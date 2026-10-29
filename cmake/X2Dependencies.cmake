@@ -24,7 +24,10 @@ if(NOT TARGET cryptopp::cryptopp)
         GIT_REPOSITORY https://github.com/abdes/cryptopp-cmake.git
         GIT_TAG CRYPTOPP_8_9_0
         GIT_SHALLOW TRUE)
+    # cryptopp-cmake 8.9 still calls FetchContent_Populate() (deprecated in CMake 3.30, policy CMP0169)
+    set(CMAKE_POLICY_DEFAULT_CMP0169 OLD)
     FetchContent_MakeAvailable(cryptopp-cmake)
+    unset(CMAKE_POLICY_DEFAULT_CMP0169)
     # cryptopp-cmake also exposes .../cryptopp itself, putting generic names (zlib.h, config.h, misc.h,
     # base64.h...) on everyone's include path. Keep only the parent directory: <cryptopp/xxx.h>.
     get_target_property(_x2_cryptopp_inc cryptopp INTERFACE_INCLUDE_DIRECTORIES)

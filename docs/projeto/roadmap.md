@@ -52,7 +52,8 @@ Tarefas:
 - [x] Resolvedor validado em escala por verificação diferencial: 1.415/1.423 arquivos do servidor equivalentes (os 8 restantes são os próprios headers de configuração).
 - [x] Importador confere a integridade de cada arquivo contra o git (a cópia do HDD tinha 90 arquivos corrompidos, ver [Inventário](../original/inventario.md#integridade-da-cópia)).
 - [ ] Flags do **cliente** (`KTDX.h`/`Always.h`) e conflitos entre servidor e cliente no código compartilhado (`Common`): fazer junto com a importação do cliente.
-- [ ] Importar `server-common`, depois cada servidor.
+- [x] `server-common` importado: 414 arquivos ([Servidor: Common](../porte/server-common.md)).
+- [ ] Importar cada servidor, começando pelo ChannelServer.
 
 ## Fase 1 — Bibliotecas
 
@@ -73,11 +74,15 @@ Andamento em 2026-10-29: plataforma e KNCSDK compilando no Linux (GCC e Clang), 
 
 ## Fase 2 — Servidor
 
+Plano detalhado do `Common`: [Servidor: Common › Plano](../porte/server-common.md#plano-do-porte-manual-um-branch-por-passo).
+
 Ver [Servidor — acoplamento com Windows](../original/servidor.md).
 
 - [ ] Rede: IOCP → Asio (standalone) ou equivalente; preservar framing/cripto de pacotes.
 - [ ] DB: ODBC → unixODBC + driver MS ODBC 18 no Linux (código de ODBC quase não muda).
-- [ ] UI MFC (`Common/ui/ServerUIDlg`) → servidor headless (console + log + comandos).
+- [ ] UI MFC (`Common/ui/ServerUIDlg`) → terminal em todas as plataformas (T15): log ao vivo, prompt Lua com histórico, título com status, encerramento com confirmação, modo serviço sem stdin.
+- [ ] Log (T16): metadados estruturados no `START_LOG`; arquivo com o conteúdo completo do original, console compacto e colorido com nível próprio.
+- [ ] (Futuro) `--gui` portável sobre a mesma API de comandos/log.
 - [ ] Remover SOAP/gSOAP, billing/auth de publishers, Mail(MIME/SMTP), CrashRpt; stub onde a lógica de jogo depende.
 - [ ] Marco: login + vila + dungeon com o `elsword.exe` original contra servidor rodando em Linux.
 

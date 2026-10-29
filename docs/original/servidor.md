@@ -18,7 +18,7 @@ Config ativa no `_reference` (a que foi ajustada no porte VS2026): `Release_US|W
 | `CRITICAL_SECTION` | 14 | `KCSLockType.h` etc. | `std::mutex` / `std::recursive_mutex` |
 | Tempo (`GetTickCount`, `timeGetTime`, QPC) | 116 | geral | `platform::TickCount()` sobre `std::chrono::steady_clock` |
 | ODBC | `Common/ODBC/{Odbc,StoredProcedure,DBUtil}` + `.dsn` | DB | mantém ODBC; unixODBC no Linux; DSN → config |
-| MFC UI | `Common/ui/{ServerApp,ServerUIDlg,DBConnectionDlg,EditLog,HookStdio}` | janela de servidor | **headless**: console + log + comandos |
+| MFC UI | `Common/ui/{ServerApp,ServerUIDlg,DBConnectionDlg,EditLog,HookStdio}` | janela de servidor: log (stdout/stderr redirecionados), campo de entrada que executa Lua (`luaL_dostring`) com histórico, título `_Loading`/`_Ready`, confirmação ao fechar | terminal em todas as plataformas (decisão T15) |
 | `CString`/`TCHAR`/`_T()` | 121 | geral | `std::wstring`/`std::string` |
 | `std::wstring`/`wchar_t` | 499 | geral | ok em memória; **cuidado no fio e no DB** (ver [protocolo.md](protocolo.md)) |
 | `__declspec`/`__forceinline`/`#pragma comment` | 38 | geral | macros de compilador / CMake |
@@ -33,6 +33,7 @@ Config ativa no `_reference` (a que foi ajustada no porte VS2026): `Release_US|W
 
 `Socket/` rede · `ODBC/` DB · `Lua/` binder · `FSM/` + `*FSM.cpp` máquinas de estado de usuário · `Room/` salas/dungeons ·
 `X2Data/` tabelas de jogo · `Mail/` correio in-game (não confundir com MailSMTP) · `Nexon/`, `OnlyGlobal/AuthAndBilling/<país>` auth/billing de publisher ·
+`OnlyGlobal/AuthAndBilling/DEB*` autenticação/cobrança SOAP ("Debelzak Custom Auth", `_DEB_AUTH`): **customização do dono do projeto** (não é da KOG), cliente de um servidor SOAP próprio; é a usada por este servidor ·
 `CrashRpt/` crash reporter · `Mornitoring/`, `PacketMornitoring/` métricas · `ui/` MFC.
 
 Arquivos centrais: `BaseServer.cpp`, `Actor*.cpp`, `Event*.h`, `EventID_{Client,Server,System}.h`, `ClientPacket.h`, `CommonPacket.h`, `ServerDefine.h` (4.645 linhas de flags).

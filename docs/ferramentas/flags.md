@@ -63,4 +63,4 @@ Repete para as configurações serviço e dev, cada uma com dois cenários: macr
 | Flag | Estado | Por quê |
 |---|---|---|
 | `_SERVICE_` | falso | Os vcxproj `Release_US` dos servidores **não** o definem (só o cliente define). No servidor, `#ifndef _SERVICE_` era código ativo |
-| `_DEB_AUTH` | verdadeiro | Definido só no Channel e no Game. Todo arquivo que o testa (`DEBAuth*`, `DEBBilling*`, `KncSendToPublisher.h`, `ChannelSimLayer`...) só é compilado nesses dois |
+| `_DEB_AUTH` | verdadeiro | DEB ("Debelzak Custom Auth", customização do dono do projeto, com servidor SOAP próprio): autenticação (Channel) e cobrança (Game) usadas por este servidor, no lugar do publisher US. Definido só no Channel e no Game; todo arquivo que o testa só é compilado nesses dois |

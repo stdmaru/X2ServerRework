@@ -20,6 +20,18 @@ REFERENCE = REPO / "_reference" / "X2Server"
 
 SOURCE_SUFFIXES = {".c", ".cpp", ".cc", ".cxx", ".h", ".hpp", ".hxx", ".inl", ".ipp"}
 
+# Standard headers the original sometimes spells with capitals (<Queue>); Windows headers are left alone,
+# they are replaced by x2/platform/win32.h during the manual port.
+STD_HEADERS = {
+    "algorithm", "array", "atomic", "bitset", "cassert", "cctype", "cerrno", "cfloat", "climits", "cmath",
+    "cstdarg", "cstddef", "cstdint", "cstdio", "cstdlib", "cstring", "ctime", "cwchar", "deque", "exception",
+    "fstream", "functional", "iomanip", "ios", "iosfwd", "iostream", "istream", "iterator", "limits", "list",
+    "locale", "map", "memory", "new", "numeric", "ostream", "queue", "set", "sstream", "stack", "stdexcept",
+    "streambuf", "string", "tuple", "typeinfo", "utility", "valarray", "vector",
+    "assert.h", "ctype.h", "errno.h", "float.h", "limits.h", "math.h", "stdarg.h", "stddef.h", "stdio.h",
+    "stdlib.h", "string.h", "time.h", "wchar.h",
+}
+
 
 class ImportError_(Exception):
     pass
@@ -48,6 +60,9 @@ class Module:
     exclude: list[str]
     maps: list[tuple[str, str]]
     flags: condres.Flags
+    seed_filter: list[str] = field(default_factory=list)    # only these vcxproj files are seeds
+    include_scope: list[str] = field(default_factory=list)  # includes are followed only into these paths
+    extern_dirs: list[Path] = field(default_factory=list)   # already ported modules: spelling fixes only
 
 
 STATES = ("true", "false", "dev", "dev_not")
@@ -80,6 +95,10 @@ def load_flags(names: list[str]) -> condres.Flags:
 def load_module(name: str) -> Module:
     data = tomllib.loads((TOOL / "modules" / f"{name}.toml").read_text())
     # a top-level key written after a [[table]] silently belongs to that table in TOML
+    top = {"name", "frozen", "source_root", "alt_root", "include_dirs", "flags", "extra", "exclude",
+           "seed_filter", "include_scope", "extern_dirs", "projects", "map"}
+    if set(data) - top:
+        raise ImportError_(f"unexpected top-level keys: {sorted(set(data) - top)}")
     allowed = {"projects": {"path", "config"}, "map": {"from", "to"}}
     for table, keys in allowed.items():
         for entry in data.get(table, []):
@@ -97,6 +116,9 @@ def load_module(name: str) -> Module:
         exclude=data.get("exclude", []),
         maps=[(m["from"].strip("/"), m["to"].strip("/")) for m in data["map"]],
         flags=load_flags(data.get("flags", [])),
+        seed_filter=data.get("seed_filter", []),
+        include_scope=data.get("include_scope", []),
+        extern_dirs=[REPO / d for d in data.get("extern_dirs", [])],
     )
 
 
@@ -107,8 +129,12 @@ def _rel(mod: Module, path: Path) -> str | None:
         return None
 
 
+def _matches(rel: str, patterns: list[str]) -> bool:
+    return any(fnmatch.fnmatch(rel, pat) or fnmatch.fnmatch(rel.lower(), pat.lower()) for pat in patterns)
+
+
 def _excluded(mod: Module, rel: str) -> bool:
-    return any(fnmatch.fnmatch(rel, pat) or fnmatch.fnmatch(rel.lower(), pat.lower()) for pat in mod.exclude)
+    return _matches(rel, mod.exclude)
 
 
 def _dest(mod: Module, rel: str) -> Path:
@@ -137,18 +163,27 @@ def run(name: str, dry_run: bool = False, force: bool = False) -> Path:
     unresolved: Counter[str] = Counter()
     outside: Counter[str] = Counter()
     missing_seeds: list[str] = []
+    other_modules: Counter[str] = Counter()
+    extern_refs: Counter[str] = Counter()
+    queued: set[Path] = set()
 
     def enqueue(path: Path, reason: str):
         rel = _rel(mod, path)
         if rel is None:
             outside[str(path)] += 1
             return
+        if reason in ("vcxproj", "header") and mod.seed_filter and not _matches(rel, mod.seed_filter):
+            return
         if _excluded(mod, rel):
             excluded_refs[rel] += 1
             return
         if path.suffix.lower() not in SOURCE_SUFFIXES:
             return
-        if path not in records and all(p != path for p, _ in queue):
+        if mod.include_scope and not _matches(rel, mod.include_scope):
+            other_modules[rel] += 1
+            return
+        if path not in queued:
+            queued.add(path)
             queue.append((path, reason))
 
     for proj, config in mod.projects:
@@ -160,7 +195,8 @@ def run(name: str, dry_run: bool = False, force: bool = False) -> Path:
             real = index.lookup(Path("/"), str(p))
             if real is None:
                 rel = _rel(mod, p)
-                if rel is None or not _excluded(mod, rel):
+                in_filter = not mod.seed_filter or (rel is not None and _matches(rel, mod.seed_filter))
+                if in_filter and (rel is None or not _excluded(mod, rel)):
                     missing_seeds.append(rel or str(p))
             else:
                 enqueue(real, "vcxproj")
@@ -192,6 +228,16 @@ def run(name: str, dry_run: bool = False, force: bool = False) -> Path:
         for delim, spelled in includes.find_includes(text):
             hit = includes.resolve_include(index, path, delim, spelled, mod.include_dirs)
             if hit is None:
+                ext = includes.resolve_include(index, Path("/nonexistent"), "<", spelled, mod.extern_dirs)
+                if ext is not None:
+                    good = includes.correct_spelling(spelled, ext)
+                    if good != spelled:
+                        rec.include_fixes[spelled] = good
+                    extern_refs[good] += 1
+                    continue
+                if spelled.lower() in STD_HEADERS and spelled != spelled.lower():
+                    rec.include_fixes[spelled] = spelled.lower()
+                    continue
                 unresolved[spelled] += 1
                 continue
             good = includes.correct_spelling(spelled, hit)
@@ -205,13 +251,18 @@ def run(name: str, dry_run: bool = False, force: bool = False) -> Path:
     manifest_path = TOOL / "manifests" / f"{mod.name}.json"
     if not dry_run:
         _write(records, manifest_path, force)
-    _report(mod, records, report_dir, excluded_refs, unresolved, outside, missing_seeds)
+    _report(mod, records, report_dir, excluded_refs, unresolved, outside, missing_seeds, other_modules, extern_refs)
     return report_dir / "REPORT.md"
 
 
 def _check_dest_includes(records: dict[Path, FileRecord], mod: Module, index: includes.CaseIndex):
     """The destination layout must keep every include working (includes are not rewritten yet)."""
-    dest_dirs = [_dest(mod, _rel(mod, d)) for d in mod.include_dirs]
+    dest_dirs = []
+    for d in mod.include_dirs:  # include dirs of other modules (servers) have no [[map]] here
+        try:
+            dest_dirs.append(_dest(mod, _rel(mod, d)))
+        except ImportError_:
+            pass
     for rec in records.values():
         for delim, spelled in includes.find_includes(rec.text):
             hit = includes.resolve_include(index, rec.src, delim, spelled, mod.include_dirs)
@@ -295,7 +346,8 @@ def _alt_diff(mod: Module, rec: FileRecord) -> list[str] | None:
                                      lineterm="", n=2))
 
 
-def _report(mod, records, report_dir: Path, excluded_refs, unresolved, outside, missing_seeds):
+def _report(mod, records, report_dir: Path, excluded_refs, unresolved, outside, missing_seeds, other_modules,
+            extern_refs):
     report_dir.mkdir(parents=True, exist_ok=True)
     diff_dir = report_dir / "alt-diff"
     for old in diff_dir.glob("*.diff") if diff_dir.exists() else []:
@@ -362,6 +414,12 @@ def _report(mod, records, report_dir: Path, excluded_refs, unresolved, outside, 
     L.append("")
     L += ["## Includes not found in the module (system / third-party / other modules)", ""]
     L += [", ".join(f"`{k}`" for k in sorted(unresolved)) or "(none)", ""]
+    if extern_refs:
+        L += ["## Includes of already ported modules (`extern_dirs`)", ""]
+        L += [", ".join(f"`{k}` ×{v}" for k, v in sorted(extern_refs.items())), ""]
+    if other_modules:
+        L += ["## Includes of files outside `include_scope` (belong to other modules)", ""]
+        L += [f"- `{k}` ×{v}" for k, v in sorted(other_modules.items())] + [""]
     if outside:
         L += ["## References outside the module root", ""] + [f"- `{k}`" for k in sorted(outside)] + [""]
 

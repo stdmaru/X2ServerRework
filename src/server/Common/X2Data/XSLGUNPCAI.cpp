@@ -1,0 +1,9 @@
+#include "./XSLGUNPCAI.h"
+
+CXSLGUNPCAI::CXSLGUNPCAI(void)
+{
+}
+
+CXSLGUNPCAI::~CXSLGUNPCAI(void)
+{
+}

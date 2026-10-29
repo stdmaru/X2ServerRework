@@ -1,0 +1,70 @@
+# KncWX2Server/Common: code shared by the five servers (and, for packets/enums, by the client).
+# Seeds: the Common/ files that some server Release_US project really compiles. Server-specific files they
+# include stay out (include_scope) and come with each server module.
+
+name = "server-common"
+source_root = "KncWX2Server"
+include_dirs = ["Common", "CenterServer", "GameServer", "GameServer/X2Data"]
+flags = ["base", "server.generated", "server"]
+
+# already ported: used only to fix the spelling of includes (KncSingleton.h -> KNCSingleton.h)
+extern_dirs = ["src/kncsdk", "src/platform/include"]
+
+seed_filter = ["Common/*"]
+include_scope = ["Common/*"]
+
+exclude = [
+    # MFC window (replaced by the terminal front-end, T15)
+    "Common/ui/*",
+    # publisher integrations of each country, including the US ones (K3RCombo auth, Payletter billing).
+    # Kept: DEB* + DEB/ (Debelzak SOAP auth/billing, enabled by _DEB_AUTH) and KncSendToPublisher.h.
+    "Common/OnlyGlobal/AuthAndBilling/BR/*",
+    "Common/OnlyGlobal/AuthAndBilling/CN/*",
+    "Common/OnlyGlobal/AuthAndBilling/EU/*",
+    "Common/OnlyGlobal/AuthAndBilling/ID/*",
+    "Common/OnlyGlobal/AuthAndBilling/IN/*",
+    "Common/OnlyGlobal/AuthAndBilling/JP/*",
+    "Common/OnlyGlobal/AuthAndBilling/PH/*",
+    "Common/OnlyGlobal/AuthAndBilling/TH/*",
+    "Common/OnlyGlobal/AuthAndBilling/TW/*",
+    "Common/OnlyGlobal/AuthAndBilling/US/*",
+    "Common/OnlyGlobal/NetCafe/*",
+    "Common/Nexon/*",
+    "Common/SOAP/*",
+    # KOG server management tool link (out of scope)
+    "Common/OnlyGlobal/ProcessCommuniationModule/*",
+    # crash reporter and SMTP alert mail (closed-source binaries)
+    "Common/CrashRpt/*",
+    "Common/Mail/X2SMTPMail.*",
+    "Common/Mail/MailManager.*",
+    "Common/Mail/MailSMTPHeader.h",
+    "Common/Mail/MailMIMEHeader.h",
+    # Windows-only legacy projects and DSNs are not sources, listed for clarity
+    "*.dsn",
+]
+
+[[projects]]
+path = "LoginServer/LoginServer.vcxproj"
+config = "Release_US|Win32"
+
+[[projects]]
+path = "CenterServer/CenterServer.vcxproj"
+config = "Release_US|Win32"
+
+[[projects]]
+path = "ChannelServer/ChannelServer.vcxproj"
+config = "Release_US|Win32"
+
+[[projects]]
+path = "GameServer/GameServer.vcxproj"
+config = "Release_US|Win32"
+
+[[projects]]
+path = "GlobalServer/GlobalServer.vcxproj"
+config = "Release_US|Win32"
+
+# Layout mirrors the original names (Common/, then GameServer/...): sources include "../Common/x.h".
+# Reorganization is Fase 5.
+[[map]]
+from = "Common"
+to = "src/server/Common"

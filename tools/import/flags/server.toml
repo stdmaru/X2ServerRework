@@ -1,5 +1,6 @@
 # Hand-written overrides for the server modules, loaded after base.toml and server.generated.toml:
 #   flags = ["base", "server.generated", "server"]
+# Rule: only flags that do not appear in packet definitions may differ from the original (protocol, T4).
 
 [environment]
 # The server Release_US builds never define _SERVICE_ (only the client does), so for server code
@@ -7,7 +8,9 @@
 false = ["_SERVICE_"]
 
 [auth]
-# Defined by the ChannelServer and GameServer Release_US projects only. Every file that tests it is compiled
-# only by those two servers (DEBAuth*, DEBBilling*, KncSendToPublisher.h via GSUser.h, ChannelSimLayer...),
-# so treating it as defined for the whole server reproduces the original. See docs/ferramentas/flags.md.
+# _DEB_AUTH = DEB ("Debelzak Custom Auth"), written by the project owner (not KOG code) as the client of their own
+# SOAP authentication server: the SOAP authentication (ChannelServer, KDEBAuthManager) and billing
+# (GameServer, KDEBBillingManager) actually used by this server. In the #if chains it replaces the US publisher
+# (K3RCombo/Payletter). Defined by the ChannelServer and GameServer Release_US projects, and every file that tests
+# it is compiled only by those two, so defining it for the whole server reproduces the original.
 true = ["_DEB_AUTH"]
