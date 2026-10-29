@@ -18,7 +18,9 @@ com CMake e x64, limpando o código no caminho. Começa pelas bibliotecas, segue
 
 ## Regras fixas
 
-- **`_reference/` é somente leitura.** Nunca edite, formate ou faça commit lá. É um symlink para o código original.
+- **`_reference/` é somente leitura.** Nunca edite, formate ou faça commit lá. `_reference/X2Server` aponta para um clone verificado
+  de `github.com/stdmaru/X2Server` (`_reference/X2Server-github`). **Não use a cópia do HDD** (`_reference/X2Server-hdd`): ela tem arquivos corrompidos.
+  Ao ler o original fora do importador, desconfie de conteúdo estranho e compare com `git -C _reference/X2Server show HEAD:<arquivo>`.
 - **Código do original entra em `src/` apenas pelo importador** (`tools/import`, ver [Importador](docs/ferramentas/importador.md)).
   Depois que um arquivo importado é editado à mão, não reimporte o módulo. Corrija direto em `src/`.
 - **Assets do cliente não mudam** (`_client/`, `.kom`, `.dds`, `.x`, `.fx`...). O código se adapta a eles.
@@ -52,6 +54,9 @@ cmake --preset linux-debug && cmake --build --preset linux-debug     # build (de
 ctest --preset linux-debug                                            # testes
 python3 tools/import/import.py <módulo> --dry-run                     # importador
 python3 tools/import/tests/test_condres.py                            # testes do importador
+python3 tools/import/tests/test_flagsim.py
+python3 tools/import/gen_flags.py server                              # flags do servidor
+python3 tools/import/check_equivalence.py server                      # resolvedor não muda o código
 python3 tools/docs/check_links.py                                     # links do wiki
 ```
 

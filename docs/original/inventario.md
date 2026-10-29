@@ -2,8 +2,8 @@
 
 # Inventário do `_reference/X2Server`
 
-`_reference/X2Server` → symlink para `/media/1tb-hdd/Storage/ElswordServer/source/X2Server`
-(repositório git próprio, 14 commits de jul/2026 portando para VS2026 / toolset `v145`).
+`_reference/X2Server` → clone verificado de `github.com/stdmaru/X2Server` (`_reference/X2Server-github`, commit `b8fb1380`;
+14 commits de jul/2026 portando para VS2026 / toolset `v145`). Veja abaixo por que não é mais a cópia do HDD.
 
 Solução: `ProjectX2.sln`. Linhas = `.c/.cpp/.h/.hpp/.inl` brutas (inclui comentários e código morto).
 
@@ -55,3 +55,17 @@ Observações:
 - `DataBase/` — 1.475 `.sql` (projeto SSMS/DBProj) — schema + stored procedures MSSQL.
 - `ScriptData/` — planilhas `.xls/.xlsm/.mdb` fonte de tabelas (insumo de ferramentas; fora de escopo).
 - `_client/data/` — cliente pronto: `x2.exe`, `*.kom` (header `KOG GC TEAM MASSFILE V.0.3`, conteúdo zlib), DLLs (d3dx9_43, fmodex, bugtrap, steam...), `x2.fx`.
+
+## Integridade da cópia
+
+Em 2026-10-29, a cópia original no HDD (`/media/1tb-hdd/Storage/ElswordServer/source/X2Server`, hoje `_reference/X2Server-hdd`)
+tinha **90 arquivos rastreados corrompidos**: mesmo tamanho e conteúdo virado bytes aleatórios. O `git status` não percebia por causa do cache de *stat*.
+Os objetos do git estavam íntegros.
+
+Afetados: `KncWX2Server` (35, entre eles `CenterServer.vcxproj`, configs `.lua`/`.ini` e `.dsn`), `3rdparty/boost/spirit` (33), `cximage` (21) e `KncTools` (1).
+Nenhum arquivo do KNCSDK foi atingido, então o que já tinha sido importado continuou válido (o relatório saiu idêntico com o clone).
+
+Ações:
+- `_reference/X2Server` passou a apontar para um clone do GitHub, no mesmo commit, com `git fsck` limpo e os 90 arquivos conferidos.
+- O importador agora confere o hash git de **todo** arquivo que lê ([Importador](../ferramentas/importador.md)).
+- **Recomendação**: checar o HDD (SMART). Arquivos que só existem nele, fora do git, podem estar corrompidos também.

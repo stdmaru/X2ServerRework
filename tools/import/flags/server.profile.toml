@@ -1,0 +1,22 @@
+# Input of gen_flags.py for the servers (variant US, Release_US|Win32 of the five server .vcxproj).
+# Output: flags/server.generated.toml (do not edit) + reports/flags-server/REPORT.md.
+
+[profile]
+root = "KncWX2Server"
+entry = "Common/ServerDefine.h"
+include_dirs = ["Common"]
+
+# Release_US preprocessor definitions common to the five servers (_DEB_AUTH is per server: see server.toml)
+defines = ["WIN32", "NDEBUG", "_WINDOWS", "SERV_COUNTRY_US"]
+# extra definitions of a development build (the original _IN_HOUSE_ build)
+dev_defines = ["_IN_HOUSE_"]
+
+# configuration headers: every name they #define/#undef (even commented out, or for another country) is a flag
+config_globs = ["Common/ServerDefine.h", "Common/OnlyGlobal/ServerDefine/*.h"]
+# code scanned for flags used in conditionals and for macros defined outside the configuration headers
+code_globs = ["**/*.h", "**/*.hpp", "**/*.cpp", "**/*.c", "**/*.inl"]
+# prefixes of feature flags: used in code but defined nowhere -> false (undefined in the original build)
+flag_prefixes = ["SERV_", "SERVER_"]
+
+output = "server.generated.toml"
+report = "flags-server"

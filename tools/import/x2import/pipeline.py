@@ -2,9 +2,11 @@
 
 import difflib
 import fnmatch
+import functools
 import hashlib
 import json
 import re
+import subprocess
 import tomllib
 from collections import Counter
 from dataclasses import dataclass, field
@@ -48,19 +50,30 @@ class Module:
     flags: condres.Flags
 
 
+STATES = ("true", "false", "dev", "dev_not")
+
+
 def load_flags(names: list[str]) -> condres.Flags:
-    flags = condres.Flags()
+    """Loads flag files in order; a later file overrides earlier ones (base -> generated -> hand-written).
+    Inside one file a name may appear in a single state only."""
+    state: dict[str, str] = {}
+    patterns: list[re.Pattern] = []
     for name in names:
         data = tomllib.loads((TOOL / "flags" / f"{name}.toml").read_text())
+        here: dict[str, str] = {}
         for section in data.values():
-            flags.true |= set(section.get("true", []))
-            flags.false |= set(section.get("false", []))
-            flags.dev |= set(section.get("dev", []))
-            flags.dev_not |= set(section.get("dev_not", []))
-            flags.false_patterns += [re.compile(p) for p in section.get("false_patterns", [])]
-    overlap = (flags.true | flags.dev | flags.dev_not) & flags.false
-    if overlap:
-        raise ImportError_(f"flags both true/dev and false: {sorted(overlap)}")
+            if not isinstance(section, dict):
+                continue
+            for st in STATES:
+                for flag in section.get(st, []):
+                    if here.get(flag, st) != st:
+                        raise ImportError_(f"flags/{name}.toml: {flag} is both {here[flag]} and {st}")
+                    here[flag] = st
+            patterns += [re.compile(p) for p in section.get("false_patterns", [])]
+        state.update(here)
+    flags = condres.Flags(false_patterns=patterns)
+    for flag, st in state.items():
+        getattr(flags, st).add(flag)
     return flags
 
 
@@ -139,7 +152,10 @@ def run(name: str, dry_run: bool = False, force: bool = False) -> Path:
             queue.append((path, reason))
 
     for proj, config in mod.projects:
-        sources, headers = vcxproj.project_files(proj, config)
+        try:
+            sources, headers = vcxproj.project_files(proj, config)
+        except ValueError as e:
+            raise ImportError_(str(e)) from e
         for p in sources:
             real = index.lookup(Path("/"), str(p))
             if real is None:
@@ -165,7 +181,9 @@ def run(name: str, dry_run: bool = False, force: bool = False) -> Path:
         rec = FileRecord(src=path, dest=_dest(mod, rel), reason=reason)
         records[path] = rec
 
-        dec = textio.decode(path.read_bytes())
+        raw = path.read_bytes()
+        _check_integrity(path, raw)
+        dec = textio.decode(raw)
         rec.encoding, rec.had_crlf = dec.encoding, dec.had_crlf
         text = textio.normalize(dec.text)
         rec.result = condres.resolve(text, mod.flags)
@@ -203,6 +221,31 @@ def _check_dest_includes(records: dict[Path, FileRecord], mod: Module, index: in
             bases = ([rec.dest.parent] if delim == '"' else []) + dest_dirs
             if not any((b / spelled).resolve() == want for b in bases):
                 rec.result.unsupported.append((0, f"include {spelled!r} breaks in destination layout"))
+
+
+@functools.cache
+def _reference_index() -> dict[str, str]:
+    """Blob hash of every file tracked by the _reference git repository (path relative to its root)."""
+    out = subprocess.run(["git", "-C", str(REFERENCE.resolve()), "ls-files", "-s", "-z"],
+                         capture_output=True, check=True).stdout
+    index = {}
+    for rec in out.split(b"\0"):
+        if rec:
+            meta, path = rec.split(b"\t", 1)
+            index[path.decode("utf-8", "surrogateescape")] = meta.split()[1].decode()
+    return index
+
+
+def _check_integrity(path: Path, data: bytes):
+    """The original disk copy had silently corrupted files: refuse anything that differs from git."""
+    rel = path.resolve().relative_to(REFERENCE.resolve()).as_posix()
+    expected = _reference_index().get(rel)
+    if expected is None:
+        raise ImportError_(f"{rel}: not tracked by the _reference git repository")
+    for blob in (data, data.replace(b"\r\n", b"\n")):
+        if hashlib.sha1(b"blob %d\0" % len(blob) + blob).hexdigest() == expected:
+            return
+    raise ImportError_(f"{rel}: content differs from git (corrupted or modified copy)")
 
 
 def _sha(text: str) -> str:

@@ -1,0 +1,13 @@
+# Hand-written overrides for the server modules, loaded after base.toml and server.generated.toml:
+#   flags = ["base", "server.generated", "server"]
+
+[environment]
+# The server Release_US builds never define _SERVICE_ (only the client does), so for server code
+# `#ifdef _SERVICE_` is dead and `#ifndef _SERVICE_` is live, exactly as in the original servers.
+false = ["_SERVICE_"]
+
+[auth]
+# Defined by the ChannelServer and GameServer Release_US projects only. Every file that tests it is compiled
+# only by those two servers (DEBAuth*, DEBBilling*, KncSendToPublisher.h via GSUser.h, ChannelSimLayer...),
+# so treating it as defined for the whole server reproduces the original. See docs/ferramentas/flags.md.
+true = ["_DEB_AUTH"]

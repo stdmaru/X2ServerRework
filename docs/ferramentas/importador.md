@@ -31,11 +31,13 @@ python3 tools/import/tests/test_condres.py       # testes do resolvedor de #if
 - `tools/import/manifests/<módulo>.json` guarda o hash de cada arquivo escrito. Se um arquivo de `src/` foi editado depois da importação, rodar de novo **falha**.
   A partir daí, corrija à mão em `src/`. `--force` sobrescreve e perde as edições.
 - Módulo com `frozen = true` no `.toml` já foi portado à mão: o importador recusa escrever nele, mesmo com `--force` (só `--dry-run`).
+- **Integridade**: todo arquivo lido do `_reference` é comparado com o hash do git do próprio `_reference`. Se for diferente (cópia corrompida ou editada), a importação para.
+  Isso foi adicionado depois que a cópia original no HDD mostrou 90 arquivos corrompidos ([Inventário](../original/inventario.md#integridade-da-cópia)).
 - Os arquivos de módulo (`tools/import/modules/*.toml`) declaram `name`, `source_root`, `alt_root`, `include_dirs`, `flags`, `extra` e `exclude` **antes** de qualquer `[[tabela]]`.
   Num TOML, chaves escritas depois de uma tabela passam a pertencer a ela; o carregador recusa esse caso.
 
 ## Flags
 
 - `tools/import/flags/base.toml`: ambiente (`_SERVICE_` → `!X2_DEV_TOOLS`, `_IN_HOUSE_` → `X2_DEV_TOOLS`), país US, anti-cheat e whitelist de dev.
-- **Ainda falta**: o conjunto completo de `SERV_*` gerado a partir de `ServerDefine.h` / `KTDX.h`. Vai entrar antes de importar `Common` e o cliente.
-  Até lá, uma `SERV_*` desconhecida fica **intacta**, nunca é resolvida por palpite.
+- `server.generated.toml` + `server.toml`: flags do servidor, geradas por [`gen_flags.py`](flags.md). As do cliente (`KTDX.h`/`Always.h`) entram quando o cliente for importado.
+- Uma flag fora dos arquivos carregados fica **intacta**: nunca é resolvida por palpite.

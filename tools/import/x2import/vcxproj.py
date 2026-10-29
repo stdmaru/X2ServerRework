@@ -25,7 +25,10 @@ def _is_excluded(item: ET.Element, config: str) -> bool:
 
 def project_files(vcxproj: Path, config: str) -> tuple[list[Path], list[Path]]:
     """Returns (compiled sources, listed headers) as absolute paths, for `config` ("MD|Win32")."""
-    root = ET.parse(vcxproj).getroot()
+    try:
+        root = ET.parse(vcxproj).getroot()
+    except ET.ParseError as e:
+        raise ValueError(f"{vcxproj}: not valid MSBuild XML ({e}); corrupted copy?") from e
     sources: list[Path] = []
     headers: list[Path] = []
     for group in root.findall(_NS + "ItemGroup"):

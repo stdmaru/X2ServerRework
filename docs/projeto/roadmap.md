@@ -48,8 +48,10 @@ Tarefas:
 - [x] Importador ([../../tools/import/README.md](../ferramentas/importador.md)): seleção via vcxproj, encoding, resolvedor de `#if` próprio
       (no lugar do `coan`, por causa da regra `X2_DEV_TOOLS`), exclusões, mapa de destino, correção de includes, relatório, trava contra sobrescrita.
 - [x] Módulo `kncsdk` importado: 62 arquivos de 742 ([relatório](../../tools/import/reports/kncsdk/REPORT.md)).
-- [ ] Gerar o conjunto final de `SERV_*` a partir de `ServerDefine.h` (servidor) e `KTDX.h`/`Always.h` (cliente), e detectar conflitos entre os dois no código compartilhado (`Common`).
-- [ ] Validar o resolvedor em escala: amostra de arquivos pré-processados (`-E`, com headers Windows como stub) antes/depois devem dar o mesmo código.
+- [x] Flags do **servidor** geradas a partir do `ServerDefine.h` (736 verdadeiras / 423 falsas): [Flags e verificação](../ferramentas/flags.md).
+- [x] Resolvedor validado em escala por verificação diferencial: 1.415/1.423 arquivos do servidor equivalentes (os 8 restantes são os próprios headers de configuração).
+- [x] Importador confere a integridade de cada arquivo contra o git (a cópia do HDD tinha 90 arquivos corrompidos, ver [Inventário](../original/inventario.md#integridade-da-cópia)).
+- [ ] Flags do **cliente** (`KTDX.h`/`Always.h`) e conflitos entre servidor e cliente no código compartilhado (`Common`): fazer junto com a importação do cliente.
 - [ ] Importar `server-common`, depois cada servidor.
 
 ## Fase 1 — Bibliotecas
