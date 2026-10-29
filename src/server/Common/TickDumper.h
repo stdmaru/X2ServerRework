@@ -1,5 +1,5 @@
 #pragma once
-#include <atltime.h>
+#include "x2/platform/win32.h"
 #include <Thread/Locker.h>
 
 

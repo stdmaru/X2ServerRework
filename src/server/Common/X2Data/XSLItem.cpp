@@ -1068,7 +1068,7 @@ int CXSLItem::GetClassChangeCashItemIDByUnitClass( const int iUnitClass_ )
 }
 //}}
 
-const bool	CXSLItem::IsPossibleCart( const int iItemID_ )
+bool	CXSLItem::IsPossibleCart( const int iItemID_ )
 {
 	if( CXSLItem::GetClassChangeCashItem( iItemID_ ) != CXSLUnit::UC_NONE )
 		return false;

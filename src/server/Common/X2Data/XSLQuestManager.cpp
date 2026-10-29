@@ -46,6 +46,7 @@ ImplementLuaScriptParser( CXSLQuestManager )
 
 bool CXSLQuestManager::AddQuestTemplet_LUA()
 {
+	int iServerGroupID = {}; // declared before the gotos below (MSVC let them cross the initialization)
 	QuestTemplet kQuestTemplet;
 	KLuaManager luaManager( GetLuaState() );
 
@@ -55,7 +56,7 @@ bool CXSLQuestManager::AddQuestTemplet_LUA()
 
 	//////////////////////////////////////////////////////////////////////////
 	//{{ 2009. 12. 18  최육사	서버군 확장
-	int iServerGroupID = 0;
+	iServerGroupID = 0;
 	LUA_GET_VALUE(					luaManager, L"m_iServerGroupID",	iServerGroupID,					-1 );
 #ifdef EXTEND_SERVER_GROUP_MASK
 	if( iServerGroupID != -1 )
@@ -203,7 +204,7 @@ bool CXSLQuestManager::AddQuestTemplet_LUA()
 					}
 					else
 					{
-						BOOST_TEST_FOREACH( int, iSubQuestID, mit->second )
+						for( int iSubQuestID : mit->second )
 						{
 							if( buf == iSubQuestID )
 							{
@@ -345,7 +346,7 @@ bool CXSLQuestManager::AddQuestTemplet_LUA()
 			if( kQuestTemplet.m_Condition.m_vecBeforeQuestID.empty() == false )
 			{
 				bool bIsExistBeforeQuest = false;
-				BOOST_TEST_FOREACH( const int, iBeforeQuestID, kQuestTemplet.m_Condition.m_vecBeforeQuestID )
+				for( const int iBeforeQuestID : kQuestTemplet.m_Condition.m_vecBeforeQuestID )
 				{
 					if( iBeforeQuestID != 0 )
 					{
@@ -1674,6 +1675,7 @@ void CXSLQuestManager::GetAccountQuestTempletList( OUT std::vector<QuestTemplet*
 
 bool CXSLQuestManager::AddAccountQuestTemplet_LUA()
 {
+	int iServerGroupID = {}; // declared before the gotos below (MSVC let them cross the initialization)
 	QuestTemplet kQuestTemplet;
 	KLuaManager luaManager( GetLuaState() );
 
@@ -1683,7 +1685,7 @@ bool CXSLQuestManager::AddAccountQuestTemplet_LUA()
 
 	//////////////////////////////////////////////////////////////////////////
 	//{{ 2009. 12. 18  최육사	서버군 확장
-	int iServerGroupID = 0;
+	iServerGroupID = 0;
 	LUA_GET_VALUE(					luaManager, L"m_iServerGroupID",	iServerGroupID,					-1 );
 
 #ifdef EXTEND_SERVER_GROUP_MASK
@@ -1822,7 +1824,7 @@ bool CXSLQuestManager::AddAccountQuestTemplet_LUA()
 					}
 					else
 					{
-						BOOST_TEST_FOREACH( int, iSubQuestID, mit->second )
+						for( int iSubQuestID : mit->second )
 						{
 							if( buf == iSubQuestID )
 							{
@@ -1948,6 +1950,7 @@ LoadFail:
 //{{ 2013. 03. 21	 계정 퀘스트 - 요일별 활성화 기능 - 김민성
 bool CXSLQuestManager::AddAccountQuestDate_LUA()
 {
+	const CXSLQuestManager::QuestTemplet* pQuestTemplet = {}; // declared before the gotos below (MSVC let them cross the initialization)
 	AccountQuestDateInfo kAccountQuestDateInfo;
 
 	KLuaManager luaManager( GetLuaState() );
@@ -1961,7 +1964,7 @@ bool CXSLQuestManager::AddAccountQuestDate_LUA()
 	LUA_GET_VALUE_RETURN_ERR(		luaManager, L"AccountQuestID",				iAccountQuestID,			0, wstrErrLua, goto LoadFail; );
 
 	// 존재하는 계정 퀘스트인지 확인한다.
-	const CXSLQuestManager::QuestTemplet*	pQuestTemplet = GetAccountQuestTemplet( iAccountQuestID );
+	pQuestTemplet = GetAccountQuestTemplet( iAccountQuestID );
 	if( pQuestTemplet == NULL )
 	{
 		START_LOG( cerr, L"존재하지 않는 계정 QUEST 입니다." )

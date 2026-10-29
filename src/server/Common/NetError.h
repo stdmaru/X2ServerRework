@@ -26,12 +26,12 @@ namespace NetError
     //};
 
 	//09. 08. 17 김정협 클라이언트에는 외국버전 그대로 적용
-    wchar_t* GetErrStrF( NetErrorID errorID );
-	wchar_t* GetErrStr( NetErrorID errorID );
+    const wchar_t* GetErrStrF( NetErrorID errorID );
+	const wchar_t* GetErrStr( NetErrorID errorID );
 
     void SetLastError( NetErrorID errorID );
-    wchar_t* GetLastErrMsg();
+    const wchar_t* GetLastErrMsg();
     NetErrorID GetLastError();
 }
 
-#define SET_ERROR( id ) NetError::SetLastError( NetError::##id )
+#define SET_ERROR( id ) NetError::SetLastError( NetError::id )

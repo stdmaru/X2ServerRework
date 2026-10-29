@@ -89,7 +89,7 @@ public:
 
 public:
 	KPvpMatchManager(void);
-	~KPvpMatchManager(void);
+	virtual ~KPvpMatchManager(void);
 
 	// for lua
 	void	SetMaxRankingPoint_LUA( int iMaxRankingPoint );

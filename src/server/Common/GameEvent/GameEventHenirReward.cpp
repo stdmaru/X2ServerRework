@@ -5,9 +5,9 @@
 KGameEventHenirReward::KGameEventHenirReward(void)
 	: m_iHenirRewardEventCount(0)
 //{{ 2011. 12. 06	최육사	특정 서버군 이벤트 시스템
-, m_iServerGroupID(-1)
-//}}
 , m_bHenirRewardUnLimited( false )
+//}}
+, m_iServerGroupID(-1)
 {
 }
 

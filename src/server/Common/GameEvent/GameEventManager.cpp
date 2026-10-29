@@ -1,4 +1,5 @@
 #include "GameEventManager.h"
+#include <algorithm>
 
 #include <KncLua.h>
 #include <lua_tinker.h>
@@ -15,7 +16,6 @@
 //{{ 2011. 7.29 조효진 반복 퀘스트 및 일일 퀘스트도 퀘스트 이벤트로 등록가능하도록 수정
 #include "../X2Data/XSLQuestManager.h"
 
-#include "../Common/OnlyGlobal/ProcessCommuniationModule/ProcessCommunicationManager.h"
 
 	#include "GameEventScriptManager.h"
 //}}
@@ -94,8 +94,7 @@ void KGameEventManager::Tick()
 					std::wstring wstrEventBegin(strBegin.GetString());
 					CStringW strEnd(mit->second->GetEndDate().Format(_T("%Y-%m-%d %H:%M:%S")));
 					std::wstring wstrEventEnd(strEnd.GetString());
-					SiKProcessCommunicationManager()->QueueingProcessWrite(boost::str(boost::wformat(L"%1%_%2%_%3%_%4%_%5%_%6%_%7%_%8%")
-						% 2 %mit->second->GetUID() %mit->second->GetEventName() %mit->second->GetType() %mit->second->GetScriptID() %wstrEventBegin %wstrEventEnd %L"이벤트 종료" ));
+					// Port: KSMS management tool notification removed (out of scope)
 
 					START_LOG( cout2, L"이벤트 종료.!" )
 						<< BUILD_LOG( mit->second->GetUID() )
@@ -179,8 +178,7 @@ void KGameEventManager::Tick()
 						std::wstring wstrEventBegin = strBegin.GetString();
 						CStringW strEnd = mit->second->GetEndDate().Format(_T("%Y-%m-%d %H:%M:%S"));
 						std::wstring wstrEventEnd = strEnd.GetString();
-						SiKProcessCommunicationManager()->QueueingProcessWrite(boost::str(boost::wformat(L"%1%_%2%_%3%_%4%_%5%_%6%_%7%_%8%")
-							% 2 %mit->second->GetUID() %mit->second->GetEventName() %mit->second->GetType() %mit->second->GetScriptID() %wstrEventBegin %wstrEventEnd %L"이벤트 시작" ));
+						// Port: KSMS management tool notification removed (out of scope)
 						START_LOG( cout2, L"이벤트 시작.!" )
 							<< BUILD_LOG( mit->second->GetUID() )
 							<< BUILD_LOG( mit->second->GetEventName() )
@@ -250,7 +248,7 @@ void KGameEventManager::SetEvent( IN const std::vector< KEventInfo >& vecEventLi
 		}
 	}
 
-	BOOST_TEST_FOREACH( const KEventInfo&, kEventInfo, vecEventList )
+	for( const KEventInfo& kEventInfo : vecEventList )
 	{
 		switch( kEventInfo.m_iEventType )
 		{
@@ -439,7 +437,6 @@ void KGameEventManager::GetRewardEvent( OUT SGameEventBonusRate& kBonusRateInfo
 	//}}
 
 	//이벤트 진행시간 체크를 위해 현재 시간을 받아온다.
-	CTime tCurrentTime = CTime::GetCurrentTime();
 
 	std::map< int, KGameEvent* >::iterator mit;
 
@@ -764,7 +761,6 @@ void KGameEventManager::CheckEventMonster( OUT std::vector< int >& vecEventID )
 		if (mit->second->IsOn() == false)
 			continue;
 
-		const int iEventUID = mit->first;
 		KGameEventMonster* pEvent = static_cast<KGameEventMonster*>(mit->second);
 
 		// 진행중인 몬스터 출현 이벤트가 있으면..
@@ -796,7 +792,6 @@ void KGameEventManager::CheckEventMonster( OUT std::set<int>& setEventID )
 		if (it->second->IsOn() == false)
 			continue;
 
-		const int iEventUID = it->first;
 		KGameEventMonster* pEvent = static_cast<KGameEventMonster*>( it->second );
 
 		// 진행중인 몬스터 출현 이벤트가 있으면..
@@ -823,7 +818,6 @@ void KGameEventManager::CheckEnableEventQuest( IN OUT std::map< int, KEventQuest
 	vecBeginQuest.clear();
 	vecEndQuest.clear();
 
-	CTime tCurrentTime = CTime::GetCurrentTime();
 
 	std::map< int, KGameEvent* >::const_iterator mit;
 	std::map< int, KEventQuestInfo >::iterator mitET;
@@ -1604,7 +1598,7 @@ void KGameEventManager::CheckEnableCumulativeTimeEventForCharInit( IN const u_ch
 	}
 }
 
-void KGameEventManager::CheckEnableAndCompleteCumulativeTimeEvent( IN const u_char ucLevel,
+void KGameEventManager::CheckEnableAndCompleteCumulativeTimeEvent( IN const u_char /*ucLevel*/,
 																   IN const bool bIsPcBang,
 																   //{{ 2011. 08. 09	최육사	투니 랜드 채널링 이벤트
 																   IN const int iChannelCode,
@@ -1625,7 +1619,6 @@ void KGameEventManager::CheckEnableAndCompleteCumulativeTimeEvent( IN const u_ch
 	vecBeginEvent.clear();
 	vecEndEvent.clear();
 
-	CTime tCurrentTime = CTime::GetCurrentTime();
 
 	std::map< int, KGameEvent* >::const_iterator mit;
 	std::map< int, std::pair< KUserCumulativeTimeEventInfo, KTimerManager > >::iterator mitET;
@@ -1856,7 +1849,7 @@ void KGameEventManager::GetNowProcessingTimeEvent( IN const std::map< int, std::
 												   IN const std::map< int, std::pair< KUserCumulativeTimeEventInfo, KTimerManager > >& mapCumulativeEventTime,
 												   IN const std::set< int >& setCompletedEvent,
 												   OUT std::vector< KTimeEventSimpleInfo >& vecTimeEvent,
-												   IN bool bAccountTimeEvent )
+												   IN bool /*bAccountTimeEvent*/ )
 {
 	vecTimeEvent.clear();
 
@@ -2120,7 +2113,7 @@ void KGameEventManager::RefreshEventScript()
 						|| pEvent->GetRepeatEvent() != pEventData->m_bRepeatEvent
 						//}}
 						//{{ 2011. 05. 31	최육사	접속 이벤트 레벨 체크
-						|| pEvent->GetMinMaxRewardSize() != pEventData->m_mapMinMaxReward.size()
+						|| pEvent->GetMinMaxRewardSize() != static_cast<int>( pEventData->m_mapMinMaxReward.size() )
 						//}}
 						|| pEvent->IsRepeatRewardEvent() != pEventData->m_bRepeatRewardEvent
 						|| pEvent->GetBeforeEventID() != ( pEventData->m_iBeforeEventID )
@@ -2365,6 +2358,8 @@ void KGameEventManager::RefreshEventScript()
 				}
 				break;
 
+			default:
+				break;
 			}
 		}
 	}
@@ -2524,8 +2519,7 @@ void KGameEventManager::AddQuestEvent( IN const KEventInfo& kInfo )
 		std::wstring wstrEventBegin = strBegin.GetString();
 		CStringW strEnd = ctEnd.Format(_T("%Y-%m-%d %H:%M:%S"));
 		std::wstring wstrEventEnd = strEnd.GetString();
-		SiKProcessCommunicationManager()->QueueingProcessWrite(boost::str(boost::wformat(L"%1%_%2%_%3%_%4%_%5%_%6%_%7%_%8%")
-			% 1 %pEvent->GetUID() %pEvent->GetEventName() %pEvent->GetType() %kInfo.m_iScriptID  %wstrEventBegin %wstrEventEnd %L"신규 Quest 이벤트 등록" ));
+		// Port: KSMS management tool notification removed (out of scope)
 
 		START_LOG( cout2, L"신규 이벤트 등록.!" )
 			<< BUILD_LOG( kInfo.m_iEventUID )
@@ -2618,8 +2612,7 @@ void KGameEventManager::AddItemDropEvent( IN const KEventInfo& kInfo )
 		std::wstring wstrEventBegin = strBegin.GetString();
 		CStringW strEnd = ctEnd.Format(_T("%Y-%m-%d %H:%M:%S"));
 		std::wstring wstrEventEnd = strEnd.GetString();
-		SiKProcessCommunicationManager()->QueueingProcessWrite(boost::str(boost::wformat(L"%1%_%2%_%3%_%4%_%5%_%6%_%7%_%8%")
-			% 1 %pEvent->GetUID() %pEvent->GetEventName() %pEvent->GetType() %kInfo.m_iScriptID  %wstrEventBegin %wstrEventEnd %L"신규 드랍 이벤트 등록" ));
+		// Port: KSMS management tool notification removed (out of scope)
 
 		START_LOG( cout2, L"신규 이벤트 등록.!" )
 			<< BUILD_LOG( kInfo.m_iEventUID )
@@ -2725,8 +2718,7 @@ void KGameEventManager::AddRewardEvent( IN const KEventInfo& kInfo )
 		std::wstring wstrEventBegin = strBegin.GetString();
 		CStringW strEnd = ctEnd.Format(_T("%Y-%m-%d %H:%M:%S"));
 		std::wstring wstrEventEnd = strEnd.GetString();
-		SiKProcessCommunicationManager()->QueueingProcessWrite(boost::str(boost::wformat(L"%1%_%2%_%3%_%4%_%5%_%6%_%7%_%8%")
-			% 1 %pEvent->GetUID() %pEvent->GetEventName() %pEvent->GetType() %kInfo.m_iScriptID  %wstrEventBegin %wstrEventEnd %L"신규 경험치&ED&VP 이벤트 등록" ));
+		// Port: KSMS management tool notification removed (out of scope)
 
 		START_LOG( cout2, L"신규 이벤트 등록.!" )
             << BUILD_LOG( kInfo.m_iEventUID )
@@ -2794,8 +2786,7 @@ void KGameEventManager::AddMonsterEvent( IN const KEventInfo& kInfo )
 		std::wstring wstrEventBegin = strBegin.GetString();
 		CStringW strEnd = ctEnd.Format(_T("%Y-%m-%d %H:%M:%S"));
 		std::wstring wstrEventEnd = strEnd.GetString();
-		SiKProcessCommunicationManager()->QueueingProcessWrite(boost::str(boost::wformat(L"%1%_%2%_%3%_%4%_%5%_%6%_%7%_%8%")
-			% 1 %pEvent->GetUID() %pEvent->GetEventName() %pEvent->GetType() %kInfo.m_iScriptID  %wstrEventBegin %wstrEventEnd %L"신규 몬스터 이벤트 등록" ));
+		// Port: KSMS management tool notification removed (out of scope)
 
 		START_LOG( cout2, L"신규 이벤트 등록.!" )
 			<< BUILD_LOG( kInfo.m_iEventUID )
@@ -2919,8 +2910,7 @@ void KGameEventManager::AddSpiritEvent( IN const KEventInfo& kInfo )
 		std::wstring wstrEventBegin = strBegin.GetString();
 		CStringW strEnd = ctEnd.Format(_T("%Y-%m-%d %H:%M:%S"));
 		std::wstring wstrEventEnd = strEnd.GetString();
-		SiKProcessCommunicationManager()->QueueingProcessWrite(boost::str(boost::wformat(L"%1%_%2%_%3%_%4%_%5%_%6%_%7%_%8%")
-			% 1 %pEvent->GetUID() %pEvent->GetEventName() %pEvent->GetType() %kInfo.m_iScriptID  %wstrEventBegin %wstrEventEnd %L"신규 근성도 이벤트 등록" ));
+		// Port: KSMS management tool notification removed (out of scope)
 		START_LOG( cout2, L"신규 이벤트 등록.!" )
 			<< BUILD_LOG( kInfo.m_iEventUID )
 			<< BUILD_LOG( kInfo.m_iEventType )
@@ -3046,8 +3036,7 @@ void KGameEventManager::AddConnectTimeEvent( IN const KEventInfo& kInfo )
 		std::wstring wstrEventBegin = strBegin.GetString();
 		CStringW strEnd = ctEnd.Format(_T("%Y-%m-%d %H:%M:%S"));
 		std::wstring wstrEventEnd = strEnd.GetString();
-		SiKProcessCommunicationManager()->QueueingProcessWrite(boost::str(boost::wformat(L"%1%_%2%_%3%_%4%_%5%_%6%_%7%_%8%")
-			% 1 %pEvent->GetUID() %pEvent->GetEventName() %pEvent->GetType() %kInfo.m_iScriptID %wstrEventBegin %wstrEventEnd %L"신규 접속시간 이벤트 등록" ));
+		// Port: KSMS management tool notification removed (out of scope)
 
 
 		START_LOG( cout2, L"신규 이벤트 등록.!" )
@@ -3135,8 +3124,7 @@ void KGameEventManager::AddSecretDungeonEvent( IN const KEventInfo& kInfo )
 		std::wstring wstrEventBegin = strBegin.GetString();
 		CStringW strEnd = ctEnd.Format(_T("%Y-%m-%d %H:%M:%S"));
 		std::wstring wstrEventEnd = strEnd.GetString();
-		SiKProcessCommunicationManager()->QueueingProcessWrite(boost::str(boost::wformat(L"%1%_%2%_%3%_%4%_%5%_%6%_%7%_%8%")
-			% 1 %pEvent->GetUID() %pEvent->GetEventName() %pEvent->GetType() %kInfo.m_iScriptID %wstrEventBegin %wstrEventEnd %L"신규 비던 이벤트 등록" ));
+		// Port: KSMS management tool notification removed (out of scope)
 
 		START_LOG( cout2, L"신규 이벤트 등록.!" )
 			<< BUILD_LOG( kInfo.m_iEventUID )
@@ -3204,8 +3192,7 @@ void KGameEventManager::AddNotifyMSGEvent( IN const KEventInfo& kInfo )
 		std::wstring wstrEventBegin = strBegin.GetString();
 		CStringW strEnd = ctEnd.Format(_T("%Y-%m-%d %H:%M:%S"));
 		std::wstring wstrEventEnd = strEnd.GetString();
-		SiKProcessCommunicationManager()->QueueingProcessWrite(boost::str(boost::wformat(L"%1%_%2%_%3%_%4%_%5%_%6%_%7%_%8%")
-			% 1 %pEvent->GetUID() %pEvent->GetEventName() %pEvent->GetType() %kInfo.m_iScriptID %wstrEventBegin %wstrEventEnd %L"신규 공지 이벤트 등록" ));
+		// Port: KSMS management tool notification removed (out of scope)
 
 		START_LOG( cout2, L"신규 이벤트 등록.!" )
 			<< BUILD_LOG( kInfo.m_iEventUID )
@@ -3305,8 +3292,7 @@ void KGameEventManager::AddCumulativeTimeEvent( IN const KEventInfo& kInfo )
 		std::wstring wstrEventBegin = strBegin.GetString();
 		CStringW strEnd = ctEnd.Format(_T("%Y-%m-%d %H:%M:%S"));
 		std::wstring wstrEventEnd = strEnd.GetString();
-		SiKProcessCommunicationManager()->QueueingProcessWrite(boost::str(boost::wformat(L"%1%_%2%_%3%_%4%_%5%_%6%_%7%_%8%")
-			% 1 %pEvent->GetUID() %pEvent->GetEventName() %pEvent->GetType() %kInfo.m_iScriptID %wstrEventBegin %wstrEventEnd %L"신규 누적시간 이벤트 등록" ));
+		// Port: KSMS management tool notification removed (out of scope)
 
 		START_LOG( cout2, L"신규 이벤트 등록.!" )
 			<< BUILD_LOG( kInfo.m_iEventUID )
@@ -3397,8 +3383,7 @@ void KGameEventManager::AddHenirRewardCountEvent( IN const KEventInfo& kInfo )
 		std::wstring wstrEventBegin = strBegin.GetString();
 		CStringW strEnd = ctEnd.Format(_T("%Y-%m-%d %H:%M:%S"));
 		std::wstring wstrEventEnd = strEnd.GetString();
-		SiKProcessCommunicationManager()->QueueingProcessWrite(boost::str(boost::wformat(L"%1%_%2%_%3%_%4%_%5%_%6%_%7%_%8%")
-			% 1 %pEvent->GetUID() %pEvent->GetEventName() %pEvent->GetType() %kInfo.m_iScriptID %wstrEventBegin %wstrEventEnd %L"신규 헤니르 보상 이벤트 등록" ));
+		// Port: KSMS management tool notification removed (out of scope)
 
 		START_LOG( cout2, L"신규 이벤트 등록.!" )
 			<< BUILD_LOG( kInfo.m_iEventUID )
@@ -3532,8 +3517,7 @@ void KGameEventManager::AddQuestItemDropEvent( IN const KEventInfo& kInfo )
 		std::wstring wstrEventBegin = strBegin.GetString();
 		CStringW strEnd = ctEnd.Format(_T("%Y-%m-%d %H:%M:%S"));
 		std::wstring wstrEventEnd = strEnd.GetString();
-		SiKProcessCommunicationManager()->QueueingProcessWrite(boost::str(boost::wformat(L"%1%_%2%_%3%_%4%_%5%_%6%_%7%_%8%")
-			% 1 %pEvent->GetUID() %pEvent->GetEventName() %pEvent->GetType() %kInfo.m_iScriptID %wstrEventBegin %wstrEventEnd %L"신규 퀘스트 아이템 드롭률 이벤트 등록" ));
+		// Port: KSMS management tool notification removed (out of scope)
 
 		START_LOG( cout2, L"신규 이벤트 등록.!" )
 			<< BUILD_LOG( kInfo.m_iEventUID )
@@ -3646,8 +3630,7 @@ void KGameEventManager::AddAdvertisementEvent( IN const KEventInfo& kInfo )
 		std::wstring wstrEventBegin = strBegin.GetString();
 		CStringW strEnd = ctEnd.Format(_T("%Y-%m-%d %H:%M:%S"));
 		std::wstring wstrEventEnd = strEnd.GetString();
-		SiKProcessCommunicationManager()->QueueingProcessWrite(boost::str(boost::wformat(L"%1%_%2%_%3%_%4%_%5%_%6%_%7%_%8%")
-			% 1 %pEvent->GetUID() %pEvent->GetEventName() %pEvent->GetType() %kInfo.m_iScriptID %wstrEventBegin %wstrEventEnd %L"신규 URL광고 이벤트 등록" ));
+		// Port: KSMS management tool notification removed (out of scope)
 
 		START_LOG( cout2, L"신규 이벤트 등록.!" )
 			<< BUILD_LOG( kInfo.m_iEventUID )
@@ -3747,7 +3730,7 @@ int KGameEventManager::GetMaxLevel()
 		if( mitIngEventData->second->IsOn() == false )
 			continue;
 
-		iMaxLevel = max( mitIngEventData->second->GetScriptID(), iMaxLevel );
+		iMaxLevel = std::max( mitIngEventData->second->GetScriptID(), iMaxLevel );
 	}
 
 	return iMaxLevel;
@@ -3877,8 +3860,7 @@ void KGameEventManager::AddDungeonEvent( IN const KEventInfo& kInfo )
 		std::wstring wstrEventBegin = strBegin.GetString();
 		CStringW strEnd = ctEnd.Format(_T("%Y-%m-%d %H:%M:%S"));
 		std::wstring wstrEventEnd = strEnd.GetString();
-		SiKProcessCommunicationManager()->QueueingProcessWrite(boost::str(boost::wformat(L"%1%_%2%_%3%_%4%_%5%_%6%_%7%_%8%")
-			% 1 %pEvent->GetUID() %pEvent->GetEventName() %pEvent->GetType() %kInfo.m_iScriptID %wstrEventBegin %wstrEventEnd %L"신규 던전 이벤트 등록" ));
+		// Port: KSMS management tool notification removed (out of scope)
 
 		START_LOG( cout2, L"신규 이벤트 등록.!" )
 			<< BUILD_LOG( kInfo.m_iEventUID )
@@ -3941,8 +3923,7 @@ void KGameEventManager::AddMaxLevelEvent( IN const KEventInfo& kInfo )
 		std::wstring wstrEventBegin = strBegin.GetString();
 		CStringW strEnd = ctEnd.Format(_T("%Y-%m-%d %H:%M:%S"));
 		std::wstring wstrEventEnd = strEnd.GetString();
-		SiKProcessCommunicationManager()->QueueingProcessWrite(boost::str(boost::wformat(L"%1%_%2%_%3%_%4%_%5%_%6%_%7%_%8%")
-			% 1 %pEvent->GetUID() %pEvent->GetEventName() %pEvent->GetType() %kInfo.m_iScriptID %wstrEventBegin %wstrEventEnd %L"신규 만렙 개방 이벤트 등록" ));
+		// Port: KSMS management tool notification removed (out of scope)
 
 		START_LOG( cout2, L"신규 이벤트 등록.!" )
 			<< BUILD_LOG( kInfo.m_iEventUID )
@@ -4004,8 +3985,7 @@ void KGameEventManager::AddContents( IN const KEventInfo& kInfo )
 		std::wstring wstrEventBegin = strBegin.GetString();
 		CStringW strEnd = ctEnd.Format(_T("%Y-%m-%d %H:%M:%S"));
 		std::wstring wstrEventEnd = strEnd.GetString();
-		SiKProcessCommunicationManager()->QueueingProcessWrite(boost::str(boost::wformat(L"%1%_%2%_%3%_%4%_%5%_%6%_%7%_%8%")
-			% 1 %pEvent->GetUID() %pEvent->GetEventName() %pEvent->GetType() %kInfo.m_iScriptID %wstrEventBegin %wstrEventEnd %L"신규 콘텐츠 이벤트 등록" ));
+		// Port: KSMS management tool notification removed (out of scope)
 
 		START_LOG( cout2, L"신규 이벤트 등록.!" )
 			<< BUILD_LOG( kInfo.m_iEventUID )
@@ -4101,8 +4081,7 @@ void KGameEventManager::AddCodeEvent( IN const KEventInfo& kInfo )
 		std::wstring wstrEventBegin = strBegin.GetString();
 		CStringW strEnd = ctEnd.Format(_T("%Y-%m-%d %H:%M:%S"));
 		std::wstring wstrEventEnd = strEnd.GetString();
-		SiKProcessCommunicationManager()->QueueingProcessWrite(boost::str(boost::wformat(L"%1%_%2%_%3%_%4%_%5%_%6%_%7%_%8%")
-			% 1 %pEvent->GetUID() %pEvent->GetEventName() %pEvent->GetType() %kInfo.m_iScriptID %wstrEventBegin %wstrEventEnd %L"신규 코드 이벤트 등록" ));
+		// Port: KSMS management tool notification removed (out of scope)
 
 		START_LOG( cout2, L"신규 이벤트 등록.!" )
 			<< BUILD_LOG( kInfo.m_iEventUID )
@@ -4201,7 +4180,6 @@ bool KGameEventManager::IsEnableEventQuest( IN int iQuestID )
 		if( mit->second->GetType() != KGameEvent::GET_QUEST )
 			continue;
 
-		const int iEventUID = mit->first;
 		KGameEventQuest* pEvent = static_cast<KGameEventQuest*>(mit->second);
 
 		const int iEnableQuestID = pEvent->GetQuestID();
@@ -4249,7 +4227,6 @@ void KGameEventManager::GetWarningEventQuest( OUT KEGS_EVENT_QUEST_CHECK_FOR_ADM
 		if( false == mit->second->IsEnable() )
 			continue;
 
-		const int iEventUID = mit->first;
 		KGameEventQuest* pEvent = static_cast<KGameEventQuest*>(mit->second);
 
 		const int iQuestID = pEvent->GetQuestID();

@@ -32,8 +32,12 @@ Código portado inclui `x2/platform/win32.h` no lugar de `<windows.h>`, `<atltim
 | `sync.h` | `CRITICAL_SECTION` (recursiva), eventos, `WaitForSingle/MultipleObjects`, `_beginthreadex`, `Sleep`, `GetCurrentThreadId` | emulação (um mutex/condvar global) | nativo |
 | `time.h` | `GetTickCount`, `timeGetTime`, `QueryPerformanceCounter`, `GetLocalTime`, **`CTime`/`CTimeSpan`** | `steady_clock` / implementação própria | nativo + `CTime` próprio |
 | `string.h` | `CStringW`/`CStringA`/`CString` (subconjunto) | implementação própria | idem (sem ATL) |
-| `crt.h` | `_wtoi`, `swprintf_s`, `wcscpy_s`, `_wcsicmp`, `_itow_s`, `_mkdir`... | implementação própria | nativo |
-| `unicode.h` | wide ↔ UTF-8 ↔ UTF-16; `TranslateWideFormat` | — | — |
+| `crt.h` | `_wtoi`, `swprintf_s`, `wcscpy_s`, `_wcsicmp`, `_itow_s`, `_mkdir`, `fopen_s`, `localtime_s` (ordem do MSVC), `_wstrdate_s`/`_wstrtime_s`, `ZeroMemory`, `_tcs*`, `WideCharToMultiByte`... e as sobrecargas com array do MSVC | implementação própria | nativo (MinGW: sobrecargas que faltam) |
+| `ini.h` | `x2::platform::ReadIniString`/`ReadIniInt` (regras do `GetPrivateProfileString`), `GetPrivateProfileStringW`/`IntW` | implementação própria | **também a própria** via `ReadIni*` (ver Armadilhas) |
+| `net.h` | Nomes do Winsock (`SOCKET`, `closesocket`, `SOCKADDR_IN`...); `OVERLAPPED`/`WSABUF` só como tipos | BSD sockets | Winsock 2 |
+| `odbc.h` | `<sql.h>`/`<sqlext.h>` sem conflito com os tipos Win32 da camada | unixODBC, com os typedefs dele renomeados | nativo |
+| `format.h`, `timer.h`, `noncopyable.h` | `x2::wformat`/`x2::str` (fiel ao Boost.Format), `x2::Timer`, `x2::noncopyable` | — | — |
+| `unicode.h` | wide ↔ UTF-8 ↔ UTF-16; `TranslateWideFormat`; `Cp949ToWide`, `IsValidUtf8`, `DecodeTextFile` | iconv (CP949) | `MultiByteToWideChar(949)` |
 | `debug.h` | `__WFILE__`, `__WFUNCTION__` em tempo de execução | — | — |
 | `d3dx_math.h` | Matemática do D3DX 9: `D3DXVECTOR2/3/4`, `D3DXMATRIX`, `D3DXCOLOR`, `D3DX_PI`, `D3DXToDegree`, `D3DXVec3*` (normalize, cross, dot, transform...), `D3DXMatrix*` (identity, multiply, inverse, rotações, translação, escala, `LookAtLH`) | implementação própria | idem (sem DXSDK) |
 
@@ -51,6 +55,12 @@ Código portado inclui `x2/platform/win32.h` no lugar de `<windows.h>`, `<atltim
   `operator&` só para temporários (qualificado com `&&`), que dá o mesmo resultado; `&` em variáveis continua sendo o nativo.
 - Matemática D3DX: mesmas convenções e fórmulas (vetor-linha `v·M`, mão esquerda, vetor nulo normaliza para nulo, `D3DXMatrixInverse` devolve `NULL` em matriz singular),
   conferidas com a implementação do Wine. Só o subconjunto usado pelo servidor; o cliente vai pedir mais (quatérnios, planos, `D3DXVec3Project`...).
+
+- **Arquivos de texto do original**: os `config_*.ini` de produção estão em **CP949**, e os scripts `.lua` em UTF-8 com BOM (5.829 de 5.832, em 2026-10-29).
+  `DecodeTextFile` detecta UTF-16/UTF-8 e cai para CP949. O INI é lido por `ReadIniString` também no Windows, porque a API nativa usa a
+  code page do sistema (no Wine, ou num Windows não coreano, as strings de versão viriam corrompidas; os testes no Wine mostraram isso).
+- **unixODBC** define seus próprios `ULONG` (64 bits), `TCHAR` (`char`), `WCHAR` (`unsigned short`)...: o `odbc.h` renomeia esses typedefs durante o include.
+- `IsWindow` sempre falso e `HWND_DESKTOP` nulo fora do Windows (servidor sem janela).
 
 ## Limitações conhecidas
 

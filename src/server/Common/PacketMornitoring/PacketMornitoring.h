@@ -3,7 +3,7 @@
 #include "RefreshSingleton.h"
 #include "DBLayer.h"
 #include <KncSend.h>
-#include <boost/timer.hpp>
+#include "x2/platform/timer.h"
 #include "CommonPacket.h"
 
 
@@ -54,7 +54,7 @@ class KPacketMornitoring
 
 public:
 	KPacketMornitoring(void);
-	~KPacketMornitoring(void);
+	virtual ~KPacketMornitoring(void);
 
 	virtual void Tick();
 
@@ -79,7 +79,7 @@ private:
 	SPacketCountInfo	m_arrLoginProxyPacketCount[EVENT_EVENTID_SENTINEL];
 	SPacketCountInfo	m_arrCnProxyPacketCount[EVENT_EVENTID_SENTINEL];
 	SPacketCountInfo	m_arrGlobalProxyPacketCount[EVENT_EVENTID_SENTINEL];
-	boost::timer		m_tDBUpdateTimer;
+	x2::Timer		m_tDBUpdateTimer;
 };
 
 DefRefreshSingletonInline( KPacketMornitoring );

@@ -130,6 +130,7 @@ CXSLUnit::PVP_RANK CXSLUnit::ComputeNewPVPRank( IN CXSLUnit::PVP_RANK eCurrentPv
 				iUpperRating = PE_END+1;
 				break;
 			}
+			[[fallthrough]]; // rating above the table: report it
 		default:
 			START_LOG( cerr, L"현재 랭크에 대한 정보가 이상함!" )
 				<< BUILD_LOG( static_cast<PVP_RANK>( cNowPvpRank ) )
@@ -239,6 +240,8 @@ CXSLUnit::UNIT_CLASS CXSLUnit::GetUnitClassDownGrade( UNIT_CLASS eUnitClass )
 	case CXSLUnit::UC_ARA_YAMA_RAJA:			return CXSLUnit::UC_ARA_LITTLE_DEVIL;
 	case CXSLUnit::UC_ADD_PSYCHIC_TRACER:		return CXSLUnit::UC_ADD_NASOD_RULER;
 	case CXSLUnit::UC_ADD_LUNATIC_PSYKER:		return CXSLUnit::UC_ADD_PSYCHIC_TRACER;
+	default:
+		break;
 	}
 
 	return CXSLUnit::UC_NONE;
@@ -336,6 +339,8 @@ CXSLUnit::UNIT_CLASS CXSLUnit::GetUnitClassBaseGrade( UNIT_CLASS eUnitClass )
 	case UC_ADD_PSYCHIC_TRACER:
 	case UC_ADD_LUNATIC_PSYKER:
 		return UC_ADD_NASOD_RULER;
+	default:
+		break;
 	}
 
 	return CXSLUnit::UC_NONE;
@@ -389,6 +394,8 @@ CXSLUnit::UNIT_CLASS CXSLUnit::GetUnitClassUpGrade( UNIT_CLASS eUnitClass )
 	case CXSLUnit::UC_ELESIS_PYRO_KNIGHT:	return CXSLUnit::UC_ELESIS_BLAZING_HEART;
 
 	case CXSLUnit::UC_ADD_PSYCHIC_TRACER:	return CXSLUnit::UC_ADD_LUNATIC_PSYKER;
+	default:
+		break;
 	}
 
 	return CXSLUnit::UC_NONE;
@@ -487,6 +494,8 @@ CXSLUnit::UNIT_TYPE CXSLUnit::GetUnitClassToUnitType( UNIT_CLASS eUnitClass )
 	case UC_ADD_PSYCHIC_TRACER:
 	case UC_ADD_LUNATIC_PSYKER:
 		return UT_ADD;
+	default:
+		break;
 	}
 
 	return CXSLUnit::UT_NONE;
@@ -532,6 +541,8 @@ bool CXSLUnit::IsFirstChangeJob( CXSLUnit::UNIT_CLASS unitClass )
 	case CXSLUnit::UC_ELESIS_PYRO_KNIGHT:
 	case CXSLUnit::UC_ADD_PSYCHIC_TRACER:
 		return true;
+	default:
+		break;
 	}
 
 	return false;
@@ -581,6 +592,8 @@ bool CXSLUnit::IsSecondChangeJob( CXSLUnit::UNIT_CLASS unitClass )
 
 	case CXSLUnit::UC_ADD_LUNATIC_PSYKER:		//루나틱 사이커
 		return true;
+	default:
+		break;
 	}
 
 	return false;
@@ -601,6 +614,8 @@ bool CXSLUnit::IsInitNormalJob( CXSLUnit::UNIT_CLASS unitClass )
 	case CXSLUnit::UC_ELESIS_KNIGHT:
 	case CXSLUnit::UC_ADD_NASOD_RULER:
 		return true;
+	default:
+		break;
 	}
 
 	return false;
@@ -619,6 +634,8 @@ bool CXSLUnit::IsMan_UnitType( UNIT_TYPE eUnitType )
 		{
 			return true;
 		}break;
+	default:
+		break;
 	}
 
 /*

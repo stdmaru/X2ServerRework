@@ -8,8 +8,8 @@
 
 #include <dbg/dbg.hpp>
 #include <KncSecurity/KncSecurity.h>
-#include <boost/bind/bind.hpp>
-using namespace boost::placeholders;
+#include <functional>
+using namespace std::placeholders;
 
 NiImplementRootRTTI( KNetLayer );
 ImplInstanceKeeping( KNetLayer );

@@ -105,7 +105,7 @@ public:
 
 public:
 	CXSLResolveItemManager(void);
-	~CXSLResolveItemManager(void);
+	virtual ~CXSLResolveItemManager(void);
 
 	// for lua
 	//{{ 2011. 01. 19	최육사	아이템 분해 개편

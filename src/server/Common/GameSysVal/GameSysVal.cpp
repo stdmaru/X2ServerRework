@@ -1,4 +1,5 @@
 #include "GameSysVal.h"
+#include <algorithm>
 //{{ 2010. 01. 05  최육사	PC방 프리미엄
 #include "X2Data/XSLItemManager.h"
 //}}
@@ -1411,7 +1412,7 @@ KPcBangReward KGameSysVal::GetPcBangReward( int iPcBangType )
 int KGameSysVal::GetLimitsLevel()
 {
 	// 이벤트로 더 높은 값이 들어올 경우 이용
-	return max( SiKGameEventManager()->GetMaxLevel(), m_iLimitsMaxLevel );
+	return std::max( SiKGameEventManager()->GetMaxLevel(), m_iLimitsMaxLevel );
 }
 
 void KGameSysVal::SetDungeonClearPaymentItemID_LUA( int iItemID )

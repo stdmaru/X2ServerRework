@@ -7,6 +7,6 @@ O plano geral está em [Projeto › Roadmap](../projeto/roadmap.md).
 
 | Módulo | Estado | Página |
 |---|---|---|
-| `src/platform` | Linux ok com testes; Windows não testado | [Plataforma](platform.md) |
-| `src/kncsdk` | Linux ok com testes; Windows não testado; validação de protocolo pendente | [KNCSDK](kncsdk.md) |
-| `src/server/Common` | importado (414 arquivos); porte manual não iniciado | [Servidor: Common](server-common.md) |
+| `src/platform` | Linux e MinGW (Wine) ok com testes; MSVC não testado | [Plataforma](platform.md) |
+| `src/kncsdk` | Linux e MinGW (Wine) ok com testes; MSVC não testado; validação de protocolo pendente | [KNCSDK](kncsdk.md) |
+| `src/server/Common` | compila no Linux (GCC/Clang, sem warnings), menos `Socket/`/`ODBC/`; sem testes ainda | [Servidor: Common](server-common.md) |

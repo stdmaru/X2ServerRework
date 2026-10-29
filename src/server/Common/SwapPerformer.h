@@ -4,7 +4,7 @@
 #include <queue>
 #include <Serializer/SerBuffer.h>
 
-#include <windows.h>    // CRITICAL_SECTION
+#include "x2/platform/win32.h"    // CRITICAL_SECTION
 #include "Thread/Locker.h"
 
 
@@ -12,7 +12,7 @@
 //#ifdef SERV_SWAP_PERFORMER
 
 
-enum ePerformerID;
+enum ePerformerID : int;
 class KSwapPerformer : public KSimObject
 {
     NiDeclareRTTI;
@@ -50,21 +50,21 @@ public:
         KLocker lockEn( m_csEnqueueEvent );
 		KLocker lockDe( m_csDequeueEvent );
 
-		_JIF( !m_pEnqueueEvent, return -1; );
-		_JIF( !m_pDequeueEvent, return -1; );
+		_JIF( m_pEnqueueEvent, return -1; );
+		_JIF( m_pDequeueEvent, return -1; );
 
         return ( m_pEnqueueEvent->size() + m_pDequeueEvent->size() );
     }
 	size_t  GetEnqueueSize() const
 	{
 		KLocker lockEn( m_csEnqueueEvent );
-		_JIF( !m_pEnqueueEvent, return -1; );
+		_JIF( m_pEnqueueEvent, return -1; );
 		return m_pEnqueueEvent->size();
 	}
 	size_t  GetDequeueSize() const
 	{
 		KLocker lockEn( m_csDequeueEvent );
-		_JIF( !m_pDequeueEvent, return -1; );
+		_JIF( m_pDequeueEvent, return -1; );
 		return m_pDequeueEvent->size();
 	}
     virtual void            Tick();     // queue consumming
@@ -92,7 +92,7 @@ protected:
     bool            GetKEvent( KEventPtr& spEvent );
 	bool            CheckAndSwapQueue();
     virtual void    ProcessEvent( const KEventPtr& spEvent ) = 0;
-    virtual bool    RoutePacket( const KEvent* pkEvent )   { return false; }
+    virtual bool    RoutePacket( const KEvent* /*pkEvent*/ )   { return false; }
 	friend void KncSend( DWORD dwPIFrom, UidType nFrom, KEventPtr spEvent );
 
 protected:

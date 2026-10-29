@@ -53,7 +53,7 @@ void KDBLayer::RegToLua()
 	lua_tinker::class_def<KDBLayer>( g_pLua, "SetSMSEnable",	&KDBLayer::SetSMSEnable_LUA );
 
 #   undef _ENUM
-#   define _ENUM( id ) lua_tinker::decl( g_pLua, #id, KDBLayer::##id );
+#   define _ENUM( id ) lua_tinker::decl( g_pLua, #id, KDBLayer::id );
 #   include "DBConnectionInfo_def.h"
 
 	lua_tinker::decl( g_pLua, "DBLayer", this );
@@ -192,7 +192,7 @@ bool KDBLayer::SetManagerDBConnectionInfo_LUA( int iServerClass, const char* szD
 		return false;
 	}
 
-	BOOST_TEST_FOREACH( const KDBConnectionInfo&, kInfo, vecDBConnectionInfo )
+	for( const KDBConnectionInfo& kInfo : vecDBConnectionInfo )
 	{
 		if( AddDBConnectionByString( kInfo.m_iDBType, kInfo.m_wstrConnectionString, kInfo.m_iThreadCount ) == false )
 		{

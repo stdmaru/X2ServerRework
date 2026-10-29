@@ -155,5 +155,16 @@ void CStringT<CharT>::AppendFormat(const CharT* fmt, ...)
     m_str += tail;
 }
 
+template <typename CharT>
+typename CStringT<CharT>::string_type CStringT<CharT>::Convert(const other_char* s)
+{
+    if (!s)
+        return string_type();
+    if constexpr (std::is_same_v<CharT, wchar_t>)
+        return x2::platform::Utf8ToWide(s);
+    else
+        return x2::platform::WideToUtf8(s);
+}
+
 template class CStringT<wchar_t>;
 template class CStringT<char>;

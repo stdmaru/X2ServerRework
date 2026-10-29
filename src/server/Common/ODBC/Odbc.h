@@ -2,13 +2,11 @@
 #define ODBC_H "$Id: ODBC.H,v 1.1 2003/05/23 01:18:40 cvs Exp $"
 
 #include <ostream>
-#include <windows.h>
-#include <sql.h>
-#include <sqlext.h>
+#include "x2/platform/win32.h"
+#include "x2/platform/odbc.h"
 #include <string>
 #include "Serializer/SerBuffer.h"
 #include <ToString.h>
-#include <atltime.h>    // CTime
 #include "KncException.h"
 #include "KncSmartPtr.h"
 //{{ 2009. 6. 15  최육사	보안스트링
@@ -99,7 +97,9 @@ public:
 	KODBC& operator >>(UINT& val);
     KODBC& operator >>(UCHAR& val);
     KODBC& operator >>(USHORT& val);
+#if defined(_WIN32) // DWORD is UINT elsewhere (same body as the UINT overload)
     KODBC& operator >>(DWORD& val);
+#endif
     KODBC& operator >>(char* val);
     KODBC& operator >>(std::string& val);
     KODBC& operator >>(float& val);

@@ -823,6 +823,7 @@ KODBC& KODBC::operator >>(USHORT& val_)
 } // operator >>()
 
 
+#if defined(_WIN32)
 KODBC& KODBC::operator >>(DWORD& val_)
 {
     SQLRETURN   ret;
@@ -846,6 +847,7 @@ KODBC& KODBC::operator >>(DWORD& val_)
 
     return *this;
 } // operator >>()
+#endif
 
 KODBC& KODBC::operator >>(ULONGLONG& val_)
 {
@@ -1294,7 +1296,6 @@ bool KODBC::IsInvalidMarkInForMachineID( IN const std::wstring& strData )
 //#endif SERV_MACHINE_ID_BLOCK
 //}}
 
-#include <boost/algorithm/string/replace.hpp>
 //#include <boost/algorithm/string/erase.hpp>
 
 // 데이터를 변형시켜서 DB에 가게 되므로 가급적 쓰지 말자.
@@ -1302,7 +1303,7 @@ void KODBC::RemoveInvalidMark( IN OUT std::wstring& strData )
 {
     for( int i = 0; i < NUM_ELEMENTS( g_szInvalidMark ); i++ )
     {
-        boost::replace_all( strData, g_szInvalidMark[i], L"*" );    // 해당 문자열을 *로 변환.
+        for( size_t pos; ( pos = strData.find( g_szInvalidMark[i] ) ) != std::wstring::npos; ) strData.replace( pos, wcslen( g_szInvalidMark[i] ), L"*" );    // 해당 문자열을 *로 변환.
         //boost::erase_all( strData, g_szInvalidMark[i] );  // 해당 문자열은 그냥 삭제.
     }
 }

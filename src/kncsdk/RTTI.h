@@ -78,7 +78,7 @@ protected:
     { \
         if (!pkObject) \
         { \
-            return false; \
+            return nullptr; \
         } \
         return pkObject->DynamicCast(pkRTTI); \
     } \
@@ -95,11 +95,11 @@ protected:
 
 // insert in root class source file
 #define NiImplementRootRTTI(rootclassname) \
-    const NiRTTI rootclassname::m_RTTI(L#rootclassname, 0)
+    const NiRTTI rootclassname::m_RTTI(L ## #rootclassname, 0)
 
 // insert in class source file
 #define NiImplementRTTI(classname, baseclassname) \
-    const NiRTTI classname::m_RTTI(L#classname, &baseclassname::m_RTTI)
+    const NiRTTI classname::m_RTTI(L ## #classname, &baseclassname::m_RTTI)
 
 // macros for run-time type testing
 #define NiIsExactKindOf(classname, pkObject) \

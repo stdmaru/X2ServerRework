@@ -69,7 +69,8 @@ KLogReporter::ELRError KLogReporter::Send()
 		}
 	}
 
-	KLogReporter::ELRError eErr = eLRError_OK;
+	// Port: the original records the failure but still returns eLRError_OK (kept)
+	[[maybe_unused]] KLogReporter::ELRError eErr = eLRError_OK;
 
 	unsigned int iF;
 	for (iF = 0; iF < m_vecFileList.size(); ++iF)

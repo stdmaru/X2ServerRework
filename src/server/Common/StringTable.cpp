@@ -1,8 +1,12 @@
 #include "StringTable.h"
-#include <boost/tokenizer.hpp>
-#include <boost/format.hpp>
+#include <filesystem>
+#include <fstream>
+#include <iterator>
+#include <sstream>
+#include <vector>
+#include "x2/platform/format.h"
 #include <dbg/dbg.hpp>
-#include <boost/shared_array.hpp>
+#include <memory>
 
 KStringTable::KStringTable(void)
 : m_strCurrentSection(L"")
@@ -22,17 +26,42 @@ void KStringTable::Dump( std::wostream& stm_ )const
     stm_ << L"--- Dump String Table ---" << std::endl;
     while( it != m_mapSectionTable.end() )
     {
-        stm_ << boost::wformat( L"[%s]\n") % it->second.m_strSection;
+        stm_ << x2::wformat( L"[%s]\n") % it->second.m_strSection;
         MAPKEYVALUE::const_iterator itKeyValue = it->second.m_mapKeyValue.begin();
         while( itKeyValue != it->second.m_mapKeyValue.end() )
         {
-            stm_ << boost::wformat( L" %s = %s\n" ) % itKeyValue->second.m_strKey % itKeyValue->second.m_strValue;
+            stm_ << x2::wformat( L" %s = %s\n" ) % itKeyValue->second.m_strKey % itKeyValue->second.m_strValue;
             ++itKeyValue;
         }
         ++it;
     }
 }
 
+namespace
+{
+    std::wstring Trim( const std::wstring& s )
+    {
+        const size_t b = s.find_first_not_of( L" \t\r" );
+        if( b == std::wstring::npos )
+            return std::wstring();
+        const size_t e = s.find_last_not_of( L" \t\r" );
+        return s.substr( b, e - b + 1 );
+    }
+
+    // INI file text: UTF-16LE or UTF-8, or CP949 like the deployed config_*.ini (the original relied on the Windows API)
+    bool ReadIniText( const std::wstring& strFileName, std::wstring& strText )
+    {
+        std::ifstream in( std::filesystem::path( strFileName ), std::ios::binary );
+        if( !in )
+            return false;
+        const std::string data( ( std::istreambuf_iterator<char>( in ) ), std::istreambuf_iterator<char>() );
+        strText = x2::platform::DecodeTextFile( data );
+        return true;
+    }
+}
+
+// Port: the original used GetPrivateProfileSectionNamesW/GetPrivateProfileSectionW. Same result: sections in file
+// order, `key=value` lines with key and value trimmed, `;` comment lines ignored, keys split on '=' (see below).
 bool KStringTable::LoadIni( IN const wchar_t* szFileName_ )
 {
     if(  szFileName_ == NULL )
@@ -41,57 +70,41 @@ bool KStringTable::LoadIni( IN const wchar_t* szFileName_ )
         return false;
     }
 
-    HANDLE hFile    = NULL;
-    DWORD dwFileSize  = 0;
-    std::wstring strFullFileName = szFileName_;
-
-    { // Get Full Path and File Size
-//        wchar_t szFileName[MAX_PATH];
-//        if( GetCurrentDirectory( MAX_PATH, szFileName ) == 0 )
-//        {
-//            START_LOG( cerr, L"GetCurrentDirectory");
-//            return false;
-//        }
-//
-//        strFullFileName = szFileName;
-//        strFullFileName += L"\\";
-//        strFullFileName += szFileName_;
-
-        hFile=CreateFileW( strFullFileName.c_str(), GENERIC_READ, 0, NULL,
-            OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL,NULL );
-        if ( hFile==INVALID_HANDLE_VALUE )
-        {
-            START_LOG( cerr, L"파일이 존재하지 않음")
-                << BUILD_LOG( strFullFileName )
-                << END_LOG;
-            return false;
-        }
-
-        dwFileSize=GetFileSize(hFile,NULL);
-        CloseHandle(hFile);
+    const std::wstring strFullFileName = szFileName_;
+    std::wstring strText;
+    if( !ReadIniText( strFullFileName, strText ) )
+    {
+        START_LOG( cerr, L"파일이 존재하지 않음")
+            << BUILD_LOG( strFullFileName )
+            << END_LOG;
+        return false;
     }
 
-    boost::shared_array< wchar_t > spaIniContents ( new wchar_t[dwFileSize+1] );
-    DWORD dwRet = GetPrivateProfileSectionNamesW( spaIniContents.get(), dwFileSize, strFullFileName.c_str() ); // 섹션 이름 얻어오기.
-
-    if( dwRet > 0 )
+    std::vector< std::pair< std::wstring, std::vector<std::wstring> > > vecSections;
+    std::wistringstream stm( strText );
+    std::wstring strLine;
+    while( std::getline( stm, strLine ) )
     {
-        for( unsigned int i = 0 ; i < dwRet-1 ; ++i )
+        strLine = Trim( strLine );
+        if( strLine.empty() || strLine[0] == L';' )
+            continue;
+        if( strLine.front() == L'[' )
         {
-            if( spaIniContents[i] == L'\0' )
-                spaIniContents[i] = L'\n';
+            const size_t end = strLine.find( L']' );
+            vecSections.emplace_back( Trim( strLine.substr( 1, end == std::wstring::npos ? std::wstring::npos : end - 1 ) ),
+                                      std::vector<std::wstring>() );
+            continue;
         }
+        if( vecSections.empty() )
+            continue; // key outside of any section: ignored, as by the Windows API
+        const size_t eq = strLine.find( L'=' );
+        vecSections.back().second.push_back( eq == std::wstring::npos ? strLine : Trim( strLine.substr( 0, eq ) ) + L"=" + Trim( strLine.substr( eq + 1 ) ) );
     }
 
-    std::wstring strSectionNames = spaIniContents.get();
-
-    typedef boost::tokenizer<boost::char_separator<wchar_t,std::wstring::traits_type>,std::wstring::const_iterator,std::wstring > TOKENIZER;
-
-    boost::char_separator<wchar_t,std::wstring::traits_type> sep(L"\n");
-    TOKENIZER tokens(strSectionNames, sep);
-    for (TOKENIZER::iterator tok_iter = tokens.begin(); tok_iter != tokens.end(); ++tok_iter )
+    for( const auto& kSection : vecSections )
     {
-        AddAndBuildSection( (*tok_iter).c_str(), strFullFileName.c_str(), dwFileSize );
+        if( !kSection.first.empty() )
+            AddAndBuildSection( kSection.first.c_str(), kSection.second );
     }
 
     return true;
@@ -170,9 +183,9 @@ std::wstring KStringTable::GetValue( IN const wchar_t* szKey_ )
 
 /* Protected */
 
-bool KStringTable::AddAndBuildSection( IN const wchar_t* szSectionName_, IN const wchar_t* szFileName_, IN DWORD dwFileSize_ )
+bool KStringTable::AddAndBuildSection( IN const wchar_t* szSectionName_, IN const std::vector<std::wstring>& vecLines_ )
 {
-    if( szSectionName_ ==NULL ||  szFileName_ == NULL || dwFileSize_ <= 0 )
+    if( szSectionName_ == NULL )
     {
         START_LOG( cerr, L"입력 파라미터중 NULL이 있음" );
         return false;
@@ -181,26 +194,9 @@ bool KStringTable::AddAndBuildSection( IN const wchar_t* szSectionName_, IN cons
     Section tmpSection;
     tmpSection.m_strSection = szSectionName_;
 
-    boost::shared_array< wchar_t > spaBuffer( new wchar_t[dwFileSize_] );
-    DWORD dwret = GetPrivateProfileSection(tmpSection.m_strSection.c_str(), spaBuffer.get(), dwFileSize_, szFileName_ );
-    if( dwret > 0)
+    for( const std::wstring& strLine : vecLines_ )
     {
-        for( unsigned int i = 0 ; i < dwret-1 ; ++i )
-        {
-            if( spaBuffer[i] == L'\0' )
-                spaBuffer[i] = L'\n';
-        }
-    }
-
-    std::wstring strIniContent = spaBuffer.get();
-
-    typedef boost::tokenizer<boost::char_separator<wchar_t,std::wstring::traits_type>,std::wstring::const_iterator,std::wstring > TOKENIZER;
-
-    boost::char_separator<wchar_t,std::wstring::traits_type> sep(L"\n");
-    TOKENIZER tokens(strIniContent, sep);
-    for (TOKENIZER::iterator tok_iter = tokens.begin(); tok_iter != tokens.end(); ++tok_iter )
-    {
-        AddAndBuildKeyvalue( (*tok_iter).c_str(), tmpSection );
+        AddAndBuildKeyvalue( strLine.c_str(), tmpSection );
     }
 
     m_mapSectionTable.insert( std::make_pair( tmpSection.m_strSection, tmpSection) );
@@ -217,11 +213,18 @@ bool KStringTable::AddAndBuildKeyvalue( IN const wchar_t* szKey_value_, Section&
     }
 
     std::wstring strIniKeyValue = szKey_value_;
-    typedef boost::tokenizer<boost::char_separator<wchar_t,std::wstring::traits_type>,std::wstring::const_iterator,std::wstring > TOKENIZER;
-
-    boost::char_separator<wchar_t,std::wstring::traits_type> sep(L"=");
-    TOKENIZER tokens(strIniKeyValue, sep);
-    TOKENIZER::iterator tok_iter = tokens.begin();
+    // split on '=' dropping empty tokens (boost::char_separator semantics): "k=v=w" -> key k, value v
+    std::vector<std::wstring> tokens;
+    for( size_t pos = 0; pos <= strIniKeyValue.size(); )
+    {
+        size_t next = strIniKeyValue.find( L'=', pos );
+        if( next == std::wstring::npos )
+            next = strIniKeyValue.size();
+        if( next > pos )
+            tokens.push_back( strIniKeyValue.substr( pos, next - pos ) );
+        pos = next + 1;
+    }
+    std::vector<std::wstring>::const_iterator tok_iter = tokens.begin();
 
     Key_value keyValue;
 

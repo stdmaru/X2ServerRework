@@ -338,7 +338,7 @@ void KGameEventScriptManager::GetAdventNpcEventInfo( IN const std::vector< int >
 {
 	vecInfo.clear();
 
-	BOOST_TEST_FOREACH( const int, iEventID, vecEventID )
+	for( const int iEventID : vecEventID )
 	{
 		std::map< int, KAdventNpcEventInfo >::const_iterator mit;
 		mit = m_mapEventMonster.find( iEventID );

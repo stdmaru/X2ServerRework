@@ -19,7 +19,7 @@ class KClassChangeTable
 
 public:
 	KClassChangeTable();
-	~KClassChangeTable();
+	virtual ~KClassChangeTable();
 
 // 스크립트 파싱 함수
 	// 직업별 그룹id 등록

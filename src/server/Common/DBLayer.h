@@ -51,7 +51,7 @@ protected:
     std::map< int, KDBThreadManagerPtr >    m_mapDBAgent;
 	bool									m_bSMSEnable;	//잘못된 사용으로 인한 문제발생시 사용될수 있어서..
 	//{{ 2012. 1. 9	최육사		DB접속 암호 이중화
-	boost::shared_ptr< void >				m_spEventAck;
+	std::shared_ptr< void >				m_spEventAck;
 	//}}
 };
 

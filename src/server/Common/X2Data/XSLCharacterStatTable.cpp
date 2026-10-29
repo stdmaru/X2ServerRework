@@ -125,7 +125,7 @@ bool CXSLCharacterStatTable::OpenScriptFile_CharacterStatTable()
 			CXSLUnit::UNIT_TYPE eUnitType = CXSLUnit::UT_NONE;
 
 			LUA_GET_VALUE_ENUM( luaManager,		TDT_TYPE,		eUnitType,		CXSLUnit::UNIT_TYPE,		CXSLUnit::UT_NONE );
-			if( CXSLUnit::UC_NONE == eUnitType )
+			if( CXSLUnit::UT_NONE == eUnitType ) // the original compared with UC_NONE (also 0)
 			{
 				luaManager.EndTable();
 				START_LOG( cerr, L"유닛 타입 정보가 이상합니다." )
@@ -158,7 +158,7 @@ bool CXSLCharacterStatTable::OpenScriptFile_CharacterStatTable()
 			CXSLUnit::UNIT_CLASS eUnitClass = CXSLUnit::UC_NONE;
 
 			LUA_GET_VALUE_ENUM( luaManager,		TDT_TYPE,		eUnitClass,		CXSLUnit::UNIT_CLASS,		CXSLUnit::UC_NONE );
-			if( CXSLUnit::UT_NONE == eUnitClass )
+			if( CXSLUnit::UC_NONE == eUnitClass ) // the original compared with UT_NONE (also 0)
 			{
 				luaManager.EndTable();
 				START_LOG( cerr, L"유닛 클래스 정보가 이상합니다." )

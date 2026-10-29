@@ -18,9 +18,9 @@
 #define OPEN_SCRIPT_FILE( classname ) \
 	{ \
 		if( Si##classname()->OpenScriptFile( g_pLua ) == false ) \
-			START_LOG( cerr, L#classname L" 정보 로드 실패.!" ); \
+			START_LOG( cerr, L ## #classname L" 정보 로드 실패.!" ); \
 		else \
-			START_LOG( cout, L#classname L" 정보 로드 성공.!" ); \
+			START_LOG( cout, L ## #classname L" 정보 로드 성공.!" ); \
 		if( Si##classname()->IsLuaPasingSuccess() == false ) \
 		{ \
 			KBaseServer::GetKObj()->AddFailScriptFileName( Si##classname()->GetParsingLuaFileName().c_str() ); \

@@ -1,7 +1,7 @@
 
 #include "XSLStat.h"
 #include "XSLUnitManager.h"
-#include "d3dx9math.h"
+#include "x2/platform/d3dx_math.h"
 
 //{{ 2012. 12. 21  던전 몬스터 그룹 랜던 배치 - 김민성
 #include <Lottery.h>

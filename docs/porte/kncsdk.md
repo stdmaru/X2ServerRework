@@ -45,6 +45,7 @@ Interface pública (nomes, macros, assinaturas) mantida; mudou o que está lista
 | `KncSecurity` | Gerador de chaves/SPI semeado pelo SO, um por thread | O original usava `boost::mt19937` **sem semente** (mesmas chaves em toda execução) e compartilhado sem lock |
 | `ObjectPool` | `BlockAllocator`/`BoostAllocator` usam um pool próprio (`FixedBlockPool.h`) | O original guardava ponteiros de **32 bits** nos blocos livres; sem Boost |
 | `Import*.h` | Esvaziados | Só faziam `#pragma comment(lib)`; o link agora é do CMake |
+| `lua_interpreter` | Novo (`lua_interpreter.cpp`): prompt Lua simples em stdin, usado por `KBaseServer::Run` | O original vinha de um `lua.c` modificado do Lua 5.1.4, que o LuaJIT não traz; o terminal da T15 vai substituí-lo |
 | Testes originais (`UnitTest/`) | Removidos, substituídos por doctest | Eram demos (um era cópia dos exemplos do Crypto++) |
 
 ### Bugs do original corrigidos
@@ -71,6 +72,8 @@ Interface pública (nomes, macros, assinaturas) mantida; mudou o que está lista
 - `lua_tinker`: faltavam `typename`/`template`, havia especializações dentro da classe (agora `if constexpr`) e sobrecargas de `push_functor` impossíveis de instanciar (removidas).
   Lua via `<lua.hpp>`, porque o LuaJIT é C; o original compilava a própria cópia do Lua como C++.
 - Macros com `L#x`, `classname##::` e `Si##Name##()`, que só funcionavam no MSVC: reescritas (`WIDENE(x)` = `L ## #x`).
+- `RTTI.h`: `DynamicCast` devolvia `false` como `void*` (agora `nullptr`) e `L#classname` virou `L ## #classname`.
+- `logfile.hpp` inclui `<ostream>` (o `operator<<` genérico precisava dele).
 
 ## Pendências
 

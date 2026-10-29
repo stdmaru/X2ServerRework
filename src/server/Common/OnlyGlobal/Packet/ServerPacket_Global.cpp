@@ -1,4 +1,4 @@
-#include <winsock2.h>
+#include "x2/platform/net.h"
 #include "ServerPacket.h"
 
 
@@ -328,22 +328,22 @@ SERIALIZE_DEFINE_GET( KEGIANT_COMMON_INITIALIZE_ACK, obj, ks )
 		;
 };
 
-SERIALIZE_DEFINE_PUT( KEGIANT_COMMON_NULL_SERVER, obj, ks )
+SERIALIZE_DEFINE_PUT( KEGIANT_COMMON_NULL_SERVER, /*obj*/, /*ks*/ )
 {
 	return true;
 };
 
-SERIALIZE_DEFINE_GET( KEGIANT_COMMON_NULL_SERVER, obj, ks )
+SERIALIZE_DEFINE_GET( KEGIANT_COMMON_NULL_SERVER, /*obj*/, /*ks*/ )
 {
 	return true;
 };
 
-SERIALIZE_DEFINE_PUT( KEGIANT_COMMON_NULL_CLIENT, obj, ks )
+SERIALIZE_DEFINE_PUT( KEGIANT_COMMON_NULL_CLIENT, /*obj*/, /*ks*/ )
 {
 	return true;
 };
 
-SERIALIZE_DEFINE_GET( KEGIANT_COMMON_NULL_CLIENT, obj, ks )
+SERIALIZE_DEFINE_GET( KEGIANT_COMMON_NULL_CLIENT, /*obj*/, /*ks*/ )
 {
 	return true;
 };

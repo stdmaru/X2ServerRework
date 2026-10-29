@@ -1,6 +1,6 @@
 #pragma once
 #include "Socket/Session.h"
-#include <windows.h>
+#include "x2/platform/win32.h"
 #include <queue>
 
 #define KActorProxyPtr KActorProxy*
@@ -51,7 +51,7 @@ protected:
     HWND                        m_hWnd;
     bool                        m_bThrowWinMsg;     ///< false이면 받은 메시지를 큐에 넣어두기만 한다.
 
-    boost::shared_ptr<void>     m_spEventAck;
+    std::shared_ptr< std::remove_pointer_t< HANDLE > > m_spEventAck; // HANDLE is not void* outside Windows
     int                         m_nAckOK;
     int                         m_iClassID;         // 이벤트를 윈도우 메세지로 던질 때, 구분자 역할을 한다.
 

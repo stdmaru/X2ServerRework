@@ -542,7 +542,7 @@ class CXSLLineMap
 		static CXSLLineMap* CreateLineMap() { return new CXSLLineMap; }
 		bool LoadLineMap( std::wstring fileName );
 
-		__forceinline bool IsOnLineConnect( D3DXVECTOR3 pos, int* pLastLineIndex, float fRadius = 1.0f, D3DXVECTOR3* pOutPos = NULL, bool bIsMonster = false )
+		__forceinline bool IsOnLineConnect( D3DXVECTOR3 pos, int* pLastLineIndex, float fRadius = 1.0f, D3DXVECTOR3* pOutPos = NULL, bool /*bIsMonster*/ = false )
 		{
 			D3DXVECTOR3	temp;
 			float		length;
@@ -676,7 +676,7 @@ class CXSLLineMap
 			}
 		}
 
-		__forceinline bool IsDownLine( D3DXVECTOR3 pos, float fRadius = 1.0f, D3DXVECTOR3* pOutPos = NULL, int* pLineIndex = NULL, bool bIsMonster = false )
+		__forceinline bool IsDownLine( D3DXVECTOR3 pos, float fRadius = 1.0f, D3DXVECTOR3* pOutPos = NULL, int* pLineIndex = NULL, bool /*bIsMonster*/ = false )
 		{
 			D3DXVECTOR3	temp;
 			float		length;
@@ -699,8 +699,8 @@ class CXSLLineMap
 		}
 
 		__forceinline LineData* GetLineData( int index );
-		__forceinline const int GetNumLineData() { return (int)m_LineList.size(); }
-		__forceinline const float GetLandHeight() { return m_fLandHeight; }
+		__forceinline int GetNumLineData() { return (int)m_LineList.size(); }
+		__forceinline float GetLandHeight() { return m_fLandHeight; }
 #ifdef NEW_VILLAGE_RENDERING_TEST
 		__forceinline const int GetNumCameraData() { return static_cast<int>(m_vecCameraData.size()); }
 		__forceinline const CameraData * GetCameraDataList( int index )
@@ -877,7 +877,7 @@ class CXSLLineMap
 
         // 모든 라인들 중에서 pos와 가장 가까운 라인을 찾고 최단 거리 지점을 pOutPos로 출력한다.
         // 리턴값 : pos와 가장 가까운 라인의 index
-        __forceinline int		GetNearestLine(	IN const D3DXVECTOR3& pos, OUT D3DXVECTOR3* pOutPos = NULL, IN bool bIsMonster = false )
+        __forceinline int		GetNearestLine(	IN const D3DXVECTOR3& pos, OUT D3DXVECTOR3* pOutPos = NULL, IN bool /*bIsMonster*/ = false )
         {
             int			touchLine		= -1;
             float		touchDistance	= 9999999.0f;
@@ -886,7 +886,6 @@ class CXSLLineMap
             //디딜 곳이 없다면 모든 선을 검색한다
             for( int i = 0; i < (int)m_LineList.size(); i++ )
             {
-                LineData* pLineData = m_LineList[i];
 
                 //정상적인 발판만 확인한다
 #if defined(MONSTER_ROAD) || defined(UNIT_ROAD)
@@ -960,7 +959,7 @@ class CXSLLineMap
         // UNIT_ROAD 가 정의되어 있으면 bIsMonster가 true 일 때 유닛 로드 타입의 라인들은 정상적인 라인이 아니다.
         // 월 타입의 라인은 정상적인 라인이 아니다.
         // 리턴값 : 정상적인 라인인지의 여부
-		__forceinline bool	VerifyLine( IN int lineIndex, IN bool bIsMonster = false )
+		__forceinline bool	VerifyLine( IN int lineIndex, IN bool /*bIsMonster*/ = false )
 		{
 			//라인이 정상이면 TRUE
 			if( lineIndex < 0 || (int)m_LineList.size() <= lineIndex )
@@ -1002,7 +1001,6 @@ class CXSLLineMap
 
 			//점과 선사이의 최단 거리를 구한다.
 			float fLineLength				= GetDistance( pLineData->startPos, pLineData->endPos );
-			float fLineStartToPointLength	= GetDistance( pLineData->startPos, pos );
 
 			D3DXVECTOR3 lineDir = pLineData->endPos - pLineData->startPos;
 			D3DXVec3Normalize( &lineDir, &lineDir );
@@ -1031,7 +1029,7 @@ class CXSLLineMap
         // MONSTER_ROAD 가 정의되어 있으면 bIsMonster 가 false 일 때 몬스터 로드 타입의 라인들을 배제하고,
         // UNIT_ROAD 가 정의되어 있으면 bIsMonster가 true 일 때 유닛 로드 타입의 라인들을 배제한다.
         // 리턴값 : inPos부터 pOutPos까지의 거리를 리턴한다.
-		__forceinline float GetNearest( IN D3DXVECTOR3 inPos, OUT D3DXVECTOR3* pOutPos, IN bool bIsMonster = false )
+		__forceinline float GetNearest( IN D3DXVECTOR3 inPos, OUT D3DXVECTOR3* pOutPos, IN bool /*bIsMonster*/ = false )
 		{
 			D3DXVECTOR3 target;
 			float		fProjectionLength;
@@ -1096,7 +1094,7 @@ class CXSLLineMap
         // UNIT_ROAD 가 정의되어 있으면 bIsMonster가 true 일 때 유닛 로드 타입의 라인들을 배제한다.
         // 리턴값 : 만약 inPos가 라인의 범위에 있다면 inPos부터 pOutPos까지의 거리를 리턴한다.
         //          그렇지 않으면 999999를 리턴한다.
-		__forceinline float GetNearest( IN D3DXVECTOR3 inPos, OUT D3DXVECTOR3* pOutPos, OUT int* pLlineIndex, IN bool bIsMonster = false )
+		__forceinline float GetNearest( IN D3DXVECTOR3 inPos, OUT D3DXVECTOR3* pOutPos, OUT int* pLlineIndex, IN bool /*bIsMonster*/ = false )
 		{
 			D3DXVECTOR3 target;
 			float		fProjectionLength;
@@ -1256,7 +1254,6 @@ class CXSLLineMap
 		std::vector<RectData*>			m_RectList;
 #endif // LINEMAP_RECT_TEST
 
-		LPDIRECT3DVERTEXBUFFER9			m_pLineMapVB;
 
 		float							m_fLandHeight;
 		std::vector<D3DXVECTOR3>		m_RedTeamStartPos;

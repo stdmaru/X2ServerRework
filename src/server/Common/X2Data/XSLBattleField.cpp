@@ -10,8 +10,8 @@ CXSLBattleField::CXSLBattleField()
 	, m_sWorldID( 0 )
 	, m_iStandardMonsterLevel( 0 )
 	, m_iMaxNumberMonster( 0 )
-	, m_iMonsterRespawnFactorByUserCount( 0 )
 	, m_iMaxJoinUserCount( SEnum::BATTLE_FIELD_MAX_NUM )
+	, m_iMonsterRespawnFactorByUserCount( 0 )
 	, m_iRequireLevel( 0 )
 {
 }
@@ -68,7 +68,7 @@ bool CXSLBattleField::OpenScriptFile()
 	lua_tinker::decl( luaManager.GetLuaState(), "g_pBattleFieldManager", this );
 
 	lua_tinker::class_add<D3DXVECTOR3>( luaManager.GetLuaState(), "D3DXVECTOR3" );
-	lua_tinker::class_con<D3DXVECTOR3>( luaManager.GetLuaState(), lua_tinker::constructor<float, float, float> );
+	lua_tinker::class_con<D3DXVECTOR3>( luaManager.GetLuaState(), lua_tinker::constructor<float, float, float>() );
 	lua_tinker::class_mem<D3DXVECTOR3>( luaManager.GetLuaState(), "x", &D3DXVECTOR3::x );
 	lua_tinker::class_mem<D3DXVECTOR3>( luaManager.GetLuaState(), "y", &D3DXVECTOR3::y );
 	lua_tinker::class_mem<D3DXVECTOR3>( luaManager.GetLuaState(), "z", &D3DXVECTOR3::z );
@@ -195,7 +195,7 @@ bool CXSLBattleField::LoadBattleFieldData( IN const SEnum::BATTLE_FIELD_ID eBatt
 					{
 						// 예외처리 중복 확인
 						bool bExist = false;
-						BOOST_TEST_FOREACH( int, iGroupID, sRiskInfo.m_vecSpawnGroupID )
+						for( int iGroupID : sRiskInfo.m_vecSpawnGroupID )
 						{
 							if( iGroupID == buf )
 							{
@@ -236,7 +236,7 @@ bool CXSLBattleField::LoadBattleFieldData( IN const SEnum::BATTLE_FIELD_ID eBatt
 
 		// 예외처리 확률 확인
 		int iTotalRate = 0;
-		BOOST_TEST_FOREACH( SRiskInfo&, sRiskInfo, m_vecMiddleBossInfo )
+		for( SRiskInfo& sRiskInfo : m_vecMiddleBossInfo )
 		{
 			iTotalRate += sRiskInfo.m_iSpawnRate;
 		}
@@ -370,7 +370,7 @@ bool CXSLBattleField::AddSpawnMonsterGroup_LUA()
 	return true;
 }
 
-void CXSLBattleField::SetLandHeight_LUA( int iLandHeight )
+void CXSLBattleField::SetLandHeight_LUA( int /*iLandHeight*/ )
 {
 	// 더미
 }
@@ -443,7 +443,7 @@ void CXSLBattleField::AddNpcGroup( IN const SSpawnNpcGroup& sSpawnNpcGroup )
 //	while( iRestCount > 0 )
 //	{
 //        // 1. 각 그룹을 한번씩 돌아가면서 출현시키자!
-//		BOOST_TEST_FOREACH( const SSpawnNpcGroup&, sSpawnNpcGroup, m_vecNpcGroupList )
+//		for( const SSpawnNpcGroup& sSpawnNpcGroup : m_vecNpcGroupList )
 //		{
 //			// 더 남은게 있는지 검사!
 //			if( iRestCount <= 0 )
@@ -519,7 +519,7 @@ void CXSLBattleField::AddNpcGroup( IN const SSpawnNpcGroup& sSpawnNpcGroup )
 //	return true;
 //}
 
-bool CXSLBattleField::GetCreateMonsterList( IN const int iPlayerCount, OUT std::vector< KNPCUnitReq >& vecCreateNPCList ) const
+bool CXSLBattleField::GetCreateMonsterList( IN const int /*iPlayerCount*/, OUT std::vector< KNPCUnitReq >& vecCreateNPCList ) const
 {
 	vecCreateNPCList.clear();
 
@@ -564,7 +564,7 @@ bool CXSLBattleField::GetCreateMonsterList( IN const int iPlayerCount, OUT std::
 
 		bool bCreatedMonsterAnyGroup = false;
 
-		BOOST_TEST_FOREACH( const SSpawnNpcGroup&, sSpawnNpcGroup, m_vecRespawnNpcGroupList )
+		for( const SSpawnNpcGroup& sSpawnNpcGroup : m_vecRespawnNpcGroupList )
 		{
 			// 생성해야할 몬스터 수가 없다면 여기서 나가자!
 			if( iCreateMonsterCount <= 0 )
@@ -644,7 +644,7 @@ bool CXSLBattleField::GetCreateBossMonsterList( OUT std::vector<KNPCUnitReq>& ve
 
 		bool bCreatedMonsterAnyGroup = false;
 
-		BOOST_TEST_FOREACH( const SSpawnNpcGroup&, sSpawnNpcGroup, m_vecBossNpcGroupList )
+		for( const SSpawnNpcGroup& sSpawnNpcGroup : m_vecBossNpcGroupList )
 		{
 			// 생성해야할 몬스터 수가 없다면 여기서 나가자!
 			if( iCreateMonsterCount <= 0 )
@@ -688,7 +688,7 @@ bool CXSLBattleField::GetRespawnMonsterList( IN const CXSLBattleField::KBattleFi
 
 
 	// 그룹별로 몬스터 생성!
-	//BOOST_TEST_FOREACH( const SSpawnNpcGroup&, sSpawnNpcGroup, m_vecNpcGroupList )
+	//for( const SSpawnNpcGroup& sSpawnNpcGroup : m_vecNpcGroupList )
 	//{
 	//	int iCreateMonsterCount = 0;
 	//	int iAliveGroupMonsterCount = 0;
@@ -784,7 +784,7 @@ bool CXSLBattleField::GetBattieFieldMiddleBossMonsterInfo( IN const int iDangero
 {
 	KLottery kMiddleBossLot;
 
-	BOOST_TEST_FOREACH( const SRiskInfo&, sRandomInfo, m_vecMiddleBossInfo )
+	for( const SRiskInfo& sRandomInfo : m_vecMiddleBossInfo )
 	{
 		if( kMiddleBossLot.AddCase( sRandomInfo.m_iSpawnID, static_cast<float>(sRandomInfo.m_iSpawnRate) ) == false )
 		{
@@ -815,7 +815,7 @@ bool CXSLBattleField::GetBattieFieldMiddleBossMonsterInfo( IN const int iDangero
 		return false;
 	}
 
-	BOOST_TEST_FOREACH( const SRiskInfo&, sRiskInfo, m_vecMiddleBossInfo )
+	for( const SRiskInfo& sRiskInfo : m_vecMiddleBossInfo )
 	{
 		// 랜덤으로 찾은 중간보스 Spwan Monster ID 를 찾는다
 		if( sRiskInfo.m_iSpawnID != iSpawnID )
@@ -824,7 +824,7 @@ bool CXSLBattleField::GetBattieFieldMiddleBossMonsterInfo( IN const int iDangero
 		if( sRiskInfo.m_iRiskValue > iDangerousValue )
 			continue;
 
-		BOOST_TEST_FOREACH( const int, iSpawnGroupID, sRiskInfo.m_vecSpawnGroupID )
+		for( const int iSpawnGroupID : sRiskInfo.m_vecSpawnGroupID )
 		{
 			const CXSLBattleField::SSpawnNpcGroup* pNpcSpawnGroup = GetSpawnNpcGroup( iSpawnGroupID );
 			if( IS_NULL( pNpcSpawnGroup ) )
@@ -869,7 +869,7 @@ bool CXSLBattleField::GetBattieFieldMiddleBossMonsterInfo( IN const int iDangero
 	{
 		switch ( m_eBattleFieldID )
 		{
-		case SEnum::VMI_BATTLE_FIELD_RUBEN_FIELD_01:
+		case SEnum::BFI_RUBEN_FIELD_01: // the original used VMI_BATTLE_FIELD_RUBEN_FIELD_01 (same value)
 			{
 				return true;
 			} break;
@@ -938,7 +938,7 @@ bool CXSLBattleField::MakeMiddleBossMonsterInfo( IN const SSpawnNpcInfo& sSpawnN
 //}
 
 
-bool CXSLBattleField::GetBattieFieldBossMonsterInfo( IN const int iDangerousValue, OUT KNPCUnitReq& kNpcInfo )
+bool CXSLBattleField::GetBattieFieldBossMonsterInfo( IN const int /*iDangerousValue*/, OUT KNPCUnitReq& /*kNpcInfo*/ )
 {
 	//{{ 2013. 02. 15   필드 중간 보스 - 김민성
 	// 중보 작업 하면서 수정 되었으니 보스 레이드 추가 시 변경 해야함
@@ -951,7 +951,7 @@ int	CXSLBattleField::GetMonsterStartPosByRandom( IN const std::vector< int >& ve
 {
 	KLotterySameProb< int > kLotStartPosRandom;
 
-    BOOST_TEST_FOREACH( const int, iLineMapIndex, vecLineMapIndexList )
+    for( const int iLineMapIndex : vecLineMapIndexList )
 	{
 		std::map< int, std::vector< int > >::const_iterator mit;
 		mit = m_mapLineIndexRandomStartPos.find( iLineMapIndex );
@@ -965,7 +965,7 @@ int	CXSLBattleField::GetMonsterStartPosByRandom( IN const std::vector< int >& ve
 			continue;
 		}
 
-		BOOST_TEST_FOREACH( const int, iStartPos, mit->second )
+		for( const int iStartPos : mit->second )
 		{
 			kLotStartPosRandom.AddCaseSameProb( iStartPos );
 		}
@@ -1084,7 +1084,7 @@ bool CXSLBattleField::CreateMonsterFromSpawnNpcGroup( IN const SSpawnNpcGroup& s
 		std::vector< int > vecCaseList;
 		kMonsterLot.GetCaseList( vecCaseList );
 
-		BOOST_TEST_FOREACH( const int, iCaseID, vecCaseList )
+		for( const int iCaseID : vecCaseList )
 		{
 			kSameMonsterLot.AddCaseSameProb( iCaseID );
 		}
@@ -1197,7 +1197,7 @@ bool CXSLBattleField::IsCanEnterBattleField( IN const u_char ucLevel, IN const s
 	}
 
 	// 던전 클리어 조건 체크
-	BOOST_TEST_FOREACH( const int, iDungeonID, m_setRequireDungeon )
+	for( const int iDungeonID : m_setRequireDungeon )
 	{
 		if( mapDungeonClear.find( iDungeonID ) == mapDungeonClear.end() )
 		{

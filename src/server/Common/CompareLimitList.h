@@ -13,9 +13,9 @@ public:
 		m_uiMaxNum = uiMaxNum;
 	}
 
-	KCompareLimitList( const unsigned int uiMaxNum )
+	KCompareLimitList( const unsigned int uiMaxNum_ )
 	{
-		m_uiMaxNum = uiMaxNum;
+		m_uiMaxNum = uiMaxNum_;
 	}
 
 	~KCompareLimitList()
@@ -27,7 +27,7 @@ public:
 	void IfUpperValuePushBack( int iCompareValue, const T& data )
 	{
 		// 비교 카운트가 작은것이면 값을 insert한다.
-		std::list< std::pair< int, T > >::iterator lit;
+		typename std::list< std::pair< int, T > >::iterator lit;
 		for( lit = m_listData.begin(); lit != m_listData.end(); ++lit )
 		{
             if( iCompareValue < lit->first )
@@ -54,7 +54,7 @@ public:
 	void IfLowerValuePushBack( int iCompareValue, const T& data )
 	{
 		// 비교 카운트가 큰것이면 값을 insert한다.
-		std::list< std::pair< int, T > >::iterator lit;
+		typename std::list< std::pair< int, T > >::iterator lit;
 		for( lit = m_listData.begin(); lit != m_listData.end(); ++lit )
 		{
 			if( iCompareValue > lit->first )
@@ -112,7 +112,7 @@ public:
 	{
 		listData.clear();
 
-		std::list< std::pair< int, T > >::const_iterator lit;
+		typename std::list< std::pair< int, T > >::const_iterator lit;
 		for( lit = m_listData.begin(); lit != m_listData.end(); ++lit )
 		{
 			listData.push_back( lit->second );
@@ -123,7 +123,7 @@ public:
 	{
 		vecData.clear();
 
-		std::list< std::pair< int, T > >::const_iterator lit;
+		typename std::list< std::pair< int, T > >::const_iterator lit;
 		for( lit = m_listData.begin(); lit != m_listData.end(); ++lit )
 		{
 			vecData.push_back( lit->second );

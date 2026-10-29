@@ -307,6 +307,7 @@ err_proc:
 
 bool CXSLEnchantItemManager::SetEnchantProbability_LUA( int iEnchantLevel )
 {
+	int iRandomCount = {}; // declared before the gotos below (MSVC let them cross the initialization)
     std::map< int, KLottery >::iterator mit;
     KLottery kLottery;
     //float fProb; 김민성
@@ -344,7 +345,7 @@ bool CXSLEnchantItemManager::SetEnchantProbability_LUA( int iEnchantLevel )
     }
 
 	//{{ 2010. 05. 31  최육사	서버 켜고나서 초기에 랜덤 처리
-	const int iRandomCount = ( rand() % 5 ) + 5;
+	iRandomCount = ( rand() % 5 ) + 5;
 
 	for( int i = 0; i < iRandomCount; ++i )
 	{
@@ -369,6 +370,7 @@ err_proc:
 
 bool CXSLEnchantItemManager::SetEnchantRareProbability_LUA( int iEnchantLevel )
 {
+	int iRandomCount = {}; // declared before the gotos below (MSVC let them cross the initialization)
 	std::map< int, KLottery >::iterator mit;
 	KLottery kLottery;
 	//float fProb; 김민성
@@ -406,7 +408,7 @@ bool CXSLEnchantItemManager::SetEnchantRareProbability_LUA( int iEnchantLevel )
 	}
 
 	//{{ 2010. 05. 31  최육사	서버 켜고나서 초기에 랜덤 처리
-	const int iRandomCount = ( rand() % 5 ) + 5;
+	iRandomCount = ( rand() % 5 ) + 5;
 
 	for( int i = 0; i < iRandomCount; ++i )
 	{
@@ -650,6 +652,7 @@ void CXSLEnchantItemManager::SetEventSupportMaterialEnchantLimitLevel_LUA( IN in
 
 bool CXSLEnchantItemManager::SetEnchantProbability_Event_LUA( int iEnchantLevel )
 {
+	int iRandomCount = {}; // declared before the gotos below (MSVC let them cross the initialization)
 	std::map< int, KLottery >::iterator mit;
 	KLottery kLottery;
 	float fProb = 0.f;
@@ -685,7 +688,7 @@ bool CXSLEnchantItemManager::SetEnchantProbability_Event_LUA( int iEnchantLevel 
 			<< END_LOG;
 	}
 
-	const int iRandomCount = ( rand() % 5 ) + 5;
+	iRandomCount = ( rand() % 5 ) + 5;
 
 	for( int i = 0; i < iRandomCount; ++i )
 	{

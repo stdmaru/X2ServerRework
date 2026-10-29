@@ -1,13 +1,13 @@
 #include "./KTDNUDP.h"
 
-#include <ws2tcpip.h> //newer functions and structs used to retrieve IP addresses
+#include "x2/platform/net.h" //newer functions and structs used to retrieve IP addresses
 
 #ifndef SIO_UDP_CONNRESET
 #define SIO_UDP_CONNRESET _WSAIOW(IOC_VENDOR,12)
 #endif // SIO_UDP_CONNRESET
 
 #define ZLIB_WINAPI
-#include <Serializer/zlib/zlib.h>
+#include <zlib.h>
 #include <malloc.h>
 #include <dbg/dbg.hpp>
 //{{ 2013. 2. 7	박세훈	랜선렉 방지 코드2

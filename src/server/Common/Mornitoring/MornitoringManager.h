@@ -3,8 +3,8 @@
 #include "RefreshSingleton.h"
 #include "DBLayer.h"
 #include <KncSend.h>
-#include <atltime.h>
-#include <boost/timer.hpp>
+#include "x2/platform/win32.h"
+#include "x2/platform/timer.h"
 #include "CommonPacket.h"
 #include "ServerPacket.h"
 

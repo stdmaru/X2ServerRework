@@ -1,9 +1,10 @@
 #include "BaseServer.h"
+#include <algorithm>
 #include "X2Data/XSLStat.h"
 #include <KncLua.h>
 #include <lua_tinker.h>
 #include "Lua/KLuaManager.h"
-#include "d3dx9math.h"
+#include "x2/platform/d3dx_math.h"
 #include "./XSLLineMap.h"
 
 
@@ -14,7 +15,6 @@
 
 CXSLLineMap::CXSLLineMap()
 {
-	m_pLineMapVB	= NULL;
 
 	m_LineList.reserve( 64 );
 	m_RedTeamStartPos.reserve( 8 );
@@ -34,7 +34,6 @@ CXSLLineMap::CXSLLineMap()
 
 CXSLLineMap::~CXSLLineMap(void)
 {
-	SAFE_RELEASE( m_pLineMapVB );
 
 	for( int i = 0; i < (int)m_LineList.size(); i++ )
 	{
@@ -57,7 +56,7 @@ CXSLLineMap::~CXSLLineMap(void)
 	//}} kimhc // 2010-08-03 // WALL 타입의 라인맵 처리 변경
 
 #ifdef LINEMAP_RECT_TEST
-	BOOST_TEST_FOREACH( RectData*, pRectData, m_RectList )
+	for( RectData* pRectData : m_RectList )
 	{
 		SAFE_DELETE( pRectData );
 	}
@@ -71,7 +70,7 @@ CXSLLineMap::~CXSLLineMap(void)
 	ReleaseLineGroup();
 }
 
-bool CXSLLineMap::LoadLineMap( std::wstring pFileName )
+bool CXSLLineMap::LoadLineMap( std::wstring /*pFileName*/ )
 {
 
 #ifdef WORLD_TRIGGER
@@ -334,15 +333,15 @@ bool CXSLLineMap::AddLine_LUA()
 			m_fYMax = pLineData->endPos.y;
 		}
 
-		m_fXMin = min( pLineData->startPos.x, m_fXMin );
-		m_fXMin = min( pLineData->endPos.x, m_fXMin );
-		m_fYMin = min( pLineData->startPos.y, m_fYMin );
-		m_fYMin = min( pLineData->endPos.y, m_fYMin );
+		m_fXMin = std::min( pLineData->startPos.x, m_fXMin );
+		m_fXMin = std::min( pLineData->endPos.x, m_fXMin );
+		m_fYMin = std::min( pLineData->startPos.y, m_fYMin );
+		m_fYMin = std::min( pLineData->endPos.y, m_fYMin );
 
-		m_fXMax = max( pLineData->startPos.x, m_fXMax );
-		m_fXMax = max( pLineData->endPos.x, m_fXMax );
-		m_fYMax = max( pLineData->startPos.y, m_fYMax );
-		m_fYMax = max( pLineData->endPos.y, m_fYMax );
+		m_fXMax = std::max( pLineData->startPos.x, m_fXMax );
+		m_fXMax = std::max( pLineData->endPos.x, m_fXMax );
+		m_fYMax = std::max( pLineData->startPos.y, m_fYMax );
+		m_fYMax = std::max( pLineData->endPos.y, m_fYMax );
 	}
 
 	#ifdef MOVING_LINE_MAP_TEST
@@ -366,15 +365,15 @@ bool CXSLLineMap::AddLine_LUA()
 				m_fYMax = pLineData->endPos.y;
 			}
 
-			m_fXMin = min( pLineData->startPos.x, m_fXMin );
-			m_fXMin = min( pLineData->endPos.x, m_fXMin );
-			m_fYMin = min( pLineData->startPos.y, m_fYMin );
-			m_fYMin = min( pLineData->endPos.y, m_fYMin );
+			m_fXMin = std::min( pLineData->startPos.x, m_fXMin );
+			m_fXMin = std::min( pLineData->endPos.x, m_fXMin );
+			m_fYMin = std::min( pLineData->startPos.y, m_fYMin );
+			m_fYMin = std::min( pLineData->endPos.y, m_fYMin );
 
-			m_fXMax = max( pLineData->startPos.x, m_fXMax );
-			m_fXMax = max( pLineData->endPos.x, m_fXMax );
-			m_fYMax = max( pLineData->startPos.y, m_fYMax );
-			m_fYMax = max( pLineData->endPos.y, m_fYMax );
+			m_fXMax = std::max( pLineData->startPos.x, m_fXMax );
+			m_fXMax = std::max( pLineData->endPos.x, m_fXMax );
+			m_fYMax = std::max( pLineData->startPos.y, m_fYMax );
+			m_fYMax = std::max( pLineData->endPos.y, m_fYMax );
 		}
 
 
@@ -755,7 +754,6 @@ void CXSLLineMap::EnableLineData( CXSLLineMap::LineData* pLineData, bool bEnable
 			m_mapLineData2LineGroup[ pLineData ] = NULL;
 
 			// 2개의 linegroup으로 분리
-			LineData* pTempLine = NULL;
 
 			LineGroup* pBeforeLineGroup = new LineGroup;
 			LineGroup* pNextLineGroup = new LineGroup;
@@ -1208,8 +1206,8 @@ bool CXSLLineMap::AddTrigger_LUA()
 
 //////////////////////////////////////////////////////////////////////////
 CXSLLineMap::LineAnimData::LineAnimData( LINE_ANIM_TYPE eAnimType )
-: m_eAnimType( eAnimType )
-, m_bEnabled( true )
+: m_bEnabled( true )
+, m_eAnimType( eAnimType )
 , m_bMoveIfSteppedOn( false )
 , m_vPivotPosition( 0, 0, 0 )
 , m_vChildPivotPosition( 0, 0, 0 )
@@ -1226,7 +1224,7 @@ void CXSLLineMap::LineAnimData::OnFrameMove( double fTime, float fElapsedTime )
 	if( false == m_bEnabled )
 		return;
 
-	BOOST_TEST_FOREACH( LineAnimData*, pChlidAnimData, m_vecpChildAnimData )
+	for( LineAnimData* pChlidAnimData : m_vecpChildAnimData )
 	{
 		if( pChlidAnimData->m_iParentAnimDataIndex >= 0 )
 		{

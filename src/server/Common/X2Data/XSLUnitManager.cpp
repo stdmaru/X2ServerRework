@@ -303,6 +303,8 @@ bool CXSLUnitManager::IsValidMonsterGrade( IN const MONSTER_GRADE eMonsterGrade 
 	case MG_MIDDLE_BOSS_NPC:
 	case MG_DEFINITELY_DROP_HP_BALL:
 		return true;
+	default:
+		break;
 	}
 
 	return false;

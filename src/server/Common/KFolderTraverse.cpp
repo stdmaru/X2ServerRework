@@ -1,65 +1,32 @@
 #include "KFolderTraverse.h"
 
-#include <algorithm>
+#include "x2/platform/unicode.h"
+
+namespace fs = std::filesystem;
 
 //---------------------------------------------------------------------------
-void KSetCurFolder(WCHAR* pcName)
+void KSetCurFolder(const WCHAR* pcName)
 {
-    SetCurrentDirectory(pcName);
-
-    //char acCurPath[_MAX_PATH] = {0};
-    //GetCurrentDirectory(_MAX_PATH, acCurPath);
-    //cout << acCurPath << endl;
+    std::error_code ec;
+    fs::current_path(fs::path(pcName), ec);
 }
 //---------------------------------------------------------------------------
 std::wstring KGetCurFolder()
 {
-	WCHAR acCurPath[_MAX_PATH] = {0};
-	GetCurrentDirectory(_MAX_PATH, acCurPath);
-
-	return acCurPath;
+    std::error_code ec;
+    return fs::current_path(ec).wstring();
 }
 //---------------------------------------------------------------------------
-std::wstring KMakeAbsolutePath(WCHAR* pcFile)
+std::wstring KMakeAbsolutePath(const WCHAR* pcFile)
 {
-    WCHAR acCurPath[_MAX_PATH] = {0};
-    GetCurrentDirectory(_MAX_PATH, acCurPath);
-
-    std::wostringstream os;
-    os << acCurPath << "\\" << pcFile;
-    return os.str();
+    std::error_code ec;
+    return (fs::current_path(ec) / pcFile).wstring();
 }
 //---------------------------------------------------------------------------
-void KDeleteFolder(WCHAR* strPath)
+// Deletes the folder and everything in it (recursively).
+void KDeleteFolder(const WCHAR* strPath)
 {
-    // 절대 경로로 변환
-    KSetCurFolder(strPath);
-    WCHAR acCurPath[_MAX_PATH] = {0};
-    GetCurrentDirectory(_MAX_PATH, acCurPath);
-
-    // 재귀적 폴더/파일 삭제
-    WIN32_FIND_DATA	wfd;
-    HANDLE hFile = FindFirstFile(L"*.*", &wfd);
-
-    while (FindNextFile(hFile, &wfd))
-    {
-        if (wcscmp(wfd.cFileName, L"..") == 0 || wcscmp(wfd.cFileName, L".") == 0)
-            continue;
-
-        if (wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
-        {
-            KDeleteFolder(wfd.cFileName);
-        }
-        else
-        {
-            DeleteFile(KMakeAbsolutePath(wfd.cFileName).c_str());
-        }
-    }
-
-    if(hFile != INVALID_HANDLE_VALUE)
-        FindClose(hFile);
-
-    KSetCurFolder(L"..");
-    RemoveDirectory(acCurPath);
+    std::error_code ec;
+    fs::remove_all(fs::path(strPath), ec);
 }
 //---------------------------------------------------------------------------

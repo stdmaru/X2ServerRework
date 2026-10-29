@@ -1,5 +1,5 @@
 #undef max
-#include <boost/random.hpp>
+#include <random>
 #include <Thread/Locker.h>
 
 #include "KncUidType.h"
@@ -10,23 +10,21 @@ namespace KncUid {
 
     typedef unsigned int DWORD;
 
-    boost::mt19937 rng;
-    boost::uniform_int<DWORD> uint32( 1, UINT_MAX );
+    std::mt19937 rng;
+    std::uniform_int_distribution<DWORD> uint32( 1, UINT_MAX );
 #ifdef EXTEND_SERVER_GROUP_MASK
-	boost::uniform_int<UidType> uint40( 1, 0x0000000fffffffff );
+	std::uniform_int_distribution<UidType> uint40( 1, 0x0000000fffffffff );
 #else // EXTEND_SERVER_GROUP_MASK
-    boost::uniform_int<UidType> uint40( 1, 0x000000ffffffffff );
+    std::uniform_int_distribution<UidType> uint40( 1, 0x000000ffffffffff );
 #endif // EXTEND_SERVER_GROUP_MASK
-    boost::variate_generator<boost::mt19937&, boost::uniform_int<DWORD> > die32(rng, uint32);
-    boost::variate_generator<boost::mt19937&, boost::uniform_int<UidType> > die40(rng, uint40);
 
     KncCriticalSection m_cs;
 
-    DWORD Die32()           { KLocker lock( m_cs ); return die32(); }
+    DWORD Die32()           { KLocker lock( m_cs ); return uint32( rng ); }
     UidType GetTempUID()
     {
         KLocker lock( m_cs );
-        return die40() | (UidType)0x1 << 62;
+        return uint40( rng ) | (UidType)0x1 << 62;
     }
 
     UidType ExtractPureUID( UidType iUID_ )

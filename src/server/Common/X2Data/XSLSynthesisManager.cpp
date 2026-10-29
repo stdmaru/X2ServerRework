@@ -151,6 +151,8 @@ const CXSLSynthesisManager::RandomItemData* CXSLSynthesisManager::GetSynthesisIt
 
 bool CXSLSynthesisManager::GetSynthesisResultItem( IN int iUnitType, IN int iEqipPosition , IN int iSocketNo , OUT std::map< int, KItemInfo >& mapResultItem , OUT std::set< int > &setSealCashItem ) const
 {
+	int iItemID = {}; // declared before the gotos below (MSVC let them cross the initialization)
+	const CXSLItem::ItemTemplet* pItemTemplet = {}; // declared before the gotos below (MSVC let them cross the initialization)
 	SET_ERROR( NET_OK );
 
 	mapResultItem.clear();
@@ -194,7 +196,7 @@ bool CXSLSynthesisManager::GetSynthesisResultItem( IN int iUnitType, IN int iEqi
 		goto end_proc;
 	}
 
-		int iItemID = 0;
+		iItemID = 0;
 		iItemID = mit->second.m_kLottery.Decision();
 
 		if( iItemID == KLottery::CASE_BLANK )
@@ -203,7 +205,7 @@ bool CXSLSynthesisManager::GetSynthesisResultItem( IN int iUnitType, IN int iEqi
 		}
 
 		//{{ 2008. 3. 17  최육사  DeleteAndInsert()
-		const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iItemID );
+		pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iItemID );
 		if( pItemTemplet == NULL )
 		{
 			START_LOG( cerr, L"아이템 템플릿 정보를 찾을 수 없습니다." )

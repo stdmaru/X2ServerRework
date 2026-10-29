@@ -6,7 +6,7 @@
 #include <sstream>
 #include <vector>
 #include <queue>
-#include <atltime.h>
+#include "x2/platform/win32.h"
 #include <ObjectPool/BoostAllocator.h>
 #include <Thread/Thread.h>
 #include <dbg/dbg.hpp>
@@ -27,10 +27,10 @@
 	kLog.StartLog( serverlog::type, data, __WFILE__, __WFUNCTION__ ) \
 
 #define BUILD_LOG_T( data ) \
-	L"    "; kLog.BuildLog( data, L#data ) \
+	L"    "; kLog.BuildLog( data, L ## #data ) \
 
 #define BUILD_LOG_END_T( data ) \
-	L"    "; kLog.BuildLog( data, L#data ); \
+	L"    "; kLog.BuildLog( data, L ## #data ); \
 } \
 
 #define END_LOG_T \
@@ -38,17 +38,17 @@
 } \
 
 #define BUILD_LOGc_T( data ) \
-	L"    "; kLog.BuildLog( static_cast<int>(data), L#data ) \
+	L"    "; kLog.BuildLog( static_cast<int>(data), L ## #data ) \
 
 #define BUILD_LOGc_END_T( data ) \
-	L"    "; kLog.BuildLog( static_cast<int>(data), L#data ); \
+	L"    "; kLog.BuildLog( static_cast<int>(data), L ## #data ); \
 } \
 
 #define BUILD_LOGtm_T( data ) \
-	L"    "; kLog.BuildLog( data.Format( KNC_TIME_FORMAT ), L#data ) \
+	L"    "; kLog.BuildLog( data.Format( KNC_TIME_FORMAT ), L ## #data ) \
 
 #define BUILD_LOGtm_END_T( data ) \
-	L"    "; kLog.BuildLog( data.Format( KNC_TIME_FORMAT ), L#data ); \
+	L"    "; kLog.BuildLog( data.Format( KNC_TIME_FORMAT ), L ## #data ); \
 } \
 
 
@@ -109,7 +109,7 @@ public:
 	template< typename T >
 	KLogStream& StartLog( serverlog::LOG_LEVEL eLogLevel, T data, const wchar_t* pStrFileName, const wchar_t* pStrFunctionName );
 
-	KLogStream& operator<< ( const wchar_t* pStrTab )
+	KLogStream& operator<< ( const wchar_t* /*pStrTab*/ )
 	{
 		// 아무것도 안함.
 		return *this;

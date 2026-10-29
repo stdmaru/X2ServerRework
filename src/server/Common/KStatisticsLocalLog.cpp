@@ -87,99 +87,51 @@ void KStatisticsLocalLog::CloseLocalLogData()
 //}}
 
 //-----------------------------------------------------------------------------
-void _DeleteFile(WIN32_FIND_DATA& wfd)
+// Daily statistics files, deleted by ClearLocalLog().
+static bool IsDailyStatisticsFile( const std::wstring& strFilename )
 {
-	if (!(wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
-	{
-		std::wstring strFilename = wfd.cFileName;
-
-		// 던전
-		if ( strFilename.find( L"SI_LOG_DUNGEON" ) != std::wstring::npos )
-		{
-			DeleteFile(KMakeAbsolutePath(wfd.cFileName).c_str());
-		}
-
-		// 대전
-		if ( strFilename.find( L"SI_LOG_PVP_VICTORY_PER" ) != std::wstring::npos )
-		{
-			DeleteFile(KMakeAbsolutePath(wfd.cFileName).c_str());
-		}
-
-		// 대전 방
-		if ( strFilename.find( L"SI_LOG_PVP_ROOM" ) != std::wstring::npos )
-		{
-			DeleteFile(KMakeAbsolutePath(wfd.cFileName).c_str());
-		}
-
-		// 던전 방
-		if ( strFilename.find( L"SI_LOG_DUNGEON_ROOM" ) != std::wstring::npos )
-		{
-			DeleteFile(KMakeAbsolutePath(wfd.cFileName).c_str());
-		}
-
-		//{{ 2008. 10. 16  최육사	타이틀
-		if ( strFilename.find( L"SI_LOG_TITLE" ) != std::wstring::npos )
-		{
-			DeleteFile(KMakeAbsolutePath(wfd.cFileName).c_str());
-		}
-		//}}
-
-		//{{ 2010. 9. 14	최육사	펫 시스템
-		if ( strFilename.find( L"SI_LOG_PET_SUMMON" ) != std::wstring::npos )
-		{
-			DeleteFile(KMakeAbsolutePath(wfd.cFileName).c_str());
-		}
-		//}}
-
-		//{{ 2010. 10. 11	최육사	서버간 접속 끊김 로그
-		if ( strFilename.find( L"SI_LOG_SERV_DISCONNECT" ) != std::wstring::npos )
-		{
-			DeleteFile(KMakeAbsolutePath(wfd.cFileName).c_str());
-		}
-		//}}
-
-		//{{ 2010. 10. 11	최육사	넥슨 빌링 패킷 로그
-		if ( strFilename.find( L"SI_LOG_BILLING_PACKET" ) != std::wstring::npos )
-		{
-			DeleteFile(KMakeAbsolutePath(wfd.cFileName).c_str());
-		}
-		//}}
-
-		//{{ 2010. 11. 17	최육사	오토핵 검증 기능
-		if ( strFilename.find( L"SI_LOG_ABUSER_MORNITORING" ) != std::wstring::npos )
-		{
-			DeleteFile(KMakeAbsolutePath(wfd.cFileName).c_str());
-		}
-		//}}
+	static const wchar_t* const s_apTags[] = {
+		L"SI_LOG_DUNGEON",				// dungeon
+		L"SI_LOG_PVP_VICTORY_PER",		// PvP
+		L"SI_LOG_PVP_ROOM",				// PvP room
+		L"SI_LOG_DUNGEON_ROOM",			// dungeon room
+		L"SI_LOG_TITLE",				// 2008-10-16 titles
+		L"SI_LOG_PET_SUMMON",			// 2010-09-14 pet system
+		L"SI_LOG_SERV_DISCONNECT",		// 2010-10-11 disconnections between servers
+		L"SI_LOG_BILLING_PACKET",		// 2010-10-11 Nexon billing packets
+		L"SI_LOG_ABUSER_MORNITORING",	// 2010-11-17 auto-hack checks
 #if X2_DEV_TOOLS
-		if ( strFilename.find( L"SI_LOG_UNDEFINED_QUEST_TEMPLET" ) != std::wstring::npos )
-		{
-			DeleteFile(KMakeAbsolutePath(wfd.cFileName).c_str());
-		}
-#endif // SERV_LOG_UNDEFINED_QUEST_TEMPLET
-
+		L"SI_LOG_UNDEFINED_QUEST_TEMPLET",
+#endif
+	};
+	for( const wchar_t* pTag : s_apTags )
+	{
+		if( strFilename.find( pTag ) != std::wstring::npos )
+			return true;
 	}
+	return false;
 }
 
-void _DeleteHenirRankingFile(WIN32_FIND_DATA& wfd)
+static void _DeleteFile( const std::filesystem::directory_entry& entry )
 {
-	if (!(wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
-	{
-		std::wstring strFilename = wfd.cFileName;
+	std::error_code ec;
+	if( !entry.is_directory( ec ) && IsDailyStatisticsFile( entry.path().filename().wstring() ) )
+		std::filesystem::remove( entry.path(), ec );
+}
 
-		// 헤니르 시공 랭킹
-		if ( strFilename.find( L"SI_LOG_HENIR_RANKING" ) != std::wstring::npos )
-		{
-			DeleteFile(KMakeAbsolutePath(wfd.cFileName).c_str());
-		}
-	}
+static void _DeleteHenirRankingFile( const std::filesystem::directory_entry& entry )
+{
+	std::error_code ec;
+	// Henir time-space ranking
+	if( !entry.is_directory( ec ) && entry.path().filename().wstring().find( L"SI_LOG_HENIR_RANKING" ) != std::wstring::npos )
+		std::filesystem::remove( entry.path(), ec );
 }
 
 void KStatisticsLocalLog::ClearLocalLog()
 {
 	CloseLocalLogData();
 
-	// 일일 통계 파일 검색해서 모두 삭제
+	// find and delete every daily statistics file
 	KApplyAllFiles( _DeleteFile );
 
 	KSIManager.ClearLocalLogData( KStatistics::SI_LOC_PVP );

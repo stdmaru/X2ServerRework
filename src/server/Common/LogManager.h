@@ -1,8 +1,8 @@
 #pragma once
 
 #include "RefreshSingleton.h"
-#include <boost/timer.hpp>
-#include <atltime.h>
+#include "x2/platform/timer.h"
+#include "x2/platform/win32.h"
 
 #include "Event.h"
 #include "ServerPacket.h"
@@ -42,8 +42,8 @@ protected:
 	double			m_fCheckTimeGap;
 	double			m_fErrorLogStatTimeGap;
 	int				m_iLogFileMaxSize;
-	boost::timer	m_tCheckTimer;
-	boost::timer	m_tErrorLogStatTimer;
+	x2::Timer	m_tCheckTimer;
+	x2::Timer	m_tErrorLogStatTimer;
 	CTime			m_tLastCheckTime;
 
 	// 실행 여부

@@ -53,7 +53,7 @@ void CXSLGuildManager::SetLimitGuildLevel_LUA( u_char ucGuildLevel )
 
 bool CXSLGuildManager::AddGuildEXP_LUA( u_char ucGuildLevel, int iNeedEXP, int iTotalEXP )
 {
-	if( ucGuildLevel < 0  ||  iNeedEXP < 0  ||  iTotalEXP < 0 )
+	if( iNeedEXP < 0  ||  iTotalEXP < 0 ) // ucGuildLevel is unsigned
 	{
 		START_LOG( cerr, L"길드 경험치 테이블 정보가 이상합니다." )
 			<< BUILD_LOGc( ucGuildLevel )

@@ -14,7 +14,7 @@
 //#include "LUA/lua.h"
 //#include "LUA/lauxlib.h"
 //#include "LUA/lualib.h"
-#include <windows.h>
+#include "x2/platform/win32.h"
 #include <assert.h>
 
 /** LUA manager class.

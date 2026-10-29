@@ -461,7 +461,7 @@ private:
 
 public:
 	CXSLSocketItem(void);
-	~CXSLSocketItem(void);
+	virtual ~CXSLSocketItem(void);
 
 	// 소켓 정보
 	bool AddSocketData_LUA();

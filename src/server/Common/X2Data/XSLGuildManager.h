@@ -48,7 +48,7 @@ public:
 	static bool IsValidSkillPointFigure( IN const int iSkillPointFigure ){	return ( ( 0 <= iSkillPointFigure ) && ( iSkillPointFigure <= 128 ) ) ? true : false;	}
 
 	CXSLGuildManager(void);
-	~CXSLGuildManager(void);
+	virtual ~CXSLGuildManager(void);
 
 	bool OpenScriptFile( const char* pFileName );
 

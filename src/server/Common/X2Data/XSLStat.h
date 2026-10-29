@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Windows.h>
+#include "x2/platform/win32.h"
 
 #include <vector>
 #include <map>

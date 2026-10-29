@@ -54,7 +54,7 @@ public:
 
 public:
 	KGameSysVal();
-	~KGameSysVal();
+	virtual ~KGameSysVal();
 
 	//check func..
 
@@ -204,7 +204,7 @@ public:
 
 
 	void	SetDungeonClearPaymentItemID_LUA( int iItemID );
-	const int	GetDungeonClearPaymentItemID() const { return m_iPaymentItemID; }
+	int	GetDungeonClearPaymentItemID() const { return m_iPaymentItemID; }
 
 	//{{ 2012. 07. 09	김민성       이벤트 큐브 오픈 가능 시간
 	void	SetEventCubeOpenStartTime_LUA( int iYear, int iMonth, int iDay, int iHour, int iMin, int iSec );

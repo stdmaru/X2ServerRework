@@ -1,4 +1,5 @@
 #include "Statistics.h"
+#include <algorithm>
 
 #include <Serializer/Serializer.h>
 #include <Serializer/SerMap.h>
@@ -11,7 +12,7 @@
 #include <iomanip>
 
 #undef _ENUM
-#define _ENUM( id ) L#id,
+#define _ENUM( id ) L ## #id,
 const wchar_t* KStatistics::ms_szStatistics[] =
 {
 #include "StatisticsID_def.h"
@@ -286,7 +287,7 @@ void KStatistics::WriteLocalLogData( std::wfstream& fout )
 			iColCnt++;
 		}
 
-		iMaxColNum = max( iMaxColNum, iColCnt );
+		iMaxColNum = std::max( iMaxColNum, iColCnt );
 	}
 
 	for( mit = m_kStatisticsData.begin(); mit != m_kStatisticsData.end(); ++mit )

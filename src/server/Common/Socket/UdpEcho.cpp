@@ -1,4 +1,4 @@
-#include <WinSock2.h>
+#include "x2/platform/net.h"
 #include "UdpEcho.h"
 #include "NetCommon.h"  // CLOSE_SOCKET
 #include <dbg/dbg.hpp>

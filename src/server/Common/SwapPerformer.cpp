@@ -20,7 +20,7 @@ KSwapPerformer::~KSwapPerformer(void)
 		KLocker lockEn( m_csEnqueueEvent );
 		KLocker lockDe( m_csDequeueEvent );
 
-		if( !m_pEnqueueEvent )
+		if( m_pEnqueueEvent ) // the original tested !m_pEnqueueEvent and then dereferenced it
 		{
 			if( !m_pEnqueueEvent->empty() )
 			{
@@ -91,7 +91,7 @@ void KSwapPerformer::QueueingEvent( const KEventPtr& spEvent_ )
 
     KLocker lock( m_csEnqueueEvent );
 
-	_JIF( !m_pEnqueueEvent, return; );
+	_JIF( m_pEnqueueEvent, return; );
 
     m_pEnqueueEvent->push( spEvent_ );
 
@@ -115,7 +115,7 @@ bool KSwapPerformer::GetKEvent( KEventPtr& spEvent )
 	{
 		KLocker lock( m_csDequeueEvent );
 
-		_JIF( !m_pDequeueEvent, return false; );
+		_JIF( m_pDequeueEvent, return false; );
 
 		if( m_pDequeueEvent->empty() )
 			return false;
@@ -131,8 +131,8 @@ bool KSwapPerformer::CheckAndSwapQueue()
 	KLocker lockEn( m_csEnqueueEvent );
 	KLocker lockDe( m_csDequeueEvent );
 
-	_JIF( !m_pEnqueueEvent, return false; );
-	_JIF( !m_pDequeueEvent, return false; );
+	_JIF( m_pEnqueueEvent, return false; );
+	_JIF( m_pDequeueEvent, return false; );
 
 	if( m_pEnqueueEvent->empty() )
 		return false;

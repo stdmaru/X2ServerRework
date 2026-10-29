@@ -66,7 +66,7 @@ bool CXSLRandomItemManager::AddRandomItemTemplet_LUA()
 	int iTemp = 0;
 	LUA_GET_VALUE_RETURN(	luaManager, L"m_ItemID",				randomItemData.m_ItemID,					0,	goto end_proc );
 	//{{ 2011. 12. 14	최육사	서버 에러 로그 버그 수정
-	if( SiCXSLItemManager()->GetItemTemplet( randomItemData.m_ItemID ) == false )
+	if( SiCXSLItemManager()->GetItemTemplet( randomItemData.m_ItemID ) == NULL )
 	{
 		START_LOG( cwarn, L"Item.lua에 등록되지 않은 아이템 입니다. 랜덤 큐브 테이블에 포함할수 없습니다!" )
 			<< BUILD_LOG( randomItemData.m_ItemID );

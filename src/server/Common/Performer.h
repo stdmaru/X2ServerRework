@@ -4,10 +4,10 @@
 #include <queue>
 #include <Serializer/SerBuffer.h>
 
-#include <windows.h>    // CRITICAL_SECTION
+#include "x2/platform/win32.h"    // CRITICAL_SECTION
 #include "Thread/Locker.h"
 
-enum ePerformerID;
+enum ePerformerID : int;
 class KPerformer : public KSimObject
 {
     NiDeclareRTTI;
@@ -74,7 +74,7 @@ public:
 protected:
     bool            GetKEvent( KEventPtr& spEvent );
     virtual void    ProcessEvent( const KEventPtr& spEvent ) = 0;
-    virtual bool    RoutePacket( const KEvent* pkEvent )   { return false; }
+    virtual bool    RoutePacket( const KEvent* /*pkEvent*/ )   { return false; }
 	friend void KncSend( DWORD dwPIFrom, UidType nFrom, KEventPtr spEvent );
 
 protected:

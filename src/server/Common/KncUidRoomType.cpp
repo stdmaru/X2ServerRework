@@ -1,5 +1,5 @@
 #undef max
-#include <boost/random.hpp>
+#include <random>
 #include <Thread/Locker.h>
 
 #include "KncUidRoomType.h"

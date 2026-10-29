@@ -2,7 +2,7 @@
 #include <map>
 #include <vector>
 #include <string>
-#include <boost/timer.hpp>
+#include "x2/platform/timer.h"
 
 
 #define SP_PROFILER_DUMP_TIME	14400.0
@@ -43,7 +43,7 @@ public:
 
 private:
 	std::map< std::wstring, KSPInfo >	m_mapProfileInfo;
-	boost::timer						m_tDBUpdateTimer;
+	x2::Timer						m_tDBUpdateTimer;
 };
 
 
@@ -74,6 +74,6 @@ public:
 private:
 	KStoredProcedureProfiler*	m_pSPP;
 	const wchar_t*				m_pQuery;
-	boost::timer				m_kTimer;
+	x2::Timer				m_kTimer;
 	bool						m_bQueryFail;
 };

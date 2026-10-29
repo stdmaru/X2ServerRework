@@ -122,7 +122,7 @@ public:
 		std::vector< RandomUnitData > m_vecUnitData;
 
 		//{{ 2012. 10. 16	박세훈	RandomBoxTable 구조 변경
-		RandomItemData::RandomItemData()
+		RandomItemData()
 			: m_byteUseCondition( 0 )
 		{
 		}
@@ -190,7 +190,7 @@ public:
 
 public:
 	CXSLRandomItemManager(void);
-	~CXSLRandomItemManager(void);
+	virtual ~CXSLRandomItemManager(void);
 
 	// for lua
 	bool	AddRandomItemTemplet_LUA();

@@ -12,13 +12,13 @@ class CXSLDungeonManager
 	DeclToStringW;
 
 public:
-	~CXSLDungeonManager();
+	virtual ~CXSLDungeonManager();
 	CXSLDungeonManager();
 
 	bool	OpenScriptFile_AllDungeonScriptLoad( IN lua_State* pLuaState );
 
 	bool	AddDungeonData_LUA();
-	bool	AddDefaultRoomTitle_LUA( int iStringIndex ) { return true; } // 클라이언트에서만 필요한 함수, 스크립트 파싱을 위해서 만들어둠
+	bool	AddDefaultRoomTitle_LUA( int /*iStringIndex*/ ) { return true; } // 클라이언트에서만 필요한 함수, 스크립트 파싱을 위해서 만들어둠
 
 	int		GetNPCDropTime( IN const int nDungeonID, IN const int iStageIndex, IN const int iSubStageIndex, IN const int iNPCID );
 

@@ -1,7 +1,14 @@
 #include "./KAutoPath.h"
 
-//{{ 2009. 7. 13  최육사	하드코딩 제거
-static std::vector< std::string > g_vecAddPath; // cpp파일에 선언하여 외부접근차단
+#include "x2/platform/unicode.h"
+
+#include <algorithm>
+#include <filesystem>
+
+namespace fs = std::filesystem;
+
+//{{ 2009-07-13 removed hard-coded paths
+static std::vector< std::string > g_vecAddPath; // file scope: no outside access
 
 void KAutoPath::AddPath( const std::string& strPath )
 {
@@ -11,38 +18,18 @@ void KAutoPath::AddPath( const std::string& strPath )
 
 KAutoPath::KAutoPath()
 {
-	char szCurDir[MAX_PATH] = "";
-	std::string strCurDir;
-	//char cFolder;
-
-	// 실행경로는 기본적으로 넣어준다!
-	GetCurrentDirectoryA( MAX_PATH, szCurDir );
-	//cFolder = szCurDir[0];
-
-
-	strCurDir = szCurDir;
-	strCurDir += "\\";
+	// the working folder is always searched first
+	std::error_code ec;
+	const std::string strCurDir = x2::platform::WideToUtf8( fs::current_path( ec ).wstring() );
 	m_vecDirectory.push_back( strCurDir );
 	InitDirectory( strCurDir );
 
-	//{{ 2009. 7. 13  최육사	하드코딩 제거
-
-	// 그외에 추가 경로도 설정한다!
-	std::vector< std::string >::const_iterator vit;
-	for( vit = g_vecAddPath.begin(); vit != g_vecAddPath.end(); ++vit )
+	// then the extra folders and their subfolders
+	for( const std::string& strAddDir : g_vecAddPath )
 	{
-		strcpy_s( szCurDir, vit->c_str() );
-		//szCurDir[0] = cFolder;
-		strCurDir = szCurDir;
-
-		// 등록된 추가 경로는 기본으로 넣자!
-		std::string strAddDir = strCurDir;
-		strAddDir += "\\";
 		m_vecDirectory.push_back( strAddDir );
-
-		InitDirectory( strCurDir );
+		InitDirectory( strAddDir );
 	}
-	//}}
 }
 
 KAutoPath::~KAutoPath(void)
@@ -52,96 +39,46 @@ KAutoPath::~KAutoPath(void)
 
 bool KAutoPath::GetPullPath( std::string& strFileName )
 {
-	FILE* file;
-	std::string strName;
-
-	for( int i = 0; i < (int)m_vecDirectory.size(); ++i )
+	// first folder (in search order) that has the file
+	for( const std::string& strDir : m_vecDirectory )
 	{
-		strName = m_vecDirectory[i] + strFileName;
-		fopen_s( &file, strName.c_str(), "rb" );
-		if( file != NULL )
+		const fs::path path = fs::path( x2::platform::Utf8ToWide( strDir ) ) / x2::platform::Utf8ToWide( strFileName );
+		std::error_code ec;
+		if( fs::is_regular_file( path, ec ) )
 		{
-			strFileName = strName;
-			break;
+			strFileName = x2::platform::WideToUtf8( path.wstring() );
+			return true;
 		}
 	}
-
-	if( file == NULL )
-	{
-		return false;
-	}
-
-	fclose( file );
-	return true;
+	return false;
 }
 
 bool KAutoPath::GetPullPath( std::wstring& wstrFileName )
 {
-	char strFileName[255] = {0,};
-	std::string strName;
-
-	WideCharToMultiByte( CP_ACP, 0, wstrFileName.c_str(), -1, strFileName, 255, NULL, NULL );
-
-	FILE* file;
-
-	for( int i = 0; i < (int)m_vecDirectory.size(); ++i )
-	{
-		strName = m_vecDirectory[i] + strFileName;
-		fopen_s( &file, strName.c_str(), "rb" );
-		if( file != NULL )
-		{
-			WCHAR wstrTemp[256] = L"";
-			::MultiByteToWideChar( CP_ACP, 0, strName.c_str(), -1, wstrTemp, 255 );
-			wstrFileName = wstrTemp;
-			break;
-		}
-	}
-
-	if( file == NULL )
-	{
+	std::string strFileName = x2::platform::WideToUtf8( wstrFileName );
+	if( !GetPullPath( strFileName ) )
 		return false;
-	}
 
-	fclose( file );
+	wstrFileName = x2::platform::Utf8ToWide( strFileName );
 	return true;
 }
 
+// Adds every subfolder of strCurDir, depth first, in name order (the order FindFirstFile gives on NTFS).
 void KAutoPath::InitDirectory( std::string strCurDir )
 {
-	HANDLE				hSearch;
-	WIN32_FIND_DATAA	fd;
-	char				szSearchPath[256];
-
-	strcpy_s( szSearchPath, strCurDir.c_str() );
-	strcat_s( szSearchPath, "\\*.*" );
-	hSearch = FindFirstFileA( szSearchPath, &fd );
-
-	if( hSearch == INVALID_HANDLE_VALUE )
-		return;
-
-	do
+	std::error_code ec;
+	std::vector< fs::path > vecSubDirs;
+	for( const auto& entry : fs::directory_iterator( fs::path( x2::platform::Utf8ToWide( strCurDir ) ), ec ) )
 	{
-		if( strcmp( fd.cFileName, "." ) && strcmp( fd.cFileName, ".." ) )
-		{
-			if( fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY )
-			{
-				char	szNewSearchDir[256];
-				std::string	strDir;
+		if( entry.is_directory( ec ) )
+			vecSubDirs.push_back( entry.path() );
+	}
+	std::sort( vecSubDirs.begin(), vecSubDirs.end() );
 
-				strcpy_s( szNewSearchDir, strCurDir.c_str() );
-				strcat_s( szNewSearchDir, "\\" );
-				strcat_s( szNewSearchDir, fd.cFileName );
-
-				strDir = szNewSearchDir;
-				strDir += "\\";
-
-				m_vecDirectory.push_back( strDir );
-
-				InitDirectory( szNewSearchDir );
-			}
-		}
-
-	}while( FindNextFileA( hSearch, &fd ) );
-
-	FindClose( hSearch );
+	for( const fs::path& subDir : vecSubDirs )
+	{
+		const std::string strDir = x2::platform::WideToUtf8( subDir.wstring() );
+		m_vecDirectory.push_back( strDir );
+		InitDirectory( strDir );
+	}
 }

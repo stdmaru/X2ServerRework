@@ -1,6 +1,5 @@
 #include "XSLDungeonSubStage.h"
 
-#include <boost/foreach.hpp>
 
 #define ARRAY_SIZE(a)       (sizeof(a)/sizeof((a)[0]))
 
@@ -82,7 +81,7 @@ bool CXSLDungeonSubStage::SubStageData::LoadCreatedNpcDropTimesData( KLuaManager
 
 float CXSLDungeonSubStage::SubStageData::GetNpcExpRate( int iUnitID )
 {
-	BOOST_TEST_FOREACH( NPCExpRateData, kNpcExpRateData, m_vecNPCExpRateDataList )
+	for( NPCExpRateData kNpcExpRateData : m_vecNPCExpRateDataList )
 	{
 		if( kNpcExpRateData.m_UnitID == iUnitID )
 			return kNpcExpRateData.m_fExpRate;
@@ -553,7 +552,7 @@ bool CXSLDungeonSubStage::SubStageData::GetNextStage( OUT CXSLDungeonSubStage::N
 	// 일반 스테이지
 	int iRandomNumber = rand() % 100;
 	int iCumulativeRate = 0;
-	BOOST_FOREACH( NextStageData kNextStageDataInVector, vecNextStage )
+	for( NextStageData kNextStageDataInVector : vecNextStage )
 	{
 		iCumulativeRate += kNextStageDataInVector.m_iRate;
 		if( iRandomNumber < iCumulativeRate )

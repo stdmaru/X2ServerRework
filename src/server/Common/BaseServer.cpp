@@ -1,4 +1,5 @@
-#include <WinSock2.h>
+#include "x2/platform/net.h"
+#include <filesystem>
 #include "BaseServer.h"
 #include "dbg/dbg.hpp"
 #include "NetError.h"
@@ -22,66 +23,7 @@
 #include <ImportKncDebug.h>
 
 
-#ifdef NDEBUG
-#   include "CrashRpt/KncCrashRpt.h"
-
-// 크래쉬 리포트 처리 함수
-void CrashReportProcess( LPVOID lpvState )
-{
-	std::wostringstream stm;
-
-	stm << L"Local IP : " << NetCommon::GetLocalIPW() << std::endl
-		<< L"GetTickCount : " << ::GetTickCount() << std::endl;
-
-	AppendToMailContent( lpvState, stm.str().c_str() );
-
-	// get post-crash execute file's full path.
-	wchar_t szBuff[MAX_PATH] = {0};
-	::GetCurrentDirectoryW( MAX_PATH, szBuff );
-	wcscat_s( szBuff, MAX_PATH, L"\\DumpUploader.exe" );
-
-	stm.str( L"" );  // 초기화 - 버퍼의 내용을 인자로 받은 문자열로 대치.
-
-	std::wstring wstrLogFileName = KncUtil::toWideString( dbg::logfile::GetLogFileName() );
-
-	// build command line parameter
-	stm << L"/s " << NetCommon::GetLocalIPW()			// 서버 이름 (아이피)
-		<< L" /f " << wstrLogFileName					// 로그파일 이름
-		<< L" /f " << GetFullDumpFileName( lpvState );	// 덤프파일 이름
-
-	ShellExecuteW( NULL, L"open", szBuff, stm.str().c_str(), NULL, SW_SHOWNORMAL );
-}
-
-unsigned int CALLBACK CrashCallback_StackOverFlow( LPVOID lpvState )
-{
-	// stack over flow인 경우 별도의 스레드에서 크래쉬 리포트 처리한다!
-    CrashReportProcess( lpvState );
-	return 0;
-}
-
-BOOL CALLBACK CrashCallback( LPVOID lpvState )
-{
-	//{{ 2010. 04. 13  최육사	크래쉬 리포트 개선
-	if( GetExcetionType( lpvState ) != EXCEPTION_STACK_OVERFLOW )
-	{
-		// 스택 오버플로우가 아니라면 기존대로 처리한다!
-		CrashReportProcess( lpvState );
-	}
-	else
-	{
-		// stack over flow인 경우 별도의 스레드 생성하여 처리!
-		HANDLE hThread = (HANDLE)_beginthreadex( 0, (1024 * 1024 * 2), CrashCallback_StackOverFlow, lpvState, 0, NULL );
-
-		// 생성 쓰레드가 덤프 끝날 때까지 기다린다
-		WaitForSingleObject( hThread, INFINITE );
-
-		CloseHandle( hThread );
-	}
-	//}}
-
-    return true;
-}
-#endif
+// Port: the crash report (closed CrashRpt DLL + DumpUploader.exe, release builds only) was removed.
 
 
 NiImplementRTTI( KBaseServer, KPerformer );
@@ -94,12 +36,12 @@ DWORD KBaseServer::ms_dwServerInfoUpdateGap( SERVER_INFO_UPDATE_GAP );
 
 KBaseServer::KBaseServer(void)
 :
-    m_iServerGroupID( 0 ),
     m_strTagVersion( L"Tag version undefined." ),
-    m_dwShutDownWait( 1000 * 60 * 2 ),
+    m_eUseVersion( VE_INTERNAL ),
     m_hWnd( HWND_DESKTOP ),
+    m_iServerGroupID( 0 ),
 	//{{ 2012. 12. 24	최육사	게임 서버 버전 세분화
-	m_eUseVersion( VE_INTERNAL )
+	m_dwShutDownWait( 1000 * 60 * 2 )
 	//}}
 {
     srand( (unsigned) time( NULL ) );
@@ -425,7 +367,7 @@ void KBaseServer::OnServerReadyComplete()
 	kPacket.m_wstrDesc = GetName();
 	kPacket.m_wstrDesc += L" 서버를 켜는 도중에 스크립트 파싱이 실패하였습니다! 서버로그 확인 바랍니다!\n\n";
 
-	BOOST_TEST_FOREACH( const std::wstring&, wstrScriptFileName, m_vecFailScriptFileList )
+	for( const std::wstring& wstrScriptFileName : m_vecFailScriptFileList )
 	{
 		kPacket.m_wstrDesc += wstrScriptFileName;
 		kPacket.m_wstrDesc += L"\n";
@@ -445,15 +387,7 @@ void KBaseServer::SetTagVersion()
 {
     KncUtil::GetTimeStampByNameW( m_strTagVersion );
 
-	//{{ 2010. 04. 13  최육사	크래쉬 리포트
-    // 050716. crash report 설정 부분을 main.cpp에서 simlayer로 옮김 - 태그 제목을 스크립트로 수정하기 위함.
-#ifdef NDEBUG
-	// 디버그 빌드가 아닐때만 install
-    LPVOID lpvState = Install( CrashCallback, m_strMailingList.c_str(), m_strTagVersion.c_str() );
-#endif
-	//}}
-
-    // 제목은 처음 초기화때 출력하므로, 아직 아무 로그도 출력하지 않은 상태여야 한다.
+    // the title is printed on initialization, so nothing may have been logged yet
     dbg::logfile::SetLogFileTitle( m_strTagVersion.c_str() );
 }
 
@@ -485,13 +419,12 @@ namespace ConfigINI
 
 void KBaseServer::LoadINIFile( const wchar_t* szFileName_ )
 {
-	// 050318. florist. ini 파일은 전체 경로(혹은 상대경로)를 적어서 사용해야 한다.
-	// 그렇지 않으면 무조건 윈도우 폴더 안에서만 찾는다. 이왕 해야 할거면 확실하게 절대경로를 쓰자.
+	// 2005-03-18 florist: the ini file needs a full (or relative) path, otherwise Windows only looks in
+	// the Windows folder. Use an absolute path to be sure.
 	wchar_t buff[MAX_PATH] = {0};
-	::GetCurrentDirectoryW( MAX_PATH, buff );
-	m_strIniFilePath = buff;
-	m_strIniFilePath += L"\\";
-	// 사내에서만 폴더 구분 한다
+	std::error_code ec;
+	m_strIniFilePath = ( std::filesystem::current_path( ec ) / L"" ).wstring(); // with the trailing separator
+	// separate config folder only in-house
 	if( m_vecCmdArgs.size() >= 3 )
 	{
 		std::string strVersionTag = KncUtil::toNarrowString( m_vecCmdArgs[1].GetString() );
@@ -503,12 +436,13 @@ void KBaseServer::LoadINIFile( const wchar_t* szFileName_ )
 	m_strIniFilePath += szFileName_;
 	m_strIniFilePath += L".ini";
 
-	// 050317. version 정보 얻어오기.
-	::GetPrivateProfileStringW( ConfigINI::szSectionVersion, ConfigINI::szKeyVersion1, 0, buff, MAX_PATH, m_strIniFilePath.c_str() );
+	// 2005-03-17 read the version info. Port: our reader on every platform, since the deployed
+	// config_*.ini is CP949 and Windows would read it in the system code page.
+	x2::platform::ReadIniString( ConfigINI::szSectionVersion, ConfigINI::szKeyVersion1, 0, buff, MAX_PATH, m_strIniFilePath.c_str() );
 	m_strMainVer[VE_INTERNAL] = buff;
-	::GetPrivateProfileStringW( ConfigINI::szSectionVersion, ConfigINI::szKeyVersion2, 0, buff, MAX_PATH, m_strIniFilePath.c_str() );
+	x2::platform::ReadIniString( ConfigINI::szSectionVersion, ConfigINI::szKeyVersion2, 0, buff, MAX_PATH, m_strIniFilePath.c_str() );
 	m_strMainVer[VE_OPEN_TEST] = buff;
-	::GetPrivateProfileStringW( ConfigINI::szSectionVersion, ConfigINI::szKeyVersion3, 0, buff, MAX_PATH, m_strIniFilePath.c_str() );
+	x2::platform::ReadIniString( ConfigINI::szSectionVersion, ConfigINI::szKeyVersion3, 0, buff, MAX_PATH, m_strIniFilePath.c_str() );
 	m_strMainVer[VE_SERVICE] = buff;
 
 	LIF( !m_strMainVer[VE_INTERNAL].empty() );

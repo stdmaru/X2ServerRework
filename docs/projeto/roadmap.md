@@ -79,6 +79,8 @@ Plano detalhado do `Common`: [Servidor: Common › Plano](../porte/server-common
 
 Ver [Servidor — acoplamento com Windows](../original/servidor.md).
 
+- [x] `server/common-build`: `Common` compilando no Linux (GCC/Clang) sem warnings, menos `Socket/`/`ODBC/` (2026-10-29). Ver [Servidor: Common](../porte/server-common.md).
+- [ ] `server/common-packets`: testes de serialização dos pacotes.
 - [ ] Rede: IOCP → Asio (standalone) ou equivalente; preservar framing/cripto de pacotes.
 - [ ] DB: ODBC → unixODBC + driver MS ODBC 18 no Linux (código de ODBC quase não muda).
 - [ ] UI MFC (`Common/ui/ServerUIDlg`) → terminal em todas as plataformas (T15): log ao vivo, prompt Lua com histórico, título com status, encerramento com confirmação, modo serviço sem stdin.
@@ -102,7 +104,7 @@ Ver [Cliente — acoplamento com Windows / Direct3D 9](../original/cliente.md).
 
 - [ ] Introduzir abstração gráfica dentro de `KTDXLIB` (D3D9 está concentrado lá: ~56 arquivos usam o device; X2Lib quase só usa matemática).
 - [ ] Reimplementar o que hoje vem de D3DX: loader `.x` (mesh + skin + animação), efeitos `.fx` (`x2.fx`), texturas `.dds`, fontes, sprites.
-- [ ] Backend novo (Vulkan direto ou SDL_GPU — [decisoes.md](decisoes.md)).
+- [ ] Backend novo: SDL_GPU ([decisoes.md](decisoes.md), T19).
 
 ## Fase 5 — Limpeza profunda
 

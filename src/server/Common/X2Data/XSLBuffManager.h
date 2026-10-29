@@ -225,7 +225,7 @@ public:
 
 public:
 	CXSLBuffManager(void);
-	~CXSLBuffManager(void);
+	virtual ~CXSLBuffManager(void);
 
 	// for lua
 	bool AddBuffInfo_LUA();

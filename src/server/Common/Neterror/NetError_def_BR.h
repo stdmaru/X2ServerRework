@@ -1413,7 +1413,10 @@ enum NetErrorEnum
 	ERR_SENTINEL
 };
 
-static wchar_t* szErrorStr[] = {
+// Message tables: compiled only in NetError.cpp (they were static arrays copied into every source file).
+#ifdef X2_NETERROR_STRINGS
+
+static const wchar_t* const szErrorStr[] = {
 	L"성공",
 	L"알 수 없는 에러입니다.",
 	L"유저 상태 오류입니다.",
@@ -2825,7 +2828,7 @@ static wchar_t* szErrorStr[] = {
 	L""
 };
 //BR버전 출력
-static wchar_t* szErrorStrF[] = {
+static const wchar_t* const szErrorStrF[] = {
 	L"Sucesso",
 	L"Um erro desconhecido ocorreu.",
 	L"Erro no status do Usuário.",
@@ -4236,3 +4239,5 @@ static wchar_t* szErrorStrF[] = {
 
 	L""
 };
+
+#endif // X2_NETERROR_STRINGS

@@ -1,4 +1,4 @@
-#include <WinSock2.h>   // wsaBuffer
+#include "x2/platform/net.h"   // wsaBuffer
 
 #include "Accepter.h"
 #include "NetCommon.h"

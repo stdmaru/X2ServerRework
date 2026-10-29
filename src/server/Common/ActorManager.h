@@ -33,20 +33,24 @@ public:
     int GetCount() const                 { KLocker lock( m_csAct ); return (int)m_mapUID.size(); }
     int GetCountNoLock() const           { return ( int )m_mapUID.size(); }
 
-    template< class T > bool Get( IN const UidType nUID, IN OUT boost::shared_ptr<T>& spOut );
+    template< class T > bool Get( IN const UidType nUID, IN OUT std::shared_ptr<T>& spOut );
     template< class T > void ForEach( T& functor );
     //template< class T > void SendToAll( const unsigned short usEventID, const T& data );
     //template< class T > void QueueingToAll( const unsigned short usEventID, const T& data );
     //void SendIDToAll( const u_short usEventID );
     bool SendTo( const UidType nReceiverUID, IN const KEvent& kEvent );
     void QueueingTo( const UidType nReceiverUID, const KEventPtr& spEvent );
-	int  MultiQueueing( const KEventPtr& spEvent, std::vector<UidType>& vecUID = std::vector<UidType>() ); // function over-riding 회피. Event안에 있는 uid들에게 모두 살포.
+	// Queues the event to every uid in it; uids not found are returned in vecUID.
+	// The original defaulted vecUID to a temporary (MSVC extension): the one-argument overloads replace that.
+	int  MultiQueueing( const KEventPtr& spEvent, std::vector<UidType>& vecUID );
+	int  MultiQueueing( const KEventPtr& spEvent ) { std::vector<UidType> vecUID; return MultiQueueing( spEvent, vecUID ); }
     void SendToAll( const KEvent& kEvent );
     void QueueingToAll( const KEventPtr& spEvent );
 
-    virtual bool FindCID( const UidType nCID ) { return 0; }
-    virtual void QueueingByCID( const UidType nReceiverCID, const KEventPtr& spEvent ) {}
-    virtual int  MultiQueueingByCID( const KEventPtr& spEvent, std::vector<UidType>& vecUID = std::vector<UidType>() ) { return 0; } // function over-riding 회피. Event안에 있는 uid들에게 모두 살포.
+    virtual bool FindCID( const UidType /*nCID*/ ) { return 0; }
+    virtual void QueueingByCID( const UidType /*nReceiverCID*/, const KEventPtr& /*spEvent*/ ) {}
+    virtual int  MultiQueueingByCID( const KEventPtr& /*spEvent*/, std::vector<UidType>& /*vecUID*/ ) { return 0; } // same, by character uid
+    int  MultiQueueingByCID( const KEventPtr& spEvent ) { std::vector<UidType> vecUID; return MultiQueueingByCID( spEvent, vecUID ); }
 
     // actormanager만의 고유함수들. UserManager 활용시엔 사용하지 않는다.
     void ReserveAdd( KActorPtr spActor ); // Accepter thread에서 접근.
@@ -74,7 +78,7 @@ protected:
 };
 
 template< typename ActorType >
-bool KActorManager::Get( IN const UidType nUID_, IN OUT boost::shared_ptr<ActorType>& spOut_ )
+bool KActorManager::Get( IN const UidType nUID_, IN OUT std::shared_ptr<ActorType>& spOut_ )
 {
     KActorPtr spActor( Get( nUID_ ) );
 
@@ -83,7 +87,7 @@ bool KActorManager::Get( IN const UidType nUID_, IN OUT boost::shared_ptr<ActorT
     if( ! NiIsExactKindOf( ActorType, spActor.get() ) )
         return false;
 
-    spOut_ = boost::static_pointer_cast<ActorType>( spActor );
+    spOut_ = std::static_pointer_cast<ActorType>( spActor );
     return true;
 }
 

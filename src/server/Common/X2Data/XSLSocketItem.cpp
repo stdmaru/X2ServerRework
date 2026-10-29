@@ -1012,7 +1012,7 @@ int CXSLSocketItem::GetMagicStoneItemID( IN bool bIsRare ) const
 }
 
 //{{ 2012. 09. 26  김민성  대전 장비 소켓 고정 강화 레벨
-bool CXSLSocketItem::GetResultItem( IN int iMagicStoneItemID, IN int iItemType, IN int iPeriodType, IN int iUseLevel, IN bool bFashion, IN int iEnchantLevel, OUT int& iResultSocketOption ) const
+bool CXSLSocketItem::GetResultItem( IN int iMagicStoneItemID, IN int iItemType, IN int /*iPeriodType*/, IN int iUseLevel, IN bool bFashion, IN int iEnchantLevel, OUT int& iResultSocketOption ) const
 //}}
 {
 	// 1. 소켓 랜덤 그룹을 얻기 위한 타입 정보
@@ -1286,7 +1286,7 @@ bool CXSLSocketItem::CalcInsertSocketCost( IN int iItemID, IN int iMagicStoneIte
 //#ifdef SERV_ITEM_OPTION_DATA_SIZE
 bool CXSLSocketItem::GetSocketOptionStat(	IN const std::vector< int >& vecSocketOption,
 											IN bool bIsDungeon,
-											IN const KStat& kBaseStat,
+											IN const KStat& /*kBaseStat*/,
 											IN OUT float& fTotalIncHPRate,
 											OUT KStat& kAddStat,
 											IN unsigned int& uiHP_OnePoint,
@@ -1316,7 +1316,7 @@ bool CXSLSocketItem::GetSocketOptionStat(	IN const std::vector< int >& vecSocket
 	//}}
 
 	//{{ 2011. 07. 25    김민성    아이템 옵션ID 데이터 사이즈 증가
-	BOOST_TEST_FOREACH( const int, sSocketOptionID, vecSocketOption )
+	for( const int sSocketOptionID : vecSocketOption )
 	//}}
 	{
 		if( sSocketOptionID == 0 )
@@ -1387,7 +1387,7 @@ bool CXSLSocketItem::GetSocketOptionStat(	IN const std::vector< int >& vecSocket
 //#ifdef SERV_ITEM_OPTION_DATA_SIZE
 void CXSLSocketItem::GetSocketOptionIncreaseRate( IN const std::vector< int >& vecSocketOption, IN bool bIsDungeon, IN OUT KStatIncreaseRate& kStatIncreaseRateInfo )
 {
-	BOOST_TEST_FOREACH( const int, iSocketOptionID, vecSocketOption )
+	for( const int iSocketOptionID : vecSocketOption )
 	{
 		const SocketData* pSocketData = GetSocketData( iSocketOptionID );
 		if( pSocketData == NULL )
@@ -1400,7 +1400,7 @@ void CXSLSocketItem::GetSocketOptionIncreaseRate( IN const std::vector< int >& v
 //#else
 //void CXSLSocketItem::GetSocketOptionIncreaseRate( IN const std::vector< short >& vecSocketOption, IN bool bIsDungeon, IN OUT KStatIncreaseRate& kStatIncreaseRateInfo )
 //{
-//	BOOST_TEST_FOREACH( const short, sSocketOptionID, vecSocketOption )
+//	for( const short sSocketOptionID : vecSocketOption )
 //	{
 //		const SocketData* pSocketData = GetSocketData( sSocketOptionID );
 //		if( pSocketData == NULL )
@@ -1541,6 +1541,8 @@ bool CXSLSocketItem::AddSocketData_LUA()
 
 	case SDT_SET_ITEM:
 		LUA_GET_VALUE( luaManager,		"m_fRepairPriceSale",		kSocketData.m_fRepairPriceSale,		0.0f	);
+		break;
+	default:
 		break;
 	}
 
@@ -1940,7 +1942,7 @@ bool CXSLSocketItem::EvaluateItemRandomSocket( IN const int iItemID, OUT std::ve
 		return false;
 	}
 
-	BOOST_TEST_FOREACH( const int, iRandomSocketGroupID, pItemTemplet->m_vecRandomSocketGroupID )
+	for( const int iRandomSocketGroupID : pItemTemplet->m_vecRandomSocketGroupID )
 	{
 		std::map< int, KLottery >::const_iterator mit;
 		mit = m_mapRandomSocketGroup.find( iRandomSocketGroupID );
@@ -2013,7 +2015,7 @@ bool CXSLSocketItem::IsCanUseMiracleCube( IN const int iMiracleCubeItemID, IN co
 
 void CXSLSocketItem::GetAndAddStatRelationLevel( IN const std::vector< int >& vecSocketOption, IN OUT KStatRelationLevel& kAddStatRelLevel ) const
 {
-    BOOST_TEST_FOREACH( const int, iOptionID, vecSocketOption )
+    for( const int iOptionID : vecSocketOption )
 	{
 		if( iOptionID == 0 )
 		{

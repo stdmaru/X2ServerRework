@@ -233,7 +233,7 @@ public:
 
 public:
 	CXSLPetManager(void);
-	~CXSLPetManager(void);
+	virtual ~CXSLPetManager(void);
 
 	// for lua
 	void	SetNewPetInfo_LUA( char cEvolutionStep, short sSatiety, int iIntimacy, short sExtroversion, short sEmotion );

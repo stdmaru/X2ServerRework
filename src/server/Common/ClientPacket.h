@@ -3889,8 +3889,8 @@ DECL_PACKET( EGS_RESET_SKILL_ACK )
 	int									m_iActiveSkillPageNumber;	/// 활성화 중인 페이지
 
 	KEGS_RESET_SKILL_ACK()
-		: m_iOK(0), m_iActiveSkillPageNumber(0), m_iDelSkillID(0),
-		m_iSPoint(0), m_iCSPoint(0)
+		: m_iOK(0), m_iDelSkillID(0), m_iSPoint(0),
+		m_iCSPoint(0), m_iActiveSkillPageNumber(0)
 	{
 		m_vecInventorySlotInfo.clear();
 	}

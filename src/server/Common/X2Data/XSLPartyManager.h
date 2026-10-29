@@ -57,7 +57,7 @@ public:
 
 public:
 	CXSLPartyManager(void);
-	~CXSLPartyManager(void);
+	virtual ~CXSLPartyManager(void);
 
 	// for lua
 	void	SetActivateFeverPoint_LUA( int iFever );

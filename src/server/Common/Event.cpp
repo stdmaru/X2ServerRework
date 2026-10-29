@@ -3,7 +3,7 @@
 #include <Serializer/Serializer.h>
 
 #undef _ENUM
-#define _ENUM( id ) L#id,
+#define _ENUM( id ) L ## #id,
 const wchar_t*  KEvent::ms_szEventID[] = {
 #   include "EventID_System.h"
 #   include "EventID_Client.h"

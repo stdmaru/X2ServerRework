@@ -1,14 +1,15 @@
+#define X2_NETERROR_STRINGS // the message tables of NetError_def_*.h
 #include "NetError.h"
 
 #include <map>
-#include <Windows.h>    // DWORD, GetCurrentThreadID
+#include "x2/platform/win32.h"    // DWORD, GetCurrentThreadID
 #include "Thread/Locker.h"
 
 namespace NetError  // 변수 선언은 namespace scope를 열고 해주어야 한다.
 {
 
 #undef NET_ERROR
-#define NET_ERROR( id, comment ) L#comment,
+#define NET_ERROR( id, comment ) L ## #comment,
 //     wchar_t* szErrorStr[] = {
  //#include "NetError_def.h"
 //     };
@@ -22,14 +23,14 @@ namespace NetError  // 변수 선언은 namespace scope를 열고 해주어야 �
 }
 
 //09. 08. 17 김정협 클라이언트에는 외국버전 그대로 적용
-wchar_t* NetError::GetErrStrF( NetErrorID errorID )
+const wchar_t* NetError::GetErrStrF( NetErrorID errorID )
 {
     KLocker lock( csNetError );
 	if( errorID >= ERR_SENTINEL || errorID < 0 ) return szErrorStrF[ ERR_SENTINEL ];
 	return szErrorStrF[ errorID ];
 }
 
-wchar_t* NetError::GetErrStr( NetErrorID errorID )
+const wchar_t* NetError::GetErrStr( NetErrorID errorID )
 {
     KLocker lock( csNetError );
 
@@ -65,7 +66,7 @@ int NetError::GetLastError()
     return mit->second;
 }
 
-wchar_t* NetError::GetLastErrMsg()
+const wchar_t* NetError::GetLastErrMsg()
 {
     KLocker lock( csNetError );
 

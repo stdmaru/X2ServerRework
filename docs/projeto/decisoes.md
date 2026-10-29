@@ -24,15 +24,9 @@
 | T16 | **Log**: o arquivo mantém o conteúdo completo do original (nível, função, data, dados, `BUILD_LOG`, arquivo/linha). O console tem renderização própria, compacta e colorida (`HH:MM:SS NÍVEL Função: mensagem`, campos `BUILD_LOG` alinhados abaixo), com nível de filtro independente do arquivo. `START_LOG` passa a entregar metadados estruturados ao logger em vez de texto pronto | O conteúdo do original é útil para diagnóstico, mas confuso no console. Decisão delegada ao agente pelo usuário (2026-10-29) |
 | T17 | **MSSQL via API ODBC**, driver **Microsoft ODBC Driver 18** (Windows e Linux, x64/arm64) e FreeTDS como alternativa sem mudar código. Os `.dsn` viram *connection strings* na configuração. No unixODBC, `SQLWCHAR` é UTF-16: a camada ODBC converte de/para `wchar_t` | O wrapper original (`KODBC`/`StoredProcedure`) é ODBC; o driver oficial é o mais completo (TLS, tipos, desempenho). Detalha a T7. Delegado ao agente pelo usuário (2026-10-29) |
 | T18 | **MinGW-w64 (GCC, runtime UCRT) cruzado a partir do Linux**, com testes rodando no **Wine**, como verificação contínua dos caminhos `_WIN32`. Presets `mingw-debug`/`mingw-release`, toolchain em `cmake/toolchains/mingw-w64-x86_64.cmake`, runtime estático. O build de Windows que vale para distribuição continua sendo o **MSVC**; o MinGW não substitui a validação nele | Não há máquina Windows; sem isso o código Windows só seria compilado na hora de validar no MSVC, acumulando erros. O MinGW já achou um bug real (`printf` ISO no MinGW). Delegado ao agente pelo usuário (2026-10-29) |
+| T19 | **SDL3** para janela/input/áudio e **SDL_GPU** para render no cliente (antiga D4), com shaders via SDL_shadercross. Vulkan direto e ponte DXVK descartados como alvo | Vulkan/D3D12/Metal de graça com muito menos código; o D3D9 está concentrado no `KTDXLIB`. Escolhido pelo usuário com a recomendação do agente (2026-10-29) |
 
 ## Pendentes
-
-### D4 — Backend gráfico
-- **SDL3 + SDL_GPU**: mais simples, com Vulkan/D3D12/Metal de graça; shaders em SPIR-V/HLSL via SDL_shadercross.
-- **Vulkan direto**: mais controle, muito mais código.
-- **Ponte temporária** (DXVK-native d3d9 no Linux): o cliente já roda em DXVK (`x2.dxvk-cache` em `_client/data`), mas isso não resolve o D3DX nem é o objetivo final.
-
-Recomendação: SDL3 para janela/input/áudio e **SDL_GPU** para render; decidir de vez na Fase 3.
 
 ### D5 — LuaJIT no Windows
 O LuaJIT não tem CMake. Opções:

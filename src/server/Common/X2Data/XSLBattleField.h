@@ -8,7 +8,7 @@
 
 #include "X2Data/XSLUnitManager.h"
 #include "Lottery.h"
-#include "d3dx9math.h"
+#include "x2/platform/d3dx_math.h"
 #include "Enum/Enum.h"
 
 

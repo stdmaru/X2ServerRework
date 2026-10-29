@@ -57,7 +57,7 @@ public:
 
 public:
 	CXSLDefenceDungeonManager(void);
-	~CXSLDefenceDungeonManager(void);
+	virtual ~CXSLDefenceDungeonManager(void);
 
 	// for lua
 	void	SetNotOpenGateMultiply_LUA( float fMultiplyValue );

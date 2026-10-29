@@ -1,5 +1,5 @@
 #pragma once
-#include <boost/timer.hpp>
+#include "x2/platform/timer.h"
 
 #pragma pack( push, 1 )
 
@@ -16,7 +16,7 @@ public:
 
 private:
 	double		 m_fAddTime;
-	boost::timer m_kTimer;
+	x2::Timer m_kTimer;
 };
 //}}
 
@@ -32,7 +32,7 @@ public:
 		// 이미 타이머가 있다면 타이머 생성 실패!
 		if( !m_vecTimer.empty() ) return false;
 
-		m_vecTimer.push_back( boost::timer() );
+		m_vecTimer.push_back( x2::Timer() );
 		return true;
 	}
 
@@ -50,7 +50,7 @@ public:
 	double elapsed() const
 	{
 		// 타이머가 없다면 0.0f를 반환
-		std::vector< boost::timer >::const_iterator vit = m_vecTimer.begin();
+		std::vector< x2::Timer >::const_iterator vit = m_vecTimer.begin();
 		if( vit == m_vecTimer.end() )
 			return 0.0f;
 
@@ -58,7 +58,7 @@ public:
 	}
 
 private:
-	std::vector< boost::timer > m_vecTimer;
+	std::vector< x2::Timer > m_vecTimer;
 };
 //}}
 

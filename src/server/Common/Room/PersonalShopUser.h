@@ -1,7 +1,7 @@
 #pragma once
 
 #include "FSM/support_FSM.h"
-#include <boost/timer.hpp>
+#include "x2/platform/timer.h"
 
 #include "Event.h"
 #include "CommonPacket.h"

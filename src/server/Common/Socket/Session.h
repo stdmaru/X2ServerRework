@@ -1,6 +1,6 @@
 #pragma once
 #include "ServerDefine.h"
-#include <WinSock2.h>
+#include "x2/platform/net.h"
 #include "Performer.h"
 #include "Thread/Thread.h"
 #include "SocketObject.h"
@@ -19,7 +19,7 @@ public:
     void OnAcceptConnection();
     KSessionPtr GetSessionPtr();
 
-    boost::weak_ptr< KSession > m_pkSession;
+    std::weak_ptr< KSession > m_pkSession;
 };
 
 class KSession : public KPerformer, public KThread

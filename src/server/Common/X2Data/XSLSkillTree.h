@@ -897,7 +897,7 @@ public:
 
 		std::map< SKILL_ABILITY_TYPE, std::vector< float > >	m_mapSkillAbility;				// 스킬 단계별 SA 효과
 
-		const float GetSkillAbilityValue( IN CXSLSkillTree::SKILL_ABILITY_TYPE eType, IN int iSkillLevel ) const
+		float GetSkillAbilityValue( IN CXSLSkillTree::SKILL_ABILITY_TYPE eType, IN int iSkillLevel ) const
 		{
 			if( true == m_mapSkillAbility.empty() )
 				return 0.f;
@@ -958,7 +958,7 @@ public:
 		CXSLSkillTree();
 
 public:
-	~CXSLSkillTree();
+	virtual ~CXSLSkillTree();
 
 	bool OpenScriptFile( const char* pFileName );
 	void OpenScriptFilePostProcess();

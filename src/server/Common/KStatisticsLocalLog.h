@@ -2,6 +2,7 @@
 
 #include "Statistics.h"
 #include "Enum/Enum.h"
+#include <fstream>
 
 class KStatisticsLocalLog
 {

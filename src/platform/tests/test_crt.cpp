@@ -28,3 +28,27 @@ TEST_CASE("MSVC CRT subset")
     CHECK(_itow_s(255, buf, 16) == 0);
     CHECK(std::wstring(buf) == L"ff");
 }
+
+TEST_CASE("MSVC CRT: array overloads, dates and fopen_s")
+{
+    wchar_t buf[16];
+    CHECK(_snwprintf_s(buf, 16, L"%2.1f|%s", 2.5, L"x") > 0);
+    CHECK(std::wstring(buf) == L"2.5|x");
+    CHECK(wcsncpy_s(buf, L"abcdef", 3) == 0);
+    CHECK(std::wstring(buf) == L"abc");
+
+    wchar_t date[9], time[9];
+    CHECK(_wstrdate_s(date) == 0);
+    CHECK(_wstrtime_s(time) == 0);
+    CHECK(std::wstring(date).size() == 8);
+    CHECK(date[2] == L'/');
+    CHECK(time[2] == L':');
+
+    time_t t0 = 0;
+    struct tm t {};
+    CHECK(localtime_s(&t, &t0) == 0);
+
+    FILE* f = reinterpret_cast<FILE*>(1);
+    CHECK(fopen_s(&f, "this/does/not/exist", "rb") != 0);
+    CHECK(f == nullptr);
+}

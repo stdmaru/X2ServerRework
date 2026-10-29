@@ -9,6 +9,7 @@
 #include "Thread/Locker.h"
 
 #include <map>
+#include <ostream>
 #include <string>
 
 namespace dbg

@@ -93,7 +93,7 @@ public:
 
 public:
 	CXSLItemManager(void);
-	~CXSLItemManager(void);
+	virtual ~CXSLItemManager(void);
 
 	// for lua
 	bool AddItemTemplet_LUA();

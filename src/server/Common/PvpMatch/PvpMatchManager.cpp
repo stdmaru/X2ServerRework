@@ -203,6 +203,8 @@ bool KPvpMatchManager::AddPvpMapForNpcMatch_LUA( int iAddMapID )
 
 void KPvpMatchManager::AddPvpNpcInfo_LUA()
 {
+	int iUnitClass = {}; // declared before the gotos below (MSVC let them cross the initialization)
+	int iLevel = {}; // declared before the gotos below (MSVC let them cross the initialization)
     KLuaManager luaManager( GetLuaState() );
 
 	int iNpcID = 0;
@@ -211,11 +213,11 @@ void KPvpMatchManager::AddPvpNpcInfo_LUA()
 
 	LUA_GET_VALUE_RETURN_ENUM(	luaManager, L"m_PvpNpcType",		sPvpNpcInfo.m_ePvpNpcType,	SEnum::PVP_NPC_TYPE, 	SEnum::PNT_NONE, goto end_proc );
 
-	int iUnitClass = 0;
+	iUnitClass = 0;
 	LUA_GET_VALUE_RETURN(		luaManager, L"m_UnitClass",			iUnitClass,								0,	goto end_proc );
 	sPvpNpcInfo.m_cUnitClass = static_cast<char>(iUnitClass);
 
-	int iLevel = 0;
+	iLevel = 0;
 	LUA_GET_VALUE(				luaManager, L"m_Level",				iLevel,									0 );
 	sPvpNpcInfo.m_ucLevel = static_cast<u_char>(iLevel);
 
@@ -317,7 +319,7 @@ bool KPvpMatchManager::DecisionPvpMap( IN const bool bIsNpcPvpMode, IN const std
 		//////////////////////////////////////////////////////////////////////////
 		// 일반 대전맵에 대한 처리
 
-		BOOST_TEST_FOREACH( const int, iMapID, m_vecPvpMapInfo )
+		for( const int iMapID : m_vecPvpMapInfo )
 		{
 			// 유저들이 선택한 맵들은 제외한다!
 			if( mapSelectedMap.find( static_cast<short>(iMapID) ) != mapSelectedMap.end() )
@@ -460,7 +462,7 @@ bool KPvpMatchManager::DecisionNpcPvpMode( IN const std::vector< KRoomUserInfo >
 	std::map< UidType, int > mapTeamMemberRating;
 
 	// 팀 멤버의 Rating을 정리하자!
-	BOOST_TEST_FOREACH( const KRoomUserInfo&, kInfo, vecTeamMember )
+	for( const KRoomUserInfo& kInfo : vecTeamMember )
 	{
 		mapTeamMemberRating.insert( std::make_pair( kInfo.m_nUnitUID, kInfo.m_iRating ) );
 	}
@@ -490,7 +492,7 @@ bool KPvpMatchManager::DecisionNpcPvpMode( IN const std::vector< KRoomUserInfo >
 
 bool KPvpMatchManager::IsExistPvpNpcName( IN const std::wstring& wstrNickName ) const
 {
-	BOOST_TEST_FOREACH( const std::wstring&, wstrCharName, m_vecPvpNpcName )
+	for( const std::wstring& wstrCharName : m_vecPvpNpcName )
 	{
         if( wstrCharName == wstrNickName )
 			return true;
@@ -519,7 +521,7 @@ bool KPvpMatchManager::GetPvpNpcInfo( IN const bool bIsAllPlayersBeginner, IN co
 		kLotPvpNpc = m_kLotPvpNpc[SEnum::PNT_HERO_NPC];
 	}
 
-	BOOST_TEST_FOREACH( int, iPvpNpcID, kLotPvpNpc.m_vecCase )
+	for( int iPvpNpcID : kLotPvpNpc.m_vecCase )
 	{
 		// 실제 존재하는 녀석인지 체크!
 		const SPvpNpcInfo* pPvpNpcInfo = GetPvpNpcInfo( iPvpNpcID );

@@ -238,7 +238,7 @@ bool CXSLResolveItemManager::GetResultItem( IN const int iItemGrade,
 		mitRD = m_mapResolveData.find( iItemGrade );
 		if( mitRD != m_mapResolveData.end() )
 		{
-			BOOST_TEST_FOREACH( const SResolveData&, kResolveData, mitRD->second )
+			for( const SResolveData& kResolveData : mitRD->second )
 			{
 				if( iEqipLevel < kResolveData.m_iBeginLv  ||  iEqipLevel > kResolveData.m_iEndLv )
 					continue;
@@ -282,7 +282,7 @@ bool CXSLResolveItemManager::GetResultItem( IN const int iItemGrade,
 			int iResolveItemType = CXSLItem::IT_NONE;
 			int iWeaponMinUnitCost = 0;
 
-			BOOST_TEST_FOREACH( const BrokenPieceResolve&, kResolveData, m_vecBrokenPieceResolve[RRT_WEAPON_BROKEN_PIECE] )
+			for( const BrokenPieceResolve& kResolveData : m_vecBrokenPieceResolve[RRT_WEAPON_BROKEN_PIECE] )
 			{
 				if( iEqipLevel < kResolveData.m_iBeginLv  ||  iEqipLevel > kResolveData.m_iEndLv )
 					continue;
@@ -349,7 +349,7 @@ end_proc:
 //}}
 
 void CXSLResolveItemManager::ResolveResult_EnchantStone( IN const SResolveData& kResolveData,
-														 IN const int iEqipLevel,
+														 IN const int /*iEqipLevel*/,
 														 IN const bool bJackpot,
 														 IN OUT std::map< int, KItemInfo >& mapResultItem ) const
 {
@@ -413,7 +413,7 @@ void CXSLResolveItemManager::ResolveResult_BrokenPiece( IN RESOLVE_RESULT_TYPE e
 		return;
 	}
 
-	BOOST_TEST_FOREACH( const BrokenPieceResolve&, kResolveData, m_vecBrokenPieceResolve[eType] )
+	for( const BrokenPieceResolve& kResolveData : m_vecBrokenPieceResolve[eType] )
 	{
 		if( iEqipLevel < kResolveData.m_iBeginLv  ||  iEqipLevel > kResolveData.m_iEndLv )
 			continue;

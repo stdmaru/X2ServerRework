@@ -22,7 +22,7 @@ public:
 	virtual void Run(){}
 	virtual void ShutDown();
 
-	virtual void QueueingEventToRoom( const KEventPtr& spEvent ){}
-	virtual void QueueingToAll( int iRoomType, const KEventPtr& spEvent ){}
-	virtual void QueueingToAll( const KEventPtr& spEvent ){}
+	virtual void QueueingEventToRoom( const KEventPtr& /*spEvent*/ ){}
+	virtual void QueueingToAll( int /*iRoomType*/, const KEventPtr& /*spEvent*/ ){}
+	virtual void QueueingToAll( const KEventPtr& /*spEvent*/ ){}
 };

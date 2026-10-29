@@ -1,6 +1,7 @@
 #pragma once
 
-#include <atltime.h>
+#include "x2/platform/net.h"
+#include "x2/platform/win32.h"
 #include <Thread/Thread.h>
 
 class KAccepter : public KThread

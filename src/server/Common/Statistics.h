@@ -1,6 +1,6 @@
 #pragma once
 
-#include <boost/timer.hpp>
+#include "x2/platform/timer.h"
 #include <ToString.h>
 #include "KncSmartPtr.h"
 
@@ -442,13 +442,13 @@ protected:
 protected:
     int m_iStatisticsID;
     KStatisticsData m_kStatisticsData;
-    boost::timer m_kUpdateTimer;
+    x2::Timer m_kUpdateTimer;
     float m_fFlushGap;
     bool m_bWriteToDB;
 	//{{ 2011. 04. 13	최육사	아이템 통계 DB기록
 	bool m_bTimeFlush;
 	CTime m_tFlushTime;
-	boost::timer m_kTimeFlushTimer;
+	x2::Timer m_kTimeFlushTimer;
 	//}}
 
 	static const wchar_t* ms_szStatistics[];

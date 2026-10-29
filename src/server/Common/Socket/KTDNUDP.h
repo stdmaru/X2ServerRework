@@ -3,9 +3,9 @@
 
 
 #include "ServerDefine.h"
-#include <Winsock2.h>
-#include <windows.h>
-#include <boost/timer.hpp>
+#include "x2/platform/net.h"
+#include "x2/platform/win32.h"
+#include "x2/platform/timer.h"
 #include <Thread/Locker.h>
 
 #include <string>
@@ -22,10 +22,12 @@ using std::list;
 //#endif//SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
 
 #define ZLIB_WINAPI
-#include <Serializer/zlib/zlib.h>
+#include <zlib.h>
 
+#if defined(_MSC_VER)
 #pragma warning( push )
 #pragma warning( disable : 4200 )
+#endif
 
 #define KTDXPROFILE()
 #define KTDXPROFILE2(name)
@@ -136,8 +138,8 @@ public:
 	struct LB_INFO_STRUCT_CHECKER
 	{
 		__int64			m_iRoomUID;
-		//boost::timer	m_kTimer;
-        //boost::timer	m_kRepeatTimer;
+		//x2::Timer	m_kTimer;
+        //x2::Timer	m_kRepeatTimer;
         DWORD           m_dwTimerStamp;
 		DWORD           m_dwRepeatTimerStamp;
 		int				m_iHeartBeatUID;
@@ -162,8 +164,8 @@ public:
 	struct LB_INFO_STRUCT_VERIFY
 	{
 		__int64			m_iRoomUID;
-		//boost::timer	m_kTimer;
-        //boost::timer	m_kRepeatTimer;
+		//x2::Timer	m_kTimer;
+        //x2::Timer	m_kRepeatTimer;
         DWORD           m_dwTimerStamp;
         DWORD           m_dwRepeatTimerStamp;
 		int				m_iHeartBeatUID;
@@ -693,7 +695,7 @@ public:
 		KTDXPROFILE();
 
 //#ifdef  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
-        if( size < 0 || size > 0 && pBuffer == NULL )
+        if( size < 0 || ( size > 0 && pBuffer == NULL ) )
 //#else 	SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
 //        if( !pBuffer )
 //#endif	SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
@@ -770,8 +772,8 @@ public:
 //#else   SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
 //	__forceinline const WCHAR*	GetMyIP(){ return m_MyIP.c_str(); }
 //#endif  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
-	__forceinline const int		GetMyPort(){ return m_MyPort; }
-	__forceinline const int		GetMyExtPort(){ return m_MyExtPort; }
+	__forceinline int			GetMyPort(){ return m_MyPort; }
+	__forceinline int			GetMyExtPort(){ return m_MyExtPort; }
 	__forceinline void			SetMyExtPort( int extPort ){ m_MyExtPort = extPort; }
 
 //#ifndef  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
@@ -868,7 +870,7 @@ private:
     Peer*                       _AddPeer( __int64 UID, u_long ulIP, int port );
 
 //#ifdef  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
-    __forceinline bool			SendPure_Scattered( u_long ulIP, int port, WSABUF alpBuffers[], DWORD dwBuffCount );
+    bool						SendPure_Scattered( u_long ulIP, int port, WSABUF alpBuffers[], DWORD dwBuffCount ); // defined in KTDNUDP.cpp: cannot be inline
 //#else   SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
 //	__forceinline bool			SendPure( const WCHAR* pIP, int port, const char ID, const char* pBuffer, int size );
 //#endif  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
@@ -971,8 +973,8 @@ private:
 //	SOCKADDR_IN											m_DesAddr;
 //#endif  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
 
-	boost::timer										m_kTimer;
-	boost::timer										m_kCheckTimer;
+	x2::Timer										m_kTimer;
+	x2::Timer										m_kCheckTimer;
 	std::map< __int64, LB_INFO_STRUCT_CHECKER >			m_mapCheckInfo;
 	std::map< __int64, LB_INFO_STRUCT_VERIFY >			m_mapVerifyInfo;
 
@@ -1023,4 +1025,6 @@ private:
 //}}
 };
 
+#if defined(_MSC_VER)
 #pragma warning(pop)
+#endif

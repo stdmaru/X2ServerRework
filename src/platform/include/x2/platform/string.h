@@ -5,6 +5,7 @@
 #include <cstdarg>
 #include <string>
 #include <string_view>
+#include <type_traits>
 
 template <typename CharT>
 class CStringT
@@ -18,6 +19,10 @@ public:
     CStringT(CharT c, int count = 1) : m_str(static_cast<size_t>(count), c) {}
     CStringT(const string_type& s) : m_str(s) {}
     CStringT(string_type&& s) : m_str(std::move(s)) {}
+    // ATL converts between CStringA and CStringW (narrow strings are UTF-8 here)
+    using other_char = std::conditional_t<std::is_same_v<CharT, wchar_t>, char, wchar_t>;
+    CStringT(const other_char* s) : m_str(Convert(s)) {}
+    CStringT& operator=(const other_char* s) { m_str = Convert(s); return *this; }
 
     // only the ATL conversion; a second implicit one would make std::wstring(cstr) ambiguous
     operator const CharT*() const { return m_str.c_str(); }
@@ -82,6 +87,7 @@ public:
 
 private:
     static int ToIndex(size_t pos) { return pos == string_type::npos ? -1 : static_cast<int>(pos); }
+    static string_type Convert(const other_char* s);
 
     string_type m_str;
 };

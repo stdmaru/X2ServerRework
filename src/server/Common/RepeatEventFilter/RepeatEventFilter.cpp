@@ -16,7 +16,7 @@ bool KRepeatEventFilter::RegRepeatEvent( unsigned short usReqEventID, unsigned s
 {
 	++m_iRegCount; // 등록 시도 카운트
 
-	boost::shared_ptr< bool > spRepeatEvent( new bool );
+	std::shared_ptr< bool > spRepeatEvent( new bool );
 
 	if( spRepeatEvent.get() == NULL )
 		return false;
@@ -79,7 +79,7 @@ bool KRepeatEventFilterNew::RegRepeatEvent( unsigned short usReqEventID, unsigne
 {
 	++m_iRegCount; // 등록 시도 카운트
 
-	boost::shared_ptr< bool > spRepeatEvent( new bool );
+	std::shared_ptr< bool > spRepeatEvent( new bool );
 
 	if( spRepeatEvent.get() == NULL )
 		return false;
@@ -200,7 +200,7 @@ bool KRepeatEventCountFilter::RegRepeatEvent( unsigned short usReqEventID, unsig
 {
 	++m_iRegCount; // 등록 시도 카운트
 
-	boost::shared_ptr< KEventFilterInfo > spRepeatEvent( new KEventFilterInfo );
+	std::shared_ptr< KEventFilterInfo > spRepeatEvent( new KEventFilterInfo );
 
 	if( spRepeatEvent.get() == NULL )
 		return false;

@@ -56,7 +56,7 @@ public:
 
 
 public:
-	~CXSLBattleFieldManager();
+	virtual ~CXSLBattleFieldManager(); // polymorphic (ToString), deleted by the singleton
 	CXSLBattleFieldManager();
 
 	// for lua

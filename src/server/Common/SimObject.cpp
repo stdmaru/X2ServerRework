@@ -3,7 +3,7 @@
 #include <KncUtil.h>    // toWideString
 
 //#undef max
-#include <boost/random.hpp>
+#include <random>
 
 NiImplementRootRTTI( KSimObject );
 

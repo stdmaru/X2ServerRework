@@ -27,7 +27,7 @@ private:
 
 public:
 	KEventDelaySystemManager();
-	~KEventDelaySystemManager();
+	virtual ~KEventDelaySystemManager();
 
 	void Tick();
 
@@ -41,7 +41,7 @@ public:
 private:
 	std::deque< KOpenRandomCubeEvent >	m_deqOpenRandomCubeEvent;
 	std::set< UidType >					m_setRegUnitUID;
-	boost::timer						m_tTimer;
+	x2::Timer						m_tTimer;
 };
 
 DefSingletonInline( KEventDelaySystemManager );

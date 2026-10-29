@@ -3,7 +3,7 @@
 #include <ToString.h>
 #include <KNCSingleton.h>
 #include <Thread/Locker.h>
-#include <boost/timer.hpp>
+#include "x2/platform/timer.h"
 //#include "BaseServer.h"
 
 #define MAX_PROFILE_SAMPLE	256
@@ -49,7 +49,7 @@ class KProfiler
 
 public:
 	KProfiler(void);
-	~KProfiler(void);
+	virtual ~KProfiler(void);
 
 	void Init();
 
@@ -74,7 +74,7 @@ private:
 	PROFILE_SAMPLE			m_oSample[MAX_PROFILE_SAMPLE];
 	PROFILE_SAMPLE_HISTORY	m_oHistories[MAX_PROFILE_SAMPLE];
 
-	boost::timer			m_kDumpTimer;
+	x2::Timer			m_kDumpTimer;
 };
 
 DefSingletonInline( KProfiler );

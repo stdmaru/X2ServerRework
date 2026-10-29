@@ -1,5 +1,7 @@
 #pragma once
 
+#include "x2/platform/types.h"
+
 typedef __int64 UidType;
 
 /*    64 bit ( 8 byte )

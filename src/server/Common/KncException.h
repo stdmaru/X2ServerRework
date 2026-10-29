@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include <atltime.h>    // CString
+#include "x2/platform/win32.h"    // CString
 #include <Thread/Locker.h>  // KncCriticalSection
 
 #define _DeclareException  \
@@ -12,9 +12,9 @@ public: \
     static void DumpExceptionInfo( IN OUT std::wostream& stm )
 
 #define _ImplementException( classname ) \
-    std::vector<CString>    classname##::ms_vecExceptionInfo; \
-    KncCriticalSection      classname##::ms_csExceptionTime; \
-    void classname##::DumpExceptionInfo( IN OUT std::wostream& stm_ ) \
+    std::vector<CString>    classname::ms_vecExceptionInfo; \
+    KncCriticalSection      classname::ms_csExceptionTime; \
+    void classname::DumpExceptionInfo( IN OUT std::wostream& stm_ ) \
     { \
         KLocker lock( ms_csExceptionTime ); \
         stm_ << L"    " L ## #classname L" #Exception : " << ms_vecExceptionInfo.size() << std::endl; \

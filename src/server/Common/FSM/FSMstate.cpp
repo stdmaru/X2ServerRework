@@ -15,7 +15,6 @@
 //#include "stdafx.h"
 //#include "GameGems.h"
 // }} florist
-#pragma   warning( disable :4018 )
 #include "FSMstate.h"
 
 //#ifdef _DEBUG
@@ -35,7 +34,7 @@ void FSMstate::AddTransition( int iInput, int iOutputID )
 	// so find the first non-zero offset in m_piOutputState[]
 	// and use that offset to store the input and OutputID
 	// within the m_piInputs[] and m_piOutputState[]
-	int i=0;
+	unsigned int i=0; // compared with the unsigned m_usNumberOfTransistions
 	for( ; i<m_usNumberOfTransistions; ++i )
 	{
 		if( !m_piOutputState[i] )
@@ -64,7 +63,7 @@ int FSMstate::GetOutput( int iInput ) const
 	int iOutputID = m_iStateID;	// output state to be returned
 
 	// for each possible transistion
-	for( int i=0; i<m_usNumberOfTransistions; ++i )
+	for( unsigned int i=0; i<m_usNumberOfTransistions; ++i )
 	{
 		// zeroed output state IDs indicate the end of the array
 		if( !m_piOutputState[i] )
@@ -91,7 +90,7 @@ void FSMstate::DeleteTransition( int iOutputID )
 {
 	// the m_piInputs[] and m_piOutputState[] are not sorted
 	// so find the offset of the output state ID to remove
-	int i=0;
+	unsigned int i=0; // compared with the unsigned m_usNumberOfTransistions
 	for( ; i<m_usNumberOfTransistions; ++i )
 	{
 		if( m_piOutputState[i] == iOutputID )
@@ -141,7 +140,7 @@ FSMstate::FSMstate( int iStateID, unsigned usTransitions )
 	try
 	{
 		m_piInputs = new int[m_usNumberOfTransistions];
-		for( int i=0; i<m_usNumberOfTransistions; ++i )
+		for( unsigned int i=0; i<m_usNumberOfTransistions; ++i )
 			m_piInputs[i] = 0;
 	}
 	catch( ... )
@@ -152,7 +151,7 @@ FSMstate::FSMstate( int iStateID, unsigned usTransitions )
 	try
 	{
 		m_piOutputState = new int[m_usNumberOfTransistions];
-		for( int i=0; i<m_usNumberOfTransistions; ++i )
+		for( unsigned int i=0; i<m_usNumberOfTransistions; ++i )
 			m_piOutputState[i] = 0;
 	}
 	catch( ... )

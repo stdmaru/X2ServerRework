@@ -2643,7 +2643,7 @@ public:
 
 public:
 	CXSLUnitManager(void);
-	~CXSLUnitManager(void);
+	virtual ~CXSLUnitManager(void);
 
 	bool OpenScriptFile( const char* pFileName );
 	bool OpenNPCScriptFile( const char* pFileName );

@@ -6,14 +6,14 @@ ImplementRefreshSingleton( CXSLPartyManager );
 
 CXSLPartyManager::CXSLPartyManager(void) :
 //{{ 2012. 11. 12	최육사	배틀필드 시스템
+m_iActivateFeverPoint( 0 ),
 m_fBasePercent( 0.f ),
-m_fPartyFeverFactor( 0.f ),
 //}}
 //{{ 2012. 11. 16	최육사		헤니르 시공 비밀 스테이지 덤프
+m_fPartyFeverFactor( 0.f ),
 m_iEnterSuccessCount( 0 ),
-m_iEnterFailCount( 0 ),
 //}}
-m_iActivateFeverPoint( 0 )
+m_iEnterFailCount( 0 )
 {
 	//{{ 2012. 11. 16	최육사		헤니르 시공 비밀 스테이지 덤프
 	m_kHenirSecretEnterMinRate.m_fEnterSecretRate = 100.f;

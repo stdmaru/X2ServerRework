@@ -39,7 +39,7 @@ public:
 
 private:
 	CXSLFieldBossData( void );
-	~CXSLFieldBossData( void );
+	virtual ~CXSLFieldBossData( void );
 
 	template<typename T1, typename T2>	bool	_SetData( OUT T1& typeValue, IN const T2 typeMinValue, IN const T2 typeSetValue, IN const T2 typeMaxValue ) const;
 	void	_CheckData( void ) const;

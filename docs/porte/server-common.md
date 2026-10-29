@@ -51,7 +51,7 @@ Tamanho: ~99 mil linhas de `.cpp` sem os stubs gSOAP. Os maiores são os pacotes
 ## Plano do porte manual (um branch por passo)
 
 1. ~~**`platform/math`**~~: feito em 2026-10-29 (`x2/platform/d3dx_math.h`, ver [Plataforma](platform.md)).
-2. **`server/common-build`**: alvo CMake com todo o `Common`, menos `Socket/` e `ODBC/`, compilando em GCC/Clang.
+2. ~~**`server/common-build`**~~: feito em 2026-10-29 (ver Estado abaixo). Alvo CMake com todo o `Common`, menos `Socket/` e `ODBC/`, compilando em GCC/Clang.
    É a passada mecânica: includes de plataforma, `typename`/`template`, Boost → `std`, stubs das integrações removidas.
 3. **`server/common-packets`**: testes de serialização dos pacotes (`ClientPacket`/`CommonPacket`), que são a base da compatibilidade (T4).
 4. **`server/common-net`**: `Socket/` sobre Asio.
@@ -59,7 +59,61 @@ Tamanho: ~99 mil linhas de `.cpp` sem os stubs gSOAP. Os maiores são os pacotes
 
 Depois disso vem o ChannelServer (`server/channel`).
 
+## Estado (2026-10-29, branch `server/common-build`)
+
+O alvo `x2_server_common` (todo o `Common`, menos os `.cpp` de `Socket/`, `ODBC/`, `KStatisticsLocalLog.cpp` e `DEBBilling*`)
+**compila no Linux sem erros e sem warnings** (GCC 16 Debug/Release, Clang 23 Release). Os headers de `Socket/` e `ODBC/` já são lidos,
+porque o resto do `Common` os inclui. Ainda **não há testes** do `Common` (vêm no passo `server/common-packets`) e nada foi executado.
+No MinGW o `Common` fica de fora enquanto não houver LuaJIT para Windows (D5).
+
+Caminho: ~15.000 erros após a importação → ~4.000 (passada mecânica) → 2.291 no início da retomada → 0. Depois, 81 mil warnings
+(73 mil vinham de um só header) → 0. Ferramentas usadas: [Porte mecânico](../ferramentas/porte-mecanico.md).
+
+## Mudanças em relação ao original
+
+### Intencionais
+
+| Onde | Mudança | Motivo |
+|---|---|---|
+| `KAutoPath`, `KFolderTraverse`, estatísticas | `FindFirstFile`/`GetCurrentDirectory`/`CopyFile`... → `std::filesystem`. `KApplyAllFiles` passa `directory_entry` ao functor e não muda mais o diretório atual | Portável. A busca de scripts continua na mesma ordem (pasta atual, depois subpastas em profundidade, por nome) |
+| `KFolderTraverse` | O original pulava a primeira entrada de `FindFirstFile` (normalmente `.`); aqui nenhuma entrada é pulada | `std::filesystem` não lista `.`/`..` |
+| `BaseServer::LoadINIFile`, `KStringTable` | INI lido pelo leitor da plataforma em **todas** as plataformas, aceitando UTF-16, UTF-8 e **CP949** | Os `config_*.ini` de produção estão em CP949; a API do Windows usa a code page do sistema, que só é 949 num Windows coreano |
+| `XSLCheckSumManager` | CMarkup → TinyXml (já presente no `Common`); `XML/Markup.*` removidos. O `MessageBox` de checksum duplicado virou log de erro | Licença do CMarkup pede permissão para uso comercial; servidor não tem janela |
+| `BaseServer` | CrashRpt removido (instalação do handler e o callback que chamava `DumpUploader.exe`, só em Release) | Binário fechado, já excluído na importação |
+| `BaseServer::Run` | `lua_interpreter` agora vem do KNCSDK (prompt simples em stdin) | O original vinha de um `lua.c` modificado; o terminal da T15 vai substituí-lo |
+| `NetError` | As tabelas de mensagens (`szErrorStr*`) só existem em `NetError.cpp`; `GetErrStr*` devolvem `const wchar_t*` | Eram `static` no header, copiadas em todo `.cpp` (73 mil warnings). Todos os chamadores copiam para `std::wstring` |
+| `ActorManager::MultiQueueing*` | Parâmetro padrão `std::vector<UidType>& = std::vector<UidType>()` virou sobrecarga de um argumento | Extensão do MSVC. **Pendente:** `GameServer/UserManager.h` tem o mesmo padrão |
+| `ActorProxy`/`BaseServer` | `std::shared_ptr<void>` de evento → `shared_ptr<remove_pointer_t<HANDLE>>` | `HANDLE` não é `void*` fora do Windows |
+| gSOAP (`DEB/`) | `register` removido, `SOAP_NEW` sem parênteses; `stdsoap2.cpp`/`soapC.cpp`/`soapClient.cpp` compilam sem warnings (`-w`) | Código de terceiros/gerado (gSOAP 2.7.18); sai junto com o servidor DEB |
+| `LineMap` | Membro `LPDIRECT3DVERTEXBUFFER9` removido | Resto do cliente, nunca usado no servidor |
+
+### Bugs do original corrigidos
+
+| Onde | Bug | Correção |
+|---|---|---|
+| `KSwapPerformer` | Testes invertidos (`_JIF( !m_pEnqueueEvent, return )` saía com ponteiro válido e só seguia com ele nulo; o destrutor desreferenciava quando nulo) | Testes corrigidos. A classe não é usada por nenhum servidor |
+| `CXSLPetManager::*SpecialFeedIntimacyRate_LUA` | Validação `> 1 && < 0` nunca era verdadeira | `\|\|`. Os scripts atuais usam 0,0201 e 0,0501, então nada muda |
+| `XSLCharacterStatTable` | Comparava `UNIT_TYPE` com `UC_NONE` e `UNIT_CLASS` com `UT_NONE` | Enum certo (os dois valem 0: sem mudança) |
+| `XSLGuildManager` | `u_char < 0` | Removido (sempre falso) |
+| `SimObject`, `SerBuffer` etc. | Pequenos: `%d` com `__int64`, valores não inicializados | Ver diffs |
+
+### Portabilidade (sem mudança de comportamento)
+
+- `typename`/`template` que o MSVC dispensava, `goto` que cruzava inicializações (declarações subidas para o início da função), `enum` declarado
+  sem tipo (`enum ePerformerID : int`), `min`/`max` de macro → `std::`, `KClearString` com construtor de cópia explícito, destrutores
+  `virtual` nas classes polimórficas apagadas pelos singletons, listas de inicialização na ordem de declaração.
+- `KFtpWrapper` (reescrito como cliente FTP sobre sockets na passada anterior): o laço de envio podia não terminar quando um envio falhava. Corrigido.
+
 ## Pendências
 
-- Licença do `XML/Markup.cpp` (CMarkup 8.1): o cabeçalho pede permissão para uso comercial. Avaliar a troca por tinyxml2 (o `TinyXml/` já está no módulo).
-- `NetError_def_*.h` (DE/EN/ES/FR/IT/PL): textos de erro de outros idiomas; manter só o necessário para o US.
+- **Caminhos com `\\`** espalhados (`"Config\\US\\"`, `"Statistics\\..."`, `"C:\\StatisticsBackup\\"`): no Linux viram nomes de arquivo com barra invertida.
+  Precisa de uma regra (normalizar na abertura de arquivos da plataforma, ou trocar no código).
+- **Nomes de arquivo com maiúsculas/minúsculas**: o Windows não diferencia; os scripts podem ser referenciados com outra grafia. Verificar ao rodar o servidor.
+- `XSLCashItemManager::AddNotSellCashItemProductNo`: `!GetServerGroupID() != iServerGroupID` mantido como está; provavelmente era
+  `GetServerGroupID() != iServerGroupID`. Decidir com o usuário (muda quais itens aparecem na loja).
+- `KLottery` usa semente fixa (42) e gerador compartilhado sem lock (decidir com o usuário).
+- `KLogReporter::Send` registra falha de envio mas devolve `eLRError_OK` (mantido).
+- E-mail real do `MailManager` (hoje só log; libcurl?).
+- `NetError_def_*.h` de outros idiomas: o build US usa o **`NetError_def_BR.h`** (enum e textos);
+  os outros podem sair, mas a ordem do enum do BR é a que vai para o cliente, então ele fica.
+- LuaJIT para MinGW/Windows (D5), para o `Common` entrar no build MinGW.

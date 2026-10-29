@@ -31,7 +31,7 @@ public:
 
 public:
 	CXSLManufactureItemManager(void);
-	~CXSLManufactureItemManager(void);
+	virtual ~CXSLManufactureItemManager(void);
 
 	// for lua
 	bool AddManufactureTemplet_LUA();

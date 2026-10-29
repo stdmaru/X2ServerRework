@@ -1,6 +1,7 @@
 #pragma once
 #include <Thread/Thread.h>
-#include <atltime.h>
+#include "x2/platform/win32.h"
+#include "x2/platform/format.h"
 #include "ThreadManager.h"
 
 #include "Event.h"
@@ -87,8 +88,8 @@ protected:
 { \
 	std::wstring wstrQuery; \
 	try { \
-		wstrQuery = boost::str(boost::wformat( query L" " argtype ) arg ); \
-	} catch (const boost::io::format_error& e) { \
+		wstrQuery = x2::str(x2::wformat( query L" " argtype ) arg ); \
+	} catch (const std::exception& e) { \
 		START_LOG( cerr, e.what() ) \
 			<< BUILD_LOG( query L" " argtype ) \
 			<< END_LOG; \
@@ -125,8 +126,8 @@ protected:
 { \
 	std::wstring wstrQuery; \
 	try { \
-		wstrQuery = boost::str(boost::wformat( query L" " argtype ) arg ); \
-	} catch (const boost::io::format_error& e) { \
+		wstrQuery = x2::str(x2::wformat( query L" " argtype ) arg ); \
+	} catch (const std::exception& e) { \
 		START_LOG( cerr, e.what() ) \
 			<< BUILD_LOG( query L" " argtype ) \
 			<< END_LOG; \
@@ -143,7 +144,7 @@ protected:
 }
 
 #define DO_QUERY_DB_THREAD( dbID, query ) \
-	if( !DoQuery( dbID, boost::str(boost::wformat query).c_str() ) ) \
+	if( !DoQuery( dbID, x2::str(x2::wformat query).c_str() ) ) \
 	{ \
 		goto end_proc; \
 	}

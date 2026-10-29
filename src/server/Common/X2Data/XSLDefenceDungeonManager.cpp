@@ -8,8 +8,8 @@
 ImplementRefreshSingleton( CXSLDefenceDungeonManager );
 
 CXSLDefenceDungeonManager::CXSLDefenceDungeonManager(void) :
-m_iQuickSlotPotionItemID( 0 ),
-m_fNotOpenGateMultiplyValue( 0.f )
+m_fNotOpenGateMultiplyValue( 0.f ),
+m_iQuickSlotPotionItemID( 0 )
 {
 
 }
@@ -211,7 +211,7 @@ bool CXSLDefenceDungeonManager::InsertSocketOptionForDefenceDungeonItem( IN cons
 		return false;
 	}
 
-	BOOST_TEST_FOREACH( const int, iGroupID, mit->second.m_vecSocketOptionGroup )
+	for( const int iGroupID : mit->second.m_vecSocketOptionGroup )
 	{
 		int iSocketOptionID = 0;
 
@@ -248,7 +248,7 @@ bool CXSLDefenceDungeonManager::GetResultRandomSocketOption( IN const int iGroup
 	KLottery kLotSocketOption = mit->second;
 
 	// 이미 획득한 옵션은 제외하자!
-	BOOST_TEST_FOREACH( const int, iNotIncludeOptionID, vecNotIncludeOptionID )
+	for( const int iNotIncludeOptionID : vecNotIncludeOptionID )
 	{
         kLotSocketOption.DelProbability( iNotIncludeOptionID );
 	}
@@ -293,7 +293,7 @@ bool CXSLDefenceDungeonManager::GetResultSpecialCardByDefenceDungeonItem( IN con
 	}
 
 	// 스페셜카드를 얻을수 있는 소켓 옵션이 있는지 검사!
-	BOOST_TEST_FOREACH( const int, iSocketOptionID, vecSocketOption )
+	for( const int iSocketOptionID : vecSocketOption )
 	{
 		std::map< int, int >::const_iterator mitSO;
 		mitSO = mit->second.m_mapSpecialCard[iDefenceDungeonPhase].find( iSocketOptionID );
@@ -373,7 +373,7 @@ float CXSLDefenceDungeonManager::GetEnterDefenceDungeonRate( IN const int iDunge
 		const int iUnitLevel = mit->second;
 
 		// 조건을 돌면서 포함되는 레벨이 있다면 해당 확률을 합산한다!
-		BOOST_TEST_FOREACH( const SEnterLevelConditionInfo&, kConditionInfo, m_vecEnterLevelCondition )
+		for( const SEnterLevelConditionInfo& kConditionInfo : m_vecEnterLevelCondition )
 		{
 			const int iLevelGap = ::abs( iDungeonNpcLevel - iUnitLevel );
 

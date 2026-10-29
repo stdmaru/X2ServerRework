@@ -1,4 +1,5 @@
 #pragma once
+#include "x2/platform/net.h"
 #include <Thread/Thread.h>
 #include <queue>
 

@@ -2,7 +2,7 @@
 
 #include "Performer.h"
 #include <Thread/Thread.h>
-#include <atltime.h> // CTime
+#include "x2/platform/win32.h" // CTime
 #include <dbg/dbg.hpp>
 
 class KThreadManager : public KPerformer
@@ -56,7 +56,7 @@ public:
     }
 
     // derived from KPerformer
-    virtual void ProcessEvent( const KEventPtr& spEvent ) {}
+    virtual void ProcessEvent( const KEventPtr& /*spEvent*/ ) {}
 
 protected:
     // 060113. florist. Factory Method 패턴을 활용한 객체 생성. 이를 위해 생성할 객체마다
@@ -67,7 +67,7 @@ protected:
 
     bool                                m_bTerminateReserved;
     size_t                              m_nTerminateCount;  // 종료된 스레드 갯수를 센다.
-    std::vector< boost::shared_ptr<KThread> >   m_vecThread;
+    std::vector< std::shared_ptr<KThread> >   m_vecThread;
     mutable KncCriticalSection                  m_csVecThread;
 
     struct KMaxProcessingInfo {  // 처리시간이 가장 오래 걸린 이벤트에 대한 정보를 기억.

@@ -68,6 +68,7 @@ O código original está em CP949. Para ler: `iconv -f cp949 -t utf-8 -c <arquiv
 ## Código
 
 - Código novo e comentários em inglês. Docs e mensagens de commit em português.
+  Comentários em coreano do original são traduzidos para inglês ao mexer no trecho (ou ao copiá-los). Comente quando ajudar de verdade.
 - Siga o estilo do código ao redor. Na limpeza, prefira a biblioteca padrão C++20 a Boost ou Win32.
 - Toda mudança de comportamento em relação ao original precisa ser intencional e registrada na página do módulo em `docs/porte/`.
 

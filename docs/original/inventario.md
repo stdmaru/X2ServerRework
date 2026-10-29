@@ -69,3 +69,17 @@ Ações:
 - `_reference/X2Server` passou a apontar para um clone do GitHub, no mesmo commit, com `git fsck` limpo e os 90 arquivos conferidos.
 - O importador agora confere o hash git de **todo** arquivo que lê ([Importador](../ferramentas/importador.md)).
 - **Recomendação**: checar o HDD (SMART). Arquivos que só existem nele, fora do git, podem estar corrompidos também.
+
+## Outras referências (2026-10-29)
+
+Também em `_reference/` (somente leitura, fora do git):
+
+| Pasta | O que é |
+|---|---|
+| `_original-server/` | Servidor compilado como roda hoje: `.exe`, `config_*.ini` (CP949), `.dsn` e os scripts `.lua` (UTF-8 com BOM) que ele carrega |
+| `AuthServer/` | Fonte do servidor SOAP de autenticação/cobrança do DEB (`_DEB_AUTH`), feito pelo dono do projeto. Usado por enquanto; deve sair numa fase futura |
+
+E em `_tools/kom/`: ferramenta para extrair os `.kom` do cliente (`_client/`), útil para inspecionar scripts e assets.
+
+`_reference/X2Server` (o link usado pelo importador, `tools/import/x2import/pipeline.py`) não existia em 2026-10-29; o clone está em `_reference/X2Server-github`.
+

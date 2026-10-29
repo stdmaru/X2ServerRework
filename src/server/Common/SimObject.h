@@ -1,11 +1,12 @@
 #pragma once
 
+#include "x2/platform/noncopyable.h"
+
 #include <RTTI.h>
 #include <ToString.h>
 #include <vector>
 #include <string>
-#include <boost/enable_shared_from_this.hpp>
-#include <boost/noncopyable.hpp>
+#include <memory>
 
 #include "KncUidType.h"
 
@@ -15,7 +16,7 @@
 #pragma pack( push, 1 )
 
 /// ToString, RTTI, RefCount, Name
-class KSimObject : public boost::enable_shared_from_this<KSimObject>, public boost::noncopyable
+class KSimObject : public std::enable_shared_from_this<KSimObject>, public x2::NonCopyable
 {
     NiDeclareRootRTTI( KSimObject );
     DeclToStringW;
@@ -33,14 +34,14 @@ public:
 
     int GetRefCount() const;
 
-    template <class T> void GetThisPtr( OUT boost::shared_ptr<T>& spPtr ) // output parameter로 포인터 받음
+    template <class T> void GetThisPtr( OUT std::shared_ptr<T>& spPtr ) // output parameter로 포인터 받음
     {
-        spPtr = boost::static_pointer_cast<T>( shared_from_this() );
+        spPtr = std::static_pointer_cast<T>( shared_from_this() );
     }
 
-    template <class T> boost::shared_ptr<T> GetThisPtr()  // function return으로 포인터 받음
+    template <class T> std::shared_ptr<T> GetThisPtr()  // function return으로 포인터 받음
     {
-        return boost::static_pointer_cast<T>( shared_from_this() );
+        return std::static_pointer_cast<T>( shared_from_this() );
     }
 
 protected:

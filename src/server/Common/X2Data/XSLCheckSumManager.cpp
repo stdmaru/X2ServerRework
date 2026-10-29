@@ -1,6 +1,8 @@
 #include "./XSLCheckSumManager.h"
 
-#include "../XML/Markup.h"
+#include "../TinyXml/tinyxml.h"
+#include <dbg/dbg.hpp>
+#include <cwctype>
 
 ImplementSingleton( CXSLCheckSumManager );
 
@@ -14,53 +16,50 @@ CXSLCheckSumManager::~CXSLCheckSumManager(void)
 
 }
 
+// <PatchInfo><File><Item Name="..." CheckSum="..."/>...</File></PatchInfo>
+// Port: read with TinyXml (already in Common) instead of CMarkup, whose license asks for permission for
+// commercial use; the duplicate-file MessageBox became an error log.
 bool CXSLCheckSumManager::OpenScriptFile( const WCHAR* pFileName )
 {
-	CMarkup xml;
-	if ( xml.Load( pFileName ) == false )
+	TiXmlDocument xml;
+	if ( xml.LoadFile( x2::platform::WideToUtf8( pFileName ).c_str() ) == false )
 		return false;
 
 	m_bLoadCheckSumFile = true;
 
-	xml.FindElem( L"PatchInfo" );
+	const TiXmlElement* pPatchInfo = xml.FirstChildElement( "PatchInfo" );
+	const TiXmlElement* pFile = pPatchInfo ? pPatchInfo->FirstChildElement( "File" ) : NULL;
+	if( pFile == NULL )
+		return true;
 
-	if( xml.FindChildElem( L"File" ) )
+	for( const TiXmlElement* pItem = pFile->FirstChildElement( "Item" ); pItem != NULL; pItem = pItem->NextSiblingElement( "Item" ) )
 	{
-		xml.IntoElem();
+		const char* szName = pItem->Attribute( "Name" );
+		const char* szCheckSum = pItem->Attribute( "CheckSum" );
+		std::wstring fileFullName = x2::platform::Utf8ToWide( szName ? szName : "" );
+		std::wstring fileName;
 
-		while( xml.FindChildElem( L"Item" ) )
+		const size_t tempStringIndex = fileFullName.rfind( L"\\" );
+		if ( tempStringIndex == std::wstring::npos )
 		{
-			xml.IntoElem();
-
-			std::wstring fileFullName = xml.GetAttrib( L"Name" );
-			std::wstring fileName;
-
-			int tempStringIndex = fileFullName.rfind( L"\\" );
-			if ( tempStringIndex == -1 )
-			{
-				fileName = fileFullName;
-			}
-			else
-			{
-				fileName = fileFullName.substr( tempStringIndex + 1 );
-			}
-
-			//m_mapCheckSum.insert( make_pair( fileName, xml.GetAttrib( L"CheckSum" ) ) );
-
-			std::wstring checkSum = xml.GetAttrib( L"CheckSum" );
-
-			for( std::wstring::iterator i = fileName.begin(); i != fileName.end(); i++ )
-				*i = (WCHAR)towupper(*i);
-
-			if ( AddCheckSum( fileName.c_str(), checkSum.c_str() ) == false )
-			{
-				MessageBox( NULL, fileName.c_str(), L"중복된 체크섬 파일 발견", MB_OK );
-			}
-
-			xml.OutOfElem();
+			fileName = fileFullName;
+		}
+		else
+		{
+			fileName = fileFullName.substr( tempStringIndex + 1 );
 		}
 
-		xml.OutOfElem();
+		const std::wstring checkSum = x2::platform::Utf8ToWide( szCheckSum ? szCheckSum : "" );
+
+		for( std::wstring::iterator i = fileName.begin(); i != fileName.end(); i++ )
+			*i = (WCHAR)std::towupper(*i);
+
+		if ( AddCheckSum( fileName.c_str(), checkSum.c_str() ) == false )
+		{
+			START_LOG( cerr, L"Duplicate checksum file found" )
+				<< BUILD_LOG( fileName )
+				<< END_LOG;
+		}
 	}
 
 	return true;

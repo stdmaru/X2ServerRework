@@ -86,7 +86,6 @@ bool CXSLPetManager::AddPetTemplet_LUA()
 
 	PetTemplet petData;
 
-	int iTemp = 0;
 	LUA_GET_VALUE_RETURN_ENUM(	luaManager, L"PET_ID",					petData.m_PetId,		PET_UNIT_ID,	PUI_NONE,	goto end_proc );
 	LUA_GET_VALUE_RETURN(		luaManager, L"COMMON_NAME",				petData.m_wstrCommonName,		L"",	goto end_proc );
 
@@ -362,7 +361,7 @@ CXSLPetManager::PET_UNIT_ID CXSLPetManager::GetTransformPetID( IN const int iUse
 
 		KLottery kLot;
 
-		BOOST_TEST_FOREACH( const int, iCase, vecCaseList )
+		for( const int iCase : vecCaseList )
 		{
 			if( iCase == kTransform.m_PetId )
 			{
@@ -831,7 +830,7 @@ bool CXSLPetManager::GetAuraSkillOption( IN PET_UNIT_ID ePetID, IN char cEvoluti
 				pPetTemplet->m_vecAuraSkillOption[CXSLPetManager::ASE_OPTION_3].begin(),
 				pPetTemplet->m_vecAuraSkillOption[CXSLPetManager::ASE_OPTION_3].end() );
 		}
-		// break하지 않고 다음 진화 단계로 내려갑니다!
+		[[fallthrough]]; // no break: on to the next evolution step
 
 	case 2:
 		{
@@ -839,7 +838,7 @@ bool CXSLPetManager::GetAuraSkillOption( IN PET_UNIT_ID ePetID, IN char cEvoluti
 				pPetTemplet->m_vecAuraSkillOption[CXSLPetManager::ASE_OPTION_2].begin(),
 				pPetTemplet->m_vecAuraSkillOption[CXSLPetManager::ASE_OPTION_2].end() );
 		}
-		// break하지 않고 다음 진화 단계로 내려갑니다!
+		[[fallthrough]]; // no break: on to the next evolution step
 
 	case 1:
 		{
@@ -950,6 +949,8 @@ bool CXSLPetManager::IsUnconditionalCommand( IN PET_ACTION_COMMAND eCommand )
 	case PAC_SLEEP_END:
 	case PAC_FORCE_SLEEP:
 		return true;
+	default:
+		break;
 	}
 
 	return false;
@@ -1040,7 +1041,7 @@ int CXSLPetManager::CalcChangeIntimacyValue( IN CXSLRoom::ROOM_TYPE eRoomType, I
 //{{ 2011. 05. 23  김민성	큐피엘 젤리 친밀도 증감
 void CXSLPetManager::IncreaseSpecialFeedIntimacyRate_LUA( IN float fIncreaseRate )
 {
-	if( fIncreaseRate > 1.0f && fIncreaseRate < 0.0f )
+	if( fIncreaseRate > 1.0f || fIncreaseRate < 0.0f ) // the original used && (never true)
 	{
 		START_LOG( cerr, L"특별한 펫 먹이 친밀도 증가 수치가 이상합니다" )
 			<< BUILD_LOG( fIncreaseRate )
@@ -1054,7 +1055,7 @@ void CXSLPetManager::IncreaseSpecialFeedIntimacyRate_LUA( IN float fIncreaseRate
 
 void CXSLPetManager::DecreaseSpecialFeedIntimacyRate_LUA( IN float fDecreaseRate )
 {
-	if( fDecreaseRate > 1.0f && fDecreaseRate < 0.0f )
+	if( fDecreaseRate > 1.0f || fDecreaseRate < 0.0f ) // the original used && (never true)
 	{
 		START_LOG( cerr, L"특별한 펫 먹이 친밀도 감소 수치가 이상합니다" )
 			<< BUILD_LOG( fDecreaseRate )

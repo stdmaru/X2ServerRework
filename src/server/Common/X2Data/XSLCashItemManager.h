@@ -69,7 +69,7 @@ public:
 	//}}
 public:
 	CXSLCashItemManager(void);
-	~CXSLCashItemManager(void);
+	virtual ~CXSLCashItemManager(void); // polymorphic (ToString), deleted by the singleton
 
 	bool OpenScriptFile( const char* pFileName );
 	bool AddPackageItemData_LUA( int iPackageItemID, int iItemID, unsigned short usProductPieces, bool bShowItem );

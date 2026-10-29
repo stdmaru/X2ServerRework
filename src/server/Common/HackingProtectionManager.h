@@ -16,7 +16,7 @@ class KHackingProtectionManager
 
 public:
 	KHackingProtectionManager();
-	~KHackingProtectionManager();
+	virtual ~KHackingProtectionManager();
 
 	void Tick();
 
@@ -32,7 +32,7 @@ public:
 private:
 	int											m_iReleaseTick;
 	std::vector< KHackingToolInfo >				m_vecHackingToolList;
-	boost::timer								m_tRefreshTimer;
+	x2::Timer								m_tRefreshTimer;
 };
 
 DefSingletonInline( KHackingProtectionManager );

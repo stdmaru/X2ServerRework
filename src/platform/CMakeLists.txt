@@ -4,8 +4,10 @@ add_library(x2_platform STATIC
     src/crt_posix.cpp
     src/d3dx_math.cpp
     src/debug.cpp
+    src/ini.cpp
     src/string.cpp
     src/sync_posix.cpp
+    src/text.cpp
     src/time.cpp
     src/unicode.cpp)
 add_library(x2::platform ALIAS x2_platform)

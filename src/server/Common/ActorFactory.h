@@ -1,16 +1,19 @@
 #pragma once
 
+#include "x2/platform/noncopyable.h"
+#include <dbg/dbg.hpp>
+
 #include "FSM/FSMclass.h"
-#include <boost/utility.hpp>
+#include "Actor.h" // CreateActor() uses KActor
 
 SmartPointer( IActorFactory );
 
 // 단순히 KActorFactory의 인터페이스 역할만을 한다. 동적생성을 위한 포인터를 선언할 때 쓰인다.
 class KActor;
-class IActorFactory : public boost::noncopyable
+class IActorFactory : public x2::NonCopyable
 {
 public:
-    virtual boost::shared_ptr<KActor> CreateActor() = 0;
+    virtual std::shared_ptr<KActor> CreateActor() = 0;
 };
 
 template < class ActorType, class FSMType, int nSendQueueSize = 0 >
@@ -20,9 +23,9 @@ public:
     KActorFactory() : m_spFSM( new FSMType ) {}
     virtual ~KActorFactory(void) {}
 
-    virtual boost::shared_ptr<KActor> CreateActor()
+    virtual std::shared_ptr<KActor> CreateActor()
     {
-        boost::shared_ptr<KActor> spActor( new ActorType );
+        std::shared_ptr<KActor> spActor( new ActorType );
         if( spActor )
         {
             spActor->Init( true );

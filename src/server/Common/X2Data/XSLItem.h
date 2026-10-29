@@ -1170,7 +1170,7 @@ class CXSLItem
 		//{{ 2012. 02. 22	박세훈	펫 이름 변경권
 		static	bool	IsPetNameChangeCashItem( const int iItemID ) { return iItemID == CXSLItem::CI_PET_NAME_CHANGE; }
 		//}}
-		static const bool	IsPossibleCart( const int iItemID_ );
+		static bool	IsPossibleCart( const int iItemID_ );
 
 
 	private:

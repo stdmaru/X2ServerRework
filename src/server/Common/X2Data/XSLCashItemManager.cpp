@@ -59,7 +59,7 @@ bool CXSLCashItemManager::OpenScriptFile( const char* pFileName )
 	return true;
 }
 
-bool CXSLCashItemManager::AddPackageItemData_LUA( int iPackageItemID, int iItemID, unsigned short usProductPieces, bool bShowItem )
+bool CXSLCashItemManager::AddPackageItemData_LUA( int iPackageItemID, int iItemID, unsigned short usProductPieces, bool /*bShowItem*/ )
 {
 	if( iPackageItemID <= 0 || iItemID <= 0 )
 	{
@@ -283,9 +283,11 @@ bool CXSLCashItemManager::AddCashItemProductNoData_LUA( int iServerGroupID, unsi
 
 		return false;
 	}
-	// CashItemData.lua 파일 참고 - 해당 서버에 캐쉬샵 표기되지 않도록
-	// m_setCashItemProductNoData 에 있는 item은 캐쉬샵에 나오면 안된다.
-	if( !KBaseServer::GetKObj()->GetServerGroupID() != iServerGroupID )
+	// See CashItemData.lua: keeps the item out of the cash shop of that server.
+	// Items in m_setCashItemProductNoData must not show up in the cash shop.
+	// Port: `!GetServerGroupID() != iServerGroupID` is kept as written (the `!` applies to the group ID only),
+	// although `GetServerGroupID() != iServerGroupID` was probably meant. See docs/porte/server-common.md.
+	if( ( !KBaseServer::GetKObj()->GetServerGroupID() ) != iServerGroupID )
 		return true;
 
 	m_setNotSellCashItemProductNo.insert( ulProductNo );
@@ -307,7 +309,7 @@ bool CXSLCashItemManager::GetPackageData( int iPackageItemID, std::vector< Packa
 }
 
 //{{ 2008. 5. 15  최육사  판매중인 상품인지 검사 ItemID
-void CXSLCashItemManager::UpdateProductList( std::vector< int >& vecProductItemID, std::vector< KCashItemResolveInfo >& vecCashResolveInfo, unsigned long ulProductNoResStone )
+void CXSLCashItemManager::UpdateProductList( std::vector< int >& vecProductItemID, std::vector< KCashItemResolveInfo >& /*vecCashResolveInfo*/, unsigned long ulProductNoResStone )
 {
 	m_setProductItemID.clear();
 	m_mapCashItemPrice.clear();

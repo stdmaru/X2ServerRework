@@ -10,14 +10,11 @@
 #include "KAutoPath.h"
 #include <ToString.h>
 
-/************************************************************************/
-/* 2010-01-15 : 최육사
-/* Refresh Singleton MACRO
-/* 내용 : 두개의 instance를 가진 싱글톤 패턴
-/* 1. Real Instance와 Temp Instance를 가지고 있다.
-/* 2. Temp Instance 포인터는 동기화 처리 되어있다.
-/* 3. Swap Instance를 호출하여 두개의 Instance를 교환할 수 있다.
-/************************************************************************/
+// 2010-01-15
+// Refresh Singleton macro: a singleton with two instances.
+// 1. It holds a Real Instance and a Temp Instance.
+// 2. The Temp Instance pointer is synchronized.
+// 3. SwapInstance exchanges the two instances.
 
 //////////////////////////////////////////////////////////////////////////
 // 적용하려는 class의 namespace안에 정의한다.
@@ -36,8 +33,8 @@
 //////////////////////////////////////////////////////////////////////////
 // 외부에서 참조하기 위한 인터페이스
 #define DefRefreshSingletonInline( classname ) \
-	inline classname* Si##classname##()		{ return classname::GetRealInstance(); } \
-	inline classname* SiTemp##classname##()	{ return classname::GetTempInstance(); }
+	inline classname* Si##classname()		{ return classname::GetRealInstance(); } \
+	inline classname* SiTemp##classname()	{ return classname::GetTempInstance(); }
 
 //////////////////////////////////////////////////////////////////////////
 // refresh singleton 구현부

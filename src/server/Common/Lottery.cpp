@@ -115,15 +115,14 @@ bool KLottery::AddCaseIntegerCast( int nCaseID, double dProbability, int nParam1
 	return true;
 }
 
-#include <boost/random.hpp>
-static boost::minstd_rand generator(42u);
+#include <random>
+static std::minstd_rand generator(42u);
 
 int KLottery::Decision( double& dCheckRoulette ) const
 {
-	static boost::uniform_real<> uni_dist(0,100);
-	static boost::variate_generator<boost::minstd_rand&, boost::uniform_real<> > uni(generator, uni_dist);
+	static std::uniform_real_distribution<> uni_dist(0,100);
 
-    double dRoulette = (double)uni();
+    double dRoulette = (double)uni_dist( generator );
 
 	//{{ 2008. 5. 23  최육사  어뷰저 체크
 	dCheckRoulette = dRoulette;
@@ -154,7 +153,7 @@ void KLottery::Seed( const int iSeed )
 	generator.seed( iSeed );
 }
 
-#include <boost/format.hpp>
+#include "x2/platform/format.h"
 
 ImplToStringW( KLottery )
 {
@@ -162,7 +161,7 @@ ImplToStringW( KLottery )
     std::map<int,KCaseUnit>::const_iterator mit;
     for( mit = m_mapCase.begin(); mit != m_mapCase.end(); mit++ )
     {
-        stm_ << boost::wformat( L"%2.2f ~ %2.2f (%2.2f%%) : %d (param1:%d, param2:%d) \n" )
+        stm_ << x2::wformat( L"%2.2f ~ %2.2f (%2.2f%%) : %d (param1:%d, param2:%d) \n" )
             % dAccumulate
             % (double)(dAccumulate + mit->second.m_dProb)
             % (double)(mit->second.m_dProb)
@@ -173,7 +172,7 @@ ImplToStringW( KLottery )
         dAccumulate += mit->second.m_dProb;
     }
 
-    stm_ << boost::wformat( L"%2.2f ~ 100 (%2.2f%%) : -1 \n" )
+    stm_ << x2::wformat( L"%2.2f ~ 100 (%2.2f%%) : -1 \n" )
         % dAccumulate
         % (100.F - dAccumulate);
 
@@ -269,7 +268,6 @@ bool KLottery::MakeHundredProbabillty()
 	_JIF( GetCaseNum() > 0, return false );
 
 	const double dRemainProb = 100.0f - m_dTotalProb;
-	const double dRemainProbByCase = dRemainProb / (double)GetCaseNum();
 
 	return AddProbability( dRemainProb );
 }
@@ -281,8 +279,6 @@ bool KLottery::MakeHundredProbabillty()
 bool KLottery::AddMultiProbRate( double dRate )
 {
 	_JIF( dRate > 0.0f, return false );
-
-	double dTempTotalProb = m_dTotalProb;
 
 	// 증가된 전체 확률이 100을 넘으면 fRate를 낮춰 보자
 	if( m_dTotalProb * dRate > 100.0f )
@@ -367,10 +363,9 @@ int KLottery::GetDuplicateParam2( int nCaseID, int iPeriod, int iQuantity  ) con
 
 KLottery::KDuplicateCaseResult KLottery::DuplicateDecision( double& dCheckRoulette ) const
 {
-	static boost::uniform_real<> uni_dist(0,100);
-	static boost::variate_generator<boost::minstd_rand&, boost::uniform_real<> > uni(generator, uni_dist);
+	static std::uniform_real_distribution<> uni_dist(0,100);
 
-	double dRoulette = (double)uni();
+	double dRoulette = (double)uni_dist( generator );
 
 	//{{ 2008. 5. 23  최육사  어뷰저 체크
 	dCheckRoulette = dRoulette;

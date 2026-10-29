@@ -5,6 +5,8 @@
 // DWORD/LONG/ULONG are 32-bit even though `long` is 64-bit on Linux x64.
 #pragma once
 
+#include <cfloat>
+#include <climits>
 #include <cstddef>
 #include <cstdint>
 
@@ -50,6 +52,48 @@ typedef DWORD*         LPDWORD;
 typedef BYTE*          LPBYTE;
 
 #define __int64 long long
+#define __int32 int
+#define __int16 short
+#define __int8  char
+
+// basetsd.h fixed-width names
+typedef std::int8_t    INT8;
+typedef std::int16_t   INT16;
+typedef std::int32_t   INT32, LONG32;
+typedef std::uint8_t   UINT8;
+typedef std::uint16_t  UINT16;
+typedef std::uint32_t  UINT32, ULONG32, DWORD32;
+typedef long long      __time64_t;
+typedef std::int32_t   __time32_t;
+typedef unsigned char  byte; // rpcndr.h (also typedef'd by KncSecurity)
+
+typedef DWORD*         PDWORD;
+typedef BYTE*          PBYTE;
+typedef WORD*          PWORD, *LPWORD;
+typedef LONG*          PLONG, *LPLONG;
+typedef UINT*          PUINT;
+typedef BOOL*          PBOOL, *LPBOOL;
+
+// COM result codes
+typedef LONG HRESULT;
+#define S_OK          static_cast<HRESULT>(0x00000000L)
+#define S_FALSE       static_cast<HRESULT>(0x00000001L)
+#define E_FAIL        static_cast<HRESULT>(0x80004005L)
+#define E_INVALIDARG  static_cast<HRESULT>(0x80070057L)
+#define E_OUTOFMEMORY static_cast<HRESULT>(0x8007000EL)
+#define E_NOTIMPL     static_cast<HRESULT>(0x80004001L)
+#define SUCCEEDED(hr) (static_cast<HRESULT>(hr) >= 0)
+#define FAILED(hr)    (static_cast<HRESULT>(hr) < 0)
+
+// window handles appear in signatures of server code (no windows exist here)
+struct HWND__;
+typedef HWND__* HWND;
+struct HINSTANCE__;
+typedef HINSTANCE__* HINSTANCE, *HMODULE;
+#define HWND_DESKTOP (static_cast<HWND>(nullptr))
+inline BOOL IsWindow(HWND) { return 0; } // no windows exist here
+
+#define __forceinline inline __attribute__((always_inline))
 
 #ifndef TRUE
 #define TRUE  1

@@ -1,5 +1,5 @@
 #pragma once
-#include <boost/timer.hpp>
+#include "x2/platform/timer.h"
 
 
 //{{ 2013. 02. 	최육사	Tick퍼포먼스 DB로그 기록
@@ -20,7 +20,7 @@ private:
 	DWORD				m_dwSimLayerTick;
 	DWORD				m_dwMaxTick;
 	CTime				m_tRegTime;
-	boost::timer		m_tTimer;
+	x2::Timer		m_tTimer;
 };
 
 

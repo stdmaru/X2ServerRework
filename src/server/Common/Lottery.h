@@ -3,6 +3,7 @@
 #include <map>
 #include <ToString.h>
 #include <KncUtil.h>    // IN OUT
+#include <dbg/dbg.hpp> // _JIF
 
 //#ifdef SERV_DOUBLE_LOTTERY
 class KLottery
@@ -119,7 +120,7 @@ public:
 
 	bool IsExist( const T CaseID ) const
 	{
-		std::vector< T >::const_iterator vit;
+		typename std::vector< T >::const_iterator vit;
 		for( vit = m_vecCase.begin(); vit != m_vecCase.end(); ++vit )
 		{
 			if( (*vit) == CaseID )
@@ -159,7 +160,7 @@ public:
 
 	bool Erase( const T CaseID )
 	{
-		std::vector< T >::iterator vit;
+		typename std::vector< T >::iterator vit;
 		for( vit = m_vecCase.begin(); vit != m_vecCase.end(); ++vit )
 		{
 			if( (*vit) == CaseID )
@@ -179,7 +180,7 @@ public:
 //#ifdef SERV_2012_PVP_SEASON2
 	void	EraseAll( const T CaseID )
 	{
-		std::vector< T >::iterator it = m_vecCase.begin();
+		typename std::vector< T >::iterator it = m_vecCase.begin();
 		while( it != m_vecCase.end() )
 		{
 			if( *it == CaseID )

@@ -125,6 +125,83 @@ errno_t _itow_s(int v, wchar_t* d, size_t s, int r) { return ToString(v, d, s, r
 errno_t _i64tow_s(long long v, wchar_t* d, size_t s, int r) { return ToString(v, d, s, r); }
 errno_t _itoa_s(int v, char* d, size_t s, int r) { return ToString(v, d, s, r); }
 
+int WideCharToMultiByte(UINT, DWORD, const wchar_t* src, int cchSrc, char* dst, int cbDst, const char*, BOOL* usedDefault)
+{
+    if (usedDefault)
+        *usedDefault = FALSE;
+    if (!src)
+        return 0;
+    const size_t len = cchSrc < 0 ? std::wcslen(src) + 1 : static_cast<size_t>(cchSrc);
+    const std::string out = x2::platform::WideToUtf8(std::wstring_view(src, len));
+    if (cbDst == 0)
+        return static_cast<int>(out.size());
+    if (!dst || out.size() > static_cast<size_t>(cbDst))
+        return 0;
+    std::memcpy(dst, out.data(), out.size());
+    return static_cast<int>(out.size());
+}
+
+int MultiByteToWideChar(UINT, DWORD, const char* src, int cbSrc, wchar_t* dst, int cchDst)
+{
+    if (!src)
+        return 0;
+    const size_t len = cbSrc < 0 ? std::strlen(src) + 1 : static_cast<size_t>(cbSrc);
+    const std::wstring out = x2::platform::Utf8ToWide(std::string_view(src, len));
+    if (cchDst == 0)
+        return static_cast<int>(out.size());
+    if (!dst || out.size() > static_cast<size_t>(cchDst))
+        return 0;
+    std::wmemcpy(dst, out.data(), out.size());
+    return static_cast<int>(out.size());
+}
+
+FILE* _wfopen(const wchar_t* path, const wchar_t* mode)
+{
+    if (!path || !mode)
+        return nullptr;
+    return std::fopen(x2::platform::WideToUtf8(path).c_str(), x2::platform::WideToUtf8(mode).c_str());
+}
+
+errno_t fopen_s(FILE** file, const char* path, const char* mode)
+{
+    if (!file)
+        return EINVAL;
+    *file = (path && mode) ? std::fopen(path, mode) : nullptr;
+    return *file ? 0 : (errno ? errno : EINVAL);
+}
+
+errno_t _wfopen_s(FILE** file, const wchar_t* path, const wchar_t* mode)
+{
+    if (!file)
+        return EINVAL;
+    *file = _wfopen(path, mode);
+    return *file ? 0 : (errno ? errno : EINVAL);
+}
+
+errno_t localtime_s(struct tm* out, const time_t* t)
+{
+    if (!out || !t)
+        return EINVAL;
+    return ::localtime_r(t, out) ? 0 : EINVAL;
+}
+
+namespace {
+
+errno_t FormatNow(wchar_t* dst, size_t size, const wchar_t* fmt)
+{
+    if (!dst || size < 9)
+        return dst && size ? (dst[0] = 0, ERANGE) : EINVAL;
+    const time_t now = std::time(nullptr);
+    struct tm t {};
+    ::localtime_r(&now, &t);
+    return std::wcsftime(dst, size, fmt, &t) ? 0 : ERANGE;
+}
+
+} // namespace
+
+errno_t _wstrdate_s(wchar_t* dst, size_t size) { return FormatNow(dst, size, L"%m/%d/%y"); }
+errno_t _wstrtime_s(wchar_t* dst, size_t size) { return FormatNow(dst, size, L"%H:%M:%S"); }
+
 int _mkdir(const char* path) { return ::mkdir(path, 0755); }
 int _wmkdir(const wchar_t* path) { return ::mkdir(x2::platform::WideToUtf8(path).c_str(), 0755); }
 

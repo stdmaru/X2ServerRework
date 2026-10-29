@@ -1,4 +1,4 @@
-#include <winsock2.h>
+#include "x2/platform/net.h"
 #include "ClientPacket.h"
 
 SERIALIZE_DEFINE_PUT( KECH_SECURITY_AUTH_REQ, obj, ks )

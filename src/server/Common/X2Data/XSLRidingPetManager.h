@@ -53,7 +53,7 @@ public:
 
 public:
 	CXSLRidingPetManager(void);
-	~CXSLRidingPetManager(void);
+	virtual ~CXSLRidingPetManager(void);
 
 	// for lua
 	bool	AddRidingPetTemplet_LUA();

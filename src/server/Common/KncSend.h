@@ -106,8 +106,9 @@
 #define ST_MASK_BIT				0x0000F000
 //}}
 
-// 각각의 Performer Class 마다 ID 를 지정한다.
-enum ePerformerID {
+// Each Performer class gets an ID.
+// Fixed underlying type so it can be forward-declared (Performer.h, SwapPerformer.h).
+enum ePerformerID : int {
     // Client
     PI_GS_PROXY			= SC_CLIENT | PC_PROXY,
 

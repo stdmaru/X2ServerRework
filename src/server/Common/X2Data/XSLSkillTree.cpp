@@ -1014,7 +1014,6 @@ bool CXSLSkillTree::AddDefaultSkill_LUA()
 	int iUnitClass	= -1;	/// 유닛 클래스
 	std::vector<int> vecDefaultSkill;
 
-	int index = 1;
 	while( luaManager.GetValue( iTableIndex, iValue ) == S_OK )
 	{
 		if ( 1 == iTableIndex )		/// 첫번째 인덱스는 클레스 값

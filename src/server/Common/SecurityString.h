@@ -20,6 +20,7 @@ public:
 	KClearString()										{}
 	KClearString( const value_type* _str )				{ m_strBuf = _str; }
 	KClearString( const T& _str )						{ m_strBuf = _str; }
+	KClearString( const KClearString& _str ) : m_strBuf( _str.m_strBuf ) {} // the implicit one is deprecated next to a user operator=
 	~KClearString()										{ clear(); }
 
 	const T& GetString() const							{ return m_strBuf; }
@@ -120,14 +121,14 @@ public:
 		std::map< unsigned int, value_type > mapTemp;
 
 		{
-			std::map< unsigned int, KSentence >::const_iterator mit;
+			typename std::map< unsigned int, KSentence >::const_iterator mit;
 			for( mit = m_mapProtectBuf.begin(); mit != m_mapProtectBuf.end(); ++mit )
 			{
 				mapTemp.insert( std::make_pair( mit->second.m_uiSentenceIndex, mit->second.m_vtSentence ) );
 			}
 		}
 		{
-			std::map< unsigned int, value_type >::iterator mit;
+			typename std::map< unsigned int, value_type >::iterator mit;
 			for( mit = mapTemp.begin(); mit != mapTemp.end(); ++mit )
 			{
 				strTemp += mit->second;
@@ -143,14 +144,14 @@ public:
 		std::map< unsigned int, value_type > mapTemp;
 
 		{
-			std::map< unsigned int, KSentence >::const_iterator mit;
+			typename std::map< unsigned int, KSentence >::const_iterator mit;
 			for( mit = m_mapProtectBuf.begin(); mit != m_mapProtectBuf.end(); ++mit )
 			{
 				mapTemp.insert( std::make_pair( mit->second.m_uiSentenceIndex, mit->second.m_vtSentence ) );
 			}
 		}
 		{
-			std::map< unsigned int, value_type >::iterator mit;
+			typename std::map< unsigned int, value_type >::iterator mit;
 			for( mit = mapTemp.begin(); mit != mapTemp.end(); ++mit )
 			{
 				strTemp += mit->second;

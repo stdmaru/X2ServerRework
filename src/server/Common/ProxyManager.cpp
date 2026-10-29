@@ -162,7 +162,7 @@ void KProxyManager::ConnectAll()
 	}
 
 	//{{ 2009. 11. 23  최육사	서버간접속구조개선
-	m_spThreadKeepConnect = boost::shared_ptr< KTThread< KProxyManager > >( new KTThread< KProxyManager >( *this, &KProxyManager::KeepConnectionThread, 10000 ) );
+	m_spThreadKeepConnect = std::shared_ptr< KTThread< KProxyManager > >( new KTThread< KProxyManager >( *this, &KProxyManager::KeepConnectionThread, 10000 ) );
 
 	if( m_spThreadKeepConnect )
 	{
@@ -288,7 +288,7 @@ bool KProxyManager::Shutdown( float fWaitTime )
 //#endif SERV_PROXY_MANAGER_BUG_FIX
 	//}}
 
-	boost::timer timer;
+	x2::Timer timer;
 	bool bShutdownFinished = ShutdownFinished();
 
 	while( timer.elapsed() < fWaitTime && !bShutdownFinished )
@@ -755,8 +755,8 @@ KActorProxyPtr KProxyManager::GetCnProxy( UidType nUserUID_ )
     std::map< int, KActorProxyPtr >::iterator mit;
     mit = m_mapProxy[PT_CENTER].find( iCnProxyID );
 
-    if( mit == m_mapProxy[PT_CENTER].end() )
-        return KActorProxyPtr();
+	if( mit == m_mapProxy[PT_CENTER].end() )
+		return KActorProxyPtr();
 
 	//{{ 2010. 05. 17  최육사	대전 던전 서버군 통합
 	if( mit->second == NULL )

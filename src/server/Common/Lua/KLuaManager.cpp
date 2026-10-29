@@ -2,7 +2,6 @@
 @author cruise@kogsoft.com
 */
 
-const static char* cvsid = "$Id: KLuaManager.cpp,v 1.5 2003/02/17 03:50:55 cvs Exp $";
 
 #include <sstream>
 #include "KLuaManager.h"
@@ -20,7 +19,7 @@ KLuaManager::KLuaManager(void)
 /** Constructor with initial internal stack size.
 @param iStackSize [in] LUA stack의 초기 크기
 */
-KLuaManager::KLuaManager(int iStackSize)
+KLuaManager::KLuaManager(int /*iStackSize*/)
 : m_iTableDepth(0), m_bLuaTinkerHelper(false)
 {
     //m_pkLuaState = lua_open(iStackSize);
@@ -63,7 +62,7 @@ std::string KLuaManager::ToString(void) const
 default임.
 @return S_OK for success, E_FAIL for failure
 */
-HRESULT KLuaManager::DoString(const char* pszStr, bool bLogOutput)
+HRESULT KLuaManager::DoString(const char* pszStr, bool /*bLogOutput*/)
 {
     if (luaL_dostring(m_pkLuaState, pszStr) == 0)
     {
@@ -81,7 +80,7 @@ HRESULT KLuaManager::DoString(const char* pszStr, bool bLogOutput)
 default임.
 @return S_OK for success, E_FAIL for failure.
 */
-HRESULT KLuaManager::DoFile(const char* pszFileName, bool bLogOutput)
+HRESULT KLuaManager::DoFile(const char* pszFileName, bool /*bLogOutput*/)
 {
     if (LUA_DOFILE(m_pkLuaState, pszFileName) == 0)
     {
@@ -134,7 +133,7 @@ HRESULT KLuaManager::Get(int iIndex)
 default임.
 @return S_OK for success, E_FAIL for failure (해당 table이 없는 경우).
 */
-HRESULT KLuaManager::BeginTable(const char* pszName, bool bLogOutput)
+HRESULT KLuaManager::BeginTable(const char* pszName, bool /*bLogOutput*/)
 {
     if (SUCCEEDED(Get(pszName)) && lua_istable(m_pkLuaState, -1) != 0)
     {
@@ -155,7 +154,7 @@ default임.
 @return S_OK for success, E_FAIL for failure (현재 table 안에 들어와 있지 않은
 경우, 해당 table이 없는 경우).
 */
-HRESULT KLuaManager::BeginTable(int iIndex, bool bLogOutput)
+HRESULT KLuaManager::BeginTable(int iIndex, bool /*bLogOutput*/)
 {
     if (SUCCEEDED(Get(iIndex)) && lua_istable(m_pkLuaState, -1) != 0)
     {
@@ -174,7 +173,7 @@ HRESULT KLuaManager::BeginTable(int iIndex, bool bLogOutput)
 default임.
 @return S_OK for success, E_FAIL for failure (table의 사용이 없던 경우).
 */
-HRESULT KLuaManager::EndTable(bool bLogOutput)
+HRESULT KLuaManager::EndTable(bool /*bLogOutput*/)
 {
     if (m_iTableDepth > 0)
     {
@@ -197,7 +196,7 @@ default임.
 @return S_OK for success, E_FAIL for failure (해당 변수가 없거나, 숫자 변수가
 아닌 경우).
 */
-HRESULT KLuaManager::GetValue(const char* pszName, bool& bValue, bool bLogOutput)
+HRESULT KLuaManager::GetValue(const char* pszName, bool& bValue, bool /*bLogOutput*/)
 {
     if (SUCCEEDED(Get(pszName)) && lua_isnumber(m_pkLuaState, -1) != 0)
     {
@@ -221,7 +220,7 @@ default임.
 @return S_OK for success, E_FAIL for failure (해당 변수가 없거나, 숫자 변수가
 아닌 경우).
 */
-HRESULT KLuaManager::GetValue(int iIndex, bool& bValue, bool bLogOutput)
+HRESULT KLuaManager::GetValue(int iIndex, bool& bValue, bool /*bLogOutput*/)
 {
     if (SUCCEEDED(Get(iIndex)) && lua_isnumber(m_pkLuaState, -1) != 0)
     {
@@ -257,7 +256,7 @@ default임.
 @return S_OK for success, E_FAIL for failure (해당 변수가 없거나, 숫자 변수가
 아닌 경우).
 */
-HRESULT KLuaManager::GetValue(const char* pszName, short& sValue, bool bLogOutput)
+HRESULT KLuaManager::GetValue(const char* pszName, short& sValue, bool /*bLogOutput*/)
 {
     GET_BY_NAME(sValue, short);
 }
@@ -270,7 +269,7 @@ default임.
 @return S_OK for success, E_FAIL for failure (해당 변수가 없거나, 숫자 변수가
 아닌 경우).
 */
-HRESULT KLuaManager::GetValue(const char* pszName, int& iValue, bool bLogOutput)
+HRESULT KLuaManager::GetValue(const char* pszName, int& iValue, bool /*bLogOutput*/)
 {
     GET_BY_NAME(iValue, int);
 }
@@ -283,7 +282,7 @@ default임.
 @return S_OK for success, E_FAIL for failure (해당 변수가 없거나, 숫자 변수가
 아닌 경우).
 */
-HRESULT KLuaManager::GetValue(const char* pszName, long& lValue, bool bLogOutput)
+HRESULT KLuaManager::GetValue(const char* pszName, long& lValue, bool /*bLogOutput*/)
 {
     GET_BY_NAME(lValue, long);
 }
@@ -296,7 +295,7 @@ default임.
 @return S_OK for success, E_FAIL for failure (해당 변수가 없거나, 숫자 변수가
 아닌 경우).
 */
-HRESULT KLuaManager::GetValue(const char* pszName, unsigned short& usValue, bool bLogOutput)
+HRESULT KLuaManager::GetValue(const char* pszName, unsigned short& usValue, bool /*bLogOutput*/)
 {
     GET_BY_NAME(usValue, unsigned short);
 }
@@ -309,7 +308,7 @@ default임.
 @return S_OK for success, E_FAIL for failure (해당 변수가 없거나, 숫자 변수가
 아닌 경우).
 */
-HRESULT KLuaManager::GetValue(const char* pszName, unsigned int& uiValue, bool bLogOutput)
+HRESULT KLuaManager::GetValue(const char* pszName, unsigned int& uiValue, bool /*bLogOutput*/)
 {
     GET_BY_NAME(uiValue, unsigned int);
 }
@@ -322,7 +321,7 @@ default임.
 @return S_OK for success, E_FAIL for failure (해당 변수가 없거나, 숫자 변수가
 아닌 경우).
 */
-HRESULT KLuaManager::GetValue(const char* pszName, unsigned long& ulValue, bool bLogOutput)
+HRESULT KLuaManager::GetValue(const char* pszName, unsigned long& ulValue, bool /*bLogOutput*/)
 {
     GET_BY_NAME(ulValue, unsigned long);
 }
@@ -335,7 +334,7 @@ default임.
 @return S_OK for success, E_FAIL for failure (해당 변수가 없거나, 숫자 변수가
 아닌 경우).
 */
-HRESULT KLuaManager::GetValue(const char* pszName, float& fValue, bool bLogOutput)
+HRESULT KLuaManager::GetValue(const char* pszName, float& fValue, bool /*bLogOutput*/)
 {
     GET_BY_NAME(fValue, float);
 }
@@ -348,7 +347,7 @@ default임.
 @return S_OK for success, E_FAIL for failure (해당 변수가 없거나, 숫자 변수가
 아닌 경우).
 */
-HRESULT KLuaManager::GetValue(const char* pszName, double& dValue, bool bLogOutput)
+HRESULT KLuaManager::GetValue(const char* pszName, double& dValue, bool /*bLogOutput*/)
 {
     GET_BY_NAME(dValue, double);
 }
@@ -374,7 +373,7 @@ default임.
 @return S_OK for success, E_FAIL for failure (해당 변수가 없거나, 숫자 변수가
 아닌 경우).
 */
-HRESULT KLuaManager::GetValue(int iIndex, short& sValue, bool bLogOutput)
+HRESULT KLuaManager::GetValue(int iIndex, short& sValue, bool /*bLogOutput*/)
 {
     GET_BY_NUM(sValue, short);
 }
@@ -387,7 +386,7 @@ default임.
 @return S_OK for success, E_FAIL for failure (해당 변수가 없거나, 숫자 변수가
 아닌 경우).
 */
-HRESULT KLuaManager::GetValue(int iIndex, int& iValue, bool bLogOutput)
+HRESULT KLuaManager::GetValue(int iIndex, int& iValue, bool /*bLogOutput*/)
 {
     GET_BY_NUM(iValue, int);
 }
@@ -400,7 +399,7 @@ default임.
 @return S_OK for success, E_FAIL for failure (해당 변수가 없거나, 숫자 변수가
 아닌 경우).
 */
-HRESULT KLuaManager::GetValue(int iIndex, long& lValue, bool bLogOutput)
+HRESULT KLuaManager::GetValue(int iIndex, long& lValue, bool /*bLogOutput*/)
 {
     GET_BY_NUM(lValue, long);
 }
@@ -413,7 +412,7 @@ default임.
 @return S_OK for success, E_FAIL for failure (해당 변수가 없거나, 숫자 변수가
 아닌 경우).
 */
-HRESULT KLuaManager::GetValue(int iIndex, unsigned short& usValue, bool bLogOutput)
+HRESULT KLuaManager::GetValue(int iIndex, unsigned short& usValue, bool /*bLogOutput*/)
 {
     GET_BY_NUM(usValue, unsigned short);
 }
@@ -426,7 +425,7 @@ default임.
 @return S_OK for success, E_FAIL for failure (해당 변수가 없거나, 숫자 변수가
 아닌 경우).
 */
-HRESULT KLuaManager::GetValue(int iIndex, unsigned int& uiValue, bool bLogOutput)
+HRESULT KLuaManager::GetValue(int iIndex, unsigned int& uiValue, bool /*bLogOutput*/)
 {
     GET_BY_NUM(uiValue, unsigned int);
 }
@@ -439,7 +438,7 @@ default임.
 @return S_OK for success, E_FAIL for failure (해당 변수가 없거나, 숫자 변수가
 아닌 경우).
 */
-HRESULT KLuaManager::GetValue(int iIndex, unsigned long& ulValue, bool bLogOutput)
+HRESULT KLuaManager::GetValue(int iIndex, unsigned long& ulValue, bool /*bLogOutput*/)
 {
     GET_BY_NUM(ulValue, unsigned long);
 }
@@ -452,7 +451,7 @@ default임.
 @return S_OK for success, E_FAIL for failure (해당 변수가 없거나, 숫자 변수가
 아닌 경우).
 */
-HRESULT KLuaManager::GetValue(int iIndex, float& fValue, bool bLogOutput)
+HRESULT KLuaManager::GetValue(int iIndex, float& fValue, bool /*bLogOutput*/)
 {
     GET_BY_NUM(fValue, float);
 }
@@ -465,7 +464,7 @@ default임.
 @return S_OK for success, E_FAIL for failure (해당 변수가 없거나, 숫자 변수가
 아닌 경우).
 */
-HRESULT KLuaManager::GetValue(int iIndex, double& dValue, bool bLogOutput)
+HRESULT KLuaManager::GetValue(int iIndex, double& dValue, bool /*bLogOutput*/)
 {
     GET_BY_NUM(dValue, double);
 }
@@ -478,7 +477,7 @@ default임.
 @return S_OK for success, E_FAIL for failure (해당 변수가 없거나, 문자열 변수가
 아닌 경우).
 */
-HRESULT KLuaManager::GetValue(const char* pszName, std::string& strValue, bool bLogOutput)
+HRESULT KLuaManager::GetValue(const char* pszName, std::string& strValue, bool /*bLogOutput*/)
 {
     if (SUCCEEDED(Get(pszName)) && lua_isstring(m_pkLuaState, -1) != 0)
     {
@@ -501,7 +500,7 @@ default임.
 @return S_OK for success, E_FAIL for failure (해당 변수가 없거나, 문자열 변수가
 아닌 경우).
 */
-HRESULT KLuaManager::GetValue(int iIndex, std::string& strValue, bool bLogOutput)
+HRESULT KLuaManager::GetValue(int iIndex, std::string& strValue, bool /*bLogOutput*/)
 {
     if (SUCCEEDED(Get(iIndex)) && lua_isstring(m_pkLuaState, -1) != 0)
     {
@@ -525,7 +524,7 @@ default임.
 @return S_OK for success, E_FAIL for failure (해당 변수가 없거나, 문자열 변수가
 아닌 경우).
 */
-HRESULT KLuaManager::GetValue(const char* pszName, char* pszValue, int iMaxLen, bool bLogOutput)
+HRESULT KLuaManager::GetValue(const char* pszName, char* pszValue, int iMaxLen, bool /*bLogOutput*/)
 {
     if (SUCCEEDED(Get(pszName)) && lua_isstring(m_pkLuaState, -1) != 0)
     {
@@ -549,7 +548,7 @@ default임.
 @return S_OK for success, E_FAIL for failure (해당 변수가 없거나, 문자열 변수가
 아닌 경우).
 */
-HRESULT KLuaManager::GetValue(int iIndex, char* pszValue, int iMaxLen, bool bLogOutput)
+HRESULT KLuaManager::GetValue(int iIndex, char* pszValue, int iMaxLen, bool /*bLogOutput*/)
 {
     if (SUCCEEDED(Get(iIndex)) && lua_isstring(m_pkLuaState, -1) != 0)
     {
@@ -564,12 +563,12 @@ HRESULT KLuaManager::GetValue(int iIndex, char* pszValue, int iMaxLen, bool bLog
     }
 }
 
-HRESULT KLuaManager::GetValue(const char* pszName, char& cValue, bool bLogOutput)
+HRESULT KLuaManager::GetValue(const char* pszName, char& cValue, bool /*bLogOutput*/)
 {
     GET_BY_NAME( cValue, char );
 }
 
-HRESULT KLuaManager::GetValue(int iIndex, char& cValue, bool bLogOutput)
+HRESULT KLuaManager::GetValue(int iIndex, char& cValue, bool /*bLogOutput*/)
 {
     GET_BY_NUM( cValue, char );
 }

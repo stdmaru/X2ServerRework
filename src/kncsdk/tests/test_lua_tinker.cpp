@@ -4,6 +4,8 @@
 
 #include <doctest/doctest.h>
 
+#include <iostream>
+#include <sstream>
 #include <string>
 
 namespace {
@@ -85,4 +87,19 @@ TEST_CASE_FIXTURE( LuaFixture, "64-bit integers keep their value" )
 {
     lua_tinker::set( L, "big", static_cast<long long>( 9000000000LL ) );
     CHECK( lua_tinker::get<long long>( L, "big" ) == 9000000000LL );
+}
+
+TEST_CASE( "lua_interpreter runs statements read from stdin" )
+{
+    lua_State* L = luaL_newstate();
+    luaL_openlibs( L );
+
+    std::istringstream input( "x = 41 + 1\nthis is not lua\ny = x * 2\n" );
+    std::streambuf* old = std::cin.rdbuf( input.rdbuf() );
+    lua_interpreter( L );
+    std::cin.rdbuf( old );
+
+    CHECK( lua_tinker::get<int>( L, "x" ) == 42 );
+    CHECK( lua_tinker::get<int>( L, "y" ) == 84 ); // a bad line does not stop the prompt
+    lua_close( L );
 }

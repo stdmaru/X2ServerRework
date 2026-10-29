@@ -1,5 +1,7 @@
+#if defined(_MSC_VER)
 #pragma warning( disable : 4800 )
-#include <Winsock2.h>
+#endif
+#include "x2/platform/net.h"
 #include "SimLayer.h"
 #include "NetLayer.h"
 #include "BaseServer.h"
@@ -7,8 +9,9 @@
 #include <KncLua.h>
 #include "Thread/Locker.h"
 #include <sstream>  // std::ostringstream
-#include <boost/bind/bind.hpp>
-using namespace boost::placeholders;
+#include <functional>
+#include "x2/platform/format.h"
+using namespace std::placeholders;
 #include "KAutoPath.h"
 #include "KncException.h"
 //{{ 2013. 02. 15	최육사	로그 시스템 개선
@@ -57,7 +60,7 @@ void KSimLayer::Init()
 	//}}
 
     // run thread manager.
-    std::for_each( m_vecpThreadMgr.begin(), m_vecpThreadMgr.end(), boost::bind( &KThreadManager::BeginThread, _1 ) );
+    std::for_each( m_vecpThreadMgr.begin(), m_vecpThreadMgr.end(), std::bind( &KThreadManager::BeginThread, _1 ) );
 }
 
 ImplToStringW( KSimLayer )
@@ -118,7 +121,7 @@ void KSimLayer::ShutDown()
     End();
 
 	// 스레드 매니저 종료 처리
-    std::for_each( m_vecpThreadMgr.begin(), m_vecpThreadMgr.end(), boost::bind( &KThreadManager::EndThread, _1, 10000 ) );
+    std::for_each( m_vecpThreadMgr.begin(), m_vecpThreadMgr.end(), std::bind( &KThreadManager::EndThread, _1, 10000 ) );
 
 	// SimLayer가 소멸할때 멤버로 가지고 있던 ThreadManager들도 죽이자!
 	m_vecpThreadMgr.clear();
@@ -251,7 +254,7 @@ const std::wstring KSimLayer::GetAuthTypeStr( DWORD dwFlag_ ) const
     {
         if( mit->first == dwFlag_ )
         {
-            stm << boost::wformat( L"%s" ) % mit->second;
+            stm << x2::wformat( L"%s" ) % mit->second;
         }
 
     }

@@ -54,7 +54,6 @@ bool CXSLDungeon::OpenScriptFile()
 	// Enum.lua 파일은 파싱되어 있어야 한다.
 
 	char szFile[MAX_PATH]	= "";
-	char strTable[MAX_PATH]	= "";
 	WideCharToMultiByte( CP_ACP, 0, m_sDungeonData.m_DataFileName.c_str(), -1, szFile, MAX_PATH, NULL, NULL );
 
 	KLuaManager luaManager;

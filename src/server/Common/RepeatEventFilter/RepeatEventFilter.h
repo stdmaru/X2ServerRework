@@ -1,8 +1,8 @@
 #pragma once
 #include <map>
 #include <vector>
-#include <boost/shared_ptr.hpp>
-#include <boost/timer.hpp>
+#include <memory>
+#include "x2/platform/timer.h"
 
 
 
@@ -23,7 +23,7 @@ public:
 	int		GetRegCount()		{ return m_iRegCount; }
 
 private:
-	typedef std::map< unsigned short, boost::shared_ptr< bool > > KRepeatEventMap;
+	typedef std::map< unsigned short, std::shared_ptr< bool > > KRepeatEventMap;
 
 	KRepeatEventMap m_mapCheckRepeatEventReq;
 	KRepeatEventMap m_mapCheckRepeatEventAck;
@@ -60,7 +60,7 @@ private:
 	bool	RegRepeatEvent( unsigned short usReqEventID, unsigned short usAckEventID );
 
 private:
-	typedef std::map< unsigned short, boost::shared_ptr< bool > > KRepeatEventMap;
+	typedef std::map< unsigned short, std::shared_ptr< bool > > KRepeatEventMap;
 
 	KRepeatEventMap m_mapCheckRepeatEventReq;
 	KRepeatEventMap m_mapCheckRepeatEventAck;
@@ -81,7 +81,7 @@ public:
 	{
         bool			m_bRecvReq;
 		int				m_iFilteringCount;
-		boost::timer	m_kTimer;
+		x2::Timer	m_kTimer;
 
 		KEventFilterInfo()
 		{
@@ -108,7 +108,7 @@ public:
 	double	GetCheckedFilteringTime()	{ return m_fFilteringTime; }
 
 private:
-	typedef std::map< unsigned short, boost::shared_ptr< KEventFilterInfo > > KRepeatEventFilterMap;
+	typedef std::map< unsigned short, std::shared_ptr< KEventFilterInfo > > KRepeatEventFilterMap;
 
 	KRepeatEventFilterMap	m_mapCheckRepeatEventReq;
 	KRepeatEventFilterMap	m_mapCheckRepeatEventAck;
@@ -143,7 +143,7 @@ public:
 
 
 
-		boost::shared_ptr< bool > spEventCheckA( new bool );
+		std::shared_ptr< bool > spEventCheckA( new bool );
 		if( spEventCheckA.get() == NULL )
 			return false;
 
@@ -152,7 +152,7 @@ public:
 		m_mapInTransaction.insert( std::make_pair( usAckEventID1, spEventCheckA ) );
 
 
-		boost::shared_ptr< bool > spEventCheckB( new bool );
+		std::shared_ptr< bool > spEventCheckB( new bool );
 		if( spEventCheckB.get() == NULL )
 			return false;
 
@@ -211,7 +211,7 @@ public:
 
 
 private:
-	typedef std::map< unsigned short, boost::shared_ptr< bool > >		KInTransactionMap;
+	typedef std::map< unsigned short, std::shared_ptr< bool > >		KInTransactionMap;
 	typedef std::map< unsigned short, std::vector<unsigned short> >		KMutualExclusionMap;		// <event_id, vector<event_id> >
 
 	KInTransactionMap m_mapInTransaction;

@@ -74,7 +74,7 @@ public:
 
 public:
 	CXSLSynthesisManager(void);
-	~CXSLSynthesisManager(void);
+	virtual ~CXSLSynthesisManager(void);
 
 	bool	AddAvatarSocketOptionForEquipPosition_LUA( int iEquipPosition, int iSocketGroupID );	//SERV_CASH_ITEM_SOCKET_OPTION
 	bool	AddSynthesisGroup_LUA( int iGroupID, int iItemID , float fRate);

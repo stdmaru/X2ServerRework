@@ -12,18 +12,18 @@ ImplementRefreshSingleton( KAutoPartyScriptManager );
 
 KAutoPartyScriptManager::KAutoPartyScriptManager(void) :
 m_fSameUnitTypeWaitTime( SAME_UNIT_TYPE_WAIT_TIME ),
-m_fDirectGameStartWaitTime( DIRECT_GAME_START_WAIT_TIME ),
-//{{ 2012. 11. 14	최육사		자동파티 대기열 난이도 통합
 m_fSameDifficultyLevelWaitTime( SAME_DIFFICULTY_LEVEL_WAIT_TIME ),
-//}}
-m_fAutoPartyBonusTime( AUTO_PARTY_BONUS_TIME_DEFALUT ),
-m_iAutoPartyMakingBeginCount( 1 ),
 //{{ 2012. 11. 14	최육사		자동파티 대기열 난이도 통합
+m_fDirectGameStartWaitTime( DIRECT_GAME_START_WAIT_TIME ),
+//}}
+m_iAutoPartyMakingBeginCount( 1 ),
+m_iCheckWaitUserCount( 10 ),
+//{{ 2012. 11. 14	최육사		자동파티 대기열 난이도 통합
+m_fAutoPartyBonusTime( AUTO_PARTY_BONUS_TIME_DEFALUT ),
 m_bIsAllMemberCheckSameUnitTypeTime( true ),
 m_bIsAllMemberCheckSameDifficultyLevelTime( true ),
-m_bIsAllMemberCheckDirectGameStartTime( true ),
 //}}
-m_iCheckWaitUserCount( 10 )
+m_bIsAllMemberCheckDirectGameStartTime( true )
 {
 }
 

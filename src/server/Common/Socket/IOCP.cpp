@@ -29,7 +29,7 @@ KIocp::~KIocp()
 
 void KIocp::EndThread()
 {
-    std::vector< boost::shared_ptr<KThread> >::iterator vit;
+    std::vector< std::shared_ptr<KThread> >::iterator vit;
     for( vit = m_vecThread.begin(); vit != m_vecThread.end(); vit++ )
     {
         PostStatus( SIGNAL_SHUTDOWN_SERVER );
@@ -201,13 +201,13 @@ KThread* KIocp::CreateThread()
 }
 
 #undef max
-#include <boost/random.hpp>
+#include <random>
 
 DWORD KIocp::GenNewCompKey() const
 {
-    static boost::mt19937 rng;
-    static boost::uniform_int<DWORD> uint32( 1, UINT_MAX );
-    static boost::variate_generator<boost::mt19937&, boost::uniform_int<DWORD> > die(rng, uint32);
+    static std::mt19937 rng;
+    static std::uniform_int_distribution<DWORD> uint32( 1, UINT_MAX );
+    static boost::variate_generator<std::mt19937&, std::uniform_int_distribution<DWORD> > die(rng, uint32);
 
     KLocker lock( m_csSockObj );
 

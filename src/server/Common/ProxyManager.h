@@ -131,7 +131,7 @@ protected:
 	PFNCreateProxy						m_fnCreateProxy;
 
 	//{{ 2009. 11. 23  최육사	서버간접속구조개선
-	boost::shared_ptr< KTThread< KProxyManager > >	m_spThreadKeepConnect;
+	std::shared_ptr< KTThread< KProxyManager > >	m_spThreadKeepConnect;
 	//}}
 };
 

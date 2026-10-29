@@ -405,7 +405,7 @@ namespace SEnum
 	};
 //#endif	SERV_SHARING_BANK_TEST
 
-	static bool IsValidGetItemReason( GET_ITEM_REASON eReason )
+	inline bool IsValidGetItemReason( GET_ITEM_REASON eReason )
 	{
 		if( GIR_NO_REASON < eReason  &&  GIR_MAX > eReason )
 			return true;
@@ -415,7 +415,7 @@ namespace SEnum
 //#endif SERV_GET_ITEM_REASON
 	//}}
 
-	static bool IsValidServerGroupID( int iServerGroupID )
+	inline bool IsValidServerGroupID( int /*iServerGroupID*/ )
 	{
 #ifdef EXTEND_SERVER_GROUP_MASK
 		// 중국의 경우 무한대로 서버군을 만들었다 지웠다 하므로 어떤 숫자든 들어올 수 있다.
@@ -432,7 +432,7 @@ namespace SEnum
 #endif // EXTEND_SERVER_GROUP_MASK
 	}
 
-	static const wchar_t* GetServerGroupName( int iServerGroupID )
+	inline const wchar_t* GetServerGroupName( int /*iServerGroupID*/ )
 	{
 #ifdef EXTEND_SERVER_GROUP_MASK
 #else
@@ -448,7 +448,7 @@ namespace SEnum
 
 	//{{ 2011. 07. 18	최육사	대전 개편
 //#ifdef SERV_PVP_NEW_SYSTEM
-	static const wchar_t* GetMatchTypeName( int iMatchTypeEnum )
+	inline const wchar_t* GetMatchTypeName( int iMatchTypeEnum )
 	{
 		switch( iMatchTypeEnum )
 		{
@@ -465,7 +465,7 @@ namespace SEnum
 //#endif SERV_PVP_NEW_SYSTEM
 	//}}
 
-	static bool IsHenirRankingType( int iRankingType )
+	inline bool IsHenirRankingType( int iRankingType )
 	{
 		switch( iRankingType )
 		{
@@ -480,7 +480,7 @@ namespace SEnum
 
 	//{{ 2012. 02. 06	최육사	배틀필드 시스템
 //#ifdef SERV_BATTLE_FIELD_SYSTEM
-	static bool IsVillageMapID( const int iFieldMapID )
+	inline bool IsVillageMapID( const int iFieldMapID )
 	{
 		if( VMI_RUBEN <= iFieldMapID  &&  iFieldMapID < VMI_VILLAGE_MAP_END )
 			return true;
@@ -488,7 +488,7 @@ namespace SEnum
 		return false;
 	}
 
-	static bool IsBattleFieldID( const int iBattleFieldID )
+	inline bool IsBattleFieldID( const int iBattleFieldID )
 	{
 		if( VMI_BATTLE_FIELD_RUBEN_FIELD_01 <= iBattleFieldID  &&  iBattleFieldID < VMI_BATTLE_FIELD_END )
 			return true;
@@ -496,7 +496,7 @@ namespace SEnum
 		return false;
 	}
 
-	static bool IsRestFieldID( const int iBattleFieldID )
+	inline bool IsRestFieldID( const int iBattleFieldID )
 	{
 		if( VMI_BATTLE_FIELD_ELDER_REST_00 <= iBattleFieldID  &&  iBattleFieldID < VMI_BATTLE_FIELD_REST_END )
 			return true;
@@ -775,7 +775,7 @@ namespace SEnum
 		LRLC_MAX,
 	};
 
-	static	int	GetCategoryIndex( const int iCategory )
+	inline	int	GetCategoryIndex( const int iCategory )
 	{
 		switch( iCategory )
 		{

@@ -3,7 +3,8 @@
 #include "RefreshSingleton.h"
 #include "DBLayer.h"
 #include <KncSend.h>
-#include <boost/timer.hpp>
+#include "x2/platform/timer.h"
+#include <fstream>
 #include <set>
 #include "CommonPacket.h"
 //{{ 2011. 12. 14	최육사	SimLayer Tick퍼포먼스 체크
@@ -26,7 +27,7 @@ class KAbuserLogManager
 
 public:
 	KAbuserLogManager(void);
-	~KAbuserLogManager(void);
+	virtual ~KAbuserLogManager(void);
 
 	//{{ 2012. 02. 03	박세훈	이벤트 관련정보 처리방법 변경 ( Script -> DB )
 	enum ABUSER_TYPE
@@ -210,7 +211,7 @@ private:
 	//{{ 2012. 02. 03	박세훈	이벤트 관련정보 처리방법 변경 ( Script -> DB )
 	int								m_arrReleaseTick[AT_MAX];
 	//}}
-	boost::timer					m_tRefreshTimer;
+	x2::Timer					m_tRefreshTimer;
 
 	std::vector< std::wstring >		m_vecPhoneNumList;
 

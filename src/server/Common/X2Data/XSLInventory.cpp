@@ -20,6 +20,8 @@ bool CXSLInventory::IsValidBankMemberShip( MEMBERSHIP_PRIVATE_BANK eGrade )
 	case MPB_DIAMOND:
 	case MPB_PLATINUM:
 		return true;
+	default:
+		break;
 	}
 
 	return false;
@@ -53,6 +55,8 @@ CXSLInventory::MEMBERSHIP_PRIVATE_BANK CXSLInventory::GetNextBankMemberShip( MEM
 	case MPB_EMERALD:	return MPB_DIAMOND;
 	case MPB_DIAMOND:	return MPB_PLATINUM;
 	case MPB_PLATINUM:	return MPB_NONE;
+	default:
+		break;
 	}
 
 	return MPB_NONE;

@@ -1,5 +1,4 @@
 #include "Temp.h"
-#include <boost/test/utils/foreach.hpp>
 #include <map>
 #include "NetError.h"
 #include "GameSysVal/GameSysVal.h"

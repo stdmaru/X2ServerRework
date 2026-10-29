@@ -1,6 +1,6 @@
 #pragma once
 #include "Event.h"
-#include <boost/timer.hpp>
+#include "x2/platform/timer.h"
 #include "ServerDefine.h"
 
 class KAfterWorkStorage
@@ -55,7 +55,7 @@ private:
 	int										m_iKeyIndex;
 	std::vector<int>						m_vecStockedKeyIndex;
 	std::map<int, KAfterWorkStorageInfo>	m_mapStockedData;
-	boost::timer							m_kUpdateTimer;
+	x2::Timer							m_kUpdateTimer;
 };
 
 template <class T>

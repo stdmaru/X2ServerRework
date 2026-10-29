@@ -35,7 +35,7 @@ public:
 
 public:
 	KAutoPartyScriptManager(void);
-	~KAutoPartyScriptManager(void);
+	virtual ~KAutoPartyScriptManager(void);
 
 	// for lua
 	bool	AddAutoPartyDungeonInfo_LUA( int iDungeonMode, int iDungeonIDWithDif, int iBeginLevel, int iEndLevel );

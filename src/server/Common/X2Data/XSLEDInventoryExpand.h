@@ -13,7 +13,7 @@ class CXSLEDInventoryExpand
 
 public:
     CXSLEDInventoryExpand(void);
-    ~CXSLEDInventoryExpand(void);
+    virtual ~CXSLEDInventoryExpand(void);
 
     bool AddBankGradeED_LUA();
     bool AddInventoryGradeED_LUA();

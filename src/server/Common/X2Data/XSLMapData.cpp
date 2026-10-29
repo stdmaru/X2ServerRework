@@ -325,7 +325,6 @@ void CXSLMapData::PackingLastPosition( IN const int iMapID, IN const u_char ucLa
 void CXSLMapData::UnpackingLastPosition( IN const int iLastPosition, OUT UINT& uiMapID, OUT u_char& ucLastTouchLineIndex, OUT u_short& usLastPosValue )
 {
 	// DB에 4byte에 압축되어 있는 위치 정보를 추출 한다; mapid(1byte), lasttouchlineindex(1byte), lastposvalue(2byte)
-	const int iPackedPositionData = iLastPosition;
 	char* pChar = (char*) &iLastPosition;
 	int iActualMapID = (int) *pChar;
 	if( iActualMapID >= 0 )

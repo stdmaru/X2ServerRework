@@ -37,7 +37,8 @@ KThreadStatisticsManager::KThreadStatisticsManager()
 	m_bBillingPacketLog			= false;
 	//}}
 
-	CreateDirectory( L"Statistics", NULL );
+	std::error_code ec;
+	std::filesystem::create_directory( L"Statistics", ec );
 
 	m_wstrFTPServerIP			= L"14.45.79.17";
 	m_iFTPPort					= 21;
@@ -125,7 +126,7 @@ void KThreadStatisticsManager::RegToLua()
 	//}}
 
 #   undef _ENUM
-#   define _ENUM( id ) lua_tinker::decl( g_pLua, #id, KStatistics::##id );
+#   define _ENUM( id ) lua_tinker::decl( g_pLua, #id, KStatistics::id );
 #   include "StatisticsID_def.h"
 
 	lua_tinker::decl( g_pLua, "StatisticsManager", this );
@@ -366,20 +367,20 @@ struct KSendLocalLog
 	const std::wstring m_wstrFindTagName;
 	KSendLocalLog( KLogReporter& kLogReporter, const wchar_t* wstrFindTagName )	: m_kLogReporter( kLogReporter ), m_wstrFindTagName( wstrFindTagName ) {}
 
-	void operator()( const WIN32_FIND_DATA& wfd )
+	void operator()( const std::filesystem::directory_entry& entry )
 	{
-		if ( ( wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) == false )
+		std::error_code ec;
+		if ( !entry.is_directory( ec ) )
 		{
-			std::wstring strFilename = wfd.cFileName;
-			//std::transform(strFilename.begin(), strFilename.end(), strFilename.begin(), std::toupper);
+			std::wstring strFilename = entry.path().filename().wstring();
 
 			std::wstring strFindTag = m_wstrFindTagName;
-			int iPosTag = strFilename.find( strFindTag );
+			const size_t iPosTag = strFilename.find( strFindTag );
 			if ( iPosTag == std::string::npos )
 				return;
 
 			std::wstring strFindExt = L".txt";
-			int iPosExt = strFilename.rfind( strFindExt );
+			const size_t iPosExt = strFilename.rfind( strFindExt );
 			if ( iPosExt == std::string::npos )
 				return;
 
@@ -515,15 +516,17 @@ void KThreadStatisticsManager::BackUpSendFTPFiles( const std::vector< KLogReport
 {
 	CTime tCurTime = CTime::GetCurrentTime();
 
-	// 1. 백업 폴더 생성
+	std::error_code ec;
+
+	// 1. create the backup folder
 	std::wstring wstrBackupFolder = L"C:\\StatisticsBackup\\";
-	CreateDirectoryW( wstrBackupFolder.c_str(), NULL );
+	std::filesystem::create_directory( wstrBackupFolder, ec );
 
-	// 2. 일자별 폴더 생성
+	// 2. one folder per day
 	wstrBackupFolder += ( CStringW )( tCurTime.Format( _T( "%Y-%m-%d\\" ) ) );
-	CreateDirectoryW( wstrBackupFolder.c_str(), NULL );
+	std::filesystem::create_directory( wstrBackupFolder, ec );
 
-	// 3. 통계 및 로그 파일 백업
+	// 3. back up the statistics and log files
 	std::vector< KLogReporter::KFileInfo >::const_iterator vit;
 	for( vit = vecFileList.begin(); vit != vecFileList.end(); ++vit )
 	{
@@ -532,7 +535,7 @@ void KThreadStatisticsManager::BackUpSendFTPFiles( const std::vector< KLogReport
 		std::wstring wstrDesFileName = wstrBackupFolder;
 		wstrDesFileName += kFileInfo.m_strRemoteFileName;
 
-		CopyFileW( kFileInfo.m_strLocalFileName.c_str(), wstrDesFileName.c_str(), false );
+		std::filesystem::copy_file( kFileInfo.m_strLocalFileName, wstrDesFileName, std::filesystem::copy_options::overwrite_existing, ec );
 	}
 }
 //}}

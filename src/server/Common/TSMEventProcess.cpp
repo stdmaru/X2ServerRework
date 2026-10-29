@@ -1,6 +1,7 @@
 #include "TSMEventProcess.h"
 #include "ThreadStatisticsManager.h"
 #include "BaseServer.h"
+#include <fstream>
 #include <iomanip>
 #include "X2Data/XSLDungeon.h"
 
@@ -383,7 +384,7 @@ IMPL_ON_FUNC( E_LOCAL_LOG_ABUSER_MORNITORING_NOT )
 	CTime tRegDate;
 	std::wstring wstrRegDate;
 
-	BOOST_TEST_FOREACH( const KAbuserEventLog&, kInfo, kPacket_.m_vecAbuserEventLog )
+	for( const KAbuserEventLog& kInfo : kPacket_.m_vecAbuserEventLog )
 	{
 		tRegDate = kInfo.m_iRegDate;
 		wstrRegDate = ( CStringW )( tRegDate.Format( _T( "%d_%H:%M:%S" ) ) );

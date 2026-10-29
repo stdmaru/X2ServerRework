@@ -298,7 +298,7 @@ public:
 
 public:
 	CXSLTitleManager(void);
-	~CXSLTitleManager(void);
+	virtual ~CXSLTitleManager(void);
 
 	// for lua
 	bool AddTitleInfo_LUA();

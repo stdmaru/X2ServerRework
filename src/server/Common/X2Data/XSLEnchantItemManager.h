@@ -49,7 +49,7 @@ public:
 
 public:
 	CXSLEnchantItemManager(void);
-	~CXSLEnchantItemManager(void);
+	virtual ~CXSLEnchantItemManager(void);
 
 	bool GetEnchantRate( IN int iEnchantLevel, OUT float& fPercent );
 	bool GetEnchantResult( IN bool bIsRare, IN int iEnchantLevel, OUT int& iResult );
@@ -164,10 +164,6 @@ private:
 	std::multimap< KRestoreInfoKey, int >	m_multimapEventRestoreItemInfo;
 	//}}
 	std::multimap< KEStoneInfoKey, int >	m_multimapEventEnchantStoneInfo;
-
-//#ifdef SERV_ENCHANT_LIMIT
-	int										m_iRealEnchantLimitLevel;
-//#endif SERV_ENCHANT_LIMIT
 
 	//{{ 2011.5.23 지헌 : 강화시 성공 확률 증가 아이템 추가
 	//}}

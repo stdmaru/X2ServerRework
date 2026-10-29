@@ -14,19 +14,19 @@ m_bPcBangEvent( false ),
 m_bAccountEvent( false ),
 //}}
 //{{ 2011. 08. 09	최육사	투니 랜드 채널링 이벤트
-m_iChannelCode( -1 ),
+m_iUnitLevel( 0 ),
 //}}
 //{{  2011.11.08     김민성    버블파이터 공동 프로모션 이벤트
 //}}
 //{{  2011.11.30     김민성    캐릭터별 접속 이벤트
+m_iChannelCode( -1 ),
 m_cUnitType( 0 ),
-m_cUnitClass( 0 ),
 //}}
 //{{ 2012. 06. 29	김민성       접속 시간에 따라 아이템 반복 지급
-m_bRepeatEvent( false ),
+m_cUnitClass( 0 ),
 //}}
 //{{ 2009. 12. 16  최육사	이벤트개편
-m_iUnitLevel( 0 )
+m_bRepeatEvent( false )
 //}}
 //{{ 2012. 12. 25	박세훈	특정 유저 전용 접속 이벤트
 , m_iEventGroupID( -1 )

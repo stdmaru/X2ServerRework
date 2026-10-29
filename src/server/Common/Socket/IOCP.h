@@ -1,5 +1,5 @@
 #pragma once
-#include <windows.h>    // HANDLE, ULONG_PTR
+#include "x2/platform/win32.h"    // HANDLE, ULONG_PTR
 #include <KNCSingleton.h>
 #include "ThreadManager.h"
 
@@ -24,6 +24,7 @@ protected:
 public:
     virtual ~KIocp();
 
+    virtual void EndThread( DWORD dwTimeOut ) { KThreadManager::EndThread( dwTimeOut ); } // the original hid it; same behavior
     virtual void EndThread();  // derived from KThreadManager
 
     bool AssociateSocket( KSocketObjectPtr spSockObj );

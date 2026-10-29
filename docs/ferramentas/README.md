@@ -5,4 +5,5 @@
 | Página | Conteúdo |
 |---|---|
 | [Importador](importador.md) | `tools/import`: copia módulos do `_reference` para `src/` já limpos (encoding, flags, includes) |
+| [Porte mecânico](porte-mecanico.md) | `tools/port`: passada mecânica e correção de erros/warnings guiada pelo log do build (`typename`, `switch`, `reorder`...) |
 | [Flags e verificação](flags.md) | `gen_flags.py` (quais flags a build original define) e `check_equivalence.py` (prova que o resolvedor não muda o código) |

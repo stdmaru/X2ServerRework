@@ -126,7 +126,8 @@ public:
     std::wstring GetCurrentSection(){ return m_strCurrentSection;};
     void Dump( std::wostream& stm )const;
 protected:
-    bool AddAndBuildSection( IN const wchar_t* szSectionName, IN const wchar_t* szFileName, IN DWORD dwFileSize );
+    // Port: the original read the file through GetPrivateProfileSection*(); see StringTable.cpp
+    bool AddAndBuildSection( IN const wchar_t* szSectionName, IN const std::vector<std::wstring>& vecLines );
     bool AddAndBuildKeyvalue( IN const wchar_t* szKey_value, Section& section );
     bool FindSection( IN const wchar_t* szSectionName, OUT MITSECTION& itSection );
     bool FindKey_value( IN MITSECTION& itSection, IN const wchar_t* szKeyName,

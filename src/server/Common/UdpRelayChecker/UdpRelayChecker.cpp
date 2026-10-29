@@ -1,4 +1,4 @@
-#include <winsock2.h>
+#include "x2/platform/net.h"
 #include "UdpRelayChecker.h"
 #include <dbg/dbg.hpp>
 #include "BaseServer.h"

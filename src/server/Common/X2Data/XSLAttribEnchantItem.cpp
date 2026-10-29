@@ -394,6 +394,8 @@ char CXSLAttribEnchantItem::GetAttribEnchantType( IN ATTRIB_COUNT_TYPE eCountTyp
 			}
 		}
 		break;
+	default:
+		break;
 	}
 
 	START_LOG( cerr, L"사용되지 않는 타입인데 이쪽으로 왔네?" )

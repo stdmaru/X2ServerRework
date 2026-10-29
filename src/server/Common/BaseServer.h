@@ -1,7 +1,8 @@
 #pragma once
 
 #include <KncLua.h>
-#include <boost/scoped_ptr.hpp>
+#include <memory>
+#include <type_traits>
 #include "Thread/Thread.h"
 #include "StringTable.h"
 #include "Performer.h"
@@ -19,16 +20,8 @@
 
 //{{ 2010. 07. 13  최육사	using boost foreach
 // include boost foreach
-#include <boost/test/utils/foreach.hpp>
 
-// boost foreach macro for map container
-#define BOOST_MAP_FOREACH( key, value, variable, container ) \
-	typedef std::map<const key,value> key##value##maptype; \
-	BOOST_TEST_FOREACH( key##value##maptype::value_type, variable, container ) \
-
-#define BOOST_MAP_CONST_FOREACH( key, value, variable, container ) \
-	typedef std::map<const key,value> key##value##maptype; \
-	BOOST_TEST_FOREACH( const key##value##maptype::value_type&, variable, container ) \
+// (BOOST_MAP_FOREACH / BOOST_MAP_CONST_FOREACH removed: unused)
 //}}
 
 
@@ -185,7 +178,7 @@ protected:
     int                                         m_iServerGroupID;
     DWORD							            m_dwServerInfoUpdateTick;
 
-    boost::shared_ptr< void >                   m_spEventAck;
+    std::shared_ptr< std::remove_pointer_t< HANDLE > > m_spEventAck; // HANDLE is not void* outside Windows
 
     // 서버 리스트
     KServerList                                 m_mapServerList;

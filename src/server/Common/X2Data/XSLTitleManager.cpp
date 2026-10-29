@@ -111,6 +111,7 @@ bool CXSLTitleManager::IsExistTitleID( int iTitleID )
 
 bool CXSLTitleManager::AddTitleMissionInfo_LUA()
 {
+	const TitleTemplet* pTitleTemplet = {}; // declared before the gotos below (MSVC let them cross the initialization)
 	KLuaManager luaManager( GetLuaState() );
 
 	MissionTemplet kMissionTemplet;
@@ -149,7 +150,7 @@ bool CXSLTitleManager::AddTitleMissionInfo_LUA()
 	LUA_GET_VALUE_RETURN(		luaManager, L"m_iTitleID",				kMissionTemplet.m_iTitleID,		0,		goto LoadFail; );
 
 	// 비공개 타이틀인지 검사
-	const TitleTemplet* pTitleTemplet = GetTitleTemplet( kMissionTemplet.m_iMissionID );
+	pTitleTemplet = GetTitleTemplet( kMissionTemplet.m_iMissionID );
 	if( pTitleTemplet == NULL )
 	{
 		START_LOG( cwarn, L"미션에 해당되는 칭호정보가 존재하지 않습니다." )
@@ -229,7 +230,7 @@ bool CXSLTitleManager::GetUseItemTitleInfoBySubMissionID( IN const int iSubMissi
 {
 	bool bFindSuccess = false;
 
-	BOOST_TEST_FOREACH( const int, iMissionID, m_vecMissionIDByClearType[TMCT_USE_ITEM] )
+	for( const int iMissionID : m_vecMissionIDByClearType[TMCT_USE_ITEM] )
 	{
 		// 타이틀이 없다면 그냥 넘어가자!
 		if( IsExistTitleID( iMissionID ) == false )
@@ -244,7 +245,7 @@ bool CXSLTitleManager::GetUseItemTitleInfoBySubMissionID( IN const int iSubMissi
 			continue;
 		}
 
-		BOOST_TEST_FOREACH( const int, iSubMissionID, pMissionTemplet->m_vecSubMission )
+		for( const int iSubMissionID : pMissionTemplet->m_vecSubMission )
 		{
 			// 해당 서브 미션을 찾았다!
             if( iSubMissionID != iSubMissionID_ )

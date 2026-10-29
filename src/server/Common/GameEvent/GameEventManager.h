@@ -4,7 +4,7 @@
 #include <ToString.h>
 #include "DBLayer.h"
 #include <KncSend.h>
-#include <boost/timer.hpp>
+#include "x2/platform/timer.h"
 #include "ServerPacket.h"
 
 #include "GameEventQuest.h"
@@ -460,10 +460,10 @@ protected:
 	SERVER_TYPE						m_eServerType;
 
 	std::map< int, KGameEvent* >	m_mapIngEventData[KGameEvent::GET_MAX];	// [EventUID, Event Struct]
-	boost::timer					m_TimerEnableCheck;						// 일정 시간마다 이벤트 진행 상태를 변경하기 위해..
-	boost::timer					m_TimerRefreshEvent;					// 일정 시간마다 DB에서 이벤트를 받아오기 위해..
+	x2::Timer					m_TimerEnableCheck;						// 일정 시간마다 이벤트 진행 상태를 변경하기 위해..
+	x2::Timer					m_TimerRefreshEvent;					// 일정 시간마다 DB에서 이벤트를 받아오기 위해..
 
-	boost::timer					m_tEventCheckTimer;
+	x2::Timer					m_tEventCheckTimer;
 	int								m_iEventReleaseTick;
 
 	int								m_iAppliedEventTick;

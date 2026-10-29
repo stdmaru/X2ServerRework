@@ -18,7 +18,7 @@ REPO = Path(__file__).resolve().parents[3]
 TOOL = REPO / "tools" / "import"
 REFERENCE = REPO / "_reference" / "X2Server"
 
-SOURCE_SUFFIXES = {".c", ".cpp", ".cc", ".cxx", ".h", ".hpp", ".hxx", ".inl", ".ipp"}
+SOURCE_SUFFIXES = {".c", ".cpp", ".cc", ".cxx", ".h", ".hpp", ".hxx", ".inl", ".ipp", ".nsmap"}  # .nsmap: gSOAP
 
 # Standard headers the original sometimes spells with capitals (<Queue>); Windows headers are left alone,
 # they are replaced by x2/platform/win32.h during the manual port.

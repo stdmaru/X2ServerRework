@@ -1,7 +1,7 @@
 #pragma once
 
 #include <list>
-#include <atltime.h>
+#include "x2/platform/win32.h"
 #include <string>
 #include <Thread/Locker.h>
 

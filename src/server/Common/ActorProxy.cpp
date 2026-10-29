@@ -1,5 +1,7 @@
 #include "ActorProxy.h"
 
+#include <cassert>
+
 #include "Event.h"
 #include "CommonPacket.h"   // KServerInfo
 #include "SystemPacket.h"

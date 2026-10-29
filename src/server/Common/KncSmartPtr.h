@@ -1,6 +1,6 @@
 #pragma once
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
-#define SmartPointer( classname ) class classname; typedef boost::shared_ptr<classname> classname##Ptr
-#define SmartPointers( structname ) struct structname; typedef boost::shared_ptr<structname> structname##Ptr
+#define SmartPointer( classname ) class classname; typedef std::shared_ptr<classname> classname##Ptr
+#define SmartPointers( structname ) struct structname; typedef std::shared_ptr<structname> structname##Ptr

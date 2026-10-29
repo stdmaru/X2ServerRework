@@ -2,8 +2,8 @@
 #include "ThreadManager.h"
 #include "ODBC/Odbc.h"
 
-#include <boost/bind/bind.hpp>
-using namespace boost::placeholders;
+#include <functional>
+using namespace std::placeholders;
 
 //ImplOstmOperatorW( KThreadManager );
 NiImplementRootRTTI( KThreadManager );
@@ -123,7 +123,7 @@ void KThreadManager::Init( int nThreadNum_ )
 
     for( int i = 0; i < nThreadNum_; i++ )
     {
-        boost::shared_ptr<KThread> spThread( CreateThread() );
+        std::shared_ptr<KThread> spThread( CreateThread() );
         spThread->SetThreadManager( this );
         m_vecThread.push_back( spThread );
     }
@@ -133,7 +133,7 @@ void KThreadManager::BeginThread()
 {
     KLocker lock( m_csVecThread );
 
-    std::for_each( m_vecThread.begin(), m_vecThread.end(), boost::bind( &KThread::Begin, _1 ) );
+    std::for_each( m_vecThread.begin(), m_vecThread.end(), std::bind( &KThread::Begin, _1 ) );
 }
 
 void KThreadManager::EndThread( DWORD dwTimeOut_/* = 10000 */ )
@@ -181,7 +181,7 @@ void KThreadManager::SetThreadNum( size_t nThreadNum_ )
     {
         for( size_t i = m_vecThread.size(); i < nThreadNum_; i++ )
         {
-            boost::shared_ptr<KThread> spThread( CreateThread() );
+            std::shared_ptr<KThread> spThread( CreateThread() );
             spThread->SetThreadManager( this );
             spThread->Begin();
             m_vecThread.push_back( spThread );

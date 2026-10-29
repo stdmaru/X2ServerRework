@@ -34,7 +34,7 @@
 		lua_tinker::class_def<KDEBAuthManager>( g_pLua, "AddAuthServiceAddress", &KDEBAuthManager::AddAuthServiceAddress );
 
 		#undef REG_LUA_ENUM
-		#define REG_LUA_ENUM( id ) lua_tinker::decl( g_pLua, #id, KDEBAuth::##id );
+		#define REG_LUA_ENUM( id ) lua_tinker::decl( g_pLua, #id, KDEBAuth::id );
 
 		REG_LUA_ENUM( DEB_AUTH )
 		REG_LUA_ENUM( DEB_AUTH_SECOND_SECURITY )

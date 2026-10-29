@@ -145,6 +145,8 @@ bool CXSLRoom::IsValidPvpGameType( const PVP_GAME_TYPE ePvpGameType )
 	case PGT_TEAM_DEATH:
 	case PGT_SURVIVAL:
 		return true;
+	default:
+		break;
 	}
 
 	return false;

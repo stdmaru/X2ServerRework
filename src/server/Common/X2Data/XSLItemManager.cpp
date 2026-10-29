@@ -985,7 +985,6 @@ bool CXSLItemManager::AddShopItemList_LUA()
 		int buf;
 		while( luaManager.GetValue(index, buf) == S_OK )
 		{
-			const int iSaleGroup = buf;
 			// 서버에서는 파싱할 필요가 없음
 
 			index++;
@@ -1173,7 +1172,7 @@ bool CXSLItemManager::GetItemLevel( IN const char cUnitType, IN const char cUnit
 
 	// 소켓 옵션에 따른 아이템 레벨 정보 얻기(추가 레벨)
 	int iSocketItemLevel = 0;
-	BOOST_TEST_FOREACH( int, iSocket, kItemInfo.m_vecItemSocket )
+	for( int iSocket : kItemInfo.m_vecItemSocket )
 	{
 		if( iSocket > 0 )
 		{
@@ -1192,15 +1191,15 @@ void CXSLItemManager::GetCaculatedItemLevelByEnchantStat( IN const KStat& kEncha
 
 	float fItemLevel = 0.f;
 
-	fItemLevel += (float)(kEnchantItemStat.m_iBaseHP) / IESV_BASE_HP;
+	fItemLevel += (float)(kEnchantItemStat.m_iBaseHP) / static_cast<float>( IESV_BASE_HP );
 
-	fItemLevel += (float)(kEnchantItemStat.m_iAtkPhysic) / IESV_PHYSIC_ATTACK;
+	fItemLevel += (float)(kEnchantItemStat.m_iAtkPhysic) / static_cast<float>( IESV_PHYSIC_ATTACK );
 
-	fItemLevel += (float)(kEnchantItemStat.m_iAtkMagic) / IESV_MAGIC_ATTACK;
+	fItemLevel += (float)(kEnchantItemStat.m_iAtkMagic) / static_cast<float>( IESV_MAGIC_ATTACK );
 
-	fItemLevel += (float)(kEnchantItemStat.m_iDefPhysic) / IESV_PHYSIC_DEFENCE;
+	fItemLevel += (float)(kEnchantItemStat.m_iDefPhysic) / static_cast<float>( IESV_PHYSIC_DEFENCE );
 
-	fItemLevel += (float)(kEnchantItemStat.m_iDefMagic) / IESV_MAGIC_DEFENCE;
+	fItemLevel += (float)(kEnchantItemStat.m_iDefMagic) / static_cast<float>( IESV_MAGIC_DEFENCE );
 
 	iItemLevel = static_cast<int>(fItemLevel);
 }
@@ -1221,6 +1220,8 @@ bool CXSLItemManager::IsCanUseQuickSlotItemInVillage( IN const int iItemID ) con
 	{
 	case CXSLItem::CIG_THROW_ITEM:
 		return false;
+	default:
+		break;
 	}
 
 	return true;
@@ -1377,7 +1378,7 @@ bool CXSLItemManager::AddItemConvertInfo_LUA()
 	}
 
 	// 파싱한 아이템 교환 정보를 저장하자!
-	BOOST_TEST_FOREACH( const int, iItemID, vecTargetItemID )
+	for( const int iItemID : vecTargetItemID )
 	{
 		m_mapItemConvertTable.insert( std::make_pair( iItemID, kConvertInfo ) );
 	}
@@ -1473,7 +1474,7 @@ void CXSLItemManager::AddCoupleAnniversaryDayRewardItem_LUA( int iItemID )
 		return;
 	}
 
-	BOOST_TEST_FOREACH( int, iID, m_vecCoupleAnniversaryDayRewardItem )
+	for( int iID : m_vecCoupleAnniversaryDayRewardItem )
 	{
 		if( iItemID == iID )
 		{
@@ -1502,7 +1503,7 @@ void CXSLItemManager::AddWeddingAnniversaryDayRewardItem_LUA( int iItemID )
 		return;
 	}
 
-	BOOST_TEST_FOREACH( int, iID, m_vecWeddingAnniversaryDayRewardItem )
+	for( int iID : m_vecWeddingAnniversaryDayRewardItem )
 	{
 		if( iItemID == iID )
 		{

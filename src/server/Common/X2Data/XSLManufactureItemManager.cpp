@@ -199,13 +199,13 @@ bool CXSLManufactureItemManager::AddManufactureResultTemplet_LUA()
 	return true;
 }
 
-bool CXSLManufactureItemManager::AddManufactureVillageData_LUA( int iManufactureID, int iVillageMapID )
+bool CXSLManufactureItemManager::AddManufactureVillageData_LUA( int /*iManufactureID*/, int /*iVillageMapID*/ )
 {
 	// 마을별로 구분되는 제조정보를 서버에서도 파싱할지 생각해보자..
 	return true;
 }
 
-bool CXSLManufactureItemManager::AddManufactureResultGroup_LUA( int iGroupID, int iItemID )
+bool CXSLManufactureItemManager::AddManufactureResultGroup_LUA( int /*iGroupID*/, int /*iItemID*/ )
 {
 	return true;
 }

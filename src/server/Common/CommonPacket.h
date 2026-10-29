@@ -671,6 +671,8 @@ DECL_DATA( KDeletedItemInfo )
 		case DR_NOT_DELETE:
 		case DR_NO_REASON:
 			return true;
+		default:
+			break;
 		}
 
 		return false;
@@ -1049,6 +1051,7 @@ DECL_DATA( KBuffBehaviorFactor )
 		m_uiType = rhs_.m_uiType;
 		m_vecValues = rhs_.m_vecValues;
 	}
+	KBuffBehaviorFactor& operator=( const KBuffBehaviorFactor& ) = default; // implicit one is deprecated next to the copy constructor
 
 	float operator[]( const UINT uiIndex_ ) const        /// 값을 쓰는데는 사용할 수 없음
 	{
@@ -1079,6 +1082,7 @@ DECL_DATA( KBuffFinalizerFactor )
 		m_uiType = rhs_.m_uiType;
 		m_vecValues = rhs_.m_vecValues;
 	}
+	KBuffFinalizerFactor& operator=( const KBuffFinalizerFactor& ) = default; // implicit one is deprecated next to the copy constructor
 
 	float operator[]( const UINT uiIndex_ ) const /// 값을 쓰는데는 사용할 수 없음
 	{
@@ -4487,10 +4491,10 @@ DECL_DATA( KPostItemInfo )
 		, m_iScriptIndex( 0 )
 		, m_iQuantity( 0 )
 		, m_cEnchantLevel( 0 )
-		, m_ucSealData( 0 )
-		, m_bRead( false )
-		//{{ 2013. 05. 09	최육사	아이템 개편
 		, m_cItemState( 0 )
+		, m_ucSealData( 0 )
+		//{{ 2013. 05. 09	최육사	아이템 개편
+		, m_bRead( false )
 		//}}
 		//{{ 2012. 08. 21	박세훈	우편 로직 변경
 		//}}
@@ -5200,8 +5204,8 @@ DECL_PACKET( EGS_GET_ITEM_NOT )
 		, m_iItemID( 0 )
 		, m_iDropItemUID( 0 )
 		, m_cGetItemType( GIT_DROP_ITEM )	// 기본적으로 드롭아이템
-		, m_iTotalED( 0 )
 		, m_bIsItemSuccess( false )
+		, m_iTotalED( 0 )
 		//{{ 2013. 1. 14	박세훈	던전 및 필드 드랍 아이템에 강화 부여
 		, m_cEnchantLevel( 0 )
 		//}}
@@ -5779,10 +5783,10 @@ DECL_DATA( KChannelChangeInfo )
 
 
 	KChannelChangeInfo()
-		: m_bIsPcBang( false )
-		, m_iPcBangType( -1 )
+		: m_iEquippedTitleID( 0 )
+		, m_bIsPcBang( false )
 		//{{ 2010. 11. 17	최육사	칭호 데이터 크기 늘이기
-		, m_iEquippedTitleID( 0 )
+		, m_iPcBangType( -1 )
 		//}}
 		//{{ 2012. 12. 12	박세훈	겨울 방학 전야 이벤트( 임시, 하드 코딩 )
 		//}}

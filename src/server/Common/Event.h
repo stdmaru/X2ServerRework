@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Serializer/SerBuffer.h>
+#include <Serializer/Serializer.h> // KSerializer, used by the templates below
 #include "KncSmartPtr.h"
 #include "KncUidType.h"
 #include <dbg/dbg.hpp>
@@ -57,7 +58,7 @@ protected:
 class KEvent;
 SERIALIZE_DEFINE_TAG(KEvent, eTAG_USERCLASS);
 SERIALIZE_DECLARE_PUTGET(KEvent);
-class KEvent : /*public boost::noncopyable, */public BlockAllocator<KEvent, 2000>
+class KEvent : /*public x2::NonCopyable, */public BlockAllocator<KEvent, 2000>
 {
 public:
 	//{{ 2011. 06. 08	최육사	KEvent 출처 등록 기능
@@ -139,7 +140,7 @@ case id: \
     packet kPacket; \
     if( !ks.Get(kPacket) ) \
     { \
-        START_LOG( cerr, L"deserialze failed." L#id L" - " L#packet ); \
+        START_LOG( cerr, L"deserialze failed." L ## #id L" - " L ## #packet ); \
     } \
     else \
 	{ \
@@ -153,8 +154,8 @@ break
 #define  CASE(id)                  _CASE(id, K##id)
 
 #define _IMPL_ON_FUNC(id, packet)   void CLASS_TYPE::ON_##id( UidType anTrace_[], packet& kPacket_ )
-#define  IMPL_ON_FUNC_NOPARAM(id)   void CLASS_TYPE::ON_##id( UidType anTrace_[] )
-#define  IMPL_ON_FUNC(id)           void CLASS_TYPE::ON_##id( UidType anTrace_[], K##id& kPacket_ )
+#define  IMPL_ON_FUNC_NOPARAM(id)   void CLASS_TYPE::ON_##id( UidType /*anTrace_*/[] )
+#define  IMPL_ON_FUNC(id)           void CLASS_TYPE::ON_##id( UidType /*anTrace_*/[], K##id& kPacket_ )
 // ^ _IMPL... 매크로를 사용해서 이중으로 정의하면 Visual Assist가 제대로 읽지 못한다.
 
 #define _DECL_ON_FUNC(id, packet)   void ON_##id( UidType anTrace_[], packet& kPacket )

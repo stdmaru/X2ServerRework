@@ -18,7 +18,7 @@ class KSMSPhoneNumberManager
 
 public:
 	KSMSPhoneNumberManager(void);
-	~KSMSPhoneNumberManager(void);
+	virtual ~KSMSPhoneNumberManager(void);
 
 	enum PHONE_NUMBER_LIST_TYPE
 	{

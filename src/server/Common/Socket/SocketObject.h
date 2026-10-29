@@ -1,6 +1,6 @@
 #pragma once
-#include <WinSock2.h>
-#include <atltime.h>    // CTime
+#include "x2/platform/net.h"
+#include "x2/platform/win32.h"    // CTime
 #include "Socket/Overlapped.h"
 #include "CircularQueue.h"
 #include <Thread/Locker.h>
@@ -48,10 +48,14 @@ public:
     void    SetKey( DWORD dwKey )   { m_dwKey = dwKey; }
     DWORD   GetKey() const          { return m_dwKey; }
     void    SetIOEvent( KOVERLAPPED::ENUM_IO_MODE eMode, HANDLE hEvent );   // 외부에서 생성한 이벤트를 설정.
+#if defined(_WIN32)
     BOOL    CancelIo()              { return ::CancelIo( (HANDLE)m_sock ); }
+#else
+    BOOL    CancelIo();             // network layer: server/common-net
+#endif
     void    SetSendQueueSize( int nSize )   { m_kSendQueue.Resize( nSize ); }
 
-    unsigned int GetIP() const			{ return m_sockaddr.sin_addr.S_un.S_addr; }
+    unsigned int GetIP() const			{ return m_sockaddr.sin_addr.s_addr; }
     const char* GetIPStr() const		{ return inet_ntoa(m_sockaddr.sin_addr); }
     unsigned short GetPort() const		{ return ntohs(m_sockaddr.sin_port); }
 

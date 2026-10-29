@@ -1,8 +1,8 @@
 #include "ActorManager.h"
 #include "NetError.h"
 
-#include <boost/bind/bind.hpp>
-using namespace boost::placeholders;
+#include <functional>
+using namespace std::placeholders;
 
 NiImplementRootRTTI( KActorManager );
 ImplInstanceKeeping( KActorManager );
@@ -64,7 +64,8 @@ void KActorManager::Tick()
 	//}}
 
     // 1. 각 Actor에 대한 event를 처리
-    ForEach( boost::bind( &KActor::Tick, _1 ) );
+    auto tick = []( const KActorPtr& spActor ) { spActor->Tick(); };
+    ForEach( tick );
 
     // 2. 삭제 상태에서 대기중인 유저 객체를 파괴. ( 절차 1. 의 루프에서 delete, insert 할 수 없다. )
     { // locking scope
@@ -72,7 +73,7 @@ void KActorManager::Tick()
         if( !m_vecDelReserved.empty() )
         {
             std::for_each( m_vecDelReserved.begin(), m_vecDelReserved.end(),
-                boost::bind( &KActorManager::Delete, boost::ref( *this ), _1 ) );
+                std::bind( &KActorManager::Delete, std::ref( *this ), _1 ) );
 
             m_vecDelReserved.clear();
         }
@@ -85,7 +86,7 @@ void KActorManager::Tick()
         if( !m_vecAddAct.empty() )
         {
             std::for_each( m_vecAddAct.begin(), m_vecAddAct.end(),
-                boost::bind( &KActorManager::AddActor, boost::ref( *this ), _1 ) );
+                std::bind( &KActorManager::AddActor, std::ref( *this ), _1 ) );
 
             m_vecAddAct.clear();
         }
@@ -159,7 +160,7 @@ bool KActorManager::UpdateUID( const UidType nUID_, KActor& kActor_ )
     // 2007. 12. 07. jseop.
     KLocker lock( m_csAct );
 
-    KActorPtr spActor = boost::static_pointer_cast<KActor>( kActor_.shared_from_this() );
+    KActorPtr spActor = std::static_pointer_cast<KActor>( kActor_.shared_from_this() );
 
     _JIF( spActor, return false );
 
@@ -241,7 +242,7 @@ void KActorManager::QueueingToAll( const KEventPtr& spEvent )
 //{
 //    KLocker lock( m_csAct );
 //
-//    ForEach( boost::bind( &KActor::SendID, _1, usEventID ) );
+//    ForEach( std::bind( &KActor::SendID, _1, usEventID ) );
 //}
 
 //{{ 2008. 10. 10  최육사	첫번째 UID얻기

@@ -233,7 +233,6 @@ void KProfiler::DumpProfileOutput( std::wostream& stm_ )
 		//unsigned int Indent = 0;
 
 		wchar_t Line[256] = {0};
-		wchar_t Name[256] = {0};
 		wchar_t IndentedName[256] = {0};
 
 		wchar_t Average[16] = {0};
@@ -279,7 +278,6 @@ void KProfiler::DumpProfileOutput( std::wostream& stm_ )
 		//unsigned int Indent = 0;
 
 		wchar_t Line[256] = {0};
-		wchar_t Name[256] = {0};
 		wchar_t IndentedName[256] = {0};
 
 		wchar_t Average[16] = {0};
@@ -389,7 +387,6 @@ void KProfiler::DumpToLogFile()
 		//unsigned int Indent = 0;
 
 		wchar_t Line[256] = {0};
-		wchar_t Name[256] = {0};
 		wchar_t IndentedName[256] = {0};
 
 		wchar_t Average[16] = {0};
@@ -435,7 +432,6 @@ void KProfiler::DumpToLogFile()
 		//unsigned int Indent = 0;
 
 		wchar_t Line[256] = {0};
-		wchar_t Name[256] = {0};
 		wchar_t IndentedName[256] = {0};
 
 		wchar_t Average[16] = {0};

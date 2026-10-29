@@ -1,14 +1,14 @@
 #include "DBConnectionManager.h"
 #include "BaseServer.h"
+#include "x2/platform/format.h"
 
 #include "cryptopp/des.h"
 #include "cryptopp/modes.h"
 #include "cryptopp/hmac.h"
-#include "cryptopp/md5.h"
 #include "KncSecurity/ByteStream.h"
 
 #undef max
-#include <boost/random.hpp>
+#include <random>
 
 // c++파일에만 두자!
 #define MASK_FIRST( key )		( key & 0x000000ff )
@@ -47,7 +47,7 @@ namespace
 
 	std::string ConvertToString( const unsigned char ucData )
 	{
-		const std::string strTemp = boost::str( boost::format( "%03d" ) % static_cast<int>(ucData) );
+		const std::string strTemp = x2::str( x2::format( "%03d" ) % static_cast<int>(ucData) );
 		return strTemp;
 	}
 
@@ -133,9 +133,9 @@ namespace
 	// des알고리즘 암호화
 	KncSecurity::KByteStream MakeCryptKey()
 	{
-		//static boost::mt19937 rng;
-		//static boost::uniform_int<DWORD> uint32( 1, std::numeric_limits<byte>::max() );   // 1 이상. SPI 0은 생성자에서 이미 설정했다.
-		//static boost::variate_generator<boost::mt19937&, boost::uniform_int<DWORD> > die(rng, uint32);
+		//static std::mt19937 rng;
+		//static std::uniform_int_distribution<DWORD> uint32( 1, std::numeric_limits<byte>::max() );   // 1 이상. SPI 0은 생성자에서 이미 설정했다.
+		//static boost::variate_generator<std::mt19937&, std::uniform_int_distribution<DWORD> > die(rng, uint32);
 
 		KncSecurity::KByteStream bsKey;
 		bsKey.clear();

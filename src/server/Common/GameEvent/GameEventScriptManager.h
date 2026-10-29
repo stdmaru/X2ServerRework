@@ -196,7 +196,7 @@ public:
 
 public:
 	KGameEventScriptManager(void);
-	~KGameEventScriptManager(void);
+	virtual ~KGameEventScriptManager(void);
 
 	// for lua
 	bool AddEventMonsterInfo_LUA();

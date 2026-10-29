@@ -11,10 +11,10 @@ m_bPcBangEvent( false ),
 m_bDirectReward( false ),
 //}}
 //{{ 2011. 08. 09	최육사	투니 랜드 채널링 이벤트
-m_iChannelCode( -1 ),
+m_bAccountEvent( false ),
 //}}
 //{{2010. 06. 11  최육사	계정단위 접속시간 이벤트
-m_bAccountEvent( false )
+m_iChannelCode( -1 )
 //}}
 {
 }

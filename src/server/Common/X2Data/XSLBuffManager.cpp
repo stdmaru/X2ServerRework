@@ -128,7 +128,7 @@ const CXSLBuffManager::BuffTemplet* CXSLBuffManager::GetBuffTemplet( IN const in
 //{{ 2012. 04. 17	박세훈	어둠의 문 개편
 bool CXSLBuffManager::BuffTemplet::CheckRoomType( IN const int& iCheckRoomType ) const
 {
-	BOOST_TEST_FOREACH( int, iRoomType, m_vecRoomType )
+	for( int iRoomType : m_vecRoomType )
 	{
 		if( iCheckRoomType == iRoomType )
 		{
