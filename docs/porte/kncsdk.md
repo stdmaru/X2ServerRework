@@ -24,6 +24,7 @@ SDK interno, do qual todos os servidores e o cliente dependem. Partes:
 | Parte | Estado |
 |---|---|
 | Compilação Linux (GCC 16 Debug, Clang 23 Release) | ok, sem warnings |
+| Compilação Windows MinGW-w64 (GCC 16, UCRT), testes no Wine 11 | ok, sem warnings; `kncsdk_tests` passa (2026-10-29). Sem `kncsdk_lua` (falta LuaJIT, D5) |
 | Compilação Windows (MSVC) | **não testada** |
 | União com `KNCSDK_Client` | feita (`SecureBuffer`, `KCSLockType`), ver abaixo |
 | Testes | 28 casos / 964 asserções (`kncsdk_tests`) + 3 (`kncsdk_lua_tests`), todos passando |
@@ -55,6 +56,7 @@ Interface pública (nomes, macros, assinaturas) mantida; mudou o que está lista
 | `lua_tinker` `tostring_s64/u64` | `%I64d` só existe no MSVC | `%lld`/`%llu` |
 | `KncUtil::EraseFrontWord` | Dependia de *overflow* de `npos` em 32 bits | Mesmo resultado, explícito |
 | `SerBuffer::Compress/UnCompress` | Passava `DWORD*` onde zlib espera `uLongf*` (8 bytes no Linux) | Variáveis do tipo certo; o tamanho na rede continua `DWORD` |
+| `SerBuffer::UnCompress` | Ignorava a falha ao ler o tamanho original e descomprimia com um valor não inicializado | Retorna `false` (warning do GCC em Release) |
 
 ### Portabilidade (sem mudança de comportamento)
 

@@ -93,6 +93,35 @@
                 "CMAKE_BUILD_TYPE": "Release",
                 "X2_DEV_TOOLS": "OFF"
             }
+        },
+        {
+            "name": "mingw-base",
+            "hidden": true,
+            "inherits": "base",
+            "toolchainFile": "${sourceDir}/cmake/toolchains/mingw-w64-x86_64.cmake",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Linux"
+            }
+        },
+        {
+            "name": "mingw-debug",
+            "inherits": "mingw-base",
+            "displayName": "MinGW-w64 Debug (cross to Windows x64, tests via Wine)",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "X2_DEV_TOOLS": "ON"
+            }
+        },
+        {
+            "name": "mingw-release",
+            "inherits": "mingw-base",
+            "displayName": "MinGW-w64 Release (cross to Windows x64, tests via Wine)",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "X2_DEV_TOOLS": "OFF"
+            }
         }
     ],
     "buildPresets": [
@@ -119,6 +148,14 @@
         {
             "name": "windows-release",
             "configurePreset": "windows-release"
+        },
+        {
+            "name": "mingw-debug",
+            "configurePreset": "mingw-debug"
+        },
+        {
+            "name": "mingw-release",
+            "configurePreset": "mingw-release"
         }
     ],
     "testPresets": [
@@ -162,6 +199,26 @@
             "configurePreset": "windows-release",
             "output": {
                 "outputOnFailure": true
+            }
+        },
+        {
+            "name": "mingw-debug",
+            "configurePreset": "mingw-debug",
+            "output": {
+                "outputOnFailure": true
+            },
+            "environment": {
+                "WINEDEBUG": "-all"
+            }
+        },
+        {
+            "name": "mingw-release",
+            "configurePreset": "mingw-release",
+            "output": {
+                "outputOnFailure": true
+            },
+            "environment": {
+                "WINEDEBUG": "-all"
             }
         }
     ]

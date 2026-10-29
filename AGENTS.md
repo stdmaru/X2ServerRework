@@ -29,11 +29,12 @@ com CMake e x64, limpando o código no caminho. Começa pelas bibliotecas, segue
 - **Variante única: US / `_SERVICE_`.** As ferramentas de debug/dev/admin ficam sob `X2_DEV_TOOLS` (ver [Debug e dev](docs/original/debug-e-dev.md)).
   Outros países, anti-cheat, integrações de publisher e código legado são descartados.
 - **Só 64 bits: x86_64 hoje, arm64 no futuro.** Windows (MSVC) e Linux (GCC/Clang) precisam compilar a partir do mesmo CMake.
+  Sem máquina Windows, os caminhos `_WIN32` são verificados com **MinGW-w64 + Wine** (preset `mingw-debug`, decisão T18).
   Nada de assembly/intrínsecos x86, nada de supor `char` com ou sem sinal (o build força `-fsigned-char`) e nada de sincronizar threads com `volatile`.
 - `windows.h` e APIs de sistema só existem em `src/platform` (`x2::platform`). Código portado inclui `x2/platform/win32.h`
   no lugar de `<windows.h>`/`<atltime.h>`/`<tchar.h>`. Ver [Plataforma](docs/porte/platform.md).
 - Módulos marcados `frozen = true` em `tools/import/modules/` já foram portados à mão: o importador se recusa a escrever neles.
-- Build sem warnings (GCC e Clang). Warning novo é corrigido, não ignorado.
+- Build sem warnings (GCC, Clang e MinGW). Warning novo é corrigido, não ignorado.
 
 ## Layout
 
@@ -52,6 +53,8 @@ _client/        cliente original e assets (fora do git)
 ```bash
 cmake --preset linux-debug && cmake --build --preset linux-debug     # build (dev tools ON)
 ctest --preset linux-debug                                            # testes
+cmake --preset mingw-debug && cmake --build --preset mingw-debug     # build Windows x64 (MinGW-w64, cruzado)
+ctest --preset mingw-debug                                            # testes Windows no Wine
 python3 tools/import/import.py <módulo> --dry-run                     # importador
 python3 tools/import/tests/test_condres.py                            # testes do importador
 python3 tools/import/tests/test_flagsim.py
@@ -96,7 +99,7 @@ O wiki em `docs/` é a memória do projeto. Ele é organizado como **wiki naveg�
 
 ### Branches
 
-- **`main` está sempre verde**: compila sem warnings (GCC e Clang), `ctest` passa e `tools/docs/check_links.py` não acusa nada. Nunca se trabalha direto nela.
+- **`main` está sempre verde**: compila sem warnings (GCC, Clang e MinGW), `ctest` passa (Linux e Wine) e `tools/docs/check_links.py` não acusa nada. Nunca se trabalha direto nela.
 - **Um branch curto por passo do roadmap**, com nome `área/assunto`. Áreas: `platform`, `kncsdk`, `server`, `client`, `tools`, `docs`, `build`.
   Exemplos: `tools/server-flags`, `server/common-import`, `build/windows-msvc`.
 - **Integração por fast-forward** (`git merge --ff-only`), com histórico linear. Se a `main` andou, faça `git rebase main` no branch antes de integrar.

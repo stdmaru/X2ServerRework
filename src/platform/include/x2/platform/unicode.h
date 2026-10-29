@@ -15,7 +15,7 @@ std::wstring   Utf16ToWide(std::u16string_view s);
 
 // Translates a printf format written for MSVC wide functions to the C library in use:
 // in MSVC `%s`/`%c` in a wide format mean wide arguments and `%S` narrow ones (the opposite of
-// ISO C), and `%I64d` is `%lld`. Identity on Windows.
+// ISO C), and `%I64d` is `%lld`. Identity with the MSVC CRT; MinGW's ISO stdio is translated like glibc.
 std::wstring   TranslateWideFormat(const wchar_t* fmt);
 
 } // namespace x2::platform

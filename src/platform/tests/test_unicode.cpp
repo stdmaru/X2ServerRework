@@ -29,7 +29,7 @@ TEST_CASE("UTF-16 is the wire format")
     CHECK(Utf16ToWide(u16) == wide);
 }
 
-#if !defined(_WIN32)
+#if !defined(_WIN32) || (defined(__USE_MINGW_ANSI_STDIO) && __USE_MINGW_ANSI_STDIO)
 TEST_CASE("MSVC wide format semantics are translated")
 {
     CHECK(TranslateWideFormat(L"%s=%d") == L"%ls=%d");

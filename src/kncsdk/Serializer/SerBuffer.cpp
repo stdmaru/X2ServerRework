@@ -120,7 +120,9 @@ bool KSerBuffer::UnCompress()
 
     m_readOffset = 0;
 
-    Read( &dwOriginSize, sizeof( dwOriginSize ) );
+    // the original ignored a failed read and decompressed with an uninitialized size
+    if( !Read( &dwOriginSize, sizeof( dwOriginSize ) ) )
+        return false;
 
     dwRetSize = dwOriginSize;
 

@@ -41,6 +41,8 @@ Código portado inclui `x2/platform/win32.h` no lugar de `<windows.h>`, `<atltim
 
 - **`%s` em formato largo**: no MSVC, `%s` em `swprintf`/`CString::Format` significa string *larga*; na glibc significa *estreita* (crash).
   `TranslateWideFormat` converte `%s`→`%ls`, `%c`→`%lc`, `%S`→`%s` e `%I64d`→`%lld`, e é usada por `CString::Format` e pelos `*printf_s`.
+  No MinGW vale o mesmo: a libstdc++ liga `__USE_MINGW_ANSI_STDIO`, que troca o `printf` do CRT por uma implementação ISO C,
+  então a tradução fica ativa lá também (achado pelos testes no Wine). Só o CRT do MSVC dispensa a tradução.
 - **`L ## __FUNCTION__`** só existe no MSVC. `__WFUNCTION__` agora é um `const wchar_t*` em tempo de execução, que pode ser passado e concatenado via `<<`,
   mas não colado a outro literal. O servidor só usa como argumento.
 - **`GetCurrentTime`** é macro no `windows.h`: o `types.h` faz `#undef` para não quebrar `CTime::GetCurrentTime()`.
@@ -54,7 +56,7 @@ Código portado inclui `x2/platform/win32.h` no lugar de `<windows.h>`, `<atltim
 
 - `_beginthreadex` não suporta `CREATE_SUSPENDED`.
 - `CString` cobre só o subconjunto usado até agora (vai crescer conforme o servidor for portado).
-- Windows ainda **não foi compilado** (só Linux GCC 16 / Clang 23). O código separa os caminhos, mas falta validar no MSVC.
+- Windows: compila e passa nos testes com **MinGW-w64** (GCC 16, UCRT) rodando no Wine (T18, 2026-10-29). Falta validar no **MSVC**.
 
 ## Testes
 
