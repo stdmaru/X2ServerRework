@@ -1,0 +1,33 @@
+--- KNCSDK_Server/Include/ObjectPool/BoostAllocator.h
++++ KNCSDK_Client/Include/ObjectPool/BoostAllocator.h
+@@ -87,5 +87,4 @@
+ CRITICAL_SECTION*m_pCS;
+ };
+-//////////////////////////////////////////////////////////////////////////
+ //boost::object_poolwrappingclass
+ template<classAllocType>
+@@ -101,8 +100,4 @@
+ s_Pool.free((AllocType*)pPointer);
+ }
+-unsignedintGetNextAllocSize()
+-{
+-returnstatic_cast<unsignedint>(s_Pool.get_next_size());
+-}
+ private:
+ typedefboost::object_pool<AllocType>BoostObjectPool;
+@@ -111,5 +106,4 @@
+ template<classAllocType>
+ typenameBoostAllocator<AllocType>::BoostObjectPoolBoostAllocator<AllocType>::s_Pool(1);//생성자의전달인자는미리생성해놓을메모리블럭갯수
+-//////////////////////////////////////////////////////////////////////////
+ //boost::object_poolwrappingclass-synchronization
+ template<classAllocType>
+@@ -127,9 +121,4 @@
+ s_Pool.free((AllocType*)pPointer);
+ }
+-unsignedintGetNextAllocSize()
+-{
+-AllocatorLockerlock(s_cs);
+-returnstatic_cast<unsignedint>(s_Pool.get_next_size());
+-}
+ private:
+ typedefboost::object_pool<AllocType>BoostObjectPool;

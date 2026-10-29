@@ -1,0 +1,44 @@
+--- KNCSDK_Server/Include/KncSecurity/SecureBuffer.h
++++ KNCSDK_Client/Include/KncSecurity/SecureBuffer.h
+@@ -17,6 +17,6 @@
+ boolCreate(constvoid*,unsignedlongnBytes);
+ //voidSet(constKByteStream&);
+-boolIsAuthentic();//GePayload()에서한번호출됨.외부에서불릴수있음
+-boolGetPayload(KByteStream&payload);
++boolIsAuthentic()const;//GePayload()에서한번호출됨.외부에서불릴수있음
++boolGetPayload(KByteStream&payload)const;
+ boolGetPayload(char*,int*);
+ voidSetAccepted();
+@@ -30,4 +30,32 @@
+ constchar*GetDataPtr()const;//forSOCKETI/Ofunction.
+ unsignedlongGetSize()const;
++//{{
++//////////////////////////////////////////////////////////////////////////
++//SADatabase를Session객체의맴버로사용하기위하여추가된변수
++//////////////////////////////////////////////////////////////////////////
++boolCreate_Local(constvoid*pData,unsignedlongnBytes,KSADatabase*pSADatabase);
++boolCreate_Local(constKByteStream&payload,KSADatabase*pSADatabase);
++boolGetPayload_Local(KByteStream&payload,KSADatabase*pSADatabase);
++boolGetPayload_Local(char*pPayload,int*pnBytes,KSADatabase*pSADatabase);
++voidSetAccepted_Local(KSADatabase*pSADatabase);
++boolCreate_notRWM_Local(constKByteStream&payload,KSADatabase*pSADatabase);
++boolIsAuthentic_notRWM_Local(boolbCheckSequenceNum/*=true*/,KSADatabase*pSADatabase);
++boolGetPayload_notRWM_Local(KByteStream&payload,boolbAuthentic/*=true*/,boolbCheckSequenceNum/*=true*/,KSADatabase*pSADatabase);
++voidGenerateIV_Local(KByteStream&bsIV_,KSADatabase*pSADatabase)const;
++KByteStreamGenerateCrypt_Local(constKByteStream&payload,constKByteStream&iv,KSADatabase*pSADatabase)const;
++KByteStreamGeneratePadding_Local(constKByteStream&payload,KSADatabase*pSADatabase)const;
++KByteStreamGenerateICV_Local(constKByteStream&auth,KSADatabase*pSADatabase)const;
++unsignedlongGetMaxSecureSize_Local(constKByteStream&payload,KSADatabase*pSADatabase)const;
++unsignedlongGetMaxPadSize_Local(constKByteStream&payload,KSADatabase*pSADatabase)const;
++inlineboolIsValidSize_Local(KSADatabase*pSADatabase)const;
++inlineboolIsValidSPIndex_Local(SpiType&nSPIndex,KSADatabase*pSADatabase)const;
++inlineboolIsValidSequenceNum_Local(SeqType&nSequenceNum,KSADatabase*pSADatabase)const;
++inlineboolIsValidSequenceNum_notRWM_Local(SeqType&nSequenceNum,KSADatabase*pSADatabase);
++inlineboolIsValidICV_Local(KSADatabase*pSADatabase)const;
++boolIsAuthentic_Local(KSADatabase*pSADatabase);
++//////////////////////////////////////////////////////////////////////////
++//SADatabase를Session객체의맴버로사용하기위하여추가된변수
++//////////////////////////////////////////////////////////////////////////
++//}}
+ private:
+ KSecurityAssociation&GetSA();

@@ -1,0 +1,244 @@
+--- KNCSDK_Server/Include/KncUtil.h
++++ KNCSDK_Client/Include/KncUtil.h
+@@ -2,5 +2,5 @@
+ #defineBEGIN_NAMESPACE(name)namespacename{
+ #defineEND_NAMESPACE}
+-#defineNUM_ELEMENTS(x)(sizeof((x))/sizeof(0[x]))//vector등에사용시컴파일에러를내도록의도된매크로입니다.
++#defineNUM_ELEMENTS(x)(sizeof((x))/sizeof(0[x]))//vectorµî¿¡»ç¿ë½ÃÄÄÆÄÀÏ¿¡·¯¸¦³»µµ·ÏÀÇµµµÈ¸ÅÅ©·ÎÀÔ´Ï´Ù.
+ #include<KncMacro.h>
+ #include<string>
+@@ -13,6 +13,4 @@
+ #include<boost/format.hpp>
+ #include<sstream>
+-#include<set>
+-#include<vector>
+ //{{GetTimeStampForLoadedLibrary
+ #include<DbgHelp.h>
+@@ -33,5 +31,5 @@
+ if(lpMsgBuf)
+ LocalFree(lpMsgBuf);
+-returnstd::wstring(L"에러값얻기실패.!");
++returnstd::wstring(L"¿¡·¯°ª¾ò±â½ÇÆÐ.!");
+ }
+ std::wstringstrRet(lpMsgBuf);
+@@ -39,5 +37,5 @@
+ returnstrRet;
+ }
+-//MD5문자열얻기
++//MD5¹®ÀÚ¿­¾ò±â
+ inlinestd::stringGetMD5(std::string&strIN_)
+ {
+@@ -51,5 +49,5 @@
+ returnstm.str();
+ }
+-//실행파일명을알려준다.
++//½ÇÇàÆÄÀÏ¸íÀ»¾Ë·ÁÁØ´Ù.
+ inlinevoidGetAppName(OUTstd::wstring&strAppName)//051228.kkurrung.Modify.
+ {
+@@ -63,5 +61,5 @@
+ inlineboolGetTimeStampByNameW(OUTstd::wstring&strTimeStamp)//051228.kkurrung.Modify.
+ {
+-//실행파일생성시각얻기.
++//½ÇÇàÆÄÀÏ»ý¼º½Ã°¢¾ò±â.
+ HANDLEhFile;
+ HANDLEhFMap;
+@@ -73,7 +71,7 @@
+ returnfalse;
+ }
+-//파일맵핑오브젝트를만든다.
++//ÆÄÀÏ¸ÊÇÎ¿ÀºêÁ§Æ®¸¦¸¸µç´Ù.
+ hFMap=CreateFileMappingW(hFile,NULL,PAGE_READONLY,0,0,NULL);
+-//주소공간에맵한다.
++//ÁÖ¼Ò°ø°£¿¡¸ÊÇÑ´Ù.
+ HMODULEhModule;
+ hModule=(HMODULE)MapViewOfFile(hFMap,FILE_MAP_READ,0,0,0);
+@@ -88,5 +86,5 @@
+ inlineboolGetTimeStampByNameA(OUTstd::string&strTimeStamp)
+ {
+-//실행파일생성시각얻기.
++//½ÇÇàÆÄÀÏ»ý¼º½Ã°¢¾ò±â.
+ HANDLEhFile;
+ HANDLEhFMap;
+@@ -98,7 +96,7 @@
+ returnfalse;
+ }
+-//파일맵핑오브젝트를만든다.
++//ÆÄÀÏ¸ÊÇÎ¿ÀºêÁ§Æ®¸¦¸¸µç´Ù.
+ hFMap=CreateFileMappingA(hFile,NULL,PAGE_READONLY,0,0,NULL);
+-//주소공간에맵한다.
++//ÁÖ¼Ò°ø°£¿¡¸ÊÇÑ´Ù.
+ HMODULEhModule;
+ hModule=(HMODULE)MapViewOfFile(hFMap,FILE_MAP_READ,0,0,0);
+@@ -111,6 +109,6 @@
+ }
+ //}}kkurrung.
+-//pow를사용하므로,#include<cmath>해주어야한다.
+-inlinelonghstol(char*str)//넷마블옛인증방식에쓰이던함수.hex문자열을숫자로바꿔준다.
++//pow¸¦»ç¿ëÇÏ¹Ç·Î,#include<cmath>ÇØÁÖ¾î¾ßÇÑ´Ù.
++inlinelonghstol(char*str)//³Ý¸¶ºí¿¾ÀÎÁõ¹æ½Ä¿¡¾²ÀÌ´øÇÔ¼ö.hex¹®ÀÚ¿­À»¼ýÀÚ·Î¹Ù²ãÁØ´Ù.
+ {
+ if(str==NULL)return0L;
+@@ -131,6 +129,6 @@
+ for(i=len-1,j=0;i>=0;--i,++j)
+ {
+-p=(long)pow(16,j);
+-{//이전에는내부클래스의staticfunction으로구현되었으나,inline함수로만들면서수정.
++p=(long)pow(16.f,j);
++{//ÀÌÀü¿¡´Â³»ºÎÅ¬·¡½ºÀÇstaticfunctionÀ¸·Î±¸ÇöµÇ¾úÀ¸³ª,inlineÇÔ¼ö·Î¸¸µé¸é¼­¼öÁ¤.
+ if('0'<=str[i]&&str[i]<='9')
+ index=str[i]-'0';
+@@ -148,5 +146,5 @@
+ inlinetime_tTimeToInt(CTime&cTime_)
+ {
+-//CTime::GetTime()은__time64_t를리턴한다.안전하게structtm을얻어서timt_t를구하자.
++//CTime::GetTime()Àº__time64_t¸¦¸®ÅÏÇÑ´Ù.¾ÈÀüÇÏ°ÔstructtmÀ»¾ò¾î¼­timt_t¸¦±¸ÇÏÀÚ.
+ structtmtmBuff;
+ cTime_.GetLocalTm(&tmBuff);
+@@ -158,5 +156,5 @@
+ if(pStr==NULL)
+ returnbuf;
+-if(len!=-1&&len<=0)//florist.0이어도통과시키지말자.
++if(len!=-1&&len<=0)//florist.0ÀÌ¾îµµÅë°ú½ÃÅ°Áö¸»ÀÚ.
+ returnbuf;
+ //figureouthowmanynarrowcharacterswearegoingtoget
+@@ -183,5 +181,5 @@
+ if(pStr==NULL)
+ returnbuf;
+-if(len!=-1&&len<=0)//florist.0이어도통과시키지말자.
++if(len!=-1&&len<=0)//florist.0ÀÌ¾îµµÅë°ú½ÃÅ°Áö¸»ÀÚ.
+ returnbuf;
+ //figureouthowmanywidecharacterswearegoingtoget
+@@ -207,5 +205,5 @@
+ if(pStr==NULL)
+ returnbuf;
+-if(len!=-1&&len<=0)//florist.0이어도통과시키지말자.
++if(len!=-1&&len<=0)//florist.0ÀÌ¾îµµÅë°ú½ÃÅ°Áö¸»ÀÚ.
+ returnbuf;
+ //figureouthowmanywidecharacterswearegoingtoget
+@@ -228,5 +226,5 @@
+ inlineboolConvertStringToCTime(conststd::wstring&wstrDate,CTime&ctDate)
+ {
+-//##날짜문자열은항상:2008-01-2211:16:00이런식의패턴으로넘어와야한다.
++//##³¯Â¥¹®ÀÚ¿­ÀºÇ×»ó:2008-01-2211:16:00ÀÌ·±½ÄÀÇÆÐÅÏÀ¸·Î³Ñ¾î¿Í¾ßÇÑ´Ù.
+ if(wstrDate.size()<19)
+ {
+@@ -255,5 +253,5 @@
+ default:
+ {
+-if((*pT)>=L'0'&&(*pT)<=L'9'||(*pT)==L'.')
++if((*pT)>=L'0'&&(*pT)<=L'9'||(*pT)==L'.')//ÇØ¿ÜÆÀÃß°¡
+ {
+ if(wstrToken[iNowToken].size()==0)
+@@ -274,5 +272,5 @@
+ iToken[i]=_wtoi(wstrToken[i].c_str());
+ }
+-//{{2010.10.13최육사CTime에서exception발생안시키도록밖에서따로검사
++//{{2010.10.13ÃÖÀ°»çCTime¿¡¼­exception¹ß»ý¾È½ÃÅ°µµ·Ï¹Û¿¡¼­µû·Î°Ë»ç
+ if(iToken[2]<1||iToken[2]>31)
+ {
+@@ -288,5 +286,5 @@
+ }
+ //}}
+-//{{2009.10.21최육사초기값체크-exception내지않고false를return하도록함.
++//{{2009.10.21ÃÖÀ°»çÃÊ±â°ªÃ¼Å©-exception³»Áö¾Ê°ífalse¸¦returnÇÏµµ·ÏÇÔ.
+ if(iToken[0]==1900&&
+ iToken[1]==1&&
+@@ -296,5 +294,5 @@
+ iToken[5]==0)
+ {
+-//이런경우에도false리턴해야함.
++//ÀÌ·±°æ¿ì¿¡µµfalse¸®ÅÏÇØ¾ßÇÔ.
+ returnfalse;
+ }
+@@ -303,91 +301,3 @@
+ returntrue;
+ }
+-//{{2011.04.25최육사랜덤획득로직개선
+-inlinestd::vector<int>GetRandomNumberList(constintiMaxNum)
+-{
+-std::set<int>setDataSource;
+-std::vector<int>vecResult;
+-for(intiNum=0;iNum<iMaxNum;++iNum)
+-{
+-setDataSource.insert(iNum);
+-}
+-for(intiNum=0;iNum<iMaxNum;++iNum)
+-{
+-if(setDataSource.size()==0)
+-break;
+-constintiRandomRet=static_cast<int>(rand()%static_cast<int>(setDataSource.size()));
+-std::set<int>::iteratorsit;
+-intiIndex=0;
+-for(sit=setDataSource.begin();sit!=setDataSource.end();++sit)
+-{
+-if(iIndex!=iRandomRet)
+-{
+-++iIndex;
+-continue;
+-}
+-vecResult.push_back(*sit);
+-break;
+-}
+-if(sit!=setDataSource.end())
+-{
+-setDataSource.erase(sit);
+-}
+-}
+-returnvecResult;
+-}
+-template<classT>
+-inlinestd::vector<T>NumberShuffle(conststd::vector<T>&vecSource)
+-{
+-std::vector<T>vecDataSource=vecSource;
+-std::vector<T>vecResult;
+-constintiMaxNum=static_cast<int>(vecDataSource.size());
+-for(intiNum=0;iNum<iMaxNum;++iNum)
+-{
+-if(vecDataSource.size()==0)
+-break;
+-constintiRandomRet=static_cast<int>(rand()%static_cast<int>(vecDataSource.size()));
+-std::vector<T>::iteratorvitSelected;
+-intiIndex=0;
+-for(vitSelected=vecDataSource.begin();vitSelected!=vecDataSource.end();++vitSelected)
+-{
+-if(iIndex!=iRandomRet)
+-{
+-++iIndex;
+-continue;
+-}
+-vecResult.push_back(*vitSelected);
+-break;
+-}
+-if(vitSelected!=vecDataSource.end())
+-{
+-vecDataSource.erase(vitSelected);
+-}
+-}
+-returnvecResult;
+-}
+-//}}
+-//{{2011.06.13최육사스테이지로그
+-//#ifdefSERV_DUNGEON_STAGE_LOG
+-inlinestd::wstringGetCurrentTimeString()
+-{
+-CTimetCurTime=CTime::GetCurrentTime();
+-std::wstringwstrRegDate=(constwchar_t*)tCurTime.Format(_T("%Y-%m-%d%H:%M:%S")).GetString();
+-returnwstrRegDate;
+-}
+-//#endifSERV_DUNGEON_STAGE_LOG
+-//}}
+-//{{2011.07.27김민성투니랜드채널링
+-//#ifdefSERV_TOONILAND_CHANNELING
+-inlinestd::wstringEraseFrontWord(conststd::wstring&wstrWord,constwchar_tflag)
+-{
+-std::wstringwstrResult=wstrWord;
+-unsignedintuiIndex=static_cast<unsignedint>(wstrResult.find(L';'));
+-if(uiIndex!=0)
+-{
+-wstrResult.erase(0,uiIndex+1);
+-}
+-returnwstrResult;
+-}
+-//#endifSERV_TOONILAND_CHANNELING
+-//}}
+ END_NAMESPACE

@@ -1,0 +1,99 @@
+--- KNCSDK_Server/Include/dbg/logfile.cpp
++++ KNCSDK_Client/Include/dbg/logfile.cpp
+@@ -17,14 +17,8 @@
+ #include<sstream>//std::ostringstream
+ //}}florist
+-//{{2013.02.19최육사로그시스템개선
+-//#ifdefSERV_LOG_SYSTEM_NEW
+-//#include<unordered_map>
+-//#endifSERV_LOG_SYSTEM_NEW
+-//}}
+ #defineBOOST_UTF8_BEGIN_NAMESPACEnamespaceutf{
+ #defineBOOST_UTF8_END_NAMESPACE}
+ #defineBOOST_UTF8_DECL
+-#include<boost/detail/utf8_codecvt_facet.hpp>
+-#include<boost/detail/utf8_codecvt_facet.ipp>
++//#include"utf8_codecvt_facet.cpp"
+ #include<boost/archive/codecvt_null.hpp>
+ //현재경로에subfolder를받는다.함수는sub-folder의이름만받는다.
+@@ -112,5 +106,6 @@
+ //}}
+ std::localeold_locale;
+-std::localeutf8_locale(old_locale,newutf::utf8_codecvt_facet);
++//std::localeutf8_locale(old_locale,newutf::utf8_codecvt_facet);
++std::localeutf8_locale("");
+ //std::localeutf16_locale(old_locale,newboost::archive::codecvt_null<wchar_t>);
+ std::localeutf16_locale("");//051226.kkurrung.콘솔에한글출력문제(코드페이지지원문제).
+@@ -278,6 +273,8 @@
+ voidlogfile::SetLogLevel(shortsLevel)
+ {
++#ifX2_DEV_TOOLS
+ cout<<lbreak<<L"ChangeLogLevel(from"<<ms_sLevel<<L"to"<<sLevel<<L")."<<lbreak;
+ wprintf(L"ChangeLogLevel(from%dto%d).\n",ms_sLevel,sLevel);
++#endif
+ ms_sLevel=sLevel;
+ }
+@@ -313,63 +310,4 @@
+ }
+ //}}florist
+-//{{2013.02.15최육사로그시스템개선
+-//#ifdefSERV_LOG_SYSTEM_NEW
+-std::streamofflogfile::GetLogFileSize()
+-{
+-m_file.seekp(0,std::ios::end);
+-returnm_file.tellp();
+-}
+-logfile&logfile::LogStat(constwchar_t*pStrFunctionName,constwchar_t*pStrFileName,constintiLineNum)
+-{
+-//{{florist
+-if(m_sLevel>ms_sLevel)return*this;
+-//}}florist
+-std::wstringstreamwstrStream;
+-wstrStream<<iLineNum;
+-//각문자열을조합해서hash값을얻자!
+-std::wstringwstrHashKey;
+-wstrHashKey+=pStrFunctionName;
+-wstrHashKey+=pStrFileName;
+-wstrHashKey+=wstrStream.str();
+-constunsignedintuiHashKey=static_cast<unsignedint>(std::hash<std::wstring>{}(wstrHashKey));
+-//해당해쉬키값으로컨테이너를조회한다.
+-{
+-//lock비용이최소화가되어야한다!
+-KLockerlock(m_csLogStat);
+-std::map<unsignedint,KLogStat>::iteratormit;
+-mit=m_mapLogStat.find(uiHashKey);
+-if(mit==m_mapLogStat.end())
+-{
+-//구조체생성-처음찍혀지는로그라면여기서insert가될것이다.
+-KLogStatkLogStat;
+-kLogStat.m_wstrFunctionName=pStrFunctionName;
+-kLogStat.m_wstrFileName=pStrFileName;
+-kLogStat.m_wstrLineNum=wstrStream.str();
+-kLogStat.m_iCount=1;
+-m_mapLogStat.insert(std::make_pair(uiHashKey,kLogStat));
+-}
+-else
+-{
+-//카운트1증가!-두번째이후로찍히는로그라면find로값변경만일어나므로lock비용은최소화된다.
+-++mit->second.m_iCount;
+-}
+-}
+-return*this;
+-}
+-voidlogfile::GetLogStat(std::map<unsignedint,KLogStat>&mapLogStat)const
+-{
+-mapLogStat.clear();
+-{
+-KLockerlock(m_csLogStat);
+-mapLogStat=m_mapLogStat;
+-}
+-}
+-voidlogfile::ClearLogStat()
+-{
+-KLockerlock(m_csLogStat);
+-m_mapLogStat.clear();
+-}
+-//#endifSERV_LOG_SYSTEM_NEW
+-//}}
+ logfile&endl(logfile&l)
+ {

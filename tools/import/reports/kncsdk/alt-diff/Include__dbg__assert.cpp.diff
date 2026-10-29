@@ -1,0 +1,9 @@
+--- KNCSDK_Server/Include/dbg/assert.cpp
++++ KNCSDK_Client/Include/dbg/assert.cpp
+@@ -55,5 +55,5 @@
+ cerr<<L"<center>FATAL</center>"<<endl;
+ #ifdef_DEBUG
+-_assert(KncUtil::toNarrowString(m_expression.c_str(),m_expression.length()).c_str(),KncUtil::toNarrowString(m_filename.c_str(),m_filename.length()).c_str(),m_line);
++assert(KncUtil::toNarrowString(m_expression.c_str(),m_expression.length()).c_str(),KncUtil::toNarrowString(m_filename.c_str(),m_filename.length()).c_str(),m_line);
+ //_assert(m_expression.c_str(),m_filename,m_line);
+ #endif

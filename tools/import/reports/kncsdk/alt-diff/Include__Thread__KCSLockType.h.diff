@@ -1,0 +1,16 @@
+--- KNCSDK_Server/Include/Thread/KCSLockType.h
++++ KNCSDK_Client/Include/Thread/KCSLockType.h
+@@ -57,5 +57,5 @@
+ constT&AccessVariable()const{returnm_variable;}
+ private:
+-CRITICAL_SECTION&m_cs;
++mutableCRITICAL_SECTION&m_cs;
+ constT&m_variable;
+ };//
+@@ -64,5 +64,5 @@
+ ~KCSLockType(){::DeleteCriticalSection(&m_cs);}
+ private:
+-CRITICAL_SECTIONm_cs;
++mutableCRITICAL_SECTIONm_cs;
+ Tm_variable;
+ };//KCSLockType

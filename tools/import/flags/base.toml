@@ -1,0 +1,59 @@
+# Flags applied to every module. Semantics in x2import/condres.py and docs/analise/debug-e-dev.md.
+#   true / false  -> resolved like the US `_SERVICE_` build
+#   dev           -> becomes `X2_DEV_TOOLS`, dev_not -> `!X2_DEV_TOOLS`
+#
+# The full SERV_* set of ServerDefine.h / KTDX.h is not here yet: it will be generated from those headers
+# when the modules that need it (server Common, client) are imported.
+
+[environment]
+dev = ["_IN_HOUSE_"]
+dev_not = ["_SERVICE_"]
+false = [
+    "_IN_HOUSE_SERVICE_READY_QA_", "_OPEN_TEST_", "_OPEN_TEST_2_", "_FOREIGN_", "_SERVICE_MANUAL_LOGIN_",
+    "BUILD_BY_HUDSON", "X2TOOL", "EFFECT_TOOL", "WORLD_TOOL", "_VTUNE_",
+]
+true = ["_CONVERT_VS_2010"]
+
+[country]
+true = ["SERV_COUNTRY_US", "CLIENT_COUNTRY_US"]
+false = [
+    "SERV_COUNTRY_EU", "SERV_COUNTRY_JP", "SERV_COUNTRY_TW", "SERV_COUNTRY_HK", "SERV_COUNTRY_TWHK",
+    "SERV_COUNTRY_CN", "SERV_COUNTRY_TH", "SERV_COUNTRY_ID", "SERV_COUNTRY_BR", "SERV_COUNTRY_PH",
+    "SERV_COUNTRY_IN", "SERV_INT_INTERNAL",
+    "CLIENT_COUNTRY_EU", "CLIENT_COUNTRY_JP", "CLIENT_COUNTRY_TW", "CLIENT_COUNTRY_HK", "CLIENT_COUNTRY_CN",
+    "CLIENT_COUNTRY_TH", "CLIENT_COUNTRY_ID", "CLIENT_COUNTRY_BR", "CLIENT_COUNTRY_PH", "CLIENT_COUNTRY_IN",
+    "CLIENT_INT_INTERNAL",
+]
+
+[anticheat]
+true = ["NO_GAMEGUARD"]
+false = [
+    "HACK_SHIELD", "HS_LMP", "HS_NO_ADMIN_NEED", "ADDITIONAL_HS", "ADD_CHKOPT_ABNORMAL_FUNCTION_CALL_V2",
+    "CHECK_NP_HACKUSER", "XTRAP", "_USE_XTRAP", "IN_TESTING_THEMIDA_BY_TOOL_TEAM",
+]
+
+[leak_detection]
+false = ["_VLD", "VLD", "MEMORY_LEAK_DETECTION_TEST"]
+
+# Debug / development / admin features kept under X2_DEV_TOOLS (whitelist, docs/analise/debug-e-dev.md)
+[dev_tools]
+dev = [
+    # items / inventory
+    "ITEM_CHEAT_POPUP_TEST", "ITEM_VIEW_CHEAT", "AUTH_AUTO_SELL_ITEM", "AUTH_DELETE_ITEM_ALL", "JUNK_AVATAR",
+    # character / buffs
+    "ERASE_BUFF_CHEAT", "CHEAT_CLASS_CHANGE", "VILLAGE_FLASH_MAN_DEV_ONLY", "DAMAGE_ZERO",
+    # commands
+    "CHEAT_COMMAND_SHORT_CUT_KEY_TEST", "ADD_SHORT_CUT_KEY_IN_HOUSE",
+    # monsters / maps
+    "SUMMON_MONSTER_BY_PRESS_KEY_AT_TRAINING_GAME", "MONSTER_TEST_DUNGEON", "CREATE_MONSTER_LIST_TEST",
+    "MONSTER_STATE_LIST_TEST", "FREE_SELECT_PVP_MAP", "ENABLE_SET_UNIT_POSITION_TEST",
+    # visualization
+    "SHOW_ATTACK_BOX_DUMMY", "IN_GAME_MANUAL_CAMERA_POSITION_TEST", "SHOW_ONLY_MY_DAMAGE",
+    # logs
+    "ADD_DAMAGE_LOG", "WRITE_SCRIPT_LOG_AT_CONSOLE_WINDOW", "LOG_LOAD_DLG_SCRIPT", "ADD_RESOURCE_ERROR_LOG",
+    "EFFECT_USE_LOG",
+    # scripts
+    "REALTIME_SCRIPT_PATCH", "EXPAND_DEVELOPER_SCRIPT",
+    # convenience
+    "AUTO_LOGIN_IN_HOUSE", "KHELP_SYSTEM_TEST", "X2OPTIMIZE_INDICATE_LOCAL_MASSFILE",
+]

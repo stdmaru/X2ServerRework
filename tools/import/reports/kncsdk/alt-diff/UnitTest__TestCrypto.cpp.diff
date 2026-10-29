@@ -1,0 +1,22 @@
+--- KNCSDK_Server/UnitTest/TestCrypto.cpp
++++ KNCSDK_Client/UnitTest/TestCrypto.cpp
+@@ -1,3 +1,3 @@
+-#include<boost/test/included/unit_test.hpp>
++#include<boost/test/unit_test.hpp>
+ #defineCRYPTOPP_DEFAULT_NO_DLL
+ #include"cryptopp/dll.h"
+@@ -10,6 +10,6 @@
+ #include"cryptopp/ida.h"
+ #include"cryptopp/base64.h"
+-//#include"cryptopp/socketft.h"
+-//#include"cryptopp/wait.h"
++#include"cryptopp/socketft.h"
++#include"cryptopp/wait.h"
+ #include"cryptopp/factory.h"
+ #include"cryptopp/validate.h"
+@@ -31,5 +31,4 @@
+ #endif
+ USING_NAMESPACE(CryptoPP)
+-USING_NAMESPACE(CryptoPP::Test)
+ USING_NAMESPACE(std)
+ constintMAX_PHRASE_LENGTH=250;

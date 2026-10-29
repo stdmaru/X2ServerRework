@@ -1,3 +1,9 @@
 _client
 _reference
 _tools
+
+# build
+/build/
+/out/
+CMakeUserPresets.json
+__pycache__/

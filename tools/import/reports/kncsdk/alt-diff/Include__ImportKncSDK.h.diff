@@ -1,0 +1,19 @@
+--- KNCSDK_Server/Include/ImportKncSDK.h
++++ KNCSDK_Client/Include/ImportKncSDK.h
+@@ -3,5 +3,16 @@
+ #errorImportKOGSDK.h를include하기전에KNCLIBNAME매크로를정의해주어야합니다.
+ #endif
++#if(_MSC_VER==1200)//VisualStudio6.0
++#errorKOGSDK는MicrosoftVisualStudio6.0컴파일러를지원하지않습니다.
++#elif(_MSC_VER==1300)//VisualStudio.NET2002
++#errorKOGSDK는MicrosoftVisualStudio.NET2002컴파일러를지원하지않습니다.
++#elif(_MSC_VER==1310)//VisualStudio.NET2003
+ #defineCLVERSION"71"
++#elif(_MSC_VER>=1400)//VisualStudio2005ExpressEdition이상
++//#errorKOGSDK는아직VisualStudio2005ExpressEdition를지원하지않습니다.
++#defineCLVERSION"71"
++//#elif(_MSC_VER==1600)//VisualStudio2010
++//#defineCLVERSION"90"
++#endif
+ #ifdef_MT
+ #ifdef_DLL

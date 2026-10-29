@@ -1,0 +1,8 @@
+--- KNCSDK_Server/Include/Serializer/SerVector.h
++++ KNCSDK_Client/Include/Serializer/SerVector.h
+@@ -4,5 +4,4 @@
+ #include"SerSTL.h"
+ #include<vector>
+-#include<iterator>
+ /**
+ *SerializeHelperfunctionsforvector<>

@@ -1,0 +1,825 @@
+--- KNCSDK_Server/Include/lua_tinker.h
++++ KNCSDK_Client/Include/lua_tinker.h
+@@ -6,8 +6,8 @@
+ //
+ //pleasecheckLicence.txtfileforlicenceandlegalissues.
+-//lastmodify:2011-11-21최육사
+ #if!defined(_LUA_TINKER_H_)
+ #define_LUA_TINKER_H_
+ #include<new>
++#include<string.h>
+ namespacelua_tinker
+ {
+@@ -93,11 +93,17 @@
+ {
+ returnif_<is_ptr<T>::value
+-,void2ptr<base_type<T>::type>
+-,if_<is_ref<T>::value
+-,void2ref<base_type<T>::type>
+-,void2val<base_type<T>::type>
++,void2ptr<typenamebase_type<T>::type>
++,typenameif_<is_ref<T>::value
++,void2ref<typenamebase_type<T>::type>
++,void2val<typenamebase_type<T>::type>
+ >::type
+ >::type::invoke(ptr);
+ }
++};
++structuser
++{
++user(void*p):m_p(p){}
++virtual~user(){}
++void*m_p;
+ };
+ template<typenameT>
+@@ -126,10 +132,4 @@
+ >::type::invoke(L,index);
+ }
+-structuser
+-{
+-user(void*p):m_p(p){}
+-virtual~user(){}
+-void*m_p;
+-};
+ template<typenameT>
+ structval2user:user
+@@ -142,4 +142,10 @@
+ template<typenameT1,typenameT2,typenameT3>
+ val2user(T1t1,T2t2,T3t3):user(newT(t1,t2,t3)){}
++template<typenameT1,typenameT2,typenameT3,typenameT4>
++val2user(T1t1,T2t2,T3t3,T4t4):user(newT(t1,t2,t3,t4)){}
++template<typenameT1,typenameT2,typenameT3,typenameT4,typenameT5>
++val2user(T1t1,T2t2,T3t3,T4t4,T5t5):user(newT(t1,t2,t3,t4,t5)){}
++template<typenameT1,typenameT2,typenameT3,typenameT4,typenameT5,typenameT6>
++val2user(T1t1,T2t2,T3t3,T4t4,T5t5,T6t6):user(newT(t1,t2,t3,t4,t5,t6)){}
+ ~val2user(){delete((T*)m_p);}
+ };
+@@ -169,11 +175,11 @@
+ {
+ if_<is_ptr<T>::value
+-,ptr2lua<base_type<T>::type>
+-,if_<is_ref<T>::value
+-,ref2lua<base_type<T>::type>
+-,val2lua<base_type<T>::type>
++,ptr2lua<typenamebase_type<T>::type>
++,typenameif_<is_ref<T>::value
++,ref2lua<typenamebase_type<T>::type>
++,val2lua<typenamebase_type<T>::type>
+ >::type
+ >::type::invoke(L,val);
+-meta_push(L,class_name<class_type<T>::type>::name());
++meta_push(L,class_name<typenameclass_type<T>::type>::name());
+ lua_setmetatable(L,-2);
+ }
+@@ -210,6 +216,6 @@
+ template<>boolread(lua_State*L,intindex);
+ template<>voidread(lua_State*L,intindex);
+-template<>__int64read(lua_State*L,intindex);
+-template<>unsigned__int64read(lua_State*L,intindex);
++template<>longlongread(lua_State*L,intindex);
++template<>unsignedlonglongread(lua_State*L,intindex);
+ template<>tableread(lua_State*L,intindex);
+ //pushavaluetoluastack
+@@ -230,6 +236,6 @@
+ template<>voidpush(lua_State*L,boolret);
+ template<>voidpush(lua_State*L,lua_value*ret);
+-template<>voidpush(lua_State*L,__int64ret);
+-template<>voidpush(lua_State*L,unsigned__int64ret);
++template<>voidpush(lua_State*L,longlongret);
++template<>voidpush(lua_State*L,unsignedlonglongret);
+ template<>voidpush(lua_State*L,tableret);
+ //popavaluefromluastack
+@@ -239,59 +245,74 @@
+ template<>tablepop(lua_State*L);
+ //functor
+-template<typenameT1=void,typenameT2=void,typenameT3=void,typenameT4=void,typenameT5=void,typenameT6=void>
++template<typenameRVal,typenameT1=void,typenameT2=void,typenameT3=void,typenameT4=void,typenameT5=void,typenameT6=void>
+ structfunctor
+ {
++staticintinvoke(lua_State*L){push(L,upvalue_<RVal(*)(T1,T2,T3,T4,T5,T6)>(L)(read<T1>(L,1),read<T2>(L,2),read<T3>(L,3),read<T4>(L,4),read<T5>(L,5),read<T6>(L,6)));return1;}
++};
++template<typenameRVal,typenameT1,typenameT2,typenameT3,typenameT4,typenameT5>
++structfunctor<RVal,T1,T2,T3,T4,T5>
++{
++staticintinvoke(lua_State*L){push(L,upvalue_<RVal(*)(T1,T2,T3,T4,T5)>(L)(read<T1>(L,1),read<T2>(L,2),read<T3>(L,3),read<T4>(L,4),read<T5>(L,5)));return1;}
++};
++template<typenameRVal,typenameT1,typenameT2,typenameT3,typenameT4>
++structfunctor<RVal,T1,T2,T3,T4>
++{
++staticintinvoke(lua_State*L){push(L,upvalue_<RVal(*)(T1,T2,T3,T4)>(L)(read<T1>(L,1),read<T2>(L,2),read<T3>(L,3),read<T4>(L,4)));return1;}
++};
++template<typenameRVal,typenameT1,typenameT2,typenameT3>
++structfunctor<RVal,T1,T2,T3>
++{
++staticintinvoke(lua_State*L){push(L,upvalue_<RVal(*)(T1,T2,T3)>(L)(read<T1>(L,1),read<T2>(L,2),read<T3>(L,3)));return1;}
++};
++template<typenameRVal,typenameT1,typenameT2>
++structfunctor<RVal,T1,T2>
++{
++staticintinvoke(lua_State*L){push(L,upvalue_<RVal(*)(T1,T2)>(L)(read<T1>(L,1),read<T2>(L,2)));return1;}
++};
++template<typenameRVal,typenameT1>
++structfunctor<RVal,T1>
++{
++staticintinvoke(lua_State*L){push(L,upvalue_<RVal(*)(T1)>(L)(read<T1>(L,1)));return1;}
++};
+ template<typenameRVal>
+-staticintinvoke(lua_State*L){push(L,upvalue_<RVal(*)(T1,T2,T3,T4,T5,T6)>(L)(read<T1>(L,1),read<T2>(L,2),read<T3>(L,3),read<T4>(L,4),read<T5>(L,5),read<T6>(L,6)));return1;}
++structfunctor<RVal>
++{
++staticintinvoke(lua_State*L){push(L,upvalue_<RVal(*)()>(L)());return1;}
++};
++//
++template<typenameT1,typenameT2,typenameT3,typenameT4,typenameT5,typenameT6>
++structfunctor<void,T1,T2,T3,T4,T5,T6>
++{
++staticintinvoke(lua_State*L){upvalue_<void(*)(T1,T2,T3,T4,T5,T6)>(L)(read<T1>(L,1),read<T2>(L,2),read<T3>(L,3),read<T4>(L,4),read<T5>(L,5),read<T6>(L,6));return0;}
++};
++template<typenameT1,typenameT2,typenameT3,typenameT4,typenameT5>
++structfunctor<void,T1,T2,T3,T4,T5>
++{
++staticintinvoke(lua_State*L){upvalue_<void(*)(T1,T2,T3,T4,T5)>(L)(read<T1>(L,1),read<T2>(L,2),read<T3>(L,3),read<T4>(L,4),read<T5>(L,5));return0;}
++};
++template<typenameT1,typenameT2,typenameT3,typenameT4>
++structfunctor<void,T1,T2,T3,T4>
++{
++staticintinvoke(lua_State*L){upvalue_<void(*)(T1,T2,T3,T4)>(L)(read<T1>(L,1),read<T2>(L,2),read<T3>(L,3),read<T4>(L,4));return0;}
++};
++template<typenameT1,typenameT2,typenameT3>
++structfunctor<void,T1,T2,T3>
++{
++staticintinvoke(lua_State*L){upvalue_<void(*)(T1,T2,T3)>(L)(read<T1>(L,1),read<T2>(L,2),read<T3>(L,3));return0;}
++};
++template<typenameT1,typenameT2>
++structfunctor<void,T1,T2>
++{
++staticintinvoke(lua_State*L){upvalue_<void(*)(T1,T2)>(L)(read<T1>(L,1),read<T2>(L,2));return0;}
++};
++template<typenameT1>
++structfunctor<void,T1>
++{
++staticintinvoke(lua_State*L){upvalue_<void(*)(T1)>(L)(read<T1>(L,1));return0;}
++};
+ template<>
+-staticintinvoke<void>(lua_State*L){upvalue_<void(*)(T1,T2,T3,T4,T5,T6)>(L)(read<T1>(L,1),read<T2>(L,2),read<T3>(L,3),read<T4>(L,4),read<T5>(L,5),read<T6>(L,6));return0;}
+-};
+-template<typenameT1,typenameT2,typenameT3,typenameT4,typenameT5>
+-structfunctor<T1,T2,T3,T4,T5>
+-{
+-template<typenameRVal>
+-staticintinvoke(lua_State*L){push(L,upvalue_<RVal(*)(T1,T2,T3,T4,T5)>(L)(read<T1>(L,1),read<T2>(L,2),read<T3>(L,3),read<T4>(L,4),read<T5>(L,5)));return1;}
+-template<>
+-staticintinvoke<void>(lua_State*L){upvalue_<void(*)(T1,T2,T3,T4,T5)>(L)(read<T1>(L,1),read<T2>(L,2),read<T3>(L,3),read<T4>(L,4),read<T5>(L,5));return0;}
+-};
+-template<typenameT1,typenameT2,typenameT3,typenameT4>
+-structfunctor<T1,T2,T3,T4>
+-{
+-template<typenameRVal>
+-staticintinvoke(lua_State*L){push(L,upvalue_<RVal(*)(T1,T2,T3,T4)>(L)(read<T1>(L,1),read<T2>(L,2),read<T3>(L,3),read<T4>(L,4)));return1;}
+-template<>
+-staticintinvoke<void>(lua_State*L){upvalue_<void(*)(T1,T2,T3,T4)>(L)(read<T1>(L,1),read<T2>(L,2),read<T3>(L,3),read<T4>(L,4));return0;}
+-};
+-template<typenameT1,typenameT2,typenameT3>
+-structfunctor<T1,T2,T3>
+-{
+-template<typenameRVal>
+-staticintinvoke(lua_State*L){push(L,upvalue_<RVal(*)(T1,T2,T3)>(L)(read<T1>(L,1),read<T2>(L,2),read<T3>(L,3)));return1;}
+-template<>
+-staticintinvoke<void>(lua_State*L){upvalue_<void(*)(T1,T2,T3)>(L)(read<T1>(L,1),read<T2>(L,2),read<T3>(L,3));return0;}
+-};
+-template<typenameT1,typenameT2>
+-structfunctor<T1,T2>
+-{
+-template<typenameRVal>
+-staticintinvoke(lua_State*L){push(L,upvalue_<RVal(*)(T1,T2)>(L)(read<T1>(L,1),read<T2>(L,2)));return1;}
+-template<>
+-staticintinvoke<void>(lua_State*L){upvalue_<void(*)(T1,T2)>(L)(read<T1>(L,1),read<T2>(L,2));return0;}
+-};
+-template<typenameT1>
+-structfunctor<T1>
+-{
+-template<typenameRVal>
+-staticintinvoke(lua_State*L){push(L,upvalue_<RVal(*)(T1)>(L)(read<T1>(L,1)));return1;}
+-template<>
+-staticintinvoke<void>(lua_State*L){upvalue_<void(*)(T1)>(L)(read<T1>(L,1));return0;}
+-};
+-template<>
+-structfunctor<>
+-{
+-template<typenameRVal>
+-staticintinvoke(lua_State*L){push(L,upvalue_<RVal(*)()>(L)());return1;}
+-template<>
+-staticintinvoke<void>(lua_State*L){upvalue_<void(*)()>(L)();return0;}
++structfunctor<void>
++{
++staticintinvoke(lua_State*L){upvalue_<void(*)()>(L)();return0;}
+ };
+ //push_functor
+@@ -299,55 +320,35 @@
+ voidpush_functor(lua_State*L,RVal(*func)())
+ {
+-lua_pushcclosure(L,functor<>::invoke<RVal>,1);
++lua_pushcclosure(L,functor<RVal>::invoke,1);
+ }
+ template<typenameRVal,typenameT1>
+ voidpush_functor(lua_State*L,RVal(*func)(T1))
+ {
+-lua_pushcclosure(L,functor<T1>::invoke<RVal>,1);
++lua_pushcclosure(L,functor<RVal,T1>::invoke,1);
+ }
+ template<typenameRVal,typenameT1,typenameT2>
+ voidpush_functor(lua_State*L,RVal(*func)(T1,T2))
+ {
+-lua_pushcclosure(L,functor<T1,T2>::invoke<RVal>,1);
++lua_pushcclosure(L,functor<RVal,T1,T2>::invoke,1);
+ }
+ template<typenameRVal,typenameT1,typenameT2,typenameT3>
+ voidpush_functor(lua_State*L,RVal(*func)(T1,T2,T3))
+ {
+-lua_pushcclosure(L,functor<T1,T2,T3>::invoke<RVal>,1);
++lua_pushcclosure(L,functor<RVal,T1,T2,T3>::invoke,1);
+ }
+ template<typenameRVal,typenameT1,typenameT2,typenameT3,typenameT4>
+ voidpush_functor(lua_State*L,RVal(*func)(T1,T2,T3,T4))
+ {
+-lua_pushcclosure(L,functor<T1,T2,T3,T4>::invoke<RVal>,1);
++lua_pushcclosure(L,functor<RVal,T1,T2,T3,T4>::invoke,1);
+ }
+ template<typenameRVal,typenameT1,typenameT2,typenameT3,typenameT4,typenameT5>
+ voidpush_functor(lua_State*L,RVal(*func)(T1,T2,T3,T4,T5))
+ {
+-lua_pushcclosure(L,functor<T1,T2,T3,T4,T5>::invoke<RVal>,1);
++lua_pushcclosure(L,functor<RVal,T1,T2,T3,T4,T5>::invoke,1);
+ }
+ template<typenameRVal,typenameT1,typenameT2,typenameT3,typenameT4,typenameT5,typenameT6>
+ voidpush_functor(lua_State*L,RVal(*func)(T1,T2,T3,T4,T5,T6))
+ {
+-lua_pushcclosure(L,functor<T1,T2,T3,T4,T5,T6>::invoke<RVal>,1);
+-}
+-template<typenameRVal,typenameT1,typenameT2,typenameT3,typenameT4,typenameT5,typenameT6,typenameT7>
+-voidpush_functor(lua_State*L,RVal(*func)(T1,T2,T3,T4,T5,T6,T7))
+-{
+-lua_pushcclosure(L,functor<T1,T2,T3,T4,T5,T6,T7>::invoke<RVal>,1);
+-}
+-template<typenameRVal,typenameT1,typenameT2,typenameT3,typenameT4,typenameT5,typenameT6,typenameT7,typenameT8>
+-voidpush_functor(lua_State*L,RVal(*func)(T1,T2,T3,T4,T5,T6,T7,T8))
+-{
+-lua_pushcclosure(L,functor<T1,T2,T3,T4,T5,T6,T7,T8>::invoke<RVal>,1);
+-}
+-template<typenameRVal,typenameT1,typenameT2,typenameT3,typenameT4,typenameT5,typenameT6,typenameT7,typenameT8,typenameT9>
+-voidpush_functor(lua_State*L,RVal(*func)(T1,T2,T3,T4,T5,T6,T7,T8,T9))
+-{
+-lua_pushcclosure(L,functor<T1,T2,T3,T4,T5,T6,T7,T8,T9>::invoke<RVal>,1);
+-}
+-template<typenameRVal,typenameT1,typenameT2,typenameT3,typenameT4,typenameT5,typenameT6,typenameT7,typenameT8,typenameT9,typenameT10>
+-voidpush_functor(lua_State*L,RVal(*func)(T1,T2,T3,T4,T5,T6,T7,T8,T9,T10))
+-{
+-lua_pushcclosure(L,functor<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10>::invoke<RVal>,1);
++lua_pushcclosure(L,functor<RVal,T1,T2,T3,T4,T5,T6>::invoke,1);
+ }
+ //membervariable
+@@ -366,91 +367,73 @@
+ };
+ //memberfunction
+-template<typenameT,typenameT1=void,typenameT2=void,typenameT3=void,typenameT4=void,typenameT5=void,typenameT6=void,typenameT7=void,typenameT8=void,typenameT9=void,typenameT10=void>
++template<typenameRVal,typenameT,typenameT1=void,typenameT2=void,typenameT3=void,typenameT4=void,typenameT5=void,typenameT6=void>
+ structmem_functor
+ {
+-template<typenameRVal>
+-staticintinvoke(lua_State*L){push(L,(read<T*>(L,1)->*upvalue_<RVal(T::*)(T1,T2,T3,T4,T5,T6,T7,T8,T9,T10)>(L))(read<T1>(L,2),read<T2>(L,3),read<T3>(L,4),read<T4>(L,5),read<T5>(L,6),read<T6>(L,7),read<T7>(L,8),read<T8>(L,9),read<T9>(L,10),read<T10>(L,11)));;return1;}
+-template<>
+-staticintinvoke<void>(lua_State*L){(read<T*>(L,1)->*upvalue_<void(T::*)(T1,T2,T3,T4,T5,T6,T7,T8,T9,T10)>(L))(read<T1>(L,2),read<T2>(L,3),read<T3>(L,4),read<T4>(L,5),read<T5>(L,6),read<T6>(L,7),read<T7>(L,8),read<T8>(L,9),read<T9>(L,10),read<T10>(L,11));return0;}
+-};
+-template<typenameT,typenameT1,typenameT2,typenameT3,typenameT4,typenameT5,typenameT6,typenameT7,typenameT8,typenameT9>
+-structmem_functor<T,T1,T2,T3,T4,T5,T6,T7,T8,T9>
+-{
+-template<typenameRVal>
+-staticintinvoke(lua_State*L){push(L,(read<T*>(L,1)->*upvalue_<RVal(T::*)(T1,T2,T3,T4,T5,T6,T7,T8,T9)>(L))(read<T1>(L,2),read<T2>(L,3),read<T3>(L,4),read<T4>(L,5),read<T5>(L,6),read<T6>(L,7),read<T7>(L,8),read<T8>(L,9),read<T9>(L,10)));;return1;}
+-template<>
+-staticintinvoke<void>(lua_State*L){(read<T*>(L,1)->*upvalue_<void(T::*)(T1,T2,T3,T4,T5,T6,T7,T8,T9)>(L))(read<T1>(L,2),read<T2>(L,3),read<T3>(L,4),read<T4>(L,5),read<T5>(L,6),read<T6>(L,7),read<T7>(L,8),read<T8>(L,9),read<T9>(L,10));return0;}
+-};
+-template<typenameT,typenameT1,typenameT2,typenameT3,typenameT4,typenameT5,typenameT6,typenameT7,typenameT8>
+-structmem_functor<T,T1,T2,T3,T4,T5,T6,T7,T8>
+-{
+-template<typenameRVal>
+-staticintinvoke(lua_State*L){push(L,(read<T*>(L,1)->*upvalue_<RVal(T::*)(T1,T2,T3,T4,T5,T6,T7,T8)>(L))(read<T1>(L,2),read<T2>(L,3),read<T3>(L,4),read<T4>(L,5),read<T5>(L,6),read<T6>(L,7),read<T7>(L,8),read<T8>(L,9)));;return1;}
+-template<>
+-staticintinvoke<void>(lua_State*L){(read<T*>(L,1)->*upvalue_<void(T::*)(T1,T2,T3,T4,T5,T6,T7,T8)>(L))(read<T1>(L,2),read<T2>(L,3),read<T3>(L,4),read<T4>(L,5),read<T5>(L,6),read<T6>(L,7),read<T7>(L,8),read<T8>(L,9));return0;}
+-};
+-template<typenameT,typenameT1,typenameT2,typenameT3,typenameT4,typenameT5,typenameT6,typenameT7>
+-structmem_functor<T,T1,T2,T3,T4,T5,T6,T7>
+-{
+-template<typenameRVal>
+-staticintinvoke(lua_State*L){push(L,(read<T*>(L,1)->*upvalue_<RVal(T::*)(T1,T2,T3,T4,T5,T6,T7)>(L))(read<T1>(L,2),read<T2>(L,3),read<T3>(L,4),read<T4>(L,5),read<T5>(L,6),read<T6>(L,7),read<T7>(L,8)));;return1;}
+-template<>
+-staticintinvoke<void>(lua_State*L){(read<T*>(L,1)->*upvalue_<void(T::*)(T1,T2,T3,T4,T5,T6,T7)>(L))(read<T1>(L,2),read<T2>(L,3),read<T3>(L,4),read<T4>(L,5),read<T5>(L,6),read<T6>(L,7),read<T7>(L,8));return0;}
++staticintinvoke(lua_State*L){push(L,(read<T*>(L,1)->*upvalue_<RVal(T::*)(T1,T2,T3,T4,T5,T6)>(L))(read<T1>(L,2),read<T2>(L,3),read<T3>(L,4),read<T4>(L,5),read<T5>(L,6),read<T6>(L,7)));;return1;}
++};
++template<typenameRVal,typenameT,typenameT1,typenameT2,typenameT3,typenameT4,typenameT5>
++structmem_functor<RVal,T,T1,T2,T3,T4,T5>
++{
++staticintinvoke(lua_State*L){push(L,(read<T*>(L,1)->*upvalue_<RVal(T::*)(T1,T2,T3,T4,T5)>(L))(read<T1>(L,2),read<T2>(L,3),read<T3>(L,4),read<T4>(L,5),read<T5>(L,6)));;return1;}
++};
++template<typenameRVal,typenameT,typenameT1,typenameT2,typenameT3,typenameT4>
++structmem_functor<RVal,T,T1,T2,T3,T4>
++{
++staticintinvoke(lua_State*L){push(L,(read<T*>(L,1)->*upvalue_<RVal(T::*)(T1,T2,T3,T4)>(L))(read<T1>(L,2),read<T2>(L,3),read<T3>(L,4),read<T4>(L,5)));return1;}
++};
++template<typenameRVal,typenameT,typenameT1,typenameT2,typenameT3>
++structmem_functor<RVal,T,T1,T2,T3>
++{
++staticintinvoke(lua_State*L){push(L,(read<T*>(L,1)->*upvalue_<RVal(T::*)(T1,T2,T3)>(L))(read<T1>(L,2),read<T2>(L,3),read<T3>(L,4)));return1;}
++};
++template<typenameRVal,typenameT,typenameT1,typenameT2>
++structmem_functor<RVal,T,T1,T2>
++{
++staticintinvoke(lua_State*L){push(L,(read<T*>(L,1)->*upvalue_<RVal(T::*)(T1,T2)>(L))(read<T1>(L,2),read<T2>(L,3)));return1;}
++};
++template<typenameRVal,typenameT,typenameT1>
++structmem_functor<RVal,T,T1>
++{
++staticintinvoke(lua_State*L){push(L,(read<T*>(L,1)->*upvalue_<RVal(T::*)(T1)>(L))(read<T1>(L,2)));return1;}
++};
++template<typenameRVal,typenameT>
++structmem_functor<RVal,T>
++{
++staticintinvoke(lua_State*L){push(L,(read<T*>(L,1)->*upvalue_<RVal(T::*)()>(L))());return1;}
+ };
+ template<typenameT,typenameT1,typenameT2,typenameT3,typenameT4,typenameT5,typenameT6>
+-structmem_functor<T,T1,T2,T3,T4,T5,T6>
+-{
+-template<typenameRVal>
+-staticintinvoke(lua_State*L){push(L,(read<T*>(L,1)->*upvalue_<RVal(T::*)(T1,T2,T3,T4,T5,T6)>(L))(read<T1>(L,2),read<T2>(L,3),read<T3>(L,4),read<T4>(L,5),read<T5>(L,6),read<T6>(L,7)));;return1;}
+-template<>
+-staticintinvoke<void>(lua_State*L){(read<T*>(L,1)->*upvalue_<void(T::*)(T1,T2,T3,T4,T5,T6)>(L))(read<T1>(L,2),read<T2>(L,3),read<T3>(L,4),read<T4>(L,5),read<T5>(L,6),read<T6>(L,7));return0;}
++structmem_functor<void,T,T1,T2,T3,T4,T5,T6>
++{
++staticintinvoke(lua_State*L){(read<T*>(L,1)->*upvalue_<void(T::*)(T1,T2,T3,T4,T5,T6)>(L))(read<T1>(L,2),read<T2>(L,3),read<T3>(L,4),read<T4>(L,5),read<T5>(L,6),read<T6>(L,7));return0;}
+ };
+ template<typenameT,typenameT1,typenameT2,typenameT3,typenameT4,typenameT5>
+-structmem_functor<T,T1,T2,T3,T4,T5>
+-{
+-template<typenameRVal>
+-staticintinvoke(lua_State*L){push(L,(read<T*>(L,1)->*upvalue_<RVal(T::*)(T1,T2,T3,T4,T5)>(L))(read<T1>(L,2),read<T2>(L,3),read<T3>(L,4),read<T4>(L,5),read<T5>(L,6)));;return1;}
+-template<>
+-staticintinvoke<void>(lua_State*L){(read<T*>(L,1)->*upvalue_<void(T::*)(T1,T2,T3,T4,T5)>(L))(read<T1>(L,2),read<T2>(L,3),read<T3>(L,4),read<T4>(L,5),read<T5>(L,6));return0;}
++structmem_functor<void,T,T1,T2,T3,T4,T5>
++{
++staticintinvoke(lua_State*L){(read<T*>(L,1)->*upvalue_<void(T::*)(T1,T2,T3,T4,T5)>(L))(read<T1>(L,2),read<T2>(L,3),read<T3>(L,4),read<T4>(L,5),read<T5>(L,6));return0;}
+ };
+ template<typenameT,typenameT1,typenameT2,typenameT3,typenameT4>
+-structmem_functor<T,T1,T2,T3,T4>
+-{
+-template<typenameRVal>
+-staticintinvoke(lua_State*L){push(L,(read<T*>(L,1)->*upvalue_<RVal(T::*)(T1,T2,T3,T4)>(L))(read<T1>(L,2),read<T2>(L,3),read<T3>(L,4),read<T4>(L,5)));return1;}
+-template<>
+-staticintinvoke<void>(lua_State*L){(read<T*>(L,1)->*upvalue_<void(T::*)(T1,T2,T3,T4)>(L))(read<T1>(L,2),read<T2>(L,3),read<T3>(L,4),read<T4>(L,5));return0;}
++structmem_functor<void,T,T1,T2,T3,T4>
++{
++staticintinvoke(lua_State*L){(read<T*>(L,1)->*upvalue_<void(T::*)(T1,T2,T3,T4)>(L))(read<T1>(L,2),read<T2>(L,3),read<T3>(L,4),read<T4>(L,5));return0;}
+ };
+ template<typenameT,typenameT1,typenameT2,typenameT3>
+-structmem_functor<T,T1,T2,T3>
+-{
+-template<typenameRVal>
+-staticintinvoke(lua_State*L){push(L,(read<T*>(L,1)->*upvalue_<RVal(T::*)(T1,T2,T3)>(L))(read<T1>(L,2),read<T2>(L,3),read<T3>(L,4)));return1;}
+-template<>
+-staticintinvoke<void>(lua_State*L){(read<T*>(L,1)->*upvalue_<void(T::*)(T1,T2,T3)>(L))(read<T1>(L,2),read<T2>(L,3),read<T3>(L,4));return0;}
++structmem_functor<void,T,T1,T2,T3>
++{
++staticintinvoke(lua_State*L){(read<T*>(L,1)->*upvalue_<void(T::*)(T1,T2,T3)>(L))(read<T1>(L,2),read<T2>(L,3),read<T3>(L,4));return0;}
+ };
+ template<typenameT,typenameT1,typenameT2>
+-structmem_functor<T,T1,T2>
+-{
+-template<typenameRVal>
+-staticintinvoke(lua_State*L){push(L,(read<T*>(L,1)->*upvalue_<RVal(T::*)(T1,T2)>(L))(read<T1>(L,2),read<T2>(L,3)));return1;}
+-template<>
+-staticintinvoke<void>(lua_State*L){(read<T*>(L,1)->*upvalue_<void(T::*)(T1,T2)>(L))(read<T1>(L,2),read<T2>(L,3));return0;}
++structmem_functor<void,T,T1,T2>
++{
++staticintinvoke(lua_State*L){(read<T*>(L,1)->*upvalue_<void(T::*)(T1,T2)>(L))(read<T1>(L,2),read<T2>(L,3));return0;}
+ };
+ template<typenameT,typenameT1>
+-structmem_functor<T,T1>
+-{
+-template<typenameRVal>
+-staticintinvoke(lua_State*L){push(L,(read<T*>(L,1)->*upvalue_<RVal(T::*)(T1)>(L))(read<T1>(L,2)));return1;}
+-template<>
+-staticintinvoke<void>(lua_State*L){(read<T*>(L,1)->*upvalue_<void(T::*)(T1)>(L))(read<T1>(L,2));return0;}
+-};
+-template<typenameT>
+-structmem_functor<T>
+-{
+-template<typenameRVal>
+-staticintinvoke(lua_State*L){push(L,(read<T*>(L,1)->*upvalue_<RVal(T::*)()>(L))());return1;}
+-template<>
+-staticintinvoke<void>(lua_State*L){(read<T*>(L,1)->*upvalue_<void(T::*)()>(L))();return0;}
++structmem_functor<void,T,T1>
++{
++staticintinvoke(lua_State*L){(read<T*>(L,1)->*upvalue_<void(T::*)(T1)>(L))(read<T1>(L,2));return0;}
++};
++template<typenameT>
++structmem_functor<void,T>
++{
++staticintinvoke(lua_State*L){(read<T*>(L,1)->*upvalue_<void(T::*)()>(L))();return0;}
+ };
+ //push_functor
+@@ -458,162 +441,128 @@
+ voidpush_functor(lua_State*L,RVal(T::*func)())
+ {
+-lua_pushcclosure(L,mem_functor<T>::invoke<RVal>,1);
++lua_pushcclosure(L,mem_functor<RVal,T>::invoke,1);
+ }
+ template<typenameRVal,typenameT>
+ voidpush_functor(lua_State*L,RVal(T::*func)()const)
+ {
+-lua_pushcclosure(L,mem_functor<T>::invoke<RVal>,1);
++lua_pushcclosure(L,mem_functor<RVal,T>::invoke,1);
+ }
+ template<typenameRVal,typenameT,typenameT1>
+ voidpush_functor(lua_State*L,RVal(T::*func)(T1))
+ {
+-lua_pushcclosure(L,mem_functor<T,T1>::invoke<RVal>,1);
++lua_pushcclosure(L,mem_functor<RVal,T,T1>::invoke,1);
+ }
+ template<typenameRVal,typenameT,typenameT1>
+ voidpush_functor(lua_State*L,RVal(T::*func)(T1)const)
+ {
+-lua_pushcclosure(L,mem_functor<T,T1>::invoke<RVal>,1);
++lua_pushcclosure(L,mem_functor<RVal,T,T1>::invoke,1);
+ }
+ template<typenameRVal,typenameT,typenameT1,typenameT2>
+ voidpush_functor(lua_State*L,RVal(T::*func)(T1,T2))
+ {
+-lua_pushcclosure(L,mem_functor<T,T1,T2>::invoke<RVal>,1);
++lua_pushcclosure(L,mem_functor<RVal,T,T1,T2>::invoke,1);
+ }
+ template<typenameRVal,typenameT,typenameT1,typenameT2>
+ voidpush_functor(lua_State*L,RVal(T::*func)(T1,T2)const)
+ {
+-lua_pushcclosure(L,mem_functor<T,T1,T2>::invoke<RVal>,1);
++lua_pushcclosure(L,mem_functor<RVal,T,T1,T2>::invoke,1);
+ }
+ template<typenameRVal,typenameT,typenameT1,typenameT2,typenameT3>
+ voidpush_functor(lua_State*L,RVal(T::*func)(T1,T2,T3))
+ {
+-lua_pushcclosure(L,mem_functor<T,T1,T2,T3>::invoke<RVal>,1);
++lua_pushcclosure(L,mem_functor<RVal,T,T1,T2,T3>::invoke,1);
+ }
+ template<typenameRVal,typenameT,typenameT1,typenameT2,typenameT3>
+ voidpush_functor(lua_State*L,RVal(T::*func)(T1,T2,T3)const)
+ {
+-lua_pushcclosure(L,mem_functor<T,T1,T2,T3>::invoke<RVal>,1);
++lua_pushcclosure(L,mem_functor<RVal,T,T1,T2,T3>::invoke,1);
+ }
+ template<typenameRVal,typenameT,typenameT1,typenameT2,typenameT3,typenameT4>
+ voidpush_functor(lua_State*L,RVal(T::*func)(T1,T2,T3,T4))
+ {
+-lua_pushcclosure(L,mem_functor<T,T1,T2,T3,T4>::invoke<RVal>,1);
++lua_pushcclosure(L,mem_functor<RVal,T,T1,T2,T3,T4>::invoke,1);
+ }
+ template<typenameRVal,typenameT,typenameT1,typenameT2,typenameT3,typenameT4>
+ voidpush_functor(lua_State*L,RVal(T::*func)(T1,T2,T3,T4)const)
+ {
+-lua_pushcclosure(L,mem_functor<T,T1,T2,T3,T4>::invoke<RVal>,1);
++lua_pushcclosure(L,mem_functor<RVal,T,T1,T2,T3,T4>::invoke,1);
+ }
+ template<typenameRVal,typenameT,typenameT1,typenameT2,typenameT3,typenameT4,typenameT5>
+ voidpush_functor(lua_State*L,RVal(T::*func)(T1,T2,T3,T4,T5))
+ {
+-lua_pushcclosure(L,mem_functor<T,T1,T2,T3,T4,T5>::invoke<RVal>,1);
++lua_pushcclosure(L,mem_functor<RVal,T,T1,T2,T3,T4,T5>::invoke,1);
+ }
+ template<typenameRVal,typenameT,typenameT1,typenameT2,typenameT3,typenameT4,typenameT5>
+ voidpush_functor(lua_State*L,RVal(T::*func)(T1,T2,T3,T4,T5)const)
+ {
+-lua_pushcclosure(L,mem_functor<T,T1,T2,T3,T4,T5>::invoke<RVal>,1);
++lua_pushcclosure(L,mem_functor<RVal,T,T1,T2,T3,T4,T5>::invoke,1);
+ }
+ template<typenameRVal,typenameT,typenameT1,typenameT2,typenameT3,typenameT4,typenameT5,typenameT6>
+ voidpush_functor(lua_State*L,RVal(T::*func)(T1,T2,T3,T4,T5,T6))
+ {
+-lua_pushcclosure(L,mem_functor<T,T1,T2,T3,T4,T5,T6>::invoke<RVal>,1);
++lua_pushcclosure(L,mem_functor<RVal,T,T1,T2,T3,T4,T5,T6>::invoke,1);
+ }
+ template<typenameRVal,typenameT,typenameT1,typenameT2,typenameT3,typenameT4,typenameT5,typenameT6>
+ voidpush_functor(lua_State*L,RVal(T::*func)(T1,T2,T3,T4,T5,T6)const)
+ {
+-lua_pushcclosure(L,mem_functor<T,T1,T2,T3,T4,T5,T6>::invoke<RVal>,1);
+-}
+-template<typenameRVal,typenameT,typenameT1,typenameT2,typenameT3,typenameT4,typenameT5,typenameT6,typenameT7>
+-voidpush_functor(lua_State*L,RVal(T::*func)(T1,T2,T3,T4,T5,T6,T7))
+-{
+-lua_pushcclosure(L,mem_functor<T,T1,T2,T3,T4,T5,T6,T7>::invoke<RVal>,1);
+-}
+-template<typenameRVal,typenameT,typenameT1,typenameT2,typenameT3,typenameT4,typenameT5,typenameT6,typenameT7>
+-voidpush_functor(lua_State*L,RVal(T::*func)(T1,T2,T3,T4,T5,T6,T7)const)
+-{
+-lua_pushcclosure(L,mem_functor<T,T1,T2,T3,T4,T5,T6,T7>::invoke<RVal>,1);
+-}
+-template<typenameRVal,typenameT,typenameT1,typenameT2,typenameT3,typenameT4,typenameT5,typenameT6,typenameT7,typenameT8>
+-voidpush_functor(lua_State*L,RVal(T::*func)(T1,T2,T3,T4,T5,T6,T7,T8))
+-{
+-lua_pushcclosure(L,mem_functor<T,T1,T2,T3,T4,T5,T6,T7,T8>::invoke<RVal>,1);
+-}
+-template<typenameRVal,typenameT,typenameT1,typenameT2,typenameT3,typenameT4,typenameT5,typenameT6,typenameT7,typenameT8>
+-voidpush_functor(lua_State*L,RVal(T::*func)(T1,T2,T3,T4,T5,T6,T7,T8)const)
+-{
+-lua_pushcclosure(L,mem_functor<T,T1,T2,T3,T4,T5,T6,T7,T8>::invoke<RVal>,1);
+-}
+-template<typenameRVal,typenameT,typenameT1,typenameT2,typenameT3,typenameT4,typenameT5,typenameT6,typenameT7,typenameT8,typenameT9>
+-voidpush_functor(lua_State*L,RVal(T::*func)(T1,T2,T3,T4,T5,T6,T7,T8,T9))
+-{
+-lua_pushcclosure(L,mem_functor<T,T1,T2,T3,T4,T5,T6,T7,T8,T9>::invoke<RVal>,1);
+-}
+-template<typenameRVal,typenameT,typenameT1,typenameT2,typenameT3,typenameT4,typenameT5,typenameT6,typenameT7,typenameT8,typenameT9>
+-voidpush_functor(lua_State*L,RVal(T::*func)(T1,T2,T3,T4,T5,T6,T7,T8,T9)const)
+-{
+-lua_pushcclosure(L,mem_functor<T,T1,T2,T3,T4,T5,T6,T7,T8,T9>::invoke<RVal>,1);
+-}
+-template<typenameRVal,typenameT,typenameT1,typenameT2,typenameT3,typenameT4,typenameT5,typenameT6,typenameT7,typenameT8,typenameT9,typenameT10>
+-voidpush_functor(lua_State*L,RVal(T::*func)(T1,T2,T3,T4,T5,T6,T7,T8,T9,T10))
+-{
+-lua_pushcclosure(L,mem_functor<T,T1,T2,T3,T4,T5,T6,T7,T8,T9,T10>::invoke<RVal>,1);
+-}
+-template<typenameRVal,typenameT,typenameT1,typenameT2,typenameT3,typenameT4,typenameT5,typenameT6,typenameT7,typenameT8,typenameT9,typenameT10>
+-voidpush_functor(lua_State*L,RVal(T::*func)(T1,T2,T3,T4,T5,T6,T7,T8,T9,T10)const)
+-{
+-lua_pushcclosure(L,mem_functor<T,T1,T2,T3,T4,T5,T6,T7,T8,T9,T10>::invoke<RVal>,1);
++lua_pushcclosure(L,mem_functor<RVal,T,T1,T2,T3,T4,T5,T6>::invoke,1);
+ }
+ //constructor
+-template<typenameT1=void,typenameT2=void,typenameT3=void,typenameT4=void>
+-structconstructor{};
+-template<typenameT1,typenameT2,typenameT3>
+-structconstructor<T1,T2,T3>
+-{
+-template<typenameT>
+-staticvoidinvoke(lua_State*L)
+-{
+-new(lua_newuserdata(L,sizeof(val2user<T>)))val2user<T>(read<T1>(L,2),read<T2>(L,3),read<T3>(L,4));
+-}
+-};
+-template<typenameT1,typenameT2>
+-structconstructor<T1,T2>
+-{
+-template<typenameT>
+-staticvoidinvoke(lua_State*L)
+-{
+-new(lua_newuserdata(L,sizeof(val2user<T>)))val2user<T>(read<T1>(L,2),read<T2>(L,3));
+-}
+-};
+-template<typenameT1>
+-structconstructor<T1>
+-{
+-template<typenameT>
+-staticvoidinvoke(lua_State*L)
+-{
+-new(lua_newuserdata(L,sizeof(val2user<T>)))val2user<T>(read<T1>(L,2));
+-}
+-};
+-template<>
+-structconstructor<void>
+-{
+-template<typenameT>
+-staticvoidinvoke(lua_State*L)
+-{
+-new(lua_newuserdata(L,sizeof(val2user<T>)))val2user<T>();
+-}
+-};
+-template<typenameT>
+-structcreator
+-{
+-template<typenameCONSTRUCTOR>
+-staticintinvoke(lua_State*L)
+-{
+-CONSTRUCTOR::invoke<T>(L);
+-meta_push(L,class_name<class_type<T>::type>::name());
++template<typenameT,typenameT1,typenameT2,typenameT3,typenameT4,typenameT5,typenameT6>
++intconstructor(lua_State*L)
++{
++new(lua_newuserdata(L,sizeof(val2user<T>)))val2user<T>(read<T1>(L,2),read<T2>(L,3),read<T3>(L,4),read<T4>(L,5),read<T5>(L,6),read<T6>(L,7));
++push_meta(L,class_name<typenameclass_type<T>::type>::name());
+ lua_setmetatable(L,-2);
+ return1;
+ }
+-};
++template<typenameT,typenameT1,typenameT2,typenameT3,typenameT4,typenameT5>
++intconstructor(lua_State*L)
++{
++new(lua_newuserdata(L,sizeof(val2user<T>)))val2user<T>(read<T1>(L,2),read<T2>(L,3),read<T3>(L,4),read<T4>(L,5),read<T5>(L,6));
++push_meta(L,class_name<typenameclass_type<T>::type>::name());
++lua_setmetatable(L,-2);
++return1;
++}
++template<typenameT,typenameT1,typenameT2,typenameT3,typenameT4>
++intconstructor(lua_State*L)
++{
++new(lua_newuserdata(L,sizeof(val2user<T>)))val2user<T>(read<T1>(L,2),read<T2>(L,3),read<T3>(L,4),read<T4>(L,5));
++push_meta(L,class_name<typenameclass_type<T>::type>::name());
++lua_setmetatable(L,-2);
++return1;
++}
++template<typenameT,typenameT1,typenameT2,typenameT3>
++intconstructor(lua_State*L)
++{
++new(lua_newuserdata(L,sizeof(val2user<T>)))val2user<T>(read<T1>(L,2),read<T2>(L,3),read<T3>(L,4));
++push_meta(L,class_name<typenameclass_type<T>::type>::name());
++lua_setmetatable(L,-2);
++return1;
++}
++template<typenameT,typenameT1,typenameT2>
++intconstructor(lua_State*L)
++{
++new(lua_newuserdata(L,sizeof(val2user<T>)))val2user<T>(read<T1>(L,2),read<T2>(L,3));
++push_meta(L,class_name<typenameclass_type<T>::type>::name());
++lua_setmetatable(L,-2);
++return1;
++}
++template<typenameT,typenameT1>
++intconstructor(lua_State*L)
++{
++new(lua_newuserdata(L,sizeof(val2user<T>)))val2user<T>(read<T1>(L,2));
++push_meta(L,class_name<typenameclass_type<T>::type>::name());
++lua_setmetatable(L,-2);
++return1;
++}
++template<typenameT>
++intconstructor(lua_State*L)
++{
++new(lua_newuserdata(L,sizeof(val2user<T>)))val2user<T>();
++push_meta(L,class_name<typenameclass_type<T>::type>::name());
++lua_setmetatable(L,-2);
++return1;
++}
+ //destroyer
+ template<typenameT>
+@@ -628,5 +577,5 @@
+ {
+ lua_pushstring(L,name);
+-lua_pushlightuserdata(L,func);
++lua_pushlightuserdata(L,(void*)func);
+ push_functor(L,func);
+ lua_settable(L,LUA_GLOBALSINDEX);
+@@ -810,122 +759,4 @@
+ push(L,arg6);
+ if(lua_pcall(L,6,1,errfunc)!=0)
+-{
+-lua_pop(L,1);
+-}
+-}
+-else
+-{
+-print_error(L,"lua_tinker::call()attempttocallglobal`%s'(notafunction)",name);
+-}
+-lua_remove(L,-2);
+-returnpop<RVal>(L);
+-}
+-template<typenameRVal,typenameT1,typenameT2,typenameT3,typenameT4,typenameT5,typenameT6,typenameT7>
+-RValcall(lua_State*L,constchar*name,T1arg1,T2arg2,T3arg3,T4arg4,T5arg5,T6arg6,T7arg7)
+-{
+-lua_pushcclosure(L,on_error,0);
+-interrfunc=lua_gettop(L);
+-lua_pushstring(L,name);
+-lua_gettable(L,LUA_GLOBALSINDEX);
+-if(lua_isfunction(L,-1))
+-{
+-push(L,arg1);
+-push(L,arg2);
+-push(L,arg3);
+-push(L,arg4);
+-push(L,arg5);
+-push(L,arg6);
+-push(L,arg7);
+-if(lua_pcall(L,7,1,errfunc)!=0)
+-{
+-lua_pop(L,1);
+-}
+-}
+-else
+-{
+-print_error(L,"lua_tinker::call()attempttocallglobal`%s'(notafunction)",name);
+-}
+-lua_remove(L,-2);
+-returnpop<RVal>(L);
+-}
+-template<typenameRVal,typenameT1,typenameT2,typenameT3,typenameT4,typenameT5,typenameT6,typenameT7,typenameT8>
+-RValcall(lua_State*L,constchar*name,T1arg1,T2arg2,T3arg3,T4arg4,T5arg5,T6arg6,T7arg7,T8arg8)
+-{
+-lua_pushcclosure(L,on_error,0);
+-interrfunc=lua_gettop(L);
+-lua_pushstring(L,name);
+-lua_gettable(L,LUA_GLOBALSINDEX);
+-if(lua_isfunction(L,-1))
+-{
+-push(L,arg1);
+-push(L,arg2);
+-push(L,arg3);
+-push(L,arg4);
+-push(L,arg5);
+-push(L,arg6);
+-push(L,arg7);
+-push(L,arg8);
+-if(lua_pcall(L,8,1,errfunc)!=0)
+-{
+-lua_pop(L,1);
+-}
+-}
+-else
+-{
+-print_error(L,"lua_tinker::call()attempttocallglobal`%s'(notafunction)",name);
+-}
+-lua_remove(L,-2);
+-returnpop<RVal>(L);
+-}
+-template<typenameRVal,typenameT1,typenameT2,typenameT3,typenameT4,typenameT5,typenameT6,typenameT7,typenameT8,typenameT9>
+-RValcall(lua_State*L,constchar*name,T1arg1,T2arg2,T3arg3,T4arg4,T5arg5,T6arg6,T7arg7,T8arg8,T9arg9)
+-{
+-lua_pushcclosure(L,on_error,0);
+-interrfunc=lua_gettop(L);
+-lua_pushstring(L,name);
+-lua_gettable(L,LUA_GLOBALSINDEX);
+-if(lua_isfunction(L,-1))
+-{
+-push(L,arg1);
+-push(L,arg2);
+-push(L,arg3);
+-push(L,arg4);
+-push(L,arg5);
+-push(L,arg6);
+-push(L,arg7);
+-push(L,arg8);
+-push(L,arg9);
+-if(lua_pcall(L,9,1,errfunc)!=0)
+-{
+-lua_pop(L,1);
+-}
+-}
+-else
+-{
+-print_error(L,"lua_tinker::call()attempttocallglobal`%s'(notafunction)",name);
+-}
+-lua_remove(L,-2);
+-returnpop<RVal>(L);
+-}
+-template<typenameRVal,typenameT1,typenameT2,typenameT3,typenameT4,typenameT5,typenameT6,typenameT7,typenameT8,typenameT9,typenameT10>
+-RValcall(lua_State*L,constchar*name,T1arg1,T2arg2,T3arg3,T4arg4,T5arg5,T6arg6,T7arg7,T8arg8,T9arg9,T10arg10)
+-{
+-lua_pushcclosure(L,on_error,0);
+-interrfunc=lua_gettop(L);
+-lua_pushstring(L,name);
+-lua_gettable(L,LUA_GLOBALSINDEX);
+-if(lua_isfunction(L,-1))
+-{
+-push(L,arg1);
+-push(L,arg2);
+-push(L,arg3);
+-push(L,arg4);
+-push(L,arg5);
+-push(L,arg6);
+-push(L,arg7);
+-push(L,arg8);
+-push(L,arg9);
+-push(L,arg10);
+-if(lua_pcall(L,10,1,errfunc)!=0)
+ {
+ lua_pop(L,1);
+@@ -968,9 +799,9 @@
+ voidclass_inh(lua_State*L)
+ {
+-meta_push(L,class_name<T>::name());
++push_meta(L,class_name<T>::name());
+ if(lua_istable(L,-1))
+ {
+ lua_pushstring(L,"__parent");
+-meta_push(L,class_name<P>::name());
++push_meta(L,class_name<P>::name());
+ lua_rawset(L,-3);
+ }
+@@ -978,13 +809,13 @@
+ }
+ //TinkerClassConstructor
+-template<typenameT,typenameCONSTRUCTOR>
+-voidclass_con(lua_State*L,CONSTRUCTOR)
+-{
+-meta_push(L,class_name<T>::name());
++template<typenameT,typenameF>
++voidclass_con(lua_State*L,Ffunc)
++{
++push_meta(L,class_name<T>::name());
+ if(lua_istable(L,-1))
+ {
+ lua_newtable(L);
+ lua_pushstring(L,"__call");
+-lua_pushcclosure(L,creator<T>::invoke<CONSTRUCTOR>,0);
++lua_pushcclosure(L,func,0);
+ lua_rawset(L,-3);
+ lua_setmetatable(L,-2);
+@@ -1010,5 +841,5 @@
+ voidclass_mem(lua_State*L,constchar*name,VARBASE::*val)
+ {
+-meta_push(L,class_name<T>::name());
++push_meta(L,class_name<T>::name());
+ if(lua_istable(L,-1))
+ {

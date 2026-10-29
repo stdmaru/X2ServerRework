@@ -1,0 +1,117 @@
+--- KNCSDK_Server/Include/dbg/logfile.hpp
++++ KNCSDK_Client/Include/dbg/logfile.hpp
+@@ -23,10 +23,4 @@
+ //wanttochangeinthere.
+ #include"KncUtil.h"
+-//{{2013.02.19최육사로그시스템개선
+-//#ifdefSERV_LOG_SYSTEM_NEW
+-#include<map>
+-#include"../Thread/Locker.h"
+-//#endifSERV_LOG_SYSTEM_NEW
+-//}}
+ namespacedbg
+ {
+@@ -63,23 +57,4 @@
+ staticstd::stringms_strFileName;
+ //}}florist
+-//{{2013.02.19최육사로그시스템개선
+-//#ifdefSERV_LOG_SYSTEM_NEW
+-public:
+-structKLogStat
+-{
+-std::wstringm_wstrFunctionName;
+-std::wstringm_wstrFileName;
+-std::wstringm_wstrLineNum;
+-intm_iCount;
+-KLogStat()
+-{
+-m_iCount=0;
+-}
+-};
+-private:
+-std::map<unsignedint,KLogStat>m_mapLogStat;
+-mutableKncCriticalSectionm_csLogStat;
+-//#endifSERV_LOG_SYSTEM_NEW
+-//}}
+ public:
+ //{{florist
+@@ -92,4 +67,5 @@
+ template<classT0>logfile&operator<<(T0data)
+ {
++#ifX2_DEV_TOOLS
+ //{{florist
+ if(m_sLevel>ms_sLevel)return*this;
+@@ -102,16 +78,26 @@
+ //::OutputDebugString(data);
+ }
++#endif
+ return*this;
+ }
+ logfile&operator<<(conststd::wstring&szStr)
+ {
++#if!X2_DEV_TOOLS
++returnoperator<<(L"");
++#else
+ returnoperator<<(szStr.c_str());
++#endif
+ }
+ logfile&operator<<(conststd::string&szStr)
+ {
++#if!X2_DEV_TOOLS
++returnoperator<<("");
++#else
+ returnoperator<<(szStr.c_str());
++#endif
+ }
+ logfile&operator<<(constchar*szData)
+ {
++#ifX2_DEV_TOOLS
+ //{{florist
+ if(m_sLevel>ms_sLevel)return*this;
+@@ -124,8 +110,10 @@
+ std::wcout<<strTmp.c_str();
+ }
++#endif
+ return*this;
+ }
+ template<>logfile&operator<<(boolb)
+ {
++#ifX2_DEV_TOOLS
+ //{{florist
+ if(m_sLevel>ms_sLevel)return*this;
+@@ -137,20 +125,18 @@
+ std::wcout<<((b==true)?L"true":L"false");
+ }
++#endif
+ return*this;
+ }
+ template<>logfile&operator<<(logfile&(*_manip)(logfile&))
+ {
++#if!X2_DEV_TOOLS
++return*this;
++#else
+ //{{florist
+ if(m_sLevel>ms_sLevel)return*this;
+ //}}florist
+ return_manip(*this);
++#endif
+ }
+-//{{2013.02.19최육사로그시스템개선
+-//#ifdefSERV_LOG_SYSTEM_NEW
+-logfile&LogStat(constwchar_t*pStrFunctionName,constwchar_t*pStrFileName,constintiLineNum);
+-voidGetLogStat(std::map<unsignedint,KLogStat>&mapLogStat)const;
+-voidClearLogStat();
+-//#endifSERV_LOG_SYSTEM_NEW
+-//}}
+ friendlogfile&endl(logfile&);
+ friendlogfile&endp(logfile&);
+@@ -163,9 +149,4 @@
+ staticvoidSetLogFileTitle(constwchar_t*szFileTitle);
+ staticconstchar*GetLogFileName(){returnms_strFileName.c_str();}
+-//{{2013.02.15최육사로그시스템개선
+-//#ifdefSERV_LOG_SYSTEM_NEW
+-staticstd::streamoffGetLogFileSize();
+-//#endifSERV_LOG_SYSTEM_NEW
+-//}}
+ //}}florist
+ private:

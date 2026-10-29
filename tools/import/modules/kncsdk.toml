@@ -1,0 +1,74 @@
+# KNCSDK: internal SDK (log, serializer, security, threads, lua_tinker).
+# Base = KNCSDK_Server (servers come first, docs/core/decisoes.md T8); KNCSDK_Client differences go to the report.
+# Embedded third-party code (Crypto++, zlib, Lua 5.0/5.1, luabind) is not imported: it comes from upstream.
+
+name = "kncsdk"
+source_root = "KNCSDK_Server"
+alt_root = "KNCSDK_Client"
+include_dirs = ["Include"]
+flags = ["base"]
+
+# public headers not reached through the projects above
+extra = [
+    "Include/KNCSingleton.h",
+    "Include/KncContainer.h",
+    "Include/KncMacro.h",
+    "Include/RTTI.h",
+    "Include/ToString.h",
+    "Include/VariableSizeBuffer.h",
+    "Include/Thread/Thread.h",
+    "Include/Thread/Locker.h",
+    "Include/Thread/KCSLockType.h",
+    "Include/ObjectPool/BlockAllocator.h",
+    "Include/ObjectPool/BoostAllocator.h",
+]
+
+exclude = [
+    "Include/cryptopp/*",
+    "Include/Serializer/zlib/*",
+    "Include/luabind/*",
+    "Src/luabind/*",
+    "Src/lua5.0.2/*",
+    "Src/lua5.1.4/*",
+    "Include/lua.h",
+    "Include/luaconf.h",
+    "Include/lauxlib.h",
+    "Include/lualib.h",
+    "Include/vld.h",
+    "Include/KncUtilLua.h",      # luabind helpers (luabind is dropped)
+    "Include/utf8_codecvt_facet.cpp",
+    "Include/dbg/codecvt_null.cpp",
+]
+
+[[projects]]
+path = "KncDebug/KncDebug71.vcxproj"
+config = "MD|Win32"
+
+[[projects]]
+path = "KncSerialize71/KncSerialize71.vcxproj"
+config = "MD|Win32"
+
+[[projects]]
+path = "KncSecurity71/KncSecurity71.vcxproj"
+config = "MD|Win32"
+
+[[projects]]
+path = "KncLua71/KncLua71.vcxproj"
+config = "MD|Win32"
+
+[[projects]]
+path = "UnitTest/UnitTest.vcxproj"
+config = "MD|Win32"
+
+# Layout mirrors Include/ so existing includes keep working; reorganization is Fase 5.
+[[map]]
+from = "Include"
+to = "src/kncsdk"
+
+[[map]]
+from = "Src"
+to = "src/kncsdk"
+
+[[map]]
+from = "UnitTest"
+to = "src/kncsdk/tests"

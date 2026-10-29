@@ -1,0 +1,14 @@
+--- KNCSDK_Server/Include/dbg/dbg.hpp
++++ KNCSDK_Client/Include/dbg/dbg.hpp
+@@ -15,10 +15,5 @@
+ #defineKNC_TIME_FORMAT_T("%Y-%m-%d%H:%M:%S")
+ #defineLOG_HEADER_STR__WFUNCTION__L"(),"<<(LPCTSTR)CTime::GetCurrentTime().Format(KNC_TIME_FORMAT)<<L","
+-//#defineSTART_LOG(type,data)dbg::type<<L#typeL":"LOG_HEADER_STR<<data<<dbg::endl
+-//{{2013.02.19최육사로그시스템개선
+-//#ifdefSERV_LOG_SYSTEM_NEW
+-#defineSTART_LOG(type,data)dbg::type.LogStat(__WFUNCTION__,__WFILE__,__LINE__)<<L#typeL":"LOG_HEADER_STR<<data<<dbg::endl
+-//#endifSERV_LOG_SYSTEM_NEW
+-//}}
++#defineSTART_LOG(type,data)dbg::type<<L#typeL":"LOG_HEADER_STR<<data<<dbg::endl
+ #defineSTART_LOG_WITH_NAME(type)START_LOG(type,L",Name:"<<m_strName)
+ #defineBUILD_LOG(data)dbg::tab<<L#dataL":"<<data<<dbg::endl

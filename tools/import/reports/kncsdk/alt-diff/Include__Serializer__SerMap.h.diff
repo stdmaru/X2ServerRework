@@ -1,0 +1,8 @@
+--- KNCSDK_Server/Include/Serializer/SerMap.h
++++ KNCSDK_Client/Include/Serializer/SerMap.h
+@@ -5,5 +5,4 @@
+ #include"SerSTL.h"
+ #include<map>
+-#include<iterator>
+ /**
+ *SerializeHelperfunctionsformap<>andmultimap<>
