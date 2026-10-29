@@ -43,14 +43,14 @@ Mesmo nome de pasta do original (`Common`), porque os fontes incluem `"../Common
 | Lua (`lua_tinker`, `luaL_*`) | 53 | `x2::kncsdk_lua` |
 | **Sockets/IOCP** (`Socket/`) | 15 | rede portável (Asio standalone), mantendo `KSession`/framing/cripto |
 | **ODBC** (`ODBC/`) | 2 | T17: ODBC Driver 18 / FreeTDS, `SQLWCHAR` UTF-16, connection strings |
-| **Matemática D3DX** (`X2Data/XSLBattleField`, `LineMap/`, `CommonPacket.h`) | 6 (187 usos) | shim de matemática compatível (`D3DXVECTOR3`...), reaproveitado pelo cliente |
+| **Matemática D3DX** (`X2Data/XSLBattleField`, `LineMap/`, `CommonPacket.h`) | 6 (187 usos) | `x2/platform/d3dx_math.h` (pronto); trocar `#include <d3dx9math.h>` por ele |
 | Dependência invertida | 1 | `KStatisticsLocalLog.cpp` inclui `GameServer/Inventory.h` e `CenterServer/PvPRoom.h` |
 
 Tamanho: ~99 mil linhas de `.cpp` sem os stubs gSOAP. Os maiores são os pacotes: `ServerPacket.cpp` (16 mil), `ClientPacket.cpp` (12 mil) e `CommonPacket.cpp` (7 mil).
 
 ## Plano do porte manual (um branch por passo)
 
-1. **`platform/math`**: shim da matemática D3DX (tipos e funções usados pelo servidor), com testes.
+1. ~~**`platform/math`**~~: feito em 2026-10-29 (`x2/platform/d3dx_math.h`, ver [Plataforma](platform.md)).
 2. **`server/common-build`**: alvo CMake com todo o `Common`, menos `Socket/` e `ODBC/`, compilando em GCC/Clang.
    É a passada mecânica: includes de plataforma, `typename`/`template`, Boost → `std`, stubs das integrações removidas.
 3. **`server/common-packets`**: testes de serialização dos pacotes (`ClientPacket`/`CommonPacket`), que são a base da compatibilidade (T4).

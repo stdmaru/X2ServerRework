@@ -35,6 +35,7 @@ Código portado inclui `x2/platform/win32.h` no lugar de `<windows.h>`, `<atltim
 | `crt.h` | `_wtoi`, `swprintf_s`, `wcscpy_s`, `_wcsicmp`, `_itow_s`, `_mkdir`... | implementação própria | nativo |
 | `unicode.h` | wide ↔ UTF-8 ↔ UTF-16; `TranslateWideFormat` | — | — |
 | `debug.h` | `__WFILE__`, `__WFUNCTION__` em tempo de execução | — | — |
+| `d3dx_math.h` | Matemática do D3DX 9: `D3DXVECTOR2/3/4`, `D3DXMATRIX`, `D3DXCOLOR`, `D3DX_PI`, `D3DXToDegree`, `D3DXVec3*` (normalize, cross, dot, transform...), `D3DXMatrix*` (identity, multiply, inverse, rotações, translação, escala, `LookAtLH`) | implementação própria | idem (sem DXSDK) |
 
 ## Armadilhas que a camada resolve
 
@@ -44,6 +45,10 @@ Código portado inclui `x2/platform/win32.h` no lugar de `<windows.h>`, `<atltim
   mas não colado a outro literal. O servidor só usa como argumento.
 - **`GetCurrentTime`** é macro no `windows.h`: o `types.h` faz `#undef` para não quebrar `CTime::GetCurrentTime()`.
 - `GetTickCount` dá a volta a cada ~49,7 dias, como no Windows (comparações com subtração sem sinal continuam certas).
+- **`&D3DXVECTOR3(0, 0, 0)`**: o original passa o endereço de temporários para funções D3DX, uma extensão do MSVC. Os tipos D3DX têm um
+  `operator&` só para temporários (qualificado com `&&`), que dá o mesmo resultado; `&` em variáveis continua sendo o nativo.
+- Matemática D3DX: mesmas convenções e fórmulas (vetor-linha `v·M`, mão esquerda, vetor nulo normaliza para nulo, `D3DXMatrixInverse` devolve `NULL` em matriz singular),
+  conferidas com a implementação do Wine. Só o subconjunto usado pelo servidor; o cliente vai pedir mais (quatérnios, planos, `D3DXVec3Project`...).
 
 ## Limitações conhecidas
 
@@ -53,4 +58,5 @@ Código portado inclui `x2/platform/win32.h` no lugar de `<windows.h>`, `<atltim
 
 ## Testes
 
-`src/platform/tests` (doctest): unicode, formatos MSVC, `CString`, `CTime`/`CTimeSpan`, eventos, threads, CRT.
+`src/platform/tests` (doctest): unicode, formatos MSVC, `CString`, `CTime`/`CTimeSpan`, eventos, threads, CRT e matemática D3DX
+(valores esperados derivados à mão das convenções do D3DX).

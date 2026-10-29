@@ -1,6 +1,7 @@
 add_executable(x2_platform_tests
     main.cpp
     test_crt.cpp
+    test_d3dx_math.cpp
     test_string.cpp
     test_sync.cpp
     test_time.cpp
