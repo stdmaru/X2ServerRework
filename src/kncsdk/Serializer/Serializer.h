@@ -1,7 +1,6 @@
 #ifndef SERIALIZER_H
 #define SERIALIZER_H "$Id: Serializer.h,v 1.5 2003/04/19 03:28:43 cvs Exp $"
 
-#pragma warning(disable: 4786)
 
 #include "BaseTypes.h"
 #include "SerDefs.h"
@@ -24,44 +23,48 @@ public:
 
 	DWORD GetReadLength() const;
 
-    // user-defined class
+    // user-defined class. The helpers are called unqualified with a SerializeHelper::Adl argument so that
+    // argument-dependent lookup also finds overloads declared after this header (packets), as MSVC did.
     template <typename T>
     bool Put(const T& obj)
     {
-        SerializeTag tag = SerializeHelper::ComputeTag(obj);
+        SerializeTag tag = ComputeTag(obj, SerializeHelper::Adl());
         return WriteTag(tag) &&
-               SerializeHelper::PutInto(*this, obj);
+               PutInto(*this, obj, SerializeHelper::Adl());
     }
 
     template <typename T>
     bool Get(T& obj)
     {
-        SerializeTag tag = SerializeHelper::ComputeTag(obj);
+        SerializeTag tag = ComputeTag(obj, SerializeHelper::Adl());
         return ReadAndCheckTag(tag) &&
-               SerializeHelper::GetFrom(*this, obj);
+               GetFrom(*this, obj, SerializeHelper::Adl());
     }
 
-    // builtin types
+    // builtin types. Wire sizes are fixed (the original MSVC x86 layout): int/unsigned/long/unsigned long
+    // are 4 bytes (long must fit in 32 bits), wchar_t is 2 bytes (UTF-16 code unit), see docs/porte/kncsdk.md.
     bool Put(char x);
     bool Get(char& x);
     bool Put(wchar_t x);
     bool Get(wchar_t& x);
-    bool Put(UCHAR x);
-    bool Get(UCHAR& x);
+    bool Put(unsigned char x);
+    bool Get(unsigned char& x);
     bool Put(short x);
     bool Get(short& x);
-    bool Put(USHORT x);
-    bool Get(USHORT& x);
+    bool Put(unsigned short x);
+    bool Get(unsigned short& x);
     bool Put(int x);
     bool Get(int& x);
-    bool Put(DWORD x);
-    bool Get(DWORD& x);
-    bool Put(UINT x);
-    bool Get(UINT& x);
-    bool Put(INT64 x);
-    bool Get(INT64& x);
-    bool Put(UINT64 x);
-    bool Get(UINT64& x);
+    bool Put(unsigned int x);           // DWORD tag (as UINT in the original)
+    bool Get(unsigned int& x);
+    bool Put(long x);                   // INT tag; fails if out of 32-bit range
+    bool Get(long& x);
+    bool Put(unsigned long x);          // DWORD tag (DWORD is unsigned long on Windows)
+    bool Get(unsigned long& x);
+    bool Put(long long x);              // INT64
+    bool Get(long long& x);
+    bool Put(unsigned long long x);     // UINT64
+    bool Get(unsigned long long& x);
     bool Put(float x);
     bool Get(float& x);
     bool Put(double x);
@@ -74,7 +77,7 @@ public:
     bool Put(const char* x);
     bool Get(std::string& x);
 
-    // wstring
+    // wstring: byte length (DWORD) + UTF-16LE
     bool Put(const std::wstring& x);
     bool Put(const wchar_t* x);
     bool Get(std::wstring& x);
@@ -143,10 +146,11 @@ protected:
     bool WriteBytes(const void* buf, DWORD len);
     bool ReadBytes(void* buf, DWORD len);
 
+    bool PutUtf16(const wchar_t* x, size_t len);
+
 private:
-    // disabled - no copying
-    KSerializer(const KSerializer&);
-    void operator=(const KSerializer&);
+    KSerializer(const KSerializer&) = delete;
+    void operator=(const KSerializer&) = delete;
 
 protected:
     KSerBuffer*     m_buffer;

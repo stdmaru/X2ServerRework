@@ -13,19 +13,19 @@
 namespace SerializeHelper
 {
     template <typename T>
-    inline SerializeTag ComputeTag(const std::vector<T>&)
+    inline SerializeTag ComputeTag(const std::vector<T>&, Adl = Adl())
     {
         return eTAG_VECTOR;
     }
 
     template <typename T>
-    inline bool PutInto(KSerializer& ser, const std::vector<T>& obj)
+    inline bool PutInto(KSerializer& ser, const std::vector<T>& obj, Adl = Adl())
     {
         return PutRange(ser, obj.begin(), obj.end(), (DWORD)obj.size());
     }
 
     template <typename T>
-    inline bool GetFrom(KSerializer& ser, std::vector<T>& obj)
+    inline bool GetFrom(KSerializer& ser, std::vector<T>& obj, Adl = Adl())
     {
         obj.clear();
         return GetRange(ser, std::back_inserter(obj), (T*)0);

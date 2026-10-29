@@ -1,14 +1,20 @@
-static const char* cvsid = "$Id: Serializer.cpp,v 1.3 2003/01/14 01:55:38 cvs Exp $";
-
 #include "Serializer.h"
 #include "SerBuffer.h"
 #include "ByteOrder.h"
+#include "x2/platform/unicode.h"
+
+#include <bit>
 #include <cassert>
+#include <cstring>
+#include <limits>
+#include <vector>
+
+static_assert(std::endian::native == std::endian::little, "ByteOrder.h assumes a little-endian host");
 
 
 KSerializer::KSerializer()
-    : m_tagsEnabled(false),
-      m_buffer(0)
+    : m_buffer(0),
+      m_tagsEnabled(false)
 {
   // empty
 }
@@ -62,24 +68,33 @@ bool KSerializer::Get(char& x)
     return ReadNumber(x, eTAG_CHAR);
 }
 
-//{{ Begin 051226. kkurrung.
+// wchar_t: one UTF-16 code unit, little-endian (raw MSVC layout, not byte-swapped like other numbers).
+// Code points outside the BMP cannot be sent as a single wchar_t and become U+FFFD.
 bool KSerializer::Put(wchar_t x)
 {
-    return WriteNumber(x, eTAG_WCHAR);
+    std::uint32_t cp = static_cast<std::uint32_t>(x);
+    if constexpr (sizeof(wchar_t) == 4) {
+        if (cp > 0xFFFF)
+            cp = 0xFFFD;
+    }
+    const USHORT unit = static_cast<USHORT>(cp);
+    return WriteNumber(unit, eTAG_WCHAR);
 }
 
 bool KSerializer::Get(wchar_t& x)
 {
-    return ReadNumber(x, eTAG_WCHAR);
+    USHORT unit = 0;
+    bool ret = ReadNumber(unit, eTAG_WCHAR);
+    x = static_cast<wchar_t>(unit);
+    return ret;
 }
-//}} 051226. End kkurrung.
 
-bool KSerializer::Put(UCHAR x)
+bool KSerializer::Put(unsigned char x)
 {
     return WriteNumber(x, eTAG_UCHAR);
 }
 
-bool KSerializer::Get(UCHAR& x)
+bool KSerializer::Get(unsigned char& x)
 {
     return ReadNumber(x, eTAG_UCHAR);
 }
@@ -97,13 +112,13 @@ bool KSerializer::Get(short& x)
     return ret;
 }
 
-bool KSerializer::Put(USHORT x)
+bool KSerializer::Put(unsigned short x)
 {
     x = HTON_I16(x);
     return WriteNumber(x, eTAG_USHORT);
 }
 
-bool KSerializer::Get(USHORT& x)
+bool KSerializer::Get(unsigned short& x)
 {
     bool ret = ReadNumber(x, eTAG_USHORT);
     x = NTOH_I16(x);
@@ -123,49 +138,70 @@ bool KSerializer::Get(int& x)
     return ret;
 }
 
-bool KSerializer::Put(DWORD x)
+bool KSerializer::Put(unsigned int x)
 {
-    x = HTON_I32(x);
-    return WriteNumber(x, eTAG_DWORD);
+    std::uint32_t v = HTON_I32(static_cast<std::uint32_t>(x));
+    return WriteNumber(v, eTAG_DWORD);
 }
 
-bool KSerializer::Get(DWORD& x)
+bool KSerializer::Get(unsigned int& x)
 {
-    bool ret = ReadNumber(x, eTAG_DWORD);
-    x = NTOH_I32(x);
+    std::uint32_t v = 0;
+    bool ret = ReadNumber(v, eTAG_DWORD);
+    x = static_cast<unsigned int>(NTOH_I32(v));
     return ret;
 }
 
-bool KSerializer::Put(UINT x)
+bool KSerializer::Put(long x)
 {
-    return Put((DWORD)x);
+    if (x < std::numeric_limits<std::int32_t>::min() || x > std::numeric_limits<std::int32_t>::max())
+        return false;
+    return Put(static_cast<int>(x));
 }
 
-bool KSerializer::Get(UINT& x)
+bool KSerializer::Get(long& x)
 {
-    return Get((DWORD&)x);
+    int v = 0;
+    bool ret = Get(v);
+    x = v;
+    return ret;
 }
 
-bool KSerializer::Put(INT64 x)
+bool KSerializer::Put(unsigned long x)
+{
+    if (x > std::numeric_limits<std::uint32_t>::max())
+        return false;
+    return Put(static_cast<unsigned int>(x));
+}
+
+bool KSerializer::Get(unsigned long& x)
+{
+    unsigned int v = 0;
+    bool ret = Get(v);
+    x = v;
+    return ret;
+}
+
+bool KSerializer::Put(long long x)
 {
     x = HTON_I64(x);
     return WriteNumber(x, eTAG_INT64);
 }
 
-bool KSerializer::Get(INT64& x)
+bool KSerializer::Get(long long& x)
 {
     bool ret = ReadNumber(x, eTAG_INT64);
     x = NTOH_I64(x);
     return ret;
 }
 
-bool KSerializer::Put(UINT64 x)
+bool KSerializer::Put(unsigned long long x)
 {
     x = HTON_I64(x);
     return WriteNumber(x, eTAG_UINT64);
 }
 
-bool KSerializer::Get(UINT64& x)
+bool KSerializer::Get(unsigned long long& x)
 {
     bool ret = ReadNumber(x, eTAG_UINT64);
     x = NTOH_I64(x);
@@ -273,47 +309,48 @@ bool KSerializer::Get(std::string& x)
 }
 
 
-//{{ Begin 051226. kkurrung.
-bool KSerializer::Put(const std::wstring& x)
+// wstring: DWORD byte length + UTF-16LE code units (the raw std::wstring of the MSVC build).
+bool KSerializer::PutUtf16(const wchar_t* x, size_t len)
 {
-    // tag
     if( !WriteTag(eTAG_WSTRING) )
         return false;
 
-    DWORD size = (DWORD)x.size() * sizeof(wchar_t) ;
+    const std::u16string u16 = x2::platform::WideToUtf16(std::wstring_view(x, len));
+    if( u16.size() > std::numeric_limits<DWORD>::max() / 2 )
+        return false;
+    DWORD size = static_cast<DWORD>(u16.size() * 2);
     if( !Put(size) )
         return false;
-    // data (only if there is some)
-    return (size == 0) || WriteBytes(x.data(), size );
+    if( size == 0 )
+        return true;
+
+    std::vector<unsigned char> bytes(size);
+    for( size_t i = 0; i < u16.size(); ++i )
+    {
+        bytes[i * 2]     = static_cast<unsigned char>(u16[i] & 0xFF);
+        bytes[i * 2 + 1] = static_cast<unsigned char>(u16[i] >> 8);
+    }
+    return WriteBytes(bytes.data(), size);
 }
 
-#include <iostream>
+bool KSerializer::Put(const std::wstring& x)
+{
+    return PutUtf16(x.data(), x.size());
+}
+
 bool KSerializer::Put(const wchar_t* x)
 {
-    // could just return Put(string(x)), but that makes a copy..
     assert(x != 0);
-    // tag
-    if( !WriteTag(eTAG_WSTRING) )
-        return false;
-
-    // size
-    DWORD size = (DWORD)wcslen(x) * sizeof(wchar_t);
-    if( !Put(size) )
-        return false;
-    // data (only if there is some)
-    return (size == 0) || WriteBytes(x, size);
+    return PutUtf16(x, wcslen(x));
 }
 
 bool KSerializer::Get(std::wstring& x)
 {
-    // erase contents
-    x.erase();
+    x.clear();
 
-    // tag
     if( !ReadAndCheckTag(eTAG_WSTRING) )
         return false;
 
-    // size
     DWORD size;
     if( !Get(size) )
         return false;
@@ -324,19 +361,18 @@ bool KSerializer::Get(std::wstring& x)
     if( m_buffer != NULL && m_buffer->GetReadLength() < size )
         return false;
 
-    // data (only if there is some)
     if( size == 0 )
         return true;
-    // since we can't get a pointer to string's internal data, have to
-    // use a temp buffer and copy it...
-    wchar_t* tempString = new wchar_t[size/sizeof(wchar_t)];
-    bool ok = ReadBytes((char*)tempString, size);
-    if (ok)
-        x.assign(tempString, size/sizeof(wchar_t));
-    delete [] tempString;
-    return ok;
+
+    std::vector<unsigned char> bytes(size);
+    if( !ReadBytes(bytes.data(), size) )
+        return false;
+    std::u16string u16(size / 2, u'\0');
+    for( size_t i = 0; i < u16.size(); ++i )
+        u16[i] = static_cast<char16_t>(bytes[i * 2] | (bytes[i * 2 + 1] << 8));
+    x = x2::platform::Utf16ToWide(u16);
+    return true;
 }
-//}} 051226. End kkurrung.
 
 /**
  * Raw byte arrays
@@ -369,7 +405,7 @@ bool KSerializer::WriteTag(const SerializeTag tag)
 {
     assert((tag >= 0) && (tag <= 255)); // fit inside uint8
 
-    UCHAR tmp = tag;
+    UCHAR tmp = static_cast<UCHAR>(tag);
     return !m_tagsEnabled || WriteBytes(&tmp, 1);
 }
 

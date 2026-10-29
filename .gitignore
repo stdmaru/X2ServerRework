@@ -7,3 +7,7 @@ _tools
 /out/
 CMakeUserPresets.json
 __pycache__/
+
+# runtime logs (dbg::logfile writes to the working directory)
+*.log
+/log/

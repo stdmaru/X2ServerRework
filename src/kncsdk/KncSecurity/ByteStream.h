@@ -21,7 +21,7 @@ class KByteStream : public std::basic_string<byte>
 public:
     KByteStream() {}
     KByteStream( const unsigned char* pData, size_t nSize ) : std::basic_string<byte>( pData, nSize ) {}
-    KByteStream( std::basic_string<byte>& kData ) : std::basic_string<byte>( kData ) {}
+    KByteStream( const std::basic_string<byte>& kData ) : std::basic_string<byte>( kData ) {}
 	virtual ~KByteStream() {}
 
     template <class T> void Assign( const T& objAssign, size_t nSize )

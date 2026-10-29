@@ -8,7 +8,19 @@
 #include "dbg/dbg.hpp"
 
 #undef max
-#include <boost/random.hpp>
+#include <limits>
+#include <random>
+
+namespace
+{
+    // The original used a static, never-seeded boost::mt19937 shared by all threads: the same key/SPI
+    // sequence on every run, and a data race. One generator per thread, seeded from the OS.
+    std::mt19937& Rng()
+    {
+        thread_local std::mt19937 rng( std::random_device{}() );
+        return rng;
+    }
+}
 
 SERIALIZE_DEFINE_PUT( KncSecurity::KSecurityAssociation, obj, ks )
 {
@@ -82,9 +94,7 @@ KSecurityAssociation::~KSecurityAssociation()
 
 void KSecurityAssociation::ResetRandomizeKey()
 {
-    static boost::mt19937 rng;
-    static boost::uniform_int<DWORD> uint32( 1, std::numeric_limits<byte>::max() );   // 1 이상. SPI 0은 생성자에서 이미 설정했다.
-    static boost::variate_generator<boost::mt19937&, boost::uniform_int<DWORD> > die(rng, uint32);
+    std::uniform_int_distribution<DWORD> die( 1, std::numeric_limits<byte>::max() );   // 1 이상.
 
     KByteStream::iterator sit;
 
@@ -92,14 +102,14 @@ void KSecurityAssociation::ResetRandomizeKey()
     m_bsAuthKey.resize( AUTH_KEY_SIZE );
     for( sit = m_bsAuthKey.begin(); sit != m_bsAuthKey.end(); sit++ )
     {
-        *sit = static_cast<byte>( die() );
+        *sit = static_cast<byte>( die( Rng() ) );
     }
 
     m_bsCryptoKey.clear();
     m_bsCryptoKey.resize( CRYPTO_KEY_SIZE );
     for( sit = m_bsCryptoKey.begin(); sit != m_bsCryptoKey.end(); sit++ )
     {
-        *sit = static_cast<byte>( die() );
+        *sit = static_cast<byte>( die( Rng() ) );
     }
 }
 

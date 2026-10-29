@@ -21,7 +21,7 @@ namespace dbg
     {
         std::wstring m_expression;
         std::wstring m_filename;
-        unsigned int m_line;
+        unsigned int m_line = 0;
 
     public:
 
@@ -50,13 +50,8 @@ namespace dbg
 
 } // dbg
 
-
-#define WIDEN(x) L ## x
-#define WIDENM(x) WIDEN(x)
-#define __WFILE__ WIDENM(__FILE__)
-#define __WFUNCTION__ WIDENM(__FUNCTION__)
-
-#define WIDENE(x) L ## # x
+// L"..." from a macro argument (L#x only works on MSVC)
+#define WIDENE(x) L ## #x
 
 #define m_custom_assert_a(x) m_custom_assert_op( x, b )
 #define m_custom_assert_b(x) m_custom_assert_op( x, a )
@@ -76,8 +71,5 @@ namespace dbg
     else ::dbg::cassert( WIDENE(expr) , __LINE__, __WFUNCTION__, __WFILE__ ).m_custom_assert_a
 
 #endif // TB_ASSERT
-
-
-
 
 #endif // TB_DBG_ASSERT_HPP

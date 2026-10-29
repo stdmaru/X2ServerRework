@@ -2,7 +2,11 @@
 #define SERDEFS_H "$Id: SerDefs.h,v 1.3 2003/01/14 05:44:39 cvs Exp $"
 
 class KSerializer;              // fwd
-namespace SerializeHelper {}    // fwd
+namespace SerializeHelper
+{
+    // Extra argument of every helper: makes KSerializer's unqualified calls find them through ADL.
+    struct Adl {};
+}
 
 /**
  * SerializeTag enumeration
@@ -65,7 +69,7 @@ enum SerializeTag
 #define SERIALIZE_DEFINE_TAG(typ, tag) \
     namespace SerializeHelper \
     { \
-        inline SerializeTag ComputeTag(const typ&) { return tag; } \
+        inline SerializeTag ComputeTag(const typ&, Adl = Adl()) { return tag; } \
     }
 
 /**
@@ -74,8 +78,8 @@ enum SerializeTag
 #define SERIALIZE_DECLARE_PUTGET(typ) \
         namespace SerializeHelper \
         { \
-            bool PutInto(KSerializer& ser, const typ& obj); \
-            bool GetFrom(KSerializer& ser, typ& obj); \
+            bool PutInto(KSerializer& ser, const typ& obj, Adl = Adl()); \
+            bool GetFrom(KSerializer& ser, typ& obj, Adl = Adl()); \
         }
 
 /**
@@ -83,8 +87,8 @@ enum SerializeTag
  * functions of the class.  Must be put inside class declaration.
  **/
 #define SERIALIZE_DECLARE_FRIEND(typ) \
-        friend bool SerializeHelper::PutInto(KSerializer&, const typ&); \
-        friend bool SerializeHelper::GetFrom(KSerializer&, typ&)
+        friend bool SerializeHelper::PutInto(KSerializer&, const typ&, SerializeHelper::Adl); \
+        friend bool SerializeHelper::GetFrom(KSerializer&, typ&, SerializeHelper::Adl)
 
 /**
  * Define (implement) PutInto() for given type.  Must be followed by
@@ -99,7 +103,7 @@ enum SerializeTag
  * }
  **/
 #define SERIALIZE_DEFINE_PUT(typ, obj, ser) \
-        bool SerializeHelper::PutInto(KSerializer& ser, const typ& obj)
+        bool SerializeHelper::PutInto(KSerializer& ser, const typ& obj, SerializeHelper::Adl)
 
 /**
  * Define (implement) GetFrom() for given type.  Must be followed by
@@ -114,6 +118,6 @@ enum SerializeTag
  * }
  **/
 #define SERIALIZE_DEFINE_GET(typ, obj, ser) \
-        bool SerializeHelper::GetFrom(KSerializer& ser, typ& obj)
+        bool SerializeHelper::GetFrom(KSerializer& ser, typ& obj, SerializeHelper::Adl)
 
 #endif

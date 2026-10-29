@@ -22,8 +22,8 @@ public:
     bool Create( const KByteStream& );
     bool Create( const void*, unsigned long nBytes );
     //void Set( const KByteStream& );
-    bool IsAuthentic();   // GePayload()에서 한번 호출됨. 외부에서 불릴 수 있음
-    bool GetPayload( KByteStream& payload );
+    bool IsAuthentic() const;   // GePayload()에서 한번 호출됨. 외부에서 불릴 수 있음
+    bool GetPayload( KByteStream& payload ) const;
     bool GetPayload( char*, int* );
     void SetAccepted();
 
@@ -34,9 +34,37 @@ public:
 	bool GetPayload_notRWM( KByteStream& payload, bool bAuthentic = true, bool bCheckSequenceNum = true );
 	//}}
 	//////////////////////////////////////////////////////////////////////////
-
     const char* GetDataPtr() const;     // for SOCKET I/O function.
     unsigned long GetSize() const;
+
+	//{{
+	//////////////////////////////////////////////////////////////////////////
+	// SADatabase 를 Session 객체의 맴버로 사용 하기 위하여 추가된 변수
+	//////////////////////////////////////////////////////////////////////////
+	bool Create_Local( const void* pData, unsigned long nBytes, KSADatabase* pSADatabase );
+	bool Create_Local( const KByteStream& payload, KSADatabase* pSADatabase );
+	bool GetPayload_Local( KByteStream& payload, KSADatabase* pSADatabase );
+	bool GetPayload_Local( char* pPayload, int* pnBytes, KSADatabase* pSADatabase );
+	void SetAccepted_Local( KSADatabase* pSADatabase );
+	bool Create_notRWM_Local( const KByteStream& payload, KSADatabase* pSADatabase );
+	bool IsAuthentic_notRWM_Local( bool bCheckSequenceNum /*= true*/, KSADatabase* pSADatabase );
+	bool GetPayload_notRWM_Local( KByteStream& payload, bool bAuthentic /*= true*/, bool bCheckSequenceNum /*= true*/, KSADatabase* pSADatabase );
+	void GenerateIV_Local( KByteStream& bsIV_, KSADatabase* pSADatabase ) const;
+	KByteStream GenerateCrypt_Local( const KByteStream& payload, const KByteStream& iv, KSADatabase* pSADatabase ) const;
+	KByteStream GeneratePadding_Local( const KByteStream& payload, KSADatabase* pSADatabase ) const;
+	KByteStream GenerateICV_Local( const KByteStream& auth, KSADatabase* pSADatabase ) const;
+	unsigned long GetMaxSecureSize_Local( const KByteStream& payload, KSADatabase* pSADatabase ) const;
+	unsigned long GetMaxPadSize_Local( const KByteStream& payload, KSADatabase* pSADatabase ) const;
+	inline bool IsValidSize_Local( KSADatabase* pSADatabase ) const;
+	inline bool IsValidSPIndex_Local( SpiType& nSPIndex, KSADatabase* pSADatabase ) const;
+	inline bool IsValidSequenceNum_Local( SeqType& nSequenceNum, KSADatabase* pSADatabase ) const;
+	inline bool IsValidSequenceNum_notRWM_Local( SeqType& nSequenceNum, KSADatabase* pSADatabase );
+	inline bool IsValidICV_Local( KSADatabase* pSADatabase ) const;
+	bool IsAuthentic_Local( KSADatabase* pSADatabase );
+	//////////////////////////////////////////////////////////////////////////
+	// SADatabase 를 Session 객체의 맴버로 사용 하기 위하여 추가된 변수
+	//////////////////////////////////////////////////////////////////////////
+	//}}
 
 private:
     KSecurityAssociation& GetSA();
@@ -63,6 +91,7 @@ private:
 	//}}
     // 데이터에서 얻은 ICV와 새로 계산한 ICV를 비교한다.
     inline bool IsValidICV() const;
+
     bool IsValidPadding( const KByteStream& payload, unsigned long& nPadBytes ) const;
 
 private:

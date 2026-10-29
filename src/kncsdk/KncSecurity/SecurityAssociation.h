@@ -14,6 +14,7 @@ SERIALIZE_DECLARE_PUTGET( KncSecurity::KSecurityAssociation );
 NAMESPACE_BEGIN( KncSecurity )
 
 typedef unsigned int SeqType;
+static_assert( sizeof( SeqType ) == 4, "SeqType is part of the secure packet header (wire format)" );
 
 #define MAX_SEQUENCE_NUM	0xFFFFFFFF
 

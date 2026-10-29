@@ -1,10 +1,7 @@
 #pragma once
 
-//extern "C" {
-#include "lua.h"
-#include "lauxlib.h"
-#include "lualib.h"
-//}
+// LuaJIT (Lua 5.1 API, C linkage). The original compiled its own Lua copy as C++.
+#include <lua.hpp>
 
 #define DeclLuaValue void to_lua(lua_State *L) { lua_tinker::push_::invoke( L, this); }
 

@@ -1,7 +1,7 @@
 #ifndef LOCKER_H
 #define LOCKER_H
 
-#include <windows.h>    // CRITICAL_SECTION
+#include "x2/platform/sync.h"    // CRITICAL_SECTION
 
 struct KncCriticalSection : public CRITICAL_SECTION
 {

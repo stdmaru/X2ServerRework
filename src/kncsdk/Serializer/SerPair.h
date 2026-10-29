@@ -12,19 +12,19 @@
 namespace SerializeHelper
 {
     template <typename T1, typename T2>
-    inline SerializeTag ComputeTag(const std::pair<T1,T2>&)
+    inline SerializeTag ComputeTag(const std::pair<T1,T2>&, Adl = Adl())
     {
     return eTAG_PAIR;
     }
 
     template <typename T1, typename T2>
-    inline bool PutInto(KSerializer& ser, const std::pair<T1,T2>& obj)
+    inline bool PutInto(KSerializer& ser, const std::pair<T1,T2>& obj, Adl = Adl())
     {
         return ser.Put(obj.first) && ser.Put(obj.second);
     }
 
     template <typename T1, typename T2>
-    inline bool GetFrom(KSerializer& ser, std::pair<T1,T2>& obj)
+    inline bool GetFrom(KSerializer& ser, std::pair<T1,T2>& obj, Adl = Adl())
     {
         return ser.Get(obj.first) && ser.Get(obj.second);
     }

@@ -1,15 +1,14 @@
 #ifndef THREAD_H
 #define THREAD_H "$Id: Thread.h,v 1.1 2003/05/23 01:18:40 cvs Exp $"
 
-#include <windows.h>
+#include "x2/platform/win32.h"
 #include <string>
 #include <map>
 #include "Locker.h"
 
-#include <process.h>
 
 #ifndef _BEGINTHREADEX
-typedef unsigned (__stdcall* PTHREAD_START)(void*);
+typedef unsigned (WINAPI* PTHREAD_START)(void*);
 #   define _BEGINTHREADEX( psa, \
                            cbStack, \
                            pfnStartAddr, \
@@ -132,7 +131,7 @@ protected:
 
 template<typename T>
 KTThread<T>::KTThread(T& kobject_, void (T::*pfnRun_)(), DWORD dwTimeout_)
-    : m_kobject(kobject_), m_dwThreadID( 0 )
+    : m_dwThreadID( 0 ), m_kobject(kobject_)
 {
     m_dwTimeout     = dwTimeout_;
     m_pfnRun        = pfnRun_;
@@ -193,7 +192,7 @@ void KTThread<T>::End(DWORD dwTimeout_)
 template<typename T>
 void KTThread<T>::Run()
 {
-    DWORD   ret = NULL;
+    DWORD   ret = 0;
     bool    bEnd = false;
     while( !bEnd )
     {
@@ -324,13 +323,13 @@ void KThreadTimer<T>::End(DWORD dwTimeout_)
 template<typename T>
 void KThreadTimer<T>::Run()
 {
-    DWORD   ret = NULL;
+    DWORD   ret = 0;
     bool    bEnd = false;
     while( !bEnd )
     {
         if( 0 == m_dwPeriod )
         {
-            MapTimer::iterator    mit;
+            typename MapTimer::iterator    mit;
             KLocker lock(m_csMapTimer);
             for( mit = m_mapTimer.begin(); mit != m_mapTimer.end(); mit++ )
             {
@@ -351,7 +350,7 @@ void KThreadTimer<T>::Run()
                 bEnd = true;
                 break;
             case WAIT_TIMEOUT:
-                MapTimer::iterator    mit;
+                typename MapTimer::iterator    mit;
                 KLocker lock(m_csMapTimer);
                 for( mit = m_mapTimer.begin(); mit != m_mapTimer.end(); mit++ )
                 {
@@ -371,7 +370,7 @@ template<typename T>
 bool KThreadTimer<T>::AddTimer( const char* szName_, DWORD dwPeriod_, void (T::*pfnRun_)())
 {
     KLocker lock(m_csMapTimer);
-    MapTimer::const_iterator    mit;
+    typename MapTimer::const_iterator    mit;
     mit = m_mapTimer.find( szName_ );
     if( mit != m_mapTimer.end() )
         return false;
@@ -390,7 +389,7 @@ template<typename T>
 void KThreadTimer<T>::DeleteTimer( const char* szName_ )
 {
     KLocker lock(m_csMapTimer);
-    MapTimer::iterator    mit;
+    typename MapTimer::iterator    mit;
     mit = m_mapTimer.find( szName_ );
     if( mit == m_mapTimer.end() )
         return;
@@ -401,7 +400,7 @@ template<typename T>
 void KThreadTimer<T>::SetTimerPeriod( const char* szName_, DWORD dwPeriod_)
 {
     KLocker lock(m_csMapTimer);
-    MapTimer::iterator    mit;
+    typename MapTimer::iterator    mit;
     mit = m_mapTimer.find( szName_ );
     if( mit == m_mapTimer.end() )
         return;

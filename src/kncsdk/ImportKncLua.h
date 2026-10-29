@@ -1,8 +1,3 @@
 #pragma once
-
-// lua 5.0.2
-// lua interpreter
-// luabind (boost 1_32_0 needed)
-
-#define KNCLIBNAME "KncLua"
-#include "ImportKncSDK.h"
+// The original selected a prebuilt KNCSDK .lib through #pragma comment(lib). Linking is done by CMake now
+// (target kncsdk); this header only stays so existing includes keep compiling.

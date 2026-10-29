@@ -11,7 +11,7 @@
         static classname*   ms_selfInstance
 
 #define DefSingletonInline(ClassName)   \
-    inline ClassName* Si##ClassName##() { return ClassName::GetInstance(); }
+    inline ClassName* Si##ClassName() { return ClassName::GetInstance(); }
 
 #define ImplementSingleton( classname ) \
     classname* classname::ms_selfInstance = NULL; \
@@ -43,7 +43,7 @@
         static classname*   ms_object
 
 #define DefKObjectInline( child, parent )   \
-    inline child* Get##child##() { return (child*)parent::GetKObj(); }
+    inline child* Get##child() { return (child*)parent::GetKObj(); }
 
 #define ImplInstanceKeeping( classname ) \
     classname* classname::ms_object = NULL; \

@@ -1,9 +1,8 @@
 #pragma once
 
 #include <map>
-#include <boost/noncopyable.hpp>
 #include "SecurityAssociation.h"
-#include <windows.h>    // CRITICAL_SECTION
+#include "x2/platform/sync.h"    // CRITICAL_SECTION
 #include "Thread/Locker.h"
 
 NAMESPACE_BEGIN( KncSecurity )
@@ -12,10 +11,12 @@ NAMESPACE_BEGIN( KncSecurity )
 // KSADatabase는 singleton으로 관리됩니다.
 // 생성되는 Session마다 SPIndex가 모두 달라야 함
 
-class KSADatabase : public boost::noncopyable
+class KSADatabase
 {
 public:
     KSADatabase();
+    KSADatabase( const KSADatabase& ) = delete;
+    KSADatabase& operator=( const KSADatabase& ) = delete;
     virtual ~KSADatabase();
 
     void Insert( OUT SpiType& nSPIndex, IN const KSecurityAssociation& sa );

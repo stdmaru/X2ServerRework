@@ -1,5 +1,3 @@
-static const char* cvsid = "$Id: SerBuffer.cpp,v 1.3 2003/01/14 01:55:38 cvs Exp $";
-
 #include "SerBuffer.h"
 #include "Serializer.h"
 
@@ -85,7 +83,7 @@ SERIALIZE_DEFINE_GET(KSerBuffer, obj, serializer)
   return serializer.Get( obj.m_bCompress ) && serializer.GetRaw(&obj.m_buf[0], len);
 }
 
-#include "zlib/zlib.h"
+#include <zlib.h>
 
 bool KSerBuffer::Compress()
 {
@@ -93,16 +91,16 @@ bool KSerBuffer::Compress()
 
     // 압축된 데이터를 담을 버퍼를 준비한다.
     std::vector<UCHAR> vecBuff;
-    DWORD dwSize = compressBound( GetLength() );
-    vecBuff.resize( dwSize );
+    uLongf destSize = compressBound( GetLength() );
+    vecBuff.resize( destSize );
 
-    // compress data.
+    // compress data. The original size goes first, as a 4-byte DWORD.
     DWORD dwOriginSize = GetLength();
-    int nRet = compress2( &vecBuff[0], &dwSize, (UCHAR*)GetData(), GetLength(), 1 );
+    int nRet = compress2( &vecBuff[0], &destSize, (const Bytef*)GetData(), GetLength(), 1 );
     if( nRet != Z_OK )
         return false;
 
-    vecBuff.resize( dwSize );   // trim extra buffer space
+    vecBuff.resize( destSize );   // trim extra buffer space
 
     // 압축된 데이터를 kbuff에 옮겨 담는다.
     Clear();
@@ -129,7 +127,9 @@ bool KSerBuffer::UnCompress()
     std::vector<UCHAR> vecDecompBuff;
     vecDecompBuff.resize( dwOriginSize );
 
-    int nRet = uncompress( &vecDecompBuff[0], &dwRetSize, (UCHAR*)&m_buf[m_readOffset], m_buf.size() - sizeof( dwOriginSize ) );
+    uLongf retSize = dwRetSize;
+    int nRet = uncompress( &vecDecompBuff[0], &retSize, (const Bytef*)&m_buf[m_readOffset], static_cast<uLong>( m_buf.size() - sizeof( dwOriginSize ) ) );
+    dwRetSize = static_cast<DWORD>( retSize );
     if( nRet != Z_OK || dwRetSize != dwOriginSize )
         return false;
 

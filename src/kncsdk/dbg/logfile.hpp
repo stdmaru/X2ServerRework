@@ -1,37 +1,15 @@
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-// Copyright Triple Buffer Software 2003 All rights reserved                                        //
-//                                                                                                  //
-// This is free sour code. You may check the terms and conditions for free source code usage at:    //
-//                                                                                                  //
-// http://triplebuffer.devmaster.net/license.php                                                    //
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-
-#ifndef TB_DBG_LOGFILE_HPP
-#define TB_DBG_LOGFILE_HPP
-
-#include <fstream>
-//{{ florist
-#include <iostream>     // std::cout
-//#include <windows.h>    // OutputDebugString
-//}} florist
-
-// NOTES:
+// Logging used everywhere through dbg::cout/cerr/cwarn/clog and the START_LOG family (dbg.hpp).
 //
-// You shouldnt create any logfiles. There are already 4 precreated logfiles that you can use
-// to log stuff.
-//
-// If you want to change the color that the logfiles log stuff in then go to the .cpp file and change
-// the html constants at teh top of the file. Also if you want to change the title that is displayed
-// in the logfile then goto the .cpp file and check the init() member function. You'll find what you
-// want to change in there.
+// Same interface as the original (Triple Buffer Software logfile, extended by KOG), different internals:
+// every thread builds its line in its own buffer and complete lines are written under a lock, to a
+// UTF-8 text file and to the console. The original wrote HTML from all threads without locking.
+#pragma once
 
-#include  "KncUtil.h"
-//{{ 2013. 02. 19	최육사	로그 시스템 개선
-//#ifdef SERV_LOG_SYSTEM_NEW
+#include "KncUtil.h"
+#include "Thread/Locker.h"
+
 #include <map>
-#include "../Thread/Locker.h"
-//#endif SERV_LOG_SYSTEM_NEW
-//}}
+#include <string>
 
 namespace dbg
 {
@@ -50,162 +28,64 @@ namespace dbg
 
     class logfile
     {
-		void start();
-		void end();
-        void set_mode();
-        void init();
-
-        static std::wofstream m_file;
-		static bool m_initialized;
-
-        static bool m_abCurMode[lm_number_of_modes];
-		//static bool m_was_error;
-		//static bool m_was_info;
-		//static bool m_was_comm;
-		//static bool m_was_warn;
-
-        e_log_mode m_mode;
-        //{{ florist
-        static bool             ms_bFileNameAtTime;
-        static short            ms_sLevel;
-        short                   m_sLevel;
-        static std::string      ms_strFileName;
-        //}} florist
-
-		//{{ 2013. 02. 19	최육사	로그 시스템 개선
-//#ifdef SERV_LOG_SYSTEM_NEW
-	public:
-		struct KLogStat
-		{
-			std::wstring	m_wstrFunctionName;
-			std::wstring	m_wstrFileName;
-			std::wstring	m_wstrLineNum;
-			int				m_iCount;
-
-			KLogStat()
-			{
-				m_iCount = 0;
-			}
-		};
-
-	private:
-		std::map< unsigned int, KLogStat >	m_mapLogStat;
-		mutable KncCriticalSection			m_csLogStat;
-//#endif SERV_LOG_SYSTEM_NEW
-		//}}
-
     public:
+        struct KLogStat
+        {
+            std::wstring    m_wstrFunctionName;
+            std::wstring    m_wstrFileName;
+            std::wstring    m_wstrLineNum;
+            int             m_iCount = 0;
+        };
 
-        //{{ florist
         logfile( e_log_mode lm, unsigned short usLevel );
-        // original below
-        //logfile( e_log_mode lm );
-        //}} florist
-        ~logfile();
+        ~logfile() = default;
 
         logfile& line_file_func( const unsigned int line, const wchar_t* file, const wchar_t* func );
 
-        template<class T0> logfile& operator << ( T0 data )
+        template<class T> logfile& operator << ( const T& data )
         {
-            //{{ florist
-            if( m_sLevel > ms_sLevel ) return *this;
-            //}} florist
-
-            this->set_mode();
-            if( m_initialized )
-            {
-                m_file<< data;
-                std::wcout << data;
-
-                //::OutputDebugString( data );
-            }
-
+            if( Enabled() )
+                Stream() << data;
             return *this;
         }
 
-        logfile& operator << ( const std::wstring& szStr )
-        {
-            return operator<< ( szStr.c_str() );
-        }
+        logfile& operator << ( const wchar_t* sz );
+        logfile& operator << ( wchar_t* sz ) { return *this << static_cast<const wchar_t*>( sz ); }
+        logfile& operator << ( const char* sz );
+        logfile& operator << ( char* sz ) { return *this << static_cast<const char*>( sz ); }
+        logfile& operator << ( const std::wstring& str ) { return *this << str.c_str(); }
+        logfile& operator << ( const std::string& str ) { return *this << str.c_str(); }
+        logfile& operator << ( const CStringW& str ) { return *this << str.GetString(); }
+        logfile& operator << ( bool b ) { return *this << ( b ? L"true" : L"false" ); }
+        logfile& operator << ( logfile& (*manip)( logfile& ) ) { return Enabled() ? manip( *this ) : *this; }
 
-        logfile& operator << ( const std::string& szStr )
-        {
-            return operator<< ( szStr.c_str() );
-        }
+        logfile& LogStat( const wchar_t* pStrFunctionName, const wchar_t* pStrFileName, const int iLineNum );
+        void GetLogStat( std::map< unsigned int, KLogStat >& mapLogStat ) const;
+        void ClearLogStat();
 
-        logfile& operator << ( const char* szData )
-        {
-            //{{ florist
-            if( m_sLevel > ms_sLevel ) return *this;
-            //}} florist
+        friend logfile& endl( logfile& );
+        friend logfile& endp( logfile& );
+        friend logfile& tab( logfile& );
+        friend logfile& lbreak( logfile& );
 
-            this->set_mode();
-            if( m_initialized )
-            {
-                std::wstring strTmp = KncUtil::toWideString( szData );
-                m_file << strTmp.c_str();
-                std::wcout << strTmp.c_str();
-            }
-
-            return *this;
-        }
-
-        template<> logfile& operator << ( bool b )
-        {
-            //{{ florist
-            if( m_sLevel > ms_sLevel ) return *this;
-            //}} florist
-
-            this->set_mode();
-	        if( m_initialized )
-            {
-		        m_file << ( ( b == true ) ? L"true" : L"false" );
-                std::wcout << ( ( b == true ) ? L"true" : L"false" );
-            }
-
-	        return *this;
-        }
-
-
-        template<> logfile& operator << ( logfile& (*_manip)(logfile&) )
-        {
-            //{{ florist
-            if( m_sLevel > ms_sLevel ) return *this;
-            //}} florist
-
-            return _manip(*this);
-        }
-
-		//{{ 2013. 02. 19	최육사	로그 시스템 개선
-		//#ifdef SERV_LOG_SYSTEM_NEW
-		logfile& LogStat( const wchar_t* pStrFunctionName, const wchar_t* pStrFileName, const int iLineNum );
-		void GetLogStat( std::map< unsigned int, KLogStat >& mapLogStat ) const;
-		void ClearLogStat();
-		//#endif SERV_LOG_SYSTEM_NEW
-		//}}
-
-	    friend logfile& endl( logfile& );
-	    friend logfile& endp( logfile& );
-	    friend logfile& tab( logfile& );
-	    friend logfile& lbreak( logfile& );
-
-        //{{ florist.
         static void CloseFile();
         static void SetLogLevel( short sLevel );
-        static void SetFileNameAtTime( bool bFileNameAtTime );
+        static void SetFileNameAtTime( bool bFileNameAtTime );   // true: one file per run under log/
         static void SetLogFileTitle( const wchar_t* szFileTitle );
-        static const char* GetLogFileName() { return ms_strFileName.c_str(); }
-		//{{ 2013. 02. 15	최육사	로그 시스템 개선
-//#ifdef SERV_LOG_SYSTEM_NEW
-		static std::streamoff GetLogFileSize();
-//#endif SERV_LOG_SYSTEM_NEW
-		//}}
-        //}} florist
+        static const char* GetLogFileName();
+        static std::streamoff GetLogFileSize();
 
     private:
-        void OpenLogFile(); // 050202. florist. 설정에 맞춰 로그파일을 생성한다.
+        bool Enabled() const;
+        std::wostream& Stream();    // current thread's pending line
+        void Flush( bool bBlankLine );
 
-    }; // logfile
+        e_log_mode  m_mode;
+        short       m_sLevel;
+
+        std::map< unsigned int, KLogStat >  m_mapLogStat;
+        mutable KncCriticalSection          m_csLogStat;
+    };
 
     extern logfile cout;
     extern logfile cerr;
@@ -217,7 +97,9 @@ namespace dbg
     extern logfile cwarn2;
     extern logfile clog2;
 
+    logfile& endl( logfile& );
+    logfile& endp( logfile& );
+    logfile& tab( logfile& );
+    logfile& lbreak( logfile& );
+
 } // dbg
-
-
-#endif // TB_DBG_LOGFILE_HPP

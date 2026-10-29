@@ -111,6 +111,10 @@ def _dest(mod: Module, rel: str) -> Path:
 
 
 def run(name: str, dry_run: bool = False, force: bool = False) -> Path:
+    data = tomllib.loads((TOOL / "modules" / f"{name}.toml").read_text())
+    if data.get("frozen") and not dry_run:
+        raise ImportError_(f"module '{name}' is frozen: it was ported by hand in src/, re-importing would "
+                           "destroy that work (only --dry-run is allowed)")
     mod = load_module(name)
     index = includes.CaseIndex()
 

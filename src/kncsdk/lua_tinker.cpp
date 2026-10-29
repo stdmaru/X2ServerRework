@@ -1,3 +1,5 @@
+#include <cstdio>
+#include <cstring>
 // lua_tinker.cpp
 //
 // LuaTinker - Simple and light C++ wrapper for Lua.
@@ -26,7 +28,7 @@ void lua_tinker::init(lua_State *L)
 static int tostring_s64(lua_State *L)
 {
 	char temp[64];
-	sprintf(temp, "%I64d", *(__int64*)lua_topointer(L, 1));
+	snprintf(temp, sizeof(temp), "%lld", *(const long long*)lua_topointer(L, 1));
 	lua_pushstring(L, temp);
 	return 1;
 }
@@ -88,7 +90,7 @@ void lua_tinker::init_s64(lua_State *L)
 static int tostring_u64(lua_State *L)
 {
 	char temp[64];
-	sprintf(temp, "%I64u", *(unsigned __int64*)lua_topointer(L, 1));
+	snprintf(temp, sizeof(temp), "%llu", *(const unsigned long long*)lua_topointer(L, 1));
 	lua_pushstring(L, temp);
 	return 1;
 }
@@ -180,7 +182,7 @@ void lua_tinker::dobuffer(lua_State *L, const char* buff, size_t len)
 	lua_pushcclosure(L, on_error, 0);
 	int errfunc = lua_gettop(L);
 
-    if(luaL_loadbuffer(L, buff, len, "lua_tinker::dobuffer()") != 0)
+    if(luaL_loadbuffer(L, buff, len, "lua_tinker::dobuffer()") == 0) // the original tested != 0 and never ran the chunk
 	{
 		if(lua_pcall(L, 0, 0, errfunc) != 0)
 		{
@@ -243,7 +245,7 @@ void lua_tinker::print_error(lua_State *L, const char* fmt, ...)
 
 	va_list args;
 	va_start(args, fmt);
-	vsprintf(text, fmt, args);
+	vsnprintf(text, sizeof(text), fmt, args);
 	va_end(args);
 
 	lua_pushstring(L, "_ALERT");
@@ -385,7 +387,7 @@ bool lua_tinker::read(lua_State *L, int index)
 }
 
 template<>
-void lua_tinker::read(lua_State *L, int index)
+void lua_tinker::read(lua_State * /*L*/, int /*index*/)
 {
 	return;
 }

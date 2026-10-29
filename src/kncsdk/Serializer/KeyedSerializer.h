@@ -203,19 +203,19 @@ bool operator!=(const KKeyedSerializer<KEY>& lhs,
 namespace SerializeHelper
 {
     template <typename KEY>
-    inline SerializeTag ComputeTag(const KKeyedSerializer<KEY>&)
+    inline SerializeTag ComputeTag(const KKeyedSerializer<KEY>&, Adl = Adl())
     {
         return eTAG_KEYEDSERIALIZER;
     }
 
     template <typename KEY>
-    inline bool PutInto(KSerializer& ser, const KKeyedSerializer<KEY>& obj)
+    inline bool PutInto(KSerializer& ser, const KKeyedSerializer<KEY>& obj, Adl = Adl())
     {
         return obj.PutInto(ser);
     }
 
     template <typename KEY>
-    inline bool GetFrom(KSerializer& ser, KKeyedSerializer<KEY>& obj)
+    inline bool GetFrom(KSerializer& ser, KKeyedSerializer<KEY>& obj, Adl = Adl())
     {
         return obj.GetFrom(ser);
     }

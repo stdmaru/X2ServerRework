@@ -12,19 +12,19 @@
 namespace SerializeHelper
 {
     template <typename T>
-    inline SerializeTag ComputeTag(const std::list<T>&)
+    inline SerializeTag ComputeTag(const std::list<T>&, Adl = Adl())
     {
         return eTAG_LIST;
     }
 
     template <typename T>
-    inline bool PutInto(KSerializer& ser, const std::list<T>& obj)
+    inline bool PutInto(KSerializer& ser, const std::list<T>& obj, Adl = Adl())
     {
         return PutRange(ser, obj.begin(), obj.end(), obj.size());
     }
 
     template <typename T>
-    inline bool GetFrom(KSerializer& ser, std::list<T>& obj)
+    inline bool GetFrom(KSerializer& ser, std::list<T>& obj, Adl = Adl())
     {
     obj.clear();
         return GetRange(ser, std::back_inserter(obj), (T*)0);

@@ -1,2 +1,3 @@
-# Modules are added here as they are ported (docs/core/roadmap.md).
-# Imported but not yet ported modules (e.g. kncsdk) are intentionally not built.
+# Modules are added here as they are ported (docs/projeto/roadmap.md).
+add_subdirectory(platform)
+add_subdirectory(kncsdk)

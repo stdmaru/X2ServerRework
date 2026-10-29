@@ -13,38 +13,38 @@
 namespace SerializeHelper
 {
     template <typename T, typename COMPARE>
-    inline SerializeTag ComputeTag(const std::set<T,COMPARE>&)
+    inline SerializeTag ComputeTag(const std::set<T,COMPARE>&, Adl = Adl())
     {
         return eTAG_SET;
     }
 
     template <typename T, typename COMPARE>
-    inline bool PutInto(KSerializer& ser, const std::set<T,COMPARE>& obj)
+    inline bool PutInto(KSerializer& ser, const std::set<T,COMPARE>& obj, Adl = Adl())
     {
         return PutRange(ser, obj.begin(), obj.end(), obj.size());
     }
 
     template <typename T, typename COMPARE>
-    inline bool GetFrom(KSerializer& ser, std::set<T,COMPARE>& obj)
+    inline bool GetFrom(KSerializer& ser, std::set<T,COMPARE>& obj, Adl = Adl())
     {
     obj.clear();
         return GetRange(ser, std::inserter(obj, obj.end()), (T*)0);
     }
 
     template <typename T, typename COMPARE>
-    inline SerializeTag ComputeTag(const std::multiset<T,COMPARE>&)
+    inline SerializeTag ComputeTag(const std::multiset<T,COMPARE>&, Adl = Adl())
     {
         return eTAG_MULTISET;
     }
 
     template <typename T, typename COMPARE>
-    inline bool PutInto(KSerializer& ser, const std::multiset<T,COMPARE>& obj)
+    inline bool PutInto(KSerializer& ser, const std::multiset<T,COMPARE>& obj, Adl = Adl())
     {
         return PutRange(ser, obj.begin(), obj.end(), obj.size());
     }
 
     template <typename T, typename COMPARE>
-    inline bool GetFrom(KSerializer& ser, std::multiset<T,COMPARE>& obj)
+    inline bool GetFrom(KSerializer& ser, std::multiset<T,COMPARE>& obj, Adl = Adl())
     {
         obj.clear();
         return GetRange(ser, std::inserter(obj, obj.end()), (T*)0);

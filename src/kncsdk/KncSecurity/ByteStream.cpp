@@ -31,7 +31,7 @@ ImplToStringA( KByteStream )
     std::basic_string<byte>::const_iterator sit;
     for( sit = begin(); sit != end(); sit++ )
     {
-        stm_ << std::hex << std::setw( 2 ) << std::setfill( '0' ) << (const int)*sit << " ";
+        stm_ << std::hex << std::setw( 2 ) << std::setfill( '0' ) << static_cast<int>(*sit) << " ";
     }
 
     return stm_ << " ]" << std::dec;

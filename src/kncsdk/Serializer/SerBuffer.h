@@ -50,14 +50,14 @@ private:
 bool operator==(const KSerBuffer& lhs, const KSerBuffer& rhs);
 
 inline KSerBuffer::KSerBuffer()
-    : m_readOffset(0), m_bCompress(false)
+    : m_bCompress(false), m_readOffset(0)
 {
 }
 
 inline KSerBuffer::KSerBuffer(const KSerBuffer& other)
-    : m_buf(other.m_buf),
-      m_readOffset(other.m_readOffset),
-      m_bCompress( other.m_bCompress )
+    : m_bCompress( other.m_bCompress ),
+      m_buf(other.m_buf),
+      m_readOffset(other.m_readOffset)
 {
 }
 

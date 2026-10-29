@@ -4,8 +4,19 @@
 #include "dbg/dbg.hpp"
 
 #undef max
-#include <boost/random.hpp>
+#include <random>
 #include <limits>
+
+namespace
+{
+    // The original used a static, never-seeded boost::mt19937 shared by all threads: the same key/SPI
+    // sequence on every run, and a data race. One generator per thread, seeded from the OS.
+    std::mt19937& Rng()
+    {
+        thread_local std::mt19937 rng( std::random_device{}() );
+        return rng;
+    }
+}
 
 NAMESPACE_BEGIN( KncSecurity )
 
@@ -30,16 +41,14 @@ KSADatabase::~KSADatabase()
 
 void KSADatabase::Insert( OUT SpiType& nSPIndex, IN const KSecurityAssociation& sa )
 {
-    static boost::mt19937 rng;
-    static boost::uniform_int<DWORD> uint32( 1, std::numeric_limits<SpiType>::max() );   // 1 이상. SPI 0은 생성자에서 이미 설정했다.
-    static boost::variate_generator<boost::mt19937&, boost::uniform_int<DWORD> > die(rng, uint32);
+    std::uniform_int_distribution<DWORD> die( 1, std::numeric_limits<SpiType>::max() );   // 1 이상. SPI 0은 생성자에서 이미 설정했다.
 
     KLocker lock( m_csSaList );
 
     for( ;; )
     {
         // Generate a random number
-        nSPIndex = static_cast<SpiType>( die() );
+        nSPIndex = static_cast<SpiType>( die( Rng() ) );
 
         // Search for the number in the database. If it's not there, use it.
         if( !Find( nSPIndex ) )

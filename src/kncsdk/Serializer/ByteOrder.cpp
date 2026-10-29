@@ -1,5 +1,3 @@
-static const char* cvsid = "$Id: ByteOrder.cpp,v 1.2 2003/01/14 01:55:38 cvs Exp $";
-
 #include "ByteOrder.h"
 
 #define TEMP_SWAP(a,b,tmp) tmp = a; a = b; b = tmp
