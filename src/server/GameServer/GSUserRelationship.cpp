@@ -1310,6 +1310,8 @@ IMPL_ON_FUNC( ELG_CALL_MY_LOVER_JOIN_BATTLE_FIELD_NOT )
 				return;
 			}
 			break;
+		default:
+			break;
 		}
 	}
 

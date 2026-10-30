@@ -17,7 +17,7 @@ public:
 	//{{ 2009. 10. 27  최육사	캐릭터삭제
 	bool IsInRankingUser( UidType iUnitUID ) const;
 	//}}
-	void SetLastRank( u_int uiLastRank ) { m_uiLastRank = m_uiLastRank; }
+	void SetLastRank( u_int /*uiLastRank*/ ) { m_uiLastRank = m_uiLastRank; }
 
 	void ClearRankingInfo() { m_vecRankingInfo.clear(); }
 	bool CheckNewRecord( IN const KHenirRankingInfo& kNewRank ) const;

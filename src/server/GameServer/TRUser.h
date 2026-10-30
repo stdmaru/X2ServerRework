@@ -105,7 +105,7 @@ protected:
 };
 
 template< typename T >
-bool KTRUser::MakeByteStream( KncSecurity::KByteStream& kByteStream, unsigned short usEventID, T& data_, bool bCompress_ /*= true*/ )
+bool KTRUser::MakeByteStream( KncSecurity::KByteStream& kByteStream, unsigned short usEventID, T& data_, bool /*bCompress_*/ /*= true*/ )
 {
 	//////////////////////////////////////////////////////////////////////////
 	//BEGIN_PROFILE( L"KEvent에서 setdata하기" );

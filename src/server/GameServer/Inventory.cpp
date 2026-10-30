@@ -1337,6 +1337,8 @@ int KInventory::GetMyNextUpgradeBankItemID()
 	case CXSLInventory::MPB_EMERALD:	return CXSLItem::CI_BANK_MEMBERSHIP_EMERALD;
 	case CXSLInventory::MPB_DIAMOND:	return CXSLItem::CI_BANK_MEMBERSHIP_DIAMOND;
 	case CXSLInventory::MPB_PLATINUM:	return CXSLItem::CI_BANK_MEMBERSHIP_PLATINUM;
+	default:
+		break;
 	}
 
 	return 0;
@@ -7261,6 +7263,8 @@ bool KInventory::ItemManufacture( IN int iManufactureID,
                     kInsertItemInfo.m_ucSealData = 101;
                 }
                 break;
+            default:
+            	break;
             }
 
 			mapToInsert.insert( std::make_pair( iResultItemID, kInsertItemInfo ) );
@@ -8703,6 +8707,8 @@ bool KInventory::AutoFeedInPetInventory( IN u_char ucLevel, IN bool bOnlyEatSpec
 					ePetFeedItemGrade = pItemTemplet->m_ItemGrade;
 				}
 			}
+			break;
+		default:
 			break;
 		}
 	}

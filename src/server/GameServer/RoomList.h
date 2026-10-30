@@ -67,19 +67,19 @@ public:
 public:
 	//////////////////////////////////////////////////////////////////////////
 	//하위클래스에서 사용하게될 함수목록.
-	virtual UidType		GetWaitingRoomUID( IN KEGS_QUICK_JOIN_REQ& kReq )			{ return 0; }
-	virtual void		SetVSPoint( IN int iMin, IN int iMax )		{}
-	virtual void		GetVSPoint( OUT int& iMin, OUT int& iMax )	{}
+	virtual UidType		GetWaitingRoomUID( IN KEGS_QUICK_JOIN_REQ& /*kReq*/ )			{ return 0; }
+	virtual void		SetVSPoint( IN int /*iMin*/, IN int /*iMax*/ )		{}
+	virtual void		GetVSPoint( OUT int& /*iMin*/, OUT int& /*iMax*/ )	{}
 
-	virtual bool		AddRoomInfo( KRoomInfoPtr spRoomInfo )		{ return false; }
-	virtual bool		DelRoomInfo( KRoomInfoPtr spRoomInfo )		{ return false; }
-	virtual bool		GetRoomInfoPage( IN KEGS_ROOM_LIST_REQ& kReq, OUT KEGS_ROOM_LIST_ACK& kAck ){ return false; }
+	virtual bool		AddRoomInfo( KRoomInfoPtr /*spRoomInfo*/ )		{ return false; }
+	virtual bool		DelRoomInfo( KRoomInfoPtr /*spRoomInfo*/ )		{ return false; }
+	virtual bool		GetRoomInfoPage( IN KEGS_ROOM_LIST_REQ& /*kReq*/, OUT KEGS_ROOM_LIST_ACK& /*kAck*/ ){ return false; }
 
-	virtual bool		AddSquareInfo( KSquareInfoPtr spSquareInfo ){ return false; }
-	virtual bool		DelSquareInfo( KSquareInfoPtr spSquareInfo ){ return false; }
-	virtual bool		GetSquareInfoPage( IN KEGS_SQUARE_LIST_REQ& kReq, OUT KEGS_SQUARE_LIST_ACK& kAck ){ return false; }
+	virtual bool		AddSquareInfo( KSquareInfoPtr /*spSquareInfo*/ ){ return false; }
+	virtual bool		DelSquareInfo( KSquareInfoPtr /*spSquareInfo*/ ){ return false; }
+	virtual bool		GetSquareInfoPage( IN KEGS_SQUARE_LIST_REQ& /*kReq*/, OUT KEGS_SQUARE_LIST_ACK& /*kAck*/ ){ return false; }
 
-	virtual void		SetPVPChannelClass( IN int iPVPChannelClass ){}
+	virtual void		SetPVPChannelClass( IN int /*iPVPChannelClass*/ ){}
 	virtual int			GetPVPChannelClass()						{ return 0; }
 	//////////////////////////////////////////////////////////////////////////
 

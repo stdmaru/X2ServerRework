@@ -294,6 +294,8 @@ bool KUserTutorialInfo::OnDelTutorialNot( KGSUserPtr spUser, KEGS_DEL_TUTORIAL_N
 				spUser->SendToCnRoom( ERM_UPDATE_TUTORIAL_INFO_NOT, kPacketToRm );
 			}
 			break;
+		default:
+			break;
 		}
 	}
 	//}}

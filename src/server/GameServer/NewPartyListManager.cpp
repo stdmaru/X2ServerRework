@@ -200,6 +200,8 @@ bool KPartyListManager::CheckInvitePartyConditionForHost( IN KGSUserPtr spHost )
 				return false;
 			}
 			break;
+		default:
+			break;
 		}
 	}
 
@@ -336,6 +338,8 @@ bool KPartyListManager::CheckInvitePartyConditionForReceiver( IN KGSUserPtr spRe
 				SET_ERROR( ERR_PARTY_07 );
 				return false;
 			}
+			break;
+		default:
 			break;
 		}
 	}

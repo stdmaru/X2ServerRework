@@ -176,12 +176,12 @@ ImplPfID( KGSUser, PI_GS_USER );
 
 KGSUser::KGSUser(void)
 :
+m_iGlobalMissionTickCount(0),
 m_uiKNMSerialNum(0),
-m_nUnitSlot(0),
 //{{ 2012. 02. 02	최육사	배틀필드 시스템
 //}}
+m_nUnitSlot(0),
 m_uiRoomListID(0),
-m_iFieldUID(0),
 m_iRoomUID(0),
 //{{ 2012. 03. 21	최육사	배틀필드 시스템
 m_iBeforeRoomUID(0),
@@ -189,14 +189,14 @@ m_iBeforeRoomUID(0),
 m_iTradeUID(0),
 m_iPersonalShopUID(0)
 //{{ 2011. 04. 13  김민성  글로벌 서버 추가
-, m_iWorldMissionTickCount(0)
+, m_iFieldUID(0)
 //}} 2011. 04. 13  김민성  글로벌 서버 추가
 //{{ 2012. 12. 12	박세훈	겨울 방학 전야 이벤트( 임시, 하드 코딩 )
 //}}
-, m_bHeroPvpUser( false )
+, m_iWorldMissionTickCount(0)
 
 //{{ 2012. 09. 06	임홍락	글로벌 미션 매니저
-, m_iGlobalMissionTickCount(0)
+, m_bHeroPvpUser( false )
 //}} 2012. 09. 06	임홍락	글로벌 미션 매니저
 {
 	//////////////////////////////////////////////////////////////////////////
@@ -4851,6 +4851,8 @@ char KGSUser::GetUnitState()
 				}
 			}
 			break;
+		default:
+			break;
 		}
 	}
 	else
@@ -5163,6 +5165,8 @@ void KGSUser::SetRoomUID( IN const UidType iUID )
 						SendToLoginServer( ELG_UPDATE_USER_UNIT_BUFF_INFO_REQ, kReq );
 					}
 				}break;
+			default:
+				break;
 			}
 		}
 		else
@@ -5593,6 +5597,8 @@ void KGSUser::SendUpdateDropQuestItemByIngQuest()
 
 				SendToCnRoom( ERM_SET_QUEST_ITEM_INFO_NOT, kInfo );
 			}
+			break;
+		default:
 			break;
 		}
 	}

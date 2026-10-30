@@ -1134,6 +1134,8 @@ _IMPL_ON_FUNC( DBE_RELEASE_PET_ACK, KEGS_RELEASE_PET_ACK )
 						SendToCnRoom( ERM_SUMMON_PET_NOT, kPacketNot );
 					}
 					break;
+				default:
+					break;
 				}
 			}
 
@@ -1339,6 +1341,8 @@ IMPL_ON_FUNC( EGS_SUMMON_RIDING_PET_REQ )
 				SendToCnRoom( ERM_SUMMON_RIDING_PET_NOT, kPacketNot );
 			}
 			break;
+		default:
+			break;
 		}
 	}
 }
@@ -1433,6 +1437,8 @@ IMPL_ON_FUNC( EGS_UNSUMMON_RIDING_PET_REQ )
 				kPacketNot.m_iUnitUID		= GetCharUID();
 				SendToCnRoom( ERM_UNSUMMON_RIDING_PET_NOT, kPacketNot );
 			}
+			break;
+		default:
 			break;
 		}
 	}
@@ -1798,6 +1804,8 @@ _IMPL_ON_FUNC( DBE_RELEASE_RIDING_PET_ACK, KEGS_RELEASE_RIDING_PET_ACK )
 							kPacketNot.m_iUnitUID		= GetCharUID();
 							SendToCnRoom( ERM_UNSUMMON_RIDING_PET_NOT, kPacketNot );
 						}
+						break;
+					default:
 						break;
 					}
 				}

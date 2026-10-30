@@ -337,6 +337,8 @@ _IMPL_ON_FUNC( ERM_OPEN_ROOM_ACK, KEGS_CREATE_ROOM_ACK )
 
 				//SendUpdateUnitState( CXSLUnit::CUS_DUNGEON_WAIT );
 				break;
+			default:
+				break;
 			}
 		}
 
@@ -525,6 +527,8 @@ _IMPL_ON_FUNC( ERM_JOIN_ROOM_ACK, KEGS_JOIN_ROOM_ACK )
 					//}
 				}
 				//SendUpdateUnitState( CXSLUnit::CUS_DUNGEON_WAIT );
+				break;
+			default:
 				break;
 			}
 		}
@@ -799,6 +803,8 @@ _IMPL_ON_FUNC( ERM_LEAVE_ROOM_ACK, KEGS_LEAVE_ROOM_ACK )
 
 	case CXSLRoom::RT_BATTLE_FIELD:
 		m_kUserBuffManager.OnLeaveBattleField( GetThisPtr<KGSUser>(), vecActivateBuff, vecDeleteBuff );
+		break;
+	default:
 		break;
 	}
 
@@ -1091,6 +1097,8 @@ IMPL_ON_FUNC( ERM_GAME_START_NOT )//, KEGS_STATE_CHANGE_GAME_START_NOT )
 				//SendUpdateUnitState( CXSLUnit::CUS_DUNGEON_PLAY );
 			}
 			break;
+		default:
+			break;
 		}
 	}
 
@@ -1177,6 +1185,8 @@ _IMPL_ON_FUNC( ERM_PLAY_START_NOT, KEGS_PLAY_START_NOT )
 				//}}
 
 			}break;
+		default:
+			break;
 		}
 	}
 	//}}
@@ -1284,6 +1294,8 @@ _IMPL_ON_FUNC( ERM_STATE_CHANGE_RESULT_NOT, KEGS_STATE_CHANGE_RESULT_NOT )
 			break;
 		case CXSLRoom::RT_DUNGEON:
 			//SendUpdateUnitState( CXSLUnit::CUS_DUNGEON_WAIT );
+			break;
+		default:
 			break;
 		}
 	}
@@ -1672,6 +1684,8 @@ IMPL_ON_FUNC( ERM_NPC_UNIT_DIE_NOT )
 						SendToCnRoom( ERM_ZERO_ENDURANCE_ITEM_IN_ROOM_NOT, kPacketNot );
 					}
 					break;
+				default:
+					break;
 				}
 			}
 		}
@@ -1912,6 +1926,8 @@ _IMPL_ON_FUNC( ERM_BATTLE_FIELD_NPC_UNIT_DIE_NOT, KERM_NPC_UNIT_DIE_NOT )
 						kPacketNot.m_vecInventorySlotInfo = vecZeroEndurance;
 						SendToCnRoom( ERM_ZERO_ENDURANCE_ITEM_IN_ROOM_NOT, kPacketNot );
 					}
+					break;
+				default:
 					break;
 				}
 			}

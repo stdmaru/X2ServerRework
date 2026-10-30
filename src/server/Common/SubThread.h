@@ -157,7 +157,7 @@ protected:
 
 //////////////////////////////////////////////////////////////////////////
 // SP Profile
-#define IMPL_PROFILER_DUMP(class)	void class::ProfilerDump( const std::vector< KStoredProcedureProfiler::KSPInfo >& vecDump )
+#define IMPL_PROFILER_DUMP(class)	void class::ProfilerDump( [[maybe_unused]] const std::vector< KStoredProcedureProfiler::KSPInfo >& vecDump )
 
 #define CALL_PROFILER_DUMP(x) \
 	if( m_kProfiler.CheckUpdateTime( x ) == true ) \

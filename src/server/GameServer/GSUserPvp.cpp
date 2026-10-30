@@ -396,6 +396,8 @@ IMPL_ON_FUNC( ERM_CHANGE_READY_ACK )
 			}
 		}
 		break;
+	default:
+		break;
 	}
 	//}}
 }

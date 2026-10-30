@@ -14,12 +14,12 @@ m_wstrSkillSlotBEndDate( L"" ),
 m_tSkillSlotBEndDate( 0 ),
 
 //m_nTheNumberOfSkillPagesAvailable(0),
-m_nActiveSkillPageNumber(1),
-
 m_iMaxCSPoint( 0 ),
+
 m_wstrCSPointEndDate( L"" ),
 m_tCSPointEndDate( 0 ),
 m_iUnitClass( 0 ),
+m_nActiveSkillPageNumber(1),
 //{{ 2010. 03. 22  최육사	기술의 노트
 m_cSkillNoteMaxPageNum( 0 )
 {
@@ -1379,6 +1379,8 @@ void KUserSkillTree::GetSkillStat( OUT KStat& kStat_, IN const SkillDataMap& map
 				kStat_.m_iDefPhysic		+= (int)kSkillStat.m_fDefPhysic;
 				kStat_.m_iDefMagic		+= (int)kSkillStat.m_fDefMagic;
 			} break;
+		default:
+			break;
 		}
 	}
 }

@@ -264,6 +264,8 @@ bool KUserPvpManager::AddRatingAndRankUpDownProcess( IN const int iRating )
 			case CXSLUnit::PVPRANK_RANK_A:	m_iRPoint -= m_iRPoint;	m_iRPoint += 200;	break;
 			case CXSLUnit::PVPRANK_RANK_S:	m_iRPoint -= m_iRPoint;	m_iRPoint += 200;	break;
 			case CXSLUnit::PVPRANK_RANK_SS:	m_iRPoint -= m_iRPoint;	m_iRPoint += 289;	break;
+			default:
+				break;
 			}
 		}
 

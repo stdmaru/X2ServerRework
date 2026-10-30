@@ -12,10 +12,10 @@ KInventoryItem::KInventoryItem()
 	, m_iItemID( 0 )
 	, m_iUsageType( 0 )
 	, m_iEnchantLevel( 0 )
-	, m_ucSealData( 0 )
-	, m_sPeriod( 0 )
-//{{ 2013. 05. 15	최육사	아이템 개편
 	, m_cItemState( 0 )
+	, m_ucSealData( 0 )
+//{{ 2013. 05. 15	최육사	아이템 개편
+	, m_sPeriod( 0 )
 //}}
 	, m_bIsDBUpdate( true )
 	, m_byteExpandedSocketNum( 0 )

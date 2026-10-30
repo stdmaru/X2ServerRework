@@ -11,9 +11,9 @@ m_iGameServChannelID( 0 ),
 m_iCurPartyCount( 0 ),
 m_iPlayGamePartyCount( 0 ),
 //{{ 2011. 12. 16	최육사	동접 최대 인원 실시간 적용
-m_iMaxUser( 0 ),
+m_fMaxWaitingTime( 0.0f ),
 //}}
-m_fMaxWaitingTime( 0.0f )
+m_iMaxUser( 0 )
 {
 }
 

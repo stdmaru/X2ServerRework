@@ -1218,6 +1218,8 @@ IMPL_ON_FUNC( DBE_NEW_QUEST_ACK )
 				}
 				break;
 				//}}
+			default:
+				break;
 			}
 		}
 		//}}
@@ -5006,6 +5008,8 @@ _IMPL_ON_FUNC( DBE_REG_SKILL_NOTE_MEMO_ACK, KEGS_REG_SKILL_NOTE_MEMO_ACK )
 					SendToCnRoom( ERM_CHANGE_SKILL_INFO_IN_ROOM_NOT, kPacketNot );
 				}
 				break;
+			default:
+				break;
 			}
 		}
 	}
@@ -5436,6 +5440,8 @@ _IMPL_ON_FUNC( DBE_NEW_ACCOUNT_QUEST_GAME_DB_ACK, KDBE_NEW_QUEST_ACK )
 					// 필드 입장에 대한 퀘스트 완료 체크!
 					m_kUserAccountQuestManager.Handler_CharaterLevelUp_Account( GetThisPtr<KGSUser>() );
 				}
+				break;
+			default:
 				break;
 			}
 		}

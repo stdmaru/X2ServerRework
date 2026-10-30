@@ -9,8 +9,8 @@
 
 KUserServerBuff::KUserServerBuff( IN const KBuffInfo& kBuffInfo ) :
 m_iBuffID( kBuffInfo.m_kFactorInfo.m_BuffIdentity.m_eBuffTempletID ),
-m_iFactorID( kBuffInfo.m_kFactorInfo.m_iFactorID ),
-m_fBuffPeriodTime( 0.0 )
+m_fBuffPeriodTime( 0.0 ),
+m_iFactorID( kBuffInfo.m_kFactorInfo.m_iFactorID )
 {
 }
 

@@ -1297,6 +1297,8 @@ IMPL_ON_FUNC( EGS_REPAIR_ITEM_REQ )
 				}
 			}
 			break;
+		default:
+			break;
 		}
 	}
 }
@@ -5530,6 +5532,8 @@ IMPL_ON_FUNC( EGB_TIME_ENCHANT_EVENT_CUBE_NOT )
 						SendToCnRoom( ERM_RESTORE_SPIRIT_NOT, kNot );
 					}
 				}
+				break;
+			default:
 				break;
 			}
 		}

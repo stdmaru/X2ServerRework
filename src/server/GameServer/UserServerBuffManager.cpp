@@ -266,7 +266,7 @@ void KUserServerBuffManager::GetBuffBonusRate( IN OUT KRoomUserInfo& kRoomUserIn
 	}
 }
 
-void KUserServerBuffManager::CheckBuffPeriod( OUT std::vector< int >& vecDeactivatedBuff, IN const int& iRoomType /*= CXSLRoom::RT_NONE*/ )
+void KUserServerBuffManager::CheckBuffPeriod( OUT std::vector< int >& vecDeactivatedBuff, IN const int& /*iRoomType*/ /*= CXSLRoom::RT_NONE*/ )
 {
 	vecDeactivatedBuff.clear();
 
@@ -299,7 +299,7 @@ void KUserServerBuffManager::CheckBuffPeriod( OUT std::vector< int >& vecDeactiv
 	}
 }
 
-void KUserServerBuffManager::OnLeaveField( IN KGSUserPtr spUser, OUT std::vector< int >& vecDeactivatedBuff )
+void KUserServerBuffManager::OnLeaveField( IN KGSUserPtr /*spUser*/, OUT std::vector< int >& vecDeactivatedBuff )
 {
 	vecDeactivatedBuff.clear();
 
@@ -323,7 +323,7 @@ void KUserServerBuffManager::OnLeaveField( IN KGSUserPtr spUser, OUT std::vector
 }
 
 //{{ 2013. 01. 09 던전 강퇴 시스템 - 김민성
-void KUserServerBuffManager::OnLeaveDungeonRoom( IN KGSUserPtr spUser, OUT std::vector< KBuffInfo >& vecActivateBuff, OUT std::vector< int >& vecDeactivateBuffList, IN bool bBadAttitudeUser )
+void KUserServerBuffManager::OnLeaveDungeonRoom( IN KGSUserPtr /*spUser*/, OUT std::vector< KBuffInfo >& vecActivateBuff, OUT std::vector< int >& vecDeactivateBuffList, IN bool bBadAttitudeUser )
 //}
 {
 	std::vector<int> vecDeleteBuff;
@@ -399,7 +399,7 @@ void KUserServerBuffManager::OnLeaveDungeonRoom( IN KGSUserPtr spUser, OUT std::
 	//}
 }
 
-void KUserServerBuffManager::OnLeaveBattleField( IN KGSUserPtr spUser, OUT std::vector< KBuffInfo >& vecActivateBuff, OUT std::vector< int >& vecDeactivatedBuff )
+void KUserServerBuffManager::OnLeaveBattleField( IN KGSUserPtr /*spUser*/, OUT std::vector< KBuffInfo >& /*vecActivateBuff*/, OUT std::vector< int >& vecDeactivatedBuff )
 {
 	vecDeactivatedBuff.clear();
 	std::vector<int> vecDeleteBuff;
@@ -438,7 +438,7 @@ void KUserServerBuffManager::OnLeaveBattleField( IN KGSUserPtr spUser, OUT std::
 	}
 }
 
-void KUserServerBuffManager::OnEndDungeonGame( IN KGSUserPtr spUser, IN const bool bDungeonClearSuccess, IN const bool bStartedByAutoParty, OUT std::vector< int >& vecDeactivatedBuff )
+void KUserServerBuffManager::OnEndDungeonGame( IN KGSUserPtr /*spUser*/, IN const bool /*bDungeonClearSuccess*/, IN const bool bStartedByAutoParty, OUT std::vector< int >& vecDeactivatedBuff )
 {
 	vecDeactivatedBuff.clear();
 	std::vector< int > vecDeleteBuff;
@@ -504,7 +504,7 @@ void KUserServerBuffManager::OnEndDungeonGame( IN KGSUserPtr spUser, IN const bo
 	}
 }
 
-void KUserServerBuffManager::OnUserDied( IN KGSUserPtr spUser, std::vector< int >& vecDeactivatedBuff )
+void KUserServerBuffManager::OnUserDied( IN KGSUserPtr /*spUser*/, std::vector< int >& vecDeactivatedBuff )
 {
 	std::vector< int > vecDeleteBuff;
 
@@ -541,7 +541,7 @@ void KUserServerBuffManager::OnUserDied( IN KGSUserPtr spUser, std::vector< int 
 	}
 }
 
-void KUserServerBuffManager::OnLeavePVPRoom( IN KGSUserPtr spUser, OUT std::vector< KBuffInfo >& vecActivateBuff, OUT std::vector< int >& vecDeactivatedBuff )
+void KUserServerBuffManager::OnLeavePVPRoom( IN KGSUserPtr /*spUser*/, OUT std::vector< KBuffInfo >& /*vecActivateBuff*/, OUT std::vector< int >& vecDeactivatedBuff )
 {
 	std::vector<int> vecDeleteBuff;
 

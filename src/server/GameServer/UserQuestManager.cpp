@@ -1045,7 +1045,7 @@ void KUserQuestManager::Handler_EGS_TALK_WITH_NPC_REQ( IN int iNPCID, IN KGSUser
 void KUserQuestManager::Handler_OnDungeonClear( IN const KGSUserPtr spUser,
 											   IN const int iDungeonID,
 											   IN const char cDifficulty,
-											   IN const char cDungeonMode,
+											   IN const char /*cDungeonMode*/,
 											   IN const char cRank,
 											   IN const int iPlayTime,
 											   IN const int iDamage,
@@ -1413,6 +1413,8 @@ void KUserQuestManager::Handler_OnDungeonClear( IN const KGSUserPtr spUser,
 				if( CheckCompleteSubQuest_BeforGroup( pQuestTemplet->m_iID, pQuestTemplet->m_vecSubQuest[iIndexSub], spUser ) == true )
 					bRVal = true;
 
+			default:
+				break;
 			}
 
 			if( bRVal == true )
@@ -3732,6 +3734,8 @@ void KUserQuestManager::GetOngoingQuestForRoom( IN KGSUserPtr spUser, OUT std::m
 						}
 					}
 				}
+				break;
+			default:
 				break;
 			}
 		}

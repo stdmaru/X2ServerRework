@@ -3,7 +3,7 @@
 
   -Wswitch            adds `default: break;` to the switch (MSVC does not warn about unhandled enum values;
                       the original relied on falling out of the switch, which is what `default: break;` does)
-  -Wunused-parameter  comments out the parameter name: `int iValue` -> `int /*iValue*/`
+  -Wunused-parameter  comments out the parameter name: `int iValue` -> `int /*iValue*/` (not inside a macro: listed)
   -Wreorder           sorts the constructor's mem-initializer list in member declaration order (only the text
                       changes: members were always initialized in declaration order)
 
@@ -113,6 +113,10 @@ def fix_unused_parameter(text: str, sites: set[tuple[int, int, str]]) -> tuple[s
         i = display_to_index(src, col)
         if not src.startswith(name, i) or src[:i].rstrip().endswith("/*"):
             print(f"skip line {line}: '{name}' not at column {col}", file=sys.stderr)
+            continue
+        # A macro (IMPL_ON_FUNC...): the name is used by other expansions, so it can't be commented out there.
+        if src.lstrip().startswith("#define") or (line >= 2 and lines[line - 2].rstrip().endswith("\\")):
+            print(f"skip line {line}: '{name}' is in a macro (use [[maybe_unused]] by hand)", file=sys.stderr)
             continue
         lines[line - 1] = src[:i] + "/*" + name + "*/" + src[i + len(name):]
         count += 1

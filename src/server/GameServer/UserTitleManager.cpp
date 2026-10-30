@@ -840,6 +840,8 @@ void KUserTitleManager::OnDungeonClear( IN KGSUserPtr spUser, IN int iDungeonID,
 				}
 				break;
 				//}}
+			default:
+				break;
 			}
 
 			// 서브 미션 클리어

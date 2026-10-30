@@ -338,6 +338,8 @@ bool KUserPet::CommandsForPet( IN CXSLPetManager::PET_ACTION_COMMAND eActionComm
 				<< END_LOG;
 		}
 		return false;
+	default:
+		break;
 	}
 
 	// 무조건 액션을 취하는 명령인지 검사

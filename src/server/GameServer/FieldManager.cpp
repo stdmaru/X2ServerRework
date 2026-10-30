@@ -278,11 +278,11 @@ void KFieldManager::QueueingEventToRoom( const KEventPtr& spEvent_ )
 	return;
 }
 
-void KFieldManager::QueueingToAll( int iRoomType, const KEventPtr& spEvent_ )
+void KFieldManager::QueueingToAll( int /*iRoomType*/, const KEventPtr& /*spEvent_*/ )
 {
 }
 
-void KFieldManager::QueueingToAll( const KEventPtr& spEvent_ )
+void KFieldManager::QueueingToAll( const KEventPtr& /*spEvent_*/ )
 {
 }
 

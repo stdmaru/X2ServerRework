@@ -703,6 +703,8 @@ IMPL_ON_FUNC( EGS_COMMUNITY_USER_LIST_REQ )
 				goto end_proc;
 			}
 			break;
+		default:
+			break;
 		}
 		//}}
 
@@ -977,6 +979,8 @@ IMPL_ON_FUNC( EGS_COMMUNITY_USER_LIST_MONITORING_MODE_REQ )
 
 				kPacket.m_iOK = NetError::NET_OK;
 			}break;
+		default:
+			break;
 		}
 	}
 

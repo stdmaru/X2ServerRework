@@ -394,6 +394,8 @@ _IMPL_ON_FUNC( ELG_GUILD_MESSAGE_NOT, KEGS_GUILD_MESSAGE_NOT )
 							SendToCnRoom( ERM_CHANGE_SKILL_INFO_IN_ROOM_NOT, kPacketNot );
 						}
 						break;
+					default:
+						break;
 					}
 				}
 			}
@@ -1345,6 +1347,8 @@ _IMPL_ON_FUNC( ELG_GET_GUILD_SKILL_NOT, KEGS_GET_GUILD_SKILL_NOT )
 				SendToCnRoom( ERM_CHANGE_SKILL_INFO_IN_ROOM_NOT, kPacketNot );
 			}
 			break;
+		default:
+			break;
 		}
 	}
 }
@@ -1502,6 +1506,8 @@ _IMPL_ON_FUNC( ELG_RESET_GUILD_SKILL_NOT, KEGS_RESET_GUILD_SKILL_NOT )
 				SendToCnRoom( ERM_CHANGE_SKILL_INFO_IN_ROOM_NOT, kPacketNot );
 			}
 			break;
+		default:
+			break;
 		}
 	}
 }
@@ -1649,6 +1655,8 @@ _IMPL_ON_FUNC( ELG_INIT_GUILD_SKILL_NOT, KEGS_INIT_GUILD_SKILL_NOT )
 				SendToCnRoom( ERM_CHANGE_SKILL_INFO_IN_ROOM_NOT, kPacketNot );
 			}
 			break;
+		default:
+			break;
 		}
 	}
 }
@@ -1676,6 +1684,8 @@ _IMPL_ON_FUNC( ELG_EXPIRE_GUILD_CASH_SKILL_POINT_NOT, KEGS_EXPIRE_GUILD_CASH_SKI
 				GetRoomUserInfo( kPacketNot );
 				SendToCnRoom( ERM_CHANGE_SKILL_INFO_IN_ROOM_NOT, kPacketNot );
 			}
+			break;
+		default:
 			break;
 		}
 	}

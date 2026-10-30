@@ -148,6 +148,8 @@ IMPL_ON_FUNC( EGS_JOIN_BATTLE_FIELD_REQ )
 				SendPacket( EGS_JOIN_BATTLE_FIELD_ACK, kAck );
 			}
 			return;
+		default:
+			break;
 		}
 	}
 	else

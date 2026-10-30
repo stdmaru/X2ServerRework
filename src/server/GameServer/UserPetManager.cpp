@@ -185,7 +185,7 @@ void KUserPetManager::PetListSort()
 	std::stable_sort( m_vecPetList.begin(), m_vecPetList.end(), PetListSortFunctor( GetSummonedPetUID() ) );
 }
 
-void KUserPetManager::Init( IN KGSUserPtr spUser,
+void KUserPetManager::Init( IN KGSUserPtr /*spUser*/,
 						    IN UidType iSummonedPetUID,
 							IN const std::map< UidType, std::map< UidType, KInventoryItemInfo > >& mapPetItem,
 							IN OUT std::vector< KPetInfo >& vecPet,

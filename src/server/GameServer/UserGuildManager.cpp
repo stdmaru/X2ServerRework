@@ -330,6 +330,8 @@ void KUserGuildManager::GetGuildSkillStat( KStat& kStat )
 				kStat.m_iDefPhysic		+= (int)pSkillTemplet->m_vecStat[kGuildSkillData.m_cSkillLevel-1].m_fDefPhysic;
 				kStat.m_iDefMagic		+= (int)pSkillTemplet->m_vecStat[kGuildSkillData.m_cSkillLevel-1].m_fDefMagic;
 			} break;
+		default:
+			break;
 		}
 	}
 }

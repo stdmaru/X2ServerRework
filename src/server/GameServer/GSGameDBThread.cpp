@@ -657,6 +657,8 @@ bool KGSGameDBThread::Query_SelectUnit( IN const UidType iUserUID, IN const KEGS
 			break;
 #endif //ADD_RENA_SYSTEM
 
+		default:
+			break;
 		}
 
 		FETCH_DATA( kInfo.m_iMaxHP

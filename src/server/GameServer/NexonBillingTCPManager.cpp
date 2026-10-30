@@ -146,7 +146,7 @@ void KNexonBillingTCPManager::BeginThread()
 }
 
 //{{ 2010. 8. 30	최육사	서버 정상 종료 처리
-void KNexonBillingTCPManager::EndThread( DWORD dwTimeOut /*= 10000*/ )
+void KNexonBillingTCPManager::EndThread( DWORD /*dwTimeOut*/ /*= 10000*/ )
 {
 	//{{ 2009. 11. 21  최육사	서버간접속구조개선
 	if( m_spThreadKeepConnect )

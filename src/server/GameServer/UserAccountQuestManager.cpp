@@ -1459,9 +1459,9 @@ void KUserAccountQuestManager::GetAccountQuesting( OUT std::vector< KQuestUpdate
 void KUserAccountQuestManager::Handler_OnDungeonClear( IN const KGSUserPtr spUser,
 													   IN const int iDungeonID,
 													   IN const char cDifficulty,
-													   IN const char cDungeonMode,
-													   IN const std::set< UidType >& setPartyMembers,
-													   IN const std::map< UidType, bool >& mapHaveExpInDungeon,
+													   IN const char /*cDungeonMode*/,
+													   IN const std::set< UidType >& /*setPartyMembers*/,
+													   IN const std::map< UidType, bool >& /*mapHaveExpInDungeon*/,
 													   IN const std::map< UidType, bool >& mapSuitableLevelInfo )
 {
 	SET_ERROR( NET_OK );
@@ -1562,6 +1562,8 @@ void KUserAccountQuestManager::Handler_OnDungeonClear( IN const KGSUserPtr spUse
 						}
 					}
 				}
+				break;
+			default:
 				break;
 			}
 

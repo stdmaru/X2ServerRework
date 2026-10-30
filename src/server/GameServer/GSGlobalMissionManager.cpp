@@ -76,7 +76,7 @@ void KGSGlobalMissionManager::GetGlobalMissionInfo( OUT KEGS_GLOBAL_MISSION_UPDA
 	kOut.m_mapGlobalMissionInfo = m_mapGlobalMissionInfo;
 }
 
-void KGSGlobalMissionManager::UpdateGlobalMissionStartTime( IN std::wstring wstrGlobalMissionDay, IN std::wstring& wstrDate )
+void KGSGlobalMissionManager::UpdateGlobalMissionStartTime( IN std::wstring /*wstrGlobalMissionDay*/, IN std::wstring& /*wstrDate*/ )
 {
 /*
 	std::map<int, KGlobalMissionOpenInfo>::iterator mit = m_mapGlobalMissionOpenInfo.find(iGlobalMissionID);
