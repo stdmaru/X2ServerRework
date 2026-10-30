@@ -59,7 +59,7 @@ void KFieldManager::Run()
 bool KFieldManager::Init()
 {
 	// create field..
-	m_spFieldFSM = boost::shared_ptr<KFieldFSM>( new KFieldFSM );
+	m_spFieldFSM = std::shared_ptr<KFieldFSM>( new KFieldFSM );
 	for( int i = 0; i < static_cast<int>(m_vecFieldInfo.size()); ++i )
 	{
 		UidType	iFieldUID = 0;
@@ -76,7 +76,7 @@ bool KFieldManager::Init()
 		m_mapEmptyFieldList[iFieldUID] = iFieldUID;
 
 		// 필드 정보 업데이트 ---> 일단 필드 정보 업데이트 할때 mapid도 같이 업데이트 한다.
-		boost::static_pointer_cast<KField>(spField)->SetFieldInfo( m_vecFieldInfo[i].m_iID, m_vecFieldInfo[i].m_kTileInfo, m_vecFieldInfo[i].m_kMapInfo );
+		std::static_pointer_cast<KField>(spField)->SetFieldInfo( m_vecFieldInfo[i].m_iID, m_vecFieldInfo[i].m_kTileInfo, m_vecFieldInfo[i].m_kMapInfo );
 
 		// 필드 생성 이벤트 보내기
 		KEventPtr spEvent( new KEvent );

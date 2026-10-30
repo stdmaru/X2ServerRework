@@ -21,7 +21,7 @@ private:
 	struct KChannelChangeUserInfo
 	{
 		KChannelChangeInfo		m_kChannelChangeInfo;	// 채널이동 하면서 가져가는 정보
-		boost::timer			m_tWaitingTimer;		// 채널이동 예약 타이머
+		x2::Timer			m_tWaitingTimer;		// 채널이동 예약 타이머
 
 		KChannelChangeUserInfo( const KChannelChangeInfo& kInfo )
 		{
@@ -104,7 +104,7 @@ private:
 	std::vector< KChannelSimpleInfo >			m_vecChannelList;
 	int											m_iCurPartyCount;
 	int											m_iPlayGamePartyCount;
-	boost::timer								m_kChannelListRefreshTimer;
+	x2::Timer								m_kChannelListRefreshTimer;
 	KChannelBonusInfo							m_kBonusInfo;				// 채널 보너스
 
 	// 채널 이동 예약

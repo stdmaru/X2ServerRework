@@ -131,7 +131,7 @@ bool KInventory::Init( IN const std::map< int, int >& mapSlotSize,
 
 	std::map< UidType, KItemInfo > mapNotInsertedItem;
 
-	BOOST_MAP_CONST_FOREACH( UidType, KInventoryItemInfo, kDB, mapInventoryItem )
+	for( const auto& kDB : mapInventoryItem )
     {
         // mapInventoryItem 과 m_mapItem의 키가 같기 때문에 m_mapItem 에 현재 루프의
         // 아이템 UID가 이미 존재하는지 검사할 필요가 없다.
@@ -266,7 +266,7 @@ bool KInventory::Init( IN const std::map< int, int >& mapSlotSize,
 		// PC방 전용 아이템 획득
 		SiKGameSysVal()->GetPcBangPremiumItem( m_pUser->GetUnitType(), vecPcBangPremiumItem, m_pUser->GetPcBangType() );
 
-		BOOST_TEST_FOREACH( const KInventoryItemInfo&, kPcBangItem, vecPcBangPremiumItem )
+		for( const KInventoryItemInfo& kPcBangItem : vecPcBangPremiumItem )
 		{
 			//{{ 2011. 12. 15	최육사	인벤토리 슬롯ID크기 늘리기
 //#ifdef SERV_EXPAND_SLOT_ID_DATA_SIZE
@@ -2043,7 +2043,7 @@ void KInventory::GetEquippedStat( IN const bool bIsDungeon, IN const KStat& kBas
 
 	//////////////////////////////////////////////////////////////////////////
 	// 9. 세트 아이템 스탯 적용
-	BOOST_TEST_FOREACH( const int, iSetID, setEquippedItemSetID )
+	for( const int iSetID : setEquippedItemSetID )
 	{
 		// 9-1. 세트 아이템 템플릿 얻기
 		const CXSLSocketItem::SetItemData* pSetItemData = SiCXSLSocketItem()->GetSetItem( iSetID );
@@ -2564,7 +2564,7 @@ void KInventory::GetEquippedItemBonusRate( IN const bool bIsDungeonRoom, OUT flo
 	}
 	//////////////////////////////////////////////////////////////////////////
 	// 9. 세트 아이템 스탯 적용
-	BOOST_TEST_FOREACH( const int, iSetID, setEquippedItemSetID )
+	for( const int iSetID : setEquippedItemSetID )
 	{
 		// 9-1. 세트 아이템 템플릿 얻기
 		const CXSLSocketItem::SetItemData* pSetItemData = SiCXSLSocketItem()->GetSetItem( iSetID );
@@ -2595,7 +2595,7 @@ void KInventory::GetEquippedItemBonusRate( IN const bool bIsDungeonRoom, OUT flo
 			continue;
 
 		std::vector< int > vecTemp = mit->second;
-		BOOST_TEST_FOREACH( const int, sSocketOptionID, vecTemp )
+		for( const int sSocketOptionID : vecTemp )
 		{
 			if( sSocketOptionID == 0 )
 				continue;
@@ -2755,7 +2755,7 @@ void KInventory::FixUpInventoryItem( IN OUT std::vector< KInventoryItemInfo >& v
 	std::map< UidType, KInventoryItemInfo > mapInventorySlotInfo;
 	std::map< UidType, KInventoryItemInfo >::iterator mitInventorySlotInfo;
 
-	BOOST_TEST_FOREACH( KInventoryItemInfo&, kInsertItem, vecInsertedItem_Copy )
+	for( KInventoryItemInfo& kInsertItem : vecInsertedItem_Copy )
 	{
 		const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( kInsertItem.m_kItemInfo.m_iItemID );
 		if( pItemTemplet == NULL )
@@ -2781,7 +2781,7 @@ void KInventory::FixUpInventoryItem( IN OUT std::vector< KInventoryItemInfo >& v
 	}
 
 	// 인벤토리에 있는 수량성 아이템 중에 수량이 가득차지 않은 아이템을 찾아서 합치자
-	BOOST_TEST_FOREACH( KInventoryItemInfo&, kItem, vecItem_Quantity )
+	for( KInventoryItemInfo& kItem : vecItem_Quantity )
 	{
 		const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( kItem.m_kItemInfo.m_iItemID );
 		if( pItemTemplet == NULL )
@@ -2871,7 +2871,7 @@ void KInventory::FixUpInventoryItem( IN OUT std::vector< KInventoryItemInfo >& v
 	}
 
 	// 합치고 남은 들어오는 동일 아이템을 수량을 합친다.
-	BOOST_TEST_FOREACH( KInventoryItemInfo&, kInsertItem, vecItem_Quantity )
+	for( KInventoryItemInfo& kInsertItem : vecItem_Quantity )
 	{
 		bool bReady = false;
 		const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( kInsertItem.m_kItemInfo.m_iItemID );
@@ -2889,7 +2889,7 @@ void KInventory::FixUpInventoryItem( IN OUT std::vector< KInventoryItemInfo >& v
 			continue;
 		}
 
-		BOOST_TEST_FOREACH( KInventoryItemInfo&, kInsertItem_Copy, vecItem_Quantity )
+		for( KInventoryItemInfo& kInsertItem_Copy : vecItem_Quantity )
 		{
 			const CXSLItem::ItemTemplet* pItemTemplet_Copy = SiCXSLItemManager()->GetItemTemplet( kInsertItem_Copy.m_kItemInfo.m_iItemID );
 			if( pItemTemplet_Copy == NULL )
@@ -2928,7 +2928,7 @@ void KInventory::FixUpInventoryItem( IN OUT std::vector< KInventoryItemInfo >& v
 	vecItem_Quantity.clear();
 
 	// 수량이 0이 되는 것은 지우자
-	BOOST_TEST_FOREACH( KInventoryItemInfo&, kInsertItem, vecItem_QuantityTemp )
+	for( KInventoryItemInfo& kInsertItem : vecItem_QuantityTemp )
 	{
 		if( kInsertItem.m_kItemInfo.m_iQuantity > 0 )
 		{
@@ -2986,7 +2986,7 @@ void KInventory::FixUpInventoryItem( IN OUT std::vector< KInventoryItemInfo >& v
 		{
 			bool bIsExist = false;
 			// 무조건 추가 하면 안된다. 나간 아이템과 겹칠 경우 갱신 되지 않는다.
-			BOOST_TEST_FOREACH( KInventoryItemInfo& , kInvenItem, vecInventorySlotInfo )
+			for( KInventoryItemInfo& kInvenItem : vecInventorySlotInfo )
 			{
 				if( kInvenItem.m_iItemUID == mitInventorySlotInfo->second.m_iItemUID )
 				{
@@ -3314,7 +3314,7 @@ void KInventory::GetShareItemMap( OUT std::map< UidType, KInventoryItemInfo > &m
 {
 	mapItem.clear();
 
-	BOOST_TEST_FOREACH( const UidType, iItemUID, m_vecInventorySlot[CXSLInventory::ST_SHARE_BANK] )
+	for( const UidType iItemUID : m_vecInventorySlot[CXSLInventory::ST_SHARE_BANK] )
 	{
 		if( iItemUID <= 0 )
 			continue;
@@ -3493,7 +3493,7 @@ bool KInventory::UpdateShareItemPosition( IN const KTradeShareItemResult& kShare
 //
 //	bool bUpdate = false;
 //
-//	BOOST_TEST_FOREACH( const UidType, iItemUID, m_vecInventorySlot[CXSLInventory::ST_SHARE_BANK] )
+//	for( const UidType iItemUID : m_vecInventorySlot[CXSLInventory::ST_SHARE_BANK] )
 //	{
 //		if( iItemUID <= 0 )
 //		{
@@ -3617,7 +3617,7 @@ bool KInventory::UpdateShareItemPosition( IN const KTradeShareItemResult& kShare
 //	}
 //
 //	//	5. 공유은행 -> 인벤토리
-//	BOOST_TEST_FOREACH( const UidType, iItemUID, m_setShareItem )
+//	for( const UidType iItemUID : m_setShareItem )
 //	{
 //		if( iItemUID <= 0 )
 //		{
@@ -3679,7 +3679,7 @@ bool KInventory::GetShareItemNeedDBUpdate( IN const std::set< UidType >& setMove
 
 	bool bUpdate = false;
 
-	BOOST_TEST_FOREACH( const UidType, iItemUID, m_vecInventorySlot[CXSLInventory::ST_SHARE_BANK] )
+	for( const UidType iItemUID : m_vecInventorySlot[CXSLInventory::ST_SHARE_BANK] )
 	{
 		if( iItemUID <= 0 )
 			continue;
@@ -3809,7 +3809,7 @@ bool KInventory::GetShareItemNeedDBUpdate( IN const std::set< UidType >& setMove
 
 	//////////////////////////////////////////////////////////////////////////
 	//	5. 공유은행 -> 인벤토리
-	BOOST_TEST_FOREACH( const UidType, iItemUID, m_setShareItem )
+	for( const UidType iItemUID : m_setShareItem )
 	{
 		if( iItemUID <= 0 )
 			continue;
@@ -3874,7 +3874,7 @@ bool KInventory::GetShareItemNeedDBUpdate( IN const std::set< UidType >& setMove
 	if( m_vecDeletedShareItem.empty() == false )
 	{
 		// 벡터에서 지워야 하지 않을까?
-		BOOST_TEST_FOREACH( const UidType, iItemUID, m_vecDeletedShareItem )
+		for( const UidType iItemUID : m_vecDeletedShareItem )
 		{
 			// 이동한 아이템인지 아닌지 검사
 			if( setMovedItemUID.find( iItemUID ) == setMovedItemUID.end() )
@@ -3884,7 +3884,7 @@ bool KInventory::GetShareItemNeedDBUpdate( IN const std::set< UidType >& setMove
 			bUpdate = true;
 		}
 
-		BOOST_TEST_FOREACH( const UidType, iDeletedShareItemUID, kReq.m_vecDeletedItem )
+		for( const UidType iDeletedShareItemUID : kReq.m_vecDeletedItem )
 		{
 			std::vector< UidType >::iterator vitDSI;
 			for( vitDSI = m_vecDeletedShareItem.begin(); vitDSI != m_vecDeletedShareItem.end(); ++vitDSI )
@@ -3906,7 +3906,7 @@ void KInventory::ClearShareBank()
 {
 	std::map< UidType, KInventoryItem >::iterator mit;
 
-	BOOST_TEST_FOREACH( UidType&, iUnitUID, m_vecInventorySlot[CXSLInventory::ST_SHARE_BANK] )
+	for( UidType& iUnitUID : m_vecInventorySlot[CXSLInventory::ST_SHARE_BANK] )
 	{
 		mit = m_mapItem.find( iUnitUID );
 		if( mit != m_mapItem.end() )
@@ -4128,7 +4128,7 @@ void KInventory::DeleteItemAll( IN int iItemID, OUT std::vector< KInventoryItemI
 	std::vector< UidType > vecDeleteItemUIDList;
 	GetItemUIDListThisItem( iItemID, vecDeleteItemUIDList, false );
 
-	BOOST_TEST_FOREACH( const UidType&, iDeleteItemUID, vecDeleteItemUIDList )
+	for( const UidType& iDeleteItemUID : vecDeleteItemUIDList )
 	{
 		KItemInfo kDeleteItemInfo;
 		LIF( GetItemInfo( iDeleteItemUID, kDeleteItemInfo ) );
@@ -6290,7 +6290,7 @@ void KInventory::RollBackDeletedItem( const std::vector< KDeletedItemInfo >& vec
 	std::map< UidType, KInventoryItem > mapDeletedItem;
 	std::map< UidType, KInventoryItem >::const_iterator cit;
 
-	BOOST_TEST_FOREACH( KDeletedItemInfo, kDeletedItemInfo, vecDeleted )
+	for( KDeletedItemInfo kDeletedItemInfo : vecDeleted )
 	{
 		cit = m_mapDeletedItem.find( kDeletedItemInfo.m_iItemUID );
 		if( cit != m_mapDeletedItem.end() )
@@ -6547,7 +6547,7 @@ bool KInventory::RepairItem( IN const std::vector< UidType > vecItemUID, OUT int
     int iTotalRequiredED = 0;
     int iRequiredVP = 0;
 
-	BOOST_TEST_FOREACH( const UidType, iItemUID, vecItemUID )
+	for( const UidType iItemUID : vecItemUID )
     {
         const int iItemID = GetItemID( iItemUID );
         const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iItemID );
@@ -6611,7 +6611,7 @@ bool KInventory::RepairItem( IN const std::vector< UidType > vecItemUID, OUT int
     iED = iTotalRequiredED;
     iVP = iRequiredVP;
 
-	BOOST_TEST_FOREACH( const UidType, iItemUID, vecItemUID )
+	for( const UidType iItemUID : vecItemUID )
     {
         int iCategory;
         int iSlotID;
@@ -7037,7 +7037,7 @@ bool KInventory::OpenRandomItem( IN char cUnitClass,
 	//{{ 2011. 05. 12  김민성	랜덤 큐브 오픈시 인벤토리 검사 수정
 	if( bIsGiveAll == false )
 	{
-		BOOST_MAP_CONST_FOREACH( int, int, kResultItem, mapCheckEmpty )
+		for( const auto& kResultItem : mapCheckEmpty )
 		{
 			mapCheckResultItem.clear();
 			mapCheckResultItem.insert( std::make_pair( kResultItem.first, kResultItem.second ) );
@@ -8458,7 +8458,7 @@ void KInventory::InitPetInventory( IN UidType iSummonedPetUID, IN int iPetCatego
 	m_vecInventorySlot[CXSLInventory::ST_PET].insert( m_vecInventorySlot[CXSLInventory::ST_PET].end(), iPetCategorySlotSize, 0 );
 
 	// 카테고리 검사!
-	BOOST_MAP_CONST_FOREACH( UidType, KInventoryItemInfo, kDB, mapPetItem )
+	for( const auto& kDB : mapPetItem )
 	{
 		// 펫 카테고리 아이템인지 검사
 		if( kDB.second.m_cSlotCategory != CXSLInventory::ST_PET )
@@ -8540,7 +8540,7 @@ void KInventory::RemovePetInventory( OUT std::map< UidType, KInventoryItemInfo >
 {
 	mapRemovedPetItem.clear();
 
-	BOOST_TEST_FOREACH( UidType&, iItemUID, m_vecInventorySlot[CXSLInventory::ST_PET] )
+	for( UidType& iItemUID : m_vecInventorySlot[CXSLInventory::ST_PET] )
 	{
 		if( iItemUID == 0 )
 			continue;
@@ -8623,7 +8623,7 @@ bool KInventory::AutoFeedInPetInventory( IN u_char ucLevel, IN bool bOnlyEatSpec
 	UidType iPetFeedItemUID = 0;
 	CXSLItem::ITEM_GRADE ePetFeedItemGrade = CXSLItem::IG_NONE;
 
-	BOOST_TEST_FOREACH( const UidType, iItemUID, m_vecInventorySlot[CXSLInventory::ST_PET] )
+	for( const UidType iItemUID : m_vecInventorySlot[CXSLInventory::ST_PET] )
 	{
 		if( iItemUID == 0 )
 			continue;
@@ -9003,7 +9003,7 @@ bool KInventory::DeleteItemForPersonalShopAgency( IN const std::vector< KSellPer
 	std::map< int, KItemInfo > mapToInsertDummy;
 	std::vector< KItemInfo > vecNewItem;
 
-	BOOST_TEST_FOREACH( const KSellPersonalShopItemInfo&, kSellItemInfo, vecSellItemInfo )
+	for( const KSellPersonalShopItemInfo& kSellItemInfo : vecSellItemInfo )
 	{
 		KInventoryItemInfo kInfo;
 		if( GetInventoryItemInfo( kSellItemInfo.m_kInventoryItemInfo.m_iItemUID, kInfo ) == false )
@@ -9039,7 +9039,7 @@ bool KInventory::DeleteItemForPersonalShopAgency( IN const std::vector< KSellPer
 		return false;
 	}
 
-	BOOST_TEST_FOREACH( const KSellPersonalShopItemInfo&, kSellItemInfo, vecSellItemInfo )
+	for( const KSellPersonalShopItemInfo& kSellItemInfo : vecSellItemInfo )
 	{
 		KStatisticsKey kKeyES;
 		kKeyES.m_vecIntKey.push_back( kSellItemInfo.m_kInventoryItemInfo.m_kItemInfo.m_iItemID );
@@ -13078,7 +13078,7 @@ float KInventory::GetRepairTitleDiscount( IN const int iTitleID )
 		return fTotalDiscount;
 	}
 
-	BOOST_TEST_FOREACH( const int, iSocketOption, pTitleInfo->m_vecSocketOption )
+	for( const int iSocketOption : pTitleInfo->m_vecSocketOption )
 	{
 		const CXSLSocketItem::SocketData* pSocketData = SiCXSLSocketItem()->GetSocketData( iSocketOption );
 		if( pSocketData == NULL )
@@ -13552,7 +13552,7 @@ void KInventory::SortNormalCategory( IN const int iCategory, OUT std::vector< Ui
 //{{ 2012. 04. 26	박세훈	펫 장난감
 bool KInventory::CheckPetToyItem( void )
 {
-	BOOST_TEST_FOREACH( UidType, iItemUID, m_vecInventorySlot[CXSLInventory::ST_SPECIAL] )
+	for( UidType iItemUID : m_vecInventorySlot[CXSLInventory::ST_SPECIAL] )
 	{
 		const int iItemID = GetItemID( iItemUID );
 
@@ -13562,7 +13562,7 @@ bool KInventory::CheckPetToyItem( void )
 		}
 	}
 
-	BOOST_TEST_FOREACH( UidType, iItemUID, m_vecInventorySlot[CXSLInventory::ST_PET] )
+	for( UidType iItemUID : m_vecInventorySlot[CXSLInventory::ST_PET] )
 	{
 		const int iItemID = GetItemID( iItemUID );
 
@@ -13614,7 +13614,7 @@ void KInventory::SetupDefenceDungeonQuickSlotItems( IN const int iDefenceDungeon
 	// 어둠의 문 전용 아이템 세팅 준비!
 	std::vector< KInventoryItemInfo > vecDefenceDungeonItem;
 	int iSlotID = 0;
-	BOOST_TEST_FOREACH( const int, iQuickSlotItemID, vecQuickSlotItemID )
+	for( const int iQuickSlotItemID : vecQuickSlotItemID )
 	{
 		const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iQuickSlotItemID );
 		if( pItemTemplet == NULL )
@@ -13686,7 +13686,7 @@ void KInventory::SetupDefenceDungeonQuickSlotItems( IN const int iDefenceDungeon
 
 	//////////////////////////////////////////////////////////////////////////
 	// 인벤토리에 실제로 아이템을 넣자!
-	BOOST_TEST_FOREACH( const KInventoryItemInfo&, kDefenceDungeonItem, vecDefenceDungeonItem )
+	for( const KInventoryItemInfo& kDefenceDungeonItem : vecDefenceDungeonItem )
 	{
 		if( VerifyCategorySlotID( kDefenceDungeonItem.m_cSlotCategory, kDefenceDungeonItem.m_sSlotID ) == false )
 		{

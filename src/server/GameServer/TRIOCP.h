@@ -1,6 +1,6 @@
 #pragma once
 
-#include <windows.h>    // HANDLE, ULONG_PTR
+#include "x2/platform/win32.h"    // HANDLE, ULONG_PTR
 #include <KNCSingleton.h>
 #include "ThreadManager.h"
 #include "Socket/SocketObject.h"

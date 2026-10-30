@@ -18,7 +18,7 @@ struct KPVPUser
 	}
 };
 
-typedef boost::shared_ptr<KPVPUser> KPVPUserPtr;
+typedef std::shared_ptr<KPVPUser> KPVPUserPtr;
 
 class KPVPLobbyManager
 {

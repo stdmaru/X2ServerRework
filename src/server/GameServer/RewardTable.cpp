@@ -90,7 +90,7 @@ void KRewardTable::GetRewardItem( IN const KPostItemInfo& kPostItemInfo, OUT std
 		return;
 	}
 
-	BOOST_TEST_FOREACH( const KRewardData&, kReward, mit->second )
+	for( const KRewardData& kReward : mit->second )
 	{
 		const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( kReward.m_iRewardItemID );
 		if( pItemTemplet == NULL )
@@ -132,7 +132,7 @@ void KRewardTable::GetRewardItem( IN const std::vector< KPostItemInfo >& vecPost
 {
 	mapRewardItem.clear();
 
-	BOOST_TEST_FOREACH( const KPostItemInfo&, kPostItem, vecPostItemInfo )
+	for( const KPostItemInfo& kPostItem : vecPostItemInfo )
 	{
 		GetRewardItem( kPostItem, mapRewardItem );
 	}
@@ -151,7 +151,7 @@ bool KRewardTable::GetRewardInfo( IN int iRewardID, OUT std::map< int, int >& ma
 		return false;
 	}
 
-	BOOST_TEST_FOREACH( const KRewardData&, kReward, mit->second )
+	for( const KRewardData& kReward : mit->second )
 	{
 		std::map< int, int >::iterator mitFindSame;
 		mitFindSame = mapRewardInfo.find( kReward.m_iRewardItemID );
@@ -172,7 +172,7 @@ void KRewardTable::GetRewardInfo( IN int iRewardType, IN const std::vector< KPos
 {
 	mapRewardInfo.clear();
 
-	BOOST_TEST_FOREACH( const KPostItemInfo&, kPostItem, vecPostItemInfo )
+	for( const KPostItemInfo& kPostItem : vecPostItemInfo )
 	{
 		if( kPostItem.m_cScriptType != static_cast<char>(iRewardType) )
 			continue;
@@ -186,7 +186,7 @@ void KRewardTable::GetRewardInfo( IN int iRewardType, IN const std::vector< KPos
 {
 	vecMessage.clear();
 
-	BOOST_TEST_FOREACH( const KPostItemInfo&, kPostItem, vecPostItemInfo )
+	for( const KPostItemInfo& kPostItem : vecPostItemInfo )
 	{
 		if( kPostItem.m_cScriptType != static_cast<char>(iRewardType) )
 			continue;

@@ -22,7 +22,7 @@ void KUserUnitSelectRewardManager::Clear()
 void KUserUnitSelectRewardManager::AddRewardItemInfo( IN const int iAddRewardID )
 {
 	// 중복 되는 아이템은 지급 하지 않는다
-	BOOST_TEST_FOREACH( const int, iRewardID, m_vecAccessItem )
+	for( const int iRewardID : m_vecAccessItem )
 	{
 		if( iRewardID == iAddRewardID )
 		{

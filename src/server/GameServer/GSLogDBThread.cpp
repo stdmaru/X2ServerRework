@@ -1,4 +1,4 @@
-#include <winsock2.h>
+#include "x2/platform/net.h"
 #include <iomanip>
 #include <sstream>
 
@@ -2801,7 +2801,7 @@ IMPL_ON_FUNC( ELOG_CASH_PRODUCT_LIST_UPDATE_NOT )
 //	DO_QUERY_NO_ARG( L"exec dbo.lup_delete_Product_list" ); // 주석 풀면 P_LProductList_DEL 이거 써야함
 
 	// 캐쉬 상품 리스트를 다시 채워 넣는다.
-	BOOST_TEST_FOREACH( const KCashPruductInfo&, kCashProductInfo, kPacket_.m_vecCashProductList )
+	for( const KCashPruductInfo& kCashProductInfo : kPacket_.m_vecCashProductList )
 	{
 		int iOK = NetError::ERR_ODBC_01;
 
@@ -3067,7 +3067,7 @@ end_proc:
 
 _IMPL_ON_FUNC( ELOG_UPDATE_SHARE_ITEM_NOT, std::vector< KTradeShareItemInfo > )
 {
-	BOOST_TEST_FOREACH( const KTradeShareItemInfo&, kTradeShareItemInfo, kPacket_ )
+	for( const KTradeShareItemInfo& kTradeShareItemInfo : kPacket_ )
 	{
 		int iOK = NetError::ERR_ODBC_01;
 		DO_QUERY( L"exec dbo.P_LTradeBank_INT", L"%d, %d, %d, %d, %d, %d, %d",
@@ -3270,7 +3270,7 @@ IMPL_ON_FUNC( DBE_UPDATE_PAKCET_MORNITORING_LOG_NOT )
 	const std::wstring wstrCurTime = (std::wstring)tCurTime.Format( _T("%Y-%m-%d %H:%M:%S") );
 	const UidType iServerUID = KBaseServer::GetKObj()->GetUID();
 
-	BOOST_TEST_FOREACH( const KPacketProcessingLatencyInfo&, kInfo, kPacket_.m_vecGSUserPacketLatencyInfo )
+	for( const KPacketProcessingLatencyInfo& kInfo : kPacket_.m_vecGSUserPacketLatencyInfo )
 	{
 		int iOK = NetError::ERR_ODBC_01;
 
@@ -3306,7 +3306,7 @@ IMPL_ON_FUNC( DBE_UPDATE_PAKCET_MORNITORING_LOG_NOT )
 
 	START_LOG( cout, L"--------------------- Login Proxy Packet count ---------------------" );
 
-	BOOST_TEST_FOREACH( const KPacketProcessingCountInfo&, kInfo, kPacket_.m_vecLoginProxyPacketCountInfo )
+	for( const KPacketProcessingCountInfo& kInfo : kPacket_.m_vecLoginProxyPacketCountInfo )
 	{
 		START_LOG( cout, KEvent::GetIDStr( kInfo.m_usEventID ) << L" : " << kInfo.m_dwCount );
 
@@ -3338,7 +3338,7 @@ IMPL_ON_FUNC( DBE_UPDATE_PAKCET_MORNITORING_LOG_NOT )
 		//}
 	}
 
-	BOOST_TEST_FOREACH( const KPacketProcessingCountInfo&, kInfo, kPacket_.m_vecCnProxyPacketCountInfo )
+	for( const KPacketProcessingCountInfo& kInfo : kPacket_.m_vecCnProxyPacketCountInfo )
 	{
 		int iOK = NetError::ERR_ODBC_01;
 
@@ -3370,7 +3370,7 @@ IMPL_ON_FUNC( DBE_UPDATE_PAKCET_MORNITORING_LOG_NOT )
 
 	START_LOG( cout, L"--------------------- Global Proxy Packet count ---------------------" );
 
-	BOOST_TEST_FOREACH( const KPacketProcessingCountInfo&, kInfo, kPacket_.m_vecGlobalProxyPacketCountInfo )
+	for( const KPacketProcessingCountInfo& kInfo : kPacket_.m_vecGlobalProxyPacketCountInfo )
 	{
 		START_LOG( cout, KEvent::GetIDStr( kInfo.m_usEventID ) << L" : " << kInfo.m_dwCount );
 
@@ -3594,7 +3594,7 @@ IMPL_ON_FUNC( DBE_LOG_STATISTICS_INFO_NOT )
 	const std::wstring wstrCurTime = ( std::wstring )( tCurTime.Format( _T( "%Y-%m-%d %H:%M:%S" ) ) );
 	const UidType iServerUID = KBaseServer::GetKObj()->GetUID();
 
-	BOOST_TEST_FOREACH( const KLogStatInfo&, kInfo, kPacket_.m_vecLogStat )
+	for( const KLogStatInfo& kInfo : kPacket_.m_vecLogStat )
 	{
 		int iOK = NetError::ERR_ODBC_01;
 

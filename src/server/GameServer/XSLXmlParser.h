@@ -3,7 +3,7 @@
 #define IN
 #define OUT
 
-#include <Windows.h>
+#include "x2/platform/win32.h"
 #include "BaseServer.h"
 
 #include "RefreshSingleton.h"

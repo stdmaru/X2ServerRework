@@ -1,6 +1,5 @@
 #include "UserRidingPetManager.h"
 #include "X2Data/XSLRidingPetManager.h"
-#include <boost/test/utils/foreach.hpp>
 
 KUserRidingPetManager::KUserRidingPetManager(void)
 : m_bInit( false )
@@ -31,7 +30,7 @@ int KUserRidingPetManager::Init( IN const std::vector<KRidingPetInfo>& vecRiding
 
 	SetInit( true );
 
-	BOOST_TEST_FOREACH( const KRidingPetInfo&, kInfo, vecRidingPetList )
+	for( const KRidingPetInfo& kInfo : vecRidingPetList )
 	{
 		if( AddRidingPet( kInfo ) != RIDING_PET_SUCCEED )
 		{
@@ -53,7 +52,7 @@ int KUserRidingPetManager::GetUserRidingPetList( IN const byte byteViewPage, OUT
 
 	if( byteViewPage == 0 )
 	{
-		BOOST_TEST_FOREACH( const KUserRidingPetPtr, spUserRidingPet, m_vecRidingPetList )
+		for( const KUserRidingPetPtr spUserRidingPet : m_vecRidingPetList )
 		{
 			KRidingPetInfo kInfo;
 			spUserRidingPet->GetData( kInfo );
@@ -229,7 +228,7 @@ int KUserRidingPetManager::GetRidingPet( IN const UidType iRidingPetUID, OUT KUs
 		return RIDING_PET_NOT_INITED;
 	}
 
-	BOOST_TEST_FOREACH( const KUserRidingPetPtr, spRidingPetInfo, m_vecRidingPetList )
+	for( const KUserRidingPetPtr spRidingPetInfo : m_vecRidingPetList )
 	{
 		if( spRidingPetInfo->GetUID() == iRidingPetUID )
 		{
@@ -313,7 +312,7 @@ int KUserRidingPetManager::Sort( void )
 
 void KUserRidingPetManager::GetDBUpdateInfo( OUT std::vector<KRidingPetInfo>& vecRidingPetList )
 {
-	BOOST_TEST_FOREACH( const KUserRidingPetPtr, spUserRidingPet, m_vecRidingPetList )
+	for( const KUserRidingPetPtr spUserRidingPet : m_vecRidingPetList )
 	{
 		if( spUserRidingPet->GetChanged() == false )
 		{
@@ -329,7 +328,7 @@ void KUserRidingPetManager::GetDBUpdateInfo( OUT std::vector<KRidingPetInfo>& ve
 
 void KUserRidingPetManager::DBUpdateFailedProcess( IN const std::vector<UidType> vecRidingPetUID )
 {
-	BOOST_TEST_FOREACH( const UidType, iRidingPetUID, vecRidingPetUID )
+	for( const UidType iRidingPetUID : vecRidingPetUID )
 	{
 		KUserRidingPetPtr spInfo = KUserRidingPetPtr();
 		if( GetRidingPet( iRidingPetUID, spInfo ) == RIDING_PET_SUCCEED )
@@ -423,7 +422,7 @@ int KUserRidingPetManager::GetExpirationPetUID( OUT std::vector<UidType>& vecRid
 	}
 
 	vecRidingPetUID.clear();
-	BOOST_TEST_FOREACH( const KUserRidingPetPtr, spInfo, m_vecRidingPetList )
+	for( const KUserRidingPetPtr spInfo : m_vecRidingPetList )
 	{
 		if( spInfo->IsExpirationRidingPet() == true )
 		{

@@ -308,7 +308,7 @@ int KInventoryItem::GetCountAssignedRandomSocket() const
 {
 	int iSocketCount = 0;
 
-	BOOST_TEST_FOREACH( const int, iSocketOptionID, m_vecRandomSocket )
+	for( const int iSocketOptionID : m_vecRandomSocket )
 	{
 		if( iSocketOptionID > 0 )
 			++iSocketCount;

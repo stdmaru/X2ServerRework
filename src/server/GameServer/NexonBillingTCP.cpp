@@ -105,7 +105,7 @@ IMPL_ON_FUNC( ENX_BT_INITIALIZE_ACK )
         kPacketCIR.m_ulPacketNo = SiKNexonBillingTCPManager()->GetNextPacketNo();
         kPacketCIR.m_bytePacketType = KNexonBillingTCPPacket::CATEGORY_INQUIRY;
 
-        boost::shared_ptr< KNexonBillingTCPPacket > spPacketCIR( new KNexonBillingTCPPacket );
+        std::shared_ptr< KNexonBillingTCPPacket > spPacketCIR( new KNexonBillingTCPPacket );
         spPacketCIR->Write( kPacketCIR );
         SiKNexonBillingTCPManager()->QueueingSendPacket( spPacketCIR );
     }
@@ -144,7 +144,7 @@ IMPL_ON_FUNC( ENX_BT_HEART_BEAT_ACK )
         kPacket.m_ulPageIndex = SiKNexonBillingTCPManager()->GetNextProductPageNumber();
 		kPacket.m_ulRowPerPage = ROW_PER_PAGE;
 
-        boost::shared_ptr< KNexonBillingTCPPacket > spPacket( new KNexonBillingTCPPacket );
+        std::shared_ptr< KNexonBillingTCPPacket > spPacket( new KNexonBillingTCPPacket );
         spPacket->Write( kPacket );
         SiKNexonBillingTCPManager()->QueueingSendPacket( spPacket );
 
@@ -169,7 +169,7 @@ IMPL_ON_FUNC( ENX_BT_CATEGORY_INQUIRY_ACK )
         kPacket.m_ulPageIndex = SiKNexonBillingTCPManager()->GetNextProductPageNumber();
 		kPacket.m_ulRowPerPage = ROW_PER_PAGE;
 
-        boost::shared_ptr< KNexonBillingTCPPacket > spPacket( new KNexonBillingTCPPacket );
+        std::shared_ptr< KNexonBillingTCPPacket > spPacket( new KNexonBillingTCPPacket );
         spPacket->Write( kPacket );
         SiKNexonBillingTCPManager()->QueueingSendPacket( spPacket );
     }
@@ -210,7 +210,7 @@ IMPL_ON_FUNC( ENX_BT_PRODUCT_INQUIRY_ACK )
             kPacket.m_ulPageIndex = SiKNexonBillingTCPManager()->GetNextProductPageNumber();
 			kPacket.m_ulRowPerPage = ROW_PER_PAGE;
 
-            boost::shared_ptr< KNexonBillingTCPPacket > spPacket( new KNexonBillingTCPPacket );
+            std::shared_ptr< KNexonBillingTCPPacket > spPacket( new KNexonBillingTCPPacket );
             spPacket->Write( kPacket );
             SiKNexonBillingTCPManager()->QueueingSendPacket( spPacket );
         }
@@ -243,7 +243,7 @@ IMPL_ON_FUNC( ENX_BT_CHECK_BALANCE_REQ )
 
     SiKNexonBillingTCPManager()->InsertPacketNoUserUID( kPacket_.m_ulPacketNo, FIRST_SENDER_UID );
 
-    boost::shared_ptr< KNexonBillingTCPPacket > spPacket( new KNexonBillingTCPPacket );
+    std::shared_ptr< KNexonBillingTCPPacket > spPacket( new KNexonBillingTCPPacket );
     spPacket->Write( kPacket_ );
     SiKNexonBillingTCPManager()->QueueingSendPacket( spPacket );
 }
@@ -305,7 +305,7 @@ IMPL_ON_FUNC( ENX_BT_PURCHASE_ITEM_REQ )
 
     SiKNexonBillingTCPManager()->InsertPacketNoUserUID( kPacket_.m_ulPacketNo, FIRST_SENDER_UID );
 
-    boost::shared_ptr< KNexonBillingTCPPacket > spPacket( new KNexonBillingTCPPacket );
+    std::shared_ptr< KNexonBillingTCPPacket > spPacket( new KNexonBillingTCPPacket );
     spPacket->Write( kPacket_ );
     SiKNexonBillingTCPManager()->QueueingSendPacket( spPacket );
 }
@@ -484,7 +484,7 @@ IMPL_ON_FUNC( ENX_BT_PURCHASE_ITEM_ACK )
 					kPacketReq.m_usOrderQuantity = vit->m_usOrderQuantity;
 
 					SiKNexonBillingTCPManager()->InsertPacketNoUserUID( kPacketReq.m_ulPacketNo, iUserUID );
-					boost::shared_ptr< KNexonBillingTCPPacket > spPacketReq( new KNexonBillingTCPPacket );
+					std::shared_ptr< KNexonBillingTCPPacket > spPacketReq( new KNexonBillingTCPPacket );
 					spPacketReq->Write( kPacketReq );
 					SiKNexonBillingTCPManager()->QueueingSendPacket( spPacketReq );
 				}
@@ -508,7 +508,7 @@ IMPL_ON_FUNC( ENX_BT_PURCHASE_ITEM_ACK )
 						kPacketReq.m_usOrderQuantity = vit->m_usOrderQuantity;
 
 						SiKNexonBillingTCPManager()->InsertPacketNoUserUID( kPacketReq.m_ulPacketNo, iUserUID );
-						boost::shared_ptr< KNexonBillingTCPPacket > spPacketReq( new KNexonBillingTCPPacket );
+						std::shared_ptr< KNexonBillingTCPPacket > spPacketReq( new KNexonBillingTCPPacket );
 						spPacketReq->Write( kPacketReq );
 						SiKNexonBillingTCPManager()->QueueingSendPacket( spPacketReq );
 					}
@@ -542,7 +542,7 @@ IMPL_ON_FUNC( ENX_BT_PURCHASE_ITEM_ACK )
 			<< BUILD_LOG( iUserUID )
 			<< END_LOG;
 
-		BOOST_TEST_FOREACH( const KNXBTPurchaseAckInfo&, kProductAckInfo, kPacket_.m_vecNXBTPurchaseInfo )
+		for( const KNXBTPurchaseAckInfo& kProductAckInfo : kPacket_.m_vecNXBTPurchaseInfo )
 		{
 			KNXBTProductInfo kProductInfo;
 			if( SiKNexonBillingTCPManager()->GetProductInfo( kProductAckInfo.m_ulProductNo, kProductInfo ) == false )
@@ -599,7 +599,7 @@ IMPL_ON_FUNC( ENX_BT_PURCHASE_GIFT_REQ )
 
 	SiKNexonBillingTCPManager()->InsertPacketNoUserUID( kPacket_.m_ulPacketNo, FIRST_SENDER_UID );
 
-	boost::shared_ptr< KNexonBillingTCPPacket > spPacket( new KNexonBillingTCPPacket );
+	std::shared_ptr< KNexonBillingTCPPacket > spPacket( new KNexonBillingTCPPacket );
 	spPacket->Write( kPacket_ );
 	SiKNexonBillingTCPManager()->QueueingSendPacket( spPacket );
 }
@@ -755,7 +755,7 @@ IMPL_ON_FUNC( ENX_BT_PURCHASE_GIFT_ACK )
 			//	kPacketReq.m_usOrderQuantity = vit->m_usOrderQuantity;
 
 			//	SiKNexonBillingTCPManager()->InsertPacketNoUserUID( kPacketReq.m_ulPacketNo, iUserUID );
-			//	boost::shared_ptr< KNexonBillingTCPPacket > spPacketReq( new KNexonBillingTCPPacket );
+			//	std::shared_ptr< KNexonBillingTCPPacket > spPacketReq( new KNexonBillingTCPPacket );
 			//	spPacketReq->Write( kPacketReq );
 			//	SiKNexonBillingTCPManager()->QueueingSendPacket( spPacketReq );
 			//}
@@ -802,7 +802,7 @@ IMPL_ON_FUNC( ENX_BT_CHECK_AUTO_PAYMENT_USER_REQ )
 
 	SiKNexonBillingTCPManager()->InsertPacketNoUserUID( kPacket_.m_ulPacketNo, FIRST_SENDER_UID );
 
-	boost::shared_ptr< KNexonBillingTCPPacket > spPacket( new KNexonBillingTCPPacket );
+	std::shared_ptr< KNexonBillingTCPPacket > spPacket( new KNexonBillingTCPPacket );
 	spPacket->Write( kPacket_ );
 	SiKNexonBillingTCPManager()->QueueingSendPacket( spPacket );
 }
@@ -864,7 +864,7 @@ IMPL_ON_FUNC( ENX_BT_COUPON_USING_REQ )
 
     SiKNexonBillingTCPManager()->InsertPacketNoUserUID( kPacket_.m_ulPacketNo, FIRST_SENDER_UID );
 
-    boost::shared_ptr< KNexonBillingTCPPacket > spPacket( new KNexonBillingTCPPacket );
+    std::shared_ptr< KNexonBillingTCPPacket > spPacket( new KNexonBillingTCPPacket );
     spPacket->Write( kPacket_ );
     SiKNexonBillingTCPManager()->QueueingSendPacket( spPacket );
 }
@@ -931,7 +931,7 @@ IMPL_ON_FUNC( ENX_BT_NISMS_INVENTORY_INQUIRY_REQ )
 
     SiKNexonBillingTCPManager()->InsertPacketNoUserUID( kPacket_.m_ulPacketNo, FIRST_SENDER_UID );
 
-    boost::shared_ptr< KNexonBillingTCPPacket > spPacket( new KNexonBillingTCPPacket );
+    std::shared_ptr< KNexonBillingTCPPacket > spPacket( new KNexonBillingTCPPacket );
     spPacket->Write( kPacket_ );
     SiKNexonBillingTCPManager()->QueueingSendPacket( spPacket );
 }
@@ -978,7 +978,7 @@ IMPL_ON_FUNC( ENX_BT_NISMS_INVENTORY_CHECK_REQ )
 
 	SiKNexonBillingTCPManager()->InsertPacketNoUserUID( kPacket_.m_ulPacketNo, FIRST_SENDER_UID );
 
-	boost::shared_ptr< KNexonBillingTCPPacket > spPacket( new KNexonBillingTCPPacket );
+	std::shared_ptr< KNexonBillingTCPPacket > spPacket( new KNexonBillingTCPPacket );
 	spPacket->Write( kPacket_ );
 	SiKNexonBillingTCPManager()->QueueingSendPacket( spPacket );
 }
@@ -1035,7 +1035,7 @@ IMPL_ON_FUNC( ENX_BT_NISMS_INVENTORY_READABLE_REQ )
 
 	SiKNexonBillingTCPManager()->InsertPacketNoUserUID( kPacket_.m_ulPacketNo, FIRST_SENDER_UID );
 
-	boost::shared_ptr< KNexonBillingTCPPacket > spPacket( new KNexonBillingTCPPacket );
+	std::shared_ptr< KNexonBillingTCPPacket > spPacket( new KNexonBillingTCPPacket );
 	spPacket->Write( kPacket_ );
 	SiKNexonBillingTCPManager()->QueueingSendPacket( spPacket );
 }
@@ -1093,7 +1093,7 @@ IMPL_ON_FUNC( ENX_BT_NISMS_INVENTORY_READ_REQ )
 
 	SiKNexonBillingTCPManager()->InsertPacketNoUserUID( kPacket_.m_ulPacketNo, FIRST_SENDER_UID );
 
-	boost::shared_ptr< KNexonBillingTCPPacket > spPacket( new KNexonBillingTCPPacket );
+	std::shared_ptr< KNexonBillingTCPPacket > spPacket( new KNexonBillingTCPPacket );
 	spPacket->Write( kPacket_ );
 	SiKNexonBillingTCPManager()->QueueingSendPacket( spPacket );
 }
@@ -1133,7 +1133,7 @@ IMPL_ON_FUNC( ENX_BT_NISMS_INVENTORY_PICK_UP_REQ )
 
     SiKNexonBillingTCPManager()->InsertPacketNoUserUID( kPacket_.m_ulPacketNo, FIRST_SENDER_UID );
 
-    boost::shared_ptr< KNexonBillingTCPPacket > spPacket( new KNexonBillingTCPPacket );
+    std::shared_ptr< KNexonBillingTCPPacket > spPacket( new KNexonBillingTCPPacket );
     spPacket->Write( kPacket_ );
     SiKNexonBillingTCPManager()->QueueingSendPacket( spPacket );
 }
@@ -1173,7 +1173,7 @@ IMPL_ON_FUNC( ENX_BT_NISMS_INVENTORY_PICK_UP_ROLLBACK_REQ )
 
     SiKNexonBillingTCPManager()->InsertPacketNoUserUID( kPacket_.m_ulPacketNo, FIRST_SENDER_UID );
 
-    boost::shared_ptr< KNexonBillingTCPPacket > spPacket( new KNexonBillingTCPPacket );
+    std::shared_ptr< KNexonBillingTCPPacket > spPacket( new KNexonBillingTCPPacket );
     spPacket->Write( kPacket_ );
     SiKNexonBillingTCPManager()->QueueingSendPacket( spPacket );
 }
@@ -1224,7 +1224,7 @@ IMPL_ON_FUNC( ENX_BT_NISMS_INVENTORY_PICK_UP_ONCE_REQ )
 
     SiKNexonBillingTCPManager()->InsertPacketNoUserUID( kPacket_.m_ulPacketNo, FIRST_SENDER_UID );
 
-    boost::shared_ptr< KNexonBillingTCPPacket > spPacket( new KNexonBillingTCPPacket );
+    std::shared_ptr< KNexonBillingTCPPacket > spPacket( new KNexonBillingTCPPacket );
     spPacket->Write( kPacket_ );
     SiKNexonBillingTCPManager()->QueueingSendPacket( spPacket );
 }
@@ -1287,7 +1287,7 @@ IMPL_ON_FUNC( ENX_BT_NISMS_INVENTORY_PICK_UP_FOR_PACKAGE_REQ )
 
 	SiKNexonBillingTCPManager()->InsertPacketNoUserUID( kPacket_.m_ulPacketNo, FIRST_SENDER_UID );
 
-	boost::shared_ptr< KNexonBillingTCPPacket > spPacket( new KNexonBillingTCPPacket );
+	std::shared_ptr< KNexonBillingTCPPacket > spPacket( new KNexonBillingTCPPacket );
 	spPacket->Write( kPacket_ );
 	SiKNexonBillingTCPManager()->QueueingSendPacket( spPacket );
 }
@@ -1341,7 +1341,7 @@ IMPL_ON_FUNC( ENX_BT_REFUND_REQ )
 
 	SiKNexonBillingTCPManager()->InsertPacketNoUserUID( kPacket_.m_ulPacketNo, FIRST_SENDER_UID );
 
-	boost::shared_ptr< KNexonBillingTCPPacket > spPacket( new KNexonBillingTCPPacket );
+	std::shared_ptr< KNexonBillingTCPPacket > spPacket( new KNexonBillingTCPPacket );
 	spPacket->Write( kPacket_ );
 	SiKNexonBillingTCPManager()->QueueingSendPacket( spPacket );
 }

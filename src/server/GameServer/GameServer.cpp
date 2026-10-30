@@ -1,6 +1,6 @@
-#include <WinSock2.h>
-#include <boost/bind/bind.hpp>
-using namespace boost::placeholders;
+#include "x2/platform/net.h"
+#include <functional>
+using namespace std::placeholders;
 #include <sstream>
 #include <iomanip>
 #include "ActorManager.h"
@@ -28,8 +28,6 @@ using namespace boost::placeholders;
 #include "UserManager.h"
 #include "GSUser.h"
 #include "GSFSM.h"
-#include "NProtectFunc.h"
-#include "HackShield/HSAuth.h"
 
 #include "NetError.h"
 #include "RoomListManager.h"
@@ -104,9 +102,7 @@ using namespace boost::placeholders;
 //}}
 
 
-//{{ 2011. 03. 29	최육사	TBB 메모리 관리자
-	#include <tbb/tbbmalloc_proxy.h>
-//}}
+// Port: Intel TBB's malloc proxy (tbbmalloc_proxy.h) removed: the platform allocator is used
 
 //{{ 2011. 04. 13  김민성  글로벌 서버 추가
 	#include "GSWorldMissionManager.h"
@@ -223,7 +219,6 @@ void KGameServer::RegToLua()
 	lua_tinker::class_inh<KGameServer, KBaseServer>( g_pLua );
 	lua_tinker::class_def<KGameServer>( g_pLua, "dump",						&KGameServer::Dump );
 	lua_tinker::class_def<KGameServer>( g_pLua, "ver",						&KGameServer::ServerVersion );
-	lua_tinker::class_def<KGameServer>( g_pLua, "SetHackShieldHSBFilePath",	&KGameServer::SetHackShieldHSBFilePath );
 	//{{ 2010. 10. 19	최육사	SMS테스트
 	//}}
 
@@ -326,26 +321,7 @@ bool KGameServer::Init()
 	//		return false;
 	//	}
 	//}
-	//{{ 2009. 8. 18  최육사	hack shield
-	if( KSimLayer::GetKObj()->CheckCommonFlag( KSimLayer::CF_HSHIELD ) == true )
-	{
-		KHSAuth::SetAhnHSServerHandle( _AhnHS_CreateServerObject( KHSAuth::GetHSBFilePath().c_str() ) );
-
-		if( KHSAuth::GetAhnHSServerHandle() == ANTICPX_INVALID_HANDLE_VALUE )
-		{
-			START_LOG( cerr, L"Hack Shield 초기화 실패! HSB파일을 읽지 못하였습니다." )
-				<< BUILD_LOG( KHSAuth::GetHSBFilePath() )
-				<< END_LOG;
-
-			return false;
-		}
-	}
-	//}}
-
-	if( KSimLayer::GetKObj()->CheckCommonFlag( KSimLayer::CF_XTRAP ) == true )
-	{
-		GetKGSSimLayer()->ReloadXTRAP_MAP();
-	}
+	// Port: HackShield and XTrap start-up removed with the anti-cheat (T10)
 
 	SetServerReady( true );
 
@@ -468,9 +444,6 @@ void KGameServer::OnServerReadyComplete()
 		<< BUILD_LOG( GetUID() )
 		<< BUILD_LOG( GetName() );
 
-	START_LOG( cout, L"----------------------------------------------" );
-	START_LOG( cout, L"----------- TBB 메모리 관리자 사용 -----------" );
-	START_LOG( cout, L"----------------------------------------------" );
 
 	//{{  2011.11.24     김민성    캐릭터 접속 로그
 	//}}
@@ -498,13 +471,6 @@ void KGameServer::ShutDown()
 	{
 		SiKProcessCommunicationManager()->ShutDown();
 	}
-
-	//{{ 2009. 8. 18  최육사	hack shield
-	if( KSimLayer::GetKObj()->CheckCommonFlag( KSimLayer::CF_HSHIELD ) == true )
-	{
-		_AhnHS_CloseServerHandle( KHSAuth::GetAhnHSServerHandle() );
-	}
-	//}}
 
 	//{{ 2009. 9. 2  최육사		비정상종료통계
 	GetKGSSimLayer()->SendToDBAbnormalReason( true );
@@ -540,9 +506,9 @@ bool KGameServer::DestroyAllSession()
 
 	int iIndex = KStatistics::eSIColDR_Server_Shutdown;
 
-	pkActorManager->ForEach( boost::bind( &KActor::SetDisconnectReason, _1, iIndex ) );
+	pkActorManager->ForEach( std::bind( &KActor::SetDisconnectReason, _1, iIndex ) );
 
-    pkActorManager->ForEach( boost::bind( &KActor::ReserveDestroy, _1 ) );
+    pkActorManager->ForEach( std::bind( &KActor::ReserveDestroy, _1 ) );
 
     DWORD dwBeginTick = ::GetTickCount();
 
@@ -640,13 +606,6 @@ void KGameServer::Tick()
 
 }
 
-void KGameServer::SetHackShieldHSBFilePath( const char* pFilePath )
-{
-	KHSAuth::SetHSBFilePath( std::string( pFilePath ) );
-
-	START_LOG( cout, L"Hack Shield HSB File Path" )
-		<< BUILD_LOG( pFilePath );
-}
 
 
 void KGameServer::ServerVersion()
@@ -1603,7 +1562,7 @@ _IMPL_ON_FUNC( ESR_ORDER_TO_REFRESH_MANAGER_ACK, KESR_SCRIPT_REFRESH_ORDER_NOT )
 	// MapData가 갱신되는 경우드롭 테이블이 갱신 되는 경우
 	if( kPacket_.m_iOrderType == KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GS_MAP_DATA )
 	{
-		BOOST_MAP_CONST_FOREACH( int, UidType, kFieldInfo, mapFieldInfo )
+		for( const auto& kFieldInfo : mapFieldInfo )
 		{
 			SiCXSLMapData()->UpdateFieldInfo( kFieldInfo.first, kFieldInfo.second );
 		}
@@ -1648,7 +1607,7 @@ _IMPL_ON_FUNC( ESR_ORDER_TO_REFRESH_MANAGER_ACK, KESR_SCRIPT_REFRESH_ORDER_NOT )
 	}
 		//}}
 
-	SiKProcessCommunicationManager()->QueueingProcessWrite(boost::str(boost::wformat(L"%1%_%2%") % 0 %L"GameServer 스크립트 실시간 패치 완료"));
+	SiKProcessCommunicationManager()->QueueingProcessWrite(x2::str(x2::wformat(L"%1%_%2%") % 0 %L"GameServer 스크립트 실시간 패치 완료"));
 }
 
 //}}
@@ -1778,7 +1737,7 @@ IMPL_ON_FUNC( ERM_BATTLE_FIELD_ROOM_INFO_NOT )
 
 IMPL_ON_FUNC( EGB_GET_AUTO_PARTY_BONUS_INFO_ACK )
 {
-	BOOST_TEST_FOREACH( const KAutoPartyBonusInfo&, kInfo, kPacket_.m_vecAutoPartyBonusInfo )
+	for( const KAutoPartyBonusInfo& kInfo : kPacket_.m_vecAutoPartyBonusInfo )
 	{
         SiKGSAutoPartyManager()->UpdateAutoPartyBonusInfo( kInfo.m_cDungeonMode, kInfo.m_iDungeonIDWithDif, kInfo.m_bActivatedBonus );
 	}

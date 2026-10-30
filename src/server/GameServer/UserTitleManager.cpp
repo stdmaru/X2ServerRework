@@ -1446,7 +1446,7 @@ void KUserTitleManager::GetEquippedTitleBonusRate( IN const bool bIsDungeon, OUT
 	}
 
 	//{{ 2011. 07. 25    김민성    아이템 옵션ID 데이터 사이즈 증가
-	BOOST_TEST_FOREACH( const int, iSocketOption, pTitleInfo->m_vecSocketOption )
+	for( const int iSocketOption : pTitleInfo->m_vecSocketOption )
 	{
 		const CXSLSocketItem::SocketData* pSocketData = SiCXSLSocketItem()->GetSocketData( iSocketOption );
 		if( pSocketData == NULL )

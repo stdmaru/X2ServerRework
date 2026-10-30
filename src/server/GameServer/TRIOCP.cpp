@@ -29,7 +29,7 @@ KTRIocp::~KTRIocp()
 
 void KTRIocp::EndThread()
 {
-    std::vector< boost::shared_ptr<KThread> >::iterator vit;
+    std::vector< std::shared_ptr<KThread> >::iterator vit;
     for( vit = m_vecThread.begin(); vit != m_vecThread.end(); vit++ )
     {
         PostStatus( SIGNAL_SHUTDOWN_SERVER );
@@ -188,13 +188,13 @@ KThread* KTRIocp::CreateThread()
 }
 
 #undef max
-#include <boost/random.hpp>
+#include <random>
 
 DWORD KTRIocp::GenNewCompKey() const
 {
-    static boost::mt19937 rng;
-    static boost::uniform_int<DWORD> uint32( 1, UINT_MAX );
-    static boost::variate_generator<boost::mt19937&, boost::uniform_int<DWORD> > die(rng, uint32);
+    static std::mt19937 rng;
+    static std::uniform_int_distribution<DWORD> uint32( 1, UINT_MAX );
+    auto die = [] { return uint32( rng ); };  // Port: boost::variate_generator -> lambda over the same distribution
 
     KLocker lock( m_csSockObj );
 

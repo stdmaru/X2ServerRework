@@ -46,8 +46,8 @@
 	#include "X2Data/XSLFieldBossData.h"
 
 #include "../Common/X2Data/XSLItem.h"
-#include <boost/bind/bind.hpp>
-using namespace boost::placeholders;
+#include <functional>
+using namespace std::placeholders;
 
 #define CLASS_TYPE      KGSUser
 
@@ -993,7 +993,7 @@ IMPL_ON_FUNC( EGS_USE_QUICK_SLOT_REQ )
             {
                 std::vector<CXSLItem::SpecialAbility>::const_iterator vit;
                 vit = std::find_if( pItemTemplet->m_SpecialAbilityList.begin(), pItemTemplet->m_SpecialAbilityList.end(),
-                    boost::bind( &CXSLItem::SpecialAbility::m_Type, _1 ) == CXSLItem::SAT_SUMMON_MONSTER );
+                    std::bind( &CXSLItem::SpecialAbility::m_Type, _1 ) == CXSLItem::SAT_SUMMON_MONSTER );
 
                 if ( vit != pItemTemplet->m_SpecialAbilityList.end() )
                 {
@@ -1571,7 +1571,7 @@ IMPL_ON_FUNC( EGS_OPEN_RANDOM_ITEM_REQ )
 	if( m_kAfterWorkStorage.InsertData( kStorage, iAfterWorkStorageKey ) == KAfterWorkStorage::AWS_SUCCEED )
 	{
 		bool bCheck = false;
-		BOOST_TEST_FOREACH( KItemInfo&, kGetItemInfo, kPacketToDB.m_vecItemInfo )
+		for( KItemInfo& kGetItemInfo : kPacketToDB.m_vecItemInfo )
 		{
 			//{{ 2013. 05. 15	최육사	아이템 개편
 			bool isEnchantCube = false;
@@ -1723,7 +1723,7 @@ IMPL_ON_FUNC( ELG_CHECK_TIME_RANDOM_ITEM_EVENT_ACK )
 	// 여기로 오는 것은 특수 랜덤 큐브이니깐 bIsCharmItem 을 검사하지 않아도 된다.
 
 	//{{ 2009. 6. 22  최육사	매력아이템 공지
-	BOOST_MAP_CONST_FOREACH( int, int, kGetItem, kPacketToDB.m_mapInsertedItem )
+	for( const auto& kGetItem : kPacketToDB.m_mapInsertedItem )
 	{
 		// 공지 날릴만한 아이템이면 날리자!
 		if( SiCXSLRandomItemManager()->IsAttrationItem( kGetItem.first ) == true )
@@ -3870,7 +3870,7 @@ IMPL_ON_FUNC( DBE_USE_ITEM_IN_INVENTORY_ACK )
 			std::vector<int> vecSkillID;
 			if( SiCXSLSkillTree()->GetUnsealItemInfo( kPacket.m_iUsedItemID, GetUnitClass(), vecSkillID ) == true )
 			{
-				BOOST_TEST_FOREACH( int, iSkillID, vecSkillID )
+				for( int iSkillID : vecSkillID )
 				{
 					if( m_kSkillTree.IsSkillUnsealed( iSkillID ) == false )
 					{
@@ -4554,7 +4554,7 @@ IMPL_ON_FUNC( DBE_RESET_PERIOD_ITEM_ACK )
 	KEGS_RESET_PERIOD_ITEM_NOT kPacketNot;
 
 	// DB 갔다와서 인벤토리에 기간 연장된거 업데이트 하고 클라로 결과 뿌리자!
-	BOOST_TEST_FOREACH( const KItemPeriodInfo&, kInfo, kPacket_.m_vecItemPeriodInfo )
+	for( const KItemPeriodInfo& kInfo : kPacket_.m_vecItemPeriodInfo )
 	{
 		KInventoryItemInfo kInventorySlotInfo;
 		if( m_kInventory.UpdatePeriod( kInfo.m_iItemUID, kInfo.m_sPeriod, kInfo.m_wstrExpirationDate, kInventorySlotInfo ) == true )
@@ -4910,7 +4910,7 @@ IMPL_ON_FUNC( DBE_UPDATE_SHARE_ITEM_ACK )
 		{
 			KEGS_UPDATE_ITEM_POSITION_NOT kNot;
 
-			BOOST_TEST_FOREACH( const KTradeShareItemInfo&, kInfo, kPacket_.m_vecTradeShareItemResult )
+			for( const KTradeShareItemInfo& kInfo : kPacket_.m_vecTradeShareItemResult )
 			{
 				KTradeShareItemResult kResult;
 				kResult.m_iBeforeItemUID = kInfo.m_iItemUID;
@@ -4981,7 +4981,7 @@ _IMPL_ON_FUNC( DBE_UPDATE_SHARE_ITEM_FOR_MOVE_SLOT_ACK, KDBE_UPDATE_SHARE_ITEM_A
 		{
 			KEGS_UPDATE_ITEM_POSITION_NOT kNot;
 
-			BOOST_TEST_FOREACH( const KTradeShareItemInfo&, kInfo, kPacket_.m_vecTradeShareItemResult )
+			for( const KTradeShareItemInfo& kInfo : kPacket_.m_vecTradeShareItemResult )
 			{
 				KTradeShareItemResult kResult;
 				kResult.m_iBeforeItemUID = kInfo.m_iItemUID;
@@ -5380,7 +5380,7 @@ IMPL_ON_FUNC( EGB_TIME_ENCHANT_EVENT_CUBE_NOT )
 	kPacketToDB.m_vecItemInfo				= kStorage.m_vecItemInfo;
 
 	//{{ 2013. 05. 15	최육사	아이템 개편
-	BOOST_TEST_FOREACH( KItemInfo&, kGetItemInfo, kPacketToDB.m_vecItemInfo )
+	for( KItemInfo& kGetItemInfo : kPacketToDB.m_vecItemInfo )
 	{
 		// 고정 강화 레벨 적용
 		bool isEnchantCube = false;
@@ -5422,7 +5422,7 @@ IMPL_ON_FUNC( EGB_TIME_ENCHANT_EVENT_CUBE_NOT )
 	if( bIsCharmItem )
 	{
 		//{{ 2009. 6. 22  최육사	매력아이템 공지
-		BOOST_MAP_CONST_FOREACH( int, int, kGetItem, kPacketToDB.m_mapInsertedItem )
+		for( const auto& kGetItem : kPacketToDB.m_mapInsertedItem )
 		{
 			// 공지 날릴만한 아이템이면 날리자!
 			if( SiCXSLRandomItemManager()->IsAttrationItem( kGetItem.first ) == true )
@@ -5457,7 +5457,7 @@ IMPL_ON_FUNC( EGB_TIME_ENCHANT_EVENT_CUBE_NOT )
 		// 봉인된 아이템이 나오는 랜덤 아이템 큐브인지 확인!
 		if( SiCXSLRandomItemManager()->IsSealRandomItemCube( iRandomItemID ) == true )
 		{
-			BOOST_MAP_CONST_FOREACH( int, int, kGetItem, kPacketToDB.m_mapInsertedItem )
+			for( const auto& kGetItem : kPacketToDB.m_mapInsertedItem )
 			{
 				// 공지 날릴만한 아이템이면 날리자!
 				if( SiCXSLRandomItemManager()->IsNotifyResultItem( kGetItem.first ) == true )
@@ -5542,7 +5542,7 @@ IMPL_ON_FUNC( EGB_TIME_ENCHANT_EVENT_CUBE_NOT )
 		//{{ 2010. 7. 26  최육사	밀봉 랜덤 큐브
 		if( SiCXSLRandomItemManager()->IsSealRandomItemCube( iRandomItemID ) == true )
 		{
-			BOOST_TEST_FOREACH( const KItemInfo&, kItem, kPacketToDB.m_vecItemInfo )
+			for( const KItemInfo& kItem : kPacketToDB.m_vecItemInfo )
 			{
 				//{{ 2013. 06. 04	최육사	아이템 개편
 				// 이미 봉인 되어 있다면 봉인 처리 하지 않는다.

@@ -210,7 +210,7 @@ void KUserDungeonManager::GetAutoPartyBonusDungeonList( IN const int iVillageMap
 		return;
 	}
 
-	BOOST_TEST_FOREACH( const KDungeonGameSimpleInfo&, kInfo, pLocalMapIDList->m_vecDungeonInfo )
+	for( const KDungeonGameSimpleInfo& kInfo : pLocalMapIDList->m_vecDungeonInfo )
 	{
 		KAutoPartyDungeonBonusInfo kAutoPartyBonusInfo;
 		kAutoPartyBonusInfo.m_cDungeonMode = kInfo.m_cDungeonMode;
@@ -222,7 +222,7 @@ void KUserDungeonManager::GetAutoPartyBonusDungeonList( IN const int iVillageMap
 
 void KUserDungeonManager::GetAutoPartyBonusDungeonList( IN const std::vector< KDungeonGameSimpleInfo >& vecDungeonList, OUT std::map< int, KAutoPartyDungeonBonusInfo >& mapAutoPartyBonusList )
 {
-	BOOST_TEST_FOREACH( const KDungeonGameSimpleInfo&, kInfo, vecDungeonList )
+	for( const KDungeonGameSimpleInfo& kInfo : vecDungeonList )
 	{
 		KAutoPartyDungeonBonusInfo kAutoPartyBonusInfo;
 		kAutoPartyBonusInfo.m_cDungeonMode = kInfo.m_cDungeonMode;

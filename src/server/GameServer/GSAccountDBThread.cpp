@@ -1,4 +1,4 @@
-#include <winsock2.h>
+#include "x2/platform/net.h"
 #include <iomanip>
 #include <sstream>
 
@@ -1775,7 +1775,7 @@ IMPL_ON_FUNC( DBE_ACCOUNT_QUEST_UPDATE_NOT )
 	CStringW strNow = tNow.Format(_T("%Y-%m-%d %H:%M:%S"));
 	std::wstring wstrNow = strNow.GetString();
 
-	BOOST_TEST_FOREACH( KQuestUpdate&, kInfo, kPacket_.m_vecAccountQuesting )
+	for( KQuestUpdate& kInfo : kPacket_.m_vecAccountQuesting )
 	{
 		if( kInfo.m_vecClearData.size() != 5 )
 		{

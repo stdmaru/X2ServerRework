@@ -38,7 +38,7 @@ void KUserQuestManager::SetUnitQuest( IN OUT std::vector< KQuestInstance >& vecQ
 	ClearUnitQuest();
 
 	//진행중 퀘스트 셋팅하기
-	BOOST_TEST_FOREACH( const KQuestInstance&, kQuestInstance, vecQuest )
+	for( const KQuestInstance& kQuestInstance : vecQuest )
 	{
 		const CXSLQuestManager::QuestTemplet* pQuestTemplet = SiCXSLQuestManager()->GetQuestTemplet( kQuestInstance.m_iID );
 		if( pQuestTemplet == NULL )
@@ -270,7 +270,7 @@ void KUserQuestManager::SetUnitQuest( IN OUT std::vector< KQuestInstance >& vecQ
 
 	//완료 퀘스트 정리해서 넣기
 	//{{ 2010. 04. 02  최육사	일일퀘스트
-	BOOST_TEST_FOREACH( const KCompleteQuestInfo&, kInfo, vecCompleteQuest )
+	for( const KCompleteQuestInfo& kInfo : vecCompleteQuest )
 	{
 		std::map< int, KCompleteQuestInfo >::iterator mitQC = m_mapCompleteQuest.find( kInfo.m_iQuestID );
 		if( mitQC == m_mapCompleteQuest.end() )
@@ -300,7 +300,7 @@ void KUserQuestManager::SetUnitQuest( IN OUT std::vector< KQuestInstance >& vecQ
 	//}}
 
 	// DB로부터 가져온 완료된 퀘스트 리스트를 가지고 After Quest의 open조건을 체크한다!
-	BOOST_TEST_FOREACH( const KCompleteQuestInfo&, kInfo, vecCompleteQuest )
+	for( const KCompleteQuestInfo& kInfo : vecCompleteQuest )
 	{
 		CheckEpicQuest_NewQuestByAfterQuest( kInfo.m_iQuestID, spUser, false, false );
 	}
@@ -476,7 +476,7 @@ bool KUserQuestManager::Handler_EGS_NEW_QUEST_REQ( IN const KEGS_NEW_QUEST_REQ& 
 				SET_ERROR( ERR_QUEST_04 );
 				goto error_proc;
 			}
-			BOOST_TEST_FOREACH( const int, iBeforeQuestID, pQuestTemplet->m_Condition.m_vecBeforeQuestID )
+			for( const int iBeforeQuestID : pQuestTemplet->m_Condition.m_vecBeforeQuestID )
 			{
 				if( CheckCompletedQuestToday( iBeforeQuestID ) == false )
 				{
@@ -528,7 +528,7 @@ bool KUserQuestManager::Handler_EGS_NEW_QUEST_REQ( IN const KEGS_NEW_QUEST_REQ& 
 	//if( pQuestTemplet->m_Condition.m_iConditionItemID)
 
 	//QUEST 수행을 위해 이전에 완료해야할 퀘스트 검사.
-	BOOST_TEST_FOREACH( const int, iBeforeQuestID, pQuestTemplet->m_Condition.m_vecBeforeQuestID )
+	for( const int iBeforeQuestID : pQuestTemplet->m_Condition.m_vecBeforeQuestID )
 	{
 		if( GetQuestCompleteCount( iBeforeQuestID ) == 0 )
 		{
@@ -1150,7 +1150,7 @@ void KUserQuestManager::Handler_OnDungeonClear( IN const KGSUserPtr spUser,
 
 			case CXSLQuestManager::SQT_WITH_DIF_SERV_USER:
 				{
-					BOOST_TEST_FOREACH( const UidType, iPartyMemberUnitUID, setPartyMembers )
+					for( const UidType iPartyMemberUnitUID : setPartyMembers )
 					{
 						if( iPartyMemberUnitUID == spUser->GetCharUID() )
 							continue;
@@ -2922,7 +2922,7 @@ void KUserQuestManager::Handler_EGS_QUEST_COMPLETE_REQ( IN const KEGS_QUEST_COMP
 			std::map<int,int>::const_iterator mit;
 
 			//선택보상 아이템들의 정보를 셋팅함.
-			BOOST_TEST_FOREACH( const CXSLQuestManager::ITEM_DATA&, kQuestSelectReward, pQuestTemplet->m_SelectReward.m_vecSelectItem )
+			for( const CXSLQuestManager::ITEM_DATA& kQuestSelectReward : pQuestTemplet->m_SelectReward.m_vecSelectItem )
 			{
 				mit = kReq.m_mapSelectItemID.find( kQuestSelectReward.m_iItemID );
 				if( mit != kReq.m_mapSelectItemID.end() )
@@ -2995,7 +2995,7 @@ void KUserQuestManager::Handler_EGS_QUEST_COMPLETE_REQ( IN const KEGS_QUEST_COMP
 		//일반보상 처리부분..
 		if( pQuestTemplet->m_Reward.m_vecItem.size() > 0 )
 		{
-			BOOST_TEST_FOREACH( const CXSLQuestManager::ITEM_DATA&, kQuestRewardData, pQuestTemplet->m_Reward.m_vecItem )
+			for( const CXSLQuestManager::ITEM_DATA& kQuestRewardData : pQuestTemplet->m_Reward.m_vecItem )
 			{
 				const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( kQuestRewardData.m_iItemID );
 				if( pItemTemplet == NULL )
@@ -3846,7 +3846,7 @@ void KUserQuestManager::CheckQuestEvent( IN KGSUserPtr spUser )
 	// 새로 시작되는 이벤트가 있다면 클라이언트에 알리고
 	if( !kPacketNotBegin.m_vecQuestID.empty() )
 	{
-		BOOST_TEST_FOREACH( const int&, iQuestID, kPacketNotBegin.m_vecQuestID )
+		for( const int& iQuestID : kPacketNotBegin.m_vecQuestID )
 		{
 			KEGS_NEW_QUEST_REQ kTempReq;
 			kTempReq.m_iQuestID = iQuestID;
@@ -3912,7 +3912,7 @@ void KUserQuestManager::CheckEpicQuest_SuccessStateChange( IN int iMapID, IN KGS
 
 	SiCXSLQuestManager()->GetEpicQuestTempletList(vecEpicList);
 
-	BOOST_TEST_FOREACH( const CXSLQuestManager::QuestTemplet*, pTemplet, vecEpicList )
+	for( const CXSLQuestManager::QuestTemplet* pTemplet : vecEpicList )
 	{
 		if( NULL == pTemplet )
 			continue;
@@ -3965,7 +3965,7 @@ void KUserQuestManager::CheckEpicQuest_NewQuestByBeforeQuest( IN KGSUserPtr spUs
 	SiCXSLQuestManager()->GetExistBeforeEpicQuestTempletList( vecEpicQuestTemplet );
 
 	// 에픽 퀘스트 리스트를 순회하면서 BeforeQuestID 를 검사함.
-	BOOST_TEST_FOREACH( const CXSLQuestManager::QuestTemplet*, pEpicQuest, vecEpicQuestTemplet )
+	for( const CXSLQuestManager::QuestTemplet* pEpicQuest : vecEpicQuestTemplet )
 	{
 		if( pEpicQuest == NULL )
 		{
@@ -3995,7 +3995,7 @@ void KUserQuestManager::CheckEpicQuest_NewQuestByBeforeQuest( IN KGSUserPtr spUs
 			bIsSuccessEpic = false;
 		}
 
-		BOOST_TEST_FOREACH( const int, iBeforeQuestID, pEpicQuest->m_Condition.m_vecBeforeQuestID )
+		for( const int iBeforeQuestID : pEpicQuest->m_Condition.m_vecBeforeQuestID )
 		{
 			if( iBeforeQuestID != 0  &&  IsCompleteQuest( iBeforeQuestID ) == false )
 			{
@@ -4045,7 +4045,7 @@ void KUserQuestManager::CheckEpicQuest_NewQuestByAfterQuest( IN const int iQuest
 		return; // 2013.06.10 lygan_조성욱 // 어차피 활성화 되지 않은 퀘스트는 AfterQuest 를 찾을 필요가 없다
 
 	// 다음 퀘스트가 에픽퀘스트인지 검사
-	BOOST_TEST_FOREACH( const int, iAfterQuestID, pQuestTemplet->m_vecAfterQuestID )
+	for( const int iAfterQuestID : pQuestTemplet->m_vecAfterQuestID )
 	{
 		//{{ 2012. 11. 9	최육사	배틀필드 시스템
 		const CXSLQuestManager::QuestTemplet* pAfterQuestTemplet = SiCXSLQuestManager()->GetQuestTemplet( iAfterQuestID );
@@ -4619,7 +4619,7 @@ void KUserQuestManager::SetAutoCompleteQuest( IN OUT KEGS_ALL_COMPLETED_QUEST_CO
 {
 	ClearAutoCompleteQuest();
 
-	BOOST_TEST_FOREACH( KEGS_QUEST_COMPLETE_REQ&, kInfo, kPacketReq.m_vecQuestCompleteReq )
+	for( KEGS_QUEST_COMPLETE_REQ& kInfo : kPacketReq.m_vecQuestCompleteReq )
 	{
 		kInfo.m_bAutoComplete = true; // 자동으로 퀘스트 완료하려면 요걸 true로 넣어줘야함.
 		m_mapAutoQuestCompleteReq.insert( std::make_pair( kInfo.m_iQuestID, kInfo ) );
@@ -4680,7 +4680,7 @@ void KUserQuestManager::CheckEventQuest( IN KGSUserPtr spUser )
 	}
 
 	// 스크립트에 없는 Quest 를 지우자
-	BOOST_TEST_FOREACH( int, iQuest, vecDeleteQuest )
+	for( int iQuest : vecDeleteQuest )
 	{
 		std::map< int, KQuestInstance >::iterator mitDelete = m_mapQuesting.find( iQuest );
 		if( mitDelete != m_mapQuesting.end() )
@@ -4832,7 +4832,7 @@ void KUserQuestManager::CheckLimitLevelQuest( IN KGSUserPtr spUser )
 		}
 	}
 
-	BOOST_TEST_FOREACH( int, iQuestID, vecDelQuest )
+	for( int iQuestID : vecDelQuest )
 	{
 		KEGS_GIVE_UP_QUEST_REQ kQuest;
 		kQuest.m_iQuestID = iQuestID;
@@ -5029,7 +5029,7 @@ void KUserQuestManager::Handler_OnFindNPC( IN KGSUserPtr spUser, std::vector< in
 			// 5. 찾는 npc 가 맞다면
 			{
 				bool bExistNpc = false;
-				BOOST_TEST_FOREACH( int, kNPCData, vecNPCData )
+				for( int kNPCData : vecNPCData )
 				{
 					if( kNPCData == pSubQuestTemplet->m_ClearCondition.m_iFindNPCID )
 					{
@@ -5091,7 +5091,7 @@ bool KUserQuestManager::CheckCompleteSubQuest_BeforGroup( IN int iQuestID, IN in
 	std::map< int,std::vector<int> >::const_iterator mitGroup = pQuestTemplet->m_mapSubQuestGroup.begin();
 	for( ; mitGroup != pQuestTemplet->m_mapSubQuestGroup.end() ; ++mitGroup )
 	{
-		BOOST_TEST_FOREACH( const int, iSub, mitGroup->second )
+		for( const int iSub : mitGroup->second )
 		{
 			if( iSub == iSubQuestID )
 			{
@@ -5129,9 +5129,9 @@ bool KUserQuestManager::CheckCompleteSubQuest_BeforGroup( IN int iQuestID, IN in
 	{
 		if( mitGroup->first < iGroupID )
 		{
-			BOOST_TEST_FOREACH( const int, iSub, mitGroup->second )
+			for( const int iSub : mitGroup->second )
 			{
-				BOOST_TEST_FOREACH( const KSubQuestInstance, SubQuest, kQuestInstance.m_vecSubQuestInstance )
+				for( const KSubQuestInstance SubQuest : kQuestInstance.m_vecSubQuestInstance )
 				{
 					if( SubQuest.m_iID == iSub )
 					{
@@ -5182,7 +5182,7 @@ void KUserQuestManager::CheckEpicQuest_EnterDungeon( IN int iDungeonID, IN KGSUs
 
 	SiCXSLQuestManager()->GetEpicQuestTempletList(vecEpicList);
 
-	BOOST_TEST_FOREACH( const CXSLQuestManager::QuestTemplet*, pTemplet, vecEpicList )
+	for( const CXSLQuestManager::QuestTemplet* pTemplet : vecEpicList )
 	{
 		if( NULL == pTemplet )
 			continue;
@@ -5244,7 +5244,7 @@ void KUserQuestManager::CheckEpicQuest_EnterBattleField( IN int iMapID, IN KGSUs
 
 	SiCXSLQuestManager()->GetEpicQuestTempletList(vecEpicList);
 
-	BOOST_TEST_FOREACH( const CXSLQuestManager::QuestTemplet*, pTemplet, vecEpicList )
+	for( const CXSLQuestManager::QuestTemplet* pTemplet : vecEpicList )
 	{
 		if( NULL == pTemplet )
 			continue;

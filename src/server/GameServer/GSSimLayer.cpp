@@ -135,8 +135,6 @@
 //{{ 2011.05.04   임규수 아바타 합성 시스템
 //}}
 
-//-- 2010. 12. 13. 지헌 : XTRAP 서버 - CXTrapCSM 포함
-#include "XTrapCSM.h"
 
 	#include "X2Data/XSLRidingPetManager.h"
 
@@ -208,7 +206,6 @@ void KGSSimLayer::RegToLua()
 	//{{ 2011. 12. 14	최육사	SimLayer Tick퍼포먼스 체크
 	lua_tinker::class_def<KGSSimLayer>( g_pLua, "TickDump",			&KGSSimLayer::TickDump_LUA );
 	//}}
-	lua_tinker::class_def<KGSSimLayer>( g_pLua, "ReloadXTRAP_MAP",	&KGSSimLayer::ReloadXTRAP_MAP );
 	lua_tinker::class_def<KGSSimLayer>( g_pLua, "AddCommonFlag_AllGS",		&KGSSimLayer::AddCommonFlag_AllGS_LUA );
 	lua_tinker::class_def<KGSSimLayer>( g_pLua, "DeleteCommonFlag_AllGS",	&KGSSimLayer::DeleteCommonFlag_AllGS_LUA );
 
@@ -862,12 +859,6 @@ void KGSSimLayer::Tick()
 
 
 
-	if( m_tXTrapReloadTimer.elapsed() > 120.0 )
-	{
-		m_tXTrapReloadTimer.restart();
-
-		ReloadXTRAP_MAP();
-	}
 
     SiKProxyManager()->Tick();
 
@@ -1204,72 +1195,6 @@ void KGSSimLayer::TickDump_LUA()
 	dbg::cout << wstrDump.str() << dbg::endl;
 }
 //}}
-
-void KGSSimLayer::ReloadXTRAP_MAP()
-{
-	KLocker lock( m_csXTrapReload );
-
-	if( false == KSimLayer::GetKObj()->CheckCommonFlag( KSimLayer::CommonFlag::CF_XTRAP ) )
-		return;
-
-	bool bModified = false;
-
-	FILE *fi;
-
-	// 바뀐 맵파일이 있는지 검사
-	for( int iCSFileIndex = 1; iCSFileIndex <= CSFILE_NUM; ++iCSFileIndex )
-	{
-		std::stringstream strstmFileName;
-		strstmFileName << "map" << iCSFileIndex << ".cs3";
-
-		fi = fopen( strstmFileName.str().c_str(), "rb" );	// MAP 파일 읽는 부분
-		if( fi == NULL )
-		{
-			START_LOG( cerr, L"맵파일 로드 실패!" )
-				<< BUILD_LOG( strstmFileName.str() )
-				<< END_LOG;
-			continue;
-		}
-		std::vector< char > vecXTrapMap;
-		vecXTrapMap.resize( XTRAP_CS4_BUFSIZE_MAP );
-
-		fread( &vecXTrapMap[0], XTRAP_CS4_BUFSIZE_MAP, 1, fi );
-		fclose( fi );
-
-		if( m_setLoadedMaps.find( vecXTrapMap ) == m_setLoadedMaps.end() )
-		{
-			// 아직 없던 맵이므로 추가합니다.
-			bModified = true;
-			m_setLoadedMaps.insert( vecXTrapMap );
-
-			// 실제 xtrap에서 사용하는 버퍼를 채웁니다.
-			m_vecUsingMap.resize( m_setLoadedMaps.size() * XTRAP_CS4_BUFSIZE_MAP );
-			int iOffset = XTRAP_CS4_BUFSIZE_MAP * m_setLoadedMaps.size() - XTRAP_CS4_BUFSIZE_MAP;
-			memcpy( &m_vecUsingMap[iOffset], &vecXTrapMap[0], XTRAP_CS4_BUFSIZE_MAP );
-
-			START_LOG( clog2, L"다음 맵파일이 변경되었으므로 추가합니다." )
-				<< BUILD_LOG( strstmFileName.str() )
-				<< END_LOG;
-		}
-	}
-
-	// 바뀐파일이 있을 경우 전체 로드합니다.
-	if( bModified )
-	{
-		unsigned int result = XTrap_S_LoadDll();	// XTrap4Server.dll 로드
-
-		if(result == 0)
-			START_LOG( cout, L"XTrap Server DLL 로드 성공!");
-		else
-			START_LOG( cerr, L"XTrap Server DLL 로드 실패!");
-
-		START_LOG( clog2, L"맵파일이 추가되어 현재 개수는 다음과 같습니다." )
-			<< BUILD_LOG( m_setLoadedMaps.size() )
-			<< END_LOG;
-
-		XTrap_S_Start( 600, m_setLoadedMaps.size(), &m_vecUsingMap[0], NULL );	// XTrap server 모듈 시작
-	}
-}
 
 void KGSSimLayer::DeleteCommonFlag_AllGS_LUA( DWORD dwFlag )
 {

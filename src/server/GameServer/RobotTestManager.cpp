@@ -173,7 +173,7 @@ void KRobotTestManager::RobotFullEquip( const std::wstring& wstrNickName, int iU
 
 	std::set< int > setEquipSlotID;
 
-	BOOST_TEST_FOREACH( const KInventoryItemSimpleInfo&, kInfo, vecItem )
+	for( const KInventoryItemSimpleInfo& kInfo : vecItem )
 	{
 		if( kInfo.m_cSlotCategory != CXSLInventory::ST_E_EQUIP )
 			continue;

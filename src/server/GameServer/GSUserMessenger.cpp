@@ -41,7 +41,7 @@ IMPL_ON_FUNC( EGS_KNM_REQUEST_NEW_FRIEND_INFO_REQ )
 		return;
 	}
 
-	if( boost::iequals(GetCharName(),kPacket_.m_wstrUnitNickName) )
+	if( x2::platform::IEquals(GetCharName(),kPacket_.m_wstrUnitNickName) )
 	{
 		KEGS_KNM_REQUEST_NEW_FRIEND_INFO_ACK kPacket;
 		kPacket.m_iOK	= NetError::ERR_KNM_00;

@@ -146,8 +146,8 @@ void KCnProxy::OnDestroy()
 			CTime kRegDate = CTime::GetCurrentTime();
 			KE_LOCAL_LOG_SERVER_DISCONNECT_NOT kNot;
 			kNot.m_cLogType				= KE_LOCAL_LOG_SERVER_DISCONNECT_NOT::SDLT_DISCONNECT;
-			kNot.m_wstrSourceName		= boost::str( boost::wformat( L"%d" ) % KBaseServer::GetKObj()->GetUID() );
-			kNot.m_wstrDestinationName	= boost::str( boost::wformat( L"%d" ) % GetProxyID() );
+			kNot.m_wstrSourceName		= x2::str( x2::wformat( L"%d" ) % KBaseServer::GetKObj()->GetUID() );
+			kNot.m_wstrDestinationName	= x2::str( x2::wformat( L"%d" ) % GetProxyID() );
 			kNot.m_wstrDestinationIP	= KncUtil::toWideString( GetIPStr() );
 			kNot.m_wstrReason			= KStatistics::GetDissconnectReasonString( GetDisconnectReason() );
 			kNot.m_wstrRegDate			= (const wchar_t*)kRegDate.Format(_T("%Y-%m-%d %H:%M:%S"));
@@ -364,7 +364,7 @@ void KCnProxy::ProcbyNotExistUser( const KEventPtr& spEvent_, std::vector<UidTyp
 		//{{ 2011. 08. 03	최육사	대전 강제 종료에 대한 예외처리
 	case ERM_UPDATE_PVP_UNIT_INFO_NOT:
 		{
-			BOOST_TEST_FOREACH( const UidType, iUnitUID, vecUID )
+			for( const UidType iUnitUID : vecUID )
 			{
 				KSerializer ks;
 				ks.BeginReading( &spEvent_->m_kbuff );
@@ -466,7 +466,7 @@ void KCnProxy::ProcbyNotExistUser( const KEventPtr& spEvent_, std::vector<UidTyp
 		//{{ 2012. 05. 23	최육사	배틀필드 시스템
 	case ERM_GAME_START_TIME_COUNT_NOT:
 		{
-			BOOST_TEST_FOREACH( const UidType, iUnitUID, vecUID )
+			for( const UidType iUnitUID : vecUID )
 			{
 				KSerializer ks;
 				ks.BeginReading( &spEvent_->m_kbuff );

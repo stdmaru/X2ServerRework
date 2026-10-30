@@ -1054,7 +1054,7 @@ IMPL_ON_FUNC( EGS_BUY_CASH_ITEM_REQ )
 				std::vector<int> vecSkillID;
 				if( SiCXSLSkillTree()->GetUnsealItemInfo( iItemID, GetUnitClass(), vecSkillID ) == true )
 				{
-					BOOST_TEST_FOREACH( int, iSkillID, vecSkillID )
+					for( int iSkillID : vecSkillID )
 					{
 						// 이미 봉인해제된 스킬인가?
 						if( m_kSkillTree.IsSkillUnsealed( iSkillID ) )
@@ -1569,7 +1569,7 @@ IMPL_ON_FUNC( EBILL_BUY_PRODUCT_ACK )
 	}
 
 	//{{ 2011. 02. 08	최육사	캐쉬템 구매 로그
-	BOOST_TEST_FOREACH( const KBillOrderInfo&, kReq, kPacket_.m_vecBillOrderInfo )
+	for( const KBillOrderInfo& kReq : kPacket_.m_vecBillOrderInfo )
 	{
 		KBillProductInfo kProductInfo;
 		if( SiKBillManager()->GetProductInfo( kReq.m_kBillProductInfo.m_iProductNo, kProductInfo ) == false )
@@ -1668,7 +1668,7 @@ IMPL_ON_FUNC( EBILL_GIFT_ITEM_ACK )
 	}
 
 	//{{ 2011. 02. 08	최육사	캐쉬템 구매 로그
-	BOOST_TEST_FOREACH( const KBillOrderInfo&, order, kPacket_.m_vecBillOrderInfo )
+	for( const KBillOrderInfo& order : kPacket_.m_vecBillOrderInfo )
 	{
 		/*
 		KNXBTProductInfo kProductInfo;

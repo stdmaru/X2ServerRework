@@ -774,7 +774,7 @@ IMPL_ON_FUNC( EGS_WEDDING_ITEM_INFO_REQ )
 	VERIFY_STATE( ( 2, KGSFSM::S_FIELD_MAP, KGSFSM::S_ROOM ) );
 
 	// 인벤토리에 존재하는 item 인지 검사 한다.
-	BOOST_TEST_FOREACH( UidType, iItemUID, kPacket_.m_vecWeddingItemList )
+	for( UidType iItemUID : kPacket_.m_vecWeddingItemList )
 	{
 		KItemInfo kItem;
 		if( m_kInventory.GetItemInfo( iItemUID, kItem ) == false )

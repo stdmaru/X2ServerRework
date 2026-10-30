@@ -98,3 +98,50 @@ using CString  = CStringW;
 
 extern template class CStringT<wchar_t>;
 extern template class CStringT<char>;
+
+namespace x2::platform {
+
+// Boost.StringAlgo's iequals / ifind_first (as a condition) / replace_all, as the original used them.
+// Case folding is ASCII only, like Boost under the "C" locale the servers run in; Korean text compares as is.
+template <typename CharT>
+constexpr CharT AsciiLower(CharT c) { return c >= CharT('A') && c <= CharT('Z') ? CharT(c - 'A' + 'a') : c; }
+
+template <typename CharT>
+bool IEquals(std::basic_string_view<CharT> a, std::basic_string_view<CharT> b)
+{
+    if (a.size() != b.size())
+        return false;
+    for (size_t i = 0; i < a.size(); ++i)
+        if (AsciiLower(a[i]) != AsciiLower(b[i]))
+            return false;
+    return true;
+}
+inline bool IEquals(std::wstring_view a, std::wstring_view b) { return IEquals<wchar_t>(a, b); }
+inline bool IEquals(std::string_view a, std::string_view b) { return IEquals<char>(a, b); }
+
+// true when pattern occurs in text ignoring ASCII case; an empty pattern is not found (as boost::ifind_first)
+template <typename CharT>
+bool IContains(std::basic_string_view<CharT> text, std::basic_string_view<CharT> pattern)
+{
+    if (pattern.empty() || pattern.size() > text.size())
+        return false;
+    for (size_t i = 0; i + pattern.size() <= text.size(); ++i)
+        if (IEquals(text.substr(i, pattern.size()), pattern))
+            return true;
+    return false;
+}
+inline bool IContains(std::wstring_view text, std::wstring_view pattern) { return IContains<wchar_t>(text, pattern); }
+inline bool IContains(std::string_view text, std::string_view pattern) { return IContains<char>(text, pattern); }
+
+template <typename CharT>
+void ReplaceAll(std::basic_string<CharT>& text, std::basic_string_view<CharT> from, std::basic_string_view<CharT> to)
+{
+    if (from.empty())
+        return;
+    for (size_t pos = text.find(from); pos != std::basic_string<CharT>::npos; pos = text.find(from, pos + to.size()))
+        text.replace(pos, from.size(), to);
+}
+inline void ReplaceAll(std::wstring& text, std::wstring_view from, std::wstring_view to) { ReplaceAll<wchar_t>(text, from, to); }
+inline void ReplaceAll(std::string& text, std::string_view from, std::string_view to) { ReplaceAll<char>(text, from, to); }
+
+} // namespace x2::platform

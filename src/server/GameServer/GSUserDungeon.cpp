@@ -379,14 +379,14 @@ _IMPL_ON_FUNC( ERM_END_GAME_DUNGEON_RESULT_DATA_NOT, KEGS_END_GAME_DUNGEON_RESUL
 	//}
 
 	//{{ 2010. 05. 17  최육사	대전 던전 서버군 통합
-	BOOST_TEST_FOREACH( const KDungeonUnitResultInfo&, kDungeonUnitResultInfo, kPacket_.m_vecDungeonUnitInfo )
+	for( const KDungeonUnitResultInfo& kDungeonUnitResultInfo : kPacket_.m_vecDungeonUnitInfo )
 	{
 		setPartyMembers.insert( kDungeonUnitResultInfo.m_UnitUID );
 	}
 	//}}
 
 	// 해당 캐릭터 정보를 찾아서 업데이트
-	BOOST_TEST_FOREACH( KDungeonUnitResultInfo&, kDungeonUnitResultInfo, kPacket_.m_vecDungeonUnitInfo )
+	for( KDungeonUnitResultInfo& kDungeonUnitResultInfo : kPacket_.m_vecDungeonUnitInfo )
 	{
 		if( kDungeonUnitResultInfo.m_UnitUID != GetCharUID() )
 			continue;

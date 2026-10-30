@@ -93,8 +93,8 @@ void KGlobalProxy::OnDestroy()
 		CTime kRegDate = CTime::GetCurrentTime();
 		KE_LOCAL_LOG_SERVER_DISCONNECT_NOT kNot;
 		kNot.m_cLogType				= KE_LOCAL_LOG_SERVER_DISCONNECT_NOT::SDLT_DISCONNECT;
-		kNot.m_wstrSourceName		= boost::str( boost::wformat( L"%d" ) % KBaseServer::GetKObj()->GetUID() );
-		kNot.m_wstrDestinationName	= boost::str( boost::wformat( L"%d" ) % GetProxyID() );
+		kNot.m_wstrSourceName		= x2::str( x2::wformat( L"%d" ) % KBaseServer::GetKObj()->GetUID() );
+		kNot.m_wstrDestinationName	= x2::str( x2::wformat( L"%d" ) % GetProxyID() );
 		kNot.m_wstrDestinationIP	= KncUtil::toWideString( GetIPStr() );
 		kNot.m_wstrReason			= KStatistics::GetDissconnectReasonString( GetDisconnectReason() );
 		kNot.m_wstrRegDate			= (const wchar_t*)kRegDate.Format(_T("%Y-%m-%d %H:%M:%S"));

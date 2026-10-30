@@ -1,4 +1,4 @@
-#include <winsock2.h>
+#include "x2/platform/net.h"
 #include <iomanip>
 #include <sstream>
 
@@ -9,7 +9,7 @@
 #include "NetError.h"
 
 //{{ 2010.11.26   조효진    SQL_Injection 문제 해결
-#include <boost/algorithm/string/replace.hpp>
+#include "x2/platform/string.h"
 //}}
 
 //ImplementDBThread( KGSBillingDBThread );
@@ -854,10 +854,10 @@ end_proc:
 
 void KGSBillingDBThread::MakeTID(__int64 iTransactionNo, time_t iTime, std::wstring& wstrTransaction)
 {
-	boost::wformat wfmt(L"%02x%03x%08x%08x");
+	x2::wformat wfmt(L"%02x%03x%08x%08x");
 
 
-	wstrTransaction = boost::str(wfmt
+	wstrTransaction = x2::str(wfmt
 		% 1
 		% 1
 		% iTime
@@ -1154,7 +1154,7 @@ _IMPL_ON_FUNC( EBILL_PREPARE_BUY_PRODUCT_REQ, KEBILL_BUY_PRODUCT_REQ )
 
 
 	//{{2012.02.16 lygan_조성욱 // 아이템을 구매하기 전에 해당 아이템이 구매 제한 조건에 충족하는지 확인용
-	BOOST_TEST_FOREACH( const KBillBuyInfo&, kBillBuyInfo, kPacket_.m_vecBillBuyInfo )
+	for( const KBillBuyInfo& kBillBuyInfo : kPacket_.m_vecBillBuyInfo )
 	{
 		int iOK = DoQuery_Buy_Product_CheckCondition(kBillBuyInfo.m_wstrOrderID,
 													kPacket_.m_wstrTotalOrderID,
@@ -1184,7 +1184,7 @@ _IMPL_ON_FUNC( EBILL_PREPARE_BUY_PRODUCT_REQ, KEBILL_BUY_PRODUCT_REQ )
 	//}}
 
 	//{{ 캐시 차감전에 로그 남김
-	BOOST_TEST_FOREACH( const KBillBuyInfo&, kBillBuyInfo, kPacket_.m_vecBillBuyInfo )
+	for( const KBillBuyInfo& kBillBuyInfo : kPacket_.m_vecBillBuyInfo )
 	{
 		int iOK = DoQuery_Insert_Buy_Product_Log(kBillBuyInfo.m_wstrOrderID,
 												kPacket_.m_wstrTotalOrderID,
@@ -1234,7 +1234,7 @@ IMPL_ON_FUNC( EBILL_BUY_PRODUCT_REQ )
 
 
 
-	BOOST_TEST_FOREACH( const KBillBuyInfo&, kBillBuyInfo, kPacket_.m_vecBillBuyInfo )
+	for( const KBillBuyInfo& kBillBuyInfo : kPacket_.m_vecBillBuyInfo )
     {
 		UidType iTrans = -1;
 
@@ -1380,11 +1380,11 @@ _IMPL_ON_FUNC( EBILL_PREPARE_GIFT_ITEM_REQ, KEBILL_GIFT_ITEM_REQ )
 
 	//{{ 2010.11.26 조효진 SQL_Injection 문제 해결
 	//std::wstring wstr_tmp = kPacket_.m_wstrPresentMessage;
-	//boost::replace_all( wstr_tmp, L"'",L"''");
+	//x2::platform::ReplaceAll( wstr_tmp, L"'",L"''");
 	//}}
 
 	//{{2012.02.16 lygan_조성욱 // 아이템을 구매하기 전에 해당 아이템이 구매 제한 조건에 충족하는지 확인용
-	BOOST_TEST_FOREACH( const KBillBuyInfo&, kBillBuyInfo, kPacket_.m_vecBillBuyInfo )
+	for( const KBillBuyInfo& kBillBuyInfo : kPacket_.m_vecBillBuyInfo )
 	{
 		int iOK = DoQuery_Gift_Item_CheckCondition( kBillBuyInfo.m_wstrOrderID,
 													kPacket_.m_wstrTotalOrderID,
@@ -1415,7 +1415,7 @@ _IMPL_ON_FUNC( EBILL_PREPARE_GIFT_ITEM_REQ, KEBILL_GIFT_ITEM_REQ )
 
 
 	//{{2012.02.16 lygan_조성욱 // 아이템을 구매하기 전에 해당 아이템이 구매 제한 조건에 충족하는지 확인용
-	BOOST_TEST_FOREACH( const KBillBuyInfo&, kBillBuyInfo, kPacket_.m_vecBillBuyInfo )
+	for( const KBillBuyInfo& kBillBuyInfo : kPacket_.m_vecBillBuyInfo )
 	{
 		int iOK = DoQuery_Gift_Item_CheckCondition( kBillBuyInfo.m_wstrOrderID,
 													kPacket_.m_wstrTotalOrderID,
@@ -1465,14 +1465,14 @@ IMPL_ON_FUNC( EBILL_GIFT_ITEM_REQ )
 
 	//{{ 2010.11.26 조효진 SQL_Injection 문제 해결
 	std::wstring wstr_tmp = kPacket_.m_wstrPresentMessage;
-	boost::replace_all( wstr_tmp, L"'",L"''");
+	x2::platform::ReplaceAll( wstr_tmp, L"'",L"''");
 	//}}
 
 	// 선물 가능 사전 체크는 EBILL_PREPARE_GIFT_ITEM_REQ 에서 진행됨
 
 
 
-	BOOST_TEST_FOREACH( const KBillBuyInfo&, kBillBuyInfo, kPacket_.m_vecBillBuyInfo )
+	for( const KBillBuyInfo& kBillBuyInfo : kPacket_.m_vecBillBuyInfo )
 	{
 		UidType iTrans = -1;
 

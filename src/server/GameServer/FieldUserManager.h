@@ -3,7 +3,7 @@
 #include "FieldUser.h"
 #include "ServerPacket.h"
 
-typedef boost::shared_ptr< std::map< UidType, KFieldUserPtr > > FieldUserListPtr;
+typedef std::shared_ptr< std::map< UidType, KFieldUserPtr > > FieldUserListPtr;
 
 class KFieldUserManager
 {

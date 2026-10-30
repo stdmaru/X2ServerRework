@@ -131,7 +131,7 @@ bool KUserUnitManager::GetAndDeleteResevedReturnToFieldInfo( OUT KReturnToFieldI
 	if( m_vecReservedReturnToFieldInfo.empty() )
 		return false;
 
-    BOOST_TEST_FOREACH( const KReturnToFieldInfo&, kReservedInfo, m_vecReservedReturnToFieldInfo )
+    for( const KReturnToFieldInfo& kReservedInfo : m_vecReservedReturnToFieldInfo )
 	{
 		kInfo = kReservedInfo;
 		break;

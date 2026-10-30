@@ -34,7 +34,7 @@ void KUserPartyManager::AddKickedPartyUID( IN UidType iPartyUID )
 	if( CheckKickedPartyUID( iPartyUID ) )
 		return;
 
-	boost::timer tKickedPartyUIDTimer;
+	x2::Timer tKickedPartyUIDTimer;
 	tKickedPartyUIDTimer.restart();
 	m_mapKickedPartyUIDList.insert( std::make_pair( iPartyUID, tKickedPartyUIDTimer ) );
 }
@@ -46,7 +46,7 @@ void KUserPartyManager::CheckExpiredKickedPartyUID()
 
 	std::vector< UidType > vecDeletePartyUIDList;
 
-	std::map< UidType, boost::timer >::const_iterator mit;
+	std::map< UidType, x2::Timer >::const_iterator mit;
 	for( mit = m_mapKickedPartyUIDList.begin(); mit != m_mapKickedPartyUIDList.end(); ++mit )
 	{
 		// 20초 이상 지났다면 삭제한다!
@@ -56,7 +56,7 @@ void KUserPartyManager::CheckExpiredKickedPartyUID()
 		}
 	}
 
-	BOOST_TEST_FOREACH( const UidType, iDeletePartyUID, vecDeletePartyUIDList )
+	for( const UidType iDeletePartyUID : vecDeletePartyUIDList )
 	{
 		m_mapKickedPartyUIDList.erase( iDeletePartyUID );
 	}
@@ -117,7 +117,7 @@ bool KUserPartyManager::IsWaitPartyUser( IN const UidType iUnitUID ) const
 	if( m_vecWaitPartyUserList.empty() )
 		return false;
 
-	BOOST_TEST_FOREACH( const SWaitPartyUserInfo&, kInfo, m_vecWaitPartyUserList )
+	for( const SWaitPartyUserInfo& kInfo : m_vecWaitPartyUserList )
 	{
 		if( kInfo.m_iWaitUnitUID == iUnitUID )
 			return true;

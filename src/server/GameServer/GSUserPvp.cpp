@@ -577,7 +577,7 @@ _IMPL_ON_FUNC( ERM_LEAVE_GAME_ACK, KEGS_LEAVE_GAME_ACK )
 
 	KELG_UPDATE_USER_UNIT_BUFF_INFO_REQ kReq;
 	kReq.m_iUnitUID = GetCharUID();
-	BOOST_TEST_FOREACH( int, iBuff, vecPvpBuff )
+	for( int iBuff : vecPvpBuff )
 	{
 		DeactivateBuff( iBuff, kReq.m_vecDeActivateBuff );
 	}
@@ -675,7 +675,7 @@ _IMPL_ON_FUNC( ERM_END_GAME_PVP_RESULT_DATA_NOT, KEGS_END_GAME_PVP_RESULT_DATA_N
 
 	KELG_UPDATE_USER_UNIT_BUFF_INFO_REQ kReq;
 	kReq.m_iUnitUID = GetCharUID();
-	BOOST_TEST_FOREACH( int, iBuff, vecPvpBuff )
+	for( int iBuff : vecPvpBuff )
 	{
 		DeactivateBuff( iBuff, kReq.m_vecDeActivateBuff );
 	}

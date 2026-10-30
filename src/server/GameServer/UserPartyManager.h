@@ -1,7 +1,7 @@
 #pragma once
 #include "Event.h"
 #include "CommonPacket.h"
-#include <boost/timer.hpp>
+#include "x2/platform/timer.h"
 
 
 //{{ 2011. 12. 20	최육사	랜덤큐브 DB실시간 적용
@@ -14,7 +14,7 @@ public:
 	struct SWaitPartyUserInfo
 	{
 		UidType			m_iWaitUnitUID;
-		boost::timer	m_tPartyWaitTime;
+		x2::Timer	m_tPartyWaitTime;
 
 		SWaitPartyUserInfo()
 		{
@@ -55,7 +55,7 @@ private:
 	UidType								m_iQuickJoinPartyUID;
 	//{{ 2010. 02. 09  최육사	빠른파티 기능개선
 //#ifdef SERV_QUICK_PARTY_UPGRADE
-	std::map< UidType, boost::timer >	m_mapKickedPartyUIDList;
+	std::map< UidType, x2::Timer >	m_mapKickedPartyUIDList;
 //#endif SERV_QUICK_PARTY_UPGRADE
 	//}}
 	std::vector< SWaitPartyUserInfo >	m_vecWaitPartyUserList;

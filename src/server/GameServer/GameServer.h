@@ -1,12 +1,7 @@
 #pragma once
 #include "BaseServer.h"
 
-//korea nProtect Module
-#include "ggsrv25.h"
-
-
-//korea HackShield Module
-#include "HackShield/AntiCpXSvr.h"
+// Port: nProtect (ggsrv25.h) and HackShield (AntiCpXSvr.h) removed with the anti-cheat (T10)
 
 
 class KGameServer : public KBaseServer
@@ -38,7 +33,6 @@ public:
     void Tick();
 
     //////////////////////////////////////////////////////////////////////////
-	void SetHackShieldHSBFilePath( const char* pFilePath );
 
 	//{{ 2011. 08. 29	김민성       일일 랜덤 퀘스트
 	void RequestRandomQuestInfo();
@@ -264,14 +258,14 @@ protected:
 protected:
 
 
-	boost::timer					m_tTimeProcessCommunicationONOFF;
+	x2::Timer					m_tTimeProcessCommunicationONOFF;
 	bool							m_bServerRunningProcessCommunicationOnOff;
 
 
 
 
 private:
-	boost::timer	m_kTimeEnchantEventTimer;
+	x2::Timer	m_kTimeEnchantEventTimer;
 	int				m_iTimeEnchantEventUID;
 	int				m_iNumOfTimeEnchantEvent;
 

@@ -163,10 +163,10 @@ protected:
 
 	SOCKET				m_sock;															// KeepConnectionThread, SendThread, RecvThread
 
-	boost::shared_ptr< KTThread< KNexonBillingTCPManager > >    m_spThreadRecv;			// Server Init Thread
-	boost::shared_ptr< KTThread< KNexonBillingTCPManager > >    m_spThreadSend;			// Server Init Thread
+	std::shared_ptr< KTThread< KNexonBillingTCPManager > >    m_spThreadRecv;			// Server Init Thread
+	std::shared_ptr< KTThread< KNexonBillingTCPManager > >    m_spThreadSend;			// Server Init Thread
 	//{{ 2009. 11. 21  최육사	서버간접속구조개선
-	boost::shared_ptr< KTThread< KNexonBillingTCPManager > >    m_spThreadKeepConnect;	// Server Init Thread
+	std::shared_ptr< KTThread< KNexonBillingTCPManager > >    m_spThreadKeepConnect;	// Server Init Thread
 	bool														m_bFirstConnectSucc;	// KeepConnectionThread, SendThread, RecvThread
 	//}}
 
@@ -181,7 +181,7 @@ protected:
 	KCSLOCK_DECLARE( std::map< unsigned long KCOMMA() UidType >, m_mapPacketNoUserUID );// TCPBillingProcessThread
 
     bool                                                        m_bInitialized;			// KeepConnectionThread, TCPBillingProcessThread
-    boost::shared_ptr< void >                                   m_spEvent;				// KeepConnectionThread, TCPBillingProcessThread
+    std::shared_ptr< void >                                   m_spEvent;				// KeepConnectionThread, TCPBillingProcessThread
 
     std::map< unsigned long, KNXBTProductInfo >                 m_mapProductInfo;		// TCPBillingProcessThread, SimLayerThread [동기화객체있음]
 	//{{ 2012. 03. 21	김민성		캐쉬 상품 리스트 서버군 구별없이 DB에 기록

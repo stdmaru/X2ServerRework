@@ -55,9 +55,7 @@ public:
 	void		 TickDump_LUA();
 	//}}
 
-	void ReloadXTRAP_MAP();
-	int GetMapQuantity() { return m_setLoadedMaps.size(); }
-	char* GetAllMapPointer() { return &m_vecUsingMap[0]; }
+	// Port: XTrap map loading (ReloadXTRAP_MAP, GetMapQuantity, GetAllMapPointer) removed with the anti-cheat (T10)
 
 	void DeleteCommonFlag_AllGS_LUA( DWORD dwFlag );
 	void AddCommonFlag_AllGS_LUA( DWORD dwFlag );
@@ -77,15 +75,11 @@ protected:
 
 	//{{ 2009. 9. 1  최육사		IOCP종료사유
 	std::map< DWORD, int >			m_mapAbnormalDisconnectReason;
-	boost::timer					m_tAbnormalReasonTimer;
+	x2::Timer					m_tAbnormalReasonTimer;
 	//}}
 	//{{ 2012. 09. 02	박세훈	Merge ( 대전에서 클라이언트 조작등으로 UDP 패킷이 날아오지 않는 유저가 발견되면 서버에서 킥한다. // 2012.06.11 lygan_조성욱 )
 	//}}
 
-	mutable KncCriticalSection      m_csXTrapReload;
-	boost::timer					m_tXTrapReloadTimer;
-	std::set<std::vector<char> >	m_setLoadedMaps;	// 현재 올라가 있는 맵인지 확인을 위한 정보
-	std::vector<char>				m_vecUsingMap;		// 실제 메모리에 올라가는 정보
     int m_iServerGroupNum;
 
 

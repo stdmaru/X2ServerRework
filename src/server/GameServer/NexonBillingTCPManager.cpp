@@ -1,4 +1,4 @@
-#include <WinSock2.h>
+#include "x2/platform/net.h"
 #include "NexonBillingTCPManager.h"
 
 #include "Socket/NetCommon.h"
@@ -96,14 +96,14 @@ void KNexonBillingTCPManager::Init( int nThreadNum )
 
     //////////////////////////////////////////////////////////////////////////
     // thread setting : recv는 recvfrom() 함수에서 알아서 block된다.
-    m_spThreadRecv = boost::shared_ptr< KTThread< KNexonBillingTCPManager > >
+    m_spThreadRecv = std::shared_ptr< KTThread< KNexonBillingTCPManager > >
 	( new KTThread< KNexonBillingTCPManager >( *this, &KNexonBillingTCPManager::Recv, 50 ) );
 
-    m_spThreadSend = boost::shared_ptr< KTThread< KNexonBillingTCPManager > >
+    m_spThreadSend = std::shared_ptr< KTThread< KNexonBillingTCPManager > >
         ( new KTThread< KNexonBillingTCPManager >( *this, &KNexonBillingTCPManager::Send, 100 ) );
 
 	//{{ 2009. 11. 21  최육사	서버간접속구조개선
-	m_spThreadKeepConnect = boost::shared_ptr< KTThread< KNexonBillingTCPManager > >
+	m_spThreadKeepConnect = std::shared_ptr< KTThread< KNexonBillingTCPManager > >
 		( new KTThread< KNexonBillingTCPManager >( *this, &KNexonBillingTCPManager::KeepConnectionThread, 1000 ) );
 	//}}
 
@@ -816,7 +816,7 @@ void KNexonBillingTCPManager::OnDisconnectBillingServer( IN const std::wstring& 
 		CTime kRegDate = CTime::GetCurrentTime();
 		KE_LOCAL_LOG_SERVER_DISCONNECT_NOT kNot;
 		kNot.m_cLogType				= KE_LOCAL_LOG_SERVER_DISCONNECT_NOT::SDLT_DISCONNECT;
-		kNot.m_wstrSourceName		= boost::str( boost::wformat( L"%d" ) % KBaseServer::GetKObj()->GetUID() );
+		kNot.m_wstrSourceName		= x2::str( x2::wformat( L"%d" ) % KBaseServer::GetKObj()->GetUID() );
 		kNot.m_wstrDestinationName	= L"Nexon Billing";
 		kNot.m_wstrDestinationIP	= KncUtil::toWideString( m_kNexonBillingTCPInfo.m_strIP );
 		kNot.m_wstrReason			= wstrReason;
@@ -903,7 +903,7 @@ bool KNexonBillingTCPManager::Connect()
     kPacketInit.m_wstrServiceCode = L"ELSWD";
     kPacketInit.m_byteDomain = static_cast<BYTE>(m_kNexonBillingTCPInfo.m_iDomain);
 
-    boost::shared_ptr< KNexonBillingTCPPacket > spPacketInit( new KNexonBillingTCPPacket );
+    std::shared_ptr< KNexonBillingTCPPacket > spPacketInit( new KNexonBillingTCPPacket );
     spPacketInit->Write( kPacketInit );
     QueueingSendPacket( spPacketInit );
 
@@ -954,7 +954,7 @@ void KNexonBillingTCPManager::KeepConnection()
     kPacketNot.m_ulPacketNo = GetNextPacketNo();
     kPacketNot.m_bytePacketType = KNexonBillingTCPPacket::HEART_BEAT;
     kPacketNot.m_iReleaseTick = GetReleaseTick();
-    boost::shared_ptr< KNexonBillingTCPPacket > spPacket( new KNexonBillingTCPPacket );
+    std::shared_ptr< KNexonBillingTCPPacket > spPacket( new KNexonBillingTCPPacket );
     spPacket->Write( kPacketNot );
     QueueingSendPacket( spPacket );
 }
@@ -1163,7 +1163,7 @@ bool KNexonBillingTCPManager::GetCashItemRefundRequestID( OUT std::wstring& wstr
 
 		__int64 iResultRequestID = ( iCashItemRefundRequestID & 0xffffffff00ffffff ) | ( ( ( iServerUID & ( __int64 )0x00000000000000ff ) << 24 ) & 0x00000000ff000000 );
 
-		wstrRequestID += boost::str( boost::wformat( L"%010d" ) % iResultRequestID );
+		wstrRequestID += x2::str( x2::wformat( L"%010d" ) % iResultRequestID );
 	}
 
 	return true;

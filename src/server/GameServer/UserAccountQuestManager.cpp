@@ -94,7 +94,7 @@ void KUserAccountQuestManager::SetAccountQuest( IN std::vector< KQuestInstance >
 	ClearAccountQuest();
 
 	// 진행 중인 계정 퀘스트 입력
-	BOOST_TEST_FOREACH( KQuestInstance&, kQuestInstance, vecAccountQuest )
+	for( KQuestInstance& kQuestInstance : vecAccountQuest )
 	{
 		const CXSLQuestManager::QuestTemplet* pQuestTemplet = SiCXSLQuestManager()->GetAccountQuestTemplet( kQuestInstance.m_iID );
 		if( pQuestTemplet == NULL )
@@ -179,7 +179,7 @@ void KUserAccountQuestManager::SetAccountQuest( IN std::vector< KQuestInstance >
 	}
 
 	// 완료한 계정 퀘스트 입력
-	BOOST_TEST_FOREACH( const KCompleteQuestInfo&, kInfo, vecAccountCompleteQuest )
+	for( const KCompleteQuestInfo& kInfo : vecAccountCompleteQuest )
 	{
 		std::map< int, KCompleteQuestInfo >::iterator mitQC = m_mapCompletedAccountQuest.find( kInfo.m_iQuestID );
 		if( mitQC == m_mapCompletedAccountQuest.end() )
@@ -195,7 +195,7 @@ void KUserAccountQuestManager::SetAccountQuest( IN std::vector< KQuestInstance >
 	}
 
 	// DB로부터 가져온 완료된 계정 퀘스트 리스트를 가지고 After Quest의 open조건을 체크한다!
-	BOOST_TEST_FOREACH( const KCompleteQuestInfo&, kInfo, vecAccountCompleteQuest )
+	for( const KCompleteQuestInfo& kInfo : vecAccountCompleteQuest )
 	{
 		CheckAccountQuest_NewQuestByAfterQuest( kInfo.m_iQuestID, spUser, false );
 	}
@@ -220,7 +220,7 @@ void KUserAccountQuestManager::CheckAccountQuest_NewQuestByAfterQuest( IN const 
 		return;
 
 	// 다음 퀘스트가 에픽퀘스트인지 검사
-	BOOST_TEST_FOREACH( const int, iAfterQuestID, pQuestTemplet->m_vecAfterQuestID )
+	for( const int iAfterQuestID : pQuestTemplet->m_vecAfterQuestID )
 	{
 		const CXSLQuestManager::QuestTemplet* pAfterQuestTemplet = SiCXSLQuestManager()->GetAccountQuestTemplet( iAfterQuestID );
 		if( IS_NULL( pAfterQuestTemplet ) )
@@ -277,7 +277,7 @@ void KUserAccountQuestManager::CheckAccountQuest_NewQuestByBeforeQuest( IN KGSUs
 	SiCXSLQuestManager()->GetAccountQuestTempletList( vecAccountQuestTemplet );
 
 	// 계정 퀘스트 리스트를 순회하면서 BeforeQuestID 를 검사함.
-	BOOST_TEST_FOREACH( const CXSLQuestManager::QuestTemplet*, pAccountQuest, vecAccountQuestTemplet )
+	for( const CXSLQuestManager::QuestTemplet* pAccountQuest : vecAccountQuestTemplet )
 	{
 		if( pAccountQuest == NULL )
 		{
@@ -304,7 +304,7 @@ void KUserAccountQuestManager::CheckAccountQuest_NewQuestByBeforeQuest( IN KGSUs
 			bIsSuccessAccount = false;
 		}
 
-		BOOST_TEST_FOREACH( const int, iBeforeQuestID, pAccountQuest->m_Condition.m_vecBeforeQuestID )
+		for( const int iBeforeQuestID : pAccountQuest->m_Condition.m_vecBeforeQuestID )
 		{
 			if( iBeforeQuestID != 0  &&  IsAccountCompleteQuest( iBeforeQuestID ) == false )
 			{
@@ -364,7 +364,7 @@ void KUserAccountQuestManager::CheckAccountQuest( IN KGSUserPtr spUser )
 
 	if( vecAccountQuestTemplet.empty() == false )
 	{
-		BOOST_TEST_FOREACH( const CXSLQuestManager::QuestTemplet*, pAccountQuest, vecAccountQuestTemplet )
+		for( const CXSLQuestManager::QuestTemplet* pAccountQuest : vecAccountQuestTemplet )
 		{
 			if( pAccountQuest == NULL )
 			{
@@ -490,7 +490,7 @@ bool KUserAccountQuestManager::Handler_EGS_NEW_QUEST_REQ_Account( IN const KEGS_
 	}
 
 	//QUEST 수행을 위해 이전에 완료해야할 퀘스트 검사.
-	BOOST_TEST_FOREACH( const int, iBeforeQuestID, pQuestTemplet->m_Condition.m_vecBeforeQuestID )
+	for( const int iBeforeQuestID : pQuestTemplet->m_Condition.m_vecBeforeQuestID )
 	{
 		if( GetAccountQuestCompleteCount( iBeforeQuestID ) == 0 )
 		{
@@ -846,7 +846,7 @@ void KUserAccountQuestManager::Handler_EGS_QUEST_COMPLETE_REQ_Account( IN const 
 			std::map<int,int>::const_iterator mit;
 
 			//선택보상 아이템들의 정보를 셋팅함.
-			BOOST_TEST_FOREACH( const CXSLQuestManager::ITEM_DATA&, kQuestSelectReward, pQuestTemplet->m_SelectReward.m_vecSelectItem )
+			for( const CXSLQuestManager::ITEM_DATA& kQuestSelectReward : pQuestTemplet->m_SelectReward.m_vecSelectItem )
 			{
 				mit = kReq.m_mapSelectItemID.find( kQuestSelectReward.m_iItemID );
 				if( mit != kReq.m_mapSelectItemID.end() )
@@ -919,7 +919,7 @@ void KUserAccountQuestManager::Handler_EGS_QUEST_COMPLETE_REQ_Account( IN const 
 		//일반보상 처리부분..
 		if( pQuestTemplet->m_Reward.m_vecItem.size() > 0 )
 		{
-			BOOST_TEST_FOREACH( const CXSLQuestManager::ITEM_DATA&, kQuestRewardData, pQuestTemplet->m_Reward.m_vecItem )
+			for( const CXSLQuestManager::ITEM_DATA& kQuestRewardData : pQuestTemplet->m_Reward.m_vecItem )
 			{
 				const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( kQuestRewardData.m_iItemID );
 				if( pItemTemplet == NULL )
@@ -1339,7 +1339,7 @@ bool KUserAccountQuestManager::CheckCompleteSubQuest_BeforGroup_AccountQuest( IN
 	std::map< int,std::vector<int> >::const_iterator mitGroup = pQuestTemplet->m_mapSubQuestGroup.begin();
 	for( ; mitGroup != pQuestTemplet->m_mapSubQuestGroup.end() ; ++mitGroup )
 	{
-		BOOST_TEST_FOREACH( const int, iSub, mitGroup->second )
+		for( const int iSub : mitGroup->second )
 		{
 			if( iSub == iSubQuestID )
 			{
@@ -1377,9 +1377,9 @@ bool KUserAccountQuestManager::CheckCompleteSubQuest_BeforGroup_AccountQuest( IN
 	{
 		if( mitGroup->first < iGroupID )
 		{
-			BOOST_TEST_FOREACH( const int, iSub, mitGroup->second )
+			for( const int iSub : mitGroup->second )
 			{
-				BOOST_TEST_FOREACH( const KSubQuestInstance, SubQuest, kQuestInstance.m_vecSubQuestInstance )
+				for( const KSubQuestInstance SubQuest : kQuestInstance.m_vecSubQuestInstance )
 				{
 					if( SubQuest.m_iID == iSub )
 					{
@@ -1638,7 +1638,7 @@ void KUserAccountQuestManager::CheckResetDayAccountQuest_AutoAccept( IN KGSUserP
 
 	// 수락이 가능한 퀘스트 인지 확인하자
 	std::vector<int> vecCompleteDayQuest;
-	BOOST_TEST_FOREACH( CXSLQuestManager::QuestTemplet*, pAccountQuestTemplet, vecAccountQuestTemplet )
+	for( CXSLQuestManager::QuestTemplet* pAccountQuestTemplet : vecAccountQuestTemplet )
 	{
 		if( pAccountQuestTemplet == NULL )
 		{

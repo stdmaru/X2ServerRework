@@ -60,7 +60,7 @@ bool KUserPetManager::AddUserPet( IN const KPetInfo& kPetInfo, IN const std::map
 	}
 
 	// vector컨테이너에서 이미 등록된 펫인지 검사
-	BOOST_TEST_FOREACH( KUserPetPtr, spPet, m_vecPetList )
+	for( KUserPetPtr spPet : m_vecPetList )
 	{
 		if( spPet == NULL )
 		{
@@ -199,7 +199,7 @@ void KUserPetManager::Init( IN KGSUserPtr spUser,
 	vecCanEvolutionPetList.clear();
 	vecNeverSummonPetList.clear();
 
-	BOOST_TEST_FOREACH( const KPetInfo&, kPet, vecPet )
+	for( const KPetInfo& kPet : vecPet )
 	{
 		// 실제 존재하는 PetID인지 검사!
 		if( SiCXSLPetManager()->IsExistPetID( kPet.m_iPetID ) == false )
@@ -215,7 +215,7 @@ void KUserPetManager::Init( IN KGSUserPtr spUser,
 		LIF( AddUserPet( kPet, mapPetItem ) );
 	}
 
-	BOOST_TEST_FOREACH( KUserPetPtr, spPet, m_vecPetList )
+	for( KUserPetPtr spPet : m_vecPetList )
 	{
 		if( spPet == NULL )
 			continue;
@@ -402,7 +402,7 @@ void KUserPetManager::GetDBUpdatePetInfo( OUT std::vector< KPetInfo >& vecPetInf
 
 void KUserPetManager::RollBackDBUpdatePetInfo( IN const std::vector< KPetInfo >& vecPetInfo )
 {
-	BOOST_TEST_FOREACH( const KPetInfo&, kPet, vecPetInfo )
+	for( const KPetInfo& kPet : vecPetInfo )
 	{
         KUserPetPtr spPet = GetPet( kPet.m_iPetUID );
 		if( spPet == NULL )
@@ -415,7 +415,7 @@ void KUserPetManager::RollBackDBUpdatePetInfo( IN const std::vector< KPetInfo >&
 
 bool KUserPetManager::IsExistPet( IN const std::wstring& wstrPetName ) const
 {
-	BOOST_MAP_CONST_FOREACH( UidType, KUserPetPtr, kPet, m_mapPetList )
+	for( const auto& kPet : m_mapPetList )
 	{
 		if( kPet.second == NULL )
 			continue;
@@ -1314,7 +1314,7 @@ int KUserPetManager::GetExistPetNum( void )
 bool KUserPetManager::GetExpirePetUID( OUT std::vector<UidType>& vecPetUID )
 {
 	vecPetUID.clear();
-	BOOST_TEST_FOREACH( const KUserPetPtr, spInfo, m_vecPetList )
+	for( const KUserPetPtr spInfo : m_vecPetList )
 	{
 		if( spInfo->IsExpirePet() == true )
 		{

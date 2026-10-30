@@ -242,7 +242,7 @@ void KUserServerBuffManager::GetBuffBonusRate( IN OUT KRoomUserInfo& kRoomUserIn
 		}
 
 		// 소켓 옵션 적용
-		BOOST_TEST_FOREACH( const int, iSocketOption, pBuffInfo->m_vecOption )
+		for( const int iSocketOption : pBuffInfo->m_vecOption )
 		{
 			const CXSLSocketItem::SocketData* pSocketData = SiCXSLSocketItem()->GetSocketData( iSocketOption );
 			if( pSocketData == NULL )
@@ -293,7 +293,7 @@ void KUserServerBuffManager::CheckBuffPeriod( OUT std::vector< int >& vecDeactiv
 		}
 	}
 
-	BOOST_TEST_FOREACH( int, iBuffID, vecDeleteBuff )
+	for( int iBuffID : vecDeleteBuff )
 	{
 		DeactivateBuff( iBuffID, vecDeactivatedBuff );
 	}
@@ -315,7 +315,7 @@ void KUserServerBuffManager::OnLeaveField( IN KGSUserPtr spUser, OUT std::vector
 		}
 	}
 
-	BOOST_TEST_FOREACH( const int, iBuffID, vecDeleteBuff )
+	for( const int iBuffID : vecDeleteBuff )
 	{
 		// 버프 삭제
 		DeactivateBuff( iBuffID, vecDeactivatedBuff );
@@ -376,7 +376,7 @@ void KUserServerBuffManager::OnLeaveDungeonRoom( IN KGSUserPtr spUser, OUT std::
 		}
 	}
 
-	BOOST_TEST_FOREACH( const int, iBuffID, vecDeleteBuff )
+	for( const int iBuffID : vecDeleteBuff )
 	{
 		// 버프 삭제
 		DeactivateBuff( iBuffID, vecDeactivateBuffList );
@@ -431,7 +431,7 @@ void KUserServerBuffManager::OnLeaveBattleField( IN KGSUserPtr spUser, OUT std::
 		}
 	}
 
-	BOOST_TEST_FOREACH( const int, iBuffID, vecDeleteBuff )
+	for( const int iBuffID : vecDeleteBuff )
 	{
 		// 버프 삭제
 		DeactivateBuff( iBuffID, vecDeactivatedBuff );
@@ -497,7 +497,7 @@ void KUserServerBuffManager::OnEndDungeonGame( IN KGSUserPtr spUser, IN const bo
 		}
 	}
 
-	BOOST_TEST_FOREACH( const int, iBuffID, vecDeleteBuff )
+	for( const int iBuffID : vecDeleteBuff )
 	{
 		// 버프 삭제
 		DeactivateBuff( iBuffID, vecDeactivatedBuff );
@@ -534,7 +534,7 @@ void KUserServerBuffManager::OnUserDied( IN KGSUserPtr spUser, std::vector< int 
 		}
 	}
 
-	BOOST_TEST_FOREACH( const int, iBuffID, vecDeleteBuff )
+	for( const int iBuffID : vecDeleteBuff )
 	{
 		// 버프 삭제
 		DeactivateBuff( iBuffID, vecDeactivatedBuff );
@@ -562,7 +562,7 @@ void KUserServerBuffManager::OnLeavePVPRoom( IN KGSUserPtr spUser, OUT std::vect
 		}
 	}
 
-	BOOST_TEST_FOREACH( const int, iBuffID, vecDeleteBuff )
+	for( const int iBuffID : vecDeleteBuff )
 	{
 		// 버프 삭제
 		DeactivateBuff( iBuffID, vecDeactivatedBuff );

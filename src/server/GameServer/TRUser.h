@@ -10,7 +10,7 @@
 #include "KncSmartPtr.h"
 #include "KncUidType.h"
 #include "Serializer/SerBuffer.h"
-#include <boost/enable_shared_from_this.hpp>
+#include <memory>
 #include "FSM/support_FSM.h"
 #include <dbg/dbg.hpp>
 #include <KncSecurity/KncSecurity.h>
@@ -51,10 +51,10 @@ public:
 	bool SendDataWithProfile( const char* szData, int iSize );
 	//}}
 
-    boost::weak_ptr< KTRUser > m_pkTRUser;
+    std::weak_ptr< KTRUser > m_pkTRUser;
 };
 
-class KTRUser : public boost::enable_shared_from_this< KTRUser >
+class KTRUser : public std::enable_shared_from_this< KTRUser >
 {
 	DeclareFSM_MT;
 	NiDeclareRootRTTI(KTRUser);

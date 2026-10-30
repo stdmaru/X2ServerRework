@@ -297,7 +297,7 @@ IMPL_ON_FUNC( ELG_INVITE_PARTY_FIND_RECEIVER_ACK )
 	{
 		KEPM_INVITE_PARTY_REQ kPacket;
 		kPacket.m_iPartyUID = GetPartyUID();
-		BOOST_TEST_FOREACH( const KPartyUserInfo&, kInfo, kPacket_.m_vecReceiverPartyUserInfo )
+		for( const KPartyUserInfo& kInfo : kPacket_.m_vecReceiverPartyUserInfo )
 		{
 			kPacket.m_kPartyUserInfo = kInfo;
 		}
@@ -312,7 +312,7 @@ IMPL_ON_FUNC( ELG_INVITE_PARTY_FIND_RECEIVER_ACK )
 		kPacketNot.m_cAuthLevel = static_cast<char>(GetAuthLevel());
 		kPacketNot.m_kCreatePartyInfo = kPacket_.m_kCreatePartyInfo;
 		GetPartyUserInfo( kPacketNot.m_kHostPartyUserInfo );
-		BOOST_TEST_FOREACH( const KPartyUserInfo&, kInfo, kPacket_.m_vecReceiverPartyUserInfo )
+		for( const KPartyUserInfo& kInfo : kPacket_.m_vecReceiverPartyUserInfo )
 		{
 			kPacketNot.m_kReceiverPartyUserInfo = kInfo;
 		}
@@ -341,7 +341,7 @@ _IMPL_ON_FUNC( EGB_INVITE_PARTY_FIND_RECEIVER_ACK, KELG_INVITE_PARTY_FIND_RECEIV
 	{
 		KEPM_INVITE_PARTY_REQ kPacket;
 		kPacket.m_iPartyUID = GetPartyUID();
-		BOOST_TEST_FOREACH( const KPartyUserInfo&, kInfo, kPacket_.m_vecReceiverPartyUserInfo )
+		for( const KPartyUserInfo& kInfo : kPacket_.m_vecReceiverPartyUserInfo )
 		{
 			kPacket.m_kPartyUserInfo = kInfo;
 		}
@@ -356,7 +356,7 @@ _IMPL_ON_FUNC( EGB_INVITE_PARTY_FIND_RECEIVER_ACK, KELG_INVITE_PARTY_FIND_RECEIV
 		kPacketNot.m_cAuthLevel = static_cast<char>(GetAuthLevel());
 		kPacketNot.m_kCreatePartyInfo = kPacket_.m_kCreatePartyInfo;
 		GetPartyUserInfo( kPacketNot.m_kHostPartyUserInfo );
-		BOOST_TEST_FOREACH( const KPartyUserInfo&, kInfo, kPacket_.m_vecReceiverPartyUserInfo )
+		for( const KPartyUserInfo& kInfo : kPacket_.m_vecReceiverPartyUserInfo )
 		{
 			kPacketNot.m_kReceiverPartyUserInfo = kInfo;
 		}
@@ -1345,7 +1345,7 @@ IMPL_ON_FUNC( ERM_PARTY_OPEN_DUNGEON_ROOM_NOT )
 	{
 		// 추가 된 버프가 있으면 보내자.
 		std::vector< KBuffInfo > vecActivateBuff;
-		BOOST_TEST_FOREACH( KBuffInfo&, kInfo, mit->second )
+		for( KBuffInfo& kInfo : mit->second )
 		{
 			ActivateBuff( kInfo.m_kFactorInfo.m_BuffIdentity.m_eBuffTempletID, vecActivateBuff );
 		}
@@ -1695,7 +1695,7 @@ _IMPL_ON_FUNC( EPM_JOIN_PARTY_NOT, KEGS_JOIN_PARTY_NOT )
 
 	if( kPacket_.m_iOK == NetError::NET_OK )
 	{
-		BOOST_TEST_FOREACH( const KPartyInfo&, kInfo, kPacket_.m_vecPartyInfo )
+		for( const KPartyInfo& kInfo : kPacket_.m_vecPartyInfo )
 		{
 			//{{ 2010. 03. 12  최육사	채널 통합 파티 버그 수정
 			if( GetPartyUID() > 0 )
@@ -1768,7 +1768,7 @@ _IMPL_ON_FUNC( EPM_JOIN_PARTY_NOT, KEGS_JOIN_PARTY_NOT )
 
 		//{{ 버프 관리 시스템 - 김민성
 		bool bExistComeBackUser = false;
-		BOOST_TEST_FOREACH( const KPartyUserInfo&, kInfo, kPacket_.m_vecPartyUserInfo )
+		for( const KPartyUserInfo& kInfo : kPacket_.m_vecPartyUserInfo )
 		{
 			if( kInfo.m_bComeBack == true )
 			{

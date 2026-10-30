@@ -221,7 +221,7 @@ IMPL_ON_FUNC( EGS_REG_PERSONAL_SHOP_ITEM_REQ )
 	__int64 iTotalSellPrice = 0;
 
 	//등록하려는 물품을 인벤토리에서 체크해본다.
-	BOOST_TEST_FOREACH( const KRegPersonalShopItemInfo&, kRegPShopItemInfo, kPacket_.m_vecRegItem )
+	for( const KRegPersonalShopItemInfo& kRegPShopItemInfo : kPacket_.m_vecRegItem )
 	{
 		KInventoryItemInfo kInfo;
 		const int iOK = m_kInventory.CheckItemForTrade( kRegPShopItemInfo.m_iItemUID, kRegPShopItemInfo.m_iQuantity, kInfo );
@@ -1243,7 +1243,7 @@ _IMPL_ON_FUNC( ERM_BUY_PERSONAL_SHOP_ITEM_COMPLETE_NOT, KDBE_BUY_PERSONAL_SHOP_I
 // 				<< BUILD_LOG( kPacketReq.m_vecUpdatedInventorySlot.size() )
 // 				<< END_LOG;
 
-// 			BOOST_TEST_FOREACH( const KInventoryItemInfo&, kInsertItemInfo, kPacketReq.m_vecUpdatedInventorySlot )
+// 			for( const KInventoryItemInfo& kInsertItemInfo : kPacketReq.m_vecUpdatedInventorySlot )
 // 			{
 // 				START_LOG( cerr, L"인벤토리 정보 확인" )
 // 					<< BUILD_LOG( kInsertItemInfo.m_iItemUID )
@@ -1254,7 +1254,7 @@ _IMPL_ON_FUNC( ERM_BUY_PERSONAL_SHOP_ITEM_COMPLETE_NOT, KDBE_BUY_PERSONAL_SHOP_I
 
 			// 거래로 인하여 추가된 아이템을 먼저 추가 하자
 			// 실제로 들어 온 item
-			BOOST_TEST_FOREACH( const KInventoryItemInfo&, kInsertItemInfo, vecInsertDBItem )
+			for( const KInventoryItemInfo& kInsertItemInfo : vecInsertDBItem )
 			{
 				KItemInfo kInfo = kInsertItemInfo.m_kItemInfo;
 
@@ -1271,7 +1271,7 @@ _IMPL_ON_FUNC( ERM_BUY_PERSONAL_SHOP_ITEM_COMPLETE_NOT, KDBE_BUY_PERSONAL_SHOP_I
 
 			if( m_kInventory.InsertItem( mapInsertItemInfo, vecInsertInventoryTemp ) == false )
 			{
-				BOOST_TEST_FOREACH( const KInventoryItemInfo&, kInsertItemInfo, vecInsertInventoryTemp )
+				for( const KInventoryItemInfo& kInsertItemInfo : vecInsertInventoryTemp )
 				{
 					START_LOG( cerr, L"추가가 실패했다고?!" )
 						<< BUILD_LOG( GetCharUID() )
@@ -1283,9 +1283,9 @@ _IMPL_ON_FUNC( ERM_BUY_PERSONAL_SHOP_ITEM_COMPLETE_NOT, KDBE_BUY_PERSONAL_SHOP_I
 			}
 
 			// 추가된 아이템을 갱신 목록에 추가한다.
-			BOOST_TEST_FOREACH( const KInventoryItemInfo&, kInsertItemInfo, vecInsertInventoryTemp )
+			for( const KInventoryItemInfo& kInsertItemInfo : vecInsertInventoryTemp )
 			{
-				BOOST_TEST_FOREACH( KInventoryItemInfo&, kTempInfo, kPacketReq.m_vecUpdatedInventorySlot )
+				for( KInventoryItemInfo& kTempInfo : kPacketReq.m_vecUpdatedInventorySlot )
 				{
 					if( kInsertItemInfo.m_iItemUID <= 0 )
 						continue;
@@ -1688,7 +1688,7 @@ IMPL_ON_FUNC( EGS_REG_PSHOP_AGENCY_ITEM_REQ )
 	__int64 iTotalSellPrice = 0;
 
 	//등록하려는 물품을 인벤토리에서 체크해본다.
-	BOOST_TEST_FOREACH( const KRegPersonalShopItemInfo&, kRegPShopItemInfo, kPacket_.m_vecRegItem )
+	for( const KRegPersonalShopItemInfo& kRegPShopItemInfo : kPacket_.m_vecRegItem )
 	{
 		KInventoryItemInfo kInfo;
 		const int iOK = m_kInventory.CheckItemForTrade( kRegPShopItemInfo.m_iItemUID, kRegPShopItemInfo.m_iQuantity, kInfo );
@@ -1842,7 +1842,7 @@ _IMPL_ON_FUNC( ERM_CHECK_FOR_REG_PSHOP_AGENCY_ITEM_ACK, KEGS_REG_PSHOP_AGENCY_IT
 	kReq.m_vecInventorySlotInfo = kPacket_.m_vecInventorySlotInfo;
 
 	//등록하려는 물품을 인벤토리에서 체크해본다.
-	BOOST_TEST_FOREACH( const KSellPersonalShopItemInfo&, kSellPShopItemInfo, kPacket_.m_vecSellItemInfo )
+	for( const KSellPersonalShopItemInfo& kSellPShopItemInfo : kPacket_.m_vecSellItemInfo )
 	{
 		KInventoryItemInfo kInfo;
 		const int iOK = m_kInventory.CheckItemForTrade( kSellPShopItemInfo.m_kInventoryItemInfo.m_iItemUID, kSellPShopItemInfo.m_kInventoryItemInfo.m_kItemInfo.m_iQuantity, kInfo );
@@ -2165,7 +2165,7 @@ _IMPL_ON_FUNC( ERM_JOIN_MY_PSHOP_AGENCY_ACK, KEGS_JOIN_MY_PSHOP_AGENCY_ACK )
 			)
         {
 
-            BOOST_TEST_FOREACH( KSellPersonalShopItemInfo&, kSellItem, kPacket_.m_vecSellItemInfo )
+            for( KSellPersonalShopItemInfo& kSellItem : kPacket_.m_vecSellItemInfo )
             {
                 kSellItem.m_iTotalSellEDIn = static_cast<int>( kSellItem.m_iTotalSellEDIn * 0.9 );
             }
@@ -2369,7 +2369,7 @@ _IMPL_ON_FUNC( ERM_BUY_PSHOP_AGENCY_ITEM_COMPLETE_NOT, KERM_BUY_PERSONAL_SHOP_IT
 
 			// 거래로 인하여 추가된 아이템을 먼저 추가 하자
 			// 실제로 들어 온 item
-			BOOST_TEST_FOREACH( const KInventoryItemInfo&, kInsertItemInfo, vecInsertDBItem )
+			for( const KInventoryItemInfo& kInsertItemInfo : vecInsertDBItem )
 			{
 				KItemInfo kInfo = kInsertItemInfo.m_kItemInfo;
 
@@ -2386,7 +2386,7 @@ _IMPL_ON_FUNC( ERM_BUY_PSHOP_AGENCY_ITEM_COMPLETE_NOT, KERM_BUY_PERSONAL_SHOP_IT
 
 			if( m_kInventory.InsertItem( mapInsertItemInfo, vecInsertInventoryTemp ) == false )
 			{
-				BOOST_TEST_FOREACH( const KInventoryItemInfo&, kInsertItemInfo, vecInsertInventoryTemp )
+				for( const KInventoryItemInfo& kInsertItemInfo : vecInsertInventoryTemp )
 				{
 					START_LOG( cerr, L"추가가 실패했다고?!" )
 						<< BUILD_LOG( GetCharUID() )
@@ -2398,9 +2398,9 @@ _IMPL_ON_FUNC( ERM_BUY_PSHOP_AGENCY_ITEM_COMPLETE_NOT, KERM_BUY_PERSONAL_SHOP_IT
 			}
 
 			// 추가된 아이템을 갱신 목록에 추가한다.
-			BOOST_TEST_FOREACH( const KInventoryItemInfo&, kInsertItemInfo, vecInsertInventoryTemp )
+			for( const KInventoryItemInfo& kInsertItemInfo : vecInsertInventoryTemp )
 			{
-				BOOST_TEST_FOREACH( KInventoryItemInfo&, kTempInfo, kPacketReq.m_vecUpdatedInventorySlot )
+				for( KInventoryItemInfo& kTempInfo : kPacketReq.m_vecUpdatedInventorySlot )
 				{
 					if( kInsertItemInfo.m_iItemUID <= 0 )
 						continue;
@@ -2614,7 +2614,7 @@ IMPL_ON_FUNC( ERM_PICK_UP_FROM_PSHOP_AGENCY_ACK )
 	mapInsertItemInfo.clear();
 
 	// 구매한 아이템 넣기
-	BOOST_TEST_FOREACH( KSellPersonalShopItemInfo&, kPickUpItemInfo, kPacket_.m_vecPickUpSuccessItemList )
+	for( KSellPersonalShopItemInfo& kPickUpItemInfo : kPacket_.m_vecPickUpSuccessItemList )
 	{
 		if( kPickUpItemInfo.m_kInventoryItemInfo.m_kItemInfo.m_iQuantity <= 0 )
 		{
@@ -2635,7 +2635,7 @@ IMPL_ON_FUNC( ERM_PICK_UP_FROM_PSHOP_AGENCY_ACK )
 
 	// 거래로 인하여 추가된 아이템을 먼저 추가 하자
 	// 실제로 들어 온 item
-	BOOST_TEST_FOREACH( const KInventoryItemInfo&, kInsertItemInfo, vecInsertDBItem )
+	for( const KInventoryItemInfo& kInsertItemInfo : vecInsertDBItem )
 	{
 		KItemInfo kInfo = kInsertItemInfo.m_kItemInfo;
 
@@ -2652,7 +2652,7 @@ IMPL_ON_FUNC( ERM_PICK_UP_FROM_PSHOP_AGENCY_ACK )
 
 	if( m_kInventory.InsertItem( mapInsertItemInfo, vecInsertInventoryTemp ) == false )
 	{
-		BOOST_TEST_FOREACH( const KInventoryItemInfo&, kInsertItemInfo, vecInsertInventoryTemp )
+		for( const KInventoryItemInfo& kInsertItemInfo : vecInsertInventoryTemp )
 		{
 			START_LOG( cerr, L"추가가 실패했다고?!" )
 				<< BUILD_LOG( GetCharUID() )
@@ -2664,9 +2664,9 @@ IMPL_ON_FUNC( ERM_PICK_UP_FROM_PSHOP_AGENCY_ACK )
 	}
 
 	// 추가된 아이템을 갱신 목록에 추가한다.
-	BOOST_TEST_FOREACH( const KInventoryItemInfo&, kInsertItemInfo, vecInsertInventoryTemp )
+	for( const KInventoryItemInfo& kInsertItemInfo : vecInsertInventoryTemp )
 	{
-		BOOST_TEST_FOREACH( KInventoryItemInfo&, kTempInfo, kPacketReq.m_vecUpdatedInventorySlot )
+		for( KInventoryItemInfo& kTempInfo : kPacketReq.m_vecUpdatedInventorySlot )
 		{
 			if( kInsertItemInfo.m_iItemUID <= 0 )
 				continue;

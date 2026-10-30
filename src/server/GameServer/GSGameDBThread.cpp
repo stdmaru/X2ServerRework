@@ -1,4 +1,4 @@
-#include <winsock2.h>
+#include "x2/platform/net.h"
 #include <iomanip>
 #include <sstream>
 
@@ -21,7 +21,7 @@
 
 #include "ScriptID_Code.h"
 
-#include <boost/algorithm/string/replace.hpp>
+#include "x2/platform/string.h"
 
 //ImplementDBThread( KGSGameDBThread );
 
@@ -2253,7 +2253,7 @@ bool KGSGameDBThread::Query_GetInventory( IN const UidType iUnitUID,
 		mitAttrib = mapAttribItemList.find( kInventoryItemInfo.m_iItemUID );
 		if( mitAttrib != mapAttribItemList.end() )
 		{
-			BOOST_TEST_FOREACH( const KAttribInfo&, kAttribInfo, mitAttrib->second )
+			for( const KAttribInfo& kAttribInfo : mitAttrib->second )
 			{
 				// 속성 강화
 				switch( kAttribInfo.first )
@@ -2346,7 +2346,7 @@ bool KGSGameDBThread::Query_InsertItemList( IN const SEnum::GET_ITEM_REASON eGet
 			<< END_LOG;
 	}
 
-	BOOST_TEST_FOREACH( const KItemInfo&, kNewItemInfo, vecItemInfo )
+	for( const KItemInfo& kNewItemInfo : vecItemInfo )
 	{
 		KItemInfo kNewItemInfoResult = kNewItemInfo; // 복사본 생성
 
@@ -3466,7 +3466,7 @@ end_proc:
 bool KGSGameDBThread::Query_UpdateQuestInfo( IN const KDBE_UPDATE_UNIT_INFO_REQ& kReq )
 {
 	//QUEST UPDATE
-	BOOST_TEST_FOREACH( const KQuestUpdate&, kQuestInfo, kReq.m_vecQuestData )
+	for( const KQuestUpdate& kQuestInfo : kReq.m_vecQuestData )
 	{
 		if( kQuestInfo.m_vecClearData.size() != 5 )
 		{
@@ -3512,7 +3512,7 @@ bool KGSGameDBThread::Query_UpdateQuestInfo( IN const KDBE_UPDATE_UNIT_INFO_REQ&
 	//{{ 2010. 02. 09  최육사	일일 이벤트 퀘스트
 
 	// 예약된 포기 퀘스트
-	BOOST_TEST_FOREACH( const int, iGiveUpQuestID, kReq.m_vecGiveUpQuestList )
+	for( const int iGiveUpQuestID : kReq.m_vecGiveUpQuestList )
 	{
 		int iOK = NetError::ERR_ODBC_01;
 		DO_QUERY( L"exec dbo.gup_delete_quest", L"%d, %d", % kReq.m_iUnitUID % iGiveUpQuestID );
@@ -3544,7 +3544,7 @@ end_proc:
 bool KGSGameDBThread::Query_UpdateTitleInfo( IN const KDBE_UPDATE_UNIT_INFO_REQ& kReq )
 {
 	//TITLE MISSION UPDATE
-	BOOST_TEST_FOREACH( const KMissionUpdate&, kMission, kReq.m_vecMissionData )
+	for( const KMissionUpdate& kMission : kReq.m_vecMissionData )
 	{
 		if( kMission.m_vecClearData.size() != 5 )
 		{
@@ -3830,7 +3830,7 @@ end_proc:
 
 bool KGSGameDBThread::Query_UpdateRankingInfo( IN const KDBE_UPDATE_UNIT_INFO_REQ& kReq )
 {
-	BOOST_TEST_FOREACH( const KHenirRankingInfo&, kRankingInfo, kReq.m_vecHenirRanking )
+	for( const KHenirRankingInfo& kRankingInfo : kReq.m_vecHenirRanking )
 	{
 		// RegDate 변환
 		CTime tRegDate = CTime( kRankingInfo.m_tRegDate );
@@ -3948,7 +3948,7 @@ end_proc:
 
 bool KGSGameDBThread::Query_UpdateConnectTimeEventInfo( IN const UidType iUserUID, IN const KDBE_UPDATE_UNIT_INFO_REQ& kReq )
 {
-	BOOST_TEST_FOREACH( const KCumulativeTimeEventInfo&, kEventInfo, kReq.m_vecUpdateEventTime )
+	for( const KCumulativeTimeEventInfo& kEventInfo : kReq.m_vecUpdateEventTime )
 	{
 		//{{ 2010. 06. 15  최육사	계정단위 접속시간 이벤트
 		if( kEventInfo.m_bAccountEvent )
@@ -4006,7 +4006,7 @@ end_proc:
 
 bool KGSGameDBThread::Query_UpdatePetInfo( IN const KDBE_UPDATE_UNIT_INFO_REQ& kReq, OUT KDBE_UPDATE_UNIT_INFO_ACK& kAck )
 {
-	BOOST_TEST_FOREACH( const KPetInfo&, kPet, kReq.m_vecPet )
+	for( const KPetInfo& kPet : kReq.m_vecPet )
 	{
 		int iOK = NetError::ERR_ODBC_01;
 
@@ -4438,7 +4438,7 @@ end_proc:
 //{{ 2012. 05. 6	박세훈	어둠의 문 개편
 bool KGSGameDBThread::Query_UpdateBuffEffect( IN const KDBE_UPDATE_UNIT_INFO_REQ& kReq )
 {
-	BOOST_TEST_FOREACH( const KRecordBuffInfo&, kRecordBuffInfo, kReq.m_vecRecordBuffInfo )
+	for( const KRecordBuffInfo& kRecordBuffInfo : kReq.m_vecRecordBuffInfo )
 	{
 		int iOK = NetError::ERR_ODBC_01;
 
@@ -4474,7 +4474,7 @@ end_proc:
 
 bool KGSGameDBThread::Query_UpdateRidingPetInfo( IN const KDBE_UPDATE_UNIT_INFO_REQ& kReq, OUT KDBE_UPDATE_UNIT_INFO_ACK& kAck )
 {
-	BOOST_TEST_FOREACH( const KRidingPetInfo&, kInfo, kReq.m_vecRidingPetList )
+	for( const KRidingPetInfo& kInfo : kReq.m_vecRidingPetList )
 	{
 		int iOK = NetError::ERR_ODBC_01;
 
@@ -4728,7 +4728,7 @@ bool KGSGameDBThread::Query_UpdateShareItem( IN const KDBE_UPDATE_SHARE_ITEM_REQ
 	}
 
 	//	6. 삭제될 아이템 업데이트
-	BOOST_TEST_FOREACH( const UidType, iItemUID, kReq.m_vecDeletedItem )
+	for( const UidType iItemUID : kReq.m_vecDeletedItem )
 	{
 		DO_QUERY( L"exec dbo.gup_delete_item", L"%d, %d", % iItemUID % static_cast<int>(KDeletedItemInfo::DR_ZERO_QUANTITY_SHARE_BANK) );
 		if( m_kODBC.BeginFetch() )
@@ -6078,7 +6078,7 @@ IMPL_ON_FUNC( DBE_BUY_ED_ITEM_REQ )
 	std::vector< KItemInfo > vecInsertItemList;
 
 	// 새로 마련한 컨테이너에 옮겨 담자!
-	BOOST_TEST_FOREACH( const KBuyGPItemInfo&, kBuyGPItemInfo, kPacket_.m_vecBuyGPItemInfo )
+	for( const KBuyGPItemInfo& kBuyGPItemInfo : kPacket_.m_vecBuyGPItemInfo )
     {
 		KItemInfo kItemInfo;
 		kItemInfo.m_iItemID		= kBuyGPItemInfo.m_iItemID;
@@ -6686,7 +6686,7 @@ IMPL_ON_FUNC( DBE_ADMIN_AUTO_GET_ALL_SKILL_REQ )
 
 
 
-	BOOST_TEST_FOREACH( short, iSkillID, kPacket_.m_vecUnsealedSkillID )
+	for( short iSkillID : kPacket_.m_vecUnsealedSkillID )
 	{
 		DO_QUERY( L"exec dbo.gup_insert_unsealed_skill", L"%d, %d", % kPacket_.m_iUnitUID % (int)iSkillID );
 		if( m_kODBC.BeginFetch() )
@@ -11504,7 +11504,7 @@ IMPL_ON_FUNC( DBE_CREATE_PET_REQ )
 		START_LOG( cout, L"증분값 업데이트 실패!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID );
 
-		BOOST_MAP_CONST_FOREACH( UidType, int, kItem, kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange )
+		for( const auto& kItem : kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange )
 		{
 			START_LOG( cout, L"아이템 정보" )
 				<< BUILD_LOG( kItem.first )
@@ -11601,7 +11601,7 @@ IMPL_ON_FUNC( DBE_SUMMON_PET_REQ )
 		START_LOG( cout, L"증분값 업데이트 실패!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID );
 
-		BOOST_MAP_CONST_FOREACH( UidType, int, kItem, kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange )
+		for( const auto& kItem : kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange )
 		{
 			START_LOG( cout, L"아이템 정보" )
 				<< BUILD_LOG( kItem.first )
@@ -11681,7 +11681,7 @@ IMPL_ON_FUNC( DBE_CHANGE_PET_NAME_REQ )
 		START_LOG( cout, L"증분값 업데이트 실패!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID );
 
-		BOOST_MAP_CONST_FOREACH( UidType, int, kItem, kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange )
+		for( const auto& kItem : kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange )
 		{
 			START_LOG( cout, L"아이템 정보" )
 				<< BUILD_LOG( kItem.first )
@@ -11702,7 +11702,7 @@ IMPL_ON_FUNC( DBE_CHANGE_PET_NAME_REQ )
 	}
 	else
 	{
-		BOOST_TEST_FOREACH( const KDeletedItemInfo&, kDeletedItemInfo, kPacket.m_kItemQuantityUpdate.m_vecDeleted )
+		for( const KDeletedItemInfo& kDeletedItemInfo : kPacket.m_kItemQuantityUpdate.m_vecDeleted )
 		{
 			if( kDeletedItemInfo.m_iItemUID == kPacket_.m_iItemUID )
 			{
@@ -12428,7 +12428,7 @@ IMPL_ON_FUNC( DBE_INSERT_ADVERTISEMENT_EVENT_INFO_NOT )
 {
 	int iOK = NetError::ERR_ODBC_01;
 
-	BOOST_TEST_FOREACH( const int&, iEventUID, kPacket_.m_vecCompletedEvent )
+	for( const int& iEventUID : kPacket_.m_vecCompletedEvent )
 	{
 		DO_QUERY( L"exec dbo.P_GAdvertisementEvent_INT", L"%d, %d",
 			% kPacket_.m_iUserUID
@@ -13043,7 +13043,7 @@ IMPL_ON_FUNC( DBE_ADMIN_CHEAT_GET_ALL_SKILL_REQ )
 	// 봉인된 스킬 해제
 	if( kPacket_.m_vecUnSealedSkill.empty() == false )
 	{
-		BOOST_TEST_FOREACH( short, iSkillID, kPacket_.m_vecUnSealedSkill )
+		for( short iSkillID : kPacket_.m_vecUnSealedSkill )
 		{
 			int iOK = NetError::NET_OK;
 			DO_QUERY( L"exec dbo.gup_insert_unsealed_skill", L"%d, %d", % kPacket_.m_iUnitUID % iSkillID );
@@ -13427,7 +13427,7 @@ IMPL_ON_FUNC( DBE_CREATE_RIDING_PET_REQ )
 		START_LOG( cout, L"증분값 업데이트 실패!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID );
 
-		BOOST_MAP_CONST_FOREACH( UidType, int, kItem, kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange )
+		for( const auto& kItem : kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange )
 		{
 			START_LOG( cout, L"아이템 정보" )
 				<< BUILD_LOG( kItem.first )
@@ -13928,7 +13928,7 @@ bool KGSGameDBThread::Quety_WeddingLetter( IN UidType iSendUserUID, IN KDBE_WEDD
 		}
 	}
 	// 하객
-	BOOST_TEST_FOREACH( UidType, iRecvUID, kPacket_.m_vecInviteUnitList )
+	for( UidType iRecvUID : kPacket_.m_vecInviteUnitList )
 	{
 		KPostItemInfo kInfo;
 		kInfo.m_iFromUnitUID = kPacket_.m_iManUID;
@@ -14126,7 +14126,7 @@ _IMPL_ON_FUNC( DBE_WEDDING_ITEM_INFO_REQ, KEGS_WEDDING_ITEM_INFO_REQ )
 
 	bool bAllFind = true;
 
-	BOOST_TEST_FOREACH( UidType, iItemUID, kPacket_.m_vecWeddingItemList )
+	for( UidType iItemUID : kPacket_.m_vecWeddingItemList )
 	{
 		int iWeddingUID = 0;
 		DO_QUERY( L"exec dbo.P_GCouple_WeddingInvitation_SEL", L"%d", % iItemUID );
@@ -14884,16 +14884,16 @@ IMPL_ON_FUNC( DBE_USE_GM_TOOL_INSERT_ITEM_INFO_NOT )
 					|| mitCurrentItemName->second.m_wstrTransItemName.compare( mitPrevItemName->second.m_wstrTransItemName ) != 0 )
 				{
 
-					boost::replace_all( mitCurrentItemName->second.m_wstrKRItemName, L"'",L"''");
-					boost::replace_all( mitCurrentItemName->second.m_wstrTransItemName, L"'",L"''");
+					x2::platform::ReplaceAll( mitCurrentItemName->second.m_wstrKRItemName, L"'",L"''");
+					x2::platform::ReplaceAll( mitCurrentItemName->second.m_wstrTransItemName, L"'",L"''");
 
 					UpdateItemTempletNameMap.insert( std::make_pair(  mitCurrentItemName->first, mitCurrentItemName->second ) );
 				}
 			}
 			else
 			{
-				boost::replace_all( mitCurrentItemName->second.m_wstrKRItemName, L"'",L"''");
-				boost::replace_all( mitCurrentItemName->second.m_wstrTransItemName, L"'",L"''");
+				x2::platform::ReplaceAll( mitCurrentItemName->second.m_wstrKRItemName, L"'",L"''");
+				x2::platform::ReplaceAll( mitCurrentItemName->second.m_wstrTransItemName, L"'",L"''");
 
 				InsertItemTempletNameMap.insert( std::make_pair(  mitCurrentItemName->first, mitCurrentItemName->second ) );
 			}
@@ -15223,7 +15223,7 @@ IMPL_ON_FUNC( DBE_EXPAND_SKILL_PAGE_REQ )
 	kPacket.m_usEventID		= kPacket_.m_usEventID;
 
 
-	BOOST_TEST_FOREACH( const int&, iSkillPagesNumberToBeAdded, kPacket_.m_vecSkillPageNumberToBeAdded )
+	for( const int& iSkillPagesNumberToBeAdded : kPacket_.m_vecSkillPageNumberToBeAdded )
 	{
 		{
 			int iOK = NetError::NET_OK;

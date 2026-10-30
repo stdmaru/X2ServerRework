@@ -90,7 +90,7 @@ IMPL_ON_FUNC( DBE_GET_POST_LETTER_LIST_ACK )
 	m_kUserUnitSelectRewardManager.GetRewardAndClear( vecAccessRewardIDList );
 	if( !vecAccessRewardIDList.empty() )  // 접속시 지급해야할 아이템이 있다면 우편으로 주자
 	{
-		BOOST_TEST_FOREACH( const int, iRewardID, vecAccessRewardIDList )
+		for( const int iRewardID : vecAccessRewardIDList )
 		{
 			// 이벤트 보상을 주자!
 			KDBE_INSERT_REWARD_TO_POST_REQ kPacketToDB;
@@ -670,7 +670,7 @@ end_proc:
 			<< BUILD_LOG( kPacket_.m_wstrToNickName );
 
 		KDBE_SEND_PHONE_MSG_NOT kPacketNot;
-		kPacketNot.m_wstrSMSMessage = boost::str( boost::wformat( L"동일닉네임 캐릭터에게 우편전송을 시도한 유저 발견! : UserUID(%d), NickName(%s), ToNickName(%s)" ) % GetUID() % GetCharName() % kPacket_.m_wstrToNickName );
+		kPacketNot.m_wstrSMSMessage = x2::str( x2::wformat( L"동일닉네임 캐릭터에게 우편전송을 시도한 유저 발견! : UserUID(%d), NickName(%s), ToNickName(%s)" ) % GetUID() % GetCharName() % kPacket_.m_wstrToNickName );
 		//{{ 2012. 10. 8	박세훈	SMS 전화번호 통합 관리
 		SiKSMSPhoneNumberManager()->GetPhoneNumberList( KSMSPhoneNumberManager::PNLT_ELSWORD_DEV_TEAM, kPacketNot.m_vecPhoneNum );
 		//}}

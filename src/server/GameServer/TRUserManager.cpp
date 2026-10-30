@@ -1,7 +1,7 @@
 #include "TRUserManager.h"
 #include "TRUserFSM.h"
-#include <boost/bind/bind.hpp>
-using namespace boost::placeholders;
+#include <functional>
+using namespace std::placeholders;
 #include <dbg/dbg.hpp>
 #include "Serializer/Serializer.h"
 

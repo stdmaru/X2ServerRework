@@ -119,7 +119,7 @@ case id: \
 	packet kPacket; \
 	if( !ks.Get(kPacket) ) \
 	{ \
-		START_LOG( cerr, L"deserialze failed." L#id L" - " L#packet ) \
+		START_LOG( cerr, L"deserialze failed." L ## #id L" - " L ## #packet ) \
 			<< BUILD_LOG( GetName() ) \
 			<< BUILD_LOG( GetCharName() ); \
 		m_kUserHackingManager.IncreaseDeserializeFailCount( id ); \
@@ -145,7 +145,7 @@ case id: \
 	KSerializer ks; \
 	ks.BeginReading( &spEvent_->m_kbuff ); \
 	packet kPacket; \
-	std::wstring wstrPacketName = L#packet; \
+	std::wstring wstrPacketName = L ## #packet; \
 	if( CheckIsValidPacketEvent( spEvent_, wstrPacketName.c_str(), ks.Get(kPacket), spEvent_->IsValidEventID() ) ) \
 	{ \
 		ON_##id( spEvent_->m_anTrace, kPacket); \
@@ -220,18 +220,6 @@ m_iPersonalShopUID(0)
     //{
     //    m_kGGAuth.SetEnable( true );
     //}
-	//{{ 2009. 8. 18  최육사	hack shield
-	if( KSimLayer::GetKObj()->CheckCommonFlag( KSimLayer::CF_HSHIELD ) )
-	{
-        m_kHSAuth.SetEnable( true );
-	}
-	//}}
-
-	if( KSimLayer::GetKObj()->CheckCommonFlag( KSimLayer::CF_XTRAP ) )
-	{
-		m_cXTrapCSM.SetEnable( true	);
-		m_cXTrapCSM.InitCSM();
-	}
 
 	// 2011.05.05 lygan_조성욱 //  중국용 커뮤니티탭 유저 정보 찾기
 	m_cCommunity_Tap_type = 0;
@@ -370,11 +358,6 @@ void KGSUser::Tick()
     }
 
 
-	// 개발자는 XTRAP 실행파일 검사를 하지 않습니다.
-	if( GetAuthLevel() < SEnum::UAL_DEVELOPER )
-	{
-		m_cXTrapCSM.CSMStep1( GetThisPtr<KGSUser>() );
-	}
 
 	//////////////////////////////////////////////////////////////////////////
 	//KOREA NPROTECT 인증
@@ -390,16 +373,7 @@ void KGSUser::Tick()
 	//////////////////////////////////////////////////////////////////////////
 
 	//////////////////////////////////////////////////////////////////////////
-	//{{ 2009. 8. 18  최육사	hack shield
-	if( m_kHSAuth.Tick( GetThisPtr<KGSUser>() ) == false )
-	{
-		SetDisconnectReason( KStatistics::eSIColDR_HackShield_Auth_Fail );
-		ReserveDestroy();
-
-		START_LOG( cerr, L"hack shield 인증 실패.!" )
-			<< END_LOG;
-		return;
-	}
+	// Port: HackShield and XTrap checks removed with the anti-cheat (T10)
 	//}}
 	//////////////////////////////////////////////////////////////////////////
 
@@ -2962,7 +2936,7 @@ bool KGSUser::OnAccountSelectUnitAck( IN OUT KDBE_SELECT_UNIT_ACK& kAck_, IN boo
         SiKChannelManager()->GetServerUIDByChannelID( iChannelID, iServerUID );
 
 		KDBE_SEND_PHONE_MSG_NOT kPacketNot;
-		kPacketNot.m_wstrSMSMessage = boost::str( boost::wformat( L"(-)ED유저: UserUID(%d),NickName(%s),ED(%d)" ) //,ServerIP(%s)" ) 해외팀 주석 처리
+		kPacketNot.m_wstrSMSMessage = x2::str( x2::wformat( L"(-)ED유저: UserUID(%d),NickName(%s),ED(%d)" ) //,ServerIP(%s)" ) 해외팀 주석 처리
             % GetUID()
             % GetCharName()
             % GetED()
@@ -4065,7 +4039,7 @@ void KGSUser::OnDeselectUnit( IN const u_short usEventID, IN const bool bOnDestr
 		//{{ 2009. 9. 29  최육사	길드
 		kPacketNot.m_iGuildUID = GetGuildUID();
 		//}}
-		BOOST_MAP_CONST_FOREACH( UidType, KFriendInfo, kFriend, m_kMessengerInfo.m_mapFriendInfo )
+		for( const auto& kFriend : m_kMessengerInfo.m_mapFriendInfo )
 		{
 			kPacketNot.m_setFriendUID.insert( kFriend.first );
 		}
@@ -4698,9 +4672,9 @@ bool KGSUser::CheckCharLevelUp()
 						//kPacketNot.m_vecPhoneNum.push_back( std::wstring( L"010-8421-1075" ) );
 						//kPacketNot.m_vecPhoneNum.push_back( std::wstring( L"010-9317-0790" ) );
 						//kPacketNot.m_wstrSMSMessage += L"레업간격발견! UserUID : ";
-						//kPacketNot.m_wstrSMSMessage += boost::str( boost::wformat( L"%d" ) % GetUID() );
+						//kPacketNot.m_wstrSMSMessage += x2::str( x2::wformat( L"%d" ) % GetUID() );
 						//kPacketNot.m_wstrSMSMessage += L", UnitUID : ";
-						//kPacketNot.m_wstrSMSMessage += boost::str( boost::wformat( L"%d" ) % GetCharUID() );
+						//kPacketNot.m_wstrSMSMessage += x2::str( x2::wformat( L"%d" ) % GetCharUID() );
 						//kPacketNot.m_wstrSMSMessage += L", NickName : ";
 						//kPacketNot.m_wstrSMSMessage += GetCharName();
 						//SendToSMSDB( DBE_SEND_PHONE_MSG_NOT, kPacketNot );
@@ -5731,7 +5705,7 @@ void KGSUser::SendEnchantNotice( IN const int iItemID, IN const int iEnchantLeve
 			KEGS_NOTIFY_MSG_NOT	kPacket;
 			kPacket.m_cNotifyType = KEGS_NOTIFY_MSG_NOT::NT_DROP_GET_ITEM; // 아이템 획득 공지
 			kPacket.m_Count			= 1;
-			kPacket.m_wstrMSG		+= boost::str( boost::wformat( L"%s;+%d %s" ) % GetCharName() % iEnchantLevel % pItemTemplet->m_Name );
+			kPacket.m_wstrMSG		+= x2::str( x2::wformat( L"%s;+%d %s" ) % GetCharName() % iEnchantLevel % pItemTemplet->m_Name );
 			kPacket.m_iRandomItem	= iRandomItemID;
 			SendToCnServer( ECN_NOTIFY_MSG_NOT, kPacket );
 		}
@@ -8170,7 +8144,7 @@ void KGSUser::OnBuyCashItemAck( const KEGS_BUY_CASH_ITEM_ACK& kPacket_ )
 	}
 
 	//{{ 2011. 02. 08	최육사	캐쉬템 구매 로그
-	BOOST_TEST_FOREACH( const KNXBTPurchaseReqInfo&, kReq, kPacket_.m_vecPurchaseReqInfo )
+	for( const KNXBTPurchaseReqInfo& kReq : kPacket_.m_vecPurchaseReqInfo )
 	{
 		KNXBTProductInfo kProductInfo;
 		if( SiKNexonBillingTCPManager()->GetProductInfo( kReq.m_ulProductNo, kProductInfo ) == false )
@@ -9117,7 +9091,7 @@ int KGSUser::OnPickUpAck( const KENX_BT_NISMS_INVENTORY_PICK_UP_ONCE_ACK& kPacke
 			std::vector<int> vecSkillID;
 			if( SiCXSLSkillTree()->GetUnsealItemInfo( iItemID, GetUnitClass(), vecSkillID ) == true )
 			{
-				BOOST_TEST_FOREACH( int, iSkillID, vecSkillID )
+				for( int iSkillID : vecSkillID )
 				{
 					KDBE_UNSEAL_SKILL_REQ kPacketToDB;
 					kPacketToDB.m_iUnitUID = GetCharUID();
@@ -9884,7 +9858,7 @@ bool KGSUser::CheckAuthLevel()
 	//kPacketNot.m_vecPhoneNum.push_back( std::wstring( L"010-9490-8761" ) );		// 황원준
 	//}}
 	//{{ 2013. 01. 17	최육사	서버간 통신 사설IP 적용
-	kPacketNot.m_wstrSMSMessage = boost::str( boost::wformat( L"허용안된IP에서 치트사용 : UserUID(%d), IP(%s), ServerIP(%s)" ) % GetUID() % GetIPStr() % KBaseServer::GetKObj()->GetPublicIP() );
+	kPacketNot.m_wstrSMSMessage = x2::str( x2::wformat( L"허용안된IP에서 치트사용 : UserUID(%d), IP(%s), ServerIP(%s)" ) % GetUID() % GetIPStr() % KBaseServer::GetKObj()->GetPublicIP() );
 	SendToSMSDB( DBE_SEND_PHONE_MSG_NOT, kPacketNot );
 	//////////////////////////////////////////////////////////////////////////
 
@@ -11348,7 +11322,7 @@ void KGSUser::CheckRidingPetProcess( void )
 	KDBE_RELEASE_RIDING_PET_REQ kPacketToDB;
 	kPacketToDB.m_iUnitUID = GetCharUID();
 
-	BOOST_TEST_FOREACH( const UidType, iRidingPetUID, vecRidingPetUID )
+	for( const UidType iRidingPetUID : vecRidingPetUID )
 	{
 		// 만료된 펫 제거하러 DB로 가자!!
 		kPacketToDB.m_iRidingPetUID = iRidingPetUID;
@@ -11502,7 +11476,7 @@ void KGSUser::CheckExpirePet()
 	KDBE_RELEASE_PET_REQ kPacketToDB;
 	kPacketToDB.m_iUnitUID = GetCharUID();
 
-	BOOST_TEST_FOREACH( const UidType, iPetUID, vecPetUID )
+	for( const UidType iPetUID : vecPetUID )
 	{
 		// 만료된 펫 제거하러 DB로 가자!!
 		kPacketToDB.m_iPetUID = iPetUID;

@@ -2,7 +2,7 @@
 
 #include <ToString.h>
 #include <KNCSingleton.h>
-#include <Windows.h>
+#include "x2/platform/win32.h"
 #include "ClientPacket.h"
 
 //##des :

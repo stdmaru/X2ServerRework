@@ -1,7 +1,7 @@
 #pragma once
 #include "Event.h"
 #include "CommonPacket.h"
-#include <boost/timer.hpp>
+#include "x2/platform/timer.h"
 #include "CacheData.h"
 #include "X2Data/XSLPetManager.h"
 //{{ 2010. 01. 15  최육사	boost allocator
@@ -154,7 +154,7 @@ private:
 	bool									m_bReservedDBUpdate;	// DB업데이트 예약
 
 	// Pet Manage
-	boost::timer							m_tPetSommonTimer;		// 펫 소환 타이머
+	x2::Timer							m_tPetSommonTimer;		// 펫 소환 타이머
 
 	// Pet Inventory
 	std::map< UidType, KInventoryItemInfo >	m_mapPetInventory;		// 펫 인벤토리

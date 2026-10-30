@@ -424,7 +424,7 @@ void KUserAbuserManager::IncreaseGetItemCount( IN KGSUserPtr spUser, IN int iCou
 			kPacketNot.m_vecPhoneNum.push_back( std::wstring( L"010-8421-1075" ) );		// 최육사
 			kPacketNot.m_vecPhoneNum.push_back( std::wstring( L"010-9317-0790" ) );		// 황정희
 			//}}
-			kPacketNot.m_wstrSMSMessage = boost::str( boost::wformat( L"작업장 발견! : UserUID(%d), UnitUID(%d), NickName(%s)" ) % spUser->GetUID() % spUser->GetCharUID() % spUser->GetCharName() );
+			kPacketNot.m_wstrSMSMessage = x2::str( x2::wformat( L"작업장 발견! : UserUID(%d), UnitUID(%d), NickName(%s)" ) % spUser->GetUID() % spUser->GetCharUID() % spUser->GetCharName() );
 			spUser->SendToSMSDB( DBE_SEND_PHONE_MSG_NOT, kPacketNot );
 
 			//{{ 2011. 09. 20	김민성	아이템 5000개 습득시 자동 계정 블럭

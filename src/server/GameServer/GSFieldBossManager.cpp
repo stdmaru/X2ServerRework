@@ -1,6 +1,6 @@
 #include "GSFieldBossManager.h"
 
-#include <Windows.h>
+#include "x2/platform/win32.h"
 
 ImplementSingleton( KGSFieldBossManager );
 

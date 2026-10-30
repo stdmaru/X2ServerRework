@@ -1,7 +1,7 @@
 #pragma once
 #include "Event.h"
 #include "CommonPacket.h"
-#include <boost/timer.hpp>
+#include "x2/platform/timer.h"
 
 
 //{{ 버프 관리 시스템 - 김민성

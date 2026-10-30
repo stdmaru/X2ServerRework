@@ -1,6 +1,5 @@
 #include "FieldUser.h"
 #include "X2Data/XSLInventory.h"
-#include <boost/test/utils/foreach.hpp>
 
 
 KFieldUser::KFieldUser(void)
@@ -45,7 +44,7 @@ void KFieldUser::SetPetInfo( IN const std::vector< KPetInfo >& vecPetInfo )
 		// 그냥 통과!
 	}
 
-	BOOST_TEST_FOREACH( const KPetInfo&, kPet, vecPetInfo )
+	for( const KPetInfo& kPet : vecPetInfo )
 	{
 		KFieldPetInfo kInfo;
 		kInfo.m_iPetUID			= kPet.m_iPetUID;

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include <boost/timer.hpp>
+#include "x2/platform/timer.h"
 
 
 //{{ 2012. 03. 29	최육사	Inventory Lock 기능
@@ -20,7 +20,7 @@ public:
 
 private:
 	bool			m_bLocked;
-	boost::timer	m_tTimer;
+	x2::Timer	m_tTimer;
 	double			m_fLockTime;
 	LOCK_TYPE		m_eLockType;
 

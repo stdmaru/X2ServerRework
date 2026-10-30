@@ -492,17 +492,7 @@ IMPL_ON_FUNC( ELG_NEXON_USER_AUTHENTICATE_ACK )
 	//	m_kHSAuth.SetEnable( false );
 	//}
 
-	if( m_kHSAuth.FirstHackShieldAuth( GetThisPtr<KGSUser>() ) == false )
-	{
-		SetDisconnectReason( KStatistics::eSIColDR_NProtect_Auth_First );
-		ReserveDestroy();
-
-		START_LOG( cerr, L"hack shield 첫인증 실패.!" )
-			<< BUILD_LOG( GetUID() )
-			<< BUILD_LOG( GetName() )
-			<< END_LOG;
-		return;
-	}
+	// Port: HackShield's first check removed with the anti-cheat (T10)
 	//}}
 
 	//{{ 2010. 07. 05  최육사	유저 어뷰저 매니저
@@ -1772,17 +1762,7 @@ IMPL_ON_FUNC( ELG_CHANNEL_CHANGE_NEXON_USER_AUTHENTICATE_ACK )
 	//}
 
 	//{{ 2009. 8. 18  최육사	hack shield
-	if( m_kHSAuth.FirstHackShieldAuth( GetThisPtr<KGSUser>() ) == false )
-	{
-		SetDisconnectReason( KStatistics::eSIColDR_NProtect_Auth_First );
-		ReserveDestroy();
-
-		START_LOG( cerr, L"hack shield 첫인증 실패.!" )
-			<< BUILD_LOG( GetUID() )
-			<< BUILD_LOG( GetName() )
-			<< END_LOG;
-		return;
-	}
+	// Port: HackShield's first check removed with the anti-cheat (T10)
 	//}}
 
 	//{{ 2010. 07. 05  최육사	유저 어뷰저 매니저
@@ -1897,7 +1877,7 @@ IMPL_ON_FUNC( DBE_CHANNEL_CHANGE_GAME_SELECT_UNIT_ACK )
 				<< BUILD_LOG( GetCharName() );
 
 			KDBE_SEND_PHONE_MSG_NOT kPacketNot;
-			kPacketNot.m_wstrSMSMessage = boost::str( boost::wformat( L"계정소속이 아닌 캐릭터로 선택시도한 유저 발견! : UserUID(%d)" ) % GetUID() );
+			kPacketNot.m_wstrSMSMessage = x2::str( x2::wformat( L"계정소속이 아닌 캐릭터로 선택시도한 유저 발견! : UserUID(%d)" ) % GetUID() );
 			//{{ 2012. 10. 8	박세훈	SMS 전화번호 통합 관리
 			SiKSMSPhoneNumberManager()->GetPhoneNumberList( KSMSPhoneNumberManager::PNLT_ELSWORD_DEV_TEAM, kPacketNot.m_vecPhoneNum );
 			//}}

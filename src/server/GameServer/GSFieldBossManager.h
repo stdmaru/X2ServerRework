@@ -2,7 +2,7 @@
 
 #include "ServerDefine.h"
 
-#include <Windows.h>
+#include "x2/platform/win32.h"
 #include <KNCSingleton.h>
 #include <time.h>
 

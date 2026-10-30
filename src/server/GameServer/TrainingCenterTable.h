@@ -3,7 +3,7 @@
 #include "GSUser.h"
 #include "ServerPacket.h"
 
-#include <Windows.h>
+#include "x2/platform/win32.h"
 #include <map>
 
 #include <RTTI.h>

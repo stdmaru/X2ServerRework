@@ -35,7 +35,7 @@
 //////////////////////////////////////////////////////////////////////////
 #pragma NOTE( "The GSUserHandler.cpp file compiles successfully!" )
 //////////////////////////////////////////////////////////////////////////
-#include "boost/lexical_cast.hpp"
+#include "x2/platform/string.h"
 
 #define CLASS_TYPE      KGSUser
 
@@ -555,7 +555,7 @@ IMPL_ON_FUNC( ENX_BT_NISMS_INVENTORY_PICK_UP_ONCE_ACK )
 					std::vector<int> vecSkillID;
 					if( SiCXSLSkillTree()->GetUnsealItemInfo( iItemID, GetUnitClass(), vecSkillID ) == true )
 					{
-						BOOST_TEST_FOREACH( int, iSkillID, vecSkillID )
+						for( int iSkillID : vecSkillID )
 						{
 							KDBE_UNSEAL_SKILL_REQ kPacketToDB;
 							kPacketToDB.m_iUnitUID = GetCharUID();
@@ -1123,7 +1123,7 @@ IMPL_ON_FUNC( ENX_BT_NISMS_INVENTORY_PICK_UP_ONCE_ACK )
 				std::vector<int> vecSkillID;
 				if( SiCXSLSkillTree()->GetUnsealItemInfo( iItemID, GetUnitClass(), vecSkillID ) == true )
 				{
-					BOOST_TEST_FOREACH( int, iSkillID, vecSkillID )
+					for( int iSkillID : vecSkillID )
 					{
 						KDBE_UNSEAL_SKILL_REQ kPacketToDB;
 						kPacketToDB.m_iUnitUID = GetCharUID();
@@ -2160,7 +2160,7 @@ _IMPL_ON_FUNC( ENX_BT_PURCHASE_ITEM_ACK, KEGS_BUY_CASH_ITEM_ACK )
 	}
 
 	//{{ 2011. 02. 08	최육사	캐쉬템 구매 로그
-	BOOST_TEST_FOREACH( const KNXBTPurchaseReqInfo&, kReq, kPacket_.m_vecPurchaseReqInfo )
+	for( const KNXBTPurchaseReqInfo& kReq : kPacket_.m_vecPurchaseReqInfo )
 	{
 		KNXBTProductInfo kProductInfo;
 		if( SiKNexonBillingTCPManager()->GetProductInfo( kReq.m_ulProductNo, kProductInfo ) == false )
@@ -2256,7 +2256,7 @@ IMPL_ON_FUNC( EGS_PRESENT_CASH_ITEM_REQ )
 	}
 
 	// 본인에게 선물하려는건지 체크하기
-	if( boost::iequals(kPacket_.m_wstrReceiverNickName, GetCharName()) )
+	if( x2::platform::IEquals(kPacket_.m_wstrReceiverNickName, GetCharName()) )
 	{
 		KEGS_PRESENT_CASH_ITEM_ACK kPacket;
 		kPacket.m_iOK = NetError::ERR_BUY_CASH_ITEM_20;
@@ -2684,7 +2684,7 @@ IMPL_ON_FUNC( EGS_MODIFY_WISH_LIST_REQ )
 
 	if( !kPacket_.m_bIsDelete )
 	{
-		BOOST_TEST_FOREACH( const int, iWishItemID, kPacket_.m_vecWishListItemID )
+		for( const int iWishItemID : kPacket_.m_vecWishListItemID )
 		{
 			// 장바구니 추가
 			const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iWishItemID );

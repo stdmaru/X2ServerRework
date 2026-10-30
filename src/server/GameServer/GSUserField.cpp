@@ -921,7 +921,7 @@ IMPL_ON_FUNC( EGS_COMMUNITY_USER_LIST_MONITORING_MODE_REQ )
 			KERM_FIELD_USER_LIST_MONITORING_MODE_REQ kReq;
 			kReq.m_uiViewPage = kPacket_.m_uiViewPage;
 
-			BOOST_TEST_FOREACH( const UidType, iUnitUID, kPacket_.m_vecUnitUIDList )
+			for( const UidType iUnitUID : kPacket_.m_vecUnitUIDList )
 			{
 				KGSUserPtr spReceiver = GetKUserManager()->GetByCID( iUnitUID );
 				if( spReceiver == NULL )

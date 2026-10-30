@@ -4,7 +4,7 @@
 #include "KncUidType.h"
 #include "X2Data/XSLInventory.h"
 #include "X2Data/XSLRoom.h"
-#include <boost/timer.hpp>
+#include "x2/platform/timer.h"
 
 class KTempInventory
 {

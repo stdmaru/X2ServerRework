@@ -7,9 +7,9 @@
 #include "SystemPacket.h"
 #include "ServerPacket.h"
 
-#include <windows.h>    // ::GetTickCount()
+#include "x2/platform/win32.h"    // ::GetTickCount()
 #include "CacheData.h"
-#include <boost/timer.hpp>
+#include "x2/platform/timer.h"
 //{{ 2010. 01. 15  최육사	boost allocator
 	#include <ObjectPool/BoostAllocator.h>
 //}}
@@ -18,7 +18,7 @@
 
 //{{ 2012.11.13 조효진 닉네임 관련 체크 검사 시 대소문자 구별 안하도록 수정
 //#ifdef SERV_STRING_CHECK_IGNORE_CASE
-#include <boost/algorithm/string.hpp>
+#include "x2/platform/string.h"
 //#endif SERV_STRING_CHECK_IGNORE_CASE
 //}}
 
@@ -42,12 +42,6 @@
 #include "CharLog.h"
 //#include "GGAuth.h"
 //{{ 2009. 8. 18  최육사	hack shield
-#include "HackShield/HSAuth.h"
-//}}
-//{{ 2010. 12. 13. 지헌 : XTRAP 서버 - CXTrapCSM 포함
-#include "XTrapCSM.h"
-#define CSFILE_NUM				2		// 사용할 MapFile 개수
-#define XTRAP_CS4_BUFSIZE_MAP	13000	// MapFile사이즈크기 (고정)
 //}}
 #include "UserStatistics.h"
 #include "MaxProcessTime.h"
@@ -150,14 +144,14 @@
 #define _VERIFY_POINTER( pointer, ret ) \
 	if( !_CrtIsValidHeapPointer( pointer ) ) \
 	{ \
-		START_LOG( cerr, L#pointer L"포인터 값 이상. (state:" << GetStateIDString() << L", name:" << m_strName << L")" ); \
+		START_LOG( cerr, L ## #pointer L"포인터 값 이상. (state:" << GetStateIDString() << L", name:" << m_strName << L")" ); \
 		return ret; \
 	}
 #else
 #define _VERIFY_POINTER( pointer, ret ) \
 	if( pointer == NULL ) \
 	{ \
-		START_LOG( cerr, L#pointer L"포인터 값 이상. (state:" << GetStateIDString() << L", name:" << m_strName << L")" ); \
+		START_LOG( cerr, L ## #pointer L"포인터 값 이상. (state:" << GetStateIDString() << L", name:" << m_strName << L")" ); \
 		return ret; \
 	}
 #endif //#ifdef _DEBUG
@@ -1466,10 +1460,9 @@ private:
 	//KGGAuth						m_kGGAuth;
 
 	//{{ 2009. 8. 18  최육사	hack shield
-	KHSAuth							m_kHSAuth;
+	// Port: m_kHSAuth (HackShield) and m_cXTrapCSM (XTrap) removed with the anti-cheat (T10)
 	//}}
 	// 지헌 : XTRAP 서버 - CXTrapCSM 선언
-	CXTrapCSM						m_cXTrapCSM;
 
 	//{{ 2010. 01. 29  최육사	PC방 상용화
 	KUserPcBangManager				m_kUserPcBangManager;

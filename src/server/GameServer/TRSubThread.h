@@ -1,6 +1,6 @@
 #pragma once
 #include <Thread/Thread.h>
-#include <atltime.h>
+#include "x2/platform/win32.h"
 #include "ThreadManager.h"
 
 #include "Event.h"

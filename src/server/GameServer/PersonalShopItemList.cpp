@@ -1,9 +1,8 @@
 #include "./PersonalShopItemList.h"
 
 //{{ 2010. 12. 16  조효진	개인 상점 아이템 검색 시 대소문자 무시
-#include <boost/algorithm/string/find.hpp>
+#include "x2/platform/string.h"
 //}}
-#include <boost/test/utils/foreach.hpp>
 #include "X2Data/XSLInventory.h"
 #include "X2Data/XSLUnit.h"
 #include "X2Data/XSLItemManager.h"
@@ -32,7 +31,7 @@ ImplToStringW( KPersonalShopItemList )
 bool KPersonalShopItemList::AddItemInfo( KERM_PERSONAL_SHOP_INFO_NOT & _kNot )
 {
 	// 리스트에 등록될 아이템 수만큼 반복
-	BOOST_TEST_FOREACH( KSellPersonalShopItemInfo, kAddItemInfo, _kNot.m_vecItemInfo )
+	for( KSellPersonalShopItemInfo kAddItemInfo : _kNot.m_vecItemInfo )
 	{
 		// 아이템 등록형식으로 가공
 		KTradeBoardItemInfo kInsertItem;
@@ -182,7 +181,7 @@ bool KPersonalShopItemList::AddItemInfo( KERM_PERSONAL_SHOP_INFO_NOT & _kNot )
 bool KPersonalShopItemList::DelItemInfo( KERM_PERSONAL_SHOP_INFO_NOT & _kNot )
 {
 	// 삭제할 아이템 수만큼 반복
-	BOOST_TEST_FOREACH( KSellPersonalShopItemInfo, kDelItemInfo, _kNot.m_vecItemInfo )
+	for( KSellPersonalShopItemInfo kDelItemInfo : _kNot.m_vecItemInfo )
 	{
 		// 카테고리 키 검사.
 		if( false == CheckSlotCategoryID(kDelItemInfo.m_kInventoryItemInfo.m_cSlotCategory) )
@@ -265,7 +264,7 @@ bool KPersonalShopItemList::DelItemInfo( const UidType & _iCenterUID )
 bool KPersonalShopItemList::ChangeItemInfo( KERM_PERSONAL_SHOP_INFO_NOT & _kNot )
 {
 	// 정보를 수정할 아이템 수만큼 반복
-	BOOST_TEST_FOREACH( KSellPersonalShopItemInfo, kChangeItemInfo, _kNot.m_vecItemInfo )
+	for( KSellPersonalShopItemInfo kChangeItemInfo : _kNot.m_vecItemInfo )
 	{
 		// 카테고리 키 검사.
 		if( false == CheckSlotCategoryID(kChangeItemInfo.m_kInventoryItemInfo.m_cSlotCategory) )
@@ -332,11 +331,11 @@ void KPersonalShopItemList::GetSearchList( IN KEGS_SEARCH_TRADE_BOARD_REQ & kReq
 		// 스트링만으로 검색하는 경우.
 		else
 		{
-			//BOOST_TEST_FOREACH( std::list<KTradeBoardItemInfo>, TradeBoardItemList, m_mapItemInfo )
+			//for( std::list<KTradeBoardItemInfo> TradeBoardItemList : m_mapItemInfo )
 			std::map< char, std::list<KTradeBoardItemInfo> >::iterator mit;
 			for( mit = m_mapItemInfo.begin(); mit != m_mapItemInfo.end(); ++mit )
 			{
-				BOOST_TEST_FOREACH( KTradeBoardItemInfo, kItemInfo, mit->second )//TradeBoardItemList )
+				for( KTradeBoardItemInfo kItemInfo : mit->second )//TradeBoardItemList )
 				{
 					const CXSLItem::ItemTemplet* pListItem = SiCXSLItemManager()->GetItemTemplet( kItemInfo.m_kSellItemInfo.m_kInventoryItemInfo.m_kItemInfo.m_iItemID );
 
@@ -352,7 +351,7 @@ void KPersonalShopItemList::GetSearchList( IN KEGS_SEARCH_TRADE_BOARD_REQ & kReq
 
 					// 스트링 검사
 					//{{ 2010. 12. 16  조효진	개인 상점 아이템 검색 시 대소문자 무시
-					if( boost::ifind_first(pListItem->m_Name, kReq.m_wstrFinder) )
+					if( x2::platform::IContains(pListItem->m_Name, kReq.m_wstrFinder) )
 					//}}
 					{
 						bool bIsInsert = true;
@@ -413,7 +412,7 @@ void KPersonalShopItemList::GetSearchList( IN KEGS_SEARCH_TRADE_BOARD_REQ & kReq
 	}
 
 	//# 검색 시작
-	BOOST_TEST_FOREACH( KTradeBoardItemInfo, kItemInfo, mit->second )
+	for( KTradeBoardItemInfo kItemInfo : mit->second )
 	{
 		bool bIsInsert = true;
 
@@ -436,7 +435,7 @@ void KPersonalShopItemList::GetSearchList( IN KEGS_SEARCH_TRADE_BOARD_REQ & kReq
 			//int iTemp = pListItem->m_Name.find(kReq.m_wstrFinder.c_str());
 
 			//{{ 2010. 12. 16  조효진	개인 상점 아이템 검색 시 대소문자 무시
-			if( !(boost::ifind_first(pListItem->m_Name, kReq.m_wstrFinder) ) )	// 못 찾았을 때
+			if( !(x2::platform::IContains(pListItem->m_Name, kReq.m_wstrFinder) ) )	// 못 찾았을 때
 			//}}
 				bIsInsert = false;
 		}
@@ -545,11 +544,11 @@ void KPersonalShopItemList::GetStrictSearchList( IN KEGS_SEARCH_TRADE_BOARD_REQ 
         // 스트링만으로 검색하는 경우.
         else
         {
-            //BOOST_TEST_FOREACH( std::list<KTradeBoardItemInfo>, TradeBoardItemList, m_mapItemInfo )
+            //for( std::list<KTradeBoardItemInfo> TradeBoardItemList : m_mapItemInfo )
             std::map< char, std::list<KTradeBoardItemInfo> >::iterator mit;
             for( mit = m_mapItemInfo.begin(); mit != m_mapItemInfo.end(); ++mit )
             {
-                BOOST_TEST_FOREACH( KTradeBoardItemInfo, kItemInfo, mit->second )//TradeBoardItemList )
+                for( KTradeBoardItemInfo kItemInfo : mit->second )//TradeBoardItemList )
                 {
                     const CXSLItem::ItemTemplet* pListItem = SiCXSLItemManager()->GetItemTemplet( kItemInfo.m_kSellItemInfo.m_kInventoryItemInfo.m_kItemInfo.m_iItemID );
 
@@ -624,7 +623,7 @@ void KPersonalShopItemList::GetStrictSearchList( IN KEGS_SEARCH_TRADE_BOARD_REQ 
     }
 
     //# 검색 시작
-    BOOST_TEST_FOREACH( KTradeBoardItemInfo, kItemInfo, mit->second )
+    for( KTradeBoardItemInfo kItemInfo : mit->second )
     {
         bool bIsInsert = true;
 

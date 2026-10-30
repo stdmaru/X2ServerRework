@@ -952,7 +952,7 @@ IMPL_ON_FUNC( ERM_CONFIRM_TRADE_NOT )
 
 	//////////////////////////////////////////////////////////////////////////
 	// 나가는 아이템
-	BOOST_TEST_FOREACH( const KInventoryItemInfo&, kOutItemInfo, kPacket_.m_vecItemOut )
+	for( const KInventoryItemInfo& kOutItemInfo : kPacket_.m_vecItemOut )
 	{
 		int iCategory;
 		int iSlotID;
@@ -1086,7 +1086,7 @@ _IMPL_ON_FUNC( ERM_DB_UPDATE_TRADE_COMPLETE_NOT, KERM_DB_UPDATE_TRADE_RESULT_NOT
 	kPacketReq.m_vecInventorySlotInfo = kPacket_.m_vecUpdatedInventorySlot;
 
 	// 나가는 아이템 이므로 아이템 UID 를 0으로 하면 클라에서 삭제 처리된다.
-	BOOST_TEST_FOREACH( KInventoryItemInfo&, kInsertItemInfo, kPacketReq.m_vecInventorySlotInfo )
+	for( KInventoryItemInfo& kInsertItemInfo : kPacketReq.m_vecInventorySlotInfo )
 	{
 		// 클라이언트에서 슬롯을 비우는 것은 uid 가 없을때
 		if( kInsertItemInfo.m_kItemInfo.m_iQuantity <= 0 )
@@ -1103,7 +1103,7 @@ _IMPL_ON_FUNC( ERM_DB_UPDATE_TRADE_COMPLETE_NOT, KERM_DB_UPDATE_TRADE_RESULT_NOT
 
 		// 거래로 인하여 추가된 아이템을 먼저 추가 하자
 		// 실제로 들어 온 item
-		BOOST_TEST_FOREACH( const KInventoryItemInfo&, kInsertItemInfo, kPacket_.m_vecInsertDBItem )
+		for( const KInventoryItemInfo& kInsertItemInfo : kPacket_.m_vecInsertDBItem )
 		{
 			KItemInfo kInfo = kInsertItemInfo.m_kItemInfo;
 
@@ -1119,7 +1119,7 @@ _IMPL_ON_FUNC( ERM_DB_UPDATE_TRADE_COMPLETE_NOT, KERM_DB_UPDATE_TRADE_RESULT_NOT
 
 		if( m_kInventory.InsertItem( mapInsertItemInfo, vecInsertInventoryTemp ) == false )
 		{
-			BOOST_TEST_FOREACH( const KInventoryItemInfo&, kInsertItemInfo, vecInsertInventoryTemp )
+			for( const KInventoryItemInfo& kInsertItemInfo : vecInsertInventoryTemp )
 			{
 				START_LOG( cerr, L"추가가 실패했다고?!" )
 					<< BUILD_LOG( GetCharUID() )
@@ -1131,9 +1131,9 @@ _IMPL_ON_FUNC( ERM_DB_UPDATE_TRADE_COMPLETE_NOT, KERM_DB_UPDATE_TRADE_RESULT_NOT
 		}
 
 		// 추가된 아이템을 갱신 목록에 추가한다.
-		BOOST_TEST_FOREACH( const KInventoryItemInfo&, kInsertItemInfo, vecInsertInventoryTemp )
+		for( const KInventoryItemInfo& kInsertItemInfo : vecInsertInventoryTemp )
 		{
-			BOOST_TEST_FOREACH( KInventoryItemInfo&, kTempInfo, kPacketReq.m_vecInventorySlotInfo )
+			for( KInventoryItemInfo& kTempInfo : kPacketReq.m_vecInventorySlotInfo )
 			{
 				if( kInsertItemInfo.m_iItemUID <= 0 )
 					continue;

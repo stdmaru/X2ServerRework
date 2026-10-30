@@ -7,7 +7,7 @@
 #include <sstream>
 
 #include <dbg/dbg.hpp>
-#include <boost/format.hpp>
+#include "x2/platform/format.h"
 
 KServerSNMaker& KServerSNMaker::GetInstance( void )
 {
@@ -114,7 +114,7 @@ bool KServerSNMaker::MakeServerSN( IN __int64& iSN, OUT unsigned char* pcharData
 	}
 
 	// __int64 형의 sn 을 std::string 형으로 변환한다.
-	std::string strSN = boost::str( boost::format( "%d" ) % iSN );
+	std::string strSN = x2::str( x2::format( "%d" ) % iSN );
 
 	// sn 에 대한 check sum 을 구한다.
 	std::string strCheckSum = GetCRCFromString( strSN );
@@ -298,7 +298,7 @@ bool KServerSNMaker::Extract_ServerSN( IN unsigned char* pcharData, OUT std::str
 	iSNResult = iSNResult | (iSNTemp & 0x00000000000000ff);
 
 	// __int64 형의 sn 을 std::string 형으로 변환한다.
-	strSN = boost::str( boost::format( "%d" ) % iSNResult );
+	strSN = x2::str( x2::format( "%d" ) % iSNResult );
 
 	iSN = iSNResult;
 

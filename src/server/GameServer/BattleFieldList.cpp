@@ -100,7 +100,7 @@ void KBattleFieldList::DelRoomInfoByCnServerUID( IN const UidType iCnServerUID )
 {
 	std::vector< UidType > vecDeleteRoomUID;
 
-	BOOST_TEST_FOREACH( const KGSBattleFieldRoomPtr, spGSBattleFieldRoom, m_vecList )
+	for( const KGSBattleFieldRoomPtr spGSBattleFieldRoom : m_vecList )
 	{
 		if( IS_NULL( spGSBattleFieldRoom ) )
 		{
@@ -117,7 +117,7 @@ void KBattleFieldList::DelRoomInfoByCnServerUID( IN const UidType iCnServerUID )
 		}
 	}
 
-	BOOST_TEST_FOREACH( const UidType, iRoomUID, vecDeleteRoomUID )
+	for( const UidType iRoomUID : vecDeleteRoomUID )
 	{
 		LIF( DelRoomInfo( iRoomUID ) );
 	}
@@ -153,7 +153,7 @@ UidType KBattleFieldList::GetBattleFieldRoomUID_MaxPartyMemberCount( IN const Ui
 	int iMaxPartyMemberCount = 0;
 
 	// 모든 필드에 해당 파티원이 가장 많은 필드를 선정하자
-	BOOST_TEST_FOREACH( const KGSBattleFieldRoomPtr, spRoomInfo, m_vecList )
+	for( const KGSBattleFieldRoomPtr spRoomInfo : m_vecList )
 	{
 		if( IS_NULL( spRoomInfo ) )
 		{
@@ -239,7 +239,7 @@ UidType KBattleFieldList::GetBattleFieldRoomUID_AllRandom()
 	KLotterySameProb< UidType > kLotRandomBF;
 
 	// 그냥 다른사람들이 있는 방을 하나 골라 주자!
-	BOOST_TEST_FOREACH( const KGSBattleFieldRoomPtr, spRoomInfo, m_vecList )
+	for( const KGSBattleFieldRoomPtr spRoomInfo : m_vecList )
 	{
 		if( IS_NULL( spRoomInfo ) )
 		{

@@ -1504,7 +1504,7 @@ _IMPL_ON_FUNC( ERM_NPC_UNIT_CREATE_NOT, KEGS_NPC_UNIT_CREATE_NOT )
 
 	//{{ QUEST 개편 - 김민성
 	std::vector< int > vecNPCData;
-	BOOST_TEST_FOREACH( KNPCUnitNot, kNPCData, kPacket_.m_vecNPCUnitAck )
+	for( KNPCUnitNot kNPCData : kPacket_.m_vecNPCUnitAck )
 	{
 		int iNPCID = 0;
 		iNPCID = kNPCData.m_kNPCUnitReq.m_NPCID;
@@ -1798,7 +1798,7 @@ IMPL_ON_FUNC( ERM_NPC_UNIT_DIE_NOT )
 			std::vector< UidType > vecTutoUserList;
 			m_kUserTutorialInfo.GetTutorUnitUIDList( vecTutoUserList );
 
-			BOOST_TEST_FOREACH( const UidType, iUnitUID, vecTutoUserList )
+			for( const UidType iUnitUID : vecTutoUserList )
 			{
 				if( SiKPartyListManager()->IsPartyMember( GetPartyUID(), iUnitUID ) )
 				{
@@ -2010,7 +2010,7 @@ _IMPL_ON_FUNC( ERM_BATTLE_FIELD_NPC_UNIT_DIE_NOT, KERM_NPC_UNIT_DIE_NOT )
 			std::vector< UidType > vecTutoUserList;
 			m_kUserTutorialInfo.GetTutorUnitUIDList( vecTutoUserList );
 
-			BOOST_TEST_FOREACH( const UidType, iUnitUID, vecTutoUserList )
+			for( const UidType iUnitUID : vecTutoUserList )
 			{
 				if( SiKPartyListManager()->IsPartyMember( GetPartyUID(), iUnitUID ) )
 				{
@@ -3425,7 +3425,7 @@ _IMPL_ON_FUNC( ERM_CREATE_ATTRIB_NPC_NOT, KEGS_CREATE_ATTRIB_NPC_NOT )
 
 	//{{ QUEST 개편 - 김민성
 	std::vector< int > vecNPCData;
-	BOOST_TEST_FOREACH( KAttribNpcUnitInfo, kNPCData, kPacket_.m_vecAttribNPCUnit )
+	for( KAttribNpcUnitInfo kNPCData : kPacket_.m_vecAttribNPCUnit )
 	{
 		int iNPCID = 0;
 		iNPCID = kNPCData.m_sNPCUnitReq.m_NPCID;
@@ -3450,7 +3450,7 @@ IMPL_ON_FUNC( ERM_ACTIVATE_BUFF_NOT )
 	VERIFY_STATE( ( 2, KGSFSM::S_FIELD_MAP, KGSFSM::S_ROOM ) );
 
 	std::vector< KBuffInfo > vecActiveBuff;
-	BOOST_TEST_FOREACH( const KBuffInfo&, kBuffInfo, kPacket_.m_vecActivateBuffList )
+	for( const KBuffInfo& kBuffInfo : kPacket_.m_vecActivateBuffList )
 	{
 		if( ActivateBuff( kBuffInfo.m_kFactorInfo.m_BuffIdentity.m_eBuffTempletID, vecActiveBuff ) == false )
 		{

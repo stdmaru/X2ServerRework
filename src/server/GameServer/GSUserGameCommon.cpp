@@ -612,7 +612,7 @@ _IMPL_ON_FUNC( DBE_GAME_SELECT_UNIT_ACK, KDBE_SELECT_UNIT_ACK )
 				<< BUILD_LOG( GetCharName() );
 
 			KDBE_SEND_PHONE_MSG_NOT kPacketNot;
-			kPacketNot.m_wstrSMSMessage = boost::str( boost::wformat( L"계정소속 아닌 캐릭터선택:UserUID(%d),UnitUID(%d) " ) // ,ServerIP(%s)" ) // 해외팀 주석 처리
+			kPacketNot.m_wstrSMSMessage = x2::str( x2::wformat( L"계정소속 아닌 캐릭터선택:UserUID(%d),UnitUID(%d) " ) // ,ServerIP(%s)" ) // 해외팀 주석 처리
                 % GetUID()
                 % kPacket_.m_nWrongUnitUID
                 //% KBaseServer::GetKObj()->GetPublicIP() // 해외팀 주석 처리
@@ -1135,7 +1135,7 @@ IMPL_ON_FUNC( DBE_NEW_QUEST_ACK )
 		}
 
 		KSubQuestInstance kSubQuest;
-		BOOST_TEST_FOREACH( const int, iSubQuestID, QuestTem->m_vecSubQuest )
+		for( const int iSubQuestID : QuestTem->m_vecSubQuest )
 		{
 			kSubQuest.m_iID = iSubQuestID;
 
@@ -1181,7 +1181,7 @@ IMPL_ON_FUNC( DBE_NEW_QUEST_ACK )
 		//}}
 
 		//{{ 2012. 04. 17	최육사	퀘스트 조건 마을 입장
-		BOOST_TEST_FOREACH( const int, iSubQuestID, QuestTem->m_vecSubQuest )
+		for( const int iSubQuestID : QuestTem->m_vecSubQuest )
 		{
 			const CXSLQuestManager::SubQuestTemplet* pSubQuestTemplet = SiCXSLQuestManager()->GetSubQuestTemplet( iSubQuestID );
 			if( IS_NULL( pSubQuestTemplet ) )
@@ -1266,7 +1266,7 @@ IMPL_ON_FUNC( EGS_GATHER_GIVE_UP_QUEST_REQ )
 {
 	VERIFY_STATE( ( 2, KGSFSM::S_FIELD_MAP, KGSFSM::S_ROOM ) );
 
-	BOOST_TEST_FOREACH( const int, iQuestID, kPacket_.m_vecGatherQuestID )
+	for( const int iQuestID : kPacket_.m_vecGatherQuestID )
 	{
 		KEGS_GIVE_UP_QUEST_REQ kPacket;
 		kPacket.m_iQuestID = iQuestID;
@@ -1651,7 +1651,7 @@ IMPL_ON_FUNC( EGS_SEARCH_UNIT_REQ )
 
 	//자기 자신의 정보를 요청한 경우.
 
-	if( boost::iequals(GetCharName(), kPacket_) )
+	if( x2::platform::IEquals(GetCharName(), kPacket_) )
 	{
 		KEGS_SEARCH_UNIT_ACK kPacket;
 		kPacket.m_iOK = NetError::NET_OK;
@@ -1692,7 +1692,7 @@ IMPL_ON_FUNC( EGS_GET_CONNECTION_UNIT_INFO_REQ )
 
 
 	//자기 자신의 정보를 요청한 경우.
-	if( boost::iequals(GetCharName(), kPacket_) )
+	if( x2::platform::IEquals(GetCharName(), kPacket_) )
 	{
 		KEGS_GET_CONNECTION_UNIT_INFO_ACK kPacket;
 		kPacket.m_iOK = NetError::NET_OK;
@@ -2104,7 +2104,7 @@ IMPL_ON_FUNC( EGS_NEW_BLACKLIST_USER_REQ )
 
 	KEGS_NEW_BLACKLIST_USER_ACK kPacket;
 
-	if( boost::iequals(kPacket_.m_wstrNickName, GetCharName()) )
+	if( x2::platform::IEquals(kPacket_.m_wstrNickName, GetCharName()) )
 	{
 		// 자기 자신을 블랙리스트에 등록할 수 없음.
 		kPacket.m_iOK = NetError::ERR_BLACKLIST_05;
@@ -2679,7 +2679,7 @@ IMPL_ON_FUNC( EGS_RECOMMEND_USER_REQ )
 	}
 
 	// 자기 자신을 추천한 경우.
-	if( boost::iequals(GetCharName(), kPacket_.m_wstrNickName) )
+	if( x2::platform::IEquals(GetCharName(), kPacket_.m_wstrNickName) )
 	{
 		KEGS_RECOMMEND_USER_ACK kPacketAck;
 		kPacketAck.m_iOK = NetError::ERR_RECOMMEND_USER_01;
@@ -3528,7 +3528,7 @@ IMPL_ON_FUNC( EGS_RESET_SKILL_REQ )
 	std::vector< int > vecSkillData;
 	m_kSkillTree.GetSkillSlot( vecSkillData );
 
-	BOOST_TEST_FOREACH( const int, iEquipSkillID, vecSkillData )
+	for( const int iEquipSkillID : vecSkillData )
 	{
 		if( iEquipSkillID == kPacket_.m_iSkillID )
 		{
@@ -4151,7 +4151,7 @@ IMPL_ON_FUNC( DBE_UPDATE_EVENT_TIME_ACK )
 
 	if( kPacket_.m_iOK == NetError::NET_OK )
 	{
-		BOOST_TEST_FOREACH( const int, iEventUID, kPacket_.m_setConnectTimeEvent )
+		for( const int iEventUID : kPacket_.m_setConnectTimeEvent )
 		{
 			int iRewardID = 0;
 			//{{ 2011. 05. 31	최육사	접속 이벤트 레벨 체크
@@ -4185,7 +4185,7 @@ IMPL_ON_FUNC( DBE_UPDATE_EVENT_TIME_ACK )
 
 		//{{ 2009. 12. 7  최육사	누적시간이벤트
 
-		BOOST_TEST_FOREACH( const int, iEventUID, kPacket_.m_setCumulativeTimeEvent )
+		for( const int iEventUID : kPacket_.m_setCumulativeTimeEvent )
 		{
 			int iRewardID = 0;
 			if( !SiKGameEventManager()->GetCumulativeTimeEventReward( iEventUID, iRewardID ) )
@@ -5313,7 +5313,7 @@ IMPL_ON_FUNC( ELG_UPDATE_USER_UNIT_BUFF_INFO_ACK )
 	//std::vector< int > vecTest;
 	//m_kUserBuffManager.GetBuffIDList( vecTest );
 	//START_LOG( cout, L"[버프체크] 현재 발동된 버프가 어떤게 있는가?------------------------------" );
-	//BOOST_TEST_FOREACH( const int, iBuffID, vecTest )
+	//for( const int iBuffID : vecTest )
 	//{
 	//	START_LOG( cout, L"[버프체크] 현재 발동된 버프" )
 	//		<< BUILD_LOG( iBuffID );
@@ -5381,7 +5381,7 @@ _IMPL_ON_FUNC( DBE_NEW_ACCOUNT_QUEST_GAME_DB_ACK, KDBE_NEW_QUEST_ACK )
 		}
 
 		KSubQuestInstance kSubQuest;
-		BOOST_TEST_FOREACH( const int, iSubQuestID, QuestTem->m_vecSubQuest )
+		for( const int iSubQuestID : QuestTem->m_vecSubQuest )
 		{
 			kSubQuest.m_iID = iSubQuestID;
 
@@ -5412,7 +5412,7 @@ _IMPL_ON_FUNC( DBE_NEW_ACCOUNT_QUEST_GAME_DB_ACK, KDBE_NEW_QUEST_ACK )
 		SendPacket( EGS_NEW_QUEST_NOT, kNot );
 
 
-		BOOST_TEST_FOREACH( const int, iSubQuestID, QuestTem->m_vecSubQuest )
+		for( const int iSubQuestID : QuestTem->m_vecSubQuest )
 		{
 			const CXSLQuestManager::SubQuestTemplet* pSubQuestTemplet = SiCXSLQuestManager()->GetSubQuestTemplet( iSubQuestID );
 			if( IS_NULL( pSubQuestTemplet ) )
@@ -5490,7 +5490,7 @@ IMPL_ON_FUNC( EGS_USER_COMMUNITY_SURVEY_NEW_REQ  )
 	VERIFY_STATE( ( 2, KGSFSM::S_FIELD_MAP, KGSFSM::S_ROOM ) );
 
 	//자기 자신의 정보를 요청한 경우.
-	if( boost::iequals(GetCharName(), kPacket_.m_wUnitNickName))
+	if( x2::platform::IEquals(GetCharName(), kPacket_.m_wUnitNickName))
 	{
 		KEGS_USER_COMMUNITY_SURVEY_NEW_ACK kPacket;
 		kPacket.m_iOK = NetError::NET_OK;

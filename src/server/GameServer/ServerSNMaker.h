@@ -6,7 +6,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include <windows.h>
+#include "x2/platform/win32.h"
 #include <string>
 
 //{{ 2011.11.02     김민성    서버에서 SN 발급 및 유효성 검사

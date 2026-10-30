@@ -88,7 +88,7 @@ bool KPartyListManager::GetPartyUserList( IN UidType iPartyUID, OUT std::vector<
 	std::vector< KPartyListUserInfo > vecUserInfo;
 	spParty->GetListUserInfoList( vecUserInfo );
 
-	BOOST_TEST_FOREACH( const KPartyListUserInfo&, kPartyListUserInfo, vecUserInfo )
+	for( const KPartyListUserInfo& kPartyListUserInfo : vecUserInfo )
 	{
 		KCommunityUserInfo kInfo;
 		kInfo.m_iUnitUID	 = kPartyListUserInfo.m_iUnitUID;

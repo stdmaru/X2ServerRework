@@ -123,19 +123,6 @@ IMPL_ON_FUNC_NOPARAM( EGS_NPROTECT_HACKING_USER_NOT )
 	SetDisconnectReason( KStatistics::eSIColDR_nProtect_Hacking );
 }
 
-//{{ 2009. 8. 18  최육사	hack shield
-IMPL_ON_FUNC( EGS_HACKSHIELD_CHECK_ACK )
-{
-	if( m_kHSAuth.OnHackShieldCheckAck( GetThisPtr<KGSUser>(), kPacket_ ) == false )
-	{
-		SetDisconnectReason( KStatistics::eSIColDR_HackShield_Wrong_Ack );
-		ReserveDestroy();
-
-		START_LOG( cerr, L"hack shield 수신 데이터 인증 실패! UserUID : " << GetUID() );
-		return;
-	}
-}
-//}}
 
 //{{ 2009. 12. 29  최육사	NPCKILLALL해킹방지
 IMPL_ON_FUNC_NOPARAM( EGS_DUNGEON_KILLALLNPC_CHECK_REQ )
@@ -172,25 +159,6 @@ _IMPL_ON_FUNC( ERM_DUNGEON_KILLALLNPC_CHECK_ACK, KEGS_DUNGEON_KILLALLNPC_CHECK_A
 	SendPacket( EGS_DUNGEON_KILLALLNPC_CHECK_ACK, kPacket_ );
 }
 
-IMPL_ON_FUNC_NOPARAM( EGS_REQUEST_HACKSHIELD_CHECK_NOT )
-{
-	VERIFY_STATE( ( 2, KGSFSM::S_FIELD_MAP, KGSFSM::S_ROOM ) );
-
-	START_LOG( cout, L"클라이언트에서 핵쉴드 체크 패킷을 요청하였습니다." )
-		<< BUILD_LOG( GetUserName() )
-		<< BUILD_LOG( GetCharName() );
-
-	// 핵쉴드 요청 패킷 클라로 전송!
-	if( m_kHSAuth.Tick( GetThisPtr<KGSUser>(), true ) == false )
-	{
-		SetDisconnectReason( KStatistics::eSIColDR_HackShield_Auth_Fail );
-		ReserveDestroy();
-
-		START_LOG( cerr, L"hack shield 인증 실패.!" )
-			<< END_LOG;
-		return;
-	}
-}
 //}}
 
 //{{ 2010. 05. 20  최육사	스크립트 파싱
@@ -1041,19 +1009,6 @@ IMPL_ON_FUNC( EGS_SERVER_CHECK_HACK_USER_ACK )
 //}}
 
 
-//-- 지헌 : XTRAP 서버 - 클라 응답 패킷 처리부분(Step3)
-IMPL_ON_FUNC( EGS_XTRAP_ACK )
-{
-	if(m_cXTrapCSM.CSMStep3( &kPacket_ ) == false)
-	{
-		// 스텝3에선 끊지 않는게 정상입니다.
-		//SetDisconnectReason( KStatistics::eSIColDR_nProtect_Hacking );
-		//ReserveDestroy();
-
-		START_LOG( cerr, L"XTRAP 해킹 클라이언트  UserUID : " << GetUID() );
-		return;
-	}
-}
 
 IMPL_ON_FUNC_NOPARAM( ERM_DUNGEON_KILLALLNPC_CHECK_NOT )
 {

@@ -1,6 +1,6 @@
 #pragma once
 #include "ActorProxy.h"
-#include <windows.h>
+#include "x2/platform/win32.h"
 #include "Thread/Thread.h"
 
 #include "Event.h"

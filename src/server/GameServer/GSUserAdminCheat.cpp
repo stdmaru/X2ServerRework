@@ -169,7 +169,7 @@ IMPL_ON_FUNC( EGS_ADMIN_MODIFY_UNIT_LEVEL_REQ )
 	}
 
 
-	if( boost::iequals(kPacket_.m_wstrUnitNickName,GetCharName()) == false )
+	if( x2::platform::IEquals(kPacket_.m_wstrUnitNickName,GetCharName()) == false )
 	{
 		START_LOG( cerr, L"치트로 다른 캐릭터의 레벨을 수정할 수 없다!" )
 			<< BUILD_LOG( GetName() )
@@ -351,7 +351,7 @@ IMPL_ON_FUNC( EGS_ADMIN_CHANGE_ED_REQ )
 	}
 
 
-	if( boost::iequals(kPacket_.m_wstrUnitNickName,GetCharName()) == false )
+	if( x2::platform::IEquals(kPacket_.m_wstrUnitNickName,GetCharName()) == false )
 	{
 		START_LOG( cerr, L"치트로 다른 캐릭터의 ED를 수정할 수 없다!" )
 			<< BUILD_LOG( GetName() )
@@ -1175,7 +1175,7 @@ IMPL_ON_FUNC( DBE_ADMIN_AUTO_GET_ALL_SKILL_ACK)
 		m_kSkillTree.CheckAndUpdateSkillLevelAndCSPOnUsedPage( mit->first, mit->second, 0 );
 	}
 
-	BOOST_TEST_FOREACH( short, iSkillID, kPacket_.m_vecUnsealedSkillID )
+	for( short iSkillID : kPacket_.m_vecUnsealedSkillID )
 	{
 		m_kSkillTree.SkillUnseal( (int)iSkillID );
 	}
@@ -1916,7 +1916,7 @@ IMPL_ON_FUNC( EGS_ADMIN_CASH_SKILL_POINT_DATE_CHANGE_REQ )
 	}
 
 	// 문자열 조합
-	std::wstring wstrModifyDate = boost::str( boost::wformat( L"%04d-%02d-%02d %02d:%02d:00" ) % kPacket_.m_iYear % kPacket_.m_iMonth % kPacket_.m_iDay % kPacket_.m_iHour % kPacket_.m_iMinute );
+	std::wstring wstrModifyDate = x2::str( x2::wformat( L"%04d-%02d-%02d %02d:%02d:00" ) % kPacket_.m_iYear % kPacket_.m_iMonth % kPacket_.m_iDay % kPacket_.m_iHour % kPacket_.m_iMinute );
 
 	// 치트 적용
 	START_LOG( cout, L"개발자가 캐쉬 스킬 포인트 기간을 변경하는 치트 코드를 사용하였습니다!" )
@@ -2058,7 +2058,7 @@ IMPL_ON_FUNC( DBE_ADMIN_CHEAT_GET_ALL_SKILL_ACK )
 	if( kPacket_.m_vecUnSealedSkill.empty() == false )
 	{
 		std::set<int>::iterator it;
-		BOOST_TEST_FOREACH( short, iSkillID, kPacket_.m_vecUnSealedSkill )
+		for( short iSkillID : kPacket_.m_vecUnSealedSkill )
 		{
 			m_kSkillTree.SkillUnseal( iSkillID );
 		}

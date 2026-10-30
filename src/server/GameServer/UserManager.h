@@ -23,8 +23,8 @@ public:
 
     template< class T > void ForEachUser( T& functor );
     CRITICAL_SECTION& GetCS()           { return m_csAct; }
-    KGSUserPtr operator[](int i) const  { return boost::static_pointer_cast<KGSUser>( m_vecAct[i] ); }    // Note : 내부에 lock 처리가 없다.
-    KGSUserPtr At( int i ) const        { return boost::static_pointer_cast<KGSUser>( m_vecAct[i] ); }
+    KGSUserPtr operator[](int i) const  { return std::static_pointer_cast<KGSUser>( m_vecAct[i] ); }    // Note : 내부에 lock 처리가 없다.
+    KGSUserPtr At( int i ) const        { return std::static_pointer_cast<KGSUser>( m_vecAct[i] ); }
 
     /* Note : operator[]의 사용
 

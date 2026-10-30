@@ -1,8 +1,8 @@
 #include "UserManager.h"
 #include "NetError.h"
 
-#include <boost/bind/bind.hpp>
-using namespace boost::placeholders;
+#include <functional>
+using namespace std::placeholders;
 
 ImplToStringW( KUserManager )
 {

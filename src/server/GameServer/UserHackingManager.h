@@ -60,7 +60,7 @@ private:
 	//}}
 	//{{ 2012. 06. 04	김민성       서버 해킹 유저 체크 요청 응답으로 변경
 	char							m_cLastSendType;
-	boost::timer					m_tHackingUserTimer;
+	x2::Timer					m_tHackingUserTimer;
 	//}}
 };
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <WinSock2.h>
+#include "x2/platform/net.h"
 #include "ToString.h"
 #include "KNCSingleton.h"
 #include "Thread/Thread.h"
@@ -46,7 +46,7 @@ private:
 	int											m_iEventCount;
 
 	// 덤프 타이머
-	boost::timer								m_kDumpTimer;
+	x2::Timer								m_kDumpTimer;
 };
 //////////////////////////////////////////////////////////////////////////
 

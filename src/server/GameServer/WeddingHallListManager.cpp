@@ -91,7 +91,7 @@ void KWeddingHallListManager::UpdateWeddingHallInfo( IN const KWeddingHallInfo& 
 	}
 
 	std::set< UidType > setUnitList;
-	BOOST_TEST_FOREACH( UidType, iUnitUID, vecUnitList )
+	for( UidType iUnitUID : vecUnitList )
 	{
 		setUnitList.insert( iUnitUID );
 	}
@@ -153,7 +153,7 @@ void KWeddingHallListManager::DelRoomInfoByCnServerUID( IN const UidType iCnServ
 		}
 	}
 
-	BOOST_TEST_FOREACH( int, iWeddingHallUID, vecWeddingHallUID )
+	for( int iWeddingHallUID : vecWeddingHallUID )
 	{
 		m_mapWeddingHallList.erase( iWeddingHallUID );
 	}

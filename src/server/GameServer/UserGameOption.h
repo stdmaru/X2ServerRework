@@ -1,6 +1,6 @@
 #pragma once
 #include "KncUidType.h"
-#include <boost/timer.hpp>
+#include "x2/platform/timer.h"
 #include <vector>
 #include <map>
 #include "CommonPacket.h"

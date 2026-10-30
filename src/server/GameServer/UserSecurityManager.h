@@ -3,7 +3,7 @@
 #include "CommonPacket.h"
 
 //{{ 2012. 04. 02	김민성		sn 모니터링 기능 분리
-	#include <boost/timer.hpp>
+	#include "x2/platform/timer.h"
 //}}
 
 //{{ 2011. 08. 17	최육사	머신ID 중복 접속 차단
@@ -59,7 +59,7 @@ private:
 	//{{ 2012. 05. 23	김민성       판매 불가 아이템 판매 시도 해킹 유저로 판단
 	int								m_iKickRandomTime;
 	char							m_cKickState;
-	boost::timer					m_tKickTimer;
+	x2::Timer					m_tKickTimer;
 	int								m_iKickReason;
 	//}}
 };

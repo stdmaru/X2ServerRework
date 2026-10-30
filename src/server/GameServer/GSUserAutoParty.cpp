@@ -705,7 +705,7 @@ _IMPL_ON_FUNC( EPM_REGROUP_PARTY_NOT, KEGS_REGROUP_PARTY_NOT )
 
 		// 새로운 파티로 세팅
 		kPacketToRM.m_iPartyUID = GetPartyUID();
-		BOOST_TEST_FOREACH( const KPartyUserInfo&, kInfo, kPacket_.m_vecPartyUserInfo )
+		for( const KPartyUserInfo& kInfo : kPacket_.m_vecPartyUserInfo )
 		{
 			kPacketToRM.m_vecPartyUnitUIDList.push_back( kInfo.m_iUnitUID );
 		}

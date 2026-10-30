@@ -7,7 +7,7 @@
 #define INVALID_SECTOR 0xffffffff
 
 typedef	__int32	SectorID;
-typedef boost::shared_ptr< std::vector< SectorID > > SectorsPtr;
+typedef std::shared_ptr< std::vector< SectorID > > SectorsPtr;
 
 /*    32 bit ( 4 byte )
 

@@ -3,7 +3,6 @@
 
 #include "NetError.h"
 
-#include <boost/foreach.hpp>
 
 
 
@@ -59,7 +58,7 @@ void KUserSkillTree::InitEverySkillPage( IN OUT std::vector<KUserSkillPageData>&
 	ResetEveryPage();
 	m_vecSkillPageData.resize(0);
 
-	BOOST_FOREACH( const KUserSkillPageData& userSkillPageData, vecSkillPage_ )
+	for( const KUserSkillPageData& userSkillPageData : vecSkillPage_ )
 	{
 		m_vecSkillPageData.push_back( SkillPageData() );
 		SkillPageData& skillPageData = m_vecSkillPageData.back();
@@ -430,7 +429,7 @@ void KUserSkillTree::ExpandSkillSlotB( std::wstring& wstrSkillSlotBEndDate )
 	}
 
 	// 사용 가능한 모든 페이지의 B슬롯 0으로 초기화
-	BOOST_FOREACH( SkillPageData& skillPageData, m_vecSkillPageData )
+	for( SkillPageData& skillPageData : m_vecSkillPageData )
 	{
 		ZeroMemory( skillPageData.m_aiSkillSlot + static_cast<int>( SKILL_SLOT_B1 ),
 			static_cast<int>( MAX_SKILL_SLOT - SKILL_SLOT_B1 ) );
@@ -468,7 +467,7 @@ void KUserSkillTree::ExpireSkillSlotB()
 	CTime tCurrentTime = CTime::GetCurrentTime();
 	if( tCurrentTime >= m_tSkillSlotBEndDate )
 	{
-		BOOST_FOREACH( SkillPageData& skillPageData, m_vecSkillPageData )
+		for( SkillPageData& skillPageData : m_vecSkillPageData )
 		{
 			ZeroMemory( skillPageData.m_aiSkillSlot + SKILL_SLOT_B1,
 				static_cast<int>(MAX_SKILL_SLOT - SKILL_SLOT_B1) );
@@ -537,7 +536,7 @@ bool KUserSkillTree::IsAllFollowingSkillLevelZero( int iSkillID )
 		return false;
 	}
 
-	BOOST_TEST_FOREACH( const int, iFollowingSkillID, pSkillTreeTemplet->m_vecFollowingSkill )
+	for( const int iFollowingSkillID : pSkillTreeTemplet->m_vecFollowingSkill )
 	{
 		if( GetSkillLevel( iFollowingSkillID ) > 0 )
 		{
@@ -868,7 +867,7 @@ void KUserSkillTree::SetSPointEveryPage( IN const int iSPoint_ )
 
 int KUserSkillTree::GetCSPointAnyPage() const
 {
-	BOOST_FOREACH( const SkillPageData& skillPageData, m_vecSkillPageData )
+	for( const SkillPageData& skillPageData : m_vecSkillPageData )
 	{
 		if ( 0 != skillPageData.GetCSPoint() )
 			return skillPageData.GetCSPoint();
@@ -1043,7 +1042,7 @@ void KUserSkillTree::GetPassiveSkillData( OUT std::vector<KSkillData>& vecSkillS
 void KUserSkillTree::CalcUsedSPointAndCSPoint( OUT std::vector<int>& vecSPoint_,
 	OUT std::vector<int>& vecCSPoint_ ) const
 {
-	BOOST_FOREACH( const SkillPageData& skillPageData, m_vecSkillPageData )
+	for( const SkillPageData& skillPageData : m_vecSkillPageData )
 	{
 		int iSPoint	= 0;	/// 해당 스킬 레벨까지 찍기 위해 필요한 스킬 포인트
 		int iCSPoint = 0;	/// 그노시스 축복 사용 이후 찍은 스킬 포인트
@@ -1122,7 +1121,7 @@ void KUserSkillTree::CalcUsedSPointAndCSPoint( OUT std::vector<int>& vecSPoint_,
 void KUserSkillTree::CalcExpireCashSkillPointEveryPage( OUT std::vector<KRetrievedSkillPageData>& vecRetrivedSkillPageData_ ) const
 {
 	vecRetrivedSkillPageData_.clear();
-	BOOST_FOREACH( const SkillPageData& skillPageData, m_vecSkillPageData )
+	for( const SkillPageData& skillPageData : m_vecSkillPageData )
 	{
 		vecRetrivedSkillPageData_.push_back( KRetrievedSkillPageData() );
 		KRetrievedSkillPageData& retrievedSkillPageData
@@ -1278,7 +1277,7 @@ int KUserSkillTree::GetRollBackLevelStep( IN const UserSkillData& userSkillData_
 // 실제로 cash skill point로 획득한 스킬을 되돌린다.
 void KUserSkillTree::ExpireCashSkillPoint()
 {
-	BOOST_FOREACH( SkillPageData& skillPageData, m_vecSkillPageData )
+	for( SkillPageData& skillPageData : m_vecSkillPageData )
 	{
 		for ( SkillDataMap::iterator mit = skillPageData.m_mapSkillTree.begin();
 			mit != skillPageData.m_mapSkillTree.end(); ++mit )
@@ -1635,7 +1634,7 @@ void KUserSkillTree::GetTierSkillList( OUT std::vector< int >& vecTierSkillList_
 
 void KUserSkillTree::GetHaveSkillList( OUT std::vector< std::map< int, int > >& vecMapHaveSkill_ ) const
 {
-	BOOST_FOREACH( const SkillPageData& skillPageData, m_vecSkillPageData )
+	for( const SkillPageData& skillPageData : m_vecSkillPageData )
 	{
 		vecMapHaveSkill_.push_back( std::map<int, int>() );
 		std::map<int, int>& mapSkillTree
@@ -1768,7 +1767,7 @@ bool KUserSkillTree::CheckGetNewSkill( IN std::map< int, KGetSkillInfo >& mapGet
 			// 기본 스킬이 아니어야 한다.
 			if( bDefaultSkillTire == false )
 			{
-				BOOST_TEST_FOREACH( int, iTierSkillID, vecTierSkillList )
+				for( int iTierSkillID : vecTierSkillList )
 				{
 					// 동일 스킬이라면 넘어가
 					if( iTierSkillID == mit->first )
@@ -1868,7 +1867,7 @@ bool KUserSkillTree::CheckResetSkill( IN KEGS_RESET_SKILL_REQ& kPacket_, IN int 
 
 void KUserSkillTree::InitializeEquippedSkillSlotEveryPage()
 {
-	BOOST_FOREACH( SkillPageData& skillPageData, m_vecSkillPageData )
+	for( SkillPageData& skillPageData : m_vecSkillPageData )
 	{
 		skillPageData.FillEquippedSkillSlotWithZero();
 	}
@@ -1892,7 +1891,7 @@ void KUserSkillTree::InitializeEquippedSkillSlot( const int iSkillPagesIndex_ )
 
 void KUserSkillTree::InitializeEveryLearnedSkillTree()
 {
-	BOOST_FOREACH( SkillPageData& skillPageData, m_vecSkillPageData )
+	for( SkillPageData& skillPageData : m_vecSkillPageData )
 	{
 		skillPageData.ClearLearnedSkillTree();
 	}
