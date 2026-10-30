@@ -68,7 +68,7 @@ Andamento em 2026-10-29: plataforma e KNCSDK compilando no Linux (GCC e Clang) e
 - [x] Dependências via CMake (T13): Crypto++ 8.9, zlib, LuaJIT 2.1 (pkg-config, ou fonte com commit fixo pelo Makefile dele: T21), doctest.
 - [x] KNCSDK portado: log, `Serializer` (formato de rede fixo), `KncSecurity`, `Thread`, `ObjectPool`, `KncUtil`, unido ao `KNCSDK_Client`. Ver [KNCSDK](../porte/kncsdk.md).
 - [x] `lua_tinker` (versão do servidor) compilando em GCC/Clang sobre LuaJIT 2.1; luabind removido.
-- [ ] **Validar o protocolo com bytes reais** do cliente/servidor originais (hoje os testes usam bytes deduzidos do código).
+- [ ] **Validar o protocolo com bytes reais** do cliente/servidor originais. Em 2026-10-30 o login no canal funcionou com o `x2_DEBUG.exe` e o `x2.exe` (troca de chave, cripto, `ECH_VERIFY_ACCOUNT`, listas); falta o resto (GameServer).
 - [x] Compilar e testar os caminhos Windows com **MinGW-w64 + Wine** (T18): plataforma e KNCSDK sem warnings, testes passando (2026-10-29).
 - [x] LuaJIT 2.1 no MinGW (T21): `kncsdk_lua` e o `Common` do servidor compilando sem warnings e com os testes passando no Wine (2026-10-30).
 - [ ] Compilar e testar no **Windows/MSVC** e LuaJIT no MSVC (D5).
@@ -89,7 +89,7 @@ Ver [Servidor — acoplamento com Windows](../original/servidor.md).
 - [x] `server/common-db`: ODBC portável (T17), testado contra SQL Server 2022 em Docker com os bancos do jogo, via FreeTDS (2026-10-30): [Banco de dados (ODBC)](../porte/server-common-db.md). Driver 18 ainda não testado.
 - [x] `server/channel-build`: ChannelServer compilando sem warnings (GCC, Clang, MinGW), `main` sem MFC (`KServerMain`), 2026-10-30. Ver [Servidor: ChannelServer](../porte/server-channel.md).
 - [x] EPublisherServer: reimplementação do AuthServer do DEB (T23), testada com o cliente gSOAP dos servidores e contra o banco (2026-10-30). Ver [Servidor: EPublisherServer](../porte/server-epublisher.md).
-- [ ] `server/channel-run`: ChannelServer no Linux com o `elsword.exe` original até o fim do login no canal. Em 2026-10-30: pasta `run/` montada pelo CMake (T22) e servidor no estado pronto com o banco; faltam o DEB e o cliente.
+- [x] `server/channel-run`: ChannelServer no Linux com o `elsword.exe` original até o fim do login no canal (2026-10-30): login pelo EPublisherServer, listas de grupos de servidores e de canais recebidas; o cliente então tenta o GameServer (porta 9300), que ainda não existe, e mostra "O servidor está cheio". Pasta `run/` pelo CMake (T22).
 - [ ] UI MFC (`Common/ui/ServerUIDlg`) → terminal em todas as plataformas (T15): log ao vivo, prompt Lua com histórico, título com status, encerramento com confirmação, modo serviço sem stdin.
 - [ ] Log (T16): metadados estruturados no `START_LOG`; arquivo com o conteúdo completo do original, console compacto e colorido com nível próprio.
 - [ ] (Futuro) `--gui` portável sobre a mesma API de comandos/log.

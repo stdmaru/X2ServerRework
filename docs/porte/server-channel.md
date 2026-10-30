@@ -22,7 +22,12 @@ Mesma posição relativa do original (`src/server/ChannelServer` ao lado de `src
 Roda no Linux pela pasta montada por `x2_run_channel` ([Pastas de execução](../ferramentas/runtime.md)): conecta no SQL Server do Docker
 (FreeTDS), carrega os scripts (`Enum.lua`, `DungeonEnum.lua`, `GameSysValTable.lua`, `WaitQueueData.lua`, `LogConfig.lua`...),
 se autentica no banco (UID 59, "Channel"), lê a lista de canais e chega ao estado pronto (`OnServerReadyComplete`), com o prompt Lua
-respondendo. Encerra com código 0 no fim do stdin. **Ainda não testado com o cliente** nem com o serviço DEB.
+respondendo. Encerra com código 0 no fim do stdin.
+
+**Testado com o cliente original** (`x2_DEBUG.exe` e `x2.exe`, no Wine, 2026-10-30), com o [EPublisherServer](server-epublisher.md):
+o login é aceito e o cliente recebe as listas de grupos de servidores e de canais. Em seguida ele conecta no GameServer
+(`LChannelList`: `127.0.0.1:9300`), que ainda não existe, e mostra "O servidor está cheio. Tente de novo.", o esperado. O primeiro teste
+falhou por causa das chaves padrão do `KncSecurity` ([KNCSDK](kncsdk.md#portabilidade-sem-mudança-de-comportamento)).
 
 ## Build (2026-10-30, branch `server/channel-build`)
 
@@ -59,5 +64,4 @@ singletons por ponteiro da base), `using` das sobrecargas escondidas de `RoutePa
 
 ## Pendências
 
-- Subir o serviço DEB e conectar o `elsword.exe` (`_client/`) até o fim do login no canal (resto do `server/channel-run`).
 - O `cerr` "INVALID_SOCKET" do `KAccepter` no encerramento vem de fechar o socket que espera no `accept`: também acontece no original (mantido).
