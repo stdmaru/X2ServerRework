@@ -61,6 +61,12 @@ Interface pública (nomes, macros, assinaturas) mantida; mudou o que está lista
 
 ### Portabilidade (sem mudança de comportamento)
 
+- **Chaves padrão do SA (SPI 0)** (achado com o cliente original em 2026-10-30): o original escrevia `"임시로만드는키"` e
+  `"해커들절대모를키"` num fonte CP949 e usava os 8 primeiros bytes. Com o fonte convertido para UTF-8 pelo importador, os bytes
+  mudaram e o cliente recusava o primeiro pacote do servidor (`IsValidICV_Local` com SPI 0, "falha na conexão com o servidor de canal").
+  Agora são os bytes CP949 escritos à mão; `test_security.cpp` confere a chave e um HMAC-MD5 calculado fora. **Cuidado geral:**
+  literal `char` não ASCII que vá para a rede, cripto ou hash tem de ser escrito em bytes (varredura em 2026-10-30: só este caso).
+
 - `Serializer` com tamanhos fixos na rede, iguais ao build MSVC x86. Detalhes em [Protocolo](../original/protocolo.md):
   - `int`, `unsigned`, `long` e `unsigned long` viram 4 bytes; um `long` fora da faixa de 32 bits **falha**, em vez de truncar;
   - `wchar_t` vira 2 bytes;

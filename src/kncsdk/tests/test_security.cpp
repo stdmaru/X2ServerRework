@@ -75,3 +75,16 @@ TEST_CASE_FIXTURE(SecurityFixture, "SA keys are not the same on every run")
     GetSADB().Delete(a);
     GetSADB().Delete(b);
 }
+
+TEST_CASE("default SA (SPI 0) uses the original client's key bytes")
+{
+    // The original keys were CP949 string literals; the client hashes with their first 8 bytes. A wrong key makes
+    // the client reject the server's first packet (IsValidICV_Local fails with SPI 0).
+    const KSecurityAssociation sa;
+    const unsigned char auth[] = { 0xC0, 0xD3, 0xBD, 0xC3, 0xB7, 0xCE, 0xB8, 0xB8 };
+    CHECK(sa.GetAuthKey() == KByteStream(auth, sizeof(auth)));
+
+    // HMAC-MD5 truncated to 10 bytes, reference computed outside (Python hmac): f50c12d659a268b33f18
+    const unsigned char expected[] = { 0xf5, 0x0c, 0x12, 0xd6, 0x59, 0xa2, 0x68, 0xb3, 0x3f, 0x18 };
+    CHECK(sa.GenerateICV(Bytes("Elsword")) == KByteStream(expected, sizeof(expected)));
+}

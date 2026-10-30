@@ -48,8 +48,13 @@ KSecurityAssociation::KSecurityAssociation()
     m_nLastSequenceNum( 0 ),
     m_nReplayWindowMask( 0 )
 {
-    m_bsAuthKey.Assign( "임시로만드는키", AUTH_KEY_SIZE );
-    m_bsCryptoKey.Assign( "해커들절대모를키", CRYPTO_KEY_SIZE );
+    // Default keys (SPI 0, before the key exchange). The original wrote them as the CP949 literals "임시로만드는키"
+    // and "해커들절대모를키" and took their first 8 bytes; the client was built from the same CP949 source,
+    // so these are the bytes on the wire. Spelled out: the port's sources are UTF-8.
+    static const unsigned char kDefaultAuthKey[AUTH_KEY_SIZE]     = { 0xC0, 0xD3, 0xBD, 0xC3, 0xB7, 0xCE, 0xB8, 0xB8 };
+    static const unsigned char kDefaultCryptoKey[CRYPTO_KEY_SIZE] = { 0xC7, 0xD8, 0xC4, 0xBF, 0xB5, 0xE9, 0xC0, 0xFD };
+    m_bsAuthKey.Assign( kDefaultAuthKey, AUTH_KEY_SIZE );
+    m_bsCryptoKey.Assign( kDefaultCryptoKey, CRYPTO_KEY_SIZE );
 }
 
 KSecurityAssociation::KSecurityAssociation( const KSecurityAssociation& sa )
