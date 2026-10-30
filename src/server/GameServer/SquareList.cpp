@@ -118,7 +118,7 @@ bool KSquareList::GetSquareInfoPage( IN KEGS_SQUARE_LIST_REQ& kReq_, OUT KEGS_SQ
 		return true;
 	}
 
-	std::vector< KSquareInfoPtr >::iterator vit;
+	[[maybe_unused]] std::vector< KSquareInfoPtr >::iterator vit;
 
 	UINT uiTotalPage;
 	uiTotalPage = pvecSquareList->size() / GetPageNum();

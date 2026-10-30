@@ -3914,7 +3914,7 @@ void KUserQuestManager::CheckEpicQuest_SuccessStateChange( IN int iMapID, IN KGS
 {
 	//# iMapID 에 대한 유효성 검사는
 	//# EGS_STATE_CHANGE_FIELD_REQ 에서 하고 들어왔기 때문에 하지 않는다.
-	std::vector<CXSLQuestManager::QuestTemplet*>::const_iterator cvit;
+	[[maybe_unused]] std::vector<CXSLQuestManager::QuestTemplet*>::const_iterator cvit;
 	std::vector<CXSLQuestManager::QuestTemplet*> vecEpicList;
 
 	SiCXSLQuestManager()->GetEpicQuestTempletList(vecEpicList);
@@ -5184,7 +5184,7 @@ void KUserQuestManager::CheckEpicQuest_EnterDungeon( IN int iDungeonID, IN KGSUs
 {
 	//# iMapID 에 대한 유효성 검사는
 	//# EGS_STATE_CHANGE_FIELD_REQ 에서 하고 들어왔기 때문에 하지 않는다.
-	std::vector<CXSLQuestManager::QuestTemplet*>::const_iterator cvit;
+	[[maybe_unused]] std::vector<CXSLQuestManager::QuestTemplet*>::const_iterator cvit;
 	std::vector<CXSLQuestManager::QuestTemplet*> vecEpicList;
 
 	SiCXSLQuestManager()->GetEpicQuestTempletList(vecEpicList);
@@ -5246,7 +5246,7 @@ void KUserQuestManager::CheckEpicQuest_EnterBattleField( IN int iMapID, IN KGSUs
 {
 	//# iMapID 에 대한 유효성 검사는
 	//# EGS_STATE_CHANGE_FIELD_REQ 에서 하고 들어왔기 때문에 하지 않는다.
-	std::vector<CXSLQuestManager::QuestTemplet*>::const_iterator cvit;
+	[[maybe_unused]] std::vector<CXSLQuestManager::QuestTemplet*>::const_iterator cvit;
 	std::vector<CXSLQuestManager::QuestTemplet*> vecEpicList;
 
 	SiCXSLQuestManager()->GetEpicQuestTempletList(vecEpicList);

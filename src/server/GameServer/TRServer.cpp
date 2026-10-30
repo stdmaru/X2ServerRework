@@ -228,7 +228,7 @@ void KTRServer::OnAccept_( SOCKET sock, const SOCKADDR_IN& sinRemote )
 
 		if( dwElapTime > m_kMaxTimeInfo.m_dwTerm )
 		{
-			m_kMaxTimeInfo.m_strIP    = KncUtil::toWideString(inet_ntoa(sinRemote.sin_addr));
+			m_kMaxTimeInfo.m_strIP    = KncUtil::toWideString(x2::platform::IpToString(sinRemote.sin_addr));
 			m_kMaxTimeInfo.m_cTime    = CTime::GetCurrentTime();
 			m_kMaxTimeInfo.m_dwTerm   = dwElapTime;
 

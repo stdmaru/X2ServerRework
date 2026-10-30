@@ -56,7 +56,7 @@ _IMPL_ON_FUNC( DBE_CHARACTER_LIST_2ND_REQ, KEGS_CHARACTER_LIST_1ST_ACK )
 {
     kPacket_.m_iOK = NetError::ERR_ODBC_01;
 
-    std::vector< KUnitInfo >::iterator vit;
+    [[maybe_unused]] std::vector< KUnitInfo >::iterator vit;
 
     UidType nUserUID = FIRST_SENDER_UID; //지정한 서버군에서 유저ID로 유저UID 얻어오기
 

@@ -173,10 +173,10 @@ IMPL_ON_FUNC( EBILL_BUY_PRODUCT_REQ )
     kPacketAck.m_iOK = NetError::ERR_UNKNOWN;
 
     // Configure the purchase amount and item list.
-    int iTotalPrice = 0;
+    [[maybe_unused]] int iTotalPrice = 0;
 	std::string strTotalList = ""; // Format: ProductNo_ProductID_count_price|ProductNo_ProductID_TotalCount_TotalPrice.
 
-	int count = 0;
+	[[maybe_unused]] int count = 0;
     std::vector< KBillBuyInfo >::iterator vit;
     for( vit = kPacket_.m_vecBillBuyInfo.begin(); vit != kPacket_.m_vecBillBuyInfo.end(); vit++ )
     {

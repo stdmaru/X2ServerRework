@@ -3196,7 +3196,7 @@ bool KGSUser::OnAccountSelectUnitAck( IN OUT KDBE_SELECT_UNIT_ACK& kAck_, IN boo
 	//}}
 
 	//{{ 2008. 10. 6  최육사	타이틀
-	bool bUsePcBangTitle = IsPcBang() & SiKGameSysVal()->IsUsingPcBangTitle( GetPcBangType() );
+	bool bUsePcBangTitle = IsPcBang() && SiKGameSysVal()->IsUsingPcBangTitle( GetPcBangType() );
 	m_kUserTitleManager.Init( bUsePcBangTitle, kAck_.m_vecMission, kAck_.m_vecTitle );
 	//}}
 
@@ -5985,7 +5985,7 @@ void KGSUser::UserStatisticsIncreaseCount( int iTableID, int iSubTableID , int i
 bool KGSUser::CheckingSpirit( IN const int iDungeonID )
 {
 	// 근성도 매니저에서 검사
-	bool bSpiritFree = ExistActivateBuff( CXSLBuffManager::BTI_BUFF_PREMIUM_PC_ROOM ) & SiKGameSysVal()->IsSpiritFree( GetPcBangType() );
+	bool bSpiritFree = ExistActivateBuff( CXSLBuffManager::BTI_BUFF_PREMIUM_PC_ROOM ) && SiKGameSysVal()->IsSpiritFree( GetPcBangType() );
 	return m_kUserSpiritManager.CheckingSpirit( iDungeonID, bSpiritFree );
 }
 
@@ -6014,7 +6014,7 @@ bool KGSUser::DecreaseSpirit( IN const int iDungeonID, IN const char cUserCount,
 	int iDecreaseSpirit = 0;
 	bool bIsSpiritUpdated = false;
 
-	bool bSpiritFree = IsPcBang() & SiKGameSysVal()->IsSpiritFree( GetPcBangType() );
+	bool bSpiritFree = IsPcBang() && SiKGameSysVal()->IsSpiritFree( GetPcBangType() );
 
     m_kUserSpiritManager.DecreaseSpirit( iDungeonID
 									   , cUserCount
@@ -6101,7 +6101,7 @@ bool KGSUser::CheckDungeonPartyCondition( IN const int iDungeonID,
 	if( CXSLDungeon::IsDefenceDungeon( iDungeonID ) == true )
 	{
 		int iWorldCrystalNum = SiKGSWorldMissionManager()->GetWorldCrystalCount();
-		int iWorldCrystalMin, iWorldCrystalMax;
+		int iWorldCrystalMin = 0, iWorldCrystalMax = 0;	// Port: unset for an unknown difficulty in the original
 
 		switch( cDifficultyLevel )
 		{
@@ -6466,7 +6466,7 @@ bool KGSUser::CheckForDungeonGameStart( IN const char cDungeonMode,
 		}
 
 		int iWorldCrystalNum = SiKGSWorldMissionManager()->GetWorldCrystalCount();
-		int iWorldCrystalMin, iWorldCrystalMax;
+		int iWorldCrystalMin = 0, iWorldCrystalMax = 0;	// Port: unset for an unknown difficulty in the original
 
 		switch( cDifficultyLevel )
 		{
@@ -9258,9 +9258,6 @@ void KGSUser::ProcessEvent( const KEventPtr& spEvent_ )
 #	define EVENT_HANDLER_NOPARAM( eventid ) CASE_CHECK_ERR_AND_FILTER_NOPARAM( eventid );
 #	undef _EVENT_HANDLER
 #	define _EVENT_HANDLER( eventid, structtype ) _CASE_CHECK_ERR_AND_FILTER( eventid, structtype );
-#pragma message( "--------------------------------------------" )
-#pragma message( "Server Packet Event Filter!!!!!" )
-#pragma message( "--------------------------------------------" )
 	//}}
 
 	// 여기서 부터 GSUser Event Handler의 헤더 파일을 추가합니다.
@@ -9309,9 +9306,6 @@ bool KGSUser::ProcessEventExpand( const KEventPtr& spEvent_ )
 {
 	switch( spEvent_->m_usEventID )
 	{
-#pragma message( "--------------------------------------------" )
-#pragma message( "Server Packet Event Filter!!!!! - ProcessEventExpand " )
-#pragma message( "--------------------------------------------" )
 
 #	include "GSUserPet.h"
 #	include "GSUserGuild.h"

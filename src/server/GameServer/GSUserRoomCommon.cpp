@@ -1860,7 +1860,7 @@ _IMPL_ON_FUNC( ERM_BATTLE_FIELD_NPC_UNIT_DIE_NOT, KERM_NPC_UNIT_DIE_NOT )
 	}
 	else
 	{
-		bool bSpiritFree = ExistActivateBuff( CXSLBuffManager::BTI_BUFF_PREMIUM_PC_ROOM ) & SiKGameSysVal()->IsSpiritFree( GetPcBangType() );
+		bool bSpiritFree = ExistActivateBuff( CXSLBuffManager::BTI_BUFF_PREMIUM_PC_ROOM ) && SiKGameSysVal()->IsSpiritFree( GetPcBangType() );
 
 		// 배틀 필드라면 근성도가 없으면 몬스터를 잡아도 EXP 를 얻지 못하게 한다.
 		if( m_kUserSpiritManager.GetSpirit() <= 0

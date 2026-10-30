@@ -1397,7 +1397,7 @@ _IMPL_ON_FUNC( EBILL_INVENTORY_INQUIRY_ACK, KEGS_BILL_INVENTORY_INQUIRY_ACK )
 			KBillPackageInfo tempSubPackageInfo;
 			KBillProductInfo tempSubPackProInfo;
 			KBillProductAttribute tempAttribute;
-			CTime tExpirationTime;
+			[[maybe_unused]] CTime tExpirationTime;
 
 			SiKBillManager()->GetProductInfo(kPacket_.m_vecSubPackageInfo[i], tempSubPackProInfo);
 

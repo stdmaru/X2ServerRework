@@ -1084,10 +1084,10 @@ IMPL_ON_FUNC( ELOG_USER_STATISTICS )
 		% edData[US::US_ED_MPostLetter]											//@MPostLetter					bigint				-- 우편 첨부
 		% edData[US::US_ED_MSendLetterBasic]									//@MSendLetterBasic				int					-- 우편 발송 수수료
 		% edData[US::US_ED_MSendLetterItem]										//@MSendLetterItem				int					-- 우편 아이템 첨부 수수료
-		% etcData[US::US_ED_OpenCubeSpendED]									//@iOpenCube					int					-- 큐브 오픈 수수료 // SERV_CUBE_OPEN_ED_CONDITION
-		% etcData[US::US_ED_PBattleFieldED]									//@iPBattleFieldED				int					-- 필드 획득		// SERV_SEPARATE_DUNGEON_FIELD_ED_LOG
-		% etcData[US::US_ED_MCoboExpressTicketED]								//@iMCoboExpressTicketED		int					-- 코보 익스프레스 수수료 // SERV_SEPARATE_DUNGEON_FIELD_ED_LOG
-		% etcData[US::US_ED_MItemResolve]										//@iMItemDecom					bigint				-- 분해 수수료		// SERV_MULTI_RESOLVE
+		% edData[US::US_ED_OpenCubeSpendED]									//@iOpenCube					int					-- 큐브 오픈 수수료 // SERV_CUBE_OPEN_ED_CONDITION
+		% edData[US::US_ED_PBattleFieldED]									//@iPBattleFieldED				int					-- 필드 획득		// SERV_SEPARATE_DUNGEON_FIELD_ED_LOG
+		% edData[US::US_ED_MCoboExpressTicketED]								//@iMCoboExpressTicketED		int					-- 코보 익스프레스 수수료 // SERV_SEPARATE_DUNGEON_FIELD_ED_LOG
+		% edData[US::US_ED_MItemResolve]										//@iMItemDecom					bigint				-- 분해 수수료		// SERV_MULTI_RESOLVE
 		//Play 23개
 		% etcData[US::US_Etc_Used_Spirit]										//@UseSpirit					int					-- 사용 근성도
 		% etcData[US::US_Etc_AllUsed_Spirit_Count]								//@AllSpirit					bit					-- 근성도 모두 소모 여부

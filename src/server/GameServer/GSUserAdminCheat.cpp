@@ -2443,7 +2443,7 @@ IMPL_ON_FUNC( EGS_ADMIN_DELETE_HENIR_RANKING_NICKNAME_NOT )
 
 	// 치트 로그
 	CStringW cwstrCheatContents;
-	cwstrCheatContents.Format( L"%d, %s", kPacket_.m_iRankingType, kPacket_.m_wstrNickName );
+	cwstrCheatContents.Format( L"%d, %s", kPacket_.m_iRankingType, kPacket_.m_wstrNickName.c_str() ); // Port: the original passed the std::wstring itself through ...
 
 	WriteCheatLogToDB( L"/dhn", cwstrCheatContents );
 }

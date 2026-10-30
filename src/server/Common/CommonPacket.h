@@ -401,7 +401,10 @@ DECL_DATA( KItemInfo )
 		m_byteExpandedSocketNum = 0;
 	}
 
-	COPYCON_ASSIGNOP( KItemInfo, right )
+	// Port: COPYCON_ASSIGNOP, but the copy starts from the default constructor: assigning into members that were never
+	// initialized (char, short) made GCC -O2 report them as maybe-uninitialized
+	KItemInfo( const KItemInfo& right ) : KItemInfo() { *this = right; }
+	KItemInfo& operator=( const KItemInfo& right )
 	{
 		m_iItemID			 = right.m_iItemID;
 		m_cUsageType		 = right.m_cUsageType;

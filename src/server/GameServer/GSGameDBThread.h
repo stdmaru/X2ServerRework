@@ -30,7 +30,7 @@ public:
 
 protected:
     // derived from KSubThread
-    virtual inline void ProcessEvent( const KEventPtr& spEvent );
+    virtual void ProcessEvent( const KEventPtr& spEvent ); // Port: `inline` dropped, it is defined in the .cpp
 
 protected:
     KStoredProcedure m_kSP;

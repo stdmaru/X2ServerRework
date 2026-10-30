@@ -337,7 +337,7 @@ bool KPVPList::GetRoomInfoPage( IN KEGS_ROOM_LIST_REQ& kReq_, OUT KEGS_ROOM_LIST
 		return true;
 	}
 
-	std::vector< KRoomInfoPtr >::iterator vit;
+	[[maybe_unused]] std::vector< KRoomInfoPtr >::iterator vit;
 
 	UINT uiTotalPage = 0;
 	uiTotalPage = pvecRoomList->size() / GetPageNum();

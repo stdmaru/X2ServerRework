@@ -858,7 +858,7 @@ IMPL_ON_FUNC( DBE_GET_PURE_SECOND_SECURITY_INFO_REQ )
 
     //{{ 2011. 05. 27    김민성    휴면 복귀 유저 보상
     [[maybe_unused]] CTime tCurr = CTime::GetCurrentTime();
-    CTime tEndDate;
+    [[maybe_unused]] CTime tEndDate;
     //}}
 
     // 2차 비번 얻기 : kPacket_ --> UserUID

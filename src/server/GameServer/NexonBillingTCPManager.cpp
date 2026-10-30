@@ -872,7 +872,7 @@ bool KNexonBillingTCPManager::Connect()
 
 	SOCKADDR_IN addr;
 	addr.sin_family			= AF_INET;
-	addr.sin_addr.s_addr	= inet_addr( m_kNexonBillingTCPInfo.m_strIP.c_str() );
+	addr.sin_addr.s_addr	= x2::platform::IpFromString( m_kNexonBillingTCPInfo.m_strIP.c_str() );
 	addr.sin_port			= htons( m_kNexonBillingTCPInfo.m_usPort );
 
 	int ret = ::connect( m_sock, ( struct sockaddr* )&addr, sizeof( addr ) );

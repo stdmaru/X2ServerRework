@@ -5857,7 +5857,7 @@ bool KInventory::DeleteAndInsert( IN const std::map< UidType, int >& mapToDelete
         int iSlotID;
         LIF( GetCategorySlot( mitToDelete->first, iCategory, iSlotID ) );
         KInventoryItemInfo kInventoryItemInfo;
-        int iUsageType;
+        int iUsageType = 0;
         _JIF( GetUsageType( mitToDelete->first, iUsageType ), continue );
         if( iUsageType == CXSLItem::PT_QUANTITY )
         {

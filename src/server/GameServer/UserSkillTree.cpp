@@ -1162,7 +1162,7 @@ void KUserSkillTree::CalcExpireCashSkillPoint( OUT int& iRetrievedSPoint_,
 		int iSkillLevel = userSkillData.m_iSkillLevel;
 		int iSkillCSP = userSkillData.m_iSkillCSPoint;
 		int iRollBackLevelStep = 0;
-		int iReturnSP = 0;		// 스킬을 해당 레벨까지 올리기 위해 필요한 스킬
+		[[maybe_unused]] int iReturnSP = 0;		// 스킬을 해당 레벨까지 올리기 위해 필요한 스킬
 		for(  ; 0 < iSkillLevel ; --iSkillLevel )
 		{
 			// 배우기위한 포인트

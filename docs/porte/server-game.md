@@ -34,8 +34,9 @@ relativa do original (`src/server/GameServer` ao lado de `src/server/Common`).
 
 ## Estado (2026-10-30, branch `server/game-build`)
 
-O executável `GameServer` (alvo `x2_game_server`, `main` com `KServerMain` como o ChannelServer) **compila e linka** em GCC Debug.
-Os warnings estão sendo zerados; depois vêm Clang, GCC Release e o clang-cl na VM Windows. Ainda não rodou: é o passo `server/game-run`.
+O executável `GameServer` (alvo `x2_game_server`, `main` com `KServerMain` como o ChannelServer) **compila e linka sem warnings** em
+GCC Debug, Clang Debug, GCC Release e clang-cl (Windows, na VM de testes), com os 6 testes passando nos três. Ainda não rodou: é o passo
+`server/game-run`. O Clang e o clang-cl acharam três bugs do original (abaixo) que o GCC não acusava.
 
 Medidas do caminho (GCC Debug, `-k 0`), para dar a escala: 632 erros em 59 arquivos depois da passada mecânica; 0 erros e 1.099
 warnings (190 distintos) depois das correções abaixo e do `fix_warnings.py`.
@@ -57,6 +58,14 @@ warnings (190 distintos) depois das correções abaixo e do `fix_warnings.py`.
 | `UserLogManager`, `RobotTestManager` | Arquivos em UTF-8 (`Utf8FileLocale`), caminhos com `/`, `std::filesystem` | O original usava o locale `"korean"` (CP949) e `CreateDirectoryA` |
 | `XSLXmlParser` (política da Nexon) | `W2A` → UTF-8 | O XML declara `encoding="utf-8"`; o `W2A` usava a code page ANSI |
 | Comparações sempre falsas | `u_char == -1` (grau de guilda) e `unsigned < 0` (nível de skill, página ativa) saem | Sempre falsas também no MSVC: o comportamento fica o mesmo (ver Pendências) |
+
+### Bugs do original corrigidos
+
+| Onde | Bug | Correção |
+|---|---|---|
+| `GSLogDBThread` (estatística do personagem) | Quatro colunas de ED (`US_ED_OpenCubeSpendED`, `US_ED_PBattleFieldED`, `US_ED_MCoboExpressTicketED`, `US_ED_MItemResolve`) eram lidas do `etcData[22]` com índices 22 a 25: leitura fora do array (lixo da pilha no log) | Lidas do `edData`, onde são somadas (2026-10-30, achado pelo `-Warray-bounds` do Clang) |
+| `GSUserAdminCheat` (`/dhn`) | O `std::wstring` do apelido passava pelo `...` do `CString::Format`: o `%s` lia a estrutura como ponteiro | `.c_str()` (o Clang recusa: "call will abort at runtime") |
+| `KGSHenirRanking::SetLastRank` | `m_uiLastRank = m_uiLastRank`: o setter não fazia nada e o limite do ranking de Henir usava sempre o valor inicial | Grava o parâmetro (`-Wself-assign-field`) |
 
 Portabilidade (sem mudança de comportamento): passada mecânica (`mechanical.py`); `BOOST_MAP_CONST_FOREACH` → range-for;
 `boost::iequals`/`ifind_first`/`replace_all` → `x2::platform::IEquals`/`IContains`/`ReplaceAll` (dobra ASCII, como o Boost no locale "C");

@@ -250,20 +250,20 @@ bool KUserPvpManager::AddRatingAndRankUpDownProcess( IN const int iRating )
 		{
 			// 랭크 업
 			//m_iRPoint = 0;
-			m_iRPoint -= m_iRPoint;
+			m_iRPoint -= GetRPoint();
 		}
 		else if( eNowPvpRank < m_ePvpRank )
 		{
 			// 랭크 다운
 			switch( eNowPvpRank )
 			{
-			case CXSLUnit::PVPRANK_RANK_E:	m_iRPoint -= m_iRPoint;	m_iRPoint += 67;	break;
-			case CXSLUnit::PVPRANK_RANK_D:	m_iRPoint -= m_iRPoint;	m_iRPoint += 111;	break;
-			case CXSLUnit::PVPRANK_RANK_C:	m_iRPoint -= m_iRPoint;	m_iRPoint += 156;	break;
-			case CXSLUnit::PVPRANK_RANK_B:	m_iRPoint -= m_iRPoint;	m_iRPoint += 156;	break;
-			case CXSLUnit::PVPRANK_RANK_A:	m_iRPoint -= m_iRPoint;	m_iRPoint += 200;	break;
-			case CXSLUnit::PVPRANK_RANK_S:	m_iRPoint -= m_iRPoint;	m_iRPoint += 200;	break;
-			case CXSLUnit::PVPRANK_RANK_SS:	m_iRPoint -= m_iRPoint;	m_iRPoint += 289;	break;
+			case CXSLUnit::PVPRANK_RANK_E:	m_iRPoint -= GetRPoint();	m_iRPoint += 67;	break;
+			case CXSLUnit::PVPRANK_RANK_D:	m_iRPoint -= GetRPoint();	m_iRPoint += 111;	break;
+			case CXSLUnit::PVPRANK_RANK_C:	m_iRPoint -= GetRPoint();	m_iRPoint += 156;	break;
+			case CXSLUnit::PVPRANK_RANK_B:	m_iRPoint -= GetRPoint();	m_iRPoint += 156;	break;
+			case CXSLUnit::PVPRANK_RANK_A:	m_iRPoint -= GetRPoint();	m_iRPoint += 200;	break;
+			case CXSLUnit::PVPRANK_RANK_S:	m_iRPoint -= GetRPoint();	m_iRPoint += 200;	break;
+			case CXSLUnit::PVPRANK_RANK_SS:	m_iRPoint -= GetRPoint();	m_iRPoint += 289;	break;
 			default:
 				break;
 			}

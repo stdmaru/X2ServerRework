@@ -6253,7 +6253,7 @@ end_proc:
 IMPL_ON_FUNC( DBE_QUEST_COMPLETE_REQ )
 {
 	KDBE_QUEST_COMPLETE_ACK kPacket;
-	std::vector< KItemInfo >::iterator vit;
+	[[maybe_unused]] std::vector< KItemInfo >::iterator vit;
 	//{{ 2012. 04. 17	최육사	퀘스트 조건 마을 입장
 	kPacket.m_bAutoComplete	= kPacket_.m_bAutoComplete;
 	//}}
@@ -15152,7 +15152,7 @@ _IMPL_ON_FUNC( DBE_CHARACTER_LIST_REQ, std::wstring )
     KEGS_CHARACTER_LIST_ACK kPacket;
     kPacket.m_iOK = NetError::ERR_ODBC_01;
 
-    std::vector< KUnitInfo >::iterator vit;
+    [[maybe_unused]] std::vector< KUnitInfo >::iterator vit;
 
     UidType nUserUID = FIRST_SENDER_UID; // FIRST_SENDER_UID, LAST_SENDER_UID 의미 파악이 어렵다. nUserUID 로 alias 한 이유
 

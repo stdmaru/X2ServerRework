@@ -95,6 +95,8 @@ Ver [Servidor — acoplamento com Windows](../original/servidor.md).
 - [x] `server/channel-run`: ChannelServer no Linux com o `elsword.exe` original até o fim do login no canal (2026-10-30): login pelo EPublisherServer, listas de grupos de servidores e de canais recebidas; o cliente então tenta o GameServer (porta 9300), que ainda não existe, e mostra "O servidor está cheio". Pasta `run/` pelo CMake (T22).
 - [ ] `server/game-build`: GameServer compilando sem warnings (GCC, Clang, MinGW).
 - [ ] `server/game-run`: cliente original da seleção de personagem até a vila (pede parte do Login/Center/GlobalServer).
+- [x] `server/game-build`: GameServer compilando sem warnings (Clang, GCC, clang-cl), `main` sem MFC, sem anti-cheat nem TBB (2026-10-30). Ver [Servidor: GameServer](../porte/server-game.md).
+- [ ] `server/game-run`: GameServer rodando, o cliente original da seleção de personagem até a vila.
 - [ ] UI MFC (`Common/ui/ServerUIDlg`) → terminal em todas as plataformas (T15): log ao vivo, prompt Lua com histórico, título com status, encerramento com confirmação, modo serviço sem stdin.
 - [ ] Log (T16): metadados estruturados no `START_LOG`; arquivo com o conteúdo completo do original, console compacto e colorido com nível próprio.
 - [ ] (Futuro) `--gui` portável sobre a mesma API de comandos/log.
