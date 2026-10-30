@@ -9,6 +9,14 @@ Antes de tudo:
    (pastas `run/`, alvos `x2_run_*`, templates em `runtime/`) e `docs/ferramentas/ci.md`.
 
 Plano:
+0. **Antes do GameServer, `build/ubuntu-env`** (pedido do usuário em 2026-10-30): o ambiente principal passa a ser **Ubuntu**, o
+   padrão global e o preferido pelo GitHub. Crie uma imagem Docker de build Ubuntu em `docker/` (LTS atual; GCC, Clang, CMake ≥ 3.28,
+   Ninja, LuaJIT 2.1, zlib, unixODBC/FreeTDS, MinGW-w64 e Wine, Python), com um jeito curto de rodar os presets dentro dela
+   (script ou `docker compose run`), e passe a fazer os builds e testes nesse container, não no host Arch. Ajuste o que o Ubuntu
+   acusar (outra versão de GCC/Clang/CMake: warnings e erros novos). Mude o CI (`.github/workflows/ci.yml`, hoje num container
+   `archlinux`, branch `build/ci`) para o mesmo ambiente Ubuntu (de preferência a mesma imagem). Registre a decisão em `decisoes.md`
+   (T24), atualize `docs/ferramentas/ci.md`, o AGENTS.md (Comandos) e a T18 se o MinGW mudar. Integre só quando o usuário pedir.
+   O `server/game-build` depois parte da `main` com isso (rebase).
 1. `server/game-build` (este): `src/server/GameServer/CMakeLists.txt` (executável `x2_game_server`, `OUTPUT_NAME GameServer`, `main.cpp`
    chamando `KServerMain` como o ChannelServer; os hooks `g_szConfigFile`/`CreateDBThread` vêm do `GameServer.cpp`), passada mecânica,
    correção dos erros e zero warnings em GCC Debug/Release, Clang e MinGW. Remover as chamadas de anti-cheat (HackShield, nProtect,
