@@ -30,6 +30,8 @@ public:
 	bool SetManagerDBConnectionInfo_LUA( int iServerClass, const char* szDSN, bool bDBConnStr );
 	//}}
 	void SetSMSEnable_LUA( bool bEnable );
+	void SetODBCDriver_LUA( const char* szDriver );
+	void SetODBCOptions_LUA( const char* szOptions );
 
     void Init();
     void ShutDown( DWORD dwWaitTime );   // 종료 대기시간을 밀리세컨드 받는다.

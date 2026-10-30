@@ -8,9 +8,19 @@ add_executable(x2_server_common_tests
     test_login_packets.cpp
     test_session.cpp
     test_udp.cpp
+    test_odbc.cpp
     server_hooks.cpp)
 target_link_libraries(x2_server_common_tests PRIVATE x2::server_common doctest::doctest)
-add_test(NAME server_common COMMAND x2_server_common_tests)
+add_test(NAME server_common COMMAND x2_server_common_tests --test-suite-exclude=db)
+
+# KODBC against a real SQL Server (test_odbc.cpp): only when a connection string is given, e.g.
+# -DX2_TEST_ODBC="DRIVER=/usr/lib/libtdsodbc.so;SERVER=127.0.0.1;PORT=1433;UID=sa;PWD=...;TDS_Version=7.4;ClientCharset=UTF-8"
+set(X2_TEST_ODBC "" CACHE STRING "ODBC connection string (without DATABASE) of the test SQL Server")
+if(X2_TEST_ODBC)
+    add_test(NAME server_common_db COMMAND x2_server_common_tests --test-suite=db)
+    string(REPLACE ";" "\\;" X2_TEST_ODBC_ESCAPED "${X2_TEST_ODBC}")    # ENVIRONMENT is a list
+    set_tests_properties(server_common_db PROPERTIES ENVIRONMENT "X2_TEST_ODBC=${X2_TEST_ODBC_ESCAPED}")
+endif()
 
 find_package(Python3 COMPONENTS Interpreter QUIET)
 if(Python3_FOUND)

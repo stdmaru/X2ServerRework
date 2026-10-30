@@ -51,12 +51,25 @@ void KDBLayer::RegToLua()
 	lua_tinker::class_def<KDBLayer>( g_pLua, "SetManagerDB",	&KDBLayer::SetManagerDBConnectionInfo_LUA );
 	//}}
 	lua_tinker::class_def<KDBLayer>( g_pLua, "SetSMSEnable",	&KDBLayer::SetSMSEnable_LUA );
+	// ODBC driver used for the .dsn files (decision T17); before the AddDB calls
+	lua_tinker::class_def<KDBLayer>( g_pLua, "SetODBCDriver",	&KDBLayer::SetODBCDriver_LUA );
+	lua_tinker::class_def<KDBLayer>( g_pLua, "SetODBCOptions",	&KDBLayer::SetODBCOptions_LUA );
 
 #   undef _ENUM
 #   define _ENUM( id ) lua_tinker::decl( g_pLua, #id, KDBLayer::id );
 #   include "DBConnectionInfo_def.h"
 
 	lua_tinker::decl( g_pLua, "DBLayer", this );
+}
+
+void KDBLayer::SetODBCDriver_LUA( const char* szDriver )
+{
+	KODBC::SetODBCDriver( KncUtil::toWideString( szDriver ? szDriver : "" ) );
+}
+
+void KDBLayer::SetODBCOptions_LUA( const char* szOptions )
+{
+	KODBC::SetODBCOptions( KncUtil::toWideString( szOptions ? szOptions : "" ) );
 }
 
 bool KDBLayer::AddDBConnectionInfo_LUA( int iDBConnection, const char* szDSN, int nThread, bool bDBConnStr )

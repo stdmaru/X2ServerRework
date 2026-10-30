@@ -20,7 +20,7 @@ class KStoredProcedure
 
 private:
     KODBC& m_kODBC;
-    KStoredProcedure(void);
+    KStoredProcedure(void) = delete;
 public:
 
     KStoredProcedure( KODBC& kODBC ) : m_kODBC(kODBC) {};

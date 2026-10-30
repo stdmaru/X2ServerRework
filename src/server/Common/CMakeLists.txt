@@ -1,9 +1,9 @@
-# Common code of the servers (docs/porte/server-common.md). Socket/ has the TCP (decision T20) and UDP layers;
-# ODBC/ (database) comes in its own step. ../X2Lib/X2UDPPacket.cpp is compiled through Socket/X2Packet.cpp.
+# Common code of the servers (docs/porte/server-common.md). Socket/ has the TCP (decision T20) and UDP layers,
+# ODBC/ the database (decision T17). ../X2Lib/X2UDPPacket.cpp is compiled through Socket/X2Packet.cpp.
 
 file(GLOB_RECURSE X2_SERVER_COMMON_SOURCES CONFIGURE_DEPENDS
     ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/*.c)
-list(FILTER X2_SERVER_COMMON_SOURCES EXCLUDE REGEX "/(ODBC|tests)/")
+list(FILTER X2_SERVER_COMMON_SOURCES EXCLUDE REGEX "/tests/")
 # depend on GameServer/CenterServer headers: compiled with those servers
 list(FILTER X2_SERVER_COMMON_SOURCES EXCLUDE REGEX "/KStatisticsLocalLog\\.cpp$")
 list(FILTER X2_SERVER_COMMON_SOURCES EXCLUDE REGEX "/OnlyGlobal/AuthAndBilling/DEBBilling(Manager)?\\.cpp$")
@@ -21,7 +21,7 @@ set_source_files_properties(
 add_library(x2::server_common ALIAS x2_server_common)
 
 target_include_directories(x2_server_common PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(x2_server_common PUBLIC x2::kncsdk x2::kncsdk_lua x2::platform PRIVATE ZLIB::ZLIB)
+target_link_libraries(x2_server_common PUBLIC x2::kncsdk x2::kncsdk_lua x2::platform x2::odbc PRIVATE ZLIB::ZLIB)
 
 if(X2_BUILD_TESTS)
     add_subdirectory(tests)

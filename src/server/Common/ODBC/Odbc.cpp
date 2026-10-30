@@ -1,27 +1,140 @@
-#pragma   warning( disable :4146 )
-//{{ florist
-#ifdef _STDAFX
-#include "stdafx.h"
-#endif
-//}} florist
-
 #include "Odbc.h"
 #include "dbg/dbg.hpp"
 #include <Thread/Locker.h>
 #include <KncUtil.h>
+#include "x2/platform/ini.h"
+#include <algorithm>
+#include <filesystem>
+#include <fstream>
+#include <iterator>
+#include <sstream>
+
+namespace {
+
+using x2::platform::FromSqlWString;
+using x2::platform::SqlWPtr;
+using x2::platform::SqlWString;
+using x2::platform::ToSqlWString;
+
+template< size_t N >
+void CopyTruncated( wchar_t ( &dst )[N], const std::wstring& src )
+{
+    const size_t n = std::min( src.size(), N - 1 );
+    std::copy_n( src.begin(), n, dst );
+    dst[n] = L'\0';
+}
+
+std::wstring Trim( const std::wstring& s )
+{
+    const size_t b = s.find_first_not_of( L" \t\r\n" );
+    if( b == std::wstring::npos )
+        return std::wstring();
+    return s.substr( b, s.find_last_not_of( L" \t\r\n" ) - b + 1 );
+}
+
+bool IEquals( const std::wstring& a, const wchar_t* b )
+{
+    const std::wstring_view bv( b );
+    return a.size() == bv.size()
+        && std::equal( a.begin(), a.end(), bv.begin(), []( wchar_t x, wchar_t y ) { return ::towupper( x ) == ::towupper( y ); } );
+}
+
+// braces quote a value of a connection string; a '}' inside is doubled
+std::wstring QuoteConnValue( const std::wstring& value )
+{
+    if( value.find_first_of( L" ;{}" ) == std::wstring::npos )
+        return value;
+
+    std::wstring quoted = L"{";
+    for( wchar_t c : value )
+    {
+        quoted += c;
+        if( c == L'}' )
+            quoted += c;
+    }
+    return quoted + L"}";
+}
+
+} // namespace
 
 KODBC::KMaxProcessingInfo KODBC::ms_kMaxProcessingInfo = {
     KncCriticalSection(), L"초기상태", 0, CTime::GetCurrentTime()
 };
 
+std::wstring KODBC::ms_wstrODBCDriver  = L"ODBC Driver 18 for SQL Server";
+std::wstring KODBC::ms_wstrODBCOptions = L"Encrypt=yes;TrustServerCertificate=yes";
+
+void KODBC::SetODBCDriver( const std::wstring& wstrDriver )
+{
+    ms_wstrODBCDriver = wstrDriver;
+    ms_wstrODBCOptions.clear();
+}
+
+void KODBC::SetODBCOptions( const std::wstring& wstrOptions )
+{
+    ms_wstrODBCOptions = wstrOptions;
+}
+
+// The [ODBC] section of a file DSN. The original passed "FILEDSN=<path>" to the Windows driver manager; unixODBC
+// reads only narrow files and the original .dsn files are UTF-16, so the file is read here (UTF-16, UTF-8 or CP949).
+bool KODBC::ReadFileDSN( const std::wstring& wstrPath, KDsnKeys& vecKeys )
+{
+    vecKeys.clear();
+
+    std::ifstream file( std::filesystem::path( wstrPath ), std::ios::binary );
+    if( !file )
+        return false;
+
+    const std::string bytes{ std::istreambuf_iterator<char>( file ), std::istreambuf_iterator<char>() };
+    std::wistringstream lines( x2::platform::DecodeTextFile( bytes ) );
+
+    bool bInSection = false;
+    for( std::wstring line; std::getline( lines, line ); )
+    {
+        line = Trim( line );
+        if( line.empty() || line[0] == L';' )
+            continue;
+
+        if( line[0] == L'[' )
+        {
+            bInSection = IEquals( line, L"[ODBC]" );
+            continue;
+        }
+
+        const size_t pos = line.find( L'=' );
+        if( bInSection && pos != std::wstring::npos )
+            vecKeys.emplace_back( Trim( line.substr( 0, pos ) ), Trim( line.substr( pos + 1 ) ) );
+    }
+
+    return !vecKeys.empty();
+}
+
+std::wstring KODBC::BuildConnStrFromDsn( const KDsnKeys& vecKeys, const std::wstring& wstrDriver, const std::wstring& wstrOptions )
+{
+    std::wstring wstrConnStr = L"DRIVER=" + QuoteConnValue( wstrDriver ) + L";";
+    for( const auto& kKey : vecKeys )
+    {
+        if( IEquals( kKey.first, L"DRIVER" ) || IEquals( kKey.first, L"WSID" ) )
+            continue;
+
+        wstrConnStr += kKey.first + L"=" + QuoteConnValue( kKey.second ) + L";";
+    }
+
+    const size_t pos = wstrOptions.find_first_not_of( L';' );
+    if( pos != std::wstring::npos )
+        wstrConnStr += wstrOptions.substr( pos );
+
+    return wstrConnStr;
+}
+
 KODBC::KODBC()
+    : m_szDiagMsg{}, m_sqlMsgLen( 0 ), m_sqlState{}, m_sqlNativeErr( 0 )
 {
     m_hEnv          = SQL_NULL_HENV;
     m_hDbc          = SQL_NULL_HDBC;
     m_hStmt         = SQL_NULL_HSTMT;
 
     m_usColumNum    = 0;
-    memset(m_szDiagMsg, 0, SQL_MAX_MESSAGE_LENGTH);
 
     InitializeCriticalSection(&m_cs );
 
@@ -51,103 +164,136 @@ bool KODBC::DriverConnect( const wchar_t* szConnStr, bool bDBConnStr )
 	}
 }
 
-bool KODBC::DriverConnectFileDSN( const wchar_t* szDsn_ )
+SQLRETURN KODBC::ReadDiag( SQLSMALLINT sHandleType, SQLHANDLE hHandle )
 {
-	std::wstring strDsn_ = szDsn_;
+    SQLWCHAR szState[6] = {};
+    SQLWCHAR szMsg[SQL_MAX_MESSAGE_LENGTH] = {};
+    m_sqlMsgLen = 0;
+    m_sqlNativeErr = 0;
 
-    if( m_strDSN.size() <= 0 )
+    const SQLRETURN ret = ::SQLGetDiagRecW( sHandleType, hHandle, 1, szState, &m_sqlNativeErr,
+                                            szMsg, SQL_MAX_MESSAGE_LENGTH, &m_sqlMsgLen );
+    if( SQLOK( ret ) )
     {
-        wchar_t buff[MAX_PATH] = {0};
-        ::GetCurrentDirectoryW( MAX_PATH, buff );
-
-        m_strDSN = L"FILEDSN=";
-        m_strDSN += buff;
-        m_strDSN += L"\\";
-        m_strDSN += strDsn_;
-
-        m_strAbsolutePathDSN = L"";
-        m_strAbsolutePathDSN += buff;
-        m_strAbsolutePathDSN += L"\\";
-        m_strAbsolutePathDSN += strDsn_;
+        CopyTruncated( m_sqlState, FromSqlWString( szState ) );
+        const SQLSMALLINT len = std::clamp<SQLSMALLINT>( m_sqlMsgLen, 0, SQL_MAX_MESSAGE_LENGTH - 1 );
+        CopyTruncated( m_szDiagMsg, FromSqlWString( szMsg, len ) );
+    }
+    else
+    {
+        m_sqlState[0] = L'\0';
+        m_szDiagMsg[0] = L'\0';
     }
 
-    SQLWCHAR InCon[255];
-    SQLWCHAR OutCon[255];
-    SQLSMALLINT cbOutCon;
-    SQLRETURN Ret;
+    return ret;
+}
 
+bool KODBC::AllocConnection( const std::wstring& wstrConnStr, const std::wstring& wstrLogName )
+{
     // allocate environment handle.
-    Ret = ::SQLAllocHandle( SQL_HANDLE_ENV,
-        SQL_NULL_HANDLE,
-        &m_hEnv );
+    SQLRETURN Ret = ::SQLAllocHandle( SQL_HANDLE_ENV, SQL_NULL_HANDLE, &m_hEnv );
 
     if( !SQLOK( Ret ) )
     {
         START_LOG( cerr, L"DriverConnect() Failed. Ret : " << Ret )
-            << BUILD_LOG( m_strDSN )
+            << BUILD_LOG( wstrLogName )
             << END_LOG;
 
         return false;
     }
 
     // set the ODBC version environment attribute.
-    Ret = ::SQLSetEnvAttr( m_hEnv,
-        SQL_ATTR_ODBC_VERSION,
-        ( SQLPOINTER )SQL_OV_ODBC3,
-        SQL_IS_INTEGER );
+    Ret = ::SQLSetEnvAttr( m_hEnv, SQL_ATTR_ODBC_VERSION, ( SQLPOINTER )SQL_OV_ODBC3, SQL_IS_INTEGER );
 
     if( !SQLOK( Ret ) )
     {
+        ReadDiag( SQL_HANDLE_ENV, m_hEnv );
         START_LOG( cerr, L"DriverConnect() Failed. Ret : " << Ret )
-            << BUILD_LOG( m_strDSN )
+            << BUILD_LOG( wstrLogName )
+            << BUILD_LOG( m_sqlState )
+            << BUILD_LOG( m_szDiagMsg )
             << END_LOG;
 
         return false;
     }
 
-    //allocate connecton handle.
+    // allocate connection handle.
     Ret = ::SQLAllocHandle( SQL_HANDLE_DBC, m_hEnv, &m_hDbc );
 
     if( !SQLOK( Ret ) )
     {
+        ReadDiag( SQL_HANDLE_ENV, m_hEnv );
         START_LOG( cerr, L"DriverConnect() Failed. Ret : " << Ret )
-            << BUILD_LOG( m_strDSN )
+            << BUILD_LOG( wstrLogName )
+            << BUILD_LOG( m_sqlState )
+            << BUILD_LOG( m_szDiagMsg )
             << END_LOG;
 
         return false;
     }
 
-    //dsn파일을 이용해서 연결한다
-    wsprintfW( ( wchar_t* )InCon, L"%s", m_strDSN.c_str() );
-    Ret = SQLDriverConnectW( m_hDbc, NULL, ( SQLWCHAR* )InCon, sizeof( InCon ), OutCon,
-        sizeof( OutCon ), &cbOutCon, SQL_DRIVER_NOPROMPT );
-
-    //에러검사
-    if( !SQLOK( Ret ) )
-    {
-        START_LOG( cerr, L"DriverConnect() Failed. Ret : " << Ret )
-            << BUILD_LOG( m_strDSN )
-            << END_LOG;
-
-        return false;
-    }
-
-    //명령핸들 할당
-    Ret = SQLAllocHandle( SQL_HANDLE_STMT, m_hDbc, &m_hStmt );
+    SqlWString InCon = ToSqlWString( wstrConnStr );
+    SQLWCHAR OutCon[1024];
+    SQLSMALLINT cbOutCon = 0;
+    Ret = ::SQLDriverConnectW( m_hDbc, NULL, SqlWPtr( InCon ), SQL_NTS, OutCon,
+                               static_cast<SQLSMALLINT>( std::size( OutCon ) ), &cbOutCon, SQL_DRIVER_NOPROMPT );
 
     if( !SQLOK( Ret ) )
     {
+        ReadDiag( SQL_HANDLE_DBC, m_hDbc );
         START_LOG( cerr, L"DriverConnect() Failed. Ret : " << Ret )
-            << BUILD_LOG( m_strDSN )
+            << BUILD_LOG( wstrLogName )
+            << BUILD_LOG( m_sqlState )
+            << BUILD_LOG( m_szDiagMsg )
             << END_LOG;
 
         return false;
     }
 
+    // allocate statement handle.
+    Ret = ::SQLAllocHandle( SQL_HANDLE_STMT, m_hDbc, &m_hStmt );
 
-    dbg::cout << L"DriverConnect() success. m_strDSN : " << m_strDSN << dbg::endl;
+    if( !SQLOK( Ret ) )
+    {
+        ReadDiag( SQL_HANDLE_DBC, m_hDbc );
+        START_LOG( cerr, L"DriverConnect() Failed. Ret : " << Ret )
+            << BUILD_LOG( wstrLogName )
+            << BUILD_LOG( m_sqlState )
+            << BUILD_LOG( m_szDiagMsg )
+            << END_LOG;
+
+        return false;
+    }
+
+    dbg::cout << L"DriverConnect() success. m_strDSN : " << wstrLogName << dbg::endl;
 
     return true;
+}
+
+bool KODBC::DriverConnectFileDSN( const wchar_t* szDsn_ )
+{
+    if( m_strDSN.size() <= 0 )
+    {
+        // relative to the working directory, like the original; the configs write the paths with '\'
+        std::wstring strDsn_ = szDsn_;
+#if !defined(_WIN32)
+        std::replace( strDsn_.begin(), strDsn_.end(), L'\\', L'/' );
+#endif
+        m_strAbsolutePathDSN = ( std::filesystem::current_path() / strDsn_ ).wstring();
+        m_strDSN = L"FILEDSN=" + m_strAbsolutePathDSN;
+    }
+
+    KDsnKeys vecKeys;
+    if( !ReadFileDSN( m_strAbsolutePathDSN, vecKeys ) )
+    {
+        START_LOG( cerr, L"DriverConnect() Failed. Cannot read the file DSN." )
+            << BUILD_LOG( m_strDSN )
+            << END_LOG;
+
+        return false;
+    }
+
+    return AllocConnection( BuildConnStrFromDsn( vecKeys, ms_wstrODBCDriver, ms_wstrODBCOptions ), m_strDSN );
 }
 
 //{{ 2009. 6. 15  최육사	conn string
@@ -156,102 +302,25 @@ bool KODBC::DriverConnectString( const KClearString< std::wstring >& kDBConnStr 
 	// Security String
 	if( m_SecurityDBConnStr.IsEmpty() )
 	{
-		m_SecurityDBConnStr.Init( kDBConnStr.GetString() ); // <--- 나중에 KClearString을 전달인자로 넣도록 바꾸자!
+		m_SecurityDBConnStr.Init( kDBConnStr.GetString() );
 
-		// Password제거된 string저장
+		// keep the string without the password: only the database name, for the logs
 		m_strDBConnStr = kDBConnStr.GetString();
 
-		int index = m_strDBConnStr.find( L";DATABASE=" );
+		size_t index = m_strDBConnStr.find( L";DATABASE=" );
 		if( index != std::wstring::npos )
 		{
-			// 앞부분을 지우자!
 			m_strDBConnStr.erase( 0, index + 10 );
 
 			index = m_strDBConnStr.find( L";" );
 			if( index != std::wstring::npos )
 			{
-				// 뒷부분을 지우자!
 				m_strDBConnStr.erase( index, m_strDBConnStr.size() - index );
 			}
 		}
 	}
 
-	SQLWCHAR InCon[255];
-	SQLWCHAR OutCon[255];
-	SQLSMALLINT cbOutCon;
-	SQLRETURN Ret;
-
-	// allocate environment handle.
-	Ret = ::SQLAllocHandle( SQL_HANDLE_ENV,
-		SQL_NULL_HANDLE,
-		&m_hEnv );
-
-	if( !SQLOK( Ret ) )
-	{
-		START_LOG( cerr, L"DriverConnect() Failed. Ret : " << Ret )
-			<< BUILD_LOG( m_strDBConnStr )
-			<< END_LOG;
-
-		return false;
-	}
-
-	// set the ODBC version environment attribute.
-	Ret = ::SQLSetEnvAttr( m_hEnv,
-		SQL_ATTR_ODBC_VERSION,
-		( SQLPOINTER )SQL_OV_ODBC3,
-		SQL_IS_INTEGER );
-
-	if( !SQLOK( Ret ) )
-	{
-		START_LOG( cerr, L"DriverConnect() Failed. Ret : " << Ret )
-			<< BUILD_LOG( m_strDBConnStr )
-			<< END_LOG;
-
-		return false;
-	}
-
-	//allocate connecton handle.
-	Ret = ::SQLAllocHandle( SQL_HANDLE_DBC, m_hEnv, &m_hDbc );
-
-	if( !SQLOK( Ret ) )
-	{
-		START_LOG( cerr, L"DriverConnect() Failed. Ret : " << Ret )
-			<< BUILD_LOG( m_strDBConnStr )
-			<< END_LOG;
-
-		return false;
-	}
-
-	//dsn파일을 이용해서 연결한다
-	wsprintfW( ( wchar_t* )InCon, L"%s", m_SecurityDBConnStr.GetClearString().c_str() );
-	Ret = SQLDriverConnectW( m_hDbc, NULL, ( SQLWCHAR* )InCon, sizeof( InCon ), OutCon, sizeof( OutCon ), &cbOutCon, SQL_DRIVER_NOPROMPT );
-
-	//에러검사
-	if( !SQLOK( Ret ) )
-	{
-		START_LOG( cerr, L"DriverConnect() Failed. Ret : " << Ret )
-			<< BUILD_LOG( m_strDBConnStr )
-			<< END_LOG;
-
-		return false;
-	}
-
-	//명령핸들 할당
-	Ret = SQLAllocHandle( SQL_HANDLE_STMT, m_hDbc, &m_hStmt );
-
-	if( !SQLOK( Ret ) )
-	{
-		START_LOG( cerr, L"DriverConnect() Failed. Ret : " << Ret )
-			<< BUILD_LOG( m_strDBConnStr )
-			<< END_LOG;
-
-		return false;
-	}
-
-
-	dbg::cout << L"DriverConnect() success. m_strDSN : " << m_strDBConnStr << dbg::endl;
-
-	return true;
+	return AllocConnection( m_SecurityDBConnStr.GetClearString().GetString(), m_strDBConnStr );
 }
 //}}
 
@@ -259,9 +328,6 @@ bool KODBC::ReConnect()
 {
     Close();
 
-    // DB연결을 시도를 해본다.  [7/26/2004]
-    //if ( !Connect( m_strDSN.c_str(), m_strLogin.c_str(), m_strPasswd.c_str()) )
-    // m_strDSN은 ReConnect가 불릴때, NULL일수 없다. 그래서 의미없이 parameter로 넘겨준다.
 	bool bRet = false;
 	if( m_bDBConnStr )
 	{
@@ -317,46 +383,30 @@ bool KODBC::Query( const std::wstring& wstrQuery )
 			<< BUILD_LOG( wstrQuery )
 			<< END_LOG;
 
-		// return하지는 않는다. 길이가 긴것이 문제될뿐 쿼리는 일단 호출해야하니까..
+		// no return: a long query is only suspicious, it still has to run
 	}
 
-	// 마지막 쿼리로 남기기
 	m_strLastQuery = wstrQuery;
+	SqlWString sqlQuery = ToSqlWString( m_strLastQuery );
 
-	DWORD dwElapTime = ::GetTickCount();  // 051001. florist. 가장 오래 걸린 쿼리 시간을 기억한다.
+	DWORD dwElapTime = ::GetTickCount();  // remembers the slowest query
 
-	// 해당 query에 대한 row가 없는 경우 ret는 SQL_NO_DATA가 return 된다.
-	SQLRETURN ret = ::SQLExecDirectW( m_hStmt, (SQLWCHAR*)m_strLastQuery.c_str(), SQL_NTS );
+	// a query without rows returns SQL_NO_DATA
+	SQLRETURN ret = ::SQLExecDirectW( m_hStmt, SqlWPtr( sqlQuery ), SQL_NTS );
+	ReadDiag( SQL_HANDLE_STMT, m_hStmt );
 
-	//{{ Modified by ct 2003-04-30 오후 03:53:45
-	SQLRETURN     ret2;
-	ret2 = SQLGetDiagRecW( SQL_HANDLE_STMT,
-		m_hStmt,
-		1,
-		m_sqlState,
-		&m_sqlNativeErr,
-		m_szDiagMsg,
-		sizeof(m_szDiagMsg) / sizeof(SQLWCHAR),
-		&m_sqlMsgLen );
-	//}} Modified by ct 2003-04-30 오후 03:53:45
-
-	// godsend odbc연결 실패시 다시 연결하고 쿼리문 다시 실행  [7/22/2004]
+	// on a lost connection or a bad cursor state, reconnect and run the query again
 	if ( ret == SQL_ERROR || ret == SQL_INVALID_HANDLE )
 	{
-		wchar_t* err1 = L"08S01";  // Communication link failure
-		wchar_t* err2 = L"24000";  // Invalid cursor state
+		const wchar_t* err1 = L"08S01";  // Communication link failure
+		const wchar_t* err2 = L"24000";  // Invalid cursor state
 
-		// godsend 커서 오류와 DB연결 안된 오류 두가지 경우 다시 연결  [7/26/2004]
-		if( wcscmp( (const wchar_t*)m_sqlState, err1) == 0 || wcscmp( (const wchar_t*)m_sqlState, err2) == 0 )
+		if( wcscmp( m_sqlState, err1 ) == 0 || wcscmp( m_sqlState, err2 ) == 0 )
 		{
-			dbg::cerr << m_strLastQuery << L"(err:" << (const wchar_t*)m_sqlState << L")" << END_LOG;
+			dbg::cerr << m_strLastQuery << L"(err:" << m_sqlState << L")" << END_LOG;
 
-			// godsend 연결을 끊는다.
 			Close();
 
-			// DB연결을 시도를 해본다.  [7/26/2004]
-			//if ( !Connect( m_strDSN.c_str(), m_strLogin.c_str(), m_strPasswd.c_str()) )
-			// godsend Connect -> DriverConnect로 변경 [9/6/2005]
 			bool bRet = false;
 			if( m_bDBConnStr )
 			{
@@ -374,14 +424,14 @@ bool KODBC::Query( const std::wstring& wstrQuery )
 			}
 			else
 			{
-				ret = ::SQLExecDirectW( m_hStmt, (SQLWCHAR*)m_strLastQuery.c_str(), SQL_NTS );
+				ret = ::SQLExecDirectW( m_hStmt, SqlWPtr( sqlQuery ), SQL_NTS );
 			}
 		}
 	}
 
 	dwElapTime = ::GetTickCount() - dwElapTime;
 
-	{   // lock이 걸리는 범위를 조절하는 scope
+	{   // scope of the lock
 		KLocker lock( ms_kMaxProcessingInfo.m_cs );
 
 		if( dwElapTime > ms_kMaxProcessingInfo.m_dwTerm )
@@ -394,20 +444,11 @@ bool KODBC::Query( const std::wstring& wstrQuery )
 				<< BUILD_LOG( ms_kMaxProcessingInfo.m_strQuery )
 				<< BUILD_LOG( ms_kMaxProcessingInfo.m_dwTerm );
 		}
-
-	}   // lock이 걸리는 범위를 조절하는 scope
+	}
 
 	if( SQLOK(ret) == false )
 	{
-		SQLRETURN ret2;
-		ret2 = SQLGetDiagRecW( SQL_HANDLE_STMT,
-			m_hStmt,
-			1,
-			m_sqlState,
-			&m_sqlNativeErr,
-			m_szDiagMsg,
-			sizeof(m_szDiagMsg) / sizeof(SQLWCHAR),
-			&m_sqlMsgLen );
+		const SQLRETURN ret2 = ReadDiag( SQL_HANDLE_STMT, m_hStmt );
 
 		START_LOG( cerr, L"Query 실패!!")
 			<< BUILD_LOG( ret )
@@ -421,164 +462,6 @@ bool KODBC::Query( const std::wstring& wstrQuery )
 
 	return SQLOK(ret);
 }
-//}}
-
-//bool KODBC::Query(const wchar_t* szFormat_, ...)
-//{
-//	wchar_t     szQuery[QUERY_BUFFER_SIZE] = {0,};
-//	va_list     vaList;
-//	SQLRETURN   ret;
-//
-//	va_start( vaList, szFormat_ );
-//	vswprintf( szQuery, szFormat_, vaList );
-//	va_end( vaList );
-//
-//	m_strLastQuery = szQuery;
-//
-//	DWORD dwElapTime = ::GetTickCount();  // 051001. florist. 가장 오래 걸린 쿼리 시간을 기억한다.
-//
-//	// 해당 query에 대한 row가 없는 경우 ret는 SQL_NO_DATA가 return 된다.
-//	ret = ::SQLExecDirectW( m_hStmt, (SQLWCHAR*)szQuery, SQL_NTS );
-//
-//	//{{ Modified by ct 2003-04-30 오후 03:53:45
-//	SQLRETURN     ret2;
-//	ret2 = SQLGetDiagRecW( SQL_HANDLE_STMT,
-//		m_hStmt,
-//		1,
-//		m_sqlState,
-//		&m_sqlNativeErr,
-//		m_szDiagMsg,
-//		sizeof(m_szDiagMsg) / sizeof(SQLWCHAR),
-//		&m_sqlMsgLen );
-//	//}} Modified by ct 2003-04-30 오후 03:53:45
-//
-//	// godsend odbc연결 실패시 다시 연결하고 쿼리문 다시 실행  [7/22/2004]
-//	if ( ret == SQL_ERROR || ret == SQL_INVALID_HANDLE )
-//	{
-//		wchar_t* err1 = L"08S01";  // Communication link failure
-//		wchar_t* err2 = L"24000";  // Invalid cursor state
-//
-//		// godsend 커서 오류와 DB연결 안된 오류 두가지 경우 다시 연결  [7/26/2004]
-//		if( wcscmp( (const wchar_t*)m_sqlState, err1) == 0 || wcscmp( (const wchar_t*)m_sqlState, err2) == 0 )
-//		{
-//			dbg::cerr << szQuery << L"(err:" << (const wchar_t*)m_sqlState << L")" << END_LOG;
-//
-//			// godsend 연결을 끊는다.
-//			Close();
-//
-//			// DB연결을 시도를 해본다.  [7/26/2004]
-//			//if ( !Connect( m_strDSN.c_str(), m_strLogin.c_str(), m_strPasswd.c_str()) )
-//			// godsend Connect -> DriverConnect로 변경 [9/6/2005]
-//			bool bRet = false;
-//			if( m_bDBConnStr )
-//			{
-//				bRet = DriverConnectString( KClearString() );
-//			}
-//			else
-//			{
-//				bRet = DriverConnectFileDSN( m_strDSN.c_str() );
-//			}
-//
-//			if( !bRet )
-//			{
-//				dbg::cerr << L"재접속 시도 실패" << END_LOG;
-//				return false;
-//			}
-//			else
-//			{
-//				ret = ::SQLExecDirectW( m_hStmt, (SQLWCHAR*)szQuery, SQL_NTS );
-//			}
-//		}
-//	}
-//
-//	dwElapTime = ::GetTickCount() - dwElapTime;
-//
-//	{   // lock이 걸리는 범위를 조절하는 scope
-//		KLocker lock( ms_kMaxProcessingInfo.m_cs );
-//
-//		if( dwElapTime > ms_kMaxProcessingInfo.m_dwTerm )
-//		{
-//			ms_kMaxProcessingInfo.m_strQuery    = szQuery;
-//			ms_kMaxProcessingInfo.m_cTime       = CTime::GetCurrentTime();
-//			ms_kMaxProcessingInfo.m_dwTerm      = dwElapTime;
-//
-//			START_LOG( clog2, L"쿼리 최대 소요시간 갱신." )
-//				<< BUILD_LOG( ms_kMaxProcessingInfo.m_strQuery )
-//				<< BUILD_LOG( ms_kMaxProcessingInfo.m_dwTerm );
-//		}
-//
-//	}   // lock이 걸리는 범위를 조절하는 scope
-//
-//	return SQLOK(ret);
-//}
-
-//bool KODBC::QueryWithBlob( KSerBuffer& kbuff_, const wchar_t* szFormat_, ... )
-//{
-//    wchar_t     szQuery[QUERY_BUFFER_SIZE];
-//    va_list     vaList;
-//    SQLRETURN   ret;
-//
-//    va_start( vaList, szFormat_ );
-//    vswprintf( szQuery, szFormat_, vaList );
-//    va_end( vaList );
-//
-//    m_strLastQuery = szQuery;
-//
-//    DWORD dwElapTime = ::GetTickCount();  // 051001. florist. 가장 오래 걸린 쿼리 시간을 기억한다.
-//
-//    // binding parameter
-//    SQLINTEGER cbBlob = SQL_LEN_DATA_AT_EXEC( kbuff_.GetLength() );
-//    ::SQLBindParameter( m_hStmt, 1, SQL_PARAM_INPUT, SQL_C_BINARY, SQL_LONGVARBINARY,
-//        kbuff_.GetLength(), 0, (SQLPOINTER)BLOB_DATA_PARAM_MARKER, 0, &cbBlob );
-//
-//    // 해당 query에 대한 row가 없는 경우 ret는 SQL_NO_DATA가 return 된다.
-//    ret = ::SQLExecDirectW( m_hStmt, (SQLWCHAR*)szQuery, SQL_NTS );
-//
-//    if( ret == SQL_NEED_DATA )
-//    {
-//        SQLPOINTER pToken;
-//        ret = ::SQLParamData( m_hStmt, &pToken );
-//        while( ret == SQL_NEED_DATA ) {
-//            if( (int)pToken == BLOB_DATA_PARAM_MARKER )
-//            {
-//                ::SQLPutData( m_hStmt, (PTR)kbuff_.GetData(), kbuff_.GetLength() );
-//            }
-//            ret = ::SQLParamData( m_hStmt, &pToken );
-//        }
-//    }
-//
-//    SQLRETURN     ret2;
-//    ret2 = SQLGetDiagRecW( SQL_HANDLE_STMT,
-//                        m_hStmt,
-//                        1,
-//                        m_sqlState,
-//                        &m_sqlNativeErr,
-//                        m_szDiagMsg,
-//                        sizeof(m_szDiagMsg) / sizeof(SQLWCHAR),
-//                        &m_sqlMsgLen );
-//
-//    dwElapTime = ::GetTickCount() - dwElapTime;
-//
-//    {   // lock이 걸리는 범위를 조절하는 scope
-//
-//        KLocker lock( ms_kMaxProcessingInfo.m_cs );
-//
-//        if( dwElapTime > ms_kMaxProcessingInfo.m_dwTerm )
-//        {
-//            ms_kMaxProcessingInfo.m_strQuery    = szQuery;
-//            ms_kMaxProcessingInfo.m_cTime       = CTime::GetCurrentTime();
-//            ms_kMaxProcessingInfo.m_dwTerm      = dwElapTime;
-//
-//            START_LOG( clog2, L"쿼리 최대 소요시간 갱신." )
-//                << BUILD_LOG( ms_kMaxProcessingInfo.m_strQuery )
-//                << BUILD_LOG( ms_kMaxProcessingInfo.m_dwTerm );
-//        }
-//
-//    }   // lock이 걸리는 범위를 조절하는 scope
-//
-//    return SQLOK(ret);
-//}
-
 
 bool KODBC::BeginFetch()
 {
@@ -588,18 +471,8 @@ bool KODBC::BeginFetch()
 
     if( !SQLOK(ret) )
     {
+        ReadDiag( SQL_HANDLE_STMT, m_hStmt );
         EndFetch();
-
-        SQLRETURN     ret2;
-        ret2 = SQLGetDiagRecW( SQL_HANDLE_STMT,
-            m_hStmt,
-            1,
-            m_sqlState,
-            &m_sqlNativeErr,
-            m_szDiagMsg,
-            sizeof(m_szDiagMsg) / sizeof(SQLWCHAR),
-            &m_sqlMsgLen );
-
         return false;
     }
 
@@ -625,12 +498,85 @@ void KODBC::EndFetch()
         ::SQLCloseCursor( m_hStmt );
 }
 
+// Reads the whole column (a NULL clears the string and returns false). The original read at most
+// 1024 bytes, truncating longer values.
+bool KODBC::GetWideData( std::wstring& wstrVal )
+{
+    m_usColumNum++;
+    wstrVal.clear();
+
+    SqlWString buff;
+    SQLWCHAR chunk[512];
+    for( ;; )
+    {
+        SQLLEN LenBin = 0;
+        const SQLRETURN ret = ::SQLGetData( m_hStmt, m_usColumNum, SQL_C_WCHAR, chunk, sizeof( chunk ), &LenBin );
+
+        if( ret == SQL_NO_DATA )
+            break;
+
+        if( !SQLOK( ret ) )
+        {
+            THROW_INVALID_QUERY();
+        }
+
+        if( LenBin == SQL_NULL_DATA )   // SQLGetData returns SQL_SUCCESS for a NULL field
+            return false;
+
+        // a truncated part fills the buffer, less the terminator
+        const size_t n = ( LenBin != SQL_NO_TOTAL && LenBin < static_cast<SQLLEN>( sizeof( chunk ) ) )
+                       ? static_cast<size_t>( LenBin ) / sizeof( SQLWCHAR )
+                       : std::size( chunk ) - 1;
+        buff.append( reinterpret_cast<const SqlWString::value_type*>( chunk ), n );
+
+        if( ret == SQL_SUCCESS )
+            break;
+    }
+
+    wstrVal = FromSqlWString( buff );
+    return true;
+}
+
+// Same as GetWideData, in the client character set of the driver (SQL_C_CHAR).
+bool KODBC::GetNarrowData( std::string& strVal )
+{
+    m_usColumNum++;
+    strVal.clear();
+
+    char chunk[1024];
+    for( ;; )
+    {
+        SQLLEN LenBin = 0;
+        const SQLRETURN ret = ::SQLGetData( m_hStmt, m_usColumNum, SQL_C_CHAR, chunk, sizeof( chunk ), &LenBin );
+
+        if( ret == SQL_NO_DATA )
+            break;
+
+        if( !SQLOK( ret ) )
+        {
+            THROW_INVALID_QUERY();
+        }
+
+        if( LenBin == SQL_NULL_DATA )   // SQLGetData returns SQL_SUCCESS for a NULL field
+            return false;
+
+        const size_t n = ( LenBin != SQL_NO_TOTAL && LenBin < static_cast<SQLLEN>( sizeof( chunk ) ) )
+                       ? static_cast<size_t>( LenBin )
+                       : sizeof( chunk ) - 1;
+        strVal.append( chunk, n );
+
+        if( ret == SQL_SUCCESS )
+            break;
+    }
+
+    return true;
+}
 
 KODBC& KODBC::operator >>(bool& val_)
 {
-    char        val;
+    char        val = 0;
     SQLRETURN   ret;
-    SQLINTEGER  LenBin;
+    SQLLEN  LenBin = 0;
 
     m_usColumNum++;
     ret = ::SQLGetData( m_hStmt,
@@ -640,7 +586,7 @@ KODBC& KODBC::operator >>(bool& val_)
                         sizeof(bool),
                         &LenBin);
 
-    if( LenBin == SQL_NULL_DATA )   // SqlGetData는 읽을 필드가 NULL이더라도 SQL_SUCCESS를 리턴한다.
+    if( LenBin == SQL_NULL_DATA )   // SQLGetData returns SQL_SUCCESS for a NULL field
         return *this;
 
     if( !SQLOK(ret) )
@@ -656,7 +602,7 @@ KODBC& KODBC::operator >>(bool& val_)
 KODBC& KODBC::operator >>(char& val_)
 {
     SQLRETURN   ret;
-    SQLINTEGER  LenBin;
+    SQLLEN  LenBin = 0;
 
     m_usColumNum++;
     ret = ::SQLGetData( m_hStmt,
@@ -666,7 +612,7 @@ KODBC& KODBC::operator >>(char& val_)
                         sizeof(char),
                         &LenBin);
 
-    if( LenBin == SQL_NULL_DATA )   // SqlGetData는 읽을 필드가 NULL이더라도 SQL_SUCCESS를 리턴한다.
+    if( LenBin == SQL_NULL_DATA )   // SQLGetData returns SQL_SUCCESS for a NULL field
         return *this;
 
     if( !SQLOK(ret) )
@@ -677,34 +623,20 @@ KODBC& KODBC::operator >>(char& val_)
     return *this;
 } // operator >>()
 
+// The original asked for a single wchar_t, room only for the terminator: it always read L'\0'.
 KODBC& KODBC::operator >>(wchar_t& val_)
 {
-	SQLRETURN   ret;
-    SQLINTEGER  LenBin;
+    std::wstring wstrVal;
+    if( GetWideData( wstrVal ) )
+        val_ = wstrVal.empty() ? L'\0' : wstrVal[0];
 
-	m_usColumNum++;
-	ret = ::SQLGetData( m_hStmt,
-		m_usColumNum,
-		SQL_C_WCHAR,
-		&val_,
-		sizeof(wchar_t),
-		&LenBin);
-
-    if( LenBin == SQL_NULL_DATA )   // SqlGetData는 읽을 필드가 NULL이더라도 SQL_SUCCESS를 리턴한다.
-        return *this;
-
-	if( !SQLOK(ret) )
-	{
-		THROW_INVALID_QUERY();
-	} // if
-
-	return *this;
+    return *this;
 } // operator >>()
 
 KODBC& KODBC::operator >>(short& val_)
 {
     SQLRETURN   ret;
-    SQLINTEGER  LenBin;
+    SQLLEN  LenBin = 0;
 
     m_usColumNum++;
     ret = ::SQLGetData( m_hStmt,
@@ -714,7 +646,7 @@ KODBC& KODBC::operator >>(short& val_)
                         sizeof(short),
                         &LenBin);
 
-    if( LenBin == SQL_NULL_DATA )   // SqlGetData는 읽을 필드가 NULL이더라도 SQL_SUCCESS를 리턴한다.
+    if( LenBin == SQL_NULL_DATA )   // SQLGetData returns SQL_SUCCESS for a NULL field
         return *this;
 
     if( !SQLOK(ret) )
@@ -728,7 +660,7 @@ KODBC& KODBC::operator >>(short& val_)
 KODBC& KODBC::operator >>(int& val_)
 {
     SQLRETURN   ret;
-    SQLINTEGER  LenBin;
+    SQLLEN  LenBin = 0;
 
     m_usColumNum++;
     ret = ::SQLGetData( m_hStmt,
@@ -738,7 +670,7 @@ KODBC& KODBC::operator >>(int& val_)
                         sizeof(int),
                         &LenBin);
 
-    if( LenBin == SQL_NULL_DATA )   // SqlGetData는 읽을 필드가 NULL이더라도 SQL_SUCCESS를 리턴한다.
+    if( LenBin == SQL_NULL_DATA )   // SQLGetData returns SQL_SUCCESS for a NULL field
         return *this;
 
     if( !SQLOK(ret) )
@@ -752,7 +684,7 @@ KODBC& KODBC::operator >>(int& val_)
 KODBC& KODBC::operator >>(UINT& val_)
 {
 	SQLRETURN   ret;
-	SQLINTEGER  LenBin;
+	SQLLEN  LenBin = 0;
 
 	m_usColumNum++;
 	ret = ::SQLGetData( m_hStmt,
@@ -762,7 +694,7 @@ KODBC& KODBC::operator >>(UINT& val_)
 		sizeof(UINT),
 		&LenBin);
 
-	if( LenBin == SQL_NULL_DATA )   // SqlGetData는 읽을 필드가 NULL이더라도 SQL_SUCCESS를 리턴한다.
+	if( LenBin == SQL_NULL_DATA )   // SQLGetData returns SQL_SUCCESS for a NULL field
 		return *this;
 
 	if( !SQLOK(ret) )
@@ -776,7 +708,7 @@ KODBC& KODBC::operator >>(UINT& val_)
 KODBC& KODBC::operator >>(UCHAR& val_)
 {
     SQLRETURN   ret;
-    SQLINTEGER  LenBin;
+    SQLLEN  LenBin = 0;
 
     m_usColumNum++;
     ret = ::SQLGetData( m_hStmt,
@@ -786,7 +718,7 @@ KODBC& KODBC::operator >>(UCHAR& val_)
                         sizeof(UCHAR),
                         &LenBin);
 
-    if( LenBin == SQL_NULL_DATA )   // SqlGetData는 읽을 필드가 NULL이더라도 SQL_SUCCESS를 리턴한다.
+    if( LenBin == SQL_NULL_DATA )   // SQLGetData returns SQL_SUCCESS for a NULL field
         return *this;
 
     if( !SQLOK(ret) )
@@ -801,7 +733,7 @@ KODBC& KODBC::operator >>(UCHAR& val_)
 KODBC& KODBC::operator >>(USHORT& val_)
 {
     SQLRETURN   ret;
-    SQLINTEGER  LenBin;
+    SQLLEN  LenBin = 0;
 
     m_usColumNum++;
     ret = ::SQLGetData( m_hStmt,
@@ -811,7 +743,7 @@ KODBC& KODBC::operator >>(USHORT& val_)
                         sizeof(USHORT),
                         &LenBin);
 
-    if( LenBin == SQL_NULL_DATA )   // SqlGetData는 읽을 필드가 NULL이더라도 SQL_SUCCESS를 리턴한다.
+    if( LenBin == SQL_NULL_DATA )   // SQLGetData returns SQL_SUCCESS for a NULL field
         return *this;
 
     if( !SQLOK(ret) )
@@ -827,7 +759,7 @@ KODBC& KODBC::operator >>(USHORT& val_)
 KODBC& KODBC::operator >>(DWORD& val_)
 {
     SQLRETURN   ret;
-    SQLINTEGER  LenBin;
+    SQLLEN  LenBin = 0;
 
     m_usColumNum++;
     ret = ::SQLGetData( m_hStmt,
@@ -837,7 +769,7 @@ KODBC& KODBC::operator >>(DWORD& val_)
                         sizeof(DWORD),
                         &LenBin);
 
-    if( LenBin == SQL_NULL_DATA )   // SqlGetData는 읽을 필드가 NULL이더라도 SQL_SUCCESS를 리턴한다.
+    if( LenBin == SQL_NULL_DATA )   // SQLGetData returns SQL_SUCCESS for a NULL field
         return *this;
 
     if( !SQLOK(ret) )
@@ -852,7 +784,7 @@ KODBC& KODBC::operator >>(DWORD& val_)
 KODBC& KODBC::operator >>(ULONGLONG& val_)
 {
     SQLRETURN   ret;
-    SQLINTEGER  LenBin;
+    SQLLEN  LenBin = 0;
 
     m_usColumNum++;
     ret = ::SQLGetData( m_hStmt,
@@ -862,7 +794,7 @@ KODBC& KODBC::operator >>(ULONGLONG& val_)
         sizeof(ULONGLONG),
         &LenBin);
 
-    if( LenBin == SQL_NULL_DATA )   // SqlGetData는 읽을 필드가 NULL이더라도 SQL_SUCCESS를 리턴한다.
+    if( LenBin == SQL_NULL_DATA )   // SQLGetData returns SQL_SUCCESS for a NULL field
         return *this;
 
     if( !SQLOK(ret) )
@@ -876,7 +808,7 @@ KODBC& KODBC::operator >>(ULONGLONG& val_)
 KODBC& KODBC::operator >>(LONGLONG& val_)
 {
     SQLRETURN   ret;
-    SQLINTEGER  LenBin;
+    SQLLEN  LenBin = 0;
 
     m_usColumNum++;
     ret = ::SQLGetData( m_hStmt,
@@ -886,7 +818,7 @@ KODBC& KODBC::operator >>(LONGLONG& val_)
         sizeof(LONGLONG),
         &LenBin);
 
-    if( LenBin == SQL_NULL_DATA )   // SqlGetData는 읽을 필드가 NULL이더라도 SQL_SUCCESS를 리턴한다.
+    if( LenBin == SQL_NULL_DATA )   // SQLGetData returns SQL_SUCCESS for a NULL field
         return *this;
 
     if( !SQLOK(ret) )
@@ -900,10 +832,7 @@ KODBC& KODBC::operator >>(LONGLONG& val_)
 
 KODBC& KODBC::operator >>(std::string& val_)
 {
-    char acBuffer[1024] = {0, };
-
-    *this >> acBuffer;
-    val_ = acBuffer;
+    GetNarrowData( val_ );  // NULL reads as an empty string, like the original
 
     return *this;
 } // operator >>()
@@ -911,15 +840,9 @@ KODBC& KODBC::operator >>(std::string& val_)
 KODBC& KODBC::operator >>(char* val_)
 {
     SQLRETURN   ret;
-    int         nLen;
-    SQLINTEGER  LenBin;
+    SQLLEN      LenBin = 0;
 
     m_usColumNum++;
-    SQLColAttribute( m_hStmt,
-                     m_usColumNum,
-                     SQL_DESC_OCTET_LENGTH,
-                     0, 0, 0,
-                    &nLen );
     ret = ::SQLGetData( m_hStmt,
                         m_usColumNum,
                         SQL_C_CHAR,
@@ -927,7 +850,7 @@ KODBC& KODBC::operator >>(char* val_)
                         1024,
                         &LenBin);
 
-    if( LenBin == SQL_NULL_DATA )   // SqlGetData는 읽을 필드가 NULL이더라도 SQL_SUCCESS를 리턴한다.
+    if( LenBin == SQL_NULL_DATA )   // SQLGetData returns SQL_SUCCESS for a NULL field
         return *this;
 
     if( !SQLOK(ret) )
@@ -941,41 +864,22 @@ KODBC& KODBC::operator >>(char* val_)
 
 KODBC& KODBC::operator >>(std::wstring& val_)
 {
-    wchar_t acBuffer[1024] = {0, };
-
-    *this >> acBuffer;
-    val_ = acBuffer;
+    GetWideData( val_ );    // NULL reads as an empty string, like the original
 
     return *this;
 } // operator >>()
 
 
+// val_ holds 512 characters, terminator included (the original's 1024 bytes of a Windows wchar_t)
 KODBC& KODBC::operator >>(wchar_t* val_)
 {
-    SQLRETURN   ret;
-    int         nLen;
-    SQLINTEGER  LenBin;
-
-    m_usColumNum++;
-    SQLColAttribute( m_hStmt,
-        m_usColumNum,
-        SQL_DESC_OCTET_LENGTH,
-        0, 0, 0,
-        &nLen );
-    ret = ::SQLGetData( m_hStmt,
-        m_usColumNum,
-        SQL_C_WCHAR,
-        val_,
-        1024,
-        &LenBin);
-
-    if( LenBin == SQL_NULL_DATA )   // SqlGetData는 읽을 필드가 NULL이더라도 SQL_SUCCESS를 리턴한다.
-        return *this;
-
-    if( !SQLOK(ret) )
+    std::wstring wstrVal;
+    if( GetWideData( wstrVal ) )    // a NULL leaves val_ untouched
     {
-        THROW_INVALID_QUERY();
-    } // if
+        const size_t n = std::min<size_t>( wstrVal.size(), 511 );
+        std::copy_n( wstrVal.begin(), n, val_ );
+        val_[n] = L'\0';
+    }
 
     return *this;
 } // operator >>()
@@ -983,7 +887,7 @@ KODBC& KODBC::operator >>(wchar_t* val_)
 KODBC& KODBC::operator >>(float& val_)
 {
     SQLRETURN   ret;
-    SQLINTEGER  LenBin;
+    SQLLEN  LenBin = 0;
 
     m_usColumNum++;
     ret = ::SQLGetData( m_hStmt,
@@ -993,7 +897,7 @@ KODBC& KODBC::operator >>(float& val_)
                         sizeof(float),
                         &LenBin);
 
-    if( LenBin == SQL_NULL_DATA )   // SqlGetData는 읽을 필드가 NULL이더라도 SQL_SUCCESS를 리턴한다.
+    if( LenBin == SQL_NULL_DATA )   // SQLGetData returns SQL_SUCCESS for a NULL field
         return *this;
 
     if( !SQLOK(ret) )
@@ -1008,99 +912,51 @@ KODBC& KODBC::operator >>(KSerBuffer& val_)
 {
     SQLRETURN   ret;
     char        cbuff[1024];
-    SQLINTEGER  LenBin;
 
     m_usColumNum++;
     val_.Clear();
 
-    ret = ::SQLGetData( m_hStmt,
-                        m_usColumNum,
-                        SQL_C_BINARY,
-                        cbuff,
-                        sizeof(cbuff),
-                        &LenBin);
-
-    while( ret != SQL_NO_DATA ) {
-
-        if( LenBin == SQL_NULL_DATA )   // SqlGetData는 읽을 필드가 NULL이더라도 SQL_SUCCESS를 리턴한다.
-            return *this;
-
-        val_.Write( cbuff, LenBin );
-
+    for( ;; )
+    {
+        SQLLEN LenBin = 0;
         ret = ::SQLGetData( m_hStmt,
                             m_usColumNum,
                             SQL_C_BINARY,
                             cbuff,
                             sizeof(cbuff),
                             &LenBin);
-    }
 
+        if( ret == SQL_NO_DATA )
+            break;
 
-    if( ret != SQL_NO_DATA )
-    {
-        THROW_INVALID_QUERY();
-    } // if
+        if( !SQLOK(ret) )
+        {
+            THROW_INVALID_QUERY();
+        } // if
 
-    return *this;
-}
+        if( LenBin == SQL_NULL_DATA )   // SQLGetData returns SQL_SUCCESS for a NULL field
+            return *this;
 
-#ifdef _USE_32BIT_TIME_T
-#include <time.h>
-KODBC& KODBC::operator >>(time_t& val_)
-{
-    SQLRETURN   ret;
-    TIMESTAMP_STRUCT sqlTime;
-    SQLINTEGER  LenBin;
+        // LenBin is what was left before this call: a truncated part fills the buffer
+        const SQLLEN lenPart = ( LenBin == SQL_NO_TOTAL || LenBin > static_cast<SQLLEN>( sizeof(cbuff) ) )
+                             ? static_cast<SQLLEN>( sizeof(cbuff) ) : LenBin;
+        val_.Write( cbuff, static_cast<int>( lenPart ) );
 
-    m_usColumNum++;
-
-    ret = ::SQLGetData( m_hStmt,
-                        m_usColumNum,
-                        SQL_C_TYPE_TIMESTAMP,
-                        &sqlTime,
-                        sizeof(sqlTime),
-                        &LenBin);
-
-    if( LenBin == SQL_NULL_DATA )   // SqlGetData는 읽을 필드가 NULL이더라도 SQL_SUCCESS를 리턴한다.
-        return *this;
-
-    if( !SQLOK(ret) )
-    {
-        THROW_INVALID_QUERY();
-    } // if
-
-    // TIMESTAMP_STRUCT -> struct tm -> time_t
-    struct tm time = {0};
-    time.tm_year    = sqlTime.year - 1900;
-    time.tm_mon     = sqlTime.month - 1;
-    time.tm_mday    = sqlTime.day;
-    time.tm_hour    = sqlTime.hour;
-    time.tm_min     = sqlTime.minute;
-    time.tm_sec     = sqlTime.second;
-
-    val_ = mktime( &time );
-    if( val_ == (time_t)-1 )
-    {
-        THROW_INVALID_QUERY();
+        if( ret == SQL_SUCCESS )
+            break;
     }
 
     return *this;
 }
-#endif
+
 
 
 // 041115
 ImplToStringW( KODBC )
 {
-   //SectionName을 얻어온다.
-    wchar_t szSectionName[10] = {0};
-   GetPrivateProfileSectionNamesW( szSectionName, 10, m_strAbsolutePathDSN.c_str() );
-
-   //Address Data를 얻어온다.
+   // a file DSN has a single section, [ODBC]
    wchar_t szAddress[100] = {0};
-   GetPrivateProfileStringW( szSectionName, L"Address", 0, szAddress, 100, m_strAbsolutePathDSN.c_str());
-
-   //출력한다.
+   GetPrivateProfileStringW( L"ODBC", L"Address", L"", szAddress, 100, m_strAbsolutePathDSN.c_str() );
 
    return stm_ << std::endl
                << TOSTRINGW( szAddress )
@@ -1121,13 +977,10 @@ void KODBC::ResetMaxTime()
 {
     KLocker lock( ms_kMaxProcessingInfo.m_cs );
 
-	std::string strQuery;
-
     ms_kMaxProcessingInfo.m_dwTerm = 0;
     ms_kMaxProcessingInfo.m_cTime = CTime::GetCurrentTime();
-    strQuery = (CStringA)ms_kMaxProcessingInfo.m_cTime.Format(_T("%Y-%m-%d %H:%M:%S"));
-    strQuery.append( " 에 데이터 초기화 되었습니다." );
-	ms_kMaxProcessingInfo.m_strQuery = KncUtil::toWideString(strQuery.c_str(), strQuery.length());
+    ms_kMaxProcessingInfo.m_strQuery = (const wchar_t*)ms_kMaxProcessingInfo.m_cTime.Format( L"%Y-%m-%d %H:%M:%S" );
+    ms_kMaxProcessingInfo.m_strQuery += L" 에 데이터 초기화 되었습니다.";
 }
 
 namespace { // 외부에서 참조당하지 못하도록 anonymous namespace 안에 선언.
@@ -1173,7 +1026,7 @@ namespace { // 외부에서 참조당하지 못하도록 anonymous namespace 안
 
 bool KODBC::IsInvalidMarkIn( IN const std::wstring& strData )
 {
-    for( int i = 0; i < NUM_ELEMENTS( g_szInvalidMark ); i++ )
+    for( size_t i = 0; i < NUM_ELEMENTS( g_szInvalidMark ); i++ )
     {
         if( strData.find( g_szInvalidMark[i] ) != std::string::npos )   // 동일한 문자가 발견된다면
             return true;
@@ -1191,7 +1044,7 @@ namespace { // 외부에서 참조당하지 못하도록 anonymous namespace 안
 
 bool KODBC::IsInvalidMarkInForLetter( IN const std::wstring& strData )
 {
-	for( int i = 0; i < NUM_ELEMENTS( g_szInvalidMarkForLetter ); i++ )
+	for( size_t i = 0; i < NUM_ELEMENTS( g_szInvalidMarkForLetter ); i++ )
 	{
 		if( strData.find( g_szInvalidMarkForLetter[i] ) != std::string::npos )   // 동일한 문자가 발견된다면
 			return true;
@@ -1234,7 +1087,7 @@ namespace { // 외부에서 참조당하지 못하도록 anonymous namespace 안
 bool KODBC::IsInvalidMarkInForCheat( IN const std::wstring& strData )
 {
 	{
-		for( int i = 0; i < NUM_ELEMENTS( g_szInvalidMarkForCheat ); i++ )
+		for( size_t i = 0; i < NUM_ELEMENTS( g_szInvalidMarkForCheat ); i++ )
 		{
 			if( strData.find( g_szInvalidMarkForCheat[i] ) != std::string::npos )   // 동일한 문자가 발견된다면
 				return true;
@@ -1284,7 +1137,7 @@ namespace { // 외부에서 참조당하지 못하도록 anonymous namespace 안
 bool KODBC::IsInvalidMarkInForMachineID( IN const std::wstring& strData )
 {
 	{
-		for( int i = 0; i < NUM_ELEMENTS( g_szInvalidMarkForMachineID ); ++i )
+		for( size_t i = 0; i < NUM_ELEMENTS( g_szInvalidMarkForMachineID ); ++i )
 		{
 			if( strData.find( g_szInvalidMarkForMachineID[i] ) != std::string::npos )   // 동일한 문자가 발견된다면
 				return true;
@@ -1298,13 +1151,15 @@ bool KODBC::IsInvalidMarkInForMachineID( IN const std::wstring& strData )
 
 //#include <boost/algorithm/string/erase.hpp>
 
-// 데이터를 변형시켜서 DB에 가게 되므로 가급적 쓰지 말자.
+// Changes the data that goes to the DB: avoid it. Each mark becomes '*'.
+// The original searched again from the start after each replacement and, '*' being a mark itself, never ended.
 void KODBC::RemoveInvalidMark( IN OUT std::wstring& strData )
 {
-    for( int i = 0; i < NUM_ELEMENTS( g_szInvalidMark ); i++ )
+    for( size_t i = 0; i < NUM_ELEMENTS( g_szInvalidMark ); i++ )
     {
-        for( size_t pos; ( pos = strData.find( g_szInvalidMark[i] ) ) != std::wstring::npos; ) strData.replace( pos, wcslen( g_szInvalidMark[i] ), L"*" );    // 해당 문자열을 *로 변환.
-        //boost::erase_all( strData, g_szInvalidMark[i] );  // 해당 문자열은 그냥 삭제.
+        const size_t len = wcslen( g_szInvalidMark[i] );
+        for( size_t pos = 0; ( pos = strData.find( g_szInvalidMark[i], pos ) ) != std::wstring::npos; ++pos )
+            strData.replace( pos, len, L"*" );
     }
 }
 

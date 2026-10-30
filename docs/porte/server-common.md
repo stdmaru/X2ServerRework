@@ -42,7 +42,7 @@ Mesmo nome de pasta do original (`Common`), porque os fontes incluem `"../Common
 | Boost | 39 | `std` |
 | Lua (`lua_tinker`, `luaL_*`) | 53 | `x2::kncsdk_lua` |
 | **Sockets/IOCP** (`Socket/`) | 15 | rede portável (Asio standalone), mantendo `KSession`/framing/cripto |
-| **ODBC** (`ODBC/`) | 2 | T17: ODBC Driver 18 / FreeTDS, `SQLWCHAR` UTF-16, connection strings. Desenho em [Banco de dados](server-common-db.md) |
+| ~~**ODBC** (`ODBC/`)~~ | 2 | feito em 2026-10-30 (T17): [Banco de dados (ODBC)](server-common-db.md) |
 | **Matemática D3DX** (`X2Data/XSLBattleField`, `LineMap/`, `CommonPacket.h`) | 6 (187 usos) | `x2/platform/d3dx_math.h` (pronto); trocar `#include <d3dx9math.h>` por ele |
 | Dependência invertida | 1 | `KStatisticsLocalLog.cpp` inclui `GameServer/Inventory.h` e `CenterServer/PvPRoom.h` |
 
@@ -56,7 +56,7 @@ Tamanho: ~99 mil linhas de `.cpp` sem os stubs gSOAP. Os maiores são os pacotes
 3. ~~**`server/common-packets`**~~: feito em 2026-10-29 (ver Testes abaixo). Testes de serialização dos pacotes (`ClientPacket`/`CommonPacket`), que são a base da compatibilidade (T4).
 4. ~~**`server/common-net`**~~: feito em 2026-10-29. TCP de `Socket/` sobre Asio (T20), ver Rede abaixo.
 5. ~~**`server/common-udp`**~~: feito em 2026-10-29. UDP de `Socket/` (`KTDNUDP`, `UdpEcho`, `LBSUdpEcho`, `X2Packet`), ver Rede abaixo.
-6. **`server/common-db`**: `ODBC/` portável (T17). Desenho em [Banco de dados (ODBC)](server-common-db.md).
+6. ~~**`server/common-db`**~~: feito em 2026-10-30. `ODBC/` portável (T17), testado contra o SQL Server com o FreeTDS: [Banco de dados (ODBC)](server-common-db.md).
 
 Depois disso vem o ChannelServer (`server/channel`).
 
@@ -64,7 +64,7 @@ Depois disso vem o ChannelServer (`server/channel`).
 
 O alvo `x2_server_common` (todo o `Common`, menos os `.cpp` de `Socket/`, `ODBC/`, `KStatisticsLocalLog.cpp` e `DEBBilling*`)
 **compila no Linux sem erros e sem warnings** (GCC 16 Debug/Release, Clang 23 Release). `Socket/` (TCP e UDP) compila e tem
-teste desde o `server/common-net`/`server/common-udp`; falta o `ODBC/` (só os headers são lidos). Ainda **não há testes** do `Common` (vêm no passo `server/common-packets`) e nada foi executado.
+teste desde o `server/common-net`/`server/common-udp`, e o `ODBC/` desde o `server/common-db` (2026-10-30, ver [Banco de dados (ODBC)](server-common-db.md)). Ainda **não há testes** do `Common` (vêm no passo `server/common-packets`) e nada foi executado.
 No MinGW o `Common` fica de fora enquanto não houver LuaJIT para Windows (D5).
 
 Caminho: ~15.000 erros após a importação → ~4.000 (passada mecânica) → 2.291 no início da retomada → 0. Depois, 81 mil warnings
@@ -114,7 +114,8 @@ Mudanças de comportamento (intencionais):
 | `test_login_packets.cpp` | Bytes exatos de `ECH_VERIFY_ACCOUNT_REQ/ACK` e `EGS_CONNECT_REQ/ACK`, montados à mão a partir da ordem dos campos e do [formato da rede](../original/protocolo.md) |
 | `test_session.cpp` | `KSession` por loopback com as threads de I/O reais: accept, troca da chave (`E_ACCEPT_CONNECTION_NOT`), pacotes cifrados nos dois sentidos, um pacote de 24 KB (mais de uma leitura) e a desconexão. Nos dois modos do proxy: nas threads de I/O e com thread própria (sem IOCP) |
 | `test_udp.cpp` | Datagramas entre dois `CKTDNUDP` (ID + struct, conferindo endereço e porta do remetente) e o `XPT_PORT_CHECK_REQ` respondido pela thread do `KLBSUdpEcho`, que precisa terminar sem tráfego |
-| `server_hooks.cpp` | Não é teste: define o que cada servidor fornece ao `Common` (`g_szConfigFile`, `CreateDBThread`), o `KStatisticsLocalLog` (compilado com o GameServer) e, até o `server/common-db`, o `KODBC`, para os testes linkarem sem um servidor |
+| `test_odbc.cpp` | `KODBC`: conversão de `.dsn` e filtros sem banco; suíte `db` contra um SQL Server real quando `X2_TEST_ODBC` está definido. Ver [Banco de dados (ODBC)](server-common-db.md#testes) |
+| `server_hooks.cpp` | Não é teste: define o que cada servidor fornece ao `Common` (`g_szConfigFile`, `CreateDBThread`) e o `KStatisticsLocalLog` (compilado com o GameServer), para os testes linkarem sem um servidor |
 | `packets_generated` (ctest) | Falha se os testes gerados estiverem desatualizados em relação aos `.cpp` dos pacotes |
 
 **Limite:** os testes provam que o porte é coerente consigo mesmo e com o formato lido no código, não que bate byte a byte com o

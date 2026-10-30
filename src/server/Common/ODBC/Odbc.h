@@ -2,9 +2,12 @@
 #define ODBC_H "$Id: ODBC.H,v 1.1 2003/05/23 01:18:40 cvs Exp $"
 
 #include <ostream>
+#include <stdexcept>
 #include "x2/platform/win32.h"
 #include "x2/platform/odbc.h"
 #include <string>
+#include <utility>
+#include <vector>
 #include "Serializer/SerBuffer.h"
 #include <ToString.h>
 #include "KncException.h"
@@ -21,7 +24,7 @@ public:
 
 #   define SQLOK(result) (result == SQL_SUCCESS || result == SQL_SUCCESS_WITH_INFO)
 #   define SQLNODATA(result) (result == SQL_NO_DATA)
-#   define THROW_INVALID_QUERY() { throw std::exception("DB Query Exception"); }
+#   define THROW_INVALID_QUERY() { throw std::runtime_error("DB Query Exception"); }
 #   define FETCH_DATA( varlist ) \
             { \
                 try \
@@ -104,14 +107,20 @@ public:
     KODBC& operator >>(std::string& val);
     KODBC& operator >>(float& val);
     KODBC& operator >>(KSerBuffer& val);
-#ifdef _USE_32BIT_TIME_T
-    KODBC& operator>>(time_t& val);
-#endif
     KODBC& operator >>(wchar_t* val);           // 051229
     KODBC& operator >>(std::wstring& val);      // 051229
     KODBC& operator >>(ULONGLONG& val);         // 061009
     KODBC& operator >>(LONGLONG& val);          // 061009
     CRITICAL_SECTION& GetCS() { return m_cs; }
+
+    // .dsn files (decision T17): their DRIVER (the legacy Windows "SQL Server") is replaced by this one and WSID is
+    // dropped. The default driver comes with Encrypt=yes;TrustServerCertificate=yes; setting another driver clears
+    // the options, so SetODBCOptions goes after it. Called while the config is read, before the DB threads start.
+    typedef std::vector< std::pair< std::wstring, std::wstring > > KDsnKeys;
+    static void SetODBCDriver( const std::wstring& wstrDriver );
+    static void SetODBCOptions( const std::wstring& wstrOptions );
+    static bool ReadFileDSN( const std::wstring& wstrPath, KDsnKeys& vecKeys );
+    static std::wstring BuildConnStrFromDsn( const KDsnKeys& vecKeys, const std::wstring& wstrDriver, const std::wstring& wstrOptions );
 
     static void DumpMaxTime( std::wostream& stm );
     static void ResetMaxTime();
@@ -129,11 +138,22 @@ public:
     CRITICAL_SECTION    m_cs;
 
 public:
-    // diagnostic message
-    SQLWCHAR            m_szDiagMsg[SQL_MAX_MESSAGE_LENGTH];
+    // diagnostic message of the last failed call (converted from SQLWCHAR, which is UTF-16 also outside Windows)
+    wchar_t             m_szDiagMsg[SQL_MAX_MESSAGE_LENGTH];
     SQLSMALLINT         m_sqlMsgLen;
-    SQLWCHAR            m_sqlState[6];
+    wchar_t             m_sqlState[6];
     SQLINTEGER          m_sqlNativeErr;
+
+private:
+    SQLRETURN           ReadDiag( SQLSMALLINT sHandleType, SQLHANDLE hHandle );
+    bool                AllocConnection( const std::wstring& wstrConnStr, const std::wstring& wstrLogName );
+    bool                GetWideData( std::wstring& wstrVal );
+    bool                GetNarrowData( std::string& strVal );
+
+    static std::wstring ms_wstrODBCDriver;
+    static std::wstring ms_wstrODBCOptions;
+
+public:
 
 	// DB Connection Info
 	bool				m_bDBConnStr;

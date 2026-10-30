@@ -8,11 +8,6 @@
 
 
 
-KStoredProcedure::KStoredProcedure(void)
-:m_kODBC( KODBC() )
-{
-}
-
 KStoredProcedure::~KStoredProcedure(void)
 {
 
@@ -214,10 +209,10 @@ end_proc:
 
 int KStoredProcedure::GetUnitSlotNum( IN const UidType& nUserUID_, IN const std::wstring& strUserID_ )
 {
+    int nUnitSlot = 0;
 
     DO_QUERY( L"exec dbo.gup_get_user_info", L"%d, N\'%s\'", % nUserUID_  % strUserID_.c_str() );
 
-    int nUnitSlot = 0;
     if( m_kODBC.BeginFetch() )
     {
         FETCH_DATA( nUnitSlot );
@@ -275,14 +270,8 @@ bool KStoredProcedure::Query_GetGuildMemberGrade( IN UidType iUnitUID, OUT u_cha
         m_kODBC.EndFetch();
     }
 
-    if( ucGuildMemberGrade == -1 )
-    {
-        START_LOG( cwarn, L"길드원 등급 정보가 존재하지 않음." )
-            << BUILD_LOG( iUnitUID )
-            << END_LOG;
-
-        goto end_proc;
-    }
+    // The original warned and returned false when the grade was -1, which an u_char never is.
+    // No server calls this.
 
     return true;
 
