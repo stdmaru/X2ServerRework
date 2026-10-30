@@ -55,6 +55,7 @@ no Linux e no Wine. Ainda não rodou com configuração, banco e cliente: é o p
 | `config_ch_DEV.lua` | `SetLocalIP( ... )` fixa o endereço com que o servidor se identifica | O original usava o primeiro endereço do nome do host, que no Linux pode ser qualquer interface (aqui, a VPN) |
 | `-popup` | Recusado com mensagem; os dados do banco vão como argumentos | Era um diálogo MFC pedindo id e senha |
 | `ChannelAccountDBThread` | `boost::variate_generator` (OTP) → lambda sobre a mesma distribuição; `_itow` → `_itow_s` | Mesmo resultado |
+| `ChannelLogDBThread`, `ChannelAccountDBThread`, `ChannelSMSDBThread` | `ProcessEvent` deixa de ser `virtual inline` (é definido no `.cpp`) | `inline` sem definição no header é ODR inválido; o clang-cl acusa (`-Wundefined-inline`). O GameServer tem o mesmo padrão |
 
 Portabilidade (sem mudança de comportamento): passada mecânica (Boost → `std`/`x2::`, includes de plataforma), `goto end_proc`
 que cruzava uma declaração em `ON_DBE_SERVER_OFF_NOT` (declaração subiu), `BaseServer.h` incluído nos headers cujos templates usam

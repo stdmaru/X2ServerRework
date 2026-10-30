@@ -59,10 +59,11 @@ if(NOT TARGET x2::luajit)
 
         if(MSVC)
             # Needs the Visual Studio environment (cl, lib, INCLUDE), as the Ninja generator already does. The script
-            # sets no CRT flag; CL passes the one of our targets (CMake's default /MD, /MDd in Debug), or link mixes them.
+            # sets no CRT flag; CL passes the one of our targets (CMake's default /MD, /MDd in Debug), or link mixes them,
+            # and /w: third-party code, its /W3 warnings are not ours to fix.
             set(_x2_luajit_lib ${luajit_SOURCE_DIR}/src/lua51.lib)
             add_custom_command(OUTPUT ${_x2_luajit_lib}
-                COMMAND ${CMAKE_COMMAND} -E env "CL=/MD$<$<CONFIG:Debug>:d>" cmd /c msvcbuild.bat static
+                COMMAND ${CMAKE_COMMAND} -E env "CL=/MD$<$<CONFIG:Debug>:d> /w" cmd /c msvcbuild.bat static
                 WORKING_DIRECTORY ${luajit_SOURCE_DIR}/src
                 COMMENT "Building LuaJIT ${X2_LUAJIT_COMMIT} (msvcbuild.bat)"
                 VERBATIM)

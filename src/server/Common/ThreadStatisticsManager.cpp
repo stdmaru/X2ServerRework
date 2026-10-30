@@ -559,14 +559,11 @@ void KThreadStatisticsManager::AttachSvnameTag( std::wostringstream& os )
 	char strTemp[256] = {0};
 	::gethostname( strTemp, 256 );
 
-	HOSTENT* hostent;
-	char* ip;
-
-	hostent = ::gethostbyname( strTemp );
-	ip = ::inet_ntoa( *( struct in_addr* )*hostent->h_addr_list );
+	// Port: getaddrinfo in place of gethostbyname, which the original dereferenced without checking for failure
+	const std::string ip = x2::platform::ResolveIPv4( strTemp );
 
 	os
-		<< L"_[" << ip << L"]";
+		<< L"_[" << ip.c_str() << L"]";
 }
 
 void KThreadStatisticsManager::CheckFlushLocalLog()

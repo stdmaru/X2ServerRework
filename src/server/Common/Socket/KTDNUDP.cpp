@@ -1859,7 +1859,7 @@ u_long  CKTDNUDP::ConvertIPToAddress( const WCHAR* pIP )
 
     string mbIP;
     ConvertWCHARToChar( mbIP, pIP );
-    return inet_addr( mbIP.c_str() );
+    return x2::platform::IpFromString( mbIP.c_str() );
 }
 
 /*static*/
@@ -1870,7 +1870,7 @@ std::wstring    CKTDNUDP::ConvertAddressToIP( u_long ulIP )
         return wstrIP;
     in_addr IP;
     IP.s_addr = ulIP;
-    ConvertCharToWCHAR( wstrIP, inet_ntoa( IP ) );
+    ConvertCharToWCHAR( wstrIP, x2::platform::IpToString( IP ) );
     return  wstrIP;
 }
 

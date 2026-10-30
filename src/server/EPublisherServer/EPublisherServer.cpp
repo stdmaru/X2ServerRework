@@ -70,7 +70,7 @@ bool EPublisherServer::Listen()
     SOCKADDR_IN addr{};
     addr.sin_family = AF_INET;
     addr.sin_port = htons(m_port);
-    addr.sin_addr.s_addr = inet_addr(m_bindAddress.c_str());
+    addr.sin_addr.s_addr = x2::platform::IpFromString(m_bindAddress.c_str());
     if (::bind(m_listen, reinterpret_cast<SOCKADDR*>(&addr), sizeof(addr)) == SOCKET_ERROR
         || ::listen(m_listen, SOMAXCONN) == SOCKET_ERROR) {
         START_LOG(cerr, L"Cannot listen on the EPublisher port.")
@@ -103,7 +103,7 @@ void EPublisherServer::Run()
             continue;
         }
         ++m_connections;
-        std::thread(&EPublisherServer::Serve, this, sock, std::string(inet_ntoa(peer.sin_addr))).detach();
+        std::thread(&EPublisherServer::Serve, this, sock, std::string(x2::platform::IpToString(peer.sin_addr))).detach();
     }
 }
 
