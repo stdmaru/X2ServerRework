@@ -152,7 +152,7 @@ void KBaseServer::RegToLua()
 }
 
 extern const wchar_t* g_szConfigFile;
-		const wchar_t* g_szConfigForderName = L"Config\\US\\";
+		const wchar_t* g_szConfigForderName = L"Config/US/";
 
 #ifndef _DEBUG	// 디버그 안되는 오류 해외팀 수정
 #include "Lottery.h"

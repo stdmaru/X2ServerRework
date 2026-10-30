@@ -88,6 +88,7 @@ Ver [Servidor — acoplamento com Windows](../original/servidor.md).
 - [x] `server/common-udp`: UDP de `Socket/` (`KTDNUDP`, `UdpEcho`, `LBSUdpEcho`) sem completion routines, com teste por loopback (2026-10-29).
 - [x] `server/common-db`: ODBC portável (T17), testado contra SQL Server 2022 em Docker com os bancos do jogo, via FreeTDS (2026-10-30): [Banco de dados (ODBC)](../porte/server-common-db.md). Driver 18 ainda não testado.
 - [x] `server/channel-build`: ChannelServer compilando sem warnings (GCC, Clang, MinGW), `main` sem MFC (`KServerMain`), 2026-10-30. Ver [Servidor: ChannelServer](../porte/server-channel.md).
+- [x] EPublisherServer: reimplementação do AuthServer do DEB (T23), testada com o cliente gSOAP dos servidores e contra o banco (2026-10-30). Ver [Servidor: EPublisherServer](../porte/server-epublisher.md).
 - [ ] `server/channel-run`: ChannelServer no Linux com o `elsword.exe` original até o fim do login no canal. Em 2026-10-30: pasta `run/` montada pelo CMake (T22) e servidor no estado pronto com o banco; faltam o DEB e o cliente.
 - [ ] UI MFC (`Common/ui/ServerUIDlg`) → terminal em todas as plataformas (T15): log ao vivo, prompt Lua com histórico, título com status, encerramento com confirmação, modo serviço sem stdin.
 - [ ] Log (T16): metadados estruturados no `START_LOG`; arquivo com o conteúdo completo do original, console compacto e colorido com nível próprio.

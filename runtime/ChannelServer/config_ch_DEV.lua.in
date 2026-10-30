@@ -6,8 +6,8 @@
 -- address this server announces; the DB (Statistics.LServerList.PublicIP) identifies the servers by it --
 SetLocalIP( "@X2_RUN_SERVER_IP@" )
 
-----------     Authentication (DEB)     ----------
-DEBAuthManager:AddAuthServiceAddress("@X2_RUN_AUTH_URL@")
+----------     Authentication (DEB, served by the EPublisherServer)     ----------
+DEBAuthManager:AddAuthServiceAddress("@X2_RUN_EPUBLISHER_URL@")
 DEBAuthManager:Init(1)
 
 ----------     Channel SimLayer     ----------

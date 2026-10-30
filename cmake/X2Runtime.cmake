@@ -29,7 +29,9 @@ set(X2_RUN_DB_PASSWORD "${_x2_db_password}" CACHE STRING "SQL Server password of
 set(X2_RUN_ODBC_DRIVER "${_x2_odbc_driver}" CACHE STRING "ODBC driver (DBLayer:SetODBCDriver)")
 set(X2_RUN_ODBC_OPTIONS "${_x2_odbc_options}" CACHE STRING "ODBC connection options (DBLayer:SetODBCOptions)")
 set(X2_RUN_SERVER_IP "127.0.0.1" CACHE STRING "Address the servers announce (SetLocalIP); docker/mssql/restore.sh writes it to LServerList")
-set(X2_RUN_AUTH_URL "http://127.0.0.1:8000/" CACHE STRING "DEB auth service (DEBAuthManager:AddAuthServiceAddress)")
+set(X2_RUN_EPUBLISHER_PORT "8000" CACHE STRING "Port of the EPublisherServer")
+set(X2_RUN_EPUBLISHER_URL "http://127.0.0.1:${X2_RUN_EPUBLISHER_PORT}/" CACHE STRING
+    "EPublisher service the servers call (DEBAuthManager:AddAuthServiceAddress)")
 
 find_package(Python3 COMPONENTS Interpreter)
 find_program(X2_LUAJIT_EXECUTABLE luajit DOC "LuaJIT, used to generate the ClientScript folder")

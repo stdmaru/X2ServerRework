@@ -71,6 +71,7 @@ python3 tools/docs/check_links.py                                     # links do
 docker compose -f docker/docker-compose.yml up -d --wait              # SQL Server de desenvolvimento
 docker/mssql/restore.sh                                               # restaura _database/*.bak nele
 cmake --build --preset linux-debug --target x2_run_channel            # monta build/linux-debug/run/ChannelServer pronto para rodar
+cmake --build --preset linux-debug --target x2_run_epublisher         # idem, EPublisherServer (login/cash do DEB, T23)
 ```
 
 O código original está em CP949. Para ler: `iconv -f cp949 -t utf-8 -c <arquivo>`. Alguns arquivos já estão em UTF-8.

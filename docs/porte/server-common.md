@@ -129,6 +129,7 @@ e não no cliente (as flags do cliente ainda não foram geradas, ver [Roadmap](.
 
 | Onde | Mudança | Motivo |
 |---|---|---|
+| Caminhos de arquivo (2026-10-30) | `"Statistics\\..."`, `"Config\\US\\"` e o `%Y-%m-%d\\` do backup usam `/`; o backup das estatísticas vai para `StatisticsBackup/<data>/` **ao lado do servidor**; `KAutoPath::AddPath` troca `\\` por `/` fora do Windows | No Linux o `\\` virava parte do nome (pastas `C:\StatisticsBackup\` dentro da pasta do servidor). O original gravava em `C:\StatisticsBackup\`, que não existe fora do Windows; `/` funciona nos dois |
 | `KStatisticsLocalLog` (`Statistics/SI_LOG_*.txt`) | Arquivos em **UTF-8** (`x2::platform::Utf8FileLocale`), caminho `Statistics/` com `/`, existência por `std::filesystem::exists` | O original usava `std::locale("korean")` (CP949, só MSVC) e `_stat`. Os arquivos antigos em CP949 com texto coreano no cabeçalho não são relidos iguais; os números são ASCII |
 | `KAutoPath`, `KFolderTraverse`, estatísticas | `FindFirstFile`/`GetCurrentDirectory`/`CopyFile`... → `std::filesystem`. `KApplyAllFiles` passa `directory_entry` ao functor e não muda mais o diretório atual | Portável. A busca de scripts continua na mesma ordem (pasta atual, depois subpastas em profundidade, por nome) |
 | `KFolderTraverse` | O original pulava a primeira entrada de `FindFirstFile` (normalmente `.`); aqui nenhuma entrada é pulada | `std::filesystem` não lista `.`/`..` |
@@ -180,8 +181,7 @@ e não no cliente (as flags do cliente ainda não foram geradas, ver [Roadmap](.
 
 ## Pendências
 
-- **Caminhos com `\\`** espalhados (`"Config\\US\\"`, `"Statistics\\..."`, `"C:\\StatisticsBackup\\"`): no Linux viram nomes de arquivo com barra invertida.
-  Precisa de uma regra (normalizar na abertura de arquivos da plataforma, ou trocar no código).
+- ~~**Caminhos com `\\`**~~: resolvido em 2026-10-30 (ver Mudanças › Intencionais).
 - **Nomes de arquivo com maiúsculas/minúsculas**: o Windows não diferencia; os scripts podem ser referenciados com outra grafia. Verificar ao rodar o servidor.
 - `XSLCashItemManager::AddNotSellCashItemProductNo`: `!GetServerGroupID() != iServerGroupID` mantido como está; provavelmente era
   `GetServerGroupID() != iServerGroupID`. Decidir com o usuário (muda quais itens aparecem na loja).

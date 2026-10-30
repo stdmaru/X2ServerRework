@@ -1,0 +1,15 @@
+﻿-- lua header. Keep this line: it makes the file be read as UTF-8.
+-- Development configuration of the EPublisher service (EPublisherServer DEV). The @...@ values are
+-- filled in by the x2_run_epublisher target (docs/ferramentas/runtime.md).
+
+EPublisher:SetBindAddress( "0.0.0.0" )
+EPublisher:SetPort( @X2_RUN_EPUBLISHER_PORT@ )	-- the servers' DEBAuthManager:AddAuthServiceAddress points here
+EPublisher:SetMaintenance( false )		-- true: every login fails with ERR_VERIFY_12
+
+-- Account database (DEBAccounts, DEBUserCash) --
+EPublisher:SetODBCDriver( "@X2_RUN_ODBC_DRIVER@" )
+EPublisher:SetODBCOptions( "@X2_RUN_ODBC_OPTIONS@" )
+EPublisher:SetDSN( "Account.dsn" )
+
+-- log level (as the servers): -1 none, 0 cerr/cout, 1 +cwarn, 2 +clog --
+log( 0 )

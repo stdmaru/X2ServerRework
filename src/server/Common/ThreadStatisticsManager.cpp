@@ -229,7 +229,7 @@ void KThreadStatisticsManager::ClearLocalLogData_()
 
 	// 덤프 시간 저장
 	int iCurTime = GetCurLocalTime();
-	std::wfstream fout( "Statistics\\LastUpdateLog.txt", std::ios::out );
+	std::wfstream fout( "Statistics/LastUpdateLog.txt", std::ios::out );
 	fout << iCurTime;
 	fout.close();
 }
@@ -384,7 +384,7 @@ struct KSendLocalLog
 			if ( iPosExt == std::string::npos )
 				return;
 
-			std::wstring strRootName = L"Statistics\\";
+			std::wstring strRootName = L"Statistics/";
 
 			std::wstring strFileFirst = strFilename.substr( 0, iPosExt );
 			std::wostringstream ostmDgTag;
@@ -459,16 +459,16 @@ void KThreadStatisticsManager::BackUpAndSendFTPLocalLog( bool bSendFileFtp )
 #endif // SERV_LOG_UNDEFINED_QUEST_TEMPLET
 
 	if ( CheckStatistics( KStatistics::SI_LOC_PVP ) == true )
-		kLogReporter.InsertFile( L"Statistics\\SI_LOG_PVP.txt", ostmPvp.str().c_str() );
+		kLogReporter.InsertFile( L"Statistics/SI_LOG_PVP.txt", ostmPvp.str().c_str() );
 
 	if ( CheckStatistics( KStatistics::SI_LOC_ITEM ) == true )
-		kLogReporter.InsertFile( L"Statistics\\SI_LOG_ITEM.txt", ostmItem.str().c_str() );
+		kLogReporter.InsertFile( L"Statistics/SI_LOG_ITEM.txt", ostmItem.str().c_str() );
 
 	if ( CheckStatistics( KStatistics::SI_LOC_SPIRIT ) == true )
-		kLogReporter.InsertFile( L"Statistics\\SI_LOG_SPIRIT.txt", ostmSpirit.str().c_str() );
+		kLogReporter.InsertFile( L"Statistics/SI_LOG_SPIRIT.txt", ostmSpirit.str().c_str() );
 
 	if ( CheckStatistics( KStatistics::SI_LOC_ENCHANT ) == true )
-		kLogReporter.InsertFile( L"Statistics\\SI_LOG_ENCHANT.txt", ostmEnchant.str().c_str() );
+		kLogReporter.InsertFile( L"Statistics/SI_LOG_ENCHANT.txt", ostmEnchant.str().c_str() );
 
 	// FTP전송 파일 백업
 	BackUpSendFTPFiles( kLogReporter.m_vecFileList );
@@ -518,12 +518,12 @@ void KThreadStatisticsManager::BackUpSendFTPFiles( const std::vector< KLogReport
 
 	std::error_code ec;
 
-	// 1. create the backup folder
-	std::wstring wstrBackupFolder = L"C:\\StatisticsBackup\\";
+	// 1. create the backup folder: StatisticsBackup/ next to the server (the original used C:\StatisticsBackup\)
+	std::wstring wstrBackupFolder = L"StatisticsBackup/";
 	std::filesystem::create_directory( wstrBackupFolder, ec );
 
 	// 2. one folder per day
-	wstrBackupFolder += ( CStringW )( tCurTime.Format( _T( "%Y-%m-%d\\" ) ) );
+	wstrBackupFolder += ( CStringW )( tCurTime.Format( _T( "%Y-%m-%d/" ) ) );
 	std::filesystem::create_directory( wstrBackupFolder, ec );
 
 	// 3. back up the statistics and log files
@@ -580,7 +580,7 @@ void KThreadStatisticsManager::CheckFlushLocalLog()
 	// 초기화
 	if ( m_iLocalLogLastUpdateTime == 0 )
 	{
-		std::wfstream fin( "Statistics\\LastUpdateLog.txt", std::ios::in );
+		std::wfstream fin( "Statistics/LastUpdateLog.txt", std::ios::in );
 		if ( fin.good() )
 		{
 			fin >> m_iLocalLogLastUpdateTime;

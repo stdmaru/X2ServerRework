@@ -12,7 +12,14 @@ static std::vector< std::string > g_vecAddPath; // file scope: no outside access
 
 void KAutoPath::AddPath( const std::string& strPath )
 {
+#if defined(_WIN32)
 	g_vecAddPath.push_back( strPath );
+#else
+	// the configs were written for Windows (C:\Elsword\ServerResource): outside it, '\' would be part of a name
+	std::string strPortable = strPath;
+	std::replace( strPortable.begin(), strPortable.end(), '\\', '/' );
+	g_vecAddPath.push_back( strPortable );
+#endif
 }
 //}}
 

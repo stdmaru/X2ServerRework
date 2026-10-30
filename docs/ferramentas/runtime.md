@@ -13,7 +13,12 @@ cmake --build --preset linux-debug --target x2_run_channel                      
 cd build/linux-debug/run/ChannelServer && ./ChannelServer DEV 0                       # tag DEV, grupo de servidores 0
 ```
 
-O servidor precisa do serviço de autenticação DEB para o login ([Servidor: ChannelServer](../porte/server-channel.md)).
+O login passa pelo EPublisherServer ([Servidor: EPublisherServer](../porte/server-epublisher.md)), que precisa estar rodando:
+
+```bash
+cmake --build --preset linux-debug --target x2_run_epublisher
+cd build/linux-debug/run/EPublisherServer && ./EPublisherServer DEV     # porta 8000 (X2_RUN_EPUBLISHER_PORT)
+```
 
 ## Layout montado
 
@@ -42,7 +47,7 @@ Os configs apontam para `../ServerResource` e `../ClientScript` (`SimLayer:AddPa
 | `X2_RUN_DB_SERVER`, `X2_RUN_DB_USER`, `X2_RUN_DB_PASSWORD` | `127.0.0.1,1433`, `sa`, `$X2_DB_PASSWORD` ou a senha de desenvolvimento do `docker-compose.yml` | `.dsn` |
 | `X2_RUN_ODBC_DRIVER`, `X2_RUN_ODBC_OPTIONS` | FreeTDS (`/usr/lib/libtdsodbc.so`, `TDS_Version=7.4;ClientCharset=UTF-8`) se existir, senão ODBC Driver 18 (`Encrypt=yes;TrustServerCertificate=yes`) | `DBLayer:SetODBCDriver/SetODBCOptions` |
 | `X2_RUN_SERVER_IP` | `127.0.0.1` | `SetLocalIP` (endereço com que o servidor se identifica no banco) |
-| `X2_RUN_AUTH_URL` | `http://127.0.0.1:8000/` | `DEBAuthManager:AddAuthServiceAddress` |
+| `X2_RUN_EPUBLISHER_PORT`, `X2_RUN_EPUBLISHER_URL` | `8000`, `http://127.0.0.1:8000/` | porta do EPublisherServer; `DEBAuthManager:AddAuthServiceAddress` dos servidores |
 
 A senha fica só no cache e nos arquivos gerados em `build/`, nunca no git.
 
