@@ -62,7 +62,7 @@ log( 0 )
 
 | Onde | Original | Agora | Motivo |
 |---|---|---|---|
-| Dependências | gSOAP (servidor), SOCI, OpenSSL, Lua 5.1 e lua_tinker próprios | `KODBC`, Crypto++, LuaJIT e `lua_tinker` do projeto; HTTP/SOAP próprios | Sem dependência nova (pedido do usuário) |
+| Dependências | gSOAP (servidor), SOCI, OpenSSL, Lua 5.1 e lua_tinker próprios | `KODBC`, `x2::crypto` (SHA-256, T27), LuaJIT e `lua_tinker` do projeto; HTTP/SOAP próprios | Sem dependência nova (pedido do usuário) |
 | Nome, config | `AuthServer`, `AuthConfig.lua` com `Auth:SetPort/SetLogLevel/SetMaintenance`, `mssql.dsn` em texto | `EPublisherServer <tag>`, `config_ep_<tag>.lua` com `EPublisher:...`, `log()` e `.dsn` como os servidores | Mesmo esquema dos outros servidores |
 | `NetError` | cópia própria do `NetError.h` | o `NetError` do `Common` | Os códigos são os que o ChannelServer e o cliente usam |
 | Compra | lê o saldo e grava o novo em duas consultas; preço negativo é ignorado; lista malformada lança exceção | um `UPDATE ... OUTPUT ... WHERE Cash >= preço`; lista malformada ou preço negativo é recusado (`_30`) | Duas compras simultâneas não gastam o mesmo saldo |

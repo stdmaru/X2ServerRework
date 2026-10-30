@@ -30,13 +30,13 @@ com CMake e x64, limpando o código no caminho. Começa pelas bibliotecas, segue
   Tipos que vão para a rede usam tamanho fixo (`int32_t`, `char16_t`...). Ver [Protocolo](docs/original/protocolo.md).
 - **Variante única: US / `_SERVICE_`.** As ferramentas de debug/dev/admin ficam sob `X2_DEV_TOOLS` (ver [Debug e dev](docs/original/debug-e-dev.md)).
   Outros países, anti-cheat, integrações de publisher e código legado são descartados.
-- **Só 64 bits: x86_64 hoje, arm64 no futuro.** Windows (MSVC) e Linux (GCC/Clang) precisam compilar a partir do mesmo CMake.
-  Sem máquina Windows, os caminhos `_WIN32` são verificados com **MinGW-w64 + Wine** (preset `mingw-debug`, decisão T18).
+- **Só 64 bits: x86_64 hoje, arm64 no futuro.** Windows (clang-cl) e Linux (Clang; GCC como verificação) compilam a partir do mesmo CMake
+  (decisão T26). Não há Windows local: os caminhos `_WIN32` são compilados e testados pelo job **clang-cl** do CI (`windows-latest`).
   Nada de assembly/intrínsecos x86, nada de supor `char` com ou sem sinal (o build força `-fsigned-char`) e nada de sincronizar threads com `volatile`.
 - `windows.h` e APIs de sistema só existem em `src/platform` (`x2::platform`). Código portado inclui `x2/platform/win32.h`
   no lugar de `<windows.h>`/`<atltime.h>`/`<tchar.h>`. Ver [Plataforma](docs/porte/platform.md).
 - Módulos marcados `frozen = true` em `tools/import/modules/` já foram portados à mão: o importador se recusa a escrever neles.
-- Build sem warnings (GCC, Clang e MinGW). Warning novo é corrigido, não ignorado.
+- Build sem warnings (GCC, Clang e clang-cl). Warning novo é corrigido, não ignorado.
 
 ## Layout
 
@@ -64,9 +64,8 @@ Builds e testes rodam na imagem Ubuntu do projeto (decisão T24): prefixe os com
 docker/build.sh cmake --preset linux-debug                            # configura (dev tools ON)
 docker/build.sh cmake --build --preset linux-debug                    # build
 docker/build.sh ctest --preset linux-debug                            # testes
-docker/build.sh cmake --preset mingw-debug                            # Windows x64 (MinGW-w64, cruzado)
-docker/build.sh cmake --build --preset mingw-debug
-docker/build.sh ctest --preset mingw-debug                            # testes Windows no Wine
+docker/build.sh cmake --preset linux-gcc && docker/build.sh cmake --build --preset linux-gcc   # verificação com GCC
+gh run list --branch <branch>                                         # CI: inclui Windows (clang-cl), que só roda lá
 python3 tools/import/import.py <módulo> --dry-run                     # importador
 python3 tools/import/tests/test_condres.py                            # testes do importador
 python3 tools/import/tests/test_flagsim.py
@@ -116,9 +115,9 @@ O wiki em `docs/` é a memória do projeto. Ele é organizado como **wiki naveg�
 
 ### Branches
 
-- **`main` está sempre verde**: compila sem warnings (GCC, Clang e MinGW), `ctest` passa (Linux e Wine) e `tools/docs/check_links.py` não acusa nada. Nunca se trabalha direto nela.
+- **`main` está sempre verde**: compila sem warnings (GCC, Clang e clang-cl), `ctest` passa (Linux e Windows, no CI) e `tools/docs/check_links.py` não acusa nada. Nunca se trabalha direto nela.
 - **Um branch curto por passo do roadmap**, com nome `área/assunto`. Áreas: `platform`, `kncsdk`, `server`, `client`, `tools`, `docs`, `build`.
-  Exemplos: `tools/server-flags`, `server/common-import`, `build/windows-msvc`.
+  Exemplos: `tools/server-flags`, `server/common-import`, `build/windows-clang-cl`.
 - **Integração por fast-forward** (`git merge --ff-only`), com histórico linear. Se a `main` andou, faça `git rebase main` no branch antes de integrar.
 - Antes de integrar, rode o build limpo, os testes e o verificador de links. Depois de integrar, apague o branch.
 - Trabalho grande demais para um passo vira vários branches em sequência, não um branch longo.

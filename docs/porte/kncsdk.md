@@ -9,6 +9,7 @@ SDK interno, do qual todos os servidores e o cliente dependem. Partes:
 | `dbg/` | log |
 | `Serializer/` | serialização (formato de rede) |
 | `KncSecurity/` | cripto de pacotes |
+| `Crypto/` | **novo** (T27): DES-CBC, HMAC-MD5, MD5, SHA-256 e hex (`x2::crypto`), no lugar do Crypto++ |
 | `Thread/` | threads e locks |
 | `ObjectPool/` | pools de objetos |
 | raiz | `KncUtil`, macros, `lua_tinker` |
@@ -17,7 +18,7 @@ SDK interno, do qual todos os servidores e o cliente dependem. Partes:
   Importado em 2026-10-29 (62 de 742 arquivos, [relatório](../../tools/import/reports/kncsdk/REPORT.md)) e portado à mão no mesmo dia.
 - O módulo está **congelado** no importador (`frozen = true`): toda edição agora é feita direto em `src/kncsdk`.
 - Análise do original: [Bibliotecas › KNCSDK](../original/bibliotecas.md).
-- Depende de: [Plataforma](platform.md), Crypto++ 8.9, zlib, LuaJIT 2.1 (só `kncsdk_lua`).
+- Depende de: [Plataforma](platform.md), zlib, LuaJIT 2.1 (só `kncsdk_lua`).
 
 ## Estado (2026-10-29)
 
@@ -42,6 +43,7 @@ Interface pública (nomes, macros, assinaturas) mantida; mudou o que está lista
 | `dbg/profiler` | Removido | Desligado no original (`TB_USE_PROFILER`), sem uso |
 | `KncUtil` | Strings estreitas são **UTF-8** em todas as plataformas | O original usava a code page ANSI do Windows (`CP_ACP`) |
 | `KncUtil::GetTimeStampByName*` | Data de modificação do executável | O original lia o *link time* do cabeçalho PE |
+| `KncSecurity`, `KncUtil::GetMD5` | Cripto pelo `x2::crypto` (`Crypto/`, T27) no lugar do Crypto++; mesmos bytes (vetores oficiais + comparação com o Crypto++). `GetRandomGenerator()` (um `AutoSeededRandomPool` sem uso fora de código comentado) removido | O Crypto++ não compila com clang-cl nem com a STL do VS 2026 |
 | `KncSecurity` | Gerador de chaves/SPI semeado pelo SO, um por thread | O original usava `boost::mt19937` **sem semente** (mesmas chaves em toda execução) e compartilhado sem lock |
 | `ObjectPool` | `BlockAllocator`/`BoostAllocator` usam um pool próprio (`FixedBlockPool.h`) | O original guardava ponteiros de **32 bits** nos blocos livres; sem Boost |
 | `Import*.h` | Esvaziados | Só faziam `#pragma comment(lib)`; o link agora é do CMake |

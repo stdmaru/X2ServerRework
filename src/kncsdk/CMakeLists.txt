@@ -3,6 +3,8 @@
 
 add_library(kncsdk STATIC
     KncUtil.cpp
+    Crypto/Des.cpp
+    Crypto/Hash.cpp
     dbg/assert.cpp
     dbg/logfile.cpp
     KncSecurity/ByteStream.cpp
@@ -16,7 +18,7 @@ add_library(kncsdk STATIC
 add_library(x2::kncsdk ALIAS kncsdk)
 
 target_include_directories(kncsdk PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(kncsdk PUBLIC x2::platform cryptopp::cryptopp PRIVATE ZLIB::ZLIB)
+target_link_libraries(kncsdk PUBLIC x2::platform PRIVATE ZLIB::ZLIB)
 
 # lua_tinker (C++ <-> Lua binding)
 if(TARGET x2::luajit)

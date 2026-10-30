@@ -32,9 +32,9 @@ Código portado inclui `x2/platform/win32.h` no lugar de `<windows.h>`, `<atltim
 | `sync.h` | `CRITICAL_SECTION` (recursiva), eventos, `WaitForSingle/MultipleObjects`, `_beginthreadex`, `Sleep`, `GetCurrentThreadId` | emulação (um mutex/condvar global) | nativo |
 | `time.h` | `GetTickCount`, `timeGetTime`, `QueryPerformanceCounter`, `GetLocalTime`, **`CTime`/`CTimeSpan`** | `steady_clock` / implementação própria | nativo + `CTime` próprio |
 | `string.h` | `CStringW`/`CStringA`/`CString` (subconjunto) | implementação própria | idem (sem ATL) |
-| `crt.h` | `_wtoi`, `swprintf_s`, `wcscpy_s`, `_wcsicmp`, `_itow_s`, `_mkdir`, `fopen_s`, `localtime_s` (ordem do MSVC), `_wstrdate_s`/`_wstrtime_s`, `ZeroMemory`, `_tcs*`, `WideCharToMultiByte`... e as sobrecargas com array do MSVC | implementação própria | nativo (MinGW: sobrecargas que faltam) |
+| `crt.h` | `_wtoi`, `swprintf_s`, `wcscpy_s`, `_wcsicmp`, `_itow_s`, `_mkdir`, `fopen_s`, `localtime_s` (ordem do MSVC), `_wstrdate_s`/`_wstrtime_s`, `ZeroMemory`, `_tcs*`, `WideCharToMultiByte`... e as sobrecargas com array do MSVC | implementação própria | nativo |
 | `ini.h` | `x2::platform::ReadIniString`/`ReadIniInt` (regras do `GetPrivateProfileString`), `GetPrivateProfileStringW`/`IntW` | implementação própria | **também a própria** via `ReadIni*` (ver Armadilhas) |
-| `net.h` | Nomes do Winsock (`SOCKET`, `closesocket`, `SOCKADDR_IN`...); `OVERLAPPED`/`WSABUF` só como tipos | BSD sockets | Winsock 2 |
+| `net.h` | Nomes do Winsock (`SOCKET`, `closesocket`, `SOCKADDR_IN`...); `OVERLAPPED`/`WSABUF` só como tipos; `IpToString`/`IpFromString`/`ResolveIPv4` no lugar de `inet_ntoa`/`inet_addr`/`gethostbyname` | BSD sockets | Winsock 2 |
 | `net_io.h` | Rede assíncrona do servidor (T20): `IoService` (`RunFor`, `Stop`, `Drain`), `TcpStream` (`Connect`, `Assign` de socket aceito, `AsyncReadSome`/`AsyncWriteSome`, `Close` que aborta o pendente), `SocketErrorMessage` | Asio (epoll) | Asio (IOCP) |
 | `odbc.h` | `<sql.h>`/`<sqlext.h>` sem conflito com os tipos Win32 da camada; `SqlWString`, `ToSqlWString`/`FromSqlWString`/`SqlWPtr` (`wchar_t` ↔ `SQLWCHAR`). Alvo `x2::odbc` (só header; liga o ODBC) | unixODBC, com os typedefs dele renomeados; `SQLWCHAR` é UTF-16 | nativo; `odbc32` |
 | `format.h`, `timer.h`, `noncopyable.h` | `x2::wformat`/`x2::str` (fiel ao Boost.Format), `x2::Timer`, `x2::noncopyable` | — | — |
@@ -46,8 +46,7 @@ Código portado inclui `x2/platform/win32.h` no lugar de `<windows.h>`, `<atltim
 
 - **`%s` em formato largo**: no MSVC, `%s` em `swprintf`/`CString::Format` significa string *larga*; na glibc significa *estreita* (crash).
   `TranslateWideFormat` converte `%s`→`%ls`, `%c`→`%lc`, `%S`→`%s` e `%I64d`→`%lld`, e é usada por `CString::Format` e pelos `*printf_s`.
-  No MinGW vale o mesmo: a libstdc++ liga `__USE_MINGW_ANSI_STDIO`, que troca o `printf` do CRT por uma implementação ISO C,
-  então a tradução fica ativa lá também (achado pelos testes no Wine). Só o CRT do MSVC dispensa a tradução.
+  Só o CRT do MSVC (o do clang-cl) dispensa a tradução.
 - **`L ## __FUNCTION__`** só existe no MSVC. `__WFUNCTION__` agora é um `const wchar_t*` em tempo de execução, que pode ser passado e concatenado via `<<`,
   mas não colado a outro literal. O servidor só usa como argumento.
 - **`GetCurrentTime`** é macro no `windows.h`: o `types.h` faz `#undef` para não quebrar `CTime::GetCurrentTime()`.
@@ -62,7 +61,6 @@ Código portado inclui `x2/platform/win32.h` no lugar de `<windows.h>`, `<atltim
   code page do sistema (no Wine, ou num Windows não coreano, as strings de versão viriam corrompidas; os testes no Wine mostraram isso).
 - **unixODBC** define seus próprios `ULONG` (64 bits), `TCHAR` (`char`), `WCHAR` (`unsigned short`)...: o `odbc.h` renomeia esses typedefs durante o include.
   O `SQLWCHAR` dele tem 2 bytes (UTF-16) e o `wchar_t` 4: texto passa pelas conversões do `odbc.h`, nunca por cast.
-  No MinGW o `odbc32` é ligado pelo nome: o caminho do `libodbc32.a` que o `FindODBC` devolve faz o CMake gerar `-Wl,-Bdynamic`, e o resto do runtime estático virava DLL.
 - **Rede**: o Asio só entra em `src/platform/src/net_io.cpp`. `TcpStream::Close` cancela antes do `shutdown`, porque no Windows o `shutdown`
   termina a leitura pendente como fim de conexão e no Linux como cancelamento; assim os dois dão `Aborted`. Quem destrói o `IoService` com
   operações pendentes precisa chamar `Drain()` antes (o `~KIocp` faz isso), senão os handlers soltam sockets durante a destruição.

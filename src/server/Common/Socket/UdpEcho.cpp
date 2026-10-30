@@ -96,7 +96,7 @@ void KUdpEcho::Loop()
     {
         START_LOG( cerr, L"전달받은 데이터 크기 이상. wanted : " << sizeof(KUdpToServer) )
             << BUILD_LOG( ret )
-            << BUILD_LOG( inet_ntoa(sender.sin_addr) )
+            << BUILD_LOG( x2::platform::IpToString(sender.sin_addr) )
             << BUILD_LOG( ntohs(sender.sin_port) )
             << END_LOG;
         return;
@@ -107,7 +107,7 @@ void KUdpEcho::Loop()
     ::memmove( &kData, recvbuff, sizeof(kData) );
 
     START_LOG( clog, L"UID : " << kData.m_nUserUID
-        << L", sock addr : " << inet_ntoa(sender.sin_addr) << L":" << usPort )
+        << L", sock addr : " << x2::platform::IpToString(sender.sin_addr) << L":" << usPort )
         << BUILD_LOG( kData.m_usPort );
 
     SendToClient( kData.m_nUserUID, E_UDP_PORT_NOT, usPort );

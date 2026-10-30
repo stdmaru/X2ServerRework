@@ -96,19 +96,28 @@ jobs:
     # The Windows build that ships (T26), on a real Windows: Visual Studio's headers, STL and linker with the
     # runner's LLVM clang-cl. Not in the Ubuntu image. Windows minutes cost 2x on private repositories.
     runs-on: windows-latest
+    defaults:
+      run:
+        # not Git Bash: its /usr/bin/link would shadow the Visual Studio linker that msvcbuild.bat calls
+        shell: pwsh
     steps:
       - uses: actions/checkout@v4
       - name: Visual Studio environment (x64)
         uses: ilammy/msvc-dev-cmd@v1
       - name: Versions
-        run: clang-cl --version && cmake --version
+        run: |
+          clang-cl --version
+          cmake --version
       - name: Configure
         run: cmake --preset windows-debug
       - name: Build
         run: |
-          set -o pipefail
-          cmake --build build/windows-debug -- -k 0 2>&1 | tee build.log   # every error in one run
-          ! grep -nE "warning( [A-Z]+[0-9]+)?:" build.log   # clang-cl, and cl/link (LuaJIT, linker)
+          cmake --build build/windows-debug -- -k 0 2>&1 | Tee-Object -FilePath build.log   # every error in one run
+          $status = $LASTEXITCODE
+          # clang-cl, and cl/link (LuaJIT, linker)
+          $warnings = Select-String -Path build.log -Pattern 'warning( [A-Z]+[0-9]+)?:'
+          if ($warnings) { $warnings; exit 1 }
+          exit $status
       - name: Test
         run: ctest --test-dir build/windows-debug --output-on-failure
 

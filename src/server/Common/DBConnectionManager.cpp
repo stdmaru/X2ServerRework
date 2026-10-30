@@ -2,9 +2,7 @@
 #include "BaseServer.h"
 #include "x2/platform/format.h"
 
-#include "cryptopp/des.h"
-#include "cryptopp/modes.h"
-#include "cryptopp/hmac.h"
+#include "Crypto/Crypto.h"
 #include "KncSecurity/ByteStream.h"
 
 #undef max
@@ -57,77 +55,7 @@ namespace
 		return ucTemp;
 	}
 
-	//////////////////////////////////////////////////////////////////////////
-	// 기초적인 암호화
-	void EncryptString( const std::string& strSource, std::string& strResult )
-	{
-		const char cFirst  = rand() % CHAR_MAX;
-		const char cSecond = rand() % CHAR_MAX;
-		const char cThird  = rand() % CHAR_MAX;
-		const char cKeyCrypt = rand() % CHAR_MAX;
-
-		const char cFirstRaelKey  = cFirst  ^ cKeyCrypt;
-		const char cSecondRealKey = cSecond ^ cKeyCrypt;
-		const char cThirdRealKey  = cThird  ^ cKeyCrypt;
-
-		// 제일 첫번째 바이트에 암호화된걸 넣자!
-		strResult += ConvertToString( cFirst );
-		strResult += ConvertToString( cSecond );
-		strResult += ConvertToString( cThird );
-		strResult += ConvertToString( cKeyCrypt );
-
-		for( unsigned int i = 0; i < strSource.size(); ++i )
-		{
-			// 암호화
-			char cEncryptData = 0;
-			cEncryptData = cFirstRaelKey  ^ strSource[i];
-			cEncryptData = cSecondRealKey ^ cEncryptData;
-			cEncryptData = cThirdRealKey  ^ cEncryptData;
-
-			strResult += ConvertToString( cEncryptData );
-		}
-	}
-
-	bool DecryptString( const std::string& strSource, std::string& strResult )
-	{
-		KCursor kCursor;
-		std::string strTemp;
-
-		strTemp = strSource.substr( kCursor.GetCurrentPos(), BYTE_TO_STRING_SIZE );
-		kCursor.Move( BYTE_TO_STRING_SIZE );
-		char cFirst  = ConvertToChar( strTemp );
-
-		strTemp = strSource.substr( kCursor.GetCurrentPos(), BYTE_TO_STRING_SIZE );
-		kCursor.Move( BYTE_TO_STRING_SIZE );
-		char cSecond = ConvertToChar( strTemp );
-
-		strTemp = strSource.substr( kCursor.GetCurrentPos(), BYTE_TO_STRING_SIZE );
-		kCursor.Move( BYTE_TO_STRING_SIZE );
-		char cThird  = ConvertToChar( strTemp );
-
-		strTemp = strSource.substr( kCursor.GetCurrentPos(), BYTE_TO_STRING_SIZE );
-		kCursor.Move( BYTE_TO_STRING_SIZE );
-		char cKeyCrypt = ConvertToChar( strTemp );
-
-		const char cFirstRaelKey  = cFirst  ^ cKeyCrypt;
-		const char cSecondRealKey = cSecond ^ cKeyCrypt;
-		const char cThirdRealKey  = cThird  ^ cKeyCrypt;
-
-		for( unsigned int i = kCursor.GetCurrentPos(); i < strSource.size(); i += BYTE_TO_STRING_SIZE )
-		{
-			char cData = ConvertToChar( strSource.substr( i, BYTE_TO_STRING_SIZE ) );
-
-			// 복호화
-			char cEncryptData = 0;
-			cEncryptData = cFirstRaelKey  ^ cData;
-			cEncryptData = cSecondRealKey ^ cEncryptData;
-			cEncryptData = cThirdRealKey  ^ cEncryptData;
-
-			strResult.push_back( cEncryptData );
-		}
-
-		return true;
-	}
+	// Port: EncryptString/DecryptString (a plain XOR, never called) removed.
 
 	//////////////////////////////////////////////////////////////////////////
 	// des알고리즘 암호화
@@ -170,7 +98,8 @@ namespace
 		//GetRandomGenerator().GenerateBlock( &bsIV_[0], GetSA().GetIVSize() );
 	}
 
-	void EncryptStirngUseDes( const std::string& strSource, std::string& strResult )
+	// Counterpart of DecryptStringUseDes, never called by the server: kept for a tool that writes the encrypted strings.
+	[[maybe_unused]] void EncryptStirngUseDes( const std::string& strSource, std::string& strResult )
 	{
 		// 암호화키를 랜덤하게 얻자!
 		KncSecurity::KByteStream bsKey = MakeCryptKey();
@@ -190,10 +119,10 @@ namespace
 		}
 
 		// DES알고리즘 암호화!
-		CryptoPP::CBC_Mode<CryptoPP::DES>::Encryption encryptor( &bsKey[0], bsKey.length(), &bsIV[0] );
+		// Port: x2::crypto in place of Crypto++'s CBC_Mode<DES> (T27)
 		KncSecurity::KByteStream crypt;
 		crypt.resize( payLoad.length() );
-		encryptor.ProcessData( &crypt[0], payLoad.c_str(), payLoad.length() );
+		x2::crypto::DesCbcEncrypt( bsKey.data(), bsIV.data(), payLoad.data(), crypt.data(), payLoad.length() );
 
 		// crypt키를 젤 앞에 붙이자!
 		for( unsigned int ui = 0; ui < bsKey.length(); ++ui )
@@ -252,10 +181,9 @@ namespace
 		}
 
 		// 복호화 작업!
-		CryptoPP::CBC_Mode<CryptoPP::DES>::Decryption decryptor( &bsKey[0], bsKey.length(), &bsIV[0] );
 		KncSecurity::KByteStream payload;
 		payload.resize( crypt.length() );
-		decryptor.ProcessData( &payload[0], crypt.c_str(), crypt.length() );
+		x2::crypto::DesCbcDecrypt( bsKey.data(), bsIV.data(), crypt.data(), payload.data(), crypt.length() );
 
 		// 복호화가 완료된 문자열을 따로 정리하자!
 		KncSecurity::KByteStream::iterator mitBS;

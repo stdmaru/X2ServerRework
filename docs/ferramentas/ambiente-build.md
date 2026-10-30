@@ -2,11 +2,12 @@
 
 # Ambiente de build (Ubuntu em Docker)
 
-Desde 2026-10-30 os builds e testes rodam numa imagem **Ubuntu** própria (decisão T24), a mesma no desenvolvimento e no
-[CI](ci.md). O host (qualquer distribuição com Docker) só monta o repositório.
+Desde 2026-10-30 os builds e testes de Linux rodam numa imagem **Ubuntu** própria (decisão T24), a mesma no desenvolvimento e no
+[CI](ci.md). O host (qualquer distribuição com Docker) só monta o repositório. O Windows (clang-cl, T26) não é compilado aqui:
+só no job Windows do CI.
 
-- Imagem: `docker/build/Dockerfile`, sobre `ubuntu:26.04` (26.04.1 LTS). Em 2026-10-30: GCC 15.2, Clang 21.1, CMake 4.2,
-  Ninja 1.13, MinGW-w64 13 (GCC 13.2, modelo de threads `posix`), Wine 10.0, unixODBC 2.3 + FreeTDS (`tdsodbc`), Python 3, ccache.
+- Imagem: `docker/build/Dockerfile`, sobre `ubuntu:26.04` (26.04.1 LTS). Em 2026-10-30: Clang 21.1 (presets `linux-*`), GCC 15.2
+  (preset `linux-gcc`, verificação), CMake 4.2, Ninja 1.13, unixODBC 2.3 + FreeTDS (`tdsodbc`), Python 3, ccache.
 - Sem pacote do LuaJIT: o do Ubuntu é o fork OpenResty, então o CMake compila o commit upstream fixo (T21) também no Linux.
 - Todo preset passa pelo `ccache` (`CMAKE_<LANG>_COMPILER_LAUNCHER` na imagem).
 
@@ -19,13 +20,12 @@ Desde 2026-10-30 os builds e testes rodam numa imagem **Ubuntu** própria (decis
 docker/build.sh cmake --preset linux-debug
 docker/build.sh cmake --build --preset linux-debug
 docker/build.sh ctest --preset linux-debug
-docker/build.sh cmake --preset mingw-debug && docker/build.sh cmake --build --preset mingw-debug
-docker/build.sh ctest --preset mingw-debug
+docker/build.sh cmake --preset linux-gcc && docker/build.sh cmake --build --preset linux-gcc   # verificação com GCC
 ```
 
 - O repositório é montado **no mesmo caminho** do host: `build/` e o `compile_commands.json` servem ao editor do host.
-- Roda com o usuário do host (os arquivos de `build/` não ficam do root). O `HOME` do container, com o cache do ccache e o
-  prefixo do Wine (criado na primeira execução), fica em `~/.cache/x2-build` (`X2_BUILD_HOME` muda).
+- Roda com o usuário do host (os arquivos de `build/` não ficam do root). O `HOME` do container, com o cache do ccache,
+  fica em `~/.cache/x2-build` (`X2_BUILD_HOME` muda).
 - Rede do host (`--network host`): os testes da suíte `db` e os servidores acham o SQL Server do [banco de desenvolvimento](banco-dev.md)
   em `127.0.0.1`, e o cliente original acha os servidores como antes.
 - Um diretório de `build/` configurado fora do container (outro compilador) deve ser apagado antes: o Ninja não recompila
@@ -35,7 +35,6 @@ docker/build.sh ctest --preset mingw-debug
 
 | Achado | Tratamento |
 |---|---|
-| MinGW do Ubuntu usa por padrão o modelo de threads `win32` (sem `std::thread`/`std::mutex` completos) | a imagem seleciona as variantes `-posix` por `update-alternatives` (T18) |
-| GCC 13 do MinGW: `ServerPacket.cpp` e os testes de pacotes passam do limite de seções do COFF ("file too big") | `-Wa,-mbig-obj` no MinGW e `/bigobj` no MSVC (`cmake/X2Compiler.cmake`) |
+| MinGW do Ubuntu: threads `win32` por padrão e "file too big" (limite de seções do COFF) nos pacotes | resolvido com `-posix` e `-Wa,-mbig-obj`; depois o MinGW saiu (T26) |
 | GCC 15 Release: `-Wmaybe-uninitialized` falso em `KTCInfo::m_wstrUDPRelayIP` nos testes de ida e volta | pragma só em volta do `CheckRoundTrip` (`src/server/Common/tests/packet_test.h`); o pragma no ponto de chamada não funciona |
 | Pacote do LuaJIT é o fork OpenResty | não instalado; receita do commit fixo (T21) |

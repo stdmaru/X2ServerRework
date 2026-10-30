@@ -38,7 +38,7 @@ public:
     void OnSendCompleted( DWORD dwTransfered );
 
     // The remote address can be set beforehand or given to Connect().
-    void SetRemoteIP( const char* szIP ) { m_sockaddr.sin_addr.s_addr   = inet_addr( szIP ); }
+    void SetRemoteIP( const char* szIP ) { m_sockaddr.sin_addr.s_addr   = x2::platform::IpFromString( szIP ); }
     void SetRemotePort( u_short usPort ) { m_sockaddr.sin_port          = htons( usPort ); }
     void SetSocketInfo( SOCKET socket, const SOCKADDR_IN& sockAddr ); // takes ownership of an accepted socket
 
@@ -54,7 +54,7 @@ public:
     void    SetSendQueueSize( int nSize )   { m_kSendQueue.Resize( nSize ); }
 
     unsigned int GetIP() const			{ return m_sockaddr.sin_addr.s_addr; }
-    const char* GetIPStr() const		{ return inet_ntoa(m_sockaddr.sin_addr); }
+    const char* GetIPStr() const		{ return x2::platform::IpToString(m_sockaddr.sin_addr); }
     unsigned short GetPort() const		{ return ntohs(m_sockaddr.sin_port); }
 
     static void DumpSendQueueLog( std::wostream& stm ) { ms_kMaxSizeInfo.Dump( stm ); }

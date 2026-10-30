@@ -4,6 +4,7 @@
 #include "SerDefs.h"
 #include "SerSTL.h"
 
+#include <iterator>
 #include <list>
 
 /**

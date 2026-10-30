@@ -16,31 +16,6 @@ if(NOT TARGET ZLIB::ZLIB)
     target_include_directories(zlibstatic INTERFACE ${zlib_SOURCE_DIR} ${zlib_BINARY_DIR})
 endif()
 
-# --- Crypto++ (no upstream CMake: cryptopp-cmake builds the pinned release) -----------------------
-find_package(cryptopp CONFIG QUIET)
-if(NOT TARGET cryptopp::cryptopp)
-    set(CRYPTOPP_BUILD_TESTING OFF CACHE BOOL "" FORCE)
-    set(CRYPTOPP_INSTALL OFF CACHE BOOL "" FORCE)
-    FetchContent_Declare(cryptopp-cmake
-        GIT_REPOSITORY https://github.com/abdes/cryptopp-cmake.git
-        GIT_TAG CRYPTOPP_8_9_0
-        GIT_SHALLOW TRUE)
-    # cryptopp-cmake 8.9 still calls FetchContent_Populate() (deprecated in CMake 3.30, policy CMP0169)
-    set(CMAKE_POLICY_DEFAULT_CMP0169 OLD)
-    FetchContent_MakeAvailable(cryptopp-cmake)
-    unset(CMAKE_POLICY_DEFAULT_CMP0169)
-    # cryptopp-cmake also exposes .../cryptopp itself, putting generic names (zlib.h, config.h, misc.h,
-    # base64.h...) on everyone's include path. Keep only the parent directory: <cryptopp/xxx.h>.
-    get_target_property(_x2_cryptopp_inc cryptopp INTERFACE_INCLUDE_DIRECTORIES)
-    list(FILTER _x2_cryptopp_inc EXCLUDE REGEX "/cryptopp/?(>)?$")
-    set_target_properties(cryptopp PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${_x2_cryptopp_inc}")
-    # third-party code: GCC 16 -O2 flags a memcpy in esign.cpp (-Wstringop-overflow); not ours to fix
-    target_compile_options(cryptopp PRIVATE $<IF:$<BOOL:${MSVC}>,/w,-w>)
-    if(MSVC)
-        target_compile_options(cryptopp PRIVATE "/FI${CMAKE_CURRENT_LIST_DIR}/compat/cryptopp_stdext.h")
-    endif()
-endif()
-
 # --- Asio standalone (header-only, decision T20): only x2::platform includes it ------------------
 find_path(X2_ASIO_INCLUDE_DIR asio.hpp)
 if(NOT X2_ASIO_INCLUDE_DIR)

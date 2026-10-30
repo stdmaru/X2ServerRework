@@ -403,7 +403,7 @@ bool KSerializer::GetRaw(void* buf, DWORD len)
  **/
 bool KSerializer::WriteTag(const SerializeTag tag)
 {
-    assert((tag >= 0) && (tag <= 255)); // fit inside uint8
+    assert(static_cast<int>(tag) >= 0 && static_cast<int>(tag) <= 255); // fit inside uint8
 
     UCHAR tmp = static_cast<UCHAR>(tag);
     return !m_tagsEnabled || WriteBytes(&tmp, 1);

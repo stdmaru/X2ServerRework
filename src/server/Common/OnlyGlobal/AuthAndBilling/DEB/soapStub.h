@@ -211,7 +211,7 @@ struct SOAP_ENV__Header
 {
 #ifdef WITH_NOEMPTYSTRUCT
 private:
-	char dummy;	/* dummy member to enable compilation */
+	[[maybe_unused]] char dummy;	/* dummy member to enable compilation */
 #endif
 };
 #endif

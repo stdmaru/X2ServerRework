@@ -65,12 +65,13 @@ Tabela completa: [Bibliotecas](../original/bibliotecas.md).
 Andamento em 2026-10-29: plataforma e KNCSDK compilando no Linux (GCC e Clang) e no MinGW-w64 (testes no Wine), com testes. Detalhes em [Porte](../porte/README.md).
 
 - [x] Camada de plataforma `x2::platform` (tipos, sync, tempo, `CTime`, `CString`, CRT, unicode), com testes. Ver [Plataforma](../porte/platform.md).
-- [x] Dependências via CMake (T13): Crypto++ 8.9, zlib, LuaJIT 2.1 (pkg-config, ou fonte com commit fixo pelo Makefile dele: T21), doctest.
+- [x] Dependências via CMake (T13): zlib, LuaJIT 2.1 (pkg-config, ou fonte com commit fixo pelo Makefile dele: T21), doctest.
 - [x] KNCSDK portado: log, `Serializer` (formato de rede fixo), `KncSecurity`, `Thread`, `ObjectPool`, `KncUtil`, unido ao `KNCSDK_Client`. Ver [KNCSDK](../porte/kncsdk.md).
 - [x] `lua_tinker` (versão do servidor) compilando em GCC/Clang sobre LuaJIT 2.1; luabind removido.
 - [ ] **Validar o protocolo com bytes reais** do cliente/servidor originais. Em 2026-10-30 o login no canal funcionou com o `x2_DEBUG.exe` e o `x2.exe` (troca de chave, cripto, `ECH_VERIFY_ACCOUNT`, listas); falta o resto (GameServer).
 - [x] Compilar e testar os caminhos Windows com **MinGW-w64 + Wine** (T18): plataforma e KNCSDK sem warnings, testes passando (2026-10-29).
 - [x] LuaJIT 2.1 no MinGW (T21): `kncsdk_lua` e o `Common` do servidor compilando sem warnings e com os testes passando no Wine (2026-10-30).
+- [x] Crypto++ substituído por `x2::crypto` (DES-CBC, HMAC-MD5, MD5, SHA-256), com vetores oficiais (T27, 2026-10-30).
 - [x] Ambiente de build único: imagem Docker Ubuntu 26.04 para builds locais e CI (T24, `build/ubuntu-env`, 2026-10-30). Ver [Ambiente de build](../ferramentas/ambiente-build.md).
 - [ ] Compilar e testar no **Windows/MSVC** e LuaJIT no MSVC (D5).
 - [ ] Boost: o KNCSDK não usa mais; o servidor ainda usa em ~230 arquivos. Reduzir ao portar o servidor.

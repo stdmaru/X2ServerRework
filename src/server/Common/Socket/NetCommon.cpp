@@ -24,21 +24,16 @@ const char* NetCommon::GetLocalIP()
         return s_strLocalIP.c_str();
 
     char szHostName[256];
-    HOSTENT* pHostInfo;
 
     if( gethostname(szHostName,sizeof(szHostName)) !=0)
     {
         return "";  // Port: the original returned false (NULL), which GetLocalIPW() then turned into a std::string
     }
 
-    pHostInfo = gethostbyname(szHostName);
-
-    if( pHostInfo == NULL)
-    {
-        return "";
-    }
-
-    return inet_ntoa(*(struct in_addr *)*pHostInfo->h_addr_list);
+    // Port: getaddrinfo in place of gethostbyname (deprecated in Winsock); per-thread result, like inet_ntoa's
+    thread_local std::string strIP;
+    strIP = x2::platform::ResolveIPv4( szHostName );
+    return strIP.c_str();
 }
 
 std::wstring NetCommon::GetLocalIPW()
@@ -74,5 +69,5 @@ const char* NetCommon::CalcIP( DWORD dwIP )
 {
     in_addr IP;
     IP.s_addr = dwIP;
-    return inet_ntoa( IP );
+    return x2::platform::IpToString( IP );
 }

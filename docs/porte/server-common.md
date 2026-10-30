@@ -141,6 +141,8 @@ e não no cliente (as flags do cliente ainda não foram geradas, ver [Roadmap](.
 | `ActorManager::MultiQueueing*` | Parâmetro padrão `std::vector<UidType>& = std::vector<UidType>()` virou sobrecarga de um argumento | Extensão do MSVC. **Pendente:** `GameServer/UserManager.h` tem o mesmo padrão |
 | `ActorProxy`/`BaseServer` | `std::shared_ptr<void>` de evento → `shared_ptr<remove_pointer_t<HANDLE>>` | `HANDLE` não é `void*` fora do Windows |
 | gSOAP (`DEB/`) | `register` removido, `SOAP_NEW` sem parênteses; `stdsoap2.cpp`/`soapC.cpp`/`soapClient.cpp` compilam sem warnings (`-w`) | Código de terceiros/gerado (gSOAP 2.7.18); sai junto com o servidor DEB |
+| `DBConnectionManager` (DES das connection strings) | `x2::crypto::DesCbc*` no lugar do `CBC_Mode<DES>` do Crypto++ (T27); mesmos bytes. `EncryptString`/`DecryptString` (XOR, nunca chamadas) removidas | O Crypto++ não compila com clang-cl |
+| `Socket/` (`SocketObject`, `NetCommon`, `UdpEcho`) | `inet_addr`/`inet_ntoa`/`gethostbyname` → `x2::platform::IpFromString`/`IpToString`/`ResolveIPv4` (`inet_pton`/`inet_ntop`/`getaddrinfo`). Só aceita IPv4 em quatro números (`inet_addr` aceitava `127.1` e hex) | APIs obsoletas no Winsock (warnings no clang-cl) |
 | `LineMap` | Membro `LPDIRECT3DVERTEXBUFFER9` removido | Resto do cliente, nunca usado no servidor |
 
 ### Bugs do original corrigidos

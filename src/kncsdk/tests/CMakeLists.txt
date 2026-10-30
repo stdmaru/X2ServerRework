@@ -1,5 +1,6 @@
 add_executable(kncsdk_tests
     main.cpp
+    test_crypto.cpp
     test_log.cpp
     test_pool.cpp
     test_security.cpp

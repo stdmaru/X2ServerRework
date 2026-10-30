@@ -1,9 +1,5 @@
 #include "SecurityAssociation.h"
-#include "cryptopp/des.h"
-#include "cryptopp/modes.h"
-#include "cryptopp/hmac.h"
-#define CRYPTOPP_ENABLE_NAMESPACE_WEAK 1
-#include "cryptopp/md5.h"
+#include "Crypto/Crypto.h"
 #include "KncSecurity.h"
 #include "dbg/dbg.hpp"
 
@@ -283,39 +279,33 @@ void KSecurityAssociation::UpdateReplayWindow( SeqType nSequenceNum_ )
 
 KByteStream KSecurityAssociation::Encryption( const KByteStream& payload, const KByteStream& IV ) const
 {
-    CryptoPP::CBC_Mode<CryptoPP::DES>::Encryption encryptor( &m_bsCryptoKey[0], m_bsCryptoKey.length(), &IV[0] );
-
+    // Port: x2::crypto in place of Crypto++'s CBC_Mode<DES> (T27); the key is 8 bytes
     KByteStream crypt;
     crypt.resize( payload.length() );
 
-    encryptor.ProcessData( &crypt[0], payload.c_str(), payload.length() );
+    x2::crypto::DesCbcEncrypt( m_bsCryptoKey.data(), IV.data(), payload.data(), crypt.data(), payload.length() );
 
     return crypt;
 }
 
 KByteStream KSecurityAssociation::Decryption( const KByteStream& crypt, const KByteStream& IV ) const
 {
-    CryptoPP::CBC_Mode<CryptoPP::DES>::Decryption decryptor( &m_bsCryptoKey[0], m_bsCryptoKey.length(), &IV[0] );
-
     KByteStream payload;
     payload.resize( crypt.length() );
 
-    decryptor.ProcessData( &payload[0], crypt.c_str(), crypt.length() );
+    x2::crypto::DesCbcDecrypt( m_bsCryptoKey.data(), IV.data(), crypt.data(), payload.data(), crypt.length() );
 
     return payload;
 }
 
 KByteStream KSecurityAssociation::GenerateICV( const KByteStream& auth ) const
 {
-    CryptoPP::HMAC<CryptoPP::Weak::MD5> mac( &m_bsAuthKey[0], m_bsAuthKey.length() );
-
-    KByteStream icv;
-    icv.resize( GetICVSize() );
-
+    x2::crypto::HmacMd5 mac( m_bsAuthKey.data(), m_bsAuthKey.length() );
     mac.Update( auth.data(), auth.length() );
-    mac.TruncatedFinal( &icv[0], GetICVSize() );
+    const x2::crypto::HmacMd5::Digest digest = mac.Final();
 
-    return icv;
+    // the ICV is the HMAC truncated to its first GetICVSize() (10) bytes
+    return KByteStream( digest.data(), GetICVSize() );
 }
 
 NAMESPACE_END

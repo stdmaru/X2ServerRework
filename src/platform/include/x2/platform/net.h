@@ -84,3 +84,37 @@ struct WSABUF
 typedef WSABUF* LPWSABUF;
 
 #endif // _WIN32
+
+#include <string>
+
+namespace x2::platform {
+
+// IPv4 text <-> address, in place of inet_addr/inet_ntoa (deprecated in Winsock). Dotted quads only: the
+// shorthand forms inet_addr took ("127.1", hex) are rejected. IpToString returns a per-thread buffer, as
+// inet_ntoa does.
+inline const char* IpToString(in_addr addr)
+{
+    thread_local char buf[INET_ADDRSTRLEN];
+    return inet_ntop(AF_INET, &addr, buf, sizeof(buf)) ? buf : "";
+}
+
+inline unsigned long IpFromString(const char* text)
+{
+    in_addr addr{};
+    return text && inet_pton(AF_INET, text, &addr) == 1 ? addr.s_addr : INADDR_NONE;
+}
+
+// First IPv4 address of a host name, or "" (getaddrinfo, in place of gethostbyname).
+inline std::string ResolveIPv4(const char* host)
+{
+    addrinfo hints{};
+    hints.ai_family = AF_INET;
+    addrinfo* list = nullptr;
+    if (getaddrinfo(host, nullptr, &hints, &list) != 0 || !list)
+        return std::string();
+    const std::string ip = IpToString(reinterpret_cast<const sockaddr_in*>(list->ai_addr)->sin_addr);
+    freeaddrinfo(list);
+    return ip;
+}
+
+} // namespace x2::platform

@@ -1,7 +1,6 @@
 #include "KncUtil.h"
 
-#define CRYPTOPP_ENABLE_NAMESPACE_WEAK 1
-#include <cryptopp/md5.h>
+#include "Crypto/Crypto.h"
 
 #include <cerrno>
 #include <chrono>
@@ -45,20 +44,8 @@ std::wstring GetLastErrMsg()
 
 std::string GetMD5( const std::string& strIN_ )
 {
-    CryptoPP::byte digest[CryptoPP::Weak::MD5::DIGESTSIZE];
-    CryptoPP::Weak::MD5 md5Obj;
-    md5Obj.Update( reinterpret_cast<const CryptoPP::byte*>( strIN_.data() ), strIN_.length() );
-    md5Obj.Final( digest );
-
-    static const char kHex[] = "0123456789abcdef";
-    std::string out;
-    out.reserve( sizeof( digest ) * 2 );
-    for( const CryptoPP::byte b : digest )
-    {
-        out.push_back( kHex[b >> 4] );
-        out.push_back( kHex[b & 0xF] );
-    }
-    return out;
+    const x2::crypto::Md5::Digest digest = x2::crypto::Md5::Hash( strIN_.data(), strIN_.length() );
+    return x2::crypto::ToHex( digest.data(), digest.size() );
 }
 
 void GetAppName( OUT std::wstring& strAppName )

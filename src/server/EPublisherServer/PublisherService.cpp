@@ -2,8 +2,7 @@
 
 #include "NetError.h"
 
-#include <cryptopp/hex.h>
-#include <cryptopp/sha.h>
+#include "Crypto/Crypto.h"
 
 #include <charconv>
 #include <exception>
@@ -53,11 +52,8 @@ std::optional<std::int64_t> TotalPrice(std::string_view list)
 std::string PublisherService::HashPassword(const std::string& password)
 {
     const std::string salted = password + std::string(kPasswordSalt);
-    std::string hex;
-    CryptoPP::SHA256 sha;
-    CryptoPP::StringSource(salted, true,
-        new CryptoPP::HashFilter(sha, new CryptoPP::HexEncoder(new CryptoPP::StringSink(hex), false)));
-    return hex;
+    const x2::crypto::Sha256::Digest digest = x2::crypto::Sha256::Hash(salted.data(), salted.size());
+    return x2::crypto::ToHex(digest.data(), digest.size());
 }
 
 LoginResult PublisherService::Login(const std::string& username, const std::string& password)

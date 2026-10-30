@@ -1,5 +1,4 @@
 #include "SADatabase.h"
-#include <cryptopp/osrng.h>
 #include "KncSecurity.h"
 #include "dbg/dbg.hpp"
 
