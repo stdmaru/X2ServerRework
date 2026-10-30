@@ -3183,6 +3183,9 @@ IMPL_ON_FUNC( DBE_INSERT_TUTORIAL_ACK )
 
 IMPL_ON_FUNC( EGS_GET_SKILL_REQ )
 {
+	// Port: hoisted above the gotos to end_proc (MSVC let goto skip their initialization)
+	int iTotalSP = 0;	// 스킬을 배우는데 필요한 일반 스킬 포인트
+	int iTotalCSP = 0;	// 스킬을 배우는데 필요한 캐시 스킬 포인트
 	//{{ 2010. 9. 7	최육사	중복 패킷 필터 개선
 	VERIFY_STATE_REPEAT_FILTER( ( 2, KGSFSM::S_FIELD_MAP, KGSFSM::S_ROOM ), EGS_GET_SKILL_REQ, EGS_GET_SKILL_ACK );
 
@@ -3236,8 +3239,6 @@ IMPL_ON_FUNC( EGS_GET_SKILL_REQ )
 	}
 
 	// 배울려는 스킬 목록으로 필요한 sp 량 얻기
-	int iTotalSP = 0;	// 스킬을 배우는데 필요한 일반 스킬 포인트
-	int iTotalCSP = 0;	// 스킬을 배우는데 필요한 캐시 스킬 포인트
 
 	if ( m_kSkillTree.GetNecessarySkillPoint( kPacket_.m_mapSkillList, iTotalSP, iTotalCSP,
 		m_kSkillTree.AccessLearnedSkillTree() ) == false )
@@ -3630,6 +3631,9 @@ IMPL_ON_FUNC( EGS_RESET_SKILL_REQ )
 
 IMPL_ON_FUNC( DBE_RESET_SKILL_ACK )
 {
+	// Port: hoisted above the gotos to end_proc (MSVC let goto skip their initialization)
+	bool isDefaultSkill{};
+	bool bAllFollowingSkillLevelZero{};
 	VERIFY_STATE( ( 2, KGSFSM::S_FIELD_MAP, KGSFSM::S_ROOM ) );
 
 	KEGS_RESET_SKILL_ACK kPacket;
@@ -3658,8 +3662,8 @@ IMPL_ON_FUNC( DBE_RESET_SKILL_ACK )
 	}
 
 	// 스킬 초기화
-	bool isDefaultSkill = SiCXSLSkillTree()->IsUnitTypeDefaultSkill( kPacket_.m_iDelSkillID );
-	bool bAllFollowingSkillLevelZero = m_kSkillTree.IsAllFollowingSkillLevelZero( kPacket_.m_iDelSkillID );
+	isDefaultSkill = SiCXSLSkillTree()->IsUnitTypeDefaultSkill( kPacket_.m_iDelSkillID );
+	bAllFollowingSkillLevelZero = m_kSkillTree.IsAllFollowingSkillLevelZero( kPacket_.m_iDelSkillID );
 
 	if ( m_kSkillTree.IsActiveSkillPageNumberValid() )
 	{
@@ -6178,6 +6182,8 @@ end_proc:
 
 IMPL_ON_FUNC( DBE_EXPAND_SKILL_PAGE_ACK )
 {
+	// Port: hoisted above the gotos to end_proc (MSVC let goto skip their initialization)
+	int iHowManyTimesToBeExpanded{};
 	 VERIFY_STATE_ACK( ( 2, KGSFSM::S_FIELD_MAP ), EGS_EXPAND_SKILL_PAGE_ACK );
 
 	 KEGS_EXPAND_SKILL_PAGE_ACK kPacket;
@@ -6208,7 +6214,7 @@ IMPL_ON_FUNC( DBE_EXPAND_SKILL_PAGE_ACK )
 			<< END_LOG;
 	 }
 
-	 const int iHowManyTimesToBeExpanded
+	 iHowManyTimesToBeExpanded
 		 = kPacket_.m_iSkillPageNumberToBeAdded - m_kSkillTree.GetTheNumberOfSkillPagesAvailable();
 
 	 for ( int i = 0; i < iHowManyTimesToBeExpanded; i++ )

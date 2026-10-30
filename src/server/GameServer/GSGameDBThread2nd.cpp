@@ -151,6 +151,8 @@ end_proc:
 
 IMPL_ON_FUNC( DBE_GAME_CREATE_UNIT_REQ )
 {
+	// Port: hoisted above the gotos to end_proc (MSVC let goto skip their initialization)
+	int iOK{};
     KEGS_CREATE_UNIT_ACK kPacket;
     kPacket.m_iOK = NetError::ERR_ODBC_01;
 
@@ -281,7 +283,7 @@ IMPL_ON_FUNC( DBE_GAME_CREATE_UNIT_REQ )
     }
 
     //{{ 2009. 3. 31  최육사	캐릭터 생성시 프로모션 입히기
-    int iOK = NetError::ERR_ODBC_01;
+    iOK = NetError::ERR_ODBC_01;
 
 	DO_QUERY( L"exec dbo.gup_create_unit_set_promotion", L"%d", % kPacket.m_kUnitInfo.m_nUnitUID );
     if( m_kODBC.BeginFetch() )

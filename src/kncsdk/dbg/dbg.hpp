@@ -15,10 +15,17 @@
 #define BUILD_LOGc( data )          dbg::tab << WIDENE(data) L" : " << static_cast<int>(data) << dbg::endl
 #define BUILD_LOGtm( data )         dbg::tab << WIDENE(data) L" : " << data.Format( KNC_TIME_FORMAT ) << dbg::endl
 #define END_LOG                     dbg::tab << L"(" << __WFILE__ << L", " << __LINE__ << L")" << dbg::endl
+// One expression (the caller keeps chaining "<< BUILD_LOG(...) << END_LOG;"). Port: the original declared two locals
+// here (rlog, szLogLevel), which a "goto end_proc" from DO_QUERY could not jump over and two of which could not share a scope.
+namespace dbg
+{
+    inline logfile& LogCondition( bool cond, logfile& ltrue, logfile& lfalse, const wchar_t* sztrue, const wchar_t* szfalse )
+    {
+        return ( cond ? ltrue : lfalse ) << ( cond ? sztrue : szfalse ) << L" : ";
+    }
+}
 #define LOG_CONDITION( cond, ctrue, cfalse )     \
-    dbg::logfile& rlog = cond ? dbg::ctrue : dbg::cfalse; \
-    const wchar_t* szLogLevel = cond ? WIDENE(ctrue) : WIDENE(cfalse); \
-    rlog << szLogLevel << L" : " << LOG_HEADER_STR << dbg::endl
+    dbg::LogCondition( (cond), dbg::ctrue, dbg::cfalse, WIDENE(ctrue), WIDENE(cfalse) ) << LOG_HEADER_STR << dbg::endl
 
 #define LOG_SUCCESS( success ) LOG_CONDITION( success, clog, cerr )
 

@@ -258,8 +258,6 @@ protected:
 protected:
 
 
-	x2::Timer					m_tTimeProcessCommunicationONOFF;
-	bool							m_bServerRunningProcessCommunicationOnOff;
 
 
 

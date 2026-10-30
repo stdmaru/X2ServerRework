@@ -2641,6 +2641,9 @@ void KUserQuestManager::Handler_OnEnterTheBattleField( IN KGSUserPtr spUser )
 //{{ QUEST 개편 - 김민성
 void KUserQuestManager::Handler_EGS_QUEST_COMPLETE_REQ( IN const KEGS_QUEST_COMPLETE_REQ& kReq, IN KGSUserPtr spUser, IN const bool bIsAdmin /*= false*/ )
 {
+	// Port: hoisted above the gotos to end_proc (MSVC let goto skip their initialization)
+	KQuestInstance* pKQuestInst{};
+	const CXSLQuestManager::QuestTemplet* pQuestTemplet{};
 	SET_ERROR( NET_OK );
 
 	bool bCheckAfterQuest = true;
@@ -2662,7 +2665,7 @@ void KUserQuestManager::Handler_EGS_QUEST_COMPLETE_REQ( IN const KEGS_QUEST_COMP
 	}
 
 	// 퀘스트 인스턴스 얻기
-	KQuestInstance* pKQuestInst = GetQuestInstance( kReq.m_iQuestID );
+	pKQuestInst = GetQuestInstance( kReq.m_iQuestID );
 	if( pKQuestInst == NULL )
 	{
 		SET_ERROR( ERR_QUEST_03 );
@@ -2670,7 +2673,7 @@ void KUserQuestManager::Handler_EGS_QUEST_COMPLETE_REQ( IN const KEGS_QUEST_COMP
 	}
 
 	// 퀘스트 템플릿 얻기
-	const CXSLQuestManager::QuestTemplet* pQuestTemplet = SiCXSLQuestManager()->GetQuestTemplet( kReq.m_iQuestID );
+	pQuestTemplet = SiCXSLQuestManager()->GetQuestTemplet( kReq.m_iQuestID );
 	if( pQuestTemplet == NULL )
 	{
 		START_LOG( cerr, L"퀘스트 진행중인데 템플릿 데이터가 없다." )

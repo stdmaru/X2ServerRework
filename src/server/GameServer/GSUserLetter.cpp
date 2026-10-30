@@ -109,6 +109,8 @@ IMPL_ON_FUNC( DBE_GET_POST_LETTER_LIST_ACK )
 //{{ 2008. 9. 8  최육사		편지 보내기 열기
 IMPL_ON_FUNC( EGS_SEND_LETTER_REQ )
 {
+	// Port: hoisted above the gotos to end_proc (MSVC let goto skip their initialization)
+	bool bFreeMail = false;
 	VERIFY_STATE_REPEAT_FILTER( ( 2, KGSFSM::S_FIELD_MAP, KGSFSM::S_ROOM ), EGS_SEND_LETTER_REQ, EGS_SEND_LETTER_ACK );
 
 	//////////////////////////////////////////////////////////////////////////
@@ -244,7 +246,6 @@ IMPL_ON_FUNC( EGS_SEND_LETTER_REQ )
 		}
 	}
 
-	bool bFreeMail = false;
 	for( int iFreeMailTicketIDIndex = 0;
 		iFreeMailTicketIDIndex < sizeof( _CONST_FREE_MAIL_TICKET_::arriFreeMailTicketID ) / sizeof( _CONST_FREE_MAIL_TICKET_::arriFreeMailTicketID[0] );
 		++iFreeMailTicketIDIndex )

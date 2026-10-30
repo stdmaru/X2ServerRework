@@ -723,8 +723,10 @@ _IMPL_ON_FUNC( DBE_ACCOUNT_DELETE_UNIT_REQ, KEGS_FINAL_DELETE_UNIT_ACK )
 //{{ 2008. 3. 28  최육사  추천인
 IMPL_ON_FUNC_NOPARAM( DBE_RECOMMEND_USER_NOT )
 {
+	// Port: hoisted above the gotos to end_proc (MSVC let goto skip their initialization)
+	int iOK{};
 	DO_QUERY( L"exec dbo.mup_update_isrecommend", L"%d", % LAST_SENDER_UID );
-	int iOK = NetError::ERR_ODBC_01;
+	iOK = NetError::ERR_ODBC_01;
 
 	if( m_kODBC.BeginFetch() )
 	{

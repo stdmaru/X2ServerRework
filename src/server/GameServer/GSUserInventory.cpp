@@ -6546,6 +6546,8 @@ IMPL_ON_FUNC( DBE_USE_FINALITY_SKILL_ACK )
 
 IMPL_ON_FUNC_NOPARAM( EGS_EXPAND_BANK_SLOT_ED_REQ )
 {
+	// Port: hoisted above the gotos to end_proc (MSVC let goto skip their initialization)
+	int iNextED{};
     // 상태 체크, 중복 패킷 처리.
     VERIFY_STATE_ACK( ( 2, KGSFSM::S_FIELD_MAP, KGSFSM::S_ROOM ), EGS_EXPAND_BANK_SLOT_ED_ACK );
 
@@ -6560,7 +6562,7 @@ IMPL_ON_FUNC_NOPARAM( EGS_EXPAND_BANK_SLOT_ED_REQ )
     }
 
     // 확장 요청한 은행 등급의 필요 ED 가져오기
-    int iNextED = m_kInventory.GetNextUpgradeBankED( CXSLInventory::GetNextBankMemberShip( m_kInventory.GetBankMemberShip() ) );
+    iNextED = m_kInventory.GetNextUpgradeBankED( CXSLInventory::GetNextBankMemberShip( m_kInventory.GetBankMemberShip() ) );
 
     // 현재 ED 충분한가
     if ( m_iED < iNextED )
@@ -6671,6 +6673,8 @@ IMPL_ON_FUNC( DBE_EXPAND_BANK_INVENTORY_ACK )
 
 IMPL_ON_FUNC_NOPARAM( EGS_GET_NEXT_BANK_ED_REQ )
 {
+	// Port: hoisted above the gotos to end_proc (MSVC let goto skip their initialization)
+	int iNextED{};
     // 상태 체크
     VERIFY_STATE_ACK( ( 2, KGSFSM::S_FIELD_MAP, KGSFSM::S_ROOM ), EGS_GET_NEXT_BANK_ED_ACK );
     KEGS_GET_NEXT_BANK_ED_ACK kPacket;
@@ -6681,7 +6685,7 @@ IMPL_ON_FUNC_NOPARAM( EGS_GET_NEXT_BANK_ED_REQ )
         goto end_proc;
     }
 
-    int iNextED = m_kInventory.GetNextUpgradeBankED( CXSLInventory::GetNextBankMemberShip( m_kInventory.GetBankMemberShip() ) );
+    iNextED = m_kInventory.GetNextUpgradeBankED( CXSLInventory::GetNextBankMemberShip( m_kInventory.GetBankMemberShip() ) );
     if ( iNextED <= 0 )
     {
         SET_ERROR( ERR_EXPAND_INVENTORY_ED_03 );
@@ -6700,6 +6704,10 @@ end_proc:
 
 IMPL_ON_FUNC_NOPARAM( EGS_GET_NEXT_INVENTORY_ED_REQ )
 {
+	// Port: hoisted above the gotos to end_proc (MSVC let goto skip their initialization)
+	int iExtendedSlotSize{};
+	int iExtendedTime{};
+	int iNextED{};
     // 상태 체크
     VERIFY_STATE_ACK( ( 2, KGSFSM::S_FIELD_MAP, KGSFSM::S_ROOM ), EGS_GET_NEXT_INVENTORY_ED_ACK );
     KEGS_GET_NEXT_INVENTORY_ED_ACK kPacket;
@@ -6709,12 +6717,12 @@ IMPL_ON_FUNC_NOPARAM( EGS_GET_NEXT_INVENTORY_ED_REQ )
         goto end_proc;
     }
 
-    int iExtendedSlotSize = m_kInventory.GetExpandedSlotSize( CXSLInventory::ST_EQUIP );
+    iExtendedSlotSize = m_kInventory.GetExpandedSlotSize( CXSLInventory::ST_EQUIP );
 
-    int iExtendedTime = iExtendedSlotSize / CXSLInventory::SLOT_COUNT_ONE_LINE;
+    iExtendedTime = iExtendedSlotSize / CXSLInventory::SLOT_COUNT_ONE_LINE;
 
     // 확장 요청한 인벤토리 필요 ED 가져오기
-    int iNextED = m_kInventory.GetNextUpgradeInventoryED( iExtendedTime + 1 );
+    iNextED = m_kInventory.GetNextUpgradeInventoryED( iExtendedTime + 1 );
 
     if ( iNextED <= 0 )
     {
@@ -6734,6 +6742,11 @@ end_proc:
 
 IMPL_ON_FUNC_NOPARAM( EGS_EXPAND_INVENTORY_ED_REQ )
 {
+	// Port: hoisted above the gotos to end_proc (MSVC let goto skip their initialization)
+	int iExtendedSlotSize{};
+	int iExtendedTime{};
+	int iNextED{};
+	int nSlot{};
     VERIFY_STATE_ACK( ( 2, KGSFSM::S_FIELD_MAP, KGSFSM::S_ROOM ), EGS_EXPAND_INVENTORY_ED_ACK );
 
     KDBE_EXPAND_INVENTORY_SLOT_REQ kPacket;
@@ -6744,12 +6757,12 @@ IMPL_ON_FUNC_NOPARAM( EGS_EXPAND_INVENTORY_ED_REQ )
         goto end_proc;
     }
 
-    int iExtendedSlotSize = m_kInventory.GetExpandedSlotSize( CXSLInventory::ST_EQUIP ); // 확장한 슬롯 수
+    iExtendedSlotSize = m_kInventory.GetExpandedSlotSize( CXSLInventory::ST_EQUIP ); // 확장한 슬롯 수
 
-    int iExtendedTime = iExtendedSlotSize / CXSLInventory::SLOT_COUNT_ONE_LINE; // 확장 횟수. 안했으면 0
+    iExtendedTime = iExtendedSlotSize / CXSLInventory::SLOT_COUNT_ONE_LINE; // 확장 횟수. 안했으면 0
 
     // 확장 요청한 인벤토리 필요 ED 가져오기
-    int iNextED = m_kInventory.GetNextUpgradeInventoryED( iExtendedTime + 1 );
+    iNextED = m_kInventory.GetNextUpgradeInventoryED( iExtendedTime + 1 );
 
     if ( iNextED <= 0 )
     {
@@ -6767,7 +6780,7 @@ IMPL_ON_FUNC_NOPARAM( EGS_EXPAND_INVENTORY_ED_REQ )
     m_iED -= iNextED;
 
     // DB로 이벤트를 보낸다.
-    int nSlot = CXSLInventory::SLOT_COUNT_ONE_LINE; // * kPacket_.m_usProductPieces * kPacket_.m_usOrderQuantity;
+    nSlot = CXSLInventory::SLOT_COUNT_ONE_LINE; // * kPacket_.m_usProductPieces * kPacket_.m_usOrderQuantity;
 
     kPacket.m_usEventID = EGS_EXPAND_INVENTORY_ED_REQ;
     kPacket.m_iUnitUID = GetCharUID();

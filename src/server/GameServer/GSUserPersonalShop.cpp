@@ -1609,6 +1609,9 @@ IMPL_ON_FUNC( ERM_CHECK_OPEN_PSHOP_AGENCY_ACK )
 
 IMPL_ON_FUNC( EGS_REG_PSHOP_AGENCY_ITEM_REQ )
 {
+	// Port: hoisted above the gotos to end_proc (MSVC let goto skip their initialization)
+	int iSellItemNum = 0;
+	__int64 iTotalSellPrice = 0;
 	VERIFY_STATE_REPEAT_FILTER( ( 1, KGSFSM::S_FIELD_MAP ), EGS_REG_PSHOP_AGENCY_ITEM_REQ, EGS_REG_PSHOP_AGENCY_ITEM_ACK );
 
 
@@ -1656,7 +1659,6 @@ IMPL_ON_FUNC( EGS_REG_PSHOP_AGENCY_ITEM_REQ )
 		goto end_proc;
 	}
 
-    int iSellItemNum = 0;
 
     switch ( m_kUserPersonalShopManager.GetPShopType() )
     {
@@ -1685,7 +1687,6 @@ IMPL_ON_FUNC( EGS_REG_PSHOP_AGENCY_ITEM_REQ )
         goto end_proc;
     }
 
-	__int64 iTotalSellPrice = 0;
 
 	//등록하려는 물품을 인벤토리에서 체크해본다.
 	for( const KRegPersonalShopItemInfo& kRegPShopItemInfo : kPacket_.m_vecRegItem )
@@ -1825,6 +1826,8 @@ end_proc:
 //{{ 2012. 05. 31	김민성       대리 상점 거래 로직 변경
 _IMPL_ON_FUNC( ERM_CHECK_FOR_REG_PSHOP_AGENCY_ITEM_ACK, KEGS_REG_PSHOP_AGENCY_ITEM_ACK )
 {
+	// Port: hoisted above the gotos to end_proc (MSVC let goto skip their initialization)
+	__int64 iTotalSellPrice = 0;
 	VERIFY_STATE_ACK( ( 1, KGSFSM::S_FIELD_MAP ), EGS_REG_PSHOP_AGENCY_ITEM_ACK );
 
 	KEGS_REG_PSHOP_AGENCY_ITEM_ACK kAck;
@@ -1836,7 +1839,6 @@ _IMPL_ON_FUNC( ERM_CHECK_FOR_REG_PSHOP_AGENCY_ITEM_ACK, KEGS_REG_PSHOP_AGENCY_IT
 		goto end_proc;
 	}
 
-	__int64 iTotalSellPrice = 0;
 
 	kReq.m_wstrPersonalShopName = kPacket_.m_wstrPersonalShopName;
 	kReq.m_vecInventorySlotInfo = kPacket_.m_vecInventorySlotInfo;

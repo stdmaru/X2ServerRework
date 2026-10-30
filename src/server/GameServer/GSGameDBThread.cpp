@@ -428,6 +428,14 @@ void KGSGameDBThread::ProcessEvent( const KEventPtr& spEvent_ )
 bool KGSGameDBThread::Query_SelectUnit( IN const UidType iUserUID, IN const KEGS_SELECT_UNIT_REQ& kReq, OUT KDBE_SELECT_UNIT_ACK& kAck )
 //}}
 {
+	// Port: hoisted above the gotos to end_proc (MSVC let goto skip their initialization)
+	bool bResetTitle = false;
+	bool bIsEquippedTitle = false;
+	const int iEQUIPPED_SKILL_SLOT_COUNT = 4;
+	bool bConductedOnceAtLeast = false;
+	int iTutorialFlag = -1;
+	int iEventUID = 0;
+	int iPeriod = 0;
 	kAck.m_kUnitInfo.Init();
 	kAck.m_iOK = NetError::ERR_ODBC_01;
 	std::map< UidType, KInventoryItemInfo >::iterator mit;
@@ -1022,8 +1030,6 @@ bool KGSGameDBThread::Query_SelectUnit( IN const UidType iUserUID, IN const KEGS
 	//TITLE MISSION 목록 받아오기
 
 	// 보유중인 타이틀
-	bool bResetTitle = false;
-	bool bIsEquippedTitle = false;
 	DO_QUERY( L"exec dbo.gup_get_title_list", L"%d", % kReq.m_iUnitUID );
 	while( m_kODBC.Fetch() )
 	{
@@ -1236,11 +1242,9 @@ bool KGSGameDBThread::Query_SelectUnit( IN const UidType iUserUID, IN const KEGS
 
 
 	//SKILL SLOT 받아오기
-	const int iEQUIPPED_SKILL_SLOT_COUNT = 4;
 
 	DO_QUERY( L"exec dbo.P_GSkillSlot_New_SEL", L"%d", % kReq.m_iUnitUID );
 
-	bool bConductedOnceAtLeast = false;
 
 	while( m_kODBC.Fetch() )
 	{
@@ -1457,7 +1461,6 @@ bool KGSGameDBThread::Query_SelectUnit( IN const UidType iUserUID, IN const KEGS
 	//}}
 
 	//080405.hoons. 사제리스트 받아오기.
-	int iTutorialFlag = -1;
 	if( kAck.m_kUnitInfo.m_ucLevel <= KTutorialManager::UNIT_LEVEL_STUDENT_MAX )
 		iTutorialFlag = 0;
 	else if( kAck.m_kUnitInfo.m_ucLevel >= KTutorialManager::UNIT_LEVEL_TEACHER_MIN )
@@ -1479,7 +1482,6 @@ bool KGSGameDBThread::Query_SelectUnit( IN const UidType iUserUID, IN const KEGS
 	//}}
 
 
-	int iEventUID = 0;
 	DO_QUERY( L"exec dbo.P_GAdvertisementEvent_SEL", L"%d", % iUserUID );
 	while( m_kODBC.Fetch() )
 	{
@@ -1907,7 +1909,6 @@ bool KGSGameDBThread::Query_SelectUnit( IN const UidType iUserUID, IN const KEGS
 
 	//////////////////////////////////////////////////////////////////////////
 	// 코보 익스프레스 VIP 티켓 구매 정보
-	int iPeriod = 0;
 
 	DO_QUERY( L"exec dbo.P_GVIPTicket_SEL", L"%d", % kReq.m_iUnitUID );
 	if( m_kODBC.BeginFetch() )
@@ -5282,6 +5283,8 @@ end_proc:
 IMPL_ON_FUNC( DBE_GAME_CREATE_UNIT_REQ )
 //}}
 {
+	// Port: hoisted above the gotos to end_proc (MSVC let goto skip their initialization)
+	int iOK{};
     KEGS_CREATE_UNIT_ACK kPacket;
     kPacket.m_iOK = NetError::ERR_ODBC_01;
 
@@ -5416,7 +5419,7 @@ IMPL_ON_FUNC( DBE_GAME_CREATE_UNIT_REQ )
 	}
 
 	//{{ 2009. 3. 31  최육사	캐릭터 생성시 프로모션 입히기
-	int iOK = NetError::ERR_ODBC_01;
+	iOK = NetError::ERR_ODBC_01;
 	DO_QUERY( L"exec dbo.gup_create_unit_set_promotion", L"%d", % kPacket.m_kUnitInfo.m_nUnitUID );
 	if( m_kODBC.BeginFetch() )
 	{
@@ -6793,10 +6796,11 @@ end_proc:
 
 _IMPL_ON_FUNC( DBE_SEARCH_UNIT_REQ, std::wstring )
 {
+	// Port: hoisted above the gotos to end_proc (MSVC let goto skip their initialization)
+	UidType iUnitUID = 0;
     KPacketOK kPacket;
     kPacket.m_iOK = NetError::ERR_ODBC_01;
     DO_QUERY( L"exec dbo.gup_get_unit_uid", L"N\'%s\'", % kPacket_ );
-    UidType iUnitUID = 0;
     if( m_kODBC.BeginFetch() )
     {
         FETCH_DATA( iUnitUID );
@@ -6818,13 +6822,14 @@ end_proc:
 
 _IMPL_ON_FUNC( DBE_KNM_REQUEST_NEW_FRIEND_INFO_REQ, std::wstring )
 {
+	// Port: hoisted above the gotos to end_proc (MSVC let goto skip their initialization)
+	UidType iUnitUID = 0;
 	KEGS_KNM_REQUEST_NEW_FRIEND_INFO_ACK kPacket;
 	kPacket.m_iOK				= NetError::ERR_ODBC_01;
 	kPacket.m_wstrUnitNickName	= kPacket_;
 
 	KDenyOptions kDeny;
 	DO_QUERY( L"exec dbo.gup_get_unit_uid", L"N\'%s\'", % kPacket_ );
-	UidType iUnitUID = 0;
 	if( m_kODBC.BeginFetch() )
 	{
 		FETCH_DATA( iUnitUID );
@@ -7550,6 +7555,8 @@ IMPL_ON_FUNC( DBE_INSERT_BUY_PERSONAL_SHOP_ITEM_REQ )
 
 IMPL_ON_FUNC( DBE_ENCHANT_ITEM_REQ )
 {
+	// Port: hoisted above the gotos to end_proc (MSVC let goto skip their initialization)
+	bool bUpdateFailed = false;
     KDBE_ENCHANT_ITEM_ACK kPacket;
     kPacket.m_iEnchantResult		  = kPacket_.m_iEnchantResult;
     kPacket.m_iItemUID				  = kPacket_.m_iItemUID;
@@ -7580,7 +7587,6 @@ IMPL_ON_FUNC( DBE_ENCHANT_ITEM_REQ )
 		goto end_proc;
 	}
 
-	bool bUpdateFailed = false;
     LIF( Query_UpdateItemQuantity( kPacket_.m_iUnitUID, kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange, kPacket.m_kItemQuantityUpdate.m_mapQuantityChange, bUpdateFailed ) );
 	Query_DeleteItem( kPacket_.m_kItemQuantityUpdate.m_vecDeleted, kPacket.m_kItemQuantityUpdate.m_vecDeleted );
 
@@ -7607,6 +7613,8 @@ end_proc:
 //{{ 2008. 12. 21  최육사	강화 복구
 IMPL_ON_FUNC( DBE_RESTORE_ITEM_REQ )
 {
+	// Port: hoisted above the gotos to end_proc (MSVC let goto skip their initialization)
+	bool bUpdateFailed = false;
 	KDBE_RESTORE_ITEM_ACK kPacket;
 	kPacket.m_iItemUID				  = kPacket_.m_iItemUID;
 	kPacket.m_iLevelAfterEnchant	  = kPacket_.m_iLevelAfterEnchant;
@@ -7632,7 +7640,6 @@ IMPL_ON_FUNC( DBE_RESTORE_ITEM_REQ )
 		goto end_proc;
 	}
 
-	bool bUpdateFailed = false;
 	LIF( Query_UpdateItemQuantity( kPacket_.m_iUnitUID, kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange, kPacket.m_kItemQuantityUpdate.m_mapQuantityChange, bUpdateFailed ) );
 	Query_DeleteItem( kPacket_.m_kItemQuantityUpdate.m_vecDeleted, kPacket.m_kItemQuantityUpdate.m_vecDeleted );
 
@@ -7659,6 +7666,8 @@ end_proc:
 //{{ 2008. 3. 6  최육사  소켓
 IMPL_ON_FUNC( DBE_SOCKET_ITEM_REQ )
 {
+	// Port: hoisted above the gotos to end_proc (MSVC let goto skip their initialization)
+	bool bUpdateFailed = false;
 	KDBE_SOCKET_ITEM_ACK kPacket;
 	kPacket.m_vecSocketInfo = kPacket_.m_vecSocketInfo;
 	//{{ 2010. 04. 15  최육사	소켓 개편
@@ -7721,7 +7730,6 @@ IMPL_ON_FUNC( DBE_SOCKET_ITEM_REQ )
 		kPacket.m_iOK = NetError::ERR_SOCKET_ITEM_10;
 	}
 
-	bool bUpdateFailed = false;
 	LIF( Query_UpdateItemQuantity( kPacket_.m_iUnitUID, kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange, kPacket.m_kItemQuantityUpdate.m_mapQuantityChange, bUpdateFailed ) );
 	Query_DeleteItem( kPacket_.m_kItemQuantityUpdate.m_vecDeleted, kPacket.m_kItemQuantityUpdate.m_vecDeleted );
 
@@ -8927,6 +8935,8 @@ end_proc:
 //{{ 2008. 9. 3  최육사		속성강화
 IMPL_ON_FUNC( DBE_ATTRIB_ENCHANT_ITEM_REQ )
 {
+	// Port: hoisted above the gotos to end_proc (MSVC let goto skip their initialization)
+	bool bUpdateFailed = false;
 	KDBE_ATTRIB_ENCHANT_ITEM_ACK kPacket;
 	kPacket.m_iItemUID = kPacket_.m_iItemUID;
 	kPacket.m_iItemID = kPacket_.m_iItemID;
@@ -8959,7 +8969,6 @@ IMPL_ON_FUNC( DBE_ATTRIB_ENCHANT_ITEM_REQ )
 		kPacket.m_iOK = NetError::ERR_ATTRIB_ENCHANT_01;
 	}
 
-	bool bUpdateFailed = false;
 	LIF( Query_UpdateItemQuantity( kPacket_.m_iUnitUID, kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange, kPacket.m_kItemQuantityUpdate.m_mapQuantityChange, bUpdateFailed ) );
 	Query_DeleteItem( kPacket_.m_kItemQuantityUpdate.m_vecDeleted, kPacket.m_kItemQuantityUpdate.m_vecDeleted );
 
@@ -9149,6 +9158,8 @@ end_proc:
 //{{ 2008. 12. 25  최육사	부여
 IMPL_ON_FUNC( DBE_ENCHANT_ATTACH_ITEM_REQ )
 {
+	// Port: hoisted above the gotos to end_proc (MSVC let goto skip their initialization)
+	bool bUpdateFailed = false;
 	KDBE_ENCHANT_ATTACH_ITEM_ACK kPacket;
 	kPacket.m_iItemUID				  = kPacket_.m_iItemUID;
 	kPacket.m_iLevelAfterEnchant	  = kPacket_.m_iLevelAfterEnchant;
@@ -9174,7 +9185,6 @@ IMPL_ON_FUNC( DBE_ENCHANT_ATTACH_ITEM_REQ )
 		goto end_proc;
 	}
 
-	bool bUpdateFailed = false;
 	LIF( Query_UpdateItemQuantity( kPacket_.m_iUnitUID, kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange, kPacket.m_kItemQuantityUpdate.m_mapQuantityChange, bUpdateFailed ) );
 	Query_DeleteItem( kPacket_.m_kItemQuantityUpdate.m_vecDeleted, kPacket.m_kItemQuantityUpdate.m_vecDeleted );
 
@@ -10030,6 +10040,8 @@ end_proc:
 //{{ 2009. 8. 27  최육사	봉인
 IMPL_ON_FUNC( DBE_SEAL_ITEM_REQ )
 {
+	// Port: hoisted above the gotos to end_proc (MSVC let goto skip their initialization)
+	bool bUpdateFailed = false;
 	KDBE_SEAL_ITEM_ACK kPacket;
 	kPacket.m_ucSealResult			  = kPacket_.m_ucSealResult;
 	kPacket.m_vecUpdatedInventorySlot = kPacket_.m_vecUpdatedInventorySlot;
@@ -10053,7 +10065,6 @@ IMPL_ON_FUNC( DBE_SEAL_ITEM_REQ )
 		goto end_proc;
 	}
 
-	bool bUpdateFailed = false;
 	LIF( Query_UpdateItemQuantity( kPacket_.m_iUnitUID, kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange, kPacket.m_kItemQuantityUpdate.m_mapQuantityChange, bUpdateFailed ) );
 	Query_DeleteItem( kPacket_.m_kItemQuantityUpdate.m_vecDeleted, kPacket.m_kItemQuantityUpdate.m_vecDeleted );
 
@@ -10079,6 +10090,8 @@ end_proc:
 
 IMPL_ON_FUNC( DBE_UNSEAL_ITEM_REQ )
 {
+	// Port: hoisted above the gotos to end_proc (MSVC let goto skip their initialization)
+	bool bUpdateFailed = false;
 	KDBE_UNSEAL_ITEM_ACK kPacket;
 	kPacket.m_ucSealResult			  = kPacket_.m_ucSealResult;
 	kPacket.m_vecUpdatedInventorySlot = kPacket_.m_vecUpdatedInventorySlot;
@@ -10102,7 +10115,6 @@ IMPL_ON_FUNC( DBE_UNSEAL_ITEM_REQ )
 		goto end_proc;
 	}
 
-	bool bUpdateFailed = false;
 	LIF( Query_UpdateItemQuantity( kPacket_.m_iUnitUID, kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange, kPacket.m_kItemQuantityUpdate.m_mapQuantityChange, bUpdateFailed ) );
 	Query_DeleteItem( kPacket_.m_kItemQuantityUpdate.m_vecDeleted, kPacket.m_kItemQuantityUpdate.m_vecDeleted );
 
@@ -10134,9 +10146,10 @@ end_proc:
 //}}
 _IMPL_ON_FUNC( DBE_INVITE_GUILD_NICKNAME_CHECK_REQ, KELG_INVITE_GUILD_ACK )
 {
+	// Port: hoisted above the gotos to end_proc (MSVC let goto skip their initialization)
+	UidType iUnitUID = 0;
 	int iOK = NetError::ERR_ODBC_01;
 	DO_QUERY( L"exec dbo.gup_get_unit_uid", L"N\'%s\'", % kPacket_.m_wstrReceiverNickName );
-	UidType iUnitUID = 0;
 	if( m_kODBC.BeginFetch() )
 	{
 		FETCH_DATA( iUnitUID );
@@ -11806,6 +11819,8 @@ end_proc:
 
 IMPL_ON_FUNC( DBE_ATTRIB_ATTACH_ITEM_REQ )
 {
+	// Port: hoisted above the gotos to end_proc (MSVC let goto skip their initialization)
+	bool bUpdateFailed = false;
 	KDBE_ATTRIB_ATTACH_ITEM_ACK kPacket;
 	kPacket.m_iItemUID					= kPacket_.m_iItemUID;
 	kPacket.m_kAttribEnchantInfo		= kPacket_.m_kAttribEnchantInfo;
@@ -11899,7 +11914,6 @@ IMPL_ON_FUNC( DBE_ATTRIB_ATTACH_ITEM_REQ )
 		}
 	}
 
-	bool bUpdateFailed = false;
 	LIF( Query_UpdateItemQuantity( kPacket_.m_iUnitUID, kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange, kPacket.m_kItemQuantityUpdate.m_mapQuantityChange, bUpdateFailed ) );
 	Query_DeleteItem( kPacket_.m_kItemQuantityUpdate.m_vecDeleted, kPacket.m_kItemQuantityUpdate.m_vecDeleted );
 
@@ -12049,6 +12063,8 @@ IMPL_ON_FUNC( DBE_INSERT_TO_INVENTORY_PICK_UP_FROM_PSHOP_AGENCY_REQ )
 
 _IMPL_ON_FUNC( DBE_GET_SHARE_BANK_REQ, KEGS_GET_SHARE_BANK_REQ )
 {
+	// Port: hoisted above the gotos to end_proc (MSVC let goto skip their initialization)
+	int iBankSize = 0;
 	KEGS_GET_SHARE_BANK_ACK kAck;
 	kAck.m_iOK = NetError::ERR_ODBC_01;
 
@@ -12127,7 +12143,6 @@ _IMPL_ON_FUNC( DBE_GET_SHARE_BANK_REQ, KEGS_GET_SHARE_BANK_REQ )
 	//	은행 크기 얻기
 	DO_QUERY( L"exec dbo.P_GItemInventorySize_SEL_Bank", L"%d", % kAck.m_iUnitUID );
 
-	int iBankSize = 0;
 	if( m_kODBC.BeginFetch() )
 	{
 		FETCH_DATA( iBankSize );
@@ -15065,6 +15080,8 @@ end_proc:
 
 IMPL_ON_FUNC( DBE_SOCKET_EXPAND_ITEM_REQ )
 {
+	// Port: hoisted above the gotos to end_proc (MSVC let goto skip their initialization)
+	bool bUpdateFailed = false;
 	KDBE_SOCKET_EXPAND_ITEM_ACK kPacket;
 	kPacket.m_iOK = NetError::ERR_ODBC_01;
 
@@ -15100,7 +15117,6 @@ IMPL_ON_FUNC( DBE_SOCKET_EXPAND_ITEM_REQ )
 	}
 
 	// Update SP가 성공했다면, 수량 변화나 삭제되어야 할 아이템 정보도 Update 하자
-	bool bUpdateFailed = false;
 	LIF( Query_UpdateItemQuantity( kPacket_.m_iUnitUID, kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange, kPacket.m_kItemQuantityUpdate.m_mapQuantityChange, bUpdateFailed ) );
 	Query_DeleteItem( kPacket_.m_kItemQuantityUpdate.m_vecDeleted, kPacket.m_kItemQuantityUpdate.m_vecDeleted );
 
@@ -15300,8 +15316,8 @@ IMPL_ON_FUNC( DBE_EXPAND_SKILL_PAGE_REQ )
 	kPacket.m_iSPoint					= kPacket_.m_iSPoint;
 	kPacket.m_iUnitUID					= kPacket_.m_iUnitUID;
 
-	const int& iSkillPagesNumberToBeAddedRef = kPacket_.m_vecSkillPageNumberToBeAdded.back();
-	kPacket.m_iSkillPageNumberToBeAdded	= iSkillPagesNumberToBeAddedRef;
+	// Port: read directly (the reference sat between the gotos to end_proc and their label)
+	kPacket.m_iSkillPageNumberToBeAdded	= kPacket_.m_vecSkillPageNumberToBeAdded.back();
 
 	for ( int i = 0; i < THE_NUMBER_OF_DEFAULT_SKILLS; i++ )
 		kPacket.m_iDefaultSkill[i] = kPacket_.m_iDefaultSkill[i];

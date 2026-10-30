@@ -265,7 +265,7 @@ int KGSBillingDBThread::DoQuery_GetCashPointByUserUID( IN const UidType iUserUID
 	// 원래 이쪽 코드는 정상적인 경우라면 중국만 사용하게 된다.
 	// 하지만 사내 버전의 경우 캐시를 보여주려고 여기 프로세스를 빌려서 사용한다.
 
-	unsigned long ulTotalCash = 0;
+	DWORD ulTotalCash = 0;	// Port: was unsigned long, which is DWORD (32 bits) only on Windows
 
 	int iRet = NetError::ERR_ODBC_01;
 	DO_QUERY_NO_PROFILE( L"exec dbo.EBP_Cash_Total_USERUID_SEL", L"%d", % iUserUID );
@@ -734,6 +734,8 @@ end_proc:
 // KOG에서 쿠폰매칭 정보 관리시 kPacket와 kCouponMatchingInfo 정보는 동일함
 int KGSBillingDBThread::UseCoupon( IN KEBILL_USE_COUPON_REQ kPacket, OUT std::vector< KBillCouponItemInfo > &vecItemInfo )
 {
+	// Port: hoisted above the gotos to end_proc (MSVC let goto skip their initialization)
+	UidType iTransNum = -1;
 	int iRet = NetError::ERR_ODBC_01;
 
 	DO_QUERY_NO_PROFILE( L"exec dbo.EBP_CouponOrder_USE", L"\'%s\', %d, \'%s\', %d, %d, %d, %d, %d",
@@ -748,7 +750,6 @@ int KGSBillingDBThread::UseCoupon( IN KEBILL_USE_COUPON_REQ kPacket, OUT std::ve
 															);
 
 	int iReturnValue, iTotalCash, iChargeItem, iChargeBonus, iChargeCash, iRemainCash, iRemainBonus;
-	UidType iTransNum = -1;
 
 	if( m_kODBC.BeginFetch() )
 	{

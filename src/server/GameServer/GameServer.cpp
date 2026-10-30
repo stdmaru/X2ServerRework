@@ -149,7 +149,7 @@ using namespace std::placeholders;
 //{{ 2010. 11. 12  조효진	GameForge 채팅 로그 관련 처리
 //}}
 
-#include "../Common/OnlyGlobal/ProcessCommuniationModule/ProcessCommunicationManager.h"
+// Port: KSMS (ProcessCommunicationManager, Windows named pipes to an external tool) removed, as in the ChannelServer
 
 //{{ 2013. 3. 11	박세훈	 로컬 랭킹 시스템
 //}}
@@ -335,8 +335,6 @@ bool KGameServer::Init()
 	RequestRandomQuestInfo();
 	//}}
 
-	m_bServerRunningProcessCommunicationOnOff = false;
-
 	if( GetServerRollType() == KServerInfo::SRT_UPDATE_CASH_PRODUCT_LIST )
 	{
 		KDBE_USE_GM_TOOL_INSERT_ITEM_INFO_NOT kPacketNOT;
@@ -388,12 +386,6 @@ void KGameServer::OnServerReadyComplete()
 	//}}
 
 	// 2013.07.18 lygan_조성욱 // SiKGameEventManager 보다 먼저 초기화 되야함
-	if (SiKGameSysVal()->GetProcessCommunication() == true)
-	{
-		SiKProcessCommunicationManager()->InitRead(TEXT("\\\\.\\pipe\\GameServerRead"));
-		SiKProcessCommunicationManager()->InitWrite(TEXT("\\\\.\\pipe\\GameServerWrite"));
-		SiKProcessCommunicationManager()->Begin();
-	}
 
 	// 이벤트 정보 얻기
 	SiKGameEventManager()->Init();
@@ -466,11 +458,6 @@ void KGameServer::ShutDown()
 {
 	//{{ 2013. 3. 17	박세훈	 로컬 랭킹 시스템
 	//}}
-
-	if (SiKGameSysVal()->GetProcessCommunication() == true)
-	{
-		SiKProcessCommunicationManager()->ShutDown();
-	}
 
 	//{{ 2009. 9. 2  최육사		비정상종료통계
 	GetKGSSimLayer()->SendToDBAbnormalReason( true );
@@ -583,26 +570,6 @@ void KGameServer::Tick()
 	CheckGSFieldBossSystem( tCurrentTime );
 
 
-	if ( m_tTimeProcessCommunicationONOFF.elapsed() > 60.0f )
-	{
-		if (SiKGameSysVal()->GetProcessCommunication() == true && m_bServerRunningProcessCommunicationOnOff == true)
-		{
-			SiKProcessCommunicationManager()->InitRead(TEXT("\\\\.\\pipe\\GameServerRead"));
-			SiKProcessCommunicationManager()->InitWrite(TEXT("\\\\.\\pipe\\GameServerWrite"));
-			SiKProcessCommunicationManager()->Begin();
-			m_bServerRunningProcessCommunicationOnOff = false;
-
-
-		}
-		else if (SiKGameSysVal()->GetProcessCommunication() == false && m_bServerRunningProcessCommunicationOnOff == false)
-		{
-			SiKProcessCommunicationManager()->ShutDown();
-
-			m_bServerRunningProcessCommunicationOnOff = true;
-
-		}
-		m_tTimeProcessCommunicationONOFF.restart();
-	}
 
 }
 
@@ -1607,7 +1574,6 @@ _IMPL_ON_FUNC( ESR_ORDER_TO_REFRESH_MANAGER_ACK, KESR_SCRIPT_REFRESH_ORDER_NOT )
 	}
 		//}}
 
-	SiKProcessCommunicationManager()->QueueingProcessWrite(x2::str(x2::wformat(L"%1%_%2%") % 0 %L"GameServer 스크립트 실시간 패치 완료"));
 }
 
 //}}

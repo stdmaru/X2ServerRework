@@ -629,6 +629,9 @@ bool KUserAccountQuestManager::Handler_EGS_NEW_QUEST_REQ_Account( IN const KEGS_
 
 void KUserAccountQuestManager::Handler_EGS_QUEST_COMPLETE_REQ_Account( IN const KEGS_QUEST_COMPLETE_REQ& kReq, IN KGSUserPtr spUser, IN const bool bIsAdmin /* = false */ )
 {
+	// Port: hoisted above the gotos to end_proc (MSVC let goto skip their initialization)
+	KQuestInstance* pKQuestInst{};
+	const CXSLQuestManager::QuestTemplet* pQuestTemplet{};
 	SET_ERROR( NET_OK );
 
 	bool bCheckAfterQuest = true;
@@ -643,7 +646,7 @@ void KUserAccountQuestManager::Handler_EGS_QUEST_COMPLETE_REQ_Account( IN const 
 	}
 
 	// 퀘스트 인스턴스 얻기
-	KQuestInstance* pKQuestInst = GetAccountQuestInstance( kReq.m_iQuestID );
+	pKQuestInst = GetAccountQuestInstance( kReq.m_iQuestID );
 	if( pKQuestInst == NULL )
 	{
 		SET_ERROR( ERR_QUEST_03 );
@@ -651,7 +654,7 @@ void KUserAccountQuestManager::Handler_EGS_QUEST_COMPLETE_REQ_Account( IN const 
 	}
 
 	// 퀘스트 템플릿 얻기
-	const CXSLQuestManager::QuestTemplet* pQuestTemplet = SiCXSLQuestManager()->GetAccountQuestTemplet( kReq.m_iQuestID );
+	pQuestTemplet = SiCXSLQuestManager()->GetAccountQuestTemplet( kReq.m_iQuestID );
 	if( pQuestTemplet == NULL )
 	{
 		START_LOG( cerr, L"계정 퀘스트 진행중인데 템플릿 데이터가 없다." )

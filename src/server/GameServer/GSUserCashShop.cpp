@@ -1699,6 +1699,9 @@ IMPL_ON_FUNC( EGS_GET_PURCHASED_PACKAGE_CASH_ITEM_REQ )
 
 IMPL_ON_FUNC( ENX_BT_NISMS_INVENTORY_PICK_UP_FOR_PACKAGE_ACK )
 {
+	// Port: hoisted above the gotos to end_proc (MSVC let goto skip their initialization)
+	int iItemID{};
+	const CXSLItem::ItemTemplet* pItemTemplet{};
 	KEGS_GET_PURCHASED_PACKAGE_CASH_ITEM_ACK kPacket;
 	KNXBTPickUpPackageInfo kPickUpPackageInfo;
 	KNXBTProductInfo kMemberProductInfo;
@@ -1732,7 +1735,7 @@ IMPL_ON_FUNC( ENX_BT_NISMS_INVENTORY_PICK_UP_FOR_PACKAGE_ACK )
 	}
 
 	// 3. ItemID 변환
-	int iItemID = kPacket_.m_ulSubProductNo;
+	iItemID = kPacket_.m_ulSubProductNo;
 	if( iItemID <= 0 )
 	{
 		START_LOG( cerr, L"아이템 ID 변환 실패." )
@@ -1744,7 +1747,7 @@ IMPL_ON_FUNC( ENX_BT_NISMS_INVENTORY_PICK_UP_FOR_PACKAGE_ACK )
 		goto end_proc;
 	}
 
-	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iItemID );
+	pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iItemID );
 	if( pItemTemplet == NULL )
 	{
 		START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )

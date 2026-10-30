@@ -2044,6 +2044,9 @@ end_proc:
 
 IMPL_ON_FUNC( EGS_JOIN_FIELD_CHANNEL_CHANGE_REQ )
 {
+	// Port: hoisted above the gotos to end_proc (MSVC let goto skip their initialization)
+	int iTempLevel = 0;
+	int iTempDungeonID = 0;
 	//{{ 2010. 9. 7	최육사	중복 패킷 필터 개선
 	VERIFY_STATE_REPEAT_FILTER( ( 1, KGSFSM::S_FIELD_MAP ), EGS_JOIN_FIELD_CHANNEL_CHANGE_REQ, EGS_JOIN_FIELD_CHANNEL_CHANGE_ACK );
 	//}}
@@ -2066,8 +2069,6 @@ IMPL_ON_FUNC( EGS_JOIN_FIELD_CHANNEL_CHANGE_REQ )
 
 	// 해당 map에 들어갈 수 있는지 조건 체크
 	//{{ 2012. 09. 21   김민성   마을 입장 오류 메시지 구분
-	int iTempLevel = 0;
-	int iTempDungeonID = 0;
 	if( !CheckEnterTheVillage( kPacket_.m_iMapID, iTempLevel, iTempDungeonID ) )
 	//}}
 	{

@@ -5,7 +5,7 @@
 #include "KAutoPath.h"
 
 
-#include "../Common/OnlyGlobal/ProcessCommuniationModule/ProcessCommunicationManager.h"
+// Port: KSMS (ProcessCommunicationManager) removed: the reload reports to the external tool are gone
 
 //{{ 2010. 06. 15  최육사	실시간 스크립트 갱신
 //#ifdef SERV_REALTIME_SCRIPT
@@ -139,7 +139,6 @@ void KGSScriptRefreshManager::ItemManager_LUA()
 	// 센터서버의 ItemManager 갱신 요청!
 	RefreshOrderToCnServerBroadCast( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_CN_ITEM_MANAGER );
 
-	SiKProcessCommunicationManager()->QueueingProcessWrite(x2::str(x2::wformat(L"%1%_%2%") % 0 %L"ItemManager 클래스 스크립트 실시간 패치!"));
 }
 
 void KGSScriptRefreshManager::RandomItemManager_LUA()
@@ -149,7 +148,6 @@ void KGSScriptRefreshManager::RandomItemManager_LUA()
 	// 게임서버의 RandomItemManager 갱신 요청!
 	RefreshOrderToCnServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GS_RANDOM_ITEM_MANAGER );
 
-	SiKProcessCommunicationManager()->QueueingProcessWrite(x2::str(x2::wformat(L"%1%_%2%") % 0 %L"RandomItemManager 클래스 스크립트 실시간 패치!"));
 }
 
 void KGSScriptRefreshManager::ManufactureItemManager_LUA()
@@ -159,7 +157,6 @@ void KGSScriptRefreshManager::ManufactureItemManager_LUA()
 	// 게임서버의 ManufactureItemManager 갱신 요청!
 	RefreshOrderToCnServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GS_MANUFACTURE_ITEM_MANAGER );
 
-	SiKProcessCommunicationManager()->QueueingProcessWrite(x2::str(x2::wformat(L"%1%_%2%") % 0 %L"ManufactureItemManager 클래스 스크립트 실시간 패치!"));
 }
 
 void KGSScriptRefreshManager::RewardTable_LUA()
@@ -169,7 +166,6 @@ void KGSScriptRefreshManager::RewardTable_LUA()
 	// 게임서버의 RewardTable 갱신 요청!
 	RefreshOrderToCnServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GS_REWARD_TABLE );
 
-	SiKProcessCommunicationManager()->QueueingProcessWrite(x2::str(x2::wformat(L"%1%_%2%") % 0 %L"RewardTable 클래스 스크립트 실시간 패치!"));
 }
 
 void KGSScriptRefreshManager::QuestManager_LUA()
@@ -187,7 +183,6 @@ void KGSScriptRefreshManager::QuestManager_LUA()
 	RefreshOrderToGBServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GB_QUEST_MANAGER );
 	//}}
 
-	SiKProcessCommunicationManager()->QueueingProcessWrite(x2::str(x2::wformat(L"%1%_%2%") % 0 %L"QuestManager 클래스 스크립트 실시간 패치!"));
 }
 
 void KGSScriptRefreshManager::TitleManager_LUA()
@@ -201,7 +196,6 @@ void KGSScriptRefreshManager::TitleManager_LUA()
 	RefreshOrderToCnServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_LG_TITLE_MANAGER );
 	//}}
 
-	SiKProcessCommunicationManager()->QueueingProcessWrite(x2::str(x2::wformat(L"%1%_%2%") % 0 %L"TitleManager 클래스 스크립트 실시간 패치!"));
 }
 
 void KGSScriptRefreshManager::DungeonManager_LUA()
@@ -214,7 +208,6 @@ void KGSScriptRefreshManager::DungeonManager_LUA()
 	// 센터서버의 DungeonManager 갱신 요청!
 	RefreshOrderToCnServerBroadCast( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_CN_DUNGEON_MANAGER );
 
-	SiKProcessCommunicationManager()->QueueingProcessWrite(x2::str(x2::wformat(L"%1%_%2%") % 0 %L"DungeonManager 클래스 스크립트 실시간 패치!"));
 
 }
 
@@ -225,7 +218,6 @@ void KGSScriptRefreshManager::DropTable_LUA()
 	// 센터서버의 DropTable 갱신 요청!
 	RefreshOrderToCnServerBroadCast( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_CN_DROP_TABLE );
 
-	SiKProcessCommunicationManager()->QueueingProcessWrite(x2::str(x2::wformat(L"%1%_%2%") % 0 %L"DropTable 클래스 스크립트 실시간 패치!"));
 
 }
 
@@ -239,7 +231,6 @@ void KGSScriptRefreshManager::GameEventScriptManager_LUA()
 	// 센터서버의 GameEventScriptManager 갱신 요청!
 	RefreshOrderToCnServerBroadCast( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_CN_GAME_EVENT_SCRIPT_MANAGER );
 
-	SiKProcessCommunicationManager()->QueueingProcessWrite(x2::str(x2::wformat(L"%1%_%2%") % 0 %L"GameEventScriptManager 클래스 스크립트 실시간 패치!"));
 
 }
 
@@ -250,7 +241,6 @@ void KGSScriptRefreshManager::MapData_LUA()
 	// 게임서버의 MapData 갱신 요청!
 	RefreshOrderToCnServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GS_MAP_DATA );
 
-	SiKProcessCommunicationManager()->QueueingProcessWrite(x2::str(x2::wformat(L"%1%_%2%") % 0 %L"MapData 클래스 스크립트 실시간 패치!"));
 
 }
 
@@ -264,7 +254,6 @@ void KGSScriptRefreshManager::GuildManager_LUA()
 	// 로그인서버의 GuildManager 갱신 요청!
 	RefreshOrderToCnServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_LG_GUILD_MANAGER );
 
-	SiKProcessCommunicationManager()->QueueingProcessWrite(x2::str(x2::wformat(L"%1%_%2%") % 0 %L"GuildManager 클래스 스크립트 실시간 패치!"));
 }
 
 void KGSScriptRefreshManager::GameSysVal_LUA()
@@ -281,7 +270,6 @@ void KGSScriptRefreshManager::GameSysVal_LUA()
 	RefreshOrderToCnServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_LG_GAME_SYS_VAL );
 	//}}
 
-	SiKProcessCommunicationManager()->QueueingProcessWrite(x2::str(x2::wformat(L"%1%_%2%") % 0 %L"GameSysVal 클래스 스크립트 실시간 패치!"));
 
 }
 
@@ -292,7 +280,6 @@ void KGSScriptRefreshManager::ResolveItemManager_LUA()
 	// 게임서버의 Resolve Item Manager 갱신 요청!
 	RefreshOrderToCnServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GS_RESOLVE_ITEM_MANAGER );
 
-	SiKProcessCommunicationManager()->QueueingProcessWrite(x2::str(x2::wformat(L"%1%_%2%") % 0 %L"ResolveItemManager 클래스 스크립트 실시간 패치!"));
 
 }
 
@@ -303,7 +290,6 @@ void KGSScriptRefreshManager::EnchantItemManager_LUA()
 	// 게임서버의 Enchant Item Manager 갱신 요청!
 	RefreshOrderToCnServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GS_ENCHANT_ITEM_MANAGER );
 
-	SiKProcessCommunicationManager()->QueueingProcessWrite(x2::str(x2::wformat(L"%1%_%2%") % 0 %L"EnchantItemManager 클래스 스크립트 실시간 패치!"));
 
 }
 
@@ -314,7 +300,6 @@ void KGSScriptRefreshManager::SocketItem_LUA()
 	// 게임서버의 Socket Item 갱신 요청!
 	RefreshOrderToCnServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GS_SOCKET_ITEM );
 
-	SiKProcessCommunicationManager()->QueueingProcessWrite(x2::str(x2::wformat(L"%1%_%2%") % 0 %L"SocketItem 클래스 스크립트 실시간 패치!"));
 
 }
 
@@ -325,7 +310,6 @@ void KGSScriptRefreshManager::AttribEnchantItem_LUA()
 	// 게임서버의 Attrib Enchant Item 갱신 요청!
 	RefreshOrderToCnServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GS_ATTRIB_ENCHANT_ITEM );
 
-	SiKProcessCommunicationManager()->QueueingProcessWrite(x2::str(x2::wformat(L"%1%_%2%") % 0 %L"AttribEnchantItem 클래스 스크립트 실시간 패치!"));
 
 }
 
@@ -336,7 +320,6 @@ void KGSScriptRefreshManager::RecommendUserTable_LUA()
 	// 게임서버의 Recommend User Table 갱신 요청!
 	RefreshOrderToCnServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GS_RECOMMEND_USER_TABLE );
 
-	SiKProcessCommunicationManager()->QueueingProcessWrite(x2::str(x2::wformat(L"%1%_%2%") % 0 %L"RecommendUserTable 클래스 스크립트 실시간 패치!"));
 
 }
 
@@ -347,7 +330,6 @@ void KGSScriptRefreshManager::ExpTable_LUA()
 	// 게임서버의 Exp Table 갱신 요청!
 	RefreshOrderToCnServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GS_EXP_TABLE );
 
-	SiKProcessCommunicationManager()->QueueingProcessWrite(x2::str(x2::wformat(L"%1%_%2%") % 0 %L"ExpTable 클래스 스크립트 실시간 패치!"));
 
 }
 
@@ -359,7 +341,6 @@ void KGSScriptRefreshManager::PetManager_LUA()
 	// 게임서버의 Pet Manager 갱신 요청!
 	RefreshOrderToCnServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GS_PET_MANAGER );
 
-	SiKProcessCommunicationManager()->QueueingProcessWrite(x2::str(x2::wformat(L"%1%_%2%") % 0 %L"PetManager 클래스 스크립트 실시간 패치!"));
 
 
 }
@@ -372,7 +353,6 @@ void KGSScriptRefreshManager::AttribNpcTable_LUA()
 	// 센터서버의 Attrib Npc Table 갱신 요청!
 	RefreshOrderToCnServerBroadCast( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_CN_ATTRIB_NPC_TABLE );
 
-	SiKProcessCommunicationManager()->QueueingProcessWrite(x2::str(x2::wformat(L"%1%_%2%") % 0 %L"AttribNpcTable 클래스 스크립트 실시간 패치!"));
 
 }
 
@@ -384,7 +364,6 @@ void KGSScriptRefreshManager::CnHackingCheckManager_LUA()
 	// 센터서버의 Cn Hacking Check Manager 갱신 요청!
 	RefreshOrderToCnServerBroadCast( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_CN_HACKING_CHECK_MANAGER );
 
-	SiKProcessCommunicationManager()->QueueingProcessWrite(x2::str(x2::wformat(L"%1%_%2%") % 0 %L"CnHackingCheckManager 클래스 스크립트 실시간 패치!"));
 
 }
 //}}
@@ -402,7 +381,6 @@ void KGSScriptRefreshManager::AbuserLogManager_LUA()
 	// 센터서버의 Abuser Log Manager 갱신 요청!
 	RefreshOrderToCnServerBroadCast( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_CN_ABUSER_LOG_MANAGER );
 
-	SiKProcessCommunicationManager()->QueueingProcessWrite(x2::str(x2::wformat(L"%1%_%2%") % 0 %L"AbuserLogManager 클래스 스크립트 실시간 패치!"));
 
 }
 
@@ -414,7 +392,6 @@ void KGSScriptRefreshManager::ResultProcess_LUA()
 	// 센터서버의 ResultProcess 갱신 요청!
 	RefreshOrderToCnServerBroadCast( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_CN_RESULT_PROCESS );
 
-	SiKProcessCommunicationManager()->QueueingProcessWrite(x2::str(x2::wformat(L"%1%_%2%") % 0 %L"ResultProcess 클래스 스크립트 실시간 패치!"));
 
 }
 //}}
@@ -427,7 +404,6 @@ void KGSScriptRefreshManager::WorldMissionManager_LUA()
 	// 글로벌서버의 WorldMissionManager 갱신 요청!
 	RefreshOrderToGBServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GB_WORLD_MISSION_MANAGER );
 
-	SiKProcessCommunicationManager()->QueueingProcessWrite(x2::str(x2::wformat(L"%1%_%2%") % 0 %L"WorldMissionManager 클래스 스크립트 실시간 패치!"));
 
 }
 //}} 2011. 04. 13  김민성  글로벌 서버 추가
@@ -446,7 +422,6 @@ void KGSScriptRefreshManager::PvpMatchManager_LUA()
 	// 글로벌서버의 Pvp Match Manager 갱신 요청!
 	RefreshOrderToGBServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GB_PVP_MATCH_MANAGER );
 
-	SiKProcessCommunicationManager()->QueueingProcessWrite(x2::str(x2::wformat(L"%1%_%2%") % 0 %L"PvpMatchManager 클래스 스크립트 실시간 패치!"));
 
 }
 
@@ -457,7 +432,6 @@ void KGSScriptRefreshManager::PvpMatchResultTable_LUA()
 	// 센터서버의 Pvp Match Result Table 갱신 요청!
 	RefreshOrderToCnServerBroadCast( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_CN_PVP_MATCH_RESULT_TABLE );
 
-	SiKProcessCommunicationManager()->QueueingProcessWrite(x2::str(x2::wformat(L"%1%_%2%") % 0 %L"PvpMatchResultTable 클래스 스크립트 실시간 패치!"));
 
 }
 //}}
@@ -470,7 +444,6 @@ void KGSScriptRefreshManager::HenirResultTable_LUA()
 	// 센터서버의 Henir Result Table 갱신 요청!
 	RefreshOrderToCnServerBroadCast( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_CN_HENIR_RESULT_TABLE );
 
-	SiKProcessCommunicationManager()->QueueingProcessWrite(x2::str(x2::wformat(L"%1%_%2%") % 0 %L"HenirResultTable 클래스 스크립트 실시간 패치!"));
 
 }
 //}}
@@ -484,7 +457,6 @@ void KGSScriptRefreshManager::ContentManager_LUA()
 	// 게임서버의 ContentManager 갱신 요청!
 	RefreshOrderToCnServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GS_CONTENT_MANAGER );
 
-	SiKProcessCommunicationManager()->QueueingProcessWrite(x2::str(x2::wformat(L"%1%_%2%") % 0 %L"ContentManager 클래스 스크립트 실시간 패치!"));
 
 }
 //}}
@@ -503,7 +475,6 @@ void KGSScriptRefreshManager::BattleFieldManager_LUA()
 	// 게임서버의 Battle Field Manager 갱신 요청!
 	RefreshOrderToCnServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GS_BATTLE_FIELD_MANAGER );
 
-	SiKProcessCommunicationManager()->QueueingProcessWrite(x2::str(x2::wformat(L"%1%_%2%") % 0 %L"BattleFieldManager 클래스 스크립트 실시간 패치!"));
 
 }
 
@@ -519,7 +490,6 @@ void KGSScriptRefreshManager::AutoPartyScriptManager_LUA()
 	RefreshOrderToCnServerBroadCast( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_CN_AUTO_PARTY_SCRIPT_MANAGER );
 	//}}
 
-	SiKProcessCommunicationManager()->QueueingProcessWrite(x2::str(x2::wformat(L"%1%_%2%") % 0 %L"AutoPartyScriptManager 클래스 스크립트 실시간 패치!"));
 
 }
 
@@ -533,7 +503,6 @@ void KGSScriptRefreshManager::PartyManager_LUA()
 	// 게임서버의 Party Manager 갱신 요청!
 	RefreshOrderToCnServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GS_PARTY_MANAGER );
 
-	SiKProcessCommunicationManager()->QueueingProcessWrite(x2::str(x2::wformat(L"%1%_%2%") % 0 %L"PartyManager 클래스 스크립트 실시간 패치!"));
 
 }
 //}}
@@ -546,7 +515,6 @@ void KGSScriptRefreshManager::BadAttitudeTable_LUA()
 	// 센터서버의 BadAttitudeTable 갱신 요청!
 	RefreshOrderToCnServerBroadCast( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_CN_BAD_ATTITUDE_TABLE );
 
-	SiKProcessCommunicationManager()->QueueingProcessWrite(x2::str(x2::wformat(L"%1%_%2%") % 0 %L"BadAttitudeTable 클래스 스크립트 실시간 패치!"));
 
 }
 //}
@@ -669,7 +637,6 @@ void KGSScriptRefreshManager::CompanyIPTable_LUA()
 	// 게임서버의 TitleManager 갱신 요청!
 	RefreshOrderToCnServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GS_COMPANY_IP_TABLE );
 
-	SiKProcessCommunicationManager()->QueueingProcessWrite(x2::str(x2::wformat(L"%1%_%2%") % 0 %L"CompanyIPTable 클래스 스크립트 실시간 패치!"));
 
 }
 //}}
@@ -682,7 +649,6 @@ void KGSScriptRefreshManager::ClassChangeTable_LUA()
 	// 게임서버의 TitleManager 갱신 요청!
 	RefreshOrderToCnServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GS_CLASS_CHANGE_TABLE );
 
-	SiKProcessCommunicationManager()->QueueingProcessWrite(x2::str(x2::wformat(L"%1%_%2%") % 0 %L"ClassChangeTable 클래스 스크립트 실시간 패치!"));
 
 }
 //}}
@@ -695,7 +661,6 @@ void KGSScriptRefreshManager::StringFilter_LUA()
 	// 게임서버의 String Fitler 갱신 요청!
 	RefreshOrderToCnServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GS_STRING_FILTER );
 
-	SiKProcessCommunicationManager()->QueueingProcessWrite(x2::str(x2::wformat(L"%1%_%2%") % 0 %L"StringFitler 클래스 스크립트 실시간 패치!"));
 
 }
 //}}
@@ -707,7 +672,6 @@ void KGSScriptRefreshManager::WorldMissionManager_IncreaseCrystalCount_LUA( int 
 
 	KncSend( PI_GS_SERVER, GetUID(), PI_GLOBAL_SERVER, 0, NULL, EGB_INCREASE_THE_PROTECTED_CRYSTAL_COUNT_NOT, iIncreaseCrystalNum );
 
-	SiKProcessCommunicationManager()->QueueingProcessWrite(x2::str(x2::wformat(L"%1%_%2%") % 0 %L"WorldMissionManager 보호된 수정의 개수 증가를 요청합니다."));
 
 }
 
@@ -717,7 +681,6 @@ void KGSScriptRefreshManager::WorldMissionManager_ResetIncreaseCrystalCount_LUA(
 
 	KncSend( PI_GS_SERVER, GetUID(), PI_GLOBAL_SERVER, 0, NULL, EGB_RESET_INCREASE_THE_PROTECTED_CRYSTAL_COUNT_NOT, char() );
 
-	SiKProcessCommunicationManager()->QueueingProcessWrite(x2::str(x2::wformat(L"%1%_%2%") % 0 %L"WorldMissionManager 보호된 수정의 개수 초기화를 요청합니다."));
 
 }
 //}}
@@ -748,7 +711,6 @@ void KGSScriptRefreshManager::LogManager_LUA()
 	// 글로벌서버의 KLogManager 갱신 요청!
 	RefreshOrderToGBServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GB_LOG_MANAGER );
 
-	SiKProcessCommunicationManager()->QueueingProcessWrite(x2::str(x2::wformat(L"%1%_%2%") % 0 %L"KLogManager 클래스 스크립트 실시간 패치!"));
 }
 //}}
 

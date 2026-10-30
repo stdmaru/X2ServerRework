@@ -613,6 +613,10 @@ _IMPL_ON_FUNC( EPM_LEAVE_PARTY_NOT, KEGS_LEAVE_PARTY_NOT )
 
 IMPL_ON_FUNC( EGS_PARTY_CHANGE_READY_REQ )
 {
+	// Port: hoisted above the gotos to end_proc (MSVC let goto skip their initialization)
+	int iDungeonID = 0;
+	char cDifficultyLevel = 0;
+	char cDungeonMode = 0;
 	VERIFY_STATE( (2, KGSFSM::S_ROOM, KGSFSM::S_FIELD_MAP) );
 
 	KEGS_PARTY_CHANGE_READY_ACK kAck;
@@ -630,9 +634,6 @@ IMPL_ON_FUNC( EGS_PARTY_CHANGE_READY_REQ )
 		goto end_proc;
 	}
 
-	int iDungeonID = 0;
-	char cDifficultyLevel = 0;
-	char cDungeonMode = 0;
 
 	//파티의 던전정보를 찾아서..
 	if( SiKPartyListManager()->GetDungeonInfo( GetPartyUID(), iDungeonID, cDifficultyLevel, cDungeonMode ) == false )
