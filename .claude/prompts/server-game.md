@@ -17,6 +17,22 @@ Plano:
    `archlinux`, branch `build/ci`) para o mesmo ambiente Ubuntu (de preferência a mesma imagem). Registre a decisão em `decisoes.md`
    (T24), atualize `docs/ferramentas/ci.md`, o AGENTS.md (Comandos) e a T18 se o MinGW mudar. Integre só quando o usuário pedir.
    O `server/game-build` depois parte da `main` com isso (rebase).
+
+   **Levantamento já feito (2026-10-30)**, com a `main` num container `ubuntu:26.04` (26.04.1 LTS: GCC 15.2, Clang 21.1, CMake 4.2.3,
+   MinGW-w64 13 com GCC 13.2, Wine 10.0, LuaJIT `2.1.1761786044` do fork OpenResty):
+   - GCC Debug e Clang Release: 0 erro, 0 warning, 6/6 testes (o 7º do Arch é a suíte `db`, que só existe com `X2_TEST_ODBC`).
+   - GCC Release: 12 `-Wmaybe-uninitialized` em `KTCInfo::m_wstrUDPRelayIP`, só em `src/server/Common/tests/packet_test.h`
+     (`CheckRoundTrip` de `KERM_OPEN_TC_ROOM_REQ` e `KEGS_CREATE_TC_ROOM_ACK`, que têm `T in{}`): falso positivo do GCC 15 com `std::wstring` no `-O2`
+     (o GCC 16 não acusa). Tratar nos testes gerados (`tools/port/gen_packet_tests.py`), sem `-Wno` global.
+   - MinGW: o padrão do Ubuntu é a variante `win32`; o `-posix` (winpthreads, como no Arch) precisa de `update-alternatives` na imagem
+     ou de `X2_MINGW_TRIPLE`/compilador `-posix` no toolchain. Com GCC 13 os `.obj` dos pacotes (`ServerPacket.cpp`, `test_packets_*.cpp`)
+     estouram o limite de seções do COFF ("file too big"): pôr `-Wa,-mbig-obj` no MinGW (e `/bigobj` no MSVC) em `cmake/X2Compiler.cmake`.
+     Com `-posix` + `-Wa,-mbig-obj`: 0 erro, 0 warning, 6/6 no Wine.
+   - LuaJIT: o pacote do Ubuntu é o fork OpenResty, não o upstream fixado na T21. Decidir: compilar o upstream fixo também no Linux
+     (a receita do CMake da T21 já existe, falta uma opção para forçá-la) ou aceitar o pacote.
+   - Wine em container: `WINEPREFIX` num diretório do usuário do container (`/root/.wine`) e `wineboot --init` antes do ctest.
+   - Scripts do teste: `docker run -i ubuntu:26.04` com `git archive main` no stdin (o `_reference`, o `_client` e o `_database` ficam de fora).
+   - O CI atual (`build/ci`, container `archlinux`) passou em GCC Debug/Release, Clang e checks; o MinGW só falhou no prefixo do Wine (corrigido).
 1. `server/game-build` (este): `src/server/GameServer/CMakeLists.txt` (executável `x2_game_server`, `OUTPUT_NAME GameServer`, `main.cpp`
    chamando `KServerMain` como o ChannelServer; os hooks `g_szConfigFile`/`CreateDBThread` vêm do `GameServer.cpp`), passada mecânica,
    correção dos erros e zero warnings em GCC Debug/Release, Clang e MinGW. Remover as chamadas de anti-cheat (HackShield, nProtect,
