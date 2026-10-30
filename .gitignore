@@ -1,7 +1,4 @@
-_client
-_server
-_reference
-_tools
+_*
 
 # build
 /build/
