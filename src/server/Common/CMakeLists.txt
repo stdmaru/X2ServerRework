@@ -21,7 +21,7 @@ set_source_files_properties(
 add_library(x2::server_common ALIAS x2_server_common)
 
 target_include_directories(x2_server_common PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(x2_server_common PUBLIC x2::kncsdk x2::kncsdk_lua x2::platform x2::odbc PRIVATE ZLIB::ZLIB)
+target_link_libraries(x2_server_common PUBLIC x2::kncsdk x2::kncsdk_lua x2::platform x2::odbc ZLIB::ZLIB)  # Socket/KTDNUDP.h includes zlib.h
 
 if(X2_BUILD_TESTS)
     add_subdirectory(tests)

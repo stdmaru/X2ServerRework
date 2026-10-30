@@ -15,6 +15,11 @@ add_library(x2::options ALIAS x2_options)
 target_compile_definitions(x2_options INTERFACE
     X2_DEV_TOOLS=$<IF:$<BOOL:${X2_DEV_TOOLS}>,1,0>)
 
+# The original is a Unicode build: TCHAR, LPCTSTR and the Win32 A/W macros are the wide ones.
+if(WIN32)
+    target_compile_definitions(x2_options INTERFACE UNICODE _UNICODE)
+endif()
+
 if(MSVC)
     target_compile_options(x2_options INTERFACE /utf-8 /W4 /permissive- /Zc:__cplusplus)
     target_compile_definitions(x2_options INTERFACE NOMINMAX WIN32_LEAN_AND_MEAN _CRT_SECURE_NO_WARNINGS)

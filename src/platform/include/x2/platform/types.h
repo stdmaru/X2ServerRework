@@ -22,6 +22,14 @@
 // <windows.h> defines GetCurrentTime() as a macro, which breaks CTime::GetCurrentTime().
 #undef GetCurrentTime
 
+// The original included <windows.h> without WIN32_LEAN_AND_MEAN, which brings rpcndr.h (byte) and winsock.h
+// (u_char...). Same types as those headers, so including them later is fine.
+typedef unsigned char  byte;
+typedef unsigned char  u_char;
+typedef unsigned short u_short;
+typedef unsigned int   u_int;
+typedef unsigned long  u_long;
+
 #else
 
 typedef std::uint8_t   BYTE;

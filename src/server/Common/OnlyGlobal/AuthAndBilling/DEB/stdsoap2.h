@@ -644,6 +644,7 @@ A commercial use license is available from Genivia, Inc., contact@genivia.com
 #  define SOAP_GAI_STRERROR gai_strerrorA
 # else
 #  ifndef __BORLANDC__
+#   include "x2/platform/net.h" /* the original's <winsock.h> came through <windows.h> */
 /* # include <winsock2.h> */ /* Alternative: use winsock2 (not available with eVC), enable this line and comment out the line above */
 #  else
 #  endif
