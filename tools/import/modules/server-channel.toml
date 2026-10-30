@@ -1,0 +1,28 @@
+# KncWX2Server/ChannelServer: the channel server (server list, account login through DEB, hand-off to the GameServer).
+# Seeds: the ChannelServer/ files its Release_US project compiles. Common/ is already ported (src/server/Common):
+# includes into it are only listed in the report (include_scope).
+
+name = "server-channel"
+source_root = "KncWX2Server"
+# same search path as the vcxproj: ../Common;./
+include_dirs = ["ChannelServer", "Common"]
+flags = ["base", "server.generated", "server"]
+
+extern_dirs = ["src/kncsdk", "src/platform/include", "src/server/Common"]
+
+seed_filter = ["ChannelServer/*"]
+include_scope = ["ChannelServer/*"]
+
+exclude = [
+    # configs, DSNs and binaries of other countries/environments are not sources, listed for clarity
+    "*.dsn",
+]
+
+[[projects]]
+path = "ChannelServer/ChannelServer.vcxproj"
+config = "Release_US|Win32"
+
+# same relative position as in the original: sources include "../Common/x.h"
+[[map]]
+from = "ChannelServer"
+to = "src/server/ChannelServer"
