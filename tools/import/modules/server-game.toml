@@ -1,0 +1,28 @@
+# KncWX2Server/GameServer: the game server (fields, dungeons, PvP, items...).
+# Seeds: the GameServer/ files its Release_US project compiles. Common/ is already ported (src/server/Common).
+
+name = "server-game"
+source_root = "KncWX2Server"
+# same search path as the vcxproj: ..\Common;.\;..\CenterServer;.\X2Data
+include_dirs = ["GameServer", "Common", "CenterServer", "GameServer/X2Data"]
+flags = ["base", "server.generated", "server"]
+
+extern_dirs = ["src/kncsdk", "src/platform/include", "src/server/Common"]
+
+seed_filter = ["GameServer/*"]
+include_scope = ["GameServer/*"]
+
+exclude = [
+    # anti-cheat (decision T10): AhnLab HackShield, nProtect GameGuard; XTrap is outside KncWX2Server
+    "GameServer/HackShield/*",
+    "GameServer/nProtect/*",
+    "*.dsn",
+]
+
+[[projects]]
+path = "GameServer/GameServer.vcxproj"
+config = "Release_US|Win32"
+
+[[map]]
+from = "GameServer"
+to = "src/server/GameServer"

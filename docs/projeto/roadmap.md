@@ -55,7 +55,8 @@ Tarefas:
 - [x] `server-common` importado: 414 arquivos ([Servidor: Common](../porte/server-common.md)).
 - [x] `server-x2lib` importado: `X2Lib/X2UDPPacket.*` (structs UDP do cliente que o servidor compila), em `src/server/X2Lib` (2026-10-29).
 - [x] `server-channel` importado: 36 arquivos ([Servidor: ChannelServer](../porte/server-channel.md), 2026-10-30).
-- [ ] Importar os outros servidores (Login, Center, Game, Global).
+- [x] `server-game` importado: 298 arquivos ([Servidor: GameServer](../porte/server-game.md), 2026-10-30).
+- [ ] Importar os outros servidores (Login, Center, Global).
 
 ## Fase 1 — Bibliotecas
 
@@ -92,6 +93,8 @@ Ver [Servidor — acoplamento com Windows](../original/servidor.md).
 - [x] `server/channel-build`: ChannelServer compilando sem warnings (GCC, Clang, MinGW), `main` sem MFC (`KServerMain`), 2026-10-30. Ver [Servidor: ChannelServer](../porte/server-channel.md).
 - [x] EPublisherServer: reimplementação do AuthServer do DEB (T23), testada com o cliente gSOAP dos servidores e contra o banco (2026-10-30). Ver [Servidor: EPublisherServer](../porte/server-epublisher.md).
 - [x] `server/channel-run`: ChannelServer no Linux com o `elsword.exe` original até o fim do login no canal (2026-10-30): login pelo EPublisherServer, listas de grupos de servidores e de canais recebidas; o cliente então tenta o GameServer (porta 9300), que ainda não existe, e mostra "O servidor está cheio". Pasta `run/` pelo CMake (T22).
+- [ ] `server/game-build`: GameServer compilando sem warnings (GCC, Clang, MinGW).
+- [ ] `server/game-run`: cliente original da seleção de personagem até a vila (pede parte do Login/Center/GlobalServer).
 - [ ] UI MFC (`Common/ui/ServerUIDlg`) → terminal em todas as plataformas (T15): log ao vivo, prompt Lua com histórico, título com status, encerramento com confirmação, modo serviço sem stdin.
 - [ ] Log (T16): metadados estruturados no `START_LOG`; arquivo com o conteúdo completo do original, console compacto e colorido com nível próprio.
 - [ ] (Futuro) `--gui` portável sobre a mesma API de comandos/log.
