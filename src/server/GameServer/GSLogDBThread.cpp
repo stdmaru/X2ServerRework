@@ -868,7 +868,7 @@ typedef KUserStatistics US;
 IMPL_ON_FUNC( ELOG_USER_STATISTICS )
 {
 	int iOK = NetError::ERR_ODBC_01;
-	int iOK_2 = NetError::ERR_ODBC_01;
+	[[maybe_unused]] int iOK_2 = NetError::ERR_ODBC_01;
 
 	if( kPacket_.m_iUnitUID <= 0 )
 	{

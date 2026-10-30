@@ -13,7 +13,7 @@ class KClientScriptManager
 
 public:
 	KClientScriptManager();
-	~KClientScriptManager();
+	virtual ~KClientScriptManager();
 
 	bool LoadClientScript( IN const char* pFileName, IN int iScriptEnum );
 	bool GetClientScriptInfo( IN int iScriptEnum, OUT std::wstring& wstrScriptInfo );

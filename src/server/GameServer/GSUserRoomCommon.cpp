@@ -30,7 +30,6 @@
 
 
 //////////////////////////////////////////////////////////////////////////
-#pragma NOTE( "The GSUserHandler.cpp file compiles successfully!" )
 //////////////////////////////////////////////////////////////////////////
 
 #define CLASS_TYPE      KGSUser
@@ -1700,7 +1699,7 @@ IMPL_ON_FUNC( ERM_NPC_UNIT_DIE_NOT )
 	else if( _CONST_SECOND_CLASS_WORLD_WAR_EVENT::bWorldWarEventForElesis1stClass == true )
 	{
 		if( CXSLUnit::IsFirstChangeJob( static_cast<CXSLUnit::UNIT_CLASS>(GetUnitClass()) ) == true &&
-			static_cast<CXSLUnit::UNIT_CLASS>( GetUnitType() ) == CXSLUnit::UT_ELESIS &&
+			static_cast<int>( GetUnitType() ) == static_cast<int>( CXSLUnit::UT_ELESIS ) && // Port: was cast to UNIT_CLASS and compared with a UNIT_TYPE
 			GetLevel() >= 35 )
 		{
 			bSecondChangeJob = true;

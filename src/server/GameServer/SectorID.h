@@ -5,9 +5,9 @@
 #include "x2/platform/types.h" // __int32
 
 #define MAX_SECTOR	255
-#define INVALID_SECTOR 0xffffffff
 
 typedef	__int32	SectorID;
+#define INVALID_SECTOR static_cast<SectorID>( -1 )	// Port: was 0xffffffff, which became -1 in every SectorID it met
 typedef std::shared_ptr< std::vector< SectorID > > SectorsPtr;
 
 /*    32 bit ( 4 byte )

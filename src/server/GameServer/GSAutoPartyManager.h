@@ -25,7 +25,7 @@ class KGSAutoPartyManager
 
 public:
     KGSAutoPartyManager();
-    ~KGSAutoPartyManager();
+    virtual ~KGSAutoPartyManager();
 
 	void	UpdateAutoPartyBonusInfo( IN const int iDungeonMode, IN const int iDungeonID, IN const bool bActivatedBonus );
 	__int64	GetUpdateTick() const				{ return m_iUpdateTick; }

@@ -35,6 +35,7 @@ protected:
 	//}}
     DECL_ON_FUNC_NOPARAM( E_RESERVE_DESTROY );
 
+    using KPerformer::RoutePacket;  // keeps the base overload visible (-Woverloaded-virtual)
     bool RoutePacket( const KEventPtr& spEvent );
 	void ProcbyNotExistUser( const KEventPtr& spEvent, std::vector<UidType>& vecUID );
 

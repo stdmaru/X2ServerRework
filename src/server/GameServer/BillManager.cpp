@@ -302,7 +302,7 @@ void KBillManager::CheckProductInfo()
 					kPacketNot.m_bEventStart = true;
 
 					KEvent kEvent2;
-					UidType anTrace[2] = { -1, -1 };
+					[[maybe_unused]] UidType anTrace[2] = { -1, -1 };
 					kEvent2.SetData( PI_GS_PROXY, NULL, EGS_BONUS_CASH_EVENT_NOT, kPacketNot );
 					KActorManager::GetKObj()->SendToAll( kEvent2 );
 
@@ -317,7 +317,7 @@ void KBillManager::CheckProductInfo()
 					kPacketNot.m_bEventStart = false;
 
 					KEvent kEvent2;
-					UidType anTrace[2] = { -1, -1 };
+					[[maybe_unused]] UidType anTrace[2] = { -1, -1 };
 					kEvent2.SetData( PI_GS_PROXY, NULL, EGS_BONUS_CASH_EVENT_NOT, kPacketNot );
 					KActorManager::GetKObj()->SendToAll( kEvent2 );
 
@@ -491,7 +491,7 @@ IMPL_ON_FUNC( EBILL_CHECK_PRODUCT_INFO_ACK )
 		}
 		SetReleaseTick(CSRTT_BONUS_EVENT, kPacket_.m_mapReleaseTick );
 		KEvent kEvent2;
-		UidType anTrace[2] = { -1, -1 };
+		[[maybe_unused]] UidType anTrace[2] = { -1, -1 };
 		kEvent2.SetData( PI_GS_PROXY, NULL, EGS_BONUS_CASH_EVENT_NOT, kPacketNot );
 		KActorManager::GetKObj()->SendToAll( kEvent2 );
 
@@ -514,7 +514,7 @@ IMPL_ON_FUNC( EBILL_CHECK_PRODUCT_INFO_ACK )
 
 	// 클라이언트에 상품 정보를 다시 다 받으라고 알린다.
 	KEvent kEvent;
-	UidType anTrace[2] = { -1, -1 };
+	[[maybe_unused]] UidType anTrace[2] = { -1, -1 };
 	kEvent.SetData( PI_GS_PROXY, NULL, EGS_CASH_PRODUCT_INFO_CHANGED_NOT );
 	KActorManager::GetKObj()->SendToAll( kEvent );
 }

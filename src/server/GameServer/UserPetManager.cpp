@@ -1314,7 +1314,7 @@ int KUserPetManager::GetExistPetNum( void )
 bool KUserPetManager::GetExpirePetUID( OUT std::vector<UidType>& vecPetUID )
 {
 	vecPetUID.clear();
-	for( const KUserPetPtr spInfo : m_vecPetList )
+	for( const KUserPetPtr& spInfo : m_vecPetList )
 	{
 		if( spInfo->IsExpirePet() == true )
 		{

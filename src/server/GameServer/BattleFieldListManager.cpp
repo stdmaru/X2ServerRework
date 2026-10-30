@@ -98,7 +98,7 @@ void KBattleFieldListManager::DeleteBattleFieldRoomInfo( IN const KBattleFieldRo
 //{{ 2012. 11. 20	최육사		배틀필드 방 정리 기능 추가
 void KBattleFieldListManager::DeleteBattleFieldRoomInfo( IN const UidType iCnServerUID )
 {
-	int nDelCount = 0;
+	[[maybe_unused]] int nDelCount = 0;
 
 	std::map< int, KBattleFieldListPtr >::iterator mit;
 	for( mit = m_mapBattleFieldList.begin(); mit != m_mapBattleFieldList.end(); ++mit )

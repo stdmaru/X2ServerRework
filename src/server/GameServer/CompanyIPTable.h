@@ -19,7 +19,7 @@ class KCompanyIPTable
 
 public:
 	KCompanyIPTable(void);
-	~KCompanyIPTable(void);
+	virtual ~KCompanyIPTable(void);
 
 	// for lua
 	bool AddCompanyIP_LUA( const char* szAddIP );

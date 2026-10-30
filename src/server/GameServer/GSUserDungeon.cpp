@@ -37,7 +37,6 @@
 
 
 //////////////////////////////////////////////////////////////////////////
-#pragma NOTE( "The GSUserHandler.cpp file compiles successfully!" )
 //////////////////////////////////////////////////////////////////////////
 
 #define CLASS_TYPE      KGSUser
@@ -351,7 +350,7 @@ _IMPL_ON_FUNC( ERM_END_GAME_DUNGEON_RESULT_DATA_NOT, KEGS_END_GAME_DUNGEON_RESUL
 	//{{ 버프 관리 시스템 - 김민성
 	{
 		bool bRefreshBuff = false;		// 버프 갱신 해야하는가?
-		int iBuffID = CXSLBuffManager::BTI_NONE;
+		[[maybe_unused]] int iBuffID = CXSLBuffManager::BTI_NONE;
 		std::vector<KBuffInfo> vecActiveBuff;
 		std::vector<int> vecDeleteBuff;
 		std::vector<int> vecDeactiveBuff;
@@ -636,7 +635,8 @@ IMPL_ON_FUNC( ERM_UPDATE_DUNGEON_UNIT_INFO_NOT )
 								//}}
 							}
 						}
-						// 의도적으로 break를 쓰지 않았습니다.
+						// intentionally no break (original comment)
+						[[fallthrough]];
 
 					case CXSLDungeon::DL_HARD:
 						{
@@ -659,7 +659,8 @@ IMPL_ON_FUNC( ERM_UPDATE_DUNGEON_UNIT_INFO_NOT )
 								//}}
 							}
 						}
-						// 의도적으로 break를 쓰지 않았습니다.
+						// intentionally no break (original comment)
+						[[fallthrough]];
 
 					case CXSLDungeon::DL_NORMAL:
 						{

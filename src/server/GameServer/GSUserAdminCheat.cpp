@@ -449,7 +449,7 @@ IMPL_ON_FUNC( EGS_ADMIN_CHANGE_SKILL_POINT_REQ )
 
 		for ( UINT i = 0; i < vecSkillPageData.size(); i++ )
 		{
-			if ( i == kPacket_.m_iActiveSkillPageNumber )
+			if ( i == static_cast<UINT>( kPacket_.m_iActiveSkillPageNumber ) )
 			{
 				int iSPointChange = kPacket_.m_iSPoint - vecSkillPageData[i].m_iSPoint.GetInitValue();
 				vecSkillPageData[i].m_iSPoint.SetValue( vecSkillPageData[i].m_iSPoint.GetInitValue() );
@@ -1272,7 +1272,7 @@ IMPL_ON_FUNC( EGS_ADMIN_GET_SKILL_REQ )
 		return;
 	}
 
-	bool bUnsealed = false;
+	[[maybe_unused]] bool bUnsealed = false;
 	if( pSkillTemplet->m_bBornSealed == true && m_kSkillTree.IsSkillUnsealed( kPacket_.m_iSkillID ) == false )
 	{
 		bUnsealed = true;

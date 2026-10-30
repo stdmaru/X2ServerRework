@@ -58,7 +58,7 @@ public:
 
 public:
 	KRewardTable(void);
-	~KRewardTable(void);
+	virtual ~KRewardTable(void);
 
 	// for lua
 	bool AddRewardData_LUA( int iRewardID, int iItemID, int iQuantity, short sPeriod );

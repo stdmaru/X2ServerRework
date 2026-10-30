@@ -45,7 +45,7 @@ public:
 	//}}
 
 public:
-	~KTutorialManager(void);
+	virtual ~KTutorialManager(void);
 
 	bool	IsExistbylist( UidType iUnitUID );
 

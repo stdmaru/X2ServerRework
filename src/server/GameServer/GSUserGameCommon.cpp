@@ -3832,7 +3832,7 @@ IMPL_ON_FUNC( EGS_INIT_SKILL_TREE_REQ )
 		return;
 	}
 
-	const int DEFAULT_SKILL_SP = 0;	// 기본 스킬은 공짜
+	[[maybe_unused]] const int DEFAULT_SKILL_SP = 0;	// 기본 스킬은 공짜
 	int iRetrievedSPoint = 0 ;	// 돌려받을 SP
 	int iRetrievedCSPoint = 0;	// 돌려받을 CSP
 

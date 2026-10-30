@@ -1280,7 +1280,6 @@ IMPL_ON_FUNC( EBILL_BUY_PRODUCT_REQ )
 			kOrderInfo.m_iTransNo					= iTrans;
 			kOrderInfo.m_wstrOrderID				= kBillBuyInfo.m_wstrOrderID;
 			kOrderInfo.m_kBillProductInfo.m_iProductNo = kBillBuyInfo.m_iProductNo;
-			kOrderInfo.m_vecSocketOption;
 			kOrderInfo.m_byteType					= KBillOrderInfo::BCIT_BUY_ITEM;
 			kOrderInfo.m_wstrSenderNickName			= L"";
 			kOrderInfo.m_wstrSenderPresentMessage	= L"";
@@ -1523,7 +1522,6 @@ IMPL_ON_FUNC( EBILL_GIFT_ITEM_REQ )
 			kOrderInfo.m_iTransNo					= iTrans;
 			kOrderInfo.m_wstrOrderID				= kBillBuyInfo.m_wstrOrderID;
 			kOrderInfo.m_kBillProductInfo.m_iProductNo = kBillBuyInfo.m_iProductNo;
-			kOrderInfo.m_vecSocketOption;
 			kOrderInfo.m_byteType					= KBillOrderInfo::BCIT_GIFT;
 			kOrderInfo.m_wstrSenderNickName			= kPacket_.m_wstrSenderNickName;
 			kOrderInfo.m_wstrSenderPresentMessage	= kPacket_.m_wstrPresentMessage;

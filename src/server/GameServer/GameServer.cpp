@@ -588,7 +588,7 @@ void KGameServer::ServerVersion()
 
 void KGameServer::WriteServerInfoToDB()
 {
-	CTime tCurrentTime = CTime::GetCurrentTime();
+	[[maybe_unused]] CTime tCurrentTime = CTime::GetCurrentTime();
 
 	// 로그인서버에서 동접 정보 집계하도록 보낸다.
 	KELG_UPDATE_CCU_INFO_NOT kNot;

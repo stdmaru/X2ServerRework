@@ -434,7 +434,7 @@ bool KGSGameDBThread::Query_SelectUnit( IN const UidType iUserUID, IN const KEGS
 	bool bIsEquippedTitle = false;
 	const int iEQUIPPED_SKILL_SLOT_COUNT = 4;
 	bool bConductedOnceAtLeast = false;
-	int iTutorialFlag = -1;
+	[[maybe_unused]] int iTutorialFlag = -1;
 	int iEventUID = 0;
 	int iPeriod = 0;
 	kAck.m_kUnitInfo.Init();
@@ -1640,8 +1640,8 @@ bool KGSGameDBThread::Query_SelectUnit( IN const UidType iUserUID, IN const KEGS
 			m_kODBC.EndFetch();
 		}
 
-		if( kAck.m_kUnitInfo.m_kUserGuildInfo.m_ucMemberShipGrade == -1  ||
-			kAck.m_kUnitInfo.m_kUserGuildInfo.m_iHonorPoint == -1 )
+		// Port: the original also tested m_ucMemberShipGrade == -1, always false for a u_char (in MSVC too): dropped
+		if( kAck.m_kUnitInfo.m_kUserGuildInfo.m_iHonorPoint == -1 )
 		{
 			START_LOG( cerr, L"길드원 등급 및 명예 포인트 정보 얻기 실패!" )
 				<< BUILD_LOG( kReq.m_iUnitUID )
@@ -3175,7 +3175,9 @@ bool KGSGameDBThread::Query_GetGuildMemberGrade( IN UidType iUnitUID, OUT u_char
 		m_kODBC.EndFetch();
 	}
 
-	if( ucGuildMemberGrade == -1 )
+	// Port: the original tested ucGuildMemberGrade == -1, always false for a u_char (in MSVC too), so this branch never
+	// ran; kept that way (docs/porte/server-game.md, Pendências)
+	if( false )
 	{
 		START_LOG( cwarn, L"길드원 등급 정보가 존재하지 않음." )
 			<< BUILD_LOG( iUnitUID )
@@ -5645,7 +5647,7 @@ _IMPL_ON_FUNC( DBE_GAME_DELETE_UNIT_REQ, KEGS_DELETE_UNIT_REQ )
 
 	if(kPacket.m_wstrNickName.length() != 0)
 	{
-		if(kPacket.m_wstrNickName.find(L"_") != -1)
+		if(kPacket.m_wstrNickName.find(L"_") != std::wstring::npos)
 		{
 			kPacket.m_iOK = NetError::ERR_DELETE_UNIT_05;
 			goto end_proc;
@@ -10151,7 +10153,7 @@ _IMPL_ON_FUNC( DBE_INVITE_GUILD_NICKNAME_CHECK_REQ, KELG_INVITE_GUILD_ACK )
 {
 	// Port: hoisted above the gotos to end_proc (MSVC let goto skip their initialization)
 	UidType iUnitUID = 0;
-	int iOK = NetError::ERR_ODBC_01;
+	[[maybe_unused]] int iOK = NetError::ERR_ODBC_01;
 	DO_QUERY( L"exec dbo.gup_get_unit_uid", L"N\'%s\'", % kPacket_.m_wstrReceiverNickName );
 	if( m_kODBC.BeginFetch() )
 	{
@@ -13753,10 +13755,10 @@ bool KGSGameDBThread::Quety_WeddingLetter( IN UidType iSendUserUID, IN KDBE_WEDD
 
 	std::wstring wstReserveTemp;
 
-	char cPostTypeInvitation = KPostItemInfo::LT_WEDDING_INVITATION;
-	int iPostInvitationItem = CXSLItem::SI_WEDDING_INVITATION_ITEM;
+	[[maybe_unused]] char cPostTypeInvitation = KPostItemInfo::LT_WEDDING_INVITATION;
+	[[maybe_unused]] int iPostInvitationItem = CXSLItem::SI_WEDDING_INVITATION_ITEM;
 
-	int	iPostNo = 0;
+	[[maybe_unused]] int	iPostNo = 0;
 	//////////////////////////////////////////////////////////////////////////
 	// 신랑
 	{

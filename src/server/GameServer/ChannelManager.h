@@ -31,7 +31,7 @@ private:
 
 public:
 	KChannelManager();
-	~KChannelManager();
+	virtual ~KChannelManager();
 
 	void Tick();
 

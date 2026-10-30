@@ -1787,7 +1787,7 @@ _IMPL_ON_FUNC( ERM_LEAVE_WEDDING_HALL_ACK, KEGS_LEAVE_ROOM_ACK )
 		return;
 	}
 
-	KEGS_LEAVE_WEDDING_HALL_ACK kPacket;
+	[[maybe_unused]] KEGS_LEAVE_WEDDING_HALL_ACK kPacket;
 	kPacket.m_iOK = kPacket_.m_iOK;
 	SendPacket( EGS_LEAVE_WEDDING_HALL_ACK, kPacket_ );
 }

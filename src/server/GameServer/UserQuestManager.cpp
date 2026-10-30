@@ -4276,7 +4276,7 @@ bool KUserQuestManager::CheckIsGoingComplete( IN const int iQuestID, IN KGSUserP
 	return true;
 }
 
-void KUserQuestManager::CountUseItem( IN KGSUserPtr spUser, IN const int iDungeonID, IN const char cDifficulty, IN const int iItemID )
+void KUserQuestManager::CountUseItem( IN KGSUserPtr spUser, IN const int /*iDungeonID*/, IN const char /*cDifficulty*/, IN const int iItemID )
 {
 	SET_ERROR( NET_OK );
 
@@ -4470,7 +4470,7 @@ void KUserQuestManager::SetClassChangeQuest( IN UidType iUnitUID, IN std::map< i
 {
 	std::map< int, KCompleteQuestInfo >::iterator mitMyComplete;
 	std::map< int, KQuestInstance >::iterator mitMyInProgress;
-	CTime tCurr = CTime::GetCurrentTime();
+	[[maybe_unused]] CTime tCurr = CTime::GetCurrentTime();
 
 
 	// 완료된 퀘스트 변환
@@ -4593,7 +4593,7 @@ void KUserQuestManager::SetClassChangeDeleteQuest( IN UidType iUnitUID, IN std::
 	}
 }
 
-void KUserQuestManager::GetClassChangeDeleteQuest( IN char cDownUnitClass, OUT std::vector< int >& vecCompleteDelete, OUT std::vector< int >& vecInProgressDelete )
+void KUserQuestManager::GetClassChangeDeleteQuest( IN char cDownUnitClass, OUT std::vector< int >& vecCompleteDelete, OUT std::vector< int >& /*vecInProgressDelete*/ )
 {
 	// 완료된 퀘스트에서 삭제 할(전직 퀘스트) 찾자
 	std::map< int, KCompleteQuestInfo >::iterator mitComplete = m_mapCompleteQuest.begin();
@@ -5138,7 +5138,7 @@ bool KUserQuestManager::CheckCompleteSubQuest_BeforGroup( IN int iQuestID, IN in
 		{
 			for( const int iSub : mitGroup->second )
 			{
-				for( const KSubQuestInstance SubQuest : kQuestInstance.m_vecSubQuestInstance )
+				for( const KSubQuestInstance& SubQuest : kQuestInstance.m_vecSubQuestInstance )
 				{
 					if( SubQuest.m_iID == iSub )
 					{

@@ -1112,6 +1112,7 @@ DECL_DATA( KBuffIdentity )
 		: m_eBuffTempletID( rhs_.m_eBuffTempletID ), m_uiUniqueNum( rhs_.m_uiUniqueNum )
 	{
 	}
+	KBuffIdentity& operator=( const KBuffIdentity& ) = default;	// the implicit one, declared (-Wdeprecated-copy)
 
 	bool operator==( const KBuffIdentity& rhs_ ) const
 	{
@@ -1140,12 +1141,15 @@ DECL_DATA( KBuffFactor )
 	{
 	}
 
-	KBuffFactor( const KBuffFactor& rhs_ ) : m_BuffIdentity( rhs_.m_BuffIdentity ),
-		m_fAccumulationMultiplier( rhs_.m_fAccumulationMultiplier ), m_ucAccumulationCountNow( rhs_.m_ucAccumulationCountNow ), m_iFactorID( rhs_.m_iFactorID )
+	// Port: the original left m_uidMesGameUnit and m_bIsMesGameUnitNpc uninitialized in copies (assignment copied them)
+	KBuffFactor( const KBuffFactor& rhs_ ) : m_BuffIdentity( rhs_.m_BuffIdentity ), m_uidMesGameUnit( rhs_.m_uidMesGameUnit ),
+		m_fAccumulationMultiplier( rhs_.m_fAccumulationMultiplier ), m_ucAccumulationCountNow( rhs_.m_ucAccumulationCountNow ),
+		m_bIsMesGameUnitNpc( rhs_.m_bIsMesGameUnitNpc ), m_iFactorID( rhs_.m_iFactorID )
 	{
 		m_vecBuffBehaviorFactors = rhs_.m_vecBuffBehaviorFactors;
 		m_vecBuffFinalizerFactors = rhs_.m_vecBuffFinalizerFactors;
 	}
+	KBuffFactor& operator=( const KBuffFactor& ) = default;	// the implicit one, declared (-Wdeprecated-copy)
 };
 
 DECL_DATA( KBuffInfo )	// 버프 하나가 가지는 정보

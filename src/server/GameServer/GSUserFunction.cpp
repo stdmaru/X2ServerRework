@@ -108,7 +108,6 @@
 #include "Enum/Enum.h"
 
 //////////////////////////////////////////////////////////////////////////
-#pragma NOTE( "The GSUserFuntion.cpp file compiles successfully!" )
 //////////////////////////////////////////////////////////////////////////
 
 
@@ -1552,8 +1551,8 @@ void KGSUser::CheckTimeEvent()
 
 		// 접속 시간 이벤트 체크
 		//{{ 2012. 10. 13	박세훈	접속 이벤트 인자 정리
-		char cAPinkEventUserType	= 0;
-		int	iAPinkScriptID			= -1;
+		[[maybe_unused]] char cAPinkEventUserType	= 0;
+		[[maybe_unused]] int	iAPinkScriptID			= -1;
 
 		KGameEventManager::ConnectEventFactorSet kFactor(
 			GetCharUID(),
@@ -1730,12 +1729,12 @@ void KGSUser::CheckUpdateWorldMission()
 	SiKGSWorldMissionManager()->GetMissionInfo( kNot );
 
 	//{{ 버프 관리 시스템 - 김민성
-	CTime tCurr = CTime::GetCurrentTime();
+	[[maybe_unused]] CTime tCurr = CTime::GetCurrentTime();
 
 	KELG_UPDATE_USER_UNIT_BUFF_INFO_REQ kBuffReq;
 	kBuffReq.m_iUnitUID = GetCharUID();
-	int iWorldBuff = SiKGSWorldMissionManager()->GetWorldBuffState();
-	int iWorldBuffPriod = SiKGSWorldMissionManager()->GetWorldBuffEndTime();
+	[[maybe_unused]] int iWorldBuff = SiKGSWorldMissionManager()->GetWorldBuffState();
+	[[maybe_unused]] int iWorldBuffPriod = SiKGSWorldMissionManager()->GetWorldBuffEndTime();
 
 	//{{ 2013. 04. 15	박세훈	어둠의 문 개편
 	//}}
@@ -3135,7 +3134,7 @@ bool KGSUser::OnAccountSelectUnitAck( IN OUT KDBE_SELECT_UNIT_ACK& kAck_, IN boo
 	//////////////////////////////////////////////////////////////////////////
 	//획득 스킬리스트.
 	LIF( KUserSkillTree::MAX_SKILL_SLOT == 8 );
-	int aSkillSlot[KUserSkillTree::MAX_SKILL_SLOT];
+	[[maybe_unused]] int aSkillSlot[KUserSkillTree::MAX_SKILL_SLOT];
 	aSkillSlot[KUserSkillTree::SKILL_SLOT_A1] = (int)  kAck_.m_kUnitInfo.m_UnitSkillData.m_aEquippedSkill[0].m_iSkillID;
 	aSkillSlot[KUserSkillTree::SKILL_SLOT_A2] = (int)  kAck_.m_kUnitInfo.m_UnitSkillData.m_aEquippedSkill[1].m_iSkillID;
 	aSkillSlot[KUserSkillTree::SKILL_SLOT_A3] = (int)  kAck_.m_kUnitInfo.m_UnitSkillData.m_aEquippedSkill[2].m_iSkillID;
@@ -7404,7 +7403,7 @@ void KGSUser::CalculateDungeonUnitStat( IN bool bRevisionDungeon,
 										IN unsigned int uiHP_OnePoint,
 										IN unsigned int uiUnitLevel,
 										IN OUT KRoomUserInfo& kRoomUserInfo,
-										IN OUT KStatIncreaseRate& kStatIncreaseRateInfo )
+										IN OUT KStatIncreaseRate& /*kStatIncreaseRateInfo*/ )
 {
 	//{{ 2012. 04. 23	최육사	배틀필드 시스템
 	if( bRevisionDungeon == true )
@@ -7479,7 +7478,7 @@ void KGSUser::CalculateBattleFieldUnitStat( IN KStat& kModifiedBaseStatBySkill,
 											IN unsigned int uiHP_OnePoint,
 											IN unsigned int uiUnitLevel,
 											IN OUT KRoomUserInfo& kRoomUserInfo,
-											IN OUT KStatIncreaseRate& kStatIncreaseRateInfo )
+											IN OUT KStatIncreaseRate& /*kStatIncreaseRateInfo*/ )
 {
 	kRoomUserInfo.m_kGameStat = kModifiedBaseStatBySkill;
 
@@ -7522,7 +7521,7 @@ void KGSUser::CalculateTrainingCenterUnitStat( IN KStat& kModifiedBaseStatBySkil
 										   IN unsigned int uiHP_OnePoint,
 										   IN unsigned int uiUnitLevel,
 										   IN OUT KRoomUserInfo& kRoomUserInfo,
-										   IN OUT KStatIncreaseRate& kStatIncreaseRateInfo )
+										   IN OUT KStatIncreaseRate& /*kStatIncreaseRateInfo*/ )
 {
 	kRoomUserInfo.m_kGameStat = kModifiedBaseStatBySkill;
 
@@ -9076,7 +9075,7 @@ int KGSUser::OnPickUpAck( const KENX_BT_NISMS_INVENTORY_PICK_UP_ONCE_ACK& kPacke
 			}
 			//}}
 			//{{ 2011. 11. 21  김민성	전직 변경 아이템
-			int iUnitClass = 0;
+			[[maybe_unused]] int iUnitClass = 0;
 			if( CXSLItem::GetClassChangeCashItem( iItemID ) != CXSLUnit::UC_NONE )
 			{
 				KDBE_BUY_UNIT_CLASS_CHANGE_REQ kPacketToDB;
@@ -9506,7 +9505,7 @@ bool KGSUser::CheckIntegritySecondSecurityPW( IN const std::wstring& wstrSecondP
 			}
 		}
 
- 		if( iCheck == wstrSecondPW.size() )
+ 		if( static_cast<size_t>( iCheck ) == wstrSecondPW.size() )
 		{
 			START_LOG( clog, L"동일한 숫자를 비밀번호로 설정하려한다." )
 				<< BUILD_LOG( GetName() )
@@ -9539,7 +9538,7 @@ bool KGSUser::CheckIntegritySecondSecurityPW( IN const std::wstring& wstrSecondP
 			iFrontNum = iNextNum;
 		}
 
-		if( iCheck == wstrSecondPW.size() )
+		if( static_cast<size_t>( iCheck ) == wstrSecondPW.size() )
 		{
 			START_LOG( clog, L"연속된 숫자를 비밀번호로 설정하려한다." )
 				<< BUILD_LOG( GetName() )
@@ -9568,7 +9567,7 @@ bool KGSUser::CheckIntegritySecondSecurityPW( IN const std::wstring& wstrSecondP
 			iFrontNum = iNextNum;
 		}
 
-		if( iCheck == wstrSecondPW.size() )
+		if( static_cast<size_t>( iCheck ) == wstrSecondPW.size() )
 		{
 			START_LOG( clog, L"연속된 숫자를 비밀번호로 설정하려한다." )
 				<< BUILD_LOG( GetName() )
@@ -9716,7 +9715,7 @@ void KGSUser::CheckComeBackUser()
 {
 	if( m_kComeBackUserInfo.GetIsComeBackUser() == true )
 	{
-		CTime tComeBackBuffEnd = m_kComeBackUserInfo.GetComeBackBuffEnd();
+		[[maybe_unused]] CTime tComeBackBuffEnd = m_kComeBackUserInfo.GetComeBackBuffEnd();
 
 		if( m_kComeBackUserInfo.CheckComeBackBuffEnd() == true )
 		{
@@ -10150,7 +10149,7 @@ bool KGSUser::GetUnlimitedClassChangeInfo( IN int iNewClassID, OUT KDBE_BUY_UNIT
 	kPacketToDB.m_iOldUnitClass = static_cast<int>( GetUnitClass() );
 
 	// 레벨이 35보다 작거나 2차 전직이 아니거나 기존 유닛타입과 변경 후 유닛타입이 다르다면 에러
-	if( eNewUnitType == CXSLUnit::UC_NONE
+	if( static_cast<int>( eNewUnitType ) == static_cast<int>( CXSLUnit::UC_NONE ) // Port: UNIT_TYPE vs UNIT_CLASS value, as in the original
 		|| GetLevel() < 35
 		|| bValidSecondChangeJob == false
 		|| eOldUnitType != eNewUnitType )

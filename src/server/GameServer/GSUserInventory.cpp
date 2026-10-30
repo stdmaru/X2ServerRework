@@ -681,8 +681,8 @@ IMPL_ON_FUNC( EGS_CHANGE_INVENTORY_SLOT_ITEM_REQ )
 	kPacketSealReq.m_ucSealResult = 0;
 
 	// 이동되는 각 슬롯에 있는 아이템 UID얻기
-	const UidType iFromItemUID = m_kInventory.GetItemUID( kPacket_.m_cFromSlotType, kPacket_.m_iFromSlotID );
-	const UidType iToItemUID = m_kInventory.GetItemUID( kPacket_.m_cToSlotType, kPacket_.m_iToSlotID );
+	[[maybe_unused]] const UidType iFromItemUID = m_kInventory.GetItemUID( kPacket_.m_cFromSlotType, kPacket_.m_iFromSlotID );
+	[[maybe_unused]] const UidType iToItemUID = m_kInventory.GetItemUID( kPacket_.m_cToSlotType, kPacket_.m_iToSlotID );
 
 	if( m_kInventory.MoveItem( kPacket_.m_cFromSlotType, kPacket_.m_iFromSlotID, kPacket_.m_cToSlotType, kPacket_.m_iToSlotID, bCheckCoolTime, kPacket.m_vecInventorySlotInfo, kPacketSealReq, m_vecPersonalShopSell_ItemInfo ) == false )
 	{
@@ -1906,7 +1906,7 @@ IMPL_ON_FUNC( DBE_OPEN_RANDOM_ITEM_ACK )
 
 
 	std::map<int, RANDOMITEM_MAPPING_TIME>::iterator mitRITime = SiCXSLRandomItemManager()->m_mapRandomItemMappingTime.begin();
-	CTime tCurr = CTime::GetCurrentTime();
+	[[maybe_unused]] CTime tCurr = CTime::GetCurrentTime();
 
 	for(; mitRITime != SiCXSLRandomItemManager()->m_mapRandomItemMappingTime.end(); mitRITime++)
 	{
@@ -1917,8 +1917,8 @@ IMPL_ON_FUNC( DBE_OPEN_RANDOM_ITEM_ACK )
 		if(mitRIData == SiCXSLRandomItemManager()->m_mapRandomItemMappingData.end())
 			continue;
 
-		CTime tStartTime = mitRITime->second.tStartTime;
-		CTime tEndTime = mitRITime->second.tEndTime;
+		[[maybe_unused]] CTime tStartTime = mitRITime->second.tStartTime;
+		[[maybe_unused]] CTime tEndTime = mitRITime->second.tEndTime;
 
 		// 한번 오픈 관련 초기화 해주고, 시간되서 안에 들어가는 경우에 다시 해주자!
 		if(!SiCXSLRandomItemManager()->RestoreMapItemGroup(mitRIData->second))
@@ -5941,7 +5941,7 @@ IMPL_ON_FUNC( EGS_EVENT_PROPOSE_AGREE_NOT )
 	{
 		// 수락 한 경우
 		// 인벤토리에서 가상 결혼 신청서를 찾아 지워라
-		bool bFindItem = false;
+		[[maybe_unused]] bool bFindItem = false;
 
 		KInventoryItemInfo kResultItemInfo;
 		std::vector< UidType > vecItemUIDList;

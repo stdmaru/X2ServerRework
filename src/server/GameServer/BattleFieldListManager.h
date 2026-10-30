@@ -15,7 +15,7 @@ class KBattleFieldListManager
 
 public:
 	KBattleFieldListManager(void);
-	~KBattleFieldListManager(void);
+	virtual ~KBattleFieldListManager(void);
 
 	KBattleFieldListPtr GetBattleFieldRoomList( IN const int iBattleFieldID );
 	bool	IsExist( IN const int iBattleFieldID ) const		{ return ( m_mapBattleFieldList.find( iBattleFieldID ) != m_mapBattleFieldList.end() ); }

@@ -463,7 +463,7 @@ bool KPartyListManager::E_InvitePartyInSameField( IN KGSUserPtr spHost, IN KGSUs
 
 //////////////////////////////////////////////////////////////////////////
 // 다른 필드에서 초대와 함께 파티 생성 및 파티 초대자 체크
-bool KPartyListManager::E_CreatePartyFarFieldCheckHost(	IN KGSUserPtr spHost, IN const std::wstring& wstrReceiverNickName )
+bool KPartyListManager::E_CreatePartyFarFieldCheckHost(	IN KGSUserPtr spHost, IN const std::wstring& /*wstrReceiverNickName*/ )
 {
 	SET_ERROR( NET_OK );
 
@@ -505,7 +505,7 @@ bool KPartyListManager::E_CreatePartyFarFieldCheckHost(	IN KGSUserPtr spHost, IN
 
 //////////////////////////////////////////////////////////////////////////
 // 다른 필드에서 자신의 파티에 초대 및 파티 초대자 체크
-bool KPartyListManager::E_InvitePartyFarFieldCheckHost( IN KGSUserPtr spHost, IN const std::wstring& wstrReceiverNickName )
+bool KPartyListManager::E_InvitePartyFarFieldCheckHost( IN KGSUserPtr spHost, IN const std::wstring& /*wstrReceiverNickName*/ )
 {
 	SET_ERROR( NET_OK );
 
@@ -564,7 +564,7 @@ bool KPartyListManager::E_InvitePartyFarFieldCheckHost( IN KGSUserPtr spHost, IN
 
 //////////////////////////////////////////////////////////////////////////
 // 닉네임으로 상대방을 초대하려고 할때
-bool KPartyListManager::E_InvitePartyFarFieldCheckReceiver( IN KGSUserPtr spReceiver, IN const KELG_INVITE_PARTY_FIND_RECEIVER_REQ& kReq )
+bool KPartyListManager::E_InvitePartyFarFieldCheckReceiver( IN KGSUserPtr spReceiver, IN const KELG_INVITE_PARTY_FIND_RECEIVER_REQ& /*kReq*/ )
 {
 	SET_ERROR( NET_OK );
 
@@ -758,7 +758,7 @@ bool KPartyListManager::E_ChangeDungeon( IN KGSUserPtr spUser, IN const KEGS_PAR
 	return true;
 }
 
-bool KPartyListManager::E_GameStart( IN KGSUserPtr spHost, IN const KEGS_QUICK_START_DUNGEON_GAME_REQ& kReq )
+bool KPartyListManager::E_GameStart( IN KGSUserPtr spHost, IN const KEGS_QUICK_START_DUNGEON_GAME_REQ& /*kReq*/ )
 {
 	KEPM_PARTY_GAME_START_REQ kPacket;
 	kPacket.m_iPartyUID = spHost->GetPartyUID();
@@ -1284,7 +1284,7 @@ bool KPartyListManager::IsPossibleLowLevel( IN KGSUserPtr spUser, IN KGSPartyPtr
 	return true;
 }
 
-bool KPartyListManager::IsPossibleLowLevel( IN KGSUserPtr spUser, IN UidType iPartyUID, OUT bool isPartyNULL )
+bool KPartyListManager::IsPossibleLowLevel( IN KGSUserPtr spUser, IN UidType iPartyUID, OUT [[maybe_unused]] bool isPartyNULL ) // Port: an OUT taken by value (the caller never sees it), as in the original
 {
 	KGSPartyPtr spParty = GetParty( iPartyUID );
 	if( spParty == NULL )

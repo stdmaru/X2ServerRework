@@ -32,10 +32,53 @@ relativa do original (`src/server/GameServer` ao lado de `src/server/Common`).
 | Banco | 502 `DO_QUERY` | `KODBC` já portado; as procedures são as do `Game01` |
 | Ferramentas de admin/cheat | `GSUserAdminCheat.*`, `UserCheatManager.*`, `RobotTestManager.*` | revisar sob `X2_DEV_TOOLS` (T10) |
 
+## Estado (2026-10-30, branch `server/game-build`)
+
+O executável `GameServer` (alvo `x2_game_server`, `main` com `KServerMain` como o ChannelServer) **compila e linka** em GCC Debug.
+Os warnings estão sendo zerados; depois vêm Clang, GCC Release e o clang-cl na VM Windows. Ainda não rodou: é o passo `server/game-run`.
+
+Medidas do caminho (GCC Debug, `-k 0`), para dar a escala: 632 erros em 59 arquivos depois da passada mecânica; 0 erros e 1.099
+warnings (190 distintos) depois das correções abaixo e do `fix_warnings.py`.
+
+**Build:** com 16 jobs o GCC estourou a RAM do host (~12 GB livres; os `.cpp` de 10 a 15 mil linhas usam ~1,5 GB cada): `-j 6`.
+
+## Mudanças em relação ao original
+
+| Onde | Mudança | Motivo |
+|---|---|---|
+| Anti-cheat (`GameServer`, `GSUser`, `GSUserFunction`, `GSUserSession`, `GSUserSecurity`, `GSSimLayer`) | Saem HackShield (`m_kHSAuth`, `_AhnHS_*`), XTrap (`m_cXTrapCSM`, mapas `map*.cs3`, `ReloadXTRAP_MAP`) e nProtect, e os handlers `EGS_HACKSHIELD_CHECK_ACK`, `EGS_REQUEST_HACKSHIELD_CHECK_NOT` e `EGS_XTRAP_ACK`. Os pacotes continuam no `Common` | T10. O config US de produção ligava o `CF_XTRAP`; sem o código o servidor age como com as flags desligadas |
+| `GameServer.cpp` | Sai o proxy de malloc do Intel TBB (`tbbmalloc_proxy.h`) e o log "TBB 메모리 관리자 사용" | Alocador do sistema; o roadmap previa tirar o TBB |
+| `GameServer`, `GSScriptRefreshManager` | Saem as chamadas ao KSMS (`ProcessCommunicationManager`, *named pipes* `\\.\pipe\GameServer*`), inclusive os 38 avisos de "script recarregado" | Ferramenta externa só Windows, já tirada do ChannelServer |
+| `NexonSOAP`, `NexonSOAPManager`, `TRIOCP`, `TRIOThread` | Arquivos removidos | Código morto: sem chamador (o relay TCP do próprio original já usava o `KIocp` do Common) |
+| `KSkTRUser::SendDataWithProfile` | Removido | Cópia do `KSocketObject::SendData` com o profiler comentado, sem chamador |
+| `ServerDefine.h` | Incluído à força em todo arquivo do servidor (`-include`/`/FI`, no `x2_server_common`) | Sem um cabeçalho pré-compilado, arquivos que chegavam ao `Enum.h` antes dele compilavam o outro ramo do `EXTEND_SERVER_GROUP_MASK` na mesma função inline |
+| `DEBBilling*` (`Common/OnlyGlobal/AuthAndBilling`) | Compilados pelo GameServer, não pela biblioteca do `Common` | Incluem o `BillManager.h` do GameServer (o original compilava o `Common` dentro de cada servidor) |
+| `NexonBillingTCPPacket` | `unsigned long` → `DWORD` | Campos de 4 bytes do protocolo; `unsigned long` tem 8 bytes no Linux (o `Read8Byte` lia 16) |
+| `UserLogManager`, `RobotTestManager` | Arquivos em UTF-8 (`Utf8FileLocale`), caminhos com `/`, `std::filesystem` | O original usava o locale `"korean"` (CP949) e `CreateDirectoryA` |
+| `XSLXmlParser` (política da Nexon) | `W2A` → UTF-8 | O XML declara `encoding="utf-8"`; o `W2A` usava a code page ANSI |
+| Comparações sempre falsas | `u_char == -1` (grau de guilda) e `unsigned < 0` (nível de skill, página ativa) saem | Sempre falsas também no MSVC: o comportamento fica o mesmo (ver Pendências) |
+
+Portabilidade (sem mudança de comportamento): passada mecânica (`mechanical.py`); `BOOST_MAP_CONST_FOREACH` → range-for;
+`boost::iequals`/`ifind_first`/`replace_all` → `x2::platform::IEquals`/`IContains`/`ReplaceAll` (dobra ASCII, como o Boost no locale "C");
+52 declarações puladas por `goto end_proc` sobem para o topo da função (`tools/port/fix_goto.py`, mais 2 à mão); `LOG_CONDITION` (KNCSDK)
+virou uma expressão; `_KCSLOCK_TYPEDEF_` variádico; `KUserManager::MultiQueueingByCID` com a sobrecarga da base (o `Common` deixara isso
+pendente); `CString::GetBuffer`; `std::min/max` no lugar das macros; `_itoa`/`_i64tow` → `std::to_string`/`_i64tow_s`; `StrStrW` → `wcsstr`;
+destrutores `virtual` em 14 singletons; `using` das sobrecargas escondidas de `RoutePacket`/`Init`; `#pragma NOTE` removidos.
+
+## Pendências
+
+- **Nexon (KR) ainda compila como código morto** (`NexonBillingTCP*`, `KNexonBillingTCPManager`): o US usa `BF_GLOBAL_SERVICE` e o
+  `SiKBillManager()` (DEB). Sai no passo do roadmap que remove os publishers. Antes, o `CI_EXPAND_SKILL_PAGE` do
+  `GSUserCashShop_Global.cpp` consulta o catálogo da Nexon, que no US está sempre vazio: no original a compra falhava (conferir ao rodar o cash).
+- Grau de guilda: o original testava `== -1` num `u_char` (sempre falso). Conferir no `server/game-run` o que a procedure devolve quando o
+  personagem não tem guilda.
+- `KPartyListManager::IsPossibleLowLevel`: o `OUT bool isPartyNULL` é recebido por valor (quem chama nunca vê o valor); mantido como no original.
+- 105 `unsigned long` no GameServer (8 bytes no Linux): revisar os que vão para rede, banco ou formato fixo ao rodar.
+
 ## Plano (um branch por passo)
 
 1. ~~**`server/game-import`**~~: este passo.
-2. **`server/game-build`**: compilar sem warnings em GCC, Clang e MinGW, com o mesmo `main` (`KServerMain`) e os hooks do servidor
+2. **`server/game-build`** (em andamento): compilar sem warnings em GCC, Clang e clang-cl, com o mesmo `main` (`KServerMain`) e os hooks do servidor
    (`g_szConfigFile`, `CreateDBThread`). Maior que o ChannelServer (15× o código): pode virar mais de um branch.
 3. **`server/game-run`**: `x2_run_game` (`runtime/GameServer`, `Game01`), e o cliente passando do "servidor cheio" para a seleção de
    personagem e a vila. **Atenção:** o GameServer fala com o LoginServer (`SendToLoginServer`), o CenterServer (`ECN_*`) e o GlobalServer

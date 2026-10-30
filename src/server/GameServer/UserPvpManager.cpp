@@ -166,7 +166,7 @@ void KUserPvpManager::AdjustInitValue( IN const UidType iUnitUID )
 			<< END_LOG;
 	}
 
-	if( m_fKFactor < KPMV_KFACTOR_MIN )
+	if( m_fKFactor < static_cast<float>( KPMV_KFACTOR_MIN ) )
 	{
 		START_LOG( cerr, L"KFactor가 최소 수치보다 작습니다. 최소 수치로 보정합니다.")
 			<< BUILD_LOG( iUnitUID )
@@ -176,7 +176,7 @@ void KUserPvpManager::AdjustInitValue( IN const UidType iUnitUID )
 
 		m_fKFactor.SetValue( KPMV_KFACTOR_MIN );
 	}
-	else if( KPMV_KFACTOR_MAX < m_fKFactor )
+	else if( static_cast<float>( KPMV_KFACTOR_MAX ) < m_fKFactor )
 	{
 		START_LOG( cerr, L"KFactor가 최대 수치보다 큽니다. 최대 수치로 보정합니다.")
 			<< BUILD_LOG( iUnitUID )
@@ -241,7 +241,7 @@ bool KUserPvpManager::AddRatingAndRankUpDownProcess( IN const int iRating )
 	{
 		//{{ 2012. 06. 19	박세훈	2012 대전 시즌2
 		const CXSLUnit::PVP_RANK eNowPvpRank = CXSLUnit::ComputeNewPVPRank( GetPvpRank(), GetRating() );
-		if( eNowPvpRank == CXSLUnit::PE_NONE )
+		if( static_cast<int>( eNowPvpRank ) == static_cast<int>( CXSLUnit::PE_NONE ) ) // Port: PVP_RANK vs PVP_EMBLEM value, as in the original
 		{
 			return false;
 		}

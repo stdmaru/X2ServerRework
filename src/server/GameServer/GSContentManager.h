@@ -18,7 +18,7 @@ private:
 
 public:
 	KGSContentManager(void);
-	~KGSContentManager(void);
+	virtual ~KGSContentManager(void);
 
 	// for lua
 	void SetEnableCashShop_LUA( bool bVal );

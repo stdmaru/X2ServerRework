@@ -39,7 +39,6 @@
 
 
 //////////////////////////////////////////////////////////////////////////
-#pragma NOTE( "The GSUserHandler.cpp file compiles successfully!" )
 //////////////////////////////////////////////////////////////////////////
 
 #define CLASS_TYPE      KGSUser
@@ -496,7 +495,7 @@ IMPL_ON_FUNC( EGS_BUY_CASH_ITEM_REQ )
 	int iBankSlotToExpand = 0;
 	int iCharSlotExpand = 0;
 	int iExpandSkillSlot = 0;
-	int iTotalLimitBuyCashItemCount = 0;
+	[[maybe_unused]] int iTotalLimitBuyCashItemCount = 0;
 
 	//#ifdef SERV_VIP_SYSTEM
 	//	int iVIPItemCount = 0;

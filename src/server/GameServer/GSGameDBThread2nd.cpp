@@ -458,7 +458,7 @@ _IMPL_ON_FUNC( DBE_GAME_DELETE_UNIT_REQ, KEGS_DELETE_UNIT_REQ )
 
 	if(kPacket.m_wstrNickName.length() != 0)
 	{
-		if(kPacket.m_wstrNickName.find(L"_") != -1)
+		if(kPacket.m_wstrNickName.find(L"_") != std::wstring::npos)
 		{
 			kPacket.m_iOK = NetError::ERR_DELETE_UNIT_05;
 			goto end_proc;

@@ -33,7 +33,6 @@
 #include "X2Data/XSLSquareUnit.h"
 
 //////////////////////////////////////////////////////////////////////////
-#pragma NOTE( "The GSUserHandler.cpp file compiles successfully!" )
 //////////////////////////////////////////////////////////////////////////
 #include "x2/platform/string.h"
 
@@ -1099,7 +1098,7 @@ IMPL_ON_FUNC( ENX_BT_NISMS_INVENTORY_PICK_UP_ONCE_ACK )
 				}
 				//}}
 				//{{ 2011. 11. 21  김민성	전직 변경 아이템
-				int iUnitClass = 0;
+				[[maybe_unused]] int iUnitClass = 0;
 				if( CXSLItem::GetClassChangeCashItem( iItemID ) != CXSLUnit::UC_NONE )
 				{
 					KDBE_BUY_UNIT_CLASS_CHANGE_REQ kPacketToDB;

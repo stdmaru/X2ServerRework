@@ -52,7 +52,7 @@ int KUserRidingPetManager::GetUserRidingPetList( IN const byte byteViewPage, OUT
 
 	if( byteViewPage == 0 )
 	{
-		for( const KUserRidingPetPtr spUserRidingPet : m_vecRidingPetList )
+		for( const KUserRidingPetPtr& spUserRidingPet : m_vecRidingPetList )
 		{
 			KRidingPetInfo kInfo;
 			spUserRidingPet->GetData( kInfo );
@@ -228,7 +228,7 @@ int KUserRidingPetManager::GetRidingPet( IN const UidType iRidingPetUID, OUT KUs
 		return RIDING_PET_NOT_INITED;
 	}
 
-	for( const KUserRidingPetPtr spRidingPetInfo : m_vecRidingPetList )
+	for( const KUserRidingPetPtr& spRidingPetInfo : m_vecRidingPetList )
 	{
 		if( spRidingPetInfo->GetUID() == iRidingPetUID )
 		{
@@ -312,7 +312,7 @@ int KUserRidingPetManager::Sort( void )
 
 void KUserRidingPetManager::GetDBUpdateInfo( OUT std::vector<KRidingPetInfo>& vecRidingPetList )
 {
-	for( const KUserRidingPetPtr spUserRidingPet : m_vecRidingPetList )
+	for( const KUserRidingPetPtr& spUserRidingPet : m_vecRidingPetList )
 	{
 		if( spUserRidingPet->GetChanged() == false )
 		{
@@ -422,7 +422,7 @@ int KUserRidingPetManager::GetExpirationPetUID( OUT std::vector<UidType>& vecRid
 	}
 
 	vecRidingPetUID.clear();
-	for( const KUserRidingPetPtr spInfo : m_vecRidingPetList )
+	for( const KUserRidingPetPtr& spInfo : m_vecRidingPetList )
 	{
 		if( spInfo->IsExpirationRidingPet() == true )
 		{

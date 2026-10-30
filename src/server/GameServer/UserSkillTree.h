@@ -260,8 +260,8 @@ public:
 	bool				IsActiveSkillPageNumberValid() const
 	{
 		// GetActiveSkillPageNumber() 는 1부터 시작 함
-		if ( GetActiveSkillPagesIndex() < 0
-			|| GetActiveSkillPagesIndex() >= m_vecSkillPageData.size() )
+		// Port: a "< 0" test was dropped (the index is unsigned char); page number 0 wraps to 255 and fails below
+		if ( GetActiveSkillPagesIndex() >= m_vecSkillPageData.size() )
 			return false;
 		else
 			return true;

@@ -11,7 +11,6 @@
 
 
 //////////////////////////////////////////////////////////////////////////
-#pragma NOTE( "The GSUserHandler.cpp file compiles successfully!" )
 //////////////////////////////////////////////////////////////////////////
 
 #define CLASS_TYPE      KGSUser
@@ -1096,7 +1095,7 @@ IMPL_ON_FUNC( DBE_CHANGE_PET_NAME_ACK )
 _IMPL_ON_FUNC( DBE_RELEASE_PET_ACK, KEGS_RELEASE_PET_ACK )
 {
 	int iPetID = 0;
-	bool bExpire = m_kUserPetManager.IsExpirePet( kPacket_.m_iPetUID, iPetID );
+	[[maybe_unused]] bool bExpire = m_kUserPetManager.IsExpirePet( kPacket_.m_iPetUID, iPetID );
 
 	if( kPacket_.m_iOK == NetError::NET_OK )
 	{

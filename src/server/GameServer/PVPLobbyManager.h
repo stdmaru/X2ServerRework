@@ -33,7 +33,7 @@ class KPVPLobbyManager
 
 public:
 	KPVPLobbyManager(void);
-	~KPVPLobbyManager(void);
+	virtual ~KPVPLobbyManager(void);
 
 	bool AddPVPUser( IN KCommunityUserInfo& kInfo, IN UidType nGSUID );
 	bool RemovePVPUser( IN UidType iUnitUID );

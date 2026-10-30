@@ -623,7 +623,7 @@ bool KNexonBillingTCPPacket::Read( KENX_BT_INITIALIZE_REQ& kPacket )
     kPacket.m_bytePacketType = m_bytePacketType;
 	_JIF( ReadString( kPacket.m_wstrServiceCode, iCP ), return false );
     _JIF( ReadByte( kPacket.m_byteDomain, iCP ), return false );
-    LIF( iCP == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
+    LIF( static_cast<DWORD>( iCP ) == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
 
 	return true;
 }
@@ -648,7 +648,7 @@ bool KNexonBillingTCPPacket::Read( KENX_BT_INITIALIZE_ACK& kPacket )
     _JIF( ReadString( kPacket.m_wstrServiceCode, iCP ), return false );
     _JIF( ReadByte( kPacket.m_byteDomain, iCP ), return false );
     _JIF( Read4Byte( kPacket.m_ulResult, iCP ), return false );
-    LIF( iCP == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
+    LIF( static_cast<DWORD>( iCP ) == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
 
     return true;
 }
@@ -672,7 +672,7 @@ bool KNexonBillingTCPPacket::Read( KENX_BT_HEART_BEAT_REQ& kPacket )
     kPacket.m_ulPacketNo = m_ulPacketNo;
     kPacket.m_bytePacketType = m_bytePacketType;
     _JIF( Read8Byte( kPacket.m_iReleaseTick, iCP ), return false );
-    LIF( iCP == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
+    LIF( static_cast<DWORD>( iCP ) == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
 
     return true;
 }
@@ -694,7 +694,7 @@ bool KNexonBillingTCPPacket::Read( KENX_BT_HEART_BEAT_ACK& kPacket )
     kPacket.m_ulPacketNo = m_ulPacketNo;
     kPacket.m_bytePacketType = m_bytePacketType;
     _JIF( Read4Byte( kPacket.m_ulResult, iCP ), return false );
-    LIF( iCP == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
+    LIF( static_cast<DWORD>( iCP ) == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
 
     return true;
 }
@@ -716,7 +716,7 @@ bool KNexonBillingTCPPacket::Read( KENX_BT_CATEGORY_INQUIRY_REQ& kPacket )
 	int iCP = 0;
 	kPacket.m_ulPacketNo = m_ulPacketNo;
 	kPacket.m_bytePacketType = m_bytePacketType;
-	LIF( iCP == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
+	LIF( static_cast<DWORD>( iCP ) == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
 
 	return true;
 }
@@ -748,7 +748,7 @@ bool KNexonBillingTCPPacket::Read( KENX_BT_CATEGORY_INQUIRY_ACK& kPacket )
 		kPacket.m_vecNXBTCategoryInfo.push_back( kNXBTCategoryInfo );
 	}
 
-	LIF( iCP == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
+	LIF( static_cast<DWORD>( iCP ) == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
 
 	return true;
 }
@@ -782,7 +782,7 @@ bool KNexonBillingTCPPacket::Read( KENX_BT_PRODUCT_INQUIRY_XML_REQ& kPacket )
     kPacket.m_bytePacketType = m_bytePacketType;
     _JIF( Read4Byte( kPacket.m_ulPageIndex,	 iCP ), return false );
     _JIF( Read4Byte( kPacket.m_ulRowPerPage, iCP ), return false );
-    LIF( iCP == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
+    LIF( static_cast<DWORD>( iCP ) == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
 
     return true;
 }
@@ -809,7 +809,7 @@ bool KNexonBillingTCPPacket::Read( KENX_BT_PRODUCT_INQUIRY_XML_ACK& kPacket )
     _JIF( Read4Byte( kPacket.m_ulTotalProductCount, iCP ), return false );
     _JIF( ReadString( kPacket.m_wstrResultXML, iCP ), return false );
 
-    LIF( iCP == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
+    LIF( static_cast<DWORD>( iCP ) == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
 
     return true;
 }
@@ -836,7 +836,7 @@ bool KNexonBillingTCPPacket::Read( KENX_BT_PRODUCT_INQUIRY_REQ& kPacket )
 	kPacket.m_bytePacketType = m_bytePacketType;
 	_JIF( Read4Byte( kPacket.m_ulPageIndex,	 iCP ), return false );
 	_JIF( Read4Byte( kPacket.m_ulRowPerPage, iCP ), return false );
-	LIF( iCP == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
+	LIF( static_cast<DWORD>( iCP ) == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
 
 	return true;
 }
@@ -872,7 +872,7 @@ bool KNexonBillingTCPPacket::Read( KENX_BT_PRODUCT_INQUIRY_ACK& kPacket )
 		kPacket.m_vecNXBTProductInfo.push_back( kNXBTProductInfo );
 	}
 
-	LIF( iCP == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
+	LIF( static_cast<DWORD>( iCP ) == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
 
 	return true;
 }
@@ -910,7 +910,7 @@ bool KNexonBillingTCPPacket::Read( KENX_BT_CHECK_BALANCE_REQ& kPacket )
 	_JIF( Read4Byte(  kPacket.m_ulPaymentType,	 iCP ), return false );
 	//}}
 	_JIF( ReadString( kPacket.m_wstrUserID,	 iCP ), return false );
-	LIF( iCP == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
+	LIF( static_cast<DWORD>( iCP ) == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
 
 	return true;
 }
@@ -936,7 +936,7 @@ bool KNexonBillingTCPPacket::Read( KENX_BT_CHECK_BALANCE_ACK& kPacket )
 	kPacket.m_bytePacketType = m_bytePacketType;
 	_JIF( Read4Byte( kPacket.m_ulResult,	 iCP ), return false );
 	_JIF( Read4Byte( kPacket.m_ulBalance,	 iCP ), return false );
-	LIF( iCP == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
+	LIF( static_cast<DWORD>( iCP ) == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
 
 	return true;
 }
@@ -981,7 +981,7 @@ bool KNexonBillingTCPPacket::Read( KENX_BT_PURCHASE_ITEM_REQ& kPacket )
 		kPacket.m_vecNXBTPurchaseInfo.push_back( kNXBTPurchaseInfo );
 	}
 
-	LIF( iCP == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
+	LIF( static_cast<DWORD>( iCP ) == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
 
 	return true;
 }
@@ -1038,7 +1038,7 @@ bool KNexonBillingTCPPacket::Read( KENX_BT_PURCHASE_ITEM_ACK& kPacket )
 		kPacket.m_vecNXBTPurchaseInfo.push_back( kNXBTPurchaseInfo );
 	}
 
-	LIF( iCP == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
+	LIF( static_cast<DWORD>( iCP ) == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
 
 	return true;
 }
@@ -1096,7 +1096,7 @@ bool KNexonBillingTCPPacket::Read( KENX_BT_PURCHASE_GIFT_REQ& kPacket )
 		kPacket.m_vecNXBTPurchaseInfo.push_back( kNXBTPurchaseInfo );
 	}
 
-	LIF( iCP == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
+	LIF( static_cast<DWORD>( iCP ) == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
 
 	return true;
 }
@@ -1153,7 +1153,7 @@ bool KNexonBillingTCPPacket::Read( KENX_BT_PURCHASE_GIFT_ACK& kPacket )
 		kPacket.m_vecNXBTPurchaseInfo.push_back( kNXBTPurchaseInfo );
 	}
 
-	LIF( iCP == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
+	LIF( static_cast<DWORD>( iCP ) == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
 
 	return true;
 }
@@ -1192,7 +1192,7 @@ bool KNexonBillingTCPPacket::Read( KENX_BT_CHECK_AUTO_PAYMENT_USER_REQ& kPacket 
 	_JIF( ReadString( kPacket.m_wstrUserID, iCP ), return false );
 	_JIF( Read4Byte( kPacket.m_ulProductNo, iCP ), return false );
 
-	LIF( iCP == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
+	LIF( static_cast<DWORD>( iCP ) == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
 
 	return true;
 }
@@ -1218,7 +1218,7 @@ bool KNexonBillingTCPPacket::Read( KENX_BT_CHECK_AUTO_PAYMENT_USER_ACK& kPacket 
 	kPacket.m_bytePacketType = m_bytePacketType;
 	_JIF( Read4Byte( kPacket.m_ulResult, iCP ), return false );
 
-	LIF( iCP == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
+	LIF( static_cast<DWORD>( iCP ) == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
 
 	return true;
 }
@@ -1243,7 +1243,7 @@ bool KNexonBillingTCPPacket::Read( KENX_BT_COUPON_INQUIRY_REQ& kPacket )
 	kPacket.m_bytePacketType = m_bytePacketType;
 	_JIF( ReadByte(   kPacket.m_byteIsCafe,			iCP ), return false );
 	_JIF( ReadString( kPacket.m_wstrCouponString,	iCP ), return false );
-	LIF( iCP == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
+	LIF( static_cast<DWORD>( iCP ) == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
 
 	return true;
 }
@@ -1277,7 +1277,7 @@ bool KNexonBillingTCPPacket::Read( KENX_BT_COUPON_INQUIRY_ACK& kPacket )
 		kPacket.m_vecProductInfo.push_back( kNXBTCouponProductInfo );
 	}
 
-	LIF( iCP == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
+	LIF( static_cast<DWORD>( iCP ) == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
 
 	return true;
 }
@@ -1315,7 +1315,7 @@ bool KNexonBillingTCPPacket::Read( KENX_BT_COUPON_INQUIRY_NEW_REQ& kPacket )
 	_JIF( ReadString( kPacket.m_wstrUserID,			iCP ), return false );
 	_JIF( Read4Byte(  kPacket.m_ulUserOID,			iCP ), return false );
 	_JIF( ReadString( kPacket.m_wstrCouponString,	iCP ), return false );
-	LIF( iCP == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
+	LIF( static_cast<DWORD>( iCP ) == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
 
 	return true;
 }
@@ -1353,7 +1353,7 @@ bool KNexonBillingTCPPacket::Read( KENX_BT_COUPON_INQUIRY_NEW_ACK& kPacket )
 		kPacket.m_vecProductInfo.push_back( kNXBTCouponProductInfo );
 	}
 
-	LIF( iCP == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
+	LIF( static_cast<DWORD>( iCP ) == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
 
 	return true;
 }
@@ -1393,7 +1393,7 @@ bool KNexonBillingTCPPacket::Read( KENX_BT_COUPON_USING_REQ& kPacket )
 	_JIF( Read4Byte(  kPacket.m_ulUserOID,			iCP ), return false );
 	_JIF( ReadString( kPacket.m_wstrUserName,		iCP ), return false );
 	_JIF( ReadString( kPacket.m_wstrCouponString,	iCP ), return false );
-	LIF( iCP == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
+	LIF( static_cast<DWORD>( iCP ) == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
 
 	return true;
 }
@@ -1435,7 +1435,7 @@ bool KNexonBillingTCPPacket::Read( KENX_BT_COUPON_USING_ACK& kPacket )
 		kPacket.m_vecCouponProductInfo.push_back( kNXBTCouponProductInfo );
 	}
 
-	LIF( iCP == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
+	LIF( static_cast<DWORD>( iCP ) == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
 
 	return true;
 }
@@ -1473,7 +1473,7 @@ bool KNexonBillingTCPPacket::Read( KENX_BT_NISMS_INVENTORY_CHECK_REQ& kPacket )
 	_JIF( ReadByte( kPacket.m_byteShowInventory, iCP ), return false );
 	_JIF( ReadByte( kPacket.m_byteIsPresent, iCP ), return false );
 
-	LIF( iCP == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
+	LIF( static_cast<DWORD>( iCP ) == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
 
 	return true;
 }
@@ -1501,7 +1501,7 @@ bool KNexonBillingTCPPacket::Read( KENX_BT_NISMS_INVENTORY_CHECK_ACK& kPacket )
 	_JIF( ReadByte( kPacket.m_byteOrderType, iCP ), return false );
 	_JIF( Read4Byte( kPacket.m_ulTotalCount, iCP ), return false );
 
-	LIF( iCP == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
+	LIF( static_cast<DWORD>( iCP ) == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
 
 	return true;
 }
@@ -1530,7 +1530,7 @@ bool KNexonBillingTCPPacket::Read( KENX_BT_NISMS_INVENTORY_INQUIRY_REQ& kPacket 
     _JIF( ReadByte( kPacket.m_byteShowInventory, iCP ), return false );
 	_JIF( Read4Byte(  kPacket.m_ulPageIndex, iCP ), return false );
 	_JIF( Read4Byte(  kPacket.m_ulRowPerPage, iCP ), return false );
-	LIF( iCP == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
+	LIF( static_cast<DWORD>( iCP ) == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
 
 	return true;
 }
@@ -1590,7 +1590,7 @@ bool KNexonBillingTCPPacket::Read( KENX_BT_NISMS_INVENTORY_INQUIRY_ACK& kPacket 
 		kPacket.m_vecNXBTLotteryInfo.push_back( kNXBTLotteryInfo );
 	}
 
-	LIF( iCP == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
+	LIF( static_cast<DWORD>( iCP ) == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
 
 	return true;
 }
@@ -1648,7 +1648,7 @@ bool KNexonBillingTCPPacket::Read( KENX_BT_NISMS_INVENTORY_READABLE_REQ& kPacket
 	_JIF( ReadByte( kPacket.m_byteShowInventory, iCP ), return false );
 	_JIF( ReadByte( kPacket.m_byteIsPresent, iCP ), return false );
 
-	LIF( iCP == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
+	LIF( static_cast<DWORD>( iCP ) == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
 
 	return true;
 }
@@ -1676,7 +1676,7 @@ bool KNexonBillingTCPPacket::Read( KENX_BT_NISMS_INVENTORY_READABLE_ACK& kPacket
 	_JIF( ReadByte( kPacket.m_byteOrderType, iCP ), return false );
 	_JIF( Read4Byte( kPacket.m_ulTotalCount, iCP ), return false );
 
-	LIF( iCP == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
+	LIF( static_cast<DWORD>( iCP ) == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
 
 	return true;
 }
@@ -1703,7 +1703,7 @@ bool KNexonBillingTCPPacket::Read( KENX_BT_NISMS_INVENTORY_READ_REQ& kPacket )
 	kPacket.m_bytePacketType = m_bytePacketType;
 	_JIF( Read4Byte( kPacket.m_ulOrderNo, iCP ), return false );
 	_JIF( Read4Byte( kPacket.m_ulProductNo, iCP ), return false );
-	LIF( iCP == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
+	LIF( static_cast<DWORD>( iCP ) == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
 
 	return true;
 }
@@ -1726,7 +1726,7 @@ bool KNexonBillingTCPPacket::Read( KENX_BT_NISMS_INVENTORY_READ_ACK& kPacket )
 	kPacket.m_ulPacketNo = m_ulPacketNo;
 	kPacket.m_bytePacketType = m_bytePacketType;
 	_JIF( Read4Byte( kPacket.m_ulResult,			iCP ), return false );
-	LIF( iCP == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
+	LIF( static_cast<DWORD>( iCP ) == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
 
 	return true;
 }
@@ -1753,7 +1753,7 @@ bool KNexonBillingTCPPacket::Read( KENX_BT_NISMS_INVENTORY_PICK_UP_REQ& kPacket 
 	_JIF( Read2Byte(  kPacket.m_usOrderQuantity,	iCP ), return false );
 	_JIF( ReadString( kPacket.m_wstrExtendValue,	iCP ), return false );
 	//}}
-	LIF( iCP == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
+	LIF( static_cast<DWORD>( iCP ) == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
 
 	return true;
 }
@@ -1786,7 +1786,7 @@ bool KNexonBillingTCPPacket::Read( KENX_BT_NISMS_INVENTORY_PICK_UP_ACK& kPacket 
 	_JIF( Read2Byte(  kPacket.m_usOrderQuantity,	iCP ), return false );
 	_JIF( ReadString( kPacket.m_wstrExtendValue,	iCP ), return false );
 	//}}
-	LIF( iCP == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
+	LIF( static_cast<DWORD>( iCP ) == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
 
 	return true;
 }
@@ -1819,7 +1819,7 @@ bool KNexonBillingTCPPacket::Read( KENX_BT_NISMS_INVENTORY_PICK_UP_ROLLBACK_REQ&
 	//{{ 2008. 1. 29  최육사  변수 추가
 	_JIF( ReadString( kPacket.m_wstrExtendValue,	iCP ), return false );
 	//}}
-    LIF( iCP == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
+    LIF( static_cast<DWORD>( iCP ) == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
 
     return true;
 }
@@ -1850,7 +1850,7 @@ bool KNexonBillingTCPPacket::Read( KENX_BT_NISMS_INVENTORY_PICK_UP_ROLLBACK_ACK&
 	//{{ 2008. 1. 29  최육사  변수 추가
 	_JIF( ReadString( kPacket.m_wstrExtendValue,	iCP ), return false );
 	//}}
-    LIF( iCP == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
+    LIF( static_cast<DWORD>( iCP ) == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
 
     return true;
 }
@@ -1880,7 +1880,7 @@ bool KNexonBillingTCPPacket::Read( KENX_BT_NISMS_INVENTORY_PICK_UP_ONCE_REQ& kPa
     _JIF( Read4Byte( kPacket.m_ulProductNo, iCP ), return false );
     _JIF( Read2Byte( kPacket.m_usOrderQuantity, iCP ), return false );
     _JIF( ReadString( kPacket.m_wstrExtendValue, iCP ), return false );
-    LIF( iCP == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
+    LIF( static_cast<DWORD>( iCP ) == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
 
     return true;
 }
@@ -1942,7 +1942,7 @@ bool KNexonBillingTCPPacket::Read( KENX_BT_NISMS_INVENTORY_PICK_UP_ONCE_ACK& kPa
 		kPacket.m_vecKNXBTBonusProductInfo.push_back( kNXBTBonusProductInfoPickUp );
 	}
 
-    LIF( iCP == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
+    LIF( static_cast<DWORD>( iCP ) == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
 
     return true;
 }
@@ -2003,7 +2003,7 @@ bool KNexonBillingTCPPacket::Read( KENX_BT_NISMS_INVENTORY_PICK_UP_FOR_PACKAGE_R
 	_JIF( Read4Byte( kPacket.m_ulPackageProductNo, iCP ), return false );
 	_JIF( Read4Byte( kPacket.m_ulProductNo, iCP ), return false );
 
-	LIF( iCP == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
+	LIF( static_cast<DWORD>( iCP ) == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
 
 	return true;
 }
@@ -2034,7 +2034,7 @@ bool KNexonBillingTCPPacket::Read( KENX_BT_NISMS_INVENTORY_PICK_UP_FOR_PACKAGE_A
 	_JIF( Read4Byte( kPacket.m_ulPackageProductNo, iCP ), return false );
 	_JIF( Read4Byte( kPacket.m_ulProductNo, iCP ), return false );
 
-	LIF( iCP == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
+	LIF( static_cast<DWORD>( iCP ) == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
 
 	return true;
 }
@@ -2070,7 +2070,7 @@ bool KNexonBillingTCPPacket::Read( KENX_BT_REFUND_REQ& kPacket )
 	_JIF( Read4Byte( kPacket.m_ulProductNo, iCP ), return false );
 	_JIF( Read2Byte( kPacket.m_usQuantity, iCP ), return false );
 
-	LIF( iCP == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
+	LIF( static_cast<DWORD>( iCP ) == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
 
 	return true;
 }
@@ -2101,7 +2101,7 @@ bool KNexonBillingTCPPacket::Read( KENX_BT_REFUND_ACK& kPacket )
 
 	_JIF( Read4Byte( kPacket.m_ulResult, iCP ), return false );
 
-	LIF( iCP == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
+	LIF( static_cast<DWORD>( iCP ) == m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT );
 
 	return true;
 }

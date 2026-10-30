@@ -2805,12 +2805,12 @@ void KInventory::FixUpInventoryItem( IN OUT std::vector< KInventoryItemInfo >& v
 		}
 
 		// 초기 수량값 보존
-		int iQuantityTemp = kItem.m_kItemInfo.m_iQuantity;
+		[[maybe_unused]] int iQuantityTemp = kItem.m_kItemInfo.m_iQuantity;
 
 		// 아이템의 카테고리 정보를 얻어오자
 		int iCategory = GetSuitableCategory( kItem.m_kItemInfo.m_iItemID );
 		int iSlot = 0;
-		bool bIsDeleted = false;
+		[[maybe_unused]] bool bIsDeleted = false;
 		for( ; iSlot < GetSlotSize( iCategory ) ; ++iSlot )
 		{
 			if( kItem.m_kItemInfo.m_iQuantity <= 0 )
@@ -3342,7 +3342,7 @@ bool KInventory::InsertShareItem( IN const UidType iItemUID, IN const KItemInfo&
 		return false;
 	}
 
-	int iSlotSize = static_cast<int>(m_vecInventorySlot[cCategory].size());
+	int iSlotSize = static_cast<int>(m_vecInventorySlot[static_cast<int>( cCategory )].size());
 	if( sSlotID >= iSlotSize || sSlotID < 0 )
 	{
 		START_LOG( cerr, L"은행 공유 : 슬롯 ID가 들어옴" )
@@ -3430,7 +3430,7 @@ bool KInventory::InsertShareItem( IN const UidType iItemUID, IN const KItemInfo&
 
 	m_mapItem.insert( std::make_pair( iItemUID, kInventoryItem ) );
 	m_setShareItem.insert( iItemUID );
-	m_vecInventorySlot[cCategory][sSlotID] = iItemUID;
+	m_vecInventorySlot[static_cast<int>( cCategory )][sSlotID] = iItemUID;
 
 	return true;
 }
@@ -3474,7 +3474,7 @@ bool KInventory::UpdateShareItemPosition( IN const KTradeShareItemResult& kShare
 
 	m_mapItem.erase( kShareResult.m_iBeforeItemUID );
 	m_mapItem.insert( std::make_pair( kShareResult.m_iNewItemUID, kInventoryItem ) );
-	m_vecInventorySlot[kInfo.m_cSlotCategory][kInfo.m_sSlotID] = kInfo.m_iItemUID;
+	m_vecInventorySlot[static_cast<int>( kInfo.m_cSlotCategory )][kInfo.m_sSlotID] = kInfo.m_iItemUID;
 
 	START_LOG( clog, "은행 공유 : 공유은행에 아이템 추가완료" )
 		<< BUILD_LOG( kShareResult.m_iBeforeItemUID )
@@ -4796,7 +4796,7 @@ bool KInventory::SortInventory( IN int iCategory, OUT std::vector< KInventoryIte
 			continue;
 
 		// 3. 빈슬롯 정보가 있다면 그 슬롯으로 이동시킨다
-		int iDestSlotID = vecEmptySlotInfo.front();
+		[[maybe_unused]] int iDestSlotID = vecEmptySlotInfo.front();
 
 		std::vector< KInventoryItemInfo > vecMoveItem;
 		//if( MoveItem( iCategory, i, iCategory, iDestSlotID, vecMoveItem ) )
@@ -9280,7 +9280,7 @@ bool KInventory::ResolveItem( IN UidType iItemUID,
 							  OUT std::map< int, int >& mapInsertedItem,
 							  OUT std::vector< KInventoryItemInfo >& vecUpdated,
 							  OUT std::vector< KItemInfo >& vecNewItem,
-							  IN bool bForceInsertItem /*= false*/ )
+							  IN bool /*bForceInsertItem*/ /*= false*/ )
 {
 	mapInsertedItem.clear();
 	vecUpdated.clear();
@@ -9962,7 +9962,7 @@ bool KInventory::EnchantItem( IN UidType iItemUID,
 	if( bIsSupportMaterial )
 	{
 		//{{  2011.12.21     김민성    코보 플루오르 스톤 이벤트
-		int iEventSupportMaterialItemID = 0;
+		[[maybe_unused]] int iEventSupportMaterialItemID = 0;
 		std::vector< KInventoryItemInfo > vecEventSupportMaterialInfo;
 
 		// 이벤트 보조제 아이템 찾기(정상적인 item 이라면 인벤토리에 존재 유무를 확인하자.
@@ -10348,7 +10348,7 @@ bool KInventory::RestoreItem( IN UidType iItemUID, OUT int& iLevelAfterEnchant, 
 	if( iRestoreItemUID <= 0 )
 	{
 		//{{  2011.12.21     김민성    코보 축복받은 복원의 주문서 이벤트
-		int iEventRestoreItemID = 0;
+		[[maybe_unused]] int iEventRestoreItemID = 0;
 		std::vector< KInventoryItemInfo > vecEventRestoreItemInfo;
 
 		// 이벤트 복구석 아이템 찾기(정상적인 item 이라면 인벤토리에 존재 유무를 확인하자.
@@ -11460,7 +11460,7 @@ bool KInventory::GetSellPrice( IN const UidType iItemUID, IN const int iQuantity
 
 	// 돌려받는 가격 계산.
 	/************************************************************************/
-	/* <<< 내구도 아이템 되팔기 계산 공식 >>>
+	// <<< 내구도 아이템 되팔기 계산 공식 >>>
 	// 수리비용 : [상점판매가격 * 0.2 * {(최대내구도 - 현재내구도) / (최대내구도 * 3)}]
 	// 돌려받는 가격 : [상점판매가격 * 0.2 - 수리비용]
 	/************************************************************************/
@@ -13138,7 +13138,7 @@ void KInventory::SetClassChangeItem( IN std::map< UidType, int >& mapItem, OUT s
 
 //{{ 2012. 02. 21	김민성	인벤토리 정렬
 //{{ 2012. 02. 27	김민성	인벤토리 정렬	- 무거운 기능을 가볍게 변경
-bool KInventory::SortCategory( IN const int iCategory, OUT std::vector< UidType >& vecUpdatedInventorySlot, OUT int& iNetError, IN const std::vector< KSellPersonalShopItemInfo > vecPersonalShopSell_ItemInfo )
+bool KInventory::SortCategory( IN const int iCategory, OUT std::vector< UidType >& vecUpdatedInventorySlot, OUT int& iNetError, IN const std::vector< KSellPersonalShopItemInfo > /*vecPersonalShopSell_ItemInfo*/ )
 {
 	iNetError = NetError::NET_OK;
 

@@ -676,7 +676,7 @@ void KUserSkillTree::SetClassChangeSkill( IN std::map< int, int >& mapSkill )
 	std::map< int, int >::iterator mit = mapSkill.begin();
 	for(  ; mit != mapSkill.end() ; ++mit )
 	{
-		int itempfirst = mit->first;
+		[[maybe_unused]] int itempfirst = mit->first;
 		sit = m_setUnsealedSkillID.find( mit->first );
 		if( sit != m_setUnsealedSkillID.end() )
 		{
@@ -1226,10 +1226,7 @@ void KUserSkillTree::CalcExpireCashSkillPoint( OUT int& iRetrievedSPoint_,
 				uNewSkillLevel = 1;
 			}
 		}
-		else if( uNewSkillLevel < 0 )
-		{
-			uNewSkillLevel = 0;
-		}
+		// Port: an "else if( uNewSkillLevel < 0 ) uNewSkillLevel = 0;" was dropped: always false, the level is unsigned
 
 		vecModifiedUserSkillData_.push_back( KUserSkillData( (short) iSkillID, uNewSkillLevel, 0 ) );
 	}
@@ -1463,7 +1460,7 @@ bool KUserSkillTree::GetNecessarySkillPoint( IN OUT std::map< int, KGetSkillInfo
 	// 전체 필요 csp 량 구하기
 	iTotalCSP_ = 0;
 
-	const int iCSPointAtThisPage = GetCSPoint();
+	[[maybe_unused]] const int iCSPointAtThisPage = GetCSPoint();
 
 	std::map< int, KGetSkillInfo>::iterator mit = mapSkillList_.begin();
 	for( ; mit != mapSkillList_.end() ; ++mit )
@@ -1824,7 +1821,7 @@ bool KUserSkillTree::CheckGetNewSkill( IN std::map< int, KGetSkillInfo >& mapGet
 	return true;
 }
 
-bool KUserSkillTree::CheckResetSkill( IN KEGS_RESET_SKILL_REQ& kPacket_, IN int iUnitClass, IN int iLevel, OUT int& iOK, OUT bool& bSKillInitLevel )
+bool KUserSkillTree::CheckResetSkill( IN KEGS_RESET_SKILL_REQ& kPacket_, IN int iUnitClass, IN int /*iLevel*/, OUT int& iOK, OUT bool& bSKillInitLevel )
 {
 	// 0레벨로 만들 것인가?
 	bSKillInitLevel = true;

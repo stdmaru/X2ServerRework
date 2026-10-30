@@ -39,7 +39,7 @@ class KPartyListManager
 
 public:
     KPartyListManager();
-    ~KPartyListManager();
+    virtual ~KPartyListManager();
 
 	KGSPartyPtr	GetParty( IN UidType iPartyUID );
 

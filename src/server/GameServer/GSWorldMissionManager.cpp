@@ -59,6 +59,7 @@ void KGSWorldMissionManager::UpdateMissionInfo( IN const KEGB_GET_MISSION_INFO_A
 
 	case KEGB_GET_MISSION_INFO_ACK::FT_INIT:
 			m_mapDefenseOpenTime = kPacketAck.m_mapDefenseOpenTime;
+			[[fallthrough]];  // as in the original: FT_INIT also does what FT_UPDATE does
 	case KEGB_GET_MISSION_INFO_ACK::FT_UPDATE:
 	case KEGB_GET_MISSION_INFO_ACK::FT_BEGIN:
 		{

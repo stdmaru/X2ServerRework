@@ -29,7 +29,7 @@ class KPersonalShopItemList
 
 public:
 	KPersonalShopItemList(void);
-	~KPersonalShopItemList(void);
+	virtual ~KPersonalShopItemList(void);
 
 	bool	AddItemInfo( KERM_PERSONAL_SHOP_INFO_NOT & kNot );
 	bool	DelItemInfo( KERM_PERSONAL_SHOP_INFO_NOT & kNot );

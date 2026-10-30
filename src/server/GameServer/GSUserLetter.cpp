@@ -21,7 +21,6 @@
 //}}
 
 //////////////////////////////////////////////////////////////////////////
-#pragma NOTE( "The GSUserHandler.cpp file compiles successfully!" )
 //////////////////////////////////////////////////////////////////////////
 
 #define CLASS_TYPE      KGSUser
@@ -248,7 +247,7 @@ IMPL_ON_FUNC( EGS_SEND_LETTER_REQ )
 	}
 
 	for( int iFreeMailTicketIDIndex = 0;
-		iFreeMailTicketIDIndex < sizeof( _CONST_FREE_MAIL_TICKET_::arriFreeMailTicketID ) / sizeof( _CONST_FREE_MAIL_TICKET_::arriFreeMailTicketID[0] );
+		static_cast<size_t>( iFreeMailTicketIDIndex ) < sizeof( _CONST_FREE_MAIL_TICKET_::arriFreeMailTicketID ) / sizeof( _CONST_FREE_MAIL_TICKET_::arriFreeMailTicketID[0] );
 		++iFreeMailTicketIDIndex )
 	{
 		if( m_kInventory.IsExist( _CONST_FREE_MAIL_TICKET_::arriFreeMailTicketID[iFreeMailTicketIDIndex], true ) == true )

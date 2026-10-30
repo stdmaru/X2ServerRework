@@ -262,7 +262,7 @@ void KGSSimLayer::Init()
 {
 	KAutoPath kAutoPath;
 	std::string	strFile;
-	bool bRVal = true;
+	[[maybe_unused]] bool bRVal = true;
 
 	{
 		LoadingTimer lt( L"Enum.lua" );

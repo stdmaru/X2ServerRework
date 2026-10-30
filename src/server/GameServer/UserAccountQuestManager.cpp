@@ -1382,7 +1382,7 @@ bool KUserAccountQuestManager::CheckCompleteSubQuest_BeforGroup_AccountQuest( IN
 		{
 			for( const int iSub : mitGroup->second )
 			{
-				for( const KSubQuestInstance SubQuest : kQuestInstance.m_vecSubQuestInstance )
+				for( const KSubQuestInstance& SubQuest : kQuestInstance.m_vecSubQuestInstance )
 				{
 					if( SubQuest.m_iID == iSub )
 					{
@@ -1521,7 +1521,7 @@ void KUserAccountQuestManager::Handler_OnDungeonClear( IN const KGSUserPtr spUse
 			}
 
 			bool bRVal = false;
-			bool bValidDungeonID = false;
+			[[maybe_unused]] bool bValidDungeonID = false;
 
 			// 1. 완료된건지 체크
 			if( kQuestInstance.m_vecSubQuestInstance[uiIndexSub].m_bIsSuccess )

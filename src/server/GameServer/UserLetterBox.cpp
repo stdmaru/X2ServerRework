@@ -168,7 +168,7 @@ void KUserLetterBox::AddLetter( const KPostItemInfo& kPostItem )
 	//{{ 2010. 11. 8	최육사	중복 닉네임 버그 해결
 
 	// 닉네임에 언더바가 있으면 삭제되거나 변경된 닉네임 입니다.
-	if( kPostItem.m_wstrFromNickName.find( '_' ) != -1 )
+	if( kPostItem.m_wstrFromNickName.find( '_' ) != std::wstring::npos )
 	{
 		//{{ 2011.09.16 조효진  넷 에러 스트링을 클라이언트쪽에서 가져와서 출력
 		kInsertLetter.m_wstrFromNickName = NetError::GetErrStrF( NetError::STR_DELETED_NICKNAME );

@@ -16,7 +16,7 @@ private:
 
 public:
 	KRecommendUserTable(void);
-	~KRecommendUserTable(void);
+	virtual ~KRecommendUserTable(void);
 
 	// for lua
 	bool AddRecommendUserData_LUA( u_char ucLevel, int iRewardID );

@@ -221,7 +221,7 @@ IMPL_ON_FUNC( ENX_BT_PRODUCT_INQUIRY_ACK )
 
 			// 클라이언트에 상품 정보를 다시 다 받으라고 알린다.
 			KEvent kEvent;
-			UidType anTrace[2] = { -1, -1 };
+			[[maybe_unused]] UidType anTrace[2] = { -1, -1 };
 			kEvent.SetData( PI_GS_PROXY, NULL, EGS_CASH_PRODUCT_INFO_CHANGED_NOT );
 			KActorManager::GetKObj()->SendToAll( kEvent );
 
@@ -250,7 +250,7 @@ IMPL_ON_FUNC( ENX_BT_CHECK_BALANCE_REQ )
 
 IMPL_ON_FUNC( ENX_BT_CHECK_BALANCE_ACK )
 {
-    bool bSucceed = ( kPacket_.m_ulResult == 0x01 );
+    [[maybe_unused]] bool bSucceed = ( kPacket_.m_ulResult == 0x01 );
 
     UidType iUserUID = SiKNexonBillingTCPManager()->GetCorrespondingUserUID( kPacket_.m_ulPacketNo );
     SiKNexonBillingTCPManager()->DeletePacketNoUserUID( kPacket_.m_ulPacketNo );
@@ -871,7 +871,7 @@ IMPL_ON_FUNC( ENX_BT_COUPON_USING_REQ )
 
 IMPL_ON_FUNC( ENX_BT_COUPON_USING_ACK )
 {
-    bool bSucceed = ( kPacket_.m_ulResult == 1 );
+    [[maybe_unused]] bool bSucceed = ( kPacket_.m_ulResult == 1 );
 
     KEGS_APPLY_COUPON_ACK kPacket;
     switch( kPacket_.m_ulResult )
@@ -1102,7 +1102,7 @@ IMPL_ON_FUNC( ENX_BT_NISMS_INVENTORY_READ_ACK )
 {
 	bool bSucceed = ( kPacket_.m_ulResult == 0x01 );
 
-	UidType iUserUID = SiKNexonBillingTCPManager()->GetCorrespondingUserUID( kPacket_.m_ulPacketNo );
+	[[maybe_unused]] UidType iUserUID = SiKNexonBillingTCPManager()->GetCorrespondingUserUID( kPacket_.m_ulPacketNo );
 	SiKNexonBillingTCPManager()->DeletePacketNoUserUID( kPacket_.m_ulPacketNo );
 
 	//if( iUserUID <= 0 )
@@ -1140,7 +1140,7 @@ IMPL_ON_FUNC( ENX_BT_NISMS_INVENTORY_PICK_UP_REQ )
 
 IMPL_ON_FUNC( ENX_BT_NISMS_INVENTORY_PICK_UP_ACK )
 {
-    bool bSucceed = ( kPacket_.m_ulResult == 0x01 );
+    [[maybe_unused]] bool bSucceed = ( kPacket_.m_ulResult == 0x01 );
 
     UidType iUserUID = SiKNexonBillingTCPManager()->GetCorrespondingUserUID( kPacket_.m_ulPacketNo );
     SiKNexonBillingTCPManager()->DeletePacketNoUserUID( kPacket_.m_ulPacketNo );
@@ -1180,7 +1180,7 @@ IMPL_ON_FUNC( ENX_BT_NISMS_INVENTORY_PICK_UP_ROLLBACK_REQ )
 
 IMPL_ON_FUNC( ENX_BT_NISMS_INVENTORY_PICK_UP_ROLLBACK_ACK )
 {
-    bool bSucceed = ( kPacket_.m_ulResult == 0x01 );
+    [[maybe_unused]] bool bSucceed = ( kPacket_.m_ulResult == 0x01 );
 
     UidType iUserUID = SiKNexonBillingTCPManager()->GetCorrespondingUserUID( kPacket_.m_ulPacketNo );
     SiKNexonBillingTCPManager()->DeletePacketNoUserUID( kPacket_.m_ulPacketNo );
@@ -1348,7 +1348,7 @@ IMPL_ON_FUNC( ENX_BT_REFUND_REQ )
 
 IMPL_ON_FUNC( ENX_BT_REFUND_ACK )
 {
-	bool bSucceed = ( kPacket_.m_ulResult == 0x01 );
+	[[maybe_unused]] bool bSucceed = ( kPacket_.m_ulResult == 0x01 );
 
 	UidType iUserUID = SiKNexonBillingTCPManager()->GetCorrespondingUserUID( kPacket_.m_ulPacketNo );
 	SiKNexonBillingTCPManager()->DeletePacketNoUserUID( kPacket_.m_ulPacketNo );

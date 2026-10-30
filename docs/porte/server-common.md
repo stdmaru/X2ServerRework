@@ -149,6 +149,7 @@ e não no cliente (as flags do cliente ainda não foram geradas, ver [Roadmap](.
 
 | Onde | Bug | Correção |
 |---|---|---|
+| `KBuffFactor` (`CommonPacket.h`) | O construtor de cópia deixava `m_uidMesGameUnit` (quem lançou o buff) e `m_bIsMesGameUnitNpc` sem inicializar; a atribuição copiava | O construtor de cópia copia os dois (2026-10-30, achado pelo `-Wdeprecated-copy` no GameServer) |
 | `KXPT_UNIT_USER_SYNC_PACK_FOR_WEDDING_HALL` (`X2UDPPacket.h`) | O `operator=` atribuía `m_fPosX/Y/Z` a eles mesmos: a posição não era copiada | Copia de `kRight` |
 | `GetFrom` de `KEGIANT_BILLING_CONSUME_ACK` e `KELOG_ITEM_TRADE_ERROR_NOT` | O bloco `GET` chamava `PUT` (copiar e colar): escrevia em vez de ler, e o restante do pacote ficava sem ler | `GET`. O primeiro é da integração Giant (fora de uso); o segundo é log entre servidores, cuja data nunca chegava |
 | `KSwapPerformer` | Testes invertidos (`_JIF( !m_pEnqueueEvent, return )` saía com ponteiro válido e só seguia com ele nulo; o destrutor desreferenciava quando nulo) | Testes corrigidos. A classe não é usada por nenhum servidor |

@@ -254,7 +254,7 @@ void KUserTitleManager::Init( IN bool bIsPcBang, IN OUT std::vector< KMissionIns
 
 	// 보유 타이틀(완료 미션) 정리해서 넣기
 	CTime kInfinityTime( 2040, 1, 1, 0, 0, 0 );
-	CTime kCurTime = CTime::GetCurrentTime();
+	[[maybe_unused]] CTime kCurTime = CTime::GetCurrentTime();
 
 	std::vector< KTitleInfo > vecCheckingTitle = vecTitle;
 	vecTitle.clear();
@@ -305,8 +305,8 @@ void KUserTitleManager::Init( IN bool bIsPcBang, IN OUT std::vector< KMissionIns
 }
 
 /************************************************************************/
-/* void CheckNewMission() : 현재 진행 가능한 미션을 찾아서 진행중인 미션으로 등록해주는 함수
-/* 1. 스크립트상의 모든 미션을 순차검색하여 조건비교를 하므로 최적화가 필요함.
+// void CheckNewMission() : 현재 진행 가능한 미션을 찾아서 진행중인 미션으로 등록해주는 함수
+// 1. 스크립트상의 모든 미션을 순차검색하여 조건비교를 하므로 최적화가 필요함.
 /************************************************************************/
 
 void KUserTitleManager::CheckNewMission( IN KGSUserPtr spUser, IN bool bFirst /*= false*/ )

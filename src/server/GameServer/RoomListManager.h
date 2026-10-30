@@ -18,7 +18,7 @@ class KRoomListManager
 
 public:
 	KRoomListManager(void);
-	~KRoomListManager(void);
+	virtual ~KRoomListManager(void);
 
 	bool			OpenScriptFile( const char* pFileName );
 

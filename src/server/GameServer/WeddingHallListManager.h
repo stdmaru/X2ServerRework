@@ -15,7 +15,7 @@ class KWeddingHallListManager
 
 public:
 	KWeddingHallListManager(void);
-	~KWeddingHallListManager(void);
+	virtual ~KWeddingHallListManager(void);
 
 	KGSWeddingHallPtr GetWeddingHallInfo( IN const int iWeddingUid );
 	bool	IsExist( IN const int iWeddingUid ) const		{ return ( m_mapWeddingHallList.find( iWeddingUid ) != m_mapWeddingHallList.end() ); }
