@@ -55,17 +55,58 @@ if(WIN32)
 endif()
 add_library(x2::asio ALIAS x2_asio)
 
-# --- LuaJIT (Lua 5.1 API) ---------------------------------------------------------------------------
-# Linux: system package via pkg-config. Windows: still to be done (LuaJIT builds with its own scripts).
+# --- LuaJIT 2.1 (Lua 5.1 API, decision T21) ----------------------------------------------------------
+# Upstream, unmodified (not the client's LuaJIT 2.0.2 copy). Linux: system package via pkg-config first.
+# Otherwise (MinGW, or no package): the source at a pinned commit, built by its own Makefile (LuaJIT has no
+# CMake). Cross builds compile its code generators (minilua, buildvm) with the host compiler and run them here.
+# MSVC: still to be done (msvcbuild.bat, D5).
+set(X2_LUAJIT_COMMIT a4c064539ea931274d407e1249b4bb575424a0f4)  # v2.1, 2026-10-21 (2.1.1792588164)
 if(NOT TARGET x2::luajit)
-    find_package(PkgConfig QUIET)
-    if(PkgConfig_FOUND)
-        pkg_check_modules(LUAJIT IMPORTED_TARGET luajit)
+    if(NOT WIN32)
+        find_package(PkgConfig QUIET)
+        if(PkgConfig_FOUND)
+            pkg_check_modules(LUAJIT IMPORTED_TARGET luajit)
+        endif()
     endif()
+
     if(TARGET PkgConfig::LUAJIT)
         add_library(x2::luajit ALIAS PkgConfig::LUAJIT)
+    elseif(NOT MSVC)
+        FetchContent_Declare(luajit
+            URL https://github.com/LuaJIT/LuaJIT/archive/${X2_LUAJIT_COMMIT}.tar.gz
+            URL_HASH SHA256=15625df3ebfbd1f76371005bffae39b84c65e718e57acc9a9c57863c7c101541
+            SOURCE_SUBDIR _no_cmake)   # only the sources; it is built below
+        FetchContent_MakeAvailable(luajit)
+
+        set(_x2_luajit_make BUILDMODE=static)
+        if(CMAKE_CROSSCOMPILING)
+            # the compiler prefix (x86_64-w64-mingw32-): the Makefile runs $(CROSS)gcc
+            string(REGEX REPLACE "gcc$" "" _x2_luajit_cross "${CMAKE_C_COMPILER}")
+            list(APPEND _x2_luajit_make HOST_CC=cc CROSS=${_x2_luajit_cross} TARGET_SYS=${CMAKE_SYSTEM_NAME})
+        else()
+            list(APPEND _x2_luajit_make CC=${CMAKE_C_COMPILER})
+        endif()
+
+        find_program(X2_MAKE NAMES gmake make REQUIRED)
+        set(_x2_luajit_lib ${luajit_SOURCE_DIR}/src/libluajit.a)
+        add_custom_command(OUTPUT ${_x2_luajit_lib}
+            COMMAND ${X2_MAKE} -C ${luajit_SOURCE_DIR}/src ${_x2_luajit_make} libluajit.a
+            WORKING_DIRECTORY ${luajit_SOURCE_DIR}
+            COMMENT "Building LuaJIT ${X2_LUAJIT_COMMIT}"
+            VERBATIM)
+        add_custom_target(x2_luajit_build DEPENDS ${_x2_luajit_lib})
+
+        add_library(x2_luajit STATIC IMPORTED GLOBAL)
+        set_target_properties(x2_luajit PROPERTIES
+            IMPORTED_LOCATION ${_x2_luajit_lib}
+            INTERFACE_INCLUDE_DIRECTORIES ${luajit_SOURCE_DIR}/src)
+        if(NOT WIN32)
+            set_property(TARGET x2_luajit PROPERTY INTERFACE_LINK_LIBRARIES m ${CMAKE_DL_LIBS})
+        endif()
+        add_dependencies(x2_luajit x2_luajit_build)
+        add_library(x2::luajit ALIAS x2_luajit)
     else()
-        message(WARNING "LuaJIT not found: targets that need Lua are skipped (docs/porte/kncsdk.md)")
+        message(WARNING "LuaJIT not found: targets that need Lua are skipped (docs/projeto/decisoes.md, D5)")
     endif()
 endif()
 
