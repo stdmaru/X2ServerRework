@@ -90,7 +90,7 @@ jobs:
       - name: Test (Wine)
         env:
           WINEDEBUG: -all
-          WINEPREFIX: ${{ github.workspace }}/.wine
+          WINEPREFIX: /root/.wine   # the container runs as root; the workspace folder is not owned by it
         run: |
           wineboot --init
           ctest --test-dir build/mingw-debug --output-on-failure
