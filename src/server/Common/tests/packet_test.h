@@ -34,6 +34,12 @@ Bytes Serialize(const T& value)
 // uninitialized, so the first bytes may hold garbage (a bool of 2...): only their size is compared; from the
 // second Put on the values are normalized and the bytes must match. Every Get must read all bytes.
 // Catches Put/Get pairs that disagree on a field's type or size.
+// GCC 15 at -O2/-O3 reports a std::wstring member of value-initialized packets (KTCInfo::m_wstrUDPRelayIP) as
+// maybe-uninitialized: a false positive (GCC 16 does not), and the pragma only works around the template definition.
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#endif
 template <typename T>
 void CheckRoundTrip(const char* name)
 {
@@ -80,3 +86,6 @@ void CheckRoundTrip(const char* name)
     CHECK(second.size() == first.size());
     CHECK(third == second);
 }
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic pop
+#endif

@@ -2,18 +2,21 @@
 
 # Integração contínua (GitHub Actions)
 
-`.github/workflows/ci.yml`, criado em 2026-10-30. Roda em todo push, em pull request e à mão (`workflow_dispatch`).
+`.github/workflows/ci.yml`, criado em 2026-10-30 (container `archlinux`; passou para a imagem Ubuntu no mesmo dia). Roda em todo push, em pull request e à mão (`workflow_dispatch`).
 Um push novo no mesmo branch cancela a execução anterior.
+
+Todos os jobs rodam na imagem do [ambiente de build](ambiente-build.md) (Ubuntu, T24), a mesma do `docker/build.sh`.
 
 | Job | O que faz |
 |---|---|
-| GCC Debug, GCC Release, Clang Release | container `archlinux:latest` (o mesmo GCC 16/Clang/CMake 4 do desenvolvimento), build dos presets `linux-debug`/`linux-release` e de um Clang Release em `build/clang`, `ctest` |
-| MinGW Debug + Wine | preset `mingw-debug`, `wineboot` num prefixo próprio e `ctest` pelo Wine (T18) |
+| Build image | publica a imagem em `ghcr.io/<dono>/x2-build:<hash do Dockerfile>` (privada, como o repositório); só reconstrói quando o `Dockerfile` muda |
+| GCC Debug, GCC Release, Clang Release | build dos presets `linux-debug`/`linux-release` e de um Clang Release em `build/clang`, `ctest` |
+| MinGW Debug + Wine | preset `mingw-debug`, `wineboot` num prefixo do root (`/root/.wine`: o workspace e o `HOME` montados pelo GitHub não são dele) e `ctest` pelo Wine (T18) |
 | Importer and wiki | `tools/import/tests/test_condres.py`, `test_flagsim.py` e `tools/docs/check_links.py` |
 
 - **Sem warnings**: o log do build é salvo e qualquer `warning:` reprova o job (regra do AGENTS.md).
-- **Dependências**: LuaJIT, zlib e unixODBC vêm dos pacotes do Arch (no MinGW, LuaJIT e zlib são compilados pela receita do CMake, T21);
-  Asio, Crypto++ e doctest pelo `FetchContent` com versão fixa (T13). `ccache` guardado entre execuções (`actions/cache`).
+- **Dependências**: as da imagem; LuaJIT pela receita do CMake com commit fixo (T21); Asio, Crypto++ e doctest pelo `FetchContent`
+  com versão fixa (T13). `ccache` guardado entre execuções (`actions/cache`).
 - **Fora do CI**: a suíte `db` do `KODBC` (precisa de um SQL Server: `X2_TEST_ODBC`, ver [Banco de desenvolvimento](banco-dev.md)),
   a geração do `ClientScript` (precisa do cliente, ver [Pastas de execução](runtime.md)) e o MSVC (D5). O repositório não tem
   `_reference/`, `_client/` nem `_database/`, e nada do CI depende deles.

@@ -21,9 +21,14 @@ if(WIN32)
 endif()
 
 if(MSVC)
-    target_compile_options(x2_options INTERFACE /utf-8 /W4 /permissive- /Zc:__cplusplus)
+    # /bigobj: the packet serialization units go past the default COFF section limit.
+    target_compile_options(x2_options INTERFACE /utf-8 /W4 /permissive- /Zc:__cplusplus /bigobj)
     target_compile_definitions(x2_options INTERFACE NOMINMAX WIN32_LEAN_AND_MEAN _CRT_SECURE_NO_WARNINGS)
 else()
     # -fsigned-char: the original assumes MSVC's signed `char`; it is unsigned by default on Linux arm64.
     target_compile_options(x2_options INTERFACE -Wall -Wextra -finput-charset=UTF-8 -fsigned-char)
+    if(MINGW)
+        # Same as MSVC's /bigobj ("file too big" on ServerPacket.cpp and the packet tests).
+        target_compile_options(x2_options INTERFACE -Wa,-mbig-obj)
+    endif()
 endif()

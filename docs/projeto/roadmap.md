@@ -71,6 +71,7 @@ Andamento em 2026-10-29: plataforma e KNCSDK compilando no Linux (GCC e Clang) e
 - [ ] **Validar o protocolo com bytes reais** do cliente/servidor originais. Em 2026-10-30 o login no canal funcionou com o `x2_DEBUG.exe` e o `x2.exe` (troca de chave, cripto, `ECH_VERIFY_ACCOUNT`, listas); falta o resto (GameServer).
 - [x] Compilar e testar os caminhos Windows com **MinGW-w64 + Wine** (T18): plataforma e KNCSDK sem warnings, testes passando (2026-10-29).
 - [x] LuaJIT 2.1 no MinGW (T21): `kncsdk_lua` e o `Common` do servidor compilando sem warnings e com os testes passando no Wine (2026-10-30).
+- [x] Ambiente de build único: imagem Docker Ubuntu 26.04 para builds locais e CI (T24, `build/ubuntu-env`, 2026-10-30). Ver [Ambiente de build](../ferramentas/ambiente-build.md).
 - [ ] Compilar e testar no **Windows/MSVC** e LuaJIT no MSVC (D5).
 - [ ] Boost: o KNCSDK não usa mais; o servidor ainda usa em ~230 arquivos. Reduzir ao portar o servidor.
 - [ ] Intel TBB 2.2 → `std` (2 usos, no GameServer).

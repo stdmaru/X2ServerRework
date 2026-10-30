@@ -52,16 +52,21 @@ docs/           wiki do projeto
 _reference/     código original (somente leitura, fora do git)
 _client/        cliente original e assets (fora do git)
 _database/      backups do SQL Server dos bancos do jogo (fora do git)
-docker/         serviços locais de desenvolvimento (SQL Server)
+docker/         imagem de build Ubuntu (build/, build.sh) e serviços locais (SQL Server)
 ```
 
 ## Comandos
 
+Builds e testes rodam na imagem Ubuntu do projeto (decisão T24): prefixe os comandos de build/teste com `docker/build.sh`
+(sem argumentos abre um shell nela). Ver [Ambiente de build](docs/ferramentas/ambiente-build.md).
+
 ```bash
-cmake --preset linux-debug && cmake --build --preset linux-debug     # build (dev tools ON)
-ctest --preset linux-debug                                            # testes
-cmake --preset mingw-debug && cmake --build --preset mingw-debug     # build Windows x64 (MinGW-w64, cruzado)
-ctest --preset mingw-debug                                            # testes Windows no Wine
+docker/build.sh cmake --preset linux-debug                            # configura (dev tools ON)
+docker/build.sh cmake --build --preset linux-debug                    # build
+docker/build.sh ctest --preset linux-debug                            # testes
+docker/build.sh cmake --preset mingw-debug                            # Windows x64 (MinGW-w64, cruzado)
+docker/build.sh cmake --build --preset mingw-debug
+docker/build.sh ctest --preset mingw-debug                            # testes Windows no Wine
 python3 tools/import/import.py <módulo> --dry-run                     # importador
 python3 tools/import/tests/test_condres.py                            # testes do importador
 python3 tools/import/tests/test_flagsim.py
@@ -70,8 +75,8 @@ python3 tools/import/check_equivalence.py server                      # resolved
 python3 tools/docs/check_links.py                                     # links do wiki
 docker compose -f docker/docker-compose.yml up -d --wait              # SQL Server de desenvolvimento
 docker/mssql/restore.sh                                               # restaura _database/*.bak nele
-cmake --build --preset linux-debug --target x2_run_channel            # monta build/linux-debug/run/ChannelServer pronto para rodar
-cmake --build --preset linux-debug --target x2_run_epublisher         # idem, EPublisherServer (login/cash do DEB, T23)
+docker/build.sh cmake --build --preset linux-debug --target x2_run_channel  # monta build/linux-debug/run/ChannelServer pronto para rodar
+docker/build.sh cmake --build --preset linux-debug --target x2_run_epublisher  # idem, EPublisherServer (login/cash do DEB, T23)
 ```
 
 O código original está em CP949. Para ler: `iconv -f cp949 -t utf-8 -c <arquivo>`. Alguns arquivos já estão em UTF-8.

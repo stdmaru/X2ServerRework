@@ -1,5 +1,7 @@
 # Build and tests on every push and pull request (docs/ferramentas/ci.md).
-# Arch Linux container: the same toolchain as development (GCC 16, Clang, CMake 4, MinGW-w64, Wine).
+# Every job runs in the project's Ubuntu build image (docker/build/Dockerfile, decision T24), the same one used by
+# docker/build.sh for local builds. The image is published to GHCR, tagged by the Dockerfile's hash, and only
+# rebuilt when the Dockerfile changes.
 # The build must have no warnings (AGENTS.md): any "warning:" in the log fails the job.
 name: CI
 
@@ -12,15 +14,52 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+  packages: read
+
 defaults:
   run:
     shell: bash
 
 jobs:
+  image:
+    name: Build image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      image: ${{ steps.tag.outputs.image }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Tag
+        id: tag
+        run: |
+          tag=$(sha256sum docker/build/Dockerfile | cut -c1-16)
+          echo "image=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/x2-build:$tag" >> "$GITHUB_OUTPUT"
+      - name: Log in to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+      - name: Build and push (if new)
+        env:
+          IMAGE: ${{ steps.tag.outputs.image }}
+        run: |
+          if docker manifest inspect "$IMAGE" >/dev/null 2>&1; then
+            echo "$IMAGE already published"
+          else
+            docker build -t "$IMAGE" docker/build
+            docker push "$IMAGE"
+          fi
+
   linux:
     name: ${{ matrix.name }}
+    needs: image
     runs-on: ubuntu-latest
-    container: archlinux:latest
+    container:
+      image: ${{ needs.image.outputs.image }}
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     strategy:
       fail-fast: false
       matrix:
@@ -31,31 +70,25 @@ jobs:
             preset: linux-release
           - name: Clang Release
             preset: clang
+    env:
+      CCACHE_DIR: ${{ github.workspace }}/.ccache
     steps:
-      - name: Packages
-        run: |
-          pacman -Syu --noconfirm --needed base-devel cmake ninja git python luajit zlib unixodbc clang ccache
       - uses: actions/checkout@v4
       - name: ccache
         uses: actions/cache@v4
         with:
           path: .ccache
-          key: ccache-${{ matrix.preset }}-${{ github.sha }}
-          restore-keys: ccache-${{ matrix.preset }}-
+          key: ccache-ubuntu-${{ matrix.preset }}-${{ github.sha }}
+          restore-keys: ccache-ubuntu-${{ matrix.preset }}-
       - name: Configure
-        env:
-          CCACHE_DIR: ${{ github.workspace }}/.ccache
         run: |
-          launcher="-DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache"
           if [ "${{ matrix.preset }}" = clang ]; then
             cmake -S . -B build/clang -G Ninja -DCMAKE_BUILD_TYPE=Release -DX2_DEV_TOOLS=OFF \
-              -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ $launcher
+              -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
           else
-            cmake --preset ${{ matrix.preset }} $launcher
+            cmake --preset ${{ matrix.preset }}
           fi
       - name: Build
-        env:
-          CCACHE_DIR: ${{ github.workspace }}/.ccache
         run: |
           set -o pipefail
           cmake --build build/${{ matrix.preset }} 2>&1 | tee build.log
@@ -65,44 +98,48 @@ jobs:
 
   mingw:
     name: MinGW Debug + Wine
+    needs: image
     runs-on: ubuntu-latest
-    container: archlinux:latest
+    container:
+      image: ${{ needs.image.outputs.image }}
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    env:
+      CCACHE_DIR: ${{ github.workspace }}/.ccache
     steps:
-      - name: Packages
-        run: |
-          pacman -Syu --noconfirm --needed base-devel cmake ninja git python mingw-w64-gcc wine ccache
       - uses: actions/checkout@v4
       - name: ccache
         uses: actions/cache@v4
         with:
           path: .ccache
-          key: ccache-mingw-debug-${{ github.sha }}
-          restore-keys: ccache-mingw-debug-
+          key: ccache-ubuntu-mingw-debug-${{ github.sha }}
+          restore-keys: ccache-ubuntu-mingw-debug-
       - name: Configure
-        run: cmake --preset mingw-debug -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+        run: cmake --preset mingw-debug
       - name: Build
-        env:
-          CCACHE_DIR: ${{ github.workspace }}/.ccache
         run: |
           set -o pipefail
           cmake --build build/mingw-debug 2>&1 | tee build.log
           ! grep -n "warning:" build.log
       - name: Test (Wine)
         env:
-          WINEDEBUG: -all
-          WINEPREFIX: /root/.wine   # the container runs as root; the workspace folder is not owned by it
+          WINEPREFIX: /root/.wine   # the container runs as root; the workspace and $HOME are not owned by it
         run: |
           wineboot --init
           ctest --test-dir build/mingw-debug --output-on-failure
 
   checks:
     name: Importer and wiki
+    needs: image
     runs-on: ubuntu-latest
+    container:
+      image: ${{ needs.image.outputs.image }}
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.13"
       - name: Importer tests
         run: |
           python3 tools/import/tests/test_condres.py
