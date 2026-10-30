@@ -645,7 +645,7 @@ void KPersonalShopItemList::GetStrictSearchList( IN KEGS_SEARCH_TRADE_BOARD_REQ 
             //if( (pListItem->m_Name.find(kReq.m_wstrFinder.c_str())) < 0 )
             //int iTemp = pListItem->m_Name.find(kReq.m_wstrFinder.c_str());
 
-            if( StrStrW( pListItem->m_Name.c_str(), kReq.m_wstrFinder.c_str() ) == NULL )
+            if( wcsstr( pListItem->m_Name.c_str(), kReq.m_wstrFinder.c_str() ) == NULL ) // Port: StrStrW (shlwapi) is wcsstr
                 bIsInsert = false;
         }
 

@@ -181,7 +181,7 @@ protected:
 	KCSLOCK_DECLARE( std::map< unsigned long KCOMMA() UidType >, m_mapPacketNoUserUID );// TCPBillingProcessThread
 
     bool                                                        m_bInitialized;			// KeepConnectionThread, TCPBillingProcessThread
-    std::shared_ptr< void >                                   m_spEvent;				// KeepConnectionThread, TCPBillingProcessThread
+    std::shared_ptr< std::remove_pointer_t< HANDLE > >        m_spEvent;  // HANDLE is not void* outside Windows				// KeepConnectionThread, TCPBillingProcessThread
 
     std::map< unsigned long, KNXBTProductInfo >                 m_mapProductInfo;		// TCPBillingProcessThread, SimLayerThread [동기화객체있음]
 	//{{ 2012. 03. 21	김민성		캐쉬 상품 리스트 서버군 구별없이 DB에 기록

@@ -1,3 +1,4 @@
+#include "GameServer.h" // KGameServer, GetKGameServer (the original got it through the precompiled header)
 #include "GSUser.h"
 #include <dbg/dbg.hpp>
 #include "GSFSM.h"

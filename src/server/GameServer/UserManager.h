@@ -48,7 +48,9 @@ public:
     void UnregCharInfo( IN KGSUser& kUser );    // 캐릭터 선택시, 이전 캐릭터 등록사항을 삭제한다.
     void RegCharInfo( IN KGSUser& kUser );      // 캐릭터를 변경한 경우, 변경된 사항을 적용한다.
     virtual void QueueingByCID( const UidType nReceiverCID, const KEventPtr& spEvent );
-    virtual int  MultiQueueingByCID( const KEventPtr& spEvent, std::vector<UidType>& vecUID = std::vector<UidType>() ); // function over-riding 회피. Event안에 있는 uid들에게 모두 살포.
+    // Port: the default argument (a temporary bound to a non-const reference, an MSVC extension) is the base class overload
+    using KActorManager::MultiQueueingByCID;
+    virtual int  MultiQueueingByCID( const KEventPtr& spEvent, std::vector<UidType>& vecUID ); // function over-riding 회피. Event안에 있는 uid들에게 모두 살포.
 
 protected:
     virtual bool Delete( const UidType nUID );  // derived from KActorManager ( util func. )

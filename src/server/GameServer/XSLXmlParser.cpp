@@ -1,5 +1,6 @@
 #include "XSLXmlParser.h"
 #include "TinyXml/tinyxml.h"
+#include "KncUtil.h"
 
 
 ImplementRefreshSingleton( CXSLXmlParser );
@@ -35,8 +36,8 @@ bool CXSLXmlParser::ConvertXMLStringToValue( IN std::map< unsigned short, KPrope
 
 		//kProperty.m_wstrPropertyValue = L"<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<PolicyResults>\n<PolicyResult>\n<No>1</No>\n<Name>셧다운제</Name>\n<Result>2</Result>\n<Option></Option>\n</PolicyResult>\n<PolicyResult>\n<No>3</No>\n<Name>이탈</Name>\n<Result>4</Result>\n<Option></Option>\n</PolicyResult>\n</PolicyResults>";
 
-		USES_CONVERSION;
-		std::string strPropertyValue(W2A(kProperty.m_wstrPropertyValue.c_str()));
+		// Port: UTF-8 (the XML says encoding="utf-8"); ATL's W2A used the ANSI code page
+		std::string strPropertyValue( KncUtil::toNarrowString( kProperty.m_wstrPropertyValue ) );
 
 		iOutUserRetaining = XMLStringToWString( strPropertyValue, iPolicyResultNo );
 	}

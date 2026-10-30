@@ -1,3 +1,4 @@
+#include "GameServer.h" // KGameServer, GetKGameServer (the original got it through the precompiled header)
 #include "GSUser.h"
 #include <dbg/dbg.hpp>
 #include "GSFSM.h"
@@ -993,7 +994,7 @@ IMPL_ON_FUNC( EGS_USE_QUICK_SLOT_REQ )
             {
                 std::vector<CXSLItem::SpecialAbility>::const_iterator vit;
                 vit = std::find_if( pItemTemplet->m_SpecialAbilityList.begin(), pItemTemplet->m_SpecialAbilityList.end(),
-                    std::bind( &CXSLItem::SpecialAbility::m_Type, _1 ) == CXSLItem::SAT_SUMMON_MONSTER );
+                    []( const CXSLItem::SpecialAbility& kAbility ) { return kAbility.m_Type == CXSLItem::SAT_SUMMON_MONSTER; } ); // Port: was boost::bind(...) == value
 
                 if ( vit != pItemTemplet->m_SpecialAbilityList.end() )
                 {

@@ -1,6 +1,9 @@
 #include "./RobotTestManager.h"
 
 #include "BaseServer.h"
+#include "x2/platform/unicode.h"
+
+#include <filesystem>
 #include <KncLua.h>
 #include <lua_tinker.h>
 #include "Lua/KLuaManager.h"
@@ -37,17 +40,18 @@ void KRobotTestManager::FileOpen( int iPatternIndex )
 		return;
 	}
 
-	::CreateDirectoryA( "RobotPattern", NULL );
+	std::error_code ec;
+	std::filesystem::create_directory( "RobotPattern", ec ); // Port: was CreateDirectoryA
 
 	CStringA cstrTemp;
 	cstrTemp.Format( "%d", iPatternIndex );
 
 	std::string strFilename;
-	strFilename  = "RobotPattern\\RobotActionScript_";
+	strFilename  = "RobotPattern/RobotActionScript_";
 	strFilename += cstrTemp.GetBuffer();
 	strFilename += ".lua";
 
-	m_wfsRobotScript.imbue(std::locale("korean", LC_CTYPE));
+	m_wfsRobotScript.imbue(x2::platform::Utf8FileLocale()); // Port: UTF-8, was the "korean" locale (CP949)
 	m_wfsRobotScript.open( strFilename.c_str(), std::ios::out | std::ios::app );
 
 	m_wfsRobotScript.flush();

@@ -45,7 +45,7 @@ bool KUserRelationshipManager::SetRelationshipType( char cType )
 	return true;
 }
 
-void KUserRelationshipManager::SetLastRewardDate( CTime& tDate )
+void KUserRelationshipManager::SetLastRewardDate( const CTime& tDate )
 {
 	CTime tDefault = CTime(2000, 1, 1, 0, 0, 0);
 	m_tLastRewardDate = tDefault;

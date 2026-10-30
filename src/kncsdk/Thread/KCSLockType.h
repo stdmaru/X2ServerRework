@@ -110,7 +110,8 @@ using KCSLockedAccessOf_ = typename std::remove_reference_t<L>::template KCSLock
 template<typename L>
 using KCSLockValueOf_ = typename std::remove_reference_t<L>::TYPE;
 
-#define _KCSLOCK_TYPEDEF_(_type_)           KCSLockTypeOf_< _type_ >
+// Variadic: a type with KCOMMA() reaches this macro already expanded into a real comma (MSVC's old preprocessor did not)
+#define _KCSLOCK_TYPEDEF_(...)              KCSLockTypeOf_< __VA_ARGS__ >
 
 /* @def   KCSLOCK_TYPE(_variable_)       @brief \a _variable_ 의 \c KCSLockType */
 #define KCSLOCK_TYPE(_variable_)            __KCSLockType__##_variable_

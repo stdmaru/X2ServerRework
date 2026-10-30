@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "./UserSkillTree.h"
 #include "X2Data/XSLSkillTree.h"
 
@@ -82,8 +83,8 @@ void KUserSkillTree::InitEverySkillPage( IN OUT std::vector<KUserSkillPageData>&
 			&& iSkillPagesIndex < m_vecSkillPageData.size(); iSkillPagesIndex++ )
 	{
 		/// 남은 SP와 CSP 계산
-		m_vecSkillPageData[iSkillPagesIndex].m_iSPoint.SetValue( max( 0, iSPointAtThisLevel_ - vecSPoint[iSkillPagesIndex] ) );
-		m_vecSkillPageData[iSkillPagesIndex].SetCSPoint( max( 0, GetMaxCSPoint() - vecCSPoint[iSkillPagesIndex] ) );
+		m_vecSkillPageData[iSkillPagesIndex].m_iSPoint.SetValue( std::max( 0, iSPointAtThisLevel_ - vecSPoint[iSkillPagesIndex] ) );
+		m_vecSkillPageData[iSkillPagesIndex].SetCSPoint( std::max( 0, GetMaxCSPoint() - vecCSPoint[iSkillPagesIndex] ) );
 
 		vecSkillPage_[iSkillPagesIndex].m_usSkillPoint		= static_cast<USHORT>( m_vecSkillPageData[iSkillPagesIndex].m_iSPoint );
 		vecSkillPage_[iSkillPagesIndex].m_usCashSkillPoint	= static_cast<USHORT>( m_vecSkillPageData[iSkillPagesIndex].GetCSPoint() );

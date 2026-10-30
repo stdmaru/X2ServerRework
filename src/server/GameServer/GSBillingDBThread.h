@@ -1,4 +1,5 @@
 #pragma once
+#include "BaseServer.h" // KBaseServer::GetKObj() in the templates below
 
 #include "SubThread.h"
 #include "ODBC/Odbc.h"

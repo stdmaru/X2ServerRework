@@ -28,6 +28,8 @@ public:
     operator const CharT*() const { return m_str.c_str(); }
     const CharT* GetString() const { return m_str.c_str(); }
     const string_type& str() const { return m_str; }
+    // ATL's GetBuffer() without a length: the characters, writable in place (no ReleaseBuffer needed, the length is kept)
+    CharT* GetBuffer() { return m_str.data(); }
 
     int  GetLength() const { return static_cast<int>(m_str.size()); }
     bool IsEmpty() const { return m_str.empty(); }

@@ -3,7 +3,7 @@
 
 
 #include <iomanip>
-#include <sys/stat.h>
+#include "x2/platform/unicode.h"
 
 
 std::wfstream KUserLogManager::ms_wfsUserLog[ULT_MAX];
@@ -57,11 +57,11 @@ void KUserLogManager::DumpLogFile( IN KGSUserPtr spUser, IN USER_LOG_TYPE eUserL
 		switch( eUserLogType )
 		{
 		case ULT_HEART_BEAT:
-			strFilename += "Log\\HeartBeatLog_";
+			strFilename += "Log/HeartBeatLog_";
 			break;
 
 		case ULT_ABNORMAL_DICONNECT:
-			strFilename += "Log\\AbnormalDisconnectLog_";
+			strFilename += "Log/AbnormalDisconnectLog_";
 			break;
 
 		default:
@@ -74,10 +74,7 @@ void KUserLogManager::DumpLogFile( IN KGSUserPtr spUser, IN USER_LOG_TYPE eUserL
 		strFilename += ( CStringA )( tCurTime.Format( _T( "%Y-%m-%d_%H%M%S" ) ) );
 		strFilename += ".txt";
 
-		struct _stat info;
-		int result = _stat( strFilename.c_str(), &info );
-
-		wfsUserLog.imbue(std::locale("korean", LC_CTYPE));
+		wfsUserLog.imbue(x2::platform::Utf8FileLocale()); // Port: UTF-8, was the "korean" locale (CP949)
 		wfsUserLog.open( strFilename.c_str(), std::ios::out | std::ios::app );
 
 		// 헤더 출력

@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "GSUser.h"
 #include "Inventory.h"
 
@@ -5764,7 +5765,7 @@ bool KInventory::DeleteAndInsert( IN const std::map< UidType, int >& mapToDelete
 
             if( GetItemID( i, j ) == mitToInsertClone->first )
             {
-                mitToInsertClone->second.m_iQuantity -= min( mitToInsertClone->second.m_iQuantity, GetRemainedQuantityCapacity( i, j ) );
+                mitToInsertClone->second.m_iQuantity -= std::min( mitToInsertClone->second.m_iQuantity, GetRemainedQuantityCapacity( i, j ) );
             }
         }
     }

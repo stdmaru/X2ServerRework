@@ -415,7 +415,7 @@ namespace SEnum
 //#endif SERV_GET_ITEM_REASON
 	//}}
 
-	inline bool IsValidServerGroupID( int /*iServerGroupID*/ )
+	inline bool IsValidServerGroupID( [[maybe_unused]] int iServerGroupID )
 	{
 #ifdef EXTEND_SERVER_GROUP_MASK
 		// 중국의 경우 무한대로 서버군을 만들었다 지웠다 하므로 어떤 숫자든 들어올 수 있다.
@@ -432,7 +432,7 @@ namespace SEnum
 #endif // EXTEND_SERVER_GROUP_MASK
 	}
 
-	inline const wchar_t* GetServerGroupName( int /*iServerGroupID*/ )
+	inline const wchar_t* GetServerGroupName( [[maybe_unused]] int iServerGroupID )
 	{
 #ifdef EXTEND_SERVER_GROUP_MASK
 #else

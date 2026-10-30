@@ -1,4 +1,6 @@
+#include "x2/platform/format.h"
 #include "GSUser.h"
+#include <algorithm>
 #include <dbg/dbg.hpp>
 #include "GSFSM.h"
 #include "NetError.h"
@@ -5173,17 +5175,17 @@ IMPL_ON_FUNC( EGS_UPDATE_PLAY_STATUS_NOT )
 	/// kimhc // 김현철 // 해킹 때문에 HP는 기본 HP의 3배
 	/// MP는 500 으로 제한 함
 	/// 추후 스탯 계산 (MP포함)을 통해 체크 하도록 해야 할 듯...
-	kPacket_.m_kGamePlayStatus.m_iMaxHP = max( sUnitStat.m_uiHP * 3, static_cast<u_int>(kPacket_.m_kGamePlayStatus.m_iMaxHP));
-	kPacket_.m_kGamePlayStatus.m_iCurHP = max( kPacket_.m_kGamePlayStatus.m_iCurHP, kPacket_.m_kGamePlayStatus.m_iMaxHP );
+	kPacket_.m_kGamePlayStatus.m_iMaxHP = std::max( sUnitStat.m_uiHP * 3, static_cast<u_int>(kPacket_.m_kGamePlayStatus.m_iMaxHP));
+	kPacket_.m_kGamePlayStatus.m_iCurHP = std::max( kPacket_.m_kGamePlayStatus.m_iCurHP, kPacket_.m_kGamePlayStatus.m_iMaxHP );
 
-	kPacket_.m_kGamePlayStatus.m_iMaxMP = max( 0, kPacket_.m_kGamePlayStatus.m_iMaxMP );
-	kPacket_.m_kGamePlayStatus.m_iMaxMP = min( 500, kPacket_.m_kGamePlayStatus.m_iMaxMP );
+	kPacket_.m_kGamePlayStatus.m_iMaxMP = std::max( 0, kPacket_.m_kGamePlayStatus.m_iMaxMP );
+	kPacket_.m_kGamePlayStatus.m_iMaxMP = std::min( 500, kPacket_.m_kGamePlayStatus.m_iMaxMP );
 
-	kPacket_.m_kGamePlayStatus.m_iCurMP = max( 0, kPacket_.m_kGamePlayStatus.m_iCurMP );
-	kPacket_.m_kGamePlayStatus.m_iCurMP = min( kPacket_.m_kGamePlayStatus.m_iCurMP, kPacket_.m_kGamePlayStatus.m_iMaxMP );
+	kPacket_.m_kGamePlayStatus.m_iCurMP = std::max( 0, kPacket_.m_kGamePlayStatus.m_iCurMP );
+	kPacket_.m_kGamePlayStatus.m_iCurMP = std::min( kPacket_.m_kGamePlayStatus.m_iCurMP, kPacket_.m_kGamePlayStatus.m_iMaxMP );
 
-	kPacket_.m_kGamePlayStatus.m_iCurHyperGage = max( 0, kPacket_.m_kGamePlayStatus.m_iCurHyperGage );
-	kPacket_.m_kGamePlayStatus.m_cCharAbilType = max( 0, static_cast<int>(kPacket_.m_kGamePlayStatus.m_cCharAbilType) );
+	kPacket_.m_kGamePlayStatus.m_iCurHyperGage = std::max( 0, kPacket_.m_kGamePlayStatus.m_iCurHyperGage );
+	kPacket_.m_kGamePlayStatus.m_cCharAbilType = std::max( 0, static_cast<int>(kPacket_.m_kGamePlayStatus.m_cCharAbilType) );
 
 	m_kUserUnitManager.SetGamePlayStatusAndCheckChangedHpMp( kPacket_.m_kGamePlayStatus, bChangedHpMp, kPartyMemberStatus );
 

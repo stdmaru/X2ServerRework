@@ -31,8 +31,8 @@ public:
 	void	SetLoverUnitUID( UidType iUnitUID )				{ m_iLoverUnitUID = iUnitUID; }
 	void	SetLoverNickName( std::wstring& wstrNickName )	{ m_wstrLoverNickName = wstrNickName; }
 	void	SetLoveWord( std::wstring& wstrWord )			{ m_wstrLoveWord = wstrWord; }
-	void	SetAnniversaryDay( CTime& tDate )				{ m_tAnniversaryDay = tDate; }
-	void	SetLastRewardDate( CTime& tDate );
+	void	SetAnniversaryDay( const CTime& tDate )			{ m_tAnniversaryDay = tDate; }
+	void	SetLastRewardDate( const CTime& tDate );
 	void	SetRewardTitleType( char cRewardTitleType )		{ m_cRewardTitleType = cRewardTitleType; }
 
 	bool	IsSolo()										{ return m_cRelationshipType == SEnum::RT_SOLO; }

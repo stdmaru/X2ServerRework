@@ -1,3 +1,4 @@
+#include "x2/platform/format.h"
 #include "CnProxy.h"
 #include "NetError.h"
 

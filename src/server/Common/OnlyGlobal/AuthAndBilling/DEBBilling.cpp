@@ -1,3 +1,4 @@
+#include <string>
 #include "./DEBBilling.h"
 
 
@@ -179,23 +180,17 @@ IMPL_ON_FUNC( EBILL_BUY_PRODUCT_REQ )
     std::vector< KBillBuyInfo >::iterator vit;
     for( vit = kPacket_.m_vecBillBuyInfo.begin(); vit != kPacket_.m_vecBillBuyInfo.end(); vit++ )
     {
-        char tmp[1024];
-		char* p_tmp = NULL;
-
 		if( vit != kPacket_.m_vecBillBuyInfo.begin() ) {
 			strTotalList += "|";
         }
 
-		p_tmp = _itoa( vit->m_iProductNo, tmp, 10 ); // Decimal (int)
-		strTotalList += p_tmp;
+		strTotalList += std::to_string( vit->m_iProductNo ); // Port: was _itoa( ..., 10 ) into tmp
 		strTotalList += "_";
 
-		p_tmp = _itoa( vit->m_iProductID, tmp, 10 ); // Decimal (int)
-		strTotalList += p_tmp;
+		strTotalList += std::to_string( vit->m_iProductID ); // Port: was _itoa( ..., 10 ) into tmp
 		strTotalList += "_";
 
-		p_tmp = _itoa( vit->m_iPoint, tmp, 10 );
-		strTotalList += p_tmp;
+		strTotalList += std::to_string( vit->m_iPoint ); // Port: was _itoa( ..., 10 ) into tmp
 
 		iTotalPrice += vit->m_iPoint;
 

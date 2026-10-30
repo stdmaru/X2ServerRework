@@ -48,7 +48,7 @@ public:
 	//{{ 2009. 12. 2  최육사	캐쉬템기간타입변경
 	bool Read2ByteSigned( short& sData, int& iCP );
 	//}}
-	bool Read4Byte( unsigned long& ulData, int& iCP );
+	bool Read4Byte( DWORD& ulData, int& iCP );
     bool Read8Byte( __int64& iData, int& iCP );
 	bool ReadString( std::wstring& wstrData, int& iCP );
 
@@ -57,7 +57,7 @@ public:
 	//{{ 2009. 12. 2  최육사	캐쉬템기간타입변경
 	bool Write2ByteSigned( short sData, int& iCP );
 	//}}
-	bool Write4Byte( unsigned long ulData, int& iCP );
+	bool Write4Byte( DWORD ulData, int& iCP );
     bool Write8Byte( const __int64& iData, int& iCP );
 	bool WriteString( const std::wstring& wstrData, int& iCP );
 
@@ -237,8 +237,8 @@ public:
 
 protected:
 	BYTE			m_byteReservedChar;
-	unsigned long   m_ulPacketLength;
-	unsigned long   m_ulPacketNo;
+	DWORD   m_ulPacketLength;
+	DWORD   m_ulPacketNo;
     BYTE            m_bytePacketType;
 	BYTE			m_abytePacketContent[MAX_PACKET_CONTENT_SIZE_NBT];
 };

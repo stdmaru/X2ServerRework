@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <KncSmartPtr.h>
+#include "x2/platform/types.h" // __int32
 
 #define MAX_SECTOR	255
 #define INVALID_SECTOR 0xffffffff

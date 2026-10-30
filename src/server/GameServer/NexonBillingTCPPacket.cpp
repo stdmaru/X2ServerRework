@@ -1,3 +1,4 @@
+#include "x2/platform/net.h" // htonl/ntohl
 #include "NexonBillingTCPPacket.h"
 
 //{{ 2013. 01. 08	최육사	빌링 패킷 넘치는 유저 찾기
@@ -32,11 +33,11 @@ bool KNexonBillingTCPPacket::ReadFromBuffer( IN BYTE* pbyteBuffer )
 	BYTE byteReservedChar;
 	::memcpy( &byteReservedChar, pbyteBuffer, sizeof( BYTE ) );
 	_JIF( byteReservedChar == 0xAF, return false );
-	::memcpy( &m_ulPacketLength, pbyteBuffer + 1, sizeof( unsigned long ) );
+	::memcpy( &m_ulPacketLength, pbyteBuffer + 1, sizeof( DWORD ) );
 	m_ulPacketLength = ::ntohl( m_ulPacketLength );
 	_JIF( m_ulPacketLength >= HEADER_IN_PACKET_LENGTH_NBT, return false );
 	_JIF( m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT <= MAX_PACKET_CONTENT_SIZE_NBT, return false );
-	::memcpy( &m_ulPacketNo, pbyteBuffer + 5, sizeof( unsigned long ) );
+	::memcpy( &m_ulPacketNo, pbyteBuffer + 5, sizeof( DWORD ) );
 	m_ulPacketNo = ::ntohl( m_ulPacketNo );
 	::memcpy( &m_bytePacketType, pbyteBuffer + 9, sizeof( BYTE ) );
 	if( m_ulPacketLength > HEADER_IN_PACKET_LENGTH_NBT )
@@ -59,10 +60,10 @@ bool KNexonBillingTCPPacket::WriteToBuffer( OUT BYTE* pbyteBuffer )
 
     _JIF( m_ulPacketLength - HEADER_IN_PACKET_LENGTH_NBT <= MAX_PACKET_CONTENT_SIZE_NBT, return false );
 	::memcpy( pbyteBuffer, &m_byteReservedChar, sizeof( BYTE ) );
-	unsigned long ulPacketLength = ::htonl( m_ulPacketLength );
-	::memcpy( pbyteBuffer + 1, &ulPacketLength, sizeof( unsigned long ) );
-    unsigned long ulPacketNo = ::htonl( m_ulPacketNo );
-	::memcpy( pbyteBuffer + 5, &ulPacketNo, sizeof( unsigned long ) );
+	DWORD ulPacketLength = ::htonl( m_ulPacketLength );
+	::memcpy( pbyteBuffer + 1, &ulPacketLength, sizeof( DWORD ) );
+    DWORD ulPacketNo = ::htonl( m_ulPacketNo );
+	::memcpy( pbyteBuffer + 5, &ulPacketNo, sizeof( DWORD ) );
     ::memcpy( pbyteBuffer + 9, &m_bytePacketType, sizeof( BYTE ) );
 	if( m_ulPacketLength > HEADER_IN_PACKET_LENGTH_NBT )
 	{
@@ -120,18 +121,18 @@ bool KNexonBillingTCPPacket::Read2ByteSigned( short& sData, int& iCP )
 //}}
 
 
-bool KNexonBillingTCPPacket::Read4Byte( unsigned long& ulData, int& iCP )
+bool KNexonBillingTCPPacket::Read4Byte( DWORD& ulData, int& iCP )
 {
-	if( iCP < 0 || iCP > MAX_PACKET_CONTENT_SIZE_NBT - ( int )sizeof( unsigned long ) )
+	if( iCP < 0 || iCP > MAX_PACKET_CONTENT_SIZE_NBT - ( int )sizeof( DWORD ) )
 	{
 		return false;
 	}
 
-	unsigned long ulDataTemp;
-	::memcpy( &ulDataTemp, m_abytePacketContent + iCP, sizeof( unsigned long ) );
+	DWORD ulDataTemp;
+	::memcpy( &ulDataTemp, m_abytePacketContent + iCP, sizeof( DWORD ) );
 	ulData = ulDataTemp;
 	ulData = ::ntohl( ulData );
-	iCP = iCP + ( int )sizeof( unsigned long );
+	iCP = iCP + ( int )sizeof( DWORD );
 	return true;
 }
 
@@ -145,13 +146,13 @@ bool KNexonBillingTCPPacket::Read8Byte( __int64& iData, int& iCP )
     __int64 iDataTemp;
     ::memcpy( &iDataTemp, m_abytePacketContent + iCP, sizeof( __int64 ) );
 
-    unsigned long aulDataTemp[2];
+    DWORD aulDataTemp[2];
     ::memcpy( aulDataTemp, &iDataTemp, sizeof( __int64 ) );
 
     aulDataTemp[0] = ::ntohl( aulDataTemp[0] );
     aulDataTemp[1] = ::ntohl( aulDataTemp[1] );
 
-    unsigned long ulTemp = aulDataTemp[0];
+    DWORD ulTemp = aulDataTemp[0];
     aulDataTemp[0] = aulDataTemp[1];
     aulDataTemp[1] = ulTemp;
 
@@ -231,16 +232,16 @@ bool KNexonBillingTCPPacket::Write2ByteSigned( short sData, int& iCP )
 //}}
 
 
-bool KNexonBillingTCPPacket::Write4Byte( unsigned long ulData, int& iCP )
+bool KNexonBillingTCPPacket::Write4Byte( DWORD ulData, int& iCP )
 {
-	if( iCP < 0 || iCP > MAX_PACKET_CONTENT_SIZE_NBT - ( int )sizeof( unsigned long ) )
+	if( iCP < 0 || iCP > MAX_PACKET_CONTENT_SIZE_NBT - ( int )sizeof( DWORD ) )
 	{
 		return false;
 	}
 
 	ulData = ::htonl( ulData );
-	::memcpy( m_abytePacketContent + iCP, &ulData, sizeof( unsigned long ) );
-	iCP = iCP + ( int )sizeof( unsigned long );
+	::memcpy( m_abytePacketContent + iCP, &ulData, sizeof( DWORD ) );
+	iCP = iCP + ( int )sizeof( DWORD );
 	return true;
 }
 
@@ -252,13 +253,13 @@ bool KNexonBillingTCPPacket::Write8Byte( const __int64& iData, int& iCP )
     }
 
     __int64 iDataTemp = iData;
-    unsigned long aulDataTemp[2];
+    DWORD aulDataTemp[2];
 
     ::memcpy( aulDataTemp, &iDataTemp, sizeof( __int64 ) );
     aulDataTemp[0] = ::htonl( aulDataTemp[0] );
     aulDataTemp[1] = ::htonl( aulDataTemp[1] );
 
-    unsigned long ulTemp = aulDataTemp[0];
+    DWORD ulTemp = aulDataTemp[0];
     aulDataTemp[0] = aulDataTemp[1];
     aulDataTemp[1] = ulTemp;
 
@@ -387,7 +388,7 @@ bool KNexonBillingTCPPacket::Write( const KNXBTProductInfo& kNXBTProductInfo, in
     _JIF( Write4Byte( kNXBTProductInfo.m_ulSalePrice, iCP ), return false );
     _JIF( Write4Byte( kNXBTProductInfo.m_ulCategoryNo, iCP ), return false );
 
-    unsigned long ulArrayLength = static_cast< unsigned long >( kNXBTProductInfo.m_vecBonusProductInfo.size() );
+    DWORD ulArrayLength = static_cast< DWORD >( kNXBTProductInfo.m_vecBonusProductInfo.size() );
     _JIF( Write4Byte( ulArrayLength, iCP ), return false );
 
     std::vector< KNXBTBonusProductInfo >::const_iterator vit;
@@ -737,10 +738,10 @@ bool KNexonBillingTCPPacket::Read( KENX_BT_CATEGORY_INQUIRY_ACK& kPacket )
 	kPacket.m_bytePacketType = m_bytePacketType;
 	_JIF( Read4Byte( kPacket.m_ulResult, iCP ), return false );
 
-	unsigned long ulArrayLength = 0;
+	DWORD ulArrayLength = 0;
 	_JIF( Read4Byte( ulArrayLength,		 iCP ), return false );
 
-	for( unsigned long ulIndex = 0; ulIndex < ulArrayLength; ++ulIndex )
+	for( DWORD ulIndex = 0; ulIndex < ulArrayLength; ++ulIndex )
 	{
 		KNXBTCategoryInfo kNXBTCategoryInfo;
 		_JIF( Read( kNXBTCategoryInfo,	 iCP ), return false );
@@ -759,7 +760,7 @@ bool KNexonBillingTCPPacket::Write( const KENX_BT_CATEGORY_INQUIRY_ACK& kPacket 
 	m_bytePacketType = kPacket.m_bytePacketType;
 	_JIF( Write4Byte( kPacket.m_ulResult, iCP ), return false );
 
-	unsigned long ulArrayLength = static_cast<unsigned long>(kPacket.m_vecNXBTCategoryInfo.size());
+	DWORD ulArrayLength = static_cast<DWORD>(kPacket.m_vecNXBTCategoryInfo.size());
 	_JIF( Write4Byte( ulArrayLength,	  iCP ), return false );
 
 	std::vector< KNXBTCategoryInfo >::const_iterator vit = kPacket.m_vecNXBTCategoryInfo.begin();
@@ -861,10 +862,10 @@ bool KNexonBillingTCPPacket::Read( KENX_BT_PRODUCT_INQUIRY_ACK& kPacket )
 	_JIF( Read8Byte( kPacket.m_iReleaseTick,		iCP ), return false );
 	_JIF( Read4Byte( kPacket.m_ulTotalProductCount, iCP ), return false );
 
-	unsigned long ulArrayLength = 0;
+	DWORD ulArrayLength = 0;
 	_JIF( Read4Byte( ulArrayLength,		 iCP ), return false );
 
-	for( unsigned long ulIndex = 0; ulIndex < ulArrayLength; ++ulIndex )
+	for( DWORD ulIndex = 0; ulIndex < ulArrayLength; ++ulIndex )
 	{
 		KNXBTProductInfo kNXBTProductInfo;
 		_JIF( Read( kNXBTProductInfo,	 iCP ), return false );
@@ -885,7 +886,7 @@ bool KNexonBillingTCPPacket::Write( const KENX_BT_PRODUCT_INQUIRY_ACK& kPacket )
 	_JIF( Write8Byte( kPacket.m_iReleaseTick,		 iCP ), return false );
 	_JIF( Write4Byte( kPacket.m_ulTotalProductCount, iCP ), return false );
 
-	unsigned long ulArrayLength = static_cast<unsigned long>(kPacket.m_vecNXBTProductInfo.size());
+	DWORD ulArrayLength = static_cast<DWORD>(kPacket.m_vecNXBTProductInfo.size());
 	_JIF( Write4Byte( ulArrayLength,	  iCP ), return false );
 
 	std::vector< KNXBTProductInfo >::const_iterator vit = kPacket.m_vecNXBTProductInfo.begin();
@@ -1557,10 +1558,10 @@ bool KNexonBillingTCPPacket::Read( KENX_BT_NISMS_INVENTORY_INQUIRY_ACK& kPacket 
 	_JIF( Read4Byte( kPacket.m_ulTotalCount,		iCP ), return false );
 
 	// KNXBTOrderInfo
-	unsigned long ulArrayLength = 0;
+	DWORD ulArrayLength = 0;
 	_JIF( Read4Byte( ulArrayLength,					iCP ), return false );
 
-	for( unsigned long ulIndex = 0; ulIndex < ulArrayLength; ++ulIndex )
+	for( DWORD ulIndex = 0; ulIndex < ulArrayLength; ++ulIndex )
 	{
 		KNXBTOrderInfo kNXBTOrderInfo;
 		_JIF( Read( kNXBTOrderInfo,					iCP ), return false );
@@ -1571,7 +1572,7 @@ bool KNexonBillingTCPPacket::Read( KENX_BT_NISMS_INVENTORY_INQUIRY_ACK& kPacket 
 	ulArrayLength = 0;
 	_JIF( Read4Byte( ulArrayLength,					iCP ), return false );
 
-	for( unsigned long ulIndex = 0; ulIndex < ulArrayLength; ++ulIndex )
+	for( DWORD ulIndex = 0; ulIndex < ulArrayLength; ++ulIndex )
 	{
 		KNXBTPackageInfo kNXBTPackageInfo;
 		_JIF( Read( kNXBTPackageInfo,				iCP ), return false );
@@ -1582,7 +1583,7 @@ bool KNexonBillingTCPPacket::Read( KENX_BT_NISMS_INVENTORY_INQUIRY_ACK& kPacket 
 	ulArrayLength = 0;
 	_JIF( Read4Byte( ulArrayLength,					iCP ), return false );
 
-	for( unsigned long ulIndex = 0; ulIndex < ulArrayLength; ++ulIndex )
+	for( DWORD ulIndex = 0; ulIndex < ulArrayLength; ++ulIndex )
 	{
 		KNXBTLotteryInfo kNXBTLotteryInfo;
 		_JIF( Read( kNXBTLotteryInfo,				iCP ), return false );
@@ -1603,7 +1604,7 @@ bool KNexonBillingTCPPacket::Write( const KENX_BT_NISMS_INVENTORY_INQUIRY_ACK& k
 	_JIF( Write4Byte( kPacket.m_ulTotalCount, iCP ), return false );
 
 	// KNXBTOrderInfo
-	unsigned long ulArrayLength = static_cast<unsigned long>(kPacket.m_vecNXBTOrderInfo.size());
+	DWORD ulArrayLength = static_cast<DWORD>(kPacket.m_vecNXBTOrderInfo.size());
 	_JIF( Write4Byte( ulArrayLength, iCP ), return false );
 
 	std::vector< KNXBTOrderInfo >::const_iterator vitOrderInfo = kPacket.m_vecNXBTOrderInfo.begin();
@@ -1613,7 +1614,7 @@ bool KNexonBillingTCPPacket::Write( const KENX_BT_NISMS_INVENTORY_INQUIRY_ACK& k
 	}
 
 	// KNXBTPackageInfo
-	ulArrayLength = static_cast<unsigned long>(kPacket.m_vecNXBTPackageInfo.size());
+	ulArrayLength = static_cast<DWORD>(kPacket.m_vecNXBTPackageInfo.size());
 	_JIF( Write4Byte( ulArrayLength, iCP ), return false );
 
 	std::vector< KNXBTPackageInfo >::const_iterator vitPackageInfo = kPacket.m_vecNXBTPackageInfo.begin();
@@ -1623,7 +1624,7 @@ bool KNexonBillingTCPPacket::Write( const KENX_BT_NISMS_INVENTORY_INQUIRY_ACK& k
 	}
 
 	// KNXBTLotteryInfo
-	ulArrayLength = static_cast<unsigned long>(kPacket.m_vecNXBTLotteryInfo.size());
+	ulArrayLength = static_cast<DWORD>(kPacket.m_vecNXBTLotteryInfo.size());
 	_JIF( Write4Byte( ulArrayLength, iCP ), return false );
 
 	std::vector< KNXBTLotteryInfo >::const_iterator vitLotteryInfo = kPacket.m_vecNXBTLotteryInfo.begin();
@@ -1920,11 +1921,11 @@ bool KNexonBillingTCPPacket::Read( KENX_BT_NISMS_INVENTORY_PICK_UP_ONCE_ACK& kPa
     _JIF( ReadString( kPacket.m_wstrProductAttribute4, iCP ), return false );
     _JIF( ReadString( kPacket.m_wstrExtendValue, iCP ), return false );
 
-    unsigned long ulArrayLength;
+    DWORD ulArrayLength;
     ulArrayLength = 0;
     _JIF( Read4Byte( ulArrayLength, iCP ), return false );
 
-    for( unsigned long ulIndex = 0; ulIndex < ulArrayLength; ++ulIndex )
+    for( DWORD ulIndex = 0; ulIndex < ulArrayLength; ++ulIndex )
     {
         KNXBTSubProductInfo kNXBTSubProductInfo;
         _JIF( Read( kNXBTSubProductInfo, iCP ), return false );
@@ -1934,7 +1935,7 @@ bool KNexonBillingTCPPacket::Read( KENX_BT_NISMS_INVENTORY_PICK_UP_ONCE_ACK& kPa
 	ulArrayLength = 0;
 	_JIF( Read4Byte( ulArrayLength, iCP ), return false );
 
-	for( unsigned long ulIndex = 0; ulIndex < ulArrayLength; ++ulIndex )
+	for( DWORD ulIndex = 0; ulIndex < ulArrayLength; ++ulIndex )
 	{
 		KNXBTBonusProductInfoPickUp kNXBTBonusProductInfoPickUp;
 		_JIF( Read( kNXBTBonusProductInfoPickUp, iCP ), return false );
@@ -1967,8 +1968,8 @@ bool KNexonBillingTCPPacket::Write( const KENX_BT_NISMS_INVENTORY_PICK_UP_ONCE_A
     _JIF( WriteString( kPacket.m_wstrProductAttribute4, iCP ), return false );
     _JIF( WriteString( kPacket.m_wstrExtendValue, iCP ), return false );
 
-    unsigned long ulArrayLength;
-    ulArrayLength = static_cast< unsigned long >( kPacket.m_vecNXBTSubProductInfo.size() );
+    DWORD ulArrayLength;
+    ulArrayLength = static_cast< DWORD >( kPacket.m_vecNXBTSubProductInfo.size() );
     _JIF( Write4Byte( ulArrayLength, iCP ), return false );
 
     std::vector< KNXBTSubProductInfo >::const_iterator vit = kPacket.m_vecNXBTSubProductInfo.begin();
@@ -1977,7 +1978,7 @@ bool KNexonBillingTCPPacket::Write( const KENX_BT_NISMS_INVENTORY_PICK_UP_ONCE_A
         _JIF( Write( *vit, iCP ), return false );
     }
 
-	ulArrayLength = static_cast< unsigned long >( kPacket.m_vecKNXBTBonusProductInfo.size() );
+	ulArrayLength = static_cast< DWORD >( kPacket.m_vecKNXBTBonusProductInfo.size() );
 	_JIF( Write4Byte( ulArrayLength, iCP ), return false );
 
 	std::vector< KNXBTBonusProductInfoPickUp >::const_iterator vit2 = kPacket.m_vecKNXBTBonusProductInfo.begin();

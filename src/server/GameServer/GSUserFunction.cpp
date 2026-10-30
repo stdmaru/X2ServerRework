@@ -1,4 +1,7 @@
+#include "x2/platform/format.h"
+#include "GameServer.h" // KGameServer, GetKGameServer (the original got it through the precompiled header)
 #include "GSUser.h"
+#include <algorithm>
 #include <dbg/dbg.hpp>
 #include "GSFSM.h"
 #include "ProxyManager.h"
@@ -9185,13 +9188,13 @@ std::wstring KGSUser::MakeOrderID()
 	CTime tCurrent = CTime::GetCurrentTime();
 	wstrRet = ( CStringW )tCurrent.Format( _T( "%Y%m%d%H%M%S" ) );
 	wchar_t wszNumber[32];
-	_i64tow( KBaseServer::GetKObj()->GetUID(), wszNumber, 10 );
+	_i64tow_s( KBaseServer::GetKObj()->GetUID(), wszNumber, 32, 10 ); // Port: _i64tow (no size) -> _i64tow_s
 	wstrRet += L"_";
 	wstrRet += wszNumber;
-	_i64tow( GetUID(), wszNumber, 10 );
+	_i64tow_s( GetUID(), wszNumber, 32, 10 );
 	wstrRet += L"_";
 	wstrRet += wszNumber;
-	_i64tow( SiKBillManager()->GetNextPurchaseNo(), wszNumber, 10 );
+	_i64tow_s( SiKBillManager()->GetNextPurchaseNo(), wszNumber, 32, 10 );
 	wstrRet += L"_";
 	wstrRet += wszNumber;
 
@@ -10895,7 +10898,7 @@ void KGSUser::CheckMaxLevel()
 	{
 		//레벨 변경사항을 보낸다.
 		KEGS_UPDATE_MAX_LEVEL_NOT kPacket;
-		kPacket.m_iMaxLevel = max( SiKGameEventManager()->GetMaxLevel(), SiKGameSysVal()->GetLimitsLevel() );
+		kPacket.m_iMaxLevel = std::max( SiKGameEventManager()->GetMaxLevel(), SiKGameSysVal()->GetLimitsLevel() );
 
 		SendPacket( EGS_UPDATE_MAX_LEVEL_NOT, kPacket );
 

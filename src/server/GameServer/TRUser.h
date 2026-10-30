@@ -6,6 +6,7 @@
 #pragma once
 
 #include "Socket/SocketObject.h"
+#include "Event.h" // KEvent (MakeByteStream)
 #include "RTTI.h"
 #include "KncSmartPtr.h"
 #include "KncUidType.h"
@@ -48,7 +49,6 @@ public:
     KTRUserPtr GetTRUserPtr();
 
 	//{{ 2009. 3. 12  최육사	프로파일러 체크용 함수
-	bool SendDataWithProfile( const char* szData, int iSize );
 	//}}
 
     std::weak_ptr< KTRUser > m_pkTRUser;

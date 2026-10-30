@@ -1,3 +1,4 @@
+#include "x2/platform/format.h"
 #include "GSUser.h"
 #include <dbg/dbg.hpp>
 #include "GSFSM.h"

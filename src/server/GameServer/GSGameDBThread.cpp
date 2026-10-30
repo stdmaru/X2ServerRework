@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "x2/platform/net.h"
 #include <iomanip>
 #include <sstream>
@@ -15089,7 +15090,7 @@ IMPL_ON_FUNC( DBE_SOCKET_EXPAND_ITEM_REQ )
 	int iArrSocketInfo[byteArraySize];
 	memset( iArrSocketInfo, 0, sizeof(int) * byteArraySize );
 
-	for( int i = 0, size = min( byteArraySize, static_cast<int>( kPacket_.m_vecItemSocket.size() ) ); i < size; ++i )
+	for( int i = 0, size = std::min<int>( byteArraySize, static_cast<int>( kPacket_.m_vecItemSocket.size() ) ); i < size; ++i )
 	{
 		iArrSocketInfo[i] = kPacket_.m_vecItemSocket[i];
 	}
