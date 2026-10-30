@@ -66,6 +66,8 @@ Código portado inclui `x2/platform/win32.h` no lugar de `<windows.h>`, `<atltim
 - **Rede**: o Asio só entra em `src/platform/src/net_io.cpp`. `TcpStream::Close` cancela antes do `shutdown`, porque no Windows o `shutdown`
   termina a leitura pendente como fim de conexão e no Linux como cancelamento; assim os dois dão `Aborted`. Quem destrói o `IoService` com
   operações pendentes precisa chamar `Drain()` antes (o `~KIocp` faz isso), senão os handlers soltam sockets durante a destruição.
+- **Windows**: o `types.h` inclui o `windows.h` com `WIN32_LEAN_AND_MEAN`, que deixa de fora o `rpcndr.h` e o `winsock.h`; os nomes que o original
+  recebia deles (`byte`, `u_char`, `u_short`, `u_int`, `u_long`) são declarados com os mesmos tipos. O build Windows define `UNICODE`/`_UNICODE` (`x2::options`).
 - `IsWindow` sempre falso e `HWND_DESKTOP` nulo fora do Windows (servidor sem janela).
 
 ## Limitações conhecidas

@@ -65,7 +65,8 @@ Depois disso vem o ChannelServer (`server/channel`).
 O alvo `x2_server_common` (todo o `Common`, menos os `.cpp` de `Socket/`, `ODBC/`, `KStatisticsLocalLog.cpp` e `DEBBilling*`)
 **compila no Linux sem erros e sem warnings** (GCC 16 Debug/Release, Clang 23 Release). `Socket/` (TCP e UDP) compila e tem
 teste desde o `server/common-net`/`server/common-udp`, e o `ODBC/` desde o `server/common-db` (2026-10-30, ver [Banco de dados (ODBC)](server-common-db.md)). Ainda **não há testes** do `Common` (vêm no passo `server/common-packets`) e nada foi executado.
-No MinGW o `Common` fica de fora enquanto não houver LuaJIT para Windows (D5).
+No **MinGW** o `Common` e os testes dele compilam sem warnings e passam no Wine desde 2026-10-30 (LuaJIT pela T21). Foi a primeira
+compilação dos caminhos `_WIN32` do `Common` (Asio sobre IOCP, `ConfigureUdpSocket`, `odbc32`); o que faltou está em Mudanças › Portabilidade.
 
 Caminho: ~15.000 erros após a importação → ~4.000 (passada mecânica) → 2.291 no início da retomada → 0. Depois, 81 mil warnings
 (73 mil vinham de um só header) → 0. Ferramentas usadas: [Porte mecânico](../ferramentas/porte-mecanico.md).
@@ -154,6 +155,10 @@ e não no cliente (as flags do cliente ainda não foram geradas, ver [Roadmap](.
 
 ### Portabilidade (sem mudança de comportamento)
 
+- Windows (achado na primeira compilação MinGW, 2026-10-30): o build passa a definir `UNICODE`/`_UNICODE`, como o original (sem isso
+  `LPCTSTR` era `const char*`); `byte` e `u_char`/`u_short`/`u_int`/`u_long`, que o original recebia do `windows.h` sem `WIN32_LEAN_AND_MEAN`,
+  vêm do `types.h` da plataforma; o gSOAP inclui `x2/platform/net.h` no lugar do `winsock.h` que vinha junto; `zlib` passou a dependência
+  pública do `x2_server_common` (`Socket/KTDNUDP.h` inclui `zlib.h`).
 - Campos `long`/`unsigned long` dos pacotes (190, em 2026-10-29) viraram `LONG`/`DWORD`: no Linux `long` tem 8 bytes, e o `Put` falhava
   com valores fora de 32 bits. No fio nada muda (mesmo tamanho e mesma tag), e no Windows os tipos são os mesmos de antes.
 
@@ -174,4 +179,3 @@ e não no cliente (as flags do cliente ainda não foram geradas, ver [Roadmap](.
 - E-mail real do `MailManager` (hoje só log; libcurl?).
 - `NetError_def_*.h` de outros idiomas: o build US usa o **`NetError_def_BR.h`** (enum e textos);
   os outros podem sair, mas a ordem do enum do BR é a que vai para o cliente, então ele fica.
-- LuaJIT para MinGW/Windows (D5), para o `Common` entrar no build MinGW.

@@ -64,12 +64,13 @@ Tabela completa: [Bibliotecas](../original/bibliotecas.md).
 Andamento em 2026-10-29: plataforma e KNCSDK compilando no Linux (GCC e Clang) e no MinGW-w64 (testes no Wine), com testes. Detalhes em [Porte](../porte/README.md).
 
 - [x] Camada de plataforma `x2::platform` (tipos, sync, tempo, `CTime`, `CString`, CRT, unicode), com testes. Ver [Plataforma](../porte/platform.md).
-- [x] Dependências via CMake (T13): Crypto++ 8.9, zlib, LuaJIT 2.1 (pkg-config), doctest.
+- [x] Dependências via CMake (T13): Crypto++ 8.9, zlib, LuaJIT 2.1 (pkg-config, ou fonte com commit fixo pelo Makefile dele: T21), doctest.
 - [x] KNCSDK portado: log, `Serializer` (formato de rede fixo), `KncSecurity`, `Thread`, `ObjectPool`, `KncUtil`, unido ao `KNCSDK_Client`. Ver [KNCSDK](../porte/kncsdk.md).
 - [x] `lua_tinker` (versão do servidor) compilando em GCC/Clang sobre LuaJIT 2.1; luabind removido.
 - [ ] **Validar o protocolo com bytes reais** do cliente/servidor originais (hoje os testes usam bytes deduzidos do código).
 - [x] Compilar e testar os caminhos Windows com **MinGW-w64 + Wine** (T18): plataforma e KNCSDK sem warnings, testes passando (2026-10-29).
-- [ ] Compilar e testar no **Windows/MSVC** e LuaJIT no Windows (D5). No MinGW o `kncsdk_lua` ainda fica de fora pelo mesmo motivo.
+- [x] LuaJIT 2.1 no MinGW (T21): `kncsdk_lua` e o `Common` do servidor compilando sem warnings e com os testes passando no Wine (2026-10-30).
+- [ ] Compilar e testar no **Windows/MSVC** e LuaJIT no MSVC (D5).
 - [ ] Boost: o KNCSDK não usa mais; o servidor ainda usa em ~230 arquivos. Reduzir ao portar o servidor.
 - [ ] Intel TBB 2.2 → `std` (2 usos, no GameServer).
 - [ ] libxml2 e FreeType upstream: só o cliente usa (Fase 3).

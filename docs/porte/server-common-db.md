@@ -11,8 +11,7 @@ O banco de testes local está em [Banco de desenvolvimento](../ferramentas/banco
 `ODBC/` compila no `x2_server_common` (GCC Debug/Release, Clang, sem warnings) e foi **testado contra um SQL Server 2022 real**
 (Docker, com os backups de `_database/` restaurados) usando o **FreeTDS 1.5**. Os testes chamam procedures reais do `Game01`
 (`P_GUnit_Userinfo_GET_20131212`, `P_GItem_Equipped_Item_SEL`, `P_GUnitLastPosition_GET`) pelo `KStoredProcedure`, como os servidores fazem.
-O **ODBC Driver 18** não foi testado (não está instalado). No MinGW o `Common` continua fora do build (D5), mas as conversões da plataforma
-são testadas no Wine.
+O **ODBC Driver 18** não foi testado (não está instalado). No MinGW o `ODBC/` compila e os testes sem banco passam no Wine (2026-10-30).
 
 **A API do `KODBC` e as macros `DO_QUERY*`/`FETCH_DATA` não mudaram**: os servidores (37 arquivos, 1.828 `DO_QUERY`, 1.118 `FETCH_DATA` e
 860 `BeginFetch` no original, contagem de 2026-10-29) entram sem alterações nesse código.
@@ -103,7 +102,7 @@ Sem `X2_TEST_ODBC`, o ctest roda só os testes sem banco (`--test-suite-exclude=
 
 - Testar com o **ODBC Driver 18** (`msodbcsql18`, AUR) e no Windows/MSVC.
 - Reconexão depois de queda (`KILL` da sessão): não automatizada nos testes.
-- Teste de integração no Wine (o `odbc32` do Wine repassa ao unixODBC): experimento, sem compromisso.
+- Teste de integração no Wine: tentado em 2026-10-30, o `odbc32` do Wine não chegou ao driver FreeTDS do Linux (a conexão falha sem diagnóstico). Sem compromisso.
 - **Fora deste passo:** trocar o texto montado por parâmetros (`SQLBindParameter`). O original monta `exec ... N'%s'` e depende de
   `IsInvalidMarkIn*` para barrar aspas; mudar isso afeta cada `DO_QUERY` e pede decisão e passo próprios. Risco anotado: injeção de SQL
   onde um `%s` não passa pelo filtro.

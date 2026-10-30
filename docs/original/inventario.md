@@ -83,6 +83,17 @@ Na raiz, `_database/` (fora do git): backups do SQL Server dos bancos do jogo (`
 restaurados pelo [Banco de desenvolvimento](../ferramentas/banco-dev.md).
 
 E em `_tools/kom/`: ferramenta para extrair os `.kom` do cliente (`_client/`), útil para inspecionar scripts e assets.
+Formatos que ela lê e grava (2026-10-30):
+
+| Arquivo | Entradas | Bytecode Lua | Estado |
+|---|---|---|---|
+| `data036.kom` do nosso cliente (2014) | Algorithm 2 (XORCRC) | `\x1bKL\x81` | ok |
+| `data036.kom` de agosto de 2014 (repositório `Elsword-V5.0318.6_3`) | Algorithm 3 (XORCRC com outra chave, zlib sem o adler32 final) | `\x1bKL\x82`: LuaJIT 2.0 com os opcodes reordenados | ok |
+| `data036_br.kom` (2016) | Algorithm 3 no XML, mas com outra chave ou variação | ? | não abre: as entradas decifram para lixo |
+
+O Algorithm 3 e a tabela de opcodes do `0x82` não estão no `_reference` (só 0, 1 e 2): vêm da engenharia reversa publicada no repositório
+`Elsword-V5.0318.6_3` (`KTDXCommonFunc.h`, `tools/kpcrack/`), feita em 2026 sobre um cliente de 2014, não de código da KOG. Em nenhum dos
+formatos a versão do LuaJIT muda: todos são LuaJIT 2.0.
 
 `_reference/X2Server` (o link usado pelo importador) não existia em 2026-10-29; o clone está em `_reference/X2Server-github`, e o importador usa o clone direto quando o link falta.
 

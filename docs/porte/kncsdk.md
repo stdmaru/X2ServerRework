@@ -24,7 +24,7 @@ SDK interno, do qual todos os servidores e o cliente dependem. Partes:
 | Parte | Estado |
 |---|---|
 | Compilação Linux (GCC 16 Debug, Clang 23 Release) | ok, sem warnings |
-| Compilação Windows MinGW-w64 (GCC 16, UCRT), testes no Wine 11 | ok, sem warnings; `kncsdk_tests` passa (2026-10-29). Sem `kncsdk_lua` (falta LuaJIT, D5) |
+| Compilação Windows MinGW-w64 (GCC 16, UCRT), testes no Wine 11 | ok, sem warnings; `kncsdk_tests` passa (2026-10-29) e `kncsdk_lua_tests` também, com o LuaJIT 2.1 compilado pelo CMake (T21, 2026-10-30) |
 | Compilação Windows (MSVC) | **não testada** |
 | União com `KNCSDK_Client` | feita (`SecureBuffer`, `KCSLockType`), ver abaixo |
 | Testes | 28 casos / 964 asserções (`kncsdk_tests`) + 3 (`kncsdk_lua_tests`), todos passando |
@@ -83,4 +83,4 @@ Interface pública (nomes, macros, assinaturas) mantida; mudou o que está lista
 - O `lua_tinker` do cliente (`LuaCommon`) é outra variante; unificar ao portar o cliente.
 - No cliente original, o log fica desligado nas builds de produção (`KNCSDK_Client/dbg/logfile.hpp`); reproduzir via nível de log ao portar o cliente.
 - `KByteStream` herda de `std::basic_string<unsigned char>`, que a libc++ (Clang no macOS) não suporta mais. Não afeta Linux/Windows.
-- LuaJIT no Windows: ainda sem receita de build no CMake (`x2::luajit` só via pkg-config).
+- LuaJIT no MSVC: a receita do CMake (T21) só cobre GCC/Clang/MinGW, pelo Makefile do LuaJIT (D5).

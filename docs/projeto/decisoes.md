@@ -26,12 +26,13 @@
 | T18 | **MinGW-w64 (GCC, runtime UCRT) cruzado a partir do Linux**, com testes rodando no **Wine**, como verificação contínua dos caminhos `_WIN32`. Presets `mingw-debug`/`mingw-release`, toolchain em `cmake/toolchains/mingw-w64-x86_64.cmake`, runtime estático. O build de Windows que vale para distribuição continua sendo o **MSVC**; o MinGW não substitui a validação nele | Não há máquina Windows; sem isso o código Windows só seria compilado na hora de validar no MSVC, acumulando erros. O MinGW já achou um bug real (`printf` ISO no MinGW). Delegado ao agente pelo usuário (2026-10-29) |
 | T19 | **SDL3** para janela/input/áudio e **SDL_GPU** para render no cliente (antiga D4), com shaders via SDL_shadercross. Vulkan direto e ponte DXVK descartados como alvo | Vulkan/D3D12/Metal de graça com muito menos código; o D3D9 está concentrado no `KTDXLIB`. Escolhido pelo usuário com a recomendação do agente (2026-10-29) |
 | T20 | **Rede do servidor sobre Asio standalone** (1.30.2, FetchContent), escondido em `x2::platform` (`net_io.h`: `IoService`, `TcpStream`); o Asio não aparece em headers fora de `src/platform`. A API do original (`KIocp`, `KSocketObject`, `KSession`, chaves de completion, modo sem IOCP com eventos) é mantida, só o motor muda. UDP (`KTDNUDP`) sai em passo próprio | Asio é proactor como o IOCP (usa IOCP no Windows e epoll no Linux), então o modelo do original encaixa sem reescrever as sessões; header-only, x64/arm64. Delegado ao agente pelo usuário (2026-10-29) |
+| T21 | **LuaJIT 2.1 upstream, sem as modificações da KOG**, no servidor e no cliente, num commit fixo (o mesmo do pacote do sistema). Linux: pkg-config primeiro; MinGW (e Linux sem o pacote): fonte baixada com hash fixo e compilada pelo Makefile do LuaJIT, chamado pelo CMake. As mudanças da cópia 2.0.2 do cliente (cabeçalho de bytecode `\x1bKL\x81`, codificação/BOM, parser removido) não são levadas; os scripts do cliente serão recompilados ou carregados como fonte quando o cliente for portado ([Bibliotecas](../original/bibliotecas.md#luajit-da-kog)). Resolve a parte MinGW da D5 | 2.0.2 não roda em arm64 (T12) e em x64 limita os objetos Lua à memória baixa (sem GC64); mesma versão em todas as plataformas. Escolhido pelo usuário, que aceita recompilar os scripts (2026-10-30) |
 
 ## Pendentes
 
-### D5 — LuaJIT no Windows
-O LuaJIT não tem CMake. Opções:
-- receita própria em CMake, que compila `buildvm` e gera os headers;
+### D5 — LuaJIT no MSVC
+O LuaJIT não tem CMake. No MinGW a receita própria em CMake (Makefile do LuaJIT) já resolve (T21, 2026-10-30). Para o MSVC, opções:
+- a mesma receita chamando o `msvcbuild.bat` do LuaJIT;
 - vcpkg só para ele;
 - binário pré-compilado.
 

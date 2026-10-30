@@ -33,8 +33,23 @@ Todas as cópias expõem **API Lua 5.1**:
 `lua_tinker` é a ponte C++↔Lua: ~815 `class_def`, ~241 `decl`, ~148 `class_add` só no servidor; 73 arquivos no cliente.
 Ele depende de templates antigos do MSVC — esperar trabalho para compilar em GCC/Clang.
 
-**A verificar**: se os `.kom` contêm Lua em **bytecode** LuaJIT 2.0 (incompatível com 2.1) ou fonte. Se for bytecode, ou mantemos 2.0.x
-ou precisamos recompilar os scripts (o que mexe em assets).
+### LuaJIT da KOG
+
+Verificado em 2026-10-30. Os `.lua` do `data036.kom` que o cliente usa (2014) são **bytecode do LuaJIT 2.0** sem símbolos, com o
+cabeçalho trocado (`\x1bKL\x81` em vez de `\x1bLJ\x01`); o resto do formato é o do 2.0.2. O 2.1 não carrega esse bytecode.
+Decisão: LuaJIT 2.1 upstream e scripts recompilados (ou fonte) no cliente (T21, em [Decisões](../projeto/decisoes.md)).
+
+A cópia `luajitLib/LuaJIT-2.0.2` é o 2.0.2 oficial com estas mudanças (comparada com o commit `RELEASE LuaJIT-2.0.2` do upstream):
+
+| Mudança | Onde | Para quê |
+|---|---|---|
+| `LUAJIT_MODIFIED_BYTECODE_HEADER` (ligado no `luaconf.h`): cabeçalho `\x1bKL` e versão `0x81` | `lj_bcdump.h`, `lj_lex.c` | bytecode que o LuaJIT oficial recusa |
+| `lua_setencoding`/`lua_getencoding`, `luaL_loadfilex(..., iEncoding)`: arquivo fonte precisa de BOM UTF-8 (ou ser bytecode); `dofile_UTF8`; `print` convertendo UTF-8 → code page ANSI | `lua.h`, `lj_obj.h`, `lj_state.c`, `lj_load.c`, `lib_base.c` | scripts UTF-8 num Windows coreano |
+| `X2OPTIMIZE_REMOVE_LUA_INTERPRETER_MODULE` (ligado no `KTDX.h` do cliente): parser e `string.dump` removidos, só carrega bytecode | `lj_parse.c`, `lj_lex.c`, `lj_bcwrite.c`, `lj_load.c`, `lib_string.c` | binário menor, scripts só compilados |
+| casts em `lj_ccallback.c` | | warnings do MSVC |
+
+O servidor não usava esta cópia (compilava o Lua 5.1.4 do `KNCSDK_Server`) e o porte não usa nenhuma dessas extensões:
+o LuaJIT 2.1 já pula o BOM UTF-8 dos scripts.
 
 ## 3rdparty
 
