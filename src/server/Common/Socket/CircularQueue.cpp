@@ -1,5 +1,8 @@
 #include "CircularQueue.h"
 
+#include <algorithm>
+#include <cstring>
+
 KCircularQueue::KCircularQueue() : m_nHead( 0 ), m_nTail( 0 )
 {
 
@@ -54,7 +57,7 @@ int KCircularQueue::Pop( IN int nSize, OUT char* pBuffer )
     ::memcpy( pBuffer, &at(m_nHead), nRDSize );
 
     m_nHead += nRDSize;
-    if( m_nHead == size() )
+    if( m_nHead == static_cast<int>( size() ) )
         m_nHead = 0;
 
     if( nRDSize < nSize )

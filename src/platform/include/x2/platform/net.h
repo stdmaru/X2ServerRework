@@ -11,6 +11,7 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #undef GetCurrentTime // <windows.h> again (see types.h)
+typedef int x2_socklen_t; // address length type of accept/getsockname (socklen_t elsewhere)
 
 #else
 

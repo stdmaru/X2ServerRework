@@ -1,35 +1,31 @@
 #include "NetCommon.h"
+#include "x2/platform/net_io.h"
 #include <string>
 #include <KncUtil.h>
-namespace NetCommon
-{
-    wchar_t WSAMsg[256] = {0};
-}
-
+// Port: FormatMessage became x2::platform::net::SocketErrorMessage. The text lives per thread
+// (the original shared one static buffer between all threads).
 const wchar_t* NetCommon::GetWsaMsg()
 {
-    FormatMessageW( FORMAT_MESSAGE_FROM_SYSTEM, NULL, ::WSAGetLastError(),
-        GetSystemDefaultLangID()/*MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT)*/,
-        WSAMsg, MAX_PATH, NULL );
-    WSAMsg[ wcslen( WSAMsg ) - 1] = L'\0';   // 문자열의 마지막에 있는 개행(\n)을 없앰.
-    return WSAMsg;
+    thread_local std::wstring strMsg;
+    strMsg = x2::platform::net::SocketErrorMessage( x2::platform::net::LastSocketError() );
+    return strMsg.c_str();
 }
 
 const char* NetCommon::GetLocalIP()
 {
     char szHostName[256];
-    PHOSTENT pHostInfo;
+    HOSTENT* pHostInfo;
 
     if( gethostname(szHostName,sizeof(szHostName)) !=0)
     {
-        return false;
+        return "";  // Port: the original returned false (NULL), which GetLocalIPW() then turned into a std::string
     }
 
     pHostInfo = gethostbyname(szHostName);
 
     if( pHostInfo == NULL)
     {
-        return false;
+        return "";
     }
 
     return inet_ntoa(*(struct in_addr *)*pHostInfo->h_addr_list);

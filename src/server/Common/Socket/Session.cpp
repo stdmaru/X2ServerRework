@@ -164,11 +164,11 @@ KSession::KPacketAuthInfo KSession::ms_kPacketAuthInfo = {
 KSession::KSession( bool bIsProxy )
 :
     m_spSockObj         ( new KSkSession ),
-    m_bIsProxy          ( bIsProxy ),
     m_bUseIocp          ( true ),
+    m_bIsProxy          ( bIsProxy ),
     m_bDestroyReserved  ( false ),
-    m_nSPIndex          ( 0 ),
     m_bAuthKeyRecved    ( false ),
+    m_nSPIndex          ( 0 ),
     m_bCheckHBTick      ( true ),
 	//{{ 2009. 10. 18  최육사	Sequence Number
 	m_bCheckSequenceNum ( false ),
@@ -176,14 +176,14 @@ KSession::KSession( bool bIsProxy )
 	m_uiPacketAuthFailCnt ( 0 ),
 	//}}
 	//{{ 2011. 06. 08	최육사	KEvent 출처 등록 기능
-	m_eSessionType		( SST_NONE ),
+	m_usLastSendEventID ( EVENT_EVENTID_SENTINEL ),
 	//}}
 	//{{ 2011. 10. 31	최육사	하트비트 오류 원인 분석
+	m_eSessionType		( SST_NONE ),
 	m_dwHBTickDump		( 0 ),
-	m_dwCurrentTickDump	( 0 ),
 	//}}
 	//{{ 2009. 8. 10  최육사	send buffer full 원인 찾기
-	m_usLastSendEventID ( EVENT_EVENTID_SENTINEL )
+	m_dwCurrentTickDump	( 0 )
 	//}}
 {
     m_dwHBTick = GetTickCount();
@@ -400,8 +400,8 @@ bool KSession::SendPacket( IN const KEvent& kEvent )
 
     }   // locking scope
 
-    if( kEvent.m_usEventID != E_HEART_BEAT )
-        dbg::clog << L"ⓢ " << kEvent.GetIDStr() << L" (name:" << m_strName << L")" << END_LOG;
+	if( kEvent.m_usEventID != E_HEART_BEAT )
+		dbg::clog << L"ⓢ " << kEvent.GetIDStr() << L" (name:" << m_strName << L")" << END_LOG;
 
 	//{{ 2009. 8. 10  최육사	Send Buffer Full사유찾기
 	m_usLastSendEventID = kEvent.m_usEventID;
@@ -624,7 +624,7 @@ void KSession::Run()
 {
     PROXY_ONLY;
 
-    DWORD ret       = NULL;
+    DWORD ret       = 0;
     bool bLoop      = true;
 
     while( bLoop )

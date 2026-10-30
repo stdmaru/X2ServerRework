@@ -9,4 +9,4 @@ O plano geral está em [Projeto › Roadmap](../projeto/roadmap.md).
 |---|---|---|
 | `src/platform` | Linux e MinGW (Wine) ok com testes; MSVC não testado | [Plataforma](platform.md) |
 | `src/kncsdk` | Linux e MinGW (Wine) ok com testes; MSVC não testado; validação de protocolo pendente | [KNCSDK](kncsdk.md) |
-| `src/server/Common` | compila no Linux (GCC/Clang, sem warnings), menos `Socket/`/`ODBC/`; testes de serialização de todos os pacotes | [Servidor: Common](server-common.md) |
+| `src/server/Common` | compila no Linux (GCC/Clang, sem warnings), com o TCP de `Socket/`; falta o UDP e o `ODBC/`; testes de pacotes e de sessão | [Servidor: Common](server-common.md) |

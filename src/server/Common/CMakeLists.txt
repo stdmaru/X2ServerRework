@@ -1,9 +1,10 @@
-# Common code of the servers (docs/porte/server-common.md). Port in progress (server/common-build):
-# Socket/ (network) and ODBC/ (database) come in their own steps.
+# Common code of the servers (docs/porte/server-common.md). Socket/ has the TCP layer (decision T20);
+# its UDP part (KTDNUDP, UdpEcho) and ODBC/ (database) come in their own steps.
 
 file(GLOB_RECURSE X2_SERVER_COMMON_SOURCES CONFIGURE_DEPENDS
     ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/*.c)
-list(FILTER X2_SERVER_COMMON_SOURCES EXCLUDE REGEX "/(Socket|ODBC|tests)/")
+list(FILTER X2_SERVER_COMMON_SOURCES EXCLUDE REGEX "/(ODBC|tests)/")
+list(FILTER X2_SERVER_COMMON_SOURCES EXCLUDE REGEX "/Socket/(KTDNUDP|UdpEcho|LBSUdpEcho|X2Packet)\\.cpp$")
 # depend on GameServer/CenterServer headers: compiled with those servers
 list(FILTER X2_SERVER_COMMON_SOURCES EXCLUDE REGEX "/KStatisticsLocalLog\\.cpp$")
 list(FILTER X2_SERVER_COMMON_SOURCES EXCLUDE REGEX "/OnlyGlobal/AuthAndBilling/DEBBilling(Manager)?\\.cpp$")

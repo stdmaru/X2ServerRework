@@ -54,20 +54,43 @@ Tamanho: ~99 mil linhas de `.cpp` sem os stubs gSOAP. Os maiores são os pacotes
 2. ~~**`server/common-build`**~~: feito em 2026-10-29 (ver Estado abaixo). Alvo CMake com todo o `Common`, menos `Socket/` e `ODBC/`, compilando em GCC/Clang.
    É a passada mecânica: includes de plataforma, `typename`/`template`, Boost → `std`, stubs das integrações removidas.
 3. ~~**`server/common-packets`**~~: feito em 2026-10-29 (ver Testes abaixo). Testes de serialização dos pacotes (`ClientPacket`/`CommonPacket`), que são a base da compatibilidade (T4).
-4. **`server/common-net`**: `Socket/` sobre Asio.
-5. **`server/common-db`**: `ODBC/` portável (T17).
+4. ~~**`server/common-net`**~~: feito em 2026-10-29. TCP de `Socket/` sobre Asio (T20), ver Rede abaixo.
+5. **`server/common-udp`**: UDP de `Socket/` (`KTDNUDP` com completion routines, `UdpEcho`, `LBSUdpEcho`, `X2Packet`) e `UdpRelayChecker`.
+   O CenterServer usa o `KTDNUDP` no relay das salas.
+6. **`server/common-db`**: `ODBC/` portável (T17).
 
 Depois disso vem o ChannelServer (`server/channel`).
 
 ## Estado (2026-10-29, branch `server/common-build`)
 
 O alvo `x2_server_common` (todo o `Common`, menos os `.cpp` de `Socket/`, `ODBC/`, `KStatisticsLocalLog.cpp` e `DEBBilling*`)
-**compila no Linux sem erros e sem warnings** (GCC 16 Debug/Release, Clang 23 Release). Os headers de `Socket/` e `ODBC/` já são lidos,
-porque o resto do `Common` os inclui. Ainda **não há testes** do `Common` (vêm no passo `server/common-packets`) e nada foi executado.
+**compila no Linux sem erros e sem warnings** (GCC 16 Debug/Release, Clang 23 Release). Desde o `server/common-net` o TCP de `Socket/`
+também compila e tem teste; o UDP de `Socket/` e o `ODBC/` ainda não (só os headers são lidos). Ainda **não há testes** do `Common` (vêm no passo `server/common-packets`) e nada foi executado.
 No MinGW o `Common` fica de fora enquanto não houver LuaJIT para Windows (D5).
 
 Caminho: ~15.000 erros após a importação → ~4.000 (passada mecânica) → 2.291 no início da retomada → 0. Depois, 81 mil warnings
 (73 mil vinham de um só header) → 0. Ferramentas usadas: [Porte mecânico](../ferramentas/porte-mecanico.md).
+
+## Rede (`Socket/`, TCP)
+
+O motor do IOCP virou `x2::platform::net` (decisão T20, ver [Plataforma](platform.md)); a API que o resto do servidor usa ficou igual.
+
+| Original | Agora |
+|---|---|
+| `KIocp`: completion port + `GetQueuedCompletionStatus` | `KIocp`: um `IoService`; as chaves de completion e o despacho `OnIOCompleted`/`OnClosedByLocal` continuam |
+| `KIOThread::Loop`: espera um pacote de completion | roda os handlers prontos por até 100 ms (`IoService::RunFor`) |
+| `KSocketObject`: `SOCKET` + `WSARecv`/`WSASend` overlapped | `TcpStream` + leitura/escrita assíncronas; o handler guarda o objeto vivo até a operação acabar |
+| Modo sem IOCP (`KSession::Init( false )`): eventos no `OVERLAPPED` | o handler guarda o resultado no `KOVERLAPPED` e sinaliza o mesmo evento; a thread da sessão chama `OnIOCompleted` |
+| `KAccepter`: `WSASocket` + `accept` bloqueante | `socket` + `accept` bloqueante; o socket aceito é entregue ao `TcpStream` |
+
+Mudanças de comportamento (intencionais):
+
+- `~KIOThread` não posta mais `SIGNAL_SHUTDOWN_SERVER`: no original isso encerrava *outra* thread de I/O, a que pegasse o pacote.
+- `~KIocp` encerra as threads de I/O, fecha os sockets registrados e roda as completions pendentes antes de destruir o serviço.
+- `KIocp::GenNewCompKey`: gerador semeado (o original usava um `mt19937` sem semente). As chaves só precisam ser únicas.
+- `NetCommon::GetWsaMsg`: mensagem por thread (o original usava um buffer estático compartilhado); `GetLocalIP` devolve `""` em vez de `NULL` quando falha.
+- `KSimObject`: o nome (`SOB_<data>_<hora>_<n>`) saía `SOB_(null)_(null)_...`, porque o original passava o código de retorno de `_wstrdate_s` como string.
+- `OnSendCompleted` usava `OVERLAPPED::InternalHigh` para descontar o enviado; agora usa o número de bytes da completion (é o mesmo valor).
 
 ## Testes (`src/server/Common/tests`, alvo `x2_server_common_tests`)
 
@@ -75,6 +98,7 @@ Caminho: ~15.000 erros após a importação → ~4.000 (passada mecânica) → 2
 |---|---|
 | `test_packets_{client,common,server}.cpp` | **Todos os 1.964 tipos serializados** (os de `#if X2_DEV_TOOLS` só nesse build) dos pacotes (2026-10-29): `Put` → `Get` repetido sobre um objeto inicializado por valor: o tamanho não muda, os bytes se repetem a partir da segunda passada (alguns construtores deixam membros sem inicializar, então a primeira pode ter lixo) e o `Get` lê tudo. Gerados por `tools/port/gen_packet_tests.py` ([Porte mecânico](../ferramentas/porte-mecanico.md)), que antes confere que `PUT` e `GET` listam os mesmos campos na mesma ordem e que cada bloco só usa a própria macro |
 | `test_login_packets.cpp` | Bytes exatos de `ECH_VERIFY_ACCOUNT_REQ/ACK` e `EGS_CONNECT_REQ/ACK`, montados à mão a partir da ordem dos campos e do [formato da rede](../original/protocolo.md) |
+| `test_session.cpp` | `KSession` por loopback com as threads de I/O reais: accept, troca da chave (`E_ACCEPT_CONNECTION_NOT`), pacotes cifrados nos dois sentidos, um pacote de 24 KB (mais de uma leitura) e a desconexão. Nos dois modos do proxy: nas threads de I/O e com thread própria (sem IOCP) |
 | `packets_generated` (ctest) | Falha se os testes gerados estiverem desatualizados em relação aos `.cpp` dos pacotes |
 
 **Limite:** os testes provam que o porte é coerente consigo mesmo e com o formato lido no código, não que bate byte a byte com o

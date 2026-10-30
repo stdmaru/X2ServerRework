@@ -7,10 +7,13 @@
 #include "SimObject.h"
 #include "KncSmartPtr.h"
 
-// 060116. florist. 현재 무조건 event 객체를 생성하도록 되어있다.
-// 이를 선택 가능하게 수정 한 후, KSockBase로 rename해서
-// 모든 소켓 작업에 활용 가능하도록 확장해 나가면 좋을 것 같다.
-// (확장 : IO모델 선택 가능, TCP/UDP 선택 가능, 세부 socket option 설정 가능...)
+// 2006-01-16 florist: an event object is always created for now. It would be nice to make that optional,
+// rename this to KSockBase and grow it into a base for every socket job
+// (choice of I/O model, TCP/UDP, detailed socket options...).
+//
+// Port (decision T20): the socket is an x2::platform::net::TcpStream run by KIocp's I/O threads.
+// Completions still arrive as OnRecvCompleted()/OnSendCompleted(), either through KIocp (completion key)
+// or, when an event was set with SetIOEvent(), through OnIOCompleted() on the thread waiting on it.
 
 SmartPointer( KSocketObject );
 
@@ -31,28 +34,23 @@ public:
                   std::vector< std::pair<int,int> >* vecOpt = NULL );
     bool SendData( const char* szData, int iSize );
     bool InitRecv();
-    void OnIOCompleted( KOVERLAPPED::ENUM_IO_MODE eMode ); // IOCP를 사용하지 않는 경우.
+    void OnIOCompleted( KOVERLAPPED::ENUM_IO_MODE eMode ); // without IOCP: called after the event was signaled
     void OnSendCompleted( DWORD dwTransfered );
 
-    // 접속할 원격지 주소를 미리 지정해 줄 수도 있고, Connect 함수 호출시에 지정해 줄 수도 있다.
+    // The remote address can be set beforehand or given to Connect().
     void SetRemoteIP( const char* szIP ) { m_sockaddr.sin_addr.s_addr   = inet_addr( szIP ); }
     void SetRemotePort( u_short usPort ) { m_sockaddr.sin_port          = htons( usPort ); }
-    void SetSocketInfo( SOCKET socket, const SOCKADDR_IN& sockAddr ) { m_sock = socket; m_sockaddr = sockAddr; }
+    void SetSocketInfo( SOCKET socket, const SOCKADDR_IN& sockAddr ); // takes ownership of an accepted socket
 
     virtual void OnRecvCompleted( DWORD dwTransfered ) = 0;
     virtual void OnSocketError();
-    virtual void OnAcceptConnection() {} // accept 되자마자 호출.
+    virtual void OnAcceptConnection() {} // called right after accept
 
-    bool    IsConnected() const     { return m_sock != INVALID_SOCKET; }
+    bool    IsConnected() const     { return m_spStream && m_spStream->IsOpen(); }
     bool    IsSending() const       { return m_ovlSend.m_bSending; }
     void    SetKey( DWORD dwKey )   { m_dwKey = dwKey; }
     DWORD   GetKey() const          { return m_dwKey; }
-    void    SetIOEvent( KOVERLAPPED::ENUM_IO_MODE eMode, HANDLE hEvent );   // 외부에서 생성한 이벤트를 설정.
-#if defined(_WIN32)
-    BOOL    CancelIo()              { return ::CancelIo( (HANDLE)m_sock ); }
-#else
-    BOOL    CancelIo();             // network layer: server/common-net
-#endif
+    void    SetIOEvent( KOVERLAPPED::ENUM_IO_MODE eMode, HANDLE hEvent );   // event created by the caller
     void    SetSendQueueSize( int nSize )   { m_kSendQueue.Resize( nSize ); }
 
     unsigned int GetIP() const			{ return m_sockaddr.sin_addr.s_addr; }
@@ -69,19 +67,22 @@ public:
 	void SetLastIocpFailedError( DWORD dwLastIocpFailedError ) { m_dwLastIocpFailedError = dwLastIocpFailedError; }
 	//}}
 
-	SOCKET&			GetSocket(){return m_sock;}
+	SOCKET			GetSocket() const { return m_spStream ? m_spStream->Native() : INVALID_SOCKET; }
 	KOVERLAPPED&	GetovlRecv(){return m_ovlRecv;}
 	KOVERLAPPED&	GetovlSend(){return m_ovlSend;}
 
 protected:
-    inline void MovDataQue2Buf();   // send-queue에 대기중인 데이터가 있다면 버퍼로 옮긴다.
+    inline void MovDataQue2Buf();   // moves data waiting in the send queue into the buffer
+    void StartSend();               // sends m_ovlSend's buffer (m_csSock held)
+    void OnAsyncCompleted( KOVERLAPPED& kOvl, const x2::platform::net::IoResult& kResult );
+    void CloseStream();             // m_csSock held
 
 protected:
     DWORD               m_dwKey;
     SOCKADDR_IN         m_sockaddr;
     KOVERLAPPED			m_ovlRecv;
     KOVERLAPPED			m_ovlSend;
-    SOCKET				m_sock;
+    std::shared_ptr< x2::platform::net::TcpStream > m_spStream; // replaces the SOCKET; null when closed
     CRITICAL_SECTION    m_csSock;
 
     KCircularQueue      m_kSendQueue;

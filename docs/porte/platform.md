@@ -35,6 +35,7 @@ Código portado inclui `x2/platform/win32.h` no lugar de `<windows.h>`, `<atltim
 | `crt.h` | `_wtoi`, `swprintf_s`, `wcscpy_s`, `_wcsicmp`, `_itow_s`, `_mkdir`, `fopen_s`, `localtime_s` (ordem do MSVC), `_wstrdate_s`/`_wstrtime_s`, `ZeroMemory`, `_tcs*`, `WideCharToMultiByte`... e as sobrecargas com array do MSVC | implementação própria | nativo (MinGW: sobrecargas que faltam) |
 | `ini.h` | `x2::platform::ReadIniString`/`ReadIniInt` (regras do `GetPrivateProfileString`), `GetPrivateProfileStringW`/`IntW` | implementação própria | **também a própria** via `ReadIni*` (ver Armadilhas) |
 | `net.h` | Nomes do Winsock (`SOCKET`, `closesocket`, `SOCKADDR_IN`...); `OVERLAPPED`/`WSABUF` só como tipos | BSD sockets | Winsock 2 |
+| `net_io.h` | Rede assíncrona do servidor (T20): `IoService` (`RunFor`, `Stop`, `Drain`), `TcpStream` (`Connect`, `Assign` de socket aceito, `AsyncReadSome`/`AsyncWriteSome`, `Close` que aborta o pendente), `SocketErrorMessage` | Asio (epoll) | Asio (IOCP) |
 | `odbc.h` | `<sql.h>`/`<sqlext.h>` sem conflito com os tipos Win32 da camada | unixODBC, com os typedefs dele renomeados | nativo |
 | `format.h`, `timer.h`, `noncopyable.h` | `x2::wformat`/`x2::str` (fiel ao Boost.Format), `x2::Timer`, `x2::noncopyable` | — | — |
 | `unicode.h` | wide ↔ UTF-8 ↔ UTF-16; `TranslateWideFormat`; `Cp949ToWide`, `IsValidUtf8`, `DecodeTextFile` | iconv (CP949) | `MultiByteToWideChar(949)` |
@@ -60,6 +61,9 @@ Código portado inclui `x2/platform/win32.h` no lugar de `<windows.h>`, `<atltim
   `DecodeTextFile` detecta UTF-16/UTF-8 e cai para CP949. O INI é lido por `ReadIniString` também no Windows, porque a API nativa usa a
   code page do sistema (no Wine, ou num Windows não coreano, as strings de versão viriam corrompidas; os testes no Wine mostraram isso).
 - **unixODBC** define seus próprios `ULONG` (64 bits), `TCHAR` (`char`), `WCHAR` (`unsigned short`)...: o `odbc.h` renomeia esses typedefs durante o include.
+- **Rede**: o Asio só entra em `src/platform/src/net_io.cpp`. `TcpStream::Close` cancela antes do `shutdown`, porque no Windows o `shutdown`
+  termina a leitura pendente como fim de conexão e no Linux como cancelamento; assim os dois dão `Aborted`. Quem destrói o `IoService` com
+  operações pendentes precisa chamar `Drain()` antes (o `~KIocp` faz isso), senão os handlers soltam sockets durante a destruição.
 - `IsWindow` sempre falso e `HWND_DESKTOP` nulo fora do Windows (servidor sem janela).
 
 ## Limitações conhecidas

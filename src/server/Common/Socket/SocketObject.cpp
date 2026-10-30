@@ -1,10 +1,8 @@
-#define NOMINMAX
 #include "SocketObject.h"
 #include "Socket/NetCommon.h"
-
-//#ifndef KNC_DONT_USE_IOCP
 #include "IOCP.h"
-//#endif
+
+#include <algorithm>
 
 #include <dbg/dbg.hpp>
 #include <Thread/Locker.h>
@@ -43,18 +41,16 @@ void KSocketObject::KMaxSizeInfo::Dump( std::wostream& stm )
         << TOSTRINGW( (LPCTSTR)m_cTime.Format( KNC_TIME_FORMAT ) );
 }
 
-KSocketObject::KSocketObject() : m_sock( INVALID_SOCKET ), m_dwKey( 0 )
+KSocketObject::KSocketObject() : m_dwKey( 0 )
 {
+    m_sockaddr = SOCKADDR_IN();
     m_sockaddr.sin_family   = AF_INET;
 
     m_ovlRecv.m_eIOMode     = KOVERLAPPED::IO_RECV;
     m_ovlSend.m_eIOMode     = KOVERLAPPED::IO_SEND;
 
-    m_ovlRecv.hEvent        = NULL;
-    m_ovlSend.hEvent        = NULL;
-
 	m_iDisconnectReason		= KStatistics::eSIColDR_No_Reason;
-	//{{ 2009. 8. 31  최육사	IOCP종료사유
+	//{{ 2009-08-31 IOCP disconnection reason
 	m_dwLastIocpFailedError = 0;
 	//}}
 
@@ -64,22 +60,17 @@ KSocketObject::KSocketObject() : m_sock( INVALID_SOCKET ), m_dwKey( 0 )
 
 void KSocketObject::SetIOEvent( KOVERLAPPED::ENUM_IO_MODE eMode_, HANDLE hEvent_ )
 {
-    // 060227. florist. 이전엔 GetIOEvent라는 함수를 제공해 내부에서 이벤트 객체를 생성했었다.
-    // 하지만 WaitFor...하는 부분은 SocketObject 외부에 있기 때문에, 종료처리시 스레드가 아직 돌 때
-    // 이벤트를 먼저 지워버리면 문제가 생긴다. 이때문에 코드가 좀 길어지더라도 스레드가 있는 코드에서
-    // 이벤트 객체를 생성 & 종료하도록 변경한다. SetIOEvent는 외부에서 새성된 Event를 받아오기만 한다.
-
-    LPWSAOVERLAPPED povl    = NULL;
+    // 2006-02-27 florist: there used to be a GetIOEvent that created the event internally. But the
+    // WaitFor... happens outside the socket object, so deleting the event at shutdown while the thread still
+    // runs caused trouble. The thread's code now creates and destroys the event; this only receives it.
 
     switch( eMode_ )
     {
-    case KOVERLAPPED::IO_SEND: povl = &m_ovlSend;   break;
-    case KOVERLAPPED::IO_RECV: povl = &m_ovlRecv;   break;
+    case KOVERLAPPED::IO_SEND: m_ovlSend.hEvent = hEvent_;  break;
+    case KOVERLAPPED::IO_RECV: m_ovlRecv.hEvent = hEvent_;  break;
     default:
         return;
     }
-
-    povl->hEvent = hEvent_;
 }
 
 
@@ -88,18 +79,47 @@ KSocketObject::~KSocketObject(void)
     { // locking scope
         KLocker lock( m_csSock );
 
-        CLOSE_SOCKET( m_sock );
+        CloseStream();
     } // locking scope
 
     DeleteCriticalSection( &m_csSock );
     DeleteCriticalSection( &m_csSendQueue );
 }
 
+void KSocketObject::CloseStream()
+{
+    if( m_spStream )
+    {
+        m_spStream->Close();    // pending operations complete as aborted
+        m_spStream.reset();
+    }
+}
+
 void KSocketObject::CloseSocket()
 {
     KLocker lock( m_csSock );
 
-    CLOSE_SOCKET( m_sock );
+    CloseStream();
+}
+
+void KSocketObject::SetSocketInfo( SOCKET socket_, const SOCKADDR_IN& sockAddr_ )
+{
+    KLocker lock( m_csSock );
+
+    CloseStream();
+    m_sockaddr = sockAddr_;
+
+    auto spStream = std::make_shared< x2::platform::net::TcpStream >( SiKIocp()->GetIoService() );
+    int iError = 0;
+    if( !spStream->Assign( socket_, &iError ) )
+    {
+        START_LOG( cerr, L"failed to take the accepted socket" )
+            << BUILD_LOG( x2::platform::net::SocketErrorMessage( iError ) )
+            << END_LOG;
+        CLOSE_SOCKET( socket_ );
+        return;
+    }
+    m_spStream = spStream;
 }
 
 bool KSocketObject::Connect( const char* szIP_,
@@ -115,30 +135,22 @@ bool KSocketObject::Connect( const char* szIP_,
         return true;
     }
 
-    int            ret;
-
-    m_sock = ::WSASocket( AF_INET,
-        SOCK_STREAM,
-        IPPROTO_TCP,
-        NULL,
-        0,
-        WSA_FLAG_OVERLAPPED ); // overlapped I/O
-
-    if( m_sock == INVALID_SOCKET )
+    auto spStream = std::make_shared< x2::platform::net::TcpStream >( SiKIocp()->GetIoService() );
+    int iError = 0;
+    if( !spStream->Open( &iError ) )
     {
-        START_LOG( cerr, GET_WSA_MSG )
-            << BUILD_LOG( WSAGetLastError() )
+        START_LOG( cerr, x2::platform::net::SocketErrorMessage( iError ) )
+            << BUILD_LOG( iError )
             << END_LOG;
         return false;
     }
 
     if( vecOpt_ != NULL )
     {
-        int sock_opt = 1;
         std::vector< std::pair<int,int> >::iterator vit;
         for( vit = vecOpt_->begin(); vit != vecOpt_->end(); vit++ )
         {
-            if( ::setsockopt( m_sock, vit->first, vit->second, (char *)&sock_opt,	sizeof (sock_opt) ) == SOCKET_ERROR )
+            if( !spStream->SetOption( vit->first, vit->second, 1 ) )
             {
                 START_LOG( cerr, GET_WSA_MSG )
                     << BUILD_LOG( WSAGetLastError() )
@@ -151,31 +163,24 @@ bool KSocketObject::Connect( const char* szIP_,
     if( szIP_ )         SetRemoteIP( szIP_ );
     if( usPort_ != 0 )  SetRemotePort( usPort_ );
 
-    ret = ::connect( m_sock, (struct sockaddr*)&m_sockaddr, sizeof(m_sockaddr) );
-
-    if( SOCKET_ERROR == ret )
+    if( !spStream->Connect( m_sockaddr, &iError ) )
     {
-        // MUST: 간혹 다른 컴(회의실)에서 WSAENOBUFS란 Error를 유발할 경우가 존재한다.
-        // TCP의 buffer space가 모자랄 경우인 것 같다.
-        // client가 100개 이면 뒤에 5개 정도가 이 error를 발생시킨다.
-        // 나중에 수정되어야 할 것 이다.
-        START_LOG( cerr, GET_WSA_MSG )
-            << BUILD_LOG( WSAGetLastError() )
+        // MUST: sometimes another machine (meeting room) gets WSAENOBUFS, apparently when TCP runs out of
+        // buffer space: with 100 clients, the last 5 or so fail. To be fixed some day.
+        START_LOG( cerr, x2::platform::net::SocketErrorMessage( iError ) )
+            << BUILD_LOG( iError )
             << BUILD_LOG( m_dwKey )
             << BUILD_LOG( szIP_ )
             << BUILD_LOG( usPort_ )
             << END_LOG;
-
-        CLOSE_SOCKET( m_sock );
         return false;
     }
+    m_spStream = spStream;
 
     KSocketObjectPtr spSockObj = GetThisPtr< KSocketObject >();
     if( bUseIocp_ )
     {
-        //#ifndef KNC_DONT_USE_IOCP
         _JIF( SiKIocp()->AssociateSocket( spSockObj ), return false );
-        //#endif
     }
 
     _JIF( spSockObj->InitRecv(), return false );
@@ -188,84 +193,68 @@ void KSocketObject::OnSocketError()
     START_LOG( cout, L"pure-virtual function called." );
 }
 
+// Port: what the IOCP delivered. With an event set (no IOCP), the result is stored and the event signaled;
+// the waiting thread then calls OnIOCompleted(). Otherwise it goes to KIocp like a dequeued completion packet:
+// data or a peer close (0 bytes) to OnIOCompleted(), a failure (including the local close) to OnClosedByLocal().
+void KSocketObject::OnAsyncCompleted( KOVERLAPPED& kOvl_, const x2::platform::net::IoResult& kResult_ )
+{
+    using x2::platform::net::IoStatus;
+
+    if( kOvl_.hEvent != NULL )
+    {
+        kOvl_.m_kResult = kResult_;
+        ::SetEvent( kOvl_.hEvent );
+        return;
+    }
+
+    if( kResult_.status == IoStatus::Ok || kResult_.status == IoStatus::Eof )
+    {
+        SiKIocp()->OnIOCompleted( m_dwKey, static_cast<DWORD>( kResult_.bytes ), &kOvl_ );
+    }
+    else
+    {
+        SiKIocp()->OnClosedByLocal( m_dwKey, kResult_.error );
+    }
+}
+
 bool KSocketObject::InitRecv()
 {
     KLocker lock( m_csSock );
 
-    if( m_sock == INVALID_SOCKET ) return false;
-
-    DWORD dwRead = 0;
-    DWORD dwFlag = 0;
-
-    // Note: Win2000에서는 아래의 WSARecv() 대신 ReadFile()을 사용할 수 있다.
-    //       Win98에서는 ReadFile()을 사용할 수 없다.
+    if( !m_spStream ) return false;
 
     m_ovlRecv.Clear();
 
-    m_ovlRecv.m_wsaBuffer.buf = &m_ovlRecv.m_pBuffer[m_ovlRecv.m_dwLeft];
-    m_ovlRecv.m_wsaBuffer.len = MAX_PACKET_SIZE - m_ovlRecv.m_dwLeft;
-
-    int ret = ::WSARecv( m_sock,                    // socket
-        &m_ovlRecv.m_wsaBuffer,     // buffer pointer, size
-        1,                          // lpBuffers 배열에 있는 WSABUF 구조체의 수.
-        &dwRead,                    // I/O 작업이 끝나자마자 보내진 바이트 수
-        &dwFlag,                    // [in,out] Option Flag
-        &m_ovlRecv,                 // struct LPWSAOVERLAPPED
-        NULL);                      // Recv 완료시 호출될 함수 포인터
-
-    if( SOCKET_ERROR == ret )
-    {
-        switch( ::GetLastError() ) {
-        case WSA_IO_PENDING:    // the overlapped operation has been successfully initiated
-            return true;
-
-        case WSAECONNRESET:     // The virtual circuit was reset by the remote side.
-            START_LOG( cwarn, L"The virtual circuit was reset by the remote side." );
-
-			SetDisconnectReason( KStatistics::eSIColDR_WSAECONNRESET );
-            OnSocketError();
-            return false;
-
-        default:
-            START_LOG( cerr, L"WSARecv() Failed." )
-                << BUILD_LOG( m_dwKey )
-                << BUILD_LOG( GET_WSA_MSG )
-                << BUILD_LOG( ret );
-
-			SetDisconnectReason( KStatistics::eSIColDR_WSARecvFailed );
-            OnSocketError();
-            return false;
-        }
-    } // if
-
-    // If no error occurs and the receive operation has completed immediately, WSARecv returns zero.
-    if( ret == 0 )
-    {
-        return true;
-    }
-    return false;
+    // the handler keeps the object (and its buffer) and the stream alive until the operation completes
+    KSocketObjectPtr spSelf = GetThisPtr< KSocketObject >();
+    std::shared_ptr< x2::platform::net::TcpStream > spStream = m_spStream;
+    m_spStream->AsyncReadSome( &m_ovlRecv.m_pBuffer[m_ovlRecv.m_dwLeft],
+        MAX_PACKET_SIZE - m_ovlRecv.m_dwLeft,
+        [spSelf, spStream]( const x2::platform::net::IoResult& kResult ) {
+            spSelf->OnAsyncCompleted( spSelf->m_ovlRecv, kResult );
+        } );
+    return true;
 }
 
 void KSocketObject::OnIOCompleted( KOVERLAPPED::ENUM_IO_MODE eMode_ )
 {
-    DWORD dwTransfered      = 0;
-    DWORD dwFlag            = 0;
-    LPWSAOVERLAPPED povl    = NULL;
+    using x2::platform::net::IoStatus;
 
+    KOVERLAPPED* pkOvl = NULL;
     switch( eMode_ )
     {
-    case KOVERLAPPED::IO_SEND: povl = &m_ovlSend;   break;
-    case KOVERLAPPED::IO_RECV: povl = &m_ovlRecv;   break;
+    case KOVERLAPPED::IO_SEND: pkOvl = &m_ovlSend;   break;
+    case KOVERLAPPED::IO_RECV: pkOvl = &m_ovlRecv;   break;
     default:
         return;
     }
 
+    // a failed operation reports 0 bytes, as WSAGetOverlappedResult() did
+    DWORD dwTransfered = 0;
     { // locking scope
-
         KLocker lock( m_csSock );
-
-        ::WSAGetOverlappedResult( m_sock, povl, &dwTransfered, FALSE, &dwFlag );
-
+        if( pkOvl->m_kResult.status == IoStatus::Ok )
+            dwTransfered = static_cast<DWORD>( pkOvl->m_kResult.bytes );
     } // locking scope
 
     if( eMode_ == KOVERLAPPED::IO_SEND )
@@ -284,72 +273,56 @@ void KSocketObject::MovDataQue2Buf()
     m_ovlSend.m_dwLeft += nSize;
 }
 
+void KSocketObject::StartSend()
+{
+    m_ovlSend.m_bSending = true;
+
+    KSocketObjectPtr spSelf = GetThisPtr< KSocketObject >();
+    std::shared_ptr< x2::platform::net::TcpStream > spStream = m_spStream;
+    m_spStream->AsyncWriteSome( m_ovlSend.m_pBuffer, m_ovlSend.m_dwLeft,
+        [spSelf, spStream]( const x2::platform::net::IoResult& kResult ) {
+            spSelf->OnAsyncCompleted( spSelf->m_ovlSend, kResult );
+        } );
+}
 
 void KSocketObject::OnSendCompleted( DWORD dwTransfered_ )
 {
     KLocker lock( m_csSock );
 
-    if( m_sock == INVALID_SOCKET ) return;
+    if( !m_spStream ) return;
 
-    m_ovlSend.m_bSending    = false;    // 050127. 다 보냈는지 여부를 떠나서 항상 false. 재전송할 경우 아래에서 다시 true해줌.
+    m_ovlSend.m_bSending    = false;    // 2005-01-27: always false, sent all or not; set again below when resending
 
-    if( dwTransfered_ >= m_ovlSend.m_dwLeft )   // 요청된 데이터를 모두 다 보냄
+    if( dwTransfered_ >= m_ovlSend.m_dwLeft )   // everything requested was sent
     {
         m_ovlSend.m_dwLeft      = 0;
     }
-    else    // 데이터를 덜 보냄 : 다시 전송을 신청
+    else    // partly sent: send the rest
     {
-        m_ovlSend.m_dwLeft -= m_ovlSend.InternalHigh;
+        // Port: the original subtracted OVERLAPPED::InternalHigh, which holds the same byte count
+        m_ovlSend.m_dwLeft -= dwTransfered_;
         memmove( &m_ovlSend.m_pBuffer[0], &m_ovlSend.m_pBuffer[dwTransfered_], m_ovlSend.m_dwLeft );
     }
 
-    MovDataQue2Buf();   // send-queue에 대기중인 데이터가 있다면 버퍼로 옮긴다.
+    MovDataQue2Buf();   // move data waiting in the send queue into the buffer
 
-    if( m_ovlSend.m_dwLeft == 0 )   // 보내야 할 데이터가 더이상 남아있지 않다면 리턴.
+    if( m_ovlSend.m_dwLeft == 0 )   // nothing left to send
         return;
 
-    m_ovlSend.m_wsaBuffer.len = m_ovlSend.m_dwLeft;
-
-    DWORD dwWrite = 0;
-    int ret = ::WSASend( m_sock,    // socket
-        &m_ovlSend.m_wsaBuffer,     // 버퍼 포인터
-        1,                          // WSABUF의 갯수
-        &dwWrite,                   // [out] 즉시 전송된 량
-        0,                          // Flag
-        &m_ovlSend,                 // OVERLAPPED
-        NULL );
-
-    if( ret == SOCKET_ERROR && ::WSAGetLastError() == ERROR_IO_PENDING )    // 현재 pending 중..
-    {
-        m_ovlSend.m_bSending   = true;
-        return;
-    }
-
-    if( ret != SOCKET_ERROR ) // 호출 하자 마자 다 보냄.
-    {
-        m_ovlSend.m_bSending   = true;
-        return;
-    }
-
-    START_LOG( cwarn, L"WSASend Failed. LastError : " << GET_WSA_MSG );
-
-	SetDisconnectReason( KStatistics::eSIColDR_WSASendFailed_OnSendComp );
-    OnSocketError();
-
-    return;
+    StartSend();
 }
 
 bool KSocketObject::SendData( const char* szData_, int iSize_ )
 {
     KLocker lock( m_csSock );
 
-    _JIF( m_sock != INVALID_SOCKET, return false );    // 소켓이 유효하지 않음.
-    _JIF( iSize_ > 0, return false );                  // 0 byte 전송 시도도 에러처리.
+    _JIF( m_spStream, return false );                  // invalid socket
+    _JIF( iSize_ > 0, return false );                  // sending 0 bytes is an error too
     _JIF( szData_ != NULL, return false );
 
-    MovDataQue2Buf(); // send-queue에 대기중인 데이터가 있다면 버퍼로 옮긴다.
+    MovDataQue2Buf(); // move data waiting in the send queue into the buffer
 
-    // input data의 처리 - 1. 버퍼에 빈 공간이 있다면 우선 복사 시도.
+    // input data, 1: copy into the buffer while it has room
     int iFreeSpace = MAX_PACKET_SIZE - m_ovlSend.m_dwLeft;
     if( iFreeSpace > 0 )
     {
@@ -360,7 +333,7 @@ bool KSocketObject::SendData( const char* szData_, int iSize_ )
         iSize_ -= iCopySize;
     }
 
-    // input data의 처리 - 2. 아직 데이터가 남아 있다면 SendQueue에 복사 시도.
+    // input data, 2: the rest goes to the send queue
     if( iSize_ > 0 )
     {
         KLocker lock2( m_csSendQueue );
@@ -370,14 +343,14 @@ bool KSocketObject::SendData( const char* szData_, int iSize_ )
         ms_kMaxSizeInfo.Check( m_kSendQueue.GetDataSize(), m_kSendQueue.size() );
     }
 
-    // input data의 처리 - 3. 그래도 아직 복사하지 못한 데이터가 남아 있다면 buffer full.
+    // input data, 3: whatever still did not fit means the buffer is full
     if( iSize_ > 0 )
     {
         START_LOG( cerr, L"Send Buffer Full. data size : " << iSize_
             << L", left : " << m_ovlSend.m_dwLeft
             << L", bSending : " << m_ovlSend.m_bSending );
 
-        // 데이터를 보내지 않았음. 다시 보내려면 SendPakcet 한번 더 호출해야 함.
+        // nothing was sent: SendPacket has to be called again
         m_ovlSend.m_dwLeft = 0;
         m_ovlSend.m_bSending = false;
 
@@ -387,40 +360,9 @@ bool KSocketObject::SendData( const char* szData_, int iSize_ )
         return false;
     }
 
-    // 전송중이지 않으면 다시한번 WsaSend를 호출해준다.
+    // not sending right now: start it
     if( m_ovlSend.m_bSending == false )
-    {
-        DWORD dwWrite = 0;
-        m_ovlSend.m_wsaBuffer.len = m_ovlSend.m_dwLeft;
-
-        int ret = ::WSASend( m_sock,    // socket
-            &m_ovlSend.m_wsaBuffer,     // 버퍼 포인터
-            1,                          // WSABUF의 갯수
-            &dwWrite,                   // [out] 즉시 전송된 량
-            0,                          // Flag
-            &m_ovlSend,                 // OVERLAPPED
-            NULL );
-
-        //std::cout << "raw length : " << kbuff_.GetLength() << std::endl << "SEND " << bsbuff << std::endl;
-
-        if( ret == SOCKET_ERROR && ::WSAGetLastError() == ERROR_IO_PENDING )    // 현재 pending 중..
-        {
-            m_ovlSend.m_bSending   = true;
-            return true;
-        }
-
-        if( ret != SOCKET_ERROR ) // 호출 하자 마자 다 보냄.
-        {
-            m_ovlSend.m_bSending   = true;
-            return true;
-        }
-
-        START_LOG( cwarn, L"WSASend Failed. LastError : " << GET_WSA_MSG << ret );
-
-		SetDisconnectReason( KStatistics::eSIColDR_WSASendFailed );
-        OnSocketError();
-        return false;
-    }
+        StartSend();
 
     return true;
 }
@@ -433,7 +375,7 @@ void KSocketObject::SetDisconnectReason( int iDisconnectReason )
 	}
 	else
 	{
-		START_LOG( cwarn, L"새로운 DisconnectReason값이 들어옴." )
+		START_LOG( cwarn, L"a new DisconnectReason arrived" )
 			<< BUILD_LOG( m_iDisconnectReason )
 			<< BUILD_LOG( iDisconnectReason )
 			<< END_LOG;

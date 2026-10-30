@@ -5,6 +5,7 @@ add_library(x2_platform STATIC
     src/d3dx_math.cpp
     src/debug.cpp
     src/ini.cpp
+    src/net_io.cpp
     src/string.cpp
     src/sync_posix.cpp
     src/text.cpp
@@ -13,10 +14,10 @@ add_library(x2_platform STATIC
 add_library(x2::platform ALIAS x2_platform)
 
 target_include_directories(x2_platform PUBLIC include)
-target_link_libraries(x2_platform PUBLIC x2::options)
+target_link_libraries(x2_platform PUBLIC x2::options PRIVATE x2::asio)
 
 if(WIN32)
-    target_link_libraries(x2_platform PUBLIC winmm)
+    target_link_libraries(x2_platform PUBLIC winmm ws2_32 mswsock)
 else()
     find_package(Threads REQUIRED)
     target_link_libraries(x2_platform PUBLIC Threads::Threads)

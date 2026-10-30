@@ -18,12 +18,7 @@ void KAccepter::Init( u_short usPort_, PFNOnAccept fnOnAccept_, bool bNagleAlgOn
     m_fnOnAccept = fnOnAccept_;
     m_bNagleAlgOn = bNagleAlgOn_;
 
-    m_sock = ::WSASocket( AF_INET,
-        SOCK_STREAM,
-        IPPROTO_TCP,
-        NULL,
-        0,
-        WSA_FLAG_OVERLAPPED ); // overlapped I/O
+    m_sock = ::socket( AF_INET, SOCK_STREAM, IPPROTO_TCP ); // accepted sockets go to KIocp (x2::platform::net)
 
     if( m_sock == INVALID_SOCKET )
     {
@@ -31,12 +26,12 @@ void KAccepter::Init( u_short usPort_, PFNOnAccept fnOnAccept_, bool bNagleAlgOn
         return;
     } // if
 
-    // server restart와 같은 경우 기존의 address를 사용할 수 있게 허용한다.
-    char bOK = true;
-    int nRet;
-    nRet = ::setsockopt( m_sock, SOL_SOCKET, SO_REUSEADDR, &bOK, sizeof(char) );
+    // allow reusing the address, e.g. when the server restarts
+    // Port: the original passed a 1-byte char, which Winsock accepts; POSIX needs an int
+    int bOK = 1;
+    ::setsockopt( m_sock, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char*>( &bOK ), sizeof( bOK ) );
 
-    SOCKADDR_IN local;  // 특정 port와 binding을 한다.
+    SOCKADDR_IN local = SOCKADDR_IN();  // bind to the given port
     local.sin_family      = AF_INET;
     local.sin_addr.s_addr = INADDR_ANY;
     local.sin_port        = htons( usPort_ );
@@ -66,7 +61,7 @@ void KAccepter::Run()
 
     while( true )
     {
-        ret = ::WaitForSingleObject( m_hKillEvent, 0 );     // 0.5s 간격
+        ret = ::WaitForSingleObject( m_hKillEvent, 0 );
 
         if( ret == WAIT_OBJECT_0 ) break;
 
@@ -81,7 +76,7 @@ void KAccepter::End( DWORD dwTimeout_ /*dwTimeout = 3000*/ )
 {
     if( NULL != m_hThread )
     {
-        CLOSE_SOCKET( m_sock );     // 추가. accept 중인 소켓을 닫는다.
+        CLOSE_SOCKET( m_sock );     // closes the socket blocked in accept (the shutdown wakes it on Linux too)
 
         SetEvent( m_hKillEvent );
         ::WaitForSingleObject( m_hThread, dwTimeout_ );
@@ -95,7 +90,7 @@ void KAccepter::Loop()
 {
     SOCKET      socket      = INVALID_SOCKET;
     SOCKADDR_IN sinRemote;
-    int         size        = sizeof(sinRemote);
+    x2_socklen_t size       = sizeof(sinRemote);
 
     socket = ::accept( m_sock, (SOCKADDR*)&sinRemote, &size );
 
@@ -105,7 +100,7 @@ void KAccepter::Loop()
         return;
     }
 
-    if( !m_bNagleAlgOn )    // Nagle option을 제거. 데이터를 모아서 보내지 않고 그 즉시 전송하도록 한다.
+    if( !m_bNagleAlgOn )    // disable Nagle: send right away instead of coalescing
     {
         int sock_opt = 1;
         if( ::setsockopt( socket, IPPROTO_TCP, TCP_NODELAY, (char*)&sock_opt, sizeof(sock_opt) ) == SOCKET_ERROR )

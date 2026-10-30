@@ -7,34 +7,40 @@
 
 ImplementSingleton( KIocp );
 NiImplementRTTI( KIocp, KThreadManager );
-ImplPfID( KIocp, PI_NULL );   // IOCP는 PfID 사용 안함.
+ImplPfID( KIocp, PI_NULL );   // the IOCP does not use a PfID
 
 KIocp::KIocp()
 :
-m_hIOCP( NULL ),
 m_dwTerm(0L),
 m_dwSockObjNum(0L)
 {
     m_cTime = CTime::GetCurrentTime();
-    m_hIOCP = ::CreateIoCompletionPort( INVALID_HANDLE_VALUE, NULL, 0, 0 );
-
-    LIF( m_hIOCP != NULL );
 }
 
 KIocp::~KIocp()
 {
-    if( m_hIOCP != NULL )
-        ::CloseHandle( m_hIOCP );
+    m_kIoService.Stop();
+    KThreadManager::EndThread( 3000 );  // the I/O threads use m_kIoService: join them before it goes away
+
+    // close what is still registered, then run the resulting completions before the members go away
+    std::map< DWORD, KSocketObjectPtr > mapSockObj;
+    {
+        KLocker lock( m_csSockObj );
+        mapSockObj.swap( m_mapSockObj );
+    }
+    for( auto& kPair : mapSockObj )
+    {
+        if( kPair.second )
+            kPair.second->CloseSocket();
+    }
+    mapSockObj.clear();
+    m_kIoService.Drain();
 }
 
 void KIocp::EndThread()
 {
-    std::vector< std::shared_ptr<KThread> >::iterator vit;
-    for( vit = m_vecThread.begin(); vit != m_vecThread.end(); vit++ )
-    {
-        PostStatus( SIGNAL_SHUTDOWN_SERVER );
-        //(*vit)->End();
-    }
+    // the original posted one SIGNAL_SHUTDOWN_SERVER packet per I/O thread
+    PostStatus( SIGNAL_SHUTDOWN_SERVER );
 }
 
 bool KIocp::AssociateSocket( KSocketObjectPtr spSockObj )
@@ -43,42 +49,21 @@ bool KIocp::AssociateSocket( KSocketObjectPtr spSockObj )
 
     DWORD dwCompKey = GenNewCompKey();
 
-    SOCKET& sock = spSockObj->GetSocket();
+    if( !spSockObj->IsConnected() )
+        return false;
 
     KLocker lock( m_csSockObj );
 
-    if( AssociateSocket( sock, dwCompKey ) )
-    {
-        m_mapSockObj.insert( std::make_pair( dwCompKey, spSockObj ) );
-        spSockObj->SetKey( dwCompKey );
-        return true;
-    }
-
-    return false;
+    m_mapSockObj.insert( std::make_pair( dwCompKey, spSockObj ) );
+    spSockObj->SetKey( dwCompKey );
+    return true;
 }
 
-bool KIocp::AssociateSocket( SOCKET hSocket, ULONG_PTR CompKey )
+bool KIocp::PostStatus( ULONG_PTR CompKey )
 {
-    return ( ::CreateIoCompletionPort( ( HANDLE ) hSocket, m_hIOCP, CompKey, 0 ) != NULL );
-}
-
-bool KIocp::PostStatus( ULONG_PTR CompKey,
-                       DWORD dwNumBytes /* = 0 */,
-                       OVERLAPPED* po /* = NULL */ )
-{
-    return ( ::PostQueuedCompletionStatus( m_hIOCP, dwNumBytes, CompKey, po ) != 0 );
-}
-
-bool KIocp::GetStatus( ULONG_PTR* pCompKey,
-                      PDWORD pdwNumBytes,
-                      OVERLAPPED** ppo,
-                      DWORD dwMilliseconds /* = INFINITE */)
-{
-    return ( ::GetQueuedCompletionStatus( m_hIOCP,
-        pdwNumBytes,
-        pCompKey,
-        ppo,
-        dwMilliseconds ) != 0 );
+    _JIF( CompKey == SIGNAL_SHUTDOWN_SERVER, return false );
+    m_kIoService.Stop();    // every KIOThread leaves RunFor() and ends
+    return true;
 }
 
 bool KIocp::DeleteCompKey( IN DWORD dwKey_ )
@@ -109,7 +94,7 @@ bool KIocp::DeleteCompKey( IN DWORD dwKey_ )
     return true;
 }
 
-void KIocp::OnIOCompleted( IN DWORD dwKey_, IN DWORD dwBytesTransfer_, IN OVERLAPPED* povl_ )
+void KIocp::OnIOCompleted( IN DWORD dwKey_, IN DWORD dwBytesTransfer_, IN KOVERLAPPED* povl_ )
 {
     if( povl_ == NULL )
     {
@@ -117,7 +102,7 @@ void KIocp::OnIOCompleted( IN DWORD dwKey_, IN DWORD dwBytesTransfer_, IN OVERLA
         return;
     }
 
-    KOVERLAPPED* pkOvl = static_cast<KOVERLAPPED*>( povl_ );
+    KOVERLAPPED* pkOvl = povl_;
 
     KSocketObjectPtr spSockObj = GetSockObj( dwKey_ );
 
@@ -147,15 +132,15 @@ void KIocp::OnIOCompleted( IN DWORD dwKey_, IN DWORD dwBytesTransfer_, IN OVERLA
     }
 }
 
-void KIocp::OnClosedByLocal( IN DWORD dwKey_ )
+void KIocp::OnClosedByLocal( IN DWORD dwKey_, IN int iError_ )
 {
     KSocketObjectPtr spSockObj = GetSockObj( dwKey_ );
 
     if( spSockObj )
     {
 		//////////////////////////////////////////////////////////////////////////
-		//{{ 2009. 8. 31  최육사	오류원인 파악
-		spSockObj->SetLastIocpFailedError( ::GetLastError() );
+		//{{ 2009-08-31 find the cause of the failure
+		spSockObj->SetLastIocpFailedError( static_cast<DWORD>( iError_ ) );
 		//}}
 		//////////////////////////////////////////////////////////////////////////
 
@@ -200,34 +185,23 @@ KThread* KIocp::CreateThread()
     return new KIOThread;
 }
 
-#undef max
 #include <random>
 
 DWORD KIocp::GenNewCompKey() const
 {
-    static std::mt19937 rng;
+    // Port: the original used an unseeded generator through boost::variate_generator; keys only need to be
+    // unique among the registered sockets, so a seeded std::mt19937 is used.
+    static std::mt19937 rng( std::random_device{}() );
     static std::uniform_int_distribution<DWORD> uint32( 1, UINT_MAX );
-    static boost::variate_generator<std::mt19937&, std::uniform_int_distribution<DWORD> > die(rng, uint32);
 
     KLocker lock( m_csSockObj );
 
-    DWORD dwStart = GetTickCount();
     for(;;)
     {
-        DWORD dwCompKey = die();
+        const DWORD dwCompKey = uint32( rng );
 
         if( m_mapSockObj.find( dwCompKey ) == m_mapSockObj.end() )
             return dwCompKey;
-    }
-    DWORD dwTerm  = GetTickCount() - dwStart;
-
-
-    if( dwTerm > m_dwTerm )
-    {
-        KLocker lock( KIocp::m_cs );
-        m_dwTerm         = dwTerm;
-        m_cTime          = CTime::GetCurrentTime();
-        m_dwSockObjNum   = m_mapSockObj.size();
     }
 }
 

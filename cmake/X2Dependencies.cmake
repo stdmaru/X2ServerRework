@@ -36,6 +36,25 @@ if(NOT TARGET cryptopp::cryptopp)
     set_target_properties(cryptopp PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${_x2_cryptopp_inc}")
 endif()
 
+# --- Asio standalone (header-only, decision T20): only x2::platform includes it ------------------
+find_path(X2_ASIO_INCLUDE_DIR asio.hpp)
+if(NOT X2_ASIO_INCLUDE_DIR)
+    FetchContent_Declare(asio
+        URL https://github.com/chriskohlhoff/asio/archive/refs/tags/asio-1-30-2.tar.gz
+        URL_HASH SHA256=755bd7f85a4b269c67ae0ea254907c078d408cce8e1a352ad2ed664d233780e8
+        SOURCE_SUBDIR do-not-add)
+    FetchContent_MakeAvailable(asio)
+    set(X2_ASIO_INCLUDE_DIR ${asio_SOURCE_DIR}/asio/include CACHE PATH "" FORCE)
+endif()
+add_library(x2_asio INTERFACE)
+target_include_directories(x2_asio SYSTEM INTERFACE ${X2_ASIO_INCLUDE_DIR})
+target_compile_definitions(x2_asio INTERFACE ASIO_STANDALONE ASIO_NO_DEPRECATED)
+if(WIN32)
+    target_compile_definitions(x2_asio INTERFACE _WIN32_WINNT=0x0A00)  # Windows 10
+    target_link_libraries(x2_asio INTERFACE ws2_32 mswsock)
+endif()
+add_library(x2::asio ALIAS x2_asio)
+
 # --- LuaJIT (Lua 5.1 API) ---------------------------------------------------------------------------
 # Linux: system package via pkg-config. Windows: still to be done (LuaJIT builds with its own scripts).
 if(NOT TARGET x2::luajit)

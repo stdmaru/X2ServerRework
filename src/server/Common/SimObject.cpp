@@ -15,9 +15,13 @@ KSimObject::KSimObject(void) : m_nUID( 0 )
 
     static unsigned __int64 sSeedNum = 0;
 
-    swprintf_s( buff3, L"SOB_%s_%s_%020d",
-        _wstrdate_s( buff1 ),
-        _wstrtime_s( buff2 ),
+    // Port: the original passed the errno_t results of _wstrdate_s/_wstrtime_s as the strings (printed as
+    // "(null)") and a 64-bit number to %d
+    _wstrdate_s( buff1 );
+    _wstrtime_s( buff2 );
+    swprintf_s( buff3, L"SOB_%s_%s_%020I64u",
+        buff1,
+        buff2,
         sSeedNum++);
 
 

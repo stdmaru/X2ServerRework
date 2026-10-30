@@ -49,6 +49,8 @@ Lido no `KNCSDK` original durante o porte; os testes de `src/kncsdk/tests/test_s
 | contêineres STL | `DWORD` (BE) com o número de itens + itens |
 | tags | 1 byte antes de cada valor, só se o serializer estiver em modo `tagging` |
 | `KSerBuffer` comprimido | `DWORD` **LE** (cru) com o tamanho original + stream zlib (nível 1) |
+| quadro TCP (`KSession`) | tamanho total (`USHORT`, **LE** cru, inclui os 2 bytes do próprio tamanho) + cabeçalho seguro; quadros maiores que `MAX_PACKET_SIZE` (32 KB) derrubam a conexão |
+| primeiro pacote (servidor → cliente) | `E_ACCEPT_CONNECTION_NOT` com o SPI novo e a `KSecurityAssociation`, cifrado com a chave padrão; depois disso os dois lados usam o SPI novo |
 | cabeçalho seguro (`KSecureBuffer`) | SPI (`unsigned short`, LE cru) + número de sequência (`unsigned int`, LE cru) + IV + dados cifrados (DES-CBC) + ICV (HMAC-MD5) |
 
 Ou seja: números passam por `HTON`, e o que é copiado como memória (`wchar_t`, cabeçalho seguro, tamanho de compressão) fica little-endian.
