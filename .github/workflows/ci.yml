@@ -136,6 +136,24 @@ jobs:
           wineboot --init
           ctest --test-dir build/mingw-debug --output-on-failure
 
+  msvc:
+    name: MSVC Debug
+    # The Windows build that ships (T18); not in the Ubuntu image. Windows minutes cost 2x on private repositories.
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Visual Studio environment (x64)
+        uses: ilammy/msvc-dev-cmd@v1
+      - name: Configure
+        run: cmake --preset windows-debug
+      - name: Build
+        run: |
+          set -o pipefail
+          cmake --build build/windows-debug 2>&1 | tee build.log
+          ! grep -nE "warning( [A-Z]+[0-9]+)?:" build.log
+      - name: Test
+        run: ctest --test-dir build/windows-debug --output-on-failure
+
   checks:
     name: Importer and wiki
     needs: image
