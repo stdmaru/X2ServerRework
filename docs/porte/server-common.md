@@ -42,7 +42,7 @@ Mesmo nome de pasta do original (`Common`), porque os fontes incluem `"../Common
 | Boost | 39 | `std` |
 | Lua (`lua_tinker`, `luaL_*`) | 53 | `x2::kncsdk_lua` |
 | **Sockets/IOCP** (`Socket/`) | 15 | rede portável (Asio standalone), mantendo `KSession`/framing/cripto |
-| **ODBC** (`ODBC/`) | 2 | T17: ODBC Driver 18 / FreeTDS, `SQLWCHAR` UTF-16, connection strings |
+| **ODBC** (`ODBC/`) | 2 | T17: ODBC Driver 18 / FreeTDS, `SQLWCHAR` UTF-16, connection strings. Desenho em [Banco de dados](server-common-db.md) |
 | **Matemática D3DX** (`X2Data/XSLBattleField`, `LineMap/`, `CommonPacket.h`) | 6 (187 usos) | `x2/platform/d3dx_math.h` (pronto); trocar `#include <d3dx9math.h>` por ele |
 | Dependência invertida | 1 | `KStatisticsLocalLog.cpp` inclui `GameServer/Inventory.h` e `CenterServer/PvPRoom.h` |
 
@@ -56,7 +56,7 @@ Tamanho: ~99 mil linhas de `.cpp` sem os stubs gSOAP. Os maiores são os pacotes
 3. ~~**`server/common-packets`**~~: feito em 2026-10-29 (ver Testes abaixo). Testes de serialização dos pacotes (`ClientPacket`/`CommonPacket`), que são a base da compatibilidade (T4).
 4. ~~**`server/common-net`**~~: feito em 2026-10-29. TCP de `Socket/` sobre Asio (T20), ver Rede abaixo.
 5. ~~**`server/common-udp`**~~: feito em 2026-10-29. UDP de `Socket/` (`KTDNUDP`, `UdpEcho`, `LBSUdpEcho`, `X2Packet`), ver Rede abaixo.
-6. **`server/common-db`**: `ODBC/` portável (T17).
+6. **`server/common-db`**: `ODBC/` portável (T17). Desenho em [Banco de dados (ODBC)](server-common-db.md).
 
 Depois disso vem o ChannelServer (`server/channel`).
 

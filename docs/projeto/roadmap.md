@@ -84,7 +84,7 @@ Ver [Servidor — acoplamento com Windows](../original/servidor.md).
 - [x] `server/common-packets`: ida e volta de todos os 1.964 tipos serializados + bytes exatos do início do login (2026-10-29). Achou 2 `GET` que chamavam `PUT` no original.
 - [x] `server/common-net`: TCP de `Socket/` sobre Asio (T20), com teste de `KSession` por loopback (2026-10-29).
 - [x] `server/common-udp`: UDP de `Socket/` (`KTDNUDP`, `UdpEcho`, `LBSUdpEcho`) sem completion routines, com teste por loopback (2026-10-29).
-- [ ] DB: ODBC → unixODBC + driver MS ODBC 18 no Linux (código de ODBC quase não muda).
+- [ ] `server/common-db`: ODBC portável (T17), unixODBC + Driver 18 / FreeTDS. Branch aberto e desenho feito (2026-10-29): [Banco de dados (ODBC)](../porte/server-common-db.md).
 - [ ] UI MFC (`Common/ui/ServerUIDlg`) → terminal em todas as plataformas (T15): log ao vivo, prompt Lua com histórico, título com status, encerramento com confirmação, modo serviço sem stdin.
 - [ ] Log (T16): metadados estruturados no `START_LOG`; arquivo com o conteúdo completo do original, console compacto e colorido com nível próprio.
 - [ ] (Futuro) `--gui` portável sobre a mesma API de comandos/log.
