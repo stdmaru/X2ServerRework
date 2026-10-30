@@ -1,0 +1,20 @@
+# X2Lib/X2UDPPacket.*: the UDP packet structs of the P2P/relay protocol. They belong to the client (X2Lib),
+# but the servers compile them too, through Common/Socket/X2Packet.cpp ("../../X2Lib/X2UDPPacket.cpp").
+# Imported with the server flags; the client import will have to reconcile them (docs/porte/server-common.md).
+
+name = "server-x2lib"
+source_root = "."
+include_dirs = ["X2Lib", "KncWX2Server/Common"]
+flags = ["base", "server.generated", "server"]
+extern_dirs = ["src/kncsdk", "src/platform/include", "src/server/Common"]
+
+extra = [
+    "X2Lib/X2UDPPacket.h",
+    "X2Lib/X2UDPPacket.cpp",
+]
+include_scope = ["X2Lib/X2UDPPacket.*"]
+
+# same relative position as in the original: src/server/Common/Socket/../../X2Lib
+[[map]]
+from = "X2Lib"
+to = "src/server/X2Lib"

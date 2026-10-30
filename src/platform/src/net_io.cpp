@@ -148,6 +148,47 @@ SOCKET TcpStream::Native() const
     return m_impl->socket.is_open() ? static_cast<SOCKET>(m_impl->socket.native_handle()) : INVALID_SOCKET;
 }
 
+bool SetNonBlocking(SOCKET sock, bool nonBlocking)
+{
+    u_long mode = nonBlocking ? 1 : 0;
+    return ioctlsocket(sock, static_cast<long>(FIONBIO), &mode) == 0;
+}
+
+void ConfigureUdpSocket([[maybe_unused]] SOCKET sock)
+{
+#if defined(_WIN32)
+    DWORD checksum = 1;
+    ::setsockopt(sock, IPPROTO_UDP, UDP_CHECKSUM_COVERAGE, reinterpret_cast<const char*>(&checksum), sizeof(checksum));
+#ifndef SIO_UDP_CONNRESET
+#define SIO_UDP_CONNRESET _WSAIOW(IOC_VENDOR, 12)
+#endif
+    BOOL newBehavior = FALSE;
+    DWORD returned = 0;
+    ::WSAIoctl(sock, SIO_UDP_CONNRESET, &newBehavior, sizeof(newBehavior), nullptr, 0, &returned, nullptr, nullptr);
+#endif
+}
+
+bool WaitReadable(SOCKET sock, unsigned milliseconds)
+{
+    fd_set readSet;
+    FD_ZERO(&readSet);
+    FD_SET(sock, &readSet);
+    timeval timeout{};
+    timeout.tv_sec = static_cast<long>(milliseconds / 1000);
+    timeout.tv_usec = static_cast<long>((milliseconds % 1000) * 1000);
+    // the first argument is ignored by Winsock
+    return ::select(static_cast<int>(sock) + 1, &readSet, nullptr, nullptr, &timeout) > 0;
+}
+
+bool IsWouldBlock(int error)
+{
+#if defined(_WIN32)
+    return error == WSAEWOULDBLOCK;
+#else
+    return error == EWOULDBLOCK || error == EAGAIN;
+#endif
+}
+
 std::wstring SocketErrorMessage(int error)
 {
     return Utf8ToWide(std::system_category().message(error));

@@ -1,16 +1,11 @@
 #include "./KTDNUDP.h"
 
-#include "x2/platform/net.h" //newer functions and structs used to retrieve IP addresses
+#include "x2/platform/net.h"
+#include "x2/platform/net_io.h"
 
-#ifndef SIO_UDP_CONNRESET
-#define SIO_UDP_CONNRESET _WSAIOW(IOC_VENDOR,12)
-#endif // SIO_UDP_CONNRESET
-
-#define ZLIB_WINAPI
 #include <zlib.h>
-#include <malloc.h>
 #include <dbg/dbg.hpp>
-//{{ 2013. 2. 7	박세훈	랜선렉 방지 코드2
+//{{ 2013-02-07 LAN-lag prevention code 2
 #include "GameSysVal/GameSysVal.h"
 //}}
 
@@ -46,11 +41,8 @@ CKTDNUDP::CKTDNUDP( int port )
 //	m_RelayPort	= 0;
 //#endif  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
 
-	char strTemp[256];
-	::gethostname( strTemp, 256 );
-
-	HOSTENT* hostent;
-	hostent		= ::gethostbyname( strTemp );
+	// Port: the original also looked up the host name here (gethostname/gethostbyname); only the
+	// commented-out code below used the result
 //#ifdef  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
     //m_MyIPAddress = ( ( struct in_addr* )*hostent->h_addr_list )->S_un.S_addr;
 //#else   SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
@@ -64,26 +56,10 @@ CKTDNUDP::CKTDNUDP( int port )
 	setsockopt( m_Socket, SOL_SOCKET, SO_SNDBUF, (char*)&sndBuf, sizeof(sndBuf) );
 	setsockopt( m_Socket, SOL_SOCKET, SO_RCVBUF, (char*)&rcvBuf, sizeof(rcvBuf) );
 
-    {
-        DWORD   dwUDPChecksum = 1;
-        setsockopt( m_Socket, IPPROTO_UDP, UDP_CHECKSUM_COVERAGE, (char*)&dwUDPChecksum, sizeof(dwUDPChecksum) );
-    }//if
-    {
-        DWORD   dwBytesReturned = 0;
-        BOOL    bNewBehavior = FALSE;
-        DWORD   dwStatus;
-
-        dwStatus = ::WSAIoctl( m_Socket, SIO_UDP_CONNRESET
-            , &bNewBehavior, sizeof(bNewBehavior)
-            , NULL, 0, &dwBytesReturned
-            , NULL, NULL );
-
-        if ( dwStatus == SOCKET_ERROR )
-        {
-            DWORD dwError = WSAGetLastError();
-            //ASSERT( dwError == WSAEWOULDBLOCK );
-        }//if
-    }
+    // Port: UDP_CHECKSUM_COVERAGE and SIO_UDP_CONNRESET (Windows only) moved to the platform; the socket is
+    // non-blocking because the overlapped receives became recvfrom() calls that must not wait
+    x2::platform::net::ConfigureUdpSocket( m_Socket );
+    x2::platform::net::SetNonBlocking( m_Socket, true );
 
 	m_LocalAddr.sin_family		= AF_INET;
 	m_LocalAddr.sin_port		= htons( static_cast<u_short>(m_MyPort) );
@@ -282,33 +258,34 @@ bool CKTDNUDP::Recv()
 
 
 //#ifdef SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
-	while( (int) m_listRecvOverlappedInOp.size() < m_iMaxNumOverlappedRecvData )
+	// Port: the original kept up to m_iMaxNumOverlappedRecvData WSARecvFrom pending, whose completion routines
+	// ran during the owner's alertable wait. Now the datagrams already queued are read here and handed to the
+	// same handler, at most that many per call.
+	for( int i = 0; i < m_iMaxNumOverlappedRecvData; ++i )
 	{
 		list<OverlappedDataInOp>::iterator iter = _GetEmptyRecvOverlappedData();
 		OverlappedDataInOp& recvInOp = *iter;
-		DWORD   dwFlags = 0;
-		int iRet = ::WSARecvFrom( m_Socket
-			, &recvInOp.m_wsaBuf
-			, 1
-			, NULL
-			, &dwFlags
+
+		x2_socklen_t iSinSize = sizeof( recvInOp.m_sin );
+		const int iRet = ::recvfrom( m_Socket
+			, recvInOp.m_wsaBuf.buf
+			, static_cast<int>( recvInOp.m_wsaBuf.len )
+			, 0
 			, (struct sockaddr*) &recvInOp.m_sin
-			, &recvInOp.m_iSinSize
-			, &recvInOp.m_overlapped
-			, &CKTDNUDP::_CompletionRoutine_Recv );
+			, &iSinSize );
+		recvInOp.m_iSinSize = static_cast<int>( iSinSize );
 
-		DWORD dwError = ::WSAGetLastError();
-
-		if( iRet == 0 )//이미 completion routine이 스케줄 되었다.
+		if( iRet > 0 )
 		{
+			_RecvOverlapped( recvInOp, static_cast<DWORD>( iRet ) );
+			_ReturnRecvOverlappedData( recvInOp );
 			continue;
 		}
-		else if( iRet == SOCKET_ERROR && ::WSAGetLastError() == WSA_IO_PENDING )
-		{
-			continue;
-		}
+
 		_ReturnRecvOverlappedData( recvInOp );
-		return false;
+		if( iRet == 0 )
+			continue;   // empty datagram: ignored, like the completion routine did
+		return x2::platform::net::IsWouldBlock( x2::platform::net::LastSocketError() );
 	}
 
 	return true;
@@ -464,7 +441,7 @@ bool CKTDNUDP::SendToIP( u_long  ulIP, int port, const char ID, const void* pBuf
     }
 
 //#ifdef  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
-    if( size < 0 || size > 0 && pBuffer == NULL )
+    if( size < 0 || ( size > 0 && pBuffer == NULL ) )
 //#else 	SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
 //    if( !pBuffer )
 //#endif	SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
@@ -529,30 +506,12 @@ bool CKTDNUDP::SendPure_Scattered( u_long ulIP, int port, WSABUF alpBuffers[], D
 	    memcpy( &sendInOp.m_wsaBuf.buf[dwOffset], alpBuffers[i].buf, alpBuffers[i].len );
         dwOffset += alpBuffers[i].len;
     }
-	int iRet = ::WSASendTo( m_Socket
-		, &sendInOp.m_wsaBuf
-		, 1
-		, NULL
-		, 0
-		, (const struct sockaddr*) &destination
-		, sizeof(destination)
-		, &sendInOp.m_overlapped
-		, &CKTDNUDP::_CompletionRoutine_Send );
-
-	if( iRet == 0 )//이미 completion routine이 스케줄 되었다.
-	{
-		return true;
-	}
-	else if( iRet == SOCKET_ERROR && ::WSAGetLastError() == WSA_IO_PENDING )
-	{
-		return true;
-	}
+	const bool bSent = _SendToNow( sendInOp, destination );
 
 	sendInOp.m_iSendCounter--;
 	if( sendInOp.m_iSendCounter == 0 )
 		_ReturnSendOverlappedData( sendInOp );
-	return false;
-
+	return bSent;
 }
 
 //#else   SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
@@ -848,32 +807,34 @@ bool CKTDNUDP::RecvForRelayTest()
 	KTDXPROFILE();
 
 //#ifdef SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
-	while( (int) m_listRecvOverlappedInOp.size() < m_iMaxNumOverlappedRecvData )
+	// Port: the original kept up to m_iMaxNumOverlappedRecvData WSARecvFrom pending, whose completion routines
+	// ran during the owner's alertable wait. Now the datagrams already queued are read here and handed to the
+	// same handler, at most that many per call.
+	for( int i = 0; i < m_iMaxNumOverlappedRecvData; ++i )
 	{
 		list<OverlappedDataInOp>::iterator iter = _GetEmptyRecvOverlappedData();
 		OverlappedDataInOp& recvInOp = *iter;
-		DWORD   dwFlags = 0;
-		int iRet = ::WSARecvFrom( m_Socket
-			, &recvInOp.m_wsaBuf
-			, 1
-			, NULL
-			, &dwFlags
-			, (struct sockaddr*) &recvInOp.m_sin
-			, &recvInOp.m_iSinSize
-			, &recvInOp.m_overlapped
-			, &CKTDNUDP::_CompletionRoutine_RecvOverlappedForRelayTest );
 
-		if( iRet == 0 )//이미 completion routine이 스케줄 되었다.
+		x2_socklen_t iSinSize = sizeof( recvInOp.m_sin );
+		const int iRet = ::recvfrom( m_Socket
+			, recvInOp.m_wsaBuf.buf
+			, static_cast<int>( recvInOp.m_wsaBuf.len )
+			, 0
+			, (struct sockaddr*) &recvInOp.m_sin
+			, &iSinSize );
+		recvInOp.m_iSinSize = static_cast<int>( iSinSize );
+
+		if( iRet > 0 )
 		{
-			continue;
-		}
-		else if( iRet == SOCKET_ERROR && ::WSAGetLastError() == WSA_IO_PENDING )
-		{
+			_RecvOverlappedForRelayTest( recvInOp, static_cast<DWORD>( iRet ) );
+			_ReturnRecvOverlappedData( recvInOp );
 			continue;
 		}
 
 		_ReturnRecvOverlappedData( recvInOp );
-		return false;
+		if( iRet == 0 )
+			continue;   // empty datagram: ignored, like the completion routine did
+		return x2::platform::net::IsWouldBlock( x2::platform::net::LastSocketError() );
 	}
 
 	return true;
@@ -1395,6 +1356,8 @@ void CKTDNUDP::_ProcessMonitoringNot( const LB_INFO_STRUCT& kInfo )
 			m_mapVerifyInfo.erase( it );
 		}
 		break;
+	default:
+		break;
 	}
 }
 
@@ -1443,7 +1406,7 @@ void CKTDNUDP::ProcessRecvData()
 		case SP_CONNECT_RELAY_REQ: // for relay server
 			{
                 int iPacketSize = pRecvData->GetSize();
-                if ( iPacketSize < sizeof(SSP_CONNECT_RELAY_REQ) )
+                if ( iPacketSize < static_cast<int>( sizeof(SSP_CONNECT_RELAY_REQ) ) )
                     break;
 				const SSP_CONNECT_RELAY_REQ* pSSP_CONNECT_RELAY_REQ = (const SSP_CONNECT_RELAY_REQ*) pRecvData->GetData();
 				Peer* pPeer		= _GetPeer( pSSP_CONNECT_RELAY_REQ->m_UID );
@@ -1469,7 +1432,7 @@ void CKTDNUDP::ProcessRecvData()
                 sSP_CONNECT_RELAY_ACK.m_dwStamp = pPeer->m_dwRelayUIDsStamp;
                 sSP_CONNECT_RELAY_ACK.m_dwTimestamp = pSSP_CONNECT_RELAY_REQ->m_dwTimestamp;
    				SendToIP( pRecvData->m_SenderIPAddress, pRecvData->m_SenderPort, SP_CONNECT_RELAY_ACK, (char*)&sSP_CONNECT_RELAY_ACK, sizeof(SSP_CONNECT_RELAY_ACK) );
-                if ( iPacketSize > sizeof(SSP_CONNECT_RELAY_REQ) && pPeer->m_dwRelayUIDsStamp != 0
+                if ( iPacketSize > static_cast<int>( sizeof(SSP_CONNECT_RELAY_REQ) ) && pPeer->m_dwRelayUIDsStamp != 0
                     && pPeer->m_vecRelayUIDs.empty() == false )
                 {
                     const char* pBuffer = pRecvData->GetData() + sizeof(SSP_CONNECT_RELAY_REQ);
@@ -1486,7 +1449,7 @@ void CKTDNUDP::ProcessRecvData()
         case SP_RELAY_SET_UID_LIST_REQ:
             {
                 int iPacketSize = pRecvData->GetSize();
-                if ( iPacketSize < sizeof(SSP_RELAY_SET_UID_LIST_REQ) )
+                if ( iPacketSize < static_cast<int>( sizeof(SSP_RELAY_SET_UID_LIST_REQ) ) )
                     break;
                 const SSP_RELAY_SET_UID_LIST_REQ* pSP_RELAY_SET_UID_LIST_REQ = (const SSP_RELAY_SET_UID_LIST_REQ*) pRecvData->GetData();
                 int iNumUIDs = (int) pSP_RELAY_SET_UID_LIST_REQ->m_byNumUIDs;
@@ -1534,7 +1497,7 @@ void CKTDNUDP::ProcessRecvData()
         case SP_RELAY_PRECONFIG:
             {
                 int iPacketSize = pRecvData->GetSize();
-                if ( iPacketSize <= sizeof(SSP_RELAY_PRECONFIG) )
+                if ( iPacketSize <= static_cast<int>( sizeof(SSP_RELAY_PRECONFIG) ) )
                     break;
                 const SSP_RELAY_PRECONFIG* pSSP_RELAY_PRECONFIG = (const SSP_RELAY_PRECONFIG*) pRecvData->GetData();
 				Peer* pPeer		= _GetPeer( pSSP_RELAY_PRECONFIG->m_UID );
@@ -1552,7 +1515,7 @@ void CKTDNUDP::ProcessRecvData()
         case SP_RELAY:
             {
                 int iPacketSize = pRecvData->GetSize();
-                if ( iPacketSize <= sizeof(SSP_RELAY) )
+                if ( iPacketSize <= static_cast<int>( sizeof(SSP_RELAY) ) )
                     break;
                 const SSP_RELAY* pSSP_RELAY = (const SSP_RELAY*) pRecvData->GetData();
                 int iNumUIDs = (int) pSSP_RELAY->m_byNumUIDs;
@@ -1578,7 +1541,7 @@ void CKTDNUDP::ProcessRecvData()
 		case SP_CONNECT_CHECK_ACK:
 		    {
                 int iPacketSize = pRecvData->GetSize();
-                if ( iPacketSize < sizeof(SSP_CONNECT_CHECK_ACK) )
+                if ( iPacketSize < static_cast<int>( sizeof(SSP_CONNECT_CHECK_ACK) ) )
                     break;
 			    const SSP_CONNECT_CHECK_ACK* pSSP_CONNECT_CHECK_ACK = ( const SSP_CONNECT_CHECK_ACK* ) pRecvData->GetData();
 
@@ -1621,7 +1584,7 @@ void CKTDNUDP::ProcessRecvData()
         case SP_HEART_BEAT_ACK:
 		    {
                 int iPacketSize = pRecvData->GetSize();
-                if ( iPacketSize < sizeof(SSP_HEART_BEAT_ACK) )
+                if ( iPacketSize < static_cast<int>( sizeof(SSP_HEART_BEAT_ACK) ) )
                     break;
 			    const SSP_HEART_BEAT_ACK* pSSP_HEART_BEAT_ACK = ( const SSP_HEART_BEAT_ACK* ) pRecvData->GetData();
 			    std::map< __int64, LB_INFO_STRUCT_CHECKER >::iterator it = m_mapCheckInfo.find( pSSP_HEART_BEAT_ACK->m_iUnitUID );
@@ -1630,7 +1593,6 @@ void CKTDNUDP::ProcessRecvData()
 				    ( it->second.m_iHeartBeatUID == pSSP_HEART_BEAT_ACK->m_iHeartBeatUID )
 				    )
 			    {
-                    DWORD   dwCurTimerStamp = ::GetTickCount();
                     LONG    lTimerStampDiff = (LONG) ( pRecvData->m_dwRecvTimestamp - it->second.m_dwTimerStamp );
                     float   fTimeDiff = lTimerStampDiff * ( 1.f/1000.f );
 				    //if( it->second.m_kTimer.elapsed() < SiKGameSysVal()->GetLanBugOutCheckTime() )
@@ -1735,77 +1697,21 @@ void CKTDNUDP::ReturnRecvData( list<RecvData>::iterator it )
 	m_RecvFreeDataList.splice( m_RecvFreeDataList.end(), m_RecvDataList, it );
 }
 
-void CALLBACK CKTDNUDP::_CompletionRoutine_Send(
-	DWORD dwError
-	, DWORD cbTransferred
-	, LPWSAOVERLAPPED lpOverlapped
-	, DWORD dwFlags )
+bool CKTDNUDP::_SendToNow( OverlappedDataInOp& sendInOp, const SOCKADDR_IN& destination )
 {
-	OverlappedDataInOp* pSendInOp = (OverlappedDataInOp*) ( lpOverlapped );
-	if ( pSendInOp == NULL )
-		return;
+	const int iRet = ::sendto( m_Socket
+		, sendInOp.m_wsaBuf.buf
+		, static_cast<int>( sendInOp.m_wsaBuf.len )
+		, 0
+		, (const struct sockaddr*) &destination
+		, sizeof(destination) );
 
-	CKTDNUDP* pKTDNUDP = pSendInOp->m_pKTDNUDP;
-	if ( pKTDNUDP == NULL )
-		return;
-
-	if ( dwError == 0 && cbTransferred != 0 )
+	if ( iRet > 0 )
 	{
-		pKTDNUDP->_SendOverlapped( *pSendInOp, cbTransferred );
-	}//if
-
-	pSendInOp->m_iSendCounter--;
-	if( pSendInOp->m_iSendCounter <= 0 )
-	{
-		pKTDNUDP->_ReturnSendOverlappedData( *pSendInOp );
+		_SendOverlapped( sendInOp, static_cast<DWORD>( iRet ) );
 	}
+	return iRet >= 0;
 }
-
-void CALLBACK CKTDNUDP::_CompletionRoutine_Recv(
-	DWORD dwError
-	, DWORD cbTransferred
-	, LPWSAOVERLAPPED lpOverlapped
-	, DWORD dwFlags )
-{
-	OverlappedDataInOp* pRecvInOp = (OverlappedDataInOp*) ( lpOverlapped );
-	if ( pRecvInOp == NULL )
-		return;
-
-	CKTDNUDP* pKTDNUDP = pRecvInOp->m_pKTDNUDP;
-	if ( pKTDNUDP == NULL )
-		return;
-
-	if ( dwError == 0 && cbTransferred != 0 )
-	{
-		pKTDNUDP->_RecvOverlapped( *pRecvInOp, cbTransferred );
-	}//if
-
-	pKTDNUDP->_ReturnRecvOverlappedData( *pRecvInOp );
-}//_CompletionRoutine_Recv()
-
-void CALLBACK CKTDNUDP::_CompletionRoutine_RecvOverlappedForRelayTest(
-	DWORD dwError
-	, DWORD cbTransferred
-	, LPWSAOVERLAPPED lpOverlapped
-	, DWORD dwFlags )
-{
-	OverlappedDataInOp* pRecvInOp = (OverlappedDataInOp*) ( lpOverlapped );
-	if ( pRecvInOp == NULL )
-		return;
-
-	CKTDNUDP* pKTDNUDP = pRecvInOp->m_pKTDNUDP;
-	if ( pKTDNUDP == NULL )
-		return;
-
-	bool    bProcessed = false;
-
-	if ( dwError == 0 && cbTransferred != 0 )
-	{
-		bProcessed = pKTDNUDP->_RecvOverlappedForRelayTest( *pRecvInOp, cbTransferred );
-	}//if
-
-	pKTDNUDP->_ReturnRecvOverlappedData( *pRecvInOp );
-}//_CompletionRoutine_Recv()
 
 list<CKTDNUDP::OverlappedDataInOp>::iterator CKTDNUDP::_GetEmptySendOverlappedData()
 {
@@ -1828,7 +1734,7 @@ list<CKTDNUDP::OverlappedDataInOp>::iterator CKTDNUDP::_GetEmptySendOverlappedDa
 	return iter;
 }
 
-bool CKTDNUDP::_SendOverlapped( OverlappedDataInOp& sendInOp, DWORD dwSendLength )
+bool CKTDNUDP::_SendOverlapped( OverlappedDataInOp& /*sendInOp*/, DWORD dwSendLength )
 {
 	//{{ 2010. 07. 05  최육사	UDP 트래픽 로그
 	m_iUDPSendTraffic += static_cast<__int64>(dwSendLength);
@@ -1879,7 +1785,7 @@ bool CKTDNUDP::_RecvOverlapped( OverlappedDataInOp& recvInOp, DWORD dwRecvLength
 	RecvData& kNewRecvData = GetEmptyRecvData();
 
     kNewRecvData.m_dwRecvTimestamp = 0;
-	kNewRecvData.m_SenderIPAddress = recvInOp.m_sin.sin_addr.S_un.S_addr;
+	kNewRecvData.m_SenderIPAddress = recvInOp.m_sin.sin_addr.s_addr;
 	kNewRecvData.m_SenderPort	= ntohs( recvInOp.m_sin.sin_port );
 	//kNewRecvData.m_ID			= recvInOp.m_wsaBuf.buf[0];
     recvInOp.SwapRecvBuffer( kNewRecvData );
@@ -1909,7 +1815,7 @@ bool CKTDNUDP::_RecvOverlappedForRelayTest( OverlappedDataInOp& recvInOp, DWORD 
 
 	RecvData& kNewRecvData = GetEmptyRecvData();
     kNewRecvData.m_dwRecvTimestamp = 0;
-	kNewRecvData.m_SenderIPAddress = recvInOp.m_sin.sin_addr.S_un.S_addr;
+	kNewRecvData.m_SenderIPAddress = recvInOp.m_sin.sin_addr.s_addr;
 	kNewRecvData.m_SenderPort	= ntohs( recvInOp.m_sin.sin_port );
 	//kNewRecvData.m_ID			= recvInOp.m_wsaBuf.buf[0];
 	//kNewRecvData.m_Size		= dwRecvLength-1;
@@ -1951,9 +1857,9 @@ u_long  CKTDNUDP::ConvertIPToAddress( const WCHAR* pIP )
     if ( pIP == NULL )
         return INADDR_ANY;
 
-	string mbIP;
-	ConvertWCHARToChar( mbIP, pIP );
-	return inet_addr( mbIP.c_str() );
+    string mbIP;
+    ConvertWCHARToChar( mbIP, pIP );
+    return inet_addr( mbIP.c_str() );
 }
 
 /*static*/
@@ -1989,43 +1895,27 @@ void CKTDNUDP::Relay( unsigned uNumUIDS, const __int64* pUIDs, const char* pData
     if (uNumUIDS == 0 || pUIDs == NULL || pData == NULL || iSize <= 0 )
         return;
 
-	list<OverlappedDataInOp>::iterator iter = _GetEmptySendOverlappedData();
-	OverlappedDataInOp& sendInOp = *iter;
-	sendInOp.m_wsaBuf.len = iSize;
-	sendInOp.m_iSendCounter = uNumUIDS;
+    list<OverlappedDataInOp>::iterator iter = _GetEmptySendOverlappedData();
+    OverlappedDataInOp& sendInOp = *iter;
+    sendInOp.m_wsaBuf.len = iSize;
+    sendInOp.m_iSendCounter = uNumUIDS;
 
-	memcpy( &sendInOp.m_wsaBuf.buf[0], pData, iSize );
+    memcpy( &sendInOp.m_wsaBuf.buf[0], pData, iSize );
 
-	for( int i = 0; i < (int) uNumUIDS; i++ )
-	{
-		__int64 UID = pUIDs[i];
-		if( const Peer* pPeer = GetPeer( UID ) )
-		{
-			//Set Destination
-			SOCKADDR_IN	destination;
-			destination.sin_family		= AF_INET;
+    for( int i = 0; i < (int) uNumUIDS; i++ )
+    {
+    	__int64 UID = pUIDs[i];
+    	if( const Peer* pPeer = GetPeer( UID ) )
+    	{
+    		//Set Destination
+    		SOCKADDR_IN	destination;
+    		destination.sin_family		= AF_INET;
             destination.sin_addr.s_addr	= pPeer->m_IPAddress;
 			destination.sin_port		= htons( static_cast<u_short>(pPeer->m_Port) );  //Port number
 
-			int iRet = ::WSASendTo( m_Socket
-				, &sendInOp.m_wsaBuf
-				, 1
-				, NULL
-				, 0
-				, (const struct sockaddr*) &destination
-				, sizeof(destination)
-				, &sendInOp.m_overlapped
-				, &CKTDNUDP::_CompletionRoutine_Send );
-
-			if( iRet == 0 )//The completion routine has already been scheduled.
-			{
-				continue;
-			}
-			else if( iRet == SOCKET_ERROR && ::WSAGetLastError() == WSA_IO_PENDING )
-			{
-				continue;
-			}
+			_SendToNow( sendInOp, destination );
 		}
+		// one count per destination, sent or not (the completion routine decremented it for the sent ones)
 		sendInOp.m_iSendCounter--;
 		if( sendInOp.m_iSendCounter == 0)
         {

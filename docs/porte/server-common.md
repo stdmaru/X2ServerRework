@@ -55,8 +55,7 @@ Tamanho: ~99 mil linhas de `.cpp` sem os stubs gSOAP. Os maiores são os pacotes
    É a passada mecânica: includes de plataforma, `typename`/`template`, Boost → `std`, stubs das integrações removidas.
 3. ~~**`server/common-packets`**~~: feito em 2026-10-29 (ver Testes abaixo). Testes de serialização dos pacotes (`ClientPacket`/`CommonPacket`), que são a base da compatibilidade (T4).
 4. ~~**`server/common-net`**~~: feito em 2026-10-29. TCP de `Socket/` sobre Asio (T20), ver Rede abaixo.
-5. **`server/common-udp`**: UDP de `Socket/` (`KTDNUDP` com completion routines, `UdpEcho`, `LBSUdpEcho`, `X2Packet`) e `UdpRelayChecker`.
-   O CenterServer usa o `KTDNUDP` no relay das salas.
+5. ~~**`server/common-udp`**~~: feito em 2026-10-29. UDP de `Socket/` (`KTDNUDP`, `UdpEcho`, `LBSUdpEcho`, `X2Packet`), ver Rede abaixo.
 6. **`server/common-db`**: `ODBC/` portável (T17).
 
 Depois disso vem o ChannelServer (`server/channel`).
@@ -64,8 +63,8 @@ Depois disso vem o ChannelServer (`server/channel`).
 ## Estado (2026-10-29, branch `server/common-build`)
 
 O alvo `x2_server_common` (todo o `Common`, menos os `.cpp` de `Socket/`, `ODBC/`, `KStatisticsLocalLog.cpp` e `DEBBilling*`)
-**compila no Linux sem erros e sem warnings** (GCC 16 Debug/Release, Clang 23 Release). Desde o `server/common-net` o TCP de `Socket/`
-também compila e tem teste; o UDP de `Socket/` e o `ODBC/` ainda não (só os headers são lidos). Ainda **não há testes** do `Common` (vêm no passo `server/common-packets`) e nada foi executado.
+**compila no Linux sem erros e sem warnings** (GCC 16 Debug/Release, Clang 23 Release). `Socket/` (TCP e UDP) compila e tem
+teste desde o `server/common-net`/`server/common-udp`; falta o `ODBC/` (só os headers são lidos). Ainda **não há testes** do `Common` (vêm no passo `server/common-packets`) e nada foi executado.
 No MinGW o `Common` fica de fora enquanto não houver LuaJIT para Windows (D5).
 
 Caminho: ~15.000 erros após a importação → ~4.000 (passada mecânica) → 2.291 no início da retomada → 0. Depois, 81 mil warnings
@@ -83,6 +82,21 @@ O motor do IOCP virou `x2::platform::net` (decisão T20, ver [Plataforma](platfo
 | Modo sem IOCP (`KSession::Init( false )`): eventos no `OVERLAPPED` | o handler guarda o resultado no `KOVERLAPPED` e sinaliza o mesmo evento; a thread da sessão chama `OnIOCompleted` |
 | `KAccepter`: `WSASocket` + `accept` bloqueante | `socket` + `accept` bloqueante; o socket aceito é entregue ao `TcpStream` |
 
+UDP (`server/common-udp`):
+
+| Original | Agora |
+|---|---|
+| `CKTDNUDP`: até 512 `WSARecvFrom` pendentes e `WSASendTo`, com *completion routines* (APC) executadas na espera alertável da thread dona | socket não bloqueante: `recvfrom` em laço (até 512 por chamada) e `sendto` direto, cada um seguido do mesmo tratamento que a rotina fazia, na mesma thread |
+| `KLBSUdpEcho::Run`: `WaitForSingleObjectEx( kill, INFINITE, TRUE )` | espera o socket ter dados (até 10 ms) e confere o evento de término |
+| `KUdpEcho::Loop`: `recvfrom` bloqueante; `ShutDown` fechava o socket para destravá-lo | espera dados por até 100 ms antes do `recvfrom`; `ShutDown` encerra a thread e depois fecha o socket (fechar não destrava o `recvfrom` no Linux) |
+| `SIO_UDP_CONNRESET`, `UDP_CHECKSUM_COVERAGE` | `x2::platform::net::ConfigureUdpSocket` (só Windows) |
+
+- `X2Lib/X2UDPPacket.*` (structs dos datagramas, do cliente) vieram pelo módulo `server-x2lib` do importador, em `src/server/X2Lib`
+  (a mesma posição relativa do original). Os dois `u_long` de `KXPT_PORT_CHECK_REQ/ACK` viraram `std::uint32_t`: no Linux teriam 8 bytes
+  e mudariam o datagrama. `static_assert` confere os tamanhos.
+- Declarações com `__forceinline` cujo corpo está no `.cpp` perderam o `__forceinline` (o GCC recusa).
+- `UdpRelayChecker/`: no build US os arquivos ficam vazios depois das flags; nada a portar.
+
 Mudanças de comportamento (intencionais):
 
 - `~KIOThread` não posta mais `SIGNAL_SHUTDOWN_SERVER`: no original isso encerrava *outra* thread de I/O, a que pegasse o pacote.
@@ -99,6 +113,8 @@ Mudanças de comportamento (intencionais):
 | `test_packets_{client,common,server}.cpp` | **Todos os 1.964 tipos serializados** (os de `#if X2_DEV_TOOLS` só nesse build) dos pacotes (2026-10-29): `Put` → `Get` repetido sobre um objeto inicializado por valor: o tamanho não muda, os bytes se repetem a partir da segunda passada (alguns construtores deixam membros sem inicializar, então a primeira pode ter lixo) e o `Get` lê tudo. Gerados por `tools/port/gen_packet_tests.py` ([Porte mecânico](../ferramentas/porte-mecanico.md)), que antes confere que `PUT` e `GET` listam os mesmos campos na mesma ordem e que cada bloco só usa a própria macro |
 | `test_login_packets.cpp` | Bytes exatos de `ECH_VERIFY_ACCOUNT_REQ/ACK` e `EGS_CONNECT_REQ/ACK`, montados à mão a partir da ordem dos campos e do [formato da rede](../original/protocolo.md) |
 | `test_session.cpp` | `KSession` por loopback com as threads de I/O reais: accept, troca da chave (`E_ACCEPT_CONNECTION_NOT`), pacotes cifrados nos dois sentidos, um pacote de 24 KB (mais de uma leitura) e a desconexão. Nos dois modos do proxy: nas threads de I/O e com thread própria (sem IOCP) |
+| `test_udp.cpp` | Datagramas entre dois `CKTDNUDP` (ID + struct, conferindo endereço e porta do remetente) e o `XPT_PORT_CHECK_REQ` respondido pela thread do `KLBSUdpEcho`, que precisa terminar sem tráfego |
+| `server_hooks.cpp` | Não é teste: define o que cada servidor fornece ao `Common` (`g_szConfigFile`, `CreateDBThread`), o `KStatisticsLocalLog` (compilado com o GameServer) e, até o `server/common-db`, o `KODBC`, para os testes linkarem sem um servidor |
 | `packets_generated` (ctest) | Falha se os testes gerados estiverem desatualizados em relação aos `.cpp` dos pacotes |
 
 **Limite:** os testes provam que o porte é coerente consigo mesmo e com o formato lido no código, não que bate byte a byte com o
@@ -127,6 +143,7 @@ e não no cliente (as flags do cliente ainda não foram geradas, ver [Roadmap](.
 
 | Onde | Bug | Correção |
 |---|---|---|
+| `KXPT_UNIT_USER_SYNC_PACK_FOR_WEDDING_HALL` (`X2UDPPacket.h`) | O `operator=` atribuía `m_fPosX/Y/Z` a eles mesmos: a posição não era copiada | Copia de `kRight` |
 | `GetFrom` de `KEGIANT_BILLING_CONSUME_ACK` e `KELOG_ITEM_TRADE_ERROR_NOT` | O bloco `GET` chamava `PUT` (copiar e colar): escrevia em vez de ler, e o restante do pacote ficava sem ler | `GET`. O primeiro é da integração Giant (fora de uso); o segundo é log entre servidores, cuja data nunca chegava |
 | `KSwapPerformer` | Testes invertidos (`_JIF( !m_pEnqueueEvent, return )` saía com ponteiro válido e só seguia com ele nulo; o destrutor desreferenciava quando nulo) | Testes corrigidos. A classe não é usada por nenhum servidor |
 | `CXSLPetManager::*SpecialFeedIntimacyRate_LUA` | Validação `> 1 && < 0` nunca era verdadeira | `\|\|`. Os scripts atuais usam 0,0201 e 0,0501, então nada muda |

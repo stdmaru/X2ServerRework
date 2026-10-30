@@ -6,7 +6,9 @@ add_executable(x2_server_common_tests
     test_packets_common.cpp
     test_packets_server.cpp
     test_login_packets.cpp
-    test_session.cpp)
+    test_session.cpp
+    test_udp.cpp
+    server_hooks.cpp)
 target_link_libraries(x2_server_common_tests PRIVATE x2::server_common doctest::doctest)
 add_test(NAME server_common COMMAND x2_server_common_tests)
 

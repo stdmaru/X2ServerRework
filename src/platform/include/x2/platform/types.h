@@ -28,6 +28,7 @@ typedef std::uint8_t   BYTE;
 typedef std::uint8_t   UCHAR;
 typedef std::uint16_t  WORD;
 typedef std::uint16_t  USHORT;
+typedef std::int16_t   SHORT;
 typedef std::uint32_t  DWORD;
 typedef std::uint32_t  UINT;
 typedef std::uint32_t  ULONG;

@@ -81,5 +81,5 @@ Também em `_reference/` (somente leitura, fora do git):
 
 E em `_tools/kom/`: ferramenta para extrair os `.kom` do cliente (`_client/`), útil para inspecionar scripts e assets.
 
-`_reference/X2Server` (o link usado pelo importador, `tools/import/x2import/pipeline.py`) não existia em 2026-10-29; o clone está em `_reference/X2Server-github`.
+`_reference/X2Server` (o link usado pelo importador) não existia em 2026-10-29; o clone está em `_reference/X2Server-github`, e o importador usa o clone direto quando o link falta.
 

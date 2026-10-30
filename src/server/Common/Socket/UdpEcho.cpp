@@ -1,4 +1,5 @@
 #include "x2/platform/net.h"
+#include "x2/platform/net_io.h"
 #include "UdpEcho.h"
 #include "NetCommon.h"  // CLOSE_SOCKET
 #include <dbg/dbg.hpp>
@@ -20,7 +21,7 @@ bool KUdpEcho::Init( USHORT usPort_ )
 {
     // 윈속 초기화는 이미 진행 되었다고 가정하고 생략한다.
 
-    m_sock = ::socket( AF_INET, SOCK_DGRAM, 0 );    // 소켓 생성
+    m_sock = ::socket( AF_INET, SOCK_DGRAM, 0 );    // create the socket
 
     if( INVALID_SOCKET == m_sock )
     {
@@ -54,7 +55,7 @@ void KUdpEcho::Run()
 
     while( true )
     {
-        ret = ::WaitForSingleObject( m_hKillEvent, 0 );     // sleep 타임을 주면 안된다.
+        ret = ::WaitForSingleObject( m_hKillEvent, 0 );     // must not sleep here
 
         if( ret == WAIT_OBJECT_0 ) break;
 
@@ -71,7 +72,12 @@ void KUdpEcho::Loop()
     int ret;
     char recvbuff[MAX_UDP_PACKET_SIZE] = {0};
     SOCKADDR_IN sender;
-    int nSenderSize = sizeof(sender);
+    x2_socklen_t nSenderSize = sizeof(sender);
+
+    // Port: wait for a datagram with a timeout instead of blocking in recvfrom, so End() stops the thread
+    // (closing a socket does not wake a blocked recvfrom on Linux)
+    if( !x2::platform::net::WaitReadable( m_sock, 100 ) )
+        return;
 
     ret = ::recvfrom( m_sock,
                       recvbuff,
@@ -86,7 +92,7 @@ void KUdpEcho::Loop()
         return;
     }
 
-    if( ret != sizeof( KUdpToServer ) ) // 항상 KUdpToServer 구조체만을 받도록 가정한다.
+    if( ret != sizeof( KUdpToServer ) ) // only KUdpToServer is ever expected
     {
         START_LOG( cerr, L"전달받은 데이터 크기 이상. wanted : " << sizeof(KUdpToServer) )
             << BUILD_LOG( ret )
@@ -121,9 +127,8 @@ void KUdpEcho::SendToClient( UidType nTo, unsigned short usEventID )
 
 void KUdpEcho::ShutDown()
 {
-    CLOSE_SOCKET( m_sock );     // blocked mode. 소켓을 먼저 닫아 스레드가 스스로 종료되도록 유도한다. (깔끔하지 못함.)
-
-    End();
+    End();                      // Port: Loop() wakes at least every 100 ms; close the socket after the thread
+    CLOSE_SOCKET( m_sock );
 
     ::WSACleanup();
 }

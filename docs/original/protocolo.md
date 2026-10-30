@@ -51,6 +51,7 @@ Lido no `KNCSDK` original durante o porte; os testes de `src/kncsdk/tests/test_s
 | `KSerBuffer` comprimido | `DWORD` **LE** (cru) com o tamanho original + stream zlib (nível 1) |
 | quadro TCP (`KSession`) | tamanho total (`USHORT`, **LE** cru, inclui os 2 bytes do próprio tamanho) + cabeçalho seguro; quadros maiores que `MAX_PACKET_SIZE` (32 KB) derrubam a conexão |
 | primeiro pacote (servidor → cliente) | `E_ACCEPT_CONNECTION_NOT` com o SPI novo e a `KSecurityAssociation`, cifrado com a chave padrão; depois disso os dois lados usam o SPI novo |
+| datagrama UDP (`CKTDNUDP`) | 1 byte com o ID (`X2_PACKET_TYPE` ou `SP_*`) + a struct copiada como memória (`#pragma pack(1)`, little-endian, sem criptografia), até 2.048 bytes |
 | cabeçalho seguro (`KSecureBuffer`) | SPI (`unsigned short`, LE cru) + número de sequência (`unsigned int`, LE cru) + IV + dados cifrados (DES-CBC) + ICV (HMAC-MD5) |
 
 Ou seja: números passam por `HTON`, e o que é copiado como memória (`wchar_t`, cabeçalho seguro, tamanho de compressão) fica little-endian.

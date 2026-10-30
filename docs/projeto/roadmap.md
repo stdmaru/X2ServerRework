@@ -53,6 +53,7 @@ Tarefas:
 - [x] Importador confere a integridade de cada arquivo contra o git (a cópia do HDD tinha 90 arquivos corrompidos, ver [Inventário](../original/inventario.md#integridade-da-cópia)).
 - [ ] Flags do **cliente** (`KTDX.h`/`Always.h`) e conflitos entre servidor e cliente no código compartilhado (`Common`): fazer junto com a importação do cliente.
 - [x] `server-common` importado: 414 arquivos ([Servidor: Common](../porte/server-common.md)).
+- [x] `server-x2lib` importado: `X2Lib/X2UDPPacket.*` (structs UDP do cliente que o servidor compila), em `src/server/X2Lib` (2026-10-29).
 - [ ] Importar cada servidor, começando pelo ChannelServer.
 
 ## Fase 1 — Bibliotecas
@@ -82,7 +83,7 @@ Ver [Servidor — acoplamento com Windows](../original/servidor.md).
 - [x] `server/common-build`: `Common` compilando no Linux (GCC/Clang) sem warnings, menos `Socket/`/`ODBC/` (2026-10-29). Ver [Servidor: Common](../porte/server-common.md).
 - [x] `server/common-packets`: ida e volta de todos os 1.964 tipos serializados + bytes exatos do início do login (2026-10-29). Achou 2 `GET` que chamavam `PUT` no original.
 - [x] `server/common-net`: TCP de `Socket/` sobre Asio (T20), com teste de `KSession` por loopback (2026-10-29).
-- [ ] `server/common-udp`: UDP de `Socket/` (`KTDNUDP`, `UdpEcho`) e `UdpRelayChecker`.
+- [x] `server/common-udp`: UDP de `Socket/` (`KTDNUDP`, `UdpEcho`, `LBSUdpEcho`) sem completion routines, com teste por loopback (2026-10-29).
 - [ ] DB: ODBC → unixODBC + driver MS ODBC 18 no Linux (código de ODBC quase não muda).
 - [ ] UI MFC (`Common/ui/ServerUIDlg`) → terminal em todas as plataformas (T15): log ao vivo, prompt Lua com histórico, título com status, encerramento com confirmação, modo serviço sem stdin.
 - [ ] Log (T16): metadados estruturados no `START_LOG`; arquivo com o conteúdo completo do original, console compacto e colorido com nível próprio.

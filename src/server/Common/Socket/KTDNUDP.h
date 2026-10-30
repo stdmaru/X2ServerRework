@@ -521,9 +521,10 @@ private:
 	};
 
 //#ifdef SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
+	// Port: a send/recv buffer of the datagram queue. The original issued overlapped WSASendTo/WSARecvFrom with
+	// completion routines (APCs run on this same thread); the I/O is now synchronous and calls the same handlers.
 	struct  OverlappedDataInOp
 	{
-		OVERLAPPED m_overlapped;
 
 		WSABUF  m_wsaBuf;
 		std::list<OverlappedDataInOp>::iterator  m_iterList;
@@ -535,28 +536,24 @@ private:
 		char*    m_pRecvBuffer;
 
 		OverlappedDataInOp()
-			: m_overlapped()
-			, m_wsaBuf()
+			: m_wsaBuf()
 			, m_iterList()
 			, m_pKTDNUDP( NULL )
 			, m_iSendCounter( 0 )
 			, m_sin()
 			, m_iSinSize( sizeof( m_sin ) )
 		{
-			ZeroMemory( &m_overlapped, sizeof(m_overlapped) );
             m_pRecvBuffer = new char[RECV_BUFFER_SIZE];
             m_wsaBuf.buf = &m_pRecvBuffer[0];
             m_wsaBuf.len = 0;
 		}
         OverlappedDataInOp( const OverlappedDataInOp& rhs_ )
-            : m_overlapped()
-            , m_iterList( rhs_.m_iterList )
+            : m_iterList( rhs_.m_iterList )
             , m_pKTDNUDP( rhs_.m_pKTDNUDP )
             , m_iSendCounter( rhs_.m_iSendCounter )
             , m_sin( rhs_.m_sin )
             , m_iSinSize( sizeof( m_sin ) )
         {
-			ZeroMemory( &m_overlapped, sizeof(m_overlapped) );
             m_pRecvBuffer = new char[RECV_BUFFER_SIZE];
             m_wsaBuf.buf = &m_pRecvBuffer[0];
             m_wsaBuf.len = rhs_.m_wsaBuf.len;
@@ -575,7 +572,6 @@ private:
 		}
 		void Init()
 		{
-			ZeroMemory( &m_overlapped, sizeof(m_overlapped) );
             m_wsaBuf.buf = &m_pRecvBuffer[0];
             m_wsaBuf.len = 0;
 			m_iterList = std::list<OverlappedDataInOp>::iterator();
@@ -675,11 +671,11 @@ public:
 
 
 //#ifdef  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
-	__forceinline bool			SendToPeer( __int64 UID, const char ID, const void* pBuffer, int size );
+	 bool			SendToPeer( __int64 UID, const char ID, const void* pBuffer, int size ); // Port: no __forceinline, the body is in KTDNUDP.cpp
 	bool			SendToIP( u_long  ulIP, int port, const char ID, const void* pBuffer, int size );
 //#else  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
-//	__forceinline bool			Send( __int64 UID, const char ID, const char* pBuffer, int size );
-//	__forceinline bool			Send( const WCHAR* pIP, int port, const char ID, const char* pBuffer, int size );
+//	 bool			Send( __int64 UID, const char ID, const char* pBuffer, int size );
+//	 bool			Send( const WCHAR* pIP, int port, const char ID, const char* pBuffer, int size );
 //#endif  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
 
 //#ifndef SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
@@ -761,9 +757,9 @@ public:
 	int							GetPeerSize() const { return static_cast<int>(m_PeerMap.size()); }
 	bool						RemovePeer( __int64 UID );
 	void						ClearPeer(){ m_PeerMap.clear(); }
-	__forceinline const Peer*	GetPeer( __int64 UID );
+	 const Peer*	GetPeer( __int64 UID ); // Port: no __forceinline, the body is in KTDNUDP.cpp
 //#ifndef SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
-//	__forceinline Peer*			GetMyPeer();
+//	 Peer*			GetMyPeer();
 //	__forceinline void			SetMyUID( __int64 myUID ){ m_MyUID = myUID; }
 //#endif  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
 
@@ -847,8 +843,11 @@ public:
     void    ThreadUnsafe_ObtainOverlappedData( std::list<OverlappedDataInOp>& list1, std::list<OverlappedDataInOp>& list2 );
 //#endif  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
 
+public:
+	SOCKET						GetSocket() const	{ return m_Socket; }	// Port: the owner thread waits on it for data
+
 protected:
-	//{{ 2012. 04. 24	최육사	UDP릴레이 퍼포먼스 체크
+	//{{ 2012-04-24 UDP relay performance check
 //#ifdef SERV_UDP_RELAY_CHECKER
 	SOCKET						GetSocketHandle()	{ return m_Socket; }
 //#ifdef  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
@@ -866,20 +865,20 @@ protected:
 
 private:
 
-    __forceinline Peer*	        _GetPeer( __int64 UID );
+     Peer*	        _GetPeer( __int64 UID ); // Port: no __forceinline, the body is in KTDNUDP.cpp
     Peer*                       _AddPeer( __int64 UID, u_long ulIP, int port );
 
 //#ifdef  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
     bool						SendPure_Scattered( u_long ulIP, int port, WSABUF alpBuffers[], DWORD dwBuffCount ); // defined in KTDNUDP.cpp: cannot be inline
 //#else   SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
-//	__forceinline bool			SendPure( const WCHAR* pIP, int port, const char ID, const char* pBuffer, int size );
+//	 bool			SendPure( const WCHAR* pIP, int port, const char ID, const char* pBuffer, int size );
 //#endif  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
-	__forceinline bool			Recv();
+	 bool			Recv(); // Port: no __forceinline, the body is in KTDNUDP.cpp
 //#ifdef  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
 		void			Relay( unsigned uNumUIDS, const __int64* pUIDs, const char* Data, int iSize );
 //#else 	SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
-//	__forceinline void			Relay( int recvSize );
-//	__forceinline void			DefencePort();
+//	 void			Relay( int recvSize );
+//	 void			DefencePort();
 //	__forceinline void			AddRelayHeader( const char& ID, char* pFinalBuffer, int& finalSize, const char* pBuffer, const int& size, vector<__int64>& UIDList )
 //	{
 //		unsigned long headerSize	= (3 * sizeof(char)) + (UIDList.size() * sizeof(__int64));
@@ -988,23 +987,8 @@ public:
 	void ReturnRecvData( list<RecvData>::iterator it );
 
 private:
-	static void CALLBACK _CompletionRoutine_Send(
-		DWORD dwError
-		, DWORD cbTransferred
-		, LPWSAOVERLAPPED lpOverlapped
-		, DWORD dwFlags );
-
-	static void CALLBACK _CompletionRoutine_Recv(
-		DWORD dwError
-		, DWORD cbTransferred
-		, LPWSAOVERLAPPED lpOverlapped
-		, DWORD dwFlags );
-
-	static void CALLBACK _CompletionRoutine_RecvOverlappedForRelayTest(
-		DWORD dwError
-		, DWORD cbTransferred
-		, LPWSAOVERLAPPED lpOverlapped
-		, DWORD dwFlags );
+	// Port: what _CompletionRoutine_Send did after WSASendTo, run right after a synchronous sendto
+	bool _SendToNow( OverlappedDataInOp& sendInOp, const SOCKADDR_IN& destination );
 
 	//
 	list<OverlappedDataInOp>::iterator _GetEmptySendOverlappedData();

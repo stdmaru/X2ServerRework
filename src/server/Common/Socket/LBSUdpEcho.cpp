@@ -1,5 +1,6 @@
 #include <Socket/KTDNUDP.h>
 #include "LBSUdpEcho.h"
+#include "x2/platform/net_io.h"
 #include <dbg/dbg.hpp>
 #include "BaseServer.h"
 #include "ActorManager.h"
@@ -72,9 +73,12 @@ void KLBSUdpEcho::Run()
     while( true )
     {
 //#ifdef SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
-		m_spUDP->OnFrameMove();
+		m_spUDP->OnFrameMove();     // Port: reads and handles the datagrams already queued
 
-		ret = ::WaitForSingleObjectEx( m_hKillEvent, INFINITE, TRUE );
+		// Port: the original waited here alertably (WaitForSingleObjectEx) until a completion routine ran;
+		// now it waits until a datagram arrives, at most 10 ms, and checks the kill event
+		x2::platform::net::WaitReadable( m_spUDP->GetSocket(), 10 );
+		ret = ::WaitForSingleObject( m_hKillEvent, 0 );
 
 		if( ret == WAIT_OBJECT_0 )
 			break;
@@ -94,8 +98,8 @@ void KLBSUdpEcho::Run()
     }// while
 
 //#ifdef  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
-    // overlapped io 는 io 를 요청한 thread 가 파괴될 때 모두 같이 파괴된다.
-    // 아래 구문의 역할은 udp manager 에서 사용되는 overlapped io 데이타가 쓰레드 파괴시까지 유지되도록 하는 것이다.
+    // Overlapped I/O is destroyed together with the thread that issued it. The call below kept the overlapped
+    // data used by the UDP manager alive until the thread is gone. (Port: the I/O is synchronous now; kept as is.)
     m_spUDP->ThreadUnsafe_ObtainOverlappedData( s_listOverlappedData1, s_listOverlappedData2 );
     m_spUDP.reset();
 //#endif  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
@@ -232,7 +236,6 @@ void KLBSUdpEcho::_ProcessRecvData()
 
 				if( pkActor != NULL )
 				{
-                    u_long uAddress = itRecvData->m_SenderIPAddress;
                     std::wstring wstrAddr = CKTDNUDP::ConvertAddressToIP( itRecvData->m_SenderIPAddress );
 
 

@@ -33,6 +33,7 @@ inline int _wcsnicmp(const wchar_t* a, const wchar_t* b, size_t n) { return ::wc
 typedef int errno_t;
 
 #define ZeroMemory(dst, size) std::memset((dst), 0, (size))
+#define CopyMemory(dst, src, size) std::memcpy((dst), (src), (size))
 
 errno_t wcscpy_s(wchar_t* dst, size_t size, const wchar_t* src);
 errno_t wcsncpy_s(wchar_t* dst, size_t size, const wchar_t* src, size_t count);

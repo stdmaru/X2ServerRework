@@ -81,6 +81,15 @@ private:
     std::unique_ptr<Impl> m_impl;
 };
 
+// Plain (synchronous) sockets, used by the UDP code.
+bool SetNonBlocking(SOCKET sock, bool nonBlocking);
+// Windows reports a WSAECONNRESET on a UDP socket when an earlier sendto got an ICMP "port unreachable";
+// the original turned that off (SIO_UDP_CONNRESET) and enabled UDP_CHECKSUM_COVERAGE. No-op elsewhere.
+void ConfigureUdpSocket(SOCKET sock);
+// Waits until the socket has data to read or `milliseconds` pass; false on timeout or error.
+bool WaitReadable(SOCKET sock, unsigned milliseconds);
+bool IsWouldBlock(int error);
+
 // Text of a socket error code (the original used FormatMessage on WSAGetLastError()).
 std::wstring SocketErrorMessage(int error);
 int LastSocketError();
