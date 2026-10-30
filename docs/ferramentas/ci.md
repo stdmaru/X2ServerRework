@@ -2,8 +2,9 @@
 
 # Integração contínua (GitHub Actions)
 
-`.github/workflows/ci.yml`, criado em 2026-10-30 (container `archlinux`; passou para a imagem Ubuntu no mesmo dia). Roda em todo push, em pull request e à mão (`workflow_dispatch`).
-Um push novo no mesmo branch cancela a execução anterior.
+`.github/workflows/ci.yml`, criado em 2026-10-30 (container `archlinux`; passou para a imagem Ubuntu no mesmo dia).
+O repositório é privado (2.000 minutos/mês, Windows 2×): roda sozinho só no push da `main` (fora pushes só de docs) e, nos branches,
+à mão (`gh workflow run ci.yml --ref <branch>`), depois de a matriz passar localmente. Um push novo no mesmo branch cancela a execução anterior.
 
 Todos os jobs rodam na imagem do [ambiente de build](ambiente-build.md) (Ubuntu, T24), a mesma do `docker/build.sh`.
 

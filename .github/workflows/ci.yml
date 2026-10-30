@@ -5,9 +5,13 @@
 # The build must have no warnings (AGENTS.md): any "warning:" in the log fails the job.
 name: CI
 
+# Minutes are limited (private repository, 2000/month; Windows counts 2x): automatic only on main, after an
+# integration. Work branches are checked locally (docker/build.sh) and dispatched by hand when needed:
+#   gh workflow run ci.yml --ref <branch>
 on:
   push:
-  pull_request:
+    branches: [main]
+    paths-ignore: ["docs/**", "**.md", ".claude/**"]
   workflow_dispatch:
 
 concurrency:
@@ -26,6 +30,7 @@ jobs:
   image:
     name: Build image
     runs-on: ubuntu-latest
+    timeout-minutes: 40
     permissions:
       contents: read
       packages: write
@@ -55,6 +60,7 @@ jobs:
     name: ${{ matrix.name }}
     needs: image
     runs-on: ubuntu-latest
+    timeout-minutes: 40
     container:
       image: ${{ needs.image.outputs.image }}
       credentials:
@@ -100,6 +106,7 @@ jobs:
     name: MinGW Debug + Wine
     needs: image
     runs-on: ubuntu-latest
+    timeout-minutes: 40
     container:
       image: ${{ needs.image.outputs.image }}
       credentials:
@@ -133,6 +140,7 @@ jobs:
     name: Importer and wiki
     needs: image
     runs-on: ubuntu-latest
+    timeout-minutes: 40
     container:
       image: ${{ needs.image.outputs.image }}
       credentials:
