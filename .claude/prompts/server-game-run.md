@@ -8,6 +8,11 @@ Antes de tudo:
 3. Leia `docs/ferramentas/ambiente-build.md` (Docker, `tools/win/winbuild.sh`) e `docs/ferramentas/ci.md` (minutos).
 
 Plano:
+0. **Fechar o `server/game-build` antes** (estado em 2026-10-30: commitado e publicado, **não integrado**). Ele tem Clang Debug, GCC
+   Release e clang-cl (VM) com 0 warnings e 6/6 testes; falta o Clang Release (`docker/build.sh cmake --build --preset linux-release -j 6`)
+   e o verificador de links. Integrar na `main` (rebase se ela andou, `git merge --ff-only`, push) **só quando o usuário pedir**; depois
+   apagar o branch e o `server/game-import` remoto (o conteúdo dele está no `server/game-build`, com commits reescritos pelo rebase).
+   O push da `main` dispara o CI completo (~60 min). O `server/game-run` parte da `main` com isso.
 1. Levantar o que o GameServer precisa do LoginServer, do CenterServer e do GlobalServer para chegar à vila (`SendToLoginServer`, `ECN_*`,
    `SendToGlobalServer`, `KLoginProxy`/`KCnProxy`/`KGlobalProxy`): quais pacotes, em que momento do login, o que acontece se o servidor
    não existe. Provavelmente é preciso importar e portar o LoginServer e o CenterServer (cada um vira o seu `server/<x>-import`/`-build`).
