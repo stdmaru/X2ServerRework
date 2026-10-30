@@ -1,0 +1,111 @@
+# Build and tests on every push and pull request (docs/ferramentas/ci.md).
+# Arch Linux container: the same toolchain as development (GCC 16, Clang, CMake 4, MinGW-w64, Wine).
+# The build must have no warnings (AGENTS.md): any "warning:" in the log fails the job.
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  linux:
+    name: ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    container: archlinux:latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: GCC Debug
+            preset: linux-debug
+          - name: GCC Release
+            preset: linux-release
+          - name: Clang Release
+            preset: clang
+    steps:
+      - name: Packages
+        run: |
+          pacman -Syu --noconfirm --needed base-devel cmake ninja git python luajit zlib unixodbc clang ccache
+      - uses: actions/checkout@v4
+      - name: ccache
+        uses: actions/cache@v4
+        with:
+          path: .ccache
+          key: ccache-${{ matrix.preset }}-${{ github.sha }}
+          restore-keys: ccache-${{ matrix.preset }}-
+      - name: Configure
+        env:
+          CCACHE_DIR: ${{ github.workspace }}/.ccache
+        run: |
+          launcher="-DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache"
+          if [ "${{ matrix.preset }}" = clang ]; then
+            cmake -S . -B build/clang -G Ninja -DCMAKE_BUILD_TYPE=Release -DX2_DEV_TOOLS=OFF \
+              -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ $launcher
+          else
+            cmake --preset ${{ matrix.preset }} $launcher
+          fi
+      - name: Build
+        env:
+          CCACHE_DIR: ${{ github.workspace }}/.ccache
+        run: |
+          set -o pipefail
+          cmake --build build/${{ matrix.preset }} 2>&1 | tee build.log
+          ! grep -n "warning:" build.log
+      - name: Test
+        run: ctest --test-dir build/${{ matrix.preset }} --output-on-failure
+
+  mingw:
+    name: MinGW Debug + Wine
+    runs-on: ubuntu-latest
+    container: archlinux:latest
+    steps:
+      - name: Packages
+        run: |
+          pacman -Syu --noconfirm --needed base-devel cmake ninja git python mingw-w64-gcc wine ccache
+      - uses: actions/checkout@v4
+      - name: ccache
+        uses: actions/cache@v4
+        with:
+          path: .ccache
+          key: ccache-mingw-debug-${{ github.sha }}
+          restore-keys: ccache-mingw-debug-
+      - name: Configure
+        run: cmake --preset mingw-debug -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+      - name: Build
+        env:
+          CCACHE_DIR: ${{ github.workspace }}/.ccache
+        run: |
+          set -o pipefail
+          cmake --build build/mingw-debug 2>&1 | tee build.log
+          ! grep -n "warning:" build.log
+      - name: Test (Wine)
+        env:
+          WINEDEBUG: -all
+          WINEPREFIX: ${{ github.workspace }}/.wine
+        run: |
+          wineboot --init
+          ctest --test-dir build/mingw-debug --output-on-failure
+
+  checks:
+    name: Importer and wiki
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Importer tests
+        run: |
+          python3 tools/import/tests/test_condres.py
+          python3 tools/import/tests/test_flagsim.py
+      - name: Wiki links
+        run: python3 tools/docs/check_links.py
