@@ -11,9 +11,10 @@ custava ~80 a 110 minutos cobrados (jobs Linux de 16 a 22 min com o ccache frio,
 
 - **Automático só no push da `main`** (ao integrar), e não quando o push só muda `docs/`, `*.md` ou `.claude/`.
 - **Branches de trabalho:** a matriz Linux roda local, de graça (`docker/build.sh`, [Ambiente de build](ambiente-build.md)). O CI é disparado
-  à mão só quando precisa, por padrão **só o Windows**, que não dá para verificar localmente:
+  à mão só quando precisa, por padrão **só o Windows**, quando a máquina Windows de testes não estiver disponível:
   `gh workflow run ci.yml --ref <branch>` (ou `-f jobs=linux` / `-f jobs=all`). Depois, `gh run list --branch <branch>`.
-- **Antes de integrar,** o Windows do branch passa no CI (um disparo) e a matriz Linux local completa passa.
+- **Antes de integrar,** a matriz Linux local completa passa e o Windows passa na máquina de testes (`tools/win/winbuild.sh`,
+  [Ambiente de build](ambiente-build.md#windows-clang-cl-por-ssh)); o disparo do Windows no CI fica para quando ela não estiver disponível.
 - **No CI, Linux com 2 jobs:** Clang Debug (dev tools ON) e GCC Release (dev tools OFF). O Clang Release, o build distribuído, fica na matriz local.
 - **`timeout-minutes`** em todos os jobs; um push novo no mesmo branch cancela a rodada anterior.
 - O cache do ccache de um branch só herda o da `main`: depois que a `main` roda, os branches começam quentes.

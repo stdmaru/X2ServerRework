@@ -31,7 +31,7 @@ com CMake e x64, limpando o código no caminho. Começa pelas bibliotecas, segue
 - **Variante única: US / `_SERVICE_`.** As ferramentas de debug/dev/admin ficam sob `X2_DEV_TOOLS` (ver [Debug e dev](docs/original/debug-e-dev.md)).
   Outros países, anti-cheat, integrações de publisher e código legado são descartados.
 - **Só 64 bits: x86_64 hoje, arm64 no futuro.** Windows (clang-cl) e Linux (Clang; GCC como verificação) compilam a partir do mesmo CMake
-  (decisão T26). Não há Windows local: os caminhos `_WIN32` são compilados e testados pelo job **clang-cl** do CI (`windows-latest`).
+  (decisão T26). Os caminhos `_WIN32` são compilados e testados numa máquina Windows por SSH (`tools/win/winbuild.sh`) e no job **clang-cl** do CI.
   Nada de assembly/intrínsecos x86, nada de supor `char` com ou sem sinal (o build força `-fsigned-char`) e nada de sincronizar threads com `volatile`.
 - `windows.h` e APIs de sistema só existem em `src/platform` (`x2::platform`). Código portado inclui `x2/platform/win32.h`
   no lugar de `<windows.h>`/`<atltime.h>`/`<tchar.h>`. Ver [Plataforma](docs/porte/platform.md).
@@ -65,7 +65,8 @@ docker/build.sh cmake --preset linux-debug                            # configur
 docker/build.sh cmake --build --preset linux-debug                    # build
 docker/build.sh ctest --preset linux-debug                            # testes
 docker/build.sh cmake --preset linux-gcc && docker/build.sh cmake --build --preset linux-gcc   # verificação com GCC
-gh workflow run ci.yml --ref <branch>                                # CI do Windows (clang-cl), só à mão: minutos contados
+X2_WIN_HOST=<user@host> tools/win/winbuild.sh                        # Windows (clang-cl) na máquina de testes, por SSH
+gh workflow run ci.yml --ref <branch>                                # CI do Windows, só à mão: minutos contados
 python3 tools/import/import.py <módulo> --dry-run                     # importador
 python3 tools/import/tests/test_condres.py                            # testes do importador
 python3 tools/import/tests/test_flagsim.py
@@ -119,6 +120,6 @@ O wiki em `docs/` é a memória do projeto. Ele é organizado como **wiki naveg�
 - **Um branch curto por passo do roadmap**, com nome `área/assunto`. Áreas: `platform`, `kncsdk`, `server`, `client`, `tools`, `docs`, `build`.
   Exemplos: `tools/server-flags`, `server/common-import`, `build/windows-clang-cl`.
 - **Integração por fast-forward** (`git merge --ff-only`), com histórico linear. Se a `main` andou, faça `git rebase main` no branch antes de integrar.
-- Antes de integrar, rode o build limpo, os testes e o verificador de links, e um disparo do CI do Windows no branch.
+- Antes de integrar, rode o build limpo, os testes e o verificador de links, e o Windows (`tools/win/winbuild.sh`, ou um disparo do CI).
   O Actions tem **2.000 minutos/mês** (Windows conta 2×): o CI só roda sozinho na `main`; ver [Integração contínua](docs/ferramentas/ci.md#minutos-orçamento). Depois de integrar, apague o branch.
 - Trabalho grande demais para um passo vira vários branches em sequência, não um branch longo.

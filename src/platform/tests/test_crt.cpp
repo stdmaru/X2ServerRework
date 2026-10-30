@@ -14,9 +14,13 @@ TEST_CASE("MSVC CRT subset")
     CHECK(wcscat_s(buf, L" world") == 0);
     CHECK(std::wstring(buf) == L"hello world");
 
+#if !defined(_WIN32)
+    // Our implementation reports the overflow. The real CRT calls the invalid parameter handler instead,
+    // which by default ends the process (as in the original), so this only checks ours.
     wchar_t tiny[4];
     CHECK(wcscpy_s(tiny, L"too long") != 0);
     CHECK(tiny[0] == 0);
+#endif
 
     CHECK(_wtoi(L"  -42") == -42);
     CHECK(_wtoi64(L"9000000000") == 9000000000LL);

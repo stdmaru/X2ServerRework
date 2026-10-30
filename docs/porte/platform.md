@@ -72,7 +72,9 @@ Código portado inclui `x2/platform/win32.h` no lugar de `<windows.h>`, `<atltim
 
 - `_beginthreadex` não suporta `CREATE_SUSPENDED`.
 - `CString` cobre só o subconjunto usado até agora (vai crescer conforme o servidor for portado).
-- Windows: compila e passa nos testes com **MinGW-w64** (GCC 16, UCRT) rodando no Wine (T18, 2026-10-29). Falta validar no **MSVC**.
+- Windows: compila sem warnings e passa nos testes com **clang-cl** (Visual Studio 2026, MSVC 14.51) num Windows real (T26, 2026-10-30).
+  De 2026-10-29 a 2026-10-30 foi verificado com MinGW-w64 + Wine (T18). O debug da STL da Microsoft achou um comportamento indefinido no
+  `x2::format` (`assign` com referência para o próprio vetor), corrigido.
 
 ## Testes
 

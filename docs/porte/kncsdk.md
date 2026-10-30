@@ -26,7 +26,7 @@ SDK interno, do qual todos os servidores e o cliente dependem. Partes:
 |---|---|
 | Compilação Linux (GCC 16 Debug, Clang 23 Release) | ok, sem warnings |
 | Compilação Windows MinGW-w64 (GCC 16, UCRT), testes no Wine 11 | ok, sem warnings; `kncsdk_tests` passa (2026-10-29) e `kncsdk_lua_tests` também, com o LuaJIT 2.1 compilado pelo CMake (T21, 2026-10-30) |
-| Compilação Windows (MSVC) | **não testada** |
+| Compilação Windows (clang-cl, VS 2026) | ok, sem warnings; `kncsdk_tests` e `kncsdk_lua_tests` passam num Windows real (T26, 2026-10-30) |
 | União com `KNCSDK_Client` | feita (`SecureBuffer`, `KCSLockType`), ver abaixo |
 | Testes | 28 casos / 964 asserções (`kncsdk_tests`) + 3 (`kncsdk_lua_tests`), todos passando |
 | Validação contra bytes reais do cliente original | **pendente** (ver Pendências) |

@@ -161,8 +161,10 @@ private:
         size_t maxPos = 0;
         for (size_t idx : m_argSpecs)
             maxPos = std::max<size_t>(maxPos, static_cast<size_t>(m_items[idx].position));
-        if (maxPos > 0)
-            m_argSpecs.assign(maxPos, m_argSpecs.front());
+        if (maxPos > 0) {
+            const size_t first = m_argSpecs.front(); // a copy: assign() must not get a reference into the vector
+            m_argSpecs.assign(maxPos, first);
+        }
     }
 
     static void Apply(std::basic_ostream<CharT>& os, const Item& it)
