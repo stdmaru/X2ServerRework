@@ -2,10 +2,10 @@
 # Runs a command in the Ubuntu build container (decision T24, docs/ferramentas/ambiente-build.md).
 #   docker/build.sh cmake --preset linux-debug
 #   docker/build.sh cmake --build --preset linux-debug
-#   docker/build.sh ctest --preset mingw-debug
+#   docker/build.sh ctest --preset linux-debug
 #   docker/build.sh                                   interactive shell
 # The repository is mounted at the same path, so build/ and compile_commands.json match the host.
-# Runs as the calling user; ccache and the Wine prefix live in ${X2_BUILD_HOME:-~/.cache/x2-build}.
+# Runs as the calling user; the ccache cache lives in ${X2_BUILD_HOME:-~/.cache/x2-build}.
 # Host network: tests and servers reach the SQL Server container on 127.0.0.1.
 set -euo pipefail
 
@@ -22,6 +22,6 @@ tty=()
 [ $# -eq 0 ] && set -- bash
 
 exec docker run --rm "${tty[@]}" --network host \
-    --user "$(id -u):$(id -g)" -e HOME=/x2home -e CCACHE_DIR=/x2home/ccache -e WINEPREFIX=/x2home/wine \
+    --user "$(id -u):$(id -g)" -e HOME=/x2home -e CCACHE_DIR=/x2home/ccache \
     -v "$home:/x2home" -v "$repo:$repo" -w "$PWD" \
-    "$image" bash -c '[ -d "$WINEPREFIX" ] || wineboot --init >/dev/null 2>&1; exec "$@"' x2-build "$@"
+    "$image" "$@"

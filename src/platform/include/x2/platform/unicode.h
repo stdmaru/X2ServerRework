@@ -24,7 +24,7 @@ std::wstring   DecodeTextFile(std::string_view bytes);
 
 // Translates a printf format written for MSVC wide functions to the C library in use:
 // in MSVC `%s`/`%c` in a wide format mean wide arguments and `%S` narrow ones (the opposite of
-// ISO C), and `%I64d` is `%lld`. Identity with the MSVC CRT; MinGW's ISO stdio is translated like glibc.
+// ISO C), and `%I64d` is `%lld`. Identity with the MSVC CRT.
 std::wstring   TranslateWideFormat(const wchar_t* fmt);
 
 // Locale for wide file streams (std::wfstream) that read and write UTF-8, in place of the MSVC-only

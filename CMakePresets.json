@@ -8,40 +8,55 @@
             "binaryDir": "${sourceDir}/build/${presetName}"
         },
         {
-            "name": "linux-debug",
+            "name": "linux-base",
+            "hidden": true,
             "inherits": "base",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "clang",
+                "CMAKE_CXX_COMPILER": "clang++"
+            },
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Linux"
+            }
+        },
+        {
+            "name": "linux-debug",
+            "inherits": "linux-base",
             "displayName": "Linux Debug (dev tools on)",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",
                 "X2_DEV_TOOLS": "ON"
-            },
-            "condition": {
-                "type": "equals",
-                "lhs": "${hostSystemName}",
-                "rhs": "Linux"
             }
         },
         {
             "name": "linux-development",
-            "inherits": "base",
+            "inherits": "linux-base",
             "displayName": "Linux Development (optimized, dev tools on)",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "RelWithDebInfo",
                 "X2_DEV_TOOLS": "ON"
-            },
-            "condition": {
-                "type": "equals",
-                "lhs": "${hostSystemName}",
-                "rhs": "Linux"
             }
         },
         {
             "name": "linux-release",
-            "inherits": "base",
+            "inherits": "linux-base",
             "displayName": "Linux Release",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release",
                 "X2_DEV_TOOLS": "OFF"
+            }
+        },
+        {
+            "name": "linux-gcc",
+            "inherits": "base",
+            "displayName": "Linux GCC Release (check only, not shipped)",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "X2_DEV_TOOLS": "OFF",
+                "CMAKE_C_COMPILER": "gcc",
+                "CMAKE_CXX_COMPILER": "g++"
             },
             "condition": {
                 "type": "equals",
@@ -58,8 +73,8 @@
                 "strategy": "external"
             },
             "cacheVariables": {
-                "CMAKE_C_COMPILER": "cl",
-                "CMAKE_CXX_COMPILER": "cl"
+                "CMAKE_C_COMPILER": "clang-cl",
+                "CMAKE_CXX_COMPILER": "clang-cl"
             },
             "condition": {
                 "type": "equals",
@@ -93,35 +108,6 @@
                 "CMAKE_BUILD_TYPE": "Release",
                 "X2_DEV_TOOLS": "OFF"
             }
-        },
-        {
-            "name": "mingw-base",
-            "hidden": true,
-            "inherits": "base",
-            "toolchainFile": "${sourceDir}/cmake/toolchains/mingw-w64-x86_64.cmake",
-            "condition": {
-                "type": "equals",
-                "lhs": "${hostSystemName}",
-                "rhs": "Linux"
-            }
-        },
-        {
-            "name": "mingw-debug",
-            "inherits": "mingw-base",
-            "displayName": "MinGW-w64 Debug (cross to Windows x64, tests via Wine)",
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug",
-                "X2_DEV_TOOLS": "ON"
-            }
-        },
-        {
-            "name": "mingw-release",
-            "inherits": "mingw-base",
-            "displayName": "MinGW-w64 Release (cross to Windows x64, tests via Wine)",
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Release",
-                "X2_DEV_TOOLS": "OFF"
-            }
         }
     ],
     "buildPresets": [
@@ -138,6 +124,10 @@
             "configurePreset": "linux-release"
         },
         {
+            "name": "linux-gcc",
+            "configurePreset": "linux-gcc"
+        },
+        {
             "name": "windows-debug",
             "configurePreset": "windows-debug"
         },
@@ -148,14 +138,6 @@
         {
             "name": "windows-release",
             "configurePreset": "windows-release"
-        },
-        {
-            "name": "mingw-debug",
-            "configurePreset": "mingw-debug"
-        },
-        {
-            "name": "mingw-release",
-            "configurePreset": "mingw-release"
         }
     ],
     "testPresets": [
@@ -181,6 +163,13 @@
             }
         },
         {
+            "name": "linux-gcc",
+            "configurePreset": "linux-gcc",
+            "output": {
+                "outputOnFailure": true
+            }
+        },
+        {
             "name": "windows-debug",
             "configurePreset": "windows-debug",
             "output": {
@@ -199,26 +188,6 @@
             "configurePreset": "windows-release",
             "output": {
                 "outputOnFailure": true
-            }
-        },
-        {
-            "name": "mingw-debug",
-            "configurePreset": "mingw-debug",
-            "output": {
-                "outputOnFailure": true
-            },
-            "environment": {
-                "WINEDEBUG": "-all"
-            }
-        },
-        {
-            "name": "mingw-release",
-            "configurePreset": "mingw-release",
-            "output": {
-                "outputOnFailure": true
-            },
-            "environment": {
-                "WINEDEBUG": "-all"
             }
         }
     ]

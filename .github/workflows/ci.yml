@@ -2,16 +2,13 @@
 # Every job runs in the project's Ubuntu build image (docker/build/Dockerfile, decision T24), the same one used by
 # docker/build.sh for local builds. The image is published to GHCR, tagged by the Dockerfile's hash, and only
 # rebuilt when the Dockerfile changes.
+# Windows is built with clang-cl on a Windows runner (T26).
 # The build must have no warnings (AGENTS.md): any "warning:" in the log fails the job.
 name: CI
 
-# Minutes are limited (private repository, 2000/month; Windows counts 2x): automatic only on main, after an
-# integration. Work branches are checked locally (docker/build.sh) and dispatched by hand when needed:
-#   gh workflow run ci.yml --ref <branch>
 on:
   push:
-    branches: [main]
-    paths-ignore: ["docs/**", "**.md", ".claude/**"]
+  pull_request:
   workflow_dispatch:
 
 concurrency:
@@ -30,7 +27,6 @@ jobs:
   image:
     name: Build image
     runs-on: ubuntu-latest
-    timeout-minutes: 40
     permissions:
       contents: read
       packages: write
@@ -60,7 +56,6 @@ jobs:
     name: ${{ matrix.name }}
     needs: image
     runs-on: ubuntu-latest
-    timeout-minutes: 40
     container:
       image: ${{ needs.image.outputs.image }}
       credentials:
@@ -70,12 +65,12 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: GCC Debug
+          - name: Clang Debug
             preset: linux-debug
-          - name: GCC Release
-            preset: linux-release
           - name: Clang Release
-            preset: clang
+            preset: linux-release
+          - name: GCC Release (check)
+            preset: linux-gcc
     env:
       CCACHE_DIR: ${{ github.workspace }}/.ccache
     steps:
@@ -87,13 +82,7 @@ jobs:
           key: ccache-ubuntu-${{ matrix.preset }}-${{ github.sha }}
           restore-keys: ccache-ubuntu-${{ matrix.preset }}-
       - name: Configure
-        run: |
-          if [ "${{ matrix.preset }}" = clang ]; then
-            cmake -S . -B build/clang -G Ninja -DCMAKE_BUILD_TYPE=Release -DX2_DEV_TOOLS=OFF \
-              -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
-          else
-            cmake --preset ${{ matrix.preset }}
-          fi
+        run: cmake --preset ${{ matrix.preset }}
       - name: Build
         run: |
           set -o pipefail
@@ -102,55 +91,24 @@ jobs:
       - name: Test
         run: ctest --test-dir build/${{ matrix.preset }} --output-on-failure
 
-  mingw:
-    name: MinGW Debug + Wine
-    needs: image
-    runs-on: ubuntu-latest
-    timeout-minutes: 40
-    container:
-      image: ${{ needs.image.outputs.image }}
-      credentials:
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-    env:
-      CCACHE_DIR: ${{ github.workspace }}/.ccache
-    steps:
-      - uses: actions/checkout@v4
-      - name: ccache
-        uses: actions/cache@v4
-        with:
-          path: .ccache
-          key: ccache-ubuntu-mingw-debug-${{ github.sha }}
-          restore-keys: ccache-ubuntu-mingw-debug-
-      - name: Configure
-        run: cmake --preset mingw-debug
-      - name: Build
-        run: |
-          set -o pipefail
-          cmake --build build/mingw-debug 2>&1 | tee build.log
-          ! grep -n "warning:" build.log
-      - name: Test (Wine)
-        env:
-          WINEPREFIX: /root/.wine   # the container runs as root; the workspace and $HOME are not owned by it
-        run: |
-          wineboot --init
-          ctest --test-dir build/mingw-debug --output-on-failure
-
-  msvc:
-    name: MSVC Debug
-    # The Windows build that ships (T18); not in the Ubuntu image. Windows minutes cost 2x on private repositories.
+  windows:
+    name: clang-cl Debug
+    # The Windows build that ships (T26), on a real Windows: Visual Studio's headers, STL and linker with the
+    # runner's LLVM clang-cl. Not in the Ubuntu image. Windows minutes cost 2x on private repositories.
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
       - name: Visual Studio environment (x64)
         uses: ilammy/msvc-dev-cmd@v1
+      - name: Versions
+        run: clang-cl --version && cmake --version
       - name: Configure
         run: cmake --preset windows-debug
       - name: Build
         run: |
           set -o pipefail
           cmake --build build/windows-debug -- -k 0 2>&1 | tee build.log   # every error in one run
-          ! grep -nE "warning( [A-Z]+[0-9]+)?:" build.log
+          ! grep -nE "warning( [A-Z]+[0-9]+)?:" build.log   # clang-cl, and cl/link (LuaJIT, linker)
       - name: Test
         run: ctest --test-dir build/windows-debug --output-on-failure
 
@@ -158,7 +116,6 @@ jobs:
     name: Importer and wiki
     needs: image
     runs-on: ubuntu-latest
-    timeout-minutes: 40
     container:
       image: ${{ needs.image.outputs.image }}
       credentials:

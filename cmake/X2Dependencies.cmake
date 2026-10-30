@@ -35,7 +35,7 @@ if(NOT TARGET cryptopp::cryptopp)
     list(FILTER _x2_cryptopp_inc EXCLUDE REGEX "/cryptopp/?(>)?$")
     set_target_properties(cryptopp PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${_x2_cryptopp_inc}")
     # third-party code: GCC 16 -O2 flags a memcpy in esign.cpp (-Wstringop-overflow); not ours to fix
-    target_compile_options(cryptopp PRIVATE $<IF:$<CXX_COMPILER_ID:MSVC>,/w,-w>)
+    target_compile_options(cryptopp PRIVATE $<IF:$<BOOL:${MSVC}>,/w,-w>)
     if(MSVC)
         target_compile_options(cryptopp PRIVATE "/FI${CMAKE_CURRENT_LIST_DIR}/compat/cryptopp_stdext.h")
     endif()
@@ -62,9 +62,8 @@ add_library(x2::asio ALIAS x2_asio)
 
 # --- LuaJIT 2.1 (Lua 5.1 API, decision T21) ----------------------------------------------------------
 # Upstream, unmodified (not the client's LuaJIT 2.0.2 copy). Linux: system package via pkg-config first.
-# Otherwise (MinGW, MSVC, or no package): the source at a pinned commit, built by its own scripts (LuaJIT has no
-# CMake): the Makefile, or msvcbuild.bat with MSVC (T25). Cross builds compile its code generators (minilua, buildvm)
-# with the host compiler and run them here.
+# Otherwise (Windows, or no package): the source at a pinned commit, built by its own scripts (LuaJIT has no
+# CMake): the Makefile, or msvcbuild.bat on Windows (T25; it compiles with cl, ABI-compatible with clang-cl).
 set(X2_LUAJIT_COMMIT a4c064539ea931274d407e1249b4bb575424a0f4)  # v2.1, 2026-10-21 (2.1.1792588164)
 if(NOT TARGET x2::luajit)
     if(NOT WIN32)
@@ -93,14 +92,7 @@ if(NOT TARGET x2::luajit)
                 COMMENT "Building LuaJIT ${X2_LUAJIT_COMMIT} (msvcbuild.bat)"
                 VERBATIM)
         else()
-            set(_x2_luajit_make BUILDMODE=static)
-            if(CMAKE_CROSSCOMPILING)
-                # the compiler prefix (x86_64-w64-mingw32-): the Makefile runs $(CROSS)gcc
-                string(REGEX REPLACE "gcc$" "" _x2_luajit_cross "${CMAKE_C_COMPILER}")
-                list(APPEND _x2_luajit_make HOST_CC=cc CROSS=${_x2_luajit_cross} TARGET_SYS=${CMAKE_SYSTEM_NAME})
-            else()
-                list(APPEND _x2_luajit_make CC=${CMAKE_C_COMPILER})
-            endif()
+            set(_x2_luajit_make BUILDMODE=static CC=${CMAKE_C_COMPILER})
 
             find_program(X2_MAKE NAMES gmake make REQUIRED)
             set(_x2_luajit_lib ${luajit_SOURCE_DIR}/src/libluajit.a)
@@ -146,8 +138,6 @@ endif()
 # x2/platform/odbc.h links it, so x2_platform itself does not depend on ODBC.
 add_library(x2_odbc INTERFACE)
 if(WIN32)
-    # by name, like the other system libraries: FindODBC gives MinGW the path of libodbc32.a, which CMake wraps
-    # in -Wl,-Bstatic ... -Wl,-Bdynamic, and that turned the rest of the static runtime (-static) dynamic
     target_link_libraries(x2_odbc INTERFACE odbc32 x2::platform)
 else()
     find_package(ODBC REQUIRED)

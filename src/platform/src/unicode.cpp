@@ -146,9 +146,8 @@ std::wstring Utf16ToWide(std::u16string_view s)
 
 std::wstring TranslateWideFormat(const wchar_t* fmt)
 {
-    // MSVC's CRT keeps the MSVC meaning. MinGW's libstdc++ turns on __USE_MINGW_ANSI_STDIO, which swaps
-    // the printf family for MinGW's own ISO C implementation: that one needs the translation like glibc.
-#if defined(_WIN32) && !(defined(__USE_MINGW_ANSI_STDIO) && __USE_MINGW_ANSI_STDIO)
+    // MSVC's CRT keeps the MSVC meaning.
+#if defined(_WIN32)
     return fmt ? std::wstring(fmt) : std::wstring();
 #else
     std::wstring out;

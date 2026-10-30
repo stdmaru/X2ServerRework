@@ -113,8 +113,3 @@ typedef wchar_t _TCHAR;
 
 #endif // !_WIN32
 
-#if defined(__MINGW32__)
-// MSVC declares these array overloads; the MinGW-w64 headers only have the (buffer, size) form.
-template <size_t N> errno_t _wstrdate_s(wchar_t (&dst)[N]) { return _wstrdate_s(dst, N); }
-template <size_t N> errno_t _wstrtime_s(wchar_t (&dst)[N]) { return _wstrtime_s(dst, N); }
-#endif
