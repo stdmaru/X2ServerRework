@@ -65,7 +65,7 @@ docker/build.sh cmake --preset linux-debug                            # configur
 docker/build.sh cmake --build --preset linux-debug                    # build
 docker/build.sh ctest --preset linux-debug                            # testes
 docker/build.sh cmake --preset linux-gcc && docker/build.sh cmake --build --preset linux-gcc   # verificação com GCC
-gh run list --branch <branch>                                         # CI: inclui Windows (clang-cl), que só roda lá
+gh workflow run ci.yml --ref <branch>                                # CI do Windows (clang-cl), só à mão: minutos contados
 python3 tools/import/import.py <módulo> --dry-run                     # importador
 python3 tools/import/tests/test_condres.py                            # testes do importador
 python3 tools/import/tests/test_flagsim.py
@@ -110,7 +110,7 @@ O wiki em `docs/` é a memória do projeto. Ele é organizado como **wiki naveg�
 
 ## Git
 
-- Commit e push só quando o usuário pedir. Ainda não há remoto configurado.
+- Remoto: `origin` (GitHub, privado). Commit e push dos branches de trabalho sem perguntar (push de branch não dispara CI); integrar na `main` só quando o usuário pedir (depois, push da `main`). Nunca force-push na `main`.
 - Mensagem: `tipo: resumo` (`feat`, `fix`, `docs`, `refactor`, `chore`), com corpo em português explicando o porquê.
 
 ### Branches
@@ -119,5 +119,6 @@ O wiki em `docs/` é a memória do projeto. Ele é organizado como **wiki naveg�
 - **Um branch curto por passo do roadmap**, com nome `área/assunto`. Áreas: `platform`, `kncsdk`, `server`, `client`, `tools`, `docs`, `build`.
   Exemplos: `tools/server-flags`, `server/common-import`, `build/windows-clang-cl`.
 - **Integração por fast-forward** (`git merge --ff-only`), com histórico linear. Se a `main` andou, faça `git rebase main` no branch antes de integrar.
-- Antes de integrar, rode o build limpo, os testes e o verificador de links. Depois de integrar, apague o branch.
+- Antes de integrar, rode o build limpo, os testes e o verificador de links, e um disparo do CI do Windows no branch.
+  O Actions tem **2.000 minutos/mês** (Windows conta 2×): o CI só roda sozinho na `main`; ver [Integração contínua](docs/ferramentas/ci.md#minutos-orçamento). Depois de integrar, apague o branch.
 - Trabalho grande demais para um passo vira vários branches em sequência, não um branch longo.

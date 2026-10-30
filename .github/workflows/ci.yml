@@ -1,15 +1,25 @@
-# Build and tests on every push and pull request (docs/ferramentas/ci.md).
-# Every job runs in the project's Ubuntu build image (docker/build/Dockerfile, decision T24), the same one used by
+# Build and tests (docs/ferramentas/ci.md).
+# The Linux jobs run in the project's Ubuntu build image (docker/build/Dockerfile, decision T24), the same one used by
 # docker/build.sh for local builds. The image is published to GHCR, tagged by the Dockerfile's hash, and only
 # rebuilt when the Dockerfile changes.
 # Windows is built with clang-cl on a Windows runner (T26).
 # The build must have no warnings (AGENTS.md): any "warning:" in the log fails the job.
 name: CI
 
+# Minutes are limited (private repository, 2000/month; Windows counts 2x): automatic only on main, after an
+# integration. Work branches are checked locally (docker/build.sh) and dispatched by hand when needed:
+#   gh workflow run ci.yml --ref <branch> [-f jobs=windows|linux|all]   (default: windows, the part not checkable locally)
 on:
   push:
-  pull_request:
+    branches: [main]
+    paths-ignore: ["docs/**", "**.md", ".claude/**"]
   workflow_dispatch:
+    inputs:
+      jobs:
+        description: "Jobs to run"
+        type: choice
+        options: [windows, linux, all]
+        default: windows
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -26,7 +36,9 @@ defaults:
 jobs:
   image:
     name: Build image
+    if: github.event_name == 'push' || inputs.jobs != 'windows'
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     permissions:
       contents: read
       packages: write
@@ -56,6 +68,7 @@ jobs:
     name: ${{ matrix.name }}
     needs: image
     runs-on: ubuntu-latest
+    timeout-minutes: 40
     container:
       image: ${{ needs.image.outputs.image }}
       credentials:
@@ -65,10 +78,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          # Clang Release (the shipped Linux build) stays in the local matrix: same diagnostics as Clang Debug
           - name: Clang Debug
             preset: linux-debug
-          - name: Clang Release
-            preset: linux-release
           - name: GCC Release (check)
             preset: linux-gcc
     env:
@@ -93,9 +105,11 @@ jobs:
 
   windows:
     name: clang-cl Debug
+    if: github.event_name == 'push' || inputs.jobs != 'linux'
     # The Windows build that ships (T26), on a real Windows: Visual Studio's headers, STL and linker with the
     # runner's LLVM clang-cl. Not in the Ubuntu image. Windows minutes cost 2x on private repositories.
     runs-on: windows-latest
+    timeout-minutes: 40
     defaults:
       run:
         # not Git Bash: its /usr/bin/link would shadow the Visual Studio linker that msvcbuild.bat calls
@@ -123,13 +137,9 @@ jobs:
 
   checks:
     name: Importer and wiki
-    needs: image
-    runs-on: ubuntu-latest
-    container:
-      image: ${{ needs.image.outputs.image }}
-      credentials:
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+    if: github.event_name == 'push' || inputs.jobs != 'windows'
+    runs-on: ubuntu-latest   # plain Python scripts: no need to pull the image
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - name: Importer tests
