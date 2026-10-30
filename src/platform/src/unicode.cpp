@@ -1,5 +1,6 @@
 #include "x2/platform/unicode.h"
 
+#include <codecvt>
 #include <cwchar>
 
 namespace x2::platform {
@@ -193,5 +194,26 @@ std::wstring TranslateWideFormat(const wchar_t* fmt)
     return out;
 #endif
 }
+
+// <codecvt> is deprecated since C++17, with no standard replacement for wide streams yet.
+#if defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#elif defined(_MSC_VER)
+#pragma warning(push)
+#pragma warning(disable : 4996)
+#endif
+std::locale Utf8FileLocale()
+{
+    if constexpr (sizeof(wchar_t) == 2)
+        return std::locale(std::locale::classic(), new std::codecvt_utf8_utf16<wchar_t>);
+    else
+        return std::locale(std::locale::classic(), new std::codecvt_utf8<wchar_t>);
+}
+#if defined(__GNUC__)
+#pragma GCC diagnostic pop
+#elif defined(_MSC_VER)
+#pragma warning(pop)
+#endif
 
 } // namespace x2::platform

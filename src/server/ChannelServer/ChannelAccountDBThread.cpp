@@ -1,4 +1,4 @@
-#include <winsock2.h>
+#include "x2/platform/net.h"
 #include <iomanip>
 #include <sstream>
 
@@ -15,7 +15,7 @@
 //}}
 
 //{{ 2010/10/23 조효진  랜돔 시드 문제 때문에 부스터 Random으로 교체함
-#include <boost/random.hpp>
+#include <random>
 //}}
 #define CLASS_TYPE KChannelAccountDBThread
 ImplPfID( KChannelAccountDBThread, PI_CHANNEL_ACCOUNT_DB );
@@ -172,9 +172,9 @@ IMPL_ON_FUNC( DBE_CH_USER_GENERAL_LOGIN_REQ )
 
 	if( kPacket.m_iOK == NetError::NET_OK )
 	{
-		static boost::mt19937 generator(timeGetTime());	// Fixed seed except for timeGetTime()
-		static boost::uniform_int<> uni_dist(0,INT_MAX) ;
-		static boost::variate_generator<boost::mt19937&, boost::uniform_int<> > gen(generator, uni_dist);
+		static std::mt19937 generator(timeGetTime());	// Fixed seed except for timeGetTime()
+		static std::uniform_int_distribution<> uni_dist(0,INT_MAX) ;
+		auto gen = [] { return uni_dist( generator ); };
 
 		int iOTP  = gen();	// Generate iOTP value within the range of 2.1 billion
 
@@ -303,15 +303,15 @@ IMPL_ON_FUNC( DBE_CH_USER_KOGOTP_LOGIN_REQ )
 
 	if( kPacket.m_iOK == NetError::NET_OK )
 	{
-		static boost::mt19937 generator(timeGetTime());	// timeGetTime() 빼면 고정 시드
-		static boost::uniform_int<> uni_dist(0,INT_MAX) ;
-		static boost::variate_generator<boost::mt19937&, boost::uniform_int<> > gen(generator, uni_dist);
+		static std::mt19937 generator(timeGetTime());	// timeGetTime() 빼면 고정 시드
+		static std::uniform_int_distribution<> uni_dist(0,INT_MAX) ;
+		auto gen = [] { return uni_dist( generator ); };
 
 		int iOTP  = gen();	// 21억 범위내에서 iOTP 값 생성
 
 
 		wchar_t wszOTP[128];
-		::_itow( iOTP, wszOTP, 10 );
+		_itow_s( iOTP, wszOTP, 10 );
 		kPacket.m_wstrOTP = wszOTP;
 
 		DO_QUERY( L"exec dbo.mup_update_user_otp", L"%d, N\'%s\'",
@@ -446,7 +446,7 @@ IMPL_ON_FUNC( DBE_GASH_USER_LOGIN_REQ )
     {
         int iOTP = rand();
         wchar_t wszOTP[128];
-        ::_itow( iOTP, wszOTP, 10 );
+        _itow_s( iOTP, wszOTP, 10 );
         kPacket.m_wstrOTP = wszOTP;
 
         DO_QUERY( L"exec dbo.mup_update_user_otp", L"%d, N\'%s\'",

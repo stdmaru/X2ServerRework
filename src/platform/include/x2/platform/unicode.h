@@ -1,6 +1,7 @@
 // Conversions between wide strings (UTF-16 on Windows, UTF-32 elsewhere), UTF-8 and UTF-16.
 #pragma once
 
+#include <locale>
 #include <string>
 #include <string_view>
 
@@ -25,5 +26,9 @@ std::wstring   DecodeTextFile(std::string_view bytes);
 // in MSVC `%s`/`%c` in a wide format mean wide arguments and `%S` narrow ones (the opposite of
 // ISO C), and `%I64d` is `%lld`. Identity with the MSVC CRT; MinGW's ISO stdio is translated like glibc.
 std::wstring   TranslateWideFormat(const wchar_t* fmt);
+
+// Locale for wide file streams (std::wfstream) that read and write UTF-8, in place of the MSVC-only
+// std::locale("korean"), which wrote CP949.
+std::locale    Utf8FileLocale();
 
 } // namespace x2::platform

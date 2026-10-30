@@ -8,7 +8,6 @@
 
 		#include "../Common/OnlyGlobal/AuthAndBilling/DEBAuthManager.h"
 
-	#include "../Common/OnlyGlobal/ProcessCommuniationModule/ProcessCommunicationManager.h"
 
 #include "Event.h"
 #include "CommonPacket.h"
@@ -37,8 +36,8 @@
 #include <lua_tinker.h>
 using namespace lua_tinker;
 
-#include <boost/bind/bind.hpp>
-using namespace boost::placeholders;
+#include <functional>
+using namespace std::placeholders;
 
 NiImplementRTTI( KChannelSimLayer, KSimLayer );
 
@@ -100,12 +99,11 @@ void KChannelSimLayer::Init()
 	//{{ 2011. 09. 26  Minseong Kim		Machine ID check - step before game loading
 		KAutoPath kAutoPath;
 		std::string	strFile;
-		bool bRVal = true;
 
 		{
 			LoadingTimer lt( L"Enum.lua" );
 
-			//If the data loading done in �� fails later, the server must be shut down.
+			// If this data fails to load, the server must be shut down later.
 			strFile = "Enum.lua";
 			kAutoPath.GetPullPath( strFile );
 			if( 0 != LUA_DOFILE( g_pLua, strFile.c_str() ) )
@@ -123,7 +121,7 @@ void KChannelSimLayer::Init()
 		{
 			LoadingTimer lt( L"DungeonEnum.lua" );
 
-			//If the data loading done in �� fails later, the server must be shut down.
+			// If this data fails to load, the server must be shut down later.
 			strFile = "DungeonEnum.lua";
 			kAutoPath.GetPullPath( strFile );
 			if( 0 != LUA_DOFILE( g_pLua, strFile.c_str() ) )
@@ -202,14 +200,12 @@ void KChannelSimLayer::ShutDown()
 			case CIM_SERVICE_MODE:
 			{
 				START_LOG( cout, L"------------ Channel server normal mode! ------------" );
-					SiKProcessCommunicationManager()->QueueingProcessWrite(boost::str(boost::wformat(L"%1%_%2%") % 0 %L"Channel Server Normal Mode!"));
 			}
 			break;
 
 			case CIM_CHECK_MODE:
 			{
 				START_LOG( cout, L"------------ Channel server maintenance mode! ------------" );
-					SiKProcessCommunicationManager()->QueueingProcessWrite(boost::str(boost::wformat(L"%1%_%2%") % 0 %L"Channel server check mode!"));
 			}
 			break;
 

@@ -5,6 +5,7 @@
 #include "ODBC/DBUtil.h"
 //}}
 #include "KncSend.h"
+#include "BaseServer.h"  // KBaseServer::GetKObj() in the template bodies below
 
 #include "Event.h"
 #include "CommonPacket.h"

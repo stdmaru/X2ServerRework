@@ -77,17 +77,15 @@ protected:
 	std::map< int, KChannelBonusInfo >	m_mapChannelBonusList;
 	//}}
 
-	boost::timer						m_kChannelListRefreshTimer;
+	x2::Timer						m_kChannelListRefreshTimer;
 	bool								m_bIsFirstUpdate;
 	std::map< int, KServerGroupInfo >		m_mapServerGroupList;
-	boost::timer							m_kServerGroupListRefreshTimer;
+	x2::Timer							m_kServerGroupListRefreshTimer;
 	bool									m_bIsFirstUpdateServerGroup;
 
 	KLoginResultInfo					m_kLoginResultInfo;
-	boost::timer						m_kLoginResultInfoTimer;
+	x2::Timer						m_kLoginResultInfoTimer;
 
-	boost::timer					m_tTimeProcessCommunicationONOFF;
-	bool							m_bServerRunningProcessCommunicationOnOff;
 };
 
 DefKObjectInline( KChannelServer, KBaseServer );

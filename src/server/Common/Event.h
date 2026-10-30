@@ -153,9 +153,9 @@ break
 #define  CASE_NOPARAM(id)           case id: ON_##id( spEvent_->m_anTrace ); break
 #define  CASE(id)                  _CASE(id, K##id)
 
-#define _IMPL_ON_FUNC(id, packet)   void CLASS_TYPE::ON_##id( UidType anTrace_[], packet& kPacket_ )
-#define  IMPL_ON_FUNC_NOPARAM(id)   void CLASS_TYPE::ON_##id( UidType /*anTrace_*/[] )
-#define  IMPL_ON_FUNC(id)           void CLASS_TYPE::ON_##id( UidType /*anTrace_*/[], K##id& kPacket_ )
+#define _IMPL_ON_FUNC(id, packet)   void CLASS_TYPE::ON_##id( [[maybe_unused]] UidType anTrace_[], packet& kPacket_ )
+#define  IMPL_ON_FUNC_NOPARAM(id)   void CLASS_TYPE::ON_##id( [[maybe_unused]] UidType anTrace_[] )
+#define  IMPL_ON_FUNC(id)           void CLASS_TYPE::ON_##id( [[maybe_unused]] UidType anTrace_[], K##id& kPacket_ )
 // ^ _IMPL... 매크로를 사용해서 이중으로 정의하면 Visual Assist가 제대로 읽지 못한다.
 
 #define _DECL_ON_FUNC(id, packet)   void ON_##id( UidType anTrace_[], packet& kPacket )

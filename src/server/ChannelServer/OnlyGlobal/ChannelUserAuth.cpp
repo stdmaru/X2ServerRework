@@ -17,7 +17,7 @@
 		//{{ 2011. 01. 20	Minseong Kim	Concurrent monitoring tool DBary Injection
 			#include "ODBC/Odbc.h"
 
-		#include <boost/format.hpp>
+		#include "x2/platform/format.h"
 
 		//{{ 2011. 09. 14	Minseong Kim	Hacking process list delivered - Step before game loading
 
@@ -124,7 +124,7 @@
 			SendPacket( ECH_SECURITY_AUTH_ACK, kAck );
 		}
 
-		void KChannelUser::HandlePublisherSecurityInfoNot(const KEPUBLISHER_SECURITY_INFO_NOT& kPacket_)
+		void KChannelUser::HandlePublisherSecurityInfoNot(const KEPUBLISHER_SECURITY_INFO_NOT& /*kPacket_*/)
 		{
 
 		}

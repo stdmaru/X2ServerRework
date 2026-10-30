@@ -34,7 +34,7 @@ public:
     int GetCountNoLock() const           { return ( int )m_mapUID.size(); }
 
     template< class T > bool Get( IN const UidType nUID, IN OUT std::shared_ptr<T>& spOut );
-    template< class T > void ForEach( T& functor );
+    template< class T > void ForEach( T&& functor );  // also takes temporaries, as MSVC allowed with T&
     //template< class T > void SendToAll( const unsigned short usEventID, const T& data );
     //template< class T > void QueueingToAll( const unsigned short usEventID, const T& data );
     //void SendIDToAll( const u_short usEventID );
@@ -92,7 +92,7 @@ bool KActorManager::Get( IN const UidType nUID_, IN OUT std::shared_ptr<ActorTyp
 }
 
 template<typename Func>
-void KActorManager::ForEach( Func& functor )
+void KActorManager::ForEach( Func&& functor )
 {
     KLocker lock( m_csAct );
     std::for_each( m_vecAct.begin(), m_vecAct.end(), functor );

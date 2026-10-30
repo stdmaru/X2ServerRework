@@ -18,7 +18,7 @@
 //}}
 
 
-#include <boost/format.hpp>
+#include "x2/platform/format.h"
 
 //{{ 2011. 09. 14  김민성	해킹 프로세스 목록 전달 - 게임 로딩 이전 단계
 //}}
@@ -70,8 +70,8 @@ void KChannelUser::ProcessEvent( const KEventPtr& spEvent_ )
 	//{{ 2012. 07. 18	최육사		재접속 로직
 	//}}
 
-    if( RoutePacket( spEvent_.get() ) )
-        return;
+	if( RoutePacket( spEvent_.get() ) )
+		return;
 
 	//{{ 2008. 8. 28  최육사	이벤트 필터
 	if( !CheckReqEvent( spEvent_->m_usEventID ) )

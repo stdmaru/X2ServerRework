@@ -4,8 +4,6 @@
 file(GLOB_RECURSE X2_SERVER_COMMON_SOURCES CONFIGURE_DEPENDS
     ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/*.c)
 list(FILTER X2_SERVER_COMMON_SOURCES EXCLUDE REGEX "/tests/")
-# depend on GameServer/CenterServer headers: compiled with those servers
-list(FILTER X2_SERVER_COMMON_SOURCES EXCLUDE REGEX "/KStatisticsLocalLog\\.cpp$")
 list(FILTER X2_SERVER_COMMON_SOURCES EXCLUDE REGEX "/OnlyGlobal/AuthAndBilling/DEBBilling(Manager)?\\.cpp$")
 
 add_library(x2_server_common STATIC ${X2_SERVER_COMMON_SOURCES})

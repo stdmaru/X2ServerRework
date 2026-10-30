@@ -2,10 +2,18 @@
 
 #include "BaseServer.h"
 #include "../Common/KFolderTraverse.h"
-#include "../GameServer/Inventory.h"
-#include "../CenterServer/PvPRoom.h"
 
- #include <sys/stat.h>
+namespace {
+// Column count of the PvP log: KPvPRoom::SP_NUM (CenterServer/StatPvP_def.h). Every server compiles this file,
+// so it no longer includes the CenterServer/GameServer headers.
+// TODO: use the enum when the CenterServer is ported (static_assert against it).
+constexpr int PVP_STAT_COLUMNS = 14;
+}
+
+#include "x2/platform/unicode.h"
+
+#include <filesystem>
+#include <string>
 
 KStatisticsLocalLog::KStatisticsLocalLog()
 {
@@ -51,18 +59,17 @@ void KStatisticsLocalLog::InitLocalLog( KLocalLog eEnum )
 		return;
 
 	std::string strFilename;
-	strFilename  = "Statistics\\";
+	strFilename  = "Statistics/";
 	strFilename += m_kLocalLog[eEnum].m_strLogFileName;
 	strFilename += ".txt";
 
-	struct _stat info;
-	int result = _stat( strFilename.c_str(), &info );
+	const bool bExists = std::filesystem::exists( strFilename );
 
-	m_kLocalLog[eEnum].m_wfsLocalLog.imbue(std::locale("korean", LC_CTYPE));
+	m_kLocalLog[eEnum].m_wfsLocalLog.imbue(x2::platform::Utf8FileLocale());
 	m_kLocalLog[eEnum].m_wfsLocalLog.open( strFilename.c_str(), std::ios::out | std::ios::app );
 
-	// 파일이 존재하지 않았을 경우 생성
-	if ( result != 0 )
+	// Write the header when the file did not exist
+	if ( !bExists )
 		WriteLocalLogHead( m_kLocalLog[eEnum].m_wfsLocalLog, m_kLocalLog[eEnum].m_iStatisticsID );
 	m_kLocalLog[eEnum].m_wfsLocalLog.flush();
 }
@@ -149,11 +156,11 @@ void KStatisticsLocalLog::FlushLocalLogStm( int iStatisticsID, const char* strFi
 {
 	if ( KSIManager.CheckStatistics( iStatisticsID ) == true )
 	{
-		std::string strPath = "Statistics\\";
+		std::string strPath = "Statistics/";
 		strPath += strFileName;
 
 		std::wfstream fout;
-		fout.imbue(std::locale("korean", LC_CTYPE));
+		fout.imbue(x2::platform::Utf8FileLocale());
 		fout.open( strPath.c_str(), std::ios::out );
 
 		WriteLocalLogHead( fout, iStatisticsID );
@@ -481,11 +488,11 @@ void KStatisticsLocalLog::LoadLocalLogFromFile( int iStatisticsID, const char* s
 {
 	if ( KSIManager.CheckStatistics( iStatisticsID ) == true )
 	{
-		std::string strPath = "Statistics\\";
+		std::string strPath = "Statistics/";
 		strPath += strFileName;
 
 		std::wfstream fin;
-		fin.imbue(std::locale("korean"));
+		fin.imbue(x2::platform::Utf8FileLocale());
 		fin.open( strPath.c_str(), std::ios::in );
 
 		WCHAR pcBuf[MAX_PATH] = { 0 };
@@ -536,7 +543,7 @@ void KStatisticsLocalLog::LoadLocalLogFromFile()
 	sb_FuncPassed = true;
 
 	// PVP Log
-	LoadLocalLogFromFile( KStatistics::SI_LOC_PVP, "SI_LOG_PVP.TXT", KPvPRoom::SP_NUM );
+	LoadLocalLogFromFile( KStatistics::SI_LOC_PVP, "SI_LOG_PVP.TXT", PVP_STAT_COLUMNS );
 
 	// Item Log
 	LoadLocalLogFromFile( KStatistics::SI_LOC_ITEM, "SI_LOG_ITEM.TXT", KStatistics::SI_ITEM_MAX );
@@ -556,20 +563,15 @@ void KStatisticsLocalLog::InitLocalLog_Henir_Ranking( int iRankingType )
 	if( m_wfsLocalLog_Henir_Ranking[iRankingType].is_open() )
 		return;
 
-	CStringA cstrFileName;
-	cstrFileName.Format( "Statistics\\SI_LOG_HENIR_RANKING_RANKING_TYPE_%d.txt", iRankingType );
+	const std::string strFilename = "Statistics/SI_LOG_HENIR_RANKING_RANKING_TYPE_" + std::to_string( iRankingType ) + ".txt";
 
-	std::string strFilename;
-	strFilename = cstrFileName.GetBuffer();
+	const bool bExists = std::filesystem::exists( strFilename );
 
-	struct _stat info;
-	int result = _stat( strFilename.c_str(), &info );
-
-	m_wfsLocalLog_Henir_Ranking[iRankingType].imbue(std::locale("korean", LC_CTYPE));
+	m_wfsLocalLog_Henir_Ranking[iRankingType].imbue(x2::platform::Utf8FileLocale());
 	m_wfsLocalLog_Henir_Ranking[iRankingType].open( strFilename.c_str(), std::ios::out | std::ios::app );
 
-	// 파일이 존재하지 않았을 경우 생성
-	if ( result != 0 )
+	// Write the header when the file did not exist
+	if ( !bExists )
 		WriteLocalLogHead( m_wfsLocalLog_Henir_Ranking[iRankingType], KStatistics::SI_LOC_HENIR_RANKING );
 
 	m_wfsLocalLog_Henir_Ranking[iRankingType].flush();

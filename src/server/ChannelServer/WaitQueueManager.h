@@ -2,7 +2,7 @@
 
 #include "RefreshSingleton.h"
 #include <ToString.h>
-#include <boost/timer.hpp>
+#include "x2/platform/timer.h"
 #include "KncSend.h"
 #include <deque>
 #include <set>
@@ -29,7 +29,7 @@ public:
 
 public:
 	KWaitQueueManager(void);
-	~KWaitQueueManager(void);
+	virtual ~KWaitQueueManager(void);
 
 	// for lua
 	void SetMode_LUA( int iMode );
@@ -63,7 +63,7 @@ protected:
 
 private:
 	WQ_ENUM						m_eMode;				// 대기열 모드
-	boost::timer				m_kTimer;
+	x2::Timer				m_kTimer;
 	int							m_iTotalCCU;			// 현재 서버군 동접
 	int							m_iTotalCCULimit;		// 서버군 동접 제한
 	int							m_iPassCount;			// 입장 가능한 인원

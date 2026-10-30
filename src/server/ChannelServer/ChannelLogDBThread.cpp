@@ -1,4 +1,4 @@
-#include <winsock2.h>
+#include "x2/platform/net.h"
 #include <iomanip>
 #include <sstream>
 
@@ -171,10 +171,10 @@ end_proc:
 
 IMPL_ON_FUNC_NOPARAM( DBE_SERVER_OFF_NOT )
 {
-    //서버 Enable을 끈다
-	DO_QUERY( L"exec dbo.P_LServerList_UPD", L"%d, %d, 0", % KBaseServer::GetKObj()->GetServerGroupID() % KBaseServer::GetKObj()->GetUID() );
-
 	int iOK = NetError::ERR_ODBC_01;
+
+	// Disable the server
+	DO_QUERY( L"exec dbo.P_LServerList_UPD", L"%d, %d, 0", % KBaseServer::GetKObj()->GetServerGroupID() % KBaseServer::GetKObj()->GetUID() );
 
     if( m_kODBC.BeginFetch() )
     {
@@ -518,7 +518,7 @@ IMPL_ON_FUNC( DBE_LOG_STATISTICS_INFO_NOT )
 	const std::wstring wstrCurTime = ( std::wstring )( tCurTime.Format( _T( "%Y-%m-%d %H:%M:%S" ) ) );
 	const UidType iServerUID = KBaseServer::GetKObj()->GetUID();
 
-	BOOST_TEST_FOREACH( const KLogStatInfo&, kInfo, kPacket_.m_vecLogStat )
+	for( const KLogStatInfo& kInfo : kPacket_.m_vecLogStat )
 	{
 		int iOK = NetError::ERR_ODBC_01;
 

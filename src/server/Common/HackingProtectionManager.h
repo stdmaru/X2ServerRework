@@ -3,6 +3,7 @@
 #include <KNCSingleton.h>
 #include <ToString.h>
 #include "KncSend.h"
+#include "BaseServer.h"  // KBaseServer::GetKObj() in the template bodies below
 
 
 //{{ 2010. 02. 16  최육사	해킹툴 리스트

@@ -9,8 +9,8 @@
 #include "ClientPacket.h"
 #include "ActorManager.h"
 
-#include <windows.h>    // ::GetTickCount()
-#include <boost/timer.hpp>
+#include "x2/platform/win32.h"    // ::GetTickCount()
+#include "x2/platform/timer.h"
 
 //{{ 2009. 10. 14  최육사	중복패킷차단
 #include "RepeatEventFilter/RepeatEventFilter.h"
@@ -153,7 +153,7 @@ protected:  // util function, Packet Handling
     virtual void OnDestroy();   // LOGINED 상태로 빠져나오고, DB data update를 신청한다
 
 private:
-	boost::timer					m_kTimer[TM_TOTAL_NUM];
+	x2::Timer					m_kTimer[TM_TOTAL_NUM];
 
 	//{{ 2009. 10. 14  최육사	필터
 	KRepeatEventFilter				m_kRepeatEventFilter;

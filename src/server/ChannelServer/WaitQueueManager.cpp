@@ -13,8 +13,8 @@ ImplementRefreshSingleton( KWaitQueueManager );
 KWaitQueueManager::KWaitQueueManager(void) :
 m_eMode( WQ_NONE ),
 m_iTotalCCU( 0 ),
-m_iPassCount( 0 ),
 m_iTotalCCULimit( 0 ),
+m_iPassCount( 0 ),
 m_fSendTimeGap( 0.0 ),
 m_bSendGetCCU( false )
 {
@@ -173,7 +173,7 @@ bool KWaitQueueManager::GetWaitUserCount( IN const UidType iUID, OUT int& iWaitU
 	if( IsExist( iUID ) == false )
 		return false;
 
-	BOOST_TEST_FOREACH( const UidType, iRegUID, m_deqWaitUserList )
+	for( const UidType iRegUID : m_deqWaitUserList )
 	{
 		if( iRegUID == iUID )
 			break;

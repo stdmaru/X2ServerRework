@@ -1,8 +1,8 @@
-#include <WinSock2.h>
+#include "x2/platform/net.h"
 #include <sstream>
 #include <iomanip>
-#include <boost/bind/bind.hpp>
-using namespace boost::placeholders;
+#include <functional>
+using namespace std::placeholders;
 #include "ChannelServer.h"
 #include "ActorManager.h"
 #include "ChannelSimLayer.h"
@@ -28,7 +28,6 @@ using namespace boost::placeholders;
 
 
 
-#include "../Common/OnlyGlobal/ProcessCommuniationModule/ProcessCommunicationManager.h"
 
 //{{ 2011. 03. 29	최육사	TBB 메모리 관리자
 //#ifdef SERV_TBB_MALLOC_PROXY_TEST
@@ -147,8 +146,6 @@ bool KChannelServer::Init()
 	OnServerReadyComplete();
 	//}}
 
-	m_bServerRunningProcessCommunicationOnOff = false;
-
     return true;
 }
 
@@ -178,13 +175,6 @@ void KChannelServer::OnServerReadyComplete()
 	//{{ 2012. 04. 24	최육사	UDP릴레이 퍼포먼스 체크
 	//}}
 
-	if (SiKGameSysVal()->GetProcessCommunication() == true)
-	{
-		SiKProcessCommunicationManager()->InitRead(TEXT("\\\\.\\pipe\\ChannelServerRead"));
-		SiKProcessCommunicationManager()->InitWrite(TEXT("\\\\.\\pipe\\ChannelServerWrite"));
-		SiKProcessCommunicationManager()->Begin();
-	}
-
 	// 서버군 이름 표시
 	START_LOG( cout2, SEnum::GetServerGroupName( GetServerGroupID() ) )
 		<< BUILD_LOG( GetServerGroupID() )
@@ -194,11 +184,6 @@ void KChannelServer::OnServerReadyComplete()
 
 void KChannelServer::ShutDown()
 {
-	if (SiKGameSysVal()->GetProcessCommunication() == true)
-	{
-		SiKProcessCommunicationManager()->ShutDown();
-	}
-
     // 아직 아무 종료처리도 진행되기 전.
     KBaseServer::ShutDown();        // 이곳에서 모든 종료가 끝난다. 각각의 Layer들도 모두 소멸됨.
 
@@ -214,7 +199,7 @@ bool KChannelServer::DestroyAllSession()
 
     START_LOG( cout, L"현재 유저 : " << pkActorManager->GetCount() << L" 명" );
 
-    pkActorManager->ForEach( boost::bind( &KActor::ReserveDestroy, _1 ) );
+    pkActorManager->ForEach( std::bind( &KActor::ReserveDestroy, _1 ) );
 
     DWORD dwBeginTick = ::GetTickCount();
 
@@ -272,27 +257,6 @@ void KChannelServer::Tick()
 		m_kLoginResultInfoTimer.restart();
 
 		InitLoginResultInfo();
-	}
-
-	if ( m_tTimeProcessCommunicationONOFF.elapsed() > 60.0f )
-	{
-		if (SiKGameSysVal()->GetProcessCommunication() == true && m_bServerRunningProcessCommunicationOnOff == true)
-		{
-			SiKProcessCommunicationManager()->InitRead(TEXT("\\\\.\\pipe\\ChannelServerRead"));
-			SiKProcessCommunicationManager()->InitWrite(TEXT("\\\\.\\pipe\\ChannelServerWrite"));
-			SiKProcessCommunicationManager()->Begin();
-			m_bServerRunningProcessCommunicationOnOff = false;
-
-
-		}
-		else if (SiKGameSysVal()->GetProcessCommunication() == false && m_bServerRunningProcessCommunicationOnOff == false)
-		{
-			SiKProcessCommunicationManager()->ShutDown();
-
-			m_bServerRunningProcessCommunicationOnOff = true;
-
-		}
-		m_tTimeProcessCommunicationONOFF.restart();
 	}
 }
 

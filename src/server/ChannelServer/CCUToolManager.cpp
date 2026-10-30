@@ -69,7 +69,7 @@ bool KCCUToolManager::NewCCUData( IN UidType iServerID, IN CCUDate iCCUDate, IN 
 	return true;
 }
 
-bool KCCUToolManager::SetCCUData( IN CCUDate iCCUDate, IN UidType iServerID, IN std::vector< KCCUInfo > vecCCUInfo, IN char cCCUType )
+bool KCCUToolManager::SetCCUData( IN CCUDate iCCUDate, IN UidType iServerID, IN std::vector< KCCUInfo > vecCCUInfo, IN char /*cCCUType*/ )
 {
 	std::map< CCUDate, CCUDateData >::iterator mapit = m_mapCCU.find( iCCUDate );
 	if( mapit == m_mapCCU.end() )

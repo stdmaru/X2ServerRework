@@ -5,7 +5,7 @@
 #include <set>
 #include <vector>
 #include <map>
-#include <boost/timer.hpp>
+#include "x2/platform/timer.h"
 #include "KncSend.h"
 
 //{{ 2011. 09. 26  김민성	머신 ID 체크 - 게임 로딩 이전 단계
@@ -41,7 +41,7 @@ class KMachineBlockManager
 
 public:
 	KMachineBlockManager(void);
-	~KMachineBlockManager(void);
+	virtual ~KMachineBlockManager(void);
 
 	void Tick();
 
@@ -60,7 +60,7 @@ private:
 
 	std::set< std::string >		m_setMachineIDBlockList;
 
-	boost::timer				m_kTimer[TM_TOTAL_NUM];
+	x2::Timer				m_kTimer[TM_TOTAL_NUM];
 	int							m_iReleaseTick[BT_MAX];
 };
 

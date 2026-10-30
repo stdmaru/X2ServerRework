@@ -44,7 +44,7 @@ Mesmo nome de pasta do original (`Common`), porque os fontes incluem `"../Common
 | **Sockets/IOCP** (`Socket/`) | 15 | rede portável (Asio standalone), mantendo `KSession`/framing/cripto |
 | ~~**ODBC** (`ODBC/`)~~ | 2 | feito em 2026-10-30 (T17): [Banco de dados (ODBC)](server-common-db.md) |
 | **Matemática D3DX** (`X2Data/XSLBattleField`, `LineMap/`, `CommonPacket.h`) | 6 (187 usos) | `x2/platform/d3dx_math.h` (pronto); trocar `#include <d3dx9math.h>` por ele |
-| Dependência invertida | 1 | `KStatisticsLocalLog.cpp` inclui `GameServer/Inventory.h` e `CenterServer/PvPRoom.h` |
+| ~~Dependência invertida~~ | 1 | resolvido em 2026-10-30 (`server/channel-build`): `KStatisticsLocalLog.cpp` não inclui mais `GameServer/Inventory.h` nem `CenterServer/PvPRoom.h` (ver Mudanças) |
 
 Tamanho: ~99 mil linhas de `.cpp` sem os stubs gSOAP. Os maiores são os pacotes: `ServerPacket.cpp` (16 mil), `ClientPacket.cpp` (12 mil) e `CommonPacket.cpp` (7 mil).
 
@@ -62,7 +62,7 @@ Depois disso vem o ChannelServer (`server/channel`).
 
 ## Estado (2026-10-29, branch `server/common-build`)
 
-O alvo `x2_server_common` (todo o `Common`, menos os `.cpp` de `Socket/`, `ODBC/`, `KStatisticsLocalLog.cpp` e `DEBBilling*`)
+O alvo `x2_server_common` (todo o `Common`, menos os `.cpp` de `Socket/`, `ODBC/`, `KStatisticsLocalLog.cpp` (entrou em 2026-10-30) e `DEBBilling*`)
 **compila no Linux sem erros e sem warnings** (GCC 16 Debug/Release, Clang 23 Release). `Socket/` (TCP e UDP) compila e tem
 teste desde o `server/common-net`/`server/common-udp`, e o `ODBC/` desde o `server/common-db` (2026-10-30, ver [Banco de dados (ODBC)](server-common-db.md)). Ainda **não há testes** do `Common` (vêm no passo `server/common-packets`) e nada foi executado.
 No **MinGW** o `Common` e os testes dele compilam sem warnings e passam no Wine desde 2026-10-30 (LuaJIT pela T21). Foi a primeira
@@ -116,7 +116,7 @@ Mudanças de comportamento (intencionais):
 | `test_session.cpp` | `KSession` por loopback com as threads de I/O reais: accept, troca da chave (`E_ACCEPT_CONNECTION_NOT`), pacotes cifrados nos dois sentidos, um pacote de 24 KB (mais de uma leitura) e a desconexão. Nos dois modos do proxy: nas threads de I/O e com thread própria (sem IOCP) |
 | `test_udp.cpp` | Datagramas entre dois `CKTDNUDP` (ID + struct, conferindo endereço e porta do remetente) e o `XPT_PORT_CHECK_REQ` respondido pela thread do `KLBSUdpEcho`, que precisa terminar sem tráfego |
 | `test_odbc.cpp` | `KODBC`: conversão de `.dsn` e filtros sem banco; suíte `db` contra um SQL Server real quando `X2_TEST_ODBC` está definido. Ver [Banco de dados (ODBC)](server-common-db.md#testes) |
-| `server_hooks.cpp` | Não é teste: define o que cada servidor fornece ao `Common` (`g_szConfigFile`, `CreateDBThread`) e o `KStatisticsLocalLog` (compilado com o GameServer), para os testes linkarem sem um servidor |
+| `server_hooks.cpp` | Não é teste: define o que cada servidor fornece ao `Common` (`g_szConfigFile`, `CreateDBThread`), para os testes linkarem sem um servidor. Nos executáveis isso vem do servidor (ex.: `ChannelServer.cpp`) |
 | `packets_generated` (ctest) | Falha se os testes gerados estiverem desatualizados em relação aos `.cpp` dos pacotes |
 
 **Limite:** os testes provam que o porte é coerente consigo mesmo e com o formato lido no código, não que bate byte a byte com o
@@ -129,6 +129,7 @@ e não no cliente (as flags do cliente ainda não foram geradas, ver [Roadmap](.
 
 | Onde | Mudança | Motivo |
 |---|---|---|
+| `KStatisticsLocalLog` (`Statistics/SI_LOG_*.txt`) | Arquivos em **UTF-8** (`x2::platform::Utf8FileLocale`), caminho `Statistics/` com `/`, existência por `std::filesystem::exists` | O original usava `std::locale("korean")` (CP949, só MSVC) e `_stat`. Os arquivos antigos em CP949 com texto coreano no cabeçalho não são relidos iguais; os números são ASCII |
 | `KAutoPath`, `KFolderTraverse`, estatísticas | `FindFirstFile`/`GetCurrentDirectory`/`CopyFile`... → `std::filesystem`. `KApplyAllFiles` passa `directory_entry` ao functor e não muda mais o diretório atual | Portável. A busca de scripts continua na mesma ordem (pasta atual, depois subpastas em profundidade, por nome) |
 | `KFolderTraverse` | O original pulava a primeira entrada de `FindFirstFile` (normalmente `.`); aqui nenhuma entrada é pulada | `std::filesystem` não lista `.`/`..` |
 | `BaseServer::LoadINIFile`, `KStringTable` | INI lido pelo leitor da plataforma em **todas** as plataformas, aceitando UTF-16, UTF-8 e **CP949** | Os `config_*.ini` de produção estão em CP949; a API do Windows usa a code page do sistema, que só é 949 num Windows coreano |
@@ -154,6 +155,13 @@ e não no cliente (as flags do cliente ainda não foram geradas, ver [Roadmap](.
 | `SimObject`, `SerBuffer` etc. | Pequenos: `%d` com `__int64`, valores não inicializados | Ver diffs |
 
 ### Portabilidade (sem mudança de comportamento)
+
+- Achados ao compilar o ChannelServer (2026-10-30): `KStatisticsLocalLog.cpp` é compilado por todos os servidores, então entrou no
+  `x2_server_common`; ele incluía `GameServer/Inventory.h` (sem uso) e `CenterServer/PvPRoom.h` só para `KPvPRoom::SP_NUM`, que virou
+  uma constante local (14, de `CenterServer/StatPvP_def.h`, a conferir quando o CenterServer for portado). `IMPL_ON_FUNC*` (`Event.h`)
+  voltou a nomear `anTrace_` (com `[[maybe_unused]]`): a passada de warnings tinha comentado o nome, e `FIRST_SENDER_UID` deixava de
+  compilar nos servidores. `KActorManager::ForEach` recebe `T&&` (o MSVC aceitava um temporário em `T&`). `HackingProtectionManager.h`
+  inclui `BaseServer.h`, que o corpo do template usa. `ServerMain.{h,cpp}`: o `main` comum dos servidores (ver [ChannelServer](server-channel.md)).
 
 - Windows (achado na primeira compilação MinGW, 2026-10-30): o build passa a definir `UNICODE`/`_UNICODE`, como o original (sem isso
   `LPCTSTR` era `const char*`); `byte` e `u_char`/`u_short`/`u_int`/`u_long`, que o original recebia do `windows.h` sem `WIN32_LEAN_AND_MEAN`,

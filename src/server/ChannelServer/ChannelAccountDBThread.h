@@ -2,6 +2,7 @@
 #include "SubThread.h"
 #include "ODBC/Odbc.h"
 #include "KncSend.h"
+#include "BaseServer.h"  // KBaseServer::GetKObj() in the template bodies below
 
 //{{ 2009. 8. 13  최육사	sp profiler
 #include "ODBC/DBUtil.h"

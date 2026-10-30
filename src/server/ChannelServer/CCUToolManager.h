@@ -17,7 +17,7 @@ public:
 
 
 	KCCUToolManager();
-	~KCCUToolManager();
+	virtual ~KCCUToolManager();
 
 	void Tick();
 

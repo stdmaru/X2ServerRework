@@ -70,7 +70,7 @@ void KMachineBlockManager::UpdateMachineBlockList( IN const KDBE_CHECK_ACCOUNT_B
 	{
 		u_int uiOldCount = m_setMachineIDBlockList.size();
 
-		BOOST_TEST_FOREACH( const std::string&, strNewMachineID, kPacket.m_vecMachineIDBlockList )
+		for( const std::string& strNewMachineID : kPacket.m_vecMachineIDBlockList )
 		{
 			if( IsBlockedMachineID( strNewMachineID ) == false )
 			{
@@ -79,7 +79,7 @@ void KMachineBlockManager::UpdateMachineBlockList( IN const KDBE_CHECK_ACCOUNT_B
 		}
 
 		m_setMachineIDBlockList.clear();
-		BOOST_TEST_FOREACH( const std::string&, strNewMachineID, kPacket.m_vecMachineIDBlockList )
+		for( const std::string& strNewMachineID : kPacket.m_vecMachineIDBlockList )
 		{
 			m_setMachineIDBlockList.insert( strNewMachineID );
 		}

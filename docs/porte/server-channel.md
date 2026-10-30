@@ -17,11 +17,37 @@ Mesma posição relativa do original (`src/server/ChannelServer` ao lado de `src
 - **Flags**: 370 blocos `#if` resolvidos, 2.898 linhas removidas. Nenhum bloco virou `X2_DEV_TOOLS`.
 - Encodings: 29 CP949, 3 UTF-8, 4 ASCII. Includes com a grafia corrigida: `odbc/` → `ODBC/`, `socket/` → `Socket/`, `\` → `/`.
 
-## Para o passo de build
+## Estado (2026-10-30, branch `server/channel-build`)
 
-- `ChannelServer.cpp` e `ChannelSimLayer.cpp` incluem `Common/OnlyGlobal/ProcessCommuniationModule/ProcessCommunicationManager.h`,
-  excluído do `Common` (ferramenta KSMS, comunicação por *named pipe* `\\.\pipe\ChannelServerRead`/`Write`). Só é usado quando
-  `GameSysVal:GetProcessCommunication()` está ligado: as chamadas saem.
-- Boost (`boost::format`, `boost::timer`, `boost::random`, `boost::bind`), `windows.h`/`WinSock2.h`: passada mecânica ([Porte mecânico](../ferramentas/porte-mecanico.md)).
-- `main` sem MFC e os hooks que o `Common` espera de cada servidor (`g_szConfigFile`, `CreateDBThread`; hoje stubs em
-  `src/server/Common/tests/server_hooks.cpp`).
+O executável `ChannelServer` (alvo `x2_channel_server`) **compila e linka sem warnings** em GCC Debug, Clang e MinGW (build do zero).
+Sem argumentos ele sobe, recusa a falta de argumentos como o original (`Init` falha), encerra todas as camadas e sai com código 1,
+no Linux e no Wine. Ainda não rodou com configuração, banco e cliente: é o passo `server/channel-run`.
+
+## Executável e linha de comando
+
+- `main.cpp` chama `KServerMain` (`Common/ServerMain.{h,cpp}`), que substitui a janela MFC do original (`Common/ui`: `CServerApp`/`CServerUIDlg`)
+  com a mesma sequência: `CreateKNC()`, `SetCmdArgs`, `Init`, `Run`, `ShutDown`, `ReleaseKObj`. O campo de entrada Lua da janela é o
+  prompt do `lua_interpreter` (`KBaseServer::Run( true )`), que termina no fim do stdin. O terminal da T15 e o log da T16 vêm depois.
+- Argumentos como no original: `ChannelServer <tag> <grupo de servidores> [<id do banco> <senha do banco>]`; a tag escolhe
+  `config_ch_<tag>.lua` (por exemplo `US_SERVICE`).
+- O código de saída é 1 quando o `Init` falha (a janela original ficava aberta até ser fechada).
+- `g_szConfigFile` e `CreateDBThread`, que o `Common` espera de cada servidor, vêm do `ChannelServer.cpp` (como no original);
+  os testes do `Common` continuam com os stubs de `server_hooks.cpp`.
+
+## Mudanças em relação ao original
+
+| Onde | Mudança | Motivo |
+|---|---|---|
+| `KChannelServer`, `KChannelSimLayer` | Saem as chamadas ao `ProcessCommunicationManager` (KSMS: *named pipes* `\\.\pipe\ChannelServerRead`/`Write`, religadas a cada 60 s no `Tick`, e as mensagens de modo de manutenção) | Ferramenta de gerência da KOG, excluída do `Common`. Só funcionava com `GameSysVal:SetProcessCommunication(true)` |
+| `-popup` | Recusado com mensagem; os dados do banco vão como argumentos | Era um diálogo MFC pedindo id e senha |
+| `ChannelAccountDBThread` | `boost::variate_generator` (OTP) → lambda sobre a mesma distribuição; `_itow` → `_itow_s` | Mesmo resultado |
+
+Portabilidade (sem mudança de comportamento): passada mecânica (Boost → `std`/`x2::`, includes de plataforma), `goto end_proc`
+que cruzava uma declaração em `ON_DBE_SERVER_OFF_NOT` (declaração subiu), `BaseServer.h` incluído nos headers cujos templates usam
+`KBaseServer::GetKObj()`, destrutores `virtual` em `KCCUToolManager`, `KMachineBlockManager` e `KWaitQueueManager` (apagados pelos
+singletons por ponteiro da base), `using` das sobrecargas escondidas de `RoutePacket`/`Init`. As mudanças no `Common` estão em
+[Servidor: Common › Mudanças](server-common.md#mudanças-em-relação-ao-original).
+
+## Pendências
+
+- Rodar com a configuração de `_reference/_original-server/ChannelServer`, o banco do Docker e o DEB, e conectar o `elsword.exe` (`server/channel-run`).
