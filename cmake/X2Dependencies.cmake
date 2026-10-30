@@ -86,3 +86,16 @@ if(X2_BUILD_TESTS)
         add_library(doctest::doctest ALIAS x2_doctest)
     endif()
 endif()
+
+# ODBC (decision T17): unixODBC outside Windows, odbc32 on Windows. Only code that includes
+# x2/platform/odbc.h links it, so x2_platform itself does not depend on ODBC.
+add_library(x2_odbc INTERFACE)
+if(WIN32)
+    # by name, like the other system libraries: FindODBC gives MinGW the path of libodbc32.a, which CMake wraps
+    # in -Wl,-Bstatic ... -Wl,-Bdynamic, and that turned the rest of the static runtime (-static) dynamic
+    target_link_libraries(x2_odbc INTERFACE odbc32 x2::platform)
+else()
+    find_package(ODBC REQUIRED)
+    target_link_libraries(x2_odbc INTERFACE ODBC::ODBC x2::platform)
+endif()
+add_library(x2::odbc ALIAS x2_odbc)
