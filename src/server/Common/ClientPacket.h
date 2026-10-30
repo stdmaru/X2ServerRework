@@ -2996,10 +2996,10 @@ DECL_PACKET( EGS_ITEM_MANUFACTURE_ACK )
 
 DECL_PACKET( EGS_KNPROTECT_AUTH_CHECK_NOT )
 {
-	unsigned long						dwIndex;
-	unsigned long						dwValue1;
-	unsigned long						dwValue2;
-	unsigned long						dwValue3;
+	DWORD						dwIndex;
+	DWORD						dwValue1;
+	DWORD						dwValue2;
+	DWORD						dwValue3;
 };
 
 
@@ -3083,8 +3083,8 @@ DECL_PACKET( EGS_GET_PURCHASED_CASH_ITEM_REQ )
 {
 	// 해외에서는 EGS_BILL_GET_PURCHASED_CASH_ITEM_REQ 사용
 
-    unsigned long                       m_ulOrderNo;
-    unsigned long                       m_ulProductNo;
+    DWORD                       m_ulOrderNo;
+    DWORD                       m_ulProductNo;
 	//{{ 2008. 4. 29  최육사  상품 속성
 	std::wstring						m_wstrProductID;
 	unsigned short						m_usProductExpire;
@@ -3122,8 +3122,8 @@ DECL_PACKET( EGS_GET_PURCHASED_PACKAGE_CASH_ITEM_REQ )
 {
 	// 해외에서도 해당 패킷 그대로 씀 (SERV_GLOBAL_CASH_PACKAGE)
 
-	unsigned long                       m_ulOrderNo;
-	unsigned long                       m_ulPackageProductNo;
+	DWORD                       m_ulOrderNo;
+	DWORD                       m_ulPackageProductNo;
 	std::wstring						m_wstrPackageProductID;
 	BYTE								m_byteProductKind;
 
@@ -3287,7 +3287,7 @@ DECL_PACKET( EGS_ADMIN_CHANGE_VSPOINT_ACK )
 DECL_PACKET( EGS_CHECK_BALANCE_ACK )
 {
     int                 m_iOK;
-    unsigned long       m_ulBalance;	// 국내코드 호환 및 하나의 캐시만 쓰는 국가들을 위해 그대로둠
+    DWORD       m_ulBalance;	// 국내코드 호환 및 하나의 캐시만 쓰는 국가들을 위해 그대로둠
 
 	bool				m_bOnlyType;		// 잔액 조회가 단 한가지 타입인지 여부 (한가지 타입일 경우 다른 Type값은 건들이면 안됨)
 	int					m_iCashType;		// 잔액 조회가 단 한가지 타입일 때 어떤 캐시타입인지 여부를 위해 사용
@@ -3776,7 +3776,7 @@ typedef KEGS_BUY_CASH_ITEM_ACK		KEGS_PRESENT_CASH_ITEM_ACK;
 //{{ 2009. 10. 6  최육사	자동결재
 DECL_PACKET( EGS_BUY_CASH_ITEM_AUTOMATIC_PAYMENT_REQ )
 {
-	unsigned long						m_ulProductNo;
+	DWORD						m_ulProductNo;
 	unsigned short						m_usOrderQuantity;
 };
 
@@ -3786,8 +3786,8 @@ DECL_PACKET( EGS_BUY_CASH_ITEM_AUTOMATIC_PAYMENT_ACK )
 	UINT								m_uiUserSN;
 	BYTE								m_byDomainType;
 	std::wstring						m_wstrTransactionID;
-	unsigned long						m_ulProductNo;
-	unsigned long						m_ulSalePrice;
+	DWORD						m_ulProductNo;
+	DWORD						m_ulSalePrice;
 	unsigned short						m_usOrderQuantity;
 };
 
@@ -3960,8 +3960,8 @@ DECL_PACKET( EGS_NEW_PRESENT_CASH_INVENTORY_NOT )
 
 DECL_PACKET( EGS_CHECK_PRESENT_CASH_INVENTORY_NOT )
 {
-	unsigned long                       m_ulOrderNo;
-	unsigned long                       m_ulProductNo;
+	DWORD                       m_ulOrderNo;
+	DWORD                       m_ulProductNo;
 };
 
 DECL_PACKET( EGS_PRESENT_MESSAGE_TO_RECEIVER_NOT )
@@ -4861,8 +4861,8 @@ typedef KPacketOK KEGS_CHANGE_GUILD_NAME_CHECK_ACK;
 DECL_PACKET( EGS_CHANGE_GUILD_NAME_REQ )
 {
 	int									m_iOK;
-	unsigned long                       m_ulOrderNo;
-	unsigned long                       m_ulProductNo;
+	DWORD                       m_ulOrderNo;
+	DWORD                       m_ulProductNo;
 	int									m_iQuantity;
 };
 
@@ -5726,8 +5726,8 @@ DECL_PACKET( EGS_MODULE_INFO_UPDATE_NOT )
 
 DECL_PACKET( EGS_CASH_ITEM_REFUND_REQ )
 {
-	unsigned long                       m_ulOrderNo;
-	unsigned long                       m_ulProductNo;
+	DWORD                       m_ulOrderNo;
+	DWORD                       m_ulProductNo;
 	int									m_iQuantity;
 };
 

@@ -379,7 +379,7 @@ DECL_PACKET( EPUBLISHER_BILLING_BALANCE_REQ )
 DECL_PACKET( EPUBLISHER_BILLING_BALANCE_ACK )
 {
 	int									m_iOK;
-	unsigned long						m_ulBalance;
+	DWORD						m_ulBalance;
 	int									m_iCashType;
 
 	KEPUBLISHER_BILLING_BALANCE_ACK()
@@ -1209,7 +1209,7 @@ DECL_PACKET( EPL_BT_HEALTH_CHECK_REQ )
 {
 	unsigned short	m_usReqLen;		// IN	1
 	unsigned short	m_usReqType;	// IN	2
-	unsigned long	m_ulReqKey;		// IN	3
+	DWORD	m_ulReqKey;		// IN	3
 	unsigned short	m_usRetCode;	// OUT	4
 };
 
@@ -1217,7 +1217,7 @@ DECL_PACKET( EPL_BT_HEALTH_CHECK_ACK )
 {
 	unsigned short	m_usReqLen;		// IN	1
 	unsigned short	m_usReqType;	// IN	2
-	unsigned long	m_ulReqKey;		// IN	3
+	DWORD	m_ulReqKey;		// IN	3
 	unsigned short	m_usRetCode;	// OUT	4
 };
 
@@ -1225,28 +1225,28 @@ DECL_PACKET( EPL_BT_BALANCE_CHECK_REQ )
 {
 	unsigned short	m_usReqLen;		// IN	1
 	unsigned short	m_usReqType;	// IN	2
-	unsigned long	m_ulReqKey;		// IN	3
+	DWORD	m_ulReqKey;		// IN	3
 	unsigned short	m_usRetCode;	// OUT	4
 
-	unsigned long	m_ulUserNo;
+	DWORD	m_ulUserNo;
 	std::wstring	m_wstrUserID;
 
-	unsigned long	m_ulRealCash;
-	unsigned long	m_ulBonusCash;
+	DWORD	m_ulRealCash;
+	DWORD	m_ulBonusCash;
 };
 
 DECL_PACKET( EPL_BT_BALANCE_CHECK_ACK )
 {
 	unsigned short	m_usReqLen;		// IN	1
 	unsigned short	m_usReqType;	// IN	2
-	unsigned long	m_ulReqKey;		// IN	3
+	DWORD	m_ulReqKey;		// IN	3
 	unsigned short	m_usRetCode;	// OUT	4
 
-	unsigned long	m_ulUserNo;
+	DWORD	m_ulUserNo;
 	std::wstring	m_wstrUserID;
 
-	unsigned long	m_ulRealCash;
-	unsigned long	m_ulBonusCash;
+	DWORD	m_ulRealCash;
+	DWORD	m_ulBonusCash;
 
 	//{{ 리턴메세지를 확인하기 위한 부분 추가합니다. 2012.03.07 박진웅
 	std::wstring						m_wstrRetMsg;
@@ -1258,7 +1258,7 @@ DECL_PACKET( EPL_BT_PURCHASEITEM_ACK )
 {
 	unsigned short	m_usReqLen;		// IN	1
 	unsigned short	m_usReqType;	// IN	2
-	unsigned long	m_ulReqKey;		// IN	3
+	DWORD	m_ulReqKey;		// IN	3
 	unsigned short	m_usRetCode;	// OUT	4
 
 	std::wstring                        m_wstrOrderID;
@@ -1280,7 +1280,7 @@ DECL_PACKET( EPL_BT_PURCHASEITEM_ACK )
 
 DECL_PACKET( EPL_BT_GIFTITEM_REQ )
 {
-	unsigned long	m_ulReqKey;		// 패킷 통신을 위한 패킷 번호
+	DWORD	m_ulReqKey;		// 패킷 통신을 위한 패킷 번호
 
 	std::wstring                        m_wstrOrderID;
 	int                                 m_iServerGroupID;
@@ -1302,7 +1302,7 @@ DECL_PACKET( EPL_BT_GIFTITEM_ACK )
 {
 	unsigned short	m_usReqLen;		// IN	1
 	unsigned short	m_usReqType;	// IN	2
-	unsigned long	m_ulReqKey;		// IN	3
+	DWORD	m_ulReqKey;		// IN	3
 	unsigned short	m_usRetCode;	// OUT	4
 
 	std::wstring                        m_wstrOrderID;
@@ -1324,7 +1324,7 @@ DECL_PACKET( EPL_BT_REGCOUPON_ACK )
 {
 	unsigned short	m_usReqLen;		// IN	1
 	unsigned short	m_usReqType;	// IN	2
-	unsigned long	m_ulReqKey;		// IN	3
+	DWORD	m_ulReqKey;		// IN	3
 	unsigned short	m_usRetCode;	// OUT	4
 
 	UidType								m_iUserUID;

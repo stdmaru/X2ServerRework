@@ -10,6 +10,7 @@ para o `server/common-build` ([Servidor: Common](../porte/server-common.md)).
 |---|---|---|
 | `mechanical.py` | Includes Win32/ATL/D3DX/winsock → plataforma, Boost → `std`/`x2::`, `BOOST_FOREACH` → range-for, colagens `##` inválidas | pasta do módulo |
 | `fix_typename.py` | Insere o `typename` que o GCC pede (`need 'typename' before ...`), na coluna indicada | log do build |
+| `gen_packet_tests.py` | Gera `src/server/Common/tests/test_packets_*.cpp` (ida e volta de todos os tipos serializados) e confere a simetria `PUT`/`GET`. `--check` só verifica (é um teste do ctest) | `.cpp` dos pacotes |
 | `fix_warnings.py` | `-Wswitch` → `default: break;`; `-Wunused-parameter` → `/*nome*/`; `-Wreorder` → ordena a lista de inicialização na ordem de declaração | log do build |
 
 Uso típico:

@@ -53,7 +53,7 @@ Tamanho: ~99 mil linhas de `.cpp` sem os stubs gSOAP. Os maiores são os pacotes
 1. ~~**`platform/math`**~~: feito em 2026-10-29 (`x2/platform/d3dx_math.h`, ver [Plataforma](platform.md)).
 2. ~~**`server/common-build`**~~: feito em 2026-10-29 (ver Estado abaixo). Alvo CMake com todo o `Common`, menos `Socket/` e `ODBC/`, compilando em GCC/Clang.
    É a passada mecânica: includes de plataforma, `typename`/`template`, Boost → `std`, stubs das integrações removidas.
-3. **`server/common-packets`**: testes de serialização dos pacotes (`ClientPacket`/`CommonPacket`), que são a base da compatibilidade (T4).
+3. ~~**`server/common-packets`**~~: feito em 2026-10-29 (ver Testes abaixo). Testes de serialização dos pacotes (`ClientPacket`/`CommonPacket`), que são a base da compatibilidade (T4).
 4. **`server/common-net`**: `Socket/` sobre Asio.
 5. **`server/common-db`**: `ODBC/` portável (T17).
 
@@ -68,6 +68,18 @@ No MinGW o `Common` fica de fora enquanto não houver LuaJIT para Windows (D5).
 
 Caminho: ~15.000 erros após a importação → ~4.000 (passada mecânica) → 2.291 no início da retomada → 0. Depois, 81 mil warnings
 (73 mil vinham de um só header) → 0. Ferramentas usadas: [Porte mecânico](../ferramentas/porte-mecanico.md).
+
+## Testes (`src/server/Common/tests`, alvo `x2_server_common_tests`)
+
+| Teste | O que cobre |
+|---|---|
+| `test_packets_{client,common,server}.cpp` | **Todos os 1.964 tipos serializados** (os de `#if X2_DEV_TOOLS` só nesse build) dos pacotes (2026-10-29): `Put` → `Get` repetido sobre um objeto inicializado por valor: o tamanho não muda, os bytes se repetem a partir da segunda passada (alguns construtores deixam membros sem inicializar, então a primeira pode ter lixo) e o `Get` lê tudo. Gerados por `tools/port/gen_packet_tests.py` ([Porte mecânico](../ferramentas/porte-mecanico.md)), que antes confere que `PUT` e `GET` listam os mesmos campos na mesma ordem e que cada bloco só usa a própria macro |
+| `test_login_packets.cpp` | Bytes exatos de `ECH_VERIFY_ACCOUNT_REQ/ACK` e `EGS_CONNECT_REQ/ACK`, montados à mão a partir da ordem dos campos e do [formato da rede](../original/protocolo.md) |
+| `packets_generated` (ctest) | Falha se os testes gerados estiverem desatualizados em relação aos `.cpp` dos pacotes |
+
+**Limite:** os testes provam que o porte é coerente consigo mesmo e com o formato lido no código, não que bate byte a byte com o
+`elsword.exe`. Isso continua pendente ([KNCSDK › Pendências](kncsdk.md#pendências)). Também não pegam um campo que exista no servidor
+e não no cliente (as flags do cliente ainda não foram geradas, ver [Roadmap](../projeto/roadmap.md)).
 
 ## Mudanças em relação ao original
 
@@ -91,6 +103,7 @@ Caminho: ~15.000 erros após a importação → ~4.000 (passada mecânica) → 2
 
 | Onde | Bug | Correção |
 |---|---|---|
+| `GetFrom` de `KEGIANT_BILLING_CONSUME_ACK` e `KELOG_ITEM_TRADE_ERROR_NOT` | O bloco `GET` chamava `PUT` (copiar e colar): escrevia em vez de ler, e o restante do pacote ficava sem ler | `GET`. O primeiro é da integração Giant (fora de uso); o segundo é log entre servidores, cuja data nunca chegava |
 | `KSwapPerformer` | Testes invertidos (`_JIF( !m_pEnqueueEvent, return )` saía com ponteiro válido e só seguia com ele nulo; o destrutor desreferenciava quando nulo) | Testes corrigidos. A classe não é usada por nenhum servidor |
 | `CXSLPetManager::*SpecialFeedIntimacyRate_LUA` | Validação `> 1 && < 0` nunca era verdadeira | `\|\|`. Os scripts atuais usam 0,0201 e 0,0501, então nada muda |
 | `XSLCharacterStatTable` | Comparava `UNIT_TYPE` com `UC_NONE` e `UNIT_CLASS` com `UT_NONE` | Enum certo (os dois valem 0: sem mudança) |
@@ -98,6 +111,9 @@ Caminho: ~15.000 erros após a importação → ~4.000 (passada mecânica) → 2
 | `SimObject`, `SerBuffer` etc. | Pequenos: `%d` com `__int64`, valores não inicializados | Ver diffs |
 
 ### Portabilidade (sem mudança de comportamento)
+
+- Campos `long`/`unsigned long` dos pacotes (190, em 2026-10-29) viraram `LONG`/`DWORD`: no Linux `long` tem 8 bytes, e o `Put` falhava
+  com valores fora de 32 bits. No fio nada muda (mesmo tamanho e mesma tag), e no Windows os tipos são os mesmos de antes.
 
 - `typename`/`template` que o MSVC dispensava, `goto` que cruzava inicializações (declarações subidas para o início da função), `enum` declarado
   sem tipo (`enum ePerformerID : int`), `min`/`max` de macro → `std::`, `KClearString` com construtor de cópia explícito, destrutores

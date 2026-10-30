@@ -616,7 +616,7 @@ DECL_PACKET( DBE_INSERT_PURCHASED_CASH_PACKAGE_REQ )
 	std::map< UidType, int >			m_kItemEnduranceUpdate;
 	std::vector< KInventoryItemInfo >   m_vecUpdatedInventorySlot;
 	std::vector< KItemInfo >            m_vecItemInfo;
-	unsigned long						m_ulProductNo;
+	DWORD						m_ulProductNo;
 	//{{ 2009. 9. 2  최육사		밀봉
 	std::set< int >						m_setSealCashItem;
 	//}}
@@ -634,7 +634,7 @@ DECL_PACKET( DBE_INSERT_PURCHASED_CASH_PACKAGE_ACK )
 	std::map< UidType, int >			m_kItemEnduranceUpdate;
 	std::vector< KInventoryItemInfo >   m_vecUpdatedInventorySlot;
 	std::map< UidType, KItemInfo >      m_mapItemInfo;
-	unsigned long						m_ulProductNo;
+	DWORD						m_ulProductNo;
 };
 //}}
 
@@ -921,7 +921,7 @@ DECL_PACKET( ENX_AUTH_INITIALIZE_REQ )
 	BYTE								m_byteDomainSN;
 	std::wstring						m_wstrDomainName;
 	BYTE								m_byteSynchronizeType;
-	unsigned long						m_ulSynchronizeCount;
+	DWORD						m_ulSynchronizeCount;
 };
 
 DECL_PACKET( ENX_AUTH_INITIALIZE_ACK )
@@ -952,7 +952,7 @@ DECL_PACKET( ENX_AUTH_LOGIN_ACK )
 	BYTE										m_byteAuthorizeType; // 구버전의 addressDesc와 동일
 	BYTE										m_byteChargeType; // 구버전의 accountDesc와 동일
 	BYTE										m_byteOption;
-	unsigned long								m_ulArgument;
+	DWORD								m_ulArgument;
 	BYTE										m_byteIsCharged; // 구버전의 IsGameBangBillType과 동일
 	std::map< unsigned short, KPropertyValue >	m_mapProperty;
 
@@ -990,8 +990,8 @@ DECL_PACKET( ENX_AUTH_MESSAGE_NOT )
 	std::wstring								m_wstrUserID;
 	std::wstring								m_wstrCharacterName;
 	BYTE										m_byteOption;
-	unsigned long								m_ulArgument;
-	unsigned long								m_ulSessionCount;
+	DWORD								m_ulArgument;
+	DWORD								m_ulSessionCount;
 };
 
 DECL_PACKET( ENX_AUTH_SYNCHRONIZE_REQ )
@@ -1536,7 +1536,7 @@ DECL_PACKET( ERM_CHECK_INVALID_ZOMBIE_USER_NOT )
 
 DECL_PACKET( ENX_BT_INITIALIZE_REQ )
 {
-    unsigned long   m_ulPacketNo;
+    DWORD   m_ulPacketNo;
     BYTE            m_bytePacketType;
     std::wstring    m_wstrServiceCode;
     BYTE            m_byteDomain;
@@ -1544,109 +1544,109 @@ DECL_PACKET( ENX_BT_INITIALIZE_REQ )
 
 DECL_PACKET( ENX_BT_INITIALIZE_ACK )
 {
-    unsigned long   m_ulPacketNo;
+    DWORD   m_ulPacketNo;
     BYTE            m_bytePacketType;
     std::wstring    m_wstrServiceCode;
     BYTE            m_byteDomain;
-    unsigned long   m_ulResult;
+    DWORD   m_ulResult;
 };
 
 DECL_PACKET( ENX_BT_HEART_BEAT_REQ )
 {
-    unsigned long   m_ulPacketNo;
+    DWORD   m_ulPacketNo;
     BYTE            m_bytePacketType;
     __int64         m_iReleaseTick;
 };
 
 DECL_PACKET( ENX_BT_HEART_BEAT_ACK )
 {
-    unsigned long   m_ulPacketNo;
+    DWORD   m_ulPacketNo;
     BYTE            m_bytePacketType;
-    unsigned long   m_ulResult;
+    DWORD   m_ulResult;
 };
 
 DECL_PACKET( ENX_BT_CATEGORY_INQUIRY_REQ )
 {
-    unsigned long   m_ulPacketNo;
+    DWORD   m_ulPacketNo;
     BYTE            m_bytePacketType;
 };
 
 DECL_PACKET( ENX_BT_CATEGORY_INQUIRY_ACK )
 {
-    unsigned long                       m_ulPacketNo;
+    DWORD                       m_ulPacketNo;
     BYTE                                m_bytePacketType;
-    unsigned long                       m_ulResult;
+    DWORD                       m_ulResult;
     std::vector< KNXBTCategoryInfo >    m_vecNXBTCategoryInfo;
 };
 
 DECL_PACKET( ENX_BT_PRODUCT_INQUIRY_XML_REQ )
 {
-    unsigned long                       m_ulPacketNo;
+    DWORD                       m_ulPacketNo;
     BYTE                                m_bytePacketType;
-    unsigned long                       m_ulPageIndex;
-    unsigned long                       m_ulRowPerPage;
+    DWORD                       m_ulPageIndex;
+    DWORD                       m_ulRowPerPage;
 };
 
 DECL_PACKET( ENX_BT_PRODUCT_INQUIRY_XML_ACK )
 {
-    unsigned long                       m_ulPacketNo;
+    DWORD                       m_ulPacketNo;
     BYTE                                m_bytePacketType;
-    unsigned long                       m_ulResult;
+    DWORD                       m_ulResult;
     __int64                             m_iReleaseTick;
-    unsigned long                       m_ulTotalProductCount;
+    DWORD                       m_ulTotalProductCount;
     std::wstring                        m_wstrResultXML;
 };
 
 DECL_PACKET( ENX_BT_PRODUCT_INQUIRY_REQ )
 {
-    unsigned long                       m_ulPacketNo;
+    DWORD                       m_ulPacketNo;
     BYTE                                m_bytePacketType;
-    unsigned long                       m_ulPageIndex;
-    unsigned long                       m_ulRowPerPage;
+    DWORD                       m_ulPageIndex;
+    DWORD                       m_ulRowPerPage;
 };
 
 DECL_PACKET( ENX_BT_PRODUCT_INQUIRY_ACK )
 {
-    unsigned long                       m_ulPacketNo;
+    DWORD                       m_ulPacketNo;
     BYTE                                m_bytePacketType;
-    unsigned long                       m_ulResult;
+    DWORD                       m_ulResult;
     __int64                             m_iReleaseTick;
-    unsigned long                       m_ulTotalProductCount;
+    DWORD                       m_ulTotalProductCount;
     std::vector< KNXBTProductInfo >     m_vecNXBTProductInfo;
 };
 
 DECL_PACKET( ENX_BT_CHECK_BALANCE_REQ )
 {
-    unsigned long                       m_ulPacketNo;
+    DWORD                       m_ulPacketNo;
     BYTE                                m_bytePacketType;
 	//{{ 2011. 07. 27    김민성    투니랜드 채널링
-	unsigned long						m_ulPaymentType;
+	DWORD						m_ulPaymentType;
 	//}}
     std::wstring                        m_wstrUserID;
 };
 
 DECL_PACKET( ENX_BT_CHECK_BALANCE_ACK )
 {
-    unsigned long                       m_ulPacketNo;
+    DWORD                       m_ulPacketNo;
     BYTE                                m_bytePacketType;
-    unsigned long                       m_ulResult;
-    unsigned long                       m_ulBalance;
+    DWORD                       m_ulResult;
+    DWORD                       m_ulBalance;
 };
 
 DECL_PACKET( ENX_BT_PURCHASE_ITEM_REQ )
 {
-    unsigned long                       m_ulPacketNo;
+    DWORD                       m_ulPacketNo;
     BYTE                                m_bytePacketType;
-    unsigned long                       m_ulRemoteIP;
+    DWORD                       m_ulRemoteIP;
     BYTE                                m_byteReason;
     std::wstring                        m_wstrGameID;
     std::wstring                        m_wstrUserID;
-    unsigned long                       m_ulUserOID;
+    DWORD                       m_ulUserOID;
     std::wstring                        m_wstrUserName;
     BYTE                                m_byteUserAge;
     std::wstring                        m_wstrOrderID;
-	unsigned long						m_ulPaymentType;
-    unsigned long                       m_ulTotalAmount;
+	DWORD						m_ulPaymentType;
+    DWORD                       m_ulTotalAmount;
     std::vector< KNXBTPurchaseReqInfo > m_vecNXBTPurchaseInfo;
 
 	KENX_BT_PURCHASE_ITEM_REQ()
@@ -1664,31 +1664,31 @@ DECL_PACKET( ENX_BT_PURCHASE_ITEM_REQ )
 
 DECL_PACKET( ENX_BT_PURCHASE_ITEM_ACK )
 {
-    unsigned long                       m_ulPacketNo;
+    DWORD                       m_ulPacketNo;
     BYTE                                m_bytePacketType;
     std::wstring                        m_wstrOrderID;
-    unsigned long                       m_ulResult;
-    unsigned long                       m_ulOrderNo;
+    DWORD                       m_ulResult;
+    DWORD                       m_ulOrderNo;
     std::vector< KNXBTPurchaseAckInfo > m_vecNXBTPurchaseInfo;
 };
 
 DECL_PACKET( ENX_BT_PURCHASE_GIFT_REQ )
 {
-    unsigned long                       m_ulPacketNo;
+    DWORD                       m_ulPacketNo;
     BYTE                                m_bytePacketType;
-    unsigned long                       m_ulRemoteIP;
+    DWORD                       m_ulRemoteIP;
     BYTE                                m_byteReason;
     std::wstring                        m_wstrSenderGameID;
     std::wstring                        m_wstrSenderUserID;
-    unsigned long                       m_ulSenderUserOID;
+    DWORD                       m_ulSenderUserOID;
     std::wstring                        m_wstrSenderUserName;
     BYTE                                m_byteSenderUserAge;
     BYTE                                m_byteReceiverServerNo;
     std::wstring                        m_wstrReceiverGameID;
     std::wstring                        m_wstrMessage;
     std::wstring                        m_wstrOrderID;
-	unsigned long						m_ulPaymentType;
-    unsigned long                       m_ulTotalAmount;
+	DWORD						m_ulPaymentType;
+    DWORD                       m_ulTotalAmount;
     std::vector< KNXBTPurchaseReqInfo > m_vecNXBTPurchaseInfo;
 
 	KENX_BT_PURCHASE_GIFT_REQ()
@@ -1707,35 +1707,35 @@ DECL_PACKET( ENX_BT_PURCHASE_GIFT_REQ )
 
 DECL_PACKET( ENX_BT_PURCHASE_GIFT_ACK )
 {
-    unsigned long                       m_ulPacketNo;
+    DWORD                       m_ulPacketNo;
     BYTE                                m_bytePacketType;
     std::wstring                        m_wstrOrderID;
-    unsigned long                       m_ulResult;
-    unsigned long                       m_ulOrderNo;
+    DWORD                       m_ulResult;
+    DWORD                       m_ulOrderNo;
     std::vector< KNXBTPurchaseAckInfo > m_vecNXBTPurchaseInfo;
 };
 
 //{{ 2009. 10. 14  최육사	자동결제
 DECL_PACKET( ENX_BT_CHECK_AUTO_PAYMENT_USER_REQ )
 {
-	unsigned long                       m_ulPacketNo;
+	DWORD                       m_ulPacketNo;
 	BYTE                                m_bytePacketType;
 	std::wstring                        m_wstrGameID;
 	std::wstring                        m_wstrUserID;
-	unsigned long						m_ulProductNo;
+	DWORD						m_ulProductNo;
 };
 
 DECL_PACKET( ENX_BT_CHECK_AUTO_PAYMENT_USER_ACK )
 {
-	unsigned long                       m_ulPacketNo;
+	DWORD                       m_ulPacketNo;
 	BYTE                                m_bytePacketType;
-    unsigned long                       m_ulResult;
+    DWORD                       m_ulResult;
 };
 //}}
 
 DECL_PACKET( ENX_BT_COUPON_INQUIRY_REQ )
 {
-    unsigned long                       m_ulPacketNo;
+    DWORD                       m_ulPacketNo;
     BYTE                                m_bytePacketType;
     BYTE                                m_byteIsCafe;
     std::wstring                        m_wstrCouponString;
@@ -1743,74 +1743,74 @@ DECL_PACKET( ENX_BT_COUPON_INQUIRY_REQ )
 
 DECL_PACKET( ENX_BT_COUPON_INQUIRY_ACK )
 {
-    unsigned long                       m_ulPacketNo;
+    DWORD                       m_ulPacketNo;
     BYTE                                m_bytePacketType;
-    unsigned long                       m_ulResult;
+    DWORD                       m_ulResult;
 	std::vector< KNXBTCouponProductInfo > m_vecProductInfo;
 };
 
 //{{ 2009. 3. 24  최육사	쿠폰사용여부 조회
 DECL_PACKET( ENX_BT_COUPON_INQUIRY_NEW_REQ )
 {
-	unsigned long                       m_ulPacketNo;
+	DWORD                       m_ulPacketNo;
 	BYTE                                m_bytePacketType;
-	unsigned long						m_ulUserIP;
+	DWORD						m_ulUserIP;
 	std::wstring						m_wstrGameID;
 	BYTE                                m_byteIsCafe;
 	std::wstring						m_wstrUserID;
-	unsigned long						m_ulUserOID;
+	DWORD						m_ulUserOID;
 	std::wstring                        m_wstrCouponString;
 };
 
 DECL_PACKET( ENX_BT_COUPON_INQUIRY_NEW_ACK )
 {
-	unsigned long                       m_ulPacketNo;
+	DWORD                       m_ulPacketNo;
 	BYTE                                m_bytePacketType;
-	unsigned long                       m_ulResult;
+	DWORD                       m_ulResult;
 	std::vector< KNXBTCouponProductInfo > m_vecProductInfo;
 };
 //}}
 
 DECL_PACKET( ENX_BT_COUPON_USING_REQ )
 {
-    unsigned long                       m_ulPacketNo;
+    DWORD                       m_ulPacketNo;
     BYTE                                m_bytePacketType;
-    unsigned long                       m_ulRemoteIP;
+    DWORD                       m_ulRemoteIP;
     BYTE                                m_byteReason;
     std::wstring                        m_wstrGameID;
     BYTE                                m_byteIsCafe;
     std::wstring                        m_wstrUserID;
-    unsigned long                       m_ulUserOID;
+    DWORD                       m_ulUserOID;
     std::wstring                        m_wstrUserName;
     std::wstring                        m_wstrCouponString;
 };
 
 DECL_PACKET( ENX_BT_COUPON_USING_ACK )
 {
-    unsigned long                       m_ulPacketNo;
+    DWORD                       m_ulPacketNo;
     BYTE                                m_bytePacketType;
     std::wstring                        m_wstrCouponTXID;
-    unsigned long                       m_ulResult;
-    unsigned long                       m_ulOrderNo;
+    DWORD                       m_ulResult;
+    DWORD                       m_ulOrderNo;
     std::vector< KNXBTCouponProductInfo > m_vecCouponProductInfo;
 };
 
 DECL_PACKET( ENX_BT_NISMS_INVENTORY_INQUIRY_REQ )
 {
-    unsigned long                       m_ulPacketNo;
+    DWORD                       m_ulPacketNo;
     BYTE                                m_bytePacketType;
     std::wstring                        m_wstrGameID;
     BYTE                                m_byteShowInventory;
-    unsigned long                       m_ulPageIndex;
-    unsigned long                       m_ulRowPerPage;
+    DWORD                       m_ulPageIndex;
+    DWORD                       m_ulRowPerPage;
 };
 
 DECL_PACKET( ENX_BT_NISMS_INVENTORY_INQUIRY_ACK )
 {
-    unsigned long                       m_ulPacketNo;
+    DWORD                       m_ulPacketNo;
     BYTE                                m_bytePacketType;
-    unsigned long                       m_ulResult;
-    unsigned long                       m_ulTotalCount;
+    DWORD                       m_ulResult;
+    DWORD                       m_ulTotalCount;
     std::vector< KNXBTOrderInfo >       m_vecNXBTOrderInfo;
     std::vector< KNXBTPackageInfo >     m_vecNXBTPackageInfo;
     std::vector< KNXBTLotteryInfo >     m_vecNXBTLotteryInfo;
@@ -1819,7 +1819,7 @@ DECL_PACKET( ENX_BT_NISMS_INVENTORY_INQUIRY_ACK )
 //{{ 2008. 6. 20  최육사  선물하기
 DECL_PACKET( ENX_BT_NISMS_INVENTORY_CHECK_REQ )
 {
-	unsigned long                       m_ulPacketNo;
+	DWORD                       m_ulPacketNo;
 	BYTE                                m_bytePacketType;
 	std::wstring                        m_wstrGameID;
 	BYTE                                m_byteShowInventory;
@@ -1828,33 +1828,33 @@ DECL_PACKET( ENX_BT_NISMS_INVENTORY_CHECK_REQ )
 
 DECL_PACKET( ENX_BT_NISMS_INVENTORY_CHECK_ACK )
 {
-	unsigned long                       m_ulPacketNo;
+	DWORD                       m_ulPacketNo;
 	BYTE                                m_bytePacketType;
-	unsigned long                       m_ulResult;
+	DWORD                       m_ulResult;
 	BYTE								m_byteOrderType;
-	unsigned long                       m_ulTotalCount;
+	DWORD                       m_ulTotalCount;
 };
 //}}
 
 DECL_PACKET( ENX_BT_NISMS_INVENTORY_READ_REQ )
 {
-    unsigned long                       m_ulPacketNo;
+    DWORD                       m_ulPacketNo;
     BYTE                                m_bytePacketType;
-    unsigned long                       m_ulOrderNo;
-    unsigned long                       m_ulProductNo;
+    DWORD                       m_ulOrderNo;
+    DWORD                       m_ulProductNo;
 };
 
 DECL_PACKET( ENX_BT_NISMS_INVENTORY_READ_ACK )
 {
-    unsigned long                       m_ulPacketNo;
+    DWORD                       m_ulPacketNo;
     BYTE                                m_bytePacketType;
-    unsigned long                       m_ulResult;
+    DWORD                       m_ulResult;
 };
 
 //{{ 2008. 6. 26  최육사  선물하기
 DECL_PACKET( ENX_BT_NISMS_INVENTORY_READABLE_REQ )
 {
-	unsigned long                       m_ulPacketNo;
+	DWORD                       m_ulPacketNo;
 	BYTE                                m_bytePacketType;
 	std::wstring                        m_wstrGameID;
 	BYTE                                m_byteShowInventory;
@@ -1863,60 +1863,60 @@ DECL_PACKET( ENX_BT_NISMS_INVENTORY_READABLE_REQ )
 
 DECL_PACKET( ENX_BT_NISMS_INVENTORY_READABLE_ACK )
 {
-	unsigned long                       m_ulPacketNo;
+	DWORD                       m_ulPacketNo;
 	BYTE                                m_bytePacketType;
-	unsigned long                       m_ulResult;
+	DWORD                       m_ulResult;
 	BYTE								m_byteOrderType;
-	unsigned long                       m_ulTotalCount;
+	DWORD                       m_ulTotalCount;
 };
 //}}
 
 DECL_PACKET( ENX_BT_NISMS_INVENTORY_PICK_UP_REQ )
 {
-    unsigned long                       m_ulPacketNo;
+    DWORD                       m_ulPacketNo;
     BYTE                                m_bytePacketType;
-    unsigned long                       m_ulOrderNo;
-    unsigned long                       m_ulProductNo;
+    DWORD                       m_ulOrderNo;
+    DWORD                       m_ulProductNo;
 	unsigned short						m_usOrderQuantity;
 	std::wstring						m_wstrExtendValue;
 };
 
 DECL_PACKET( ENX_BT_NISMS_INVENTORY_PICK_UP_ACK )
 {
-    unsigned long                       m_ulPacketNo;
+    DWORD                       m_ulPacketNo;
     BYTE                                m_bytePacketType;
-    unsigned long                       m_ulResult;
-    unsigned long                       m_ulOrderNo;
-    unsigned long                       m_ulProductNo;
+    DWORD                       m_ulResult;
+    DWORD                       m_ulOrderNo;
+    DWORD                       m_ulProductNo;
 	unsigned short						m_usOrderQuantity;
 	std::wstring						m_wstrExtendValue;
 };
 
 DECL_PACKET( ENX_BT_NISMS_INVENTORY_PICK_UP_ROLLBACK_REQ )
 {
-    unsigned long                       m_ulPacketNo;
+    DWORD                       m_ulPacketNo;
     BYTE                                m_bytePacketType;
-    unsigned long                       m_ulOrderNo;
-    unsigned long                       m_ulProductNo;
+    DWORD                       m_ulOrderNo;
+    DWORD                       m_ulProductNo;
 	std::wstring						m_wstrExtendValue;
 };
 
 DECL_PACKET( ENX_BT_NISMS_INVENTORY_PICK_UP_ROLLBACK_ACK )
 {
-    unsigned long                       m_ulPacketNo;
+    DWORD                       m_ulPacketNo;
     BYTE                                m_bytePacketType;
-    unsigned long                       m_ulResult;
-    unsigned long                       m_ulOrderNo;
-    unsigned long                       m_ulProductNo;
+    DWORD                       m_ulResult;
+    DWORD                       m_ulOrderNo;
+    DWORD                       m_ulProductNo;
 	std::wstring						m_wstrExtendValue;
 };
 
 DECL_PACKET( ENX_BT_NISMS_INVENTORY_PICK_UP_ONCE_REQ )
 {
-    unsigned long                       m_ulPacketNo;
+    DWORD                       m_ulPacketNo;
     BYTE                                m_bytePacketType;
-    unsigned long                       m_ulOrderNo;
-    unsigned long                       m_ulProductNo;
+    DWORD                       m_ulOrderNo;
+    DWORD                       m_ulProductNo;
     unsigned short                      m_usOrderQuantity;
     std::wstring                        m_wstrExtendValue;
 };
@@ -1925,11 +1925,11 @@ DECL_PACKET( ENX_BT_NISMS_INVENTORY_PICK_UP_ONCE_ACK )
 {
 	// 해외에서는 EBILL_PICK_UP_ACK 이거 사용
 
-    unsigned long                       m_ulPacketNo;
+    DWORD                       m_ulPacketNo;
     BYTE                                m_bytePacketType;
-    unsigned long                       m_ulResult;
-    unsigned long                       m_ulOrderNo;
-    unsigned long                       m_ulProductNo;
+    DWORD                       m_ulResult;
+    DWORD                       m_ulOrderNo;
+    DWORD                       m_ulProductNo;
     BYTE                                m_byteProductKind;
     std::wstring                        m_wstrProductName;
     std::wstring                        m_wstrProductID;
@@ -1951,23 +1951,23 @@ DECL_PACKET( ENX_BT_NISMS_INVENTORY_PICK_UP_ONCE_ACK )
 //{{ 2008. 6. 16  최육사  넥슨 빌링 패키지 픽업
 DECL_PACKET( ENX_BT_NISMS_INVENTORY_PICK_UP_FOR_PACKAGE_REQ )
 {
-	unsigned long                       m_ulPacketNo;
+	DWORD                       m_ulPacketNo;
 	BYTE                                m_bytePacketType;
-	unsigned long                       m_ulOrderNo;
-	unsigned long				        m_ulPackageProductNo;
-	unsigned long                       m_ulProductNo;
+	DWORD                       m_ulOrderNo;
+	DWORD				        m_ulPackageProductNo;
+	DWORD                       m_ulProductNo;
 };
 
 // SERV_GLOBAL_BILLING 해외팀도 사용함
 DECL_PACKET( ENX_BT_NISMS_INVENTORY_PICK_UP_FOR_PACKAGE_ACK )
 {
-	unsigned long                       m_ulPacketNo;
+	DWORD                       m_ulPacketNo;
 	BYTE                                m_bytePacketType;
-	unsigned long                       m_ulResult;
-	unsigned long                       m_ulOrderNo;
-	unsigned long				        m_ulPackageProductNo;
-	unsigned long                       m_ulProductNo;
-	unsigned long                       m_ulSubProductNo;
+	DWORD                       m_ulResult;
+	DWORD                       m_ulOrderNo;
+	DWORD				        m_ulPackageProductNo;
+	DWORD                       m_ulProductNo;
+	DWORD                       m_ulSubProductNo;
 };
 //}}
 
@@ -1975,13 +1975,13 @@ DECL_PACKET( ENX_BT_NISMS_INVENTORY_PICK_UP_FOR_PACKAGE_ACK )
 
 DECL_PACKET( ENX_BT_REFUND_REQ )
 {
-	unsigned long                       m_ulPacketNo;
+	DWORD                       m_ulPacketNo;
 	BYTE                                m_bytePacketType;
-    unsigned long                       m_ulRemoteIP;
+    DWORD                       m_ulRemoteIP;
 	std::wstring                        m_wstrRequestID;
 	std::wstring                        m_wstrGameID;
-	unsigned long                       m_ulOrderNo;
-	unsigned long                       m_ulProductNo;
+	DWORD                       m_ulOrderNo;
+	DWORD                       m_ulProductNo;
 	unsigned short                      m_usQuantity;
 
 	KENX_BT_REFUND_REQ()
@@ -1997,9 +1997,9 @@ DECL_PACKET( ENX_BT_REFUND_REQ )
 
 DECL_PACKET( ENX_BT_REFUND_ACK )
 {
-	unsigned long                       m_ulPacketNo;
+	DWORD                       m_ulPacketNo;
 	BYTE                                m_bytePacketType;
-    unsigned long                       m_ulResult;
+    DWORD                       m_ulResult;
 };
 
 //}}
@@ -2953,7 +2953,7 @@ DECL_PACKET( ENX_UPDATE_PRODUCT_LIST_NOT )
 	//{{ 2011. 02. 23	최육사	캐쉬 상품 리스트
 	std::vector< KCashPruductInfo >		m_vecCashProductList;
 	//}}
-	unsigned long						m_ulProductNoResStone;
+	DWORD						m_ulProductNoResStone;
 };
 //}}
 
@@ -4720,16 +4720,16 @@ DECL_PACKET( ELG_CHANGE_GUILD_NAME_RESULT_REQ )
 DECL_PACKET( ELG_CHANGE_GUILD_NAME_TIME_CHECK_REQ )
 {
 	UidType								m_iUnitUID;
-	unsigned long                       m_ulOrderNo;
-	unsigned long                       m_ulProductNo;
+	DWORD                       m_ulOrderNo;
+	DWORD                       m_ulProductNo;
 	int									m_iQuantity;
 };
 
 DECL_PACKET( ELG_CHANGE_GUILD_NAME_TIME_CHECK_ACK )
 {
 	int									m_iOK;
-	unsigned long                       m_ulOrderNo;
-	unsigned long                       m_ulProductNo;
+	DWORD                       m_ulOrderNo;
+	DWORD                       m_ulProductNo;
 	int									m_iQuantity;
 };
 
@@ -6205,7 +6205,7 @@ DECL_PACKET( E_LOCAL_LOG_BILLING_PACKET_NOT )
 
 	char								m_cLogType;
 	UidType								m_iUserUID;
-	unsigned long						m_ulOrderNo;
+	DWORD						m_ulOrderNo;
 	std::wstring						m_wstrRegDate;
 	u_short								m_usEventID;
 };

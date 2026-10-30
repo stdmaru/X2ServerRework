@@ -3927,10 +3927,10 @@ DECL_DATA( KEXPData )
 
 DECL_DATA( KNXBTCategoryInfo )
 {
-    unsigned long       m_ulCategoryNo;
+    DWORD       m_ulCategoryNo;
     std::wstring        m_wstrCategoryName;
-    unsigned long       m_ulParentCategoryNo;
-    unsigned long       m_ulDisplayNo;
+    DWORD       m_ulParentCategoryNo;
+    DWORD       m_ulDisplayNo;
 
 	CON_COPYCON_ASSIGNOP( KNXBTCategoryInfo, right )
 	{
@@ -3944,7 +3944,7 @@ DECL_DATA( KNXBTCategoryInfo )
 
 DECL_DATA( KNXBTBonusProductInfo )
 {
-    unsigned long       m_ulProductNo;
+    DWORD       m_ulProductNo;
     std::wstring        m_wstrExtend;
 
 	CON_COPYCON_ASSIGNOP( KNXBTBonusProductInfo, right )
@@ -3958,25 +3958,25 @@ DECL_DATA( KNXBTBonusProductInfo )
 //{{ 2008. 7. 10  최육사  빌링패킷 수정
 DECL_DATA( KNXBTBonusProductInfoPickUp )
 {
-    unsigned long		m_ulBonusProduct;
-	unsigned long		m_ulBonusAmount;
+    DWORD		m_ulBonusProduct;
+	DWORD		m_ulBonusAmount;
 };
 //}}
 
 DECL_DATA( KNXBTProductInfo )
 {
-    unsigned long                           m_ulProductNo;
-    unsigned long                           m_ulRelationProductNo;
+    DWORD                           m_ulProductNo;
+    DWORD                           m_ulRelationProductNo;
 	//{{ 2009. 12. 2  최육사	캐쉬템기간타입변경
     short									m_sProductExpire;
 	//}}
     unsigned short                          m_usProductPieces;
     std::wstring                            m_wstrProductID;
     std::wstring                            m_wstrProductGUID;
-    unsigned long                           m_ulPaymentType;
+    DWORD                           m_ulPaymentType;
     std::wstring                            m_wstrProductType;
-    unsigned long                           m_ulSalePrice;
-    unsigned long                           m_ulCategoryNo;
+    DWORD                           m_ulSalePrice;
+    DWORD                           m_ulCategoryNo;
     std::vector< KNXBTBonusProductInfo >    m_vecBonusProductInfo;
 
 	CON_COPYCON_ASSIGNOP( KNXBTProductInfo, right )
@@ -4006,7 +4006,7 @@ DECL_DATA( KNXBTProductInfo )
 
 DECL_DATA( KNXBTPurchaseReqInfo )
 {
-	unsigned long   m_ulProductNo;
+	DWORD   m_ulProductNo;
 	unsigned short	m_usOrderQuantity;
 
 	KNXBTPurchaseReqInfo()
@@ -4018,7 +4018,7 @@ DECL_DATA( KNXBTPurchaseReqInfo )
 
 DECL_DATA( KNXBTPurchaseAckInfo )
 {
-    unsigned long	m_ulProductNo;
+    DWORD	m_ulProductNo;
 	unsigned short	m_usOrderQuantity;
 	std::wstring	m_wstrExtendValue;
 
@@ -4034,8 +4034,8 @@ DECL_DATA( KNXBTPurchaseAckInfo )
 
 DECL_DATA( KNXBTOrderInfo )
 {
-    unsigned long       m_ulOrderNo;
-    unsigned long       m_ulProductNo;
+    DWORD       m_ulOrderNo;
+    DWORD       m_ulProductNo;
     BYTE                m_byteProductKind;
     std::wstring        m_wstrProductName;
     std::wstring        m_wstrProductID;
@@ -4092,9 +4092,9 @@ DECL_DATA( KNXBTOrderInfo )
 
 DECL_DATA( KNXBTPackageInfo )
 {
-    unsigned long       m_ulOrderNo;
-    unsigned long       m_ulPackageProductNo;
-    unsigned long       m_ulProductNo;
+    DWORD       m_ulOrderNo;
+    DWORD       m_ulPackageProductNo;
+    DWORD       m_ulProductNo;
     std::wstring        m_wstrProductName;
     std::wstring        m_wstrProductID;
 	//{{ 2009. 12. 2  최육사	캐쉬템기간타입변경
@@ -4135,7 +4135,7 @@ DECL_DATA( KNXBTPackageInfo )
 //{{ 2008. 7. 28  최육사	패키지
 DECL_DATA( KNXBTPickUpPackageInfo )
 {
-	unsigned long       m_ulProductNo;
+	DWORD       m_ulProductNo;
 	std::wstring		m_wstrProductID;
 	//{{ 2009. 12. 2  최육사	캐쉬템기간타입변경
 	short				m_sProductExpire;
@@ -4166,9 +4166,9 @@ DECL_DATA( KNXBTPickUpPackageInfo )
 
 DECL_DATA( KNXBTLotteryInfo )
 {
-    unsigned long       m_ulOrderNo;
-    unsigned long       m_ulLotteryProductNo;
-    unsigned long       m_ulProductNo;
+    DWORD       m_ulOrderNo;
+    DWORD       m_ulLotteryProductNo;
+    DWORD       m_ulProductNo;
     std::wstring        m_wstrProductName;
     std::wstring        m_wstrProductID;
 	//{{ 2009. 12. 2  최육사	캐쉬템기간타입변경
@@ -4204,7 +4204,7 @@ DECL_DATA( KNXBTLotteryInfo )
 
 DECL_DATA( KNXBTCouponProductInfo )
 {
-    unsigned long       m_ulProductNo;
+    DWORD       m_ulProductNo;
     std::wstring        m_wstrExtendValue;
 
 	CON_COPYCON_ASSIGNOP( KNXBTCouponProductInfo, right )
@@ -4217,7 +4217,7 @@ DECL_DATA( KNXBTCouponProductInfo )
 
 DECL_DATA( KNXBTSubProductInfo )
 {
-    unsigned long       m_ulProductNo;
+    DWORD       m_ulProductNo;
     std::wstring        m_wstrProductName;
     std::wstring        m_wstrProductID;
 	//{{ 2009. 12. 2  최육사	캐쉬템기간타입변경
@@ -5996,7 +5996,7 @@ DECL_DATA( KPropertyValue )
 {
 	BYTE							m_bytePropertyValue;
 	unsigned int					m_uintPropertyValue;
-	unsigned long					m_ulongPropertyValue;
+	DWORD					m_ulongPropertyValue;
 	std::wstring					m_wstrPropertyValue;
 	std::vector< unsigned long >	m_vecPropertyValue;
 	//{{ 2011. 09. 29  김민성	셧다운제 도입
@@ -6233,11 +6233,11 @@ typedef KEGS_WORLD_TRIGGER_RELOCATION_REQ		KEGS_WORLD_TRIGGER_RELOCATION_NOT;
 //{{ 2011. 02. 23	최육사	캐쉬 상품 리스트
 DECL_DATA( KCashPruductInfo )
 {
-	unsigned long                           m_ulProductNo;
+	DWORD                           m_ulProductNo;
 	short									m_sProductExpire;
 	u_short									m_usProductPieces;
 	int										m_iItemID;
-	unsigned long                           m_ulSalePrice;
+	DWORD                           m_ulSalePrice;
 
 	KCashPruductInfo()
 	{

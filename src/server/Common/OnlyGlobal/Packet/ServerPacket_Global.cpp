@@ -633,12 +633,13 @@ SERIALIZE_DEFINE_PUT( KEGIANT_BILLING_CONSUME_ACK, obj, ks )
 
 SERIALIZE_DEFINE_GET( KEGIANT_BILLING_CONSUME_ACK, obj, ks )
 {
-	return PUT( m_iOK )
-		&& PUT( m_iBalance )
-		&& PUT( m_iBonus )
-		&& PUT( m_bHasFilled )
-		&& PUT( m_iPoint )
-		&& PUT( m_uiGiantUID )
+	// Port: the original called PUT here (copy-paste), writing instead of reading
+	return GET( m_iOK )
+		&& GET( m_iBalance )
+		&& GET( m_iBonus )
+		&& GET( m_bHasFilled )
+		&& GET( m_iPoint )
+		&& GET( m_uiGiantUID )
 		;
 }
 
@@ -2173,7 +2174,7 @@ SERIALIZE_DEFINE_GET( KELOG_ITEM_TRADE_ERROR_NOT, obj, ks )
 {
 	return GET( m_iUnitUID )
 		&& GET( m_iType )
-		&& PUT( m_wsrtRegDate )
+		&& GET( m_wsrtRegDate ) // Port: was PUT (copy-paste); the date was never read
 		;
 }
 

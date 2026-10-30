@@ -22,7 +22,7 @@ DECL_DATA( KGlobalCashInfo )
 		//GCT_PUBLISHER_BONUS_CASH	= 4,		// 퍼블리셔 쪽 보너스 캐쉬 (현재 사용국가 없어서 주석처리)
 	};
 
-	unsigned long				m_ulCash[GCT_TOTAL_NUM];
+	DWORD				m_ulCash[GCT_TOTAL_NUM];
 
 	KGlobalCashInfo()
 	{
@@ -72,7 +72,7 @@ DECL_DATA( KBillPackageInfo )
 	int                 m_iPackageNo;	// TranNo 임
 	std::vector< int >  m_vecProductNo;
 
-	unsigned long       m_ulProductNo;
+	DWORD       m_ulProductNo;
 	int			        m_iProductID;
 	std::wstring        m_wstrProductID;
 	//{{ 2009. 12. 2  최육사	캐쉬템기간타입변경

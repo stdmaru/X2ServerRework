@@ -80,7 +80,7 @@ Plano detalhado do `Common`: [Servidor: Common › Plano](../porte/server-common
 Ver [Servidor — acoplamento com Windows](../original/servidor.md).
 
 - [x] `server/common-build`: `Common` compilando no Linux (GCC/Clang) sem warnings, menos `Socket/`/`ODBC/` (2026-10-29). Ver [Servidor: Common](../porte/server-common.md).
-- [ ] `server/common-packets`: testes de serialização dos pacotes.
+- [x] `server/common-packets`: ida e volta de todos os 1.964 tipos serializados + bytes exatos do início do login (2026-10-29). Achou 2 `GET` que chamavam `PUT` no original.
 - [ ] Rede: IOCP → Asio (standalone) ou equivalente; preservar framing/cripto de pacotes.
 - [ ] DB: ODBC → unixODBC + driver MS ODBC 18 no Linux (código de ODBC quase não muda).
 - [ ] UI MFC (`Common/ui/ServerUIDlg`) → terminal em todas as plataformas (T15): log ao vivo, prompt Lua com histórico, título com status, encerramento com confirmação, modo serviço sem stdin.
