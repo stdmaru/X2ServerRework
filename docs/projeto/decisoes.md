@@ -30,13 +30,8 @@
 | T22 | **Pastas prontas para rodar, sem depender do `_reference`** (que será apagado no fim do projeto). Tudo o que os servidores leem fica versionado em `runtime/`, menos binários e assets do cliente: `ServerResource/` (os scripts do servidor em produção, `_original-server`, com os bytes intactos), configs e `.dsn` como templates `*.in` (sem senha). O `ClientScript` que os servidores leem é **gerado dos `.kom` do cliente** (`tools/runtime/gen_clientscript.py`, sobre `tools/kom`). Os alvos `x2_run_<servidor>` montam `build/<preset>/run/` com o mesmo layout do original. Os dados do banco de desenvolvimento podem mudar (por script); a estrutura não | Rodar com um comando, igual em toda máquina, e o repositório se basta sem o `_reference`. O `ClientScript` do servidor original é de outra versão do cliente (2016–2019) e de outro formato; gerado do cliente, fica coerente com o `elsword.exe` em uso. Escolhido pelo usuário com o agente (2026-10-30) |
 | T23 | **EPublisherServer**: o `AuthServer` (DEB, do dono do projeto) é **reimplementado** em `src/server/EPublisherServer`, com o nome que o código original dá a esse serviço (`EPUBLISHER_*`, login e compras). Mesmo protocolo (SOAP/HTTP do cliente gSOAP dos servidores), mesmas tabelas (`DEBAccounts`, `DEBUserCash`), sobre o `KODBC`, sem SOCI/OpenSSL/gSOAP no servidor. Conta como código original até a Fase 5, quando a função deve ir para o ChannelServer. Ele pode usar o `Common`; **nada do `Common` ou dos outros servidores usa ele** | Evita dependências novas e usa o mesmo acesso a banco dos servidores. Liberdade total dada pelo usuário, com a regra de separação e o nome (2026-10-30) |
 | T24 | **Builds e testes numa imagem Docker Ubuntu LTS** (`docker/build/Dockerfile`, `ubuntu:26.04`), a mesma no desenvolvimento (`docker/build.sh`) e no CI (publicada no GHCR pelo hash do `Dockerfile`). O host só precisa de Docker. GCC, Clang, CMake e MinGW são os do Ubuntu, não os mais novos; o código continua sem warnings em ambos ([Ambiente de build](../ferramentas/ambiente-build.md)) | Ubuntu é o padrão mais usado e o preferido do GitHub; um ambiente único e reproduzível em todas as máquinas e no CI. Pedido do usuário (2026-10-30) |
+| T25 | **LuaJIT no MSVC pelo `msvcbuild.bat`** do próprio LuaJIT (antiga D5), chamado pela mesma receita do CMake da T21 (`static`, CRT dos nossos alvos via `CL`). Validado pelo job **MSVC Debug** do CI em `windows-latest` (Windows real, Visual Studio do runner) | Mesmo commit fixo e mesmo caminho do MinGW, sem vcpkg nem binário de terceiros. Escolhido pelo usuário (2026-10-30), com o CI do GitHub dando a máquina Windows que faltava |
 
 ## Pendentes
 
-### D5 — LuaJIT no MSVC
-O LuaJIT não tem CMake. No MinGW a receita própria em CMake (Makefile do LuaJIT) já resolve (T21, 2026-10-30). Para o MSVC, opções:
-- a mesma receita chamando o `msvcbuild.bat` do LuaJIT;
-- vcpkg só para ele;
-- binário pré-compilado.
-
-Decidir quando houver uma máquina Windows para validar.
+Nenhuma no momento.

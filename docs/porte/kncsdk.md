@@ -89,4 +89,4 @@ Interface pública (nomes, macros, assinaturas) mantida; mudou o que está lista
 - O `lua_tinker` do cliente (`LuaCommon`) é outra variante; unificar ao portar o cliente.
 - No cliente original, o log fica desligado nas builds de produção (`KNCSDK_Client/dbg/logfile.hpp`); reproduzir via nível de log ao portar o cliente.
 - `KByteStream` herda de `std::basic_string<unsigned char>`, que a libc++ (Clang no macOS) não suporta mais. Não afeta Linux/Windows.
-- LuaJIT no MSVC: a receita do CMake (T21) só cobre GCC/Clang/MinGW, pelo Makefile do LuaJIT (D5).
+- LuaJIT no MSVC: a receita do CMake (T21) chama o `msvcbuild.bat` do LuaJIT (T25).

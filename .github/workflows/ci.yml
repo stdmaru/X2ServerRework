@@ -149,7 +149,7 @@ jobs:
       - name: Build
         run: |
           set -o pipefail
-          cmake --build build/windows-debug 2>&1 | tee build.log
+          cmake --build build/windows-debug -- -k 0 2>&1 | tee build.log   # every error in one run
           ! grep -nE "warning( [A-Z]+[0-9]+)?:" build.log
       - name: Test
         run: ctest --test-dir build/windows-debug --output-on-failure

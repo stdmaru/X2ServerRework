@@ -36,6 +36,9 @@ if(NOT TARGET cryptopp::cryptopp)
     set_target_properties(cryptopp PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${_x2_cryptopp_inc}")
     # third-party code: GCC 16 -O2 flags a memcpy in esign.cpp (-Wstringop-overflow); not ours to fix
     target_compile_options(cryptopp PRIVATE $<IF:$<CXX_COMPILER_ID:MSVC>,/w,-w>)
+    if(MSVC)
+        target_compile_options(cryptopp PRIVATE "/FI${CMAKE_CURRENT_LIST_DIR}/compat/cryptopp_stdext.h")
+    endif()
 endif()
 
 # --- Asio standalone (header-only, decision T20): only x2::platform includes it ------------------
