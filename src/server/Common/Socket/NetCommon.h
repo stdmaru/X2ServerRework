@@ -18,6 +18,9 @@ namespace NetCommon
 {
     const wchar_t* GetWsaMsg();
     const char* GetLocalIP();
+    // Fixes the address GetLocalIP() returns (config: SetLocalIP( "127.0.0.1" )); empty goes back to the
+    // original lookup, the first address of the host name. The DB identifies each server by this address.
+    void SetLocalIP( const char* szIP );
 	std::wstring GetLocalIPW();
     bool InitWinSock();
     const char* CalcIP( DWORD dwIP );

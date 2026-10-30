@@ -162,6 +162,9 @@ e não no cliente (as flags do cliente ainda não foram geradas, ver [Roadmap](.
   voltou a nomear `anTrace_` (com `[[maybe_unused]]`): a passada de warnings tinha comentado o nome, e `FIRST_SENDER_UID` deixava de
   compilar nos servidores. `KActorManager::ForEach` recebe `T&&` (o MSVC aceitava um temporário em `T&`). `HackingProtectionManager.h`
   inclui `BaseServer.h`, que o corpo do template usa. `ServerMain.{h,cpp}`: o `main` comum dos servidores (ver [ChannelServer](server-channel.md)).
+- Ao rodar o ChannelServer (2026-10-30): `KBaseServer::Authenticate` devolve o resultado que o `DBE_SERVER_ON_ACK` de cada servidor
+  grava com `SetAuthenticateResult` (no lugar do `::exit( 0 )` do original, ver [ChannelServer › Mudanças](server-channel.md#mudanças-em-relação-ao-original));
+  `NetCommon::SetLocalIP` (Lua `SetLocalIP`) fixa o endereço que o `GetLocalIP` devolve. Sem chamar, o comportamento é o do original.
 
 - Windows (achado na primeira compilação MinGW, 2026-10-30): o build passa a definir `UNICODE`/`_UNICODE`, como o original (sem isso
   `LPCTSTR` era `const char*`); `byte` e `u_char`/`u_short`/`u_int`/`u_long`, que o original recebia do `windows.h` sem `WIN32_LEAN_AND_MEAN`,

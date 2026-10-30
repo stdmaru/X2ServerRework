@@ -21,6 +21,8 @@ com CMake e x64, limpando o código no caminho. Começa pelas bibliotecas, segue
 - **`_reference/` é somente leitura.** Nunca edite, formate ou faça commit lá. `_reference/X2Server` aponta para um clone verificado
   de `github.com/stdmaru/X2Server` (`_reference/X2Server-github`). **Não use a cópia do HDD** (`_reference/X2Server-hdd`): ela tem arquivos corrompidos.
   Ao ler o original fora do importador, desconfie de conteúdo estranho e compare com `git -C _reference/X2Server show HEAD:<arquivo>`.
+- **O `_reference/` será apagado no fim do projeto.** Nada (build, execução, testes, ferramentas) pode depender dele, só o importador
+  ao trazer arquivos. O que os servidores precisam para rodar fica versionado (`runtime/`), menos binários e assets do cliente (decisão T22).
 - **Código do original entra em `src/` apenas pelo importador** (`tools/import`, ver [Importador](docs/ferramentas/importador.md)).
   Depois que um arquivo importado é editado à mão, não reimporte o módulo. Corrija direto em `src/`.
 - **Assets do cliente não mudam** (`_client/`, `.kom`, `.dds`, `.x`, `.fx`...). O código se adapta a eles.
@@ -43,6 +45,9 @@ src/            código novo (platform/, kncsdk/, depois server/ e client/)
 cmake/          módulos CMake do projeto
 tools/import/   importador _reference -> src/ (+ relatórios em reports/, manifests/)
 tools/docs/     utilitários do wiki
+tools/kom/      .kom/.kim do cliente (extrair, decompilar, empacotar)
+tools/runtime/  geração do ClientScript a partir do cliente
+runtime/        o que os servidores leem ao rodar (ServerResource, configs e .dsn como templates)
 docs/           wiki do projeto
 _reference/     código original (somente leitura, fora do git)
 _client/        cliente original e assets (fora do git)
@@ -65,6 +70,7 @@ python3 tools/import/check_equivalence.py server                      # resolved
 python3 tools/docs/check_links.py                                     # links do wiki
 docker compose -f docker/docker-compose.yml up -d --wait              # SQL Server de desenvolvimento
 docker/mssql/restore.sh                                               # restaura _database/*.bak nele
+cmake --build --preset linux-debug --target x2_run_channel            # monta build/linux-debug/run/ChannelServer pronto para rodar
 ```
 
 O código original está em CP949. Para ler: `iconv -f cp949 -t utf-8 -c <arquivo>`. Alguns arquivos já estão em UTF-8.

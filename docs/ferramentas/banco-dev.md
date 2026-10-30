@@ -30,6 +30,10 @@ docker compose -f docker/docker-compose.yml down -v           # apaga o containe
   `docker/docker-compose.yml` e muda com `X2_DB_PASSWORD` (antes do primeiro `up`, e também no `restore.sh`).
 - O `restore.sh` copia os `.bak` para dentro do container (o SQL Server roda como uid 10001, que pode não conseguir ler os arquivos montados)
   e restaura cada um com `MOVE` dos arquivos lógicos. Aceita arquivos específicos: `docker/mssql/restore.sh _database/Game01.bak`.
+- **Dados ajustados para desenvolvimento** (o `restore.sh` faz depois de restaurar o `Statistics`): `LServerList.PublicIP/PrivateIP/IP`
+  e `LChannelList.IP` passam a `X2_SERVER_IP` (padrão `127.0.0.1`). Os servidores se identificam no banco pelo endereço
+  (`SetLocalIP` nos configs) e o ChannelServer manda ao cliente os endereços da `LChannelList`; o backup tem os de produção.
+  Os outros campos com IP são logs. Regra (2026-10-30): **os dados podem mudar, por script; a estrutura (tabelas, procedures) não**.
 - `sqlcmd` dentro do container: `docker exec -it x2-mssql /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P '<senha>'`.
 
 ## Connection strings

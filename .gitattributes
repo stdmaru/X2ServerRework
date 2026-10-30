@@ -11,3 +11,7 @@
 *.lib  binary
 *.dll  binary
 *.exe  binary
+
+# server data versioned exactly as the production server had it (CRLF/LF mixed, BOM)
+runtime/ServerResource/** -text
+runtime/*/config_*.ini    -text

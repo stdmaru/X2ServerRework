@@ -106,6 +106,7 @@ void KBaseServer::RegToLua()
 	lua_tinker::def( g_pLua, "log",			&dbg::logfile::SetLogLevel );
 	lua_tinker::def( g_pLua, "changelog",		&dbg::logfile::CloseFile );
 	lua_tinker::def( g_pLua, "GetLocalIP",	&NetCommon::GetLocalIP );
+	lua_tinker::def( g_pLua, "SetLocalIP",	&NetCommon::SetLocalIP );
 
  	lua_tinker::class_add<KThreadManager>( g_pLua, "KThreadManager" );
 	lua_tinker::class_def<KThreadManager>( g_pLua, "Init",						&KThreadManager::Init );
@@ -555,12 +556,13 @@ bool KBaseServer::Authenticate( DWORD dwTimeOut_ )
     kPacket.m_wstrIP    = NetCommon::GetLocalIPW();
     kPacket.m_usPort    = KNetLayer::GetKObj()->m_usPortMaster;
 
+    m_bAuthenticateOK = false;
     SendToLogDB( DBE_SERVER_ON_REQ, kPacket );
 
     switch( ::WaitForSingleObject( m_spEventAck.get(), dwTimeOut_ ) )
     {
-    case WAIT_OBJECT_0: // ack를 제대로 받은 경우.
-        return true;
+    case WAIT_OBJECT_0: // the ack arrived: accepted or refused by the DB
+        return m_bAuthenticateOK;
     case WAIT_TIMEOUT: // 시간 초과
         START_LOG( cerr, L"verify account timeout." );
         return false;

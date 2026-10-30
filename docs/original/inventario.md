@@ -76,7 +76,7 @@ Também em `_reference/` (somente leitura, fora do git):
 
 | Pasta | O que é |
 |---|---|
-| `_original-server/` | Servidor compilado como roda hoje: `.exe`, `config_*.ini` (CP949), `.dsn` e os scripts `.lua` (UTF-8 com BOM) que ele carrega |
+| `_original-server/` | Servidor compilado como roda hoje: `.exe`, `config_*.ini` (CP949), `.dsn` e os scripts `.lua` (UTF-8 com BOM) que ele carrega. O `ServerResource` dele está versionado em `runtime/`; o `ClientScript` é de outra versão do cliente ([Pastas de execução](../ferramentas/runtime.md)) |
 | `AuthServer/` | Fonte do servidor SOAP de autenticação/cobrança do DEB (`_DEB_AUTH`), feito pelo dono do projeto. Usado por enquanto; deve sair numa fase futura |
 
 Na raiz, `_database/` (fora do git): backups do SQL Server dos bancos do jogo (`Account`, `Game01`, `ES_BILLING`, `Statistics`),

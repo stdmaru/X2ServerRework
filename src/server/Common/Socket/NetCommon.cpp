@@ -11,8 +11,18 @@ const wchar_t* NetCommon::GetWsaMsg()
     return strMsg.c_str();
 }
 
+namespace { std::string s_strLocalIP; }
+
+void NetCommon::SetLocalIP( const char* szIP )
+{
+    s_strLocalIP = szIP ? szIP : "";
+}
+
 const char* NetCommon::GetLocalIP()
 {
+    if( !s_strLocalIP.empty() )
+        return s_strLocalIP.c_str();
+
     char szHostName[256];
     HOSTENT* pHostInfo;
 

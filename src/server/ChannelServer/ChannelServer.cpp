@@ -378,15 +378,17 @@ void KChannelServer::ProcessEvent( const KEventPtr& spEvent_ )
 
 _IMPL_ON_FUNC( DBE_SERVER_ON_ACK, KDBE_CHANNEL_SERVER_ON_ACK )
 {
-	//스타트에 실패했으면 프로그램을 끈다
+	// If the start failed, the server shuts down: Authenticate() returns false and Init() fails.
+	// The original called ::exit( 0 ) here, from this thread, while the other threads were still running.
 	if( kPacket_.m_iOK != NetError::NET_OK)
 	{
-		::exit( 0 );
+		SetAuthenticateResult( false );
+		SetEvent( m_spEventAck.get() );
 		return;
 	}
 
 	SetServerInfo( kPacket_.m_kServerInfo );
-
+	SetAuthenticateResult( true );
 
     SetEvent( m_spEventAck.get() );
 }

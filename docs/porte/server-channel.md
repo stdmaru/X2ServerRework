@@ -17,7 +17,14 @@ Mesma posição relativa do original (`src/server/ChannelServer` ao lado de `src
 - **Flags**: 370 blocos `#if` resolvidos, 2.898 linhas removidas. Nenhum bloco virou `X2_DEV_TOOLS`.
 - Encodings: 29 CP949, 3 UTF-8, 4 ASCII. Includes com a grafia corrigida: `odbc/` → `ODBC/`, `socket/` → `Socket/`, `\` → `/`.
 
-## Estado (2026-10-30, branch `server/channel-build`)
+## Estado (2026-10-30, branch `server/channel-run`)
+
+Roda no Linux pela pasta montada por `x2_run_channel` ([Pastas de execução](../ferramentas/runtime.md)): conecta no SQL Server do Docker
+(FreeTDS), carrega os scripts (`Enum.lua`, `DungeonEnum.lua`, `GameSysValTable.lua`, `WaitQueueData.lua`, `LogConfig.lua`...),
+se autentica no banco (UID 59, "Channel"), lê a lista de canais e chega ao estado pronto (`OnServerReadyComplete`), com o prompt Lua
+respondendo. Encerra com código 0 no fim do stdin. **Ainda não testado com o cliente** nem com o serviço DEB.
+
+## Build (2026-10-30, branch `server/channel-build`)
 
 O executável `ChannelServer` (alvo `x2_channel_server`) **compila e linka sem warnings** em GCC Debug, Clang e MinGW (build do zero).
 Sem argumentos ele sobe, recusa a falta de argumentos como o original (`Init` falha), encerra todas as camadas e sai com código 1,
@@ -39,6 +46,8 @@ no Linux e no Wine. Ainda não rodou com configuração, banco e cliente: é o p
 | Onde | Mudança | Motivo |
 |---|---|---|
 | `KChannelServer`, `KChannelSimLayer` | Saem as chamadas ao `ProcessCommunicationManager` (KSMS: *named pipes* `\\.\pipe\ChannelServerRead`/`Write`, religadas a cada 60 s no `Tick`, e as mensagens de modo de manutenção) | Ferramenta de gerência da KOG, excluída do `Common`. Só funcionava com `GameSysVal:SetProcessCommunication(true)` |
+| `ON_DBE_SERVER_ON_ACK` | Quando o banco recusa o servidor, a resposta marca `SetAuthenticateResult( false )` e libera o `Authenticate`; o `Init` falha e o servidor encerra pelo `ShutDown` (código 1) | O original chamava `::exit( 0 )` nessa thread, com as outras rodando: os destrutores estáticos liberavam o pool de eventos em uso (falha de segmentação achada com ASan em 2026-10-30) |
+| `config_ch_DEV.lua` | `SetLocalIP( ... )` fixa o endereço com que o servidor se identifica | O original usava o primeiro endereço do nome do host, que no Linux pode ser qualquer interface (aqui, a VPN) |
 | `-popup` | Recusado com mensagem; os dados do banco vão como argumentos | Era um diálogo MFC pedindo id e senha |
 | `ChannelAccountDBThread` | `boost::variate_generator` (OTP) → lambda sobre a mesma distribuição; `_itow` → `_itow_s` | Mesmo resultado |
 
@@ -50,4 +59,5 @@ singletons por ponteiro da base), `using` das sobrecargas escondidas de `RoutePa
 
 ## Pendências
 
-- Rodar com a configuração de `_reference/_original-server/ChannelServer`, o banco do Docker e o DEB, e conectar o `elsword.exe` (`server/channel-run`).
+- Subir o serviço DEB e conectar o `elsword.exe` (`_client/`) até o fim do login no canal (resto do `server/channel-run`).
+- O `cerr` "INVALID_SOCKET" do `KAccepter` no encerramento vem de fechar o socket que espera no `accept`: também acontece no original (mantido).

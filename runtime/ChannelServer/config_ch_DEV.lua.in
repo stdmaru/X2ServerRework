@@ -1,0 +1,84 @@
+﻿-- lua header. Keep this line: it makes the file be read as UTF-8.
+-- Development configuration of the Channel Server (tag DEV: ChannelServer DEV <server group id>).
+-- Derived from the production config_ch_US_SERVICE.lua. The @...@ values are filled in by the
+-- x2_run_channel target (docs/ferramentas/runtime.md).
+
+-- address this server announces; the DB (Statistics.LServerList.PublicIP) identifies the servers by it --
+SetLocalIP( "@X2_RUN_SERVER_IP@" )
+
+----------     Authentication (DEB)     ----------
+DEBAuthManager:AddAuthServiceAddress("@X2_RUN_AUTH_URL@")
+DEBAuthManager:Init(1)
+
+----------     Channel SimLayer     ----------
+SimLayer:SetUseKogOTP ( true )
+
+-- time to wait for the DB queue on shutdown --
+Server:SetShutDownWait( 60 * 1000 )
+
+
+----------     Channel NetLayer     ----------
+
+NetLayer:SetCheckSequenceNum( true )
+NetLayer:SetPacketAuthFailLimit( 100 ) -- disconnect a user after 100 invalid packets
+
+
+-- PublisherBillingConnectType Flag --
+--[[
+		PBCT_NONE		= 0,
+		// because of KncSend, the DBLayer and the other managers must be told apart
+		PBCT_NORMAL		= 1,	// through a regular manager (usually TCP, SOAP...)
+		PBCT_DB			= 2,	// through the DB manager
+		PBCT_UNUSUAL	= 3,	// mixed or special cases
+--]]
+SimLayer:SetPublisherBillingConnectType (PBCT_NORMAL)
+SimLayer:SetCheckCouponByPublisher ( true )
+
+-- Auth Flag --
+--[[
+AF_INTERNAL       : in-house auth
+AF_NEXON_KOREA    : Nexon Korea auth
+AF_K3RCOMBO_US    : US
+AF_GLOBAL_SERVICE : global service (DEB)
+--]]
+SimLayer:SetAuthFlag( AF_GLOBAL_SERVICE )
+
+-- IP Check --
+SimLayer:SetCheckIPMode( CIM_SERVICE_MODE )		-- service mode
+--SimLayer:SetCheckIPMode( CIM_CHECK_MODE )		-- maintenance mode
+--SimLayer:AddIP( "127.0.0.1" )
+
+-- whether IPs are checked
+SimLayer:SetCheckIPType( CIT_ALL_IP_ALLOW )
+
+-- Script File Path (relative to this folder: build/<preset>/run/ChannelServer) --
+SimLayer:AddPath( "../ServerResource" ) -- server common
+SimLayer:AddPath( "../ClientScript" ) -- client script, generated from the client data
+
+
+----------     DB Layer     ----------
+
+-- ODBC driver (docs/porte/server-common-db.md); must come before AddDB --
+DBLayer:SetODBCDriver( "@X2_RUN_ODBC_DRIVER@" )
+DBLayer:SetODBCOptions( "@X2_RUN_ODBC_OPTIONS@" )
+
+-- databases --
+--[[
+DC_ACCOUNT         : accounts
+DC_GAME            : game
+DC_LOG             : statistics
+DC_NX_SHOP_GATEWAY : Nexon billing gateway
+--]]
+-- AddDB( DB type, file dsn, thread count, DBConnectionString? )
+
+DBLayer:AddDB( DC_ACCOUNT,	'Account.dsn',		10, false )
+DBLayer:AddDB( DC_LOG,		'Statistics.dsn',	10, false )
+
+-- log level --
+--[[
+-1 : no logs
+ 0 : cerr, cout
+ 1 : cerr, cwarn, cout
+ 2 : cerr, cwarn, clog, cout
+--]]
+log( 0 )

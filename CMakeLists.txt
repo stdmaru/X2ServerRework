@@ -19,6 +19,7 @@ endif()
 
 include(X2Compiler)
 include(X2Dependencies)
+include(X2Runtime)
 
 if(X2_BUILD_TESTS)
     enable_testing()

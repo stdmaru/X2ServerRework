@@ -1,6 +1,7 @@
 #pragma once
 
 #include <KncLua.h>
+#include <atomic>
 #include <memory>
 #include <type_traits>
 #include "Thread/Thread.h"
@@ -166,6 +167,8 @@ protected:
     inline void SetTagVersion();
     inline void LoadINIFile( const wchar_t* szFileName );
     bool Authenticate( DWORD dwTimeOut );
+    // Called by the server's DBE_SERVER_ON_ACK handler before it signals m_spEventAck.
+    void SetAuthenticateResult( bool bOK )          { m_bAuthenticateOK = bOK; }
 
     std::wstring                                m_strTagVersion;            ///< 050716. florist. 태그빌드 버전 문자열
     std::wstring                                m_strMailingList;           ///< 061011. florist. crash report mailing list.
@@ -179,6 +182,7 @@ protected:
     DWORD							            m_dwServerInfoUpdateTick;
 
     std::shared_ptr< std::remove_pointer_t< HANDLE > > m_spEventAck; // HANDLE is not void* outside Windows
+    std::atomic< bool >                         m_bAuthenticateOK{ false };
 
     // 서버 리스트
     KServerList                                 m_mapServerList;

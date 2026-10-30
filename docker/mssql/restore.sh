@@ -44,3 +44,15 @@ for bak in "$@"; do
     echo "restoring $db"
     sqlcmd -Q "RESTORE DATABASE [$db] FROM DISK = N'$DIR/$db.bak' WITH REPLACE$moves" >/dev/null
 done
+
+# The servers find themselves in Statistics.LServerList by address (SetLocalIP in the configs), and the Channel
+# Server sends the game server addresses of Statistics.LChannelList to the client. The backup has the
+# production addresses: point both to X2_SERVER_IP (only data changes, the schema stays as it is).
+for bak in "$@"; do
+    if [ "$(basename "$bak" .bak)" = Statistics ]; then
+        ip="${X2_SERVER_IP:-127.0.0.1}"
+        echo "LServerList -> $ip"
+        sqlcmd -d Statistics -Q "UPDATE dbo.LServerList SET PublicIP = N'$ip', PrivateIP = N'$ip', IP = N'$ip';
+                                 UPDATE dbo.LChannelList SET IP = N'$ip'" >/dev/null
+    fi
+done
