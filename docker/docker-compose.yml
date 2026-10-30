@@ -1,0 +1,28 @@
+# Local services for development (docs/ferramentas/banco-dev.md).
+#   docker compose -f docker/docker-compose.yml up -d     start (data stays in the x2-mssql-data volume)
+#   docker/mssql/restore.sh                               restore _database/*.bak
+# Listens only on 127.0.0.1. The sa password is for this local container; set X2_DB_PASSWORD before the first start to change it.
+name: x2
+
+services:
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: x2-mssql
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: Developer
+      MSSQL_SA_PASSWORD: ${X2_DB_PASSWORD:-X2dev!Passw0rd}
+    ports:
+      - "127.0.0.1:${X2_DB_PORT:-1433}:1433"
+    volumes:
+      - mssql-data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -Q 'SELECT 1' -b -o /dev/null"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 10s
+
+volumes:
+  mssql-data:
+    name: x2-mssql-data

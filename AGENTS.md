@@ -46,6 +46,8 @@ tools/docs/     utilitários do wiki
 docs/           wiki do projeto
 _reference/     código original (somente leitura, fora do git)
 _client/        cliente original e assets (fora do git)
+_database/      backups do SQL Server dos bancos do jogo (fora do git)
+docker/         serviços locais de desenvolvimento (SQL Server)
 ```
 
 ## Comandos
@@ -61,6 +63,8 @@ python3 tools/import/tests/test_flagsim.py
 python3 tools/import/gen_flags.py server                              # flags do servidor
 python3 tools/import/check_equivalence.py server                      # resolvedor não muda o código
 python3 tools/docs/check_links.py                                     # links do wiki
+docker compose -f docker/docker-compose.yml up -d --wait              # SQL Server de desenvolvimento
+docker/mssql/restore.sh                                               # restaura _database/*.bak nele
 ```
 
 O código original está em CP949. Para ler: `iconv -f cp949 -t utf-8 -c <arquivo>`. Alguns arquivos já estão em UTF-8.

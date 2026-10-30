@@ -79,6 +79,9 @@ Também em `_reference/` (somente leitura, fora do git):
 | `_original-server/` | Servidor compilado como roda hoje: `.exe`, `config_*.ini` (CP949), `.dsn` e os scripts `.lua` (UTF-8 com BOM) que ele carrega |
 | `AuthServer/` | Fonte do servidor SOAP de autenticação/cobrança do DEB (`_DEB_AUTH`), feito pelo dono do projeto. Usado por enquanto; deve sair numa fase futura |
 
+Na raiz, `_database/` (fora do git): backups do SQL Server dos bancos do jogo (`Account`, `Game01`, `ES_BILLING`, `Statistics`),
+restaurados pelo [Banco de desenvolvimento](../ferramentas/banco-dev.md).
+
 E em `_tools/kom/`: ferramenta para extrair os `.kom` do cliente (`_client/`), útil para inspecionar scripts e assets.
 
 `_reference/X2Server` (o link usado pelo importador) não existia em 2026-10-29; o clone está em `_reference/X2Server-github`, e o importador usa o clone direto quando o link falta.
