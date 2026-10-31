@@ -41,6 +41,11 @@ recebe a lista de Center (9100), Login (9200) e Global (9500), tenta conectar ne
 com o prompt Lua respondendo. Encerra com código 0 no fim do stdin. Os pacotes para os servidores que ainda não existem são descartados
 ([Dependências](#dependências-de-outros-servidores-levantamento-de-2026-10-31)).
 
+**Testado com o cliente original** (no Wine, 2026-10-31, com o EPublisherServer e o ChannelServer): o "O servidor está cheio" não
+aparece mais. O cliente conecta na porta 9300, troca a chave e manda o `EGS_VERIFY_ACCOUNT_REQ`; o GameServer o repassa como
+`ELG_NEXON_USER_AUTHENTICATE_REQ`, que é descartado porque o LoginServer não existe, e o cliente fica parado em "Conectando ao servidor".
+O próximo passo é o LoginServer.
+
 **Build** (2026-10-30, `server/game-build`): o executável (alvo `x2_game_server`, `main` com `KServerMain` como o ChannelServer)
 compila e linka sem warnings em GCC Debug, Clang Debug, GCC Release, Clang Release e clang-cl (Windows, na VM de testes), com os 6
 testes passando em todos. O Clang e o clang-cl acharam três bugs do original (abaixo) que o GCC não acusava.
@@ -119,7 +124,7 @@ depois da vila. O LoginServer não conecta em nenhum outro servidor: é ele que 
 1. ~~**`server/game-import`**~~: este passo.
 2. ~~**`server/game-build`**~~ (2026-10-30): compilar sem warnings em GCC, Clang e clang-cl, com o mesmo `main` (`KServerMain`) e os hooks do servidor
    (`g_szConfigFile`, `CreateDBThread`). Maior que o ChannelServer (15× o código): pode virar mais de um branch.
-3. **`server/game-run`** (em andamento): `x2_run_game` (`runtime/GameServer`, `Game01`) e o GameServer até o estado pronto, com o cliente
+3. ~~**`server/game-run`**~~ (2026-10-31): `x2_run_game` (`runtime/GameServer`, `Game01`) e o GameServer até o estado pronto, com o cliente
    conectando nele. O login para no `EGS_VERIFY_ACCOUNT_REQ` até existir o LoginServer ([Dependências](#dependências-de-outros-servidores-levantamento-de-2026-10-31)).
 4. **`server/login-import`**, **`server/login-build`** e **`server/login-run`**: o LoginServer, como o ChannelServer e o GameServer.
    Com ele, o cliente da seleção de personagem até a vila. O CenterServer e o GlobalServer vêm depois (dungeon, PvP, festas).
