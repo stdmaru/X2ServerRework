@@ -35,7 +35,7 @@ relativa do original (`src/server/GameServer` ao lado de `src/server/Common`).
 ## Estado (2026-10-30, branch `server/game-build`)
 
 O executável `GameServer` (alvo `x2_game_server`, `main` com `KServerMain` como o ChannelServer) **compila e linka sem warnings** em
-GCC Debug, Clang Debug, GCC Release e clang-cl (Windows, na VM de testes), com os 6 testes passando nos três. Ainda não rodou: é o passo
+GCC Debug, Clang Debug, GCC Release, Clang Release e clang-cl (Windows, na VM de testes), com os 6 testes passando em todos. Ainda não rodou: é o passo
 `server/game-run`. O Clang e o clang-cl acharam três bugs do original (abaixo) que o GCC não acusava.
 
 Medidas do caminho (GCC Debug, `-k 0`), para dar a escala: 632 erros em 59 arquivos depois da passada mecânica; 0 erros e 1.099
@@ -87,7 +87,7 @@ destrutores `virtual` em 14 singletons; `using` das sobrecargas escondidas de `R
 ## Plano (um branch por passo)
 
 1. ~~**`server/game-import`**~~: este passo.
-2. **`server/game-build`** (em andamento): compilar sem warnings em GCC, Clang e clang-cl, com o mesmo `main` (`KServerMain`) e os hooks do servidor
+2. ~~**`server/game-build`**~~ (2026-10-30): compilar sem warnings em GCC, Clang e clang-cl, com o mesmo `main` (`KServerMain`) e os hooks do servidor
    (`g_szConfigFile`, `CreateDBThread`). Maior que o ChannelServer (15× o código): pode virar mais de um branch.
 3. **`server/game-run`**: `x2_run_game` (`runtime/GameServer`, `Game01`), e o cliente passando do "servidor cheio" para a seleção de
    personagem e a vila. **Atenção:** o GameServer fala com o LoginServer (`SendToLoginServer`), o CenterServer (`ECN_*`) e o GlobalServer
