@@ -70,7 +70,10 @@ public:
 
 	virtual bool Init();
     virtual void RegToLua();
-    virtual void Run( bool bRunInterpreter );       // 콘솔일땐 자체 interpreter 구동, 윈도우일땐 무시.
+    virtual void Run( bool bRunInterpreter );       // console: runs its own interpreter; window: ignored.
+	// Port: the terminal (T15) is opened by KServerMain before Init, with the window title ("<title>_Loading"/"_Ready");
+	// none in service mode.
+	void SetTerminal( x2::platform::Terminal* pkTerminal, const std::string& strTitle ) { m_pkTerminal = pkTerminal; m_strTerminalTitle = strTitle; }
     virtual void ShutDown();
     virtual bool DestroyAllSession() = 0;           // 접속중인 세션의 종료.
     //virtual void WriteServerInfoToDB();
@@ -202,8 +205,11 @@ public:
     DWORD                                       m_dwShutDownWait;
     static DWORD                                ms_dwServerInfoUpdateGap;
 
-	// 서버 로딩 상태
+	// server loading state
 	bool										m_bServerReady;
+
+	x2::platform::Terminal*						m_pkTerminal = nullptr;
+	std::string									m_strTerminalTitle;
 
 	//{{ 2013. 01. 17	최육사	서버간 통신 사설IP 적용
 	std::wstring								m_wstrPublicIP;

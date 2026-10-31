@@ -7,6 +7,7 @@ add_executable(x2_platform_tests
     test_format.cpp
     test_string.cpp
     test_sync.cpp
+    test_terminal.cpp
     test_text.cpp
     test_time.cpp
     test_unicode.cpp)

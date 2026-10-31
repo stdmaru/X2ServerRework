@@ -277,7 +277,15 @@ bool KBaseServer::Init()
 
 void KBaseServer::Run( bool bRunInterpreter_ )
 {
-    if( bRunInterpreter_ )  lua_interpreter( g_pLua );
+    if( !bRunInterpreter_ )
+        return;
+
+    LuaPromptOptions kOptions;
+    kOptions.terminal = m_pkTerminal;
+    kOptions.title = m_strTerminalTitle;
+    kOptions.ready = [this]() { return GetServerReady(); };
+    kOptions.noStdin = m_pkTerminal == nullptr;
+    lua_interpreter( g_pLua, kOptions );
 }
 
 void KBaseServer::ShutDown()

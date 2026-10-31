@@ -177,7 +177,7 @@ TEST_CASE("console rendering is compact: time, level, function, message, aligned
 TEST_CASE("console level is independent of the file level")
 {
     std::string console;
-    dbg::logfile::SetConsoleWriter( [&console]( std::string_view text ) { console += text; } );
+    dbg::logfile::SetConsoleWriter( [&console]( std::string_view text ) { console += text; }, false );
     dbg::logfile::SetLogLevel( 2 );
     dbg::logfile::SetConsoleLogLevel( 0 );
     START_LOG( clog, L"file-only-marker" );
@@ -195,5 +195,5 @@ TEST_CASE("console level is independent of the file level")
     dbg::logfile::SetConsoleLogLevel( -1 );
     CHECK(dbg::logfile::GetConsoleLogLevel() == 0);
     dbg::logfile::SetLogLevel( 2 );
-    dbg::logfile::SetConsoleWriter( {} );
+    dbg::logfile::SetConsoleWriter( {}, false );
 }

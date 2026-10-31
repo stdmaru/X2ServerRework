@@ -170,7 +170,7 @@ namespace dbg
         static void SetLogLevel( short sLevel );        // file (and console, unless it has its own level)
         static void SetConsoleLogLevel( short sLevel ); // console only; -1 follows the file level again
         static short GetConsoleLogLevel();              // the effective level
-        static void SetConsoleWriter( console_writer writer );     // empty: back to stdout
+        static void SetConsoleWriter( console_writer writer, bool bColor );    // empty: back to stdout
         static void SetFileNameAtTime( bool bFileNameAtTime );   // true: one file per run under log/
         static void SetLogFileTitle( const wchar_t* szFileTitle );
         static const char* GetLogFileName();

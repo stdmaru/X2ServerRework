@@ -1,5 +1,5 @@
-// EPublisherServer <tag>: reads config_ep_<tag>.lua, connects to the Account database and serves the
-// EPublisher SOAP service. Like the other servers, stdin is a Lua prompt and its end shuts the server down.
+// EPublisherServer <tag> [--no-stdin]: reads config_ep_<tag>.lua, connects to the Account database and serves the
+// EPublisher SOAP service. Like the other servers, the terminal is a Lua prompt (T15); --no-stdin is service mode.
 #include "EPublisherServer.h"
 
 #include "x2/platform/console.h"
@@ -18,8 +18,16 @@ int main(int argc, char* argv[])
 
     x2::platform::InitConsole();
 
-    if (argc < 2) {
-        std::fputs("usage: EPublisherServer <tag>   (reads config_ep_<tag>.lua)\n", stderr);
+    std::string tag;
+    bool noStdin = false;
+    for (int i = 1; i < argc; ++i) {
+        if (std::string(argv[i]) == "--no-stdin")
+            noStdin = true;
+        else if (tag.empty())
+            tag = argv[i];
+    }
+    if (tag.empty()) {
+        std::fputs("usage: EPublisherServer <tag> [--no-stdin]   (reads config_ep_<tag>.lua)\n", stderr);
         return 1;
     }
 
@@ -30,7 +38,7 @@ int main(int argc, char* argv[])
     luaL_openlibs(L);
     RegisterLua(L, server);
 
-    const std::string config = std::string("config_ep_") + argv[1] + ".lua";
+    const std::string config = "config_ep_" + tag + ".lua";
     if (LUA_DOFILE(L, config.c_str()) != 0) {
         const char* error = lua_tostring(L, -1);
         START_LOG(cerr, L"Cannot load the configuration.")
@@ -53,7 +61,11 @@ int main(int argc, char* argv[])
     }
 
     std::thread accepter([&server] { server.Run(); });
-    lua_interpreter(L);
+    LuaPromptOptions options;
+    options.title = "EPublisherServer";
+    options.ready = [] { return true; };   // listening already
+    options.noStdin = noStdin;
+    lua_interpreter(L, options);
     server.Stop();
     accepter.join();
     lua_close(L);

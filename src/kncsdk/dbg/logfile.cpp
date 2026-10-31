@@ -474,10 +474,11 @@ namespace dbg
         return Out().ConsoleLevel();
     }
 
-    void logfile::SetConsoleWriter( console_writer writer )
+    void logfile::SetConsoleWriter( console_writer writer, bool bColor )
     {
         Output& out = Out();
         std::lock_guard lock( out.mutex );
+        out.colorConsole = writer ? bColor : x2::platform::IsColorTerminal( stdout );
         out.consoleWriter = std::move( writer );
     }
 
