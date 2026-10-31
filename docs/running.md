@@ -88,10 +88,14 @@ cd build/linux-debug/run/GlobalServer     && ./GlobalServer DEV 0
 - As portas dos servidores de jogo vêm do banco (`Statistics.dbo.LServerList`); a do EPublisherServer, do `X2_RUN_EPUBLISHER_PORT`.
 - A ordem não é rígida: o GameServer se reconecta a cada 10 s ao LoginServer, ao CenterServer e ao GlobalServer. O login só funciona com o
   EPublisherServer de pé.
-- Cada servidor mostra o log no terminal e grava o log completo num arquivo na pasta dele.
-- A entrada do terminal é um **prompt Lua**, como o campo de comando da janela do servidor original.
-- **O fim da entrada encerra o servidor**: Ctrl+D no Linux, Ctrl+Z e Enter no Windows. Para rodar em segundo plano, mantenha
-  a entrada aberta, por exemplo com `(sleep infinity) | ./GameServer DEV 0`.
+- Cada servidor mostra no terminal um log compacto e colorido (`consolelog( n )` muda o nível dele) e grava o log completo num
+  arquivo na pasta dele.
+- O terminal tem um **prompt Lua**, como o campo de comando da janela do servidor original: o log corre acima dele sem quebrar a linha
+  digitada, ↑/↓ percorrem o histórico e o título mostra `<Servidor>_Loading` até o estado pronto, depois `_Ready`.
+- **Encerrar**: Ctrl+C ou Ctrl+D com a linha vazia pergunta `Are you sure you want to exit? [y/N]`; `y` encerra. SIGTERM encerra sem perguntar.
+- **Sem terminal** (entrada por pipe ou arquivo), cada linha do stdin é um comando e o fim dele encerra o servidor.
+  Para rodar como serviço ou em segundo plano, use `--no-stdin` (`./GameServer DEV 0 --no-stdin`): o servidor espera SIGTERM,
+  SIGINT ou SIGHUP (no Windows, Ctrl+C ou o fechamento do console). Detalhes em [KNCSDK › Terminal](porte/kncsdk.md#terminal-t15).
 - Os executáveis compilados no container também rodam direto no host, numa distribuição com unixODBC e FreeTDS. Só o
   caminho do driver muda: `X2_RUN_ODBC_DRIVER` no `docker/.env`, por exemplo `/usr/lib/libtdsodbc.so` no Arch.
 

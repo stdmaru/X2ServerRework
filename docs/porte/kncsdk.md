@@ -48,7 +48,7 @@ Interface pública (nomes, macros, assinaturas) mantida; mudou o que está lista
 | `KncSecurity` | Gerador de chaves/SPI semeado pelo SO, um por thread | O original usava `boost::mt19937` **sem semente** (mesmas chaves em toda execução) e compartilhado sem lock |
 | `ObjectPool` | `BlockAllocator`/`BoostAllocator` usam um pool próprio (`FixedBlockPool.h`) | O original guardava ponteiros de **32 bits** nos blocos livres; sem Boost |
 | `Import*.h` | Esvaziados | Só faziam `#pragma comment(lib)`; o link agora é do CMake |
-| `lua_interpreter` | Novo (`lua_interpreter.cpp`): prompt Lua simples em stdin, usado por `KBaseServer::Run` | O original vinha de um `lua.c` modificado do Lua 5.1.4, que o LuaJIT não traz; o terminal da T15 vai substituí-lo |
+| `lua_interpreter` | Novo (`lua_interpreter.cpp`): o terminal dos servidores (ver [Terminal](#terminal-t15)), usado por `KBaseServer::Run` | O original vinha de um `lua.c` modificado do Lua 5.1.4, que o LuaJIT não traz, e a janela MFC (`CServerUIDlg`) tinha o próprio campo de comando (T15) |
 | `LUA_DOFILE` | Era `luaL_dofile`; agora `lua_dofile` (`lua_dofile.cpp`, 2026-10-31). Igual ao `luaL_dofile`, menos para arquivo que passa do limite do LuaJIT de 65.536 constantes numa função (`Item.lua` gerado do cliente, `ArcadeResultTable.lua`): ele é dividido nos comandos do topo (identificador na coluna 0) e as partes, compiladas antes, rodam em ordem, com os números de linha do arquivo nas mensagens. Só divide sem `local` no topo e sem string longa (`[[`); se uma parte não compila, devolve o erro original | O original rodava num Lua 5.1, que aceita 2^18 constantes; o LuaJIT recusava os dois arquivos (T21) |
 | Testes originais (`UnitTest/`) | Removidos, substituídos por doctest | Eram demos (um era cópia dos exemplos do Crypto++) |
 
@@ -77,6 +77,29 @@ instrução termina; se o nível não vai para nenhum destino, nada é formatado
 - O console não mostra arquivo/linha, separadores (`lbreak`) nem linhas vazias; texto solto (dumps, tabelas) sai como está.
 - Nível do console: `logfile::SetConsoleLogLevel` (Lua: `consolelog( n )`), independente do `log( n )` do arquivo; `-1` volta a seguir o arquivo, que é o padrão.
 - `logfile::SetConsoleWriter` troca o destino do console (o terminal da T15 usa).
+
+### Terminal (T15)
+
+Feito em 2026-10-31 (`server/terminal`), no lugar da janela MFC (`Common/ui/ServerUIDlg`, ver [Servidor](../original/servidor.md)).
+O `lua_interpreter( L, LuaPromptOptions )` usa o `x2::platform::Terminal` ([Plataforma](platform.md)) e tem três modos:
+
+| Modo | Quando | Comportamento |
+|---|---|---|
+| Interativo | stdin e stdout são um terminal | Entrada crua e editor de linha (←/→, Home/End, Ctrl+A/E/U/K/W, Ctrl+←/→, ↑/↓ no histórico, Ctrl+L limpa a tela). O log (`SetConsoleWriter`) e tudo o que vai para stdout/stderr (um pipe, como o `CHookStdio` do original) saem acima do prompt, que é redesenhado. Título `<título>_Loading`, depois `_Ready` (o `ready` é consultado a cada ~100 ms, como o laço de 5 ms do original). Ctrl+C limpa a linha; com a linha vazia, Ctrl+C ou Ctrl+D perguntam `Are you sure you want to exit? [y/N]` (texto do original) |
+| Linhas | stdin é pipe ou arquivo | Cada linha é um comando, sem prompt nem eco; o fim do stdin encerra. É o que o ServerManager (T30) vai usar |
+| Serviço | `--no-stdin` | Não lê nada; espera SIGTERM/SIGINT/SIGHUP (Windows: Ctrl+C, fechamento do console, logoff, desligamento) |
+
+- Linha de comando como no `lua.c`: uma expressão imprime o valor (`1+1` → `2`), o resto roda como instrução; o erro sai em vermelho.
+  O original rodava `luaL_dostring` e descartava o erro.
+- O `KServerMain` abre o terminal antes do `Init` (a janela original existia durante a carga), com o nome do executável como título
+  (a janela se chamava `GameServer`...), e o fecha depois do `ShutDown`. Teclas digitadas durante a carga esperam o prompt; um Ctrl+C
+  nesse intervalo abre a pergunta assim que o prompt aparece.
+- SIGTERM e o fechamento do console encerram sem perguntar. No Windows, o fechamento dá ~5 s para o `ShutDown` (limite do sistema).
+- Num terminal, uma falha fatal (SIGSEGV, SIGABRT...) devolve o modo do terminal antes de terminar, para não deixar o shell em modo cru.
+- Linux: `termios` sem `ECHO`/`ICANON`/`ISIG` (o processamento da saída fica). Windows: `ReadConsoleW` com `ENABLE_VIRTUAL_TERMINAL_INPUT`
+  (as teclas chegam como texto e sequências VT, o mesmo decodificador do Linux), porque o UTF-8 pelo stdin do conhost não é confiável.
+- Sem biblioteca de edição de linha (T13): as opções (readline, linenoise, replxx) não cobrem o console do Windows ou trazem bem mais
+  do que o necessário; o editor é pequeno e testado (`test_terminal.cpp`).
 
 ### Bugs do original corrigidos
 

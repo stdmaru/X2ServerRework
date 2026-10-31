@@ -38,7 +38,7 @@ relativa do original (`src/server/GameServer` ao lado de `src/server/Common`).
 SQL Server do Docker (FreeTDS), carrega os scripts do `ServerResource` e do `ClientScript` gerado do cliente (os erros dos dados de
 produção estão em [Bugs do original](../original/bugs.md#dados-serverresource-clientscript)), se autentica no banco (UID 2, "Game"),
 recebe a lista de Center (9100), Login (9200) e Global (9500), tenta conectar neles e chega ao estado pronto (`OnServerReadyComplete`),
-com o prompt Lua respondendo. Encerra com código 0 no fim do stdin. Os pacotes para os servidores que ainda não existem são descartados
+com o prompt Lua respondendo. Encerra com código 0 (ver [Rodar os servidores](../running.md)). Os pacotes para os servidores que ainda não existem são descartados
 ([Dependências](#dependências-de-outros-servidores-levantamento-de-2026-10-31)).
 
 **Testado com o cliente original** (no Wine, 2026-10-31, com o EPublisherServer e o ChannelServer): o "O servidor está cheio" não

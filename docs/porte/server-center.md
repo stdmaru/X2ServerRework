@@ -39,7 +39,7 @@ do original (`src/server/CenterServer` ao lado de `src/server/Common`).
 **Roda no Linux** pela pasta montada por `x2_run_center` ([Pastas de execução](../ferramentas/runtime.md)): conecta nos três bancos
 (`Account`, `Game01`, `Statistics`), carrega os scripts (os erros de carga são os de dungeon e linemap já listados em
 [Bugs do original](../original/bugs.md#dados-serverresource-clientscript)), se autentica no banco e chega ao estado pronto; o GameServer
-conecta nele (porta 9100). Encerra com código 0 no fim do stdin.
+conecta nele (porta 9100). Encerra com código 0 (ver [Rodar os servidores](../running.md)).
 
 **Testado com o cliente original** (no Wine, 2026-10-31, com o EPublisherServer, o LoginServer, o ChannelServer e o GameServer): saída da
 vila para o **campo**, entrada numa **dungeon** e troca de personagem, sem erro no CenterServer. Os pacotes para o GlobalServer (`EGB_*`:

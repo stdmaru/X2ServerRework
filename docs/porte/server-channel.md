@@ -22,7 +22,7 @@ Mesma posição relativa do original (`src/server/ChannelServer` ao lado de `src
 Roda no Linux pela pasta montada por `x2_run_channel` ([Pastas de execução](../ferramentas/runtime.md)): conecta no SQL Server do Docker
 (FreeTDS), carrega os scripts (`Enum.lua`, `DungeonEnum.lua`, `GameSysValTable.lua`, `WaitQueueData.lua`, `LogConfig.lua`...),
 se autentica no banco (UID 59, "Channel"), lê a lista de canais e chega ao estado pronto (`OnServerReadyComplete`), com o prompt Lua
-respondendo. Encerra com código 0 no fim do stdin.
+respondendo. Encerra com código 0 (ver [Rodar os servidores](../running.md)).
 
 **Testado com o cliente original** (`x2_DEBUG.exe` e `x2.exe`, no Wine, 2026-10-30), com o [EPublisherServer](server-epublisher.md):
 o login é aceito e o cliente recebe as listas de grupos de servidores e de canais. Em seguida ele conecta no GameServer
@@ -39,7 +39,7 @@ no Linux e no Wine. Ainda não rodou com configuração, banco e cliente: é o p
 
 - `main.cpp` chama `KServerMain` (`Common/ServerMain.{h,cpp}`), que substitui a janela MFC do original (`Common/ui`: `CServerApp`/`CServerUIDlg`)
   com a mesma sequência: `CreateKNC()`, `SetCmdArgs`, `Init`, `Run`, `ShutDown`, `ReleaseKObj`. O campo de entrada Lua da janela é o
-  prompt do `lua_interpreter` (`KBaseServer::Run( true )`), que termina no fim do stdin. O terminal da T15 e o log da T16 vêm depois.
+  prompt do `lua_interpreter` (`KBaseServer::Run( true )`). Desde 2026-10-31 é o terminal da T15 ([KNCSDK › Terminal](kncsdk.md#terminal-t15)).
 - Argumentos como no original: `ChannelServer <tag> <grupo de servidores> [<id do banco> <senha do banco>]`; a tag escolhe
   `config_ch_<tag>.lua` (por exemplo `US_SERVICE`).
 - O código de saída é 1 quando o `Init` falha (a janela original ficava aberta até ser fechada).

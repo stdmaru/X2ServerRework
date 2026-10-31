@@ -31,8 +31,8 @@ docker/build.sh cmake --preset linux-gcc && docker/build.sh cmake --build --pres
   também lê o `docker/.env` (`X2_WIN_HOST`, `X2_WIN_DIR`).
 - Rede do host (`--network host`): os testes da suíte `db` e os servidores acham o SQL Server do [banco de desenvolvimento](banco-dev.md)
   em `127.0.0.1`, e o cliente original acha os servidores como antes.
-- O stdin fica sempre ligado (`-i`, e `-it` num terminal): o prompt Lua dos servidores termina no fim da entrada, então um servidor rodado
-  por aqui fica de pé enquanto o stdin estiver aberto (por exemplo `(sleep 600) | docker/build.sh ...`).
+- O stdin fica sempre ligado (`-i`, e `-it` num terminal): sem terminal, o prompt Lua dos servidores termina no fim da entrada, então um
+  servidor rodado por aqui fica de pé enquanto o stdin estiver aberto (por exemplo `(sleep 600) | docker/build.sh ...`) ou com `--no-stdin`.
 - Um diretório de `build/` configurado fora do container (outro compilador) deve ser apagado antes: o Ninja não recompila
   objetos só porque a versão do compilador mudou.
 

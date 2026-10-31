@@ -41,7 +41,7 @@ Banco `Account`: `DEBAccounts` (`UID`, `AccountID`, `Password` = sha256 hexadeci
 | `Http.{h,cpp}` | um pedido HTTP por vez, com keep-alive quando pedido; tempo limite de 10 s por leitura, como o original |
 | `PublisherService.{h,cpp}` | as três operações sobre `IAccountStore`, sem SOAP nem banco (testável) |
 | `OdbcAccountStore.{h,cpp}` | `IAccountStore` sobre o `KODBC`, com o `.dsn` e o driver dos servidores |
-| `EPublisherServer.{h,cpp}`, `main.cpp` | config Lua, porta, uma thread por conexão (até 100), prompt Lua no stdin como os outros servidores |
+| `EPublisherServer.{h,cpp}`, `main.cpp` | config Lua, porta, uma thread por conexão (até 100), o terminal dos outros servidores (T15), `--no-stdin` para serviço |
 | `tests/test_epublisher.cpp` | hash, SOAP, operações com um armazenamento falso e o **cliente gSOAP dos servidores** (`soap_call___ns1__Login`...) contra o serviço |
 
 ## Uso
@@ -68,7 +68,7 @@ log( 0 )
 | Compra | lê o saldo e grava o novo em duas consultas; preço negativo é ignorado; lista malformada lança exceção | um `UPDATE ... OUTPUT ... WHERE Cash >= preço`; lista malformada ou preço negativo é recusado (`_30`) | Duas compras simultâneas não gastam o mesmo saldo |
 | `iTotalCash` | nunca preenchido (0) | saldo depois da compra (ou o atual, se faltou saldo) | Informativo; o `KDEBBilling` não lê o campo |
 | Erro de banco no login | exceção não tratada na thread do pedido | `ERR_VERIFY_21` | |
-| Encerramento | laço sem fim; `exit` se a porta falha | fim do stdin encerra (como os servidores); código 1 se a porta ou o banco falham | |
+| Encerramento | laço sem fim; `exit` se a porta falha | como os servidores (terminal da T15: confirmação, fim do stdin ou sinal); código 1 se a porta ou o banco falham | |
 
 Observado no cliente DEB (`Common`, não muda aqui): `KDEBAuth` só copia o `strPurchaseToken` da resposta quando ele está **vazio**
 (teste invertido), então o token nunca chega ao servidor. Anotado para quando o GameServer usar o cash.

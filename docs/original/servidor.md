@@ -18,7 +18,7 @@ Config ativa no `_reference` (a que foi ajustada no porte VS2026): `Release_US|W
 | `CRITICAL_SECTION` | 14 | `KCSLockType.h` etc. | `std::mutex` / `std::recursive_mutex` |
 | Tempo (`GetTickCount`, `timeGetTime`, QPC) | 116 | geral | `platform::TickCount()` sobre `std::chrono::steady_clock` |
 | ODBC | `Common/ODBC/{Odbc,StoredProcedure,DBUtil}` + `.dsn` | DB | mantém ODBC; unixODBC no Linux; DSN → config |
-| MFC UI | `Common/ui/{ServerApp,ServerUIDlg,DBConnectionDlg,EditLog,HookStdio}` | janela de servidor: log (stdout/stderr redirecionados), campo de entrada que executa Lua (`luaL_dostring`) com histórico, título `_Loading`/`_Ready`, confirmação ao fechar | terminal em todas as plataformas (decisão T15) |
+| MFC UI | `Common/ui/{ServerApp,ServerUIDlg,DBConnectionDlg,EditLog,HookStdio}` | janela de servidor: log (stdout/stderr redirecionados), campo de entrada que executa Lua (`luaL_dostring`) com histórico, título `_Loading`/`_Ready`, confirmação ao fechar | terminal em todas as plataformas (decisão T15, feito em 2026-10-31: [KNCSDK › Terminal](../porte/kncsdk.md#terminal-t15)) |
 | `CString`/`TCHAR`/`_T()` | 121 | geral | `std::wstring`/`std::string` |
 | `std::wstring`/`wchar_t` | 499 | geral | ok em memória; **cuidado no fio e no DB** (ver [protocolo.md](protocolo.md)) |
 | `__declspec`/`__forceinline`/`#pragma comment` | 38 | geral | macros de compilador / CMake |

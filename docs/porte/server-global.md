@@ -42,7 +42,7 @@ do original (`src/server/GlobalServer` ao lado de `src/server/Common`).
 **Roda no Linux** pela pasta que o build monta (`x2_run_global`, [Pastas de execução](../ferramentas/runtime.md)): conecta nos dois
 bancos (`Account` e `Statistics`), carrega os scripts (`Enum`, `DungeonEnum`, `WorldMissionConfig`, `PvpMatchData`...; os erros de carga
 são os de dungeon e linemap já listados), se autentica no banco, chega ao `OnServerReadyComplete` e aceita a conexão do GameServer
-(porta 9500). Encerra com código 0 no fim do stdin. Três grupos de procedures que ele chama não existem nos backups (missões globais,
+(porta 9500). Encerra com código 0 (ver [Rodar os servidores](../running.md)). Três grupos de procedures que ele chama não existem nos backups (missões globais,
 encantamento por tempo, troca com limite): essas funções sobem sem dados ([Bugs do original](../original/bugs.md#dados-serverresource-clientscript)).
 
 **Testado com o cliente original** (no Wine, 2026-10-31, com os outros cinco servidores): login, vila, campo e dungeon como antes, sem erro
