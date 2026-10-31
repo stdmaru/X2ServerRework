@@ -11,6 +11,7 @@
 #include <iostream>
 #include <string>
 #include <thread>
+#include <vector>
 
 using namespace x2::platform;
 
@@ -95,25 +96,26 @@ int Request(const std::string& name, const std::string& command, bool waitForClo
 int main(int argc, char* argv[])
 {
     InitConsole();
-    if (argc < 2)
+    const std::vector<std::string> args = Utf8Arguments(argc, argv);
+    if (args.size() < 2)
         return Usage();
-    const std::string verb = argv[1];
-    if (verb == "list" && argc == 2) {
+    const std::string& verb = args[1];
+    if (verb == "list" && args.size() == 2) {
         for (const std::string& name : ListControlSockets())
             std::printf("%s\n", name.c_str());
         return 0;
     }
-    if (argc < 3)
+    if (args.size() < 3)
         return Usage();
-    const std::string name = argv[2];
-    if (verb == "attach" && argc == 3)
+    const std::string& name = args[2];
+    if (verb == "attach" && args.size() == 3)
         return Attach(name);
-    if (verb == "stop" && argc == 3)
+    if (verb == "stop" && args.size() == 3)
         return Request(name, "{\"id\":1,\"stop\":true}", true);
-    if (verb == "run" && argc >= 4) {
-        std::string lua = argv[3];
-        for (int i = 4; i < argc; ++i)
-            lua += std::string(" ") + argv[i];
+    if (verb == "run" && args.size() >= 4) {
+        std::string lua = args[3];
+        for (std::size_t i = 4; i < args.size(); ++i)
+            lua += " " + args[i];
         return Request(name, "{\"id\":1,\"lua\":" + JsonString(lua) + "}", false);
     }
     return Usage();

@@ -23,9 +23,9 @@ int KServerMain( int argc, char* argv[] )
 	kConsoleOptions.name = strName;
 	kConsoleOptions.control = strName;
 	std::vector< KClearString< std::wstring > > vecCmdArgs;
-	for( int i = 0; i < argc; ++i )
+	const std::vector< std::string > vecArgs = x2::platform::Utf8Arguments( argc, argv );
+	for( const std::string& strArg : vecArgs )
 	{
-		const std::string strArg = argv[i];
 		if( strArg == "--no-stdin" )
 		{
 			kConsoleOptions.noStdin = true;		// service mode

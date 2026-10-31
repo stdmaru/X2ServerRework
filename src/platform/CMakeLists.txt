@@ -21,7 +21,7 @@ target_include_directories(x2_platform PUBLIC include)
 target_link_libraries(x2_platform PUBLIC x2::options PRIVATE x2::asio)
 
 if(WIN32)
-    target_link_libraries(x2_platform PUBLIC winmm ws2_32 mswsock)
+    target_link_libraries(x2_platform PUBLIC winmm ws2_32 mswsock shell32)
 else()
     find_package(Threads REQUIRED)
     target_link_libraries(x2_platform PUBLIC Threads::Threads)

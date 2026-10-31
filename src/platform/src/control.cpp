@@ -215,8 +215,9 @@ std::vector<std::string> ListControlSockets()
     InitSockets();
     std::vector<std::string> names;
     std::error_code ec;
-    for (const auto& item : std::filesystem::directory_iterator(ControlSocketDir(), ec)) {
-        const std::filesystem::path& path = item.path();
+    // increment(ec): nothing here may throw on a socket file (see Start)
+    for (std::filesystem::directory_iterator it(ControlSocketDir(), ec), end; !ec && it != end; it.increment(ec)) {
+        const std::filesystem::path& path = it->path();
         if (path.extension() != ".sock")
             continue;
         const Socket s = ConnectTo(path.string());
@@ -381,17 +382,16 @@ bool ControlServer::Start(const std::string& name, Greeting greeting, LineHandle
         error = "socket path too long: " + path;
         return false;
     }
-    // A socket file with nobody behind it is left over from a process that is gone
-    if (std::filesystem::exists(path)) {
-        const Socket probe = ConnectTo(path);
-        if (probe != kNoSocket) {
-            CloseSocket(probe);
-            error = "another server is listening on " + path;
-            return false;
-        }
-        std::error_code ec;
-        std::filesystem::remove(path, ec);
+    // A socket file with nobody behind it is left over from a process that is gone. Not asked with exists():
+    // on Windows the AF_UNIX socket file is a reparse point that std::filesystem cannot stat.
+    const Socket probe = ConnectTo(path);
+    if (probe != kNoSocket) {
+        CloseSocket(probe);
+        error = "another server is listening on " + path;
+        return false;
     }
+    std::error_code ec;
+    std::filesystem::remove(path, ec);
     const Socket s = ::socket(AF_UNIX, SOCK_STREAM, 0);
     if (s == kNoSocket) {
         error = "cannot create a local socket";

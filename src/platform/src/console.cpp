@@ -2,7 +2,9 @@
 
 #if defined(_WIN32)
 #include "x2/platform/types.h" // <windows.h>
+#include "x2/platform/unicode.h"
 #include <io.h>
+#include <shellapi.h>
 #else
 #include <unistd.h>
 #endif
@@ -65,10 +67,31 @@ bool IsColorTerminal(std::FILE* stream)
     return ::GetConsoleMode(handle, &mode) && (mode & ENABLE_VIRTUAL_TERMINAL_PROCESSING) != 0;
 }
 
+std::vector<std::string> Utf8Arguments(int argc, char* argv[])
+{
+    int count = 0;
+    LPWSTR* wide = ::CommandLineToArgvW(::GetCommandLineW(), &count);
+    if (!wide || count != argc) {
+        if (wide)
+            ::LocalFree(wide);
+        return std::vector<std::string>(argv, argv + argc);
+    }
+    std::vector<std::string> args;
+    for (int i = 0; i < count; ++i)
+        args.push_back(WideToUtf8(wide[i]));
+    ::LocalFree(wide);
+    return args;
+}
+
 #else
 
 void InitConsole()
 {
+}
+
+std::vector<std::string> Utf8Arguments(int argc, char* argv[])
+{
+    return std::vector<std::string>(argv, argv + argc);
 }
 
 bool IsColorTerminal(std::FILE* stream)
