@@ -37,12 +37,24 @@ do original (`src/server/GlobalServer` ao lado de `src/server/Common`).
 | `CTime`, `lua_tinker` | 13 arquivos (132 usos), 10 (50) | já cobertos pela [Plataforma](platform.md) e pelo KNCSDK |
 | Banco | 27 `DO_QUERY` em 4 arquivos | `KODBC` já portado; a config US usa só `DC_ACCOUNT` e `DC_LOG` (`Account_US_SERVICE.dsn`, `log_US_SERVICE.dsn`) |
 
-## Estado (2026-10-31, branch `server/global-build`)
+## Estado (2026-10-31, branch `server/global-run`)
+
+**Roda no Linux** pela pasta que o build monta (`x2_run_global`, [Pastas de execução](../ferramentas/runtime.md)): conecta nos dois
+bancos (`Account` e `Statistics`), carrega os scripts (`Enum`, `DungeonEnum`, `WorldMissionConfig`, `PvpMatchData`...; os erros de carga
+são os de dungeon e linemap já listados), se autentica no banco, chega ao `OnServerReadyComplete` e aceita a conexão do GameServer
+(porta 9500). Encerra com código 0 no fim do stdin. Três grupos de procedures que ele chama não existem nos backups (missões globais,
+encantamento por tempo, troca com limite): essas funções sobem sem dados ([Bugs do original](../original/bugs.md#dados-serverresource-clientscript)).
+
+**Testado com o cliente original** (no Wine, 2026-10-31, com os outros cinco servidores): login, vila, campo e dungeon como antes, sem erro
+no GlobalServer; o GameServer passa a entregar os `EGB_*` (nenhum descarte depois que os servidores sobem) e recebe do Global o
+`EGB_UPDATE_AUTO_PARTY_BONUS_INFO_NOT`. Com ele, **todos os servidores do original estão portados**.
+
+### Build (2026-10-31, branch `server/global-build`)
 
 **Compila e linka sem warnings** (alvo `x2_global_server`, executável `GlobalServer`, `main` com `KServerMain` como os outros
 servidores, ícone do original) em Clang Debug, GCC Debug, Clang Release, GCC Release e clang-cl (Windows, na VM de testes), com os
 6 testes passando no Linux e no Windows. Sem argumentos ele sobe, recusa a falta de configuração (`Init` falha), encerra todas as
-camadas e sai com código 1, como os outros. Ainda não roda com configuração e banco: é o `server/global-run`.
+camadas e sai com código 1, como os outros.
 
 Medidas do caminho, para dar a escala: 50 erros no Clang Debug (`-k 0`) depois da passada mecânica, quase todos de dois templates do
 `GlobalServer.h`, e 7 no GCC; ~40 warnings distintos no Linux e 17 no clang-cl. O menor dos servidores: o acoplamento já tinha saído
@@ -79,7 +91,7 @@ devolve pelo `goto`; `tCurrentTime` do `CheckExchangeLimit`; membros só citados
 1. ~~**`server/global-import`**~~ (2026-10-31): `tools/import/modules/server-global.toml` e esta página.
 2. ~~**`server/global-build`**~~ (2026-10-31): compilar sem warnings em Clang, GCC (Debug e Release) e clang-cl, com o `main` do `KServerMain`
    (como os outros servidores) e o ícone do original; o KSMS sai.
-3. **`server/global-run`**: `runtime/GlobalServer` (do `config_gb_US_SERVICE.lua` da pasta de produção, `.dsn` do `Account` e do
+3. ~~**`server/global-run`**~~ (2026-10-31): `runtime/GlobalServer` (do `config_gb_US_SERVICE.lua` da pasta de produção, `.dsn` do `Account` e do
    `Statistics`/log), a pasta montada no build e os `EGB_*` do GameServer respondidos. Os `.lua` da pasta de produção já estão
    resolvidos pela T28: o código só carrega o `WorldMissionConfig.lua` (no `ServerResource`), além do `Enum.lua`, do
    `DungeonEnum.lua` e do `PvpMatchData.lua`; o `GlobalMissionConfig.lua` e o `MissEliosConfig.lua` da pasta de produção não são

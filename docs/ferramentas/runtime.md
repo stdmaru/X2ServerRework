@@ -18,6 +18,8 @@ cmake --build --preset linux-debug --target x2_run_login                        
 cd build/linux-debug/run/LoginServer && ./LoginServer DEV 0
 cmake --build --preset linux-debug --target x2_run_center                            # CenterServer (porta 9100)
 cd build/linux-debug/run/CenterServer && ./CenterServer DEV 0
+cmake --build --preset linux-debug --target x2_run_global                            # GlobalServer (porta 9500)
+cd build/linux-debug/run/GlobalServer && ./GlobalServer DEV 0
 ```
 
 O login passa pelo EPublisherServer ([Servidor: EPublisherServer](../porte/server-epublisher.md)), que precisa estar rodando:
@@ -112,6 +114,10 @@ pasta de produção do LoginServer (recompensa de Henir até o 6º lugar, contra
 **CenterServer** (`runtime/CenterServer`, 2026-10-31): `config_cn_DEV.lua.in` derivado do `config_cn_US_SERVICE.lua` (o SMS já estava
 desligado), `.dsn` do `Account`, `Game01` e `Statistics` e o `config_cn.ini` como estava. A pasta `Config/` de produção (configs de
 outros países) não vem.
+
+**GlobalServer** (`runtime/GlobalServer`, 2026-10-31): `config_gb_DEV.lua.in` derivado do `config_gb_US_SERVICE.lua` (SMS e NXWeb já
+estavam comentados), `.dsn` do `Account` e do `Statistics` (os dois bancos da config US) e o `config_gb.ini` como estava. O
+`GlobalMissionConfig.lua` e o `MissEliosConfig.lua` da pasta de produção não são lidos por nada (T28).
 
 ## Scripts da pasta de cada servidor (2026-10-31, T28)
 

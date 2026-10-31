@@ -39,3 +39,10 @@ de dungeon já aconteciam em produção. O servidor sobe assim, ignorando as ent
   treinos `Training_*`, `Besma_MINE2_*`, `Elder_NewYear`); o `Dungeon_Event_KidDay.lua` existe só no `ClientScript` original.
 - 2 linemaps de campo (`Field_Velder_Stage2/3_LineMap.lua`) que não existem.
 - A procedure `dbo.P_GItem_Def_GET` (ferramenta de GM) não existe no banco de desenvolvimento.
+- O GlobalServer chama três grupos de procedures do `Statistics` que não existem em nenhum dos backups (2026-10-31, `server/global-run`):
+  `P_LEvent_GlobalMission_SEL/UPD` (missões globais), `P_LEvent_RandomEnchant_SEL/UPD` (evento de encantamento por tempo) e
+  `P_LExchangeLimitInfo_GET`/`P_LExchangeLimitItem_GET`/`P_LExchangeLimitLog_*` (troca com limite). Essas funções sobem sem dados.
+  Também falta a hora da defesa do cristal ("디펜스 던전 시간 셋팅 값이 존재 하지 않습니다", `SetTodayMissionTime`).
+- O `MapData.lua` não registra os mapas locais de Ruben (10000) e Elder (10001) no `AddLocalMapInfo` (começa em Altera): quando o cliente
+  pede o bônus do grupo automático nessas vilas (`EGS_REQUEST_GET_AUTO_PARTY_BONUS_INFO_NOT`), o GameServer acusa "등록되지 않은 맵ID입니다!"
+  e manda a lista vazia (2026-10-31, `server/global-run`).

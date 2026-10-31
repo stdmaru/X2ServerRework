@@ -15,9 +15,10 @@ funcionam com o `elsword.exe` de sempre, sem mudar nada nele nem nos assets dele
 | LoginServer | contas, guildas, rankings | roda | compila |
 | CenterServer | salas de campo e de dungeon | roda | compila |
 | GameServer | personagens, vila, campos, dungeons, itens, quests, PvP | roda | compila |
-| GlobalServer | missões globais, quest do dia, contagem de usuários | em porte | em porte |
+| GlobalServer | missões globais, grupo automático, PvP, contagem de usuários | roda | compila |
 
-Com o cliente original, já funcionam o login, a seleção de personagem, a vila, o campo e a dungeon.
+Todos os servidores do original estão portados. Com o cliente original, já funcionam o login, a seleção de personagem, a vila,
+o campo e a dungeon, com os seis servidores rodando juntos.
 No Windows tudo compila sem warnings e os testes passam, mas os servidores ainda não foram testados rodando lá.
 
 ## Compilar
@@ -34,7 +35,7 @@ O cliente original e os backups do banco não fazem parte do repositório.
 
 ## Próximos passos
 
-O GlobalServer, um terminal novo para os servidores e o **ServerManager**, uma ferramenta para orquestrar e monitorar os
+Um terminal novo para os servidores, o log estruturado e o **ServerManager**, uma ferramenta para orquestrar e monitorar os
 servidores, local e por SSH. Depois vem o porte do cliente para SDL3 + SDL_GPU. Tudo isso está no [Roadmap](docs/projeto/roadmap.md).
 
 ## Documentação

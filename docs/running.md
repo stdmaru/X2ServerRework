@@ -73,6 +73,7 @@ cd build/linux-debug/run/ChannelServer    && ./ChannelServer DEV 0
 cd build/linux-debug/run/LoginServer      && ./LoginServer DEV 0
 cd build/linux-debug/run/CenterServer     && ./CenterServer DEV 0
 cd build/linux-debug/run/GameServer       && ./GameServer DEV 0
+cd build/linux-debug/run/GlobalServer     && ./GlobalServer DEV 0
 ```
 
 | Servidor | Porta | Função |
@@ -82,9 +83,10 @@ cd build/linux-debug/run/GameServer       && ./GameServer DEV 0
 | LoginServer | 9200 | contas, guildas, rankings |
 | CenterServer | 9100 | salas de campo e de dungeon |
 | GameServer | 9300 | o jogo em si |
+| GlobalServer | 9500 | missões globais, grupo automático, PvP, contagem de usuários |
 
 - As portas dos servidores de jogo vêm do banco (`Statistics.dbo.LServerList`); a do EPublisherServer, do `X2_RUN_EPUBLISHER_PORT`.
-- A ordem não é rígida: o GameServer se reconecta a cada 10 s ao LoginServer e ao CenterServer. O login só funciona com o
+- A ordem não é rígida: o GameServer se reconecta a cada 10 s ao LoginServer, ao CenterServer e ao GlobalServer. O login só funciona com o
   EPublisherServer de pé.
 - Cada servidor mostra o log no terminal e grava o log completo num arquivo na pasta dele.
 - A entrada do terminal é um **prompt Lua**, como o campo de comando da janela do servidor original.
@@ -98,5 +100,6 @@ cd build/linux-debug/run/GameServer       && ./GameServer DEV 0
 Com os servidores no estado pronto, abra o cliente original (`_client/`; no Linux, `wine elsword.exe`) e faça login com
 uma conta do banco. O banco de desenvolvimento tem a conta `test`, com a senha `test`.
 
-O que já funciona (2026-10-31): login, seleção de personagem, vila, campo e dungeon. O GlobalServer, que cuida das missões
-globais, da quest do dia e da contagem de usuários, ainda está em porte. Sem ele, essas funções não existem, mas nada trava.
+O que já funciona (2026-10-31): login, seleção de personagem, vila, campo e dungeon, com os seis servidores. Algumas funções do
+GlobalServer (missões globais, evento de encantamento, troca com limite) sobem sem dados, porque o banco de desenvolvimento não tem
+as procedures delas ([Bugs do original](original/bugs.md#dados-serverresource-clientscript)).
