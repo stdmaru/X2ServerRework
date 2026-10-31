@@ -4,7 +4,7 @@
 #include <ToString.h>
 #include <map>
 #include "Guild.h"
-#include <boost/timer.hpp>
+#include "x2/platform/timer.h"
 
 
 
@@ -144,7 +144,7 @@ private:
 	};
 
 	std::list< ReservedGuildName >		m_listReservedGuildName;
-	boost::timer						m_kTimer;
+	x2::Timer						m_kTimer;
 	//}}
 };
 

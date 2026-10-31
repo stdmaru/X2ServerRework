@@ -16,9 +16,6 @@
 //}}
 
 #include "LoginUser.h"
-//{{ 2010. 06. 08  최육사	넥슨PC방 인증 서버 개편
-	#include "NexonAuthManager.h"
-//}}
 
 
 
@@ -63,8 +60,8 @@
 #include <lua_tinker.h>
 using namespace lua_tinker;
 
-#include <boost/bind/bind.hpp>
-using namespace boost::placeholders;
+#include <functional>
+using namespace std::placeholders;
 
 NiImplementRTTI( KLoginSimLayer, KSimLayer );
 
@@ -114,9 +111,6 @@ void KLoginSimLayer::RegToLua()
 	GetKLoginRoomManager()->RegToLua();
 	//}}
 
-	//{{ 2010. 06. 08  최육사	넥슨PC방 인증 서버 개편
-	SiKNexonAuthManager()->RegToLua();
-	//}}
 
 
 }
@@ -157,24 +151,6 @@ bool KLoginSimLayer::GetGSUserInfoByMachineID( IN const std::string& strMachineI
 }
 //}}
 
-//{{ 2010. 06. 08  최육사	넥슨PC방 인증 서버 개편
-
-void KLoginSimLayer::CheckAuthSynchronize( const KENX_AUTH_SYNCHRONIZE_REQ& kInfo )
-{
-    m_kUserList.CheckAuthSynchronize( kInfo );
-}
-
-bool KLoginSimLayer::UpdateSessionNoByUserID( const std::wstring& wstrUserID, __int64 iSessionNo )
-{
-	return m_kUserList.UpdateSessionNoByUserID( wstrUserID, iSessionNo );
-}
-
-void KLoginSimLayer::LoginTimeOut( const KELG_NEXON_USER_LOGIN_TIME_OUT_NOT& kInfo )
-{
-    m_kUserList.LoginTimeOut( kInfo );
-}
-
-//}}
 
 
 int KLoginSimLayer::RegUser( UidType iUserUID, UidType iGSUID, const KELG_REGISTER_USER_REQ& kInfo_, bool bChannelChanged )
@@ -204,16 +180,6 @@ void KLoginSimLayer::UnRegUnit( UidType iUserUID )
 
 void KLoginSimLayer::Init()
 {
-    switch( GetAuthFlag() )
-    {
-    case KSimLayer::AF_NEXON_KOREA:
-		//{{ 2010. 06. 08  최육사	넥슨PC방 인증 서버 개편
-		m_vecpThreadMgr.push_back( SiKNexonAuthManager()->GetInstance() );
-		//}}
-        break;
-    default:
-        break;
-    }
 
 
 
@@ -333,16 +299,6 @@ void KLoginSimLayer::Tick()
 {
     KSimLayer::Tick();
 
-    switch( GetAuthFlag() )
-    {
-    case KSimLayer::AF_NEXON_KOREA:
-		//{{ 2010. 06. 08  최육사	넥슨PC방 인증 서버 개편
-		SiKNexonAuthManager()->Tick();
-		//}}
-        break;
-    default:
-        break;
-    }
 
 
 
@@ -378,16 +334,6 @@ void KLoginSimLayer::ShutDown()
 {
     KSimLayer::ShutDown();
 
-    switch( GetAuthFlag() )
-    {
-    case KSimLayer::AF_NEXON_KOREA:
-		//{{ 2010. 06. 08  최육사	넥슨PC방 인증 서버 개편
-		SiKNexonAuthManager()->ReleaseInstance();
-		//}}
-        break;
-    default:
-        break;
-    }
 
 
 

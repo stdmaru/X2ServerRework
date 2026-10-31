@@ -274,7 +274,7 @@ void KPersonalShopAgency::_BroadCast( const KEvent& kEvent_ )
 		spEvent->m_anTrace[1] = -1;
 
 		// User 각각에 대한 loop
-		BOOST_TEST_FOREACH( const UidType, iMemberUnitUID, mit->second )
+		for( const UidType iMemberUnitUID : mit->second )
 		{
 			LIF( spEvent->m_kDestPerformer.AddUID( iMemberUnitUID ) );
 		}
@@ -297,7 +297,7 @@ void KPersonalShopAgency::_BroadCastWithOutOneChar( const KEvent& kEvent_, const
 		spEvent->m_anTrace[1] = -1;
 
 		// User 각각에 대한 loop
-		BOOST_TEST_FOREACH( const UidType, iMemberUnitUID, mit->second )
+		for( const UidType iMemberUnitUID : mit->second )
 		{
 			if( iMemberUnitUID == iUnitUID )
 				continue;
@@ -427,7 +427,7 @@ _IMPL_ON_FUNC( ERM_CHECK_INVALID_USER_NOT, UidType )
 		return;
 
 	//먼저 다 빼주고
-	BOOST_TEST_FOREACH( const UidType, iDelUnitUID, vecDelUserUID )
+	for( const UidType iDelUnitUID : vecDelUserUID )
 	{
 		m_kPersonalShopUserManager.LeavePersonalShop( iDelUnitUID );
 	}
@@ -761,7 +761,7 @@ _IMPL_ON_FUNC( ERM_CHECK_FOR_REG_PSHOP_AGENCY_ITEM_REQ, KDBE_PREPARE_REG_PSHOP_A
 	}
 
 	//{{ 2008. 9. 11  최육사	개인상점 예외처리
-	BOOST_TEST_FOREACH( const KSellPersonalShopItemInfo&, kSellPShopItemInfo, kPacket_.m_vecSellItemInfo )
+	for( const KSellPersonalShopItemInfo& kSellPShopItemInfo : kPacket_.m_vecSellItemInfo )
 	{
 		__int64 iPricePerOne  = static_cast<__int64>(kSellPShopItemInfo.m_iPricePerOne);
 		__int64 iItemQuantity = static_cast<__int64>(kSellPShopItemInfo.m_kInventoryItemInfo.m_kItemInfo.m_iQuantity);
@@ -835,7 +835,7 @@ _IMPL_ON_FUNC( ERM_REG_PSHOP_AGENCY_ITEM_REQ, KERM_REG_PERSONAL_SHOP_ITEM_REQ )
 	m_wstrPersonalShopName = kPacket_.m_wstrPersonalShopName;
 
 	//{{ 2008. 9. 11  최육사	개인상점 예외처리
-	BOOST_TEST_FOREACH( const KSellPersonalShopItemInfo&, kSellPShopItemInfo, kPacket_.m_vecSellItemInfo )
+	for( const KSellPersonalShopItemInfo& kSellPShopItemInfo : kPacket_.m_vecSellItemInfo )
 	{
 		__int64 iPricePerOne  = static_cast<__int64>(kSellPShopItemInfo.m_iPricePerOne);
 		__int64 iItemQuantity = static_cast<__int64>(kSellPShopItemInfo.m_kInventoryItemInfo.m_kItemInfo.m_iQuantity);
@@ -1659,7 +1659,7 @@ IMPL_ON_FUNC( ERM_PREPARE_PICK_UP_FROM_PSHOP_AGENCY_ACK )
 	kPacketToDB.m_iGSUID = LAST_SENDER_UID;
 	kPacketToDB.m_iUnitUID = FIRST_SENDER_UID;
 
-	BOOST_TEST_FOREACH( const KSellPersonalShopItemInfo&, kItem, kPacketToDB.m_vecPickUpItemList )
+	for( const KSellPersonalShopItemInfo& kItem : kPacketToDB.m_vecPickUpItemList )
 	{
 		if ( kPacket_.m_cShopType <= SEnum::AST_NORMAL )
         {
@@ -1692,7 +1692,7 @@ IMPL_ON_FUNC( DBE_PICK_UP_FROM_PSHOP_AGENCY_ACK )
 	}
 
 	std::vector<UidType> vecPickUpItemList;
-	BOOST_TEST_FOREACH( const KSellPersonalShopItemInfo&, kItem, kPacket_.m_vecPickUpItemList )
+	for( const KSellPersonalShopItemInfo& kItem : kPacket_.m_vecPickUpItemList )
 	{
 		vecPickUpItemList.push_back( kItem.m_kInventoryItemInfo.m_iItemUID );
 	}
@@ -1712,7 +1712,7 @@ IMPL_ON_FUNC( DBE_PICK_UP_FROM_PSHOP_AGENCY_ACK )
 
 	m_kPersonalShopItemManager.PickUpComplete( vecPickUpItemList, kPacket, eType );
 
-	BOOST_TEST_FOREACH( KSellPersonalShopItemInfo&, kItem, kPacket_.m_vecPickUpItemList )
+	for( KSellPersonalShopItemInfo& kItem : kPacket_.m_vecPickUpItemList )
 	{
 		if( kItem.m_iInventoryItemUID != 0  )
 		{
@@ -1799,7 +1799,7 @@ IMPL_ON_FUNC( ERM_CHECK_ZOMBIE_USER_ACK )
 IMPL_ON_FUNC( ERM_CHECK_MY_PSHOP_AGENCY_INFO_REQ )
 {
     std::vector< KSellPShopItemBackupData > vecMissingSellItemInfo;
-    BOOST_TEST_FOREACH( KSellPShopItemBackupData&, kItem, kPacket_.m_vecSellItemInfo )
+    for( KSellPShopItemBackupData& kItem : kPacket_.m_vecSellItemInfo )
     {
         if( false == m_kPersonalShopItemManager.IsExistItem( kItem.m_kSellPShopItemInfo.m_kInventoryItemInfo.m_iItemUID ) )
         {

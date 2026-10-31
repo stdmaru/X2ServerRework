@@ -34,7 +34,7 @@ void KRandomItemEventManager::UpdateEventInfo( IN const std::vector< KTimeOpenRa
 {
 	CTime tCurTime = CTime::GetCurrentTime();
 
-	BOOST_TEST_FOREACH( const KTimeOpenRandomItemEventInfo&, kInfo, vecEventInfo )
+	for( const KTimeOpenRandomItemEventInfo& kInfo : vecEventInfo )
 	{
 		SRandomItemEvent kEventData;
 		kEventData.m_iID			= kInfo.m_iID;
@@ -163,7 +163,7 @@ void KRandomItemEventManager::CheckTimeOpenRandomItemEvent( IN const UidType iUs
 		}
 	}
 
-	BOOST_TEST_FOREACH( const __int64, iTime, vecDeleteList )
+	for( const __int64 iTime : vecDeleteList )
 	{
 		m_mapEventInfo.erase( iTime );
 	}

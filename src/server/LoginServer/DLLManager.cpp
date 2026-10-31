@@ -59,7 +59,7 @@ void KDLLManager::OnServerReadyComplete()
 //{{  2012. 1. 30	김민성		한방핵 방어(해킹 프로세스 검사)
 void KDLLManager::Init( IN const std::vector< KModuleInfo >& vecModuleList )
 {
-	BOOST_TEST_FOREACH( const KModuleInfo&, kInfo, vecModuleList )
+	for( const KModuleInfo& kInfo : vecModuleList )
 	{
 		AddModuleInfo( kInfo );
 	}
@@ -98,7 +98,7 @@ void KDLLManager::Shutdown()
 
 void KDLLManager::UpdateModuleList( IN const std::vector< std::wstring >& vecModuleList )
 {
-	BOOST_TEST_FOREACH( const std::wstring&, wstrModuleName, vecModuleList )
+	for( const std::wstring& wstrModuleName : vecModuleList )
 	{
 		UpdateModuleInfo( wstrModuleName );
 	}
@@ -106,7 +106,7 @@ void KDLLManager::UpdateModuleList( IN const std::vector< std::wstring >& vecMod
 
 void KDLLManager::UpdateModuleList( IN const std::vector< KModuleInfo >& vecModuleList )
 {
-	BOOST_TEST_FOREACH( const KModuleInfo&, kInfo, vecModuleList )
+	for( const KModuleInfo& kInfo : vecModuleList )
 	{
 		UpdateModuleUID( kInfo.m_wstrModuleName, kInfo.m_iModuleUID );
 	}

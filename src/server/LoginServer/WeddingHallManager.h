@@ -2,7 +2,7 @@
 
 #include "RefreshSingleton.h"
 #include <KncSend.h>
-#include <boost/timer.hpp>
+#include "x2/platform/timer.h"
 #include "BaseServer.h"
 #include <map>
 

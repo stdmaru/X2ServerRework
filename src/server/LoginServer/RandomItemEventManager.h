@@ -3,7 +3,7 @@
 #include <KNCSingleton.h>
 #include <ToString.h>
 #include <set>
-#include <boost/timer.hpp>
+#include "x2/platform/timer.h"
 #include "KncSend.h"
 
 

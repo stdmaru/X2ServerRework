@@ -4,7 +4,7 @@
 #include <ToString.h>
 #include <map>
 #include "GuildAd.h"
-#include <boost/timer.hpp>
+#include "x2/platform/timer.h"
 #include "KncSend.h"
 
 
@@ -128,7 +128,7 @@ private:
 
 	std::map< UidType, int >			m_mapApplyJoinGuildList;
 
-	boost::timer						m_kTimer[TM_TOTAL_NUM];
+	x2::Timer						m_kTimer[TM_TOTAL_NUM];
 };
 
 DefSingletonInline( KGuildBoardManager );

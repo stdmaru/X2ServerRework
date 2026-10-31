@@ -9,11 +9,7 @@
 //{{ 2011. 04. 29	최육사	대리상인
 	#include "LoginRoomManager.h"
 //}}
-#include "Nexon/AuthCheck.h"
-#include <boost/format.hpp>
-//{{ 2010. 06. 08  최육사	넥슨PC방 인증 서버 개편
-	#include "NexonAuthManager.h"
-//}}
+#include "x2/platform/format.h"
 
 	#include "LoginSimLayer.h"
 
@@ -100,9 +96,6 @@ void KLoginUser::ProcessEvent( const KEventPtr& spEvent_ )
 
 
 
-	//{{ 2010. 06. 29  최육사	게임 PC방 인증 서버 개편
-	CASE( ELG_NEXON_USER_LOGIN_TIME_OUT_NOT );
-	//}}
 
 	CASE( ELG_REGISTER_UNIT_NOT );
 	CASE( ELG_UNIT_DISCONNECT_NOT );
@@ -383,305 +376,6 @@ void KLoginUser::Tick()
     }
 }
 
-//{{ 2010. 06. 22  최육사	OTP적용
-//////////////////////////////////////////////////////////////////////////
-
-bool KLoginUser::AuthenticateUser( const wchar_t* szPassport, const wchar_t* szHWID, KNexonAccountInfo& kInfo )
-{
-	//Nexon ID & Guest ID ..?
-	PassportType passportType = AuthCheck_GetPassportType( szPassport );
-
-	AuthCheckError errorCode = AUTHCHECK_ERROR_OK;
-
-	switch( passportType )
-	{
-		//process nexon id..
-	case kPassportType_Nexon:
-		{
-			//{{ 2012. 06. 28	김민성       통합 멤버십 ATL 1.0 -> 2.0 변경
-			wchar_t		szID[MAX_PATH] = { 0, };
-			UINT64		nNexonSN = 0;
-			wchar_t		szLoginIP[MAX_PATH] = { 0, };
-			UINT32		uSex = 0;
-			UINT32		uAge = 0;
-			wchar_t		szNationCode[MAX_PATH] = { 0, };
-			wchar_t		szMeta[MAX_PATH] = { 0, };
-			UINT8		uSecureCode = 0;										// 0 이면 미사용 , 1 이면 OTP 사용, 2 이면 지정PC, 3 이면 넥슨 스틱
-			UINT8		uChannelCode = -1;
-			wchar_t		szChannelUID[MAX_PATH] = { 0, };
-			BOOL		bNewMembership = 0;
-			INT8		uMainAuthLevel = 0;			// ATL 메인 레벨
-			INT8		uSubAuthLevel = 0;			// ATL 서브 레벨
-
-			//////////////////////////////////////////////////////////////////////////
-			LoginBegin();
-			//////////////////////////////////////////////////////////////////////////
-
-			errorCode = AuthCheck_CheckSession3( FALSE,							// IN	BOOL			bRemoteCheck
-												szPassport,						// IN	const TCHAR*	szPassport,					// 1024
-												kInfo.m_wstrLoginIP.c_str(),	// IN	const TCHAR*	szUserIp,					// 32
-												szHWID,							// IN	const TCHAR*	szHWID,						// 64
-												0,								// IN	UINT32			uGameCode,
-												szID,							// OUT	TCHAR*			pszId			= NULL,		// 32		-- 의미 변경(숫자@nx) 넥슨 유저만
-												&nNexonSN,						// OUT	UINT64*			pnNexonSN64
-												szLoginIP,						// OUT	TCHAR*			pszLoginIp		= NULL,		// 32
-												&uSex,							// OUT	UINT32*			puSex,
-												&uAge,							// OUT	UINT32*			puAge,
-												szNationCode,					// OUT	TCHAR*			pszNationCode	= NULL,		// 3
-												szMeta,							// OUT	TCHAR*			pszMeta			= NULL,		// 1024
-												&uSecureCode,					// OUT	UINT8*			puSecureCode,
-												&uChannelCode,					// OUT	UINT8*			puChannelCode,
-												szChannelUID,					// OOUT	TCHAR*			pszChannelUID	= NULL,		// 32
-												&bNewMembership,				// OUT	BOOL*			pbNewMembership
-												&uMainAuthLevel,				// OUT	INT8*			pnMainAuthLevel,
-												&uSubAuthLevel					// OUT	INT8*			pnSubAuthLevel
-												);
-
-			//////////////////////////////////////////////////////////////////////////
-			LoginEnd();
-			//////////////////////////////////////////////////////////////////////////
-			// 4바이트 값이 넘는다면 확인차 로그를 찍자.
-			if( nNexonSN > UINT_MAX )
-			{
-				START_LOG( cout2, L"값의 범위가 넘는 값이 들어왔다." )
-					<< BUILD_LOG( szID )
-					<< BUILD_LOG( nNexonSN )
-					<< END_LOG;
-			}
-
-			std::wstring wstrID = szID;
-			if( static_cast<int>( wstrID.find( L"@tooni", 0 ) ) != -1 )	// '@tooni' 가 포함 되어 있다.
-			{
-				if( uChannelCode != KNexonAccountInfo::CE_TOONILAND_ACCOUNT )
-				{
-					START_LOG( cout2, L"@tooni 가 포함 되어 있다. 그런데 채널코드가 3이 아니다!" )
-						<< BUILD_LOG( szPassport )
-						<< BUILD_LOG( (int)errorCode )
-						<< BUILD_LOG( szID )
-						<< BUILD_LOG( nNexonSN )
-						<< BUILD_LOG( uChannelCode )
-						<< END_LOG;
-
-					// 보정하자
-					uChannelCode = KNexonAccountInfo::CE_TOONILAND_ACCOUNT;
-				}
-			}
-            else if( static_cast<int>( wstrID.find( L"@naver", 0 ) ) != -1 )
-            {
-                if( uChannelCode != KNexonAccountInfo::CE_NAVER_ACCOUNT )
-                {
-                    START_LOG( cout2, L"@naver 가 포함 되어 있다. 그런데 채널코드가 6 아니다!" )
-                        << BUILD_LOG( szPassport )
-                        << BUILD_LOG( (int)errorCode )
-                        << BUILD_LOG( szID )
-                        << BUILD_LOG( nNexonSN )
-                        << BUILD_LOG( uChannelCode )
-                        << END_LOG;
-
-                    // 보정하자
-                    uChannelCode = KNexonAccountInfo::CE_NAVER_ACCOUNT;
-                }
-            }
-			else if( static_cast<int>( wstrID.find( L"@nx", 0 ) ) != -1 )  //'@nx' 가 포함 되어 있다.
-			{
-				if( uChannelCode != KNexonAccountInfo::CE_NEXON_ACCOUNT )
-				{
-					START_LOG( cout2, L"@nx 가 없다. 그런데 채널코드가 0이 아니다!" )
-						<< BUILD_LOG( szPassport )
-						<< BUILD_LOG( (int)errorCode )
-						<< BUILD_LOG( szID )
-						<< BUILD_LOG( nNexonSN )
-						<< BUILD_LOG( uChannelCode )
-						<< END_LOG;
-
-					// 보정하자
-					uChannelCode = KNexonAccountInfo::CE_NEXON_ACCOUNT;
-				}
-			}
-			else
-			{
-				if( uChannelCode != KNexonAccountInfo::CE_NEXON_ACCOUNT )
-				{
-					START_LOG( cout2, L"'@' 가 없다. 그런데 채널코드가 0이 아니다!" )
-						<< BUILD_LOG( szPassport )
-						<< BUILD_LOG( (int)errorCode )
-						<< BUILD_LOG( szID )
-						<< BUILD_LOG( nNexonSN )
-						<< BUILD_LOG( uChannelCode )
-						<< END_LOG;
-
-					// 보정하자
-					uChannelCode = KNexonAccountInfo::CE_NEXON_ACCOUNT;
-				}
-			}
-			//}}
-
-			START_LOG( clog, L"OTP 추가버전 passport인증 결과!!" )
-				<< BUILD_LOG( szPassport )
-				<< BUILD_LOG( (int)errorCode )
-				<< BUILD_LOG( szID )
-				<< BUILD_LOG( nNexonSN )
-				<< BUILD_LOG( szLoginIP )
-				<< BUILD_LOG( uSex )
-				<< BUILD_LOG( uAge )
-				//{{ 2012. 06. 28	김민성       통합 멤버십 ATL 1.0 -> 2.0 변경
-				<< BUILD_LOG( bNewMembership )
-				<< BUILD_LOG( uMainAuthLevel )
-				<< BUILD_LOG( uSubAuthLevel )
-				//}}
-				<< BUILD_LOG( szNationCode )
-				<< BUILD_LOG( szMeta )
-				<< BUILD_LOG( uSecureCode )
-				<< BUILD_LOG( uChannelCode )
-				<< BUILD_LOG( szChannelUID )
-				;
-
-			if( errorCode == AUTHCHECK_ERROR_OK )
-			{
-				if( kInfo.m_wstrLoginIP.compare( szLoginIP ) != 0 )
-				{
-					START_LOG( cerr, L"[NesonID]KSession의 유저 IP와 넥슨 패스워드에서 추출한 IP가 다름." )
-						<< BUILD_LOG( kInfo.m_wstrLoginIP )
-						<< BUILD_LOG( szLoginIP )
-						<< END_LOG;
-
-					// 인증 실패 처리 할까 말까..
-				}
-
-				kInfo.m_wstrID = szID;
-				//{{ 2012. 06. 28	김민성       통합 멤버십 ATL 1.0 -> 2.0 변경
-				kInfo.m_uiNexonSN = static_cast<UINT32>(nNexonSN);
-				//}}
-				kInfo.m_wstrLoginIP = szLoginIP;
-				if( uSex == 1 || uSex == 3 )
-				{
-					// 남성
-					kInfo.m_bSex = true;
-				}
-				else if( uSex == 2 || uSex == 4 )
-				{
-					// 여성
-					kInfo.m_bSex = false;
-				}
-				else
-				{
-					START_LOG( cwarn, L"넥슨 인증 성별 값이 이상함." )
-						<< BUILD_LOG( szID )
-						<< BUILD_LOG( szPassport )
-						<< BUILD_LOG( uSex )
-						<< END_LOG;
-				}
-				kInfo.m_uiAge = uAge;
-				//{{ 2012. 06. 28	김민성       통합 멤버십 ATL 1.0 -> 2.0 변경
-				kInfo.m_bNewMembership = (bNewMembership > 0) ? true : false;
-				kInfo.m_uMainAuthLevel = static_cast<UINT8>(uMainAuthLevel);
-				kInfo.m_uSubAuthLevel = static_cast<UINT8>(uSubAuthLevel);
-				//}}
-				kInfo.m_wstrNationCode = szNationCode;
-				kInfo.m_wstrMeta = szMeta;
-				kInfo.m_uSecureCode = uSecureCode;
-				kInfo.m_uChannelCode = uChannelCode;
-
-				if( kInfo.m_uChannelCode != KNexonAccountInfo::CE_NEXON_ACCOUNT &&
-                    kInfo.m_uChannelCode != KNexonAccountInfo::CE_TOONILAND_ACCOUNT &&
-                    kInfo.m_uChannelCode != KNexonAccountInfo::CE_NAVER_ACCOUNT )
-				{
-					START_LOG( cerr, L"사용하지 않는 채널링 값입니다." )
-						<< BUILD_LOG( errorCode )
-						<< BUILD_LOG( kInfo.m_uChannelCode )
-						<< END_LOG;
-
-					return false;
-				}
-
-				kInfo.m_wstrChannelUID = szChannelUID;
-			}
-		}
-		break;
-		//process guest id..
-	case kPassportType_Guest:
-		{
-			INT32		nGameCode = 0;
-			INT64		nGuestSN = 0;
-			wchar_t		szGuestId[MAX_PATH] = { 0, };
-			wchar_t		szLoginIP[MAX_PATH] = { 0, };
-			SYSTEMTIME	timeCreated;
-			SYSTEMTIME	timeToExpire;
-
-			errorCode = AuthCheck_CheckGuestPassport( szPassport, &nGameCode, &nGuestSN, szGuestId, szLoginIP, &timeCreated, &timeToExpire );
-
-			if( errorCode == AUTHCHECK_ERROR_OK )
-			{
-				if( kInfo.m_wstrLoginIP.compare( szLoginIP ) != 0 )
-				{
-					START_LOG( cerr, L"[GuestID]KSession의 유저 IP와 넥슨 패스워드에서 추출한 IP가 다름." )
-						<< BUILD_LOG( kInfo.m_wstrLoginIP )
-						<< BUILD_LOG( szLoginIP )
-						<< END_LOG;
-
-					// 인증 실패 처리 할까 말까..
-				}
-
-				kInfo.m_wstrID = szGuestId;
-				//080514.hoons. 게스트아이디를 따로 식별하기 위해 "_"를 붙인다.
-				//넥슨과의 협의로 게스트 아이디는 넥슨아이디보다 한글자 적게 받는다.
-				kInfo.m_wstrID += L"/";
-				kInfo.m_uiNexonSN = static_cast<UINT32>(nGuestSN);
-				kInfo.m_wstrLoginIP = szLoginIP;
-				kInfo.m_byteGuestUser = 1;
-			}
-		}
-		break;
-
-	default:
-		{
-			START_LOG( cerr, L"Error: Passport type is undefined!!!" )
-				<< END_LOG;
-
-			return false;
-		}
-		break;
-	}
-
-	if( errorCode != AUTHCHECK_ERROR_OK )
-	{
-		switch( errorCode )
-		{
-		case AUTHCHECK_ERROR_TIMEOUT:
-			{
-				START_LOG( cerr, L"passport 인증 가능 기간 만료!" )
-					<< BUILD_LOG( errorCode )
-					<< BUILD_LOG( kInfo.m_wstrLoginIP )
-					<< BUILD_LOG( kInfo.m_byteGuestUser )
-					<< END_LOG;
-			}
-			break;
-
-		default:
-			{
-				START_LOG( cerr, L"아이디 인증 실패!" )
-					<< BUILD_LOG( errorCode )
-					<< BUILD_LOG( kInfo.m_wstrLoginIP )
-					<< BUILD_LOG( kInfo.m_byteGuestUser )
-					<< END_LOG;
-			}
-			break;
-		}
-	}
-
-	return ( errorCode == AUTHCHECK_ERROR_OK );//(bRet == TRUE);  // BOOL -> bool
-}
-//////////////////////////////////////////////////////////////////////////
-//}}
-
-//{{ 2008. 6. 11  최육사  선물하기
-bool KLoginUser::AuthCheckPassword( const wchar_t* szPassword, UINT32 uiPwdHash )
-{
-	UINT32 uPwdHash = AuthCheck_GetHashValue( szPassword );
-
-	return ( uiPwdHash == uPwdHash );
-}
-//}}
 
 //{{ 2011. 08. 11	최육사	투니 랜드 채널링
 void KLoginUser::LoginBegin()
@@ -771,8 +465,8 @@ void KLoginUser::OnDestroy()
 		CTime kRegDate = CTime::GetCurrentTime();
 		KE_LOCAL_LOG_SERVER_DISCONNECT_NOT kNot;
 		kNot.m_cLogType				= KE_LOCAL_LOG_SERVER_DISCONNECT_NOT::SDLT_DISCONNECT;
-		kNot.m_wstrSourceName		= boost::str( boost::wformat( L"%d" ) % KBaseServer::GetKObj()->GetUID() );
-		kNot.m_wstrDestinationName	= boost::str( boost::wformat( L"%d" ) % GetUID() );
+		kNot.m_wstrSourceName		= x2::str( x2::wformat( L"%d" ) % KBaseServer::GetKObj()->GetUID() );
+		kNot.m_wstrDestinationName	= x2::str( x2::wformat( L"%d" ) % GetUID() );
 		kNot.m_wstrDestinationIP	= KncUtil::toWideString( GetIPStr() );
 		kNot.m_wstrReason			= KStatistics::GetDissconnectReasonString( GetDisconnectReason() );
 		kNot.m_wstrRegDate			= (const wchar_t*)kRegDate.Format(_T("%Y-%m-%d %H:%M:%S"));
@@ -844,19 +538,9 @@ bool KLoginUser::RoutePacket( const KEvent* pkEvent_ )
 				//}}
                 return true;
             case PC_NX_AUTH:
-                if( KSimLayer::GetKObj()->GetAuthFlag() == KSimLayer::AF_NEXON_KOREA )
-                {
-					//{{ 2010. 06. 08  최육사	넥슨PC방 인증 서버 개편
-					SiKNexonAuthManager()->QueueingEvent( spEvent );
-					//}}
-                }
-                else
-                {
-                    START_LOG( cerr, L"넥슨 국내인증이 아님." )
-                        << BUILD_LOG( KSimLayer::GetKObj()->GetAuthFlag() )
-                        //<< BUILD_LOG( KSimLayer::GetKObj()->GetAuthFlagStr( KSimLayer::GetKObj()->GetAuthFlag() ) )
-                        << END_LOG;
-                }
+                START_LOG( cerr, L"넥슨 국내인증이 아님." )
+                    << BUILD_LOG( KSimLayer::GetKObj()->GetAuthFlag() )
+                    << END_LOG;
                 return true;
             default:
                 START_LOG( cerr, L"도착지가 이상한 패킷." )
@@ -1232,19 +916,6 @@ IMPL_ON_FUNC( ELG_USER_DISCONNECT_REQ )
 
 //////////////////////////////////////////////////////////////////////////
 
-//{{ 2010. 06. 29  최육사	게임 PC방 인증 서버 개편
-
-IMPL_ON_FUNC( ELG_NEXON_USER_LOGIN_TIME_OUT_NOT )
-{
-	VERIFY_STATE( ( 1, KDefaultFSM::S_LOGINED ) );
-
-	//////////////////////////////////////////////////////////////////////////
-	START_LOG( cout, L"넥슨 PC방 인증 서버 개편 : 로그인 타임 아웃 처리!" )
-		<< BUILD_LOG( kPacket_.m_wstrUserID );
-	//////////////////////////////////////////////////////////////////////////
-
-	GetKLoginSimLayer()->LoginTimeOut( kPacket_ );
-}
 
 //}}
 
@@ -1895,10 +1566,9 @@ IMPL_ON_FUNC( ELG_PRESENT_CASH_ITEM_REQ )
 
 	KELG_PRESENT_CASH_ITEM_ACK kPacket;
 
-	// 비밀번호 인증
-	if( !AuthCheckPassword( kPacket_.m_wstrPassword.c_str(), kPacket_.m_uiPwdHash ) )
+	// Password check: the hash was Nexon's (AuthCheck_GetHashValue, proprietary AuthCheck.lib), so it always fails
 	{
-		// 비밀번호 인증 실패
+		// Password check failed
 		kPacket.m_iOK			   = NetError::ERR_BUY_CASH_ITEM_21;
 		goto end_proc;
 	}

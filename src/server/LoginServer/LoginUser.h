@@ -9,7 +9,7 @@
 #include "ClientPacket.h"
 #include "ActorManager.h"
 
-#include <windows.h>    // ::GetTickCount()
+#include "x2/platform/win32.h"    // ::GetTickCount()
 
 
 SmartPointer(KLoginUser);
@@ -51,10 +51,6 @@ public:
     virtual void Tick();
 
 protected:  // util function, Packet Handling
-	//{{ 2010. 06. 22  최육사	OTP적용
-	bool AuthenticateUser( const wchar_t* szPassport, const wchar_t* szHWID, KNexonAccountInfo& kInfo );
-	//}}
-	bool AuthCheckPassword( const wchar_t* szPassword, UINT32 uiPwdHash );
 
 	//{{ 2011. 08. 11	최육사	투니 랜드 채널링
 	void LoginBegin();
@@ -111,9 +107,6 @@ protected:  // util function, Packet Handling
 
 
 
-	//{{ 2010. 06. 29  최육사	게임 PC방 인증 서버 개편
-	DECL_ON_FUNC( ELG_NEXON_USER_LOGIN_TIME_OUT_NOT );
-	//}}
 
 	DECL_ON_FUNC( ELG_REGISTER_UNIT_NOT );
 	DECL_ON_FUNC( ELG_UNIT_DISCONNECT_NOT );

@@ -2,9 +2,6 @@
 #include "ActorManager.h"
 #include "LoginUser.h"
 #include "SimLayer.h"
-//{{ 2010. 06. 04  최육사	넥슨PC방 인증 서버 개편
-	#include "NexonAuthManager.h"
-//}}
 //{{ 2011. 08. 17	최육사	머신ID 중복 접속 차단
 	#include "GameSysVal/GameSysVal.h"
 //}}
@@ -29,7 +26,7 @@ KUserList::~KUserList()
 
 bool KUserList::GetGSUserInfoByUserUID( UidType iUserUID, KGSUserInfo& kInfo )
 {
-    std::map< UidType, boost::shared_ptr< KGSUserInfo > >::iterator mit;
+    std::map< UidType, std::shared_ptr< KGSUserInfo > >::iterator mit;
 
     mit = m_mapUserUID.find( iUserUID );
     if( mit == m_mapUserUID.end() )
@@ -52,7 +49,7 @@ bool KUserList::GetGSUserInfoByUserUID( UidType iUserUID, KGSUserInfo& kInfo )
 
 bool KUserList::GetGSUserInfoByUserID( const std::wstring& wstrUserID, KUserList::KGSUserInfo& kInfo )
 {
-    std::map< std::wstring, boost::shared_ptr< KGSUserInfo > >::iterator mit;
+    std::map< std::wstring, std::shared_ptr< KGSUserInfo > >::iterator mit;
 
     mit = m_mapUserID.find( wstrUserID );
     if( mit == m_mapUserID.end() )
@@ -75,7 +72,7 @@ bool KUserList::GetGSUserInfoByUserID( const std::wstring& wstrUserID, KUserList
 
 bool KUserList::GetGSUserInfoByUnitUID( UidType iUnitUID, KGSUserInfo& kInfo )
 {
-    std::map< UidType, boost::shared_ptr< KGSUserInfo > >::iterator mit;
+    std::map< UidType, std::shared_ptr< KGSUserInfo > >::iterator mit;
 
     mit = m_mapUnitUID.find( iUnitUID );
     if( mit == m_mapUnitUID.end() )
@@ -102,7 +99,7 @@ bool KUserList::GetGSUserInfoByUnitNickName( std::wstring& wstrUnitNickName, KGS
 	//추후 찾는 유저의 uid(first_sender)를 받아와 서버군코드가 같은 유저의 닉네임을 찾게 수정
 	//그럼 키값이 멀티로 서버군코드, 닉네임이 되어야 겠다.
 
-    std::map< std::wstring, boost::shared_ptr< KGSUserInfo > >::iterator mit;
+    std::map< std::wstring, std::shared_ptr< KGSUserInfo > >::iterator mit;
 
     mit = m_mapUnitNickName.find( wstrUnitNickName );
     if( mit == m_mapUnitNickName.end() )
@@ -127,7 +124,7 @@ bool KUserList::GetGSUserInfoByUnitNickName( std::wstring& wstrUnitNickName, KGS
 //{{ 2011. 08. 17	최육사	머신ID 중복 접속 차단
 bool KUserList::GetGSUserInfoByMachineID( IN const std::string& strMachineID, KUserList::KGSUserInfo& kInfo )
 {
-	std::map< std::string, boost::shared_ptr< KGSUserInfo > >::iterator mit;
+	std::map< std::string, std::shared_ptr< KGSUserInfo > >::iterator mit;
 
 	mit = m_mapMachineID.find( strMachineID );
 	if( mit == m_mapMachineID.end() )
@@ -147,331 +144,6 @@ bool KUserList::GetGSUserInfoByMachineID( IN const std::string& strMachineID, KU
 	kInfo = *( mit->second );
 	return true;
 }
-//}}
-
-//{{ 2010. 06. 08  최육사	넥슨PC방 인증 서버 개편
-
-void KUserList::CheckAuthSynchronize( const KENX_AUTH_SYNCHRONIZE_REQ& kInfo )
-{
-	//////////////////////////////////////////////////////////////////////////
-	// m_mapSynchronizeReq가 비어있지 않다면 인증서버에서 동기화 요청이 들어온것이다!
-	// UserID로 검색하여 접속중인지 확인해보고 동기화 정보를 인증서버로 보내주자!
-
-	if( kInfo.m_mapSynchronizeReq.empty() == false )
-	{
-		KENX_AUTH_SYNCHRONIZE_ACK kPacketAck;
-		kPacketAck.m_bytePacketType = 46;
-		kPacketAck.m_byteIsMonitoring = kInfo.m_byteIsMonitoring;
-		__int64 iSessionNo = 0;
-
-		std::map< __int64, std::wstring >::const_iterator mit;
-		for( mit = kInfo.m_mapSynchronizeReq.begin(); mit != kInfo.m_mapSynchronizeReq.end(); ++mit )
-		{
-			KGSUserInfo kUserInfo;
-
-			//{{ 2011. 09. 27	김민성	PC 방 오과금 방지
-			BYTE byteSyncRet = ( GetGSUserInfoByUserID( mit->second, kUserInfo ) ? 1 : 0 );
-			//}}
-
-			// 접속중인데 SessionNo가 0이면 여기서는 넘어가고 동기화 완료 후 재로그인 처리 한다.
-			if( kUserInfo.m_iSessionNo == 0 )
-			{
-				START_LOG( clog, L"유저의 SessionNo 가 0 입니깡?" )
-					<< BUILD_LOG( kInfo.m_bytePacketType )
-					<< BUILD_LOG( kInfo.m_byteIsMonitoring )
-					<< BUILD_LOG( mit->second )
-					<< BUILD_LOG( byteSyncRet )
-					<< END_LOG;
-
-				// PC 방 오과금 방지 수정
-//				continue;
-				byteSyncRet = 0;
-			}
-
-			// SessionNo가 0이 아닌데 원래 가지고 있던 SessionNo와 다르다면?
-			if( kUserInfo.m_iSessionNo != mit->first )
-			{
-				byteSyncRet = 0;
-			}
-
- 			START_LOG( clog, L"세션으로 넘어가는 값을 봅시다" )
- 				<< BUILD_LOG( mit->first )
- 				<< BUILD_LOG( byteSyncRet );
-
-			kPacketAck.m_mapSynchronizeAck.insert( std::make_pair( mit->first, byteSyncRet ) );
-		}
-
-		KEventPtr spEvent( new KEvent );
-		spEvent->SetData( PI_LOGIN_NX_AUTH, NULL, ENX_AUTH_SYNCHRONIZE_ACK, kPacketAck );
-		SiKNexonAuthManager()->QueueingEvent( spEvent );
-		return;
-	}
-
-	//////////////////////////////////////////////////////////////////////////
-	// m_mapSynchronizeReq가 비어있다면 인증서버에서 동기화가 완료된것이다!
-	// 이제 유저 리스트를 확인해서 SessionNo가 0인것은 재 로그인 처리하자!
-	CheckUnauthorizedSession();
-}
-
-void KUserList::CheckUnauthorizedSession()
-{
-	// SessionNo가 0인 유저를 찾아서 재 로그인 처리하자!
-
-	std::map< std::wstring,	boost::shared_ptr< KGSUserInfo > >::const_iterator mitID;
-	for( mitID = m_mapUserID.begin(); mitID != m_mapUserID.end(); ++mitID )
-	{
-		const boost::shared_ptr< KGSUserInfo > spGSUserInfo = mitID->second;
-		if( spGSUserInfo == NULL )
-		{
-			START_LOG( cerr, L"유저 포인터가 이상합니다." )
-				<< BUILD_LOG( mitID->first )
-				<< END_LOG;
-			continue;
-		}
-
-		// SessionNo가 0이라면 로그인 재시도!
-		if( spGSUserInfo->m_iSessionNo == 0 )
-		{
-			//{{ 2011. 07. 27    김민성    투니랜드 채널링
-			//{{ 2012. 04. 02	김민성		넥슨 auth soap
-//#ifdef SERV_NEXON_AUTH_SOAP
-
-
-
-            int nRet1st = CheckUserIDAndSetChannelCode( spGSUserInfo->m_wstrUserID, L"@tooni", KNexonAccountInfo::CE_TOONILAND_ACCOUNT, spGSUserInfo->m_ucChannelCode );
-            int nRet2nd = CheckUserIDAndSetChannelCode( spGSUserInfo->m_wstrUserID, L"@nx", KNexonAccountInfo::CE_NEXON_ACCOUNT, spGSUserInfo->m_ucChannelCode );
-            int nRet3rd = CheckUserIDAndSetChannelCode( spGSUserInfo->m_wstrUserID, L"@naver", KNexonAccountInfo::CE_NAVER_ACCOUNT, spGSUserInfo->m_ucChannelCode );
-
-            if ( nRet1st == -1 && nRet2nd == -1 && nRet3rd == -1 )
-            {
-                spGSUserInfo->m_ucChannelCode = KNexonAccountInfo::CE_NEXON_ACCOUNT; // 넥슨 유저 , 기본값
-            }
-
-			//int iRet = static_cast<int>( spGSUserInfo->m_wstrUserID.find( L"@tooni", 0 ) );
-			//if( iRet != -1 ) // @가 없다. 검색 결과가 있다
-			//{
-			//	if( spGSUserInfo->m_ucChannelCode != KNexonAccountInfo::CE_TOONILAND_ACCOUNT )
-			//	{
-			//		START_LOG( clog, L"이상한 채널코드로 동록 되어 있다." )
-			//			<< BUILD_LOG( spGSUserInfo->m_ucChannelCode )
-			//			<< END_LOG;
-			//		spGSUserInfo->m_ucChannelCode = KNexonAccountInfo::CE_TOONILAND_ACCOUNT; // 투니랜드유저
-			//	}
-			//}
-			//else		// @가 있다
-			//{
-   //             //CheckUserIDAndSetChannelCode( spGSUserInfo->m_wstrUserID, L"@nx", KNexonAccountInfo::CE_NEXON_ACCOUNT, spGSUserInfo->m_ucChannelCode );
-			//	iRet = static_cast<int>( spGSUserInfo->m_wstrUserID.find( L"@nx", 0 ) );
-			//	if( iRet != -1 )
-			//	{
-			//		if( spGSUserInfo->m_ucChannelCode != KNexonAccountInfo::CE_NEXON_ACCOUNT )
-			//		{
-			//			START_LOG( clog, L"이상한 채널코드로 동록 되어 있다." )
-			//				<< BUILD_LOG( spGSUserInfo->m_ucChannelCode )
-			//				<< END_LOG;
-			//			spGSUserInfo->m_ucChannelCode = KNexonAccountInfo::CE_NEXON_ACCOUNT; // 넥슨 유저
-			//		}
-			//	}
-			//	else
-			//	{
-			//		spGSUserInfo->m_ucChannelCode = KNexonAccountInfo::CE_NEXON_ACCOUNT; // 넥슨 유저
-			//	}
-			//}
-
-			std::wstring wstrResult;
-			std::wstring wstrID;
-			wstrResult = boost::str( boost::wformat( L"%d" ) % spGSUserInfo->m_ucChannelCode );
-			wstrResult += ';';
-			wstrID = boost::str( boost::wformat( L"%s" ) % spGSUserInfo->m_wstrUserID );
-			wstrResult += wstrID;
-
-			KGSUserInfo temp = *spGSUserInfo;
-			temp.m_wstrUserID = wstrResult;
-
-			// 인증 서버로 로그인 요청
-			NexonAuthLogin( temp, true );
-			//}}
-
-			START_LOG( clog2, L"넥슨 PC방 인증 서버 : 인증서버 연결실패로 인한 로그인 재시도!" )
-				<< BUILD_LOG( spGSUserInfo->m_wstrUserID )
-				<< BUILD_LOG( spGSUserInfo->m_uiIP )
-				<< BUILD_LOG( spGSUserInfo->m_byteCanTry )
-				<< BUILD_LOG( spGSUserInfo->m_bIsGuestUser );
-		}
-	}
-}
-
-int KUserList::CheckUserIDAndSetChannelCode( IN const std::wstring& wstrUserID_, IN const std::wstring& wstrPostfix_ , IN const int& nAcocuntType_, OUT UCHAR& ucChannelCode_ )
-{
-    int nRet = static_cast<int>( wstrUserID_.find( wstrPostfix_, 0 ) );
-
-    if ( nRet != -1 )
-    {
-        if( ucChannelCode_ != nAcocuntType_ )
-        {
-            START_LOG( cwarn, L"이상한 채널코드로 등록 되어 있다." )
-                << BUILD_LOG( ucChannelCode_ )
-                << BUILD_LOG( nAcocuntType_ )
-                << END_LOG;
-            ucChannelCode_ = static_cast<UCHAR>(nAcocuntType_);
-        }
-
-    }
-
-    return nRet;
-}
-
-void KUserList::NexonAuthLogin( const KGSUserInfo& kUserInfo, bool bOnlyAuthentication /*= false*/ )
-{
-	KENX_AUTH_LOGIN_REQ kPacketReq;
-	kPacketReq.m_bytePacketType	= 42;
-	kPacketReq.m_wstrUserID		= kUserInfo.m_wstrUserID;
-	kPacketReq.m_uiIP			= kUserInfo.m_uiIP;
-
-	// 아이디의 체험판 여부
-	{
-		KPropertyValue kProperty;
-		kProperty.m_bytePropertyValue = kUserInfo.m_byteCanTry;
-		kPacketReq.m_mapProperty.insert( std::make_pair( 3, kProperty ) );
-	}
-
-	// 체험ID 여부
-	{
-		KPropertyValue kProperty;
-		kProperty.m_bytePropertyValue = ( kUserInfo.m_bIsGuestUser ? 1 : 0 );
-		kPacketReq.m_mapProperty.insert( std::make_pair( 4, kProperty ) );
-	}
-
-	// 엘소드는 게임 실행 중 프리미엄 적용이 불가능하므로 OnlyAuthentication을 보냄
-	if( bOnlyAuthentication )
-	{
-		KPropertyValue kProperty;
-		kProperty.m_bytePropertyValue = 1; // 일반 개인
-		kPacketReq.m_mapProperty.insert( std::make_pair( 12, kProperty ) );
-	}
-
-	//{{ 2011. 09. 29  김민성	셧다운제 도입
-	/*
-	//{{ 2011. 06. 22    김민성    이탈 방지 모델 - NEXON 세션 시스템 수정
-#ifdef SERV_NEXON_SESSION_PROTOCOL
-	// 이탈 예상 여부
-	{
-		KPropertyValue kProperty;
-		kProperty.m_bytePropertyValue = 4;
-		kPacketReq.m_mapProperty.insert( std::make_pair( 17, kProperty ) );
-	}
-#endif SERV_NEXON_SESSION_PROTOCOL
-	//}}
-	*/
-	//}}
-
-	KEventPtr spEvent( new KEvent );
-	spEvent->SetData( PI_LOGIN_NX_AUTH, NULL, ENX_AUTH_LOGIN_REQ, kPacketReq );
-	SiKNexonAuthManager()->QueueingEvent( spEvent );
-
-	//{{ 2012. 09. 03	최육사		중복 접속 버그 수정
-	RegAuthWaitUser( kUserInfo );
-	//}}
-}
-
-void KUserList::NexonAuthLogout( const std::wstring& wstrUserID, __int64 iSessionNo )
-{
-	KENX_AUTH_LOGOUT_NOT kPacketNot;
-	kPacketNot.m_bytePacketType = 43;
-	kPacketNot.m_byteLogoutType = 8;
-	kPacketNot.m_wstrUserID		= wstrUserID;
-	kPacketNot.m_iSessionNo		= iSessionNo;
-
-	KEventPtr spEvent( new KEvent );
-	spEvent->SetData( PI_LOGIN_NX_AUTH, NULL, ENX_AUTH_LOGOUT_NOT, kPacketNot );
-	SiKNexonAuthManager()->QueueingEvent( spEvent );
-}
-
-bool KUserList::UpdateSessionNoByUserID( const std::wstring& wstrUserID, __int64 iSessionNo )
-{
-	std::map< std::wstring, boost::shared_ptr< KGSUserInfo > >::iterator mit;
-
-	mit = m_mapUserID.find( wstrUserID );
-	if( mit == m_mapUserID.end() )
-	{
-		return false;
-	}
-
-	if( !mit->second )
-	{
-		START_LOG( cerr, L"포인터 이상." )
-			<< BUILD_LOG( wstrUserID )
-			<< END_LOG;
-
-		return false;
-	}
-
-	//{{ 2011. 09. 27	김민성	PC 방 오과금 방지
-	//}}
-
-	mit->second->m_iSessionNo = iSessionNo;
-
-	return true;
-}
-
-void KUserList::LoginTimeOut( const KELG_NEXON_USER_LOGIN_TIME_OUT_NOT& kInfo )
-{
-	KGSUserInfo kUserInfo;
-	if( GetGSUserInfoByUserID( kInfo.m_wstrUserID, kUserInfo ) == false )
-	{
-		START_LOG( cerr, L"유저 정보가 존재하지 않습니다!" )
-			<< BUILD_LOG( kInfo.m_wstrUserID )
-			<< END_LOG;
-		return;
-	}
-
-	//{{ 2011. 07. 27    김민성    투니랜드 채널링
-	//{{ 2012. 04. 02	김민성		넥슨 auth soap
-	//}}
-
-	std::wstring wstrResult;
-	std::wstring wstrID;
-	wstrResult = boost::str( boost::wformat( L"%d" ) % kUserInfo.m_ucChannelCode );
-	wstrResult += ';';
-	wstrID = boost::str( boost::wformat( L"%s" ) % kUserInfo.m_wstrUserID );
-	wstrResult += wstrID; // wstrResult 는 채널링코드(세션용);userid@naver 로 결합된 형태 -SSO채널링코드 아님-에 주의
-
-	// 인증서버로 로그아웃 요청
-	NexonAuthLogout( wstrResult, kUserInfo.m_iSessionNo );
-	//}}
-
-	START_LOG( clog2, L"넥슨 PC방 인증 서버 개편 : 타임 아웃으로 인한 계정 로그아웃!" )
-		<< BUILD_LOG( kInfo.m_wstrUserID )
-		<< BUILD_LOG( kUserInfo.m_iSessionNo );
-
-	// SessionNo는 0으로 갱신!
-	LIF( UpdateSessionNoByUserID( kInfo.m_wstrUserID, 0 ) );
-
-	//{{ 2011. 07. 27    김민성    투니랜드 채널링
-	//{{ 2012. 04. 02	김민성		넥슨 auth soap
-	//}}
-
-	wstrResult.clear();
-	wstrID.clear();
-	wstrResult = boost::str( boost::wformat( L"%d" ) % kUserInfo.m_ucChannelCode );
-	wstrResult += ';';
-	wstrID = boost::str( boost::wformat( L"%s" ) % kUserInfo.m_wstrUserID );
-	wstrResult += wstrID;
-
-	KGSUserInfo temp = kUserInfo;
-	temp.m_wstrUserID = wstrResult;
-
-	// 인증 서버로 로그인 요청
-	NexonAuthLogin( temp, true );
-	//}}
-
-	START_LOG( clog2, L"넥슨 PC방 인증 서버 개편 : 타임 아웃으로 인한 계정 로그인!" )
-		<< BUILD_LOG( kUserInfo.m_wstrUserID )
-		<< BUILD_LOG( kUserInfo.m_uiIP )
-		<< BUILD_LOG( kUserInfo.m_byteCanTry )
-		<< BUILD_LOG( kUserInfo.m_bIsGuestUser );
-}
-
 //}}
 
 int KUserList::RegUser( IN const UidType iUserUID, IN const UidType iGSUID, IN const KELG_REGISTER_USER_REQ& kInfo_, IN const bool bChannelChanged )
@@ -505,7 +177,7 @@ int KUserList::RegUser( IN const UidType iUserUID, IN const UidType iGSUID, IN c
     }
 
 	// 2. 유저 정보 생성
-    boost::shared_ptr< KGSUserInfo > spGSUserInfo( new KGSUserInfo() );
+    std::shared_ptr< KGSUserInfo > spGSUserInfo( new KGSUserInfo() );
     spGSUserInfo->m_nUserUID	 = iUserUID;
     spGSUserInfo->m_wstrUserID	 = kInfo_.m_wstrUserID;
     spGSUserInfo->m_nGSUID		 = iGSUID;
@@ -527,8 +199,8 @@ int KUserList::RegUser( IN const UidType iUserUID, IN const UidType iGSUID, IN c
 	spGSUserInfo->m_strMachineID = kInfo_.m_strMachineID;
 	//}}
 
-    std::map< UidType, boost::shared_ptr< KGSUserInfo > >::iterator mitUserUID;
-    std::map< std::wstring, boost::shared_ptr< KGSUserInfo > >::iterator mitUserID;
+    std::map< UidType, std::shared_ptr< KGSUserInfo > >::iterator mitUserUID;
+    std::map< std::wstring, std::shared_ptr< KGSUserInfo > >::iterator mitUserID;
 	//{{ 2011. 08. 17	최육사	머신ID 중복 접속 차단
 	// 중복되는 머신ID가 있는지 확인!
 	if( KSimLayer::GetKObj()->GetVersionFlag() != KSimLayer::VF_OPEN_TEST )		// 오픈 테섭에서는 검사 제외
@@ -783,133 +455,9 @@ int KUserList::RegUser( IN const UidType iUserUID, IN const UidType iGSUID, IN c
 
 end_proc:
     // 6. 인증 서버 로그인 - 정상적인 유저 등록이면 여기로 온다.
-    if( KSimLayer::GetKObj()->GetAuthFlag() == KSimLayer::AF_NEXON_KOREA )
-    {
-		//{{ 2010. 06. 04  최육사	넥슨PC방 인증 서버 개편
-//#ifdef SERV_PCBANG_AUTH_NEW
-		//{{ 2011. 07. 27    김민성    투니랜드 채널링
-//#ifdef SERV_TOONILAND_CHANNELING
-		//{{ 2012. 04. 02	김민성		넥슨 auth soap
-//#ifdef SERV_NEXON_AUTH_SOAP
-		/*int iRet = static_cast<int>( spGSUserInfo->m_wstrUserID.find( L"@tooni", 0 ) );
-		if( iRet != -1 ) // @tooni 있다
-		{
-			if( spGSUserInfo->m_ucChannelCode != KNexonAccountInfo::CE_TOONILAND_ACCOUNT )
-			{
-				START_LOG( clog, L"이상한 채널코드로 동록 되어 있다." )
-					<< BUILD_LOG( spGSUserInfo->m_ucChannelCode )
-					<< END_LOG;
-				spGSUserInfo->m_ucChannelCode = KNexonAccountInfo::CE_TOONILAND_ACCOUNT; // 투니랜드유저
-			}
-		}
-		else
-		{
-			iRet = static_cast<int>( spGSUserInfo->m_wstrUserID.find( L"@nx", 0 ) );
-			if( iRet != -1 ) // @nx 있다
-			{
-				if( spGSUserInfo->m_ucChannelCode != KNexonAccountInfo::CE_NEXON_ACCOUNT )
-				{
-					START_LOG( clog, L"이상한 채널코드로 동록 되어 있다." )
-						<< BUILD_LOG( spGSUserInfo->m_ucChannelCode )
-						<< END_LOG;
-					spGSUserInfo->m_ucChannelCode = KNexonAccountInfo::CE_NEXON_ACCOUNT; // 넥슨 유저
-				}
-			}
-			else
-			{
-				spGSUserInfo->m_ucChannelCode = KNexonAccountInfo::CE_NEXON_ACCOUNT; // 넥슨 유저
-			}
-		}*/
-
-        int nRet1st = CheckUserIDAndSetChannelCode( spGSUserInfo->m_wstrUserID, L"@tooni", KNexonAccountInfo::CE_TOONILAND_ACCOUNT, spGSUserInfo->m_ucChannelCode );
-        int nRet2nd = CheckUserIDAndSetChannelCode( spGSUserInfo->m_wstrUserID, L"@nx", KNexonAccountInfo::CE_NEXON_ACCOUNT, spGSUserInfo->m_ucChannelCode );
-        int nRet3rd = CheckUserIDAndSetChannelCode( spGSUserInfo->m_wstrUserID, L"@naver", KNexonAccountInfo::CE_NAVER_ACCOUNT, spGSUserInfo->m_ucChannelCode );
-
-        if ( nRet1st == -1 && nRet2nd == -1 && nRet3rd == -1 )
-        {
-            spGSUserInfo->m_ucChannelCode = KNexonAccountInfo::CE_NEXON_ACCOUNT; // 넥슨 유저 , 기본값
-        }
-
-//#else
-//		int iRet = static_cast<int>( spGSUserInfo->m_wstrUserID.find( L'@', 0 ) );
-//		if( iRet == -1 ) // @가 없다
-//		{
-//			if( spGSUserInfo->m_ucChannelCode != KNexonAccountInfo::CE_NEXON_ACCOUNT )
-//			{
-//				START_LOG( clog, L"이상한 채널코드로 동록 되어 있다." )
-//					<< BUILD_LOG( spGSUserInfo->m_ucChannelCode )
-//					<< END_LOG;
-//				spGSUserInfo->m_ucChannelCode = KNexonAccountInfo::CE_NEXON_ACCOUNT; // 넥슨 유저
-//			}
-//		}
-//		else		// @가 있다
-//		{
-//			if( spGSUserInfo->m_ucChannelCode != KNexonAccountInfo::CE_TOONILAND_ACCOUNT )
-//			{
-//				START_LOG( clog, L"이상한 채널코드로 동록 되어 있다." )
-//					<< BUILD_LOG( spGSUserInfo->m_ucChannelCode )
-//					<< END_LOG;
-//				spGSUserInfo->m_ucChannelCode = KNexonAccountInfo::CE_TOONILAND_ACCOUNT; // 투니랜드유저
-//			}
-//		}
-//#endif SERV_NEXON_AUTH_SOAP
-		//}}
-
-		std::wstring wstrResult;
-		std::wstring wstrID;
-		wstrResult = boost::str( boost::wformat( L"%d" ) % spGSUserInfo->m_ucChannelCode );
-		wstrResult += ';';
-		wstrID = boost::str( boost::wformat( L"%s" ) % spGSUserInfo->m_wstrUserID );
-		wstrResult += wstrID;
-
-		KGSUserInfo temp = *spGSUserInfo;
-		temp.m_wstrUserID = wstrResult;
-
-		// 인증 서버로 로그인 요청
-		NexonAuthLogin( temp );
-//#else
-//		// 인증서버로 로그인 요청
-//		NexonAuthLogin( *spGSUserInfo );
-//#endif SERV_TOONILAND_CHANNELING
-		//}}
-
-//#else
-//		//////////////////////////////////////////////////////////////////////////
-//		KENX_USER_LOGIN_REQ kPacketReq;
-//
-//		//if( StrRChrW( wstrUserID.c_str(), wstrUserID.c_str()+wstrUserID.size(), L'/' ) != NULL )
-//		//{
-//		//	kPacketReq.m_wstrUserID = wstrUserID.substr( 0, wstrUserID.size() - 1 );
-//		//}
-//
-//		kPacketReq.m_bytePacketType = 39;
-//		kPacketReq.m_byteLogin		= 4;
-//		kPacketReq.m_wstrUserID		= kInfo_.m_wstrUserID;
-//		kPacketReq.m_wstrUnitNickName.clear();
-//		kPacketReq.m_uiIP			= kInfo_.m_uiIP;
-//		kPacketReq.m_byteCanTry		= kInfo_.m_byteCanTry;
-//		kPacketReq.m_byteGuestUser	= kInfo_.m_byteGuestUser;
-//
-//		KEventPtr spEvent( new KEvent );
-//		spEvent->SetData( PI_LOGIN_NX_AUTH, NULL, ENX_USER_LOGIN_REQ, kPacketReq );
-//		SiKNexonBillingAuthManager()->QueueingEvent( spEvent );
-//#endif SERV_PCBANG_AUTH_NEW
-		//}}
-
-		//{{ 2008. 5. 27  최육사  체험ID 동접
-		if( IsGuestUser( kInfo_.m_byteGuestUser ) )
-		{
-			IncreaseGuestConcurrentUser();
-		}
-		//}}
-    }
-
-	else
-	{
-		//{{ 2012. 09. 03	최육사		중복 접속 버그 수정
-		RegAuthWaitUser( *spGSUserInfo );
-		//}}
-	}
+	//{{ 2012. 09. 03	최육사		중복 접속 버그 수정
+	RegAuthWaitUser( *spGSUserInfo );
+	//}}
 
     return NetError::NET_OK;
 }
@@ -926,8 +474,8 @@ bool KUserList::UnRegUser( IN const UidType iUserUID )
         return false;
     }
 
-    std::map< UidType, boost::shared_ptr< KGSUserInfo > >::iterator mitUserUID;
-    std::map< std::wstring, boost::shared_ptr< KGSUserInfo > >::iterator mitUserID;
+    std::map< UidType, std::shared_ptr< KGSUserInfo > >::iterator mitUserUID;
+    std::map< std::wstring, std::shared_ptr< KGSUserInfo > >::iterator mitUserID;
 
 	// 2. 삭제하려는 유저가 있는지 검사
     mitUserUID = m_mapUserUID.find( iUserUID );
@@ -1004,7 +552,7 @@ bool KUserList::UnRegUser( IN const UidType iUserUID )
 	}
 	else
 	{
-		std::map< std::string, boost::shared_ptr< KGSUserInfo > >::iterator mitMachineID;
+		std::map< std::string, std::shared_ptr< KGSUserInfo > >::iterator mitMachineID;
 		mitMachineID = m_mapMachineID.find( kInfo.m_strMachineID );
 		if( mitMachineID == m_mapMachineID.end() )
 		{
@@ -1029,42 +577,6 @@ bool KUserList::UnRegUser( IN const UidType iUserUID )
 	// 5. 현재 동접 저장
 	SetConcurrentUserCount( m_mapUserUID.size() );
 
-	// 6. 인증 서버 로그 아웃
-    switch( KSimLayer::GetKObj()->GetAuthFlag() )
-    {
-    case KSimLayer::AF_NEXON_KOREA:
-        {
-			//{{ 2010. 06. 08  최육사	넥슨PC방 인증 서버 개편
-			// 인증서버로 로그아웃 요청
-			//{{ 2011. 07. 27    김민성    투니랜드 채널링
-			//{{ 2012. 04. 02	김민성		넥슨 auth soap
-			//}}
-
-			std::wstring wstrResult;
-			std::wstring wstrID;
-
-			wstrResult = boost::str( boost::wformat( L"%d" ) % kInfo.m_ucChannelCode );
-			wstrResult += ';';
-			wstrID = boost::str( boost::wformat( L"%s" ) % kInfo.m_wstrUserID );
-			wstrResult += wstrID;
-
-			NexonAuthLogout( wstrResult, iSessionNo );
-			//}}
-			//}}
-			//{{ 2011. 09. 27	김민성	PC 방 오과금 방지
-			//}}
-
-			//{{ 2008. 5. 27  최육사  체험ID 동접
-			if( kInfo.m_bIsGuestUser )
-			{
-				DecreaseGuestConcurrentUser();
-			}
-			//}}
-		}
-        break;
-    default:
-        break;
-    }
 
 
     return true;
@@ -1085,7 +597,7 @@ void KUserList::UnRegAllUserOfThisGS( IN const UidType iGSUID )
     }
 
     std::vector< UidType > vecUserUID;
-    std::map< UidType, boost::shared_ptr< KGSUserInfo > >::iterator mitUserUID;
+    std::map< UidType, std::shared_ptr< KGSUserInfo > >::iterator mitUserUID;
     for( mitUserUID = m_mapUserUID.begin(); mitUserUID != m_mapUserUID.end(); mitUserUID++ )
     {
         if( !mitUserUID->second )
@@ -1154,7 +666,7 @@ int KUserList::RegUnit( IN const UidType iUserUID, IN const UidType iUnitUID, IN
 		return NetError::ERR_USER_REGISTRATION_09;
 	}
 
-    std::map< UidType, boost::shared_ptr< KGSUserInfo > >::iterator mitUserUID;
+    std::map< UidType, std::shared_ptr< KGSUserInfo > >::iterator mitUserUID;
     mitUserUID = m_mapUserUID.find( iUserUID );
     if( mitUserUID == m_mapUserUID.end() )
     {
@@ -1177,7 +689,7 @@ int KUserList::RegUnit( IN const UidType iUserUID, IN const UidType iUnitUID, IN
     }
 
 	//UID로 검색
-    std::map< UidType, boost::shared_ptr< KGSUserInfo > >::iterator mitUnitUID;
+    std::map< UidType, std::shared_ptr< KGSUserInfo > >::iterator mitUnitUID;
     mitUnitUID = m_mapUnitUID.find( mitUserUID->second->m_nUnitUID );
     if( mitUnitUID != m_mapUnitUID.end() )
     {
@@ -1202,7 +714,7 @@ int KUserList::RegUnit( IN const UidType iUserUID, IN const UidType iUnitUID, IN
     m_mapUnitUID.insert( std::make_pair( iUnitUID, mitUserUID->second ) );
 
 	//닉네임 검색
-    std::map< std::wstring, boost::shared_ptr< KGSUserInfo > >::iterator mitUnitNickName;
+    std::map< std::wstring, std::shared_ptr< KGSUserInfo > >::iterator mitUnitNickName;
     mitUnitNickName = m_mapUnitNickName.find( mitUserUID->second->m_wstrUnitNickName );
     if( mitUnitNickName != m_mapUnitNickName.end() )
     {
@@ -1249,7 +761,7 @@ bool KUserList::UnRegUnit( IN const UidType iUserUID )
         return false;
     }
 
-    std::map< UidType, boost::shared_ptr< KGSUserInfo > >::iterator mitUserUID;
+    std::map< UidType, std::shared_ptr< KGSUserInfo > >::iterator mitUserUID;
     mitUserUID = m_mapUserUID.find( iUserUID );
     if( mitUserUID == m_mapUserUID.end() )
     {
@@ -1269,7 +781,7 @@ bool KUserList::UnRegUnit( IN const UidType iUserUID )
         return false;
     }
 
-    std::map< UidType, boost::shared_ptr< KGSUserInfo > >::iterator mitUnitUID;
+    std::map< UidType, std::shared_ptr< KGSUserInfo > >::iterator mitUnitUID;
     if( mitUserUID->second->m_nUnitUID > 0 )
     {
         mitUnitUID = m_mapUnitUID.find( mitUserUID->second->m_nUnitUID );
@@ -1314,7 +826,7 @@ bool KUserList::UnRegUnit( IN const UidType iUserUID )
         }
     }
 
-    std::map< std::wstring, boost::shared_ptr< KGSUserInfo > >::iterator mitUnitNickName;
+    std::map< std::wstring, std::shared_ptr< KGSUserInfo > >::iterator mitUnitNickName;
     if( !mitUserUID->second->m_wstrUnitNickName.empty() )
     {
         mitUnitNickName = m_mapUnitNickName.find( mitUserUID->second->m_wstrUnitNickName );
@@ -1354,7 +866,7 @@ bool KUserList::UnRegUnit( IN const UidType iUserUID )
 //{{ 2009. 4. 1  최육사		친구 차단
 bool KUserList::SetDenyFriendShip( UidType iUnitUID, bool bDenyFriendShip )
 {
-	std::map< UidType, boost::shared_ptr< KGSUserInfo > >::iterator mit;
+	std::map< UidType, std::shared_ptr< KGSUserInfo > >::iterator mit;
 
 	mit = m_mapUnitUID.find( iUnitUID );
 	if( mit == m_mapUnitUID.end() )
@@ -1438,7 +950,7 @@ void KUserList::Tick()
 		}
 	}
 
-	BOOST_TEST_FOREACH( const UidType, iUserUID, vecDeleteUserList )
+	for( const UidType iUserUID : vecDeleteUserList )
 	{
 		// 일단 먼저 지우고
 		UnRegAuthWaitUser( iUserUID );

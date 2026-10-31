@@ -2,7 +2,7 @@
 
 #include <KNCSingleton.h>
 #include <ToString.h>
-#include <boost/timer.hpp>
+#include "x2/platform/timer.h"
 #include "KncSend.h"
 
 
@@ -44,7 +44,7 @@ private:
 
 private:
 	std::map< std::wstring, KModuleInfo >	m_mapModuleList;
-	boost::timer							m_kTimer;
+	x2::Timer							m_kTimer;
 
 	//{{  2012. 1. 30	김민성		한방핵 방어(해킹 프로세스 검사)
 	//}}

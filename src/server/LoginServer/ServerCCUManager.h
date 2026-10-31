@@ -3,7 +3,7 @@
 #include <KNCSingleton.h>
 #include <ToString.h>
 #include <map>
-#include <boost/timer.hpp>
+#include "x2/platform/timer.h"
 #include "KncSend.h"
 
 
@@ -45,7 +45,7 @@ protected:
 private:
 	std::map< UidType, KUpdateCCUInfo >		m_mapCCUInfo;
 
-	boost::timer							m_kTimer[TM_TOTAL_NUM];
+	x2::Timer							m_kTimer[TM_TOTAL_NUM];
 	//CTime									m_tNextUpdateTime;
 
 	//{{ 2011.10.12 조효진 동접 정보 버그 수정 및 전체 동접 서버에서 남기도록 수정

@@ -1,4 +1,4 @@
-#include <winsock2.h>
+#include "x2/platform/net.h"
 #include <iomanip>
 #include <sstream>
 
@@ -1267,7 +1267,7 @@ IMPL_ON_FUNC_NOPARAM( DBE_LOAD_PSHOP_AGENCY_REQ )
 
 	// 대리 상점 인벤 정보 얻기
 	{
-		BOOST_TEST_FOREACH( KERM_OPEN_PSHOP_AGENCY_BY_SERVER_NOT&, kInfo, kPacket.m_vecOpenPShopAgency )
+		for( KERM_OPEN_PSHOP_AGENCY_BY_SERVER_NOT& kInfo : kPacket.m_vecOpenPShopAgency )
 		{
 			// 상점 판매 물품 얻기
 			DO_QUERY( L"exec dbo.P_GPShopItem_SEL", L"%d", % kInfo.m_iUnitUID );
@@ -1345,7 +1345,7 @@ IMPL_ON_FUNC_NOPARAM( DBE_LOAD_PSHOP_AGENCY_REQ )
 
 	// 대리상점이 정상적으로 개설된건지 체크하기!
 	{
-		BOOST_TEST_FOREACH( const KERM_OPEN_PSHOP_AGENCY_BY_SERVER_NOT&, kInfo, kPacket.m_vecOpenPShopAgency )
+		for( const KERM_OPEN_PSHOP_AGENCY_BY_SERVER_NOT& kInfo : kPacket.m_vecOpenPShopAgency )
 		{
 			if( kInfo.m_vecSellItemInfo.empty() == false )
 				continue;
@@ -1455,6 +1455,7 @@ end_proc:
 //{{ 2012. 05. 31	김민성       대리 상점 거래 로직 변경
 _IMPL_ON_FUNC( DBE_REG_PSHOP_AGENCY_ITEM_REQ, KERM_REG_PERSONAL_SHOP_ITEM_ACK )
 {
+	UidType iItemUID[SEnum::PAE_SELL_ITEM_LIMIT_NUM] = {0,};
 	// SP 쿼리를 만들어 보자
 	//{{ 2013. 05. 28	최육사	아이템 개편
 	std::wstring wstrQuerySP = L"exec dbo.P_GItem_Total_Pshop_New ";
@@ -1485,44 +1486,43 @@ _IMPL_ON_FUNC( DBE_REG_PSHOP_AGENCY_ITEM_REQ, KERM_REG_PERSONAL_SHOP_ITEM_ACK )
 		goto end_proc;
 	}
 
-	wstrQuerySP += boost::str( boost::wformat( L"%d" ) % iTemp_Type );
+	wstrQuerySP += x2::str( x2::wformat( L"%d" ) % iTemp_Type );
 
 	// 판매자
-	wstrQuerySP += boost::str( boost::wformat( L", %d" ) % kPacket_.m_iUnitUID );
+	wstrQuerySP += x2::str( x2::wformat( L", %d" ) % kPacket_.m_iUnitUID );
 
 	// 구매자
-	wstrQuerySP += boost::str( boost::wformat( L", %d" ) % iTemp_Zero );
+	wstrQuerySP += x2::str( x2::wformat( L", %d" ) % iTemp_Zero );
 
 	// 판매자 ED
-	wstrQuerySP += boost::str( boost::wformat( L", %d" ) % iTemp_Zero );		// 수수료가 다르기 때문에 각자 처리 해야한다.
+	wstrQuerySP += x2::str( x2::wformat( L", %d" ) % iTemp_Zero );		// 수수료가 다르기 때문에 각자 처리 해야한다.
 
 	// 구매자 ED
-	wstrQuerySP += boost::str( boost::wformat( L", %d" ) % iTemp_Zero );		// 수수료가 다르기 때문에 각자 처리 해야한다.
+	wstrQuerySP += x2::str( x2::wformat( L", %d" ) % iTemp_Zero );		// 수수료가 다르기 때문에 각자 처리 해야한다.
 
 	// 등록 아이템
-	BOOST_TEST_FOREACH( KSellPersonalShopItemInfo&, kSellItemInfo,  kPacket_.m_vecSellItemInfo)
+	for( KSellPersonalShopItemInfo& kSellItemInfo : kPacket_.m_vecSellItemInfo )
 	{
-		wstrQuerySP += boost::str( boost::wformat( L", %d" ) % kSellItemInfo.m_kInventoryItemInfo.m_iItemUID );								// ItemUID
-		wstrQuerySP += boost::str( boost::wformat( L", %d" ) % kSellItemInfo.m_kInventoryItemInfo.m_kItemInfo.m_iQuantity );				// Quantity
-		wstrQuerySP += boost::str( boost::wformat( L", %d" ) % kSellItemInfo.m_iPricePerOne );												// price
-		wstrQuerySP += boost::str( boost::wformat( L", %d" ) % static_cast<int>(kSellItemInfo.m_kInventoryItemInfo.m_cSlotCategory) );		// category
+		wstrQuerySP += x2::str( x2::wformat( L", %d" ) % kSellItemInfo.m_kInventoryItemInfo.m_iItemUID );								// ItemUID
+		wstrQuerySP += x2::str( x2::wformat( L", %d" ) % kSellItemInfo.m_kInventoryItemInfo.m_kItemInfo.m_iQuantity );				// Quantity
+		wstrQuerySP += x2::str( x2::wformat( L", %d" ) % kSellItemInfo.m_iPricePerOne );												// price
+		wstrQuerySP += x2::str( x2::wformat( L", %d" ) % static_cast<int>(kSellItemInfo.m_kInventoryItemInfo.m_cSlotCategory) );		// category
 	}
 
 	for(int i = static_cast<int>(kPacket_.m_vecSellItemInfo.size()) ; i < SEnum::PAE_SELL_ITEM_LIMIT_NUM ; ++i )// 아이템이 빈 곳을 채워주는 곳
 	{
-		wstrQuerySP += boost::str( boost::wformat( L", %d" ) % iTemp_Zero );		// ItemUID
-		wstrQuerySP += boost::str( boost::wformat( L", %d" ) % iTemp_Zero );		// Quantity
-		wstrQuerySP += boost::str( boost::wformat( L", %d" ) % iTemp_Zero );		// price
-		wstrQuerySP += boost::str( boost::wformat( L", %d" ) % iTemp_Zero );		// category
+		wstrQuerySP += x2::str( x2::wformat( L", %d" ) % iTemp_Zero );		// ItemUID
+		wstrQuerySP += x2::str( x2::wformat( L", %d" ) % iTemp_Zero );		// Quantity
+		wstrQuerySP += x2::str( x2::wformat( L", %d" ) % iTemp_Zero );		// price
+		wstrQuerySP += x2::str( x2::wformat( L", %d" ) % iTemp_Zero );		// category
 	}
 
 	// 상점 이름
-	wstrQuerySP += boost::str( boost::wformat( L", N\'%s\'" ) % kPacket_.m_wstrPersonalShopName );
+	wstrQuerySP += x2::str( x2::wformat( L", N\'%s\'" ) % kPacket_.m_wstrPersonalShopName );
 
 	DO_QUERY_NO_ARG( wstrQuerySP.c_str() );
 
 	// 아이템은 9개 이므로 9개로 고정한다.
-	UidType iItemUID[SEnum::PAE_SELL_ITEM_LIMIT_NUM] = {0,};
 
 	if( m_kODBC.BeginFetch() )
 	{
@@ -1562,7 +1562,7 @@ _IMPL_ON_FUNC( DBE_REG_PSHOP_AGENCY_ITEM_REQ, KERM_REG_PERSONAL_SHOP_ITEM_ACK )
 		}
 
 		int index = 0;
-		BOOST_TEST_FOREACH( KSellPersonalShopItemInfo&, kSellItemInfo,  kPacket_.m_vecSellItemInfo)
+		for( KSellPersonalShopItemInfo& kSellItemInfo : kPacket_.m_vecSellItemInfo )
 		{
 			KSellPersonalShopItemInfo kItemTemp;
 			kItemTemp = kSellItemInfo;
@@ -1580,6 +1580,7 @@ end_proc:
 //{{ 2012. 05. 31	김민성       대리 상점 거래 로직 변경
 IMPL_ON_FUNC( DBE_BUY_PSHOP_AGENCY_ITEM_REQ )
 {
+	UidType iItemUID[SEnum::PAE_SELL_ITEM_LIMIT_NUM] = {0,};
 	kPacket_.m_iOK = NetError::ERR_ODBC_01;
 
 	// SP 쿼리를 만들어 보자
@@ -1588,43 +1589,42 @@ IMPL_ON_FUNC( DBE_BUY_PSHOP_AGENCY_ITEM_REQ )
 	//{{ 2013. 05. 28	최육사	아이템 개편
 	std::wstring wstrQuerySP = L"exec dbo.P_GItem_Total_Pshop_New ";
 	//}}
-	wstrQuerySP += boost::str( boost::wformat( L"%d" ) % iTemp_Type );
+	wstrQuerySP += x2::str( x2::wformat( L"%d" ) % iTemp_Type );
 
 	// 판매자
-	wstrQuerySP += boost::str( boost::wformat( L", %d" ) % kPacket_.m_iHostUnitUID );
+	wstrQuerySP += x2::str( x2::wformat( L", %d" ) % kPacket_.m_iHostUnitUID );
 
 	// 구매자
-	wstrQuerySP += boost::str( boost::wformat( L", %d" ) % kPacket_.m_iPriceUnitUID );
+	wstrQuerySP += x2::str( x2::wformat( L", %d" ) % kPacket_.m_iPriceUnitUID );
 
 	// 판매자 ED
-	wstrQuerySP += boost::str( boost::wformat( L", %d" ) % iTemp_Zero );				// 판매자는 회수때 처리
+	wstrQuerySP += x2::str( x2::wformat( L", %d" ) % iTemp_Zero );				// 판매자는 회수때 처리
 
 	// 구매자 ED
-	wstrQuerySP += boost::str( boost::wformat( L", %d" ) % kPacket_.m_iPriceUnitEDOUT );		// 수수료가 다르기 때문에 각자 처리 해야한다.
+	wstrQuerySP += x2::str( x2::wformat( L", %d" ) % kPacket_.m_iPriceUnitEDOUT );		// 수수료가 다르기 때문에 각자 처리 해야한다.
 
 	// 판매자 아이템
-	wstrQuerySP += boost::str( boost::wformat( L", %d" ) % kPacket_.m_kSellItemDBUpdate.m_iItemUID );	// itemuid - 대리상점 itemuid
-	wstrQuerySP += boost::str( boost::wformat( L", %d" ) % kPacket_.m_kSellItemDBUpdate.m_kItemInfo.m_iQuantity );	// quantity
-	wstrQuerySP += boost::str( boost::wformat( L", %d" ) % 0 );												// price
-	wstrQuerySP += boost::str( boost::wformat( L", %d" ) % 0 );												// category
+	wstrQuerySP += x2::str( x2::wformat( L", %d" ) % kPacket_.m_kSellItemDBUpdate.m_iItemUID );	// itemuid - 대리상점 itemuid
+	wstrQuerySP += x2::str( x2::wformat( L", %d" ) % kPacket_.m_kSellItemDBUpdate.m_kItemInfo.m_iQuantity );	// quantity
+	wstrQuerySP += x2::str( x2::wformat( L", %d" ) % 0 );												// price
+	wstrQuerySP += x2::str( x2::wformat( L", %d" ) % 0 );												// category
 
 	// 구매자 아이템 - 구매자는 아이템이 들어오기만 하기 때문에 없다.
 	int index = 1;			// 물건 하나를 등록 했으므로 1로 초기화한다.
 	for( ; index < SEnum::PAE_SELL_ITEM_LIMIT_NUM ; ++index )
 	{
-		wstrQuerySP += boost::str( boost::wformat( L", %d" ) % iTemp_Zero );
-		wstrQuerySP += boost::str( boost::wformat( L", %d" ) % iTemp_Zero );
-		wstrQuerySP += boost::str( boost::wformat( L", %d" ) % iTemp_Zero );
-		wstrQuerySP += boost::str( boost::wformat( L", %d" ) % iTemp_Zero );
+		wstrQuerySP += x2::str( x2::wformat( L", %d" ) % iTemp_Zero );
+		wstrQuerySP += x2::str( x2::wformat( L", %d" ) % iTemp_Zero );
+		wstrQuerySP += x2::str( x2::wformat( L", %d" ) % iTemp_Zero );
+		wstrQuerySP += x2::str( x2::wformat( L", %d" ) % iTemp_Zero );
 	}
 
 	std::wstring wstrTemp;
-	wstrQuerySP += boost::str( boost::wformat( L", N\'%s\'" ) % wstrTemp );
+	wstrQuerySP += x2::str( x2::wformat( L", N\'%s\'" ) % wstrTemp );
 
 	DO_QUERY_NO_ARG( wstrQuerySP.c_str() );
 
 	// 아이템은 9개 이므로 9개로 고정한다.
-	UidType iItemUID[SEnum::PAE_SELL_ITEM_LIMIT_NUM] = {0,};
 
 	if( m_kODBC.BeginFetch() )
 	{
@@ -1709,6 +1709,7 @@ end_proc:
 //{{ 2012. 05. 31	김민성       대리 상점 거래 로직 변경
 IMPL_ON_FUNC( DBE_PICK_UP_FROM_PSHOP_AGENCY_REQ )
 {
+	UidType iItemUID[SEnum::PAE_SELL_ITEM_LIMIT_NUM] = {0,};
 	KDBE_PICK_UP_FROM_PSHOP_AGENCY_ACK kPacket;
 	kPacket.m_iGSUID = kPacket_.m_iGSUID;
 	kPacket.m_iUnitUID = kPacket_.m_iUnitUID;
@@ -1723,47 +1724,46 @@ IMPL_ON_FUNC( DBE_PICK_UP_FROM_PSHOP_AGENCY_REQ )
 	int iTemp_Type = 4;		// 대리 상점 아이템 회수 sp 타입
 	int iTemp_Zero = 0;
 
-	wstrQuerySP += boost::str( boost::wformat( L"%d" ) % iTemp_Type );
+	wstrQuerySP += x2::str( x2::wformat( L"%d" ) % iTemp_Type );
 
 	// 판매자
-	wstrQuerySP += boost::str( boost::wformat( L", %d" ) % kPacket_.m_iUnitUID );
+	wstrQuerySP += x2::str( x2::wformat( L", %d" ) % kPacket_.m_iUnitUID );
 
 	// 구매자
-	wstrQuerySP += boost::str( boost::wformat( L", %d" ) % iTemp_Zero );
+	wstrQuerySP += x2::str( x2::wformat( L", %d" ) % iTemp_Zero );
 
 	// 판매자 ED
-	wstrQuerySP += boost::str( boost::wformat( L", %d" ) % kPacket_.m_iSellItemTotalED );		// 전체 판매된 ED 총합
+	wstrQuerySP += x2::str( x2::wformat( L", %d" ) % kPacket_.m_iSellItemTotalED );		// 전체 판매된 ED 총합
 
 	// 구매자 ED
-	wstrQuerySP += boost::str( boost::wformat( L", %d" ) % iTemp_Zero );
+	wstrQuerySP += x2::str( x2::wformat( L", %d" ) % iTemp_Zero );
 
 	// 등록 아이템
-	BOOST_TEST_FOREACH( KSellPersonalShopItemInfo&, kSellItemInfo,  kPacket_.m_vecPickUpItemList)
+	for( KSellPersonalShopItemInfo& kSellItemInfo : kPacket_.m_vecPickUpItemList )
 	{
-		wstrQuerySP += boost::str( boost::wformat( L", %d" ) % kSellItemInfo.m_kInventoryItemInfo.m_iItemUID );								// ItemUID
-		wstrQuerySP += boost::str( boost::wformat( L", %d" ) % kSellItemInfo.m_kInventoryItemInfo.m_kItemInfo.m_iQuantity );				// Quantity
-		wstrQuerySP += boost::str( boost::wformat( L", %d" ) % kSellItemInfo.m_iPricePerOne );												// price
-		wstrQuerySP += boost::str( boost::wformat( L", %d" ) % static_cast<int>(kSellItemInfo.m_kInventoryItemInfo.m_cSlotCategory) );		// category
+		wstrQuerySP += x2::str( x2::wformat( L", %d" ) % kSellItemInfo.m_kInventoryItemInfo.m_iItemUID );								// ItemUID
+		wstrQuerySP += x2::str( x2::wformat( L", %d" ) % kSellItemInfo.m_kInventoryItemInfo.m_kItemInfo.m_iQuantity );				// Quantity
+		wstrQuerySP += x2::str( x2::wformat( L", %d" ) % kSellItemInfo.m_iPricePerOne );												// price
+		wstrQuerySP += x2::str( x2::wformat( L", %d" ) % static_cast<int>(kSellItemInfo.m_kInventoryItemInfo.m_cSlotCategory) );		// category
 
 		vecAddItem.push_back( kSellItemInfo );
 	}
 
 	for(int i = static_cast<int>(kPacket_.m_vecPickUpItemList.size()) ; i < SEnum::PAE_SELL_ITEM_LIMIT_NUM ; ++i )
 	{
-		wstrQuerySP += boost::str( boost::wformat( L", %d" ) % iTemp_Zero );		// ItemUID
-		wstrQuerySP += boost::str( boost::wformat( L", %d" ) % iTemp_Zero );		// Quantity
-		wstrQuerySP += boost::str( boost::wformat( L", %d" ) % iTemp_Zero );		// price
-		wstrQuerySP += boost::str( boost::wformat( L", %d" ) % iTemp_Zero );		// category
+		wstrQuerySP += x2::str( x2::wformat( L", %d" ) % iTemp_Zero );		// ItemUID
+		wstrQuerySP += x2::str( x2::wformat( L", %d" ) % iTemp_Zero );		// Quantity
+		wstrQuerySP += x2::str( x2::wformat( L", %d" ) % iTemp_Zero );		// price
+		wstrQuerySP += x2::str( x2::wformat( L", %d" ) % iTemp_Zero );		// category
 	}
 
 	// 상점 이름
 	std::wstring wstrTemp;
-	wstrQuerySP += boost::str( boost::wformat( L", N\'%s\'" ) % wstrTemp );
+	wstrQuerySP += x2::str( x2::wformat( L", N\'%s\'" ) % wstrTemp );
 
 	DO_QUERY_NO_ARG( wstrQuerySP.c_str() );
 
 	// 아이템은 9개 이므로 9개로 고정한다.
-	UidType iItemUID[SEnum::PAE_SELL_ITEM_LIMIT_NUM] = {0,};
 
 	if( m_kODBC.BeginFetch() )
 	{
@@ -1795,7 +1795,7 @@ IMPL_ON_FUNC( DBE_PICK_UP_FROM_PSHOP_AGENCY_REQ )
 				<< END_LOG;
 
 			// 실패 처리
-			BOOST_TEST_FOREACH( KSellPersonalShopItemInfo&, kSellItemInfo,  kPacket_.m_vecPickUpItemList)
+			for( KSellPersonalShopItemInfo& kSellItemInfo : kPacket_.m_vecPickUpItemList )
 			{
 				kPacket.m_vecPickUpFailList.push_back( kSellItemInfo.m_kInventoryItemInfo.m_iItemUID );
 			}
@@ -1805,9 +1805,9 @@ IMPL_ON_FUNC( DBE_PICK_UP_FROM_PSHOP_AGENCY_REQ )
 
 		int index = 0;
 
-		BOOST_TEST_FOREACH( KSellPersonalShopItemInfo&, kSellItemInfo,  kPacket_.m_vecPickUpItemList )
+		for( KSellPersonalShopItemInfo& kSellItemInfo : kPacket_.m_vecPickUpItemList )
 		{
-			BOOST_TEST_FOREACH( const KSellPersonalShopItemInfo&, kItemTemp,  vecAddItem )
+			for( const KSellPersonalShopItemInfo& kItemTemp : vecAddItem )
 			{
 				if( kItemTemp.m_kInventoryItemInfo.m_iItemUID == kSellItemInfo.m_kInventoryItemInfo.m_iItemUID )
 				{
@@ -2107,13 +2107,14 @@ end_proc:
 //{{ 2012. 06. 05	최육사	배틀필드 시스템
 _IMPL_ON_FUNC( DBE_CHECK_NICKNAME_FOR_INVITE_PARTY_REQ, KELG_INVITE_PARTY_FIND_RECEIVER_REQ )
 {
+	// Port: hoisted above the gotos to end_proc (MSVC let goto skip their initialization)
+	UidType iUnitUID = 0;
 	KELG_INVITE_PARTY_FIND_RECEIVER_ACK kPacket;
 	kPacket.m_iOK = NetError::ERR_ODBC_01;
 	kPacket.m_iHostUnitUID = kPacket_.m_iHostUnitUID;
 
 	// 닉네임 찾기!
 	DO_QUERY( L"exec dbo.gup_get_unit_uid", L"N\'%s\'", % kPacket_.m_wstrReceiverNickName );
-	UidType iUnitUID = 0;
 	if( m_kODBC.BeginFetch() )
 	{
 		FETCH_DATA( iUnitUID );

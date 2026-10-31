@@ -1,4 +1,4 @@
-#include <winsock2.h>
+#include "x2/platform/net.h"
 #include <iomanip>
 #include <sstream>
 
@@ -755,7 +755,7 @@ _IMPL_ON_FUNC( DBE_UPDATE_MODULE_INFO_LIST_REQ, KDBE_GET_MODULE_INFO_LIST_ACK )
 {
 	KDBE_GET_MODULE_INFO_LIST_ACK kPacket;
 
-	BOOST_TEST_FOREACH( const KModuleInfo&, kInfo, kPacket_.m_vecModuleList )
+	for( const KModuleInfo& kInfo : kPacket_.m_vecModuleList )
 	{
 		int iOK = NetError::ERR_ODBC_01;
 
@@ -1008,7 +1008,7 @@ IMPL_ON_FUNC( DBE_LOG_STATISTICS_INFO_NOT )
 	const std::wstring wstrCurTime = strCurTime.GetString();
 	const UidType iServerUID = KBaseServer::GetKObj()->GetUID();
 
-	BOOST_TEST_FOREACH( const KLogStatInfo&, kInfo, kPacket_.m_vecLogStat )
+	for( const KLogStatInfo& kInfo : kPacket_.m_vecLogStat )
 	{
 		int iOK = NetError::ERR_ODBC_01;
 

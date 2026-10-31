@@ -17,7 +17,7 @@
 //}}
 
 //{{ 2009. 6. 10  최육사	타이머 매니저
-#include <boost/timer.hpp>
+#include "x2/platform/timer.h"
 //}}
 
 
@@ -195,7 +195,7 @@ private:
 	//{{ 2009. 11. 23  최육사	길드스킬
 	KGuildSkillTree								m_kSkillTree;
 
-	boost::timer								m_kTimer[TM_TOTAL_NUM];
+	x2::Timer								m_kTimer[TM_TOTAL_NUM];
 	//}}
 
 };

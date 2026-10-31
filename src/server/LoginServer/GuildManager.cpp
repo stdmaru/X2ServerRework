@@ -859,7 +859,7 @@ bool KGuildManager::ReserveGuildName( IN const UidType& iUnitUID, IN const std::
 		return false;
 	}
 
-	BOOST_TEST_FOREACH( ReservedGuildName, var, m_listReservedGuildName )
+	for( ReservedGuildName var : m_listReservedGuildName )
 	{
 		if( var.m_wstrGuildName == wstrGuildName )
 		{
@@ -904,7 +904,7 @@ bool KGuildManager::GetReservedGuildName( IN const UidType& iUnitUID, OUT std::w
 		return false;
 	}
 
-	BOOST_TEST_FOREACH( ReservedGuildName, var, m_listReservedGuildName )
+	for( ReservedGuildName var : m_listReservedGuildName )
 	{
 		if( var.m_iUnitUID == iUnitUID )
 		{
@@ -926,7 +926,7 @@ bool KGuildManager::CheckReservedGuildName( IN const UidType& iUnitUID )
 		return false;
 	}
 
-	BOOST_TEST_FOREACH( ReservedGuildName, var, m_listReservedGuildName )
+	for( ReservedGuildName var : m_listReservedGuildName )
 	{
 		if( var.m_iUnitUID == iUnitUID )
 		{
@@ -947,7 +947,7 @@ void KGuildManager::TimeRefresh( IN const UidType& iUnitUID )
 		return;
 	}
 
-	BOOST_TEST_FOREACH( ReservedGuildName, var, m_listReservedGuildName )
+	for( ReservedGuildName var : m_listReservedGuildName )
 	{
 		if( var.m_iUnitUID == iUnitUID )
 		{

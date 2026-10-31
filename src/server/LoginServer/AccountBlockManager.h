@@ -5,7 +5,7 @@
 #include <set>
 #include <vector>
 #include <map>
-#include <boost/timer.hpp>
+#include "x2/platform/timer.h"
 #include "KncSend.h"
 
 
@@ -79,7 +79,7 @@ private:
 	//{{ 2011. 08. 09	최육사	머신ID 블럭기능
 	std::set< std::string >		m_setMachineIDBlockList;
 	//}}
-	boost::timer				m_kTimer[TM_TOTAL_NUM];
+	x2::Timer				m_kTimer[TM_TOTAL_NUM];
 	int							m_iReleaseTick[BT_MAX];
 };
 

@@ -48,7 +48,7 @@ ImplToStringW( KLoginRoomManager )
 
 	UidType iRoomUID = 0;
 	KPerformer::KMaxQueueSize kMaxQueueSizeDump;
-	BOOST_TEST_FOREACH( KLoginBaseRoomPtr, spRoom, m_vecRoomList )
+	for( KLoginBaseRoomPtr spRoom : m_vecRoomList )
 	{
 		if( spRoom == NULL )
 			continue;
@@ -158,7 +158,7 @@ void KLoginRoomManager::Tick()
 	//}}
 	//////////////////////////////////////////////////////////////////////////
 
-	BOOST_TEST_FOREACH( KLoginBaseRoomPtr, spRoom, m_vecRoomList )
+	for( KLoginBaseRoomPtr spRoom : m_vecRoomList )
 	{
 		if( spRoom == NULL )
 		{
@@ -403,7 +403,7 @@ void KLoginRoomManager::QueueingToAll( int iRoomType, const KEventPtr& spEvent_ 
 	std::map< UidType, KLoginBaseRoomPtr >::iterator mitRoom;
 	std::map< UidType, UidType >::iterator mitEmptyRoom;
 
-	BOOST_TEST_FOREACH( KLoginBaseRoomPtr, spRoom, m_vecRoomList )
+	for( KLoginBaseRoomPtr spRoom : m_vecRoomList )
 	{
 		if( spRoom == NULL )
 			continue;
@@ -491,7 +491,7 @@ void KLoginRoomManager::SendToGSCharacter( UidType nGS, UidType nTo, unsigned sh
 
 FSMclassPtr KLoginRoomManager::CreateRoomFSM()
 {
-	return boost::shared_ptr< KPersonalShopFSM >( new KPersonalShopFSM );
+	return std::shared_ptr< KPersonalShopFSM >( new KPersonalShopFSM );
 }
 
 KLoginBaseRoomPtr KLoginRoomManager::CreateRoom()

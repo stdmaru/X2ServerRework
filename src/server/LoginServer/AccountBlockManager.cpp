@@ -88,7 +88,7 @@ void KAccountBlockManager::UpdateAccountBlockList( IN const KDBE_CHECK_ACCOUNT_B
 			{ // 기존 리스트에 없었던 유저들은 따로 골라낸다!
 				std::vector< UidType > vecBlockUserList;
 
-				BOOST_TEST_FOREACH( const UidType, iUserUID, setNewBlockList )
+				for( const UidType iUserUID : setNewBlockList )
 				{
 					if( IsBlockedAccount( iUserUID, eBlockType ) == false )
 					{
@@ -102,7 +102,7 @@ void KAccountBlockManager::UpdateAccountBlockList( IN const KDBE_CHECK_ACCOUNT_B
 			{ // 기존 리스트에 있었는데 없어지는 유저들도 따로 골라낸다!
 				std::vector< UidType > vecUnblockUserList;
 
-				BOOST_TEST_FOREACH( const UidType, iUserUID, m_setAccountBlockList[eBlockType] )
+				for( const UidType iUserUID : m_setAccountBlockList[eBlockType] )
 				{
 					if( setNewBlockList.find( iUserUID ) == setNewBlockList.end() )
 					{
@@ -141,7 +141,7 @@ void KAccountBlockManager::UpdateAccountBlockList( IN const KDBE_CHECK_ACCOUNT_B
 	{
 		u_int uiOldCount = m_setMachineIDBlockList.size();
 
-		BOOST_TEST_FOREACH( const std::string&, strNewMachineID, kPacket.m_vecMachineIDBlockList )
+		for( const std::string& strNewMachineID : kPacket.m_vecMachineIDBlockList )
 		{
 			if( IsBlockedMachineID( strNewMachineID ) == false )
 			{
@@ -150,7 +150,7 @@ void KAccountBlockManager::UpdateAccountBlockList( IN const KDBE_CHECK_ACCOUNT_B
 		}
 
 		m_setMachineIDBlockList.clear();
-		BOOST_TEST_FOREACH( const std::string&, strNewMachineID, kPacket.m_vecMachineIDBlockList )
+		for( const std::string& strNewMachineID : kPacket.m_vecMachineIDBlockList )
 		{
 			m_setMachineIDBlockList.insert( strNewMachineID );
 		}

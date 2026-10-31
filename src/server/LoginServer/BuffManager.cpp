@@ -26,7 +26,7 @@ bool KBuffManager::AddUnitBuffInfo( IN const UidType& iUnitUID, IN const std::ve
 	//////////////////////////////////////////////////////////////////////////
 	{
 		// 버프 정보 검증
-		BOOST_TEST_FOREACH( const KBuffInfo&, kTestBuff, vecBuffInfo )
+		for( const KBuffInfo& kTestBuff : vecBuffInfo )
 		{
 			if( kTestBuff.m_kFactorInfo.m_vecBuffBehaviorFactors.size() > 10 )
 			{
@@ -44,7 +44,7 @@ bool KBuffManager::AddUnitBuffInfo( IN const UidType& iUnitUID, IN const std::ve
 					<< END_LOG;
 			}
 
-			BOOST_TEST_FOREACH( const KBuffBehaviorFactor&, kBuffBFactor, kTestBuff.m_kFactorInfo.m_vecBuffBehaviorFactors )
+			for( const KBuffBehaviorFactor& kBuffBFactor : kTestBuff.m_kFactorInfo.m_vecBuffBehaviorFactors )
 			{
 				if( kBuffBFactor.m_vecValues.size() > 10 )
 				{
@@ -55,7 +55,7 @@ bool KBuffManager::AddUnitBuffInfo( IN const UidType& iUnitUID, IN const std::ve
 				}
 			}
 
-			BOOST_TEST_FOREACH( const KBuffFinalizerFactor&, kBuffFFactor, kTestBuff.m_kFactorInfo.m_vecBuffFinalizerFactors )
+			for( const KBuffFinalizerFactor& kBuffFFactor : kTestBuff.m_kFactorInfo.m_vecBuffFinalizerFactors )
 			{
 				if( kBuffFFactor.m_vecValues.size() > 10 )
 				{
@@ -77,7 +77,7 @@ bool KBuffManager::AddUnitBuffInfo( IN const UidType& iUnitUID, IN const std::ve
 		// 최초 입력되는 것이므로 시간을 저장하자.
 		CTime tCurr = CTime::GetCurrentTime();
 		kNewUnitBuffInfo.m_iInsertTime = tCurr.GetTime();
-		BOOST_TEST_FOREACH( const KBuffInfo&, kNewBuffInfo, vecBuffInfo )
+		for( const KBuffInfo& kNewBuffInfo : vecBuffInfo )
 		{
 			kNewUnitBuffInfo.m_mapBuffInfo.insert( std::make_pair( kNewBuffInfo.m_kFactorInfo.m_BuffIdentity.m_eBuffTempletID, kNewBuffInfo ) );
 		}
@@ -97,7 +97,7 @@ bool KBuffManager::AddUnitBuffInfo( IN const UidType& iUnitUID, IN const std::ve
 	KUnitBuffInfo& kUnitBuffInfo = mit->second;
 
 	// 옛날 버프중에 같은게 있는지 찾아 본다.
-	BOOST_TEST_FOREACH( const KBuffInfo&, kNewBuff, vecBuffInfo )
+	for( const KBuffInfo& kNewBuff : vecBuffInfo )
 	{
 		std::map< int, KBuffInfo >::iterator mitBI;
 		mitBI = kUnitBuffInfo.m_mapBuffInfo.find( kNewBuff.m_kFactorInfo.m_BuffIdentity.m_eBuffTempletID );
@@ -144,7 +144,7 @@ bool KBuffManager::DeleteUnitBuffInfo( IN UidType& iUnitUID, IN std::vector<int>
 	}
 	else
 	{
-		BOOST_TEST_FOREACH( const int, iBuffID, vecBuffID )
+		for( const int iBuffID : vecBuffID )
 		{
 			mit->second.m_mapBuffInfo.erase( iBuffID );
 		}
@@ -221,7 +221,7 @@ bool KBuffManager::AddRenewBuffTime( IN const UidType& iUnitUID, IN const __int6
 	std::map< __int64, std::vector<UidType> >::iterator mit = m_mapUnitTime.find( iNewTime );
 	if( mit != m_mapUnitTime.end() )
 	{
-		BOOST_TEST_FOREACH( UidType, iUID, mit->second )
+		for( UidType iUID : mit->second )
 		{
 			if( iUID == iUnitUID )
 			{
@@ -332,7 +332,7 @@ void KBuffManager::CheckEndBuff()
 			break;
 		}
 
-		BOOST_TEST_FOREACH( UidType, iUnitUID, mit->second )
+		for( UidType iUnitUID : mit->second )
 		{
 			setUnitList.insert( iUnitUID );
 		}

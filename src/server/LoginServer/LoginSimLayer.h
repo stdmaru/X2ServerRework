@@ -34,9 +34,6 @@ public:
 	//}}
 
 	//{{ 2010. 06. 08  최육사	넥슨PC방 인증 서버 개편
-	void	CheckAuthSynchronize( const KENX_AUTH_SYNCHRONIZE_REQ& kInfo );
-	bool	UpdateSessionNoByUserID( const std::wstring& wstrUserID, __int64 iSessionNo );
-	void	LoginTimeOut( const KELG_NEXON_USER_LOGIN_TIME_OUT_NOT& kInfo );
 	u_int	GetConcurrentUserCount()					{ return m_kUserList.GetConcurrentUserCount(); }
 	//}}
 

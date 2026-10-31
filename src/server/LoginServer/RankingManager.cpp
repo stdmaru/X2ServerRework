@@ -8,6 +8,7 @@
 	#include "LoginServer.h"
 //}}
 
+#include <filesystem>
 #include <iomanip>
 
 
@@ -428,10 +429,7 @@ void KRankingManager::RefreshTimeFileBackup()
 {
 	std::wstring wstrFilePath;
 
-	wchar_t buff[MAX_PATH] = {0};
-	::GetCurrentDirectoryW( MAX_PATH, buff );
-	wstrFilePath = buff;
-	wstrFilePath += L"\\RefreshTimeBackup.ini";
+	wstrFilePath = ( std::filesystem::current_path() / L"RefreshTimeBackup.ini" ).wstring();
 
 	std::map< int, KHenirRanking >::const_iterator mit;
 	for( mit = m_mapHenirRanking.begin(); mit != m_mapHenirRanking.end(); ++mit )
@@ -457,15 +455,10 @@ bool KRankingManager::CheckRefreshTimeFileBackup()
 	CTime tCurTime = CTime::GetCurrentTime();
 
 	wchar_t buff[MAX_PATH] = {0};
-	::GetCurrentDirectoryW( MAX_PATH, buff );
-	wstrFilePath = buff;
-	wstrFilePath += L"\\RefreshTimeBackup.ini";
-
-	char strFilePath[255] = {0,};
-	::WideCharToMultiByte( CP_ACP, 0, wstrFilePath.c_str(), -1, strFilePath, 255, NULL, NULL );
+	wstrFilePath = ( std::filesystem::current_path() / L"RefreshTimeBackup.ini" ).wstring();
 
 	std::ifstream ifs;
-	ifs.open( strFilePath );
+	ifs.open( std::filesystem::path( wstrFilePath ) );
 	if( !ifs.is_open() )
 	{
 		START_LOG( cout, L"RefreshTimeBackup파일이 없습니다! [참고] 서버를 처음 동작시켰을 경우 파일이 없을 수 있습니다." )

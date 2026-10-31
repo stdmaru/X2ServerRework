@@ -12,6 +12,9 @@ namespace x2::platform {
 DWORD ReadIniString(const wchar_t* section, const wchar_t* key, const wchar_t* defaultValue,
                     wchar_t* dst, DWORD size, const wchar_t* fileName);
 UINT  ReadIniInt(const wchar_t* section, const wchar_t* key, INT defaultValue, const wchar_t* fileName);
+// Sets key = value in the section, adding the section and key when missing (WritePrivateProfileString).
+// A null value removes the key, a null key removes the section. The file is rewritten as UTF-8.
+bool  WriteIniString(const wchar_t* section, const wchar_t* key, const wchar_t* value, const wchar_t* fileName);
 
 } // namespace x2::platform
 
@@ -24,5 +27,9 @@ inline DWORD GetPrivateProfileStringW(const wchar_t* section, const wchar_t* key
 inline UINT GetPrivateProfileIntW(const wchar_t* section, const wchar_t* key, INT defaultValue, const wchar_t* fileName)
 {
     return x2::platform::ReadIniInt(section, key, defaultValue, fileName);
+}
+inline BOOL WritePrivateProfileStringW(const wchar_t* section, const wchar_t* key, const wchar_t* value, const wchar_t* fileName)
+{
+    return x2::platform::WriteIniString(section, key, value, fileName) ? TRUE : FALSE;
 }
 #endif // !_WIN32

@@ -1,4 +1,4 @@
-#include <winsock2.h>
+#include "x2/platform/net.h"
 #include <iomanip>
 #include <sstream>
 
@@ -42,7 +42,7 @@ void KLoginSMSDBThread::SendToUser( UidType nTo, unsigned short usEventID )
 
 IMPL_ON_FUNC( DBE_SEND_PHONE_MSG_NOT )
 {
-	BOOST_TEST_FOREACH( const std::wstring&, wstrPhoneNum, kPacket_.m_vecPhoneNum )
+	for( const std::wstring& wstrPhoneNum : kPacket_.m_vecPhoneNum )
 	{
 // 		DO_QUERY_NO_PROFILE( L"insert into em_tran ( tran_phone, tran_callback, tran_status, tran_date, tran_msg )",
 // 			L"values ( N\'%s\', N\'%s\', \'1\', getdate(), N\'%s\' )",

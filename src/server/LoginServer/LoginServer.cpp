@@ -1,8 +1,8 @@
-#include <WinSock2.h>
+#include "x2/platform/net.h"
 #include <sstream>
 #include <iomanip>
-#include <boost/bind/bind.hpp>
-using namespace boost::placeholders;
+#include <functional>
+using namespace std::placeholders;
 #include "LoginServer.h"
 #include "ActorManager.h"
 #include "LoginSimLayer.h"
@@ -37,9 +37,6 @@ using namespace boost::placeholders;
 //}}
 //{{ 2010. 06. 01  최육사	동접 처리 개편
 	#include "ServerCCUManager.h"
-//}}
-//{{ 2010. 06. 22  최육사	OTP적용
-	#include "Nexon/AuthCheck.h"
 //}}
 
 //{{ 2010. 06. 22  최육사	계정블럭기능
@@ -86,7 +83,7 @@ using namespace boost::placeholders;
 //{{ 최육사 : [2012/10/9] //	태국 OTP 인증 통신 모듈
 //}}
 
-#include "../Common/OnlyGlobal/ProcessCommuniationModule/ProcessCommunicationManager.h"
+// Port: KSMS (ProcessCommunicationManager, Windows named pipes to an external tool) removed, as in the ChannelServer
 
 //{{ 2011. 03. 29	최육사	TBB 메모리 관리자
 //#ifdef SERV_TBB_MALLOC_PROXY_TEST
@@ -202,8 +199,6 @@ bool KLoginServer::Init()
 	OnServerReadyComplete();
 	//}}
 
-	m_bServerRunningProcessCommunicationOnOff = false;
-
     return true;
 }
 
@@ -211,17 +206,7 @@ void KLoginServer::OnServerReadyComplete()
 {
 	KBaseServer::OnServerReadyComplete();
 
-	//{{ 2010. 06. 22  최육사	OTP적용
-	// Passport Level
-	AuthCheck_SetPassportLevel( m_uiPassportLevel );
-
-	START_LOG( cout2, L"Nexon AuthCheck SetPassportLevel : " << m_uiPassportLevel );
-
-	// Locale
-	AuthCheck_SetLocale( kLocaleID_KR );
-
-	START_LOG( cout2, L"Nexon AuthCheck SetLocale : kLocaleID_KR" );
-	//}}
+	// Port: Nexon AuthCheck (proprietary AuthCheck.lib: passport level and locale) removed
 
 	//{{ 2009. 7. 6  최육사		랭킹 개편
 	SiKRankingManager()->Init();
@@ -259,13 +244,6 @@ void KLoginServer::OnServerReadyComplete()
 	//{{ 2013. 3. 4	박세훈	 로컬 랭킹 시스템
 	//}}
 
-	if (SiKGameSysVal()->GetProcessCommunication() == true)
-	{
-		SiKProcessCommunicationManager()->InitRead(TEXT("\\\\.\\pipe\\LoginServerRead"));
-		SiKProcessCommunicationManager()->InitWrite(TEXT("\\\\.\\pipe\\LoginServerWrite"));
-		SiKProcessCommunicationManager()->Begin();
-	}
-
 	//{{ 2013. 04. 01	 인연 시스템 - 김민성
 	SiKWeddingHallManager()->Init();
 	//}
@@ -281,11 +259,6 @@ void KLoginServer::ShutDown()
 
 	//{{ 2013. 3. 15	박세훈	 로컬 랭킹 시스템
 	//}}
-
-	if (SiKGameSysVal()->GetProcessCommunication() == true)
-	{
-		SiKProcessCommunicationManager()->ShutDown();
-	}
 
 	//{{ 2009. 7. 6  최육사		랭킹 개편 -	DBLayer가 죽기전에 랭킹정보를 업데이트 해야한다.
     SiKRankingManager()->ShutDown();
@@ -324,10 +297,10 @@ bool KLoginServer::DestroyAllSession()
 	//{{ 2009. 1. 30  최육사	서버 셧다운 종료 사유 설정
 	int iIndex = KStatistics::eSIColDR_Server_Shutdown;
 
-	pkActorManager->ForEach( boost::bind( &KActor::SetDisconnectReason, _1, iIndex ) );
+	pkActorManager->ForEach( std::bind( &KActor::SetDisconnectReason, _1, iIndex ) );
 	//}}
 
-    pkActorManager->ForEach( boost::bind( &KActor::ReserveDestroy, _1 ) );
+    pkActorManager->ForEach( std::bind( &KActor::ReserveDestroy, _1 ) );
 
     DWORD dwBeginTick = ::GetTickCount();
 
@@ -385,27 +358,6 @@ void KLoginServer::Tick()
 	SiKAccountBlockManager()->Tick();
 	//}}
 
-
-	if ( m_tTimeProcessCommunicationONOFF.elapsed() > 60.0f )
-	{
-		if (SiKGameSysVal()->GetProcessCommunication() == true && m_bServerRunningProcessCommunicationOnOff == true)
-		{
-			SiKProcessCommunicationManager()->InitRead(TEXT("\\\\.\\pipe\\LoginServerRead"));
-			SiKProcessCommunicationManager()->InitWrite(TEXT("\\\\.\\pipe\\LoginServerWrite"));
-			SiKProcessCommunicationManager()->Begin();
-			m_bServerRunningProcessCommunicationOnOff = false;
-
-
-		}
-		else if (SiKGameSysVal()->GetProcessCommunication() == false && m_bServerRunningProcessCommunicationOnOff == false)
-		{
-			SiKProcessCommunicationManager()->ShutDown();
-
-			m_bServerRunningProcessCommunicationOnOff = true;
-
-		}
-		m_tTimeProcessCommunicationONOFF.restart();
-	}
 }
 
 //{{ 2008. 5. 27  최육사  체험ID 동접
@@ -449,12 +401,6 @@ void KLoginServer::ProcessEvent( const KEventPtr& spEvent_ )
 // 		CASE( DBE_GET_GIANT_DELETED_UNIT_LIST_ACK );
 // #endif //SERV_GUARANTEE_UNIQUENESS_OF_NAME_CN
 
-		//{{ 2010. 06. 08  최육사	넥슨PC방 인증 서버 개편
-		CASE( ENX_AUTH_LOGIN_ACK );
-		CASE( ENX_AUTH_TERMINATE_NOT );
-		CASE( ENX_AUTH_MESSAGE_NOT );
-		CASE( ENX_AUTH_SYNCHRONIZE_REQ );
-		//}}
 		//{{ 2009. 7. 6  최육사		랭킹 개편
 		CASE( DBE_GET_HENIR_RANKING_INFO_ACK );
 	   _CASE( ELG_CLEAR_RANKING_NOT, bool );
@@ -557,136 +503,6 @@ IMPL_ON_FUNC_NOPARAM( DBE_UPDATE_SERVER_INFO_ACK )
 	// 기능 없음.
 }
 
-//{{ 2010. 06. 08  최육사	넥슨PC방 인증 서버 개편
-
-IMPL_ON_FUNC( ENX_AUTH_LOGIN_ACK )
-{
-	START_LOG( cerr, L"넥슨 PC방 인증 서버 : 해외는 여기 로그인 타면 안됨!!!!!!" )
-		<< BUILD_LOG( kPacket_.m_wstrUserID )
-		<< BUILD_LOG( kPacket_.m_iSessionNo )
-		<< BUILD_LOG( kPacket_.m_byteAuthorizeResult )
-		<< BUILD_LOG( kPacket_.m_mapProperty.size() );
-
-	// 인증 서버로부터 받은 SessionNo를 유저정보에 업데이트
-// 	if( GetKLoginSimLayer()->UpdateSessionNoByUserID( kPacket_.m_wstrUserID, kPacket_.m_iSessionNo ) == false )
-// 	{
-// 		START_LOG( cerr, L"SessionNo 업데이트 실패." )
-// 			<< BUILD_LOG( kPacket_.m_wstrUserID )
-// 			<< BUILD_LOG( kPacket_.m_bytePacketType )
-// 			<< BUILD_LOG( kPacket_.m_byteAuthorizeResult )
-// 			<< BUILD_LOG( kPacket_.m_iSessionNo )
-// 			<< END_LOG;
-// 		return;
-// 	}
-//
-// 	KUserList::KGSUserInfo kInfo;
-// 	if( GetKLoginSimLayer()->GetGSUserInfoByUserID( kPacket_.m_wstrUserID, kInfo ) == false )
-// 	{
-// 		START_LOG( cerr, L"유저 게임 서버 검색 실패." )
-// 			<< BUILD_LOG( kPacket_.m_wstrUserID )
-// 			<< BUILD_LOG( kPacket_.m_bytePacketType )
-// 			<< BUILD_LOG( kPacket_.m_byteAuthorizeResult )
-// 			<< END_LOG;
-// 		return;
-// 	}
-//
-// 	//{{ 2012. 09. 03	최육사		중복 접속 버그 수정
-// #ifdef SERV_DUPLICATE_CONNECT_BUG_FIX
-// 	GetKLoginSimLayer()->UnRegAuthWaitUser( kInfo.m_nUserUID );
-// #endif SERV_DUPLICATE_CONNECT_BUG_FIX
-// 	//}}
-//
-// 	switch( kPacket_.m_byteAuthorizeResult )
-// 	{
-// 	case 0: // Forbidden - 비정상 접속으로 게임 실행을 차단한다.
-// 	case 1: // Allowed - 프리미엄을 적용하고 게임을 실행한다.
-// 	case 2: // Trial - 프리미엄 없이 게임을 실행한다.
-// 	case 3: // Terminate - 게임 실행을 차단하고 인증서버로 로그아웃 패킷을 전송한다.
-// 		break;
-//
-// 	default:
-// 		START_LOG( cerr, L"넥슨 인증 서버 로그인 결과값이 이상하다." )
-// 			<< BUILD_LOG( kPacket_.m_wstrUserID )
-// 			<< BUILD_LOG( kPacket_.m_byteAuthorizeResult )
-// 			<< END_LOG;
-// 		return;
-// 	}
-//
-// 	//{{ 2010. 07. 01  최육사	PC방 인증 서버 개편
-// 	if( kInfo.m_bChannelChanged )
-// 	{
-// 		UidType anTrace[2] = { kInfo.m_nGSUID, -1 };
-// 		KncSend( PI_LOGIN_SERVER, KBaseServer::GetKObj()->GetUID(), PI_GS_USER, kInfo.m_nUserUID, anTrace, ELG_REGISTER_NEXON_CHANNEL_CHANGE_USER_ACK, kPacket_ );
-// 	}
-// 	else
-// 	{
-// 		UidType anTrace[2] = { kInfo.m_nGSUID, -1 };
-// 		KncSend( PI_LOGIN_SERVER, KBaseServer::GetKObj()->GetUID(), PI_GS_USER, kInfo.m_nUserUID, anTrace, ELG_REGISTER_NEXON_USER_ACK, kPacket_ );
-// 	}
-// 	//}}
-
-	// 2008.12.23.hoons.
-	// 피씨방 오류로 인한 임시 로그
-	//if( kPacket_.m_wstrUserID.compare(L"nateawooda") == 0 || kPacket_.m_wstrUserID.compare(L"demiahun") == 0 )
-	//{
-	//	SOCKADDR_IN sAddr;
-	//	sAddr.sin_addr.S_un.S_addr = kInfo.m_uiIP;
-
-	//	START_LOG( cout2, L"피씨방 임시로그.!(확인필요)" )
-	//		<< BUILD_LOG( kPacket_.m_wstrUserID )
-	//		<< BUILD_LOG( static_cast<int>(kPacket_.m_byteIsCharged) )
-	//		<< BUILD_LOG( ::inet_ntoa(sAddr.sin_addr) )
-	//		<< END_LOG;
-	//}
-}
-
-IMPL_ON_FUNC( ENX_AUTH_TERMINATE_NOT )
-{
-	// 과금이 종료되어서 해당 유저를 접속 종료시키자!
-	KUserList::KGSUserInfo kInfo;
-	if( GetKLoginSimLayer()->GetGSUserInfoByUserID( kPacket_.m_wstrUserID, kInfo ) == false )
-	{
-		START_LOG( cerr, L"유저 게임 서버 검색 실패." )
-			<< BUILD_LOG( kPacket_.m_wstrUserID )
-			<< BUILD_LOG( kPacket_.m_bytePacketType )
-			<< BUILD_LOG( kPacket_.m_byteTerminateType )
-			<< END_LOG;
-		return;
-	}
-
-	UidType anTrace[2] = { kInfo.m_nGSUID, -1 };
-	KncSend( PI_LOGIN_SERVER, KBaseServer::GetKObj()->GetUID(), PI_GS_USER, kInfo.m_nUserUID, anTrace, ENX_AUTH_TERMINATE_NOT, kPacket_ );
-}
-
-IMPL_ON_FUNC( ENX_AUTH_MESSAGE_NOT )
-{
-    // 해당 유저에게 메시지 전송!
-	KUserList::KGSUserInfo kInfo;
-	if( GetKLoginSimLayer()->GetGSUserInfoByUserID( kPacket_.m_wstrUserID, kInfo ) == false )
-	{
-		START_LOG( cerr, L"유저 게임 서버 검색 실패." )
-			<< BUILD_LOG( kPacket_.m_wstrUserID )
-			<< BUILD_LOG( kPacket_.m_bytePacketType )
-			<< BUILD_LOG( kPacket_.m_byteMessageType )
-			<< END_LOG;
-		return;
-	}
-
-	UidType anTrace[2] = { kInfo.m_nGSUID, -1 };
-	KncSend( PI_LOGIN_SERVER, KBaseServer::GetKObj()->GetUID(), PI_GS_USER, kInfo.m_nUserUID, anTrace, ENX_AUTH_MESSAGE_NOT, kPacket_ );
-}
-
-IMPL_ON_FUNC( ENX_AUTH_SYNCHRONIZE_REQ )
-{
-	START_LOG( cout, L"넥슨 PC방 인증 서버 : 동기화 체크 패킷 도착!" )
-		<< BUILD_LOG( kPacket_.m_byteIsMonitoring )
-		<< BUILD_LOG( kPacket_.m_mapSynchronizeReq.size() );
-
-	GetKLoginSimLayer()->CheckAuthSynchronize( kPacket_ );
-}
-
-//////////////////////////////////////////////////////////////////////////
-//}}
 
 //{{ 2009. 7. 6  최육사		랭킹 개편
 IMPL_ON_FUNC( DBE_GET_HENIR_RANKING_INFO_ACK )
@@ -943,7 +759,7 @@ IMPL_ON_FUNC( DBE_CHECK_ACCOUNT_BLOCK_LIST_ACK )
 			{
 			case KAccountBlockManager::BT_CONNECT_BLOCK:
 				{
-					BOOST_TEST_FOREACH( const UidType, iUserUID, vecBlockList )
+					for( const UidType iUserUID : vecBlockList )
 					{
 						KUserList::KGSUserInfo kInfo;
 						if( GetKLoginSimLayer()->GetGSUserInfoByUserUID( iUserUID, kInfo ) == false )
@@ -962,7 +778,7 @@ IMPL_ON_FUNC( DBE_CHECK_ACCOUNT_BLOCK_LIST_ACK )
 
 			case KAccountBlockManager::BT_TRADE_BLOCK:
 				{
-					BOOST_TEST_FOREACH( const UidType, iUserUID, vecBlockList )
+					for( const UidType iUserUID : vecBlockList )
 					{
 						KUserList::KGSUserInfo kInfo;
 						if( GetKLoginSimLayer()->GetGSUserInfoByUserUID( iUserUID, kInfo ) == false )
@@ -1004,7 +820,7 @@ IMPL_ON_FUNC( DBE_CHECK_ACCOUNT_BLOCK_LIST_ACK )
 
 			case KAccountBlockManager::BT_TRADE_BLOCK:
 				{
-					BOOST_TEST_FOREACH( const UidType, iUserUID, vecBlockList )
+					for( const UidType iUserUID : vecBlockList )
 					{
 						KUserList::KGSUserInfo kInfo;
 						if( GetKLoginSimLayer()->GetGSUserInfoByUserUID( iUserUID, kInfo ) == false )
@@ -1031,7 +847,7 @@ IMPL_ON_FUNC( DBE_CHECK_ACCOUNT_BLOCK_LIST_ACK )
 	//{{ 2011. 08. 17	최육사	머신ID 중복 접속 차단
 	{
 		// 접속중인 유저 접속 해제 시키기!
-		BOOST_TEST_FOREACH( const std::string&, strMachineID, vecBlockMachineIDList )
+		for( const std::string& strMachineID : vecBlockMachineIDList )
 		{
 			KUserList::KGSUserInfo kInfo;
 			if( GetKLoginSimLayer()->GetGSUserInfoByMachineID( strMachineID, kInfo ) == false )
@@ -1101,8 +917,6 @@ _IMPL_ON_FUNC( ESR_ORDER_TO_REFRESH_MANAGER_ACK, KESR_SCRIPT_REFRESH_ORDER_NOT )
 		}
 		break;
 	}
-
-	SiKProcessCommunicationManager()->QueueingProcessWrite(boost::str(boost::wformat(L"%1%_%2%") % 0 %L"LoginServer 스크립트 실시간 패치 완료"));
 }
 
 //}}
@@ -1157,7 +971,7 @@ IMPL_ON_FUNC( DBE_LOAD_PSHOP_AGENCY_ACK )
 
 	int iOpenPShopAgencyCount = 0;
 
-	BOOST_TEST_FOREACH( const KERM_OPEN_PSHOP_AGENCY_BY_SERVER_NOT&, kPacket, kPacket_.m_vecOpenPShopAgency )
+	for( const KERM_OPEN_PSHOP_AGENCY_BY_SERVER_NOT& kPacket : kPacket_.m_vecOpenPShopAgency )
 	{
 		if( kPacket.m_vecSellItemInfo.empty() )
 		{
@@ -1211,7 +1025,7 @@ IMPL_ON_FUNC( ELG_RANKING_TITLE_REWARD_NOT )
 		const KRankingTitleReward& kTitleReward = mit->second;
 		std::wstring wstrMessage;
 
-		BOOST_TEST_FOREACH( const KTitleReward&, kRewardInfo, kTitleReward.m_vecReward )
+		for( const KTitleReward& kRewardInfo : kTitleReward.m_vecReward )
 		{
 			// 타이틀 보상 주기
 			KDBE_INSERT_TITLE_REQ kPacket;

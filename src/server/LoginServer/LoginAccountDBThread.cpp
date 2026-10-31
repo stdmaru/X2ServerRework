@@ -1,4 +1,4 @@
-#include <winsock2.h>
+#include "x2/platform/net.h"
 #include <iomanip>
 #include <sstream>
 
@@ -12,7 +12,7 @@
 #include "SimLayer.h"
 	#include "AccountBlockManager.h"
 
-	#include <boost/random.hpp>
+	#include <random>
 
 
 #define CLASS_TYPE KLoginAccountDBThread
@@ -307,9 +307,9 @@ IMPL_ON_FUNC( ELG_NEXON_USER_AUTHENTICATE_REQ )
 		}
 
 		//{{ 2010/10/23	조효진	랜돔 시드 문제 때문에 부스터 Random으로 교체함
-		static boost::mt19937 generator(timeGetTime());	// timeGetTime() 빼면 고정 시드
-		static boost::uniform_int<> uni_dist(0,INT_MAX) ;
-		static boost::variate_generator<boost::mt19937&, boost::uniform_int<> > gen(generator, uni_dist);
+		static std::mt19937 generator(timeGetTime());	// timeGetTime() 빼면 고정 시드
+		static std::uniform_int_distribution<> uni_dist(0,INT_MAX) ;
+		auto gen = [] { return uni_dist( generator ); };
 
 		int iOTP  = gen();
 		//}}
@@ -515,9 +515,9 @@ IMPL_ON_FUNC( ELG_CHANNEL_CHANGE_NEXON_USER_AUTHENTICATE_REQ )
         if( kPacket.m_kUserAuthAck.m_iOK == NetError::NET_OK )
         {
 			//{{ 2011/1/6	조효진	랜돔 시드 문제 때문에 부스터 Random으로 교체함
-			static boost::mt19937 generator(timeGetTime());	// timeGetTime() 빼면 고정 시드
-			static boost::uniform_int<> uni_dist(0,INT_MAX) ;
-			static boost::variate_generator<boost::mt19937&, boost::uniform_int<> > gen(generator, uni_dist);
+			static std::mt19937 generator(timeGetTime());	// timeGetTime() 빼면 고정 시드
+			static std::uniform_int_distribution<> uni_dist(0,INT_MAX) ;
+			auto gen = [] { return uni_dist( generator ); };
 
 			int iOTP  = gen();
             wchar_t wszOTP[128];
@@ -630,8 +630,10 @@ end_proc:
 
 IMPL_ON_FUNC( DBE_UPDATE_IS_LOGIN_NOT )
 {
+	// Port: hoisted above the gotos to end_proc (MSVC let goto skip their initialization)
+	int iOK{};
 	DO_QUERY( L"exec dbo.mup_update_islogin", L"%d, %d", % kPacket_.m_iUserUID % kPacket_.m_bIsLogin );
-	int iOK = NetError::NET_OK;
+	iOK = NetError::NET_OK;
 
 	if( m_kODBC.BeginFetch() )
 	{

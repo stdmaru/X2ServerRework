@@ -366,11 +366,13 @@ bool KHenirRanking::CheckNewRecord( IN const KHenirRankingInfo& kNewRankingInfo 
 		return false;
 	}
 
-	const KHenirRankingInfo& kOldRankingInfo = *vitTR;
-	if( KHenirRankingInfo::RankCompare( kNewRankingInfo, kOldRankingInfo ) == false )
 	{
-		// 100위안에 들지 못했다!
-		return false;
+		const KHenirRankingInfo& kOldRankingInfo = *vitTR;
+		if( KHenirRankingInfo::RankCompare( kNewRankingInfo, kOldRankingInfo ) == false )
+		{
+			// Did not make the top 100
+			return false;
+		}
 	}
 
 	// 4. 100위안에 드는지 확인되었으니 랭킹리스트에 넣고 소트하자

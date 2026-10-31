@@ -4,7 +4,7 @@
 #include "KncUidType.h"
 #include "KncSmartPtr.h"
 
-#include <boost/timer.hpp>
+#include "x2/platform/timer.h"
 
 #include "Enum/Enum.h"
 
@@ -167,7 +167,7 @@ public:
 	struct KAuthWaitUser
 	{
 		UidType         m_iUserUID;
-		boost::timer	m_tTimer;
+		x2::Timer	m_tTimer;
 
 		KAuthWaitUser()
 		{
@@ -193,9 +193,6 @@ public:
 	//}}
 
 	//{{ 2010. 06. 08  최육사	넥슨PC방 인증 서버 개편
-	void	CheckAuthSynchronize( const KENX_AUTH_SYNCHRONIZE_REQ& kInfo );
-	bool	UpdateSessionNoByUserID( const std::wstring& wstrUserID, __int64 iSessionNo );
-	void	LoginTimeOut( const KELG_NEXON_USER_LOGIN_TIME_OUT_NOT& kInfo );
 	u_int	GetConcurrentUserCount()					{ KLocker lock( m_csConcurrentUser ); return m_uiConcurrentUser; }
 	void	SetConcurrentUserCount( u_int uiCCU )		{ KLocker lock( m_csConcurrentUser ); m_uiConcurrentUser = uiCCU; }
 	//}}
@@ -235,28 +232,23 @@ protected:
 
 	//{{ 2010. 06. 28  최육사	게임 PC방 인증 서버 개편
 	bool	IsEnableAuthWait() const					{ return m_bEnableAuthWait; }
-	void	CheckUnauthorizedSession();
-	void	NexonAuthLogin( const KGSUserInfo& kUserInfo, bool bOnlyAuthentication = false );
-	void	NexonAuthLogout( const std::wstring& wstrUserID, __int64 iSessionNo );
 	//}}
 
-    int CheckUserIDAndSetChannelCode( IN const std::wstring& wstrUserID_, IN const std::wstring& wstrPostfix_ , IN const int& nAcocuntType_, OUT UCHAR& ucChannelCode_ );
-
 protected:
-	std::map< UidType,		boost::shared_ptr< KGSUserInfo > >		m_mapUserUID;   // main key, data
-	std::map< std::wstring,	boost::shared_ptr< KGSUserInfo > >		m_mapUserID;
+	std::map< UidType,		std::shared_ptr< KGSUserInfo > >		m_mapUserUID;   // main key, data
+	std::map< std::wstring,	std::shared_ptr< KGSUserInfo > >		m_mapUserID;
 
-	std::map< UidType,		boost::shared_ptr< KGSUserInfo > >		m_mapUnitUID;
-	std::map< std::wstring,	boost::shared_ptr< KGSUserInfo > >		m_mapUnitNickName;
+	std::map< UidType,		std::shared_ptr< KGSUserInfo > >		m_mapUnitUID;
+	std::map< std::wstring,	std::shared_ptr< KGSUserInfo > >		m_mapUnitNickName;
 	//{{ 2011. 08. 17	최육사	머신ID 중복 접속 차단
-	std::map< std::string,  boost::shared_ptr< KGSUserInfo > >		m_mapMachineID;
+	std::map< std::string,  std::shared_ptr< KGSUserInfo > >		m_mapMachineID;
 	//}}
 
 	//{{ 2011. 09. 27	김민성	PC 방 오과금 방지
 	//}}
 	//{{ 2012. 09. 03	최육사		중복 접속 버그 수정
 	std::map< UidType,		 KAuthWaitUser >						m_mapAuthWaitUser;	// key(UserUID)
-	boost::timer													m_tCheckAuthWaitTimer;
+	x2::Timer													m_tCheckAuthWaitTimer;
 	bool															m_bEnableAuthWait;
 	//}}
 

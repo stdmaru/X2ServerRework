@@ -1,4 +1,4 @@
-#include <winsock2.h>
+#include "x2/platform/net.h"
 #include <iomanip>
 #include <sstream>
 
@@ -586,9 +586,9 @@ end_proc:
 void KLoginBillingDBThread::MakeTID(__int64 iTransactionNo, time_t iTime, std::wstring& wstrTransaction
 	)
 {
-	boost::wformat wfmt(L"%02x%03x%08x%08x");
+	x2::wformat wfmt(L"%02x%03x%08x%08x");
 
-	wstrTransaction = boost::str(wfmt
+	wstrTransaction = x2::str(wfmt
 		% 1
 		% 1
 		% iTime

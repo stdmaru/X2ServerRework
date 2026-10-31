@@ -38,7 +38,7 @@ void KPersonalShopItemManager::GetSellPersonalShopItemInfoList( OUT std::vector<
 {
 	vecItemList.clear();
 
-	BOOST_TEST_FOREACH( KPersonalShopItemPtr, spItemInfo, m_vecSellItemInfo )
+	for( KPersonalShopItemPtr spItemInfo : m_vecSellItemInfo )
 	{
 		if( spItemInfo == NULL )
 		{
@@ -206,7 +206,7 @@ void KPersonalShopItemManager::DelSellItemInfo( IN const UidType iItemUID )
 
 void KPersonalShopItemManager::UpdateSellItemList( IN const std::vector< KSellPersonalShopItemInfo >& vecSellItemList )
 {
-	BOOST_TEST_FOREACH( const KSellPersonalShopItemInfo&, kInfo, vecSellItemList )
+	for( const KSellPersonalShopItemInfo& kInfo : vecSellItemList )
 	{
 		if( IsExistItem( kInfo.m_kInventoryItemInfo.m_iItemUID ) == true )
 		{
@@ -222,7 +222,7 @@ void KPersonalShopItemManager::UpdateSellItemList( IN const std::vector< KSellPe
 
 void KPersonalShopItemManager::UpdateSellItemBackupDataList( IN const std::vector< KSellPShopItemBackupData >& vecSellItemList )
 {
-	BOOST_TEST_FOREACH( const KSellPShopItemBackupData&, kInfo, vecSellItemList )
+	for( const KSellPShopItemBackupData& kInfo : vecSellItemList )
 	{
 		if( IsExistItem( kInfo.m_kSellPShopItemInfo.m_kInventoryItemInfo.m_iItemUID ) == true )
 		{
@@ -380,7 +380,7 @@ bool KPersonalShopItemManager::PrepareForBuyItem( IN const UidType iHostUnitUID,
 		{
 			//{{ 2009. 2. 12  최육사	개인상점 ED버그 방지
 			bool bIsBuyItemExist = false;
-			BOOST_TEST_FOREACH( KItemInfo&, kBuyItemInfoTemp, kResult.m_vecItemInfoTemp )
+			for( KItemInfo& kBuyItemInfoTemp : kResult.m_vecItemInfoTemp )
 			{
 				if( kBuyItemInfoTemp.m_iItemID == spItemInfo->GetItemID() )
 				{
@@ -452,7 +452,7 @@ bool KPersonalShopItemManager::Confirm( IN const UidType iItemUID, IN const bool
 
 bool KPersonalShopItemManager::IsAllItemSoldOut() const
 {
-	BOOST_TEST_FOREACH( KPersonalShopItemPtr, spItemInfo, m_vecSellItemInfo )
+	for( KPersonalShopItemPtr spItemInfo : m_vecSellItemInfo )
 	{
 		if( spItemInfo == NULL )
 		{
@@ -471,7 +471,7 @@ bool KPersonalShopItemManager::IsAllItemSoldOut() const
 //{{ 2011. 05. 24	최육사	대리 상인 개편
 bool KPersonalShopItemManager::IsAllItemOnSale() const
 {
-	BOOST_TEST_FOREACH( KPersonalShopItemPtr, spItemInfo, m_vecSellItemInfo )
+	for( KPersonalShopItemPtr spItemInfo : m_vecSellItemInfo )
 	{
 		if( spItemInfo == NULL )
 		{
@@ -498,7 +498,7 @@ bool KPersonalShopItemManager::PrepareForPickUp( IN const std::vector< UidType >
 	kResult.m_iTotalAddED = 0;
 
 	// 각 아이템 정보들을 모으자!
-	BOOST_TEST_FOREACH( const UidType, iItemUID, vecPickUpItemList )
+	for( const UidType iItemUID : vecPickUpItemList )
 	{
 		KPersonalShopItemPtr spItemInfo = GetPersonalShopItem( iItemUID );
 		if( spItemInfo == NULL )
@@ -559,7 +559,7 @@ bool KPersonalShopItemManager::PickUp( IN const std::vector< UidType >& vecPickU
 	SET_ERROR( NET_OK );
 
 	// 각 아이템 정보들을 모으자!
-	BOOST_TEST_FOREACH( const UidType, iItemUID, vecPickUpItemList )
+	for( const UidType iItemUID : vecPickUpItemList )
 	{
 		KPersonalShopItemPtr spItemInfo = GetPersonalShopItem( iItemUID );
 		if( spItemInfo == NULL )
@@ -598,7 +598,7 @@ bool KPersonalShopItemManager::PickUp( IN const std::vector< UidType >& vecPickU
 	}
 
 	// pick up 상태로 바꾸자!
-	BOOST_TEST_FOREACH( const UidType, iItemUID, vecPickUpItemList )
+	for( const UidType iItemUID : vecPickUpItemList )
 	{
 		KPersonalShopItemPtr spItemInfo = GetPersonalShopItem( iItemUID );
 		if( spItemInfo == NULL )
@@ -624,7 +624,7 @@ bool KPersonalShopItemManager::PickUp( IN const std::vector< UidType >& vecPickU
 void KPersonalShopItemManager::UnPickUp( IN const std::vector< UidType >& vecPickUpFailList )
 {
 	// 각 아이템 정보들을 모으자!
-	BOOST_TEST_FOREACH( const UidType, iItemUID, vecPickUpFailList )
+	for( const UidType iItemUID : vecPickUpFailList )
 	{
 		KPersonalShopItemPtr spItemInfo = GetPersonalShopItem( iItemUID );
 		if( spItemInfo == NULL )
@@ -673,7 +673,7 @@ void KPersonalShopItemManager::PickUpComplete( IN const std::vector< UidType >& 
 	kResult.m_vecSellItemInfo.clear();
 
 	// 각 아이템 정보들을 모으자!
-	BOOST_TEST_FOREACH( const UidType, iItemUID, vecPickUpItemList )
+	for( const UidType iItemUID : vecPickUpItemList )
 	{
 		KPersonalShopItemPtr spItemInfo = GetPersonalShopItem( iItemUID );
 		if( spItemInfo == NULL )

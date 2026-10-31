@@ -4,7 +4,7 @@
 #include <ToString.h>
 #include <KncSend.h>
 #include <map>
-#include <boost/timer.hpp>
+#include "x2/platform/timer.h"
 #include "BaseServer.h"
 #include "HenirRanking.h"
 
@@ -96,8 +96,8 @@ private:
 	std::map< int, KHenirRanking >								m_mapHenirRanking;			// 헤니르 시공 랭킹
 	std::map< KTitleRewardKey, std::vector< KTitleReward > >	m_mapRankingTitleReward;	// 랭킹 타이틀 보상
 
-	boost::timer								m_tBroadCastTimer;							// 브로드 캐스팅을 위한 타이머
-	boost::timer								m_tClearTimer;								// 초기화 체크를 위한 타이머
+	x2::Timer								m_tBroadCastTimer;							// 브로드 캐스팅을 위한 타이머
+	x2::Timer								m_tClearTimer;								// 초기화 체크를 위한 타이머
 	bool										m_bInit;									// DB로부터 랭킹 리스트 받았는지 여부
 	bool										m_bReservedRankingReward;					// 랭킹 보상처리 예약
 
@@ -109,7 +109,7 @@ private:
 	std::map< UidType, KPvpRankingInfo >		m_mapPvpRanking;
 
 	CTime										m_tResetRankingTime;
-	boost::timer								m_kRefreshTimer;
+	x2::Timer								m_kRefreshTimer;
 };
 
 DefSingletonInline( KRankingManager );

@@ -1,5 +1,6 @@
 #pragma once
 #include "BaseServer.h"
+#include "ActorManager.h" // KActorManager in the templates below
 #include "KncSend.h"
 
 //{{ 최육사 : [2012/10/9] //	태국 OTP 인증 통신 모듈
@@ -59,12 +60,6 @@ protected:
 // 	DECL_ON_FUNC( DBE_GET_GIANT_DELETED_UNIT_LIST_ACK );
 // #endif //SERV_GUARANTEE_UNIQUENESS_OF_NAME_CN
 
-	//{{ 2010. 06. 08  최육사	넥슨PC방 인증 서버 개편
-	DECL_ON_FUNC( ENX_AUTH_LOGIN_ACK );
-	DECL_ON_FUNC( ENX_AUTH_TERMINATE_NOT );
-	DECL_ON_FUNC( ENX_AUTH_MESSAGE_NOT );
-	DECL_ON_FUNC( ENX_AUTH_SYNCHRONIZE_REQ );
-	//}}
 
 	//{{ 2009. 7. 6  최육사		랭킹 개편
 	DECL_ON_FUNC( DBE_GET_HENIR_RANKING_INFO_ACK );
@@ -150,8 +145,6 @@ private:
 	//}}
 	//{{ 최육사 : [2012/10/9] //	태국 OTP 인증 통신 모듈
 	//}}
-	boost::timer					m_tTimeProcessCommunicationONOFF;
-	bool							m_bServerRunningProcessCommunicationOnOff;
 
 };
 
