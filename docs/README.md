@@ -10,6 +10,14 @@ Os assets do cliente (`.kom`, `.dds`, `.x`, `.fx`, ...) **não** são alterados:
 2. [Roadmap](projeto/roadmap.md): fases e o que está em andamento.
 3. [Decisões](projeto/decisoes.md): tomadas e pendentes.
 
+## Guias de uso
+
+Para quem só quer compilar e rodar (também linkados pelo [README](../README.md) da raiz):
+
+- [Compilar no Linux](building-linux.md): container Docker ou nativo, pacotes por distribuição.
+- [Compilar no Windows](building-windows.md): Visual Studio 2026 com o clang-cl.
+- [Rodar os servidores](running.md): banco, configurações locais, pastas de execução, servidores e cliente.
+
 ## Áreas
 
 | Área | Assunto |
