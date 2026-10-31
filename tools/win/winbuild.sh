@@ -2,7 +2,7 @@
 # Builds and tests the Windows (clang-cl, T26) presets on a Windows machine over SSH (docs/ferramentas/ambiente-build.md).
 #   X2_WIN_HOST=user@host tools/win/winbuild.sh [preset] [jobs]      default: windows-debug, every core of the machine
 # Sends the tracked files with their working-tree contents (uncommitted edits included) to $X2_WIN_DIR/src and runs
-# cmake/ctest inside the Visual Studio environment found by vswhere. The machine needs Visual Studio Build Tools
+# cmake/ctest inside the newest Visual Studio found by vswhere that has the C++ and Clang components. The machine needs Visual Studio Build Tools
 # (C++ workload, Clang and CMake components), Python 3 and an OpenSSH server with key login; no Git.
 set -euo pipefail
 
@@ -21,7 +21,7 @@ script=$(mktemp)
 trap 'rm -f "$script"' EXIT
 cat > "$script" <<CMD
 @echo off
-for /f "usebackq delims=" %%i in (\`"%ProgramFiles(x86)%\\Microsoft Visual Studio\\Installer\\vswhere.exe" -latest -products * -property installationPath\`) do set VSDIR=%%i
+for /f "usebackq delims=" %%i in (\`"%ProgramFiles(x86)%\\Microsoft Visual Studio\\Installer\\vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 Microsoft.VisualStudio.Component.VC.Llvm.Clang -property installationPath\`) do set VSDIR=%%i
 call "%VSDIR%\\Common7\\Tools\\VsDevCmd.bat" -arch=amd64 -host_arch=amd64 -no_logo || exit /b 1
 set PATH=%VSDIR%\\VC\\Tools\\Llvm\\x64\\bin;%PATH%
 cd /d $win\\src

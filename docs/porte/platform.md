@@ -40,6 +40,7 @@ Código portado inclui `x2/platform/win32.h` no lugar de `<windows.h>`, `<atltim
 | `format.h`, `timer.h`, `noncopyable.h` | `x2::wformat`/`x2::str` (fiel ao Boost.Format), `x2::Timer`, `x2::noncopyable` | — | — |
 | `unicode.h` | wide ↔ UTF-8 ↔ UTF-16; `TranslateWideFormat`; `Cp949ToWide`, `IsValidUtf8`, `DecodeTextFile`; `Utf8FileLocale` (locale UTF-8 para `std::wfstream`, no lugar de `std::locale("korean")`) | iconv (CP949) | `MultiByteToWideChar(949)` |
 | `debug.h` | `__WFILE__`, `__WFUNCTION__` em tempo de execução | — | — |
+| `console.h` | `InitConsole` (no início do `main` de cada servidor), `IsColorTerminal` (usado pelo log) | nada a fazer; `isatty` | console em UTF-8 na entrada e na saída (`SetConsoleCP`/`SetConsoleOutputCP`, restaurados ao sair) e escapes ANSI ligados (`ENABLE_VIRTUAL_TERMINAL_PROCESSING`); cor só se o console tiver esse modo |
 | `d3dx_math.h` | Matemática do D3DX 9: `D3DXVECTOR2/3/4`, `D3DXMATRIX`, `D3DXCOLOR`, `D3DX_PI`, `D3DXToDegree`, `D3DXVec3*` (normalize, cross, dot, transform...), `D3DXMatrix*` (identity, multiply, inverse, rotações, translação, escala, `LookAtLH`) | implementação própria | idem (sem DXSDK) |
 
 ## Armadilhas que a camada resolve
@@ -72,6 +73,9 @@ Código portado inclui `x2/platform/win32.h` no lugar de `<windows.h>`, `<atltim
 
 - `_beginthreadex` não suporta `CREATE_SUSPENDED`.
 - `CString` cobre só o subconjunto usado até agora (vai crescer conforme o servidor for portado).
+- Console do Windows (2026-10-31): até o `InitConsole`, o texto coreano do log saía corrompido, porque o console decodificava o UTF-8
+  pela code page OEM. Com ele a saída fica certa, mas o conhost com Consolas não tem glifos de Hangul (o Windows Terminal resolve por
+  *fallback* de fonte) e a leitura de UTF-8 não ASCII pelo stdin no conhost não é confiável: o terminal da T15 deve ler com `ReadConsoleW`.
 - Windows: compila sem warnings e passa nos testes com **clang-cl** (Visual Studio 2026, MSVC 14.51) num Windows real (T26, 2026-10-30).
   De 2026-10-29 a 2026-10-30 foi verificado com MinGW-w64 + Wine (T18). O debug da STL da Microsoft achou um comportamento indefinido no
   `x2::format` (`assign` com referência para o próprio vetor), corrigido.
