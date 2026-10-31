@@ -28,6 +28,7 @@ Análise do código de referência, feita em 2026-10-29 sobre o commit `b8fb1380
 | [Feature flags](feature-flags.md) | `SERV_*`, países, ambientes: o maior volume de código morto |
 | [Debug e dev](debug-e-dev.md) | Ferramentas de debug/admin a manter (`X2_DEV_TOOLS`) |
 | [Codificação](codificacao.md) | CP949, fim de linha, convenções do código original |
+| [Bugs do original](bugs.md) | Comportamento errado do original mantido no porte: pendências da Fase 5 |
 
 ## Ruído
 

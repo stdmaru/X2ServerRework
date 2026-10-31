@@ -17,7 +17,8 @@ mkdir -p "$home"
 # Docker's layer cache makes this a no-op when the Dockerfile has not changed.
 docker build -q -t "$image" "$repo/docker/build" >/dev/null
 
-tty=()
+# stdin always attached: the servers' Lua prompt ends at end of input (a pipe keeps them running)
+tty=(-i)
 [ -t 0 ] && [ -t 1 ] && tty=(-it)
 [ $# -eq 0 ] && set -- bash
 

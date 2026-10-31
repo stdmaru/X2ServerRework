@@ -122,3 +122,5 @@ Ver [Cliente — acoplamento com Windows / Direct3D 9](../original/cliente.md).
 
 Refatoração de verdade (remoção de sistemas mortos, organização de pastas, nomes), guiada por testes/smoke tests
 das fases anteriores. Só depois que tudo roda.
+
+- [ ] Consertar os [bugs do original](../original/bugs.md) mantidos no porte, cada um com a decisão do comportamento novo.

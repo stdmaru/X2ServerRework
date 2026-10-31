@@ -820,11 +820,13 @@ void KGameServer::SendToGlobalServer( unsigned short usEventID )
 
 _IMPL_ON_FUNC( DBE_SERVER_ON_ACK, KDBE_GAME_SERVER_ON_ACK )
 {
-	//스타트에 실패했으면 프로그램을 끈다
+	// If the start failed, the server shuts down: Authenticate() returns false and Init() fails.
+	// The original called ::exit( 0 ) here, from this thread, while the other threads were still running.
 	if( kPacket_.m_iOK != NetError::NET_OK)
 	{
-        ::exit( 0 );
-        return;
+		SetAuthenticateResult( false );
+		SetEvent( m_spEventAck.get() );
+		return;
 	}
 
     SetServerInfo( kPacket_.m_kServerInfo );
@@ -852,6 +854,7 @@ _IMPL_ON_FUNC( DBE_SERVER_ON_ACK, KDBE_GAME_SERVER_ON_ACK )
 	SiKChannelManager()->Init( GetServerGroupID(), kPacket_.m_iChannelID, kPacket_.m_kBonusInfo );
 	//}}
 
+	SetAuthenticateResult( true );
     SetEvent( m_spEventAck.get() );
 }
 

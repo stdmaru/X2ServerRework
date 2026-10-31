@@ -16,8 +16,10 @@ if(DEFINED ENV{X2_DB_PASSWORD})
 else()
     set(_x2_db_password "X2dev!Passw0rd")
 endif()
-if(EXISTS /usr/lib/libtdsodbc.so)
-    set(_x2_odbc_driver "/usr/lib/libtdsodbc.so")
+# FreeTDS: /usr/lib on Arch, /usr/lib/<triplet>/odbc on Ubuntu (the build image, T24)
+find_library(X2_FREETDS_ODBC tdsodbc PATH_SUFFIXES odbc DOC "FreeTDS ODBC driver, preferred by the .dsn templates")
+if(X2_FREETDS_ODBC)
+    set(_x2_odbc_driver "${X2_FREETDS_ODBC}")
     set(_x2_odbc_options "TDS_Version=7.4;ClientCharset=UTF-8")
 else()
     set(_x2_odbc_driver "ODBC Driver 18 for SQL Server")
@@ -35,6 +37,20 @@ set(X2_RUN_EPUBLISHER_URL "http://127.0.0.1:${X2_RUN_EPUBLISHER_PORT}/" CACHE ST
 
 find_package(Python3 COMPONENTS Interpreter)
 find_program(X2_LUAJIT_EXECUTABLE luajit DOC "LuaJIT, used to generate the ClientScript folder")
+# Without a system luajit (the build image has none, T21), build the interpreter of the pinned LuaJIT commit.
+# It runs after the library build: both use the same source tree.
+set(_x2_luajit_depends)
+if(NOT X2_LUAJIT_EXECUTABLE AND TARGET x2_luajit_build AND NOT WIN32)
+    set(_x2_luajit_exe "${luajit_SOURCE_DIR}/src/luajit")
+    add_custom_command(OUTPUT "${_x2_luajit_exe}"
+        COMMAND ${X2_MAKE} -C "${luajit_SOURCE_DIR}/src" BUILDMODE=static CC=${CMAKE_C_COMPILER} luajit
+        DEPENDS x2_luajit_build
+        COMMENT "Building the LuaJIT ${X2_LUAJIT_COMMIT} interpreter (ClientScript generation)"
+        VERBATIM)
+    add_custom_target(x2_luajit_exe DEPENDS "${_x2_luajit_exe}")
+    set(X2_LUAJIT_EXECUTABLE "${_x2_luajit_exe}")
+    set(_x2_luajit_depends x2_luajit_exe)
+endif()
 
 set(_x2_runtime_src "${CMAKE_SOURCE_DIR}/runtime")
 
@@ -50,6 +66,7 @@ if(NOT TARGET x2_run_resources)
         message(STATUS "x2_run_*: ClientScript is not generated (needs Python 3, luajit and X2_CLIENT_DATA=${X2_CLIENT_DATA})")
     endif()
     add_custom_target(x2_run_resources ${_x2_commands}
+        DEPENDS ${_x2_luajit_depends}
         COMMENT "Assembling ${X2_RUN_DIR} (ServerResource, ClientScript)" VERBATIM)
 endif()
 

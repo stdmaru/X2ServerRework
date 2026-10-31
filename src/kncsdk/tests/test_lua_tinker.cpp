@@ -4,6 +4,7 @@
 
 #include <doctest/doctest.h>
 
+#include <fstream>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -101,5 +102,77 @@ TEST_CASE( "lua_interpreter runs statements read from stdin" )
 
     CHECK( lua_tinker::get<int>( L, "x" ) == 42 );
     CHECK( lua_tinker::get<int>( L, "y" ) == 84 ); // a bad line does not stop the prompt
+    lua_close( L );
+}
+
+namespace {
+
+// A data script like Item.lua: one table call per entry (one constant each), past LuaJIT's 65536 constants.
+std::string WriteBigScript( const char* path, int entries, const char* tail )
+{
+    std::ofstream out( path, std::ios::binary );
+    out << "\xEF\xBB\xBF-- lua header\n\n";
+    for( int i = 0; i < entries; ++i )
+        out << "Add\n{\n\tm_ID = " << i << ",\n\tm_Name = \"name " << i << "\",\n\tm_Desc = \"desc " << i << "\",\n}\n";
+    out << tail;
+    return path;
+}
+
+int g_iEntries = 0;
+int g_iLastID = -1;
+int AddEntry( lua_State* L )
+{
+    lua_getfield( L, 1, "m_ID" );
+    const int id = static_cast<int>( lua_tointeger( L, -1 ) );
+    if( id == g_iLastID + 1 )
+        ++g_iEntries;
+    g_iLastID = id;
+    return 0;
+}
+
+} // namespace
+
+TEST_CASE( "lua_dofile runs scripts past the constant limit in order" )
+{
+    lua_State* L = luaL_newstate();
+    luaL_openlibs( L );
+    lua_register( L, "Add", AddEntry );
+
+    const std::string path = WriteBigScript( "big_script.lua", 70000, "done = true\n" );
+    REQUIRE( luaL_loadfile( L, path.c_str() ) != 0 ); // the limit is real
+    lua_pop( L, 1 );
+
+    g_iEntries = 0;
+    g_iLastID = -1;
+    const int top = lua_gettop( L );
+    CHECK( LUA_DOFILE( L, path.c_str() ) == 0 );
+    CHECK( lua_gettop( L ) == top );
+    CHECK( g_iEntries == 70000 );
+    CHECK( lua_tinker::get<bool>( L, "done" ) );
+    lua_close( L );
+}
+
+TEST_CASE( "lua_dofile reports errors with the line of the file" )
+{
+    lua_State* L = luaL_newstate();
+    luaL_openlibs( L );
+    lua_register( L, "Add", AddEntry );
+
+    // 70000 entries of 6 lines after 2 header lines: the error is on line 420003
+    const std::string path = WriteBigScript( "big_script_error.lua", 70000, "error( \"stop\" )\n" );
+    REQUIRE( LUA_DOFILE( L, path.c_str() ) != 0 );
+    const std::string msg = lua_tostring( L, -1 );
+    CHECK( msg.find( "big_script_error.lua:420003: stop" ) != std::string::npos );
+    lua_close( L );
+
+    // a syntax error anywhere: nothing runs
+    L = luaL_newstate();
+    luaL_openlibs( L );
+    lua_register( L, "Add", AddEntry );
+    g_iEntries = 0;
+    g_iLastID = -1;
+    WriteBigScript( "big_script_syntax.lua", 70000, "this is not lua\n" );
+    CHECK( LUA_DOFILE( L, "big_script_syntax.lua" ) != 0 );
+    CHECK( g_iEntries == 0 );
     lua_close( L );
 }

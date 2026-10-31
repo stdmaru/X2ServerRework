@@ -491,29 +491,33 @@ bool CXSLSkillTree::LoadSkillTemplet_Stat( KLuaManager& luaManager, SkillTemplet
 		return true;
 	}
 
-	// 한가지라도 데이터가 있는 것이라면 넣자
+	// if there is any data, add it
+	// Port: the size checks above only reject empty tables (inverted test of the original), so a table can be shorter
+	// than SLV_MAX_LEVEL (the guild skills 500 and 501 have 10 levels): the original read past the vector there.
+	// Levels without data get 0.
+	const auto at = []( const std::vector< float >& vec, int iIndex ) { return iIndex < static_cast<int>( vec.size() ) ? vec[iIndex] : 0.f; };
 	for( int iIndex = 0 ; iIndex < SkillTemplet::SLV_MAX_LEVEL ; ++iIndex )
 	{
 		CXSLStat::Stat kInfo;
 		if( vecBaseHP.empty() == false )
 		{
-			kInfo.m_fBaseHP = vecBaseHP[iIndex];
+			kInfo.m_fBaseHP = at( vecBaseHP, iIndex );
 		}
 		if( vecAtkPhysic.empty() == false )
 		{
-			kInfo.m_fAtkPhysic = vecAtkPhysic[iIndex];
+			kInfo.m_fAtkPhysic = at( vecAtkPhysic, iIndex );
 		}
 		if( vecAtkMagic.empty() == false )
 		{
-			kInfo.m_fAtkMagic = vecAtkMagic[iIndex];
+			kInfo.m_fAtkMagic = at( vecAtkMagic, iIndex );
 		}
 		if( vecDefPhysic.empty() == false )
 		{
-			kInfo.m_fDefPhysic = vecDefPhysic[iIndex];
+			kInfo.m_fDefPhysic = at( vecDefPhysic, iIndex );
 		}
 		if( vecDefMagic.empty() == false )
 		{
-			kInfo.m_fDefMagic = vecDefMagic[iIndex];
+			kInfo.m_fDefMagic = at( vecDefMagic, iIndex );
 		}
 
 		skillTemplet.m_vecStat.push_back( kInfo );

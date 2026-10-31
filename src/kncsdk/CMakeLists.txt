@@ -22,7 +22,7 @@ target_link_libraries(kncsdk PUBLIC x2::platform PRIVATE ZLIB::ZLIB)
 
 # lua_tinker (C++ <-> Lua binding)
 if(TARGET x2::luajit)
-    add_library(kncsdk_lua STATIC lua_tinker.cpp lua_interpreter.cpp)
+    add_library(kncsdk_lua STATIC lua_tinker.cpp lua_interpreter.cpp lua_dofile.cpp)
     add_library(x2::kncsdk_lua ALIAS kncsdk_lua)
     target_link_libraries(kncsdk_lua PUBLIC x2::kncsdk x2::luajit)
 endif()

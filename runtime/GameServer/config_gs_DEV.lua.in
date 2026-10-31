@@ -1,0 +1,127 @@
+﻿-- lua header. Keep this line: it makes the file be read as UTF-8.
+-- Development configuration of the Game Server (tag DEV: GameServer DEV <server group id>).
+-- Derived from the production config_gs_US_SERVICE.lua. The @...@ values are filled in by the
+-- x2_run_game target (docs/ferramentas/runtime.md).
+
+-- address this server announces; the DB (Statistics.LServerList.PublicIP) identifies the servers by it --
+SetLocalIP( "@X2_RUN_SERVER_IP@" )
+
+----------     Billing (DEB, served by the EPublisherServer)     ----------
+DEBBillingManager:AddWebServiceAddress("@X2_RUN_EPUBLISHER_URL@")
+DEBBillingManager:Init(1)
+
+----------     Game Server     ----------
+-- number of server groups (needed by the entry structure)
+SimLayer:SetServerGroupNum( 1 )
+
+-- use the service version (config_gs.ini, [Version] Service Version)
+Server:SetUseVersion( VE_SERVICE )
+
+-- time to wait for the DB queue on shutdown --
+Server:SetShutDownWait( 60 * 1000 )
+
+-- number of TRWorkerThreads
+TRServer:TRWorkerThreadCount( 4 )
+
+
+----------     GS NetLayer     ----------
+
+NetLayer:SetCheckSequenceNum( true )
+NetLayer:SetPacketAuthFailLimit( 100 ) -- disconnect a user after 100 invalid packets
+
+
+-- Version Flag --
+--[[
+VF_INTERNAL	 : in-house test version
+VF_OPEN_TEST : open test version
+VF_SERVICE	 : service version
+--]]
+SimLayer:SetVersionFlag( VF_SERVICE )
+
+-- Common Flag --
+--[[
+CF_NPGG     : nProtect Game Guard check
+CF_CHECK_IP : check the connecting IP
+--]]
+SimLayer:AddCommonFlag( CF_CHECK_IP )
+
+-- Auth Flag --
+--[[
+AF_INTERNAL       : in-house auth
+AF_NEXON_KOREA    : Nexon Korea auth
+AF_K3RCOMBO_US    : US
+AF_GLOBAL_SERVICE : global service (DEB)
+--]]
+SimLayer:SetAuthFlag( AF_GLOBAL_SERVICE )
+
+-- Billing Flag --
+--[[
+BF_NEXON_KOREA_TEST : Nexon billing, test server
+BF_NEXON_KOREA      : Nexon billing
+BF_PAYLETTER_US     : Payletter (US)
+BF_GLOBAL_SERVICE   : global service (DEB)
+--]]
+SimLayer:SetBillingFlag( BF_GLOBAL_SERVICE )
+
+-- IP Check --
+-- with no address set, every IP may connect
+--SimLayer:AddIP( "127.0.0.1" )
+
+-- Script File Path (relative to this folder: build/<preset>/run/GameServer) --
+SimLayer:AddPath( "../ServerResource" ) -- server common
+SimLayer:AddPath( "../ClientScript" ) -- client script, generated from the client data
+
+
+----------     DB Layer     ----------
+
+-- ODBC driver (docs/porte/server-common-db.md); must come before AddDB --
+DBLayer:SetODBCDriver( "@X2_RUN_ODBC_DRIVER@" )
+DBLayer:SetODBCOptions( "@X2_RUN_ODBC_OPTIONS@" )
+
+-- databases --
+--[[
+DC_ACCOUNT     : accounts
+DC_GAME        : game
+DC_LOG         : statistics
+DC_KOG_BILLING : billing (cash)
+--]]
+-- AddDB( DB type, file dsn, thread count, DBConnectionString? )
+-- Production had Game01/Game02 by server group, both pointing to the same Game01 database.
+
+DBLayer:AddDB( DC_ACCOUNT,		'Account.dsn',		10, false )
+DBLayer:AddDB( DC_GAME,			'Game01.dsn',		15, false )
+DBLayer:AddDB( DC_LOG,			'Statistics.dsn',	10, false )
+DBLayer:AddDB( DC_KOG_BILLING,	'Billing.dsn',		10, false )
+
+
+----------     Statistics     ----------
+
+-- production sent the statistics logs by FTP; not in development
+StatisticsManager:SendToFTPStatistics( false )
+StatisticsManager:SetUserLog( true )
+StatisticsManager:SetBillingPacketLog( true )
+
+StatisticsManager:AddStatistics( SI_DISCONNECT_USERFSM, 1800, true )
+StatisticsManager:AddStatistics( SI_DISCONNECT_REASON, 300, true )
+StatisticsManager:AddStatistics( SI_PVP_MAP, 3600, true )
+StatisticsManager:AddStatistics( SI_FPS, 3600, true )
+StatisticsManager:AddStatistics( SI_ED, 3600, true )
+StatisticsManager:AddStatistics( SI_QUEST, 3600, true )
+StatisticsManager:AddStatistics( SI_CHARACTER, 3600, true )
+StatisticsManager:AddStatistics( SI_LOC_ITEM, 3600, false )
+StatisticsManager:AddStatistics( SI_LOC_SPIRIT, 3600, false )
+StatisticsManager:AddStatistics( SI_LOC_ENCHANT, 3600, false )
+StatisticsManager:AddStatistics( SI_ITEM_DB, 3600, true )
+StatisticsManager:SetStatisticsFlushTime( SI_ITEM_DB, 4 )
+
+
+----------     Log level     ----------
+
+-- log level --
+--[[
+-1 : no logs
+ 0 : cerr, cout
+ 1 : cerr, cwarn, cout
+ 2 : cerr, cwarn, clog, cout
+--]]
+log( 0 )

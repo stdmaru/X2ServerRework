@@ -48,6 +48,7 @@ Interface pública (nomes, macros, assinaturas) mantida; mudou o que está lista
 | `ObjectPool` | `BlockAllocator`/`BoostAllocator` usam um pool próprio (`FixedBlockPool.h`) | O original guardava ponteiros de **32 bits** nos blocos livres; sem Boost |
 | `Import*.h` | Esvaziados | Só faziam `#pragma comment(lib)`; o link agora é do CMake |
 | `lua_interpreter` | Novo (`lua_interpreter.cpp`): prompt Lua simples em stdin, usado por `KBaseServer::Run` | O original vinha de um `lua.c` modificado do Lua 5.1.4, que o LuaJIT não traz; o terminal da T15 vai substituí-lo |
+| `LUA_DOFILE` | Era `luaL_dofile`; agora `lua_dofile` (`lua_dofile.cpp`, 2026-10-31). Igual ao `luaL_dofile`, menos para arquivo que passa do limite do LuaJIT de 65.536 constantes numa função (`Item.lua` gerado do cliente, `ArcadeResultTable.lua`): ele é dividido nos comandos do topo (identificador na coluna 0) e as partes, compiladas antes, rodam em ordem, com os números de linha do arquivo nas mensagens. Só divide sem `local` no topo e sem string longa (`[[`); se uma parte não compila, devolve o erro original | O original rodava num Lua 5.1, que aceita 2^18 constantes; o LuaJIT recusava os dois arquivos (T21) |
 | Testes originais (`UnitTest/`) | Removidos, substituídos por doctest | Eram demos (um era cópia dos exemplos do Crypto++) |
 
 ### Bugs do original corrigidos

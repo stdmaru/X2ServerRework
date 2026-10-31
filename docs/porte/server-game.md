@@ -32,11 +32,18 @@ relativa do original (`src/server/GameServer` ao lado de `src/server/Common`).
 | Banco | 502 `DO_QUERY` | `KODBC` já portado; as procedures são as do `Game01` |
 | Ferramentas de admin/cheat | `GSUserAdminCheat.*`, `UserCheatManager.*`, `RobotTestManager.*` | revisar sob `X2_DEV_TOOLS` (T10) |
 
-## Estado (2026-10-30, branch `server/game-build`)
+## Estado (2026-10-31, branch `server/game-run`)
 
-O executável `GameServer` (alvo `x2_game_server`, `main` com `KServerMain` como o ChannelServer) **compila e linka sem warnings** em
-GCC Debug, Clang Debug, GCC Release, Clang Release e clang-cl (Windows, na VM de testes), com os 6 testes passando em todos. Ainda não rodou: é o passo
-`server/game-run`. O Clang e o clang-cl acharam três bugs do original (abaixo) que o GCC não acusava.
+**Roda no Linux** pela pasta montada por `x2_run_game` ([Pastas de execução](../ferramentas/runtime.md)): conecta nos quatro bancos do
+SQL Server do Docker (FreeTDS), carrega os scripts do `ServerResource` e do `ClientScript` gerado do cliente (os erros dos dados de
+produção estão em [Bugs do original](../original/bugs.md#dados-serverresource-clientscript)), se autentica no banco (UID 2, "Game"),
+recebe a lista de Center (9100), Login (9200) e Global (9500), tenta conectar neles e chega ao estado pronto (`OnServerReadyComplete`),
+com o prompt Lua respondendo. Encerra com código 0 no fim do stdin. Os pacotes para os servidores que ainda não existem são descartados
+([Dependências](#dependências-de-outros-servidores-levantamento-de-2026-10-31)).
+
+**Build** (2026-10-30, `server/game-build`): o executável (alvo `x2_game_server`, `main` com `KServerMain` como o ChannelServer)
+compila e linka sem warnings em GCC Debug, Clang Debug, GCC Release, Clang Release e clang-cl (Windows, na VM de testes), com os 6
+testes passando em todos. O Clang e o clang-cl acharam três bugs do original (abaixo) que o GCC não acusava.
 
 Medidas do caminho (GCC Debug, `-k 0`), para dar a escala: 632 erros em 59 arquivos depois da passada mecânica; 0 erros e 1.099
 warnings (190 distintos) depois das correções abaixo e do `fix_warnings.py`.
@@ -57,7 +64,8 @@ warnings (190 distintos) depois das correções abaixo e do `fix_warnings.py`.
 | `NexonBillingTCPPacket` | `unsigned long` → `DWORD` | Campos de 4 bytes do protocolo; `unsigned long` tem 8 bytes no Linux (o `Read8Byte` lia 16) |
 | `UserLogManager`, `RobotTestManager` | Arquivos em UTF-8 (`Utf8FileLocale`), caminhos com `/`, `std::filesystem` | O original usava o locale `"korean"` (CP949) e `CreateDirectoryA` |
 | `XSLXmlParser` (política da Nexon) | `W2A` → UTF-8 | O XML declara `encoding="utf-8"`; o `W2A` usava a code page ANSI |
-| Comparações sempre falsas | `u_char == -1` (grau de guilda) e `unsigned < 0` (nível de skill, página ativa) saem | Sempre falsas também no MSVC: o comportamento fica o mesmo (ver Pendências) |
+| Comparações sempre falsas | `u_char == -1` (grau de guilda) e `unsigned < 0` (nível de skill, página ativa) saem | Sempre falsas também no MSVC: o comportamento fica o mesmo ([Bugs do original](../original/bugs.md)) |
+| `ON_DBE_SERVER_ON_ACK` (`GameServer.cpp`) | Quando o banco recusa o servidor, a resposta marca `SetAuthenticateResult( false )` e o `Init` falha; quando aceita, marca `true` | Como no ChannelServer ([Mudanças](server-channel.md#mudanças-em-relação-ao-original)): o original chamava `::exit( 0 )` nessa thread. Sem o `true`, o `Authenticate` do `Common` portado recusava o GameServer |
 
 ### Bugs do original corrigidos
 
@@ -66,6 +74,7 @@ warnings (190 distintos) depois das correções abaixo e do `fix_warnings.py`.
 | `GSLogDBThread` (estatística do personagem) | Quatro colunas de ED (`US_ED_OpenCubeSpendED`, `US_ED_PBattleFieldED`, `US_ED_MCoboExpressTicketED`, `US_ED_MItemResolve`) eram lidas do `etcData[22]` com índices 22 a 25: leitura fora do array (lixo da pilha no log) | Lidas do `edData`, onde são somadas (2026-10-30, achado pelo `-Warray-bounds` do Clang) |
 | `GSUserAdminCheat` (`/dhn`) | O `std::wstring` do apelido passava pelo `...` do `CString::Format`: o `%s` lia a estrutura como ponteiro | `.c_str()` (o Clang recusa: "call will abort at runtime") |
 | `KGSHenirRanking::SetLastRank` | `m_uiLastRank = m_uiLastRank`: o setter não fazia nada e o limite do ranking de Henir usava sempre o valor inicial | Grava o parâmetro (`-Wself-assign-field`) |
+| `CXSLSkillTree::LoadSkillTemplet_Stat` (`Common`) | Uma tabela de stat com menos de 30 níveis (as skills de guilda 500 e 501 têm 10) era lida até o nível 30: leitura fora do vetor | Os níveis sem dado ficam com 0 (2026-10-31, asserção da libstdc++ no Debug). A checagem invertida que deixa a tabela passar fica para a Fase 5 ([Bugs do original](../original/bugs.md)) |
 
 Portabilidade (sem mudança de comportamento): passada mecânica (`mechanical.py`); `BOOST_MAP_CONST_FOREACH` → range-for;
 `boost::iequals`/`ifind_first`/`replace_all` → `x2::platform::IEquals`/`IContains`/`ReplaceAll` (dobra ASCII, como o Boost no locale "C");
@@ -79,9 +88,8 @@ destrutores `virtual` em 14 singletons; `using` das sobrecargas escondidas de `R
 - **Nexon (KR) ainda compila como código morto** (`NexonBillingTCP*`, `KNexonBillingTCPManager`): o US usa `BF_GLOBAL_SERVICE` e o
   `SiKBillManager()` (DEB). Sai no passo do roadmap que remove os publishers. Antes, o `CI_EXPAND_SKILL_PAGE` do
   `GSUserCashShop_Global.cpp` consulta o catálogo da Nexon, que no US está sempre vazio: no original a compra falhava (conferir ao rodar o cash).
-- Grau de guilda: o original testava `== -1` num `u_char` (sempre falso). Conferir no `server/game-run` o que a procedure devolve quando o
-  personagem não tem guilda.
-- `KPartyListManager::IsPossibleLowLevel`: o `OUT bool isPartyNULL` é recebido por valor (quem chama nunca vê o valor); mantido como no original.
+- Bugs do original mantidos (defesa mágica das skills, grau de guilda, `IsPossibleLowLevel`...) e erros dos dados de produção ao carregar:
+  [Bugs do original](../original/bugs.md), para a Fase 5.
 - 105 `unsigned long` no GameServer (8 bytes no Linux): revisar os que vão para rede, banco ou formato fixo ao rodar.
 
 ## Dependências de outros servidores (levantamento de 2026-10-31)
