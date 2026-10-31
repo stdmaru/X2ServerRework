@@ -80,7 +80,7 @@ int	KAutoPartyCompleteTimeManager::GetAutoPartyMakingEstimatedTime() const
 	CTime tCurr = CTime::GetCurrentTime();									// 현재 시간
 	CTime tTwoHourAgo = tCurr - CTimeSpan( 0, 2, 0, 0 );					// 현재 시간에서 두시간 전 시간
 
-	BOOST_TEST_FOREACH( const KAutoPartyTime, kCompleteTime, m_listCompleteTime )
+	for( const KAutoPartyTime kCompleteTime : m_listCompleteTime )
 	{
 		if( tTwoHourAgo <= kCompleteTime.m_tAutoPartyTime )	// 최근 2시간 이내 라면
 		{
@@ -112,7 +112,7 @@ bool KAutoPartyMakingProcess::GetListTypeByLevelCondition( IN const u_char ucLev
 {
 	iListType = 0;
 
-	BOOST_TEST_FOREACH( const SLevelCondition&, sCondition, m_vecLevelCondition )
+	for( const SLevelCondition& sCondition : m_vecLevelCondition )
 	{
 		if( sCondition.m_iBeginLevel > ucLevel  ||  sCondition.m_iEndLevel < ucLevel )
 			continue;
@@ -196,7 +196,7 @@ void KAutoPartyMakingProcess::ClearAllAutoPartyInfo()
 		vecWaitNumberLIst.push_back( mit->first );
 	}
 
-	BOOST_TEST_FOREACH( const UidType, iWaitNumber, vecWaitNumberLIst )
+	for( const UidType iWaitNumber : vecWaitNumberLIst )
 	{
 		UnRegAutoPartyWaitListByWaitNumber( iWaitNumber, NetError::NOT_LEAVE_AUTO_PARTY_WAIT_REASON_01 );
 	}
@@ -305,7 +305,7 @@ KAutoPartyPtr KAutoPartyMakingProcess::MakeAutoParty( IN const KAutoPartyConditi
 	}
 
 	// FSM설정
-	FSMclassPtr spFSMClass = boost::shared_ptr< KAutoPartyFSM >( new KAutoPartyFSM );
+	FSMclassPtr spFSMClass = std::shared_ptr< KAutoPartyFSM >( new KAutoPartyFSM );
 	spAutoParty->SetFSM( spFSMClass );
 	return spAutoParty;
 }
@@ -426,7 +426,7 @@ bool KAutoPartyMakingProcess::RegAutoPartyWaitList( IN const std::vector< KAutoP
 	}
 
 	// 3. 자동 파티 대기자 리스트에 신청자들을 하나씩 넣습니다!
-	BOOST_TEST_FOREACH( const KAutoPartyUserInfo&, kInfo, vecAutoPartyUserList )
+	for( const KAutoPartyUserInfo& kInfo : vecAutoPartyUserList )
 	{
 		// 이미 등록된 캐릭터 인지 검사
 		if( IsExistInWaitListByUnitUID( kInfo.m_iUnitUID ) == true )
@@ -599,7 +599,7 @@ bool KAutoPartyMakingProcess::UnRegAutoPartyWaitListByWaitNumber( IN const UidTy
 	std::vector< UidType > vecUnitUIDList;
 	spAutoPartyWaitList->GetUnitUIDList( vecUnitUIDList );
 
-	BOOST_TEST_FOREACH( const UidType, iUnitUID, vecUnitUIDList )
+	for( const UidType iUnitUID : vecUnitUIDList )
 	{
 		UnRegAutoPartyWaitListByUnitUID( iUnitUID, iUnRegReason, wstrCancelUnitNickName );
 	}
@@ -721,7 +721,7 @@ void KAutoPartyMakingProcess::MakingAutoPartyProcessing( OUT std::vector< KAutoP
 					// 모집된 파티원들 모두 시간이 지났는지 검사!
 					bool bDirectGameStart = false;
 
-					BOOST_TEST_FOREACH( const UidType, iAutoPartyWaitNumber, vecSelectedWaitUserList )
+					for( const UidType iAutoPartyWaitNumber : vecSelectedWaitUserList )
 					{
 						KAutoPartyUserWaitListPtr spWaitList = GetAutoPartyWaitListByWaitNumber( iAutoPartyWaitNumber );
 						if( IS_NULL( spWaitList ) )
@@ -778,7 +778,7 @@ void KAutoPartyMakingProcess::MakingAutoPartyProcessing( OUT std::vector< KAutoP
 			}
 
 			// 적합한 유저들 자동 파티에 입장 처리!
-			BOOST_TEST_FOREACH( const UidType, iAutoPartyWaitNumber, vecSelectedWaitUserList )
+			for( const UidType iAutoPartyWaitNumber : vecSelectedWaitUserList )
 			{
                 KAutoPartyUserWaitListPtr spWaitList = GetAutoPartyWaitListByWaitNumber( iAutoPartyWaitNumber );
 				if( spWaitList == NULL )
@@ -868,7 +868,7 @@ void KAutoPartyMakingProcess::AutoPartyProcess_GetWaitUserListByOptimalCondition
 
 	const u_int uiMaxSize = listOptimalAutoPartyWaitList.MaxSize();
 
-	BOOST_TEST_FOREACH( KAutoPartyUserWaitListPtr, spTargetUserList, listAutoPartyMakingWaitList )
+	for( KAutoPartyUserWaitListPtr spTargetUserList : listAutoPartyMakingWaitList )
 	{
 		if( spTargetUserList == NULL )
 		{
@@ -944,7 +944,7 @@ void KAutoPartyMakingProcess::AutoPartyProcess_GetWaitNumberListForCompleteMakeA
 	iDifficulty = spFrontAutoPartyWaitUser->GetDifficultyLevel();
 	//}}
 
-	BOOST_TEST_FOREACH( KAutoPartyUserWaitListPtr, spTargetUserList, listSortedWaitUserList )
+	for( KAutoPartyUserWaitListPtr spTargetUserList : listSortedWaitUserList )
 	{
 		if( spTargetUserList == NULL )
 		{
@@ -978,7 +978,7 @@ bool KAutoPartyMakingProcess::IsActivatedDelayTimeBonus()
 	if( m_vecDelayBonusTimer.empty() )
 		return false;
 
-	std::vector< boost::timer >::iterator vit;
+	std::vector< x2::Timer >::iterator vit;
 	for( vit = m_vecDelayBonusTimer.begin(); vit != m_vecDelayBonusTimer.end(); ++vit )
 	{
 		if( vit->elapsed() < 5.0 )
@@ -1001,7 +1001,7 @@ void KAutoPartyMakingProcess::SetActivatedAutoPartyBonus( IN const bool bActivat
 
 	if( bBefore == true  &&  bActivate == false )
 	{
-		m_vecDelayBonusTimer.push_back( boost::timer() );
+		m_vecDelayBonusTimer.push_back( x2::Timer() );
 	}
 }
 

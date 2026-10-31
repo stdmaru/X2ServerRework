@@ -74,7 +74,7 @@ private:
 	std::vector< KPartyRoomUserInfo >	m_vecPartyRoomUserInfo;
 	// 던전 정보가 있어야 하지 않을까?
 
-	boost::timer					m_tTimer[TE_MAX];
+	x2::Timer					m_tTimer[TE_MAX];
 };
 
 template < class T >

@@ -2,6 +2,8 @@
 #include "BaseServer.h"
 #include "BlockListManager.h"
 
+#include "x2/platform/net.h"
+
 
 //{{ 2013. 05. 14	최육사	아이템 개편
 
@@ -134,7 +136,7 @@ void KBlockListManager::UpdateTradeBlock( IN const std::vector< KBlockInfo >& ve
 	std::set< UidType > setUpdateBlock;	// DB로부터 받아온 블럭 대상 리스트
 	std::set< UidType > setDelBlock;	// 제재 해제가 될 블럭 대상 리스트
 
-	BOOST_TEST_FOREACH( const KBlockInfo&, kInfo, vecBlockInfo )
+	for( const KBlockInfo& kInfo : vecBlockInfo )
 	{
 		const UidType iTradeBlockUserUID = kInfo.m_iBlockTarget;
 
@@ -182,7 +184,7 @@ void KBlockListManager::UpdateTradeBlock( IN const std::vector< KBlockInfo >& ve
 		setDelBlock.insert( mit->first );
 	}
 
-	BOOST_TEST_FOREACH( const UidType, iBlockTarget, setDelBlock )
+	for( const UidType iBlockTarget : setDelBlock )
 	{
 		std::map< UidType, KBlockData >::iterator mit;
 		mit = m_mapTradeBlock.find( iBlockTarget );
@@ -206,7 +208,7 @@ void KBlockListManager::UpdateAccountBlock( IN const std::vector< KBlockInfo >& 
 	std::set< UidType > setUpdateBlock;	// DB로부터 받아온 블럭 대상 리스트
 	std::set< UidType > setDelBlock;	// 제재 해제가 될 블럭 대상 리스트
 
-	BOOST_TEST_FOREACH( const KBlockInfo&, kInfo, vecBlockInfo )
+	for( const KBlockInfo& kInfo : vecBlockInfo )
 	{
 		const UidType iBlockUserUID = kInfo.m_iBlockTarget;
 
@@ -237,7 +239,7 @@ void KBlockListManager::UpdateAccountBlock( IN const std::vector< KBlockInfo >& 
 		setDelBlock.insert( mit->first );
 	}
 
-	BOOST_TEST_FOREACH( const UidType, iBlockTarget, setDelBlock )
+	for( const UidType iBlockTarget : setDelBlock )
 	{
 		std::map< UidType, KBlockData >::iterator mit;
 		mit = m_mapAccountBlock.find( iBlockTarget );
@@ -257,7 +259,7 @@ void KBlockListManager::UpdateAccountBlock( IN const std::vector< KBlockInfo >& 
 
 	m_mapAccountBlock.clear();
 
-	BOOST_TEST_FOREACH( const KBlockInfo&, kInfo, vecBlockInfo )
+	for( const KBlockInfo& kInfo : vecBlockInfo )
 	{
 		m_mapAccountBlock.insert( std::make_pair( kInfo.m_iBlockTarget, KBlockData( kInfo ) ) );
 	}
@@ -267,10 +269,10 @@ void KBlockListManager::UpdateIpBlock( IN const std::vector< KBlockInfo >& vecBl
 {
 	m_mapIpBlock.clear();
 
-	BOOST_TEST_FOREACH( const KBlockInfo&, kInfo, vecBlockInfo )
+	for( const KBlockInfo& kInfo : vecBlockInfo )
 	{
 		const std::string strIP = KncUtil::toNarrowString( kInfo.m_wstrBlockTarget );
-		const u_int uiIP = ::inet_addr( strIP.c_str() );
+		const u_int uiIP = x2::platform::IpFromString( strIP.c_str() );
 
 		m_mapIpBlock.insert( std::make_pair( uiIP, KBlockData( kInfo ) ) );
 	}
@@ -303,7 +305,7 @@ bool KBlockListManager::IsAccountBlockUser( IN const UidType iUserUID ) const
 bool KBlockListManager::IsIpBlockUser( IN const std::wstring& wstrIP ) const
 {
 	const std::string strIP = KncUtil::toNarrowString( wstrIP );
-	const u_int uiIP = ::inet_addr( strIP.c_str() );
+	const u_int uiIP = x2::platform::IpFromString( strIP.c_str() );
 
 	std::map< u_int, KBlockData >::const_iterator mit;
 	mit = m_mapIpBlock.find( uiIP );
@@ -351,7 +353,7 @@ void KBlockListManager::UpdateModuleInfo( IN const std::wstring& wstrModuleName 
 
 void KBlockListManager::UpdateModuleList( IN const std::vector< KBlockInfo >& vecModuleList )
 {
-	BOOST_TEST_FOREACH( const KBlockInfo&, kInfo, vecModuleList )
+	for( const KBlockInfo& kInfo : vecModuleList )
 	{
 		UpdateModuleInfo( kInfo.m_wstrBlockTarget );
 	}
@@ -359,7 +361,7 @@ void KBlockListManager::UpdateModuleList( IN const std::vector< KBlockInfo >& ve
 
 void KBlockListManager::UpdateModuleList( IN const std::vector< std::wstring >& vecModuleList )
 {
-	BOOST_TEST_FOREACH( const std::wstring&, wstrModuleName, vecModuleList )
+	for( const std::wstring& wstrModuleName : vecModuleList )
 	{
 		UpdateModuleInfo( wstrModuleName );
 	}
@@ -371,7 +373,7 @@ bool KBlockListManager::CheckHackingModuleList( IN const std::vector< std::wstri
 
 	std::map< std::wstring, KBlockData >::iterator mit;
 
-	BOOST_TEST_FOREACH( const std::wstring&, wstrName, vecModuleList )
+	for( const std::wstring& wstrName : vecModuleList )
 	{
 		mit = m_mapDllBlock.find( wstrName );
 		if( mit != m_mapDllBlock.end() )
@@ -385,12 +387,8 @@ bool KBlockListManager::CheckHackingModuleList( IN const std::vector< std::wstri
 			KModuleInfo kInfo;
 			kInfo.m_iModuleUID = static_cast<int>(mit->second.GetBlockUID());
 			kInfo.m_wstrModuleName = mit->second.GetBlockTargetString();
-			kInfo.m_iCount;
-			kInfo.m_iFlag;
-			//{{  2012. 1. 30	김민성		한방핵 방어(해킹 프로세스 검사)
-			kInfo.m_bAllow;
-			//}}
-			kInfo.m_bReserveDBUpdate;
+			// Port: the original had four statements here that only named members (m_iCount, m_iFlag, m_bAllow,
+			// m_bReserveDBUpdate) without assigning them; they did nothing and are gone.
 			mapModuleName.insert( std::make_pair( kInfo.m_wstrModuleName, kInfo ) );
 		}
 	}

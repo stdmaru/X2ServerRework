@@ -5,8 +5,8 @@
 #include "RefreshSingleton.h"
 #include "DBLayer.h"
 #include <KncSend.h>
-#include <atltime.h>
-#include <boost/timer.hpp>
+#include "x2/platform/win32.h"
+#include "x2/platform/timer.h"
 #include "CommonPacket.h"
 #include "ServerPacket.h"
 
@@ -34,7 +34,7 @@ public:
 
 public:
 	KWorldMissionManager(void);
-	~KWorldMissionManager(void);
+	virtual ~KWorldMissionManager(void);
 
 	template < class T > void SendToLogDB( unsigned short usEventID, const T& data );
 
@@ -99,11 +99,11 @@ public:
 private:
 	bool			m_bIsFirstTick;
 
-	boost::timer	m_kTimerDOT;			//	던전오픈 시간 체크를 위한 타이머
-	boost::timer	m_kTimerEnableCheck;	//	일정 주기 체크를 위한 타이머
-	boost::timer	m_kTimerUpdate;			//	1분에 한번씩 게임서버로 현재상태 전달
-	boost::timer	m_kTimerWorldBuff;		//	월드 버프 종료 시간 용
-	boost::timer	m_kTimerForReduceTheProtectedCrystalCount;		//	분당 소모되는 카운트를 위한 타이머
+	x2::Timer	m_kTimerDOT;			//	던전오픈 시간 체크를 위한 타이머
+	x2::Timer	m_kTimerEnableCheck;	//	일정 주기 체크를 위한 타이머
+	x2::Timer	m_kTimerUpdate;			//	1분에 한번씩 게임서버로 현재상태 전달
+	x2::Timer	m_kTimerWorldBuff;		//	월드 버프 종료 시간 용
+	x2::Timer	m_kTimerForReduceTheProtectedCrystalCount;		//	분당 소모되는 카운트를 위한 타이머
 
 	bool			m_bActive;				//	현재 던전 개방되어 있지 여부
 	bool			m_bWorldBuffTime;		//  월드 버프 시간 용

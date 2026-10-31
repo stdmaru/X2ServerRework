@@ -10,7 +10,7 @@ using namespace lua_tinker;
 #define CASE_SCRIPT_REFRESH_SWAP_INSTANCE( flag, className ) \
 case KESR_SCRIPT_REFRESH_ORDER_NOT::flag: \
 	className::SwapInstance( g_pLua ); \
-	START_LOG( cout, L#className L" 스크립트 갱신을 완료하였습니다!" ); \
+	START_LOG( cout, L ## #className L" 스크립트 갱신을 완료하였습니다!" ); \
 	Si##className()->DumpToLogFile(); \
 	break; \
 
@@ -24,6 +24,7 @@ class KGlobalScriptRefreshManager : public KThreadManager
 	DeclPfID;
 
 public:
+	using KThreadManager::Init;
 	KGlobalScriptRefreshManager();
 	virtual ~KGlobalScriptRefreshManager();
 

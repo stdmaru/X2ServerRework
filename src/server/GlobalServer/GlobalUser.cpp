@@ -5,7 +5,7 @@
 #include "NetError.h"
 #include "GlobalSimLayer.h"
 #include "GlobalServer.h"
-#include <boost/format.hpp>
+#include "x2/platform/format.h"
 
 //{{ 2010. 10. 12	최육사	서버 모니터링
 //}}
@@ -223,8 +223,8 @@ void KGlobalUser::OnDestroy()
 		CTime kRegDate = CTime::GetCurrentTime();
 		KE_LOCAL_LOG_SERVER_DISCONNECT_NOT kNot;
 		kNot.m_cLogType				= KE_LOCAL_LOG_SERVER_DISCONNECT_NOT::SDLT_DISCONNECT;
-		kNot.m_wstrSourceName		= boost::str( boost::wformat( L"%d" ) % KBaseServer::GetKObj()->GetUID() );
-		kNot.m_wstrDestinationName	= boost::str( boost::wformat( L"%d" ) % GetUID() );
+		kNot.m_wstrSourceName		= x2::str( x2::wformat( L"%d" ) % KBaseServer::GetKObj()->GetUID() );
+		kNot.m_wstrDestinationName	= x2::str( x2::wformat( L"%d" ) % GetUID() );
 		kNot.m_wstrDestinationIP	= KncUtil::toWideString( GetIPStr() );
 		kNot.m_wstrReason			= KStatistics::GetDissconnectReasonString( GetDisconnectReason() );
 		kNot.m_wstrRegDate			= (const wchar_t*)kRegDate.Format(_T("%Y-%m-%d %H:%M:%S"));
@@ -565,7 +565,7 @@ IMPL_ON_FUNC( EGB_CHECK_BLOCK_USER_NOT )
 {
 	KEGB_UPDATE_BLOCK_RESULT_NOT kPacket;
 
-	BOOST_TEST_FOREACH( const int, iBlockType, kPacket_.m_vecBlockType )
+	for( const int iBlockType : kPacket_.m_vecBlockType )
 	{
 		switch( iBlockType )
 		{

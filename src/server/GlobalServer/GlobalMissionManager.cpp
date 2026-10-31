@@ -223,6 +223,8 @@ void KGlobalMissionManager::BroadCastGlobalMission( KEGB_UPDATE_GLOBAL_MISSION_I
 	case KEGB_UPDATE_GLOBAL_MISSION_INFO_NOT::FT_SUCCESS:
 	case KEGB_UPDATE_GLOBAL_MISSION_INFO_NOT::FT_FAIL:
 		kPacket.m_wstrGlobalMissionDay = wstrGlobalMissionDay;
+	default:
+		break;
 	}
 
 	// 모든 게임서버에 브로드 캐스팅
@@ -246,7 +248,7 @@ void KGlobalMissionManager::BroadCastGlobalMissionStartTime()	// 불필요한 �
 	KncSend( PI_GLOBAL_SERVER, KBaseServer::GetKObj()->GetUID(), PI_GS_SERVER, 0 , anTrace, EGB_UPDATE_GLOBAL_MISSION_START_TIME_NOT, kPacket );
 }
 
-void KGlobalMissionManager::StartMission( std::wstring wstrGlobalMissionDay, bool IsReStart /* false */ )
+void KGlobalMissionManager::StartMission( std::wstring wstrGlobalMissionDay, bool /*IsReStart*/ /* false */ )
 {
 	//	이벤트 시작
 	std::map< std::wstring, KGlobalMissionInfo >::iterator mit = m_mapGlobalMissionInfo.find(wstrGlobalMissionDay);

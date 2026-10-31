@@ -59,7 +59,7 @@ protected:
 	int										m_iListType;
     std::map< UidType, KAutoPartyUserPtr >	m_mapMember;
 	std::vector< KAutoPartyUserPtr >		m_vecWaitList;
-	boost::timer							m_tWaitTimer;
+	x2::Timer							m_tWaitTimer;
 	//{{ 2012. 11. 14	최육사		자동파티 대기열 난이도 통합
 	KAutoPartyConditionInfo					m_kAutoPartyCondition;
 	//}}

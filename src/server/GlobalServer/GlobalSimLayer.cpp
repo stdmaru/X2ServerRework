@@ -55,8 +55,8 @@
 #include <lua_tinker.h>
 using namespace lua_tinker;
 
-#include <boost/bind/bind.hpp>
-using namespace boost::placeholders;
+#include <functional>
+using namespace std::placeholders;
 
 NiImplementRTTI( KGlobalSimLayer, KSimLayer );
 

@@ -183,8 +183,8 @@ protected:
 
 	// 자동 파티 보너스 여부
 	bool											m_bActivatedAutoPartyBonus;		// 자동 파티 보너스 여부
-	boost::timer									m_tGameStartLastTime;			// 자동 파티 보너스 타이머 [타이머 시간이 2분을 넘으면 보너스적용!]
-	std::vector< boost::timer >						m_vecDelayBonusTimer;			// UI갱신과 실제 보너스 적용시간 사이의 간격을 메꾸기 위한 타이머
+	x2::Timer									m_tGameStartLastTime;			// 자동 파티 보너스 타이머 [타이머 시간이 2분을 넘으면 보너스적용!]
+	std::vector< x2::Timer >						m_vecDelayBonusTimer;			// UI갱신과 실제 보너스 적용시간 사이의 간격을 메꾸기 위한 타이머
 
 	//{{ 2012. 11. 21	최육사		대기인원 표시 레벨 구간으로 수정
 	std::map< int, int >							m_mapAutoPartyWaitUserCount;	// 자동 파티 대기인원 수 ( 레벨구간별 )

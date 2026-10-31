@@ -1,8 +1,8 @@
 #include "FieldBossManager.h"
 
-#include <Windows.h>
+#include "x2/platform/win32.h"
 
-#include <intsafe.h>
+#include <climits>
 
 ImplementSingleton( KFieldBossManager );
 
@@ -51,7 +51,7 @@ byte KFieldBossManager::GetTotalDangerousValue( void ) const
 		byteTotalDangerousValueSum += it->second;
 
 		if( byteTotalDangerousValueSum < it->second )
-			return BYTE_MAX;
+			return UCHAR_MAX;
 	}
 
 	return byteTotalDangerousValueSum;

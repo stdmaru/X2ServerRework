@@ -67,7 +67,7 @@ bool KAutoPartyUser::GetPartyUserInfo( OUT KPartyUserInfo& kPartyUserInfo )
 		return false;
 	}
 
-	BOOST_TEST_FOREACH( const KPartyUserInfo&, kInfo, m_vecPartyUserInfo )
+	for( const KPartyUserInfo& kInfo : m_vecPartyUserInfo )
 	{
 		kPartyUserInfo = kInfo;
 		return true;
@@ -104,7 +104,7 @@ bool KAutoPartyUser::GetPartyRoomUserInfo( OUT KPartyRoomUserInfo& kPartyRoomUse
 		return false;
 	}
 
-	BOOST_TEST_FOREACH( const KPartyRoomUserInfo&, kInfo, m_vecPartyRoomUserInfo )
+	for( const KPartyRoomUserInfo& kInfo : m_vecPartyRoomUserInfo )
 	{
 		kPartyRoomUserInfo = kInfo;
 		kPartyRoomUserInfo.m_bAutoPartyBonus = m_kAutoPartyUserInfo.m_bAutoPartyBonus;	// 자동 파티 보너스

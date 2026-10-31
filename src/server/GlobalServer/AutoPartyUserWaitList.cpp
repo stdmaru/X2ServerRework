@@ -22,7 +22,7 @@ UidType KAutoPartyUserWaitList::GetPartyUID() const
 {
 	UidType iPartyUID = 0;
 
-	BOOST_TEST_FOREACH( KAutoPartyUserPtr, spAutoPartyUser, m_vecWaitList )
+	for( KAutoPartyUserPtr spAutoPartyUser : m_vecWaitList )
 	{
         if( iPartyUID == 0 )
 		{
@@ -47,7 +47,7 @@ void KAutoPartyUserWaitList::GetUnitUIDList( OUT std::vector< UidType >& vecUnit
 {
 	vecUnitUIDList.clear();
 
-	BOOST_TEST_FOREACH( const KAutoPartyUserPtr, spAutoPartyUser, m_vecWaitList )
+	for( const KAutoPartyUserPtr& spAutoPartyUser : m_vecWaitList )
 	{
         if( spAutoPartyUser == NULL )
 		{
@@ -64,7 +64,7 @@ void KAutoPartyUserWaitList::GetAutoPartyUserInfoList( OUT std::vector< KAutoPar
 {
 	vecAutoPartyUserInfo.clear();
 
-	BOOST_TEST_FOREACH( const KAutoPartyUserPtr, spAutoPartyUser, m_vecWaitList )
+	for( const KAutoPartyUserPtr& spAutoPartyUser : m_vecWaitList )
 	{
 		if( spAutoPartyUser == NULL )
 		{
@@ -84,7 +84,7 @@ u_char KAutoPartyUserWaitList::GetTopUnitLevel() const
 {
 	u_char ucTopLevel = 0;
 
-	BOOST_TEST_FOREACH( const KAutoPartyUserPtr, spAutoPartyUser, m_vecWaitList )
+	for( const KAutoPartyUserPtr& spAutoPartyUser : m_vecWaitList )
 	{
 		if( spAutoPartyUser == NULL )
 		{
@@ -104,7 +104,7 @@ u_char KAutoPartyUserWaitList::GetAverageUnitLevel() const
 {
 	int iTotalLevel = 0;
 
-    BOOST_TEST_FOREACH( const KAutoPartyUserPtr, spAutoPartyUser, m_vecWaitList )
+    for( const KAutoPartyUserPtr& spAutoPartyUser : m_vecWaitList )
 	{
 		if( spAutoPartyUser == NULL )
 		{
@@ -135,7 +135,7 @@ u_char KAutoPartyUserWaitList::GetLevelForListType() const
 	int iTotalLevel = 0;
 	int iAverageIncludeUserCount = 0;
 
-	BOOST_TEST_FOREACH( const KAutoPartyUserPtr, spAutoPartyUser, m_vecWaitList )
+	for( const KAutoPartyUserPtr& spAutoPartyUser : m_vecWaitList )
 	{
 		if( IS_NULL( spAutoPartyUser ) )
 		{
@@ -164,7 +164,7 @@ u_char KAutoPartyUserWaitList::GetLevelForListType() const
 
 bool KAutoPartyUserWaitList::IsExistUnitType( IN const char cUnitType ) const
 {
-	BOOST_TEST_FOREACH( const KAutoPartyUserPtr, spAutoPartyUser, m_vecWaitList )
+	for( const KAutoPartyUserPtr& spAutoPartyUser : m_vecWaitList )
 	{
 		if( spAutoPartyUser == NULL )
 		{
@@ -182,7 +182,7 @@ bool KAutoPartyUserWaitList::IsExistUnitType( IN const char cUnitType ) const
 
 bool KAutoPartyUserWaitList::CheckSameUnitType( IN KAutoPartyUserWaitListPtr spAutoPartyUserWaitList )
 {
-	BOOST_TEST_FOREACH( const KAutoPartyUserPtr, spAutoPartyUser, m_vecWaitList )
+	for( const KAutoPartyUserPtr& spAutoPartyUser : m_vecWaitList )
 	{
 		if( spAutoPartyUser == NULL )
 		{
@@ -280,7 +280,7 @@ void KAutoPartyUserWaitList::DelAutoPartyUser( IN const UidType iUnitUID )
 
 void KAutoPartyUserWaitList::SetAutoPartyBonus( IN const bool bAutoPartyBonus )
 {
-	BOOST_TEST_FOREACH( const KAutoPartyUserPtr, spAutoPartyUser, m_vecWaitList )
+	for( const KAutoPartyUserPtr& spAutoPartyUser : m_vecWaitList )
 	{
 		if( IS_NULL( spAutoPartyUser ) )
 		{

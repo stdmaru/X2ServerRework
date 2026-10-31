@@ -126,7 +126,7 @@ public:
 protected:
 	KAutoPartyConditionInfo	m_kAutoPartyInfo;
 	KAutoPartyUserManager	m_kAutoPartyUserManager;
-	boost::timer			m_tTimer[APTE_MAX];
+	x2::Timer			m_tTimer[APTE_MAX];
 };
 
 template < class T >
@@ -142,7 +142,7 @@ void KAutoParty::BroadCast( IN const u_short usEventID, IN const T& data, IN con
 	std::vector< UidType > vecAutoPartyUserList;
     m_kAutoPartyUserManager.GetAutoPartyUserList( vecAutoPartyUserList );
 
-	BOOST_TEST_FOREACH( const UidType, iUnitUID, vecAutoPartyUserList )
+	for( const UidType iUnitUID : vecAutoPartyUserList )
 	{
 		KAutoPartyUserPtr spAutoPartyUser = m_kAutoPartyUserManager.GetUser( iUnitUID );
 		if( spAutoPartyUser == NULL )

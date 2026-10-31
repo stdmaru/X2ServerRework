@@ -1,4 +1,5 @@
 #include "MatchUserWaitList.h"
+#include <algorithm>
 
 #include "MatchUserFSM.h"
 #include "Enum/Enum.h"
@@ -24,7 +25,7 @@ UidType KMatchUserWaitList::GetPartyUID() const
 {
 	UidType iPartyUID = 0;
 
-	BOOST_TEST_FOREACH( KMatchUserPtr, spMatchUser, m_vecWaitList )
+	for( KMatchUserPtr spMatchUser : m_vecWaitList )
 	{
         if( iPartyUID == 0 )
 		{
@@ -49,7 +50,7 @@ void KMatchUserWaitList::GetUnitUIDList( OUT std::vector< UidType >& vecUnitUIDL
 {
 	vecUnitUIDList.clear();
 
-	BOOST_TEST_FOREACH( const KMatchUserPtr, spMatchUser, m_vecWaitList )
+	for( const KMatchUserPtr& spMatchUser : m_vecWaitList )
 	{
         if( spMatchUser == NULL )
 		{
@@ -66,7 +67,7 @@ void KMatchUserWaitList::GetMatchUserInfoList( OUT std::vector< KMatchUserInfo >
 {
 	vecMatchUserInfo.clear();
 
-	BOOST_TEST_FOREACH( const KMatchUserPtr, spMatchUser, m_vecWaitList )
+	for( const KMatchUserPtr& spMatchUser : m_vecWaitList )
 	{
 		if( spMatchUser == NULL )
 		{
@@ -152,7 +153,7 @@ int	KMatchUserWaitList::GetRatingAverage() const
 {
 	int iTotalRating = 0;
 
-	BOOST_TEST_FOREACH( KMatchUserPtr, spMatchUser, m_vecWaitList )
+	for( KMatchUserPtr spMatchUser : m_vecWaitList )
 	{
         if( spMatchUser == NULL )
 		{
@@ -188,7 +189,7 @@ int	KMatchUserWaitList::GetRatingWeightAverage() const
 	std::map< UidType, int > mapTeamMemberInfo;
 	int iMaxRating = 0;
 
-	BOOST_TEST_FOREACH( KMatchUserPtr, spMatchUser, m_vecWaitList )
+	for( KMatchUserPtr spMatchUser : m_vecWaitList )
 	{
 		if( spMatchUser == NULL )
 		{
@@ -206,13 +207,13 @@ int	KMatchUserWaitList::GetRatingWeightAverage() const
 	const int iRatingWeightEverage = SiKPvpMatchManager()->GetRatingByTeam( mapTeamMemberInfo );
 	const int iModifiedMaxRating = static_cast<int>( static_cast<double>(iMaxRating) * 0.8 );
 
-	return max( iRatingWeightEverage, iModifiedMaxRating );
+	return std::max( iRatingWeightEverage, iModifiedMaxRating );
 }
 //}}
 
 bool KMatchUserWaitList::IsPossibleMatchMakingBegin() const
 {
-	BOOST_TEST_FOREACH( KMatchUserPtr, spMatchUser, m_vecWaitList )
+	for( KMatchUserPtr spMatchUser : m_vecWaitList )
 	{
 		if( spMatchUser == NULL )
 		{
@@ -230,7 +231,7 @@ bool KMatchUserWaitList::IsPossibleMatchMakingBegin() const
 
 bool KMatchUserWaitList::IsAllPlayersSameRank( IN const CXSLUnit::PVP_RANK eRank )
 {
-	BOOST_TEST_FOREACH( KMatchUserPtr, spMatchUser, m_vecWaitList )
+	for( KMatchUserPtr spMatchUser : m_vecWaitList )
 	{
 		if( !spMatchUser )
 		{
@@ -259,7 +260,7 @@ bool KMatchUserWaitList::CheckOptimalMatch( IN KMatchUserWaitListPtr spWaitList,
 //{{ 2012. 09. 15	박세훈	2012 대전 시즌2
 bool KMatchUserWaitList::IsAllPlayersArrangeRank( void )
 {
-	BOOST_TEST_FOREACH( KMatchUserPtr, spMatchUser, m_vecWaitList )
+	for( KMatchUserPtr spMatchUser : m_vecWaitList )
 	{
 		if( !spMatchUser )
 		{
@@ -278,7 +279,7 @@ bool KMatchUserWaitList::IsAllPlayersArrangeRank( void )
 
 bool KMatchUserWaitList::IsAllPlayersBeginner( void )
 {
-	BOOST_TEST_FOREACH( KMatchUserPtr, spMatchUser, m_vecWaitList )
+	for( KMatchUserPtr spMatchUser : m_vecWaitList )
 	{
 		if( !spMatchUser )
 		{

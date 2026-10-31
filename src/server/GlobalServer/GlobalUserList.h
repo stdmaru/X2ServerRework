@@ -35,7 +35,7 @@ public:
 			m_cAuthLevel		= SEnum::UAL_NORMAL;
         }
 
-        KGSUserInfo( const UidType iUserUID, const std::wstring& wstrUserID, const UidType iGSUID )
+        KGSUserInfo( const UidType iUserUID, const std::wstring& /*wstrUserID*/, const UidType iGSUID )
         {
             m_nUserUID			= iUserUID;
             m_nUnitUID			= 0;
@@ -112,16 +112,16 @@ public:
 	void	SetHeroPvpUserTournamentConnection( IN const UidType iServerGroupID, IN const std::wstring wstrNickName, IN const bool bConnect );
 
 protected:
-	std::map< UidType,		boost::shared_ptr< KGSUserInfo > >		m_mapUnitUID;
+	std::map< UidType,		std::shared_ptr< KGSUserInfo > >		m_mapUnitUID;
 
 #ifdef EXTEND_SERVER_GROUP_MASK
-	std::map< int, std::map< std::wstring,	boost::shared_ptr< KGSUserInfo > > >		m_mapUnitNickName;
+	std::map< int, std::map< std::wstring,	std::shared_ptr< KGSUserInfo > > >		m_mapUnitNickName;
 #else
-	std::map< std::wstring,	boost::shared_ptr< KGSUserInfo > >		m_mapUnitNickName[SEnum::SGI_END];
+	std::map< std::wstring,	std::shared_ptr< KGSUserInfo > >		m_mapUnitNickName[SEnum::SGI_END];
 #endif // EXTEND_SERVER_GROUP_MASK
 
 	//{{ 2013. 05. 29	최육사	제재 리스트 통합
-	std::map< UidType,		boost::shared_ptr< KGSUserInfo > >		m_mapUserUID;
+	std::map< UidType,		std::shared_ptr< KGSUserInfo > >		m_mapUserUID;
 	//}}
 	HERO_PVP_USER_TYPE												m_vecHeroPvpUserList;
 	std::vector< std::pair< UidType, UidType > >					m_vecHeroPvpObserverList;

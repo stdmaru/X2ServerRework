@@ -1,8 +1,8 @@
-#include <WinSock2.h>
+#include "x2/platform/net.h"
 #include <sstream>
 #include <iomanip>
-#include <boost/bind/bind.hpp>
-using namespace boost::placeholders;
+#include <functional>
+using namespace std::placeholders;
 #include "GlobalServer.h"
 #include "ActorManager.h"
 #include "GlobalSimLayer.h"
@@ -55,7 +55,7 @@ using namespace boost::placeholders;
 
 #include "GameEvent/GameEventManager.h"
 
-#include "../Common/OnlyGlobal/ProcessCommuniationModule/ProcessCommunicationManager.h"
+// Port: KSMS (ProcessCommunicationManager, Windows named pipes to an external tool) removed, as in the other servers
 #include "GameSysVal/GameSysVal.h"
 
 //{{ 2013. 05. 14	최육사	제재 리스트 통합
@@ -184,8 +184,6 @@ bool KGlobalServer::Init()
 	//{{ 2012. 12. 17	박세훈	잭팟 이벤트
 	//}}
 
-	m_bServerRunningProcessCommunicationOnOff = false;
-
 	return true;
 }
 
@@ -204,12 +202,6 @@ void KGlobalServer::OnServerReadyComplete()
 	// 이벤트 정보 얻기
 	SiKGameEventManager()->Init();
 
-	if (SiKGameSysVal()->GetProcessCommunication() == true)
-	{
-		SiKProcessCommunicationManager()->InitRead(TEXT("\\\\.\\pipe\\GlobalServerRead"));
-		SiKProcessCommunicationManager()->InitWrite(TEXT("\\\\.\\pipe\\GlobalServerWrite"));
-		SiKProcessCommunicationManager()->Begin();
-	}
 	//{{ 2013. 05. 14	최육사	제재 리스트 통합
 	SiKBlockListManager()->Init();
 	//}}
@@ -235,11 +227,6 @@ void KGlobalServer::ShutDown()
 	KGlobalScriptRefreshManager::ReleaseInstance();
 	//}}
 
-	if (SiKGameSysVal()->GetProcessCommunication() == true)
-	{
-		SiKProcessCommunicationManager()->ShutDown();
-	}
-
 	// 아직 아무 종료처리도 진행되기 전.
 	KBaseServer::ShutDown();        // 이곳에서 모든 종료가 끝난다. 각각의 Layer들도 모두 소멸됨.
 }
@@ -255,10 +242,10 @@ bool KGlobalServer::DestroyAllSession()
 	//{{ 2009. 1. 30  최육사	서버 셧다운 종료 사유 설정
 	int iIndex = KStatistics::eSIColDR_Server_Shutdown;
 
-	pkActorManager->ForEach( boost::bind( &KActor::SetDisconnectReason, _1, iIndex ) );
+	pkActorManager->ForEach( std::bind( &KActor::SetDisconnectReason, _1, iIndex ) );
 	//}}
 
-	pkActorManager->ForEach( boost::bind( &KActor::ReserveDestroy, _1 ) );
+	pkActorManager->ForEach( std::bind( &KActor::ReserveDestroy, _1 ) );
 
 	DWORD dwBeginTick = ::GetTickCount();
 
@@ -330,27 +317,6 @@ void KGlobalServer::Tick()
 	//}}
 
 	CheckHeroPvpUserList();
-
-	if ( m_tTimeProcessCommunicationONOFF.elapsed() > 60.0f )
-	{
-		if (SiKGameSysVal()->GetProcessCommunication() == true && m_bServerRunningProcessCommunicationOnOff == true)
-		{
-			SiKProcessCommunicationManager()->InitRead(TEXT("\\\\.\\pipe\\GlobalServerRead"));
-			SiKProcessCommunicationManager()->InitWrite(TEXT("\\\\.\\pipe\\GlobalServerWrite"));
-			SiKProcessCommunicationManager()->Begin();
-			m_bServerRunningProcessCommunicationOnOff = false;
-
-
-		}
-		else if (SiKGameSysVal()->GetProcessCommunication() == false && m_bServerRunningProcessCommunicationOnOff == false)
-		{
-			SiKProcessCommunicationManager()->ShutDown();
-
-			m_bServerRunningProcessCommunicationOnOff = true;
-
-		}
-		m_tTimeProcessCommunicationONOFF.restart();
-	}
 
 	CheckTimeEnchantEvent();
 
@@ -433,15 +399,18 @@ void KGlobalServer::ProcessEvent( const KEventPtr& spEvent_ )
 
 _IMPL_ON_FUNC( DBE_SERVER_ON_ACK, KDBE_LOGIN_SERVER_ON_ACK )
 {
-	//스타트에 실패했으면 프로그램을 끈다
+	// If the start failed, the server shuts down: Authenticate() returns false and Init() fails.
+	// The original called ::exit( 0 ) here, from this thread, while the other threads were still running.
 	if( kPacket_.m_iOK != NetError::NET_OK)
 	{
-		::exit( 0 );
+		SetAuthenticateResult( false );
+		SetEvent( m_spEventAck.get() );
 		return;
 	}
 
 	SetServerInfo( kPacket_.m_kServerInfo );
 
+	SetAuthenticateResult( true );
 	SetEvent( m_spEventAck.get() );
 }
 
@@ -519,7 +488,6 @@ _IMPL_ON_FUNC( ESR_ORDER_TO_REFRESH_MANAGER_ACK, KESR_SCRIPT_REFRESH_ORDER_NOT )
 		break;
 	}
 
-	SiKProcessCommunicationManager()->QueueingProcessWrite(boost::str(boost::wformat(L"%1%_%2%") % 0 %L"GlobalServer 스크립트 실시간 패치 완료"));
 }
 
 //}}
@@ -626,7 +594,7 @@ IMPL_ON_FUNC( DBE_CHECK_BLOCK_LIST_ACK )
 	SiKBlockListManager()->UpdateblockList( kPacket_.m_iReleaseTick, kPacket_.m_mapBlockInfo, vecNewBlock, vecDelBlock );
 
 	// 새로 실행되는 블럭은 해당 유저를 찾아서 블럭시키자!
-	BOOST_TEST_FOREACH( const KBlockInfo&, kInfo, vecNewBlock )
+	for( const KBlockInfo& kInfo : vecNewBlock )
 	{
 		KGlobalUserList::KGSUserInfo kGSUserInfo;
 		if( GetKGlobalSimLayer()->GetGSUserInfoByUserUID( kInfo.m_iBlockTarget, kGSUserInfo ) == true )
@@ -638,7 +606,7 @@ IMPL_ON_FUNC( DBE_CHECK_BLOCK_LIST_ACK )
 	}
 
 	// 삭제되는 블럭은 해당 유저를 찾아서 해제 시키자!
-	BOOST_TEST_FOREACH( const KBlockInfo&, kInfo, vecDelBlock )
+	for( const KBlockInfo& kInfo : vecDelBlock )
 	{
 		if( kInfo.m_cBlockType != KBlockInfo::BT_TRADE_BLOCK )
 			continue;
@@ -686,7 +654,7 @@ void KGlobalServer::CheckTimeEnchantEvent( void )
 	std::map<int, KTimeEnchantEventInfo>::iterator it;
 
 	// 종료된 이벤트 처리
-	BOOST_TEST_FOREACH( const int, iEventUID, m_setEndTimeEnchantEventInfo )
+	for( const int iEventUID : m_setEndTimeEnchantEventInfo )
 	{
 		m_mapBeginTimeEnchantEventInfo.erase( iEventUID );
 	}
@@ -743,7 +711,7 @@ IMPL_ON_FUNC( DBE_TIME_ENCHANT_EVENT_INFO_ACK )
 	m_mapBeginTimeEnchantEventInfo.clear();
 	m_setEndTimeEnchantEventInfo.clear();
 
-	BOOST_TEST_FOREACH( const KTimeEnchantEventInfo&, kInfo, kPacket_.m_vecTimeEnchantEventInfo )
+	for( const KTimeEnchantEventInfo& kInfo : kPacket_.m_vecTimeEnchantEventInfo )
 	{
 		m_mapTimeEnchantEventInfo.insert( std::map<int, KTimeEnchantEventInfo>::value_type( kInfo.m_iEventUID, kInfo ) );
 	}
@@ -768,7 +736,7 @@ void KGlobalServer::GetBeginExchangeLimitInfo( OUT std::map< int, int >& mapBegi
 {
 	for( EXCHANGE_LIMIT_CONTAINER::const_iterator it = m_listBeginExchangeLimitInfo.begin(); it != m_listBeginExchangeLimitInfo.end(); ++it )
 	{
-		BOOST_TEST_FOREACH( const int, iDestItemID, it->m_setDestItemID )
+		for( const int iDestItemID : it->m_setDestItemID )
 		{
 			std::pair< std::map< int, int >::iterator, bool > pairResult = mapBeginExchangeLimitInfo.insert( std::map< int, int >::value_type( iDestItemID, it->m_iLimitQuantity ) );
 			if( pairResult.second == false )
@@ -788,8 +756,7 @@ int KGlobalServer::RetrieveExchangeLimitData( IN const int iDestItemID, OUT int&
 		return KGlobalServer::ELR_NOT_INITED;
 	}
 
-	// 여기서는 진행 중인 제한 중에서 종료되지 않은 것을 정확하게 찾을 필요가 있다.
-	__time64_t tCurrentTime = CTime::GetCurrentTime().GetTime();
+	// Here we need to find exactly the limits in progress that have not ended yet.
 	int iResult = KGlobalServer::ELR_PASS;
 
 	for( EXCHANGE_LIMIT_CONTAINER::iterator it = m_listBeginExchangeLimitInfo.begin(); it != m_listBeginExchangeLimitInfo.end(); ++it )
@@ -848,7 +815,7 @@ int KGlobalServer::ReInsertExchangeLimitData( IN const int iLimitUID )
 void KGlobalServer::CheckExchangeLimit( IN const bool bForceNotify /*= false */)
 {
 	bool bExchangeLimitChanged = false;
-	if( KGlobalServer::ELI_CHECK_TERM <= m_kExchangeLimitCheckTimer.elapsed() )
+	if( static_cast<double>( KGlobalServer::ELI_CHECK_TERM ) <= m_kExchangeLimitCheckTimer.elapsed() )
 	{
 		m_kExchangeLimitCheckTimer.restart();
 
@@ -892,7 +859,7 @@ void KGlobalServer::CheckExchangeLimit( IN const bool bForceNotify /*= false */)
 
 	if( ( bExchangeLimitChanged == true ) ||	// 새로 시작된 교환 제한 목록이 있거나,
 		( ( m_bExchangeLimitInfoChanged == true ) &&	// 수량에 변화가 있을 것이라 예상되는 상태에서
-		  ( KGlobalServer::ELI_QUANTITY_TERM <= m_kExchangeLimitQuantityTimer.elapsed() ) )	||// 동기화 제한 시간을 충족하거나
+		  ( static_cast<double>( KGlobalServer::ELI_QUANTITY_TERM ) <= m_kExchangeLimitQuantityTimer.elapsed() ) )	||// 동기화 제한 시간을 충족하거나
 		  ( bForceNotify == true )	// 동기화 패킷을 날릴 것을 강제할 때
 		  )
 	{

@@ -1,6 +1,7 @@
 #pragma once
 #include "BaseServer.h"
 #include "KncSend.h"
+#include "ActorManager.h"
 
 class KGlobalServer : public KBaseServer
 {
@@ -126,10 +127,10 @@ protected:
 	DECL_ON_FUNC( DBE_GET_GLOBAL_MISSION_INFO_ACK );
 
 private:
-	boost::timer	m_kTimer;
+	x2::Timer	m_kTimer;
 
 	//{{ 2011. 08. 29	김민성       일일 랜덤 퀘스트
-	boost::timer	m_kTimerRandomQuest;
+	x2::Timer	m_kTimerRandomQuest;
 	//}}
 	//{{ 2011. 09. 29  김민성	셧다운제 도입
 	//}}
@@ -138,11 +139,8 @@ private:
 	//{{ 2012. 12. 17	박세훈	잭팟 이벤트
 	//}}
 
-	boost::timer					m_tTimeProcessCommunicationONOFF;
-	bool							m_bServerRunningProcessCommunicationOnOff;
-
 	int										m_iTimeEnchantEventUID;
-	boost::timer							m_kTimeEnchantEventTimer;
+	x2::Timer							m_kTimeEnchantEventTimer;
 	std::map<int, KTimeEnchantEventInfo>	m_mapTimeEnchantEventInfo;		// <m_iEventUID, ...>
 	std::map<int, KTimeEnchantEventInfo>	m_mapBeginTimeEnchantEventInfo;	// <m_iEventUID, ...>
 	std::set<int>							m_setEndTimeEnchantEventInfo;	// <m_iEventUID>
@@ -153,14 +151,14 @@ private:
 		ELI_QUANTITY_TERM	= 10,
 	};
 	typedef	std::list< KExchangeLimitInfo >	EXCHANGE_LIMIT_CONTAINER;
-	boost::timer				m_kExchangeLimitCheckTimer;
+	x2::Timer				m_kExchangeLimitCheckTimer;
 	int							m_iExchangeLimitUID;
 	EXCHANGE_LIMIT_CONTAINER	m_listExchangeLimitInfo;		// 분류되지 않은 제한 정보
 	EXCHANGE_LIMIT_CONTAINER	m_listBeginExchangeLimitInfo;	// 진행 중인 제한 정보
 	bool						m_bExchangeLimitInfoChanged;
-	boost::timer				m_kExchangeLimitQuantityTimer;
+	x2::Timer				m_kExchangeLimitQuantityTimer;
 
-	boost::timer	m_kTimerGlobalMission;
+	x2::Timer	m_kTimerGlobalMission;
 };
 
 DefKObjectInline( KGlobalServer, KBaseServer );

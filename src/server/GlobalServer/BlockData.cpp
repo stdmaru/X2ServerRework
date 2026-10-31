@@ -63,45 +63,38 @@ void KBlockData::SetBlockInfo( const KBlockInfo& kInfo )
 
 bool KBlockData::UpdateAndChanged( const KBlockInfo& kInfo )
 {
-	bool bChanged = false;
 	CTime tStartTime;
 	CTime tEndTime;
 
 	if( m_iBlockUID != kInfo.m_iBlockUID )
 	{
-		bChanged = true;
 		goto end_proc;
 	}
 
 	if( m_cBlockType != kInfo.m_cBlockType )
 	{
-		bChanged = true;
 		goto end_proc;
 	}
 
 	if( m_wstrBlockTarget != kInfo.m_wstrBlockTarget )
 	{
-		bChanged = true;
 		goto end_proc;
 	}
 
 	if( m_iBlockTarget != kInfo.m_iBlockTarget )
 	{
-		bChanged = true;
 		goto end_proc;
 	}
 
 	LIF( KncUtil::ConvertStringToCTime( kInfo.m_wstrStartDate, tStartTime ) );
 	if( m_tStartTime != tStartTime )
 	{
-		bChanged = true;
 		goto end_proc;
 	}
 
 	LIF( KncUtil::ConvertStringToCTime( kInfo.m_wstrEndDate, tEndTime ) );
 	if( m_tStartTime != tEndTime )
 	{
-		bChanged = true;
 		goto end_proc;
 	}
 

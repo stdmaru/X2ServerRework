@@ -1,4 +1,4 @@
-#include <winsock2.h>
+#include "x2/platform/net.h"
 #include <iomanip>
 #include <sstream>
 
@@ -426,7 +426,7 @@ IMPL_ON_FUNC( DBE_LOG_STATISTICS_INFO_NOT )
 	const std::wstring wstrCurTime = ( std::wstring )( tCurTime.Format( _T( "%Y-%m-%d %H:%M:%S" ) ) );
 	const UidType iServerUID = KBaseServer::GetKObj()->GetUID();
 
-	BOOST_TEST_FOREACH( const KLogStatInfo&, kInfo, kPacket_.m_vecLogStat )
+	for( const KLogStatInfo& kInfo : kPacket_.m_vecLogStat )
 	{
 		int iOK = NetError::ERR_ODBC_01;
 

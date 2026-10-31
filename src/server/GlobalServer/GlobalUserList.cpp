@@ -20,7 +20,7 @@ KGlobalUserList::~KGlobalUserList()
 
 bool KGlobalUserList::GetGSUserInfoByUnitUID( IN const UidType iUnitUID, OUT KGSUserInfo& kInfo )
 {
-    std::map< UidType, boost::shared_ptr< KGSUserInfo > >::const_iterator mit;
+    std::map< UidType, std::shared_ptr< KGSUserInfo > >::const_iterator mit;
     mit = m_mapUnitUID.find( iUnitUID );
     if( mit == m_mapUnitUID.end() )
     {
@@ -55,11 +55,11 @@ bool KGlobalUserList::GetGSUserInfoByUnitNickName( IN const UidType iServerGroup
 	}
 
 #ifdef EXTEND_SERVER_GROUP_MASK
-	const std::map< std::wstring,	boost::shared_ptr< KGSUserInfo > >& mapUnitNickName = m_mapUnitNickName.find( static_cast< int >( iServerGroupID ) )->second;
+	const std::map< std::wstring,	std::shared_ptr< KGSUserInfo > >& mapUnitNickName = m_mapUnitNickName.find( static_cast< int >( iServerGroupID ) )->second;
 #else
-	const std::map< std::wstring,	boost::shared_ptr< KGSUserInfo > >& mapUnitNickName = m_mapUnitNickName[iServerGroupID];
+	const std::map< std::wstring,	std::shared_ptr< KGSUserInfo > >& mapUnitNickName = m_mapUnitNickName[iServerGroupID];
 #endif // EXTEND_SERVER_GROUP_MASK
-	std::map< std::wstring, boost::shared_ptr< KGSUserInfo > >::const_iterator mit;
+	std::map< std::wstring, std::shared_ptr< KGSUserInfo > >::const_iterator mit;
 	mit = mapUnitNickName.find( wstrUnitNickName );
 	if( mit == mapUnitNickName.end() )
 	{
@@ -82,7 +82,7 @@ bool KGlobalUserList::GetGSUserInfoByUnitNickName( IN const UidType iServerGroup
 //{{ 2013. 05. 29	최육사	제재 리스트 통합
 bool KGlobalUserList::GetGSUserInfoByUserUID( IN const UidType iUserUID, OUT KGSUserInfo& kInfo )
 {
-	std::map< UidType, boost::shared_ptr< KGSUserInfo > >::const_iterator mit;
+	std::map< UidType, std::shared_ptr< KGSUserInfo > >::const_iterator mit;
 	mit = m_mapUserUID.find( iUserUID );
 	if( mit == m_mapUserUID.end() )
 	{
@@ -117,7 +117,7 @@ void KGlobalUserList::UnRegAllUserOfThisGS( IN const UidType iGSUID )
     }
 
     std::vector< UidType > vecUnitUID;
-    std::map< UidType, boost::shared_ptr< KGSUserInfo > >::iterator mitUnitUID;
+    std::map< UidType, std::shared_ptr< KGSUserInfo > >::iterator mitUnitUID;
     for( mitUnitUID = m_mapUnitUID.begin(); mitUnitUID != m_mapUnitUID.end(); ++mitUnitUID )
     {
         if( IS_NULL( mitUnitUID->second ) )
@@ -135,7 +135,7 @@ void KGlobalUserList::UnRegAllUserOfThisGS( IN const UidType iGSUID )
         }
     }
 
-	BOOST_TEST_FOREACH( const UidType, iUnitUID, vecUnitUID )
+	for( const UidType iUnitUID : vecUnitUID )
     {
         UnRegUnit( iUnitUID );
     }
@@ -173,7 +173,7 @@ int KGlobalUserList::RegUnit( IN const KRegUnitInfo& kUnitInfo )
     }
 
 	//UID로 검색
-    std::map< UidType, boost::shared_ptr< KGSUserInfo > >::iterator mitUnitUID;
+    std::map< UidType, std::shared_ptr< KGSUserInfo > >::iterator mitUnitUID;
     mitUnitUID = m_mapUnitUID.find( kUnitInfo.m_iUnitUID );
     if( mitUnitUID != m_mapUnitUID.end() )
     {
@@ -211,9 +211,9 @@ int KGlobalUserList::RegUnit( IN const KRegUnitInfo& kUnitInfo )
 	}
 #endif // EXTEND_SERVER_GROUP_MASK
 
-	std::map< std::wstring,	boost::shared_ptr< KGSUserInfo > >& mapUnitNickName = m_mapUnitNickName[iServerGroupID];
+	std::map< std::wstring,	std::shared_ptr< KGSUserInfo > >& mapUnitNickName = m_mapUnitNickName[iServerGroupID];
 
-    std::map< std::wstring, boost::shared_ptr< KGSUserInfo > >::iterator mitUnitNickName;
+    std::map< std::wstring, std::shared_ptr< KGSUserInfo > >::iterator mitUnitNickName;
     mitUnitNickName = mapUnitNickName.find( kUnitInfo.m_wstrUnitNickName );
     if( mitUnitNickName != mapUnitNickName.end() )
     {
@@ -246,7 +246,7 @@ int KGlobalUserList::RegUnit( IN const KRegUnitInfo& kUnitInfo )
     }
 
 	// 캐릭터 정보 추가
-	boost::shared_ptr< KGSUserInfo > spGSUserInfo( new KGSUserInfo() );
+	std::shared_ptr< KGSUserInfo > spGSUserInfo( new KGSUserInfo() );
 	spGSUserInfo->m_nUserUID			= kUnitInfo.m_iUserUID;
 	spGSUserInfo->m_nUnitUID			= kUnitInfo.m_iUnitUID;
 	spGSUserInfo->m_wstrUnitNickName	= kUnitInfo.m_wstrUnitNickName;
@@ -282,7 +282,7 @@ bool KGlobalUserList::UnRegUnit( IN const UidType iUnitUID )
         return false;
     }
 
-    std::map< UidType, boost::shared_ptr< KGSUserInfo > >::iterator mitUnitUID;
+    std::map< UidType, std::shared_ptr< KGSUserInfo > >::iterator mitUnitUID;
     mitUnitUID = m_mapUnitUID.find( iUnitUID );
     if( mitUnitUID == m_mapUnitUID.end() )
     {
@@ -327,8 +327,8 @@ bool KGlobalUserList::UnRegUnit( IN const UidType iUnitUID )
 	}
 #endif // EXTEND_SERVER_GROUP_MASK
 
-	std::map< std::wstring,	boost::shared_ptr< KGSUserInfo > >& mapUnitNickName = m_mapUnitNickName[iServerGroupID];
-    std::map< std::wstring, boost::shared_ptr< KGSUserInfo > >::iterator mitUnitNickName;
+	std::map< std::wstring,	std::shared_ptr< KGSUserInfo > >& mapUnitNickName = m_mapUnitNickName[iServerGroupID];
+    std::map< std::wstring, std::shared_ptr< KGSUserInfo > >::iterator mitUnitNickName;
     if( !mitUnitUID->second->m_wstrUnitNickName.empty() )
     {
         mitUnitNickName = mapUnitNickName.find( mitUnitUID->second->m_wstrUnitNickName );

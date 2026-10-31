@@ -5,6 +5,7 @@
 #include "ODBC/DBUtil.h"
 //}}
 #include "KncSend.h"
+#include "BaseServer.h" // KBaseServer::GetKObj() in the templates below
 
 #include "Event.h"
 #include "SystemPacket.h"
@@ -25,13 +26,11 @@ public:
     virtual ~KGlobalAccountDBThread(void);
 
 protected:
-    virtual inline void ProcessEvent( const KEventPtr& spEvent );
+    virtual void ProcessEvent( const KEventPtr& spEvent );
 
 protected:
     // packet send function
 	template < class T > void SendToServer( unsigned short usEventID, const T& data );
-    template < class T > void SendToNXGMToolTcpManager( unsigned short usEventID, const T& data );
-	template < class T > void SendToNXGMToolTcpServer( unsigned short usEventID, const T& data );
 //#ifdef	SERV_LOCAL_RANKING_SYSTEM // 적용날짜: 2013-04-07
 	template < class T > void SendToUser( UidType nTo, unsigned short usEventID, const T& data );
 	void SendToUser( UidType nTo, unsigned short usEventID );
@@ -48,21 +47,7 @@ void KGlobalAccountDBThread::SendToServer( unsigned short usEventID, const T& da
 	KncSend( GetPfID(), 0, PI_GLOBAL_SERVER, KBaseServer::GetKObj()->GetUID(), NULL, usEventID, data );
 }
 
-template < class T >
-void KGlobalAccountDBThread::SendToNXGMToolTcpManager( unsigned short usEventID, const T& data )
-{
-	KEventPtr spEvent( new KEvent );
-	spEvent->SetData( PI_GLOBAL_NX_GMTOOL_TCP, NULL, usEventID, data );
-	SiKNexonGMToolTCPManager()->QueueingEvent( spEvent );
-}
-
-template < class T >
-void KGlobalAccountDBThread::SendToNXGMToolTcpServer( unsigned short usEventID, const T& data )
-{
-	KEventPtr spEvent( new KEvent );
-	spEvent->SetData( PI_GLOBAL_NX_GMTOOL_TCP, NULL, usEventID, data );
-	SiKNexonGMToolServer()->QueueingEvent( spEvent );
-}
+// Port: SendToNXGMToolTcpManager/Server (Nexon GM tool, never called) removed
 
 //#ifdef	SERV_LOCAL_RANKING_SYSTEM // 적용날짜: 2013-04-07
 template < class T >

@@ -9,7 +9,7 @@
 #include "ClientPacket.h"
 #include "ActorManager.h"
 
-#include <windows.h>    // ::GetTickCount()
+#include "x2/platform/win32.h"    // ::GetTickCount()
 
 
 SmartPointer(KGlobalUser);

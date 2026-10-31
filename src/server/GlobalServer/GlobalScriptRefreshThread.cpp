@@ -33,7 +33,7 @@
 
 #define _CASE_REFRESH_SCRIPT( flag, classname, functionname ) \
 case KESR_SCRIPT_REFRESH_ORDER_NOT::flag: \
-	START_LOG( cout, L#classname L" 스크립트 갱신을 시작합니다!" ); \
+	START_LOG( cout, L ## #classname L" 스크립트 갱신을 시작합니다!" ); \
 	{ \
 		KLocker lock( classname::GetTempCS() ); \
 		if( SiTemp##classname()->functionname( SiKGlobalScriptRefreshManager()->GetRefreshLuaState() ) == false ) \

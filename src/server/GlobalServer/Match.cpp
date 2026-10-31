@@ -184,7 +184,7 @@ void KMatch::CloseMatchByCancel( IN const UidType iCancelUnitUID )
 		std::vector< UidType > vecRematchUserList;
 
 
-		BOOST_TEST_FOREACH( const UidType, iUnitUID, vecUserList )
+		for( const UidType iUnitUID : vecUserList )
 		{
 			KMatchUserPtr spMatchUser = m_kMatchUserManager.GetUser( iUnitUID );
 			if( spMatchUser == NULL )
@@ -242,7 +242,7 @@ void KMatch::CloseMatchByCancel( IN const UidType iCancelUnitUID )
 
 		//////////////////////////////////////////////////////////////////////////
 		// 매치 재신청!
-		BOOST_TEST_FOREACH( const UidType, iUnitUID, vecRematchUserList )
+		for( const UidType iUnitUID : vecRematchUserList )
 		{
 			KMatchUserPtr spMatchUser = m_kMatchUserManager.GetUser( iUnitUID );
 			if( spMatchUser == NULL )
@@ -280,7 +280,7 @@ void KMatch::CloseMatchByCancel( IN const std::vector<UidType>& vecCancelUnitUID
 	// 매치 재신청할 리스트
 	std::vector< UidType > vecRematchUserList;
 
-	BOOST_TEST_FOREACH( const UidType, iUnitUID, vecUserList )
+	for( const UidType iUnitUID : vecUserList )
 	{
 		KMatchUserPtr spMatchUser = m_kMatchUserManager.GetUser( iUnitUID );
 		if( spMatchUser == NULL )
@@ -295,7 +295,7 @@ void KMatch::CloseMatchByCancel( IN const std::vector<UidType>& vecCancelUnitUID
 		bool bContinue = false;
 
 		// 취소 요청한 당사자인자 검사
-		BOOST_TEST_FOREACH( UidType, iCancelUnitUID, vecCancelUnitUID )
+		for( UidType iCancelUnitUID : vecCancelUnitUID )
 		{
 			KMatchUserPtr spCancelUser = m_kMatchUserManager.GetUser( iCancelUnitUID );
 			if( spCancelUser == NULL )
@@ -366,7 +366,7 @@ void KMatch::CloseMatchByCancel( IN const std::vector<UidType>& vecCancelUnitUID
 
 	//////////////////////////////////////////////////////////////////////////
 	// 매치 재신청!
-	BOOST_TEST_FOREACH( const UidType, iUnitUID, vecRematchUserList )
+	for( const UidType iUnitUID : vecRematchUserList )
 	{
 		KMatchUserPtr spMatchUser = m_kMatchUserManager.GetUser( iUnitUID );
 		if( spMatchUser == NULL )
@@ -462,6 +462,8 @@ CXSLRoom::PVP_GAME_TYPE KMatch::GetMatchPvpGameType( IN const SEnum::MATCH_TYPE 
 	case SEnum::MT_TEAM_DEATH_2_ON_2:
 	case SEnum::MT_TEAM_DEATH_3_ON_3:
 		return CXSLRoom::PGT_TEAM_DEATH;
+	default:
+		break;
 	}
 
 	return CXSLRoom::PGT_NULL;
@@ -482,6 +484,8 @@ int KMatch::GetMatchPlayerCount( IN const SEnum::MATCH_TYPE eMatchType )
 	case SEnum::MT_TEAM_3_ON_3:
 	case SEnum::MT_TEAM_DEATH_3_ON_3:
 		return 3;
+	default:
+		break;
 	}
 
 	return 0;
@@ -496,9 +500,8 @@ bool KMatch::GetRoomInfoForPvpGame( IN const bool bIsNpcPvpMode, OUT KRoomInfo& 
 {
 	kInfo.m_RoomType		= CXSLRoom::RT_PVP;
 	kInfo.m_RoomName		= L"Match Making Battle!";
-	kInfo.m_RoomState; // 이건 머지?
+	// Port: the original named m_RoomState and m_bTeamBalance here without assigning them ("what is this?"); they keep the KRoomInfo defaults.
 	kInfo.m_bPublic			= false;
-	kInfo.m_bTeamBalance; // 이건 머지?
 	kInfo.m_MaxSlot			= static_cast<char>(KMatch::GetMatchTotalPlayerCount( GetMatchType() ));
 	kInfo.m_JoinSlot		= static_cast<char>(m_kMatchUserManager.GetNumMember());
 	kInfo.m_PVPGameType		= KMatch::GetMatchPvpGameType( GetMatchType() );
@@ -793,7 +796,7 @@ IMPL_ON_FUNC( EGB_GET_ROOM_USER_INFO_FOR_MATCH_ACK )
 
 		if( eRedTeamPvpNpcMode != SEnum::PNT_NONE )
 		{
-			BOOST_TEST_FOREACH( const KRoomUserInfo&, kRedTeamUser, vecRedTeam )
+			for( const KRoomUserInfo& kRedTeamUser : vecRedTeam )
 			{
 				KEGB_OPEN_PVP_ROOM_FOR_MATCH_REQ kPacketReq;
 
@@ -834,7 +837,7 @@ IMPL_ON_FUNC( EGB_GET_ROOM_USER_INFO_FOR_MATCH_ACK )
 
 			if( eBlueTeamPvpNpcMode == SEnum::PNT_NONE )
 			{
-				BOOST_TEST_FOREACH( const KRoomUserInfo&, kRoomUserInfo, vecBlueTeam )
+				for( const KRoomUserInfo& kRoomUserInfo : vecBlueTeam )
 				{
 					// 매치 유저들에게 알리자!
 					KEGS_MATCH_CLOSE_NOT kPacketNot;
@@ -855,7 +858,7 @@ IMPL_ON_FUNC( EGB_GET_ROOM_USER_INFO_FOR_MATCH_ACK )
 
 		if( eBlueTeamPvpNpcMode != SEnum::PNT_NONE )
 		{
-			BOOST_TEST_FOREACH( const KRoomUserInfo&, kBlueTeamUser, vecBlueTeam )
+			for( const KRoomUserInfo& kBlueTeamUser : vecBlueTeam )
 			{
 				KEGB_OPEN_PVP_ROOM_FOR_MATCH_REQ kPacketReq;
 
@@ -896,7 +899,7 @@ IMPL_ON_FUNC( EGB_GET_ROOM_USER_INFO_FOR_MATCH_ACK )
 
 			if( eRedTeamPvpNpcMode == SEnum::PNT_NONE )
 			{
-				BOOST_TEST_FOREACH( const KRoomUserInfo&, kRoomUserInfo, vecRedTeam )
+				for( const KRoomUserInfo& kRoomUserInfo : vecRedTeam )
 				{
 					// 매치 유저들에게 알리자!
 					KEGS_MATCH_CLOSE_NOT kPacketNot;

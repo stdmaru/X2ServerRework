@@ -15,7 +15,7 @@ O plano geral está em [Projeto › Roadmap](../projeto/roadmap.md).
 | `src/server/ChannelServer` | compila no Linux (Clang, GCC) e no Windows (clang-cl) sem warnings; roda no Linux (`x2_run_channel`); login do cliente original no canal funcionando (2026-10-30) | [Servidor: ChannelServer](server-channel.md) |
 | `src/server/LoginServer` | compila sem warnings no Linux (Clang, GCC) e no Windows (clang-cl); roda no Linux (`x2_run_login`); com ele o cliente original chega à vila (2026-10-31) | [Servidor: LoginServer](server-login.md) |
 | `src/server/CenterServer` | compila sem warnings no Linux (Clang, GCC) e no Windows (clang-cl); roda no Linux (`x2_run_center`); com ele o cliente original vai ao campo e à dungeon (2026-10-31) | [Servidor: CenterServer](server-center.md) |
-| `src/server/GlobalServer` | importado (2026-10-31); ainda não compila | [Servidor: GlobalServer](server-global.md) |
+| `src/server/GlobalServer` | compila sem warnings no Linux (Clang, GCC) e no Windows (clang-cl) (2026-10-31); ainda não roda | [Servidor: GlobalServer](server-global.md) |
 
 **Ícones no Windows** (2026-10-31): cada executável de servidor leva o ícone do original (`icon.ico` na pasta do módulo, copiado do
 `_reference` pelo git; o do EPublisherServer vem do `AuthServer` do DEB). O `x2_windows_icon` (`cmake/X2Compiler.cmake`) gera o `.rc`

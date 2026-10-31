@@ -3,7 +3,7 @@
 #include "RefreshSingleton.h"
 #include "DBLayer.h"
 #include <KncSend.h>
-#include <boost/timer.hpp>
+#include "x2/platform/timer.h"
 #include "CommonPacket.h"
 #include "ServerPacket.h"
 #include "BlockData.h"
@@ -50,7 +50,7 @@ private:
 	void	SetReleaseTick( IN const int iReleaseTick )	{ m_iReleaseTick = iReleaseTick; }
 
 private:
-	boost::timer							m_tTimer;
+	x2::Timer							m_tTimer;
 	int										m_iReleaseTick;
 
 	// 각 블럭타입에 맞게 별도의 리스트로 관리하자. ( 성능 )

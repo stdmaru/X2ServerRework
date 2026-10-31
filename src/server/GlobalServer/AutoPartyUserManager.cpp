@@ -66,7 +66,7 @@ bool KAutoPartyUserManager::Enter( IN const std::vector< KAutoPartyUserInfo >& v
 		return false;
 	}
 
-	BOOST_TEST_FOREACH( const KAutoPartyUserInfo, kInfo, vecAutoPartyUserList )
+	for( const KAutoPartyUserInfo& kInfo : vecAutoPartyUserList )
 	{
 		if( Enter( kInfo ) == false )
 		{

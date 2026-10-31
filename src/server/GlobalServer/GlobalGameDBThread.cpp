@@ -1,4 +1,4 @@
-#include <winsock2.h>
+#include "x2/platform/net.h"
 #include <iomanip>
 #include <sstream>
 
@@ -80,13 +80,14 @@ void KGlobalGameDBThread::SendToUser( UidType nTo, unsigned short usEventID )
 
 _IMPL_ON_FUNC( DBE_CHECK_NICKNAME_FOR_INVITE_PARTY_REQ, KELG_INVITE_PARTY_FIND_RECEIVER_REQ )
 {
+	// Port: hoisted above the gotos to end_proc (MSVC let goto skip their initialization)
+	UidType iUnitUID = 0;
 	KELG_INVITE_PARTY_FIND_RECEIVER_ACK kPacket;
 	kPacket.m_iOK = NetError::ERR_ODBC_01;
 	kPacket.m_iHostUnitUID = kPacket_.m_iHostUnitUID;
 
 	// 닉네임 찾기!
 	DO_QUERY( L"exec dbo.gup_get_unit_uid", L"N\'%s\'", % kPacket_.m_wstrReceiverNickName );
-	UidType iUnitUID = 0;
 	if( m_kODBC.BeginFetch() )
 	{
 		FETCH_DATA( iUnitUID );

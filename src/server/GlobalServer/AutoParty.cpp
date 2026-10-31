@@ -172,7 +172,7 @@ void KAutoParty::CloseAutoPartyByCancel( IN const UidType iCancelUnitUID )
 		std::vector< UidType > vecReAutoPartyUserList;
 
 
-		BOOST_TEST_FOREACH( const UidType, iUnitUID, vecUserList )
+		for( const UidType iUnitUID : vecUserList )
 		{
 			KAutoPartyUserPtr spAutoPartyUser = m_kAutoPartyUserManager.GetUser( iUnitUID );
 			if( spAutoPartyUser == NULL )
@@ -236,7 +236,7 @@ void KAutoParty::CloseAutoPartyByCancel( IN const UidType iCancelUnitUID )
 
 		//////////////////////////////////////////////////////////////////////////
 		// 자동 파티 재신청!
-		BOOST_TEST_FOREACH( const UidType, iUnitUID, vecReAutoPartyUserList )
+		for( const UidType iUnitUID : vecReAutoPartyUserList )
 		{
 			KAutoPartyUserPtr spAutoPartyUser = m_kAutoPartyUserManager.GetUser( iUnitUID );
 			if( spAutoPartyUser == NULL )
@@ -273,7 +273,7 @@ void KAutoParty::CloseAutoPartyByCancel( IN const std::vector<UidType>& vecCance
 	// 자동 파티 재신청할 리스트
 	std::vector< UidType > vecReAutoPartyUserList;
 
-	BOOST_TEST_FOREACH( const UidType, iUnitUID, vecUserList )
+	for( const UidType iUnitUID : vecUserList )
 	{
 		KAutoPartyUserPtr spAutoPartyUser = m_kAutoPartyUserManager.GetUser( iUnitUID );
 		if( spAutoPartyUser == NULL )
@@ -288,7 +288,7 @@ void KAutoParty::CloseAutoPartyByCancel( IN const std::vector<UidType>& vecCance
 		bool bContinue = false;
 
 		// 취소 요청한 당사자인자 검사
-		BOOST_TEST_FOREACH( UidType, iCancelUnitUID, vecCancelUnitUID )
+		for( UidType iCancelUnitUID : vecCancelUnitUID )
 		{
 			KAutoPartyUserPtr spCancelUser = m_kAutoPartyUserManager.GetUser( iCancelUnitUID );
 			if( spCancelUser == NULL )
@@ -359,7 +359,7 @@ void KAutoParty::CloseAutoPartyByCancel( IN const std::vector<UidType>& vecCance
 
 	//////////////////////////////////////////////////////////////////////////
 	// 자동 파티 재신청!
-	BOOST_TEST_FOREACH( const UidType, iUnitUID, vecReAutoPartyUserList )
+	for( const UidType iUnitUID : vecReAutoPartyUserList )
 	{
 		KAutoPartyUserPtr spAutoPartyUser = m_kAutoPartyUserManager.GetUser( iUnitUID );
 		if( spAutoPartyUser == NULL )

@@ -3,6 +3,7 @@
 #include "ODBC/Odbc.h"
 #include "ODBC/DBUtil.h"
 #include "KncSend.h"
+#include "BaseServer.h" // KBaseServer::GetKObj() in the templates below
 
 #include "Event.h"
 #include "CommonPacket.h"
@@ -25,7 +26,7 @@ public:
     virtual ~KGlobalGameDBThread(void);
 
 protected:
-    virtual inline void ProcessEvent( const KEventPtr& spEvent );
+    virtual void ProcessEvent( const KEventPtr& spEvent );
 
 protected:
     // packet send function

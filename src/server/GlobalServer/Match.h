@@ -132,7 +132,7 @@ public:
 protected:
 	SEnum::MATCH_TYPE		m_eMatchType;
 	KMatchUserManager		m_kMatchUserManager;
-	boost::timer			m_tTimer[MTE_MAX];
+	x2::Timer			m_tTimer[MTE_MAX];
 };
 
 template < class T >
@@ -148,7 +148,7 @@ void KMatch::BroadCast( IN const u_short usEventID, IN const T& data, IN const U
 	std::vector< UidType > vecMatchUserList;
     m_kMatchUserManager.GetMatchUserList( vecMatchUserList );
 
-	BOOST_TEST_FOREACH( const UidType, iUnitUID, vecMatchUserList )
+	for( const UidType iUnitUID : vecMatchUserList )
 	{
 		KMatchUserPtr spMatchUser = m_kMatchUserManager.GetUser( iUnitUID );
 		if( spMatchUser == NULL )

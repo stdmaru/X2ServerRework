@@ -56,7 +56,7 @@ int	KMatchCompleteTimeManager::GetMatchMakingEstimatedTime() const
 	CTime tCurr = CTime::GetCurrentTime();									// 현재 시간
 	CTime tTwoHourAgo = tCurr - CTimeSpan( 0, 2, 0, 0 );					// 현재 시간에서 두시간 전 시간
 
-	BOOST_TEST_FOREACH( const KMatchTime, kCompleteTime, m_listCompleteTime )
+	for( const KMatchTime kCompleteTime : m_listCompleteTime )
 	{
 		if( tTwoHourAgo <= kCompleteTime.m_tMatchTime )	// 최근 2시간 이내 라면
 		{
@@ -182,7 +182,7 @@ void KMatchMakingManager::ClearAllMatchInfo()
 	std::vector< UidType > vecMatchList;
 	for( u_int uiMatchType = 0; uiMatchType < SEnum::MT_MAX; ++uiMatchType )
 	{
-		BOOST_TEST_FOREACH( KMatchPtr, spMatch, m_vecMatch[uiMatchType] )
+		for( KMatchPtr spMatch : m_vecMatch[uiMatchType] )
 		{
 			if( !spMatch )
 				continue;
@@ -191,7 +191,7 @@ void KMatchMakingManager::ClearAllMatchInfo()
 		}
 	}
 
-	BOOST_TEST_FOREACH( const UidType, iMatchUID, vecMatchList )
+	for( const UidType iMatchUID : vecMatchList )
 	{
 		DestroyMatch( iMatchUID );
 	}
@@ -206,7 +206,7 @@ void KMatchMakingManager::ClearAllMatchInfo()
 		vecUnitUIDLIst.push_back( mit->first );
 	}
 
-	BOOST_TEST_FOREACH( const UidType, iUnitUID, vecUnitUIDLIst )
+	for( const UidType iUnitUID : vecUnitUIDLIst )
 	{
 		UnRegMatchWaitListByUnitUID( iUnitUID, NetError::NOT_LEAVE_MATCH_WAIT_REASON_01 );
 	}
@@ -222,7 +222,7 @@ void KMatchMakingManager::Tick()
 	// 매치 Tick을 처리하자!
 	for( u_int uiMatchType = 0; uiMatchType < SEnum::MT_MAX; ++uiMatchType )
 	{
-		BOOST_TEST_FOREACH( KMatchPtr, spMatch, m_vecMatch[uiMatchType] )
+		for( KMatchPtr spMatch : m_vecMatch[uiMatchType] )
 		{
 			if( spMatch == NULL )
 				continue;
@@ -238,7 +238,7 @@ void KMatchMakingManager::Tick()
 	}
 
 	// 매치 종료 처리!
-	BOOST_TEST_FOREACH( const UidType, iMatchUID, vecDeleteMatchUIDList )
+	for( const UidType iMatchUID : vecDeleteMatchUIDList )
 	{
         DestroyMatch( iMatchUID );
 	}
@@ -267,7 +267,7 @@ KMatchPtr KMatchMakingManager::MakeMatch( IN const SEnum::MATCH_TYPE eMatchType 
 	}
 
 	// FSM설정
-	FSMclassPtr spFSMClass = boost::shared_ptr< KMatchFSM >( new KMatchFSM );
+	FSMclassPtr spFSMClass = std::shared_ptr< KMatchFSM >( new KMatchFSM );
 	spMatch->SetFSM( spFSMClass );
 	return spMatch;
 }
@@ -513,7 +513,7 @@ bool KMatchMakingManager::RegMatchWaitList( IN const SEnum::MATCH_TYPE eType, IN
 	}
 
 	// 3. 매치 대기자 리스트에 신청자들을 하나씩 넣습니다!
-	BOOST_TEST_FOREACH( const KMatchUserInfo, kInfo, vecMatchUserList )
+	for( const KMatchUserInfo& kInfo : vecMatchUserList )
 	{
 		// 이미 등록된 캐릭터 인지 검사
 		if( IsExistInWaitListByUnitUID( kInfo.m_iUnitUID ) == true )
@@ -699,7 +699,7 @@ bool KMatchMakingManager::UnRegMatchWaitListByWaitNumber( IN const int iWaitNumb
 	std::vector< UidType > vecUnitUIDList;
 	spMatchWaitList->GetUnitUIDList( vecUnitUIDList );
 
-	BOOST_TEST_FOREACH( const UidType, iUnitUID, vecUnitUIDList )
+	for( const UidType iUnitUID : vecUnitUIDList )
 	{
 		UnRegMatchWaitListByUnitUID( iUnitUID, iUnRegReason, wstrCancelUnitNickName );
 	}
@@ -757,7 +757,7 @@ bool KMatchMakingManager::FindTheOpponent( IN const SEnum::MATCH_TYPE& eType,
 	// 매치 대기자 리스트의 멤버가 모두 F랭크인지 검사!
 	const bool bIsAllMemberBeginner = spFrontMatchWaitUser->IsAllPlayersBeginner();
 
-	BOOST_TEST_FOREACH( KMatchUserWaitListPtr, spTargetUserList, listMatchMakingWaitList )
+	for( KMatchUserWaitListPtr spTargetUserList : listMatchMakingWaitList )
 	{
 		// 요만큼만 체크하자!
 		if( iCheckListIndex > CHECK_WAIT_USER_COUNT )
@@ -1027,7 +1027,7 @@ void KMatchMakingManager::MatchMakingForWaitUser( IN const SEnum::MATCH_TYPE eTy
 			}
 
 			// 적합한 유저들 매치에 입장 처리!
-			BOOST_TEST_FOREACH( const int, iMatchWaitNumber, vecSelectedWaitUserList )
+			for( const int iMatchWaitNumber : vecSelectedWaitUserList )
 			{
                 KMatchUserWaitListPtr spWaitList = GetMatchWaitListByWaitNumber( iMatchWaitNumber );
 				if( spWaitList == NULL )
@@ -1147,7 +1147,7 @@ IMPL_ON_FUNC( EGB_REQUEST_MATCH_MAKING_REQ )
 	SendToGSCharacter( LAST_SENDER_UID, FIRST_SENDER_UID, EGB_REQUEST_MATCH_MAKING_ACK, kPacket );
 
 	// 매치 성공에 대해서 알림
-	BOOST_TEST_FOREACH( const KMatchUserInfo&, kInfo, kPacket_.m_vecMatchUserInfo )
+	for( const KMatchUserInfo& kInfo : kPacket_.m_vecMatchUserInfo )
 	{
 		KEGS_REG_MATCH_WAIT_LIST_SUCCESS_NOT kPacketNot;
 		kPacketNot.m_iEstimatedTime = m_kCompleteTimeManager[eMatchType].GetMatchMakingEstimatedTime();

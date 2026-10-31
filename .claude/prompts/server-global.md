@@ -11,7 +11,7 @@ Antes de tudo:
 
 Estado em 2026-10-31: o CenterServer, o console UTF-8 do Windows, as decisões T29/T30 (ServerManager) e as pastas de execução no
 build normal (`X2_RUN_FOLDERS`, `docker/.env`) já estão na `main`. O `server/global-import` está pronto (manifesto, código em
-`src/server/GlobalServer`, `docs/porte/server-global.md`); siga do `server/global-build`.
+`src/server/GlobalServer`, `docs/porte/server-global.md`), e o `server/global-build` também (compila sem warnings na matriz toda); siga do `server/global-run`.
 
 Plano (um branch por passo):
 1. **`server/global-import`**: `tools/import/modules/server-global.toml` (modelo: `server-center.toml`) para `KncWX2Server/GlobalServer`

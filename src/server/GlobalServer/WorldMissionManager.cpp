@@ -59,12 +59,12 @@ ImplToStringW( KWorldMissionManager )
 {
 	stm_	<< L"----------[ World Mission Manager ]----------" << std::endl
 		<< TOSTRINGW( m_bActive )
-		<< BUILD_LOG( m_iTotalCCU )
-		<< BUILD_LOG( m_iMissionTime )
-		<< BUILD_LOG( m_iNextDOT )
-		<< BUILD_LOG( m_usWorldBuffDurationTime )
-		<< BUILD_LOG( m_iStartedCrystalCount )
-		<< BUILD_LOG( m_iProtectedCrystalCount )
+		<< TOSTRINGW( m_iTotalCCU )
+		<< TOSTRINGW( m_iMissionTime )
+		<< TOSTRINGW( m_iNextDOT )
+		<< TOSTRINGW( m_usWorldBuffDurationTime )
+		<< TOSTRINGW( m_iStartedCrystalCount )
+		<< TOSTRINGW( m_iProtectedCrystalCount )
 		<< TOSTRINGW( m_kTimerDOT.elapsed() )
 		;
 

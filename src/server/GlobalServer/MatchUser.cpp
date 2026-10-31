@@ -89,7 +89,7 @@ bool KMatchUser::GetRoomUserInfo( OUT KRoomUserInfo& kRoomUserInfo )
 		return false;
 	}
 
-	BOOST_TEST_FOREACH( const KRoomUserInfo&, kInfo, m_vecRoomUserInfo )
+	for( const KRoomUserInfo& kInfo : m_vecRoomUserInfo )
 	{
 		kRoomUserInfo = kInfo;
 		return true;

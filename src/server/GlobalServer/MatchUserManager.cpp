@@ -1,5 +1,6 @@
 #include "Match.h"
 #include "MatchUserManager.h"
+#include <algorithm>
 
 #include "Enum/Enum.h"
 #include "NetError.h"
@@ -70,7 +71,7 @@ bool KMatchUserManager::Enter( IN const std::vector< KMatchUserInfo >& vecMatchU
 		return false;
 	}
 
-	BOOST_TEST_FOREACH( const KMatchUserInfo, kInfo, vecMatchUserList )
+	for( const KMatchUserInfo& kInfo : vecMatchUserList )
 	{
 		if( Enter( kInfo ) == false )
 		{
@@ -279,7 +280,7 @@ int	KMatchUserManager::GetRatingWeightAverage( void ) const
 	const int iRatingWeightEverage = SiKPvpMatchManager()->GetRatingByTeam( mapTeamMemberInfo );
 	const int iModifiedMaxRating = static_cast<int>( static_cast<double>(iMaxRating) * 0.8 );
 
-	return max( iRatingWeightEverage, iModifiedMaxRating );
+	return std::max( iRatingWeightEverage, iModifiedMaxRating );
 }
 
 int KMatchUserManager::GetRatingWeightAverage( std::vector<KRoomUserInfo> vecTeam )
@@ -299,7 +300,7 @@ int KMatchUserManager::GetRatingWeightAverage( std::vector<KRoomUserInfo> vecTea
 	std::map< UidType, int > mapTeamMemberInfo;
 	int iMaxRating = 0;
 
-	BOOST_TEST_FOREACH( const KRoomUserInfo&, kRoomUserInfo, vecTeam )
+	for( const KRoomUserInfo& kRoomUserInfo : vecTeam )
 	{
 		mapTeamMemberInfo.insert( std::make_pair( kRoomUserInfo.m_nUnitUID, kRoomUserInfo.m_iRating ) );
 
@@ -310,7 +311,7 @@ int KMatchUserManager::GetRatingWeightAverage( std::vector<KRoomUserInfo> vecTea
 	const int iRatingWeightAverage = SiKPvpMatchManager()->GetRatingByTeam( mapTeamMemberInfo );
 	const int iModifiedMaxRating = static_cast<int>( static_cast<double>( iMaxRating ) * 0.8 );
 
-	return max( iRatingWeightAverage, iModifiedMaxRating );
+	return std::max( iRatingWeightAverage, iModifiedMaxRating );
 }
 //}}
 
@@ -383,7 +384,7 @@ void KMatchUserManager::GetAllPlayersSelectedPvpMap( OUT std::map< short, int >&
 			continue;
 		}
 
-		BOOST_TEST_FOREACH( const short, sMapID, spMatchUser->GetSelectedPvpMap() )
+		for( const short sMapID : spMatchUser->GetSelectedPvpMap() )
 		{
 			mitSM = mapPvpMapInfo.find( sMapID );
 			if( mitSM == mapPvpMapInfo.end() )
@@ -596,7 +597,7 @@ bool KMatchUserManager::TeamMemberSelection( OUT std::vector< KRoomUserInfo >& v
 		// 파티에 소속된 것이 아니기 때문에 개개인으로 다루어야 한다.
 		if( iPartyUID == 0 )
 		{
-			BOOST_TEST_FOREACH( const UidType&, iUnitUID, vecUnitUID )
+			for( const UidType& iUnitUID : vecUnitUID )
 			{
 				std::vector<UidType> vecTemp;
 				vecTemp.push_back( iUnitUID );
@@ -680,7 +681,7 @@ bool KMatchUserManager::GetRoomUserInfo( IN const std::vector< UidType >& vecUni
 {
 	vecRoomUserInfo.clear();
 
-    BOOST_TEST_FOREACH( const UidType, iUnitUID, vecUnitUIDList )
+    for( const UidType iUnitUID : vecUnitUIDList )
 	{
 		KMatchUserPtr spMatchUser = GetUser( iUnitUID );
 		if( spMatchUser == NULL )
@@ -899,7 +900,7 @@ bool KMatchUserManager::GetTeamRatingGapByRatingLevel( IN const std::vector< Uid
 	for( u_int ui = 0; ui < vecHighRating.size(); ++ui )
 	{
 		const u_int iUserIndex = vecHighRating[ui];
-		if( iUserIndex < 0  ||  iUserIndex >= vecSortedUserList.size() )
+		if( iUserIndex >= vecSortedUserList.size() )
 		{
 			START_LOG( cerr, L"정리된 유저 리스트에 존재하지 않는 index값이다! 이건 있을수 없는 일이야!" )
 				<< BUILD_LOG( vecSortedUserList.size() )
@@ -937,7 +938,7 @@ bool KMatchUserManager::GetTeamRatingGapByRatingLevel( IN const std::vector< Uid
 	for( u_int ui = 0; ui < vecMiddleRating.size(); ++ui )
 	{
 		const u_int iUserIndex = vecMiddleRating[ui];
-		if( iUserIndex < 0  ||  iUserIndex >= vecSortedUserList.size() )
+		if( iUserIndex >= vecSortedUserList.size() )
 		{
 			START_LOG( cerr, L"정리된 유저 리스트에 존재하지 않는 index값이다! 이건 있을수 없는 일이야!" )
 				<< BUILD_LOG( vecSortedUserList.size() )
@@ -975,7 +976,7 @@ bool KMatchUserManager::GetTeamRatingGapByRatingLevel( IN const std::vector< Uid
 	for( u_int ui = 0; ui < vecLowRating.size(); ++ui )
 	{
 		const u_int iUserIndex = vecLowRating[ui];
-		if( iUserIndex < 0  ||  iUserIndex >= vecSortedUserList.size() )
+		if( iUserIndex >= vecSortedUserList.size() )
 		{
 			START_LOG( cerr, L"정리된 유저 리스트에 존재하지 않는 index값이다! 이건 있을수 없는 일이야!" )
 				<< BUILD_LOG( vecSortedUserList.size() )

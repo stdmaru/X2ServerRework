@@ -82,7 +82,7 @@ private:
 	bool							m_bPvpPowerMode;
 	bool							m_bPvpItemMode;
 	std::set< short >				m_setSelectedPvpMap;
-	boost::timer					m_tTimer[TE_MAX];
+	x2::Timer					m_tTimer[TE_MAX];
 };
 
 template < class T >

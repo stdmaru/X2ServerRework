@@ -37,14 +37,47 @@ do original (`src/server/GlobalServer` ao lado de `src/server/Common`).
 | `CTime`, `lua_tinker` | 13 arquivos (132 usos), 10 (50) | já cobertos pela [Plataforma](platform.md) e pelo KNCSDK |
 | Banco | 27 `DO_QUERY` em 4 arquivos | `KODBC` já portado; a config US usa só `DC_ACCOUNT` e `DC_LOG` (`Account_US_SERVICE.dsn`, `log_US_SERVICE.dsn`) |
 
-## Estado (2026-10-31, branch `server/global-import`)
+## Estado (2026-10-31, branch `server/global-build`)
 
-Importado, ainda não compila: falta o `CMakeLists.txt`, que vem no `server/global-build`.
+**Compila e linka sem warnings** (alvo `x2_global_server`, executável `GlobalServer`, `main` com `KServerMain` como os outros
+servidores, ícone do original) em Clang Debug, GCC Debug, Clang Release, GCC Release e clang-cl (Windows, na VM de testes), com os
+6 testes passando no Linux e no Windows. Sem argumentos ele sobe, recusa a falta de configuração (`Init` falha), encerra todas as
+camadas e sai com código 1, como os outros. Ainda não roda com configuração e banco: é o `server/global-run`.
+
+Medidas do caminho, para dar a escala: 50 erros no Clang Debug (`-k 0`) depois da passada mecânica, quase todos de dois templates do
+`GlobalServer.h`, e 7 no GCC; ~40 warnings distintos no Linux e 17 no clang-cl. O menor dos servidores: o acoplamento já tinha saído
+no `Common`.
+
+## Mudanças em relação ao original
+
+| Onde | Mudança | Motivo |
+|---|---|---|
+| `KGlobalServer` | Saem as chamadas ao KSMS (`ProcessCommunicationManager`, *named pipes* `\\.\pipe\GlobalServer*`, religadas a cada 60 s no `Tick`, e o aviso de script recarregado) | Como no [CenterServer](server-center.md#mudanças-em-relação-ao-original) e nos outros servidores |
+| `ON_DBE_SERVER_ON_ACK` (`GlobalServer.cpp`) | Quando o banco recusa o servidor, a resposta marca `SetAuthenticateResult( false )` e o `Init` falha; quando aceita, marca `true` | Como no [GameServer](server-game.md#mudanças-em-relação-ao-original): o original chamava `::exit( 0 )` nessa thread |
+| `KGlobalAccountDBThread` | Saem os templates `SendToNXGMToolTcpManager`/`SendToNXGMToolTcpServer` | Ferramenta de GM da Nexon (publisher); nunca eram chamados, e os singletons que usavam não existem no build US |
+| `KBlockListManager` (bloqueio por IP) | `inet_addr` → `x2::platform::IpFromString` (`inet_pton`) | `inet_addr` é obsoleto no Winsock. Só endereços com quatro números: as formas curtas que o `inet_addr` aceitava (`127.1`, hexadecimal) deixam de casar com um bloqueio |
+| `Global*DBThread.h` | `ProcessEvent` deixa de ser `virtual inline` | Definido no `.cpp`: ODR inválido (`-Wundefined-inline` do clang-cl), como no CenterServer e no LoginServer |
+
+Portabilidade (sem mudança de comportamento): passada mecânica (`mechanical.py`); a declaração pulada por `goto end_proc` no
+`GlobalGameDBThread` sobe (`fix_goto.py`); includes que o MSVC dispensava nos templates (`ActorManager.h` no `GlobalServer.h`,
+`BaseServer.h` nos DB threads); `intsafe.h` → `<climits>` (`BYTE_MAX` → `UCHAR_MAX`, o mesmo 255); `max` → `std::max`; destrutores
+`virtual` nos singletons `KGlobalMissionManager`, `KWorldMissionManager` e `KGlobalServerCCUManager`; `using KThreadManager::Init` no
+`KGlobalScriptRefreshManager`; `default: break;` nos `switch` incompletos; laços que copiavam `shared_ptr` e estruturas por valor passam a
+referência `const`; comparações de `enum` com `double` (os prazos de troca limitada) com `static_cast`; `unsigned < 0` (sempre falso
+também no MSVC) sai do `KMatchUserManager`; variáveis e instruções mortas saem (`bChanged` do `KBlockData::UpdateAndChanged`, que
+devolve pelo `goto`; `tCurrentTime` do `CheckExchangeLimit`; membros só citados, sem atribuição, no `KBlockListManager` e no
+`KMatch::GetRoomInfoForPvpGame`, que ficam com os valores padrão dos construtores, como no original).
+
+### Bugs do original corrigidos
+
+| Onde | Bug | Correção |
+|---|---|---|
+| `KWorldMissionManager::ToStringW` | Usava `BUILD_LOG` (manipuladores do logger, `dbg::tab`/`dbg::endl`) num `std::wostream` comum: o MSVC convertia os ponteiros de função em endereços, e o *dump* saía com números no lugar de tabulações e quebras de linha | `TOSTRINGW`, como o resto da função (2026-10-31, `-Wmicrosoft-cast` do clang-cl) |
 
 ## Plano
 
-1. **`server/global-import`** (2026-10-31): `tools/import/modules/server-global.toml` e esta página.
-2. **`server/global-build`**: compilar sem warnings em Clang, GCC (Debug e Release) e clang-cl, com o `main` do `KServerMain`
+1. ~~**`server/global-import`**~~ (2026-10-31): `tools/import/modules/server-global.toml` e esta página.
+2. ~~**`server/global-build`**~~ (2026-10-31): compilar sem warnings em Clang, GCC (Debug e Release) e clang-cl, com o `main` do `KServerMain`
    (como os outros servidores) e o ícone do original; o KSMS sai.
 3. **`server/global-run`**: `runtime/GlobalServer` (do `config_gb_US_SERVICE.lua` da pasta de produção, `.dsn` do `Account` e do
    `Statistics`/log), a pasta montada no build e os `EGB_*` do GameServer respondidos. Os `.lua` da pasta de produção já estão

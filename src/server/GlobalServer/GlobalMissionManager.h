@@ -4,8 +4,8 @@
 #include "RefreshSingleton.h"
 #include "DBLayer.h"
 #include <KncSend.h>
-#include <atltime.h>
-#include <boost/timer.hpp>
+#include "x2/platform/win32.h"
+#include "x2/platform/timer.h"
 #include "CommonPacket.h"
 #include "ServerPacket.h"
 
@@ -20,7 +20,7 @@ class KGlobalMissionManager
 public:
 
 	KGlobalMissionManager(void);
-	~KGlobalMissionManager(void);
+	virtual ~KGlobalMissionManager(void);
 
 	template < class T > void SendToLogDB( unsigned short usEventID, const T& data );
 
@@ -62,9 +62,9 @@ private:
 	bool			m_bIsFirstTick;
 	bool			m_bReceiveGlobalMissionInfo;
 
-	boost::timer	m_kTimerMissionStart;				//	다음 글로벌 미션 시작 시간 체크를 위한 타이머
-	boost::timer	m_kTimerEnableCheck;				//	일정 주기 체크를 위한 타이머
-	boost::timer	m_kTimerUpdate;						//	게임 서버 정보 업데이트용 타이머
+	x2::Timer	m_kTimerMissionStart;				//	다음 글로벌 미션 시작 시간 체크를 위한 타이머
+	x2::Timer	m_kTimerEnableCheck;				//	일정 주기 체크를 위한 타이머
+	x2::Timer	m_kTimerUpdate;						//	게임 서버 정보 업데이트용 타이머
 
 	std::map< std::wstring, KGlobalMissionInfo >	m_mapGlobalMissionInfo;					// 글로벌 미션별 오픈 정보
 	bool											m_bGlobalMissionOn;						// 글로벌 미션을 하는가?

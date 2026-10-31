@@ -3,7 +3,7 @@
 #include <KNCSingleton.h>
 #include <ToString.h>
 #include <map>
-#include <boost/timer.hpp>
+#include "x2/platform/timer.h"
 #include "KncSend.h"
 
 
@@ -25,7 +25,7 @@ class KGlobalServerCCUManager
 
 public:
 	KGlobalServerCCUManager(void);
-	~KGlobalServerCCUManager(void);
+	virtual ~KGlobalServerCCUManager(void);
 
 	void		Tick();
 	void		UpdateCCUInfo( IN const KUpdateCCUInfo& kInfo );

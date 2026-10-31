@@ -98,7 +98,7 @@ bool KAutoPartyMakingManager::Init()
 	}
 
 	// 세팅에 따라 AutoPartyMakingProcess를 생성!
-	BOOST_TEST_FOREACH( const KAutoPartyMakingProcessCondition&, kInfo, vecAutoPartyDungeonInfo )
+	for( const KAutoPartyMakingProcessCondition& kInfo : vecAutoPartyDungeonInfo )
 	{
 		KMakingProcessKey kKey( kInfo.m_iDungeonMode, kInfo.m_iDungeonIDWithDif );
 		std::map< KMakingProcessKey, KAutoPartyMakingProcess >::iterator mit;
@@ -118,7 +118,7 @@ bool KAutoPartyMakingManager::Init()
 		std::vector< int > vecNormalDungeonIDList;
 		SiCXSLDungeonManager()->GetNormalDungeonIDList( vecNormalDungeonIDList );
 
-		BOOST_TEST_FOREACH( const int, iDungeonIDWithDif, vecNormalDungeonIDList )
+		for( const int iDungeonIDWithDif : vecNormalDungeonIDList )
 		{
 			// 튜토리얼 제외
 			if( CXSLDungeon::IsTutorialDungeon( iDungeonIDWithDif ) == true )
@@ -162,7 +162,7 @@ void KAutoPartyMakingManager::ClearAllAutoPartyInfo()
 
 	// 자동 파티 종료 처리!
 	std::vector< UidType > vecAutoPartyList;
-	BOOST_TEST_FOREACH( KAutoPartyPtr, spAutoParty, m_vecAutoParty )
+	for( KAutoPartyPtr spAutoParty : m_vecAutoParty )
 	{
 		if( !spAutoParty )
 			continue;
@@ -170,7 +170,7 @@ void KAutoPartyMakingManager::ClearAllAutoPartyInfo()
 		vecAutoPartyList.push_back( spAutoParty->GetAutoPartyUID() );
 	}
 
-	BOOST_TEST_FOREACH( const UidType, iAutoPartyUID, vecAutoPartyList )
+	for( const UidType iAutoPartyUID : vecAutoPartyList )
 	{
 		DestroyAutoParty( iAutoPartyUID );
 	}
@@ -193,7 +193,7 @@ void KAutoPartyMakingManager::Tick()
 	//////////////////////////////////////////////////////////////////////////
 	// 자동 파티 Tick을 처리하자!
 	std::vector< UidType > vecDeleteAutoPartyUIDList;
-	BOOST_TEST_FOREACH( KAutoPartyPtr, spAutoParty, m_vecAutoParty )
+	for( KAutoPartyPtr spAutoParty : m_vecAutoParty )
 	{
 		if( spAutoParty == NULL )
 			continue;
@@ -210,7 +210,7 @@ void KAutoPartyMakingManager::Tick()
 
 	//////////////////////////////////////////////////////////////////////////
 	// 자동 파티 종료 처리!
-	BOOST_TEST_FOREACH( const UidType, iAutoPartyUID, vecDeleteAutoPartyUIDList )
+	for( const UidType iAutoPartyUID : vecDeleteAutoPartyUIDList )
 	{
         DestroyAutoParty( iAutoPartyUID );
 	}
@@ -229,7 +229,7 @@ void KAutoPartyMakingManager::Tick()
 		mit->second.MakingAutoPartyProcessing( vecMadeAutoParty );
 
 		// 생성된 자동 파티를 리스트에 추가!
-		BOOST_TEST_FOREACH( KAutoPartyPtr, spAutoParty, vecMadeAutoParty )
+		for( KAutoPartyPtr spAutoParty : vecMadeAutoParty )
 		{
 			LIF( AddAutoParty( spAutoParty ) );
 		}
@@ -532,7 +532,7 @@ IMPL_ON_FUNC( EGB_REQUEST_AUTO_PARTY_MAKING_REQ )
 	SendToGSCharacter( LAST_SENDER_UID, FIRST_SENDER_UID, EGB_REQUEST_AUTO_PARTY_MAKING_ACK, kPacket );
 
 	// 자동 파티 대기자 등록 성공에 대해서 알림
-	BOOST_TEST_FOREACH( const KAutoPartyUserInfo&, kInfo, kPacket_.m_vecAutoPartyUser )
+	for( const KAutoPartyUserInfo& kInfo : kPacket_.m_vecAutoPartyUser )
 	{
 		KEGS_REG_AUTO_PARTY_WAIT_LIST_SUCCESS_NOT kPacketNot;
 		kPacketNot.m_bRemakingAutoParty = kPacket_.m_bRemakingAutoParty; // 재등록 여부!
