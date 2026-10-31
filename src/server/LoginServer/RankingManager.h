@@ -18,7 +18,7 @@ class KRankingManager
 
 public:
 	KRankingManager(void);
-	~KRankingManager(void);
+	virtual ~KRankingManager(void);
 
 	bool OpenScriptFile( const char* pFileName );
 	bool AddHenirRankingInfo_LUA( int iRankingType, int iLastRank, int iHour, int iDayOfWeek = 0, int iWeekOfMonth = 0 );

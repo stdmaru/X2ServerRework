@@ -12,9 +12,9 @@
 
 
 KUserList::KUserList() :
-m_uiConcurrentUser( 0 ),
-//{{ 2012. 09. 03	최육사		중복 접속 버그 수정
 m_bEnableAuthWait( true ),
+//{{ 2012. 09. 03	최육사		중복 접속 버그 수정
+m_uiConcurrentUser( 0 ),
 //}}
 m_iGuestConcurrentUser( 0 )
 {
@@ -514,9 +514,6 @@ bool KUserList::UnRegUser( IN const UidType iUserUID )
 	//}}
 
     KGSUserInfo kInfo = *( mitUserUID->second );
-	//{{ 2010. 06. 28  최육사	게임 PC방 인증 서버 개편
-	const __int64 iSessionNo = kInfo.m_iSessionNo;
-	//}}
 
 	// 4. 유저 정보 삭제
     if( kInfo.m_wstrUserID.empty() )
@@ -968,8 +965,6 @@ void KUserList::Tick()
 			<< BUILD_LOG( kInfo.m_wstrUserID );
 
 		KENX_AUTH_LOGIN_ACK kPacketAuth;
-		kPacketAuth.m_bytePacketType;
-		kPacketAuth.m_byteLoginType;
 		kPacketAuth.m_wstrUserID = kInfo.m_wstrUserID;
 		kPacketAuth.m_byteAuthorizeResult = 2; // Trial - 프리미엄 없이 게임을 실행한다.
 

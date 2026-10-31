@@ -493,7 +493,6 @@ end_proc:
 
 IMPL_ON_FUNC( DBE_BACKUP_RANKING_INFO_NOT )
 {
-	int iOK = NetError::ERR_ODBC_01;
 	//{{ 2011. 09. 07	최육사	헤니르 시공 랭킹 백업 업데이트
 	const CTime tCurTime = CTime::GetCurrentTime();
 	const CStringW strCurTime = tCurTime.Format(_T("%Y-%m-%d %H:%M:%S"));

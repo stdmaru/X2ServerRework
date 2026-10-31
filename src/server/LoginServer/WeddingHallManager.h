@@ -20,7 +20,7 @@ private:
 
 public:
 	KWeddingHallManager(void);
-	~KWeddingHallManager(void);
+	virtual ~KWeddingHallManager(void);
 
 
 

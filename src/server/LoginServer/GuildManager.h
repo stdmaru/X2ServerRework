@@ -19,7 +19,7 @@ class KGuildManager
 
 public:
 	KGuildManager(void);
-	~KGuildManager(void);
+	virtual ~KGuildManager(void);
 
 	//{{ 2009. 11. 25  최육사	길드스킬
 	void Tick();

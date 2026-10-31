@@ -2232,9 +2232,6 @@ _IMPL_ON_FUNC( DBE_RELATIONSHIP_INFO_GAME_DB_REQ, KELG_RELATIONSHIP_INFO_REQ )
 	DO_QUERY( L"exec dbo.P_GCouple_Info_SEL_PartnerInfo", L"%d", % kPacket_.m_iAcceptUnitUID );
 	if( m_kODBC.BeginFetch() )
 	{
-		bool bDummy = false;
-		int iDummyINT = 0;
-		UidType iDummyUID = 0;
 		std::wstring wstrLastLogOutTime;
 
 		FETCH_DATA( kAck.m_iOK

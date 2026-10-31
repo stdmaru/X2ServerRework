@@ -843,7 +843,7 @@ void KGuildBoardManager::GetGuildAdList( IN const KELG_GET_GUILD_AD_LIST_REQ& kR
 	kAck.m_uiViewPage = kReq.m_uiViewPage;
 	kAck.m_uiTotalPage = 1;
 
-	if( SORT_TYPE < 0  ||  SORT_TYPE >= AST_MAX )
+	if( SORT_TYPE >= AST_MAX )
 	{
 		START_LOG( cerr, L"존재하지 않는 길드 광고 타입입니다." )
 			<< BUILD_LOGc( SORT_TYPE )

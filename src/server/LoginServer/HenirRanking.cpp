@@ -307,7 +307,6 @@ CTime KHenirRanking::GetDayOfWeekInMonth( int iYear, int iMonth, int iWeekOfMont
 
 bool KHenirRanking::CheckNewRecord( IN const KHenirRankingInfo& kNewRankingInfo )
 {
-	std::vector< UidType >::const_iterator vitFIND;
 	std::vector< KHenirRankingInfo >::reverse_iterator vitTR;
 
 	//{{ 2010. 05. 18  최육사	대전 던전 서버군 통합

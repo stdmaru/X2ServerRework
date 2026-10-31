@@ -38,7 +38,8 @@ void KGuildSkillTree::UpdateGuildSkillTree( IN const KGuildSkillInfo& kInfo )
 			continue;
 		}
 
-		int iSkillLevel = static_cast<int>(kGuildSkillData.m_cSkillLevel);
+		// Original bug: the clamped level is never used, the DB level is kept (docs/original/bugs.md)
+		[[maybe_unused]] int iSkillLevel = static_cast<int>(kGuildSkillData.m_cSkillLevel);
 
 		// 스킬의 최고레벨보다 높은 스킬이 있다면 최고레벨로 보정
 		const CXSLSkillTree::SkillTreeTemplet* pSkillTreeTemplet = SiCXSLSkillTree()->GetGuildSkillTreeTemplet( kGuildSkillData.m_iSkillID );
@@ -115,7 +116,7 @@ bool KGuildSkillTree::SetSkillLevelAndCSP( int iSkillID, int iSkillLevel, int iS
 {
 	SET_ERROR( NET_OK );
 
-	int iCheckSkillLevel = iSkillLevel;
+	[[maybe_unused]] int iCheckSkillLevel = iSkillLevel;
 	if( 0 == iSkillLevel )
 	{
 		iCheckSkillLevel = 1;
@@ -364,7 +365,6 @@ void KGuildSkillTree::ExpireCashSkillPoint( OUT std::vector< KGuildSkillData >& 
 	GuildSkillDataMap::iterator mit;
 	for( mit = m_mapSkillTree.begin(); mit != m_mapSkillTree.end(); ++mit )
 	{
-		const int iSkillID = mit->first;
 		GuildSkill& kGuildSkillData = mit->second;
 
 		if( kGuildSkillData.m_iSkillCSPoint > 0 )

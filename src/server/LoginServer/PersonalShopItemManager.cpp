@@ -245,7 +245,7 @@ void KPersonalShopItemManager::UpdateSellItemBackupDataList( IN const std::vecto
 	}
 }
 
-bool KPersonalShopItemManager::PrepareForBuyItem( IN const UidType iHostUnitUID, IN const char cPersonalShopType, IN const KERM_BUY_PERSONAL_SHOP_ITEM_REQ& kReq, OUT KDBE_BUY_PSHOP_AGENCY_ITEM_REQ& kResult )
+bool KPersonalShopItemManager::PrepareForBuyItem( IN const UidType /*iHostUnitUID*/, IN const char cPersonalShopType, IN const KERM_BUY_PERSONAL_SHOP_ITEM_REQ& kReq, OUT KDBE_BUY_PSHOP_AGENCY_ITEM_REQ& kResult )
 {
 	SET_ERROR( NET_OK );
 

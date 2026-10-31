@@ -31,7 +31,7 @@ class KServerCCUManager
 
 public:
 	KServerCCUManager(void);
-	~KServerCCUManager(void);
+	virtual ~KServerCCUManager(void);
 
 	void Tick();
 

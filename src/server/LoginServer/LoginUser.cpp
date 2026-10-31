@@ -1566,19 +1566,9 @@ IMPL_ON_FUNC( ELG_PRESENT_CASH_ITEM_REQ )
 
 	KELG_PRESENT_CASH_ITEM_ACK kPacket;
 
-	// Password check: the hash was Nexon's (AuthCheck_GetHashValue, proprietary AuthCheck.lib), so it always fails
-	{
-		// Password check failed
-		kPacket.m_iOK			   = NetError::ERR_BUY_CASH_ITEM_21;
-		goto end_proc;
-	}
-
-	kPacket.m_iOK				   = NetError::NET_OK;
-	kPacket.m_wstrReceiverNickName = kPacket_.m_wstrReceiverNickName;
-	kPacket.m_wstrMessage		   = kPacket_.m_wstrMessage;
-	kPacket.m_vecPurchaseReqInfo   = kPacket_.m_vecPurchaseReqInfo;
-
-end_proc:
+	// Port: the password was checked against Nexon's hash (AuthCheck_GetHashValue, proprietary AuthCheck.lib),
+	// which is gone, so the check always fails. No US GameServer sends this request.
+	kPacket.m_iOK = NetError::ERR_BUY_CASH_ITEM_21;
 	SendToGSUser( FIRST_SENDER_UID, ELG_PRESENT_CASH_ITEM_ACK, kPacket );
 }
 
@@ -1963,7 +1953,6 @@ IMPL_ON_FUNC( ELG_FRIEND_POSITION_UPDATE_NOT )
     {
         for( sit = kPacket_.m_setFriendUID.begin(); sit != kPacket_.m_setFriendUID.end(); sit++ )
         {
-            bool bExist = false;
             KUserList::KGSUserInfo kGSUserInfo;
             if( GetKLoginSimLayer()->GetGSUserInfoByUnitUID( *sit, kGSUserInfo ) )
             {

@@ -49,7 +49,7 @@ class KAccountBlockManager
 
 public:
 	KAccountBlockManager(void);
-	~KAccountBlockManager(void);
+	virtual ~KAccountBlockManager(void);
 
 	void Tick();
 

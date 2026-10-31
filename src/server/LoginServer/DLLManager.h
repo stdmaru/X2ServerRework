@@ -18,7 +18,7 @@ class KDLLManager
 
 public:
 	KDLLManager(void);
-	~KDLLManager(void);
+	virtual ~KDLLManager(void);
 
 	void Tick();
 	void OnServerReadyComplete();

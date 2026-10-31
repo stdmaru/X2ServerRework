@@ -71,13 +71,13 @@ void KPersonalShopItem::SetPShopAgencyItemUID( IN const UidType iItemUID )
 	m_kSellItemInfo.m_kInventoryItemInfo.m_iItemUID = iItemUID;
 }
 
-bool KPersonalShopItem::BuyItem( IN const char cPersonalShopType,
+bool KPersonalShopItem::BuyItem( IN const char /*cPersonalShopType*/,
 								 IN const int iBuyQuantity,
 								 OUT int& iSellUnitEDIn,
 								 OUT int& iPriceUnitEDOUT,
 								 OUT int& iPriceCommissionED,
 								 OUT KInventoryItemInfo& kPriceIntemInfoIN,
-								 OUT KSellPShopItemDBUpdateInfo& kSellItemDBUpdateInfo )
+								 OUT KSellPShopItemDBUpdateInfo& /*kSellItemDBUpdateInfo*/ )
 {
 	if( IsPShopAgencyItemUID() == false )
 	{
@@ -132,7 +132,6 @@ bool KPersonalShopItem::BuyItem( IN const char cPersonalShopType,
 	m_iWaitForConfirmSellCommisionED = iiSellCommissionED;
 
 	// 판매되고 있는 아이템 수량을 깎는다!
-	const int iBeforeQuantity = GetQuantity();
 	m_kSellItemInfo.m_kInventoryItemInfo.m_kItemInfo.m_iQuantity -= iBuyQuantity;
 	LIF( m_kSellItemInfo.m_kInventoryItemInfo.m_kItemInfo.m_iQuantity >= 0 );
 

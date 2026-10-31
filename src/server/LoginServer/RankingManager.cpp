@@ -477,7 +477,7 @@ bool KRankingManager::CheckRefreshTimeFileBackup()
 		CStringW cstrRankingType;
 		cstrRankingType.Format( L"RANKING_TYPE_%d", mit->first );
 
-		memset( buff, 0, MAX_PATH );
+		memset( buff, 0, sizeof( buff ) );
 
 		::GetPrivateProfileStringW( L"Ranking Refresh Time", cstrRankingType.GetBuffer(), 0, buff, MAX_PATH, wstrFilePath.c_str() );
 

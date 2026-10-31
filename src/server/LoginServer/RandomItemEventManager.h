@@ -37,7 +37,7 @@ class KRandomItemEventManager
 
 public:
 	KRandomItemEventManager(void);
-	~KRandomItemEventManager(void);
+	virtual ~KRandomItemEventManager(void);
 
 	void Init();
 	void UpdateEventInfo( IN const std::vector< KTimeOpenRandomItemEventInfo >& vecEventInfo, IN const std::set< UidType >& setGetRewardUserUIDList );

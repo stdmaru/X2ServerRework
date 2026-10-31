@@ -45,7 +45,7 @@ class KGuildBoardManager
 
 public:
 	KGuildBoardManager(void);
-	~KGuildBoardManager(void);
+	virtual ~KGuildBoardManager(void);
 
 	void Init();
 	void UpdateGuildBoardInfo( IN const KDBE_GET_GUILD_BOARD_INFO_ACK& kInfo );

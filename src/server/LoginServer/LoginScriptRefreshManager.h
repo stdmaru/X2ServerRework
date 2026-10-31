@@ -28,6 +28,7 @@ public:
 	virtual ~KLoginScriptRefreshManager();
 
 	// derived from KThreadManager
+	using KThreadManager::Init;  // keeps the base overload visible (-Woverloaded-virtual), as in the ChannelServer
 	virtual void Init();
 	virtual KThread* CreateThread();
 

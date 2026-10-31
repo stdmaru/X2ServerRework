@@ -76,8 +76,8 @@ ImplToStringW( KLoginRoomManager )
 
 KLoginRoomManager::KLoginRoomManager()
 :
-m_dfZUTickTime( 0.0 ),
-m_dwNextRoomNumber( 1 )
+m_dwNextRoomNumber( 1 ),
+m_dfZUTickTime( 0.0 )
 {
 }
 
@@ -397,7 +397,7 @@ void KLoginRoomManager::QueueingEventToRoom( const KEventPtr& spEvent_ )
 	spRoom->QueueingEvent( spEvent_ );
 }
 
-void KLoginRoomManager::QueueingToAll( int iRoomType, const KEventPtr& spEvent_ )
+void KLoginRoomManager::QueueingToAll( int /*iRoomType*/, const KEventPtr& spEvent_ )
 {
 	// 빈 방에는 큐잉하지 않는다.
 	std::map< UidType, KLoginBaseRoomPtr >::iterator mitRoom;

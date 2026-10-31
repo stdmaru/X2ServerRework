@@ -1403,7 +1403,7 @@ _IMPL_ON_FUNC( DBE_BUY_PSHOP_AGENCY_ITEM_ACK, KDBE_BUY_PSHOP_AGENCY_ITEM_REQ )
 		kCompleteNot.m_iSellUnitUID			= 0; // 넣을 필요가 없음!
 		kCompleteNot.m_iSellUnitEDIN		= 0; // 넣을 필요가 없음!
 		kCompleteNot.m_iSellCommissionED	= 0; // 넣을 필요가 없음!
-		kCompleteNot.m_kSellIntemInfoOUT;		 // 넣을 필요가 없음!
+		// m_kSellIntemInfoOUT: not needed either
 
 		kCompleteNot.m_iPriceUnitUID		= kPacket_.m_iPriceUnitUID;
 		kCompleteNot.m_iPriceUnitEDOUT		= kPacket_.m_iPriceUnitEDOUT;

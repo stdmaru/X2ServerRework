@@ -15,7 +15,7 @@ class KBuffManager
 
 public:
 	KBuffManager(void);
-	~KBuffManager(void);
+	virtual ~KBuffManager(void);
 
 	// 버프 정보 갱신
 	bool AddUnitBuffInfo( IN const UidType& iUnitUID, IN const std::vector<KBuffInfo>& vecBuffInfo );
