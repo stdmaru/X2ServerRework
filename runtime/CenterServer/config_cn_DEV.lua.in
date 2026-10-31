@@ -1,0 +1,91 @@
+﻿-- lua header. Keep this line: it makes the file be read as UTF-8.
+-- Development configuration of the Center Server (tag DEV: CenterServer DEV <server group id>).
+-- Derived from the production config_cn_US_SERVICE.lua. The @...@ values are filled in by the
+-- x2_run_center target (docs/ferramentas/runtime.md).
+
+-- address this server announces; the DB (Statistics.LServerList.PublicIP) identifies the servers by it --
+SetLocalIP( "@X2_RUN_SERVER_IP@" )
+
+----------     Center Server     ----------
+
+-- time to wait for the DB queue on shutdown --
+Server:SetShutDownWait( 60 * 1000 )  -- 1 minute
+
+
+----------     Center NetLayer     ----------
+
+NetLayer:SetCheckSequenceNum( false ) -- no SequenceNum check between servers
+
+-- PublisherBillingConnectType Flag --
+--[[
+		PBCT_NONE		= 0,
+		PBCT_NORMAL		= 1,	// through a regular manager (TCP, SOAP...)
+		PBCT_DB			= 2,	// through a DB manager
+		PBCT_UNUSUAL	= 3,	// special cases
+--]]
+SimLayer:SetPublisherBillingConnectType (PBCT_NORMAL)
+SimLayer:SetCheckCouponByPublisher ( true )
+
+-- Auth Flag --
+--[[
+AF_INTERNAL       : in-house auth
+AF_GLOBAL_SERVICE : global service (DEB)
+--]]
+SimLayer:SetAuthFlag( AF_GLOBAL_SERVICE )
+
+-- Script File Path (relative to this folder: build/<preset>/run/CenterServer) --
+SimLayer:AddPath( "../ServerResource" ) -- server common
+SimLayer:AddPath( "../ClientScript" ) -- client script, generated from the client data
+
+
+----------     DB Layer     ----------
+
+-- ODBC driver (docs/porte/server-common-db.md); must come before AddDB --
+DBLayer:SetODBCDriver( "@X2_RUN_ODBC_DRIVER@" )
+DBLayer:SetODBCOptions( "@X2_RUN_ODBC_OPTIONS@" )
+
+-- databases --
+--[[
+DC_ACCOUNT : accounts
+DC_GAME    : game
+DC_LOG     : statistics
+--]]
+-- AddDB( DB type, file dsn, thread count, DBConnectionString? )
+-- Production had Game01/Game02 by server group, both pointing to the same Game01 database; SMS was off.
+
+DBLayer:AddDB( DC_ACCOUNT,	'Account.dsn',		10, false )
+DBLayer:AddDB( DC_GAME,		'Game01.dsn',		 5, false )
+DBLayer:AddDB( DC_LOG,		'Statistics.dsn',	10, false )
+
+
+----------     Rooms     ----------
+
+RoomManager:SetNumPvPRoom( 1500 )
+RoomManager:SetNumDungeonRoom( 1500 )
+RoomManager:SetNumSquare( 10 ) -- at least the number of squares set in the DB
+RoomManager:SetNumTrade( 300 )
+RoomManager:SetNumTrainingCenterRoom( 1500 )
+RoomManager:SetNumPersonalShop( 150 )
+RoomManager:SetNumBattleField( 1800 )
+
+-- zombie user check interval --
+RoomManager:SetZUTickTime( 300 )
+RoomManager:SetBattleFieldZUTickTime( 20 )		-- for battle fields
+
+
+----------     Statistics     ----------
+
+StatisticsManager:AddStatistics( SI_RES_STONE, 3600, true )
+StatisticsManager:AddStatistics( SI_LOC_PVP, 3600, false )
+
+
+----------     Log level     ----------
+
+-- log level --
+--[[
+-1 : no logs
+ 0 : cerr, cout
+ 1 : cerr, cwarn, cout
+ 2 : cerr, cwarn, clog, cout
+--]]
+log( 0 )
