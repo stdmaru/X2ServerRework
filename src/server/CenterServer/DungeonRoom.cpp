@@ -1285,8 +1285,8 @@ void KDungeonRoom::CheckDungeonUnitInfoSuccess()
 
 		bool m_bSCHAR1 = false;
 		bool m_bSCHAR2 = false;
-		char m_CheckClass = 0;
-		char m_CheckType = 0;
+		char m_CheckClass;
+		char m_CheckType;
 
 		int m_iRoomUserCnt = m_spRoomUserManager->GetLiveMember();
 
