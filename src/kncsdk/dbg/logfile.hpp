@@ -145,6 +145,8 @@ namespace dbg
 
         // Receives the console rendering of each record (UTF-8, complete lines). The default writes to stdout.
         using console_writer = std::function<void( std::string_view )>;
+        // Receives each record the console takes, structured (the control protocol, T30). Called under the log lock.
+        using record_sink = std::function<void( const entry& )>;
 
         logfile( e_log_mode lm, unsigned short usLevel );
         ~logfile() = default;
@@ -171,6 +173,7 @@ namespace dbg
         static void SetConsoleLogLevel( short sLevel ); // console only; -1 follows the file level again
         static short GetConsoleLogLevel();              // the effective level
         static void SetConsoleWriter( console_writer writer, bool bColor );    // empty: back to stdout
+        static void SetRecordSink( record_sink sink );                          // empty: none
         static void SetFileNameAtTime( bool bFileNameAtTime );   // true: one file per run under log/
         static void SetLogFileTitle( const wchar_t* szFileTitle );
         static const char* GetLogFileName();
@@ -178,6 +181,8 @@ namespace dbg
 
         // Console rendering of a record (empty when it has nothing to show); exposed for the tests.
         static std::string RenderConsole( const entry& e, bool color );
+        // One JSON line (no newline): {"type":"log","time":...,"level":...,"message":...,"fields":[...]} (docs/porte/kncsdk.md).
+        static std::string RenderJson( const entry& e );
 
     private:
         friend class record;

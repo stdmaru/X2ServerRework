@@ -431,6 +431,7 @@ struct Terminal::Impl
 
     // output hook
     bool hooked = false;
+    std::function<void(std::string_view)> outputHandler;    // under mutex
     std::thread pump;
 
 #if defined(_WIN32)
@@ -455,7 +456,21 @@ struct Terminal::Impl
     void StartHook();
     void StopHook();
     void Redraw();
+    void Output(std::string_view text);
 };
+
+void Terminal::Impl::Output(std::string_view text)
+{
+    std::function<void(std::string_view)> handler;
+    {
+        std::lock_guard lock(mutex);
+        handler = outputHandler;
+    }
+    if (handler)
+        handler(text);
+    else
+        owner->Write(text);
+}
 
 void Terminal::Impl::RawWrite(std::string_view text)
 {
@@ -633,16 +648,16 @@ void Terminal::Impl::StartHook()
                 pending.append(buffer, static_cast<std::size_t>(n));
                 const std::size_t end = pending.rfind('\n');
                 if (end != std::string::npos) {
-                    owner->Write(std::string_view(pending).substr(0, end + 1));
+                    Output(std::string_view(pending).substr(0, end + 1));
                     pending.erase(0, end + 1);
                 }
             } else if (!pending.empty()) {
-                owner->Write(pending);
+                Output(pending);
                 pending.clear();
             }
         }
         if (!pending.empty())
-            owner->Write(pending);
+            Output(pending);
     });
 }
 
@@ -689,7 +704,7 @@ Terminal::Terminal(Options options)
     d.in = ::GetStdHandle(STD_INPUT_HANDLE);
     d.out = ::GetStdHandle(STD_OUTPUT_HANDLE);
     DWORD outMode = 0;
-    d.interactive = ::GetConsoleMode(d.in, &d.savedInMode) && ::GetConsoleMode(d.out, &outMode);
+    d.interactive = !options.machine && ::GetConsoleMode(d.in, &d.savedInMode) && ::GetConsoleMode(d.out, &outMode);
     if (d.interactive) {
         // Keys arrive as text and VT sequences (the same decoder as elsewhere); Ctrl+C is a key, not a signal.
         const DWORD mode = (d.savedInMode & ~(ENABLE_LINE_INPUT | ENABLE_ECHO_INPUT | ENABLE_PROCESSED_INPUT |
@@ -701,7 +716,7 @@ Terminal::Terminal(Options options)
         d.savedTitle = title;
     }
 #else
-    d.interactive = ::isatty(STDIN_FILENO) && ::isatty(STDOUT_FILENO);
+    d.interactive = !options.machine && ::isatty(STDIN_FILENO) && ::isatty(STDOUT_FILENO);
     if (d.interactive && ::tcgetattr(STDIN_FILENO, &g_savedTermios) == 0) {
         struct termios raw = g_savedTermios;
         // No echo, no line buffering, no signal keys (Ctrl+C asks first); output processing stays ("\n" -> "\r\n").
@@ -719,7 +734,7 @@ Terminal::Terminal(Options options)
         d.interactive = false;
     }
 #endif
-    if (d.interactive && options.hookOutput)
+    if ((d.interactive && options.hookOutput) || options.machine)
         d.StartHook();
 }
 
@@ -783,6 +798,12 @@ void Terminal::SetTitle(const std::string& title)
 #else
     d.RawWrite("\x1b]0;" + title + "\x07");
 #endif
+}
+
+void Terminal::SetOutputHandler(std::function<void(std::string_view)> handler)
+{
+    std::lock_guard lock(m_impl->mutex);
+    m_impl->outputHandler = std::move(handler);
 }
 
 void Terminal::SetPrompt(std::string prompt)

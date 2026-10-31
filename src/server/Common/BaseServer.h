@@ -1,6 +1,7 @@
 #pragma once
 
 #include <KncLua.h>
+#include <ServerConsole.h>
 #include <atomic>
 #include <memory>
 #include <type_traits>
@@ -71,9 +72,8 @@ public:
 	virtual bool Init();
     virtual void RegToLua();
     virtual void Run( bool bRunInterpreter );       // console: runs its own interpreter; window: ignored.
-	// Port: the terminal (T15) is opened by KServerMain before Init, with the window title ("<title>_Loading"/"_Ready");
-	// none in service mode.
-	void SetTerminal( x2::platform::Terminal* pkTerminal, const std::string& strTitle ) { m_pkTerminal = pkTerminal; m_strTerminalTitle = strTitle; }
+	// Port: the console (terminal and control socket, T15/T30) is opened by KServerMain before Init.
+	void SetConsole( KServerConsole* pkConsole ) { m_pkConsole = pkConsole; }
     virtual void ShutDown();
     virtual bool DestroyAllSession() = 0;           // 접속중인 세션의 종료.
     //virtual void WriteServerInfoToDB();
@@ -208,8 +208,7 @@ public:
 	// server loading state
 	bool										m_bServerReady;
 
-	x2::platform::Terminal*						m_pkTerminal = nullptr;
-	std::string									m_strTerminalTitle;
+	KServerConsole*								m_pkConsole = nullptr;
 
 	//{{ 2013. 01. 17	최육사	서버간 통신 사설IP 적용
 	std::wstring								m_wstrPublicIP;

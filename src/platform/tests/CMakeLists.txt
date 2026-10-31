@@ -1,5 +1,6 @@
 add_executable(x2_platform_tests
     main.cpp
+    test_control.cpp
     test_crt.cpp
     test_d3dx_math.cpp
     test_net_io.cpp

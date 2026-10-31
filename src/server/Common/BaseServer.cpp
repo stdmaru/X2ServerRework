@@ -280,12 +280,10 @@ void KBaseServer::Run( bool bRunInterpreter_ )
     if( !bRunInterpreter_ )
         return;
 
-    LuaPromptOptions kOptions;
-    kOptions.terminal = m_pkTerminal;
-    kOptions.title = m_strTerminalTitle;
-    kOptions.ready = [this]() { return GetServerReady(); };
-    kOptions.noStdin = m_pkTerminal == nullptr;
-    lua_interpreter( g_pLua, kOptions );
+    if( m_pkConsole )
+        m_pkConsole->Run( g_pLua, [this]() { return GetServerReady(); } );
+    else
+        lua_interpreter( g_pLua );
 }
 
 void KBaseServer::ShutDown()

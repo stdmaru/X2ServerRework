@@ -1,7 +1,9 @@
 // Manual test of the server terminal (T15): the Lua prompt of the servers, with a log line every 2 s from another
 // thread (it must not break the line being typed) and the title going from _Loading to _Ready after 3 s.
-//   x2_terminal_demo [--no-stdin]
+// Its control socket is "TerminalDemo" (x2ctl attach TerminalDemo).
+//   x2_terminal_demo [--no-stdin | --machine]
 #include "KncLua.h"
+#include "ServerConsole.h"
 #include "dbg/dbg.hpp"
 #include "x2/platform/console.h"
 
@@ -28,11 +30,17 @@ int main(int argc, char* argv[])
         }
     });
 
-    LuaPromptOptions options;
-    options.title = "TerminalDemo";
-    options.ready = [start] { return std::chrono::steady_clock::now() - start > std::chrono::seconds(3); };
-    options.noStdin = argc > 1 && std::strcmp(argv[1], "--no-stdin") == 0;
-    lua_interpreter(L, options);
+    KServerConsole::Options options;
+    options.name = "TerminalDemo";
+    options.control = "TerminalDemo";
+    for (int i = 1; i < argc; ++i) {
+        options.noStdin = options.noStdin || std::strcmp(argv[i], "--no-stdin") == 0;
+        options.machine = options.machine || std::strcmp(argv[i], "--machine") == 0;
+    }
+    {
+        KServerConsole console(options);
+        console.Run(L, [start] { return std::chrono::steady_clock::now() - start > std::chrono::seconds(3); });
+    }
 
     running = false;
     ticker.join();

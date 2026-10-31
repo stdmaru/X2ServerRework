@@ -98,6 +98,9 @@ public:
     struct Options
     {
         bool hookOutput = true;     // interactive only: stdout/stderr through the pipe
+        // For a program reading stdout (T30): never interactive, stdout/stderr always through the pipe, and Write
+        // goes alone to the real stdout, so that it carries only what the program writes there.
+        bool machine = false;
     };
 
     explicit Terminal(Options options);
@@ -112,6 +115,8 @@ public:
     // Thread-safe. Complete lines (a missing final newline is added); printed above the prompt.
     void Write(std::string_view text);
     void SetTitle(const std::string& title);
+    // What the program writes to stdout/stderr while it is hooked, by lines; by default it is Write.
+    void SetOutputHandler(std::function<void(std::string_view)> handler);
     void SetPrompt(std::string prompt);
 
     // Waits for a line, calling `idle` about every 100 ms. nullopt: exit confirmed (Ctrl+C / Ctrl+D, then y),

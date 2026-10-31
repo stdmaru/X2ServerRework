@@ -2,10 +2,12 @@
 
 add_library(x2_platform STATIC
     src/console.cpp
+    src/control.cpp
     src/crt_posix.cpp
     src/d3dx_math.cpp
     src/debug.cpp
     src/ini.cpp
+    src/json.cpp
     src/net_io.cpp
     src/string.cpp
     src/terminal.cpp

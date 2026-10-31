@@ -197,3 +197,32 @@ TEST_CASE("console level is independent of the file level")
     dbg::logfile::SetLogLevel( 2 );
     dbg::logfile::SetConsoleWriter( {}, false );
 }
+
+TEST_CASE("records go to the record sink and render as JSON")
+{
+    dbg::entry e;
+    e.mode = dbg::lm_warning;
+    e.time = CTime( 2026, 10, 31, 12, 34, 56 );
+    e.file = L"/src/User.cpp";
+    e.line = 10;
+    e.Header( { L"cwarn", L"OnLogin", true } );
+    e.Append( L"user \"x\" not found" );
+    e.EndLine();
+    e.Field( L"wstrNickName" );
+    e.Append( L"한글" );
+    e.EndLine();
+    e.Append( L"    reason : timeout\n" );
+    CHECK(dbg::logfile::RenderJson( e ) ==
+          "{\"type\":\"log\",\"time\":\"2026-10-31 12:34:56\",\"level\":\"warn\",\"stream\":\"cwarn\",\"func\":\"OnLogin\","
+          "\"file\":\"/src/User.cpp\",\"line\":10,\"message\":\"user \\\"x\\\" not found\","
+          "\"fields\":[{\"name\":\"wstrNickName\",\"value\":\"\xED\x95\x9C\xEA\xB8\x80\"}],\"text\":[\"    reason : timeout\"]}");
+
+    std::vector<std::string> sunk;
+    dbg::logfile::SetLogLevel( 2 );
+    dbg::logfile::SetRecordSink( [&sunk]( const dbg::entry& r ) { sunk.push_back( dbg::logfile::RenderJson( r ) ); } );
+    START_LOG( clog, L"sink-marker" ) << BUILD_LOG( e.line );
+    dbg::logfile::SetRecordSink( {} );
+    REQUIRE(sunk.size() == 1);
+    CHECK(sunk[0].find( "\"message\":\"sink-marker\"" ) != std::string::npos);
+    CHECK(sunk[0].find( "{\"name\":\"e.line\",\"value\":\"10\"}" ) != std::string::npos);
+}

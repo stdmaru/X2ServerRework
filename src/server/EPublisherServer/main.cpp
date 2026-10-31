@@ -1,11 +1,12 @@
-// EPublisherServer <tag> [--no-stdin]: reads config_ep_<tag>.lua, connects to the Account database and serves the
-// EPublisher SOAP service. Like the other servers, the terminal is a Lua prompt (T15); --no-stdin is service mode.
+// EPublisherServer <tag>: reads config_ep_<tag>.lua, connects to the Account database and serves the EPublisher
+// SOAP service. The console and its options are the other servers' (KServerConsole, T15/T30).
 #include "EPublisherServer.h"
 
 #include "x2/platform/console.h"
 #include "x2/platform/unicode.h"
 
 #include <KncLua.h>
+#include <ServerConsole.h>
 #include <dbg/dbg.hpp>
 
 #include <cstdio>
@@ -19,17 +20,28 @@ int main(int argc, char* argv[])
     x2::platform::InitConsole();
 
     std::string tag;
-    bool noStdin = false;
+    KServerConsole::Options consoleOptions;
+    consoleOptions.name = "EPublisherServer";
+    consoleOptions.control = consoleOptions.name;
     for (int i = 1; i < argc; ++i) {
-        if (std::string(argv[i]) == "--no-stdin")
-            noStdin = true;
+        const std::string arg = argv[i];
+        if (arg == "--no-stdin")
+            consoleOptions.noStdin = true;
+        else if (arg == "--machine")
+            consoleOptions.machine = true;
+        else if (arg == "--no-control")
+            consoleOptions.control.clear();
+        else if (arg.rfind("--control=", 0) == 0)
+            consoleOptions.control = arg.substr(10);
         else if (tag.empty())
-            tag = argv[i];
+            tag = arg;
     }
     if (tag.empty()) {
-        std::fputs("usage: EPublisherServer <tag> [--no-stdin]   (reads config_ep_<tag>.lua)\n", stderr);
+        std::fputs("usage: EPublisherServer <tag> [--no-stdin | --machine] [--control=<name> | --no-control]\n"
+                   "       (reads config_ep_<tag>.lua)\n", stderr);
         return 1;
     }
+    KServerConsole console(consoleOptions);
 
     OdbcAccountStore store;
     EPublisherServer server(store);
@@ -61,11 +73,7 @@ int main(int argc, char* argv[])
     }
 
     std::thread accepter([&server] { server.Run(); });
-    LuaPromptOptions options;
-    options.title = "EPublisherServer";
-    options.ready = [] { return true; };   // listening already
-    options.noStdin = noStdin;
-    lua_interpreter(L, options);
+    console.Run(L, [] { return true; });   // listening already
     server.Stop();
     accepter.join();
     lua_close(L);

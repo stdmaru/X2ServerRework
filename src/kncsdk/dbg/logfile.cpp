@@ -8,6 +8,7 @@
 #include <mutex>
 
 #include "x2/platform/console.h"
+#include "x2/platform/json.h"
 
 namespace dbg
 {
@@ -40,6 +41,7 @@ namespace dbg
             std::atomic<short>  consoleLevel{ -1 }; // -1: same as the file
             bool            colorConsole = x2::platform::IsColorTerminal( stdout );
             logfile::console_writer consoleWriter;
+            logfile::record_sink    recordSink;
 
             short ConsoleLevel() const { const short c = consoleLevel; return c < 0 ? level.load() : c; }
         };
@@ -351,6 +353,8 @@ namespace dbg
         }
         if( e.level <= out.ConsoleLevel() )
         {
+            if( out.recordSink )
+                out.recordSink( e );
             const std::string console = RenderConsole( e, out.colorConsole );
             if( console.empty() )
                 return;
@@ -480,6 +484,87 @@ namespace dbg
         std::lock_guard lock( out.mutex );
         out.colorConsole = writer ? bColor : x2::platform::IsColorTerminal( stdout );
         out.consoleWriter = std::move( writer );
+    }
+
+    void logfile::SetRecordSink( record_sink sink )
+    {
+        Output& out = Out();
+        std::lock_guard lock( out.mutex );
+        out.recordSink = std::move( sink );
+    }
+
+    std::string logfile::RenderJson( const entry& e )
+    {
+        using x2::platform::AppendJsonString;
+        auto narrow = []( std::wstring_view str ) { return KncUtil::toNarrowString( std::wstring( TrimRight( str ) ) ); };
+
+        static const char* const kStreams[lm_number_of_modes] = { "cout", "cerr", "cwarn", "clog", "cout2", "cerr2", "cwarn2", "clog2" };
+        const char* level = "note";
+        switch( e.mode )
+        {
+        case lm_error:   case lm_error2:   level = "error"; break;
+        case lm_warning: case lm_warning2: level = "warn";  break;
+        case lm_info:    case lm_info2:    level = "info";  break;
+        default: break;
+        }
+
+        // The message is the header's line (or the first line of a record without one); the other lines are text
+        const entry::line_t* message = nullptr;
+        for( const entry::line_t& l : e.lines )
+            if( l.kind == entry::line_t::message || ( l.kind == entry::line_t::text && !TrimRight( l.value ).empty() ) )
+            {
+                message = &l;
+                break;
+            }
+
+        std::string out = "{\"type\":\"log\",\"time\":";
+        AppendJsonString( out, KncUtil::toNarrowString( e.time.Format( kTimeFormat ).GetString() ) );
+        out += ",\"level\":\"";
+        out += level;
+        out += "\",\"stream\":\"";
+        out += kStreams[e.mode < lm_number_of_modes ? e.mode : 0];
+        out += '"';
+        if( e.func )
+        {
+            out += ",\"func\":";
+            AppendJsonString( out, KncUtil::toNarrowString( e.func ) );
+        }
+        if( e.file )
+        {
+            out += ",\"file\":";
+            AppendJsonString( out, KncUtil::toNarrowString( e.file ) );
+            out += ",\"line\":" + std::to_string( e.line );
+        }
+        out += ",\"message\":";
+        AppendJsonString( out, message ? narrow( message->value ) : std::string() );
+        out += ",\"fields\":[";
+        bool first = true;
+        for( const entry::line_t& l : e.lines )
+        {
+            if( l.kind != entry::line_t::field )
+                continue;
+            if( !first )
+                out += ',';
+            first = false;
+            out += "{\"name\":";
+            AppendJsonString( out, narrow( l.name ) );
+            out += ",\"value\":";
+            AppendJsonString( out, narrow( l.value ) );
+            out += '}';
+        }
+        out += "],\"text\":[";
+        first = true;
+        for( const entry::line_t& l : e.lines )
+        {
+            if( &l == message || l.kind != entry::line_t::text || TrimRight( l.value ).empty() )
+                continue;
+            if( !first )
+                out += ',';
+            first = false;
+            AppendJsonString( out, narrow( l.value ) );
+        }
+        out += "]}";
+        return out;
     }
 
     void logfile::SetFileNameAtTime( bool bFileNameAtTime )
