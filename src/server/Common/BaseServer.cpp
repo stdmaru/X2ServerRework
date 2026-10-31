@@ -105,6 +105,7 @@ void KBaseServer::RegToLua()
 	// global function set
 	lua_tinker::def( g_pLua, "log",			&dbg::logfile::SetLogLevel );
 	lua_tinker::def( g_pLua, "changelog",		&dbg::logfile::CloseFile );
+	lua_tinker::def( g_pLua, "consolelog",		&dbg::logfile::SetConsoleLogLevel );	// port: console level of its own (T16)
 	lua_tinker::def( g_pLua, "GetLocalIP",	&NetCommon::GetLocalIP );
 	lua_tinker::def( g_pLua, "SetLocalIP",	&NetCommon::SetLocalIP );
 

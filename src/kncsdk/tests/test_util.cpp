@@ -101,3 +101,21 @@ TEST_CASE("singleton and ToString macros")
     KToStringSample().ToString(os);
     CHECK(os.str() == L"    m_iValue : 7\n");
 }
+
+TEST_CASE("NumberShuffle makes the same picks as the original erase loop")
+{
+    const std::vector<long long> source = { 10, 20, 30, 40, 50, 60, 70 };
+    for( unsigned seed = 1; seed < 20; ++seed )
+    {
+        srand( seed );
+        std::vector<long long> left = source, expected;
+        while( !left.empty() )
+        {
+            const int r = rand() % static_cast<int>( left.size() );
+            expected.push_back( left[r] );
+            left.erase( left.begin() + r );
+        }
+        srand( seed );
+        CHECK( KncUtil::NumberShuffle( source ) == expected );
+    }
+}

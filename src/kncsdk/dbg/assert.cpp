@@ -30,8 +30,12 @@ namespace dbg
         m_filename = file;
         m_line = line;
 
-        cerr << L"Assert failure in ";
-        cerr.line_file_func( line, file, func ) << L". Expr is \"" << expr << L"\"" << endl;
+        std::wstring fileName = file ? file : L"";
+        const size_t pos = fileName.find_last_of( L"\\/" );
+        if( pos != std::wstring::npos )
+            fileName = fileName.substr( pos + 1 );
+        cerr << L"Assert failure in " << func << L"(" << line << L")::" << fileName
+             << L". Expr is \"" << expr << L"\"" << endl;
 
         return *this;
     }

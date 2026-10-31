@@ -1,10 +1,11 @@
 #include "logfile.hpp"
 
+#include <algorithm>
+#include <atomic>
 #include <cstdio>
 #include <filesystem>
 #include <fstream>
 #include <mutex>
-#include <sstream>
 
 #include "x2/platform/console.h"
 
@@ -23,8 +24,10 @@ namespace dbg
     namespace
     {
         const char* const kDefaultFileName = "log.log";
+        const wchar_t* const kTimeFormat = L"%Y-%m-%d %H:%M:%S";
+        const wchar_t* const kTab = L"    ";
 
-        // Shared output state. Function-local statics: logging may happen during static initialization.
+        // Shared output state. Function-local static: logging may happen during static initialization.
         struct Output
         {
             std::mutex      mutex;
@@ -33,32 +36,18 @@ namespace dbg
             bool            fileNameAtTime = false;
             std::string     fileName = "Logfile Not Initialize Yet.";
             std::wstring    title = L"Log";
-            short           level = 2;
+            std::atomic<short>  level{ 2 };         // file
+            std::atomic<short>  consoleLevel{ -1 }; // -1: same as the file
             bool            colorConsole = x2::platform::IsColorTerminal( stdout );
+            logfile::console_writer consoleWriter;
+
+            short ConsoleLevel() const { const short c = consoleLevel; return c < 0 ? level.load() : c; }
         };
 
         Output& Out()
         {
             static Output out;
             return out;
-        }
-
-        // Pending line of the current thread (one statement may span several logfile objects only through
-        // manipulators, which always act on the same object).
-        std::wostringstream& Pending()
-        {
-            thread_local std::wostringstream stm;
-            return stm;
-        }
-
-        const char* ConsoleColor( e_log_mode mode )
-        {
-            switch( mode )
-            {
-            case lm_error:   case lm_error2:   return "\x1b[31m";
-            case lm_warning: case lm_warning2: return "\x1b[33m";
-            default:                           return nullptr;
-            }
         }
 
         // with Out().mutex held
@@ -90,26 +79,242 @@ namespace dbg
             }
         }
 
-        void Write( e_log_mode mode, const std::string& line )
+        // Console tag and color of each mode (the "2" streams look like their base ones).
+        struct ConsoleStyle { const char* tag; const char* color; };
+
+        ConsoleStyle StyleOf( e_log_mode mode )
         {
-            Output& out = Out();
-            std::lock_guard lock( out.mutex );
-            if( !out.opened )
-                OpenFile( out );
-            if( out.file )
+            switch( mode )
             {
-                out.file << line;
-                out.file.flush();
+            case lm_error:   case lm_error2:   return { "ERROR", "\x1b[1;31m" };
+            case lm_warning: case lm_warning2: return { "WARN ", "\x1b[33m" };
+            case lm_info:    case lm_info2:    return { "INFO ", "\x1b[36m" };
+            default:                           return { "NOTE ", "\x1b[32m" };
             }
-            const char* color = out.colorConsole ? ConsoleColor( mode ) : nullptr;
-            if( color )
-                std::fputs( color, stdout );
-            std::fputs( line.c_str(), stdout );
-            if( color )
-                std::fputs( "\x1b[0m", stdout );
-            std::fflush( stdout );
+        }
+
+        std::wstring_view TrimLeft( std::wstring_view str )
+        {
+            const size_t pos = str.find_first_not_of( L" \t" );
+            return pos == std::wstring_view::npos ? std::wstring_view() : str.substr( pos );
+        }
+
+        std::wstring_view TrimRight( std::wstring_view str )
+        {
+            const size_t pos = str.find_last_not_of( L" \t\r" );
+            return pos == std::wstring_view::npos ? std::wstring_view() : str.substr( 0, pos + 1 );
+        }
+
+        void AppendUtf8( std::string& out, std::wstring_view str )
+        {
+            out += KncUtil::toNarrowString( std::wstring( str ) );
         }
     }
+
+    //////////////////////////////////////////////////////////////////////////
+    // entry
+
+    void entry::Append( std::wstring_view str )
+    {
+        text += str;
+        for( ;; )
+        {
+            const size_t pos = str.find( L'\n' );
+            std::wstring_view piece = str.substr( 0, pos );
+            if( !piece.empty() && piece.back() == L'\r' )
+                piece.remove_suffix( 1 );
+            if( !piece.empty() )
+            {
+                if( !open )
+                {
+                    lines.push_back( { line_t::text, {}, {} } );
+                    open = true;
+                }
+                lines.back().value += piece;
+            }
+            if( pos == std::wstring_view::npos )
+                break;
+            open = false;
+            str.remove_prefix( pos + 1 );
+        }
+    }
+
+    void entry::EndLine()
+    {
+        text += L'\n';
+        open = false;
+    }
+
+    void entry::Header( const header_t& h )
+    {
+        if( h.type )
+        {
+            text += h.type;
+            text += L" : ";
+            type = h.type;
+        }
+        if( h.func )
+        {
+            text += h.func;
+            func = h.func;
+        }
+        text += L"(), ";
+        if( h.time )
+        {
+            text += time.Format( kTimeFormat ).GetString();
+            text += L", ";
+        }
+        lines.push_back( { line_t::message, {}, {} } );
+        open = true;
+    }
+
+    void entry::Field( const wchar_t* name )
+    {
+        text += kTab;
+        text += name;
+        text += L" : ";
+        lines.push_back( { line_t::field, name, {} } );
+        open = true;
+    }
+
+    void entry::Location( const wchar_t* fileName, unsigned int lineNum )
+    {
+        text += kTab;
+        text += L"(";
+        text += fileName ? fileName : L"";
+        text += L", ";
+        text += std::to_wstring( lineNum );
+        text += L")\n";
+        open = false;
+        if( !file )
+        {
+            file = fileName;
+            line = lineNum;
+        }
+    }
+
+    void entry::Break()
+    {
+        if( !text.empty() && text.back() != L'\n' )
+            text += L'\n';
+        text += L"-----------------------------------------------\n";
+        lines.push_back( { line_t::separator, {}, {} } );
+        open = false;
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+    // record
+
+    record::record( logfile& log )
+    {
+        if( log.Enabled() )
+        {
+            m_entry = std::make_unique<entry>();
+            m_entry->mode = log.m_mode;
+            m_entry->level = log.m_sLevel;
+            m_entry->time = CTime::GetCurrentTime();
+        }
+    }
+
+    record::record( logfile& log, const wchar_t* type, const wchar_t* func, const wchar_t* file, unsigned int line )
+        : record( log )
+    {
+        if( m_entry )
+        {
+            m_entry->file = file;
+            m_entry->line = line;
+            m_entry->Header( { type, func, true } );
+        }
+    }
+
+    record::~record()
+    {
+        if( m_entry )
+            logfile::Write( *m_entry );
+    }
+
+    std::wostream* record::BeginValue()
+    {
+        if( !m_entry->fmt )
+            m_entry->fmt.emplace();
+        m_entry->fmt->str( std::wstring() );
+        return &*m_entry->fmt;
+    }
+
+    void record::EndValue()
+    {
+        m_entry->Append( m_entry->fmt->view() );
+    }
+
+    record& record::operator << ( const wchar_t* sz )
+    {
+        if( m_entry )
+            m_entry->Append( sz ? sz : L"(null)" );
+        return *this;
+    }
+
+    record& record::operator << ( const char* sz )
+    {
+        if( m_entry )
+            m_entry->Append( sz ? KncUtil::toWideString( sz ) : std::wstring( L"(null)" ) );
+        return *this;
+    }
+
+    record& record::operator << ( const std::wstring& str )
+    {
+        if( m_entry )
+            m_entry->Append( str );
+        return *this;
+    }
+
+    record& record::operator << ( manip_t m )
+    {
+        if( !m_entry )
+            return *this;
+        switch( m.kind )
+        {
+        case manip_t::endl:
+            m_entry->EndLine();
+            break;
+        case manip_t::endp:
+            m_entry->EndLine();
+            m_entry->EndLine();
+            break;
+        case manip_t::tab:
+            m_entry->text += kTab;
+            if( m_entry->open )
+                m_entry->lines.back().value += kTab;
+            break;
+        case manip_t::lbreak:
+            m_entry->Break();
+            break;
+        }
+        return *this;
+    }
+
+    record& record::operator << ( const header_t& h )
+    {
+        if( m_entry )
+            m_entry->Header( h );
+        return *this;
+    }
+
+    record& record::operator << ( const field_t& f )
+    {
+        if( m_entry )
+            m_entry->Field( f.name );
+        return *this;
+    }
+
+    record& record::operator << ( const location_t& l )
+    {
+        if( m_entry )
+            m_entry->Location( l.file, l.line );
+        return *this;
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+    // logfile
 
     logfile::logfile( e_log_mode lm, unsigned short sLevel )
         : m_mode( lm ), m_sLevel( static_cast<short>( sLevel ) )
@@ -118,45 +323,128 @@ namespace dbg
 
     bool logfile::Enabled() const
     {
-        return m_sLevel <= Out().level;
+        const Output& out = Out();
+        return m_sLevel <= std::max( out.level.load(), out.ConsoleLevel() );
     }
 
-    std::wostream& logfile::Stream()
+    record logfile::Start( const wchar_t* type, const wchar_t* func, const wchar_t* file, unsigned int line )
     {
-        return Pending();
+        LogStat( func, file, static_cast<int>( line ) );
+        return record( *this, type, func, file, line );
     }
 
-    void logfile::Flush( bool bBlankLine )
+    void logfile::Write( entry& e )
     {
-        std::wostringstream& stm = Pending();
-        std::string line = KncUtil::toNarrowString( stm.str() );
-        line += bBlankLine ? "\n\n" : "\n";
-        stm.str( std::wstring() );
-        stm.clear();
-        Write( m_mode, line );
+        Output& out = Out();
+        std::lock_guard lock( out.mutex );
+        if( e.level <= out.level )
+        {
+            if( !out.opened )
+                OpenFile( out );
+            if( out.file )
+            {
+                if( e.text.empty() || e.text.back() != L'\n' )
+                    e.text += L'\n';
+                out.file << KncUtil::toNarrowString( e.text );
+                out.file.flush();
+            }
+        }
+        if( e.level <= out.ConsoleLevel() )
+        {
+            const std::string console = RenderConsole( e, out.colorConsole );
+            if( console.empty() )
+                return;
+            if( out.consoleWriter )
+            {
+                out.consoleWriter( console );
+            }
+            else
+            {
+                std::fwrite( console.data(), 1, console.size(), stdout );
+                std::fflush( stdout );
+            }
+        }
     }
 
-    logfile& logfile::operator << ( const wchar_t* sz )
+    // HH:MM:SS LEVEL Function: message
+    //                name  = value
+    //                more text
+    std::string logfile::RenderConsole( const entry& e, bool color )
     {
-        if( Enabled() )
-            Stream() << ( sz ? sz : L"(null)" );
-        return *this;
-    }
+        constexpr size_t kIndent = 15;      // "HH:MM:SS LEVEL "
+        constexpr size_t kMaxNameWidth = 32;
 
-    logfile& logfile::operator << ( const char* sz )
-    {
-        if( Enabled() )
-            Stream() << ( sz ? KncUtil::toWideString( sz ) : std::wstring( L"(null)" ) );
-        return *this;
-    }
+        const char* const dim = color ? "\x1b[2m" : "";
+        const char* const bold = color ? "\x1b[1m" : "";
+        const char* const reset = color ? "\x1b[0m" : "";
 
-    logfile& logfile::line_file_func( const unsigned int line, const wchar_t* file, const wchar_t* func )
-    {
-        std::wstring str = file ? file : L"";
-        const size_t pos = str.find_last_of( L"\\/" );
-        if( pos != std::wstring::npos )
-            str = str.substr( pos + 1 );
-        return *this << func << L"(" << line << L")::" << str;
+        // What the console shows: no separators or blank lines; the message line stays even if empty.
+        std::vector<const entry::line_t*> lines;
+        size_t nameWidth = 0;
+        for( const entry::line_t& l : e.lines )
+        {
+            if( l.kind == entry::line_t::separator )
+                continue;
+            if( l.kind == entry::line_t::text && TrimRight( l.value ).empty() )
+                continue;
+            if( l.kind == entry::line_t::field )
+                nameWidth = std::max( nameWidth, std::min( l.name.size(), kMaxNameWidth ) );
+            lines.push_back( &l );
+        }
+        if( lines.empty() )
+            return {};
+
+        const ConsoleStyle style = StyleOf( e.mode );
+        std::string out;
+        out += dim;
+        out += KncUtil::toNarrowString( e.time.Format( L"%H:%M:%S" ).GetString() );
+        out += reset;
+        out += ' ';
+        if( color )
+            out += style.color;
+        out += style.tag;
+        out += reset;
+        out += ' ';
+
+        bool first = true;
+        for( const entry::line_t* l : lines )
+        {
+            if( !first )
+                out.append( kIndent, ' ' );
+            if( first && e.func )
+            {
+                out += bold;
+                AppendUtf8( out, e.func );
+                out += reset;
+                out += ':';
+                if( !( l->kind == entry::line_t::message && TrimRight( l->value ).empty() ) )
+                    out += ' ';
+            }
+            switch( l->kind )
+            {
+            case entry::line_t::field:
+                out += dim;
+                AppendUtf8( out, l->name );
+                if( l->name.size() < nameWidth )
+                    out.append( nameWidth - l->name.size(), ' ' );
+                out += " =";
+                out += reset;
+                if( !TrimRight( l->value ).empty() )
+                    out += ' ';
+                AppendUtf8( out, TrimRight( l->value ) );
+                break;
+            case entry::line_t::message:
+                AppendUtf8( out, TrimRight( l->value ) );
+                break;
+            default:
+                // raw text keeps its own layout on the first line (dumps, tables); below it, the tab goes
+                AppendUtf8( out, TrimRight( first ? l->value : TrimLeft( l->value ) ) );
+                break;
+            }
+            out += '\n';
+            first = false;
+        }
+        return out;
     }
 
     void logfile::CloseFile()
@@ -169,8 +457,28 @@ namespace dbg
 
     void logfile::SetLogLevel( short sLevel )
     {
-        cout << lbreak << L"Change LogLevel (from " << Out().level << L" to " << sLevel << L" )." << lbreak;
+        cout << lbreak << L"Change LogLevel (from " << Out().level.load() << L" to " << sLevel << L" )." << lbreak;
         Out().level = sLevel;
+    }
+
+    void logfile::SetConsoleLogLevel( short sLevel )
+    {
+        Output& out = Out();
+        cout << L"Change console LogLevel (from " << out.ConsoleLevel() << L" to "
+             << ( sLevel < 0 ? out.level.load() : sLevel ) << L" )." << endl;
+        out.consoleLevel = static_cast<short>( sLevel < 0 ? -1 : sLevel );
+    }
+
+    short logfile::GetConsoleLogLevel()
+    {
+        return Out().ConsoleLevel();
+    }
+
+    void logfile::SetConsoleWriter( console_writer writer )
+    {
+        Output& out = Out();
+        std::lock_guard lock( out.mutex );
+        out.consoleWriter = std::move( writer );
     }
 
     void logfile::SetFileNameAtTime( bool bFileNameAtTime )
@@ -231,33 +539,6 @@ namespace dbg
     {
         KLocker lock( m_csLogStat );
         m_mapLogStat.clear();
-    }
-
-    logfile& endl( logfile& l )
-    {
-        l.Flush( false );
-        return l;
-    }
-
-    logfile& endp( logfile& l )
-    {
-        l.Flush( true );
-        return l;
-    }
-
-    logfile& tab( logfile& l )
-    {
-        l.Stream() << L"    ";
-        return l;
-    }
-
-    logfile& lbreak( logfile& l )
-    {
-        if( !Pending().str().empty() )
-            l.Flush( false );
-        l.Stream() << L"-----------------------------------------------";
-        l.Flush( false );
-        return l;
     }
 
 } // dbg

@@ -9,6 +9,7 @@
 #include "KncMacro.h"
 #include "x2/platform/win32.h"
 
+#include <algorithm>
 #include <cmath>
 #include <cstdlib>
 #include <set>
@@ -77,16 +78,13 @@ std::vector< int > GetRandomNumberList( const int iMaxNum );
 template< class T >
 inline std::vector< T > NumberShuffle( const std::vector< T >& vecSource )
 {
-    std::vector< T > vecDataSource = vecSource;
-    std::vector< T > vecResult;
-    vecResult.reserve( vecDataSource.size() );
-    while( !vecDataSource.empty() )
+    // Same picks as the original (the rand()-th of the elements left, which keep their order), done in place:
+    // the elements left are [i, end). Copying and erasing tripped GCC 15 Release (-Wfree-nonheap-object, false positive).
+    std::vector< T > vecResult = vecSource;
+    for( size_t i = 0; i < vecResult.size(); ++i )
     {
-        const int iRandomRet = static_cast<int>( rand() % static_cast<int>( vecDataSource.size() ) );
-        vecResult.push_back( vecDataSource[iRandomRet] );
-        // same as erase( begin() + iRandomRet ); GCC 15 Release flags the inlined erase (-Wfree-nonheap-object, false positive)
-        std::move( vecDataSource.begin() + iRandomRet + 1, vecDataSource.end(), vecDataSource.begin() + iRandomRet );
-        vecDataSource.pop_back();
+        const size_t iRandomRet = static_cast<size_t>( rand() % static_cast<int>( vecResult.size() - i ) );
+        std::rotate( vecResult.begin() + i, vecResult.begin() + i + iRandomRet, vecResult.begin() + i + iRandomRet + 1 );
     }
     return vecResult;
 }

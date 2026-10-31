@@ -28,7 +28,7 @@ SDK interno, do qual todos os servidores e o cliente dependem. Partes:
 | Compilação Windows MinGW-w64 (GCC 16, UCRT), testes no Wine 11 | ok, sem warnings; `kncsdk_tests` passa (2026-10-29) e `kncsdk_lua_tests` também, com o LuaJIT 2.1 compilado pelo CMake (T21, 2026-10-30) |
 | Compilação Windows (clang-cl, VS 2026) | ok, sem warnings; `kncsdk_tests` e `kncsdk_lua_tests` passam num Windows real (T26, 2026-10-30) |
 | União com `KNCSDK_Client` | feita (`SecureBuffer`, `KCSLockType`), ver abaixo |
-| Testes | 28 casos / 964 asserções (`kncsdk_tests`) + 3 (`kncsdk_lua_tests`), todos passando |
+| Testes | 39 casos / 1.029 asserções (`kncsdk_tests`, contagem de 2026-10-31) + 3 (`kncsdk_lua_tests`), todos passando |
 | Validação contra bytes reais do cliente original | **pendente** (ver Pendências) |
 
 ## Mudanças em relação ao original
@@ -39,7 +39,8 @@ Interface pública (nomes, macros, assinaturas) mantida; mudou o que está lista
 
 | Onde | Mudança | Motivo |
 |---|---|---|
-| `dbg/logfile` | Linhas montadas por thread e gravadas sob lock, em arquivo **texto UTF-8** (`log.log`, ou `log/log_<data>.log`) + console com cor | O original gravava **HTML** de vários threads sem lock (condição de corrida) |
+| `dbg/logfile` | Cada instrução de log monta um **registro** (`dbg::entry`) com os metadados (nível, função, hora, arquivo/linha, campos do `BUILD_LOG`) ao lado do texto, gravado sob lock no fim da instrução. O arquivo, **texto UTF-8** (`log.log`, ou `log/log_<data>.log`), recebe o texto do original sem mudança; o console tem renderização própria (ver [Log](#log-t16)) e nível próprio | O original gravava **HTML** de vários threads sem lock (condição de corrida); o console repetia o texto do arquivo (decisão T16) |
+| `dbg/logfile` | Uma instrução sem `dbg::endl` (`dbg::cerr << L"..." << id;`) termina a linha no arquivo | O original deixava a linha aberta, e o log seguinte (de qualquer thread) colava nela |
 | `dbg/profiler` | Removido | Desligado no original (`TB_USE_PROFILER`), sem uso |
 | `KncUtil` | Strings estreitas são **UTF-8** em todas as plataformas | O original usava a code page ANSI do Windows (`CP_ACP`) |
 | `KncUtil::GetTimeStampByName*` | Data de modificação do executável | O original lia o *link time* do cabeçalho PE |
@@ -50,6 +51,32 @@ Interface pública (nomes, macros, assinaturas) mantida; mudou o que está lista
 | `lua_interpreter` | Novo (`lua_interpreter.cpp`): prompt Lua simples em stdin, usado por `KBaseServer::Run` | O original vinha de um `lua.c` modificado do Lua 5.1.4, que o LuaJIT não traz; o terminal da T15 vai substituí-lo |
 | `LUA_DOFILE` | Era `luaL_dofile`; agora `lua_dofile` (`lua_dofile.cpp`, 2026-10-31). Igual ao `luaL_dofile`, menos para arquivo que passa do limite do LuaJIT de 65.536 constantes numa função (`Item.lua` gerado do cliente, `ArcadeResultTable.lua`): ele é dividido nos comandos do topo (identificador na coluna 0) e as partes, compiladas antes, rodam em ordem, com os números de linha do arquivo nas mensagens. Só divide sem `local` no topo e sem string longa (`[[`); se uma parte não compila, devolve o erro original | O original rodava num Lua 5.1, que aceita 2^18 constantes; o LuaJIT recusava os dois arquivos (T21) |
 | Testes originais (`UnitTest/`) | Removidos, substituídos por doctest | Eram demos (um era cópia dos exemplos do Crypto++) |
+
+### Log (T16)
+
+Feito em 2026-10-31 (`kncsdk/log-structured`). As macros (`dbg.hpp`) mantêm nomes e uso, só mudaram por dentro:
+
+| Macro | Entrega ao logger | Texto no arquivo (igual ao original) |
+|---|---|---|
+| `START_LOG( type, data )` | `logfile::Start`: nível, nome do tipo, função, hora, arquivo e linha; conta o ponto de chamada (`LogStat`) | `type : Função(), AAAA-MM-DD hh:mm:ss, data` |
+| `BUILD_LOG*( x )` | `dbg::field`: um campo (nome = expressão, valor) | `    x : valor` |
+| `END_LOG` | `dbg::location`: arquivo e linha | `    (arquivo, linha)` |
+| `LOG_HEADER_STR`, `_JIF`/`LIF`, `LOG_CONDITION` | `dbg::header`: função (e hora) | `Função(), data, ` / `Função(), in x` |
+
+O primeiro `<<` num `dbg::cout/cerr/cwarn/clog` (ou o `Start`) cria um `dbg::record` temporário, que grava o registro quando a
+instrução termina; se o nível não vai para nenhum destino, nada é formatado. Console, uma linha por registro e os campos alinhados embaixo:
+
+```
+18:44:03 NOTE  SetLanBugOutCheckOption_Lua: 랜선렉 방지 코드: 인자 정보 수정
+               m_bLanBugOutCheck            = false
+               m_byteLanBugOutCheckMaxCount = 0
+```
+
+- Níveis: `ERROR` (`cerr`, vermelho), `WARN` (`cwarn`, amarelo), `INFO` (`clog`, ciano), `NOTE` (`cout`, verde); os `*2` iguais aos de base.
+  Hora e nomes dos campos esmaecidos, função em negrito; sem cor quando a saída não é terminal (`IsColorTerminal`).
+- O console não mostra arquivo/linha, separadores (`lbreak`) nem linhas vazias; texto solto (dumps, tabelas) sai como está.
+- Nível do console: `logfile::SetConsoleLogLevel` (Lua: `consolelog( n )`), independente do `log( n )` do arquivo; `-1` volta a seguir o arquivo, que é o padrão.
+- `logfile::SetConsoleWriter` troca o destino do console (o terminal da T15 usa).
 
 ### Bugs do original corrigidos
 
@@ -84,6 +111,7 @@ Interface pública (nomes, macros, assinaturas) mantida; mudou o que está lista
 - Macros com `L#x`, `classname##::` e `Si##Name##()`, que só funcionavam no MSVC: reescritas (`WIDENE(x)` = `L ## #x`).
 - `RTTI.h`: `DynamicCast` devolvia `false` como `void*` (agora `nullptr`) e `L#classname` virou `L ## #classname`.
 - `logfile.hpp` inclui `<ostream>` (o `operator<<` genérico precisava dele).
+- `KncUtil::NumberShuffle`: as mesmas escolhas do original (o `rand()`-ésimo dos que sobram, na ordem), feitas no próprio vetor com `std::rotate`; a cópia com `erase` disparava um falso positivo do GCC 15 em Release (`-Wfree-nonheap-object`). Teste em `test_util.cpp`.
 
 ## Pendências
 
