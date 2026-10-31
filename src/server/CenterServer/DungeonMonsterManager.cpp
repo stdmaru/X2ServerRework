@@ -59,7 +59,7 @@ bool KDungeonMonsterManager::InsertSubStageNpcList( IN const int iStageID, IN co
 	SUB_STAGE_NPC_INFO sSubStageNpcInfo;
 
 	// 몬스터 등급별로 구분해서 리스트를 만들자!
-	BOOST_TEST_FOREACH( const KNPCUnitReq&, kNpcInfo, vecSubStageNpcList )
+	for( const KNPCUnitReq& kNpcInfo : vecSubStageNpcList )
 	{
 		if( kNpcInfo.m_cMonsterGrade == CXSLUnitManager::MG_BOSS_NPC )
 		{
@@ -173,7 +173,7 @@ bool KDungeonMonsterManager::IsAllSubStageNpcDie( IN const int iStageID, IN cons
 	if( sSubStageNpcInfo.m_setBossNpcUID.empty() )
 	{
 		// 해당 서브 스테이지에 모든 일반 몬스터가 죽었는지 확인!
-		BOOST_TEST_FOREACH( const int, iNpcUID, sSubStageNpcInfo.m_setNormalNpcUID )
+		for( const int iNpcUID : sSubStageNpcInfo.m_setNormalNpcUID )
 		{
 			bool bIsDie = false;
 			if( IsExistMonster( iNpcUID, bIsDie ) == false )
@@ -201,7 +201,7 @@ bool KDungeonMonsterManager::IsAllSubStageNpcDie( IN const int iStageID, IN cons
 	else
 	{
 		// 해당 서브 스테이지에 모든 보스 몬스터가 죽었는지 확인!
-		BOOST_TEST_FOREACH( const int, iNpcUID, sSubStageNpcInfo.m_setBossNpcUID )
+		for( const int iNpcUID : sSubStageNpcInfo.m_setBossNpcUID )
 		{
 			bool bIsDie = false;
 			if( IsExistMonster( iNpcUID, bIsDie ) == false )

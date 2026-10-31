@@ -80,7 +80,7 @@ bool KBattleFieldMonsterManager::FirstCreateBossMonster( IN const SEnum::BATTLE_
 	}
 
 	// 2. 몬스터 생성 처리!
-	BOOST_TEST_FOREACH( KNPCUnitReq&, kNpcInfo, kBattleFieldNpcList.m_NPCList )
+	for( KNPCUnitReq& kNpcInfo : kBattleFieldNpcList.m_NPCList )
 	{
 		// 몬스터 생성!
 		if( CreateMonster( kNpcInfo, kNpcInfo.m_UID ) == false )
@@ -162,7 +162,7 @@ bool KBattleFieldMonsterManager::FirstCreateMonster( IN const SEnum::BATTLE_FIEL
 	}
 
 	// 2. 몬스터 생성 처리!
-	BOOST_TEST_FOREACH( KNPCUnitReq&, kNpcInfo, kBattleFieldNpcList.m_NPCList )
+	for( KNPCUnitReq& kNpcInfo : kBattleFieldNpcList.m_NPCList )
 	{
 		// 몬스터 생성!
 		if( CreateMonster( kNpcInfo, kNpcInfo.m_UID ) == false )
@@ -271,7 +271,7 @@ bool KBattleFieldMonsterManager::CheckRespawnMonster( IN const SEnum::BATTLE_FIE
 	}
 
 	// 8. 몬스터 생성 처리!
-	BOOST_TEST_FOREACH( KNPCUnitReq&, kNpcInfo, kBattleFieldNpcList.m_NPCList )
+	for( KNPCUnitReq& kNpcInfo : kBattleFieldNpcList.m_NPCList )
 	{
 		// 몬스터 생성!
 		if( CreateMonster( kNpcInfo, kNpcInfo.m_UID ) == false )
@@ -331,7 +331,7 @@ bool KBattleFieldMonsterManager::CheckRespawnMonster( IN const SEnum::BATTLE_FIE
 	// 9. 리스폰 예약 리스트에서 예약 삭제
 	LIF( vecRespawnTimeOverList.size() == kResultNot.m_vecNPCUnitAck.size() );
 
-	BOOST_TEST_FOREACH( const int, iNpcUID, vecRespawnTimeOverList )
+	for( const int iNpcUID : vecRespawnTimeOverList )
 	{
 		m_mapReserveMonsterRespawn.erase( iNpcUID );
 	}
@@ -360,7 +360,7 @@ void KBattleFieldMonsterManager::GetAliveMonsterList( OUT std::vector< KNPCUnitR
 		vecNpcList.push_back( mit->second.m_kNpcInfo );
 
 		// 해당 몬스터가 속성 몬스터라면 속성정보도 넣자!
-		BOOST_TEST_FOREACH( const KAttribEnchantNpcInfo&, kAttribNpcInfo, mit->second.m_vecAttribNpcInfo )
+		for( const KAttribEnchantNpcInfo& kAttribNpcInfo : mit->second.m_vecAttribNpcInfo )
 		{
 			mapAttirbNpcInfo.insert( std::make_pair( mit->first, kAttribNpcInfo ) );
 			break;
@@ -620,7 +620,7 @@ void KBattleFieldMonsterManager::StartedMonsterEventProcess( IN const std::vecto
 														   )
 {
 	// 새로 시작된 몬스터 출현 이벤트 처리
-	BOOST_TEST_FOREACH( int, iEventID, vecStartEventID )
+	for( int iEventID : vecStartEventID )
 	{
 		std::vector<int> vecEventID;
 		std::set<int> setEventMonsterUID;
@@ -629,7 +629,7 @@ void KBattleFieldMonsterManager::StartedMonsterEventProcess( IN const std::vecto
 		vecEventID.push_back( iEventID );
 		SiKGameEventScriptManager()->GetAdventNpcEventInfo( vecEventID, vecAdventNpcEventInfo );
 
-		BOOST_TEST_FOREACH( KGameEventScriptManager::KAdventNpcEventInfo&, kInfo, vecAdventNpcEventInfo )
+		for( KGameEventScriptManager::KAdventNpcEventInfo& kInfo : vecAdventNpcEventInfo )
 		{
 			// 등장할 수 있는 필드인지 체크!
 			if( kInfo.m_setAdventField.empty() == false )
@@ -702,7 +702,7 @@ void KBattleFieldMonsterManager::EndedMonsterEventProcess( IN const std::vector<
 														 )
 {
 	// 이벤트별로 각각 처리 한다.
-	BOOST_TEST_FOREACH( int, iEndEventID, vecEndEventID )
+	for( int iEndEventID : vecEndEventID )
 	{
 		// 제거 해야 할 이벤트 정보가 있는지 검사!
 		std::map< int, std::set<int> >::iterator it = m_mapEventMonster.find( iEndEventID );
@@ -712,7 +712,7 @@ void KBattleFieldMonsterManager::EndedMonsterEventProcess( IN const std::vector<
 		}
 
 		// 해당 이벤트에 의해 등록된 몬스터의 처리
-		BOOST_TEST_FOREACH( int, iEventMonsterUID, it->second )
+		for( int iEventMonsterUID : it->second )
 		{
 			std::map< int, NPC_DATA >::iterator itAliveNpc = m_mapAliveEventNpcList.find( iEventMonsterUID );
 			if( itAliveNpc == m_mapAliveEventNpcList.end() )
@@ -843,7 +843,7 @@ bool KBattleFieldMonsterManager::GetEventMonsterEventID( IN const int iNpcUID, O
 {
 	for( std::map< int, std::set<int> >::const_iterator it = m_mapEventMonster.begin(); it != m_mapEventMonster.end(); ++it )
 	{
-		BOOST_TEST_FOREACH( const int, iEventMonsterUID, it->second )
+		for( const int iEventMonsterUID : it->second )
 		{
 			if( iNpcUID == iEventMonsterUID )
 			{
@@ -883,7 +883,7 @@ void KBattleFieldMonsterManager::CheckRespawnEventMonster( IN const SEnum::BATTL
 
 	// 몬스터 생성 처리!
 	std::vector<int>	vecTimeRestartRespawnList;
-	BOOST_TEST_FOREACH( const int, iNpcUID, setRespawnTimeOverList )
+	for( const int iNpcUID : setRespawnTimeOverList )
 	{
 		if( m_mapDieEventNpcList.find( iNpcUID ) == m_mapDieEventNpcList.end() )
 		{
@@ -923,7 +923,7 @@ void KBattleFieldMonsterManager::CheckRespawnEventMonster( IN const SEnum::BATTL
 		vecEventID.push_back( itMapEventMonster->first );
 		SiKGameEventScriptManager()->GetAdventNpcEventInfo( vecEventID, vecAdventNpcEventInfo );
 
-		BOOST_TEST_FOREACH( KGameEventScriptManager::KAdventNpcEventInfo&, kInfo, vecAdventNpcEventInfo )
+		for( KGameEventScriptManager::KAdventNpcEventInfo& kInfo : vecAdventNpcEventInfo )
 		{
 			// 등장할 수 있는 필드인지 체크!
 			if( kInfo.m_setAdventField.empty() == false )
@@ -988,7 +988,7 @@ void KBattleFieldMonsterManager::CheckRespawnEventMonster( IN const SEnum::BATTL
 	}
 
 	// 이번 리스폰 타임에서 제외된 대상을 위한 정리
-	BOOST_TEST_FOREACH( const int, iNpcUID, vecTimeRestartRespawnList )
+	for( const int iNpcUID : vecTimeRestartRespawnList )
 	{
 		std::map<int, SMonsterRespawnInfo>::iterator it = m_mapReserveEventMonsterRespawn.find( iNpcUID );
 		if( it != m_mapReserveEventMonsterRespawn.end() )
@@ -1001,7 +1001,7 @@ void KBattleFieldMonsterManager::CheckRespawnEventMonster( IN const SEnum::BATTL
 	}
 
 	// 리스폰된 대상을 리스트에서 제거한다.
-	BOOST_TEST_FOREACH( const int, iNpcUID, setRespawnTimeOverList )
+	for( const int iNpcUID : setRespawnTimeOverList )
 	{
 		m_mapReserveEventMonsterRespawn.erase( iNpcUID );
 	}
@@ -1109,7 +1109,7 @@ bool KBattleFieldMonsterManager::CheckMiddleBossMonster( IN const SEnum::BATTLE_
 		return false;
 	}
 
-	BOOST_TEST_FOREACH( KNPCUnitReq&, kMiddleBossNpcInfo, vecMiddleBossNpcInfo )
+	for( KNPCUnitReq& kMiddleBossNpcInfo : vecMiddleBossNpcInfo )
 	{
 		// 몬스터 생성!
 		CreateMiddleBossMonster( kMiddleBossNpcInfo, kMiddleBossNpcInfo.m_UID );
@@ -1191,11 +1191,11 @@ bool KBattleFieldMonsterManager::SetMiddleBossMonsterDie( IN const int iNpcUID )
 		std::vector< std::vector<KNPCUnitReq> >	vecTempMiddleBossList = m_vecMiddleBossListForClient;
 		m_vecMiddleBossListForClient.clear();
 
-		BOOST_TEST_FOREACH( std::vector<KNPCUnitReq>&, vecList, vecTempMiddleBossList )
+		for( std::vector<KNPCUnitReq>& vecList : vecTempMiddleBossList )
 		{
 			std::vector<KNPCUnitReq> vecNew;
 
-			BOOST_TEST_FOREACH( KNPCUnitReq&, kNpc, vecList )
+			for( KNPCUnitReq& kNpc : vecList )
 			{
 				if( kNpc.m_UID != iNpcUID )
 				{
@@ -1221,7 +1221,7 @@ bool KBattleFieldMonsterManager::IsMiddleBossMonster( IN const int iNpcUID ) con
 	{
 		std::vector<KNPCUnitReq> vecList = m_vecMiddleBossListForClient[index];
 
-		BOOST_TEST_FOREACH( KNPCUnitReq&, kNpc, vecList )
+		for( KNPCUnitReq& kNpc : vecList )
 		{
 			if( kNpc.m_UID == iNpcUID )
 			{

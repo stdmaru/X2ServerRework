@@ -1,4 +1,4 @@
-#include <winsock2.h>
+#include "x2/platform/net.h"
 #include <iomanip>
 #include <sstream>
 
@@ -47,7 +47,7 @@ void KCnSMSDBThread::SendToGSUser( UidType nGS, UidType nTo, unsigned short usEv
 
 IMPL_ON_FUNC( DBE_SEND_PHONE_MSG_NOT )
 {
-	BOOST_TEST_FOREACH( const std::wstring&, wstrPhoneNum, kPacket_.m_vecPhoneNum )
+	for( const std::wstring& wstrPhoneNum : kPacket_.m_vecPhoneNum )
 	{
         std::wstring wstrProject = L"ES";
         std::wstring wstrNation = KSimLayer::GetKObj()->GetAuthTypeStr( KSimLayer::GetKObj()->GetAuthFlag() );

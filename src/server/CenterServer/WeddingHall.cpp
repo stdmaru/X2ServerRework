@@ -265,7 +265,7 @@ void KWeddingHall::DeleteZombie( std::vector<UidType>& vecZombieUnit )
 	START_LOG( cout2, L"[알림] 배틀필드 좀비 유저 삭제!" )
 		<< BUILD_LOG( vecZombieUnit.size() );
 
-	BOOST_TEST_FOREACH( const UidType, iUnitUID, vecZombieUnit )
+	for( const UidType iUnitUID : vecZombieUnit )
 	{
 		KRoomUserPtr spUser = m_spUserManager->GetUser( iUnitUID );
 		if( IS_NOT_NULL( spUser ) )
@@ -306,7 +306,7 @@ void KWeddingHall::DeleteZombie( std::vector<UidType>& vecZombieUnit )
 	}
 	else
 	{
-		BOOST_TEST_FOREACH( const UidType, iUnitUID, vecZombieUnit )
+		for( const UidType iUnitUID : vecZombieUnit )
 		{
 			// 방의 모든 유저들에게 슬롯 정보를 날린다.
 			KEGS_LEAVE_WEDDING_HALL_NOT kPacketNot;
@@ -468,7 +468,7 @@ void KWeddingHall::GetWeddingHallSlotInfo( std::vector< KRoomSlotInfo >& vecSlot
 	std::vector< KRoomSlotInfo > vecTempSlot;
 	GetRoomSlotInfo( vecTempSlot, eType );
 
-	BOOST_TEST_FOREACH( KRoomSlotInfo&, kRoomInfo, vecTempSlot )
+	for( KRoomSlotInfo& kRoomInfo : vecTempSlot )
 	{
 		if( kRoomInfo.m_kRoomUserInfo.m_nUnitUID > 0)
 		{
@@ -692,7 +692,7 @@ IMPL_ON_FUNC( ERM_JOIN_WEDDING_HALL_REQ )
 	std::vector< KRoomSlotInfo > vecTempSlot;
 	GetWeddingHallSlotInfo( vecTempSlot );
 
-	BOOST_TEST_FOREACH( KRoomSlotInfo&, kInfo, vecTempSlot )
+	for( KRoomSlotInfo& kInfo : vecTempSlot )
 	{
 		if( kInfo.m_kRoomUserInfo.m_nUnitUID > 0 &&  kInfo.m_kRoomUserInfo.m_nUnitUID != FIRST_SENDER_UID )
 		{
@@ -913,12 +913,12 @@ _IMPL_ON_FUNC( ERM_CHECK_INVALID_USER_NOT, UidType )
 	if( iCount == 0 )
 		return;
 
-	BOOST_TEST_FOREACH( const KRoomUserManager::KLeaveUserInfo&, kInfo, vecDelUserUID )
+	for( const KRoomUserManager::KLeaveUserInfo& kInfo : vecDelUserUID )
 	{
 		m_spUserManager->LeaveRoom( kInfo.m_iUnitUID );
 	}
 
-	BOOST_TEST_FOREACH( const KRoomUserManager::KLeaveUserInfo&, kInfo, vecDelUserUID )
+	for( const KRoomUserManager::KLeaveUserInfo& kInfo : vecDelUserUID )
 	{
 		if( IsEmpty() == false )
 		{

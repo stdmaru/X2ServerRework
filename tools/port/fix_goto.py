@@ -4,7 +4,7 @@
 MSVC let `goto end_proc` (the DO_QUERY macro of the DB threads) skip the initialization of later locals;
 standard C++ does not. Each crossed declaration moves to the top of its function body:
 
-- `T name = <literal>;`        the whole line moves (initializing earlier changes nothing)
+- `T name = <literal>;`        the whole line moves (initializing earlier changes nothing), also `T a[N] = {0,};`
 - `T name = <expression>;`     `T name{};` moves up and `name = <expression>;` stays where it was
                                (a top-level `const` is dropped then: the value is computed later)
 
@@ -52,14 +52,16 @@ def main() -> int:
         edits = {}                  # line index -> replacement
         for lineno, decl in sorted(decls):
             i = lineno - 1
-            name = decl.split()[-1].lstrip("*&")
+            # GCC prints arrays as `T name [N]`: the name is the word before the dimensions
+            name = re.sub(r"\s*(\[[^\]]*\])+$", "", decl).split()[-1].lstrip("*&")
             m = re.match(r"^(?P<indent>\s*)(?P<type>[^=;]*?\b" + re.escape(name) + r")\s*=\s*(?P<init>[^;]+);(?P<rest>.*)$",
                          lines[i].rstrip("\r\n"))
             start = function_start(lines, i)
             if not m or start is None or "&" in m["type"] or "," in m["type"]:
                 manual.append(f"{file}:{lineno}: {decl}")
                 continue
-            if LITERAL.match(m["init"].strip()):
+            init = m["init"].strip()
+            if LITERAL.match(init) or (init.startswith("{") and init.endswith("}")):  # `= {0,}`: an aggregate
                 hoist[start].append(lines[i].strip())
                 edits[i] = None
             else:

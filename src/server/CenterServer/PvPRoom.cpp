@@ -120,7 +120,7 @@ void KPvPRoom::Tick()
 				break;
 
 			// 하나씩 이탈 시키자!
-			BOOST_TEST_FOREACH( const UidType, iPvpNpcUnitUID, vecPvpNpcUnitUIDLIst )
+			for( const UidType iPvpNpcUnitUID : vecPvpNpcUnitUIDLIst )
 			{
 				if( m_spRoomUserManager->LeaveRoom( iPvpNpcUnitUID ) == false )
 				{
@@ -373,7 +373,7 @@ void KPvPRoom::EndPlay()
 	case KPVPChannelInfo::PCC_TOURNAMENT:
 		//}}
 		{
-			BOOST_TEST_FOREACH( KPVPUnitResultInfo&, kPvpUnitResultInfo, kPacketNot.m_vecPVPUnitInfo )
+			for( KPVPUnitResultInfo& kPvpUnitResultInfo : kPacketNot.m_vecPVPUnitInfo )
 			{
 				//{{ 2011. 07. 11	최육사	대전 개편
 				kPvpUnitResultInfo.m_iRating			= 0;
@@ -415,7 +415,7 @@ void KPvPRoom::EndPlay()
 	KDBE_PVP_MATCH_RESULT_LOG_NOT kPacketToPvpLog;
 	//}}
 
-	BOOST_TEST_FOREACH( const KPVPUnitResultInfo&, kPvpUnitResultInfo, kPacketNot.m_vecPVPUnitInfo )
+	for( const KPVPUnitResultInfo& kPvpUnitResultInfo : kPacketNot.m_vecPVPUnitInfo )
 	{
 		KRoomUserPtr spRoomUser = m_spRoomUserManager->GetUser( kPvpUnitResultInfo.m_UnitUID );
 		if( spRoomUser == NULL )
@@ -1664,7 +1664,7 @@ void KPvPRoom::LogToDB_GamePlayNetWorkInfo( IN const UidType iUnitUID, IN const 
 		CTime tCurTime = CTime::GetCurrentTime();
 		KELOG_COLLECTION_OF_RELAY_AND_P2P_INFO_NOT kPacketToLog;
 
-		BOOST_TEST_FOREACH( const KGamePlayNetworkInfo&, kGamePlayNetworkInfo, kInfo.m_vecGamePlayNetworkInfo )
+		for( const KGamePlayNetworkInfo& kGamePlayNetworkInfo : kInfo.m_vecGamePlayNetworkInfo )
 		{
 			if( kGamePlayNetworkInfo.m_iOpponentUnitUID == iUnitUID )
 				continue;
@@ -2170,7 +2170,7 @@ _IMPL_ON_FUNC( ERM_NPC_UNIT_CREATE_REQ, KEGS_NPC_UNIT_CREATE_REQ )
 
 	KEGS_NPC_UNIT_CREATE_NOT kPacketNot;
 
-	BOOST_TEST_FOREACH( const KNPCUnitReq&, kNpcUnitInfo, kPacket_.m_vecNPCUnitReq )
+	for( const KNPCUnitReq& kNpcUnitInfo : kPacket_.m_vecNPCUnitReq )
 	{
 		/// 적군 몬스터 이거나
 		/// 아군 중 아래의 리스트 NPC
@@ -2945,7 +2945,7 @@ _IMPL_ON_FUNC( ERM_USER_UNIT_DIE_REQ, KEGS_USER_UNIT_DIE_REQ )
 		//			KERM_DECREASE_PET_SATIETY_NOT kPacketNot;
 		//			kPacketNot.m_cTeamNumMember = static_cast<char>(vecTeamMemberList.size());
 		//
-		//			BOOST_TEST_FOREACH( const UidType, iUnitUID, vecTeamMemberList )
+		//			for( const UidType iUnitUID : vecTeamMemberList )
 		//			{
 		//				KRoomUserPtr spRoomUser = m_spRoomUserManager->GetUser( iUnitUID );
 		//				if( spRoomUser == NULL )
@@ -3021,7 +3021,7 @@ IMPL_ON_FUNC_NOPARAM( ERM_USER_UNIT_DIE_COMPLETE_REQ )
 
 
 	//{{ 2012. 11. 27 PVP에서 유저가 죽은 이후 부활 시점 수정 - 김민성
-	BOOST_TEST_FOREACH( KRebirthInfo&,  kInfo, m_vecRebirthInfo )
+	for( KRebirthInfo& kInfo : m_vecRebirthInfo )
 	{
 		if( kInfo.nCID == FIRST_SENDER_UID )
 		{
@@ -3829,7 +3829,7 @@ _IMPL_ON_FUNC( ERM_CHANGE_PVP_ITEM_POS_REQ, KEGS_CHANGE_PVP_ITEM_POS_REQ )
 	bool bExist = false;
 
 	// 생성된 item 인지 확인 하자
-	BOOST_TEST_FOREACH( const DROP_ITEMDATA, kDropItem, m_vecDropItem )
+	for( const DROP_ITEMDATA kDropItem : m_vecDropItem )
 	{
 		if( kDropItem.m_iDropItemUID == kPacket_.m_iItemUID )
 		{
@@ -3958,11 +3958,11 @@ void KPvPRoom::PvPLogToFile( KRoomUserPtr spRoomUser, int iVSPoint, int iEXP, in
 //{{ 2012. 07. 16	박세훈	2012 대전 시즌2
 void KPvPRoom::RevengeBuffProcess( IN const UidType& iMyUnitUID, IN int iPrevMyTeamKillNumGab, IN int iNowMyTeamKillNumGab )
 {
-	iPrevMyTeamKillNumGab	= min( 3, iPrevMyTeamKillNumGab );
-	iNowMyTeamKillNumGab	= min( 3, iNowMyTeamKillNumGab );
+	iPrevMyTeamKillNumGab	= std::min( 3, iPrevMyTeamKillNumGab );
+	iNowMyTeamKillNumGab	= std::min( 3, iNowMyTeamKillNumGab );
 
-	iPrevMyTeamKillNumGab	= max( -3, iPrevMyTeamKillNumGab );
-	iNowMyTeamKillNumGab	= max( -3, iNowMyTeamKillNumGab );
+	iPrevMyTeamKillNumGab	= std::max( -3, iPrevMyTeamKillNumGab );
+	iNowMyTeamKillNumGab	= std::max( -3, iNowMyTeamKillNumGab );
 
 	if( iPrevMyTeamKillNumGab == iNowMyTeamKillNumGab )
 		return;
@@ -4009,7 +4009,7 @@ void KPvPRoom::RevengeBuffProcess( IN const UidType& iMyUnitUID, IN int iPrevMyT
 	{
 		m_spRoomUserManager->GetTeam( iMyUnitUID, iMyTeamIndex );
 		m_spRoomUserManager->GetTeamMemberList( static_cast<CXSLRoom::TEAM_NUM>( iMyTeamIndex ), false, vecUnitUIDList );
-		BOOST_TEST_FOREACH( const UidType&, iUnitUID, vecUnitUIDList )
+		for( const UidType& iUnitUID : vecUnitUIDList )
 		{
 			UidType iGSUID;
 			if( m_spRoomUserManager->GetGSUID( iUnitUID, iGSUID ) == false )
@@ -4030,7 +4030,7 @@ void KPvPRoom::RevengeBuffProcess( IN const UidType& iMyUnitUID, IN int iPrevMyT
 			iMyTeamIndex = CXSLRoom::TN_RED;
 		}
 		m_spRoomUserManager->GetTeamMemberList( static_cast<CXSLRoom::TEAM_NUM>( iMyTeamIndex ), false, vecUnitUIDList );
-		BOOST_TEST_FOREACH( const UidType&, iUnitUID, vecUnitUIDList )
+		for( const UidType& iUnitUID : vecUnitUIDList )
 		{
 			UidType iGSUID;
 			if( m_spRoomUserManager->GetGSUID( iUnitUID, iGSUID ) == false )
@@ -4043,7 +4043,7 @@ void KPvPRoom::RevengeBuffProcess( IN const UidType& iMyUnitUID, IN int iPrevMyT
 int	KPvPRoom::GetTeamRevengeBuffID( IN const UidType iMyUnitUID ) const
 {
 	int iNowMyTeamKillNumGab	= m_spRoomUserManager->GetMyTeamKillNum( iMyUnitUID ) - m_spRoomUserManager->GetEnemyTeamKillNum( iMyUnitUID );
-	iNowMyTeamKillNumGab		= max( -3, iNowMyTeamKillNumGab );
+	iNowMyTeamKillNumGab		= std::max( -3, iNowMyTeamKillNumGab );
 
 	if( iNowMyTeamKillNumGab < 0 )
 	{

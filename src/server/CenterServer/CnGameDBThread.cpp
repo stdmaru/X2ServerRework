@@ -1,4 +1,4 @@
-#include <winsock2.h>
+#include "x2/platform/net.h"
 #include <iomanip>
 #include <sstream>
 
@@ -100,7 +100,7 @@ bool KCnGameDBThread::Query_InsertItemList( IN const SEnum::GET_ITEM_REASON eGet
 			<< END_LOG;
 	}
 
-	BOOST_TEST_FOREACH( const KItemInfo&, kNewItemInfo, vecItemInfo )
+	for( const KItemInfo& kNewItemInfo : vecItemInfo )
 	{
 		KItemInfo kNewItemInfoResult = kNewItemInfo; // 복사본 생성
 
@@ -373,6 +373,8 @@ end_proc:
 //{{ 2012. 05. 08	김민성       개인 거래 로직 변경
 IMPL_ON_FUNC( DBE_DB_UPDATE_TRADE_RESULT_REQ )
 {
+	// Port: hoisted above the gotos to end_proc (MSVC let goto skip their initialization)
+	UidType iItemUID[20]{};
 	KDBE_DB_UPDATE_TRADE_RESULT_ACK kPacketAck;
 	kPacketAck.m_iOK = NetError::ERR_ODBC_01;
 
@@ -384,7 +386,7 @@ IMPL_ON_FUNC( DBE_DB_UPDATE_TRADE_RESULT_REQ )
 	//{{ 2013. 05. 28	최육사	아이템 개편
 	std::wstring wstrQuerySP = L"exec dbo.P_GItem_Total_Trade_New ";
 	//}}
-	wstrQuerySP += boost::str( boost::wformat( L"%d" ) % iTemp_Type );
+	wstrQuerySP += x2::str( x2::wformat( L"%d" ) % iTemp_Type );
 
 	std::vector< KERM_DB_UPDATE_TRADE_RESULT_NOT >::iterator vitDBUpdate;
 
@@ -407,13 +409,13 @@ IMPL_ON_FUNC( DBE_DB_UPDATE_TRADE_RESULT_REQ )
 
 	for( vitDBUpdate = kPacket_.m_vecDBUpdate.begin() ; vitDBUpdate != kPacket_.m_vecDBUpdate.end() ; ++vitDBUpdate )
 	{
-		wstrQuerySP += boost::str( boost::wformat( L", %d" ) % vitDBUpdate->m_iUnitUID );
+		wstrQuerySP += x2::str( x2::wformat( L", %d" ) % vitDBUpdate->m_iUnitUID );
 	}
 
 	// ed 를 먼저 적어 놓자
 	for( vitDBUpdate = kPacket_.m_vecDBUpdate.begin() ; vitDBUpdate != kPacket_.m_vecDBUpdate.end() ; ++vitDBUpdate )
 	{
-		wstrQuerySP += boost::str( boost::wformat( L", %d" ) % vitDBUpdate->m_iChangedED );
+		wstrQuerySP += x2::str( x2::wformat( L", %d" ) % vitDBUpdate->m_iChangedED );
 	}
 
 	// 유닛별 정보로 정리
@@ -426,14 +428,14 @@ IMPL_ON_FUNC( DBE_DB_UPDATE_TRADE_RESULT_REQ )
 		std::vector<KInventoryItemInfo>::iterator vvit = vitDBUpdate->m_vecUpdated.begin();
 		for( ; vvit != vitDBUpdate->m_vecUpdated.end() ; ++vvit, ++index )
 		{
-			wstrQuerySP += boost::str( boost::wformat( L", %d" ) % vvit->m_iItemUID );
-			wstrQuerySP += boost::str( boost::wformat( L", %d" ) % vvit->m_kItemInfo.m_iQuantity );
+			wstrQuerySP += x2::str( x2::wformat( L", %d" ) % vvit->m_iItemUID );
+			wstrQuerySP += x2::str( x2::wformat( L", %d" ) % vvit->m_kItemInfo.m_iQuantity );
 		}
 
 		for( ; index < 10 ; ++index )
 		{
-			wstrQuerySP += boost::str( boost::wformat( L", %d" ) % iTemp_Zero );
-			wstrQuerySP += boost::str( boost::wformat( L", %d" ) % iTemp_Zero );
+			wstrQuerySP += x2::str( x2::wformat( L", %d" ) % iTemp_Zero );
+			wstrQuerySP += x2::str( x2::wformat( L", %d" ) % iTemp_Zero );
 		}
 	}
 
@@ -441,15 +443,14 @@ IMPL_ON_FUNC( DBE_DB_UPDATE_TRADE_RESULT_REQ )
 	{
 		for( ; index < 20 ; ++index )
 		{
-			wstrQuerySP += boost::str( boost::wformat( L", %d" ) % iTemp_Zero );
-			wstrQuerySP += boost::str( boost::wformat( L", %d" ) % iTemp_Zero );
+			wstrQuerySP += x2::str( x2::wformat( L", %d" ) % iTemp_Zero );
+			wstrQuerySP += x2::str( x2::wformat( L", %d" ) % iTemp_Zero );
 		}
 	}
 
 	DO_QUERY_NO_ARG( wstrQuerySP.c_str() );
 
 	// 아이템은 10개 + 10개 이므로 20개로 고정한다.
-	UidType iItemUID[20] = {0,};
 
 	if( m_kODBC.BeginFetch() )
 	{
@@ -539,6 +540,8 @@ end_proc:
 //{{ 2012. 05. 29	김민성       개인 상점 거래 로직 변경
 IMPL_ON_FUNC( DBE_BUY_PERSONAL_SHOP_ITEM_COMPLETE_REQ )
 {
+	// Port: hoisted above the gotos to end_proc (MSVC let goto skip their initialization)
+	UidType iItemUID[20]{};
 	KDBE_BUY_PERSONAL_SHOP_ITEM_COMPLETE_ACK kPacketAck;
 	kPacketAck.m_iOK = NetError::NET_OK;
 
@@ -547,37 +550,36 @@ IMPL_ON_FUNC( DBE_BUY_PERSONAL_SHOP_ITEM_COMPLETE_REQ )
 	//{{ 2013. 05. 28	최육사	아이템 개편
 	std::wstring wstrQuerySP = L"exec dbo.P_GItem_Total_Trade_New ";
 	//}}
-	wstrQuerySP += boost::str( boost::wformat( L"%d" ) % iTemp_Type );
+	wstrQuerySP += x2::str( x2::wformat( L"%d" ) % iTemp_Type );
 
 	// 판매자
-	wstrQuerySP += boost::str( boost::wformat( L", %d" ) % kPacket_.m_iSellUnitUID );
+	wstrQuerySP += x2::str( x2::wformat( L", %d" ) % kPacket_.m_iSellUnitUID );
 
 	// 구매자
-	wstrQuerySP += boost::str( boost::wformat( L", %d" ) % kPacket_.m_iBuyUnitUID );
+	wstrQuerySP += x2::str( x2::wformat( L", %d" ) % kPacket_.m_iBuyUnitUID );
 
 	// 판매자 ED
-	wstrQuerySP += boost::str( boost::wformat( L", %d" ) % kPacket_.m_iSellUnitEDIN );		// 수수료가 다르기 때문에 각자 처리 해야한다.
+	wstrQuerySP += x2::str( x2::wformat( L", %d" ) % kPacket_.m_iSellUnitEDIN );		// 수수료가 다르기 때문에 각자 처리 해야한다.
 
 	// 구매자 ED
-	wstrQuerySP += boost::str( boost::wformat( L", %d" ) % kPacket_.m_iBuyUnitEDOUT );		// 수수료가 다르기 때문에 각자 처리 해야한다.
+	wstrQuerySP += x2::str( x2::wformat( L", %d" ) % kPacket_.m_iBuyUnitEDOUT );		// 수수료가 다르기 때문에 각자 처리 해야한다.
 
 	// 판매자 아이템
-	wstrQuerySP += boost::str( boost::wformat( L", %d" ) % kPacket_.m_kSellItemInfo.m_iItemUID );
-	wstrQuerySP += boost::str( boost::wformat( L", %d" ) % kPacket_.m_kSellItemInfo.m_kItemInfo.m_iQuantity );
+	wstrQuerySP += x2::str( x2::wformat( L", %d" ) % kPacket_.m_kSellItemInfo.m_iItemUID );
+	wstrQuerySP += x2::str( x2::wformat( L", %d" ) % kPacket_.m_kSellItemInfo.m_kItemInfo.m_iQuantity );
 
 	// 구매자 아이템 - 구매자는 아이템이 들어오기만 하기 때문에 없다.
 	int index = 1;			// 물건 하나를 등록 했으므로 1로 초기화한다.
 	int iTemp_Zero = 0;
 	for( ; index < 20 ; ++index )
 	{
-		wstrQuerySP += boost::str( boost::wformat( L", %d" ) % iTemp_Zero );
-		wstrQuerySP += boost::str( boost::wformat( L", %d" ) % iTemp_Zero );
+		wstrQuerySP += x2::str( x2::wformat( L", %d" ) % iTemp_Zero );
+		wstrQuerySP += x2::str( x2::wformat( L", %d" ) % iTemp_Zero );
 	}
 
 	DO_QUERY_NO_ARG( wstrQuerySP.c_str() );
 
 	// 아이템은 10개 + 10개 이므로 20개로 고정한다.
-	UidType iItemUID[20] = {0,};
 
 	if( m_kODBC.BeginFetch() )
 	{

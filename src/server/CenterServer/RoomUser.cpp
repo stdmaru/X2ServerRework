@@ -503,13 +503,13 @@ bool KRoomUser::RequestTradeTo( UidType nCID )
         return false;
     }
 
-    std::map< UidType, boost::timer >::iterator mit = m_mapTradeRequest.find( nCID );
+    std::map< UidType, x2::Timer >::iterator mit = m_mapTradeRequest.find( nCID );
     if( mit != m_mapTradeRequest.end() )
     {
         return false;
     }
 
-    boost::timer kTimer;
+    x2::Timer kTimer;
     m_mapTradeRequest.insert( std::make_pair( nCID, kTimer ) );
     SetTrade( true );
 
@@ -518,7 +518,7 @@ bool KRoomUser::RequestTradeTo( UidType nCID )
 
 bool KRoomUser::TradeAcceptedBy( UidType nCID )
 {
-    std::map< UidType, boost::timer >::iterator mit = m_mapTradeRequest.find( nCID );
+    std::map< UidType, x2::Timer >::iterator mit = m_mapTradeRequest.find( nCID );
     if( mit != m_mapTradeRequest.end() )
     {
         m_mapTradeRequest.clear();
@@ -530,7 +530,7 @@ bool KRoomUser::TradeAcceptedBy( UidType nCID )
 
 bool KRoomUser::TradeRejectedBy( UidType nCID )
 {
-    std::map< UidType, boost::timer >::iterator mit = m_mapTradeRequest.find( nCID );
+    std::map< UidType, x2::Timer >::iterator mit = m_mapTradeRequest.find( nCID );
     if( mit == m_mapTradeRequest.end() )
     {
         START_LOG( cwarn, L"거래 신청 중이 아닌데 거절 당했다." )
@@ -554,7 +554,7 @@ bool KRoomUser::ExpireTradeRequest()
 {
     bool bFlag = !m_mapTradeRequest.empty();
 
-    std::map< UidType, boost::timer >::iterator mit = m_mapTradeRequest.begin();
+    std::map< UidType, x2::Timer >::iterator mit = m_mapTradeRequest.begin();
     while( mit != m_mapTradeRequest.end() )
     {
         if( mit->second.elapsed() > 10.0 )
@@ -992,7 +992,7 @@ bool KRoomUser::UpdatePetSatiety( IN UidType iPetUID, IN short sSatiety )
 		// 그냥 통과!
 	}
 
-    BOOST_TEST_FOREACH( KPetInfo&, kPet, m_kRoomUserInfo.m_vecPet )
+    for( KPetInfo& kPet : m_kRoomUserInfo.m_vecPet )
 	{
 		if( kPet.m_iPetUID != iPetUID )
 		{
@@ -1030,7 +1030,7 @@ bool KRoomUser::UpdatePetIntimacy( IN UidType iPetUID, IN int iIntimacy )
 		// 그냥 통과!
 	}
 
-	BOOST_TEST_FOREACH( KPetInfo&, kPet, m_kRoomUserInfo.m_vecPet )
+	for( KPetInfo& kPet : m_kRoomUserInfo.m_vecPet )
 	{
 		if( kPet.m_iPetUID != iPetUID )
 		{
@@ -1065,7 +1065,7 @@ int KRoomUser::GetPetID() const
 		// 그냥 통과!
 	}
 
-	BOOST_TEST_FOREACH( const KPetInfo&, kPet, m_kRoomUserInfo.m_vecPet )
+	for( const KPetInfo& kPet : m_kRoomUserInfo.m_vecPet )
 	{
 		return kPet.m_iPetID;
 	}
@@ -1089,7 +1089,7 @@ char KRoomUser::GetPetEvolutionStep() const
 		// 그냥 통과!
 	}
 
-	BOOST_TEST_FOREACH( const KPetInfo&, kPet, m_kRoomUserInfo.m_vecPet )
+	for( const KPetInfo& kPet : m_kRoomUserInfo.m_vecPet )
 	{
 		return kPet.m_cEvolutionStep;
 	}
@@ -1389,7 +1389,7 @@ void KRoomUser::UpdateBuffInfo( IN const std::vector< KBuffInfo >& vecActivatedB
 
 	//{{ 버프 관리 시스템 - 김민성
 	m_fAddQuestDropBouns = 0.f;
-	BOOST_TEST_FOREACH( KBuffInfo, kBuff, m_kRoomUserInfo.m_vecBuffInfo )
+	for( KBuffInfo kBuff : m_kRoomUserInfo.m_vecBuffInfo )
 	{
 		// 월드 버프 3단계라면 퀘스트 드롭률을 50% 올린다.
 		if( CXSLBuffManager::BTI_BUFF_BLESSING_OF_EL == kBuff.m_kFactorInfo.m_BuffIdentity.m_eBuffTempletID )
@@ -1408,7 +1408,7 @@ void KRoomUser::UpdateBuffInfo( IN const std::vector< KBuffInfo >& vecActivatedB
 
 bool KRoomUser::ExistActiveBuff( IN const int iBuffID )
 {
-	BOOST_TEST_FOREACH( KBuffInfo, kBuff, m_kRoomUserInfo.m_vecBuffInfo )
+	for( KBuffInfo kBuff : m_kRoomUserInfo.m_vecBuffInfo )
 	{
 		if( iBuffID == kBuff.m_kFactorInfo.m_BuffIdentity.m_eBuffTempletID )
 		{
@@ -1441,7 +1441,7 @@ bool KRoomUser::CheckCompleteSubQuest_BeforGroup( IN int iQuestID, IN int iSubQu
 	std::map< int,std::vector<int> >::const_iterator mitGroup = pQuestTemplet->m_mapSubQuestGroup.begin();
 	for( ; mitGroup != pQuestTemplet->m_mapSubQuestGroup.end() ; ++mitGroup )
 	{
-		BOOST_TEST_FOREACH( const int, iSub, mitGroup->second )
+		for( const int iSub : mitGroup->second )
 		{
 			if( iSub == iSubQuestID )
 			{
@@ -1485,7 +1485,7 @@ bool KRoomUser::CheckCompleteSubQuest_BeforGroup( IN int iQuestID, IN int iSubQu
 		std::map< int,std::vector<int> >::const_iterator mitGroup = pQuestTemplet->m_mapSubQuestGroup.begin();
 		for( ; mitGroup != pQuestTemplet->m_mapSubQuestGroup.end() ; ++mitGroup )
 		{
-			BOOST_TEST_FOREACH( const int, iSub, mitGroup->second )
+			for( const int iSub : mitGroup->second )
 			{
 				if( iSub == mitSub->first )
 				{
@@ -1618,7 +1618,7 @@ DWORD KRoomUser::GetPingScore()
 		DWORD dwTotalPingScore = 0;
 		DWORD dwAvgPingScore = 0;
 
-		BOOST_TEST_FOREACH( const DWORD, dwScore, m_vecPingScore )
+		for( const DWORD dwScore : m_vecPingScore )
 		{
 			dwTotalPingScore += dwScore;
 		}

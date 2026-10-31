@@ -262,7 +262,7 @@ bool KBattleFieldUserManager::DelRoomUserInBattleFieldPartyList( IN const UidTyp
 		return true;
 	}
 
-	BOOST_TEST_FOREACH( const UidType, iMemberUnitUID, mitP->second.GetPartyMemberList() )
+	for( const UidType iMemberUnitUID : mitP->second.GetPartyMemberList() )
 	{
 		if( iMemberUnitUID == iUnitUID )
 			continue;
@@ -365,7 +365,7 @@ bool KBattleFieldUserManager::RegIntrudeUnitLoadUserList( IN const UidType iUnit
 		return false;
 	}
 
-	BOOST_TEST_FOREACH( const UidType, iRegUnitUID, vecUnitUIDList )
+	for( const UidType iRegUnitUID : vecUnitUIDList )
 	{
 		spRoomUser->RegIntrudeUnitLoadUser( iRegUnitUID );
 	}
@@ -391,7 +391,7 @@ bool KBattleFieldUserManager::UnregIntrudeUnitLoadUserList( IN const UidType iUn
 		return false;
 	}
 
-	BOOST_TEST_FOREACH( const UidType, iRegUnitUID, vecUnitUIDList )
+	for( const UidType iRegUnitUID : vecUnitUIDList )
 	{
 		spRoomUser->UnregIntrudeUnitLoadUser( iRegUnitUID );
 	}

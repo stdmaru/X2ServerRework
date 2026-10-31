@@ -10,7 +10,7 @@
 #include "ServerPacket.h"
 
 #include "KncSend.h"
-#include <boost/timer.hpp>
+#include "x2/platform/timer.h"
 
 #include "Room/PersonalShopUserManager.h"
 #include "X2Data/XSLSquareUnit.h"
@@ -85,7 +85,7 @@ protected:
 
 protected:
 	KPersonalShopUserManager	m_kPersonalShopUserManager;
-	boost::timer				m_kTimer[TM_TOTAL_NUM];
+	x2::Timer				m_kTimer[TM_TOTAL_NUM];
 
 	std::wstring							m_wstrPersonalShopName;
 	std::vector<KSellPersonalShopItemInfo>	m_vecSellItemInfo;

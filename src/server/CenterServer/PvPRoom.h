@@ -2,7 +2,7 @@
 
 #include "Room.h"
 #include "Lottery.h"
-#include <boost/timer.hpp>
+#include "x2/platform/timer.h"
 
 //{{ 2011. 10. 25	최육사	배틀필드 시스템
 	#include "PvpMonsterManager.h"
@@ -28,7 +28,7 @@ public:
         UidType nCID;
         int iPosition;
         float fDelay;
-        boost::timer kTimer;
+        x2::Timer kTimer;
 		//{{ 2012. 11. 27 PVP에서 유저가 죽은 이후 부활 시점 수정 - 김민성
 		bool	bReady;
 		//}
@@ -65,7 +65,7 @@ public:
 		int		m_iDropItemUID;
 		int		m_iItemID;
 		int		m_iGroup;
-		boost::timer m_TimerOfChangeItem;
+		x2::Timer m_TimerOfChangeItem;
 
 		DROP_ITEMDATA()
 		{

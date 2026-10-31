@@ -2247,7 +2247,7 @@ bool KRoomUserManager::GetItemWithRandom( IN const int iItemID, IN const int iDu
 	}
 
 	{ // 잘못된 iterator참조를 방지하기 위한 scope
-		BOOST_TEST_FOREACH( const UidType, iUnitUID, vecRoomUserShuffle )
+		for( const UidType iUnitUID : vecRoomUserShuffle )
 		{
 			KRoomUserPtr spRoomUser = GetUser( iUnitUID );
 			if( spRoomUser == NULL )
@@ -2292,7 +2292,7 @@ bool KRoomUserManager::GetItemWithRandom( IN const int iItemID, IN const int iDu
 	{
 		if( pItemTemplet->m_UseCondition == CXSLItem::UC_ONE_CLASS )
 		{
-			BOOST_TEST_FOREACH( const UidType, iUnitUID, vecRoomUserShuffle )
+			for( const UidType iUnitUID : vecRoomUserShuffle )
 			{
 				KRoomUserPtr spRoomUser = GetUser( iUnitUID );
 				if( spRoomUser == NULL )
@@ -2336,7 +2336,7 @@ bool KRoomUserManager::GetItemWithRandom( IN const int iItemID, IN const int iDu
 		}
 		else
 		{
-			BOOST_TEST_FOREACH( const UidType, iUnitUID, vecRoomUserShuffle )
+			for( const UidType iUnitUID : vecRoomUserShuffle )
 			{
 				KRoomUserPtr spRoomUser = GetUser( iUnitUID );
 				if( spRoomUser == NULL )
@@ -5751,7 +5751,7 @@ bool KRoomUserManager::ProcessBuffSkill( IN KEGS_BUFF_SKILL_INFO_CONVEY_REQ& kPa
 
 	if( kPacket.m_bIsBuffCasting == true )   // 버프 시전
 	{
-		BOOST_TEST_FOREACH( const UidType, iCaughtUnitUID, kPacket.m_vecCaughtUIDList )
+		for( const UidType iCaughtUnitUID : kPacket.m_vecCaughtUIDList )
 		{
 			std::map< UidType, KRoomUserPtr >::iterator mit;
 			mit = m_mapRoomUser[UT_GAME].find( iCaughtUnitUID );
@@ -5802,7 +5802,7 @@ bool KRoomUserManager::ProcessBuffSkill( IN KEGS_BUFF_SKILL_INFO_CONVEY_REQ& kPa
 	}
 	else									// 캔슬 시전
 	{
-		BOOST_TEST_FOREACH( const UidType, iCaughtUnitUID, kPacket.m_vecCaughtUIDList )
+		for( const UidType iCaughtUnitUID : kPacket.m_vecCaughtUIDList )
 		{
 			std::map< UidType, KRoomUserPtr >::iterator mit;
 			mit = m_mapRoomUser[UT_GAME].find( iCaughtUnitUID );
@@ -5883,7 +5883,7 @@ bool KRoomUserManager::CheckCaughtBuffSkill( OUT KEGS_BUFF_SKILL_INFO_CONVEY_NOT
 			continue;
 		}
 
-		BOOST_TEST_FOREACH( const KBuffSkillInfo&, kBuffSkillInfo, vecBuffInfo )
+		for( const KBuffSkillInfo& kBuffSkillInfo : vecBuffInfo )
 		{
 			mitBuffInfo = KNot.m_mapCaughtUIDList.find( kBuffSkillInfo.m_iBuffEnum );
 			if( mitBuffInfo == KNot.m_mapCaughtUIDList.end() ) // 새로 추가

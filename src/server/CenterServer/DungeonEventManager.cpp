@@ -42,7 +42,7 @@ void KDungeonEventManager::Init()
 
 void KDungeonEventManager::UpdateTimeDropEventMonsterInfo( IN const std::vector< KDungeonDropEventNpcInfo >& vecEventInfo )
 {
-    BOOST_TEST_FOREACH( const KDungeonDropEventNpcInfo&, kInfo, vecEventInfo )
+    for( const KDungeonDropEventNpcInfo& kInfo : vecEventInfo )
 	{
 		m_mapTimeDropEventMonster.insert( std::make_pair( kInfo.m_tDropDate, kInfo ) );
 	}

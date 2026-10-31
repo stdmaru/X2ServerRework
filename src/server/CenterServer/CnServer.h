@@ -81,8 +81,6 @@ protected:
 protected:
 	int								m_iProxyID;
 
-	boost::timer					m_tTimeProcessCommunicationONOFF;
-	bool							m_bServerRunningProcessCommunicationOnOff;
 };
 
 DefKObjectInline( KCnServer, KBaseServer );

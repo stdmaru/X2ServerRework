@@ -1,6 +1,6 @@
 #include "ServerDefine.h"
 //{{ 2013. 2. 6	박세훈	랜선렉 방지 코드2
-#include <WinSock2.h>	// windows.h redefinition 오류 대처용
+#include "x2/platform/net.h"	// windows.h redefinition 오류 대처용
 //}}
 #include "CnRoomManager.h"
 
@@ -216,7 +216,7 @@ bool KCnRoomManager::Init()
 	}
 
 	// 이전에 세팅된 광장 정보로 광장을 생성한다.
-	BOOST_TEST_FOREACH( const KSquareCreateInfo&, kInfo, m_vecSquareCreateInfo )
+	for( const KSquareCreateInfo& kInfo : m_vecSquareCreateInfo )
 	{
 		KEventPtr spEvent( new KEvent );
 		spEvent->SetData( PI_CN_ROOM, NULL, ERM_OPEN_SQUARE_NOT, kInfo );
@@ -860,17 +860,17 @@ FSMclassPtr KCnRoomManager::CreateRoomFSM( int iRoomType )
 {
 	switch( iRoomType )
 	{
-	case CXSLRoom::RT_PVP:				return boost::shared_ptr< KRoomFSM >( new KRoomFSM );
-	case CXSLRoom::RT_DUNGEON:			return boost::shared_ptr< KRoomFSM >( new KRoomFSM );
-	case CXSLRoom::RT_TRAININGCENTER:	return boost::shared_ptr< KRoomFSM >( new KRoomFSM );
-	case CXSLRoom::RT_SQUARE:			return boost::shared_ptr< KBaseRoomFSM >( new KBaseRoomFSM );
-	case CXSLRoom::RT_TRADE:			return boost::shared_ptr< KTradeFSM >( new KTradeFSM );
-	case CXSLRoom::RT_PERSONAL_SHOP:	return boost::shared_ptr< KPersonalShopFSM >( new KPersonalShopFSM );
+	case CXSLRoom::RT_PVP:				return std::shared_ptr< KRoomFSM >( new KRoomFSM );
+	case CXSLRoom::RT_DUNGEON:			return std::shared_ptr< KRoomFSM >( new KRoomFSM );
+	case CXSLRoom::RT_TRAININGCENTER:	return std::shared_ptr< KRoomFSM >( new KRoomFSM );
+	case CXSLRoom::RT_SQUARE:			return std::shared_ptr< KBaseRoomFSM >( new KBaseRoomFSM );
+	case CXSLRoom::RT_TRADE:			return std::shared_ptr< KTradeFSM >( new KTradeFSM );
+	case CXSLRoom::RT_PERSONAL_SHOP:	return std::shared_ptr< KPersonalShopFSM >( new KPersonalShopFSM );
 		//{{ 2011. 10. 27	최육사	배틀필드 시스템
-	case CXSLRoom::RT_BATTLE_FIELD:		return boost::shared_ptr< KRoomFSM >( new KRoomFSM );
+	case CXSLRoom::RT_BATTLE_FIELD:		return std::shared_ptr< KRoomFSM >( new KRoomFSM );
 		//}}
 		//{{ 2013. 04. 01	 인연 시스템 - 김민성
-	case CXSLRoom::RT_WEDDING_HALL:		return boost::shared_ptr< KRoomFSM >( new KRoomFSM );
+	case CXSLRoom::RT_WEDDING_HALL:		return std::shared_ptr< KRoomFSM >( new KRoomFSM );
 		//}
 
 	default:

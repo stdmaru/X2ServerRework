@@ -2,7 +2,7 @@
 
 #include "CnBaseRoom.h"
 
-#include <boost/timer.hpp>
+#include "x2/platform/timer.h"
 
 #include "SquareUserManager.h"
 

@@ -3,7 +3,7 @@
 #include "RefreshSingleton.h"
 #include "DBLayer.h"
 #include <KncSend.h>
-#include <boost/timer.hpp>
+#include "x2/platform/timer.h"
 #include <map>
 #include "CommonPacket.h"
 #include "ClientPacket.h"

@@ -301,7 +301,7 @@ float KDropTable::GetPVPDropFailRate( PVP_FAILRATE eKey )
 
 bool KDropTable::CheckPVPItem( int _iItemID )
 {
-	BOOST_TEST_FOREACH( const int&, iItemID, m_vecPVPDropItem )
+	for( const int& iItemID : m_vecPVPDropItem )
 	{
 		if( _iItemID == iItemID )
 			return true;
@@ -1636,7 +1636,7 @@ void KDropTable::SetTimeDropInfo( IN const std::vector< KTimeDropInfo >& vecTime
 {
 	CTime tCurTime = CTime::GetCurrentTime();
 
-	BOOST_TEST_FOREACH( const KTimeDropInfo&, kTimeDropInfo, vecTimeDropInfo )
+	for( const KTimeDropInfo& kTimeDropInfo : vecTimeDropInfo )
 	{
 		CTime tTimeDrop;
 		std::wstring wstrDropTime = kTimeDropInfo.m_wstrDropTime;
@@ -3046,7 +3046,7 @@ void KDropTable::EnchantItemDropEventProcess( IN const int iItemID, OUT char& cE
 		return;
 	}
 
-	BOOST_TEST_FOREACH( const EIDESettingInfo&, kEIDESettingInfo, m_kEnchantItemDropEventInfo.m_vecEIDESettingInfo )
+	for( const EIDESettingInfo& kEIDESettingInfo : m_kEnchantItemDropEventInfo.m_vecEIDESettingInfo )
 	{
 		if( ( kEIDESettingInfo.m_iMinLevel != 0 ) && ( pItemTemplet->m_UseLevel < kEIDESettingInfo.m_iMinLevel ) )
 		{

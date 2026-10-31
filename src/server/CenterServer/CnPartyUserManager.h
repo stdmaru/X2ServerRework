@@ -136,7 +136,7 @@ private:
 	struct KWaitingUserInfo
 	{
 		KCnPartyUserPtr	m_spUser;
-		boost::timer    m_kTimer;
+		x2::Timer    m_kTimer;
 		bool            m_bInvited;
 		//{{ 2012. 11. 7	최육사	배틀필드 시스템
 		UidType			m_iSendInviteUnitUID;	// 초대장을 보낸 사람

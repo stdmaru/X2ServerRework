@@ -1,6 +1,6 @@
 #pragma once
 #include "Event.h"
-#include <boost/timer.hpp>
+#include "x2/platform/timer.h"
 #include <KncContainer.h>
 
 

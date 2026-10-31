@@ -1,6 +1,6 @@
 //{{ 2013. 2. 6	박세훈	랜선렉 방지 코드2
 //#ifdef SERV_FIX_SYNC_PACKET_USING_RELAY
-	#include <WinSock2.h>	// windows.h redefinition 오류 대처용
+	#include "x2/platform/net.h"	// windows.h redefinition 오류 대처용
 //#endif SERV_FIX_SYNC_PACKET_USING_RELAY
 //}}
 
@@ -199,7 +199,7 @@ void KRoom::Tick()
     m_spRoomUserManager->ExpireTradeRequest( vecUID );
     if( !vecUID.empty() )
     {
-		BOOST_TEST_FOREACH( const UidType, iUnitUID, vecUID )
+		for( const UidType iUnitUID : vecUID )
         {
             // 방의 모든 유저에게 바뀐 정보를 날린다.
             KEGS_CHANGE_TRADE_NOT kNot;
@@ -588,13 +588,13 @@ void KRoom::StartPlay()
 void KRoom::EndPlay()
 {
 	//{{ 2013. 2. 7	박세훈	랜선렉 방지 코드2
-	BOOST_TEST_FOREACH( const UidType, iUnitUID, m_setRanBugCheckList )
+	for( const UidType iUnitUID : m_setRanBugCheckList )
 	{
 		KInteriorUdpSession::GetKObj()->DataPushBack( CKTDNUDP::LEI_CHECK_CANCLE_NOT, GetUID(), iUnitUID );
 	}
 	ClearLanBugCheckUser();
 
-	BOOST_TEST_FOREACH( const UidType, iUnitUID, m_setRanBugVerifyList )
+	for( const UidType iUnitUID : m_setRanBugVerifyList )
 	{
 		KInteriorUdpSession::GetKObj()->DataPushBack( CKTDNUDP::LEI_VERIFY_CANCLE_NOT, GetUID(), iUnitUID );
 	}
@@ -2382,7 +2382,7 @@ _IMPL_ON_FUNC( ERM_UPDATE_NPC_UNIT_BUFF_INFO_NOT, KEGS_UPDATE_NPC_UNIT_BUFF_INFO
 	}
 	else
 	{
-        BOOST_TEST_FOREACH( UidType, uidUnitUID, kPacket_.m_vecToUnitUID )
+        for( UidType uidUnitUID : kPacket_.m_vecToUnitUID )
         {
 		    KRoomUserPtr spRoomUser = m_spRoomUserManager->GetUser( uidUnitUID );
 		    if( IS_NULL( spRoomUser ) )

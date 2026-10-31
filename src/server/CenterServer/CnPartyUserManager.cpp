@@ -611,7 +611,7 @@ bool KCnPartyUserManager::Create( IN const std::vector< KPartyUserInfo >& vecUse
 {
 	bool bRet = false;
 
-	BOOST_TEST_FOREACH( const KPartyUserInfo&, kInfo, vecUserInfo )
+	for( const KPartyUserInfo& kInfo : vecUserInfo )
 	{
 		if( GetNumMember() == 0 )
 		{
@@ -636,7 +636,7 @@ bool KCnPartyUserManager::Create( IN const std::vector< KRegroupPartyUserInfo >&
 {
 	bool bRet = false;
 
-	BOOST_TEST_FOREACH( const KRegroupPartyUserInfo&, kInfo, vecUserInfo )
+	for( const KRegroupPartyUserInfo& kInfo : vecUserInfo )
 	{
 		if( GetNumMember() == 0 )
 		{
@@ -1295,7 +1295,7 @@ void KCnPartyUserManager::GetCheckedSameOldParty( OUT std::map< UidType, std::se
 		}
 
 		// 현재 멤버중에 같은 파티원이 있는지 체크하자!
-		BOOST_TEST_FOREACH( const UidType, iUnitUID, kInfo.m_setOldPartyMember )
+		for( const UidType iUnitUID : kInfo.m_setOldPartyMember )
 		{
 			bool bInsertOldPartyMember = false;
 
@@ -1379,7 +1379,7 @@ void KCnPartyUserManager::CheckRegroup2Member( OUT std::vector< KRegroupPartyUse
 		const std::set< UidType >& setOldPartyMember = mit->second;
 		if( setOldPartyMember.size() == 1 )
 		{
-			BOOST_TEST_FOREACH( const UidType, iUnitUID, setOldPartyMember )
+			for( const UidType iUnitUID : setOldPartyMember )
 			{
 				setLeaveUnitUIDList.insert( iUnitUID );
 			}
@@ -1411,7 +1411,7 @@ void KCnPartyUserManager::CheckRegroup3Member( OUT std::vector< KRegroupPartyUse
 		const std::set< UidType >& setOldPartyMember = mit->second;
 		if( setOldPartyMember.size() == 1 )
 		{
-			BOOST_TEST_FOREACH( const UidType, iUnitUID, setOldPartyMember )
+			for( const UidType iUnitUID : setOldPartyMember )
 			{
 				setLeaveUnitUIDList.insert( iUnitUID );
 			}
@@ -1441,7 +1441,7 @@ void KCnPartyUserManager::CheckRegroup4Member( OUT std::vector< KRegroupPartyUse
 		// 수동 파티 멤버값이 1일 경우. 바로 이탈 처리.
 		if( setOldPartyMember.size() == 1 )
 		{
-			BOOST_TEST_FOREACH( const UidType, iUnitUID, setOldPartyMember )
+			for( const UidType iUnitUID : setOldPartyMember )
 			{
 				setLeaveUnitUIDList.insert( iUnitUID );
 			}
@@ -1459,7 +1459,7 @@ void KCnPartyUserManager::CheckRegroup4Member( OUT std::vector< KRegroupPartyUse
 		}
 
 		// 두번째로 체크되는 파티는 재결합 해야하는 파티이다!
-		BOOST_TEST_FOREACH( const UidType, iUnitUID, setOldPartyMember )
+		for( const UidType iUnitUID : setOldPartyMember )
 		{
 			KCnPartyUserPtr spPartyUser = GetPartyUser( iUnitUID );
 			if( spPartyUser == NULL )

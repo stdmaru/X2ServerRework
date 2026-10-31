@@ -1,7 +1,7 @@
-#include <WinSock2.h>
+#include "x2/platform/net.h"
 #include <sstream>
 #include <iomanip>
-#include <boost/bind/bind.hpp>
+#include <functional>
 #include "CnServer.h"
 #include "ActorManager.h"
 #include "CnSimLayer.h"
@@ -59,15 +59,15 @@
 	#include "LogManager.h"
 //}}
 
-#include "../Common/OnlyGlobal/ProcessCommuniationModule/ProcessCommunicationManager.h"
+// Port: KSMS (ProcessCommunicationManager, Windows named pipes to an external tool) removed, as in the other servers
 #include "GameSysVal/GameSysVal.h"
 
-using namespace boost::placeholders;
+using namespace std::placeholders;
 
 #define CASE_SCRIPT_REFRESH_SWAP_INSTANCE( flag, className ) \
 case KESR_SCRIPT_REFRESH_ORDER_NOT::flag: \
 	className::SwapInstance( g_pLua ); \
-	START_LOG( cout, L#className L" 스크립트 갱신을 완료하였습니다!" ); \
+	START_LOG( cout, L ## #className L" 스크립트 갱신을 완료하였습니다!" ); \
 	Si##className()->DumpToLogFile(); \
 	break; \
 
@@ -161,7 +161,6 @@ bool KCnServer::Init()
 	OnServerReadyComplete();
 	//}}
 
-	m_bServerRunningProcessCommunicationOnOff = false;
 
     return true;
 }
@@ -197,13 +196,6 @@ void KCnServer::OnServerReadyComplete()
 	SiKCnScriptRefreshManager()->Init();
 	//}}
 
-	if (SiKGameSysVal()->GetProcessCommunication() == true)
-	{
-		SiKProcessCommunicationManager()->InitRead(TEXT("\\\\.\\pipe\\CenterServerRead"));
-		SiKProcessCommunicationManager()->InitWrite(TEXT("\\\\.\\pipe\\CenterServerWrite"));
-		SiKProcessCommunicationManager()->Begin();
-	}
-
 	// 서버군 이름 표시
 	START_LOG( cout2, SEnum::GetServerGroupName( GetServerGroupID() ) )
 		<< BUILD_LOG( GetServerGroupID() )
@@ -215,11 +207,6 @@ void KCnServer::OnServerReadyComplete()
 
 void KCnServer::ShutDown()
 {
-	if (SiKGameSysVal()->GetProcessCommunication() == true)
-	{
-		SiKProcessCommunicationManager()->ShutDown();
-	}
-
     // 아직 아무 종료처리도 진행되기 전.
     KBaseServer::ShutDown();        // 이곳에서 모든 종료가 끝난다. 각각의 Layer들도 모두 소멸됨.
 
@@ -252,10 +239,10 @@ bool KCnServer::DestroyAllSession()
 	//{{ 2009. 1. 30  최육사	서버 셧다운 종료 사유 설정
 	int iIndex = KStatistics::eSIColDR_Server_Shutdown;
 
-	pkActorManager->ForEach( boost::bind( &KActor::SetDisconnectReason, _1, iIndex ) );
+	pkActorManager->ForEach( std::bind( &KActor::SetDisconnectReason, _1, iIndex ) );
 	//}}
 
-    pkActorManager->ForEach( boost::bind( &KActor::ReserveDestroy, _1 ) );
+    pkActorManager->ForEach( std::bind( &KActor::ReserveDestroy, _1 ) );
 
     DWORD dwBeginTick = ::GetTickCount();
 
@@ -293,24 +280,6 @@ void KCnServer::Tick()
     //        WriteServerInfoToDB();
     //    }
     //}
-
-	if ( m_tTimeProcessCommunicationONOFF.elapsed() > 60.0f )
-	{
-		if (SiKGameSysVal()->GetProcessCommunication() == true && m_bServerRunningProcessCommunicationOnOff == true)
-		{
-			SiKProcessCommunicationManager()->InitRead(TEXT("\\\\.\\pipe\\CenterServerRead"));
-			SiKProcessCommunicationManager()->InitWrite(TEXT("\\\\.\\pipe\\CenterServerWrite"));
-			SiKProcessCommunicationManager()->Begin();
-			m_bServerRunningProcessCommunicationOnOff = false;
-		}
-		else if (SiKGameSysVal()->GetProcessCommunication() == false && m_bServerRunningProcessCommunicationOnOff == false)
-		{
-			SiKProcessCommunicationManager()->ShutDown();
-
-			m_bServerRunningProcessCommunicationOnOff = true;
-		}
-		m_tTimeProcessCommunicationONOFF.restart();
-	}
 }
 
 void KCnServer::ProcessEvent( const KEventPtr& spEvent_ )
@@ -371,9 +340,12 @@ void KCnServer::ProcessEvent( const KEventPtr& spEvent_ )
 _IMPL_ON_FUNC( DBE_SERVER_ON_ACK, KDBE_CENTER_SERVER_ON_ACK )
 {
 	//스타트에 실패했으면 프로그램을 끈다
+	// If the start failed, the server shuts down: Authenticate() returns false and Init() fails.
+	// The original called ::exit( 0 ) here, from this thread, while the other threads were still running.
 	if( kPacket_.m_iOK != NetError::NET_OK)
 	{
-		::exit( 0 );
+		SetAuthenticateResult( false );
+		SetEvent( m_spEventAck.get() );
 		return;
 	}
 
@@ -385,6 +357,7 @@ _IMPL_ON_FUNC( DBE_SERVER_ON_ACK, KDBE_CENTER_SERVER_ON_ACK )
 	SetProxyID( kPacket_.m_iProxyID );
 	GetKCnRoomManager()->PrepareSquare( kPacket_.m_vecSquareList );
 
+	SetAuthenticateResult( true );
     SetEvent( m_spEventAck.get() );
 }
 

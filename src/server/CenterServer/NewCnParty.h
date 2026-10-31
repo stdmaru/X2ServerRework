@@ -316,7 +316,7 @@ protected:
 	const UidType						m_iUID;							//UID는 한번 받으면 건들지 않아야 한다.
 	std::wstring						m_wstrName;
 	//{{ 2011. 12. 26	최육사	배틀필드 시스템
-	boost::timer						m_tTimer[TE_MAX];
+	x2::Timer						m_tTimer[TE_MAX];
 	bool								m_bRemakingAutoParty;
 	//}}
 	int									m_iDungeonID;

@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include "x2/platform/timer.h"
 
 namespace Knc
 {
@@ -147,7 +148,7 @@ namespace Knc
 
 	private:
 		double				m_fLimitTime;
-		boost::timer		m_tTimer;
+		x2::Timer		m_tTimer;
 		std::vector< T >	m_vecCon;
 	};
 }

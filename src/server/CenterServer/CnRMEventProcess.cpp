@@ -44,7 +44,7 @@
 	#include "BadAttitudeTable.h"
 //}
 
-#include "../Common/OnlyGlobal/ProcessCommuniationModule/ProcessCommunicationManager.h"
+// Port: KSMS (ProcessCommunicationManager, Windows named pipes to an external tool) removed, as in the other servers
 
 //{{ 2013. 04. 15	최육사	어둠의 문 개편
 	#include "X2Data/XSLDefenceDungeonManager.h"
@@ -56,7 +56,7 @@
 #define CASE_SCRIPT_REFRESH_SWAP_INSTANCE( flag, className ) \
 case KESR_SCRIPT_REFRESH_ORDER_NOT::flag: \
 	className::SwapInstance( g_pLua ); \
-	START_LOG( cout, L#className L" 스크립트 갱신을 완료하였습니다!" ); \
+	START_LOG( cout, L ## #className L" 스크립트 갱신을 완료하였습니다!" ); \
 	Si##className()->DumpToLogFile(); \
 	break; \
 
@@ -190,8 +190,6 @@ _IMPL_ON_FUNC( ESR_ORDER_TO_REFRESH_MANAGER_ACK, KESR_SCRIPT_REFRESH_ORDER_NOT )
 		//}}
 	}
 	//}}
-
-	SiKProcessCommunicationManager()->QueueingProcessWrite(boost::str(boost::wformat(L"%1%_%2%") % 0 %L"CenterServer 스크립트 실시간 패치 완료"));
 
 }
 

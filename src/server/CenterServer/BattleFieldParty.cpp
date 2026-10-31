@@ -20,7 +20,7 @@ void KBattleFieldParty::Clear()
 
 void KBattleFieldParty::UpdatePartyMemberList( IN const std::vector< UidType >& vecInfo )
 {
-	BOOST_TEST_FOREACH( const UidType, iUnitUID, vecInfo )
+	for( const UidType iUnitUID : vecInfo )
 	{
 		m_setPartyMemberList.insert( iUnitUID );
 	}
@@ -30,7 +30,7 @@ void KBattleFieldParty::GetPartyMemberList( OUT std::vector< UidType >& vecMembe
 {
 	vecMemberList.clear();
 
-	BOOST_TEST_FOREACH( const UidType, iUnitUID, m_setPartyMemberList )
+	for( const UidType iUnitUID : m_setPartyMemberList )
 	{
 		vecMemberList.push_back( iUnitUID );
 	}

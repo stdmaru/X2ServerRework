@@ -178,7 +178,7 @@ void KBadAttitudeManager::CheckBadAttitudeUnit( OUT std::vector<UidType>& vecNew
 		}
 	}
 
-	BOOST_TEST_FOREACH( UidType, iUnitUID, vecNewBadAttitudeUnit )
+	for( UidType iUnitUID : vecNewBadAttitudeUnit )
 	{
 		BadAttitudeForceVote( iUnitUID );
 	}

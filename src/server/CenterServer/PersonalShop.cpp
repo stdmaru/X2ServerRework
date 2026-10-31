@@ -334,6 +334,8 @@ end_proc:
 
 IMPL_ON_FUNC( ERM_REG_PERSONAL_SHOP_ITEM_REQ )
 {
+	// Port: hoisted above the gotos to end_proc (MSVC let goto skip their initialization)
+	int iSellItemNum = 3;
 	VERIFY_ROOM_STATE( ( 1, KPersonalShopFSM::S_WAIT ), ERM_REG_PERSONAL_SHOP_ITEM_ACK, KERM_REG_PERSONAL_SHOP_ITEM_ACK );
 
 	std::vector< KSellPersonalShopItemInfo >::const_iterator vit;
@@ -398,7 +400,6 @@ IMPL_ON_FUNC( ERM_REG_PERSONAL_SHOP_ITEM_REQ )
 	}
 
 	//현재는 임시로 3개까지만 가능하고 추후 유료화 모델에 따라 판매개수가 달라진다.
-	int iSellItemNum = 3;
 
 	if( m_PersonalShopType == SEnum::AST_PREMIUM )
 		iSellItemNum = 9;
@@ -583,6 +584,9 @@ IMPL_ON_FUNC( ERM_LEAVE_PERSONAL_SHOP_REQ )
 
 IMPL_ON_FUNC( ERM_BUY_PERSONAL_SHOP_ITEM_REQ )
 {
+	// Port: hoisted above the gotos to end_proc (MSVC let goto skip their initialization)
+	UidType iHostUID = 0;
+	UidType iHostGSUID = 0;
 	VERIFY_ROOM_STATE( ( 1, KPersonalShopFSM::S_SHOP ), ERM_BUY_PERSONAL_SHOP_ITEM_ACK, KEGS_BUY_PERSONAL_SHOP_ITEM_ACK );
 
 	kPacket.m_iOK = NetError::ERR_UNKNOWN;
@@ -744,8 +748,6 @@ IMPL_ON_FUNC( ERM_BUY_PERSONAL_SHOP_ITEM_REQ )
 	//}}
 
 	//모든 구매사항 체크가 끝났으면 판매자 gsuser로 가서 판매물품이 있는지 체크하고 온다.
-	UidType iHostUID = 0;
-	UidType iHostGSUID = 0;
 
 	if( m_kPersonalShopUserManager.GetHostUID( iHostUID ) == true )
 	{
@@ -792,6 +794,9 @@ end_proc:
 //{{ 2012. 05. 29	김민성       개인 상점 거래 로직 변경
 IMPL_ON_FUNC( ERM_CONFIRM_BUY_PERSONAL_SHOP_ITEM_ACK )
 {
+	// Port: hoisted above the gotos to end_proc (MSVC let goto skip their initialization)
+	UidType iHostUID = 0;
+	UidType iHostGSUID = 0;
 	VERIFY_ROOM_STATE( ( 1, KPersonalShopFSM::S_SHOP ), ERM_BUY_PERSONAL_SHOP_ITEM_ACK, KEGS_BUY_PERSONAL_SHOP_ITEM_ACK );
 
 	std::vector< KSellPersonalShopItemInfo >::iterator vitItem;
@@ -822,8 +827,6 @@ IMPL_ON_FUNC( ERM_CONFIRM_BUY_PERSONAL_SHOP_ITEM_ACK )
 		goto end_proc;
 	}
 
-	UidType iHostUID = 0;
-	UidType iHostGSUID = 0;
 	if( m_kPersonalShopUserManager.GetHostUID( iHostUID ) == true )
 	{
 		if( m_kPersonalShopUserManager.GetPersonalShopUserGS( iHostUID, iHostGSUID ) == false )

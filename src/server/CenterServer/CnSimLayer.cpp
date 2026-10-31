@@ -72,8 +72,8 @@
 #include <lua_tinker.h>
 using namespace lua_tinker;
 
-#include <boost/bind/bind.hpp>
-using namespace boost::placeholders;
+#include <functional>
+using namespace std::placeholders;
 
 NiImplementRTTI( KCnSimLayer, KSimLayer );
 
@@ -125,7 +125,7 @@ void KCnSimLayer::DisconnectAllCnUser_LUA()
 
 	KActorManager* pkActorManager = KActorManager::GetKObj();
 
-	pkActorManager->ForEach( boost::bind( &KActor::ReserveDestroy, _1 ) );
+	pkActorManager->ForEach( std::bind( &KActor::ReserveDestroy, _1 ) );
 }
 //////////////////////////////////////////////////////////////////////////
 

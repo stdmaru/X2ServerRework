@@ -647,7 +647,7 @@ IMPL_ON_FUNC_NOPARAM( ERM_APPROVE_TRADE_REQ )
 			return;
 		}
 
-		BOOST_TEST_FOREACH( const KTradeUserInfo&, kInfo, vecUserList )
+		for( const KTradeUserInfo& kInfo : vecUserList )
 		{
 			KERM_CONFIRM_TRADE_REQ kPacketReq;
 
@@ -735,7 +735,7 @@ IMPL_ON_FUNC( ERM_CONFIRM_TRADE_ACK )
 			return;
 		}
 
-		BOOST_TEST_FOREACH( const KTradeUserInfo&, kConfirmTradeUserInfo, vecUserList )
+		for( const KTradeUserInfo& kConfirmTradeUserInfo : vecUserList )
 		{
 			KERM_CONFIRM_TRADE_NOT kPacketNot;
 			kPacketNot.m_iTradeUID = GetUID();
@@ -834,7 +834,7 @@ IMPL_ON_FUNC( ERM_DB_UPDATE_TRADE_RESULT_NOT )
 
 		KDBE_DB_UPDATE_TRADE_RESULT_REQ kPacketToDB;
 
-		BOOST_TEST_FOREACH( const KTradeUserInfo&, kUserInfo, vecUserList )
+		for( const KTradeUserInfo& kUserInfo : vecUserList )
 		{
 			if( m_kTradeUserManager.GetDBUpdateInfo( kUserInfo.m_iUnitUID, kPacketToDB.m_vecDBUpdate ) == false )
 			{
@@ -881,7 +881,7 @@ IMPL_ON_FUNC( DBE_DB_UPDATE_TRADE_RESULT_ACK )
 
 	//{{ DB 처리 이후 거래 로그 기록 - 김민성
 	// 개인 거래 기록.
-	BOOST_TEST_FOREACH( const KERM_DB_UPDATE_TRADE_RESULT_NOT&, UserInfo, kPacket_.m_vecDBUpdate )
+	for( const KERM_DB_UPDATE_TRADE_RESULT_NOT& UserInfo : kPacket_.m_vecDBUpdate )
 	{
 		KTradeUserPtr spTradeUser = m_kTradeUserManager.GetUser( UserInfo.m_iUnitUID );
 		if( spTradeUser == NULL )
@@ -951,7 +951,7 @@ IMPL_ON_FUNC( DBE_DB_UPDATE_TRADE_RESULT_ACK )
 	}
 	//}}
 
-	BOOST_TEST_FOREACH( const KERM_DB_UPDATE_TRADE_RESULT_NOT&, kPacketNot, kPacket_.m_vecDBUpdate )
+	for( const KERM_DB_UPDATE_TRADE_RESULT_NOT& kPacketNot : kPacket_.m_vecDBUpdate )
 	{
 		KTradeUserPtr spTradeUser = m_kTradeUserManager.GetUser( kPacketNot.m_iUnitUID );
 		if( spTradeUser == NULL )

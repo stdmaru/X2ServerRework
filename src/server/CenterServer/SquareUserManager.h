@@ -43,7 +43,9 @@ public:
 	bool			IsCreatePersonalShop();	//개인상점을 개설할수있는지 여부.
 	char			GetPersonalShopState( IN UidType nCID );
 	UidType			GetPersonalShopUID( IN UidType nCID );
-	bool			SetPersonalShopData( IN UidType nCID, IN const KSquarePersonalShopInfo& kInfo, OUT KEGS_UPDATE_SQUARE_PERSONAL_SHOP_INFO_NOT& kNot = KEGS_UPDATE_SQUARE_PERSONAL_SHOP_INFO_NOT() );
+	bool			SetPersonalShopData( IN UidType nCID, IN const KSquarePersonalShopInfo& kInfo, OUT KEGS_UPDATE_SQUARE_PERSONAL_SHOP_INFO_NOT& kNot );
+	// The original defaulted kNot to a temporary (an MSVC extension: a non-const reference to an rvalue)
+	bool			SetPersonalShopData( IN UidType nCID, IN const KSquarePersonalShopInfo& kInfo ) { KEGS_UPDATE_SQUARE_PERSONAL_SHOP_INFO_NOT kNot; return SetPersonalShopData( nCID, kInfo, kNot ); }
 
 	//{{ 2010. 8. 2	최육사	광장 싱크 최적화
 	//}}

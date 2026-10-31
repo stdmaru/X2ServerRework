@@ -1,7 +1,7 @@
 #pragma once
 
 #include "FSM/support_FSM.h"
-#include <boost/timer.hpp>
+#include "x2/platform/timer.h"
 
 #include "Event.h"
 #include "CommonPacket.h"
@@ -64,5 +64,5 @@ protected:
 	//}}
 
 	//Zombie user 체크를 위한 변수
-	boost::timer					m_TimerZU;
+	x2::Timer					m_TimerZU;
 };

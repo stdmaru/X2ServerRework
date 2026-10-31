@@ -102,7 +102,7 @@ bool KWeddingHallUserManager::RegIntrudeUnitLoadUserList( IN const UidType iUnit
 		return false;
 	}
 
-	BOOST_TEST_FOREACH( const UidType, iRegUnitUID, vecUnitUIDList )
+	for( const UidType iRegUnitUID : vecUnitUIDList )
 	{
 		spRoomUser->RegIntrudeUnitLoadUser( iRegUnitUID );
 	}
@@ -128,7 +128,7 @@ bool KWeddingHallUserManager::UnregIntrudeUnitLoadUserList( IN const UidType iUn
 		return false;
 	}
 
-	BOOST_TEST_FOREACH( const UidType, iRegUnitUID, vecUnitUIDList )
+	for( const UidType iRegUnitUID : vecUnitUIDList )
 	{
 		spRoomUser->UnregIntrudeUnitLoadUser( iRegUnitUID );
 	}

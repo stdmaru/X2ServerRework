@@ -176,7 +176,7 @@ void KSquare::DeleteZombie( std::vector<UidType>& vecZombieUnit )
 		<< BUILD_LOG( vecZombieUnit.size() )
 		<< END_LOG;
 
-	BOOST_TEST_FOREACH( const UidType, iUnitUID, vecZombieUnit )
+	for( const UidType iUnitUID : vecZombieUnit )
 	{
 		KSquareUserPtr spUser = m_kSquareUserManager.GetUser( iUnitUID );
 		if( spUser == NULL )

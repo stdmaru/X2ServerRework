@@ -74,7 +74,7 @@ void KCnPartyManager::Init()
 		}
 
 		// FSM설정
-		FSMclassPtr spFSMClass = boost::shared_ptr< KCnPartyFSM >( new KCnPartyFSM );
+		FSMclassPtr spFSMClass = std::shared_ptr< KCnPartyFSM >( new KCnPartyFSM );
 		spParty->SetFSM( spFSMClass );
 
 		// 파티 정보 생성

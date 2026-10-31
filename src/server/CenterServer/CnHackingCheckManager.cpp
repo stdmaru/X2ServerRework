@@ -1,4 +1,5 @@
 #include "./CnHackingCheckManager.h"
+#include "x2/platform/format.h"
 #include "X2Data/XSLDungeonManager.h"
 #include "Enum/Enum.h"
 
@@ -405,10 +406,10 @@ void KCnHackingCheckManager::Tick()
 	kPacketNot.m_wstrSMSMessage += L" ~ ";
 	kPacketNot.m_wstrSMSMessage += (const wchar_t*)tCurTime.Format(_T("%Y-%m-%d %H:%M:%S"));
 	kPacketNot.m_wstrSMSMessage += L", [";
-	kPacketNot.m_wstrSMSMessage += boost::str( boost::wformat( L"%d회" ) % iDungeonClearTimeCheckCount );
+	kPacketNot.m_wstrSMSMessage += x2::str( x2::wformat( L"%d회" ) % iDungeonClearTimeCheckCount );
 	kPacketNot.m_wstrSMSMessage += L"]";
 	kPacketNot.m_wstrSMSMessage += L", [";
-	kPacketNot.m_wstrSMSMessage += boost::str( boost::wformat( L"%d계정" ) % uiCheckUserCount );
+	kPacketNot.m_wstrSMSMessage += x2::str( x2::wformat( L"%d계정" ) % uiCheckUserCount );
 	kPacketNot.m_wstrSMSMessage += L"]";
 
 	SendToSMSDB( DBE_SEND_PHONE_MSG_NOT, kPacketNot );
@@ -485,7 +486,7 @@ bool KCnHackingCheckManager::CheckStageMinimumClearTime( IN const int iStageID_,
     //}
 
     // 설계 의도 : 하멜이 스테이지ID 40 번, 샌더가 50번이라고 가정하면, 45번 스테이지에서 던전을 클리어한 경우에 40번 기준 시간보다 짧으면 해킹으로 탐지
-    BOOST_TEST_FOREACH( const KMapStageClearTime::value_type& , data, m_kHenirClearTimeCheckData.m_mapStageClearTime )
+    for( const KMapStageClearTime::value_type& data : m_kHenirClearTimeCheckData.m_mapStageClearTime )
     {
         if ( data.first > iStageID_ ) // 스테이지 ID > 클리어한 스테이지 ID = 해킹 기준 스테이지 범위가 아니다
         {

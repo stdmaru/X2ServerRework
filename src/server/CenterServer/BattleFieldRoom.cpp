@@ -1,5 +1,6 @@
 //#ifdef SERV_SYNC_PACKET_USING_RELAY_WORKINGS_CHECK// 작업날짜: 2013-05-06	// 박세훈
-#include <WinSock2.h>	// windows.h redefinition 오류 대처용
+#include "x2/platform/net.h"	// windows.h redefinition 오류 대처용
+#include "x2/platform/format.h"
 #pragma pack( push, 8 )
 //#endif // SERV_SYNC_PACKET_USING_RELAY_WORKINGS_CHECK
 #include "BattleFieldRoom.h"
@@ -38,7 +39,7 @@
 
 	#include "X2Data/XSLFieldBossData.h"
 
-#include <intsafe.h>
+#include <climits>
 
 
 
@@ -190,7 +191,7 @@ void KBattleFieldRoom::LogToDB_GamePlayNetWorkInfo( IN const UidType iUnitUID, I
 		CTime tCurTime = CTime::GetCurrentTime();
 		KELOG_COLLECTION_OF_RELAY_AND_P2P_INFO_NOT kPacketToLog;
 
-		BOOST_TEST_FOREACH( const KGamePlayNetworkInfo&, kGamePlayNetworkInfo, kInfo.m_vecGamePlayNetworkInfo )
+		for( const KGamePlayNetworkInfo& kGamePlayNetworkInfo : kInfo.m_vecGamePlayNetworkInfo )
 		{
 			if( kGamePlayNetworkInfo.m_iOpponentUnitUID == iUnitUID )
 				continue;
@@ -477,7 +478,7 @@ void KBattleFieldRoom::DeleteZombie( std::vector<UidType>& vecZombieUnit )
 	START_LOG( cout2, L"[알림] 배틀필드 좀비 유저 삭제!" )
 		<< BUILD_LOG( vecZombieUnit.size() );
 
-	BOOST_TEST_FOREACH( const UidType, iUnitUID, vecZombieUnit )
+	for( const UidType iUnitUID : vecZombieUnit )
 	{
 		KRoomUserPtr spUser = m_spUserManager->GetUser( iUnitUID );
 		if( IS_NOT_NULL( spUser ) )
@@ -518,7 +519,7 @@ void KBattleFieldRoom::DeleteZombie( std::vector<UidType>& vecZombieUnit )
 	}
 	else
 	{
-		BOOST_TEST_FOREACH( const UidType, iUnitUID, vecZombieUnit )
+		for( const UidType iUnitUID : vecZombieUnit )
 		{
 			// 방의 모든 유저들에게 슬롯 정보를 날린다.
 			KEGS_LEAVE_BATTLE_FIELD_NOT kPacketNot;
@@ -745,13 +746,13 @@ void KBattleFieldRoom::CheckIntrudeUserLoadComplete()
 		//{{ QUEST 개편 - 김민성
 		KERM_UPDATE_QUEST_INFO_NOT kNot;
 		std::vector< int > vecNPC;
-		BOOST_TEST_FOREACH( KNPCUnitReq&, kData, kPacket.m_vecNPCData )
+		for( KNPCUnitReq& kData : kPacket.m_vecNPCData )
 		{
 			kNot.m_vecNPC.push_back( kData.m_NPCID );
 		}
 		//}}
 
-		BOOST_TEST_FOREACH( const UidType, iUnitUID, vecNpcLoadUserList )
+		for( const UidType iUnitUID : vecNpcLoadUserList )
 		{
 			KRoomUserPtr spRoomUser = m_spUserManager->GetUser( iUnitUID );
 			if( spRoomUser == NULL )
@@ -768,11 +769,11 @@ void KBattleFieldRoom::CheckIntrudeUserLoadComplete()
 			std::vector< std::vector<KNPCUnitReq> >	vecTempMiddleBossList;
 			m_kMonsterManager.GetMiddleBossMonsterList( vecTempMiddleBossList );
 
-			BOOST_TEST_FOREACH( std::vector<KNPCUnitReq>&, vecList, vecTempMiddleBossList )
+			for( std::vector<KNPCUnitReq>& vecList : vecTempMiddleBossList )
 			{
 				KEGS_NPC_UNIT_CREATE_MIDDLE_BOSS_NOT kPacketNot;
 
-				BOOST_TEST_FOREACH( KNPCUnitReq&, kNpc, vecList )
+				for( KNPCUnitReq& kNpc : vecList )
 				{
 					KNPCUnitNot kMiddleBoss;
 					kMiddleBoss.m_kNPCUnitReq = kNpc;
@@ -951,7 +952,7 @@ void KBattleFieldRoom::OnLeaveRoom( IN const UidType iLAST_SENDER_UID, IN const 
 		std::vector< int > vecDeleteNpcList;
 		m_kMonsterManager.GetNpcOwnerListByUnitUID( iFIRST_SENDER_UID, vecDeleteNpcList );
 
-		BOOST_TEST_FOREACH( int, iNPCUID, vecDeleteNpcList )
+		for( int iNPCUID : vecDeleteNpcList )
 		{
 			LIF( m_kMonsterManager.SetMonsterDie( iNPCUID, 0 ) );
 
@@ -1378,7 +1379,7 @@ _IMPL_ON_FUNC( ERM_NPC_UNIT_CREATE_REQ, KEGS_NPC_UNIT_CREATE_REQ )
 	KEGS_NPC_UNIT_CREATE_NOT kPacketNot;
 	kPacketNot.m_iBattleFieldID = GetBattleFieldID();
 
-	BOOST_TEST_FOREACH( KNPCUnitReq&, kCreateNpcInfo, kPacket_.m_vecNPCUnitReq )
+	for( KNPCUnitReq& kCreateNpcInfo : kPacket_.m_vecNPCUnitReq )
 	{
 		/// 적군 몬스터 이거나
 		/// 아군 중 아래의 리스트 NPC
@@ -1563,6 +1564,11 @@ IMPL_ON_FUNC_NOPARAM( ERM_USER_UNIT_DIE_COMPLETE_REQ )
 //{{ 필드 드롭 개편 - 김민성
 _IMPL_ON_FUNC( ERM_GET_ITEM_REQ, KEGS_GET_ITEM_REQ )
 {
+	// Port: hoisted above the gotos to end_proc (MSVC let goto skip their initialization)
+	KBattleFieldRoom::ITEM_DATA* pItemData = nullptr;
+	UidType iGetUnitPartyUID{};
+	bool bNotCreateItem = false;
+	UidType iGSUID{};
 	VERIFY_ROOM_STATE( ( 1, KRoomFSM::S_PLAY ), ERM_GET_ITEM_ACK, KEGS_GET_ITEM_ACK );
 
 	kPacket.m_iOK = NetError::NET_OK;
@@ -1584,7 +1590,7 @@ _IMPL_ON_FUNC( ERM_GET_ITEM_REQ, KEGS_GET_ITEM_REQ )
 		goto end_proc;
 	}
 
-	UidType iGetUnitPartyUID = spGetUser->GetPartyUID();
+	iGetUnitPartyUID = spGetUser->GetPartyUID();
 
 	// 1. 습득할려는 item이 없는경우
 	mit = m_mapDropItem.find( kPacket_.m_iDropItemUID );
@@ -1599,16 +1605,16 @@ _IMPL_ON_FUNC( ERM_GET_ITEM_REQ, KEGS_GET_ITEM_REQ )
 		goto end_proc;
 	}
 
-	KBattleFieldRoom::ITEM_DATA& sItemData = mit->second;
+	pItemData = &mit->second;
 
 	// 2. 아이템 종류 검사
-	if( kPacket_.m_kItemInfo.m_iItemID != sItemData.m_iItemID )
+	if( kPacket_.m_kItemInfo.m_iItemID != pItemData->m_iItemID )
 	{
 		START_LOG( cerr, L"습득할려는 아이템의 종류가 잘못되었음." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_iDropItemUID )
 			<< BUILD_LOG( kPacket_.m_kItemInfo.m_iItemID )
-			<< BUILD_LOG( sItemData.m_iItemID )
+			<< BUILD_LOG( pItemData->m_iItemID )
 			<< END_LOG;
 
 		kPacket.m_iOK = NetError::ERR_ITEM_05;
@@ -1616,14 +1622,14 @@ _IMPL_ON_FUNC( ERM_GET_ITEM_REQ, KEGS_GET_ITEM_REQ )
 	}
 
 	// 3. 다른 유저가 이미 습득한건가
-	if( sItemData.m_bIsGet == true )
+	if( pItemData->m_bIsGet == true )
 	{
 		kPacket.m_iOK = NetError::ERR_ITEM_01;
 		goto end_proc;
 	}
 
 	// 4. 획득 가능한 유저인가?
-	if( sItemData.IsGetItemPossibleUnit( FIRST_SENDER_UID ) == false )
+	if( pItemData->IsGetItemPossibleUnit( FIRST_SENDER_UID ) == false )
 	{
 		START_LOG( cerr, L"아이템을 획득 할 수 없는 캐릭터인데 획득 요청을 보냈군.. 해킹인가?" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
@@ -1637,30 +1643,29 @@ _IMPL_ON_FUNC( ERM_GET_ITEM_REQ, KEGS_GET_ITEM_REQ )
 	kNot.m_iDropItemUID	= kPacket_.m_iDropItemUID;
 	kNot.m_iItemID		= kPacket_.m_kItemInfo.m_iItemID;
 	//{{ 2013. 1. 14	박세훈	던전 및 필드 드랍 아이템에 강화 부여
-	kNot.m_cEnchantLevel= sItemData.m_cEnchantLevel;
+	kNot.m_cEnchantLevel= pItemData->m_cEnchantLevel;
 	//}}
 
 	// 순간소비 아이템
-	bool bNotCreateItem = false;
-	UidType iGSUID = LAST_SENDER_UID; // ServerUID저장
+	iGSUID = LAST_SENDER_UID; // ServerUID저장
 
 	// 4. 먹은 아이템이 ED인가? Item인가?
 
 	//////////////////////////////////////////////////////////////////////////
 	// ED아이템
-	if( sItemData.m_bIsGP == true )
+	if( pItemData->m_bIsGP == true )
 	{
-		kNot.m_iTotalED = sItemData.m_iED;
+		kNot.m_iTotalED = pItemData->m_iED;
 		kNot.m_GetUnitUID = FIRST_SENDER_UID; // 클라이언트 화면에 어떤놈이 ED먹었나 표시해줄때 사용
 		float fPartyBonusRate = m_spUserManager->GetBattleFieldPartyBonusRate( kNot.m_GetUnitUID );
-		if( m_spUserManager->AddBattleFieldRewardED( sItemData.m_cNpcLevel, kNot.m_GetUnitUID, fPartyBonusRate, sItemData.m_iED, sItemData.m_mapDamageByUser, kNot ) == false )
+		if( m_spUserManager->AddBattleFieldRewardED( pItemData->m_cNpcLevel, kNot.m_GetUnitUID, fPartyBonusRate, pItemData->m_iED, pItemData->m_mapDamageByUser, kNot ) == false )
 		{
 			START_LOG( cerr, L"ED보상처리가 이상합니다!" )
 				<< BUILD_LOG( kNot.m_GetUnitUID )
-				<< BUILD_LOGc( sItemData.m_cNpcLevel )
-				<< BUILD_LOG( sItemData.m_iNpcMaxHP )
-				<< BUILD_LOG( sItemData.m_mapDamageByUser.size() )
-				<< BUILD_LOG( sItemData.m_iED )
+				<< BUILD_LOGc( pItemData->m_cNpcLevel )
+				<< BUILD_LOG( pItemData->m_iNpcMaxHP )
+				<< BUILD_LOG( pItemData->m_mapDamageByUser.size() )
+				<< BUILD_LOG( pItemData->m_iED )
 				<< END_LOG;
 
 			kPacket.m_iOK = NetError::ERR_ITEM_04;
@@ -1673,17 +1678,17 @@ _IMPL_ON_FUNC( ERM_GET_ITEM_REQ, KEGS_GET_ITEM_REQ )
 	// 아이템	먹는 사람에게 무조건 들어간다
 	else
 	{
-		const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( sItemData.m_iItemID );
+		const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( pItemData->m_iItemID );
 		if( pItemTemplet == NULL )
 		{
 			START_LOG( cerr, L"Item Templet 정보가 없음. 이상한 아이템 먹었네." )
 				<< BUILD_LOG( FIRST_SENDER_UID )
-				<< BUILD_LOG( sItemData.m_iItemID )
+				<< BUILD_LOG( pItemData->m_iItemID )
 				<< END_LOG;
 
 			kPacket.m_iOK = NetError::ERR_ITEM_04;
 
-			sItemData.m_bIsGet = true; // 먹은걸로 처리
+			pItemData->m_bIsGet = true; // 먹은걸로 처리
 			goto end_proc;
 		}
 		else
@@ -1698,7 +1703,7 @@ _IMPL_ON_FUNC( ERM_GET_ITEM_REQ, KEGS_GET_ITEM_REQ )
 		}
 	}
 
-	sItemData.m_bIsGet	= true;	//오류가 없어야 아이템을 먹은것으로 체크
+	pItemData->m_bIsGet	= true;	//오류가 없어야 아이템을 먹은것으로 체크
 
 	// ack를 먼저 보낸다
 	SendToGSCharacter( LAST_SENDER_UID, FIRST_SENDER_UID, ERM_GET_ITEM_ACK, kPacket );
@@ -1739,15 +1744,15 @@ _IMPL_ON_FUNC( ERM_GET_ITEM_REQ, KEGS_GET_ITEM_REQ )
 
 		//{{ 2009. 6. 23  최육사	드롭 획득 공지 아이템 - 비던아이템, 매력아이템
 		//{{ 2013. 1. 14	박세훈	던전 및 필드 드랍 아이템에 강화 부여
-		if(		( sItemData.m_bNotify == true )
-			||	( SiKDropTable()->IsNotifyDropItem( sItemData.m_iItemID ) )
+		if(		( pItemData->m_bNotify == true )
+			||	( SiKDropTable()->IsNotifyDropItem( pItemData->m_iItemID ) )
 			)
 			//}}
 		{
 			KRoomUserPtr spRoomUser = m_spUserManager->GetUser( kNot.m_GetUnitUID );
 			if( spRoomUser != NULL )
 			{
-				const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( sItemData.m_iItemID );
+				const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( pItemData->m_iItemID );
 				if( pItemTemplet != NULL )
 				{
 					KEGS_NOTIFY_MSG_NOT	kPacket;
@@ -1756,9 +1761,9 @@ _IMPL_ON_FUNC( ERM_GET_ITEM_REQ, KEGS_GET_ITEM_REQ )
 					kPacket.m_wstrMSG = spRoomUser->GetNickName();
 					kPacket.m_wstrMSG += L";";
 					//{{ 2012. 1. 17	박세훈	던전 및 필드 드랍 아이템에 강화 부여
-					if( sItemData.m_bNotify == true )
+					if( pItemData->m_bNotify == true )
 					{
-						kPacket.m_wstrMSG += boost::str( boost::wformat( L"+%d " ) % static_cast<int>( sItemData.m_cEnchantLevel ) );
+						kPacket.m_wstrMSG += x2::str( x2::wformat( L"+%d " ) % static_cast<int>( pItemData->m_cEnchantLevel ) );
 					}
 					//}}
 					kPacket.m_wstrMSG += pItemTemplet->m_Name;
@@ -1768,7 +1773,7 @@ _IMPL_ON_FUNC( ERM_GET_ITEM_REQ, KEGS_GET_ITEM_REQ )
 				{
 					START_LOG( cerr, L"드롭 획득 아이템 공지를 날리려는데 존재하지 않는 아이템입니다" )
 						<< BUILD_LOG( kNot.m_GetUnitUID )
-						<< BUILD_LOG( sItemData.m_iItemID )
+						<< BUILD_LOG( pItemData->m_iItemID )
 						<< END_LOG;
 				}
 			}
@@ -1886,12 +1891,12 @@ _IMPL_ON_FUNC( ERM_CHECK_INVALID_USER_NOT, UidType )
 	if( iCount == 0 )
 		return;
 
-	BOOST_TEST_FOREACH( const KRoomUserManager::KLeaveUserInfo&, kInfo, vecDelUserUID )
+	for( const KRoomUserManager::KLeaveUserInfo& kInfo : vecDelUserUID )
 	{
 		m_spUserManager->LeaveRoom( kInfo.m_iUnitUID );
 	}
 
-	BOOST_TEST_FOREACH( const KRoomUserManager::KLeaveUserInfo&, kInfo, vecDelUserUID )
+	for( const KRoomUserManager::KLeaveUserInfo& kInfo : vecDelUserUID )
 	{
 		if( IsEmpty() == false )
 		{
@@ -2209,7 +2214,7 @@ IMPL_ON_FUNC( ERM_DUMP_BATTLE_FIELD_NOT )
 		std::vector< UidType > vecUserList;
 		m_spUserManager->GetUnitUIDList( vecUserList );
 
-		BOOST_TEST_FOREACH( const UidType, iUnitUID, vecUserList )
+		for( const UidType iUnitUID : vecUserList )
 		{
 			KRoomUserPtr spRoomUser = m_spUserManager->GetUser( iUnitUID );
 			if( IS_NULL( spRoomUser ) )
@@ -2249,7 +2254,7 @@ IMPL_ON_FUNC( ERM_DUMP_BATTLE_FIELD_NOT )
 				<< BUILD_LOG( spRoomUser->GetPartyUID() )
 				<< BUILD_LOG( vecPartyMemberList.size() );
 
-			BOOST_TEST_FOREACH( const UidType, iPartyMemberUnitUID, vecPartyMemberList )
+			for( const UidType iPartyMemberUnitUID : vecPartyMemberList )
 			{
 				START_LOG( cout, L"파티원 UnitUID : " << iPartyMemberUnitUID );
 			}
@@ -2320,7 +2325,7 @@ IMPL_ON_FUNC( ERM_KILL_ZOMBIE_USER_IN_BATTLE_FIELD_NOT )
 	std::vector< UidType > vecUserList;
 	m_spUserManager->GetUnitUIDList( vecUserList );
 
-	BOOST_TEST_FOREACH( const UidType, iUnitUID, vecUserList )
+	for( const UidType iUnitUID : vecUserList )
 	{
 		KRoomUserPtr spRoomUser = m_spUserManager->GetUser( iUnitUID );
 		if( IS_NULL( spRoomUser ) )
@@ -2372,7 +2377,7 @@ _IMPL_ON_FUNC( ERM_CHECK_EXIST_MONSTER_UID_REQ, KEGS_CHECK_EXIST_MONSTER_UID_REQ
 	VERIFY_ROOM_STATE( ( 1, KRoomFSM::S_PLAY ), ERM_CHECK_EXIST_MONSTER_UID_ACK, KEGS_CHECK_EXIST_MONSTER_UID_ACK );
 
 	// 루프를 돌면서 해당 몬스터가 실제로 있는지 확인한다
-	BOOST_TEST_FOREACH( const int, iNpcUID, kPacket_.m_vecNpcUID )
+	for( const int iNpcUID : kPacket_.m_vecNpcUID )
 	{
 		// 없으면
         if( m_kMonsterManager.IsExistMonster( iNpcUID ) == false )
@@ -2397,7 +2402,7 @@ _IMPL_ON_FUNC( ERM_COMMUNITY_IN_BATTLE_FIELD_REQ, KEGS_COMMUNITY_USER_LIST_REQ )
 	std::vector< UidType > vecUserList;
 	m_spUserManager->GetUnitUIDList( vecUserList );
 
-	BOOST_TEST_FOREACH( UidType, iUnitUid, vecUserList )
+	for( UidType iUnitUid : vecUserList )
 	{
 		KRoomUserPtr spRoomUser = m_spUserManager->GetUser( iUnitUid );
 
@@ -2579,7 +2584,7 @@ void KBattleFieldRoom::CheckEventMonster()
 		}
 
 		// 제거 처리
-		BOOST_TEST_FOREACH( KERM_NPC_UNIT_DIE_NOT&, kNpcDietNot, veckPacketNpcDie )
+		for( KERM_NPC_UNIT_DIE_NOT& kNpcDietNot : veckPacketNpcDie )
 		{
 			BroadCast( ERM_BATTLE_FIELD_NPC_UNIT_DIE_NOT, kNpcDietNot, KRoomUserManager::UL_NPC_LOAD_USER );
 		}
@@ -2627,7 +2632,7 @@ void KBattleFieldRoom::CheckMiddleBossMonster()
             //kLog.m_nNumGenBoss = kPacketNot.m_kCreatePacket.m_vecNPCUnitAck.size();
 
             //std::vector< KNPCUnitNot > m_vecNPCUnitAck
-            BOOST_TEST_FOREACH( KNPCUnitNot, kNPCUnit, kPacketNot.m_kCreatePacket.m_vecNPCUnitAck )
+            for( KNPCUnitNot kNPCUnit : kPacketNot.m_kCreatePacket.m_vecNPCUnitAck )
             {
                  kLog.m_nSpawnID = kNPCUnit.m_kNPCUnitReq.m_iBossGroupID;
             }
@@ -2747,7 +2752,7 @@ void KBattleFieldRoom::BattleFieldMiddleBossDropProcess( IN const KEGS_NPC_UNIT_
 			mapUserContribution.insert( std::make_pair( mitDamageByUser->first, fContribution ) );
 
 			// 파티 원도 동일한 기여도로 셋팅한다.
-			BOOST_TEST_FOREACH( UidType, iPartyUnitUID, vecPartyUserList )
+			for( UidType iPartyUnitUID : vecPartyUserList )
 			{
 				mapUserContribution.insert( std::make_pair( iPartyUnitUID, fContribution ) );
 			}
@@ -3035,10 +3040,10 @@ void KBattleFieldRoom::BattleFieldMiddleBossDropProcess( IN const KEGS_NPC_UNIT_
 				//}
 				{
 					//있다면 유닛별로 루푸를 돌면서..
-					BOOST_TEST_FOREACH( const KRoomUser::QUEST_ITEM_DROP_INFO&, kDropInfo, vecDropInfo )
+					for( const KRoomUser::QUEST_ITEM_DROP_INFO& kDropInfo : vecDropInfo )
 					{
 						//드롭된 아이템 수만큼 처리를 시작..
-						BOOST_TEST_FOREACH( const int, iDropQuestItemID, kDropInfo.m_vecDropQuestItem )
+						for( const int iDropQuestItemID : kDropInfo.m_vecDropQuestItem )
 						{
 							KEGS_GET_ITEM_NOT kDropNot;
 							kDropNot.m_cGetItemType = KEGS_GET_ITEM_NOT::GIT_QUEST_ITEM;
@@ -3091,7 +3096,7 @@ void KBattleFieldRoom::BattleFieldMiddleBossDropProcess( IN const KEGS_NPC_UNIT_
 			//2.NPC ITEM 드롭처리
 			if( sDropDataNpc.m_vecItemID.empty() == false )
 			{
-				BOOST_TEST_FOREACH( const int, iDropItemID, sDropDataNpc.m_vecItemID )
+				for( const int iDropItemID : sDropDataNpc.m_vecItemID )
 				{
 					kDropItemNot.m_DropItemDataList.push_back( CreateItemProcess( iDropItemID, kDieNpcInfo.m_cLevel, kPacket_.m_iNpcMaxHP, mapUserContribution ) );
 				}
@@ -3100,7 +3105,7 @@ void KBattleFieldRoom::BattleFieldMiddleBossDropProcess( IN const KEGS_NPC_UNIT_
 			//{{ 2009. 4. 22  최육사	전체드롭
 			if( sDropDataStatic.m_vecItemID.empty() == false )
 			{
-				BOOST_TEST_FOREACH( const int, iDropItemID, sDropDataStatic.m_vecItemID )
+				for( const int iDropItemID : sDropDataStatic.m_vecItemID )
 				{
 					kDropItemNot.m_DropItemDataList.push_back( CreateItemProcess( iDropItemID, kDieNpcInfo.m_cLevel, kPacket_.m_iNpcMaxHP, mapUserContribution ) );
 				}
@@ -3110,7 +3115,7 @@ void KBattleFieldRoom::BattleFieldMiddleBossDropProcess( IN const KEGS_NPC_UNIT_
 			//4.ATTRIB NPC ITEM 드롭처리
 			if( kDieNpcInfo.m_bActive == true && sDropDataAttribNpc.m_vecItemID.empty() == false )
 			{
-				BOOST_TEST_FOREACH( const int, iDropItemID, sDropDataAttribNpc.m_vecItemID )
+				for( const int iDropItemID : sDropDataAttribNpc.m_vecItemID )
 				{
 					kDropItemNot.m_DropItemDataList.push_back( CreateItemProcess( iDropItemID, kDieNpcInfo.m_cLevel, kPacket_.m_iNpcMaxHP, mapUserContribution ) );
 				}
@@ -3273,7 +3278,7 @@ void KBattleFieldRoom::BattleFieldNormalDropProcess( const IN KEGS_NPC_UNIT_DIE_
 			mapUserContribution.insert( std::make_pair( mitDamageByUser->first, fContribution ) );
 
 			// 파티 원도 동일한 기여도로 셋팅한다.
-			BOOST_TEST_FOREACH( UidType, iPartyUnitUID, vecPartyUserList )
+			for( UidType iPartyUnitUID : vecPartyUserList )
 			{
 				mapUserContribution.insert( std::make_pair( iPartyUnitUID, fContribution ) );
 			}
@@ -3485,10 +3490,10 @@ void KBattleFieldRoom::BattleFieldNormalDropProcess( const IN KEGS_NPC_UNIT_DIE_
 				//}
 				{
 					//있다면 유닛별로 루푸를 돌면서..
-					BOOST_TEST_FOREACH( const KRoomUser::QUEST_ITEM_DROP_INFO&, kDropInfo, vecDropInfo )
+					for( const KRoomUser::QUEST_ITEM_DROP_INFO& kDropInfo : vecDropInfo )
 					{
 						//드롭된 아이템 수만큼 처리를 시작..
-						BOOST_TEST_FOREACH( const int, iDropQuestItemID, kDropInfo.m_vecDropQuestItem )
+						for( const int iDropQuestItemID : kDropInfo.m_vecDropQuestItem )
 						{
 							KEGS_GET_ITEM_NOT kDropNot;
 							kDropNot.m_cGetItemType = KEGS_GET_ITEM_NOT::GIT_QUEST_ITEM;
@@ -3542,7 +3547,7 @@ void KBattleFieldRoom::BattleFieldNormalDropProcess( const IN KEGS_NPC_UNIT_DIE_
 			//2.NPC ITEM 드롭처리
 			if( sDropDataNpc.m_vecItemID.empty() == false )
 			{
-				BOOST_TEST_FOREACH( const int, iDropItemID, sDropDataNpc.m_vecItemID )
+				for( const int iDropItemID : sDropDataNpc.m_vecItemID )
 				{
 					kDropItemNot.m_DropItemDataList.push_back( CreateItemProcess( iDropItemID, kDieNpcInfo.m_cLevel, kPacket_.m_iNpcMaxHP, mapUserContribution ) );
 				}
@@ -3551,7 +3556,7 @@ void KBattleFieldRoom::BattleFieldNormalDropProcess( const IN KEGS_NPC_UNIT_DIE_
 			//{{ 2009. 4. 22  최육사	전체드롭
 			if( sDropDataStatic.m_vecItemID.empty() == false )
 			{
-				BOOST_TEST_FOREACH( const int, iDropItemID, sDropDataStatic.m_vecItemID )
+				for( const int iDropItemID : sDropDataStatic.m_vecItemID )
 				{
 					kDropItemNot.m_DropItemDataList.push_back( CreateItemProcess( iDropItemID, kDieNpcInfo.m_cLevel, kPacket_.m_iNpcMaxHP, mapUserContribution ) );
 				}
@@ -3561,7 +3566,7 @@ void KBattleFieldRoom::BattleFieldNormalDropProcess( const IN KEGS_NPC_UNIT_DIE_
 			//4.ATTRIB NPC ITEM 드롭처리
 			if( kDieNpcInfo.m_bActive == true && sDropDataAttribNpc.m_vecItemID.empty() == false )
 			{
-				BOOST_TEST_FOREACH( const int, iDropItemID, sDropDataAttribNpc.m_vecItemID )
+				for( const int iDropItemID : sDropDataAttribNpc.m_vecItemID )
 				{
 					kDropItemNot.m_DropItemDataList.push_back( CreateItemProcess( iDropItemID, kDieNpcInfo.m_cLevel, kPacket_.m_iNpcMaxHP, mapUserContribution ) );
 				}
@@ -4098,7 +4103,7 @@ void KBattleFieldRoom::BattleFieldBossDropProcess( const IN KEGS_NPC_UNIT_DIE_RE
 			mapUserContribution.insert( std::make_pair( mitDamageByUser->first, fContribution ) );
 
 			// 파티 원도 동일한 기여도로 셋팅한다.
-			BOOST_TEST_FOREACH( UidType, iPartyUnitUID, vecPartyUserList )
+			for( UidType iPartyUnitUID : vecPartyUserList )
 			{
 				mapUserContribution.insert( std::make_pair( iPartyUnitUID, fContribution ) );
 			}
@@ -4324,10 +4329,10 @@ void KBattleFieldRoom::BattleFieldBossDropProcess( const IN KEGS_NPC_UNIT_DIE_RE
 				//}
 			{
 				//있다면 유닛별로 루푸를 돌면서..
-				BOOST_TEST_FOREACH( const KRoomUser::QUEST_ITEM_DROP_INFO&, kDropInfo, vecDropInfo )
+				for( const KRoomUser::QUEST_ITEM_DROP_INFO& kDropInfo : vecDropInfo )
 				{
 					//드롭된 아이템 수만큼 처리를 시작..
-					BOOST_TEST_FOREACH( const int, iDropQuestItemID, kDropInfo.m_vecDropQuestItem )
+					for( const int iDropQuestItemID : kDropInfo.m_vecDropQuestItem )
 					{
 						KEGS_GET_ITEM_NOT kDropNot;
 						kDropNot.m_cGetItemType = KEGS_GET_ITEM_NOT::GIT_QUEST_ITEM;
@@ -4380,7 +4385,7 @@ void KBattleFieldRoom::BattleFieldBossDropProcess( const IN KEGS_NPC_UNIT_DIE_RE
 		//2.NPC ITEM 드롭처리
 		if( sDropDataNpc.m_vecItemID.empty() == false )
 		{
-			BOOST_TEST_FOREACH( const int, iDropItemID, sDropDataNpc.m_vecItemID )
+			for( const int iDropItemID : sDropDataNpc.m_vecItemID )
 			{
 				kDropItemNot.m_DropItemDataList.push_back( CreateItemProcess( iDropItemID, kDieNpcInfo.m_cLevel, kPacket_.m_iNpcMaxHP, mapUserContribution ) );
 			}
@@ -4389,7 +4394,7 @@ void KBattleFieldRoom::BattleFieldBossDropProcess( const IN KEGS_NPC_UNIT_DIE_RE
 		//{{ 2009. 4. 22  최육사	전체드롭
 		if( sDropDataStatic.m_vecItemID.empty() == false )
 		{
-			BOOST_TEST_FOREACH( const int, iDropItemID, sDropDataStatic.m_vecItemID )
+			for( const int iDropItemID : sDropDataStatic.m_vecItemID )
 			{
 				kDropItemNot.m_DropItemDataList.push_back( CreateItemProcess( iDropItemID, kDieNpcInfo.m_cLevel, kPacket_.m_iNpcMaxHP, mapUserContribution ) );
 			}
@@ -4399,7 +4404,7 @@ void KBattleFieldRoom::BattleFieldBossDropProcess( const IN KEGS_NPC_UNIT_DIE_RE
 		//4.ATTRIB NPC ITEM 드롭처리
 		if( kDieNpcInfo.m_bActive == true && sDropDataAttribNpc.m_vecItemID.empty() == false )
 		{
-			BOOST_TEST_FOREACH( const int, iDropItemID, sDropDataAttribNpc.m_vecItemID )
+			for( const int iDropItemID : sDropDataAttribNpc.m_vecItemID )
 			{
 				kDropItemNot.m_DropItemDataList.push_back( CreateItemProcess( iDropItemID, kDieNpcInfo.m_cLevel, kPacket_.m_iNpcMaxHP, mapUserContribution ) );
 			}
@@ -4511,7 +4516,7 @@ void KBattleFieldRoom::_BossRewardProcess( IN const UidType iUnitUID, IN const s
 	if( 0 <= iRank )
 	{
 		// 로그 관련 정보라서 const_cast를 사용함. 이 함수의 상수성을 제거하거나 외부에서 처리해도 문제 없다.
-		const_cast<KBattleFieldRoom*>( this )->_MakeBossFieldUserLog( iUnitUID, static_cast<byte>( min( iRank, BYTE_MAX ) ) );
+		const_cast<KBattleFieldRoom*>( this )->_MakeBossFieldUserLog( iUnitUID, static_cast<byte>( std::min<size_t>( iRank, UCHAR_MAX ) ) );
 	}
 }
 
@@ -4667,7 +4672,7 @@ void KBattleFieldRoom::_MakePartyContributionData( IN const std::map<UidType, fl
 	std::vector< std::set< UidType > > vecUnitListGroupdByParty;
 	m_spUserManager->GetUnitListGroupdByParty( vecUnitListGroupdByParty );
 
-	BOOST_TEST_FOREACH( const std::set<UidType>&, setUnitList, vecUnitListGroupdByParty )
+	for( const std::set<UidType>& setUnitList : vecUnitListGroupdByParty )
 	{
 		if( setUnitList.empty() == true )
 			continue;
@@ -4701,7 +4706,7 @@ void KBattleFieldRoom::_BossFieldCloseProcess( const bool bTimeOut )
 	}
 
 	// 로그 정보 수집
-	m_kBossFieldLog.m_kFieldLog.m_iPlayTime = static_cast<int>( min( ( tCurrentTime - m_tFieldOpenTime ), INT_MAX ) );
+	m_kBossFieldLog.m_kFieldLog.m_iPlayTime = static_cast<int>( std::min<__time64_t>( ( tCurrentTime - m_tFieldOpenTime ), INT_MAX ) );
 	m_kBossFieldLog.m_kFieldLog.m_byteRemainUserCount = static_cast<byte>(m_spUserManager->GetNumMember());
 	m_kBossFieldLog.m_kFieldLog.m_bSucceed = !bTimeOut;
 
@@ -4735,7 +4740,7 @@ bool KBattleFieldRoom::EnterRoom( IN const KRoomUserInfo& kInfo, IN const KBattl
 		KBossFieldUserLog kBossFieldUserLog;
 		kBossFieldUserLog.m_iUnitUID		= kInfo.m_nUnitUID;
 		kBossFieldUserLog.m_byteLevel		= kInfo.m_ucLevel;
-		kBossFieldUserLog.m_byteClass		= max( kInfo.m_cUnitClass, 0 );
+		kBossFieldUserLog.m_byteClass		= std::max<char>( kInfo.m_cUnitClass, 0 );
 		kBossFieldUserLog.m_wstrNickName	= kInfo.m_wstrNickName;
 		it->second.push_back( kBossFieldUserLog );
 	}

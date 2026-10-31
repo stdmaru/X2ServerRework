@@ -6,7 +6,7 @@
 #include "Socket/NetCommon.h"
 
 #include "RoomUserManager.h"
-#include <boost/timer.hpp>
+#include "x2/platform/timer.h"
 
 SmartPointer( KRoom );
 
@@ -91,7 +91,7 @@ public:
 
 	private:
 		bool			m_bIsStart;
-		boost::timer	m_kTimer;
+		x2::Timer	m_kTimer;
 	};
 
 public:
@@ -363,7 +363,7 @@ protected:
     static float                        ms_fPlayTimeNotifyGap;
 	bool								m_bEnableRemainingPlayTime;
 
-    boost::timer                        m_kTimer[TM_TOTAL_NUM];
+    x2::Timer                        m_kTimer[TM_TOTAL_NUM];
 	//{{ 2011. 11. 7	최육사	배틀필드 시스템
 	KRoomUserManagerPtr					m_spRoomUserManager;
 	//}}
@@ -391,7 +391,7 @@ protected:
 
 
 private:
-	boost::timer						m_kHostCheckTimer;
+	x2::Timer						m_kHostCheckTimer;
 
 
 };

@@ -38,7 +38,7 @@ bool KCnPartyUser::GetPartyRoomUserInfo( OUT KPartyRoomUserInfo& kInfo )
 //{{ 2012. 03. 26	최육사	배틀필드 시스템
 bool KCnPartyUser::GetOldPartyInfo( OUT KOldPartyInfo& kInfo ) const
 {
-	BOOST_TEST_FOREACH( const KOldPartyInfo&, kOldPartyInfo, m_vecOldPartyInfo )
+	for( const KOldPartyInfo& kOldPartyInfo : m_vecOldPartyInfo )
 	{
 		kInfo = kOldPartyInfo;
 		return true;

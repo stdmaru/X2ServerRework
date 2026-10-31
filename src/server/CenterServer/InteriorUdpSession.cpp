@@ -4,7 +4,6 @@
 #include "../Common/Socket/NetCommon.h"  // CLOSE_SOCKET
 #include "../Common/Socket/Session.h"    // EVENT_UDP_PORT_NOT
 #include <dbg/dbg.hpp>
-#include <boost/test/utils/foreach.hpp>
 #include "KncSend.h"
 #include "Event.h"
 #include "CommonPacket.h"
@@ -197,9 +196,9 @@ void KInteriorUdpSession::OnFrameMove( void )
 //#endif  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
 
 //#ifdef  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
-    BOOST_TEST_FOREACH( const CKTDNUDP::LB_INFO_STRUCT&, recvData, m_vecStorage )
+    for( const CKTDNUDP::LB_INFO_STRUCT& recvData : m_vecStorage )
 //#else   SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
-//	BOOST_TEST_FOREACH( const CKTDNUDP::LB_INFO_STRUCT&, recvData, m_RecvDataList )
+//	for( const CKTDNUDP::LB_INFO_STRUCT& recvData : m_RecvDataList )
 //#endif  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
 	{
 		switch( recvData.m_eEventID )

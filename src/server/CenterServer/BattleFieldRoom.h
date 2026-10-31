@@ -315,7 +315,7 @@ protected:
 	KBattleFieldMonsterManager			m_kMonsterManager;
 	KDungeonSecurityManager				m_kSecurityManager;
 
-	boost::timer						m_tTimer[TE_MAX];
+	x2::Timer						m_tTimer[TE_MAX];
 
 	static DWORD						m_dwMonsterRespawnCheckTick;
 

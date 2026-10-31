@@ -1,4 +1,4 @@
-#include <winsock2.h>
+#include "x2/platform/net.h"
 #include <iomanip>
 #include <sstream>
 
@@ -173,7 +173,7 @@ IMPL_ON_FUNC( ELOG_CHAT_LOG_NOT )
 		% kPacket_.m_strMsg );
 
 end_proc:
-    __noop; // doing nothing.
+    ; // doing nothing.
 }
 
 _IMPL_ON_FUNC( DBE_SERVER_ON_REQ, KNetAddress )
@@ -1058,7 +1058,7 @@ IMPL_ON_FUNC( DBE_PVP_MATCH_RESULT_LOG_NOT )
 	//////////////////////////////////////////////////////////////////////////
 	// 로그 기록!
 
-	BOOST_TEST_FOREACH( const KPvpMatchUserResultLog&, kUserLog, kPacket_.m_vecPvpMatchUserLog )
+	for( const KPvpMatchUserResultLog& kUserLog : kPacket_.m_vecPvpMatchUserLog )
 	{
 		iOK = NetError::ERR_ODBC_01;
 
@@ -1139,7 +1139,7 @@ IMPL_ON_FUNC( DBE_PVP_MATCH_RESULT_LOG_NOT )
 	return;
 
 end_proc:
-	BOOST_TEST_FOREACH( const KPvpMatchUserResultLog&, kUserLog, kPacket_.m_vecPvpMatchUserLog )
+	for( const KPvpMatchUserResultLog& kUserLog : kPacket_.m_vecPvpMatchUserLog )
 	{
 		START_LOG( cerr, L"대전 매칭 유저 로그 기록 실패!" )
 			<< BUILD_LOG( iOK )
@@ -1177,7 +1177,7 @@ end_proc:
 //{{ 2012. 10. 16	최육사		P2P & Relay 정보 수집
 IMPL_ON_FUNC( ELOG_COLLECTION_OF_RELAY_AND_P2P_INFO_NOT )
 {
-	BOOST_TEST_FOREACH( const KDBUpdateGamePlayNetworkInfo&, kInfo, kPacket_.m_vecDBUpdateInfo )
+	for( const KDBUpdateGamePlayNetworkInfo& kInfo : kPacket_.m_vecDBUpdateInfo )
 	{
 		int iOK = NetError::ERR_ODBC_01;
 
@@ -1352,7 +1352,7 @@ IMPL_ON_FUNC( DBE_LOG_STATISTICS_INFO_NOT )
 	const std::wstring wstrCurTime = ( std::wstring )( tCurTime.Format( _T( "%Y-%m-%d %H:%M:%S" ) ) );
 	const UidType iServerUID = KBaseServer::GetKObj()->GetUID();
 
-	BOOST_TEST_FOREACH( const KLogStatInfo&, kInfo, kPacket_.m_vecLogStat )
+	for( const KLogStatInfo& kInfo : kPacket_.m_vecLogStat )
 	{
 		int iOK = NetError::ERR_ODBC_01;
 
@@ -1410,6 +1410,8 @@ end_proc:
 //{{ 2013. 2. 26	박세훈	랜선렉 방지 코드2
 IMPL_ON_FUNC( DBE_UDP_CHECK_KICK_USER_NOT )
 {
+	// Port: hoisted above the gotos to end_proc (MSVC let goto skip their initialization)
+	int iOK{};
 	CTime tCurrentTime = CTime::GetCurrentTime();
 	CStringW str = tCurrentTime.Format(_T("%Y-%m-%d %H:%M:%S"));
 	const std::wstring wstrRegTime(str.GetString());
@@ -1423,7 +1425,7 @@ IMPL_ON_FUNC( DBE_UDP_CHECK_KICK_USER_NOT )
 		% wstrRegTime
 		);
 
-	int iOK = NetError::ERR_ODBC_01;
+	iOK = NetError::ERR_ODBC_01;
 	if( m_kODBC.BeginFetch() )
 	{
 		FETCH_DATA( iOK );
@@ -1487,7 +1489,7 @@ IMPL_ON_FUNC( ELOG_HENIR_HACKING_LOG_NOT )
 
         반환 값: Result (인설트 실패 시 -1 반환)*/
     std::wstring wstrTime = (LPCTSTR)CTime::GetCurrentTime().Format( _T("%y%m%d %H:%M:%S") );
-    BOOST_TEST_FOREACH( const KHenirHackUserData&, sData, kPacket_.m_vecHackUser )
+    for( const KHenirHackUserData& sData : kPacket_.m_vecHackUser )
     {
         DO_QUERY( L"exec dbo.P_LHenirHackUserLog_INS",
             L"%d, %d, %d, %d, N\'%s\' ",
@@ -1511,13 +1513,15 @@ end_proc:
 
 _IMPL_ON_FUNC( ELOG_GEN_FIELD_MIDDLE_BOSS_STAT_NOT, KFieldBossGenKillStat )
 {
+	// Port: hoisted above the gotos to end_proc (MSVC let goto skip their initialization)
+	int iOK{};
     DO_QUERY( L"exec dbo.P_StatsFieldBossSpawn_INS",
         L"%d, %d",
         % kPacket_.m_nFieldID
         % kPacket_.m_nSpawnID
         );
 
-    int iOK = NetError::ERR_ODBC_01;
+    iOK = NetError::ERR_ODBC_01;
     if( m_kODBC.BeginFetch() )
     {
         FETCH_DATA( iOK );
@@ -1535,6 +1539,8 @@ end_proc:
 
 _IMPL_ON_FUNC( ELOG_KILL_FIELD_MIDDLE_BOSS_STAT_NOT, KFieldBossGenKillStat )
 {
+	// Port: hoisted above the gotos to end_proc (MSVC let goto skip their initialization)
+	int iOK{};
     DO_QUERY( L"exec dbo.P_StatsFieldBossKill_INS",
         L"%d, %d, %d",
         % kPacket_.m_nFieldID
@@ -1542,7 +1548,7 @@ _IMPL_ON_FUNC( ELOG_KILL_FIELD_MIDDLE_BOSS_STAT_NOT, KFieldBossGenKillStat )
         % kPacket_.m_nNumUser
         );
 
-    int iOK = NetError::ERR_ODBC_01;
+    iOK = NetError::ERR_ODBC_01;
     if( m_kODBC.BeginFetch() )
     {
         FETCH_DATA( iOK );
@@ -1560,6 +1566,8 @@ end_proc:
 
 IMPL_ON_FUNC( DBE_BOSS_FIELD_LOG_NOT )
 {
+	// Port: hoisted above the gotos to end_proc (MSVC let goto skip their initialization)
+	int iOK{};
 	// 방에 대한 로그 쓰기
 	DO_QUERY( L"exec dbo.P_LBossFieldLog_INS",
 		L"%d, %d, N\'%s\', %d, %d, %d",
@@ -1571,7 +1579,7 @@ IMPL_ON_FUNC( DBE_BOSS_FIELD_LOG_NOT )
 		% kPacket_.m_kFieldLog.m_byteRemainUserCount
 		);
 
-	int iOK = NetError::ERR_ODBC_01;
+	iOK = NetError::ERR_ODBC_01;
 	int iLogUID;
 
 	if( m_kODBC.BeginFetch() )
@@ -1595,7 +1603,7 @@ IMPL_ON_FUNC( DBE_BOSS_FIELD_LOG_NOT )
 	{
 		const std::vector<KBossFieldUserLog>& vecUserLog = it->second;
 
-		BOOST_TEST_FOREACH( const KBossFieldUserLog&, kData, vecUserLog )
+		for( const KBossFieldUserLog& kData : vecUserLog )
 		{
 			DO_QUERY( L"exec dbo.P_LBossFieldLog_Unit_INS",
 				L"%d, %d, N\'%s\', %d, %d, %d, %d, %d, %d, %d, "

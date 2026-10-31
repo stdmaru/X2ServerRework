@@ -123,7 +123,7 @@ private:
 	KDungeonClearTimeHackUserCheck	m_kDungeonClearTimeCheckData;
 	std::set< UidType >				m_setDungeonClearTimeCheckUserList;
 	int								m_iDungeonClearTimeCheckCount;
-	boost::timer					m_tDungeonClearTimeCheckTimer;
+	x2::Timer					m_tDungeonClearTimeCheckTimer;
 	std::vector< std::wstring >		m_vecPhoneNumList;
 	//}}
     KHenirClearTimeHackUserCheck    m_kHenirClearTimeCheckData;

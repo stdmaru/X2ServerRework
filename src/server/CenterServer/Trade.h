@@ -2,7 +2,7 @@
 
 #include "CnBaseRoom.h"
 
-#include <boost/timer.hpp>
+#include "x2/platform/timer.h"
 
 #include "TradeUserManager.h"
 
@@ -62,7 +62,7 @@ protected:
 
 protected:
 	KTradeUserManager	m_kTradeUserManager;
-	boost::timer		m_kTimer[TM_TOTAL_NUM];
+	x2::Timer		m_kTimer[TM_TOTAL_NUM];
 };
 
 template< class T >

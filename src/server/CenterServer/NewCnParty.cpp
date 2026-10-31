@@ -264,7 +264,7 @@ void KCnParty::Tick()
 		m_kPartyUserManager.Tick( vecDeleteCadidateUser );
 		if( vecDeleteCadidateUser.empty() == false )
 		{
-			BOOST_TEST_FOREACH( const UidType, iUnitUID, vecDeleteCadidateUser )
+			for( const UidType iUnitUID : vecDeleteCadidateUser )
 			{
 				LIF( LeaveCandidateMember( iUnitUID ) );
 			}
@@ -456,7 +456,7 @@ void KCnParty::UpdateJoinRoomInfoAndGetOnOffResult( IN const UidType iUnitUID, I
 	}
 
 	// 필드에서 필드로, 필드에서 다른곳으로 다른곳에서 필드로 이동한거라면 새로운 갱신을 처리하자!
-	BOOST_TEST_FOREACH( const UidType, iUnitUID, vecOnMoveButton )
+	for( const UidType iUnitUID : vecOnMoveButton )
 	{
 		KCnPartyUserPtr spPartyUser = m_kPartyUserManager.GetPartyUser( iUnitUID );
 		if( spPartyUser == NULL )
@@ -472,7 +472,7 @@ void KCnParty::UpdateJoinRoomInfoAndGetOnOffResult( IN const UidType iUnitUID, I
 		spPartyUser->SendToGSCharacter( EPM_UPDATE_MOVE_TO_PARTY_MEMBER_INFO_NOT, kNot );
 	}
 
-	BOOST_TEST_FOREACH( const UidType, iUnitUID, vecOffMoveButton )
+	for( const UidType iUnitUID : vecOffMoveButton )
 	{
 		KCnPartyUserPtr spPartyUser = m_kPartyUserManager.GetPartyUser( iUnitUID );
 		if( spPartyUser == NULL )
@@ -877,7 +877,7 @@ void KCnParty::CloseParty( IN const int iReason )
 
 	if( vecDeleteCadidateUser.empty() == false )
 	{
-		BOOST_TEST_FOREACH( const UidType, iUnitUID, vecDeleteCadidateUser )
+		for( const UidType iUnitUID : vecDeleteCadidateUser )
 		{
 			// 7초 이후에 대기자의 상태가 변화가 없었는지 확인, 없었다면 파티 초대를 거부한것이므로 초대 거부 메시지를 초대자에게 날리자.
 			KCnPartyUserPtr spHost = m_kPartyUserManager.GetHostPtr();
@@ -1936,7 +1936,7 @@ IMPL_ON_FUNC( EPM_CHECK_FOR_PARTY_GAME_START_ACK )
 	}
 
 	KPartyRoomUserInfo kPartyRoomUserInfo;
-	BOOST_TEST_FOREACH( const KPartyRoomUserInfo&, kInfo, kPacket_.m_vecUserInfo )
+	for( const KPartyRoomUserInfo& kInfo : kPacket_.m_vecUserInfo )
 	{
 		kPartyRoomUserInfo = kInfo;
 		break;
@@ -2534,7 +2534,7 @@ _IMPL_ON_FUNC( EPM_CHECK_INVALID_USER_NOT, UidType )
 	std::vector< UidType > vecDeleteUserList;
 	m_kPartyUserManager.GetUnitUIDListByGSUID( iDisconnectedGSUID, vecDeleteUserList );
 
-	BOOST_TEST_FOREACH( const UidType, iDeleteUnitUID, vecDeleteUserList )
+	for( const UidType iDeleteUnitUID : vecDeleteUserList )
 	{
 		//파티에서 나갈유저를 빼주자.
 		if( LeaveMember( iDeleteUnitUID
@@ -2975,7 +2975,7 @@ IMPL_ON_FUNC( EPM_REGROUP_PARTY_FOR_AUTO_PARTY_DUNGEON_GAME_REQ )
 	SetInfo( kPacket_.m_kCreatePartyInfo );
 
 	// 게임 시작을 할 수 있도록 PartyRoomUserInfo도 저장
-	BOOST_TEST_FOREACH( const KRegroupPartyUserInfo&, kRegroupPartyUserInfo, kPacket_.m_vecRegroupPartyUserInfo )
+	for( const KRegroupPartyUserInfo& kRegroupPartyUserInfo : kPacket_.m_vecRegroupPartyUserInfo )
 	{
 		KCnPartyUserPtr spUser = m_kPartyUserManager.GetPartyUser( kRegroupPartyUserInfo.m_kPartyRoomUserInfo.m_kRoomUserInfo.m_nUnitUID );
 		if( spUser == NULL )
@@ -3257,7 +3257,7 @@ IMPL_ON_FUNC_NOPARAM( EPM_END_GAME_REGROUP_PARTY_NOT )
 	m_kPartyUserManager.GetUnitUIDListAboutEndGameRegroupParty( kRegroupNot.m_vecRegroupPartyUserInfo, setLeaveUnitUIDList );
 
 	// 이제 이탈시켜야할 유저들을 이탈 시키자!
-	BOOST_TEST_FOREACH( const UidType, iUnitUID, setLeaveUnitUIDList )
+	for( const UidType iUnitUID : setLeaveUnitUIDList )
 	{
 		KCnPartyUserPtr spLeaveUser = m_kPartyUserManager.GetPartyUser( iUnitUID );
 		if( IS_NULL( spLeaveUser ) )
@@ -3285,7 +3285,7 @@ IMPL_ON_FUNC_NOPARAM( EPM_END_GAME_REGROUP_PARTY_NOT )
 	}
 
 	// 새로운 파티 대상자가 존재한다면 재결합 하러 가자!
-	BOOST_TEST_FOREACH( const KRegroupPartyUserInfo&, kInfo, kRegroupNot.m_vecRegroupPartyUserInfo )
+	for( const KRegroupPartyUserInfo& kInfo : kRegroupNot.m_vecRegroupPartyUserInfo )
 	{
 		kRegroupNot.m_kCreatePartyInfo.m_cPartyType		 = GetPartyType();
 		kRegroupNot.m_kCreatePartyInfo.m_iDungeonID		 = GetDungeonID();

@@ -1,4 +1,5 @@
 #include "DungeonRoom.h"
+#include "x2/platform/format.h"
 #include "NetError.h"
 #include "Room/RoomFSM.h"
 #include "X2Data/XSLRoom.h"
@@ -248,7 +249,7 @@ void KDungeonRoom::LogToDB_GamePlayNetWorkInfo( IN const UidType iUnitUID, IN co
 		CTime tCurTime = CTime::GetCurrentTime();
 		KELOG_COLLECTION_OF_RELAY_AND_P2P_INFO_NOT kPacketToLog;
 
-		BOOST_TEST_FOREACH( const KGamePlayNetworkInfo&, kGamePlayNetworkInfo, kInfo.m_vecGamePlayNetworkInfo )
+		for( const KGamePlayNetworkInfo& kGamePlayNetworkInfo : kInfo.m_vecGamePlayNetworkInfo )
 		{
 			if( kGamePlayNetworkInfo.m_iOpponentUnitUID == iUnitUID )
 				continue;
@@ -1224,7 +1225,7 @@ void KDungeonRoom::CheckDungeonUnitInfoSuccess()
 
             bool bIsDetectedHackUser = false;
             std::vector< KHenirHackUserData > vecHackUser;
-            BOOST_TEST_FOREACH( const KRoomUserPtr, spRoomUser, vecKRoomUserPtr )
+            for( const KRoomUserPtr spRoomUser : vecKRoomUserPtr )
             {
                 KHenirHackUserData kHackUser;
                 if( spRoomUser == NULL )
@@ -1365,7 +1366,7 @@ void KDungeonRoom::CheckDungeonUnitInfoSuccess()
 			kNotMsg.m_cNotifyType = KEGS_NOTIFY_MSG_NOT::NT_HENIR_CLEAR;
 			kNotMsg.m_Count = 1;
 
-			BOOST_TEST_FOREACH( const KRoomUserPtr, spRoomUser, vecKRoomUserPtr )
+			for( const KRoomUserPtr spRoomUser : vecKRoomUserPtr )
 			{
 				if( spRoomUser == NULL )
 				{
@@ -2142,7 +2143,7 @@ void KDungeonRoom::ReservedRegroupOldParty()
 
 void KDungeonRoom::CheckReserveRegroupOldParty()
 {
-	BOOST_TEST_FOREACH( const KERM_END_GAME_REGROUP_PARTY_NOT&, kPacketNot, m_vecReservedRegroupOldParty )
+	for( const KERM_END_GAME_REGROUP_PARTY_NOT& kPacketNot : m_vecReservedRegroupOldParty )
 	{
 		SendToGSServer( kPacketNot.m_iGSUID, ERM_END_GAME_REGROUP_PARTY_NOT, kPacketNot );
 		break;
@@ -2257,7 +2258,7 @@ void KDungeonRoom::PrepareForEnterDefenceDungeon()
 void KDungeonRoom::EnterDefenceDungeon( IN const std::vector< UidType >& vecLeaveUnitUID )
 {
 	// 일단 먼저 이탈자들부터 이탈처리하자!
-	BOOST_TEST_FOREACH( const UidType, iUnitUID, vecLeaveUnitUID )
+	for( const UidType iUnitUID : vecLeaveUnitUID )
 	{
 		KRoomUserPtr spRoomUser = m_spRoomUserManager->GetUser( iUnitUID );
 		if( IS_NULL( spRoomUser ) )
@@ -2417,7 +2418,7 @@ IMPL_ON_FUNC( ERM_PARTY_OPEN_DUNGEON_ROOM_REQ )
 	m_spRoomUserManager->Reset();
 	m_spRoomUserManager->AssignTeam( -1 );
 
-	BOOST_TEST_FOREACH( const KPartyRoomUserInfo&, kInfo, kPacket_.m_vecUserInfo )
+	for( const KPartyRoomUserInfo& kInfo : kPacket_.m_vecUserInfo )
 	{
 		// 슬롯에 유저 넣는다.
 		if( m_spRoomUserManager->EnterRoom( kInfo.m_kRoomUserInfo, false ) == false )
@@ -2877,7 +2878,7 @@ _IMPL_ON_FUNC( ERM_DUNGEON_STAGE_LOAD_REQ, KEGS_DUNGEON_STAGE_LOAD_REQ )
 		)
 	{
 		//{{ 2012. 02. 03	박세훈	이벤트 관련정보 처리방법 변경 ( Script -> DB )
-		BOOST_TEST_FOREACH( KGameEventScriptManager::KAdventNpcEventInfo&, kInfo, m_vecEventMonster )
+		for( KGameEventScriptManager::KAdventNpcEventInfo& kInfo : m_vecEventMonster )
 			//}}
 		{
 			// 보스 스테이지에서 등장 시킬지 체크!
@@ -3057,7 +3058,7 @@ _IMPL_ON_FUNC( ERM_DUNGEON_STAGE_LOAD_REQ, KEGS_DUNGEON_STAGE_LOAD_REQ )
 			else
 			{
 				// 출현 위치가 -1이면 이미 출현 결정된 NPC의 위치를 주자!
-				BOOST_TEST_FOREACH( const KNPCUnitReq&, kNpc, kNPCList.m_NPCList )
+				for( const KNPCUnitReq& kNpc : kNPCList.m_NPCList )
 				{
 					kNPCData.m_nStartPos = kNpc.m_nStartPos;
 					kNPCList.m_NPCList.push_back( kNPCData );
@@ -3824,7 +3825,7 @@ _IMPL_ON_FUNC( ERM_NPC_UNIT_CREATE_REQ, KEGS_NPC_UNIT_CREATE_REQ )
 	//}} 2011. 04. 13  김민성  글로벌 서버 추가
 
 
-	BOOST_TEST_FOREACH( KNPCUnitReq&, kCreateNpcInfo, kPacket_.m_vecNPCUnitReq )
+	for( KNPCUnitReq& kCreateNpcInfo : kPacket_.m_vecNPCUnitReq )
 	{
 		KNPCUnitNot kNPCInfo;
 
@@ -4265,7 +4266,7 @@ _IMPL_ON_FUNC( ERM_NPC_UNIT_DIE_REQ, KEGS_NPC_UNIT_DIE_REQ )
 		std::vector< UidType > vecLiveMember;
 		m_spRoomUserManager->GetLiveMemberList( vecLiveMember );
 
-		BOOST_TEST_FOREACH( UidType, iPartyUserUID, vecLiveMember )
+		for( UidType iPartyUserUID : vecLiveMember )
 		{
 			KRoomUserPtr spRoomUser = m_spRoomUserManager->GetUser( iPartyUserUID );
 			if( IS_NULL( spRoomUser ) )
@@ -4555,10 +4556,10 @@ _IMPL_ON_FUNC( ERM_NPC_UNIT_DIE_REQ, KEGS_NPC_UNIT_DIE_REQ )
 			if( m_spRoomUserManager->GetQuestDropItem( spRoomUser->GetCID(), GetDungeonID(), GetDifficultyLevel(), m_cDungeonMode, kDieNpcInfo.m_iNPCID, vecDropInfo, m_fQuestItemDropEventProbRate ) == true )
 			//}
 			{
-				BOOST_TEST_FOREACH( const KRoomUser::QUEST_ITEM_DROP_INFO&, kDropInfo, vecDropInfo )
+				for( const KRoomUser::QUEST_ITEM_DROP_INFO& kDropInfo : vecDropInfo )
 				{
 					//드롭된 아이템 수만큼 처리를 시작..
-					BOOST_TEST_FOREACH( const int, iDropQuestItemID, kDropInfo.m_vecDropQuestItem )
+					for( const int iDropQuestItemID : kDropInfo.m_vecDropQuestItem )
 					{
 						KEGS_GET_ITEM_NOT kDropNot;
 						kDropNot.m_cGetItemType = KEGS_GET_ITEM_NOT::GIT_QUEST_ITEM;
@@ -4645,7 +4646,7 @@ _IMPL_ON_FUNC( ERM_NPC_UNIT_DIE_REQ, KEGS_NPC_UNIT_DIE_REQ )
 			//2.NPC ITEM 드롭처리
 			if( sDropDataNpc.m_vecItemID.empty() == false )
 			{
-				BOOST_TEST_FOREACH( const int, iDropItemID, sDropDataNpc.m_vecItemID )
+				for( const int iDropItemID : sDropDataNpc.m_vecItemID )
 				{
 					// 특정 아이템이 특정던전에서 드롭되지 않도록 하는 코드
 					if( !CXSLDungeon::IsItemDropDungeon( iDropItemID, m_iDungeonID ) )
@@ -4658,7 +4659,7 @@ _IMPL_ON_FUNC( ERM_NPC_UNIT_DIE_REQ, KEGS_NPC_UNIT_DIE_REQ )
 			//{{ 2009. 4. 22  최육사	전체드롭
 			if( sDropDataStatic.m_vecItemID.empty() == false )
 			{
-				BOOST_TEST_FOREACH( const int, iDropItemID, sDropDataStatic.m_vecItemID )
+				for( const int iDropItemID : sDropDataStatic.m_vecItemID )
 				{
 					// 특정 아이템이 특정던전에서 드롭되지 않도록 하는 코드
 					if( !CXSLDungeon::IsItemDropDungeon( iDropItemID, m_iDungeonID ) )
@@ -4672,7 +4673,7 @@ _IMPL_ON_FUNC( ERM_NPC_UNIT_DIE_REQ, KEGS_NPC_UNIT_DIE_REQ )
 			//3.EVENT ITEM 드롭처리
 			if( kDieNpcInfo.m_bActive == true && sDropDataEvent.m_vecItemID.empty() == false )
 			{
-				BOOST_TEST_FOREACH( const int, iDropItemID, sDropDataEvent.m_vecItemID )
+				for( const int iDropItemID : sDropDataEvent.m_vecItemID )
 				{
 					// 특정 아이템이 특정던전에서 드롭되지 않도록 하는 코드
 					if( !CXSLDungeon::IsItemDropDungeon( iDropItemID, m_iDungeonID ) )
@@ -4685,7 +4686,7 @@ _IMPL_ON_FUNC( ERM_NPC_UNIT_DIE_REQ, KEGS_NPC_UNIT_DIE_REQ )
 			//4.ATTRIB NPC ITEM 드롭처리
 			if( kDieNpcInfo.m_bActive == true && sDropDataAttribNpc.m_vecItemID.empty() == false )
 			{
-				BOOST_TEST_FOREACH( const int, iDropItemID, sDropDataAttribNpc.m_vecItemID )
+				for( const int iDropItemID : sDropDataAttribNpc.m_vecItemID )
 				{
 					kDropItemNot.m_DropItemDataList.push_back( CreateItemProcess( iDropItemID ) );
 				}
@@ -4694,7 +4695,7 @@ _IMPL_ON_FUNC( ERM_NPC_UNIT_DIE_REQ, KEGS_NPC_UNIT_DIE_REQ )
 			//5.HENIR NPC SPECIAL 드롭처리
 			if( sDropDataHenir.m_vecItemID.empty() == false )
 			{
-				BOOST_TEST_FOREACH( const int, iDropItemID, sDropDataHenir.m_vecItemID )
+				for( const int iDropItemID : sDropDataHenir.m_vecItemID )
 				{
 					kDropItemNot.m_DropItemDataList.push_back( CreateItemProcess( iDropItemID ) );
 				}
@@ -4867,6 +4868,10 @@ IMPL_ON_FUNC_NOPARAM( ERM_USER_UNIT_DIE_COMPLETE_REQ )
 //{{ 필드 드롭 개편 - 김민성
 _IMPL_ON_FUNC( ERM_GET_ITEM_REQ, KEGS_GET_ITEM_REQ )
 {
+	// Port: hoisted above the gotos to end_proc (MSVC let goto skip their initialization)
+	ITEM_DATA* pItemData = nullptr;
+	bool bNotCreateItem = false;
+	UidType iGSUID{};
 	VERIFY_ROOM_STATE( ( 2, KRoomFSM::S_PLAY, KRoomFSM::S_RESULT ), ERM_GET_ITEM_ACK, KEGS_GET_ITEM_ACK );
 
 	kPacket.m_iOK = NetError::NET_OK;
@@ -4910,16 +4915,16 @@ _IMPL_ON_FUNC( ERM_GET_ITEM_REQ, KEGS_GET_ITEM_REQ )
 		goto end_proc;
 	}
 
-	ITEM_DATA& sItemData = mit->second;
+	pItemData = &mit->second;
 
 	// 2. 아이템 종류 검사
-	if( kPacket_.m_kItemInfo.m_iItemID != sItemData.m_iItemID )
+	if( kPacket_.m_kItemInfo.m_iItemID != pItemData->m_iItemID )
 	{
 		START_LOG( cerr, L"습득할려는 아이템의 종류가 잘못되었음." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_iDropItemUID )
 			<< BUILD_LOG( kPacket_.m_kItemInfo.m_iItemID )
-			<< BUILD_LOG( sItemData.m_iItemID )
+			<< BUILD_LOG( pItemData->m_iItemID )
 			<< END_LOG;
 
 		// 절대로 일어날 수 없는 에러!
@@ -4947,7 +4952,7 @@ _IMPL_ON_FUNC( ERM_GET_ITEM_REQ, KEGS_GET_ITEM_REQ )
 	}
 
 	// 3. 다른 유저가 이미 습득한건가
-	if( sItemData.m_bIsGet == true )
+	if( pItemData->m_bIsGet == true )
 	{
 		kPacket.m_iOK = NetError::ERR_ITEM_01;
 		goto end_proc;
@@ -4956,12 +4961,11 @@ _IMPL_ON_FUNC( ERM_GET_ITEM_REQ, KEGS_GET_ITEM_REQ )
 	kNot.m_iDropItemUID	= kPacket_.m_iDropItemUID;
 	kNot.m_iItemID		= kPacket_.m_kItemInfo.m_iItemID;
 	//{{ 2013. 1. 14	박세훈	던전 및 필드 드랍 아이템에 강화 부여
-	kNot.m_cEnchantLevel= sItemData.m_cEnchantLevel;
+	kNot.m_cEnchantLevel= pItemData->m_cEnchantLevel;
 	//}}
 
 	// 순간소비 아이템
-	bool bNotCreateItem = false;
-	UidType iGSUID = LAST_SENDER_UID; // ServerUID저장
+	iGSUID = LAST_SENDER_UID; // ServerUID저장
 
 // 	const bool bIsGetItemDistribute = ( kPacket_.m_kItemInfo.m_iItemID == CXSLItem::HDR_TIMESPACE_PIECE );
 // 	if( bIsGetItemDistribute == true )
@@ -4971,16 +4975,16 @@ _IMPL_ON_FUNC( ERM_GET_ITEM_REQ, KEGS_GET_ITEM_REQ )
 // 	else
 	{
 		// 4. 먹은 아이템이 ED인가? Item인가?
-		if( sItemData.m_bIsGP == true )
+		if( pItemData->m_bIsGP == true )
 		{
-			kNot.m_iTotalED = sItemData.m_iED;
+			kNot.m_iTotalED = pItemData->m_iED;
 			kNot.m_GetUnitUID = FIRST_SENDER_UID; // 클라이언트 화면에 어떤놈이 ED먹었나 표시해줄때 사용
 			const float fPartyBonusRate = GetDungeonPartyBonusRate();
-			if( !m_spRoomUserManager->AddDungeonRewardED( sItemData.m_iED, FIRST_SENDER_UID, fPartyBonusRate, GetDungeonID(), GetDifficultyLevel(), kNot ) )
+			if( !m_spRoomUserManager->AddDungeonRewardED( pItemData->m_iED, FIRST_SENDER_UID, fPartyBonusRate, GetDungeonID(), GetDifficultyLevel(), kNot ) )
 
 			{
 				START_LOG( cerr, L"ED보상처리가 이상합니다!" )
-					<< BUILD_LOG( sItemData.m_iED )
+					<< BUILD_LOG( pItemData->m_iED )
 					<< END_LOG;
 
 				kPacket.m_iOK = NetError::ERR_ITEM_04;
@@ -4991,17 +4995,17 @@ _IMPL_ON_FUNC( ERM_GET_ITEM_REQ, KEGS_GET_ITEM_REQ )
 		}
 		else		// 아이템
 		{
-			const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( sItemData.m_iItemID );
+			const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( pItemData->m_iItemID );
 			if( pItemTemplet == NULL )
 			{
 				START_LOG( cerr, L"Item Templet 정보가 없음. 이상한 아이템 먹었네." )
 					<< BUILD_LOG( FIRST_SENDER_UID )
-					<< BUILD_LOG( sItemData.m_iItemID )
+					<< BUILD_LOG( pItemData->m_iItemID )
 					<< END_LOG;
 
 				kPacket.m_iOK = NetError::ERR_ITEM_04;
 
-				sItemData.m_bIsGet = true; // 먹은걸로 처리
+				pItemData->m_bIsGet = true; // 먹은걸로 처리
 				goto end_proc;
 			}
 			else
@@ -5017,7 +5021,7 @@ _IMPL_ON_FUNC( ERM_GET_ITEM_REQ, KEGS_GET_ITEM_REQ )
 		}
 	}
 
-	sItemData.m_bIsGet	= true;	//오류가 없어야 아이템을 먹은것으로 체크
+	pItemData->m_bIsGet	= true;	//오류가 없어야 아이템을 먹은것으로 체크
 
 	// ack를 먼저 보낸다
 	SendToGSCharacter( LAST_SENDER_UID, FIRST_SENDER_UID, ERM_GET_ITEM_ACK, kPacket );
@@ -5076,15 +5080,15 @@ _IMPL_ON_FUNC( ERM_GET_ITEM_REQ, KEGS_GET_ITEM_REQ )
 
 			//{{ 드롭 획득 공지 아이템 - 비던아이템, 매력아이템
 			//{{ 2013. 1. 14	박세훈	던전 및 필드 드랍 아이템에 강화 부여
-			if(		( sItemData.m_bNotify == true )
-				||	( SiKDropTable()->IsNotifyDropItem( sItemData.m_iItemID ) )
+			if(		( pItemData->m_bNotify == true )
+				||	( SiKDropTable()->IsNotifyDropItem( pItemData->m_iItemID ) )
 				)
 				//}}
 			{
 				KRoomUserPtr spRoomUser = m_spRoomUserManager->GetUser( kNot.m_GetUnitUID );
 				if( spRoomUser != NULL )
 				{
-					const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( sItemData.m_iItemID );
+					const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( pItemData->m_iItemID );
 					if( pItemTemplet != NULL )
 					{
 						KEGS_NOTIFY_MSG_NOT	kPacket;
@@ -5093,9 +5097,9 @@ _IMPL_ON_FUNC( ERM_GET_ITEM_REQ, KEGS_GET_ITEM_REQ )
 						kPacket.m_wstrMSG = spRoomUser->GetNickName();
 						kPacket.m_wstrMSG += L";";
 						//{{ 2012. 1. 17	박세훈	던전 및 필드 드랍 아이템에 강화 부여
-						if( sItemData.m_bNotify == true )
+						if( pItemData->m_bNotify == true )
 						{
-							kPacket.m_wstrMSG += boost::str( boost::wformat( L"+%d " ) % static_cast<int>( sItemData.m_cEnchantLevel ) );
+							kPacket.m_wstrMSG += x2::str( x2::wformat( L"+%d " ) % static_cast<int>( pItemData->m_cEnchantLevel ) );
 						}
 						//}}
 						kPacket.m_wstrMSG += pItemTemplet->m_Name;
@@ -5105,7 +5109,7 @@ _IMPL_ON_FUNC( ERM_GET_ITEM_REQ, KEGS_GET_ITEM_REQ )
 					{
 						START_LOG( cerr, L"드롭 획득 아이템 공지를 날리려는데 존재하지 않는 아이템입니다" )
 							<< BUILD_LOG( kNot.m_GetUnitUID )
-							<< BUILD_LOG( sItemData.m_iItemID )
+							<< BUILD_LOG( pItemData->m_iItemID )
 							<< END_LOG;
 					}
 				}
@@ -6391,7 +6395,7 @@ _IMPL_ON_FUNC( ERM_BAD_ATTITUDE_USER_CHECK_INFO_NOT, KEGS_BAD_ATTITUDE_USER_CHEC
 		// 불량 유저를 찾았다
 		if( vecNewBadAttitudeUser.empty() == false )
 		{
-			BOOST_TEST_FOREACH( UidType, iBadAttitudeUserUID, vecNewBadAttitudeUser )
+			for( UidType iBadAttitudeUserUID : vecNewBadAttitudeUser )
 			{
 				// 불량 유저에게 자신이 불량 유저가 되었으니 조심하라는 메시지를 출력하게 한다.
 				KRoomUserPtr pUser = m_spRoomUserManager->GetUser( iBadAttitudeUserUID );
@@ -6415,7 +6419,7 @@ _IMPL_ON_FUNC( ERM_BAD_ATTITUDE_USER_CHECK_INFO_NOT, KEGS_BAD_ATTITUDE_USER_CHEC
 		// 강퇴 유저를 찾았다
 		if( vecNewForceExitUser.empty() == false )
 		{
-			BOOST_TEST_FOREACH( UidType, iForceExitUserUID, vecNewForceExitUser )
+			for( UidType iForceExitUserUID : vecNewForceExitUser )
 			{
 				KRoomUserPtr pUser = m_spRoomUserManager->GetUser( iForceExitUserUID );
 				if( pUser != NULL )

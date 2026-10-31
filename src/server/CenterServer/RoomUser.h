@@ -1,7 +1,7 @@
 #pragma once
 
 #include "FSM/support_FSM.h"
-#include <boost/timer.hpp>
+#include "x2/platform/timer.h"
 
 #include "Event.h"
 #include "CommonPacket.h"
@@ -51,7 +51,7 @@ public:
 		UidType								m_iCastingUnitUID;		// 버프 시전자
 		int									m_iBuffEnum;			// 버프 종류
 		bool								m_bBuffState;			// 버프의 상태(on/off)
-		boost::timer						m_tBuffTimer;			// 버프 시간 체크용 타이머
+		x2::Timer						m_tBuffTimer;			// 버프 시간 체크용 타이머
 		float								m_fBuffTime;			// 버프 지속시간(남은 버프 유지시간)
 		char								m_cBuffLevel;			// 버프 스킬 레벨
 	};
@@ -552,8 +552,8 @@ protected:
 	float							m_fPercent;
 	int								m_nRank;
 
-    boost::timer                    m_kLoadingTimer;
-    boost::timer                    m_kPlayTimer;
+    x2::Timer                    m_kLoadingTimer;
+    x2::Timer                    m_kPlayTimer;
 	float							m_fPlayTime;
 	//{{ 2011. 06. 13	최육사	스테이지 로그
 	//}}
@@ -568,11 +568,11 @@ protected:
 	//}}
 
 	//Zombie user 체크를 위한 변수
-	boost::timer					m_TimerZU;
-    boost::timer                    m_TimerZombieAlert;
+	x2::Timer					m_TimerZU;
+    x2::Timer                    m_TimerZombieAlert;
     bool                            m_bZombieAlert;
 
-    std::map< UidType, boost::timer >   m_mapTradeRequest;
+    std::map< UidType, x2::Timer >   m_mapTradeRequest;
 
 	//080408.hoons. 사제시스템 던전게임 보상처리를 위해 사용될 데이터
 	std::vector< UidType >			m_vecStudentUnitUID;
@@ -581,8 +581,8 @@ protected:
 	bool							m_bEndPlay;
 	bool							m_bCashContinueReady;
 	double							m_fDelayPacketTime;
-	boost::timer					m_tDelayPacketTimer;
-	boost::timer					m_tCashContinueTimer;
+	x2::Timer					m_tDelayPacketTimer;
+	x2::Timer					m_tCashContinueTimer;
 
 //
 //#ifdef PVP_BOSS_COMBAT_TEST

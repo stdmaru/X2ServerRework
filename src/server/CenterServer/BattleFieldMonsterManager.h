@@ -47,7 +47,7 @@ public:
 	{
 		int				m_iMonsterGroupID;
 		double			m_fRespawnTime;
-		boost::timer	m_tTimer;
+		x2::Timer	m_tTimer;
 
 		SMonsterRespawnInfo()
 		{
