@@ -23,14 +23,17 @@ Os bugs que o porte **já corrigiu** (leitura fora do array, `%s` com `std::wstr
 
 ## Dados (`ServerResource`, `ClientScript`)
 
-Erros ao carregar os scripts de produção com o `ClientScript` gerado do cliente (contagem do GameServer de 2026-10-31). O conjunto de
+Erros ao carregar os scripts de produção com o `ClientScript` gerado do cliente (contagem do GameServer de 2026-10-31, depois da
+[T28](../projeto/decisoes.md): são os mesmos números dos logs de produção de 2026-07, `_original-server/GameServer/log`). O conjunto de
 itens (49.837) e os scripts de dungeon foram conferidos: são os mesmos do `ClientScript` do servidor original, então os erros de item e
 de dungeon já aconteciam em produção. O servidor sobe assim, ignorando as entradas ruins:
 
-- Itens que não existem no `Item.lua` citados pelo `ServerResource`: 719 itens atrativos (`AddAttractionItemInfo`),
-  650 grupos de item aleatório (`AddRandomItemGroup`, com a soma da probabilidade passando de 100%), 172 pacotes do cash com item repetido,
-  41 itens selados e 17 de aviso de resultado.
-- 19 pets (IDs 37 em diante) e 1 montaria (ID 11) que o script de criação cita e o template não tem.
+- Itens que não existem no `Item.lua` citados pelo `ServerResource`: 437 itens atrativos (`AddAttractionItemInfo`),
+  167 grupos de item aleatório (`AddRandomItemGroup`, com a soma da probabilidade passando de 100%), 172 pacotes do cash com item repetido,
+  27 itens selados e 13 de aviso de resultado.
+- 1.081 resultados de fabricação (`AddManufactureResultTemplet`, "잘못된 제조ID") cujo ID de fabricação o `ClientScript` não tem (a
+  produção, com o `ClientScript` dela, de um cliente mais novo, tinha 1.223).
+- 12 pets e 1 montaria (ID 11) que o script de criação cita e o template não tem.
 - 24 scripts de dungeon citados pelo `DungeonData.lua` que nem o cliente nem o `ClientScript` original têm (tutoriais `ElTutorial_*`,
   treinos `Training_*`, `Besma_MINE2_*`, `Elder_NewYear`); o `Dungeon_Event_KidDay.lua` existe só no `ClientScript` original.
 - 2 linemaps de campo (`Field_Velder_Stage2/3_LineMap.lua`) que não existem.

@@ -469,7 +469,6 @@ MapData:AddLocalMapInfo( LOCAL_MAP_ID["LMI_SANDER"],		DUNGEON_MODE["DM_INVALID"]
 MapData:AddLocalMapInfo( LOCAL_MAP_ID["LMI_SANDER"],		DUNGEON_MODE["DM_INVALID"],		 	DUNGEON_ID["DI_SANDER_KARUSO_VILLAGE_HARD"] )
 MapData:AddLocalMapInfo( LOCAL_MAP_ID["LMI_SANDER"],		DUNGEON_MODE["DM_INVALID"],		 	DUNGEON_ID["DI_SANDER_KARUSO_VILLAGE_EXPERT"] )
 
-
 ----------------------------------------------
 -- 코보 익스프레스 VIP 티켓 유효한 필드 체크
 ----------------------------------------------

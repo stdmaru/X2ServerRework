@@ -44,14 +44,6 @@ g_pRandomItemManager:AddSealRandomItemInfo(	160949 ) --	영웅 지원 큐브
 -- 랜덤 봉인 큐브 추가	2013-11-27	신진섭
 g_pRandomItemManager:AddSealRandomItemInfo(	183398 ) --	아리엘 강화의 부적(Lv.7~Lv.10) 랜덤 큐브
 
--- 랜덤 봉인 큐브 추가	2013-12-18	우원식
-g_pRandomItemManager:AddSealRandomItemInfo(	161033 ) --	특별한 선물 꾸러미
-g_pRandomItemManager:AddSealRandomItemInfo(	161024 ) --	천재지변 큐브
-g_pRandomItemManager:AddSealRandomItemInfo(	161025 ) --	스페셜 천재지변 큐브
-g_pRandomItemManager:AddSealRandomItemInfo(	161026 ) --	아리엘의 강화의 부적 Lv.9~10큐브
-g_pRandomItemManager:AddSealRandomItemInfo(	161027 ) --	웰컴 천재지변 큐브
-g_pRandomItemManager:AddSealRandomItemInfo(	161028 ) --	넥슨 캐시 1억 큐브
-
 
 
 ---------------
@@ -59,117 +51,33 @@ g_pRandomItemManager:AddSealRandomItemInfo(	161028 ) --	넥슨 캐시 1억 큐�
 ---------------
 
 
-g_pRandomItemManager:AddSealRandomItemInfo(	108900 )	-- 얼음 조각상
-g_pRandomItemManager:AddSealRandomItemInfo(	131377 )	-- 이벤트 가열기
+g_pRandomItemManager:AddSealRandomItemInfo( 108900 ) -- 가열기
+g_pRandomItemManager:AddSealRandomItemInfo( 131377 ) -- 이벤트 가열기
+g_pRandomItemManager:AddSealRandomItemInfo( 85001530 ) -- 봉인된 얼음 조각상(레이븐, 이브, 청 엘 수색대 장교)
+g_pRandomItemManager:AddSealRandomItemInfo( 85002440 ) -- 봉인된 얼음 조각상(레이븐, 이브, 청 나소드 배틀 슈트)
+g_pRandomItemManager:AddSealRandomItemInfo( 85002450 ) -- 봉인된 얼음 조각상(나소드 배틀 슈트)
+g_pRandomItemManager:AddSealRandomItemInfo( 85002870 ) -- 봉인된 얼음 조각상(아크엔젤)
+g_pRandomItemManager:AddSealRandomItemInfo( 85002871 ) -- 봉인된 얼음 조각상(이브, 청 아크엔젤)
+g_pRandomItemManager:AddSealRandomItemInfo( 85002872 ) -- 봉인된 얼음 조각상(벨더 임페리얼 가드)
+g_pRandomItemManager:AddSealRandomItemInfo( 85002873 ) -- 봉인된 얼음 조각상(청 벨더 임페리얼 가드)
+g_pRandomItemManager:AddSealRandomItemInfo( 85002874 ) -- 봉인된 얼음 조각상(살바토르 솔레스)
+g_pRandomItemManager:AddSealRandomItemInfo( 85002875 ) -- 봉인된 얼음 조각상(청 살바토르 솔레스)
+g_pRandomItemManager:AddSealRandomItemInfo( 85002876 ) -- 봉인된 얼음 조각상(청 아크데빌)
+g_pRandomItemManager:AddSealRandomItemInfo( 85002877 ) -- 봉인된 얼음 조각상(아크데빌)
 
-g_pRandomItemManager:AddSealRandomItemInfo(	80001977 )	-- 아리엘의 황금 복주머니
-g_pRandomItemManager:AddSealRandomItemInfo(	80001978 )	-- 춘절 황금 복주머니
-g_pRandomItemManager:AddSealRandomItemInfo(	80002400 )	-- 루리엘의 빛나는 할로윈 몬스터의 영혼
-
-g_pRandomItemManager:AddSealRandomItemInfo(	84001142 )	-- 봉인된 얼음 조각상(청 나소드 배틀 슈트)
-g_pRandomItemManager:AddSealRandomItemInfo(	84001144 )	-- 봉인된 얼음 조각상(청 엘 수색대 장교)
-g_pRandomItemManager:AddSealRandomItemInfo(	84001710 )	-- 로열 메이드 (컬러&블랙) 한정 매직 큐브
-g_pRandomItemManager:AddSealRandomItemInfo(	84001844 )	-- 직녀
-g_pRandomItemManager:AddSealRandomItemInfo(	84001860 )	-- 국경절
-
-g_pRandomItemManager:AddSealRandomItemInfo(	85001530 )	-- 봉인된 얼음 조각상(레이븐, 이브, 청 엘 수색대 장교)
-g_pRandomItemManager:AddSealRandomItemInfo(	85002440 )	-- 봉인된 얼음 조각상(레이븐, 이브, 청 나소드 배틀 슈트)
-g_pRandomItemManager:AddSealRandomItemInfo(	85002450 )	-- 봉인된 얼음 조각상(나소드 배틀 슈트)
-g_pRandomItemManager:AddSealRandomItemInfo(	85002870 )	-- 봉인된 얼음 조각상(아크엔젤)
-g_pRandomItemManager:AddSealRandomItemInfo(	85002871 )	-- 봉인된 얼음 조각상(이브, 청 아크엔젤)
-g_pRandomItemManager:AddSealRandomItemInfo(	85002872 )	-- 봉인된 얼음 조각상(벨더 임페리얼 가드)
-g_pRandomItemManager:AddSealRandomItemInfo(	85002873 )	-- 봉인된 얼음 조각상(청 벨더 임페리얼 가드)
-g_pRandomItemManager:AddSealRandomItemInfo(	85002874 )	-- 봉인된 얼음 조각상(살바토르 솔레스)
-g_pRandomItemManager:AddSealRandomItemInfo(	85002875 )	-- 봉인된 얼음 조각상(청 살바토르 솔레스)
-g_pRandomItemManager:AddSealRandomItemInfo(	85002876 )	-- 봉인된 얼음 조각상(청 아크데빌)
-g_pRandomItemManager:AddSealRandomItemInfo(	85002877 )	-- 봉인된 얼음 조각상(아크데빌)
-
-g_pRandomItemManager:AddSealRandomItemInfo(	85003498 )	-- 할로윈 몬스터의 영혼
-g_pRandomItemManager:AddSealRandomItemInfo(	85003500 )	-- 빛나는 할로윈 몬스터의 영혼
+g_pRandomItemManager:AddSealRandomItemInfo( 85003498 ) -- 할로윈 몬스터의 영혼
+g_pRandomItemManager:AddSealRandomItemInfo( 85003500 ) -- 빛나는 할로윈 몬스터의 영혼
+g_pRandomItemManager:AddSealRandomItemInfo( 80002400 ) -- 루리엘의 빛나는 할로윈 몬스터의 영혼
+g_pRandomItemManager:AddSealRandomItemInfo(	210000084 )	-- 펫 랜덤 박스
+g_pRandomItemManager:AddSealRandomItemInfo(	250001580 ) -- 다크니스 코어
 
 g_pRandomItemManager:AddSealRandomItemInfo(	85003722 )	-- 봉인된 얼음 조각상(아라 엘 수색대 장교)
 g_pRandomItemManager:AddSealRandomItemInfo(	85003720 )	-- 봉인된 황금 얼음 조각상
-g_pRandomItemManager:AddSealRandomItemInfo(	85003820 )	-- 봉인된 얼음 조각상(아라 아크엔젤)
-g_pRandomItemManager:AddSealRandomItemInfo(	80002730 )	-- 봉인된 얼음 조각상(아라, 아크엔젤, 엘 수색대)
-
-g_pRandomItemManager:AddSealRandomItemInfo(	90000595 )	-- 봉인된 얼음 조각상(이브 엘 수색대 장교)
-g_pRandomItemManager:AddSealRandomItemInfo(	90001060 )	-- 봉인된 얼음 조각상(청 엘 수색대 장교)
-g_pRandomItemManager:AddSealRandomItemInfo(	90001594 )	-- 봉인된 얼음 조각상(황금색)
-g_pRandomItemManager:AddSealRandomItemInfo(	90001900 )	-- 봉인된 얼음 조각상(이브, 나소드 배틀)
-g_pRandomItemManager:AddSealRandomItemInfo(	90001970 )	-- 봉인된 얼음 조각상(청, 아크엔젤)
-
-g_pRandomItemManager:AddSealRandomItemInfo(	210000084 )	-- 펫 랜덤 박스
-g_pRandomItemManager:AddSealRandomItemInfo(	250001580 )	-- 다크니스 코어
-
 
 
 -- 매력 아이템 큐브					iItemID	bBonus		
-g_pRandomItemManager:AddCharmItem(	108900,	91610	)	-- 봉인된 얼음 조각상
-g_pRandomItemManager:AddCharmItem(	108901,	91610	)	-- 봉인된 얼음 조각상(아크엔젤)
-g_pRandomItemManager:AddCharmItem(	108902,	91610	)	-- 봉인된 얼음 조각상(청 아크엔젤)
-g_pRandomItemManager:AddCharmItem(	160259,	91610	)	-- 봉인된 얼음 조각상(청 살바토르 솔레스)
-g_pRandomItemManager:AddCharmItem(	160286,	91610	)	-- 봉인된 얼음 조각상(청 엘 수색대 장교)
-g_pRandomItemManager:AddCharmItem(	160287,	91610	)	-- 봉인된 얼음 조각상(엘 수색대 장교)
-g_pRandomItemManager:AddCharmItem(	160324,	91610	)	-- 봉인된 얼음 조각상(청 나소드 배틀 슈트)
-g_pRandomItemManager:AddCharmItem(	160325,	91610	)	-- 봉인된 얼음 조각상(나소드 배틀 슈트)
-g_pRandomItemManager:AddCharmItem(	160377,	91610	)	-- 봉인된 얼음 조각상(청 로열 서번트)
-g_pRandomItemManager:AddCharmItem(	135115,	91610	)	-- 봉인된 얼음 조각상(Gold)
-g_pRandomItemManager:AddCharmItem(	160559,	91610	)	-- 봉인된 얼음 조각상(청 아크데빌)
-g_pRandomItemManager:AddCharmItem(	160597,	91610	)	-- 봉인된 얼음 조각상(청 벨더 임페리얼 가드)
-g_pRandomItemManager:AddCharmItem(	160576,	0		)	-- 강화의 부적 Lv.9~10큐브
-g_pRandomItemManager:AddCharmItem(	160902,	0		)	-- 아리엘의 강화의 부적 랜덤 큐브 (Lv.5~Lv.9)
-g_pRandomItemManager:AddCharmItem(	160630,	0		)	-- 겨울 방학 대박 큐브
-g_pRandomItemManager:AddCharmItem(	160643,	91610	)	-- 봉인된 얼음 조각상(아라 아크엔젤)
-g_pRandomItemManager:AddCharmItem(	160644,	0		)	-- 엘소드 5주념 기념 큐브
-g_pRandomItemManager:AddCharmItem(	160645,	0		)	-- 2013년 D-4 현물 경품 랜덤 큐브
-g_pRandomItemManager:AddCharmItem(	160647,	0		)	-- 2013년 D-2 캐시 액세서리 랜덤 큐브
-g_pRandomItemManager:AddCharmItem(	160648,	0		)	-- 굿바이 2012년 큐브
-g_pRandomItemManager:AddCharmItem(	160656,	91610	)	-- 봉인된 미니 얼음 조각상
-g_pRandomItemManager:AddCharmItem(	160666,	91610	)	-- 봉인된 얼음 조각상(아라 살바토르 이벨른)
-g_pRandomItemManager:AddCharmItem(	160683,	91610	)	-- 봉인된 얼음 조각상 2배용
-g_pRandomItemManager:AddCharmItem(	160684,	91610	)	-- 봉인된 얼음 조각상(아라 살바토르 이벨른) 2배용
-g_pRandomItemManager:AddCharmItem(	160710,	91610	)	-- 봉인된 얼음 조각상(골드 팔콘)
-g_pRandomItemManager:AddCharmItem(	160748,	91610	)	-- 봉인된 얼음 조각상(골드 팔콘) 2배용
-g_pRandomItemManager:AddCharmItem(	268544,	91610	)	-- 봉인된 미니 얼음 조각상(골드 팔콘)
-g_pRandomItemManager:AddCharmItem(	160747,	91610	)	-- 봉인된 얼음 조각상(아라 엘 수색대 장교)
-g_pRandomItemManager:AddCharmItem(	160772,	92377	)	-- 봉인된 올인원 얼음 조각상 (시즌1)
-g_pRandomItemManager:AddCharmItem(	160773,	92378	)	-- 정체 불명의 고대 화석
-g_pRandomItemManager:AddCharmItem(	160769, 0		)	--	다크 크리스탈 축복 큐브
-g_pRandomItemManager:AddCharmItem(	160578,	91610	)	-- 2배 확률 봉인된 얼음 조각상
-g_pRandomItemManager:AddCharmItem(	160857,	92377	)	-- [코보] 올인원 얼음 조각상 가열기
-g_pRandomItemManager:AddCharmItem(	160867,	91610	)	-- 봉인된 얼음 조각상(엘리시스 엘 수색대 장교)
-g_pRandomItemManager:AddCharmItem(	160873,	91610	)	-- 봉인된 얼음 조각상(아라 로열 메이드)
-
-g_pRandomItemManager:AddCharmItem(	160877,	91610	)	--봉인된 얼음 조각상(엘리시스 로열 메이드)
-g_pRandomItemManager:AddCharmItem(	160878,	91610	)	--봉인된 얼음 조각상(아라 아크데빌)
-g_pRandomItemManager:AddCharmItem(	160896,	91610	)	--봉인된 얼음 조각상(아라 그레이스 페어리)
-g_pRandomItemManager:AddCharmItem(	160897,	91610	)	--봉인된 얼음 조각상(엘리시스 아크엔젤)
-g_pRandomItemManager:AddCharmItem(	160942,	91610	)	--봉인된 얼음 조각상(아라 금강야차)
-g_pRandomItemManager:AddCharmItem(	160950,	91610	)	--봉인된 얼음 조각상(엘리시스 금강야차)
-g_pRandomItemManager:AddCharmItem(	160953,  91610	)	-- 봉인된 얼음 조각상
-g_pRandomItemManager:AddCharmItem(	160954,  91610	)	--봉인된 얼음 조각상(아라 금강야차)
-g_pRandomItemManager:AddCharmItem(	160955,  91610	)	--봉인된 얼음 조각상(엘리시스 금강야차)
-g_pRandomItemManager:AddCharmItem(	161029,  91610	)	--봉인된 얼음 조각상(애드 아크엔젤)
-
-
-
----------------
--- 해외 전용 --
----------------
-
-
+g_pRandomItemManager:AddCharmItem(	108900,	91610	)	-- 가열기
 g_pRandomItemManager:AddCharmItem(	131377,	91610	)	-- 이벤트 가열기
-
-g_pRandomItemManager:AddCharmItem(	80001977,	91610	)	-- 아리엘의 황금 복주머니
-g_pRandomItemManager:AddCharmItem(	80001978,	91610	)	--  춘절 황금 복주머니
-g_pRandomItemManager:AddCharmItem(	80002400,	0	)	-- 루리엘의 빛나는 할로윈 몬스터의 영혼
-
-g_pRandomItemManager:AddCharmItem(	84001142,	91610	)	-- 봉인된 얼음 조각상(청 나소드 배틀 슈트)
-g_pRandomItemManager:AddCharmItem(	84001144,	91610	)	-- 봉인된 얼음 조각상(청 엘 수색대 장교)
-g_pRandomItemManager:AddCharmItem(	84001710,	91610	)	-- 로열 메이드 (컬러&블랙) 한정 매직 큐브
-g_pRandomItemManager:AddCharmItem(	84001844,	91610	)	-- 직녀
-g_pRandomItemManager:AddCharmItem(	84001860,	91610	)	-- 국경절
-
 g_pRandomItemManager:AddCharmItem(	85001530,	91610	)	-- 봉인된 얼음 조각상(레이븐, 이브, 청 엘 수색대 장교)
 g_pRandomItemManager:AddCharmItem(	85002440,	91610	)	-- 봉인된 얼음 조각상(레이븐, 이브, 청 나소드 배틀 슈트)
 g_pRandomItemManager:AddCharmItem(	85002450,	91610	)	-- 봉인된 얼음 조각상(나소드 배틀 슈트)
@@ -185,19 +93,10 @@ g_pRandomItemManager:AddCharmItem(	85002877,	91610	)	-- 봉인된 얼음 조각�
 g_pRandomItemManager:AddCharmItem(	85003498,	0	)	-- 할로윈 몬스터의 영혼
 g_pRandomItemManager:AddCharmItem(	85003500,	0	)	-- 빛나는 할로윈 몬스터의 영혼
 
+g_pRandomItemManager:AddCharmItem(	153000081,	153000083	)	-- 선행 확인증
+
 g_pRandomItemManager:AddCharmItem(	85003722,	91610	)	-- 봉인된 얼음 조각상(아라 엘 수색대 장교)
 g_pRandomItemManager:AddCharmItem(	85003720,	91610	)	-- 봉인된 황금 얼음 조각상
-g_pRandomItemManager:AddCharmItem(	85003820,	91610	)	-- 봉인된 얼음 조각상(아라 아크엔젤)
-
-g_pRandomItemManager:AddCharmItem(	80002730,	91610	)	-- 봉인된 얼음 조각상(아라, 아크엔젤, 엘 수색대)
-
-g_pRandomItemManager:AddCharmItem(	90000595,	91610	)	-- 봉인된 얼음 조각상(이브 엘 수색대 장교)
-g_pRandomItemManager:AddCharmItem(	90001060,	91610	)	-- 봉인된 얼음 조각상(청 엘 수색대 장교)
-g_pRandomItemManager:AddCharmItem(	90001594,	91610	)	-- 봉인된 얼음 조각상(황금색)
-g_pRandomItemManager:AddCharmItem(	90001900,	91610	)	-- 봉인된 얼음 조각상(이브, 나소드 배틀)
-g_pRandomItemManager:AddCharmItem(	90001970,	91610	)	-- 봉인된 얼음 조각상(청, 아크엔젤)
-
-g_pRandomItemManager:AddCharmItem(	153000081,	153000083	)	-- 선행 확인증
 
 
 
@@ -300,11 +199,7 @@ g_pRandomItemManager:AddNotifyResultItemInfo(	132499	) --	아리엘의 강화부
 g_pRandomItemManager:AddNotifyResultItemInfo(	132500	) --	아리엘의 강화부적 Lv.10
 g_pRandomItemManager:AddNotifyResultItemInfo(	135444	) --	넥슨 캐시 1,000원 쿠폰 10개
 
-g_pRandomItemManager:AddNotifyResultItemInfo(	160794	) --	[코보]뽀루의 발 도장 (황금색)
-g_pRandomItemManager:AddNotifyResultItemInfo(	135471	) --	넥슨캐시 30,000원 티켓
-g_pRandomItemManager:AddNotifyResultItemInfo(	135439	) --	넥슨캐시 50,000원 티켓
-g_pRandomItemManager:AddNotifyResultItemInfo(	135438	) --	넥슨캐시 100,000원 티켓
-g_pRandomItemManager:AddNotifyResultItemInfo(	161026	) --	아리엘의 강화부적 Lv.9~10 랜덤 큐브
+g_pRandomItemManager:AddNotifyResultItemInfo(	160794	) --	활금 발 도장
 
 
 
@@ -312,7 +207,6 @@ g_pRandomItemManager:AddNotifyResultItemInfo(	161026	) --	아리엘의 강화부
 -- 해외 전용 --
 ---------------
 
-g_pRandomItemManager:AddNotifyResultItemInfo( 132497 )    --	아리엘의 강화부적 Lv.7
 
 -- 131218/오현택/ 다크니스 코어 아이템(일본머지)
 
@@ -1422,17 +1316,12 @@ g_pRandomItemManager:AddAttractionItemInfo(	244610	,	true)      --	홍조
 g_pRandomItemManager:AddAttractionItemInfo(	244620	,	true)      --	홍조(뿌잉뿌잉)
 g_pRandomItemManager:AddAttractionItemInfo(	244630	,	true)      --	홍조(새침)
 g_pRandomItemManager:AddAttractionItemInfo(	207450	,	true)      --	가슴을 적시는 눈물
-g_pRandomItemManager:AddAttractionItemInfo(	130163	,	true)      --	기술의 반지 반지 (30일)
 g_pRandomItemManager:AddAttractionItemInfo(	133388	,	true)      --	정제된 엘의 조각 랜덤 큐브 (3개)
 g_pRandomItemManager:AddAttractionItemInfo(	160613	,	true)      --	에픽 NPC 카드 랜덤 큐브 (3개)
 
 
 -- 가열기 공지 추가	2012.12.31	박세훈		
 g_pRandomItemManager:AddAttractionItemInfo(	160659	,	true)      --	글레이셜 노블레스 올 세트 큐브
-g_pRandomItemManager:AddAttractionItemInfo(	160657	,	true)      --	중간보스 몬스터 카드 랜덤 큐브
-
--- 가열기 공지 추가	2013.01.03	김민성
-g_pRandomItemManager:AddAttractionItemInfo(	263380	,	true)      --	미니 얼음 조각상 가열기
 
 
 -- 가열기 공지 추가	2013.1.22	박세훈
@@ -1613,34 +1502,12 @@ g_pRandomItemManager:AddAttractionItemInfo(	88389	,	true)      --	나소드 배�
 g_pRandomItemManager:AddAttractionItemInfo(	550000	,	true)      --	소환석 : 나소드 모비
 g_pRandomItemManager:AddAttractionItemInfo(	550010	,	true)      --	소환석 : 신속의 코카
 g_pRandomItemManager:AddAttractionItemInfo(	550020	,	true)      --	소환석 : 에이션트 뽀루
-g_pRandomItemManager:AddAttractionItemInfo(	550040	,	true)      --	소환석 : 아이스 하멜링
-g_pRandomItemManager:AddAttractionItemInfo(	550041	,	true)      --	소환석 : 다크 하멜링
-g_pRandomItemManager:AddAttractionItemInfo(	550042	,	true)      --	소환석 : 레드 하멜링
-g_pRandomItemManager:AddAttractionItemInfo(	550050	,	true)      --	소환석 : 이브 커스텀-오베론650
 g_pRandomItemManager:AddAttractionItemInfo(	500010	,	true)      --	생명의 결정 (쁘띠 에인션트 뽀루)
 g_pRandomItemManager:AddAttractionItemInfo(	500020	,	true)      --	생명의 결정 (트리 나이트)
 g_pRandomItemManager:AddAttractionItemInfo(	500150	,	true)      --	생명의 결정 (미스틱)
 g_pRandomItemManager:AddAttractionItemInfo(	500230	,	true)      --	생명의 결정 (해츨링)
 g_pRandomItemManager:AddAttractionItemInfo(	500540	,	true)      --	생명의 결정 (유니엘-더 라이트 브링어)
 g_pRandomItemManager:AddAttractionItemInfo(	500600	,	true)      --	생명의 결정 (은여우 미호)
-g_pRandomItemManager:AddAttractionItemInfo(	500826	,	true)      --	생명의 결정 (그림 리퍼-데스)
-g_pRandomItemManager:AddAttractionItemInfo(	500830	,	true)      --	생명의 결정 (우비 입은 고양이-검정)
-g_pRandomItemManager:AddAttractionItemInfo(	500831	,	true)      --	생명의 결정 (우비 입은 고양이-하양)
-
---판별기 공지 추가 1/22 /중국 전용 
-g_pRandomItemManager:AddAttractionItemInfo(	82550000	,	true)      --	소환석 : 돌진 전차 모비RT
-g_pRandomItemManager:AddAttractionItemInfo(	82550010	,	true)      --	소환석 : 바람의 코우시카
-g_pRandomItemManager:AddAttractionItemInfo(	82550020	,	true)      --	소환석 : 에이션트 라이딩 뽀루
-g_pRandomItemManager:AddAttractionItemInfo(	82550030	,	true)      --	소환석 : 퐁고 스콜피온 TYPE-R
-g_pRandomItemManager:AddAttractionItemInfo(	82550040	,	true)      --	소환석 : 아이스 하멜링
-g_pRandomItemManager:AddAttractionItemInfo(	82550041	,	true)      --	소환석 : 다크 하멜링
-g_pRandomItemManager:AddAttractionItemInfo(	82550042	,	true)      --	소환석 : 파이어 하멜링
-g_pRandomItemManager:AddAttractionItemInfo(	82500010	,	true)      --	생명의 결정 (쁘띠 에인션트 뽀루)
-g_pRandomItemManager:AddAttractionItemInfo(	82500020	,	true)      --	생명의 결정 (트리 나이트)
-g_pRandomItemManager:AddAttractionItemInfo(	82500150	,	true)      --	생명의 결정 (미스틱)
-g_pRandomItemManager:AddAttractionItemInfo(	82500230	,	true)      --	생명의 결정 (해츨링)
-g_pRandomItemManager:AddAttractionItemInfo(	82500540	,	true)      --	생명의 결정 (유니엘-더 라이트 브링어)
-g_pRandomItemManager:AddAttractionItemInfo(	82500600	,	true)      --	생명의 결정 (은여우 미호)
 
 
 -- 가열기 공지 추가	2013-06-19	박세훈	
@@ -1723,302 +1590,6 @@ g_pRandomItemManager:AddAttractionItemInfo(	88676	,	true)      --	살바토르 �
 g_pRandomItemManager:AddAttractionItemInfo(	88677	,	true)      --	살바토르 벤투스 날개 깃 (엘리시스)
 g_pRandomItemManager:AddAttractionItemInfo(	88678	,	true)      --	살바토르 벤투스 실론 윙 (엘리시스)
 
--- 가열기 공지 추가	2013-08-07	우원식
-g_pRandomItemManager:AddAttractionItemInfo(	133519	,	true)      --	로열 메이드-바이올렛 스피어(아라)
-g_pRandomItemManager:AddAttractionItemInfo(	133520	,	true)      --	로열 메이드-바이올렛 위치 상의(아라)
-g_pRandomItemManager:AddAttractionItemInfo(	133521	,	true)      --	로열 메이드-바이올렛 위치 하의(아라)
-g_pRandomItemManager:AddAttractionItemInfo(	133522	,	true)      --	로열 메이드-바이올렛 위치 장갑(아라)
-g_pRandomItemManager:AddAttractionItemInfo(	133523	,	true)      --	로열 메이드-바이올렛 위치 신발(아라)
-g_pRandomItemManager:AddAttractionItemInfo(	133524	,	true)      --	로열 메이드-바이올렛 위치 헤어(아라)
-g_pRandomItemManager:AddAttractionItemInfo(	133525	,	true)      --	로열 메이드 헤드드레스(아라)
-g_pRandomItemManager:AddAttractionItemInfo(	133526	,	true)      --	로열 배틀 미니미(아라)
-g_pRandomItemManager:AddAttractionItemInfo(	133527	,	true)      --	로열 메이드-블랙 스피어(아라)
-g_pRandomItemManager:AddAttractionItemInfo(	133528	,	true)      --	로열 메이드-블랙 위치 상의(아라)
-g_pRandomItemManager:AddAttractionItemInfo(	133529	,	true)      --	로열 메이드-블랙 위치 하의(아라)
-g_pRandomItemManager:AddAttractionItemInfo(	133530	,	true)      --	로열 메이드-블랙 위치 장갑(아라)
-g_pRandomItemManager:AddAttractionItemInfo(	133531	,	true)      --	로열 메이드-블랙 위치 신발(아라)
-g_pRandomItemManager:AddAttractionItemInfo(	133532	,	true)      --	로열 메이드-블랙 위치 헤어(아라)
-g_pRandomItemManager:AddAttractionItemInfo(	133533	,	true)      --	로열 메이드 블랙 헤드드레스(아라)
-g_pRandomItemManager:AddAttractionItemInfo(	133534	,	true)      --	로열 배틀 블랙 미니미(아라)
-
--- 가열기 공지 추가	2013-08-21	박세훈
-g_pRandomItemManager:AddAttractionItemInfo(	550040	,	true)      --	소환석 : 아이스 하멜링
-
--- 가열기 공지 추가	2013-09-05	우원식
-g_pRandomItemManager:AddAttractionItemInfo(	133538	,	true)      --	로열 메이드-블루 문 스피어(엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	133539	,	true)      --	로열 메이드-블루 문 상의(엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	133540	,	true)      --	로열 메이드-블루 문 하의(엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	133541	,	true)      --	로열 메이드-블루 문 장갑(엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	133542	,	true)      --	로열 메이드-블루 문 신발(엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	133543	,	true)      --	로열 메이드-블루 문 헤어(엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	133544	,	true)      --	로열 메이드 헤드드레스(엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	133545	,	true)      --	로열 배틀 미니미(엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	133546	,	true)      --	로열 메이드-다크 폴 스피어(엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	133547	,	true)      --	로열 메이드-다크 폴 상의(엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	133548	,	true)      --	로열 메이드-다크 폴 하의(엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	133549	,	true)      --	로열 메이드-다크 폴 장갑(엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	133550	,	true)      --	로열 메이드-다크 폴 신발(엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	133551	,	true)      --	로열 메이드-다크 폴 헤어(엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	133552	,	true)      --	로열 메이드 블랙 헤드드레스(엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	133553	,	true)      --	로열 배틀 블랙 미니미(엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	88430	,	true)      --	아크데빌 스피어 (아라)
-g_pRandomItemManager:AddAttractionItemInfo(	88431	,	true)      --	아크데빌 상의 (아라)
-g_pRandomItemManager:AddAttractionItemInfo(	88432	,	true)      --	아크데빌 하의 (아라)
-g_pRandomItemManager:AddAttractionItemInfo(	88433	,	true)      --	아크데빌 장갑 (아라)
-g_pRandomItemManager:AddAttractionItemInfo(	88434	,	true)      --	아크데빌 신발 (아라)
-g_pRandomItemManager:AddAttractionItemInfo(	88435	,	true)      --	아크데빌 헤어 (아라)
-g_pRandomItemManager:AddAttractionItemInfo(	88436	,	true)      --	아크데빌 윙 (아라)
-g_pRandomItemManager:AddAttractionItemInfo(	88437	,	true)      --	아크데빌 아이 (아라)
-g_pRandomItemManager:AddAttractionItemInfo(	88438	,	true)      --	아크데빌 윙츠 (아라)
-
--- 가열기 공지 추가	2013-09-17	우원식
-g_pRandomItemManager:AddAttractionItemInfo(	550041	,	true)      --	소환석 : 다크 하멜링
-g_pRandomItemManager:AddAttractionItemInfo(	550042	,	true)      --	소환석 : 파이어 하멜링
-
--- 가열기 공지 추가	2013-09-27	우원식
-g_pRandomItemManager:AddAttractionItemInfo(	81979	,	true)      --	그레이스 페어리 퀸 스태프(아라)
-g_pRandomItemManager:AddAttractionItemInfo(	81980	,	true)      --	그레이스 페어리 상의(아라)
-g_pRandomItemManager:AddAttractionItemInfo(	81981	,	true)      --	그레이스 페어리 하의(아라)
-g_pRandomItemManager:AddAttractionItemInfo(	81982	,	true)      --	그레이스 페어리 장갑(아라)
-g_pRandomItemManager:AddAttractionItemInfo(	81983	,	true)      --	그레이스 페어리 신발(아라)
-g_pRandomItemManager:AddAttractionItemInfo(	81984	,	true)      --	그레이스 페어리 머리(아라)
-g_pRandomItemManager:AddAttractionItemInfo(	81985	,	true)      --	그레이스 페어리 미니미(아라)
-g_pRandomItemManager:AddAttractionItemInfo(	81986	,	true)      --	그레이스 페어리 라이트 윙(아라)
-g_pRandomItemManager:AddAttractionItemInfo(	81987	,	true)      --	그레이스 페어리 윙츠 (아라)
-
--- 가열기 공지 추가	2013-10-01	우원식
-g_pRandomItemManager:AddAttractionItemInfo(	81988	,	true)      --	아크엔젤 클레이모어 (엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	81989	,	true)      --	아크엔젤 상의 (엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	81990	,	true)      --	아크엔젤 하의 (엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	81991	,	true)      --	아크엔젤 장갑 (엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	81992	,	true)      --	아크엔젤 신발 (엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	81993	,	true)      --	아크엔젤 헤어 (엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	81994	,	true)      --	아크엔젤 윙 (엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	81995	,	true)      --	아크엔젤 크라운 (엘리시스)
-
--- 가열기 공지 추가	2013.10.02	우원식		
-
-g_pRandomItemManager:AddAttractionItemInfo(	160880	,	true)      --	스타 아카데미 동복 무기 큐브
-g_pRandomItemManager:AddAttractionItemInfo(	160881	,	true)      --	스타 아카데미 동복 상의 큐브
-g_pRandomItemManager:AddAttractionItemInfo(	160882	,	true)      --	스타 아카데미 동복 하의 큐브
-g_pRandomItemManager:AddAttractionItemInfo(	160883	,	true)      --	스타 아카데미 동복 장갑 큐브
-g_pRandomItemManager:AddAttractionItemInfo(	160884	,	true)      --	스타 아카데미 동복 신발 큐브
-g_pRandomItemManager:AddAttractionItemInfo(	160885	,	true)      --	스타 아카데미 동복 헤어 큐브
-
--- 가열기 공지 추가	2013.10.07	우원식		
-
-g_pRandomItemManager:AddAttractionItemInfo(	88685	,	true)      --	이그니션 칼리고 소드 (엘소드)
-g_pRandomItemManager:AddAttractionItemInfo(	88686	,	true)      --	이그니션 칼리고 상의 (엘소드)
-g_pRandomItemManager:AddAttractionItemInfo(	88687	,	true)      --	이그니션 칼리고 하의 (엘소드)
-g_pRandomItemManager:AddAttractionItemInfo(	88688	,	true)      --	이그니션 칼리고 장갑 (엘소드)
-g_pRandomItemManager:AddAttractionItemInfo(	88689	,	true)      --	이그니션 칼리고 신발 (엘소드)
-g_pRandomItemManager:AddAttractionItemInfo(	88690	,	true)      --	이그니션 칼리고 헤어 (엘소드)
-g_pRandomItemManager:AddAttractionItemInfo(	88691	,	true)      --	이그니션 칼리고 크라운 (엘소드)
-g_pRandomItemManager:AddAttractionItemInfo(	88692	,	true)      --	이그니션 칼리고 윙 (엘소드)
-g_pRandomItemManager:AddAttractionItemInfo(	88693	,	true)      --	이그니션 칼리고 완드 (아이샤)
-g_pRandomItemManager:AddAttractionItemInfo(	88694	,	true)      --	이그니션 칼리고 상의 (아이샤)
-g_pRandomItemManager:AddAttractionItemInfo(	88695	,	true)      --	이그니션 칼리고 하의 (아이샤)
-g_pRandomItemManager:AddAttractionItemInfo(	88696	,	true)      --	이그니션 칼리고 장갑 (아이샤)
-g_pRandomItemManager:AddAttractionItemInfo(	88697	,	true)      --	이그니션 칼리고 신발 (아이샤)
-g_pRandomItemManager:AddAttractionItemInfo(	88698	,	true)      --	이그니션 칼리고 헤어 (아이샤)
-g_pRandomItemManager:AddAttractionItemInfo(	88699	,	true)      --	이그니션 칼리고 크라운 (아이샤)
-g_pRandomItemManager:AddAttractionItemInfo(	88700	,	true)      --	이그니션 칼리고 윙 (아이샤)
-g_pRandomItemManager:AddAttractionItemInfo(	88701	,	true)      --	이그니션 칼리고 보우 (레나)
-g_pRandomItemManager:AddAttractionItemInfo(	88702	,	true)      --	이그니션 칼리고 상의 (레나)
-g_pRandomItemManager:AddAttractionItemInfo(	88703	,	true)      --	이그니션 칼리고 하의 (레나)
-g_pRandomItemManager:AddAttractionItemInfo(	88704	,	true)      --	이그니션 칼리고 장갑 (레나)
-g_pRandomItemManager:AddAttractionItemInfo(	88705	,	true)      --	이그니션 칼리고 신발 (레나)
-g_pRandomItemManager:AddAttractionItemInfo(	88706	,	true)      --	이그니션 칼리고 헤어 (레나)
-g_pRandomItemManager:AddAttractionItemInfo(	88707	,	true)      --	이그니션 칼리고 크라운 (레나)
-g_pRandomItemManager:AddAttractionItemInfo(	88708	,	true)      --	이그니션 칼리고 윙 (레나)
-g_pRandomItemManager:AddAttractionItemInfo(	88709	,	true)      --	이그니션 칼리고 블레이드 (레이븐)
-g_pRandomItemManager:AddAttractionItemInfo(	88710	,	true)      --	이그니션 칼리고 상의 (레이븐)
-g_pRandomItemManager:AddAttractionItemInfo(	88711	,	true)      --	이그니션 칼리고 하의 (레이븐)
-g_pRandomItemManager:AddAttractionItemInfo(	88712	,	true)      --	이그니션 칼리고 장갑 (레이븐)
-g_pRandomItemManager:AddAttractionItemInfo(	88713	,	true)      --	이그니션 칼리고 신발 (레이븐)
-g_pRandomItemManager:AddAttractionItemInfo(	88714	,	true)      --	이그니션 칼리고 헤어 (레이븐)
-g_pRandomItemManager:AddAttractionItemInfo(	88715	,	true)      --	이그니션 칼리고 크라운 (레이븐)
-g_pRandomItemManager:AddAttractionItemInfo(	88716	,	true)      --	이그니션 칼리고 윙 (레이븐)
-g_pRandomItemManager:AddAttractionItemInfo(	88717	,	true)      --	이그니션 칼리고 클레이모어 (엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	88718	,	true)      --	이그니션 칼리고 상의 (엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	88719	,	true)      --	이그니션 칼리고 하의 (엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	88720	,	true)      --	이그니션 칼리고 장갑 (엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	88721	,	true)      --	이그니션 칼리고 신발 (엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	88722	,	true)      --	이그니션 칼리고 헤어 (엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	88723	,	true)      --	이그니션 칼리고 크라운 (엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	88724	,	true)      --	이그니션 칼리고 윙 (엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	88725	,	true)      --	이그니션 칼리고 기어 (이브)
-g_pRandomItemManager:AddAttractionItemInfo(	88726	,	true)      --	이그니션 칼리고 상의 (이브)
-g_pRandomItemManager:AddAttractionItemInfo(	88727	,	true)      --	이그니션 칼리고 하의 (이브)
-g_pRandomItemManager:AddAttractionItemInfo(	88728	,	true)      --	이그니션 칼리고 장갑 (이브)
-g_pRandomItemManager:AddAttractionItemInfo(	88729	,	true)      --	이그니션 칼리고 신발 (이브)
-g_pRandomItemManager:AddAttractionItemInfo(	88730	,	true)      --	이그니션 칼리고 헤어 (이브)
-g_pRandomItemManager:AddAttractionItemInfo(	88731	,	true)      --	이그니션 칼리고 크라운 (이브)
-g_pRandomItemManager:AddAttractionItemInfo(	88732	,	true)      --	이그니션 칼리고 윙 (이브)
-g_pRandomItemManager:AddAttractionItemInfo(	88733	,	true)      --	이그니션 칼리고 캐논 (청)
-g_pRandomItemManager:AddAttractionItemInfo(	88734	,	true)      --	이그니션 칼리고 상의 (청)
-g_pRandomItemManager:AddAttractionItemInfo(	88735	,	true)      --	이그니션 칼리고 하의 (청)
-g_pRandomItemManager:AddAttractionItemInfo(	88736	,	true)      --	이그니션 칼리고 장갑 (청)
-g_pRandomItemManager:AddAttractionItemInfo(	88737	,	true)      --	이그니션 칼리고 신발 (청)
-g_pRandomItemManager:AddAttractionItemInfo(	88738	,	true)      --	이그니션 칼리고 헤어 (청)
-g_pRandomItemManager:AddAttractionItemInfo(	88739	,	true)      --	이그니션 칼리고 크라운 (청)
-g_pRandomItemManager:AddAttractionItemInfo(	88740	,	true)      --	이그니션 칼리고 윙 (청)
-g_pRandomItemManager:AddAttractionItemInfo(	88741	,	true)      --	이그니션 칼리고 스피어 (아라)
-g_pRandomItemManager:AddAttractionItemInfo(	88742	,	true)      --	이그니션 칼리고 상의 (아라)
-g_pRandomItemManager:AddAttractionItemInfo(	88743	,	true)      --	이그니션 칼리고 하의 (아라)
-g_pRandomItemManager:AddAttractionItemInfo(	88744	,	true)      --	이그니션 칼리고 장갑 (아라)
-g_pRandomItemManager:AddAttractionItemInfo(	88745	,	true)      --	이그니션 칼리고 신발 (아라)
-g_pRandomItemManager:AddAttractionItemInfo(	88746	,	true)      --	이그니션 칼리고 헤어 (아라)
-g_pRandomItemManager:AddAttractionItemInfo(	88747	,	true)      --	이그니션 칼리고 크라운 (아라)
-g_pRandomItemManager:AddAttractionItemInfo(	88748	,	true)      --	이그니션 칼리고 윙 (아라)
-g_pRandomItemManager:AddAttractionItemInfo(	130506	,	true)      --	불멸의 투지
-
--- 가열기 공지 추가	2013.10.21	우원식		
-
-g_pRandomItemManager:AddAttractionItemInfo(	133546	,	true)      --	로열 메이드-다크 폴 클레이모어(엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	133547	,	true)      --	로열 메이드-다크 폴 상의(엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	133548	,	true)      --	로열 메이드-다크 폴 하의(엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	133549	,	true)      --	로열 메이드-다크 폴 장갑(엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	133550	,	true)      --	로열 메이드-다크 폴 신발(엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	133551	,	true)      --	로열 메이드-다크 폴 헤어(엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	133552	,	true)      --	로열 메이드 블랙 헤드드레스(엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	133553	,	true)      --	로열 배틀 블랙 미니미(엘리시스)
-
--- 가열기 공지 추가	2013.11.06	우원식	
-g_pRandomItemManager:AddAttractionItemInfo(	81949	,	true)      --	금강야차 귀문파천창(아라)
-g_pRandomItemManager:AddAttractionItemInfo(	81950	,	true)      --	금강야차 상의(아라)
-g_pRandomItemManager:AddAttractionItemInfo(	81951	,	true)      --	금강야차 하의(아라)
-g_pRandomItemManager:AddAttractionItemInfo(	81952	,	true)      --	금강야차 장갑(아라)
-g_pRandomItemManager:AddAttractionItemInfo(	81953	,	true)      --	금강야차 신발(아라)
-g_pRandomItemManager:AddAttractionItemInfo(	81954	,	true)      --	금강야차 머리 장식(아라)
-g_pRandomItemManager:AddAttractionItemInfo(	81955	,	true)      --	금강야차 화무일홍 망토(아라)
-g_pRandomItemManager:AddAttractionItemInfo(	81956	,	true)      --	금강 천야차 귀문파천창(아라)
-g_pRandomItemManager:AddAttractionItemInfo(	81957	,	true)      --	금강 천야차 상의(아라)
-g_pRandomItemManager:AddAttractionItemInfo(	81958	,	true)      --	금강 천야차 하의(아라)
-g_pRandomItemManager:AddAttractionItemInfo(	81959	,	true)      --	금강 천야차 장갑(아라)
-g_pRandomItemManager:AddAttractionItemInfo(	81960	,	true)      --	금강 천야차 신발(아라)
-g_pRandomItemManager:AddAttractionItemInfo(	81961	,	true)      --	금강 천야차 머리 장식(아라)
-g_pRandomItemManager:AddAttractionItemInfo(	81962	,	true)      --	금강 천야차 염령환 망토(아라)
-g_pRandomItemManager:AddAttractionItemInfo(	81996	,	true)      --	금강야차 나락령(아라)
-g_pRandomItemManager:AddAttractionItemInfo(	81160	,	true)      --	금강야차 귀면갑
-g_pRandomItemManager:AddAttractionItemInfo(	81280	,	true)      --	금강 천야차 귀면갑
-
--- 가열기 공지 추가	2013.11.14	우원식
-g_pRandomItemManager:AddAttractionItemInfo(	81997	,	true)      --	금강야차 귀문파천창(엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	81998	,	true)      --	금강야차 상의(엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	81999	,	true)      --	금강야차 하의(엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	82000	,	true)      --	금강야차 장갑(엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	82001	,	true)      --	금강야차 신발(엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	82002	,	true)      --	금강야차 머리 장식(엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	82003	,	true)      --	금강야차 화무일홍 망토(엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	82004	,	true)      --	금강 천야차 귀문파천창(엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	82005	,	true)      --	금강 천야차 상의(엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	82006	,	true)      --	금강 천야차 하의(엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	82007	,	true)      --	금강 천야차 장갑(엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	82008	,	true)      --	금강 천야차 신발(엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	82009	,	true)      --	금강 천야차 머리 장식(엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	82010	,	true)      --	금강 천야차 염령환 망토(엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	82011	,	true)      --	금강야차 나락령(엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	81160	,	true)      --	금강야차 귀면갑
-g_pRandomItemManager:AddAttractionItemInfo(	81280	,	true)      --	금강 천야차 귀면갑
-
--- 가열기 공지 추가	2013.12.17	우원식
-g_pRandomItemManager:AddAttractionItemInfo(	82012	,	true)      --	아크엔젤 다이너모 (애드)
-g_pRandomItemManager:AddAttractionItemInfo(	82013	,	true)      --	아크엔젤 상의 (애드)
-g_pRandomItemManager:AddAttractionItemInfo(	82014	,	true)      --	아크엔젤 하의 (애드)
-g_pRandomItemManager:AddAttractionItemInfo(	82015	,	true)      --	아크엔젤 장갑 (애드)
-g_pRandomItemManager:AddAttractionItemInfo(	82016	,	true)      --	아크엔젤 신발 (애드)
-g_pRandomItemManager:AddAttractionItemInfo(	82017	,	true)      --	아크엔젤 헤어 (애드)
-g_pRandomItemManager:AddAttractionItemInfo(	82018	,	true)      --	아크엔젤 윙 (애드)
-g_pRandomItemManager:AddAttractionItemInfo(	82019	,	true)      --	아크엔젤 크라운 (애드)
-
--- 가열기 공지 추가	2013-12-22	우원식
-g_pRandomItemManager:AddAttractionItemInfo(	550050	,	true)      --	소환석 : 이브 커스텀-오베론650
-
--- 가열기 공지 추가	2014.01.03	우원식
-g_pRandomItemManager:AddAttractionItemInfo(	82020	,	true)      --	데몬 슬레이어 소드 (엘소드)
-g_pRandomItemManager:AddAttractionItemInfo(	82021	,	true)      --	데몬 슬레이어 상의 (엘소드)
-g_pRandomItemManager:AddAttractionItemInfo(	82022	,	true)      --	데몬 슬레이어 하의 (엘소드)
-g_pRandomItemManager:AddAttractionItemInfo(	82023	,	true)      --	데몬 슬레이어 장갑 (엘소드)
-g_pRandomItemManager:AddAttractionItemInfo(	82024	,	true)      --	데몬 슬레이어 신발 (엘소드)
-g_pRandomItemManager:AddAttractionItemInfo(	82025	,	true)      --	데몬 슬레이어 헤어 (엘소드)
-g_pRandomItemManager:AddAttractionItemInfo(	82026	,	true)      --	데몬 슬레이어 투구 (엘소드)
-g_pRandomItemManager:AddAttractionItemInfo(	82027	,	true)      --	데몬 슬레이어 윙 (엘소드)
-g_pRandomItemManager:AddAttractionItemInfo(	82028	,	true)      --	데몬 슬레이어 스태프 (아이샤)
-g_pRandomItemManager:AddAttractionItemInfo(	82029	,	true)      --	데몬 슬레이어 상의 (아이샤)
-g_pRandomItemManager:AddAttractionItemInfo(	82030	,	true)      --	데몬 슬레이어 하의 (아이샤)
-g_pRandomItemManager:AddAttractionItemInfo(	82031	,	true)      --	데몬 슬레이어 장갑 (아이샤)
-g_pRandomItemManager:AddAttractionItemInfo(	82032	,	true)      --	데몬 슬레이어 신발 (아이샤)
-g_pRandomItemManager:AddAttractionItemInfo(	82033	,	true)      --	데몬 슬레이어 헤어 (아이샤)
-g_pRandomItemManager:AddAttractionItemInfo(	82034	,	true)      --	데몬 슬레이어 티아라 (아이샤)
-g_pRandomItemManager:AddAttractionItemInfo(	82035	,	true)      --	데몬 슬레이어 윙 (아이샤)
-g_pRandomItemManager:AddAttractionItemInfo(	82036	,	true)      --	데몬 슬레이어 보우 (레나)
-g_pRandomItemManager:AddAttractionItemInfo(	82037	,	true)      --	데몬 슬레이어 상의 (레나)
-g_pRandomItemManager:AddAttractionItemInfo(	82038	,	true)      --	데몬 슬레이어 하의 (레나)
-g_pRandomItemManager:AddAttractionItemInfo(	82039	,	true)      --	데몬 슬레이어 장갑 (레나)
-g_pRandomItemManager:AddAttractionItemInfo(	82040	,	true)      --	데몬 슬레이어 신발 (레나)
-g_pRandomItemManager:AddAttractionItemInfo(	82041	,	true)      --	데몬 슬레이어 헤어 (레나)
-g_pRandomItemManager:AddAttractionItemInfo(	82042	,	true)      --	데몬 슬레이어 투구 (레나)
-g_pRandomItemManager:AddAttractionItemInfo(	82043	,	true)      --	데몬 슬레이어 윙 (레나)
-g_pRandomItemManager:AddAttractionItemInfo(	82044	,	true)      --	데몬 슬레이어 블레이드 (레이븐)
-g_pRandomItemManager:AddAttractionItemInfo(	82045	,	true)      --	데몬 슬레이어 상의 (레이븐)
-g_pRandomItemManager:AddAttractionItemInfo(	82046	,	true)      --	데몬 슬레이어 하의 (레이븐)
-g_pRandomItemManager:AddAttractionItemInfo(	82047	,	true)      --	데몬 슬레이어 장갑 (레이븐)
-g_pRandomItemManager:AddAttractionItemInfo(	82048	,	true)      --	데몬 슬레이어 신발 (레이븐)
-g_pRandomItemManager:AddAttractionItemInfo(	82049	,	true)      --	데몬 슬레이어 헤어 (레이븐)
-g_pRandomItemManager:AddAttractionItemInfo(	82050	,	true)      --	데몬 슬레이어 크라운 (레이븐)
-g_pRandomItemManager:AddAttractionItemInfo(	82051	,	true)      --	데몬 슬레이어 윙 (레이븐)
-g_pRandomItemManager:AddAttractionItemInfo(	82052	,	true)      --	데몬 슬레이어 기어 (이브)
-g_pRandomItemManager:AddAttractionItemInfo(	82053	,	true)      --	데몬 슬레이어 상의 (이브)
-g_pRandomItemManager:AddAttractionItemInfo(	82054	,	true)      --	데몬 슬레이어 하의 (이브)
-g_pRandomItemManager:AddAttractionItemInfo(	82055	,	true)      --	데몬 슬레이어 장갑 (이브)
-g_pRandomItemManager:AddAttractionItemInfo(	82056	,	true)      --	데몬 슬레이어 신발 (이브)
-g_pRandomItemManager:AddAttractionItemInfo(	82057	,	true)      --	데몬 슬레이어 헤어 (이브)
-g_pRandomItemManager:AddAttractionItemInfo(	82058	,	true)      --	데몬 슬레이어 혼 (이브)
-g_pRandomItemManager:AddAttractionItemInfo(	82059	,	true)      --	데몬 슬레이어 윙 (이브)
-g_pRandomItemManager:AddAttractionItemInfo(	82060	,	true)      --	데몬 슬레이어 캐논 (청)
-g_pRandomItemManager:AddAttractionItemInfo(	82061	,	true)      --	데몬 슬레이어 상의 (청)
-g_pRandomItemManager:AddAttractionItemInfo(	82062	,	true)      --	데몬 슬레이어 하의 (청)
-g_pRandomItemManager:AddAttractionItemInfo(	82063	,	true)      --	데몬 슬레이어 장갑 (청)
-g_pRandomItemManager:AddAttractionItemInfo(	82064	,	true)      --	데몬 슬레이어 신발 (청)
-g_pRandomItemManager:AddAttractionItemInfo(	82065	,	true)      --	데몬 슬레이어 헤어 (청)
-g_pRandomItemManager:AddAttractionItemInfo(	82066	,	true)      --	데몬 슬레이어 투구 (청)
-g_pRandomItemManager:AddAttractionItemInfo(	82067	,	true)      --	데몬 슬레이어 망토 (청)
-g_pRandomItemManager:AddAttractionItemInfo(	82068	,	true)      --	데몬 슬레이어 스피어 (아라)
-g_pRandomItemManager:AddAttractionItemInfo(	82069	,	true)      --	데몬 슬레이어 상의 (아라)
-g_pRandomItemManager:AddAttractionItemInfo(	82070	,	true)      --	데몬 슬레이어 하의 (아라)
-g_pRandomItemManager:AddAttractionItemInfo(	82071	,	true)      --	데몬 슬레이어 장갑 (아라)
-g_pRandomItemManager:AddAttractionItemInfo(	82072	,	true)      --	데몬 슬레이어 신발 (아라)
-g_pRandomItemManager:AddAttractionItemInfo(	82073	,	true)      --	데몬 슬레이어 헤어 (아라)
-g_pRandomItemManager:AddAttractionItemInfo(	82074	,	true)      --	데몬 슬레이어 혼 (아라)
-g_pRandomItemManager:AddAttractionItemInfo(	82075	,	true)      --	데몬 슬레이어 윙 (아라)
-g_pRandomItemManager:AddAttractionItemInfo(	82076	,	true)      --	데몬 슬레이어 클레이모어 (엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	82077	,	true)      --	데몬 슬레이어 상의 (엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	82078	,	true)      --	데몬 슬레이어 하의 (엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	82079	,	true)      --	데몬 슬레이어 장갑 (엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	82080	,	true)      --	데몬 슬레이어 신발 (엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	82081	,	true)      --	데몬 슬레이어 헤어 (엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	82082	,	true)      --	데몬 슬레이어 티아라 (엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	82083	,	true)      --	데몬 슬레이어 윙 (엘리시스)
-g_pRandomItemManager:AddAttractionItemInfo(	82084	,	true)      --	데몬 슬레이어 다이너모 (애드)
-g_pRandomItemManager:AddAttractionItemInfo(	82085	,	true)      --	데몬 슬레이어 상의 (애드)
-g_pRandomItemManager:AddAttractionItemInfo(	82086	,	true)      --	데몬 슬레이어 하의 (애드)
-g_pRandomItemManager:AddAttractionItemInfo(	82087	,	true)      --	데몬 슬레이어 장갑 (애드)
-g_pRandomItemManager:AddAttractionItemInfo(	82088	,	true)      --	데몬 슬레이어 신발 (애드)
-g_pRandomItemManager:AddAttractionItemInfo(	82089	,	true)      --	데몬 슬레이어 헤어 (애드)
-g_pRandomItemManager:AddAttractionItemInfo(	82090	,	true)      --	데몬 슬레이어 투구 (애드)
-g_pRandomItemManager:AddAttractionItemInfo(	82091	,	true)      --	데몬 슬레이어 윙 (애드)
-
--- 가열기 공지 추가	2014.01.13	우원식
-g_pRandomItemManager:AddAttractionItemInfo(	82122	,	true)      --	엘 수색대 장교 다이너모 (애드)
-g_pRandomItemManager:AddAttractionItemInfo(	82123	,	true)      --	엘 수색대 장교 제복 상의 (애드)
-g_pRandomItemManager:AddAttractionItemInfo(	82124	,	true)      --	엘 수색대 장교 제복 하의 (애드)
-g_pRandomItemManager:AddAttractionItemInfo(	82125	,	true)      --	엘 수색대 장교 제복 장갑 (애드)
-g_pRandomItemManager:AddAttractionItemInfo(	82126	,	true)      --	엘 수색대 장교 제복 신발 (애드)
-g_pRandomItemManager:AddAttractionItemInfo(	82127	,	true)      --	엘 수색대 장교 제복 헤어 (애드)
-g_pRandomItemManager:AddAttractionItemInfo(	82128	,	true)      --	엘 수색대 장교 제복 망토 (애드)
-g_pRandomItemManager:AddAttractionItemInfo(	82129	,	true)      --	엘 수색대 장교 모자 (애드)
-g_pRandomItemManager:AddAttractionItemInfo(	130722	,	true)      --	예식검
 
 
 
@@ -2027,32 +1598,7 @@ g_pRandomItemManager:AddAttractionItemInfo(	130722	,	true)      --	예식검
 ---------------
 
 
--- 120711/오현택/청아크데빌 추가
-
-g_pRandomItemManager:AddAttractionItemInfo( 	81180	,	true	)	--	아크데빌 데몰리셔 (청)
-g_pRandomItemManager:AddAttractionItemInfo( 	81181	,	true	)	--	아크데빌 상의 (청)
-g_pRandomItemManager:AddAttractionItemInfo( 	81182	,	true	)	--	아크데빌 하의 (청)
-g_pRandomItemManager:AddAttractionItemInfo( 	81183	,	true	)	--	아크데빌 장갑 (청)
-g_pRandomItemManager:AddAttractionItemInfo( 	81184	,	true	)	--	아크데빌 신발 (청)
-g_pRandomItemManager:AddAttractionItemInfo( 	81185	,	true	)	--	아크데빌 헤어 (청)
-g_pRandomItemManager:AddAttractionItemInfo( 	81186	,	true	)	--	아크데빌 윙 (청)
-g_pRandomItemManager:AddAttractionItemInfo( 	81187	,	true	)	--	아크데빌 아이 (청)
-g_pRandomItemManager:AddAttractionItemInfo( 	67000500	,	true	)	--	아크데빌 헤어 Ver.Dark (청)
-
-
--- 121121/오현택/청 벨더 임페리엘 (120313)
-
-g_pRandomItemManager:AddAttractionItemInfo( 	81847	,	true	)	--	벨더 임페리얼 가드 스파이크 캐논(청)
-g_pRandomItemManager:AddAttractionItemInfo( 	81848	,	true	)	--	벨더 임페리얼 가드 로열 플레이트(청)
-g_pRandomItemManager:AddAttractionItemInfo( 	81849	,	true	)	--	벨더 임페리얼 가드 그리브(청)
-g_pRandomItemManager:AddAttractionItemInfo( 	81850	,	true	)	--	벨더 임페리얼 가드 건틀릿(청)
-g_pRandomItemManager:AddAttractionItemInfo( 	81851	,	true	)	--	벨더 임페리얼 가드 새버톤(청)
-g_pRandomItemManager:AddAttractionItemInfo( 	81852	,	true	)	--	벨더 임페리얼 가드 헤어(청)
-g_pRandomItemManager:AddAttractionItemInfo( 	81853	,	true	)	--	벨더 임페리얼 가드 헤드기어(청)
-g_pRandomItemManager:AddAttractionItemInfo( 	81854	,	true	)	--	벨더 임페리얼 가드 망토(청)
-
-
--- 130116/오현택/다크 메이드
+-- 120725/오현택/다크메이드
 
 g_pRandomItemManager:AddAttractionItemInfo( 	132716	,	true	)	--	로열 서번트-다크니스 소드(엘소드)
 g_pRandomItemManager:AddAttractionItemInfo( 	132717	,	true	)	--	로열 서번트-다크니스 가드 상의(엘소드)
@@ -2103,174 +1649,49 @@ g_pRandomItemManager:AddAttractionItemInfo( 	81385	,	true	)	--	로열 서번트-
 g_pRandomItemManager:AddAttractionItemInfo( 	81386	,	true	)	--	로열 서번트 실버 윙 모노클(청)
 g_pRandomItemManager:AddAttractionItemInfo( 	81387	,	true	)	--	로열 배틀 블랙 미니미(청)
 
-
-
-----------------------
--- 해외 대역 (중국) --
-----------------------
-
-
--- 131023/오현택/할로윈 아바타 + 액세서리
-
-g_pRandomItemManager:AddAttractionItemInfo(	250001600	, true )	--	엘소드 할로윈 파티 코스프레 무기
-g_pRandomItemManager:AddAttractionItemInfo(	250001601	, true )	--	엘소드 할로윈 파티 코스프레 상의
-g_pRandomItemManager:AddAttractionItemInfo(	250001602	, true )	--	엘소드 할로윈 파티 코스프레 하의
-g_pRandomItemManager:AddAttractionItemInfo(	250001603	, true )	--	엘소드 할로윈 파티 코스프레 장갑
-g_pRandomItemManager:AddAttractionItemInfo(	250001604	, true )	--	엘소드 할로윈 파티 코스프레 신발
-g_pRandomItemManager:AddAttractionItemInfo(	250001605	, true )	--	엘소드 할로윈 파티 코스프레 헤어
-g_pRandomItemManager:AddAttractionItemInfo(	250001610	, true )	--	아이샤 할로윈 파티 코스프레 무기
-g_pRandomItemManager:AddAttractionItemInfo(	250001611	, true )	--	아이샤 할로윈 파티 코스프레 상의
-g_pRandomItemManager:AddAttractionItemInfo(	250001612	, true )	--	아이샤 할로윈 파티 코스프레 하의
-g_pRandomItemManager:AddAttractionItemInfo(	250001613	, true )	--	아이샤 할로윈 파티 코스프레 장갑
-g_pRandomItemManager:AddAttractionItemInfo(	250001614	, true )	--	아이샤 할로윈 파티 코스프레 신발
-g_pRandomItemManager:AddAttractionItemInfo(	250001615	, true )	--	아이샤 할로윈 파티 코스프레 헤어
-g_pRandomItemManager:AddAttractionItemInfo(	250001620	, true )	--	레나 할로윈 파티 코스프레 무기
-g_pRandomItemManager:AddAttractionItemInfo(	250001621	, true )	--	레나 할로윈 파티 코스프레 상의
-g_pRandomItemManager:AddAttractionItemInfo(	250001622	, true )	--	레나 할로윈 파티 코스프레 하의
-g_pRandomItemManager:AddAttractionItemInfo(	250001623	, true )	--	레나 할로윈 파티 코스프레 장갑
-g_pRandomItemManager:AddAttractionItemInfo(	250001624	, true )	--	레나 할로윈 파티 코스프레 신발
-g_pRandomItemManager:AddAttractionItemInfo(	250001625	, true )	--	레나 할로윈 파티 코스프레 헤어
-g_pRandomItemManager:AddAttractionItemInfo(	250001630	, true )	--	레이븐 할로윈 파티 코스프레 무기
-g_pRandomItemManager:AddAttractionItemInfo(	250001631	, true )	--	레이븐 할로윈 파티 코스프레 상의
-g_pRandomItemManager:AddAttractionItemInfo(	250001632	, true )	--	레이븐 할로윈 파티 코스프레 하의
-g_pRandomItemManager:AddAttractionItemInfo(	250001633	, true )	--	레이븐 할로윈 파티 코스프레 장갑
-g_pRandomItemManager:AddAttractionItemInfo(	250001634	, true )	--	레이븐 할로윈 파티 코스프레 신발
-g_pRandomItemManager:AddAttractionItemInfo(	250001635	, true )	--	레이븐 할로윈 파티 코스프레 헤어
-g_pRandomItemManager:AddAttractionItemInfo(	250001640	, true )	--	이브 할로윈 파티 코스프레 무기
-g_pRandomItemManager:AddAttractionItemInfo(	250001641	, true )	--	이브 할로윈 파티 코스프레 상의
-g_pRandomItemManager:AddAttractionItemInfo(	250001642	, true )	--	이브 할로윈 파티 코스프레 하의
-g_pRandomItemManager:AddAttractionItemInfo(	250001643	, true )	--	이브 할로윈 파티 코스프레 장갑
-g_pRandomItemManager:AddAttractionItemInfo(	250001644	, true )	--	이브 할로윈 파티 코스프레 신발
-g_pRandomItemManager:AddAttractionItemInfo(	250001645	, true )	--	이브 할로윈 파티 코스프레 헤어
-g_pRandomItemManager:AddAttractionItemInfo(	250001650	, true )	--	청 할로윈 파티 코스프레 무기
-g_pRandomItemManager:AddAttractionItemInfo(	250001651	, true )	--	청 할로윈 파티 코스프레 상의
-g_pRandomItemManager:AddAttractionItemInfo(	250001652	, true )	--	청 할로윈 파티 코스프레 하의
-g_pRandomItemManager:AddAttractionItemInfo(	250001653	, true )	--	청 할로윈 파티 코스프레 장갑
-g_pRandomItemManager:AddAttractionItemInfo(	250001654	, true )	--	청 할로윈 파티 코스프레 신발
-g_pRandomItemManager:AddAttractionItemInfo(	250001655	, true )	--	청 할로윈 파티 코스프레 헤어
-g_pRandomItemManager:AddAttractionItemInfo(	250001660	, true )	--	아라 할로윈 파티 코스프레 무기
-g_pRandomItemManager:AddAttractionItemInfo(	250001661	, true )	--	아라 할로윈 파티 코스프레 상의
-g_pRandomItemManager:AddAttractionItemInfo(	250001662	, true )	--	아라 할로윈 파티 코스프레 하의
-g_pRandomItemManager:AddAttractionItemInfo(	250001663	, true )	--	아라 할로윈 파티 코스프레 장갑
-g_pRandomItemManager:AddAttractionItemInfo(	250001664	, true )	--	아라 할로윈 파티 코스프레 신발
-g_pRandomItemManager:AddAttractionItemInfo(	250001665	, true )	--	아라 할로윈 파티 코스프레 헤어
-g_pRandomItemManager:AddAttractionItemInfo(	250001670	, true )	--	엘소드 할로윈 파티 코스프레 가면
-g_pRandomItemManager:AddAttractionItemInfo(	250001671	, true )	--	아이샤 할로윈 파티 코스프레 가면
-g_pRandomItemManager:AddAttractionItemInfo(	250001672	, true )	--	레나 할로윈 파티 코스프레 가면
-g_pRandomItemManager:AddAttractionItemInfo(	250001673	, true )	--	레이븐 할로윈 파티 코스프레 가면
-g_pRandomItemManager:AddAttractionItemInfo(	250001674	, true )	--	이브 할로윈 파티 코스프레 가면
-g_pRandomItemManager:AddAttractionItemInfo(	250001675	, true )	--	청 할로윈 파티 코스프레 가면
-g_pRandomItemManager:AddAttractionItemInfo(	250001676	, true )	--	아라 할로윈 파티 코스프레 가면
-g_pRandomItemManager:AddAttractionItemInfo(	250001680	, true )	--	엘소드 할로윈 파티 코스프레 무기 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001681	, true )	--	엘소드 할로윈 파티 코스프레 상의 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001682	, true )	--	엘소드 할로윈 파티 코스프레 하의 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001683	, true )	--	엘소드 할로윈 파티 코스프레 장갑 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001684	, true )	--	엘소드 할로윈 파티 코스프레 신발 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001685	, true )	--	엘소드 할로윈 파티 코스프레 헤어 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001686	, true )	--	아이샤 할로윈 파티 코스프레 무기 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001687	, true )	--	아이샤 할로윈 파티 코스프레 상의 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001688	, true )	--	아이샤 할로윈 파티 코스프레 하의 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001689	, true )	--	아이샤 할로윈 파티 코스프레 장갑 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001690	, true )	--	아이샤 할로윈 파티 코스프레 신발 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001691	, true )	--	아이샤 할로윈 파티 코스프레 헤어 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001692	, true )	--	레나 할로윈 파티 코스프레 무기 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001693	, true )	--	레나 할로윈 파티 코스프레 상의 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001694	, true )	--	레나 할로윈 파티 코스프레 하의 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001695	, true )	--	레나 할로윈 파티 코스프레 장갑 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001696	, true )	--	레나 할로윈 파티 코스프레 신발 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001697	, true )	--	레나 할로윈 파티 코스프레 헤어 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001698	, true )	--	레이븐 할로윈 파티 코스프레 무기 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001699	, true )	--	레이븐 할로윈 파티 코스프레 상의 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001700	, true )	--	레이븐 할로윈 파티 코스프레 하의 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001701	, true )	--	레이븐 할로윈 파티 코스프레 장갑 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001702	, true )	--	레이븐 할로윈 파티 코스프레 신발 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001703	, true )	--	레이븐 할로윈 파티 코스프레 헤어 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001704	, true )	--	이브 할로윈 파티 코스프레 무기 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001705	, true )	--	이브 할로윈 파티 코스프레 상의 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001706	, true )	--	이브 할로윈 파티 코스프레 하의 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001707	, true )	--	이브 할로윈 파티 코스프레 장갑 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001708	, true )	--	이브 할로윈 파티 코스프레 신발 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001709	, true )	--	이브 할로윈 파티 코스프레 헤어 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001710	, true )	--	청 할로윈 파티 코스프레 무기 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001711	, true )	--	청 할로윈 파티 코스프레 상의 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001712	, true )	--	청 할로윈 파티 코스프레 하의 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001713	, true )	--	청 할로윈 파티 코스프레 장갑 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001714	, true )	--	청 할로윈 파티 코스프레 신발 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001715	, true )	--	청 할로윈 파티 코스프레 헤어 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001716	, true )	--	아라 할로윈 파티 코스프레 무기 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001717	, true )	--	아라 할로윈 파티 코스프레 상의 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001718	, true )	--	아라 할로윈 파티 코스프레 하의 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001719	, true )	--	아라 할로윈 파티 코스프레 장갑 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001720	, true )	--	아라 할로윈 파티 코스프레 신발 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001721	, true )	--	아라 할로윈 파티 코스프레 헤어 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001722	, true )	--	엘소드 할로윈 파티 코스프레 가면 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001723	, true )	--	아이샤 할로윈 파티 코스프레 가면 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001724	, true )	--	레나 할로윈 파티 코스프레 가면 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001725	, true )	--	레이븐 할로윈 파티 코스프레 가면 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001726	, true )	--	이브 할로윈 파티 코스프레 가면 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001727	, true )	--	청 할로윈 파티 코스프레 가면 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001728	, true )	--	아라 할로윈 파티 코스프레 가면 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001729	, true )	--	할로윈 파티 코스프레 사신의 낫
-g_pRandomItemManager:AddAttractionItemInfo(	250001730	, true )	--	할로윈 파티 코스프레 서큐버스의 날개
-g_pRandomItemManager:AddAttractionItemInfo(	250001731	, true )	--	할로윈 파티 코스프레 강시의 부적 모자
-g_pRandomItemManager:AddAttractionItemInfo(	250001732	, true )	--	할로윈 파티 코스프레 라이칸스로프의 꼬리
-g_pRandomItemManager:AddAttractionItemInfo(	250001733	, true )	--	할로윈 파티 코스프레 파라오의 관
-g_pRandomItemManager:AddAttractionItemInfo(	250001734	, true )	--	할로윈 파티 코스프레 프랑켄슈타인의 나사
-g_pRandomItemManager:AddAttractionItemInfo(	250001735	, true )	--	할로윈 파티 코스프레 악마의 꼬리
-g_pRandomItemManager:AddAttractionItemInfo(	250001750	, true )	--	할로윈 파티 코스프레 사신의 낫 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001751	, true )	--	할로윈 파티 코스프레 서큐버스의 날개 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001752	, true )	--	할로윈 파티 코스프레 강시의 부적 모자 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001753	, true )	--	할로윈 파티 코스프레 라이칸스로프의 꼬리 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001754	, true )	--	할로윈 파티 코스프레 파라오의 관 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001755	, true )	--	할로윈 파티 코스프레 프랑켄슈타인의 나사 (Ver. B)
-g_pRandomItemManager:AddAttractionItemInfo(	250001756	, true )	--	할로윈 파티 코스프레 악마의 꼬리 (Ver. B)
-
-
--- 140108/오현택/금강천야차
-
-g_pRandomItemManager:AddAttractionItemInfo(	81220	, true )	--	금강 천야차 귀문일천도(엘소드)
-g_pRandomItemManager:AddAttractionItemInfo(	81221	, true )	--	금강 천야차 상의(엘소드)
-g_pRandomItemManager:AddAttractionItemInfo(	81222	, true )	--	금강 천야차 하의(엘소드)
-g_pRandomItemManager:AddAttractionItemInfo(	81223	, true )	--	금강 천야차 장갑(엘소드)
-g_pRandomItemManager:AddAttractionItemInfo(	81224	, true )	--	금강 천야차 신발(엘소드)
-g_pRandomItemManager:AddAttractionItemInfo(	81225	, true )	--	금강 천야차 머리 장식(엘소드)
-g_pRandomItemManager:AddAttractionItemInfo(	81226	, true )	--	금강 천야차 염령환 망토(엘소드)
-g_pRandomItemManager:AddAttractionItemInfo(	81230	, true )	--	금강 천야차 마령지(아이샤)
-g_pRandomItemManager:AddAttractionItemInfo(	81231	, true )	--	금강 천야차 상의(아이샤)
-g_pRandomItemManager:AddAttractionItemInfo(	81232	, true )	--	금강 천야차 하의(아이샤)
-g_pRandomItemManager:AddAttractionItemInfo(	81233	, true )	--	금강 천야차 장갑(아이샤)
-g_pRandomItemManager:AddAttractionItemInfo(	81234	, true )	--	금강 천야차 신발(아이샤)
-g_pRandomItemManager:AddAttractionItemInfo(	81235	, true )	--	금강 천야차 머리 장식(아이샤)
-g_pRandomItemManager:AddAttractionItemInfo(	81236	, true )	--	금강 천야차 염령환 망토(아이샤)
-g_pRandomItemManager:AddAttractionItemInfo(	81240	, true )	--	금강 천야차 사령궁(레나)
-g_pRandomItemManager:AddAttractionItemInfo(	81241	, true )	--	금강 천야차 상의(레나)
-g_pRandomItemManager:AddAttractionItemInfo(	81242	, true )	--	금강 천야차 하의(레나)
-g_pRandomItemManager:AddAttractionItemInfo(	81243	, true )	--	금강 천야차 장갑(레나)
-g_pRandomItemManager:AddAttractionItemInfo(	81244	, true )	--	금강 천야차 신발(레나)
-g_pRandomItemManager:AddAttractionItemInfo(	81245	, true )	--	금강 천야차 머리 장식(레나)
-g_pRandomItemManager:AddAttractionItemInfo(	81246	, true )	--	금강 천야차 염령환 망토(레나)
-g_pRandomItemManager:AddAttractionItemInfo(	81250	, true )	--	금강 천야차 참마도(레이븐)
-g_pRandomItemManager:AddAttractionItemInfo(	81251	, true )	--	금강 천야차 상의(레이븐)
-g_pRandomItemManager:AddAttractionItemInfo(	81252	, true )	--	금강 천야차 하의(레이븐)
-g_pRandomItemManager:AddAttractionItemInfo(	81253	, true )	--	금강 천야차 장갑(레이븐)
-g_pRandomItemManager:AddAttractionItemInfo(	81254	, true )	--	금강 천야차 신발(레이븐)
-g_pRandomItemManager:AddAttractionItemInfo(	81255	, true )	--	금강 천야차 머리 장식(레이븐)
-g_pRandomItemManager:AddAttractionItemInfo(	81256	, true )	--	금강 천야차 염령환 망토(레이븐)
-g_pRandomItemManager:AddAttractionItemInfo(	81260	, true )	--	금강 천야차 수라염귀(이브)
-g_pRandomItemManager:AddAttractionItemInfo(	81261	, true )	--	금강 천야차 상의(이브)
-g_pRandomItemManager:AddAttractionItemInfo(	81262	, true )	--	금강 천야차 하의(이브)
-g_pRandomItemManager:AddAttractionItemInfo(	81263	, true )	--	금강 천야차 장갑(이브)
-g_pRandomItemManager:AddAttractionItemInfo(	81264	, true )	--	금강 천야차 신발(이브)
-g_pRandomItemManager:AddAttractionItemInfo(	81265	, true )	--	금강 천야차 머리 장식(이브)
-g_pRandomItemManager:AddAttractionItemInfo(	81266	, true )	--	금강 천야차 염령환 망토(이브)
-g_pRandomItemManager:AddAttractionItemInfo(	81270	, true )	--	금강 천야차 귀문멸포(청)
-g_pRandomItemManager:AddAttractionItemInfo(	81271	, true )	--	금강 천야차 상의(청)
-g_pRandomItemManager:AddAttractionItemInfo(	81272	, true )	--	금강 천야차 하의(청)
-g_pRandomItemManager:AddAttractionItemInfo(	81273	, true )	--	금강 천야차 장갑(청)
-g_pRandomItemManager:AddAttractionItemInfo(	81274	, true )	--	금강 천야차 신발(청)
-g_pRandomItemManager:AddAttractionItemInfo(	81275	, true )	--	금강 천야차 머리 장식(청)
-g_pRandomItemManager:AddAttractionItemInfo(	81276	, true )	--	금강 천야차 염령환 망토(청)
-g_pRandomItemManager:AddAttractionItemInfo(	81280	, true )	--	금강 천야차 귀면갑
+g_pRandomItemManager:AddAttractionItemInfo(	81220	,	true	)	-- 금강 천야차 귀문일천도(엘소드)
+g_pRandomItemManager:AddAttractionItemInfo(	81221	,	true	)	-- 금강 천야차 상의(엘소드)
+g_pRandomItemManager:AddAttractionItemInfo(	81222	,	true	)	-- 금강 천야차 하의(엘소드)
+g_pRandomItemManager:AddAttractionItemInfo(	81223	,	true	)	-- 금강 천야차 장갑(엘소드)
+g_pRandomItemManager:AddAttractionItemInfo(	81224	,	true	)	-- 금강 천야차 신발(엘소드)
+g_pRandomItemManager:AddAttractionItemInfo(	81225	,	true	)	-- 금강 천야차 머리 장식(엘소드)
+g_pRandomItemManager:AddAttractionItemInfo(	81226	,	true	)	-- 금강 천야차 염령환 망토(엘소드)
+g_pRandomItemManager:AddAttractionItemInfo(	81230	,	true	)	-- 금강 천야차 마령지(아이샤)
+g_pRandomItemManager:AddAttractionItemInfo(	81231	,	true	)	-- 금강 천야차 상의(아이샤)
+g_pRandomItemManager:AddAttractionItemInfo(	81232	,	true	)	-- 금강 천야차 하의(아이샤)
+g_pRandomItemManager:AddAttractionItemInfo(	81233	,	true	)	-- 금강 천야차 장갑(아이샤)
+g_pRandomItemManager:AddAttractionItemInfo(	81234	,	true	)	-- 금강 천야차 신발(아이샤)
+g_pRandomItemManager:AddAttractionItemInfo(	81235	,	true	)	-- 금강 천야차 머리 장식(아이샤)
+g_pRandomItemManager:AddAttractionItemInfo(	81236	,	true	)	-- 금강 천야차 염령환 망토(아이샤)
+g_pRandomItemManager:AddAttractionItemInfo(	81240	,	true	)	-- 금강 천야차 사령궁(레나)
+g_pRandomItemManager:AddAttractionItemInfo(	81241	,	true	)	-- 금강 천야차 상의(레나)
+g_pRandomItemManager:AddAttractionItemInfo(	81242	,	true	)	-- 금강 천야차 하의(레나)
+g_pRandomItemManager:AddAttractionItemInfo(	81243	,	true	)	-- 금강 천야차 장갑(레나)
+g_pRandomItemManager:AddAttractionItemInfo(	81244	,	true	)	-- 금강 천야차 신발(레나)
+g_pRandomItemManager:AddAttractionItemInfo(	81245	,	true	)	-- 금강 천야차 머리 장식(레나)
+g_pRandomItemManager:AddAttractionItemInfo(	81246	,	true	)	-- 금강 천야차 염령환 망토(레나)
+g_pRandomItemManager:AddAttractionItemInfo(	81250	,	true	)	-- 금강 천야차 참마도(레이븐)
+g_pRandomItemManager:AddAttractionItemInfo(	81251	,	true	)	-- 금강 천야차 상의(레이븐)
+g_pRandomItemManager:AddAttractionItemInfo(	81252	,	true	)	-- 금강 천야차 하의(레이븐)
+g_pRandomItemManager:AddAttractionItemInfo(	81253	,	true	)	-- 금강 천야차 장갑(레이븐)
+g_pRandomItemManager:AddAttractionItemInfo(	81254	,	true	)	-- 금강 천야차 신발(레이븐)
+g_pRandomItemManager:AddAttractionItemInfo(	81255	,	true	)	-- 금강 천야차 머리 장식(레이븐)
+g_pRandomItemManager:AddAttractionItemInfo(	81256	,	true	)	-- 금강 천야차 염령환 망토(레이븐)
+g_pRandomItemManager:AddAttractionItemInfo(	81260	,	true	)	-- 금강 천야차 수라염귀(이브)
+g_pRandomItemManager:AddAttractionItemInfo(	81261	,	true	)	-- 금강 천야차 상의(이브)
+g_pRandomItemManager:AddAttractionItemInfo(	81262	,	true	)	-- 금강 천야차 하의(이브)
+g_pRandomItemManager:AddAttractionItemInfo(	81263	,	true	)	-- 금강 천야차 장갑(이브)
+g_pRandomItemManager:AddAttractionItemInfo(	81264	,	true	)	-- 금강 천야차 신발(이브)
+g_pRandomItemManager:AddAttractionItemInfo(	81265	,	true	)	-- 금강 천야차 머리 장식(이브)
+g_pRandomItemManager:AddAttractionItemInfo(	81266	,	true	)	-- 금강 천야차 염령환 망토(이브)
+g_pRandomItemManager:AddAttractionItemInfo(	81270	,	true	)	-- 금강 천야차 귀문멸포(청)
+g_pRandomItemManager:AddAttractionItemInfo(	81271	,	true	)	-- 금강 천야차 상의(청)
+g_pRandomItemManager:AddAttractionItemInfo(	81272	,	true	)	-- 금강 천야차 하의(청)
+g_pRandomItemManager:AddAttractionItemInfo(	81273	,	true	)	-- 금강 천야차 장갑(청)
+g_pRandomItemManager:AddAttractionItemInfo(	81274	,	true	)	-- 금강 천야차 신발(청)
+g_pRandomItemManager:AddAttractionItemInfo(	81275	,	true	)	-- 금강 천야차 머리 장식(청)
+g_pRandomItemManager:AddAttractionItemInfo(	81276	,	true	)	-- 금강 천야차 염령환 망토(청)
+g_pRandomItemManager:AddAttractionItemInfo(	81280	,	true	)	-- 금강 천야차 귀면갑
 
 
 -- 131106/오현택/드래곤 나이트 리폼
@@ -2360,66 +1781,3 @@ g_pRandomItemManager:AddAttractionItemInfo(	133505	, true )	--	드래곤 나이�
 g_pRandomItemManager:AddAttractionItemInfo(	133506	, true )	--	드래곤 나이트-아바돈 어비스(아라)
 g_pRandomItemManager:AddAttractionItemInfo(	133507	, true )	--	드래곤 나이트-아바돈 몰러(아라)
 g_pRandomItemManager:AddAttractionItemInfo(	133508	, true )	--	드래곤 나이트-아바돈 아너(아라)
-
-
--- 140122/오현택/아라 로열 블러드
-
-g_pRandomItemManager:AddAttractionItemInfo(	81971	, true )	--	로열 블러드 디그너티 상의(아라)
-g_pRandomItemManager:AddAttractionItemInfo(	81972	, true )	--	로열 블러드 디그너티 하의(아라)
-g_pRandomItemManager:AddAttractionItemInfo(	81973	, true )	--	로열 블러드 디그너티 장갑(아라)
-g_pRandomItemManager:AddAttractionItemInfo(	81974	, true )	--	로열 블러드 디그너티 신발(아라)
-g_pRandomItemManager:AddAttractionItemInfo(	81975	, true )	--	로열 블러드 디그너티 헤어(아라)
-g_pRandomItemManager:AddAttractionItemInfo(	81976	, true )	--	로열 블러드 디그너티 스피어(아라)
-g_pRandomItemManager:AddAttractionItemInfo(	81977	, true )	--	로열 블러드 디그너티 골든 크라운(아라)
-g_pRandomItemManager:AddAttractionItemInfo(	81978	, true )	--	로열 블러드 디그너티 글로리아(아라)
-
-
--- 131224/이경철/로열메이드 리폼
-g_pRandomItemManager:AddAttractionItemInfo(	132716	, true )	--	로열 서번트-다크니스 소드(엘소드)
-g_pRandomItemManager:AddAttractionItemInfo(	132717	, true )	--	로열 서번트-다크니스 가드 상의(엘소드)
-g_pRandomItemManager:AddAttractionItemInfo(	132718	, true )	--	로열 서번트-다크니스 가드 하의(엘소드)
-g_pRandomItemManager:AddAttractionItemInfo(	132719	, true )	--	로열 서번트-다크니스 가드 장갑(엘소드)
-g_pRandomItemManager:AddAttractionItemInfo(	132720	, true )	--	로열 서번트-다크니스 가드 신발(엘소드)
-g_pRandomItemManager:AddAttractionItemInfo(	132721	, true )	--	로열 서번트-다크니스 가드 헤어(엘소드)
-g_pRandomItemManager:AddAttractionItemInfo(	132722	, true )	--	로열 메이드-블랙 스피어(아이샤)
-g_pRandomItemManager:AddAttractionItemInfo(	132723	, true )	--	로열 메이드-블랙 위치 상의(아이샤)
-g_pRandomItemManager:AddAttractionItemInfo(	132724	, true )	--	로열 메이드-블랙 위치 하의(아이샤)
-g_pRandomItemManager:AddAttractionItemInfo(	132725	, true )	--	로열 메이드-블랙 위치 장갑(아이샤)
-g_pRandomItemManager:AddAttractionItemInfo(	132726	, true )	--	로열 메이드-블랙 위치 신발(아이샤)
-g_pRandomItemManager:AddAttractionItemInfo(	132727	, true )	--	로열 메이드-블랙 위치 헤어(아이샤)
-g_pRandomItemManager:AddAttractionItemInfo(	132728	, true )	--	로열 메이드-블랙 스퀄(레나)
-g_pRandomItemManager:AddAttractionItemInfo(	132729	, true )	--	로열 메이드-섀도우 아틸러리 상의(레나)
-g_pRandomItemManager:AddAttractionItemInfo(	132730	, true )	--	로열 메이드-섀도우 아틸러리 하의(레나)
-g_pRandomItemManager:AddAttractionItemInfo(	132731	, true )	--	로열 메이드-섀도우 아틸러리 장갑(레나)
-g_pRandomItemManager:AddAttractionItemInfo(	132732	, true )	--	로열 메이드-섀도우 아틸러리 신발(레나)
-g_pRandomItemManager:AddAttractionItemInfo(	132733	, true )	--	로열 메이드-섀도우 아틸러리 헤어(레나)
-g_pRandomItemManager:AddAttractionItemInfo(	132734	, true )	--	로열 서번트-아크 랜스(레이븐)
-g_pRandomItemManager:AddAttractionItemInfo(	132735	, true )	--	로열 서번트-그레이 호크 상의(레이븐)
-g_pRandomItemManager:AddAttractionItemInfo(	132736	, true )	--	로열 서번트-그레이 호크 하의(레이븐)
-g_pRandomItemManager:AddAttractionItemInfo(	132737	, true )	--	로열 서번트-그레이 호크 장갑(레이븐)
-g_pRandomItemManager:AddAttractionItemInfo(	132738	, true )	--	로열 서번트-그레이 호크 신발(레이븐)
-g_pRandomItemManager:AddAttractionItemInfo(	132739	, true )	--	로열 서번트-그레이 호크 헤어(레이븐)
-g_pRandomItemManager:AddAttractionItemInfo(	132740	, true )	--	로열 메이드-컴뱃 기어(이브)
-g_pRandomItemManager:AddAttractionItemInfo(	132741	, true )	--	로열 메이드-컴뱃 마리오넷 상의(이브)
-g_pRandomItemManager:AddAttractionItemInfo(	132742	, true )	--	로열 메이드-컴뱃 마리오넷 하의(이브)
-g_pRandomItemManager:AddAttractionItemInfo(	132743	, true )	--	로열 메이드-컴뱃 마리오넷 장갑(이브)
-g_pRandomItemManager:AddAttractionItemInfo(	132744	, true )	--	로열 메이드-컴뱃 마리오넷 신발(이브)
-g_pRandomItemManager:AddAttractionItemInfo(	132745	, true )	--	로열 메이드-컴뱃 마리오넷 헤어(이브)
-g_pRandomItemManager:AddAttractionItemInfo(	132797	, true )	--	로열 서번트 실버 윙 모노클(엘소드)
-g_pRandomItemManager:AddAttractionItemInfo(	132798	, true )	--	로열 메이드 블랙 헤드드레스(아이샤)
-g_pRandomItemManager:AddAttractionItemInfo(	132799	, true )	--	로열 메이드 블랙 헤드드레스(레나)
-g_pRandomItemManager:AddAttractionItemInfo(	132800	, true )	--	로열 서번트 실버 윙 모노클(레이븐)
-g_pRandomItemManager:AddAttractionItemInfo(	132801	, true )	--	로열 메이드 블랙 헤드드레스(이브)
-g_pRandomItemManager:AddAttractionItemInfo(	132802	, true )	--	로열 배틀 블랙 미니미(엘소드)
-g_pRandomItemManager:AddAttractionItemInfo(	132803	, true )	--	로열 배틀 블랙 미니미(아이샤)
-g_pRandomItemManager:AddAttractionItemInfo(	132804	, true )	--	로열 배틀 블랙 미니미(레나)
-g_pRandomItemManager:AddAttractionItemInfo(	132805	, true )	--	로열 배틀 블랙 미니미(레이븐)
-g_pRandomItemManager:AddAttractionItemInfo(	132806	, true )	--	로열 배틀 블랙 미니미(이브)
-g_pRandomItemManager:AddAttractionItemInfo(	81380	, true )	--	로열 서번트-다크로드 캐논(청)
-g_pRandomItemManager:AddAttractionItemInfo(	81381	, true )	--	로열 서번트-다크로드 가드 상의(청)
-g_pRandomItemManager:AddAttractionItemInfo(	81382	, true )	--	로열 서번트-다크로드 가드 하의(청)
-g_pRandomItemManager:AddAttractionItemInfo(	81383	, true )	--	로열 서번트-다크로드 가드 장갑(청)
-g_pRandomItemManager:AddAttractionItemInfo(	81384	, true )	--	로열 서번트-다크로드 가드 신발(청)
-g_pRandomItemManager:AddAttractionItemInfo(	81385	, true )	--	로열 서번트-다크로드 가드 헤어(청)
-g_pRandomItemManager:AddAttractionItemInfo(	81386	, true )	--	로열 서번트 실버 윙 모노클(청)
-g_pRandomItemManager:AddAttractionItemInfo(	81387	, true )	--	로열 배틀 블랙 미니미(청)

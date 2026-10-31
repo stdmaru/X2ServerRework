@@ -200,6 +200,7 @@ ClassChangeTable:SetClassChange_Memo(1,607012, UNIT_CLASS["UC_ARA_SAKRA_DEVANAM"
 ClassChangeTable:SetClassChange_Memo(2,607013, UNIT_CLASS["UC_ARA_SAKRA_DEVANAM"])
 ClassChangeTable:SetClassChange_Memo(3,607010, UNIT_CLASS["UC_ARA_SAKRA_DEVANAM"])
 
+--[[
 --소마
 ClassChangeTable:SetClassChange_Memo(0,607015, UNIT_CLASS["UC_ARA_LITTLE_DEVIL"])
 ClassChangeTable:SetClassChange_Memo(1,607016, UNIT_CLASS["UC_ARA_LITTLE_DEVIL"])	
@@ -210,3 +211,4 @@ ClassChangeTable:SetClassChange_Memo(0,607015, UNIT_CLASS["UC_ARA_YAMA_RAJA"])
 ClassChangeTable:SetClassChange_Memo(1,607016, UNIT_CLASS["UC_ARA_YAMA_RAJA"])	
 ClassChangeTable:SetClassChange_Memo(2,607017, UNIT_CLASS["UC_ARA_YAMA_RAJA"])
 ClassChangeTable:SetClassChange_Memo(3,607014, UNIT_CLASS["UC_ARA_YAMA_RAJA"])
+--]]

@@ -13,6 +13,8 @@ DUNGEON_KINDS =
 	LEVEL_DUNGEON = 2,
 }
 
+--DropTable:AddPaymentDungeon( DUNGEON_ID["DI_EVENT_NIGHT_WATCHER"], { iItemID = 80002144, fRate = 100, iQuantity = 1 } )
+
 --[[ 세팅 예시
 DropTable:AddPaymentDungeon( DUNGEON_KINDS["ALL_DUNGEON"],{ iItemID = 69010, fRate = 80} )   
 모든 던전 클리어시 아이템(69010)을 80% 확률로 지급
@@ -55,15 +57,6 @@ DUNGEON_ID["DI_RUBEN_EL_TREE_NORMAL"]에서 { iItemID = 135246, fRate = 45 } 조
 --PaymentItemTable.lua 추가 된 조건 만족 시 던전 결과창( Clear 일때만 )에 아이템이 추가로 지급 됩니다.
 --                             필수         필수         필수          선택       선택    선택         선택
 --   던전별 아이템셋팅     ( 던전종류,{ 지급 아이템ID, 지급 확률, 소유 퀘스트ID, MIN_LV, MAX_LV , 피씨방 유저 지급 확률} )
------------------------------------------------------------------------------------------------------------
--- 추가 필수 조건
--- iGoingQuestID = 진행중인 퀘스트
--- 추가 선택 조건
--- iTitleID1, iTitleID2 = 칭호, eUnitType = 유닛 타입, bPartyPay = 조건 만족시 파티 전체 지급 여부
--- bComeback = 복귀유저(사용시 확인 필요), iEquippedItemID1, iEquippedItemID2 = 장착장비, iUseItemID = 사용 아이템, bMustParty = 파티여부
--- iConsumingItemID = 아이템 소모하고 획득, iAllyNPCID = 동료NPC
------------------------------------------------------------------------------------------------------------
-
 
 DropTable:AddPaymentDungeon( DUNGEON_KINDS["EXP_DUNGEON"],		{ iItemID = 135039, fRate = 100, iQuestID = 10146 } )  -- 경험치 받는 던전, 10146 퀘스트 보유 시, 135039 아이템을 100% 지급.
 DropTable:AddPaymentDungeon( DUNGEON_KINDS["EXP_DUNGEON"],		{ iItemID = 135044, fRate = 100, iQuestID = 10156 } )  -- 경험치 받는 던전, 10156 퀘스트 보유 시, 135044 아이템을 100% 지급.
@@ -94,16 +87,10 @@ DropTable:AddPaymentDungeon(	DUNGEON_ID["DI_DEFENCE_DUNGEON_ELDER_NORMAL"]		, { 
 --DropTable:AddPaymentDungeon(	DUNGEON_ID["DI_DEFENCE_DUNGEON_ELDER_NORMAL"]		, { iItemID = 111383,	fRate = 100, iQuantity = 3, iMinLv = 35	} )
 --DropTable:AddPaymentDungeon(	DUNGEON_ID["DI_DEFENCE_DUNGEON_ELDER_NORMAL"]		, { iItemID = 78610,	fRate = 100, iQuantity = 1, iMinLv = 35	} )
 
--- 나와 이벤트 2013년 7월 31일 ~ 2013년 8월 6일
---DropTable:AddPaymentDungeon( DUNGEON_ID["DI_EVENT_NIGHT_WATCHER"], { iItemID = 80002144, fRate = 100, iQuantity = 1, wstrBeginDate = '2013-07-31 00:00:00', wstrEndDate = '2013-08-06 23:59:00', } )
+-- 할로윈 던전
+DropTable:AddPaymentDungeon(	DUNGEON_ID["DI_EVENT_HALLOWEEN_2013_BOSS"]	, { iItemID = 250001740, fRate = 100, iQuantity = 1, wstrBeginDate = '2013-09-30 00:00:00', wstrEndDate = '2013-10-15 23:59:00',} )
+DropTable:AddPaymentDungeon(	DUNGEON_ID["DI_EVENT_HALLOWEEN_2013_BOSS"]	, { iItemID = 250001740, fRate = 100, iQuantity = 1, wstrBeginDate = '2013-10-31 00:00:00', wstrEndDate = '2013-11-01 00:00:10',} )
 
--- 스팀 이벤트 ( 2013년 7월 24일 ~ 2013년 8월 6일 (2주) )
---DropTable:AddPaymentDungeon(	DUNGEON_KINDS["EXP_DUNGEON"]	, { iItemID = 90002241, fRate = 100, iQuantity = 1, iTitleID1 = 35210, iTitleID2 = 35220, } )
-
--- 베커 이벤트 신입 용병을 트레이닝하자!!  (2013년 08월 14일 ~ 2013년 08월 27일)
---DropTable:AddPaymentDungeon(	DUNGEON_KINDS["EXP_DUNGEON"]	, { iItemID = 85003041, fRate = 100, iQuantity = 1, cUnitClass = UNIT_CLASS["UC_RAVEN_VETERAN_COMMANDER"], bPartyPay = True, wstrBeginDate = '2013-08-14 00:00:00', wstrEndDate = '2013-08-27 23:59:00',} )
---DropTable:AddPaymentDungeon(	DUNGEON_KINDS["EXP_DUNGEON"]	, { iItemID = 85003047, fRate = 50, iQuantity = 1, iQuestID = 85600, iMinLv = 35, wstrBeginDate = '2013-08-14 00:00:00', wstrEndDate = '2013-08-27 23:59:00',} )
---[[
 -- 2013년 크리스마스 이벤트
 DropTable:AddPaymentDungeon(	DUNGEON_KINDS["LEVEL_DUNGEON"],		{ iItemID = 153000084, fRate = 100, iGoingQuestID = 140190 } )  -- 경험치 받는 던전, 140190 퀘스트 보유 시, 펭귄산타의 잃어버린 선물 아이템을 100% 지급.
 DropTable:AddPaymentDungeon(	DUNGEON_KINDS["LEVEL_DUNGEON"],		{ iItemID = 153000084, fRate = 100, iGoingQuestID = 140200 } )  -- 경험치 받는 던전, 140200 퀘스트 보유 시, 펭귄산타의 잃어버린 선물 아이템을 100% 지급.
@@ -115,30 +102,34 @@ DropTable:AddPaymentDungeon(	DUNGEON_KINDS["LEVEL_DUNGEON"],		{ iItemID = 153000
 
 -- 아라 소선 이벤트
 DropTable:AddPaymentDungeon( ALL_DUNGEON,		{ iItemID = 60007341, fRate = 100, iQuestID = 63750, wstrBeginDate = '2013-11-26 14:00:00', wstrEndDate = '2013-12-17 23:59:00'  } )  -- 모든던전 -- ES_JP 13.07.24 아라 이벤트
-DropTable:AddPaymentDungeon( ALL_DUNGEON,		{ iItemID = 60007341, fRate = 100, iQuestID = 63750, wstrBeginDate = '2013-12-18 00:00:00', wstrEndDate = '2014-01-01 23:59:00'  } )  -- 모든던전 -- ES_JP 13.07.24 아라 이벤트
---]]
--- 아라 신 전직 전야 이벤트
-DropTable:AddPaymentDungeon( DUNGEON_KINDS["LEVEL_DUNGEON"],		{ iItemID = 85003832, fRate = 100, iQuestID = 85660, wstrBeginDate = '2014-01-06 00:00:00', wstrEndDate = '2014-01-15 03:50:00'  } )  
-DropTable:AddPaymentDungeon( DUNGEON_KINDS["LEVEL_DUNGEON"],		{ iItemID = 85003832, fRate = 100, iQuestID = 85660, wstrBeginDate = '2014-01-22 00:00:00', wstrEndDate = '2014-01-27 23:59:00'  } )  
+DropTable:AddPaymentDungeon( ALL_DUNGEON,		{ iItemID = 60007341, fRate = 100, iQuestID = 63750, wstrBeginDate = '2013-12-25 10:00:00', wstrEndDate = '2014-01-01 23:59:00'  } )  -- 모든던전 -- ES_JP 13.07.24 아라 이벤트
 
+-- 베커 이벤트 신입 용병을 트레이닝하자!!  (2013년 08월 14일 ~ 2013년 08월 27일)
+--DropTable:AddPaymentDungeon(	DUNGEON_KINDS["EXP_DUNGEON"]	, { iItemID = 85003041, fRate = 100, iQuantity = 1, cUnitClass = UNIT_CLASS["UC_RAVEN_VETERAN_COMMANDER"], bPartyPay = True, wstrBeginDate = '2013-08-21 00:00:00', wstrEndDate = '2013-09-04 23:59:00',} )
+--DropTable:AddPaymentDungeon(	DUNGEON_KINDS["EXP_DUNGEON"]	, { iItemID = 85003047, fRate = 50, iQuantity = 1, iQuestID = 85600, iMinLv = 35, wstrBeginDate = '2013-08-21 00:00:00', wstrEndDate = '2013-09-04 23:59:00',} )
+--DropTable:AddPaymentDungeon(	DUNGEON_KINDS["EXP_DUNGEON"]	, { iItemID = 85003041, fRate = 100, iQuantity = 1, cUnitClass = UNIT_CLASS["UC_RAVEN_VETERAN_COMMANDER"], bPartyPay = True, wstrBeginDate = '2013-08-21 00:00:00', wstrEndDate = '2013-09-04 05:59:00',} )
+--DropTable:AddPaymentDungeon(	DUNGEON_KINDS["EXP_DUNGEON"]	, { iItemID = 85003047, fRate = 50, iQuantity = 1, iQuestID = 85600, iMinLv = 35, wstrBeginDate = '2013-08-21 00:00:00', wstrEndDate = '2013-09-04 05:59:00',} )
+
+-- 코드 배틀세라프 (2013-09-18 ~ 2013-09-25)
+--DropTable:AddPaymentDungeon(DUNGEON_KINDS["EXP_DUNGEON"]	, { iItemID = 80002230, fRate = 100, iQuantity = 1, cUnitClass = UNIT_CLASS["UC_EVE_BATTLE_SERAPH"], bPartyPay = True, wstrBeginDate = '2013-09-18 09:00:00', wstrEndDate = '2013-09-25 08:59:59',} )
+--DropTable:AddPaymentDungeon(DUNGEON_KINDS["EXP_DUNGEON"]	, { iItemID = 80002230, fRate = 100, iQuantity = 1, cUnitClass = UNIT_CLASS["UC_EVE_BATTLE_SERAPH"], bPartyPay = True, wstrBeginDate = '2013-08-11 09:00:00', wstrEndDate = '2013-09-25 08:59:59',} )
 -- 코보 PC방 쿠폰 (2012-12-20 ~ 2013-02-28)
 --DropTable:AddPaymentDungeon(	DUNGEON_KINDS["EXP_DUNGEON"],	{ iItemID = 135093, fPcBangUserRate = 100, wstrBeginDate = '2012-12-20 00:00:00', wstrEndDate = '2013-02-28 07:00:00', iQuantity = 1 } )	-- 코보 PC방 쿠폰
-
--- 다크엘의 파편 (2013-06-26 ~ 2013-07-09)
---DropTable:AddPaymentDungeon( DUNGEON_KINDS["LEVEL_DUNGEON"],{ iItemID = 85002803, fRate = 100, wstrBeginDate = '2013-05-26 00:00:00', wstrEndDate = '2013-06-19 18:00:00' } )
 --[[
-DropTable:AddPaymentDungeon( DUNGEON_KINDS["LEVEL_DUNGEON"],{ iItemID = 85002803, fRate = 100, wstrBeginDate = '2013-06-26 00:00:00', wstrEndDate = '2013-07-09 23:59:00' } )
-DropTable:AddUnPaymentCondition(	DUNGEON_ID["DI_RUBEN_EL_TREE_NORMAL"]			,{ iItemID = 85002803, fRate = 100, } )
-DropTable:AddUnPaymentCondition(	DUNGEON_ID["DI_RUBEN_RUIN_OF_ELF_NORMAL"]		,{ iItemID = 85002803, fRate = 100, } )
-DropTable:AddUnPaymentCondition(	DUNGEON_ID["DI_RUBEN_RUIN_OF_ELF_HARD"]			,{ iItemID = 85002803, fRate = 100, } )
-DropTable:AddUnPaymentCondition(	DUNGEON_ID["DI_RUBEN_RUIN_OF_ELF_EXPERT"]		,{ iItemID = 85002803, fRate = 100, } )
-DropTable:AddUnPaymentCondition(	DUNGEON_ID["DI_RUBEN_SWAMP_NORMAL"]				,{ iItemID = 85002803, fRate = 100, } )
-DropTable:AddUnPaymentCondition(	DUNGEON_ID["DI_RUBEN_SWAMP_HARD"]				,{ iItemID = 85002803, fRate = 100, } )
-DropTable:AddUnPaymentCondition(	DUNGEON_ID["DI_RUBEN_SWAMP_EXPERT"]				,{ iItemID = 85002803, fRate = 100, } )
-DropTable:AddUnPaymentCondition(	DUNGEON_ID["DI_ELDER_HENIR_SPACE"]				,{ iItemID = 85002803, fRate = 100, } )
-DropTable:AddUnPaymentCondition(	DUNGEON_ID["DI_DEFENCE_DUNGEON_ELDER_NORMAL"]	,{ iItemID = 85002803, fRate = 100, } )
-DropTable:AddUnPaymentCondition(	DUNGEON_ID["DI_DEFENCE_DUNGEON_ELDER_HARD"]		,{ iItemID = 85002803, fRate = 100, } )
-DropTable:AddUnPaymentCondition(	DUNGEON_ID["DI_DEFENCE_DUNGEON_ELDER_EXPERT"]	,{ iItemID = 85002803, fRate = 100, } )
+-- 다크엘의 파편 (2013-06-26 ~ 2013-07-09)
+--DropTable:AddPaymentDungeon( DUNGEON_KINDS["LEVEL_DUNGEON"],{ iItemID = 85002803, fRate = 100, wstrBeginDate = '2013-06-19 11:00:00', wstrEndDate = '2013-06-19 15:00:00' } )
+DropTable:AddPaymentDungeon( DUNGEON_KINDS["LEVEL_DUNGEON"],{ iItemID = 85002803, fRate = 100, wstrBeginDate = '2013-06-26 09:00:00', wstrEndDate = '2013-07-10 09:00:00' } )
+DropTable:AddUnPaymentCondition(	DUNGEON_ID["DI_RUBEN_EL_TREE_NORMAL"]			,{ iItemID = 160267, fRate = 100, } )
+DropTable:AddUnPaymentCondition(	DUNGEON_ID["DI_RUBEN_RUIN_OF_ELF_NORMAL"]		,{ iItemID = 160267, fRate = 100, } )
+DropTable:AddUnPaymentCondition(	DUNGEON_ID["DI_RUBEN_RUIN_OF_ELF_HARD"]			,{ iItemID = 160267, fRate = 100, } )
+DropTable:AddUnPaymentCondition(	DUNGEON_ID["DI_RUBEN_RUIN_OF_ELF_EXPERT"]		,{ iItemID = 160267, fRate = 100, } )
+DropTable:AddUnPaymentCondition(	DUNGEON_ID["DI_RUBEN_SWAMP_NORMAL"]				,{ iItemID = 160267, fRate = 100, } )
+DropTable:AddUnPaymentCondition(	DUNGEON_ID["DI_RUBEN_SWAMP_HARD"]				,{ iItemID = 160267, fRate = 100, } )
+DropTable:AddUnPaymentCondition(	DUNGEON_ID["DI_RUBEN_SWAMP_EXPERT"]				,{ iItemID = 160267, fRate = 100, } )
+DropTable:AddUnPaymentCondition(	DUNGEON_ID["DI_ELDER_HENIR_SPACE"]				,{ iItemID = 160267, fRate = 100, } )
+DropTable:AddUnPaymentCondition(	DUNGEON_ID["DI_DEFENCE_DUNGEON_ELDER_NORMAL"]	,{ iItemID = 160267, fRate = 100, } )
+DropTable:AddUnPaymentCondition(	DUNGEON_ID["DI_DEFENCE_DUNGEON_ELDER_HARD"]		,{ iItemID = 160267, fRate = 100, } )
+DropTable:AddUnPaymentCondition(	DUNGEON_ID["DI_DEFENCE_DUNGEON_ELDER_EXPERT"]	,{ iItemID = 160267, fRate = 100, } )
 --]]
 --[[
 -- 현자의 주문서

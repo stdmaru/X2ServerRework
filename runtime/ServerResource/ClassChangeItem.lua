@@ -205,6 +205,7 @@ ClassChangeTable:SetClassChange_InventoryItem(1,607012, UNIT_CLASS["UC_ARA_SAKRA
 ClassChangeTable:SetClassChange_InventoryItem(2,607013, UNIT_CLASS["UC_ARA_SAKRA_DEVANAM"])
 ClassChangeTable:SetClassChange_InventoryItem(3,607010, UNIT_CLASS["UC_ARA_SAKRA_DEVANAM"])
 
+--[[
 --소마
 ClassChangeTable:SetClassChange_InventoryItem(0,607015, UNIT_CLASS["UC_ARA_LITTLE_DEVIL"])
 ClassChangeTable:SetClassChange_InventoryItem(1,607016, UNIT_CLASS["UC_ARA_LITTLE_DEVIL"])	
@@ -215,6 +216,7 @@ ClassChangeTable:SetClassChange_InventoryItem(0,607015, UNIT_CLASS["UC_ARA_YAMA_
 ClassChangeTable:SetClassChange_InventoryItem(1,607016, UNIT_CLASS["UC_ARA_YAMA_RAJA"])	
 ClassChangeTable:SetClassChange_InventoryItem(2,607017, UNIT_CLASS["UC_ARA_YAMA_RAJA"])
 ClassChangeTable:SetClassChange_InventoryItem(3,607014, UNIT_CLASS["UC_ARA_YAMA_RAJA"])
+--]]
 
 ---------------------------------------------------------------인벤토리 교본 아이템
 --소드 나이트

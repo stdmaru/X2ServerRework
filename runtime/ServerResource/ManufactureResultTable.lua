@@ -3251,526 +3251,6 @@ g_pManufactureItemManager:AddManufactureResultTemplet
 
 g_pManufactureItemManager:AddManufactureResultTemplet
 {
-       m_ManufactureID = 61208,
-
-       m_ResultGroupID = 1,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61209,
-
-       m_ResultGroupID = 2,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61210,
-
-       m_ResultGroupID = 3,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61211,
-
-       m_ResultGroupID = 4,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61212,
-
-       m_ResultGroupID = 5,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61213,
-
-       m_ResultGroupID = 6,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61214,
-
-       m_ResultGroupID = 7,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61215,
-
-       m_ResultGroupID = 8,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61216,
-
-       m_ResultGroupID = 9,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61217,
-
-       m_ResultGroupID = 10,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61218,
-
-       m_ResultGroupID = 11,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61219,
-
-       m_ResultGroupID = 12,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61220,
-
-       m_ResultGroupID = 13,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61221,
-
-       m_ResultGroupID = 14,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61222,
-
-       m_ResultGroupID = 15,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61223,
-
-       m_ResultGroupID = 16,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61224,
-
-       m_ResultGroupID = 17,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61225,
-
-       m_ResultGroupID = 18,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61226,
-
-       m_ResultGroupID = 19,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61227,
-
-       m_ResultGroupID = 20,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61228,
-
-       m_ResultGroupID = 21,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61229,
-
-       m_ResultGroupID = 22,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61230,
-
-       m_ResultGroupID = 23,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61231,
-
-       m_ResultGroupID = 24,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61232,
-
-       m_ResultGroupID = 25,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61233,
-
-       m_ResultGroupID = 26,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61234,
-
-       m_ResultGroupID = 27,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61235,
-
-       m_ResultGroupID = 28,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61236,
-
-       m_ResultGroupID = 29,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61237,
-
-       m_ResultGroupID = 30,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61238,
-
-       m_ResultGroupID = 31,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61239,
-
-       m_ResultGroupID = 32,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61240,
-
-       m_ResultGroupID = 33,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61241,
-
-       m_ResultGroupID = 34,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61242,
-
-       m_ResultGroupID = 35,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61243,
-
-       m_ResultGroupID = 36,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61244,
-
-       m_ResultGroupID = 37,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61245,
-
-       m_ResultGroupID = 38,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61246,
-
-       m_ResultGroupID = 39,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61247,
-
-       m_ResultGroupID = 40,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61248,
-
-       m_ResultGroupID = 41,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61249,
-
-       m_ResultGroupID = 42,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61250,
-
-       m_ResultGroupID = 43,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61251,
-
-       m_ResultGroupID = 44,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61252,
-
-       m_ResultGroupID = 45,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61253,
-
-       m_ResultGroupID = 46,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61254,
-
-       m_ResultGroupID = 47,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61255,
-
-       m_ResultGroupID = 48,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61256,
-
-       m_ResultGroupID = 49,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61257,
-
-       m_ResultGroupID = 50,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61258,
-
-       m_ResultGroupID = 51,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61259,
-
-       m_ResultGroupID = 52,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61260,
-
-       m_ResultGroupID = 53,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61261,
-
-       m_ResultGroupID = 54,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61262,
-
-       m_ResultGroupID = 55,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61263,
-
-       m_ResultGroupID = 56,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61264,
-
-       m_ResultGroupID = 57,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61265,
-
-       m_ResultGroupID = 58,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61266,
-
-       m_ResultGroupID = 59,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61267,
-
-       m_ResultGroupID = 60,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61268,
-
-       m_ResultGroupID = 61,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61269,
-
-       m_ResultGroupID = 62,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61270,
-
-       m_ResultGroupID = 63,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61271,
-
-       m_ResultGroupID = 64,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
-       m_ManufactureID = 61272,
-
-       m_ResultGroupID = 65,
-       m_Rate = 100,
-}
-
-g_pManufactureItemManager:AddManufactureResultTemplet
-{
        m_ManufactureID = 61273,
 
        m_ResultGroupID = 61070,
@@ -5251,6 +4731,2206 @@ g_pManufactureItemManager:AddManufactureResultTemplet
 
 g_pManufactureItemManager:AddManufactureResultTemplet
 {
+       m_ManufactureID = 69010,
+
+       m_ResultGroupID = 69010,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69011,
+
+       m_ResultGroupID = 69011,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69012,
+
+       m_ResultGroupID = 69012,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69013,
+
+       m_ResultGroupID = 69013,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69014,
+
+       m_ResultGroupID = 69014,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69015,
+
+       m_ResultGroupID = 69015,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69016,
+
+       m_ResultGroupID = 69016,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69017,
+
+       m_ResultGroupID = 69017,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69018,
+
+       m_ResultGroupID = 69018,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69019,
+
+       m_ResultGroupID = 69019,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69020,
+
+       m_ResultGroupID = 69020,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69021,
+
+       m_ResultGroupID = 69021,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69022,
+
+       m_ResultGroupID = 69022,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69023,
+
+       m_ResultGroupID = 69023,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69024,
+
+       m_ResultGroupID = 69024,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69025,
+
+       m_ResultGroupID = 69025,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69026,
+
+       m_ResultGroupID = 69026,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69027,
+
+       m_ResultGroupID = 69027,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69028,
+
+       m_ResultGroupID = 69028,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69029,
+
+       m_ResultGroupID = 69029,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69030,
+
+       m_ResultGroupID = 69030,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69031,
+
+       m_ResultGroupID = 69031,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69032,
+
+       m_ResultGroupID = 69032,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69033,
+
+       m_ResultGroupID = 69033,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69034,
+
+       m_ResultGroupID = 69034,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69035,
+
+       m_ResultGroupID = 69035,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69036,
+
+       m_ResultGroupID = 69036,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69037,
+
+       m_ResultGroupID = 69037,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69038,
+
+       m_ResultGroupID = 69038,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69039,
+
+       m_ResultGroupID = 69039,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69040,
+
+       m_ResultGroupID = 69040,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69041,
+
+       m_ResultGroupID = 69041,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69042,
+
+       m_ResultGroupID = 69042,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69043,
+
+       m_ResultGroupID = 69043,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69044,
+
+       m_ResultGroupID = 69044,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69045,
+
+       m_ResultGroupID = 69045,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69046,
+
+       m_ResultGroupID = 69046,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69047,
+
+       m_ResultGroupID = 69047,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69048,
+
+       m_ResultGroupID = 69048,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69049,
+
+       m_ResultGroupID = 69049,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69050,
+
+       m_ResultGroupID = 69050,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69051,
+
+       m_ResultGroupID = 69051,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69052,
+
+       m_ResultGroupID = 69052,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69053,
+
+       m_ResultGroupID = 69053,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69054,
+
+       m_ResultGroupID = 69054,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69055,
+
+       m_ResultGroupID = 69055,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69056,
+
+       m_ResultGroupID = 69056,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69057,
+
+       m_ResultGroupID = 69057,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69058,
+
+       m_ResultGroupID = 69058,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69059,
+
+       m_ResultGroupID = 69059,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69060,
+
+       m_ResultGroupID = 69060,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69061,
+
+       m_ResultGroupID = 69061,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69062,
+
+       m_ResultGroupID = 69062,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69063,
+
+       m_ResultGroupID = 69063,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69064,
+
+       m_ResultGroupID = 69064,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69065,
+
+       m_ResultGroupID = 69065,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69066,
+
+       m_ResultGroupID = 69066,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69067,
+
+       m_ResultGroupID = 69067,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69068,
+
+       m_ResultGroupID = 69068,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69069,
+
+       m_ResultGroupID = 69069,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69070,
+
+       m_ResultGroupID = 69070,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69071,
+
+       m_ResultGroupID = 69071,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69072,
+
+       m_ResultGroupID = 69072,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69073,
+
+       m_ResultGroupID = 69073,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69074,
+
+       m_ResultGroupID = 69074,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69075,
+
+       m_ResultGroupID = 69075,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69076,
+
+       m_ResultGroupID = 69076,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69077,
+
+       m_ResultGroupID = 69077,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69078,
+
+       m_ResultGroupID = 69078,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69079,
+
+       m_ResultGroupID = 69079,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69080,
+
+       m_ResultGroupID = 69080,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69081,
+
+       m_ResultGroupID = 69081,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69082,
+
+       m_ResultGroupID = 69082,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69083,
+
+       m_ResultGroupID = 69083,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69084,
+
+       m_ResultGroupID = 69084,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69085,
+
+       m_ResultGroupID = 69085,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69086,
+
+       m_ResultGroupID = 69086,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69087,
+
+       m_ResultGroupID = 69087,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69088,
+
+       m_ResultGroupID = 69088,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69089,
+
+       m_ResultGroupID = 69089,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69090,
+
+       m_ResultGroupID = 69090,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69091,
+
+       m_ResultGroupID = 69091,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69092,
+
+       m_ResultGroupID = 69092,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69093,
+
+       m_ResultGroupID = 69093,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69094,
+
+       m_ResultGroupID = 69094,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69095,
+
+       m_ResultGroupID = 69095,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69096,
+
+       m_ResultGroupID = 69096,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69097,
+
+       m_ResultGroupID = 69097,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69098,
+
+       m_ResultGroupID = 69098,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69099,
+
+       m_ResultGroupID = 69099,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69100,
+
+       m_ResultGroupID = 69100,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69101,
+
+       m_ResultGroupID = 69101,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69102,
+
+       m_ResultGroupID = 69102,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69103,
+
+       m_ResultGroupID = 69103,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69104,
+
+       m_ResultGroupID = 69104,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69105,
+
+       m_ResultGroupID = 69105,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69106,
+
+       m_ResultGroupID = 69106,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69107,
+
+       m_ResultGroupID = 69107,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69108,
+
+       m_ResultGroupID = 69108,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69109,
+
+       m_ResultGroupID = 69109,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69110,
+
+       m_ResultGroupID = 69110,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69111,
+
+       m_ResultGroupID = 69111,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69112,
+
+       m_ResultGroupID = 69112,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69113,
+
+       m_ResultGroupID = 69113,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69114,
+
+       m_ResultGroupID = 69114,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69115,
+
+       m_ResultGroupID = 69115,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69116,
+
+       m_ResultGroupID = 69116,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69117,
+
+       m_ResultGroupID = 69117,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69118,
+
+       m_ResultGroupID = 69118,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69119,
+
+       m_ResultGroupID = 69119,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69120,
+
+       m_ResultGroupID = 69120,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69121,
+
+       m_ResultGroupID = 69121,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69122,
+
+       m_ResultGroupID = 69122,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69123,
+
+       m_ResultGroupID = 69123,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69124,
+
+       m_ResultGroupID = 69124,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69125,
+
+       m_ResultGroupID = 69125,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69126,
+
+       m_ResultGroupID = 69126,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69127,
+
+       m_ResultGroupID = 69127,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69128,
+
+       m_ResultGroupID = 69128,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69129,
+
+       m_ResultGroupID = 69129,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69130,
+
+       m_ResultGroupID = 69130,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69131,
+
+       m_ResultGroupID = 69131,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69132,
+
+       m_ResultGroupID = 69132,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69133,
+
+       m_ResultGroupID = 69133,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69134,
+
+       m_ResultGroupID = 69134,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69135,
+
+       m_ResultGroupID = 69135,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69136,
+
+       m_ResultGroupID = 69136,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69137,
+
+       m_ResultGroupID = 69137,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69138,
+
+       m_ResultGroupID = 69138,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69139,
+
+       m_ResultGroupID = 69139,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69140,
+
+       m_ResultGroupID = 69140,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69141,
+
+       m_ResultGroupID = 69141,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69142,
+
+       m_ResultGroupID = 69142,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69143,
+
+       m_ResultGroupID = 69143,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69144,
+
+       m_ResultGroupID = 69144,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69145,
+
+       m_ResultGroupID = 69145,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69146,
+
+       m_ResultGroupID = 69146,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69147,
+
+       m_ResultGroupID = 69147,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69148,
+
+       m_ResultGroupID = 69148,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69149,
+
+       m_ResultGroupID = 69149,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69150,
+
+       m_ResultGroupID = 69150,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69151,
+
+       m_ResultGroupID = 69151,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69152,
+
+       m_ResultGroupID = 69152,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69153,
+
+       m_ResultGroupID = 69153,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69154,
+
+       m_ResultGroupID = 69154,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69155,
+
+       m_ResultGroupID = 69155,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69156,
+
+       m_ResultGroupID = 69156,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69157,
+
+       m_ResultGroupID = 69157,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69158,
+
+       m_ResultGroupID = 69158,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69159,
+
+       m_ResultGroupID = 69159,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69160,
+
+       m_ResultGroupID = 69160,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69161,
+
+       m_ResultGroupID = 69161,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69162,
+
+       m_ResultGroupID = 69162,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69163,
+
+       m_ResultGroupID = 69163,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69164,
+
+       m_ResultGroupID = 69164,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69165,
+
+       m_ResultGroupID = 69165,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69166,
+
+       m_ResultGroupID = 69166,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69167,
+
+       m_ResultGroupID = 69167,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69168,
+
+       m_ResultGroupID = 69168,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69169,
+
+       m_ResultGroupID = 69169,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69170,
+
+       m_ResultGroupID = 69170,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69171,
+
+       m_ResultGroupID = 69171,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69172,
+
+       m_ResultGroupID = 69172,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69173,
+
+       m_ResultGroupID = 69173,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69174,
+
+       m_ResultGroupID = 69174,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69175,
+
+       m_ResultGroupID = 69175,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69176,
+
+       m_ResultGroupID = 69176,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69177,
+
+       m_ResultGroupID = 69177,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69178,
+
+       m_ResultGroupID = 69178,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69179,
+
+       m_ResultGroupID = 69179,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69180,
+
+       m_ResultGroupID = 69180,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69181,
+
+       m_ResultGroupID = 69181,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69182,
+
+       m_ResultGroupID = 69182,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69183,
+
+       m_ResultGroupID = 69183,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69184,
+
+       m_ResultGroupID = 69184,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69185,
+
+       m_ResultGroupID = 69185,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69186,
+
+       m_ResultGroupID = 69186,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69187,
+
+       m_ResultGroupID = 69187,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69188,
+
+       m_ResultGroupID = 69188,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69189,
+
+       m_ResultGroupID = 69189,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69190,
+
+       m_ResultGroupID = 69190,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69191,
+
+       m_ResultGroupID = 69191,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69192,
+
+       m_ResultGroupID = 69192,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69193,
+
+       m_ResultGroupID = 69193,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69194,
+
+       m_ResultGroupID = 69194,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69195,
+
+       m_ResultGroupID = 69195,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69196,
+
+       m_ResultGroupID = 69196,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69197,
+
+       m_ResultGroupID = 69197,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69198,
+
+       m_ResultGroupID = 69198,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69199,
+
+       m_ResultGroupID = 69199,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69200,
+
+       m_ResultGroupID = 69200,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69201,
+
+       m_ResultGroupID = 69201,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69202,
+
+       m_ResultGroupID = 69202,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69203,
+
+       m_ResultGroupID = 69203,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69204,
+
+       m_ResultGroupID = 69204,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69205,
+
+       m_ResultGroupID = 69205,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69206,
+
+       m_ResultGroupID = 69206,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69207,
+
+       m_ResultGroupID = 69207,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69208,
+
+       m_ResultGroupID = 69208,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69209,
+
+       m_ResultGroupID = 69209,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69210,
+
+       m_ResultGroupID = 69210,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69211,
+
+       m_ResultGroupID = 69211,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69212,
+
+       m_ResultGroupID = 69212,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69213,
+
+       m_ResultGroupID = 69213,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69214,
+
+       m_ResultGroupID = 69214,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69215,
+
+       m_ResultGroupID = 69215,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69216,
+
+       m_ResultGroupID = 69216,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69217,
+
+       m_ResultGroupID = 69217,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69218,
+
+       m_ResultGroupID = 69218,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69219,
+
+       m_ResultGroupID = 69219,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69220,
+
+       m_ResultGroupID = 69220,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69221,
+
+       m_ResultGroupID = 69221,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69222,
+
+       m_ResultGroupID = 69222,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69223,
+
+       m_ResultGroupID = 69223,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69224,
+
+       m_ResultGroupID = 69224,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69225,
+
+       m_ResultGroupID = 69225,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69226,
+
+       m_ResultGroupID = 69226,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69227,
+
+       m_ResultGroupID = 69227,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69228,
+
+       m_ResultGroupID = 69228,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69229,
+
+       m_ResultGroupID = 69229,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69230,
+
+       m_ResultGroupID = 69230,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69231,
+
+       m_ResultGroupID = 69231,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69232,
+
+       m_ResultGroupID = 69232,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69233,
+
+       m_ResultGroupID = 69233,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69234,
+
+       m_ResultGroupID = 69234,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69235,
+
+       m_ResultGroupID = 69235,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69236,
+
+       m_ResultGroupID = 69236,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69237,
+
+       m_ResultGroupID = 69237,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69238,
+
+       m_ResultGroupID = 69238,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69239,
+
+       m_ResultGroupID = 69239,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69240,
+
+       m_ResultGroupID = 69240,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69241,
+
+       m_ResultGroupID = 69241,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69242,
+
+       m_ResultGroupID = 69242,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69243,
+
+       m_ResultGroupID = 69243,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69244,
+
+       m_ResultGroupID = 69244,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69245,
+
+       m_ResultGroupID = 69245,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69246,
+
+       m_ResultGroupID = 69246,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69247,
+
+       m_ResultGroupID = 69247,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69248,
+
+       m_ResultGroupID = 69248,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69249,
+
+       m_ResultGroupID = 69249,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69250,
+
+       m_ResultGroupID = 69250,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69251,
+
+       m_ResultGroupID = 69251,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69252,
+
+       m_ResultGroupID = 69252,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69253,
+
+       m_ResultGroupID = 69253,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69254,
+
+       m_ResultGroupID = 69254,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69255,
+
+       m_ResultGroupID = 69255,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69256,
+
+       m_ResultGroupID = 69256,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69257,
+
+       m_ResultGroupID = 69257,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69258,
+
+       m_ResultGroupID = 69258,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69259,
+
+       m_ResultGroupID = 69259,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69260,
+
+       m_ResultGroupID = 69260,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69261,
+
+       m_ResultGroupID = 69261,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69262,
+
+       m_ResultGroupID = 69262,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69263,
+
+       m_ResultGroupID = 69263,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69264,
+
+       m_ResultGroupID = 69264,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69265,
+
+       m_ResultGroupID = 69265,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69266,
+
+       m_ResultGroupID = 69266,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69267,
+
+       m_ResultGroupID = 69267,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69268,
+
+       m_ResultGroupID = 69268,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69269,
+
+       m_ResultGroupID = 69269,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69270,
+
+       m_ResultGroupID = 69270,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69271,
+
+       m_ResultGroupID = 69271,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69272,
+
+       m_ResultGroupID = 69272,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69273,
+
+       m_ResultGroupID = 69273,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69274,
+
+       m_ResultGroupID = 69274,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69275,
+
+       m_ResultGroupID = 69275,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69276,
+
+       m_ResultGroupID = 69276,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69277,
+
+       m_ResultGroupID = 69277,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69278,
+
+       m_ResultGroupID = 69278,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69279,
+
+       m_ResultGroupID = 69279,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69280,
+
+       m_ResultGroupID = 69280,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69281,
+
+       m_ResultGroupID = 69281,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69282,
+
+       m_ResultGroupID = 69282,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69283,
+
+       m_ResultGroupID = 69283,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69284,
+
+       m_ResultGroupID = 69284,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
        m_ManufactureID = 69353,
 
        m_ResultGroupID = 69353,
@@ -5806,6 +7486,446 @@ g_pManufactureItemManager:AddManufactureResultTemplet
        m_ManufactureID = 69422,
 
        m_ResultGroupID = 69422,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69424,
+
+       m_ResultGroupID = 69424,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69425,
+
+       m_ResultGroupID = 69425,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69426,
+
+       m_ResultGroupID = 69426,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69427,
+
+       m_ResultGroupID = 69427,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69428,
+
+       m_ResultGroupID = 69428,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69429,
+
+       m_ResultGroupID = 69429,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69430,
+
+       m_ResultGroupID = 69430,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69431,
+
+       m_ResultGroupID = 69431,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69432,
+
+       m_ResultGroupID = 69432,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69433,
+
+       m_ResultGroupID = 69433,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69434,
+
+       m_ResultGroupID = 69434,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69435,
+
+       m_ResultGroupID = 69435,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69436,
+
+       m_ResultGroupID = 69436,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69437,
+
+       m_ResultGroupID = 69437,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69438,
+
+       m_ResultGroupID = 69438,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69439,
+
+       m_ResultGroupID = 69439,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69440,
+
+       m_ResultGroupID = 69440,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69441,
+
+       m_ResultGroupID = 69441,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69442,
+
+       m_ResultGroupID = 69442,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69443,
+
+       m_ResultGroupID = 69443,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69444,
+
+       m_ResultGroupID = 69444,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69445,
+
+       m_ResultGroupID = 69445,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69446,
+
+       m_ResultGroupID = 69446,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69447,
+
+       m_ResultGroupID = 69447,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69448,
+
+       m_ResultGroupID = 69448,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69449,
+
+       m_ResultGroupID = 69449,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69450,
+
+       m_ResultGroupID = 69450,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69451,
+
+       m_ResultGroupID = 69451,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69452,
+
+       m_ResultGroupID = 69452,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69453,
+
+       m_ResultGroupID = 69453,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69454,
+
+       m_ResultGroupID = 69454,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69455,
+
+       m_ResultGroupID = 69455,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69456,
+
+       m_ResultGroupID = 69456,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69457,
+
+       m_ResultGroupID = 69457,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69458,
+
+       m_ResultGroupID = 69458,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69459,
+
+       m_ResultGroupID = 69459,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69460,
+
+       m_ResultGroupID = 69460,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69461,
+
+       m_ResultGroupID = 69461,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69462,
+
+       m_ResultGroupID = 69462,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69463,
+
+       m_ResultGroupID = 69463,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69464,
+
+       m_ResultGroupID = 69464,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69465,
+
+       m_ResultGroupID = 69465,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69466,
+
+       m_ResultGroupID = 69466,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69467,
+
+       m_ResultGroupID = 69467,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69468,
+
+       m_ResultGroupID = 69468,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69469,
+
+       m_ResultGroupID = 69469,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69470,
+
+       m_ResultGroupID = 69470,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69471,
+
+       m_ResultGroupID = 69471,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69472,
+
+       m_ResultGroupID = 69472,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69473,
+
+       m_ResultGroupID = 69473,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69474,
+
+       m_ResultGroupID = 69474,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69475,
+
+       m_ResultGroupID = 69475,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69476,
+
+       m_ResultGroupID = 69476,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69477,
+
+       m_ResultGroupID = 69477,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 69478,
+
+       m_ResultGroupID = 69478,
        m_Rate = 100,
 }
 
@@ -27691,6 +29811,6534 @@ g_pManufactureItemManager:AddManufactureResultTemplet
 
 g_pManufactureItemManager:AddManufactureResultTemplet
 {
+       m_ManufactureID = 60000420,
+
+       m_ResultGroupID = 60000420,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60000444,
+
+       m_ResultGroupID = 60000444,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60000534,
+
+       m_ResultGroupID = 60000534,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60000700,
+
+       m_ResultGroupID = 60000700,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60000701,
+
+       m_ResultGroupID = 60000701,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60000702,
+
+       m_ResultGroupID = 60000702,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60000703,
+
+       m_ResultGroupID = 60000703,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60000704,
+
+       m_ResultGroupID = 60000704,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60000705,
+
+       m_ResultGroupID = 60000705,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60000706,
+
+       m_ResultGroupID = 60000706,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60000707,
+
+       m_ResultGroupID = 60000707,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60000708,
+
+       m_ResultGroupID = 60000708,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60000882,
+
+       m_ResultGroupID = 60000882,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001100,
+
+       m_ResultGroupID = 60001100,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001234,
+
+       m_ResultGroupID = 60001234,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001236,
+
+       m_ResultGroupID = 60001236,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001238,
+
+       m_ResultGroupID = 60001238,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001240,
+
+       m_ResultGroupID = 60001240,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001242,
+
+       m_ResultGroupID = 60001242,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001317,
+
+       m_ResultGroupID = 60001317,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001481,
+
+       m_ResultGroupID = 60001481,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001619,
+
+       m_ResultGroupID = 60001619,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001670,
+
+       m_ResultGroupID = 60001670,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001671,
+
+       m_ResultGroupID = 60001671,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001697,
+
+       m_ResultGroupID = 60001697,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001698,
+
+       m_ResultGroupID = 60001698,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001725,
+
+       m_ResultGroupID = 60001725,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001727,
+
+       m_ResultGroupID = 60001726,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001728,
+
+       m_ResultGroupID = 60001726,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001729,
+
+       m_ResultGroupID = 60001726,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001776,
+
+       m_ResultGroupID = 60001776,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001777,
+
+       m_ResultGroupID = 60001777,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001778,
+
+       m_ResultGroupID = 60001778,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001779,
+
+       m_ResultGroupID = 60001779,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001780,
+
+       m_ResultGroupID = 60001780,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001781,
+
+       m_ResultGroupID = 60001781,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001802,
+
+       m_ResultGroupID = 60001802,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001805,
+
+       m_ResultGroupID = 60001806,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001806,
+
+       m_ResultGroupID = 60001806,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001807,
+
+       m_ResultGroupID = 130165,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001818,
+
+       m_ResultGroupID = 60001818,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001819,
+
+       m_ResultGroupID = 60001819,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001820,
+
+       m_ResultGroupID = 60001820,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001821,
+
+       m_ResultGroupID = 60001821,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001822,
+
+       m_ResultGroupID = 60001822,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001823,
+
+       m_ResultGroupID = 60001823,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001824,
+
+       m_ResultGroupID = 60001824,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001825,
+
+       m_ResultGroupID = 60001825,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001828,
+
+       m_ResultGroupID = 75000257,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001831,
+
+       m_ResultGroupID = 132886,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001832,
+
+       m_ResultGroupID = 60001832,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001833,
+
+       m_ResultGroupID = 60001833,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001845,
+
+       m_ResultGroupID = 60001845,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001846,
+
+       m_ResultGroupID = 60001846,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001847,
+
+       m_ResultGroupID = 60001727,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001866,
+
+       m_ResultGroupID = 60001866,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001867,
+
+       m_ResultGroupID = 60001867,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001886,
+
+       m_ResultGroupID = 60001886,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001889,
+
+       m_ResultGroupID = 70000303,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001890,
+
+       m_ResultGroupID = 60001907,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001891,
+
+       m_ResultGroupID = 60001908,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001892,
+
+       m_ResultGroupID = 60001909,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001893,
+
+       m_ResultGroupID = 60001910,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001936,
+
+       m_ResultGroupID = 60001936,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001937,
+
+       m_ResultGroupID = 60001937,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001954,
+
+       m_ResultGroupID = 60001954,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001957,
+
+       m_ResultGroupID = 60001957,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001958,
+
+       m_ResultGroupID = 60001958,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001959,
+
+       m_ResultGroupID = 60001959,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001960,
+
+       m_ResultGroupID = 60001960,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001961,
+
+       m_ResultGroupID = 60001961,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001962,
+
+       m_ResultGroupID = 60001962,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001963,
+
+       m_ResultGroupID = 60001963,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001967,
+
+       m_ResultGroupID = 131412,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001989,
+
+       m_ResultGroupID = 60001989,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001990,
+
+       m_ResultGroupID = 60001990,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001991,
+
+       m_ResultGroupID = 60001991,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001992,
+
+       m_ResultGroupID = 60001992,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60001993,
+
+       m_ResultGroupID = 60001993,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002001,
+
+       m_ResultGroupID = 60002001,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002010,
+
+       m_ResultGroupID = 60002010,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002011,
+
+       m_ResultGroupID = 60002011,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002082,
+
+       m_ResultGroupID = 60002082,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002083,
+
+       m_ResultGroupID = 60002083,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002084,
+
+       m_ResultGroupID = 60002084,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002085,
+
+       m_ResultGroupID = 60002085,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002086,
+
+       m_ResultGroupID = 60002086,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002101,
+
+       m_ResultGroupID = 60002101,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002102,
+
+       m_ResultGroupID = 60002102,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002103,
+
+       m_ResultGroupID = 60002103,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002111,
+
+       m_ResultGroupID = 60002111,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002220,
+
+       m_ResultGroupID = 60002220,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002221,
+
+       m_ResultGroupID = 60002221,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002222,
+
+       m_ResultGroupID = 60002222,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002223,
+
+       m_ResultGroupID = 60002223,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002270,
+
+       m_ResultGroupID = 60002270,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002271,
+
+       m_ResultGroupID = 60002271,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002280,
+
+       m_ResultGroupID = 60002280,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002510,
+
+       m_ResultGroupID = 60002510,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002520,
+
+       m_ResultGroupID = 60002520,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002560,
+
+       m_ResultGroupID = 132498,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002680,
+
+       m_ResultGroupID = 60002680,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002700,
+
+       m_ResultGroupID = 60002700,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002760,
+
+       m_ResultGroupID = 60002851,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002761,
+
+       m_ResultGroupID = 60002851,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002762,
+
+       m_ResultGroupID = 60002851,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002763,
+
+       m_ResultGroupID = 60002851,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002764,
+
+       m_ResultGroupID = 60002851,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002765,
+
+       m_ResultGroupID = 60002851,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002770,
+
+       m_ResultGroupID = 60002852,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002771,
+
+       m_ResultGroupID = 60002852,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002772,
+
+       m_ResultGroupID = 60002852,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002773,
+
+       m_ResultGroupID = 60002852,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002774,
+
+       m_ResultGroupID = 60002852,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002775,
+
+       m_ResultGroupID = 60002852,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002780,
+
+       m_ResultGroupID = 60002853,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002781,
+
+       m_ResultGroupID = 60002853,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002782,
+
+       m_ResultGroupID = 60002853,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002783,
+
+       m_ResultGroupID = 60002853,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002784,
+
+       m_ResultGroupID = 60002853,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002785,
+
+       m_ResultGroupID = 60002853,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002790,
+
+       m_ResultGroupID = 60002854,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002791,
+
+       m_ResultGroupID = 60002854,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002792,
+
+       m_ResultGroupID = 60002854,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002793,
+
+       m_ResultGroupID = 60002854,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002794,
+
+       m_ResultGroupID = 60002854,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002795,
+
+       m_ResultGroupID = 60002854,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002800,
+
+       m_ResultGroupID = 60002855,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002801,
+
+       m_ResultGroupID = 60002855,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002802,
+
+       m_ResultGroupID = 60002855,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002803,
+
+       m_ResultGroupID = 60002855,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002804,
+
+       m_ResultGroupID = 60002855,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002805,
+
+       m_ResultGroupID = 60002855,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002810,
+
+       m_ResultGroupID = 60002856,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002811,
+
+       m_ResultGroupID = 60002856,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002812,
+
+       m_ResultGroupID = 60002856,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002813,
+
+       m_ResultGroupID = 60002856,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002814,
+
+       m_ResultGroupID = 60002856,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002815,
+
+       m_ResultGroupID = 60002856,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002820,
+
+       m_ResultGroupID = 60002857,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002821,
+
+       m_ResultGroupID = 60002857,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002822,
+
+       m_ResultGroupID = 60002857,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002823,
+
+       m_ResultGroupID = 60002857,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002824,
+
+       m_ResultGroupID = 60002857,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002825,
+
+       m_ResultGroupID = 60002857,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002830,
+
+       m_ResultGroupID = 60002858,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002831,
+
+       m_ResultGroupID = 60002858,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002832,
+
+       m_ResultGroupID = 60002858,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002833,
+
+       m_ResultGroupID = 60002858,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002834,
+
+       m_ResultGroupID = 60002858,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002835,
+
+       m_ResultGroupID = 60002858,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002940,
+
+       m_ResultGroupID = 60002940,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002950,
+
+       m_ResultGroupID = 60002950,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002960,
+
+       m_ResultGroupID = 60002960,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002970,
+
+       m_ResultGroupID = 60002970,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002980,
+
+       m_ResultGroupID = 60002980,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60002990,
+
+       m_ResultGroupID = 60002990,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60003000,
+
+       m_ResultGroupID = 60003001,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60003001,
+
+       m_ResultGroupID = 60003001,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60003371,
+
+       m_ResultGroupID = 60003371,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60003372,
+
+       m_ResultGroupID = 60003372,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60003395,
+
+       m_ResultGroupID = 60003395,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60003513,
+
+       m_ResultGroupID = 60003513,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60003514,
+
+       m_ResultGroupID = 60003514,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60003515,
+
+       m_ResultGroupID = 60003515,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60003602,
+
+       m_ResultGroupID = 60003602,
+       m_Rate = 0,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60003603,
+
+       m_ResultGroupID = 60003603,
+       m_Rate = 0,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60003604,
+
+       m_ResultGroupID = 60003604,
+       m_Rate = 0,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60003605,
+
+       m_ResultGroupID = 60003605,
+       m_Rate = 0,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60003606,
+
+       m_ResultGroupID = 60003606,
+       m_Rate = 0,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60003607,
+
+       m_ResultGroupID = 60003607,
+       m_Rate = 0,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60003630,
+
+       m_ResultGroupID = 60003630,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60003632,
+
+       m_ResultGroupID = 60003632,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60003640,
+
+       m_ResultGroupID = 60003640,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60003641,
+
+       m_ResultGroupID = 60003641,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60003642,
+
+       m_ResultGroupID = 60003642,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60003647,
+
+       m_ResultGroupID = 60003647,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60003648,
+
+       m_ResultGroupID = 60003648,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60003657,
+
+       m_ResultGroupID = 60003657,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60003662,
+
+       m_ResultGroupID = 60003662,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60003663,
+
+       m_ResultGroupID = 60003663,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60003716,
+
+       m_ResultGroupID = 60003716,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60003717,
+
+       m_ResultGroupID = 60003717,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60003718,
+
+       m_ResultGroupID = 60003718,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60003719,
+
+       m_ResultGroupID = 60003719,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60003727,
+
+       m_ResultGroupID = 60003727,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60003728,
+
+       m_ResultGroupID = 60003728,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60003735,
+
+       m_ResultGroupID = 60003735,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60003736,
+
+       m_ResultGroupID = 60003736,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60003737,
+
+       m_ResultGroupID = 60003737,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60003738,
+
+       m_ResultGroupID = 60003738,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60003794,
+
+       m_ResultGroupID = 60003794,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60003795,
+
+       m_ResultGroupID = 60003795,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60003899,
+
+       m_ResultGroupID = 60003899,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60003901,
+
+       m_ResultGroupID = 60003901,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60003931,
+
+       m_ResultGroupID = 60003931,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60003932,
+
+       m_ResultGroupID = 60003932,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60003933,
+
+       m_ResultGroupID = 60003933,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60003958,
+
+       m_ResultGroupID = 60003958,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60003960,
+
+       m_ResultGroupID = 60003960,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60003978,
+
+       m_ResultGroupID = 60003978,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60003979,
+
+       m_ResultGroupID = 60003979,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60003992,
+
+       m_ResultGroupID = 60003992,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004094,
+
+       m_ResultGroupID = 60004094,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004096,
+
+       m_ResultGroupID = 60004096,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004115,
+
+       m_ResultGroupID = 60004115,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004116,
+
+       m_ResultGroupID = 60004116,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004117,
+
+       m_ResultGroupID = 60004117,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004126,
+
+       m_ResultGroupID = 60004126,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004127,
+
+       m_ResultGroupID = 60004127,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004128,
+
+       m_ResultGroupID = 60004128,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004132,
+
+       m_ResultGroupID = 60004132,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004137,
+
+       m_ResultGroupID = 60004137,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004144,
+
+       m_ResultGroupID = 60004144,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004195,
+
+       m_ResultGroupID = 60004195,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004199,
+
+       m_ResultGroupID = 60004199,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004200,
+
+       m_ResultGroupID = 60004199,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004206,
+
+       m_ResultGroupID = 60004206,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004216,
+
+       m_ResultGroupID = 60004216,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004217,
+
+       m_ResultGroupID = 60004216,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004218,
+
+       m_ResultGroupID = 60004216,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004219,
+
+       m_ResultGroupID = 60004216,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004220,
+
+       m_ResultGroupID = 60004216,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004235,
+
+       m_ResultGroupID = 60004235,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004236,
+
+       m_ResultGroupID = 60004236,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004237,
+
+       m_ResultGroupID = 60004237,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004238,
+
+       m_ResultGroupID = 60004238,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004239,
+
+       m_ResultGroupID = 60004239,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004241,
+
+       m_ResultGroupID = 60004241,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004242,
+
+       m_ResultGroupID = 60004242,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004243,
+
+       m_ResultGroupID = 60004243,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004244,
+
+       m_ResultGroupID = 60004244,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004267,
+
+       m_ResultGroupID = 60004267,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004320,
+
+       m_ResultGroupID = 60004320,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004337,
+
+       m_ResultGroupID = 60004337,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004339,
+
+       m_ResultGroupID = 60004339,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004340,
+
+       m_ResultGroupID = 60004340,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004341,
+
+       m_ResultGroupID = 60004341,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004342,
+
+       m_ResultGroupID = 60004342,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004428,
+
+       m_ResultGroupID = 60004428,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004429,
+
+       m_ResultGroupID = 60004429,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004430,
+
+       m_ResultGroupID = 60004430,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004432,
+
+       m_ResultGroupID = 60004432,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004442,
+
+       m_ResultGroupID = 60004442,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004474,
+
+       m_ResultGroupID = 60004474,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004475,
+
+       m_ResultGroupID = 60004475,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004477,
+
+       m_ResultGroupID = 60004477,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004479,
+
+       m_ResultGroupID = 60004479,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004480,
+
+       m_ResultGroupID = 60004480,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004483,
+
+       m_ResultGroupID = 60004483,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004484,
+
+       m_ResultGroupID = 60004484,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004522,
+
+       m_ResultGroupID = 60004522,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004523,
+
+       m_ResultGroupID = 60004523,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004529,
+
+       m_ResultGroupID = 60004529,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004610,
+
+       m_ResultGroupID = 60004610,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004611,
+
+       m_ResultGroupID = 60004611,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004612,
+
+       m_ResultGroupID = 60004612,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004613,
+
+       m_ResultGroupID = 60004613,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004614,
+
+       m_ResultGroupID = 60004614,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004690,
+
+       m_ResultGroupID = 60004690,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004691,
+
+       m_ResultGroupID = 60004691,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004692,
+
+       m_ResultGroupID = 60004692,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004693,
+
+       m_ResultGroupID = 60004693,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004694,
+
+       m_ResultGroupID = 60004694,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004700,
+
+       m_ResultGroupID = 60004700,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004701,
+
+       m_ResultGroupID = 60004701,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004702,
+
+       m_ResultGroupID = 60004702,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004703,
+
+       m_ResultGroupID = 60004703,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004704,
+
+       m_ResultGroupID = 60004704,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004710,
+
+       m_ResultGroupID = 60004710,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004711,
+
+       m_ResultGroupID = 60004711,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004712,
+
+       m_ResultGroupID = 60004712,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004713,
+
+       m_ResultGroupID = 60004713,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004714,
+
+       m_ResultGroupID = 60004714,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004720,
+
+       m_ResultGroupID = 60004720,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004721,
+
+       m_ResultGroupID = 60004721,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004722,
+
+       m_ResultGroupID = 60004722,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004723,
+
+       m_ResultGroupID = 60004723,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004724,
+
+       m_ResultGroupID = 60004724,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004730,
+
+       m_ResultGroupID = 60004730,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004731,
+
+       m_ResultGroupID = 60004731,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004732,
+
+       m_ResultGroupID = 60004732,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004733,
+
+       m_ResultGroupID = 60004733,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004734,
+
+       m_ResultGroupID = 60004734,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004740,
+
+       m_ResultGroupID = 60004740,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004741,
+
+       m_ResultGroupID = 60004741,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004742,
+
+       m_ResultGroupID = 60004742,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004743,
+
+       m_ResultGroupID = 60004743,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004744,
+
+       m_ResultGroupID = 60004744,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004751,
+
+       m_ResultGroupID = 60004751,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004850,
+
+       m_ResultGroupID = 60004850,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004915,
+
+       m_ResultGroupID = 60004915,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004930,
+
+       m_ResultGroupID = 60004930,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004931,
+
+       m_ResultGroupID = 60004931,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004932,
+
+       m_ResultGroupID = 60004932,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004998,
+
+       m_ResultGroupID = 60004998,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60004999,
+
+       m_ResultGroupID = 60004999,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60005025,
+
+       m_ResultGroupID = 60005025,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60005028,
+
+       m_ResultGroupID = 60005028,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60005100,
+
+       m_ResultGroupID = 60005100,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60005101,
+
+       m_ResultGroupID = 60005101,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60005102,
+
+       m_ResultGroupID = 60005102,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60005103,
+
+       m_ResultGroupID = 60005103,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60005104,
+
+       m_ResultGroupID = 60005104,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60005105,
+
+       m_ResultGroupID = 60005105,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60005106,
+
+       m_ResultGroupID = 60005106,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60005107,
+
+       m_ResultGroupID = 60005107,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60005108,
+
+       m_ResultGroupID = 60005108,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60005109,
+
+       m_ResultGroupID = 60005109,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60006537,
+
+       m_ResultGroupID = 60006537,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60006538,
+
+       m_ResultGroupID = 60006538,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60006539,
+
+       m_ResultGroupID = 60006539,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 60006540,
+
+       m_ResultGroupID = 60006540,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 64000000,
+
+       m_ResultGroupID = 64000000,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 64000001,
+
+       m_ResultGroupID = 64000001,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 64000002,
+
+       m_ResultGroupID = 64000002,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 64000011,
+
+       m_ResultGroupID = 64000011,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 64000013,
+
+       m_ResultGroupID = 64000013,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 64000100,
+
+       m_ResultGroupID = 64000100,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 64000101,
+
+       m_ResultGroupID = 64000101,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 64000102,
+
+       m_ResultGroupID = 64000102,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 64000103,
+
+       m_ResultGroupID = 64000103,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 64000104,
+
+       m_ResultGroupID = 64000104,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 65000494,
+
+       m_ResultGroupID = 65000494,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 65000497,
+
+       m_ResultGroupID = 65000497,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 65000558,
+
+       m_ResultGroupID = 65000558,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 65000580,
+
+       m_ResultGroupID = 65000580,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 65000581,
+
+       m_ResultGroupID = 65000581,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 65000582,
+
+       m_ResultGroupID = 65000582,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 65000583,
+
+       m_ResultGroupID = 65000583,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 65000584,
+
+       m_ResultGroupID = 65000584,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 65000599,
+
+       m_ResultGroupID = 65000599,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 65000804,
+
+       m_ResultGroupID = 65000804,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 65000807,
+
+       m_ResultGroupID = 65000807,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 65001022,
+
+       m_ResultGroupID = 65001022,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 65001033,
+
+       m_ResultGroupID = 65001033,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 65001050,
+
+       m_ResultGroupID = 65001050,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 65001051,
+
+       m_ResultGroupID = 65001051,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 65001052,
+
+       m_ResultGroupID = 65001052,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 65001053,
+
+       m_ResultGroupID = 65001053,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67000263,
+
+       m_ResultGroupID = 67000263,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67000264,
+
+       m_ResultGroupID = 67000264,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67000301,
+
+       m_ResultGroupID = 67000301,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67000322,
+
+       m_ResultGroupID = 67000322,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67000364,
+
+       m_ResultGroupID = 67000364,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67000371,
+
+       m_ResultGroupID = 67000371,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67000372,
+
+       m_ResultGroupID = 67000372,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67000373,
+
+       m_ResultGroupID = 67000373,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67000601,
+
+       m_ResultGroupID = 67000601,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67000609,
+
+       m_ResultGroupID = 67000609,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67000610,
+
+       m_ResultGroupID = 67000610,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67000611,
+
+       m_ResultGroupID = 67000611,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67000612,
+
+       m_ResultGroupID = 67000612,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67000613,
+
+       m_ResultGroupID = 67000613,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67000614,
+
+       m_ResultGroupID = 67000614,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67000711,
+
+       m_ResultGroupID = 67000711,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67000712,
+
+       m_ResultGroupID = 67000712,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67000713,
+
+       m_ResultGroupID = 67000713,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67000714,
+
+       m_ResultGroupID = 67000714,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67000781,
+
+       m_ResultGroupID = 67000781,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67000798,
+
+       m_ResultGroupID = 67000798,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67000803,
+
+       m_ResultGroupID = 67000803,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67001611,
+
+       m_ResultGroupID = 67001611,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67001615,
+
+       m_ResultGroupID = 67001615,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67001616,
+
+       m_ResultGroupID = 67001616,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67001621,
+
+       m_ResultGroupID = 67001621,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67002134,
+
+       m_ResultGroupID = 67002134,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67002137,
+
+       m_ResultGroupID = 67002137,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67002183,
+
+       m_ResultGroupID = 67002183,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67002400,
+
+       m_ResultGroupID = 67002400,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67006186,
+
+       m_ResultGroupID = 67006186,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67006187,
+
+       m_ResultGroupID = 67006187,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67006188,
+
+       m_ResultGroupID = 67006188,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67006213,
+
+       m_ResultGroupID = 67006213,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67006233,
+
+       m_ResultGroupID = 67006233,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67006234,
+
+       m_ResultGroupID = 67006234,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67006235,
+
+       m_ResultGroupID = 67006235,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67006236,
+
+       m_ResultGroupID = 67006236,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67006237,
+
+       m_ResultGroupID = 67006237,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67006238,
+
+       m_ResultGroupID = 67006238,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67006239,
+
+       m_ResultGroupID = 67006239,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67006240,
+
+       m_ResultGroupID = 67006240,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67006241,
+
+       m_ResultGroupID = 67006241,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67006242,
+
+       m_ResultGroupID = 67006242,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67006243,
+
+       m_ResultGroupID = 67006243,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67006255,
+
+       m_ResultGroupID = 67006255,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67006256,
+
+       m_ResultGroupID = 67006256,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67006257,
+
+       m_ResultGroupID = 67006257,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67006258,
+
+       m_ResultGroupID = 67006258,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67006259,
+
+       m_ResultGroupID = 67006259,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67006260,
+
+       m_ResultGroupID = 67006260,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67006261,
+
+       m_ResultGroupID = 67006261,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67006262,
+
+       m_ResultGroupID = 67006262,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67006263,
+
+       m_ResultGroupID = 67006263,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67006264,
+
+       m_ResultGroupID = 67006264,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67006265,
+
+       m_ResultGroupID = 67006265,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67006464,
+
+       m_ResultGroupID = 67006464,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67006465,
+
+       m_ResultGroupID = 67006465,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67006466,
+
+       m_ResultGroupID = 67006466,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67006467,
+
+       m_ResultGroupID = 67006467,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67006468,
+
+       m_ResultGroupID = 67006468,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67006469,
+
+       m_ResultGroupID = 67006469,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67006470,
+
+       m_ResultGroupID = 67006470,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67006471,
+
+       m_ResultGroupID = 67006471,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67006472,
+
+       m_ResultGroupID = 67006472,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67006473,
+
+       m_ResultGroupID = 67006473,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67006474,
+
+       m_ResultGroupID = 67006474,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67006475,
+
+       m_ResultGroupID = 67006475,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67006476,
+
+       m_ResultGroupID = 67006476,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 67006477,
+
+       m_ResultGroupID = 67006477,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 70004370,
+
+       m_ResultGroupID = 70004370,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 70004390,
+
+       m_ResultGroupID = 70004390,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 70005100,
+
+       m_ResultGroupID = 70005100,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 75000000,
+
+       m_ResultGroupID = 75000000,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 75000001,
+
+       m_ResultGroupID = 75000000,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 75000610,
+
+       m_ResultGroupID = 75000610,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 75000611,
+
+       m_ResultGroupID = 75000611,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 75000612,
+
+       m_ResultGroupID = 75000612,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000079,
+
+       m_ResultGroupID = 80000079,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000186,
+
+       m_ResultGroupID = 80000186,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000223,
+
+       m_ResultGroupID = 80000223,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000224,
+
+       m_ResultGroupID = 80000223,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000229,
+
+       m_ResultGroupID = 80000229,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000277,
+
+       m_ResultGroupID = 80000277,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000278,
+
+       m_ResultGroupID = 80000278,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000281,
+
+       m_ResultGroupID = 80000281,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000284,
+
+       m_ResultGroupID = 80000284,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000288,
+
+       m_ResultGroupID = 80000288,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000359,
+
+       m_ResultGroupID = 80000359,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000360,
+
+       m_ResultGroupID = 80000360,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000361,
+
+       m_ResultGroupID = 80000361,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000370,
+
+       m_ResultGroupID = 80000370,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000371,
+
+       m_ResultGroupID = 80000371,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000372,
+
+       m_ResultGroupID = 80000372,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000374,
+
+       m_ResultGroupID = 80000374,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000375,
+
+       m_ResultGroupID = 80000375,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000376,
+
+       m_ResultGroupID = 80000376,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000377,
+
+       m_ResultGroupID = 80000377,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000378,
+
+       m_ResultGroupID = 80000378,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000379,
+
+       m_ResultGroupID = 80000379,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000380,
+
+       m_ResultGroupID = 80000380,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000381,
+
+       m_ResultGroupID = 80000381,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000382,
+
+       m_ResultGroupID = 80000382,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000383,
+
+       m_ResultGroupID = 80000383,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000384,
+
+       m_ResultGroupID = 80000384,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000385,
+
+       m_ResultGroupID = 80000385,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000386,
+
+       m_ResultGroupID = 80000386,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000387,
+
+       m_ResultGroupID = 80000387,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000388,
+
+       m_ResultGroupID = 80000388,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000389,
+
+       m_ResultGroupID = 80000389,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000390,
+
+       m_ResultGroupID = 80000390,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000391,
+
+       m_ResultGroupID = 80000391,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000392,
+
+       m_ResultGroupID = 80000392,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000393,
+
+       m_ResultGroupID = 80000393,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000394,
+
+       m_ResultGroupID = 80000394,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000395,
+
+       m_ResultGroupID = 80000395,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000396,
+
+       m_ResultGroupID = 80000396,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000397,
+
+       m_ResultGroupID = 80000397,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000398,
+
+       m_ResultGroupID = 80000398,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000485,
+
+       m_ResultGroupID = 80000485,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000492,
+
+       m_ResultGroupID = 80000492,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000493,
+
+       m_ResultGroupID = 80000493,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000499,
+
+       m_ResultGroupID = 80000499,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000500,
+
+       m_ResultGroupID = 80000500,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000501,
+
+       m_ResultGroupID = 80000501,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000502,
+
+       m_ResultGroupID = 80000502,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000503,
+
+       m_ResultGroupID = 80000503,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000504,
+
+       m_ResultGroupID = 80000504,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000505,
+
+       m_ResultGroupID = 80000505,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000553,
+
+       m_ResultGroupID = 80000553,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000554,
+
+       m_ResultGroupID = 80000554,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000625,
+
+       m_ResultGroupID = 80000610,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000626,
+
+       m_ResultGroupID = 80000610,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000671,
+
+       m_ResultGroupID = 80000671,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000672,
+
+       m_ResultGroupID = 80000672,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000675,
+
+       m_ResultGroupID = 80000675,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000691,
+
+       m_ResultGroupID = 109945,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000692,
+
+       m_ResultGroupID = 109955,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000693,
+
+       m_ResultGroupID = 130047,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000694,
+
+       m_ResultGroupID = 109950,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000695,
+
+       m_ResultGroupID = 109965,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000696,
+
+       m_ResultGroupID = 232230,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000776,
+
+       m_ResultGroupID = 80000776,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000790,
+
+       m_ResultGroupID = 132496,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000791,
+
+       m_ResultGroupID = 132495,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000801,
+
+       m_ResultGroupID = 80000801,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000990,
+
+       m_ResultGroupID = 80000990,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000991,
+
+       m_ResultGroupID = 80000991,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000992,
+
+       m_ResultGroupID = 80000992,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80000993,
+
+       m_ResultGroupID = 80000993,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001043,
+
+       m_ResultGroupID = 80001043,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001080,
+
+       m_ResultGroupID = 80001080,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001081,
+
+       m_ResultGroupID = 80001081,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001082,
+
+       m_ResultGroupID = 80001082,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001083,
+
+       m_ResultGroupID = 80001083,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001084,
+
+       m_ResultGroupID = 80001084,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001085,
+
+       m_ResultGroupID = 80001085,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001086,
+
+       m_ResultGroupID = 80001086,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001087,
+
+       m_ResultGroupID = 80001087,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001088,
+
+       m_ResultGroupID = 80001088,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001089,
+
+       m_ResultGroupID = 80001089,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001090,
+
+       m_ResultGroupID = 80001090,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001091,
+
+       m_ResultGroupID = 80001091,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001092,
+
+       m_ResultGroupID = 80001092,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001093,
+
+       m_ResultGroupID = 80001093,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001094,
+
+       m_ResultGroupID = 80001094,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001095,
+
+       m_ResultGroupID = 80001095,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001096,
+
+       m_ResultGroupID = 80001096,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001097,
+
+       m_ResultGroupID = 80001097,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001098,
+
+       m_ResultGroupID = 80001098,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001099,
+
+       m_ResultGroupID = 80001099,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001100,
+
+       m_ResultGroupID = 80001100,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001101,
+
+       m_ResultGroupID = 80001101,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001102,
+
+       m_ResultGroupID = 80001102,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001103,
+
+       m_ResultGroupID = 80001103,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001104,
+
+       m_ResultGroupID = 80001104,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001120,
+
+       m_ResultGroupID = 80001120,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001178,
+
+       m_ResultGroupID = 80001178,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001179,
+
+       m_ResultGroupID = 80001179,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001281,
+
+       m_ResultGroupID = 80001281,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001282,
+
+       m_ResultGroupID = 80001282,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001283,
+
+       m_ResultGroupID = 80001283,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001284,
+
+       m_ResultGroupID = 80001284,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001295,
+
+       m_ResultGroupID = 80001295,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001296,
+
+       m_ResultGroupID = 80001296,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001297,
+
+       m_ResultGroupID = 80001297,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001351,
+
+       m_ResultGroupID = 80001351,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001364,
+
+       m_ResultGroupID = 80001364,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001365,
+
+       m_ResultGroupID = 80001365,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001366,
+
+       m_ResultGroupID = 80001366,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001367,
+
+       m_ResultGroupID = 80001367,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001410,
+
+       m_ResultGroupID = 80001410,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001411,
+
+       m_ResultGroupID = 80001411,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001412,
+
+       m_ResultGroupID = 80001412,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001413,
+
+       m_ResultGroupID = 80001413,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001414,
+
+       m_ResultGroupID = 80001414,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001429,
+
+       m_ResultGroupID = 80001429,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001430,
+
+       m_ResultGroupID = 80001430,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001489,
+
+       m_ResultGroupID = 80001489,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001490,
+
+       m_ResultGroupID = 80001490,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001491,
+
+       m_ResultGroupID = 80001491,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001495,
+
+       m_ResultGroupID = 80001495,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001507,
+
+       m_ResultGroupID = 80001507,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001508,
+
+       m_ResultGroupID = 160250,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001509,
+
+       m_ResultGroupID = 80001507,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001510,
+
+       m_ResultGroupID = 80001507,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001511,
+
+       m_ResultGroupID = 80001507,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001512,
+
+       m_ResultGroupID = 80001507,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001533,
+
+       m_ResultGroupID = 80001533,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001539,
+
+       m_ResultGroupID = 80001539,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001540,
+
+       m_ResultGroupID = 180030,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001541,
+
+       m_ResultGroupID = 180031,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001542,
+
+       m_ResultGroupID = 180032,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80001543,
+
+       m_ResultGroupID = 180033,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80002142,
+
+       m_ResultGroupID = 80002142,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80002143,
+
+       m_ResultGroupID = 80002143,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80002208,
+
+       m_ResultGroupID = 80002208,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80002209,
+
+       m_ResultGroupID = 80002209,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80002210,
+
+       m_ResultGroupID = 80002210,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80002211,
+
+       m_ResultGroupID = 80002211,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80002231,
+
+       m_ResultGroupID = 109955,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80002232,
+
+       m_ResultGroupID = 85002094,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 80002233,
+
+       m_ResultGroupID = 80002233,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 84000192,
+
+       m_ResultGroupID = 84000192,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 84000193,
+
+       m_ResultGroupID = 84000193,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 84000194,
+
+       m_ResultGroupID = 84000194,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 84000195,
+
+       m_ResultGroupID = 84000195,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 84000840,
+
+       m_ResultGroupID = 84000840,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 84000841,
+
+       m_ResultGroupID = 84000841,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 84000842,
+
+       m_ResultGroupID = 84000842,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 84001142,
+
+       m_ResultGroupID = 84001142,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85000016,
+
+       m_ResultGroupID = 85000016,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85000227,
+
+       m_ResultGroupID = 85000227,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85000228,
+
+       m_ResultGroupID = 85000228,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85000230,
+
+       m_ResultGroupID = 85000230,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85000246,
+
+       m_ResultGroupID = 85000246,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85000248,
+
+       m_ResultGroupID = 85000248,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85000249,
+
+       m_ResultGroupID = 109945,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85000250,
+
+       m_ResultGroupID = 109955,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85000388,
+
+       m_ResultGroupID = 85000388,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85000398,
+
+       m_ResultGroupID = 85000398,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85000407,
+
+       m_ResultGroupID = 85000407,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85000415,
+
+       m_ResultGroupID = 85000415,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85000416,
+
+       m_ResultGroupID = 85000416,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85000417,
+
+       m_ResultGroupID = 85000417,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85000418,
+
+       m_ResultGroupID = 85000418,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85000421,
+
+       m_ResultGroupID = 85000421,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85000422,
+
+       m_ResultGroupID = 85000422,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85000453,
+
+       m_ResultGroupID = 85000453,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85000454,
+
+       m_ResultGroupID = 85000454,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85000455,
+
+       m_ResultGroupID = 85000455,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85000456,
+
+       m_ResultGroupID = 85000456,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85000486,
+
+       m_ResultGroupID = 85000486,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85000515,
+
+       m_ResultGroupID = 85000515,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85000516,
+
+       m_ResultGroupID = 85000516,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85000517,
+
+       m_ResultGroupID = 85000517,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85000518,
+
+       m_ResultGroupID = 85000518,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85000520,
+
+       m_ResultGroupID = 85000520,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85000534,
+
+       m_ResultGroupID = 85000534,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85000535,
+
+       m_ResultGroupID = 85000535,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85000536,
+
+       m_ResultGroupID = 85000536,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85000537,
+
+       m_ResultGroupID = 85000537,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85000538,
+
+       m_ResultGroupID = 85000538,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85000539,
+
+       m_ResultGroupID = 85000539,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85000540,
+
+       m_ResultGroupID = 85000540,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85000541,
+
+       m_ResultGroupID = 85000541,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85000542,
+
+       m_ResultGroupID = 85000542,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85000543,
+
+       m_ResultGroupID = 85000543,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85000544,
+
+       m_ResultGroupID = 85000544,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85000545,
+
+       m_ResultGroupID = 85000545,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85000673,
+
+       m_ResultGroupID = 85000673,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85000862,
+
+       m_ResultGroupID = 85000862,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85000868,
+
+       m_ResultGroupID = 85000868,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85000915,
+
+       m_ResultGroupID = 85000915,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85000916,
+
+       m_ResultGroupID = 85000916,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85000917,
+
+       m_ResultGroupID = 85000917,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85000930,
+
+       m_ResultGroupID = 85000930,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85001085,
+
+       m_ResultGroupID = 85001085,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85001530,
+
+       m_ResultGroupID = 85001530,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85001550,
+
+       m_ResultGroupID = 77200,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85001551,
+
+       m_ResultGroupID = 160250,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85001552,
+
+       m_ResultGroupID = 85001552,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85001553,
+
+       m_ResultGroupID = 132496,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85001844,
+
+       m_ResultGroupID = 85001844,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85001845,
+
+       m_ResultGroupID = 85001845,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85001858,
+
+       m_ResultGroupID = 85001858,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85001859,
+
+       m_ResultGroupID = 85001859,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85001860,
+
+       m_ResultGroupID = 85001858,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85001861,
+
+       m_ResultGroupID = 85001859,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85001862,
+
+       m_ResultGroupID = 85001862,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85001863,
+
+       m_ResultGroupID = 85001863,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85002017,
+
+       m_ResultGroupID = 180161,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85002062,
+
+       m_ResultGroupID = 85002062,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85002063,
+
+       m_ResultGroupID = 85002063,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85002080,
+
+       m_ResultGroupID = 85002080,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85002081,
+
+       m_ResultGroupID = 85002081,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85002082,
+
+       m_ResultGroupID = 85002082,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85002083,
+
+       m_ResultGroupID = 85002083,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85002084,
+
+       m_ResultGroupID = 85002084,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85002440,
+
+       m_ResultGroupID = 85002440,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85002450,
+
+       m_ResultGroupID = 85002450,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85002551,
+
+       m_ResultGroupID = 85002551,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85002552,
+
+       m_ResultGroupID = 85002551,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85002553,
+
+       m_ResultGroupID = 85002551,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85002554,
+
+       m_ResultGroupID = 85002551,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85002555,
+
+       m_ResultGroupID = 85002551,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85002556,
+
+       m_ResultGroupID = 85002551,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85002557,
+
+       m_ResultGroupID = 85002551,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85002567,
+
+       m_ResultGroupID = 85002567,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85002568,
+
+       m_ResultGroupID = 85002568,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85002576,
+
+       m_ResultGroupID = 85002576,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85002577,
+
+       m_ResultGroupID = 85002577,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85002578,
+
+       m_ResultGroupID = 85002578,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85002870,
+
+       m_ResultGroupID = 85002870,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85002871,
+
+       m_ResultGroupID = 85002871,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85002872,
+
+       m_ResultGroupID = 85002872,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85002873,
+
+       m_ResultGroupID = 85002873,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85002874,
+
+       m_ResultGroupID = 85002874,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85002875,
+
+       m_ResultGroupID = 85002875,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85002876,
+
+       m_ResultGroupID = 85002876,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85002877,
+
+       m_ResultGroupID = 85002877,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003470,
+
+       m_ResultGroupID = 85003470,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003471,
+
+       m_ResultGroupID = 85003471,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003472,
+
+       m_ResultGroupID = 85003472,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003473,
+
+       m_ResultGroupID = 85003473,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003474,
+
+       m_ResultGroupID = 85003474,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003475,
+
+       m_ResultGroupID = 85003475,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003476,
+
+       m_ResultGroupID = 85003476,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003477,
+
+       m_ResultGroupID = 85003477,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003478,
+
+       m_ResultGroupID = 85003478,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003479,
+
+       m_ResultGroupID = 85003479,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003480,
+
+       m_ResultGroupID = 85003480,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003481,
+
+       m_ResultGroupID = 85003481,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003482,
+
+       m_ResultGroupID = 85003482,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003490,
+
+       m_ResultGroupID = 133489,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003491,
+
+       m_ResultGroupID = 133490,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003492,
+
+       m_ResultGroupID = 133491,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003493,
+
+       m_ResultGroupID = 133492,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003494,
+
+       m_ResultGroupID = 133493,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003495,
+
+       m_ResultGroupID = 133494,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003496,
+
+       m_ResultGroupID = 133495,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003497,
+
+       m_ResultGroupID = 133496,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003498,
+
+       m_ResultGroupID = 133497,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003499,
+
+       m_ResultGroupID = 133498,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003500,
+
+       m_ResultGroupID = 133499,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003501,
+
+       m_ResultGroupID = 133500,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003502,
+
+       m_ResultGroupID = 133501,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003503,
+
+       m_ResultGroupID = 133502,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003504,
+
+       m_ResultGroupID = 133503,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003505,
+
+       m_ResultGroupID = 133504,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003506,
+
+       m_ResultGroupID = 133505,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003507,
+
+       m_ResultGroupID = 133506,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003508,
+
+       m_ResultGroupID = 133507,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003509,
+
+       m_ResultGroupID = 133508,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003520,
+
+       m_ResultGroupID = 81390,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003521,
+
+       m_ResultGroupID = 81391,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003522,
+
+       m_ResultGroupID = 81392,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003523,
+
+       m_ResultGroupID = 81393,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003524,
+
+       m_ResultGroupID = 81394,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003525,
+
+       m_ResultGroupID = 81395,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003526,
+
+       m_ResultGroupID = 81396,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003527,
+
+       m_ResultGroupID = 81400,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003528,
+
+       m_ResultGroupID = 81401,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003529,
+
+       m_ResultGroupID = 81402,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003530,
+
+       m_ResultGroupID = 81403,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003531,
+
+       m_ResultGroupID = 81404,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003532,
+
+       m_ResultGroupID = 81405,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003533,
+
+       m_ResultGroupID = 81406,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003534,
+
+       m_ResultGroupID = 81410,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003535,
+
+       m_ResultGroupID = 81411,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003536,
+
+       m_ResultGroupID = 81412,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003537,
+
+       m_ResultGroupID = 81413,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003538,
+
+       m_ResultGroupID = 81414,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003539,
+
+       m_ResultGroupID = 81415,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003540,
+
+       m_ResultGroupID = 81416,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003541,
+
+       m_ResultGroupID = 81420,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003542,
+
+       m_ResultGroupID = 81421,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003543,
+
+       m_ResultGroupID = 81422,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003544,
+
+       m_ResultGroupID = 81423,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003545,
+
+       m_ResultGroupID = 81424,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003546,
+
+       m_ResultGroupID = 81425,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003547,
+
+       m_ResultGroupID = 81426,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003548,
+
+       m_ResultGroupID = 81430,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003549,
+
+       m_ResultGroupID = 81431,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003550,
+
+       m_ResultGroupID = 81432,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003551,
+
+       m_ResultGroupID = 81433,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003552,
+
+       m_ResultGroupID = 81434,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003553,
+
+       m_ResultGroupID = 81435,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003554,
+
+       m_ResultGroupID = 81436,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003555,
+
+       m_ResultGroupID = 81440,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003556,
+
+       m_ResultGroupID = 81441,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003557,
+
+       m_ResultGroupID = 81442,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003558,
+
+       m_ResultGroupID = 81443,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003559,
+
+       m_ResultGroupID = 81444,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003560,
+
+       m_ResultGroupID = 81445,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003561,
+
+       m_ResultGroupID = 81446,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003562,
+
+       m_ResultGroupID = 81450,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003563,
+
+       m_ResultGroupID = 81451,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003564,
+
+       m_ResultGroupID = 81452,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003565,
+
+       m_ResultGroupID = 81453,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003566,
+
+       m_ResultGroupID = 81454,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003567,
+
+       m_ResultGroupID = 81455,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003568,
+
+       m_ResultGroupID = 81456,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003569,
+
+       m_ResultGroupID = 81457,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003570,
+
+       m_ResultGroupID = 81458,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003571,
+
+       m_ResultGroupID = 81459,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003572,
+
+       m_ResultGroupID = 81460,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003573,
+
+       m_ResultGroupID = 81461,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003574,
+
+       m_ResultGroupID = 81462,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003575,
+
+       m_ResultGroupID = 81463,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003576,
+
+       m_ResultGroupID = 81464,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003577,
+
+       m_ResultGroupID = 81465,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003578,
+
+       m_ResultGroupID = 81466,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003579,
+
+       m_ResultGroupID = 81467,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003580,
+
+       m_ResultGroupID = 81468,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003590,
+
+       m_ResultGroupID = 81470,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003591,
+
+       m_ResultGroupID = 81471,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003592,
+
+       m_ResultGroupID = 81472,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003593,
+
+       m_ResultGroupID = 81473,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003594,
+
+       m_ResultGroupID = 81474,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003595,
+
+       m_ResultGroupID = 81475,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003596,
+
+       m_ResultGroupID = 81476,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003597,
+
+       m_ResultGroupID = 81480,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003598,
+
+       m_ResultGroupID = 81481,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003599,
+
+       m_ResultGroupID = 81482,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003600,
+
+       m_ResultGroupID = 81483,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003601,
+
+       m_ResultGroupID = 81484,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003602,
+
+       m_ResultGroupID = 81485,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003603,
+
+       m_ResultGroupID = 81486,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003604,
+
+       m_ResultGroupID = 81490,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003605,
+
+       m_ResultGroupID = 81491,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003606,
+
+       m_ResultGroupID = 81492,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003607,
+
+       m_ResultGroupID = 81493,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003608,
+
+       m_ResultGroupID = 81494,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003609,
+
+       m_ResultGroupID = 81495,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003610,
+
+       m_ResultGroupID = 81496,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003611,
+
+       m_ResultGroupID = 81500,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003612,
+
+       m_ResultGroupID = 81501,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003613,
+
+       m_ResultGroupID = 81502,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003614,
+
+       m_ResultGroupID = 81503,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003615,
+
+       m_ResultGroupID = 81504,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003616,
+
+       m_ResultGroupID = 81505,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003617,
+
+       m_ResultGroupID = 81506,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003618,
+
+       m_ResultGroupID = 81510,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003619,
+
+       m_ResultGroupID = 81511,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003620,
+
+       m_ResultGroupID = 81512,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003621,
+
+       m_ResultGroupID = 81513,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003622,
+
+       m_ResultGroupID = 81514,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003623,
+
+       m_ResultGroupID = 81515,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003624,
+
+       m_ResultGroupID = 81516,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003625,
+
+       m_ResultGroupID = 81520,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003626,
+
+       m_ResultGroupID = 81521,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003627,
+
+       m_ResultGroupID = 81522,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003628,
+
+       m_ResultGroupID = 81523,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003629,
+
+       m_ResultGroupID = 81524,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003630,
+
+       m_ResultGroupID = 81525,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003631,
+
+       m_ResultGroupID = 81526,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003632,
+
+       m_ResultGroupID = 81530,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003633,
+
+       m_ResultGroupID = 81531,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003634,
+
+       m_ResultGroupID = 81532,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003635,
+
+       m_ResultGroupID = 81533,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003636,
+
+       m_ResultGroupID = 81534,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003637,
+
+       m_ResultGroupID = 81535,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003638,
+
+       m_ResultGroupID = 81536,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003639,
+
+       m_ResultGroupID = 81537,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003640,
+
+       m_ResultGroupID = 81538,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003641,
+
+       m_ResultGroupID = 81539,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003642,
+
+       m_ResultGroupID = 81540,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003643,
+
+       m_ResultGroupID = 81541,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003644,
+
+       m_ResultGroupID = 81542,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003645,
+
+       m_ResultGroupID = 81543,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003646,
+
+       m_ResultGroupID = 81544,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003647,
+
+       m_ResultGroupID = 81545,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003648,
+
+       m_ResultGroupID = 81546,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003649,
+
+       m_ResultGroupID = 81547,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 85003650,
+
+       m_ResultGroupID = 81548,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
        m_ManufactureID = 85003720,
 
        m_ResultGroupID = 85003720,
@@ -27707,9 +36355,617 @@ g_pManufactureItemManager:AddManufactureResultTemplet
 
 g_pManufactureItemManager:AddManufactureResultTemplet
 {
-       m_ManufactureID = 85003820,
+       m_ManufactureID = 90000076,
 
-       m_ResultGroupID = 85003820,
+       m_ResultGroupID = 90000076,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90000121,
+
+       m_ResultGroupID = 90000121,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90000122,
+
+       m_ResultGroupID = 90000122,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90000123,
+
+       m_ResultGroupID = 90000123,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90000124,
+
+       m_ResultGroupID = 90000124,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90000125,
+
+       m_ResultGroupID = 90000125,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90000126,
+
+       m_ResultGroupID = 90000126,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90000127,
+
+       m_ResultGroupID = 90000127,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90000135,
+
+       m_ResultGroupID = 90000127,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90000210,
+
+       m_ResultGroupID = 90000210,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90000218,
+
+       m_ResultGroupID = 90000218,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90000219,
+
+       m_ResultGroupID = 90000219,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90000220,
+
+       m_ResultGroupID = 90000220,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90000300,
+
+       m_ResultGroupID = 132496,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90000301,
+
+       m_ResultGroupID = 132495,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90000310,
+
+       m_ResultGroupID = 90000310,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90000352,
+
+       m_ResultGroupID = 90000352,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90000388,
+
+       m_ResultGroupID = 90000388,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90000511,
+
+       m_ResultGroupID = 90000511,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90000512,
+
+       m_ResultGroupID = 90000512,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90000583,
+
+       m_ResultGroupID = 90000583,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90000586,
+
+       m_ResultGroupID = 90000586,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90000587,
+
+       m_ResultGroupID = 90000587,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90000588,
+
+       m_ResultGroupID = 90000588,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90000589,
+
+       m_ResultGroupID = 90000589,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90000595,
+
+       m_ResultGroupID = 108900,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90000708,
+
+       m_ResultGroupID = 90000708,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90000764,
+
+       m_ResultGroupID = 90000764,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90001022,
+
+       m_ResultGroupID = 90001022,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90001060,
+
+       m_ResultGroupID = 90001060,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90001102,
+
+       m_ResultGroupID = 90001102,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90001103,
+
+       m_ResultGroupID = 90001103,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90001104,
+
+       m_ResultGroupID = 90001104,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90001105,
+
+       m_ResultGroupID = 90001105,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90001131,
+
+       m_ResultGroupID = 90001131,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90001310,
+
+       m_ResultGroupID = 500010,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90001311,
+
+       m_ResultGroupID = 500020,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90001312,
+
+       m_ResultGroupID = 500150,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90001313,
+
+       m_ResultGroupID = 75000600,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90001314,
+
+       m_ResultGroupID = 200620,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90001315,
+
+       m_ResultGroupID = 200700,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90001316,
+
+       m_ResultGroupID = 202410,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90001317,
+
+       m_ResultGroupID = 223480,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90001318,
+
+       m_ResultGroupID = 223490,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90001319,
+
+       m_ResultGroupID = 223500,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90001320,
+
+       m_ResultGroupID = 223510,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90001321,
+
+       m_ResultGroupID = 223520,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90001322,
+
+       m_ResultGroupID = 223525,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90001323,
+
+       m_ResultGroupID = 223530,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90001324,
+
+       m_ResultGroupID = 223540,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90001325,
+
+       m_ResultGroupID = 223550,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90001326,
+
+       m_ResultGroupID = 223560,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90001327,
+
+       m_ResultGroupID = 223570,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90001328,
+
+       m_ResultGroupID = 223575,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90001329,
+
+       m_ResultGroupID = 223580,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90001330,
+
+       m_ResultGroupID = 223590,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90001331,
+
+       m_ResultGroupID = 223600,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90001332,
+
+       m_ResultGroupID = 223610,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90001333,
+
+       m_ResultGroupID = 223620,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90001334,
+
+       m_ResultGroupID = 223625,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90001335,
+
+       m_ResultGroupID = 223630,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90001336,
+
+       m_ResultGroupID = 223640,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90001337,
+
+       m_ResultGroupID = 223650,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90001338,
+
+       m_ResultGroupID = 223660,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90001339,
+
+       m_ResultGroupID = 223670,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90001340,
+
+       m_ResultGroupID = 223675,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90001410,
+
+       m_ResultGroupID = 160466,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90001411,
+
+       m_ResultGroupID = 160467,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90001412,
+
+       m_ResultGroupID = 160468,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90001413,
+
+       m_ResultGroupID = 160469,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90001452,
+
+       m_ResultGroupID = 90001452,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90001454,
+
+       m_ResultGroupID = 90001454,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90001700,
+
+       m_ResultGroupID = 90001700,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90001702,
+
+       m_ResultGroupID = 90001702,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90001707,
+
+       m_ResultGroupID = 90001707,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90001708,
+
+       m_ResultGroupID = 131582,
+       m_Rate = 100,
+}
+
+g_pManufactureItemManager:AddManufactureResultTemplet
+{
+       m_ManufactureID = 90001710,
+
+       m_ResultGroupID = 130165,
        m_Rate = 100,
 }
 g_pManufactureItemManager:AddManufactureResultGroupWithRate( 1, 61130, 100, false )
@@ -28735,6 +37991,67 @@ g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81384, 81384, 100, 
 g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81385, 81385, 100, false )
 g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81386, 81386, 100, false )
 g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81387, 81387, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81390, 81390, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81391, 81391, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81392, 81392, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81393, 81393, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81394, 81394, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81395, 81395, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81396, 81396, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81400, 81400, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81401, 81401, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81402, 81402, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81403, 81403, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81404, 81404, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81405, 81405, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81406, 81406, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81410, 81410, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81411, 81411, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81412, 81412, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81413, 81413, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81414, 81414, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81415, 81415, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81416, 81416, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81420, 81420, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81421, 81421, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81422, 81422, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81423, 81423, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81424, 81424, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81425, 81425, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81426, 81426, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81430, 81430, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81431, 81431, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81432, 81432, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81433, 81433, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81434, 81434, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81435, 81435, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81436, 81436, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81440, 81440, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81441, 81441, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81442, 81442, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81443, 81443, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81444, 81444, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81445, 81445, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81446, 81446, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81450, 81450, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81451, 81451, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81452, 81452, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81453, 81453, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81454, 81454, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81455, 81455, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81456, 81456, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81457, 81457, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81458, 81458, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81459, 81459, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81460, 81460, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81461, 81461, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81462, 81462, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81463, 81463, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81464, 81464, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81465, 81465, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81466, 81466, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81467, 81467, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81468, 81468, 100, false )
 g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81470, 81470, 100, false )
 g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81471, 81471, 100, false )
 g_pManufactureItemManager:AddManufactureResultGroupWithRate( 81472, 81472, 100, false )
@@ -30656,6 +39973,26 @@ g_pManufactureItemManager:AddManufactureResultGroupWithRate( 133215, 133215, 100
 g_pManufactureItemManager:AddManufactureResultGroupWithRate( 133216, 133216, 100, false )
 g_pManufactureItemManager:AddManufactureResultGroupWithRate( 133217, 133217, 100, false )
 g_pManufactureItemManager:AddManufactureResultGroupWithRate( 133388, 133388, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 133489, 133489, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 133490, 133490, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 133491, 133491, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 133492, 133492, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 133493, 133493, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 133494, 133494, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 133495, 133495, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 133496, 133496, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 133497, 133497, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 133498, 133498, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 133499, 133499, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 133500, 133500, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 133501, 133501, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 133502, 133502, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 133503, 133503, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 133504, 133504, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 133505, 133505, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 133506, 133506, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 133507, 133507, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 133508, 133508, 100, false )
 g_pManufactureItemManager:AddManufactureResultGroupWithRate( 135400, 135400, 100, false )
 g_pManufactureItemManager:AddManufactureResultGroupWithRate( 135401, 135401, 100, false )
 g_pManufactureItemManager:AddManufactureResultGroupWithRate( 135402, 135402, 100, false )
@@ -45190,6 +54527,903 @@ g_pManufactureItemManager:AddManufactureResultGroupWithRate( 10600700, 10600702,
 g_pManufactureItemManager:AddManufactureResultGroupWithRate( 10600700, 10600703, 5, true )
 g_pManufactureItemManager:AddManufactureResultGroupWithRate( 10600800, 10600802, 95, true )
 g_pManufactureItemManager:AddManufactureResultGroupWithRate( 10600800, 10600803, 5, true )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60000284, 60000284, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60000331, 60000331, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60000332, 60000332, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60000333, 60000333, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60000334, 60000334, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60000335, 60000335, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60000420, 60000420, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60000444, 60000444, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60000445, 60000445, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60000475, 60000475, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60000480, 60000480, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60000520, 60000520, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60000521, 60000521, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60000522, 60000522, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60000523, 60000523, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60000525, 60000525, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60000526, 60000526, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60000532, 60000532, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60000533, 60000533, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60000534, 60000534, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60000536, 60000536, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60000537, 60000537, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60000543, 60000543, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60000560, 60000560, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60000561, 60000561, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60000562, 60000562, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60000700, 60000700, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60000701, 60000701, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60000702, 60000702, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60000703, 60000703, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60000704, 60000704, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60000705, 60000705, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60000706, 60000706, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60000707, 60000707, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60000708, 60000708, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60000836, 60000836, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60000837, 60000837, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60000879, 60000879, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60000880, 60000880, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60000882, 60000882, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60000947, 60000947, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60000948, 60000948, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60000972, 60000972, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001049, 60001049, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001052, 60001052, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001053, 60001053, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001054, 60001054, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001055, 60001055, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001056, 60001056, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001057, 60001057, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001058, 60001058, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001059, 60001059, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001060, 60001060, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001061, 60001061, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001062, 60001062, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001063, 60001063, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001064, 60001064, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001065, 60001065, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001066, 60001066, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001067, 60001067, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001068, 60001068, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001069, 60001069, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001070, 60001070, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001071, 60001071, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001072, 60001072, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001073, 60001073, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001074, 60001074, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001075, 60001075, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001076, 60001076, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001077, 60001077, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001078, 60001078, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001079, 60001079, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001080, 60001080, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001081, 60001081, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001085, 60001085, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001086, 60001086, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001095, 60001095, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001096, 60001096, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001100, 60001100, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001211, 60001211, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001212, 60001212, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001213, 60001213, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001222, 60001222, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001223, 60001223, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001224, 60001224, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001225, 60001222, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001226, 60001222, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001227, 60001223, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001228, 60001223, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001234, 60001234, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001236, 60001236, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001238, 60001238, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001240, 60001240, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001242, 60001242, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001281, 60001281, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001302, 60001302, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001317, 60001317, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001380, 60001380, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001396, 60001396, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001397, 60001397, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001398, 60001398, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001399, 60001399, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001400, 60001400, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001411, 60001411, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001412, 60001412, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001413, 60001413, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001417, 60001417, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001435, 60001435, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001438, 60001438, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001439, 60001439, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001444, 60001444, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001478, 60001478, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001481, 60001481, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001485, 60001485, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001496, 60001496, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001497, 60001497, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001511, 60001511, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001512, 60001512, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001513, 60001513, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001514, 60001514, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001521, 60001521, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001528, 60001528, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001619, 60001619, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001670, 60001670, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001671, 60001671, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001697, 60001697, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001698, 60001698, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001725, 60001725, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001726, 60001726, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001727, 60001727, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001769, 60001769, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001776, 60001776, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001777, 60001777, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001778, 60001778, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001779, 60001779, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001780, 60001780, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001781, 60001781, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001802, 60001802, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001806, 60001806, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001818, 60001818, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001819, 60001819, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001820, 60001820, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001821, 60001821, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001822, 60001822, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001823, 60001823, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001824, 60001824, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001825, 60001825, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001832, 60001832, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001833, 60001833, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001845, 60001845, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001846, 60001846, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001866, 60001866, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001867, 60001867, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001886, 60001886, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001907, 60001907, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001908, 60001908, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001909, 60001909, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001910, 60001910, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001936, 60001936, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001937, 60001937, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001954, 60001954, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001956, 60001956, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001957, 60001957, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001958, 60001958, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001959, 60001959, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001960, 60001960, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001961, 60001961, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001962, 60001962, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001963, 60001963, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001989, 60001989, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001990, 60001990, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001991, 60001991, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001992, 60001992, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60001993, 60001993, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60002001, 60002001, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60002010, 60002010, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60002011, 60002011, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60002070, 60002070, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60002082, 60002082, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60002083, 60002083, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60002084, 60002084, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60002085, 60002085, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60002086, 60002086, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60002101, 60002101, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60002102, 60002102, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60002103, 60002103, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60002111, 60002111, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60002220, 60002220, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60002221, 60002221, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60002222, 60002222, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60002223, 60002223, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60002270, 60002270, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60002271, 60002271, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60002280, 60002280, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60002510, 60002510, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60002520, 60002520, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60002560, 132498, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60002680, 60002680, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60002700, 60002700, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60002851, 60002851, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60002852, 60002852, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60002853, 60002853, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60002854, 60002854, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60002855, 60002855, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60002856, 60002856, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60002857, 60002857, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60002858, 60002858, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60002940, 60002940, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60002950, 60002950, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60002960, 60002960, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60002970, 60002970, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60002980, 60002980, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60002990, 60002990, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003001, 60003001, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003371, 60003371, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003372, 60003372, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003395, 60003395, 55, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003395, 60003396, 5, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003395, 60003397, 3, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003395, 60003398, 1, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003395, 60003407, 12, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003395, 60003408, 12, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003395, 60003409, 12, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003513, 60003513, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003514, 60003514, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003515, 60003515, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003602, 60003602, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003603, 60003602, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003604, 60003602, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003605, 60003602, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003606, 60003602, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003607, 60003602, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003630, 60003630, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003632, 60003632, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003640, 60003640, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003641, 60003641, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003642, 60003642, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003647, 60003647, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003648, 60003648, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003657, 60003657, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003662, 90000241, 50, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003662, 90000242, 50, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003663, 90000243, 17, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003663, 90000244, 17, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003663, 90000245, 17, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003663, 90000246, 16, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003663, 90000247, 16, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003663, 90000248, 17, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003714, 60003714, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003716, 60003716, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003717, 60003717, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003718, 60003718, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003719, 60003719, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003727, 60003727, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003728, 60003728, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003735, 60003735, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003736, 60003736, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003737, 60003737, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003738, 60003738, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003794, 60003794, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003795, 60003795, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003899, 60003899, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003901, 60003901, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003931, 60003931, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003932, 60003932, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003933, 60003933, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003958, 60003958, 50, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003958, 60003959, 50, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003960, 60003960, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003978, 60003978, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003979, 60003979, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60003992, 60003992, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004094, 60004094, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004096, 60004096, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004115, 60004115, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004116, 60004116, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004117, 60004117, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004126, 60004126, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004127, 60004127, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004128, 60004128, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004132, 60004132, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004137, 60004137, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004144, 60004144, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004195, 60004195, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004199, 60004199, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004200, 60004199, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004206, 60004206, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004216, 60004216, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004235, 60004235, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004236, 60004236, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004237, 60004237, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004238, 60004238, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004239, 60004239, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004241, 60004241, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004242, 60004242, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004243, 60004243, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004244, 60004244, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004245, 60004245, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004246, 60004246, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004247, 60004247, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004248, 60004248, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004249, 60004249, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004267, 60004267, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004320, 60004320, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004321, 60004321, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004322, 60004322, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004323, 60004323, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004324, 60004324, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004325, 60004325, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004326, 60004326, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004337, 60004337, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004339, 60004339, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004340, 60004340, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004341, 60004341, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004342, 60004342, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004428, 60004428, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004429, 60004429, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004430, 60004430, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004432, 60004432, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004442, 60004442, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004474, 60004474, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004475, 60004475, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004477, 60004477, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004479, 60004479, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004480, 60004480, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004483, 60004483, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004484, 60004484, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004522, 60004522, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004523, 60004523, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004529, 60004529, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004610, 60004610, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004611, 60004611, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004612, 60004612, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004613, 60004613, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004614, 60004614, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004690, 60004690, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004691, 60004691, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004692, 60004692, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004693, 60004693, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004694, 60004694, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004700, 60004700, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004701, 60004701, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004702, 60004702, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004703, 60004703, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004704, 60004704, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004710, 60004710, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004711, 60004711, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004712, 60004712, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004713, 60004713, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004714, 60004714, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004720, 60004720, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004721, 60004721, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004722, 60004722, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004723, 60004723, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004724, 60004724, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004730, 60004730, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004731, 60004731, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004732, 60004732, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004733, 60004733, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004734, 60004734, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004740, 60004740, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004741, 60004741, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004742, 60004742, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004743, 60004743, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004744, 60004744, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004751, 60004751, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004850, 60004850, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004915, 60004915, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004930, 60004930, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004931, 60004931, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004932, 60004932, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004998, 60004998, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60004999, 60004999, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60005025, 60005025, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60005028, 60005028, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60005100, 60005100, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60005101, 60005101, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60005102, 60005102, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60005103, 60005103, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60005104, 60005104, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60005105, 60005105, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60005106, 60005106, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60005107, 60005107, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60005108, 60005108, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60005109, 60005109, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60006537, 60006537, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60006538, 60006538, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60006539, 60006539, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 60006540, 60006540, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 64000000, 64000000, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 64000001, 64000001, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 64000002, 64000002, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 64000011, 64000011, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 64000013, 64000013, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 64000100, 64000100, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 64000101, 64000101, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 64000102, 64000102, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 64000103, 64000103, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 64000104, 64000104, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 65000020, 65000020, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 65000021, 65000021, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 65000022, 65000022, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 65000024, 65000024, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 65000044, 65000044, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 65000045, 65000045, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 65000049, 65000049, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 65000200, 65000200, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 65000201, 65000201, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 65000203, 65000203, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 65000204, 65000204, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 65000241, 65000241, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 65000242, 65000242, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 65000250, 65000250, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 65000251, 65000251, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 65000252, 65000252, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 65000253, 65000253, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 65000258, 65000258, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 65000295, 65000295, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 65000344, 65000344, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 65000347, 65000347, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 65000351, 65000351, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 65000494, 65000494, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 65000497, 65000497, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 65000558, 65000558, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 65000580, 65000580, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 65000581, 65000581, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 65000582, 65000582, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 65000583, 65000583, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 65000584, 65000584, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 65000599, 65000599, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 65000804, 65000804, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 65000807, 65000807, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 65001022, 65001022, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 65001033, 65001033, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 65001050, 65001050, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 65001051, 65001051, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 65001052, 65001052, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 65001053, 65001053, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67000263, 67000263, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67000264, 67000264, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67000301, 67000301, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67000322, 67000322, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67000364, 67000364, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67000371, 67000371, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67000372, 67000372, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67000373, 67000373, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67000601, 67000601, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67000609, 67000609, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67000610, 67000610, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67000611, 67000611, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67000612, 67000612, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67000613, 67000613, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67000614, 67000614, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67000711, 67000711, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67000712, 67000712, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67000713, 67000713, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67000714, 67000714, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67000781, 67000781, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67000798, 67000799, 50, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67000798, 67000800, 50, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67000803, 67000803, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67001611, 67001611, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67001615, 67001615, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67001616, 67001616, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67001621, 67001621, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67002134, 67002134, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67002137, 67002137, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67002183, 67002183, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67002400, 67002400, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67006186, 67006186, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67006187, 67006187, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67006188, 67006188, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67006213, 67006213, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67006233, 67006233, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67006234, 67006234, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67006235, 67006235, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67006236, 67006236, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67006237, 67006237, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67006238, 67006238, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67006239, 67006239, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67006240, 67006240, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67006241, 67006241, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67006242, 67006242, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67006243, 67006243, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67006255, 67006255, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67006256, 67006256, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67006257, 67006257, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67006258, 67006258, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67006259, 67006259, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67006260, 67006260, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67006261, 67006261, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67006262, 67006262, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67006263, 67006263, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67006264, 67006264, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67006265, 67006265, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67006464, 67006464, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67006465, 67006465, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67006466, 67006466, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67006467, 67006467, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67006468, 67006468, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67006469, 67006469, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67006470, 67006470, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67006471, 67006471, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67006472, 67006472, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67006473, 67006473, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67006474, 67006474, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67006475, 67006475, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67006476, 67006476, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 67006477, 67006477, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 70000303, 70000303, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 70004370, 70004370, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 70004390, 70004390, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 70005100, 70005100, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 75000000, 75000000, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 75000001, 75000001, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 75000008, 75000008, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 75000009, 75000009, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 75000010, 75000010, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 75000011, 75000011, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 75000012, 75000012, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 75000013, 75000013, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 75000020, 75000020, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 75000021, 75000021, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 75000022, 75000022, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 75000023, 75000023, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 75000024, 75000024, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 75000025, 75000025, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 75000032, 75000032, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 75000033, 75000033, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 75000034, 75000034, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 75000035, 75000035, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 75000036, 75000036, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 75000037, 75000037, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 75000044, 75000044, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 75000045, 75000045, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 75000046, 75000046, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 75000047, 75000047, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 75000048, 75000048, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 75000049, 75000049, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 75000056, 75000056, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 75000057, 75000057, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 75000058, 75000058, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 75000059, 75000059, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 75000060, 75000060, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 75000061, 75000061, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 75000257, 75000257, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 75000600, 75000600, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 75000610, 75000610, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 75000611, 75000611, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 75000612, 75000612, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000079, 80000079, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000186, 80000186, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000223, 80000223, 99, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000223, 80000227, 1, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000224, 80000223, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000229, 80000229, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000277, 80000277, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000278, 80000277, 70, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000278, 80000278, 30, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000281, 80000281, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000284, 80000283, 70, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000284, 80000284, 30, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000288, 80000288, 90, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000288, 80000289, 10, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000359, 80000359, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000360, 80000360, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000361, 80000361, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000370, 129070, 50, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000370, 80000186, 50, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000371, 80000371, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000372, 80000372, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000374, 80000374, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000375, 80000375, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000376, 80000376, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000377, 80000377, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000378, 80000378, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000379, 80000379, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000380, 80000380, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000381, 80000381, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000382, 80000382, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000383, 80000383, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000384, 80000384, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000385, 80000385, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000386, 80000386, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000387, 80000387, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000388, 80000388, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000389, 80000389, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000390, 80000390, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000391, 80000391, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000392, 80000392, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000393, 80000393, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000394, 80000394, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000395, 80000395, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000396, 80000396, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000397, 80000397, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000398, 80000398, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000485, 80000486, 50, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000485, 80000487, 50, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000492, 80000492, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000493, 80000493, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000499, 80000499, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000500, 80000481, 1, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000500, 80000482, 29, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000500, 80000483, 35, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000500, 80000484, 35, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000501, 80000481, 1, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000501, 80000482, 29, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000501, 80000483, 35, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000501, 80000484, 35, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000502, 80000481, 1, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000502, 80000482, 29, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000502, 80000483, 35, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000502, 80000484, 35, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000503, 80000481, 1, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000503, 80000482, 29, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000503, 80000483, 35, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000503, 80000484, 35, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000504, 80000482, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000505, 80000482, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000553, 80000553, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000554, 80000554, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000610, 80000610, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000626, 80000610, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000671, 80000671, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000672, 80000672, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000675, 80000675, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000776, 80000776, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000801, 80000801, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000990, 80000990, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000991, 80000991, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000992, 80000992, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80000993, 80000993, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001043, 80001043, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001080, 80001080, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001081, 80001081, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001082, 80001082, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001083, 80001083, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001084, 80001084, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001085, 80001085, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001086, 80001086, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001087, 80001087, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001088, 80001088, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001089, 80001089, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001090, 80001090, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001091, 80001091, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001092, 80001092, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001093, 80001093, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001094, 80001094, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001095, 80001095, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001096, 80001096, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001097, 80001097, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001098, 80001098, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001099, 80001099, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001100, 80001100, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001101, 80001101, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001102, 80001102, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001103, 80001103, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001104, 80001104, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001120, 80001120, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001178, 80001178, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001179, 80001179, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001281, 80001281, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001282, 80001282, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001283, 80001283, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001284, 80001284, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001295, 80001295, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001296, 80001296, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001297, 80001297, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001351, 80001351, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001364, 80001364, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001365, 80001365, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001366, 80001366, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001367, 80001367, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001410, 80001410, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001411, 80001411, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001412, 80001412, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001413, 80001413, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001414, 80001414, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001429, 80001429, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001430, 80001430, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001489, 80001489, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001490, 80001490, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001491, 80001491, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001495, 80001495, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001507, 80001507, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001508, 80001508, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001509, 80001509, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001510, 80001510, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001511, 80001511, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001512, 80001512, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001533, 80001533, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001539, 80001539, 25, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001539, 80001540, 25, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001539, 80001541, 25, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001539, 80001542, 6, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001539, 80001543, 5, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001539, 80001544, 5, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001539, 80001545, 2, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001539, 80001546, 2, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001539, 80001547, 2, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001539, 80001548, 1, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001539, 80001549, 0.5, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001539, 80001550, 0.5, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001539, 80001557, 0.4, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001539, 80001558, 0.3, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80001539, 80001559, 0.3, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80002142, 80002142, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80002143, 80002143, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80002208, 80002208, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80002209, 80002209, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80002210, 80002210, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80002211, 80002211, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 80002233, 80002233, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 84000192, 84000192, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 84000193, 84000193, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 84000194, 84000194, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 84000195, 84000195, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 84000840, 84000840, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 84000841, 84000841, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 84000842, 84000842, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 84001142, 84001142, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85000015, 85000015, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85000016, 85000016, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85000227, 85000227, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85000228, 85000228, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85000246, 85000246, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85000248, 85000248, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85000249, 85000249, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85000250, 85000250, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85000388, 85000388, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85000391, 85000391, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85000398, 85000398, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85000415, 85000415, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85000416, 85000416, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85000417, 85000417, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85000418, 85000418, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85000419, 85000419, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85000420, 85000420, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85000421, 85000421, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85000422, 85000422, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85000453, 85000453, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85000454, 85000454, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85000455, 85000455, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85000456, 85000456, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85000486, 85000486, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85000515, 85000515, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85000516, 85000516, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85000517, 85000517, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85000518, 85000518, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85000520, 85000520, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85000534, 85000534, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85000535, 85000535, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85000536, 85000536, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85000537, 85000537, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85000538, 85000538, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85000539, 85000539, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85000540, 85000540, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85000541, 85000541, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85000542, 85000542, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85000543, 85000543, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85000544, 85000544, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85000545, 85000545, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85000673, 85000673, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85000862, 85000862, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85000868, 85000868, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85000915, 85000915, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85000916, 85000916, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85000917, 85000917, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85000930, 85000930, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85001085, 85001085, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85001530, 85001530, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85001552, 85001552, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85001844, 85001844, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85001845, 85001845, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85001858, 85001858, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85001859, 85001859, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85001862, 85001862, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85001863, 85001863, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85001940, 85001940, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85002062, 85002062, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85002063, 85002063, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85002080, 85002080, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85002081, 85002081, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85002082, 85002082, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85002083, 85002083, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85002084, 85002084, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85002094, 85002094, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85002440, 85002440, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85002450, 85002450, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85002551, 85002551, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85002567, 85002567, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85002568, 85002568, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85002576, 85002576, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85002577, 85002577, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85002578, 85002578, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85002870, 85002870, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85002871, 85002871, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85002872, 85002872, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85002873, 85002873, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85002874, 85002874, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85002875, 85002875, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85002876, 85002876, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85002877, 85002877, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85003470, 85003470, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85003471, 85003471, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85003472, 85003472, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85003473, 85003473, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85003474, 85003474, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85003475, 85003475, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85003476, 85003476, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85003477, 85003477, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85003478, 85003478, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85003479, 85003479, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85003480, 85003480, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85003481, 85003481, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85003482, 85003482, 100, false )
 g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85003720, 85003720, 100, false )
 g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85003722, 85003722, 100, false )
-g_pManufactureItemManager:AddManufactureResultGroupWithRate( 85003820, 85003820, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000076, 90000076, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000121, 90000121, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000122, 90000122, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000123, 90000123, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000124, 90000124, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000125, 90000125, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000126, 90000126, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000127, 90000127, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000210, 90000210, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000218, 90000218, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000219, 90000219, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000220, 90000220, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000352, 90000352, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000388, 90000388, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000498, 90000498, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000511, 90000511, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000512, 90000512, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000583, 90000583, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000586, 90000586, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000587, 90000587, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000588, 90000588, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000589, 90000589, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000595, 90000595, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000610, 90000610, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000657, 109945, 25, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000657, 109950, 15, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000657, 109955, 10, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000657, 109965, 15, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000657, 130047, 30, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000657, 130159, 5, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000658, 109945, 25, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000658, 109950, 15, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000658, 109955, 10, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000658, 109965, 15, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000658, 130047, 30, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000658, 130160, 5, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000659, 109945, 25, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000659, 109950, 15, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000659, 109955, 10, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000659, 109965, 15, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000659, 130047, 30, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000659, 130161, 5, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000660, 109945, 25, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000660, 109950, 15, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000660, 109955, 10, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000660, 109965, 15, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000660, 130047, 30, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000660, 130645, 5, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000661, 109945, 25, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000661, 109950, 15, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000661, 109955, 10, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000661, 109965, 15, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000661, 130047, 30, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000661, 130162, 5, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000662, 109945, 25, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000662, 109950, 15, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000662, 109955, 10, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000662, 109965, 15, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000662, 130047, 30, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000662, 131262, 5, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000663, 109945, 25, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000663, 109950, 15, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000663, 109955, 13, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000663, 109965, 15, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000663, 130047, 30, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000663, 132497, 1, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000663, 207500, 1, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000668, 90000668, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000708, 90000708, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90000764, 90000764, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90001022, 90001022, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90001060, 90001060, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90001102, 90001102, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90001103, 90001103, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90001104, 90001104, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90001105, 90001105, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90001131, 90001131, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90001452, 90001452, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90001454, 90001454, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90001700, 90001700, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90001702, 90001702, 100, false )
+g_pManufactureItemManager:AddManufactureResultGroupWithRate( 90001707, 90001707, 100, false )

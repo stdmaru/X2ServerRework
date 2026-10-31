@@ -75,19 +75,26 @@ ClassChangeTable:SetClassGroupID(62, UNIT_CLASS["UC_CHUNG_TACTICAL_TROOPER"])
 
 --아라 1차 전직
 ClassChangeTable:SetClassGroupID(71, UNIT_CLASS["UC_ARA_LITTLE_HSIEN"])	--//아라 1차 소선(2013.8.6. 이승헌)
+--[[
 ClassChangeTable:SetClassGroupID(71, UNIT_CLASS["UC_ARA_LITTLE_DEVIL"])	--//아라 1차 소마(2013.8.6. 이승헌)
+--]]
 --ClassChangeTable:SetClassGroupID(71, UNIT_CLASS["UC_ARA_LITTLE_DEVIL"])
 --아라 2차 전직
+--[[ 임시 주석 처리
 ClassChangeTable:SetClassGroupID(72, UNIT_CLASS["UC_ARA_SAKRA_DEVANAM"])	--//아라 2차 제천(2013.8.6. 이승헌)
 ClassChangeTable:SetClassGroupID(72, UNIT_CLASS["UC_ARA_YAMA_RAJA"])		--//아라 2차 명왕(2013.8.6. 이승헌)
+--]]
 --ClassChangeTable:SetClassGroupID(72, UNIT_CLASS["UC_CHUNG_TACTICAL_TROOPER"])
---[[
+
 --엘리시스 1차 전직
+--[[ 임시 주석 처리
 ClassChangeTable:SetClassGroupID(81, UNIT_CLASS["UC_ELESIS_SABER_KNIGHT"])
 ClassChangeTable:SetClassGroupID(81, UNIT_CLASS["UC_ELESIS_PYRO_KNIGHT"])
+--]]
 -- ClassChangeTable:SetClassGroupID(81, UNIT_CLASS["UC_ELESIS_ANGELIC_KNIGHT"])
 --엘리시스 2차 전직
+--[[ 임시 주석 처리
 ClassChangeTable:SetClassGroupID(82, UNIT_CLASS["UC_ELESIS_GRAND_MASTER"])
 ClassChangeTable:SetClassGroupID(82, UNIT_CLASS["UC_ELESIS_BLAZING_HEART"])
--- ClassChangeTable:SetClassGroupID(82, UNIT_CLASS["UC_ELESIS_INNOCENT_SOUL"])
 --]]
+-- ClassChangeTable:SetClassGroupID(82, UNIT_CLASS["UC_ELESIS_INNOCENT_SOUL"])

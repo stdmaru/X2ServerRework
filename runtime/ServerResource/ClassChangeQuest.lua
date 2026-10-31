@@ -1007,9 +1007,11 @@ ClassChangeTable:SetClassChange_Quest(22,35250, UNIT_CLASS["UC_ARA_LITTLE_HSIEN"
 ClassChangeTable:SetClassChange_Quest(23,35260, UNIT_CLASS["UC_ARA_LITTLE_HSIEN"])--제천 3 / 5
 ClassChangeTable:SetClassChange_Quest(24,35270, UNIT_CLASS["UC_ARA_LITTLE_HSIEN"])--제천 4 / 5
 ClassChangeTable:SetClassChange_Quest(25,35280, UNIT_CLASS["UC_ARA_LITTLE_HSIEN"])--제천 5 / 5
+--[[
 --소마
 ClassChangeTable:SetClassChange_Quest(21,35390, UNIT_CLASS["UC_ARA_LITTLE_DEVIL"])--명왕 1 / 5
 ClassChangeTable:SetClassChange_Quest(22,35391, UNIT_CLASS["UC_ARA_LITTLE_DEVIL"])--명왕 2 / 5
 ClassChangeTable:SetClassChange_Quest(23,35392, UNIT_CLASS["UC_ARA_LITTLE_DEVIL"])--명왕 3 / 5
 ClassChangeTable:SetClassChange_Quest(24,35393, UNIT_CLASS["UC_ARA_LITTLE_DEVIL"])--명왕 4 / 5
 ClassChangeTable:SetClassChange_Quest(25,35394, UNIT_CLASS["UC_ARA_LITTLE_DEVIL"])--명왕 5 / 5
+--]]

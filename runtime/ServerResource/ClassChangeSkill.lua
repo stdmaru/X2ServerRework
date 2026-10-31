@@ -266,6 +266,7 @@ ClassChangeTable:SetClassChange_Skill(3,7404, UNIT_CLASS["UC_ARA_SAKRA_DEVANAM"]
 ClassChangeTable:SetClassChange_Skill(4,7405, UNIT_CLASS["UC_ARA_SAKRA_DEVANAM"])--만월 베기, 필요없지만 추가함 (1차 캐릭으론 획득할 수 없음으로)
 ClassChangeTable:SetClassChange_Skill(5,7600, UNIT_CLASS["UC_ARA_SAKRA_DEVANAM"])--분기등천-천수화, 필요없지만 추가함 (1차 캐릭으론 획득할 수 없음으로)
 
+--[[
 --소마
 ClassChangeTable:SetClassChange_Skill(1,7215, UNIT_CLASS["UC_ARA_LITTLE_DEVIL"])--이혈공
 ClassChangeTable:SetClassChange_Skill(2,7014, UNIT_CLASS["UC_ARA_LITTLE_DEVIL"])--연환지옥
@@ -278,7 +279,7 @@ ClassChangeTable:SetClassChange_Skill(2,7014, UNIT_CLASS["UC_ARA_YAMA_RAJA"])--�
 ClassChangeTable:SetClassChange_Skill(3,7013, UNIT_CLASS["UC_ARA_YAMA_RAJA"])--연환장
 ClassChangeTable:SetClassChange_Skill(4,7409, UNIT_CLASS["UC_ARA_YAMA_RAJA"])--늑대의 울부짖음
 ClassChangeTable:SetClassChange_Skill(5,7601, UNIT_CLASS["UC_ARA_YAMA_RAJA"])--대규환지옥
---[[
+
 --세이버 나이트
 ClassChangeTable:SetClassChange_Skill(1,8209, UNIT_CLASS["UC_ELESIS_SABER_KNIGHT"])--파워 브레이크
 ClassChangeTable:SetClassChange_Skill(2,8006, UNIT_CLASS["UC_ELESIS_SABER_KNIGHT"])--승리의 검

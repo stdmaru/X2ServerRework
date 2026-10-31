@@ -37,9 +37,10 @@ Os configs apontam para `../ServerResource` e `../ClientScript` (`SimLayer:AddPa
 ## O que está versionado (`runtime/`)
 
 - `ServerResource/`: os 84 scripts do servidor em produção (`_original-server/ServerResource`, 20 MB), com os bytes intactos
-  (`-text` no `.gitattributes`: mistura de CRLF/LF e BOM, como estavam). Escolha do usuário em 2026-10-30, no lugar da cópia do
+  (`-text` no `.gitattributes`: mistura de CRLF/LF e BOM, como estavam), **com as versões da pasta de cada servidor no lugar das
+  do `ServerResource`** (abaixo, T28). Escolha do usuário em 2026-10-30, no lugar da cópia do
   repositório `X2Server` (85 MB, com pastas por país e os valores da KOG: o servidor em produção tem nível máximo 67, URL de anúncio própria e arquivos a mais).
-- `<Servidor>/`: arquivos do original sem segredo (`config_ch.ini`) e templates `*.in`: `config_<x>_DEV.lua.in` (derivado do
+- `<Servidor>/`: nenhum `.lua` de dados (só os configs); arquivos do original sem segredo (`config_ch.ini`) e templates `*.in`: `config_<x>_DEV.lua.in` (derivado do
   `config_*_US_SERVICE.lua`, comentários traduzidos) e um `.dsn.in` por banco.
 
 ### Valores dos templates (cache do CMake)
@@ -79,12 +80,32 @@ LuaJIT passam pelo `lua_dofile` ([KNCSDK](../porte/kncsdk.md)), e os erros dos d
 **GameServer** (`runtime/GameServer`, 2026-10-31): `config_gs_DEV.lua.in` derivado do `config_gs_US_SERVICE.lua` de produção (que já não
 tinha `CF_XTRAP` nem HackShield), com a estatística por FTP desligada; `.dsn` do `Account`, `Game01`, `Statistics` e `ES_BILLING`
 (o de produção tinha `Game01`/`Game02` por grupo, os dois no mesmo banco); `config_gs.ini` como estava (a versão `V4.0326.5`).
-Os `.lua` soltos na pasta de produção do GameServer não são lidos por nada (o `KAutoPath` só procura nos `AddPath`).
+Os `.lua` soltos na pasta de produção do GameServer **eram lidos** e foram para o `ServerResource` (abaixo).
 
 **LoginServer** (`runtime/LoginServer`, 2026-10-31): `config_lg_DEV.lua.in` derivado do `config_lg_US_SERVICE.lua` (já sem a Nexon, que
-estava comentada), `.dsn` do `Account`, `Game01`, `Statistics` e `ES_BILLING` e o `config_lg.ini` como estava. O `RankingData.lua` lido
-é o do `ServerResource` (o da pasta de produção do LoginServer, com outra recompensa de Henir, não é lido). O `RefreshTimeBackup.ini`
+estava comentada), `.dsn` do `Account`, `Game01`, `Statistics` e `ES_BILLING` e o `config_lg.ini` como estava. O `RankingData.lua` da
+pasta de produção do LoginServer (recompensa de Henir até o 6º lugar, contra 3 no `ServerResource`) era o lido e foi para o `ServerResource`. O `RefreshTimeBackup.ini`
 (horário do próximo reset de cada ranking de Henir) é criado pelo servidor ao encerrar, na própria pasta, e não é versionado.
+
+## Scripts da pasta de cada servidor (2026-10-31, T28)
+
+O `KAutoPath` (`Common/KAutoPath.cpp`) procura um script **primeiro na pasta atual** e nas subpastas dela, e só depois nos `AddPath`.
+Em produção cada serviço rodava com a pasta atual na própria pasta (`nssm set ... AppDirectory C:\Elsword\<Servidor>\`,
+`_original-server/Install-Services.ps1`), então os `.lua` soltos ali **valiam no lugar** dos do `ServerResource`. O porte mantém a
+ordem de busca; os scripts ficam todos no `ServerResource`, com a versão da pasta do servidor, para o mesmo comportamento da produção.
+
+Comparação de 2026-10-31 (pasta do servidor × `ServerResource` × `KncWX2Server/ServerResource/US` do repositório `X2Server`, a base):
+
+| Situação | Arquivos | Feito |
+|---|---|---|
+| Diferentes do `ServerResource` | GameServer: `CashItemPrice`, `ClassChangeItem`, `ClassChangeMemo`, `ClassChangeQuest`, `ClassChangeSkill`, `ClassChangeTable`, `FieldData`, `ManufactureResultTable`, `MapData`, `PetData`, `RandomItemData`, `RandomItemMapping`, `RandomItemTable`, `RecommendUserTable`, `StatTable`; CenterServer: `DropTable`, `PaymentItemTable`, `SecretDungeonData`, `StaticDropTable`; LoginServer: `RankingData`; GlobalServer: `WorldMissionConfig` (só o fim de linha) | a versão da pasta do servidor substitui a do `ServerResource` (bytes intactos) |
+| Iguais ao `ServerResource` | os outros 11 do GameServer e 13 do CenterServer | nada |
+| Só na pasta do servidor, sem uso | `BoardBox`, `BoardBox2`, `CardTable`, `GlobalMissionConfig`, `MissEliosConfig` (o do GameServer e o do GlobalServer diferem) | não vêm: nenhum código, config ou script cita esses nomes. Rever o `MissEliosConfig` do GlobalServer quando ele for portado |
+
+Nem sempre a versão da pasta do servidor é a mais nova: em 9 arquivos o `ServerResource` era a base intacta e só a pasta do servidor tinha
+edições (`CashItemPrice` de 2012-02 contra 2011-06), mas no `StatTable` (classes da Ara, 2013-08 contra 2012-05), no `RandomItemData`,
+no `RandomItemMapping` (eventos até 2014-08) e no `PaymentItemTable` o `ServerResource` era mais novo e **nunca foi carregado** em
+produção. As versões substituídas ficam no histórico do git (o commit inicial do `runtime/ServerResource`) e no repositório `X2Server`.
 
 ## `tools/kom`
 

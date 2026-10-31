@@ -8,7 +8,7 @@ DropTable:AddStaticDropInfo
 {
 	DungeonID = 0,
 	Enable = True,
-	DropItemList = {{ 91620, 8 },{ 91630, 2 },{ 160773, 2 },},
+	DropItemList = {{ 91620, 8 },{ 91630, 2 },},
 }
 
 DropTable:AddStaticDropInfo

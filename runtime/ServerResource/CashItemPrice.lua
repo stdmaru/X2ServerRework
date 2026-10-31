@@ -1,4 +1,5 @@
-﻿-- #ifdef SERV_CASHITEM_RESOLVE_ADD
+﻿
+-- #ifdef SERV_CASHITEM_RESOLVE_ADD
 g_pCashItemManager:AddCashItemGroup(	10	,	210000222	)	-- 발렌타인 곰인형(1)
 g_pCashItemManager:AddCashItemResolveAdd(	10	,	210000223	,	1	,	100	)  -- 러블리 발렌타인 곰인형
 g_pCashItemManager:AddCashItemResolveAdd(	10	,	210000224	,	1	,	100	)  -- 발렌타인 러브링
@@ -1675,67 +1676,67 @@ g_pCashItemManager:AddCashItemPrice(	131187	,	2400	)
 g_pCashItemManager:AddCashItemPrice(	131188	,	5000	)
 
 
--- 111109/오현택/윈터 캐쥬얼 패키지
-g_pCashItemManager:AddCashItemPrice(	217150	,	8500	)	--	아이스 소드 (빨강)
-g_pCashItemManager:AddCashItemPrice(	217160	,	6000	)	--	겨울용 세미펑크룩 상의 (빨강)
-g_pCashItemManager:AddCashItemPrice(	217170	,	6000	)	--	겨울용 세미펑크룩 하의 (빨강)
-g_pCashItemManager:AddCashItemPrice(	217180	,	2800	)	--	겨울용 세미펑크룩 장갑 (빨강)
-g_pCashItemManager:AddCashItemPrice(	217190	,	2800	)	--	겨울용 세미펑크룩 신발 (빨강)
-g_pCashItemManager:AddCashItemPrice(	217200	,	6000	)	--	레이어컷 헤어 (회색)
-g_pCashItemManager:AddCashItemPrice(	217210	,	8500	)	--	아이스 소드 (파랑)
-g_pCashItemManager:AddCashItemPrice(	217220	,	6000	)	--	겨울용 세미펑크룩 상의 (파랑)
-g_pCashItemManager:AddCashItemPrice(	217230	,	6000	)	--	겨울용 세미펑크룩 하의 (파랑)
-g_pCashItemManager:AddCashItemPrice(	217240	,	2800	)	--	겨울용 세미펑크룩 장갑 (파랑)
-g_pCashItemManager:AddCashItemPrice(	217250	,	2800	)	--	겨울용 세미펑크룩 신발 (파랑)
-g_pCashItemManager:AddCashItemPrice(	217260	,	6000	)	--	레이어컷 헤어 (남색)
-g_pCashItemManager:AddCashItemPrice(	217270	,	8500	)	--	아이스 스태프 (분홍)
-g_pCashItemManager:AddCashItemPrice(	217280	,	6000	)	--	겨울용 래빗 코트 (분홍)
-g_pCashItemManager:AddCashItemPrice(	217290	,	6000	)	--	겨울용 래빗 스커트 (분홍)
-g_pCashItemManager:AddCashItemPrice(	217300	,	2800	)	--	겨울용 래빗 장갑 (분홍)
-g_pCashItemManager:AddCashItemPrice(	217310	,	2800	)	--	겨울용 래빗 부츠 (분홍)
-g_pCashItemManager:AddCashItemPrice(	217320	,	6000	)	--	롱 볼륨매직 헤어 (회갈색)
-g_pCashItemManager:AddCashItemPrice(	217330	,	8500	)	--	아이스 스태프 (회보라)
-g_pCashItemManager:AddCashItemPrice(	217340	,	6000	)	--	겨울용 래빗 코트 (회보라)
-g_pCashItemManager:AddCashItemPrice(	217350	,	6000	)	--	겨울용 래빗 스커트 (회보라)
-g_pCashItemManager:AddCashItemPrice(	217360	,	2800	)	--	겨울용 래빗 장갑 (회보라)
-g_pCashItemManager:AddCashItemPrice(	217370	,	2800	)	--	겨울용 래빗 부츠 (회보라)
-g_pCashItemManager:AddCashItemPrice(	217380	,	6000	)	--	롱 볼륨매직 헤어 (연두색)
-g_pCashItemManager:AddCashItemPrice(	217390	,	8500	)	--	아이스 보우 (노랑)
-g_pCashItemManager:AddCashItemPrice(	217400	,	6000	)	--	패딩 점퍼 (노랑)
-g_pCashItemManager:AddCashItemPrice(	217410	,	6000	)	--	레깅스 스커트 (노랑)
-g_pCashItemManager:AddCashItemPrice(	217420	,	2800	)	--	스웨터 장갑 (노랑)
-g_pCashItemManager:AddCashItemPrice(	217430	,	2800	)	--	어그 부츠 (노랑)
-g_pCashItemManager:AddCashItemPrice(	217440	,	6000	)	--	보브컷 헤어 (검정)
-g_pCashItemManager:AddCashItemPrice(	217450	,	8500	)	--	아이스 보우 (분홍)
-g_pCashItemManager:AddCashItemPrice(	217460	,	6000	)	--	패딩 점퍼 (분홍)
-g_pCashItemManager:AddCashItemPrice(	217470	,	6000	)	--	레깅스 스커트 (분홍)
-g_pCashItemManager:AddCashItemPrice(	217480	,	2800	)	--	스웨터 장갑 (분홍)
-g_pCashItemManager:AddCashItemPrice(	217490	,	2800	)	--	어그 부츠 (분홍)
-g_pCashItemManager:AddCashItemPrice(	217500	,	6000	)	--	보브컷 헤어 (노랑)
-g_pCashItemManager:AddCashItemPrice(	217510	,	8500	)	--	아이스 블레이드 (파랑)
-g_pCashItemManager:AddCashItemPrice(	217520	,	6000	)	--	마피아 패션 투 버튼 코트 (파랑)
-g_pCashItemManager:AddCashItemPrice(	217530	,	6000	)	--	마피아 패션 정장 하의 (파랑)
-g_pCashItemManager:AddCashItemPrice(	217540	,	2800	)	--	마피아 패션 양털 장갑 (파랑)
-g_pCashItemManager:AddCashItemPrice(	217550	,	2800	)	--	마피아 패션 구두 (파랑)
-g_pCashItemManager:AddCashItemPrice(	217560	,	6000	)	--	세미 롱 샤기컷 헤어 (파랑)
-g_pCashItemManager:AddCashItemPrice(	217570	,	8500	)	--	아이스 블레이드 (적갈색)
-g_pCashItemManager:AddCashItemPrice(	217580	,	6000	)	--	마피아 패션 투 버튼 코트 (적갈색)
-g_pCashItemManager:AddCashItemPrice(	217590	,	6000	)	--	마피아 패션 정장 하의 (적갈색)
-g_pCashItemManager:AddCashItemPrice(	217600	,	2800	)	--	마피아 패션 양털 장갑 (적갈색)
-g_pCashItemManager:AddCashItemPrice(	217610	,	2800	)	--	마피아 패션 구두 (적갈색)
-g_pCashItemManager:AddCashItemPrice(	217620	,	6000	)	--	세미 롱 샤기컷 헤어 (회색)
-g_pCashItemManager:AddCashItemPrice(	217630	,	8500	)	--	수정 램프 (빨강)
-g_pCashItemManager:AddCashItemPrice(	217640	,	6000	)	--	겨울용 투 버튼 코트 (빨강)
-g_pCashItemManager:AddCashItemPrice(	217650	,	6000	)	--	겨울용 스커트 (빨강)
-g_pCashItemManager:AddCashItemPrice(	217660	,	2800	)	--	겨울용 털 장갑 (빨강)
-g_pCashItemManager:AddCashItemPrice(	217670	,	2800	)	--	겨울용 털 부츠 (빨강)
-g_pCashItemManager:AddCashItemPrice(	217680	,	6000	)	--	롱 웨이브 헤어 (노랑)
-g_pCashItemManager:AddCashItemPrice(	217690	,	8500	)	--	수정 램프 (노랑)
-g_pCashItemManager:AddCashItemPrice(	217700	,	6000	)	--	겨울용 투 버튼 코트 (노랑)
-g_pCashItemManager:AddCashItemPrice(	217710	,	6000	)	--	겨울용 스커트 (노랑)
-g_pCashItemManager:AddCashItemPrice(	217720	,	2800	)	--	겨울용 털 장갑 (노랑)
-g_pCashItemManager:AddCashItemPrice(	217730	,	2800	)	--	겨울용 털 부츠 (노랑)
-g_pCashItemManager:AddCashItemPrice(	217740	,	6000	)	--	롱 웨이브 헤어 (검정)
+-- 추가
+g_pCashItemManager:AddCashItemPrice(	217150	,	7000	)
+g_pCashItemManager:AddCashItemPrice(	217160	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	217170	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	217180	,	2400	)
+g_pCashItemManager:AddCashItemPrice(	217190	,	2400	)
+g_pCashItemManager:AddCashItemPrice(	217200	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	217210	,	7000	)
+g_pCashItemManager:AddCashItemPrice(	217220	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	217230	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	217240	,	2400	)
+g_pCashItemManager:AddCashItemPrice(	217250	,	2400	)
+g_pCashItemManager:AddCashItemPrice(	217260	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	217270	,	7000	)
+g_pCashItemManager:AddCashItemPrice(	217280	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	217290	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	217300	,	2400	)
+g_pCashItemManager:AddCashItemPrice(	217310	,	2400	)
+g_pCashItemManager:AddCashItemPrice(	217320	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	217330	,	7000	)
+g_pCashItemManager:AddCashItemPrice(	217340	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	217350	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	217360	,	2400	)
+g_pCashItemManager:AddCashItemPrice(	217370	,	2400	)
+g_pCashItemManager:AddCashItemPrice(	217380	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	217390	,	7000	)
+g_pCashItemManager:AddCashItemPrice(	217400	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	217410	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	217420	,	2400	)
+g_pCashItemManager:AddCashItemPrice(	217430	,	2400	)
+g_pCashItemManager:AddCashItemPrice(	217440	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	217450	,	7000	)
+g_pCashItemManager:AddCashItemPrice(	217460	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	217470	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	217480	,	2400	)
+g_pCashItemManager:AddCashItemPrice(	217490	,	2400	)
+g_pCashItemManager:AddCashItemPrice(	217500	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	217510	,	7000	)
+g_pCashItemManager:AddCashItemPrice(	217520	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	217530	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	217540	,	2400	)
+g_pCashItemManager:AddCashItemPrice(	217550	,	2400	)
+g_pCashItemManager:AddCashItemPrice(	217560	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	217570	,	7000	)
+g_pCashItemManager:AddCashItemPrice(	217580	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	217590	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	217600	,	2400	)
+g_pCashItemManager:AddCashItemPrice(	217610	,	2400	)
+g_pCashItemManager:AddCashItemPrice(	217620	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	217630	,	7000	)
+g_pCashItemManager:AddCashItemPrice(	217640	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	217650	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	217660	,	2400	)
+g_pCashItemManager:AddCashItemPrice(	217670	,	2400	)
+g_pCashItemManager:AddCashItemPrice(	217680	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	217690	,	7000	)
+g_pCashItemManager:AddCashItemPrice(	217700	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	217710	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	217720	,	2400	)
+g_pCashItemManager:AddCashItemPrice(	217730	,	2400	)
+g_pCashItemManager:AddCashItemPrice(	217740	,	5000	)
 g_pCashItemManager:AddCashItemPrice(	217880	,	2000	)
 g_pCashItemManager:AddCashItemPrice(	217890	,	5000	)
 g_pCashItemManager:AddCashItemPrice(	131385	,	5000	)
@@ -3831,7 +3832,7 @@ g_pCashItemManager:AddCashItemPrice(	234200	,	5000	)	--	빈티지 안경
 g_pCashItemManager:AddCashItemPrice(	234210	,	5000	)	--	패셔니스트 안경
 g_pCashItemManager:AddCashItemPrice(	234220	,	5000	)	--	학구파 안경
 g_pCashItemManager:AddCashItemPrice(	234230	,	5000	)	--	반장 안경
-g_pCashItemManager:AddCashItemPrice(	232170	,	3000	)	--	풀잎 나비 날개	
+g_pCashItemManager:AddCashItemPrice(	232170	,	5000	)	--	풀잎 나비 날개	
 g_pCashItemManager:AddCashItemPrice(	232180	,	3000	)	--	꽃잎 나비 날개	
 
 -- 추가 8/18 김민성
@@ -3856,9 +3857,9 @@ g_pCashItemManager:AddCashItemPrice(	237210	,	5000	)    -- 	가방 속의 고양
 g_pCashItemManager:AddCashItemPrice(	237220	,	5000	)    -- 	가방 속의 고양이(샴)
 g_pCashItemManager:AddCashItemPrice(	237230	,	5000	)    -- 	가방 속의 고양이(봄베이)
 g_pCashItemManager:AddCashItemPrice(	237240	,	5000	)    -- 	머리 위의 고양이(코숏)
-g_pCashItemManager:AddCashItemPrice(	237250	,	5000	)    -- 	머리 위의 고양이(터키쉬)
-g_pCashItemManager:AddCashItemPrice(	237260	,	5000	)    -- 	머리 위의 고양이(샴)
-g_pCashItemManager:AddCashItemPrice(	237270	,	5000	)    -- 	머리 위의 고양이(봄베이)
+g_pCashItemManager:AddCashItemPrice(	237250	,	6900	)    -- 	머리 위의 고양이(터키쉬)
+g_pCashItemManager:AddCashItemPrice(	237260	,	6900	)    -- 	머리 위의 고양이(샴)
+g_pCashItemManager:AddCashItemPrice(	237270	,	6900	)    -- 	머리 위의 고양이(봄베이)
 
 -- 추가 9/7 김민성
 g_pCashItemManager:AddCashItemPrice(	237350	,	9000	)   --	엘소드 2ne1 키치룩 St. 메가소드
@@ -5292,10 +5293,10 @@ g_pCashItemManager:AddCashItemPrice(	81607	,	7000	) --	홀리 유니콘 노블 �
 g_pCashItemManager:AddCashItemPrice(	81608	,	7000	) --	홀리 유니콘 노블 블레이드
 g_pCashItemManager:AddCashItemPrice(	81609	,	7000	) --	홀리 유니콘 노블 기어
 g_pCashItemManager:AddCashItemPrice(	81610	,	7000	) --	홀리 유니콘 노블 캐논
-g_pCashItemManager:AddCashItemPrice(	250660	,	5000	) --	불꽃놀이(한 여름 밤의 꿈)
-g_pCashItemManager:AddCashItemPrice(	250670	,	5000	) --	불꽃놀이(뜨거운 추억)
-g_pCashItemManager:AddCashItemPrice(	250680	,	5000	) --	불꽃놀이(밤바다의 추억)
-g_pCashItemManager:AddCashItemPrice(	250690	,	5000	) --	불꽃놀이(추억은 불꽃 불꽃)
+g_pCashItemManager:AddCashItemPrice(	250660	,	6900	) --	불꽃놀이(한 여름 밤의 꿈)
+g_pCashItemManager:AddCashItemPrice(	250670	,	6900	) --	불꽃놀이(뜨거운 추억)
+g_pCashItemManager:AddCashItemPrice(	250680	,	6900	) --	불꽃놀이(밤바다의 추억)
+g_pCashItemManager:AddCashItemPrice(	250690	,	6900	) --	불꽃놀이(추억은 불꽃 불꽃)
 
 
 -- 추가 5/16 박세훈
@@ -8230,1160 +8231,6 @@ g_pCashItemManager:AddCashItemPrice(	133532	,	5000	) --	로열 메이드-블랙 
 g_pCashItemManager:AddCashItemPrice(	133533	,	5000	) --	로열 메이드 블랙 헤드드레스(아라)
 g_pCashItemManager:AddCashItemPrice(	133534	,	5000	) --	로열 배틀 블랙 미니미(아라)
 
---추가 8/20 우원식
-g_pCashItemManager:AddCashItemPrice(	271686	,	9900	) --	엘소드 돌아온 크레용 팝 (레드)
-g_pCashItemManager:AddCashItemPrice(	271687	,	9900	) --	아이샤 돌아온 크레용 팝 (레드)
-g_pCashItemManager:AddCashItemPrice(	271688	,	9900	) --	레나 돌아온 크레용 팝 (레드)
-g_pCashItemManager:AddCashItemPrice(	271689	,	9900	) --	레이븐 돌아온 크레용 팝 (레드)
-g_pCashItemManager:AddCashItemPrice(	271690	,	9900	) --	이브 돌아온 크레용 팝 (레드)
-g_pCashItemManager:AddCashItemPrice(	271691	,	9900	) --	청 돌아온 크레용 팝 (레드)
-g_pCashItemManager:AddCashItemPrice(	271692	,	9900	) --	아라 돌아온 크레용 팝 (레드)
-g_pCashItemManager:AddCashItemPrice(	271693	,	9900	) --	엘리시스 돌아온 크레용 팝 (레드)
-g_pCashItemManager:AddCashItemPrice(	271694	,	5000	) --	엘소드 용팝's 핼멧 (레드)
-g_pCashItemManager:AddCashItemPrice(	271695	,	5000	) --	아이샤 용팝's 핼멧 (레드)
-g_pCashItemManager:AddCashItemPrice(	271696	,	5000	) --	레나 용팝's 핼멧 (레드)
-g_pCashItemManager:AddCashItemPrice(	271697	,	5000	) --	레이븐 용팝's 핼멧 (레드)
-g_pCashItemManager:AddCashItemPrice(	271698	,	5000	) --	이브 용팝's 핼멧 (레드)
-g_pCashItemManager:AddCashItemPrice(	271699	,	5000	) --	청 용팝's 핼멧 (레드)
-g_pCashItemManager:AddCashItemPrice(	271700	,	5000	) --	아라 용팝's 핼멧 (레드)
-g_pCashItemManager:AddCashItemPrice(	271701	,	5000	) --	엘리시스 용팝's 핼멧 (레드)
-g_pCashItemManager:AddCashItemPrice(	271702	,	9900	) --	엘소드 돌아온 크레용 팝 (블루)
-g_pCashItemManager:AddCashItemPrice(	271703	,	9900	) --	아이샤 돌아온 크레용 팝 (블루)
-g_pCashItemManager:AddCashItemPrice(	271704	,	9900	) --	레나 돌아온 크레용 팝 (블루)
-g_pCashItemManager:AddCashItemPrice(	271705	,	9900	) --	레이븐 돌아온 크레용 팝 (블루)
-g_pCashItemManager:AddCashItemPrice(	271706	,	9900	) --	이브 돌아온 크레용 팝 (블루)
-g_pCashItemManager:AddCashItemPrice(	271707	,	9900	) --	청 돌아온 크레용 팝 (블루)
-g_pCashItemManager:AddCashItemPrice(	271708	,	9900	) --	아라 돌아온 크레용 팝 (블루)
-g_pCashItemManager:AddCashItemPrice(	271709	,	9900	) --	엘리시스 돌아온 크레용 팝 (블루)
-g_pCashItemManager:AddCashItemPrice(	271710	,	5000	) --	엘소드 용팝's 핼멧 (블루)
-g_pCashItemManager:AddCashItemPrice(	271711	,	5000	) --	아이샤 용팝's 핼멧 (블루)
-g_pCashItemManager:AddCashItemPrice(	271712	,	5000	) --	레나 용팝's 핼멧 (블루)
-g_pCashItemManager:AddCashItemPrice(	271713	,	5000	) --	레이븐 용팝's 핼멧 (블루)
-g_pCashItemManager:AddCashItemPrice(	271714	,	5000	) --	이브 용팝's 핼멧 (블루)
-g_pCashItemManager:AddCashItemPrice(	271715	,	5000	) --	청 용팝's 핼멧 (블루)
-g_pCashItemManager:AddCashItemPrice(	271716	,	5000	) --	아라 용팝's 핼멧 (블루)
-g_pCashItemManager:AddCashItemPrice(	271717	,	5000	) --	엘리시스 용팝's 핼멧 (블루)
-
---추가 9/5 우원식
-g_pCashItemManager:AddCashItemPrice(	133538	,	7000	) --	로열 메이드-블루 문 스피어(엘리시스)
-g_pCashItemManager:AddCashItemPrice(	133539	,	5000	) --	로열 메이드-블루 문 상의(엘리시스)
-g_pCashItemManager:AddCashItemPrice(	133540	,	5000	) --	로열 메이드-블루 문 하의(엘리시스)
-g_pCashItemManager:AddCashItemPrice(	133541	,	2400	) --	로열 메이드-블루 문 장갑(엘리시스)
-g_pCashItemManager:AddCashItemPrice(	133542	,	2400	) --	로열 메이드-블루 문 신발(엘리시스)
-g_pCashItemManager:AddCashItemPrice(	133543	,	5000	) --	로열 메이드-블루 문 헤어(엘리시스)
-g_pCashItemManager:AddCashItemPrice(	133544	,	5000	) --	로열 메이드 헤드드레스(엘리시스)
-g_pCashItemManager:AddCashItemPrice(	133545	,	5000	) --	로열 배틀 미니미(엘리시스)
-g_pCashItemManager:AddCashItemPrice(	133546	,	7000	) --	로열 메이드-다크 폴 스피어(엘리시스)
-g_pCashItemManager:AddCashItemPrice(	133547	,	5000	) --	로열 메이드-다크 폴 상의(엘리시스)
-g_pCashItemManager:AddCashItemPrice(	133548	,	5000	) --	로열 메이드-다크 폴 하의(엘리시스)
-g_pCashItemManager:AddCashItemPrice(	133549	,	2400	) --	로열 메이드-다크 폴 장갑(엘리시스)
-g_pCashItemManager:AddCashItemPrice(	133550	,	2400	) --	로열 메이드-다크 폴 신발(엘리시스)
-g_pCashItemManager:AddCashItemPrice(	133551	,	5000	) --	로열 메이드-다크 폴 헤어(엘리시스)
-g_pCashItemManager:AddCashItemPrice(	133552	,	5000	) --	로열 메이드 블랙 헤드드레스(엘리시스)
-g_pCashItemManager:AddCashItemPrice(	133553	,	5000	) --	로열 배틀 블랙 미니미(엘리시스)
-g_pCashItemManager:AddCashItemPrice(	88430	,	7000	) --	아크데빌 스피어 (아라)
-g_pCashItemManager:AddCashItemPrice(	88431	,	5000	) --	아크데빌 상의 (아라)
-g_pCashItemManager:AddCashItemPrice(	88432	,	5000	) --	아크데빌 하의 (아라)
-g_pCashItemManager:AddCashItemPrice(	88433	,	2400	) --	아크데빌 장갑 (아라)
-g_pCashItemManager:AddCashItemPrice(	88434	,	2400	) --	아크데빌 신발 (아라)
-g_pCashItemManager:AddCashItemPrice(	88435	,	5000	) --	아크데빌 헤어 (아라)
-g_pCashItemManager:AddCashItemPrice(	88436	,	5000	) --	아크데빌 윙 (아라)
-g_pCashItemManager:AddCashItemPrice(	88437	,	5000	) --	아크데빌 아이 (아라)
-g_pCashItemManager:AddCashItemPrice(	88438	,	5000	) --	아크데빌 윙츠 (아라)
-g_pCashItemManager:AddCashItemPrice(	271806	,	7000	) --	엘소드 엘리오스 느와르 무기 (하양)
-g_pCashItemManager:AddCashItemPrice(	271807	,	5000	) --	엘소드 엘리오스 느와르 상의 (하양)
-g_pCashItemManager:AddCashItemPrice(	271808	,	5000	) --	엘소드 엘리오스 느와르 하의 (하양)
-g_pCashItemManager:AddCashItemPrice(	271809	,	2400	) --	엘소드 엘리오스 느와르 장갑 (하양)
-g_pCashItemManager:AddCashItemPrice(	271810	,	2400	) --	엘소드 엘리오스 느와르 신발 (하양)
-g_pCashItemManager:AddCashItemPrice(	271811	,	5000	) --	엘소드 엘리오스 느와르 헤어 (빨강)
-g_pCashItemManager:AddCashItemPrice(	271812	,	7000	) --	엘소드 엘리오스 느와르 무기 (빨강)
-g_pCashItemManager:AddCashItemPrice(	271813	,	5000	) --	엘소드 엘리오스 느와르 상의 (빨강)
-g_pCashItemManager:AddCashItemPrice(	271814	,	5000	) --	엘소드 엘리오스 느와르 하의 (빨강)
-g_pCashItemManager:AddCashItemPrice(	271815	,	2400	) --	엘소드 엘리오스 느와르 장갑 (빨강)
-g_pCashItemManager:AddCashItemPrice(	271816	,	2400	) --	엘소드 엘리오스 느와르 신발 (빨강)
-g_pCashItemManager:AddCashItemPrice(	271817	,	5000	) --	엘소드 엘리오스 느와르 헤어 (검정)
-g_pCashItemManager:AddCashItemPrice(	271818	,	7000	) --	아이샤 엘리오스 느와르 무기 (하양)
-g_pCashItemManager:AddCashItemPrice(	271819	,	5000	) --	아이샤 엘리오스 느와르 상의 (하양)
-g_pCashItemManager:AddCashItemPrice(	271820	,	5000	) --	아이샤 엘리오스 느와르 하의 (하양)
-g_pCashItemManager:AddCashItemPrice(	271821	,	2400	) --	아이샤 엘리오스 느와르 장갑 (하양)
-g_pCashItemManager:AddCashItemPrice(	271822	,	2400	) --	아이샤 엘리오스 느와르 신발 (하양)
-g_pCashItemManager:AddCashItemPrice(	271823	,	5000	) --	아이샤 엘리오스 느와르 헤어 (보라)
-g_pCashItemManager:AddCashItemPrice(	271824	,	7000	) --	아이샤 엘리오스 느와르 무기 (검정)
-g_pCashItemManager:AddCashItemPrice(	271825	,	5000	) --	아이샤 엘리오스 느와르 상의 (검정)
-g_pCashItemManager:AddCashItemPrice(	271826	,	5000	) --	아이샤 엘리오스 느와르 하의 (검정)
-g_pCashItemManager:AddCashItemPrice(	271827	,	2400	) --	아이샤 엘리오스 느와르 장갑 (검정)
-g_pCashItemManager:AddCashItemPrice(	271828	,	2400	) --	아이샤 엘리오스 느와르 신발 (검정)
-g_pCashItemManager:AddCashItemPrice(	271829	,	5000	) --	아이샤 엘리오스 느와르 헤어 (검정)
-g_pCashItemManager:AddCashItemPrice(	271830	,	7000	) --	레나 엘리오스 느와르 무기 (하양)
-g_pCashItemManager:AddCashItemPrice(	271831	,	5000	) --	레나 엘리오스 느와르 상의 (하양)
-g_pCashItemManager:AddCashItemPrice(	271832	,	5000	) --	레나 엘리오스 느와르 하의 (하양)
-g_pCashItemManager:AddCashItemPrice(	271833	,	2400	) --	레나 엘리오스 느와르 장갑 (하양)
-g_pCashItemManager:AddCashItemPrice(	271834	,	2400	) --	레나 엘리오스 느와르 신발 (하양)
-g_pCashItemManager:AddCashItemPrice(	271835	,	5000	) --	레나 엘리오스 느와르 헤어 (초록)
-g_pCashItemManager:AddCashItemPrice(	271836	,	7000	) --	레나 엘리오스 느와르 무기 (초록)
-g_pCashItemManager:AddCashItemPrice(	271837	,	5000	) --	레나 엘리오스 느와르 상의 (초록)
-g_pCashItemManager:AddCashItemPrice(	271838	,	5000	) --	레나 엘리오스 느와르 하의 (초록)
-g_pCashItemManager:AddCashItemPrice(	271839	,	2400	) --	레나 엘리오스 느와르 장갑 (초록)
-g_pCashItemManager:AddCashItemPrice(	271840	,	2400	) --	레나 엘리오스 느와르 신발 (초록)
-g_pCashItemManager:AddCashItemPrice(	271841	,	5000	) --	레나 엘리오스 느와르 헤어 (검정)
-g_pCashItemManager:AddCashItemPrice(	271842	,	7000	) --	레이븐 엘리오스 느와르 무기 (검정)
-g_pCashItemManager:AddCashItemPrice(	271843	,	5000	) --	레이븐 엘리오스 느와르 상의 (검정)
-g_pCashItemManager:AddCashItemPrice(	271844	,	5000	) --	레이븐 엘리오스 느와르 하의 (검정)
-g_pCashItemManager:AddCashItemPrice(	271845	,	2400	) --	레이븐 엘리오스 느와르 장갑 (검정)
-g_pCashItemManager:AddCashItemPrice(	271846	,	2400	) --	레이븐 엘리오스 느와르 신발 (검정)
-g_pCashItemManager:AddCashItemPrice(	271847	,	5000	) --	레이븐 엘리오스 느와르 헤어 (검정)
-g_pCashItemManager:AddCashItemPrice(	271848	,	7000	) --	레이븐 엘리오스 느와르 무기 (빨강)
-g_pCashItemManager:AddCashItemPrice(	271849	,	5000	) --	레이븐 엘리오스 느와르 상의 (빨강)
-g_pCashItemManager:AddCashItemPrice(	271850	,	5000	) --	레이븐 엘리오스 느와르 하의 (빨강)
-g_pCashItemManager:AddCashItemPrice(	271851	,	2400	) --	레이븐 엘리오스 느와르 장갑 (빨강)
-g_pCashItemManager:AddCashItemPrice(	271852	,	2400	) --	레이븐 엘리오스 느와르 신발 (빨강)
-g_pCashItemManager:AddCashItemPrice(	271853	,	5000	) --	레이븐 엘리오스 느와르 헤어 (빨강)
-g_pCashItemManager:AddCashItemPrice(	271854	,	7000	) --	엘리시스 엘리오스 느와르 무기 (하양)
-g_pCashItemManager:AddCashItemPrice(	271855	,	5000	) --	엘리시스 엘리오스 느와르 상의 (하양)
-g_pCashItemManager:AddCashItemPrice(	271856	,	5000	) --	엘리시스 엘리오스 느와르 하의 (하양)
-g_pCashItemManager:AddCashItemPrice(	271857	,	2400	) --	엘리시스 엘리오스 느와르 장갑 (하양)
-g_pCashItemManager:AddCashItemPrice(	271858	,	2400	) --	엘리시스 엘리오스 느와르 신발 (하양)
-g_pCashItemManager:AddCashItemPrice(	271859	,	5000	) --	엘리시스 엘리오스 느와르 헤어 (빨강)
-g_pCashItemManager:AddCashItemPrice(	271860	,	7000	) --	엘리시스 엘리오스 느와르 무기 (빨강)
-g_pCashItemManager:AddCashItemPrice(	271861	,	5000	) --	엘리시스 엘리오스 느와르 상의 (빨강)
-g_pCashItemManager:AddCashItemPrice(	271862	,	5000	) --	엘리시스 엘리오스 느와르 하의 (빨강)
-g_pCashItemManager:AddCashItemPrice(	271863	,	2400	) --	엘리시스 엘리오스 느와르 장갑 (빨강)
-g_pCashItemManager:AddCashItemPrice(	271864	,	2400	) --	엘리시스 엘리오스 느와르 신발 (빨강)
-g_pCashItemManager:AddCashItemPrice(	271865	,	5000	) --	엘리시스 엘리오스 느와르 헤어 (노랑)
-g_pCashItemManager:AddCashItemPrice(	271866	,	7000	) --	이브 엘리오스 느와르 무기 (하양)
-g_pCashItemManager:AddCashItemPrice(	271867	,	5000	) --	이브 엘리오스 느와르 상의 (하양)
-g_pCashItemManager:AddCashItemPrice(	271868	,	5000	) --	이브 엘리오스 느와르 하의 (하양)
-g_pCashItemManager:AddCashItemPrice(	271869	,	2400	) --	이브 엘리오스 느와르 장갑 (하양)
-g_pCashItemManager:AddCashItemPrice(	271870	,	2400	) --	이브 엘리오스 느와르 신발 (하양)
-g_pCashItemManager:AddCashItemPrice(	271871	,	5000	) --	이브 엘리오스 느와르 헤어 (은색)
-g_pCashItemManager:AddCashItemPrice(	271872	,	7000	) --	이브 엘리오스 느와르 무기 (분홍)
-g_pCashItemManager:AddCashItemPrice(	271873	,	5000	) --	이브 엘리오스 느와르 상의 (분홍)
-g_pCashItemManager:AddCashItemPrice(	271874	,	5000	) --	이브 엘리오스 느와르 하의 (분홍)
-g_pCashItemManager:AddCashItemPrice(	271875	,	2400	) --	이브 엘리오스 느와르 장갑 (분홍)
-g_pCashItemManager:AddCashItemPrice(	271876	,	2400	) --	이브 엘리오스 느와르 신발 (분홍)
-g_pCashItemManager:AddCashItemPrice(	271877	,	5000	) --	이브 엘리오스 느와르 헤어 (검정)
-g_pCashItemManager:AddCashItemPrice(	271878	,	7000	) --	청 엘리오스 느와르 무기 (하양)
-g_pCashItemManager:AddCashItemPrice(	271879	,	5000	) --	청 엘리오스 느와르 상의 (하양)
-g_pCashItemManager:AddCashItemPrice(	271880	,	5000	) --	청 엘리오스 느와르 하의 (하양)
-g_pCashItemManager:AddCashItemPrice(	271881	,	2400	) --	청 엘리오스 느와르 장갑 (하양)
-g_pCashItemManager:AddCashItemPrice(	271882	,	2400	) --	청 엘리오스 느와르 신발 (하양)
-g_pCashItemManager:AddCashItemPrice(	271883	,	5000	) --	청 엘리오스 느와르 헤어 (연갈)
-g_pCashItemManager:AddCashItemPrice(	271884	,	7000	) --	청 엘리오스 느와르 무기 (파랑)
-g_pCashItemManager:AddCashItemPrice(	271885	,	5000	) --	청 엘리오스 느와르 상의 (파랑)
-g_pCashItemManager:AddCashItemPrice(	271886	,	5000	) --	청 엘리오스 느와르 하의 (파랑)
-g_pCashItemManager:AddCashItemPrice(	271887	,	2400	) --	청 엘리오스 느와르 장갑 (파랑)
-g_pCashItemManager:AddCashItemPrice(	271888	,	2400	) --	청 엘리오스 느와르 신발 (파랑)
-g_pCashItemManager:AddCashItemPrice(	271889	,	5000	) --	청 엘리오스 느와르 헤어 (검정)
-g_pCashItemManager:AddCashItemPrice(	271890	,	7000	) --	아라 엘리오스 느와르 무기 (하양)
-g_pCashItemManager:AddCashItemPrice(	271891	,	5000	) --	아라 엘리오스 느와르 상의 (하양)
-g_pCashItemManager:AddCashItemPrice(	271892	,	5000	) --	아라 엘리오스 느와르 하의 (하양)
-g_pCashItemManager:AddCashItemPrice(	271893	,	2400	) --	아라 엘리오스 느와르 장갑 (하양)
-g_pCashItemManager:AddCashItemPrice(	271894	,	2400	) --	아라 엘리오스 느와르 신발 (하양)
-g_pCashItemManager:AddCashItemPrice(	271895	,	5000	) --	아라 엘리오스 느와르 헤어 (검정)
-g_pCashItemManager:AddCashItemPrice(	271896	,	7000	) --	아라 엘리오스 느와르 무기 (주황)
-g_pCashItemManager:AddCashItemPrice(	271897	,	5000	) --	아라 엘리오스 느와르 상의 (주황)
-g_pCashItemManager:AddCashItemPrice(	271898	,	5000	) --	아라 엘리오스 느와르 하의 (주황)
-g_pCashItemManager:AddCashItemPrice(	271899	,	2400	) --	아라 엘리오스 느와르 장갑 (주황)
-g_pCashItemManager:AddCashItemPrice(	271900	,	2400	) --	아라 엘리오스 느와르 신발 (주황)
-g_pCashItemManager:AddCashItemPrice(	271901	,	5000	) --	아라 엘리오스 느와르 헤어 (진갈)
-g_pCashItemManager:AddCashItemPrice(	272092	,	9900	) --	엘소드 달묘전설 (하양)
-g_pCashItemManager:AddCashItemPrice(	272093	,	9900	) --	아이샤 달묘전설 (하양)
-g_pCashItemManager:AddCashItemPrice(	272094	,	9900	) --	레나 달묘전설 (하양)
-g_pCashItemManager:AddCashItemPrice(	272095	,	9900	) --	레이븐 달묘전설 (하양)
-g_pCashItemManager:AddCashItemPrice(	272096	,	9900	) --	엘리시스 달묘전설 (하양)
-g_pCashItemManager:AddCashItemPrice(	272097	,	9900	) --	이브 달묘전설 (하양)
-g_pCashItemManager:AddCashItemPrice(	272098	,	9900	) --	청 달묘전설 (하양)
-g_pCashItemManager:AddCashItemPrice(	272099	,	9900	) --	아라 달묘전설 (하양)
-g_pCashItemManager:AddCashItemPrice(	272100	,	9900	) --	엘소드 달묘전설 (검정)
-g_pCashItemManager:AddCashItemPrice(	272101	,	9900	) --	아이샤 달묘전설 (검정)
-g_pCashItemManager:AddCashItemPrice(	272102	,	9900	) --	레나 달묘전설 (검정)
-g_pCashItemManager:AddCashItemPrice(	272103	,	9900	) --	레이븐 달묘전설 (검정)
-g_pCashItemManager:AddCashItemPrice(	272104	,	9900	) --	엘리시스 달묘전설 (검정)
-g_pCashItemManager:AddCashItemPrice(	272105	,	9900	) --	이브 달묘전설 (검정)
-g_pCashItemManager:AddCashItemPrice(	272106	,	9900	) --	청 달묘전설 (검정)
-g_pCashItemManager:AddCashItemPrice(	272107	,	9900	) --	아라 달묘전설 (검정)
-g_pCashItemManager:AddCashItemPrice(	271922	,	7000	) --	엘소드 스타 아카데미 동복 대검(노랑)
-g_pCashItemManager:AddCashItemPrice(	271923	,	5000	) --	엘소드 스타 아카데미 동복 상의(노랑)
-g_pCashItemManager:AddCashItemPrice(	271924	,	5000	) --	엘소드 스타 아카데미 동복 하의(노랑)
-g_pCashItemManager:AddCashItemPrice(	271925	,	2400	) --	엘소드 스타 아카데미 동복 장갑(노랑)
-g_pCashItemManager:AddCashItemPrice(	271926	,	2400	) --	엘소드 스타 아카데미 동복 신발(노랑)
-g_pCashItemManager:AddCashItemPrice(	271927	,	5000	) --	엘소드 스타 아카데미 동복 헤어 (검정)
-g_pCashItemManager:AddCashItemPrice(	271928	,	7000	) --	아이샤 스타 아카데미 동복 스태프(노랑)
-g_pCashItemManager:AddCashItemPrice(	271929	,	5000	) --	아이샤 스타 아카데미 동복 상의(노랑)
-g_pCashItemManager:AddCashItemPrice(	271930	,	5000	) --	아이샤 스타 아카데미 동복 하의(노랑)
-g_pCashItemManager:AddCashItemPrice(	271931	,	2400	) --	아이샤 스타 아카데미 동복 장갑(노랑)
-g_pCashItemManager:AddCashItemPrice(	271932	,	2400	) --	아이샤 스타 아카데미 동복 신발(노랑)
-g_pCashItemManager:AddCashItemPrice(	271933	,	5000	) --	아이샤 스타 아카데미 동복 헤어 (검정)
-g_pCashItemManager:AddCashItemPrice(	271934	,	7000	) --	레나 스타 아카데미 동복 활(노랑)
-g_pCashItemManager:AddCashItemPrice(	271935	,	5000	) --	레나 스타 아카데미 동복 상의(노랑)
-g_pCashItemManager:AddCashItemPrice(	271936	,	5000	) --	레나 스타 아카데미 동복 하의(노랑)
-g_pCashItemManager:AddCashItemPrice(	271937	,	2400	) --	레나 스타 아카데미 동복 장갑(노랑)
-g_pCashItemManager:AddCashItemPrice(	271938	,	2400	) --	레나 스타 아카데미 동복 신발(노랑)
-g_pCashItemManager:AddCashItemPrice(	271939	,	5000	) --	레나 스타 아카데미 동복 헤어 (검정)
-g_pCashItemManager:AddCashItemPrice(	271940	,	7000	) --	레이븐 스타 아카데미 동복 장검(노랑)
-g_pCashItemManager:AddCashItemPrice(	271941	,	5000	) --	레이븐 스타 아카데미 동복 상의(노랑)
-g_pCashItemManager:AddCashItemPrice(	271942	,	5000	) --	레이븐 스타 아카데미 동복 하의(노랑)
-g_pCashItemManager:AddCashItemPrice(	271943	,	2400	) --	레이븐 스타 아카데미 동복 장갑(노랑)
-g_pCashItemManager:AddCashItemPrice(	271944	,	2400	) --	레이븐 스타 아카데미 동복 신발(노랑)
-g_pCashItemManager:AddCashItemPrice(	271945	,	5000	) --	레이븐 스타 아카데미 동복 헤어 (검정)
-g_pCashItemManager:AddCashItemPrice(	271946	,	7000	) --	엘리시스 스타 아카데미 동복 양손검(노랑)
-g_pCashItemManager:AddCashItemPrice(	271947	,	5000	) --	엘리시스 스타 아카데미 동복 상의(노랑)
-g_pCashItemManager:AddCashItemPrice(	271948	,	5000	) --	엘리시스 스타 아카데미 동복 하의(노랑)
-g_pCashItemManager:AddCashItemPrice(	271949	,	2400	) --	엘리시스 스타 아카데미 동복 장갑(노랑)
-g_pCashItemManager:AddCashItemPrice(	271950	,	2400	) --	엘리시스 스타 아카데미 동복 신발(노랑)
-g_pCashItemManager:AddCashItemPrice(	271951	,	5000	) --	엘리시스 스타 아카데미 동복 헤어 (검정)
-g_pCashItemManager:AddCashItemPrice(	271952	,	7000	) --	이브 스타 아카데미 동복 기어(노랑)
-g_pCashItemManager:AddCashItemPrice(	271953	,	5000	) --	이브 스타 아카데미 동복 상의(노랑)
-g_pCashItemManager:AddCashItemPrice(	271954	,	5000	) --	이브 스타 아카데미 동복 하의(노랑)
-g_pCashItemManager:AddCashItemPrice(	271955	,	2400	) --	이브 스타 아카데미 동복 장갑(노랑)
-g_pCashItemManager:AddCashItemPrice(	271956	,	2400	) --	이브 스타 아카데미 동복 신발(노랑)
-g_pCashItemManager:AddCashItemPrice(	271957	,	5000	) --	이브 스타 아카데미 동복 헤어 (검정)
-g_pCashItemManager:AddCashItemPrice(	271958	,	7000	) --	청 스타 아카데미 동복 철포(노랑)
-g_pCashItemManager:AddCashItemPrice(	271959	,	5000	) --	청 스타 아카데미 동복 상의(노랑)
-g_pCashItemManager:AddCashItemPrice(	271960	,	5000	) --	청 스타 아카데미 동복 하의(노랑)
-g_pCashItemManager:AddCashItemPrice(	271961	,	2400	) --	청 스타 아카데미 동복 장갑(노랑)
-g_pCashItemManager:AddCashItemPrice(	271962	,	2400	) --	청 스타 아카데미 동복 신발(노랑)
-g_pCashItemManager:AddCashItemPrice(	271963	,	5000	) --	청 스타 아카데미 동복 헤어 (검정)
-g_pCashItemManager:AddCashItemPrice(	271964	,	7000	) --	아라 스타 아카데미 동복 창(노랑)
-g_pCashItemManager:AddCashItemPrice(	271965	,	5000	) --	아라 스타 아카데미 동복 상의(노랑)
-g_pCashItemManager:AddCashItemPrice(	271966	,	5000	) --	아라 스타 아카데미 동복 하의(노랑)
-g_pCashItemManager:AddCashItemPrice(	271967	,	2400	) --	아라 스타 아카데미 동복 장갑(노랑)
-g_pCashItemManager:AddCashItemPrice(	271968	,	2400	) --	아라 스타 아카데미 동복 신발(노랑)
-g_pCashItemManager:AddCashItemPrice(	271969	,	5000	) --	아라 스타 아카데미 동복 헤어 (검정)
-
---추가 9/27 우원식
-g_pCashItemManager:AddCashItemPrice(	81979	,	7000	) --	그레이스 페어리 퀸 스태프(아라)
-g_pCashItemManager:AddCashItemPrice(	81980	,	5000	) --	그레이스 페어리 상의(아라)
-g_pCashItemManager:AddCashItemPrice(	81981	,	5000	) --	그레이스 페어리 하의(아라)
-g_pCashItemManager:AddCashItemPrice(	81982	,	2400	) --	그레이스 페어리 장갑(아라)
-g_pCashItemManager:AddCashItemPrice(	81983	,	2400	) --	그레이스 페어리 신발(아라)
-g_pCashItemManager:AddCashItemPrice(	81984	,	5000	) --	그레이스 페어리 머리(아라)
-g_pCashItemManager:AddCashItemPrice(	81985	,	5000	) --	그레이스 페어리 미니미(아라)
-g_pCashItemManager:AddCashItemPrice(	81986	,	5000	) --	그레이스 페어리 라이트 윙(아라)
-g_pCashItemManager:AddCashItemPrice(	81987	,	5000	) --	그레이스 페어리 윙츠 (아라)
-
---추가 10/1 우원식
-g_pCashItemManager:AddCashItemPrice(	81988	,	7000	) --	아크엔젤 클레이모어 (엘리시스)
-g_pCashItemManager:AddCashItemPrice(	81989	,	5000	) --	아크엔젤 상의 (엘리시스)
-g_pCashItemManager:AddCashItemPrice(	81990	,	5000	) --	아크엔젤 하의 (엘리시스)
-g_pCashItemManager:AddCashItemPrice(	81991	,	2400	) --	아크엔젤 장갑 (엘리시스)
-g_pCashItemManager:AddCashItemPrice(	81992	,	2400	) --	아크엔젤 신발 (엘리시스)
-g_pCashItemManager:AddCashItemPrice(	81993	,	5000	) --	아크엔젤 헤어 (엘리시스)
-g_pCashItemManager:AddCashItemPrice(	81994	,	5000	) --	아크엔젤 윙 (엘리시스)
-g_pCashItemManager:AddCashItemPrice(	81995	,	5000	) --	아크엔젤 크라운 (엘리시스)					
-g_pCashItemManager:AddCashItemPrice(	271970	,	7000	) --	엘소드 ELS 고스로리 무기 (검정)
-g_pCashItemManager:AddCashItemPrice(	271971	,	5000	) --	엘소드 ELS 고스로리 상의 (검정)
-g_pCashItemManager:AddCashItemPrice(	271972	,	5000	) --	엘소드 ELS 고스로리 하의 (검정)
-g_pCashItemManager:AddCashItemPrice(	271973	,	2400	) --	엘소드 ELS 고스로리 장갑 (검정)
-g_pCashItemManager:AddCashItemPrice(	271974	,	2400	) --	엘소드 ELS 고스로리 신발 (검정)
-g_pCashItemManager:AddCashItemPrice(	271975	,	5000	) --	엘소드 ELS 고스로리 헤어 (검정)
-g_pCashItemManager:AddCashItemPrice(	271976	,	7000	) --	엘소드 ELS 고스로리 무기 (빨강)
-g_pCashItemManager:AddCashItemPrice(	271977	,	5000	) --	엘소드 ELS 고스로리 상의 (빨강)
-g_pCashItemManager:AddCashItemPrice(	271978	,	5000	) --	엘소드 ELS 고스로리 하의 (빨강)
-g_pCashItemManager:AddCashItemPrice(	271979	,	2400	) --	엘소드 ELS 고스로리 장갑 (빨강)
-g_pCashItemManager:AddCashItemPrice(	271980	,	2400	) --	엘소드 ELS 고스로리 신발 (빨강)
-g_pCashItemManager:AddCashItemPrice(	271981	,	5000	) --	엘소드 ELS 고스로리 헤어 (노랑)
-g_pCashItemManager:AddCashItemPrice(	271982	,	7000	) --	아이샤 ELS 고스로리 무기 (보라)
-g_pCashItemManager:AddCashItemPrice(	271983	,	5000	) --	아이샤 ELS 고스로리 상의 (보라)
-g_pCashItemManager:AddCashItemPrice(	271984	,	5000	) --	아이샤 ELS 고스로리 하의 (보라)
-g_pCashItemManager:AddCashItemPrice(	271985	,	2400	) --	아이샤 ELS 고스로리 장갑 (보라)
-g_pCashItemManager:AddCashItemPrice(	271986	,	2400	) --	아이샤 ELS 고스로리 신발 (보라)
-g_pCashItemManager:AddCashItemPrice(	271987	,	5000	) --	아이샤 ELS 고스로리 헤어 (분홍)
-g_pCashItemManager:AddCashItemPrice(	271988	,	7000	) --	아이샤 ELS 고스로리 무기 (파랑)
-g_pCashItemManager:AddCashItemPrice(	271989	,	5000	) --	아이샤 ELS 고스로리 상의 (파랑)
-g_pCashItemManager:AddCashItemPrice(	271990	,	5000	) --	아이샤 ELS 고스로리 하의 (파랑)
-g_pCashItemManager:AddCashItemPrice(	271991	,	2400	) --	아이샤 ELS 고스로리 장갑 (파랑)
-g_pCashItemManager:AddCashItemPrice(	271992	,	2400	) --	아이샤 ELS 고스로리 신발 (파랑)
-g_pCashItemManager:AddCashItemPrice(	271993	,	5000	) --	아이샤 ELS 고스로리 헤어 (노랑)
-g_pCashItemManager:AddCashItemPrice(	271994	,	7000	) --	레나 ELS 고스로리 무기 (보라)
-g_pCashItemManager:AddCashItemPrice(	271995	,	5000	) --	레나 ELS 고스로리 상의 (보라)
-g_pCashItemManager:AddCashItemPrice(	271996	,	5000	) --	레나 ELS 고스로리 하의 (보라)
-g_pCashItemManager:AddCashItemPrice(	271997	,	2400	) --	레나 ELS 고스로리 장갑 (보라)
-g_pCashItemManager:AddCashItemPrice(	271998	,	2400	) --	레나 ELS 고스로리 신발 (보라)
-g_pCashItemManager:AddCashItemPrice(	271999	,	5000	) --	레나 ELS 고스로리 헤어 (은색)
-g_pCashItemManager:AddCashItemPrice(	272000	,	7000	) --	레나 ELS 고스로리 무기 (초록)
-g_pCashItemManager:AddCashItemPrice(	272001	,	5000	) --	레나 ELS 고스로리 상의 (초록)
-g_pCashItemManager:AddCashItemPrice(	272002	,	5000	) --	레나 ELS 고스로리 하의 (초록)
-g_pCashItemManager:AddCashItemPrice(	272003	,	2400	) --	레나 ELS 고스로리 장갑 (초록)
-g_pCashItemManager:AddCashItemPrice(	272004	,	2400	) --	레나 ELS 고스로리 신발 (초록)
-g_pCashItemManager:AddCashItemPrice(	272005	,	5000	) --	레나 ELS 고스로리 헤어 (금색)
-g_pCashItemManager:AddCashItemPrice(	272006	,	7000	) --	레이븐 ELS 고스로리 무기 (검정)
-g_pCashItemManager:AddCashItemPrice(	272007	,	5000	) --	레이븐 ELS 고스로리 상의 (검정)
-g_pCashItemManager:AddCashItemPrice(	272008	,	5000	) --	레이븐 ELS 고스로리 하의 (검정)
-g_pCashItemManager:AddCashItemPrice(	272009	,	2400	) --	레이븐 ELS 고스로리 장갑 (검정)
-g_pCashItemManager:AddCashItemPrice(	272010	,	2400	) --	레이븐 ELS 고스로리 신발 (검정)
-g_pCashItemManager:AddCashItemPrice(	272011	,	5000	) --	레이븐 ELS 고스로리 헤어 (검정)
-g_pCashItemManager:AddCashItemPrice(	272012	,	7000	) --	레이븐 ELS 고스로리 무기 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272013	,	5000	) --	레이븐 ELS 고스로리 상의 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272014	,	5000	) --	레이븐 ELS 고스로리 하의 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272015	,	2400	) --	레이븐 ELS 고스로리 장갑 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272016	,	2400	) --	레이븐 ELS 고스로리 신발 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272017	,	5000	) --	레이븐 ELS 고스로리 헤어 (은색)
-g_pCashItemManager:AddCashItemPrice(	272018	,	7000	) --	엘리시스 ELS 고스로리 무기 (검정)
-g_pCashItemManager:AddCashItemPrice(	272019	,	5000	) --	엘리시스 ELS 고스로리 상의 (검정)
-g_pCashItemManager:AddCashItemPrice(	272020	,	5000	) --	엘리시스 ELS 고스로리 하의 (검정)
-g_pCashItemManager:AddCashItemPrice(	272021	,	2400	) --	엘리시스 ELS 고스로리 장갑 (검정)
-g_pCashItemManager:AddCashItemPrice(	272022	,	2400	) --	엘리시스 ELS 고스로리 신발 (검정)
-g_pCashItemManager:AddCashItemPrice(	272023	,	5000	) --	엘리시스 ELS 고스로리 헤어 (분홍)
-g_pCashItemManager:AddCashItemPrice(	272024	,	7000	) --	엘리시스 ELS 고스로리 무기 (파랑)
-g_pCashItemManager:AddCashItemPrice(	272025	,	5000	) --	엘리시스 ELS 고스로리 상의 (파랑)
-g_pCashItemManager:AddCashItemPrice(	272026	,	5000	) --	엘리시스 ELS 고스로리 하의 (파랑)
-g_pCashItemManager:AddCashItemPrice(	272027	,	2400	) --	엘리시스 ELS 고스로리 장갑 (파랑)
-g_pCashItemManager:AddCashItemPrice(	272028	,	2400	) --	엘리시스 ELS 고스로리 신발 (파랑)
-g_pCashItemManager:AddCashItemPrice(	272029	,	5000	) --	엘리시스 ELS 고스로리 헤어 (와인)
-g_pCashItemManager:AddCashItemPrice(	272030	,	7000	) --	이브 ELS 고스로리 무기 (파랑)
-g_pCashItemManager:AddCashItemPrice(	272031	,	5000	) --	이브 ELS 고스로리 상의 (파랑)
-g_pCashItemManager:AddCashItemPrice(	272032	,	5000	) --	이브 ELS 고스로리 하의 (파랑)
-g_pCashItemManager:AddCashItemPrice(	272033	,	2400	) --	이브 ELS 고스로리 장갑 (파랑)
-g_pCashItemManager:AddCashItemPrice(	272034	,	2400	) --	이브 ELS 고스로리 신발 (파랑)
-g_pCashItemManager:AddCashItemPrice(	272035	,	5000	) --	이브 ELS 고스로리 헤어 (주황)
-g_pCashItemManager:AddCashItemPrice(	272036	,	7000	) --	이브 ELS 고스로리 무기 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272037	,	5000	) --	이브 ELS 고스로리 상의 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272038	,	5000	) --	이브 ELS 고스로리 하의 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272039	,	2400	) --	이브 ELS 고스로리 장갑 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272040	,	2400	) --	이브 ELS 고스로리 신발 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272041	,	5000	) --	이브 ELS 고스로리 헤어 (노랑)
-g_pCashItemManager:AddCashItemPrice(	272042	,	7000	) --	청 ELS 고스로리 무기 (청녹)
-g_pCashItemManager:AddCashItemPrice(	272043	,	5000	) --	청 ELS 고스로리 상의 (청녹)
-g_pCashItemManager:AddCashItemPrice(	272044	,	5000	) --	청 ELS 고스로리 하의 (청녹)
-g_pCashItemManager:AddCashItemPrice(	272045	,	2400	) --	청 ELS 고스로리 장갑 (청녹)
-g_pCashItemManager:AddCashItemPrice(	272046	,	2400	) --	청 ELS 고스로리 신발 (청녹)
-g_pCashItemManager:AddCashItemPrice(	272047	,	5000	) --	청 ELS 고스로리 헤어 (하양)
-g_pCashItemManager:AddCashItemPrice(	272048	,	7000	) --	청 ELS 고스로리 무기 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272049	,	5000	) --	청 ELS 고스로리 상의 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272050	,	5000	) --	청 ELS 고스로리 하의 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272051	,	2400	) --	청 ELS 고스로리 장갑 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272052	,	2400	) --	청 ELS 고스로리 신발 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272053	,	5000	) --	청 ELS 고스로리 헤어 (베이지)
-g_pCashItemManager:AddCashItemPrice(	272054	,	7000	) --	아라 ELS 고스로리 무기 (검정)
-g_pCashItemManager:AddCashItemPrice(	272055	,	5000	) --	아라 ELS 고스로리 상의 (검정)
-g_pCashItemManager:AddCashItemPrice(	272056	,	5000	) --	아라 ELS 고스로리 하의 (검정)
-g_pCashItemManager:AddCashItemPrice(	272057	,	2400	) --	아라 ELS 고스로리 장갑 (검정)
-g_pCashItemManager:AddCashItemPrice(	272058	,	2400	) --	아라 ELS 고스로리 신발 (검정)
-g_pCashItemManager:AddCashItemPrice(	272059	,	5000	) --	아라 ELS 고스로리 헤어 (금색)
-g_pCashItemManager:AddCashItemPrice(	272060	,	7000	) --	아라 ELS 고스로리 무기 (파랑)
-g_pCashItemManager:AddCashItemPrice(	272061	,	5000	) --	아라 ELS 고스로리 상의 (파랑)
-g_pCashItemManager:AddCashItemPrice(	272062	,	5000	) --	아라 ELS 고스로리 하의 (파랑)
-g_pCashItemManager:AddCashItemPrice(	272063	,	2400	) --	아라 ELS 고스로리 장갑 (파랑)
-g_pCashItemManager:AddCashItemPrice(	272064	,	2400	) --	아라 ELS 고스로리 신발 (파랑)
-g_pCashItemManager:AddCashItemPrice(	272065	,	5000	) --	아라 ELS 고스로리 헤어 (은색)					
-g_pCashItemManager:AddCashItemPrice(	183276   ,	5000	) --	엔젤 윙 웨폰가드 (레드)
-g_pCashItemManager:AddCashItemPrice(	272082   ,	5000	) --	엘소드 ELS 고스로리 가면 (검정)
-g_pCashItemManager:AddCashItemPrice(	272083   ,	5000	) --	아이샤 ELS 고스로리 가면 (보라)
-g_pCashItemManager:AddCashItemPrice(	272084   ,	5000	) --	레나 ELS 고스로리 가면 (보라)
-g_pCashItemManager:AddCashItemPrice(	272085   ,	5000	) --	레이븐 ELS 고스로리 가면 (검정)
-g_pCashItemManager:AddCashItemPrice(	272086   ,	5000	) --	엘리시스 ELS 고스로리 가면 (검정)
-g_pCashItemManager:AddCashItemPrice(	272087   ,	5000	) --	이브 ELS 고스로리 가면 (파랑)
-g_pCashItemManager:AddCashItemPrice(	272088   ,	5000	) --	청 ELS 고스로리 가면 (청녹)
-g_pCashItemManager:AddCashItemPrice(	272089   ,	5000	) --	아라 ELS 고스로리 가면 (검정)
-g_pCashItemManager:AddCashItemPrice(	272273   ,	5000	) --	엘소드 ELS 고스로리 가면 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272274   ,	5000	) --	아이샤 ELS 고스로리 가면 (파랑)
-g_pCashItemManager:AddCashItemPrice(	272275   ,	5000	) --	레나 ELS 고스로리 가면 (초록)
-g_pCashItemManager:AddCashItemPrice(	272276   ,	5000	) --	레이븐 ELS 고스로리 가면 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272277   ,	5000	) --	엘리시스 ELS 고스로리 가면 (파랑)
-g_pCashItemManager:AddCashItemPrice(	272278   ,	5000	) --	이브 ELS 고스로리 가면 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272279   ,	5000	) --	청 ELS 고스로리 가면 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272280   ,	5000	) --	아라 ELS 고스로리 가면 (파랑)
-
---추가 10/7 우원식
-g_pCashItemManager:AddCashItemPrice(	88685	,	7000	) --	이그니션 칼리고 소드 (엘소드)
-g_pCashItemManager:AddCashItemPrice(	88686	,	5000	) --	이그니션 칼리고 상의 (엘소드)
-g_pCashItemManager:AddCashItemPrice(	88687	,	5000	) --	이그니션 칼리고 하의 (엘소드)
-g_pCashItemManager:AddCashItemPrice(	88688	,	2400	) --	이그니션 칼리고 장갑 (엘소드)
-g_pCashItemManager:AddCashItemPrice(	88689	,	2400	) --	이그니션 칼리고 신발 (엘소드)
-g_pCashItemManager:AddCashItemPrice(	88690	,	5000	) --	이그니션 칼리고 헤어 (엘소드)
-g_pCashItemManager:AddCashItemPrice(	88691	,	5000	) --	이그니션 칼리고 크라운 (엘소드)
-g_pCashItemManager:AddCashItemPrice(	88692	,	5000	) --	이그니션 칼리고 윙 (엘소드)
-g_pCashItemManager:AddCashItemPrice(	88693	,	7000	) --	이그니션 칼리고 완드 (아이샤)
-g_pCashItemManager:AddCashItemPrice(	88694	,	5000	) --	이그니션 칼리고 상의 (아이샤)
-g_pCashItemManager:AddCashItemPrice(	88695	,	5000	) --	이그니션 칼리고 하의 (아이샤)
-g_pCashItemManager:AddCashItemPrice(	88696	,	2400	) --	이그니션 칼리고 장갑 (아이샤)
-g_pCashItemManager:AddCashItemPrice(	88697	,	2400	) --	이그니션 칼리고 신발 (아이샤)
-g_pCashItemManager:AddCashItemPrice(	88698	,	5000	) --	이그니션 칼리고 헤어 (아이샤)
-g_pCashItemManager:AddCashItemPrice(	88699	,	5000	) --	이그니션 칼리고 크라운 (아이샤)
-g_pCashItemManager:AddCashItemPrice(	88700	,	5000	) --	이그니션 칼리고 윙 (아이샤)
-g_pCashItemManager:AddCashItemPrice(	88701	,	7000	) --	이그니션 칼리고 보우 (레나)
-g_pCashItemManager:AddCashItemPrice(	88702	,	5000	) --	이그니션 칼리고 상의 (레나)
-g_pCashItemManager:AddCashItemPrice(	88703	,	5000	) --	이그니션 칼리고 하의 (레나)
-g_pCashItemManager:AddCashItemPrice(	88704	,	2400	) --	이그니션 칼리고 장갑 (레나)
-g_pCashItemManager:AddCashItemPrice(	88705	,	2400	) --	이그니션 칼리고 신발 (레나)
-g_pCashItemManager:AddCashItemPrice(	88706	,	5000	) --	이그니션 칼리고 헤어 (레나)
-g_pCashItemManager:AddCashItemPrice(	88707	,	5000	) --	이그니션 칼리고 크라운 (레나)
-g_pCashItemManager:AddCashItemPrice(	88708	,	5000	) --	이그니션 칼리고 윙 (레나)
-g_pCashItemManager:AddCashItemPrice(	88709	,	7000	) --	이그니션 칼리고 블레이드 (레이븐)
-g_pCashItemManager:AddCashItemPrice(	88710	,	5000	) --	이그니션 칼리고 상의 (레이븐)
-g_pCashItemManager:AddCashItemPrice(	88711	,	5000	) --	이그니션 칼리고 하의 (레이븐)
-g_pCashItemManager:AddCashItemPrice(	88712	,	2400	) --	이그니션 칼리고 장갑 (레이븐)
-g_pCashItemManager:AddCashItemPrice(	88713	,	2400	) --	이그니션 칼리고 신발 (레이븐)
-g_pCashItemManager:AddCashItemPrice(	88714	,	5000	) --	이그니션 칼리고 헤어 (레이븐)
-g_pCashItemManager:AddCashItemPrice(	88715	,	5000	) --	이그니션 칼리고 크라운 (레이븐)
-g_pCashItemManager:AddCashItemPrice(	88716	,	5000	) --	이그니션 칼리고 윙 (레이븐)
-g_pCashItemManager:AddCashItemPrice(	88717	,	7000	) --	이그니션 칼리고 클레이모어 (엘리시스)
-g_pCashItemManager:AddCashItemPrice(	88718	,	5000	) --	이그니션 칼리고 상의 (엘리시스)
-g_pCashItemManager:AddCashItemPrice(	88719	,	5000	) --	이그니션 칼리고 하의 (엘리시스)
-g_pCashItemManager:AddCashItemPrice(	88720	,	2400	) --	이그니션 칼리고 장갑 (엘리시스)
-g_pCashItemManager:AddCashItemPrice(	88721	,	2400	) --	이그니션 칼리고 신발 (엘리시스)
-g_pCashItemManager:AddCashItemPrice(	88722	,	5000	) --	이그니션 칼리고 헤어 (엘리시스)
-g_pCashItemManager:AddCashItemPrice(	88723	,	5000	) --	이그니션 칼리고 크라운 (엘리시스)
-g_pCashItemManager:AddCashItemPrice(	88724	,	5000	) --	이그니션 칼리고 윙 (엘리시스)
-g_pCashItemManager:AddCashItemPrice(	88725	,	7000	) --	이그니션 칼리고 기어 (이브)
-g_pCashItemManager:AddCashItemPrice(	88726	,	5000	) --	이그니션 칼리고 상의 (이브)
-g_pCashItemManager:AddCashItemPrice(	88727	,	5000	) --	이그니션 칼리고 하의 (이브)
-g_pCashItemManager:AddCashItemPrice(	88728	,	2400	) --	이그니션 칼리고 장갑 (이브)
-g_pCashItemManager:AddCashItemPrice(	88729	,	2400	) --	이그니션 칼리고 신발 (이브)
-g_pCashItemManager:AddCashItemPrice(	88730	,	5000	) --	이그니션 칼리고 헤어 (이브)
-g_pCashItemManager:AddCashItemPrice(	88731	,	5000	) --	이그니션 칼리고 크라운 (이브)
-g_pCashItemManager:AddCashItemPrice(	88732	,	5000	) --	이그니션 칼리고 윙 (이브)
-g_pCashItemManager:AddCashItemPrice(	88733	,	7000	) --	이그니션 칼리고 캐논 (청)
-g_pCashItemManager:AddCashItemPrice(	88734	,	5000	) --	이그니션 칼리고 상의 (청)
-g_pCashItemManager:AddCashItemPrice(	88735	,	5000	) --	이그니션 칼리고 하의 (청)
-g_pCashItemManager:AddCashItemPrice(	88736	,	2400	) --	이그니션 칼리고 장갑 (청)
-g_pCashItemManager:AddCashItemPrice(	88737	,	2400	) --	이그니션 칼리고 신발 (청)
-g_pCashItemManager:AddCashItemPrice(	88738	,	5000	) --	이그니션 칼리고 헤어 (청)
-g_pCashItemManager:AddCashItemPrice(	88739	,	5000	) --	이그니션 칼리고 크라운 (청)
-g_pCashItemManager:AddCashItemPrice(	88740	,	5000	) --	이그니션 칼리고 윙 (청)
-g_pCashItemManager:AddCashItemPrice(	88741	,	7000	) --	이그니션 칼리고 스피어 (아라)
-g_pCashItemManager:AddCashItemPrice(	88742	,	5000	) --	이그니션 칼리고 상의 (아라)
-g_pCashItemManager:AddCashItemPrice(	88743	,	5000	) --	이그니션 칼리고 하의 (아라)
-g_pCashItemManager:AddCashItemPrice(	88744	,	2400	) --	이그니션 칼리고 장갑 (아라)
-g_pCashItemManager:AddCashItemPrice(	88745	,	2400	) --	이그니션 칼리고 신발 (아라)
-g_pCashItemManager:AddCashItemPrice(	88746	,	5000	) --	이그니션 칼리고 헤어 (아라)
-g_pCashItemManager:AddCashItemPrice(	88747	,	5000	) --	이그니션 칼리고 크라운 (아라)
-g_pCashItemManager:AddCashItemPrice(	88748	,	5000	) --	이그니션 칼리고 윙 (아라)
-g_pCashItemManager:AddCashItemPrice(	272234	,	5000	) --	엘로드 크라운 (블루)
-g_pCashItemManager:AddCashItemPrice(	272235	,	5000	) --	엘로드 크라운 (레드)
-g_pCashItemManager:AddCashItemPrice(	183277	,	5000	) --	포레스트 페어리
-
---추가 10/17 우원식
-g_pCashItemManager:AddCashItemPrice(	272297	,	7000	) --	엘소드 할로윈 마왕 대검 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272298	,	5000	) --	엘소드 할로윈 마왕 상의 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272299	,	5000	) --	엘소드 할로윈 마왕 하의 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272300	,	2400	) --	엘소드 할로윈 마왕 장갑 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272301	,	2400	) --	엘소드 할로윈 마왕 신발 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272302	,	5000	) --	엘소드 할로윈 마왕 헤어 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272303	,	7000	) --	엘소드 할로윈 마왕 대검 (보라)
-g_pCashItemManager:AddCashItemPrice(	272304	,	5000	) --	엘소드 할로윈 마왕 상의 (보라)
-g_pCashItemManager:AddCashItemPrice(	272305	,	5000	) --	엘소드 할로윈 마왕 하의 (보라)
-g_pCashItemManager:AddCashItemPrice(	272306	,	2400	) --	엘소드 할로윈 마왕 장갑 (보라)
-g_pCashItemManager:AddCashItemPrice(	272307	,	2400	) --	엘소드 할로윈 마왕 신발 (보라)
-g_pCashItemManager:AddCashItemPrice(	272308	,	5000	) --	엘소드 할로윈 마왕 헤어 (보라)
-g_pCashItemManager:AddCashItemPrice(	272309	,	7000	) --	아이샤 할로윈 헌터 크로스보우 스태프 (검정)
-g_pCashItemManager:AddCashItemPrice(	272310	,	5000	) --	아이샤 할로윈 헌터 상의 (검정)
-g_pCashItemManager:AddCashItemPrice(	272311	,	5000	) --	아이샤 할로윈 헌터 하의 (검정)
-g_pCashItemManager:AddCashItemPrice(	272312	,	2400	) --	아이샤 할로윈 헌터 장갑 (검정)
-g_pCashItemManager:AddCashItemPrice(	272313	,	2400	) --	아이샤 할로윈 헌터 신발 (검정)
-g_pCashItemManager:AddCashItemPrice(	272314	,	5000	) --	아이샤 할로윈 헌터 헤어 (검정)
-g_pCashItemManager:AddCashItemPrice(	272315	,	7000	) --	아이샤 할로윈 헌터 크로스보우 스태프 (파랑)
-g_pCashItemManager:AddCashItemPrice(	272316	,	5000	) --	아이샤 할로윈 헌터 상의 (파랑)
-g_pCashItemManager:AddCashItemPrice(	272317	,	5000	) --	아이샤 할로윈 헌터 하의 (파랑)
-g_pCashItemManager:AddCashItemPrice(	272318	,	2400	) --	아이샤 할로윈 헌터 장갑 (파랑)
-g_pCashItemManager:AddCashItemPrice(	272319	,	2400	) --	아이샤 할로윈 헌터 신발 (파랑)
-g_pCashItemManager:AddCashItemPrice(	272320	,	5000	) --	아이샤 할로윈 헌터 헤어 (파랑)
-g_pCashItemManager:AddCashItemPrice(	272321	,	7000	) --	레나 할로윈 헌터 홀리 크로스보우 (하양)
-g_pCashItemManager:AddCashItemPrice(	272322	,	5000	) --	레나 할로윈 헌터 상의 (하양)
-g_pCashItemManager:AddCashItemPrice(	272323	,	5000	) --	레나 할로윈 헌터 하의 (하양)
-g_pCashItemManager:AddCashItemPrice(	272324	,	2400	) --	레나 할로윈 헌터 장갑 (하양)
-g_pCashItemManager:AddCashItemPrice(	272325	,	2400	) --	레나 할로윈 헌터 신발 (하양)
-g_pCashItemManager:AddCashItemPrice(	272326	,	5000	) --	레나 할로윈 헌터 헤어 (하양)
-g_pCashItemManager:AddCashItemPrice(	272327	,	7000	) --	레나 할로윈 헌터 홀리 크로스보우 (검정)
-g_pCashItemManager:AddCashItemPrice(	272328	,	5000	) --	레나 할로윈 헌터 상의 (검정)
-g_pCashItemManager:AddCashItemPrice(	272329	,	5000	) --	레나 할로윈 헌터 하의 (검정)
-g_pCashItemManager:AddCashItemPrice(	272330	,	2400	) --	레나 할로윈 헌터 장갑 (검정)
-g_pCashItemManager:AddCashItemPrice(	272331	,	2400	) --	레나 할로윈 헌터 신발 (검정)
-g_pCashItemManager:AddCashItemPrice(	272332	,	5000	) --	레나 할로윈 헌터 헤어 (검정)
-g_pCashItemManager:AddCashItemPrice(	272333	,	7000	) --	레이븐 할로윈 뱀파이어 장검 (검정)
-g_pCashItemManager:AddCashItemPrice(	272334	,	5000	) --	레이븐 할로윈 뱀파이어 상의 (검정)
-g_pCashItemManager:AddCashItemPrice(	272335	,	5000	) --	레이븐 할로윈 뱀파이어 하의 (검정)
-g_pCashItemManager:AddCashItemPrice(	272336	,	2400	) --	레이븐 할로윈 뱀파이어 장갑 (검정)
-g_pCashItemManager:AddCashItemPrice(	272337	,	2400	) --	레이븐 할로윈 뱀파이어 신발 (검정)
-g_pCashItemManager:AddCashItemPrice(	272338	,	5000	) --	레이븐 할로윈 뱀파이어 헤어 (검정)
-g_pCashItemManager:AddCashItemPrice(	272339	,	7000	) --	레이븐 할로윈 뱀파이어 장검 (하양)
-g_pCashItemManager:AddCashItemPrice(	272340	,	5000	) --	레이븐 할로윈 뱀파이어 상의 (하양)
-g_pCashItemManager:AddCashItemPrice(	272341	,	5000	) --	레이븐 할로윈 뱀파이어 하의 (하양)
-g_pCashItemManager:AddCashItemPrice(	272342	,	2400	) --	레이븐 할로윈 뱀파이어 장갑 (하양)
-g_pCashItemManager:AddCashItemPrice(	272343	,	2400	) --	레이븐 할로윈 뱀파이어 신발 (하양)
-g_pCashItemManager:AddCashItemPrice(	272344	,	5000	) --	레이븐 할로윈 뱀파이어 헤어 (하양)
-g_pCashItemManager:AddCashItemPrice(	272345	,	7000	) --	이브 할로윈 헌터 리볼버 기어 (청록)
-g_pCashItemManager:AddCashItemPrice(	272346	,	5000	) --	이브 할로윈 헌터 상의 (청록)
-g_pCashItemManager:AddCashItemPrice(	272347	,	5000	) --	이브 할로윈 헌터 하의 (청록)
-g_pCashItemManager:AddCashItemPrice(	272348	,	2400	) --	이브 할로윈 헌터 장갑 (청록)
-g_pCashItemManager:AddCashItemPrice(	272349	,	2400	) --	이브 할로윈 헌터 신발 (청록)
-g_pCashItemManager:AddCashItemPrice(	272350	,	5000	) --	이브 할로윈 헌터 헤어 (청록)
-g_pCashItemManager:AddCashItemPrice(	272351	,	7000	) --	이브 할로윈 헌터 리볼버 기어 (주황)
-g_pCashItemManager:AddCashItemPrice(	272352	,	5000	) --	이브 할로윈 헌터 상의 (주황)
-g_pCashItemManager:AddCashItemPrice(	272353	,	5000	) --	이브 할로윈 헌터 하의 (주황)
-g_pCashItemManager:AddCashItemPrice(	272354	,	2400	) --	이브 할로윈 헌터 장갑 (주황)
-g_pCashItemManager:AddCashItemPrice(	272355	,	2400	) --	이브 할로윈 헌터 신발 (주황)
-g_pCashItemManager:AddCashItemPrice(	272356	,	5000	) --	이브 할로윈 헌터 헤어 (주황)
-g_pCashItemManager:AddCashItemPrice(	272357	,	7000	) --	청 할로윈 늑대이빨 철포 (하양)
-g_pCashItemManager:AddCashItemPrice(	272358	,	5000	) --	청 할로윈 늑대인간 상의 (하양)
-g_pCashItemManager:AddCashItemPrice(	272359	,	5000	) --	청 할로윈 늑대인간 하의 (하양)
-g_pCashItemManager:AddCashItemPrice(	272360	,	2400	) --	청 할로윈 늑대인간 장갑 (하양)
-g_pCashItemManager:AddCashItemPrice(	272361	,	2400	) --	청 할로윈 늑대인간 신발 (하양)
-g_pCashItemManager:AddCashItemPrice(	272362	,	5000	) --	청 할로윈 늑대인간 헤어 (하양)
-g_pCashItemManager:AddCashItemPrice(	272363	,	7000	) --	청 할로윈 늑대이빨 철포 (군청)
-g_pCashItemManager:AddCashItemPrice(	272364	,	5000	) --	청 할로윈 늑대인간 상의 (군청)
-g_pCashItemManager:AddCashItemPrice(	272365	,	5000	) --	청 할로윈 늑대인간 하의 (군청)
-g_pCashItemManager:AddCashItemPrice(	272366	,	2400	) --	청 할로윈 늑대인간 장갑 (군청)
-g_pCashItemManager:AddCashItemPrice(	272367	,	2400	) --	청 할로윈 늑대인간 신발 (군청)
-g_pCashItemManager:AddCashItemPrice(	272368	,	5000	) --	청 할로윈 늑대인간 헤어 (군청)
-g_pCashItemManager:AddCashItemPrice(	272369	,	7000	) --	아라 할로윈 서큐버스 사이드 (보라)
-g_pCashItemManager:AddCashItemPrice(	272370	,	5000	) --	아라 할로윈 서큐버스 상의 (보라)
-g_pCashItemManager:AddCashItemPrice(	272371	,	5000	) --	아라 할로윈 서큐버스 하의 (보라)
-g_pCashItemManager:AddCashItemPrice(	272372	,	2400	) --	아라 할로윈 서큐버스 장갑 (보라)
-g_pCashItemManager:AddCashItemPrice(	272373	,	2400	) --	아라 할로윈 서큐버스 신발 (보라)
-g_pCashItemManager:AddCashItemPrice(	272374	,	5000	) --	아라 할로윈 서큐버스 헤어 (보라)
-g_pCashItemManager:AddCashItemPrice(	272375	,	7000	) --	아라 할로윈 서큐버스 사이드 (주황)
-g_pCashItemManager:AddCashItemPrice(	272376	,	5000	) --	아라 할로윈 서큐버스 상의 (주황)
-g_pCashItemManager:AddCashItemPrice(	272377	,	5000	) --	아라 할로윈 서큐버스 하의 (주황)
-g_pCashItemManager:AddCashItemPrice(	272378	,	2400	) --	아라 할로윈 서큐버스 장갑 (주황)
-g_pCashItemManager:AddCashItemPrice(	272379	,	2400	) --	아라 할로윈 서큐버스 신발 (주황)
-g_pCashItemManager:AddCashItemPrice(	272380	,	5000	) --	아라 할로윈 서큐버스 헤어 (주황)
-g_pCashItemManager:AddCashItemPrice(	272381	,	7000	) --	엘리시스 할로윈 데빌 퀸 클레이모어 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272382	,	5000	) --	엘리시스 할로윈 데빌 퀸 상의 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272383	,	5000	) --	엘리시스 할로윈 데빌 퀸 하의 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272384	,	2400	) --	엘리시스 할로윈 데빌 퀸 장갑 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272385	,	2400	) --	엘리시스 할로윈 데빌 퀸 신발 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272386	,	5000	) --	엘리시스 할로윈 데빌 퀸 헤어 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272387	,	7000	) --	엘리시스 할로윈 데빌 퀸 클레이모어 (검정)
-g_pCashItemManager:AddCashItemPrice(	272388	,	5000	) --	엘리시스 할로윈 데빌 퀸 상의 (검정)
-g_pCashItemManager:AddCashItemPrice(	272389	,	5000	) --	엘리시스 할로윈 데빌 퀸 하의 (검정)
-g_pCashItemManager:AddCashItemPrice(	272390	,	2400	) --	엘리시스 할로윈 데빌 퀸 장갑 (검정)
-g_pCashItemManager:AddCashItemPrice(	272391	,	2400	) --	엘리시스 할로윈 데빌 퀸 신발 (검정)
-g_pCashItemManager:AddCashItemPrice(	272392	,	5000	) --	엘리시스 할로윈 데빌 퀸 헤어 (검정)
-
---추가 10/21 우원식
-g_pCashItemManager:AddCashItemPrice(	133546	,	7000	) --	로열 메이드-다크 폴 클레이모어(엘리시스)
-g_pCashItemManager:AddCashItemPrice(	133547	,	5000	) --	로열 메이드-다크 폴 상의(엘리시스)
-g_pCashItemManager:AddCashItemPrice(	133548	,	5000	) --	로열 메이드-다크 폴 하의(엘리시스)
-g_pCashItemManager:AddCashItemPrice(	133549	,	2400	) --	로열 메이드-다크 폴 장갑(엘리시스)
-g_pCashItemManager:AddCashItemPrice(	133550	,	2400	) --	로열 메이드-다크 폴 신발(엘리시스)
-g_pCashItemManager:AddCashItemPrice(	133551	,	5000	) --	로열 메이드-다크 폴 헤어(엘리시스)
-g_pCashItemManager:AddCashItemPrice(	133552	,	5000	) --	로열 메이드 블랙 헤드드레스(엘리시스)
-g_pCashItemManager:AddCashItemPrice(	133553	,	5000	) --	로열 배틀 블랙 미니미(엘리시스)
-
---추가 10/23 우원식
-g_pCashItemManager:AddCashItemPrice(	183278	,	7000	) --	엘소드 할로윈 호박 양손검
-g_pCashItemManager:AddCashItemPrice(	183279	,	7000	) --	아이샤 할로윈 호박 스태프
-g_pCashItemManager:AddCashItemPrice(	183280	,	7000	) --	레나 할로윈 호박 활 
-g_pCashItemManager:AddCashItemPrice(	183281	,	7000	) --	레이븐 할로윈 호박 장검
-g_pCashItemManager:AddCashItemPrice(	183282	,	7000	) --	이브 할로윈 호박 기어
-g_pCashItemManager:AddCashItemPrice(	183283	,	7000	) --	청 할로윈 호박 철포
-g_pCashItemManager:AddCashItemPrice(	183284	,	7000	) --	아라 할로윈 호박 창
-g_pCashItemManager:AddCashItemPrice(	183285	,	7000	) --	엘리시스 할로윈 호박 클레이모어
-g_pCashItemManager:AddCashItemPrice(	183286	,	7000	) --	엘소드 할로윈 파티 턱시도 양손검
-g_pCashItemManager:AddCashItemPrice(	183287	,	5000	) --	엘소드 할로윈 파티 턱시도 상의
-g_pCashItemManager:AddCashItemPrice(	183288	,	5000	) --	엘소드 할로윈 파티 턱시도 하의
-g_pCashItemManager:AddCashItemPrice(	183289	,	2400	) --	엘소드 할로윈 파티 턱시도 장갑
-g_pCashItemManager:AddCashItemPrice(	183290	,	2400	) --	엘소드 할로윈 파티 턱시도 신발
-g_pCashItemManager:AddCashItemPrice(	183291	,	5000	) --	엘소드 할로윈 파티 턱시도 헤어
-g_pCashItemManager:AddCashItemPrice(	183298	,	7000	) --	아이샤 할로윈 파티 드레스 스태프
-g_pCashItemManager:AddCashItemPrice(	183299	,	5000	) --	아이샤 할로윈 파티 드레스 상의
-g_pCashItemManager:AddCashItemPrice(	183300	,	5000	) --	아이샤 할로윈 파티 드레스 하의
-g_pCashItemManager:AddCashItemPrice(	183301	,	2400	) --	아이샤 할로윈 파티 드레스 장갑
-g_pCashItemManager:AddCashItemPrice(	183302	,	2400	) --	아이샤 할로윈 파티 드레스 신발
-g_pCashItemManager:AddCashItemPrice(	183303	,	5000	) --	아이샤 할로윈 파티 드레스 헤어
-g_pCashItemManager:AddCashItemPrice(	183310	,	7000	) --	레나 할로윈 파티 드레스 활
-g_pCashItemManager:AddCashItemPrice(	183311	,	5000	) --	레나 할로윈 파티 드레스 상의
-g_pCashItemManager:AddCashItemPrice(	183312	,	5000	) --	레나 할로윈 파티 드레스 하의
-g_pCashItemManager:AddCashItemPrice(	183313	,	2400	) --	레나 할로윈 파티 드레스 장갑
-g_pCashItemManager:AddCashItemPrice(	183314	,	2400	) --	레나 할로윈 파티 드레스 신발
-g_pCashItemManager:AddCashItemPrice(	183315	,	5000	) --	레나 할로윈 파티 드레스 헤어
-g_pCashItemManager:AddCashItemPrice(	183322	,	7000	) --	레이븐 할로윈 파티 턱시도 장검
-g_pCashItemManager:AddCashItemPrice(	183323	,	5000	) --	레이븐 할로윈 파티 턱시도 상의
-g_pCashItemManager:AddCashItemPrice(	183324	,	5000	) --	레이븐 할로윈 파티 턱시도 하의
-g_pCashItemManager:AddCashItemPrice(	183325	,	2400	) --	레이븐 할로윈 파티 턱시도 장갑
-g_pCashItemManager:AddCashItemPrice(	183326	,	2400	) --	레이븐 할로윈 파티 턱시도 신발
-g_pCashItemManager:AddCashItemPrice(	183327	,	5000	) --	레이븐 할로윈 파티 턱시도 헤어
-g_pCashItemManager:AddCashItemPrice(	183334	,	7000	) --	이브 할로윈 파티 드레스 기어
-g_pCashItemManager:AddCashItemPrice(	183335	,	5000	) --	이브 할로윈 파티 드레스 상의
-g_pCashItemManager:AddCashItemPrice(	183336	,	5000	) --	이브 할로윈 파티 드레스 하의
-g_pCashItemManager:AddCashItemPrice(	183337	,	2400	) --	이브 할로윈 파티 드레스 장갑
-g_pCashItemManager:AddCashItemPrice(	183338	,	2400	) --	이브 할로윈 파티 드레스 신발
-g_pCashItemManager:AddCashItemPrice(	183339	,	5000	) --	이브 할로윈 파티 드레스 헤어
-g_pCashItemManager:AddCashItemPrice(	183346	,	7000	) --	청 할로윈 파티 턱시도 철포
-g_pCashItemManager:AddCashItemPrice(	183347	,	5000	) --	청 할로윈 파티 턱시도 상의
-g_pCashItemManager:AddCashItemPrice(	183348	,	5000	) --	청 할로윈 파티 턱시도 하의
-g_pCashItemManager:AddCashItemPrice(	183349	,	2400	) --	청 할로윈 파티 턱시도 장갑
-g_pCashItemManager:AddCashItemPrice(	183350	,	2400	) --	청 할로윈 파티 턱시도 신발
-g_pCashItemManager:AddCashItemPrice(	183351	,	5000	) --	청 할로윈 파티 턱시도 헤어
-
---추가 10/24 우원식
-g_pCashItemManager:AddCashItemPrice(	183358	,	7000	) --	아라 할로윈 파티 드레스 창 (검정)
-g_pCashItemManager:AddCashItemPrice(	183359	,	5000	) --	아라 할로윈 파티 드레스 상의 (검정)
-g_pCashItemManager:AddCashItemPrice(	183360	,	5000	) --	아라 할로윈 파티 드레스 하의 (검정)
-g_pCashItemManager:AddCashItemPrice(	183361	,	2400	) --	아라 할로윈 파티 드레스 장갑 (검정)
-g_pCashItemManager:AddCashItemPrice(	183362	,	2400	) --	아라 할로윈 파티 드레스 신발 (검정)
-g_pCashItemManager:AddCashItemPrice(	183363	,	5000	) --	아라 할로윈 파티 드레스 헤어 (검정)
-g_pCashItemManager:AddCashItemPrice(	183364	,	7000	) --	아라 할로윈 파티 드레스 창 (빨강)
-g_pCashItemManager:AddCashItemPrice(	183365	,	5000	) --	아라 할로윈 파티 드레스 상의 (빨강)
-g_pCashItemManager:AddCashItemPrice(	183366	,	5000	) --	아라 할로윈 파티 드레스 하의 (빨강)
-g_pCashItemManager:AddCashItemPrice(	183367	,	2400	) --	아라 할로윈 파티 드레스 장갑 (빨강)
-g_pCashItemManager:AddCashItemPrice(	183368	,	2400	) --	아라 할로윈 파티 드레스 신발 (빨강)
-g_pCashItemManager:AddCashItemPrice(	183369	,	5000	) --	아라 할로윈 파티 드레스 헤어 (빨강)
-g_pCashItemManager:AddCashItemPrice(	183370	,	7000	) --	엘리시스 할로윈 파티 드레스 클레이모어 (검정)
-g_pCashItemManager:AddCashItemPrice(	183371	,	5000	) --	엘리시스 할로윈 파티 드레스 상의 (검정)
-g_pCashItemManager:AddCashItemPrice(	183372	,	5000	) --	엘리시스 할로윈 파티 드레스 하의 (검정)
-g_pCashItemManager:AddCashItemPrice(	183373	,	2400	) --	엘리시스 할로윈 파티 드레스 장갑 (검정)
-g_pCashItemManager:AddCashItemPrice(	183374	,	2400	) --	엘리시스 할로윈 파티 드레스 신발 (검정)
-g_pCashItemManager:AddCashItemPrice(	183375	,	5000	) --	엘리시스 할로윈 파티 드레스 헤어 (검정)
-g_pCashItemManager:AddCashItemPrice(	183376	,	7000	) --	엘리시스 할로윈 파티 드레스 클레이모어 (빨강)
-g_pCashItemManager:AddCashItemPrice(	183377	,	5000	) --	엘리시스 할로윈 파티 드레스 상의 (빨강)
-g_pCashItemManager:AddCashItemPrice(	183378	,	5000	) --	엘리시스 할로윈 파티 드레스 하의 (빨강)
-g_pCashItemManager:AddCashItemPrice(	183379	,	2400	) --	엘리시스 할로윈 파티 드레스 장갑 (빨강)
-g_pCashItemManager:AddCashItemPrice(	183380	,	2400	) --	엘리시스 할로윈 파티 드레스 신발 (빨강)
-g_pCashItemManager:AddCashItemPrice(	183381	,	5000	) --	엘리시스 할로윈 파티 드레스 헤어 (빨강)
-
---추가 10/31 우원식
-g_pCashItemManager:AddCashItemPrice(	272236	,	8000	) --	명중의 안대
-g_pCashItemManager:AddCashItemPrice(	272241	,	3200	) --	고딕 리본 장식 (블루)
-g_pCashItemManager:AddCashItemPrice(	272242	,	3200	) --	고딕 리본 장식 (퍼플)
-g_pCashItemManager:AddCashItemPrice(	272243	,	3200	) --	고딕 리본 장식 (블루)
-g_pCashItemManager:AddCashItemPrice(	272244	,	3200	) --	고딕 리본 장식 (퍼플)
-g_pCashItemManager:AddCashItemPrice(	272245	,	3200	) --	고딕 리본 장식 (블루)
-g_pCashItemManager:AddCashItemPrice(	272246	,	3200	) --	고딕 리본 장식 (퍼플)
-g_pCashItemManager:AddCashItemPrice(	272247	,	3200	) --	고딕 리본 장식 (블루)
-g_pCashItemManager:AddCashItemPrice(	272248	,	3200	) --	고딕 리본 장식 (퍼플)
-g_pCashItemManager:AddCashItemPrice(	272249	,	3200	) --	고딕 리본 장식 (블루)
-g_pCashItemManager:AddCashItemPrice(	272250	,	3200	) --	고딕 리본 장식 (퍼플)
-g_pCashItemManager:AddCashItemPrice(	272251	,	3200	) --	고딕 리본 장식 (블루)
-g_pCashItemManager:AddCashItemPrice(	272252	,	3200	) --	고딕 리본 장식 (퍼플)
-g_pCashItemManager:AddCashItemPrice(	272253	,	3200	) --	고딕 리본 장식 (블루)
-g_pCashItemManager:AddCashItemPrice(	272254	,	3200	) --	고딕 리본 장식 (퍼플)
-g_pCashItemManager:AddCashItemPrice(	272255	,	3200	) --	고딕 리본 장식 (블루)
-g_pCashItemManager:AddCashItemPrice(	272256	,	3200	) --	고딕 리본 장식 (퍼플)
-g_pCashItemManager:AddCashItemPrice(	272257	,	3200	) --	엔젤 윙 웨폰가드 (화이트)
-g_pCashItemManager:AddCashItemPrice(	272258	,	3200	) --	엔젤 윙 웨폰가드 (블랙)
-g_pCashItemManager:AddCashItemPrice(	272259	,	3200	) --	엔젤 윙 웨폰가드 (화이트)
-g_pCashItemManager:AddCashItemPrice(	272260	,	3200	) --	엔젤 윙 웨폰가드 (블랙)
-g_pCashItemManager:AddCashItemPrice(	272261	,	3200	) --	엔젤 윙 웨폰가드 (화이트)
-g_pCashItemManager:AddCashItemPrice(	272262	,	3200	) --	엔젤 윙 웨폰가드 (블랙)
-g_pCashItemManager:AddCashItemPrice(	272263	,	3200	) --	엔젤 윙 웨폰가드 (화이트)
-g_pCashItemManager:AddCashItemPrice(	272264	,	3200	) --	엔젤 윙 웨폰가드 (블랙)
-g_pCashItemManager:AddCashItemPrice(	272265	,	3200	) --	엔젤 윙 웨폰가드 (화이트)
-g_pCashItemManager:AddCashItemPrice(	272266	,	3200	) --	엔젤 윙 웨폰가드 (블랙)
-g_pCashItemManager:AddCashItemPrice(	272267	,	3200	) --	엔젤 윙 웨폰가드 (화이트)
-g_pCashItemManager:AddCashItemPrice(	272268	,	3200	) --	엔젤 윙 웨폰가드 (블랙)
-g_pCashItemManager:AddCashItemPrice(	272269	,	3200	) --	엔젤 윙 웨폰가드 (화이트)
-g_pCashItemManager:AddCashItemPrice(	272270	,	3200	) --	엔젤 윙 웨폰가드 (블랙)
-g_pCashItemManager:AddCashItemPrice(	272271	,	3200	) --	엔젤 윙 웨폰가드 (화이트)
-g_pCashItemManager:AddCashItemPrice(	272272	,	3200	) --	엔젤 윙 웨폰가드 (블랙)
-
---추가 11/12 우원식
-g_pCashItemManager:AddCashItemPrice(	81949	,	7000	) --	금강야차 귀문파천창(아라)
-g_pCashItemManager:AddCashItemPrice(	81950	,	5000	) --	금강야차 상의(아라)
-g_pCashItemManager:AddCashItemPrice(	81951	,	5000	) --	금강야차 하의(아라)
-g_pCashItemManager:AddCashItemPrice(	81952	,	2400	) --	금강야차 장갑(아라)
-g_pCashItemManager:AddCashItemPrice(	81953	,	2400	) --	금강야차 신발(아라)
-g_pCashItemManager:AddCashItemPrice(	81954	,	5000	) --	금강야차 머리 장식(아라)
-g_pCashItemManager:AddCashItemPrice(	81955	,	5000	) --	금강야차 화무일홍 망토(아라)
-g_pCashItemManager:AddCashItemPrice(	81956	,	7000	) --	금강 천야차 귀문파천창(아라)
-g_pCashItemManager:AddCashItemPrice(	81957	,	5000	) --	금강 천야차 상의(아라)
-g_pCashItemManager:AddCashItemPrice(	81958	,	5000	) --	금강 천야차 하의(아라)
-g_pCashItemManager:AddCashItemPrice(	81959	,	2400	) --	금강 천야차 장갑(아라)
-g_pCashItemManager:AddCashItemPrice(	81960	,	2400	) --	금강 천야차 신발(아라)
-g_pCashItemManager:AddCashItemPrice(	81961	,	5000	) --	금강 천야차 머리 장식(아라)
-g_pCashItemManager:AddCashItemPrice(	81962	,	5000	) --	금강 천야차 염령환 망토(아라)
-g_pCashItemManager:AddCashItemPrice(	81996	,	5000	) --	금강야차 나락령(아라)
-g_pCashItemManager:AddCashItemPrice(	81160	,	5000	) --	금강야차 귀면갑
-g_pCashItemManager:AddCashItemPrice(	81280	,	5000	) --	금강 천야차 귀면갑
-
---추가 11/14 우원식
-g_pCashItemManager:AddCashItemPrice(	81997	,	7000	) --	금강야차 귀문파천창(엘리시스)
-g_pCashItemManager:AddCashItemPrice(	81998	,	5000	) --	금강야차 상의(엘리시스)
-g_pCashItemManager:AddCashItemPrice(	81999	,	5000	) --	금강야차 하의(엘리시스)
-g_pCashItemManager:AddCashItemPrice(	82000	,	2400	) --	금강야차 장갑(엘리시스)
-g_pCashItemManager:AddCashItemPrice(	82001	,	2400	) --	금강야차 신발(엘리시스)
-g_pCashItemManager:AddCashItemPrice(	82002	,	5000	) --	금강야차 머리 장식(엘리시스)
-g_pCashItemManager:AddCashItemPrice(	82003	,	5000	) --	금강야차 화무일홍 망토(엘리시스)
-g_pCashItemManager:AddCashItemPrice(	82004	,	7000	) --	금강 천야차 귀문파천창(엘리시스)
-g_pCashItemManager:AddCashItemPrice(	82005	,	5000	) --	금강 천야차 상의(엘리시스)
-g_pCashItemManager:AddCashItemPrice(	82006	,	5000	) --	금강 천야차 하의(엘리시스)
-g_pCashItemManager:AddCashItemPrice(	82007	,	2400	) --	금강 천야차 장갑(엘리시스)
-g_pCashItemManager:AddCashItemPrice(	82008	,	2400	) --	금강 천야차 신발(엘리시스)
-g_pCashItemManager:AddCashItemPrice(	82009	,	5000	) --	금강 천야차 머리 장식(엘리시스)
-g_pCashItemManager:AddCashItemPrice(	82010	,	5000	) --	금강 천야차 염령환 망토(엘리시스)
-g_pCashItemManager:AddCashItemPrice(	82011	,	5000	) --	금강야차 나락령(엘리시스)
-g_pCashItemManager:AddCashItemPrice(	81160	,	5000	) --	금강야차 귀면갑
-g_pCashItemManager:AddCashItemPrice(	272480	,	7000	) --	엘소드 사립 엘리오스 학원 대검 (검정)
-g_pCashItemManager:AddCashItemPrice(	272481	,	5000	) --	엘소드 사립 엘리오스 학원 상의 (검정)
-g_pCashItemManager:AddCashItemPrice(	272482	,	5000	) --	엘소드 사립 엘리오스 학원 하의 (검정)
-g_pCashItemManager:AddCashItemPrice(	272483	,	2400	) --	엘소드 사립 엘리오스 학원 장갑 (검정)
-g_pCashItemManager:AddCashItemPrice(	272484	,	2400	) --	엘소드 사립 엘리오스 학원 신발 (검정)
-g_pCashItemManager:AddCashItemPrice(	272657	,	5000	) --	엘소드 사립 엘리오스 학원 헤어 (검정)
-g_pCashItemManager:AddCashItemPrice(	272486	,	7000	) --	엘소드 사립 엘리오스 학원 대검 (하양)
-g_pCashItemManager:AddCashItemPrice(	272487	,	5000	) --	엘소드 사립 엘리오스 학원 상의 (하양)
-g_pCashItemManager:AddCashItemPrice(	272488	,	5000	) --	엘소드 사립 엘리오스 학원 하의 (하양)
-g_pCashItemManager:AddCashItemPrice(	272489	,	2400	) --	엘소드 사립 엘리오스 학원 장갑 (하양)
-g_pCashItemManager:AddCashItemPrice(	272490	,	2400	) --	엘소드 사립 엘리오스 학원 신발 (하양)
-g_pCashItemManager:AddCashItemPrice(	272658	,	5000	) --	엘소드 사립 엘리오스 학원 헤어 (하양)
-g_pCashItemManager:AddCashItemPrice(	272492	,	7000	) --	아이샤 사립 엘리오스 학원 스태프 (검정)
-g_pCashItemManager:AddCashItemPrice(	272493	,	5000	) --	아이샤 사립 엘리오스 학원 상의 (검정)
-g_pCashItemManager:AddCashItemPrice(	272494	,	5000	) --	아이샤 사립 엘리오스 학원 하의 (검정)
-g_pCashItemManager:AddCashItemPrice(	272495	,	2400	) --	아이샤 사립 엘리오스 학원 장갑 (검정)
-g_pCashItemManager:AddCashItemPrice(	272496	,	2400	) --	아이샤 사립 엘리오스 학원 신발 (검정)
-g_pCashItemManager:AddCashItemPrice(	272659	,	5000	) --	아이샤 사립 엘리오스 학원 헤어 (검정)
-g_pCashItemManager:AddCashItemPrice(	272498	,	7000	) --	아이샤 사립 엘리오스 학원 스태프 (하양)
-g_pCashItemManager:AddCashItemPrice(	272499	,	5000	) --	아이샤 사립 엘리오스 학원 상의 (하양)
-g_pCashItemManager:AddCashItemPrice(	272500	,	5000	) --	아이샤 사립 엘리오스 학원 하의 (하양)
-g_pCashItemManager:AddCashItemPrice(	272501	,	2400	) --	아이샤 사립 엘리오스 학원 장갑 (하양)
-g_pCashItemManager:AddCashItemPrice(	272502	,	2400	) --	아이샤 사립 엘리오스 학원 신발 (하양)
-g_pCashItemManager:AddCashItemPrice(	272660	,	5000	) --	아이샤 사립 엘리오스 학원 헤어 (하양)
-g_pCashItemManager:AddCashItemPrice(	272504	,	7000	) --	레나 사립 엘리오스 학원 활 (검정)
-g_pCashItemManager:AddCashItemPrice(	272505	,	5000	) --	레나 사립 엘리오스 학원 상의 (검정)
-g_pCashItemManager:AddCashItemPrice(	272506	,	5000	) --	레나 사립 엘리오스 학원 하의 (검정)
-g_pCashItemManager:AddCashItemPrice(	272507	,	2400	) --	레나 사립 엘리오스 학원 장갑 (검정)
-g_pCashItemManager:AddCashItemPrice(	272508	,	2400	) --	레나 사립 엘리오스 학원 신발 (검정)
-g_pCashItemManager:AddCashItemPrice(	272661	,	5000	) --	레나 사립 엘리오스 학원 헤어 (검정)
-g_pCashItemManager:AddCashItemPrice(	272510	,	7000	) --	레나 사립 엘리오스 학원 활 (하양)
-g_pCashItemManager:AddCashItemPrice(	272511	,	5000	) --	레나 사립 엘리오스 학원 상의 (하양)
-g_pCashItemManager:AddCashItemPrice(	272512	,	5000	) --	레나 사립 엘리오스 학원 하의 (하양)
-g_pCashItemManager:AddCashItemPrice(	272513	,	2400	) --	레나 사립 엘리오스 학원 장갑 (하양)
-g_pCashItemManager:AddCashItemPrice(	272514	,	2400	) --	레나 사립 엘리오스 학원 신발 (하양)
-g_pCashItemManager:AddCashItemPrice(	272662	,	5000	) --	레나 사립 엘리오스 학원 헤어 (하양)
-g_pCashItemManager:AddCashItemPrice(	272516	,	7000	) --	레이븐 사립 엘리오스 학원 장검 (검정)
-g_pCashItemManager:AddCashItemPrice(	272517	,	5000	) --	레이븐 사립 엘리오스 학원 상의 (검정)
-g_pCashItemManager:AddCashItemPrice(	272518	,	5000	) --	레이븐 사립 엘리오스 학원 하의 (검정)
-g_pCashItemManager:AddCashItemPrice(	272519	,	2400	) --	레이븐 사립 엘리오스 학원 장갑 (검정)
-g_pCashItemManager:AddCashItemPrice(	272520	,	2400	) --	레이븐 사립 엘리오스 학원 신발 (검정)
-g_pCashItemManager:AddCashItemPrice(	272663	,	5000	) --	레이븐 사립 엘리오스 학원 헤어 (검정)
-g_pCashItemManager:AddCashItemPrice(	272522	,	7000	) --	레이븐 사립 엘리오스 학원 장검 (하양)
-g_pCashItemManager:AddCashItemPrice(	272523	,	5000	) --	레이븐 사립 엘리오스 학원 상의 (하양)
-g_pCashItemManager:AddCashItemPrice(	272524	,	5000	) --	레이븐 사립 엘리오스 학원 하의 (하양)
-g_pCashItemManager:AddCashItemPrice(	272525	,	2400	) --	레이븐 사립 엘리오스 학원 장갑 (하양)
-g_pCashItemManager:AddCashItemPrice(	272526	,	2400	) --	레이븐 사립 엘리오스 학원 신발 (하양)
-g_pCashItemManager:AddCashItemPrice(	272664	,	5000	) --	레이븐 사립 엘리오스 학원 헤어 (하양)
-g_pCashItemManager:AddCashItemPrice(	272528	,	7000	) --	이브 사립 엘리오스 학원 기어 (검정)
-g_pCashItemManager:AddCashItemPrice(	272529	,	5000	) --	이브 사립 엘리오스 학원 상의 (검정)
-g_pCashItemManager:AddCashItemPrice(	272530	,	5000	) --	이브 사립 엘리오스 학원 하의 (검정)
-g_pCashItemManager:AddCashItemPrice(	272531	,	2400	) --	이브 사립 엘리오스 학원 장갑 (검정)
-g_pCashItemManager:AddCashItemPrice(	272532	,	2400	) --	이브 사립 엘리오스 학원 신발 (검정)
-g_pCashItemManager:AddCashItemPrice(	272665	,	5000	) --	이브 사립 엘리오스 학원 헤어 (검정)
-g_pCashItemManager:AddCashItemPrice(	272534	,	7000	) --	이브 사립 엘리오스 학원 기어 (하양)
-g_pCashItemManager:AddCashItemPrice(	272535	,	5000	) --	이브 사립 엘리오스 학원 상의 (하양)
-g_pCashItemManager:AddCashItemPrice(	272536	,	5000	) --	이브 사립 엘리오스 학원 하의 (하양)
-g_pCashItemManager:AddCashItemPrice(	272537	,	2400	) --	이브 사립 엘리오스 학원 장갑 (하양)
-g_pCashItemManager:AddCashItemPrice(	272538	,	2400	) --	이브 사립 엘리오스 학원 신발 (하양)
-g_pCashItemManager:AddCashItemPrice(	272666	,	5000	) --	이브 사립 엘리오스 학원 헤어 (하양)
-g_pCashItemManager:AddCashItemPrice(	272540	,	7000	) --	청 사립 엘리오스 학원 철포 (검정)
-g_pCashItemManager:AddCashItemPrice(	272541	,	5000	) --	청 사립 엘리오스 학원 상의 (검정)
-g_pCashItemManager:AddCashItemPrice(	272542	,	5000	) --	청 사립 엘리오스 학원 하의 (검정)
-g_pCashItemManager:AddCashItemPrice(	272543	,	2400	) --	청 사립 엘리오스 학원 장갑 (검정)
-g_pCashItemManager:AddCashItemPrice(	272544	,	2400	) --	청 사립 엘리오스 학원 신발 (검정)
-g_pCashItemManager:AddCashItemPrice(	272667	,	5000	) --	청 사립 엘리오스 학원 헤어 (검정)
-g_pCashItemManager:AddCashItemPrice(	272546	,	7000	) --	청 사립 엘리오스 학원 철포 (하양)
-g_pCashItemManager:AddCashItemPrice(	272547	,	5000	) --	청 사립 엘리오스 학원 상의 (하양)
-g_pCashItemManager:AddCashItemPrice(	272548	,	5000	) --	청 사립 엘리오스 학원 하의 (하양)
-g_pCashItemManager:AddCashItemPrice(	272549	,	2400	) --	청 사립 엘리오스 학원 장갑 (하양)
-g_pCashItemManager:AddCashItemPrice(	272550	,	2400	) --	청 사립 엘리오스 학원 신발 (하양)
-g_pCashItemManager:AddCashItemPrice(	272668	,	5000	) --	청 사립 엘리오스 학원 헤어 (하양)
-g_pCashItemManager:AddCashItemPrice(	272552	,	7000	) --	아라 사립 엘리오스 학원 장창 (검정)
-g_pCashItemManager:AddCashItemPrice(	272553	,	5000	) --	아라 사립 엘리오스 학원 상의 (검정)
-g_pCashItemManager:AddCashItemPrice(	272554	,	5000	) --	아라 사립 엘리오스 학원 하의 (검정)
-g_pCashItemManager:AddCashItemPrice(	272555	,	2400	) --	아라 사립 엘리오스 학원 장갑 (검정)
-g_pCashItemManager:AddCashItemPrice(	272556	,	2400	) --	아라 사립 엘리오스 학원 신발 (검정)
-g_pCashItemManager:AddCashItemPrice(	272669	,	5000	) --	아라 사립 엘리오스 학원 헤어 (검정)
-g_pCashItemManager:AddCashItemPrice(	272558	,	7000	) --	아라 사립 엘리오스 학원 장창 (하양)
-g_pCashItemManager:AddCashItemPrice(	272559	,	5000	) --	아라 사립 엘리오스 학원 상의 (하양)
-g_pCashItemManager:AddCashItemPrice(	272560	,	5000	) --	아라 사립 엘리오스 학원 하의 (하양)
-g_pCashItemManager:AddCashItemPrice(	272561	,	2400	) --	아라 사립 엘리오스 학원 장갑 (하양)
-g_pCashItemManager:AddCashItemPrice(	272562	,	2400	) --	아라 사립 엘리오스 학원 신발 (하양)
-g_pCashItemManager:AddCashItemPrice(	272670	,	5000	) --	아라 사립 엘리오스 학원 헤어 (하양)
-g_pCashItemManager:AddCashItemPrice(	272564	,	7000	) --	엘리시스 사립 엘리오스 학원 양손검 (검정)
-g_pCashItemManager:AddCashItemPrice(	272565	,	5000	) --	엘리시스 사립 엘리오스 학원 상의 (검정)
-g_pCashItemManager:AddCashItemPrice(	272566	,	5000	) --	엘리시스 사립 엘리오스 학원 하의 (검정)
-g_pCashItemManager:AddCashItemPrice(	272567	,	2400	) --	엘리시스 사립 엘리오스 학원 장갑 (검정)
-g_pCashItemManager:AddCashItemPrice(	272568	,	2400	) --	엘리시스 사립 엘리오스 학원 신발 (검정)
-g_pCashItemManager:AddCashItemPrice(	272671	,	5000	) --	엘리시스 사립 엘리오스 학원 헤어 (검정)
-g_pCashItemManager:AddCashItemPrice(	272570	,	7000	) --	엘리시스 사립 엘리오스 학원 양손검 (하양)
-g_pCashItemManager:AddCashItemPrice(	272571	,	5000	) --	엘리시스 사립 엘리오스 학원 상의 (하양)
-g_pCashItemManager:AddCashItemPrice(	272572	,	5000	) --	엘리시스 사립 엘리오스 학원 하의 (하양)
-g_pCashItemManager:AddCashItemPrice(	272573	,	2400	) --	엘리시스 사립 엘리오스 학원 장갑 (하양)
-g_pCashItemManager:AddCashItemPrice(	272574	,	2400	) --	엘리시스 사립 엘리오스 학원 신발 (하양)
-g_pCashItemManager:AddCashItemPrice(	272672	,	5000	) --	엘리시스 사립 엘리오스 학원 헤어 (하양)
-g_pCashItemManager:AddCashItemPrice(	272485	,	5000	) --	엘소드 사립 엘리오스 학원 모자 (검정)
-g_pCashItemManager:AddCashItemPrice(	272491	,	5000	) --	엘소드 사립 엘리오스 학원 모자 (하양)
-g_pCashItemManager:AddCashItemPrice(	272497	,	5000	) --	아이샤 사립 엘리오스 학원 모자 (검정)
-g_pCashItemManager:AddCashItemPrice(	272503	,	5000	) --	아이샤 사립 엘리오스 학원 모자 (하양)
-g_pCashItemManager:AddCashItemPrice(	272509	,	5000	) --	레나 사립 엘리오스 학원 모자 (검정)
-g_pCashItemManager:AddCashItemPrice(	272515	,	5000	) --	레나 사립 엘리오스 학원 모자 (하양)
-g_pCashItemManager:AddCashItemPrice(	272521	,	5000	) --	레이븐 사립 엘리오스 학원 모자 (검정)
-g_pCashItemManager:AddCashItemPrice(	272527	,	5000	) --	레이븐 사립 엘리오스 학원 모자 (하양)
-g_pCashItemManager:AddCashItemPrice(	272533	,	5000	) --	이브 사립 엘리오스 학원 모자 (검정)
-g_pCashItemManager:AddCashItemPrice(	272539	,	5000	) --	이브 사립 엘리오스 학원 모자 (하양)
-g_pCashItemManager:AddCashItemPrice(	272545	,	5000	) --	청 사립 엘리오스 학원 모자 (검정)
-g_pCashItemManager:AddCashItemPrice(	272551	,	5000	) --	청 사립 엘리오스 학원 모자 (하양)
-g_pCashItemManager:AddCashItemPrice(	272557	,	5000	) --	아라 사립 엘리오스 학원 모자 (검정)
-g_pCashItemManager:AddCashItemPrice(	272563	,	5000	) --	아라 사립 엘리오스 학원 모자 (하양)
-g_pCashItemManager:AddCashItemPrice(	272569	,	5000	) --	엘리시스 사립 엘리오스 학원 모자 (검정)
-g_pCashItemManager:AddCashItemPrice(	272575	,	5000	) --	엘리시스 사립 엘리오스 학원 모자 (하양)
-
---추가 12/3 우원식
-g_pCashItemManager:AddCashItemPrice(	272197	,	7000	) --	아라 알프스 프릴 삼지창(빨강)
-g_pCashItemManager:AddCashItemPrice(	272198	,	5000	) --	아라 알프스 상의(빨강)
-g_pCashItemManager:AddCashItemPrice(	272199	,	5000	) --	아라 알프스 하의(빨강)
-g_pCashItemManager:AddCashItemPrice(	272200	,	2400	) --	아라 알프스 장갑(빨강)
-g_pCashItemManager:AddCashItemPrice(	272201	,	2400	) --	아라 알프스 신발(빨강)
-g_pCashItemManager:AddCashItemPrice(	272202	,	5000	) --	아라 알프스 머리(빨강)
-g_pCashItemManager:AddCashItemPrice(	272203	,	7000	) --	아라 알프스 프릴 삼지창(핑크)
-g_pCashItemManager:AddCashItemPrice(	272204	,	5000	) --	아라 알프스 상의(핑크)
-g_pCashItemManager:AddCashItemPrice(	272205	,	5000	) --	아라 알프스 하의(핑크)
-g_pCashItemManager:AddCashItemPrice(	272206	,	2400	) --	아라 알프스 장갑(핑크)
-g_pCashItemManager:AddCashItemPrice(	272207	,	2400	) --	아라 알프스 신발(핑크)
-g_pCashItemManager:AddCashItemPrice(	272208	,	5000	) --	아라 알프스 머리(핑크)
-
---추가 12/9 우원식
-g_pCashItemManager:AddCashItemPrice(	272747	,	7000	) --	엘리시스 알프스 양산 클레이모어(파랑)
-g_pCashItemManager:AddCashItemPrice(	272748	,	5000	) --	엘리시스 알프스 상의(파랑)
-g_pCashItemManager:AddCashItemPrice(	272749	,	5000	) --	엘리시스 알프스 하의(파랑)
-g_pCashItemManager:AddCashItemPrice(	272750	,	2400	) --	엘리시스 알프스 장갑(파랑)
-g_pCashItemManager:AddCashItemPrice(	272751	,	2400	) --	엘리시스 알프스 신발(파랑)
-g_pCashItemManager:AddCashItemPrice(	272752	,	5000	) --	엘리시스 알프스 헤어(파랑)
-g_pCashItemManager:AddCashItemPrice(	272753	,	7000	) --	엘리시스 알프스 양산 클레이모어(빨강)
-g_pCashItemManager:AddCashItemPrice(	272754	,	5000	) --	엘리시스 알프스 상의(빨강)
-g_pCashItemManager:AddCashItemPrice(	272755	,	5000	) --	엘리시스 알프스 하의(빨강)
-g_pCashItemManager:AddCashItemPrice(	272756	,	2400	) --	엘리시스 알프스 장갑(빨강)
-g_pCashItemManager:AddCashItemPrice(	272757	,	2400	) --	엘리시스 알프스 신발(빨강)
-g_pCashItemManager:AddCashItemPrice(	272758	,	5000	) --	엘리시스 알프스 헤어(빨강)
-g_pCashItemManager:AddCashItemPrice(	272744	,	5000	) --	나소드 세틀라잇 밴드
-g_pCashItemManager:AddCashItemPrice(	272745	,	5000	) --	나소드 캣 후드
-g_pCashItemManager:AddCashItemPrice(	272761	,	5000	) --	나소드 애드 초콜릿
-g_pCashItemManager:AddCashItemPrice(	81956	,	7000	) --	금강 천야차 귀문파천창(아라)
-g_pCashItemManager:AddCashItemPrice(	81957	,	5000	) --	금강 천야차 상의(아라)
-g_pCashItemManager:AddCashItemPrice(	81958	,	5000	) --	금강 천야차 하의(아라)
-g_pCashItemManager:AddCashItemPrice(	81959	,	2400	) --	금강 천야차 장갑(아라)
-g_pCashItemManager:AddCashItemPrice(	81960	,	2400	) --	금강 천야차 신발(아라)
-g_pCashItemManager:AddCashItemPrice(	81961	,	5000	) --	금강 천야차 머리 장식(아라)
-g_pCashItemManager:AddCashItemPrice(	81962	,	5000	) --	금강 천야차 염령환 망토(아라)
-g_pCashItemManager:AddCashItemPrice(	82004	,	7000	) --	금강 천야차 귀문의천도(엘리시스)
-g_pCashItemManager:AddCashItemPrice(	82005	,	5000	) --	금강 천야차 상의(엘리시스)
-g_pCashItemManager:AddCashItemPrice(	82006	,	5000	) --	금강 천야차 하의(엘리시스)
-g_pCashItemManager:AddCashItemPrice(	82007	,	2400	) --	금강 천야차 장갑(엘리시스)
-g_pCashItemManager:AddCashItemPrice(	82008	,	2400	) --	금강 천야차 신발(엘리시스)
-g_pCashItemManager:AddCashItemPrice(	82009	,	5000	) --	금강 천야차 머리 장식(엘리시스)
-g_pCashItemManager:AddCashItemPrice(	82010	,	5000	) --	금강 천야차 화무일홍 망토(엘리시스)
-
-
---추가 12/17 우원식
-g_pCashItemManager:AddCashItemPrice(	272782	,	7000	) --	애드 사이언티스트 다이너모 (레드)
-g_pCashItemManager:AddCashItemPrice(	272783	,	5000	) --	애드 사이언티스트 상의 (레드)
-g_pCashItemManager:AddCashItemPrice(	272784	,	5000	) --	애드 사이언티스트 하의 (레드)
-g_pCashItemManager:AddCashItemPrice(	272785	,	2400	) --	애드 사이언티스트 장갑 (레드)
-g_pCashItemManager:AddCashItemPrice(	272786	,	2400	) --	애드 사이언티스트 신발 (레드)
-g_pCashItemManager:AddCashItemPrice(	272787	,	5000	) --	애드 사이언티스트 헤어 (레드)
-g_pCashItemManager:AddCashItemPrice(	272788	,	7000	) --	애드 사이언티스트 다이너모 (옐로)
-g_pCashItemManager:AddCashItemPrice(	272789	,	5000	) --	애드 사이언티스트 상의 (옐로)
-g_pCashItemManager:AddCashItemPrice(	272790	,	5000	) --	애드 사이언티스트 하의 (옐로)
-g_pCashItemManager:AddCashItemPrice(	272791	,	2400	) --	애드 사이언티스트 장갑 (옐로)
-g_pCashItemManager:AddCashItemPrice(	272792	,	2400	) --	애드 사이언티스트 신발 (옐로)
-g_pCashItemManager:AddCashItemPrice(	272793	,	5000	) --	애드 사이언티스트 헤어 (옐로)
-g_pCashItemManager:AddCashItemPrice(	272796	,	7000	) --	애드 애니멀 룩 다이너모 (퍼플)
-g_pCashItemManager:AddCashItemPrice(	272797	,	5000	) --	애드 애니멀 룩 상의 (퍼플)
-g_pCashItemManager:AddCashItemPrice(	272798	,	5000	) --	애드 애니멀 룩 하의 (퍼플)
-g_pCashItemManager:AddCashItemPrice(	272799	,	2400	) --	애드 애니멀 룩 장갑 (퍼플)
-g_pCashItemManager:AddCashItemPrice(	272800	,	2400	) --	애드 애니멀 룩 신발 (퍼플)
-g_pCashItemManager:AddCashItemPrice(	272801	,	5000	) --	애드 애니멀 룩 헤어 (퍼플)
-g_pCashItemManager:AddCashItemPrice(	272802	,	7000	) --	애드 애니멀 룩 다이너모 (옐로)
-g_pCashItemManager:AddCashItemPrice(	272803	,	5000	) --	애드 애니멀 룩 상의 (옐로)
-g_pCashItemManager:AddCashItemPrice(	272804	,	5000	) --	애드 애니멀 룩 하의 (옐로)
-g_pCashItemManager:AddCashItemPrice(	272805	,	2400	) --	애드 애니멀 룩 장갑 (옐로)
-g_pCashItemManager:AddCashItemPrice(	272806	,	2400	) --	애드 애니멀 룩 신발 (옐로)
-g_pCashItemManager:AddCashItemPrice(	272807	,	5000	) --	애드 애니멀 룩 헤어 (옐로)
-g_pCashItemManager:AddCashItemPrice(	272812	,	7000	) --	엘소드 엘리오스 구세군 무기 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272813	,	5000	) --	엘소드 엘리오스 구세군 상의 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272814	,	5000	) --	엘소드 엘리오스 구세군 하의 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272815	,	2400	) --	엘소드 엘리오스 구세군 장갑 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272816	,	2400	) --	엘소드 엘리오스 구세군 신발 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272817	,	5000	) --	엘소드 엘리오스 구세군 헤어 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272818	,	5000	) --	엘소드 엘리오스 구세군 모자 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272819	,	7000	) --	엘소드 엘리오스 구세군 무기 (하양)
-g_pCashItemManager:AddCashItemPrice(	272820	,	5000	) --	엘소드 엘리오스 구세군 상의 (하양)
-g_pCashItemManager:AddCashItemPrice(	272821	,	5000	) --	엘소드 엘리오스 구세군 하의 (하양)
-g_pCashItemManager:AddCashItemPrice(	272822	,	2400	) --	엘소드 엘리오스 구세군 장갑 (하양)
-g_pCashItemManager:AddCashItemPrice(	272823	,	2400	) --	엘소드 엘리오스 구세군 신발 (하양)
-g_pCashItemManager:AddCashItemPrice(	272824	,	5000	) --	엘소드 엘리오스 구세군 헤어 (하양)
-g_pCashItemManager:AddCashItemPrice(	272825	,	5000	) --	엘소드 엘리오스 구세군 모자 (하양)
-g_pCashItemManager:AddCashItemPrice(	272826	,	7000	) --	아이샤 엘리오스 구세군 무기 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272827	,	5000	) --	아이샤 엘리오스 구세군 상의 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272828	,	5000	) --	아이샤 엘리오스 구세군 하의 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272829	,	2400	) --	아이샤 엘리오스 구세군 장갑 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272830	,	2400	) --	아이샤 엘리오스 구세군 신발 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272831	,	5000	) --	아이샤 엘리오스 구세군 헤어 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272832	,	5000	) --	아이샤 엘리오스 구세군 모자 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272833	,	7000	) --	아이샤 엘리오스 구세군 무기 (하양)
-g_pCashItemManager:AddCashItemPrice(	272834	,	5000	) --	아이샤 엘리오스 구세군 상의 (하양)
-g_pCashItemManager:AddCashItemPrice(	272835	,	5000	) --	아이샤 엘리오스 구세군 하의 (하양)
-g_pCashItemManager:AddCashItemPrice(	272836	,	2400	) --	아이샤 엘리오스 구세군 장갑 (하양)
-g_pCashItemManager:AddCashItemPrice(	272837	,	2400	) --	아이샤 엘리오스 구세군 신발 (하양)
-g_pCashItemManager:AddCashItemPrice(	272838	,	5000	) --	아이샤 엘리오스 구세군 헤어 (하양)
-g_pCashItemManager:AddCashItemPrice(	272839	,	5000	) --	아이샤 엘리오스 구세군 모자 (하양)
-g_pCashItemManager:AddCashItemPrice(	272840	,	7000	) --	레나 엘리오스 구세군 무기 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272841	,	5000	) --	레나 엘리오스 구세군 상의 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272842	,	5000	) --	레나 엘리오스 구세군 하의 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272843	,	2400	) --	레나 엘리오스 구세군 장갑 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272844	,	2400	) --	레나 엘리오스 구세군 신발 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272845	,	5000	) --	레나 엘리오스 구세군 헤어 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272846	,	5000	) --	레나 엘리오스 구세군 모자 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272847	,	7000	) --	레나 엘리오스 구세군 무기 (하양)
-g_pCashItemManager:AddCashItemPrice(	272848	,	5000	) --	레나 엘리오스 구세군 상의 (하양)
-g_pCashItemManager:AddCashItemPrice(	272849	,	5000	) --	레나 엘리오스 구세군 하의 (하양)
-g_pCashItemManager:AddCashItemPrice(	272850	,	2400	) --	레나 엘리오스 구세군 장갑 (하양)
-g_pCashItemManager:AddCashItemPrice(	272851	,	2400	) --	레나 엘리오스 구세군 신발 (하양)
-g_pCashItemManager:AddCashItemPrice(	272852	,	5000	) --	레나 엘리오스 구세군 헤어 (하양)
-g_pCashItemManager:AddCashItemPrice(	272853	,	5000	) --	레나 엘리오스 구세군 모자 (하양)
-g_pCashItemManager:AddCashItemPrice(	272854	,	7000	) --	레이븐 엘리오스 구세군 무기 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272855	,	5000	) --	레이븐 엘리오스 구세군 상의 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272856	,	5000	) --	레이븐 엘리오스 구세군 하의 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272857	,	2400	) --	레이븐 엘리오스 구세군 장갑 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272858	,	2400	) --	레이븐 엘리오스 구세군 신발 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272859	,	5000	) --	레이븐 엘리오스 구세군 헤어 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272860	,	5000	) --	레이븐 엘리오스 구세군 모자 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272861	,	7000	) --	레이븐 엘리오스 구세군 무기 (하양)
-g_pCashItemManager:AddCashItemPrice(	272862	,	5000	) --	레이븐 엘리오스 구세군 상의 (하양)
-g_pCashItemManager:AddCashItemPrice(	272863	,	5000	) --	레이븐 엘리오스 구세군 하의 (하양)
-g_pCashItemManager:AddCashItemPrice(	272864	,	2400	) --	레이븐 엘리오스 구세군 장갑 (하양)
-g_pCashItemManager:AddCashItemPrice(	272865	,	2400	) --	레이븐 엘리오스 구세군 신발 (하양)
-g_pCashItemManager:AddCashItemPrice(	272866	,	5000	) --	레이븐 엘리오스 구세군 헤어 (하양)
-g_pCashItemManager:AddCashItemPrice(	272867	,	5000	) --	레이븐 엘리오스 구세군 모자 (하양)
-g_pCashItemManager:AddCashItemPrice(	272868	,	7000	) --	이브 엘리오스 구세군 무기 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272869	,	5000	) --	이브 엘리오스 구세군 상의 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272870	,	5000	) --	이브 엘리오스 구세군 하의 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272871	,	2400	) --	이브 엘리오스 구세군 장갑 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272872	,	2400	) --	이브 엘리오스 구세군 신발 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272873	,	5000	) --	이브 엘리오스 구세군 헤어 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272874	,	5000	) --	이브 엘리오스 구세군 모자 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272875	,	7000	) --	이브 엘리오스 구세군 무기 (하양)
-g_pCashItemManager:AddCashItemPrice(	272876	,	5000	) --	이브 엘리오스 구세군 상의 (하양)
-g_pCashItemManager:AddCashItemPrice(	272877	,	5000	) --	이브 엘리오스 구세군 하의 (하양)
-g_pCashItemManager:AddCashItemPrice(	272878	,	2400	) --	이브 엘리오스 구세군 장갑 (하양)
-g_pCashItemManager:AddCashItemPrice(	272879	,	2400	) --	이브 엘리오스 구세군 신발 (하양)
-g_pCashItemManager:AddCashItemPrice(	272880	,	5000	) --	이브 엘리오스 구세군 헤어 (하양)
-g_pCashItemManager:AddCashItemPrice(	272881	,	5000	) --	이브 엘리오스 구세군 모자 (하양)
-g_pCashItemManager:AddCashItemPrice(	272882	,	7000	) --	청 엘리오스 구세군 무기 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272883	,	5000	) --	청 엘리오스 구세군 상의 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272884	,	5000	) --	청 엘리오스 구세군 하의 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272885	,	2400	) --	청 엘리오스 구세군 장갑 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272886	,	2400	) --	청 엘리오스 구세군 신발 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272887	,	5000	) --	청 엘리오스 구세군 헤어 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272888	,	5000	) --	청 엘리오스 구세군 모자 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272889	,	7000	) --	청 엘리오스 구세군 무기 (하양)
-g_pCashItemManager:AddCashItemPrice(	272890	,	5000	) --	청 엘리오스 구세군 상의 (하양)
-g_pCashItemManager:AddCashItemPrice(	272891	,	5000	) --	청 엘리오스 구세군 하의 (하양)
-g_pCashItemManager:AddCashItemPrice(	272892	,	2400	) --	청 엘리오스 구세군 장갑 (하양)
-g_pCashItemManager:AddCashItemPrice(	272893	,	2400	) --	청 엘리오스 구세군 신발 (하양)
-g_pCashItemManager:AddCashItemPrice(	272894	,	5000	) --	청 엘리오스 구세군 헤어 (하양)
-g_pCashItemManager:AddCashItemPrice(	272895	,	5000	) --	청 엘리오스 구세군 모자 (하양)
-g_pCashItemManager:AddCashItemPrice(	272896	,	7000	) --	아라 엘리오스 구세군 무기 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272897	,	5000	) --	아라 엘리오스 구세군 상의 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272898	,	5000	) --	아라 엘리오스 구세군 하의 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272899	,	2400	) --	아라 엘리오스 구세군 장갑 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272900	,	2400	) --	아라 엘리오스 구세군 신발 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272901	,	5000	) --	아라 엘리오스 구세군 헤어 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272902	,	5000	) --	아라 엘리오스 구세군 모자 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272903	,	7000	) --	아라 엘리오스 구세군 무기 (하양)
-g_pCashItemManager:AddCashItemPrice(	272904	,	5000	) --	아라 엘리오스 구세군 상의 (하양)
-g_pCashItemManager:AddCashItemPrice(	272905	,	5000	) --	아라 엘리오스 구세군 하의 (하양)
-g_pCashItemManager:AddCashItemPrice(	272906	,	2400	) --	아라 엘리오스 구세군 장갑 (하양)
-g_pCashItemManager:AddCashItemPrice(	272907	,	2400	) --	아라 엘리오스 구세군 신발 (하양)
-g_pCashItemManager:AddCashItemPrice(	272908	,	5000	) --	아라 엘리오스 구세군 헤어 (하양)
-g_pCashItemManager:AddCashItemPrice(	272909	,	5000	) --	아라 엘리오스 구세군 모자 (하양)
-g_pCashItemManager:AddCashItemPrice(	272910	,	7000	) --	엘리시스 엘리오스 구세군 무기 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272911	,	5000	) --	엘리시스 엘리오스 구세군 상의 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272912	,	5000	) --	엘리시스 엘리오스 구세군 하의 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272913	,	2400	) --	엘리시스 엘리오스 구세군 장갑 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272914	,	2400	) --	엘리시스 엘리오스 구세군 신발 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272915	,	5000	) --	엘리시스 엘리오스 구세군 헤어 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272916	,	5000	) --	엘리시스 엘리오스 구세군 모자 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272917	,	7000	) --	엘리시스 엘리오스 구세군 무기 (하양)
-g_pCashItemManager:AddCashItemPrice(	272918	,	5000	) --	엘리시스 엘리오스 구세군 상의 (하양)
-g_pCashItemManager:AddCashItemPrice(	272919	,	5000	) --	엘리시스 엘리오스 구세군 하의 (하양)
-g_pCashItemManager:AddCashItemPrice(	272920	,	2400	) --	엘리시스 엘리오스 구세군 장갑 (하양)
-g_pCashItemManager:AddCashItemPrice(	272921	,	2400	) --	엘리시스 엘리오스 구세군 신발 (하양)
-g_pCashItemManager:AddCashItemPrice(	272922	,	5000	) --	엘리시스 엘리오스 구세군 헤어 (하양)
-g_pCashItemManager:AddCashItemPrice(	272923	,	5000	) --	엘리시스 엘리오스 구세군 모자 (하양)
-g_pCashItemManager:AddCashItemPrice(	272924	,	7000	) --	애드 엘리오스 구세군 무기 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272925	,	5000	) --	애드 엘리오스 구세군 상의 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272926	,	5000	) --	애드 엘리오스 구세군 하의 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272927	,	2400	) --	애드 엘리오스 구세군 장갑 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272928	,	2400	) --	애드 엘리오스 구세군 신발 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272929	,	5000	) --	애드 엘리오스 구세군 헤어 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272930	,	5000	) --	애드 엘리오스 구세군 모자 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272931	,	7000	) --	애드 엘리오스 구세군 무기 (하양)
-g_pCashItemManager:AddCashItemPrice(	272932	,	5000	) --	애드 엘리오스 구세군 상의 (하양)
-g_pCashItemManager:AddCashItemPrice(	272933	,	5000	) --	애드 엘리오스 구세군 하의 (하양)
-g_pCashItemManager:AddCashItemPrice(	272934	,	2400	) --	애드 엘리오스 구세군 장갑 (하양)
-g_pCashItemManager:AddCashItemPrice(	272935	,	2400	) --	애드 엘리오스 구세군 신발 (하양)
-g_pCashItemManager:AddCashItemPrice(	272936	,	5000	) --	애드 엘리오스 구세군 헤어 (하양)
-g_pCashItemManager:AddCashItemPrice(	272937	,	5000	) --	애드 엘리오스 구세군 모자 (하양)
-g_pCashItemManager:AddCashItemPrice(	272762	,	9900	) --	엘소드 크레용 팝 X-MAS (초록)
-g_pCashItemManager:AddCashItemPrice(	272763	,	9900	) --	아이샤 크레용 팝 X-MAS (초록)
-g_pCashItemManager:AddCashItemPrice(	272764	,	9900	) --	레나 크레용 팝 X-MAS (초록)
-g_pCashItemManager:AddCashItemPrice(	272765	,	9900	) --	레이븐 크레용 팝 X-MAS (초록)
-g_pCashItemManager:AddCashItemPrice(	272766	,	9900	) --	이브 크레용 팝 X-MAS (초록)
-g_pCashItemManager:AddCashItemPrice(	272767	,	9900	) --	청 크레용 팝 X-MAS (초록)
-g_pCashItemManager:AddCashItemPrice(	272768	,	9900	) --	아라 크레용 팝 X-MAS (초록)
-g_pCashItemManager:AddCashItemPrice(	272769	,	9900	) --	엘리시스 크레용 팝 X-MAS (초록)
-g_pCashItemManager:AddCashItemPrice(	272770	,	9900	) --	애드 크레용 팝 X-MAS (초록)
-g_pCashItemManager:AddCashItemPrice(	272771	,	9900	) --	엘소드 크레용 팝 X-MAS (파랑)
-g_pCashItemManager:AddCashItemPrice(	272772	,	9900	) --	아이샤 크레용 팝 X-MAS (파랑)
-g_pCashItemManager:AddCashItemPrice(	272773	,	9900	) --	레나 크레용 팝 X-MAS (파랑)
-g_pCashItemManager:AddCashItemPrice(	272774	,	9900	) --	레이븐 크레용 팝 X-MAS (파랑)
-g_pCashItemManager:AddCashItemPrice(	272775	,	9900	) --	이브 크레용 팝 X-MAS (파랑)
-g_pCashItemManager:AddCashItemPrice(	272776	,	9900	) --	청 크레용 팝 X-MAS (파랑)
-g_pCashItemManager:AddCashItemPrice(	272777	,	9900	) --	아라 크레용 팝 X-MAS (파랑)
-g_pCashItemManager:AddCashItemPrice(	272778	,	9900	) --	엘리시스 크레용 팝 X-MAS (파랑)
-g_pCashItemManager:AddCashItemPrice(	272779	,	9900	) --	애드 크레용 팝 X-MAS (파랑)
-g_pCashItemManager:AddCashItemPrice(	272780	,	5000	) --	크레용 팝 X-MAS 스타 크라운 (노랑)
-g_pCashItemManager:AddCashItemPrice(	272956	,	5000	) --	크레용 팝 X-MAS 스타 크라운 (파랑)
-g_pCashItemManager:AddCashItemPrice(	82012	,	7000	) --	아크엔젤 다이너모 (애드)
-g_pCashItemManager:AddCashItemPrice(	82013	,	5000	) --	아크엔젤 상의 (애드)
-g_pCashItemManager:AddCashItemPrice(	82014	,	5000	) --	아크엔젤 하의 (애드)
-g_pCashItemManager:AddCashItemPrice(	82015	,	2400	) --	아크엔젤 장갑 (애드)
-g_pCashItemManager:AddCashItemPrice(	82016	,	24000	) --	아크엔젤 신발 (애드)
-g_pCashItemManager:AddCashItemPrice(	82017	,	5000	) --	아크엔젤 헤어 (애드)
-g_pCashItemManager:AddCashItemPrice(	82018	,	5000	) --	아크엔젤 윙 (애드)
-g_pCashItemManager:AddCashItemPrice(	82019	,	5000	) --	아크엔젤 크라운 (애드)
-
---추가 12/19 우원식
-g_pCashItemManager:AddCashItemPrice(	272739	,	8000	) --	마법의 목걸이(II)(애드 전용)
-g_pCashItemManager:AddCashItemPrice(	272740	,	6000	) --	유연한 기술의 반지(II)(애드 전용)
-g_pCashItemManager:AddCashItemPrice(	272741	,	6000	) --	강인한 기술의 반지(II)(애드 전용)
-g_pCashItemManager:AddCashItemPrice(	272742	,	6000	) --	강렬한 기술의 반지(II)(애드 전용)
-g_pCashItemManager:AddCashItemPrice(	272743	,	6000	) --	초월한 기술의 반지(II)(애드 전용)
-g_pCashItemManager:AddCashItemPrice(	272474	,	3200	) --	나소드 판넬 가드 (애드)
-g_pCashItemManager:AddCashItemPrice(	272475	,	3200	) --	블루 고딕 리본 장식 (애드)
-g_pCashItemManager:AddCashItemPrice(	272476	,	3200	) --	퍼플 고딕 리본 장식 (애드)
-g_pCashItemManager:AddCashItemPrice(	272477	,	3200	) --	화이트 엔젤 윙 웨폰가드 (애드)
-g_pCashItemManager:AddCashItemPrice(	272478	,	3200	) --	블랙 엔젤 윙 웨폰가드 (애드)
-g_pCashItemManager:AddCashItemPrice(	272479	,	3200	) --	오리하르콘 출력 증폭기 (애드)
-
---추가 1/6 우원식
-g_pCashItemManager:AddCashItemPrice(	271776	,	7000	) --	아라 백야 기사단 창
-g_pCashItemManager:AddCashItemPrice(	271777	,	5000	) --	아라 백야 기사단 플레이트
-g_pCashItemManager:AddCashItemPrice(	271778	,	5000	) --	아라 백야 기사단 그리브
-g_pCashItemManager:AddCashItemPrice(	271779	,	2400	) --	아라 백야 기사단 건틀릿
-g_pCashItemManager:AddCashItemPrice(	271780	,	2400	) --	아라 백야 기사단 새버톤
-g_pCashItemManager:AddCashItemPrice(	271781	,	5000	) --	아라 백야 기사단 헤어
-g_pCashItemManager:AddCashItemPrice(	271782	,	7000	) --	아라 적혈 기사단 창
-g_pCashItemManager:AddCashItemPrice(	271783	,	5000	) --	아라 적혈 기사단 플레이트
-g_pCashItemManager:AddCashItemPrice(	271784	,	5000	) --	아라 적혈 기사단 그리브
-g_pCashItemManager:AddCashItemPrice(	271785	,	2400	) --	아라 적혈 기사단 건틀릿
-g_pCashItemManager:AddCashItemPrice(	271786	,	2400	) --	아라 적혈 기사단 새버톤
-g_pCashItemManager:AddCashItemPrice(	271787	,	5000	) --	아라 적혈 기사단 헤어
-g_pCashItemManager:AddCashItemPrice(	261290	,	7000	) --	아이스 캐논 (녹색)
-g_pCashItemManager:AddCashItemPrice(	261300	,	5000	) --	겨울용 기모 아웃터 (녹색)
-g_pCashItemManager:AddCashItemPrice(	261310	,	5000	) --	겨울용 기모 하의 (녹색)
-g_pCashItemManager:AddCashItemPrice(	261320	,	2400	) --	겨울용 기모 암워머 (녹색)
-g_pCashItemManager:AddCashItemPrice(	261330	,	2400	) --	겨울용 기모 트래킹 슈즈(녹색)
-g_pCashItemManager:AddCashItemPrice(	261340	,	5000	) --	방울 비니 (녹색)
-g_pCashItemManager:AddCashItemPrice(	261350	,	7000	) --	아이스 캐논 (빨강)
-g_pCashItemManager:AddCashItemPrice(	261360	,	5000	) --	겨울용 기모 아웃터 (빨강)
-g_pCashItemManager:AddCashItemPrice(	261370	,	5000	) --	겨울용 기모 하의 (빨강)
-g_pCashItemManager:AddCashItemPrice(	261380	,	2400	) --	겨울용 기모 암워머 (빨강)
-g_pCashItemManager:AddCashItemPrice(	261390	,	2400	) --	겨울용 기모 트래킹 슈즈(빨강)
-g_pCashItemManager:AddCashItemPrice(	261400	,	5000	) --	방울 비니 (빨강)
-g_pCashItemManager:AddCashItemPrice(	272437	,	7000	) --	아이스 스피어 (파랑)
-g_pCashItemManager:AddCashItemPrice(	272438	,	5000	) --	겨울용 캐쥬얼 상의 (파랑)
-g_pCashItemManager:AddCashItemPrice(	272439	,	5000	) --	겨울용 캐쥬얼 하의 (파랑)
-g_pCashItemManager:AddCashItemPrice(	272440	,	2400	) --	겨울용 캐쥬얼 장갑 (파랑)
-g_pCashItemManager:AddCashItemPrice(	272441	,	2400	) --	겨울용 캐쥬얼 신발 (파랑)
-g_pCashItemManager:AddCashItemPrice(	272442	,	5000	) --	겨울용 캐쥬얼 헤어 (파랑)
-g_pCashItemManager:AddCashItemPrice(	272443	,	7000	) --	아이스 스피어 (핑크)
-g_pCashItemManager:AddCashItemPrice(	272444	,	5000	) --	겨울용 캐쥬얼 상의 (핑크)
-g_pCashItemManager:AddCashItemPrice(	272445	,	5000	) --	겨울용 캐쥬얼 하의 (핑크)
-g_pCashItemManager:AddCashItemPrice(	272446	,	2400	) --	겨울용 캐쥬얼 장갑 (핑크)
-g_pCashItemManager:AddCashItemPrice(	272447	,	2400	) --	겨울용 캐쥬얼 신발 (핑크)
-g_pCashItemManager:AddCashItemPrice(	272448	,	5000	) --	겨울용 캐쥬얼 헤어 (핑크)
-g_pCashItemManager:AddCashItemPrice(	272718	,	7000	) --	아이스 클레이모어(검정)
-g_pCashItemManager:AddCashItemPrice(	272719	,	5000	) --	겨울용 캐쥬얼 상의(검정)
-g_pCashItemManager:AddCashItemPrice(	272720	,	5000	) --	겨울용 캐쥬얼 하의(검정)
-g_pCashItemManager:AddCashItemPrice(	272721	,	2400	) --	겨울용 캐쥬얼 장갑(검정)
-g_pCashItemManager:AddCashItemPrice(	272722	,	2400	) --	겨울용 캐쥬얼 신발(검정)
-g_pCashItemManager:AddCashItemPrice(	272723	,	5000	) --	겨울용 캐쥬얼 헤어(검정)
-g_pCashItemManager:AddCashItemPrice(	272724	,	7000	) --	아이스 클레이모어(파랑)
-g_pCashItemManager:AddCashItemPrice(	272725	,	5000	) --	겨울용 캐쥬얼 상의(파랑)
-g_pCashItemManager:AddCashItemPrice(	272726	,	5000	) --	겨울용 캐쥬얼 하의(파랑)
-g_pCashItemManager:AddCashItemPrice(	272727	,	2400	) --	겨울용 캐쥬얼 장갑(파랑)
-g_pCashItemManager:AddCashItemPrice(	272728	,	2400	) --	겨울용 캐쥬얼 신발(파랑)
-g_pCashItemManager:AddCashItemPrice(	272729	,	5000	) --	겨울용 캐쥬얼 헤어(파랑)
-g_pCashItemManager:AddCashItemPrice(	273061	,	5000	) --	엘로드 크리스탈 밴드 (파랑)
-g_pCashItemManager:AddCashItemPrice(	273062	,	5000	) --	엘로드 크리스탈 밴드 (빨강)
-g_pCashItemManager:AddCashItemPrice(	273063	,	5000	) --	엘로드 크리스탈 윙츠 (파랑)
-g_pCashItemManager:AddCashItemPrice(	273064	,	5000	) --	엘로드 크리스탈 윙츠 (빨강)
-g_pCashItemManager:AddCashItemPrice(	82020	,	7000	) --	데몬 슬레이어 소드 (엘소드)
-g_pCashItemManager:AddCashItemPrice(	82021	,	5000	) --	데몬 슬레이어 상의 (엘소드)
-g_pCashItemManager:AddCashItemPrice(	82022	,	5000	) --	데몬 슬레이어 하의 (엘소드)
-g_pCashItemManager:AddCashItemPrice(	82023	,	2400	) --	데몬 슬레이어 장갑 (엘소드)
-g_pCashItemManager:AddCashItemPrice(	82024	,	2400	) --	데몬 슬레이어 신발 (엘소드)
-g_pCashItemManager:AddCashItemPrice(	82025	,	5000	) --	데몬 슬레이어 헤어 (엘소드)
-g_pCashItemManager:AddCashItemPrice(	82026	,	5000	) --	데몬 슬레이어 투구 (엘소드)
-g_pCashItemManager:AddCashItemPrice(	82027	,	5000	) --	데몬 슬레이어 윙 (엘소드)
-g_pCashItemManager:AddCashItemPrice(	82028	,	7000	) --	데몬 슬레이어 스태프 (아이샤)
-g_pCashItemManager:AddCashItemPrice(	82029	,	5000	) --	데몬 슬레이어 상의 (아이샤)
-g_pCashItemManager:AddCashItemPrice(	82030	,	5000	) --	데몬 슬레이어 하의 (아이샤)
-g_pCashItemManager:AddCashItemPrice(	82031	,	2400	) --	데몬 슬레이어 장갑 (아이샤)
-g_pCashItemManager:AddCashItemPrice(	82032	,	2400	) --	데몬 슬레이어 신발 (아이샤)
-g_pCashItemManager:AddCashItemPrice(	82033	,	5000	) --	데몬 슬레이어 헤어 (아이샤)
-g_pCashItemManager:AddCashItemPrice(	82034	,	5000	) --	데몬 슬레이어 티아라 (아이샤)
-g_pCashItemManager:AddCashItemPrice(	82035	,	5000	) --	데몬 슬레이어 윙 (아이샤)
-g_pCashItemManager:AddCashItemPrice(	82036	,	7000	) --	데몬 슬레이어 보우 (레나)
-g_pCashItemManager:AddCashItemPrice(	82037	,	5000	) --	데몬 슬레이어 상의 (레나)
-g_pCashItemManager:AddCashItemPrice(	82038	,	5000	) --	데몬 슬레이어 하의 (레나)
-g_pCashItemManager:AddCashItemPrice(	82039	,	2400	) --	데몬 슬레이어 장갑 (레나)
-g_pCashItemManager:AddCashItemPrice(	82040	,	2400	) --	데몬 슬레이어 신발 (레나)
-g_pCashItemManager:AddCashItemPrice(	82041	,	5000	) --	데몬 슬레이어 헤어 (레나)
-g_pCashItemManager:AddCashItemPrice(	82042	,	5000	) --	데몬 슬레이어 투구 (레나)
-g_pCashItemManager:AddCashItemPrice(	82043	,	5000	) --	데몬 슬레이어 윙 (레나)
-g_pCashItemManager:AddCashItemPrice(	82044	,	7000	) --	데몬 슬레이어 블레이드 (레이븐)
-g_pCashItemManager:AddCashItemPrice(	82045	,	5000	) --	데몬 슬레이어 상의 (레이븐)
-g_pCashItemManager:AddCashItemPrice(	82046	,	5000	) --	데몬 슬레이어 하의 (레이븐)
-g_pCashItemManager:AddCashItemPrice(	82047	,	2400	) --	데몬 슬레이어 장갑 (레이븐)
-g_pCashItemManager:AddCashItemPrice(	82048	,	2400	) --	데몬 슬레이어 신발 (레이븐)
-g_pCashItemManager:AddCashItemPrice(	82049	,	5000	) --	데몬 슬레이어 헤어 (레이븐)
-g_pCashItemManager:AddCashItemPrice(	82050	,	5000	) --	데몬 슬레이어 크라운 (레이븐)
-g_pCashItemManager:AddCashItemPrice(	82051	,	5000	) --	데몬 슬레이어 윙 (레이븐)
-g_pCashItemManager:AddCashItemPrice(	82052	,	7000	) --	데몬 슬레이어 기어 (이브)
-g_pCashItemManager:AddCashItemPrice(	82053	,	5000	) --	데몬 슬레이어 상의 (이브)
-g_pCashItemManager:AddCashItemPrice(	82054	,	5000	) --	데몬 슬레이어 하의 (이브)
-g_pCashItemManager:AddCashItemPrice(	82055	,	2400	) --	데몬 슬레이어 장갑 (이브)
-g_pCashItemManager:AddCashItemPrice(	82056	,	2400	) --	데몬 슬레이어 신발 (이브)
-g_pCashItemManager:AddCashItemPrice(	82057	,	5000	) --	데몬 슬레이어 헤어 (이브)
-g_pCashItemManager:AddCashItemPrice(	82058	,	5000	) --	데몬 슬레이어 혼 (이브)
-g_pCashItemManager:AddCashItemPrice(	82059	,	5000	) --	데몬 슬레이어 윙 (이브)
-g_pCashItemManager:AddCashItemPrice(	82060	,	7000	) --	데몬 슬레이어 캐논 (청)
-g_pCashItemManager:AddCashItemPrice(	82061	,	5000	) --	데몬 슬레이어 상의 (청)
-g_pCashItemManager:AddCashItemPrice(	82062	,	5000	) --	데몬 슬레이어 하의 (청)
-g_pCashItemManager:AddCashItemPrice(	82063	,	2400	) --	데몬 슬레이어 장갑 (청)
-g_pCashItemManager:AddCashItemPrice(	82064	,	2400	) --	데몬 슬레이어 신발 (청)
-g_pCashItemManager:AddCashItemPrice(	82065	,	5000	) --	데몬 슬레이어 헤어 (청)
-g_pCashItemManager:AddCashItemPrice(	82066	,	5000	) --	데몬 슬레이어 투구 (청)
-g_pCashItemManager:AddCashItemPrice(	82067	,	5000	) --	데몬 슬레이어 망토 (청)
-g_pCashItemManager:AddCashItemPrice(	82068	,	7000	) --	데몬 슬레이어 스피어 (아라)
-g_pCashItemManager:AddCashItemPrice(	82069	,	5000	) --	데몬 슬레이어 상의 (아라)
-g_pCashItemManager:AddCashItemPrice(	82070	,	5000	) --	데몬 슬레이어 하의 (아라)
-g_pCashItemManager:AddCashItemPrice(	82071	,	2400	) --	데몬 슬레이어 장갑 (아라)
-g_pCashItemManager:AddCashItemPrice(	82072	,	2400	) --	데몬 슬레이어 신발 (아라)
-g_pCashItemManager:AddCashItemPrice(	82073	,	5000	) --	데몬 슬레이어 헤어 (아라)
-g_pCashItemManager:AddCashItemPrice(	82074	,	5000	) --	데몬 슬레이어 혼 (아라)
-g_pCashItemManager:AddCashItemPrice(	82075	,	5000	) --	데몬 슬레이어 윙 (아라)
-g_pCashItemManager:AddCashItemPrice(	82076	,	7000	) --	데몬 슬레이어 클레이모어 (엘리시스)
-g_pCashItemManager:AddCashItemPrice(	82077	,	5000	) --	데몬 슬레이어 상의 (엘리시스)
-g_pCashItemManager:AddCashItemPrice(	82078	,	5000	) --	데몬 슬레이어 하의 (엘리시스)
-g_pCashItemManager:AddCashItemPrice(	82079	,	2400	) --	데몬 슬레이어 장갑 (엘리시스)
-g_pCashItemManager:AddCashItemPrice(	82080	,	2400	) --	데몬 슬레이어 신발 (엘리시스)
-g_pCashItemManager:AddCashItemPrice(	82081	,	5000	) --	데몬 슬레이어 헤어 (엘리시스)
-g_pCashItemManager:AddCashItemPrice(	82082	,	5000	) --	데몬 슬레이어 티아라 (엘리시스)
-g_pCashItemManager:AddCashItemPrice(	82083	,	5000	) --	데몬 슬레이어 윙 (엘리시스)
-g_pCashItemManager:AddCashItemPrice(	82084	,	7000	) --	데몬 슬레이어 다이너모 (애드)
-g_pCashItemManager:AddCashItemPrice(	82085	,	5000	) --	데몬 슬레이어 상의 (애드)
-g_pCashItemManager:AddCashItemPrice(	82086	,	5000	) --	데몬 슬레이어 하의 (애드)
-g_pCashItemManager:AddCashItemPrice(	82087	,	2400	) --	데몬 슬레이어 장갑 (애드)
-g_pCashItemManager:AddCashItemPrice(	82088	,	2400	) --	데몬 슬레이어 신발 (애드)
-g_pCashItemManager:AddCashItemPrice(	82089	,	5000	) --	데몬 슬레이어 헤어 (애드)
-g_pCashItemManager:AddCashItemPrice(	82090	,	5000	) --	데몬 슬레이어 투구 (애드)
-g_pCashItemManager:AddCashItemPrice(	82091	,	5000	) --	데몬 슬레이어 윙 (애드)
-
-
 
 
 
@@ -9392,271 +8239,268 @@ g_pCashItemManager:AddCashItemPrice(	82091	,	5000	) --	데몬 슬레이어 윙 (
 ---------------
 
 
--- ???
-g_pCashItemManager:AddCashItemPrice(	90000077	,	5000	)
-g_pCashItemManager:AddCashItemPrice(	90000078	,	5000	)
-g_pCashItemManager:AddCashItemPrice(	90000079	,	5000	)
-g_pCashItemManager:AddCashItemPrice(	90000080	,	5000	)
-g_pCashItemManager:AddCashItemPrice(	90000081	,	5000	)
-g_pCashItemManager:AddCashItemPrice(	90000082	,	5000	)
-g_pCashItemManager:AddCashItemPrice(	90000083	,	5000	)
-g_pCashItemManager:AddCashItemPrice(	90000084	,	5000	)
-g_pCashItemManager:AddCashItemPrice(	90000085	,	5000	)
-g_pCashItemManager:AddCashItemPrice(	90000086	,	5000	)
-g_pCashItemManager:AddCashItemPrice(	90000087	,	5000	)
-g_pCashItemManager:AddCashItemPrice(	90000088	,	5000	)
-g_pCashItemManager:AddCashItemPrice(	90000089	,	5000	)
+-- 2011.4.13 조효진   부활절 캐시 아이템 업데이트
+g_pCashItemManager:AddCashItemPrice(	132790	,	7000	)
+g_pCashItemManager:AddCashItemPrice(	132791	,	7000	)
+g_pCashItemManager:AddCashItemPrice(	132792	,	7000	)
 
--- 111019/오현택/할로윈 아바타 2종
-
-g_pCashItemManager:AddCashItemPrice(	120001000	,	8500	)	--	침식의 검(빨강)
-g_pCashItemManager:AddCashItemPrice(	120001010	,	6000	)	--	검은늑대 코스튬 상의(빨강)
-g_pCashItemManager:AddCashItemPrice(	120001020	,	6000	)	--	검은늑대 코스튬 하의(빨강)
-g_pCashItemManager:AddCashItemPrice(	120001030	,	2800	)	--	검은늑대 코스튬 장갑(빨강)
-g_pCashItemManager:AddCashItemPrice(	120001040	,	2800	)	--	검은늑대 코스튬 신발(빨강)
-g_pCashItemManager:AddCashItemPrice(	120001050	,	6000	)	--	검은늑대 단발머리(빨강)
-g_pCashItemManager:AddCashItemPrice(	120001060	,	8500	)	--	침식의 검(청록)
-g_pCashItemManager:AddCashItemPrice(	120001070	,	6000	)	--	검은늑대 코스튬 상의(청록)
-g_pCashItemManager:AddCashItemPrice(	120001080	,	6000	)	--	검은늑대 코스튬 하의(청록)
-g_pCashItemManager:AddCashItemPrice(	120001090	,	2800	)	--	검은늑대 코스튬 장갑(청록)
-g_pCashItemManager:AddCashItemPrice(	120001100	,	2800	)	--	검은늑대 코스튬 신발(청록)
-g_pCashItemManager:AddCashItemPrice(	120001110	,	6000	)	--	검은늑대 단발머리(청록)
-g_pCashItemManager:AddCashItemPrice(	120001120	,	8500	)	--	할로윈의 악마 - 데몬 잭(주황)
-g_pCashItemManager:AddCashItemPrice(	120001130	,	6000	)	--	펌킨 위치 코스튬 상의(주황)
-g_pCashItemManager:AddCashItemPrice(	120001140	,	6000	)	--	펌킨 위치 코스튬 하의(주황)
-g_pCashItemManager:AddCashItemPrice(	120001150	,	2800	)	--	펌킨 위치 코스튬 장갑(주황)
-g_pCashItemManager:AddCashItemPrice(	120001160	,	2800	)	--	펌킨 위치 코스튬 신발(주황)
-g_pCashItemManager:AddCashItemPrice(	120001170	,	6000	)	--	단풍모양 묶음머리(주황)
-g_pCashItemManager:AddCashItemPrice(	120001180	,	8500	)	--	할로윈의 악마 - 데몬 잭(빨강)
-g_pCashItemManager:AddCashItemPrice(	120001190	,	6000	)	--	펌킨 위치 코스튬 상의(빨강)
-g_pCashItemManager:AddCashItemPrice(	120001200	,	6000	)	--	펌킨 위치 코스튬 하의(빨강)
-g_pCashItemManager:AddCashItemPrice(	120001210	,	2800	)	--	펌킨 위치 코스튬 장갑(빨강)
-g_pCashItemManager:AddCashItemPrice(	120001220	,	2800	)	--	펌킨 위치 코스튬 신발(빨강)
-g_pCashItemManager:AddCashItemPrice(	120001230	,	6000	)	--	단풍모양 묶음머리(빨강)
-g_pCashItemManager:AddCashItemPrice(	120001240	,	8500	)	--	다크 윙 배트 보우(보라)
-g_pCashItemManager:AddCashItemPrice(	120001250	,	6000	)	--	서큐버스 예식 드레스 상의(보라)
-g_pCashItemManager:AddCashItemPrice(	120001260	,	6000	)	--	서큐버스 예식 드레스 하의(보라)
-g_pCashItemManager:AddCashItemPrice(	120001270	,	2800	)	--	서큐버스 예식 드레스 장갑(보라)
-g_pCashItemManager:AddCashItemPrice(	120001280	,	2800	)	--	서큐버스 예식 드레스 신발(보라)
-g_pCashItemManager:AddCashItemPrice(	120001290	,	6000	)	--	롱테일 매튜어 커트(보라)
-g_pCashItemManager:AddCashItemPrice(	120001300	,	8500	)	--	다크 윙 배트 보우(분홍)
-g_pCashItemManager:AddCashItemPrice(	120001310	,	6000	)	--	서큐버스 예식 드레스 상의(분홍)
-g_pCashItemManager:AddCashItemPrice(	120001320	,	6000	)	--	서큐버스 예식 드레스 하의(분홍)
-g_pCashItemManager:AddCashItemPrice(	120001330	,	2800	)	--	서큐버스 예식 드레스 장갑(분홍)
-g_pCashItemManager:AddCashItemPrice(	120001340	,	2800	)	--	서큐버스 예식 드레스 신발(분홍)
-g_pCashItemManager:AddCashItemPrice(	120001350	,	6000	)	--	롱테일 매튜어 커트(분홍)
-g_pCashItemManager:AddCashItemPrice(	120001360	,	8500	)	--	니들 그립 글레이브(파랑)
-g_pCashItemManager:AddCashItemPrice(	120001370	,	6000	)	--	다크 스튜어드 턱시도 상의(파랑)
-g_pCashItemManager:AddCashItemPrice(	120001380	,	6000	)	--	다크 스튜어드 턱시도 하의(파랑)
-g_pCashItemManager:AddCashItemPrice(	120001390	,	2800	)	--	다크 스튜어드 턱시도 장갑(파랑)
-g_pCashItemManager:AddCashItemPrice(	120001400	,	2800	)	--	다크 스튜어드 턱시도 신발(파랑)
-g_pCashItemManager:AddCashItemPrice(	120001410	,	6000	)	--	와일드 스왓컷(파랑)
-g_pCashItemManager:AddCashItemPrice(	120001420	,	8500	)	--	니들 그립 글레이브(빨강)
-g_pCashItemManager:AddCashItemPrice(	120001430	,	6000	)	--	다크 스튜어드 턱시도 상의(빨강)
-g_pCashItemManager:AddCashItemPrice(	120001440	,	6000	)	--	다크 스튜어드 턱시도 하의(빨강)
-g_pCashItemManager:AddCashItemPrice(	120001450	,	2800	)	--	다크 스튜어드 턱시도 장갑(빨강)
-g_pCashItemManager:AddCashItemPrice(	120001460	,	2800	)	--	다크 스튜어드 턱시도 신발(빨강)
-g_pCashItemManager:AddCashItemPrice(	120001470	,	6000	)	--	와일드 스왓컷(빨강)
-g_pCashItemManager:AddCashItemPrice(	120001480	,	8500	)	--	해골 촛대(분홍)
-g_pCashItemManager:AddCashItemPrice(	120001490	,	6000	)	--	할로위치 코스튬 상의(분홍)
-g_pCashItemManager:AddCashItemPrice(	120001500	,	6000	)	--	할로위치 코스튬 하의(분홍)
-g_pCashItemManager:AddCashItemPrice(	120001510	,	2800	)	--	할로위치 코스튬 장갑(분홍)
-g_pCashItemManager:AddCashItemPrice(	120001520	,	2800	)	--	할로위치 코스튬 신발(분홍)
-g_pCashItemManager:AddCashItemPrice(	120001530	,	6000	)	--	할로위치 마법사 모자(분홍)
-g_pCashItemManager:AddCashItemPrice(	120001540	,	8500	)	--	해골 촛대(파랑)
-g_pCashItemManager:AddCashItemPrice(	120001550	,	6000	)	--	할로위치 코스튬 상의(파랑)
-g_pCashItemManager:AddCashItemPrice(	120001560	,	6000	)	--	할로위치 코스튬 하의(파랑)
-g_pCashItemManager:AddCashItemPrice(	120001570	,	2800	)	--	할로위치 코스튬 장갑(파랑)
-g_pCashItemManager:AddCashItemPrice(	120001580	,	2800	)	--	할로위치 코스튬 신발(파랑)
-g_pCashItemManager:AddCashItemPrice(	120001590	,	6000	)	--	할로위치 마법사 모자(파랑)
-g_pCashItemManager:AddCashItemPrice(	120001600	,	8500	)	--	펌킨 캐논(주황)
-g_pCashItemManager:AddCashItemPrice(	120001610	,	6000	)	--	펌킨 매지션 코스튬 상의(주황)
-g_pCashItemManager:AddCashItemPrice(	120001620	,	6000	)	--	펌킨 매지션 코스튬 하의(주황)
-g_pCashItemManager:AddCashItemPrice(	120001630	,	2800	)	--	펌킨 매지션 코스튬 장갑(주황)
-g_pCashItemManager:AddCashItemPrice(	120001640	,	2800	)	--	펌킨 매지션 코스튬 신발(주황)
-g_pCashItemManager:AddCashItemPrice(	120001650	,	6000	)	--	펌킨 매지션 마법모자(주황)
-g_pCashItemManager:AddCashItemPrice(	120001660	,	8500	)	--	펌킨 캐논(빨강)
-g_pCashItemManager:AddCashItemPrice(	120001670	,	6000	)	--	펌킨 매지션 코스튬 상의(빨강)
-g_pCashItemManager:AddCashItemPrice(	120001680	,	6000	)	--	펌킨 매지션 코스튬 하의(빨강)
-g_pCashItemManager:AddCashItemPrice(	120001690	,	2800	)	--	펌킨 매지션 코스튬 장갑(빨강)
-g_pCashItemManager:AddCashItemPrice(	120001700	,	2800	)	--	펌킨 매지션 코스튬 신발(빨강)
-g_pCashItemManager:AddCashItemPrice(	120001710	,	6000	)	--	펌킨 매지션 마법모자(빨강)
-						
-g_pCashItemManager:AddCashItemPrice(	120001900	,	7000	)	--	침식의 검(빨강)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120001910	,	5000	)	--	검은늑대 코스튬 상의(빨강)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120001920	,	5000	)	--	검은늑대 코스튬 하의(빨강)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120001930	,	2400	)	--	검은늑대 코스튬 장갑(빨강)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120001940	,	2400	)	--	검은늑대 코스튬 신발(빨강)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120001950	,	5000	)	--	검은늑대 단발머리(빨강)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120001960	,	7000	)	--	침식의 검(청록)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120001970	,	5000	)	--	검은늑대 코스튬 상의(청록)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120001980	,	5000	)	--	검은늑대 코스튬 하의(청록)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120001990	,	2400	)	--	검은늑대 코스튬 장갑(청록)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002000	,	2400	)	--	검은늑대 코스튬 신발(청록)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002010	,	5000	)	--	검은늑대 단발머리(청록)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002020	,	7000	)	--	할로윈의 악마 - 데몬 잭(주황)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002030	,	5000	)	--	펌킨 위치 코스튬 상의(주황)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002040	,	5000	)	--	펌킨 위치 코스튬 하의(주황)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002050	,	2400	)	--	펌킨 위치 코스튬 장갑(주황)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002060	,	2400	)	--	펌킨 위치 코스튬 신발(주황)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002070	,	5000	)	--	단풍모양 묶음머리(주황)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002080	,	7000	)	--	할로윈의 악마 - 데몬 잭(빨강)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002090	,	5000	)	--	펌킨 위치 코스튬 상의(빨강)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002100	,	5000	)	--	펌킨 위치 코스튬 하의(빨강)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002110	,	2400	)	--	펌킨 위치 코스튬 장갑(빨강)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002120	,	2400	)	--	펌킨 위치 코스튬 신발(빨강)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002130	,	5000	)	--	단풍모양 묶음머리(빨강)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002140	,	7000	)	--	다크 윙 배트 보우(보라)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002150	,	5000	)	--	서큐버스 예식 드레스 상의(보라)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002160	,	5000	)	--	서큐버스 예식 드레스 하의(보라)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002170	,	2400	)	--	서큐버스 예식 드레스 장갑(보라)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002180	,	2400	)	--	서큐버스 예식 드레스 신발(보라)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002190	,	5000	)	--	롱테일 매튜어 커트(보라)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002200	,	7000	)	--	다크 윙 배트 보우(분홍)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002210	,	5000	)	--	서큐버스 예식 드레스 상의(분홍)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002220	,	5000	)	--	서큐버스 예식 드레스 하의(분홍)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002230	,	2400	)	--	서큐버스 예식 드레스 장갑(분홍)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002240	,	2400	)	--	서큐버스 예식 드레스 신발(분홍)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002250	,	5000	)	--	롱테일 매튜어 커트(분홍)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002260	,	7000	)	--	니들 그립 글레이브(파랑)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002270	,	5000	)	--	다크 스튜어드 턱시도 상의(파랑)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002280	,	5000	)	--	다크 스튜어드 턱시도 하의(파랑)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002290	,	2400	)	--	다크 스튜어드 턱시도 장갑(파랑)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002300	,	2400	)	--	다크 스튜어드 턱시도 신발(파랑)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002310	,	5000	)	--	와일드 스왓컷(파랑)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002320	,	7000	)	--	니들 그립 글레이브(빨강)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002330	,	5000	)	--	다크 스튜어드 턱시도 상의(빨강)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002340	,	5000	)	--	다크 스튜어드 턱시도 하의(빨강)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002350	,	2400	)	--	다크 스튜어드 턱시도 장갑(빨강)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002360	,	2400	)	--	다크 스튜어드 턱시도 신발(빨강)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002370	,	5000	)	--	와일드 스왓컷(빨강)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002380	,	7000	)	--	해골 촛대(분홍)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002390	,	5000	)	--	할로위치 코스튬 상의(분홍)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002400	,	5000	)	--	할로위치 코스튬 하의(분홍)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002410	,	2400	)	--	할로위치 코스튬 장갑(분홍)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002420	,	2400	)	--	할로위치 코스튬 신발(분홍)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002430	,	5000	)	--	할로위치 마법사 모자(분홍)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002440	,	7000	)	--	해골 촛대(파랑)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002450	,	5000	)	--	할로위치 코스튬 상의(파랑)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002460	,	5000	)	--	할로위치 코스튬 하의(파랑)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002470	,	2400	)	--	할로위치 코스튬 장갑(파랑)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002480	,	2400	)	--	할로위치 코스튬 신발(파랑)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002490	,	5000	)	--	할로위치 마법사 모자(파랑)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002500	,	7000	)	--	펌킨 캐논(주황)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002510	,	5000	)	--	펌킨 매지션 코스튬 상의(주황)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002520	,	5000	)	--	펌킨 매지션 코스튬 하의(주황)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002530	,	2400	)	--	펌킨 매지션 코스튬 장갑(주황)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002540	,	2400	)	--	펌킨 매지션 코스튬 신발(주황)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002550	,	5000	)	--	펌킨 매지션 마법모자(주황)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002560	,	7000	)	--	펌킨 캐논(빨강)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002570	,	5000	)	--	펌킨 매지션 코스튬 상의(빨강)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002580	,	5000	)	--	펌킨 매지션 코스튬 하의(빨강)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002590	,	2400	)	--	펌킨 매지션 코스튬 장갑(빨강)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002600	,	2400	)	--	펌킨 매지션 코스튬 신발(빨강)(능력없음)
-g_pCashItemManager:AddCashItemPrice(	120002610	,	5000	)	--	펌킨 매지션 마법모자(빨강)(능력없음)
-
-g_pCashItemManager:AddCashItemPrice(	223040	,	5000	)	--	붉은 삼지창
-g_pCashItemManager:AddCashItemPrice(	216410	,	5000	)	--	사악한 펌킨 헤드
-g_pCashItemManager:AddCashItemPrice(	131263	,	5000	)	--	마족의 할로윈 망토
+-- 2011.7.26 안경민    유카타 아바타 아이템 업데이트
+g_pCashItemManager:AddCashItemPrice(	115000000	,	7000	)
+g_pCashItemManager:AddCashItemPrice(	115000001	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	115000002	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	115000003	,	2400	)
+g_pCashItemManager:AddCashItemPrice(	115000004	,	2400	)
+g_pCashItemManager:AddCashItemPrice(	115000005	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	115000006	,	7000	)
+g_pCashItemManager:AddCashItemPrice(	115000007	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	115000008	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	115000009	,	2400	)
+g_pCashItemManager:AddCashItemPrice(	115000010	,	2400	)
+g_pCashItemManager:AddCashItemPrice(	115000011	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	115000012	,	7000	)
+g_pCashItemManager:AddCashItemPrice(	115000013	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	115000014	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	115000015	,	2400	)
+g_pCashItemManager:AddCashItemPrice(	115000016	,	2400	)
+g_pCashItemManager:AddCashItemPrice(	115000017	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	115000018	,	7000	)
+g_pCashItemManager:AddCashItemPrice(	115000019	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	115000020	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	115000021	,	2400	)
+g_pCashItemManager:AddCashItemPrice(	115000022	,	2400	)
+g_pCashItemManager:AddCashItemPrice(	115000023	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	115000024	,	7000	)
+g_pCashItemManager:AddCashItemPrice(	115000025	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	115000026	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	115000027	,	2400	)
+g_pCashItemManager:AddCashItemPrice(	115000028	,	2400	)
+g_pCashItemManager:AddCashItemPrice(	115000029	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	115000030	,	7000	)
+g_pCashItemManager:AddCashItemPrice(	115000031	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	115000032	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	115000033	,	2400	)
+g_pCashItemManager:AddCashItemPrice(	115000034	,	2400	)
+g_pCashItemManager:AddCashItemPrice(	115000035	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	115000036	,	7000	)
+g_pCashItemManager:AddCashItemPrice(	115000037	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	115000038	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	115000039	,	2400	)
+g_pCashItemManager:AddCashItemPrice(	115000040	,	2400	)
+g_pCashItemManager:AddCashItemPrice(	115000041	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	115000042	,	7000	)
+g_pCashItemManager:AddCashItemPrice(	115000043	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	115000044	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	115000045	,	2400	)
+g_pCashItemManager:AddCashItemPrice(	115000046	,	2400	)
+g_pCashItemManager:AddCashItemPrice(	115000047	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	115000048	,	7000	)
+g_pCashItemManager:AddCashItemPrice(	115000049	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	115000050	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	115000051	,	2400	)
+g_pCashItemManager:AddCashItemPrice(	115000052	,	2400	)
+g_pCashItemManager:AddCashItemPrice(	115000053	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	115000054	,	7000	)
+g_pCashItemManager:AddCashItemPrice(	115000055	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	115000056	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	115000057	,	2400	)
+g_pCashItemManager:AddCashItemPrice(	115000058	,	2400	)
+g_pCashItemManager:AddCashItemPrice(	115000059	,	5000	)
+g_pCashItemManager:AddCashItemPrice( 	115000070	,	5000	)
+g_pCashItemManager:AddCashItemPrice( 	115000071	,	5000	)
 
 
--- 111123/안경민/추수감사절 액세서리
-g_pCashItemManager:AddCashItemPrice(	90000355	,	5000	)	--	인디언 헤어밴드
-g_pCashItemManager:AddCashItemPrice(	90000356	,	5000	)	--	인디언 사냥꾼의 활
-g_pCashItemManager:AddCashItemPrice(	90000357	,	5000	)	--	인디언 토마호크 도끼
-g_pCashItemManager:AddCashItemPrice(	90000358	,	5000	)	--	인디언 얼굴 페인팅
-g_pCashItemManager:AddCashItemPrice(	90000359	,	5000	)	--	인디언 암밴드
+-- 2011.8.29 안경민    엘의 마스터 시리즈
+-- Cash Item
+g_pCashItemManager:AddCashItemPrice(	115000073	,	5000	)
+g_pCashItemManager:AddCashItemPrice( 	115000074	,	5000	)
+g_pCashItemManager:AddCashItemPrice( 	115000075	,	5000	)
+
+-- Quest Reward Item
+g_pCashItemManager:AddCashItemPrice(	85000554	,	5000	)
+g_pCashItemManager:AddCashItemPrice( 	85000555	,	5000	)
+g_pCashItemManager:AddCashItemPrice( 	85000556	,	5000	)
+
+-- 2011.11.09 안경민 이브 할로윈 아바타
+g_pCashItemManager:AddCashItemPrice(	115000081	,	7000	)
+g_pCashItemManager:AddCashItemPrice(	115000082	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	115000083	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	115000084	,	2400	)
+g_pCashItemManager:AddCashItemPrice(	115000085	,	2400	)
+g_pCashItemManager:AddCashItemPrice(	115000086	,	5000	)
+				
+g_pCashItemManager:AddCashItemPrice(	115000091	,	7000	)
+g_pCashItemManager:AddCashItemPrice(	115000092	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	115000093	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	115000094	,	2400	)
+g_pCashItemManager:AddCashItemPrice(	115000095	,	2400	)
+g_pCashItemManager:AddCashItemPrice(	115000096	,	5000	)
 
 
--- 111214/오현택/산타모자
+-- 2011.12.20 안경민 산타 모자 헤어
+g_pCashItemManager:AddCashItemPrice(	120002760	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	120002770	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	120002780	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	120002790	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	120002800	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	120002810	,	5000	)
 
-g_pCashItemManager:AddCashItemPrice(	120002760	,	6000	)	--	산타 모자 (엘소드)
-g_pCashItemManager:AddCashItemPrice(	120002770	,	6000	)	--	산타 모자 (아이샤)
-g_pCashItemManager:AddCashItemPrice(	120002780	,	6000	)	--	산타 모자 (레나)
-g_pCashItemManager:AddCashItemPrice(	120002790	,	6000	)	--	산타 모자 (레이븐)
-g_pCashItemManager:AddCashItemPrice(	120002800	,	6000	)	--	산타 모자 (이브)
-g_pCashItemManager:AddCashItemPrice(	120002810	,	6000	)	--	산타 모자 (청)
-g_pCashItemManager:AddCashItemPrice(	90003060	,	6000	)	--	산타 모자 (아라)
+-- CBS뽀루, 발렌타인 액세서리
+g_pCashItemManager:AddCashItemPrice(	115000120	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	85000910	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	85000911	,	5000	)
 
---  풋볼 아바타
+--유저 아바타 1차
 
-g_pCashItemManager:AddCashItemPrice(	120002900	,	7000	)
-g_pCashItemManager:AddCashItemPrice(	120002901	,	5000	)
-g_pCashItemManager:AddCashItemPrice(	120002902	,	5000	)
-g_pCashItemManager:AddCashItemPrice(	120002903	,	2400	)
-g_pCashItemManager:AddCashItemPrice(	120002904	,	2400	)
-g_pCashItemManager:AddCashItemPrice(	120002905	,	5000	)
-g_pCashItemManager:AddCashItemPrice(	120002906	,	7000	)
-g_pCashItemManager:AddCashItemPrice(	120002907	,	5000	)
-g_pCashItemManager:AddCashItemPrice(	120002908	,	5000	)
-g_pCashItemManager:AddCashItemPrice(	120002909	,	2400	)
-g_pCashItemManager:AddCashItemPrice(	120002910	,	2400	)
-g_pCashItemManager:AddCashItemPrice(	120002911	,	5000	)
-g_pCashItemManager:AddCashItemPrice(	120002912	,	7000	)
-g_pCashItemManager:AddCashItemPrice(	120002913	,	5000	)
-g_pCashItemManager:AddCashItemPrice(	120002914	,	5000	)
-g_pCashItemManager:AddCashItemPrice(	120002915	,	2400	)
-g_pCashItemManager:AddCashItemPrice(	120002916	,	2400	)
-g_pCashItemManager:AddCashItemPrice(	120002917	,	5000	)
-g_pCashItemManager:AddCashItemPrice(	120002918	,	7000	)
-g_pCashItemManager:AddCashItemPrice(	120002919	,	5000	)
-g_pCashItemManager:AddCashItemPrice(	120002920	,	5000	)
-g_pCashItemManager:AddCashItemPrice(	120002921	,	2400	)
-g_pCashItemManager:AddCashItemPrice(	120002922	,	2400	)
-g_pCashItemManager:AddCashItemPrice(	120002923	,	5000	)
-g_pCashItemManager:AddCashItemPrice(	120002924	,	7000	)
-g_pCashItemManager:AddCashItemPrice(	120002925	,	5000	)
-g_pCashItemManager:AddCashItemPrice(	120002926	,	5000	)
-g_pCashItemManager:AddCashItemPrice(	120002927	,	2400	)
-g_pCashItemManager:AddCashItemPrice(	120002928	,	2400	)
-g_pCashItemManager:AddCashItemPrice(	120002929	,	5000	)
-g_pCashItemManager:AddCashItemPrice(	120002930	,	7000	)
-g_pCashItemManager:AddCashItemPrice(	120002931	,	5000	)
-g_pCashItemManager:AddCashItemPrice(	120002932	,	5000	)
-g_pCashItemManager:AddCashItemPrice(	120002933	,	2400	)
-g_pCashItemManager:AddCashItemPrice(	120002934	,	2400	)
-g_pCashItemManager:AddCashItemPrice(	120002935	,	5000	)
-g_pCashItemManager:AddCashItemPrice(	120002936	,	7000	)
-g_pCashItemManager:AddCashItemPrice(	120002937	,	5000	)
-g_pCashItemManager:AddCashItemPrice(	120002938	,	5000	)
-g_pCashItemManager:AddCashItemPrice(	120002939	,	2400	)
-g_pCashItemManager:AddCashItemPrice(	120002940	,	2400	)
-g_pCashItemManager:AddCashItemPrice(	120002941	,	5000	)
-g_pCashItemManager:AddCashItemPrice(	120002942	,	7000	)
-g_pCashItemManager:AddCashItemPrice(	120002943	,	5000	)
-g_pCashItemManager:AddCashItemPrice(	120002944	,	5000	)
-g_pCashItemManager:AddCashItemPrice(	120002945	,	2400	)
-g_pCashItemManager:AddCashItemPrice(	120002946	,	2400	)
-g_pCashItemManager:AddCashItemPrice(	120002947	,	5000	)
-g_pCashItemManager:AddCashItemPrice(	120002948	,	7000	)
-g_pCashItemManager:AddCashItemPrice(	120002949	,	5000	)
-g_pCashItemManager:AddCashItemPrice(	120002950	,	5000	)
-g_pCashItemManager:AddCashItemPrice(	120002951	,	2400	)
-g_pCashItemManager:AddCashItemPrice(	120002952	,	2400	)
-g_pCashItemManager:AddCashItemPrice(	120002953	,	5000	)
-g_pCashItemManager:AddCashItemPrice(	120002954	,	7000	)
-g_pCashItemManager:AddCashItemPrice(	120002955	,	5000	)
-g_pCashItemManager:AddCashItemPrice(	120002956	,	5000	)
-g_pCashItemManager:AddCashItemPrice(	120002957	,	2400	)
-g_pCashItemManager:AddCashItemPrice(	120002958	,	2400	)
-g_pCashItemManager:AddCashItemPrice(	120002959	,	5000	)
+g_pCashItemManager:AddCashItemPrice(	115000160	,	7000	)	 --	엘소드 유저 아바타 콘테스트 무기(1P)
+g_pCashItemManager:AddCashItemPrice(	115000161	,	5000	)	 --	엘소드 유저 아바타 콘테스트 상의(1P)
+g_pCashItemManager:AddCashItemPrice(	115000162	,	5000	)	 --	엘소드 유저 아바타 콘테스트 하의(1P)
+g_pCashItemManager:AddCashItemPrice(	115000163	,	2400	)	 --	엘소드 유저 아바타 콘테스트 장갑(1P)
+g_pCashItemManager:AddCashItemPrice(	115000164	,	2400	)	 --	엘소드 유저 아바타 콘테스트 신발(1P)
+g_pCashItemManager:AddCashItemPrice(	115000165	,	5000	)	 --	엘소드 유저 아바타 콘테스트 헤어(1P)
+g_pCashItemManager:AddCashItemPrice(	115000166	,	7000	)	 --	엘소드 유저 아바타 콘테스트 무기(2P)
+g_pCashItemManager:AddCashItemPrice(	115000167	,	5000	)	 --	엘소드 유저 아바타 콘테스트 상의(2P)
+g_pCashItemManager:AddCashItemPrice(	115000168	,	5000	)	 --	엘소드 유저 아바타 콘테스트 하의(2P)
+g_pCashItemManager:AddCashItemPrice(	115000169	,	2400	)	 --	엘소드 유저 아바타 콘테스트 장갑(2P)
+g_pCashItemManager:AddCashItemPrice(	115000170	,	2400	)	 --	엘소드 유저 아바타 콘테스트 신발(2P)
+g_pCashItemManager:AddCashItemPrice(	115000171	,	5000	)	 --	엘소드 유저 아바타 콘테스트 헤어(2P)
+g_pCashItemManager:AddCashItemPrice(	115000172	,	7000	)	 --	아이샤 유저 아바타 콘테스트 무기(1P)
+g_pCashItemManager:AddCashItemPrice(	115000173	,	5000	)	 --	아이샤 유저 아바타 콘테스트 상의(1P)
+g_pCashItemManager:AddCashItemPrice(	115000174	,	5000	)	 --	아이샤 유저 아바타 콘테스트 하의(1P)
+g_pCashItemManager:AddCashItemPrice(	115000175	,	2400	)	 --	아이샤 유저 아바타 콘테스트 장갑(1P)
+g_pCashItemManager:AddCashItemPrice(	115000176	,	2400	)	 --	아이샤 유저 아바타 콘테스트 신발(1P)
+g_pCashItemManager:AddCashItemPrice(	115000177	,	5000	)	 --	아이샤 유저 아바타 콘테스트 헤어(1P)
+g_pCashItemManager:AddCashItemPrice(	115000178	,	7000	)	 --	아이샤 유저 아바타 콘테스트 무기(2P)
+g_pCashItemManager:AddCashItemPrice(	115000179	,	5000	)	 --	아이샤 유저 아바타 콘테스트 상의(2P)
+g_pCashItemManager:AddCashItemPrice(	115000180	,	5000	)	 --	아이샤 유저 아바타 콘테스트 하의(2P)
+g_pCashItemManager:AddCashItemPrice(	115000181	,	2400	)	 --	아이샤 유저 아바타 콘테스트 장갑(2P)
+g_pCashItemManager:AddCashItemPrice(	115000182	,	2400	)	 --	아이샤 유저 아바타 콘테스트 신발(2P)
+g_pCashItemManager:AddCashItemPrice(	115000183	,	5000	)	 --	아이샤 유저 아바타 콘테스트 헤어(2P)
+g_pCashItemManager:AddCashItemPrice(	115000184	,	7000	)	 --	레나 유저 아바타 콘테스트 무기(1P)
+g_pCashItemManager:AddCashItemPrice(	115000185	,	5000	)	 --	레나 유저 아바타 콘테스트 상의(1P)
+g_pCashItemManager:AddCashItemPrice(	115000186	,	5000	)	 --	레나 유저 아바타 콘테스트 하의(1P)
+g_pCashItemManager:AddCashItemPrice(	115000187	,	2400	)	 --	레나 유저 아바타 콘테스트 장갑(1P)
+g_pCashItemManager:AddCashItemPrice(	115000188	,	2400	)	 --	레나 유저 아바타 콘테스트 신발(1P)
+g_pCashItemManager:AddCashItemPrice(	115000189	,	5000	)	 --	레나 유저 아바타 콘테스트 헤어(1P)
+g_pCashItemManager:AddCashItemPrice(	115000190	,	7000	)	 --	레나 유저 아바타 콘테스트 무기(2P)
+g_pCashItemManager:AddCashItemPrice(	115000191	,	5000	)	 --	레나 유저 아바타 콘테스트 상의(2P)
+g_pCashItemManager:AddCashItemPrice(	115000192	,	5000	)	 --	레나 유저 아바타 콘테스트 하의(2P)
+g_pCashItemManager:AddCashItemPrice(	115000193	,	2400	)	 --	레나 유저 아바타 콘테스트 장갑(2P)
+g_pCashItemManager:AddCashItemPrice(	115000194	,	2400	)	 --	레나 유저 아바타 콘테스트 신발(2P)
+g_pCashItemManager:AddCashItemPrice(	115000195	,	5000	)	 --	레나 유저 아바타 콘테스트 헤어(2P)
+g_pCashItemManager:AddCashItemPrice(	115000196	,	7000	)	 --	레이븐 유저 아바타 콘테스트 무기(1P)
+g_pCashItemManager:AddCashItemPrice(	115000197	,	5000	)	 --	레이븐 유저 아바타 콘테스트 상의(1P)
+g_pCashItemManager:AddCashItemPrice(	115000198	,	5000	)	 --	레이븐 유저 아바타 콘테스트 하의(1P)
+g_pCashItemManager:AddCashItemPrice(	115000199	,	2400	)	 --	레이븐 유저 아바타 콘테스트 장갑(1P)
+g_pCashItemManager:AddCashItemPrice(	115000200	,	2400	)	 --	레이븐 유저 아바타 콘테스트 신발(1P)
+g_pCashItemManager:AddCashItemPrice(	115000201	,	5000	)	 --	레이븐 유저 아바타 콘테스트 헤어(1P)
+g_pCashItemManager:AddCashItemPrice(	115000202	,	7000	)	 --	레이븐 유저 아바타 콘테스트 무기(2P)
+g_pCashItemManager:AddCashItemPrice(	115000203	,	5000	)	 --	레이븐 유저 아바타 콘테스트 상의(2P)
+g_pCashItemManager:AddCashItemPrice(	115000204	,	5000	)	 --	레이븐 유저 아바타 콘테스트 하의(2P)
+g_pCashItemManager:AddCashItemPrice(	115000205	,	2400	)	 --	레이븐 유저 아바타 콘테스트 장갑(2P)
+g_pCashItemManager:AddCashItemPrice(	115000206	,	2400	)	 --	레이븐 유저 아바타 콘테스트 신발(2P)
+g_pCashItemManager:AddCashItemPrice(	115000207	,	5000	)	 --	레이븐 유저 아바타 콘테스트 헤어(2P)
+g_pCashItemManager:AddCashItemPrice(	115000208	,	7000	)	 --	이브 유저 아바타 콘테스트 무기(1P)
+g_pCashItemManager:AddCashItemPrice(	115000209	,	5000	)	 --	이브 유저 아바타 콘테스트 상의(1P)
+g_pCashItemManager:AddCashItemPrice(	115000210	,	5000	)	 --	이브 유저 아바타 콘테스트 하의(1P)
+g_pCashItemManager:AddCashItemPrice(	115000211	,	2400	)	 --	이브 유저 아바타 콘테스트 장갑(1P)
+g_pCashItemManager:AddCashItemPrice(	115000212	,	2400	)	 --	이브 유저 아바타 콘테스트 신발(1P)
+g_pCashItemManager:AddCashItemPrice(	115000213	,	5000	)	 --	이브 유저 아바타 콘테스트 헤어(1P)
+g_pCashItemManager:AddCashItemPrice(	115000214	,	7000	)	 --	이브 유저 아바타 콘테스트 무기(2P)
+g_pCashItemManager:AddCashItemPrice(	115000215	,	5000	)	 --	이브 유저 아바타 콘테스트 상의(2P)
+g_pCashItemManager:AddCashItemPrice(	115000216	,	5000	)	 --	이브 유저 아바타 콘테스트 하의(2P)
+g_pCashItemManager:AddCashItemPrice(	115000217	,	2400	)	 --	이브 유저 아바타 콘테스트 장갑(2P)
+g_pCashItemManager:AddCashItemPrice(	115000218	,	2400	)	 --	이브 유저 아바타 콘테스트 신발(2P)
+g_pCashItemManager:AddCashItemPrice(	115000219	,	5000	)	 --	이브 유저 아바타 콘테스트 헤어(2P)
 
-
---발렌타인 액세서리
-
-g_pCashItemManager:AddCashItemPrice(	120002970	,	5000	)
-g_pCashItemManager:AddCashItemPrice(	120002971	,	5000	)
-
-g_pCashItemManager:AddCashItemPrice(	120003010	,	5000	)	
-g_pCashItemManager:AddCashItemPrice(	120003011	,	5000	)	
-g_pCashItemManager:AddCashItemPrice(    120002820   ,  5000  ) 
-g_pCashItemManager:AddCashItemPrice(    120002830   ,  7000  ) 
-g_pCashItemManager:AddCashItemPrice(    120002831   ,  7000  ) 
-g_pCashItemManager:AddCashItemPrice(    120002832   ,  7000  ) 
-g_pCashItemManager:AddCashItemPrice(    120003013   ,  5000  )
+-- 신 마법의 목걸이 2012-02-29
+g_pCashItemManager:AddCashItemPrice(	75000600	,	8000	)	-- 신 마법의 목걸이
 
 
--- 120627/오현택/청기본아바타6종
+-- 유저 아바타 2차
+g_pCashItemManager:AddCashItemPrice(	115000230	,	7000	)	 --	엘소드 유저 아바타 2차 콘테스트 무기(1P)
+g_pCashItemManager:AddCashItemPrice(	115000231	,	5000	)	 --	엘소드 유저 아바타 2차 콘테스트 상의(1P)
+g_pCashItemManager:AddCashItemPrice(	115000232	,	5000	)	 --	엘소드 유저 아바타 2차 콘테스트 하의(1P)
+g_pCashItemManager:AddCashItemPrice(	115000233	,	2400	)	 --	엘소드 유저 아바타 2차 콘테스트 장갑(1P)
+g_pCashItemManager:AddCashItemPrice(	115000234	,	2400	)	 --	엘소드 유저 아바타 2차 콘테스트 신발(1P)
+g_pCashItemManager:AddCashItemPrice(	115000235	,	5000	)	 --	엘소드 유저 아바타 2차 콘테스트 헤어(1P)
+g_pCashItemManager:AddCashItemPrice(	115000236	,	7000	)	 --	엘소드 유저 아바타 2차 콘테스트 무기(2P)
+g_pCashItemManager:AddCashItemPrice(	115000237	,	5000	)	 --	엘소드 유저 아바타 2차 콘테스트 상의(2P)
+g_pCashItemManager:AddCashItemPrice(	115000238	,	5000	)	 --	엘소드 유저 아바타 2차 콘테스트 하의(2P)
+g_pCashItemManager:AddCashItemPrice(	115000239	,	2400	)	 --	엘소드 유저 아바타 2차 콘테스트 장갑(2P)
+g_pCashItemManager:AddCashItemPrice(	115000240	,	2400	)	 --	엘소드 유저 아바타 2차 콘테스트 신발(2P)
+g_pCashItemManager:AddCashItemPrice(	115000241	,	5000	)	 --	엘소드 유저 아바타 2차 콘테스트 헤어(2P)
+g_pCashItemManager:AddCashItemPrice(	115000242	,	7000	)	 --	아이샤 유저 아바타 2차 콘테스트 무기(1P)
+g_pCashItemManager:AddCashItemPrice(	115000243	,	5000	)	 --	아이샤 유저 아바타 2차 콘테스트 상의(1P)
+g_pCashItemManager:AddCashItemPrice(	115000244	,	5000	)	 --	아이샤 유저 아바타 2차 콘테스트 하의(1P)
+g_pCashItemManager:AddCashItemPrice(	115000245	,	2400	)	 --	아이샤 유저 아바타 2차 콘테스트 장갑(1P)
+g_pCashItemManager:AddCashItemPrice(	115000246	,	2400	)	 --	아이샤 유저 아바타 2차 콘테스트 신발(1P)
+g_pCashItemManager:AddCashItemPrice(	115000247	,	5000	)	 --	아이샤 유저 아바타 2차 콘테스트 헤어(1P)
+g_pCashItemManager:AddCashItemPrice(	115000248	,	7000	)	 --	아이샤 유저 아바타 2차 콘테스트 무기(2P)
+g_pCashItemManager:AddCashItemPrice(	115000249	,	5000	)	 --	아이샤 유저 아바타 2차 콘테스트 상의(2P)
+g_pCashItemManager:AddCashItemPrice(	115000250	,	5000	)	 --	아이샤 유저 아바타 2차 콘테스트 하의(2P)
+g_pCashItemManager:AddCashItemPrice(	115000251	,	2400	)	 --	아이샤 유저 아바타 2차 콘테스트 장갑(2P)
+g_pCashItemManager:AddCashItemPrice(	115000252	,	2400	)	 --	아이샤 유저 아바타 2차 콘테스트 신발(2P)
+g_pCashItemManager:AddCashItemPrice(	115000253	,	5000	)	 --	아이샤 유저 아바타 2차 콘테스트 헤어(2P)
+g_pCashItemManager:AddCashItemPrice(	115000254	,	7000	)	 --	레나 유저 아바타 2차 콘테스트 무기(1P)
+g_pCashItemManager:AddCashItemPrice(	115000255	,	5000	)	 --	레나 유저 아바타 2차 콘테스트 상의(1P)
+g_pCashItemManager:AddCashItemPrice(	115000256	,	5000	)	 --	레나 유저 아바타 2차 콘테스트 하의(1P)
+g_pCashItemManager:AddCashItemPrice(	115000257	,	2400	)	 --	레나 유저 아바타 2차 콘테스트 장갑(1P)
+g_pCashItemManager:AddCashItemPrice(	115000258	,	2400	)	 --	레나 유저 아바타 2차 콘테스트 신발(1P)
+g_pCashItemManager:AddCashItemPrice(	115000259	,	5000	)	 --	레나 유저 아바타 2차 콘테스트 헤어(1P)
+g_pCashItemManager:AddCashItemPrice(	115000260	,	7000	)	 --	레나 유저 아바타 2차 콘테스트 무기(2P)
+g_pCashItemManager:AddCashItemPrice(	115000261	,	5000	)	 --	레나 유저 아바타 2차 콘테스트 상의(2P)
+g_pCashItemManager:AddCashItemPrice(	115000262	,	5000	)	 --	레나 유저 아바타 2차 콘테스트 하의(2P)
+g_pCashItemManager:AddCashItemPrice(	115000263	,	2400	)	 --	레나 유저 아바타 2차 콘테스트 장갑(2P)
+g_pCashItemManager:AddCashItemPrice(	115000264	,	2400	)	 --	레나 유저 아바타 2차 콘테스트 신발(2P)
+g_pCashItemManager:AddCashItemPrice(	115000265	,	5000	)	 --	레나 유저 아바타 2차 콘테스트 헤어(2P)
+g_pCashItemManager:AddCashItemPrice(	115000266	,	7000	)	 --	레이븐 유저 아바타 2차 콘테스트 무기(1P)
+g_pCashItemManager:AddCashItemPrice(	115000267	,	5000	)	 --	레이븐 유저 아바타 2차 콘테스트 상의(1P)
+g_pCashItemManager:AddCashItemPrice(	115000268	,	5000	)	 --	레이븐 유저 아바타 2차 콘테스트 하의(1P)
+g_pCashItemManager:AddCashItemPrice(	115000269	,	2400	)	 --	레이븐 유저 아바타 2차 콘테스트 장갑(1P)
+g_pCashItemManager:AddCashItemPrice(	115000270	,	2400	)	 --	레이븐 유저 아바타 2차 콘테스트 신발(1P)
+g_pCashItemManager:AddCashItemPrice(	115000271	,	5000	)	 --	레이븐 유저 아바타 2차 콘테스트 헤어(1P)
+g_pCashItemManager:AddCashItemPrice(	115000272	,	7000	)	 --	레이븐 유저 아바타 2차 콘테스트 무기(2P)
+g_pCashItemManager:AddCashItemPrice(	115000273	,	5000	)	 --	레이븐 유저 아바타 2차 콘테스트 상의(2P)
+g_pCashItemManager:AddCashItemPrice(	115000274	,	5000	)	 --	레이븐 유저 아바타 2차 콘테스트 하의(2P)
+g_pCashItemManager:AddCashItemPrice(	115000275	,	2400	)	 --	레이븐 유저 아바타 2차 콘테스트 장갑(2P)
+g_pCashItemManager:AddCashItemPrice(	115000276	,	2400	)	 --	레이븐 유저 아바타 2차 콘테스트 신발(2P)
+g_pCashItemManager:AddCashItemPrice(	115000277	,	5000	)	 --	레이븐 유저 아바타 2차 콘테스트 헤어(2P)
+g_pCashItemManager:AddCashItemPrice(	115000278	,	7000	)	 --	이브 유저 아바타 2차 콘테스트 무기(1P)
+g_pCashItemManager:AddCashItemPrice(	115000279	,	5000	)	 --	이브 유저 아바타 2차 콘테스트 상의(1P)
+g_pCashItemManager:AddCashItemPrice(	115000280	,	5000	)	 --	이브 유저 아바타 2차 콘테스트 하의(1P)
+g_pCashItemManager:AddCashItemPrice(	115000281	,	2400	)	 --	이브 유저 아바타 2차 콘테스트 장갑(1P)
+g_pCashItemManager:AddCashItemPrice(	115000282	,	2400	)	 --	이브 유저 아바타 2차 콘테스트 신발(1P)
+g_pCashItemManager:AddCashItemPrice(	115000283	,	5000	)	 --	이브 유저 아바타 2차 콘테스트 헤어(1P)
+g_pCashItemManager:AddCashItemPrice(	115000284	,	7000	)	 --	이브 유저 아바타 2차 콘테스트 무기(2P)
+g_pCashItemManager:AddCashItemPrice(	115000285	,	5000	)	 --	이브 유저 아바타 2차 콘테스트 상의(2P)
+g_pCashItemManager:AddCashItemPrice(	115000286	,	5000	)	 --	이브 유저 아바타 2차 콘테스트 하의(2P)
+g_pCashItemManager:AddCashItemPrice(	115000287	,	2400	)	 --	이브 유저 아바타 2차 콘테스트 장갑(2P)
+g_pCashItemManager:AddCashItemPrice(	115000288	,	2400	)	 --	이브 유저 아바타 2차 콘테스트 신발(2P)
+g_pCashItemManager:AddCashItemPrice(	115000289	,	5000	)	 --	이브 유저 아바타 2차 콘테스트 헤어(2P)
+
+
+-- 조디악 액세서리 추가
+g_pCashItemManager:AddCashItemPrice(	500390	,	5000	)	--	조디악-아쿠아리우스(물병 자리)
+g_pCashItemManager:AddCashItemPrice(	500400	,	5000	)	--	조디악-파이시즈(물고기 자리)
+g_pCashItemManager:AddCashItemPrice(	500410	,	5000	)	--	조디악-에리스(양 자리)
+g_pCashItemManager:AddCashItemPrice(	500420	,	5000	)	--	조디악-타우러스(황소 자리)
+g_pCashItemManager:AddCashItemPrice(	500430	,	5000	)	--	조디악-제미니(쌍둥이 자리)
+g_pCashItemManager:AddCashItemPrice(	500440	,	5000	)	--	조디악-캔서(게 자리)
+g_pCashItemManager:AddCashItemPrice(	500450	,	5000	)	--	조디악-레오(사자 자리)
+g_pCashItemManager:AddCashItemPrice(	500460	,	5000	)	--	조디악-버고(처녀 자리)
+g_pCashItemManager:AddCashItemPrice(	500470	,	5000	)	--	조디악-리브라(천칭 자리)
+g_pCashItemManager:AddCashItemPrice(	500480	,	5000	)	--	조디악-스콜피어스(전갈 자리)
+g_pCashItemManager:AddCashItemPrice(	500490	,	5000	)	--	조디악-사지타리어스(궁수 자리)
+g_pCashItemManager:AddCashItemPrice(	500500	,	5000	)	--	조디악-캐프리코너스(염소 자리)
+
+
+-- 일일퀴즈 액세서리 추가
+g_pCashItemManager:AddCashItemPrice(	120003010	,	5000	)	--	퀴즈의 요정
+g_pCashItemManager:AddCashItemPrice(	120003011	,	5000	)	--	몽당 연필
+g_pCashItemManager:AddCashItemPrice(	115000310	,	5000	)	--	퀴즈 왕 안경
+
+
+-- 120711/오현택/청기본6종
 
 g_pCashItemManager:AddCashItemPrice(	90000770	,	7000	)	--	해양소년단제복 무기 (파랑)
 g_pCashItemManager:AddCashItemPrice(	90000771	,	5000	)	--	해양소년단제복 상의 (파랑)
@@ -9706,18 +8550,18 @@ g_pCashItemManager:AddCashItemPrice(	90000814	,	5000	)	--	로열캐너니어 하
 g_pCashItemManager:AddCashItemPrice(	90000815	,	2400	)	--	로열캐너니어 장갑 (하늘)
 g_pCashItemManager:AddCashItemPrice(	90000816	,	2400	)	--	로열캐너니어 신발 (하늘)
 g_pCashItemManager:AddCashItemPrice(	90000817	,	5000	)	--	로열캐너니어 헤어 (하늘)
-g_pCashItemManager:AddCashItemPrice(	90000818	,	7000	)	--	에어기어룩 무기 (빨강)
-g_pCashItemManager:AddCashItemPrice(	90000819	,	5000	)	--	에어기어룩 상의 (빨강)
-g_pCashItemManager:AddCashItemPrice(	90000820	,	5000	)	--	에어기어룩 하의 (빨강)
-g_pCashItemManager:AddCashItemPrice(	90000821	,	2400	)	--	에어기어룩 장갑 (빨강)
-g_pCashItemManager:AddCashItemPrice(	90000822	,	2400	)	--	에어기어룩 신발 (빨강)
-g_pCashItemManager:AddCashItemPrice(	90000823	,	5000	)	--	에어기어룩 헤어 (빨강)
-g_pCashItemManager:AddCashItemPrice(	90000824	,	7000	)	--	에어기어룩 무기 (파랑)
-g_pCashItemManager:AddCashItemPrice(	90000825	,	5000	)	--	에어기어룩 상의 (파랑)
-g_pCashItemManager:AddCashItemPrice(	90000826	,	5000	)	--	에어기어룩 하의 (파랑)
-g_pCashItemManager:AddCashItemPrice(	90000827	,	2400	)	--	에어기어룩 장갑 (파랑)
-g_pCashItemManager:AddCashItemPrice(	90000828	,	2400	)	--	에어기어룩 신발 (파랑)
-g_pCashItemManager:AddCashItemPrice(	90000829	,	5000	)	--	에어기어룩 헤어 (파랑)
+g_pCashItemManager:AddCashItemPrice(	90000818	,	7000	)	--	에어기어룩 무기 (파랑)
+g_pCashItemManager:AddCashItemPrice(	90000819	,	5000	)	--	에어기어룩 상의 (파랑)
+g_pCashItemManager:AddCashItemPrice(	90000820	,	5000	)	--	에어기어룩 하의 (파랑)
+g_pCashItemManager:AddCashItemPrice(	90000821	,	2400	)	--	에어기어룩 장갑 (파랑)
+g_pCashItemManager:AddCashItemPrice(	90000822	,	2400	)	--	에어기어룩 신발 (파랑)
+g_pCashItemManager:AddCashItemPrice(	90000823	,	5000	)	--	에어기어룩 헤어 (파랑)
+g_pCashItemManager:AddCashItemPrice(	90000824	,	7000	)	--	에어기어룩 무기 (빨강)
+g_pCashItemManager:AddCashItemPrice(	90000825	,	5000	)	--	에어기어룩 상의 (빨강)
+g_pCashItemManager:AddCashItemPrice(	90000826	,	5000	)	--	에어기어룩 하의 (빨강)
+g_pCashItemManager:AddCashItemPrice(	90000827	,	2400	)	--	에어기어룩 장갑 (빨강)
+g_pCashItemManager:AddCashItemPrice(	90000828	,	2400	)	--	에어기어룩 신발 (빨강)
+g_pCashItemManager:AddCashItemPrice(	90000829	,	5000	)	--	에어기어룩 헤어 (빨강)
 g_pCashItemManager:AddCashItemPrice(	90000830	,	7000	)	--	고스트헌터 무기 (빨강)
 g_pCashItemManager:AddCashItemPrice(	90000831	,	5000	)	--	고스트헌터 상의 (빨강)
 g_pCashItemManager:AddCashItemPrice(	90000832	,	5000	)	--	고스트헌터 하의 (빨강)
@@ -9732,28 +8576,65 @@ g_pCashItemManager:AddCashItemPrice(	90000840	,	2400	)	--	고스트헌터 신발
 g_pCashItemManager:AddCashItemPrice(	90000841	,	5000	)	--	고스트헌터 헤어 (파랑)
 
 
--- 120627/오현택/서머비치룩 (전캐릭 다 있었으나 국내로 통합 머지)
+-- 120711/오현택/청테니스아바타
 
-g_pCashItemManager:AddCashItemPrice(	90000860	,	8000	)	--	청 서버 비치룩 무기(파랑)
-g_pCashItemManager:AddCashItemPrice(	90000861	,	6000	)	--	해변의 스타 조끼(파랑)
-g_pCashItemManager:AddCashItemPrice(	90000862	,	6000	)	--	해변의 스타 반바지(파랑)
-g_pCashItemManager:AddCashItemPrice(	90000863	,	3000	)	--	해변의 스타 팔찌(파랑)
-g_pCashItemManager:AddCashItemPrice(	90000864	,	3000	)	--	해변의 스타 비치샌들(파랑)
-g_pCashItemManager:AddCashItemPrice(	90000865	,	6000	)	--	해변의 스타 캡모자(파랑)
-g_pCashItemManager:AddCashItemPrice(	90000866	,	8000	)	--	청 서버 비치룩 무기(주황)
-g_pCashItemManager:AddCashItemPrice(	90000867	,	6000	)	--	해변의 스타 조끼(주황)
-g_pCashItemManager:AddCashItemPrice(	90000868	,	6000	)	--	해변의 스타 반바지(주황)
-g_pCashItemManager:AddCashItemPrice(	90000869	,	3000	)	--	해변의 스타 팔찌(주황)
-g_pCashItemManager:AddCashItemPrice(	90000870	,	3000	)	--	해변의 스타 비치샌들(주황)
-g_pCashItemManager:AddCashItemPrice(	90000871	,	6000	)	--	해변의 스타 캡모자(주황)
-
-
--- 120718/오현택/하멜34
-
-g_pCashItemManager:AddCashItemPrice(	90001041	,	5000	)	--	강화된 타란바슈의 뿔
+g_pCashItemManager:AddCashItemPrice(	85001050	,	7000	)	--	청 스포티 스타일 철포(청록)
+g_pCashItemManager:AddCashItemPrice(	85001051	,	5000	)	--	청 스포티 진업(청록)
+g_pCashItemManager:AddCashItemPrice(	85001052	,	5000	)	--	청 스포츠 숏 팬츠(청록)
+g_pCashItemManager:AddCashItemPrice(	85001053	,	2400	)	--	청 스포츠 아대(청록)
+g_pCashItemManager:AddCashItemPrice(	85001054	,	2400	)	--	청 테니스화(청록)
+g_pCashItemManager:AddCashItemPrice(	85001055	,	5000	)	--	청 트윈 스포츠밴드 헤어(청록)
+g_pCashItemManager:AddCashItemPrice(	85001056	,	7000	)	--	청 스포티 스타일 철포(연두)
+g_pCashItemManager:AddCashItemPrice(	85001057	,	5000	)	--	청 스포티 진업(연두)
+g_pCashItemManager:AddCashItemPrice(	85001058	,	5000	)	--	청 스포츠 숏 팬츠(연두)
+g_pCashItemManager:AddCashItemPrice(	85001059	,	2400	)	--	청 스포츠 아대(연두)
+g_pCashItemManager:AddCashItemPrice(	85001060	,	2400	)	--	청 테니스화(연두)
+g_pCashItemManager:AddCashItemPrice(	85001061	,	5000	)	--	청 트윈 스포츠밴드 헤어(연두)
 
 
--- 120723/안경민/올림픽
+-- 120718/오현택/썸머 캐쥬얼 (청)
+
+g_pCashItemManager:AddCashItemPrice(	85001110	,	7000	)	--	운화철포 (빨강)
+g_pCashItemManager:AddCashItemPrice(	85001111	,	5000	)	--	청 썸머 캐쥬얼 코튼 셔츠 (빨강)
+g_pCashItemManager:AddCashItemPrice(	85001112	,	5000	)	--	청 썸머 캐쥬얼 팬츠 (빨강)
+g_pCashItemManager:AddCashItemPrice(	85001113	,	2400	)	--	청 썸머 캐쥬얼 코튼 밴드 (빨강)
+g_pCashItemManager:AddCashItemPrice(	85001114	,	2400	)	--	청 썸머 캐쥬얼 스니커 (빨강)
+g_pCashItemManager:AddCashItemPrice(	85001115	,	5000	)	--	댄디 스타일 모자 (하양)
+g_pCashItemManager:AddCashItemPrice(	85001116	,	7000	)	--	운화철포 (초록)
+g_pCashItemManager:AddCashItemPrice(	85001117	,	5000	)	--	청 썸머 캐쥬얼 코튼 셔츠 (초록)
+g_pCashItemManager:AddCashItemPrice(	85001118	,	5000	)	--	청 썸머 캐쥬얼 팬츠 (초록)
+g_pCashItemManager:AddCashItemPrice(	85001119	,	2400	)	--	청 썸머 캐쥬얼 코튼 밴드 (초록)
+g_pCashItemManager:AddCashItemPrice(	85001120	,	2400	)	--	청 썸머 캐쥬얼 스니커 (초록)
+g_pCashItemManager:AddCashItemPrice(	85001121	,	5000	)	--	댄디 스타일 모자 (검정)
+
+
+-- 120725/오현택/썸머 체커룩 (청)
+
+g_pCashItemManager:AddCashItemPrice(	85001130	,	7000	)	--	워터 캐논 (파랑)
+g_pCashItemManager:AddCashItemPrice(	85001131	,	5000	)	--	체커 사선 비치룩 상의 (파랑)
+g_pCashItemManager:AddCashItemPrice(	85001132	,	5000	)	--	체커 사선 비치룩 하의 (파랑)
+g_pCashItemManager:AddCashItemPrice(	85001133	,	2400	)	--	체커 사선 비치룩 장갑 (파랑)
+g_pCashItemManager:AddCashItemPrice(	85001134	,	2400	)	--	체커 사선 비치룩 신발 (파랑)
+g_pCashItemManager:AddCashItemPrice(	85001135	,	5000	)	--	큐트 샤기 숏컷 (남색)
+g_pCashItemManager:AddCashItemPrice(	85001136	,	7000	)	--	워터 캐논 (빨강)
+g_pCashItemManager:AddCashItemPrice(	85001137	,	5000	)	--	체커 사선 비치룩 상의 (빨강)
+g_pCashItemManager:AddCashItemPrice(	85001138	,	5000	)	--	체커 사선 비치룩 하의 (빨강)
+g_pCashItemManager:AddCashItemPrice(	85001139	,	2400	)	--	체커 사선 비치룩 장갑 (빨강)
+g_pCashItemManager:AddCashItemPrice(	85001140	,	2400	)	--	체커 사선 비치룩 신발 (빨강)
+g_pCashItemManager:AddCashItemPrice(	85001141	,	5000	)	--	큐트 샤기 숏컷 (노랑)
+
+
+-- 120725/오현택/블랙 메이드 (청)
+
+g_pCashItemManager:AddCashItemPrice(	81380	,	7000	)	--	로열 서번트-다크로드 캐논(청)
+g_pCashItemManager:AddCashItemPrice(	81381	,	5000	)	--	로열 서번트-다크로드 가드 상의(청)
+g_pCashItemManager:AddCashItemPrice(	81382	,	5000	)	--	로열 서번트-다크로드 가드 하의(청)
+g_pCashItemManager:AddCashItemPrice(	81383	,	2400	)	--	로열 서번트-다크로드 가드 장갑(청)
+g_pCashItemManager:AddCashItemPrice(	81384	,	2400	)	--	로열 서번트-다크로드 가드 신발(청)
+g_pCashItemManager:AddCashItemPrice(	81385	,	5000	)	--	로열 서번트-다크로드 가드 헤어(청)
+
+
+-- 120801/오현택/올림픽 아바타
 
 g_pCashItemManager:AddCashItemPrice(	210000001	,	5000	)	--	엘리오스 게임 유니폼 상의 (엘소드)
 g_pCashItemManager:AddCashItemPrice(	210000002	,	5000	)	--	엘리오스 게임 유니폼 하의 (엘소드)
@@ -9781,127 +8662,7 @@ g_pCashItemManager:AddCashItemPrice(	210000053	,	2400	)	--	엘리오스 게임 �
 g_pCashItemManager:AddCashItemPrice(	210000054	,	2400	)	--	엘리오스 게임 유니폼 신발 (청)
 
 
--- 120814/오현택/닌자
-
-g_pCashItemManager:AddCashItemPrice(	90001150	,	7000	)	--	엘소드 닌자 무기 (1P)
-g_pCashItemManager:AddCashItemPrice(	90001151	,	5000	)	--	엘소드 닌자 상의 (1P)
-g_pCashItemManager:AddCashItemPrice(	90001152	,	5000	)	--	엘소드 닌자 하의 (1P)
-g_pCashItemManager:AddCashItemPrice(	90001153	,	2400	)	--	엘소드 닌자 장갑 (1P)
-g_pCashItemManager:AddCashItemPrice(	90001154	,	2400	)	--	엘소드 닌자 신발 (1P)
-g_pCashItemManager:AddCashItemPrice(	90001155	,	5000	)	--	엘소드 닌자 헤어 (1P)
-g_pCashItemManager:AddCashItemPrice(	90001160	,	7000	)	--	엘소드 닌자 무기 (2P)
-g_pCashItemManager:AddCashItemPrice(	90001161	,	5000	)	--	엘소드 닌자 상의 (2P)
-g_pCashItemManager:AddCashItemPrice(	90001162	,	5000	)	--	엘소드 닌자 하의 (2P)
-g_pCashItemManager:AddCashItemPrice(	90001163	,	2400	)	--	엘소드 닌자 장갑 (2P)
-g_pCashItemManager:AddCashItemPrice(	90001164	,	2400	)	--	엘소드 닌자 신발 (2P)
-g_pCashItemManager:AddCashItemPrice(	90001165	,	5000	)	--	엘소드 닌자 헤어 (2P)
-g_pCashItemManager:AddCashItemPrice(	90001170	,	7000	)	--	아이샤 닌자 무기 (1P)
-g_pCashItemManager:AddCashItemPrice(	90001171	,	5000	)	--	아이샤 닌자 상의 (1P)
-g_pCashItemManager:AddCashItemPrice(	90001172	,	5000	)	--	아이샤 닌자 하의 (1P)
-g_pCashItemManager:AddCashItemPrice(	90001173	,	2400	)	--	아이샤 닌자 장갑 (1P)
-g_pCashItemManager:AddCashItemPrice(	90001174	,	2400	)	--	아이샤 닌자 신발 (1P)
-g_pCashItemManager:AddCashItemPrice(	90001175	,	5000	)	--	아이샤 닌자 헤어 (1P)
-g_pCashItemManager:AddCashItemPrice(	90001180	,	7000	)	--	아이샤 닌자 무기 (2P)
-g_pCashItemManager:AddCashItemPrice(	90001181	,	5000	)	--	아이샤 닌자 상의 (2P)
-g_pCashItemManager:AddCashItemPrice(	90001182	,	5000	)	--	아이샤 닌자 하의 (2P)
-g_pCashItemManager:AddCashItemPrice(	90001183	,	2400	)	--	아이샤 닌자 장갑 (2P)
-g_pCashItemManager:AddCashItemPrice(	90001184	,	2400	)	--	아이샤 닌자 신발 (2P)
-g_pCashItemManager:AddCashItemPrice(	90001185	,	5000	)	--	아이샤 닌자 헤어 (2P)
-g_pCashItemManager:AddCashItemPrice(	90001190	,	7000	)	--	레나 닌자 무기 (1P)
-g_pCashItemManager:AddCashItemPrice(	90001191	,	5000	)	--	레나 닌자 상의 (1P)
-g_pCashItemManager:AddCashItemPrice(	90001192	,	5000	)	--	레나 닌자 하의 (1P)
-g_pCashItemManager:AddCashItemPrice(	90001193	,	2400	)	--	레나 닌자 장갑 (1P)
-g_pCashItemManager:AddCashItemPrice(	90001194	,	2400	)	--	레나 닌자 신발 (1P)
-g_pCashItemManager:AddCashItemPrice(	90001195	,	5000	)	--	레나 닌자 헤어 (1P)
-g_pCashItemManager:AddCashItemPrice(	90001200	,	7000	)	--	레나 닌자 무기 (2P)
-g_pCashItemManager:AddCashItemPrice(	90001201	,	5000	)	--	레나 닌자 상의 (2P)
-g_pCashItemManager:AddCashItemPrice(	90001202	,	5000	)	--	레나 닌자 하의 (2P)
-g_pCashItemManager:AddCashItemPrice(	90001203	,	2400	)	--	레나 닌자 장갑 (2P)
-g_pCashItemManager:AddCashItemPrice(	90001204	,	2400	)	--	레나 닌자 신발 (2P)
-g_pCashItemManager:AddCashItemPrice(	90001205	,	5000	)	--	레나 닌자 헤어 (2P)
-g_pCashItemManager:AddCashItemPrice(	90001210	,	7000	)	--	레이븐 닌자 무기 (1P)
-g_pCashItemManager:AddCashItemPrice(	90001211	,	5000	)	--	레이븐 닌자 상의 (1P)
-g_pCashItemManager:AddCashItemPrice(	90001212	,	5000	)	--	레이븐 닌자 하의 (1P)
-g_pCashItemManager:AddCashItemPrice(	90001213	,	2400	)	--	레이븐 닌자 장갑 (1P)
-g_pCashItemManager:AddCashItemPrice(	90001214	,	2400	)	--	레이븐 닌자 신발 (1P)
-g_pCashItemManager:AddCashItemPrice(	90001215	,	5000	)	--	레이븐 닌자 헤어 (1P)
-g_pCashItemManager:AddCashItemPrice(	90001220	,	7000	)	--	레이븐 닌자 무기 (2P)
-g_pCashItemManager:AddCashItemPrice(	90001221	,	5000	)	--	레이븐 닌자 상의 (2P)
-g_pCashItemManager:AddCashItemPrice(	90001222	,	5000	)	--	레이븐 닌자 하의 (2P)
-g_pCashItemManager:AddCashItemPrice(	90001223	,	2400	)	--	레이븐 닌자 장갑 (2P)
-g_pCashItemManager:AddCashItemPrice(	90001224	,	2400	)	--	레이븐 닌자 신발 (2P)
-g_pCashItemManager:AddCashItemPrice(	90001225	,	5000	)	--	레이븐 닌자 헤어 (2P)
-g_pCashItemManager:AddCashItemPrice(	90001230	,	7000	)	--	이브 닌자 무기 (1P)
-g_pCashItemManager:AddCashItemPrice(	90001231	,	5000	)	--	이브 닌자 상의 (1P)
-g_pCashItemManager:AddCashItemPrice(	90001232	,	5000	)	--	이브 닌자 하의 (1P)
-g_pCashItemManager:AddCashItemPrice(	90001233	,	2400	)	--	이브 닌자 장갑 (1P)
-g_pCashItemManager:AddCashItemPrice(	90001234	,	2400	)	--	이브 닌자 신발 (1P)
-g_pCashItemManager:AddCashItemPrice(	90001235	,	5000	)	--	이브 닌자 헤어 (1P)
-g_pCashItemManager:AddCashItemPrice(	90001240	,	7000	)	--	이브 닌자 무기 (2P)
-g_pCashItemManager:AddCashItemPrice(	90001241	,	5000	)	--	이브 닌자 상의 (2P)
-g_pCashItemManager:AddCashItemPrice(	90001242	,	5000	)	--	이브 닌자 하의 (2P)
-g_pCashItemManager:AddCashItemPrice(	90001243	,	2400	)	--	이브 닌자 장갑 (2P)
-g_pCashItemManager:AddCashItemPrice(	90001244	,	2400	)	--	이브 닌자 신발 (2P)
-g_pCashItemManager:AddCashItemPrice(	90001245	,	5000	)	--	이브 닌자 헤어 (2P)
-g_pCashItemManager:AddCashItemPrice(	90001250	,	7000	)	--	청 닌자 무기 (1P)
-g_pCashItemManager:AddCashItemPrice(	90001251	,	5000	)	--	청 닌자 상의 (1P)
-g_pCashItemManager:AddCashItemPrice(	90001252	,	5000	)	--	청 닌자 하의 (1P)
-g_pCashItemManager:AddCashItemPrice(	90001253	,	2400	)	--	청 닌자 장갑 (1P)
-g_pCashItemManager:AddCashItemPrice(	90001254	,	2400	)	--	청 닌자 신발 (1P)
-g_pCashItemManager:AddCashItemPrice(	90001255	,	5000	)	--	청 닌자 헤어 (1P)
-g_pCashItemManager:AddCashItemPrice(	90001260	,	7000	)	--	청 닌자 무기 (2P)
-g_pCashItemManager:AddCashItemPrice(	90001261	,	5000	)	--	청 닌자 상의 (2P)
-g_pCashItemManager:AddCashItemPrice(	90001262	,	5000	)	--	청 닌자 하의 (2P)
-g_pCashItemManager:AddCashItemPrice(	90001263	,	2400	)	--	청 닌자 장갑 (2P)
-g_pCashItemManager:AddCashItemPrice(	90001264	,	2400	)	--	청 닌자 신발 (2P)
-g_pCashItemManager:AddCashItemPrice(	90001265	,	5000	)	--	청 닌자 헤어 (2P)
-
-
--- 120814/오현택/이벤트 액세 분해
-
-g_pCashItemManager:AddCashItemPrice(	90001140	,	5000	)	--	닌자 마스크
-g_pCashItemManager:AddCashItemPrice(	90001131	,	5000	)	--	진(眞) 사스케의 검
-g_pCashItemManager:AddCashItemPrice(	90001142	,	5000	)	--	닌자 마스크 (White)
-
-
--- 120829/오현택/블랙 메이드 (청)
-
-g_pCashItemManager:AddCashItemPrice(	81380	,	7000	)	--	로열 서번트-다크로드 캐논(청)
-g_pCashItemManager:AddCashItemPrice(	81381	,	5000	)	--	로열 서번트-다크로드 가드 상의(청)
-g_pCashItemManager:AddCashItemPrice(	81382	,	5000	)	--	로열 서번트-다크로드 가드 하의(청)
-g_pCashItemManager:AddCashItemPrice(	81383	,	2400	)	--	로열 서번트-다크로드 가드 장갑(청)
-g_pCashItemManager:AddCashItemPrice(	81384	,	2400	)	--	로열 서번트-다크로드 가드 신발(청)
-g_pCashItemManager:AddCashItemPrice(	81385	,	5000	)	--	로열 서번트-다크로드 가드 헤어(청)
-
-
--- 120829/오현택/마목 누락
-
-g_pCashItemManager:AddCashItemPrice(	75000600	,	8000	)	-- 신 마법의 목걸이
-
-
--- 120912/오현택/해적(청)
-
-g_pCashItemManager:AddCashItemPrice(	90001380	,	7000	)	--	체인 앵커 그레이트 철포 (검정)
-g_pCashItemManager:AddCashItemPrice(	90001381	,	5000	)	--	청 해적 코스프레 상의 (검정)
-g_pCashItemManager:AddCashItemPrice(	90001382	,	5000	)	--	청 해적 코스프레 하의 (검정)
-g_pCashItemManager:AddCashItemPrice(	90001383	,	2400	)	--	청 해적 코스프레 장갑 (검정)
-g_pCashItemManager:AddCashItemPrice(	90001384	,	2400	)	--	청 해적 코스프레 신발 (검정)
-g_pCashItemManager:AddCashItemPrice(	90001385	,	5000	)	--	청 해적 코스프레 헤어 (검정)
-g_pCashItemManager:AddCashItemPrice(	90001386	,	7000	)	--	체인 앵커 그레이트 철포 (빨강)
-g_pCashItemManager:AddCashItemPrice(	90001387	,	5000	)	--	청 해적 코스프레 상의 (빨강)
-g_pCashItemManager:AddCashItemPrice(	90001388	,	5000	)	--	청 해적 코스프레 하의 (빨강)
-g_pCashItemManager:AddCashItemPrice(	90001389	,	2400	)	--	청 해적 코스프레 장갑 (빨강)
-g_pCashItemManager:AddCashItemPrice(	90001390	,	2400	)	--	청 해적 코스프레 신발 (빨강)
-g_pCashItemManager:AddCashItemPrice(	90001391	,	5000	)	--	청 해적 코스프레 헤어 (노랑)
-
-
--- 120926/오현택/눈뽀루 추가
-
-g_pCashItemManager:AddCashItemPrice(	210000060	,	2000	)	--	눈뽀루
-g_pCashItemManager:AddCashItemPrice(	210000061	,	5000	)	--	엣지 눈뽀루
-
-
--- 120926/오현택/스타아카데미하복(청)
+-- 120822/오현택/스타아카데미하복(청)
 
 g_pCashItemManager:AddCashItemPrice(	75000400	,	7000	)	--	분침의 철포 (감청)
 g_pCashItemManager:AddCashItemPrice(	75000410	,	5000	)	--	청 스타 아카데미 하복 상의 (감청)
@@ -9917,74 +8678,7 @@ g_pCashItemManager:AddCashItemPrice(	75000500	,	2400	)	--	청 스타 아카데�
 g_pCashItemManager:AddCashItemPrice(	75000510	,	5000	)	--	볼륨샤기컷 (노랑)
 
 
--- 120718/오현택/썸머 캐쥬얼 (청)
-
-g_pCashItemManager:AddCashItemPrice(	85001110	,	7000	)	--	운화철포 (빨강)
-g_pCashItemManager:AddCashItemPrice(	85001111	,	5000	)	--	청 썸머 캐쥬얼 코튼 셔츠 (빨강)
-g_pCashItemManager:AddCashItemPrice(	85001112	,	5000	)	--	청 썸머 캐쥬얼 팬츠 (빨강)
-g_pCashItemManager:AddCashItemPrice(	85001113	,	2400	)	--	청 썸머 캐쥬얼 코튼 밴드 (빨강)
-g_pCashItemManager:AddCashItemPrice(	85001114	,	2400	)	--	청 썸머 캐쥬얼 스니커 (빨강)
-g_pCashItemManager:AddCashItemPrice(	85001115	,	5000	)	--	댄디 스타일 모자 (하양)
-g_pCashItemManager:AddCashItemPrice(	85001116	,	7000	)	--	운화철포 (초록)
-g_pCashItemManager:AddCashItemPrice(	85001117	,	5000	)	--	청 썸머 캐쥬얼 코튼 셔츠 (초록)
-g_pCashItemManager:AddCashItemPrice(	85001118	,	5000	)	--	청 썸머 캐쥬얼 팬츠 (초록)
-g_pCashItemManager:AddCashItemPrice(	85001119	,	2400	)	--	청 썸머 캐쥬얼 코튼 밴드 (초록)
-g_pCashItemManager:AddCashItemPrice(	85001120	,	2400	)	--	청 썸머 캐쥬얼 스니커 (초록)
-g_pCashItemManager:AddCashItemPrice(	85001121	,	5000	)	--	댄디 스타일 모자 (검정)
-
-
--- 121010/오현택/헤니르 이벤트
-
-g_pCashItemManager:AddCashItemPrice(	85001840	,	2000	)	--	글레이브의 주사위
-g_pCashItemManager:AddCashItemPrice(	85001843	,	5000	)	--	시공간의 힘이 깃든 글레이브의 주사위
-
-
--- 121010/오현택/2009 할로윈 청
-
-g_pCashItemManager:AddCashItemPrice(	210000090	,	7000	)	--	자이언트 본 캐논(회갈색)
-g_pCashItemManager:AddCashItemPrice(	210000091	,	5000	)	--	할로윈의 마법사 '토토' 코스튭 상의(회갈색)
-g_pCashItemManager:AddCashItemPrice(	210000092	,	5000	)	--	할로윈의 마법사 '토토' 코스튭 하의(회갈색)
-g_pCashItemManager:AddCashItemPrice(	210000093	,	2400	)	--	할로윈의 마법사 '토토' 코스튭 장갑(회갈색)
-g_pCashItemManager:AddCashItemPrice(	210000094	,	2400	)	--	할로윈의 마법사 '토토' 코스튭 신발(회갈색)
-g_pCashItemManager:AddCashItemPrice(	210000095	,	5000	)	--	할로윈의 마법사 '토토' 코스튭 헤어(회갈색)
-g_pCashItemManager:AddCashItemPrice(	210000096	,	7000	)	--	자이언트 본 캐논(검정색)
-g_pCashItemManager:AddCashItemPrice(	210000097	,	5000	)	--	할로윈의 마법사 '토토' 코스튭 상의(검정색)
-g_pCashItemManager:AddCashItemPrice(	210000098	,	5000	)	--	할로윈의 마법사 '토토' 코스튭 하의(검정색)
-g_pCashItemManager:AddCashItemPrice(	210000099	,	2400	)	--	할로윈의 마법사 '토토' 코스튭 장갑(검정색)
-g_pCashItemManager:AddCashItemPrice(	210000100	,	2400	)	--	할로윈의 마법사 '토토' 코스튭 신발(검정색)
-g_pCashItemManager:AddCashItemPrice(	210000101	,	5000	)	--	할로윈의 마법사 '토토' 코스튭 헤어(검정색)
-
-
--- 121024/오현택/할로윈 이벤트
-
-g_pCashItemManager:AddCashItemPrice(	210000131	,	5000	)	--	데스사이즈 - 조화
-g_pCashItemManager:AddCashItemPrice(	210000132	,	5000	)	--	데스사이즈 - 신비
-g_pCashItemManager:AddCashItemPrice(	210000133	,	5000	)	--	데스사이즈 - 광휘
-g_pCashItemManager:AddCashItemPrice(	210000134	,	5000	)	--	데스사이즈 - 전투
-g_pCashItemManager:AddCashItemPrice(	210000135	,	5000	)	--	데스사이즈 - 증강
-g_pCashItemManager:AddCashItemPrice(	210000136	,	5000	)	--	데스사이즈 - 적중
-
-g_pCashItemManager:AddCashItemPrice(	180152	,	5000	)	--	뱀파이어 링커 망토
-g_pCashItemManager:AddCashItemPrice(	131192	,	5000	)	--	놀란 펌킨 헤드
-
-
--- 121024/오현택/대륙의 모험가(청)
-
-g_pCashItemManager:AddCashItemPrice(	85001640	,	7000	)	--	대양의 포병장교-무적의 함포(하양)
-g_pCashItemManager:AddCashItemPrice(	85001641	,	5000	)	--	대양의 포병장교 상의(하양)
-g_pCashItemManager:AddCashItemPrice(	85001642	,	5000	)	--	대양의 포병장교 하의(하양)
-g_pCashItemManager:AddCashItemPrice(	85001643	,	2400	)	--	대양의 포병장교 장갑(하양)
-g_pCashItemManager:AddCashItemPrice(	85001644	,	2400	)	--	대양의 포병장교 신발(하양)
-g_pCashItemManager:AddCashItemPrice(	85001645	,	5000	)	--	대양의 포병장교 헤어(검정)
-g_pCashItemManager:AddCashItemPrice(	85001646	,	7000	)	--	대양의 포병장교-무적의 함포(파랑)
-g_pCashItemManager:AddCashItemPrice(	85001647	,	5000	)	--	대양의 포병장교 상의(파랑)
-g_pCashItemManager:AddCashItemPrice(	85001648	,	5000	)	--	대양의 포병장교 하의(파랑)
-g_pCashItemManager:AddCashItemPrice(	85001649	,	2400	)	--	대양의 포병장교 장갑(파랑)
-g_pCashItemManager:AddCashItemPrice(	85001650	,	2400	)	--	대양의 포병장교 신발(파랑)
-g_pCashItemManager:AddCashItemPrice(	85001651	,	5000	)	--	대양의 포병장교 헤어(노랑)
-
-
--- 121107/오현택/이상한 나라(청)
+-- 120912/오현택/이상한나라(청)
 
 g_pCashItemManager:AddCashItemPrice(	70005020	,	10000	)	--	토끼 신사 청 시계 철포(파랑)
 g_pCashItemManager:AddCashItemPrice(	70005021	,	7000	)	--	토끼 신사 청 코트(파랑)
@@ -9999,14 +8693,100 @@ g_pCashItemManager:AddCashItemPrice(	70005029	,	3600	)	--	토끼 신사 청 장�
 g_pCashItemManager:AddCashItemPrice(	70005030	,	3600	)	--	토끼 신사 청 신발(빨강)
 g_pCashItemManager:AddCashItemPrice(	70005031	,	7000	)	--	토끼 신사 청 모자(빨강)
 
-
--- 121128/오현택/캐쉬 액세
-
-g_pCashItemManager:AddCashItemPrice(	90001550	,	5000	)	--	호랑가시나무 열매
+g_pCashItemManager:AddCashItemPrice(	85001630	,	5000	)	--	스타 엔젤 헤드셋
+g_pCashItemManager:AddCashItemPrice(	85001631	,	5000	)	--	스타 엔젤 스티커
 
 
--- 121218/오현택/청 2008 크리스마스 아바타
+-- 120924/안경민/아이돌밴드(청)외 기타 악세서리
+g_pCashItemManager:AddCashItemPrice(	85001560	,	7000	)	--	아이돌 밴드's 철포 (노랑)
+g_pCashItemManager:AddCashItemPrice(	85001561	,	5000	)	--	아이돌 밴드 청 상의 (노랑)
+g_pCashItemManager:AddCashItemPrice(	85001562	,	5000	)	--	아이돌 밴드 청 하의 (노랑)
+g_pCashItemManager:AddCashItemPrice(	85001563	,	2400	)	--	아이돌 밴드 청 장갑 (노랑)
+g_pCashItemManager:AddCashItemPrice(	85001564	,	2400	)	--	아이돌 밴드 청 스니커 (노랑)
+g_pCashItemManager:AddCashItemPrice(	85001565	,	5000	)	--	아이돌 밴드 청 헤어 (연노랑)
+g_pCashItemManager:AddCashItemPrice(	85001566	,	7000	)	--	아이돌 밴드's 소드 (연두)
+g_pCashItemManager:AddCashItemPrice(	85001567	,	5000	)	--	아이돌 밴드 청 상의 (연두)
+g_pCashItemManager:AddCashItemPrice(	85001568	,	5000	)	--	아이돌 밴드 청 하의 (연두)
+g_pCashItemManager:AddCashItemPrice(	85001569	,	2400	)	--	아이돌 밴드 청 장갑 (연두)
+g_pCashItemManager:AddCashItemPrice(	85001570	,	2400	)	--	아이돌 밴드 청 스니커 (연두)
+g_pCashItemManager:AddCashItemPrice(	85001571	,	5000	)	--	아이돌 밴드 청 헤어 (갈색)
+g_pCashItemManager:AddCashItemPrice(	85001630	,	5000	)	--	스타 엔젤 헤드셋
+g_pCashItemManager:AddCashItemPrice(	85001631	,	5000	)	--	스타 엔젤 스티커
 
+
+-- 121008/안경민/2008 할로윈 청 아바타 및 기타 악세서리
+g_pCashItemManager:AddCashItemPrice(	120001600	,	7000	)	--	펌킨 캐논(주황)
+g_pCashItemManager:AddCashItemPrice(	120001610	,	5000	)	--	펌킨 매지션 코스튬 상의(주황)
+g_pCashItemManager:AddCashItemPrice(	120001620	,	5000	)	--	펌킨 매지션 코스튬 하의(주황)
+g_pCashItemManager:AddCashItemPrice(	120001630	,	2400	)	--	펌킨 매지션 코스튬 장갑(주황)
+g_pCashItemManager:AddCashItemPrice(	120001640	,	2400	)	--	펌킨 매지션 코스튬 신발(주황)
+g_pCashItemManager:AddCashItemPrice(	120001650	,	5000	)	--	펌킨 매지션 마법모자(주황)
+g_pCashItemManager:AddCashItemPrice(	120001660	,	7000	)	--	펌킨 캐논(빨강)
+g_pCashItemManager:AddCashItemPrice(	120001670	,	5000	)	--	펌킨 매지션 코스튬 상의(빨강)
+g_pCashItemManager:AddCashItemPrice(	120001680	,	5000	)	--	펌킨 매지션 코스튬 하의(빨강)
+g_pCashItemManager:AddCashItemPrice(	120001690	,	2400	)	--	펌킨 매지션 코스튬 장갑(빨강)
+g_pCashItemManager:AddCashItemPrice(	120001700	,	2400	)	--	펌킨 매지션 코스튬 신발(빨강)
+g_pCashItemManager:AddCashItemPrice(	120001710	,	5000	)	--	펌킨 매지션 마법모자(빨강)
+g_pCashItemManager:AddCashItemPrice(	85001840	,	2500	)	--	글레이브의 주사위
+g_pCashItemManager:AddCashItemPrice(	85001843	,	2500	)	--	시공간의 힘이 깃든 글레이브의 주사위
+
+-- 121024/안경민/2009  할로윈 아바타 및 기타 악세서리
+g_pCashItemManager:AddCashItemPrice(	210000131	,	5000	)	--	데스사이즈 - 조화
+g_pCashItemManager:AddCashItemPrice(	210000132	,	5000	)	--	데스사이즈 - 신비
+g_pCashItemManager:AddCashItemPrice(	210000133	,	5000	)	--	데스사이즈 - 광휘
+g_pCashItemManager:AddCashItemPrice(	210000134	,	5000	)	--	데스사이즈 - 전투
+g_pCashItemManager:AddCashItemPrice(	210000135	,	5000	)	--	데스사이즈 - 증강
+g_pCashItemManager:AddCashItemPrice(	210000136	,	5000	)	--	데스사이즈 - 적중
+g_pCashItemManager:AddCashItemPrice(	85001850	,	5000	)	--	뱀파이어 망토
+g_pCashItemManager:AddCashItemPrice(	85001851	,	5000	)	--	놀란 펌킨 헤드
+g_pCashItemManager:AddCashItemPrice(	85001852	,	5000	)	--	음산한 펌킨 헤드
+g_pCashItemManager:AddCashItemPrice(	85001853	,	5000	)	--	드림스텝-할로윈 펌킨
+g_pCashItemManager:AddCashItemPrice(	210000090	,	7000	)	--	자이언트 본 캐논(회갈색)
+g_pCashItemManager:AddCashItemPrice(	210000091	,	5000	)	--	할로윈의 마법사 '토토' 코스튭 상의(회갈색)
+g_pCashItemManager:AddCashItemPrice(	210000092	,	5000	)	--	할로윈의 마법사 '토토' 코스튭 하의(회갈색)
+g_pCashItemManager:AddCashItemPrice(	210000093	,	2400	)	--	할로윈의 마법사 '토토' 코스튭 장갑(회갈색)
+g_pCashItemManager:AddCashItemPrice(	210000094	,	2400	)	--	할로윈의 마법사 '토토' 코스튭 신발(회갈색)
+g_pCashItemManager:AddCashItemPrice(	210000095	,	5000	)	--	할로윈의 마법사 '토토' 코스튭 헤어(회갈색)
+g_pCashItemManager:AddCashItemPrice(	210000096	,	7000	)	--	자이언트 본 캐논(검정색)
+g_pCashItemManager:AddCashItemPrice(	210000097	,	5000	)	--	할로윈의 마법사 '토토' 코스튭 상의(검정색)
+g_pCashItemManager:AddCashItemPrice(	210000098	,	5000	)	--	할로윈의 마법사 '토토' 코스튭 하의(검정색)
+g_pCashItemManager:AddCashItemPrice(	210000099	,	2400	)	--	할로윈의 마법사 '토토' 코스튭 장갑(검정색)
+g_pCashItemManager:AddCashItemPrice(	210000100	,	2400	)	--	할로윈의 마법사 '토토' 코스튭 신발(검정색)
+g_pCashItemManager:AddCashItemPrice(	210000101	,	5000	)	--	할로윈의 마법사 '토토' 코스튭 헤어(검정색)
+
+-- 121101/안경민/신비한 대륙의 모험가 및 흑룡 악세
+g_pCashItemManager:AddCashItemPrice(	85001640	,	7000	)	--	대양의 포병장교-무적의 함포(하양)
+g_pCashItemManager:AddCashItemPrice(	85001641	,	5000	)	--	대양의 포병장교 상의(하양)
+g_pCashItemManager:AddCashItemPrice(	85001642	,	5000	)	--	대양의 포병장교 하의(하양)
+g_pCashItemManager:AddCashItemPrice(	85001643	,	2400	)	--	대양의 포병장교 장갑(하양)
+g_pCashItemManager:AddCashItemPrice(	85001644	,	2400	)	--	대양의 포병장교 신발(하양)
+g_pCashItemManager:AddCashItemPrice(	85001645	,	5000	)	--	대양의 포병장교 헤어(검정)
+g_pCashItemManager:AddCashItemPrice(	85001646	,	7000	)	--	대양의 포병장교-무적의 함포(파랑)
+g_pCashItemManager:AddCashItemPrice(	85001647	,	5000	)	--	대양의 포병장교 상의(파랑)
+g_pCashItemManager:AddCashItemPrice(	85001648	,	5000	)	--	대양의 포병장교 하의(파랑)
+g_pCashItemManager:AddCashItemPrice(	85001649	,	2400	)	--	대양의 포병장교 장갑(파랑)
+g_pCashItemManager:AddCashItemPrice(	85001650	,	2400	)	--	대양의 포병장교 신발(파랑)
+g_pCashItemManager:AddCashItemPrice(	85001651	,	5000	)	--	대양의 포병장교 헤어(노랑)
+g_pCashItemManager:AddCashItemPrice(	120002820	,	5000	)	--	황룡승천포
+g_pCashItemManager:AddCashItemPrice(	120002830	,	7000	)	--	흑룡천익
+g_pCashItemManager:AddCashItemPrice(	120002831	,	7000	)	--	흑룡우미
+g_pCashItemManager:AddCashItemPrice(	120002832	,	7000	)	--	흑룡성각
+
+-- 121108/안경민/청 해적 패키지
+g_pCashItemManager:AddCashItemPrice(	90001380	,	7000	)	--	체인 앵커 그레이트 철포 (검정)
+g_pCashItemManager:AddCashItemPrice(	90001381	,	5000	)	--	청 해적 코스프레 상의 (검정)
+g_pCashItemManager:AddCashItemPrice(	90001382	,	5000	)	--	청 해적 코스프레 하의 (검정)
+g_pCashItemManager:AddCashItemPrice(	90001383	,	2400	)	--	청 해적 코스프레 장갑 (검정)
+g_pCashItemManager:AddCashItemPrice(	90001384	,	2400	)	--	청 해적 코스프레 신발 (검정)
+g_pCashItemManager:AddCashItemPrice(	90001385	,	5000	)	--	청 해적 코스프레 헤어 (검정)
+g_pCashItemManager:AddCashItemPrice(	90001386	,	7000	)	--	체인 앵커 그레이트 철포 (빨강)
+g_pCashItemManager:AddCashItemPrice(	90001387	,	5000	)	--	청 해적 코스프레 상의 (빨강)
+g_pCashItemManager:AddCashItemPrice(	90001388	,	5000	)	--	청 해적 코스프레 하의 (빨강)
+g_pCashItemManager:AddCashItemPrice(	90001389	,	2400	)	--	청 해적 코스프레 장갑 (빨강)
+g_pCashItemManager:AddCashItemPrice(	90001390	,	2400	)	--	청 해적 코스프레 신발 (빨강)
+g_pCashItemManager:AddCashItemPrice(	90001391	,	5000	)	--	청 해적 코스프레 헤어 (노랑)
+
+-- 121205/안경민/크리스마스 아바타 /액세서리
 g_pCashItemManager:AddCashItemPrice(	259160	,	7000	)	--	홀리 윙 캐논(빨강)
 g_pCashItemManager:AddCashItemPrice(	259170	,	5000	)	--	청 크리스마스 상의(빨강)
 g_pCashItemManager:AddCashItemPrice(	259180	,	5000	)	--	청 크리스마스 하의(빨강)
@@ -10020,60 +8800,10 @@ g_pCashItemManager:AddCashItemPrice(	259250	,	2400	)	--	청 크리스마스 장�
 g_pCashItemManager:AddCashItemPrice(	259260	,	2400	)	--	청 크리스마스 신발(검정)
 g_pCashItemManager:AddCashItemPrice(	259270	,	5000	)	--	타이디 볼륨 컷(검정)
 
-
--- 121227/오현택/청 아이돌 밴드
-
-g_pCashItemManager:AddCashItemPrice(	85001560	,	7000	)	--	아이돌 밴드's 철포 (노랑)
-g_pCashItemManager:AddCashItemPrice(	85001561	,	5000	)	--	아이돌 밴드 청 상의 (노랑)
-g_pCashItemManager:AddCashItemPrice(	85001562	,	5000	)	--	아이돌 밴드 청 하의 (노랑)
-g_pCashItemManager:AddCashItemPrice(	85001563	,	2400	)	--	아이돌 밴드 청 장갑 (노랑)
-g_pCashItemManager:AddCashItemPrice(	85001564	,	2400	)	--	아이돌 밴드 청 스니커 (노랑)
-g_pCashItemManager:AddCashItemPrice(	85001565	,	5000	)	--	아이돌 밴드 청 헤어 (연노랑)
-g_pCashItemManager:AddCashItemPrice(	85001566	,	7000	)	--	아이돌 밴드's 소드 (연두)
-g_pCashItemManager:AddCashItemPrice(	85001567	,	5000	)	--	아이돌 밴드 청 상의 (연두)
-g_pCashItemManager:AddCashItemPrice(	85001568	,	5000	)	--	아이돌 밴드 청 하의 (연두)
-g_pCashItemManager:AddCashItemPrice(	85001569	,	2400	)	--	아이돌 밴드 청 장갑 (연두)
-g_pCashItemManager:AddCashItemPrice(	85001570	,	2400	)	--	아이돌 밴드 청 스니커 (연두)
-g_pCashItemManager:AddCashItemPrice(	85001571	,	5000	)	--	아이돌 밴드 청 헤어 (갈색)
+g_pCashItemManager:AddCashItemPrice(	90001550	,	5000	)	--	호랑가시나무 열매
 
 
--- 121227/오현택/청 윈터 캐쥬얼
-
-g_pCashItemManager:AddCashItemPrice(	261290	,	7000	)	--	아이스 캐논 (녹색)
-g_pCashItemManager:AddCashItemPrice(	261300	,	5000	)	--	겨울용 기모 아웃터 (녹색)
-g_pCashItemManager:AddCashItemPrice(	261310	,	5000	)	--	겨울용 기모 하의 (녹색)
-g_pCashItemManager:AddCashItemPrice(	261320	,	2400	)	--	겨울용 기모 암워머 (녹색)
-g_pCashItemManager:AddCashItemPrice(	261330	,	2400	)	--	겨울용 기모 트래킹 슈즈(녹색)
-g_pCashItemManager:AddCashItemPrice(	261340	,	5000	)	--	방울 미니 (빨강)
-g_pCashItemManager:AddCashItemPrice(	261350	,	7000	)	--	아이스 캐논 (빨강)
-g_pCashItemManager:AddCashItemPrice(	261360	,	5000	)	--	겨울용 기모 아웃터 (빨강)
-g_pCashItemManager:AddCashItemPrice(	261370	,	5000	)	--	겨울용 기모 하의 (빨강)
-g_pCashItemManager:AddCashItemPrice(	261380	,	2400	)	--	겨울용 기모 암워머 (빨강)
-g_pCashItemManager:AddCashItemPrice(	261390	,	2400	)	--	겨울용 기모 트래킹 슈즈(빨강)
-g_pCashItemManager:AddCashItemPrice(	261400	,	5000	)	--	방울 미니 (빨강)
-
-
--- 121227/오현택/엔젤 액세서리 패키지
-
-g_pCashItemManager:AddCashItemPrice(	210000150	,	5000	)	--	스타 엔젤 헤드셋
-g_pCashItemManager:AddCashItemPrice(	210000151	,	5000	)	--	스타 엔젤 스티커
-g_pCashItemManager:AddCashItemPrice(	210000152	,	5000	)	--	스타 엔젤 플라워 룩 휴대용 스피커
-g_pCashItemManager:AddCashItemPrice(	210000153	,	5000	)	--	데빌 일렉 기타 (Davil Inno II RED)
-
-g_pCashItemManager:AddCashItemPrice(	180135	,	7000	)	--	벨더 임페리얼 가드 퓨어 캐논(청)
-g_pCashItemManager:AddCashItemPrice(	180136	,	5000	)	--	벨더 임페리얼 가드 로열 플레이트(청)
-g_pCashItemManager:AddCashItemPrice(	180137	,	5000	)	--	벨더 임페리얼 가드 그리브(청)
-g_pCashItemManager:AddCashItemPrice(	180138	,	2400	)	--	벨더 임페리얼 가드 건틀릿(청)
-g_pCashItemManager:AddCashItemPrice(	180139	,	2400	)	--	벨더 임페리얼 가드 새버톤(청)
-g_pCashItemManager:AddCashItemPrice(	180140	,	5000	)	--	벨더 임페리얼 가드 헤어(청)
-
-g_pCashItemManager:AddCashItemPrice(	250000100	,	5000	)	--	엘로드 씰
-g_pCashItemManager:AddCashItemPrice(	250000110	,	5000	)	--	엘로드 체이서
-g_pCashItemManager:AddCashItemPrice(	250000120	,	5000	)	--	엘로드 브레슬릿
-g_pCashItemManager:AddCashItemPrice(	250000130	,	5000	)	--	엘로드 씰(타락)
-g_pCashItemManager:AddCashItemPrice(	250000140	,	5000	)	--	엘로드 체이서(타락)
-g_pCashItemManager:AddCashItemPrice(	250000150	,	5000	)	--	엘로드 브레슬릿(타락)
-
+-- 121212/안경민/청 타탄 체크 아바타
 g_pCashItemManager:AddCashItemPrice(	70002830	,	7000	)	--	청 파이프 캐논(빨강)
 g_pCashItemManager:AddCashItemPrice(	70002831	,	5000	)	--	청 타탄체크 상의(빨강)
 g_pCashItemManager:AddCashItemPrice(	70002832	,	5000	)	--	청 타탄체크 하의(빨강)
@@ -10087,110 +8817,179 @@ g_pCashItemManager:AddCashItemPrice(	70002839	,	2400	)	--	청 타탄체크 장�
 g_pCashItemManager:AddCashItemPrice(	70002840	,	2400	)	--	청 타탄체크 신발(청록)
 g_pCashItemManager:AddCashItemPrice(	70002841	,	5000	)	--	청 타탄체크 헤어(주황)
 
-g_pCashItemManager:AddCashItemPrice(	210000222	,	200	)	--	발렌타인 곰인형(1)
+g_pCashItemManager:AddCashItemPrice(	250000030	,	7000	)	--	겨울 스포츠 봅슬레이 Ver. 철포 (파랑)
+g_pCashItemManager:AddCashItemPrice(	250000031	,	5000	)	--	겨울 스포츠 봅슬레이 복장 상의 (파랑)
+g_pCashItemManager:AddCashItemPrice(	250000032	,	5000	)	--	겨울 스포츠 봅슬레이 복장 하의 (파랑)
+g_pCashItemManager:AddCashItemPrice(	250000033	,	2400	)	--	겨울 스포츠 봅슬레이 복장 장갑 (파랑)
+g_pCashItemManager:AddCashItemPrice(	250000034	,	2400	)	--	겨울 스포츠 봅슬레이 복장 신발 (파랑)
+g_pCashItemManager:AddCashItemPrice(	250000035	,	5000	)	--	겨울 스포츠 봅슬레이 복장 헤어 (파랑)
+g_pCashItemManager:AddCashItemPrice(	250000036	,	5000	)	--	겨울 스포츠 스켈레톤 (파랑)
+g_pCashItemManager:AddCashItemPrice(	250000040	,	7000	)	--	겨울 스포츠 봅슬레이 Ver. 철포 (검정)
+g_pCashItemManager:AddCashItemPrice(	250000041	,	5000	)	--	겨울 스포츠 봅슬레이 복장 상의 (검정)
+g_pCashItemManager:AddCashItemPrice(	250000042	,	5000	)	--	겨울 스포츠 봅슬레이 복장 하의 (검정)
+g_pCashItemManager:AddCashItemPrice(	250000043	,	2400	)	--	겨울 스포츠 봅슬레이 복장 장갑 (검정)
+g_pCashItemManager:AddCashItemPrice(	250000044	,	2400	)	--	겨울 스포츠 봅슬레이 복장 신발 (검정)
+g_pCashItemManager:AddCashItemPrice(	250000045	,	5000	)	--	겨울 스포츠 봅슬레이 복장 헤어 (검정)
+g_pCashItemManager:AddCashItemPrice(	250000046	,	5000	)	--	겨울 스포츠 스켈레톤 (검정)
+
+
+g_pCashItemManager:AddCashItemPrice(	70002260	,	7000	)	--	청 배드 가이즈 캐논(분홍)
+g_pCashItemManager:AddCashItemPrice(	70002261	,	5000	)	--	청 배드 가이즈 가죽 자켓(분홍)
+g_pCashItemManager:AddCashItemPrice(	70002262	,	5000	)	--	청 배드 가이즈 바지(분홍)
+g_pCashItemManager:AddCashItemPrice(	70002263	,	2400	)	--	청 배드 가이즈 장갑(분홍)
+g_pCashItemManager:AddCashItemPrice(	70002264	,	2400	)	--	청 배드 가이즈 신발(분홍)
+g_pCashItemManager:AddCashItemPrice(	70002265	,	5000	)	--	청 배드 가이즈 펑키헤어(분홍)
+g_pCashItemManager:AddCashItemPrice(	70002266	,	7000	)	--	청 배드 가이즈 캐논(하늘)
+g_pCashItemManager:AddCashItemPrice(	70002267	,	5000	)	--	청 배드 가이즈 가죽 자켓(하늘)
+g_pCashItemManager:AddCashItemPrice(	70002268	,	5000	)	--	청 배드 가이즈 바지(하늘)
+g_pCashItemManager:AddCashItemPrice(	70002269	,	2400	)	--	청 배드 가이즈 장갑(하늘)
+g_pCashItemManager:AddCashItemPrice(	70002270	,	2400	)	--	청 배드 가이즈 신발(하늘)
+g_pCashItemManager:AddCashItemPrice(	70002271	,	5000	)	--	청 배드 가이즈 펑키헤어(하늘)
 
 g_pCashItemManager:AddCashItemPrice(	210000223	,	5000	)	--	러블리 발렌타인 곰인형
 
-g_pCashItemManager:AddCashItemPrice(	90000200	,	5000	)	--	마나 고블러 팩
-g_pCashItemManager:AddCashItemPrice(	90000201	,	5000	)	--	촘프 반다나
-g_pCashItemManager:AddCashItemPrice(	90000202	,	5000	)	--	로얄 머플러
+g_pCashItemManager:AddCashItemPrice(	210000222	,	200	)	--	발렌타인 곰인형(1)
 
-g_pCashItemManager:AddCashItemPrice(	250000660	,	7000	)	--	미국 아바타 컨테스트 엘소드 대검 (Ver.A)
-g_pCashItemManager:AddCashItemPrice(	250000661	,	5000	)	--	미국 아바타 컨테스트 엘소드 상의 (Ver.A)
-g_pCashItemManager:AddCashItemPrice(	250000662	,	5000	)	--	미국 아바타 컨테스트 엘소드 하의 (Ver.A)
-g_pCashItemManager:AddCashItemPrice(	250000663	,	2400	)	--	미국 아바타 컨테스트 엘소드 장갑 (Ver.A)
-g_pCashItemManager:AddCashItemPrice(	250000664	,	2400	)	--	미국 아바타 컨테스트 엘소드 신발 (Ver.A)
-g_pCashItemManager:AddCashItemPrice(	250000665	,	5000	)	--	미국 아바타 컨테스트 엘소드 헤어 (Ver.A)
-g_pCashItemManager:AddCashItemPrice(	250000670	,	7000	)	--	미국 아바타 컨테스트 엘소드 대검 (Ver.B)
-g_pCashItemManager:AddCashItemPrice(	250000671	,	5000	)	--	미국 아바타 컨테스트 엘소드 상의 (Ver.B)
-g_pCashItemManager:AddCashItemPrice(	250000672	,	5000	)	--	미국 아바타 컨테스트 엘소드 하의 (Ver.B)
-g_pCashItemManager:AddCashItemPrice(	250000673	,	2400	)	--	미국 아바타 컨테스트 엘소드 장갑 (Ver.B)
-g_pCashItemManager:AddCashItemPrice(	250000674	,	2400	)	--	미국 아바타 컨테스트 엘소드 신발 (Ver.B)
-g_pCashItemManager:AddCashItemPrice(	250000675	,	5000	)	--	미국 아바타 컨테스트 엘소드 헤어 (Ver.B)
-g_pCashItemManager:AddCashItemPrice(	250000680	,	7000	)	--	미국 아바타 컨테스트 아이샤 지팡이 (Ver.A)
-g_pCashItemManager:AddCashItemPrice(	250000681	,	5000	)	--	미국 아바타 컨테스트 아이샤 상의 (Ver.A)
-g_pCashItemManager:AddCashItemPrice(	250000682	,	5000	)	--	미국 아바타 컨테스트 아이샤 하의 (Ver.A)
-g_pCashItemManager:AddCashItemPrice(	250000683	,	2400	)	--	미국 아바타 컨테스트 아이샤 장갑 (Ver.A)
-g_pCashItemManager:AddCashItemPrice(	250000684	,	2400	)	--	미국 아바타 컨테스트 아이샤 신발 (Ver.A)
-g_pCashItemManager:AddCashItemPrice(	250000685	,	5000	)	--	미국 아바타 컨테스트 아이샤 헤어 (Ver.A)
-g_pCashItemManager:AddCashItemPrice(	250000690	,	7000	)	--	미국 아바타 컨테스트 아이샤 지팡이 (Ver.B)
-g_pCashItemManager:AddCashItemPrice(	250000691	,	5000	)	--	미국 아바타 컨테스트 아이샤 상의 (Ver.B)
-g_pCashItemManager:AddCashItemPrice(	250000692	,	5000	)	--	미국 아바타 컨테스트 아이샤 하의 (Ver.B)
-g_pCashItemManager:AddCashItemPrice(	250000693	,	2400	)	--	미국 아바타 컨테스트 아이샤 장갑 (Ver.B)
-g_pCashItemManager:AddCashItemPrice(	250000694	,	2400	)	--	미국 아바타 컨테스트 아이샤 신발 (Ver.B)
-g_pCashItemManager:AddCashItemPrice(	250000695	,	5000	)	--	미국 아바타 컨테스트 아이샤 헤어 (Ver.B)
-g_pCashItemManager:AddCashItemPrice(	250000700	,	7000	)	--	미국 아바타 컨테스트 레나 활 (Ver.A)
-g_pCashItemManager:AddCashItemPrice(	250000701	,	5000	)	--	미국 아바타 컨테스트 레나 상의 (Ver.A)
-g_pCashItemManager:AddCashItemPrice(	250000702	,	5000	)	--	미국 아바타 컨테스트 레나 하의 (Ver.A)
-g_pCashItemManager:AddCashItemPrice(	250000703	,	2400	)	--	미국 아바타 컨테스트 레나 장갑 (Ver.A)
-g_pCashItemManager:AddCashItemPrice(	250000704	,	2400	)	--	미국 아바타 컨테스트 레나 신발 (Ver.A)
-g_pCashItemManager:AddCashItemPrice(	250000705	,	5000	)	--	미국 아바타 컨테스트 레나 헤어 (Ver.A)
-g_pCashItemManager:AddCashItemPrice(	250000710	,	7000	)	--	미국 아바타 컨테스트 레나 활 (Ver.B)
-g_pCashItemManager:AddCashItemPrice(	250000711	,	5000	)	--	미국 아바타 컨테스트 레나 상의 (Ver.B)
-g_pCashItemManager:AddCashItemPrice(	250000712	,	5000	)	--	미국 아바타 컨테스트 레나 하의 (Ver.B)
-g_pCashItemManager:AddCashItemPrice(	250000713	,	2400	)	--	미국 아바타 컨테스트 레나 장갑 (Ver.B)
-g_pCashItemManager:AddCashItemPrice(	250000714	,	2400	)	--	미국 아바타 컨테스트 레나 신발 (Ver.B)
-g_pCashItemManager:AddCashItemPrice(	250000715	,	5000	)	--	미국 아바타 컨테스트 레나 헤어 (Ver.B)
-g_pCashItemManager:AddCashItemPrice(	250000720	,	7000	)	--	미국 아바타 컨테스트 레이븐 장검 (Ver.A)
-g_pCashItemManager:AddCashItemPrice(	250000721	,	5000	)	--	미국 아바타 컨테스트 레이븐 상의 (Ver.A)
-g_pCashItemManager:AddCashItemPrice(	250000722	,	5000	)	--	미국 아바타 컨테스트 레이븐 하의 (Ver.A)
-g_pCashItemManager:AddCashItemPrice(	250000723	,	2400	)	--	미국 아바타 컨테스트 레이븐 장갑 (Ver.A)
-g_pCashItemManager:AddCashItemPrice(	250000724	,	2400	)	--	미국 아바타 컨테스트 레이븐 신발 (Ver.A)
-g_pCashItemManager:AddCashItemPrice(	250000725	,	5000	)	--	미국 아바타 컨테스트 레이븐 헤어 (Ver.A)
-g_pCashItemManager:AddCashItemPrice(	250000730	,	7000	)	--	미국 아바타 컨테스트 레이븐 장검 (Ver.B)
-g_pCashItemManager:AddCashItemPrice(	250000731	,	5000	)	--	미국 아바타 컨테스트 레이븐 상의 (Ver.B)
-g_pCashItemManager:AddCashItemPrice(	250000732	,	5000	)	--	미국 아바타 컨테스트 레이븐 하의 (Ver.B)
-g_pCashItemManager:AddCashItemPrice(	250000733	,	2400	)	--	미국 아바타 컨테스트 레이븐 장갑 (Ver.B)
-g_pCashItemManager:AddCashItemPrice(	250000734	,	2400	)	--	미국 아바타 컨테스트 레이븐 신발 (Ver.B)
-g_pCashItemManager:AddCashItemPrice(	250000735	,	5000	)	--	미국 아바타 컨테스트 레이븐 헤어 (Ver.B)
-g_pCashItemManager:AddCashItemPrice(	250000740	,	7000	)	--	미국 아바타 컨테스트 이브 기어 (Ver.A)
-g_pCashItemManager:AddCashItemPrice(	250000741	,	5000	)	--	미국 아바타 컨테스트 이브 상의 (Ver.A)
-g_pCashItemManager:AddCashItemPrice(	250000742	,	5000	)	--	미국 아바타 컨테스트 이브 하의 (Ver.A)
-g_pCashItemManager:AddCashItemPrice(	250000743	,	2400	)	--	미국 아바타 컨테스트 이브 장갑 (Ver.A)
-g_pCashItemManager:AddCashItemPrice(	250000744	,	2400	)	--	미국 아바타 컨테스트 이브 신발 (Ver.A)
-g_pCashItemManager:AddCashItemPrice(	250000745	,	5000	)	--	미국 아바타 컨테스트 이브 헤어 (Ver.A)
-g_pCashItemManager:AddCashItemPrice(	250000750	,	7000	)	--	미국 아바타 컨테스트 이브 기어 (Ver.B)
-g_pCashItemManager:AddCashItemPrice(	250000751	,	5000	)	--	미국 아바타 컨테스트 이브 상의 (Ver.B)
-g_pCashItemManager:AddCashItemPrice(	250000752	,	5000	)	--	미국 아바타 컨테스트 이브 하의 (Ver.B)
-g_pCashItemManager:AddCashItemPrice(	250000753	,	2400	)	--	미국 아바타 컨테스트 이브 장갑 (Ver.B)
-g_pCashItemManager:AddCashItemPrice(	250000754	,	2400	)	--	미국 아바타 컨테스트 이브 신발 (Ver.B)
-g_pCashItemManager:AddCashItemPrice(	250000755	,	5000	)	--	미국 아바타 컨테스트 이브 헤어 (Ver.B)
-g_pCashItemManager:AddCashItemPrice(	250000760	,	7000	)	--	미국 아바타 컨테스트 청 철포 (Ver.A)
-g_pCashItemManager:AddCashItemPrice(	250000761	,	5000	)	--	미국 아바타 컨테스트 청 상의 (Ver.A)
-g_pCashItemManager:AddCashItemPrice(	250000762	,	5000	)	--	미국 아바타 컨테스트 청 하의 (Ver.A)
-g_pCashItemManager:AddCashItemPrice(	250000763	,	2400	)	--	미국 아바타 컨테스트 청 장갑 (Ver.A)
-g_pCashItemManager:AddCashItemPrice(	250000764	,	2400	)	--	미국 아바타 컨테스트 청 신발 (Ver.A)
-g_pCashItemManager:AddCashItemPrice(	250000765	,	5000	)	--	미국 아바타 컨테스트 청 헤어 (Ver.A)
-g_pCashItemManager:AddCashItemPrice(	250000770	,	7000	)	--	미국 아바타 컨테스트 청 철포 (Ver.B)
-g_pCashItemManager:AddCashItemPrice(	250000771	,	5000	)	--	미국 아바타 컨테스트 청 상의 (Ver.B)
-g_pCashItemManager:AddCashItemPrice(	250000772	,	5000	)	--	미국 아바타 컨테스트 청 하의 (Ver.B)
-g_pCashItemManager:AddCashItemPrice(	250000773	,	2400	)	--	미국 아바타 컨테스트 청 장갑 (Ver.B)
-g_pCashItemManager:AddCashItemPrice(	250000774	,	2400	)	--	미국 아바타 컨테스트 청 신발 (Ver.B)
-g_pCashItemManager:AddCashItemPrice(	250000775	,	5000	)	--	미국 아바타 컨테스트 청 헤어 (Ver.B)
-g_pCashItemManager:AddCashItemPrice(	90001891	,	2400	)	--	희미한 드림스텝(나뭇잎)
-g_pCashItemManager:AddCashItemPrice(	90001892	,	3600	)	--	드림스텝(나뭇잎)
-g_pCashItemManager:AddCashItemPrice(	90001893	,	5000	)	--	빛나는 드림스텝(나뭇잎)
 
-g_pCashItemManager:AddCashItemPrice(	85002080	,	200	)	--	아리엘의 이브 발렌타인 기어
-g_pCashItemManager:AddCashItemPrice(	85002081	,	200	)	--	아리엘의 이브 발렌타인 상의
-g_pCashItemManager:AddCashItemPrice(	85002082	,	200	)	--	아리엘의 이브 발렌타인 하의
-g_pCashItemManager:AddCashItemPrice(	85002083	,	200	)	--	아리엘의 이브 발렌타인 장갑
-g_pCashItemManager:AddCashItemPrice(	85002084	,	200	)	--	아리엘의 이브 발렌타인 신발
+g_pCashItemManager:AddCashItemPrice(	261290	,	7000	)	--	아이스 캐논 (녹색)
+g_pCashItemManager:AddCashItemPrice(	261300	,	5000	)	--	겨울용 기모 아웃터 (녹색)
+g_pCashItemManager:AddCashItemPrice(	261310	,	5000	)	--	겨울용 기모 하의 (녹색)
+g_pCashItemManager:AddCashItemPrice(	261320	,	2400	)	--	겨울용 기모 암워머 (녹색)
+g_pCashItemManager:AddCashItemPrice(	261330	,	2400	)	--	겨울용 기모 트래킹 슈즈(녹색)
+g_pCashItemManager:AddCashItemPrice(	261340	,	5000	)	--	방울 미니 (빨강)
+g_pCashItemManager:AddCashItemPrice(	261350	,	7000	)	--	아이스 캐논 (빨강)
+g_pCashItemManager:AddCashItemPrice(	261360	,	5000	)	--	겨울용 기모 아웃터 (빨강)
+g_pCashItemManager:AddCashItemPrice(	261370	,	5000	)	--	겨울용 기모 하의 (빨강)
+g_pCashItemManager:AddCashItemPrice(	261380	,	2400	)	--	겨울용 기모 암워머 (빨강)
+g_pCashItemManager:AddCashItemPrice(	261390	,	2400	)	--	겨울용 기모 트래킹 슈즈(빨강)
+g_pCashItemManager:AddCashItemPrice(	261400	,	5000	)	--	방울 미니 (갈색)
+g_pCashItemManager:AddCashItemPrice(	133344	,	6900	)	--	드림 스텝 - 플레어
+
+--3.13
+g_pCashItemManager:AddCashItemPrice(	85002140	,	7000	)	--	엘소드 노블나이츠 응원단장 부부젤라
+g_pCashItemManager:AddCashItemPrice(	85002141	,	5000	)	--	엘소드 노블나이츠 응원단장 상의
+g_pCashItemManager:AddCashItemPrice(	85002142	,	5000	)	--	엘소드 노블나이츠 응원단장 하의
+g_pCashItemManager:AddCashItemPrice(	85002143	,	2400	)	--	엘소드 노블나이츠 응원단장 장갑
+g_pCashItemManager:AddCashItemPrice(	85002144	,	2400	)	--	엘소드 노블나이츠 응원단장 신발
+g_pCashItemManager:AddCashItemPrice(	85002145	,	5000	)	--	엘소드 노블나이츠 응원단장 헤어
+g_pCashItemManager:AddCashItemPrice(	85002150	,	7000	)	--	엘소드 노블나이츠 응원단장 부부젤라(ver.Re)
+g_pCashItemManager:AddCashItemPrice(	85002151	,	5000	)	--	엘소드 노블나이츠 응원단장 상의(ver.Re)
+g_pCashItemManager:AddCashItemPrice(	85002152	,	5000	)	--	엘소드 노블나이츠 응원단장 하의(ver.Re)
+g_pCashItemManager:AddCashItemPrice(	85002153	,	2400	)	--	엘소드 노블나이츠 응원단장 장갑(ver.Re)
+g_pCashItemManager:AddCashItemPrice(	85002154	,	2400	)	--	엘소드 노블나이츠 응원단장 신발(ver.Re)
+g_pCashItemManager:AddCashItemPrice(	85002155	,	5000	)	--	엘소드 노블나이츠 응원단장 헤어(ver.Re)
+g_pCashItemManager:AddCashItemPrice(	85002160	,	7000	)	--	아이샤 블루세일러 넵튠 스태프
+g_pCashItemManager:AddCashItemPrice(	85002161	,	5000	)	--	아이샤 블루세일러 상의
+g_pCashItemManager:AddCashItemPrice(	85002162	,	5000	)	--	아이샤 블루세일러 하의
+g_pCashItemManager:AddCashItemPrice(	85002163	,	2400	)	--	아이샤 블루세일러 장갑
+g_pCashItemManager:AddCashItemPrice(	85002164	,	2400	)	--	아이샤 블루세일러 신발
+g_pCashItemManager:AddCashItemPrice(	85002165	,	5000	)	--	아이샤 블루세일러 헤어
+g_pCashItemManager:AddCashItemPrice(	85002170	,	7000	)	--	아이샤 블루세일러 넵튠 스태프(ver.Re)
+g_pCashItemManager:AddCashItemPrice(	85002171	,	5000	)	--	아이샤 블루세일러 상의(ver.Re)
+g_pCashItemManager:AddCashItemPrice(	85002172	,	5000	)	--	아이샤 블루세일러 하의(ver.Re)
+g_pCashItemManager:AddCashItemPrice(	85002173	,	2400	)	--	아이샤 블루세일러 장갑(ver.Re)
+g_pCashItemManager:AddCashItemPrice(	85002174	,	2400	)	--	아이샤 블루세일러 신발(ver.Re)
+g_pCashItemManager:AddCashItemPrice(	85002175	,	5000	)	--	아이샤 블루세일러 헤어(ver.Re)
+g_pCashItemManager:AddCashItemPrice(	85002180	,	7000	)	--	레나 눈의 여왕 스톰브링거
+g_pCashItemManager:AddCashItemPrice(	85002181	,	5000	)	--	레나 눈의 여왕 상의
+g_pCashItemManager:AddCashItemPrice(	85002182	,	5000	)	--	레나 눈의 여왕 하의
+g_pCashItemManager:AddCashItemPrice(	85002183	,	2400	)	--	레나 눈의 여왕 장갑
+g_pCashItemManager:AddCashItemPrice(	85002184	,	2400	)	--	레나 눈의 여왕 신발
+g_pCashItemManager:AddCashItemPrice(	85002185	,	5000	)	--	레나 눈의 여왕 헤어
+g_pCashItemManager:AddCashItemPrice(	85002190	,	7000	)	--	레나 눈의 여왕 스톰브링거(ver.Re)
+g_pCashItemManager:AddCashItemPrice(	85002191	,	5000	)	--	레나 눈의 여왕 상의(ver.Re)
+g_pCashItemManager:AddCashItemPrice(	85002192	,	5000	)	--	레나 눈의 여왕 하의(ver.Re)
+g_pCashItemManager:AddCashItemPrice(	85002193	,	2400	)	--	레나 눈의 여왕 장갑(ver.Re)
+g_pCashItemManager:AddCashItemPrice(	85002194	,	2400	)	--	레나 눈의 여왕 신발(ver.Re)
+g_pCashItemManager:AddCashItemPrice(	85002195	,	5000	)	--	레나 눈의 여왕 헤어(ver.Re)
+g_pCashItemManager:AddCashItemPrice(	85002200	,	7000	)	--	레이븐 다크니스 위저드 워블레이드
+g_pCashItemManager:AddCashItemPrice(	85002201	,	5000	)	--	레이븐 다크니스 위저드 상의
+g_pCashItemManager:AddCashItemPrice(	85002202	,	5000	)	--	레이븐 다크니스 위저드 하의
+g_pCashItemManager:AddCashItemPrice(	85002203	,	2400	)	--	레이븐 다크니스 위저드 장갑
+g_pCashItemManager:AddCashItemPrice(	85002204	,	2400	)	--	레이븐 다크니스 위저드 신발
+g_pCashItemManager:AddCashItemPrice(	85002205	,	5000	)	--	레이븐 다크니스 위저드 헤어
+g_pCashItemManager:AddCashItemPrice(	85002210	,	7000	)	--	레이븐 다크니스 위저드 워블레이드(ver.Re)
+g_pCashItemManager:AddCashItemPrice(	85002211	,	5000	)	--	레이븐 다크니스 위저드 상의(ver.Re)
+g_pCashItemManager:AddCashItemPrice(	85002212	,	5000	)	--	레이븐 다크니스 위저드 하의(ver.Re)
+g_pCashItemManager:AddCashItemPrice(	85002213	,	2400	)	--	레이븐 다크니스 위저드 장갑(ver.Re)
+g_pCashItemManager:AddCashItemPrice(	85002214	,	2400	)	--	레이븐 다크니스 위저드 신발(ver.Re)
+g_pCashItemManager:AddCashItemPrice(	85002215	,	5000	)	--	레이븐 다크니스 위저드 헤어(ver.Re)
+g_pCashItemManager:AddCashItemPrice(	85002220	,	7000	)	--	이브 나소드 노블레스 가디언 기어
+g_pCashItemManager:AddCashItemPrice(	85002221	,	5000	)	--	이브 나소드 노블레스 상의
+g_pCashItemManager:AddCashItemPrice(	85002222	,	5000	)	--	이브 나소드 노블레스 하의
+g_pCashItemManager:AddCashItemPrice(	85002223	,	2400	)	--	이브 나소드 노블레스 장갑
+g_pCashItemManager:AddCashItemPrice(	85002224	,	2400	)	--	이브 나소드 노블레스 신발
+g_pCashItemManager:AddCashItemPrice(	85002225	,	5000	)	--	이브 나소드 노블레스 헤어
+g_pCashItemManager:AddCashItemPrice(	85002230	,	7000	)	--	이브 나소드 노블레스 가디언 기어(ver.Re)
+g_pCashItemManager:AddCashItemPrice(	85002231	,	5000	)	--	이브 나소드 노블레스 상의(ver.Re)
+g_pCashItemManager:AddCashItemPrice(	85002232	,	5000	)	--	이브 나소드 노블레스 하의(ver.Re)
+g_pCashItemManager:AddCashItemPrice(	85002233	,	2400	)	--	이브 나소드 노블레스 장갑(ver.Re)
+g_pCashItemManager:AddCashItemPrice(	85002234	,	2400	)	--	이브 나소드 노블레스 신발(ver.Re)
+g_pCashItemManager:AddCashItemPrice(	85002235	,	5000	)	--	이브 나소드 노블레스 헤어(ver.Re)
+g_pCashItemManager:AddCashItemPrice(	85002240	,	7000	)	--	청 소혹성 B-612의 왕자님 폭스워터폿
+g_pCashItemManager:AddCashItemPrice(	85002241	,	5000	)	--	청 소혹성 B-612의 왕자님 상의
+g_pCashItemManager:AddCashItemPrice(	85002242	,	5000	)	--	청 소혹성 B-612의 왕자님 하의
+g_pCashItemManager:AddCashItemPrice(	85002243	,	2400	)	--	청 소혹성 B-612의 왕자님 장갑
+g_pCashItemManager:AddCashItemPrice(	85002244	,	2400	)	--	청 소혹성 B-612의 왕자님 신발
+g_pCashItemManager:AddCashItemPrice(	85002245	,	5000	)	--	청 소혹성 B-612의 왕자님 헤어
+g_pCashItemManager:AddCashItemPrice(	85002250	,	7000	)	--	청 소혹성 B-612의 왕자님 폭스워터폿(ver.Re)
+g_pCashItemManager:AddCashItemPrice(	85002251	,	5000	)	--	청 소혹성 B-612의 왕자님 상의(ver.Re)
+g_pCashItemManager:AddCashItemPrice(	85002252	,	5000	)	--	청 소혹성 B-612의 왕자님 하의(ver.Re)
+g_pCashItemManager:AddCashItemPrice(	85002253	,	2400	)	--	청 소혹성 B-612의 왕자님 장갑(ver.Re)
+g_pCashItemManager:AddCashItemPrice(	85002254	,	2400	)	--	청 소혹성 B-612의 왕자님 신발(ver.Re)
+g_pCashItemManager:AddCashItemPrice(	85002255	,	5000	)	--	청 소혹성 B-612의 왕자님 헤어(ver.Re)
+g_pCashItemManager:AddCashItemPrice(	250000430	,	7000	)	--	독일 디자인 컨테스트 「Thomas Rensen」 청 철포 (Ver.A)
+g_pCashItemManager:AddCashItemPrice(	250000431	,	5000	)	--	독일 디자인 컨테스트 「Thomas Rensen」 청 상의 (Ver.A)
+g_pCashItemManager:AddCashItemPrice(	250000432	,	5000	)	--	독일 디자인 컨테스트 「Thomas Rensen」 청 하의 (Ver.A)
+g_pCashItemManager:AddCashItemPrice(	250000433	,	2400	)	--	독일 디자인 컨테스트 「Thomas Rensen」 청 장갑 (Ver.A)
+g_pCashItemManager:AddCashItemPrice(	250000434	,	2400	)	--	독일 디자인 컨테스트 「Thomas Rensen」 청 신발 (Ver.A)
+g_pCashItemManager:AddCashItemPrice(	250000435	,	5000	)	--	독일 디자인 컨테스트 「Thomas Rensen」 청 헤어 (Ver.A)
+g_pCashItemManager:AddCashItemPrice(	250000440	,	7000	)	--	독일 디자인 컨테스트 「Thomas Rensen」 청 철포 (Ver.B)
+g_pCashItemManager:AddCashItemPrice(	250000441	,	5000	)	--	독일 디자인 컨테스트 「Thomas Rensen」 청 상의 (Ver.B)
+g_pCashItemManager:AddCashItemPrice(	250000442	,	5000	)	--	독일 디자인 컨테스트 「Thomas Rensen」 청 하의 (Ver.B)
+g_pCashItemManager:AddCashItemPrice(	250000443	,	2400	)	--	독일 디자인 컨테스트 「Thomas Rensen」 청 장갑 (Ver.B)
+g_pCashItemManager:AddCashItemPrice(	250000444	,	2400	)	--	독일 디자인 컨테스트 「Thomas Rensen」 청 신발 (Ver.B)
+g_pCashItemManager:AddCashItemPrice(	250000445	,	5000	)	--	독일 디자인 컨테스트 「Thomas Rensen」 청 헤어 (Ver.B)
+g_pCashItemManager:AddCashItemPrice(	250000180	,	7000	)	--	롭이어 당근 철포 (하양)
+g_pCashItemManager:AddCashItemPrice(	250000181	,	5000	)	--	롭이어 토끼의 상의 (하양)
+g_pCashItemManager:AddCashItemPrice(	250000182	,	5000	)	--	롭이어 토끼의 하의 (하양)
+g_pCashItemManager:AddCashItemPrice(	250000183	,	2400	)	--	롭이어 토끼의 장갑 (하양)
+g_pCashItemManager:AddCashItemPrice(	250000184	,	2400	)	--	롭이어 도끼의 신발 (하양)
+g_pCashItemManager:AddCashItemPrice(	250000185	,	5000	)	--	롭이어 토끼의 헤어 (하양)
+g_pCashItemManager:AddCashItemPrice(	250000190	,	7000	)	--	롭이어 당근 철포 (살색)
+g_pCashItemManager:AddCashItemPrice(	250000191	,	5000	)	--	롭이어 토끼의 상의 (살색)
+g_pCashItemManager:AddCashItemPrice(	250000192	,	5000	)	--	롭이어 토끼의 하의 (살색)
+g_pCashItemManager:AddCashItemPrice(	250000193	,	2400	)	--	롭이어 토끼의 장갑 (살색)
+g_pCashItemManager:AddCashItemPrice(	250000194	,	2400	)	--	롭이어 도끼의 신발 (살색)
+g_pCashItemManager:AddCashItemPrice(	250000195	,	5000	)	--	롭이어 토끼의 헤어 (살색)
+g_pCashItemManager:AddCashItemPrice(	250000200	,	5000	)	--	롭이어 토끼 꼬리 (하양)
+g_pCashItemManager:AddCashItemPrice(	250000201	,	5000	)	--	롭이어 토끼 꼬리 (살색)
+g_pCashItemManager:AddCashItemPrice(	133346	,	7000	)	--	드림 스텝 - 스타
+g_pCashItemManager:AddCashItemPrice(	233280	,	5000	)	--	재미있는 당근 놀이
+g_pCashItemManager:AddCashItemPrice(	180151	,	5000	)	--	애완용 쁘띠뽀루
+g_pCashItemManager:AddCashItemPrice(	180295	,	5000	)	--	뽀루 망토
+g_pCashItemManager:AddCashItemPrice(	181467	,	5000	)	--	러블리 락앤롤 기타
+g_pCashItemManager:AddCashItemPrice(	131284	,	5000	)	--	맹세의 완장
+g_pCashItemManager:AddCashItemPrice(	130716	,	5000	)	--	투지의 암 가드
+g_pCashItemManager:AddCashItemPrice(	60003456	,	5000	)	--	당근당근
+
 
 g_pCashItemManager:AddCashItemPrice(	250000000	,	10000	)	--	오픈 웨딩 카 캐논(빨강)
 g_pCashItemManager:AddCashItemPrice(	250000001	,	7000	)	--	노블레스 연미복 상의(하양)
 g_pCashItemManager:AddCashItemPrice(	250000002	,	7000	)	--	노블레스 연미복 하의(하양)
-g_pCashItemManager:AddCashItemPrice(	250000003	,	3600	)	--	실크 웨딩 장갑(하양)
-g_pCashItemManager:AddCashItemPrice(	250000004	,	3600	)	--	화이트 포인트 구두(하양)
+g_pCashItemManager:AddCashItemPrice(	250000003	,	3500	)	--	실크 웨딩 장갑(하양)
+g_pCashItemManager:AddCashItemPrice(	250000004	,	3500	)	--	화이트 포인트 구두(하양)
 g_pCashItemManager:AddCashItemPrice(	250000005	,	7000	)	--	스트레이트 스타일링 헤어(연보라)
 g_pCashItemManager:AddCashItemPrice(	250000010	,	10000	)	--	오픈 웨딩 카 캐논(파랑)
 g_pCashItemManager:AddCashItemPrice(	250000011	,	7000	)	--	노블레스 연미복 상의(검정)
 g_pCashItemManager:AddCashItemPrice(	250000012	,	7000	)	--	노블레스 연미복 하의(검정)
-g_pCashItemManager:AddCashItemPrice(	250000013	,	3600	)	--	실크 웨딩 장갑(검정)
-g_pCashItemManager:AddCashItemPrice(	250000014	,	3600	)	--	화이트 포인트 구두(검정)
+g_pCashItemManager:AddCashItemPrice(	250000013	,	3500	)	--	실크 웨딩 장갑(검정)
+g_pCashItemManager:AddCashItemPrice(	250000014	,	3500	)	--	화이트 포인트 구두(검정)
 g_pCashItemManager:AddCashItemPrice(	250000015	,	7000	)	--	스트레이트 스타일링 헤어(연녹색)
 
-g_pCashItemManager:AddCashItemPrice(	233280	,	5000	)	--	재미있는 당근 놀이
+g_pCashItemManager:AddCashItemPrice(	133345	,	7000	)	--	드림 스텝 - 윈드
+g_pCashItemManager:AddCashItemPrice(	180001	,	5000	)	--	두근두근 하트 안경
+g_pCashItemManager:AddCashItemPrice(	80001862	,	5000	)	--	엄마 팬더 가면
 
 g_pCashItemManager:AddCashItemPrice(	60005025	,	5000	)	--	몬스터 카드 수집가의 가방
 g_pCashItemManager:AddCashItemPrice(	60005028	,	5000	)	--	몬스터 카드 수집가의 외눈 안경
@@ -10200,7 +8999,6 @@ g_pCashItemManager:AddCashItemPrice(	60005042	,	5000	)	--	레나 몬스터 카�
 g_pCashItemManager:AddCashItemPrice(	60005043	,	5000	)	--	레이븐 몬스터 카드 수집가의 모자
 g_pCashItemManager:AddCashItemPrice(	60005044	,	5000	)	--	이브 몬스터 카드 수집가의 모자
 g_pCashItemManager:AddCashItemPrice(	60005045	,	5000	)	--	청 몬스터 카드 수집가의 모자
-
 g_pCashItemManager:AddCashItemPrice(	85002328	,	5000	)	--	투사의 방패
 
 g_pCashItemManager:AddCashItemPrice(	250000300	,	7000	)	--	밀리터리 룩 철포 (암회색)
@@ -10215,6 +9013,7 @@ g_pCashItemManager:AddCashItemPrice(	250000312	,	5000	)	--	밀리터리 룩 하�
 g_pCashItemManager:AddCashItemPrice(	250000313	,	2400	)	--	밀리터리 룩 장갑 (갈색)
 g_pCashItemManager:AddCashItemPrice(	250000314	,	2400	)	--	밀리터리 룩 신발 (갈색)
 g_pCashItemManager:AddCashItemPrice(	250000315	,	5000	)	--	미디엄 와일드 헤어 (살색)
+g_pCashItemManager:AddCashItemPrice(	133343	,	7000	)	--	드림 스텝 - 소드
 
 g_pCashItemManager:AddCashItemPrice(	85002479	,	7000	)	--	엘소드 엘리오스 조사단 무기
 g_pCashItemManager:AddCashItemPrice(	85002480	,	5000	)	--	엘소드 엘리오스 조사단 상의
@@ -10254,27 +9053,66 @@ g_pCashItemManager:AddCashItemPrice(	85002513	,	2400	)	--	청 엘리오스 조�
 g_pCashItemManager:AddCashItemPrice(	85002514	,	5000	)	--	청 엘리오스 조사단 헤어
 
 
-
--- 130710/오현택/청 마린룩
-
-g_pCashItemManager:AddCashItemPrice(	75000837	,	7000	)	--	청 마린룩 무기(파랑)
-g_pCashItemManager:AddCashItemPrice(	75000838	,	5000	)	--	청 마린룩 상의(파랑)
-g_pCashItemManager:AddCashItemPrice(	75000839	,	5000	)	--	청 마린룩 장갑(파랑)
-g_pCashItemManager:AddCashItemPrice(	75000840	,	2400	)	--	청 마린룩 선원바지(파랑)
-g_pCashItemManager:AddCashItemPrice(	75000841	,	2400	)	--	청 마린룩 신발(파랑)
-g_pCashItemManager:AddCashItemPrice(	75000842	,	5000	)	--	청 마린룩 러보이컷(노랑)
-g_pCashItemManager:AddCashItemPrice(	75000843	,	7000	)	--	청 마린룩 무기(빨강)
-g_pCashItemManager:AddCashItemPrice(	75000844	,	5000	)	--	청 마린룩 상의(빨강)
-g_pCashItemManager:AddCashItemPrice(	75000845	,	5000	)	--	청 마린룩 선원바지(빨강)
-g_pCashItemManager:AddCashItemPrice(	75000846	,	2400	)	--	청 마린룩 장갑(빨강)
-g_pCashItemManager:AddCashItemPrice(	75000847	,	2400	)	--	청 마린룩 신발(빨강)
-g_pCashItemManager:AddCashItemPrice(	75000848	,	5000	)	--	청 마린룩 러보이컷(회색)
-						
-g_pCashItemManager:AddCashItemPrice(	75000859	,	5000	)	--	청 마린룩 정모(파랑)
-g_pCashItemManager:AddCashItemPrice(	75000860	,	5000	)	--	청 마린룩 정모(빨강)
+g_pCashItemManager:AddCashItemPrice(	250000060	,	7000	)	--	스타 우라노스 철포 (감청)
+g_pCashItemManager:AddCashItemPrice(	250000061	,	5000	)	--	청 스타 아카데미 상의 (감청)
+g_pCashItemManager:AddCashItemPrice(	250000062	,	5000	)	--	청 스타 아카데미 하의 (감청)
+g_pCashItemManager:AddCashItemPrice(	250000063	,	2400	)	--	청 스타 아카데미 장갑 (감청)
+g_pCashItemManager:AddCashItemPrice(	250000064	,	2400	)	--	청 스타 아카데미 신발 (감청)
+g_pCashItemManager:AddCashItemPrice(	250000065	,	5000	)	--	스타일리시 머쉬룸 컷 헤어 (감청)
+g_pCashItemManager:AddCashItemPrice(	250000070	,	7000	)	--	스타 우라노스 철포 (하양)
+g_pCashItemManager:AddCashItemPrice(	250000071	,	5000	)	--	청 스타 아카데미 상의 (하양)
+g_pCashItemManager:AddCashItemPrice(	250000072	,	5000	)	--	청 스타 아카데미 하의 (하양)
+g_pCashItemManager:AddCashItemPrice(	250000073	,	2400	)	--	청 스타 아카데미 장갑 (하양)
+g_pCashItemManager:AddCashItemPrice(	250000074	,	2400	)	--	청 스타 아카데미 신발 (하양)
+g_pCashItemManager:AddCashItemPrice(	250000075	,	5000	)	--	스타일리시 머쉬룸 컷 헤어 (하양)
 
 
--- 130710/오현택/인소이벤트 때 사용한 아바타 분해 (130619 업데이트)
+g_pCashItemManager:AddCashItemPrice(	65300	,	5000	)	--	사각테 안경
+g_pCashItemManager:AddCashItemPrice(	130006	,	5000	)	--	신학기 기념 엘소드 가방
+g_pCashItemManager:AddCashItemPrice(	129775	,	5000	)	--	200일 가죽 가방
+g_pCashItemManager:AddCashItemPrice(	66010	,	5000	)	--	틴틴 가방
+
+
+-- 130717/오현택/청 서머 비치룩
+
+g_pCashItemManager:AddCashItemPrice(	90000860	,	8000	)	--	청 서버 비치룩 무기(파랑)
+g_pCashItemManager:AddCashItemPrice(	90000861	,	6000	)	--	해변의 스타 조끼(파랑)
+g_pCashItemManager:AddCashItemPrice(	90000862	,	6000	)	--	해변의 스타 반바지(파랑)
+g_pCashItemManager:AddCashItemPrice(	90000863	,	3000	)	--	해변의 스타 팔찌(파랑)
+g_pCashItemManager:AddCashItemPrice(	90000864	,	3000	)	--	해변의 스타 비치샌들(파랑)
+g_pCashItemManager:AddCashItemPrice(	90000865	,	6000	)	--	해변의 스타 캡모자(파랑)
+g_pCashItemManager:AddCashItemPrice(	90000866	,	8000	)	--	청 서버 비치룩 무기(주황)
+g_pCashItemManager:AddCashItemPrice(	90000867	,	6000	)	--	해변의 스타 조끼(주황)
+g_pCashItemManager:AddCashItemPrice(	90000868	,	6000	)	--	해변의 스타 반바지(주황)
+g_pCashItemManager:AddCashItemPrice(	90000869	,	3000	)	--	해변의 스타 팔찌(주황)
+g_pCashItemManager:AddCashItemPrice(	90000870	,	3000	)	--	해변의 스타 비치샌들(주황)
+g_pCashItemManager:AddCashItemPrice(	90000871	,	6000	)	--	해변의 스타 캡모자(주황)
+
+
+-- 130717/오현택/청 독일 컨테스트
+
+g_pCashItemManager:AddCashItemPrice(	250001000	,	7000	)	--	독일 디자인 컨테스트 「Jennifer Schellenberg」 청 철포 (Ver.A)
+g_pCashItemManager:AddCashItemPrice(	250001001	,	5000	)	--	독일 디자인 컨테스트 「Jennifer Schellenberg」 청 상의 (Ver.A)
+g_pCashItemManager:AddCashItemPrice(	250001002	,	5000	)	--	독일 디자인 컨테스트 「Jennifer Schellenberg」 청 하의 (Ver.A)
+g_pCashItemManager:AddCashItemPrice(	250001003	,	2400	)	--	독일 디자인 컨테스트 「Jennifer Schellenberg」 청 장갑 (Ver.A)
+g_pCashItemManager:AddCashItemPrice(	250001004	,	2400	)	--	독일 디자인 컨테스트 「Jennifer Schellenberg」 청 신발 (Ver.A)
+g_pCashItemManager:AddCashItemPrice(	250001005	,	5000	)	--	독일 디자인 컨테스트 「Jennifer Schellenberg」 청 헤어 (Ver.A)
+g_pCashItemManager:AddCashItemPrice(	250001010	,	7000	)	--	독일 디자인 컨테스트 「Jennifer Schellenberg」 청 철포 (Ver.B)
+g_pCashItemManager:AddCashItemPrice(	250001011	,	5000	)	--	독일 디자인 컨테스트 「Jennifer Schellenberg」 청 상의 (Ver.B)
+g_pCashItemManager:AddCashItemPrice(	250001012	,	5000	)	--	독일 디자인 컨테스트 「Jennifer Schellenberg」 청 하의 (Ver.B)
+g_pCashItemManager:AddCashItemPrice(	250001013	,	2400	)	--	독일 디자인 컨테스트 「Jennifer Schellenberg」 청 장갑 (Ver.B)
+g_pCashItemManager:AddCashItemPrice(	250001014	,	2400	)	--	독일 디자인 컨테스트 「Jennifer Schellenberg」 청 신발 (Ver.B)
+g_pCashItemManager:AddCashItemPrice(	250001015	,	5000	)	--	독일 디자인 컨테스트 「Jennifer Schellenberg」 청 헤어 (Ver.B)
+
+
+-- 130717/오현택/캐쉬샵 액세서리
+
+g_pCashItemManager:AddCashItemPrice(	160522	,	5000	)	--	바나나 선풍기
+g_pCashItemManager:AddCashItemPrice(	60004522	,	5000	)	--	맛있는 수박
+g_pCashItemManager:AddCashItemPrice(	67004781	,	7000	)	--	드림 스텝 - 엘프마을 나뭇잎
+
+
+-- 130717/오현택/인소이벤트 때 사용한 아바타 분해 (130619 업데이트)
 
 g_pCashItemManager:AddCashItemPrice(	85002620	,	200	)	--	툼스톤 블레이드 (빨강)
 g_pCashItemManager:AddCashItemPrice(	85002621	,	200	)	--	와일드 트레져 유니폼 상의 (검정)
@@ -10386,85 +9224,27 @@ g_pCashItemManager:AddCashItemPrice(	85002794	,	200	)	--	세인트크로스가�
 g_pCashItemManager:AddCashItemPrice(	85002795	,	200	)	--	세인트크로스가더 헤어 (보라)
 
 
--- 130724/김록환/나이트 와처 이벤트 때 사용한 아바타 분해
+-- 130807/오현택/청 마린룩
 
-g_pCashItemManager:AddCashItemPrice(	85001050	,	7000	)	--	청 스포티 스타일 철포(청록)
-g_pCashItemManager:AddCashItemPrice(	85001051	,	5000	)	--	청 스포티 진업(청록)
-g_pCashItemManager:AddCashItemPrice(	85001052	,	5000	)	--	청 스포츠 숏 팬츠(청록)
-g_pCashItemManager:AddCashItemPrice(	85001053	,	2400	)	--	청 스포츠 아대(청록)
-g_pCashItemManager:AddCashItemPrice(	85001054	,	2400	)	--	청 테니스화(청록)
-g_pCashItemManager:AddCashItemPrice(	85001055	,	5000	)	--	청 트윈 스포츠밴드 헤어(청록)
-g_pCashItemManager:AddCashItemPrice(	85001056	,	7000	)	--	청 스포티 스타일 철포(연두)
-g_pCashItemManager:AddCashItemPrice(	85001057	,	5000	)	--	청 스포티 진업(연두)
-g_pCashItemManager:AddCashItemPrice(	85001058	,	5000	)	--	청 스포츠 숏 팬츠(연두)
-g_pCashItemManager:AddCashItemPrice(	85001059	,	2400	)	--	청 스포츠 아대(연두)
-g_pCashItemManager:AddCashItemPrice(	85001060	,	2400	)	--	청 테니스화(연두)
-g_pCashItemManager:AddCashItemPrice(	85001061	,	5000	)	--	청 트윈 스포츠밴드 헤어(연두)
-g_pCashItemManager:AddCashItemPrice(	239340	,	5000	)	--	병아리 날다 
+g_pCashItemManager:AddCashItemPrice(	75000837	,	7000	)	--	청 마린룩 무기(파랑)
+g_pCashItemManager:AddCashItemPrice(	75000838	,	5000	)	--	청 마린룩 상의(파랑)
+g_pCashItemManager:AddCashItemPrice(	75000839	,	5000	)	--	청 마린룩 장갑(파랑)
+g_pCashItemManager:AddCashItemPrice(	75000840	,	2400	)	--	청 마린룩 선원바지(파랑)
+g_pCashItemManager:AddCashItemPrice(	75000841	,	2400	)	--	청 마린룩 신발(파랑)
+g_pCashItemManager:AddCashItemPrice(	75000842	,	5000	)	--	청 마린룩 러보이컷(노랑)
+g_pCashItemManager:AddCashItemPrice(	75000843	,	7000	)	--	청 마린룩 무기(빨강)
+g_pCashItemManager:AddCashItemPrice(	75000844	,	5000	)	--	청 마린룩 상의(빨강)
+g_pCashItemManager:AddCashItemPrice(	75000845	,	5000	)	--	청 마린룩 선원바지(빨강)
+g_pCashItemManager:AddCashItemPrice(	75000846	,	2400	)	--	청 마린룩 장갑(빨강)
+g_pCashItemManager:AddCashItemPrice(	75000847	,	2400	)	--	청 마린룩 신발(빨강)
+g_pCashItemManager:AddCashItemPrice(	75000848	,	5000	)	--	청 마린룩 러보이컷(회색)
+						
+g_pCashItemManager:AddCashItemPrice(	75000859	,	5000	)	--	청 마린룩 정모(파랑)
+g_pCashItemManager:AddCashItemPrice(	75000860	,	5000	)	--	청 마린룩 정모(빨강)
 
 
--- 130911/오현택/누락된 유카타 아바타 분해 설정
+-- 130807/오현택/청 유카타
 
-g_pCashItemManager:AddCashItemPrice(	115000000	,	7000	)	--	엘소드 유카타 무기(빨강)
-g_pCashItemManager:AddCashItemPrice(	115000001	,	5000	)	--	엘소드 유카타 상의(빨강)
-g_pCashItemManager:AddCashItemPrice(	115000002	,	5000	)	--	엘소드 유카타 하의(빨강)
-g_pCashItemManager:AddCashItemPrice(	115000003	,	2400	)	--	엘소드 유카타 장갑(빨강)
-g_pCashItemManager:AddCashItemPrice(	115000004	,	2400	)	--	엘소드 유카타 신발(빨강)
-g_pCashItemManager:AddCashItemPrice(	115000005	,	5000	)	--	엘소드 유카타 헤어(빨강)
-g_pCashItemManager:AddCashItemPrice(	115000006	,	7000	)	--	엘소드 유카타 무기(하양)
-g_pCashItemManager:AddCashItemPrice(	115000007	,	5000	)	--	엘소드 유카타 상의(하양)
-g_pCashItemManager:AddCashItemPrice(	115000008	,	5000	)	--	엘소드 유카타 하의(하양)
-g_pCashItemManager:AddCashItemPrice(	115000009	,	2400	)	--	엘소드 유카타 장갑(하양)
-g_pCashItemManager:AddCashItemPrice(	115000010	,	2400	)	--	엘소드 유카타 신발(하양)
-g_pCashItemManager:AddCashItemPrice(	115000011	,	5000	)	--	엘소드 유카타 헤어(하양)
-g_pCashItemManager:AddCashItemPrice(	115000012	,	7000	)	--	아이샤 유카타 무기(자주)
-g_pCashItemManager:AddCashItemPrice(	115000013	,	5000	)	--	아이샤 유카타 상의(자주)
-g_pCashItemManager:AddCashItemPrice(	115000014	,	5000	)	--	아이샤 유카타 하의(자주)
-g_pCashItemManager:AddCashItemPrice(	115000015	,	2400	)	--	아이샤 유카타 장갑(자주)
-g_pCashItemManager:AddCashItemPrice(	115000016	,	2400	)	--	아이샤 유카타 신발(자주)
-g_pCashItemManager:AddCashItemPrice(	115000017	,	5000	)	--	아이샤 유카타 헤어(자주)
-g_pCashItemManager:AddCashItemPrice(	115000018	,	7000	)	--	아이샤 유카타 무기(분홍)
-g_pCashItemManager:AddCashItemPrice(	115000019	,	5000	)	--	아이샤 유카타 상의(분홍)
-g_pCashItemManager:AddCashItemPrice(	115000020	,	5000	)	--	아이샤 유카타 하의(분홍)
-g_pCashItemManager:AddCashItemPrice(	115000021	,	2400	)	--	아이샤 유카타 장갑(분홍)
-g_pCashItemManager:AddCashItemPrice(	115000022	,	2400	)	--	아이샤 유카타 신발(분홍)
-g_pCashItemManager:AddCashItemPrice(	115000023	,	5000	)	--	아이샤 유카타 헤어(분홍)
-g_pCashItemManager:AddCashItemPrice(	115000024	,	7000	)	--	레나 유카타 무기(하늘)
-g_pCashItemManager:AddCashItemPrice(	115000025	,	5000	)	--	레나 유카타 상의(하늘)
-g_pCashItemManager:AddCashItemPrice(	115000026	,	5000	)	--	레나 유카타 하의(하늘)
-g_pCashItemManager:AddCashItemPrice(	115000027	,	2400	)	--	레나 유카타 장갑(하늘)
-g_pCashItemManager:AddCashItemPrice(	115000028	,	2400	)	--	레나 유카타 신발(하늘)
-g_pCashItemManager:AddCashItemPrice(	115000029	,	5000	)	--	레나 유카타 헤어(하늘)
-g_pCashItemManager:AddCashItemPrice(	115000030	,	7000	)	--	레나 유카타 무기(자주)
-g_pCashItemManager:AddCashItemPrice(	115000031	,	5000	)	--	레나 유카타 상의(자주)
-g_pCashItemManager:AddCashItemPrice(	115000032	,	5000	)	--	레나 유카타 하의(자주)
-g_pCashItemManager:AddCashItemPrice(	115000033	,	2400	)	--	레나 유카타 장갑(자주)
-g_pCashItemManager:AddCashItemPrice(	115000034	,	2400	)	--	레나 유카타 신발(자주)
-g_pCashItemManager:AddCashItemPrice(	115000035	,	5000	)	--	레나 유카타 헤어(자주)
-g_pCashItemManager:AddCashItemPrice(	115000036	,	7000	)	--	레이븐 유카타 무기(파랑)
-g_pCashItemManager:AddCashItemPrice(	115000037	,	5000	)	--	레이븐 유카타 상의(파랑)
-g_pCashItemManager:AddCashItemPrice(	115000038	,	5000	)	--	레이븐 유카타 하의(파랑)
-g_pCashItemManager:AddCashItemPrice(	115000039	,	2400	)	--	레이븐 유카타 장갑(파랑)
-g_pCashItemManager:AddCashItemPrice(	115000040	,	2400	)	--	레이븐 유카타 신발(파랑)
-g_pCashItemManager:AddCashItemPrice(	115000041	,	5000	)	--	레이븐 유카타 헤어(파랑)
-g_pCashItemManager:AddCashItemPrice(	115000042	,	7000	)	--	레이븐 유카타 무기(고동)
-g_pCashItemManager:AddCashItemPrice(	115000043	,	5000	)	--	레이븐 유카타 상의(고동)
-g_pCashItemManager:AddCashItemPrice(	115000044	,	5000	)	--	레이븐 유카타 하의(고동)
-g_pCashItemManager:AddCashItemPrice(	115000045	,	2400	)	--	레이븐 유카타 장갑(고동)
-g_pCashItemManager:AddCashItemPrice(	115000046	,	2400	)	--	레이븐 유카타 신발(고동)
-g_pCashItemManager:AddCashItemPrice(	115000047	,	5000	)	--	레이븐 유카타 헤어(고동)
-g_pCashItemManager:AddCashItemPrice(	115000048	,	7000	)	--	이브 유카타 무기(분홍)
-g_pCashItemManager:AddCashItemPrice(	115000049	,	5000	)	--	이브 유카타 상의(분홍)
-g_pCashItemManager:AddCashItemPrice(	115000050	,	5000	)	--	이브 유카타 하의(분홍)
-g_pCashItemManager:AddCashItemPrice(	115000051	,	2400	)	--	이브 유카타 장갑(분홍)
-g_pCashItemManager:AddCashItemPrice(	115000052	,	2400	)	--	이브 유카타 신발(분홍)
-g_pCashItemManager:AddCashItemPrice(	115000053	,	5000	)	--	이브 유카타 헤어(분홍)
-g_pCashItemManager:AddCashItemPrice(	115000054	,	7000	)	--	이브 유카타 무기(노랑)
-g_pCashItemManager:AddCashItemPrice(	115000055	,	5000	)	--	이브 유카타 상의(노랑)
-g_pCashItemManager:AddCashItemPrice(	115000056	,	5000	)	--	이브 유카타 하의(노랑)
-g_pCashItemManager:AddCashItemPrice(	115000057	,	2400	)	--	이브 유카타 장갑(노랑)
-g_pCashItemManager:AddCashItemPrice(	115000058	,	2400	)	--	이브 유카타 신발(노랑)
-g_pCashItemManager:AddCashItemPrice(	115000059	,	5000	)	--	이브 유카타 헤어(노랑)
 g_pCashItemManager:AddCashItemPrice(	250000840	,	7000	)	--	청 유카타 무기(보라)
 g_pCashItemManager:AddCashItemPrice(	250000841	,	5000	)	--	청 유카타 상의(보라)
 g_pCashItemManager:AddCashItemPrice(	250000842	,	5000	)	--	청 유카타 하의(보라)
@@ -10478,14 +9258,275 @@ g_pCashItemManager:AddCashItemPrice(	250000853	,	2400	)	--	청 유카타 장갑(
 g_pCashItemManager:AddCashItemPrice(	250000854	,	2400	)	--	청 유카타 신발(파랑)
 g_pCashItemManager:AddCashItemPrice(	250000855	,	5000	)	--	청 유카타 헤어(파랑)
 
-g_pCashItemManager:AddCashItemPrice(	115000070	,	5000	)	--	유카타 부채
-g_pCashItemManager:AddCashItemPrice(	115000071	,	5000	)	--	유카타 우산
 
+-- 130807/오현택/이벤트 액세
 
--- 130911/오현택/필드중간보스이벤트
-
+g_pCashItemManager:AddCashItemPrice(	65000050	,	5000	)	--	검은 고양이 꼬리
+g_pCashItemManager:AddCashItemPrice(	65000051	,	5000	)	--	검은 고양이 귀
+						
 g_pCashItemManager:AddCashItemPrice(	60006500	,	5000	)	--	카메라 ES-888(블랙)
 g_pCashItemManager:AddCashItemPrice(	60006501	,	5000	)	--	카메라 ES-889(핑크)
+
+
+-- 130904/오현택/할로윈 아바타
+
+g_pCashItemManager:AddCashItemPrice(	85003110	,	200	)	--	아리엘의 침식의 검(빨강)
+g_pCashItemManager:AddCashItemPrice(	85003111	,	200	)	--	아리엘의 검은늑대 코스튬 상의(빨강)
+g_pCashItemManager:AddCashItemPrice(	85003112	,	200	)	--	아리엘의 검은늑대 코스튬 하의(빨강)
+g_pCashItemManager:AddCashItemPrice(	85003113	,	200	)	--	아리엘의 검은늑대 코스튬 장갑(빨강)
+g_pCashItemManager:AddCashItemPrice(	85003114	,	200	)	--	아리엘의 검은늑대 코스튬 신발(빨강)
+g_pCashItemManager:AddCashItemPrice(	85003115	,	200	)	--	아리엘의 검은늑대 단발머리(빨강)
+g_pCashItemManager:AddCashItemPrice(	85003120	,	200	)	--	아리엘의 침식의 검(청록)
+g_pCashItemManager:AddCashItemPrice(	85003121	,	200	)	--	아리엘의 검은늑대 코스튬 상의(청록)
+g_pCashItemManager:AddCashItemPrice(	85003122	,	200	)	--	아리엘의 검은늑대 코스튬 하의(청록)
+g_pCashItemManager:AddCashItemPrice(	85003123	,	200	)	--	아리엘의 검은늑대 코스튬 장갑(청록)
+g_pCashItemManager:AddCashItemPrice(	85003124	,	200	)	--	아리엘의 검은늑대 코스튬 신발(청록)
+g_pCashItemManager:AddCashItemPrice(	85003125	,	200	)	--	아리엘의 검은늑대 단발머리(청록)
+g_pCashItemManager:AddCashItemPrice(	85003130	,	200	)	--	아리엘의 할로윈의 악마 - 데몬 잭(주황)
+g_pCashItemManager:AddCashItemPrice(	85003131	,	200	)	--	아리엘의 펌킨 위치 코스튬 상의(주황)
+g_pCashItemManager:AddCashItemPrice(	85003132	,	200	)	--	아리엘의 펌킨 위치 코스튬 하의(주황)
+g_pCashItemManager:AddCashItemPrice(	85003133	,	200	)	--	아리엘의 펌킨 위치 코스튬 장갑(주황)
+g_pCashItemManager:AddCashItemPrice(	85003134	,	200	)	--	아리엘의 펌킨 위치 코스튬 신발(주황)
+g_pCashItemManager:AddCashItemPrice(	85003135	,	200	)	--	아리엘의 단풍모양 묶음머리(주황)
+g_pCashItemManager:AddCashItemPrice(	85003140	,	200	)	--	아리엘의 할로윈의 악마 - 데몬 잭(빨강)
+g_pCashItemManager:AddCashItemPrice(	85003141	,	200	)	--	아리엘의 펌킨 위치 코스튬 상의(빨강)
+g_pCashItemManager:AddCashItemPrice(	85003142	,	200	)	--	아리엘의 펌킨 위치 코스튬 하의(빨강)
+g_pCashItemManager:AddCashItemPrice(	85003143	,	200	)	--	아리엘의 펌킨 위치 코스튬 장갑(빨강)
+g_pCashItemManager:AddCashItemPrice(	85003144	,	200	)	--	아리엘의 펌킨 위치 코스튬 신발(빨강)
+g_pCashItemManager:AddCashItemPrice(	85003145	,	200	)	--	아리엘의 단풍모양 묶음머리(빨강)
+g_pCashItemManager:AddCashItemPrice(	85003150	,	200	)	--	아리엘의 다크 윙 배트 보우(보라)
+g_pCashItemManager:AddCashItemPrice(	85003151	,	200	)	--	아리엘의 서큐버스 예식 드레스 상의(보라)
+g_pCashItemManager:AddCashItemPrice(	85003152	,	200	)	--	아리엘의 서큐버스 예식 드레스 하의(보라)
+g_pCashItemManager:AddCashItemPrice(	85003153	,	200	)	--	아리엘의 서큐버스 예식 드레스 장갑(보라)
+g_pCashItemManager:AddCashItemPrice(	85003154	,	200	)	--	아리엘의 서큐버스 예식 드레스 신발(보라)
+g_pCashItemManager:AddCashItemPrice(	85003155	,	200	)	--	아리엘의 롱테일 매튜어 커트(보라)
+g_pCashItemManager:AddCashItemPrice(	85003160	,	200	)	--	아리엘의 다크 윙 배트 보우(분홍)
+g_pCashItemManager:AddCashItemPrice(	85003161	,	200	)	--	아리엘의 서큐버스 예식 드레스 상의(분홍)
+g_pCashItemManager:AddCashItemPrice(	85003162	,	200	)	--	아리엘의 서큐버스 예식 드레스 하의(분홍)
+g_pCashItemManager:AddCashItemPrice(	85003163	,	200	)	--	아리엘의 서큐버스 예식 드레스 장갑(분홍)
+g_pCashItemManager:AddCashItemPrice(	85003164	,	200	)	--	아리엘의 서큐버스 예식 드레스 신발(분홍)
+g_pCashItemManager:AddCashItemPrice(	85003165	,	200	)	--	아리엘의 롱테일 매튜어 커트(분홍)
+g_pCashItemManager:AddCashItemPrice(	85003170	,	200	)	--	아리엘의 니들 그립 글레이브(파랑)
+g_pCashItemManager:AddCashItemPrice(	85003171	,	200	)	--	아리엘의 다크 스튜어드 턱시도 상의(파랑)
+g_pCashItemManager:AddCashItemPrice(	85003172	,	200	)	--	아리엘의 다크 스튜어드 턱시도 하의(파랑)
+g_pCashItemManager:AddCashItemPrice(	85003173	,	200	)	--	아리엘의 다크 스튜어드 턱시도 장갑(파랑)
+g_pCashItemManager:AddCashItemPrice(	85003174	,	200	)	--	아리엘의 다크 스튜어드 턱시도 신발(파랑)
+g_pCashItemManager:AddCashItemPrice(	85003175	,	200	)	--	아리엘의 와일드 스왓컷(파랑)
+g_pCashItemManager:AddCashItemPrice(	85003180	,	200	)	--	아리엘의 니들 그립 글레이브(빨강)
+g_pCashItemManager:AddCashItemPrice(	85003181	,	200	)	--	아리엘의 다크 스튜어드 턱시도 상의(빨강)
+g_pCashItemManager:AddCashItemPrice(	85003182	,	200	)	--	아리엘의 다크 스튜어드 턱시도 하의(빨강)
+g_pCashItemManager:AddCashItemPrice(	85003183	,	200	)	--	아리엘의 다크 스튜어드 턱시도 장갑(빨강)
+g_pCashItemManager:AddCashItemPrice(	85003184	,	200	)	--	아리엘의 다크 스튜어드 턱시도 신발(빨강)
+g_pCashItemManager:AddCashItemPrice(	85003185	,	200	)	--	아리엘의 와일드 스왓컷(빨강)
+g_pCashItemManager:AddCashItemPrice(	85003190	,	200	)	--	아리엘의 해골 촛대(분홍)
+g_pCashItemManager:AddCashItemPrice(	85003191	,	200	)	--	아리엘의 할로위치 코스튬 상의(분홍)
+g_pCashItemManager:AddCashItemPrice(	85003192	,	200	)	--	아리엘의 할로위치 코스튬 하의(분홍)
+g_pCashItemManager:AddCashItemPrice(	85003193	,	200	)	--	아리엘의 할로위치 코스튬 장갑(분홍)
+g_pCashItemManager:AddCashItemPrice(	85003194	,	200	)	--	아리엘의 할로위치 코스튬 신발(분홍)
+g_pCashItemManager:AddCashItemPrice(	85003195	,	200	)	--	아리엘의 할로위치 마법사 모자(분홍)
+g_pCashItemManager:AddCashItemPrice(	85003200	,	200	)	--	아리엘의 해골 촛대(파랑)
+g_pCashItemManager:AddCashItemPrice(	85003201	,	200	)	--	아리엘의 할로위치 코스튬 상의(파랑)
+g_pCashItemManager:AddCashItemPrice(	85003202	,	200	)	--	아리엘의 할로위치 코스튬 하의(파랑)
+g_pCashItemManager:AddCashItemPrice(	85003203	,	200	)	--	아리엘의 할로위치 코스튬 장갑(파랑)
+g_pCashItemManager:AddCashItemPrice(	85003204	,	200	)	--	아리엘의 할로위치 코스튬 신발(파랑)
+g_pCashItemManager:AddCashItemPrice(	85003205	,	200	)	--	아리엘의 할로위치 마법사 모자(파랑)
+g_pCashItemManager:AddCashItemPrice(	85003210	,	200	)	--	아리엘의 펌킨 캐논(주황)
+g_pCashItemManager:AddCashItemPrice(	85003211	,	200	)	--	아리엘의 펌킨 매지션 코스튬 상의(주황)
+g_pCashItemManager:AddCashItemPrice(	85003212	,	200	)	--	아리엘의 펌킨 매지션 코스튬 하의(주황)
+g_pCashItemManager:AddCashItemPrice(	85003213	,	200	)	--	아리엘의 펌킨 매지션 코스튬 장갑(주황)
+g_pCashItemManager:AddCashItemPrice(	85003214	,	200	)	--	아리엘의 펌킨 매지션 코스튬 신발(주황)
+g_pCashItemManager:AddCashItemPrice(	85003215	,	200	)	--	아리엘의 펌킨 매지션 마법모자(주황)
+g_pCashItemManager:AddCashItemPrice(	85003220	,	200	)	--	아리엘의 펌킨 캐논(빨강)
+g_pCashItemManager:AddCashItemPrice(	85003221	,	200	)	--	아리엘의 펌킨 매지션 코스튬 상의(빨강)
+g_pCashItemManager:AddCashItemPrice(	85003222	,	200	)	--	아리엘의 펌킨 매지션 코스튬 하의(빨강)
+g_pCashItemManager:AddCashItemPrice(	85003223	,	200	)	--	아리엘의 펌킨 매지션 코스튬 장갑(빨강)
+g_pCashItemManager:AddCashItemPrice(	85003224	,	200	)	--	아리엘의 펌킨 매지션 코스튬 신발(빨강)
+g_pCashItemManager:AddCashItemPrice(	85003225	,	200	)	--	아리엘의 펌킨 매지션 마법모자(빨강)
+g_pCashItemManager:AddCashItemPrice(	85003230	,	200	)	--	아리엘의 와일드 더블 스워드 (갈색)
+g_pCashItemManager:AddCashItemPrice(	85003231	,	200	)	--	아리엘의 할로윈의 마법사 '사자' 코스튬 상의 (갈색)
+g_pCashItemManager:AddCashItemPrice(	85003232	,	200	)	--	아리엘의 할로윈의 마법사 '사자' 코스튬 하의 (갈색)
+g_pCashItemManager:AddCashItemPrice(	85003233	,	200	)	--	아리엘의 할로윈의 마법사 '사자' 코스튬 장갑 (갈색)
+g_pCashItemManager:AddCashItemPrice(	85003234	,	200	)	--	아리엘의 할로윈의 마법사 '사자' 코스튬 신발 (갈색)
+g_pCashItemManager:AddCashItemPrice(	85003235	,	200	)	--	아리엘의 할로윈의 마법사 '사자' 코스튬 헤어 (갈색)
+g_pCashItemManager:AddCashItemPrice(	85003240	,	200	)	--	아리엘의 와일드 더블 스워드 (하양)
+g_pCashItemManager:AddCashItemPrice(	85003241	,	200	)	--	아리엘의 할로윈의 마법사 '사자' 코스튬 상의 (하양)
+g_pCashItemManager:AddCashItemPrice(	85003242	,	200	)	--	아리엘의 할로윈의 마법사 '사자' 코스튬 하의 (하양)
+g_pCashItemManager:AddCashItemPrice(	85003243	,	200	)	--	아리엘의 할로윈의 마법사 '사자' 코스튬 장갑 (하양)
+g_pCashItemManager:AddCashItemPrice(	85003244	,	200	)	--	아리엘의 할로윈의 마법사 '사자' 코스튬 신발 (하양)
+g_pCashItemManager:AddCashItemPrice(	85003245	,	200	)	--	아리엘의 할로윈의 마법사 '사자' 코스튬 헤어 (하양)
+g_pCashItemManager:AddCashItemPrice(	85003250	,	200	)	--	아리엘의 모닝 스타 로드 (보라)
+g_pCashItemManager:AddCashItemPrice(	85003251	,	200	)	--	아리엘의 할로윈의 마법사 '마녀' 코스튬 상의 (보라)
+g_pCashItemManager:AddCashItemPrice(	85003252	,	200	)	--	아리엘의 할로윈의 마법사 '마녀' 코스튬 하의 (보라)
+g_pCashItemManager:AddCashItemPrice(	85003253	,	200	)	--	아리엘의 할로윈의 마법사 '마녀' 코스튬 장갑 (보라)
+g_pCashItemManager:AddCashItemPrice(	85003254	,	200	)	--	아리엘의 할로윈의 마법사 '마녀' 코스튬 신발 (보라)
+g_pCashItemManager:AddCashItemPrice(	85003255	,	200	)	--	아리엘의 할로윈의 마법사 '마녀' 코스튬 헤어 (보라)
+g_pCashItemManager:AddCashItemPrice(	85003260	,	200	)	--	아리엘의 모닝 스타 로드 (하양)
+g_pCashItemManager:AddCashItemPrice(	85003261	,	200	)	--	아리엘의 할로윈의 마법사 '마녀' 코스튬 상의 (하양)
+g_pCashItemManager:AddCashItemPrice(	85003262	,	200	)	--	아리엘의 할로윈의 마법사 '마녀' 코스튬 하의 (하양)
+g_pCashItemManager:AddCashItemPrice(	85003263	,	200	)	--	아리엘의 할로윈의 마법사 '마녀' 코스튬 장갑 (하양)
+g_pCashItemManager:AddCashItemPrice(	85003264	,	200	)	--	아리엘의 할로윈의 마법사 '마녀' 코스튬 신발 (하양)
+g_pCashItemManager:AddCashItemPrice(	85003265	,	200	)	--	아리엘의 할로윈의 마법사 '마녀' 코스튬 헤어 (하양)
+g_pCashItemManager:AddCashItemPrice(	85003270	,	200	)	--	아리엘의 매직 스태프 보우 (파랑)
+g_pCashItemManager:AddCashItemPrice(	85003271	,	200	)	--	아리엘의 할로윈의 마법사 '소녀' 코스튬 상의 (파랑)
+g_pCashItemManager:AddCashItemPrice(	85003272	,	200	)	--	아리엘의 할로윈의 마법사 '소녀' 코스튬 하의 (파랑)
+g_pCashItemManager:AddCashItemPrice(	85003273	,	200	)	--	아리엘의 할로윈의 마법사 '소녀' 코스튬 장갑 (파랑)
+g_pCashItemManager:AddCashItemPrice(	85003274	,	200	)	--	아리엘의 할로윈의 마법사 '소녀' 코스튬 신발 (파랑)
+g_pCashItemManager:AddCashItemPrice(	85003275	,	200	)	--	아리엘의 할로윈의 마법사 '소녀' 코스튬 헤어 (검정)
+g_pCashItemManager:AddCashItemPrice(	85003280	,	200	)	--	아리엘의 매직 스태프 보우 (분홍)
+g_pCashItemManager:AddCashItemPrice(	85003281	,	200	)	--	아리엘의 할로윈의 마법사 '소녀' 코스튬 상의 (분홍)
+g_pCashItemManager:AddCashItemPrice(	85003282	,	200	)	--	아리엘의 할로윈의 마법사 '소녀' 코스튬 하의 (분홍)
+g_pCashItemManager:AddCashItemPrice(	85003283	,	200	)	--	아리엘의 할로윈의 마법사 '소녀' 코스튬 장갑 (분홍)
+g_pCashItemManager:AddCashItemPrice(	85003284	,	200	)	--	아리엘의 할로윈의 마법사 '소녀' 코스튬 신발 (분홍)
+g_pCashItemManager:AddCashItemPrice(	85003285	,	200	)	--	아리엘의 할로윈의 마법사 '소녀' 코스튬 헤어 (살구)
+g_pCashItemManager:AddCashItemPrice(	85003290	,	200	)	--	아리엘의 아이언 배틀 엑스 (검정)
+g_pCashItemManager:AddCashItemPrice(	85003291	,	200	)	--	아리엘의 할로윈의 마법사 '양철나무꾼' 코스튬 상의 (검정)
+g_pCashItemManager:AddCashItemPrice(	85003292	,	200	)	--	아리엘의 할로윈의 마법사 '양철나무꾼' 코스튬 하의 (검정)
+g_pCashItemManager:AddCashItemPrice(	85003293	,	200	)	--	아리엘의 할로윈의 마법사 '양철나무꾼' 코스튬 장갑 (검정)
+g_pCashItemManager:AddCashItemPrice(	85003294	,	200	)	--	아리엘의 할로윈의 마법사 '양철나무꾼' 코스튬 신발 (검정)
+g_pCashItemManager:AddCashItemPrice(	85003295	,	200	)	--	아리엘의 할로윈의 마법사 '양철나무꾼' 코스튬 헤어 (갈색)
+g_pCashItemManager:AddCashItemPrice(	85003300	,	200	)	--	아리엘의 아이언 배틀 엑스 (하양)
+g_pCashItemManager:AddCashItemPrice(	85003301	,	200	)	--	아리엘의 할로윈의 마법사 '양철나무꾼' 코스튬 상의 (하양)
+g_pCashItemManager:AddCashItemPrice(	85003302	,	200	)	--	아리엘의 할로윈의 마법사 '양철나무꾼' 코스튬 하의 (하양)
+g_pCashItemManager:AddCashItemPrice(	85003303	,	200	)	--	아리엘의 할로윈의 마법사 '양철나무꾼' 코스튬 장갑 (하양)
+g_pCashItemManager:AddCashItemPrice(	85003304	,	200	)	--	아리엘의 할로윈의 마법사 '양철나무꾼' 코스튬 신발 (하양)
+g_pCashItemManager:AddCashItemPrice(	85003305	,	200	)	--	아리엘의 할로윈의 마법사 '양철나무꾼' 코스튬 헤어 (초록)
+g_pCashItemManager:AddCashItemPrice(	85003310	,	200	)	--	아리엘의 허수아비 돌 (회갈색)
+g_pCashItemManager:AddCashItemPrice(	85003311	,	200	)	--	아리엘의 할로윈의 마법사 '허수아비' 코스튬 상의 (회갈색)
+g_pCashItemManager:AddCashItemPrice(	85003312	,	200	)	--	아리엘의 할로윈의 마법사 '허수아비' 코스튬 하의 (회갈색)
+g_pCashItemManager:AddCashItemPrice(	85003313	,	200	)	--	아리엘의 할로윈의 마법사 '허수아비' 코스튬 장갑 (회갈색)
+g_pCashItemManager:AddCashItemPrice(	85003314	,	200	)	--	아리엘의 할로윈의 마법사 '허수아비' 코스튬 신발 (회갈색)
+g_pCashItemManager:AddCashItemPrice(	85003315	,	200	)	--	아리엘의 할로윈의 마법사 '허수아비' 코스튬 헤어 (노랑)
+g_pCashItemManager:AddCashItemPrice(	85003320	,	200	)	--	아리엘의 허수아비 돌 (베이지)
+g_pCashItemManager:AddCashItemPrice(	85003321	,	200	)	--	아리엘의 할로윈의 마법사 '허수아비' 코스튬 상의 (베이지)
+g_pCashItemManager:AddCashItemPrice(	85003322	,	200	)	--	아리엘의 할로윈의 마법사 '허수아비' 코스튬 하의 (베이지)
+g_pCashItemManager:AddCashItemPrice(	85003323	,	200	)	--	아리엘의 할로윈의 마법사 '허수아비' 코스튬 장갑 (베이지)
+g_pCashItemManager:AddCashItemPrice(	85003324	,	200	)	--	아리엘의 할로윈의 마법사 '허수아비' 코스튬 신발 (베이지)
+g_pCashItemManager:AddCashItemPrice(	85003325	,	200	)	--	아리엘의 할로윈의 마법사 '허수아비' 코스튬 헤어 (고동)
+g_pCashItemManager:AddCashItemPrice(	85003330	,	200	)	--	아리엘의 자이언트 본 캐논(회갈색)
+g_pCashItemManager:AddCashItemPrice(	85003331	,	200	)	--	아리엘의 할로윈의 마법사 '토토' 코스튭 상의(회갈색)
+g_pCashItemManager:AddCashItemPrice(	85003332	,	200	)	--	아리엘의 할로윈의 마법사 '토토' 코스튭 하의(회갈색)
+g_pCashItemManager:AddCashItemPrice(	85003333	,	200	)	--	아리엘의 할로윈의 마법사 '토토' 코스튭 장갑(회갈색)
+g_pCashItemManager:AddCashItemPrice(	85003334	,	200	)	--	아리엘의 할로윈의 마법사 '토토' 코스튭 신발(회갈색)
+g_pCashItemManager:AddCashItemPrice(	85003335	,	200	)	--	아리엘의 할로윈의 마법사 '토토' 코스튭 헤어(회갈색)
+g_pCashItemManager:AddCashItemPrice(	85003340	,	200	)	--	아리엘의 자이언트 본 캐논(검정색)
+g_pCashItemManager:AddCashItemPrice(	85003341	,	200	)	--	아리엘의 할로윈의 마법사 '토토' 코스튭 상의(검정색)
+g_pCashItemManager:AddCashItemPrice(	85003342	,	200	)	--	아리엘의 할로윈의 마법사 '토토' 코스튭 하의(검정색)
+g_pCashItemManager:AddCashItemPrice(	85003343	,	200	)	--	아리엘의 할로윈의 마법사 '토토' 코스튭 장갑(검정색)
+g_pCashItemManager:AddCashItemPrice(	85003344	,	200	)	--	아리엘의 할로윈의 마법사 '토토' 코스튭 신발(검정색)
+g_pCashItemManager:AddCashItemPrice(	85003345	,	200	)	--	아리엘의 할로윈의 마법사 '토토' 코스튭 헤어(검정색)
+g_pCashItemManager:AddCashItemPrice(	85003350	,	200	)	--	아리엘의 엘소드 할로윈 커즈나이트
+g_pCashItemManager:AddCashItemPrice(	85003351	,	200	)	--	아리엘의 엘소드 할로윈 밤의 마왕 상의
+g_pCashItemManager:AddCashItemPrice(	85003352	,	200	)	--	아리엘의 엘소드 할로윈 밤의 마왕 하의
+g_pCashItemManager:AddCashItemPrice(	85003353	,	200	)	--	아리엘의 엘소드 할로윈 밤의 마왕 장갑
+g_pCashItemManager:AddCashItemPrice(	85003354	,	200	)	--	아리엘의 엘소드 할로윈 밤의 마왕 신발
+g_pCashItemManager:AddCashItemPrice(	85003355	,	200	)	--	아리엘의 엘소드 할로윈 밤의 마왕 헤어
+g_pCashItemManager:AddCashItemPrice(	85003360	,	200	)	--	아리엘의 엘소드 할로윈 커즈나이트(ver.Red)
+g_pCashItemManager:AddCashItemPrice(	85003361	,	200	)	--	아리엘의 엘소드 할로윈 밤의 마왕 상의(ver.Red)
+g_pCashItemManager:AddCashItemPrice(	85003362	,	200	)	--	아리엘의 엘소드 할로윈 밤의 마왕 하의(ver.Red)
+g_pCashItemManager:AddCashItemPrice(	85003363	,	200	)	--	아리엘의 엘소드 할로윈 밤의 마왕 장갑(ver.Red)
+g_pCashItemManager:AddCashItemPrice(	85003364	,	200	)	--	아리엘의 엘소드 할로윈 밤의 마왕 신발(ver.Red)
+g_pCashItemManager:AddCashItemPrice(	85003365	,	200	)	--	아리엘의 엘소드 할로윈 밤의 마왕 헤어(ver.Red)
+g_pCashItemManager:AddCashItemPrice(	85003370	,	200	)	--	아리엘의 아이샤 할로윈 위쳐스태프
+g_pCashItemManager:AddCashItemPrice(	85003371	,	200	)	--	아리엘의 아이샤 할로윈 밤의 마녀 상의
+g_pCashItemManager:AddCashItemPrice(	85003372	,	200	)	--	아리엘의 아이샤 할로윈 밤의 마녀 하의
+g_pCashItemManager:AddCashItemPrice(	85003373	,	200	)	--	아리엘의 아이샤 할로윈 밤의 마녀 장갑
+g_pCashItemManager:AddCashItemPrice(	85003374	,	200	)	--	아리엘의 아이샤 할로윈 밤의 마녀 신발
+g_pCashItemManager:AddCashItemPrice(	85003375	,	200	)	--	아리엘의 아이샤 할로윈 밤의 마녀 헤어
+g_pCashItemManager:AddCashItemPrice(	85003380	,	200	)	--	아리엘의 아이샤 할로윈 위쳐스태프(ver.Red)
+g_pCashItemManager:AddCashItemPrice(	85003381	,	200	)	--	아리엘의 아이샤 할로윈 밤의 마녀 상의(ver.Red)
+g_pCashItemManager:AddCashItemPrice(	85003382	,	200	)	--	아리엘의 아이샤 할로윈 밤의 마녀 하의(ver.Red)
+g_pCashItemManager:AddCashItemPrice(	85003383	,	200	)	--	아리엘의 아이샤 할로윈 밤의 마녀 장갑(ver.Red)
+g_pCashItemManager:AddCashItemPrice(	85003384	,	200	)	--	아리엘의 아이샤 할로윈 밤의 마녀 신발(ver.Red)
+g_pCashItemManager:AddCashItemPrice(	85003385	,	200	)	--	아리엘의 아이샤 할로윈 밤의 마녀 헤어(ver.Red)
+g_pCashItemManager:AddCashItemPrice(	85003390	,	200	)	--	아리엘의 레나 할로윈 밤의 마녀 배트라이더
+g_pCashItemManager:AddCashItemPrice(	85003391	,	200	)	--	아리엘의 레나 할로윈 밤의 마녀 상의
+g_pCashItemManager:AddCashItemPrice(	85003392	,	200	)	--	아리엘의 레나 할로윈 밤의 마녀 하의
+g_pCashItemManager:AddCashItemPrice(	85003393	,	200	)	--	아리엘의 레나 할로윈 밤의 마녀 장갑
+g_pCashItemManager:AddCashItemPrice(	85003394	,	200	)	--	아리엘의 레나 할로윈 밤의 마녀 신발
+g_pCashItemManager:AddCashItemPrice(	85003395	,	200	)	--	아리엘의 레나 할로윈 밤의 마녀 헤어
+g_pCashItemManager:AddCashItemPrice(	85003400	,	200	)	--	아리엘의 레나 할로윈 밤의 마녀 배트라이더(ver.Red)
+g_pCashItemManager:AddCashItemPrice(	85003401	,	200	)	--	아리엘의 레나 할로윈 밤의 마녀 상의(ver.Red)
+g_pCashItemManager:AddCashItemPrice(	85003402	,	200	)	--	아리엘의 레나 할로윈 밤의 마녀 하의(ver.Red)
+g_pCashItemManager:AddCashItemPrice(	85003403	,	200	)	--	아리엘의 레나 할로윈 밤의 마녀 장갑(ver.Red)
+g_pCashItemManager:AddCashItemPrice(	85003404	,	200	)	--	아리엘의 레나 할로윈 밤의 마녀 신발(ver.Red)
+g_pCashItemManager:AddCashItemPrice(	85003405	,	200	)	--	아리엘의 레나 할로윈 밤의 마녀 헤어(ver.Red)
+g_pCashItemManager:AddCashItemPrice(	85003410	,	200	)	--	아리엘의 레이븐 할로윈 카발라스피어
+g_pCashItemManager:AddCashItemPrice(	85003411	,	200	)	--	아리엘의 레이븐 할로윈 밤의 마왕 상의
+g_pCashItemManager:AddCashItemPrice(	85003412	,	200	)	--	아리엘의 레이븐 할로윈 밤의 마왕 하의
+g_pCashItemManager:AddCashItemPrice(	85003413	,	200	)	--	아리엘의 레이븐 할로윈 밤의 마왕 장갑
+g_pCashItemManager:AddCashItemPrice(	85003414	,	200	)	--	아리엘의 레이븐 할로윈 밤의 마왕 신발
+g_pCashItemManager:AddCashItemPrice(	85003415	,	200	)	--	아리엘의 레이븐 할로윈 밤의 마왕 헤어
+g_pCashItemManager:AddCashItemPrice(	85003420	,	200	)	--	아리엘의 레이븐 할로윈 카발라스피어(ver.Red)
+g_pCashItemManager:AddCashItemPrice(	85003421	,	200	)	--	아리엘의 레이븐 할로윈 밤의 마왕 상의(ver.Red)
+g_pCashItemManager:AddCashItemPrice(	85003422	,	200	)	--	아리엘의 레이븐 할로윈 밤의 마왕 하의(ver.Red)
+g_pCashItemManager:AddCashItemPrice(	85003423	,	200	)	--	아리엘의 레이븐 할로윈 밤의 마왕 장갑(ver.Red)
+g_pCashItemManager:AddCashItemPrice(	85003424	,	200	)	--	아리엘의 레이븐 할로윈 밤의 마왕 신발(ver.Red)
+g_pCashItemManager:AddCashItemPrice(	85003425	,	200	)	--	아리엘의 레이븐 할로윈 밤의 마왕 헤어(ver.Red)
+g_pCashItemManager:AddCashItemPrice(	85003430	,	200	)	--	아리엘의 이브 할로윈 카론의 램프
+g_pCashItemManager:AddCashItemPrice(	85003431	,	200	)	--	아리엘의 이브 할로윈 밤의 마녀 상의
+g_pCashItemManager:AddCashItemPrice(	85003432	,	200	)	--	아리엘의 이브 할로윈 밤의 마녀 하의
+g_pCashItemManager:AddCashItemPrice(	85003433	,	200	)	--	아리엘의 이브 할로윈 밤의 마녀 장갑
+g_pCashItemManager:AddCashItemPrice(	85003434	,	200	)	--	아리엘의 이브 할로윈 밤의 마녀 신발
+g_pCashItemManager:AddCashItemPrice(	85003435	,	200	)	--	아리엘의 이브 할로윈 밤의 마녀 헤어
+g_pCashItemManager:AddCashItemPrice(	85003440	,	200	)	--	아리엘의 이브 할로윈 카론의 램프(ver.Red)
+g_pCashItemManager:AddCashItemPrice(	85003441	,	200	)	--	아리엘의 이브 할로윈 밤의 마녀 상의(ver.Red)
+g_pCashItemManager:AddCashItemPrice(	85003442	,	200	)	--	아리엘의 이브 할로윈 밤의 마녀 하의(ver.Red)
+g_pCashItemManager:AddCashItemPrice(	85003443	,	200	)	--	아리엘의 이브 할로윈 밤의 마녀 장갑(ver.Red)
+g_pCashItemManager:AddCashItemPrice(	85003444	,	200	)	--	아리엘의 이브 할로윈 밤의 마녀 신발(ver.Red)
+g_pCashItemManager:AddCashItemPrice(	85003445	,	200	)	--	아리엘의 이브 할로윈 밤의 마녀 헤어(ver.Red)
+g_pCashItemManager:AddCashItemPrice(	85003450	,	200	)	--	아리엘의 청 할로윈 언더테이커
+g_pCashItemManager:AddCashItemPrice(	85003451	,	200	)	--	아리엘의 청 할로윈 밤의 마왕 상의
+g_pCashItemManager:AddCashItemPrice(	85003452	,	200	)	--	아리엘의 청 할로윈 밤의 마왕 하의
+g_pCashItemManager:AddCashItemPrice(	85003453	,	200	)	--	아리엘의 청 할로윈 밤의 마왕 장갑
+g_pCashItemManager:AddCashItemPrice(	85003454	,	200	)	--	아리엘의 청 할로윈 밤의 마왕 신발
+g_pCashItemManager:AddCashItemPrice(	85003455	,	200	)	--	아리엘의 청 할로윈 밤의 마왕 헤어
+g_pCashItemManager:AddCashItemPrice(	85003460	,	200	)	--	아리엘의 청 할로윈 언더테이커(ver.Red)
+g_pCashItemManager:AddCashItemPrice(	85003461	,	200	)	--	아리엘의 청 할로윈 밤의 마왕 상의(ver.Red)
+g_pCashItemManager:AddCashItemPrice(	85003462	,	200	)	--	아리엘의 청 할로윈 밤의 마왕 하의(ver.Red)
+g_pCashItemManager:AddCashItemPrice(	85003463	,	200	)	--	아리엘의 청 할로윈 밤의 마왕 장갑(ver.Red)
+g_pCashItemManager:AddCashItemPrice(	85003464	,	200	)	--	아리엘의 청 할로윈 밤의 마왕 신발(ver.Red)
+g_pCashItemManager:AddCashItemPrice(	85003465	,	200	)	--	아리엘의 청 할로윈 밤의 마왕 헤어(ver.Red)
+
+
+-- 130904/오현택/캐쉬 액세
+
+g_pCashItemManager:AddCashItemPrice(	60003340	,	5000	)	--	선생님 안경
+g_pCashItemManager:AddCashItemPrice(	132051	,	5000	)	--	고양이 가방
+
+g_pCashItemManager:AddCashItemPrice(	130031	,	5000	)	--	코스모스
+g_pCashItemManager:AddCashItemPrice(	130033	,	5000	)	--	단풍잎
+
+
+-- 130904/오현택/청 판타지 춘추
+
+g_pCashItemManager:AddCashItemPrice(	271490	,	7000	)	--	윙 스타 캐논(청록)
+g_pCashItemManager:AddCashItemPrice(	271491	,	5000	)	--	청 판타지 아카데미 춘추교복 상의(청록)
+g_pCashItemManager:AddCashItemPrice(	271492	,	5000	)	--	청 판타지 아카데미 춘추교복 하의(청록)
+g_pCashItemManager:AddCashItemPrice(	271493	,	2400	)	--	청 판타지 아카데미 춘추교복 장갑(청록)
+g_pCashItemManager:AddCashItemPrice(	271494	,	2400	)	--	청 판타지 아카데미 춘추교복 신발(청록)
+g_pCashItemManager:AddCashItemPrice(	271495	,	5000	)	--	청 판타지 아카데미 춘추교복 헤어(청록)
+g_pCashItemManager:AddCashItemPrice(	271496	,	7000	)	--	윙 스타 캐논(보라)
+g_pCashItemManager:AddCashItemPrice(	271497	,	5000	)	--	청 판타지 아카데미 춘추교복 상의(보라)
+g_pCashItemManager:AddCashItemPrice(	271498	,	5000	)	--	청 판타지 아카데미 춘추교복 하의(보라)
+g_pCashItemManager:AddCashItemPrice(	271499	,	2400	)	--	청 판타지 아카데미 춘추교복 장갑(보라)
+g_pCashItemManager:AddCashItemPrice(	271500	,	2400	)	--	청 판타지 아카데미 춘추교복 신발(보라)
+g_pCashItemManager:AddCashItemPrice(	271501	,	5000	)	--	청 판타지 아카데미 춘추교복 헤어(보라)
+
+
+-- 130904/오현택/청 천하일통
+
+g_pCashItemManager:AddCashItemPrice(	270730	,	7000	)	--	맹호파천포 (빨강)
+g_pCashItemManager:AddCashItemPrice(	270731	,	5000	)	--	맹호파천귀갑 상의 (빨강)
+g_pCashItemManager:AddCashItemPrice(	270732	,	5000	)	--	맹호파천귀갑 하의 (빨강)
+g_pCashItemManager:AddCashItemPrice(	270733	,	2400	)	--	맹호파천귀갑 장갑 (빨강)
+g_pCashItemManager:AddCashItemPrice(	270734	,	2400	)	--	맹호파천귀갑 신발 (빨강)
+g_pCashItemManager:AddCashItemPrice(	270735	,	5000	)	--	맹호파천귀갑 헤어 (빨강)
+g_pCashItemManager:AddCashItemPrice(	270736	,	7000	)	--	맹호파천포 (하양)
+g_pCashItemManager:AddCashItemPrice(	270737	,	5000	)	--	맹호파천귀갑 상의 (하양)
+g_pCashItemManager:AddCashItemPrice(	270738	,	5000	)	--	맹호파천귀갑 하의 (하양)
+g_pCashItemManager:AddCashItemPrice(	270739	,	2400	)	--	맹호파천귀갑 장갑 (하양)
+g_pCashItemManager:AddCashItemPrice(	270740	,	2400	)	--	맹호파천귀갑 신발 (하양)
+g_pCashItemManager:AddCashItemPrice(	270741	,	5000	)	--	맹호파천귀갑 헤어 (하양)
 
 
 -- 131016/오현택/이벤트 액세
@@ -10508,25 +9549,6 @@ g_pCashItemManager:AddCashItemPrice(	250000882	,	5000	)	--	판타지 클레릭 �
 g_pCashItemManager:AddCashItemPrice(	250000883	,	2400	)	--	판타지 클레릭 장갑 (하양)
 g_pCashItemManager:AddCashItemPrice(	250000884	,	2400	)	--	판타지 클레릭 신발 (하양)
 g_pCashItemManager:AddCashItemPrice(	250000885	,	5000	)	--	레이어 숏 컷 헤어 (청록)
-
-
--- 131016/오현택/청 동물 코스프레
-
-g_pCashItemManager:AddCashItemPrice(	250000180	,	7000	)	--	롭이어 당근 철포 (하양)
-g_pCashItemManager:AddCashItemPrice(	250000181	,	5000	)	--	롭이어 토끼의 상의 (하양)
-g_pCashItemManager:AddCashItemPrice(	250000182	,	5000	)	--	롭이어 토끼의 하의 (하양)
-g_pCashItemManager:AddCashItemPrice(	250000183	,	2400	)	--	롭이어 토끼의 장갑 (하양)
-g_pCashItemManager:AddCashItemPrice(	250000184	,	2400	)	--	롭이어 도끼의 신발 (하양)
-g_pCashItemManager:AddCashItemPrice(	250000185	,	5000	)	--	롭이어 토끼의 헤어 (하양)
-g_pCashItemManager:AddCashItemPrice(	250000190	,	7000	)	--	롭이어 당근 철포 (살색)
-g_pCashItemManager:AddCashItemPrice(	250000191	,	5000	)	--	롭이어 토끼의 상의 (살색)
-g_pCashItemManager:AddCashItemPrice(	250000192	,	5000	)	--	롭이어 토끼의 하의 (살색)
-g_pCashItemManager:AddCashItemPrice(	250000193	,	2400	)	--	롭이어 토끼의 장갑 (살색)
-g_pCashItemManager:AddCashItemPrice(	250000194	,	2400	)	--	롭이어 도끼의 신발 (살색)
-g_pCashItemManager:AddCashItemPrice(	250000195	,	5000	)	--	롭이어 토끼의 헤어 (살색)
-						
-g_pCashItemManager:AddCashItemPrice(	250000200	,	5000	)	--	롭이어 토끼 꼬리 (하양)
-g_pCashItemManager:AddCashItemPrice(	250000201	,	5000	)	--	롭이어 토끼 꼬리 (살색)
 
 
 -- 131016/오현택/할로윈 아바타(해외 제작)
@@ -10634,23 +9656,54 @@ g_pCashItemManager:AddCashItemPrice(	250001754	,	5000	)	--	할로윈 파티 코�
 g_pCashItemManager:AddCashItemPrice(	250001755	,	5000	)	--	할로윈 파티 코스프레 프랑켄슈타인의 나사 (Ver. B)
 
 
--- 131106/오현택/청 배드가이즈
+-- 131106/오현택/일본 컨테스트 2차
 
-g_pCashItemManager:AddCashItemPrice(	70002260	,	7000	)	--	청 배드 가이즈 캐논(분홍)
-g_pCashItemManager:AddCashItemPrice(	70002261	,	5000	)	--	청 배드 가이즈 가죽 자켓(분홍)
-g_pCashItemManager:AddCashItemPrice(	70002262	,	5000	)	--	청 배드 가이즈 바지(분홍)
-g_pCashItemManager:AddCashItemPrice(	70002263	,	2400	)	--	청 배드 가이즈 장갑(분홍)
-g_pCashItemManager:AddCashItemPrice(	70002264	,	2400	)	--	청 배드 가이즈 신발(분홍)
-g_pCashItemManager:AddCashItemPrice(	70002265	,	5000	)	--	청 배드 가이즈 펑키헤어(분홍)
-g_pCashItemManager:AddCashItemPrice(	70002266	,	7000	)	--	청 배드 가이즈 캐논(하늘)
-g_pCashItemManager:AddCashItemPrice(	70002267	,	5000	)	--	청 배드 가이즈 가죽 자켓(하늘)
-g_pCashItemManager:AddCashItemPrice(	70002268	,	5000	)	--	청 배드 가이즈 바지(하늘)
-g_pCashItemManager:AddCashItemPrice(	70002269	,	2400	)	--	청 배드 가이즈 장갑(하늘)
-g_pCashItemManager:AddCashItemPrice(	70002270	,	2400	)	--	청 배드 가이즈 신발(하늘)
-g_pCashItemManager:AddCashItemPrice(	70002271	,	5000	)	--	청 배드 가이즈 펑키헤어(하늘)
+g_pCashItemManager:AddCashItemPrice(	67004930	,	7000	)	--	엘소드 일본 컨테스트 소드
+g_pCashItemManager:AddCashItemPrice(	67004931	,	5000	)	--	엘소드 일본 컨테스트 상의
+g_pCashItemManager:AddCashItemPrice(	67004932	,	5000	)	--	엘소드 일본 컨테스트 하의
+g_pCashItemManager:AddCashItemPrice(	67004933	,	2400	)	--	엘소드 일본 컨테스트 장갑
+g_pCashItemManager:AddCashItemPrice(	67004934	,	2400	)	--	엘소드 일본 컨테스트 신발
+g_pCashItemManager:AddCashItemPrice(	67004935	,	5000	)	--	엘소드 일본 컨테스트 헤어
+g_pCashItemManager:AddCashItemPrice(	67004942	,	7000	)	--	아이샤 일본 컨테스트 스태프
+g_pCashItemManager:AddCashItemPrice(	67004943	,	5000	)	--	아이샤 일본 컨테스트 상의
+g_pCashItemManager:AddCashItemPrice(	67004944	,	5000	)	--	아이샤 일본 컨테스트 하의
+g_pCashItemManager:AddCashItemPrice(	67004945	,	2400	)	--	아이샤 일본 컨테스트 장갑
+g_pCashItemManager:AddCashItemPrice(	67004946	,	2400	)	--	아이샤 일본 컨테스트 신발
+g_pCashItemManager:AddCashItemPrice(	67004947	,	5000	)	--	아이샤 일본 컨테스트 헤어
+g_pCashItemManager:AddCashItemPrice(	67004954	,	7000	)	--	레나 일본 컨테스트 보우
+g_pCashItemManager:AddCashItemPrice(	67004955	,	5000	)	--	레나 일본 컨테스트 상의
+g_pCashItemManager:AddCashItemPrice(	67004956	,	5000	)	--	레나 일본 컨테스트 하의
+g_pCashItemManager:AddCashItemPrice(	67004957	,	2400	)	--	레나 일본 컨테스트 장갑
+g_pCashItemManager:AddCashItemPrice(	67004958	,	2400	)	--	레나 일본 컨테스트 신발
+g_pCashItemManager:AddCashItemPrice(	67004959	,	5000	)	--	레나 일본 컨테스트 헤어
+g_pCashItemManager:AddCashItemPrice(	67004966	,	7000	)	--	레이븐 일본 컨테스트 블레이드
+g_pCashItemManager:AddCashItemPrice(	67004967	,	5000	)	--	레이븐 일본 컨테스트 상의
+g_pCashItemManager:AddCashItemPrice(	67004968	,	5000	)	--	레이븐 일본 컨테스트 하의
+g_pCashItemManager:AddCashItemPrice(	67004969	,	2400	)	--	레이븐 일본 컨테스트 장갑
+g_pCashItemManager:AddCashItemPrice(	67004970	,	2400	)	--	레이븐 일본 컨테스트 신발
+g_pCashItemManager:AddCashItemPrice(	67004971	,	5000	)	--	레이븐 일본 컨테스트 헤어
+g_pCashItemManager:AddCashItemPrice(	67004978	,	7000	)	--	이브 일본 컨테스트 기어
+g_pCashItemManager:AddCashItemPrice(	67004979	,	5000	)	--	이브 일본 컨테스트 상의
+g_pCashItemManager:AddCashItemPrice(	67004980	,	5000	)	--	이브 일본 컨테스트 하의
+g_pCashItemManager:AddCashItemPrice(	67004981	,	2400	)	--	이브 일본 컨테스트 장갑
+g_pCashItemManager:AddCashItemPrice(	67004982	,	2400	)	--	이브 일본 컨테스트 신발
+g_pCashItemManager:AddCashItemPrice(	67004983	,	5000	)	--	이브 일본 컨테스트 헤어
+g_pCashItemManager:AddCashItemPrice(	67004990	,	7000	)	--	청 일본 컨테스트 캐논
+g_pCashItemManager:AddCashItemPrice(	67004991	,	5000	)	--	청 일본 컨테스트 상의
+g_pCashItemManager:AddCashItemPrice(	67004992	,	5000	)	--	청 일본 컨테스트 하의
+g_pCashItemManager:AddCashItemPrice(	67004993	,	2400	)	--	청 일본 컨테스트 장갑
+g_pCashItemManager:AddCashItemPrice(	67004994	,	2400	)	--	청 일본 컨테스트 신발
+g_pCashItemManager:AddCashItemPrice(	67004995	,	5000	)	--	청 일본 컨테스트 헤어
 
 
--- 131106/오현택/한벌아바타
+-- 131120/오현택/샌더 이벤트
+
+g_pCashItemManager:AddCashItemPrice(	67006186	,	5000	)	--	축복받은 모래바람 윙츠(칼루소 에디션)
+g_pCashItemManager:AddCashItemPrice(	67006187	,	5000	)	--	축복받은 모래바람 윙츠(하피 에디션)
+g_pCashItemManager:AddCashItemPrice(	67006188	,	5000	)	--	축복받은 모래바람 윙츠
+
+
+-- 131120/오현택/스킬트리개편
 
 g_pCashItemManager:AddCashItemPrice(	67006464	,	200	)	--	수련용 도복(엘소드, 능력 없음)
 g_pCashItemManager:AddCashItemPrice(	67006465	,	200	)	--	수련용 도복(아이샤, 능력 없음)
@@ -10668,7 +9721,7 @@ g_pCashItemManager:AddCashItemPrice(	67006476	,	10000	)	--	실전용 도복(청)
 g_pCashItemManager:AddCashItemPrice(	67006477	,	10000	)	--	실전용 도복(아라)
 
 
--- 131106/오현택/기술의반지2
+-- 131120/오현택/기술의반지
 
 g_pCashItemManager:AddCashItemPrice(	270974	,	6000	)	--	유연한 기술의 반지 (II)
 g_pCashItemManager:AddCashItemPrice(	270975	,	6000	)	--	강인한 기술의 반지 (II)
@@ -10676,63 +9729,119 @@ g_pCashItemManager:AddCashItemPrice(	270976	,	6000	)	--	강렬한 기술의 반�
 g_pCashItemManager:AddCashItemPrice(	270977	,	6000	)	--	초월한 기술의 반지 (II)
 
 
--- 131120/오현택/샌더 이벤트
+-- 131218/이경철/액세서리 랜덤 큐브(60007240)에서 나오는 액세서리
+g_pCashItemManager:AddCashItemPrice( 60007140, 5000 )
+g_pCashItemManager:AddCashItemPrice( 60007150, 5000 )
+g_pCashItemManager:AddCashItemPrice( 60007160, 5000 )
+g_pCashItemManager:AddCashItemPrice( 60007170, 5000 )
+g_pCashItemManager:AddCashItemPrice( 60007180, 5000 )
+g_pCashItemManager:AddCashItemPrice( 60007190, 5000 )
+g_pCashItemManager:AddCashItemPrice( 60007200, 5000 )
+g_pCashItemManager:AddCashItemPrice( 60007210, 5000 )
+g_pCashItemManager:AddCashItemPrice( 60007220, 5000 )
+g_pCashItemManager:AddCashItemPrice( 60007230, 5000 )
 
-g_pCashItemManager:AddCashItemPrice(	67006186	,	5000	)	--	축복받은 모래바람 윙츠(칼루소 에디션)
-g_pCashItemManager:AddCashItemPrice(	67006187	,	5000	)	--	축복받은 모래바람 윙츠(하피 에디션)
-g_pCashItemManager:AddCashItemPrice(	67006188	,	5000	)	--	축복받은 모래바람 윙츠
-
-
--- 131218/이경철/아라,소선,제천,크리스마스,연말새해 이벤트
-g_pCashItemManager:AddCashItemPrice(	60007140	,	5000	)	--	쫑긋쫑긋 토끼귀
-g_pCashItemManager:AddCashItemPrice(	60007150	,	5000	)	--	깜찍한 토끼 가방
-g_pCashItemManager:AddCashItemPrice(	60007160	,	5000	)	--	고양이 방울
-g_pCashItemManager:AddCashItemPrice(	60007170	,	5000	)	--	천사의 완장
-g_pCashItemManager:AddCashItemPrice(	60007180	,	5000	)	--	악마의 붉은 뿔
-g_pCashItemManager:AddCashItemPrice(	60007190	,	5000	)	--	용병의 안대
-g_pCashItemManager:AddCashItemPrice(	60007200	,	5000	)	--	산소 마스크
-g_pCashItemManager:AddCashItemPrice(	60007210	,	5000	)	--	매달린 팬더인형
-g_pCashItemManager:AddCashItemPrice(	60007220	,	5000	)	--	작살총
-g_pCashItemManager:AddCashItemPrice(	60007230	,	5000	)	--	핑크 패션 백 팩
-g_pCashItemManager:AddCashItemPrice(	60007344	,	200	)	--	아렌의 창
-g_pCashItemManager:AddCashItemPrice(	70007203	,	5000	)	--	천상의 지배자
-						
-g_pCashItemManager:AddCashItemPrice(	153000086	,	200	)	--	폴라 베어 코스프레 아바타 (엘소드)
-g_pCashItemManager:AddCashItemPrice(	153000087	,	200	)	--	폴라 베어 코스프레 아바타 (아이샤)
-g_pCashItemManager:AddCashItemPrice(	153000088	,	200	)	--	폴라 베어 코스프레 아바타 (레나)
-g_pCashItemManager:AddCashItemPrice(	153000089	,	200	)	--	폴라 베어 코스프레 아바타 (레이븐)
-g_pCashItemManager:AddCashItemPrice(	153000090	,	200	)	--	폴라 베어 코스프레 아바타 (이브)
-g_pCashItemManager:AddCashItemPrice(	153000091	,	200	)	--	폴라 베어 코스프레 아바타 (청)
-g_pCashItemManager:AddCashItemPrice(	153000092	,	200	)	--	폴라 베어 코스프레 아바타 (아라)
-g_pCashItemManager:AddCashItemPrice(	153000093	,	200	)	--	폴라 베어 코스프레 아바타 (엘리시스)
-
-
--- 131218/오현택/아라 로열 블러드
-
-g_pCashItemManager:AddCashItemPrice(	81971	,	7000	)	--	로열 블러드 디그너티 상의(아라)
-g_pCashItemManager:AddCashItemPrice(	81972	,	5000	)	--	로열 블러드 디그너티 하의(아라)
-g_pCashItemManager:AddCashItemPrice(	81973	,	5000	)	--	로열 블러드 디그너티 장갑(아라)
-g_pCashItemManager:AddCashItemPrice(	81974	,	2400	)	--	로열 블러드 디그너티 신발(아라)
-g_pCashItemManager:AddCashItemPrice(	81975	,	2400	)	--	로열 블러드 디그너티 헤어(아라)
-g_pCashItemManager:AddCashItemPrice(	81976	,	5000	)	--	로열 블러드 디그너티 스피어(아라)
-g_pCashItemManager:AddCashItemPrice(	81977	,	5000	)	--	로열 블러드 디그너티 골든 크라운(아라)
-g_pCashItemManager:AddCashItemPrice(	81978	,	5000	)	--	로열 블러드 디그너티 글로리아(아라)
-
-
--- 131218/이경철/크리스마스 이벤트
-
-g_pCashItemManager:AddCashItemPrice(	272461	,	7000	)	--	아라 크리스마스 스피어 
-g_pCashItemManager:AddCashItemPrice(	272462	,	5000	)	--	아라 크리스마스 드레스 상의 
-g_pCashItemManager:AddCashItemPrice(	272463	,	5000	)	--	아라 크리스마스 드레스 하의 
-g_pCashItemManager:AddCashItemPrice(	272464	,	2400	)	--	아라 크리스마스 드레스 장갑 
-g_pCashItemManager:AddCashItemPrice(	272465	,	2400	)	--	아라 크리스마스 드레스 신발 
-g_pCashItemManager:AddCashItemPrice(	272466	,	5000	)	--	아라 크리스마스 드레스 헤어 
-g_pCashItemManager:AddCashItemPrice(	272467	,	7000	)	--	아라 크리스마스 스피어 (ver.Gentle)
-g_pCashItemManager:AddCashItemPrice(	272468	,	5000	)	--	아라 크리스마스 드레스 상의 (ver.Gentle)
-g_pCashItemManager:AddCashItemPrice(	272469	,	5000	)	--	아라 크리스마스 드레스 하의 (ver.Gentle)
-g_pCashItemManager:AddCashItemPrice(	272470	,	2400	)	--	아라 크리스마스 드레스 장갑 (ver.Gentle)
-g_pCashItemManager:AddCashItemPrice(	272471	,	2400	)	--	아라 크리스마스 드레스 신발 (ver.Gentle)
-g_pCashItemManager:AddCashItemPrice(	272472	,	5000	)	--	아라 크리스마스 드레스 헤어 (ver.Gentle)
+-- 131218/이경철/프리스트 아바타
+g_pCashItemManager:AddCashItemPrice(	236050	,	7000	)	--	엘소드 다크 프리스트 크로스로드
+g_pCashItemManager:AddCashItemPrice(	236060	,	5000	)	--	엘소드 다크 프리스트 상의
+g_pCashItemManager:AddCashItemPrice(	236070	,	5000	)	--	엘소드 다크 프리스트 하의
+g_pCashItemManager:AddCashItemPrice(	236080	,	2400	)	--	엘소드 다크 프리스트 장갑
+g_pCashItemManager:AddCashItemPrice(	236090	,	2400	)	--	엘소드 다크 프리스트 신발
+g_pCashItemManager:AddCashItemPrice(	236100	,	5000	)	--	엘소드 다크 프리스트 헤어
+g_pCashItemManager:AddCashItemPrice(	236950	,	5000	)	--	엘소드 다크 프리스트 후드
+g_pCashItemManager:AddCashItemPrice(	236110	,	7000	)	--	엘소드 홀리 프리스트 크로스로드
+g_pCashItemManager:AddCashItemPrice(	236120	,	5000	)	--	엘소드 홀리 프리스트 상의
+g_pCashItemManager:AddCashItemPrice(	236130	,	5000	)	--	엘소드 홀리 프리스트 하의
+g_pCashItemManager:AddCashItemPrice(	236140	,	2400	)	--	엘소드 홀리 프리스트 장갑
+g_pCashItemManager:AddCashItemPrice(	236150	,	2400	)	--	엘소드 홀리 프리스트 신발
+g_pCashItemManager:AddCashItemPrice(	236160	,	5000	)	--	엘소드 홀리 프리스트 헤어
+g_pCashItemManager:AddCashItemPrice(	236960	,	5000	)	--	엘소드 홀리 프리스트 후드
+g_pCashItemManager:AddCashItemPrice(	236170	,	7000	)	--	아이샤 다크 프리스트 소울브리더
+g_pCashItemManager:AddCashItemPrice(	236180	,	5000	)	--	아이샤 다크 프리스트 상의
+g_pCashItemManager:AddCashItemPrice(	236190	,	5000	)	--	아이샤 다크 프리스트 하의
+g_pCashItemManager:AddCashItemPrice(	236200	,	2400	)	--	아이샤 다크 프리스트 장갑
+g_pCashItemManager:AddCashItemPrice(	236210	,	2400	)	--	아이샤 다크 프리스트 신발
+g_pCashItemManager:AddCashItemPrice(	236220	,	5000	)	--	아이샤 다크 프리스트 헤어
+g_pCashItemManager:AddCashItemPrice(	236970	,	5000	)	--	아이샤 다크 프리스트 후드
+g_pCashItemManager:AddCashItemPrice(	236230	,	7000	)	--	아이샤 홀리 프리스트 소울브리더
+g_pCashItemManager:AddCashItemPrice(	236240	,	5000	)	--	아이샤 홀리 프리스트 상의
+g_pCashItemManager:AddCashItemPrice(	236250	,	5000	)	--	아이샤 홀리 프리스트 하의
+g_pCashItemManager:AddCashItemPrice(	236260	,	2400	)	--	아이샤 홀리 프리스트 장갑
+g_pCashItemManager:AddCashItemPrice(	236270	,	2400	)	--	아이샤 홀리 프리스트 신발
+g_pCashItemManager:AddCashItemPrice(	236280	,	5000	)	--	아이샤 홀리 프리스트 헤어
+g_pCashItemManager:AddCashItemPrice(	236980	,	5000	)	--	아이샤 홀리 프리스트 후드
+g_pCashItemManager:AddCashItemPrice(	236290	,	7000	)	--	레나 다크 프리스트 클레릭보우
+g_pCashItemManager:AddCashItemPrice(	236300	,	5000	)	--	레나 다크 프리스트 상의
+g_pCashItemManager:AddCashItemPrice(	236310	,	5000	)	--	레나 다크 프리스트 하의
+g_pCashItemManager:AddCashItemPrice(	236320	,	2400	)	--	레나 다크 프리스트 장갑
+g_pCashItemManager:AddCashItemPrice(	236330	,	2400	)	--	레나 다크 프리스트 신발
+g_pCashItemManager:AddCashItemPrice(	236340	,	5000	)	--	레나 다크 프리스트 헤어
+g_pCashItemManager:AddCashItemPrice(	236990	,	5000	)	--	레나 다크 프리스트 후드
+g_pCashItemManager:AddCashItemPrice(	236350	,	7000	)	--	레나 홀리 프리스트 클레릭보우
+g_pCashItemManager:AddCashItemPrice(	236360	,	5000	)	--	레나 홀리 프리스트 상의
+g_pCashItemManager:AddCashItemPrice(	236370	,	5000	)	--	레나 홀리 프리스트 하의
+g_pCashItemManager:AddCashItemPrice(	236380	,	2400	)	--	레나 홀리 프리스트 장갑
+g_pCashItemManager:AddCashItemPrice(	236390	,	2400	)	--	레나 홀리 프리스트 신발
+g_pCashItemManager:AddCashItemPrice(	236400	,	5000	)	--	레나 홀리 프리스트 헤어
+g_pCashItemManager:AddCashItemPrice(	237000	,	5000	)	--	레나 홀리 프리스트 후드
+g_pCashItemManager:AddCashItemPrice(	236410	,	7000	)	--	레이븐 다크 프리스트 레이지커터
+g_pCashItemManager:AddCashItemPrice(	236420	,	5000	)	--	레이븐 다크 프리스트 상의
+g_pCashItemManager:AddCashItemPrice(	236430	,	5000	)	--	레이븐 다크 프리스트 하의
+g_pCashItemManager:AddCashItemPrice(	236440	,	2400	)	--	레이븐 다크 프리스트 장갑
+g_pCashItemManager:AddCashItemPrice(	236450	,	2400	)	--	레이븐 다크 프리스트 신발
+g_pCashItemManager:AddCashItemPrice(	236460	,	5000	)	--	레이븐 다크 프리스트 헤어
+g_pCashItemManager:AddCashItemPrice(	237010	,	5000	)	--	레이븐 다크 프리스트 후드
+g_pCashItemManager:AddCashItemPrice(	236470	,	7000	)	--	레이븐 홀리 프리스트 레이지커터
+g_pCashItemManager:AddCashItemPrice(	236480	,	5000	)	--	레이븐 홀리 프리스트 상의
+g_pCashItemManager:AddCashItemPrice(	236490	,	5000	)	--	레이븐 홀리 프리스트 하의
+g_pCashItemManager:AddCashItemPrice(	236500	,	2400	)	--	레이븐 홀리 프리스트 장갑
+g_pCashItemManager:AddCashItemPrice(	236510	,	2400	)	--	레이븐 홀리 프리스트 신발
+g_pCashItemManager:AddCashItemPrice(	236520	,	5000	)	--	레이븐 홀리 프리스트 헤어
+g_pCashItemManager:AddCashItemPrice(	237020	,	5000	)	--	레이븐 홀리 프리스트 후드
+g_pCashItemManager:AddCashItemPrice(	236530	,	7000	)	--	이브 다크 프리스트 저지먼트
+g_pCashItemManager:AddCashItemPrice(	236540	,	5000	)	--	이브 다크 프리스트 상의
+g_pCashItemManager:AddCashItemPrice(	236550	,	5000	)	--	이브 다크 프리스트 하의
+g_pCashItemManager:AddCashItemPrice(	236560	,	2400	)	--	이브 다크 프리스트 장갑
+g_pCashItemManager:AddCashItemPrice(	236570	,	2400	)	--	이브 다크 프리스트 신발
+g_pCashItemManager:AddCashItemPrice(	236580	,	5000	)	--	이브 다크 프리스트 헤어
+g_pCashItemManager:AddCashItemPrice(	237030	,	5000	)	--	이브 다크 프리스트 후드
+g_pCashItemManager:AddCashItemPrice(	236590	,	7000	)	--	이브 홀리 프리스트 저지먼트
+g_pCashItemManager:AddCashItemPrice(	236600	,	5000	)	--	이브 홀리 프리스트 상의
+g_pCashItemManager:AddCashItemPrice(	236610	,	5000	)	--	이브 홀리 프리스트 하의
+g_pCashItemManager:AddCashItemPrice(	236620	,	2400	)	--	이브 홀리 프리스트 장갑
+g_pCashItemManager:AddCashItemPrice(	236630	,	2400	)	--	이브 홀리 프리스트 신발
+g_pCashItemManager:AddCashItemPrice(	236640	,	5000	)	--	이브 홀리 프리스트 헤어
+g_pCashItemManager:AddCashItemPrice(	237040	,	5000	)	--	이브 홀리 프리스트 후드
+g_pCashItemManager:AddCashItemPrice(	236650	,	7000	)	--	청 다크 프리스트 디스트로이어
+g_pCashItemManager:AddCashItemPrice(	236660	,	5000	)	--	청 다크 프리스트 상의
+g_pCashItemManager:AddCashItemPrice(	236670	,	5000	)	--	청 다크 프리스트 하의
+g_pCashItemManager:AddCashItemPrice(	236680	,	2400	)	--	청 다크 프리스트 장갑
+g_pCashItemManager:AddCashItemPrice(	236690	,	2400	)	--	청 다크 프리스트 신발
+g_pCashItemManager:AddCashItemPrice(	236700	,	5000	)	--	청 다크 프리스트 헤어
+g_pCashItemManager:AddCashItemPrice(	237050	,	5000	)	--	청 다크 프리스트 후드
+g_pCashItemManager:AddCashItemPrice(	236710	,	7000	)	--	청 홀리 프리스트 디스트로이어
+g_pCashItemManager:AddCashItemPrice(	236720	,	5000	)	--	청 홀리 프리스트 상의
+g_pCashItemManager:AddCashItemPrice(	236730	,	5000	)	--	청 홀리 프리스트 하의
+g_pCashItemManager:AddCashItemPrice(	236740	,	2400	)	--	청 홀리 프리스트 장갑
+g_pCashItemManager:AddCashItemPrice(	236750	,	2400	)	--	청 홀리 프리스트 신발
+g_pCashItemManager:AddCashItemPrice(	236760	,	5000	)	--	청 홀리 프리스트 헤어
+g_pCashItemManager:AddCashItemPrice(	237060	,	5000	)	--	청 홀리 프리스트 후드
+g_pCashItemManager:AddCashItemPrice(	272221	,	7000	)	--	아라 다크 프리스트 십자창
+g_pCashItemManager:AddCashItemPrice(	272222	,	5000	)	--	아라 다크 프리스트 상의
+g_pCashItemManager:AddCashItemPrice(	272223	,	5000	)	--	아라 다크 프리스트 하의
+g_pCashItemManager:AddCashItemPrice(	272224	,	2400	)	--	아라 다크 프리스트 장갑
+g_pCashItemManager:AddCashItemPrice(	272225	,	2400	)	--	아라 다크 프리스트 신발
+g_pCashItemManager:AddCashItemPrice(	272226	,	5000	)	--	아라 다크 프리스트 헤어
+g_pCashItemManager:AddCashItemPrice(	272676	,	5000	)	--	아라 다크 프리스트 후드
+g_pCashItemManager:AddCashItemPrice(	272227	,	7000	)	--	아라 홀리 프리스트 십자창
+g_pCashItemManager:AddCashItemPrice(	272228	,	5000	)	--	아라 홀리 프리스트 상의
+g_pCashItemManager:AddCashItemPrice(	272229	,	5000	)	--	아라 홀리 프리스트 하의
+g_pCashItemManager:AddCashItemPrice(	272230	,	2400	)	--	아라 홀리 프리스트 장갑
+g_pCashItemManager:AddCashItemPrice(	272231	,	2400	)	--	아라 홀리 프리스트 신발
+g_pCashItemManager:AddCashItemPrice(	272232	,	5000	)	--	아라 홀리 프리스트 헤어
+g_pCashItemManager:AddCashItemPrice(	272677	,	5000	)	--	아라 홀리 프리스트 후드
+					
+-- 131218/이경철/아라 윈터캐주얼					
 g_pCashItemManager:AddCashItemPrice(	272437	,	7000	)	--	아이스 스피어 (파랑)
 g_pCashItemManager:AddCashItemPrice(	272438	,	5000	)	--	겨울용 캐쥬얼 상의 (파랑)
 g_pCashItemManager:AddCashItemPrice(	272439	,	5000	)	--	겨울용 캐쥬얼 하의 (파랑)
@@ -10745,174 +9854,159 @@ g_pCashItemManager:AddCashItemPrice(	272445	,	5000	)	--	겨울용 캐쥬얼 하�
 g_pCashItemManager:AddCashItemPrice(	272446	,	2400	)	--	겨울용 캐쥬얼 장갑 (핑크)
 g_pCashItemManager:AddCashItemPrice(	272447	,	2400	)	--	겨울용 캐쥬얼 신발 (핑크)
 g_pCashItemManager:AddCashItemPrice(	272448	,	5000	)	--	겨울용 캐쥬얼 헤어 (핑크)
-g_pCashItemManager:AddCashItemPrice(	235210	,	7000	)	--	엘소드 샤니베어 슬리핑 소드(하늘)
-g_pCashItemManager:AddCashItemPrice(	235220	,	5000	)	--	엘소드 샤니베어 파자마 상의(하늘)
-g_pCashItemManager:AddCashItemPrice(	235230	,	5000	)	--	엘소드 샤니베어 파자마 상의(하늘)
-g_pCashItemManager:AddCashItemPrice(	235240	,	2400	)	--	엘소드 샤니베어 손목 시계(하늘)
-g_pCashItemManager:AddCashItemPrice(	235250	,	2400	)	--	엘소드 샤니베어 슬리퍼(하늘)
-g_pCashItemManager:AddCashItemPrice(	235260	,	5000	)	--	엘소드 샤니베어 파자마 두건(하늘)
-g_pCashItemManager:AddCashItemPrice(	235270	,	7000	)	--	엘소드 샤니베어 슬리핑 소드(주황)
-g_pCashItemManager:AddCashItemPrice(	235280	,	5000	)	--	엘소드 샤니베어 파자마 상의(주황)
-g_pCashItemManager:AddCashItemPrice(	235290	,	5000	)	--	엘소드 샤니베어 파자마 상의(주황)
-g_pCashItemManager:AddCashItemPrice(	235300	,	2400	)	--	엘소드 샤니베어 손목 시계(주황)
-g_pCashItemManager:AddCashItemPrice(	235310	,	2400	)	--	엘소드 샤니베어 슬리퍼(주황)
-g_pCashItemManager:AddCashItemPrice(	235320	,	5000	)	--	엘소드 샤니베어 파자마 두건(주황)
-g_pCashItemManager:AddCashItemPrice(	235330	,	7000	)	--	아이샤 러블리 캣 스태츄(분홍)
-g_pCashItemManager:AddCashItemPrice(	235340	,	5000	)	--	아이샤 러블리 캣 파자마 상의(분홍)
-g_pCashItemManager:AddCashItemPrice(	235350	,	5000	)	--	아이샤 러블리 캣 파자마 하의(분홍)
-g_pCashItemManager:AddCashItemPrice(	235360	,	2400	)	--	아이샤 러블리 캣 방울(분홍)
-g_pCashItemManager:AddCashItemPrice(	235370	,	2400	)	--	아이샤 러블리 캣 슬리퍼(분홍)
-g_pCashItemManager:AddCashItemPrice(	235380	,	5000	)	--	아이샤 러블리 캣 슬리핑 캡(분홍)
-g_pCashItemManager:AddCashItemPrice(	235390	,	7000	)	--	아이샤 러블리 캣 스태츄(보라)
-g_pCashItemManager:AddCashItemPrice(	235400	,	5000	)	--	아이샤 러블리 캣 파자마 상의(보라)
-g_pCashItemManager:AddCashItemPrice(	235410	,	5000	)	--	아이샤 러블리 캣 파자마 하의(보라)
-g_pCashItemManager:AddCashItemPrice(	235420	,	2400	)	--	아이샤 러블리 캣 방울(보라)
-g_pCashItemManager:AddCashItemPrice(	235430	,	2400	)	--	아이샤 러블리 캣 슬리퍼(보라)
-g_pCashItemManager:AddCashItemPrice(	235440	,	5000	)	--	아이샤 러블리 캣 슬리핑 캡(보라)
-g_pCashItemManager:AddCashItemPrice(	235450	,	7000	)	--	레나 나이트블룸 프릴보우(노랑)
-g_pCashItemManager:AddCashItemPrice(	235460	,	5000	)	--	레나 나이트블룸 파자마 상의(검정)
-g_pCashItemManager:AddCashItemPrice(	235470	,	5000	)	--	레나 나이트블룸 파자마 하의(검정)
-g_pCashItemManager:AddCashItemPrice(	235480	,	2400	)	--	레나 나이트블룸 사파이어 팔찌(분홍)
-g_pCashItemManager:AddCashItemPrice(	235490	,	2400	)	--	레나 나이트블룸 슬리퍼(노랑)
-g_pCashItemManager:AddCashItemPrice(	235500	,	5000	)	--	레나 나이트블룸 양갈래 리본 헤어(노랑)
-g_pCashItemManager:AddCashItemPrice(	235510	,	7000	)	--	레나 나이트블룸 프릴보우(분홍)
-g_pCashItemManager:AddCashItemPrice(	235520	,	5000	)	--	레나 나이트블룸 파자마 상의(분홍)
-g_pCashItemManager:AddCashItemPrice(	235530	,	5000	)	--	레나 나이트블룸 파자마 하의(분홍)
-g_pCashItemManager:AddCashItemPrice(	235540	,	2400	)	--	레나 나이트블룸 사파이어 팔찌(하늘)
-g_pCashItemManager:AddCashItemPrice(	235550	,	2400	)	--	레나 나이트블룸 슬리퍼(분홍)
-g_pCashItemManager:AddCashItemPrice(	235560	,	5000	)	--	레나 나이트블룸 양갈래 리본 헤어(주황)
-g_pCashItemManager:AddCashItemPrice(	235570	,	7000	)	--	레이븐 하쉬드림 카타나(하늘)
-g_pCashItemManager:AddCashItemPrice(	235580	,	5000	)	--	레이븐 하쉬드림 가운 상의(하양)
-g_pCashItemManager:AddCashItemPrice(	235590	,	5000	)	--	레이븐 하쉬드림 가운 하의(하양)
-g_pCashItemManager:AddCashItemPrice(	235600	,	2400	)	--	레이븐 하쉬드림 금장 팔찌(노랑)
-g_pCashItemManager:AddCashItemPrice(	235610	,	2400	)	--	레이븐 하쉬드림 슬리퍼(하늘)
-g_pCashItemManager:AddCashItemPrice(	235620	,	5000	)	--	레이븐 하쉬드림 쉬크 헤어(고동)
-g_pCashItemManager:AddCashItemPrice(	235630	,	7000	)	--	레이븐 하쉬드림 카타나(주황)
-g_pCashItemManager:AddCashItemPrice(	235640	,	5000	)	--	레이븐 하쉬드림 가운 상의(주황)
-g_pCashItemManager:AddCashItemPrice(	235650	,	5000	)	--	레이븐 하쉬드림 가운 하의(주황)
-g_pCashItemManager:AddCashItemPrice(	235660	,	2400	)	--	레이븐 하쉬드림 은장 팔찌(은색)
-g_pCashItemManager:AddCashItemPrice(	235670	,	2400	)	--	레이븐 하쉬드림 슬리퍼(주황)
-g_pCashItemManager:AddCashItemPrice(	235680	,	5000	)	--	레이븐 하쉬드림 쉬크 헤어(은색)
-g_pCashItemManager:AddCashItemPrice(	235690	,	7000	)	--	이브 퓨어나잇 쉬프 기어(하양)
-g_pCashItemManager:AddCashItemPrice(	235700	,	5000	)	--	이브 퓨어나잇 블라우스(하양)
-g_pCashItemManager:AddCashItemPrice(	235710	,	5000	)	--	이브 퓨어나잇 하의(하양)
-g_pCashItemManager:AddCashItemPrice(	235720	,	2400	)	--	이브 퓨어나잇 반지 장식(빨강)
-g_pCashItemManager:AddCashItemPrice(	235730	,	2400	)	--	이브 퓨어나잇 슬리퍼(빨강)
-g_pCashItemManager:AddCashItemPrice(	235740	,	5000	)	--	이브 퓨어나잇 애플 헤어(검정)
-g_pCashItemManager:AddCashItemPrice(	235750	,	7000	)	--	이브 퓨어나잇 쉬프 기어(하늘)
-g_pCashItemManager:AddCashItemPrice(	235760	,	5000	)	--	이브 퓨어나잇 블라우스(하늘)
-g_pCashItemManager:AddCashItemPrice(	235770	,	5000	)	--	이브 퓨어나잇 하의(하늘)
-g_pCashItemManager:AddCashItemPrice(	235780	,	2400	)	--	이브 퓨어나잇 반지 장식(분홍)
-g_pCashItemManager:AddCashItemPrice(	235790	,	2400	)	--	이브 퓨어나잇 슬리퍼(하늘)
-g_pCashItemManager:AddCashItemPrice(	235800	,	5000	)	--	이브 퓨어나잇 애플 헤어(하양)
-g_pCashItemManager:AddCashItemPrice(	235810	,	7000	)	--	청 래핑카우 필로우 캐논(하양)
-g_pCashItemManager:AddCashItemPrice(	235820	,	5000	)	--	청 래핑카우 파자마 상의(하양)
-g_pCashItemManager:AddCashItemPrice(	235830	,	5000	)	--	청 래핑카우 파자마 하의(하양)
-g_pCashItemManager:AddCashItemPrice(	235840	,	2400	)	--	청 래핑카우 방울(노랑)
-g_pCashItemManager:AddCashItemPrice(	235850	,	2400	)	--	청 래핑카우 슬리퍼(하양)
-g_pCashItemManager:AddCashItemPrice(	235860	,	5000	)	--	청 래핑카우 슬리핑 캡(하양)
-g_pCashItemManager:AddCashItemPrice(	235870	,	7000	)	--	청 래핑카우 필로우 캐논(노랑)
-g_pCashItemManager:AddCashItemPrice(	235880	,	5000	)	--	청 래핑카우 파자마 상의(노랑)
-g_pCashItemManager:AddCashItemPrice(	235890	,	5000	)	--	청 래핑카우 파자마 하의(노랑)
-g_pCashItemManager:AddCashItemPrice(	235900	,	2400	)	--	청 래핑카우 방울(은색)
-g_pCashItemManager:AddCashItemPrice(	235910	,	2400	)	--	청 래핑카우 슬리퍼(노랑)
-g_pCashItemManager:AddCashItemPrice(	235920	,	5000	)	--	청 래핑카우 슬리핑 캡(노랑)
-g_pCashItemManager:AddCashItemPrice(	271672	,	7000	)	--	아라 프릴 원피스 토끼 막대(흰색)
-g_pCashItemManager:AddCashItemPrice(	271673	,	5000	)	--	아라 프릴 원피스 파자마 상의(흰색)
-g_pCashItemManager:AddCashItemPrice(	271674	,	5000	)	--	아라 프릴 원피스 파자마 상의(흰색)
-g_pCashItemManager:AddCashItemPrice(	271675	,	2400	)	--	아라 프릴 원피스 리본 팔찌(흰색)
-g_pCashItemManager:AddCashItemPrice(	271676	,	2400	)	--	아라 프릴 원피스 슬리퍼(흰색)
-g_pCashItemManager:AddCashItemPrice(	271677	,	5000	)	--	아라 프릴 원피스 토끼 밴드(흰색)
-g_pCashItemManager:AddCashItemPrice(	271678	,	7000	)	--	아라 프릴 원피스 토끼 막대(회색)
-g_pCashItemManager:AddCashItemPrice(	271679	,	5000	)	--	아라 프릴 원피스 파자마 상의(회색)
-g_pCashItemManager:AddCashItemPrice(	271680	,	5000	)	--	아라 프릴 원피스 파자마 상의(회색)
-g_pCashItemManager:AddCashItemPrice(	271681	,	2400	)	--	아라 프릴 원피스 리본 팔찌(회색)
-g_pCashItemManager:AddCashItemPrice(	271682	,	2400	)	--	아라 프릴 원피스 슬리퍼(회색)
-g_pCashItemManager:AddCashItemPrice(	271683	,	5000	)	--	아라 프릴 원피스 토끼 밴드(회색)
+				
+-- 131218/이경철/아라 2011 크리스마스				
+g_pCashItemManager:AddCashItemPrice(	272461	,	7000	)	--	아라 크리스마스 스피어 
+g_pCashItemManager:AddCashItemPrice(	272462	,	5000	)	--	아라 크리스마스 드레스 상의 
+g_pCashItemManager:AddCashItemPrice(	272463	,	5000	)	--	아라 크리스마스 드레스 하의 
+g_pCashItemManager:AddCashItemPrice(	272464	,	2400	)	--	아라 크리스마스 드레스 장갑 
+g_pCashItemManager:AddCashItemPrice(	272465	,	2400	)	--	아라 크리스마스 드레스 신발 
+g_pCashItemManager:AddCashItemPrice(	272466	,	5000	)	--	아라 크리스마스 드레스 헤어 
+g_pCashItemManager:AddCashItemPrice(	272467	,	7000	)	--	아라 크리스마스 스피어 (ver.Gentle)
+g_pCashItemManager:AddCashItemPrice(	272468	,	5000	)	--	아라 크리스마스 드레스 상의 (ver.Gentle)
+g_pCashItemManager:AddCashItemPrice(	272469	,	5000	)	--	아라 크리스마스 드레스 하의 (ver.Gentle)
+g_pCashItemManager:AddCashItemPrice(	272470	,	2400	)	--	아라 크리스마스 드레스 장갑 (ver.Gentle)
+g_pCashItemManager:AddCashItemPrice(	272471	,	2400	)	--	아라 크리스마스 드레스 신발 (ver.Gentle)
+g_pCashItemManager:AddCashItemPrice(	272472	,	5000	)	--	아라 크리스마스 드레스 헤어 (ver.Gentle)
+			
+-- 131218/이경철/캡틴 루돌프			
 g_pCashItemManager:AddCashItemPrice(	153000117	,	10000	)	--	엘소드 캡틴 루돌프
-g_pCashItemManager:AddCashItemPrice(	153000133	,	7000	)	--	엘소드 캡틴 루돌프 산타 브로드소드
 g_pCashItemManager:AddCashItemPrice(	153000118	,	10000	)	--	엘소드 캡틴 루돌프(ver.Icecream)
-g_pCashItemManager:AddCashItemPrice(	153000134	,	7000	)	--	엘소드 캡틴 루돌프 산타 브로드소드(ver.Icecream)
 g_pCashItemManager:AddCashItemPrice(	153000119	,	10000	)	--	아이샤 캡틴 루돌프
-g_pCashItemManager:AddCashItemPrice(	153000135	,	7000	)	--	아이샤 캡틴 루돌프 징글벨 스태프
 g_pCashItemManager:AddCashItemPrice(	153000120	,	10000	)	--	아이샤 캡틴 루돌프(ver.Icecream)
-g_pCashItemManager:AddCashItemPrice(	153000136	,	7000	)	--	아이샤 캡틴 루돌프 징글벨 스태프(ver.Icecream)
 g_pCashItemManager:AddCashItemPrice(	153000121	,	10000	)	--	레나 캡틴 루돌프
-g_pCashItemManager:AddCashItemPrice(	153000137	,	7000	)	--	레나 캡틴 루돌프 러블링 보우
 g_pCashItemManager:AddCashItemPrice(	153000122	,	10000	)	--	레나 캡틴 루돌프(ver.Icecream)
-g_pCashItemManager:AddCashItemPrice(	153000138	,	7000	)	--	레나 캡틴 루돌프 러블링 보우(ver.Icecream)
 g_pCashItemManager:AddCashItemPrice(	153000123	,	10000	)	--	레이븐 캡틴 루돌프
-g_pCashItemManager:AddCashItemPrice(	153000139	,	7000	)	--	레이븐 캡틴 루돌프 트리 블레이드
 g_pCashItemManager:AddCashItemPrice(	153000124	,	10000	)	--	레이븐 캡틴 루돌프(ver.Icecream)
-g_pCashItemManager:AddCashItemPrice(	153000140	,	7000	)	--	레이븐 캡틴 루돌프 트리 블레이드(ver.Icecream)
 g_pCashItemManager:AddCashItemPrice(	153000125	,	10000	)	--	이브 캡틴 루돌프
-g_pCashItemManager:AddCashItemPrice(	153000141	,	7000	)	--	이브 캡틴 루돌프 프레젠트 기어
 g_pCashItemManager:AddCashItemPrice(	153000126	,	10000	)	--	이브 캡틴 루돌프(ver.Icecream)
-g_pCashItemManager:AddCashItemPrice(	153000142	,	7000	)	--	이브 캡틴 루돌프 프레젠트 기어(ver.Icecream)
 g_pCashItemManager:AddCashItemPrice(	153000127	,	10000	)	--	청 캡틴 루돌프
-g_pCashItemManager:AddCashItemPrice(	153000143	,	7000	)	--	청 캡틴 루돌프 스노우맨 캐논
 g_pCashItemManager:AddCashItemPrice(	153000128	,	10000	)	--	청 캡틴 루돌프(ver.Icecream)
-g_pCashItemManager:AddCashItemPrice(	153000144	,	7000	)	--	청 캡틴 루돌프 스노우맨 캐논(ver.Icecream)
 g_pCashItemManager:AddCashItemPrice(	153000129	,	10000	)	--	아라 캡틴 루돌프
-g_pCashItemManager:AddCashItemPrice(	153000145	,	7000	)	--	아라 캡틴 루돌프 창
 g_pCashItemManager:AddCashItemPrice(	153000130	,	10000	)	--	아라 캡틴 루돌프(ver.Icecream)
+g_pCashItemManager:AddCashItemPrice(	153000133	,	7000	)	--	엘소드 캡틴 루돌프 산타 브로드소드
+g_pCashItemManager:AddCashItemPrice(	153000134	,	7000	)	--	엘소드 캡틴 루돌프 산타 브로드소드(ver.Icecream)
+g_pCashItemManager:AddCashItemPrice(	153000135	,	7000	)	--	아이샤 캡틴 루돌프 징글벨 스태프
+g_pCashItemManager:AddCashItemPrice(	153000136	,	7000	)	--	아이샤 캡틴 루돌프 징글벨 스태프(ver.Icecream)
+g_pCashItemManager:AddCashItemPrice(	153000137	,	7000	)	--	레나 캡틴 루돌프 러블링 보우
+g_pCashItemManager:AddCashItemPrice(	153000138	,	7000	)	--	레나 캡틴 루돌프 러블링 보우(ver.Icecream)
+g_pCashItemManager:AddCashItemPrice(	153000139	,	7000	)	--	레이븐 캡틴 루돌프 트리 블레이드
+g_pCashItemManager:AddCashItemPrice(	153000140	,	7000	)	--	레이븐 캡틴 루돌프 트리 블레이드(ver.Icecream)
+g_pCashItemManager:AddCashItemPrice(	153000141	,	7000	)	--	이브 캡틴 루돌프 프레젠트 기어
+g_pCashItemManager:AddCashItemPrice(	153000142	,	7000	)	--	이브 캡틴 루돌프 프레젠트 기어(ver.Icecream)
+g_pCashItemManager:AddCashItemPrice(	153000143	,	7000	)	--	청 캡틴 루돌프 스노우맨 캐논
+g_pCashItemManager:AddCashItemPrice(	153000144	,	7000	)	--	청 캡틴 루돌프 스노우맨 캐논(ver.Icecream)
+g_pCashItemManager:AddCashItemPrice(	153000145	,	7000	)	--	아라 캡틴 루돌프 창
 g_pCashItemManager:AddCashItemPrice(	153000146	,	7000	)	--	아라 캡틴 루돌프 창(ver.Icecream)
 
-
--- 140115/오현택/샌더34이벤트
-
-g_pCashItemManager:AddCashItemPrice(	182510	,	5000	)	--	토기의 조련용 채찍
-g_pCashItemManager:AddCashItemPrice(	182511	,	5000	)	--	아엘로의 황금 날개
-g_pCashItemManager:AddCashItemPrice(	182512	,	5000	)	--	지옥견의 분노
-g_pCashItemManager:AddCashItemPrice(	182513	,	5000	)	--	칼루소 전투원의 카타르
-						
-g_pCashItemManager:AddCashItemPrice(	60007460	,	5000	)	--	대가의 토기의 조련용 채찍
-g_pCashItemManager:AddCashItemPrice(	60007461	,	5000	)	--	대가의 아엘로의 황금 날개
-g_pCashItemManager:AddCashItemPrice(	60007462	,	5000	)	--	대가의 오버트락의 가면
-g_pCashItemManager:AddCashItemPrice(	60007463	,	5000	)	--	대가의 칼루소 전투원의 카타르
-
-g_pCashItemManager:AddCashItemPrice(	60007470	,	5000	)	--	토기의 조련용 채찍
-g_pCashItemManager:AddCashItemPrice(	60007471	,	5000	)	--	아엘로의 황금 날개
-g_pCashItemManager:AddCashItemPrice(	60007472	,	5000	)	--	오바트락의 가면
-g_pCashItemManager:AddCashItemPrice(	60007473	,	5000	)	--	칼루소 전투원의 카타르
+--131218/이경철/크리스마스 이벤트 한벌 아바타
+g_pCashItemManager:AddCashItemPrice(	153000086	,	200	)	--	폴라 베어 코스프레 아바타 (엘소드)
+g_pCashItemManager:AddCashItemPrice(	153000087	,	200	)	--	폴라 베어 코스프레 아바타 (아이샤)
+g_pCashItemManager:AddCashItemPrice(	153000088	,	200	)	--	폴라 베어 코스프레 아바타 (레나)
+g_pCashItemManager:AddCashItemPrice(	153000089	,	200	)	--	폴라 베어 코스프레 아바타 (레이븐)
+g_pCashItemManager:AddCashItemPrice(	153000090	,	200	)	--	폴라 베어 코스프레 아바타 (이브)
+g_pCashItemManager:AddCashItemPrice(	153000091	,	200	)	--	폴라 베어 코스프레 아바타 (청)
+g_pCashItemManager:AddCashItemPrice(	153000092	,	200	)	--	폴라 베어 코스프레 아바타 (아라)
+g_pCashItemManager:AddCashItemPrice(	153000093	,	200	)	--	폴라 베어 코스프레 아바타 (엘리시스)
 
 
--- 140122/오현택/탈것이벤트
+-- 131218/오현택/아라 드래곤 나이트
 
-g_pCashItemManager:AddCashItemPrice(	67006340	,	5000	)	--	베스트 라이딩 헬멧 (엘소드)
-g_pCashItemManager:AddCashItemPrice(	67006341	,	5000	)	--	베스트 라이딩 헬멧 (아이샤)
-g_pCashItemManager:AddCashItemPrice(	67006342	,	5000	)	--	베스트 라이딩 헬멧 (레나)
-g_pCashItemManager:AddCashItemPrice(	67006343	,	5000	)	--	베스트 라이딩 헬멧 (레이븐)
-g_pCashItemManager:AddCashItemPrice(	67006344	,	5000	)	--	베스트 라이딩 헬멧 (이브)
-g_pCashItemManager:AddCashItemPrice(	67006345	,	5000	)	--	베스트 라이딩 헬멧 (청)
-g_pCashItemManager:AddCashItemPrice(	67006346	,	5000	)	--	베스트 라이딩 헬멧 (아라)
+g_pCashItemManager:AddCashItemPrice(	133489	,	7000	)	--	드래곤 나이트-다크사이드 심판자(아라)
+g_pCashItemManager:AddCashItemPrice(	133490	,	5000	)	--	드래곤 나이트-다크사이드 판금 상의(아라)
+g_pCashItemManager:AddCashItemPrice(	133491	,	5000	)	--	드래곤 나이트-다크사이드 판금 하의(아라)
+g_pCashItemManager:AddCashItemPrice(	133492	,	2400	)	--	드래곤 나이트-다크사이드 판금 장갑(아라)
+g_pCashItemManager:AddCashItemPrice(	133493	,	2400	)	--	드래곤 나이트-다크사이드 판금 신발(아라)
+g_pCashItemManager:AddCashItemPrice(	133494	,	5000	)	--	드래곤 나이트-다크사이드 판금 투구(아라)
+g_pCashItemManager:AddCashItemPrice(	133495	,	5000	)	--	드래곤 나이트-다크사이드 퍼플 헤어(아라)
+g_pCashItemManager:AddCashItemPrice(	133496	,	5000	)	--	드래곤 나이트-다크사이드 어비스(아라)
+g_pCashItemManager:AddCashItemPrice(	133497	,	5000	)	--	드래곤 나이트-다크사이드 몰러(아라)
+g_pCashItemManager:AddCashItemPrice(	133498	,	5000	)	--	드래곤 나이트-다크사이드 아너(아라)
+g_pCashItemManager:AddCashItemPrice(	133499	,	7000	)	--	드래곤 나이트-아바돈 심판자(아라)
+g_pCashItemManager:AddCashItemPrice(	133500	,	5000	)	--	드래곤 나이트-아바돈 판금 상의(아라)
+g_pCashItemManager:AddCashItemPrice(	133501	,	5000	)	--	드래곤 나이트-아바돈 판금 하의(아라)
+g_pCashItemManager:AddCashItemPrice(	133502	,	2400	)	--	드래곤 나이트-아바돈 판금 장갑(아라)
+g_pCashItemManager:AddCashItemPrice(	133503	,	2400	)	--	드래곤 나이트-아바돈 판금 신발(아라)
+g_pCashItemManager:AddCashItemPrice(	133504	,	5000	)	--	드래곤 나이트-아바돈 판금 투구(아라)
+g_pCashItemManager:AddCashItemPrice(	133505	,	5000	)	--	드래곤 나이트-아바돈 순백 헤어(아라)
+g_pCashItemManager:AddCashItemPrice(	133506	,	5000	)	--	드래곤 나이트-아바돈 어비스(아라)
+g_pCashItemManager:AddCashItemPrice(	133507	,	5000	)	--	드래곤 나이트-아바돈 몰러(아라)
+g_pCashItemManager:AddCashItemPrice(	133508	,	5000	)	--	드래곤 나이트-아바돈 아너(아라)
 
+-- 131218/이경철/퓨어 베놈
+g_pCashItemManager:AddCashItemPrice(	180028	,	5000	)	--	퓨어 베놈
 
--- 140129/오현택/아라 파티퀘
-
-g_pCashItemManager:AddCashItemPrice(	271748	,	7000	)	--	아라 파티쉐 파르페 스피어(스트로베리)
-g_pCashItemManager:AddCashItemPrice(	271749	,	5000	)	--	아라 파티쉐 상의(스트로베리)
-g_pCashItemManager:AddCashItemPrice(	271750	,	5000	)	--	아라 파티쉐 하의(스트로베리)
-g_pCashItemManager:AddCashItemPrice(	271751	,	2400	)	--	아라 파티쉐 장갑(스트로베리)
-g_pCashItemManager:AddCashItemPrice(	271752	,	2400	)	--	아라 파티쉐 신발(스트로베리)
-g_pCashItemManager:AddCashItemPrice(	271753	,	5000	)	--	아라 파티쉐 헤어(스트로베리)
-g_pCashItemManager:AddCashItemPrice(	271754	,	7000	)	--	아라 파티쉐 파르페 스피어(라임오렌지)
-g_pCashItemManager:AddCashItemPrice(	271755	,	5000	)	--	아라 파티쉐 상의(라임오렌지)
-g_pCashItemManager:AddCashItemPrice(	271756	,	5000	)	--	아라 파티쉐 하의(라임오렌지)
-g_pCashItemManager:AddCashItemPrice(	271757	,	2400	)	--	아라 파티쉐 장갑(라임오렌지)
-g_pCashItemManager:AddCashItemPrice(	271758	,	2400	)	--	아라 파티쉐 신발(라임오렌지)
-g_pCashItemManager:AddCashItemPrice(	271759	,	5000	)	--	아라 파티쉐 헤어(라임오렌지)
-
-
--- 140129/오현택/소마 이벤트
-
-g_pCashItemManager:AddCashItemPrice(	85003790	,	200	)	--	아리엘의 페넥여우 꼬리 (회색)
-g_pCashItemManager:AddCashItemPrice(	85003791	,	200	)	--	아리엘의 데빌 윙
-g_pCashItemManager:AddCashItemPrice(	85003792	,	200	)	--	아리엘의 악마의 완장
-
-
--- 140129/이순형/춘절 이벤트
-
-g_pCashItemManager:AddCashItemPrice(	141000898	,	5000	)	--	어깨 망아지 인형(파랑)
-g_pCashItemManager:AddCashItemPrice(	141000912	,	5000	)	--	어깨 망아지 인형(분홍)
+-- 131218/이경철/아라 기본 6종
+g_pCashItemManager:AddCashItemPrice(	250001100	,	7000	)	--	아라 초보 검투사 창 (Ver.A)
+g_pCashItemManager:AddCashItemPrice(	250001101	,	5000	)	--	아라 초보 검투사 상의 (Ver.A)
+g_pCashItemManager:AddCashItemPrice(	250001102	,	5000	)	--	아라 초보 검투사 하의 (Ver.A)
+g_pCashItemManager:AddCashItemPrice(	250001103	,	2400	)	--	아라 초보 검투사 장갑 (Ver.A)
+g_pCashItemManager:AddCashItemPrice(	250001104	,	2400	)	--	아라 초보 검투사 신발 (Ver.A)
+g_pCashItemManager:AddCashItemPrice(	250001105	,	5000	)	--	아라 초보 검투사 헤어 (Ver.A)
+g_pCashItemManager:AddCashItemPrice(	250001110	,	7000	)	--	아라 초보 검투사 창 (Ver.B)
+g_pCashItemManager:AddCashItemPrice(	250001111	,	5000	)	--	아라 초보 검투사 상의 (Ver.B)
+g_pCashItemManager:AddCashItemPrice(	250001112	,	5000	)	--	아라 초보 검투사 하의 (Ver.B)
+g_pCashItemManager:AddCashItemPrice(	250001113	,	2400	)	--	아라 초보 검투사 장갑 (Ver.B)
+g_pCashItemManager:AddCashItemPrice(	250001114	,	2400	)	--	아라 초보 검투사 신발 (Ver.B)
+g_pCashItemManager:AddCashItemPrice(	250001115	,	5000	)	--	아라 초보 검투사 헤어 (Ver.B)
+g_pCashItemManager:AddCashItemPrice(	250001120	,	7000	)	--	아라 초보 모험가 창 (Ver.A)
+g_pCashItemManager:AddCashItemPrice(	250001121	,	5000	)	--	아라 초보 모험가 상의 (Ver.A)
+g_pCashItemManager:AddCashItemPrice(	250001122	,	5000	)	--	아라 초보 모험가 하의 (Ver.A)
+g_pCashItemManager:AddCashItemPrice(	250001123	,	2400	)	--	아라 초보 모험가 장갑 (Ver.A)
+g_pCashItemManager:AddCashItemPrice(	250001124	,	2400	)	--	아라 초보 모험가 신발 (Ver.A)
+g_pCashItemManager:AddCashItemPrice(	250001125	,	5000	)	--	아라 초보 모험가 헤어 (Ver.A)
+g_pCashItemManager:AddCashItemPrice(	250001130	,	7000	)	--	아라 초보 모험가 창 (Ver.B)
+g_pCashItemManager:AddCashItemPrice(	250001131	,	5000	)	--	아라 초보 모험가 상의 (Ver.B)
+g_pCashItemManager:AddCashItemPrice(	250001132	,	5000	)	--	아라 초보 모험가 하의 (Ver.B)
+g_pCashItemManager:AddCashItemPrice(	250001133	,	2400	)	--	아라 초보 모험가 장갑 (Ver.B)
+g_pCashItemManager:AddCashItemPrice(	250001134	,	2400	)	--	아라 초보 모험가 신발 (Ver.B)
+g_pCashItemManager:AddCashItemPrice(	250001135	,	5000	)	--	아라 초보 모험가 헤어 (Ver.B)
+g_pCashItemManager:AddCashItemPrice(	250001140	,	7000	)	--	아라 인턴사원 창 (Ver.A)
+g_pCashItemManager:AddCashItemPrice(	250001141	,	5000	)	--	아라 인턴사원 상의 (Ver.A)
+g_pCashItemManager:AddCashItemPrice(	250001142	,	5000	)	--	아라 인턴사원 하의 (Ver.A)
+g_pCashItemManager:AddCashItemPrice(	250001143	,	2400	)	--	아라 인턴사원 장갑 (Ver.A)
+g_pCashItemManager:AddCashItemPrice(	250001144	,	2400	)	--	아라 인턴사원 신발 (Ver.A)
+g_pCashItemManager:AddCashItemPrice(	250001145	,	5000	)	--	아라 인턴 사원 헤어 (Ver.A)
+g_pCashItemManager:AddCashItemPrice(	250001150	,	7000	)	--	아라 인턴사원 창 (Ver.B)
+g_pCashItemManager:AddCashItemPrice(	250001151	,	5000	)	--	아라 인턴사원 상의 (Ver.B)
+g_pCashItemManager:AddCashItemPrice(	250001152	,	5000	)	--	아라 인턴사원 하의 (Ver.B)
+g_pCashItemManager:AddCashItemPrice(	250001153	,	2400	)	--	아라 인턴사원 장갑 (Ver.B)
+g_pCashItemManager:AddCashItemPrice(	250001154	,	2400	)	--	아라 인턴사원 신발 (Ver.B)
+g_pCashItemManager:AddCashItemPrice(	250001155	,	5000	)	--	아라 인턴 사원 헤어 (Ver.B)
+g_pCashItemManager:AddCashItemPrice(	250001160	,	7000	)	--	아라 견습 기사단 창 (Ver.A)
+g_pCashItemManager:AddCashItemPrice(	250001161	,	5000	)	--	아라 견습 기사단 상의 (Ver.A)
+g_pCashItemManager:AddCashItemPrice(	250001162	,	5000	)	--	아라 견습 기사단 하의 (Ver.A)
+g_pCashItemManager:AddCashItemPrice(	250001163	,	2400	)	--	아라 견습 기사단 장갑 (Ver.A)
+g_pCashItemManager:AddCashItemPrice(	250001164	,	2400	)	--	아라 견습 기사단 신발 (Ver.A)
+g_pCashItemManager:AddCashItemPrice(	250001165	,	5000	)	--	아라 견습 기사단 헤어 (Ver.A)
+g_pCashItemManager:AddCashItemPrice(	250001170	,	7000	)	--	아라 견습 기사단 창 (Ver.B)
+g_pCashItemManager:AddCashItemPrice(	250001171	,	5000	)	--	아라 견습 기사단 상의 (Ver.B)
+g_pCashItemManager:AddCashItemPrice(	250001172	,	5000	)	--	아라 견습 기사단 하의 (Ver.B)
+g_pCashItemManager:AddCashItemPrice(	250001173	,	2400	)	--	아라 견습 기사단 장갑 (Ver.B)
+g_pCashItemManager:AddCashItemPrice(	250001174	,	2400	)	--	아라 견습 기사단 신발 (Ver.B)
+g_pCashItemManager:AddCashItemPrice(	250001175	,	5000	)	--	아라 견습 기사단 헤어 (Ver.B)
+g_pCashItemManager:AddCashItemPrice(	250001180	,	7000	)	--	아라 기사 아카데미 창 (Ver.A)
+g_pCashItemManager:AddCashItemPrice(	250001181	,	5000	)	--	아라 기사 아카데미 상의 (Ver.A)
+g_pCashItemManager:AddCashItemPrice(	250001182	,	5000	)	--	아라 기사 아카데미 하의 (Ver.A)
+g_pCashItemManager:AddCashItemPrice(	250001183	,	2400	)	--	아라 기사 아카데미 장갑 (Ver.A)
+g_pCashItemManager:AddCashItemPrice(	250001184	,	2400	)	--	아라 기사 아카데미 신발 (Ver.A)
+g_pCashItemManager:AddCashItemPrice(	250001185	,	5000	)	--	아라 기사 아카데미 헤어 (Ver.A)
+g_pCashItemManager:AddCashItemPrice(	250001190	,	7000	)	--	아라 기사 아카데미 창 (Ver.B)
+g_pCashItemManager:AddCashItemPrice(	250001191	,	5000	)	--	아라 기사 아카데미 상의 (Ver.B)
+g_pCashItemManager:AddCashItemPrice(	250001192	,	5000	)	--	아라 기사 아카데미 하의 (Ver.B)
+g_pCashItemManager:AddCashItemPrice(	250001193	,	2400	)	--	아라 기사 아카데미 장갑 (Ver.B)
+g_pCashItemManager:AddCashItemPrice(	250001194	,	2400	)	--	아라 기사 아카데미 신발 (Ver.B)
+g_pCashItemManager:AddCashItemPrice(	250001195	,	5000	)	--	아라 기사 아카데미 헤어 (Ver.B)
+g_pCashItemManager:AddCashItemPrice(	250001200	,	7000	)	--	아라 초보 사냥꾼 창 (Ver.A)
+g_pCashItemManager:AddCashItemPrice(	250001201	,	5000	)	--	아라 초보 사냥꾼 상의 (Ver.A)
+g_pCashItemManager:AddCashItemPrice(	250001202	,	5000	)	--	아라 초보 사냥꾼 하의 (Ver.A)
+g_pCashItemManager:AddCashItemPrice(	250001203	,	2400	)	--	아라 초보 사냥꾼 장갑 (Ver.A)
+g_pCashItemManager:AddCashItemPrice(	250001204	,	2400	)	--	아라 초보 사냥꾼 신발 (Ver.A)
+g_pCashItemManager:AddCashItemPrice(	250001205	,	5000	)	--	아라 초보 사냥꾼 헤어 (Ver.A)
+g_pCashItemManager:AddCashItemPrice(	250001210	,	7000	)	--	아라 초보 사냥꾼 창 (Ver.B)
+g_pCashItemManager:AddCashItemPrice(	250001211	,	5000	)	--	아라 초보 사냥꾼 상의 (Ver.B)
+g_pCashItemManager:AddCashItemPrice(	250001212	,	5000	)	--	아라 초보 사냥꾼 하의 (Ver.B)
+g_pCashItemManager:AddCashItemPrice(	250001213	,	2400	)	--	아라 초보 사냥꾼 장갑 (Ver.B)
+g_pCashItemManager:AddCashItemPrice(	250001214	,	2400	)	--	아라 초보 사냥꾼 신발 (Ver.B)
+g_pCashItemManager:AddCashItemPrice(	250001215	,	5000	)	--	아라 초보 사냥꾼 헤어 (Ver.B)
 

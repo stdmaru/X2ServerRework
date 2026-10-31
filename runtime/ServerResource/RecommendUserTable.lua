@@ -24,6 +24,3 @@ g_pKRecommendUserTable:AddRecommendUserData( 15, 4 )
 --g_pKRecommendUserTable:AddRecommendUserEventReward( 50, 10499 ) -- 2개
 --g_pKRecommendUserTable:AddRecommendUserEventReward( 65, 10500 ) -- 3개
 -- #endif SERV_RECOMMEND_LIST_EVENT
-
--- 일본/미국 추천인 이벤트 131106
-g_pKRecommendUserTable:AddRecommendUserData( 35, 1531 )

@@ -32,9 +32,9 @@ WEEK_OF_MONTH =
 -- 주간 : 갱신 요일 시각
 -- 월간 : 갱신 주 요일 시각
 
-RankingManager:AddHenirRankingInfo( RANKING_TYPE["RT_DAY_RANkING"],		100, 3 )
-RankingManager:AddHenirRankingInfo( RANKING_TYPE["RT_WEEK_RANKING"],	100, 3, WEEK_OF_MONTH["WOM_WEDNESDDAY"] )
-RankingManager:AddHenirRankingInfo( RANKING_TYPE["RT_MONTH_RANKING"],	100, 3, WEEK_OF_MONTH["WOM_WEDNESDDAY"], 1 )
+RankingManager:AddHenirRankingInfo( RANKING_TYPE["RT_DAY_RANkING"],		100, 6 )
+RankingManager:AddHenirRankingInfo( RANKING_TYPE["RT_WEEK_RANKING"],	100, 6, WEEK_OF_MONTH["WOM_WEDNESDDAY"] )
+RankingManager:AddHenirRankingInfo( RANKING_TYPE["RT_MONTH_RANKING"],	100, 6, WEEK_OF_MONTH["WOM_WEDNESDDAY"], 1 )
 
 
 -- 랭킹 초기화 및 보상 시작 시기 설정
