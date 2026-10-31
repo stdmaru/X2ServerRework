@@ -4,6 +4,9 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
+# shellcheck source=../env.sh
+source "$ROOT/docker/env.sh"
+x2_load_env "$ROOT"
 NAME=x2-mssql
 PASSWORD="${X2_DB_PASSWORD:-X2dev!Passw0rd}"
 DIR=/var/opt/mssql/backup

@@ -27,7 +27,9 @@ docker compose -f docker/docker-compose.yml down -v           # apaga o containe
 ```
 
 - Escuta só em `127.0.0.1:1433` (`X2_DB_PORT` muda a porta). Usuário `sa`; a senha padrão de desenvolvimento está no
-  `docker/docker-compose.yml` e muda com `X2_DB_PASSWORD` (antes do primeiro `up`, e também no `restore.sh`).
+  `docker/docker-compose.yml` e muda com `X2_DB_PASSWORD` (antes do primeiro `up`, e também no `restore.sh`). As variáveis podem ficar
+  no `docker/.env` (não versionado; modelo em `docker/.env.example`), que o `docker compose`, o `restore.sh`, o `docker/build.sh` e o
+  CMake leem; a do shell vence a do arquivo (2026-10-31).
 - O `restore.sh` copia os `.bak` para dentro do container (o SQL Server roda como uid 10001, que pode não conseguir ler os arquivos montados)
   e restaura cada um com `MOVE` dos arquivos lógicos. Aceita arquivos específicos: `docker/mssql/restore.sh _database/Game01.bak`.
 - **Dados ajustados para desenvolvimento** (o `restore.sh` faz depois de restaurar o `Statistics`): `LServerList.PublicIP/PrivateIP/IP`

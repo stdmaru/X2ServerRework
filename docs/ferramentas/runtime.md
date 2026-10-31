@@ -9,7 +9,8 @@ Decisão T22 em [Decisões](../projeto/decisoes.md). Criado em 2026-10-30 no pas
 
 ```bash
 docker compose -f docker/docker-compose.yml up -d --wait && docker/mssql/restore.sh   # banco (ver Banco de desenvolvimento)
-cmake --build --preset linux-debug --target x2_run_channel                           # compila e monta a pasta
+cmake --build --preset linux-debug                                                   # compila e monta todas as pastas
+cmake --build --preset linux-debug --target x2_run_channel                           # ou só uma
 cd build/linux-debug/run/ChannelServer && ./ChannelServer DEV 0                       # tag DEV, grupo de servidores 0
 cmake --build --preset linux-debug --target x2_run_game                              # GameServer (porta 9300)
 cd build/linux-debug/run/GameServer && ./GameServer DEV 0
@@ -25,6 +26,14 @@ O login passa pelo EPublisherServer ([Servidor: EPublisherServer](../porte/serve
 cmake --build --preset linux-debug --target x2_run_epublisher
 cd build/linux-debug/run/EPublisherServer && ./EPublisherServer DEV     # porta 8000 (X2_RUN_EPUBLISHER_PORT)
 ```
+
+Desde 2026-10-31 o build normal monta as pastas de todos os servidores (`X2_RUN_FOLDERS`, ligada por padrão, põe os `x2_run_*`
+no `ALL`), em todos os presets. É incremental: o `ClientScript` tem um arquivo de controle e só é regerado quando o cliente muda, e os
+arquivos só são copiados quando mudam; um build sem mudanças continua levando menos de um segundo. Sem o cliente (`X2_CLIENT_DATA`), o
+`ClientScript` é pulado com um aviso. O CI configura com `-DX2_RUN_FOLDERS=OFF` (não tem cliente nem banco).
+
+Estas pastas são um **ambiente de desenvolvimento** (banco local, driver ODBC e cliente da máquina que compilou), não um pacote de
+implantação: o pacote de release, com as configurações como templates para preencher, é um passo à parte (`cmake --install`, ainda não existe).
 
 ## Layout montado
 
@@ -51,12 +60,19 @@ Os configs apontam para `../ServerResource` e `../ClientScript` (`SimLayer:AddPa
 |---|---|---|
 | `X2_RUN_DIR` | `build/<preset>/run` | destino |
 | `X2_CLIENT_DATA` | `_client/data` | origem do `ClientScript` |
-| `X2_RUN_DB_SERVER`, `X2_RUN_DB_USER`, `X2_RUN_DB_PASSWORD` | `127.0.0.1,1433`, `sa`, `$X2_DB_PASSWORD` ou a senha de desenvolvimento do `docker-compose.yml` | `.dsn` |
+| `X2_RUN_DB_SERVER`, `X2_RUN_DB_USER`, `X2_RUN_DB_PASSWORD` | `127.0.0.1,<X2_DB_PORT ou 1433>`, `sa`, a senha de desenvolvimento do `docker-compose.yml` | `.dsn` |
 | `X2_RUN_ODBC_DRIVER`, `X2_RUN_ODBC_OPTIONS` | FreeTDS (`libtdsodbc.so`, achado pelo `find_library` em `/usr/lib` no Arch ou `/usr/lib/<triplet>/odbc` no Ubuntu; `TDS_Version=7.4;ClientCharset=UTF-8`) se existir, senão ODBC Driver 18 (`Encrypt=yes;TrustServerCertificate=yes`) | `DBLayer:SetODBCDriver/SetODBCOptions` |
 | `X2_RUN_SERVER_IP` | `127.0.0.1` | `SetLocalIP` (endereço com que o servidor se identifica no banco) |
 | `X2_RUN_EPUBLISHER_PORT`, `X2_RUN_EPUBLISHER_URL` | `8000`, `http://127.0.0.1:8000/` | porta do EPublisherServer; `DEBAuthManager:AddAuthServiceAddress` dos servidores |
 
 A senha fica só no cache e nos arquivos gerados em `build/`, nunca no git.
+
+**Pelo ambiente ou pelo `docker/.env`** (2026-10-31): cada variável da tabela também pode vir de uma variável de ambiente de mesmo nome, que
+**vence o cache a cada configure** (`x2_env_cache` em `cmake/X2Runtime.cmake`); sem ela, vale o que está no cache (o `-D` ou o padrão).
+Três têm o nome que o `docker compose` e o `restore.sh` também leem: a senha vem de `X2_DB_PASSWORD`, o endereço de `X2_SERVER_IP` e
+a porta do `X2_RUN_DB_SERVER` de `X2_DB_PORT`. Valor vazio é ignorado; caminho relativo é tomado a partir da raiz do repositório. O
+`docker/build.sh` repassa ao container todas as variáveis `X2_*` do ambiente e do `docker/.env` (não versionado; modelo com todas as
+variáveis em `docker/.env.example`). A mudança vale no próximo configure (`cmake --preset <preset>`) e depois fica no cache.
 
 **Rodar no host** (para testes, sem Docker): o binário compilado na imagem roda direto numa distribuição com as mesmas bibliotecas
 (unixODBC, FreeTDS); só o caminho do driver muda. Configure com `-DX2_RUN_ODBC_DRIVER=/usr/lib/libtdsodbc.so` (Arch, 2026-10-31) e

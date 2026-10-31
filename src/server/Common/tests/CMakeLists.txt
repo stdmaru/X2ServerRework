@@ -15,7 +15,7 @@ add_test(NAME server_common COMMAND x2_server_common_tests --test-suite-exclude=
 
 # KODBC against a real SQL Server (test_odbc.cpp): only when a connection string is given, e.g.
 # -DX2_TEST_ODBC="DRIVER=/usr/lib/libtdsodbc.so;SERVER=127.0.0.1;PORT=1433;UID=sa;PWD=...;TDS_Version=7.4;ClientCharset=UTF-8"
-set(X2_TEST_ODBC "" CACHE STRING "ODBC connection string (without DATABASE) of the test SQL Server")
+x2_env_cache(X2_TEST_ODBC STRING "" "ODBC connection string (without DATABASE) of the test SQL Server")
 if(X2_TEST_ODBC)
     add_test(NAME server_common_db COMMAND x2_server_common_tests --test-suite=db)
     string(REPLACE ";" "\\;" X2_TEST_ODBC_ESCAPED "${X2_TEST_ODBC}")    # ENVIRONMENT is a list

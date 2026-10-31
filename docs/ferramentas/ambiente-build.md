@@ -26,6 +26,9 @@ docker/build.sh cmake --preset linux-gcc && docker/build.sh cmake --build --pres
 - O repositório é montado **no mesmo caminho** do host: `build/` e o `compile_commands.json` servem ao editor do host.
 - Roda com o usuário do host (os arquivos de `build/` não ficam do root). O `HOME` do container, com o cache do ccache,
   fica em `~/.cache/x2-build` (`X2_BUILD_HOME` muda).
+- Repassa ao container as variáveis `X2_*` do ambiente e do `docker/.env` (a do shell vence; modelo em `docker/.env.example`),
+  por exemplo a senha do banco para o CMake ([Pastas de execução](runtime.md#valores-dos-templates-cache-do-cmake)). O `winbuild.sh`
+  também lê o `docker/.env` (`X2_WIN_HOST`, `X2_WIN_DIR`).
 - Rede do host (`--network host`): os testes da suíte `db` e os servidores acham o SQL Server do [banco de desenvolvimento](banco-dev.md)
   em `127.0.0.1`, e o cliente original acha os servidores como antes.
 - O stdin fica sempre ligado (`-i`, e `-it` num terminal): o prompt Lua dos servidores termina no fim da entrada, então um servidor rodado

@@ -88,12 +88,16 @@ Os presets são os mesmos do Linux: `windows-debug`, `windows-development` e `wi
    Ele escuta em `127.0.0.1:1433`; a senha de desenvolvimento está no `docker/docker-compose.yml` e muda com `X2_DB_PASSWORD`.
    Ver [Banco de desenvolvimento](docs/ferramentas/banco-dev.md).
 
-2. **Pastas de execução.** Cada alvo `x2_run_<servidor>` compila o servidor e monta a pasta dele em `build/<preset>/run/`,
-   com os configs já apontando para o banco e os scripts (`ServerResource` do repositório e `ClientScript` gerado do cliente):
+   As configurações locais (senha e porta do banco, endereço dos servidores, driver ODBC, pasta do cliente...) ficam num
+   `docker/.env`, que não é versionado. O [`docker/.env.example`](docker/.env.example) lista todas as variáveis:
 
    ```bash
-   docker/build.sh cmake --build --preset linux-debug --target x2_run_epublisher x2_run_channel x2_run_login x2_run_center x2_run_game
+   cp docker/.env.example docker/.env
    ```
+
+2. **Pastas de execução.** O build (seção anterior) já monta, em `build/<preset>/run/`, a pasta de cada servidor pronta para
+   rodar, com os configs apontando para o banco e os scripts (`ServerResource` do repositório e `ClientScript` gerado do cliente).
+   Elas são um ambiente de desenvolvimento, não um pacote para levar a outra máquina.
 
 3. **Servidores.** Um terminal por servidor, cada um na sua pasta. O primeiro argumento é a configuração (`DEV`
    lê o `config_*_DEV.lua`) e o segundo é o grupo de servidores:

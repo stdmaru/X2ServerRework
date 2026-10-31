@@ -6,6 +6,11 @@
 # (C++ workload, Clang and CMake components), Python 3 and an OpenSSH server with key login; no Git.
 set -euo pipefail
 
+# X2_WIN_HOST and X2_WIN_DIR may also come from docker/.env
+# shellcheck source=../../docker/env.sh
+source "$(dirname "${BASH_SOURCE[0]}")/../../docker/env.sh"
+x2_load_env "$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+
 host=${X2_WIN_HOST:?set X2_WIN_HOST=user@host}
 dir=${X2_WIN_DIR:-C:/x2}
 preset=${1:-windows-debug}
