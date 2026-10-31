@@ -570,6 +570,8 @@ void Terminal::Impl::StartHook()
     savedStderr = ::_dup(2);
     pipeRead = fds[0];
     pipeWrite = fds[1];
+    // _dup2 closes the handle fd 1 had, which is the console handle GetStdHandle gave: write through the copy
+    out = reinterpret_cast<HANDLE>(::_get_osfhandle(savedStdout));
     ::_dup2(pipeWrite, 1);
     ::_dup2(pipeWrite, 2);
     ::SetStdHandle(STD_OUTPUT_HANDLE, reinterpret_cast<HANDLE>(::_get_osfhandle(1)));
@@ -664,6 +666,7 @@ void Terminal::Impl::StopHook()
     if (pump.joinable())
         pump.join();
 #if defined(_WIN32)
+    out = ::GetStdHandle(STD_OUTPUT_HANDLE);    // fd 1 has the console again; savedStdout's copy goes away
     ::_close(pipeRead);
     ::_close(savedStdout);
     ::_close(savedStderr);
