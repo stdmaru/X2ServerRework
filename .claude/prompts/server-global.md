@@ -9,10 +9,9 @@ Antes de tudo:
 3. Leia `docs/ferramentas/importador.md`, `docs/ferramentas/porte-mecanico.md`, `docs/ferramentas/runtime.md` (seções "Rodar no host" e
    "Scripts da pasta de cada servidor") e `docs/original/bugs.md`.
 
-Estado em 2026-10-31: `server/center-import`, `server/center-build` e `server/center-run` estão um sobre o outro (o `center-run` já
-rebaseado sobre a `main` com a T28), com push, **ainda não integrados** (pergunte ao usuário se integra antes de começar; se os minutos do
-Actions ainda não voltaram, `[skip ci]` num commit vazio no topo, como nas últimas integrações). Comece do `server/center-run` (ou da
-`main`, se já integrado).
+Estado em 2026-10-31: o CenterServer, o console UTF-8 do Windows, as decisões T29/T30 (ServerManager) e as pastas de execução no
+build normal (`X2_RUN_FOLDERS`, `docker/.env`) já estão na `main`. O `server/global-import` está pronto (manifesto, código em
+`src/server/GlobalServer`, `docs/porte/server-global.md`); siga do `server/global-build`.
 
 Plano (um branch por passo):
 1. **`server/global-import`**: `tools/import/modules/server-global.toml` (modelo: `server-center.toml`) para `KncWX2Server/GlobalServer`

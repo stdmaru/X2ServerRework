@@ -103,7 +103,9 @@ Ver [Servidor — acoplamento com Windows](../original/servidor.md).
 - [x] `server/center-import`: CenterServer importado (2026-10-31). Ver [Servidor: CenterServer](../porte/server-center.md).
 - [x] `server/center-build`: CenterServer compilando sem warnings (Clang, GCC, clang-cl), sem o KSMS (2026-10-31). Ver [Servidor: CenterServer](../porte/server-center.md).
 - [x] `server/center-run`: CenterServer no Linux (`x2_run_center`), com o cliente original no **campo** e numa **dungeon** (2026-10-31). Ver [Servidor: CenterServer](../porte/server-center.md).
-- [ ] GlobalServer (`server/global-import`, `-build`, `-run`): missões globais, quest aleatória do dia, CCU.
+- [x] `server/global-import`: GlobalServer importado (2026-10-31). Ver [Servidor: GlobalServer](../porte/server-global.md).
+- [ ] `server/global-build`: GlobalServer compilando sem warnings (Clang, GCC, clang-cl), sem o KSMS.
+- [ ] `server/global-run`: GlobalServer no Linux, com os `EGB_*` do GameServer respondidos (missões globais, quest do dia, CCU, bloqueio).
 - [ ] UI MFC (`Common/ui/ServerUIDlg`) → terminal em todas as plataformas (T15): log ao vivo, prompt Lua com histórico, título com status, encerramento com confirmação, modo serviço sem stdin.
 - [ ] Log (T16): metadados estruturados no `START_LOG`; arquivo com o conteúdo completo do original, console compacto e colorido com nível próprio.
 - [ ] Modo de saída para máquina e socket local com `x2ctl attach` (T30), depois do terminal e do log.

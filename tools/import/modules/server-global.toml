@@ -1,0 +1,25 @@
+# KncWX2Server/GlobalServer: global/world missions, random daily quest, CCU, user block list, auto party and PvP matching...
+# Seeds: the GlobalServer/ files its Release_US project compiles. Common/ is already ported (src/server/Common).
+
+name = "server-global"
+source_root = "KncWX2Server"
+# same search path as the vcxproj: ..\Common;.\
+include_dirs = ["GlobalServer", "Common"]
+flags = ["base", "server.generated", "server"]
+
+extern_dirs = ["src/kncsdk", "src/platform/include", "src/server/Common"]
+
+seed_filter = ["GlobalServer/*"]
+include_scope = ["GlobalServer/*"]
+
+exclude = [
+    "*.dsn",
+]
+
+[[projects]]
+path = "GlobalServer/GlobalServer.vcxproj"
+config = "Release_US|Win32"
+
+[[map]]
+from = "GlobalServer"
+to = "src/server/GlobalServer"
