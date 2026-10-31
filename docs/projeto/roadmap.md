@@ -106,7 +106,8 @@ Ver [Servidor — acoplamento com Windows](../original/servidor.md).
 - [ ] GlobalServer (`server/global-import`, `-build`, `-run`): missões globais, quest aleatória do dia, CCU.
 - [ ] UI MFC (`Common/ui/ServerUIDlg`) → terminal em todas as plataformas (T15): log ao vivo, prompt Lua com histórico, título com status, encerramento com confirmação, modo serviço sem stdin.
 - [ ] Log (T16): metadados estruturados no `START_LOG`; arquivo com o conteúdo completo do original, console compacto e colorido com nível próprio.
-- [ ] (Futuro) `--gui` portável sobre a mesma API de comandos/log.
+- [ ] Modo de saída para máquina e socket local com `x2ctl attach` (T30), depois do terminal e do log.
+- [ ] ServerManager (T29, T30): ferramenta SDL3 + ImGui que orquestra e monitora os servidores, local e por SSH. Vem depois da base SDL3 do cliente (Fase 3).
 - [ ] Remover SOAP/gSOAP, billing/auth de publishers, Mail(MIME/SMTP), CrashRpt; stub onde a lógica de jogo depende.
 - [x] Marco: login + vila + dungeon com o `elsword.exe` original contra servidor rodando em Linux (2026-10-31).
 
