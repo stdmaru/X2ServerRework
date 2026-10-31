@@ -857,7 +857,7 @@ void KRoom::_BroadCast( int iFlag_, const KEvent& kEvent_ )
 }
 
 //{{ 2013. 2. 7	박세훈	랜선렉 방지 코드2
-void KRoom::OnLeaveRoom( IN const UidType iLAST_SENDER_UID, IN const UidType iFIRST_SENDER_UID, IN const KERM_LEAVE_ROOM_REQ& kPacket_, IN const u_short usEventIDAck )
+void KRoom::OnLeaveRoom( IN const UidType iLAST_SENDER_UID, IN const UidType iFIRST_SENDER_UID, IN const KERM_LEAVE_ROOM_REQ& /*kPacket_*/, IN const u_short usEventIDAck )
 {
 	// 의도적인 Leave Room 직후 접속이 끊겼을 때 한 번 더 Leave Room 하게 되는 경우가 있다.
 	KEGS_LEAVE_ROOM_ACK kPacket;

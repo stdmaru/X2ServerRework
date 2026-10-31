@@ -34,7 +34,7 @@ KInteriorUdpSession::~KInteriorUdpSession(void)
 //#endif  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
 }
 
-void KInteriorUdpSession::Init( IN u_short usTargetPort )
+void KInteriorUdpSession::Init( IN u_short /*usTargetPort*/ )
 {
 //#ifndef SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
 //	char strTemp[256];

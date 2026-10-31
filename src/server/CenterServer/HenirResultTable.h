@@ -44,7 +44,7 @@ public:
 
 public:
 	KHenirResultTable(void);
-	~KHenirResultTable(void);
+	virtual ~KHenirResultTable(void);
 
 	// for lua
 	bool AddHenirResultItemInfo_LUA( IN int iStageCount, IN char cHenirDungeonMode, IN int iItemGroupID, IN int iRandomCount );

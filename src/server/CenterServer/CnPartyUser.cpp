@@ -4,12 +4,12 @@
 
 KCnPartyUser::KCnPartyUser( const KPartyUserInfo& kInfo ) :
 //{{ 2012. 03. 23	최육사	배틀필드 시스템
-m_bIsOnGoToPartyButton( false ),
-m_bCheckedForAutoParty( false ),
-m_bCheckedPlayCondition( false ),
-//}}
 m_bReady( false ),
-m_bHost( false )
+m_bHost( false ),
+m_bIsOnGoToPartyButton( false ),
+//}}
+m_bCheckedForAutoParty( false ),
+m_bCheckedPlayCondition( false )
 {
 	SetPartyUserInfo( kInfo );
 }

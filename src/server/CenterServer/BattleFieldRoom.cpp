@@ -184,7 +184,7 @@ void KBattleFieldRoom::GetRoomInfo( KRoomInfo& kInfo )
 }
 
 //{{ 2012. 10. 16	최육사		P2P & Relay 정보 수집
-void KBattleFieldRoom::LogToDB_GamePlayNetWorkInfo( IN const UidType iUnitUID, IN const KGamePlayNetworkInfoPackage& kInfo, IN const bool bLeaveRoom )
+void KBattleFieldRoom::LogToDB_GamePlayNetWorkInfo( IN const UidType iUnitUID, IN const KGamePlayNetworkInfoPackage& kInfo, IN const bool /*bLeaveRoom*/ )
 {
 	if( kInfo.m_vecGamePlayNetworkInfo.empty() == false )
 	{
@@ -954,7 +954,7 @@ void KBattleFieldRoom::OnLeaveRoom( IN const UidType iLAST_SENDER_UID, IN const 
 
 		for( int iNPCUID : vecDeleteNpcList )
 		{
-			LIF( m_kMonsterManager.SetMonsterDie( iNPCUID, 0 ) );
+			LIF( m_kMonsterManager.SetFieldMonsterDie( iNPCUID, 0 ) );
 
 			KERM_NPC_UNIT_DIE_NOT kNpcDietNot;
 			kNpcDietNot.m_nDieNPCUID		 = iNPCUID;
@@ -2541,7 +2541,7 @@ void KBattleFieldRoom::CheckDropEventCount()
 
 	if( SiKGameEventManager()->CheckItemDropProbEvent( m_fItemDropEventProbRate ) == true )
 	{
-		if( m_fItemDropEventProbRate < REE_DROP_EVENT_PROB_DEFAULT )
+		if( m_fItemDropEventProbRate < static_cast<float>( REE_DROP_EVENT_PROB_DEFAULT ) )
 			m_fItemDropEventProbRate = REE_DROP_EVENT_PROB_DEFAULT;
 	}
 
@@ -2551,7 +2551,7 @@ void KBattleFieldRoom::CheckDropEventCount()
 	{
 		m_fQuestItemDropEventProbRate = fQuestItemDropEventProbRate + 1.f;
 
-		if( m_fQuestItemDropEventProbRate < REE_DROP_EVENT_PROB_DEFAULT )
+		if( m_fQuestItemDropEventProbRate < static_cast<float>( REE_DROP_EVENT_PROB_DEFAULT ) )
 			m_fQuestItemDropEventProbRate = 1.f;
 	}
 	//}
@@ -4513,7 +4513,7 @@ void KBattleFieldRoom::_BossRewardProcess( IN const UidType iUnitUID, IN const s
 		}
 	}
 
-	if( 0 <= iRank )
+	// Port: the original tested "0 <= iRank", always true for a size_t
 	{
 		// 로그 관련 정보라서 const_cast를 사용함. 이 함수의 상수성을 제거하거나 외부에서 처리해도 문제 없다.
 		const_cast<KBattleFieldRoom*>( this )->_MakeBossFieldUserLog( iUnitUID, static_cast<byte>( std::min<size_t>( iRank, UCHAR_MAX ) ) );
@@ -4613,7 +4613,7 @@ int KBattleFieldRoom::MonsterDiePrcess( IN const UidType iUnitUID, IN const KEGS
 	}
 
 	// 아직 살아있다면 죽인사람과 죽은것으로 설정..
-	LIF( m_kMonsterManager.SetMonsterDie( kPacket_.m_nDieNPCUID, kPacket_.m_uiAttUnit ) );
+	LIF( m_kMonsterManager.SetFieldMonsterDie( kPacket_.m_nDieNPCUID, kPacket_.m_uiAttUnit ) );
 
 	//{{ 2013. 02. 15   필드 중간 보스 - 김민성
 	BattleFieldNormalDropProcess( kPacket_, kDieNpcInfo, iUnitUID );
@@ -4649,7 +4649,7 @@ int KBattleFieldRoom::BossMonsterDieProcess( IN const UidType iUnitUID, IN const
 		}
 
 		// 아직 살아있다면 죽인사람과 죽은것으로 설정..
-		LIF( m_kMonsterManager.SetMonsterDie( kPacket_.m_nDieNPCUID, kPacket_.m_uiAttUnit ) );
+		LIF( m_kMonsterManager.SetFieldMonsterDie( kPacket_.m_nDieNPCUID, kPacket_.m_uiAttUnit ) );
 
 		BattleFieldBossDropProcess( kPacket_, kDieNpcInfo, iUnitUID );
 
@@ -4659,7 +4659,7 @@ int KBattleFieldRoom::BossMonsterDieProcess( IN const UidType iUnitUID, IN const
 	else
 	{
 		// 아직 살아있다면 죽인사람과 죽은것으로 설정..
-		LIF( m_kMonsterManager.SetMonsterDie( kPacket_.m_nDieNPCUID, kPacket_.m_uiAttUnit ) );
+		LIF( m_kMonsterManager.SetFieldMonsterDie( kPacket_.m_nDieNPCUID, kPacket_.m_uiAttUnit ) );
 	}
 
 	kPacket.m_iNPCID = kDieNpcInfo.m_iNPCID;

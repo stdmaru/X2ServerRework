@@ -7,8 +7,8 @@
 
 
 KDefenceDungeonManager::KDefenceDungeonManager() :
-m_bEnterDefenceDungeon( false ),
 m_bOpenDefenceDungeon( false ),
+m_bEnterDefenceDungeon( false ),
 m_iDefenceDungeonPhase( CXSLDefenceDungeonManager::DDP_INIT )
 {
 }

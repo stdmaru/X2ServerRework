@@ -16,7 +16,7 @@ KCnAccountDBThread::~KCnAccountDBThread(void)
 {
 }
 
-void KCnAccountDBThread::ProcessEvent( const KEventPtr& spEvent_ )
+void KCnAccountDBThread::ProcessEvent( const KEventPtr& /*spEvent_*/ )
 {
     //switch( spEvent_->m_usEventID )
     //{

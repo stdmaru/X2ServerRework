@@ -20,14 +20,14 @@ FSMclassPtr KRoomUserManager::ms_spUserFSM = KRoomUserFSMPtr( new KRoomUserFSM )
 KRoomUserManager::KRoomUserManager()
 :
 //{{ 2011. 07. 25	최육사	대전 개편
-m_iRedTeamRating( 0 )
+m_eRoomType( CXSLRoom::RT_TOTAL_NUM )
+, m_bIsCheckZU( false )
+//}}
+, m_iRedTeamRating( 0 )
+//{{ 2012. 06. 07	최육사	배틀필드 시스템
 , m_iBlueTeamRating( 0 )
 //}}
-, m_eRoomType( CXSLRoom::RT_TOTAL_NUM )
-//{{ 2012. 06. 07	최육사	배틀필드 시스템
 , m_iSendReturnToFieldUnitUID( 0 )
-//}}
-, m_bIsCheckZU( false )
 {
 }
 
@@ -220,7 +220,7 @@ bool KRoomUserManager::DeleteUser( UidType nCID, USERLIST_TYPE eType /* = UT_GAM
     return true;
 }
 
-bool KRoomUserManager::GetGSUID( IN UidType nCID, OUT UidType& nGSUID, USERLIST_TYPE eType /* = UT_GAME  */)
+bool KRoomUserManager::GetGSUID( IN UidType nCID, OUT UidType& nGSUID, USERLIST_TYPE /*eType*/ /* = UT_GAME  */)
 {
 	KRoomUserPtr spRoomUser = GetUser( nCID );
 	if( !spRoomUser )
@@ -1444,6 +1444,8 @@ bool KRoomUserManager::DeathTeamBalance( std::vector<KRoomUserPtr>& vecChangeUni
 				}
 			}
 		}
+		break;
+	default:
 		break;
 	}
 
@@ -4730,7 +4732,6 @@ bool KRoomUserManager::IsRingofpvprebirth( UidType nCID )
 
 void KRoomUserManager::ZU_CheckStart()
 {
-	USERLIST_TYPE eType = UT_GAME;
 
 	START_LOG( clog, L"유령유저 체크시작.!" );
 
@@ -5026,7 +5027,6 @@ void KRoomUserManager::ExpireTradeRequest( std::vector< UidType >& vecTradeExpir
 bool KRoomUserManager::GetQuestDropItem( IN const UidType iUnitUID, IN const int iDungeonID, IN const char cDifficulty, IN const char cDungeonMode, IN const int iNPCID, OUT std::vector<KRoomUser::QUEST_ITEM_DROP_INFO>& vecDropInfo, IN float fQuestItemDropRate )
 //}
 {
-	USERLIST_TYPE eType = UT_GAME;
 
 	SET_ERROR( NET_OK );
 
@@ -5057,7 +5057,7 @@ bool KRoomUserManager::GetQuestDropItem( IN const UidType iUnitUID, IN const int
 
 
 	//{{ 2013. 03. 18	 퀘스트 드롭 확률 증가 이벤트 - 김민성
-		if( spRoomUser->GetQuestDropItem( iDungeonID, cDifficulty, cDungeonMode, iNPCID, sDropInfo, bIsComeBackUserInRoom, fQuestItemDropRate, bSuitableLevel ) == true )
+	if( spRoomUser->GetQuestDropItem( iDungeonID, cDifficulty, cDungeonMode, iNPCID, sDropInfo, bIsComeBackUserInRoom, fQuestItemDropRate, bSuitableLevel ) == true )
 	//}
 	{
 		vecDropInfo.push_back( sDropInfo );
@@ -6642,7 +6642,7 @@ KRoomUserPtr KRoomUserManager::ChooseBetterHost( UidType iHostUID )
 				if( IS_NOT_NULL( spNewHost ) )
 				{
 					if(
-                        spNewHost->ZombieAlert_Get() == true && mit->second->ZombieAlert_Get() == false ||
+                        ( spNewHost->ZombieAlert_Get() == true && mit->second->ZombieAlert_Get() == false ) ||
                         spNewHost->GetPingScore() > mit->second->GetPingScore() )
 					{
 						spNewHost = mit->second;

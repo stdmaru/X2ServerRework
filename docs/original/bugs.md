@@ -20,6 +20,7 @@ Os bugs que o porte **já corrigiu** (leitura fora do array, `%s` com `std::wstr
 | `GameServer/NewPartyListManager.cpp`, `KPartyListManager::IsPossibleLowLevel` | O `OUT bool isPartyNULL` é recebido por valor | Quem chama nunca vê o valor | 2026-10-30, `server/game-build` |
 | `GameServer`, grau de guilda | Testa `== -1` num `u_char`, o que é sempre falso (o teste saiu no porte, com o mesmo efeito) | A conferir no `server/game-run`: o que a procedure devolve quando o personagem não tem guilda | 2026-10-30, `server/game-build` |
 | `GameServer`, nível de skill e página de skill ativa | Testam `unsigned < 0`, sempre falso (os testes saíram no porte, com o mesmo efeito) | A validação de valor negativo nunca dispara | 2026-10-30, `server/game-build` |
+| `CenterServer/DungeonRoom.cpp`, checagem de "sub-stage limpa em 1 s" (`GetSubStageNpcDieCheck`) | O número de NPCs ativos da sub-stage é contado e descartado: o `m_mapSubStageActiveNpcNum` recebe o número de NPCs que dão EXP, e o `m_iSubStageActiveNpc` (que dispara a checagem a partir de 5) também vem do mapa de EXP. O mapa de ativos nunca é lido | A checagem anti-hack (o pedido `HCT_CHECK_NPC_DIE_TIME` ao GameServer) conta NPCs de EXP em vez de ativos: pode disparar ou deixar de disparar fora do previsto. A contagem morta saiu no porte, o comportamento é o mesmo | 2026-10-31, `server/center-build` |
 
 ## Dados (`ServerResource`, `ClientScript`)
 

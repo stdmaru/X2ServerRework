@@ -253,10 +253,10 @@ bool KCnHackingCheckManager::CheckDungeonResultAutoHackUser( IN const int iDunge
 															IN const int iUnitLevel,
 															IN const bool bClear,
 															IN const int iStartedMember,
-															IN const CXSLDungeon::RANK_TYPE eComboRank,
-															IN const CXSLDungeon::RANK_TYPE eTechnicalRank,
-															IN const CXSLDungeon::RANK_TYPE eTimeRank,
-															IN const CXSLDungeon::RANK_TYPE eDamagedRank,
+															IN const CXSLDungeon::RANK_TYPE /*eComboRank*/,
+															IN const CXSLDungeon::RANK_TYPE /*eTechnicalRank*/,
+															IN const CXSLDungeon::RANK_TYPE /*eTimeRank*/,
+															IN const CXSLDungeon::RANK_TYPE /*eDamagedRank*/,
 															IN const int iTechnicalScore,
 															IN const int iContinueCount,
 															IN const bool bHavePet
@@ -423,8 +423,8 @@ void KCnHackingCheckManager::Tick()
 
 
 
-bool KCnHackingCheckManager::CheckHenirClearTimeHackUser( IN const char cAuthLevel_,
-    IN const UidType iUserUID_,
+bool KCnHackingCheckManager::CheckHenirClearTimeHackUser( IN const char /*cAuthLevel_*/,
+    IN const UidType /*iUserUID_*/,
     IN const int iDungeonID_,
     IN const int iStageID_,
     //IN const char cDifficultyLevel,

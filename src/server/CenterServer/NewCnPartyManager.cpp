@@ -375,6 +375,7 @@ void KCnPartyManager::CloseParty( IN KCnPartyPtr spParty, bool bClosePartyList /
 			// 파티 상태 CLOSE상태로 변경
 			spParty->StateTransition( KCnPartyFSM::I_TO_CLOSE );
 		}
+		[[fallthrough]];
 
 	case KCnPartyFSM::S_CLOSE:
 		{

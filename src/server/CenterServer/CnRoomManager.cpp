@@ -125,11 +125,11 @@ ImplToStringW( KCnRoomManager )
 KCnRoomManager::KCnRoomManager()
 :
 //{{ 2012. 09. 08	최육사	배틀필드 시스템
+m_dfZUTickTime( 0.0 ),
 m_dfBattleFieldZUTickTime( 20.0 ),
 m_dfBattleFIeldZUEchoTime( 10.0 ),
-m_dfBattleFieldZombieAlertTickTime( 20.0 ),
 //}}
-m_dfZUTickTime( 0.0 )
+m_dfBattleFieldZombieAlertTickTime( 20.0 )
 {
 	int i;
 	for( i = 0; i < CXSLRoom::RT_TOTAL_NUM; i++ )

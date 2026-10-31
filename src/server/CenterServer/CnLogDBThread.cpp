@@ -951,8 +951,6 @@ IMPL_ON_FUNC_NOPARAM( DBE_GET_DUNGEON_EVENT_INFO_REQ )
 	while( m_kODBC.Fetch() )
 	{
 		KDungeonDropEventNpcInfo kInfo;
-		UidType iUnitUID = 0;
-		int iServerUID = 0;
 		std::wstring wstrDropDate;
 		std::wstring wstrDieDate;
 

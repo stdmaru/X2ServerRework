@@ -67,7 +67,7 @@ public:
 
 public:
 	KResultProcess(void);
-	~KResultProcess(void);
+	virtual ~KResultProcess(void);
 
 	//{{ 2011. 07. 19	최육사	대전 개편
 //////////////////////////////////////////////////////////////////////////

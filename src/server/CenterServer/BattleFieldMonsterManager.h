@@ -109,7 +109,8 @@ public:
 
 	// 몬스터 처리
 	bool	CreateMonster( IN const KNPCUnitReq& kNpcInfo, OUT int& iCreatedNpcUID );
-	bool	SetMonsterDie( IN const int iNpcUID, IN const UidType iAttUnitUID );
+		// Port: renamed from SetMonsterDie, which hid the virtual KRoomMonsterManager::SetMonsterDie( int, UidType, bool )
+	bool	SetFieldMonsterDie( IN const int iNpcUID, IN const UidType iAttUnitUID );
 	bool	SetAttribMonster( IN const int iNpcUID, IN const KAttribEnchantNpcInfo& kInfo );
 
 	// 몬스터 죽음 정보

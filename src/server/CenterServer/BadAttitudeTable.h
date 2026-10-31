@@ -21,7 +21,7 @@ class KBadAttitudeTable
 
 public:
 	KBadAttitudeTable(void);
-	~KBadAttitudeTable(void);
+	virtual ~KBadAttitudeTable(void);
 
 	// 루아
 	void AddBadAttitudeCutLinePoint_LUA( CXSLDungeon::DUNGEON_TYPE eDungeonType, int iPoint );

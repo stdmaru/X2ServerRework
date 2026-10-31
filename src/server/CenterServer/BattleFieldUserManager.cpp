@@ -559,7 +559,6 @@ bool KBattleFieldUserManager::GetRoomUserList( std::map< UidType, KRoomUserPtr >
 
 bool KBattleFieldUserManager::AddBattleFieldRewardEXP( IN const UidType iUnitUID, IN const float fLevelFactor, IN const int iExp, OUT KERM_NPC_UNIT_DIE_NOT& kInfo )
 {
-	USERLIST_TYPE eType = UT_GAME;
 
 	// 레벨 조건에 의해서 경험치를 습득 못한 경우
 	if( iExp <= 0 && fLevelFactor <= 0.f )
@@ -789,13 +788,12 @@ bool KBattleFieldUserManager::AddBattleFieldRewardED( IN const char cNpcLevel,
 //}}
 
 bool KBattleFieldUserManager::GetItemWithRandom( IN const std::map< UidType, float > mapDamageByUser,
-												 IN const UidType iGetItemUnitUID,
+												 IN const UidType /*iGetItemUnitUID*/,
 												 IN const int iItemID,
-												 IN const int iDungeonID,
+												 IN const int /*iDungeonID*/,
 												 OUT UidType& iGetUnitUID,
 												 OUT UidType& iGSUID )
 {
-	USERLIST_TYPE eType = UT_GAME;
 
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iItemID );
 	if( pItemTemplet == NULL )
@@ -1048,7 +1046,6 @@ float KBattleFieldUserManager::GetBattleFieldPartyBonusRate( IN const UidType& i
 
 bool KBattleFieldUserManager::IsComeBackUserInParty( IN UidType iUnitUID )
 {
-	int iCount = 0;
 
 	if( CheckUserlistType( UT_GAME ) == false )
 		return false;
@@ -1403,7 +1400,6 @@ void KBattleFieldUserManager::GetPartyLevelFactor( IN const UidType iUnitUID, IN
 
 void KBattleFieldUserManager::ZombieAlert_CheckStart()
 {
-	USERLIST_TYPE eType = UT_GAME;
 
 	START_LOG( clog, L"유령유저 ALERT 체크시작.!" );
 
@@ -1479,7 +1475,6 @@ bool KBattleFieldUserManager::ZombieAlert_Tick()
 
 	USERLIST_TYPE eType = UT_GAME;
 
-    UidType cidHost = 0;
     bool    bHostFound = false;
     bool    bHostAlive = false;
     bool    bNonHostAlive = false;
@@ -1506,7 +1501,6 @@ bool KBattleFieldUserManager::ZombieAlert_Tick()
         if ( mit->second->IsHost() == true )
         {
             bHostFound = true;
-            cidHost = mit->second->GetCID();
             bHostAlive = mit->second->IsPlaying() == true && bNewZombieAlert == false;
         }
         else if ( bNonHostAlive == false )

@@ -35,7 +35,6 @@ KRoomUser::KRoomUser() :
 	m_iNowStageID( -1 ),
     m_iRebirthPos( 0 ),
 	m_nKillNPC( 0 ),
-	m_bDungeonUnitInfo( false ),
 	m_iOldEXP( 0 ),
 	m_iOldED( 0 ),
 	m_iRewardEXP( 0 ),
@@ -43,57 +42,58 @@ KRoomUser::KRoomUser() :
 	m_nRewardED( 0 ),
 	m_nRewardVP( 0 ),
 	m_bIsResult( false ),
+	m_iStartTimeNumResurrectionStone( 0 ),
 	//{{ 2011. 11. 7	최육사	배틀필드 시스템
+	m_iFirstUseResurrectionStoneStageID( -1 ),
+	m_iFirstUseResurrectionStoneSubStageID( -1 ),
 	m_bActivatedAutoPartyBonus( false ),
-	m_bBattleFieldNpcLoad( false ),
-	m_bBattleFieldNpcSyncSubjects( false ),
 	//}}
 	//{{ 2012. 11. 9	최육사	배틀필드 시스템
-	m_bHenirReward( false ),
+	m_bBattleFieldNpcLoad( false ),
 	//}}
 	//{{ 2007. 11. 5  최육사
-	m_iUsedResurrectionStoneCount( 0 ),
-	m_iPassedStageCount( 0 ),
-	m_iPassedSubStageCount( 0 ),
+	m_bBattleFieldNpcSyncSubjects( false ),
+	m_bHenirReward( false ),
+	m_bDungeonUnitInfo( false ),
 	//}}
 	//{{ 2007. 12. 17  최육사  난입 상태
-	m_bIsIntrude( false ),
+	m_fPlayTime( 0.0f ),
 	//}}
 	//{{ 2008. 1. 11  최육사  플레이 타임 초기화
-	m_fPlayTime( 0.0f ),
+	m_iUsedResurrectionStoneCount( 0 ),
 	//}}
 	//{{ 2011. 06. 13	최육사	스테이지 로그
 	//}}
 	//{{ 2011. 07. 25	최육사	대전 개편
-	m_iPvpNpcID( 0 ),
+	m_iPassedStageCount( 0 ),
 	//}}
 	//{{ 2012. 04. 17	최육사	던전 로그 컬럼 추가
-	m_iStartTimeNumResurrectionStone( 0 ),
-	m_iFirstUseResurrectionStoneStageID( -1 ),
-	m_iFirstUseResurrectionStoneSubStageID( -1 ),
+	m_iPassedSubStageCount( 0 ),
+	m_bIsIntrude( false ),
+	m_bZombieAlert( false ),
 	//}}
 	//{{ 핑 상태체크 호스트 변경 - 김민성
-	m_bRecivedPingScore( false ),
+	m_bEndPlay( false ),
     //}}
     //{{ 2013.08.05    하형진   좀비경고 - 필드 등에서 방장교체에 사용됨
-    m_bZombieAlert( false ),
+    m_bCashContinueReady( false ),
     //}}
 	//{{ 2008. 6. 17  최육사  실시간 부활석
-	m_bEndPlay( false ),
-	m_bCashContinueReady( false ),
-	m_fDelayPacketTime( 15.0f )
+	m_fDelayPacketTime( 15.0f ),
+	m_iPvpNpcID( 0 ),
+	m_bRecivedPingScore( false )
 	//}}
 	//{{ 2013. 04. 15	최육사	어둠의 문 개편
-	, m_bPrepareForDefence( false )
-	//}}
-	//{{ 2013. 04. 22	최육사	어둠의 문 입장 로직 변경
-	, m_bRecvEnterPopupReply( false )
-	, m_bEnterDefenceDungeon( false )
-	//}}
-	//{{ 2012. 11. 20	박세훈	Field Frame 로그 추가
 	, m_iFieldFrame( 0 )
 	//}}
+	//{{ 2013. 04. 22	최육사	어둠의 문 입장 로직 변경
 	, m_bAcceptRematch( false )
+	, m_bPrepareForDefence( false )
+	//}}
+	//{{ 2012. 11. 20	박세훈	Field Frame 로그 추가
+	, m_bRecvEnterPopupReply( false )
+	//}}
+	, m_bEnterDefenceDungeon( false )
 {
 
 //#ifdef PVP_BOSS_COMBAT_TEST
@@ -1535,7 +1535,7 @@ bool KRoomUser::CheckCompleteSubQuest_BeforGroup( IN int iQuestID, IN int iSubQu
 	return true;
 }
 
-bool KRoomUser::CheckFindNPCQuest( IN int iMapID, IN std::vector< int >& vecNpc, IN bool IsDungeon )
+bool KRoomUser::CheckFindNPCQuest( IN int iMapID, IN std::vector< int >& /*vecNpc*/, IN bool IsDungeon )
 {
 	if( m_kRoomUserInfo.m_mapOngoingQuest.empty() == true )
 		return false;

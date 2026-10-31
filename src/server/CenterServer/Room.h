@@ -161,7 +161,7 @@ protected:
     virtual	void SendRoomListInfo( IN const int iCode );
 	//{{ 2011. 07. 26	최육사	대전 개편
 //#ifdef SERV_PVP_NEW_SYSTEM
-	virtual void SendPVPUserInfo( UidType iUnitUID, char cState = KCommunityUserInfo::US_NONE ) {}
+	virtual void SendPVPUserInfo( UidType /*iUnitUID*/, char /*cState*/ = KCommunityUserInfo::US_NONE ) {}
 	virtual void SendAllPVPUserInfo() {}
 //#endif SERV_PVP_NEW_SYSTEM
 	//}}

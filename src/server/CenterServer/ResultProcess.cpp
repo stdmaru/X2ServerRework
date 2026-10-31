@@ -88,7 +88,7 @@ ImplementLuaScriptParser( KResultProcess )
 //////////////////////////////////////////////////////////////////////////
 bool KResultProcess::Result_TEAM(IN const float fTotalPlayTime,
 								 IN const float fRemainingPlayTime,
-								 IN const int iPVPChannelClass,
+								 IN const int /*iPVPChannelClass*/,
 								 IN const bool bOfficialPvpCancel,
 								 IN const SEnum::MATCH_TYPE eMatchType,
 								 IN const SEnum::PVP_NPC_TYPE ePvpNpcType,
@@ -313,13 +313,13 @@ bool KResultProcess::Result_TEAM(IN const float fTotalPlayTime,
 
 bool KResultProcess::Result_SURVIVAL( IN const float fTotalPlayTime,
 									  IN const float fRemainingPlayTime,
-									  IN const int iPVPChannelClass,
-									  IN const bool bOfficialPvpCancel,
-									  IN const SEnum::MATCH_TYPE eMatchType,
-									  IN const SEnum::PVP_NPC_TYPE ePvpNpcType,
+									  IN const int /*iPVPChannelClass*/,
+									  IN const bool /*bOfficialPvpCancel*/,
+									  IN const SEnum::MATCH_TYPE /*eMatchType*/,
+									  IN const SEnum::PVP_NPC_TYPE /*ePvpNpcType*/,
 									  IN OUT KRoomUserManagerPtr spRoomUserManager,
 									  OUT KEGS_END_GAME_PVP_RESULT_DATA_NOT& kPacketNot,
-									  OUT KPvpMatchUserResultLog::END_TYPE& eEndType )
+									  OUT KPvpMatchUserResultLog::END_TYPE& /*eEndType*/ )
 {
 	KRoomUserPtr		pkRoomUser;
 
@@ -329,7 +329,7 @@ bool KResultProcess::Result_SURVIVAL( IN const float fTotalPlayTime,
 	//무승부 처리
 	if( spRoomUserManager->GetNumResultPlayer() <= 1 )
 	{
-		if( (fTotalPlayTime - fRemainingPlayTime) < SEnum::ET_PVP_DRAWN_TIME )
+		if( (fTotalPlayTime - fRemainingPlayTime) < static_cast<float>( SEnum::ET_PVP_DRAWN_TIME ) )
 		{
 			kPacketNot.m_bIsDrawn = true;
 		}
@@ -498,7 +498,7 @@ bool KResultProcess::Result_SURVIVAL( IN const float fTotalPlayTime,
 
 bool KResultProcess::Result_TEAM_DEATH(	IN const float fTotalPlayTime,
 										IN const float fRemainingPlayTime,
-										IN const int iPVPChannelClass,
+										IN const int /*iPVPChannelClass*/,
 										IN const bool bOfficialPvpCancel,
 										IN const SEnum::MATCH_TYPE eMatchType,
 										IN const SEnum::PVP_NPC_TYPE ePvpNpcType,
@@ -732,9 +732,9 @@ bool KResultProcess::Result_DUNGEON( IN OUT KRoomUserManagerPtr spRoomUserManage
 									IN const int iStageID,
 									//}}
 									IN const int nTotalPlayTime,
-									IN const int nRemainingTime,
+									IN const int /*nRemainingTime*/,
 									IN const int nDropItemUID,
-									IN const int iStartedNumMember,
+									IN const int /*iStartedNumMember*/,
 									//{{ 2012. 03. 15	최육사	배틀필드 시스템
 									IN const bool bStartedByAutoParty,
 									//}}
@@ -795,8 +795,6 @@ bool KResultProcess::Result_DUNGEON( IN OUT KRoomUserManagerPtr spRoomUserManage
 
 	//2. 각 UNIT 별 시간랭크 계산에 사용될 평균 레벨 / 킬수 계산하기
 	int nAverageLevel		= 0;
-	int	nTotalKillNPCNum	= 0;
-	int iMaxKill = 0;
 	//{{ 2011. 02. 22	최육사	던전 랭크 개편
 	int iPartyTotalGivenDamage = 0;
 	//}}
@@ -806,7 +804,7 @@ bool KResultProcess::Result_DUNGEON( IN OUT KRoomUserManagerPtr spRoomUserManage
 		_JIF( pkRoomUser != NULL, continue; );
 
 		nAverageLevel			+= pkRoomUser->GetLevel();
-		nTotalKillNPCNum		+= pkRoomUser->GetKillNPC_LUA();
+		pkRoomUser->GetKillNPC_LUA(); // Port: the sum was never used, but the call raises m_nKillNPC to at least 1
 		//{{ 2011. 02. 22	최육사	던전 랭크 개편
 		iPartyTotalGivenDamage	+= pkRoomUser->GetTotalGivenDamamge_LUA();
 		//}}
@@ -1152,7 +1150,7 @@ bool KResultProcess::Result_DUNGEON( IN OUT KRoomUserManagerPtr spRoomUserManage
 		//TIME RESULT
 		{
 			//{{ 2011. 01. 20	최육사	던전 랭크 개편
-			(CXSLDungeon::RANK_TYPE)lua_tinker::call<int>( GetLuaState(), "DUNGEON_TIME_RESULT", spRoomUser.get(), (int)(iDungeonID + cDifficulty), &kDungeonMonsterManager, kUnitInfoNot.m_nSec );
+			lua_tinker::call<int>( GetLuaState(), "DUNGEON_TIME_RESULT", spRoomUser.get(), (int)(iDungeonID + cDifficulty), &kDungeonMonsterManager, kUnitInfoNot.m_nSec );
 			//}}
 
 			fTimeBonus	= spRoomUser->GetPercent();
@@ -1309,7 +1307,7 @@ bool KResultProcess::Result_DUNGEON( IN OUT KRoomUserManagerPtr spRoomUserManage
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 
-bool KResultProcess::Result_TEAM_BREAK(	IN KRoomUserManagerPtr spRoomUserManager, IN KRoomUserPtr spRoomUser, IN const int iReason, IN const SEnum::MATCH_TYPE eMatchType, IN const SEnum::PVP_NPC_TYPE ePvpNpcType, OUT KERM_UPDATE_PVP_UNIT_INFO_NOT& kInfo )
+bool KResultProcess::Result_TEAM_BREAK(	IN KRoomUserManagerPtr /*spRoomUserManager*/, IN KRoomUserPtr spRoomUser, IN const int iReason, IN const SEnum::MATCH_TYPE eMatchType, IN const SEnum::PVP_NPC_TYPE ePvpNpcType, OUT KERM_UPDATE_PVP_UNIT_INFO_NOT& kInfo )
 {
 	// 이탈 사유 중에서 크래쉬는 제외
 	kInfo.m_iEXP = 0;
@@ -1337,7 +1335,7 @@ bool KResultProcess::Result_TEAM_BREAK(	IN KRoomUserManagerPtr spRoomUserManager
 	return true;
 }
 
-bool KResultProcess::Result_TEAM_DEATH_BREAK( IN KRoomUserManagerPtr spRoomUserManager, IN KRoomUserPtr spRoomUser, IN const int iReason, IN const SEnum::MATCH_TYPE eMatchType, IN const SEnum::PVP_NPC_TYPE ePvpNpcType, OUT KERM_UPDATE_PVP_UNIT_INFO_NOT& kInfo )
+bool KResultProcess::Result_TEAM_DEATH_BREAK( IN KRoomUserManagerPtr /*spRoomUserManager*/, IN KRoomUserPtr spRoomUser, IN const int iReason, IN const SEnum::MATCH_TYPE eMatchType, IN const SEnum::PVP_NPC_TYPE ePvpNpcType, OUT KERM_UPDATE_PVP_UNIT_INFO_NOT& kInfo )
 {
 	// 이탈 사유 중에서 크래쉬는 제외
 	kInfo.m_iEXP = 0;
@@ -1365,7 +1363,7 @@ bool KResultProcess::Result_TEAM_DEATH_BREAK( IN KRoomUserManagerPtr spRoomUserM
 	return true;
 }
 
-bool KResultProcess::Result_SURVIVAL_BREAK( IN KRoomUserManagerPtr spRoomUserManager, IN KRoomUserPtr spRoomUser, IN const int iReason, IN const SEnum::MATCH_TYPE eMatchType, IN const SEnum::PVP_NPC_TYPE ePvpNpcType, OUT KERM_UPDATE_PVP_UNIT_INFO_NOT& kInfo )
+bool KResultProcess::Result_SURVIVAL_BREAK( IN KRoomUserManagerPtr /*spRoomUserManager*/, IN KRoomUserPtr spRoomUser, IN const int iReason, IN const SEnum::MATCH_TYPE eMatchType, IN const SEnum::PVP_NPC_TYPE ePvpNpcType, OUT KERM_UPDATE_PVP_UNIT_INFO_NOT& kInfo )
 {
 	// 이탈 사유 중에서 크래쉬는 제외
 	kInfo.m_iEXP = 0;
@@ -1496,7 +1494,7 @@ int KResultProcess::DecidePVPWinTeam( IN const float fTotalPlayTime, IN const fl
 	if( mapTeamInfo.size() <= 1 )
 	{
 		//무승부
-		if( (fTotalPlayTime - fRemainingPlayTime) < SEnum::ET_PVP_DRAWN_TIME )
+		if( (fTotalPlayTime - fRemainingPlayTime) < static_cast<float>( SEnum::ET_PVP_DRAWN_TIME ) )
 		{
 			//{{ 2011. 08. 03	최육사	대전 개편
 			eEndType = KPvpMatchUserResultLog::ET_EALRY_LEAVE;
@@ -1817,14 +1815,14 @@ void KResultProcess::SortbyPVPSlot(std::vector<KPVPUnitResultInfo>& vecData, KRo
 bool KResultProcess::Result_DefenceDUNGEON( IN OUT KRoomUserManagerPtr spRoomUserManager,
 											IN OUT KDungeonMonsterManager& kDungeonMonsterManager,
 											IN const bool bIsWin,
-											IN const CXSLDungeon::DUNGEON_TYPE eDungeonType,
+											IN const CXSLDungeon::DUNGEON_TYPE /*eDungeonType*/,
 											IN const char cDungeonMode,
 											IN const char cDifficulty,
 											IN const int iDungeonID,
 											IN const int nTotalPlayTime,
-											IN const int nRemainingTime,
+											IN const int /*nRemainingTime*/,
 											IN const int nDropItemUID,
-											IN const int iStartedNumMember,
+											IN const int /*iStartedNumMember*/,
 											//{{ 2012. 03. 15	최육사	배틀필드 시스템
 											IN const bool bStartedByAutoParty,
 											//}}
@@ -1832,7 +1830,7 @@ bool KResultProcess::Result_DefenceDUNGEON( IN OUT KRoomUserManagerPtr spRoomUse
 											OUT KEGS_END_GAME_DUNGEON_RESULT_DATA_NOT& kUnitInfoNot,
 											OUT std::vector< KRoomUserPtr >& vecKRoomUserPtr,
 											OUT std::vector< KERM_UPDATE_DUNGEON_UNIT_INFO_NOT >& vecUpdateUnitInfo,
-											IN int iProtectedCrystalCount )
+											IN int /*iProtectedCrystalCount*/ )
 {
 	//공통으로 들어갈 결과정보를 셋팅한다..
 	kUnitInfoNot.m_bIsWin		= bIsWin;
@@ -1888,8 +1886,6 @@ bool KResultProcess::Result_DefenceDUNGEON( IN OUT KRoomUserManagerPtr spRoomUse
 
 	//2. 각 UNIT 별 시간랭크 계산에 사용될 평균 레벨 / 킬수 계산하기
 	int nAverageLevel		= 0;
-	int	nTotalKillNPCNum	= 0;
-	int iMaxKill = 0;
 	//{{ 2011. 02. 22	최육사	던전 랭크 개편
 	int iPartyTotalGivenDamage = 0;
 	//}}
@@ -1899,7 +1895,7 @@ bool KResultProcess::Result_DefenceDUNGEON( IN OUT KRoomUserManagerPtr spRoomUse
 		_JIF( pkRoomUser != NULL, continue; );
 
 		nAverageLevel			+= pkRoomUser->GetLevel();
-		nTotalKillNPCNum		+= pkRoomUser->GetKillNPC_LUA();
+		pkRoomUser->GetKillNPC_LUA(); // Port: the sum was never used, but the call raises m_nKillNPC to at least 1
 		//{{ 2011. 02. 22	최육사	던전 랭크 개편
 		iPartyTotalGivenDamage	+= pkRoomUser->GetTotalGivenDamamge_LUA();
 		//}}
@@ -2115,7 +2111,7 @@ bool KResultProcess::Result_DefenceDUNGEON( IN OUT KRoomUserManagerPtr spRoomUse
 		//TIME RESULT
 		{
 			//{{ 2011. 01. 20	최육사	던전 랭크 개편
-			(CXSLDungeon::RANK_TYPE)lua_tinker::call<int>( GetLuaState(), "DUNGEON_TIME_RESULT", spRoomUser.get(), (int)(iDungeonID + cDifficulty), &kDungeonMonsterManager, kUnitInfoNot.m_nSec );
+			lua_tinker::call<int>( GetLuaState(), "DUNGEON_TIME_RESULT", spRoomUser.get(), (int)(iDungeonID + cDifficulty), &kDungeonMonsterManager, kUnitInfoNot.m_nSec );
 			//}}
 
 			fTimeBonus	= spRoomUser->GetPercent();
@@ -2291,7 +2287,7 @@ float KResultProcess::GetDungeonModePartyBonusRate( char cDungeonMode )
 	case CXSLDungeon::DT_HENIR:
 	case CXSLDungeon::DT_SECRET:
 		{
-			return m_fDungeonModePartyBonus[cDungeonMode];
+			return m_fDungeonModePartyBonus[static_cast<int>( cDungeonMode )];
 		}break;
 	default:
 		{
@@ -2312,7 +2308,7 @@ float KResultProcess::GetDungeonPartyDifficultyBonusRate( char cDifficulty )
 	case CXSLDungeon::DL_HARD:
 	case CXSLDungeon::DL_EXPERT:
 		{
-			return m_fPartyDifficultyBonus[cDifficulty];
+			return m_fPartyDifficultyBonus[static_cast<int>( cDifficulty )];
 		}break;
 	default:
 		{
@@ -2380,14 +2376,12 @@ void KResultProcess::LeaveRoomResultRank( IN int						iDungeonID,
 	// 랭크 결과처리
 	//CXSLDungeon::RANK_TYPE	eCombo, eTechnical, eDamage, eTime;
 	//float값은 exp를 추가로 얻을 %
-	float					fComboBonus, fTechBonus, fDamageBonus, fTimeBonus;
 	//////////////////////////////////////////////////////////////////////////
 	//COMBO RESULT
 	{
 		//{{ 2011. 01. 21	최육사	던전 랭크 개편
 		lua_tinker::call<double>( GetLuaState(), "DUNGEON_COMBO_RESULT", spRoomUser.get(), (int)(iDungeonID + cDifficultyLevel), &kDungeonMonsterManager, iEndNumMember, iPartyTotalGivenDamage );
 
-		fComboBonus	= spRoomUser->GetPercent();
 		kDungeonUnitInfoDummy.m_cComboRank	= (CXSLDungeon::RANK_TYPE)spRoomUser->GetRank();
 	}
 
@@ -2398,7 +2392,6 @@ void KResultProcess::LeaveRoomResultRank( IN int						iDungeonID,
 
 		lua_tinker::call<double>( GetLuaState(), "DUNGEON_TECHNICAL_RESULT", spRoomUser.get(), (int)(iDungeonID + cDifficultyLevel), &kDungeonMonsterManager, iEndNumMember, iPartyTotalGivenDamage );
 
-		fTechBonus	= spRoomUser->GetPercent();
 		kDungeonUnitInfoDummy.m_cTechnicalRank = (CXSLDungeon::RANK_TYPE)spRoomUser->GetRank();
 	}
 
@@ -2408,7 +2401,6 @@ void KResultProcess::LeaveRoomResultRank( IN int						iDungeonID,
 		//{{ 2011. 01. 21	최육사	던전 랭크 개편
 		lua_tinker::call<double>( GetLuaState(), "DUNGEON_DAMAGE_RESULT", spRoomUser.get(), (int)(iDungeonID + cDifficultyLevel), &kDungeonMonsterManager );
 
-		fDamageBonus	= spRoomUser->GetPercent();
 		kDungeonUnitInfoDummy.m_cDamagedRank	= (CXSLDungeon::RANK_TYPE)spRoomUser->GetRank();
 	}
 
@@ -2416,9 +2408,8 @@ void KResultProcess::LeaveRoomResultRank( IN int						iDungeonID,
 	//TIME RESULT
 	{
 		//{{ 2011. 01. 20	최육사	던전 랭크 개편
-		(CXSLDungeon::RANK_TYPE)lua_tinker::call<int>( GetLuaState(), "DUNGEON_TIME_RESULT", spRoomUser.get(), (int)(iDungeonID + cDifficultyLevel), &kDungeonMonsterManager, iTotalPlayTime );
+		lua_tinker::call<int>( GetLuaState(), "DUNGEON_TIME_RESULT", spRoomUser.get(), (int)(iDungeonID + cDifficultyLevel), &kDungeonMonsterManager, iTotalPlayTime );
 
-		fTimeBonus	= spRoomUser->GetPercent();
 		kDungeonUnitInfoDummy.m_cTimeRank	= (CXSLDungeon::RANK_TYPE)spRoomUser->GetRank();
 	}
 

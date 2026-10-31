@@ -14,7 +14,6 @@ KCnNetLayer::~KCnNetLayer(void)
 ImplToStringW( KCnNetLayer )
 {
 	int iKTUDPPeerSize = -1;
-	int iKTUDPPacketLossCount = -1;
 	//{{ 2010. 07. 05  최육사	UDP 트래픽 로그
 	__int64 iUDPSendTraffic = -1;
 	__int64 iUDPRecvTraffic = -1;

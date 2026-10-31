@@ -22,7 +22,7 @@ class KDungeonEventManager
 
 public:
 	KDungeonEventManager(void);
-	~KDungeonEventManager(void);
+	virtual ~KDungeonEventManager(void);
 
 	//struct KTimeDropEventMonsterInfo
 	//{

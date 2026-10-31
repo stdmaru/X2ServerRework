@@ -421,7 +421,6 @@ IMPL_ON_FUNC( DBE_DB_UPDATE_TRADE_RESULT_REQ )
 	// 유닛별 정보로 정리
 	vitDBUpdate = kPacket_.m_vecDBUpdate.begin();
 	int iTemp_Zero = 0;
-	bool bCheck = false;
 	int index = 0;
 	for(  ; vitDBUpdate != kPacket_.m_vecDBUpdate.end() ; ++vitDBUpdate )
 	{

@@ -47,7 +47,7 @@ protected:
 
 	virtual void ProcessEvent( const KEventPtr& spEvent );    // derived from KPerformer
 	//{{ 2011. 04. 06	최육사	대리 상인
-	virtual void ProcessNativeEvent( const KEventPtr& spEvent ) {}
+	virtual void ProcessNativeEvent( const KEventPtr& /*spEvent*/ ) {}
 	//}}
 
 	//{{ 2010. 05. 10  최육사	대전던전 서버군 통합

@@ -253,7 +253,7 @@ protected:
 	virtual	void	SendRoomListInfo( IN const int iCode );
 
 	//{{ 2012. 05. 23	최육사	배틀필드 시스템
-	virtual void	TimeCountFinishProcess( IN const u_short usEventID ) { /*아무것도 안합니다.*/ }
+	virtual void	TimeCountFinishProcess( IN const u_short /*usEventID*/ ) { /*아무것도 안합니다.*/ }
 	//}}
 
 	void			OnLeaveRoom( IN const UidType iLAST_SENDER_UID, IN const UidType iFIRST_SENDER_UID, IN const KERM_LEAVE_ROOM_REQ& kPacket_, IN const u_short usEventIDAck );

@@ -15,6 +15,7 @@ class KCnScriptRefreshManager : public KThreadManager
 	DeclPfID;
 
 public:
+	using KThreadManager::Init;
 	KCnScriptRefreshManager();
 	virtual ~KCnScriptRefreshManager();
 

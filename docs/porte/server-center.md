@@ -34,14 +34,49 @@ do original (`src/server/CenterServer` ao lado de `src/server/Common`).
 | `CTime`, `lua_tinker` | 16, 15 | já cobertos pela [Plataforma](platform.md) e pelo KNCSDK |
 | Banco | 50 `DO_QUERY` | `KODBC` já portado; as procedures são as do `Game01`, `Log` e `Account` |
 
-## Estado (2026-10-31, branch `server/center-import`)
+## Estado (2026-10-31, branch `server/center-build`)
 
-Importado, ainda sem build.
+**Compila e linka sem warnings** (alvo `x2_center_server`, executável `CenterServer`, `main` com `KServerMain` como os outros
+servidores) em Clang Debug e GCC Debug. Faltam Release e clang-cl (abaixo, ao fechar o passo).
+
+Medidas do caminho, para dar a escala: 51 erros (Clang Debug, `-k 0`) em 13 arquivos depois da passada mecânica, 29 no GCC (quase
+todos `goto end_proc`); 112 warnings distintos no Clang e 143 no GCC antes do `fix_warnings.py` e das correções à mão. Menor que o
+LoginServer: o grosso do acoplamento já tinha saído no `Common`.
+
+## Mudanças em relação ao original
+
+| Onde | Mudança | Motivo |
+|---|---|---|
+| `KCnServer`, `CnRMEventProcess` | Saem as chamadas ao KSMS (`ProcessCommunicationManager`, *named pipes* `\\.\pipe\CenterServer*`, religadas a cada 60 s no `Tick`, e o aviso de script recarregado) | Como no [ChannelServer](server-channel.md#mudanças-em-relação-ao-original) e nos outros servidores |
+| `ON_DBE_SERVER_ON_ACK` (`CnServer.cpp`) | Quando o banco recusa o servidor, a resposta marca `SetAuthenticateResult( false )` e o `Init` falha; quando aceita, marca `true` | Como no [GameServer](server-game.md#mudanças-em-relação-ao-original): o original chamava `::exit( 0 )` nessa thread |
+| `KBattleFieldMonsterManager::SetMonsterDie( int, UidType )` | Renomeado para `SetFieldMonsterDie` (as 4 chamadas do `KBattleFieldRoom`) | Escondia a virtual `KRoomMonsterManager::SetMonsterDie( int, UidType, bool = true )`; um `using` deixaria as chamadas de 2 argumentos ambíguas. As chamadas eram todas pelo tipo concreto: nada muda |
+
+Portabilidade (sem mudança de comportamento): passada mecânica (`mechanical.py`); declarações puladas por `goto end_proc` sobem
+(`fix_goto.py`, que passou a entender arrays com `= {0,}`), e duas referências `ITEM_DATA&` do `ERM_GET_ITEM_REQ` (campo e dungeon)
+viram ponteiro declarado no topo; `boost::timer` → `x2::Timer` também no `Knc::KSingleObject` do KNCSDK (`KncContainer.h`, que nenhum
+servidor usava até agora); o argumento padrão temporário numa referência não `const` (`KSquareUserManager::SetPersonalShopData`, extensão
+do MSVC) vira uma sobrecarga; `__noop`, `intsafe.h` e as macros `min`/`max` (com o tipo do original: `size_t`, `__time64_t`, `char`)
+saem; includes que o MSVC dispensava nos templates (`BaseServer.h` nos DB threads); destrutores `virtual` em 8 singletons; `using` das
+sobrecargas escondidas de `Init` e `SetRoomInfo`; `[[fallthrough]]` no fechamento de festa (`S_* → I_TO_CLOSE → I_TO_INIT`, de
+propósito); variáveis mortas removidas (o `GetKillNPC_LUA()` dos resultados de dungeon continua sendo chamado: ele sobe o `m_nKillNPC`
+para 1); o cast descartado do `DUNGEON_TIME_RESULT` sai (o rank vem do `GetRank()` logo depois); o teste `0 <= iRank` (`size_t`, sempre
+verdadeiro também no MSVC) sai.
+
+### Bugs do original corrigidos
+
+| Onde | Bug | Correção |
+|---|---|---|
+| `KDropTable::AddExtraStageMonsterDropInfo_LUA` | A validação da chave era `m_nMonsterID == -1 && m_nMonsterID == 0`, sempre falsa: uma entrada sem `MonsterID` (ou com 0) entrava na tabela de drop do estágio extra | `\|\|` (2026-10-31, `-Wtautological-overlap-compare` do Clang) |
+
+## Pendências
+
+- O bug da checagem de "sub-stage limpa em 1 s" do `DungeonRoom` fica mantido ([Bugs do original](../original/bugs.md)).
+- SMS (`CnSMSDBThread`) compila e continua: a config US não liga o `DC_SMS`. Conferir ao rodar.
 
 ## Plano (um branch por passo)
 
-1. ~~**`server/center-import`**~~ (2026-10-31): este passo.
-2. **`server/center-build`**: compilar sem warnings em Clang, GCC e clang-cl, com o `main` do `KServerMain` (como os outros servidores).
+1. ~~**`server/center-import`**~~ (2026-10-31).
+2. ~~**`server/center-build`**~~ (2026-10-31): compilar sem warnings em Clang, GCC e clang-cl, com o `main` do `KServerMain` (como os outros servidores).
 3. **`server/center-run`**: `runtime/CenterServer`, `x2_run_center`, e o cliente original no campo e numa dungeon. O GameServer acha o
    Center pela lista do banco (`Statistics.LServerList`) e reconecta a cada 10 s
    ([Dependências do GameServer](server-game.md#dependências-de-outros-servidores-levantamento-de-2026-10-31)).

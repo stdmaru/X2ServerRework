@@ -452,7 +452,7 @@ protected:
 
 public:
 	KDropTable(void);
-	~KDropTable(void);
+	virtual ~KDropTable(void);
 
 	//////////////////////////////////////////////////////////////////////////
 	// for lua

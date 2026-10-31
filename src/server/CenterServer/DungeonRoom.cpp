@@ -242,7 +242,7 @@ void KDungeonRoom::GetRoomInfo( OUT KRoomInfo& kInfo )
 }
 
 //{{ 2012. 10. 16	최육사		P2P & Relay 정보 수집
-void KDungeonRoom::LogToDB_GamePlayNetWorkInfo( IN const UidType iUnitUID, IN const KGamePlayNetworkInfoPackage& kInfo, IN const bool bLeaveRoom )
+void KDungeonRoom::LogToDB_GamePlayNetWorkInfo( IN const UidType iUnitUID, IN const KGamePlayNetworkInfoPackage& kInfo, IN const bool /*bLeaveRoom*/ )
 {
 	if( kInfo.m_vecGamePlayNetworkInfo.empty() == false )
 	{
@@ -1225,7 +1225,7 @@ void KDungeonRoom::CheckDungeonUnitInfoSuccess()
 
             bool bIsDetectedHackUser = false;
             std::vector< KHenirHackUserData > vecHackUser;
-            for( const KRoomUserPtr spRoomUser : vecKRoomUserPtr )
+            for( const KRoomUserPtr& spRoomUser : vecKRoomUserPtr )
             {
                 KHenirHackUserData kHackUser;
                 if( spRoomUser == NULL )
@@ -1292,7 +1292,7 @@ void KDungeonRoom::CheckDungeonUnitInfoSuccess()
 
 		std::vector<UidType> vecRelation;
 
-		if(m_spRoomUserManager->GetLiveMember() != NULL)
+		if(m_spRoomUserManager->GetLiveMember() != 0)
 		{
 			KRoomUserPtr spRoomUserCheck = m_spRoomUserManager->GetUser( 0 );
 
@@ -1366,7 +1366,7 @@ void KDungeonRoom::CheckDungeonUnitInfoSuccess()
 			kNotMsg.m_cNotifyType = KEGS_NOTIFY_MSG_NOT::NT_HENIR_CLEAR;
 			kNotMsg.m_Count = 1;
 
-			for( const KRoomUserPtr spRoomUser : vecKRoomUserPtr )
+			for( const KRoomUserPtr& spRoomUser : vecKRoomUserPtr )
 			{
 				if( spRoomUser == NULL )
 				{
@@ -3007,7 +3007,7 @@ _IMPL_ON_FUNC( ERM_DUNGEON_STAGE_LOAD_REQ, KEGS_DUNGEON_STAGE_LOAD_REQ )
 	{
 		m_fQuestItemDropEventProbRate = fQuestItemDropEventProbRate + 1.f;
 
-		if( m_fQuestItemDropEventProbRate < REE_DROP_EVENT_PROB_DEFAULT )
+		if( m_fQuestItemDropEventProbRate < static_cast<float>( REE_DROP_EVENT_PROB_DEFAULT ) )
 			m_fQuestItemDropEventProbRate = 1.f;
 	}
 	//}
@@ -3072,9 +3072,8 @@ _IMPL_ON_FUNC( ERM_DUNGEON_STAGE_LOAD_REQ, KEGS_DUNGEON_STAGE_LOAD_REQ )
 
 		int iExpNpcNum = 0;
 
-		//{{ 2011. 09. 07  김민성	서브 스테이지 DIE NPC 시간 체크 기능
-		int iSubStageActiveNpc = 0;
-		//}}
+		// Port: the count of active NPCs (iSubStageActiveNpc) was computed here and never used
+		// (docs/original/bugs.md: m_mapSubStageActiveNpcNum gets the EXP NPC count)
 
 		for( int i = 0; i < (int)kNPCList.m_NPCList.size(); ++i )
 		{
@@ -3122,12 +3121,6 @@ _IMPL_ON_FUNC( ERM_DUNGEON_STAGE_LOAD_REQ, KEGS_DUNGEON_STAGE_LOAD_REQ )
 				{
 					iExpNpcNum++;
 				}
-				//{{ 2011. 09. 07  김민성	서브 스테이지 DIE NPC 시간 체크 기능
-				if( kNpcInfo.m_bActive == true )
-				{
-					iSubStageActiveNpc++;
-				}
-				//}}
 			}
 			else
 			{
@@ -3135,12 +3128,6 @@ _IMPL_ON_FUNC( ERM_DUNGEON_STAGE_LOAD_REQ, KEGS_DUNGEON_STAGE_LOAD_REQ )
 				{
 					iExpNpcNum++;
 				}
-				//{{ 2011. 09. 07  김민성	서브 스테이지 DIE NPC 시간 체크 기능
-				if( kNpcInfo.m_bActive == true )
-				{
-					iSubStageActiveNpc++;
-				}
-				//}}
 			}
 			//}}
 			//////////////////////////////////////////////////////////////////////////
@@ -3886,7 +3873,6 @@ _IMPL_ON_FUNC( ERM_NPC_UNIT_CREATE_REQ, KEGS_NPC_UNIT_CREATE_REQ )
 
 		// 몬스터 생성!
 		LIF( m_kDungeonMonsterManager.CreateMonster( kCreateNpcInfo, kNPCInfo.m_kNPCUnitReq.m_UID ) );
-		const int iNpcUID = kNPCInfo.m_kNPCUnitReq.m_UID;
 
 		if( kCreateNpcInfo.m_iAllyUID > 0 )
 			m_spRoomUserManager->AddAllyNPC( kCreateNpcInfo.m_iAllyUID, kNPCInfo.m_kNPCUnitReq );
@@ -5905,7 +5891,6 @@ void KDungeonRoom::OnLeaveRoom( IN const UidType iLAST_SENDER_UID, IN const UidT
 			{
 				//튜토리얼 모드이면 패널티가 없음..
 				int iEXP = 0;
-				int iED = 0;
 				if( CXSLDungeon::IsTutorialDungeon( m_iDungeonID ) == false )
 				{
 					KERM_UPDATE_DUNGEON_UNIT_INFO_NOT kPacket;
@@ -5943,7 +5928,6 @@ void KDungeonRoom::OnLeaveRoom( IN const UidType iLAST_SENDER_UID, IN const UidT
 						//}}
 					}
 
-					iED = kPacket.m_iED;
 				}
 
 				//{{ 2012. 11. 9	최육사	배틀필드 시스템

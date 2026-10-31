@@ -165,7 +165,6 @@ void KWeddingHall::StartGame()
 	// 배틀필드는 남는시간체크를 하지 않습니다.
 	EnableRemainingPlaytime( false );
 
-	const int iPlayerCount = m_spUserManager->GetNumMember();
 
     const int iPlayingUserCount = m_spUserManager->GetNumPlaying();
     if( iPlayingUserCount < 1 || iPlayingUserCount > m_spUserManager->GetMaxSlot() )
@@ -223,7 +222,6 @@ void KWeddingHall::HandleTimeOutUser( std::map< UidType, UidType >& mapUserCIDNG
 		}
 
 		const UidType iUnitUID = mit->first;
-		const UidType iPartyUID = spRoomUser->GetPartyUID();
 
 		if( !m_spUserManager->LeaveRoom( mit->first ) )
 		{

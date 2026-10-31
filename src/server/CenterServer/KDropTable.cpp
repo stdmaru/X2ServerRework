@@ -667,7 +667,7 @@ void KDropTable::AddExtraStageMonsterDropInfo_LUA()
 	LUA_GET_VALUE( luaMgr, "ED",				kInfo.m_iED, -1 );
 	LUA_GET_VALUE( luaMgr, "EDProperty",		kInfo.m_fEDProperty, 0.0f );
 
-	if( kInfo.m_nMonsterID == -1 && kInfo.m_nMonsterID == 0 )
+	if( kInfo.m_nMonsterID == -1 || kInfo.m_nMonsterID == 0 )
 	{
 		START_LOG( cerr, L"Invalid key" )
 			<< BUILD_LOG( kInfo.m_nMonsterID );
@@ -1123,7 +1123,7 @@ bool KDropTable::NpcDropItem( IN const int iNpcID,
 							 IN const float fDungeonFactor,
 							 IN const float fContribution,
 							 IN const int iPartyUserCount_,
-							 IN const float fPartyDropBonus,
+							 IN const float /*fPartyDropBonus*/,
 							 //{{ 2012. 12. 16  드롭 이벤트 - 김민성
 							 IN const float fDropRate,
 							 //}}
@@ -1166,7 +1166,7 @@ bool KDropTable::NpcDropItem( IN const int iNpcID,
 
 	//////////////////////////////////////////////////////////////////////////
 	// NPC로부터 얻게되는 ED
-	if( ( (float)rand() / RAND_MAX ) < fEDProperty )
+	if( ( (float)rand() / static_cast<float>( RAND_MAX ) ) < fEDProperty )
 	{
 		if( true == bIsBoss )
 		{
@@ -1614,7 +1614,7 @@ bool KDropTable::DropGroupItem( IN int iDropGroupID, OUT int& iDropItemID )
 }
 
 //{{ 2009. 6. 17  최육사	대전드롭
-bool KDropTable::PvpDropItem( IN int iItemDropNum, OUT DROP_DATA& sDropData )
+bool KDropTable::PvpDropItem( IN int /*iItemDropNum*/, OUT DROP_DATA& sDropData )
 {
 	sDropData.m_vecItemID.clear();
 	sDropData.m_iExp        = -1;
@@ -2704,7 +2704,7 @@ bool KDropTable::BattleFieldNpcDropItem( IN const KBattleFieldNpcDropInfo& kDrop
 									   , IN const float fLevelFactor
 									   , IN const float fUserContribution
 									   , IN const int iPartyCount_	// kimhc // 김현철 // 2013-12-16 // 기여도 변경 작업
-									   , IN const float fPartyDropBonus
+									   , IN const float /*fPartyDropBonus*/
 										//{{ 2012. 12. 16  드롭 이벤트 - 김민성
 									   , IN const float fDropRate
 										//}}
@@ -2767,7 +2767,7 @@ bool KDropTable::BattleFieldNpcDropItem( IN const KBattleFieldNpcDropInfo& kDrop
 
 	//////////////////////////////////////////////////////////////////////////
 	// NPC로부터 얻게되는 ED
-	if( ( (float)rand() / RAND_MAX ) < kDropInfo.m_fEDProperty )
+	if( ( (float)rand() / static_cast<float>( RAND_MAX ) ) < kDropInfo.m_fEDProperty )
 	{
 		if( true == bIsBoss )
 		{

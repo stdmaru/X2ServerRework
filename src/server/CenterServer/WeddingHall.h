@@ -66,8 +66,8 @@ protected:
 	virtual float GetRemainingPlayTime(){ return m_fRemainingPlayTime; }
 	virtual void DeleteZombie( std::vector<UidType>& vecZombieUnit );	//추후 pvp/dungeon 방별 개별처리가 필요할경우 재작성을 위해
 
-	virtual void	TimeCountFinishProcess( IN const u_short usEventID ) { /*아무것도 안합니다.*/ }
-	virtual	void	LogToDB_GamePlayNetWorkInfo( IN const UidType iUnitUID, IN const KGamePlayNetworkInfoPackage& kInfo, IN const bool bLeaveRoom ) { /*아무것도 안합니다.*/ }
+	virtual void	TimeCountFinishProcess( IN const u_short /*usEventID*/ ) { /*아무것도 안합니다.*/ }
+	virtual	void	LogToDB_GamePlayNetWorkInfo( IN const UidType /*iUnitUID*/, IN const KGamePlayNetworkInfoPackage& /*kInfo*/, IN const bool /*bLeaveRoom*/ ) { /*아무것도 안합니다.*/ }
 
 	void	SetWeddingHallInfo( IN const KWeddingHallInfo& kInfo );
 	void	GetWeddingHallInfo( OUT KWeddingHallInfo& kInfo );

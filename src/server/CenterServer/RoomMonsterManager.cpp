@@ -146,7 +146,7 @@ bool KRoomMonsterManager::IsAllBossMonstersDead() const
 }
 //}}
 
-bool KRoomMonsterManager::SetMonsterDie( IN const int iNpcUID, IN const UidType iAttUnitUID, IN const bool bInsertDieList /*= true*/ )
+bool KRoomMonsterManager::SetMonsterDie( IN const int iNpcUID, IN const UidType /*iAttUnitUID*/, IN const bool bInsertDieList /*= true*/ )
 {
 	std::map< int, NPC_DATA >::iterator mit;
 	mit = m_mapAliveNpcList.find( iNpcUID );

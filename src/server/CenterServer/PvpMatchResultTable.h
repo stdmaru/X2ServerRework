@@ -32,7 +32,7 @@ public:
 
 public:
 	KPvpMatchResultTable(void);
-	~KPvpMatchResultTable(void);
+	virtual ~KPvpMatchResultTable(void);
 
 	// for lua
 	void	AddPvpExpRewardInfo_LUA( int iLevel, int iExp );

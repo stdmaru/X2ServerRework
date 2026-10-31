@@ -91,7 +91,7 @@ public:
 
 public:
 	KAttribNpcTable(void);
-	~KAttribNpcTable(void);
+	virtual ~KAttribNpcTable(void);
 
 	//////////////////////////////////////////////////////////////////////////
 	// 스크립트 파싱

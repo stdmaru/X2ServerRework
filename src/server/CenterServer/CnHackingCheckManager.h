@@ -55,7 +55,7 @@ public:
 
 public:
 	KCnHackingCheckManager(void);
-	~KCnHackingCheckManager(void);
+	virtual ~KCnHackingCheckManager(void);
 
 	// for lua
 	void SetDungeonResultCheckEnable_LUA( bool bVal );

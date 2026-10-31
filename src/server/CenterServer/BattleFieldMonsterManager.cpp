@@ -20,7 +20,7 @@ KBattleFieldMonsterManager::~KBattleFieldMonsterManager()
 {
 }
 
-void KBattleFieldMonsterManager::StartGame( IN const SEnum::BATTLE_FIELD_ID eBattleFieldID, IN const int iPlayerCount, IN const int iDangerousValue, IN const bool bBossField )
+void KBattleFieldMonsterManager::StartGame( IN const SEnum::BATTLE_FIELD_ID eBattleFieldID, IN const int iPlayerCount, IN const int /*iDangerousValue*/, IN const bool bBossField )
 {
 	KRoomMonsterManager::StartGame();
 
@@ -370,7 +370,6 @@ void KBattleFieldMonsterManager::GetAliveMonsterList( OUT std::vector< KNPCUnitR
 	//{{ 2013. 1. 4	박세훈	필드 이벤트 몬스터
 	for( mit = m_mapEventNpcInfoForClient.begin(); mit != m_mapEventNpcInfoForClient.end(); ++mit )
 	{
-		const SNpcInfoForClient& sNpcInfoForClient = mit->second;
 
 		// 해당 몬스터가 살아있는지 확인!
 		if( IsEventMonsterAlive( mit->first ) == false )
@@ -406,7 +405,7 @@ bool KBattleFieldMonsterManager::CreateMonster( IN const KNPCUnitReq& kNpcInfo, 
     return bRet;
 }
 
-bool KBattleFieldMonsterManager::SetMonsterDie( IN const int iNpcUID, IN const UidType iAttUnitUID )
+bool KBattleFieldMonsterManager::SetFieldMonsterDie( IN const int iNpcUID, IN const UidType iAttUnitUID )
 {
 	int iGroupID = 0;
 
@@ -797,7 +796,7 @@ void KBattleFieldMonsterManager::CreateEventMonster( IN const KNPCUnitReq& kNpcI
 //#endif//SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
 }
 
-bool KBattleFieldMonsterManager::SetEventMonsterDie( IN const int iNpcUID, IN const UidType iAttUnitUID )
+bool KBattleFieldMonsterManager::SetEventMonsterDie( IN const int iNpcUID, IN const UidType /*iAttUnitUID*/ )
 {
 	bool bRet = false;
 

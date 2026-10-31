@@ -14,6 +14,7 @@ class KTrainingCenterRoom : public KDungeonRoom
 	DeclToStringW;
 
 public:
+	using KDungeonRoom::SetRoomInfo;
 	KTrainingCenterRoom();
 	virtual ~KTrainingCenterRoom();
 
@@ -34,7 +35,7 @@ protected:
 	//virtual int  DecideWinTeam();
 	//virtual int  GetPlayMode();
 	//virtual void HandleTimeOutUser( std::map< UidType, UidType >& mapUserCIDNGS );
-	virtual	void SendRoomListInfo( IN const int iCode ){}	//훈련소는 방리스트가 없기때문에 동작을 안되게 한다.
+	virtual	void SendRoomListInfo( IN const int /*iCode*/ ){}	//훈련소는 방리스트가 없기때문에 동작을 안되게 한다.
 	virtual float GetRemainingPlayTime(){ return KRoom::GetRemainingPlayTime(); }
 
 	DECL_ON_FUNC( ERM_OPEN_TC_ROOM_REQ );

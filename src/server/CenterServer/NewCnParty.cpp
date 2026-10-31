@@ -391,7 +391,7 @@ void KCnParty::UpdatePartyInfoInPartyList( IN const bool bForce /*= false*/ )
 }
 
 //{{ 2012. 02. 28	최육사	배틀필드 시스템
-void KCnParty::UpdatePartyFeverInPartyList( IN const bool bForce /*= false*/ )
+void KCnParty::UpdatePartyFeverInPartyList( IN const bool /*bForce*/ /*= false*/ )
 {
 	//{{ 2011. 07. 11	최육사	대전 개편
 //#ifdef SERV_PVP_NEW_SYSTEM
@@ -1882,8 +1882,6 @@ IMPL_ON_FUNC( EPM_CHECK_FOR_PARTY_GAME_START_ACK )
 {
 	VERIFY_PARTY_STATE_WARN( ( 1, KCnPartyFSM::S_PREPARE_FOR_PLAY ) );
 
-	KEGS_PARTY_GAME_START_ACK kAck;
-	kAck.m_iOK = NetError::NET_OK;
 
 	// 소속 파티원인지 검사
 	KCnPartyUserPtr spUser = m_kPartyUserManager.GetPartyUser( FIRST_SENDER_UID );
@@ -2036,8 +2034,6 @@ IMPL_ON_FUNC( EPM_END_GAME_NOT )
 {
 	VERIFY_PARTY_STATE_WARN( ( 1, KCnPartyFSM::S_WAIT ) );
 
-	KEGS_PARTY_GAME_START_ACK kAck;
-	kAck.m_iOK = NetError::NET_OK;
 
 	if( FIRST_SENDER_UID != m_kPartyUserManager.GetHostUID() )
 	{
