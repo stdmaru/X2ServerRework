@@ -39,7 +39,7 @@ no Linux e no Wine. Ainda não rodou com configuração, banco e cliente: é o p
 
 - `main.cpp` chama `KServerMain` (`Common/ServerMain.{h,cpp}`), que substitui a janela MFC do original (`Common/ui`: `CServerApp`/`CServerUIDlg`)
   com a mesma sequência: `CreateKNC()`, `SetCmdArgs`, `Init`, `Run`, `ShutDown`, `ReleaseKObj`. O campo de entrada Lua da janela é o
-  prompt do `lua_interpreter` (`KBaseServer::Run( true )`). Desde 2026-10-31 é o terminal da T15 ([KNCSDK › Terminal](kncsdk.md#terminal-t15)).
+  prompt do `lua_interpreter` (`KBaseServer::Run( true )`). Desde 2026-10-31 é o terminal da T15 ([Console dos servidores](console.md)).
 - Argumentos como no original: `ChannelServer <tag> <grupo de servidores> [<id do banco> <senha do banco>]`; a tag escolhe
   `config_ch_<tag>.lua` (por exemplo `US_SERVICE`).
 - O código de saída é 1 quando o `Init` falha (a janela original ficava aberta até ser fechada).

@@ -106,9 +106,9 @@ Ver [Servidor — acoplamento com Windows](../original/servidor.md).
 - [x] `server/global-import`: GlobalServer importado (2026-10-31). Ver [Servidor: GlobalServer](../porte/server-global.md).
 - [x] `server/global-build`: GlobalServer compilando sem warnings (Clang, GCC, clang-cl), sem o KSMS (2026-10-31). Ver [Servidor: GlobalServer](../porte/server-global.md).
 - [x] `server/global-run`: GlobalServer no Linux (`x2_run_global`), com o GameServer entregando os `EGB_*` e o cliente original testado com os seis servidores (2026-10-31). Ver [Servidor: GlobalServer](../porte/server-global.md).
-- [x] UI MFC (`Common/ui/ServerUIDlg`) → terminal em todas as plataformas (T15): log ao vivo, prompt Lua com histórico, título com status, encerramento com confirmação, modo serviço sem stdin (2026-10-31, `server/terminal`, ver [KNCSDK › Terminal](../porte/kncsdk.md#terminal-t15)).
+- [x] UI MFC (`Common/ui/ServerUIDlg`) → terminal em todas as plataformas (T15): log ao vivo, prompt Lua com histórico, título com status, encerramento com confirmação, modo serviço sem stdin (2026-10-31, `server/terminal`, ver [Console dos servidores](../porte/console.md)).
 - [x] Log (T16): metadados estruturados no `START_LOG`; arquivo com o conteúdo completo do original, console compacto e colorido com nível próprio (2026-10-31, `kncsdk/log-structured`, ver [KNCSDK › Log](../porte/kncsdk.md#log-t16)).
-- [ ] Modo de saída para máquina e socket local com `x2ctl attach` (T30), depois do terminal e do log.
+- [x] Modo de saída para máquina e socket local com `x2ctl attach` (T30), depois do terminal e do log (2026-10-31, `server/control`, ver [Console dos servidores](../porte/console.md)).
 - [ ] ServerManager (T29, T30): ferramenta SDL3 + ImGui que orquestra e monitora os servidores, local e por SSH. Vem depois da base SDL3 do cliente (Fase 3).
 - [ ] Remover SOAP/gSOAP, billing/auth de publishers, Mail(MIME/SMTP), CrashRpt; stub onde a lógica de jogo depende.
 - [x] Marco: login + vila + dungeon com o `elsword.exe` original contra servidor rodando em Linux (2026-10-31).

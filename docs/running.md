@@ -95,7 +95,10 @@ cd build/linux-debug/run/GlobalServer     && ./GlobalServer DEV 0
 - **Encerrar**: Ctrl+C ou Ctrl+D com a linha vazia pergunta `Are you sure you want to exit? [y/N]`; `y` encerra. SIGTERM encerra sem perguntar.
 - **Sem terminal** (entrada por pipe ou arquivo), cada linha do stdin é um comando e o fim dele encerra o servidor.
   Para rodar como serviço ou em segundo plano, use `--no-stdin` (`./GameServer DEV 0 --no-stdin`): o servidor espera SIGTERM,
-  SIGINT ou SIGHUP (no Windows, Ctrl+C ou o fechamento do console). Detalhes em [KNCSDK › Terminal](porte/kncsdk.md#terminal-t15).
+  SIGINT ou SIGHUP (no Windows, Ctrl+C ou o fechamento do console).
+- **Um servidor já rodando** (em serviço, ou em outro terminal) atende pelo `run/x2ctl`: `x2ctl list`, `x2ctl run GameServer 'print(1)'`,
+  `x2ctl stop GameServer`, ou `x2ctl attach GameServer` para o log e os comandos em JSON (também por `ssh`).
+  Detalhes, opções (`--machine`, `--control=<nome>`) e o protocolo em [Console dos servidores](porte/console.md).
 - Os executáveis compilados no container também rodam direto no host, numa distribuição com unixODBC e FreeTDS. Só o
   caminho do driver muda: `X2_RUN_ODBC_DRIVER` no `docker/.env`, por exemplo `/usr/lib/libtdsodbc.so` no Arch.
 

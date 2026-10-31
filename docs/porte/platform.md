@@ -40,8 +40,10 @@ Código portado inclui `x2/platform/win32.h` no lugar de `<windows.h>`, `<atltim
 | `format.h`, `timer.h`, `noncopyable.h` | `x2::wformat`/`x2::str` (fiel ao Boost.Format), `x2::Timer`, `x2::noncopyable` | — | — |
 | `unicode.h` | wide ↔ UTF-8 ↔ UTF-16; `TranslateWideFormat`; `Cp949ToWide`, `IsValidUtf8`, `DecodeTextFile`; `Utf8FileLocale` (locale UTF-8 para `std::wfstream`, no lugar de `std::locale("korean")`) | iconv (CP949) | `MultiByteToWideChar(949)` |
 | `debug.h` | `__WFILE__`, `__WFUNCTION__` em tempo de execução | — | — |
-| `terminal.h` | `Terminal` (terminal dos servidores, T15: entrada crua, prompt redesenhado sob a saída, stdout/stderr por pipe, título, sinais de parada), `WaitForStop` (modo serviço), `KeyDecoder` (UTF-8 + sequências VT → teclas), `LineEditor` (edição, histórico, largura de caracteres do Leste Asiático, rolagem lateral). Uso em [KNCSDK › Terminal](kncsdk.md#terminal-t15) | `termios`, `poll`, pipe com `dup2` | `ReadConsoleW` com VT input, `_pipe` + `_dup2` + `SetStdHandle`, `WriteConsoleW`, `SetConsoleCtrlHandler` |
-| `console.h` | `InitConsole` (no início do `main` de cada servidor), `IsColorTerminal` (usado pelo log) | nada a fazer; `isatty` | console em UTF-8 na entrada e na saída (`SetConsoleCP`/`SetConsoleOutputCP`, restaurados ao sair) e escapes ANSI ligados (`ENABLE_VIRTUAL_TERMINAL_PROCESSING`); cor só se o console tiver esse modo |
+| `terminal.h` | `Terminal` (terminal dos servidores, T15: entrada crua, prompt redesenhado sob a saída, stdout/stderr por pipe, título, sinais de parada), `WaitForStop` (modo serviço), `KeyDecoder` (UTF-8 + sequências VT → teclas), `LineEditor` (edição, histórico, largura de caracteres do Leste Asiático, rolagem lateral). Uso em [Console dos servidores](console.md); `machine` e `SetOutputHandler` para o modo máquina | `termios`, `poll`, pipe com `dup2` | `ReadConsoleW` com VT input, `_pipe` + `_dup2` + `SetStdHandle`, `WriteConsoleW`, `SetConsoleCtrlHandler` |
+| `control.h` | Socket de controle dos servidores (T30): `ControlServer` (escuta, fila e thread de escrita por cliente, saudação, difusão), `ControlClient` (o `x2ctl`), `ControlSocketDir`/`Path`, `ListControlSockets`. Uso em [Console dos servidores](console.md) | `AF_UNIX` | `AF_UNIX` (`afunix.h`, Windows 10 1803+) |
+| `json.h` | `AppendJsonString`/`JsonString` (escape, UTF-8 inválido vira U+FFFD), `ParseJsonObject` (objeto sem objetos nem listas dentro: os comandos do protocolo) | — | — |
+| `console.h` | `InitConsole` (no início do `main` de cada servidor), `IsColorTerminal` (usado pelo log), `Utf8Arguments` (os argumentos do `main` em UTF-8; no Windows, da linha de comando UTF-16) | nada a fazer; `isatty` | console em UTF-8 na entrada e na saída (`SetConsoleCP`/`SetConsoleOutputCP`, restaurados ao sair) e escapes ANSI ligados (`ENABLE_VIRTUAL_TERMINAL_PROCESSING`); cor só se o console tiver esse modo |
 | `d3dx_math.h` | Matemática do D3DX 9: `D3DXVECTOR2/3/4`, `D3DXMATRIX`, `D3DXCOLOR`, `D3DX_PI`, `D3DXToDegree`, `D3DXVec3*` (normalize, cross, dot, transform...), `D3DXMatrix*` (identity, multiply, inverse, rotações, translação, escala, `LookAtLH`) | implementação própria | idem (sem DXSDK) |
 
 ## Armadilhas que a camada resolve
@@ -86,5 +88,5 @@ Código portado inclui `x2/platform/win32.h` no lugar de `<windows.h>`, `<atltim
 
 ## Testes
 
-`src/platform/tests` (doctest): unicode, terminal (decodificador de teclas, editor de linha), formatos MSVC, `CString`, `CTime`/`CTimeSpan`, eventos, threads, CRT e matemática D3DX
+`src/platform/tests` (doctest): unicode, terminal (decodificador de teclas, editor de linha), JSON, socket de controle, formatos MSVC, `CString`, `CTime`/`CTimeSpan`, eventos, threads, CRT e matemática D3DX
 (valores esperados derivados à mão das convenções do D3DX).
