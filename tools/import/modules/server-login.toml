@@ -1,0 +1,25 @@
+# KncWX2Server/LoginServer: account auth, user list, guilds, rankings, personal shop agency...
+# Seeds: the LoginServer/ files its Release_US project compiles. Common/ is already ported (src/server/Common).
+
+name = "server-login"
+source_root = "KncWX2Server"
+# same search path as the vcxproj: ..\Common;.\
+include_dirs = ["LoginServer", "Common"]
+flags = ["base", "server.generated", "server"]
+
+extern_dirs = ["src/kncsdk", "src/platform/include", "src/server/Common"]
+
+seed_filter = ["LoginServer/*"]
+include_scope = ["LoginServer/*"]
+
+exclude = [
+    "*.dsn",
+]
+
+[[projects]]
+path = "LoginServer/LoginServer.vcxproj"
+config = "Release_US|Win32"
+
+[[map]]
+from = "LoginServer"
+to = "src/server/LoginServer"
