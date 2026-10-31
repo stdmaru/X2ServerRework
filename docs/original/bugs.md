@@ -17,6 +17,7 @@ Os bugs que o porte **já corrigiu** (leitura fora do array, `%s` com `std::wstr
 | `GameServer/NewPartyListManager.cpp`, `KPartyListManager::IsPossibleLowLevel` | O `OUT bool isPartyNULL` é recebido por valor | Quem chama nunca vê o valor | 2026-10-30, `server/game-build` |
 | `GameServer`, grau de guilda | Testa `== -1` num `u_char`, o que é sempre falso (o teste saiu no porte, com o mesmo efeito) | A conferir no `server/game-run`: o que a procedure devolve quando o personagem não tem guilda | 2026-10-30, `server/game-build` |
 | `GameServer`, nível de skill e página de skill ativa | Testam `unsigned < 0`, sempre falso (os testes saíram no porte, com o mesmo efeito) | A validação de valor negativo nunca dispara | 2026-10-30, `server/game-build` |
+| `LoginServer/GuildSkillTree.cpp`, `KGuildSkillTree::Init` | O nível de skill de guilda acima do máximo é corrigido numa variável local (`iSkillLevel`) que nunca é usada: a skill entra com o nível do banco | Uma skill de guilda gravada acima do nível máximo continua acima, só com o log de erro | 2026-10-31, `server/login-build` |
 
 ## Dados (`ServerResource`, `ClientScript`)
 

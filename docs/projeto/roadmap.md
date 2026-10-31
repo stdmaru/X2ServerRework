@@ -97,7 +97,8 @@ Ver [Servidor — acoplamento com Windows](../original/servidor.md).
 - [x] `server/game-build`: GameServer compilando sem warnings (Clang, GCC, clang-cl), `main` sem MFC, sem anti-cheat nem TBB (2026-10-30). Ver [Servidor: GameServer](../porte/server-game.md).
 - [x] `server/game-run`: GameServer no Linux até o estado pronto, com o cliente original conectando nele (2026-10-31): o "servidor cheio" some e o login para no `EGS_VERIFY_ACCOUNT_REQ`, que depende do LoginServer ([levantamento](../porte/server-game.md#dependências-de-outros-servidores-levantamento-de-2026-10-31)).
 - [x] `server/login-import`: LoginServer importado (2026-10-31). Ver [Servidor: LoginServer](../porte/server-login.md).
-- [ ] `server/login-build`, `server/login-run`: LoginServer; com ele, o cliente da seleção de personagem até a vila.
+- [x] `server/login-build`: LoginServer compilando sem warnings (Clang, GCC, clang-cl), sem a Nexon (KR) nem os arquivos de país (2026-10-31). Ver [Servidor: LoginServer](../porte/server-login.md).
+- [ ] `server/login-run`: LoginServer rodando; com ele, o cliente da seleção de personagem até a vila.
 - [ ] UI MFC (`Common/ui/ServerUIDlg`) → terminal em todas as plataformas (T15): log ao vivo, prompt Lua com histórico, título com status, encerramento com confirmação, modo serviço sem stdin.
 - [ ] Log (T16): metadados estruturados no `START_LOG`; arquivo com o conteúdo completo do original, console compacto e colorido com nível próprio.
 - [ ] (Futuro) `--gui` portável sobre a mesma API de comandos/log.

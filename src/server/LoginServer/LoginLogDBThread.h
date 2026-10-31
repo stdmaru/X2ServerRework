@@ -27,7 +27,7 @@ public:
     virtual ~KLoginLogDBThread(void);
 
 protected:
-    virtual inline void ProcessEvent( const KEventPtr& spEvent );
+    virtual void ProcessEvent( const KEventPtr& spEvent ); // Port: `inline` dropped, it is defined in the .cpp
 
 protected:
     // packet send function

@@ -13,4 +13,4 @@ O plano geral está em [Projeto › Roadmap](../projeto/roadmap.md).
 | `src/server/EPublisherServer` | reimplementação do AuthServer (DEB): compila sem warnings, testes no Linux e no Windows, roda contra o banco | [Servidor: EPublisherServer](server-epublisher.md) |
 | `src/server/GameServer` | compila sem warnings no Linux (Clang, GCC) e no Windows (clang-cl), 2026-10-30; ainda não roda | [Servidor: GameServer](server-game.md) |
 | `src/server/ChannelServer` | compila no Linux (Clang, GCC) e no Windows (clang-cl) sem warnings; roda no Linux (`x2_run_channel`); login do cliente original no canal funcionando (2026-10-30) | [Servidor: ChannelServer](server-channel.md) |
-| `src/server/LoginServer` | importado (2026-10-31); ainda não compila | [Servidor: LoginServer](server-login.md) |
+| `src/server/LoginServer` | compila sem warnings no Linux (Clang, GCC) e no Windows (clang-cl), 2026-10-31; ainda não roda | [Servidor: LoginServer](server-login.md) |

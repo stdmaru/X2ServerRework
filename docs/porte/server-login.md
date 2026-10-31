@@ -32,10 +32,44 @@ GameServers; não conecta em nenhum outro servidor. Origem: `KncWX2Server/LoginS
 | `CTime`, `lua_tinker` | 25, 10 | já cobertos pela [Plataforma](platform.md) e pelo KNCSDK |
 | Banco | 119 `DO_QUERY` | `KODBC` já portado; as procedures são as do `Account`, `Game01` e `Log` |
 
+## Estado (2026-10-31, branch `server/login-build`)
+
+**Compila e linka sem warnings** (alvo `x2_login_server`, executável `LoginServer`, `main` com `KServerMain` como o ChannelServer e o
+GameServer) em Clang Debug, GCC Debug, Clang Release, GCC Release e clang-cl (Windows, na VM de testes), com os 6 testes passando no
+Linux e no Windows. Ainda não roda: falta a pasta de execução (`server/login-run`).
+
+Medidas do caminho (Clang Debug, `-k 0`), para dar a escala: 103 erros em 15 arquivos depois da passada mecânica, 51 depois de tirar a
+Nexon; 39 warnings no GCC (11 destrutores não virtuais). Bem menor que o GameServer: o grosso do acoplamento já tinha saído no `Common`.
+
+## Mudanças em relação ao original
+
+| Onde | Mudança | Motivo |
+|---|---|---|
+| Nexon (KR): `NexonAuth*`, `NexonBillingAuth*`, `AuthCheck` | Arquivos removidos. Saem também os ramos `AF_NEXON_KOREA` do `LoginSimLayer` (thread do `NXAuthManager`, `Tick`, `ShutDown`, `RegToLua`) e do `KUserList` (`NexonAuthLogin`/`Logout` no registro e na saída do usuário), a sincronização e o timeout de sessão de PC-bang (`CheckAuthSynchronize`, `CheckUnauthorizedSession`, `LoginTimeOut`, `UpdateSessionNoByUserID`), os handlers `ENX_AUTH_*` do `KLoginServer` e o `ELG_NEXON_USER_LOGIN_TIME_OUT_NOT` do `KLoginUser`, e o `AuthenticateUser` (sem chamador). A rota `PC_NX_AUTH` só registra o erro que o original já registrava fora da Coreia | T10. No US (`AF_GLOBAL_SERVICE`) era código morto: tudo dependia de `AF_NEXON_KOREA`, e o GameServer só manda o timeout depois de um login de PC-bang da Nexon. O `AuthCheck` é um binário proprietário sem fonte ([Binários proprietários](../original/binarios-proprietarios.md)). O pacote `ELG_NEXON_USER_AUTHENTICATE_REQ`, que o US usa, fica (o nome é da Nexon, a autenticação é no `Account`) |
+| `KLoginServer::OnServerReadyComplete` | Saem `AuthCheck_SetPassportLevel`/`SetLocale`. O `Server:SetPassportLevel` do Lua continua aceito, sem efeito | Idem |
+| `ELG_PRESENT_CASH_ITEM_REQ` (`LoginUser.cpp`) | Responde sempre `ERR_BUY_CASH_ITEM_21` (senha errada) | A senha era conferida com o hash do `AuthCheck`. Nenhum GameServer US manda esse pedido |
+| `OnlyGlobal/` (`LoginUser_CN`, `_TH`, `UserList_JP`, `_TH`, `_TW`) | Arquivos removidos | Outros países: depois das flags só tinham includes |
+| `KLoginServer` | Saem as chamadas ao KSMS (`ProcessCommunicationManager`, *named pipes* `\\.\pipe\LoginServer*`, religadas a cada 60 s no `Tick`, e o aviso de script recarregado) | Como no [ChannelServer](server-channel.md#mudanças-em-relação-ao-original) e no [GameServer](server-game.md#mudanças-em-relação-ao-original) |
+| `KRankingManager` (`RefreshTimeBackup.ini`) | Caminho com `std::filesystem::current_path()` no lugar de `GetCurrentDirectoryW` + `\\`; a gravação usa o `WritePrivateProfileStringW` novo da [Plataforma](platform.md) (`WriteIniString`), que grava UTF-8 | O Linux não tem a API; o arquivo só tem números ASCII |
+| `*DBThread.h` | `ProcessEvent` deixa de ser `virtual inline` | Definido no `.cpp`: ODR inválido (`-Wundefined-inline` do clang-cl), como no ChannelServer |
+
+Portabilidade (sem mudança de comportamento): passada mecânica (`mechanical.py`); `boost::variate_generator` → lambda sobre o
+`std::uniform_int_distribution` (OTP, como no ChannelServer); declarações puladas por `goto end_proc` sobem (`fix_goto.py`, mais 4 à mão);
+includes que o MSVC dispensava nos templates (`BaseServer.h` nos DB threads, `ActorManager.h` no `LoginServer.h`); destrutores `virtual`
+em 9 singletons; `using KThreadManager::Init` no `KLoginScriptRefreshManager`; variáveis mortas e expressões sem efeito removidas;
+`memset` do buffer de `wchar_t` com `sizeof` (zerava só metade, sem efeito porque a leitura termina a string); o teste `unsigned < 0`
+do tipo de anúncio de guilda sai (sempre falso também no MSVC).
+
+## Pendências
+
+- Bugs do original mantidos (nível de skill de guilda acima do máximo): [Bugs do original](../original/bugs.md), para a Fase 5.
+- SMS (`LoginSMSDBThread`, `SMSPhoneNumberManager`) e o `DLLManager` compilam e continuam: a config US não liga o `DC_SMS` e o
+  `DLLManager` só lê a lista de módulos do banco. Conferir ao rodar.
+
 ## Plano (um branch por passo)
 
-1. ~~**`server/login-import`**~~ (2026-10-31): este passo.
-2. **`server/login-build`**: compilar sem warnings em Clang, GCC e clang-cl, com o `main` do `KServerMain` (como o ChannelServer e o GameServer).
+1. ~~**`server/login-import`**~~ (2026-10-31).
+2. ~~**`server/login-build`**~~ (2026-10-31): compilar sem warnings em Clang, GCC e clang-cl, com o `main` do `KServerMain` (como o ChannelServer e o GameServer).
 3. **`server/login-run`**: `runtime/LoginServer` (`config_lg_DEV.lua.in`), `x2_run_login`, e o login do cliente pelo GameServer:
    `ELG_NEXON_USER_AUTHENTICATE_REQ` (`P_MUser_SEL_Auth` no `Account`) e `ELG_REGISTER_USER_REQ` →
    `ELG_REGISTER_USER_GLOBAL_PUBLISHER_ACK`; depois, a seleção de personagem e a vila
