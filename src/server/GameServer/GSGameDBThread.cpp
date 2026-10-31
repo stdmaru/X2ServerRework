@@ -591,6 +591,9 @@ bool KGSGameDBThread::Query_SelectUnit( IN const UidType iUserUID, IN const KEGS
 
 			kAck.m_kUnitInfo.m_UnitSkillData.m_nActiveSkillPagesNumber = 1;
 		}
+
+		// Port: the original left the cursor open here, and the next query reconnected on "invalid cursor state" (24000)
+		m_kODBC.EndFetch();
 	}
 	else
 	{

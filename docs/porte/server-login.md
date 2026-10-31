@@ -72,9 +72,14 @@ em 9 singletons; `using KThreadManager::Init` no `KLoginScriptRefreshManager`; v
 `memset` do buffer de `wchar_t` com `sizeof` (zerava só metade, sem efeito porque a leitura termina a string); o teste `unsigned < 0`
 do tipo de anúncio de guilda sai (sempre falso também no MSVC).
 
+### Bugs do original corrigidos
+
+| Onde | Bug | Correção |
+|---|---|---|
+| `KGuildSkillTree::Init` | O nível de skill de guilda acima do máximo era corrigido numa variável local que nunca era usada: a skill entrava com o nível do banco, só com o log de erro | A skill entra com o nível limitado ao máximo (2026-10-31, `-Wunused-but-set-variable` do GCC) |
+
 ## Pendências
 
-- Bugs do original mantidos (nível de skill de guilda acima do máximo): [Bugs do original](../original/bugs.md), para a Fase 5.
 - SMS (`LoginSMSDBThread`, `SMSPhoneNumberManager`) e o `DLLManager` compilam e continuam: a config US não liga o `DC_SMS` e o
   `DLLManager` só lê a lista de módulos do banco. Conferir ao rodar.
 

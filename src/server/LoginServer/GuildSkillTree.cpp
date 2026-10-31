@@ -38,8 +38,7 @@ void KGuildSkillTree::UpdateGuildSkillTree( IN const KGuildSkillInfo& kInfo )
 			continue;
 		}
 
-		// Original bug: the clamped level is never used, the DB level is kept (docs/original/bugs.md)
-		[[maybe_unused]] int iSkillLevel = static_cast<int>(kGuildSkillData.m_cSkillLevel);
+		int iSkillLevel = static_cast<int>(kGuildSkillData.m_cSkillLevel);
 
 		// 스킬의 최고레벨보다 높은 스킬이 있다면 최고레벨로 보정
 		const CXSLSkillTree::SkillTreeTemplet* pSkillTreeTemplet = SiCXSLSkillTree()->GetGuildSkillTreeTemplet( kGuildSkillData.m_iSkillID );
@@ -59,7 +58,8 @@ void KGuildSkillTree::UpdateGuildSkillTree( IN const KGuildSkillInfo& kInfo )
 		}
 
 		// 이미 존재하면 삽입되지 않고 존재하지 않으면 삽입된다.
-		GuildSkill kSkillData( kGuildSkillData.m_cSkillLevel, kGuildSkillData.m_cSkillCSPoint );
+		// Port: the original built it from m_cSkillLevel, so the level above the maximum was never clamped
+		GuildSkill kSkillData( iSkillLevel, kGuildSkillData.m_cSkillCSPoint );
 		m_mapSkillTree.insert( std::make_pair( kGuildSkillData.m_iSkillID, kSkillData ) );
 	}
 }
