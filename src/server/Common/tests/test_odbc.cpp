@@ -231,9 +231,9 @@ TEST_CASE( "a procedure called with exec, like DO_QUERY, and a long std::string"
     KODBC kODBC;
     REQUIRE( kODBC.DriverConnect( wstrConn.c_str(), true ) );
 
-    // #temporary procedure: lives only in this connection. A statement without a result returns SQL_NO_DATA,
-    // which Query reports as false, like the original (the servers only exec procedures that select).
-    CHECK_FALSE( kODBC.Query( L"CREATE PROCEDURE #x2_test_sp @iUID bigint, @wstrName nvarchar(32) AS "
+    // #temporary procedure: lives only in this connection. A statement without a result returns SQL_NO_DATA on
+    // FreeTDS, which Query reports as success, like the SQL Server driver of production.
+    CHECK( kODBC.Query( L"CREATE PROCEDURE #x2_test_sp @iUID bigint, @wstrName nvarchar(32) AS "
                           L"SELECT @iUID + 1, @wstrName + N'!', REPLICATE(CAST('a' AS varchar(max)), 5000)" ) );
     CHECK( kODBC.m_sqlState[0] == L'\0' );     // no error
 
@@ -248,6 +248,29 @@ TEST_CASE( "a procedure called with exec, like DO_QUERY, and a long std::string"
     CHECK( llUID == 9000000001LL );
     CHECK( wstrName == L"엘소드!" );
     CHECK( strLong == std::string( 5000, 'a' ) );
+}
+
+TEST_CASE( "a procedure without a result, like the statistics inserts, succeeds" )
+{
+    const std::wstring wstrConn = ConnStr( L"tempdb" );
+    REQUIRE_DB( wstrConn );
+
+    KODBC kODBC;
+    REQUIRE( kODBC.DriverConnect( wstrConn.c_str(), true ) );
+
+    // the shape of dbo.P_StatCCUMinute_INS and dbo.P_Rank_SpaceTime_Day_DEL: SET NOCOUNT ON and no SELECT
+    REQUIRE( kODBC.Query( L"CREATE TABLE #x2_test_t ( i int )" ) );
+    REQUIRE( kODBC.Query( L"CREATE PROCEDURE #x2_test_ins @i int AS SET NOCOUNT ON INSERT INTO #x2_test_t VALUES ( @i )" ) );
+    CHECK( kODBC.Query( L"exec #x2_test_ins 7" ) );
+    CHECK( kODBC.m_sqlState[0] == L'\0' );
+    CHECK_FALSE( kODBC.BeginFetch() );          // no rows to read
+
+    REQUIRE( kODBC.Query( L"SELECT COUNT(*) FROM #x2_test_t" ) );
+    int iCount = 0;
+    REQUIRE( kODBC.BeginFetch() );
+    kODBC >> iCount;
+    kODBC.EndFetch();
+    CHECK( iCount == 1 );
 }
 
 TEST_CASE( "KStoredProcedure reads the characters of a user from Game01" )

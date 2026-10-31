@@ -74,6 +74,7 @@ no Linux), `SERVER=host,porta`, `DATABASE`, `UID`, `PWD`, `WSID` e `APP`, em UTF
 | Conexão por `.dsn` | Arquivo lido por nós, driver trocado, `WSID` fora (ver Configuração) | O driver `SQL Server` não existe fora do Windows; o unixODBC não lê `.dsn` em UTF-16 |
 | Falha de conexão | O log traz o `SQLSTATE` e a mensagem do driver | O original só logava o código de retorno |
 | `ReadDiag` | Quando não há registro de diagnóstico, `m_sqlState`/`m_szDiagMsg` ficam vazios | O original deixava o texto do erro anterior |
+| `Query` | `SQL_NO_DATA` do `SQLExecDirectW` (comando sem resultado: procedure com `SET NOCOUNT ON` e sem `SELECT`, `CREATE`) conta como sucesso (2026-10-31, `server/login-run`) | O FreeTDS devolve `SQL_NO_DATA`; o driver `SQL Server` da produção devolvia sucesso: os logs do LoginServer original mostram o `dbo.P_StatCCUMinute_INS` rodando a cada minuto sem erro. Antes da mudança o porte registrava "Query 실패" e o `DO_QUERY` pulava o resto (o backup do ranking de Henir parava no `P_Rank_SpaceTime_*_DEL`) |
 
 ### Bugs do original corrigidos
 
@@ -84,7 +85,6 @@ no Linux), `SERVER=host,porta`, `DATABASE`, `UID`, `PWD`, `WSID` e `APP`, em UTF
 
 ### Mantido como no original (anotado)
 
-- `Query` devolve `false` quando o comando não produz resultado (`SQL_NO_DATA`), por exemplo um `CREATE`: os servidores só chamam procedures que fazem `SELECT`.
 - `USHORT` é lido como `SQL_C_SSHORT` (`smallint -1` vira 65535; valores acima de 32.767 numa coluna `int` falham).
 - Se a primeira conexão falha, a reconexão automática (`08S01`/`24000`) nunca acontece, porque não há estado SQL para comparar.
 
@@ -94,7 +94,7 @@ no Linux), `SERVER=host,porta`, `DATABASE`, `UID`, `PWD`, `WSID` e `APP`, em UTF
 |---|---|
 | `platform/tests/test_odbc.cpp` (sempre; Linux e Wine) | `SQLWCHAR` ↔ `wchar_t`: ASCII, coreano, `♪`, espaço ideográfico, fora do BMP (par substituto), vazio |
 | `server/Common/tests/test_odbc.cpp`, sem banco (sempre) | `ReadFileDSN` com um `.dsn` UTF-16 no formato do original (seção `[ODBC]`, comentário, outra seção), `BuildConnStrFromDsn` (troca do driver, `WSID` fora, `{}` em `;`/`}`/espaço, opções), `IsInvalidMarkIn*`, `RemoveInvalidMark` |
-| idem, suíte `db` (ctest `server_common_db`, só com `X2_TEST_ODBC`) | Contra o SQL Server: todos os tipos do `operator>>` (`bit`, `smallint` em `char`/`short`/`USHORT`, `int`, `bigint`, `real`, `nvarchar` com coreano e fora do BMP, 3.000 caracteres, `varchar`, `varbinary` de 2.500 bytes, `NULL`); erro com `SQLSTATE` `42S02` e mensagem; senha errada; `.dsn` UTF-16 com `DRIVER=SQL Server` e `WSID` trocados; procedure temporária com `exec` e `bigint`/`N'...'`; `KStoredProcedure` sobre o `Game01` |
+| idem, suíte `db` (ctest `server_common_db`, só com `X2_TEST_ODBC`) | Contra o SQL Server: todos os tipos do `operator>>` (`bit`, `smallint` em `char`/`short`/`USHORT`, `int`, `bigint`, `real`, `nvarchar` com coreano e fora do BMP, 3.000 caracteres, `varchar`, `varbinary` de 2.500 bytes, `NULL`); erro com `SQLSTATE` `42S02` e mensagem; senha errada; `.dsn` UTF-16 com `DRIVER=SQL Server` e `WSID` trocados; procedure temporária com `exec` e `bigint`/`N'...'`; procedure sem resultado (`SET NOCOUNT ON`, só `INSERT`) dando sucesso; `KStoredProcedure` sobre o `Game01` |
 
 Sem `X2_TEST_ODBC`, o ctest roda só os testes sem banco (`--test-suite-exclude=db`); a suíte `db` rodada à mão sem a variável passa com a mensagem "skipped".
 

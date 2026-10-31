@@ -13,6 +13,8 @@ cmake --build --preset linux-debug --target x2_run_channel                      
 cd build/linux-debug/run/ChannelServer && ./ChannelServer DEV 0                       # tag DEV, grupo de servidores 0
 cmake --build --preset linux-debug --target x2_run_game                              # GameServer (porta 9300)
 cd build/linux-debug/run/GameServer && ./GameServer DEV 0
+cmake --build --preset linux-debug --target x2_run_login                             # LoginServer (porta 9200)
+cd build/linux-debug/run/LoginServer && ./LoginServer DEV 0
 ```
 
 O login passa pelo EPublisherServer ([Servidor: EPublisherServer](../porte/server-epublisher.md)), que precisa estar rodando:
@@ -78,6 +80,11 @@ LuaJIT passam pelo `lua_dofile` ([KNCSDK](../porte/kncsdk.md)), e os erros dos d
 tinha `CF_XTRAP` nem HackShield), com a estatística por FTP desligada; `.dsn` do `Account`, `Game01`, `Statistics` e `ES_BILLING`
 (o de produção tinha `Game01`/`Game02` por grupo, os dois no mesmo banco); `config_gs.ini` como estava (a versão `V4.0326.5`).
 Os `.lua` soltos na pasta de produção do GameServer não são lidos por nada (o `KAutoPath` só procura nos `AddPath`).
+
+**LoginServer** (`runtime/LoginServer`, 2026-10-31): `config_lg_DEV.lua.in` derivado do `config_lg_US_SERVICE.lua` (já sem a Nexon, que
+estava comentada), `.dsn` do `Account`, `Game01`, `Statistics` e `ES_BILLING` e o `config_lg.ini` como estava. O `RankingData.lua` lido
+é o do `ServerResource` (o da pasta de produção do LoginServer, com outra recompensa de Henir, não é lido). O `RefreshTimeBackup.ini`
+(horário do próximo reset de cada ranking de Henir) é criado pelo servidor ao encerrar, na própria pasta, e não é versionado.
 
 ## `tools/kom`
 

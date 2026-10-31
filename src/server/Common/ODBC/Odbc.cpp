@@ -391,7 +391,6 @@ bool KODBC::Query( const std::wstring& wstrQuery )
 
 	DWORD dwElapTime = ::GetTickCount();  // remembers the slowest query
 
-	// a query without rows returns SQL_NO_DATA
 	SQLRETURN ret = ::SQLExecDirectW( m_hStmt, SqlWPtr( sqlQuery ), SQL_NTS );
 	ReadDiag( SQL_HANDLE_STMT, m_hStmt );
 
@@ -445,6 +444,11 @@ bool KODBC::Query( const std::wstring& wstrQuery )
 				<< BUILD_LOG( ms_kMaxProcessingInfo.m_dwTerm );
 		}
 	}
+
+	// Port: a statement without a result (a procedure with SET NOCOUNT ON and no SELECT, a CREATE) returns SQL_NO_DATA
+	// on FreeTDS; the SQL Server driver of production returned SQL_SUCCESS (docs/porte/server-common-db.md)
+	if( ret == SQL_NO_DATA )
+		ret = SQL_SUCCESS;
 
 	if( SQLOK(ret) == false )
 	{

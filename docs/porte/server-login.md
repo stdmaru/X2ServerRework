@@ -52,6 +52,7 @@ Nexon; 39 warnings no GCC (11 destrutores não virtuais). Bem menor que o GameSe
 | `KLoginServer` | Saem as chamadas ao KSMS (`ProcessCommunicationManager`, *named pipes* `\\.\pipe\LoginServer*`, religadas a cada 60 s no `Tick`, e o aviso de script recarregado) | Como no [ChannelServer](server-channel.md#mudanças-em-relação-ao-original) e no [GameServer](server-game.md#mudanças-em-relação-ao-original) |
 | `KRankingManager` (`RefreshTimeBackup.ini`) | Caminho com `std::filesystem::current_path()` no lugar de `GetCurrentDirectoryW` + `\\`; a gravação usa o `WritePrivateProfileStringW` novo da [Plataforma](platform.md) (`WriteIniString`), que grava UTF-8 | O Linux não tem a API; o arquivo só tem números ASCII |
 | `*DBThread.h` | `ProcessEvent` deixa de ser `virtual inline` | Definido no `.cpp`: ODR inválido (`-Wundefined-inline` do clang-cl), como no ChannelServer |
+| `ON_DBE_SERVER_ON_ACK` (`LoginServer.cpp`) | Quando o banco recusa o servidor, a resposta marca `SetAuthenticateResult( false )` e o `Init` falha; quando aceita, marca `true` | Como no [GameServer](server-game.md#mudanças-em-relação-ao-original): o original chamava `::exit( 0 )` nessa thread, e sem o `true` o `Authenticate` do `Common` portado recusava o servidor |
 
 Portabilidade (sem mudança de comportamento): passada mecânica (`mechanical.py`); `boost::variate_generator` → lambda sobre o
 `std::uniform_int_distribution` (OTP, como no ChannelServer); declarações puladas por `goto end_proc` sobem (`fix_goto.py`, mais 4 à mão);
