@@ -15,6 +15,8 @@ cmake --build --preset linux-debug --target x2_run_game                         
 cd build/linux-debug/run/GameServer && ./GameServer DEV 0
 cmake --build --preset linux-debug --target x2_run_login                             # LoginServer (porta 9200)
 cd build/linux-debug/run/LoginServer && ./LoginServer DEV 0
+cmake --build --preset linux-debug --target x2_run_center                            # CenterServer (porta 9100)
+cd build/linux-debug/run/CenterServer && ./CenterServer DEV 0
 ```
 
 O login passa pelo EPublisherServer ([Servidor: EPublisherServer](../porte/server-epublisher.md)), que precisa estar rodando:
@@ -56,6 +58,10 @@ Os configs apontam para `../ServerResource` e `../ClientScript` (`SimLayer:AddPa
 
 A senha fica só no cache e nos arquivos gerados em `build/`, nunca no git.
 
+**Rodar no host** (para testes, sem Docker): o binário compilado na imagem roda direto numa distribuição com as mesmas bibliotecas
+(unixODBC, FreeTDS); só o caminho do driver muda. Configure com `-DX2_RUN_ODBC_DRIVER=/usr/lib/libtdsodbc.so` (Arch, 2026-10-31) e
+remonte as pastas (`x2_run_*`). O `gdb` do host dá o *backtrace* de um crash: `gdb -batch -ex run -ex bt --args ./GameServer DEV 0`.
+
 ## `ClientScript` gerado do cliente
 
 `tools/runtime/gen_clientscript.py <data> <saída>`: decifra cada `.lua` dos `.kom` e decompila o bytecode da KOG (`tools/kom/kom.py`),
@@ -86,6 +92,10 @@ Os `.lua` soltos na pasta de produção do GameServer **eram lidos** e foram par
 estava comentada), `.dsn` do `Account`, `Game01`, `Statistics` e `ES_BILLING` e o `config_lg.ini` como estava. O `RankingData.lua` da
 pasta de produção do LoginServer (recompensa de Henir até o 6º lugar, contra 3 no `ServerResource`) era o lido e foi para o `ServerResource`. O `RefreshTimeBackup.ini`
 (horário do próximo reset de cada ranking de Henir) é criado pelo servidor ao encerrar, na própria pasta, e não é versionado.
+
+**CenterServer** (`runtime/CenterServer`, 2026-10-31): `config_cn_DEV.lua.in` derivado do `config_cn_US_SERVICE.lua` (o SMS já estava
+desligado), `.dsn` do `Account`, `Game01` e `Statistics` e o `config_cn.ini` como estava. A pasta `Config/` de produção (configs de
+outros países) não vem.
 
 ## Scripts da pasta de cada servidor (2026-10-31, T28)
 

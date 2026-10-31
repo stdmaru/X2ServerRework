@@ -34,7 +34,19 @@ do original (`src/server/CenterServer` ao lado de `src/server/Common`).
 | `CTime`, `lua_tinker` | 16, 15 | já cobertos pela [Plataforma](platform.md) e pelo KNCSDK |
 | Banco | 50 `DO_QUERY` | `KODBC` já portado; as procedures são as do `Game01`, `Log` e `Account` |
 
-## Estado (2026-10-31, branch `server/center-build`)
+## Estado (2026-10-31, branch `server/center-run`)
+
+**Roda no Linux** pela pasta montada por `x2_run_center` ([Pastas de execução](../ferramentas/runtime.md)): conecta nos três bancos
+(`Account`, `Game01`, `Statistics`), carrega os scripts (os erros de carga são os de dungeon e linemap já listados em
+[Bugs do original](../original/bugs.md#dados-serverresource-clientscript)), se autentica no banco e chega ao estado pronto; o GameServer
+conecta nele (porta 9100). Encerra com código 0 no fim do stdin.
+
+**Testado com o cliente original** (no Wine, 2026-10-31, com o EPublisherServer, o LoginServer, o ChannelServer e o GameServer): saída da
+vila para o **campo**, entrada numa **dungeon** e troca de personagem, sem erro no CenterServer. Os pacotes para o GlobalServer (`EGB_*`:
+CCU, missões, quest do dia, bloqueio) continuam descartados pelo GameServer, sem travar nada. A troca de personagem derrubava o GameServer
+(Debug) no relay TCP: era o `KSerBuffer::UnCompress` de um evento sem dados, corrigido no [KNCSDK](kncsdk.md).
+
+### Build (2026-10-31, branch `server/center-build`)
 
 **Compila e linka sem warnings** (alvo `x2_center_server`, executável `CenterServer`, `main` com `KServerMain` como os outros
 servidores) em Clang Debug, GCC Debug, Clang Release, GCC Release e clang-cl (Windows, na VM de testes), com os 6 testes passando
@@ -81,6 +93,6 @@ verdadeiro também no MSVC) sai; `nGSUID`, `m_CheckClass`/`m_CheckType` e `iCand
 
 1. ~~**`server/center-import`**~~ (2026-10-31).
 2. ~~**`server/center-build`**~~ (2026-10-31): compilar sem warnings em Clang, GCC e clang-cl, com o `main` do `KServerMain` (como os outros servidores).
-3. **`server/center-run`**: `runtime/CenterServer`, `x2_run_center`, e o cliente original no campo e numa dungeon. O GameServer acha o
+3. ~~**`server/center-run`**~~ (2026-10-31): `runtime/CenterServer`, `x2_run_center`, e o cliente original no campo e numa dungeon. O GameServer acha o
    Center pela lista do banco (`Statistics.LServerList`) e reconecta a cada 10 s
    ([Dependências do GameServer](server-game.md#dependências-de-outros-servidores-levantamento-de-2026-10-31)).

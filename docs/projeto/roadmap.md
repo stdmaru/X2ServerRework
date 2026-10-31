@@ -71,7 +71,7 @@ Andamento em 2026-10-29: plataforma e KNCSDK compilando no Linux (GCC e Clang) e
 - [x] Dependências via CMake (T13): zlib, LuaJIT 2.1 (pkg-config, ou fonte com commit fixo pelo Makefile dele: T21), doctest.
 - [x] KNCSDK portado: log, `Serializer` (formato de rede fixo), `KncSecurity`, `Thread`, `ObjectPool`, `KncUtil`, unido ao `KNCSDK_Client`. Ver [KNCSDK](../porte/kncsdk.md).
 - [x] `lua_tinker` (versão do servidor) compilando em GCC/Clang sobre LuaJIT 2.1; luabind removido.
-- [ ] **Validar o protocolo com bytes reais** do cliente/servidor originais. Em 2026-10-30 o login no canal funcionou com o `x2_DEBUG.exe` e o `x2.exe` (troca de chave, cripto, `ECH_VERIFY_ACCOUNT`, listas); em 2026-10-31 o cliente chegou à vila pelo GameServer e o LoginServer (seleção de personagem, canal, vila); falta o resto (campo, dungeon).
+- [ ] **Validar o protocolo com bytes reais** do cliente/servidor originais. Em 2026-10-30 o login no canal funcionou com o `x2_DEBUG.exe` e o `x2.exe` (troca de chave, cripto, `ECH_VERIFY_ACCOUNT`, listas); em 2026-10-31 o cliente chegou à vila pelo GameServer e o LoginServer (seleção de personagem, canal, vila) e, com o CenterServer, ao campo e a uma dungeon; falta o GlobalServer.
 - [x] Compilar e testar os caminhos Windows com **MinGW-w64 + Wine** (T18): plataforma e KNCSDK sem warnings, testes passando (2026-10-29).
 - [x] LuaJIT 2.1 no MinGW (T21): `kncsdk_lua` e o `Common` do servidor compilando sem warnings e com os testes passando no Wine (2026-10-30).
 - [x] Crypto++ substituído por `x2::crypto` (DES-CBC, HMAC-MD5, MD5, SHA-256), com vetores oficiais (T27, 2026-10-30).
@@ -102,12 +102,13 @@ Ver [Servidor — acoplamento com Windows](../original/servidor.md).
 - [x] `server/login-run`: LoginServer no Linux (`x2_run_login`), com o cliente original da lista de personagens até a **vila** (2026-10-31). A saída para o campo para no `ERM_OPEN_BATTLE_FIELD_REQ`, que vai para o CenterServer.
 - [x] `server/center-import`: CenterServer importado (2026-10-31). Ver [Servidor: CenterServer](../porte/server-center.md).
 - [x] `server/center-build`: CenterServer compilando sem warnings (Clang, GCC, clang-cl), sem o KSMS (2026-10-31). Ver [Servidor: CenterServer](../porte/server-center.md).
-- [ ] `server/center-run`: o CenterServer rodando, com o cliente original no campo e numa dungeon. Depois o GlobalServer.
+- [x] `server/center-run`: CenterServer no Linux (`x2_run_center`), com o cliente original no **campo** e numa **dungeon** (2026-10-31). Ver [Servidor: CenterServer](../porte/server-center.md).
+- [ ] GlobalServer (`server/global-import`, `-build`, `-run`): missões globais, quest aleatória do dia, CCU.
 - [ ] UI MFC (`Common/ui/ServerUIDlg`) → terminal em todas as plataformas (T15): log ao vivo, prompt Lua com histórico, título com status, encerramento com confirmação, modo serviço sem stdin.
 - [ ] Log (T16): metadados estruturados no `START_LOG`; arquivo com o conteúdo completo do original, console compacto e colorido com nível próprio.
 - [ ] (Futuro) `--gui` portável sobre a mesma API de comandos/log.
 - [ ] Remover SOAP/gSOAP, billing/auth de publishers, Mail(MIME/SMTP), CrashRpt; stub onde a lógica de jogo depende.
-- [ ] Marco: login + vila + dungeon com o `elsword.exe` original contra servidor rodando em Linux.
+- [x] Marco: login + vila + dungeon com o `elsword.exe` original contra servidor rodando em Linux (2026-10-31).
 
 ## Fase 3 — Cliente: plataforma
 
