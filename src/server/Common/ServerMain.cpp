@@ -2,6 +2,8 @@
 
 #include "BaseServer.h"
 
+#include "x2/platform/console.h"
+
 #include <cstdio>
 #include <string>
 #include <vector>
@@ -10,6 +12,8 @@ extern KBaseServer* CreateKNC();
 
 int KServerMain( int argc, char* argv[] )
 {
+	x2::platform::InitConsole();
+
 	std::vector< KClearString< std::wstring > > vecCmdArgs;
 	for( int i = 0; i < argc; ++i )
 	{

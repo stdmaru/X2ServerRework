@@ -1,6 +1,7 @@
 # x2::platform - the only place that talks to the OS directly (docs/porte/platform.md).
 
 add_library(x2_platform STATIC
+    src/console.cpp
     src/crt_posix.cpp
     src/d3dx_math.cpp
     src/debug.cpp

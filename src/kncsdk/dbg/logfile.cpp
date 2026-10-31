@@ -6,15 +6,7 @@
 #include <mutex>
 #include <sstream>
 
-#if defined(_WIN32)
-#include <io.h>
-#define X2_ISATTY(fd) _isatty(fd)
-#define X2_FILENO(f) _fileno(f)
-#else
-#include <unistd.h>
-#define X2_ISATTY(fd) ::isatty(fd)
-#define X2_FILENO(f) ::fileno(f)
-#endif
+#include "x2/platform/console.h"
 
 namespace dbg
 {
@@ -42,7 +34,7 @@ namespace dbg
             std::string     fileName = "Logfile Not Initialize Yet.";
             std::wstring    title = L"Log";
             short           level = 2;
-            bool            colorConsole = X2_ISATTY( X2_FILENO( stdout ) ) != 0;
+            bool            colorConsole = x2::platform::IsColorTerminal( stdout );
         };
 
         Output& Out()

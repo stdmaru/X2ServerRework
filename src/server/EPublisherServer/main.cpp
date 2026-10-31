@@ -2,6 +2,7 @@
 // EPublisher SOAP service. Like the other servers, stdin is a Lua prompt and its end shuts the server down.
 #include "EPublisherServer.h"
 
+#include "x2/platform/console.h"
 #include "x2/platform/unicode.h"
 
 #include <KncLua.h>
@@ -14,6 +15,8 @@
 int main(int argc, char* argv[])
 {
     using namespace x2::epublisher;
+
+    x2::platform::InitConsole();
 
     if (argc < 2) {
         std::fputs("usage: EPublisherServer <tag>   (reads config_ep_<tag>.lua)\n", stderr);
