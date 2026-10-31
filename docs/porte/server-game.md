@@ -84,11 +84,34 @@ destrutores `virtual` em 14 singletons; `using` das sobrecargas escondidas de `R
 - `KPartyListManager::IsPossibleLowLevel`: o `OUT bool isPartyNULL` é recebido por valor (quem chama nunca vê o valor); mantido como no original.
 - 105 `unsigned long` no GameServer (8 bytes no Linux): revisar os que vão para rede, banco ou formato fixo ao rodar.
 
+## Dependências de outros servidores (levantamento de 2026-10-31)
+
+O GameServer não conhece os outros servidores pela configuração. Ao se autenticar no banco, recebe a lista de Center, Login e Global
+(`m_mapCenterList`/`m_mapLoginList`/`m_mapGlobalList`, `GameServer.cpp`) e o `KProxyManager` (`Common`) conecta em todos
+(`ConnectAll`), com uma thread que tenta de novo a cada 10 s. **Ele não espera essas conexões para ficar pronto**
+(`SetServerReady` vem logo depois). Sem o servidor de destino, o `SendTo*Server` registra "Proxy 포인터를 찾을 수 없음" e descarta o pacote.
+Ninguém responde e não há timeout: o usuário fica parado no estado em que estava.
+
+Do canal até a vila (`GSUserSession.cpp`, `GSUserGameCommon.cpp`, `GSUserField.cpp`, `GSUserFunction.cpp`):
+
+| Momento | Pacote | Destino | Sem o servidor |
+|---|---|---|---|
+| `EGS_VERIFY_ACCOUNT_REQ` | `ELG_NEXON_USER_AUTHENTICATE_REQ` → `_ACK` | LoginServer, que autentica no `Account` (`P_MUser_SEL_Auth`, ramo `SERV_GLOBAL_AUTH`) | **bloqueia**: o cliente nunca recebe o `EGS_VERIFY_ACCOUNT_ACK` |
+| depois do `_ACK` | `ELG_REGISTER_USER_REQ` → `ELG_REGISTER_USER_GLOBAL_PUBLISHER_ACK` | LoginServer (lista de usuários, bloqueio de conta) | **bloqueia**: o usuário não passa para `S_LOGINED` |
+| seleção de servidor e de personagem | nenhum (só os bancos `Game` e `Account`) | — | — |
+| personagem selecionado | `ELG_REGISTER_UNIT_NOT`, `EGB_REGISTER_UNIT_NOT`, `ELG_UPDATE_USER_UNIT_BUFF_INFO_REQ` | Login, Global | só avisos, nada espera por eles |
+| entrada na vila | `ERM_JOIN_FIELD_*` | o próprio GameServer (`SendToGSField`) | — |
+
+Conclusão: **para chegar à vila só falta o LoginServer** (45 `.cpp`, ~42 mil linhas no original, 2026-10-31). O CenterServer (~87 mil
+linhas: salas de dungeon, PvP, praça, festas, troca) e o GlobalServer (~21 mil: missões globais, quest aleatória do dia, CCU) só entram
+depois da vila. O LoginServer não conecta em nenhum outro servidor: é ele que recebe as conexões.
+
 ## Plano (um branch por passo)
 
 1. ~~**`server/game-import`**~~: este passo.
 2. ~~**`server/game-build`**~~ (2026-10-30): compilar sem warnings em GCC, Clang e clang-cl, com o mesmo `main` (`KServerMain`) e os hooks do servidor
    (`g_szConfigFile`, `CreateDBThread`). Maior que o ChannelServer (15× o código): pode virar mais de um branch.
-3. **`server/game-run`**: `x2_run_game` (`runtime/GameServer`, `Game01`), e o cliente passando do "servidor cheio" para a seleção de
-   personagem e a vila. **Atenção:** o GameServer fala com o LoginServer (`SendToLoginServer`), o CenterServer (`ECN_*`) e o GlobalServer
-   (`SendToGlobalServer`); levantar o que é preciso deles para a vila antes desse passo (provavelmente portar o LoginServer e o CenterServer).
+3. **`server/game-run`** (em andamento): `x2_run_game` (`runtime/GameServer`, `Game01`) e o GameServer até o estado pronto, com o cliente
+   conectando nele. O login para no `EGS_VERIFY_ACCOUNT_REQ` até existir o LoginServer ([Dependências](#dependências-de-outros-servidores-levantamento-de-2026-10-31)).
+4. **`server/login-import`**, **`server/login-build`** e **`server/login-run`**: o LoginServer, como o ChannelServer e o GameServer.
+   Com ele, o cliente da seleção de personagem até a vila. O CenterServer e o GlobalServer vêm depois (dungeon, PvP, festas).
