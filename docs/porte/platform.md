@@ -68,6 +68,9 @@ Código portado inclui `x2/platform/win32.h` no lugar de `<windows.h>`, `<atltim
   operações pendentes precisa chamar `Drain()` antes (o `~KIocp` faz isso), senão os handlers soltam sockets durante a destruição.
 - **Windows**: o `types.h` inclui o `windows.h` com `WIN32_LEAN_AND_MEAN`, que deixa de fora o `rpcndr.h` e o `winsock.h`; os nomes que o original
   recebia deles (`byte`, `u_char`, `u_short`, `u_int`, `u_long`) são declarados com os mesmos tipos. O build Windows define `UNICODE`/`_UNICODE` (`x2::options`).
+- **Desvio do stdout no Windows** (`terminal.cpp`): o `_dup2(pipe, 1)` fecha o handle que estava no fd 1, que é o mesmo que o
+  `GetStdHandle(STD_OUTPUT_HANDLE)` devolveu antes. O terminal escreve pela cópia (`_dup(1)`); com o handle antigo nada aparecia,
+  nem log nem prompt (achado na VM em 2026-10-31).
 - `IsWindow` sempre falso e `HWND_DESKTOP` nulo fora do Windows (servidor sem janela).
 
 ## Limitações conhecidas

@@ -63,11 +63,17 @@ Os configs apontam para `../ServerResource` e `../ClientScript` (`SimLayer:AddPa
 | `X2_RUN_DIR` | `build/<preset>/run` | destino |
 | `X2_CLIENT_DATA` | `_client/data` | origem do `ClientScript` |
 | `X2_RUN_DB_SERVER`, `X2_RUN_DB_USER`, `X2_RUN_DB_PASSWORD` | `127.0.0.1,<X2_DB_PORT ou 1433>`, `sa`, a senha de desenvolvimento do `docker-compose.yml` | `.dsn` |
+| `X2_RUN_DB_NAME_PREFIX` | vazio | prefixo dos nomes dos bancos nos `.dsn` (2026-10-31): um servidor com os bancos restaurados como `Elsword-Account`, `Elsword-Statistics`... usa `Elsword-` |
 | `X2_RUN_ODBC_DRIVER`, `X2_RUN_ODBC_OPTIONS` | FreeTDS (`libtdsodbc.so`, achado pelo `find_library` em `/usr/lib` no Arch ou `/usr/lib/<triplet>/odbc` no Ubuntu; `TDS_Version=7.4;ClientCharset=UTF-8`) se existir, senão ODBC Driver 18 (`Encrypt=yes;TrustServerCertificate=yes`) | `DBLayer:SetODBCDriver/SetODBCOptions` |
 | `X2_RUN_SERVER_IP` | `127.0.0.1` | `SetLocalIP` (endereço com que o servidor se identifica no banco) |
 | `X2_RUN_EPUBLISHER_PORT`, `X2_RUN_EPUBLISHER_URL` | `8000`, `http://127.0.0.1:8000/` | porta do EPublisherServer; `DEBAuthManager:AddAuthServiceAddress` dos servidores |
 
 A senha fica só no cache e nos arquivos gerados em `build/`, nunca no git.
+
+**Os arquivos de `run/<Servidor>/` são regenerados a cada build** (`copy_if_different`): uma edição à mão num `.dsn` ou config de lá
+volta ao template no build seguinte (aconteceu na VM Windows em 2026-10-31). Para outro banco ou endereço, mude as variáveis acima e
+rode o configure de novo. No Windows o `ClientScript` não é gerado (precisa do `luajit` e do cliente): copie o de um build Linux para
+`run/ClientScript`.
 
 **Pelo ambiente ou pelo `docker/.env`** (2026-10-31): cada variável da tabela também pode vir de uma variável de ambiente de mesmo nome, que
 **vence o cache a cada configure** (`x2_env_cache` em `cmake/X2Runtime.cmake`); sem ela, vale o que está no cache (o `-D` ou o padrão).

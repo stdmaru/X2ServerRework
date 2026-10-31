@@ -51,6 +51,7 @@ endif()
 x2_env_cache(X2_RUN_DB_SERVER STRING "127.0.0.1,1433" "SQL Server (host,port) of the .dsn templates")
 x2_env_cache(X2_RUN_DB_USER STRING "sa" "SQL Server user of the .dsn templates")
 x2_env_cache(X2_RUN_DB_PASSWORD STRING "X2dev!Passw0rd" "SQL Server password of the .dsn templates (not versioned)" X2_DB_PASSWORD)
+x2_env_cache(X2_RUN_DB_NAME_PREFIX STRING "" "Prefix of the database names in the .dsn templates (a server with Elsword-Account...: Elsword-)")
 x2_env_cache(X2_RUN_ODBC_DRIVER STRING "${_x2_odbc_driver}" "ODBC driver (DBLayer:SetODBCDriver)")
 x2_env_cache(X2_RUN_ODBC_OPTIONS STRING "${_x2_odbc_options}" "ODBC connection options (DBLayer:SetODBCOptions)")
 x2_env_cache(X2_RUN_SERVER_IP STRING "127.0.0.1"

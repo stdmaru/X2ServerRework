@@ -98,6 +98,8 @@ O `lua_interpreter( L, LuaPromptOptions )` usa o `x2::platform::Terminal` ([Plat
 - Num terminal, uma falha fatal (SIGSEGV, SIGABRT...) devolve o modo do terminal antes de terminar, para não deixar o shell em modo cru.
 - Linux: `termios` sem `ECHO`/`ICANON`/`ISIG` (o processamento da saída fica). Windows: `ReadConsoleW` com `ENABLE_VIRTUAL_TERMINAL_INPUT`
   (as teclas chegam como texto e sequências VT, o mesmo decodificador do Linux), porque o UTF-8 pelo stdin do conhost não é confiável.
+- `x2_terminal_demo` (`src/kncsdk/tests/terminal_demo.cpp`, compilado com os testes): o mesmo prompt sem servidor nem banco, com uma linha
+  de log a cada 2 s e o estado pronto depois de 3 s, para testar o terminal à mão num console. Testado no Linux e no Windows (2026-10-31).
 - Sem biblioteca de edição de linha (T13): as opções (readline, linenoise, replxx) não cobrem o console do Windows ou trazem bem mais
   do que o necessário; o editor é pequeno e testado (`test_terminal.cpp`).
 
