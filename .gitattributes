@@ -11,6 +11,7 @@
 *.lib  binary
 *.dll  binary
 *.exe  binary
+*.ico  binary
 
 # server data versioned exactly as the production server had it (CRLF/LF mixed, BOM)
 runtime/ServerResource/** -text

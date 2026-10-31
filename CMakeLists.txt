@@ -4,6 +4,9 @@ project(X2Rework
     VERSION 0.1.0
     DESCRIPTION "Elsword server/client port (Windows + Linux)"
     LANGUAGES C CXX)
+if(WIN32)
+    enable_language(RC)  # application icons of the servers (x2_windows_icon)
+endif()
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 

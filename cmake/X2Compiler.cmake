@@ -28,3 +28,16 @@ else()
     # -fsigned-char: the original assumes MSVC's signed `char`; it is unsigned by default on Linux arm64.
     target_compile_options(x2_options INTERFACE -Wall -Wextra -finput-charset=UTF-8 -fsigned-char)
 endif()
+
+# x2_windows_icon(<executable target> <icon.ico>): the application icon of the original executable (its <Server>.rc had
+# `IDI_ICON1 ICON "icon.ico"`). Windows only; the .rc is generated next to the build files.
+function(x2_windows_icon target icon)
+    if(NOT WIN32)
+        return()
+    endif()
+    set(rc "${CMAKE_CURRENT_BINARY_DIR}/${target}_icon.rc")
+    file(TO_CMAKE_PATH "${icon}" icon_path)
+    file(CONFIGURE OUTPUT "${rc}" CONTENT "IDI_ICON1 ICON \"${icon_path}\"\n")
+    target_sources(${target} PRIVATE "${rc}")
+    set_property(SOURCE "${rc}" APPEND PROPERTY OBJECT_DEPENDS "${icon}")
+endfunction()
