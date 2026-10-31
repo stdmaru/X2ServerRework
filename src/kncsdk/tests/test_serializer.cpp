@@ -140,3 +140,13 @@ TEST_CASE("KSerBuffer compression round trip")
     REQUIRE(ser.Get(out));
     CHECK(out == payload);
 }
+
+TEST_CASE("KSerBuffer compression of an empty payload")
+{
+    // events without data are compressed too: size 0 + an empty zlib stream (the GameServer TCP relay got these)
+    KSerBuffer buf;
+    REQUIRE(buf.Compress());
+    CHECK(buf.GetLength() > sizeof(DWORD));
+    REQUIRE(buf.UnCompress());
+    CHECK(buf.GetLength() == 0);
+}

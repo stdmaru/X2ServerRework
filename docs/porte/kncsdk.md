@@ -61,6 +61,7 @@ Interface pública (nomes, macros, assinaturas) mantida; mudou o que está lista
 | `KncUtil::EraseFrontWord` | Dependia de *overflow* de `npos` em 32 bits | Mesmo resultado, explícito |
 | `SerBuffer::Compress/UnCompress` | Passava `DWORD*` onde zlib espera `uLongf*` (8 bytes no Linux) | Variáveis do tipo certo; o tamanho na rede continua `DWORD` |
 | `SerBuffer::UnCompress` | Ignorava a falha ao ler o tamanho original e descomprimia com um valor não inicializado | Retorna `false` (warning do GCC em Release) |
+| `SerBuffer::UnCompress` | Um evento sem dados também é comprimido (tamanho 0 + fluxo zlib vazio), e a volta pegava `&vec[0]` do vetor vazio e chamava `Write` com 0 bytes (`assert( len > 0 )`): comportamento indefinido, que no Release do MSVC passava | `data()` e o `Write` pulado: o mesmo buffer vazio. Derrubava o GameServer (Debug) no relay TCP (`KTRUser`) ao trocar de personagem (2026-10-31, `server/center-run`); teste em `test_serializer.cpp` |
 
 ### Portabilidade (sem mudança de comportamento)
 

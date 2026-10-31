@@ -129,14 +129,17 @@ bool KSerBuffer::UnCompress()
     std::vector<UCHAR> vecDecompBuff;
     vecDecompBuff.resize( dwOriginSize );
 
+    // An empty payload is compressed too (size 0 + an empty zlib stream). The original took &vec[0] of the
+    // empty vector and wrote 0 bytes; data() and the skipped Write give the same empty buffer without the UB.
     uLongf retSize = dwRetSize;
-    int nRet = uncompress( &vecDecompBuff[0], &retSize, (const Bytef*)&m_buf[m_readOffset], static_cast<uLong>( m_buf.size() - sizeof( dwOriginSize ) ) );
+    int nRet = uncompress( vecDecompBuff.data(), &retSize, (const Bytef*)m_buf.data() + m_readOffset, static_cast<uLong>( m_buf.size() - sizeof( dwOriginSize ) ) );
     dwRetSize = static_cast<DWORD>( retSize );
     if( nRet != Z_OK || dwRetSize != dwOriginSize )
         return false;
 
     Clear();
-    Write( (void*)(&vecDecompBuff[0]), dwOriginSize );
+    if( dwOriginSize > 0 )
+        Write( vecDecompBuff.data(), dwOriginSize );
 
     m_bCompress = false;
 
