@@ -5,6 +5,8 @@
 #include <afunix.h>
 #else
 #include <cerrno>
+#include <fcntl.h>
+#include <poll.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
 #include <sys/un.h>
@@ -13,6 +15,7 @@
 
 #include <algorithm>
 #include <atomic>
+#include <chrono>
 #include <condition_variable>
 #include <cstdlib>
 #include <cstring>
@@ -75,9 +78,46 @@ Socket ConnectTo(const std::string& path)
     return s;
 }
 
-bool SendAll(Socket s, std::string_view data)
+void SetNonBlocking(Socket s)
+{
+#if defined(_WIN32)
+    u_long on = 1;
+    ::ioctlsocket(s, FIONBIO, &on);
+#else
+    ::fcntl(s, F_SETFL, ::fcntl(s, F_GETFL, 0) | O_NONBLOCK);
+#endif
+}
+
+bool WouldBlock()
+{
+#if defined(_WIN32)
+    return ::WSAGetLastError() == WSAEWOULDBLOCK;
+#else
+    return errno == EAGAIN || errno == EWOULDBLOCK;
+#endif
+}
+
+bool WaitWritable(Socket s, int ms)
+{
+#if defined(_WIN32)
+    WSAPOLLFD pfd = {s, POLLWRNORM, 0};
+    return ::WSAPoll(&pfd, 1, ms) > 0;
+#else
+    struct pollfd pfd = {s, POLLOUT, 0};
+    return ::poll(&pfd, 1, ms) > 0;
+#endif
+}
+
+// With `cancel`, the socket is non-blocking and the wait gives up once it is set.
+bool SendAll(Socket s, std::string_view data, const std::atomic<bool>* cancel = nullptr)
 {
     while (!data.empty()) {
+        if (cancel) {
+            if (*cancel)
+                return false;
+            if (!WaitWritable(s, 100))
+                continue;
+        }
         const int chunk = static_cast<int>(std::min<std::size_t>(data.size(), 1 << 20));
 #if defined(_WIN32)
         const int n = ::send(s, data.data(), chunk, 0);
@@ -86,6 +126,8 @@ bool SendAll(Socket s, std::string_view data)
         if (n < 0 && errno == EINTR)
             continue;
 #endif
+        if (n < 0 && cancel && WouldBlock())
+            continue;
         if (n <= 0)
             return false;
         data.remove_prefix(static_cast<std::size_t>(n));
@@ -93,8 +135,22 @@ bool SendAll(Socket s, std::string_view data)
     return true;
 }
 
-// Reads into `pending` until it holds a line; false at the end of the connection.
-bool ReceiveLine(Socket s, std::string& pending, std::string& line)
+// Waits up to `ms` for `s` to be readable (data, a connection to accept, or its end).
+// Blocking calls are not used on the server side: on Windows, closing or shutting down an AF_UNIX socket from
+// another thread does not wake an accept or recv blocked on it.
+bool WaitReadable(Socket s, int ms)
+{
+#if defined(_WIN32)
+    WSAPOLLFD pfd = {s, POLLRDNORM, 0};
+    return ::WSAPoll(&pfd, 1, ms) > 0;
+#else
+    struct pollfd pfd = {s, POLLIN, 0};
+    return ::poll(&pfd, 1, ms) > 0;
+#endif
+}
+
+// Reads into `pending` until it holds a line; false at the end of the connection or once `cancel` is set.
+bool ReceiveLine(Socket s, std::string& pending, std::string& line, const std::atomic<bool>* cancel = nullptr)
 {
     for (;;) {
         const std::size_t end = pending.find('\n');
@@ -105,6 +161,12 @@ bool ReceiveLine(Socket s, std::string& pending, std::string& line)
             pending.erase(0, end + 1);
             return true;
         }
+        if (cancel) {
+            if (*cancel)
+                return false;
+            if (!WaitReadable(s, 100))
+                continue;
+        }
         char buffer[4096];
 #if defined(_WIN32)
         const int n = ::recv(s, buffer, sizeof(buffer), 0);
@@ -113,6 +175,8 @@ bool ReceiveLine(Socket s, std::string& pending, std::string& line)
         if (n < 0 && errno == EINTR)
             continue;
 #endif
+        if (n < 0 && cancel && WouldBlock())
+            continue;
         if (n <= 0)
             return false;
         pending.append(buffer, static_cast<std::size_t>(n));
@@ -178,7 +242,9 @@ struct ControlServer::Impl
         std::deque<std::string> queue;
         std::size_t queued = 0;
         bool closing = false;
+        std::atomic<bool> cancel{false};  // ends the reader
         std::atomic<bool> done{false};    // the reader ended: Accept joins and removes the client
+        std::atomic<bool> flushed{false}; // the writer ended
         std::thread reader;
         std::thread writer;
     };
@@ -205,19 +271,24 @@ void ControlServer::Impl::Drop(const std::shared_ptr<Client>& client)
         client->closing = true;
         ShutdownSocket(client->socket, true);
     }
+    client->cancel = true;
     client->wake.notify_all();
 }
 
 void ControlServer::Impl::Accept()
 {
     for (;;) {
-        const Socket s = ::accept(listener, nullptr, nullptr);
-        if (s == kNoSocket) {
+        {
             std::lock_guard lock(mutex);
             if (stopping)
                 return;
-            continue;
         }
+        if (!WaitReadable(listener, 100))
+            continue;
+        const Socket s = ::accept(listener, nullptr, nullptr);
+        if (s == kNoSocket)
+            continue;
+        SetNonBlocking(s);
         auto client = std::make_shared<Client>();
         client->socket = s;
 
@@ -258,6 +329,10 @@ void ControlServer::Impl::Accept()
 void ControlServer::Impl::Serve(int id, std::shared_ptr<Client> client)
 {
     client->writer = std::thread([client] {
+        struct MarkFlushed {
+            Client& c;
+            ~MarkFlushed() { c.flushed = true; }
+        } markFlushed{*client};
         for (;;) {
             std::string data;
             {
@@ -271,13 +346,13 @@ void ControlServer::Impl::Serve(int id, std::shared_ptr<Client> client)
                 }
                 client->queued = 0;
             }
-            if (!SendAll(client->socket, data))
+            if (!SendAll(client->socket, data, &client->cancel))
                 return;
         }
     });
     client->reader = std::thread([this, id, client] {
         std::string pending, line;
-        while (ReceiveLine(client->socket, pending, line))
+        while (ReceiveLine(client->socket, pending, line, &client->cancel))
             if (onLine)
                 onLine(id, line);
         Drop(client);
@@ -350,24 +425,20 @@ void ControlServer::Stop()
         d.stopping = true;
         clients.swap(d.clients);
     }
-    // Unblocks accept: shutdown on Linux, closing on Windows
-    ShutdownSocket(d.listener, true);
-#if defined(_WIN32)
-    CloseSocket(d.listener);
-#endif
     if (d.acceptor.joinable())
-        d.acceptor.join();
-#if !defined(_WIN32)
+        d.acceptor.join();     // it sees `stopping` within 100 ms
     CloseSocket(d.listener);
-#endif
     d.listener = kNoSocket;
     for (auto& [id, client] : clients) {
         {
-            // what is queued still goes out (e.g. the final status), then the connection ends
+            // what is queued still goes out (e.g. the final status), for up to 2 s, then the connection ends
             std::unique_lock lock(client->mutex);
             client->closing = true;
             client->wake.notify_all();
         }
+        for (int i = 0; i < 20 && !client->flushed; ++i)
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        client->cancel = true;
         if (client->writer.joinable())
             client->writer.join();
         ShutdownSocket(client->socket, true);
