@@ -1,0 +1,68 @@
+-- lua header. Keep this line: it makes the file be read as UTF-8.
+-- Development configuration of the Global Server (tag DEV: GlobalServer DEV <server group id>).
+-- Derived from the production config_gb_US_SERVICE.lua. The @...@ values are filled in by the
+-- x2_run_global target (docs/ferramentas/runtime.md).
+
+-- address this server announces; the DB (Statistics.LServerList.PublicIP) identifies the servers by it --
+SetLocalIP( "@X2_RUN_SERVER_IP@" )
+
+----------     Global Server     ----------
+
+-- time to wait for the DB queue on shutdown --
+Server:SetShutDownWait( 60 * 1000 )
+
+
+----------     Global NetLayer     ----------
+
+NetLayer:SetCheckSequenceNum( false ) -- no SequenceNum check between servers
+
+-- PublisherBillingConnectType Flag --
+--[[
+		PBCT_NONE		= 0,
+		PBCT_NORMAL		= 1,	// through a regular manager (TCP, SOAP...)
+		PBCT_DB			= 2,	// through a DB manager
+		PBCT_UNUSUAL	= 3,	// special cases
+--]]
+SimLayer:SetPublisherBillingConnectType (PBCT_NORMAL)
+SimLayer:SetCheckCouponByPublisher ( true )
+
+-- Auth Flag --
+--[[
+AF_INTERNAL       : in-house auth
+AF_GLOBAL_SERVICE : global service (DEB)
+--]]
+SimLayer:SetAuthFlag( AF_GLOBAL_SERVICE )
+
+-- Script File Path (relative to this folder: build/<preset>/run/GlobalServer) --
+SimLayer:AddPath( "../ServerResource" ) -- server common
+SimLayer:AddPath( "../ClientScript" ) -- client script, generated from the client data
+
+
+----------     DB Layer     ----------
+
+-- ODBC driver (docs/porte/server-common-db.md); must come before AddDB --
+DBLayer:SetODBCDriver( "@X2_RUN_ODBC_DRIVER@" )
+DBLayer:SetODBCOptions( "@X2_RUN_ODBC_OPTIONS@" )
+
+-- databases --
+--[[
+DC_ACCOUNT : accounts
+DC_LOG     : statistics
+--]]
+-- AddDB( DB type, file dsn, thread count, DBConnectionString? )
+-- Production also listed SMS and Nexon web (NXWeb), both commented out.
+
+DBLayer:AddDB( DC_ACCOUNT,	'Account.dsn',		1, false )
+DBLayer:AddDB( DC_LOG,		'Statistics.dsn',	5, false )
+
+
+----------     Log level     ----------
+
+-- log level --
+--[[
+-1 : no logs
+ 0 : cerr, cout
+ 1 : cerr, cwarn, cout
+ 2 : cerr, cwarn, clog, cout
+--]]
+log( 0 )
