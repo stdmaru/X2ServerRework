@@ -1,0 +1,25 @@
+# KncWX2Server/CenterServer: battle fields, dungeon/PvP rooms, square, parties, trade, personal shop...
+# Seeds: the CenterServer/ files its Release_US project compiles. Common/ is already ported (src/server/Common).
+
+name = "server-center"
+source_root = "KncWX2Server"
+# same search path as the vcxproj: ..\Common;.\
+include_dirs = ["CenterServer", "Common"]
+flags = ["base", "server.generated", "server"]
+
+extern_dirs = ["src/kncsdk", "src/platform/include", "src/server/Common"]
+
+seed_filter = ["CenterServer/*"]
+include_scope = ["CenterServer/*"]
+
+exclude = [
+    "*.dsn",
+]
+
+[[projects]]
+path = "CenterServer/CenterServer.vcxproj"
+config = "Release_US|Win32"
+
+[[map]]
+from = "CenterServer"
+to = "src/server/CenterServer"

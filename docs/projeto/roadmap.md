@@ -57,7 +57,8 @@ Tarefas:
 - [x] `server-channel` importado: 36 arquivos ([Servidor: ChannelServer](../porte/server-channel.md), 2026-10-30).
 - [x] `server-game` importado: 298 arquivos ([Servidor: GameServer](../porte/server-game.md), 2026-10-30).
 - [x] `server-login` importado: 86 arquivos ([Servidor: LoginServer](../porte/server-login.md), 2026-10-31).
-- [ ] Importar os outros servidores (Center, Global).
+- [x] `server-center` importado: 123 arquivos ([Servidor: CenterServer](../porte/server-center.md), 2026-10-31).
+- [ ] Importar o GlobalServer.
 
 ## Fase 1 — Bibliotecas
 
@@ -99,7 +100,8 @@ Ver [Servidor — acoplamento com Windows](../original/servidor.md).
 - [x] `server/login-import`: LoginServer importado (2026-10-31). Ver [Servidor: LoginServer](../porte/server-login.md).
 - [x] `server/login-build`: LoginServer compilando sem warnings (Clang, GCC, clang-cl), sem a Nexon (KR) nem os arquivos de país (2026-10-31). Ver [Servidor: LoginServer](../porte/server-login.md).
 - [x] `server/login-run`: LoginServer no Linux (`x2_run_login`), com o cliente original da lista de personagens até a **vila** (2026-10-31). A saída para o campo para no `ERM_OPEN_BATTLE_FIELD_REQ`, que vai para o CenterServer.
-- [ ] CenterServer (`server/center-import`, `-build`, `-run`): campos, dungeons, PvP, praça, festas, troca. Depois o GlobalServer.
+- [x] `server/center-import`: CenterServer importado (2026-10-31). Ver [Servidor: CenterServer](../porte/server-center.md).
+- [ ] CenterServer (`server/center-build`, `-run`): campos, dungeons, PvP, praça, festas, troca. Depois o GlobalServer.
 - [ ] UI MFC (`Common/ui/ServerUIDlg`) → terminal em todas as plataformas (T15): log ao vivo, prompt Lua com histórico, título com status, encerramento com confirmação, modo serviço sem stdin.
 - [ ] Log (T16): metadados estruturados no `START_LOG`; arquivo com o conteúdo completo do original, console compacto e colorido com nível próprio.
 - [ ] (Futuro) `--gui` portável sobre a mesma API de comandos/log.
