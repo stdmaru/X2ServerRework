@@ -70,7 +70,7 @@ Andamento em 2026-10-29: plataforma e KNCSDK compilando no Linux (GCC e Clang) e
 - [x] Dependências via CMake (T13): zlib, LuaJIT 2.1 (pkg-config, ou fonte com commit fixo pelo Makefile dele: T21), doctest.
 - [x] KNCSDK portado: log, `Serializer` (formato de rede fixo), `KncSecurity`, `Thread`, `ObjectPool`, `KncUtil`, unido ao `KNCSDK_Client`. Ver [KNCSDK](../porte/kncsdk.md).
 - [x] `lua_tinker` (versão do servidor) compilando em GCC/Clang sobre LuaJIT 2.1; luabind removido.
-- [ ] **Validar o protocolo com bytes reais** do cliente/servidor originais. Em 2026-10-30 o login no canal funcionou com o `x2_DEBUG.exe` e o `x2.exe` (troca de chave, cripto, `ECH_VERIFY_ACCOUNT`, listas); em 2026-10-31 o cliente conectou no GameServer (troca de chave, `EGS_VERIFY_ACCOUNT_REQ`); falta o resto.
+- [ ] **Validar o protocolo com bytes reais** do cliente/servidor originais. Em 2026-10-30 o login no canal funcionou com o `x2_DEBUG.exe` e o `x2.exe` (troca de chave, cripto, `ECH_VERIFY_ACCOUNT`, listas); em 2026-10-31 o cliente chegou à vila pelo GameServer e o LoginServer (seleção de personagem, canal, vila); falta o resto (campo, dungeon).
 - [x] Compilar e testar os caminhos Windows com **MinGW-w64 + Wine** (T18): plataforma e KNCSDK sem warnings, testes passando (2026-10-29).
 - [x] LuaJIT 2.1 no MinGW (T21): `kncsdk_lua` e o `Common` do servidor compilando sem warnings e com os testes passando no Wine (2026-10-30).
 - [x] Crypto++ substituído por `x2::crypto` (DES-CBC, HMAC-MD5, MD5, SHA-256), com vetores oficiais (T27, 2026-10-30).
@@ -98,7 +98,8 @@ Ver [Servidor — acoplamento com Windows](../original/servidor.md).
 - [x] `server/game-run`: GameServer no Linux até o estado pronto, com o cliente original conectando nele (2026-10-31): o "servidor cheio" some e o login para no `EGS_VERIFY_ACCOUNT_REQ`, que depende do LoginServer ([levantamento](../porte/server-game.md#dependências-de-outros-servidores-levantamento-de-2026-10-31)).
 - [x] `server/login-import`: LoginServer importado (2026-10-31). Ver [Servidor: LoginServer](../porte/server-login.md).
 - [x] `server/login-build`: LoginServer compilando sem warnings (Clang, GCC, clang-cl), sem a Nexon (KR) nem os arquivos de país (2026-10-31). Ver [Servidor: LoginServer](../porte/server-login.md).
-- [ ] `server/login-run`: LoginServer rodando; com ele, o cliente da seleção de personagem até a vila.
+- [x] `server/login-run`: LoginServer no Linux (`x2_run_login`), com o cliente original da lista de personagens até a **vila** (2026-10-31). A saída para o campo para no `ERM_OPEN_BATTLE_FIELD_REQ`, que vai para o CenterServer.
+- [ ] CenterServer (`server/center-import`, `-build`, `-run`): campos, dungeons, PvP, praça, festas, troca. Depois o GlobalServer.
 - [ ] UI MFC (`Common/ui/ServerUIDlg`) → terminal em todas as plataformas (T15): log ao vivo, prompt Lua com histórico, título com status, encerramento com confirmação, modo serviço sem stdin.
 - [ ] Log (T16): metadados estruturados no `START_LOG`; arquivo com o conteúdo completo do original, console compacto e colorido com nível próprio.
 - [ ] (Futuro) `--gui` portável sobre a mesma API de comandos/log.

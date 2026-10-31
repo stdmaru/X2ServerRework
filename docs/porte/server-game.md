@@ -44,7 +44,7 @@ com o prompt Lua respondendo. Encerra com código 0 no fim do stdin. Os pacotes 
 **Testado com o cliente original** (no Wine, 2026-10-31, com o EPublisherServer e o ChannelServer): o "O servidor está cheio" não
 aparece mais. O cliente conecta na porta 9300, troca a chave e manda o `EGS_VERIFY_ACCOUNT_REQ`; o GameServer o repassa como
 `ELG_NEXON_USER_AUTHENTICATE_REQ`, que é descartado porque o LoginServer não existe, e o cliente fica parado em "Conectando ao servidor".
-O próximo passo é o LoginServer.
+Com o [LoginServer](server-login.md) (2026-10-31) o cliente passa daí e chega à vila; a saída para o campo depende do CenterServer.
 
 **Build** (2026-10-30, `server/game-build`): o executável (alvo `x2_game_server`, `main` com `KServerMain` como o ChannelServer)
 compila e linka sem warnings em GCC Debug, Clang Debug, GCC Release, Clang Release e clang-cl (Windows, na VM de testes), com os 6

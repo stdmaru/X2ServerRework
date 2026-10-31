@@ -32,11 +32,22 @@ GameServers; não conecta em nenhum outro servidor. Origem: `KncWX2Server/LoginS
 | `CTime`, `lua_tinker` | 25, 10 | já cobertos pela [Plataforma](platform.md) e pelo KNCSDK |
 | Banco | 119 `DO_QUERY` | `KODBC` já portado; as procedures são as do `Account`, `Game01` e `Log` |
 
-## Estado (2026-10-31, branch `server/login-build`)
+## Estado (2026-10-31, branch `server/login-run`)
+
+**Roda no Linux** pela pasta montada por `x2_run_login` ([Pastas de execução](../ferramentas/runtime.md)): conecta nos quatro bancos,
+carrega os scripts, se autentica no banco (UID 58, "Login") e chega ao estado pronto; o GameServer conecta nele
+(`ELG_VERIFY_SERVER_CONNECT`). Encerra com código 0 no fim do stdin.
+
+**Testado com o cliente original** (no Wine, 2026-10-31, com o EPublisherServer, o ChannelServer e o GameServer): login, lista de
+personagens, entrada no canal e **chegada à vila**. Ao sair para o campo o cliente para: o `ERM_OPEN_BATTLE_FIELD_REQ` vai para o
+CenterServer, que ainda não existe. Os pacotes para o GlobalServer (`EGB_*`: CCU, missões, quest do dia) também são descartados, sem
+travar nada.
+
+### Build (2026-10-31, branch `server/login-build`)
 
 **Compila e linka sem warnings** (alvo `x2_login_server`, executável `LoginServer`, `main` com `KServerMain` como o ChannelServer e o
 GameServer) em Clang Debug, GCC Debug, Clang Release, GCC Release e clang-cl (Windows, na VM de testes), com os 6 testes passando no
-Linux e no Windows. Ainda não roda: falta a pasta de execução (`server/login-run`).
+Linux e no Windows.
 
 Medidas do caminho (Clang Debug, `-k 0`), para dar a escala: 103 erros em 15 arquivos depois da passada mecânica, 51 depois de tirar a
 Nexon; 39 warnings no GCC (11 destrutores não virtuais). Bem menor que o GameServer: o grosso do acoplamento já tinha saído no `Common`.
@@ -71,7 +82,7 @@ do tipo de anúncio de guilda sai (sempre falso também no MSVC).
 
 1. ~~**`server/login-import`**~~ (2026-10-31).
 2. ~~**`server/login-build`**~~ (2026-10-31): compilar sem warnings em Clang, GCC e clang-cl, com o `main` do `KServerMain` (como o ChannelServer e o GameServer).
-3. **`server/login-run`**: `runtime/LoginServer` (`config_lg_DEV.lua.in`), `x2_run_login`, e o login do cliente pelo GameServer:
+3. ~~**`server/login-run`**~~ (2026-10-31): `runtime/LoginServer` (`config_lg_DEV.lua.in`), `x2_run_login`, e o login do cliente pelo GameServer:
    `ELG_NEXON_USER_AUTHENTICATE_REQ` (`P_MUser_SEL_Auth` no `Account`) e `ELG_REGISTER_USER_REQ` →
    `ELG_REGISTER_USER_GLOBAL_PUBLISHER_ACK`; depois, a seleção de personagem e a vila
    ([Dependências do GameServer](server-game.md#dependências-de-outros-servidores-levantamento-de-2026-10-31)).
