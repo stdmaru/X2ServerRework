@@ -1073,7 +1073,7 @@ _IMPL_ON_FUNC( ERM_BAN_USER_REQ, KEGS_BAN_USER_REQ )
 	}
 	//}}
 
-	UidType nGSUID;
+	UidType nGSUID = 0;
 	bool bIsHost = false;
 
 	KRoomUserPtr pkRoomUser = m_spRoomUserManager->GetUser( kPacket_.m_iUnitUID );

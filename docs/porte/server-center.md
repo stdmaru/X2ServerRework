@@ -37,7 +37,8 @@ do original (`src/server/CenterServer` ao lado de `src/server/Common`).
 ## Estado (2026-10-31, branch `server/center-build`)
 
 **Compila e linka sem warnings** (alvo `x2_center_server`, executável `CenterServer`, `main` com `KServerMain` como os outros
-servidores) em Clang Debug e GCC Debug. Faltam Release e clang-cl (abaixo, ao fechar o passo).
+servidores) em Clang Debug, GCC Debug, Clang Release, GCC Release e clang-cl (Windows, na VM de testes), com os 6 testes passando
+no Linux e no Windows.
 
 Medidas do caminho, para dar a escala: 51 erros (Clang Debug, `-k 0`) em 13 arquivos depois da passada mecânica, 29 no GCC (quase
 todos `goto end_proc`); 112 warnings distintos no Clang e 143 no GCC antes do `fix_warnings.py` e das correções à mão. Menor que o
@@ -61,7 +62,9 @@ saem; includes que o MSVC dispensava nos templates (`BaseServer.h` nos DB thread
 sobrecargas escondidas de `Init` e `SetRoomInfo`; `[[fallthrough]]` no fechamento de festa (`S_* → I_TO_CLOSE → I_TO_INIT`, de
 propósito); variáveis mortas removidas (o `GetKillNPC_LUA()` dos resultados de dungeon continua sendo chamado: ele sobe o `m_nKillNPC`
 para 1); o cast descartado do `DUNGEON_TIME_RESULT` sai (o rank vem do `GetRank()` logo depois); o teste `0 <= iRank` (`size_t`, sempre
-verdadeiro também no MSVC) sai.
+verdadeiro também no MSVC) sai; `nGSUID`, `m_CheckClass`/`m_CheckType` e `iCandidateTeam` começam em 0 (o GCC Release acusava
+`-Wmaybe-uninitialized`; só eram lidos depois de receber valor); o `erase` do `KncUtil::NumberShuffle` (KNCSDK) vira `std::move` +
+`pop_back`, a mesma operação na mesma ordem, porque o GCC 15 Release acusava um falso `-Wfree-nonheap-object` no `erase` expandido.
 
 ### Bugs do original corrigidos
 

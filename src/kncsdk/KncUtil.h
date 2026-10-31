@@ -84,7 +84,9 @@ inline std::vector< T > NumberShuffle( const std::vector< T >& vecSource )
     {
         const int iRandomRet = static_cast<int>( rand() % static_cast<int>( vecDataSource.size() ) );
         vecResult.push_back( vecDataSource[iRandomRet] );
-        vecDataSource.erase( vecDataSource.begin() + iRandomRet );
+        // same as erase( begin() + iRandomRet ); GCC 15 Release flags the inlined erase (-Wfree-nonheap-object, false positive)
+        std::move( vecDataSource.begin() + iRandomRet + 1, vecDataSource.end(), vecDataSource.begin() + iRandomRet );
+        vecDataSource.pop_back();
     }
     return vecResult;
 }

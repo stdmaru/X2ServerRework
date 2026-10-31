@@ -4444,7 +4444,7 @@ KRoomSlotPtr KRoomUserManager::FindEmptySlot( bool bConsiderTeam, USERLIST_TYPE 
             }
         }
 
-        int iCandidateTeam;
+        int iCandidateTeam = 0;
         int iMaxEmptySlot = 0;
         for( mit1 = mapTeamAndNumEmpty.begin(); mit1 != mapTeamAndNumEmpty.end(); mit1++ )
         {
