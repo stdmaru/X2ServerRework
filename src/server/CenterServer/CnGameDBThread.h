@@ -29,7 +29,7 @@ public:
     virtual ~KCnGameDBThread(void);
 
 protected:
-    virtual inline void ProcessEvent( const KEventPtr& spEvent );
+    virtual void ProcessEvent( const KEventPtr& spEvent );
 
 	bool Query_InsertItemList( IN const SEnum::GET_ITEM_REASON eGetItemReason,
 							   IN const UidType iUnitUID,

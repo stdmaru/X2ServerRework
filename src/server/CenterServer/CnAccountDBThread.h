@@ -20,7 +20,7 @@ public:
     virtual ~KCnAccountDBThread(void);
 
 protected:
-    virtual inline void ProcessEvent( const KEventPtr& spEvent );
+    virtual void ProcessEvent( const KEventPtr& spEvent );
 
 protected:
 };

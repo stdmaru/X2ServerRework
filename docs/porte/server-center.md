@@ -50,6 +50,7 @@ LoginServer: o grosso do acoplamento já tinha saído no `Common`.
 | `KCnServer`, `CnRMEventProcess` | Saem as chamadas ao KSMS (`ProcessCommunicationManager`, *named pipes* `\\.\pipe\CenterServer*`, religadas a cada 60 s no `Tick`, e o aviso de script recarregado) | Como no [ChannelServer](server-channel.md#mudanças-em-relação-ao-original) e nos outros servidores |
 | `ON_DBE_SERVER_ON_ACK` (`CnServer.cpp`) | Quando o banco recusa o servidor, a resposta marca `SetAuthenticateResult( false )` e o `Init` falha; quando aceita, marca `true` | Como no [GameServer](server-game.md#mudanças-em-relação-ao-original): o original chamava `::exit( 0 )` nessa thread |
 | `KBattleFieldMonsterManager::SetMonsterDie( int, UidType )` | Renomeado para `SetFieldMonsterDie` (as 4 chamadas do `KBattleFieldRoom`) | Escondia a virtual `KRoomMonsterManager::SetMonsterDie( int, UidType, bool = true )`; um `using` deixaria as chamadas de 2 argumentos ambíguas. As chamadas eram todas pelo tipo concreto: nada muda |
+| `Cn*DBThread.h` | `ProcessEvent` deixa de ser `virtual inline` | Definido no `.cpp`: ODR inválido (`-Wundefined-inline` do clang-cl), como no LoginServer |
 
 Portabilidade (sem mudança de comportamento): passada mecânica (`mechanical.py`); declarações puladas por `goto end_proc` sobem
 (`fix_goto.py`, que passou a entender arrays com `= {0,}`), e duas referências `ITEM_DATA&` do `ERM_GET_ITEM_REQ` (campo e dungeon)
