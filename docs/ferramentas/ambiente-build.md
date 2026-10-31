@@ -39,15 +39,15 @@ O Windows não roda na imagem. Além do job do [CI](ci.md), há uma **máquina W
 onde `tools/win/winbuild.sh` compila e testa sem gastar minutos do Actions:
 
 ```bash
-X2_WIN_HOST=usuario@host tools/win/winbuild.sh                        # windows-debug, 6 jobs
+X2_WIN_HOST=usuario@host tools/win/winbuild.sh                        # windows-debug, todos os núcleos da máquina
 X2_WIN_HOST=usuario@host tools/win/winbuild.sh windows-release 4
 ```
 
 - Manda os arquivos versionados **com as edições ainda não commitadas** (`git ls-files` + `tar` pelo SSH) para `C:/x2/src`
   (`X2_WIN_DIR` muda) e roda `cmake`/`ctest` no ambiente do Visual Studio achado pelo `vswhere`. O `build/` fica na máquina e é incremental.
 - A máquina precisa de Visual Studio Build Tools (carga C++, componentes Clang e CMake, que trazem CMake e Ninja), Python 3 e
-  OpenSSH com login por chave; Git não. Em 2026-10-30: Windows Server 2022, Build Tools 18.11.3 (MSVC 14.51), 12 núcleos, 8 GB
-  (por isso 6 jobs: os arquivos de pacotes são pesados).
+  OpenSSH com login por chave; Git não. Em 2026-10-30: Windows Server 2022, Build Tools 18.11.3 (MSVC 14.51), 12 núcleos, 8 GB.
+  A VM fica num servidor Proxmox dedicado: o padrão é usar todos os núcleos (`%NUMBER_OF_PROCESSORS%`, 2026-10-31).
 - Só para build e testes.
 
 ## O que o Ubuntu mudou em relação ao Arch (2026-10-30)

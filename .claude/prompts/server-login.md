@@ -7,13 +7,13 @@ Antes de tudo:
    no login), e como modelo `docs/porte/server-channel.md` e `docs/porte/server-game.md` (importação, build, Mudanças).
 3. Leia `docs/ferramentas/importador.md`, `docs/ferramentas/runtime.md` e `docs/original/bugs.md` (bugs do original mantidos vão para lá).
 
-Estado em 2026-10-31: o `server/game-run` está **commitado e publicado, não integrado** na `main`. Integrar (ff-only, push) só quando o
-usuário pedir; os minutos do CI acabaram até 2026-11-01 (para pular o CI, um commit vazio com `[skip ci]` no topo; ver a memória do CI).
+Estado em 2026-10-31: o `server/game-run` está **integrado na `main`** (sem CI: os minutos acabaram até 2026-11-01; Windows conferido
+na VM). Comece os branches a partir da `main`. Integrar só quando o usuário pedir; para pular o CI, `[skip ci]` no commit do topo.
 
 Plano (um branch por passo, como o GameServer):
 1. **`server/login-import`**: `tools/import/modules/server-login.toml` (modelo: `server-game.toml`) para `KncWX2Server/LoginServer`
    (45 `.cpp`, ~42 mil linhas). Ver o relatório; os `NexonAuth*`/`NexonBillingAuth*` e SMS/Mail são de publisher/legado.
-2. **`server/login-build`**: compilar sem warnings em Clang e GCC (`-j 6`) e clang-cl (VM, `tools/win/winbuild.sh`), `main` com `KServerMain`.
+2. **`server/login-build`**: compilar sem warnings em Clang e GCC (`-j 6`) e clang-cl (VM, `tools/win/winbuild.sh`, que usa todos os núcleos), `main` com `KServerMain`.
 3. **`server/login-run`**: `runtime/LoginServer` (`config_lg_DEV.lua.in` do `_reference/_original-server/LoginServer`), `x2_run_login`.
    O login no GameServer passa por `ELG_NEXON_USER_AUTHENTICATE_REQ` (ramo `SERV_GLOBAL_AUTH`: `P_MUser_SEL_Auth` no `Account`) e
    `ELG_REGISTER_USER_REQ` → `ELG_REGISTER_USER_GLOBAL_PUBLISHER_ACK`. Depois, a seleção de personagem e a vila (só bancos e o GameServer).

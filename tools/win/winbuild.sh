@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Builds and tests the Windows (clang-cl, T26) presets on a Windows machine over SSH (docs/ferramentas/ambiente-build.md).
-#   X2_WIN_HOST=user@host tools/win/winbuild.sh [preset] [jobs]      default: windows-debug, 6 jobs
+#   X2_WIN_HOST=user@host tools/win/winbuild.sh [preset] [jobs]      default: windows-debug, every core of the machine
 # Sends the tracked files with their working-tree contents (uncommitted edits included) to $X2_WIN_DIR/src and runs
 # cmake/ctest inside the Visual Studio environment found by vswhere. The machine needs Visual Studio Build Tools
 # (C++ workload, Clang and CMake components), Python 3 and an OpenSSH server with key login; no Git.
@@ -9,7 +9,7 @@ set -euo pipefail
 host=${X2_WIN_HOST:?set X2_WIN_HOST=user@host}
 dir=${X2_WIN_DIR:-C:/x2}
 preset=${1:-windows-debug}
-jobs=${2:-6}
+jobs=${2:-%NUMBER_OF_PROCESSORS%}
 repo=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)
 ssh_opts=(-o BatchMode=yes -o LogLevel=ERROR)
 win=${dir//\//\\}
