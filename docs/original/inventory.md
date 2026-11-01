@@ -26,7 +26,7 @@ Solution: `ProjectX2.sln`. Line counts are raw `.c/.cpp/.h/.hpp/.inl` lines (inc
 | `Profiler/` | 18 | ~3 k | Custom profiler |
 | `3rdparty/` | — | 2.6 GB | Boost 1.91 (+ precompiled libs), DXSDK, FreeType, IntelTBB 2.2 |
 
-Relevant **our code** (excluding embedded third-party code): ~2.2 M lines before flag cleanup.
+Relevant **project code** (excluding embedded third-party code): ~2.2 M lines before flag cleanup.
 
 ## Solution projects and dependency graph
 

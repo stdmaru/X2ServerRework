@@ -3,7 +3,8 @@
 # Run directories (`runtime/`, `x2_run_*`)
 
 Decision T22 in [Decisions](../project/decisions.md). Created on 2026-10-30 for `server/channel-run`. Nothing here depends on
-`_reference`, which will be deleted: everything servers read is versioned under `runtime/` or generated from client (`_client/`).
+`_reference`, which will be deleted: everything the servers read is either versioned under `runtime/` or generated from the client
+(`_client/`).
 
 ## Usage
 
@@ -29,13 +30,13 @@ cmake --build --preset linux-debug --target x2_run_epublisher
 cd build/linux-debug/run/EPublisherServer && ./EPublisherServer DEV     # port 8000 (X2_RUN_EPUBLISHER_PORT)
 ```
 
-Since 2026-10-31, normal build assembles all server directories (`X2_RUN_FOLDERS`, ON by default, adds `x2_run_*` to `ALL`) in all
-presets. Incremental: `ClientScript` has a stamp and is regenerated only when client changes; files are copied only when changed; an
-unchanged build takes less than a second. Without client (`X2_CLIENT_DATA`), `ClientScript` is skipped with a warning. CI configures
+Since 2026-10-31, normal builds assemble all server directories (`X2_RUN_FOLDERS`, ON by default, adds `x2_run_*` to `ALL`) in all
+presets. Incremental builds use a stamp to regenerate `ClientScript` only when the client changes, and copy files only when needed;
+a no-op build takes less than a second. Without the client (`X2_CLIENT_DATA`), `ClientScript` is skipped with a warning. CI configures
 with `-DX2_RUN_FOLDERS=OFF` (no client or database).
 
-These are **development environments** (local DB, ODBC driver, and client from machine that built them), not deployment packages:
-release package with configs as templates to fill in is a separate step (`cmake --install`, not implemented yet).
+These are **development environments** (with a local database, an ODBC driver, and the client from the build machine), not deployment
+packages. Creating a release package with configuration templates is a separate step (`cmake --install`, not implemented yet).
 
 ## Assembled layout
 
@@ -49,9 +50,10 @@ Configs point to `../ServerResource` and `../ClientScript` (`SimLayer:AddPath`),
 
 ## Versioned under `runtime/`
 
-- `ServerResource/`: 84 production server scripts (`_original-server/ServerResource`, 20 MB), bytes intact
+- `ServerResource/`: 84 production server scripts (`_original-server/ServerResource`, 20 MB), with their bytes intact
   (`-text` in `.gitattributes`: mixed CRLF/LF and BOM, as found), **with each server-folder version replacing the corresponding
-  `ServerResource` version** (see below, T28). User chose this on 2026-10-30 instead of copy from `X2Server` repository (85 MB,
+  `ServerResource` version** (see below, T28). On 2026-10-30, the user chose these files over those in the `X2Server` repository
+  (85 MB,
   country folders and KOG values: production server has max level 67, custom ad URL, and extra files).
 - `<Server>/`: no data `.lua` files (configs only); original files without secrets (`config_ch.ini`) and `*.in` templates:
   `config_<x>_DEV.lua.in` (derived from `config_*_US_SERVICE.lua`, comments translated) and one `.dsn.in` per database.
@@ -63,46 +65,50 @@ Configs point to `../ServerResource` and `../ClientScript` (`SimLayer:AddPath`),
 | `X2_RUN_DIR` | `build/<preset>/run` | destination |
 | `X2_CLIENT_DATA` | `_client/data` | `ClientScript` source |
 | `X2_RUN_DB_SERVER`, `X2_RUN_DB_USER`, `X2_RUN_DB_PASSWORD` | `127.0.0.1,<X2_DB_PORT or 1433>`, `sa`, development password from `docker-compose.yml` | `.dsn` |
-| `X2_RUN_DB_NAME_PREFIX` | empty | prefix for database names in `.dsn` (2026-10-31): server with databases restored as `Elsword-Account`, `Elsword-Statistics`... uses `Elsword-` |
+| `X2_RUN_DB_NAME_PREFIX` | empty | Prefix for database names in `.dsn` files. Set to `Elsword-` if the restored databases are named `Elsword-Account`, `Elsword-Statistics`, etc. (2026-10-31) |
 | `X2_RUN_ODBC_DRIVER`, `X2_RUN_ODBC_OPTIONS` | FreeTDS (`libtdsodbc.so`, found by `find_library` in `/usr/lib` on Arch or `/usr/lib/<triplet>/odbc` on Ubuntu; `TDS_Version=7.4;ClientCharset=UTF-8`) if available, else ODBC Driver 18 (`Encrypt=yes;TrustServerCertificate=yes`) | `DBLayer:SetODBCDriver/SetODBCOptions` |
-| `X2_RUN_SERVER_IP` | `127.0.0.1` | `SetLocalIP` (address server identifies itself with in DB) |
+| `X2_RUN_SERVER_IP` | `127.0.0.1` | `SetLocalIP` (the address the server registers in the database) |
 | `X2_RUN_EPUBLISHER_PORT`, `X2_RUN_EPUBLISHER_URL` | `8000`, `http://127.0.0.1:8000/` | EPublisherServer port; server `DEBAuthManager:AddAuthServiceAddress` |
 
 Password exists only in cache and generated files under `build/`, never in git.
 
-**Files under `run/<Server>/` are regenerated on every build** (`copy_if_different`): hand edits to `.dsn` or configs there are replaced
-by template next build (happened on Windows VM on 2026-10-31). To use another DB or address, change variables above and reconfigure.
+**Files under `run/<Server>/` are regenerated on every build** (`copy_if_different`): hand edits to `.dsn` files or configs there are
+replaced by the template on the next build (as happened on the Windows VM on 2026-10-31). To use another database or address, change
+the variables above and reconfigure.
 On Windows, `ClientScript` is not generated (requires `luajit` and client): copy it from a Linux build to `run/ClientScript`.
 
-**Environment or `docker/.env`** (2026-10-31): each variable in table can also come from same-name environment variable, which
-**overrides cache on every configure** (`x2_env_cache` in `cmake/X2Runtime.cmake`); otherwise cache (`-D` or default) is used.
+**Environment variables and `docker/.env`** (2026-10-31): each variable in the table can also be set through an environment variable
+with the same name, which **overrides the cache on every configure** (`x2_env_cache` in `cmake/X2Runtime.cmake`); otherwise, the
+cache value (`-D` or default) is used.
 Three names are also read by `docker compose` and `restore.sh`: password from `X2_DB_PASSWORD`, address from `X2_SERVER_IP`, and
 `X2_RUN_DB_SERVER` port from `X2_DB_PORT`. Empty values are ignored; relative paths are resolved from repository root.
-`docker/build.sh` passes all `X2_*` variables from environment and `docker/.env` (not versioned; template with all vars at
-`docker/.env.example`) into container. Changes take effect on next configure (`cmake --preset <preset>`) and are then cached.
+`docker/build.sh` passes all `X2_*` variables from the environment and `docker/.env` (not versioned; template with all variables in
+`docker/.env.example`) into the container. Changes take effect on the next configure (`cmake --preset <preset>`) and are then cached.
 
-**Run on host** (for testing, without Docker): binary built in image runs directly on a distribution with same libraries
-(unixODBC, FreeTDS); only driver path changes. Configure with `-DX2_RUN_ODBC_DRIVER=/usr/lib/libtdsodbc.so` (Arch, 2026-10-31)
-and assemble directories again (`x2_run_*`). Host `gdb` provides crash backtrace:
+**Run on the host** (for testing, without Docker): the binary built in the image runs directly on a distribution with the same
+libraries (unixODBC, FreeTDS); only the driver path changes. Configure with `-DX2_RUN_ODBC_DRIVER=/usr/lib/libtdsodbc.so`
+(Arch, 2026-10-31) and assemble the directories again (`x2_run_*`). The host's `gdb` provides a crash backtrace:
 `gdb -batch -ex run -ex bt --args ./GameServer DEV 0`.
 
-## `ClientScript` generated from client
+## `ClientScript` generated from the client
 
 `tools/runtime/gen_clientscript.py <data> <output>`: decrypts each `.lua` in `.kom` and decompiles KOG bytecode (`tools/kom/kom.py`),
-and transforms `Item.kim` into `Item.lua` + `SetItem.lua` (`tools/kom/kim.py`, which uses a `luajit` to read enums: system version
-or, without it as in build image, fixed-commit LuaJIT interpreter from T21 built by CMake).
-Flat output (`KAutoPath` searches subfolders by name, and no names repeat across `.kom`). Measured on 2026-10-30 with client in
-`_client/`: 4,564 scripts from 173 `.kom`, 45 seconds. Output stamp avoids rerun when nothing changes.
+and transforms `Item.kim` into `Item.lua` + `SetItem.lua` (`tools/kom/kim.py`, which uses LuaJIT to read enums: the system-installed
+version or, when unavailable as in the build image, the interpreter built by CMake from the commit pinned in T21).
+Scripts are flattened into one output directory (`KAutoPath` searches subfolders by name, and no names repeat across `.kom` files).
+Measured on 2026-10-30 with the client in `_client/`: 4,564 scripts from 173 `.kom`, 45 seconds. The output stamp avoids reruns
+when nothing changes.
 
 **Comparison with original server's `ClientScript`** (2026-10-30, behavioral comparison using `tools/runtime/lua_trace.lua`, which
-records calls, arguments, and defined globals): 2,198 equivalent (2 byte-identical), 1,800 different, 68 absent from client.
+records calls, arguments, and defined globals): 2,198 scripts behave equivalently (2 are byte-identical), 1,800 differ, and 68 are
+absent from the client.
 
 - **Version**: original server's `ClientScript` comes from newer client (`DungeonEnum.lua` has dungeons from 2016–2019).
   Dungeon IDs used by `ServerResource` exist in both versions.
-- **Format**: server copy is before KOG preprocessor (`X2ScriptPreprocessingTool`): vectors are text inside tables
+- **Format**: the server copy predates KOG's preprocessing step (`X2ScriptPreprocessingTool`): vectors are text inside tables
   (`"START_POS = D3DXVECTOR3(0, 19200, 0)"`); client has calls (`START_POS = D3DXVECTOR3(0, 19200, 0)`). Appears in line maps
   (`World/`) and dialogs. **Verify in GameServer**, which reads these files (`lua_tinker::get<D3DXVECTOR3>`).
-- **Absent from client**: event scripts (`*_Festival`, `Halloween_2013`, `Mission_Impossible`...), translation (`*Trans.lua`),
+- **Absent from the client**: event scripts (`*_Festival`, `Halloween_2013`, `Mission_Impossible`...), translation (`*Trans.lua`),
   and `NewSkillTemplet.lua`.
 
 ChannelServer reads only `Enum.lua` and `DungeonEnum.lua` from `ClientScript`. GameServer reads almost everything; files too large for
@@ -111,7 +117,7 @@ LuaJIT go through `lua_dofile` ([KNCSDK](../porting/kncsdk.md)), and production-
 
 **GameServer** (`runtime/GameServer`, 2026-10-31): `config_gs_DEV.lua.in` derived from production `config_gs_US_SERVICE.lua`
 (already had no `CF_XTRAP` or HackShield), with FTP statistics disabled; `.dsn` for `Account`, `Game01`, `Statistics`, and
-`ES_BILLING` (production had `Game01`/`Game02` per group, both in same database); `config_gs.ini` unchanged (version `V4.0326.5`).
+`ES_BILLING` (production had `Game01`/`Game02` per group, both in the same database); `config_gs.ini` unchanged (version `V4.0326.5`).
 Loose `.lua` files in production GameServer folder **were loaded** and moved to `ServerResource` (below).
 
 **LoginServer** (`runtime/LoginServer`, 2026-10-31): `config_lg_DEV.lua.in` derived from `config_lg_US_SERVICE.lua` (Nexon already
@@ -124,7 +130,7 @@ off), `.dsn` for `Account`, `Game01`, `Statistics`, and `config_cn.ini` unchange
 
 **GlobalServer** (`runtime/GlobalServer`, 2026-10-31): `config_gb_DEV.lua.in` derived from `config_gb_US_SERVICE.lua` (SMS and NXWeb
 already commented), `.dsn` for `Account` and `Statistics` (two DBs in US config), and `config_gb.ini` unchanged.
-Production folder's `GlobalMissionConfig.lua` and `MissEliosConfig.lua` are not loaded by anything (T28).
+The production folder's `GlobalMissionConfig.lua` and `MissEliosConfig.lua` are not loaded by anything (T28).
 
 ## Scripts from each server folder (2026-10-31, T28)
 
@@ -133,13 +139,13 @@ In production each service ran with its own folder as current directory (`nssm s
 `_original-server/Install-Services.ps1`), so loose `.lua` files there **took precedence over** those in `ServerResource`. Port retains
 search order; all scripts are stored in `ServerResource`, using the server-folder version, to reproduce production behavior.
 
-Comparison from 2026-10-31 (server folder × `ServerResource` × `KncWX2Server/ServerResource/US` from `X2Server` repository, baseline):
+Comparison from 2026-10-31 (server folder × `ServerResource` × `KncWX2Server/ServerResource/US` from the `X2Server` repository as a baseline):
 
 | Status | Files | Action |
 |---|---|---|
 | Differ from `ServerResource` | GameServer: `CashItemPrice`, `ClassChangeItem`, `ClassChangeMemo`, `ClassChangeQuest`, `ClassChangeSkill`, `ClassChangeTable`, `FieldData`, `ManufactureResultTable`, `MapData`, `PetData`, `RandomItemData`, `RandomItemMapping`, `RandomItemTable`, `RecommendUserTable`, `StatTable`; CenterServer: `DropTable`, `PaymentItemTable`, `SecretDungeonData`, `StaticDropTable`; LoginServer: `RankingData`; GlobalServer: `WorldMissionConfig` (line endings only) | server-folder version replaces `ServerResource` version (bytes preserved) |
 | Match `ServerResource` | remaining 11 GameServer files and 13 CenterServer files | no action |
-| Only in server folder, unused | `BoardBox`, `BoardBox2`, `CardTable`, `GlobalMissionConfig`, `MissEliosConfig` (GameServer and GlobalServer versions differ) | not included: no code, config, or script references these names. Revisit GlobalServer `MissEliosConfig` when ported |
+| Only in server folder and unused | `BoardBox`, `BoardBox2`, `CardTable`, `GlobalMissionConfig`, `MissEliosConfig` (GameServer and GlobalServer versions differ) | Not included: no code, config, or script references these names. Revisit GlobalServer `MissEliosConfig` when ported |
 
 Server-folder version is not always newer: in 9 files, `ServerResource` was untouched baseline and only server folder had edits
 (`CashItemPrice` from 2012-02 vs. 2011-06), but for `StatTable` (Ara classes, 2013-08 vs. 2012-05), `RandomItemData`,

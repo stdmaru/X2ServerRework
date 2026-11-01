@@ -1,8 +1,8 @@
-[Home](../README.md) › [Original code](README.md) › Binaries without source (`.lib` / `.dll`)
+[Home](../README.md) › [Original code](README.md) › Proprietary binaries without source (`.lib` / `.dll`)
 
-# Binaries without source (`.lib` / `.dll`)
+# Proprietary binaries without source (`.lib` / `.dll`)
 
-These cannot be ported. For each one, remove the integration and, if game logic depends on the result, add an explicit stub.
+These binaries cannot be ported. Remove each integration and, if game logic depends on its result, add an explicit stub.
 
 Source: `#pragma comment(lib, ...)` and `.lib`/`.dll` files versioned in `_reference`.
 

@@ -6,8 +6,9 @@ Central account server: authenticates users entering GameServer (the `Account` d
 and account blocking, and stores data shared across the server group: guilds (skills, announcements, and board), rankings (including
 Henir and local), personal-shop agency, buffs, wedding hall, random-item events, and CCU. Accepts connections from GameServers;
 does not connect to any other server. Source: `KncWX2Server/LoginServer`, imported on 2026-10-31 with
-[server flags](../tools/flags.md) ([report](../../tools/import/reports/server-login/REPORT.md)). Uses already-ported
-[Common](server-common.md). Same relative location as original (`src/server/LoginServer` beside `src/server/Common`).
+[server flags](../tools/flags.md) ([report](../../tools/import/reports/server-login/REPORT.md)). Depends on the ported
+[Common](server-common.md) library. The port preserves the original directory layout (`src/server/LoginServer` beside
+`src/server/Common`).
 
 ## Import (2026-10-31)
 
@@ -33,7 +34,7 @@ does not connect to any other server. Source: `KncWX2Server/LoginServer`, import
 
 ## Status (2026-10-31, branch `server/login-run`)
 
-**Runs on Linux** from directory assembled by `x2_run_login` ([Run directories](../tools/runtime.md)): connects to four databases,
+**Runs on Linux** from the directory assembled by `x2_run_login` ([Run directories](../tools/runtime.md)): connects to four databases,
 loads scripts, authenticates to DB (UID 58, "Login"), and reaches ready state; GameServer connects to it
 (`ELG_VERIFY_SERVER_CONNECT`). Exits with code 0 at end of stdin.
 

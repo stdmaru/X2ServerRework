@@ -36,7 +36,7 @@ docker compose -f docker/docker-compose.yml down -v           # remove container
   and `LChannelList.IP` become `X2_SERVER_IP` (default `127.0.0.1`). Servers identify themselves in DB by address
   (`SetLocalIP` in configs), and ChannelServer sends `LChannelList` addresses to client; backup contains production addresses.
   Other IP fields are logs. Rule (2026-10-30): **data may be changed by script; schema (tables, procedures) may not**.
-- `sqlcmd` inside container: `docker exec -it x2-mssql /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P '<password>'`.
+- Run `sqlcmd` inside the container: `docker exec -it x2-mssql /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P '<password>'`.
 
 ## Connection strings
 

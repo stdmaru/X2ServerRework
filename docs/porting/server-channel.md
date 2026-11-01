@@ -4,8 +4,9 @@
 
 Channel server: server list, account login (through DEB, `_DEB_AUTH`), and user handoff to GameServer.
 Source: `KncWX2Server/ChannelServer`, imported on 2026-10-30 with [server flags](../tools/flags.md)
-([report](../../tools/import/reports/server-channel/REPORT.md)). Uses already-ported [Common](server-common.md).
-Same relative location as original (`src/server/ChannelServer` beside `src/server/Common`) because sources include `"../Common/x.h"`.
+([report](../../tools/import/reports/server-channel/REPORT.md)). Depends on the ported [Common](server-common.md) library.
+The port preserves the original directory layout (`src/server/ChannelServer` beside `src/server/Common`) because source files include
+headers as `"../Common/x.h"`.
 
 ## Import (2026-10-30)
 
@@ -19,7 +20,7 @@ Same relative location as original (`src/server/ChannelServer` beside `src/serve
 
 ## Status (2026-10-30, branch `server/channel-run`)
 
-Runs on Linux from directory assembled by `x2_run_channel` ([Run directories](../tools/runtime.md)): connects to Docker SQL Server
+Runs on Linux from the directory assembled by `x2_run_channel` ([Run directories](../tools/runtime.md)): connects to the Docker SQL Server
 (FreeTDS), loads scripts (`Enum.lua`, `DungeonEnum.lua`, `GameSysValTable.lua`, `WaitQueueData.lua`, `LogConfig.lua`...),
 authenticates to DB (UID 59, "Channel"), reads channel list, and reaches ready state (`OnServerReadyComplete`), with Lua prompt responding.
 Exits with code 0 (see [Run the servers](../running.md)).

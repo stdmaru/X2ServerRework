@@ -2,7 +2,7 @@
 
 # `_reference` → `src/` importer
 
-Copies a cleaned module from the original code. `_reference` is never modified (decision T9).
+Imports and normalizes a module from the original code. `_reference` is never modified (decision T9).
 
 ```bash
 python3 tools/import/import.py kncsdk            # import and generate report

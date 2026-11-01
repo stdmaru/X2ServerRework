@@ -2,15 +2,15 @@
 
 # Original code (`_reference/X2Server`)
 
-Analysis of the reference code, performed on 2026-10-29 at commit `b8fb1380`.
-This is reference material; decisions resulting from it are recorded in [Project › Decisions](../project/decisions.md).
+Analysis of the reference code at commit `b8fb1380`, performed on 2026-10-29.
+This page is reference material; decisions based on it are recorded in [Project › Decisions](../project/decisions.md).
 
 ## Overview
 
 | Page | Contents |
 |---|---|
 | [Inventory](inventory.md) | Modules, sizes, dependency graph, data |
-| [Libraries](libraries.md) | Each library/third party: version and action (replace/port/remove) |
+| [Libraries](libraries.md) | Each library and third-party dependency, with its version and recommended action (replace, port, or remove) |
 
 ## Platform dependencies
 

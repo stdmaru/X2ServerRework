@@ -36,7 +36,8 @@ to the server as arguments: `--no-stdin`, `--machine`, `--control=<name>` (socke
 
 ## Control socket
 
-A Unix socket (`AF_UNIX`, available on Windows since 10 1803: one code path instead of *named pipes*) in a user-only directory:
+A Unix socket (`AF_UNIX`, available on Windows since version 1803) in a user-only directory, so the same implementation works on
+both platforms instead of using *named pipes* on Windows:
 `$XDG_RUNTIME_DIR/x2/<name>.sock` (or `/tmp/x2-<uid>/`, mode 0700) on Linux, `%TEMP%\x2\<name>.sock` on Windows. It speaks the same
 [protocol](#protocol) to any number of clients; all receive logs and status, while a command result goes only to its requester.
 

@@ -1,6 +1,6 @@
-[Home](../README.md) › [Original code](README.md) › Libraries — what to do with each
+[Home](../README.md) › [Original code](README.md) › Libraries: recommended actions
 
-# Libraries — what to do with each
+# Libraries: recommended actions
 
 Action legend: **UP** = replace with upstream version via CMake · **PORT** = port custom code ·
 **STD** = replace with the C++ standard library · **RM** = remove · **NEW** = replace with another library.

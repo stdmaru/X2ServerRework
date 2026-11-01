@@ -1,8 +1,9 @@
-[Home](../README.md) › [Original code](README.md) › Out of scope (noise)
+[Home](../README.md) › [Original code](README.md) › Out-of-scope projects and tools
 
-# Out of scope (noise)
+# Out-of-scope projects and tools
 
-Projects and folders in `_reference/X2Server` that **will not be ported for now**. Kept only to document what exists.
+Projects and folders in `_reference/X2Server` that **are not currently being ported**. This page documents what is present in the
+reference code.
 
 ## Tools (editors, converters, utilities)
 
@@ -26,7 +27,7 @@ Potentially useful as **reference** later:
 
 ## Third-party integrations
 
-`HShield`, `XTRAP`, `NexonModule`, `Steamworks`, `IGA` — see [Binaries without source (`.lib` / `.dll`)](proprietary-binaries.md).
+`HShield`, `XTRAP`, `NexonModule`, `Steamworks`, `IGA` — see [Proprietary binaries without source (`.lib` / `.dll`)](proprietary-binaries.md).
 
 ## Data / spreadsheets
 

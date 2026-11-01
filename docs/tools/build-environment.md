@@ -2,7 +2,7 @@
 
 # Build environment (Ubuntu in Docker)
 
-Since 2026-10-30, Linux builds and tests run in a custom **Ubuntu** image (decision T24), shared by development and
+Since 2026-10-30, Linux builds and tests have run in a custom **Ubuntu** image (decision T24), shared by development and
 [CI](ci.md). The host (any distribution with Docker) only mounts the repository. Windows (clang-cl, T26) is not built here:
 only in the Windows CI job.
 
@@ -13,8 +13,8 @@ only in the Windows CI job.
 
 ## Usage
 
-`docker/build.sh` runs a command inside container (without arguments, opens a shell). Builds image the first time
-(and when `Dockerfile` changes; otherwise Docker cache makes it immediate).
+`docker/build.sh` runs a command inside a container; without arguments, it opens a shell. It builds the image on the first run
+(and whenever `Dockerfile` changes; otherwise, Docker's build cache makes startup nearly instant).
 
 ```bash
 docker/build.sh cmake --preset linux-debug
@@ -23,7 +23,7 @@ docker/build.sh ctest --preset linux-debug
 docker/build.sh cmake --preset linux-gcc && docker/build.sh cmake --build --preset linux-gcc   # GCC check
 ```
 
-- Repository is mounted **at the same path** as host: `build/` and `compile_commands.json` are available to host editor.
+- The repository is mounted **at the same path** as on the host, so `build/` and `compile_commands.json` are available to the host editor.
 - Runs as host user (files under `build/` are not root-owned). Container `HOME`, with ccache, is `~/.cache/x2-build` (`X2_BUILD_HOME` changes it).
 - Passes host and `docker/.env` `X2_*` variables into container (shell variable wins; template at `docker/.env.example`),
   e.g. DB password for CMake ([Run directories](runtime.md#template-values-cmake-cache)). `winbuild.sh` also reads `docker/.env`

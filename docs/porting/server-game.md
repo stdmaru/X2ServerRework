@@ -4,8 +4,8 @@
 
 Game server: characters, towns, fields, dungeons, PvP, items, quests, guilds, cash (through [EPublisherServer](server-epublisher.md)).
 Source: `KncWX2Server/GameServer`, imported on 2026-10-30 with [server flags](../tools/flags.md)
-([report](../../tools/import/reports/server-game/REPORT.md)). Uses already-ported [Common](server-common.md).
-Same relative location as original (`src/server/GameServer` beside `src/server/Common`).
+([report](../../tools/import/reports/server-game/REPORT.md)). Depends on the ported [Common](server-common.md) library.
+The port preserves the original directory layout (`src/server/GameServer` beside `src/server/Common`).
 
 ## Import (2026-10-30)
 
@@ -34,8 +34,8 @@ Same relative location as original (`src/server/GameServer` beside `src/server/C
 
 ## Status (2026-10-31, branch `server/game-run`)
 
-**Runs on Linux** from directory assembled by `x2_run_game` ([Run directories](../tools/runtime.md)): connects to four Docker
-SQL Server databases (FreeTDS), loads scripts from `ServerResource` and `ClientScript` generated from client (production-data load
+**Runs on Linux** from the directory assembled by `x2_run_game` ([Run directories](../tools/runtime.md)): connects to four Docker
+SQL Server databases (FreeTDS), loads scripts from `ServerResource` and `ClientScript` generated from the client (production-data load
 errors are in [Original bugs](../original/bugs.md#data-serverresource-clientscript)), authenticates to DB (UID 2, "Game"), receives
 Center (9100), Login (9200), and Global (9500) lists, attempts to connect, and reaches ready state (`OnServerReadyComplete`), with Lua
 prompt responding. Exits with code 0 (see [Run the servers](../running.md)). Packets to servers that do not yet exist are discarded

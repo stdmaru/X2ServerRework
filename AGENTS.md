@@ -89,8 +89,8 @@ The original code is encoded in CP949. To read it, use `iconv -f cp949 -t utf-8 
 
 ## Code
 
-- New code, code comments, documentation, and commit messages must always be in English.
-  Translate Korean comments from the original into English when editing or copying that code. Add comments only when they help.
+- Write new code and code comments in English. Project documentation is maintained in English. Translate Korean comments from the
+  original when editing or copying that code. Add comments only when they help.
 - Follow the style of the surrounding code. When cleaning up, prefer the C++20 standard library to Boost or Win32.
 - Any behavior change from the original must be intentional and recorded on the module page under `docs/porting/`.
 
@@ -120,7 +120,7 @@ The wiki under `docs/` is the project's memory. It is organized as a **navigable
 
 - Remote: `origin` (private GitHub repository). Commit and push work branches without asking (pushing a branch does not trigger
   CI); integrate into `main` only when the user asks (then push `main`). Never force-push to `main`.
-- Commit message format: `type: summary` (`feat`, `fix`, `docs`, `refactor`, `chore`), with an English body explaining why.
+- Commit message format: `type: summary` (`feat`, `fix`, `docs`, `refactor`, `chore`), with a Portuguese body explaining why.
 
 ### Branches
 

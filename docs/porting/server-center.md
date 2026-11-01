@@ -4,11 +4,11 @@
 
 Room server: battlefields (`BattleFieldRoom`), dungeons (`DungeonRoom`, including Henir and defense), PvP (`PvPRoom`, matches
 and results), square (`Square`), parties (`NewCnParty`, party fever), trade (`Trade`), personal shop (`PersonalShop`), training center,
-and wedding hall. Server side of simulation: monsters, drops, and room results. Accepts GameServer connections (port 9100); GameServers
-send it `ERM_*` messages (first is `ERM_OPEN_BATTLE_FIELD_REQ` when leaving town).
+and wedding hall. It handles server-side simulation for monsters, drops, and room results. It accepts GameServer connections on port
+9100; GameServers send it `ERM_*` messages (the first is `ERM_OPEN_BATTLE_FIELD_REQ`, sent when leaving town).
 Source: `KncWX2Server/CenterServer`, imported on 2026-10-31 with [server flags](../tools/flags.md)
-([report](../../tools/import/reports/server-center/REPORT.md)). Uses already-ported [Common](server-common.md). Same relative location
-as original (`src/server/CenterServer` beside `src/server/Common`).
+([report](../../tools/import/reports/server-center/REPORT.md)). Depends on the ported [Common](server-common.md) library.
+The port preserves the original directory layout (`src/server/CenterServer` beside `src/server/Common`).
 
 ## Import (2026-10-31)
 
@@ -35,7 +35,7 @@ as original (`src/server/CenterServer` beside `src/server/Common`).
 
 ## Status (2026-10-31, branch `server/center-run`)
 
-**Runs on Linux** from directory assembled by `x2_run_center` ([Run directories](../tools/runtime.md)): connects to three databases
+**Runs on Linux** from the directory assembled by `x2_run_center` ([Run directories](../tools/runtime.md)): connects to three databases
 (`Account`, `Game01`, `Statistics`), loads scripts (dungeon and line-map load errors already listed under
 [Original bugs](../original/bugs.md#data-serverresource-clientscript)), authenticates to DB, and reaches ready state; GameServer
 connects to it (port 9100). Exits with code 0 (see [Run the servers](../running.md)).

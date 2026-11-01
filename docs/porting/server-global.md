@@ -2,15 +2,15 @@
 
 # Server: GlobalServer (`src/server/GlobalServer`)
 
-Server for data shared across all server groups: global missions (`GlobalMissionManager`) and world missions
+Provides data shared across all server groups: global missions (`GlobalMissionManager`) and world missions
 (`WorldMissionManager`, crystal defense, `P_LDefense_Crystal_*`), random-enchantment and exchange-limit events (`GlobalEventDBThread`),
 user count (`GlobalServerCCUManager`), blocklist (`BlockListManager`, `P_MPenalty_GET`), automatic party formation (`AutoParty*`),
 PvP matchmaking (`Match*`), field boss (`FieldBossManager`), and server serial numbers (`ServerSNManager`). Accepts GameServer
 connections (port 9500, `Statistics.LServerList`); GameServers send `EGB_*` messages, currently discarded because server was absent
 ([GameServer dependencies](server-game.md#dependencies-on-other-servers-survey-from-2026-10-31)).
 Source: `KncWX2Server/GlobalServer`, imported on 2026-10-31 with [server flags](../tools/flags.md)
-([report](../../tools/import/reports/server-global/REPORT.md)). Uses already-ported [Common](server-common.md). Same relative location
-as original (`src/server/GlobalServer` beside `src/server/Common`).
+([report](../../tools/import/reports/server-global/REPORT.md)). Depends on the ported [Common](server-common.md) library.
+The port preserves the original directory layout (`src/server/GlobalServer` beside `src/server/Common`).
 
 ## Import (2026-10-31)
 
@@ -38,7 +38,7 @@ as original (`src/server/GlobalServer` beside `src/server/Common`).
 
 ## Status (2026-10-31, branch `server/global-run`)
 
-**Runs on Linux** from directory assembled by build (`x2_run_global`, [Run directories](../tools/runtime.md)): connects to two
+**Runs on Linux** from the directory assembled by the build (`x2_run_global`, [Run directories](../tools/runtime.md)): connects to two
 databases (`Account` and `Statistics`), loads scripts (`Enum`, `DungeonEnum`, `WorldMissionConfig`, `PvpMatchData`...; load errors
 are the already-listed dungeon and line-map errors), authenticates to DB, reaches `OnServerReadyComplete`, and accepts GameServer
 connection (port 9500). Exits with code 0 (see [Run the servers](../running.md)). Three groups of procedures it calls do not exist

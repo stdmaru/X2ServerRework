@@ -2,7 +2,7 @@
 
 # Server: EPublisherServer (`src/server/EPublisherServer`)
 
-Authentication and cash service called by ChannelServer and GameServer through DEB client (`_DEB_AUTH`: `KDEBAuth`,
+Authentication and cash service used by ChannelServer and GameServer through the DEB client (`_DEB_AUTH`: `KDEBAuth`,
 `KDEBBilling` in `Common/OnlyGlobal/AuthAndBilling`). Original code calls this role *EPublisher* (`EPUBLISHER_*` packets).
 Decision T23 in [Decisions](../project/decisions.md).
 

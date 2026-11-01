@@ -18,7 +18,7 @@ Repository is private: **2,000 Actions minutes/month**, with Windows minutes cha
   [Build environment](build-environment.md#windows-clang-cl-over-ssh)); trigger Windows CI only when machine unavailable.
 - **CI Linux uses 2 jobs:** Clang Debug (dev tools ON) and GCC Release (dev tools OFF). Clang Release, the distributed build, stays in local matrix.
 - **`timeout-minutes`** on all jobs; a new push to same branch cancels previous run.
-- A branch's ccache inherits only from `main`: after `main` runs, branches start warm.
+- Branches restore ccache data only from `main`, so they benefit from a warm cache after `main` has run.
 
 Linux jobs use [build environment](build-environment.md) image (Ubuntu, T24), same as `docker/build.sh`; Windows job uses Windows runner (T26).
 

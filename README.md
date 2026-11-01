@@ -19,7 +19,7 @@ the ported servers work with the original `elsword.exe`, without changing the cl
 
 All original servers have been ported. With the original client, login, character selection, the town, fields, and a dungeon
 are already working with all six servers running together.
-Everything builds without warnings and the tests pass on Windows, but the servers have not yet been tested at runtime there.
+Everything builds without warnings and the tests pass on Windows, but the servers have only been run on Linux.
 
 ## Build
 

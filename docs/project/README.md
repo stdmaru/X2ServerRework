@@ -2,7 +2,7 @@
 
 # Project
 
-Project direction. **Everything here is essential.**
+Project overview. **All of these pages are essential.**
 
 | Page | Contents |
 |---|---|

@@ -2,10 +2,10 @@
 
 # Server: Common (`src/server/Common`)
 
-Code shared by all five servers, and partly by the client (packets, enums, `EventID_*`).
+Code shared by all five servers and used in part by the client (packet definitions, enums, and `EventID_*`).
 Source: `KncWX2Server/Common`, imported on 2026-10-29 with [server flags](../tools/flags.md)
-([report](../../tools/import/reports/server-common/REPORT.md)).
-Folder name matches the original (`Common`) because sources include `"../Common/x.h"`.
+([report](../../tools/import/reports/server-common/REPORT.md)). The port keeps the original folder name (`Common`) because
+source files include headers as `"../Common/x.h"`.
 
 ## Import
 
@@ -108,7 +108,7 @@ UDP (`server/common-udp`):
 | `SIO_UDP_CONNRESET`, `UDP_CHECKSUM_COVERAGE` | `x2::platform::net::ConfigureUdpSocket` (Windows only) |
 
 - `X2Lib/X2UDPPacket.*` (client datagram structs) came through importer module `server-x2lib`, under `src/server/X2Lib`
-  (same relative location as original). The two `u_long` fields in `KXPT_PORT_CHECK_REQ/ACK` became `std::uint32_t`: on Linux they
+  (the same relative path as in the original). The two `u_long` fields in `KXPT_PORT_CHECK_REQ/ACK` became `std::uint32_t`: on Linux they
   would be 8 bytes and change the datagram. `static_assert` checks sizes.
 - Declarations with `__forceinline` whose bodies are in `.cpp` lost `__forceinline` (GCC rejects it).
 - `UdpRelayChecker/`: files become empty after US flags; nothing to port.
