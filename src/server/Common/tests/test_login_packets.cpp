@@ -1,5 +1,5 @@
 // Exact bytes of the first packets of the login, derived by hand from the field order in ClientPacket.cpp/
-// CommonPacket.cpp and the wire format of docs/original/protocolo.md (numbers big-endian, strings with a
+// CommonPacket.cpp and the wire format of docs/original/protocol.md (numbers big-endian, strings with a
 // big-endian byte count; std::wstring as UTF-16LE). Not yet checked against captured traffic.
 #include "packet_test.h"
 

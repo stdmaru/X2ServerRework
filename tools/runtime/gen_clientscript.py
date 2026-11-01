@@ -9,7 +9,7 @@ folder and its subfolders by name (KAutoPath), and no two client scripts share a
 Usage: tools/runtime/gen_clientscript.py <client data dir> <out dir> [--luajit PATH]
 
 Nothing is rewritten when the inputs did not change (a stamp file in <out dir> records them).
-See docs/ferramentas/runtime.md.
+See docs/tools/runtime.md.
 """
 
 import argparse

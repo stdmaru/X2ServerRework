@@ -1,4 +1,4 @@
-# x2ctl: client of the servers' control socket (decision T30, docs/porte/kncsdk.md)
+# x2ctl: client of the servers' control socket (decision T30, docs/porting/kncsdk.md)
 add_executable(x2ctl main.cpp)
 target_link_libraries(x2ctl PRIVATE x2::platform)
 

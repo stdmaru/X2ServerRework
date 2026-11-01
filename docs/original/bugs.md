@@ -1,48 +1,48 @@
-[Início](../README.md) › [Código original](README.md) › Bugs do original
+[Home](../README.md) › [Original code](README.md) › Original bugs
 
-# Bugs do original (pendências da Fase 5)
+# Original bugs (Phase 5 backlog)
 
-Comportamento errado que **já existia no original** e que o porte **mantém de propósito**, para não mudar o jogo no meio do porte.
-São consertados na [Fase 5](../projeto/roadmap.md#fase-5--limpeza-profunda), cada um com uma decisão sobre o comportamento novo.
+Incorrect behavior that **already existed in the original** and that the port **intentionally preserves**, to avoid changing
+the game mid-port. These are fixed in [Phase 5](../project/roadmap.md#phase-5--deep-cleanup), each with a decision about the new behavior.
 
-**Regra (pedido do usuário, 2026-10-31):** bug evidente é corrigido assim que achado, com a correção registrada na página do módulo.
-Ficam aqui só os que são mais convenientes de tratar depois ou cujo comportamento certo é incerto (balanço do jogo, dados do banco).
+**Rule (user request, 2026-10-31):** fix an obvious bug as soon as it is found, recording the fix on the module page.
+Only bugs that are more convenient to handle later or whose correct behavior is uncertain (game balance, database data) remain here.
 
-Os bugs que o porte **já corrigiu** (leitura fora do array, `%s` com `std::wstring`...) não entram aqui: ficam na seção
-"Bugs do original corrigidos" da página do módulo em [Porte](../porte/README.md).
+Bugs already fixed by the port (out-of-bounds reads, `%s` with `std::wstring`...) are not listed here: see the "Original bugs fixed"
+section of the relevant module page in [Porting](../porting/README.md).
 
-## Código
+## Code
 
-| Onde | Bug | Efeito no jogo | Achado |
+| Location | Bug | In-game effect | Found |
 |---|---|---|---|
-| `Common/X2Data/XSLSkillTree.cpp`, `LoadSkillTemplet_Stat` | A defesa mágica por nível é lida da tabela `m_DefPhysic`, e não da `m_DefMagic` (o bloco foi copiado e só o vetor mudou) | Skills com bônus de stat dão defesa mágica igual à física. As skills de guilda 500 e 501 têm `m_DefMagic` própria, que é ignorada | 2026-10-31, `server/game-run` |
-| `Common/X2Data/XSLSkillTree.cpp`, `LoadSkillTemplet_Stat` | A checagem de tamanho está invertida (`empty() != false && size() != SLV_MAX_LEVEL`): recusa só a tabela vazia, e uma tabela com menos de 30 níveis passa | O original lia fora do vetor nos níveis que faltam. O porte põe 0 nesses níveis ([GameServer](../porte/server-game.md#bugs-do-original-corrigidos)); falta decidir se a tabela curta é válida (as skills de guilda têm 10 níveis) | 2026-10-31, `server/game-run` |
-| `GameServer/NewPartyListManager.cpp`, `KPartyListManager::IsPossibleLowLevel` | O `OUT bool isPartyNULL` é recebido por valor | Quem chama nunca vê o valor | 2026-10-30, `server/game-build` |
-| `GameServer`, grau de guilda | Testa `== -1` num `u_char`, o que é sempre falso (o teste saiu no porte, com o mesmo efeito) | A conferir no `server/game-run`: o que a procedure devolve quando o personagem não tem guilda | 2026-10-30, `server/game-build` |
-| `GameServer`, nível de skill e página de skill ativa | Testam `unsigned < 0`, sempre falso (os testes saíram no porte, com o mesmo efeito) | A validação de valor negativo nunca dispara | 2026-10-30, `server/game-build` |
-| `CenterServer/DungeonRoom.cpp`, checagem de "sub-stage limpa em 1 s" (`GetSubStageNpcDieCheck`) | O número de NPCs ativos da sub-stage é contado e descartado: o `m_mapSubStageActiveNpcNum` recebe o número de NPCs que dão EXP, e o `m_iSubStageActiveNpc` (que dispara a checagem a partir de 5) também vem do mapa de EXP. O mapa de ativos nunca é lido | A checagem anti-hack (o pedido `HCT_CHECK_NPC_DIE_TIME` ao GameServer) conta NPCs de EXP em vez de ativos: pode disparar ou deixar de disparar fora do previsto. A contagem morta saiu no porte, o comportamento é o mesmo | 2026-10-31, `server/center-build` |
+| `Common/X2Data/XSLSkillTree.cpp`, `LoadSkillTemplet_Stat` | Magic defense per level is read from the `m_DefPhysic` table instead of `m_DefMagic` (the block was copied and only the vector changed) | Skills with stat bonuses grant magic defense equal to physical defense. Guild skills 500 and 501 have their own `m_DefMagic`, which is ignored | 2026-10-31, `server/game-run` |
+| `Common/X2Data/XSLSkillTree.cpp`, `LoadSkillTemplet_Stat` | Size check is inverted (`empty() != false && size() != SLV_MAX_LEVEL`): it rejects only an empty table, allowing a table with fewer than 30 levels | The original read out of bounds for missing levels. The port uses 0 for those levels ([GameServer](../porting/server-game.md#original-bugs-fixed)); still need to decide whether a short table is valid (guild skills have 10 levels) | 2026-10-31, `server/game-run` |
+| `GameServer/NewPartyListManager.cpp`, `KPartyListManager::IsPossibleLowLevel` | `OUT bool isPartyNULL` is passed by value | Caller never receives the value | 2026-10-30, `server/game-build` |
+| `GameServer`, guild grade | Checks `== -1` on a `u_char`, which is always false (the check was removed in the port, with the same effect) | Verify in `server/game-run`: what the procedure returns when the character has no guild | 2026-10-30, `server/game-build` |
+| `GameServer`, skill level and active skill page | Check `unsigned < 0`, which is always false (the checks were removed in the port, with the same effect) | Negative-value validation never runs | 2026-10-30, `server/game-build` |
+| `CenterServer/DungeonRoom.cpp`, "sub-stage cleared in 1 s" check (`GetSubStageNpcDieCheck`) | The active NPC count for the sub-stage is computed and discarded: `m_mapSubStageActiveNpcNum` receives the number of NPCs that grant EXP, and `m_iSubStageActiveNpc` (which triggers the check from 5 onward) also comes from the EXP map. The active-NPC map is never read | Anti-hack check (`HCT_CHECK_NPC_DIE_TIME` request to GameServer) counts EXP-granting NPCs instead of active NPCs: may trigger or fail to trigger unexpectedly. The dead count was removed in the port; behavior is unchanged | 2026-10-31, `server/center-build` |
 
-## Dados (`ServerResource`, `ClientScript`)
+## Data (`ServerResource`, `ClientScript`)
 
-Erros ao carregar os scripts de produção com o `ClientScript` gerado do cliente (contagem do GameServer de 2026-10-31, depois da
-[T28](../projeto/decisoes.md): são os mesmos números dos logs de produção de 2026-07, `_original-server/GameServer/log`). O conjunto de
-itens (49.837) e os scripts de dungeon foram conferidos: são os mesmos do `ClientScript` do servidor original, então os erros de item e
-de dungeon já aconteciam em produção. O servidor sobe assim, ignorando as entradas ruins:
+Errors loading production scripts with `ClientScript` generated from the client (GameServer counts from 2026-10-31, after
+[T28](../project/decisions.md): same counts as the 2026-07 production logs in `_original-server/GameServer/log`). The item set (49,837)
+and dungeon scripts were checked: they match those in the original server's `ClientScript`, so item and dungeon errors already occurred
+in production. The server starts while ignoring invalid entries:
 
-- Itens que não existem no `Item.lua` citados pelo `ServerResource`: 437 itens atrativos (`AddAttractionItemInfo`),
-  167 grupos de item aleatório (`AddRandomItemGroup`, com a soma da probabilidade passando de 100%), 172 pacotes do cash com item repetido,
-  27 itens selados e 13 de aviso de resultado.
-- 1.081 resultados de fabricação (`AddManufactureResultTemplet`, "잘못된 제조ID") cujo ID de fabricação o `ClientScript` não tem (a
-  produção, com o `ClientScript` dela, de um cliente mais novo, tinha 1.223).
-- 12 pets e 1 montaria (ID 11) que o script de criação cita e o template não tem.
-- 24 scripts de dungeon citados pelo `DungeonData.lua` que nem o cliente nem o `ClientScript` original têm (tutoriais `ElTutorial_*`,
-  treinos `Training_*`, `Besma_MINE2_*`, `Elder_NewYear`); o `Dungeon_Event_KidDay.lua` existe só no `ClientScript` original.
-- 2 linemaps de campo (`Field_Velder_Stage2/3_LineMap.lua`) que não existem.
-- A procedure `dbo.P_GItem_Def_GET` (ferramenta de GM) não existe no banco de desenvolvimento.
-- O GlobalServer chama três grupos de procedures do `Statistics` que não existem em nenhum dos backups (2026-10-31, `server/global-run`):
-  `P_LEvent_GlobalMission_SEL/UPD` (missões globais), `P_LEvent_RandomEnchant_SEL/UPD` (evento de encantamento por tempo) e
-  `P_LExchangeLimitInfo_GET`/`P_LExchangeLimitItem_GET`/`P_LExchangeLimitLog_*` (troca com limite). Essas funções sobem sem dados.
-  Também falta a hora da defesa do cristal ("디펜스 던전 시간 셋팅 값이 존재 하지 않습니다", `SetTodayMissionTime`).
-- O `MapData.lua` não registra os mapas locais de Ruben (10000) e Elder (10001) no `AddLocalMapInfo` (começa em Altera): quando o cliente
-  pede o bônus do grupo automático nessas vilas (`EGS_REQUEST_GET_AUTO_PARTY_BONUS_INFO_NOT`), o GameServer acusa "등록되지 않은 맵ID입니다!"
-  e manda a lista vazia (2026-10-31, `server/global-run`).
+- Items referenced by `ServerResource` but absent from `Item.lua`: 437 attraction items (`AddAttractionItemInfo`),
+  167 random item groups (`AddRandomItemGroup`, with total probability exceeding 100%), 172 cash packages with duplicate items,
+  27 sealed items, and 13 result-notification items.
+- 1,081 crafting results (`AddManufactureResultTemplet`, "잘못된 제조ID") whose crafting ID is absent from `ClientScript`
+  (production, with its own `ClientScript` from a newer client, had 1,223).
+- 12 pets and 1 mount (ID 11) referenced by the creation script but missing from the template.
+- 24 dungeon scripts referenced by `DungeonData.lua` that are in neither the client nor the original `ClientScript`
+  (`ElTutorial_*` tutorials, `Training_*` training, `Besma_MINE2_*`, `Elder_NewYear`); `Dungeon_Event_KidDay.lua` exists only in the original `ClientScript`.
+- 2 field line maps (`Field_Velder_Stage2/3_LineMap.lua`) that do not exist.
+- Procedure `dbo.P_GItem_Def_GET` (GM tool) is absent from the development database.
+- GlobalServer calls three groups of `Statistics` procedures absent from all backups (2026-10-31, `server/global-run`):
+  `P_LEvent_GlobalMission_SEL/UPD` (global missions), `P_LEvent_RandomEnchant_SEL/UPD` (timed enchantment event), and
+  `P_LExchangeLimitInfo_GET`/`P_LExchangeLimitItem_GET`/`P_LExchangeLimitLog_*` (limited exchange). These features start without data.
+  Crystal-defense time is also missing ("디펜스 던전 시간 셋팅 값이 존재 하지 않습니다", `SetTodayMissionTime`).
+- `MapData.lua` does not register local maps Ruben (10000) and Elder (10001) through `AddLocalMapInfo` (entries start at Altera):
+  when the client requests the automatic-party bonus in these towns (`EGS_REQUEST_GET_AUTO_PARTY_BONUS_INFO_NOT`), GameServer reports
+  "등록되지 않은 맵ID입니다!" and sends an empty list (2026-10-31, `server/global-run`).

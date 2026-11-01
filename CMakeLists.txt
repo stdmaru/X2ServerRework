@@ -17,7 +17,7 @@ option(X2_BUILD_TESTS  "Build unit tests" ON)
 
 # x86_64 and arm64 (decisions T6, T12)
 if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
-    message(FATAL_ERROR "X2Rework targets 64-bit only (see docs/projeto/decisoes.md, T6)")
+    message(FATAL_ERROR "X2Rework targets 64-bit only (see docs/project/decisions.md, T6)")
 endif()
 
 include(X2Compiler)

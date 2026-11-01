@@ -1,4 +1,4 @@
-# KNCSDK - internal SDK shared by servers and client (docs/porte/kncsdk.md).
+# KNCSDK - internal SDK shared by servers and client (docs/porting/kncsdk.md).
 # The source tree mirrors the original Include/ folder, which is also the include root.
 
 add_library(kncsdk STATIC

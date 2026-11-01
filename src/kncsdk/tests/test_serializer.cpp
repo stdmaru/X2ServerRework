@@ -1,4 +1,4 @@
-// Wire format of KSerializer. Expected bytes follow the original MSVC x86 build (docs/original/protocolo.md):
+// Wire format of KSerializer. Expected bytes follow the original MSVC x86 build (docs/original/protocol.md):
 // numbers big-endian, wchar_t/wstring as raw UTF-16LE, sizes as 4-byte DWORD.
 #include "Serializer/SerBuffer.h"
 #include "Serializer/SerMap.h"

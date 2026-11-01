@@ -1,4 +1,4 @@
-# Game server (docs/porte/server-game.md). Common/ is the x2_server_common library.
+# Game server (docs/porting/server-game.md). Common/ is the x2_server_common library.
 
 file(GLOB_RECURSE X2_GAME_SERVER_SOURCES CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 

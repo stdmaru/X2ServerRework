@@ -1,4 +1,4 @@
-# x2::platform - the only place that talks to the OS directly (docs/porte/platform.md).
+# x2::platform - the only place that talks to the OS directly (docs/porting/platform.md).
 
 add_library(x2_platform STATIC
     src/console.cpp

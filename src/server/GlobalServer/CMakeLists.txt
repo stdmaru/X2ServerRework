@@ -1,4 +1,4 @@
-# Global server (docs/porte/server-global.md). Common/ is the x2_server_common library.
+# Global server (docs/porting/server-global.md). Common/ is the x2_server_common library.
 
 file(GLOB_RECURSE X2_GLOBAL_SERVER_SOURCES CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 

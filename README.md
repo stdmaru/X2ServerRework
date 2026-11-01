@@ -1,45 +1,45 @@
 # X2ServerRework
 
-Porte dos servidores (e, mais adiante, do cliente) de **Elsword** para **Windows e Linux**, em 64 bits.
+Port of the **Elsword** servers (and, later, the client) to **64-bit Windows and Linux**.
 
-O código original só roda no Windows: MFC, DirectX 9 e MSVC de 32 bits. Aqui ele passa para C++20 e CMake, com
-Clang nas duas plataformas, e é limpo no caminho. O **protocolo continua o do cliente original**: os servidores portados
-funcionam com o `elsword.exe` de sempre, sem mudar nada nele nem nos assets dele.
+The original code only runs on Windows: MFC, DirectX 9, and 32-bit MSVC. Here, it is being moved to C++20 and CMake,
+built with Clang on both platforms, and cleaned up along the way. The **protocol remains compatible with the original client**:
+the ported servers work with the original `elsword.exe`, without changing the client or its assets.
 
-## Estado (2026-10-31)
+## Status (2026-10-31)
 
-| Servidor | Função | Linux | Windows |
+| Server | Role | Linux | Windows |
 |---|---|---|---|
-| EPublisherServer | login e cash | roda | compila |
-| ChannelServer | primeiro contato do cliente: login, servidores e canais | roda | compila |
-| LoginServer | contas, guildas, rankings | roda | compila |
-| CenterServer | salas de campo e de dungeon | roda | compila |
-| GameServer | personagens, vila, campos, dungeons, itens, quests, PvP | roda | compila |
-| GlobalServer | missões globais, grupo automático, PvP, contagem de usuários | roda | compila |
+| EPublisherServer | login and cash | runs | builds |
+| ChannelServer | client's first connection: login, servers, and channels | runs | builds |
+| LoginServer | accounts, guilds, rankings | runs | builds |
+| CenterServer | field and dungeon rooms | runs | builds |
+| GameServer | characters, towns, fields, dungeons, items, quests, PvP | runs | builds |
+| GlobalServer | global missions, automatic matchmaking, PvP, user counts | runs | builds |
 
-Todos os servidores do original estão portados. Com o cliente original, já funcionam o login, a seleção de personagem, a vila,
-o campo e a dungeon, com os seis servidores rodando juntos.
-No Windows tudo compila sem warnings e os testes passam, mas os servidores ainda não foram testados rodando lá.
+All original servers have been ported. With the original client, login, character selection, the town, fields, and a dungeon
+are already working with all six servers running together.
+Everything builds without warnings and the tests pass on Windows, but the servers have only been run on Linux.
 
-## Compilar
+## Build
 
-- [Linux](docs/building-linux.md): pelo container Docker do projeto (recomendado) ou nativo, com os pacotes de cada distribuição.
-- [Windows](docs/building-windows.md): Visual Studio 2026 com o clang-cl.
+- [Linux](docs/building-linux.md): using the project's Docker container (recommended) or natively, with packages for each distribution.
+- [Windows](docs/building-windows.md): Visual Studio 2026 with clang-cl.
 
-## Rodar
+## Run
 
-[Rodar os servidores](docs/running.md): o banco de dados (SQL Server em Docker), as configurações locais
-(`docker/.env`), as pastas que o build monta, a ordem dos servidores e o cliente.
+[Run the servers](docs/running.md): the database (SQL Server in Docker), local settings (`docker/.env`), generated run
+directories, server startup order, and the client.
 
-O cliente original e os backups do banco não fazem parte do repositório.
+The original client and database backups are not part of this repository.
 
-## Próximos passos
+## What's next
 
-Um terminal novo para os servidores, o log estruturado e o **ServerManager**, uma ferramenta para orquestrar e monitorar os
-servidores, local e por SSH. Depois vem o porte do cliente para SDL3 + SDL_GPU. Tudo isso está no [Roadmap](docs/projeto/roadmap.md).
+A new server terminal, structured logging, and **ServerManager**, a tool to orchestrate and monitor the servers locally and over SSH.
+Next comes the client port to SDL3 + SDL_GPU. See the [Roadmap](docs/project/roadmap.md) for all planned work.
 
-## Documentação
+## Documentation
 
-O [wiki do projeto](docs/README.md) tem os detalhes: decisões, andamento, notas de cada módulo portado e a análise do
-código original. Quem for mexer no código começa pelo [AGENTS.md](AGENTS.md), com as regras do repositório (estilo,
-branches, o que não se muda).
+The [project wiki](docs/README.md) contains the details: decisions, progress, notes on each ported module, and analysis of the
+original code. Before working on the code, start with [AGENTS.md](AGENTS.md), which contains the repository rules (style,
+branches, and what must not be changed).

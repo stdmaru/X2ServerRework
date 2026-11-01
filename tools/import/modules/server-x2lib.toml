@@ -1,6 +1,6 @@
 # X2Lib/X2UDPPacket.*: the UDP packet structs of the P2P/relay protocol. They belong to the client (X2Lib),
 # but the servers compile them too, through Common/Socket/X2Packet.cpp ("../../X2Lib/X2UDPPacket.cpp").
-# Imported with the server flags; the client import will have to reconcile them (docs/porte/server-common.md).
+# Imported with the server flags; the client import will have to reconcile them (docs/porting/server-common.md).
 
 name = "server-x2lib"
 source_root = "."

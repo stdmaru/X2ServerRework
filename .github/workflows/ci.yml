@@ -1,4 +1,4 @@
-# Build and tests (docs/ferramentas/ci.md).
+# Build and tests (docs/tools/ci.md).
 # The Linux jobs run in the project's Ubuntu build image (docker/build/Dockerfile, decision T24), the same one used by
 # docker/build.sh for local builds. The image is published to GHCR, tagged by the Dockerfile's hash, and only
 # rebuilt when the Dockerfile changes.

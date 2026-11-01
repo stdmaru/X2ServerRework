@@ -1,9 +1,9 @@
 # KNCSDK: internal SDK (log, serializer, security, threads, lua_tinker).
-# Base = KNCSDK_Server (servers come first, docs/core/decisoes.md T8); KNCSDK_Client differences go to the report.
+# Base = KNCSDK_Server (servers come first, docs/project/decisions.md T8); KNCSDK_Client differences go to the report.
 # Embedded third-party code (Crypto++, zlib, Lua 5.0/5.1, luabind) is not imported: it comes from upstream.
 
 name = "kncsdk"
-# Ported by hand since 2026-10-29 (docs/porte/kncsdk.md): never write to src/kncsdk again.
+# Ported by hand since 2026-10-29 (docs/porting/kncsdk.md): never write to src/kncsdk again.
 frozen = true
 source_root = "KNCSDK_Server"
 alt_root = "KNCSDK_Client"

@@ -1,43 +1,43 @@
-[Início](../README.md) › [Código original](README.md) › Feature flags e variantes
+[Home](../README.md) › [Original code](README.md) › Feature flags and variants
 
-# Feature flags e variantes
+# Feature flags and variants
 
-## Tamanho do problema
+## Scale of the problem
 
-- ~**1.175** macros `SERV_*` distintas em servidor + cliente.
-- ~**58.600** linhas de `#if/#ifdef/#ifndef` só em `KncWX2Server` + `X2Lib`.
-- `#ifdef SERV_*` aparece em 874 arquivos do servidor e 324 do X2Lib.
-- `KncWX2Server/Common/ServerDefine.h` tem **4.645 linhas**, ~700 `#define` (133 comentados), cada um com bloco de comentário coreano
-  (autor, data, descrição). Equivalente no cliente: `KTDXLIB/Always.h`, `KTDX.h`, `OnlyGlobal/Always_*.h`.
+- ~**1,175** distinct `SERV_*` macros across server + client.
+- ~**58,600** `#if/#ifdef/#ifndef` lines in `KncWX2Server` + `X2Lib` alone.
+- `#ifdef SERV_*` appears in 874 server files and 324 X2Lib files.
+- `KncWX2Server/Common/ServerDefine.h` has **4,645 lines**, ~700 `#define`s (133 commented out), each with a Korean comment block
+  (author, date, description). Client equivalents: `KTDXLIB/Always.h`, `KTDX.h`, `OnlyGlobal/Always_*.h`.
 
-## Eixos de variação
+## Variation axes
 
-| Eixo | Macros | Origem |
+| Axis | Macros | Source |
 |---|---|---|
-| País | `SERV_COUNTRY_{US,EU,JP,TW,HK,TWHK,CN,TH,ID,BR,PH,IN}`, `CLIENT_COUNTRY_*`, `SERV_INT_INTERNAL` | vcxproj por configuração |
-| Ambiente | `_SERVICE_`, `_IN_HOUSE_`, `_IN_HOUSE_SERVICE_READY_QA_`, `_OPEN_TEST_`, `_OPEN_TEST_2_`, `_DEBUG`, `X2TOOL`, `EFFECT_TOOL` | vcxproj + `ServerDefine.h:4389` |
-| Global | `SERV_GLOBAL_COMMON` (+ `SERV_GLOBAL_AUTH/BILLING/FRIEND/CASH_PACKAGE`) | `ServerDefine.h:4608` → inclui `OnlyGlobal/ServerDefine/ServerDefine_<país>.h` |
-| Features | `SERV_<FEATURE>` — eventos, sistemas, correções datadas | `ServerDefine.h`, `ServerDefine_<país>.h` |
+| Country | `SERV_COUNTRY_{US,EU,JP,TW,HK,TWHK,CN,TH,ID,BR,PH,IN}`, `CLIENT_COUNTRY_*`, `SERV_INT_INTERNAL` | Per-configuration vcxproj |
+| Environment | `_SERVICE_`, `_IN_HOUSE_`, `_IN_HOUSE_SERVICE_READY_QA_`, `_OPEN_TEST_`, `_OPEN_TEST_2_`, `_DEBUG`, `X2TOOL`, `EFFECT_TOOL` | vcxproj + `ServerDefine.h:4389` |
+| Global | `SERV_GLOBAL_COMMON` (+ `SERV_GLOBAL_AUTH/BILLING/FRIEND/CASH_PACKAGE`) | `ServerDefine.h:4608` → includes `OnlyGlobal/ServerDefine/ServerDefine_<country>.h` |
+| Features | `SERV_<FEATURE>` — events, systems, dated fixes | `ServerDefine.h`, `ServerDefine_<country>.h` |
 | Build | `BUILD_BY_HUDSON`, `_CONVERT_VS_2010` | vcxproj |
 
-O cliente tem ~40 configurações no `X2Lib.vcxproj` (`US_INTERNAL`, `EU_SERVICE`, `JP_TEST`...).
+The client has ~40 configurations in `X2Lib.vcxproj` (`US_INTERNAL`, `EU_SERVICE`, `JP_TEST`...).
 
-## Estado (2026-10-29)
+## Status (2026-10-29)
 
-Servidor resolvido: [Flags e verificação](../ferramentas/flags.md) (736 verdadeiras, 423 falsas, verificação diferencial em toda a árvore). Cliente: pendente.
+Server resolved: [Flags and verification](../tools/flags.md) (736 true, 423 false, differential verification across the entire tree). Client: pending.
 
-## Estratégia: congelar com ferramenta, não à mão
+## Strategy: freeze with a tool, not by hand
 
-1. Variante escolhida: US / `_SERVICE_` (decisão T5 em [Decisões](../projeto/decisoes.md)).
-2. Extrair o conjunto efetivo de macros definidas: compilar `ServerDefine.h`/`Always.h` com `-dM -E` usando os defines do vcxproj alvo.
-3. Resolver com o resolvedor próprio (`tools/import/x2import/condres.py`, no lugar de `coan`/`unifdef`), que remove os ramos mortos e as próprias diretivas.
-4. Apagar `ServerDefine_<outros países>.h`, `OnlyGlobal/*/<outros países>`, `ServerDefine.h` vira um arquivo pequeno (ou some).
-5. Compilar e comparar comportamento (smoke test) antes/depois.
+1. Selected variant: US / `_SERVICE_` (decision T5 in [Decisions](../project/decisions.md)).
+2. Extract the effective set of defined macros: preprocess `ServerDefine.h`/`Always.h` with `-dM -E`, using the target vcxproj defines.
+3. Resolve using the custom resolver (`tools/import/x2import/condres.py`) instead of `coan`/`unifdef`; it removes dead branches and the directives themselves.
+4. Delete `ServerDefine_<other countries>.h`, `OnlyGlobal/*/<other countries>`; reduce `ServerDefine.h` to a small file (or remove it).
+5. Compile and compare behavior (smoke test) before and after.
 
-**Exceção de debug:** macros de dev da whitelist e checagens diretas de `_SERVICE_`/`_IN_HOUSE_` não são resolvidas;
-viram `#if X2_DEV_TOOLS`. Ver [debug-e-dev.md](debug-e-dev.md).
+**Debug exception:** whitelisted development macros and direct `_SERVICE_`/`_IN_HOUSE_` checks are not resolved;
+they become `#if X2_DEV_TOOLS`. See [Debug and development](debug-and-development.md).
 
-Cuidados:
-- Macros usadas em `#if` com expressões (`defined(A) && !defined(B)`) — `coan` lida bem; `unifdef` também.
-- Macros **definidas e depois `#undef`** (ex. `SERV_INT_INTERNAL` desliga `SERV_TIME_DROP_MONSTER_EVENT`) — usar o estado final.
-- Algumas flags podem estar em arquivos `.lua` de recurso ou em SQL — não são afetadas pelo `coan`.
+Precautions:
+- Macros used in expressions in `#if` (`defined(A) && !defined(B)`) — `coan` handles them well; `unifdef` does too.
+- Macros **defined and then `#undef`ed** (e.g. `SERV_INT_INTERNAL` disables `SERV_TIME_DROP_MONSTER_EVENT`) — use the final state.
+- Some flags may be in resource `.lua` files or SQL — they are not affected by `coan`.

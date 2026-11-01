@@ -1,6 +1,6 @@
-# Servers (docs/porte/server-common.md)
+# Servers (docs/porting/server-common.md)
 if(NOT TARGET x2::kncsdk_lua)
-    message(WARNING "LuaJIT not found: the servers are skipped (docs/projeto/decisoes.md, T21)")
+    message(WARNING "LuaJIT not found: the servers are skipped (docs/project/decisions.md, T21)")
     return()
 endif()
 add_subdirectory(Common)

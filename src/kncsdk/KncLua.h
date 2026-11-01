@@ -10,7 +10,7 @@
 //}}
 
 // luaL_dofile, except for files past LuaJIT's limit of 65536 constants in one function (the original ran on Lua 5.1):
-// those are split at their top-level statements and the pieces run in order (docs/porte/kncsdk.md).
+// those are split at their top-level statements and the pieces run in order (docs/porting/kncsdk.md).
 int lua_dofile( lua_State* L, const char* filename );
 
 // A plain Lua prompt over `L` (the server console of ServerConsole.h with no name), until the user exits or stdin ends.

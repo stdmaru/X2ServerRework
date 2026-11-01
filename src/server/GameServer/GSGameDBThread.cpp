@@ -3179,7 +3179,7 @@ bool KGSGameDBThread::Query_GetGuildMemberGrade( IN UidType iUnitUID, OUT u_char
 	}
 
 	// Port: the original tested ucGuildMemberGrade == -1, always false for a u_char (in MSVC too), so this branch never
-	// ran; kept that way (docs/porte/server-game.md, Pendências)
+	// ran; kept that way (docs/porting/server-game.md, Pendências)
 	if( false )
 	{
 		START_LOG( cwarn, L"길드원 등급 정보가 존재하지 않음." )

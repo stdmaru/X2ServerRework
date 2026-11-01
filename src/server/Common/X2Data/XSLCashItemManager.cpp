@@ -286,7 +286,7 @@ bool CXSLCashItemManager::AddCashItemProductNoData_LUA( int iServerGroupID, unsi
 	// See CashItemData.lua: keeps the item out of the cash shop of that server.
 	// Items in m_setCashItemProductNoData must not show up in the cash shop.
 	// Port: `!GetServerGroupID() != iServerGroupID` is kept as written (the `!` applies to the group ID only),
-	// although `GetServerGroupID() != iServerGroupID` was probably meant. See docs/porte/server-common.md.
+	// although `GetServerGroupID() != iServerGroupID` was probably meant. See docs/porting/server-common.md.
 	if( ( !KBaseServer::GetKObj()->GetServerGroupID() ) != iServerGroupID )
 		return true;
 

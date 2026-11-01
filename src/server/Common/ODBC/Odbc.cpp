@@ -446,7 +446,7 @@ bool KODBC::Query( const std::wstring& wstrQuery )
 	}
 
 	// Port: a statement without a result (a procedure with SET NOCOUNT ON and no SELECT, a CREATE) returns SQL_NO_DATA
-	// on FreeTDS; the SQL Server driver of production returned SQL_SUCCESS (docs/porte/server-common-db.md)
+	// on FreeTDS; the SQL Server driver of production returned SQL_SUCCESS (docs/porting/server-common-db.md)
 	if( ret == SQL_NO_DATA )
 		ret = SQL_SUCCESS;
 

@@ -181,7 +181,7 @@ namespace dbg
 
         // Console rendering of a record (empty when it has nothing to show); exposed for the tests.
         static std::string RenderConsole( const entry& e, bool color );
-        // One JSON line (no newline): {"type":"log","time":...,"level":...,"message":...,"fields":[...]} (docs/porte/kncsdk.md).
+        // One JSON line (no newline): {"type":"log","time":...,"level":...,"message":...,"fields":[...]} (docs/porting/kncsdk.md).
         static std::string RenderJson( const entry& e );
 
     private:

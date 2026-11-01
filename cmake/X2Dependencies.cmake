@@ -1,4 +1,4 @@
-# Third-party dependencies (decision T13, docs/projeto/decisoes.md):
+# Third-party dependencies (decision T13, docs/project/decisions.md):
 # find_package() first, FetchContent fallback with pinned versions.
 
 include(FetchContent)

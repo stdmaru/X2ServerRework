@@ -1,37 +1,37 @@
-[Início](../README.md) › Código original
+[Home](../README.md) › Original code
 
-# Código original (`_reference/X2Server`)
+# Original code (`_reference/X2Server`)
 
-Análise do código de referência, feita em 2026-10-29 sobre o commit `b8fb1380`.
-É material de consulta: as decisões que saem daqui ficam em [Projeto › Decisões](../projeto/decisoes.md).
+Analysis of the reference code at commit `b8fb1380`, performed on 2026-10-29.
+This page is reference material; decisions based on it are recorded in [Project › Decisions](../project/decisions.md).
 
-## Visão geral
+## Overview
 
-| Página | Conteúdo |
+| Page | Contents |
 |---|---|
-| [Inventário](inventario.md) | Módulos, tamanhos, grafo de dependências, dados |
-| [Bibliotecas](bibliotecas.md) | Cada lib/3rdparty: versão e ação (substituir/portar/remover) |
+| [Inventory](inventory.md) | Modules, sizes, dependency graph, data |
+| [Libraries](libraries.md) | Each library and third-party dependency, with its version and recommended action (replace, port, or remove) |
 
-## Acoplamento com a plataforma
+## Platform dependencies
 
-| Página | Conteúdo |
+| Page | Contents |
 |---|---|
-| [Servidor](servidor.md) | IOCP, ODBC, MFC, threads, tempo |
-| [Cliente](cliente.md) | D3D9/D3DX, input, som, IME, vídeo |
-| [Protocolo](protocolo.md) | Serialização e compatibilidade de rede (`long`, `wchar_t`) |
-| [Binários proprietários](binarios-proprietarios.md) | `.lib`/`.dll` sem fonte: anti-cheat, billing, publishers |
+| [Server](server.md) | IOCP, ODBC, MFC, threads, time |
+| [Client](client.md) | D3D9/D3DX, input, audio, IME, video |
+| [Protocol](protocol.md) | Serialization and network compatibility (`long`, `wchar_t`) |
+| [Proprietary binaries](proprietary-binaries.md) | Source-less `.lib`/`.dll`: anti-cheat, billing, publishers |
 
-## Limpeza
+## Cleanup
 
-| Página | Conteúdo |
+| Page | Contents |
 |---|---|
-| [Feature flags](feature-flags.md) | `SERV_*`, países, ambientes: o maior volume de código morto |
-| [Debug e dev](debug-e-dev.md) | Ferramentas de debug/admin a manter (`X2_DEV_TOOLS`) |
-| [Codificação](codificacao.md) | CP949, fim de linha, convenções do código original |
-| [Bugs do original](bugs.md) | Comportamento errado do original mantido no porte: pendências da Fase 5 |
+| [Feature flags](feature-flags.md) | `SERV_*`, countries, environments: the largest volume of dead code |
+| [Debug and development](debug-and-development.md) | Debug/admin tools to retain (`X2_DEV_TOOLS`) |
+| [Encoding](encoding.md) | CP949, line endings, original code conventions |
+| [Original bugs](bugs.md) | Original incorrect behavior retained in the port: Phase 5 backlog |
 
-## Ruído
+## Out of scope
 
-| Página | Conteúdo |
+| Page | Contents |
 |---|---|
-| [Fora de escopo](fora-de-escopo.md) | Ferramentas e projetos que não serão portados agora |
+| [Out of scope](out-of-scope.md) | Tools and projects not being ported for now |

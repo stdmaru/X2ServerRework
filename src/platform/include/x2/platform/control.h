@@ -1,6 +1,6 @@
 // Local control channel of the servers (decision T30): a Unix domain socket (AF_UNIX; Windows 10 1803+ has it too),
 // in a folder only the user can reach, that x2ctl connects to stdin/stdout (`ssh host x2ctl attach GameServer`).
-// The messages are lines (the JSON lines of the control protocol, docs/porte/kncsdk.md).
+// The messages are lines (the JSON lines of the control protocol, docs/porting/kncsdk.md).
 #pragma once
 
 #include <functional>

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Builds and tests the Windows (clang-cl, T26) presets on a Windows machine over SSH (docs/ferramentas/ambiente-build.md).
+# Builds and tests the Windows (clang-cl, T26) presets on a Windows machine over SSH (docs/tools/build-environment.md).
 #   X2_WIN_HOST=user@host tools/win/winbuild.sh [preset] [jobs]      default: windows-debug, every core of the machine
 # Sends the tracked files with their working-tree contents (uncommitted edits included) to $X2_WIN_DIR/src, removes
 # there the ones git deleted, and runs

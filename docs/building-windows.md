@@ -1,26 +1,25 @@
-[Início](README.md) › Compilar no Windows
+[Home](README.md) › Build on Windows
 
-# Compilar no Windows
+# Build on Windows
 
-O Windows compila com o **clang-cl** (o Clang no modo do MSVC), usando os headers, a STL e o linker do Visual Studio
-(decisão T26). Só x64. Estado em 2026-10-31: compila sem warnings e os testes passam, mas **os servidores ainda não foram
-testados rodando no Windows**, só no Linux.
+Windows builds use **clang-cl** (Clang in MSVC mode) with Visual Studio's headers, standard library, and linker (decision T26).
+Builds target x64 only. As of 2026-10-31, builds are warning-free and tests pass, but **the servers have only been run on Linux**.
 
-## 1. Instalar
+## 1. Install
 
-| O quê | Para quê |
+| What | Purpose |
 |---|---|
-| **Visual Studio 2026** (Community) ou o **Build Tools for Visual Studio 2026** | compilador, CMake e Ninja |
-| **Git** | baixar o código |
-| **Python 3** (opcional) | gerar o `ClientScript` a partir do cliente (ver o passo 4) |
+| **Visual Studio 2026** (Community) or **Build Tools for Visual Studio 2026** | compiler, CMake, Ninja |
+| **Git** | download code |
+| **Python 3** (optional) | generate `ClientScript` from the client (see step 4) |
 
-No instalador do Visual Studio, marque:
+In the Visual Studio Installer, select:
 
-- a carga **Desenvolvimento para desktop com C++** (*Desktop development with C++*);
-- em *Componentes individuais*: **Compilador C++ Clang para Windows** e **Ferramentas de CMake do C++ para Windows**;
-- um **Windows 11 SDK** (vem com a carga).
+- **Desktop development with C++** workload;
+- under *Individual components*: **C++ Clang Compiler for Windows** and **C++ CMake tools for Windows**;
+- a **Windows 11 SDK** (included with workload).
 
-O mesmo pela linha de comando, com o instalador do Build Tools (`vs_BuildTools.exe`, baixado do site da Microsoft):
+To install the same components from the command line, use the Build Tools installer (`vs_BuildTools.exe`, available from Microsoft):
 
 ```bat
 vs_BuildTools.exe --passive --wait ^
@@ -29,22 +28,22 @@ vs_BuildTools.exe --passive --wait ^
   --add Microsoft.VisualStudio.Component.VC.CMake.Project
 ```
 
-**Observação:** com mais de uma instalação do Visual Studio na máquina, abra o prompt **da que tem esses componentes**.
-Uma instalação sem C++ dá `fatal error: 'cstdio' file not found` até nos headers padrão.
+**Note:** if you have multiple Visual Studio installations, open the prompt **for the installation with these components**.
+An installation without C++ reports `fatal error: 'cstdio' file not found` even for standard headers.
 
-## 2. Pegar o código
+## 2. Get the code
 
 ```bat
 git clone https://github.com/stdmaru/X2ServerRework.git
 cd X2ServerRework
 ```
 
-O cliente original (`_client\`) e os backups do banco (`_database\`) não fazem parte do repositório ([Rodar os servidores](running.md)).
+The original client (`_client\`) and database backups (`_database\`) are not included ([Run the servers](running.md)).
 
-## 3. Compilar e testar
+## 3. Build and test
 
-Abra o **x64 Native Tools Command Prompt for VS 2026** (ou o *Developer Command Prompt*, com `-arch=amd64`).
-O clang-cl do Visual Studio não fica no `PATH`, então ponha-o lá antes:
+Open **x64 Native Tools Command Prompt for VS 2026** (or *Developer Command Prompt* with `-arch=amd64`).
+Visual Studio's clang-cl is not in `PATH` by default, so add its directory:
 
 ```bat
 set PATH=%VSINSTALLDIR%VC\Tools\Llvm\x64\bin;%PATH%
@@ -53,32 +52,32 @@ cmake --build --preset windows-debug
 ctest --preset windows-debug
 ```
 
-| Preset | Tipo | Ferramentas de dev (`X2_DEV_TOOLS`) |
+| Preset | Type | Dev tools (`X2_DEV_TOOLS`) |
 |---|---|---|
-| `windows-debug` | Debug | sim |
-| `windows-development` | RelWithDebInfo | sim |
-| `windows-release` | Release | não |
+| `windows-debug` | Debug | yes |
+| `windows-development` | RelWithDebInfo | yes |
+| `windows-release` | Release | no |
 
-- As dependências (zlib, LuaJIT, Asio, doctest) são baixadas pelo CMake na primeira configuração, que precisa de internet.
-  O LuaJIT é compilado pelo `msvcbuild.bat` dele (T25).
-- Os executáveis levam o ícone do servidor original.
-- Para trocar de terminal ou de instalação do Visual Studio, apague `build\<preset>` e configure de novo.
+- Dependencies (zlib, LuaJIT, Asio, doctest) are downloaded by CMake on first configure, which requires internet.
+  LuaJIT is built using its `msvcbuild.bat` (T25).
+- Executables use original server icons.
+- To switch prompts or Visual Studio installations, remove `build\<preset>` and configure again.
 
-## 4. O resultado
+## 4. Output
 
-- Executáveis em `build\<preset>\src\server\<Servidor>\`.
-- Pastas montadas em `build\<preset>\run\<Servidor>\`, como no Linux ([Rodar os servidores](running.md)). Diferenças no Windows:
-  - O `ClientScript` só é gerado com o Python 3 e um `luajit.exe` no `PATH`. No Windows o build não compila o interpretador,
-    só a biblioteca. Sem eles, o build avisa e segue. A pasta também pode ser gerada no Linux e copiada.
-  - Os configs usam o **Microsoft ODBC Driver 18 for SQL Server**, que precisa estar instalado para os servidores
-    acessarem o banco.
+- Executables in `build\<preset>\src\server\<Server>\`.
+- Assembled folders in `build\<preset>\run\<Server>\`, as on Linux ([Run the servers](running.md)). Differences on Windows:
+  - `ClientScript` is generated only if Python 3 and `luajit.exe` are available in `PATH`. The Windows build compiles the LuaJIT
+    library, not the interpreter. If either requirement is missing, the build emits a warning and continues. You can also generate
+    `ClientScript` on Linux and copy it over.
+  - Configs use **Microsoft ODBC Driver 18 for SQL Server**, which must be installed for servers to access the database.
 
-## Compilar de outra máquina (opcional)
+## Build from another machine (optional)
 
-Quem desenvolve no Linux pode compilar e testar numa máquina Windows por SSH, sem sair do Linux:
+Developers on Linux can build and run tests on a Windows machine over SSH without leaving Linux:
 
 ```bash
-X2_WIN_HOST=usuario@host tools/win/winbuild.sh
+X2_WIN_HOST=user@host tools/win/winbuild.sh
 ```
 
-Requisitos da máquina e detalhes: [Ambiente de build](ferramentas/ambiente-build.md#windows-clang-cl-por-ssh).
+See [Build environment](tools/build-environment.md#windows-clang-cl-over-ssh) for machine requirements and setup details.
