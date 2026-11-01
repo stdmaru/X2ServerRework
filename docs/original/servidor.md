@@ -32,7 +32,7 @@ Config ativa no `_reference` (a que foi ajustada no porte VS2026): `Release_US|W
 ## Subsistemas de `Common/` (para orientação)
 
 `Socket/` rede · `ODBC/` DB · `Lua/` binder · `FSM/` + `*FSM.cpp` máquinas de estado de usuário · `Room/` salas/dungeons ·
-`X2Data/` tabelas de jogo · `Mail/` correio in-game (não confundir com MailSMTP) · `Nexon/`, `OnlyGlobal/AuthAndBilling/<país>` auth/billing de publisher ·
+`X2Data/` tabelas de jogo · `Mail/` e-mail de alerta por SMTP/MIME (`KMailManager`, `X2SMTPMail` sobre DLLs fechadas; o correio do jogo não está aqui) · `Nexon/`, `OnlyGlobal/AuthAndBilling/<país>` auth/billing de publisher ·
 `OnlyGlobal/AuthAndBilling/DEB*` autenticação/cobrança SOAP ("Debelzak Custom Auth", `_DEB_AUTH`): **customização do dono do projeto** (não é da KOG), cliente de um servidor SOAP próprio; é a usada por este servidor ·
 `CrashRpt/` crash reporter · `Mornitoring/`, `PacketMornitoring/` métricas · `ui/` MFC.
 

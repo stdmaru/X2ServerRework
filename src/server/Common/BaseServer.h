@@ -15,9 +15,6 @@
 //{{ 2010. 06. 20  최육사	통계 스레드
 	#include "ThreadStatisticsManager.h"
 //}}
-//{{ 2010. 12. 7	최육사	메일 전송 시스템
-	#include "Mail/MailManager.h"
-//}}
 #include "SecurityString.h"
 
 //{{ 2010. 07. 13  최육사	using boost foreach
@@ -118,16 +115,11 @@ public:
     //void GetServerInfo( KServerInfo& kServerInfo );
     void SetServerInfo( const KServerInfo& kServerInfo );
 
-    void SetMailingList( const char* strList )      { m_strMailingList = KncUtil::toWideString( strList ); }
-
 	//{{ 2012. 12. 24	최육사	게임 서버 버전 세분화
 	const std::wstring& GetMainVersion() const;
 	//}}
     template < class T > void SendToAccountDB( unsigned short usEventID, const T& data );
     template < class T > void SendToLogDB( unsigned short usEventID, const T& data );
-	//{{ 2010. 12. 7	최육사	메일 전송 시스템
-	template < class T > void QueueingEventToMailManager( unsigned short usEventID, const T& data );
-	//}}
     void SendToAccountDB( unsigned short usEventID );
     void SendToLogDB( unsigned short usEventID );
 
@@ -147,9 +139,7 @@ public:
 	//{{ 2010. 11. 12	최육사	서버간 접속 모니터링
 	//}}
 
-	//{{ 2011. 02. 07	최육사	스크립트 파싱 오류 리포트
-	void SetScriptParsingErrReport_LUA( bool bVal );
-	void AddScriptParsingErrReportMail_LUA( const char* pszMail );
+	// script parsing error report (the original mailed it; see OnServerReadyComplete)
 	void AddFailScriptFileName( const wchar_t* pszScriptFileName )	{ m_vecFailScriptFileList.push_back( pszScriptFileName ); }
 	bool IsScriptParsingSuccess() const				{ return m_vecFailScriptFileList.empty(); }
 	//}}
@@ -174,7 +164,6 @@ protected:
     void SetAuthenticateResult( bool bOK )          { m_bAuthenticateOK = bOK; }
 
     std::wstring                                m_strTagVersion;            ///< 050716. florist. 태그빌드 버전 문자열
-    std::wstring                                m_strMailingList;           ///< 061011. florist. crash report mailing list.
     std::wstring                                m_strIniFilePath;
 	//{{ 2012. 12. 24	최육사	게임 서버 버전 세분화
 	std::wstring								m_strMainVer[VE_MAX];
@@ -219,19 +208,13 @@ public:
 	KThreadStatisticsManager					m_kTStatisticsManager;
 	//}}
 
-	//{{ 2010. 12. 7	최육사	메일 전송 시스템
-	KMailManager								m_kMailManager;
-	//}}
-
 	//{{ 2010. 11. 12	최육사	서버간 접속 모니터링
 	//}}
 	//{{ 2011. 02. 23	최육사	서버별 역할 타입
 	char										m_cServerRollType;
 	//}}
 	//{{ 2011. 02. 07	최육사	스크립트 파싱 오류 리포트
-	bool										m_bScriptParsingErrReport;
 	std::vector< std::wstring >					m_vecFailScriptFileList;
-	std::vector< std::wstring >					m_vecScriptParsingErrMailList;
 	//}}
 
 	//{{ 2011.2.11  조효진  모니터링툴 서버 포트 체크 시 에러로그 남는거 수정
@@ -243,13 +226,6 @@ public:
 
 extern lua_State* g_pLua;
 
-//{{ 2010. 12. 7	최육사	메일 전송 시스템
-template < class T >
-void KBaseServer::QueueingEventToMailManager( unsigned short usEventID, const T& data )
-{
-	m_kMailManager.QueueingEvent( usEventID, data );
-}
-//}}
 
 template < class T >
 void KBaseServer::SendToAccountDB( unsigned short usEventID, const T& data )

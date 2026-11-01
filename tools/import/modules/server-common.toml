@@ -37,10 +37,7 @@ exclude = [
     "Common/OnlyGlobal/ProcessCommuniationModule/*",
     # crash reporter and SMTP alert mail (closed-source binaries)
     "Common/CrashRpt/*",
-    "Common/Mail/X2SMTPMail.*",
-    "Common/Mail/MailManager.*",
-    "Common/Mail/MailSMTPHeader.h",
-    "Common/Mail/MailMIMEHeader.h",
+    "Common/Mail/*",
     # Windows-only legacy projects and DSNs are not sources, listed for clarity
     "*.dsn",
 ]

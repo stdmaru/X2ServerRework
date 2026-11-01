@@ -151,6 +151,7 @@ e não no cliente (as flags do cliente ainda não foram geradas, ver [Roadmap](.
 | `BaseServer::LoadINIFile`, `KStringTable` | INI lido pelo leitor da plataforma em **todas** as plataformas, aceitando UTF-16, UTF-8 e **CP949** | Os `config_*.ini` de produção estão em CP949; a API do Windows usa a code page do sistema, que só é 949 num Windows coreano |
 | `XSLCheckSumManager` | CMarkup → TinyXml (já presente no `Common`); `XML/Markup.*` removidos. O `MessageBox` de checksum duplicado virou log de erro | Licença do CMarkup pede permissão para uso comercial; servidor não tem janela |
 | `BaseServer` | CrashRpt removido (instalação do handler e o callback que chamava `DumpUploader.exe`, só em Release) | Binário fechado, já excluído na importação |
+| `BaseServer` (e-mail) | O `KMailManager` saiu (2026-10-31). Até então era um stub escrito no porte que mandava o e-mail para o log. O único e-mail era o relatório de scripts com erro de parsing, ligado por `SetScriptParsingErrReport( true )` e `AddScriptParsingErrReportMail`. Nenhum config usava as duas funções, nem as do `_reference`, e elas saíram com o `SetMailingList`. Agora, se um script falha, o `OnServerReadyComplete` sempre escreve um erro no log com a lista. O pacote `KEMAIL_SEND_EMAIL_NOT` e o `EMAIL_SEND_EMAIL_NOT` ficam, para não deslocar os IDs de evento | O envio era por DLLs fechadas (`MailSMTP`/`MailMIME`), e os servidores não mandam e-mail |
 | `BaseServer::Run` | O [console dos servidores](console.md) (`KServerConsole`: terminal da T15, protocolo da T30), aberto pelo `KServerMain` antes do `Init` (`SetConsole`); `--no-stdin`, `--machine`, `--control=<nome>` e `--no-control` são dele, não do servidor | O original vinha de um `lua.c` modificado, e a janela MFC tinha o próprio campo de comando |
 | `RegToLua` | Função nova `consolelog( n )`: nível do log no console, independente do `log( n )` do arquivo (T16) | O console tem nível próprio (ver [KNCSDK › Log](kncsdk.md#log-t16)) |
 | `NetError` | As tabelas de mensagens (`szErrorStr*`) só existem em `NetError.cpp`; `GetErrStr*` devolvem `const wchar_t*` | Eram `static` no header, copiadas em todo `.cpp` (73 mil warnings). Todos os chamadores copiam para `std::wstring` |
@@ -208,6 +209,5 @@ e não no cliente (as flags do cliente ainda não foram geradas, ver [Roadmap](.
   `GetServerGroupID() != iServerGroupID`. Decidir com o usuário (muda quais itens aparecem na loja).
 - `KLottery` usa semente fixa (42) e gerador compartilhado sem lock (decidir com o usuário).
 - `KLogReporter::Send` registra falha de envio mas devolve `eLRError_OK` (mantido).
-- E-mail real do `MailManager` (hoje só log; libcurl?).
 - `NetError_def_*.h` de outros idiomas: o build US usa o **`NetError_def_BR.h`** (enum e textos);
   os outros podem sair, mas a ordem do enum do BR é a que vai para o cliente, então ele fica.

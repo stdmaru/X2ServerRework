@@ -48,9 +48,6 @@ KBaseServer::KBaseServer(void)
     m_dwServerInfoUpdateTick = ::GetTickCount();
     m_spEventAck.reset( CreateEvent( NULL, false, false, NULL ), CloseHandle );
 	m_bServerReady = false;
-	//{{ 2011. 02. 07	최육사	스크립트 파싱 오류 리포트
-	m_bScriptParsingErrReport = false;
-	//}}
 	//{{ 2011. 02. 23	최육사	서버별 역할 타입
 	m_cServerRollType = KServerInfo::SRT_NONE;
 	//}}
@@ -82,7 +79,6 @@ ImplToStringW( KBaseServer )
     }
 
     START_TOSTRING_PARENTW( KPerformer )
-        << TOSTRINGW( m_strMailingList )
         << TOSTRINGW( m_strTagVersion )
         << TOSTRINGW( uiServerList )
 		//{{ 2012. 12. 24	최육사	게임 서버 버전 세분화
@@ -119,15 +115,10 @@ void KBaseServer::RegToLua()
 	lua_tinker::class_def<KBaseServer>( g_pLua, "SetUseVersion",					&KBaseServer::SetUseVersion );
 	//}}
 	lua_tinker::class_def<KBaseServer>( g_pLua, "SetShutDownWait",					&KBaseServer::SetShutDownWait );
-	lua_tinker::class_def<KBaseServer>( g_pLua, "SetMailingList",					&KBaseServer::SetMailingList );
 	//{{ 2009. 12. 17  최육사	서버군확장
 	lua_tinker::class_def<KBaseServer>( g_pLua, "GetServerGroupID",					&KBaseServer::GetServerGroupID );
 	//}}
 	//{{ 2010. 11. 12	최육사	서버간 접속 모니터링
-	//}}
-	//{{ 2011. 02. 07	최육사	스크립트 파싱 오류 리포트
-	lua_tinker::class_def<KBaseServer>( g_pLua, "SetScriptParsingErrReport",		&KBaseServer::SetScriptParsingErrReport_LUA );
-	lua_tinker::class_def<KBaseServer>( g_pLua, "AddScriptParsingErrReportMail",	&KBaseServer::AddScriptParsingErrReportMail_LUA );
 	//}}
 
 	//{{ 2011.2.11  조효진  모니터링툴 서버 포트 체크 시 에러로그 남는거 수정
@@ -261,9 +252,6 @@ bool KBaseServer::Init()
 	//{{ 2010. 06. 21  최육사	통계 스레드
 	m_kTStatisticsManager.Init();
 	//}}
-	//{{ 2010. 12. 7	최육사	메일 전송 시스템
-	m_kMailManager.Init();
-	//}}
 	//{{ 2007. 12. 24  최육사  사내서버라면 로그를 전송하지 않는다.
 	//if( KSimLayer::GetKObj()->GetAuthFlag() == KSimLayer::AF_NEXON_KOREA )
 	//	m_kStatisticsManager.SetSendToFTP( true );
@@ -305,9 +293,6 @@ void KBaseServer::ShutDown()
 
 	//{{ 2010. 06. 21  최육사	통계 스레드
 	m_kTStatisticsManager.Shutdown();
-	//}}
-	//{{ 2010. 12. 7	최육사	메일 전송 시스템
-	m_kMailManager.Shutdown();
 	//}}
 
 	SendToLogDB( DBE_SERVER_OFF_NOT );
@@ -354,41 +339,23 @@ void KBaseServer::Tick()
 
 void KBaseServer::OnServerReadyComplete()
 {
-	// 스크립트 파싱 에러 리포트
-	if( m_bScriptParsingErrReport == false )
-		return;
-
+	// Script parsing error report. Port: the original mailed it with the log attached, only when the config enabled it
+	// (SetScriptParsingErrReport, AddScriptParsingErrReportMail); without mail (closed SMTP DLLs) it is an error in the log.
     if( IsScriptParsingSuccess() == true )
 		return;
 
-	std::wstring wstrLogFileName = KncUtil::toWideString( dbg::logfile::GetLogFileName() );
-
-	// 메일로 서버 로그를 전송하자!
-	KEMAIL_SEND_EMAIL_NOT kPacket;
-	kPacket.m_vecRecvMailAddrList = m_vecScriptParsingErrMailList;
-
-	// 제목
-	kPacket.m_wstrTitle = L"스크립트 파싱 에러 리포트! : ";
-	kPacket.m_wstrTitle += GetName();
-
-	// 본문
-	kPacket.m_wstrDesc = GetName();
-	kPacket.m_wstrDesc += L" 서버를 켜는 도중에 스크립트 파싱이 실패하였습니다! 서버로그 확인 바랍니다!\n\n";
-
+	std::wstring wstrFailScripts;
 	for( const std::wstring& wstrScriptFileName : m_vecFailScriptFileList )
 	{
-		kPacket.m_wstrDesc += wstrScriptFileName;
-		kPacket.m_wstrDesc += L"\n";
+		wstrFailScripts += wstrScriptFileName;
+		wstrFailScripts += L" ";
 	}
 
-	// 서버 로그 파일 첨부
-	kPacket.m_vecAttachFileFullPathList.push_back( wstrLogFileName );
-	QueueingEventToMailManager( EMAIL_SEND_EMAIL_NOT, kPacket );
-
-	START_LOG( cout, L"--- 스크립트 파싱 에러 리포트 ---" )
-		<< BUILD_LOG( m_bScriptParsingErrReport )
-		<< BUILD_LOG( IsScriptParsingSuccess() )
-		<< BUILD_LOG( wstrLogFileName );
+	START_LOG( cerr, L"Script parsing failed while the server was starting; check the server log." )
+		<< BUILD_LOG( GetName() )
+		<< BUILD_LOG( m_vecFailScriptFileList.size() )
+		<< BUILD_LOG( wstrFailScripts )
+		<< END_LOG;
 }
 
 void KBaseServer::SetTagVersion()
@@ -598,25 +565,6 @@ void KBaseServer::DumpToLogFile()
 //}}
 
 //{{ 2010. 11. 12	최육사	서버간 접속 모니터링
-//}}
-
-//{{ 2011. 02. 07	최육사	스크립트 파싱 오류 리포트
-void KBaseServer::SetScriptParsingErrReport_LUA( bool bVal )
-{
-	m_bScriptParsingErrReport = bVal;
-
-	START_LOG( cout, L"스크립트 파싱 오류 리포트 기능 동작 여부 : " << m_bScriptParsingErrReport );
-}
-
-void KBaseServer::AddScriptParsingErrReportMail_LUA( const char* pszMail )
-{
-	std::wstring wstrMail = KncUtil::toWideString( pszMail );
-    m_vecScriptParsingErrMailList.push_back( wstrMail );
-
-	START_LOG( cout, L"-- 스크립트 파싱 오류 리포트 대상 메일 주소 등록 --" )
-		<< BUILD_LOG( wstrMail );
-}
-
 //}}
 
 void KBaseServer::SendToAccountDB( unsigned short usEventID )

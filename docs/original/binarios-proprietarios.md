@@ -15,7 +15,7 @@ Fonte: `#pragma comment(lib, ...)` + `.lib/.dll` versionados no `_reference`.
 | `XTRAP/...xtrap4client_serverpart_*` | anti-cheat XTRAP | remover |
 | `Common/Nexon/AuthCheck.lib` | auth Nexon | remover; auth própria |
 | `OnlyGlobal/AuthAndBilling/<país>/...` (`HanAuthForSvr`, `HanBillingForSvr`, `NetmarbleSignChecker`, `libeay32MD` PH...) | auth/billing de publishers | remover; manter só fluxo de auth direto no DB |
-| `MailMIME.lib/.dll`, `MailSMTP.lib/.dll` (copiados em cada servidor) | envio de e-mail (alertas?) | remover ou trocar por nada |
+| `MailMIME.lib/.dll`, `MailSMTP.lib/.dll` (copiados em cada servidor) | envio de e-mail (alertas?) | removido em 2026-10-31: sem e-mail, o relatório de scripts com erro vai para o log ([Common](../porte/server-common.md)) |
 | `Common/CrashRpt/CrashRpt.lib` | crash reporter | remover; usar core dump / sanitizers |
 | `odbc32`, `ws2_32`, `winmm`, `dbghelp`, `psapi` | sistema Windows | substituídos pela camada de plataforma |
 
