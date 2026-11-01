@@ -77,6 +77,7 @@ do tipo de anúncio de guilda sai (sempre falso também no MSVC).
 | Onde | Bug | Correção |
 |---|---|---|
 | `KGuildSkillTree::Init` | O nível de skill de guilda acima do máximo era corrigido numa variável local que nunca era usada: a skill entrava com o nível do banco, só com o log de erro | A skill entra com o nível limitado ao máximo (2026-10-31, `-Wunused-but-set-variable` do GCC) |
+| `KUserList` (`UserList.h`) | `#pragma pack(1)` abrangia a classe inteira, desalinhando `m_csConcurrentUser`; `pthread_mutex_lock` falhava com `SIGBUS` no ARM64 ao registrar usuário | Packing removido da classe (ela não é serializada na rede); teste verifica que seu alinhamento preserva o de `KncCriticalSection` |
 
 ## Pendências
 

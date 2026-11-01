@@ -8,8 +8,6 @@
 
 #include "Enum/Enum.h"
 
-#pragma pack( push, 1 )
-
 class KUserList
 {
 public:
@@ -258,5 +256,3 @@ protected:
 	int																m_iGuestConcurrentUser; // 체험ID 동접
 
 };
-
-#pragma pack( pop )

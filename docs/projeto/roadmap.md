@@ -100,6 +100,8 @@ Ver [Servidor — acoplamento com Windows](../original/servidor.md).
 - [x] `server/login-import`: LoginServer importado (2026-10-31). Ver [Servidor: LoginServer](../porte/server-login.md).
 - [x] `server/login-build`: LoginServer compilando sem warnings (Clang, GCC, clang-cl), sem a Nexon (KR) nem os arquivos de país (2026-10-31). Ver [Servidor: LoginServer](../porte/server-login.md).
 - [x] `server/login-run`: LoginServer no Linux (`x2_run_login`), com o cliente original da lista de personagens até a **vila** (2026-10-31). A saída para o campo para no `ERM_OPEN_BATTLE_FIELD_REQ`, que vai para o CenterServer.
+- [x] `server/login-arm64-alignment`: SIGBUS do LoginServer diagnosticado em `KUserList::RegUser`; packing que desalinhava o mutex removido e teste de regressão passa no Release Linux x86_64 (2026-11-01). Ver [Servidor: LoginServer](../porte/server-login.md).
+- [ ] Revalidar a autenticação no ARM64 com a correção implantada.
 - [x] `server/center-import`: CenterServer importado (2026-10-31). Ver [Servidor: CenterServer](../porte/server-center.md).
 - [x] `server/center-build`: CenterServer compilando sem warnings (Clang, GCC, clang-cl), sem o KSMS (2026-10-31). Ver [Servidor: CenterServer](../porte/server-center.md).
 - [x] `server/center-run`: CenterServer no Linux (`x2_run_center`), com o cliente original no **campo** e numa **dungeon** (2026-10-31). Ver [Servidor: CenterServer](../porte/server-center.md).
