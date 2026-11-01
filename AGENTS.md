@@ -119,8 +119,9 @@ The wiki under `docs/` is the project's memory. It is organized as a **navigable
 ## Git
 
 - Remote: `origin` (private GitHub repository). Commit and push work branches without asking (pushing a branch does not trigger
-  CI); integrate into `main` only when the user asks (then push `main`). Never force-push to `main`.
-- Commit message format: `type: summary` (`feat`, `fix`, `docs`, `refactor`, `chore`), with a Portuguese body explaining why.
+  CI). Integrate changes into `main` through a well english-described pull request; do not merge locally or push directly to `main`. Never force-push to
+  `main`.
+- Commit message format: `type: summary` (`feat`, `fix`, `docs`, `refactor`, `chore`), with a body explaining why.
 
 ### Branches
 
@@ -128,9 +129,11 @@ The wiki under `docs/` is the project's memory. It is organized as a **navigable
   `tools/docs/check_links.py` reports no issues. Never work directly on it.
 - **Use one short-lived branch per roadmap step**, named `area/topic`. Areas: `platform`, `kncsdk`, `server`, `client`, `tools`,
   `docs`, `build`. Examples: `tools/server-flags`, `server/common-import`, `build/windows-clang-cl`.
-- **Integrate with fast-forward only** (`git merge --ff-only`), keeping history linear. If `main` has moved, rebase the branch
-  onto `main` before integrating.
-- Before integration, run a clean build, tests, the link checker, and Windows validation (`tools/win/winbuild.sh` or a CI run).
+- **Open a pull request from each work branch to `main`** when its roadmap step is complete. If `main` has moved, rebase the branch
+  onto `main` and push the updated work branch before updating the PR.
+- Before requesting integration, run a clean build, tests, the link checker, and Windows validation
+  (`tools/win/winbuild.sh` or a CI run). Integrate through the PR after its checks pass and it is approved; preserve linear history
+  by using GitHub's rebase-and-merge option. Do not merge the PR locally or push its changes directly to `main`.
   Actions has a **2,000-minute monthly budget** (Windows counts twice); CI runs automatically only on `main`. See
-  [Continuous integration](docs/tools/ci.md#minutes-orçamento). Delete the branch after integration.
+  [Continuous integration](docs/tools/ci.md#minutes-orçamento). Delete the work branch after the PR is merged.
 - If work is too large for one step, split it into sequential branches rather than keeping one long-lived branch.
