@@ -110,7 +110,7 @@ Ver [Servidor — acoplamento com Windows](../original/servidor.md).
 - [x] Log (T16): metadados estruturados no `START_LOG`; arquivo com o conteúdo completo do original, console compacto e colorido com nível próprio (2026-10-31, `kncsdk/log-structured`, ver [KNCSDK › Log](../porte/kncsdk.md#log-t16)).
 - [x] Modo de saída para máquina e socket local com `x2ctl attach` (T30), depois do terminal e do log (2026-10-31, `server/control`, ver [Console dos servidores](../porte/console.md)).
 - [ ] ServerManager (T29, T30): ferramenta SDL3 + ImGui que orquestra e monitora os servidores, local e por SSH. Vem depois da base SDL3 do cliente (Fase 3).
-- [ ] Remover SOAP/gSOAP, billing/auth de publishers, Mail(MIME/SMTP), CrashRpt; stub onde a lógica de jogo depende.
+- [x] Remover SOAP/gSOAP, billing/auth de publishers, Mail(MIME/SMTP), CrashRpt; stub onde a lógica de jogo depende (2026-10-31). O gSOAP do cliente DEB virou SOAP/HTTP próprio, com login e billing do DEB iguais (T31, `server/cleanup-gsoap`, ver [Common › Cliente do DEB](../porte/server-common.md#cliente-do-deb-t31)). O `KMailManager` saiu, e o relatório de scripts com erro vai para o log (`server/cleanup-mail`). CrashRpt, os publishers de outros países e o `Common/SOAP` nunca entraram em `src/`: o importador os exclui. Sobram só os `NetError`/IDs de evento deles, que são protocolo, e comentários.
 - [x] Marco: login + vila + dungeon com o `elsword.exe` original contra servidor rodando em Linux (2026-10-31).
 
 ## Fase 3 — Cliente: plataforma

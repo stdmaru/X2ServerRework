@@ -49,6 +49,9 @@ X2_WIN_HOST=usuario@host tools/win/winbuild.sh windows-release 4
 - Manda os arquivos versionados **com as edições ainda não commitadas** (`git ls-files` + `tar` pelo SSH) para `C:/x2/src`
   (`X2_WIN_DIR` muda) e roda `cmake`/`ctest` no ambiente do Visual Studio mais novo que tenha os componentes C++ e Clang (`vswhere -requires`: em 2026-10-31 a VM ganhou um
   Visual Studio Community sem C++, e o `-latest` sozinho passou a escolhê-lo). O `build/` fica na máquina e é incremental.
+- Lá, apaga os arquivos que o histórico do git removeu e que não são mais rastreados. O `tar` só acrescenta, e o glob do CMake ainda
+  compilava o `stdsoap2.cpp` depois que o gSOAP saiu (2026-10-31). A comparação ignora maiúsculas, como o Windows: `soapClient.cpp`
+  (removido) e `SoapClient.cpp` (novo) são o mesmo arquivo lá. Arquivos que nunca estiveram no git não são tocados.
 - A máquina precisa de Visual Studio Build Tools (carga C++, componentes Clang e CMake, que trazem CMake e Ninja), Python 3 e
   OpenSSH com login por chave; Git não. Em 2026-10-30: Windows Server 2022, Build Tools 18.11.3 (MSVC 14.51), 12 núcleos, 8 GB.
   A VM fica num servidor Proxmox dedicado: o padrão é usar todos os núcleos (`%NUMBER_OF_PROCESSORS%`, 2026-10-31).
