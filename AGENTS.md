@@ -4,7 +4,7 @@ Instruções para agentes (e pessoas) que trabalham neste repositório.
 
 ## O projeto
 
-Porte do servidor e do cliente de Elsword (`_reference/X2Server`, que é só Windows/DX9/MSVC) para Windows + Linux,
+Porte do servidor e do cliente de Elsword (`_reference/X2Server-github`, que é só Windows/DX9/MSVC) para Windows + Linux,
 com CMake e x64, limpando o código no caminho. Começa pelas bibliotecas, segue para o servidor e termina no cliente.
 
 ## Antes de começar qualquer tarefa
@@ -15,12 +15,12 @@ com CMake e x64, limpando o código no caminho. Começa pelas bibliotecas, segue
    e [Código original](docs/original/README.md) para o comportamento do `_reference`.
 3. Não reabra uma decisão registrada em `decisoes.md`. Se algo novo contradiz uma decisão, aponte isso ao usuário.
 4. Consulte o wiki sempre que precisar de contexto. Antes de investigar algo do zero, veja se já está documentado.
+5. Ao alterar o código, certifique-se de manter o wiki atualizado.
 
 ## Regras fixas
 
-- **`_reference/` é somente leitura.** Nunca edite, formate ou faça commit lá. `_reference/X2Server` aponta para um clone verificado
-  de `github.com/stdmaru/X2Server` (`_reference/X2Server-github`). **Não use a cópia do HDD** (`_reference/X2Server-hdd`): ela tem arquivos corrompidos.
-  Ao ler o original fora do importador, desconfie de conteúdo estranho e compare com `git -C _reference/X2Server show HEAD:<arquivo>`.
+- **`_reference/` é somente leitura.** Nunca edite, formate ou faça commit lá. `_reference/X2Server-github` aponta para um clone verificado
+  de `github.com/stdmaru/X2Server`.
 - **O `_reference/` será apagado no fim do projeto.** Nada (build, execução, testes, ferramentas) pode depender dele, só o importador
   ao trazer arquivos. O que os servidores precisam para rodar fica versionado (`runtime/`), menos binários e assets do cliente (decisão T22).
 - **Código do original entra em `src/` apenas pelo importador** (`tools/import`, ver [Importador](docs/ferramentas/importador.md)).
