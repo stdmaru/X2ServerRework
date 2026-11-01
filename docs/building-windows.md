@@ -81,4 +81,4 @@ Quem desenvolve no Linux pode compilar e testar numa máquina Windows por SSH, s
 X2_WIN_HOST=usuario@host tools/win/winbuild.sh
 ```
 
-Requisitos da máquina e detalhes: [Ambiente de build](ferramentas/ambiente-build.md#windows-clang-cl-por-ssh).
+Requisitos da máquina e detalhes: [Ambiente de build](tools/build-environment.md#windows-clang-cl-por-ssh).

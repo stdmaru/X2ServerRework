@@ -1,5 +1,5 @@
 -- Canonical trace of what a Lua script does to its environment (calls, arguments, globals it defines), so that
--- two versions of a script can be compared by behaviour instead of text (docs/ferramentas/runtime.md).
+-- two versions of a script can be compared by behaviour instead of text (docs/tools/runtime.md).
 -- usage: luajit tools/runtime/lua_trace.lua <file>
 local path = arg[1]
 local f = assert(io.open(path, "rb")); local src = f:read("*a"); f:close()

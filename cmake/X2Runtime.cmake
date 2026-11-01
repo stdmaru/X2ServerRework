@@ -1,4 +1,4 @@
-# Ready-to-run server folders (decision T22, docs/ferramentas/runtime.md).
+# Ready-to-run server folders (decision T22, docs/tools/runtime.md).
 #
 #   build/<preset>/run/ServerResource/   runtime/ServerResource (server scripts, versioned)
 #   build/<preset>/run/ClientScript/     generated from the client data (tools/runtime/gen_clientscript.py)

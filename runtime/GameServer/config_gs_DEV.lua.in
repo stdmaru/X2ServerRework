@@ -1,7 +1,7 @@
 ﻿-- lua header. Keep this line: it makes the file be read as UTF-8.
 -- Development configuration of the Game Server (tag DEV: GameServer DEV <server group id>).
 -- Derived from the production config_gs_US_SERVICE.lua. The @...@ values are filled in by the
--- x2_run_game target (docs/ferramentas/runtime.md).
+-- x2_run_game target (docs/tools/runtime.md).
 
 -- address this server announces; the DB (Statistics.LServerList.PublicIP) identifies the servers by it --
 SetLocalIP( "@X2_RUN_SERVER_IP@" )
@@ -74,7 +74,7 @@ SimLayer:AddPath( "../ClientScript" ) -- client script, generated from the clien
 
 ----------     DB Layer     ----------
 
--- ODBC driver (docs/porte/server-common-db.md); must come before AddDB --
+-- ODBC driver (docs/porting/server-common-db.md); must come before AddDB --
 DBLayer:SetODBCDriver( "@X2_RUN_ODBC_DRIVER@" )
 DBLayer:SetODBCOptions( "@X2_RUN_ODBC_OPTIONS@" )
 

@@ -6,9 +6,9 @@ Client assets (`.kom`, `.dds`, `.x`, `.fx`, ...) are **not** modified: this is a
 
 ## Start here
 
-1. [Mission and scope](projeto/missao-e-escopo.md): what is in scope and what is not.
-2. [Roadmap](projeto/roadmap.md): project phases and current progress.
-3. [Decisions](projeto/decisoes.md): decisions made and pending.
+1. [Mission and scope](project/mission-and-scope.md): what is in scope and what is not.
+2. [Roadmap](project/roadmap.md): project phases and current progress.
+3. [Decisions](project/decisions.md): decisions made and pending.
 
 ## User guides
 
@@ -22,10 +22,10 @@ For those who just want to build and run the project (also linked from the root 
 
 | Area | Contents |
 |---|---|
-| [Project](projeto/README.md) | Mission, roadmap, and decisions. **Essential.** |
+| [Project](project/README.md) | Mission, roadmap, and decisions. **Essential.** |
 | [Original code](original/README.md) | Analysis of `_reference`: modules, libraries, Windows dependencies, protocol, flags, and debugging |
-| [Port](porte/README.md) | Work notes for each ported module: status, changes, and open items |
-| [Tools](ferramentas/README.md) | Project tools (importer) |
+| [Port](porting/README.md) | Work notes for each ported module: status, changes, and open items |
+| [Tools](tools/README.md) | Project tools (importer) |
 
 ## Wiki conventions
 

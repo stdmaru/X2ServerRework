@@ -1,4 +1,4 @@
-# EPublisher service (docs/porte/server-epublisher.md): login and cash for the servers' DEB client.
+# EPublisher service (docs/porting/server-epublisher.md): login and cash for the servers' DEB client.
 # It uses the Common (KODBC, NetError, log, the DEB SOAP messages); nothing in the Common uses it.
 
 add_library(x2_epublisher STATIC

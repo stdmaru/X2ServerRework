@@ -36,7 +36,7 @@ The original client and database backups are not part of this repository.
 ## What's next
 
 A new server terminal, structured logging, and **ServerManager**, a tool to orchestrate and monitor the servers locally and over SSH.
-Next comes the client port to SDL3 + SDL_GPU. See the [Roadmap](docs/projeto/roadmap.md) for all planned work.
+Next comes the client port to SDL3 + SDL_GPU. See the [Roadmap](docs/project/roadmap.md) for all planned work.
 
 ## Documentation
 

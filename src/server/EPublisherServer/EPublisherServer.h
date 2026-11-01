@@ -2,7 +2,7 @@
 // requests, enabled by _DEB_AUTH). SOAP over HTTP, one thread per connection.
 //
 // A reimplementation of the project owner's AuthServer (C++/gSOAP/SOCI): same messages, same tables, same
-// results, on the servers' own KODBC. Nothing in Common depends on it (docs/porte/server-epublisher.md).
+// results, on the servers' own KODBC. Nothing in Common depends on it (docs/porting/server-epublisher.md).
 #pragma once
 
 #include "OdbcAccountStore.h"

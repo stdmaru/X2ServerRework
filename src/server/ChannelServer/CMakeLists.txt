@@ -1,4 +1,4 @@
-# Channel server (docs/porte/server-channel.md). Common/ is the x2_server_common library.
+# Channel server (docs/porting/server-channel.md). Common/ is the x2_server_common library.
 
 file(GLOB_RECURSE X2_CHANNEL_SERVER_SOURCES CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 

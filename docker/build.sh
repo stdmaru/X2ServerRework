@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Runs a command in the Ubuntu build container (decision T24, docs/ferramentas/ambiente-build.md).
+# Runs a command in the Ubuntu build container (decision T24, docs/tools/build-environment.md).
 #   docker/build.sh cmake --preset linux-debug
 #   docker/build.sh cmake --build --preset linux-debug
 #   docker/build.sh ctest --preset linux-debug

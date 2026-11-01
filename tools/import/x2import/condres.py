@@ -1,6 +1,6 @@
 """Partial preprocessor: resolves #if/#ifdef/#elif groups for a known set of macros.
 
-Like unifdef/coan, but with one extra rule required by the project (docs/analise/debug-e-dev.md):
+Like unifdef/coan, but with one extra rule required by the project (docs/original/debug-and-development.md):
 macros in the "dev" set are not resolved but rewritten to the X2_DEV_TOOLS switch.
 
 Each macro is one of:

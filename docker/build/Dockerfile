@@ -1,4 +1,4 @@
-# Build environment of the project (decision T24, docs/ferramentas/ambiente-build.md): the same image runs the
+# Build environment of the project (decision T24, docs/tools/build-environment.md): the same image runs the
 # local builds (docker/build.sh) and the CI (.github/workflows/ci.yml). Linux only: Windows is built with
 # clang-cl on a Windows CI runner (T26).
 # Ubuntu LTS: Clang (shipped) and GCC (check), CMake, Ninja, unixODBC/FreeTDS, Python.

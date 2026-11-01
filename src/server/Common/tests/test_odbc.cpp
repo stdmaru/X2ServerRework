@@ -1,6 +1,6 @@
 // KODBC. Without a database: the .dsn conversion and the character filters. Against a real SQL Server (suite "db"):
 // needs the X2_TEST_ODBC environment variable with an ODBC connection string, without DATABASE, to the server of
-// docker/docker-compose.yml with the _database backups restored (docs/ferramentas/banco-dev.md); ctest sets it
+// docker/docker-compose.yml with the _database backups restored (docs/tools/development-database.md); ctest sets it
 // from the X2_TEST_ODBC cache variable.
 #include "ODBC/Odbc.h"
 #include "ODBC/StoredProcedure.h"

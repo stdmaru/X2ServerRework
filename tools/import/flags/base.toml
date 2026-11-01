@@ -1,4 +1,4 @@
-# Flags applied to every module. Semantics in x2import/condres.py and docs/analise/debug-e-dev.md.
+# Flags applied to every module. Semantics in x2import/condres.py and docs/original/debug-and-development.md.
 #   true / false  -> resolved like the US `_SERVICE_` build
 #   dev           -> becomes `X2_DEV_TOOLS`, dev_not -> `!X2_DEV_TOOLS`
 #
@@ -35,7 +35,7 @@ false = [
 [leak_detection]
 false = ["_VLD", "VLD", "MEMORY_LEAK_DETECTION_TEST"]
 
-# Debug / development / admin features kept under X2_DEV_TOOLS (whitelist, docs/analise/debug-e-dev.md)
+# Debug / development / admin features kept under X2_DEV_TOOLS (whitelist, docs/original/debug-and-development.md)
 [dev_tools]
 dev = [
     # items / inventory

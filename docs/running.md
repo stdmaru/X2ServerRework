@@ -29,7 +29,7 @@ docker/mssql/restore.sh
 - O `restore.sh` também ajusta os endereços dos servidores no banco para `127.0.0.1`, ou para o `X2_SERVER_IP`.
 - Para parar: `docker compose -f docker/docker-compose.yml stop`. Os dados ficam no volume `x2-mssql-data`.
 
-Detalhes: [Banco de desenvolvimento](ferramentas/banco-dev.md).
+Detalhes: [Banco de desenvolvimento](tools/development-database.md).
 
 ## 2. Configurações locais
 
@@ -60,7 +60,7 @@ build/linux-debug/run/
 ```
 
 Para montar só uma pasta: `docker/build.sh cmake --build --preset linux-debug --target x2_run_game`.
-São um ambiente de desenvolvimento, não um pacote para outra máquina. Detalhes: [Pastas de execução](ferramentas/runtime.md).
+São um ambiente de desenvolvimento, não um pacote para outra máquina. Detalhes: [Pastas de execução](tools/runtime.md).
 
 ## 4. Iniciar os servidores
 
@@ -98,7 +98,7 @@ cd build/linux-debug/run/GlobalServer     && ./GlobalServer DEV 0
   SIGINT ou SIGHUP (no Windows, Ctrl+C ou o fechamento do console).
 - **Um servidor já rodando** (em serviço, ou em outro terminal) atende pelo `run/x2ctl`: `x2ctl list`, `x2ctl run GameServer 'print(1)'`,
   `x2ctl stop GameServer`, ou `x2ctl attach GameServer` para o log e os comandos em JSON (também por `ssh`).
-  Detalhes, opções (`--machine`, `--control=<nome>`) e o protocolo em [Console dos servidores](porte/console.md).
+  Detalhes, opções (`--machine`, `--control=<nome>`) e o protocolo em [Console dos servidores](porting/console.md).
 - Os executáveis compilados no container também rodam direto no host, numa distribuição com unixODBC e FreeTDS. Só o
   caminho do driver muda: `X2_RUN_ODBC_DRIVER` no `docker/.env`, por exemplo `/usr/lib/libtdsodbc.so` no Arch.
 

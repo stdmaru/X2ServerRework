@@ -14,7 +14,7 @@ Os dois produzem os mesmos presets:
 | `linux-release` | Clang | Release | não |
 | `linux-gcc` | GCC | Release | não (só verificação) |
 
-As ferramentas de dev são os comandos de debug e de administração do original ([Debug e dev](original/debug-e-dev.md)).
+As ferramentas de dev são os comandos de debug e de administração do original ([Debug e dev](original/debug-and-development.md)).
 Sem elas, o build é o de produção.
 
 ## 1. Pegar o código
@@ -96,4 +96,4 @@ porque o compilador mudou.
 | `Imported target "PkgConfig::LUAJIT" includes non-existent path` | `build/<preset>` configurado fora do container: apague a pasta e configure de novo |
 | `ClientScript is not generated` | falta o `_client/data` (ou o `X2_CLIENT_DATA` aponta para outro lugar): o build segue, mas os servidores precisam dele para rodar |
 
-Mais detalhes da imagem e do CI: [Ambiente de build](ferramentas/ambiente-build.md), [Integração contínua](ferramentas/ci.md).
+Mais detalhes da imagem e do CI: [Ambiente de build](tools/build-environment.md), [Integração contínua](tools/ci.md).

@@ -1,4 +1,4 @@
-// x2ctl: talks to the control socket of a running server (decision T30, protocol in docs/porte/kncsdk.md).
+// x2ctl: talks to the control socket of a running server (decision T30, protocol in docs/porting/kncsdk.md).
 //   x2ctl list                    servers listening (their control socket names)
 //   x2ctl attach <name>           stdin -> server, server -> stdout, in protocol lines (ssh host x2ctl attach GameServer)
 //   x2ctl run <name> <lua...>     runs one Lua command, prints what it printed; exit code 1 on a Lua error

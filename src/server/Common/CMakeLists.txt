@@ -1,4 +1,4 @@
-# Common code of the servers (docs/porte/server-common.md). Socket/ has the TCP (decision T20) and UDP layers,
+# Common code of the servers (docs/porting/server-common.md). Socket/ has the TCP (decision T20) and UDP layers,
 # ODBC/ the database (decision T17). ../X2Lib/X2UDPPacket.cpp is compiled through Socket/X2Packet.cpp.
 
 file(GLOB_RECURSE X2_SERVER_COMMON_SOURCES CONFIGURE_DEPENDS

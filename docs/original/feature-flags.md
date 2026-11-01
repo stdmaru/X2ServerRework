@@ -24,18 +24,18 @@ O cliente tem ~40 configurações no `X2Lib.vcxproj` (`US_INTERNAL`, `EU_SERVICE
 
 ## Estado (2026-10-29)
 
-Servidor resolvido: [Flags e verificação](../ferramentas/flags.md) (736 verdadeiras, 423 falsas, verificação diferencial em toda a árvore). Cliente: pendente.
+Servidor resolvido: [Flags e verificação](../tools/flags.md) (736 verdadeiras, 423 falsas, verificação diferencial em toda a árvore). Cliente: pendente.
 
 ## Estratégia: congelar com ferramenta, não à mão
 
-1. Variante escolhida: US / `_SERVICE_` (decisão T5 em [Decisões](../projeto/decisoes.md)).
+1. Variante escolhida: US / `_SERVICE_` (decisão T5 em [Decisões](../project/decisions.md)).
 2. Extrair o conjunto efetivo de macros definidas: compilar `ServerDefine.h`/`Always.h` com `-dM -E` usando os defines do vcxproj alvo.
 3. Resolver com o resolvedor próprio (`tools/import/x2import/condres.py`, no lugar de `coan`/`unifdef`), que remove os ramos mortos e as próprias diretivas.
 4. Apagar `ServerDefine_<outros países>.h`, `OnlyGlobal/*/<outros países>`, `ServerDefine.h` vira um arquivo pequeno (ou some).
 5. Compilar e comparar comportamento (smoke test) antes/depois.
 
 **Exceção de debug:** macros de dev da whitelist e checagens diretas de `_SERVICE_`/`_IN_HOUSE_` não são resolvidas;
-viram `#if X2_DEV_TOOLS`. Ver [debug-e-dev.md](debug-e-dev.md).
+viram `#if X2_DEV_TOOLS`. Ver [debug-and-development.md](debug-and-development.md).
 
 Cuidados:
 - Macros usadas em `#if` com expressões (`defined(A) && !defined(B)`) — `coan` lida bem; `unifdef` também.

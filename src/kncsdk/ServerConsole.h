@@ -1,7 +1,7 @@
 // Console of a server: the terminal of decision T15 and the control protocol of decision T30, in place of the
 // original's window (Common/ui/ServerUIDlg: log, Lua input field, _Loading/_Ready title, exit confirmation).
 //
-// Opened before the server loads and closed after it shuts down, like the window. Modes (docs/porte/kncsdk.md):
+// Opened before the server loads and closed after it shuts down, like the window. Modes (docs/porting/kncsdk.md):
 // - terminal: live log above a Lua prompt with history, status in the title, exit confirmed with y;
 // - lines: stdin is not a terminal, each line is a Lua command, its end shuts the server down;
 // - machine (--machine): stdin and stdout speak the protocol, JSON lines, for a program driving the server;

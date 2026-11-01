@@ -42,7 +42,7 @@ public:
     }
 
     // builtin types. Wire sizes are fixed (the original MSVC x86 layout): int/unsigned/long/unsigned long
-    // are 4 bytes (long must fit in 32 bits), wchar_t is 2 bytes (UTF-16 code unit), see docs/porte/kncsdk.md.
+    // are 4 bytes (long must fit in 32 bits), wchar_t is 2 bytes (UTF-16 code unit), see docs/porting/kncsdk.md.
     bool Put(char x);
     bool Get(char& x);
     bool Put(wchar_t x);

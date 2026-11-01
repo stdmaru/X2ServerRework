@@ -1,6 +1,6 @@
 ﻿-- lua header. Keep this line: it makes the file be read as UTF-8.
 -- Development configuration of the EPublisher service (EPublisherServer DEV). The @...@ values are
--- filled in by the x2_run_epublisher target (docs/ferramentas/runtime.md).
+-- filled in by the x2_run_epublisher target (docs/tools/runtime.md).
 
 EPublisher:SetBindAddress( "0.0.0.0" )
 EPublisher:SetPort( @X2_RUN_EPUBLISHER_PORT@ )	-- the servers' DEBAuthManager:AddAuthServiceAddress points here

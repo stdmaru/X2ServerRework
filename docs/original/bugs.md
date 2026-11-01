@@ -3,20 +3,20 @@
 # Bugs do original (pendências da Fase 5)
 
 Comportamento errado que **já existia no original** e que o porte **mantém de propósito**, para não mudar o jogo no meio do porte.
-São consertados na [Fase 5](../projeto/roadmap.md#fase-5--limpeza-profunda), cada um com uma decisão sobre o comportamento novo.
+São consertados na [Fase 5](../project/roadmap.md#fase-5--limpeza-profunda), cada um com uma decisão sobre o comportamento novo.
 
 **Regra (pedido do usuário, 2026-10-31):** bug evidente é corrigido assim que achado, com a correção registrada na página do módulo.
 Ficam aqui só os que são mais convenientes de tratar depois ou cujo comportamento certo é incerto (balanço do jogo, dados do banco).
 
 Os bugs que o porte **já corrigiu** (leitura fora do array, `%s` com `std::wstring`...) não entram aqui: ficam na seção
-"Bugs do original corrigidos" da página do módulo em [Porte](../porte/README.md).
+"Bugs do original corrigidos" da página do módulo em [Porte](../porting/README.md).
 
 ## Código
 
 | Onde | Bug | Efeito no jogo | Achado |
 |---|---|---|---|
 | `Common/X2Data/XSLSkillTree.cpp`, `LoadSkillTemplet_Stat` | A defesa mágica por nível é lida da tabela `m_DefPhysic`, e não da `m_DefMagic` (o bloco foi copiado e só o vetor mudou) | Skills com bônus de stat dão defesa mágica igual à física. As skills de guilda 500 e 501 têm `m_DefMagic` própria, que é ignorada | 2026-10-31, `server/game-run` |
-| `Common/X2Data/XSLSkillTree.cpp`, `LoadSkillTemplet_Stat` | A checagem de tamanho está invertida (`empty() != false && size() != SLV_MAX_LEVEL`): recusa só a tabela vazia, e uma tabela com menos de 30 níveis passa | O original lia fora do vetor nos níveis que faltam. O porte põe 0 nesses níveis ([GameServer](../porte/server-game.md#bugs-do-original-corrigidos)); falta decidir se a tabela curta é válida (as skills de guilda têm 10 níveis) | 2026-10-31, `server/game-run` |
+| `Common/X2Data/XSLSkillTree.cpp`, `LoadSkillTemplet_Stat` | A checagem de tamanho está invertida (`empty() != false && size() != SLV_MAX_LEVEL`): recusa só a tabela vazia, e uma tabela com menos de 30 níveis passa | O original lia fora do vetor nos níveis que faltam. O porte põe 0 nesses níveis ([GameServer](../porting/server-game.md#bugs-do-original-corrigidos)); falta decidir se a tabela curta é válida (as skills de guilda têm 10 níveis) | 2026-10-31, `server/game-run` |
 | `GameServer/NewPartyListManager.cpp`, `KPartyListManager::IsPossibleLowLevel` | O `OUT bool isPartyNULL` é recebido por valor | Quem chama nunca vê o valor | 2026-10-30, `server/game-build` |
 | `GameServer`, grau de guilda | Testa `== -1` num `u_char`, o que é sempre falso (o teste saiu no porte, com o mesmo efeito) | A conferir no `server/game-run`: o que a procedure devolve quando o personagem não tem guilda | 2026-10-30, `server/game-build` |
 | `GameServer`, nível de skill e página de skill ativa | Testam `unsigned < 0`, sempre falso (os testes saíram no porte, com o mesmo efeito) | A validação de valor negativo nunca dispara | 2026-10-30, `server/game-build` |
@@ -25,7 +25,7 @@ Os bugs que o porte **já corrigiu** (leitura fora do array, `%s` com `std::wstr
 ## Dados (`ServerResource`, `ClientScript`)
 
 Erros ao carregar os scripts de produção com o `ClientScript` gerado do cliente (contagem do GameServer de 2026-10-31, depois da
-[T28](../projeto/decisoes.md): são os mesmos números dos logs de produção de 2026-07, `_original-server/GameServer/log`). O conjunto de
+[T28](../project/decisions.md): são os mesmos números dos logs de produção de 2026-07, `_original-server/GameServer/log`). O conjunto de
 itens (49.837) e os scripts de dungeon foram conferidos: são os mesmos do `ClientScript` do servidor original, então os erros de item e
 de dungeon já aconteciam em produção. O servidor sobe assim, ignorando as entradas ruins:
 

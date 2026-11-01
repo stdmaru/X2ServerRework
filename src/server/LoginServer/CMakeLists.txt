@@ -1,4 +1,4 @@
-# Login server (docs/porte/server-login.md). Common/ is the x2_server_common library.
+# Login server (docs/porting/server-login.md). Common/ is the x2_server_common library.
 
 file(GLOB_RECURSE X2_LOGIN_SERVER_SOURCES CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 list(FILTER X2_LOGIN_SERVER_SOURCES EXCLUDE REGEX "/tests/")
