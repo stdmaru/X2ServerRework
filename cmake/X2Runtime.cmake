@@ -114,6 +114,7 @@ function(x2_runtime_server name target folder)
     endif()
     add_custom_target(x2_run_${name} ${all}
         COMMAND ${CMAKE_COMMAND} -E make_directory "${dst}/Statistics"
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${dst}/log"
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${plain} "$<TARGET_FILE:${target}>" "${dst}"
         DEPENDS ${target} x2_run_resources
         COMMENT "Assembling ${dst}" VERBATIM)
