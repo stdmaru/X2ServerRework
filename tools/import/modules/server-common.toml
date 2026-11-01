@@ -17,7 +17,7 @@ exclude = [
     # MFC window (replaced by the terminal front-end, T15)
     "Common/ui/*",
     # publisher integrations of each country, including the US ones (K3RCombo auth, Payletter billing).
-    # Kept: DEB* + DEB/ (Debelzak SOAP auth/billing, enabled by _DEB_AUTH) and KncSendToPublisher.h.
+    # Kept: DEB* (Debelzak SOAP auth/billing, enabled by _DEB_AUTH) and KncSendToPublisher.h.
     "Common/OnlyGlobal/AuthAndBilling/BR/*",
     "Common/OnlyGlobal/AuthAndBilling/CN/*",
     "Common/OnlyGlobal/AuthAndBilling/EU/*",
@@ -31,6 +31,8 @@ exclude = [
     "Common/OnlyGlobal/NetCafe/*",
     "Common/Nexon/*",
     "Common/SOAP/*",
+    # gSOAP runtime and generated client of the DEB AuthService: replaced by an own client (decision T31)
+    "Common/OnlyGlobal/AuthAndBilling/DEB/*",
     # KOG server management tool link (out of scope)
     "Common/OnlyGlobal/ProcessCommuniationModule/*",
     # crash reporter and SMTP alert mail (closed-source binaries)
