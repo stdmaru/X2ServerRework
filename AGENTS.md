@@ -1,125 +1,136 @@
 # AGENTS.md
 
-Instruções para agentes (e pessoas) que trabalham neste repositório.
+Instructions for agents and people working in this repository.
 
-## O projeto
+## The project
 
-Porte do servidor e do cliente de Elsword (`_reference/X2Server-github`, que é só Windows/DX9/MSVC) para Windows + Linux,
-com CMake e x64, limpando o código no caminho. Começa pelas bibliotecas, segue para o servidor e termina no cliente.
+Port the Elsword server and client (`_reference/X2Server-github`), which currently targets only Windows/DX9/MSVC, to Windows
+and Linux with CMake and x64, cleaning up the code along the way. Start with the libraries, then move on to the server and,
+finally, the client.
 
-## Antes de começar qualquer tarefa
+## Before starting any task
 
-1. Leia a [página principal do wiki](docs/README.md) e as páginas de [Projeto](docs/projeto/README.md):
-   [Roadmap](docs/projeto/roadmap.md) (o que está em andamento) e [Decisões](docs/projeto/decisoes.md) (o que já foi decidido).
-2. Antes de mexer num módulo ou assunto, abra a página dele no wiki: [Porte](docs/porte/README.md) para módulos de `src/`
-   e [Código original](docs/original/README.md) para o comportamento do `_reference`.
-3. Não reabra uma decisão registrada em `decisoes.md`. Se algo novo contradiz uma decisão, aponte isso ao usuário.
-4. Consulte o wiki sempre que precisar de contexto. Antes de investigar algo do zero, veja se já está documentado.
-5. Ao alterar o código, certifique-se de manter o wiki atualizado.
+1. Read the [wiki home page](docs/README.md) and the [Project](docs/projeto/README.md) pages:
+   [Roadmap](docs/projeto/roadmap.md) (work in progress) and [Decisions](docs/projeto/decisoes.md) (decisions already made).
+2. Before changing a module or topic, open its wiki page: [Port](docs/porte/README.md) for modules under `src/`, and
+   [Original code](docs/original/README.md) for the behavior of `_reference`.
+3. Do not reopen a decision recorded in `decisoes.md`. If something new conflicts with a decision, point it out to the user.
+4. Consult the wiki whenever context is needed. Before investigating something from scratch, check whether it is already documented.
+5. When changing code, make sure the wiki stays up to date.
 
-## Regras fixas
+## Fixed rules
 
-- **`_reference/` é somente leitura.** Nunca edite, formate ou faça commit lá. `_reference/X2Server-github` aponta para um clone verificado
-  de `github.com/stdmaru/X2Server`.
-- **O `_reference/` será apagado no fim do projeto.** Nada (build, execução, testes, ferramentas) pode depender dele, só o importador
-  ao trazer arquivos. O que os servidores precisam para rodar fica versionado (`runtime/`), menos binários e assets do cliente (decisão T22).
-- **Código do original entra em `src/` apenas pelo importador** (`tools/import`, ver [Importador](docs/ferramentas/importador.md)).
-  Depois que um arquivo importado é editado à mão, não reimporte o módulo. Corrija direto em `src/`.
-- **Assets do cliente não mudam** (`_client/`, `.kom`, `.dds`, `.x`, `.fx`...). O código se adapta a eles.
-- **Protocolo compatível com o cliente original** (`x2.exe`): não mude formato de pacote, tamanhos ou cripto sem uma decisão registrada.
-  Tipos que vão para a rede usam tamanho fixo (`int32_t`, `char16_t`...). Ver [Protocolo](docs/original/protocolo.md).
-- **Variante única: US / `_SERVICE_`.** As ferramentas de debug/dev/admin ficam sob `X2_DEV_TOOLS` (ver [Debug e dev](docs/original/debug-e-dev.md)).
-  Outros países, anti-cheat, integrações de publisher e código legado são descartados.
-- **Só 64 bits: x86_64 hoje, arm64 no futuro.** Windows (clang-cl) e Linux (Clang; GCC como verificação) compilam a partir do mesmo CMake
-  (decisão T26). Os caminhos `_WIN32` são compilados e testados numa máquina Windows por SSH (`tools/win/winbuild.sh`) e no job **clang-cl** do CI.
-  Nada de assembly/intrínsecos x86, nada de supor `char` com ou sem sinal (o build força `-fsigned-char`) e nada de sincronizar threads com `volatile`.
-- `windows.h` e APIs de sistema só existem em `src/platform` (`x2::platform`). Código portado inclui `x2/platform/win32.h`
-  no lugar de `<windows.h>`/`<atltime.h>`/`<tchar.h>`. Ver [Plataforma](docs/porte/platform.md).
-- Módulos marcados `frozen = true` em `tools/import/modules/` já foram portados à mão: o importador se recusa a escrever neles.
-- Build sem warnings (GCC, Clang e clang-cl). Warning novo é corrigido, não ignorado.
+- **`_reference/` is read-only.** Never edit, format, or commit files there. `_reference/X2Server-github` points to a verified
+  clone of `github.com/stdmaru/X2Server`.
+- **`_reference/` will be deleted at the end of the project.** Nothing (builds, execution, tests, or tools) may depend on it,
+  except the importer when bringing in files. Everything the servers need at runtime is versioned under `runtime/`, except
+  binaries and client assets (decision T22).
+- **Original code enters `src/` only through the importer** (`tools/import`; see [Importer](docs/ferramentas/importador.md)).
+  Once an imported file has been edited by hand, do not reimport that module. Fix it directly in `src/`.
+- **Client assets must not change** (`_client/`, `.kom`, `.dds`, `.x`, `.fx`, ...). Adapt the code to them.
+- **Keep the protocol compatible with the original client** (`x2.exe`): do not change packet formats, sizes, or cryptography
+  without a recorded decision. Types sent over the network must have fixed sizes (`int32_t`, `char16_t`, ...). See
+  [Protocol](docs/original/protocolo.md).
+- **Only one variant: US / `_SERVICE_`.** Debug/dev/admin tools are gated by `X2_DEV_TOOLS` (see
+  [Debug and development](docs/original/debug-e-dev.md)). Discard other countries, anti-cheat, publisher integrations,
+  and legacy code.
+- **64-bit only: x86_64 today, arm64 in the future.** Windows (clang-cl) and Linux (Clang; GCC as a check) build from the same
+  CMake project (decision T26). `_WIN32` paths are compiled and tested on a Windows machine over SSH
+  (`tools/win/winbuild.sh`) and in the CI **clang-cl** job. No x86 assembly/intrinsics, do not assume `char` is signed or
+  unsigned (the build forces `-fsigned-char`), and do not use `volatile` for thread synchronization.
+- `windows.h` and system APIs belong only in `src/platform` (`x2::platform`). Ported code includes
+  `x2/platform/win32.h` instead of `<windows.h>`, `<atltime.h>`, or `<tchar.h>`. See [Platform](docs/porte/platform.md).
+- Modules marked `frozen = true` in `tools/import/modules/` have already been ported by hand; the importer refuses to write
+  to them.
+- Builds must be warning-free (GCC, Clang, and clang-cl). Fix new warnings; do not suppress them.
 
 ## Layout
 
 ```
-src/            código novo (platform/, kncsdk/, depois server/ e client/)
-cmake/          módulos CMake do projeto
-tools/import/   importador _reference -> src/ (+ relatórios em reports/, manifests/)
-tools/docs/     utilitários do wiki
-tools/kom/      .kom/.kim do cliente (extrair, decompilar, empacotar)
-tools/runtime/  geração do ClientScript a partir do cliente
-runtime/        o que os servidores leem ao rodar (ServerResource, configs e .dsn como templates)
-docs/           wiki do projeto
-_reference/     código original (somente leitura, fora do git)
-_client/        cliente original e assets (fora do git)
-_database/      backups do SQL Server dos bancos do jogo (fora do git)
-docker/         imagem de build Ubuntu (build/, build.sh) e serviços locais (SQL Server)
+src/            new code (platform/, kncsdk/, then server/ and client/)
+cmake/          project CMake modules
+tools/import/   _reference -> src/ importer (+ reports in reports/, manifests/)
+tools/docs/     wiki utilities
+tools/kom/      client .kom/.kim tools (extract, decompile, package)
+tools/runtime/  generate ClientScript from the client
+runtime/        server runtime files (ServerResource, configs, and .dsn templates)
+docs/           project wiki
+_reference/     original code (read-only, outside git)
+_client/        original client and assets (outside git)
+_database/      SQL Server game database backups (outside git)
+docker/         Ubuntu build image (build/, build.sh) and local services (SQL Server)
 ```
 
-## Comandos
+## Commands
 
-Builds e testes rodam na imagem Ubuntu do projeto (decisão T24): prefixe os comandos de build/teste com `docker/build.sh`
-(sem argumentos abre um shell nela). Ver [Ambiente de build](docs/ferramentas/ambiente-build.md).
+Builds and tests run in the project's Ubuntu image (decision T24): prefix build/test commands with `docker/build.sh`
+(with no arguments, it opens a shell in the image). See [Build environment](docs/ferramentas/ambiente-build.md).
 
 ```bash
-docker/build.sh cmake --preset linux-debug                            # configura (dev tools ON)
+docker/build.sh cmake --preset linux-debug                            # configure (dev tools ON)
 docker/build.sh cmake --build --preset linux-debug                    # build
-docker/build.sh ctest --preset linux-debug                            # testes
-docker/build.sh cmake --preset linux-gcc && docker/build.sh cmake --build --preset linux-gcc   # verificação com GCC
-X2_WIN_HOST=<user@host> tools/win/winbuild.sh                        # Windows (clang-cl) na máquina de testes, por SSH
-gh workflow run ci.yml --ref <branch>                                # CI do Windows, só à mão: minutos contados
-python3 tools/import/import.py <módulo> --dry-run                     # importador
-python3 tools/import/tests/test_condres.py                            # testes do importador
+docker/build.sh ctest --preset linux-debug                            # tests
+docker/build.sh cmake --preset linux-gcc && docker/build.sh cmake --build --preset linux-gcc   # GCC check
+X2_WIN_HOST=<user@host> tools/win/winbuild.sh                        # Windows (clang-cl) test machine over SSH
+gh workflow run ci.yml --ref <branch>                                # run Windows CI manually; minutes are limited
+python3 tools/import/import.py <module> --dry-run                     # importer
+python3 tools/import/tests/test_condres.py                            # importer tests
 python3 tools/import/tests/test_flagsim.py
-python3 tools/import/gen_flags.py server                              # flags do servidor
-python3 tools/import/check_equivalence.py server                      # resolvedor não muda o código
-python3 tools/docs/check_links.py                                     # links do wiki
-docker compose -f docker/docker-compose.yml up -d --wait              # SQL Server de desenvolvimento
-docker/mssql/restore.sh                                               # restaura _database/*.bak nele
-docker/build.sh cmake --build --preset linux-debug --target x2_run_channel  # monta build/linux-debug/run/ChannelServer pronto para rodar
-docker/build.sh cmake --build --preset linux-debug --target x2_run_epublisher  # idem, EPublisherServer (login/cash do DEB, T23)
+python3 tools/import/gen_flags.py server                              # generate server flags
+python3 tools/import/check_equivalence.py server                      # verify resolver does not change code
+python3 tools/docs/check_links.py                                     # wiki links
+docker compose -f docker/docker-compose.yml up -d --wait              # development SQL Server
+docker/mssql/restore.sh                                               # restore _database/*.bak to it
+docker/build.sh cmake --build --preset linux-debug --target x2_run_channel  # create build/linux-debug/run/ChannelServer
+docker/build.sh cmake --build --preset linux-debug --target x2_run_epublisher  # likewise, EPublisherServer (DEB login/cash, T23)
 ```
 
-O código original está em CP949. Para ler: `iconv -f cp949 -t utf-8 -c <arquivo>`. Alguns arquivos já estão em UTF-8.
+The original code is encoded in CP949. To read it, use `iconv -f cp949 -t utf-8 -c <file>`. Some files are already UTF-8.
 
-## Código
+## Code
 
-- Código novo e comentários em inglês. Docs e mensagens de commit em português.
-  Comentários em coreano do original são traduzidos para inglês ao mexer no trecho (ou ao copiá-los). Comente quando ajudar de verdade.
-- Siga o estilo do código ao redor. Na limpeza, prefira a biblioteca padrão C++20 a Boost ou Win32.
-- Toda mudança de comportamento em relação ao original precisa ser intencional e registrada na página do módulo em `docs/porte/`.
+- New code, code comments, documentation, and commit messages must always be in English.
+  Translate Korean comments from the original into English when editing or copying that code. Add comments only when they help.
+- Follow the style of the surrounding code. When cleaning up, prefer the C++20 standard library to Boost or Win32.
+- Any behavior change from the original must be intentional and recorded on the module page under `docs/porte/`.
 
-## Documentação
+## Documentation
 
-O wiki em `docs/` é a memória do projeto. Ele é organizado como **wiki navegável por índices**:
+The wiki under `docs/` is the project's memory. It is organized as a **navigable wiki with indexes**:
 
-- **Página principal:** `docs/README.md`. Apresenta o projeto, aponta para onde começar e lista as áreas.
-- **Áreas são pastas**, e cada uma tem um `README.md` que é o **índice** da área. Áreas atuais:
-  `projeto/` (rumo: missão, roadmap, decisões), `original/` (análise do `_reference`),
-  `porte/` (notas por módulo de `src/`), `ferramentas/` (ferramentas do projeto).
-- **Assunto que cresce vira subpasta** com índice próprio (`README.md`), e assim por diante, aprofundando em níveis.
-  Exemplo: `porte/server/README.md` → `porte/server/gameserver.md`.
-- **Toda página nova entra no índice da sua pasta.** Página fora de índice não existe.
-- **Toda página começa com a navegação** a partir da raiz: `[Início](../README.md) › [Área](README.md) › Título`.
-- **Os índices separam o essencial da referência/ruído**, para que o leitor saiba o que precisa ler e o que é só consulta.
-- **Uma informação, um lugar.** Não duplique: crie um link para a página dona do assunto.
-  Decisões ficam só em `projeto/decisoes.md` (`T#` tomadas, `D#` pendentes), e o andamento só em `projeto/roadmap.md`.
-- **Mantenha atualizado no mesmo trabalho:** ao concluir um passo, marque o roadmap. Ao descobrir algo sobre o original,
-  anote na página da área. Ao portar um módulo, atualize a página dele em `porte/`.
-- Use links relativos. Datas são absolutas (`2026-10-29`), nunca "ontem" ou "semana passada".
-  Contagens e estimativas levam a data em que foram feitas.
-- Depois de mover ou criar páginas, rode `python3 tools/docs/check_links.py`.
+- **Home page:** `docs/README.md`. Introduces the project, points readers to where to start, and lists the areas.
+- **Areas are folders**, each with a `README.md` index. Current areas:
+  `projeto/` (direction: mission, roadmap, decisions), `original/` (analysis of `_reference`),
+  `porte/` (notes for each `src/` module), and `ferramentas/` (project tools).
+- **Topics that grow become subfolders** with their own index (`README.md`), continuing down the hierarchy.
+  Example: `porte/server/README.md` → `porte/server/gameserver.md`.
+- **Every new page must be added to its folder's index.** An unindexed page does not exist.
+- **Every page starts with navigation from the root:** `[Home](../README.md) › [Area](README.md) › Title`.
+- **Indexes distinguish essential content from reference/noise**, so readers know what they need to read and what is just a reference.
+- **One piece of information, one place.** Do not duplicate information; link to the page that owns it.
+  Decisions belong only in `projeto/decisoes.md` (`T#` decided, `D#` pending), and progress belongs only in
+  `projeto/roadmap.md`.
+- **Keep the wiki up to date as part of the same task:** when completing a step, update the roadmap; when learning something
+  about the original, record it on the relevant area page; when porting a module, update its `porte/` page.
+- Use relative links. Use absolute dates (`2026-10-29`), never “yesterday” or “last week”.
+  Counts and estimates must include the date they were made.
+- After moving or creating pages, run `python3 tools/docs/check_links.py`.
 
 ## Git
 
-- Remoto: `origin` (GitHub, privado). Commit e push dos branches de trabalho sem perguntar (push de branch não dispara CI); integrar na `main` só quando o usuário pedir (depois, push da `main`). Nunca force-push na `main`.
-- Mensagem: `tipo: resumo` (`feat`, `fix`, `docs`, `refactor`, `chore`), com corpo em português explicando o porquê.
+- Remote: `origin` (private GitHub repository). Commit and push work branches without asking (pushing a branch does not trigger
+  CI); integrate into `main` only when the user asks (then push `main`). Never force-push to `main`.
+- Commit message format: `type: summary` (`feat`, `fix`, `docs`, `refactor`, `chore`), with an English body explaining why.
 
 ### Branches
 
-- **`main` está sempre verde**: compila sem warnings (GCC, Clang e clang-cl), `ctest` passa (Linux e Windows, no CI) e `tools/docs/check_links.py` não acusa nada. Nunca se trabalha direto nela.
-- **Um branch curto por passo do roadmap**, com nome `área/assunto`. Áreas: `platform`, `kncsdk`, `server`, `client`, `tools`, `docs`, `build`.
-  Exemplos: `tools/server-flags`, `server/common-import`, `build/windows-clang-cl`.
-- **Integração por fast-forward** (`git merge --ff-only`), com histórico linear. Se a `main` andou, faça `git rebase main` no branch antes de integrar.
-- Antes de integrar, rode o build limpo, os testes e o verificador de links, e o Windows (`tools/win/winbuild.sh`, ou um disparo do CI).
-  O Actions tem **2.000 minutos/mês** (Windows conta 2×): o CI só roda sozinho na `main`; ver [Integração contínua](docs/ferramentas/ci.md#minutos-orçamento). Depois de integrar, apague o branch.
-- Trabalho grande demais para um passo vira vários branches em sequência, não um branch longo.
+- **`main` is always green**: builds without warnings (GCC, Clang, and clang-cl), `ctest` passes (Linux and Windows in CI), and
+  `tools/docs/check_links.py` reports no issues. Never work directly on it.
+- **Use one short-lived branch per roadmap step**, named `area/topic`. Areas: `platform`, `kncsdk`, `server`, `client`, `tools`,
+  `docs`, `build`. Examples: `tools/server-flags`, `server/common-import`, `build/windows-clang-cl`.
+- **Integrate with fast-forward only** (`git merge --ff-only`), keeping history linear. If `main` has moved, rebase the branch
+  onto `main` before integrating.
+- Before integration, run a clean build, tests, the link checker, and Windows validation (`tools/win/winbuild.sh` or a CI run).
+  Actions has a **2,000-minute monthly budget** (Windows counts twice); CI runs automatically only on `main`. See
+  [Continuous integration](docs/ferramentas/ci.md#minutes-orçamento). Delete the branch after integration.
+- If work is too large for one step, split it into sequential branches rather than keeping one long-lived branch.
