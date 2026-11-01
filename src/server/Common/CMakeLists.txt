@@ -9,14 +9,6 @@ list(FILTER X2_SERVER_COMMON_SOURCES EXCLUDE REGEX "/OnlyGlobal/AuthAndBilling/D
 
 add_library(x2_server_common STATIC ${X2_SERVER_COMMON_SOURCES})
 
-# gSOAP 2.7.18 runtime and the code it generated for the DEB auth service: third-party/generated code
-# (register, VLAs, unused parameters...), built without warnings like the dependencies in _deps.
-# It goes away with the DEB auth server (docs/porte/server-common.md).
-set_source_files_properties(
-    OnlyGlobal/AuthAndBilling/DEB/stdsoap2.cpp
-    OnlyGlobal/AuthAndBilling/DEB/soapC.cpp
-    OnlyGlobal/AuthAndBilling/DEB/soapClient.cpp
-    PROPERTIES COMPILE_OPTIONS $<IF:$<CXX_COMPILER_ID:MSVC>,/w,-w>)
 add_library(x2::server_common ALIAS x2_server_common)
 
 target_include_directories(x2_server_common PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

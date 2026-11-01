@@ -63,7 +63,7 @@ o LuaJIT 2.1 já pula o BOM UTF-8 dos scripts.
 | CxImage + jpeg + png | antigo | KTDXLIB (21 arquivos) | **NOVO** → `stb_image`/`libpng` |
 | zlib | embutida em vários lugares (`KNCSDK`, `KTDXLIB/zlibstat.lib`) | `.kom`, serializer | **UP** |
 | tinyxml | 2 cópias | servidor/cliente | **UP** tinyxml2 ou unificar |
-| gSOAP (`Common/SOAP`) | gerado | servidor, auth de publishers | **RM** (ver binários proprietários) |
+| gSOAP (`Common/SOAP`) | gerado | servidor, auth de publishers | **RM** (ver binários proprietários). A cópia do DEB (`AuthAndBilling/DEB`) entrou e saiu na T31 (cliente próprio) |
 | json (`json_vc71_libmt.lib`) | jsoncpp antigo binário | cliente/servidor | **NOVO** → nlohmann/json ou jsoncpp upstream |
 | BasicExcel (`X2Lib`) | — | export de debug | **RM** provável |
 

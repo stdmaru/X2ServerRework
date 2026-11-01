@@ -4,9 +4,6 @@
 
 #include "NetError.h"
 
-#include "DEB/soapH.h" // or whatever it is called, you must already have it
-#include "DEB/AuthService.nsmap" // this is what you have to add to fix the problem
-
 
 #define CLASS_TYPE  KDEBBilling
 
@@ -15,9 +12,8 @@ ImplPfID( KDEBBilling, PI_GS_PUBLISHER_BILLING );
 _ImplementException( KDEBBilling );
 
 KDEBBilling::KDEBBilling(std::string WsdlFile)
+	: m_kSoapClient( std::move( WsdlFile ) )
 {
-	m_strWsdlPath = WsdlFile;
-	p_gf_soap = NULL;
 }
 
 KDEBBilling::~KDEBBilling(void)
@@ -30,18 +26,8 @@ void KDEBBilling::Run()
 	std::cout << "KSubThread::Run(), thread start." << std::endl;
 	START_LOG( cout2, L"[Test Log] DEB Billing Start" ) << END_LOG;
 
-	SoapInitialize();
-
-	START_LOG( cout2, L"[Test Log] DEB Billing Soap Initialized" ) << END_LOG;
-
 	while( true )
 	{
-		//{{ 2010/11/11 Jo Hyo-jin If SOAP module creation fails, re-create it //
-		if( p_gf_soap == NULL )
-        {
-			SoapInitialize();
-		}
-
 		DWORD ret = ::WaitForSingleObject( m_hKillEvent, 1 );
 
 		if( ret == WAIT_OBJECT_0 ) break;
@@ -50,32 +36,7 @@ void KDEBBilling::Run()
 		else std::cout << "*** WaitForSingleObject() - return :" << ret << std::endl;
 	}
 
-	SoapUninitialize();
-
-	START_LOG( cout2, L"[Test Log] DEB Billing Soap End" ) << END_LOG;
-}
-
-void KDEBBilling::SoapInitialize()
-{
-	p_gf_soap = soap_new();
-	if( !p_gf_soap )	//// couldn't allocate: stop
-	{
-		p_gf_soap = NULL;
-
-		START_LOG( cerr, L"Soap_new Error" ) << END_LOG;
-
-		return;
-	}
-}
-
-void KDEBBilling::SoapUninitialize()
-{
-	if( p_gf_soap != NULL )
-	{
-		soap_destroy(p_gf_soap);
-		soap_end(p_gf_soap);
-		p_gf_soap = NULL;
-	}
+	START_LOG( cout2, L"[Test Log] DEB Billing End" ) << END_LOG;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -135,14 +96,18 @@ IMPL_ON_FUNC( EPUBLISHER_BILLING_BALANCE_REQ )
         // When we look at the cache type as one, we generally see it as public cache.
         kPacketAck.m_iCashType = KGlobalCashInfo::GCT_PUBLISHER_CASH;
 
-	_ns2__GetUserCashRequest request;
-	request.uiPublisherUID = kPacket_.m_uiPublisherUID;
-
-	_ns2__GetUserCashResponse response;
-	int soap_result = soap_call___ns1__GetUserCash(p_gf_soap, m_strWsdlPath.c_str(), NULL, &request, &response);
-	if(soap_result == SOAP_OK) {
-		kPacketAck.m_iOK = response.iOK;
-		kPacketAck.m_ulBalance = static_cast<ULONG>(response.ulBalance);
+	std::string strError;
+	const auto response = m_kSoapClient.Call( "GetUserCashRequest",
+		{ { "uiPublisherUID", std::to_string( kPacket_.m_uiPublisherUID ) } }, strError );
+	if( response ) {
+		kPacketAck.m_iOK = static_cast<int>( response->Int( "iOK" ) );
+		kPacketAck.m_ulBalance = static_cast<ULONG>( response->UInt( "ulBalance" ) );
+	} else {
+		START_LOG( cerr, L"[DEB] AuthService balance request failed." )
+			<< BUILD_LOG( m_kSoapClient.Endpoint() )
+			<< BUILD_LOG( strError )
+			<< BUILD_LOG( kPacket_.m_uiPublisherUID )
+			<< END_LOG;
 	}
 
     SendToUser( FIRST_SENDER_UID, EPUBLISHER_BILLING_BALANCE_ACK, kPacketAck );
@@ -197,28 +162,29 @@ IMPL_ON_FUNC( EBILL_BUY_PRODUCT_REQ )
 		count++;
     }
 
-	// Build request
-    _ns2__PurchaseProductRequest request;
-    request.uiPublisherUID = kPacket_.m_uiPublisherUID;
-	request.iChannelingCode = kPacket_.m_iChannelingCode;
-	request.iUnitUID = static_cast<int>(kPacket_.m_iUnitUID);
-	request.strUserIP = kPacket_.m_strUserIP;
-	request.strNickName = KncUtil::toNarrowString(kPacket_.m_wstrNickName);
-	request.strTotalOrderID = KncUtil::toNarrowString(kPacket_.m_wstrTotalOrderID);
-	request.strTotalList = strTotalList;
+	// Build request (iUnitUID is an xsd:int in the service, as the original sent it)
+	const x2::deb::SoapFields request = {
+		{ "uiPublisherUID", std::to_string( kPacket_.m_uiPublisherUID ) },
+		{ "iChannelingCode", std::to_string( kPacket_.m_iChannelingCode ) },
+		{ "iUnitUID", std::to_string( static_cast<int>( kPacket_.m_iUnitUID ) ) },
+		{ "strUserIP", kPacket_.m_strUserIP },
+		{ "strNickName", KncUtil::toNarrowString( kPacket_.m_wstrNickName ) },
+		{ "strTotalOrderID", KncUtil::toNarrowString( kPacket_.m_wstrTotalOrderID ) },
+		{ "strTotalList", strTotalList },
+	};
+	std::string strError;
+	const auto response = m_kSoapClient.Call( "PurchaseProductRequest", request, strError );
 
-    _ns2__PurchaseProductResponse response;
-	int soap_result = soap_call___ns1__PurchaseProduct(p_gf_soap, m_strWsdlPath.c_str(), NULL, &request, &response);
-
-	if( soap_result == SOAP_OK )
+	if( response )
 	{
         // Purchase fail processing
-        if( response.iOK != NetError::NET_OK ) {
-            kPacketAck.m_iOK = response.iOK;
+        const int iOK = static_cast<int>( response->Int( "iOK" ) );
+        if( iOK != NetError::NET_OK ) {
+            kPacketAck.m_iOK = iOK;
 
             START_LOG( clog, L"[DEB] Purchase request has been rejected." )
-                << BUILD_LOG( response.iOK )
-                << BUILD_LOG( NetError::GetErrStr(response.iOK) )
+                << BUILD_LOG( iOK )
+                << BUILD_LOG( NetError::GetErrStr(iOK) )
                 << BUILD_LOG( kPacket_.m_wstrTotalOrderID )
                 << BUILD_LOG( kPacket_.m_wstrUserID )
                 << BUILD_LOG( kPacket_.m_wstrNickName )
@@ -235,7 +201,8 @@ IMPL_ON_FUNC( EBILL_BUY_PRODUCT_REQ )
     else
     {
 		START_LOG( cerr, L"[DEB] AuthService has encountered a fatal error upon processing purchase request." )
-			<< BUILD_LOG( soap_result )
+			<< BUILD_LOG( m_kSoapClient.Endpoint() )
+			<< BUILD_LOG( strError )
 			<< BUILD_LOG( kPacket_.m_wstrTotalOrderID )
 			<< BUILD_LOG( kPacket_.m_wstrUserID )
 			<< BUILD_LOG( kPacket_.m_wstrNickName )

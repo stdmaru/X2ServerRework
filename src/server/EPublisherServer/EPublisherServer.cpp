@@ -1,7 +1,7 @@
 #include "EPublisherServer.h"
 
 #include "Http.h"
-#include "Soap.h"
+#include "OnlyGlobal/AuthAndBilling/DEB/Soap.h"
 
 #include "NetError.h"
 #include "x2/platform/net_io.h"
@@ -12,10 +12,13 @@
 #include <lua_tinker.h>
 
 #include <chrono>
-#include <cstdlib>
 #include <thread>
 
 namespace x2::epublisher {
+
+using x2::deb::BuildSoapFault;
+using x2::deb::BuildSoapResponse;
+using x2::deb::SoapFields;
 
 namespace {
 
@@ -23,19 +26,6 @@ constexpr unsigned kRequestTimeoutMs = 10 * 1000;  // as the original: 10 s per 
 constexpr int kMaxConnections = 100;
 
 std::wstring Wide(const std::string& s) { return x2::platform::Utf8ToWide(s); }
-
-unsigned long ToULong(const std::map<std::string, std::string>& fields, const char* name)
-{
-    const auto it = fields.find(name);
-    return it == fields.end() ? 0 : std::strtoul(it->second.c_str(), nullptr, 10);
-}
-
-const std::string& Field(const std::map<std::string, std::string>& fields, const char* name)
-{
-    static const std::string empty;
-    const auto it = fields.find(name);
-    return it == fields.end() ? empty : it->second;
-}
 
 } // namespace
 
@@ -139,17 +129,17 @@ void EPublisherServer::Serve(SOCKET sock, std::string peer)
 std::string EPublisherServer::HandleSoap(const std::string& body, int& httpStatus)
 {
     httpStatus = 200;
-    const auto request = ParseSoapRequest(body);
+    const auto request = x2::deb::ParseSoapMessage(body);
     if (!request) {
         httpStatus = 500;
         return BuildSoapFault("SOAP-ENV:Client", "Malformed SOAP request");
     }
-    const auto& f = request->fields;
+    const auto& f = *request;
 
-    if (request->operation == "LoginRequest") {
-        const auto result = m_service.Login(Field(f, "strUsername"), Field(f, "strPassword"));
-        const std::wstring wstrUsername = Wide(Field(f, "strUsername"));
-        const std::wstring wstrIP = Wide(Field(f, "strIPAddress"));
+    if (request->element == "LoginRequest") {
+        const auto result = m_service.Login(f.Text("strUsername"), f.Text("strPassword"));
+        const std::wstring wstrUsername = Wide(f.Text("strUsername"));
+        const std::wstring wstrIP = Wide(f.Text("strIPAddress"));
         const int iResult = result.result;
         START_LOG(cout, L"[EPublisher] Login")
             << BUILD_LOG(wstrUsername)
@@ -170,8 +160,8 @@ std::string EPublisherServer::HandleSoap(const std::string& body, int& httpStatu
         }
         return BuildSoapResponse("LoginResponse", out);
     }
-    if (request->operation == "GetUserCashRequest") {
-        const auto uid = static_cast<unsigned int>(ToULong(f, "uiPublisherUID"));
+    if (request->element == "GetUserCashRequest") {
+        const auto uid = static_cast<unsigned int>(f.UInt("uiPublisherUID"));
         const auto result = m_service.GetUserCash(uid);
         const long long iBalance = result.balance;
         const int iOK = result.result;
@@ -183,12 +173,12 @@ std::string EPublisherServer::HandleSoap(const std::string& body, int& httpStatu
         return BuildSoapResponse("GetUserCashResponse",
             { { "iOK", std::to_string(result.result) }, { "ulBalance", std::to_string(result.balance) } });
     }
-    if (request->operation == "PurchaseProductRequest") {
-        const auto uid = static_cast<unsigned int>(ToULong(f, "uiPublisherUID"));
-        const auto result = m_service.PurchaseProduct(uid, Field(f, "strTotalList"));
-        const std::wstring wstrNickName = Wide(Field(f, "strNickName"));
-        const std::wstring wstrOrderID = Wide(Field(f, "strTotalOrderID"));
-        const std::wstring wstrTotalList = Wide(Field(f, "strTotalList"));
+    if (request->element == "PurchaseProductRequest") {
+        const auto uid = static_cast<unsigned int>(f.UInt("uiPublisherUID"));
+        const auto result = m_service.PurchaseProduct(uid, f.Text("strTotalList"));
+        const std::wstring wstrNickName = Wide(f.Text("strNickName"));
+        const std::wstring wstrOrderID = Wide(f.Text("strTotalOrderID"));
+        const std::wstring wstrTotalList = Wide(f.Text("strTotalList"));
         const long long iBalance = result.balance;
         const int iOK = result.result;
         START_LOG(cout, L"[EPublisher] PurchaseProduct")
@@ -204,7 +194,7 @@ std::string EPublisherServer::HandleSoap(const std::string& body, int& httpStatu
     }
 
     httpStatus = 500;
-    return BuildSoapFault("SOAP-ENV:Client", "Unknown operation " + request->operation);
+    return BuildSoapFault("SOAP-ENV:Client", "Unknown operation " + request->element);
 }
 
 void RegisterLua(lua_State* L, EPublisherServer& server)

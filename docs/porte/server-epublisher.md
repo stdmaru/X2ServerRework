@@ -8,7 +8,7 @@ Serviço de autenticação e cash que o ChannelServer e o GameServer chamam pelo
 
 **Reimplementação**, em 2026-10-30, do `AuthServer` do dono do projeto (`_reference/AuthServer`: C++, gSOAP 2.8, SOCI, OpenSSL, Lua 5.1 próprio).
 Ele é considerado parte do código original: fica até a Fase 5, quando a função deve ir para o ChannelServer.
-**Regra:** o EPublisherServer usa o `Common` (`KODBC`, `NetError`, log, `lua_tinker`); **nada do `Common` ou dos outros servidores usa ele.**
+**Regra:** o EPublisherServer usa o `Common` (`KODBC`, `NetError`, log, `lua_tinker`, as mensagens SOAP do DEB); **nada do `Common` ou dos outros servidores usa ele.**
 
 ## Estado (2026-10-30)
 
@@ -17,8 +17,10 @@ devolve a conta 20004. Sobe junto com o ChannelServer (pasta `run/`, ver [Pastas
 
 ## Protocolo
 
-SOAP 1.1 document/literal sobre HTTP/1.1, exatamente o que o cliente gSOAP 2.7 dos servidores escreve e lê: `POST` com
-`Content-Length`, elementos qualificados pelo namespace `urn:AuthService` (prefixo `ns2`).
+SOAP 1.1 document/literal sobre HTTP/1.1, exatamente o que o cliente gSOAP 2.7 dos servidores escrevia e lia: `POST` com
+`Content-Length`, elementos qualificados pelo namespace `urn:AuthService` (prefixo `ns2`). Desde a T31 (2026-10-31) os servidores usam um
+cliente próprio que escreve os mesmos bytes ([Common › Cliente do DEB](server-common.md#cliente-do-deb-t31)); as mensagens
+(`x2::deb`, `Common/OnlyGlobal/AuthAndBilling/DEB/Soap.{h,cpp}`) são as mesmas dos dois lados.
 
 | Operação | Pedido | Resposta |
 |---|---|---|
@@ -37,12 +39,11 @@ Banco `Account`: `DEBAccounts` (`UID`, `AccountID`, `Password` = sha256 hexadeci
 
 | Arquivo | Papel |
 |---|---|
-| `Soap.{h,cpp}` | lê o envelope (operação e campos, entidades XML) e monta respostas e falhas |
 | `Http.{h,cpp}` | um pedido HTTP por vez, com keep-alive quando pedido; tempo limite de 10 s por leitura, como o original |
 | `PublisherService.{h,cpp}` | as três operações sobre `IAccountStore`, sem SOAP nem banco (testável) |
 | `OdbcAccountStore.{h,cpp}` | `IAccountStore` sobre o `KODBC`, com o `.dsn` e o driver dos servidores |
-| `EPublisherServer.{h,cpp}`, `main.cpp` | config Lua, porta, uma thread por conexão (até 100), o terminal dos outros servidores (T15), `--no-stdin` para serviço |
-| `tests/test_epublisher.cpp` | hash, SOAP, operações com um armazenamento falso e o **cliente gSOAP dos servidores** (`soap_call___ns1__Login`...) contra o serviço |
+| `EPublisherServer.{h,cpp}`, `main.cpp` | lê o pedido e monta a resposta com as mensagens SOAP do `Common` (`x2::deb`); config Lua, porta, uma thread por conexão (até 100), o terminal dos outros servidores (T15), `--no-stdin` para serviço |
+| `tests/test_epublisher.cpp` | hash, SOAP, operações com um armazenamento falso, um pedido **capturado do cliente gSOAP** antes de ele sair (T31) e o **cliente dos servidores** (`x2::deb::SoapClient`) contra o serviço |
 
 ## Uso
 

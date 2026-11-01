@@ -3,16 +3,14 @@
 
 	#include "DEBAuthManager.h"
 	#include "NetError.h"
-	#include "DEB/soapH.h"
-	#include "DEB/AuthService.nsmap"
 
 	#define CLASS_TYPE KDEBAuth
 
 	_ImplementException( KDEBAuth );
 
 	KDEBAuth::KDEBAuth(std::string strWsdlPath)
+		: m_kSoapClient( std::move( strWsdlPath ) )
 	{
-		m_strWsdlPath = strWsdlPath;
 	}
 
 	KDEBAuth::~KDEBAuth()
@@ -31,18 +29,10 @@
 
 		srand( (unsigned) time( NULL ) );
 
-		SoapInitialize();
-		START_LOG( clog2, L"[DEB] AuthServer Soap Client Initialized" )
-		<< END_LOG;
-
 		testfunction();
 
 		while( true )
 		{
-			if( soapClient == NULL ){
-				SoapInitialize();
-			}
-
 			DWORD ret = ::WaitForSingleObject( m_hKillEvent, 1 );
 
 			if( ret == WAIT_OBJECT_0 ) break;
@@ -51,10 +41,6 @@
 
 			else std::cout << "*** WaitForSingleObject() - return :" << ret << std::endl;
 		}
-
-		SoapDestroy();
-		START_LOG( clog2, L"[DEB] AuthServer Soap was destroyed" )
-			<< END_LOG;
 	}
 
 	//=========================================================================//
@@ -112,30 +98,6 @@
 		}
 	}
 
-	void KDEBAuth::SoapInitialize()
-	{
-		soapClient = soap_new();
-		if( !soapClient )	//// couldn't allocate: stop
-		{
-			soapClient = NULL;
-
-			START_LOG( cerr, L"[DEB] Fatal error on AuthServer SOAP client initialization." )
-				<< END_LOG;
-
-			return;
-		}
-	}
-
-	void KDEBAuth::SoapDestroy()
-	{
-		if( soapClient != NULL )
-		{
-			soap_destroy(soapClient);
-			soap_end(soapClient);
-			soapClient = NULL;
-		}
-	}
-
 	//////////////////////////////////////////////////////
 	IMPL_ON_FUNC( EPUBLISHER_AUTHENTICATION_REQ )
 	{
@@ -181,39 +143,32 @@
 
 		}
 
-		// Request packet
-		_ns2__LoginRequest request;
-		request.strUsername = KncUtil::toNarrowString(kPacket_.m_wstrServiceAccountID);
-		request.strPassword = KncUtil::toNarrowString(kPacket_.m_wstrServicePassword);
-		request.strIPAddress = KncUtil::toNarrowString(kPacket_.m_wstrIP);
+		const x2::deb::SoapFields request = {
+			{ "strUsername", KncUtil::toNarrowString( kPacket_.m_wstrServiceAccountID ) },
+			{ "strPassword", KncUtil::toNarrowString( kPacket_.m_wstrServicePassword ) },
+			{ "strIPAddress", KncUtil::toNarrowString( kPacket_.m_wstrIP ) },
+		};
+		std::string strError;
+		const auto response = m_kSoapClient.Call( "LoginRequest", request, strError );
 
-		// Response packet
-		_ns2__LoginResponse response;
+		if( response ) {
+			kPacketAck.m_iOK = static_cast<int>( response->Int( "iResult" ) );
 
-		int soap_call_result = soap_call___ns1__Login(soapClient, m_strWsdlPath.c_str(), NULL, &request, &response);
+			if( kPacketAck.m_iOK == NetError::NET_OK ) { // Success
+				if( !response->Text( "strID" ).empty() )
+					kPacketAck.m_wstrID = KncUtil::toWideString( response->Text( "strID" ) );
 
-		if(soap_call_result == SOAP_OK) {
-			kPacketAck.m_iOK = response.iResult;
+				kPacketAck.m_uiPublisherUID = static_cast<unsigned int>( response->Int( "iPublisherSN" ) );
+				kPacketAck.m_iChannelingCode = static_cast<int>( response->Int( "iChannelingCode" ) );
 
-			if (response.iResult == NetError::NET_OK) { // Success
-				if (!response.strID.empty()) {
-					std::wstring strID = KncUtil::toWideString(response.strID);
-					kPacketAck.m_wstrID = strID;
-				}
-
-				unsigned int uiPublisherUID = response.iPublisherSN;
-				kPacketAck.m_uiPublisherUID = uiPublisherUID;
-
-				int iChannelingCode = response.iChannelingCode;
-				kPacketAck.m_iChannelingCode = iChannelingCode;
-
-				if (response.strPurchaseToken.empty()) {
-					std::wstring wstrPurchTok = KncUtil::toWideString(response.strPurchaseToken);
-					kPacketAck.wstrPurchTok = wstrPurchTok;
-				}
+				// Port: the original tested empty() here, so the token was only copied when there was none.
+				if( !response->Text( "strPurchaseToken" ).empty() )
+					kPacketAck.wstrPurchTok = KncUtil::toWideString( response->Text( "strPurchaseToken" ) );
 			}
 		} else {
 			START_LOG( cerr, L"[DEB] Fatal error AuthServer request." )
+				<< BUILD_LOG( m_kSoapClient.Endpoint() )
+				<< BUILD_LOG( strError )
 				<< END_LOG;
 		}
 

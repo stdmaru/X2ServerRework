@@ -24,17 +24,32 @@ Mesmo nome de pasta do original (`Common`), porque os fontes incluem `"../Common
 
   As referências a eles, ~190 includes, viram stubs ou somem na passada manual.
 - **Mantido: DEB ("Debelzak Custom Auth")**, ligado por `_DEB_AUTH` (Channel e Game no `Release_US`). **Não é código da KOG**: foi escrito pelo dono do projeto,
-  junto com um **servidor SOAP próprio** de autenticação, feito do zero. É a autenticação (`KDEBAuth`, cliente gSOAP que chama `Login` num `AuthService`
-  de endereço configurável) e a cobrança (`KDEBBilling`) **usadas por este servidor**. Nas cadeias de `#if`, ele substitui o publisher US.
-  Entram `AuthAndBilling/DEB*`, os stubs gSOAP de `AuthAndBilling/DEB/` e o `KncSendToPublisher.h`.
+  junto com um **servidor SOAP próprio** de autenticação, feito do zero. É a autenticação (`KDEBAuth`, cliente SOAP que chama `Login` num `AuthService`
+  de endereço configurável; era gSOAP até a T31) e a cobrança (`KDEBBilling`) **usadas por este servidor**. Nas cadeias de `#if`, ele substitui o publisher US.
+  Entram `AuthAndBilling/DEB*`, os stubs gSOAP de `AuthAndBilling/DEB/` (removidos em 2026-10-31, T31) e o `KncSendToPublisher.h`.
   Erro corrigido em 2026-10-29: uma primeira versão desligou o `_DEB_AUTH` achando que era só integração de publisher.
 - Includes para o KNCSDK com a grafia corrigida (`KncSingleton.h` → `KNCSingleton.h`, `RTTI.H` → `RTTI.h`...) via `extern_dirs`.
+
+## Cliente do DEB (T31)
+
+`OnlyGlobal/AuthAndBilling/DEB/` tem, no lugar do gSOAP 2.7 (runtime `stdsoap2` + código gerado do `AuthService`), duas peças próprias
+em `x2::deb`:
+
+| Arquivo | Papel |
+|---|---|
+| `Soap.{h,cpp}` | mensagens SOAP 1.1 document/literal do `AuthService` (`urn:AuthService`): monta pedidos, respostas e falhas, lê o elemento do `Body` e os campos (`SoapMessage::Text/Int/UInt`, campo que falta vale vazio/0, como o gSOAP deixava). O [EPublisherServer](server-epublisher.md) usa as mesmas funções do lado servidor |
+| `SoapClient.{h,cpp}` | um `POST` HTTP/1.1 por chamada, numa conexão nova (`Connection: close`), bloqueante como o gSOAP; lê até o `Content-Length` ou o fechamento; 10 s de espera por leitura. `SOAP-ENV:Fault`, HTTP diferente de 200 ou erro de rede viram `nullopt` com o motivo em texto |
+
+O pedido sai com os mesmos bytes que o gSOAP escrevia (linha de pedido, `Host`, `User-Agent: gSOAP/2.7`, `Content-Type`, `SOAPAction: ""`
+e o envelope com as declarações `ns1`/`ns2`), conferido contra uma captura do cliente antigo (teste em
+`EPublisherServer/tests/test_epublisher.cpp`). Um `AuthService` feito para o cliente gSOAP continua servindo. O endereço vem do config Lua,
+como antes (`DEBAuthManager:AddAuthServiceAddress`, `DEBBillingManager:AddWebServiceAddress`), e precisa ser `http://host[:porta][/caminho]`.
 
 ## Acoplamento restante (2026-10-29)
 
 | Área | Arquivos | Plano |
 |---|---:|---|
-| gSOAP (`AuthAndBilling/DEB/`, `stdsoap2`) | 3 | código C portável; gerar de novo com gSOAP atual ou compilar como está, com sockets da plataforma |
+| ~~gSOAP (`AuthAndBilling/DEB/`, `stdsoap2`)~~ | 3 | removido em 2026-10-31 (T31): cliente SOAP próprio, ver [Cliente do DEB](#cliente-do-deb-t31) |
 | `windows.h`/ATL/WinInet/`stdafx.h` | ~35 | `x2/platform/win32.h`; WinInet (`KFtpWrapper`) avaliar se é necessário |
 | Threads/eventos (`_beginthreadex`, `WaitForSingleObject`...) | 29 | já cobertos pela [Plataforma](platform.md) |
 | `CTime`/`CTimeSpan`, `CString` | 46 / 10 | cobertos pela Plataforma (ampliar o `CString` se faltar algo) |
@@ -46,7 +61,7 @@ Mesmo nome de pasta do original (`Common`), porque os fontes incluem `"../Common
 | **Matemática D3DX** (`X2Data/XSLBattleField`, `LineMap/`, `CommonPacket.h`) | 6 (187 usos) | `x2/platform/d3dx_math.h` (pronto); trocar `#include <d3dx9math.h>` por ele |
 | ~~Dependência invertida~~ | 1 | resolvido em 2026-10-30 (`server/channel-build`): `KStatisticsLocalLog.cpp` não inclui mais `GameServer/Inventory.h` nem `CenterServer/PvPRoom.h` (ver Mudanças) |
 
-Tamanho: ~99 mil linhas de `.cpp` sem os stubs gSOAP. Os maiores são os pacotes: `ServerPacket.cpp` (16 mil), `ClientPacket.cpp` (12 mil) e `CommonPacket.cpp` (7 mil).
+Tamanho: ~99 mil linhas de `.cpp` sem os stubs gSOAP (que saíram na T31). Os maiores são os pacotes: `ServerPacket.cpp` (16 mil), `ClientPacket.cpp` (12 mil) e `CommonPacket.cpp` (7 mil).
 
 ## Plano do porte manual (um branch por passo)
 
@@ -141,7 +156,7 @@ e não no cliente (as flags do cliente ainda não foram geradas, ver [Roadmap](.
 | `NetError` | As tabelas de mensagens (`szErrorStr*`) só existem em `NetError.cpp`; `GetErrStr*` devolvem `const wchar_t*` | Eram `static` no header, copiadas em todo `.cpp` (73 mil warnings). Todos os chamadores copiam para `std::wstring` |
 | `ActorManager::MultiQueueing*` | Parâmetro padrão `std::vector<UidType>& = std::vector<UidType>()` virou sobrecarga de um argumento | Extensão do MSVC. **Pendente:** `GameServer/UserManager.h` tem o mesmo padrão |
 | `ActorProxy`/`BaseServer` | `std::shared_ptr<void>` de evento → `shared_ptr<remove_pointer_t<HANDLE>>` | `HANDLE` não é `void*` fora do Windows |
-| gSOAP (`DEB/`) | `register` removido, `SOAP_NEW` sem parênteses; `stdsoap2.cpp`/`soapC.cpp`/`soapClient.cpp` compilam sem warnings (`-w`) | Código de terceiros/gerado (gSOAP 2.7.18); sai junto com o servidor DEB |
+| `KDEBAuth`, `KDEBBilling` (`AuthAndBilling/`) | O gSOAP saiu (T31): as chamadas `soap_call___ns1__*` viraram `x2::deb::SoapClient::Call` com os mesmos elementos e campos. Sem `SoapInitialize`/`SoapDestroy` (não há estado entre chamadas). Falha de rede ou de SOAP agora vai ao log com o endereço e o motivo, também no saldo (`EPUBLISHER_BILLING_BALANCE_REQ`), que antes falhava calado. Ver [Cliente do DEB](#cliente-do-deb-t31) | O gSOAP era código de terceiros copiado do `_reference` (17 mil linhas compiladas com `-w`) |
 | `DBConnectionManager` (DES das connection strings) | `x2::crypto::DesCbc*` no lugar do `CBC_Mode<DES>` do Crypto++ (T27); mesmos bytes. `EncryptString`/`DecryptString` (XOR, nunca chamadas) removidas | O Crypto++ não compila com clang-cl |
 | `Socket/` (`SocketObject`, `NetCommon`, `UdpEcho`, `KTDNUDP`), `NetLayer`, `ThreadStatisticsManager` (e o EPublisherServer) | `inet_addr`/`inet_ntoa`/`gethostbyname` → `x2::platform::IpFromString`/`IpToString`/`ResolveIPv4` (`inet_pton`/`inet_ntop`/`getaddrinfo`). Só aceita IPv4 em quatro números (`inet_addr` aceitava `127.1` e hex) | APIs obsoletas no Winsock (warnings no clang-cl). O `ThreadStatisticsManager` não derruba mais o processo quando o nome da máquina não resolve (o original desreferenciava o `NULL` do `gethostbyname`) |
 | `LineMap` | Membro `LPDIRECT3DVERTEXBUFFER9` removido | Resto do cliente, nunca usado no servidor |
@@ -158,6 +173,8 @@ e não no cliente (as flags do cliente ainda não foram geradas, ver [Roadmap](.
 | `XSLCharacterStatTable` | Comparava `UNIT_TYPE` com `UC_NONE` e `UNIT_CLASS` com `UT_NONE` | Enum certo (os dois valem 0: sem mudança) |
 | `XSLGuildManager` | `u_char < 0` | Removido (sempre falso) |
 | `SimObject`, `SerBuffer` etc. | Pequenos: `%d` com `__int64`, valores não inicializados | Ver diffs |
+| `KDEBAuth` (`EPUBLISHER_AUTHENTICATION_REQ`) | `if( response.strPurchaseToken.empty() )`: o token de compra só era copiado quando vinha vazio | `!empty()` (2026-10-31). O `wstrPurchTok` chega preenchido ao ChannelServer |
+| Cliente gSOAP do DEB | Texto não ASCII (UTF-8) saía codificado duas vezes: o gSOAP 2.7 sem `SOAP_C_UTFSTRING` tomava cada byte como Latin-1. Uma conta `é가` chegava ao serviço como `Ã©ê°\u0080` | O cliente da T31 manda o UTF-8 como está (2026-10-31, conferido com o gSOAP antes de removê-lo) |
 
 ### Portabilidade (sem mudança de comportamento)
 
@@ -173,7 +190,7 @@ e não no cliente (as flags do cliente ainda não foram geradas, ver [Roadmap](.
 
 - Windows (achado na primeira compilação MinGW, 2026-10-30): o build passa a definir `UNICODE`/`_UNICODE`, como o original (sem isso
   `LPCTSTR` era `const char*`); `byte` e `u_char`/`u_short`/`u_int`/`u_long`, que o original recebia do `windows.h` sem `WIN32_LEAN_AND_MEAN`,
-  vêm do `types.h` da plataforma; o gSOAP inclui `x2/platform/net.h` no lugar do `winsock.h` que vinha junto; `zlib` passou a dependência
+  vêm do `types.h` da plataforma; o gSOAP incluía `x2/platform/net.h` no lugar do `winsock.h` que vinha junto (até a T31); `zlib` passou a dependência
   pública do `x2_server_common` (`Socket/KTDNUDP.h` inclui `zlib.h`).
 - Campos `long`/`unsigned long` dos pacotes (190, em 2026-10-29) viraram `LONG`/`DWORD`: no Linux `long` tem 8 bytes, e o `Put` falhava
   com valores fora de 32 bits. No fio nada muda (mesmo tamanho e mesma tag), e no Windows os tipos são os mesmos de antes.

@@ -1,5 +1,5 @@
 # EPublisher service tests (docs/porte/server-epublisher.md): SOAP parsing, the operations over a fake store, and
-# the whole service called by the servers' own gSOAP client (Common/OnlyGlobal/AuthAndBilling/DEB).
+# the whole service called by the servers' own SOAP client (Common/OnlyGlobal/AuthAndBilling/DEB).
 add_executable(x2_epublisher_tests
     main.cpp
     test_epublisher.cpp

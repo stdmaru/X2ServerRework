@@ -9,9 +9,7 @@
 #include "KncException.h"
 #include "BillManager.h"
 #include "BaseServer.h"
-
-
-#include "DEB/soapH.h" // or whatever it is called, you must already have it
+#include "DEB/SoapClient.h"
 
 class KDEBBilling : public KSubThread
 {
@@ -21,10 +19,7 @@ class KDEBBilling : public KSubThread
 public:
 	KDEBBilling(std::string WsdlFile);
 	~KDEBBilling(void);
-	virtual void Run();	// Overridden to include Soap Initialize //
-
-	void SoapInitialize();
-	void SoapUninitialize();
+	virtual void Run();
 
 	// packet send function
 	template < class T > void SendToServer( unsigned short usEventID, const T& data );
@@ -46,8 +41,7 @@ public:
 	DECL_ON_FUNC( EBILL_USE_COUPON_REQ );
 
 protected:
-	struct soap* p_gf_soap;
-	std::string m_strWsdlPath;
+	x2::deb::SoapClient m_kSoapClient;	// Port: own SOAP/HTTP client in place of gSOAP (decision T31)
 };
 
 

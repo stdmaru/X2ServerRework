@@ -2,17 +2,20 @@
 
 #include <cstdlib>
 
-namespace x2::epublisher {
+namespace x2::deb {
 
 namespace {
 
-constexpr std::string_view kEnvelopeOpen =
+constexpr std::string_view kEnvelopeStart =
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
     "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\""
     " xmlns:SOAP-ENC=\"http://schemas.xmlsoap.org/soap/encoding/\""
     " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
-    " xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\""
-    " xmlns:ns2=\"urn:AuthService\"><SOAP-ENV:Body>";
+    " xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"";
+// The gSOAP client also declared the WSDL namespace (unused in the messages).
+constexpr std::string_view kRequestNamespaces =
+    " xmlns:ns1=\"http://192.168.1.100:8000/AuthService.wsdl\" xmlns:ns2=\"urn:AuthService\"><SOAP-ENV:Body>";
+constexpr std::string_view kResponseNamespaces = " xmlns:ns2=\"urn:AuthService\"><SOAP-ENV:Body>";
 constexpr std::string_view kEnvelopeClose = "</SOAP-ENV:Body></SOAP-ENV:Envelope>";
 
 std::string_view LocalName(std::string_view qname)
@@ -96,9 +99,43 @@ std::string XmlUnescape(std::string_view text)
     return out;
 }
 
+std::string BuildMessage(std::string_view namespaces, std::string_view element, const SoapFields& fields)
+{
+    std::string xml(kEnvelopeStart);
+    xml += namespaces;
+    xml += "<ns2:";
+    xml += element;
+    xml += '>';
+    for (const auto& [name, value] : fields) {
+        xml += "<ns2:" + name + '>' + XmlEscape(value) + "</ns2:" + name + '>';
+    }
+    xml += "</ns2:";
+    xml += element;
+    xml += '>';
+    xml += kEnvelopeClose;
+    return xml;
+}
+
 } // namespace
 
-std::optional<SoapRequest> ParseSoapRequest(std::string_view xml)
+const std::string& SoapMessage::Text(const char* name) const
+{
+    static const std::string empty;
+    const auto it = fields.find(name);
+    return it == fields.end() ? empty : it->second;
+}
+
+long long SoapMessage::Int(const char* name) const
+{
+    return std::strtoll(Text(name).c_str(), nullptr, 10);
+}
+
+std::uint64_t SoapMessage::UInt(const char* name) const
+{
+    return std::strtoull(Text(name).c_str(), nullptr, 10);
+}
+
+std::optional<SoapMessage> ParseSoapMessage(std::string_view xml)
 {
     std::size_t pos = 0;
     // up to <...:Body>
@@ -113,10 +150,10 @@ std::optional<SoapRequest> ParseSoapRequest(std::string_view xml)
     if (!op || op->closing)
         return std::nullopt;
 
-    SoapRequest request;
-    request.operation = std::string(LocalName(op->name));
+    SoapMessage message;
+    message.element = std::string(LocalName(op->name));
     if (op->empty)
-        return request;
+        return message;
 
     for (;;) {
         const auto tag = NextTag(xml, pos);
@@ -126,7 +163,7 @@ std::optional<SoapRequest> ParseSoapRequest(std::string_view xml)
             break;
         const std::string name(LocalName(tag->name));
         if (tag->empty) {
-            request.fields[name];
+            message.fields[name];
             continue;
         }
         const auto valueStart = tag->end;
@@ -134,9 +171,9 @@ std::optional<SoapRequest> ParseSoapRequest(std::string_view xml)
         if (!close || !close->closing || LocalName(close->name) != name)
             return std::nullopt;  // nested elements are not part of these messages
         const auto valueEnd = xml.rfind('<', close->end - 1);
-        request.fields[name] = XmlUnescape(xml.substr(valueStart, valueEnd - valueStart));
+        message.fields[name] = XmlUnescape(xml.substr(valueStart, valueEnd - valueStart));
     }
-    return request;
+    return message;
 }
 
 std::string XmlEscape(std::string_view text)
@@ -155,25 +192,20 @@ std::string XmlEscape(std::string_view text)
     return out;
 }
 
+std::string BuildSoapRequest(std::string_view element, const SoapFields& fields)
+{
+    return BuildMessage(kRequestNamespaces, element, fields);
+}
+
 std::string BuildSoapResponse(std::string_view element, const SoapFields& fields)
 {
-    std::string xml(kEnvelopeOpen);
-    xml += "<ns2:";
-    xml += element;
-    xml += '>';
-    for (const auto& [name, value] : fields) {
-        xml += "<ns2:" + name + '>' + XmlEscape(value) + "</ns2:" + name + '>';
-    }
-    xml += "</ns2:";
-    xml += element;
-    xml += '>';
-    xml += kEnvelopeClose;
-    return xml;
+    return BuildMessage(kResponseNamespaces, element, fields);
 }
 
 std::string BuildSoapFault(std::string_view faultCode, std::string_view message)
 {
-    std::string xml(kEnvelopeOpen);
+    std::string xml(kEnvelopeStart);
+    xml += kResponseNamespaces;
     xml += "<SOAP-ENV:Fault><faultcode>";
     xml += XmlEscape(faultCode);
     xml += "</faultcode><faultstring>";
@@ -183,4 +215,4 @@ std::string BuildSoapFault(std::string_view faultCode, std::string_view message)
     return xml;
 }
 
-} // namespace x2::epublisher
+} // namespace x2::deb

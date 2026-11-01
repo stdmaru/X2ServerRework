@@ -6,6 +6,7 @@
 #include "ServerPacket.h"
 #include "SubThread.h"
 #include "KncException.h"
+#include "DEB/SoapClient.h"
 
 	class KDEBAuth :public KSubThread
 	{
@@ -23,9 +24,7 @@
 
 			KDEBAuth(std::string WsdlFile);
 			virtual ~KDEBAuth();
-			virtual void Run();	// Redefined to include Soap Initialize //
-			void SoapInitialize();
-			void SoapDestroy();
+			virtual void Run();
 			virtual void ProcessEvent( const KEventPtr& spEvent );
 
 			DECL_ON_FUNC( EPUBLISHER_AUTHENTICATION_REQ );
@@ -34,6 +33,5 @@
 			void testfunction();
 
 		protected:
-			std::string	m_strWsdlPath;
-			struct soap* soapClient;
+			x2::deb::SoapClient	m_kSoapClient;	// Port: own SOAP/HTTP client in place of gSOAP (decision T31)
 	};
