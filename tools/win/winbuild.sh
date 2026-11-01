@@ -23,9 +23,10 @@ win=${dir//\//\\}
 ssh "${ssh_opts[@]}" "$host" "if not exist $win\\src mkdir $win\\src"
 git -C "$repo" ls-files -z | tar -C "$repo" --null -T - -cf - | ssh "${ssh_opts[@]}" "$host" "tar -xf - -C $dir/src"
 # tar only adds: files deleted in the history and no longer tracked are removed there too (a CMake glob would still
-# compile them). Files git never had (the machine's own) are left alone.
-comm -23 <(git -C "$repo" log --diff-filter=D --name-only --pretty=format: HEAD | sed '/^$/d' | sort -u) \
-         <(git -C "$repo" ls-files | sort -u) |
+# compile them). Files git never had (the machine's own) are left alone. Windows ignores case, so a deleted path that
+# matches a tracked one in another case (soapClient.cpp / SoapClient.cpp) is the tracked file and stays.
+awk 'NR == FNR { tracked[tolower($0)] = 1; next } $0 != "" && !(tolower($0) in tracked) && !seen[$0]++' \
+    <(git -C "$repo" ls-files) <(git -C "$repo" log --diff-filter=D --name-only --pretty=format: HEAD) |
     ssh "${ssh_opts[@]}" "$host" "python -c \"import os,sys; [os.remove(p) for p in (os.path.join(r'$win\\src', l.strip()) for l in sys.stdin if l.strip()) if os.path.isfile(p)]\""
 
 script=$(mktemp)
