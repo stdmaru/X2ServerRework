@@ -1,71 +1,71 @@
-[Início](README.md) › Rodar os servidores
+[Home](README.md) › Run the servers
 
-# Rodar os servidores
+# Run the servers
 
-Como subir o conjunto de servidores e jogar com o cliente original. O passo a passo é o do Linux, o único em que os
-servidores foram testados até 2026-10-31. Antes, compile: [Linux](building-linux.md) ou [Windows](building-windows.md).
+How to start the server suite and play with original client. Steps below are for Linux, the only platform on which servers had been
+tested as of 2026-10-31. Build first: [Linux](building-linux.md) or [Windows](building-windows.md).
 
-Os comandos com `docker/build.sh` rodam no container de build. Num build nativo, rode o mesmo comando sem o prefixo.
+Commands prefixed with `docker/build.sh` run in build container. For native build, run same command without prefix.
 
-## O que é preciso
+## Requirements
 
-- **Os backups do banco** em `_database/` (`Account.bak`, `Game01.bak`, `Statistics.bak`, `ES_BILLING.bak`).
-- **O cliente original** em `_client/`: os servidores leem os scripts dele (gerados dos `.kom`), e é com ele que se joga.
-  No Linux, o cliente roda pelo **Wine**.
-- **Docker com `compose`**, para o SQL Server de desenvolvimento.
+- **Database backups** in `_database/` (`Account.bak`, `Game01.bak`, `Statistics.bak`, `ES_BILLING.bak`).
+- **Original client** in `_client/`: servers read its scripts (generated from `.kom`), and it is used to play.
+  On Linux, client runs through **Wine**.
+- **Docker with `compose`**, for development SQL Server.
 
-Nenhum deles está no repositório.
+None of these are in the repository.
 
-## 1. Banco de dados
+## 1. Database
 
-Sobe o SQL Server 2022 em Docker e restaura os backups. O `restore.sh` **substitui** os bancos que já existirem:
+Start SQL Server 2022 in Docker and restore backups. `restore.sh` **replaces** existing databases:
 
 ```bash
 docker compose -f docker/docker-compose.yml up -d --wait
 docker/mssql/restore.sh
 ```
 
-- Escuta só em `127.0.0.1:1433`, com o usuário `sa` e a senha de desenvolvimento do `docker/docker-compose.yml`.
-- O `restore.sh` também ajusta os endereços dos servidores no banco para `127.0.0.1`, ou para o `X2_SERVER_IP`.
-- Para parar: `docker compose -f docker/docker-compose.yml stop`. Os dados ficam no volume `x2-mssql-data`.
+- Listens only on `127.0.0.1:1433`, user `sa`, with development password from `docker/docker-compose.yml`.
+- `restore.sh` also changes server addresses in database to `127.0.0.1` or `X2_SERVER_IP`.
+- Stop with `docker compose -f docker/docker-compose.yml stop`. Data remains in `x2-mssql-data` volume.
 
-Detalhes: [Banco de desenvolvimento](tools/development-database.md).
+Details: [Development database](tools/development-database.md).
 
-## 2. Configurações locais
+## 2. Local settings
 
-Os padrões servem para tudo na mesma máquina. Para mudar alguma coisa, como a senha ou a porta do banco, o endereço que
-os servidores anunciam, o driver ODBC ou a pasta do cliente, copie o modelo e descomente o que mudar:
+Defaults work when everything is on same machine. To change something (e.g. password, DB port, advertised server address,
+ODBC driver, or client folder), copy template and uncomment values to change:
 
 ```bash
 cp docker/.env.example docker/.env
 ```
 
-O `docker/.env` não é versionado. Ele é lido pelo `docker compose`, pelo `docker/build.sh`, pelo `restore.sh` e pelo CMake.
-Uma variável definida no shell vence a do arquivo. As mudanças valem no próximo configure (`cmake --preset <preset>`).
-O [`docker/.env.example`](../docker/.env.example) explica cada variável.
+`docker/.env` is not versioned. It is read by `docker compose`, `docker/build.sh`, `restore.sh`, and CMake.
+Shell variable takes precedence over file. Changes apply on next configure (`cmake --preset <preset>`).
+[`docker/.env.example`](../docker/.env.example) describes each variable.
 
-## 3. Pastas dos servidores
+## 3. Server directories
 
-O build já monta, em `build/<preset>/run/`, uma pasta pronta para cada servidor:
+Build assembles ready-to-run directory for each server under `build/<preset>/run/`:
 
-```
+```text
 build/linux-debug/run/
-├── ServerResource/      scripts do servidor (do repositório)
-├── ClientScript/        scripts gerados do cliente
-├── EPublisherServer/    executável + config_*_DEV.lua + .dsn (já apontando para o banco)
+├── ServerResource/      server scripts (from repository)
+├── ClientScript/        scripts generated from client
+├── EPublisherServer/    executable + config_*_DEV.lua + .dsn (already pointed at DB)
 ├── ChannelServer/
 ├── LoginServer/
 ├── CenterServer/
 └── GameServer/
 ```
 
-Para montar só uma pasta: `docker/build.sh cmake --build --preset linux-debug --target x2_run_game`.
-São um ambiente de desenvolvimento, não um pacote para outra máquina. Detalhes: [Pastas de execução](tools/runtime.md).
+To assemble only one: `docker/build.sh cmake --build --preset linux-debug --target x2_run_game`.
+These are development environments, not packages for another machine. Details: [Run directories](tools/runtime.md).
 
-## 4. Iniciar os servidores
+## 4. Start servers
 
-Um terminal para cada servidor, cada um dentro da sua pasta. O primeiro argumento escolhe a configuração (`DEV` lê o
-`config_*_DEV.lua`) e o segundo é o grupo de servidores:
+Use one terminal per server, each from its own directory. First argument selects config (`DEV` reads `config_*_DEV.lua`), second
+is server group:
 
 ```bash
 cd build/linux-debug/run/EPublisherServer && ./EPublisherServer DEV
@@ -76,37 +76,36 @@ cd build/linux-debug/run/GameServer       && ./GameServer DEV 0
 cd build/linux-debug/run/GlobalServer     && ./GlobalServer DEV 0
 ```
 
-| Servidor | Porta | Função |
+| Server | Port | Role |
 |---|---|---|
-| EPublisherServer | 8000 | login e cash |
-| ChannelServer | 9400 | primeiro contato do cliente: login, listas de servidores e canais |
-| LoginServer | 9200 | contas, guildas, rankings |
-| CenterServer | 9100 | salas de campo e de dungeon |
-| GameServer | 9300 | o jogo em si |
-| GlobalServer | 9500 | missões globais, grupo automático, PvP, contagem de usuários |
+| EPublisherServer | 8000 | login and cash |
+| ChannelServer | 9400 | client's first contact: login, server and channel lists |
+| LoginServer | 9200 | accounts, guilds, rankings |
+| CenterServer | 9100 | field and dungeon rooms |
+| GameServer | 9300 | game itself |
+| GlobalServer | 9500 | global missions, auto-party, PvP, user count |
 
-- As portas dos servidores de jogo vêm do banco (`Statistics.dbo.LServerList`); a do EPublisherServer, do `X2_RUN_EPUBLISHER_PORT`.
-- A ordem não é rígida: o GameServer se reconecta a cada 10 s ao LoginServer, ao CenterServer e ao GlobalServer. O login só funciona com o
-  EPublisherServer de pé.
-- Cada servidor mostra no terminal um log compacto e colorido (`consolelog( n )` muda o nível dele) e grava o log completo num
-  arquivo na pasta dele.
-- O terminal tem um **prompt Lua**, como o campo de comando da janela do servidor original: o log corre acima dele sem quebrar a linha
-  digitada, ↑/↓ percorrem o histórico e o título mostra `<Servidor>_Loading` até o estado pronto, depois `_Ready`.
-- **Encerrar**: Ctrl+C ou Ctrl+D com a linha vazia pergunta `Are you sure you want to exit? [y/N]`; `y` encerra. SIGTERM encerra sem perguntar.
-- **Sem terminal** (entrada por pipe ou arquivo), cada linha do stdin é um comando e o fim dele encerra o servidor.
-  Para rodar como serviço ou em segundo plano, use `--no-stdin` (`./GameServer DEV 0 --no-stdin`): o servidor espera SIGTERM,
-  SIGINT ou SIGHUP (no Windows, Ctrl+C ou o fechamento do console).
-- **Um servidor já rodando** (em serviço, ou em outro terminal) atende pelo `run/x2ctl`: `x2ctl list`, `x2ctl run GameServer 'print(1)'`,
-  `x2ctl stop GameServer`, ou `x2ctl attach GameServer` para o log e os comandos em JSON (também por `ssh`).
-  Detalhes, opções (`--machine`, `--control=<nome>`) e o protocolo em [Console dos servidores](porting/console.md).
-- Os executáveis compilados no container também rodam direto no host, numa distribuição com unixODBC e FreeTDS. Só o
-  caminho do driver muda: `X2_RUN_ODBC_DRIVER` no `docker/.env`, por exemplo `/usr/lib/libtdsodbc.so` no Arch.
+- Game-server ports come from database (`Statistics.dbo.LServerList`); EPublisherServer port from `X2_RUN_EPUBLISHER_PORT`.
+- Order is not strict: GameServer retries LoginServer, CenterServer, and GlobalServer every 10 seconds. Login works only while
+  EPublisherServer is running.
+- Each server shows compact colored terminal log (`consolelog( n )` changes its level) and writes full log to file in its directory.
+- Terminal has a **Lua prompt**, like original server window's command field: logs scroll above without breaking typed line, ↑/↓ navigate
+  history, title shows `<Server>_Loading` until ready, then `_Ready`.
+- **Stop:** Ctrl+C or Ctrl+D on empty line asks `Are you sure you want to exit? [y/N]`; `y` exits. SIGTERM exits without asking.
+- **Without terminal** (stdin is pipe or file), each stdin line is a command and EOF exits server.
+  To run as service/background, use `--no-stdin` (`./GameServer DEV 0 --no-stdin`): server waits for SIGTERM, SIGINT, or SIGHUP
+  (on Windows, Ctrl+C or console close).
+- **Connect to an already-running server** (service or another terminal) through `run/x2ctl`: `x2ctl list`,
+  `x2ctl run GameServer 'print(1)'`, `x2ctl stop GameServer`, or `x2ctl attach GameServer` for log and JSON commands (also over `ssh`).
+  Details, options (`--machine`, `--control=<name>`), and protocol in [Server console](porting/console.md).
+- Executables built in container also run directly on host distribution with unixODBC and FreeTDS. Only driver path changes:
+  `X2_RUN_ODBC_DRIVER` in `docker/.env`, e.g. `/usr/lib/libtdsodbc.so` on Arch.
 
-## 5. Cliente
+## 5. Client
 
-Com os servidores no estado pronto, abra o cliente original (`_client/`; no Linux, `wine elsword.exe`) e faça login com
-uma conta do banco. O banco de desenvolvimento tem a conta `test`, com a senha `test`.
+When servers are ready, open original client (`_client/`; on Linux, `wine elsword.exe`) and log in with a DB account.
+Development database has account `test`, password `test`.
 
-O que já funciona (2026-10-31): login, seleção de personagem, vila, campo e dungeon, com os seis servidores. Algumas funções do
-GlobalServer (missões globais, evento de encantamento, troca com limite) sobem sem dados, porque o banco de desenvolvimento não tem
-as procedures delas ([Bugs do original](original/bugs.md#dados-serverresource-clientscript)).
+Working as of 2026-10-31: login, character selection, town, field, and dungeon with all six servers. Some GlobalServer features
+(global missions, enchantment event, exchange limit) start without data because development DB lacks their procedures
+([Original bugs](original/bugs.md#data-serverresource-clientscript)).

@@ -1,28 +1,28 @@
-[Início](../README.md) › [Código original](README.md) › Codificação de arquivos e convenções do código original
+[Home](../README.md) › [Original code](README.md) › Original code encoding and conventions
 
-# Codificação de arquivos e convenções do código original
+# Original code encoding and conventions
 
 ## Encoding
 
-Amostra de ~400 `.cpp` (servidor + cliente) via `file`:
-- maioria aparece como "ISO-8859" / "Non-ISO extended-ASCII" → na prática **CP949 (EUC-KR)**: comentários e literais em coreano.
-- uma minoria já está em UTF-8 (alguns com BOM, ex. `luajitLib/ReadMe.txt`), e parte é ASCII puro.
-- fim de linha misto: CRLF, LF e CRLF+LF no mesmo arquivo; um caso com `NEL`.
+Sample of ~400 `.cpp` files (server + client) inspected with `file`:
+- Most are reported as "ISO-8859" / "Non-ISO extended-ASCII" → effectively **CP949 (EUC-KR)**: Korean comments and string literals.
+- A minority are already UTF-8 (some with BOM, e.g. `luajitLib/ReadMe.txt`), and some are plain ASCII.
+- Mixed line endings: CRLF, LF, and CRLF+LF in the same file; one case with `NEL`.
 
-Conversão sugerida (Fase 0):
-1. Detectar por arquivo (`uchardet`/`charset-normalizer`): ASCII/UTF-8 ficam; resto `iconv -f CP949 -t UTF-8`.
-2. Revisar diffs de **literais de string** (`L"..."`, `"..."`) — o MSVC compilava com code page 949; ao mudar para UTF-8 o binário muda.
-   Strings visíveis ao jogador normalmente vêm de tabelas (`StringID_def*.h`, `.lua`, `.kom`), não do código, mas confirmar.
-3. Normalizar para LF + `.gitattributes`; adicionar `.editorconfig`.
-4. Compilar com `/utf-8` no MSVC.
+Suggested conversion (Phase 0):
+1. Detect per file (`uchardet`/`charset-normalizer`): keep ASCII/UTF-8; convert the rest with `iconv -f CP949 -t UTF-8`.
+2. Review diffs of **string literals** (`L"..."`, `"..."`) — MSVC compiled them with code page 949, so changing to UTF-8 changes the binary.
+   Player-visible strings usually come from tables (`StringID_def*.h`, `.lua`, `.kom`), not code, but verify.
+3. Normalize to LF + `.gitattributes`; add `.editorconfig`.
+4. Compile with `/utf-8` in MSVC.
 
-Ler arquivos originais no terminal: `iconv -f cp949 -t utf-8 -c <arquivo>`.
+Read original files in a terminal: `iconv -f cp949 -t utf-8 -c <file>`.
 
-## Convenções observadas
+## Observed conventions
 
-- Prefixo `K` (KNC = empresa KOG / "KNC"): `KActor`, `KGSUser`, `KTDX*` (engine), `CX2*` (jogo, cliente).
-- Blocos de mudança marcados com comentários `//{{ autor : data` ... `//}}` e cabeçalho por feature em `ServerDefine.h`
-  (`이름/아이디/작업시작날짜/패치날짜/작업내용`). São histórico de SVN embutido no código → candidatos a remoção junto com as flags.
-- Código comentado em grande volume (ex. várias chamadas `uncompress` comentadas em `KGCMassFileManager.cpp`).
-- Precompiled headers `stdafx.h` em todos os projetos.
-- Projetos antigos coexistindo: `.vcproj` (VS2003/2005), `*_2003.vcxproj`, `.dsp/.dsw` (VC6), `.vspscc/.vssscc` (SourceSafe) → lixo.
+- `K` prefix (KNC = KOG company / "KNC"): `KActor`, `KGSUser`, `KTDX*` (engine), `CX2*` (game, client).
+- Change blocks marked with comments `//{{ author : date` ... `//}}` and feature headers in `ServerDefine.h`
+  (`name/id/work start date/patch date/work description`). These are SVN history embedded in the code → candidates for removal along with the flags.
+- Large amounts of commented-out code (e.g. several commented `uncompress` calls in `KGCMassFileManager.cpp`).
+- Precompiled headers `stdafx.h` in every project.
+- Old project formats coexist: `.vcproj` (VS2003/2005), `*_2003.vcxproj`, `.dsp/.dsw` (VC6), `.vspscc/.vssscc` (SourceSafe) → clutter.

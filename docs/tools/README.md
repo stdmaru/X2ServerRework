@@ -1,13 +1,13 @@
-[Início](../README.md) › Ferramentas
+[Home](../README.md) › Tools
 
-# Ferramentas do projeto
+# Project tools
 
-| Página | Conteúdo |
+| Page | Contents |
 |---|---|
-| [Importador](importer.md) | `tools/import`: copia módulos do `_reference` para `src/` já limpos (encoding, flags, includes) |
-| [Porte mecânico](mechanical-porting.md) | `tools/port`: passada mecânica e correção de erros/warnings guiada pelo log do build (`typename`, `switch`, `reorder`...) |
-| [Banco de desenvolvimento](development-database.md) | `docker/`: SQL Server 2022 em Docker com os bancos de `_database/`, connection strings e os testes do `KODBC` contra ele |
-| [Pastas de execução](runtime.md) | `runtime/` e os alvos `x2_run_*`: pasta pronta para rodar cada servidor, `ClientScript` gerado do cliente, `tools/kom` |
-| [Ambiente de build](build-environment.md) | `docker/build.sh` e `docker/build/Dockerfile`: imagem Ubuntu onde rodam todos os builds e testes, local e no CI (T24) |
-| [Integração contínua](ci.md) | `.github/workflows/ci.yml`: build sem warnings e testes em Clang, GCC e clang-cl (Windows) a cada push |
-| [Flags e verificação](flags.md) | `gen_flags.py` (quais flags a build original define) e `check_equivalence.py` (prova que o resolvedor não muda o código) |
+| [Importer](importer.md) | `tools/import`: copies cleaned modules from `_reference` into `src/` (encoding, flags, includes) |
+| [Mechanical porting](mechanical-porting.md) | `tools/port`: mechanical pass and build-log-guided fixes for errors/warnings (`typename`, `switch`, `reorder`...) |
+| [Development database](development-database.md) | `docker/`: SQL Server 2022 in Docker with databases from `_database/`, connection strings, and `KODBC` tests against it |
+| [Run directories](runtime.md) | `runtime/` and `x2_run_*` targets: ready-to-run server folders, `ClientScript` generated from client, `tools/kom` |
+| [Build environment](build-environment.md) | `docker/build.sh` and `docker/build/Dockerfile`: Ubuntu image for all local and CI builds/tests (T24) |
+| [Continuous integration](ci.md) | `.github/workflows/ci.yml`: warning-free builds and tests with Clang, GCC, and clang-cl (Windows) on each push |
+| [Flags and verification](flags.md) | `gen_flags.py` (which flags original build defines) and `check_equivalence.py` (proves resolver leaves code unchanged) |

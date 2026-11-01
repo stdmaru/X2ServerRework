@@ -1,37 +1,37 @@
-[Início](../README.md) › [Código original](README.md) › Binários sem fonte (`.lib` / `.dll`)
+[Home](../README.md) › [Original code](README.md) › Binaries without source (`.lib` / `.dll`)
 
-# Binários sem fonte (`.lib` / `.dll`)
+# Binaries without source (`.lib` / `.dll`)
 
-Não podem ser portados. Para cada um: remover a integração e, se a lógica de jogo depender do resultado, deixar um stub explícito.
+These cannot be ported. For each one, remove the integration and, if game logic depends on the result, add an explicit stub.
 
-Fonte: `#pragma comment(lib, ...)` + `.lib/.dll` versionados no `_reference`.
+Source: `#pragma comment(lib, ...)` and `.lib`/`.dll` files versioned in `_reference`.
 
-## Servidor
+## Server
 
-| Binário | Função | Ação |
+| Binary | Purpose | Action |
 |---|---|---|
-| `GameServer/HackShield/AntiCpXSvr` | anti-cheat AhnLab | remover |
-| `GameServer/nProtect/ggsrv*.lib`, `ggauth*.dll` | anti-cheat GameGuard | remover |
-| `XTRAP/...xtrap4client_serverpart_*` | anti-cheat XTRAP | remover |
-| `Common/Nexon/AuthCheck.lib` | auth Nexon | remover; auth própria |
-| `OnlyGlobal/AuthAndBilling/<país>/...` (`HanAuthForSvr`, `HanBillingForSvr`, `NetmarbleSignChecker`, `libeay32MD` PH...) | auth/billing de publishers | remover; manter só fluxo de auth direto no DB |
-| `MailMIME.lib/.dll`, `MailSMTP.lib/.dll` (copiados em cada servidor) | envio de e-mail (alertas?) | removido em 2026-10-31: sem e-mail, o relatório de scripts com erro vai para o log ([Common](../porting/server-common.md)) |
-| `Common/CrashRpt/CrashRpt.lib` | crash reporter | remover; usar core dump / sanitizers |
-| `odbc32`, `ws2_32`, `winmm`, `dbghelp`, `psapi` | sistema Windows | substituídos pela camada de plataforma |
+| `GameServer/HackShield/AntiCpXSvr` | AhnLab anti-cheat | remove |
+| `GameServer/nProtect/ggsrv*.lib`, `ggauth*.dll` | GameGuard anti-cheat | remove |
+| `XTRAP/...xtrap4client_serverpart_*` | XTRAP anti-cheat | remove |
+| `Common/Nexon/AuthCheck.lib` | Nexon auth | remove; implement own auth |
+| `OnlyGlobal/AuthAndBilling/<country>/...` (`HanAuthForSvr`, `HanBillingForSvr`, `NetmarbleSignChecker`, PH `libeay32MD`...) | Publisher auth/billing | remove; retain only the direct DB auth flow |
+| `MailMIME.lib/.dll`, `MailSMTP.lib/.dll` (copied into each server) | Email delivery (alerts?) | removed on 2026-10-31: without email, script error reports go to the log ([Common](../porting/server-common.md)) |
+| `Common/CrashRpt/CrashRpt.lib` | Crash reporter | remove; use core dumps / sanitizers |
+| `odbc32`, `ws2_32`, `winmm`, `dbghelp`, `psapi` | Windows system libraries | replaced by the platform layer |
 
-## Cliente
+## Client
 
-| Binário | Função | Ação |
+| Binary | Purpose | Action |
 |---|---|---|
-| `d3d9`, `d3dx9`, `dxguid`, `dxerr9`, `dinput8`, `dsound`, `ddraw`, `dplayx` | DirectX | substituir (ver [client.md](client.md)) |
-| `fmodex.dll` | áudio FMOD Ex (descontinuado) | substituir |
-| `bdvid32.dll`, `bdcap32.dll` | Bandi video / captura | remover/substituir |
-| `KncFirewall.lib` | config de firewall do Windows | remover |
-| `CrashRpt.lib`, `BugTrap(u).lib`, `knccrashrpt.dll` | crash report | remover |
-| `HShield` (`hsupchk`), `XTRAP`, `npgamelib*` | anti-cheat | remover |
-| `NexonModule`, `PurpleForClient`, `NMClientAuthDll`, `SSOWebLib`, `glbnmcashdll` | login/cash de publishers | remover |
-| `steam_api`, `sdkencryptedappticket` | Steam | remover (ou opcional no futuro) |
-| `IGALib` | in-game ads | remover |
-| `json_vc71_libmt` | jsoncpp antigo | trocar por lib upstream |
-| `zlibstat.lib`, `freetype2411.lib`, `libxml-md.lib`, `cximage/jpeg/png` | libs abertas pré-compiladas | upstream via CMake |
-| `mfc100u`, `msvcr100`, `msvcp100` (no `_client/data`) | runtime VS2010 | desaparecem |
+| `d3d9`, `d3dx9`, `dxguid`, `dxerr9`, `dinput8`, `dsound`, `ddraw`, `dplayx` | DirectX | replace (see [Client](client.md)) |
+| `fmodex.dll` | FMOD Ex audio (discontinued) | replace |
+| `bdvid32.dll`, `bdcap32.dll` | Bandi video / capture | remove/replace |
+| `KncFirewall.lib` | Windows firewall configuration | remove |
+| `CrashRpt.lib`, `BugTrap(u).lib`, `knccrashrpt.dll` | Crash reporting | remove |
+| `HShield` (`hsupchk`), `XTRAP`, `npgamelib*` | Anti-cheat | remove |
+| `NexonModule`, `PurpleForClient`, `NMClientAuthDll`, `SSOWebLib`, `glbnmcashdll` | Publisher login/cash | remove |
+| `steam_api`, `sdkencryptedappticket` | Steam | remove (or optional in the future) |
+| `IGALib` | In-game ads | remove |
+| `json_vc71_libmt` | Old jsoncpp | replace with upstream library |
+| `zlibstat.lib`, `freetype2411.lib`, `libxml-md.lib`, `cximage/jpeg/png` | Precompiled open-source libraries | use upstream via CMake |
+| `mfc100u`, `msvcr100`, `msvcp100` (in `_client/data`) | VS2010 runtime | will disappear |

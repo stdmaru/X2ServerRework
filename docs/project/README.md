@@ -1,11 +1,11 @@
-[Início](../README.md) › Projeto
+[Home](../README.md) › Project
 
-# Projeto
+# Project
 
-Rumo do projeto. **Tudo aqui é essencial.**
+Project direction. **Everything here is essential.**
 
-| Página | Conteúdo |
+| Page | Contents |
 |---|---|
-| [Missão e escopo](mission-and-scope.md) | O que entra, o que fica de fora, critério de "pronto" |
-| [Roadmap](roadmap.md) | Fases do porte, em ordem, com estado e entregáveis |
-| [Decisões](decisions.md) | Decisões tomadas (T*) e pendentes (D*) |
+| [Mission and scope](mission-and-scope.md) | What is in scope and what is not; definition of done |
+| [Roadmap](roadmap.md) | Project phases, in order, and their deliverables |
+| [Decisions](decisions.md) | Decisions made (T*) and pending (D*) |

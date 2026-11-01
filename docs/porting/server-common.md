@@ -1,213 +1,211 @@
-[Início](../README.md) › [Porte](README.md) › Servidor: Common
+[Home](../README.md) › [Porting](README.md) › Server: Common
 
-# Servidor: Common (`src/server/Common`)
+# Server: Common (`src/server/Common`)
 
-Código compartilhado pelos cinco servidores, e em parte pelo cliente (pacotes, enums, `EventID_*`).
-Origem: `KncWX2Server/Common`, importado em 2026-10-29 com as [flags do servidor](../tools/flags.md)
-([relatório](../../tools/import/reports/server-common/REPORT.md)).
-Mesmo nome de pasta do original (`Common`), porque os fontes incluem `"../Common/x.h"`.
+Code shared by all five servers, and partly by the client (packets, enums, `EventID_*`).
+Source: `KncWX2Server/Common`, imported on 2026-10-29 with [server flags](../tools/flags.md)
+([report](../../tools/import/reports/server-common/REPORT.md)).
+Folder name matches the original (`Common`) because sources include `"../Common/x.h"`.
 
-## Importação
+## Import
 
-- **Seleção**: só os fontes do `Common/` que algum vcxproj de servidor compila (`Release_US`): 239 fontes, mais os headers que eles incluem, deram **414 arquivos**.
-  Dos 239 fontes, 107 são usados pelos cinco servidores e 89 por um só.
-- **Flags**: 6.627 blocos `#if` resolvidos e 49 mil linhas removidas. Dev (`X2_DEV_TOOLS`): só os logs `SERV_LOG_UNDEFINED_QUEST_TEMPLET` e `DELETE_INCORRECT_ERROR_LOG`.
-- **Excluídos**:
+- **Selection**: only `Common/` sources compiled by at least one server vcxproj (`Release_US`): 239 sources, plus included headers,
+  for **414 files**. Of the 239 sources, 107 are used by all five servers and 89 by only one.
+- **Flags**: resolved 6,627 `#if` blocks and removed 49,000 lines. Dev (`X2_DEV_TOOLS`): only logs `SERV_LOG_UNDEFINED_QUEST_TEMPLET` and `DELETE_INCORRECT_ERROR_LOG`.
+- **Excluded**:
 
-  | O que | Motivo |
+  | What | Reason |
   |---|---|
-  | `ui/` (MFC) | substituído pelo terminal, T15 |
-  | `OnlyGlobal/AuthAndBilling/<país>/` | integrações de publisher de cada país, inclusive as do US (K3RCombo, Payletter), que o DEB substitui |
-  | `OnlyGlobal/NetCafe`, `Nexon`, `SOAP` | integrações de publisher |
-  | `OnlyGlobal/ProcessCommuniationModule` | ferramenta KSMS |
-  | `CrashRpt`, `Mail/` | binários fechados (SMTP de alerta) |
+  | `ui/` (MFC) | replaced by terminal, T15 |
+  | `OnlyGlobal/AuthAndBilling/<country>/` | country-specific publisher integrations, including US (K3RCombo, Payletter), replaced by DEB |
+  | `OnlyGlobal/NetCafe`, `Nexon`, `SOAP` | publisher integrations |
+  | `OnlyGlobal/ProcessCommuniationModule` | KSMS tool |
+  | `CrashRpt`, `Mail/` | closed-source binaries (alert SMTP) |
 
-  As referências a eles, ~190 includes, viram stubs ou somem na passada manual.
-- **Mantido: DEB ("Debelzak Custom Auth")**, ligado por `_DEB_AUTH` (Channel e Game no `Release_US`). **Não é código da KOG**: foi escrito pelo dono do projeto,
-  junto com um **servidor SOAP próprio** de autenticação, feito do zero. É a autenticação (`KDEBAuth`, cliente SOAP que chama `Login` num `AuthService`
-  de endereço configurável; era gSOAP até a T31) e a cobrança (`KDEBBilling`) **usadas por este servidor**. Nas cadeias de `#if`, ele substitui o publisher US.
-  Entram `AuthAndBilling/DEB*`, os stubs gSOAP de `AuthAndBilling/DEB/` (removidos em 2026-10-31, T31) e o `KncSendToPublisher.h`.
-  Erro corrigido em 2026-10-29: uma primeira versão desligou o `_DEB_AUTH` achando que era só integração de publisher.
-- Includes para o KNCSDK com a grafia corrigida (`KncSingleton.h` → `KNCSingleton.h`, `RTTI.H` → `RTTI.h`...) via `extern_dirs`.
+  References to these, ~190 includes, become stubs or are removed in the manual port.
+- **Retained: DEB ("Debelzak Custom Auth")**, enabled by `_DEB_AUTH` (Channel and Game in `Release_US`). **Not KOG code**: written by
+  the project owner, along with a custom SOAP authentication server built from scratch. It provides authentication (`KDEBAuth`, SOAP
+  client that calls `Login` on a configurable `AuthService`; gSOAP until T31) and billing (`KDEBBilling`) **used by this server**.
+  In `#if` chains it replaces the US publisher. Included are `AuthAndBilling/DEB*`, gSOAP stubs in `AuthAndBilling/DEB/` (removed
+  on 2026-10-31, T31), and `KncSendToPublisher.h`. Fix from 2026-10-29: an early version disabled `_DEB_AUTH`, assuming it was only a publisher integration.
+- KNCSDK includes with corrected spelling (`KncSingleton.h` → `KNCSingleton.h`, `RTTI.H` → `RTTI.h`...) via `extern_dirs`.
 
-## Cliente do DEB (T31)
+## DEB client (T31)
 
-`OnlyGlobal/AuthAndBilling/DEB/` tem, no lugar do gSOAP 2.7 (runtime `stdsoap2` + código gerado do `AuthService`), duas peças próprias
-em `x2::deb`:
+`OnlyGlobal/AuthAndBilling/DEB/` contains two custom `x2::deb` components instead of gSOAP 2.7 (runtime `stdsoap2` + generated `AuthService` code):
 
-| Arquivo | Papel |
+| File | Role |
 |---|---|
-| `Soap.{h,cpp}` | mensagens SOAP 1.1 document/literal do `AuthService` (`urn:AuthService`): monta pedidos, respostas e falhas, lê o elemento do `Body` e os campos (`SoapMessage::Text/Int/UInt`, campo que falta vale vazio/0, como o gSOAP deixava). O [EPublisherServer](server-epublisher.md) usa as mesmas funções do lado servidor |
-| `SoapClient.{h,cpp}` | um `POST` HTTP/1.1 por chamada, numa conexão nova (`Connection: close`), bloqueante como o gSOAP; lê até o `Content-Length` ou o fechamento; 10 s de espera por leitura. `SOAP-ENV:Fault`, HTTP diferente de 200 ou erro de rede viram `nullopt` com o motivo em texto |
+| `Soap.{h,cpp}` | SOAP 1.1 document/literal messages for `AuthService` (`urn:AuthService`): builds requests, responses, faults; reads the `Body` element and fields (`SoapMessage::Text/Int/UInt`; missing field becomes empty/0, as gSOAP did). [EPublisherServer](server-epublisher.md) uses the same functions on server side |
+| `SoapClient.{h,cpp}` | One HTTP/1.1 `POST` per call over a new connection (`Connection: close`), blocking like gSOAP; reads until `Content-Length` or connection close; 10-second read timeout. `SOAP-ENV:Fault`, non-200 HTTP status, or network error return `nullopt` with a text reason |
 
-O pedido sai com os mesmos bytes que o gSOAP escrevia (linha de pedido, `Host`, `User-Agent: gSOAP/2.7`, `Content-Type`, `SOAPAction: ""`
-e o envelope com as declarações `ns1`/`ns2`), conferido contra uma captura do cliente antigo (teste em
-`EPublisherServer/tests/test_epublisher.cpp`). Um `AuthService` feito para o cliente gSOAP continua servindo. O endereço vem do config Lua,
-como antes (`DEBAuthManager:AddAuthServiceAddress`, `DEBBillingManager:AddWebServiceAddress`), e precisa ser `http://host[:porta][/caminho]`.
+Requests have the same bytes gSOAP wrote (request line, `Host`, `User-Agent: gSOAP/2.7`, `Content-Type`, `SOAPAction: ""`,
+and envelope with `ns1`/`ns2` declarations), verified against a capture from the old client (test in
+`EPublisherServer/tests/test_epublisher.cpp`). An `AuthService` designed for the gSOAP client still works. Address comes from Lua config,
+as before (`DEBAuthManager:AddAuthServiceAddress`, `DEBBillingManager:AddWebServiceAddress`), and must be `http://host[:port][/path]`.
 
-## Acoplamento restante (2026-10-29)
+## Remaining dependencies (2026-10-29)
 
-| Área | Arquivos | Plano |
+| Area | Files | Plan |
 |---|---:|---|
-| ~~gSOAP (`AuthAndBilling/DEB/`, `stdsoap2`)~~ | 3 | removido em 2026-10-31 (T31): cliente SOAP próprio, ver [Cliente do DEB](#cliente-do-deb-t31) |
-| `windows.h`/ATL/WinInet/`stdafx.h` | ~35 | `x2/platform/win32.h`; WinInet (`KFtpWrapper`) avaliar se é necessário |
-| Threads/eventos (`_beginthreadex`, `WaitForSingleObject`...) | 29 | já cobertos pela [Plataforma](platform.md) |
-| `CTime`/`CTimeSpan`, `CString` | 46 / 10 | cobertos pela Plataforma (ampliar o `CString` se faltar algo) |
-| `__int64`, `__forceinline`, `__declspec` | 15 | tipos/macros da Plataforma |
+| ~~gSOAP (`AuthAndBilling/DEB/`, `stdsoap2`)~~ | 3 | removed on 2026-10-31 (T31): custom SOAP client, see [DEB client](#deb-client-t31) |
+| `windows.h`/ATL/WinInet/`stdafx.h` | ~35 | `x2/platform/win32.h`; assess whether WinInet (`KFtpWrapper`) is needed |
+| Threads/events (`_beginthreadex`, `WaitForSingleObject`...) | 29 | covered by [Platform](platform.md) |
+| `CTime`/`CTimeSpan`, `CString` | 46 / 10 | covered by Platform (extend `CString` if needed) |
+| `__int64`, `__forceinline`, `__declspec` | 15 | Platform types/macros |
 | Boost | 39 | `std` |
 | Lua (`lua_tinker`, `luaL_*`) | 53 | `x2::kncsdk_lua` |
-| **Sockets/IOCP** (`Socket/`) | 15 | rede portável (Asio standalone), mantendo `KSession`/framing/cripto |
-| ~~**ODBC** (`ODBC/`)~~ | 2 | feito em 2026-10-30 (T17): [Banco de dados (ODBC)](server-common-db.md) |
-| **Matemática D3DX** (`X2Data/XSLBattleField`, `LineMap/`, `CommonPacket.h`) | 6 (187 usos) | `x2/platform/d3dx_math.h` (pronto); trocar `#include <d3dx9math.h>` por ele |
-| ~~Dependência invertida~~ | 1 | resolvido em 2026-10-30 (`server/channel-build`): `KStatisticsLocalLog.cpp` não inclui mais `GameServer/Inventory.h` nem `CenterServer/PvPRoom.h` (ver Mudanças) |
+| **Sockets/IOCP** (`Socket/`) | 15 | portable networking (standalone Asio), retaining `KSession`/framing/crypto |
+| ~~**ODBC** (`ODBC/`)~~ | 2 | done on 2026-10-30 (T17): [ODBC database](server-common-db.md) |
+| **D3DX math** (`X2Data/XSLBattleField`, `LineMap/`, `CommonPacket.h`) | 6 (187 uses) | `x2/platform/d3dx_math.h` (ready); replace `#include <d3dx9math.h>` |
+| ~~Inverted dependency~~ | 1 | resolved on 2026-10-30 (`server/channel-build`): `KStatisticsLocalLog.cpp` no longer includes `GameServer/Inventory.h` or `CenterServer/PvPRoom.h` (see Changes) |
 
-Tamanho: ~99 mil linhas de `.cpp` sem os stubs gSOAP (que saíram na T31). Os maiores são os pacotes: `ServerPacket.cpp` (16 mil), `ClientPacket.cpp` (12 mil) e `CommonPacket.cpp` (7 mil).
+Size: ~99,000 lines of `.cpp` excluding gSOAP stubs (removed in T31). Largest are packet files: `ServerPacket.cpp` (16k), `ClientPacket.cpp` (12k), and `CommonPacket.cpp` (7k).
 
-## Plano do porte manual (um branch por passo)
+## Manual port plan (one branch per step)
 
-1. ~~**`platform/math`**~~: feito em 2026-10-29 (`x2/platform/d3dx_math.h`, ver [Plataforma](platform.md)).
-2. ~~**`server/common-build`**~~: feito em 2026-10-29 (ver Estado abaixo). Alvo CMake com todo o `Common`, menos `Socket/` e `ODBC/`, compilando em GCC/Clang.
-   É a passada mecânica: includes de plataforma, `typename`/`template`, Boost → `std`, stubs das integrações removidas.
-3. ~~**`server/common-packets`**~~: feito em 2026-10-29 (ver Testes abaixo). Testes de serialização dos pacotes (`ClientPacket`/`CommonPacket`), que são a base da compatibilidade (T4).
-4. ~~**`server/common-net`**~~: feito em 2026-10-29. TCP de `Socket/` sobre Asio (T20), ver Rede abaixo.
-5. ~~**`server/common-udp`**~~: feito em 2026-10-29. UDP de `Socket/` (`KTDNUDP`, `UdpEcho`, `LBSUdpEcho`, `X2Packet`), ver Rede abaixo.
-6. ~~**`server/common-db`**~~: feito em 2026-10-30. `ODBC/` portável (T17), testado contra o SQL Server com o FreeTDS: [Banco de dados (ODBC)](server-common-db.md).
+1. ~~**`platform/math`**~~: done on 2026-10-29 (`x2/platform/d3dx_math.h`, see [Platform](platform.md)).
+2. ~~**`server/common-build`**~~: done on 2026-10-29 (see Status below). CMake target with all `Common`, except `Socket/` and `ODBC/`, building under GCC/Clang.
+   Mechanical pass: platform includes, `typename`/`template`, Boost → `std`, stubs for removed integrations.
+3. ~~**`server/common-packets`**~~: done on 2026-10-29 (see Tests below). Serialization tests for packets (`ClientPacket`/`CommonPacket`), basis of compatibility (T4).
+4. ~~**`server/common-net`**~~: done on 2026-10-29. TCP `Socket/` on Asio (T20), see Networking below.
+5. ~~**`server/common-udp`**~~: done on 2026-10-29. UDP `Socket/` (`KTDNUDP`, `UdpEcho`, `LBSUdpEcho`, `X2Packet`), see Networking below.
+6. ~~**`server/common-db`**~~: done on 2026-10-30. Portable `ODBC/` (T17), tested against SQL Server with FreeTDS: [ODBC database](server-common-db.md).
 
-Depois disso vem o ChannelServer (`server/channel`).
+Next came ChannelServer (`server/channel`).
 
-## Estado (2026-10-29, branch `server/common-build`)
+## Status (2026-10-29, branch `server/common-build`)
 
-O alvo `x2_server_common` (todo o `Common`, menos os `.cpp` de `Socket/`, `ODBC/`, `KStatisticsLocalLog.cpp` (entrou em 2026-10-30) e `DEBBilling*`)
-**compila no Linux sem erros e sem warnings** (GCC 16 Debug/Release, Clang 23 Release). `Socket/` (TCP e UDP) compila e tem
-teste desde o `server/common-net`/`server/common-udp`, e o `ODBC/` desde o `server/common-db` (2026-10-30, ver [Banco de dados (ODBC)](server-common-db.md)). Ainda **não há testes** do `Common` (vêm no passo `server/common-packets`) e nada foi executado.
-No **MinGW** o `Common` e os testes dele compilam sem warnings e passam no Wine desde 2026-10-30 (LuaJIT pela T21). Foi a primeira
-compilação dos caminhos `_WIN32` do `Common` (Asio sobre IOCP, `ConfigureUdpSocket`, `odbc32`); o que faltou está em Mudanças › Portabilidade.
+Target `x2_server_common` (all `Common` except `.cpp` in `Socket/`, `ODBC/`, `KStatisticsLocalLog.cpp` (added on 2026-10-30), and `DEBBilling*`)
+**builds on Linux without errors or warnings** (GCC 16 Debug/Release, Clang 23 Release). `Socket/` (TCP and UDP) has built and been tested
+since `server/common-net`/`server/common-udp`, and `ODBC/` since `server/common-db` (2026-10-30, see [ODBC database](server-common-db.md)).
+At the time, `Common` had **no tests** (added in `server/common-packets`) and had not been run.
+With **MinGW**, `Common` and its tests build without warnings and pass under Wine since 2026-10-30 (LuaJIT via T21). This was the first
+build of `Common` `_WIN32` paths (Asio over IOCP, `ConfigureUdpSocket`, `odbc32`); remaining issues are under Changes › Portability.
 
-Caminho: ~15.000 erros após a importação → ~4.000 (passada mecânica) → 2.291 no início da retomada → 0. Depois, 81 mil warnings
-(73 mil vinham de um só header) → 0. Ferramentas usadas: [Porte mecânico](../tools/mechanical-porting.md).
+Progress: ~15,000 errors after import → ~4,000 (mechanical pass) → 2,291 at start of resumed work → 0. Then 81,000 warnings
+(73,000 from one header) → 0. Tools used: [Mechanical porting](../tools/mechanical-porting.md).
 
-## Rede (`Socket/`, TCP)
+## Networking (`Socket/`, TCP)
 
-O motor do IOCP virou `x2::platform::net` (decisão T20, ver [Plataforma](platform.md)); a API que o resto do servidor usa ficou igual.
+IOCP engine replaced with `x2::platform::net` (decision T20, see [Platform](platform.md)); API used by the rest of the server remains the same.
 
-| Original | Agora |
+| Original | Now |
 |---|---|
-| `KIocp`: completion port + `GetQueuedCompletionStatus` | `KIocp`: um `IoService`; as chaves de completion e o despacho `OnIOCompleted`/`OnClosedByLocal` continuam |
-| `KIOThread::Loop`: espera um pacote de completion | roda os handlers prontos por até 100 ms (`IoService::RunFor`) |
-| `KSocketObject`: `SOCKET` + `WSARecv`/`WSASend` overlapped | `TcpStream` + leitura/escrita assíncronas; o handler guarda o objeto vivo até a operação acabar |
-| Modo sem IOCP (`KSession::Init( false )`): eventos no `OVERLAPPED` | o handler guarda o resultado no `KOVERLAPPED` e sinaliza o mesmo evento; a thread da sessão chama `OnIOCompleted` |
-| `KAccepter`: `WSASocket` + `accept` bloqueante | `socket` + `accept` bloqueante; o socket aceito é entregue ao `TcpStream` |
+| `KIocp`: completion port + `GetQueuedCompletionStatus` | `KIocp`: an `IoService`; completion keys and `OnIOCompleted`/`OnClosedByLocal` dispatch remain |
+| `KIOThread::Loop`: waits for a completion packet | runs ready handlers for up to 100 ms (`IoService::RunFor`) |
+| `KSocketObject`: `SOCKET` + overlapped `WSARecv`/`WSASend` | `TcpStream` + async read/write; handler keeps object alive until operation completes |
+| No-IOCP mode (`KSession::Init( false )`): events in `OVERLAPPED` | handler stores result in `KOVERLAPPED` and signals same event; session thread calls `OnIOCompleted` |
+| `KAccepter`: `WSASocket` + blocking `accept` | `socket` + blocking `accept`; accepted socket is passed to `TcpStream` |
 
 UDP (`server/common-udp`):
 
-| Original | Agora |
+| Original | Now |
 |---|---|
-| `CKTDNUDP`: até 512 `WSARecvFrom` pendentes e `WSASendTo`, com *completion routines* (APC) executadas na espera alertável da thread dona | socket não bloqueante: `recvfrom` em laço (até 512 por chamada) e `sendto` direto, cada um seguido do mesmo tratamento que a rotina fazia, na mesma thread |
-| `KLBSUdpEcho::Run`: `WaitForSingleObjectEx( kill, INFINITE, TRUE )` | espera o socket ter dados (até 10 ms) e confere o evento de término |
-| `KUdpEcho::Loop`: `recvfrom` bloqueante; `ShutDown` fechava o socket para destravá-lo | espera dados por até 100 ms antes do `recvfrom`; `ShutDown` encerra a thread e depois fecha o socket (fechar não destrava o `recvfrom` no Linux) |
-| `SIO_UDP_CONNRESET`, `UDP_CHECKSUM_COVERAGE` | `x2::platform::net::ConfigureUdpSocket` (só Windows) |
+| `CKTDNUDP`: up to 512 pending `WSARecvFrom` and `WSASendTo`, with *completion routines* (APCs) run during alertable wait on owning thread | nonblocking socket: loop over `recvfrom` (up to 512 per call) and direct `sendto`, each followed by the same handling as the original routine on the same thread |
+| `KLBSUdpEcho::Run`: `WaitForSingleObjectEx( kill, INFINITE, TRUE )` | waits for socket data (up to 10 ms) and checks stop event |
+| `KUdpEcho::Loop`: blocking `recvfrom`; `ShutDown` closed socket to unblock it | waits up to 100 ms for data before `recvfrom`; `ShutDown` stops thread, then closes socket (closing does not unblock `recvfrom` on Linux) |
+| `SIO_UDP_CONNRESET`, `UDP_CHECKSUM_COVERAGE` | `x2::platform::net::ConfigureUdpSocket` (Windows only) |
 
-- `X2Lib/X2UDPPacket.*` (structs dos datagramas, do cliente) vieram pelo módulo `server-x2lib` do importador, em `src/server/X2Lib`
-  (a mesma posição relativa do original). Os dois `u_long` de `KXPT_PORT_CHECK_REQ/ACK` viraram `std::uint32_t`: no Linux teriam 8 bytes
-  e mudariam o datagrama. `static_assert` confere os tamanhos.
-- Declarações com `__forceinline` cujo corpo está no `.cpp` perderam o `__forceinline` (o GCC recusa).
-- `UdpRelayChecker/`: no build US os arquivos ficam vazios depois das flags; nada a portar.
+- `X2Lib/X2UDPPacket.*` (client datagram structs) came through importer module `server-x2lib`, under `src/server/X2Lib`
+  (same relative location as original). The two `u_long` fields in `KXPT_PORT_CHECK_REQ/ACK` became `std::uint32_t`: on Linux they
+  would be 8 bytes and change the datagram. `static_assert` checks sizes.
+- Declarations with `__forceinline` whose bodies are in `.cpp` lost `__forceinline` (GCC rejects it).
+- `UdpRelayChecker/`: files become empty after US flags; nothing to port.
 
-Mudanças de comportamento (intencionais):
+Intentional behavior changes:
 
-- `~KIOThread` não posta mais `SIGNAL_SHUTDOWN_SERVER`: no original isso encerrava *outra* thread de I/O, a que pegasse o pacote.
-- `~KIocp` encerra as threads de I/O, fecha os sockets registrados e roda as completions pendentes antes de destruir o serviço.
-- `KIocp::GenNewCompKey`: gerador semeado (o original usava um `mt19937` sem semente). As chaves só precisam ser únicas.
-- `NetCommon::GetWsaMsg`: mensagem por thread (o original usava um buffer estático compartilhado); `GetLocalIP` devolve `""` em vez de `NULL` quando falha.
-- `KSimObject`: o nome (`SOB_<data>_<hora>_<n>`) saía `SOB_(null)_(null)_...`, porque o original passava o código de retorno de `_wstrdate_s` como string.
-- `OnSendCompleted` usava `OVERLAPPED::InternalHigh` para descontar o enviado; agora usa o número de bytes da completion (é o mesmo valor).
+- `~KIOThread` no longer posts `SIGNAL_SHUTDOWN_SERVER`: in original, that stopped *another* I/O thread, whichever picked up the packet.
+- `~KIocp` stops I/O threads, closes registered sockets, and runs pending completions before destroying service.
+- `KIocp::GenNewCompKey`: seeded generator (original used unseeded `mt19937`). Keys only need to be unique.
+- `NetCommon::GetWsaMsg`: per-thread message (original used a shared static buffer); `GetLocalIP` returns `""` instead of `NULL` on failure.
+- `KSimObject`: name (`SOB_<date>_<time>_<n>`) was `SOB_(null)_(null)_...` because original passed `_wstrdate_s` return code as a string.
+- `OnSendCompleted` used `OVERLAPPED::InternalHigh` for sent-byte count; now uses completion byte count (same value).
 
-## Testes (`src/server/Common/tests`, alvo `x2_server_common_tests`)
+## Tests (`src/server/Common/tests`, target `x2_server_common_tests`)
 
-| Teste | O que cobre |
+| Test | Coverage |
 |---|---|
-| `test_packets_{client,common,server}.cpp` | **Todos os 1.964 tipos serializados** (os de `#if X2_DEV_TOOLS` só nesse build) dos pacotes (2026-10-29): `Put` → `Get` repetido sobre um objeto inicializado por valor: o tamanho não muda, os bytes se repetem a partir da segunda passada (alguns construtores deixam membros sem inicializar, então a primeira pode ter lixo) e o `Get` lê tudo. Gerados por `tools/port/gen_packet_tests.py` ([Porte mecânico](../tools/mechanical-porting.md)), que antes confere que `PUT` e `GET` listam os mesmos campos na mesma ordem e que cada bloco só usa a própria macro |
-| `test_login_packets.cpp` | Bytes exatos de `ECH_VERIFY_ACCOUNT_REQ/ACK` e `EGS_CONNECT_REQ/ACK`, montados à mão a partir da ordem dos campos e do [formato da rede](../original/protocol.md) |
-| `test_session.cpp` | `KSession` por loopback com as threads de I/O reais: accept, troca da chave (`E_ACCEPT_CONNECTION_NOT`), pacotes cifrados nos dois sentidos, um pacote de 24 KB (mais de uma leitura) e a desconexão. Nos dois modos do proxy: nas threads de I/O e com thread própria (sem IOCP) |
-| `test_udp.cpp` | Datagramas entre dois `CKTDNUDP` (ID + struct, conferindo endereço e porta do remetente) e o `XPT_PORT_CHECK_REQ` respondido pela thread do `KLBSUdpEcho`, que precisa terminar sem tráfego |
-| `test_odbc.cpp` | `KODBC`: conversão de `.dsn` e filtros sem banco; suíte `db` contra um SQL Server real quando `X2_TEST_ODBC` está definido. Ver [Banco de dados (ODBC)](server-common-db.md#testes) |
-| `server_hooks.cpp` | Não é teste: define o que cada servidor fornece ao `Common` (`g_szConfigFile`, `CreateDBThread`), para os testes linkarem sem um servidor. Nos executáveis isso vem do servidor (ex.: `ChannelServer.cpp`) |
-| `packets_generated` (ctest) | Falha se os testes gerados estiverem desatualizados em relação aos `.cpp` dos pacotes |
+| `test_packets_{client,common,server}.cpp` | **All 1,964 serialized types** (those under `#if X2_DEV_TOOLS` only in that build) in packets (2026-10-29): repeated `Put` → `Get` on value-initialized object: size stays constant, bytes repeat from second pass (some constructors leave members uninitialized, so first pass may contain garbage), and `Get` reads all data. Generated by `tools/port/gen_packet_tests.py` ([Mechanical porting](../tools/mechanical-porting.md)), which first verifies `PUT` and `GET` list same fields in same order and each block uses only its own macro |
+| `test_login_packets.cpp` | Exact bytes for `ECH_VERIFY_ACCOUNT_REQ/ACK` and `EGS_CONNECT_REQ/ACK`, hand-built from field order and [network format](../original/protocol.md) |
+| `test_session.cpp` | `KSession` loopback with real I/O threads: accept, key exchange (`E_ACCEPT_CONNECTION_NOT`), encrypted packets both ways, 24 KB packet (more than one read), disconnect. Both proxy modes: on I/O threads and on its own thread (without IOCP) |
+| `test_udp.cpp` | Datagrams between two `CKTDNUDP`s (ID + struct, checking sender address and port) and `XPT_PORT_CHECK_REQ` response from `KLBSUdpEcho` thread, which must exit without traffic |
+| `test_odbc.cpp` | `KODBC`: `.dsn` conversion and filters without DB; `db` suite against real SQL Server when `X2_TEST_ODBC` is set. See [ODBC database](server-common-db.md#tests) |
+| `server_hooks.cpp` | Not a test: defines what each server supplies to `Common` (`g_szConfigFile`, `CreateDBThread`) so tests can link without a server. In executables these come from server (e.g. `ChannelServer.cpp`) |
+| `packets_generated` (ctest) | Fails if generated tests are out of date with packet `.cpp` files |
 
-**Limite:** os testes provam que o porte é coerente consigo mesmo e com o formato lido no código, não que bate byte a byte com o
-`elsword.exe`. Isso continua pendente ([KNCSDK › Pendências](kncsdk.md#pendências)). Também não pegam um campo que exista no servidor
-e não no cliente (as flags do cliente ainda não foram geradas, ver [Roadmap](../project/roadmap.md)).
+**Limit:** tests prove the port is self-consistent and matches the format read from code, not that it matches `elsword.exe` byte for byte.
+That remains pending ([KNCSDK › Pending](kncsdk.md#pending)). They also cannot detect a field present on server but not client
+(client flags have not been generated yet; see [Roadmap](../project/roadmap.md)).
 
-## Mudanças em relação ao original
+## Changes from the original
 
-### Intencionais
+### Intentional
 
-| Onde | Mudança | Motivo |
+| Where | Change | Reason |
 |---|---|---|
-| Caminhos de arquivo (2026-10-30) | `"Statistics\\..."`, `"Config\\US\\"` e o `%Y-%m-%d\\` do backup usam `/`; o backup das estatísticas vai para `StatisticsBackup/<data>/` **ao lado do servidor**; `KAutoPath::AddPath` troca `\\` por `/` fora do Windows | No Linux o `\\` virava parte do nome (pastas `C:\StatisticsBackup\` dentro da pasta do servidor). O original gravava em `C:\StatisticsBackup\`, que não existe fora do Windows; `/` funciona nos dois |
-| `KStatisticsLocalLog` (`Statistics/SI_LOG_*.txt`) | Arquivos em **UTF-8** (`x2::platform::Utf8FileLocale`), caminho `Statistics/` com `/`, existência por `std::filesystem::exists` | O original usava `std::locale("korean")` (CP949, só MSVC) e `_stat`. Os arquivos antigos em CP949 com texto coreano no cabeçalho não são relidos iguais; os números são ASCII |
-| `KAutoPath`, `KFolderTraverse`, estatísticas | `FindFirstFile`/`GetCurrentDirectory`/`CopyFile`... → `std::filesystem`. `KApplyAllFiles` passa `directory_entry` ao functor e não muda mais o diretório atual | Portável. A busca de scripts continua na mesma ordem (pasta atual, depois subpastas em profundidade, por nome) |
-| `KFolderTraverse` | O original pulava a primeira entrada de `FindFirstFile` (normalmente `.`); aqui nenhuma entrada é pulada | `std::filesystem` não lista `.`/`..` |
-| `BaseServer::LoadINIFile`, `KStringTable` | INI lido pelo leitor da plataforma em **todas** as plataformas, aceitando UTF-16, UTF-8 e **CP949** | Os `config_*.ini` de produção estão em CP949; a API do Windows usa a code page do sistema, que só é 949 num Windows coreano |
-| `XSLCheckSumManager` | CMarkup → TinyXml (já presente no `Common`); `XML/Markup.*` removidos. O `MessageBox` de checksum duplicado virou log de erro | Licença do CMarkup pede permissão para uso comercial; servidor não tem janela |
-| `BaseServer` | CrashRpt removido (instalação do handler e o callback que chamava `DumpUploader.exe`, só em Release) | Binário fechado, já excluído na importação |
-| `BaseServer` (e-mail) | O `KMailManager` saiu (2026-10-31). Até então era um stub escrito no porte que mandava o e-mail para o log. O único e-mail era o relatório de scripts com erro de parsing, ligado por `SetScriptParsingErrReport( true )` e `AddScriptParsingErrReportMail`. Nenhum config usava as duas funções, nem as do `_reference`, e elas saíram com o `SetMailingList`. Agora, se um script falha, o `OnServerReadyComplete` sempre escreve um erro no log com a lista. O pacote `KEMAIL_SEND_EMAIL_NOT` e o `EMAIL_SEND_EMAIL_NOT` ficam, para não deslocar os IDs de evento | O envio era por DLLs fechadas (`MailSMTP`/`MailMIME`), e os servidores não mandam e-mail |
-| `BaseServer::Run` | O [console dos servidores](console.md) (`KServerConsole`: terminal da T15, protocolo da T30), aberto pelo `KServerMain` antes do `Init` (`SetConsole`); `--no-stdin`, `--machine`, `--control=<nome>` e `--no-control` são dele, não do servidor | O original vinha de um `lua.c` modificado, e a janela MFC tinha o próprio campo de comando |
-| `RegToLua` | Função nova `consolelog( n )`: nível do log no console, independente do `log( n )` do arquivo (T16) | O console tem nível próprio (ver [KNCSDK › Log](kncsdk.md#log-t16)) |
-| `NetError` | As tabelas de mensagens (`szErrorStr*`) só existem em `NetError.cpp`; `GetErrStr*` devolvem `const wchar_t*` | Eram `static` no header, copiadas em todo `.cpp` (73 mil warnings). Todos os chamadores copiam para `std::wstring` |
-| `ActorManager::MultiQueueing*` | Parâmetro padrão `std::vector<UidType>& = std::vector<UidType>()` virou sobrecarga de um argumento | Extensão do MSVC. **Pendente:** `GameServer/UserManager.h` tem o mesmo padrão |
-| `ActorProxy`/`BaseServer` | `std::shared_ptr<void>` de evento → `shared_ptr<remove_pointer_t<HANDLE>>` | `HANDLE` não é `void*` fora do Windows |
-| `KDEBAuth`, `KDEBBilling` (`AuthAndBilling/`) | O gSOAP saiu (T31): as chamadas `soap_call___ns1__*` viraram `x2::deb::SoapClient::Call` com os mesmos elementos e campos. Sem `SoapInitialize`/`SoapDestroy` (não há estado entre chamadas). Falha de rede ou de SOAP agora vai ao log com o endereço e o motivo, também no saldo (`EPUBLISHER_BILLING_BALANCE_REQ`), que antes falhava calado. Ver [Cliente do DEB](#cliente-do-deb-t31) | O gSOAP era código de terceiros copiado do `_reference` (17 mil linhas compiladas com `-w`) |
-| `DBConnectionManager` (DES das connection strings) | `x2::crypto::DesCbc*` no lugar do `CBC_Mode<DES>` do Crypto++ (T27); mesmos bytes. `EncryptString`/`DecryptString` (XOR, nunca chamadas) removidas | O Crypto++ não compila com clang-cl |
-| `Socket/` (`SocketObject`, `NetCommon`, `UdpEcho`, `KTDNUDP`), `NetLayer`, `ThreadStatisticsManager` (e o EPublisherServer) | `inet_addr`/`inet_ntoa`/`gethostbyname` → `x2::platform::IpFromString`/`IpToString`/`ResolveIPv4` (`inet_pton`/`inet_ntop`/`getaddrinfo`). Só aceita IPv4 em quatro números (`inet_addr` aceitava `127.1` e hex) | APIs obsoletas no Winsock (warnings no clang-cl). O `ThreadStatisticsManager` não derruba mais o processo quando o nome da máquina não resolve (o original desreferenciava o `NULL` do `gethostbyname`) |
-| `LineMap` | Membro `LPDIRECT3DVERTEXBUFFER9` removido | Resto do cliente, nunca usado no servidor |
+| File paths (2026-10-30) | `"Statistics\\..."`, `"Config\\US\\"`, and `%Y-%m-%d\\` backup path use `/`; statistics backup goes to `StatisticsBackup/<date>/` **next to server**; `KAutoPath::AddPath` changes `\\` to `/` outside Windows | On Linux `\\` became part of the name (folders like `C:\StatisticsBackup\` inside server directory). Original wrote to `C:\StatisticsBackup\`, unavailable outside Windows; `/` works on both |
+| `KStatisticsLocalLog` (`Statistics/SI_LOG_*.txt`) | Files are **UTF-8** (`x2::platform::Utf8FileLocale`), `Statistics/` path uses `/`, existence checked with `std::filesystem::exists` | Original used `std::locale("korean")` (CP949, MSVC only) and `_stat`. Old CP949 files with Korean header text are not read identically; numbers are ASCII |
+| `KAutoPath`, `KFolderTraverse`, statistics | `FindFirstFile`/`GetCurrentDirectory`/`CopyFile`... → `std::filesystem`. `KApplyAllFiles` passes `directory_entry` to functor and no longer changes current directory | Portable. Script search order remains the same (current folder, then subfolders depth-first, by name) |
+| `KFolderTraverse` | Original skipped first `FindFirstFile` entry (usually `.`); now no entries are skipped | `std::filesystem` does not list `.`/`..` |
+| `BaseServer::LoadINIFile`, `KStringTable` | INI read through platform reader on **all** platforms, accepting UTF-16, UTF-8, and **CP949** | Production `config_*.ini` files are CP949; Windows API uses system code page, which is 949 only on Korean Windows |
+| `XSLCheckSumManager` | CMarkup → TinyXml (already in `Common`); remove `XML/Markup.*`. Duplicate-checksum `MessageBox` becomes error log | CMarkup license requires permission for commercial use; server has no window |
+| `BaseServer` | Remove CrashRpt (handler install and callback calling `DumpUploader.exe`, Release only) | Closed-source binary, already excluded from import |
+| `BaseServer` (email) | `KMailManager` removed (2026-10-31). Until then it was a port stub that sent email to log. Only email was script parse-error report, enabled by `SetScriptParsingErrReport( true )` and `AddScriptParsingErrReportMail`. Neither function was used by any config, including `_reference`; both were removed along with `SetMailingList`. Now if a script fails, `OnServerReadyComplete` always logs an error with the list. Keep `KEMAIL_SEND_EMAIL_NOT` packet and `EMAIL_SEND_EMAIL_NOT` to avoid shifting event IDs | Delivery used closed DLLs (`MailSMTP`/`MailMIME`), and servers do not send email |
+| `BaseServer::Run` | [Server console](console.md) (`KServerConsole`: T15 terminal, T30 protocol), opened by `KServerMain` before `Init` (`SetConsole`); `--no-stdin`, `--machine`, `--control=<name>`, and `--no-control` belong to console, not server | Original came from modified `lua.c`; MFC window had its own command field |
+| `RegToLua` | New `consolelog( n )`: console log level, independent of file `log( n )` (T16) | Console has its own level (see [KNCSDK › Logging](kncsdk.md#logging-t16)) |
+| `NetError` | Message tables (`szErrorStr*`) exist only in `NetError.cpp`; `GetErrStr*` return `const wchar_t*` | They were `static` in header, copied into every `.cpp` (73k warnings). All callers copy into `std::wstring` |
+| `ActorManager::MultiQueueing*` | Default argument `std::vector<UidType>& = std::vector<UidType>()` replaced with one-argument overload | MSVC extension. **Pending:** `GameServer/UserManager.h` has same pattern |
+| `ActorProxy`/`BaseServer` | Event `std::shared_ptr<void>` → `shared_ptr<remove_pointer_t<HANDLE>>` | Outside Windows, `HANDLE` is not `void*` |
+| `KDEBAuth`, `KDEBBilling` (`AuthAndBilling/`) | gSOAP removed (T31): `soap_call___ns1__*` calls replaced by `x2::deb::SoapClient::Call` with same elements and fields. No `SoapInitialize`/`SoapDestroy` (no state between calls). Network/SOAP failure is now logged with address and reason, including balance (`EPUBLISHER_BILLING_BALANCE_REQ`), which previously failed silently. See [DEB client](#deb-client-t31) | gSOAP was third-party code copied from `_reference` (17k lines compiled with `-w`) |
+| `DBConnectionManager` (DES connection strings) | `x2::crypto::DesCbc*` instead of Crypto++ `CBC_Mode<DES>` (T27); same bytes. Removed unused XOR `EncryptString`/`DecryptString` | Crypto++ does not compile with clang-cl |
+| `Socket/` (`SocketObject`, `NetCommon`, `UdpEcho`, `KTDNUDP`), `NetLayer`, `ThreadStatisticsManager` (and EPublisherServer) | `inet_addr`/`inet_ntoa`/`gethostbyname` → `x2::platform::IpFromString`/`IpToString`/`ResolveIPv4` (`inet_pton`/`inet_ntop`/`getaddrinfo`). Accepts only dotted-quad IPv4 (`inet_addr` accepted `127.1` and hex) | Obsolete Winsock APIs (clang-cl warnings). `ThreadStatisticsManager` no longer crashes if machine name does not resolve (original dereferenced `NULL` from `gethostbyname`) |
+| `LineMap` | Removed `LPDIRECT3DVERTEXBUFFER9` member | Client leftover, never used in server |
 
-### Bugs do original corrigidos
+### Original bugs fixed
 
-| Onde | Bug | Correção |
+| Where | Bug | Fix |
 |---|---|---|
-| `KBuffFactor` (`CommonPacket.h`) | O construtor de cópia deixava `m_uidMesGameUnit` (quem lançou o buff) e `m_bIsMesGameUnitNpc` sem inicializar; a atribuição copiava | O construtor de cópia copia os dois (2026-10-30, achado pelo `-Wdeprecated-copy` no GameServer) |
-| `KXPT_UNIT_USER_SYNC_PACK_FOR_WEDDING_HALL` (`X2UDPPacket.h`) | O `operator=` atribuía `m_fPosX/Y/Z` a eles mesmos: a posição não era copiada | Copia de `kRight` |
-| `GetFrom` de `KEGIANT_BILLING_CONSUME_ACK` e `KELOG_ITEM_TRADE_ERROR_NOT` | O bloco `GET` chamava `PUT` (copiar e colar): escrevia em vez de ler, e o restante do pacote ficava sem ler | `GET`. O primeiro é da integração Giant (fora de uso); o segundo é log entre servidores, cuja data nunca chegava |
-| `KSwapPerformer` | Testes invertidos (`_JIF( !m_pEnqueueEvent, return )` saía com ponteiro válido e só seguia com ele nulo; o destrutor desreferenciava quando nulo) | Testes corrigidos. A classe não é usada por nenhum servidor |
-| `CXSLPetManager::*SpecialFeedIntimacyRate_LUA` | Validação `> 1 && < 0` nunca era verdadeira | `\|\|`. Os scripts atuais usam 0,0201 e 0,0501, então nada muda |
-| `XSLCharacterStatTable` | Comparava `UNIT_TYPE` com `UC_NONE` e `UNIT_CLASS` com `UT_NONE` | Enum certo (os dois valem 0: sem mudança) |
-| `XSLGuildManager` | `u_char < 0` | Removido (sempre falso) |
-| `SimObject`, `SerBuffer` etc. | Pequenos: `%d` com `__int64`, valores não inicializados | Ver diffs |
-| `KDEBAuth` (`EPUBLISHER_AUTHENTICATION_REQ`) | `if( response.strPurchaseToken.empty() )`: o token de compra só era copiado quando vinha vazio | `!empty()` (2026-10-31). O `wstrPurchTok` chega preenchido ao ChannelServer |
-| Cliente gSOAP do DEB | Texto não ASCII (UTF-8) saía codificado duas vezes: o gSOAP 2.7 sem `SOAP_C_UTFSTRING` tomava cada byte como Latin-1. Uma conta `é가` chegava ao serviço como `Ã©ê°\u0080` | O cliente da T31 manda o UTF-8 como está (2026-10-31, conferido com o gSOAP antes de removê-lo) |
+| `KBuffFactor` (`CommonPacket.h`) | Copy constructor left `m_uidMesGameUnit` (buff caster) and `m_bIsMesGameUnitNpc` uninitialized; assignment copied them | Copy constructor now copies both (2026-10-30, found by GameServer `-Wdeprecated-copy`) |
+| `KXPT_UNIT_USER_SYNC_PACK_FOR_WEDDING_HALL` (`X2UDPPacket.h`) | `operator=` assigned `m_fPosX/Y/Z` to themselves: position was not copied | Copy from `kRight` |
+| `GetFrom` for `KEGIANT_BILLING_CONSUME_ACK` and `KELOG_ITEM_TRADE_ERROR_NOT` | `GET` block called `PUT` (copy/paste): wrote instead of reading and left rest of packet unread | Corrected to `GET`. First belongs to unused Giant integration; second is inter-server log whose date never arrived |
+| `KSwapPerformer` | Inverted checks (`_JIF( !m_pEnqueueEvent, return )` returned with non-null pointer and continued only when null; destructor dereferenced when null) | Checks corrected. Class is unused by any server |
+| `CXSLPetManager::*SpecialFeedIntimacyRate_LUA` | Validation `> 1 && < 0` was never true | `\|\|`. Current scripts use 0.0201 and 0.0501, so behavior is unchanged |
+| `XSLCharacterStatTable` | Compared `UNIT_TYPE` with `UC_NONE` and `UNIT_CLASS` with `UT_NONE` | Correct enums (both equal 0, so no behavior change) |
+| `XSLGuildManager` | `u_char < 0` | Removed (always false) |
+| `SimObject`, `SerBuffer`, etc. | Minor: `%d` with `__int64`, uninitialized values | See diffs |
+| `KDEBAuth` (`EPUBLISHER_AUTHENTICATION_REQ`) | `if( response.strPurchaseToken.empty() )`: purchase token copied only when empty | `!empty()` (2026-10-31). `wstrPurchTok` now arrives populated at ChannelServer |
+| DEB gSOAP client | Non-ASCII UTF-8 text was encoded twice: gSOAP 2.7 without `SOAP_C_UTFSTRING` treated each byte as Latin-1. Account `é가` reached service as `Ã©ê°\u0080` | T31 client sends UTF-8 unchanged (2026-10-31, verified against gSOAP before removal) |
 
-### Portabilidade (sem mudança de comportamento)
+### Portability (no behavior change)
 
-- Achados ao compilar o ChannelServer (2026-10-30): `KStatisticsLocalLog.cpp` é compilado por todos os servidores, então entrou no
-  `x2_server_common`; ele incluía `GameServer/Inventory.h` (sem uso) e `CenterServer/PvPRoom.h` só para `KPvPRoom::SP_NUM`, que virou
-  uma constante local (14, de `CenterServer/StatPvP_def.h`, a conferir quando o CenterServer for portado). `IMPL_ON_FUNC*` (`Event.h`)
-  voltou a nomear `anTrace_` (com `[[maybe_unused]]`): a passada de warnings tinha comentado o nome, e `FIRST_SENDER_UID` deixava de
-  compilar nos servidores. `KActorManager::ForEach` recebe `T&&` (o MSVC aceitava um temporário em `T&`). `HackingProtectionManager.h`
-  inclui `BaseServer.h`, que o corpo do template usa. `ServerMain.{h,cpp}`: o `main` comum dos servidores (ver [ChannelServer](server-channel.md)).
-- Ao rodar o ChannelServer (2026-10-30): `KBaseServer::Authenticate` devolve o resultado que o `DBE_SERVER_ON_ACK` de cada servidor
-  grava com `SetAuthenticateResult` (no lugar do `::exit( 0 )` do original, ver [ChannelServer › Mudanças](server-channel.md#mudanças-em-relação-ao-original));
-  `NetCommon::SetLocalIP` (Lua `SetLocalIP`) fixa o endereço que o `GetLocalIP` devolve. Sem chamar, o comportamento é o do original.
+- Found while compiling ChannelServer (2026-10-30): `KStatisticsLocalLog.cpp` is compiled by all servers, so added to `x2_server_common`;
+  it included unused `GameServer/Inventory.h` and `CenterServer/PvPRoom.h` only for `KPvPRoom::SP_NUM`, replaced by local constant
+  14 (from `CenterServer/StatPvP_def.h`, to verify when CenterServer was ported). `IMPL_ON_FUNC*` (`Event.h`) again names `anTrace_`
+  (with `[[maybe_unused]]`): warning pass had commented out the name, so `FIRST_SENDER_UID` stopped compiling in servers.
+  `KActorManager::ForEach` takes `T&&` (MSVC accepted temporary with `T&`). `HackingProtectionManager.h` includes `BaseServer.h`,
+  used by template body. `ServerMain.{h,cpp}`: common server `main` (see [ChannelServer](server-channel.md)).
+- When running ChannelServer (2026-10-30): `KBaseServer::Authenticate` returns result that each server's `DBE_SERVER_ON_ACK` stores
+  with `SetAuthenticateResult` (instead of original `::exit( 0 )`, see [ChannelServer › Changes](server-channel.md#changes-from-the-original));
+  `NetCommon::SetLocalIP` (Lua `SetLocalIP`) sets address returned by `GetLocalIP`. Without this call, behavior is as original.
+- Windows (found in first MinGW build, 2026-10-30): build now defines `UNICODE`/`_UNICODE`, like original (otherwise `LPCTSTR` was `const char*`);
+  `byte` and `u_char`/`u_short`/`u_int`/`u_long`, formerly provided by `windows.h` without `WIN32_LEAN_AND_MEAN`, come from platform `types.h`;
+  gSOAP included `x2/platform/net.h` instead of `winsock.h` it included indirectly (until T31); `zlib` became a public dependency of
+  `x2_server_common` (`Socket/KTDNUDP.h` includes `zlib.h`).
+- Packet `long`/`unsigned long` fields (190, as of 2026-10-29) became `LONG`/`DWORD`: on Linux `long` is 8 bytes, and `Put` failed
+  for values outside 32-bit range. Wire format is unchanged (same size and tag), and Windows types are unchanged.
+- Added `typename`/`template` that MSVC accepted, fixed `goto` crossing initialization (declarations moved to function start), gave enums
+  explicit underlying type (`enum ePerformerID : int`), replaced `min`/`max` macros with `std::`, gave `KClearString` explicit copy
+  constructor, added `virtual` destructors to polymorphic classes deleted by singletons, and ordered initializer lists by declaration.
+- `KFtpWrapper` (rewritten as socket-based FTP client in prior pass): send loop could fail to terminate when a send failed. Fixed.
 
-- Windows (achado na primeira compilação MinGW, 2026-10-30): o build passa a definir `UNICODE`/`_UNICODE`, como o original (sem isso
-  `LPCTSTR` era `const char*`); `byte` e `u_char`/`u_short`/`u_int`/`u_long`, que o original recebia do `windows.h` sem `WIN32_LEAN_AND_MEAN`,
-  vêm do `types.h` da plataforma; o gSOAP incluía `x2/platform/net.h` no lugar do `winsock.h` que vinha junto (até a T31); `zlib` passou a dependência
-  pública do `x2_server_common` (`Socket/KTDNUDP.h` inclui `zlib.h`).
-- Campos `long`/`unsigned long` dos pacotes (190, em 2026-10-29) viraram `LONG`/`DWORD`: no Linux `long` tem 8 bytes, e o `Put` falhava
-  com valores fora de 32 bits. No fio nada muda (mesmo tamanho e mesma tag), e no Windows os tipos são os mesmos de antes.
+## Pending
 
-- `typename`/`template` que o MSVC dispensava, `goto` que cruzava inicializações (declarações subidas para o início da função), `enum` declarado
-  sem tipo (`enum ePerformerID : int`), `min`/`max` de macro → `std::`, `KClearString` com construtor de cópia explícito, destrutores
-  `virtual` nas classes polimórficas apagadas pelos singletons, listas de inicialização na ordem de declaração.
-- `KFtpWrapper` (reescrito como cliente FTP sobre sockets na passada anterior): o laço de envio podia não terminar quando um envio falhava. Corrigido.
-
-## Pendências
-
-- ~~**Caminhos com `\\`**~~: resolvido em 2026-10-30 (ver Mudanças › Intencionais).
-- **Nomes de arquivo com maiúsculas/minúsculas**: o Windows não diferencia; os scripts podem ser referenciados com outra grafia. Verificar ao rodar o servidor.
-- `XSLCashItemManager::AddNotSellCashItemProductNo`: `!GetServerGroupID() != iServerGroupID` mantido como está; provavelmente era
-  `GetServerGroupID() != iServerGroupID`. Decidir com o usuário (muda quais itens aparecem na loja).
-- `KLottery` usa semente fixa (42) e gerador compartilhado sem lock (decidir com o usuário).
-- `KLogReporter::Send` registra falha de envio mas devolve `eLRError_OK` (mantido).
-- `NetError_def_*.h` de outros idiomas: o build US usa o **`NetError_def_BR.h`** (enum e textos);
-  os outros podem sair, mas a ordem do enum do BR é a que vai para o cliente, então ele fica.
+- ~~**Paths with `\\`**~~: resolved on 2026-10-30 (see Intentional changes).
+- **Case-sensitive file names**: Windows is case-insensitive; scripts may be referenced using different capitalization. Check when running server.
+- `XSLCashItemManager::AddNotSellCashItemProductNo`: retained `!GetServerGroupID() != iServerGroupID`; likely should be `GetServerGroupID() != iServerGroupID`.
+  Decide with user (changes which items appear in store).
+- `KLottery` uses fixed seed (42) and shared generator without lock (decide with user).
+- `KLogReporter::Send` logs send failure but returns `eLRError_OK` (retained).
+- `NetError_def_*.h` for other languages: US build uses **`NetError_def_BR.h`** (enum and text);
+  others can be removed, but BR enum order goes to client and must remain.

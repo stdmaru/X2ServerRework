@@ -1,58 +1,60 @@
-[Início](../README.md) › [Código original](README.md) › Protocolo de rede e serialização
+[Home](../README.md) › [Original code](README.md) › Network protocol and serialization
 
-# Protocolo de rede e serialização
+# Network protocol and serialization
 
-## Onde está
+## Locations
 
-- Definição de pacotes: `KncWX2Server/Common/ClientPacket.{h,cpp}`, `CommonPacket.{h,cpp}`, `OnlyGlobal/Packet/*_Global.cpp`,
-  IDs em `EventID_{Client,Server,System}.h` (+ `_Global`). **Compartilhados** pelo cliente (`X2Lib` inclui `KncWX2Server/Common`).
-- Serialização: `KNCSDK_*/Include/Serializer/` (`Serializer.h`, `SerBuffer`, `Ser{Vector,Map,Set,List,Deque,Pair}.h`, `KeyedSerializer.h`, `ByteOrder`).
-- Transporte: `Common/Socket/{Session,X2Packet,NetCommon}` e `X2ServerProtocol/Socket` (cliente). Cripto via `KncSecurity` (Crypto++).
+- Packet definitions: `KncWX2Server/Common/ClientPacket.{h,cpp}`, `CommonPacket.{h,cpp}`, `OnlyGlobal/Packet/*_Global.cpp`,
+  IDs in `EventID_{Client,Server,System}.h` (+ `_Global`). **Shared** with the client (`X2Lib` includes `KncWX2Server/Common`).
+- Serialization: `KNCSDK_*/Include/Serializer/` (`Serializer.h`, `SerBuffer`, `Ser{Vector,Map,Set,List,Deque,Pair}.h`, `KeyedSerializer.h`, `ByteOrder`).
+- Transport: `Common/Socket/{Session,X2Packet,NetCommon}` and `X2ServerProtocol/Socket` (client). Encryption via `KncSecurity` (Crypto++).
 
-## O problema
+## The problem
 
-O serializer escreve tipos primitivos com `WriteBytes(&x, sizeof(T))` (ver `Serializer.h:129`), ou seja, o formato no fio
-**é o layout de memória do MSVC x86**. Ao compilar com GCC/Clang em x64:
+The serializer writes primitive types using `WriteBytes(&x, sizeof(T))` (see `Serializer.h:129`), so the on-wire format
+**is the MSVC x86 memory layout**. When compiling with GCC/Clang on x64:
 
-| Tipo C++ | Win32 MSVC | Linux x64 | Efeito |
+| C++ type | Win32 MSVC | Linux x64 | Effect |
 |---|---|---|---|
-| `long` / `unsigned long` | 4 B | **8 B** | pacote corrompido (49 usos só em `ClientPacket.h`/`CommonPacket.h`) |
-| `wchar_t` / `std::wstring` | 2 B (UTF-16) | **4 B** (UTF-32) | todas as strings quebram (`Put(const std::wstring&)`) |
-| `time_t` (`_USE_32BIT_TIME_T` no cliente) | 4 B | 8 B | datas |
-| `bool`, `enum` | 1 B / 4 B | 1 B / 4 B | ok, mas enums sem tipo explícito devem ganhar `: int32_t` |
-| `DWORD`, `UINT`, `__int64` | 4 / 4 / 8 | precisam typedef | definir como `uint32_t`/`int64_t` |
-| ponteiros/`size_t` em structs | 4 B | 8 B | auditar se algum é serializado |
+| `long` / `unsigned long` | 4 B | **8 B** | corrupted packet (49 uses in `ClientPacket.h`/`CommonPacket.h` alone) |
+| `wchar_t` / `std::wstring` | 2 B (UTF-16) | **4 B** (UTF-32) | all strings break (`Put(const std::wstring&)`) |
+| `time_t` (`_USE_32BIT_TIME_T` in client) | 4 B | 8 B | dates |
+| `bool`, `enum` | 1 B / 4 B | 1 B / 4 B | okay, but enums without explicit underlying types should get `: int32_t` |
+| `DWORD`, `UINT`, `__int64` | 4 / 4 / 8 | need typedefs | define as `uint32_t`/`int64_t` |
+| pointers/`size_t` in structs | 4 B | 8 B | audit whether any are serialized |
 
-## Estratégia proposta
+## Proposed strategy
 
-1. Typedefs fixos numa header de plataforma (`DWORD=uint32_t`, `LONG=int32_t`, ...).
-2. No `Serializer`, sobrecargas explícitas que convertem `long` → `int32_t` e `std::wstring` → UTF-16LE (`char16_t`) **no fio**.
-   Internamente o código pode continuar com `std::wstring` por enquanto.
-3. `static_assert(sizeof(...))` nos structs serializados como POD.
-4. **Teste de bytes idênticos**: capturar pacotes do servidor/cliente originais (ou serializar fixtures no build MSVC x86 do `_reference`)
-   e comparar com a saída do código portado.
-5. Endianness: todos os alvos são little-endian; `ByteOrder.cpp` pode ser simplificado.
+1. Fixed typedefs in a platform header (`DWORD=uint32_t`, `LONG=int32_t`, ...).
+2. Explicit overloads in `Serializer` converting `long` → `int32_t` and `std::wstring` → UTF-16LE (`char16_t`) **on the wire**.
+   Internally, code can continue using `std::wstring` for now.
+3. `static_assert(sizeof(...))` on serialized POD structs.
+4. **Identical-byte test**: capture packets from the original client/server (or serialize fixtures in the `_reference` MSVC x86 build)
+   and compare them with output from the ported code.
+5. Endianness: all targets are little-endian; `ByteOrder.cpp` can be simplified.
 
-A mesma preocupação vale para **binding ODBC** (`SQLBindParameter` com `SQL_C_LONG` + `long` de 8 bytes) e para leitura de arquivos binários do cliente (`.kom`, headers de mesh) com structs.
+The same concern applies to **ODBC bindings** (`SQLBindParameter` with `SQL_C_LONG` + 8-byte `long`) and reading client binary files
+(`.kom`, mesh headers) into structs.
 
-## Formato confirmado no código (2026-10-29)
+## Format confirmed in code (2026-10-29)
 
-Lido no `KNCSDK` original durante o porte; os testes de `src/kncsdk/tests/test_serializer.cpp` codificam isto.
+Read from the original `KNCSDK` during the port; tests in `src/kncsdk/tests/test_serializer.cpp` encode this.
 
-| Item | Formato na rede |
+| Item | Network format |
 |---|---|
 | `short`, `int`, `DWORD`/`UINT`, `INT64`/`UINT64`, `float`, `double` | **big-endian** (`ByteOrder.h`: `BYTEORDER_NET = BIG`), 2/4/8 bytes |
 | `char`, `unsigned char`, `bool` | 1 byte (`bool` = 0/1) |
-| `wchar_t` | 2 bytes **little-endian** (memória crua, sem troca de bytes) |
-| `std::string` | `DWORD` (BE) com o tamanho em bytes + bytes |
-| `std::wstring` | `DWORD` (BE) com o tamanho **em bytes** + UTF-16 **LE** |
-| contêineres STL | `DWORD` (BE) com o número de itens + itens |
-| tags | 1 byte antes de cada valor, só se o serializer estiver em modo `tagging` |
-| `KSerBuffer` comprimido | `DWORD` **LE** (cru) com o tamanho original + stream zlib (nível 1) |
-| quadro TCP (`KSession`) | tamanho total (`USHORT`, **LE** cru, inclui os 2 bytes do próprio tamanho) + cabeçalho seguro; quadros maiores que `MAX_PACKET_SIZE` (32 KB) derrubam a conexão |
-| primeiro pacote (servidor → cliente) | `E_ACCEPT_CONNECTION_NOT` com o SPI novo e a `KSecurityAssociation`, cifrado com a chave padrão; depois disso os dois lados usam o SPI novo |
-| datagrama UDP (`CKTDNUDP`) | 1 byte com o ID (`X2_PACKET_TYPE` ou `SP_*`) + a struct copiada como memória (`#pragma pack(1)`, little-endian, sem criptografia), até 2.048 bytes |
-| cabeçalho seguro (`KSecureBuffer`) | SPI (`unsigned short`, LE cru) + número de sequência (`unsigned int`, LE cru) + IV + dados cifrados (DES-CBC) + ICV (HMAC-MD5) |
+| `wchar_t` | 2 bytes **little-endian** (raw memory, no byte swap) |
+| `std::string` | `DWORD` (BE) with size in bytes + bytes |
+| `std::wstring` | `DWORD` (BE) with size **in bytes** + UTF-16 **LE** |
+| STL containers | `DWORD` (BE) with item count + items |
+| tags | 1 byte before each value, only if serializer is in `tagging` mode |
+| compressed `KSerBuffer` | raw **LE** `DWORD` with original size + zlib stream (level 1) |
+| TCP frame (`KSession`) | total size (raw **LE** `USHORT`, includes its own 2 bytes) + secure header; frames larger than `MAX_PACKET_SIZE` (32 KB) drop the connection |
+| first packet (server → client) | `E_ACCEPT_CONNECTION_NOT` with new SPI and `KSecurityAssociation`, encrypted with the default key; after that, both sides use the new SPI |
+| UDP datagram (`CKTDNUDP`) | 1-byte ID (`X2_PACKET_TYPE` or `SP_*`) + struct copied as memory (`#pragma pack(1)`, little-endian, no encryption), up to 2,048 bytes |
+| secure header (`KSecureBuffer`) | SPI (`unsigned short`, raw LE) + sequence number (`unsigned int`, raw LE) + IV + encrypted data (DES-CBC) + ICV (HMAC-MD5) |
 
-Ou seja: números passam por `HTON`, e o que é copiado como memória (`wchar_t`, cabeçalho seguro, tamanho de compressão) fica little-endian.
-O porte reproduz isso com tipos de tamanho fixo. Ainda falta confirmar contra pacotes capturados do cliente original ([KNCSDK › Pendências](../porting/kncsdk.md#pendências)).
+In other words, numbers go through `HTON`, while values copied as memory (`wchar_t`, secure header, compression size) remain little-endian.
+The port reproduces this with fixed-width types. Still to confirm against captured packets from the original client
+([KNCSDK › Pending](../porting/kncsdk.md#pending)).

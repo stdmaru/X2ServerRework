@@ -1,131 +1,132 @@
-[Início](../README.md) › [Porte](README.md) › Servidor: GameServer
+[Home](../README.md) › [Porting](README.md) › Server: GameServer
 
-# Servidor: GameServer (`src/server/GameServer`)
+# Server: GameServer (`src/server/GameServer`)
 
-Servidor de jogo: personagens, vila, campos, dungeons, PvP, itens, quests, guildas, cash (pelo [EPublisherServer](server-epublisher.md)).
-Origem: `KncWX2Server/GameServer`, importado em 2026-10-30 com as [flags do servidor](../tools/flags.md)
-([relatório](../../tools/import/reports/server-game/REPORT.md)). Usa o [Common](server-common.md), já portado. Mesma posição
-relativa do original (`src/server/GameServer` ao lado de `src/server/Common`).
+Game server: characters, towns, fields, dungeons, PvP, items, quests, guilds, cash (through [EPublisherServer](server-epublisher.md)).
+Source: `KncWX2Server/GameServer`, imported on 2026-10-30 with [server flags](../tools/flags.md)
+([report](../../tools/import/reports/server-game/REPORT.md)). Uses already-ported [Common](server-common.md).
+Same relative location as original (`src/server/GameServer` beside `src/server/Common`).
 
-## Importação (2026-10-30)
+## Import (2026-10-30)
 
-- **Seleção**: os arquivos próprios do `GameServer/` que o `GameServer.vcxproj` compila (`Release_US`) e os headers deles:
-  **298 arquivos** (145 `.cpp`, 153 `.h`), 163 mil linhas escritas, 148 mil de `.cpp`. Os maiores: `GSGameDBThread.cpp` (15 mil),
-  `Inventory.cpp` (15 mil), `GSUserFunction.cpp` (12 mil). Os includes para o `Common` não são seguidos (`include_scope`); nenhum
-  header do CenterServer é usado, apesar de `..\CenterServer` estar no caminho de busca do vcxproj.
-- **Flags**: 7.532 blocos `#if` resolvidos, 81 mil linhas removidas. Viraram `X2_DEV_TOOLS`: dois `_IN_HOUSE_` em
-  `GSUserGameCommon.cpp` e os logs `SERV_LOG_UNDEFINED_QUEST_TEMPLET` (como no `Common`).
-- **Excluídos (anti-cheat, T10)**: `HackShield/` (AhnLab, `HSAuth.cpp`), `nProtect/` (GameGuard, `GGAuth.cpp`, `NProtectFunc.cpp`) e o
-  XTrap (`..\..\Xtrap\Server\XTrap4Server.cpp`, `XTrapCSM.cpp`), que o vcxproj compila de fora do `KncWX2Server` e o importador não traz.
-  Restam referências em 9 arquivos (`GameServer.*`, `GSSimLayer.*`, `GSUser*.cpp`, `GSLogDBThread.cpp`): saem no build.
-- Encodings: 274 CP949, 24 ASCII.
+- **Selection**: files belonging to `GameServer/` compiled by `GameServer.vcxproj` (`Release_US`) and their headers:
+  **298 files** (145 `.cpp`, 153 `.h`), 163k written lines, 148k in `.cpp`. Largest: `GSGameDBThread.cpp` (15k),
+  `Inventory.cpp` (15k), `GSUserFunction.cpp` (12k). `Common` includes are not followed (`include_scope`); no CenterServer header
+  is used despite `..\CenterServer` being in vcxproj search path.
+- **Flags**: resolved 7,532 `#if` blocks, removed 81k lines. Converted to `X2_DEV_TOOLS`: two `_IN_HOUSE_` checks in
+  `GSUserGameCommon.cpp` and logs `SERV_LOG_UNDEFINED_QUEST_TEMPLET` (as in `Common`).
+- **Excluded (anti-cheat, T10)**: `HackShield/` (AhnLab, `HSAuth.cpp`), `nProtect/` (GameGuard, `GGAuth.cpp`, `NProtectFunc.cpp`),
+  and XTrap (`..\..\Xtrap\Server\XTrap4Server.cpp`, `XTrapCSM.cpp`), compiled by vcxproj from outside `KncWX2Server` and not imported.
+  References remain in 9 files (`GameServer.*`, `GSSimLayer.*`, `GSUser*.cpp`, `GSLogDBThread.cpp`): removed at build.
+- Encoding: 274 CP949, 24 ASCII.
 
-## Acoplamento (2026-10-30)
+## Dependencies (2026-10-30)
 
-| Área | Arquivos/usos | Plano |
+| Area | Files/usages | Plan |
 |---|---:|---|
-| Boost | 52 arquivos (`boost::str`/`wformat` 118, `shared_ptr` 35, `timer` 16, `iequals`/`replace_all` 15...) | passada mecânica ([Porte mecânico](../tools/mechanical-porting.md)); `iequals`/`replace_all` à mão |
-| `windows.h`/winsock/ATL | 29 | `x2/platform/win32.h`, `net.h` |
-| Intel TBB | `GameServer.cpp` (`tbbmalloc_proxy.h`) | sai (alocador; o roadmap prevê `std`) |
-| Anti-cheat | 9 | remover as chamadas |
-| `CTime`, `__int64`, `lua_tinker` | 64, 21, 21 | já cobertos pela [Plataforma](platform.md) e pelo KNCSDK |
-| Banco | 502 `DO_QUERY` | `KODBC` já portado; as procedures são as do `Game01` |
-| Ferramentas de admin/cheat | `GSUserAdminCheat.*`, `UserCheatManager.*`, `RobotTestManager.*` | revisar sob `X2_DEV_TOOLS` (T10) |
+| Boost | 52 files (`boost::str`/`wformat` 118, `shared_ptr` 35, `timer` 16, `iequals`/`replace_all` 15...) | mechanical pass ([Mechanical porting](../tools/mechanical-porting.md)); manual `iequals`/`replace_all` |
+| `windows.h`/Winsock/ATL | 29 | `x2/platform/win32.h`, `net.h` |
+| Intel TBB | `GameServer.cpp` (`tbbmalloc_proxy.h`) | remove (allocator; roadmap calls for `std`) |
+| Anti-cheat | 9 | remove calls |
+| `CTime`, `__int64`, `lua_tinker` | 64, 21, 21 | already covered by [Platform](platform.md) and KNCSDK |
+| Database | 502 `DO_QUERY` | `KODBC` already ported; procedures are in `Game01` |
+| Admin/cheat tools | `GSUserAdminCheat.*`, `UserCheatManager.*`, `RobotTestManager.*` | review under `X2_DEV_TOOLS` (T10) |
 
-## Estado (2026-10-31, branch `server/game-run`)
+## Status (2026-10-31, branch `server/game-run`)
 
-**Roda no Linux** pela pasta montada por `x2_run_game` ([Pastas de execução](../tools/runtime.md)): conecta nos quatro bancos do
-SQL Server do Docker (FreeTDS), carrega os scripts do `ServerResource` e do `ClientScript` gerado do cliente (os erros dos dados de
-produção estão em [Bugs do original](../original/bugs.md#dados-serverresource-clientscript)), se autentica no banco (UID 2, "Game"),
-recebe a lista de Center (9100), Login (9200) e Global (9500), tenta conectar neles e chega ao estado pronto (`OnServerReadyComplete`),
-com o prompt Lua respondendo. Encerra com código 0 (ver [Rodar os servidores](../running.md)). Os pacotes para os servidores que ainda não existem são descartados
-([Dependências](#dependências-de-outros-servidores-levantamento-de-2026-10-31)).
+**Runs on Linux** from directory assembled by `x2_run_game` ([Run directories](../tools/runtime.md)): connects to four Docker
+SQL Server databases (FreeTDS), loads scripts from `ServerResource` and `ClientScript` generated from client (production-data load
+errors are in [Original bugs](../original/bugs.md#data-serverresource-clientscript)), authenticates to DB (UID 2, "Game"), receives
+Center (9100), Login (9200), and Global (9500) lists, attempts to connect, and reaches ready state (`OnServerReadyComplete`), with Lua
+prompt responding. Exits with code 0 (see [Run the servers](../running.md)). Packets to servers that do not yet exist are discarded
+([Dependencies](#dependencies-on-other-servers-survey-from-2026-10-31)).
 
-**Testado com o cliente original** (no Wine, 2026-10-31, com o EPublisherServer e o ChannelServer): o "O servidor está cheio" não
-aparece mais. O cliente conecta na porta 9300, troca a chave e manda o `EGS_VERIFY_ACCOUNT_REQ`; o GameServer o repassa como
-`ELG_NEXON_USER_AUTHENTICATE_REQ`, que é descartado porque o LoginServer não existe, e o cliente fica parado em "Conectando ao servidor".
-Com o [LoginServer](server-login.md) (2026-10-31) o cliente passa daí e chega à vila; a saída para o campo depende do CenterServer.
+**Tested with original client** (Wine, 2026-10-31, with EPublisherServer and ChannelServer): "The server is full" no longer appears.
+Client connects to port 9300, exchanges key, and sends `EGS_VERIFY_ACCOUNT_REQ`; GameServer forwards it as
+`ELG_NEXON_USER_AUTHENTICATE_REQ`, which is discarded because LoginServer does not exist, and client remains at "Connecting to server".
+With [LoginServer](server-login.md) (2026-10-31), client gets past this and reaches town; leaving for field requires CenterServer.
 
-**Build** (2026-10-30, `server/game-build`): o executável (alvo `x2_game_server`, `main` com `KServerMain` como o ChannelServer)
-compila e linka sem warnings em GCC Debug, Clang Debug, GCC Release, Clang Release e clang-cl (Windows, na VM de testes), com os 6
-testes passando em todos. O Clang e o clang-cl acharam três bugs do original (abaixo) que o GCC não acusava.
+**Build** (2026-10-30, `server/game-build`): executable (target `x2_game_server`, `main` uses `KServerMain` like ChannelServer)
+builds and links without warnings with GCC Debug, Clang Debug, GCC Release, Clang Release, and clang-cl (Windows test VM); all 6 tests
+pass in each. Clang and clang-cl found three original bugs (below) that GCC did not report.
 
-Medidas do caminho (GCC Debug, `-k 0`), para dar a escala: 632 erros em 59 arquivos depois da passada mecânica; 0 erros e 1.099
-warnings (190 distintos) depois das correções abaixo e do `fix_warnings.py`.
+Build effort (GCC Debug, `-k 0`): 632 errors in 59 files after mechanical pass; 0 errors and 1,099 warnings (190 distinct) after fixes
+below and `fix_warnings.py`.
 
-**Build:** com 16 jobs o GCC estourou a RAM do host (~12 GB livres; os `.cpp` de 10 a 15 mil linhas usam ~1,5 GB cada): `-j 6`.
+**Build resources:** with 16 jobs, GCC exhausted host RAM (~12 GB free; 10k–15k-line `.cpp` files use ~1.5 GB each): use `-j 6`.
 
-## Mudanças em relação ao original
+## Changes from the original
 
-| Onde | Mudança | Motivo |
+| Where | Change | Reason |
 |---|---|---|
-| Anti-cheat (`GameServer`, `GSUser`, `GSUserFunction`, `GSUserSession`, `GSUserSecurity`, `GSSimLayer`) | Saem HackShield (`m_kHSAuth`, `_AhnHS_*`), XTrap (`m_cXTrapCSM`, mapas `map*.cs3`, `ReloadXTRAP_MAP`) e nProtect, e os handlers `EGS_HACKSHIELD_CHECK_ACK`, `EGS_REQUEST_HACKSHIELD_CHECK_NOT` e `EGS_XTRAP_ACK`. Os pacotes continuam no `Common` | T10. O config US de produção ligava o `CF_XTRAP`; sem o código o servidor age como com as flags desligadas |
-| `GameServer.cpp` | Sai o proxy de malloc do Intel TBB (`tbbmalloc_proxy.h`) e o log "TBB 메모리 관리자 사용" | Alocador do sistema; o roadmap previa tirar o TBB |
-| `GameServer`, `GSScriptRefreshManager` | Saem as chamadas ao KSMS (`ProcessCommunicationManager`, *named pipes* `\\.\pipe\GameServer*`), inclusive os 38 avisos de "script recarregado" | Ferramenta externa só Windows, já tirada do ChannelServer |
-| `NexonSOAP`, `NexonSOAPManager`, `TRIOCP`, `TRIOThread` | Arquivos removidos | Código morto: sem chamador (o relay TCP do próprio original já usava o `KIocp` do Common) |
-| `KSkTRUser::SendDataWithProfile` | Removido | Cópia do `KSocketObject::SendData` com o profiler comentado, sem chamador |
-| `ServerDefine.h` | Incluído à força em todo arquivo do servidor (`-include`/`/FI`, no `x2_server_common`) | Sem um cabeçalho pré-compilado, arquivos que chegavam ao `Enum.h` antes dele compilavam o outro ramo do `EXTEND_SERVER_GROUP_MASK` na mesma função inline |
-| `DEBBilling*` (`Common/OnlyGlobal/AuthAndBilling`) | Compilados pelo GameServer, não pela biblioteca do `Common` | Incluem o `BillManager.h` do GameServer (o original compilava o `Common` dentro de cada servidor) |
-| `NexonBillingTCPPacket` | `unsigned long` → `DWORD` | Campos de 4 bytes do protocolo; `unsigned long` tem 8 bytes no Linux (o `Read8Byte` lia 16) |
-| `UserLogManager`, `RobotTestManager` | Arquivos em UTF-8 (`Utf8FileLocale`), caminhos com `/`, `std::filesystem` | O original usava o locale `"korean"` (CP949) e `CreateDirectoryA` |
-| `XSLXmlParser` (política da Nexon) | `W2A` → UTF-8 | O XML declara `encoding="utf-8"`; o `W2A` usava a code page ANSI |
-| Comparações sempre falsas | `u_char == -1` (grau de guilda) e `unsigned < 0` (nível de skill, página ativa) saem | Sempre falsas também no MSVC: o comportamento fica o mesmo ([Bugs do original](../original/bugs.md)) |
-| `ON_DBE_SERVER_ON_ACK` (`GameServer.cpp`) | Quando o banco recusa o servidor, a resposta marca `SetAuthenticateResult( false )` e o `Init` falha; quando aceita, marca `true` | Como no ChannelServer ([Mudanças](server-channel.md#mudanças-em-relação-ao-original)): o original chamava `::exit( 0 )` nessa thread. Sem o `true`, o `Authenticate` do `Common` portado recusava o GameServer |
+| Anti-cheat (`GameServer`, `GSUser`, `GSUserFunction`, `GSUserSession`, `GSUserSecurity`, `GSSimLayer`) | Remove HackShield (`m_kHSAuth`, `_AhnHS_*`), XTrap (`m_cXTrapCSM`, `map*.cs3`, `ReloadXTRAP_MAP`), nProtect, and handlers `EGS_HACKSHIELD_CHECK_ACK`, `EGS_REQUEST_HACKSHIELD_CHECK_NOT`, `EGS_XTRAP_ACK`. Packets remain in `Common` | T10. Production US config enabled `CF_XTRAP`; without code server behaves as with flags disabled |
+| `GameServer.cpp` | Remove Intel TBB malloc proxy (`tbbmalloc_proxy.h`) and log "TBB 메모리 관리자 사용" | System allocator; roadmap planned TBB removal |
+| `GameServer`, `GSScriptRefreshManager` | Remove KSMS calls (`ProcessCommunicationManager`, *named pipes* `\\.\pipe\GameServer*`), including 38 "script reloaded" notices | External Windows-only tool, already removed from ChannelServer |
+| `NexonSOAP`, `NexonSOAPManager`, `TRIOCP`, `TRIOThread` | Remove files | Dead code: no callers (original TCP relay already used `Common` `KIocp`) |
+| `KSkTRUser::SendDataWithProfile` | Removed | Copy of `KSocketObject::SendData` with profiler commented out, no callers |
+| `ServerDefine.h` | Force-include in every server file (`-include`/`/FI`, in `x2_server_common`) | Without precompiled header, files reaching `Enum.h` before it compiled the other `EXTEND_SERVER_GROUP_MASK` branch in same inline function |
+| `DEBBilling*` (`Common/OnlyGlobal/AuthAndBilling`) | Compiled by GameServer, not `Common` library | Includes GameServer's `BillManager.h` (original compiled `Common` into each server) |
+| `NexonBillingTCPPacket` | `unsigned long` → `DWORD` | 4-byte protocol fields; `unsigned long` is 8 bytes on Linux (`Read8Byte` read 16) |
+| `UserLogManager`, `RobotTestManager` | Files use UTF-8 (`Utf8FileLocale`), `/` paths, `std::filesystem` | Original used `"korean"` locale (CP949) and `CreateDirectoryA` |
+| `XSLXmlParser` (Nexon policy) | `W2A` → UTF-8 | XML declares `encoding="utf-8"`; `W2A` used ANSI code page |
+| Always-false comparisons | Remove `u_char == -1` (guild grade) and `unsigned < 0` (skill level, active page) | Also always false in MSVC: behavior unchanged ([Original bugs](../original/bugs.md)) |
+| `ON_DBE_SERVER_ON_ACK` (`GameServer.cpp`) | When DB rejects server, response calls `SetAuthenticateResult( false )` and `Init` fails; when accepted, sets `true` | As in ChannelServer ([Changes](server-channel.md#changes-from-the-original)): original called `::exit( 0 )` on that thread. Without `true`, ported `Common` `Authenticate` rejected GameServer |
 
-### Bugs do original corrigidos
+### Original bugs fixed
 
-| Onde | Bug | Correção |
+| Where | Bug | Fix |
 |---|---|---|
-| `GSLogDBThread` (estatística do personagem) | Quatro colunas de ED (`US_ED_OpenCubeSpendED`, `US_ED_PBattleFieldED`, `US_ED_MCoboExpressTicketED`, `US_ED_MItemResolve`) eram lidas do `etcData[22]` com índices 22 a 25: leitura fora do array (lixo da pilha no log) | Lidas do `edData`, onde são somadas (2026-10-30, achado pelo `-Warray-bounds` do Clang) |
-| `GSUserAdminCheat` (`/dhn`) | O `std::wstring` do apelido passava pelo `...` do `CString::Format`: o `%s` lia a estrutura como ponteiro | `.c_str()` (o Clang recusa: "call will abort at runtime") |
-| `KGSHenirRanking::SetLastRank` | `m_uiLastRank = m_uiLastRank`: o setter não fazia nada e o limite do ranking de Henir usava sempre o valor inicial | Grava o parâmetro (`-Wself-assign-field`) |
-| `GSGameDBThread`, seleção de personagem | Depois de ler a linha do `dbo.P_GSkill_Expand_SEL` faltava o `EndFetch`: a query seguinte (`dbo.P_GUnitLastPosition_GET`) achava o cursor aberto (`24000`) e o `KODBC` reconectava e repetia | `EndFetch` (2026-10-31, achado no teste com o cliente do `server/login-run`) |
-| `CXSLSkillTree::LoadSkillTemplet_Stat` (`Common`) | Uma tabela de stat com menos de 30 níveis (as skills de guilda 500 e 501 têm 10) era lida até o nível 30: leitura fora do vetor | Os níveis sem dado ficam com 0 (2026-10-31, asserção da libstdc++ no Debug). A checagem invertida que deixa a tabela passar fica para a Fase 5 ([Bugs do original](../original/bugs.md)) |
+| `GSLogDBThread` (character statistics) | Four ED columns (`US_ED_OpenCubeSpendED`, `US_ED_PBattleFieldED`, `US_ED_MCoboExpressTicketED`, `US_ED_MItemResolve`) were read from `etcData[22]` at indices 22–25: out-of-bounds read (stack garbage in log) | Read from `edData`, where they are summed (2026-10-30, found by Clang `-Warray-bounds`) |
+| `GSUserAdminCheat` (`/dhn`) | Nickname `std::wstring` passed through `CString::Format` `...`: `%s` interpreted its structure as pointer | `.c_str()` (Clang rejects: "call will abort at runtime") |
+| `KGSHenirRanking::SetLastRank` | `m_uiLastRank = m_uiLastRank`: setter did nothing and Henir ranking limit always used initial value | Store parameter (`-Wself-assign-field`) |
+| `GSGameDBThread`, character selection | Missing `EndFetch` after reading `dbo.P_GSkill_Expand_SEL` row: next query (`dbo.P_GUnitLastPosition_GET`) found open cursor (`24000`), so `KODBC` reconnected and retried | Add `EndFetch` (2026-10-31, found in client test during `server/login-run`) |
+| `CXSLSkillTree::LoadSkillTemplet_Stat` (`Common`) | Stat table with fewer than 30 levels (guild skills 500 and 501 have 10) was read through level 30: out-of-bounds read | Missing levels become 0 (2026-10-31, libstdc++ Debug assertion). Inverted check that allows short table remains for Phase 5 ([Original bugs](../original/bugs.md)) |
 
-Portabilidade (sem mudança de comportamento): passada mecânica (`mechanical.py`); `BOOST_MAP_CONST_FOREACH` → range-for;
-`boost::iequals`/`ifind_first`/`replace_all` → `x2::platform::IEquals`/`IContains`/`ReplaceAll` (dobra ASCII, como o Boost no locale "C");
-52 declarações puladas por `goto end_proc` sobem para o topo da função (`tools/port/fix_goto.py`, mais 2 à mão); `LOG_CONDITION` (KNCSDK)
-virou uma expressão; `_KCSLOCK_TYPEDEF_` variádico; `KUserManager::MultiQueueingByCID` com a sobrecarga da base (o `Common` deixara isso
-pendente); `CString::GetBuffer`; `std::min/max` no lugar das macros; `_itoa`/`_i64tow` → `std::to_string`/`_i64tow_s`; `StrStrW` → `wcsstr`;
-destrutores `virtual` em 14 singletons; `using` das sobrecargas escondidas de `RoutePacket`/`Init`; `#pragma NOTE` removidos.
+Portability (no behavior change): mechanical pass (`mechanical.py`); `BOOST_MAP_CONST_FOREACH` → range-for;
+`boost::iequals`/`ifind_first`/`replace_all` → `x2::platform::IEquals`/`IContains`/`ReplaceAll` (ASCII folding, like Boost in "C" locale);
+move 52 declarations skipped by `goto end_proc` to function start (`tools/port/fix_goto.py`, plus 2 manual); KNCSDK `LOG_CONDITION`
+became an expression; `_KCSLOCK_TYPEDEF_` made variadic; `KUserManager::MultiQueueingByCID` now exposes base overload
+(previously pending in `Common`); `CString::GetBuffer`; `std::min/max` instead of macros; `_itoa`/`_i64tow` → `std::to_string`/`_i64tow_s`;
+`StrStrW` → `wcsstr`; `virtual` destructors in 14 singletons; `using` declarations for hidden `RoutePacket`/`Init` overloads; remove `#pragma NOTE`.
 
-## Pendências
+## Pending
 
-- **Nexon (KR) ainda compila como código morto** (`NexonBillingTCP*`, `KNexonBillingTCPManager`): o US usa `BF_GLOBAL_SERVICE` e o
-  `SiKBillManager()` (DEB). Sai no passo do roadmap que remove os publishers. Antes, o `CI_EXPAND_SKILL_PAGE` do
-  `GSUserCashShop_Global.cpp` consulta o catálogo da Nexon, que no US está sempre vazio: no original a compra falhava (conferir ao rodar o cash).
-- Bugs do original mantidos (defesa mágica das skills, grau de guilda, `IsPossibleLowLevel`...) e erros dos dados de produção ao carregar:
-  [Bugs do original](../original/bugs.md), para a Fase 5.
-- 105 `unsigned long` no GameServer (8 bytes no Linux): revisar os que vão para rede, banco ou formato fixo ao rodar.
+- **Nexon (KR) still compiles as dead code** (`NexonBillingTCP*`, `KNexonBillingTCPManager`): US uses `BF_GLOBAL_SERVICE` and
+  `SiKBillManager()` (DEB). Remove in roadmap publisher cleanup step. Before that, `CI_EXPAND_SKILL_PAGE` in
+  `GSUserCashShop_Global.cpp` queries Nexon catalog, always empty in US: purchase failed in original (verify when testing cash).
+- Original bugs retained (magic defense for skills, guild grade, `IsPossibleLowLevel`...) and production-data load errors:
+  [Original bugs](../original/bugs.md), for Phase 5.
+- 105 `unsigned long` in GameServer (8 bytes on Linux): review those sent to network, DB, or fixed formats when running.
 
-## Dependências de outros servidores (levantamento de 2026-10-31)
+## Dependencies on other servers (survey from 2026-10-31)
 
-O GameServer não conhece os outros servidores pela configuração. Ao se autenticar no banco, recebe a lista de Center, Login e Global
-(`m_mapCenterList`/`m_mapLoginList`/`m_mapGlobalList`, `GameServer.cpp`) e o `KProxyManager` (`Common`) conecta em todos
-(`ConnectAll`), com uma thread que tenta de novo a cada 10 s. **Ele não espera essas conexões para ficar pronto**
-(`SetServerReady` vem logo depois). Sem o servidor de destino, o `SendTo*Server` registra "Proxy 포인터를 찾을 수 없음" e descarta o pacote.
-Ninguém responde e não há timeout: o usuário fica parado no estado em que estava.
+GameServer does not know other servers from configuration. On DB authentication, it receives Center, Login, and Global lists
+(`m_mapCenterList`/`m_mapLoginList`/`m_mapGlobalList`, `GameServer.cpp`) and `KProxyManager` (`Common`) connects to all
+(`ConnectAll`), with a thread retrying every 10 seconds. **It does not wait for these connections before becoming ready**
+(`SetServerReady` follows immediately). Without target server, `SendTo*Server` logs "Proxy pointer not found" and discards packet.
+No response or timeout: user remains in current state.
 
-Do canal até a vila (`GSUserSession.cpp`, `GSUserGameCommon.cpp`, `GSUserField.cpp`, `GSUserFunction.cpp`):
+From channel through town (`GSUserSession.cpp`, `GSUserGameCommon.cpp`, `GSUserField.cpp`, `GSUserFunction.cpp`):
 
-| Momento | Pacote | Destino | Sem o servidor |
+| Point | Packet | Destination | If server is absent |
 |---|---|---|---|
-| `EGS_VERIFY_ACCOUNT_REQ` | `ELG_NEXON_USER_AUTHENTICATE_REQ` → `_ACK` | LoginServer, que autentica no `Account` (`P_MUser_SEL_Auth`, ramo `SERV_GLOBAL_AUTH`) | **bloqueia**: o cliente nunca recebe o `EGS_VERIFY_ACCOUNT_ACK` |
-| depois do `_ACK` | `ELG_REGISTER_USER_REQ` → `ELG_REGISTER_USER_GLOBAL_PUBLISHER_ACK` | LoginServer (lista de usuários, bloqueio de conta) | **bloqueia**: o usuário não passa para `S_LOGINED` |
-| seleção de servidor e de personagem | nenhum (só os bancos `Game` e `Account`) | — | — |
-| personagem selecionado | `ELG_REGISTER_UNIT_NOT`, `EGB_REGISTER_UNIT_NOT`, `ELG_UPDATE_USER_UNIT_BUFF_INFO_REQ` | Login, Global | só avisos, nada espera por eles |
-| entrada na vila | `ERM_JOIN_FIELD_*` | o próprio GameServer (`SendToGSField`) | — |
+| `EGS_VERIFY_ACCOUNT_REQ` | `ELG_NEXON_USER_AUTHENTICATE_REQ` → `_ACK` | LoginServer authenticates against `Account` (`P_MUser_SEL_Auth`, `SERV_GLOBAL_AUTH` branch) | **blocks**: client never receives `EGS_VERIFY_ACCOUNT_ACK` |
+| after `_ACK` | `ELG_REGISTER_USER_REQ` → `ELG_REGISTER_USER_GLOBAL_PUBLISHER_ACK` | LoginServer (user list, account block) | **blocks**: user does not enter `S_LOGINED` |
+| server and character selection | none (only `Game` and `Account` databases) | — | — |
+| character selected | `ELG_REGISTER_UNIT_NOT`, `EGB_REGISTER_UNIT_NOT`, `ELG_UPDATE_USER_UNIT_BUFF_INFO_REQ` | Login, Global | warnings only; nothing waits for replies |
+| enter town | `ERM_JOIN_FIELD_*` | GameServer itself (`SendToGSField`) | — |
 
-Conclusão: **para chegar à vila só falta o LoginServer** (45 `.cpp`, ~42 mil linhas no original, 2026-10-31). O CenterServer (~87 mil
-linhas: salas de dungeon, PvP, praça, festas, troca) e o GlobalServer (~21 mil: missões globais, quest aleatória do dia, CCU) só entram
-depois da vila. O LoginServer não conecta em nenhum outro servidor: é ele que recebe as conexões.
+Conclusion: **only LoginServer is needed to reach town** (45 `.cpp`, ~42k original lines, 2026-10-31). CenterServer (~87k lines:
+dungeon rooms, PvP, square, parties, trade) and GlobalServer (~21k: global missions, random daily quest, CCU) are only needed after town.
+LoginServer does not connect to any other server; it accepts their connections.
 
-## Plano (um branch por passo)
+## Plan (one branch per step)
 
-1. ~~**`server/game-import`**~~: este passo.
-2. ~~**`server/game-build`**~~ (2026-10-30): compilar sem warnings em GCC, Clang e clang-cl, com o mesmo `main` (`KServerMain`) e os hooks do servidor
-   (`g_szConfigFile`, `CreateDBThread`). Maior que o ChannelServer (15× o código): pode virar mais de um branch.
-3. ~~**`server/game-run`**~~ (2026-10-31): `x2_run_game` (`runtime/GameServer`, `Game01`) e o GameServer até o estado pronto, com o cliente
-   conectando nele. O login para no `EGS_VERIFY_ACCOUNT_REQ` até existir o LoginServer ([Dependências](#dependências-de-outros-servidores-levantamento-de-2026-10-31)).
-4. **`server/login-import`**, **`server/login-build`** e **`server/login-run`**: o LoginServer, como o ChannelServer e o GameServer.
-   Com ele, o cliente da seleção de personagem até a vila. O CenterServer e o GlobalServer vêm depois (dungeon, PvP, festas).
+1. ~~**`server/game-import`**~~: this step.
+2. ~~**`server/game-build`**~~ (2026-10-30): build without warnings in GCC, Clang, clang-cl, using same `main` (`KServerMain`) and
+   server hooks (`g_szConfigFile`, `CreateDBThread`). Larger than ChannelServer (15× the code); may span multiple branches.
+3. ~~**`server/game-run`**~~ (2026-10-31): `x2_run_game` (`runtime/GameServer`, `Game01`) and GameServer to ready state, with client
+   connecting. Login stops at `EGS_VERIFY_ACCOUNT_REQ` until LoginServer exists
+   ([Dependencies](#dependencies-on-other-servers-survey-from-2026-10-31)).
+4. **`server/login-import`**, **`server/login-build`**, and **`server/login-run`**: LoginServer, like ChannelServer and GameServer.
+   Then client goes from character selection to town. CenterServer and GlobalServer follow (dungeon, PvP, parties).

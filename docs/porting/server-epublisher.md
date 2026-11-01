@@ -1,80 +1,80 @@
-[Início](../README.md) › [Porte](README.md) › Servidor: EPublisherServer
+[Home](../README.md) › [Porting](README.md) › Server: EPublisherServer
 
-# Servidor: EPublisherServer (`src/server/EPublisherServer`)
+# Server: EPublisherServer (`src/server/EPublisherServer`)
 
-Serviço de autenticação e cash que o ChannelServer e o GameServer chamam pelo cliente DEB (`_DEB_AUTH`: `KDEBAuth`,
-`KDEBBilling` em `Common/OnlyGlobal/AuthAndBilling`). O código original chama esse papel de *EPublisher* (pacotes
-`EPUBLISHER_*`). Decisão T23 em [Decisões](../project/decisions.md).
+Authentication and cash service called by ChannelServer and GameServer through DEB client (`_DEB_AUTH`: `KDEBAuth`,
+`KDEBBilling` in `Common/OnlyGlobal/AuthAndBilling`). Original code calls this role *EPublisher* (`EPUBLISHER_*` packets).
+Decision T23 in [Decisions](../project/decisions.md).
 
-**Reimplementação**, em 2026-10-30, do `AuthServer` do dono do projeto (`_reference/AuthServer`: C++, gSOAP 2.8, SOCI, OpenSSL, Lua 5.1 próprio).
-Ele é considerado parte do código original: fica até a Fase 5, quando a função deve ir para o ChannelServer.
-**Regra:** o EPublisherServer usa o `Common` (`KODBC`, `NetError`, log, `lua_tinker`, as mensagens SOAP do DEB); **nada do `Common` ou dos outros servidores usa ele.**
+**Reimplementation**, on 2026-10-30, of the project owner's `AuthServer` (`_reference/AuthServer`: C++, gSOAP 2.8, SOCI, OpenSSL,
+custom Lua 5.1). It is considered part of original code: remains until Phase 5, when functionality should move into ChannelServer.
+**Rule:** EPublisherServer uses `Common` (`KODBC`, `NetError`, logging, `lua_tinker`, DEB SOAP messages); **nothing in `Common` or other servers depends on it.**
 
-## Estado (2026-10-30)
+## Status (2026-10-30)
 
-Compila sem warnings (GCC, Clang, MinGW), testes passando no Linux e no Wine. Roda contra o banco do Docker: o login `test`/`test`
-devolve a conta 20004. Sobe junto com o ChannelServer (pasta `run/`, ver [Pastas de execução](../tools/runtime.md)).
+Builds without warnings (GCC, Clang, MinGW); tests pass on Linux and under Wine. Runs against Docker database: login `test`/`test`
+returns account 20004. Starts alongside ChannelServer (`run/` directory, see [Run directories](../tools/runtime.md)).
 
-## Protocolo
+## Protocol
 
-SOAP 1.1 document/literal sobre HTTP/1.1, exatamente o que o cliente gSOAP 2.7 dos servidores escrevia e lia: `POST` com
-`Content-Length`, elementos qualificados pelo namespace `urn:AuthService` (prefixo `ns2`). Desde a T31 (2026-10-31) os servidores usam um
-cliente próprio que escreve os mesmos bytes ([Common › Cliente do DEB](server-common.md#cliente-do-deb-t31)); as mensagens
-(`x2::deb`, `Common/OnlyGlobal/AuthAndBilling/DEB/Soap.{h,cpp}`) são as mesmas dos dois lados.
+SOAP 1.1 document/literal over HTTP/1.1, exactly what servers' gSOAP 2.7 client wrote and read: `POST` with
+`Content-Length`, elements qualified by `urn:AuthService` namespace (prefix `ns2`). Since T31 (2026-10-31), servers use a custom
+client writing the same bytes ([Common › DEB client](server-common.md#deb-client-t31)); messages (`x2::deb`,
+`Common/OnlyGlobal/AuthAndBilling/DEB/Soap.{h,cpp}`) are shared by both sides.
 
-| Operação | Pedido | Resposta |
+| Operation | Request | Response |
 |---|---|---|
-| `LoginRequest` | `strUsername`, `strPassword`, `strIPAddress` | `LoginResponse`: `iResult`, `strID` (= UID em texto), `iPublisherSN` (= UID), `strPurchaseToken`, `iChannelingCode` (0) |
+| `LoginRequest` | `strUsername`, `strPassword`, `strIPAddress` | `LoginResponse`: `iResult`, `strID` (= UID as text), `iPublisherSN` (= UID), `strPurchaseToken`, `iChannelingCode` (0) |
 | `GetUserCashRequest` | `uiPublisherUID` | `GetUserCashResponse`: `iOK`, `ulBalance` |
-| `PurchaseProductRequest` | `uiPublisherUID`, `iChannelingCode`, `iUnitUID`, `strUserIP`, `strNickName`, `strTotalOrderID`, `strTotalList` (`<nº>_<id>_<preço>\|...`) | `PurchaseProductResponse`: `iOK`, `iTotalCash` |
+| `PurchaseProductRequest` | `uiPublisherUID`, `iChannelingCode`, `iUnitUID`, `strUserIP`, `strNickName`, `strTotalOrderID`, `strTotalList` (`<count>_<id>_<price>\|...`) | `PurchaseProductResponse`: `iOK`, `iTotalCash` |
 
-Os resultados são os `NetError` do `Common` (os mesmos que o ChannelServer repassa ao cliente): login `NET_OK`, `ERR_VERIFY_20`
-(conta ou senha), `ERR_VERIFY_12` (manutenção), `ERR_VERIFY_21` (erro de banco); cash `ERR_GASH_02`/`ERR_GASH_00`; compra
-`ERR_PAYLETTER_BILLING_08` (saldo), `_09` (conta), `_30` (lista ou erro).
+Results use `Common` `NetError` codes (same ones ChannelServer forwards to client): login `NET_OK`, `ERR_VERIFY_20`
+(account or password), `ERR_VERIFY_12` (maintenance), `ERR_VERIFY_21` (DB error); cash `ERR_GASH_02`/`ERR_GASH_00`; purchase
+`ERR_PAYLETTER_BILLING_08` (balance), `_09` (account), `_30` (list or error).
 
-Banco `Account`: `DEBAccounts` (`UID`, `AccountID`, `Password` = sha256 hexadecimal minúsculo de senha + sal, `PurchaseToken`) e
-`DEBUserCash` (`UserUID`, `Cash`). A estrutura não muda.
+`Account` database: `DEBAccounts` (`UID`, `AccountID`, `Password` = lowercase hexadecimal SHA-256 of password + salt, `PurchaseToken`)
+and `DEBUserCash` (`UserUID`, `Cash`). Schema is unchanged.
 
-## Arquivos
+## Files
 
-| Arquivo | Papel |
+| File | Role |
 |---|---|
-| `Http.{h,cpp}` | um pedido HTTP por vez, com keep-alive quando pedido; tempo limite de 10 s por leitura, como o original |
-| `PublisherService.{h,cpp}` | as três operações sobre `IAccountStore`, sem SOAP nem banco (testável) |
-| `OdbcAccountStore.{h,cpp}` | `IAccountStore` sobre o `KODBC`, com o `.dsn` e o driver dos servidores |
-| `EPublisherServer.{h,cpp}`, `main.cpp` | lê o pedido e monta a resposta com as mensagens SOAP do `Common` (`x2::deb`); config Lua, porta, uma thread por conexão (até 100), o terminal dos outros servidores (T15), `--no-stdin` para serviço |
-| `tests/test_epublisher.cpp` | hash, SOAP, operações com um armazenamento falso, um pedido **capturado do cliente gSOAP** antes de ele sair (T31) e o **cliente dos servidores** (`x2::deb::SoapClient`) contra o serviço |
+| `Http.{h,cpp}` | One HTTP request at a time, keep-alive when requested; 10-second read timeout, like original |
+| `PublisherService.{h,cpp}` | Three operations over `IAccountStore`, no SOAP or DB (testable) |
+| `OdbcAccountStore.{h,cpp}` | `IAccountStore` on `KODBC`, with server `.dsn` and driver |
+| `EPublisherServer.{h,cpp}`, `main.cpp` | Read request and build response using `Common` SOAP messages (`x2::deb`); Lua config, port, one thread per connection (up to 100), same terminal as other servers (T15), `--no-stdin` for service |
+| `tests/test_epublisher.cpp` | Hash, SOAP, operations with fake store, **captured request from gSOAP client** before its removal (T31), and **server client** (`x2::deb::SoapClient`) against service |
 
-## Uso
+## Usage
 
-`EPublisherServer DEV` lê `config_ep_DEV.lua` (template em `runtime/EPublisherServer/`):
+`EPublisherServer DEV` reads `config_ep_DEV.lua` (template in `runtime/EPublisherServer/`):
 
 ```lua
 EPublisher:SetBindAddress( "0.0.0.0" )
 EPublisher:SetPort( 8000 )
 EPublisher:SetMaintenance( false )
-EPublisher:SetODBCDriver( "..." )   -- como DBLayer:SetODBCDriver
+EPublisher:SetODBCDriver( "..." )   -- like DBLayer:SetODBCDriver
 EPublisher:SetODBCOptions( "..." )
 EPublisher:SetDSN( "Account.dsn" )
 log( 0 )
 ```
 
-## Diferenças em relação ao AuthServer original
+## Differences from original AuthServer
 
-| Onde | Original | Agora | Motivo |
+| Where | Original | Now | Reason |
 |---|---|---|---|
-| Dependências | gSOAP (servidor), SOCI, OpenSSL, Lua 5.1 e lua_tinker próprios | `KODBC`, `x2::crypto` (SHA-256, T27), LuaJIT e `lua_tinker` do projeto; HTTP/SOAP próprios | Sem dependência nova (pedido do usuário) |
-| Nome, config | `AuthServer`, `AuthConfig.lua` com `Auth:SetPort/SetLogLevel/SetMaintenance`, `mssql.dsn` em texto | `EPublisherServer <tag>`, `config_ep_<tag>.lua` com `EPublisher:...`, `log()` e `.dsn` como os servidores | Mesmo esquema dos outros servidores |
-| `NetError` | cópia própria do `NetError.h` | o `NetError` do `Common` | Os códigos são os que o ChannelServer e o cliente usam |
-| Compra | lê o saldo e grava o novo em duas consultas; preço negativo é ignorado; lista malformada lança exceção | um `UPDATE ... OUTPUT ... WHERE Cash >= preço`; lista malformada ou preço negativo é recusado (`_30`) | Duas compras simultâneas não gastam o mesmo saldo |
-| `iTotalCash` | nunca preenchido (0) | saldo depois da compra (ou o atual, se faltou saldo) | Informativo; o `KDEBBilling` não lê o campo |
-| Erro de banco no login | exceção não tratada na thread do pedido | `ERR_VERIFY_21` | |
-| Encerramento | laço sem fim; `exit` se a porta falha | como os servidores (terminal da T15: confirmação, fim do stdin ou sinal); código 1 se a porta ou o banco falham | |
+| Dependencies | gSOAP (server), SOCI, OpenSSL, Lua 5.1 and custom lua_tinker | `KODBC`, `x2::crypto` (SHA-256, T27), project's LuaJIT and `lua_tinker`; custom HTTP/SOAP | No new dependencies (user request) |
+| Name/config | `AuthServer`, `AuthConfig.lua` with `Auth:SetPort/SetLogLevel/SetMaintenance`, text `mssql.dsn` | `EPublisherServer <tag>`, `config_ep_<tag>.lua` with `EPublisher:...`, `log()`, `.dsn` like other servers | Same model as other servers |
+| `NetError` | own copy of `NetError.h` | `Common` `NetError` | Codes are used by ChannelServer and client |
+| Purchase | reads balance and writes new balance in two queries; ignores negative price; malformed list throws | one `UPDATE ... OUTPUT ... WHERE Cash >= price`; malformed list or negative price is rejected (`_30`) | Two simultaneous purchases cannot spend the same balance |
+| `iTotalCash` | never populated (0) | balance after purchase (or current balance if insufficient funds) | Informational; `KDEBBilling` does not read field |
+| Login DB error | unhandled exception on request thread | `ERR_VERIFY_21` | |
+| Shutdown | infinite loop; `exit` if port fails | like other servers (T15 terminal: confirmation, stdin EOF, or signal); code 1 if port or DB fails | |
 
-Observado no cliente DEB (`Common`, não muda aqui): `KDEBAuth` só copia o `strPurchaseToken` da resposta quando ele está **vazio**
-(teste invertido), então o token nunca chega ao servidor. Anotado para quando o GameServer usar o cash.
+Observed in DEB client (`Common`, unchanged here): `KDEBAuth` copies response `strPurchaseToken` only when it is **empty**
+(inverted check), so token never reaches server. Recorded for when GameServer uses cash.
 
-## Pendências
+## Pending
 
-- Login completo com o `elsword.exe` (passo `server/channel-run`).
-- Cash e compra com o GameServer (o `KDEBBilling` ainda não é compilado).
+- Full login with `elsword.exe` (`server/channel-run` step).
+- Cash and purchase with GameServer (`KDEBBilling` is not yet compiled).

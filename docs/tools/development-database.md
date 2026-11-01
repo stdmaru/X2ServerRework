@@ -1,65 +1,65 @@
-[Início](../README.md) › [Ferramentas](README.md) › Banco de desenvolvimento
+[Home](../README.md) › [Tools](README.md) › Development database
 
-# Banco de desenvolvimento (SQL Server em Docker)
+# Development database (SQL Server in Docker)
 
-SQL Server 2022 local para testar o servidor e o `KODBC` ([Banco de dados (ODBC)](../porting/server-common-db.md)), com os
-bancos do jogo restaurados dos backups em `_database/` (fora do git).
+Local SQL Server 2022 for testing servers and `KODBC` ([ODBC database](../porting/server-common-db.md)), with game databases restored
+from backups in `_database/` (outside git).
 
-## Bancos (2026-10-30)
+## Databases (2026-10-30)
 
-| Backup | Banco | Conteúdo |
+| Backup | Database | Contents |
 |---|---|---|
-| `Account.bak` | `Account` | contas (`MUser`: 5 usuários), 31 tabelas, 103 procedures |
-| `Game01.bak` | `Game01` | personagens, itens, quests (`GUnit`, `GItem`...), 145 tabelas, 445 procedures |
-| `ES_BILLING.bak` | `ES_BILLING` | loja/cobrança (`EB_Product`: 8.193 produtos), 40 tabelas, 62 procedures |
-| `Statistics.bak` | `Statistics` | logs e estatísticas, 168 tabelas, 333 procedures |
+| `Account.bak` | `Account` | accounts (`MUser`: 5 users), 31 tables, 103 procedures |
+| `Game01.bak` | `Game01` | characters, items, quests (`GUnit`, `GItem`...), 145 tables, 445 procedures |
+| `ES_BILLING.bak` | `ES_BILLING` | shop/billing (`EB_Product`: 8,193 products), 40 tables, 62 procedures |
+| `Statistics.bak` | `Statistics` | logs and statistics, 168 tables, 333 procedures |
 
-Collation `Latin1_General_CI_AS`, nível de compatibilidade 100 (SQL Server 2008). Nos `.dsn` do servidor original os bancos têm
-outros nomes (`DATABASE=Elsword-Account`...): ao rodar um servidor contra este banco, ajuste o `DATABASE` dos `.dsn`.
+Collation `Latin1_General_CI_AS`, compatibility level 100 (SQL Server 2008). Original server `.dsn` files use other database names
+(`DATABASE=Elsword-Account`...): when running a server against this database, adjust `.dsn` `DATABASE` values.
 
-## Uso
+## Usage
 
 ```bash
-docker compose -f docker/docker-compose.yml up -d --wait     # sobe (cria o volume na primeira vez)
-docker/mssql/restore.sh                                       # restaura todos os _database/*.bak (substitui os bancos)
-docker compose -f docker/docker-compose.yml stop              # para; os dados ficam no volume x2-mssql-data
-docker compose -f docker/docker-compose.yml down -v           # apaga o container e o volume
+docker compose -f docker/docker-compose.yml up -d --wait     # start (creates volume first time)
+docker/mssql/restore.sh                                       # restore all _database/*.bak (replaces databases)
+docker compose -f docker/docker-compose.yml stop              # stop; data remains in x2-mssql-data volume
+docker compose -f docker/docker-compose.yml down -v           # remove container and volume
 ```
 
-- Escuta só em `127.0.0.1:1433` (`X2_DB_PORT` muda a porta). Usuário `sa`; a senha padrão de desenvolvimento está no
-  `docker/docker-compose.yml` e muda com `X2_DB_PASSWORD` (antes do primeiro `up`, e também no `restore.sh`). As variáveis podem ficar
-  no `docker/.env` (não versionado; modelo em `docker/.env.example`), que o `docker compose`, o `restore.sh`, o `docker/build.sh` e o
-  CMake leem; a do shell vence a do arquivo (2026-10-31).
-- O `restore.sh` copia os `.bak` para dentro do container (o SQL Server roda como uid 10001, que pode não conseguir ler os arquivos montados)
-  e restaura cada um com `MOVE` dos arquivos lógicos. Aceita arquivos específicos: `docker/mssql/restore.sh _database/Game01.bak`.
-- **Dados ajustados para desenvolvimento** (o `restore.sh` faz depois de restaurar o `Statistics`): `LServerList.PublicIP/PrivateIP/IP`
-  e `LChannelList.IP` passam a `X2_SERVER_IP` (padrão `127.0.0.1`). Os servidores se identificam no banco pelo endereço
-  (`SetLocalIP` nos configs) e o ChannelServer manda ao cliente os endereços da `LChannelList`; o backup tem os de produção.
-  Os outros campos com IP são logs. Regra (2026-10-30): **os dados podem mudar, por script; a estrutura (tabelas, procedures) não**.
-- `sqlcmd` dentro do container: `docker exec -it x2-mssql /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P '<senha>'`.
+- Listens only on `127.0.0.1:1433` (`X2_DB_PORT` changes port). User `sa`; default development password is in
+  `docker/docker-compose.yml` and can be changed with `X2_DB_PASSWORD` (before first `up`, and also in `restore.sh`). Variables may
+  be in `docker/.env` (not versioned; template `docker/.env.example`), read by `docker compose`, `restore.sh`, `docker/build.sh`,
+  and CMake; shell value takes precedence over file (2026-10-31).
+- `restore.sh` copies `.bak` files into container (SQL Server runs as uid 10001, which may not read mounted files), then restores
+  each with `MOVE` for logical files. Accepts specific files: `docker/mssql/restore.sh _database/Game01.bak`.
+- **Data adjusted for development** (`restore.sh` runs after restoring `Statistics`): `LServerList.PublicIP/PrivateIP/IP`
+  and `LChannelList.IP` become `X2_SERVER_IP` (default `127.0.0.1`). Servers identify themselves in DB by address
+  (`SetLocalIP` in configs), and ChannelServer sends `LChannelList` addresses to client; backup contains production addresses.
+  Other IP fields are logs. Rule (2026-10-30): **data may be changed by script; schema (tables, procedures) may not**.
+- `sqlcmd` inside container: `docker exec -it x2-mssql /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P '<password>'`.
 
 ## Connection strings
 
-FreeTDS (pacote `freetds`; driver em `/usr/lib/libtdsodbc.so`, sem registrar no `odbcinst.ini`):
+FreeTDS (`freetds` package; driver at `/usr/lib/libtdsodbc.so`, no registration in `odbcinst.ini`):
 
-```
-DRIVER=/usr/lib/libtdsodbc.so;SERVER=127.0.0.1,1433;UID=sa;PWD=<senha>;TDS_Version=7.4;ClientCharset=UTF-8
-```
-
-ODBC Driver 18 (`msodbcsql18`, AUR; não testado em 2026-10-30):
-
-```
-DRIVER={ODBC Driver 18 for SQL Server};SERVER=127.0.0.1,1433;UID=sa;PWD=<senha>;Encrypt=yes;TrustServerCertificate=yes
+```text
+DRIVER=/usr/lib/libtdsodbc.so;SERVER=127.0.0.1,1433;UID=sa;******;TDS_Version=7.4;ClientCharset=UTF-8
 ```
 
-## Testes do `KODBC` contra o banco
+ODBC Driver 18 (`msodbcsql18`, AUR; not tested as of 2026-10-30):
 
-A suíte `db` de `x2_server_common_tests` roda quando o CMake recebe a connection string (sem `DATABASE`; os testes escolhem o banco):
+```text
+DRIVER={ODBC Driver 18 for SQL Server};SERVER=127.0.0.1,1433;UID=sa;******;Encrypt=yes;TrustServerCertificate=yes
+```
+
+## `KODBC` tests against database
+
+`db` suite of `x2_server_common_tests` runs when CMake receives connection string (without `DATABASE`; tests select database):
 
 ```bash
-cmake --preset linux-debug -DX2_TEST_ODBC="DRIVER=/usr/lib/libtdsodbc.so;SERVER=127.0.0.1,1433;UID=sa;PWD=<senha>;TDS_Version=7.4;ClientCharset=UTF-8"
+cmake --preset linux-debug -DX2_TEST_ODBC="DRIVER=/usr/lib/libtdsodbc.so;SERVER=127.0.0.1,1433;UID=sa;******;TDS_Version=7.4;ClientCharset=UTF-8"
 ctest --preset linux-debug -R server_common_db
 ```
 
-Os testes só leem dados (e criam uma procedure temporária `#x2_test_sp`, que some com a conexão). Precisam dos backups restaurados:
-um deles lê os personagens do usuário 1 do `Game01`.
+Tests only read data (and create temporary procedure `#x2_test_sp`, removed with connection). Restored backups are needed:
+one test reads character data for user 1 from `Game01`.

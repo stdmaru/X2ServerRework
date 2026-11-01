@@ -1,98 +1,97 @@
-[Início](../README.md) › [Porte](README.md) › Servidor: CenterServer
+[Home](../README.md) › [Porting](README.md) › Server: CenterServer
 
-# Servidor: CenterServer (`src/server/CenterServer`)
+# Server: CenterServer (`src/server/CenterServer`)
 
-Servidor das salas: campos de batalha (`BattleFieldRoom`), dungeons (`DungeonRoom`, inclusive Henir e defesa), PvP (`PvPRoom`, partidas
-e resultados), praça (`Square`), festas (`NewCnParty`, febre de festa), troca (`Trade`), loja pessoal (`PersonalShop`), centro de
-treino e salão de casamento. É o lado servidor da simulação: monstros, drops e resultados das salas. Recebe as conexões dos GameServers
-(porta 9100); os GameServers mandam para ele os `ERM_*` (o primeiro a aparecer é o `ERM_OPEN_BATTLE_FIELD_REQ`, ao sair da vila).
-Origem: `KncWX2Server/CenterServer`, importado em 2026-10-31 com as [flags do servidor](../tools/flags.md)
-([relatório](../../tools/import/reports/server-center/REPORT.md)). Usa o [Common](server-common.md), já portado. Mesma posição relativa
-do original (`src/server/CenterServer` ao lado de `src/server/Common`).
+Room server: battlefields (`BattleFieldRoom`), dungeons (`DungeonRoom`, including Henir and defense), PvP (`PvPRoom`, matches
+and results), square (`Square`), parties (`NewCnParty`, party fever), trade (`Trade`), personal shop (`PersonalShop`), training center,
+and wedding hall. Server side of simulation: monsters, drops, and room results. Accepts GameServer connections (port 9100); GameServers
+send it `ERM_*` messages (first is `ERM_OPEN_BATTLE_FIELD_REQ` when leaving town).
+Source: `KncWX2Server/CenterServer`, imported on 2026-10-31 with [server flags](../tools/flags.md)
+([report](../../tools/import/reports/server-center/REPORT.md)). Uses already-ported [Common](server-common.md). Same relative location
+as original (`src/server/CenterServer` beside `src/server/Common`).
 
-## Importação (2026-10-31)
+## Import (2026-10-31)
 
-- **Seleção**: os arquivos próprios do `CenterServer/` que o `CenterServer.vcxproj` compila (`Release_US`) e os headers deles:
-  **123 arquivos** (59 `.cpp`, 64 `.h`), 65 mil linhas escritas, 57 mil de `.cpp`. Os maiores: `RoomUserManager.cpp` (7,2 mil),
-  `DungeonRoom.cpp` (6,6 mil), `BattleFieldRoom.cpp` (4,9 mil). O `Main.cpp` da pasta não entra no projeto. Os includes para o `Common`
-  não são seguidos (`include_scope`).
-- **Flags**: 2.389 blocos `#if` resolvidos, 20 mil linhas removidas. Nenhum bloco virou `X2_DEV_TOOLS`.
-- **Nada excluído na importação**, como no GameServer e no LoginServer: o que é de publisher ou legado sai no build, com a mudança
-  registrada aqui. Ficam de fora só os `.dsn` (os da execução vêm de `runtime/`, T22).
-- Encodings: 113 CP949, 10 ASCII.
+- **Selection**: files belonging to `CenterServer/` compiled by `CenterServer.vcxproj` (`Release_US`) and their headers:
+  **123 files** (59 `.cpp`, 64 `.h`), 65k written lines, 57k in `.cpp`. Largest: `RoomUserManager.cpp` (7.2k),
+  `DungeonRoom.cpp` (6.6k), `BattleFieldRoom.cpp` (4.9k). Folder's `Main.cpp` is not in project. `Common` includes are not followed (`include_scope`).
+- **Flags**: resolved 2,389 `#if` blocks, removed 20k lines. No block became `X2_DEV_TOOLS`.
+- **Nothing excluded during import**, as with GameServer and LoginServer: publisher/legacy code is removed at build, with changes
+  documented here. Only `.dsn` files are omitted (runtime versions come from `runtime/`, T22).
+- Encoding: 113 CP949, 10 ASCII.
 
-## Acoplamento (2026-10-31)
+## Dependencies (2026-10-31)
 
-| Área | Arquivos/usos | Plano |
+| Area | Files/usages | Plan |
 |---|---:|---|
-| KSMS (`ProcessCommunicationManager`, *named pipes*) | `CnServer.*`, `CnRMEventProcess.cpp` | sai, como nos outros servidores |
-| SMS (`CnSMSDBThread`, `DC_SMS`) e o `SMSPhoneNumberManager` | 2 + `CnSimLayer`, `CnServer`, `CnPartyFSM`, `CnHackingCheckManager`, `CnScriptRefreshThread` | compila e fica, como no LoginServer (a config US não liga o `DC_SMS`); conferir ao rodar |
-| Anti-cheat, TBB, publisher | nenhum (o TBB só aparece comentado no `CnServer.cpp`) | — |
-| Boost | 31 arquivos (`timer` 28, `wformat`/`str` 54, `shared_ptr` 9, `bind` 3) | passada mecânica ([Porte mecânico](../tools/mechanical-porting.md)); `bind` à mão |
-| `windows.h`/winsock/ATL | 14 | `x2/platform/win32.h`, `net.h` |
-| UDP (`InteriorUdpSession`, sobre o `KTDNUDP` do `Common`) | 2 | o `KTDNUDP` já foi portado (`server/common-udp`) |
-| `CTime`, `lua_tinker` | 16, 15 | já cobertos pela [Plataforma](platform.md) e pelo KNCSDK |
-| Banco | 50 `DO_QUERY` | `KODBC` já portado; as procedures são as do `Game01`, `Log` e `Account` |
+| KSMS (`ProcessCommunicationManager`, *named pipes*) | `CnServer.*`, `CnRMEventProcess.cpp` | remove, as in other servers |
+| SMS (`CnSMSDBThread`, `DC_SMS`) and `SMSPhoneNumberManager` | 2 + `CnSimLayer`, `CnServer`, `CnPartyFSM`, `CnHackingCheckManager`, `CnScriptRefreshThread` | builds and remains, as in LoginServer (US config does not enable `DC_SMS`); verify when running |
+| Anti-cheat, TBB, publisher | none (TBB appears only in comment in `CnServer.cpp`) | — |
+| Boost | 31 files (`timer` 28, `wformat`/`str` 54, `shared_ptr` 9, `bind` 3) | mechanical pass ([Mechanical porting](../tools/mechanical-porting.md)); manual `bind` |
+| `windows.h`/Winsock/ATL | 14 | `x2/platform/win32.h`, `net.h` |
+| UDP (`InteriorUdpSession`, on top of `Common` `KTDNUDP`) | 2 | `KTDNUDP` already ported (`server/common-udp`) |
+| `CTime`, `lua_tinker` | 16, 15 | already covered by [Platform](platform.md) and KNCSDK |
+| Database | 50 `DO_QUERY` | `KODBC` already ported; procedures are in `Game01`, `Log`, and `Account` |
 
-## Estado (2026-10-31, branch `server/center-run`)
+## Status (2026-10-31, branch `server/center-run`)
 
-**Roda no Linux** pela pasta montada por `x2_run_center` ([Pastas de execução](../tools/runtime.md)): conecta nos três bancos
-(`Account`, `Game01`, `Statistics`), carrega os scripts (os erros de carga são os de dungeon e linemap já listados em
-[Bugs do original](../original/bugs.md#dados-serverresource-clientscript)), se autentica no banco e chega ao estado pronto; o GameServer
-conecta nele (porta 9100). Encerra com código 0 (ver [Rodar os servidores](../running.md)).
+**Runs on Linux** from directory assembled by `x2_run_center` ([Run directories](../tools/runtime.md)): connects to three databases
+(`Account`, `Game01`, `Statistics`), loads scripts (dungeon and line-map load errors already listed under
+[Original bugs](../original/bugs.md#data-serverresource-clientscript)), authenticates to DB, and reaches ready state; GameServer
+connects to it (port 9100). Exits with code 0 (see [Run the servers](../running.md)).
 
-**Testado com o cliente original** (no Wine, 2026-10-31, com o EPublisherServer, o LoginServer, o ChannelServer e o GameServer): saída da
-vila para o **campo**, entrada numa **dungeon** e troca de personagem, sem erro no CenterServer. Os pacotes para o GlobalServer (`EGB_*`:
-CCU, missões, quest do dia, bloqueio) continuam descartados pelo GameServer, sem travar nada. A troca de personagem derrubava o GameServer
-(Debug) no relay TCP: era o `KSerBuffer::UnCompress` de um evento sem dados, corrigido no [KNCSDK](kncsdk.md).
+**Tested with original client** (Wine, 2026-10-31, with EPublisherServer, LoginServer, ChannelServer, and GameServer): leaving
+town for a **field**, entering a **dungeon**, and switching characters all work without CenterServer errors. Packets to GlobalServer
+(`EGB_*`: CCU, missions, daily quest, blocklist) continue to be discarded by GameServer without hanging. Character switching had
+crashed GameServer (Debug) in TCP relay: caused by `KSerBuffer::UnCompress` for an event with no data, fixed in [KNCSDK](kncsdk.md).
 
 ### Build (2026-10-31, branch `server/center-build`)
 
-**Compila e linka sem warnings** (alvo `x2_center_server`, executável `CenterServer`, `main` com `KServerMain` como os outros
-servidores) em Clang Debug, GCC Debug, Clang Release, GCC Release e clang-cl (Windows, na VM de testes), com os 6 testes passando
-no Linux e no Windows.
+**Builds and links without warnings** (target `x2_center_server`, executable `CenterServer`, `main` uses `KServerMain` like other
+servers) with Clang Debug, GCC Debug, Clang Release, GCC Release, and clang-cl (Windows test VM); all 6 tests pass
+on Linux and Windows.
 
-Medidas do caminho, para dar a escala: 51 erros (Clang Debug, `-k 0`) em 13 arquivos depois da passada mecânica, 29 no GCC (quase
-todos `goto end_proc`); 112 warnings distintos no Clang e 143 no GCC antes do `fix_warnings.py` e das correções à mão. Menor que o
-LoginServer: o grosso do acoplamento já tinha saído no `Common`.
+Build effort: 51 errors (Clang Debug, `-k 0`) in 13 files after mechanical pass, 29 under GCC (almost all `goto end_proc`);
+112 distinct Clang warnings and 143 GCC warnings before `fix_warnings.py` and manual fixes. Smaller than LoginServer: most
+platform coupling had already been removed in `Common`.
 
-## Mudanças em relação ao original
+## Changes from the original
 
-| Onde | Mudança | Motivo |
+| Where | Change | Reason |
 |---|---|---|
-| `KCnServer`, `CnRMEventProcess` | Saem as chamadas ao KSMS (`ProcessCommunicationManager`, *named pipes* `\\.\pipe\CenterServer*`, religadas a cada 60 s no `Tick`, e o aviso de script recarregado) | Como no [ChannelServer](server-channel.md#mudanças-em-relação-ao-original) e nos outros servidores |
-| `ON_DBE_SERVER_ON_ACK` (`CnServer.cpp`) | Quando o banco recusa o servidor, a resposta marca `SetAuthenticateResult( false )` e o `Init` falha; quando aceita, marca `true` | Como no [GameServer](server-game.md#mudanças-em-relação-ao-original): o original chamava `::exit( 0 )` nessa thread |
-| `KBattleFieldMonsterManager::SetMonsterDie( int, UidType )` | Renomeado para `SetFieldMonsterDie` (as 4 chamadas do `KBattleFieldRoom`) | Escondia a virtual `KRoomMonsterManager::SetMonsterDie( int, UidType, bool = true )`; um `using` deixaria as chamadas de 2 argumentos ambíguas. As chamadas eram todas pelo tipo concreto: nada muda |
-| `Cn*DBThread.h` | `ProcessEvent` deixa de ser `virtual inline` | Definido no `.cpp`: ODR inválido (`-Wundefined-inline` do clang-cl), como no LoginServer |
+| `KCnServer`, `CnRMEventProcess` | Remove KSMS calls (`ProcessCommunicationManager`, *named pipes* `\\.\pipe\CenterServer*`, reconnected every 60 s in `Tick`, and script-reloaded notice) | As in [ChannelServer](server-channel.md#changes-from-the-original) and other servers |
+| `ON_DBE_SERVER_ON_ACK` (`CnServer.cpp`) | When DB rejects server, response calls `SetAuthenticateResult( false )` and `Init` fails; when accepted, sets `true` | As in [GameServer](server-game.md#changes-from-the-original): original called `::exit( 0 )` on that thread |
+| `KBattleFieldMonsterManager::SetMonsterDie( int, UidType )` | Renamed to `SetFieldMonsterDie` (four `KBattleFieldRoom` calls) | Hid virtual `KRoomMonsterManager::SetMonsterDie( int, UidType, bool = true )`; `using` would make two-argument calls ambiguous. All calls used concrete type: no behavior change |
+| `Cn*DBThread.h` | `ProcessEvent` is no longer `virtual inline` | Defined in `.cpp`: ODR-invalid (`-Wundefined-inline` from clang-cl), as in LoginServer |
 
-Portabilidade (sem mudança de comportamento): passada mecânica (`mechanical.py`); declarações puladas por `goto end_proc` sobem
-(`fix_goto.py`, que passou a entender arrays com `= {0,}`), e duas referências `ITEM_DATA&` do `ERM_GET_ITEM_REQ` (campo e dungeon)
-viram ponteiro declarado no topo; `boost::timer` → `x2::Timer` também no `Knc::KSingleObject` do KNCSDK (`KncContainer.h`, que nenhum
-servidor usava até agora); o argumento padrão temporário numa referência não `const` (`KSquareUserManager::SetPersonalShopData`, extensão
-do MSVC) vira uma sobrecarga; `__noop`, `intsafe.h` e as macros `min`/`max` (com o tipo do original: `size_t`, `__time64_t`, `char`)
-saem; includes que o MSVC dispensava nos templates (`BaseServer.h` nos DB threads); destrutores `virtual` em 8 singletons; `using` das
-sobrecargas escondidas de `Init` e `SetRoomInfo`; `[[fallthrough]]` no fechamento de festa (`S_* → I_TO_CLOSE → I_TO_INIT`, de
-propósito); variáveis mortas removidas (o `GetKillNPC_LUA()` dos resultados de dungeon continua sendo chamado: ele sobe o `m_nKillNPC`
-para 1); o cast descartado do `DUNGEON_TIME_RESULT` sai (o rank vem do `GetRank()` logo depois); o teste `0 <= iRank` (`size_t`, sempre
-verdadeiro também no MSVC) sai; `nGSUID`, `m_CheckClass`/`m_CheckType` e `iCandidateTeam` começam em 0 (o GCC Release acusava
-`-Wmaybe-uninitialized`; só eram lidos depois de receber valor); o `erase` do `KncUtil::NumberShuffle` (KNCSDK) vira `std::move` +
-`pop_back`, a mesma operação na mesma ordem, porque o GCC 15 Release acusava um falso `-Wfree-nonheap-object` no `erase` expandido.
+Portability (no behavior change): mechanical pass (`mechanical.py`); declarations skipped by `goto end_proc` moved upward
+(`fix_goto.py`, updated to understand arrays initialized with `= {0,}`), and two `ITEM_DATA&` references in `ERM_GET_ITEM_REQ`
+(field and dungeon) became pointers declared at function start; `boost::timer` → `x2::Timer`, including KNCSDK `Knc::KSingleObject`
+(`KncContainer.h`, unused by servers until then); temporary default argument to non-`const` reference
+(`KSquareUserManager::SetPersonalShopData`, MSVC extension) became an overload; remove `__noop`, `intsafe.h`, and `min`/`max` macros
+(preserving original types: `size_t`, `__time64_t`, `char`); add `BaseServer.h` to DB-thread headers where templates need it;
+`virtual` destructors in 8 singletons; `using` declarations for hidden `Init` and `SetRoomInfo` overloads; `[[fallthrough]]` in party close
+(`S_* → I_TO_CLOSE → I_TO_INIT`, intentional); remove dead variables (still call `GetKillNPC_LUA()` for dungeon results: it sets
+`m_nKillNPC` to 1); remove discarded `DUNGEON_TIME_RESULT` cast (rank comes from following `GetRank()`); remove `0 <= iRank` test
+(`size_t`, also always true in MSVC); initialize `nGSUID`, `m_CheckClass`/`m_CheckType`, and `iCandidateTeam` to 0 (GCC Release
+reported `-Wmaybe-uninitialized`; they were read only after assignment); KNCSDK `KncUtil::NumberShuffle` `erase` becomes `std::move` +
+`pop_back`, same operation in same order, because GCC 15 Release reported false `-Wfree-nonheap-object` in expanded `erase`.
 
-### Bugs do original corrigidos
+### Original bugs fixed
 
-| Onde | Bug | Correção |
+| Where | Bug | Fix |
 |---|---|---|
-| `KDropTable::AddExtraStageMonsterDropInfo_LUA` | A validação da chave era `m_nMonsterID == -1 && m_nMonsterID == 0`, sempre falsa: uma entrada sem `MonsterID` (ou com 0) entrava na tabela de drop do estágio extra | `\|\|` (2026-10-31, `-Wtautological-overlap-compare` do Clang) |
+| `KDropTable::AddExtraStageMonsterDropInfo_LUA` | Key validation was `m_nMonsterID == -1 && m_nMonsterID == 0`, always false: entry with no `MonsterID` (or 0) entered extra-stage drop table | `\|\|` (2026-10-31, Clang `-Wtautological-overlap-compare`) |
 
-## Pendências
+## Pending
 
-- O bug da checagem de "sub-stage limpa em 1 s" do `DungeonRoom` fica mantido ([Bugs do original](../original/bugs.md)).
-- SMS (`CnSMSDBThread`) compila e continua: a config US não liga o `DC_SMS`. Conferir ao rodar.
+- Retain `DungeonRoom` "sub-stage cleared in 1 s" check bug ([Original bugs](../original/bugs.md)).
+- `CnSMSDBThread` builds and remains: US config does not enable `DC_SMS`. Verify when running.
 
-## Plano (um branch por passo)
+## Plan (one branch per step)
 
 1. ~~**`server/center-import`**~~ (2026-10-31).
-2. ~~**`server/center-build`**~~ (2026-10-31): compilar sem warnings em Clang, GCC e clang-cl, com o `main` do `KServerMain` (como os outros servidores).
-3. ~~**`server/center-run`**~~ (2026-10-31): `runtime/CenterServer`, `x2_run_center`, e o cliente original no campo e numa dungeon. O GameServer acha o
-   Center pela lista do banco (`Statistics.LServerList`) e reconecta a cada 10 s
-   ([Dependências do GameServer](server-game.md#dependências-de-outros-servidores-levantamento-de-2026-10-31)).
+2. ~~**`server/center-build`**~~ (2026-10-31): build without warnings with Clang, GCC, clang-cl; `main` uses `KServerMain` (as other servers).
+3. ~~**`server/center-run`**~~ (2026-10-31): `runtime/CenterServer`, `x2_run_center`, and original client in field and dungeon. GameServer
+   finds Center from DB list (`Statistics.LServerList`) and retries every 10 seconds
+   ([GameServer dependencies](server-game.md#dependencies-on-other-servers-survey-from-2026-10-31)).

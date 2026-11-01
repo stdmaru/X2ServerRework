@@ -1,92 +1,92 @@
-[Início](../README.md) › [Porte](README.md) › Plataforma
+[Home](../README.md) › [Porting](README.md) › Platform
 
-# Plataforma (`src/platform`, alvo `x2::platform`)
+# Platform (`src/platform`, target `x2::platform`)
 
-Única parte do código que fala direto com o sistema operacional (regra do [AGENTS.md](../../AGENTS.md)).
-Código novo, sem equivalente no original. Criada em 2026-10-29 (decisão T11).
+The only part of the code that talks directly to the operating system (per [AGENTS.md](../../AGENTS.md)).
+New code, with no equivalent in the original. Created on 2026-10-29 (decision T11).
 
-## Ideia
+## Idea
 
-O original usa APIs Win32/ATL em massa. Contagem só no servidor:
+The original uses Win32/ATL APIs extensively. Counts in the server alone:
 
-| API | Uso |
+| API | Usage |
 |---|---|
-| `CTime` | ~1.700 vezes |
+| `CTime` | ~1,700 occurrences |
 | `DWORD` | ~900 |
-| Eventos/`WaitForSingleObject` | ~50 arquivos |
+| Events/`WaitForSingleObject` | ~50 files |
 | `CString` | ~300 |
 
-Reescrever tudo isso agora seria inviável e arriscado. Então a camada oferece **substitutos com os mesmos nomes e semântica**:
-- **no Windows**, usa o `windows.h` real, e este é o único lugar onde ele é incluído;
-- **no Linux**, emula o subconjunto usado.
+Rewriting all of this now would be impractical and risky. The layer therefore provides **replacements with the same names and semantics**:
+- **On Windows**, it uses real `windows.h`, and this is the only place where it is included.
+- **On Linux**, it emulates the used subset.
 
-A modernização (trocar por `std::` direto) fica para a Fase 5.
+Modernization (use `std::` directly) is deferred to Phase 5.
 
-Código portado inclui `x2/platform/win32.h` no lugar de `<windows.h>`, `<atltime.h>` e `<tchar.h>`.
+Ported code includes `x2/platform/win32.h` instead of `<windows.h>`, `<atltime.h>`, and `<tchar.h>`.
 
-## Conteúdo
+## Contents
 
-| Header | O que oferece | Linux | Windows |
+| Header | Provides | Linux | Windows |
 |---|---|---|---|
-| `types.h` | `DWORD`, `BYTE`, `LONG`, `INT64`, `TCHAR`, `_T()`, `MAX_PATH`... com os tamanhos do Windows (`DWORD`/`LONG` = 32 bits) | typedefs | `windows.h` |
-| `sync.h` | `CRITICAL_SECTION` (recursiva), eventos, `WaitForSingle/MultipleObjects`, `_beginthreadex`, `Sleep`, `GetCurrentThreadId` | emulação (um mutex/condvar global) | nativo |
-| `time.h` | `GetTickCount`, `timeGetTime`, `QueryPerformanceCounter`, `GetLocalTime`, **`CTime`/`CTimeSpan`** | `steady_clock` / implementação própria | nativo + `CTime` próprio |
-| `string.h` | `CStringW`/`CStringA`/`CString` (subconjunto) | implementação própria | idem (sem ATL) |
-| `crt.h` | `_wtoi`, `swprintf_s`, `wcscpy_s`, `_wcsicmp`, `_itow_s`, `_mkdir`, `fopen_s`, `localtime_s` (ordem do MSVC), `_wstrdate_s`/`_wstrtime_s`, `ZeroMemory`, `_tcs*`, `WideCharToMultiByte`... e as sobrecargas com array do MSVC | implementação própria | nativo |
-| `ini.h` | `x2::platform::ReadIniString`/`ReadIniInt` (regras do `GetPrivateProfileString`), `WriteIniString` (do `WritePrivateProfileString`, grava UTF-8; 2026-10-31, para o `RefreshTimeBackup.ini` do LoginServer), `GetPrivateProfileStringW`/`IntW`, `WritePrivateProfileStringW` | implementação própria | **também a própria** via `ReadIni*` (ver Armadilhas) |
-| `net.h` | Nomes do Winsock (`SOCKET`, `closesocket`, `SOCKADDR_IN`...); `OVERLAPPED`/`WSABUF` só como tipos; `IpToString`/`IpFromString`/`ResolveIPv4` no lugar de `inet_ntoa`/`inet_addr`/`gethostbyname` | BSD sockets | Winsock 2 |
-| `net_io.h` | Rede assíncrona do servidor (T20): `IoService` (`RunFor`, `Stop`, `Drain`), `TcpStream` (`Connect`, `Assign` de socket aceito, `AsyncReadSome`/`AsyncWriteSome`, `Close` que aborta o pendente), `SocketErrorMessage` | Asio (epoll) | Asio (IOCP) |
-| `odbc.h` | `<sql.h>`/`<sqlext.h>` sem conflito com os tipos Win32 da camada; `SqlWString`, `ToSqlWString`/`FromSqlWString`/`SqlWPtr` (`wchar_t` ↔ `SQLWCHAR`). Alvo `x2::odbc` (só header; liga o ODBC) | unixODBC, com os typedefs dele renomeados; `SQLWCHAR` é UTF-16 | nativo; `odbc32` |
-| `format.h`, `timer.h`, `noncopyable.h` | `x2::wformat`/`x2::str` (fiel ao Boost.Format), `x2::Timer`, `x2::noncopyable` | — | — |
-| `unicode.h` | wide ↔ UTF-8 ↔ UTF-16; `TranslateWideFormat`; `Cp949ToWide`, `IsValidUtf8`, `DecodeTextFile`; `Utf8FileLocale` (locale UTF-8 para `std::wfstream`, no lugar de `std::locale("korean")`) | iconv (CP949) | `MultiByteToWideChar(949)` |
-| `debug.h` | `__WFILE__`, `__WFUNCTION__` em tempo de execução | — | — |
-| `terminal.h` | `Terminal` (terminal dos servidores, T15: entrada crua, prompt redesenhado sob a saída, stdout/stderr por pipe, título, sinais de parada), `WaitForStop` (modo serviço), `KeyDecoder` (UTF-8 + sequências VT → teclas), `LineEditor` (edição, histórico, largura de caracteres do Leste Asiático, rolagem lateral). Uso em [Console dos servidores](console.md); `machine` e `SetOutputHandler` para o modo máquina | `termios`, `poll`, pipe com `dup2` | `ReadConsoleW` com VT input, `_pipe` + `_dup2` + `SetStdHandle`, `WriteConsoleW`, `SetConsoleCtrlHandler` |
-| `control.h` | Socket de controle dos servidores (T30): `ControlServer` (escuta, fila e thread de escrita por cliente, saudação, difusão), `ControlClient` (o `x2ctl`), `ControlSocketDir`/`Path`, `ListControlSockets`. Uso em [Console dos servidores](console.md) | `AF_UNIX` | `AF_UNIX` (`afunix.h`, Windows 10 1803+) |
-| `json.h` | `AppendJsonString`/`JsonString` (escape, UTF-8 inválido vira U+FFFD), `ParseJsonObject` (objeto sem objetos nem listas dentro: os comandos do protocolo) | — | — |
-| `console.h` | `InitConsole` (no início do `main` de cada servidor), `IsColorTerminal` (usado pelo log), `Utf8Arguments` (os argumentos do `main` em UTF-8; no Windows, da linha de comando UTF-16) | nada a fazer; `isatty` | console em UTF-8 na entrada e na saída (`SetConsoleCP`/`SetConsoleOutputCP`, restaurados ao sair) e escapes ANSI ligados (`ENABLE_VIRTUAL_TERMINAL_PROCESSING`); cor só se o console tiver esse modo |
-| `d3dx_math.h` | Matemática do D3DX 9: `D3DXVECTOR2/3/4`, `D3DXMATRIX`, `D3DXCOLOR`, `D3DX_PI`, `D3DXToDegree`, `D3DXVec3*` (normalize, cross, dot, transform...), `D3DXMatrix*` (identity, multiply, inverse, rotações, translação, escala, `LookAtLH`) | implementação própria | idem (sem DXSDK) |
+| `types.h` | `DWORD`, `BYTE`, `LONG`, `INT64`, `TCHAR`, `_T()`, `MAX_PATH`... with Windows sizes (`DWORD`/`LONG` = 32 bits) | typedefs | `windows.h` |
+| `sync.h` | `CRITICAL_SECTION` (recursive), events, `WaitForSingle/MultipleObjects`, `_beginthreadex`, `Sleep`, `GetCurrentThreadId` | emulation (one global mutex/condition variable) | native |
+| `time.h` | `GetTickCount`, `timeGetTime`, `QueryPerformanceCounter`, `GetLocalTime`, **`CTime`/`CTimeSpan`** | `steady_clock` / custom implementation | native + custom `CTime` |
+| `string.h` | `CStringW`/`CStringA`/`CString` (subset) | custom implementation | same (without ATL) |
+| `crt.h` | `_wtoi`, `swprintf_s`, `wcscpy_s`, `_wcsicmp`, `_itow_s`, `_mkdir`, `fopen_s`, `localtime_s` (MSVC argument order), `_wstrdate_s`/`_wstrtime_s`, `ZeroMemory`, `_tcs*`, `WideCharToMultiByte`... and MSVC array overloads | custom implementation | native |
+| `ini.h` | `x2::platform::ReadIniString`/`ReadIniInt` (`GetPrivateProfileString` rules), `WriteIniString` (`WritePrivateProfileString`, writes UTF-8; 2026-10-31, for LoginServer's `RefreshTimeBackup.ini`), `GetPrivateProfileStringW`/`IntW`, `WritePrivateProfileStringW` | custom implementation | also custom via `ReadIni*` (see Pitfalls) |
+| `net.h` | Winsock names (`SOCKET`, `closesocket`, `SOCKADDR_IN`...); `OVERLAPPED`/`WSABUF` as types only; `IpToString`/`IpFromString`/`ResolveIPv4` instead of `inet_ntoa`/`inet_addr`/`gethostbyname` | BSD sockets | Winsock 2 |
+| `net_io.h` | Server async networking (T20): `IoService` (`RunFor`, `Stop`, `Drain`), `TcpStream` (`Connect`, `Assign` accepted socket, `AsyncReadSome`/`AsyncWriteSome`, `Close` aborting pending operations), `SocketErrorMessage` | Asio (epoll) | Asio (IOCP) |
+| `odbc.h` | `<sql.h>`/`<sqlext.h>` without conflict with platform Win32 types; `SqlWString`, `ToSqlWString`/`FromSqlWString`/`SqlWPtr` (`wchar_t` ↔ `SQLWCHAR`). Target `x2::odbc` (header-only; links ODBC) | unixODBC, with its typedefs renamed; `SQLWCHAR` is UTF-16 | native; `odbc32` |
+| `format.h`, `timer.h`, `noncopyable.h` | `x2::wformat`/`x2::str` (faithful to Boost.Format), `x2::Timer`, `x2::noncopyable` | — | — |
+| `unicode.h` | wide ↔ UTF-8 ↔ UTF-16; `TranslateWideFormat`; `Cp949ToWide`, `IsValidUtf8`, `DecodeTextFile`; `Utf8FileLocale` (UTF-8 locale for `std::wfstream`, instead of `std::locale("korean")`) | iconv (CP949) | `MultiByteToWideChar(949)` |
+| `debug.h` | runtime `__WFILE__`, `__WFUNCTION__` | — | — |
+| `terminal.h` | `Terminal` (server terminal, T15: raw input, prompt redrawn after output, stdout/stderr piped, title, stop signals), `WaitForStop` (service mode), `KeyDecoder` (UTF-8 + VT sequences → keys), `LineEditor` (editing, history, East Asian character widths, horizontal scrolling). See [Server console](console.md); `machine` and `SetOutputHandler` for machine mode | `termios`, `poll`, pipe with `dup2` | `ReadConsoleW` with VT input, `_pipe` + `_dup2` + `SetStdHandle`, `WriteConsoleW`, `SetConsoleCtrlHandler` |
+| `control.h` | Server control socket (T30): `ControlServer` (listen, queue and writer thread per client, greeting, broadcast), `ControlClient` (`x2ctl`), `ControlSocketDir`/`Path`, `ListControlSockets`. See [Server console](console.md) | `AF_UNIX` | `AF_UNIX` (`afunix.h`, Windows 10 1803+) |
+| `json.h` | `AppendJsonString`/`JsonString` (escaping; invalid UTF-8 becomes U+FFFD), `ParseJsonObject` (object without nested objects or arrays: control protocol commands) | — | — |
+| `console.h` | `InitConsole` (at start of each server `main`), `IsColorTerminal` (used by logging), `Utf8Arguments` (`main` arguments as UTF-8; on Windows, from UTF-16 command line) | no-op; `isatty` | UTF-8 console input/output (`SetConsoleCP`/`SetConsoleOutputCP`, restored on exit) and ANSI escapes enabled (`ENABLE_VIRTUAL_TERMINAL_PROCESSING`); color only if console supports it |
+| `d3dx_math.h` | D3DX 9 math: `D3DXVECTOR2/3/4`, `D3DXMATRIX`, `D3DXCOLOR`, `D3DX_PI`, `D3DXToDegree`, `D3DXVec3*` (normalize, cross, dot, transform...), `D3DXMatrix*` (identity, multiply, inverse, rotations, translation, scale, `LookAtLH`) | custom implementation | same (without DXSDK) |
 
-## Armadilhas que a camada resolve
+## Pitfalls handled by the layer
 
-- **`%s` em formato largo**: no MSVC, `%s` em `swprintf`/`CString::Format` significa string *larga*; na glibc significa *estreita* (crash).
-  `TranslateWideFormat` converte `%s`→`%ls`, `%c`→`%lc`, `%S`→`%s` e `%I64d`→`%lld`, e é usada por `CString::Format` e pelos `*printf_s`.
-  Só o CRT do MSVC (o do clang-cl) dispensa a tradução.
-- **`L ## __FUNCTION__`** só existe no MSVC. `__WFUNCTION__` agora é um `const wchar_t*` em tempo de execução, que pode ser passado e concatenado via `<<`,
-  mas não colado a outro literal. O servidor só usa como argumento.
-- **`GetCurrentTime`** é macro no `windows.h`: o `types.h` faz `#undef` para não quebrar `CTime::GetCurrentTime()`.
-- `GetTickCount` dá a volta a cada ~49,7 dias, como no Windows (comparações com subtração sem sinal continuam certas).
-- **`&D3DXVECTOR3(0, 0, 0)`**: o original passa o endereço de temporários para funções D3DX, uma extensão do MSVC. Os tipos D3DX têm um
-  `operator&` só para temporários (qualificado com `&&`), que dá o mesmo resultado; `&` em variáveis continua sendo o nativo.
-- Matemática D3DX: mesmas convenções e fórmulas (vetor-linha `v·M`, mão esquerda, vetor nulo normaliza para nulo, `D3DXMatrixInverse` devolve `NULL` em matriz singular),
-  conferidas com a implementação do Wine. Só o subconjunto usado pelo servidor; o cliente vai pedir mais (quatérnios, planos, `D3DXVec3Project`...).
+- **`%s` in wide format strings**: in MSVC, `%s` in `swprintf`/`CString::Format` means a *wide* string; in glibc it means a *narrow* string (crash).
+  `TranslateWideFormat` converts `%s`→`%ls`, `%c`→`%lc`, `%S`→`%s`, and `%I64d`→`%lld`; it is used by `CString::Format` and `*printf_s`.
+  Only MSVC CRT (used by clang-cl) does not need translation.
+- **`L ## __FUNCTION__`** exists only in MSVC. `__WFUNCTION__` is now a runtime `const wchar_t*`, which can be passed and concatenated via `<<`,
+  but not pasted into another literal. The server uses it only as an argument.
+- **`GetCurrentTime`** is a `windows.h` macro: `types.h` undefines it so it does not break `CTime::GetCurrentTime()`.
+- `GetTickCount` wraps every ~49.7 days, as on Windows (subtraction-based unsigned comparisons still work).
+- **`&D3DXVECTOR3(0, 0, 0)`**: the original passes addresses of temporaries to D3DX functions, an MSVC extension. D3DX types have an
+  `operator&` for temporaries only (qualified with `&&`), returning the same result; `&` on variables remains native.
+- D3DX math: same conventions and formulas (row vector `v·M`, left-handed, zero vector normalizes to zero, `D3DXMatrixInverse` returns `NULL` for singular matrices),
+  checked against Wine's implementation. Only the server-used subset is present; the client will need more (quaternions, planes, `D3DXVec3Project`...).
+- **Original text files**: production `config_*.ini` files are **CP949**, and `.lua` scripts are UTF-8 with BOM (5,829 of 5,832, as of 2026-10-29).
+  `DecodeTextFile` detects UTF-16/UTF-8 and falls back to CP949. INI is read with `ReadIniString` on Windows too, because the native API uses
+  the system code page (under Wine, or on non-Korean Windows, version strings would be corrupted; Wine tests showed this).
+- **unixODBC** defines its own `ULONG` (64 bits), `TCHAR` (`char`), `WCHAR` (`unsigned short`)... `odbc.h` renames these typedefs during inclusion.
+  Its `SQLWCHAR` is 2 bytes (UTF-16), while `wchar_t` is 4: text always goes through `odbc.h` conversions, never casts.
+- **Networking**: Asio is included only by `src/platform/src/net_io.cpp`. `TcpStream::Close` cancels before `shutdown`, because on Windows
+  `shutdown` finishes a pending read as end-of-connection while on Linux it is cancellation; this makes both report `Aborted`. Code destroying
+  `IoService` with pending operations must call `Drain()` first (`~KIocp` does this), or handlers release sockets during destruction.
+- **Windows**: `types.h` includes `windows.h` with `WIN32_LEAN_AND_MEAN`, excluding `rpcndr.h` and `winsock.h`; names the original got from them
+  (`byte`, `u_char`, `u_short`, `u_int`, `u_long`) are declared with the same types. Windows builds define `UNICODE`/`_UNICODE` (`x2::options`).
+- **Windows stdout redirection** (`terminal.cpp`): `_dup2(pipe, 1)` closes the handle previously associated with fd 1, which is the same one
+  returned earlier by `GetStdHandle(STD_OUTPUT_HANDLE)`. The terminal writes through a duplicate (`_dup(1)`); with the old handle, nothing
+  appeared — neither logs nor prompt (found in the VM on 2026-10-31).
+- `IsWindow` always returns false and `HWND_DESKTOP` is null outside Windows (server has no window).
 
-- **Arquivos de texto do original**: os `config_*.ini` de produção estão em **CP949**, e os scripts `.lua` em UTF-8 com BOM (5.829 de 5.832, em 2026-10-29).
-  `DecodeTextFile` detecta UTF-16/UTF-8 e cai para CP949. O INI é lido por `ReadIniString` também no Windows, porque a API nativa usa a
-  code page do sistema (no Wine, ou num Windows não coreano, as strings de versão viriam corrompidas; os testes no Wine mostraram isso).
-- **unixODBC** define seus próprios `ULONG` (64 bits), `TCHAR` (`char`), `WCHAR` (`unsigned short`)...: o `odbc.h` renomeia esses typedefs durante o include.
-  O `SQLWCHAR` dele tem 2 bytes (UTF-16) e o `wchar_t` 4: texto passa pelas conversões do `odbc.h`, nunca por cast.
-- **Rede**: o Asio só entra em `src/platform/src/net_io.cpp`. `TcpStream::Close` cancela antes do `shutdown`, porque no Windows o `shutdown`
-  termina a leitura pendente como fim de conexão e no Linux como cancelamento; assim os dois dão `Aborted`. Quem destrói o `IoService` com
-  operações pendentes precisa chamar `Drain()` antes (o `~KIocp` faz isso), senão os handlers soltam sockets durante a destruição.
-- **Windows**: o `types.h` inclui o `windows.h` com `WIN32_LEAN_AND_MEAN`, que deixa de fora o `rpcndr.h` e o `winsock.h`; os nomes que o original
-  recebia deles (`byte`, `u_char`, `u_short`, `u_int`, `u_long`) são declarados com os mesmos tipos. O build Windows define `UNICODE`/`_UNICODE` (`x2::options`).
-- **Desvio do stdout no Windows** (`terminal.cpp`): o `_dup2(pipe, 1)` fecha o handle que estava no fd 1, que é o mesmo que o
-  `GetStdHandle(STD_OUTPUT_HANDLE)` devolveu antes. O terminal escreve pela cópia (`_dup(1)`); com o handle antigo nada aparecia,
-  nem log nem prompt (achado na VM em 2026-10-31).
-- `IsWindow` sempre falso e `HWND_DESKTOP` nulo fora do Windows (servidor sem janela).
+## Known limitations
 
-## Limitações conhecidas
+- `_beginthreadex` does not support `CREATE_SUSPENDED`.
+- `CString` covers only the subset used so far (it will grow as the server port continues).
+- Windows console (2026-10-31): before `InitConsole`, Korean log text was corrupted because the console decoded UTF-8 using the OEM code page.
+  With it, output is correct, but conhost with Consolas lacks Hangul glyphs (Windows Terminal uses font *fallback*) and reading non-ASCII UTF-8
+  from conhost stdin is unreliable: therefore the terminal (`terminal.h`) reads with `ReadConsoleW`.
+- Windows: builds without warnings and passes tests with **clang-cl** (Visual Studio 2026, MSVC 14.51) on real Windows (T26, 2026-10-30).
+  From 2026-10-29 through 2026-10-30 it was checked with MinGW-w64 + Wine (T18). Microsoft's STL debug mode found undefined behavior in
+  `x2::format` (`assign` with a reference to its own vector); fixed.
 
-- `_beginthreadex` não suporta `CREATE_SUSPENDED`.
-- `CString` cobre só o subconjunto usado até agora (vai crescer conforme o servidor for portado).
-- Console do Windows (2026-10-31): até o `InitConsole`, o texto coreano do log saía corrompido, porque o console decodificava o UTF-8
-  pela code page OEM. Com ele a saída fica certa, mas o conhost com Consolas não tem glifos de Hangul (o Windows Terminal resolve por
-  *fallback* de fonte) e a leitura de UTF-8 não ASCII pelo stdin no conhost não é confiável: por isso o terminal (`terminal.h`) lê com `ReadConsoleW`.
-- Windows: compila sem warnings e passa nos testes com **clang-cl** (Visual Studio 2026, MSVC 14.51) num Windows real (T26, 2026-10-30).
-  De 2026-10-29 a 2026-10-30 foi verificado com MinGW-w64 + Wine (T18). O debug da STL da Microsoft achou um comportamento indefinido no
-  `x2::format` (`assign` com referência para o próprio vetor), corrigido.
+## Tests
 
-## Testes
-
-`src/platform/tests` (doctest): unicode, terminal (decodificador de teclas, editor de linha), JSON, socket de controle, formatos MSVC, `CString`, `CTime`/`CTimeSpan`, eventos, threads, CRT e matemática D3DX
-(valores esperados derivados à mão das convenções do D3DX).
+`src/platform/tests` (doctest): Unicode, terminal (key decoder, line editor), JSON, control socket, MSVC formats, `CString`,
+`CTime`/`CTimeSpan`, events, threads, CRT, and D3DX math
+(expected values derived manually from D3DX conventions).

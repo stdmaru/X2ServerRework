@@ -1,109 +1,109 @@
-[Início](../README.md) › [Porte](README.md) › [Servidor: Common](server-common.md) › Banco de dados (ODBC)
+[Home](../README.md) › [Porting](README.md) › [Server: Common](server-common.md) › Database (ODBC)
 
-# Servidor: banco de dados (`Common/ODBC`)
+# Server database (`Common/ODBC`)
 
-Passo `server/common-db` (desenho em 2026-10-29, implementado em 2026-10-30). Base: decisão T17 em [Decisões](../project/decisions.md)
-(API ODBC, Microsoft ODBC Driver 18, FreeTDS como alternativa, `.dsn` → connection strings, `SQLWCHAR` UTF-16).
-O banco de testes local está em [Banco de desenvolvimento](../tools/development-database.md).
+`server/common-db` step (designed on 2026-10-29, implemented on 2026-10-30). Based on decision T17 in [Decisions](../project/decisions.md)
+(ODBC API, Microsoft ODBC Driver 18, FreeTDS as alternative, `.dsn` → connection strings, UTF-16 `SQLWCHAR`).
+Local test database: [Development database](../tools/development-database.md).
 
-## Estado (2026-10-30)
+## Status (2026-10-30)
 
-`ODBC/` compila no `x2_server_common` (GCC Debug/Release, Clang, sem warnings) e foi **testado contra um SQL Server 2022 real**
-(Docker, com os backups de `_database/` restaurados) usando o **FreeTDS 1.5**. Os testes chamam procedures reais do `Game01`
-(`P_GUnit_Userinfo_GET_20131212`, `P_GItem_Equipped_Item_SEL`, `P_GUnitLastPosition_GET`) pelo `KStoredProcedure`, como os servidores fazem.
-O **ODBC Driver 18** não foi testado (não está instalado). No MinGW o `ODBC/` compila e os testes sem banco passam no Wine (2026-10-30).
+`ODBC/` builds as part of `x2_server_common` (GCC Debug/Release, Clang, no warnings) and was **tested against a real SQL Server 2022**
+(Docker, with `_database/` backups restored) using **FreeTDS 1.5**. Tests call real `Game01` procedures
+(`P_GUnit_Userinfo_GET_20131212`, `P_GItem_Equipped_Item_SEL`, `P_GUnitLastPosition_GET`) via `KStoredProcedure`, as servers do.
+**ODBC Driver 18** was not tested (not installed). Under MinGW, `ODBC/` builds and database-free tests pass under Wine (2026-10-30).
 
-**A API do `KODBC` e as macros `DO_QUERY*`/`FETCH_DATA` não mudaram**: os servidores (37 arquivos, 1.828 `DO_QUERY`, 1.118 `FETCH_DATA` e
-860 `BeginFetch` no original, contagem de 2026-10-29) entram sem alterações nesse código.
+**The `KODBC` API and `DO_QUERY*`/`FETCH_DATA` macros are unchanged**: server code (37 files, 1,828 `DO_QUERY`, 1,118 `FETCH_DATA`,
+and 860 `BeginFetch` in the original, counted 2026-10-29) uses this code without changes.
 
-## O que existe
+## Contents
 
-| Arquivo | Papel |
+| File | Role |
 |---|---|
-| `ODBC/Odbc.{h,cpp}` | `KODBC`: conexão (`.dsn` ou connection string), `Query` com reconexão, `Fetch` e `operator>>` por tipo, filtros de caracteres (`IsInvalidMarkIn*`), `KDBQuerySuccessChecker` |
-| `ODBC/StoredProcedure.{h,cpp}` | consultas fixas usadas por mais de um servidor |
-| `ODBC/DBUtil.{h,cpp}` | profiler das procedures (`KStoredProcedureProfiler`), sem mudança |
-| `SubThread.h` | `DeclareDBThread`, `DO_QUERY*` (monta a query com `x2::wformat` e chama `KODBC::Query`), `FETCH_DATA`, sem mudança |
-| `DBLayer.cpp`, `DBThreadManager.cpp`, `DBConnectionManager.cpp` | `DBLayer:AddDB(tipo, '<arquivo>.dsn', threads, bConnStr)` nos `config_*.lua`; uma conexão `KODBC` por thread de DB |
-| `x2/platform/odbc.h` (plataforma) | `<sql.h>`/`<sqlext.h>` e as conversões `wchar_t` ↔ `SQLWCHAR`; alvo CMake `x2::odbc` ([Plataforma](platform.md)) |
+| `ODBC/Odbc.{h,cpp}` | `KODBC`: connection (`.dsn` or connection string), `Query` with reconnect, `Fetch` and `operator>>` by type, character filters (`IsInvalidMarkIn*`), `KDBQuerySuccessChecker` |
+| `ODBC/StoredProcedure.{h,cpp}` | Fixed queries used by more than one server |
+| `ODBC/DBUtil.{h,cpp}` | Procedure profiler (`KStoredProcedureProfiler`), unchanged |
+| `SubThread.h` | `DeclareDBThread`, `DO_QUERY*` (builds query using `x2::wformat` and calls `KODBC::Query`), `FETCH_DATA`, unchanged |
+| `DBLayer.cpp`, `DBThreadManager.cpp`, `DBConnectionManager.cpp` | `DBLayer:AddDB(type, '<file>.dsn', threads, bConnStr)` in `config_*.lua`; one `KODBC` connection per DB thread |
+| `x2/platform/odbc.h` (platform) | `<sql.h>`/`<sqlext.h>` and `wchar_t` ↔ `SQLWCHAR` conversions; CMake target `x2::odbc` ([Platform](platform.md)) |
 
-Todas as consultas são `exec dbo.<procedure> <args>` montadas como texto; os formatos usados são `%d`, `%s` (sempre dentro de `N'...'`) e `%f`.
+All queries are text assembled as `exec dbo.<procedure> <args>`; formats used are `%d`, `%s` (always inside `N'...'`), and `%f`.
 
-## Configuração
+## Configuration
 
-A configuração real (`_reference/_original-server`) usa só `.dsn`: `[ODBC]`, `DRIVER=SQL Server` (driver legado do Windows, que não existe
-no Linux), `SERVER=host,porta`, `DATABASE`, `UID`, `PWD`, `WSID` e `APP`, em UTF-16. Nenhum `config_*.lua` usa o modo connection string.
+Real configuration (`_reference/_original-server`) uses only `.dsn`: `[ODBC]`, `DRIVER=SQL Server` (legacy Windows driver, unavailable
+on Linux), `SERVER=host,port`, `DATABASE`, `UID`, `PWD`, `WSID`, and `APP`, in UTF-16. No `config_*.lua` uses connection-string mode.
 
-- O `.dsn` continua sendo a entrada, mas o `KODBC` não usa mais `FILEDSN=`: lê a seção `[ODBC]` (UTF-16, UTF-8 ou CP949, por
-  `DecodeTextFile`) e monta a connection string (`KODBC::ReadFileDSN` + `KODBC::BuildConnStrFromDsn`, testadas sem banco).
-  O `DRIVER` do arquivo é trocado pelo configurado, `WSID` é descartado, o resto das chaves passa na mesma ordem (com `{}` quando o valor tem espaço, `;` ou chaves).
-- Driver padrão: `ODBC Driver 18 for SQL Server`, com as opções `Encrypt=yes;TrustServerCertificate=yes` (canal criptografado,
-  certificado não verificado: o Driver 18 exige criptografia por padrão e recusa certificado autoassinado; o driver legado não criptografava).
-- Chamadas novas e opcionais no `config_*.lua`, **antes** dos `AddDB`:
-  - `DBLayer:SetODBCDriver('FreeTDS')`: troca o driver e **zera as opções** (elas são do Driver 18);
-  - `DBLayer:SetODBCOptions('Encrypt=yes')`: chaves acrescentadas ao fim da string.
-- O caminho do `.dsn` continua relativo ao diretório atual, como no original; fora do Windows o `\` dos configs vira `/`.
-- `SERVER=host,porta` funciona no Driver 18 e no FreeTDS (conferido no FreeTDS em 2026-10-30).
-- O modo connection string (`AddDB(..., true)`, com UID/PWD vindos da linha de comando) continua igual.
-- A senha não vai para o log: no modo `.dsn` aparece o caminho (`FILEDSN=<caminho>`), no modo connection string só o `DATABASE`, como no original.
+- `.dsn` remains the input, but `KODBC` no longer uses `FILEDSN=`: it reads `[ODBC]` (UTF-16, UTF-8, or CP949, via `DecodeTextFile`)
+  and builds the connection string (`KODBC::ReadFileDSN` + `KODBC::BuildConnStrFromDsn`, tested without a database).
+  The file's `DRIVER` is replaced with the configured driver, `WSID` is discarded, and the remaining keys keep their order (wrapped in `{}` if values contain spaces, `;`, or braces).
+- Default driver: `ODBC Driver 18 for SQL Server`, with options `Encrypt=yes;TrustServerCertificate=yes` (encrypted channel,
+  certificate not verified: Driver 18 requires encryption by default and rejects self-signed certificates; legacy driver did not encrypt).
+- New optional calls in `config_*.lua`, **before** `AddDB`:
+  - `DBLayer:SetODBCDriver('FreeTDS')`: changes driver and **clears options** (they are for Driver 18);
+  - `DBLayer:SetODBCOptions('Encrypt=yes')`: options appended to the end of connection string.
+- `.dsn` path remains relative to the current directory, as in original; outside Windows, `\` in configs becomes `/`.
+- `SERVER=host,port` works with Driver 18 and FreeTDS (verified with FreeTDS on 2026-10-30).
+- Connection-string mode (`AddDB(..., true)`, UID/PWD from command line) remains unchanged.
+- Password is not logged: `.dsn` mode logs the path (`FILEDSN=<path>`), connection-string mode logs only `DATABASE`, as in original.
 
-## Mudanças em relação ao original
+## Changes from the original
 
-### Portabilidade (sem mudança de comportamento)
+### Portability (no behavior change)
 
-| Onde | Original | Agora |
+| Where | Original | Now |
 |---|---|---|
-| Texto na API (`SQLExecDirectW`, `SQLDriverConnectW`, `SQL_C_WCHAR`, diagnóstico) | cast de `wchar_t*` para `SQLWCHAR*` | conversão por `x2::platform::ToSqlWString`/`FromSqlWString` (no Windows é cópia; fora dele `wchar_t` tem 4 bytes e `SQLWCHAR` tem 2) |
-| `m_szDiagMsg`, `m_sqlState` | arrays de `SQLWCHAR` | arrays de `wchar_t` (mesmo nome), preenchidos por `ReadDiag()`, que substitui os blocos repetidos de `SQLGetDiagRecW`. As macros `DO_QUERY*` não mudam |
-| Indicadores do `SQLGetData` | `SQLINTEGER` (4 bytes) | `SQLLEN`, que tem 8 bytes em x64 (Windows e Linux); o driver escreveria além da variável |
-| `SQLColAttribute` com `int nLen` | resultado nunca usado | removido (também escrevia 8 bytes num `int`) |
-| Buffers da conexão | `wsprintfW` num `SQLWCHAR[255]` e `sizeof` (bytes) como tamanho em caracteres | a string inteira com `SQL_NTS`; as três funções de conexão viraram uma (`AllocConnection`) |
-| `THROW_INVALID_QUERY` | `std::exception("...")` (extensão do MSVC) | `std::runtime_error` |
-| `operator>>(time_t&)` | sob `_USE_32BIT_TIME_T` | removido (só existe no MSVC x86) |
-| `ToStringW` | `GetPrivateProfileSectionNamesW` no `.dsn` | lê `Address` da seção `[ODBC]` (o `.dsn` só tem essa seção) |
-| `KStoredProcedure()` | construtor privado ligando uma referência a um temporário | `= delete` (nunca foi usado) |
+| Text in API (`SQLExecDirectW`, `SQLDriverConnectW`, `SQL_C_WCHAR`, diagnostics) | cast `wchar_t*` to `SQLWCHAR*` | converted with `x2::platform::ToSqlWString`/`FromSqlWString` (copy on Windows; elsewhere `wchar_t` is 4 bytes and `SQLWCHAR` 2) |
+| `m_szDiagMsg`, `m_sqlState` | `SQLWCHAR` arrays | `wchar_t` arrays (same names), filled by `ReadDiag()`, replacing repeated `SQLGetDiagRecW` blocks. `DO_QUERY*` macros unchanged |
+| `SQLGetData` indicators | `SQLINTEGER` (4 bytes) | `SQLLEN`, 8 bytes on x64 (Windows and Linux); driver would otherwise write past the variable |
+| `SQLColAttribute` with `int nLen` | result never used | removed (also wrote 8 bytes to an `int`) |
+| Connection buffers | `wsprintfW` into `SQLWCHAR[255]` and `sizeof` (bytes) used as character count | full string with `SQL_NTS`; three connection functions merged into one (`AllocConnection`) |
+| `THROW_INVALID_QUERY` | `std::exception("...")` (MSVC extension) | `std::runtime_error` |
+| `operator>>(time_t&)` | guarded by `_USE_32BIT_TIME_T` | removed (only exists on MSVC x86) |
+| `ToStringW` | `GetPrivateProfileSectionNamesW` on `.dsn` | reads `Address` from `[ODBC]` section (`.dsn` has only this section) |
+| `KStoredProcedure()` | private constructor bound a reference to a temporary | `= delete` (never used) |
 
-### Intencionais
+### Intentional
 
-| Onde | Mudança | Motivo |
+| Where | Change | Reason |
 |---|---|---|
-| `operator>>(std::wstring&)` e `(std::string&)` | Leem a coluna inteira, em pedaços; `NULL` continua virando string vazia | O original lia no máximo 1.024 bytes (511 caracteres) e cortava o resto em silêncio |
-| `operator>>(wchar_t*)` e `(char*)` | Mesmo limite do original (511 caracteres + zero; 1.024 bytes) | O tamanho do destino é desconhecido |
-| `operator>>(wchar_t&)` | Lê o primeiro caractere | O original pedia um buffer de um `wchar_t`, que só cabe o terminador: lia sempre `L'\0'` |
-| `operator>>(KSerBuffer&)` | Copia só o que veio em cada pedaço e para em erro | O original copiava `LenBin` bytes (o que *faltava*, não o que coube) de um buffer de 1.024 e repetia para sempre em `SQL_ERROR` |
-| Conexão por `.dsn` | Arquivo lido por nós, driver trocado, `WSID` fora (ver Configuração) | O driver `SQL Server` não existe fora do Windows; o unixODBC não lê `.dsn` em UTF-16 |
-| Falha de conexão | O log traz o `SQLSTATE` e a mensagem do driver | O original só logava o código de retorno |
-| `ReadDiag` | Quando não há registro de diagnóstico, `m_sqlState`/`m_szDiagMsg` ficam vazios | O original deixava o texto do erro anterior |
-| `Query` | `SQL_NO_DATA` do `SQLExecDirectW` (comando sem resultado: procedure com `SET NOCOUNT ON` e sem `SELECT`, `CREATE`) conta como sucesso (2026-10-31, `server/login-run`) | O FreeTDS devolve `SQL_NO_DATA`; o driver `SQL Server` da produção devolvia sucesso: os logs do LoginServer original mostram o `dbo.P_StatCCUMinute_INS` rodando a cada minuto sem erro. Antes da mudança o porte registrava "Query 실패" e o `DO_QUERY` pulava o resto (o backup do ranking de Henir parava no `P_Rank_SpaceTime_*_DEL`) |
+| `operator>>(std::wstring&)` and `(std::string&)` | Read whole column in chunks; `NULL` still becomes empty string | Original read at most 1,024 bytes (511 characters) and silently truncated the rest |
+| `operator>>(wchar_t*)` and `(char*)` | Same limit as original (511 characters + null; 1,024 bytes) | Destination size is unknown |
+| `operator>>(wchar_t&)` | Reads first character | Original requested a one-`wchar_t` buffer, which fits only the terminator: always read `L'\0'` |
+| `operator>>(KSerBuffer&)` | Copies only data returned in each chunk and stops on error | Original copied `LenBin` bytes (what was *missing*, not what fit) from a 1,024-byte buffer and looped forever on `SQL_ERROR` |
+| `.dsn` connection | Read file ourselves, replace driver, drop `WSID` (see Configuration) | `SQL Server` driver is unavailable outside Windows; unixODBC does not read UTF-16 `.dsn` |
+| Connection failure | Log contains `SQLSTATE` and driver message | Original logged only return code |
+| `ReadDiag` | When no diagnostic record exists, `m_sqlState`/`m_szDiagMsg` are empty | Original retained previous error text |
+| `Query` | `SQL_NO_DATA` from `SQLExecDirectW` (command without results: procedure with `SET NOCOUNT ON` and no `SELECT`, `CREATE`) counts as success (2026-10-31, `server/login-run`) | FreeTDS returns `SQL_NO_DATA`; production's `SQL Server` driver returned success: original LoginServer logs show `dbo.P_StatCCUMinute_INS` running every minute without errors. Before this change the port logged "Query failed" and `DO_QUERY` skipped the rest (Henir ranking backup stopped at `P_Rank_SpaceTime_*_DEL`) |
 
-### Bugs do original corrigidos
+### Original bugs fixed
 
-| Onde | Bug | Correção |
+| Where | Bug | Fix |
 |---|---|---|
-| `KODBC::RemoveInvalidMark` | Troca cada marca por `*` buscando sempre do início; como `*` também é marca, **nunca terminava** quando o texto tinha alguma marca | A busca continua depois da troca. Nenhum servidor chama a função |
-| `KStoredProcedure::Query_GetGuildMemberGrade` | `u_char == -1`, sempre falso | Teste removido (comportamento igual). Nenhum servidor chama a função |
+| `KODBC::RemoveInvalidMark` | Replaced each character with `*` while always searching from the start; because `*` is also a match, it **never terminated** when text contained a mark | Continue search after replacement. No server calls this function |
+| `KStoredProcedure::Query_GetGuildMemberGrade` | `u_char == -1`, always false | Removed check (same behavior). No server calls this function |
 
-### Mantido como no original (anotado)
+### Retained as in original (documented)
 
-- `USHORT` é lido como `SQL_C_SSHORT` (`smallint -1` vira 65535; valores acima de 32.767 numa coluna `int` falham).
-- Se a primeira conexão falha, a reconexão automática (`08S01`/`24000`) nunca acontece, porque não há estado SQL para comparar.
+- `USHORT` is read as `SQL_C_SSHORT` (`smallint -1` becomes 65535; values above 32,767 in an `int` column fail).
+- If initial connection fails, automatic reconnect (`08S01`/`24000`) never happens because there is no SQL state to compare.
 
-## Testes
+## Tests
 
-| Teste | O que cobre |
+| Test | Coverage |
 |---|---|
-| `platform/tests/test_odbc.cpp` (sempre; Linux e Wine) | `SQLWCHAR` ↔ `wchar_t`: ASCII, coreano, `♪`, espaço ideográfico, fora do BMP (par substituto), vazio |
-| `server/Common/tests/test_odbc.cpp`, sem banco (sempre) | `ReadFileDSN` com um `.dsn` UTF-16 no formato do original (seção `[ODBC]`, comentário, outra seção), `BuildConnStrFromDsn` (troca do driver, `WSID` fora, `{}` em `;`/`}`/espaço, opções), `IsInvalidMarkIn*`, `RemoveInvalidMark` |
-| idem, suíte `db` (ctest `server_common_db`, só com `X2_TEST_ODBC`) | Contra o SQL Server: todos os tipos do `operator>>` (`bit`, `smallint` em `char`/`short`/`USHORT`, `int`, `bigint`, `real`, `nvarchar` com coreano e fora do BMP, 3.000 caracteres, `varchar`, `varbinary` de 2.500 bytes, `NULL`); erro com `SQLSTATE` `42S02` e mensagem; senha errada; `.dsn` UTF-16 com `DRIVER=SQL Server` e `WSID` trocados; procedure temporária com `exec` e `bigint`/`N'...'`; procedure sem resultado (`SET NOCOUNT ON`, só `INSERT`) dando sucesso; `KStoredProcedure` sobre o `Game01` |
+| `platform/tests/test_odbc.cpp` (always; Linux and Wine) | `SQLWCHAR` ↔ `wchar_t`: ASCII, Korean, `♪`, ideographic space, outside BMP (surrogate pair), empty |
+| `server/Common/tests/test_odbc.cpp`, no database (always) | `ReadFileDSN` with UTF-16 `.dsn` in original format (`[ODBC]`, comment, another section), `BuildConnStrFromDsn` (driver replacement, omit `WSID`, `{}` around `;`/`}`/space, options), `IsInvalidMarkIn*`, `RemoveInvalidMark` |
+| Same, `db` suite (ctest `server_common_db`, only with `X2_TEST_ODBC`) | Against SQL Server: all `operator>>` types (`bit`, `smallint` into `char`/`short`/`USHORT`, `int`, `bigint`, `real`, `nvarchar` with Korean and outside BMP, 3,000 characters, `varchar`, 2,500-byte `varbinary`, `NULL`); error with `SQLSTATE` `42S02` and message; wrong password; UTF-16 `.dsn` with `DRIVER=SQL Server` and `WSID` replaced; temporary procedure via `exec` and `bigint`/`N'...'`; procedure without result (`SET NOCOUNT ON`, `INSERT` only) succeeds; `KStoredProcedure` against `Game01` |
 
-Sem `X2_TEST_ODBC`, o ctest roda só os testes sem banco (`--test-suite-exclude=db`); a suíte `db` rodada à mão sem a variável passa com a mensagem "skipped".
+Without `X2_TEST_ODBC`, ctest runs only database-free tests (`--test-suite-exclude=db`); running the `db` suite manually without the variable reports "skipped".
 
-## Pendências
+## Pending
 
-- Testar com o **ODBC Driver 18** (`msodbcsql18`, AUR) e no Windows/MSVC.
-- Reconexão depois de queda (`KILL` da sessão): não automatizada nos testes.
-- Teste de integração no Wine: tentado em 2026-10-30, o `odbc32` do Wine não chegou ao driver FreeTDS do Linux (a conexão falha sem diagnóstico). Sem compromisso.
-- **Fora deste passo:** trocar o texto montado por parâmetros (`SQLBindParameter`). O original monta `exec ... N'%s'` e depende de
-  `IsInvalidMarkIn*` para barrar aspas; mudar isso afeta cada `DO_QUERY` e pede decisão e passo próprios. Risco anotado: injeção de SQL
-  onde um `%s` não passa pelo filtro.
-- Pool de conexões, async, outro banco que não o MSSQL: fora do escopo (T7).
+- Test with **ODBC Driver 18** (`msodbcsql18`, AUR) and on Windows/MSVC.
+- Reconnect after connection loss (`KILL` session): not automated in tests.
+- Wine integration test: attempted on 2026-10-30; Wine's `odbc32` did not reach Linux FreeTDS driver (connection failed without diagnostics). No commitment to support this.
+- **Out of scope for this step:** replace assembled SQL text with parameters (`SQLBindParameter`). Original builds `exec ... N'%s'` and relies on
+  `IsInvalidMarkIn*` to reject quotes; changing this affects each `DO_QUERY` and needs its own decision and step. Risk noted: SQL injection
+  where a `%s` does not pass through the filter.
+- Connection pooling, async, databases other than MSSQL: out of scope (T7).

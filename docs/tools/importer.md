@@ -1,43 +1,43 @@
-[Início](../README.md) › [Ferramentas](README.md) › Importador `_reference` → `src/`
+[Home](../README.md) › [Tools](README.md) › `_reference` → `src/` importer
 
-# Importador `_reference` → `src/`
+# `_reference` → `src/` importer
 
-Copia um módulo do código original já limpo. O `_reference` nunca é modificado (decisão T9).
+Copies a cleaned module from the original code. `_reference` is never modified (decision T9).
 
 ```bash
-python3 tools/import/import.py kncsdk            # importa e gera relatório
-python3 tools/import/import.py kncsdk --dry-run  # só o relatório
-python3 tools/import/tests/test_condres.py       # testes do resolvedor de #if
+python3 tools/import/import.py kncsdk            # import and generate report
+python3 tools/import/import.py kncsdk --dry-run  # report only
+python3 tools/import/tests/test_condres.py       # #if resolver tests
 ```
 
-## O que ele faz, por arquivo
+## What it does, per file
 
-1. **Seleção**: fontes que o `.vcxproj` compila na config indicada (respeita `ExcludedFromBuild`), mais os headers listados,
-   os `extra` do módulo e tudo o que eles incluem (fechamento transitivo) dentro de `source_root`. Fica de fora o que bate em `exclude`.
-2. **Encoding**: UTF-8 / UTF-8 BOM / UTF-16 / CP949 → UTF-8 sem BOM. Também normaliza LF, remove espaço no fim das linhas e garante uma única quebra final.
-3. **`#if`** (`tools/import/x2import/condres.py`): resolve as macros conhecidas (`tools/import/flags/*.toml`) e reescreve as macros de dev para `X2_DEV_TOOLS`.
-   Além disso:
-   - remove `#if 0`;
-   - remove os `#define`/`#undef` das flags;
-   - remove `#pragma comment(lib, …)`, que vai para o relatório;
-   - converte `#endif FOO` em `#endif // FOO`.
-4. **Includes**: resolve sem diferenciar maiúsculas e corrige a grafia (maiúsculas, `\` → `/`), porque no Linux o sistema de arquivos diferencia.
-5. **Destino** pelas regras `[[map]]`. Hoje o layout espelha o original, para não ter de reescrever includes. Se algum include quebrar no destino, o relatório avisa.
-6. **Relatório** em `tools/import/reports/<módulo>/REPORT.md`: arquivos e origem, blocos `X2_DEV_TOOLS` para triagem, includes corrigidos,
-   dependências externas e diferenças contra `alt_root` (ignorando espaços; diffs em `tools/import/reports/<módulo>/alt-diff/`).
+1. **Selection**: sources compiled by `.vcxproj` in specified configuration (respects `ExcludedFromBuild`), plus listed headers,
+   module `extra` files, and their transitive includes within `source_root`. Files matching `exclude` are omitted.
+2. **Encoding**: UTF-8 / UTF-8 BOM / UTF-16 / CP949 → UTF-8 without BOM. Also normalizes LF, trims trailing whitespace, ensures one final newline.
+3. **`#if`** (`tools/import/x2import/condres.py`): resolves known macros (`tools/import/flags/*.toml`) and rewrites dev macros to `X2_DEV_TOOLS`.
+   It also:
+   - removes `#if 0`;
+   - removes flag `#define`/`#undef`;
+   - removes `#pragma comment(lib, …)`, which is reported;
+   - converts `#endif FOO` to `#endif // FOO`.
+4. **Includes**: resolves without case sensitivity and fixes spelling (case, `\` → `/`), because Linux filesystems are case-sensitive.
+5. **Destination** via `[[map]]` rules. Current layout mirrors original to avoid rewriting includes. Report warns if an include breaks at destination.
+6. **Report** at `tools/import/reports/<module>/REPORT.md`: files and sources, `X2_DEV_TOOLS` blocks for triage, corrected includes,
+   external dependencies, and differences against `alt_root` (ignoring whitespace; diffs under `tools/import/reports/<module>/alt-diff/`).
 
-## Regras
+## Rules
 
-- `tools/import/manifests/<módulo>.json` guarda o hash de cada arquivo escrito. Se um arquivo de `src/` foi editado depois da importação, rodar de novo **falha**.
-  A partir daí, corrija à mão em `src/`. `--force` sobrescreve e perde as edições.
-- Módulo com `frozen = true` no `.toml` já foi portado à mão: o importador recusa escrever nele, mesmo com `--force` (só `--dry-run`).
-- **Integridade**: todo arquivo lido do `_reference` é comparado com o hash do git do próprio `_reference`. Se for diferente (cópia corrompida ou editada), a importação para.
-  Isso foi adicionado depois que a cópia original no HDD mostrou 90 arquivos corrompidos ([Inventário](../original/inventory.md#integridade-da-cópia)).
-- Os arquivos de módulo (`tools/import/modules/*.toml`) declaram `name`, `source_root`, `alt_root`, `include_dirs`, `flags`, `extra` e `exclude` **antes** de qualquer `[[tabela]]`.
-  Num TOML, chaves escritas depois de uma tabela passam a pertencer a ela; o carregador recusa esse caso.
+- `tools/import/manifests/<module>.json` stores hash of every written file. If a `src/` file has been edited since import, rerun **fails**.
+  From then on, fix it manually in `src/`. `--force` overwrites and loses edits.
+- A module with `frozen = true` in its `.toml` has been manually ported: importer refuses to write to it, even with `--force` (only `--dry-run`).
+- **Integrity**: every file read from `_reference` is checked against its git hash. If different (corrupted or edited copy), import stops.
+  Added after original HDD copy showed 90 corrupted files ([Inventory](../original/inventory.md#copy-integrity)).
+- Module files (`tools/import/modules/*.toml`) declare `name`, `source_root`, `alt_root`, `include_dirs`, `flags`, `extra`, and `exclude`
+  **before** any `[[table]]`. In TOML, keys after a table belong to that table; loader rejects this case.
 
 ## Flags
 
-- `tools/import/flags/base.toml`: ambiente (`_SERVICE_` → `!X2_DEV_TOOLS`, `_IN_HOUSE_` → `X2_DEV_TOOLS`), país US, anti-cheat e whitelist de dev.
-- `server.generated.toml` + `server.toml`: flags do servidor, geradas por [`gen_flags.py`](flags.md). As do cliente (`KTDX.h`/`Always.h`) entram quando o cliente for importado.
-- Uma flag fora dos arquivos carregados fica **intacta**: nunca é resolvida por palpite.
+- `tools/import/flags/base.toml`: environment (`_SERVICE_` → `!X2_DEV_TOOLS`, `_IN_HOUSE_` → `X2_DEV_TOOLS`), US country, anti-cheat, dev whitelist.
+- `server.generated.toml` + `server.toml`: server flags, generated by [`gen_flags.py`](flags.md). Client flags (`KTDX.h`/`Always.h`) will be added when client is imported.
+- A flag not in loaded files remains **intact**: it is never resolved by guesswork.

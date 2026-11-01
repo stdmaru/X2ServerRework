@@ -1,140 +1,139 @@
-[Início](../README.md) › [Projeto](README.md) › Roadmap
+[Home](../README.md) › [Project](README.md) › Roadmap
 
 # Roadmap
 
-Ordem pensada para ter algo **testável** o mais cedo possível. A peça-chave: o cliente original
-(`_client/elsword.exe`, PE32 x86) já existe e funciona — então o servidor portado pode ser validado
-contra ele **antes** de tocarmos no cliente. Isso só funciona se mantivermos o protocolo de rede
-idêntico ([Protocolo de rede e serialização](../original/protocol.md)).
+The order is designed to produce something **testable** as early as possible. The key is that the original client
+(`_client/elsword.exe`, PE32 x86) already exists and works — so the ported server can be validated against it
+**before** we touch the client. This requires preserving the network protocol exactly
+([Network protocol and serialization](../original/protocol.md)).
 
+```text
+Phase 0  New repo + automatic importer           (clean copy from _reference; no logic changes)
+Phase 1  Libraries: replace third party, port KNCSDK
+Phase 2  Server  → Linux/Windows, tested with original client
+Phase 3  Client  → platform layer (SDL) + graphics abstraction
+Phase 4  Client  → new graphics backend (Vulkan / SDL_GPU)
+Phase 5  Deep cleanup / reorganization
 ```
-Fase 0  Repo novo + importador automático       (copia do _reference já limpo; sem mudar lógica)
-Fase 1  Bibliotecas: substituir 3rdparty, portar KNCSDK
-Fase 2  Servidor  → Linux/Windows, testado com o cliente original
-Fase 3  Cliente   → camada de plataforma (SDL) + abstração gráfica
-Fase 4  Cliente   → backend gráfico novo (Vulkan / SDL_GPU)
-Fase 5  Limpeza profunda / reorganização
-```
 
-## Fase 0 — Repo novo + importador
+## Phase 0 — New repo + importer
 
-O `_reference` **não é modificado** (fica só leitura). O código novo nasce do zero em `src/`, mas os arquivos
-que mantemos **não são copiados à mão**: um script (`tools/import/`) lê o `_reference` e grava em `src/`
-a versão já limpa. Motivo em [decisions.md](decisions.md) (T9).
+`_reference` is **not modified** (read-only). New code starts from scratch in `src/`, but files we keep are **not copied by hand**:
+a script (`tools/import/`) reads `_reference` and writes the cleaned version to `src/`. Rationale in [decisions.md](decisions.md) (T9).
 
-O importador, por etapa:
+Importer steps:
 
-1. **Seleção de arquivos**: lê os `.vcxproj` na config `Release_US|Win32` e pega só os fontes que realmente compilam
-   (respeitando `ExcludedFromBuild`) + os headers que eles incluem. Arquivo que não entra no build não é importado.
-2. **Encoding**: CP949 → UTF-8, fim de linha LF. Ver [Codificação de arquivos e convenções do código original](../original/encoding.md).
-3. **Feature flags congeladas** com `coan` usando o conjunto final de macros da variante US/`_SERVICE_`
-   (~1.175 flags `SERV_*`, ~58 mil linhas de `#if*`). Ver [Feature flags e variantes](../original/feature-flags.md).
-   **Exceção:** macros de debug/dev da whitelist e as checagens diretas de ambiente (`#ifndef _SERVICE_`, `_IN_HOUSE_`)
-   viram `#if X2_DEV_TOOLS` e entram no relatório para triagem. Ver [Ferramentas de debug / desenvolvimento / administração](../original/debug-and-development.md).
-4. **Exclusões**: lista explícita de pastas/arquivos a não trazer (outros países, anti-cheat, SOAP, binários proprietários, DXUT...).
-5. **Mapa de destino**: caminho no `_reference` → caminho em `src/` (onde a reorganização de pastas acontece).
-6. Relatório: arquivos importados, descartados e flags resolvidas.
+1. **File selection**: read `.vcxproj` files in `Release_US|Win32` and select only sources that actually compile
+   (respecting `ExcludedFromBuild`) + headers they include. Files not in the build are not imported.
+2. **Encoding**: CP949 → UTF-8, LF line endings. See [Original code encoding and conventions](../original/encoding.md).
+3. **Freeze feature flags** with `coan` using the final US/`_SERVICE_` macro set
+   (~1,175 `SERV_*` flags, ~58,000 `#if*` lines). See [Feature flags and variants](../original/feature-flags.md).
+   **Exception:** whitelisted debug/dev macros and direct environment checks (`#ifndef _SERVICE_`, `_IN_HOUSE_`)
+   become `#if X2_DEV_TOOLS` and are included in the report for triage. See [Debug, development, and administration tools](../original/debug-and-development.md).
+4. **Exclusions**: explicit list of folders/files not to bring in (other countries, anti-cheat, SOAP, proprietary binaries, DXUT...).
+5. **Destination map**: path in `_reference` → path in `src/` (where folder reorganization happens).
+6. Report imported/discarded files and resolved flags.
 
-Regras:
-- Correções que só um humano faz (portar IOCP, trocar tipos, etc.) acontecem **depois** da importação, em commits normais em `src/`.
-- O importador roda **por módulo** (primeiro KNCSDK, depois `Common`, depois cada servidor), conforme cada fase precisa — não importamos tudo de uma vez.
-- Re-rodar o importador sobre um módulo já editado não é permitido; se descobrirmos um erro de flag depois, corrigimos à mão em `src/`.
-  (Antes da primeira edição manual de um módulo, re-rodar é livre.)
-- A unificação de duplicatas (`KNCSDK_Server`×`KNCSDK_Client`, as duas pastas `Socket`, as 3 cópias de `lua_tinker`) é feita no mapa
-  de destino: escolhe-se uma fonte e as diferenças da outra viram revisão manual.
+Rules:
+- Fixes that require a human (port IOCP, replace types, etc.) happen **after** import, in regular commits to `src/`.
+- The importer runs **per module** (first KNCSDK, then `Common`, then each server), as required by each phase — we do not import everything at once.
+- Re-running the importer over a manually edited module is not allowed; if we discover a flag error later, fix it manually in `src/`.
+  (Before the first manual edit to a module, re-running is fine.)
+- Unifying duplicates (`KNCSDK_Server`×`KNCSDK_Client`, the two `Socket` folders, the 3 copies of `lua_tinker`) happens in the destination map:
+  choose one source and manually review differences from the other.
 
-Tarefas:
-- [x] Layout do repo (`src/`, `cmake/`, `tools/import/`), CMake raiz, presets Linux/Windows x64, `.gitattributes`, `.editorconfig`.
-- [x] Importador ([../../tools/import/README.md](../tools/importer.md)): seleção via vcxproj, encoding, resolvedor de `#if` próprio
-      (no lugar do `coan`, por causa da regra `X2_DEV_TOOLS`), exclusões, mapa de destino, correção de includes, relatório, trava contra sobrescrita.
-- [x] Módulo `kncsdk` importado: 62 arquivos de 742 ([relatório](../../tools/import/reports/kncsdk/REPORT.md)).
-- [x] Flags do **servidor** geradas a partir do `ServerDefine.h` (736 verdadeiras / 423 falsas): [Flags e verificação](../tools/flags.md).
-- [x] Resolvedor validado em escala por verificação diferencial: 1.415/1.423 arquivos do servidor equivalentes (os 8 restantes são os próprios headers de configuração).
-- [x] Importador confere a integridade de cada arquivo contra o git (a cópia do HDD tinha 90 arquivos corrompidos, ver [Inventário](../original/inventory.md#integridade-da-cópia)).
-- [ ] Flags do **cliente** (`KTDX.h`/`Always.h`) e conflitos entre servidor e cliente no código compartilhado (`Common`): fazer junto com a importação do cliente.
-- [x] `server-common` importado: 414 arquivos ([Servidor: Common](../porting/server-common.md)).
-- [x] `server-x2lib` importado: `X2Lib/X2UDPPacket.*` (structs UDP do cliente que o servidor compila), em `src/server/X2Lib` (2026-10-29).
-- [x] `server-channel` importado: 36 arquivos ([Servidor: ChannelServer](../porting/server-channel.md), 2026-10-30).
-- [x] `server-game` importado: 298 arquivos ([Servidor: GameServer](../porting/server-game.md), 2026-10-30).
-- [x] `server-login` importado: 86 arquivos ([Servidor: LoginServer](../porting/server-login.md), 2026-10-31).
-- [x] `server-center` importado: 123 arquivos ([Servidor: CenterServer](../porting/server-center.md), 2026-10-31).
-- [ ] Importar o GlobalServer.
+Tasks:
+- [x] Repository layout (`src/`, `cmake/`, `tools/import/`), root CMake, Linux/Windows x64 presets, `.gitattributes`, `.editorconfig`.
+- [x] Importer ([Importer](../tools/importer.md)): vcxproj selection, encoding, custom `#if` resolver
+      (instead of `coan`, because of the `X2_DEV_TOOLS` rule), exclusions, destination map, include fixes, report, overwrite protection.
+- [x] `kncsdk` module imported: 62 of 742 files ([report](../../tools/import/reports/kncsdk/REPORT.md)).
+- [x] **Server** flags generated from `ServerDefine.h` (736 true / 423 false): [Flags and verification](../tools/flags.md).
+- [x] Resolver validated at scale by differential check: 1,415/1,423 server files equivalent (the remaining 8 are configuration headers).
+- [x] Importer checks each file's integrity against git (the HDD copy had 90 corrupted files; see [Inventory](../original/inventory.md#copy-integrity)).
+- [ ] **Client** flags (`KTDX.h`/`Always.h`) and conflicts between server and client in shared code (`Common`): do this alongside client import.
+- [x] `server-common` imported: 414 files ([Server: Common](../porting/server-common.md)).
+- [x] `server-x2lib` imported: `X2Lib/X2UDPPacket.*` (client UDP structs compiled by the server), in `src/server/X2Lib` (2026-10-29).
+- [x] `server-channel` imported: 36 files ([Server: ChannelServer](../porting/server-channel.md), 2026-10-30).
+- [x] `server-game` imported: 298 files ([Server: GameServer](../porting/server-game.md), 2026-10-30).
+- [x] `server-login` imported: 86 files ([Server: LoginServer](../porting/server-login.md), 2026-10-31).
+- [x] `server-center` imported: 123 files ([Server: CenterServer](../porting/server-center.md), 2026-10-31).
+- [x] GlobalServer imported (2026-10-31).
 
-## Fase 1 — Bibliotecas
+## Phase 1 — Libraries
 
-A maior parte não é "portar", é **substituir pela versão upstream** via CMake. Só o KNCSDK é código próprio.
-Tabela completa: [Bibliotecas](../original/libraries.md).
+Most of the work is not "porting"; it is **replacing with upstream versions** through CMake. KNCSDK is the only custom library.
+Full table: [Libraries](../original/libraries.md).
 
-Andamento em 2026-10-29: plataforma e KNCSDK compilando no Linux (GCC e Clang) e no MinGW-w64 (testes no Wine), com testes. Detalhes em [Porte](../porting/README.md).
+Status on 2026-10-29: platform and KNCSDK compiled on Linux (GCC and Clang) and MinGW-w64 (tested with Wine), with tests. Details in [Porting](../porting/README.md).
 
-- [x] Camada de plataforma `x2::platform` (tipos, sync, tempo, `CTime`, `CString`, CRT, unicode), com testes. Ver [Plataforma](../porting/platform.md).
-- [x] Dependências via CMake (T13): zlib, LuaJIT 2.1 (pkg-config, ou fonte com commit fixo pelo Makefile dele: T21), doctest.
-- [x] KNCSDK portado: log, `Serializer` (formato de rede fixo), `KncSecurity`, `Thread`, `ObjectPool`, `KncUtil`, unido ao `KNCSDK_Client`. Ver [KNCSDK](../porting/kncsdk.md).
-- [x] `lua_tinker` (versão do servidor) compilando em GCC/Clang sobre LuaJIT 2.1; luabind removido.
-- [ ] **Validar o protocolo com bytes reais** do cliente/servidor originais. Em 2026-10-30 o login no canal funcionou com o `x2_DEBUG.exe` e o `x2.exe` (troca de chave, cripto, `ECH_VERIFY_ACCOUNT`, listas); em 2026-10-31 o cliente chegou à vila pelo GameServer e o LoginServer (seleção de personagem, canal, vila) e, com o CenterServer, ao campo e a uma dungeon; com o GlobalServer, todos os servidores rodam juntos.
-- [x] Compilar e testar os caminhos Windows com **MinGW-w64 + Wine** (T18): plataforma e KNCSDK sem warnings, testes passando (2026-10-29).
-- [x] LuaJIT 2.1 no MinGW (T21): `kncsdk_lua` e o `Common` do servidor compilando sem warnings e com os testes passando no Wine (2026-10-30).
-- [x] Crypto++ substituído por `x2::crypto` (DES-CBC, HMAC-MD5, MD5, SHA-256), com vetores oficiais (T27, 2026-10-30).
-- [x] Ambiente de build único: imagem Docker Ubuntu 26.04 para builds locais e CI (T24, `build/ubuntu-env`, 2026-10-30). Ver [Ambiente de build](../tools/build-environment.md).
-- [ ] Compilar e testar no **Windows/MSVC** e LuaJIT no MSVC (D5).
-- [ ] Boost: o KNCSDK não usa mais; o servidor ainda usa em ~230 arquivos. Reduzir ao portar o servidor.
-- [ ] Intel TBB 2.2 → `std` (2 usos, no GameServer).
-- [ ] libxml2 e FreeType upstream: só o cliente usa (Fase 3).
+- [x] `x2::platform` layer (types, sync, time, `CTime`, `CString`, CRT, Unicode), with tests. See [Platform](../porting/platform.md).
+- [x] Dependencies via CMake (T13): zlib, LuaJIT 2.1 (pkg-config or source at a pinned commit built by its Makefile: T21), doctest.
+- [x] KNCSDK ported: logging, `Serializer` (fixed network format), `KncSecurity`, `Thread`, `ObjectPool`, `KncUtil`, merged with `KNCSDK_Client`. See [KNCSDK](../porting/kncsdk.md).
+- [x] Server `lua_tinker` compiles with GCC/Clang on LuaJIT 2.1; luabind removed.
+- [ ] **Validate protocol against real bytes** from the original client/server. On 2026-10-30, login to the channel worked with `x2_DEBUG.exe` and `x2.exe` (key exchange, encryption, `ECH_VERIFY_ACCOUNT`, lists); on 2026-10-31, the client reached town through GameServer and LoginServer (character selection, channel, town), then the field and a dungeon with CenterServer; with GlobalServer, all servers run together.
+- [x] Compile and test Windows paths with **MinGW-w64 + Wine** (T18): platform and KNCSDK without warnings, tests passing (2026-10-29).
+- [x] LuaJIT 2.1 on MinGW (T21): `kncsdk_lua` and server `Common` compile without warnings and tests pass in Wine (2026-10-30).
+- [x] Crypto++ replaced by `x2::crypto` (DES-CBC, HMAC-MD5, MD5, SHA-256), with official test vectors (T27, 2026-10-30).
+- [x] Unified build environment: Docker Ubuntu 26.04 image for local builds and CI (T24, `build/ubuntu-env`, 2026-10-30). See [Build environment](../tools/build-environment.md).
+- [x] Compile and test on **Windows with clang-cl**, including LuaJIT with MSVC (T25/T26).
+- [ ] Boost: KNCSDK no longer uses it; the server still uses it in ~230 files. Reduce while porting the server.
+- [ ] Intel TBB 2.2 → `std` (2 uses in GameServer).
+- [ ] Upstream libxml2 and FreeType: used only by the client (Phase 3).
 
-## Fase 2 — Servidor
+## Phase 2 — Server
 
-Plano detalhado do `Common`: [Servidor: Common › Plano](../porting/server-common.md#plano-do-porte-manual-um-branch-por-passo).
+Detailed `Common` plan: [Server: Common › Plan](../porting/server-common.md#manual-port-plan-one-branch-per-step).
 
-Ver [Servidor — acoplamento com Windows](../original/server.md).
+See [Server — Windows dependencies](../original/server.md).
 
-- [x] `server/common-build`: `Common` compilando no Linux (GCC/Clang) sem warnings, menos `Socket/`/`ODBC/` (2026-10-29). Ver [Servidor: Common](../porting/server-common.md).
-- [x] `server/common-packets`: ida e volta de todos os 1.964 tipos serializados + bytes exatos do início do login (2026-10-29). Achou 2 `GET` que chamavam `PUT` no original.
-- [x] `server/common-net`: TCP de `Socket/` sobre Asio (T20), com teste de `KSession` por loopback (2026-10-29).
-- [x] `server/common-udp`: UDP de `Socket/` (`KTDNUDP`, `UdpEcho`, `LBSUdpEcho`) sem completion routines, com teste por loopback (2026-10-29).
-- [x] `server/common-db`: ODBC portável (T17), testado contra SQL Server 2022 em Docker com os bancos do jogo, via FreeTDS (2026-10-30): [Banco de dados (ODBC)](../porting/server-common-db.md). Driver 18 ainda não testado.
-- [x] `server/channel-build`: ChannelServer compilando sem warnings (GCC, Clang, MinGW), `main` sem MFC (`KServerMain`), 2026-10-30. Ver [Servidor: ChannelServer](../porting/server-channel.md).
-- [x] EPublisherServer: reimplementação do AuthServer do DEB (T23), testada com o cliente gSOAP dos servidores e contra o banco (2026-10-30). Ver [Servidor: EPublisherServer](../porting/server-epublisher.md).
-- [x] `server/channel-run`: ChannelServer no Linux com o `elsword.exe` original até o fim do login no canal (2026-10-30): login pelo EPublisherServer, listas de grupos de servidores e de canais recebidas; o cliente então tenta o GameServer (porta 9300), que ainda não existe, e mostra "O servidor está cheio". Pasta `run/` pelo CMake (T22).
-- [x] `server/game-build`: GameServer compilando sem warnings (Clang, GCC, clang-cl), `main` sem MFC, sem anti-cheat nem TBB (2026-10-30). Ver [Servidor: GameServer](../porting/server-game.md).
-- [x] `server/game-run`: GameServer no Linux até o estado pronto, com o cliente original conectando nele (2026-10-31): o "servidor cheio" some e o login para no `EGS_VERIFY_ACCOUNT_REQ`, que depende do LoginServer ([levantamento](../porting/server-game.md#dependências-de-outros-servidores-levantamento-de-2026-10-31)).
-- [x] `server/login-import`: LoginServer importado (2026-10-31). Ver [Servidor: LoginServer](../porting/server-login.md).
-- [x] `server/login-build`: LoginServer compilando sem warnings (Clang, GCC, clang-cl), sem a Nexon (KR) nem os arquivos de país (2026-10-31). Ver [Servidor: LoginServer](../porting/server-login.md).
-- [x] `server/login-run`: LoginServer no Linux (`x2_run_login`), com o cliente original da lista de personagens até a **vila** (2026-10-31). A saída para o campo para no `ERM_OPEN_BATTLE_FIELD_REQ`, que vai para o CenterServer.
-- [x] `server/login-arm64-alignment`: SIGBUS do LoginServer diagnosticado em `KUserList::RegUser`; packing que desalinhava o mutex removido e teste de regressão passa no Release Linux x86_64 (2026-11-01). Ver [Servidor: LoginServer](../porting/server-login.md).
-- [ ] Revalidar a autenticação no ARM64 com a correção implantada.
-- [x] `server/center-import`: CenterServer importado (2026-10-31). Ver [Servidor: CenterServer](../porting/server-center.md).
-- [x] `server/center-build`: CenterServer compilando sem warnings (Clang, GCC, clang-cl), sem o KSMS (2026-10-31). Ver [Servidor: CenterServer](../porting/server-center.md).
-- [x] `server/center-run`: CenterServer no Linux (`x2_run_center`), com o cliente original no **campo** e numa **dungeon** (2026-10-31). Ver [Servidor: CenterServer](../porting/server-center.md).
-- [x] `server/global-import`: GlobalServer importado (2026-10-31). Ver [Servidor: GlobalServer](../porting/server-global.md).
-- [x] `server/global-build`: GlobalServer compilando sem warnings (Clang, GCC, clang-cl), sem o KSMS (2026-10-31). Ver [Servidor: GlobalServer](../porting/server-global.md).
-- [x] `server/global-run`: GlobalServer no Linux (`x2_run_global`), com o GameServer entregando os `EGB_*` e o cliente original testado com os seis servidores (2026-10-31). Ver [Servidor: GlobalServer](../porting/server-global.md).
-- [x] UI MFC (`Common/ui/ServerUIDlg`) → terminal em todas as plataformas (T15): log ao vivo, prompt Lua com histórico, título com status, encerramento com confirmação, modo serviço sem stdin (2026-10-31, `server/terminal`, ver [Console dos servidores](../porting/console.md)).
-- [x] Log (T16): metadados estruturados no `START_LOG`; arquivo com o conteúdo completo do original, console compacto e colorido com nível próprio (2026-10-31, `kncsdk/log-structured`, ver [KNCSDK › Log](../porting/kncsdk.md#log-t16)).
-- [x] Modo de saída para máquina e socket local com `x2ctl attach` (T30), depois do terminal e do log (2026-10-31, `server/control`, ver [Console dos servidores](../porting/console.md)).
-- [ ] ServerManager (T29, T30): ferramenta SDL3 + ImGui que orquestra e monitora os servidores, local e por SSH. Vem depois da base SDL3 do cliente (Fase 3).
-- [x] Remover SOAP/gSOAP, billing/auth de publishers, Mail(MIME/SMTP), CrashRpt; stub onde a lógica de jogo depende (2026-10-31). O gSOAP do cliente DEB virou SOAP/HTTP próprio, com login e billing do DEB iguais (T31, `server/cleanup-gsoap`, ver [Common › Cliente do DEB](../porting/server-common.md#cliente-do-deb-t31)). O `KMailManager` saiu, e o relatório de scripts com erro vai para o log (`server/cleanup-mail`). CrashRpt, os publishers de outros países e o `Common/SOAP` nunca entraram em `src/`: o importador os exclui. Sobram só os `NetError`/IDs de evento deles, que são protocolo, e comentários.
-- [x] Marco: login + vila + dungeon com o `elsword.exe` original contra servidor rodando em Linux (2026-10-31).
+- [x] `server/common-build`: `Common` compiles on Linux (GCC/Clang) without warnings, except `Socket/`/`ODBC/` (2026-10-29). See [Server: Common](../porting/server-common.md).
+- [x] `server/common-packets`: round-trip all 1,964 serialized types + exact bytes for the start of login (2026-10-29). Found 2 `GET`s that called `PUT` in the original.
+- [x] `server/common-net`: TCP `Socket/` on Asio (T20), with `KSession` loopback test (2026-10-29).
+- [x] `server/common-udp`: UDP `Socket/` (`KTDNUDP`, `UdpEcho`, `LBSUdpEcho`) without completion routines, with loopback test (2026-10-29).
+- [x] `server/common-db`: portable ODBC (T17), tested against SQL Server 2022 in Docker with game databases via FreeTDS (2026-10-30): [ODBC database](../porting/server-common-db.md). Driver 18 still untested.
+- [x] `server/channel-build`: ChannelServer compiles without warnings (GCC, Clang, MinGW), `main` without MFC (`KServerMain`), 2026-10-30. See [Server: ChannelServer](../porting/server-channel.md).
+- [x] EPublisherServer: DEB AuthServer reimplementation (T23), tested with the servers' gSOAP client and against the database (2026-10-30). See [Server: EPublisherServer](../porting/server-epublisher.md).
+- [x] `server/channel-run`: ChannelServer on Linux with original `elsword.exe` through the end of channel login (2026-10-30): login through EPublisherServer, server-group and channel lists received; the client then tries GameServer (port 9300), which does not exist yet, and shows "Server is full". `run/` directory generated by CMake (T22).
+- [x] `server/game-build`: GameServer compiles without warnings (Clang, GCC, clang-cl), `main` without MFC, no anti-cheat or TBB (2026-10-30). See [Server: GameServer](../porting/server-game.md).
+- [x] `server/game-run`: GameServer on Linux reaches ready state with original client connecting (2026-10-31): "server full" disappears and login stops at `EGS_VERIFY_ACCOUNT_REQ`, which depends on LoginServer ([dependency survey](../porting/server-game.md#dependencies-on-other-servers-survey-from-2026-10-31)).
+- [x] `server/login-import`: LoginServer imported (2026-10-31). See [Server: LoginServer](../porting/server-login.md).
+- [x] `server/login-build`: LoginServer compiles without warnings (Clang, GCC, clang-cl), without Nexon (KR) or country-specific files (2026-10-31). See [Server: LoginServer](../porting/server-login.md).
+- [x] `server/login-run`: LoginServer on Linux (`x2_run_login`), original client from character list through **town** (2026-10-31). Leaving for a field stops at `ERM_OPEN_BATTLE_FIELD_REQ`, which goes to CenterServer.
+- [x] `server/login-arm64-alignment`: LoginServer SIGBUS diagnosed in `KUserList::RegUser`; packing that misaligned the mutex removed, regression test passes on Linux x86_64 Release (2026-11-01). ARM64 validation also passed: the server no longer crashes during authentication. See [Server: LoginServer](../porting/server-login.md).
+- [x] Revalidated authentication on ARM64 with the fix deployed; server no longer crashes.
+- [x] `server/center-import`: CenterServer imported (2026-10-31). See [Server: CenterServer](../porting/server-center.md).
+- [x] `server/center-build`: CenterServer compiles without warnings (Clang, GCC, clang-cl), without KSMS (2026-10-31). See [Server: CenterServer](../porting/server-center.md).
+- [x] `server/center-run`: CenterServer on Linux (`x2_run_center`), original client reaches a **field** and a **dungeon** (2026-10-31). See [Server: CenterServer](../porting/server-center.md).
+- [x] `server/global-import`: GlobalServer imported (2026-10-31). See [Server: GlobalServer](../porting/server-global.md).
+- [x] `server/global-build`: GlobalServer compiles without warnings (Clang, GCC, clang-cl), without KSMS (2026-10-31). See [Server: GlobalServer](../porting/server-global.md).
+- [x] `server/global-run`: GlobalServer on Linux (`x2_run_global`), GameServer delivers `EGB_*`, and the original client was tested with all six servers (2026-10-31). See [Server: GlobalServer](../porting/server-global.md).
+- [x] MFC UI (`Common/ui/ServerUIDlg`) → terminal on all platforms (T15): live log, Lua prompt with history, status in title, shutdown confirmation, service mode without stdin (2026-10-31, `server/terminal`, see [Server console](../porting/console.md)).
+- [x] Logging (T16): structured metadata in `START_LOG`; file retains full original content, console is compact and colored with its own level (2026-10-31, `kncsdk/log-structured`, see [KNCSDK › Logging](../porting/kncsdk.md#logging-t16)).
+- [x] Machine-readable output mode and local socket with `x2ctl attach` (T30), after terminal and logging (2026-10-31, `server/control`, see [Server console](../porting/console.md)).
+- [ ] ServerManager (T29, T30): SDL3 + ImGui tool to orchestrate and monitor servers locally and over SSH. Follows the client's SDL3 foundation (Phase 3).
+- [x] Remove SOAP/gSOAP, publisher billing/auth, Mail (MIME/SMTP), CrashRpt; stub where game logic depends on them (2026-10-31). The DEB gSOAP client became custom SOAP/HTTP, with DEB login and billing unchanged (T31, `server/cleanup-gsoap`, see [Common › DEB client](../porting/server-common.md#deb-client-t31)). `KMailManager` was removed, and script error reports go to the log (`server/cleanup-mail`). CrashRpt, other-country publishers, and `Common/SOAP` were never imported into `src/`: the importer excludes them. Only their `NetError`s/event IDs remain as protocol, along with comments.
+- [x] Milestone: login + town + dungeon with original `elsword.exe` against servers running on Linux (2026-10-31).
 
-## Fase 3 — Cliente: plataforma
+## Phase 3 — Client: platform
 
-Ver [Cliente — acoplamento com Windows / Direct3D 9](../original/client.md).
+See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
 
-- [ ] Janela/input/IME: Win32 + DirectInput → SDL3. Manter, por enquanto, o modelo `MsgProc(HWND, UINT, WPARAM, LPARAM)`
-      traduzindo eventos SDL em mensagens no estilo Win32 (X2Lib usa `HWND` em ~272 arquivos — quase todo pela assinatura de `MsgProc`).
-- [ ] Matemática D3DX (`D3DXVECTOR3` ~8.000 usos) → shim header-compatível sobre GLM ou implementação própria.
-- [ ] Som: FMOD Ex / DirectSound → miniaudio/SDL3 audio (ou FMOD Core atual, que é multiplataforma).
-- [ ] Vídeo (Bandi), browser embutido, CxImage, Steam, anti-cheat → remover/substituir.
-- [ ] `.kom` (zlib + header "KOG GC TEAM MASSFILE V.0.3") — loader portável.
+- [ ] Window/input/IME: Win32 + DirectInput → SDL3. For now, retain the `MsgProc(HWND, UINT, WPARAM, LPARAM)` model
+      by translating SDL events into Win32-style messages (`X2Lib` uses `HWND` in ~272 files — mostly through the `MsgProc` signature).
+- [ ] D3DX math (`D3DXVECTOR3` ~8,000 uses) → header-compatible shim over GLM or custom implementation.
+- [ ] Audio: FMOD Ex / DirectSound → miniaudio/SDL3 audio (or current cross-platform FMOD Core).
+- [ ] Video (Bandi), embedded browser, CxImage, Steam, anti-cheat → remove/replace.
+- [ ] `.kom` (zlib + header "KOG GC TEAM MASSFILE V.0.3") — portable loader.
 
-## Fase 4 — Cliente: gráfico
+## Phase 4 — Client: graphics
 
-- [ ] Introduzir abstração gráfica dentro de `KTDXLIB` (D3D9 está concentrado lá: ~56 arquivos usam o device; X2Lib quase só usa matemática).
-- [ ] Reimplementar o que hoje vem de D3DX: loader `.x` (mesh + skin + animação), efeitos `.fx` (`x2.fx`), texturas `.dds`, fontes, sprites.
-- [ ] Backend novo: SDL_GPU ([decisions.md](decisions.md), T19).
+- [ ] Introduce graphics abstraction within `KTDXLIB` (D3D9 is concentrated there: ~56 files use the device; X2Lib mostly uses math).
+- [ ] Reimplement what currently comes from D3DX: `.x` loader (mesh + skin + animation), `.fx` effects (`x2.fx`), `.dds` textures, fonts, sprites.
+- [ ] New backend: SDL_GPU ([decisions.md](decisions.md), T19).
 
-## Fase 5 — Limpeza profunda
+## Phase 5 — Deep cleanup
 
-Refatoração de verdade (remoção de sistemas mortos, organização de pastas, nomes), guiada por testes/smoke tests
-das fases anteriores. Só depois que tudo roda.
+Real refactoring (remove dead systems, reorganize folders and names), guided by tests/smoke tests
+from the previous phases. Only after everything runs.
 
-- [ ] Consertar os [bugs do original](../original/bugs.md) mantidos no porte, cada um com a decisão do comportamento novo.
+- [ ] Fix the [original bugs](../original/bugs.md) retained in the port, each with a decision about the new behavior.

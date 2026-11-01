@@ -1,69 +1,69 @@
-[Início](../README.md) › [Código original](README.md) › Ferramentas de debug / desenvolvimento / administração
+[Home](../README.md) › [Original code](README.md) › Debug, development, and administration tools
 
-# Ferramentas de debug / desenvolvimento / administração
+# Debug, development, and administration tools
 
-Objetivo (decisão T10): build base = **`_SERVICE_`**, mas **manter** tudo que serve para administrar,
-desenvolver ou depurar. Pode ser redesenhado; não precisa ser fiel ao original.
+Goal (decision T10): the base build is **`_SERVICE_`**, but **retain** everything useful for administration,
+development, or debugging. It may be redesigned; it need not reproduce the original.
 
-## Como o original controla isso
+## How the original controls this
 
-Ambiente escolhido por define no vcxproj, interpretado em `KTDXLIB/KTDX.h`:
+Environment is selected by a define in the vcxproj, interpreted in `KTDXLIB/KTDX.h`:
 
-| Macro | Significado (comentários do `KTDX.h`) |
+| Macro | Meaning (`KTDX.h` comments) |
 |---|---|
-| `_SERVICE_` | patch de produção |
-| `_SERVICE_` + `_OPEN_TEST_` | servidor de teste aberto |
-| `_IN_HOUSE_` | build interna **com** código de teste |
-| `_IN_HOUSE_SERVICE_READY_QA_` | build interna **sem** código de teste (QA) |
+| `_SERVICE_` | Production patch |
+| `_SERVICE_` + `_OPEN_TEST_` | Open test server |
+| `_IN_HOUSE_` | Internal build **with** test code |
+| `_IN_HOUSE_SERVICE_READY_QA_` | Internal build **without** test code (QA) |
 
-O debug aparece de três formas:
+Debug functionality appears in three forms:
 
-1. **Macros derivadas**: cada bloco de ambiente no `KTDX.h` define macros de feature, e `_IN_HOUSE_` inclui
-   `InHouseEtc.h` e `InHouse1..6.h`, um arquivo por desenvolvedor.
-2. **Checagem direta** no código: `#ifndef _SERVICE_` / `#ifdef _IN_HOUSE_` / `_OPEN_TEST_` (~82 / 68 / 40 arquivos no cliente).
-3. **Servidor**: comandos de admin são **pacotes** (`EGS_ADMIN_*`, 33 tipos: kick, mudar ED/level/classe, criar NPC,
-   completar quest, observer mode, auth level...) verificados por nível de autorização em tempo de execução.
-   Quase não dependem de `#ifdef`, então seguem com o porte normal. No original, a janela MFC do servidor também
-   tinha funções de operação; elas viram comandos de console.
+1. **Derived macros**: each environment block in `KTDX.h` defines feature macros; `_IN_HOUSE_` includes
+   `InHouseEtc.h` and `InHouse1..6.h`, one file per developer.
+2. **Direct checks** in code: `#ifndef _SERVICE_` / `#ifdef _IN_HOUSE_` / `_OPEN_TEST_` (~82 / 68 / 40 client files).
+3. **Server**: admin commands are **packets** (`EGS_ADMIN_*`, 33 types: kick, change ED/level/class, create NPC,
+   complete quest, observer mode, auth level...) checked against authorization level at runtime.
+   They barely depend on `#ifdef`, so they remain in the regular port. In the original, the server's MFC window also
+   had operational functions; those become console commands.
 
-## Problema: `_IN_HOUSE_` não é só debug
+## Problem: `_IN_HOUSE_` is not just debug
 
-`InHouse*.h` mistura ferramentas de dev com **mudanças de gameplay não lançadas** e correções experimentais.
-Exemplos: `BALANCE_PATCH_20131107`, `UPGRADE_TRADE_SYSTEM`, `OPTION_UI_RENEWAL`, `FIX_MEMORY_LEAK`, `REGULATE_STATE_CHANGE_LOGIC`.
-Ligar `_IN_HOUSE_` inteiro mudaria o jogo e quebraria a compatibilidade com o `x2.exe` original (T4).
-Por isso a regra não pode ser "liga tudo de in-house".
+`InHouse*.h` mixes development tools with **unreleased gameplay changes** and experimental fixes.
+Examples: `BALANCE_PATCH_20131107`, `UPGRADE_TRADE_SYSTEM`, `OPTION_UI_RENEWAL`, `FIX_MEMORY_LEAK`, `REGULATE_STATE_CHANGE_LOGIC`.
+Enabling all of `_IN_HOUSE_` would change the game and break compatibility with the original `x2.exe` (T4).
+Therefore, the rule cannot be "enable all in-house features."
 
-## Estratégia no importador
+## Importer strategy
 
-Uma flag nossa, **`X2_DEV_TOOLS`**: ligada na build `Development`, desligada na `Release`.
+Our flag, **`X2_DEV_TOOLS`**: enabled in `Development`, disabled in `Release`.
 
-1. Todo o resto é resolvido como na build `_SERVICE_` (US).
-2. **Whitelist de macros de debug**: elas não são resolvidas, e o importador reescreve o teste para `X2_DEV_TOOLS`.
-   Candidatas (lista inicial, a revisar):
-   - itens/inventário: `ITEM_CHEAT_POPUP_TEST` (janela de compra de itens via cheat), `ITEM_VIEW_CHEAT`, `AUTH_AUTO_SELL_ITEM`, `AUTH_DELETE_ITEM_ALL`, `JUNK_AVATAR`
-   - personagem/buffs: `ERASE_BUFF_CHEAT`, `CHEAT_CLASS_CHANGE`, `VILLAGE_FLASH_MAN_DEV_ONLY`, `DAMAGE_ZERO`
-   - comandos: `CHEAT_COMMAND_SHORT_CUT_KEY_TEST`, `ADD_SHORT_CUT_KEY_IN_HOUSE`
-   - monstros/mapas: `SUMMON_MONSTER_BY_PRESS_KEY_AT_TRAINING_GAME`, `MONSTER_TEST_DUNGEON`, `CREATE_MONSTER_LIST_TEST`, `MONSTER_STATE_LIST_TEST`, `FREE_SELECT_PVP_MAP`, `ENABLE_SET_UNIT_POSITION_TEST`
-   - visualização: `SHOW_ATTACK_BOX_DUMMY`, `IN_GAME_MANUAL_CAMERA_POSITION_TEST`, `SHOW_ONLY_MY_DAMAGE`
+1. Resolve everything else as in the US `_SERVICE_` build.
+2. **Whitelist debug macros**: do not resolve them; rewrite their checks to `X2_DEV_TOOLS`.
+   Initial candidates (to review):
+   - items/inventory: `ITEM_CHEAT_POPUP_TEST` (cheat item-purchase window), `ITEM_VIEW_CHEAT`, `AUTH_AUTO_SELL_ITEM`, `AUTH_DELETE_ITEM_ALL`, `JUNK_AVATAR`
+   - character/buffs: `ERASE_BUFF_CHEAT`, `CHEAT_CLASS_CHANGE`, `VILLAGE_FLASH_MAN_DEV_ONLY`, `DAMAGE_ZERO`
+   - commands: `CHEAT_COMMAND_SHORT_CUT_KEY_TEST`, `ADD_SHORT_CUT_KEY_IN_HOUSE`
+   - monsters/maps: `SUMMON_MONSTER_BY_PRESS_KEY_AT_TRAINING_GAME`, `MONSTER_TEST_DUNGEON`, `CREATE_MONSTER_LIST_TEST`, `MONSTER_STATE_LIST_TEST`, `FREE_SELECT_PVP_MAP`, `ENABLE_SET_UNIT_POSITION_TEST`
+   - visualization: `SHOW_ATTACK_BOX_DUMMY`, `IN_GAME_MANUAL_CAMERA_POSITION_TEST`, `SHOW_ONLY_MY_DAMAGE`
    - logs: `ADD_DAMAGE_LOG`, `WRITE_SCRIPT_LOG_AT_CONSOLE_WINDOW`, `LOG_LOAD_DLG_SCRIPT`, `ADD_RESOURCE_ERROR_LOG`, `EFFECT_USE_LOG`
-   - scripts: `REALTIME_SCRIPT_PATCH` (recarregar script em tempo real), `EXPAND_DEVELOPER_SCRIPT`
-   - conveniência: `AUTO_LOGIN_IN_HOUSE`, `KHELP_SYSTEM_TEST`, `X2OPTIMIZE_INDICATE_LOCAL_MASSFILE`/`MASS_FILE_FIRST` (ler arquivo solto antes do `.kom`)
-3. **Checagens diretas** (`#ifndef _SERVICE_`, `#ifdef _IN_HOUSE_`) viram `#if X2_DEV_TOOLS` por padrão.
-   O importador gera um **relatório** com cada bloco convertido para triagem manual. Bloco que não for de debug
-   (gameplay, outro país, anti-cheat) é resolvido como `_SERVICE_`.
-4. Tudo o que estiver em `InHouse*.h` e **não** entrar na whitelist é descartado, ou seja, fica como no `_SERVICE_`.
-5. Requisito: com `X2_DEV_TOOLS` ligado, o cliente **continua compatível** com o servidor e o protocolo. Debug não pode mudar formato de pacote.
-   Se alguma feature exigir isso, ela fica fora da whitelist e é refeita depois.
+   - scripts: `REALTIME_SCRIPT_PATCH` (hot-reload scripts), `EXPAND_DEVELOPER_SCRIPT`
+   - convenience: `AUTO_LOGIN_IN_HOUSE`, `KHELP_SYSTEM_TEST`, `X2OPTIMIZE_INDICATE_LOCAL_MASSFILE`/`MASS_FILE_FIRST` (read loose file before `.kom`)
+3. **Direct checks** (`#ifndef _SERVICE_`, `#ifdef _IN_HOUSE_`) become `#if X2_DEV_TOOLS` by default.
+   The importer generates a **report** of every converted block for manual triage. Blocks that are not debug
+   (gameplay, another country, anti-cheat) resolve as `_SERVICE_`.
+4. Everything in `InHouse*.h` that is **not** whitelisted is discarded, leaving the `_SERVICE_` behavior.
+5. Requirement: with `X2_DEV_TOOLS` enabled, the client **remains compatible** with the server and protocol. Debug must not change packet format.
+   If a feature requires that, keep it out of the whitelist and redesign it later.
 
-## Depois do porte (redesenho, Fase 5+)
+## After the port (redesign, Phase 5+)
 
-- Juntar os cheats espalhados num **console/painel de dev** único no cliente (comandos + janelas: itens, monstros, posição, buffs).
-- Servidor: console de admin (kick, anúncio, reload de scripts, status) no lugar da UI MFC.
-- Os pacotes `EGS_ADMIN_*` continuam sendo a fonte da verdade no servidor, sempre checando o nível de autorização.
-- Avaliar o uso de ImGui no cliente para as janelas de dev.
+- Bring scattered cheats into a single client **dev console/panel** (commands + windows: items, monsters, position, buffs).
+- Server: admin console (kick, announcements, script reload, status) instead of the MFC UI.
+- `EGS_ADMIN_*` packets remain the source of truth on the server, always checking authorization level.
+- Evaluate ImGui for client development windows.
 
-## A verificar
+## To verify
 
-- Lista completa de blocos `#ifndef _SERVICE_` no X2Lib (sai do relatório do importador).
-- Onde o cliente decide mostrar cheats: por macro ou também pelo auth level recebido do servidor.
-- Encoding misto confirmado: `KTDX.h` está em UTF-8, enquanto `InHouse*.h` estão em CP949. A detecção tem de ser por arquivo.
+- Full list of `#ifndef _SERVICE_` blocks in X2Lib (from the importer report).
+- Whether the client decides to show cheats by macro or also by the auth level received from the server.
+- Mixed encoding confirmed: `KTDX.h` is UTF-8, while `InHouse*.h` are CP949. Detection must be per file.

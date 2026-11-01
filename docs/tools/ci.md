@@ -1,38 +1,39 @@
-[Início](../README.md) › [Ferramentas](README.md) › Integração contínua
+[Home](../README.md) › [Tools](README.md) › Continuous integration
 
-# Integração contínua (GitHub Actions)
+# Continuous integration (GitHub Actions)
 
-`.github/workflows/ci.yml`, criado em 2026-10-30 (container `archlinux`; no mesmo dia passou para a imagem Ubuntu, T24, e o MinGW + Wine deu lugar ao clang-cl no Windows, T26).
+`.github/workflows/ci.yml`, created on 2026-10-30 (Arch Linux container; moved to Ubuntu image the same day, T24, and MinGW + Wine
+was replaced by clang-cl on Windows, T26).
 
-## Minutos (orçamento)
+## Minutes (budget)
 
-O repositório é privado: **2.000 minutos/mês** de Actions, com os do Windows contando **2×**. Em 2026-10-30 uma rodada completa
-custava ~80 a 110 minutos cobrados (jobs Linux de 16 a 22 min com o ccache frio, Windows 14 min × 2). Por isso:
+Repository is private: **2,000 Actions minutes/month**, with Windows minutes charged at **2×**. As of 2026-10-30, a full run cost
+~80–110 billed minutes (Linux jobs 16–22 min with cold ccache, Windows 14 min × 2). Therefore:
 
-- **Automático só no push da `main`** (ao integrar), e não quando o push só muda `docs/`, `*.md` ou `.claude/`.
-- **Branches de trabalho:** a matriz Linux roda local, de graça (`docker/build.sh`, [Ambiente de build](build-environment.md)). O CI é disparado
-  à mão só quando precisa, por padrão **só o Windows**, quando a máquina Windows de testes não estiver disponível:
-  `gh workflow run ci.yml --ref <branch>` (ou `-f jobs=linux` / `-f jobs=all`). Depois, `gh run list --branch <branch>`.
-- **Antes de integrar,** a matriz Linux local completa passa e o Windows passa na máquina de testes (`tools/win/winbuild.sh`,
-  [Ambiente de build](build-environment.md#windows-clang-cl-por-ssh)); o disparo do Windows no CI fica para quando ela não estiver disponível.
-- **No CI, Linux com 2 jobs:** Clang Debug (dev tools ON) e GCC Release (dev tools OFF). O Clang Release, o build distribuído, fica na matriz local.
-- **`timeout-minutes`** em todos os jobs; um push novo no mesmo branch cancela a rodada anterior.
-- O cache do ccache de um branch só herda o da `main`: depois que a `main` roda, os branches começam quentes.
+- **Automatic only on push to `main`** (when integrating), not when push changes only `docs/`, `*.md`, or `.claude/`.
+- **Work branches:** run Linux matrix locally for free (`docker/build.sh`, [Build environment](build-environment.md)). Trigger CI manually
+  only as needed, by default **Windows only**, when Windows test machine is unavailable:
+  `gh workflow run ci.yml --ref <branch>` (or `-f jobs=linux` / `-f jobs=all`). Then `gh run list --branch <branch>`.
+- **Before integration,** full local Linux matrix must pass and Windows must pass on test machine (`tools/win/winbuild.sh`,
+  [Build environment](build-environment.md#windows-clang-cl-over-ssh)); trigger Windows CI only when machine unavailable.
+- **CI Linux uses 2 jobs:** Clang Debug (dev tools ON) and GCC Release (dev tools OFF). Clang Release, the distributed build, stays in local matrix.
+- **`timeout-minutes`** on all jobs; a new push to same branch cancels previous run.
+- A branch's ccache inherits only from `main`: after `main` runs, branches start warm.
 
-Os jobs de Linux rodam na imagem do [ambiente de build](build-environment.md) (Ubuntu, T24), a mesma do `docker/build.sh`; o de Windows, num runner Windows (T26).
+Linux jobs use [build environment](build-environment.md) image (Ubuntu, T24), same as `docker/build.sh`; Windows job uses Windows runner (T26).
 
-| Job | O que faz |
+| Job | What it does |
 |---|---|
-| Build image | publica a imagem em `ghcr.io/<dono>/x2-build:<hash do Dockerfile>` (privada, como o repositório); só reconstrói quando o `Dockerfile` muda |
-| Clang Debug, GCC Release (check) | build dos presets `linux-debug` (Clang) e `linux-gcc` (GCC, só verificação), `ctest` |
-| clang-cl Debug | runner `windows-latest` (fora da imagem Ubuntu): ambiente do Visual Studio x64 (`ilammy/msvc-dev-cmd`) e o clang-cl do LLVM do runner, preset `windows-debug` (com `-k 0`: todos os erros numa rodada), `ctest`. O build de Windows distribuído (T26) e o único lugar onde o Windows é compilado; LuaJIT pelo `msvcbuild.bat` (T25). Minutos de Windows contam 2× em repositório privado |
-| Importer and wiki | `tools/import/tests/test_condres.py`, `test_flagsim.py` e `tools/docs/check_links.py` |
+| Build image | Publishes image to `ghcr.io/<owner>/x2-build:<Dockerfile hash>` (private, like repository); rebuilds only when `Dockerfile` changes |
+| Clang Debug, GCC Release (check) | Builds `linux-debug` (Clang) and `linux-gcc` (GCC, verification only) presets, runs `ctest` |
+| clang-cl Debug | `windows-latest` runner (outside Ubuntu image): Visual Studio x64 environment (`ilammy/msvc-dev-cmd`) and runner LLVM clang-cl, `windows-debug` preset (`-k 0`: all errors in one pass), `ctest`. Distributed Windows build (T26) and only place Windows is compiled; LuaJIT via `msvcbuild.bat` (T25). Windows minutes count 2× for private repos |
+| Importer and wiki | `tools/import/tests/test_condres.py`, `test_flagsim.py`, and `tools/docs/check_links.py` |
 
-- **Sem warnings**: o log do build é salvo e qualquer `warning:` (no `cl`/`link`, `warning C####:`/`LNK####:`) reprova o job (regra do AGENTS.md).
-- **Dependências**: as da imagem; LuaJIT pela receita do CMake com commit fixo (T21); Asio, zlib e doctest pelo `FetchContent`
-  com versão fixa (T13). `ccache` guardado entre execuções (`actions/cache`).
-- **Fora do CI**: a suíte `db` do `KODBC` (precisa de um SQL Server: `X2_TEST_ODBC`, ver [Banco de desenvolvimento](development-database.md)),
-  a geração do `ClientScript` (precisa do cliente, ver [Pastas de execução](runtime.md)) O repositório não tem
-  `_reference/`, `_client/` nem `_database/`, e nada do CI depende deles.
+- **No warnings**: build log is saved and any `warning:` (`cl`/`link`, `warning C####:`/`LNK####:`) fails job (AGENTS.md rule).
+- **Dependencies**: image packages; LuaJIT via pinned-commit CMake recipe (T21); Asio, zlib, and doctest through pinned `FetchContent` (T13).
+  `ccache` persisted between runs (`actions/cache`).
+- **Outside CI**: `KODBC` `db` suite (requires SQL Server: `X2_TEST_ODBC`, see [Development database](development-database.md)),
+  `ClientScript` generation (requires client, see [Run directories](runtime.md)). Repository has no
+  `_reference/`, `_client/`, or `_database/`, and CI depends on none of them.
 
-Ver o resultado: `gh run list`, `gh run view --log-failed`.
+View results: `gh run list`, `gh run view --log-failed`.

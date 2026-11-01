@@ -1,50 +1,50 @@
-[Início](README.md) › Compilar no Linux
+[Home](README.md) › Build on Linux
 
-# Compilar no Linux
+# Build on Linux
 
-Há dois caminhos. O **recomendado é o container** (`docker/build.sh`): é a mesma imagem Ubuntu do CI (decisão T24), e
-o host só precisa do Docker. O build nativo também funciona, mas não é verificado continuamente.
+There are two options. The **recommended option is the container** (`docker/build.sh`): it uses the same Ubuntu image as CI
+(decision T24), and the host only needs Docker. Native builds also work, but are not continuously verified.
 
-Os dois produzem os mesmos presets:
+Both use the same presets:
 
-| Preset | Compilador | Tipo | Ferramentas de dev (`X2_DEV_TOOLS`) |
+| Preset | Compiler | Type | Dev tools (`X2_DEV_TOOLS`) |
 |---|---|---|---|
-| `linux-debug` | Clang | Debug | sim |
-| `linux-development` | Clang | RelWithDebInfo | sim |
-| `linux-release` | Clang | Release | não |
-| `linux-gcc` | GCC | Release | não (só verificação) |
+| `linux-debug` | Clang | Debug | yes |
+| `linux-development` | Clang | RelWithDebInfo | yes |
+| `linux-release` | Clang | Release | no |
+| `linux-gcc` | GCC | Release | no (verification only) |
 
-As ferramentas de dev são os comandos de debug e de administração do original ([Debug e dev](original/debug-and-development.md)).
-Sem elas, o build é o de produção.
+Dev tools are original debug and administration commands ([Debug and development](original/debug-and-development.md)).
+Without them, the build is for production.
 
-## 1. Pegar o código
+## 1. Get the code
 
 ```bash
 git clone https://github.com/stdmaru/X2ServerRework.git
 cd X2ServerRework
 ```
 
-O **cliente original** (`_client/`) e os **backups do banco** (`_database/`) não fazem parte do repositório. O build não
-precisa deles, mas para rodar, sim ([Rodar os servidores](running.md)). Sem o `_client/`, o build avisa que pulou o `ClientScript`.
+The **original client** (`_client/`) and **database backups** (`_database/`) are not part of repository. Build does not need them,
+but running does ([Run the servers](running.md)). Without `_client/`, build warns that it skipped `ClientScript`.
 
-## 2a. Com Docker (recomendado)
+## 2a. Docker (recommended)
 
-Pacotes do host: Docker com o plugin `compose`, e Git.
+Host packages: Docker with `compose` plugin, and Git.
 
-| Distribuição | Comando |
+| Distribution | Command |
 |---|---|
 | Ubuntu / Debian | `sudo apt install docker.io docker-compose-v2 git` |
 | Arch | `sudo pacman -S docker docker-compose git` |
 | Fedora | `sudo dnf install moby-engine docker-compose git` |
 
-O usuário precisa poder rodar o Docker sem `sudo`:
+User must be able to run Docker without `sudo`:
 
 ```bash
 sudo systemctl enable --now docker
-sudo usermod -aG docker "$USER"     # vale a partir do próximo login
+sudo usermod -aG docker "$USER"     # takes effect on next login
 ```
 
-Configurar, compilar e testar:
+Configure, build, and test:
 
 ```bash
 docker/build.sh cmake --preset linux-debug
@@ -52,24 +52,24 @@ docker/build.sh cmake --build --preset linux-debug
 docker/build.sh ctest --preset linux-debug
 ```
 
-- Na primeira vez, o `docker/build.sh` constrói a imagem (`docker/build/Dockerfile`). Depois, o cache do Docker torna isso instantâneo.
-  Sem argumentos, o script abre um shell dentro dela.
-- O repositório é montado no mesmo caminho do host, então `build/` e `compile_commands.json` servem ao editor normalmente.
-- O container roda com o seu usuário. O cache do ccache fica em `~/.cache/x2-build`.
-- As variáveis `X2_*` do shell e do `docker/.env` são repassadas ao container ([Rodar os servidores](running.md#2-configurações-locais)).
+- On first run, `docker/build.sh` builds image (`docker/build/Dockerfile`). Later Docker cache makes it immediate.
+  Without arguments, script opens a shell inside image.
+- Repository is mounted at same host path, so `build/` and `compile_commands.json` are available to editor.
+- Container runs as your user. ccache is in `~/.cache/x2-build`.
+- Shell and `docker/.env` `X2_*` variables are passed into container ([Run the servers](running.md#2-local-settings)).
 
-## 2b. Nativo (sem Docker)
+## 2b. Native (without Docker)
 
-Pacotes:
+Packages:
 
-| Distribuição | Comando |
+| Distribution | Command |
 |---|---|
 | Ubuntu 26.04 | `sudo apt install build-essential clang cmake ninja-build pkg-config git python3 unixodbc-dev tdsodbc` |
 | Arch | `sudo pacman -S base-devel clang cmake ninja pkgconf git python unixodbc freetds` |
 
-É o que a imagem instala. Precisa de CMake 3.28 ou mais novo e de um Clang com C++20. O ccache é opcional.
-O zlib, o LuaJIT, o Asio e o doctest vêm pelo próprio CMake: ele usa o pacote do sistema quando existe e, quando não, baixa a versão fixa.
-O LuaJIT só aceita o upstream 2.1. O pacote do Ubuntu é o fork do OpenResty e é ignorado: nesse caso o CMake compila o commit fixo.
+These are installed in the image. Requires CMake 3.28+ and Clang with C++20. ccache is optional.
+zlib, LuaJIT, Asio, and doctest come through CMake: it uses system package when available, otherwise downloads pinned version.
+LuaJIT accepts upstream 2.1 only. Ubuntu package is OpenResty fork and ignored; in that case CMake builds pinned commit.
 
 ```bash
 cmake --preset linux-debug
@@ -77,23 +77,22 @@ cmake --build --preset linux-debug
 ctest --preset linux-debug
 ```
 
-**Observação:** um diretório `build/<preset>` configurado de um jeito (nativo ou container) deve ser apagado antes de
-configurar do outro. O cache guarda caminhos de bibliotecas que só existem num dos dois, e o Ninja não recompila só
-porque o compilador mudou.
+**Note:** a `build/<preset>` directory configured one way (native or container) must be removed before configuring the other way.
+Cache stores library paths that exist in only one environment, and Ninja does not rebuild merely because compiler changed.
 
-## 3. O resultado
+## 3. Output
 
-- Executáveis em `build/<preset>/src/server/<Servidor>/`.
-- **Pastas prontas para rodar** em `build/<preset>/run/<Servidor>/`: o executável, os configs preenchidos e os scripts.
-  O build normal monta essas pastas (`X2_RUN_FOLDERS`). Ver [Rodar os servidores](running.md).
-- Um build sem mudanças leva menos de um segundo, e cada build seguinte só refaz o que mudou.
+- Executables in `build/<preset>/src/server/<Server>/`.
+- **Ready-to-run folders** in `build/<preset>/run/<Server>/`: executable, filled configs, and scripts.
+  Normal build assembles these (`X2_RUN_FOLDERS`). See [Run the servers](running.md).
+- An unchanged build takes less than a second; each subsequent build only rebuilds what changed.
 
-## Problemas comuns
+## Common issues
 
-| Sintoma | Causa e solução |
+| Symptom | Cause and fix |
 |---|---|
-| `permission denied ... docker.sock` | o usuário não está no grupo `docker`: rode `usermod -aG docker`, entre de novo na sessão |
-| `Imported target "PkgConfig::LUAJIT" includes non-existent path` | `build/<preset>` configurado fora do container: apague a pasta e configure de novo |
-| `ClientScript is not generated` | falta o `_client/data` (ou o `X2_CLIENT_DATA` aponta para outro lugar): o build segue, mas os servidores precisam dele para rodar |
+| `permission denied ... docker.sock` | user is not in `docker` group: run `usermod -aG docker`, log in again |
+| `Imported target "PkgConfig::LUAJIT" includes non-existent path` | `build/<preset>` was configured outside container: remove directory and configure again |
+| `ClientScript is not generated` | `_client/data` missing (or `X2_CLIENT_DATA` points elsewhere): build continues, but servers need it to run |
 
-Mais detalhes da imagem e do CI: [Ambiente de build](tools/build-environment.md), [Integração contínua](tools/ci.md).
+More on image and CI: [Build environment](tools/build-environment.md), [Continuous integration](tools/ci.md).

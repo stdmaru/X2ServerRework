@@ -1,39 +1,39 @@
-[Início](../README.md) › [Código original](README.md) › Fora de escopo (ruído)
+[Home](../README.md) › [Original code](README.md) › Out of scope (noise)
 
-# Fora de escopo (ruído)
+# Out of scope (noise)
 
-Projetos e pastas do `_reference/X2Server` que **não** vamos portar agora. Mantido só para saber o que existe.
+Projects and folders in `_reference/X2Server` that **will not be ported for now**. Kept only to document what exists.
 
-## Ferramentas (editores, conversores, utilitários)
+## Tools (editors, converters, utilities)
 
 `X2Tool`, `X2DungeonTool`, `X2EffectTool`, `X2EventSceneTool`, `X2ItemTool`, `X2LineMapTool`, `X2WorldTool`, `X2ScenarioTool`,
-`X2Viewer`, `X2KomFileViewer`, `X2MassFileTool`, `X2ScriptPreprocessingTool`, `X2TETXETPreprocessingTool` (está na `.sln`),
+`X2Viewer`, `X2KomFileViewer`, `X2MassFileTool`, `X2ScriptPreprocessingTool`, `X2TETXETPreprocessingTool` (in the `.sln`),
 `XFileCompare`, `XFileExp`, `KOGExport`, `ElswordExport`, `KOGSkinMesh`, `KOGGamePerformanceCheck`,
 `LuaCompileTool`, `AnsiToUTF8`, `ContentSelector`, `CreateCheckInfo`, `DungeonStatistics`, `KncTools`, `ReleaseTool`, `TestEmpty`.
 
-Possivelmente úteis como **referência** mais tarde:
-- `X2KomFileViewer` / `X2MassFileTool` — formato `.kom`.
-- `LuaCompileTool` — indica se scripts nos `.kom` são bytecode.
-- `X2TETXETPreprocessingTool` / `KTDXDeviceTET_Preprocessing` — formatos de textura/mesh pré-processados.
+Potentially useful as **reference** later:
+- `X2KomFileViewer` / `X2MassFileTool` — `.kom` format.
+- `LuaCompileTool` — indicates whether scripts in `.kom` files are bytecode.
+- `X2TETXETPreprocessingTool` / `KTDXDeviceTET_Preprocessing` — preprocessed texture/mesh formats.
 
-## Gerenciadores de DB / web / billing
+## DB / web / billing managers
 
 `BillingTool`, `NetErrorDBManager`, `ScriptDBManager`, `StringDBManager`, `TextureStringManager`, `TransDBManagerForWeb`.
 
 ## Launchers / patcher
 
-`X2Patcher` (está na `.sln`), `X2ChinaLauncher` (303 MB).
+`X2Patcher` (in the `.sln`), `X2ChinaLauncher` (303 MB).
 
-## Integrações de terceiros
+## Third-party integrations
 
-`HShield`, `XTRAP`, `NexonModule`, `Steamworks`, `IGA` — ver [Binários sem fonte (`.lib` / `.dll`)](proprietary-binaries.md).
+`HShield`, `XTRAP`, `NexonModule`, `Steamworks`, `IGA` — see [Binaries without source (`.lib` / `.dll`)](proprietary-binaries.md).
 
-## Dados/planilhas
+## Data / spreadsheets
 
-`ScriptData/` (`.xls/.xlsm/.mdb` de design), `Localization/`, `Backup/`.
+`ScriptData/` (`.xls/.xlsm/.mdb` design files), `Localization/`, `Backup/`.
 
-## Duplicatas / legado
+## Duplicates / legacy
 
 - `KncWX2Server/KncWX2Server_2003.sln`, `*_2003.vcxproj`, `.vcproj`, `.dsp/.dsw`, `.vspscc/.vssscc`.
-- `KncWX2Server/GameClient/` (38 arquivos) — provável cliente de teste/bot; verificar antes de descartar.
-- `luaLib/HK_SERVICE/`, `luaLib/Release_IN/` — artefatos de build versionados.
+- `KncWX2Server/GameClient/` (38 files) — likely a test client/bot; verify before discarding.
+- `luaLib/HK_SERVICE/`, `luaLib/Release_IN/` — versioned build artifacts.

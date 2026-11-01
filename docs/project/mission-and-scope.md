@@ -1,37 +1,38 @@
-[Início](../README.md) › [Projeto](README.md) › Missão e escopo
+[Home](../README.md) › [Project](README.md) › Mission and scope
 
-# Missão e escopo
+# Mission and scope
 
-## Missão
+## Mission
 
-Portar **servidor** e **cliente** de `_reference/X2Server` para Windows + Linux
-(CMake, SDL, Vulkan/abstração gráfica moderna), removendo código morto, variantes de país,
-anti-cheats e integrações proprietárias, e reorganizando o código.
+Port the **server** and **client** from `_reference/X2Server` to Windows and Linux
+(CMake, SDL, Vulkan/modern graphics abstraction), removing dead code, country variants,
+anti-cheat systems, and proprietary integrations, while reorganizing the code.
 
-## Dentro do escopo
+## In scope
 
-**Servidores** (`KncWX2Server/`): `LoginServer`, `CenterServer`, `ChannelServer`, `GameServer`, `GlobalServer`
-e o código compartilhado `KncWX2Server/Common`.
+**Servers** (`KncWX2Server/`): `LoginServer`, `CenterServer`, `ChannelServer`, `GameServer`, `GlobalServer`,
+and the shared `KncWX2Server/Common` code.
 
-**Cliente**: `X2` (executável), `X2Lib` (lógica de jogo), `KTDXLIB` (engine: render, som, input, rede, UI).
+**Client**: `X2` (executable), `X2Lib` (game logic), `KTDXLIB` (engine: rendering, audio, input, networking, UI).
 
-**Bibliotecas que eles usam**: `KNCSDK_Server` / `KNCSDK_Client`, `X2ServerProtocol`, `LuaCommon`, `luaLib`,
+**Libraries they use**: `KNCSDK_Server` / `KNCSDK_Client`, `X2ServerProtocol`, `LuaCommon`, `luaLib`,
 `luajitLib`, `libxml`, `cximage`, `Profiler`, `3rdparty/{boost,freetype,IntelTBB,DXSDK}`.
-Detalhes: [Bibliotecas — o que fazer com cada uma](../original/libraries.md).
+Details: [Libraries — what to do with each](../original/libraries.md).
 
-**Dados de servidor que o código lê** (não são "assets do cliente", mas também não vamos reescrever):
-`KncWX2Server/ServerResource/*.lua`, `DataBase/` (1.475 `.sql` de MSSQL — schema e stored procedures).
+**Server data read by the code** (not "client assets", but also not being rewritten):
+`KncWX2Server/ServerResource/*.lua`, `DataBase/` (1,475 MSSQL `.sql` files — schema and stored procedures).
 
-## Fora do escopo (por enquanto)
+## Out of scope (for now)
 
-- Assets do cliente (`_client/data/*.kom`, `.dds`, `.x`, `.fx`, música, vídeo). O código novo tem de ler os formatos atuais.
-- Todas as ferramentas (`X2Tool`, `X2DungeonTool`, `X2Patcher`, `*DBManager`, ...). Lista: [Fora de escopo (ruído)](../original/out-of-scope.md).
-- Anti-cheat (HackShield, XTRAP, nProtect), billing/auth de publishers, Steam, IGA, Nexon — serão removidos ou viram stub.
-  Ver [Binários sem fonte (`.lib` / `.dll`)](../original/proprietary-binaries.md).
+- Client assets (`_client/data/*.kom`, `.dds`, `.x`, `.fx`, music, video). New code must read the existing formats.
+- All original tools (`X2Tool`, `X2DungeonTool`, `X2Patcher`, `*DBManager`, ...). List: [Out of scope (noise)](../original/out-of-scope.md).
+- Anti-cheat (HackShield, XTRAP, nProtect), publisher billing/auth, Steam, IGA, Nexon — these will be removed or stubbed.
+  See [Binaries without source (`.lib` / `.dll`)](../original/proprietary-binaries.md).
 
-## Critério de "pronto" (alto nível)
+## Definition of done (high level)
 
-1. Servidores compilam e rodam em Linux e Windows a partir de um único `CMakeLists.txt`, sem MFC, sem IOCP direto, sem `windows.h` fora de uma camada de plataforma.
-2. Um cliente conecta, loga, entra em vila e em dungeon contra o servidor portado.
-3. Cliente portado roda em Linux e Windows com os assets atuais, sem D3D9/D3DX.
-4. Uma única variante de país — US (ver [decisions.md](decisions.md)); flags `SERV_*` resolvidas e removidas do código.
+1. Servers build and run on Linux and Windows from a single `CMakeLists.txt`, without MFC, direct IOCP, or `windows.h`
+   outside a platform layer.
+2. A client can connect, log in, and enter a town and a dungeon on the ported server.
+3. The ported client runs on Linux and Windows with the existing assets, without D3D9/D3DX.
+4. One country variant — US (see [decisions.md](decisions.md)); `SERV_*` flags are resolved and removed from the code.

@@ -1,23 +1,24 @@
-[Início](../README.md) › Porte
+[Home](../README.md) › Porting
 
-# Porte
+# Porting
 
-Uma página (ou subpasta) por módulo de `src/`: estado, o que mudou em relação ao original, decisões locais e pendências.
-O plano geral está em [Projeto › Roadmap](../project/roadmap.md).
+One page (or subfolder) per `src/` module: status, changes from the original, local decisions, and pending work.
+The overall plan is in [Project › Roadmap](../project/roadmap.md).
 
-| Módulo | Estado | Página |
+| Module | Status | Page |
 |---|---|---|
-| `src/platform` | Linux (Clang, GCC) e Windows (clang-cl) ok com testes | [Plataforma](platform.md) |
-| `src/kncsdk` | Linux (Clang, GCC) e Windows (clang-cl) ok com testes; cripto própria (T27); validação de protocolo pendente | [KNCSDK](kncsdk.md) |
-| `src/kncsdk/ServerConsole`, `src/server/x2ctl` | terminal (T15) e protocolo de controle (T30) dos servidores, Linux e Windows (2026-10-31) | [Console dos servidores](console.md) |
-| `src/server/Common` | compila no Linux (Clang, GCC) e no Windows (clang-cl), sem warnings, com `Socket/` (TCP e UDP) e `ODBC/`; testes de pacotes, sessão, UDP e banco (SQL Server real, FreeTDS; só Linux) | [Servidor: Common](server-common.md); [Banco de dados (ODBC)](server-common-db.md) |
-| `src/server/EPublisherServer` | reimplementação do AuthServer (DEB): compila sem warnings, testes no Linux e no Windows, roda contra o banco | [Servidor: EPublisherServer](server-epublisher.md) |
-| `src/server/GameServer` | compila sem warnings no Linux (Clang, GCC) e no Windows (clang-cl); roda no Linux (`x2_run_game`); cliente original até a vila (2026-10-31) | [Servidor: GameServer](server-game.md) |
-| `src/server/ChannelServer` | compila no Linux (Clang, GCC) e no Windows (clang-cl) sem warnings; roda no Linux (`x2_run_channel`); login do cliente original no canal funcionando (2026-10-30) | [Servidor: ChannelServer](server-channel.md) |
-| `src/server/LoginServer` | compila sem warnings no Linux (Clang, GCC) e no Windows (clang-cl); roda no Linux (`x2_run_login`); com ele o cliente original chega à vila (2026-10-31) | [Servidor: LoginServer](server-login.md) |
-| `src/server/CenterServer` | compila sem warnings no Linux (Clang, GCC) e no Windows (clang-cl); roda no Linux (`x2_run_center`); com ele o cliente original vai ao campo e à dungeon (2026-10-31) | [Servidor: CenterServer](server-center.md) |
-| `src/server/GlobalServer` | compila sem warnings no Linux (Clang, GCC) e no Windows (clang-cl); roda no Linux (`x2_run_global`); testado com o cliente original e os outros servidores (2026-10-31) | [Servidor: GlobalServer](server-global.md) |
+| `src/platform` | Linux (Clang, GCC) and Windows (clang-cl) build and tests pass | [Platform](platform.md) |
+| `src/kncsdk` | Linux (Clang, GCC) and Windows (clang-cl) build and tests pass; custom crypto (T27); protocol validation pending | [KNCSDK](kncsdk.md) |
+| `src/kncsdk/ServerConsole`, `src/server/x2ctl` | Server terminal (T15) and control protocol (T30), Linux and Windows (2026-10-31) | [Server console](console.md) |
+| `src/server/Common` | Linux (Clang, GCC) and Windows (clang-cl) build without warnings, with `Socket/` (TCP and UDP) and `ODBC/`; packet, session, UDP, and database tests (real SQL Server, FreeTDS; Linux only) | [Server: Common](server-common.md); [ODBC database](server-common-db.md) |
+| `src/server/EPublisherServer` | DEB AuthServer reimplementation: builds without warnings, tests on Linux and Windows, runs against the database | [Server: EPublisherServer](server-epublisher.md) |
+| `src/server/GameServer` | Linux (Clang, GCC) and Windows (clang-cl) build without warnings; runs on Linux (`x2_run_game`); original client reaches town (2026-10-31) | [Server: GameServer](server-game.md) |
+| `src/server/ChannelServer` | Linux (Clang, GCC) and Windows (clang-cl) build without warnings; runs on Linux (`x2_run_channel`); original client channel login works (2026-10-30) | [Server: ChannelServer](server-channel.md) |
+| `src/server/LoginServer` | Linux (Clang, GCC) and Windows (clang-cl) build without warnings; runs on Linux (`x2_run_login`); original client reaches town (2026-10-31); ARM64 authentication crash fixed and verified | [Server: LoginServer](server-login.md) |
+| `src/server/CenterServer` | Linux (Clang, GCC) and Windows (clang-cl) build without warnings; runs on Linux (`x2_run_center`); original client reaches a field and dungeon (2026-10-31) | [Server: CenterServer](server-center.md) |
+| `src/server/GlobalServer` | Linux (Clang, GCC) and Windows (clang-cl) build without warnings; runs on Linux (`x2_run_global`); tested with original client and other servers (2026-10-31) | [Server: GlobalServer](server-global.md) |
 
-**Ícones no Windows** (2026-10-31): cada executável de servidor leva o ícone do original (`icon.ico` na pasta do módulo, copiado do
-`_reference` pelo git; o do EPublisherServer vem do `AuthServer` do DEB). O `x2_windows_icon` (`cmake/X2Compiler.cmake`) gera o `.rc`
-com o mesmo `IDI_ICON1 ICON "icon.ico"` dos `<Servidor>.rc` originais; os diálogos MFC desses `.rc` não vêm (T15). No Linux não faz nada.
+**Windows icons** (2026-10-31): each server executable uses the original icon (`icon.ico` in the module directory, copied from
+`_reference` through git; EPublisherServer's comes from the DEB `AuthServer`). `x2_windows_icon` (`cmake/X2Compiler.cmake`) generates
+the `.rc` with the same `IDI_ICON1 ICON "icon.ico"` as the original `<Server>.rc`; MFC dialogs from those `.rc` files are not included (T15).
+It does nothing on Linux.

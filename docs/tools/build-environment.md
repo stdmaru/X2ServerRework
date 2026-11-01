@@ -1,66 +1,64 @@
-[Início](../README.md) › [Ferramentas](README.md) › Ambiente de build
+[Home](../README.md) › [Tools](README.md) › Build environment
 
-# Ambiente de build (Ubuntu em Docker)
+# Build environment (Ubuntu in Docker)
 
-Desde 2026-10-30 os builds e testes de Linux rodam numa imagem **Ubuntu** própria (decisão T24), a mesma no desenvolvimento e no
-[CI](ci.md). O host (qualquer distribuição com Docker) só monta o repositório. O Windows (clang-cl, T26) não é compilado aqui:
-só no job Windows do CI.
+Since 2026-10-30, Linux builds and tests run in a custom **Ubuntu** image (decision T24), shared by development and
+[CI](ci.md). The host (any distribution with Docker) only mounts the repository. Windows (clang-cl, T26) is not built here:
+only in the Windows CI job.
 
-- Imagem: `docker/build/Dockerfile`, sobre `ubuntu:26.04` (26.04.1 LTS). Em 2026-10-30: Clang 21.1 (presets `linux-*`), GCC 15.2
-  (preset `linux-gcc`, verificação), CMake 4.2, Ninja 1.13, unixODBC 2.3 + FreeTDS (`tdsodbc`), Python 3, ccache.
-- Sem pacote do LuaJIT: o do Ubuntu é o fork OpenResty, então o CMake compila o commit upstream fixo (T21) também no Linux.
-- Todo preset passa pelo `ccache` (`CMAKE_<LANG>_COMPILER_LAUNCHER` na imagem).
+- Image: `docker/build/Dockerfile`, based on `ubuntu:26.04` (26.04.1 LTS). As of 2026-10-30: Clang 21.1 (`linux-*` presets), GCC 15.2
+  (`linux-gcc` preset, verification), CMake 4.2, Ninja 1.13, unixODBC 2.3 + FreeTDS (`tdsodbc`), Python 3, ccache.
+- No LuaJIT package: Ubuntu's is the OpenResty fork, so CMake also builds a pinned upstream commit (T21) on Linux.
+- Every preset goes through `ccache` (`CMAKE_<LANG>_COMPILER_LAUNCHER` in image).
 
-## Uso
+## Usage
 
-`docker/build.sh` roda um comando dentro do container (sem argumentos, abre um shell). Ele constrói a imagem na primeira vez
-(e quando o `Dockerfile` muda; senão o cache do Docker torna isso instantâneo).
+`docker/build.sh` runs a command inside container (without arguments, opens a shell). Builds image the first time
+(and when `Dockerfile` changes; otherwise Docker cache makes it immediate).
 
 ```bash
 docker/build.sh cmake --preset linux-debug
 docker/build.sh cmake --build --preset linux-debug
 docker/build.sh ctest --preset linux-debug
-docker/build.sh cmake --preset linux-gcc && docker/build.sh cmake --build --preset linux-gcc   # verificação com GCC
+docker/build.sh cmake --preset linux-gcc && docker/build.sh cmake --build --preset linux-gcc   # GCC check
 ```
 
-- O repositório é montado **no mesmo caminho** do host: `build/` e o `compile_commands.json` servem ao editor do host.
-- Roda com o usuário do host (os arquivos de `build/` não ficam do root). O `HOME` do container, com o cache do ccache,
-  fica em `~/.cache/x2-build` (`X2_BUILD_HOME` muda).
-- Repassa ao container as variáveis `X2_*` do ambiente e do `docker/.env` (a do shell vence; modelo em `docker/.env.example`),
-  por exemplo a senha do banco para o CMake ([Pastas de execução](runtime.md#valores-dos-templates-cache-do-cmake)). O `winbuild.sh`
-  também lê o `docker/.env` (`X2_WIN_HOST`, `X2_WIN_DIR`).
-- Rede do host (`--network host`): os testes da suíte `db` e os servidores acham o SQL Server do [banco de desenvolvimento](development-database.md)
-  em `127.0.0.1`, e o cliente original acha os servidores como antes.
-- O stdin fica sempre ligado (`-i`, e `-it` num terminal): sem terminal, o prompt Lua dos servidores termina no fim da entrada, então um
-  servidor rodado por aqui fica de pé enquanto o stdin estiver aberto (por exemplo `(sleep 600) | docker/build.sh ...`) ou com `--no-stdin`.
-- Um diretório de `build/` configurado fora do container (outro compilador) deve ser apagado antes: o Ninja não recompila
-  objetos só porque a versão do compilador mudou.
+- Repository is mounted **at the same path** as host: `build/` and `compile_commands.json` are available to host editor.
+- Runs as host user (files under `build/` are not root-owned). Container `HOME`, with ccache, is `~/.cache/x2-build` (`X2_BUILD_HOME` changes it).
+- Passes host and `docker/.env` `X2_*` variables into container (shell variable wins; template at `docker/.env.example`),
+  e.g. DB password for CMake ([Run directories](runtime.md#template-values-cmake-cache)). `winbuild.sh` also reads `docker/.env`
+  (`X2_WIN_HOST`, `X2_WIN_DIR`).
+- Host networking (`--network host`): `db` test suite and servers reach [development DB](development-database.md) at `127.0.0.1`;
+  original client reaches servers as before.
+- stdin is always connected (`-i`, and `-it` in a terminal): without terminal, server Lua prompt exits at EOF, so a server started here
+  stays up while stdin remains open (e.g. `(sleep 600) | docker/build.sh ...`) or with `--no-stdin`.
+- A `build/` directory configured outside container (another compiler) should be deleted before use: Ninja does not rebuild objects only because compiler version changed.
 
-## Windows (clang-cl) por SSH
+## Windows (clang-cl) over SSH
 
-O Windows não roda na imagem. Além do job do [CI](ci.md), há uma **máquina Windows de testes** (VM do usuário, desde 2026-10-30)
-onde `tools/win/winbuild.sh` compila e testa sem gastar minutos do Actions:
+Windows does not run in the image. Besides [CI](ci.md), there is a **Windows test machine** (user VM, since 2026-10-30)
+where `tools/win/winbuild.sh` builds and tests without spending Actions minutes:
 
 ```bash
-X2_WIN_HOST=usuario@host tools/win/winbuild.sh                        # windows-debug, todos os núcleos da máquina
-X2_WIN_HOST=usuario@host tools/win/winbuild.sh windows-release 4
+X2_WIN_HOST=user@host tools/win/winbuild.sh                        # windows-debug, all machine cores
+X2_WIN_HOST=user@host tools/win/winbuild.sh windows-release 4
 ```
 
-- Manda os arquivos versionados **com as edições ainda não commitadas** (`git ls-files` + `tar` pelo SSH) para `C:/x2/src`
-  (`X2_WIN_DIR` muda) e roda `cmake`/`ctest` no ambiente do Visual Studio mais novo que tenha os componentes C++ e Clang (`vswhere -requires`: em 2026-10-31 a VM ganhou um
-  Visual Studio Community sem C++, e o `-latest` sozinho passou a escolhê-lo). O `build/` fica na máquina e é incremental.
-- Lá, apaga os arquivos que o histórico do git removeu e que não são mais rastreados. O `tar` só acrescenta, e o glob do CMake ainda
-  compilava o `stdsoap2.cpp` depois que o gSOAP saiu (2026-10-31). A comparação ignora maiúsculas, como o Windows: `soapClient.cpp`
-  (removido) e `SoapClient.cpp` (novo) são o mesmo arquivo lá. Arquivos que nunca estiveram no git não são tocados.
-- A máquina precisa de Visual Studio Build Tools (carga C++, componentes Clang e CMake, que trazem CMake e Ninja), Python 3 e
-  OpenSSH com login por chave; Git não. Em 2026-10-30: Windows Server 2022, Build Tools 18.11.3 (MSVC 14.51), 12 núcleos, 8 GB.
-  A VM fica num servidor Proxmox dedicado: o padrão é usar todos os núcleos (`%NUMBER_OF_PROCESSORS%`, 2026-10-31).
-- Só para build e testes.
+- Sends tracked files **including uncommitted edits** (`git ls-files` + `tar` over SSH) to `C:/x2/src` (`X2_WIN_DIR` changes it)
+  and runs `cmake`/`ctest` in newest Visual Studio environment with C++ and Clang components (`vswhere -requires`: on 2026-10-31
+  VM gained Visual Studio Community without C++, and `-latest` alone began selecting it). `build/` stays on machine and is incremental.
+- There, deletes files removed from git history and no longer tracked. `tar` only adds files, and CMake glob kept compiling
+  `stdsoap2.cpp` after gSOAP was removed (2026-10-31). Comparison is case-insensitive, like Windows: removed `soapClient.cpp` and new
+  `SoapClient.cpp` are the same file there. Files never tracked in git are untouched.
+- Machine needs Visual Studio Build Tools (C++ workload, Clang and CMake components, which bring CMake and Ninja), Python 3,
+  and OpenSSH with key login; no Git required. As of 2026-10-30: Windows Server 2022, Build Tools 18.11.3 (MSVC 14.51), 12 cores, 8 GB.
+  VM is on dedicated Proxmox server: default is all cores (`%NUMBER_OF_PROCESSORS%`, 2026-10-31).
+- Only for build and tests.
 
-## O que o Ubuntu mudou em relação ao Arch (2026-10-30)
+## What changed when moving from Arch to Ubuntu (2026-10-30)
 
-| Achado | Tratamento |
+| Finding | Handling |
 |---|---|
-| MinGW do Ubuntu: threads `win32` por padrão e "file too big" (limite de seções do COFF) nos pacotes | resolvido com `-posix` e `-Wa,-mbig-obj`; depois o MinGW saiu (T26) |
-| GCC 15 Release: `-Wmaybe-uninitialized` falso em `KTCInfo::m_wstrUDPRelayIP` nos testes de ida e volta | pragma só em volta do `CheckRoundTrip` (`src/server/Common/tests/packet_test.h`); o pragma no ponto de chamada não funciona |
-| Pacote do LuaJIT é o fork OpenResty | não instalado; receita do commit fixo (T21) |
+| Ubuntu MinGW: `win32` threads by default and "file too big" (COFF section limit) in packets | fixed with `-posix` and `-Wa,-mbig-obj`; MinGW later removed (T26) |
+| GCC 15 Release: false `-Wmaybe-uninitialized` for `KTCInfo::m_wstrUDPRelayIP` in round-trip tests | pragma only around `CheckRoundTrip` (`src/server/Common/tests/packet_test.h`); pragma at call site does not work |
+| LuaJIT package is OpenResty fork | not installed; use pinned-commit recipe (T21) |

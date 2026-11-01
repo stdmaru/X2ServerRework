@@ -1,55 +1,55 @@
-[Início](../README.md) › [Código original](README.md) › Cliente — acoplamento com Windows / Direct3D 9
+[Home](../README.md) › [Original code](README.md) › Client — Windows / Direct3D 9 dependencies
 
-# Cliente — acoplamento com Windows / Direct3D 9
+# Client — Windows / Direct3D 9 dependencies
 
-Três camadas: `X2` (exe, 2 fontes) → `X2Lib` (jogo, 285 fontes no vcxproj, 609 arquivos) → `KTDXLIB` (engine, 120 fontes, 338 arquivos).
-Build original: Win32 x86, Unicode, MFC em algumas configs (`_AFXDLL`), `_USE_32BIT_TIME_T`.
+Three layers: `X2` (exe, 2 sources) → `X2Lib` (game, 285 sources in vcxproj, 609 files) → `KTDXLIB` (engine, 120 sources, 338 files).
+Original build: Win32 x86, Unicode, MFC in some configurations (`_AFXDLL`), `_USE_32BIT_TIME_T`.
 
-## Boa notícia: o D3D9 está concentrado no KTDXLIB
+## Good news: D3D9 is concentrated in KTDXLIB
 
-| Padrão | X2Lib | KTDXLIB | Servidor |
+| Pattern | X2Lib | KTDXLIB | Server |
 |---|---:|---:|---:|
 | `IDirect3DDevice9` / `LPDIRECT3DDEVICE9` | 2 | 56 | 0 |
 | `GetDevice()` | 22 | 29 | 0 |
 | `LPDIRECT3DTEXTURE9` | 0 | 11 | 0 |
 | `D3DRS_`/`D3DFVF`/`D3DPT_`/`D3DFMT` | 14 | 57 | 1 |
-| Tipos de matemática D3DX (`D3DXVECTOR*`, `D3DXMATRIX`...) | 367 | 104 | 13 |
-| Funções de matemática D3DX (`D3DXVec*`, `D3DXMatrix*`...) | 50 | 33 | 4 |
+| D3DX math types (`D3DXVECTOR*`, `D3DXMATRIX`...) | 367 | 104 | 13 |
+| D3DX math functions (`D3DXVec*`, `D3DXMatrix*`...) | 50 | 33 | 4 |
 | `HWND` | 272 | 58 | 13 |
 | `MessageBox` | 40 | 19 | 4 |
 
-Leitura: X2Lib usa D3D quase só como **biblioteca de matemática** (`D3DXVECTOR3` aparece ~8.000 vezes) e via `HWND`
-na assinatura de `MsgProc`. Um shim de matemática compatível + tradução de eventos isolam a maior parte do X2Lib do porte gráfico.
-Os ~22 arquivos do X2Lib que chamam `GetDevice()` precisam ser revisados um a um.
+Interpretation: X2Lib uses D3D almost exclusively as a **math library** (`D3DXVECTOR3` appears ~8,000 times) and through
+`HWND` in the `MsgProc` signature. A compatible math shim plus event translation isolate most of X2Lib from the graphics port.
+The ~22 X2Lib files that call `GetDevice()` need individual review.
 
-## O que vem do D3DX e precisa de substituto
+## D3DX features that need replacements
 
-| Recurso | Uso | Substituto |
+| Feature | Use | Replacement |
 |---|---|---|
-| `D3DXLoadMeshFromX` / `...HierarchyFromX`, `ID3DXAnimationController` | `KTDXDeviceXMesh`, `KTDXDeviceXSkinMesh`, `KTDXAnimationController` | parser `.x` próprio (texto/binário) + skinning; formato `.x` fica (asset) |
-| `D3DXCreateEffect` | 4 arquivos; `x2.fx` em `_client/data` | traduzir `x2.fx` (HLSL SM2/3 + techniques/passes) para shaders do backend novo; isso é **código**, não asset |
-| `D3DXCreateTextureFromFile`, cube textures | `KTDXDeviceTexture` | loader DDS (DXT1/3/5) + stb_image |
-| `D3DXCreateFont`, `D3DXCreateSprite` | fontes/UI | FreeType (já usado em `KTDGFreeTypeFont`) + batcher 2D |
-| Fixed-function (`SetRenderState`, `DrawPrimitiveUP`, FVF) | 16 / 21 arquivos | emular pipeline fixo com shaders + buffers dinâmicos |
+| `D3DXLoadMeshFromX` / `...HierarchyFromX`, `ID3DXAnimationController` | `KTDXDeviceXMesh`, `KTDXDeviceXSkinMesh`, `KTDXAnimationController` | custom `.x` parser (text/binary) + skinning; `.x` remains an asset format |
+| `D3DXCreateEffect` | 4 files; `x2.fx` in `_client/data` | translate `x2.fx` (HLSL SM2/3 + techniques/passes) to shaders for the new backend; this is **code**, not an asset |
+| `D3DXCreateTextureFromFile`, cube textures | `KTDXDeviceTexture` | DDS loader (DXT1/3/5) + stb_image |
+| `D3DXCreateFont`, `D3DXCreateSprite` | fonts/UI | FreeType (already used in `KTDGFreeTypeFont`) + 2D batcher |
+| Fixed-function (`SetRenderState`, `DrawPrimitiveUP`, FVF) | 16 / 21 files | emulate fixed-function pipeline with shaders + dynamic buffers |
 
-## Outros subsistemas
+## Other subsystems
 
-| Área | Onde | Plano |
+| Area | Where | Plan |
 |---|---|---|
-| Janela / loop | `KTDXApp`, `DXUT/` | SDL3 |
-| Input | `KTDIDevice*` (DirectInput8 em 6 arquivos), `KTDIDeviceWinKey` | SDL3 |
-| IME (coreano/CJK) | `KTDGUIIMEEditBox`, `KHangulPPWSelector` (`ImmGetContext` em 5 arquivos, `WM_IME_*`) | SDL3 text input/IME — revisar se a variante for US |
-| Som | `KTDSManager`, `KTDXDeviceSound`, `KTDSMP3Play`, `FMOD/` (FMOD Ex), DirectSound | miniaudio / SDL3 audio, ou FMOD Core atual |
-| Vídeo | `BandiVideo*` (15 arquivos), `bdvid32.dll` | remover ou trocar (ffmpeg/pl_mpeg) conforme formato em `data/movie` |
-| Rede | `KTDNManager`, `KTDNUDP`, `KTDNTransfer`, `X2ServerProtocol/Socket` (IOCP no cliente!) | mesma lib de rede do servidor (Asio) |
-| Arquivos `.kom` | `KGCMassFileManager`, `KGCMassFileBufferManager` (zlib `uncompress`) | portar; formato é asset |
-| Browser embutido | `KBrowserWrapper`, `KPCHWebBrowser`, `Browser.c` | remover |
-| Crash/anti-hack | `CrashRpt`, `KncFirewall`, `KProtectedType`, `AntiHackingString.h`, XTRAP, HackShield | remover |
-| Publisher | `NexonModule`, `Steamworks`, `IGA` (ads), `X2Lib/OnlyGlobal/<país>` | remover/stub |
+| Window / loop | `KTDXApp`, `DXUT/` | SDL3 |
+| Input | `KTDIDevice*` (DirectInput8 in 6 files), `KTDIDeviceWinKey` | SDL3 |
+| IME (Korean/CJK) | `KTDGUIIMEEditBox`, `KHangulPPWSelector` (`ImmGetContext` in 5 files, `WM_IME_*`) | SDL3 text input/IME — review whether the US variant needs this |
+| Audio | `KTDSManager`, `KTDXDeviceSound`, `KTDSMP3Play`, `FMOD/` (FMOD Ex), DirectSound | miniaudio / SDL3 audio, or current FMOD Core |
+| Video | `BandiVideo*` (15 files), `bdvid32.dll` | remove or replace (ffmpeg/pl_mpeg) depending on `data/movie` format |
+| Networking | `KTDNManager`, `KTDNUDP`, `KTDNTransfer`, `X2ServerProtocol/Socket` (IOCP in the client too!) | same networking library as the server (Asio) |
+| `.kom` files | `KGCMassFileManager`, `KGCMassFileBufferManager` (zlib `uncompress`) | port; format is an asset |
+| Embedded browser | `KBrowserWrapper`, `KPCHWebBrowser`, `Browser.c` | remove |
+| Crash/anti-hack | `CrashRpt`, `KncFirewall`, `KProtectedType`, `AntiHackingString.h`, XTRAP, HackShield | remove |
+| Publisher | `NexonModule`, `Steamworks`, `IGA` (ads), `X2Lib/OnlyGlobal/<country>` | remove/stub |
 
-## Riscos específicos do cliente
+## Client-specific risks
 
-- **x64**: ~600 casts ponteiro→`DWORD/int/long` (estimativa por regex, cliente+servidor) e 12 arquivos com `__asm`.
-- `_USE_32BIT_TIME_T`: `time_t` de 32 bits pode estar em structs gravados/serializados.
-- Ordem de inicialização de singletons globais (`KJohnSingleton`, `KGlobalSingleton`, `KDynamicSingleton`).
-- `x2.fx` mistura estado fixo e shaders — tradução manual, validar visualmente contra o original.
+- **x64**: ~600 pointer→`DWORD/int/long` casts (regex estimate, client+server) and 12 files with `__asm`.
+- `_USE_32BIT_TIME_T`: 32-bit `time_t` may occur in written/serialized structs.
+- Initialization order of global singletons (`KJohnSingleton`, `KGlobalSingleton`, `KDynamicSingleton`).
+- `x2.fx` mixes fixed-function state and shaders — manual translation; visually validate against the original.

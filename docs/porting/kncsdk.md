@@ -1,129 +1,128 @@
-[Início](../README.md) › [Porte](README.md) › KNCSDK
+[Home](../README.md) › [Porting](README.md) › KNCSDK
 
-# KNCSDK (`src/kncsdk`, alvos `x2::kncsdk` e `x2::kncsdk_lua`)
+# KNCSDK (`src/kncsdk`, targets `x2::kncsdk` and `x2::kncsdk_lua`)
 
-SDK interno, do qual todos os servidores e o cliente dependem. Partes:
+Internal SDK on which all servers and the client depend. Parts:
 
-| Pasta | Conteúdo |
+| Folder | Contents |
 |---|---|
-| `dbg/` | log |
-| `Serializer/` | serialização (formato de rede) |
-| `KncSecurity/` | cripto de pacotes |
-| `Crypto/` | **novo** (T27): DES-CBC, HMAC-MD5, MD5, SHA-256 e hex (`x2::crypto`), no lugar do Crypto++ |
-| `Thread/` | threads e locks |
-| `ObjectPool/` | pools de objetos |
-| raiz | `KncUtil`, macros, `lua_tinker` |
+| `dbg/` | logging |
+| `Serializer/` | serialization (network format) |
+| `KncSecurity/` | packet encryption |
+| `Crypto/` | **new** (T27): DES-CBC, HMAC-MD5, MD5, SHA-256, and hex (`x2::crypto`), replacing Crypto++ |
+| `Thread/` | threads and locks |
+| `ObjectPool/` | object pools |
+| root | `KncUtil`, macros, `lua_tinker` |
 
-- Origem: `KNCSDK_Server`, unido ao que só existe em `KNCSDK_Client`.
-  Importado em 2026-10-29 (62 de 742 arquivos, [relatório](../../tools/import/reports/kncsdk/REPORT.md)) e portado à mão no mesmo dia.
-- O módulo está **congelado** no importador (`frozen = true`): toda edição agora é feita direto em `src/kncsdk`.
-- Análise do original: [Bibliotecas › KNCSDK](../original/libraries.md).
-- Depende de: [Plataforma](platform.md), zlib, LuaJIT 2.1 (só `kncsdk_lua`).
+- Source: `KNCSDK_Server`, merged with files unique to `KNCSDK_Client`.
+  Imported on 2026-10-29 (62 of 742 files, [report](../../tools/import/reports/kncsdk/REPORT.md)) and manually ported the same day.
+- The module is **frozen** in the importer (`frozen = true`): all edits are now made directly in `src/kncsdk`.
+- Original analysis: [Libraries › KNCSDK](../original/libraries.md).
+- Depends on: [Platform](platform.md), zlib, LuaJIT 2.1 (`kncsdk_lua` only).
 
-## Estado (2026-10-29)
+## Status (2026-10-29)
 
-| Parte | Estado |
+| Part | Status |
 |---|---|
-| Compilação Linux (GCC 16 Debug, Clang 23 Release) | ok, sem warnings |
-| Compilação Windows MinGW-w64 (GCC 16, UCRT), testes no Wine 11 | ok, sem warnings; `kncsdk_tests` passa (2026-10-29) e `kncsdk_lua_tests` também, com o LuaJIT 2.1 compilado pelo CMake (T21, 2026-10-30) |
-| Compilação Windows (clang-cl, VS 2026) | ok, sem warnings; `kncsdk_tests` e `kncsdk_lua_tests` passam num Windows real (T26, 2026-10-30) |
-| União com `KNCSDK_Client` | feita (`SecureBuffer`, `KCSLockType`), ver abaixo |
-| Testes | 39 casos / 1.029 asserções (`kncsdk_tests`, contagem de 2026-10-31) + 3 (`kncsdk_lua_tests`), todos passando |
-| Validação contra bytes reais do cliente original | **pendente** (ver Pendências) |
+| Linux build (GCC 16 Debug, Clang 23 Release) | passes, no warnings |
+| Windows MinGW-w64 build (GCC 16, UCRT), tests under Wine 11 | passes, no warnings; `kncsdk_tests` passes (2026-10-29) and `kncsdk_lua_tests` too, with LuaJIT 2.1 built by CMake (T21, 2026-10-30) |
+| Windows build (clang-cl, VS 2026) | passes, no warnings; `kncsdk_tests` and `kncsdk_lua_tests` pass on real Windows (T26, 2026-10-30) |
+| Merge with `KNCSDK_Client` | complete (`SecureBuffer`, `KCSLockType`), see below |
+| Tests | 39 cases / 1,029 assertions (`kncsdk_tests`, count as of 2026-10-31) + 3 (`kncsdk_lua_tests`), all pass |
+| Validation against real bytes from original client | **pending** (see Pending) |
 
-## Mudanças em relação ao original
+## Changes from the original
 
-Interface pública (nomes, macros, assinaturas) mantida; mudou o que está listado aqui.
+Public interface (names, macros, signatures) retained; changes are listed here.
 
-### Intencionais
+### Intentional
 
-| Onde | Mudança | Motivo |
+| Where | Change | Reason |
 |---|---|---|
-| `dbg/logfile` | Cada instrução de log monta um **registro** (`dbg::entry`) com os metadados (nível, função, hora, arquivo/linha, campos do `BUILD_LOG`) ao lado do texto, gravado sob lock no fim da instrução. O arquivo, **texto UTF-8** (`log.log`, ou `log/log_<data>.log`), recebe o texto do original sem mudança; o console tem renderização própria (ver [Log](#log-t16)) e nível próprio | O original gravava **HTML** de vários threads sem lock (condição de corrida); o console repetia o texto do arquivo (decisão T16) |
-| `dbg/logfile` | Uma instrução sem `dbg::endl` (`dbg::cerr << L"..." << id;`) termina a linha no arquivo | O original deixava a linha aberta, e o log seguinte (de qualquer thread) colava nela |
-| `dbg/profiler` | Removido | Desligado no original (`TB_USE_PROFILER`), sem uso |
-| `KncUtil` | Strings estreitas são **UTF-8** em todas as plataformas | O original usava a code page ANSI do Windows (`CP_ACP`) |
-| `KncUtil::GetTimeStampByName*` | Data de modificação do executável | O original lia o *link time* do cabeçalho PE |
-| `KncSecurity`, `KncUtil::GetMD5` | Cripto pelo `x2::crypto` (`Crypto/`, T27) no lugar do Crypto++; mesmos bytes (vetores oficiais + comparação com o Crypto++). `GetRandomGenerator()` (um `AutoSeededRandomPool` sem uso fora de código comentado) removido | O Crypto++ não compila com clang-cl nem com a STL do VS 2026 |
-| `KncSecurity` | Gerador de chaves/SPI semeado pelo SO, um por thread | O original usava `boost::mt19937` **sem semente** (mesmas chaves em toda execução) e compartilhado sem lock |
-| `ObjectPool` | `BlockAllocator`/`BoostAllocator` usam um pool próprio (`FixedBlockPool.h`) | O original guardava ponteiros de **32 bits** nos blocos livres; sem Boost |
-| `Import*.h` | Esvaziados | Só faziam `#pragma comment(lib)`; o link agora é do CMake |
-| `lua_interpreter` | Agora o [console dos servidores](console.md) (`KServerConsole`, `ServerConsole.cpp`); `lua_interpreter( L )` é ele sem nome nem socket | O original vinha de um `lua.c` modificado do Lua 5.1.4, que o LuaJIT não traz, e a janela MFC (`CServerUIDlg`) tinha o próprio campo de comando (T15) |
-| `LUA_DOFILE` | Era `luaL_dofile`; agora `lua_dofile` (`lua_dofile.cpp`, 2026-10-31). Igual ao `luaL_dofile`, menos para arquivo que passa do limite do LuaJIT de 65.536 constantes numa função (`Item.lua` gerado do cliente, `ArcadeResultTable.lua`): ele é dividido nos comandos do topo (identificador na coluna 0) e as partes, compiladas antes, rodam em ordem, com os números de linha do arquivo nas mensagens. Só divide sem `local` no topo e sem string longa (`[[`); se uma parte não compila, devolve o erro original | O original rodava num Lua 5.1, que aceita 2^18 constantes; o LuaJIT recusava os dois arquivos (T21) |
-| Testes originais (`UnitTest/`) | Removidos, substituídos por doctest | Eram demos (um era cópia dos exemplos do Crypto++) |
+| `dbg/logfile` | Each log statement builds a **record** (`dbg::entry`) with metadata (level, function, time, file/line, `BUILD_LOG` fields) alongside the text, written under a lock at the end of the statement. The file, **UTF-8 text** (`log.log`, or `log/log_<date>.log`), receives the original text unchanged; the console has its own rendering (see [Logging](#logging-t16)) and level | Original wrote **HTML** from multiple threads without a lock (race condition); console duplicated file text (decision T16) |
+| `dbg/logfile` | A statement without `dbg::endl` (`dbg::cerr << L"..." << id;`) ends its line in the file | Original left the line open, so the next log (from any thread) appended to it |
+| `dbg/profiler` | Removed | Disabled in original (`TB_USE_PROFILER`), unused |
+| `KncUtil` | Narrow strings are **UTF-8** on every platform | Original used Windows ANSI code page (`CP_ACP`) |
+| `KncUtil::GetTimeStampByName*` | Executable modification date | Original read *link time* from PE header |
+| `KncSecurity`, `KncUtil::GetMD5` | Crypto uses `x2::crypto` (`Crypto/`, T27) instead of Crypto++; same bytes (official vectors + comparison with Crypto++). Removed unused `GetRandomGenerator()` (`AutoSeededRandomPool` had no use outside commented code) | Crypto++ does not compile with clang-cl or VS 2026 STL |
+| `KncSecurity` | Key/SPI generator seeded by OS, one per thread | Original used **unseeded** `boost::mt19937` (same keys every run) and shared it without a lock |
+| `ObjectPool` | `BlockAllocator`/`BoostAllocator` use a custom pool (`FixedBlockPool.h`) | Original stored **32-bit** pointers in free blocks; removes Boost |
+| `Import*.h` | Emptied | Only contained `#pragma comment(lib)`; CMake now links libraries |
+| `lua_interpreter` | Now the [server console](console.md) (`KServerConsole`, `ServerConsole.cpp`); `lua_interpreter( L )` is the same without a name or socket | Original came from a modified Lua 5.1.4 `lua.c`, not included with LuaJIT, and MFC window (`CServerUIDlg`) had its own command field (T15) |
+| `LUA_DOFILE` | Was `luaL_dofile`; now `lua_dofile` (`lua_dofile.cpp`, 2026-10-31). Same as `luaL_dofile`, except for files exceeding LuaJIT's limit of 65,536 constants in one function (`Item.lua` generated from the client, `ArcadeResultTable.lua`): split at top-level commands (identifier in column 0) and precompiled parts run in order, preserving source line numbers in messages. Splitting only works without top-level `local` and long strings (`[[`); if a part does not compile, return the original error | Original ran Lua 5.1, which accepts 2^18 constants; LuaJIT rejected both files (T21) |
+| Original tests (`UnitTest/`) | Removed and replaced with doctest | They were demos (one copied Crypto++ examples) |
 
-### Log (T16)
+### Logging (T16)
 
-Feito em 2026-10-31 (`kncsdk/log-structured`). As macros (`dbg.hpp`) mantêm nomes e uso, só mudaram por dentro:
+Implemented on 2026-10-31 (`kncsdk/log-structured`). Macros (`dbg.hpp`) retain their names and use; only their internals changed:
 
-| Macro | Entrega ao logger | Texto no arquivo (igual ao original) |
+| Macro | Passed to logger | File text (same as original) |
 |---|---|---|
-| `START_LOG( type, data )` | `logfile::Start`: nível, nome do tipo, função, hora, arquivo e linha; conta o ponto de chamada (`LogStat`) | `type : Função(), AAAA-MM-DD hh:mm:ss, data` |
-| `BUILD_LOG*( x )` | `dbg::field`: um campo (nome = expressão, valor) | `    x : valor` |
-| `END_LOG` | `dbg::location`: arquivo e linha | `    (arquivo, linha)` |
-| `LOG_HEADER_STR`, `_JIF`/`LIF`, `LOG_CONDITION` | `dbg::header`: função (e hora) | `Função(), data, ` / `Função(), in x` |
+| `START_LOG( type, data )` | `logfile::Start`: level, type name, function, time, file and line; records call site (`LogStat`) | `type : Function(), YYYY-MM-DD hh:mm:ss, data` |
+| `BUILD_LOG*( x )` | `dbg::field`: one field (name = expression, value) | `    x : value` |
+| `END_LOG` | `dbg::location`: file and line | `    (file, line)` |
+| `LOG_HEADER_STR`, `_JIF`/`LIF`, `LOG_CONDITION` | `dbg::header`: function (and time) | `Function(), date, ` / `Function(), in x` |
 
-O primeiro `<<` num `dbg::cout/cerr/cwarn/clog` (ou o `Start`) cria um `dbg::record` temporário, que grava o registro quando a
-instrução termina; se o nível não vai para nenhum destino, nada é formatado. Console, uma linha por registro e os campos alinhados embaixo:
+The first `<<` in `dbg::cout/cerr/cwarn/clog` (or `Start`) creates a temporary `dbg::record`, which writes the record when the statement
+ends; if the level goes to no destination, nothing is formatted. Console output is one line per record, with fields aligned below:
 
-```
+```text
 18:44:03 NOTE  SetLanBugOutCheckOption_Lua: 랜선렉 방지 코드: 인자 정보 수정
                m_bLanBugOutCheck            = false
                m_byteLanBugOutCheckMaxCount = 0
 ```
 
-- Níveis: `ERROR` (`cerr`, vermelho), `WARN` (`cwarn`, amarelo), `INFO` (`clog`, ciano), `NOTE` (`cout`, verde); os `*2` iguais aos de base.
-  Hora e nomes dos campos esmaecidos, função em negrito; sem cor quando a saída não é terminal (`IsColorTerminal`).
-- O console não mostra arquivo/linha, separadores (`lbreak`) nem linhas vazias; texto solto (dumps, tabelas) sai como está.
-- Nível do console: `logfile::SetConsoleLogLevel` (Lua: `consolelog( n )`), independente do `log( n )` do arquivo; `-1` volta a seguir o arquivo, que é o padrão.
-- `logfile::SetConsoleWriter` troca o destino do console (o terminal da T15 usa); `logfile::SetRecordSink` recebe cada registro que o console recebe, estruturado, e `RenderJson` o escreve em JSON (o protocolo da T30, ver [Console](console.md#protocolo)).
+- Levels: `ERROR` (`cerr`, red), `WARN` (`cwarn`, yellow), `INFO` (`clog`, cyan), `NOTE` (`cout`, green); `*2` variants match their base level.
+- Time and field names are dimmed, function is bold; no color when output is not a terminal (`IsColorTerminal`).
+- Console omits file/line, separators (`lbreak`), and empty lines; standalone text (dumps, tables) is emitted as-is.
+- Console level: `logfile::SetConsoleLogLevel` (Lua: `consolelog( n )`), independent from file `log( n )`; `-1` follows file level, the default.
+- `logfile::SetConsoleWriter` changes console destination (used by T15 terminal); `logfile::SetRecordSink` receives each record emitted to console in structured form, and `RenderJson` writes it as JSON (T30 protocol, see [Console](console.md#protocol)).
 
-### Console dos servidores (T15, T30)
+### Server console (T15, T30)
 
-`ServerConsole.{h,cpp}` (`KServerConsole`, no alvo `kncsdk_lua`): o terminal e o protocolo de controle, numa página própria:
-[Console dos servidores](console.md).
+`ServerConsole.{h,cpp}` (`KServerConsole`, in `kncsdk_lua` target): terminal and control protocol, documented separately:
+[Server console](console.md).
 
-### Bugs do original corrigidos
+### Original bugs fixed
 
-| Onde | Bug | Correção |
+| Where | Bug | Fix |
 |---|---|---|
-| `KSecureBuffer::GetPayload*` e similares | `_JIF( cond, false )`: a "ação" `false;` não faz nada, e o código **continuava** após falhar, por exemplo decifrando um pacote com HMAC inválido | `_JIF( cond, return false )`, padrão já usado 1.404× no servidor. Só rejeita pacotes que já eram inválidos |
-| `lua_tinker::dobuffer/dostring` | Condição invertida: o script nunca executava | Corrigida (o servidor não usava essas funções) |
-| `lua_tinker` `tostring_s64/u64` | `%I64d` só existe no MSVC | `%lld`/`%llu` |
-| `KncUtil::EraseFrontWord` | Dependia de *overflow* de `npos` em 32 bits | Mesmo resultado, explícito |
-| `SerBuffer::Compress/UnCompress` | Passava `DWORD*` onde zlib espera `uLongf*` (8 bytes no Linux) | Variáveis do tipo certo; o tamanho na rede continua `DWORD` |
-| `SerBuffer::UnCompress` | Ignorava a falha ao ler o tamanho original e descomprimia com um valor não inicializado | Retorna `false` (warning do GCC em Release) |
-| `SerBuffer::UnCompress` | Um evento sem dados também é comprimido (tamanho 0 + fluxo zlib vazio), e a volta pegava `&vec[0]` do vetor vazio e chamava `Write` com 0 bytes (`assert( len > 0 )`): comportamento indefinido, que no Release do MSVC passava | `data()` e o `Write` pulado: o mesmo buffer vazio. Derrubava o GameServer (Debug) no relay TCP (`KTRUser`) ao trocar de personagem (2026-10-31, `server/center-run`); teste em `test_serializer.cpp` |
+| `KSecureBuffer::GetPayload*` and similar | `_JIF( cond, false )`: the "action" `false;` does nothing, so code **continued** after failure, e.g. decrypting a packet with invalid HMAC | `_JIF( cond, return false )`, a pattern already used 1,404 times in server. Rejects only packets that were already invalid |
+| `lua_tinker::dobuffer/dostring` | Inverted condition: script never ran | Fixed (server did not use these functions) |
+| `lua_tinker` `tostring_s64/u64` | `%I64d` exists only in MSVC | `%lld`/`%llu` |
+| `KncUtil::EraseFrontWord` | Relied on 32-bit `npos` overflow | Same result, explicit |
+| `SerBuffer::Compress/UnCompress` | Passed `DWORD*` where zlib expects `uLongf*` (8 bytes on Linux) | Correctly typed variables; on-wire size remains `DWORD` |
+| `SerBuffer::UnCompress` | Ignored failure to read original size and decompressed using an uninitialized value | Returns `false` (GCC Release warning) |
+| `SerBuffer::UnCompress` | Events with no data are also compressed (size 0 + empty zlib stream), and decompression took `&vec[0]` from an empty vector and called `Write` with 0 bytes (`assert( len > 0 )`): undefined behavior that passed in MSVC Release | `data()` and skip `Write`: same empty buffer. Crashed GameServer (Debug) in TCP relay (`KTRUser`) while changing characters (2026-10-31, `server/center-run`); regression test in `test_serializer.cpp` |
 
-### Portabilidade (sem mudança de comportamento)
+### Portability (no behavior change)
 
-- **Chaves padrão do SA (SPI 0)** (achado com o cliente original em 2026-10-30): o original escrevia `"임시로만드는키"` e
-  `"해커들절대모를키"` num fonte CP949 e usava os 8 primeiros bytes. Com o fonte convertido para UTF-8 pelo importador, os bytes
-  mudaram e o cliente recusava o primeiro pacote do servidor (`IsValidICV_Local` com SPI 0, "falha na conexão com o servidor de canal").
-  Agora são os bytes CP949 escritos à mão; `test_security.cpp` confere a chave e um HMAC-MD5 calculado fora. **Cuidado geral:**
-  literal `char` não ASCII que vá para a rede, cripto ou hash tem de ser escrito em bytes (varredura em 2026-10-30: só este caso).
+- **Default SA keys (SPI 0)** (found with original client on 2026-10-30): original wrote `"임시로만드는키"` and
+  `"해커들절대모를키"` in a CP949 source file and used the first 8 bytes. Once the importer converted the source to UTF-8, bytes changed
+  and client rejected the first server packet (`IsValidICV_Local` with SPI 0, "channel server connection failed").
+  They are now explicitly encoded as CP949 bytes; `test_security.cpp` checks the key and an HMAC-MD5 calculated externally.
+  **General caution:** non-ASCII `char` literals sent over network or used in crypto/hash must be encoded as bytes (2026-10-30 scan: this was the only case).
+- `Serializer` uses fixed on-wire sizes, matching MSVC x86. Details in [Protocol](../original/protocol.md):
+  - `int`, `unsigned`, `long`, and `unsigned long` are 4 bytes; `long` outside 32-bit range **fails** instead of truncating;
+  - `wchar_t` becomes 2 bytes;
+  - `std::wstring` becomes UTF-16LE.
+- `Serializer`: `SerializeHelper::ComputeTag/PutInto/GetFrom` gained a tag parameter `SerializeHelper::Adl`, and `KSerializer` calls them unqualified.
+  Without it, GCC/Clang cannot see overloads declared after the header (the packets); old MSVC could.
+  `SERIALIZE_*` macros absorb the change, so packet code is unchanged.
+- `KCSLockType`: no Boost and no specializations inside the class; same macros (`KCSLOCK_BEGIN`...).
+- `lua_tinker`: missing `typename`/`template`, specializations inside the class (now `if constexpr`), and `push_functor` overloads that could not be instantiated (removed).
+  Lua included via `<lua.hpp>`, because LuaJIT is C; original compiled its own Lua copy as C++.
+- Macros with `L#x`, `classname##::`, and `Si##Name##()` that worked only in MSVC were rewritten (`WIDENE(x)` = `L ## #x`).
+- `RTTI.h`: `DynamicCast` returned `false` as `void*` (now `nullptr`) and `L#classname` became `L ## #classname`.
+- `logfile.hpp` includes `<ostream>` (generic `operator<<` needed it).
+- `KncUtil::NumberShuffle`: same choices as original (the `rand()`-th remaining item, in order), performed in-place using `std::rotate`; copying with `erase` triggered a GCC 15 false positive in Release (`-Wfree-nonheap-object`). Test in `test_util.cpp`.
 
-- `Serializer` com tamanhos fixos na rede, iguais ao build MSVC x86. Detalhes em [Protocolo](../original/protocol.md):
-  - `int`, `unsigned`, `long` e `unsigned long` viram 4 bytes; um `long` fora da faixa de 32 bits **falha**, em vez de truncar;
-  - `wchar_t` vira 2 bytes;
-  - `std::wstring` vira UTF-16LE.
-- `Serializer`: as funções `SerializeHelper::ComputeTag/PutInto/GetFrom` ganharam um parâmetro-etiqueta `SerializeHelper::Adl`, e o `KSerializer` as chama sem qualificação.
-  Sem isso, GCC/Clang não enxergam as sobrecargas declaradas depois do header (os pacotes); o MSVC antigo enxergava.
-  As macros `SERIALIZE_*` absorvem a mudança, e o código dos pacotes não muda.
-- `KCSLockType`: sem Boost e sem especializações dentro da classe; mesmas macros (`KCSLOCK_BEGIN`...).
-- `lua_tinker`: faltavam `typename`/`template`, havia especializações dentro da classe (agora `if constexpr`) e sobrecargas de `push_functor` impossíveis de instanciar (removidas).
-  Lua via `<lua.hpp>`, porque o LuaJIT é C; o original compilava a própria cópia do Lua como C++.
-- Macros com `L#x`, `classname##::` e `Si##Name##()`, que só funcionavam no MSVC: reescritas (`WIDENE(x)` = `L ## #x`).
-- `RTTI.h`: `DynamicCast` devolvia `false` como `void*` (agora `nullptr`) e `L#classname` virou `L ## #classname`.
-- `logfile.hpp` inclui `<ostream>` (o `operator<<` genérico precisava dele).
-- `KncUtil::NumberShuffle`: as mesmas escolhas do original (o `rand()`-ésimo dos que sobram, na ordem), feitas no próprio vetor com `std::rotate`; a cópia com `erase` disparava um falso positivo do GCC 15 em Release (`-Wfree-nonheap-object`). Teste em `test_util.cpp`.
+## Pending
 
-## Pendências
-
-- **Validar o protocolo com bytes reais**: capturar pacotes do `x2.exe` original e do servidor original e comparar com o `Serializer`/`KSecureBuffer` portados.
-  Hoje os bytes esperados dos testes vêm da leitura do código.
-- O IV do `KSecureBuffer` é `'A' + rand() % 40` repetido (fraco). Mudar isso mexe no protocolo; decidir depois.
-- O `lua_tinker` do cliente (`LuaCommon`) é outra variante; unificar ao portar o cliente.
-- No cliente original, o log fica desligado nas builds de produção (`KNCSDK_Client/dbg/logfile.hpp`); reproduzir via nível de log ao portar o cliente.
-- `KByteStream` herda de `std::basic_string<unsigned char>`, que a libc++ (Clang no macOS) não suporta mais. Não afeta Linux/Windows.
-- LuaJIT no MSVC: a receita do CMake (T21) chama o `msvcbuild.bat` do LuaJIT (T25).
+- **Validate protocol against real bytes**: capture packets from original `x2.exe` and server and compare with ported `Serializer`/`KSecureBuffer`.
+  Expected bytes in current tests are derived from reading the code.
+- `KSecureBuffer` IV is `'A' + rand() % 40` repeated (weak). Changing it affects the protocol; decide later.
+- Client `lua_tinker` (`LuaCommon`) is another variant; unify when porting the client.
+- In the original client, logging is disabled in production builds (`KNCSDK_Client/dbg/logfile.hpp`); reproduce through log level during client port.
+- `KByteStream` inherits from `std::basic_string<unsigned char>`, which libc++ (Clang on macOS) no longer supports. Does not affect Linux/Windows.
+- LuaJIT on MSVC: CMake recipe (T21) calls LuaJIT's `msvcbuild.bat` (T25).
