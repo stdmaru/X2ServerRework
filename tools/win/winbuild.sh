@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Builds and tests the Windows (clang-cl, T26) presets on a Windows machine over SSH (docs/ferramentas/ambiente-build.md).
 #   X2_WIN_HOST=user@host tools/win/winbuild.sh [preset] [jobs]      default: windows-debug, every core of the machine
-# Sends the tracked files with their working-tree contents (uncommitted edits included) to $X2_WIN_DIR/src and runs
+# Sends the tracked files with their working-tree contents (uncommitted edits included) to $X2_WIN_DIR/src, removes
+# there the ones git deleted, and runs
 # cmake/ctest inside the newest Visual Studio found by vswhere that has the C++ and Clang components. The machine needs Visual Studio Build Tools
 # (C++ workload, Clang and CMake components), Python 3 and an OpenSSH server with key login; no Git.
 set -euo pipefail
@@ -21,6 +22,11 @@ win=${dir//\//\\}
 
 ssh "${ssh_opts[@]}" "$host" "if not exist $win\\src mkdir $win\\src"
 git -C "$repo" ls-files -z | tar -C "$repo" --null -T - -cf - | ssh "${ssh_opts[@]}" "$host" "tar -xf - -C $dir/src"
+# tar only adds: files deleted in the history and no longer tracked are removed there too (a CMake glob would still
+# compile them). Files git never had (the machine's own) are left alone.
+comm -23 <(git -C "$repo" log --diff-filter=D --name-only --pretty=format: HEAD | sed '/^$/d' | sort -u) \
+         <(git -C "$repo" ls-files | sort -u) |
+    ssh "${ssh_opts[@]}" "$host" "python -c \"import os,sys; [os.remove(p) for p in (os.path.join(r'$win\\src', l.strip()) for l in sys.stdin if l.strip()) if os.path.isfile(p)]\""
 
 script=$(mktemp)
 trap 'rm -f "$script"' EXIT
