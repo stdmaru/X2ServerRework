@@ -76,16 +76,33 @@ cd build/linux-debug/run/GameServer       && ./GameServer DEV 0
 cd build/linux-debug/run/GlobalServer     && ./GlobalServer DEV 0
 ```
 
-| Server | Port | Role |
-|---|---|---|
-| EPublisherServer | 8000 | login and cash |
-| ChannelServer | 9400 | client's first contact: login, server and channel lists |
-| LoginServer | 9200 | accounts, guilds, rankings |
-| CenterServer | 9100 | field and dungeon rooms |
-| GameServer | 9300 | game itself |
-| GlobalServer | 9500 | global missions, auto-party, PvP, user count |
+### Network ports
 
-- Game-server ports come from database (`Statistics.dbo.LServerList`); EPublisherServer port from `X2_RUN_EPUBLISHER_PORT`.
+The client does **not** connect to every server listener. The services use internal connections to each other; only the client-facing
+listeners (including relay traffic) need to be reachable from players:
+
+| Port/protocol | Service | Use |
+|---|---|---|
+| `9400/TCP` | ChannelServer | Client's first contact: login, server and channel lists |
+| `9300/TCP` | GameServer | Main game connection |
+| `9301/TCP` | GameServer | TCP relay |
+| `9301/UDP` | GameServer | UDP game traffic |
+| `9101/UDP` | CenterServer | UDP relay for rooms and fields |
+
+These are the public mappings in [`docker-compose.yml`](../docker/docker-compose.yml). The Compose `ports` entries without a host
+address publish on all host interfaces, so restrict the public firewall/security-group rules to the table above. The SQL mapping is
+bound only to `127.0.0.1` and is not public.
+
+The other listeners are for server-to-server communication and should **not** be exposed to players or the public Internet:
+EPublisherServer `8000/TCP`, LoginServer `9200/TCP`, CenterServer `9100/TCP`, and GlobalServer `9500/TCP`. In Compose they are
+reachable by service name over the private `x2-net` network and have no published host ports.
+
+Game-server TCP/UDP ports come from `Statistics.dbo.LServerList` (and the addresses sent by ChannelServer come from
+`Statistics.dbo.LChannelList`); the Compose mappings must match those database values. EPublisherServer's port comes from
+`X2_RUN_EPUBLISHER_PORT`, and its URL is used by the other servers. For clients outside the host, configure the advertised server
+address as a reachable public IP (`X2_SERVER_IP`/`X2_RUN_SERVER_IP`), then regenerate the server configuration and restore/update the
+database addresses. The default `127.0.0.1` is for local development and will not work for remote clients.
+
 - Startup order is flexible: GameServer retries LoginServer, CenterServer, and GlobalServer every 10 seconds. Login works only while
   EPublisherServer is running.
 - Each server shows compact colored terminal log (`consolelog( n )` changes its level) and writes full log to file in its directory.
