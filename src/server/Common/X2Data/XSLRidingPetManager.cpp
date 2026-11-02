@@ -44,7 +44,7 @@ bool CXSLRidingPetManager::AddRidingPetTemplet_LUA()
 
 	if( m_mapRidingPetTemplet.find( kData.m_iRidingPetID ) != m_mapRidingPetTemplet.end() )
 	{
-		START_LOG( cerr ,L"이미 등록된 펫 정보입니다!" )
+		START_LOG( cerr ,L"Pet information is already registered." )
 			<< BUILD_LOG( kData.m_iRidingPetID )
 			<< END_LOG;
 		goto end_proc;
@@ -56,7 +56,7 @@ bool CXSLRidingPetManager::AddRidingPetTemplet_LUA()
 	return true;
 
 end_proc:
-	START_LOG( cerr, L"라이딩 펫 스크립트 파싱 실패.!" )
+	START_LOG( cerr, L"Failed to parse the riding pet script." )
 		<< BUILD_LOG( kData.m_iRidingPetID )
 		<< END_LOG;
 	return false;
@@ -66,7 +66,7 @@ bool CXSLRidingPetManager::AddRidingPetCreateItemInfo_LUA( int iItemID, USHORT u
 {
 	if( IsExistRidingPetID( usRidingPetID ) == false )
 	{
-		START_LOG( cerr, L"등록 되지 않은 RidingPetID입니다!" )
+		START_LOG( cerr, L"RidingPetID is not registered." )
 			<< BUILD_LOG( usRidingPetID )
 			<< END_LOG;
 		return false;
@@ -74,7 +74,7 @@ bool CXSLRidingPetManager::AddRidingPetCreateItemInfo_LUA( int iItemID, USHORT u
 
 	if( m_mapRidingPetCreateItem.find( iItemID ) != m_mapRidingPetCreateItem.end() )
 	{
-		START_LOG( cerr, L"이미 등록된 ItemID입니다!" )
+		START_LOG( cerr, L"ItemID is already registered." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 		return false;
@@ -89,7 +89,7 @@ const CXSLRidingPetManager::RidingPetTemplet* CXSLRidingPetManager::GetRidingPet
 	std::map<RIDING_PET_UNIT_ID, RidingPetTemplet>::const_iterator it = m_mapRidingPetTemplet.find( static_cast<RIDING_PET_UNIT_ID>( usRidingPetID ) );
 	if( it == m_mapRidingPetTemplet.end() )
 	{
-		START_LOG( cerr, L"존재하지 않는 RidingPetID입니다!" )
+		START_LOG( cerr, L"RidingPetID does not exist." )
 			<< BUILD_LOG( usRidingPetID )
 			<< END_LOG;
 		return NULL;

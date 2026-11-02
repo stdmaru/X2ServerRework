@@ -60,7 +60,7 @@ void KCnUser::ProcessEvent( const KEventPtr& spEvent_ )
 	CASE_NOPARAM( E_RESERVE_DESTROY );
 
     default:
-        dbg::cerr << L"이벤트 핸들러가 정의되지 않았음. " << spEvent_->GetIDStr();
+        dbg::cerr << L"Event handler is not defined. " << spEvent_->GetIDStr();
     }
 
     dwElapTime = ::GetTickCount() - dwElapTime;
@@ -194,18 +194,18 @@ void KCnUser::OnDestroy()
 	//{{ 2009. 1. 30  최육사	객체 소멸 로그
 	if( GetDisconnectReason() == KStatistics::eSIColDR_Server_Shutdown )
 	{
-		START_LOG( cout, L"서버 셧다운으로 인한 CnUser객체 소멸" );
+		START_LOG( cout, L"CnUser object destroyed during server shutdown." );
 	}
 	//{{ 2011. 10. 31	최육사	하트비트 오류 원인 분석
 	else if( GetDisconnectReason() == KStatistics::eSIColDR_Heart_Beat )
 	{
-		START_LOG( cout2, L"하트비트로 인한 CnUser객체 소멸" )
+		START_LOG( cout2, L"CnUser object destroyed by heartbeat." )
 			<< BUILD_LOG( GetDisconnectReason() )
 			<< BUILD_LOG( GetIPStr() )
 			<< BUILD_LOG( m_dwHBTickDump )
 			<< BUILD_LOG( m_dwCurrentTickDump )
 			<< BUILD_LOG( m_dwCurrentTickDump - m_dwHBTickDump )
-			<< dbg::tab << L"종료 사유 : " << KStatistics::GetDissconnectReasonString( GetDisconnectReason() ) << dbg::endl;
+			<< dbg::tab << L"Shutdown reason: " << KStatistics::GetDissconnectReasonString( GetDisconnectReason() ) << dbg::endl;
 
 		//{{ 2010. 10. 11	최육사	서버간 접속 끊김 로그
 		CTime kRegDate = CTime::GetCurrentTime();
@@ -222,10 +222,10 @@ void KCnUser::OnDestroy()
 	//}}
 	else
 	{
-		START_LOG( cout2, L"비정상적인 원인으로 인한 CnUser객체 소멸" )
+		START_LOG( cout2, L"CnUser object destroyed unexpectedly." )
 			<< BUILD_LOG( GetDisconnectReason() )
 			<< BUILD_LOG( GetIPStr() )
-			<< dbg::tab << L"종료 사유 : " << KStatistics::GetDissconnectReasonString( GetDisconnectReason() ) << dbg::endl;
+			<< dbg::tab << L"Shutdown reason: " << KStatistics::GetDissconnectReasonString( GetDisconnectReason() ) << dbg::endl;
 
 		//{{ 2010. 10. 11	최육사	서버간 접속 끊김 로그
 		CTime kRegDate = CTime::GetCurrentTime();
@@ -295,7 +295,7 @@ bool KCnUser::RoutePacket( const KEvent* pkEvent_ )
         }
         else if( iEval > 0 )
         {
-            START_LOG( cerr, L"현재는 센터 서버가 최상위 서버이다." )
+            START_LOG( cerr, L"CenterServer is currently the top-level server." )
                 << BUILD_LOG( pkEvent_->m_kDestPerformer.m_dwPerformerID )
                 << BUILD_LOG( pkEvent_->m_usEventID )
                 << BUILD_LOG( pkEvent_->GetIDStr() )
@@ -328,7 +328,7 @@ bool KCnUser::RoutePacket( const KEvent* pkEvent_ )
 				return true;
 				//}}
             default:
-                START_LOG( cerr, L"도착지가 이상한 패킷." )
+                START_LOG( cerr, L"Packet has an invalid destination." )
                     << BUILD_LOG( pkEvent_->m_kDestPerformer.m_dwPerformerID )
                     << END_LOG;
                 return true;
@@ -363,7 +363,7 @@ IMPL_ON_FUNC( ECN_VERIFY_SERVER_CONNECT_REQ )
 
 	if( kPacket_.m_kNetAddress.m_wstrIP != KncUtil::toWideString( GetIPStr() ) )
 	{
-		START_LOG( cerr, L"유효하지 않은 IP" )
+		START_LOG( cerr, L"Invalid IP address." )
 			<< BUILD_LOG( kPacket_.m_kNetAddress.m_wstrIP )
 			<< BUILD_LOG( GetIPStr() );
 
@@ -410,14 +410,14 @@ _IMPL_ON_FUNC( DBE_VERIFY_SERVER_CONNECT_ACK, KECN_VERIFY_SERVER_CONNECT_ACK )
 		//{{ 2009. 3. 25  최육사	로그
 		if( IsSameServerGroup() )
 		{
-			START_LOG( cout2, L"같은 서버군의 게임서버와 정상적으로 접속하였습니다!" )
+			START_LOG( cout2, L"Connected successfully to a GameServer in the same server group!" )
 				<< BUILD_LOG( kPacket_.m_nUID )
 				<< BUILD_LOG( kPacket_.m_strName )
 				<< BUILD_LOG( m_iCnServerGroupID );
 		}
 		else
 		{
-			START_LOG( cout2, L"다른 서버군의 게임서버와 정상적으로 접속하였습니다!" )
+			START_LOG( cout2, L"Connected successfully to a GameServer in another server group!" )
 				<< BUILD_LOG( kPacket_.m_nUID )
 				<< BUILD_LOG( kPacket_.m_strName )
 				<< BUILD_LOG( m_iCnServerGroupID )

@@ -37,7 +37,7 @@ void KFieldUser::SetPetInfo( IN const std::vector< KPetInfo >& vecPetInfo )
 
 	if( vecPetInfo.size() > 1 )
 	{
-		START_LOG( cerr, L"펫 정보가 1개보다 많다! 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"More than one pet information entry exists; this should never happen!" )
 			<< BUILD_LOG( m_kFieldUserInfo.m_iUnitUID )
 			<< END_LOG;
 

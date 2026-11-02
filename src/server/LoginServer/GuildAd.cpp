@@ -57,7 +57,7 @@ void KGuildAd::InsertApplyJoin( IN const KApplyJoinGuildInfo& kInfo )
 
 		if( (*vit)->m_iUnitUID == kInfo.m_iUnitUID )
 		{
-			START_LOG( cerr, L"apply vector에 중복된 유저가 있다!" )
+			START_LOG( cerr, L"Duplicate user in the application vector!" )
 				<< BUILD_LOG( kInfo.m_iUnitUID )
 				<< END_LOG;
 
@@ -106,7 +106,7 @@ void KGuildAd::UpdateApplyJoinInfo( IN const KApplyJoinGuildInfo& kInfo )
 	KApplyJoinGuildInfoPtr spApplyJoinGuildInfo = GetApplyJoinGuildInfo( kInfo.m_iUnitUID );
 	if( spApplyJoinGuildInfo == NULL )
 	{
-		START_LOG( cerr, L"길드 가입 신청자 정보가 없다!" )
+		START_LOG( cerr, L"Guild applicant information is missing!" )
 			<< BUILD_LOG( kInfo.m_iUnitUID )
 			<< END_LOG;
 
@@ -151,7 +151,7 @@ KApplyJoinGuildInfoPtr KGuildAd::GetApplyJoinGuildInfo( IN UidType iUnitUID )
 	std::map< UidType, KApplyJoinGuildInfoPtr >::iterator mit = m_mapApplyJoinGuild.find( iUnitUID );
 	if( mit == m_mapApplyJoinGuild.end() )
 	{
-		START_LOG( cerr, L"길드 가입 신청 정보 찾기 실패!" )
+		START_LOG( cerr, L"Failed to find guild application information!" )
 			<< BUILD_LOG( iUnitUID );
 
 		return KApplyJoinGuildInfoPtr();
@@ -159,7 +159,7 @@ KApplyJoinGuildInfoPtr KGuildAd::GetApplyJoinGuildInfo( IN UidType iUnitUID )
 
 	if( mit->second == NULL )
 	{
-		START_LOG( cerr, L"길드 가입 신청 포인터 이상.!" )
+		START_LOG( cerr, L"Invalid guild application pointer!" )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 
@@ -174,7 +174,7 @@ bool KGuildAd::GetApplyJoinGuildInfo( IN UidType iUnitUID, OUT KApplyJoinGuildIn
 	KApplyJoinGuildInfoPtr spApplyJoinGuildInfo = GetApplyJoinGuildInfo( iUnitUID );
 	if( spApplyJoinGuildInfo == NULL )
 	{
-		START_LOG( cerr, L"길드 가입 신청자 정보가 없다!" )
+		START_LOG( cerr, L"Guild applicant information is missing!" )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 
@@ -212,7 +212,7 @@ void KGuildAd::NewApplyJoin( IN const KApplyJoinGuildInfo& kInfo )
 	// 이미 가입된 유저인지 체크
 	if( IsExistMyApplyJoinGuild( kInfo.m_iUnitUID ) == true )
 	{
-		START_LOG( cerr, L"이미 가입된 유저 입니다!" )
+		START_LOG( cerr, L"The user is already a guild member!" )
 			<< BUILD_LOG( GetGuildUID() )
 			<< BUILD_LOG( kInfo.m_iUnitUID )
 			<< END_LOG;
@@ -256,7 +256,7 @@ void KGuildAd::GetApplyJoinGuildList( IN const KELG_GET_APPLY_JOIN_GUILD_LIST_RE
 
 		if( m_vecApplyJoinGuild.size() <= uiBeginIndex )
 		{
-			START_LOG( cerr, L"일어날 수 없는 에러!" )
+			START_LOG( cerr, L"Unexpected error!" )
 				<< BUILD_LOG( kAck.m_uiViewPage )
 				<< BUILD_LOG( kAck.m_uiTotalPage )
 				<< BUILD_LOG( uiBeginIndex )
@@ -273,7 +273,7 @@ void KGuildAd::GetApplyJoinGuildList( IN const KELG_GET_APPLY_JOIN_GUILD_LIST_RE
 	{
 		if( (*vit) == NULL )
 		{
-			START_LOG( cerr, L"길드 가입 신청 정보 포인터가 이상합니다." )
+			START_LOG( cerr, L"Invalid guild application pointer." )
 				<< END_LOG;
 			break;
 		}

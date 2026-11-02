@@ -123,7 +123,7 @@ bool CXSLDungeon::OpenScriptFile()
 			CXSLDungeonStage::StageData* pStageData = new CXSLDungeonStage::StageData();
 			if( pStageData->LoadData( bScriptCheck, luaManager ) == false )
 			{
-				START_LOG( cerr, L"던전 스크립트 파싱 실패!" )
+				START_LOG( cerr, L"Failed to parse the dungeon script." )
 					<< BUILD_LOG( m_sDungeonData.m_DataFileName )
 					<< END_LOG;
 			}
@@ -171,7 +171,7 @@ int CXSLDungeon::GetNPCDropTime( IN const int iStageIndex, IN const int iSubStag
 	//{{ 2009. 7. 15  최육사	index 범위 체크
 	if( iStageIndex < 0 || iStageIndex >= (int)m_vecStageData.size() )
 	{
-		START_LOG( cerr, L"stage index값이 이상합니다." )
+		START_LOG( cerr, L"Invalid stage index." )
 			<< BUILD_LOG( iStageIndex )
 			<< BUILD_LOG( m_vecStageData.size() )
 			<< END_LOG;
@@ -182,7 +182,7 @@ int CXSLDungeon::GetNPCDropTime( IN const int iStageIndex, IN const int iSubStag
 
 	if( iSubStageIndex < 0 || iSubStageIndex >= (int)pStageData->m_SubStageDataList.size() )
 	{
-		START_LOG( cerr, L"substage index값이 이상합니다." )
+		START_LOG( cerr, L"Invalid substage index." )
 			<< BUILD_LOG( iSubStageIndex )
 			<< BUILD_LOG( pStageData->m_SubStageDataList.size() )
 			<< END_LOG;
@@ -198,7 +198,7 @@ float CXSLDungeon::GetNPCExpRate( IN const int iStageIndex, IN const int iSubSta
 	//{{ 2009. 7. 15  최육사	index 범위 체크
 	if( iStageIndex < 0 || iStageIndex >= (int)m_vecStageData.size() )
 	{
-		START_LOG( cerr, L"stage index값이 이상합니다." )
+		START_LOG( cerr, L"Invalid stage index." )
 			<< BUILD_LOG( m_sDungeonData.m_DungeonID )
 			<< BUILD_LOG( iStageIndex )
 			<< BUILD_LOG( m_vecStageData.size() )
@@ -210,7 +210,7 @@ float CXSLDungeon::GetNPCExpRate( IN const int iStageIndex, IN const int iSubSta
 
 	if( iSubStageIndex < 0 || iSubStageIndex >= (int)pStageData->m_SubStageDataList.size() )
 	{
-		START_LOG( cerr, L"substage index값이 이상합니다." )
+		START_LOG( cerr, L"Invalid substage index." )
 			<< BUILD_LOG( m_sDungeonData.m_DungeonID )
 			<< BUILD_LOG( iStageIndex )
 			<< BUILD_LOG( iSubStageIndex )
@@ -231,7 +231,7 @@ bool CXSLDungeon::GetNPCData( IN const int iStageIndex, IN const int iRelativeMo
 	//{{ 2009. 7. 15  최육사	index 범위 체크
 	if( iStageIndex < 0  ||  iStageIndex >= (int)m_vecStageData.size() )
 	{
-		START_LOG( cerr, L"stage index값이 이상합니다." )
+		START_LOG( cerr, L"Invalid stage index." )
 			<< BUILD_LOG( iStageIndex )
 			<< BUILD_LOG( m_vecStageData.size() )
 			<< END_LOG;
@@ -260,7 +260,7 @@ bool CXSLDungeon::GetNPCData( IN const int iStageIndex, IN const int iRelativeMo
 		std::map< int, std::vector<CXSLDungeonSubStage::NPCData*> >::iterator mit = pSubStageData->m_mapNPCDataList.find( iNpcGroupID );
 		if( mit == pSubStageData->m_mapNPCDataList.end() )
 		{
-			START_LOG( cerr, L"Random NPC Group ID 값으로 찾은 데이터가 없습니다." )
+			START_LOG( cerr, L"No data found for the Random NPC Group ID." )
 				<< BUILD_LOG( iStageIndex )
 				<< BUILD_LOG( iRelativeMonsterLevel )
 				<< BUILD_LOG( iNpcGroupID )
@@ -319,7 +319,7 @@ bool CXSLDungeon::GetNPCData( IN const int iStageIndex, IN const int iRelativeMo
 			{
 				kNPCUnitReq.m_nStartPos = 0;
 
-				START_LOG( cerr, L"생성될 몬스터 시작위치가 없네 누구냐 넌..?" )
+				START_LOG( cerr, L"No start position is defined for the monster to be created." )
 					<< BUILD_LOG( pNPCData->m_UnitID )
 					<< BUILD_LOG( m_sDungeonData.m_DungeonID )
 					<< BUILD_LOG( m_sDungeonData.m_DungeonName )
@@ -390,7 +390,7 @@ int CXSLDungeon::GetStartPosByRandom( IN int iStageIndex, IN int iSubStageIndex 
 {
 	if( (int)m_vecStageData.size() <= iStageIndex || 0 > iStageIndex )
 	{
-		START_LOG( cerr, L"stage 인덱스 오류.!" )
+		START_LOG( cerr, L"Invalid stage index." )
 			<< BUILD_LOG( (int)m_vecStageData.size() )
 			<< BUILD_LOG( iStageIndex )
 			<< END_LOG;
@@ -401,7 +401,7 @@ int CXSLDungeon::GetStartPosByRandom( IN int iStageIndex, IN int iSubStageIndex 
 	CXSLDungeonStage::StageData* pStageData = m_vecStageData[iStageIndex];
 	if( pStageData == NULL )
 	{
-		START_LOG( cerr, L"stage 포인터 오류.!" )
+		START_LOG( cerr, L"Invalid stage pointer." )
 			<< BUILD_LOG( iStageIndex )
 			<< END_LOG;
 
@@ -410,7 +410,7 @@ int CXSLDungeon::GetStartPosByRandom( IN int iStageIndex, IN int iSubStageIndex 
 
 	if( (int)pStageData->m_SubStageDataList.size() <= iSubStageIndex || 0 > iSubStageIndex )
 	{
-		START_LOG( cerr, L"Sub stage 인덱스 오류.!" )
+		START_LOG( cerr, L"Invalid substage index." )
 			<< BUILD_LOG( (int)pStageData->m_SubStageDataList.size() )
 			<< BUILD_LOG( (int)m_sDungeonData.m_DungeonID )
 			<< BUILD_LOG( (int)m_sDungeonData.m_eDifficulty )
@@ -424,7 +424,7 @@ int CXSLDungeon::GetStartPosByRandom( IN int iStageIndex, IN int iSubStageIndex 
 	CXSLDungeonSubStage::SubStageData* pSubStageData = pStageData->m_SubStageDataList[iSubStageIndex];
 	if( pSubStageData == NULL )
 	{
-		START_LOG( cerr, L"Sub stage 포인터 오류.!" )
+		START_LOG( cerr, L"Invalid substage pointer." )
 			<< BUILD_LOG( iSubStageIndex )
 			<< END_LOG;
 
@@ -441,7 +441,7 @@ int CXSLDungeon::GetStartPosByRandom( IN int iStageIndex, IN int iSubStageIndex 
 	std::map<int,std::vector<CXSLDungeonSubStage::NPCData*> >::iterator mit = pSubStageData->m_mapNPCDataList.find( iNpcGroupID );
 	if( mit == pSubStageData->m_mapNPCDataList.end() )
 	{
-		START_LOG( cerr, L"Random Npc Group ID 값으로 찾은 데이터가 없다." )
+		START_LOG( cerr, L"No data found for the Random NPC Group ID." )
 			<< BUILD_LOG( iNpcGroupID )
 			<< END_LOG;
 		return -1;
@@ -484,7 +484,7 @@ void CXSLDungeon::GetExtraNpcInfo( IN int iStageIndex, IN int iSubStageIndex, OU
 
 	if( (int)m_vecStageData.size() <= iStageIndex || 0 > iStageIndex )
 	{
-		START_LOG( cerr, L"stage 인덱스 오류.!" )
+		START_LOG( cerr, L"Invalid stage index." )
 			<< BUILD_LOG( (int)m_vecStageData.size() )
 			<< BUILD_LOG( iStageIndex )
 			<< END_LOG;
@@ -495,7 +495,7 @@ void CXSLDungeon::GetExtraNpcInfo( IN int iStageIndex, IN int iSubStageIndex, OU
 	CXSLDungeonStage::StageData* pStageData = m_vecStageData[iStageIndex];
 	if( pStageData == NULL )
 	{
-		START_LOG( cerr, L"stage 포인터 오류.!" )
+		START_LOG( cerr, L"Invalid stage pointer." )
 			<< BUILD_LOG( iStageIndex )
 			<< END_LOG;
 
@@ -504,7 +504,7 @@ void CXSLDungeon::GetExtraNpcInfo( IN int iStageIndex, IN int iSubStageIndex, OU
 
 	if( (int)pStageData->m_SubStageDataList.size() <= iSubStageIndex || 0 > iSubStageIndex )
 	{
-		START_LOG( cerr, L"Sub stage 인덱스 오류.!" )
+		START_LOG( cerr, L"Invalid substage index." )
 			<< BUILD_LOG( (int)pStageData->m_SubStageDataList.size() )
 			<< BUILD_LOG( (int)m_sDungeonData.m_DungeonID )
 			<< BUILD_LOG( (int)m_sDungeonData.m_eDifficulty )
@@ -518,7 +518,7 @@ void CXSLDungeon::GetExtraNpcInfo( IN int iStageIndex, IN int iSubStageIndex, OU
 	CXSLDungeonSubStage::SubStageData* pSubStageData = pStageData->m_SubStageDataList[iSubStageIndex];
 	if( pSubStageData == NULL )
 	{
-		START_LOG( cerr, L"Sub stage 포인터 오류.!" )
+		START_LOG( cerr, L"Invalid substage pointer." )
 			<< BUILD_LOG( iSubStageIndex )
 			<< END_LOG;
 
@@ -553,7 +553,7 @@ CXSLDungeonStage::STAGE_TYPE CXSLDungeon::GetStageType( IN u_int uiStageIndex ) 
 	CXSLDungeonStage::StageData* pStageData = m_vecStageData[uiStageIndex];
 	if( pStageData == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 스테이지입니다." )
+		START_LOG( cerr, L"Stage does not exist." )
 			<< BUILD_LOG( uiStageIndex )
 			<< END_LOG;
 
@@ -1108,7 +1108,7 @@ int CXSLDungeon::GetSecretStageEnteringEvent( IN const int iStageIndex, IN const
 	//{{ 2009. 7. 15  최육사	index 범위 체크
 	if( iStageIndex < 0 || iStageIndex >= (int)m_vecStageData.size() )
 	{
-		START_LOG( cerr, L"stage index값이 이상합니다." )
+		START_LOG( cerr, L"Invalid stage index." )
 			<< BUILD_LOG( iStageIndex )
 			<< BUILD_LOG( m_vecStageData.size() )
 			<< END_LOG;
@@ -1119,7 +1119,7 @@ int CXSLDungeon::GetSecretStageEnteringEvent( IN const int iStageIndex, IN const
 
 	if( iSubStageIndex < 0 || iSubStageIndex >= (int)pStageData->m_SubStageDataList.size() )
 	{
-		START_LOG( cerr, L"substage index값이 이상합니다." )
+		START_LOG( cerr, L"Invalid substage index." )
 			<< BUILD_LOG( iSubStageIndex )
 			<< BUILD_LOG( pStageData->m_SubStageDataList.size() )
 			<< END_LOG;
@@ -1135,7 +1135,7 @@ bool CXSLDungeon::GetNextStage( OUT CXSLDungeonSubStage::NextStageData& kNextSta
 	//{{ 2009. 7. 15  최육사	index 범위 체크
 	if( iStageIndex < 0 || iStageIndex >= (int)m_vecStageData.size() )
 	{
-		START_LOG( cerr, L"stage index값이 이상합니다." )
+		START_LOG( cerr, L"Invalid stage index." )
 			<< BUILD_LOG( iStageIndex )
 			<< BUILD_LOG( m_vecStageData.size() )
 			<< END_LOG;
@@ -1146,7 +1146,7 @@ bool CXSLDungeon::GetNextStage( OUT CXSLDungeonSubStage::NextStageData& kNextSta
 
 	if( iSubStageIndex < 0 || iSubStageIndex >= (int)pStageData->m_SubStageDataList.size() )
 	{
-		START_LOG( cerr, L"substage index값이 이상합니다." )
+		START_LOG( cerr, L"Invalid substage index." )
 			<< BUILD_LOG( iSubStageIndex )
 			<< BUILD_LOG( pStageData->m_SubStageDataList.size() )
 			<< END_LOG;

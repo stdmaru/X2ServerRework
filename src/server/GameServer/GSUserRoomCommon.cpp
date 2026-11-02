@@ -57,7 +57,7 @@ IMPL_ON_FUNC( EGS_CREATE_ROOM_REQ )
 	{
 		if( GetLevel() > SiKGameSysVal()->GetGuestUserLimitLevel() )
 		{
-			START_LOG( cerr, L"클라이언트에서 체험ID가 레벨20되었을때 유저를 캐릭선택으로 이동시켰을텐데 아직 게임을 하고있네?" )
+			START_LOG( cerr, L"The client should return a trial character to character selection at level 20, but the user is still playing." )
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
 
@@ -70,7 +70,7 @@ IMPL_ON_FUNC( EGS_CREATE_ROOM_REQ )
 	// [참고] 특정던전일 경우(예:초심자숲) 파티에 속하지 않아도 시작할 수 있게 만들어야 할까?
 	if( CXSLDungeon::IsSinglePlayDungeon( kPacket_.m_RoomInfo.m_iDungeonID ) )
 	{
-		START_LOG( cerr, L"튜토리얼 던전은 이 패킷으로 생성하려 하면안되는데?" )
+		START_LOG( cerr, L"Tutorial dungeons should not be created with this packet." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_RoomInfo.m_iDungeonID )
 			<< END_LOG;
@@ -93,7 +93,7 @@ IMPL_ON_FUNC( EGS_CREATE_ROOM_REQ )
 			//{{ 2010. 7. 29  최육사	서버 코드 정리
 			if( kPacket_.m_RoomInfo.m_iPVPChannelClass == KPVPChannelInfo::PCC_NONE )
 			{
-				START_LOG( cerr, L"대전 채널 정보가 이상합니다! 있을 수 없는 에러!" )
+				START_LOG( cerr, L"Invalid PvP channel information; this should never happen!" )
 					<< BUILD_LOG( GetCharUID() )
 					<< BUILD_LOG( GetRoomListID() )
 					<< BUILD_LOG( GetRoomUID() )
@@ -111,7 +111,7 @@ IMPL_ON_FUNC( EGS_CREATE_ROOM_REQ )
 			{
 				if( CXSLRoom::IsValidWinKillNum( kPacket_.m_RoomInfo.m_PVPGameType, kPacket_.m_RoomInfo.m_WinKillNum ) == false )
 				{
-					START_LOG( cerr, L"대전방 생성시 킬수세팅이 이상함." )
+					START_LOG( cerr, L"Invalid kill count setting when creating a PvP room." )
 						<< BUILD_LOG( GetCharUID() )
 						<< BUILD_LOGc( kPacket_.m_RoomInfo.m_PVPGameType )
 						<< BUILD_LOGc( kPacket_.m_RoomInfo.m_WinKillNum )
@@ -125,7 +125,7 @@ IMPL_ON_FUNC( EGS_CREATE_ROOM_REQ )
 				// 플레이 시간 검사
 				if( CXSLRoom::IsValidPvpPlayTime( kPacket_.m_RoomInfo.m_PVPGameType, static_cast<int>(kPacket_.m_RoomInfo.m_fPlayTime) ) == false )
 				{
-					START_LOG( cerr, L"대전방 생성시 플레이 타임 세팅이 이상함." )
+					START_LOG( cerr, L"Invalid play time setting when creating a PvP room." )
 						<< BUILD_LOG( GetCharUID() )
 						<< BUILD_LOGc( kPacket_.m_RoomInfo.m_PVPGameType )
 						<< BUILD_LOG( kPacket_.m_RoomInfo.m_fPlayTime )
@@ -146,7 +146,7 @@ IMPL_ON_FUNC( EGS_CREATE_ROOM_REQ )
 
 	case CXSLRoom::RT_DUNGEON:
 		{
-			START_LOG( cerr, L"잘못된 방 생성 패킷입니다." )
+			START_LOG( cerr, L"Invalid room creation packet." )
 				<< BUILD_LOG( GetCharName() )
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
@@ -159,7 +159,7 @@ IMPL_ON_FUNC( EGS_CREATE_ROOM_REQ )
 
 	default: //룸타입이 이상할 경우
 		{
-			START_LOG( cerr, L"잘못된 룸 타입 에러.!" )
+			START_LOG( cerr, L"Invalid room type!" )
 				<< BUILD_LOGc( kPacket_.m_RoomInfo.m_RoomType )
 				<< END_LOG;
 
@@ -184,7 +184,7 @@ IMPL_ON_FUNC( EGS_CREATE_ROOM_REQ )
 		}
 		else
 		{
-			START_LOG( cerr, L"특수 유저 이하의 계정이 옵저버 방 만들기 요청" )
+			START_LOG( cerr, L"Account with privileges below special-user level requested an observer room" )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( KBaseServer::GetKObj()->GetUID() )
 				<< END_LOG;
@@ -197,7 +197,7 @@ IMPL_ON_FUNC( EGS_CREATE_ROOM_REQ )
 		}
 	}
 
-	START_LOG( clog2, L"만든 사람, 게임 서버" )
+	START_LOG( clog2, L"Creator, game server" )
 		<< BUILD_LOG( GetCharUID() )
 		<< BUILD_LOG( KBaseServer::GetKObj()->GetUID() )
 		<< BUILD_LOGc( kPacket_.m_RoomInfo.m_PVPGameType )
@@ -225,7 +225,7 @@ IMPL_ON_FUNC( EGS_CREATE_TUTORIAL_ROOM_REQ )
 	{
 		if( GetLevel() > SiKGameSysVal()->GetGuestUserLimitLevel() )
 		{
-			START_LOG( cerr, L"클라이언트에서 체험ID가 레벨20되었을때 유저를 캐릭선택으로 이동시켰을텐데 아직 게임을 하고있네?" )
+			START_LOG( cerr, L"The client should return a trial character to character selection at level 20, but the user is still playing." )
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
 
@@ -238,7 +238,7 @@ IMPL_ON_FUNC( EGS_CREATE_TUTORIAL_ROOM_REQ )
 	// [참고] 특정던전일 경우(예:초심자숲) 파티에 속하지 않아도 시작할 수 있게 만들어야 할까?
 	if( !CXSLDungeon::IsSinglePlayDungeon( kPacket_.m_RoomInfo.m_iDungeonID ) )
 	{
-		START_LOG( cerr, L"일반 던전은 이 패킷으로 생성하려 하면안되는데?" )
+		START_LOG( cerr, L"Regular dungeons should not be created with this packet." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_RoomInfo.m_iDungeonID )
 			<< END_LOG;
@@ -257,7 +257,7 @@ IMPL_ON_FUNC( EGS_CREATE_TUTORIAL_ROOM_REQ )
 			//운영자 이상이 아니면 체크한다.
 			if( GetAuthLevel() >= SEnum::UAL_GM )
 			{
-				START_LOG( cout, L"운영자 던전방 생성.!" )
+				START_LOG( cout, L"Operator created a dungeon room!" )
 					<< BUILD_LOG( GetCharName() )
 					<< BUILD_LOG( kPacket_.m_RoomInfo.m_iDungeonID )
 					;
@@ -270,7 +270,7 @@ IMPL_ON_FUNC( EGS_CREATE_TUTORIAL_ROOM_REQ )
 
 	default: //룸타입이 이상할 경우
 		{
-			START_LOG( cerr, L"잘못된 룸 타입 에러.!" )
+			START_LOG( cerr, L"Invalid room type!" )
 				<< BUILD_LOG( kPacket_.m_RoomInfo.m_RoomType )
 				<< END_LOG;
 
@@ -286,7 +286,7 @@ IMPL_ON_FUNC( EGS_CREATE_TUTORIAL_ROOM_REQ )
 
 	GetRoomUserInfo( kPacket.m_kRoomUserInfo, kPacket_.m_RoomInfo.m_RoomType );
 
-	START_LOG( clog2, L"만든 사람, 게임 서버" )
+	START_LOG( clog2, L"Creator, game server" )
 		<< BUILD_LOG( GetCharUID() )
 		<< BUILD_LOG( KBaseServer::GetKObj()->GetUID() )
 		<< BUILD_LOG( kPacket_.m_RoomInfo.m_iDungeonID );
@@ -402,7 +402,7 @@ IMPL_ON_FUNC( EGS_JOIN_ROOM_REQ )
 		kPacketAck.m_iOK = NetError::ERR_ROOM_16;
 		SendPacket( EGS_JOIN_ROOM_ACK, kPacketAck );
 
-		START_LOG( cwarn, L"방이 삭제되어 join이 안되는 경우.!" )
+		START_LOG( cwarn, L"Cannot join because the room has been deleted!" )
 			<< BUILD_LOG( NetError::GetErrStr( kPacketAck.m_iOK ) )
 			<< END_LOG;
 
@@ -430,7 +430,7 @@ IMPL_ON_FUNC( EGS_JOIN_ROOM_REQ )
 	{
 		if( GetLevel() > SiKGameSysVal()->GetGuestUserLimitLevel() )
 		{
-			START_LOG( cerr, L"클라이언트에서 체험ID가 레벨20되었을때 유저를 캐릭선택으로 이동시켰을텐데 아직 게임을 하고있네?" )
+			START_LOG( cerr, L"The client should return a trial character to character selection at level 20, but the user is still playing." )
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
 
@@ -458,7 +458,7 @@ IMPL_ON_FUNC( EGS_JOIN_ROOM_REQ )
 
 	case CXSLRoom::RT_DUNGEON:
 		{
-			START_LOG( cerr, L"잘못된 방 입장 패킷입니다." )
+			START_LOG( cerr, L"Invalid room entry packet." )
 				<< BUILD_LOG( GetCharName() )
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
@@ -482,7 +482,7 @@ IMPL_ON_FUNC( EGS_JOIN_ROOM_REQ )
 	//{{ 2012. 12. 5	최육사		옵저버 대전 난입 모드
 	if( GetAuthLevel() >= SEnum::UAL_GM  &&  m_kUserCheatManager.IsObserverMode() == true )
 	{
-		START_LOG( cout, L"운영자가 옵저버 모드로 방에 난입합니다!" )
+		START_LOG( cout, L"An operator is entering the room in observer mode!" )
 			<< BUILD_LOGc( GetAuthLevel() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( GetCharName() );
@@ -582,7 +582,7 @@ IMPL_ON_FUNC( EGS_QUICK_JOIN_REQ )
 			kPacketAck.m_iOK = NetError::ERR_ROOM_16;
 			SendPacket( EGS_QUICK_JOIN_ACK, kPacketAck );
 
-			START_LOG( cerr, L"방이 삭제되어 join이 안되는 경우.!" )
+			START_LOG( cerr, L"Cannot join because the room has been deleted!" )
 				<< BUILD_LOG( NetError::GetErrStr( kPacketAck.m_iOK ) )
 				<< END_LOG
 				;
@@ -595,7 +595,7 @@ IMPL_ON_FUNC( EGS_QUICK_JOIN_REQ )
 		{
 			if( GetLevel() > SiKGameSysVal()->GetGuestUserLimitLevel() )
 			{
-				START_LOG( cerr, L"클라이언트에서 체험ID가 레벨20되었을때 유저를 캐릭선택으로 이동시켰을텐데 아직 게임을 하고있네?" )
+				START_LOG( cerr, L"The client should return a trial character to character selection at level 20, but the user is still playing." )
 					<< BUILD_LOG( GetCharUID() )
 					<< END_LOG;
 
@@ -626,7 +626,7 @@ IMPL_ON_FUNC( EGS_QUICK_JOIN_REQ )
 
 		case CXSLRoom::RT_DUNGEON:
 			{
-				START_LOG( cerr, L"잘못된 퀵조인 패킷입니다." )
+				START_LOG( cerr, L"Invalid quick-join packet." )
 					<< BUILD_LOG( GetCharName() )
 					<< BUILD_LOG( GetCharUID() )
 					<< END_LOG;
@@ -726,7 +726,7 @@ IMPL_ON_FUNC( EGS_LEAVE_ROOM_REQ )
 		//{{ 2010. 03. 17  최육사	상태 오류 수정
 	case CXSLRoom::RT_SQUARE:
 		{
-			START_LOG( cerr, L"방 이탈인데 유저는 광장에 있네? 일어나서는 안되는 오류" )
+			START_LOG( cerr, L"User is in the plaza while leaving the room; this should never happen." )
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
 
@@ -985,7 +985,7 @@ IMPL_ON_FUNC( EGS_STATE_CHANGE_GAME_START_REQ )
 	}
 	else
 	{
-		START_LOG( cerr, L"방에 입장해있는데 RoomUID가 없다?" )
+		START_LOG( cerr, L"The user is in a room but has no RoomUID." )
 			<< BUILD_LOG( GetRoomUID() )
 			<< END_LOG;
 		return;
@@ -1174,7 +1174,7 @@ _IMPL_ON_FUNC( ERM_PLAY_START_NOT, KEGS_PLAY_START_NOT )
 
 				SendPacket( EGS_HENIR_REWARD_COUNT_NOT, kPacket );
 
-				START_LOG( clog, L"유저에게 보상 획득 횟수 갱신!!" )
+				START_LOG( clog, L"Updated reward acquisition count for user!" )
 					<< BUILD_LOG( GetUID() )
 					<< BUILD_LOG( m_kUserDungeonManager.GetPossibleHenirRewardEventUnLimited() )
 					<< BUILD_LOG( m_kUserDungeonManager.GetPossibleHenirRewardNormalCount() )
@@ -1222,7 +1222,7 @@ IMPL_ON_FUNC( EGS_END_GAME_REQ )
 					if( SiKPartyListManager()->E_EndGame( GetThisPtr<KGSUser>() ) == false )
 					//}}
 					{
-						START_LOG( cerr, L"게임 종료에 따른 파티유저정보 업데이트 실패!" )
+						START_LOG( cerr, L"Failed to update party user information after the game ended!" )
 							<< BUILD_LOG( GetCharUID() )
 							<< BUILD_LOG( GetCharName() )
 							<< BUILD_LOG( GetPartyUID() )
@@ -1238,7 +1238,7 @@ IMPL_ON_FUNC( EGS_END_GAME_REQ )
 	}
 	else
 	{
-		START_LOG( cerr, L"End Game을 보내왔는데 RoomUID값이 이상하다?" )
+		START_LOG( cerr, L"Received End Game with an invalid RoomUID." )
 			<< BUILD_LOG( GetRoomUID() )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
@@ -1333,7 +1333,7 @@ IMPL_ON_FUNC( EGS_ROOM_LIST_REQ )
 
 	if( GetRoomListID() == SiKRoomListManager()->GetPvpOffcialRoomListID() )
 	{
-		START_LOG( cerr, L"공식 대전 방 리스트를 왜 요청하지?? 뭔가 꼬였나?" )
+		START_LOG( cerr, L"Why was the official PvP room list requested? Is something out of sync?" )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( GetCharUID() )
 			<< END_LOG;
@@ -1542,7 +1542,7 @@ IMPL_ON_FUNC( EGS_NPC_UNIT_DIE_REQ )
 
 	if( kPacket_.m_nDieNPCUID == -1 )
 	{
-		START_LOG( clog, L"삭제되는 유닛 추후 클라이언트 루틴수정" );
+		START_LOG( clog, L"Unit being deleted; client routine will be updated later" );
 
 		return;
 	}
@@ -1552,7 +1552,7 @@ IMPL_ON_FUNC( EGS_NPC_UNIT_DIE_REQ )
 	// [2012-12-07][최육사] RoomUID값이 없는데 굳이 패킷을 센터서버로 보낼 필요가 없다.
 	if( GetRoomUID() == 0 )
 	{
-		START_LOG( cerr, L"S_ROOM상태인데 RoomUID값은 저장되어있지 않다!" )
+		START_LOG( cerr, L"The user is in S_ROOM state, but no RoomUID is stored!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( GetRoomUID() )
@@ -1759,7 +1759,7 @@ IMPL_ON_FUNC( ERM_NPC_UNIT_DIE_NOT )
 			{
 				if( GetRoomUID() <= 0 )
 				{
-					START_LOG( cerr, L"룸 UID 이상." )
+					START_LOG( cerr, L"Invalid room UID." )
 						<< BUILD_LOG( GetRoomUID() )
 						<< BUILD_LOG( GetCharUID() )
 						<< END_LOG;
@@ -1787,7 +1787,7 @@ IMPL_ON_FUNC( ERM_NPC_UNIT_DIE_NOT )
 
 				default:
 					{
-						START_LOG( cerr, L"이상한 방 타입." )
+						START_LOG( cerr, L"Invalid room type." )
 							<< BUILD_LOG( CXSLRoom::GetRoomType( GetRoomUID() ) )
 							<< BUILD_LOG( GetCharUID() )
 							<< END_LOG;
@@ -1977,7 +1977,7 @@ _IMPL_ON_FUNC( ERM_BATTLE_FIELD_NPC_UNIT_DIE_NOT, KERM_NPC_UNIT_DIE_NOT )
 			{
 				if( GetRoomUID() <= 0 )
 				{
-					START_LOG( cerr, L"룸 UID 이상." )
+					START_LOG( cerr, L"Invalid room UID." )
 						<< BUILD_LOG( GetRoomUID() )
 						<< BUILD_LOG( GetCharUID() )
 						<< END_LOG;
@@ -2000,7 +2000,7 @@ _IMPL_ON_FUNC( ERM_BATTLE_FIELD_NPC_UNIT_DIE_NOT, KERM_NPC_UNIT_DIE_NOT )
 
 				default:
 					{
-						START_LOG( cerr, L"이상한 방 타입." )
+						START_LOG( cerr, L"Invalid room type." )
 							<< BUILD_LOG( CXSLRoom::GetRoomType( GetRoomUID() ) )
 							<< BUILD_LOG( GetCharUID() )
 							<< END_LOG;
@@ -2175,7 +2175,7 @@ _IMPL_ON_FUNC( ERM_GET_ITEM_INSERT_TO_INVENTORY_NOT, KEGS_GET_ITEM_NOT )
 	}
 	else
 	{
-		START_LOG( cerr, L"AfterWorkStorage: Key값을 얻을 수 없습니다." )
+		START_LOG( cerr, L"AfterWorkStorage: Could not retrieve the key." )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( GetCharUID() )
 			<< END_LOG;
@@ -2189,7 +2189,7 @@ IMPL_ON_FUNC( DBE_GET_ITEM_INSERT_TO_INVENTORY_ACK )
 
 	if( kPacket_.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"실시간 아이템 DB업데이트 실패! 절대 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"Failed to update the item in the database in real time; this should never happen!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( NetError::GetErrStr( kPacket_.m_iOK ) )
 			<< END_LOG;
@@ -2282,7 +2282,7 @@ IMPL_ON_FUNC( EGS_GET_TEMP_ITEM_REQ )
 		//{{ 2012. 03. 29	최육사	Inventory Lock 기능
 		if( m_kInventory.IsLocked() == true )
 		{
-			START_LOG( cout, L"인벤토리 락이 걸려있는 상태입니다!" )
+			START_LOG( cout, L"The inventory is locked!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharName() )
@@ -2302,7 +2302,7 @@ IMPL_ON_FUNC( EGS_GET_TEMP_ITEM_REQ )
 
 	if( m_kTempInventory.PrepareTempItemToInventory( kPacket_.m_iTempItemUID, kPacket.m_iItemID, mapGetItem ) == false )
 	{
-		START_LOG( cerr, L"임시 인벤 아이템 가져오기 실패!" )
+		START_LOG( cerr, L"Failed to retrieve the temporary inventory item!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iTempItemUID )
 			<< END_LOG;
@@ -2317,7 +2317,7 @@ IMPL_ON_FUNC( EGS_GET_TEMP_ITEM_REQ )
 
 	if( mapInsertedItem.empty() )
 	{
-		START_LOG( clog, L"임시 인벤 아이템을 넣을 인벤토리 공간이 부족함." )
+		START_LOG( clog, L"Not enough inventory space for temporary inventory items." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iTempItemUID )
 			<< END_LOG;
@@ -2330,7 +2330,7 @@ IMPL_ON_FUNC( EGS_GET_TEMP_ITEM_REQ )
 	// 임시 인벤에 해당 아이템 삭제처리
 	if( m_kTempInventory.DeleteTempItem( kPacket_.m_iTempItemUID ) == false )
 	{
-		START_LOG( cerr, L"임시 인벤에 아이템 지우기 실패! 일어나서는 안되는에러!" )
+		START_LOG( cerr, L"Failed to delete item from temporary inventory; this should never happen!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iTempItemUID )
 			<< END_LOG;
@@ -2420,7 +2420,7 @@ IMPL_ON_FUNC( DBE_GET_TEMP_ITEM_ACK )
 
 	if( kPacket_.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"실시간 아이템 DB업데이트 실패! 절대 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"Failed to update the item in the database in real time; this should never happen!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( NetError::GetErrStr( kPacket_.m_iOK ) )
 			<< END_LOG;
@@ -2507,7 +2507,7 @@ IMPL_ON_FUNC( EGS_DELETE_TEMP_ITEM_REQ )
 
 	if( m_kTempInventory.DeleteTempItem( kPacket_.m_iTempItemUID ) == false )
 	{
-		START_LOG( cwarn, L"존재하지 않는 임시 인벤 아이템을 버릴려고 했음." )
+		START_LOG( cwarn, L"Attempted to discard a nonexistent temporary inventory item." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iTempItemUID )
 			<< END_LOG;
@@ -2538,7 +2538,7 @@ IMPL_ON_FUNC( ERM_CHECK_INVALID_ZOMBIE_USER_NOT )
 {
 	// 방에서 방에 입장한 유저가 좀비라고 판단되면 날리는 이벤트!
 
-	START_LOG( cout2, L"게임방 좀비유저 유저인데 접속되어있음.!" )
+	START_LOG( cout2, L"A zombie user in the game room is still connected!" )
 		<< BUILD_LOG( GetUID() )
 		<< BUILD_LOG( GetCharUID() )
 		<< BUILD_LOG( GetUserName() )
@@ -2551,7 +2551,7 @@ IMPL_ON_FUNC( ERM_CHECK_INVALID_ZOMBIE_USER_NOT )
 
 	if( GetRoomUID() != 0  &&  GetRoomUID() != kPacket_.m_iRoomUID )
 	{
-		START_LOG( cerr, L"게임방 좀비유져인데 이미 다른방에 있음.!" )
+		START_LOG( cerr, L"The zombie user is already in another room!" )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( GetRoomUID() )
 			<< BUILD_LOG( kPacket_.m_iRoomUID )
@@ -2574,7 +2574,7 @@ IMPL_ON_FUNC( ERM_CHECK_INVALID_ZOMBIE_USER_NOT )
 			//SendPacket( EGS_LEAVE_SQUARE_ACK, kPacket );
 			SendID( EGS_BAN_USER_NOT );
 
-			START_LOG( cout2, L"좀비유저인데 아직 같은 광장에 있음.?" );
+			START_LOG( cout2, L"Zombie user is still in the same plaza?" );
 		}
 		else
 		{
@@ -2622,7 +2622,7 @@ IMPL_ON_FUNC( ERM_CHECK_INVALID_ZOMBIE_USER_NOT )
 
 		if( GetRoomUID() != 0  &&  GetRoomUID() == kPacket_.m_iRoomUID )
 		{
-			START_LOG( cout2, L"좀비유저인데 아직 같은방에 있음.?" );
+			START_LOG( cout2, L"The zombie user is still in the same room." );
 		}
 
 		SetRoomUID( 0 );
@@ -2773,7 +2773,7 @@ _IMPL_ON_FUNC( ERM_RESULT_SUCCESS_ACK, KEGS_RESULT_SUCCESS_ACK )
 	}
 	else
 	{
-		START_LOG( cerr, L"방에 입장해있는데 RoomUID가 없다?" )
+		START_LOG( cerr, L"The user is in a room but has no RoomUID." )
 			<< BUILD_LOG( GetRoomUID() )
 			<< END_LOG;
 	}
@@ -2899,7 +2899,7 @@ IMPL_ON_FUNC( EGS_JOIN_SQUARE_REQ )
 	//{{ 2010. 05. 20  최육사	대전 던전 서버군 통합
 	if( IsSameServerGroupUID( kPacket_.m_iSquareUID ) == false )
 	{
-		START_LOG( cerr, L"다른 서버군의 광장에는 입장할 수 없다!" )
+		START_LOG( cerr, L"Cannot enter a plaza in another server group!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iSquareUID )
 			<< END_LOG;
@@ -3078,16 +3078,16 @@ _IMPL_ON_FUNC( ERM_SQUARE_UNIT_SYNC_DATA_NOT, KEGS_SQUARE_UNIT_SYNC_DATA_NOT )
 	{
 		if( GetRoomUID() > 0  &&  CXSLRoom::GetRoomType( GetRoomUID() ) == CXSLRoom::RT_SQUARE )
 		{
-			START_LOG( cerr, L"상태 오류. [거래광장] Name : " << m_strName )
-				<< L"    현재 상태 : " << GetStateIDString() << dbg::endl
-				<< L"    허용 상태 : ( 1, KGSFSM::S_ROOM )"
+			START_LOG( cerr, L"State error. [Trading plaza] Name: " << m_strName )
+				<< L"    Current state: " << GetStateIDString() << dbg::endl
+				<< L"    Allowed state: (1, KGSFSM::S_ROOM)"
 				<< END_LOG;
 		}
 		else
 		{
-			START_LOG( cerr, L"상태 오류. Name : " << m_strName )
-				<< L"    현재 상태 : " << GetStateIDString() << dbg::endl
-				<< L"    허용 상태 : ( 1, KGSFSM::S_ROOM )"
+			START_LOG( cerr, L"State error. Name: " << m_strName )
+				<< L"    Current state: " << GetStateIDString() << dbg::endl
+				<< L"    Allowed state: (1, KGSFSM::S_ROOM)"
 				<< END_LOG;
 		}
 		return;
@@ -3113,7 +3113,7 @@ IMPL_ON_FUNC( EGS_CREATE_TC_ROOM_REQ )
 
 	if( SiKTrainingCenterTable()->CheckIfEnter( m_mapTCClear, kPacket_.m_iTCID ) == false )
 	{
-		START_LOG( cerr, L"수행조건이 되지않는 훈련소를 생성할려고함.!" )
+		START_LOG( cerr, L"Attempted to create a training room without meeting the requirements!" )
 			<< BUILD_LOG( kPacket_.m_iTCID )
 			<< END_LOG;
 
@@ -3129,7 +3129,7 @@ IMPL_ON_FUNC( EGS_CREATE_TC_ROOM_REQ )
 
 	if( kPacket.m_kTCInfo.m_iDungeonID <= 0 )
 	{
-		START_LOG( cerr, L"해당 훈련소에 대한 던전아이디가 없음 허헉 +ㅁ+;" )
+		START_LOG( cerr, L"No dungeon ID for this training room." )
 			<< BUILD_LOG( kPacket_.m_iTCID )
 			<< BUILD_LOG( GetCharUID() )
 			<< END_LOG;
@@ -3141,7 +3141,7 @@ IMPL_ON_FUNC( EGS_CREATE_TC_ROOM_REQ )
 
 	GetRoomUserInfo( kPacket.m_kRoomUserInfo, CXSLRoom::RT_TRAININGCENTER );
 
-	START_LOG( clog2, L"만든 사람, 게임 서버" )
+	START_LOG( clog2, L"Creator, game server" )
 		<< BUILD_LOG( GetCharUID() )
 		<< BUILD_LOG( KBaseServer::GetKObj()->GetUID() )
 		;
@@ -3190,7 +3190,7 @@ _IMPL_ON_FUNC( ERM_OPEN_TC_ROOM_ACK, KEGS_CREATE_TC_ROOM_ACK )
 	}
 	else
 	{
-		START_LOG( cerr, L"방생성 실패.!" )
+		START_LOG( cerr, L"Failed to create the room!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( NetError::GetErrStr( kPacket_.m_iOK ) )
@@ -3470,7 +3470,7 @@ IMPL_ON_FUNC( ERM_ACTIVATE_BUFF_NOT )
 	{
 		if( ActivateBuff( kBuffInfo.m_kFactorInfo.m_BuffIdentity.m_eBuffTempletID, vecActiveBuff ) == false )
 		{
-			START_LOG( cerr, L"서버 버프 활성화 실패!" )
+			START_LOG( cerr, L"Failed to activate server buff!" )
 				<< BUILD_LOG( GetCharName() )
 				<< BUILD_LOG( kBuffInfo.m_kFactorInfo.m_BuffIdentity.m_eBuffTempletID )
 				<< END_LOG;
@@ -3494,7 +3494,7 @@ _IMPL_ON_FUNC( ERM_UPDATE_BUFF_INFO_IN_ROOM_NOT, KEGS_UPDATE_BUFF_INFO_IN_ROOM_N
 
 	if( GetRoomUID() == 0 )
 	{
-		START_LOG( cerr, L"방 상태인데 RoomUID가 없네? 이상하다. 일단 진행 하자" )
+		START_LOG( cerr, L"Room state has no RoomUID; unexpected, but continuing." )
 			<< BUILD_LOG( GetCharUID() )
 			<< END_LOG;
 	}
@@ -3538,7 +3538,7 @@ IMPL_ON_FUNC( EGS_CHECK_EXIST_MONSTER_UID_REQ )
 
     if( GetRoomUID() == 0 )
 	{
-		START_LOG( cerr, L"방에 있는것도 아닌데 이 패킷을 보냈네? 시간차 문제인가?" )
+		START_LOG( cerr, L"Sent this packet while not in a room; could this be a timing issue?" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetCharUID() )
 			<< END_LOG;
@@ -3567,7 +3567,7 @@ IMPL_ON_FUNC( EGS_UDP_PING_SCORE_NOT )
 
 	if( GetRoomUID() == 0 )
 	{
-		START_LOG( clog, L"방에 입장한 상태가 아닌데 UDP PING SCORE패킷을 보냈다" )
+		START_LOG( clog, L"Sent a UDP PING SCORE packet without being in a room." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetCharUID() )
 			<< END_LOG;
@@ -3587,7 +3587,7 @@ IMPL_ON_FUNC( EGB_TIME_ENCHANT_EVENT_DROP_NOT )
 {
 	if( kPacket_.m_iAfterWorkStorageKey == 0 )
 	{
-		START_LOG( cerr, L"AfterWorkStorage: Key값이 이상합니다." )
+		START_LOG( cerr, L"AfterWorkStorage: Invalid key." )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iAfterWorkStorageKey )
@@ -3598,7 +3598,7 @@ IMPL_ON_FUNC( EGB_TIME_ENCHANT_EVENT_DROP_NOT )
 	KEGS_GET_ITEM_NOT kStorage;
 	if( m_kAfterWorkStorage.RetrieveData( kPacket_.m_iAfterWorkStorageKey, kStorage ) != KAfterWorkStorage::AWS_SUCCEED )
 	{
-		START_LOG( cerr, L"AfterWorkStorage: 꺼내오기 실패" )
+		START_LOG( cerr, L"AfterWorkStorage: Failed to retrieve the item." )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( GetCharUID() )
 			<< END_LOG;
@@ -3608,7 +3608,7 @@ IMPL_ON_FUNC( EGB_TIME_ENCHANT_EVENT_DROP_NOT )
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( kStorage.m_iItemID );
 	if( pItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )
+		START_LOG( cerr, L"Failed to retrieve the item template." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kStorage.m_iItemID )
 			<< END_LOG;

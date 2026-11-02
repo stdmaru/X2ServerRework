@@ -117,7 +117,7 @@ bool CXSLSkillTree::AddSkillTreeTemplet_LUA()
 
 	if( iSkillID <= 0 )
 	{
-		START_LOG( cerr, L"AddSkillTreeTemplet 파싱 실패!" )
+		START_LOG( cerr, L"Failed to parse AddSkillTreeTemplet." )
 			<< BUILD_LOG( iSkillID )
 			<< END_LOG;
 		return false;
@@ -133,7 +133,7 @@ bool CXSLSkillTree::AddSkillTreeTemplet_LUA()
 	if( skillTreeTemplet.m_iMasterSkillLevel <= 0 || skillTreeTemplet.m_iTier <= -1 || skillTreeTemplet.m_iColumn <= -1
 		|| skillTreeTemplet.m_iUnitClass <= CXSLUnit::UC_NONE || skillTreeTemplet.m_iUnitClass >= CXSLUnit::UC_MAX )
 	{
-		START_LOG( cerr, L"AddSkillTreeTemplet 파싱 실패!" )
+		START_LOG( cerr, L"Failed to parse AddSkillTreeTemplet." )
 			<< BUILD_LOG( iSkillID )
 			<< BUILD_LOG( skillTreeTemplet.m_iUnitClass )
 			<< BUILD_LOG( skillTreeTemplet.m_iMasterSkillLevel )
@@ -158,7 +158,7 @@ bool CXSLSkillTree::AddGuildSkillTreeTemplet_LUA()
 
 	if( iSkillID <= 0 )
 	{
-		START_LOG( cerr, L"AddGuildSkillTreeTemplet 파싱 실패!" )
+		START_LOG( cerr, L"Failed to parse AddGuildSkillTreeTemplet." )
 			<< BUILD_LOG( iSkillID )
 			<< END_LOG;
 		return false;
@@ -172,7 +172,7 @@ bool CXSLSkillTree::AddGuildSkillTreeTemplet_LUA()
 
 	if( skillTreeTemplet.m_iMasterSkillLevel <= 0 || skillTreeTemplet.m_iTier <= -1 || skillTreeTemplet.m_iColumn <= -1 )
 	{
-		START_LOG( cerr, L"AddGuildSkillTreeTemplet 파싱 실패!" )
+		START_LOG( cerr, L"Failed to parse AddGuildSkillTreeTemplet." )
 			<< BUILD_LOG( iSkillID )
 			<< BUILD_LOG( skillTreeTemplet.m_iMasterSkillLevel )
 			<< BUILD_LOG( skillTreeTemplet.m_iTier )
@@ -201,7 +201,7 @@ bool CXSLSkillTree::AddSkillTemplet_LUA()
 	//m_vecRequireCharactorLevel
 	if( LoadSkillTemplet_RequireCharactorLevel( luaManager, skillTemplet ) == false )
 	{
-		START_LOG( cerr, L"스킬 템플릿 필요 레벨 제한 파싱 오류" )
+		START_LOG( cerr, L"Failed to parse the skill template required-level limit." )
 			<< BUILD_LOG( skillTemplet.m_iSkillID )
 			<< END_LOG;
 
@@ -211,7 +211,7 @@ bool CXSLSkillTree::AddSkillTemplet_LUA()
 	// stat
 	if( LoadSkillTemplet_Stat( luaManager, skillTemplet ) == false )
 	{
-		START_LOG( cerr, L"스킬 템플릿 stat 파싱 오류" )
+		START_LOG( cerr, L"Failed to parse skill template stats." )
 			<< BUILD_LOG( skillTemplet.m_iSkillID )
 			<< END_LOG;
 
@@ -221,63 +221,63 @@ bool CXSLSkillTree::AddSkillTemplet_LUA()
 	// SKILL ABILITY
 	if( LoadSkillTemplet_SA( luaManager, SA_MAX_HP_REL, skillTemplet ) == false )
 	{
-		START_LOG( cerr, L"스킬 템플릿 SA_MAX_HP_REL 파싱 오류" )
+		START_LOG( cerr, L"Failed to parse skill template SA_MAX_HP_REL." )
 			<< BUILD_LOG( skillTemplet.m_iSkillID )
 			<< END_LOG;
 		return false;
 	}
 	if( LoadSkillTemplet_SA( luaManager, SA_ATK_PHYSIC_TO_ATK_MAGIC, skillTemplet ) == false )
 	{
-		START_LOG( cerr, L"스킬 템플릿 SA_ATK_PHYSIC_TO_ATK_MAGIC 파싱 오류" )
+		START_LOG( cerr, L"Failed to parse skill template SA_ATK_PHYSIC_TO_ATK_MAGIC." )
 			<< BUILD_LOG( skillTemplet.m_iSkillID )
 			<< END_LOG;
 		return false;
 	}
 	if( LoadSkillTemplet_SA( luaManager, SA_ATK_MAGIC_TO_ATK_PHYSIC, skillTemplet ) == false )
 	{
-		START_LOG( cerr, L"스킬 템플릿 SA_ATK_MAGIC_TO_ATK_PHYSIC 파싱 오류" )
+		START_LOG( cerr, L"Failed to parse skill template SA_ATK_MAGIC_TO_ATK_PHYSIC." )
 			<< BUILD_LOG( skillTemplet.m_iSkillID )
 			<< END_LOG;
 		return false;
 	}
 	if( LoadSkillTemplet_SA( luaManager, SA_DEF_PHYSIC_REL, skillTemplet ) == false )
 	{
-		START_LOG( cerr, L"스킬 템플릿 SA_DEF_PHYSIC_REL 파싱 오류" )
+		START_LOG( cerr, L"Failed to parse skill template SA_DEF_PHYSIC_REL." )
 			<< BUILD_LOG( skillTemplet.m_iSkillID )
 			<< END_LOG;
 		return false;
 	}
 	if( LoadSkillTemplet_SA( luaManager, SA_DEF_MAGIC_REL, skillTemplet ) == false )
 	{
-		START_LOG( cerr, L"스킬 템플릿 SA_DEF_MAGIC_REL 파싱 오류" )
+		START_LOG( cerr, L"Failed to parse skill template SA_DEF_MAGIC_REL." )
 			<< BUILD_LOG( skillTemplet.m_iSkillID )
 			<< END_LOG;
 		return false;
 	}
 	if( LoadSkillTemplet_SA( luaManager, SA_ATK_MAGIC_REL, skillTemplet ) == false )
 	{
-		START_LOG( cerr, L"스킬 템플릿 SA_ATK_MAGIC_REL 파싱 오류" )
+		START_LOG( cerr, L"Failed to parse skill template SA_ATK_MAGIC_REL." )
 			<< BUILD_LOG( skillTemplet.m_iSkillID )
 			<< END_LOG;
 		return false;
 	}
 	if( LoadSkillTemplet_SA( luaManager, SA_ATK_PHYSIC_REL, skillTemplet ) == false )
 	{
-		START_LOG( cerr, L"스킬 템플릿 SA_ATK_PHYSIC_REL 파싱 오류" )
+		START_LOG( cerr, L"Failed to parse skill template SA_ATK_PHYSIC_REL." )
 			<< BUILD_LOG( skillTemplet.m_iSkillID )
 			<< END_LOG;
 		return false;
 	}
 	if( LoadSkillTemplet_SA( luaManager, SA_EXP_GAIN_REL, skillTemplet ) == false )
 	{
-		START_LOG( cerr, L"스킬 템플릿 SA_EXP_GAIN_REL 파싱 오류" )
+		START_LOG( cerr, L"Failed to parse skill template SA_EXP_GAIN_REL." )
 			<< BUILD_LOG( skillTemplet.m_iSkillID )
 			<< END_LOG;
 		return false;
 	}
 	if( LoadSkillTemplet_SA( luaManager, SA_ED_GAIN_REL, skillTemplet ) == false )
 	{
-		START_LOG( cerr, L"스킬 템플릿 SA_ED_GAIN_REL 파싱 오류" )
+		START_LOG( cerr, L"Failed to parse skill template SA_ED_GAIN_REL." )
 			<< BUILD_LOG( skillTemplet.m_iSkillID )
 			<< END_LOG;
 		return false;
@@ -287,7 +287,7 @@ bool CXSLSkillTree::AddSkillTemplet_LUA()
 
 	if( it != m_mapSkillTemplet.end() )
 	{
-		START_LOG( cerr, L"중복된 스킬을 템플릿에 등록하려고 함." )
+		START_LOG( cerr, L"Attempted to register a duplicate skill template." )
 			<< BUILD_LOG( skillTemplet.m_iSkillID )
 			<< END_LOG;
 
@@ -329,7 +329,7 @@ bool CXSLSkillTree::LoadSkillTemplet_RequireCharactorLevel( KLuaManager& luaMana
 		// 데이터가 하나라도 있으면 SLV_MAX_LEVEL 만큼 있어야 한다.
 		if( vecRequireCharactorLevel.empty() != false && vecRequireCharactorLevel.size() != SkillTemplet::SLV_MAX_LEVEL )
 		{
-			START_LOG( cerr, L"스킬 레벨 만큼의 데이터가 존재하지 않습니다." )
+			START_LOG( cerr, L"Not enough data for the skill level." )
 				<< BUILD_LOG( vecRequireCharactorLevel.size() )
 				<< END_LOG;
 
@@ -379,7 +379,7 @@ bool CXSLSkillTree::LoadSkillTemplet_Stat( KLuaManager& luaManager, SkillTemplet
 			// 데이터가 하나라도 있으면 SLV_MAX_LEVEL 만큼 있어야 한다.
 			if( vecBaseHP.empty() != false && vecBaseHP.size() != SkillTemplet::SLV_MAX_LEVEL )
 			{
-				START_LOG( cerr, L"스킬 레벨 만큼의 데이터가 존재하지 않습니다." )
+				START_LOG( cerr, L"Not enough data for the skill level." )
 					<< BUILD_LOG( vecBaseHP.size() )
 					<< END_LOG;
 
@@ -401,7 +401,7 @@ bool CXSLSkillTree::LoadSkillTemplet_Stat( KLuaManager& luaManager, SkillTemplet
 			// 데이터가 하나라도 있으면 SLV_MAX_LEVEL 만큼 있어야 한다.
 			if( vecAtkPhysic.empty() != false && vecAtkPhysic.size() != SkillTemplet::SLV_MAX_LEVEL )
 			{
-				START_LOG( cerr, L"스킬 레벨 만큼의 데이터가 존재하지 않습니다." )
+				START_LOG( cerr, L"Not enough data for the skill level." )
 					<< BUILD_LOG( vecAtkPhysic.size() )
 					<< END_LOG;
 
@@ -423,7 +423,7 @@ bool CXSLSkillTree::LoadSkillTemplet_Stat( KLuaManager& luaManager, SkillTemplet
 			// 데이터가 하나라도 있으면 SLV_MAX_LEVEL 만큼 있어야 한다.
 			if( vecAtkMagic.empty() != false && vecAtkMagic.size() != SkillTemplet::SLV_MAX_LEVEL )
 			{
-				START_LOG( cerr, L"스킬 레벨 만큼의 데이터가 존재하지 않습니다." )
+				START_LOG( cerr, L"Not enough data for the skill level." )
 					<< BUILD_LOG( vecAtkMagic.size() )
 					<< END_LOG;
 
@@ -445,7 +445,7 @@ bool CXSLSkillTree::LoadSkillTemplet_Stat( KLuaManager& luaManager, SkillTemplet
 			// 데이터가 하나라도 있으면 SLV_MAX_LEVEL 만큼 있어야 한다.
 			if( vecDefPhysic.empty() != false && vecDefPhysic.size() != SkillTemplet::SLV_MAX_LEVEL )
 			{
-				START_LOG( cerr, L"스킬 레벨 만큼의 데이터가 존재하지 않습니다." )
+				START_LOG( cerr, L"Not enough data for the skill level." )
 					<< BUILD_LOG( vecDefPhysic.size() )
 					<< END_LOG;
 
@@ -467,7 +467,7 @@ bool CXSLSkillTree::LoadSkillTemplet_Stat( KLuaManager& luaManager, SkillTemplet
 			// 데이터가 하나라도 있으면 SLV_MAX_LEVEL 만큼 있어야 한다.
 			if( vecDefMagic.empty() != false && vecDefMagic.size() != SkillTemplet::SLV_MAX_LEVEL )
 			{
-				START_LOG( cerr, L"스킬 레벨 만큼의 데이터가 존재하지 않습니다." )
+				START_LOG( cerr, L"Not enough data for the skill level." )
 					<< BUILD_LOG( vecDefMagic.size() )
 					<< END_LOG;
 
@@ -530,7 +530,7 @@ bool CXSLSkillTree::LoadSkillTemplet_SA( KLuaManager& luaManager, SKILL_ABILITY_
 	std::map< SKILL_ABILITY_TYPE, std::vector< float > >::iterator mit = skillTemplet.m_mapSkillAbility.find( eType );
 	if( mit != skillTemplet.m_mapSkillAbility.end() )
 	{
-		START_LOG( cerr, L"중복 처리!  LoadSkillTemplet_SA" )
+		START_LOG( cerr, L"Duplicate entry while processing LoadSkillTemplet_SA." )
 			<< BUILD_LOG( static_cast<int>(eType) )
 			<< END_LOG;
 		return false;
@@ -569,7 +569,7 @@ bool CXSLSkillTree::LoadSkillTemplet_SA( KLuaManager& luaManager, SKILL_ABILITY_
 		break;
 	default:
 		{
-			START_LOG( cerr, L"처리하지 않는 type 에 대한 요청입니다. 다시 한번 확인 하세요.  LoadSkillTemplet_SA" )
+			START_LOG( cerr, L"Request for an unsupported type in LoadSkillTemplet_SA; please check the configuration." )
 				<< BUILD_LOG( static_cast<int>(eType) )
 				<< END_LOG;
 			return false;
@@ -591,7 +591,7 @@ bool CXSLSkillTree::LoadSkillTemplet_SA( KLuaManager& luaManager, SKILL_ABILITY_
 		// 데이터가 하나라도 있으면 SLV_MAX_LEVEL 만큼 있어야 한다.
 		if( vecSkillAbility.empty() != false && vecSkillAbility.size() != SkillTemplet::SLV_MAX_LEVEL )
 		{
-			START_LOG( cerr, L"스킬 레벨 만큼의 데이터가 존재하지 않습니다." )
+			START_LOG( cerr, L"Not enough data for the skill level." )
 				<< BUILD_LOG( vecSkillAbility.size() )
 				<< END_LOG;
 			return false;
@@ -642,7 +642,7 @@ bool CXSLSkillTree::AddSealSkillInfo_LUA()
 
 	if( iUnitClassType >= CXSLUnit::UCT_END )
 	{
-		START_LOG( cerr, L"존재하지 않는 Unit Class Type 입니다." )
+		START_LOG( cerr, L"Unit class type does not exist." )
 			<< BUILD_LOG( iItemID )
 			<< BUILD_LOG( iUnitClassType )
 			<< END_LOG;
@@ -653,7 +653,7 @@ bool CXSLSkillTree::AddSealSkillInfo_LUA()
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iItemID );
 	if( pItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 ItemID가 봉인스킬아이템으로 설정되었습니다." )
+		START_LOG( cerr, L"Nonexistent ItemID configured as a skill-sealing item." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 
@@ -673,7 +673,7 @@ bool CXSLSkillTree::AddSealSkillInfo_LUA()
 			{
 				luaManager.EndTable();
 
-				START_LOG( cerr, L"유효하지 않은 SkillID입니다!" )
+				START_LOG( cerr, L"Invalid SkillID." )
 					<< BUILD_LOG( iItemID )
 					<< BUILD_LOG( iSkillID )
 					<< END_LOG;
@@ -683,7 +683,7 @@ bool CXSLSkillTree::AddSealSkillInfo_LUA()
 
 			if( IsExsitSkillID( iSkillID ) == false )
 			{
-				START_LOG( cerr, L"유효하지 않은 SkillID입니다!" )
+				START_LOG( cerr, L"Invalid SkillID." )
 					<< BUILD_LOG( iItemID )
 					<< BUILD_LOG( iSkillID )
 					<< END_LOG;
@@ -697,7 +697,7 @@ bool CXSLSkillTree::AddSealSkillInfo_LUA()
 	// 아이템 - 스킬
 	if( m_mapUnsealSkillItem.find( iItemID ) != m_mapUnsealSkillItem.end() )
 	{
-		START_LOG( cerr, L"이미 등록된 Unseal ItemID입니다." )
+		START_LOG( cerr, L"Unseal ItemID is already registered." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 
@@ -709,7 +709,7 @@ bool CXSLSkillTree::AddSealSkillInfo_LUA()
 	// 아이템 - 직종
 	if( m_mapUnsealSkillItem_UnitClassType.find( iItemID ) != m_mapUnsealSkillItem_UnitClassType.end() )
 	{
-		START_LOG( cerr, L"이미 등록된 iUnitClassType 입니다." )
+		START_LOG( cerr, L"iUnitClassType is already registered." )
 			<< BUILD_LOG( iItemID )
 			<< BUILD_LOG( iUnitClassType )
 			<< END_LOG;
@@ -815,7 +815,7 @@ bool CXSLSkillTree::GetUnitClassDefaultSkill( IN char cUnitClass, OUT int& iSkil
 	std::map< int,std::vector<int> >::iterator mit = m_mapDefaultSkill.find( static_cast<int>(cUnitClass) );
 	if( mit == m_mapDefaultSkill.end() )
 	{
-		START_LOG( cerr, L"존재하지 않는 유닛 클래스의 기본 스킬을 얻으려 합니다." )
+		START_LOG( cerr, L"Attempted to get base skills for a nonexistent unit class." )
 			<< BUILD_LOGc( cUnitClass )
 			<< END_LOG;
 
@@ -827,7 +827,7 @@ bool CXSLSkillTree::GetUnitClassDefaultSkill( IN char cUnitClass, OUT int& iSkil
 	{
 		if( mit->second.size() != 2 )
 		{
-			START_LOG( cerr, L"유닛 클래스의 기본 스킬 갯수가 이상합니다." )
+			START_LOG( cerr, L"Invalid number of base skills for the unit class." )
 				<< BUILD_LOGc( cUnitClass )
 				<< BUILD_LOG( mit->second.size() )
 				<< END_LOG;
@@ -840,7 +840,7 @@ bool CXSLSkillTree::GetUnitClassDefaultSkill( IN char cUnitClass, OUT int& iSkil
 	{
 		if( mit->second.size() != 4 )
 		{
-			START_LOG( cerr, L"유닛 클래스의 기본 스킬 갯수가 이상합니다." )
+			START_LOG( cerr, L"Invalid number of base skills for the unit class." )
 				<< BUILD_LOGc( cUnitClass )
 				<< BUILD_LOG( mit->second.size() )
 				<< END_LOG;
@@ -853,7 +853,7 @@ bool CXSLSkillTree::GetUnitClassDefaultSkill( IN char cUnitClass, OUT int& iSkil
 	{
 		if( mit->second.size() != 6 )
 		{
-			START_LOG( cerr, L"유닛 클래스의 기본 스킬 갯수가 이상합니다." )
+			START_LOG( cerr, L"Invalid number of base skills for the unit class." )
 				<< BUILD_LOGc( cUnitClass )
 				<< BUILD_LOG( mit->second.size() )
 				<< END_LOG;
@@ -1032,7 +1032,7 @@ bool CXSLSkillTree::AddDefaultSkill_LUA()
 
 	if( iUnitClass <= 0 )
 	{
-		START_LOG( cerr, L"유닛 클래스 정보가 이상합니다." )
+		START_LOG( cerr, L"Invalid unit class information." )
 			<< BUILD_LOG( iUnitClass )
 			<< BUILD_LOG( vecDefaultSkill.size() )
 			<< END_LOG;
@@ -1041,7 +1041,7 @@ bool CXSLSkillTree::AddDefaultSkill_LUA()
 
 	if( (int)vecDefaultSkill.size() != 6 )
 	{
-		START_LOG( cerr, L"전달 인자 값의 수가 맞지 않습니다." )
+		START_LOG( cerr, L"Incorrect number of arguments." )
 			<< BUILD_LOG( iUnitClass )
 			<< BUILD_LOG( vecDefaultSkill.size() )
 			<< END_LOG;
@@ -1051,7 +1051,7 @@ bool CXSLSkillTree::AddDefaultSkill_LUA()
 	std::map< int, std::vector< int > >::iterator mit = m_mapDefaultSkill.find( iUnitClass );
 	if( mit != m_mapDefaultSkill.end() )
 	{
-		START_LOG( cerr, L"유닛 클래스 정보가 중복 입니다." )
+		START_LOG( cerr, L"Duplicate unit class information." )
 			<< BUILD_LOG( iUnitClass )
 			<< BUILD_LOG( vecDefaultSkill.size() )
 			<< END_LOG;

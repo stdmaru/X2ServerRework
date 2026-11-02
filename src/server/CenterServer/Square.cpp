@@ -59,7 +59,7 @@ void KSquare::Tick()
 	{
 		DeleteZombie( vecZombieUnit );
 
-		START_LOG( cout2, L"광장 좀비유저 삭제.!" )
+		START_LOG( cout2, L"Removing square zombie user!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( vecZombieUnit.size() )
 			<< END_LOG;
@@ -101,7 +101,7 @@ void KSquare::ProcessEvent( const KEventPtr& spEvent_ )
    //}}
 
 	default:
-		START_LOG( cerr, L"없는 패킷이 광장에 날아온다 ;ㅁ;" )
+		START_LOG( cerr, L"Unexpected packet received in square." )
 			<< BUILD_LOG( KEvent::GetIDStr( spEvent_->m_usEventID ) )
 			<< END_LOG;
 		break;
@@ -172,7 +172,7 @@ void KSquare::GetSquareInfo( KSquareInfo& kSquareInfo )
 
 void KSquare::DeleteZombie( std::vector<UidType>& vecZombieUnit )
 {
-	START_LOG( cout2, L"삭제될 좀비 광장유저개수.!" )
+	START_LOG( cout2, L"Number of zombie square users to remove!" )
 		<< BUILD_LOG( vecZombieUnit.size() )
 		<< END_LOG;
 
@@ -181,7 +181,7 @@ void KSquare::DeleteZombie( std::vector<UidType>& vecZombieUnit )
 		KSquareUserPtr spUser = m_kSquareUserManager.GetUser( iUnitUID );
 		if( spUser == NULL )
 		{
-			START_LOG( cerr, L"광장 좀비유저 포인터 이상.!" )
+			START_LOG( cerr, L"Invalid square zombie-user pointer!" )
 				<< BUILD_LOG( iUnitUID )
 				<< END_LOG;
 			continue;
@@ -193,7 +193,7 @@ void KSquare::DeleteZombie( std::vector<UidType>& vecZombieUnit )
 
 		if( m_kSquareUserManager.LeaveSquare( iUnitUID ) == false )
 		{
-			START_LOG( cerr, L"좀비유저 광장 나가기 실패." )
+			START_LOG( cerr, L"Failed to remove zombie user from square." )
 				<< END_LOG;
 			continue;
 		}
@@ -221,7 +221,7 @@ IMPL_ON_FUNC( ERM_OPEN_SQUARE_NOT )
 {
 	if( GetStateID() != KBaseRoomFSM::S_INIT )
 	{
-		START_LOG( cerr, L"광장이 초기 상태가 아님." )
+		START_LOG( cerr, L"Square is not in its initial state." )
 			<< BUILD_LOG( GetStateID() )
 			<< BUILD_LOG( GetStateIDString() )
 			<< END_LOG;
@@ -340,7 +340,7 @@ _IMPL_ON_FUNC( ERM_LEAVE_SQUARE_REQ, KEGS_LEAVE_SQUARE_REQ )
 
 	if( m_kSquareUserManager.LeaveSquare( FIRST_SENDER_UID ) == false )
 	{
-		START_LOG( cerr, L"광장 나가기 실패." );
+		START_LOG( cerr, L"Failed to leave square." );
 		kPacket.m_iOK = NetError::ERR_SQUARE_02;
 		SendToGSCharacter( LAST_SENDER_UID, FIRST_SENDER_UID, ERM_LEAVE_SQUARE_ACK, kPacket );
 		return;
@@ -378,7 +378,7 @@ _IMPL_ON_FUNC( ERM_CHAT_REQ, KEGS_CHAT_REQ )
 
     if( kPacket_.m_cChatPacketType != KEGS_CHAT_REQ::CPT_TOTAL )
 	{
-		START_LOG( cerr, L"일반채팅 패킷타입이 아닌데 여기왔네?" )
+		START_LOG( cerr, L"A non-normal-chat packet type reached this handler." )
 			<< BUILD_LOGc( kPacket_.m_cChatPacketType )
 			<< END_LOG;
 		return;
@@ -418,7 +418,7 @@ _IMPL_ON_FUNC( ERM_CHAT_REQ, KEGS_CHAT_REQ )
 	}
 	else
 	{
-		START_LOG( cerr, L"이상한 채팅 타입." )
+		START_LOG( cerr, L"Unexpected chat type." )
 			<< BUILD_LOGc( kPacketBR.m_cRoomChatType )
 			<< END_LOG;
 
@@ -502,7 +502,7 @@ IMPL_ON_FUNC( ERM_REQUEST_TRADE_NOT )
 	//거래상대자가 개인상점 개설중이면 거래를 승인하지 않는다.
 	if( m_kSquareUserManager.GetPersonalShopState( kPacket_.m_iReceiverUID ) > CXSLSquareUnit::PSS_NONE )
 	{
-		START_LOG( cwarn, L"개인상점 개설중인 유저에게 개인거래 신청이 옴.!" )
+		START_LOG( cwarn, L"Personal-trade request received by a user who is opening a personal shop!" )
 			<< BUILD_LOG( kPacket_.m_iSenderUID )
 			<< BUILD_LOG( kPacket_.m_iReceiverUID )
 			<< BUILD_LOG( kPacket_.m_wstrSenderNickName )
@@ -551,7 +551,7 @@ IMPL_ON_FUNC_NOPARAM( ERM_CHECK_OPEN_PERSONAL_SHOP_REQ )
 	{
 		kPacket.m_iOK = NetError::ERR_PERSONAL_SHOP_22;
 
-		START_LOG( cerr, L"상점개설 체크중 다시 체크 패킷이옴.!" )
+		START_LOG( cerr, L"Received another shop-open check packet while a check is in progress!" )
 			<< BUILD_LOG( FIRST_SENDER_UID );
 
 		goto end_proc;
@@ -565,7 +565,7 @@ IMPL_ON_FUNC_NOPARAM( ERM_CHECK_OPEN_PERSONAL_SHOP_REQ )
 	{
 		kPacket.m_iOK = NetError::ERR_PERSONAL_SHOP_03;
 
-		START_LOG( cerr, L"유저정보를 찾지 못해 개인상점 시작실패.!" )
+		START_LOG( cerr, L"Failed to start personal shop: user information not found!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
 
@@ -584,7 +584,7 @@ _IMPL_ON_FUNC( ERM_UPDATE_SQUARE_PERSONAL_SHOP_INFO_NOT, KSquarePersonalShopInfo
 
 	if( m_kSquareUserManager.SetPersonalShopData( FIRST_SENDER_UID, kPacket_, kNot ) == false )
 	{
-		START_LOG( cerr, L"유저정보를 찾지 못해 개인상점 시작실패.!" )
+		START_LOG( cerr, L"Failed to start personal shop: user information not found!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOGc( kPacket_.m_cPersonalShopState )
 			<< BUILD_LOG( kPacket_.m_iPersonalShopUID )
@@ -637,7 +637,7 @@ _IMPL_ON_FUNC( ERM_CHECK_JOIN_PERSONAL_SHOP_REQ, KEGS_JOIN_PERSONAL_SHOP_REQ )
 		}
 		else
 		{
-			START_LOG( cerr, L"상점개설중인데 상점 UID가 잘못되었음.!" )
+			START_LOG( cerr, L"Invalid shop UID while opening the shop!" )
 				<< BUILD_LOG( FIRST_SENDER_UID )
 				<< BUILD_LOG( kPacket_.m_iUnitUID )
 				<< BUILD_LOGc( cShopState )
@@ -646,7 +646,7 @@ _IMPL_ON_FUNC( ERM_CHECK_JOIN_PERSONAL_SHOP_REQ, KEGS_JOIN_PERSONAL_SHOP_REQ )
 	}
 	else
 	{
-		START_LOG( cerr, L"상점준비가 안되어있는데 참여 신청이옴.!" )
+		START_LOG( cerr, L"Participation request received before the shop was ready!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOGc( cShopState )
@@ -689,7 +689,7 @@ IMPL_ON_FUNC( ERM_SQUARE_UNIT_REFRESH_ED_NOT )
 	KSquareUserPtr spUser = m_kSquareUserManager.GetUser( kPacket_.m_iUnitUID );
 	if( !spUser )
 	{
-		START_LOG( clog, L"광장에 존재하지 않는 유저입니다." )
+		START_LOG( clog, L"User does not exist in the square." )
 			<< BUILD_LOG( kPacket_.m_iUnitUID );
 
 		return;

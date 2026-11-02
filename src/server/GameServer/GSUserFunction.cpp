@@ -436,7 +436,7 @@ void KGSUser::Tick()
 		char cLastSendType = KEGS_SERVER_CHECK_HACK_USER_REQ::HCT_NONE;
 		if( m_kUserHackingManager.CheckHackingUserRecivedPacket( cLastSendType ) == false )
 		{
-			START_LOG( cerr, L"해킹 유저 패킷을 보냈는데 응답이 없다." )
+			START_LOG( cerr, L"Sent the suspected hacker packet, but received no response." )
 				<< BUILD_LOG( GetCharName() )
 				<< BUILD_LOGc( cLastSendType )
 				<<END_LOG;
@@ -523,7 +523,7 @@ void KGSUser::OnDestroy()
 	}
 	else
 	{
-		START_LOG( cerr, L"disconnect userfsm 통계 인덱스 값이 이상합니다." )
+		START_LOG( cerr, L"Invalid disconnect user FSM statistics index." )
 			<< BUILD_LOG( GetStateID() )
 			<< BUILD_LOG( iIndex )
 			<< END_LOG;
@@ -541,7 +541,7 @@ void KGSUser::OnDestroy()
 		{
 			//{{ 2009. 9. 1  최육사		IOCP종료사유
 
-			START_LOG( clog, L"IOCP종료사유" )
+			START_LOG( clog, L"IOCP shutdown reason" )
 				<< BUILD_LOG( GetUserName() )
 				<< BUILD_LOG( GetLastIocpFailedError() );
 
@@ -572,7 +572,7 @@ void KGSUser::OnDestroy()
 
 	case KStatistics::eSIColDR_SendBufferFull:
 		{
-			START_LOG( cout, L"Send Buffer Full 종료 유저 상태." )
+			START_LOG( cout, L"User state when disconnecting due to a full send buffer." )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( KEvent::GetIDStr( GetLastSendEventID() ) )
@@ -637,7 +637,7 @@ void KGSUser::OnDestroy()
 		{
 		case KStatistics::eSIColDR_Limit_User_Num:
 			{
-				START_LOG( cwarn, L"서버 수용 인원 가득참." )
+				START_LOG( cwarn, L"The server is at capacity." )
 					<< BUILD_LOG( GetUID() )
 					<< BUILD_LOG( GetName() )
 					<< BUILD_LOG( GetIPStr() )
@@ -650,7 +650,7 @@ void KGSUser::OnDestroy()
 			//{{ 2010. 06. 23  최육사	계정블럭기능
 		case KStatistics::eSIColDR_GameServer_Account_Block:
 			{
-				START_LOG( cwarn, L"해킹 의심 유저 접속 제한 조치." )
+				START_LOG( cwarn, L"Restricted access for user suspected of hacking." )
 					<< BUILD_LOG( GetUID() )
 					<< BUILD_LOG( GetName() )
 					<< BUILD_LOG( GetIPStr() )
@@ -664,7 +664,7 @@ void KGSUser::OnDestroy()
 			//{{ 2011. 08. 09	최육사	머신ID 블럭기능
 		case KStatistics::eSIColDR_MachineID_Block:
 			{
-				START_LOG( cout, L"머신 ID 블럭." )
+				START_LOG( cout, L"Machine ID blocked." )
 					<< BUILD_LOG( GetUID() )
 					<< BUILD_LOG( GetName() )
 					<< BUILD_LOG( GetIPStr() )
@@ -677,7 +677,7 @@ void KGSUser::OnDestroy()
 
 		default:
 			{
-				START_LOG( cerr2, L"로그인 실패 유저." )
+				START_LOG( cerr2, L"Login failed for user." )
 					<< BUILD_LOG( GetUID() )
 					<< BUILD_LOG( GetName() )
 					<< BUILD_LOG( GetIPStr() )
@@ -768,7 +768,7 @@ bool KGSUser::RoutePacket( const KEvent* pkEvent_ )
                 SiKDBLayer()->QueueingEvent( spEvent );
                 return true;
             default:
-                START_LOG( cerr, L"도착지가 이상한 패킷." )
+                START_LOG( cerr, L"Packet has an invalid destination." )
                     << BUILD_LOG( pkEvent_->m_kDestPerformer.m_dwPerformerID )
                     << END_LOG;
                 return true;
@@ -784,7 +784,7 @@ void KGSUser::WriteUnitInfoToDB( bool bFinal, int iEventID /*= 0*/ )
     // 유닛이 선택되지 않았으면 업데이트 하지 말아야 한다.
     if( GetCharUID() <= 0 )
     {
-		START_LOG( cerr, L"[ERROR] 유닛 정보 업데이트 하는데, 유닛이 선택되지 않았다.")
+		START_LOG( cerr, L"[ERROR] Cannot update unit information because no unit is selected.")
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( iEventID )
 			<< END_LOG;
@@ -810,7 +810,7 @@ void KGSUser::WriteUnitInfoToDB( bool bFinal, int iEventID /*= 0*/ )
 	{
 		if( m_iED.GetChangeValue() != 0 )
 		{
-			START_LOG( cout, L"[알림] Inventroy Lock 상태인데 ED증분값이 남아있다! 이러면 문제 생길텐데..?" )
+			START_LOG( cout, L"[Notice] ED increment remains while the inventory is locked; this may cause problems." )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( GetCharName() )
 				<< BUILD_LOG( GetED() )
@@ -880,7 +880,7 @@ void KGSUser::WriteUnitInfoToDB( bool bFinal, int iEventID /*= 0*/ )
 		{
 			if( SiCXSLMapData()->CheckMapData( GetMapID() ) == false )
 			{
-				START_LOG( cerr, L"DB업데이트 하려는 MapID가 이상하다?" )
+				START_LOG( cerr, L"Invalid MapID for database update." )
 					<< BUILD_LOG( GetCharName() )
 					<< BUILD_LOG( GetMapID() )
 					<< BUILD_LOG( SiCXSLMapData()->GetDefaultMapID() )
@@ -1190,7 +1190,7 @@ void KGSUser::WriteCheatLogToDB( const wchar_t* szCheatCode, const std::wstring&
 
 	if( KODBC::IsInvalidMarkInForCheat( kPacket.m_wsCheatCode ) )
 	{
-		START_LOG( cerr, L"SQL Injection 방지" )
+		START_LOG( cerr, L"Preventing SQL injection" )
 			<< BUILD_LOG( kPacket.m_wsCheatCode )
 			<< END_LOG;
 		return;
@@ -1198,7 +1198,7 @@ void KGSUser::WriteCheatLogToDB( const wchar_t* szCheatCode, const std::wstring&
 
 	if( KODBC::IsInvalidMarkInForCheat( kPacket.m_wsCheatContents ) )
 	{
-		START_LOG( cerr, L"SQL Injection 방지" )
+		START_LOG( cerr, L"Preventing SQL injection" )
 			<< BUILD_LOG( kPacket.m_wsCheatContents )
 			<< END_LOG;
 		return;
@@ -1240,7 +1240,7 @@ void KGSUser::WriteCharacterLogToDBWithParam( IN const KELOG_USER_CHARACTER_LOG_
 {
 	if( KELOG_USER_CHARACTER_LOG_NOT::IsValidLogType( eLogType ) == false )
 	{
-		START_LOG( cerr, L"잘못된 로그 타입 입니다!" )
+		START_LOG( cerr, L"Invalid log type!" )
 			<< BUILD_LOG( eLogType )
 			<< END_LOG;
 		return;
@@ -1345,7 +1345,7 @@ void KGSUser::ExpireItem( bool bForce/* = false */ )
 		{
 			if( GetFieldUID() <= 0 )
 			{
-				START_LOG( clog, L"필드 상태인데 FieldUID가 없다." )
+				START_LOG( clog, L"Field state has no FieldUID." )
 					<< BUILD_LOG( GetFieldUID() )
 					<< BUILD_LOG( GetCharUID() )
 					<< BUILD_LOG( GetCharName() )
@@ -1377,7 +1377,7 @@ void KGSUser::ExpireItem( bool bForce/* = false */ )
         {
             if( GetRoomUID() <= 0 )
             {
-                START_LOG( cerr, L"룸 UID 이상." )
+                START_LOG( cerr, L"Invalid room UID." )
                     << BUILD_LOG( GetRoomUID() )
                     << BUILD_LOG( GetCharUID() )
                     << BUILD_LOG( GetCharName() )
@@ -1445,7 +1445,7 @@ void KGSUser::ExpireItem( bool bForce/* = false */ )
 
             default:
                 {
-                    START_LOG( cerr, L"이상한 방 타입." )
+                    START_LOG( cerr, L"Invalid room type." )
                         << BUILD_LOG( CXSLRoom::GetRoomType( GetRoomUID() ) )
                         << BUILD_LOG( GetCharUID() )
                         << END_LOG;
@@ -1494,7 +1494,7 @@ void KGSUser::ExpireCashSkillPoint( bool bForce /*= false*/ )
 							uiSizeOfEveryUserSkillData += KDBReq.m_vecRetrievedSkillPageData[i].m_vecUserSkillData.size();
 						}
 
-						START_LOG( cerr, L"캐시 스킬 포인트 기간 만료 시점에 스킬 포인트 값이 비정상입니다." )
+						START_LOG( cerr, L"Invalid skill point value when cash skill point duration expired." )
 							<< BUILD_LOG( GetName() )
 							<< BUILD_LOG( GetCharName() )
 							<< BUILD_LOG( iSumOfSPoint )
@@ -1698,7 +1698,7 @@ void KGSUser::CheckAutoFeed()
 		const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( kAutoFeedPacket.m_iFeedItemID );
 		if( pItemTemplet == NULL )
 		{
-			START_LOG( cerr, L"존재하지 않는 아이템입니다!" )
+			START_LOG( cerr, L"The item does not exist!" )
 				<< BUILD_LOG( kAutoFeedPacket.m_iFeedItemID )
 				<< END_LOG;
 
@@ -1761,7 +1761,7 @@ int KGSUser::CanIUseTheAutoLootingItem( IN const UidType iPetUID )
 	KUserPetPtr spPet = m_kUserPetManager.GetPet( iPetUID );
 	if( spPet == NULL )
 	{
-		START_LOG( cerr, L"보유 하고 있지 않는 PetUID입니다." )
+		START_LOG( cerr, L"The PetUID is not owned by this user." )
 			<< BUILD_LOG( iPetUID )
 			<< END_LOG;
 		return NetError::ERR_PET_26;
@@ -1792,7 +1792,7 @@ void KGSUser::SetAutoLootingPet( IN const UidType iPetUID )
 	KUserPetPtr spPet = m_kUserPetManager.GetPet( iPetUID );
 	if( spPet == NULL )
 	{
-		START_LOG( cerr, L"보유 하고 있지 않는 PetUID입니다." )
+		START_LOG( cerr, L"The PetUID is not owned by this user." )
 			<< BUILD_LOG( iPetUID )
 			<< END_LOG;
 		return;
@@ -1806,7 +1806,7 @@ int KGSUser::CanIUseTransformItem( IN const UidType iPetUID )
 	KUserPetPtr spPet = m_kUserPetManager.GetPet( iPetUID );
 	if( spPet == NULL )
 	{
-		START_LOG( cerr, L"보유 하고 있지 않는 PetUID입니다." )
+		START_LOG( cerr, L"The PetUID is not owned by this user." )
 			<< BUILD_LOG( iPetUID )
 			<< END_LOG;
 		return NetError::ERR_PET_26;
@@ -1819,7 +1819,7 @@ int KGSUser::CanIUseTransformItem( IN const UidType iPetUID )
 		spPet->GetPetID() != CXSLPetManager::PUI_HALLOWEEN_PUMPKIN_LOJETA_F && spPet->GetPetID() != CXSLPetManager::PUI_HALLOWEEN_PUMPKIN_NARENEA_F
 		)
 	{
-		START_LOG( cerr, L"변신 물약을 사용할수 있는 펫이 아닙니다." )
+		START_LOG( cerr, L"This pet cannot use transformation potions." )
 			<< BUILD_LOG( iPetUID )
 			<< END_LOG;
 		return NetError::ERR_HW_PET_02;
@@ -1848,7 +1848,7 @@ void KGSUser::UseTransformItem( IN int iUsedItemID, IN const UidType iPetUID, OU
 	KUserPetPtr spPet = m_kUserPetManager.GetPet( iPetUID );
 	if( spPet == NULL )
 	{
-		START_LOG( cerr, L"보유 하고 있지 않는 PetUID입니다." )
+		START_LOG( cerr, L"The PetUID is not owned by this user." )
 			<< BUILD_LOG( iPetUID )
 			<< END_LOG;
 		return;
@@ -1918,7 +1918,7 @@ bool KGSUser::CheckSkillPointError() const
 				//{{ 2009. 6. 16  최육사	일반유저일 경우만 에러찍음
 				if( GetAuthLevel() < SEnum::UAL_GM )
 				{
-					START_LOG( cerr, L"내가 가지고 있는 SP 보유량에 문제가 있을 수 있습니다.!" )
+					START_LOG( cerr, L"The user's available SP may be incorrect!" )
 						<< BUILD_LOG( GetCharUID() )
 						<< BUILD_LOG( GetCharName() )
 						<< BUILD_LOGc( GetLevel() )
@@ -1934,7 +1934,7 @@ bool KGSUser::CheckSkillPointError() const
 				else
 				{
 					// 운영자급 이상은 테스트 목적으로 SP를 변경할 수 있기 때문에 에러를 찍지 않습니다.
-					START_LOG( cwarn, L"내가 가지고 있는 SP 보유량에 문제가 있을 수 있습니다.!" )
+					START_LOG( cwarn, L"The user's available SP may be incorrect!" )
 						<< BUILD_LOG( GetCharUID() )
 						<< BUILD_LOG( GetCharName() )
 						<< BUILD_LOGc( GetLevel() )
@@ -1958,7 +1958,7 @@ bool KGSUser::CheckSkillPointError() const
 		{
 			if( vecUsedCSPoint[i] != 0  ||  vecSkillPageData[i].GetCSPoint() != 0 )
 			{
-				START_LOG( cerr, L"CSP 사용기간이 만료되었는데 CSP가 남아있다" )
+				START_LOG( cerr, L"The CSP duration has expired, but CSP remains." )
 					<< BUILD_LOG( GetCharUID() )
 					<< BUILD_LOG( GetCharName() )
 					<< BUILD_LOGc( GetLevel() )
@@ -1979,7 +1979,7 @@ bool KGSUser::CheckSkillPointError() const
 					//{{ 2009. 6. 16  최육사	일반유저일 경우만 에러찍음
 					if( GetAuthLevel() < SEnum::UAL_GM )
 					{
-						START_LOG( cerr, L"내가 가지고 있는 SP 보유량에 문제가 있을 수 있습니다.!!" )
+						START_LOG( cerr, L"The user's available SP may be incorrect!!" )
 							<< BUILD_LOG( GetCharUID() )
 							<< BUILD_LOG( GetCharName() )
 							<< BUILD_LOGc( GetLevel() )
@@ -1995,7 +1995,7 @@ bool KGSUser::CheckSkillPointError() const
 					else
 					{
 						// 운영자급 이상은 테스트 목적으로 SP를 변경할 수 있기 때문에 에러를 찍지 않습니다.
-						START_LOG( cwarn, L"내가 가지고 있는 SP 보유량에 문제가 있을 수 있습니다.!!" )
+						START_LOG( cwarn, L"The user's available SP may be incorrect!!" )
 							<< BUILD_LOG( GetCharUID() )
 							<< BUILD_LOG( GetCharName() )
 							<< BUILD_LOGc( GetLevel() )
@@ -2129,7 +2129,7 @@ void KGSUser::Kick( IN const int iNetError )
 		//}}
 
 	default:
-		START_LOG( cerr, L"Kick Reason값이 이상합니다." )
+		START_LOG( cerr, L"Invalid Kick Reason value." )
 			<< BUILD_LOG( iNetError )
 			<< END_LOG;
 		break;
@@ -2242,7 +2242,7 @@ void KGSUser::SetUnitInfo( const KUnitInfo& kInfo )
 	{
 		GetKUserManager()->UnregCharInfo( *this );
 
-		START_LOG( cerr, L"캐릭터 선택하려는데 기존 캐릭터 정보가 초기화 되어있지 않다?" )
+		START_LOG( cerr, L"Attempted to select a character, but existing character information was not initialized?" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kInfo.m_nUnitUID )
 			<< END_LOG;
@@ -2299,7 +2299,7 @@ void KGSUser::SetUnitInfo( const KUnitInfo& kInfo )
 	}
 	else if( false == m_kSkillTree.SetCSPointEndDate( kInfo.m_wstrCSPointEndDate ) )
 	{
-		START_LOG( cerr, L"문자열 시간 변환 실패." )
+		START_LOG( cerr, L"Failed to convert the time string." )
 			<< BUILD_LOG( kInfo.m_wstrCSPointEndDate )
 			<< END_LOG;
 
@@ -2641,7 +2641,7 @@ bool KGSUser::OnConnectReq( IN const KEGS_CONNECT_REQ& kReq, OUT KEGS_CONNECT_AC
 	//}}
 	if( iMaxUser <= 0 )
 	{
-		START_LOG( cerr, L"최대 동접 이상." )
+		START_LOG( cerr, L"Maximum concurrent-user limit exceeded." )
 			<< BUILD_LOG( iMaxUser )
 			<< END_LOG;
 
@@ -2710,7 +2710,7 @@ bool KGSUser::OnNexonUserAuthenticateAck( IN OUT KELG_NEXON_USER_AUTHENTICATE_AC
 	KActorPtr spActor( KActorManager::GetKObj()->Get( kAck_.m_kAccountInfo.m_nUserUID ) );
 	if( spActor )
 	{
-		START_LOG( cerr, L"동일서버간 이중접속 감지" )
+		START_LOG( cerr, L"Duplicate connection detected within the same server." )
 			<< BUILD_LOG( m_strName )
 			<< BUILD_LOG( m_nUID )
 			<< BUILD_LOG( kAck_.m_kAccountInfo.m_nUserUID )
@@ -2756,7 +2756,7 @@ bool KGSUser::OnNexonUserAuthenticateAck( IN OUT KELG_NEXON_USER_AUTHENTICATE_AC
 	//{{ 2011.10.14     김민성    운영자 기능은 특정 IP 에서만 사용 가능
 	if( kAck_.m_kAccountInfo.m_iAuthLevel == SEnum::UAL_SUPERDEVELOPER )
 	{
-		START_LOG( cout2, L"슈퍼 개발자 계정입니다!!!" )
+		START_LOG( cout2, L"This is a super-developer account!!!" )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( kAck_.m_kAccountInfo.m_iAuthLevel )
 			<< END_LOG;
@@ -2926,7 +2926,7 @@ bool KGSUser::OnAccountSelectUnitAck( IN OUT KDBE_SELECT_UNIT_ACK& kAck_, IN boo
 	//{{ 2012. 09. 26	최육사		우편 복사 버그 수정
 	if( GetED() < 0 )
 	{
-		START_LOG( cout, L"ED가 마이너스인 유저가 발견되었습니다~!!" )
+		START_LOG( cout, L"A user with negative ED was found!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetUserID() )
 			<< BUILD_LOG( GetCharUID() )
@@ -2967,7 +2967,7 @@ bool KGSUser::OnAccountSelectUnitAck( IN OUT KDBE_SELECT_UNIT_ACK& kAck_, IN boo
 		{
 			if( GetED() != kAck_.m_iRealDataED )
 			{
-				START_LOG( cout, L"[알림] 캐릭터 선택 해제 시점에 남겼던 ED값과 유저가 보유하고 있는 ED값이 다르다! DB해킹인가!?" )
+				START_LOG( cout, L"[Notice] The user's current ED differs from the amount recorded when deselecting the character; possible database tampering!" )
 					<< BUILD_LOG( GetName() )
 					<< BUILD_LOG( GetCharName() )
 					<< BUILD_LOG( GetED() )
@@ -2985,7 +2985,7 @@ bool KGSUser::OnAccountSelectUnitAck( IN OUT KDBE_SELECT_UNIT_ACK& kAck_, IN boo
 		{
 			if( GetED() != kAck_.m_iRealDataED )
 			{
-				START_LOG( cout, L"[알림] 운영자급 이상 계정에 대해서 ED값 변동이 있었는지 체크 바랍니다!" )
+				START_LOG( cout, L"[Notice] Check for ED balance changes on operator-level accounts!" )
 					<< BUILD_LOG( GetName() )
 					<< BUILD_LOG( GetCharName() )
 					<< BUILD_LOG( GetED() )
@@ -3036,7 +3036,7 @@ bool KGSUser::OnAccountSelectUnitAck( IN OUT KDBE_SELECT_UNIT_ACK& kAck_, IN boo
 				kLastPos.m_iMapID = SiCXSLMapData()->GetDefaultMapID();
 			}
 
-			START_LOG( cerr, L"입장 가능한 배틀필드가 아닌데 DB에 저장되어 있습니다!" )
+			START_LOG( cerr, L"The database contains a battlefield that cannot be entered!" )
 				<< BUILD_LOG( GetCharName() )
 				<< BUILD_LOG( kAck_.m_kUnitInfo.m_kLastPos.m_iMapID )
 				<< BUILD_LOG( GetMapID() )
@@ -3064,7 +3064,7 @@ bool KGSUser::OnAccountSelectUnitAck( IN OUT KDBE_SELECT_UNIT_ACK& kAck_, IN boo
  				kLastPos.m_iMapID = SiCXSLMapData()->GetDefaultMapID();
  			}
 
- 			START_LOG( cerr, L"입장할 수 없는 마을인데 DB에 저장되어 있었다?" )
+			START_LOG( cerr, L"A town the user cannot enter was saved in the database?" )
  				<< BUILD_LOG( GetCharName() )
  				<< BUILD_LOG( kAck_.m_kUnitInfo.m_kLastPos.m_iMapID )
  				<< BUILD_LOG( GetMapID() )
@@ -3078,7 +3078,7 @@ bool KGSUser::OnAccountSelectUnitAck( IN OUT KDBE_SELECT_UNIT_ACK& kAck_, IN boo
 	}
 	else
 	{
-		START_LOG( cerr, L"저장된 마지막 위치가 튜토리얼도 마을도 배틀필드도 아닌 위치다! 일어나면 안되는 오류!" )
+		START_LOG( cerr, L"Saved last location is not a tutorial, town, or battlefield; this should never happen!" )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( kAck_.m_kUnitInfo.m_kLastPos.m_iMapID )
 			<< BUILD_LOG( GetMapID() )
@@ -3096,7 +3096,7 @@ bool KGSUser::OnAccountSelectUnitAck( IN OUT KDBE_SELECT_UNIT_ACK& kAck_, IN boo
 	KDBE_UPDATE_INVENTORY_ITEM_POS_NOT kPacketToDB;
 	if( m_kInventory.Init( kAck_.m_mapInventorySlotSize, kAck_.m_mapItem, kPacketToDB.m_kItemPositionUpdate, bIsChannelChange ) == false )
 	{
-		START_LOG( cerr, L"인벤토리 초기화시 문제 발생" )
+		START_LOG( cerr, L"Error while initializing inventory." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOGc( GetAuthLevel() )
 			<< END_LOG;
@@ -3173,7 +3173,7 @@ bool KGSUser::OnAccountSelectUnitAck( IN OUT KDBE_SELECT_UNIT_ACK& kAck_, IN boo
 	{
 		if( GetAuthLevel() < SEnum::UAL_GM )
 		{
-			START_LOG( cerr, L"캐릭터 선택 시점에 스킬 포인트 값이 비정상입니다." )
+			START_LOG( cerr, L"Invalid skill point value when selecting character." )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharName() )
 				<< END_LOG;
@@ -3299,7 +3299,7 @@ bool KGSUser::OnAccountSelectUnitAck( IN OUT KDBE_SELECT_UNIT_ACK& kAck_, IN boo
 	//030406.hoons. 사제리스트 정리 및 예외처리를 한다.
 	if( m_kUserTutorialInfo.OnSelectUnitAck( GetThisPtr<KGSUser>(), kAck_.m_vecTutorialDBUnitInfo ) == false )
 	{
-		START_LOG( cerr, L"사제리스트 정보 셋팅실패.!" )
+		START_LOG( cerr, L"Failed to set mentor list information!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOGc( GetLevel() )
 			<< BUILD_LOG( GetCharName() )
@@ -3317,7 +3317,7 @@ bool KGSUser::OnAccountSelectUnitAck( IN OUT KDBE_SELECT_UNIT_ACK& kAck_, IN boo
 			kTutInfo.m_bIsOnline = true;
 			if( SiKTutorialManager()->AddUnit( kTutInfo ) == false )
 			{
-				START_LOG( cerr, L"사제시스템 리스트 추가 실패.!" )
+				START_LOG( cerr, L"Failed to add entry to mentor system list!" )
 					<< BUILD_LOG( GetCharUID() )
 					<< BUILD_LOGc( GetLevel() )
 					<< BUILD_LOG( GetCharName() )
@@ -3634,13 +3634,13 @@ void KGSUser::OnSelectUnitSuccess( IN const KDBE_SELECT_UNIT_ACK& kAck_, IN bool
 			spEvent->SetData( PI_GS_NX_BILLING_TCP, anTrace, ENX_BT_CHECK_AUTO_PAYMENT_USER_REQ, kPacketReq );
 			SiKNexonBillingTCPManager()->QueueingEvent( spEvent );
 
-			START_LOG( clog, L"자동결제 했는지 체크하러 가자!" )
+			START_LOG( clog, L"Checking whether auto-payment was made!" )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( kPacketReq.m_ulProductNo );
 		}
 		else
 		{
-			START_LOG( clog, L"자동결제 체크시각이 지나서 그냥 통과!" )
+			START_LOG( clog, L"The auto-billing check time has passed; allowing the request." )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( kAck_.m_wstrAutoPayResStoneLastDate )
 				<< BUILD_LOG( m_iNumAutoPaymentResStone );
@@ -3804,7 +3804,7 @@ void KGSUser::OnDeselectUnit( IN const u_short usEventID, IN const bool bOnDestr
 
 	if( GetCharUID() < 0 )
 	{
-		START_LOG( cerr, L"UnitUID값이 마이너스다! 있을 수 없는 에러!" )
+		START_LOG( cerr, L"UnitUID is negative; this should never happen!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( usEventID )
 			<< END_LOG;
@@ -4010,7 +4010,7 @@ void KGSUser::OnDeselectUnit( IN const u_short usEventID, IN const bool bOnDestr
 	{
 		if( SiKTutorialManager()->DeleteUnit( GetCharUID() ) == false )
 		{
-			START_LOG( cerr, L"사세시스템중 제자정보 지우기 실패.!" )
+			START_LOG( cerr, L"Failed to delete apprentice information in the mentor system!" )
 				<< BUILD_LOG( GetCharName() )
 				<< BUILD_LOG( GetLevel() )
 				<< END_LOG;
@@ -4277,7 +4277,7 @@ bool KGSUser::CheckCharLevelUp()
 			}
 			else
 			{
-				START_LOG( cerr, L"기술의 노트 레벨별 페이지 정보 얻기 실패!" )
+				START_LOG( cerr, L"Failed to retrieve skill note page information by level!" )
 					<< BUILD_LOG( GetCharUID() )
 					<< BUILD_LOGc( GetLevel() )
 					<< END_LOG;
@@ -4601,7 +4601,7 @@ bool KGSUser::CheckCharLevelUp()
 				{
 					if( GetAuthLevel() >= SEnum::UAL_GM )
 					{
-						START_LOG( cout, L"레벨업 시간 간격이 1분 미만으로 체크되었으나 계정권한이 운영자급 이상이므로 아무런 처리를 하지 않습니다!" )
+						START_LOG( cout, L"Level-up interval is under one minute, but no action is taken because the account has operator-level privileges or higher." )
 							<< BUILD_LOG( GetName() )
 							<< BUILD_LOG( GetUID() )
 							<< BUILD_LOGc( GetAuthLevel() )
@@ -4610,7 +4610,7 @@ bool KGSUser::CheckCharLevelUp()
 					}
 					else
 					{
-						START_LOG( cout, L"레벨업 시간 간격이 1분 미만으로 체크되어 해당 유저를 접속 종료 처리함!" )
+						START_LOG( cout, L"The level-up interval was under one minute; disconnecting the user!" )
 							<< BUILD_LOG( GetName() )
 							<< BUILD_LOG( GetUID() )
 							<< BUILD_LOGc( GetAuthLevel() )
@@ -4625,7 +4625,7 @@ bool KGSUser::CheckCharLevelUp()
 
 						if( SiKAbuserLogManager()->IsAbuserCheckLevelUp() == true )
 						{
-							START_LOG( cout, L"해킹 유저 등록 및 계정 접속 차단 합니다!" )
+							START_LOG( cout, L"Registering the user as a hacker and blocking account access!" )
 								<< BUILD_LOG( GetName() )
 								<< BUILD_LOG( GetUID() )
 								<< BUILD_LOGc( GetAuthLevel() )
@@ -4639,7 +4639,7 @@ bool KGSUser::CheckCharLevelUp()
 
 							if( m_cHackingUserType == SEnum::HUT_NORMAL )
 							{
-								START_LOG( clog, L"해킹 유저 신고.!" )
+								START_LOG( clog, L"Reporting a user for hacking!" )
 									<< BUILD_LOG( GetUID() )
 									<< BUILD_LOG( GetName() )
 									<< BUILD_LOG( GetCharName() )
@@ -4765,7 +4765,7 @@ bool KGSUser::CheckCharLevelUp()
         else
 		{
 			START_LOG_WITH_NAME( cerr )
-				<< L"UNIT STAT DATA 파싱 실패.!(이러면 안되는데)" << dbg::endl
+				<< L"Failed to parse unit stat data; this should never happen!" << dbg::endl
 				<< BUILD_LOGc( GetUnitClass() )
 				<< BUILD_LOG( GetLevel() )
 				<< END_LOG;
@@ -4879,7 +4879,7 @@ bool KGSUser::GetPVPChannelClass( OUT int& iPvpChannelClass ) const
 	const int iPvpChannelClassByRoomListID = SiKRoomListManager()->GetPVPChannelClassByRoomListID( GetRoomListID() );
 	if( iPvpChannelClassByRoomListID == KPVPChannelInfo::PCC_NONE )
 	{
-		START_LOG( cerr, L"존재 하지 않는 대전 채널의 RoomListID값을 가지고 있습니다! 있을 수 없는 에러!" )
+		START_LOG( cerr, L"RoomListID belongs to a nonexistent PvP channel; this should never happen!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetRoomListID() )
 			<< BUILD_LOG( GetRoomUID() )
@@ -4900,7 +4900,7 @@ bool KGSUser::GetPVPChannelClass( OUT int& iPvpChannelClass ) const
 		{
 			if( iPvpChannelClassByRoomUID != iPvpChannelClassByRoomListID )
 			{
-				START_LOG( cerr, L"RoomListID로 얻은 대전채널과 RoomUID로 얻은 대전 채널이 다르다? 있을 수 없는 에러!" )
+				START_LOG( cerr, L"The PvP channel from RoomListID differs from the channel from RoomUID; this should never happen!" )
 					<< BUILD_LOG( GetCharUID() )
 					<< BUILD_LOG( GetRoomListID() )
 					<< BUILD_LOG( GetRoomUID() )
@@ -4965,7 +4965,7 @@ void KGSUser::GetPartyUserInfo( KPartyUserInfo& kInfo )
 	kInfo.m_wstrInternalIP = GetP2PInternalIP();
 	kInfo.m_usInternalPort = GetP2PInternalPort();
 
-	START_LOG( clog, L"IP, 포트 확인" )
+	START_LOG( clog, L"Checking IP address and port" )
 		<< BUILD_LOG( kInfo.m_wstrInternalIP )
 		<< BUILD_LOG( kInfo.m_usInternalPort )
 		<< END_LOG;
@@ -4996,7 +4996,7 @@ void KGSUser::SendUpdatePartyUnitInfo( bool bChangeField /* = false  */)
 		if( SiKPartyListManager()->E_UpdatePartyUserInfo( GetThisPtr<KGSUser>(), bChangeField ) == false )
 		//}}
 		{
-			START_LOG( cerr, L"파티유저 정보 업데이트 실패." )
+			START_LOG( cerr, L"Failed to update party user information." )
 				<< BUILD_LOG( GetCharName() )
 				<< END_LOG;
 		}
@@ -5016,7 +5016,7 @@ void KGSUser::SendLeaveParty( int iReason )
 		if( SiKPartyListManager()->E_LeavePartyReq( GetThisPtr<KGSUser>(), kPacket ) == false )
 		//}}
 		{
-			START_LOG( cerr, L"파티 나가기 실패.!" )
+			START_LOG( cerr, L"Failed to leave the party!" )
 				<< BUILD_LOG( GetCharName() )
 				<< BUILD_LOG( NetError::GetErrStr(iReason) )
 				<< END_LOG;
@@ -5107,7 +5107,7 @@ void KGSUser::SetRoomUID( IN const UidType iUID )
 	{
 		if( iUID == 0 )
 		{
-			START_LOG( cerr, L"방에서 이미 나갔는데 또 나가라고 정보가 왔네? 이상한 오류다!" )
+			START_LOG( cerr, L"Received another room-leave request after already leaving; unexpected error!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( GetCharName() )
 				<< BUILD_LOG( GetStateIDString() )
@@ -5170,7 +5170,7 @@ void KGSUser::SetRoomUID( IN const UidType iUID )
 		}
 		else
 		{
-			START_LOG( cerr, L"이미 방에 입장해 있는데 또 입장하려고 하네? 이러면 안되!" )
+			START_LOG( cerr, L"Attempted to enter a room while already in one!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( GetCharName() )
 				<< BUILD_LOG( GetStateIDString() )
@@ -5194,7 +5194,7 @@ void KGSUser::SetFieldUID( IN const UidType iUID )
 	{
 		if( iUID == 0 )
 		{
-			START_LOG( cerr, L"필드에서 이미 나갔는데 또 나가라고 정보가 왔네? 이상한 오류다!" )
+			START_LOG( cerr, L"Received another leave-field request after already leaving; unexpected error!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( GetCharName() )
 				<< BUILD_LOG( GetStateIDString() )
@@ -5251,7 +5251,7 @@ void KGSUser::SendUpdatePartyMemberList( IN UidType iPartyUID, IN const std::set
 	if( GetFieldUID() == 0 )
 	{
 		// 필드상태이지만 FieldUID가 0인 경우가 있다. [대전로비, 훈련소로비]
-		START_LOG( clog, L"현재 필드 상태인데 UID가 잘못되었음." )
+		START_LOG( clog, L"Invalid UID while the user is in the field." )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( GetFieldUID() )
 			<< END_LOG;
@@ -5279,7 +5279,7 @@ void KGSUser::SendUpdateFriendList()
 	if( GetFieldUID() == 0 )
 	{
 		// 필드상태이지만 FieldUID가 0인 경우가 있다. [대전로비, 훈련소로비]
-		START_LOG( clog, L"현재 필드 상태인데 UID가 잘못되었음." )
+		START_LOG( clog, L"Invalid UID while the user is in the field." )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( GetFieldUID() )
 			<< END_LOG;
@@ -5335,7 +5335,7 @@ void KGSUser::SendUpdatePVPUserInfo( char cState )
 	{
 		if( GetRoomListID() <= 0 )
 		{
-			START_LOG( cerr, L"대전로비에 입장하려는데 RoomListID값이 이상합니다!" )
+			START_LOG( cerr, L"Invalid RoomListID while attempting to enter the PvP lobby!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( GetRoomListID() )
 				<< END_LOG;
@@ -5411,7 +5411,7 @@ void KGSUser::SendUpdateChangeEquippedItem()
 	{
 		if( GetRoomUID() <= 0 )
 		{
-			START_LOG( cerr, L"룸 UID 이상." )
+			START_LOG( cerr, L"Invalid room UID." )
 				<< BUILD_LOG( GetRoomUID() )
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
@@ -5451,7 +5451,7 @@ void KGSUser::SendUpdateChangeEquippedItem()
 
 		default:
 			{
-				START_LOG( cerr, L"이상한 방 타입." )
+				START_LOG( cerr, L"Invalid room type." )
 					<< BUILD_LOG( CXSLRoom::GetRoomType( GetRoomUID() ) )
 					<< BUILD_LOG( GetCharUID() )
 					<< END_LOG;
@@ -5498,7 +5498,7 @@ void KGSUser::SendUpdateChangeEquippedItem( IN const std::vector< KInventoryItem
 	{
 		if( GetRoomUID() <= 0 )
 		{
-			START_LOG( cerr, L"룸 UID 이상." )
+			START_LOG( cerr, L"Invalid room UID." )
 				<< BUILD_LOG( GetRoomUID() )
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
@@ -5562,7 +5562,7 @@ void KGSUser::SendUpdateChangeEquippedItem( IN const std::vector< KInventoryItem
 
 		default:
 			{
-				START_LOG( cerr, L"이상한 방 타입." )
+				START_LOG( cerr, L"Invalid room type." )
 					<< BUILD_LOG( CXSLRoom::GetRoomType( GetRoomUID() ) )
 					<< BUILD_LOG( GetCharUID() )
 					<< END_LOG;
@@ -5632,7 +5632,7 @@ void KGSUser::SendPetAction( IN CXSLPetManager::PET_ACTION_COMMAND ePetAction )
 	{
 		if( GetRoomUID() <= 0 )
 		{
-			START_LOG( cerr, L"룸 UID 이상." )
+			START_LOG( cerr, L"Invalid room UID." )
 				<< BUILD_LOG( GetRoomUID() )
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
@@ -5662,7 +5662,7 @@ void KGSUser::SendPetAction( IN CXSLPetManager::PET_ACTION_COMMAND ePetAction )
 
 		default:
 			{
-				START_LOG( cerr, L"이상한 방 타입." )
+				START_LOG( cerr, L"Invalid room type." )
 					<< BUILD_LOG( CXSLRoom::GetRoomType( GetRoomUID() ) )
 					<< BUILD_LOG( GetCharUID() )
 					<< END_LOG;
@@ -5672,7 +5672,7 @@ void KGSUser::SendPetAction( IN CXSLPetManager::PET_ACTION_COMMAND ePetAction )
 	}
 	else
 	{
-		START_LOG( cerr, L"이상한 상태에서 펫 액션을 전송하려고 합니다." )
+		START_LOG( cerr, L"Attempted to send a pet action in an invalid state." )
 			<< BUILD_LOG( GetStateIDString() )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( ePetAction )
@@ -5719,7 +5719,7 @@ void KGSUser::SendEnchantNotice( IN const int iItemID, IN const int iEnchantLeve
 		}
 		else
 		{
-			START_LOG( cerr, L"존재하지 않는 아이템을 강화했다? 공지 날리기 실패!" )
+			START_LOG( cerr, L"Attempted to enhance a nonexistent item; failed to send the notice!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( iItemID )
 				<< END_LOG;
@@ -5741,7 +5741,7 @@ void KGSUser::HackUserRegRejectedUser( IN const char cReason
 
 	if( SEnum::UAL_DEVELOPER <= GetAuthLevel() )
 	{
-		START_LOG( cout, L"계정 권한이 개발자급 이상이므로 블록 조치를 취하지 않습니다!" )
+		START_LOG( cout, L"Not applying a block because the account has developer-level privileges or higher!" )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOGc( GetAuthLevel() )
@@ -5759,7 +5759,7 @@ void KGSUser::HackUserRegRejectedUser( IN const char cReason
 	kPacketNot.m_cRejectedReason	= cReason;
 	SendToLoginServer( ELG_REG_REJECTED_USER_NOT, kPacketNot );
 
-	START_LOG( cout, L"서버가 오토핵 유저로 판단! Rejected User로 등록!" )
+	START_LOG( cout, L"Server identified the user as an auto-hack user; adding to the rejected-user list!" )
 		<< BUILD_LOG( GetUserName() )
 		<< BUILD_LOG( GetCharName() )
 		<< BUILD_LOGc( cReason )
@@ -5785,7 +5785,7 @@ void KGSUser::HackUserRegTradeBlock( IN const char cReason )
 	// 개인거래 차단!
 	m_kUserAbuserManager.SetTradeBlockUser( true );
 
-	START_LOG( cout, L"서버가 오토핵 유저로 판단! Trade Block User로 등록!" )
+	START_LOG( cout, L"Server identified the user as an auto-hack user; adding to the trade-block list!" )
 		<< BUILD_LOG( GetUserName() )
 		<< BUILD_LOG( GetCharName() )
 		<< BUILD_LOGc( cReason );
@@ -5800,7 +5800,7 @@ void KGSUser::HackUserRegMonitorsUser( IN const char cReason )
 	if( m_cHackingUserType != SEnum::HUT_NORMAL )
 		return;
 
-	START_LOG( clog, L"해킹 유저 신고.!" )
+	START_LOG( clog, L"Reporting a user for hacking!" )
 		<< BUILD_LOG( GetUID() )
 		<< BUILD_LOG( GetUserName() )
 		<< BUILD_LOG( GetCharName() )
@@ -5813,7 +5813,7 @@ void KGSUser::HackUserRegMonitorsUser( IN const char cReason )
 	// AccountDB에도 등록하자!
 	SendToAccountDB( DBE_REPORT_HACK_USER_NOT, GetUID() );
 
-	START_LOG( cout, L"서버가 오토핵 유저로 판단! 해킹 의심 유저로 등록!" )
+	START_LOG( cout, L"Server identified the user as an auto-hack user; marking as a suspected hacker!" )
 		<< BUILD_LOG( GetUserName() )
 		<< BUILD_LOG( GetCharName() )
 		<< BUILD_LOGc( cReason );
@@ -5833,7 +5833,7 @@ void KGSUser::HackUserKick( IN const KEGS_SERVER_CHECK_HACK_USER_REQ& kPacket )
 	ReserveDestroy();
 	//}}
 
-	START_LOG( cout, L"서버가 오토핵 유저로 판단! 접속 종료 처리!" )
+	START_LOG( cout, L"Server identified the user as an auto-hack user; disconnecting!" )
 		<< BUILD_LOG( GetUserName() )
 		<< BUILD_LOG( GetCharName() )
 		<< BUILD_LOGc( kPacket.m_cHackingCheckType );
@@ -6076,7 +6076,7 @@ bool KGSUser::CheckDungeonPartyCondition( IN const int iDungeonID,
 	const int iDungeonIDAndDif = ( iDungeonID + static_cast<int>(cDifficultyLevel) );
 	if( iDungeonIDAndDif <= 0 )
 	{
-		START_LOG( cerr, L"dungeonid값이 이상하다!" )
+		START_LOG( cerr, L"Invalid dungeon ID!" )
 			<< BUILD_LOG( iDungeonID )
 			<< BUILD_LOGc( cDifficultyLevel )
 			<< END_LOG;
@@ -6087,7 +6087,7 @@ bool KGSUser::CheckDungeonPartyCondition( IN const int iDungeonID,
 	bool bIsEventDungeon = SiCXSLDungeonManager()->IsSwitchingWithEventInfo( iDungeonID );
 	if( !SiKGameEventManager()->IsEnableDungeon( iDungeonID, bIsEventDungeon ) )
 	{
-		START_LOG( cerr, L"꺼져있는 이벤트 DungeonID입니다. 클라에서 검사했을텐데.." )
+		START_LOG( cerr, L"The event DungeonID is disabled; the client should have checked this." )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( iDungeonID )
 			<< BUILD_LOGc( cDifficultyLevel )
@@ -6139,7 +6139,7 @@ bool KGSUser::CheckDungeonPartyCondition( IN const int iDungeonID,
 	//헤니르던전모드가 정상인지 체크한다.
 	if( CXSLDungeon::IsValidDungeonMode( static_cast<CXSLDungeon::DUNGEON_MODE>(cDungeonMode) ) == false )
 	{
-		START_LOG( cerr, L"던전 모드값이 이상합니다!" )
+		START_LOG( cerr, L"Invalid dungeon mode value!" )
 			<< BUILD_LOGc( cDungeonMode )
 			<< END_LOG;
 
@@ -6225,7 +6225,7 @@ bool KGSUser::CheckDungeonPartyCondition( IN const int iDungeonID,
 	}
 	else
 	{
-		START_LOG( cout, L"운영자 파티 생성 시도!" )
+		START_LOG( cout, L"Operator attempted to create a party!" )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( iDungeonID );
 	}
@@ -6255,7 +6255,7 @@ bool KGSUser::CheckPvpPartyCondition( IN const char cPVPGameType, IN const bool 
 
 	if( CXSLRoom::IsValidPvpGameType( (CXSLRoom::PVP_GAME_TYPE)cPVPGameType ) == false )
 	{
-		START_LOG( cerr, L"pvp game type값이 이상하다!" )
+		START_LOG( cerr, L"Invalid PvP game type!" )
 			<< BUILD_LOGc( cPVPGameType )
 			<< END_LOG;
 
@@ -6276,7 +6276,7 @@ bool KGSUser::CheckPvpPartyCondition( IN const char cPVPGameType, IN const bool 
 	//운영자 이상이 아니면 체크한다.
 	if( GetAuthLevel() >= SEnum::UAL_GM )
 	{
-		START_LOG( cout, L"운영자 대전 파티 생성 시도!" )
+		START_LOG( cout, L"Operator attempted to create a PvP party!" )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOGc( cPVPGameType );
 	}
@@ -6285,7 +6285,7 @@ bool KGSUser::CheckPvpPartyCondition( IN const char cPVPGameType, IN const bool 
 		// 대전 파티 제한 레벨
 		if( GetLevel() < SEnum::PE_PVP_OFFICIAL_LIMIT_LEVEL )
 		{
-			START_LOG( cerr, L"공식 대전을 하기에 부족한 캐릭터 레벨입니다." )
+			START_LOG( cerr, L"The character level is too low for official PvP." )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( GetMatchUID() )
@@ -6316,7 +6316,7 @@ bool KGSUser::CheckForDungeonGameStart( IN const char cDungeonMode,
 	{
 		if( GetLevel() > SiKGameSysVal()->GetGuestUserLimitLevel() )
 		{
-			START_LOG( cerr, L"클라이언트에서 체험ID가 레벨20되었을때 유저를 캐릭선택으로 이동시켰을텐데 아직 게임을 하고있네?" )
+			START_LOG( cerr, L"The client should return a trial character to character selection at level 20, but the user is still playing." )
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
 
@@ -6348,7 +6348,7 @@ bool KGSUser::CheckForDungeonGameStart( IN const char cDungeonMode,
 		}
 		else if( SiKPartyListManager()->GetPartyNumMember( GetPartyUID(), iNumMember ) == false )
 		{
-			START_LOG( cerr, L"파티 맴버 이상.!" )
+			START_LOG( cerr, L"Invalid party member!" )
 				<< BUILD_LOG( GetPartyUID() )
 				<< BUILD_LOG( GetCharName() )
 				<< BUILD_LOG( iNumMember )
@@ -6368,7 +6368,7 @@ bool KGSUser::CheckForDungeonGameStart( IN const char cDungeonMode,
 	bool bIsEventDungeon = SiCXSLDungeonManager()->IsSwitchingWithEventInfo( iDungeonID );
 	if( !SiKGameEventManager()->IsEnableDungeon( iDungeonID, bIsEventDungeon ) )
 	{
-		START_LOG( cerr, L"꺼져있는 이벤트 DungeonID입니다. 클라에서 검사했을텐데.." )
+		START_LOG( cerr, L"The event DungeonID is disabled; the client should have checked this." )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( iDungeonID )
 			<< BUILD_LOGc( (int)cDifficultyLevel )
@@ -6511,7 +6511,7 @@ bool KGSUser::CheckItemLevel( IN std::map< int, KInventoryItemInfo >& mapEquippe
 		const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( mit->second.m_kItemInfo.m_iItemID );
 		if( pItemTemplet == NULL )
 		{
-			START_LOG( cerr, L"아이템 정보가 존재하지 않습니다!" )
+			START_LOG( cerr, L"The item information does not exist!" )
 				<< BUILD_LOG( mit->second.m_kItemInfo.m_iItemID )
 				<< END_LOG;
 			return false;
@@ -6547,7 +6547,7 @@ bool KGSUser::CheckRequiredItemToEnterDungeonRoom( int iDungeonID, CXSLDungeon::
 {
 	if( iDungeonID <= 0 )
 	{
-		START_LOG( cerr, L"던전id가 이상합니다" )
+		START_LOG( cerr, L"Invalid dungeon ID." )
 			<< BUILD_LOG( iDungeonID )
 			<< BUILD_LOG( (int)eDungeonMode )
 			<< BUILD_LOG( GetRoomUID() )
@@ -6559,7 +6559,7 @@ bool KGSUser::CheckRequiredItemToEnterDungeonRoom( int iDungeonID, CXSLDungeon::
 
 	if( CXSLDungeon::IsValidDungeonMode( eDungeonMode ) == false )
 	{
-		START_LOG( cerr, L"비정상적인 DungeonMode값입니다." )
+		START_LOG( cerr, L"Invalid DungeonMode value." )
 			<< BUILD_LOG( iDungeonID )
 			<< BUILD_LOG( (int)eDungeonMode )
 			<< END_LOG;
@@ -6593,7 +6593,7 @@ bool KGSUser::CheckRequiredItemToEnterDungeonRoom( int iDungeonID, CXSLDungeon::
 	std::vector< std::pair< int, int > > vecTicketInformation;
 	if( SiCXSLDungeonManager()->GetTicketInformation( iDungeonID, vecTicketInformation ) == false )
 	{
-		START_LOG( cerr, L"던전에 필요한 아이템 정보를 가져오다가 실패했습니다!" )
+		START_LOG( cerr, L"Failed to retrieve the item information required for the dungeon!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( iDungeonID )
@@ -6634,7 +6634,7 @@ bool KGSUser::DeleteRequiredItemToEnterDungeonRoom( int iDungeonID, CXSLDungeon:
 {
 	if( iDungeonID <= 0 )
 	{
-		START_LOG( cerr, L"던전id가 이상합니다! 일어날수 없는 에러!" )
+		START_LOG( cerr, L"Invalid dungeon ID; this should never happen!" )
 			<< BUILD_LOG( iDungeonID )
 			<< BUILD_LOG( GetRoomUID() )
 			<< BUILD_LOG( CXSLRoom::GetRoomType( GetRoomUID() ) )
@@ -6675,7 +6675,7 @@ bool KGSUser::DeleteRequiredItemToEnterDungeonRoom( int iDungeonID, CXSLDungeon:
 	std::vector< std::pair< int, int > > vecTicketInformation;
 	if( false == SiCXSLDungeonManager()->GetTicketInformation( iDungeonID, vecTicketInformation ) )
 	{
-		START_LOG( cerr, L"던전에 필요한 아이템 정보를 가져오다가 실패했습니다!" )
+		START_LOG( cerr, L"Failed to retrieve the item information required for the dungeon!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( iDungeonID )
@@ -7007,7 +7007,7 @@ void KGSUser::GetRoomUserInfo( OUT KRoomUserInfo& kRoomUserInfo, IN const int iR
 	{
 		if( GetRoomUID() == 0 )
 		{
-			START_LOG( cerr, L"전달인자 RoomType이 -1이라서 RoomUID로 RoomType을 얻을려고 하는데 RoomUID가 0이다?" )
+			START_LOG( cerr, L"RoomType argument is -1, so retrieving it by RoomUID, but RoomUID is 0?" )
 				<< BUILD_LOG( iRoomType_ )
 				<< BUILD_LOG( GetCharName() )
 				<< END_LOG;
@@ -7174,7 +7174,7 @@ void KGSUser::GetRoomUserInfo( OUT KRoomUserInfo& kRoomUserInfo, IN const int iR
 
 	default:
 		{
-			START_LOG( cerr, L"유닛정보 셋팅중 잘못된 룸타입.!" )
+			START_LOG( cerr, L"Invalid room type while setting unit information!" )
 				<< BUILD_LOG( CXSLRoom::GetRoomType( GetRoomUID() ) )
 				<< BUILD_LOG( GetCharName() )
 				<< END_LOG;
@@ -7387,7 +7387,7 @@ void KGSUser::CalculatePvpUnitStat( IN int iPVPChannelClass,
 
 	case KPVPChannelInfo::PCC_NONE:
 		{
-			START_LOG( clog, L"대전 채널 정보가 이상합니다!" )
+			START_LOG( clog, L"Invalid PvP channel information!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( GetRoomListID() )
 				<< BUILD_LOG( GetRoomUID() )
@@ -8092,7 +8092,7 @@ bool KGSUser::IsTransactionEnabled( unsigned short usEventID )
 
 			if( false == bTransactionEnabled )
 			{
-				START_LOG( cwarn, L"패킷 처리할려고 하는데 다른 패킷 처리와 겹쳐서 타이밍문제를 피하기 위해 패킷 처리 안하고 무시!" )
+				START_LOG( cwarn, L"Ignoring packet because processing overlaps with another packet, avoiding a timing issue!" )
 					<< BUILD_LOG( GetCharUID() )
 					<< BUILD_LOG( GetCharName() )
 					<< BUILD_LOG( usEventID )
@@ -8157,7 +8157,7 @@ void KGSUser::OnBuyCashItemAck( const KEGS_BUY_CASH_ITEM_ACK& kPacket_ )
 		KNXBTProductInfo kProductInfo;
 		if( SiKNexonBillingTCPManager()->GetProductInfo( kReq.m_ulProductNo, kProductInfo ) == false )
 		{
-			START_LOG( cerr, L"존재하지 않는 상품을 구매하였습니다!" )
+			START_LOG( cerr, L"Attempted to purchase a product that does not exist!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( kReq.m_ulProductNo )
 				<< END_LOG;
@@ -8211,7 +8211,7 @@ int KGSUser::OnGetPurchasedCashItemReq( const KEGS_GET_PURCHASED_CASH_ITEM_REQ& 
 
 	if( iItemID <= 0 )
 	{
-		START_LOG( cerr, L"아이템 ID 변환 실패." )
+		START_LOG( cerr, L"Failed to convert the item ID." )
 			<< BUILD_LOG( kPacket_.m_ulProductNo )
 			<< BUILD_LOG( kPacket_.m_wstrProductID )
 			<< BUILD_LOG( kPacket2_.m_iTransNo )
@@ -8227,7 +8227,7 @@ int KGSUser::OnGetPurchasedCashItemReq( const KEGS_GET_PURCHASED_CASH_ITEM_REQ& 
 	// 2. 상품 종류를 검사한다.
 	if( SiKBillManager()->IsPackage( kPacket2_.m_iProductNo ) )
 	{
-		START_LOG( cerr, L"패키지 아이템 가져오기 시도" )
+		START_LOG( cerr, L"Attempting to retrieve package item" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kPacket2_.m_iProductNo )
 			<< END_LOG;
@@ -8567,7 +8567,7 @@ int KGSUser::OnPickUpAck( const KENX_BT_NISMS_INVENTORY_PICK_UP_ONCE_ACK& kPacke
 {
 	if( kPacket2_.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"캐쉬 아이템 가져 오기 실패." )
+		START_LOG( cerr, L"Failed to retrieve the cash item." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( kPacket2_.m_iOK )
@@ -8595,7 +8595,7 @@ int KGSUser::OnPickUpAck( const KENX_BT_NISMS_INVENTORY_PICK_UP_ONCE_ACK& kPacke
 
 	if( iItemID <= 0 )
 	{
-		START_LOG( cerr, L"아이템 ID 변환 실패." )
+		START_LOG( cerr, L"Failed to convert the item ID." )
 			<< BUILD_LOG( kPacket_.m_ulProductNo )
 			<< BUILD_LOG( kPacket2_.m_iProductNo )
 			<< BUILD_LOG( iItemID )
@@ -8607,7 +8607,7 @@ int KGSUser::OnPickUpAck( const KENX_BT_NISMS_INVENTORY_PICK_UP_ONCE_ACK& kPacke
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iItemID );
 	if( pItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )
+		START_LOG( cerr, L"Failed to retrieve the item template." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 
@@ -8857,7 +8857,7 @@ int KGSUser::OnPickUpAck( const KENX_BT_NISMS_INVENTORY_PICK_UP_ONCE_ACK& kPacke
 				}
 				else
 				{
-					START_LOG( cerr, L"현재 사용하고 있는 캐시스킬포인트와 다른 것으로 기간연장 하려고함!!" )
+					START_LOG( cerr, L"Attempted to extend the duration using a different cash skill point than the one currently in use!" )
 						<< BUILD_LOG( GetCharUID() )
 						<< BUILD_LOG( pItemTemplet->m_ItemID )
 						//{{ 2009. 12. 2  최육사	캐쉬템기간타입변경
@@ -8935,7 +8935,7 @@ int KGSUser::OnPickUpAck( const KENX_BT_NISMS_INVENTORY_PICK_UP_ONCE_ACK& kPacke
 			}
 			else
 			{
-				START_LOG( cerr, L"기술의 노트를 습득하려고 하는데 페이지 수 얻기를 실패하였습니다." )
+				START_LOG( cerr, L"Failed to retrieve the page count while acquiring the skill note." )
 					<< BUILD_LOG( GetCharUID() )
 					<< BUILD_LOG( GetLevel() )
 					<< END_LOG;
@@ -9049,7 +9049,7 @@ int KGSUser::OnPickUpAck( const KENX_BT_NISMS_INVENTORY_PICK_UP_ONCE_ACK& kPacke
 				int iDefaultSkill[6] = {0,};
 				if( SiCXSLSkillTree()->GetUnitClassDefaultSkill( kPacket.m_cUnitClass, iDefaultSkill[0], iDefaultSkill[1], iDefaultSkill[2], iDefaultSkill[3], iDefaultSkill[4], iDefaultSkill[5] ) == false )
 				{
-					START_LOG( cerr, L"전직시 지급하려는 기본 스킬이 이상함" )
+					START_LOG( cerr, L"Invalid base skill to grant upon class advancement." )
 						<< BUILD_LOG( kPacket.m_iUnitUID )
 						<< BUILD_LOGc( kPacket.m_cUnitClass )
 						<< END_LOG;
@@ -9086,7 +9086,7 @@ int KGSUser::OnPickUpAck( const KENX_BT_NISMS_INVENTORY_PICK_UP_ONCE_ACK& kPacke
 				}
 				else
 				{
-					START_LOG( cerr, L"캐쉬 아이템 픽업 과정에서 실패가 났다! 복귀 해야 할 듯 한데!!!" )
+					START_LOG( cerr, L"Failed to pick up the cash item; the operation should be rolled back!" )
 						<< BUILD_LOG( GetCharUID() )
 						<< BUILD_LOG( iItemID )
 						<< END_LOG;
@@ -9281,7 +9281,7 @@ void KGSUser::ProcessEvent( const KEventPtr& spEvent_ )
 	default:
 		if( ProcessEventExpand( spEvent_ ) == false)
 		{
-			START_LOG( cerr, L"이벤트 핸들러가 정의되지 않았음 - " << spEvent_->GetIDStr() )
+			START_LOG( cerr, L"No event handler is defined - " << spEvent_->GetIDStr() )
 				<< BUILD_LOG( spEvent_->m_usEventID );
 		}
 		break;
@@ -9368,13 +9368,13 @@ void KGSUser::CheckDeserializeFailCount()
 	{
 		if( GetAuthLevel() >= SEnum::UAL_DEVELOPER )
 		{
-			START_LOG( cout, L"개발자인데 Deserialize Fail Hacking Check에 걸려들었네? 코드 잘못 짰나;;" )
+			START_LOG( cout, L"A developer was flagged by Deserialize Fail Hacking Check; is the code incorrect?" )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharName() );
 		}
 		else
 		{
-			START_LOG( cout, L"[해킹감지!] Deserialize Fail Hacking Check에 유저가 체크 되었습니다! 모니터링 유저에 등록하고 거래차단 되었습니다!" )
+			START_LOG( cout, L"[Hack detected] User flagged by Deserialize Fail Hacking Check; added to monitoring and trade-block lists!" )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharName() );
 			//{{ 2012. 06. 04	김민성       서버 해킹 유저 체크 요청 응답으로 변경
@@ -9445,7 +9445,7 @@ bool KGSUser::IsSameSecondSecurityPW( IN const std::wstring& wstrSecondPW )
 		return true;
 	}
 
-	START_LOG( clog, L"2차 보안 비밀번호의 맞지 않습니다." )
+	START_LOG( clog, L"The secondary security password does not match." )
 		<< BUILD_LOG( GetUID() )
 		<< BUILD_LOG( m_wstrSecondPW )
 		<< BUILD_LOG( wstrSecondPW )
@@ -9501,7 +9501,7 @@ bool KGSUser::CheckIntegritySecondSecurityPW( IN const std::wstring& wstrSecondP
 
  		if( static_cast<size_t>( iCheck ) == wstrSecondPW.size() )
 		{
-			START_LOG( clog, L"동일한 숫자를 비밀번호로 설정하려한다." )
+			START_LOG( clog, L"Attempted to set a password using repeated digits." )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( wstrSecondPW );
 
@@ -9534,7 +9534,7 @@ bool KGSUser::CheckIntegritySecondSecurityPW( IN const std::wstring& wstrSecondP
 
 		if( static_cast<size_t>( iCheck ) == wstrSecondPW.size() )
 		{
-			START_LOG( clog, L"연속된 숫자를 비밀번호로 설정하려한다." )
+			START_LOG( clog, L"Attempted to set a password using sequential digits." )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( wstrSecondPW );
 
@@ -9563,7 +9563,7 @@ bool KGSUser::CheckIntegritySecondSecurityPW( IN const std::wstring& wstrSecondP
 
 		if( static_cast<size_t>( iCheck ) == wstrSecondPW.size() )
 		{
-			START_LOG( clog, L"연속된 숫자를 비밀번호로 설정하려한다." )
+			START_LOG( clog, L"Attempted to set a password using sequential digits." )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( wstrSecondPW );
 
@@ -9624,7 +9624,7 @@ int KGSUser::GetSecurityType()
 			}break;
 		default:
 			{
-				START_LOG( cerr, L"GetNexonSecurityType() 의 값이 이상합니다." )
+				START_LOG( cerr, L"GetNexonSecurityType() returned an invalid value." )
 					<< BUILD_LOG( GetUID() )
 					<< BUILD_LOG( iNexonSecurityType )
 					<< BUILD_LOG( GetIsUseSecondPW() )
@@ -9654,7 +9654,7 @@ int KGSUser::GetSecurityType()
 			}break;
 		default:
 			{
-				START_LOG( cerr, L"GetNexonSecurityType() 의 값이 이상합니다." )
+				START_LOG( cerr, L"GetNexonSecurityType() returned an invalid value." )
 					<< BUILD_LOG( GetUID() )
 					<< BUILD_LOG( iNexonSecurityType )
 					<< BUILD_LOG( GetIsUseSecondPW() )
@@ -9884,7 +9884,7 @@ bool KGSUser::GetUnitClassChangeInfo( IN int iItemID, OUT KDBE_BUY_UNIT_CLASS_CH
 	if( !SiCXSLSkillTree()->GetUnitClassDefaultSkill( static_cast<char>(iNewUnitClass), kPacketToDB.m_iDefaultSkillID1, kPacketToDB.m_iDefaultSkillID2, kPacketToDB.m_iDefaultSkillID3,
 														kPacketToDB.m_iDefaultSkillID4, kPacketToDB.m_iDefaultSkillID5, kPacketToDB.m_iDefaultSkillID6 ) )
 	{
-		START_LOG( cerr, L"유닛타입이 이상함." )
+		START_LOG( cerr, L"Invalid unit type." )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( cItemUnitClass )
@@ -9916,7 +9916,7 @@ bool KGSUser::GetUnitClassChangeInfo( IN int iItemID, OUT KDBE_BUY_UNIT_CLASS_CH
 		}
 		else
 		{
-			START_LOG( cerr, L"cash skill point기한이 다되었는데 스킬트리에 csp가 남아있다." )
+			START_LOG( cerr, L"The cash skill point has expired, but CSP remains in the skill tree." )
 				<< BUILD_LOG( GetCharName() )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( iCSPoint )
@@ -9951,7 +9951,7 @@ bool KGSUser::GetUnitClassChangeInfo( IN int iItemID, OUT KDBE_BUY_UNIT_CLASS_CH
 		std::set< int >::iterator sit = setUnSealedSkillID.begin();
 		if( sit == setUnSealedSkillID.end() )
 		{
-			START_LOG( cerr, L"전직 변경 아이템 사용 - 봉인 해제한 스킬이 존재한다고 했는데...데이터가 없다!" )
+			START_LOG( cerr, L"Class-change item use: an unsealed skill was reported, but its data is missing!" )
 				<< BUILD_LOG( GetUserID() )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOGc( GetUnitClass() )
@@ -9984,7 +9984,7 @@ bool KGSUser::GetUnitClassChangeInfo( IN int iItemID, OUT KDBE_BUY_UNIT_CLASS_CH
 		std::map< char, int >::iterator mit = mapSkillNote.begin();
 		if( mit == mapSkillNote.end() )
 		{
-			START_LOG( cerr, L"전직 변경 아이템 사용 - 장착한 메모가 존재한다고 했는데...데이터가 없다!" )
+			START_LOG( cerr, L"Class-change item use: an equipped skill note was reported, but its data is missing!" )
 				<< BUILD_LOG( GetUserID() )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOGc( GetUnitClass() )
@@ -10021,7 +10021,7 @@ bool KGSUser::GetUnitClassChangeInfo( IN int iItemID, OUT KDBE_BUY_UNIT_CLASS_CH
 	mitInventoryItem = mapInventoryItem.begin();
 	if( mitInventoryItem == mapInventoryItem.end() )	// 아이템이 존재한다면 교환 가능한 아이템 인지 확인하자
 	{
-		START_LOG( clog, L"전직 변경 아이템 사용 - Inventory Item 데이터가 없다!" )
+		START_LOG( clog, L"Class-change item use: inventory item data is missing!" )
 			<< BUILD_LOG( GetUserID() )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOGc( GetUnitClass() )
@@ -10157,7 +10157,7 @@ bool KGSUser::GetUnlimitedClassChangeInfo( IN int iNewClassID, OUT KDBE_BUY_UNIT
 	if( !SiCXSLSkillTree()->GetUnitClassDefaultSkill( static_cast<char>(iNewClassID), kPacketToDB.m_iDefaultSkillID1, kPacketToDB.m_iDefaultSkillID2, kPacketToDB.m_iDefaultSkillID3,
 														kPacketToDB.m_iDefaultSkillID4, kPacketToDB.m_iDefaultSkillID5, kPacketToDB.m_iDefaultSkillID6 ) )
 	{
-		START_LOG( cerr, L"유닛타입이 이상함." )
+		START_LOG( cerr, L"Invalid unit type." )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( cItemUnitClass )
@@ -10190,7 +10190,7 @@ bool KGSUser::GetUnlimitedClassChangeInfo( IN int iNewClassID, OUT KDBE_BUY_UNIT
 		}
 		else
 		{
-			START_LOG( cerr, L"cash skill point기한이 다되었는데 스킬트리에 csp가 남아있다." )
+			START_LOG( cerr, L"The cash skill point has expired, but CSP remains in the skill tree." )
 				<< BUILD_LOG( GetCharName() )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( iUsedSPoint )
@@ -10224,7 +10224,7 @@ bool KGSUser::GetUnlimitedClassChangeInfo( IN int iNewClassID, OUT KDBE_BUY_UNIT
 		std::set< int >::iterator sit = setUnSealedSkillID.begin();
 		if( sit == setUnSealedSkillID.end() )
 		{
-			START_LOG( cerr, L"전직 변경 아이템 사용 - 봉인 해제한 스킬이 존재한다고 했는데...데이터가 없다!" )
+			START_LOG( cerr, L"Class-change item use: an unsealed skill was reported, but its data is missing!" )
 				<< BUILD_LOG( GetUserID() )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOGc( GetUnitClass() )
@@ -10256,7 +10256,7 @@ bool KGSUser::GetUnlimitedClassChangeInfo( IN int iNewClassID, OUT KDBE_BUY_UNIT
 		std::map< char, int >::iterator mit = mapSkillNote.begin();
 		if( mit == mapSkillNote.end() )
 		{
-			START_LOG( cerr, L"전직 변경 아이템 사용 - 장착한 메모가 존재한다고 했는데...데이터가 없다!" )
+			START_LOG( cerr, L"Class-change item use: an equipped skill note was reported, but its data is missing!" )
 				<< BUILD_LOG( GetUserID() )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOGc( GetUnitClass() )
@@ -10292,7 +10292,7 @@ bool KGSUser::GetUnlimitedClassChangeInfo( IN int iNewClassID, OUT KDBE_BUY_UNIT
 	mitInventoryItem = mapInventoryItem.begin();
 	if( mitInventoryItem == mapInventoryItem.end() )	// 아이템이 존재한다면 교환 가능한 아이템 인지 확인하자
 	{
-		START_LOG( clog, L"전직 변경 아이템 사용 - Inventory Item 데이터가 없다!" )
+		START_LOG( clog, L"Class-change item use: inventory item data is missing!" )
 			<< BUILD_LOG( GetUserID() )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOGc( GetUnitClass() )
@@ -10505,7 +10505,7 @@ bool KGSUser::ActivateBuff( IN const int iBuffID, OUT std::vector< KBuffInfo >& 
 	const CXSLBuffManager::BuffTemplet* pBuffTemplet = SiCXSLBuffManager()->GetBuffTemplet( iBuffID );
 	if( pBuffTemplet == NULL )
 	{
-		START_LOG( cerr, L"존재 하지 않는 버프입니다!" )
+		START_LOG( cerr, L"The specified buff does not exist!" )
 			<< BUILD_LOG( iBuffID )
 			<< END_LOG;
 		return false;
@@ -10522,7 +10522,7 @@ bool KGSUser::ActivateItemBuff( IN const int iUseItemID, OUT std::vector< KBuffI
 {
 	if( SiCXSLItemManager()->IsBuffItem( iUseItemID ) == false )
 	{
-		START_LOG( clog, L"존재하지 아이템(버프)입니다." )
+		START_LOG( clog, L"Item (buff) does not exist." )
 			<< BUILD_LOG( iUseItemID )
 			<< END_LOG;
 		return false;
@@ -10546,7 +10546,7 @@ bool KGSUser::ActivateItemBuff( IN const int iUseItemID, OUT std::vector< KBuffI
 			const CXSLBuffManager::BuffTemplet* pBuffTemplet = SiCXSLBuffManager()->GetBuffTemplet( iBuffID );
 			if( pBuffTemplet == NULL )
 			{
-				START_LOG( cerr, L"존재 하지 않는 버프입니다!" )
+				START_LOG( cerr, L"The specified buff does not exist!" )
 					<< BUILD_LOG( iBuffID )
 					<< END_LOG;
 				return false;
@@ -10564,7 +10564,7 @@ bool KGSUser::ActivateItemBuff( IN const int iUseItemID, OUT std::vector< KBuffI
 			const CXSLBuffManager::BuffTemplet* pDeBuffTemplet = SiCXSLBuffManager()->GetBuffTemplet( CXSLBuffManager::BTI_BUFF_STRENGTHENING_BODY );
 			if( pDeBuffTemplet == NULL )
 			{
-				START_LOG( cerr, L"존재 하지 않는 버프입니다!" )
+				START_LOG( cerr, L"The specified buff does not exist!" )
 					<< BUILD_LOG( CXSLBuffManager::BTI_BUFF_STRENGTHENING_BODY )
 					<< END_LOG;
 				return false;
@@ -10611,7 +10611,7 @@ bool KGSUser::ActivateItemBuff( IN const int iUseItemID, OUT std::vector< KBuffI
 			const CXSLBuffManager::BuffTemplet* pBuffTemplet = SiCXSLBuffManager()->GetBuffTemplet( iBuffID );
 			if( pBuffTemplet == NULL )
 			{
-				START_LOG( cerr, L"존재 하지 않는 버프입니다!" )
+				START_LOG( cerr, L"The specified buff does not exist!" )
 					<< BUILD_LOG( iBuffID )
 					<< END_LOG;
 				return false;
@@ -10640,7 +10640,7 @@ bool KGSUser::ActivateItemBuff( IN const int iUseItemID, OUT std::vector< KBuffI
 		break;
 	default:
 		{
-			START_LOG( cerr, L"버프 정보가 없는 아이템을 사용 했습니다." )
+			START_LOG( cerr, L"Used an item with no buff information." )
 				<< BUILD_LOG( GetCharName() )
 				<< BUILD_LOG( iUseItemID )
 				<< END_LOG;
@@ -10658,7 +10658,7 @@ bool KGSUser::DeactivateBuff( IN const int iBuffID, OUT std::vector< int >& vecD
 	const CXSLBuffManager::BuffTemplet* pBuffTemplet = SiCXSLBuffManager()->GetBuffTemplet( iBuffID );
 	if( pBuffTemplet == NULL )
 	{
-		START_LOG( cerr, L"존재 하지 않는 버프입니다!" )
+		START_LOG( cerr, L"The specified buff does not exist!" )
 			<< BUILD_LOG( iBuffID )
 			<< END_LOG;
 		return false;
@@ -10841,7 +10841,7 @@ void KGSUser::AddTempInventoryItem( IN const int iItemID
 	}
 	else
 	{
-		START_LOG( cerr, L"임시 인벤토리에 아이템 저장 실패!" )
+		START_LOG( cerr, L"Failed to save item to temporary inventory!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
@@ -11435,7 +11435,7 @@ bool KGSUser::isCanUseUnsealCashSkillItem( IN int iItemID )
 		}break;
 	default:
 		{
-			START_LOG( cerr, L"unit class type 의 값이 비정상적입니다." )
+			START_LOG( cerr, L"Invalid unit class type value." )
 				<< BUILD_LOG( iItemID )
 				<< BUILD_LOG( iUnitClassType )
 				<< END_LOG;
@@ -11598,7 +11598,7 @@ void KGSUser::SendExpandSkillPageReqToGameDB( const unsigned short usEventID_, c
 		kPacket.m_iDefaultSkill[2], kPacket.m_iDefaultSkill[3],
 		kPacket.m_iDefaultSkill[4], kPacket.m_iDefaultSkill[5] ) )
 	{
-		START_LOG( cerr, L"유닛타입이 이상함." )
+		START_LOG( cerr, L"Invalid unit type." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( GetCharUID() )

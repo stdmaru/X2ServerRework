@@ -136,7 +136,7 @@ void KCnLogDBThread::ProcessEvent( const KEventPtr& spEvent_ )
 	   CASE( DBE_BOSS_FIELD_LOG_NOT );
 
     default:
-        START_LOG( cerr, L"이벤트 핸들러가 정의되지 않았음. " << spEvent_->GetIDStr() );
+        START_LOG( cerr, L"Event handler is not defined. " << spEvent_->GetIDStr() );
     }
 
 	//////////////////////////////////////////////////////////////////////////
@@ -191,7 +191,7 @@ _IMPL_ON_FUNC( DBE_SERVER_ON_REQ, KNetAddress )
 
     if( !m_kODBC.BeginFetch() )
     {
-        START_LOG( cerr, L"센터 서버 인증 실패." )
+        START_LOG( cerr, L"CenterServer authentication failed." )
             << BUILD_LOG( kPacket_.m_wstrIP )
 			<< END_LOG;
 
@@ -222,7 +222,7 @@ _IMPL_ON_FUNC( DBE_SERVER_ON_REQ, KNetAddress )
 	//}}
 	if( !m_kODBC.BeginFetch() )
 	{
-		START_LOG( cerr, L"난 누군가의 센터다." )
+		START_LOG( cerr, L"I am someone’s CenterServer." )
 			<< BUILD_LOG( kPacket.m_kServerInfo.m_iUID )
 			<< END_LOG;
 
@@ -259,7 +259,7 @@ _IMPL_ON_FUNC( DBE_SERVER_ON_REQ, KNetAddress )
 
         if( kPacket.m_iOK != NetError::NET_OK )
         {
-            START_LOG( cerr, L"서버 켜짐 표시 실패." )
+            START_LOG( cerr, L"Failed to mark server as running." )
                 << BUILD_LOG( kPacket.m_kServerInfo.m_iUID )
                 << END_LOG;
 
@@ -387,7 +387,7 @@ IMPL_ON_FUNC_NOPARAM( DBE_SERVER_OFF_NOT )
 
         if( iOK != NetError::NET_OK )
         {
-            START_LOG( cerr, L"서버 종료 표시 실패." )
+            START_LOG( cerr, L"Failed to mark server as stopped." )
                 << BUILD_LOG( GetKCnServer()->GetUID() )
                 << END_LOG;
 
@@ -485,7 +485,7 @@ _IMPL_ON_FUNC( ELOG_STAT_RES_STONE, KStatisticsData )
     {
         if( mit->first.m_vecIntKey.empty() )
         {
-            START_LOG( cerr, L"통계키값이 비었음." )
+            START_LOG( cerr, L"Statistics key is empty." )
                 << END_LOG;
 
             continue;
@@ -496,7 +496,7 @@ _IMPL_ON_FUNC( ELOG_STAT_RES_STONE, KStatisticsData )
         {
             if( vit == mit->second.end() )
             {
-                START_LOG( cwarn, L"카운트 데이터가 비었음." )
+                START_LOG( cwarn, L"Count data is empty." )
                     << BUILD_LOG( iIndex )
                     << END_LOG;
 
@@ -652,7 +652,7 @@ IMPL_ON_FUNC( DBE_ABUSER_LIST_REQ )
 		}
 		else
 		{
-			START_LOG( clog, L"Abuser List와는 관계없는 ReleaseTick입니다." )
+			START_LOG( clog, L"This ReleaseTick is unrelated to the Abuser List." )
 				<< BUILD_LOG( iAbuserType );
 		}
 	}
@@ -745,7 +745,7 @@ IMPL_ON_FUNC( DBE_CHECK_TIME_DROP_RESULT_REQ )
 	{
 		kPacket.m_iOK = NetError::ERR_TIME_DROP_EVENT_00;
 
-		START_LOG( cerr, L"시간 드롭 보상 체크 쿼리 실패!" )
+		START_LOG( cerr, L"Failed to query timed-drop rewards!" )
 			<< BUILD_LOG( kPacket_.m_iTimeDropID )
 			<< BUILD_LOG( kPacket_.m_iUserUID )
 			<< END_LOG;
@@ -1046,7 +1046,7 @@ IMPL_ON_FUNC( DBE_PVP_MATCH_RESULT_LOG_NOT )
 
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"로그 기록을 위한 ArenaUID값 얻기 실패!" )
+		START_LOG( cerr, L"Failed to retrieve ArenaUID for logging!" )
 			<< BUILD_LOG( iOK )
 			<< END_LOG;
 		goto end_proc;
@@ -1102,7 +1102,7 @@ IMPL_ON_FUNC( DBE_PVP_MATCH_RESULT_LOG_NOT )
 
 		if( iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"대전 매칭 유저 로그 기록 실패!" )
+			START_LOG( cerr, L"Failed to record PvP matchmaking user log!" )
 				<< BUILD_LOG( iOK )
 				<< BUILD_LOG( iArenaLogUID )
 				<< BUILD_LOGc( kPacket_.m_cMatchType )
@@ -1139,7 +1139,7 @@ IMPL_ON_FUNC( DBE_PVP_MATCH_RESULT_LOG_NOT )
 end_proc:
 	for( const KPvpMatchUserResultLog& kUserLog : kPacket_.m_vecPvpMatchUserLog )
 	{
-		START_LOG( cerr, L"대전 매칭 유저 로그 기록 실패!" )
+		START_LOG( cerr, L"Failed to record PvP matchmaking user log!" )
 			<< BUILD_LOG( iOK )
 			<< BUILD_LOG( iArenaLogUID )
 			<< BUILD_LOGc( kPacket_.m_cMatchType )
@@ -1199,7 +1199,7 @@ IMPL_ON_FUNC( ELOG_COLLECTION_OF_RELAY_AND_P2P_INFO_NOT )
 end_proc:
 		if( iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"P2P 네트워크 플레이 정보 로그 기록 실패!" )
+			START_LOG( cerr, L"Failed to record P2P network-play information!" )
 				<< BUILD_LOG( iOK )
 				<< BUILD_LOG( kInfo.m_iGameType )
 				<< BUILD_LOG( kInfo.m_iHolePunchingTryCount )
@@ -1254,7 +1254,7 @@ IMPL_ON_FUNC( ELOG_BATTLE_FIELD_LEAVE_LOG_NOT )
 end_proc:
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"배틀필드 이탈 로그 기록 실패!" )
+		START_LOG( cerr, L"Failed to record Battlefield exit log!" )
 			<< BUILD_LOG( iOK )
 			<< BUILD_LOG( kPacket_.m_wstrServerIP )
 			<< BUILD_LOG( kPacket_.m_iBattleFieldID )
@@ -1298,7 +1298,7 @@ IMPL_ON_FUNC( DBE_DUNGEON_RESULT_LEAVE_LOG_NOT )
 end_proc:
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"던전 결과창 이탈 로그 기록 실패!" )
+		START_LOG( cerr, L"Failed to record dungeon-result screen exit log!" )
 			<< BUILD_LOG( iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_wstrLeaveReason )
@@ -1332,7 +1332,7 @@ IMPL_ON_FUNC( DBE_TICK_PERFORMANCE_LOG_NOT )
 end_proc:
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"SimLayer Tick 퍼포먼스 로그 기록 실패!" )
+		START_LOG( cerr, L"Failed to record SimLayer Tick performance log!" )
 			<< BUILD_LOG( kPacket_.m_iServerUID )
 			<< BUILD_LOG( kPacket_.m_iServerType )
 			<< BUILD_LOG( kPacket_.m_dwMaxTickCount )
@@ -1372,7 +1372,7 @@ IMPL_ON_FUNC( DBE_LOG_STATISTICS_INFO_NOT )
 end_proc:
 		if( iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"Log Statistics 정보 기록 실패!" )
+			START_LOG( cerr, L"Failed to record log statistics!" )
 				<< BUILD_LOG( iServerUID )
 				<< BUILD_LOG( kInfo.m_wstrFunctionName )
 				<< BUILD_LOG( kInfo.m_wstrFileName )
@@ -1432,7 +1432,7 @@ IMPL_ON_FUNC( DBE_UDP_CHECK_KICK_USER_NOT )
 
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"랜선 렉 로그 등록 실패" )
+		START_LOG( cerr, L"Failed to record network-lag log." )
 			<< BUILD_LOG( iOK )
 			<< BUILD_LOG( kPacket_.m_iRoomUID )
 			<< BUILD_LOG( kPacket_.m_iPVPChannelClass )

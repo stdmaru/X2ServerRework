@@ -81,45 +81,45 @@ protected: \
 #define VERIFY_FORBIDDEN_STATE( varg ) \
 	if( m_pkCurrentState->CheckState varg ) \
 	{ \
-	START_LOG( cerr, L"상태 오류. Name : " << m_strName ) \
-	<< L"        현재 상태 : " << GetStateIDString() << dbg::endl \
-	<< L" 허용 안되는 상태 : " L ## #varg << END_LOG; \
+	START_LOG( cerr, L"State error. Name: " << m_strName ) \
+	<< L"        Current state: " << GetStateIDString() << dbg::endl \
+	<< L" Forbidden state: " L ## #varg << END_LOG; \
 	return; \
 	}
 
 #define VERIFY_STATE_LOG( log, varg ) \
 	if( !m_pkCurrentState->CheckState varg ) \
 	{ \
-	START_LOG( log, L"상태 오류. Name : " << m_strName ) \
-	<< L"    현재 상태 : " << GetStateIDString() << dbg::endl \
-	<< L"    허용 상태 : " L ## #varg << END_LOG; \
+	START_LOG( log, L"State error. Name: " << m_strName ) \
+	<< L"    Current state: " << GetStateIDString() << dbg::endl \
+	<< L"    Allowed state: " L ## #varg << END_LOG; \
 	return; \
 	}
 
 #define VERIFY_STATE( varg ) \
     if( !m_pkCurrentState->CheckState varg ) \
     { \
-        START_LOG( cerr, L"상태 오류. Name : " << m_strName ) \
-            << L"    현재 상태 : " << GetStateIDString() << dbg::endl \
-			<< L"    허용 상태 : " L ## #varg << END_LOG; \
+        START_LOG( cerr, L"State error. Name: " << m_strName ) \
+            << L"    Current state: " << GetStateIDString() << dbg::endl \
+			<< L"    Allowed state: " L ## #varg << END_LOG; \
         return; \
     }
 
 #define VERIFY_STATE_WARN( varg ) \
 	if( !m_pkCurrentState->CheckState varg ) \
 	{ \
-		START_LOG( cwarn, L"상태 오류. Name : " << m_strName ) \
-			<< L"    현재 상태 : " << GetStateIDString() << dbg::endl \
-			<< L"    허용 상태 : " L ## #varg << END_LOG; \
+		START_LOG( cwarn, L"State error. Name: " << m_strName ) \
+			<< L"    Current state: " << GetStateIDString() << dbg::endl \
+			<< L"    Allowed state: " L ## #varg << END_LOG; \
 		return; \
 	}
 
 #define _VERIFY_STATE_ACK( varg, eventid, packet ) \
 	if( !m_pkCurrentState->CheckState varg ) \
 	{ \
-		START_LOG( cerr, L"상태 오류. [return ack] Name : " << m_strName ) \
-			<< L"    현재 상태 : " << GetStateIDString() << dbg::endl \
-			<< L"    허용 상태 : " L ## #varg << END_LOG; \
+		START_LOG( cerr, L"State error. [return ack] Name: " << m_strName ) \
+			<< L"    Current state: " << GetStateIDString() << dbg::endl \
+			<< L"    Allowed state: " L ## #varg << END_LOG; \
 		packet kAck; \
 		kAck.m_iOK = NetError::ERR_WRONG_STATE_00; \
 		SendPacket( eventid, kAck ); \
@@ -131,9 +131,9 @@ protected: \
 #define _VERIFY_STATE_ACK_WARN( varg, eventid, packet ) \
 	if( !m_pkCurrentState->CheckState varg ) \
 	{ \
-		START_LOG( cwarn, L"상태 오류. [return ack] Name : " << m_strName ) \
-			<< L"    현재 상태 : " << GetStateIDString() << dbg::endl \
-			<< L"    허용 상태 : " L ## #varg << END_LOG; \
+		START_LOG( cwarn, L"State error. [return ack] Name: " << m_strName ) \
+			<< L"    Current state: " << GetStateIDString() << dbg::endl \
+			<< L"    Allowed state: " L ## #varg << END_LOG; \
 		packet kAck; \
 		kAck.m_iOK = NetError::ERR_WRONG_STATE_00; \
 		SendPacket( eventid, kAck ); \

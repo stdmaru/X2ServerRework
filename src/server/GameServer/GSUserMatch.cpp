@@ -64,7 +64,7 @@ IMPL_ON_FUNC( EGS_CHANGE_PARTY_TYPE_REQ )
 
 	if( SiKPartyListManager()->E_ChangePartyType( GetThisPtr<KGSUser>(), kPacket_ ) == false )
 	{
-		START_LOG( cerr, L"파티 타입 변경 실패.!" )
+		START_LOG( cerr, L"Failed to change the party type!" )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
 	}
@@ -72,7 +72,7 @@ IMPL_ON_FUNC( EGS_CHANGE_PARTY_TYPE_REQ )
 	return;
 
 end_proc:
-	START_LOG( cwarn, L"파티 타입 변경 실패.!" )
+	START_LOG( cwarn, L"Failed to change the party type!" )
 		<< BUILD_LOG( GetCharName() )
 		<< BUILD_LOG( NetError::GetErrStr( kAck.m_iOK ) )
 		<< END_LOG;
@@ -106,7 +106,7 @@ IMPL_ON_FUNC( EGS_PVP_PARTY_CHANGE_MATCH_INFO_REQ )
 
 	if( GetPartyUID() == 0 )
 	{
-		START_LOG( clog, L"이건 정상적인 상황임." )
+		START_LOG( clog, L"This is expected." )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
 
@@ -118,7 +118,7 @@ IMPL_ON_FUNC( EGS_PVP_PARTY_CHANGE_MATCH_INFO_REQ )
 
 	if( SiKPartyListManager()->E_ChangePvpMatchInfo( GetThisPtr<KGSUser>(), kPacket_ ) == false )
 	{
-		START_LOG( cerr, L"파티 대전 매치 정보 변경 실패.!" )
+		START_LOG( cerr, L"Failed to change party PvP match information!" )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( GetPartyUID() )
 			<< END_LOG;
@@ -154,7 +154,7 @@ IMPL_ON_FUNC( EGS_REQUEST_MATCH_MAKING_REQ )
 	// 이미 매치에 등록된 상태인지 확인한다!
 	if( GetMatchUID() != 0 )
 	{
-		START_LOG( cerr, L"이미 매치에 등록된 상태입니다!" )
+		START_LOG( cerr, L"Already registered for a match!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetMatchUID() )
@@ -168,7 +168,7 @@ IMPL_ON_FUNC( EGS_REQUEST_MATCH_MAKING_REQ )
 	// 던전 자동 매칭 중인지 확인!!
 	if( m_kUserDungeonManager.GetAutoPartyWaitNumber() != 0  ||  m_kUserDungeonManager.GetAutoPartyUID() != 0 )
 	{
-		START_LOG( cerr, L"던전 자동 매칭 중인데 공식 대전 매칭 요청이 들어왔다!!" )
+		START_LOG( cerr, L"Received an official PvP match request during dungeon auto-matchmaking!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
@@ -181,7 +181,7 @@ IMPL_ON_FUNC( EGS_REQUEST_MATCH_MAKING_REQ )
 	// 룸 리스트 조회 중인지 확인!!
 	if( GetRoomListID() != 0 )
 	{
-		START_LOG( cerr, L"룸 리스트 조회 중에 공식 대전 매칭 요청이 들어왔다!!" )
+		START_LOG( cerr, L"Received an official PvP matchmaking request while querying the room list!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
@@ -201,7 +201,7 @@ IMPL_ON_FUNC( EGS_REQUEST_MATCH_MAKING_REQ )
 
 	default:
 		{
-			START_LOG( cerr, L"이상한 대전 인원 신청입니다." )
+			START_LOG( cerr, L"Invalid PvP player-count request." )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( GetMatchUID() )
@@ -217,7 +217,7 @@ IMPL_ON_FUNC( EGS_REQUEST_MATCH_MAKING_REQ )
 	if( kPacket_.m_cPvpGameType != CXSLRoom::PGT_TEAM  &&
 		kPacket_.m_cPvpGameType != CXSLRoom::PGT_TEAM_DEATH )
 	{
-		START_LOG( cerr, L"이상한 대전 타입 입니다." )
+		START_LOG( cerr, L"Invalid PvP type." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetMatchUID() )
@@ -232,7 +232,7 @@ IMPL_ON_FUNC( EGS_REQUEST_MATCH_MAKING_REQ )
 	// 공식 대전은 최소레벨이 10레벨이 되어야 한다.
 	if( GetLevel() < SEnum::PE_PVP_OFFICIAL_LIMIT_LEVEL )
 	{
-		START_LOG( cerr, L"공식 대전을 하기에 부족한 캐릭터 레벨입니다." )
+		START_LOG( cerr, L"The character level is too low for official PvP." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetMatchUID() )
@@ -302,7 +302,7 @@ _IMPL_ON_FUNC( EGB_REG_MATCH_WAIT_LIST_SUCCESS_NOT, KEGS_REG_MATCH_WAIT_LIST_SUC
 
 	if( m_kUserPvpManager.IsRequestMatchMaking() == true )
 	{
-		START_LOG( cerr, L"이미 대전 매치 리스트에 등록되어있는데 또 등록하는게 왔네? 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"Received another registration for a user already in the PvP match list; this should never happen!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
@@ -326,7 +326,7 @@ IMPL_ON_FUNC_NOPARAM( EGS_CANCEL_MATCH_MAKING_REQ )
 
 	if( m_kUserPvpManager.IsRequestMatchMaking() == false  &&  GetMatchUID() == 0 )
 	{
-		START_LOG( cerr, L"대전 매칭을 신청한적이 없는데 취소요청이 왔네?" )
+		START_LOG( cerr, L"Received a match cancellation request without a matching request?" )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( GetRoomListID() )
 			<< END_LOG;
@@ -375,7 +375,7 @@ IMPL_ON_FUNC( EGS_MATCH_MAKING_SUCCESS_REPLY_NOT )
 
 	if( GetMatchUID() == 0 )
 	{
-		START_LOG( cerr, L"현재 매치에 등록된 상태가 아닌데 매치 성공에 대한 응답을 하려고 한다!" )
+		START_LOG( cerr, L"Attempted to respond to a successful match while not registered in matchmaking!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
@@ -387,7 +387,7 @@ IMPL_ON_FUNC( EGS_MATCH_MAKING_SUCCESS_REPLY_NOT )
 	// 선택한 비선호 대전맵이 2개 이상인지 체크한다.
 	if( kPacket_.m_setSelectedPvpMap.size() > 2 )
 	{
-        START_LOG( cerr, L"유저가 선택한 비선호 대전맵이 2개 이상이다. 절대 일어나서는 안되는 에러!" )
+        START_LOG( cerr, L"User selected more than two disliked PvP maps; this should never happen!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_setSelectedPvpMap.size() )
@@ -406,7 +406,7 @@ _IMPL_ON_FUNC( EGB_UNREG_MATCH_WAIT_LIST_NOT, KEGS_UNREG_MATCH_WAIT_LIST_NOT )
 
 	if( m_kUserPvpManager.IsRequestMatchMaking() == false )
 	{
-		START_LOG( cerr, L"매치 리스트 등록한적이 없는데 등록취소가 왔네?" )
+		START_LOG( cerr, L"Received a match-list cancellation without a previous registration?" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
@@ -429,7 +429,7 @@ _IMPL_ON_FUNC( EGB_MATCH_CLOSE_NOT, KEGS_MATCH_CLOSE_NOT )
 
 	if( GetMatchUID() == 0 )
 	{
-		START_LOG( cerr, L"원래부터 매치된 유저가 아닌데 매치 취소가 왔다?" )
+		START_LOG( cerr, L"Received a match cancellation for a user who was never matched?" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
@@ -457,7 +457,7 @@ IMPL_ON_FUNC( EGB_REMATCH_MAKING_USER_NOT )
 	// 이미 매치에 등록된 상태인지 확인한다!
 	if( GetMatchUID() != 0 )
 	{
-		START_LOG( cerr, L"이미 매치에 등록된 상태입니다! 절대 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"Already registered for a match; this should never happen!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetMatchUID() )
@@ -475,7 +475,7 @@ IMPL_ON_FUNC( EGB_REMATCH_MAKING_USER_NOT )
 
 	default:
 		{
-			START_LOG( cerr, L"이상한 대전 인원 신청입니다." )
+			START_LOG( cerr, L"Invalid PvP player-count request." )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( GetMatchUID() )
@@ -488,7 +488,7 @@ IMPL_ON_FUNC( EGB_REMATCH_MAKING_USER_NOT )
 	if( kPacket_.m_cPvpGameType != CXSLRoom::PGT_TEAM  &&
 		kPacket_.m_cPvpGameType != CXSLRoom::PGT_TEAM_DEATH )
 	{
-		START_LOG( cerr, L"이상한 대전 타입 입니다." )
+		START_LOG( cerr, L"Invalid PvP type." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetMatchUID() )
@@ -500,7 +500,7 @@ IMPL_ON_FUNC( EGB_REMATCH_MAKING_USER_NOT )
 	// 공식 대전은 최소레벨이 10레벨이 되어야 한다.
 	if( GetLevel() < SEnum::PE_PVP_OFFICIAL_LIMIT_LEVEL )
 	{
-		START_LOG( cerr, L"공식 대전을 하기에 부족한 캐릭터 레벨입니다." )
+		START_LOG( cerr, L"The character level is too low for official PvP." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetMatchUID() )
@@ -539,7 +539,7 @@ IMPL_ON_FUNC_NOPARAM( EGB_GET_ROOM_USER_INFO_FOR_MATCH_REQ )
 
 	if( GetMatchUID() == 0 )
 	{
-		START_LOG( cerr, L"현재 매치에 등록된 상태가 아닌데 매치 성공에 대한 응답을 하려고 한다!" )
+		START_LOG( cerr, L"Attempted to respond to a successful match while not registered in matchmaking!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
@@ -579,7 +579,7 @@ IMPL_ON_FUNC( EGB_OPEN_PVP_ROOM_FOR_MATCH_REQ )
 		}
 		else
 		{
-			START_LOG( cerr, L"이미 방에 입장해있다! 예외 상황이 존재하는것인가?" )
+			START_LOG( cerr, L"Already in a room; is this an exceptional case?" )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( GetRoomUID() )
 				<< BUILD_LOG( CXSLRoom::GetRoomType( GetRoomUID() ) )
@@ -638,7 +638,7 @@ _IMPL_ON_FUNC( ERM_OPEN_PVP_ROOM_FOR_MATCH_ACK, KEGB_OPEN_PVP_ROOM_FOR_MATCH_ACK
 
 	if( kPacket_.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"대전방 생성 실패!" )
+		START_LOG( cerr, L"Failed to create PvP room!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( NetError::GetErrStr( kPacket_.m_iOK ) )
@@ -707,7 +707,7 @@ IMPL_ON_FUNC( EGS_PVP_NPC_UNIT_RE_BIRTH_POS_REQ )
 
 	if( GetRoomUID() == 0 )
 	{
-		START_LOG( cerr, L"방에 없는데 대전 NPC부활패킷을 쏘네?" )
+		START_LOG( cerr, L"Sent a PvP NPC resurrection packet while not in a room?" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetCharUID() )
 			<< END_LOG;

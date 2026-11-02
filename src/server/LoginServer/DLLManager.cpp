@@ -48,11 +48,11 @@ void KDLLManager::Tick()
 
 void KDLLManager::OnServerReadyComplete()
 {
-	START_LOG( cout, L"DLL 관리 리스트 요청!" );
+	START_LOG( cout, L"DLL manager list requested!" );
 
 	SendToLogDB( DBE_GET_MODULE_INFO_LIST_REQ );
 
-	START_LOG( cout, L"해킹 DLL 리스트 요청!" );
+	START_LOG( cout, L"Hack DLL list requested!" );
 
 }
 
@@ -116,7 +116,7 @@ bool KDLLManager::AddModuleInfo( IN const KModuleInfo& kInfo )
 {
 	if( m_mapModuleList.find( kInfo.m_wstrModuleName ) != m_mapModuleList.end() )
 	{
-		START_LOG( cwarn, L"이미 등록되어있는 모듈UID입니다." )
+		START_LOG( cwarn, L"A module with this UID is already registered." )
 			<< BUILD_LOG( kInfo.m_wstrModuleName )
 			<< END_LOG;
 		return false;
@@ -132,7 +132,7 @@ bool KDLLManager::UpdateModuleUID( IN const std::wstring& wstrModuleName, IN int
 	mit = m_mapModuleList.find( wstrModuleName );
 	if( mit == m_mapModuleList.end() )
 	{
-		START_LOG( cerr, L"모듈 정보를 찾지 못했습니다!" )
+		START_LOG( cerr, L"Module information not found!" )
 			<< BUILD_LOG( wstrModuleName )
 			<< END_LOG;
 		return false;

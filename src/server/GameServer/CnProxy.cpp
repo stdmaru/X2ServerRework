@@ -80,7 +80,7 @@ void KCnProxy::ProcessEvent( const KEventPtr& spEvent_ )
     CASE_NOPARAM( E_RESERVE_DESTROY );
 
     default:
-        START_LOG( cerr, L"이벤트 핸들러가 정의되지 않았음 - " << spEvent_->GetIDStr() );
+        START_LOG( cerr, L"No event handler is defined - " << spEvent_->GetIDStr() );
     }
 }
 
@@ -118,7 +118,7 @@ void KCnProxy::OnDestroy()
 		spEvent->SetData( PI_GS_USER, NULL, ERM_CHECK_INVALID_ROOM_NOT, iProxyID );
 		KActorManager::GetKObj()->QueueingToAll( spEvent );
 
-		START_LOG( clog2, L"센터서버가 뻐덨네. +ㅁ+/ 오늘도 야근..;ㅁ;" )
+		START_LOG( clog2, L"The CenterServer crashed; another late night!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( nDelRoomCount )
 			<< BUILD_LOG( nDelSquareCount )
@@ -132,15 +132,15 @@ void KCnProxy::OnDestroy()
 	//{{ 2009. 1. 30  최육사	객체 소멸 로그
 	if( GetDisconnectReason() == KStatistics::eSIColDR_Server_Shutdown )
 	{
-		START_LOG( cout, L"서버 셧다운으로 인한 CnProxy객체 소멸" )
+		START_LOG( cout, L"Destroying CnProxy object due to server shutdown" )
 			<< BUILD_LOG( GetProxyID() );
 	}
 	else
 	{
-		START_LOG( cout2, L"비정상적인 원인으로 인한 CnProxy객체 소멸" )
+		START_LOG( cout2, L"Destroying the CnProxy object due to an abnormal condition." )
 			<< BUILD_LOG( GetProxyID() )
 			<< BUILD_LOG( GetDisconnectReason() )
-			<< dbg::tab << L"종료 사유 : " << KStatistics::GetDissconnectReasonString( GetDisconnectReason() ) << dbg::endl;
+			<< dbg::tab << L"Shutdown reason: " << KStatistics::GetDissconnectReasonString( GetDisconnectReason() ) << dbg::endl;
 
 		//{{ 2010. 10. 11	최육사	서버간 접속 끊김 로그
 		{
@@ -182,7 +182,7 @@ IMPL_ON_FUNC( ECN_VERIFY_SERVER_CONNECT_ACK )
 
 		if( IsSameServerGroup() )
 		{
-			START_LOG( cout2, L"같은 서버군 센터서버와 정상적으로 접속하였습니다!" )
+			START_LOG( cout2, L"Connected to the CenterServer in the same server group successfully!" )
 				<< BUILD_LOG( kPacket_.m_iServerUID )
 				<< BUILD_LOG( m_iGsServerGroupID )
 				<< BUILD_LOG( m_iCnServerGroupID );
@@ -192,7 +192,7 @@ IMPL_ON_FUNC( ECN_VERIFY_SERVER_CONNECT_ACK )
 		}
 		else
 		{
-			START_LOG( cout2, L"다른 서버군 센터서버와 정상적으로 접속하였습니다!" )
+			START_LOG( cout2, L"Connected to the CenterServer in another server group successfully!" )
 				<< BUILD_LOG( kPacket_.m_iServerUID )
 				<< BUILD_LOG( m_iGsServerGroupID )
 				<< BUILD_LOG( m_iCnServerGroupID );
@@ -245,7 +245,7 @@ bool KCnProxy::RoutePacket( const KEventPtr& spEvent_ )
         }
         else if( iEval > 0 )
         {
-            START_LOG( cerr, L"상위 서버로 보낼 이벤트가 오면 안된다." )
+            START_LOG( cerr, L"An event for an upstream server should not be received here." )
                 << BUILD_LOG( spEvent_->m_kDestPerformer.m_dwPerformerID )
                 << BUILD_LOG( spEvent_->m_usEventID )
                 << BUILD_LOG( spEvent_->GetIDStr() )
@@ -269,7 +269,7 @@ bool KCnProxy::RoutePacket( const KEventPtr& spEvent_ )
 					{
 						ProcbyNotExistUser( spEvent_, vecUID );
 
-						START_LOG( cwarn, L"패킷전달 유닛이 없음." )
+						START_LOG( cwarn, L"No packet forwarding unit is available." )
 							<< BUILD_LOG( KEvent::GetIDStr( spEvent_->m_usEventID ) )
 							<< BUILD_LOG( iNotExistUserCnt )
 							<< END_LOG;
@@ -283,7 +283,7 @@ bool KCnProxy::RoutePacket( const KEventPtr& spEvent_ )
                 SiKDBLayer()->QueueingEvent( spEvent_ );
                 return true;
             default:
-                START_LOG( cerr, L"도착지가 이상한 패킷." )
+                START_LOG( cerr, L"Packet has an invalid destination." )
                     << BUILD_LOG( spEvent_->m_kDestPerformer.m_dwPerformerID )
                     << END_LOG;
                 return true;
@@ -420,7 +420,7 @@ void KCnProxy::ProcbyNotExistUser( const KEventPtr& spEvent_, std::vector<UidTyp
 
 						if( kPacket.m_cEmblemEnum == CXSLUnit::PVPRANK_NONE )
 						{
-							START_LOG( cerr, L"PVPRANK_NONE 랭크!! 발생해선 안된다. m_bIsWinBeforeMatch을 제외한 나머지 값은 갱신 시키지 않는다!!")
+							START_LOG( cerr, L"PVPRANK_NONE rank! This should never happen. Do not update any value except m_bIsWinBeforeMatch!")
 								<< BUILD_LOG( iUnitUID )
 								<< END_LOG;
 							kPacket.m_iOfficialMatchCnt = 0;
@@ -438,7 +438,7 @@ void KCnProxy::ProcbyNotExistUser( const KEventPtr& spEvent_, std::vector<UidTyp
 						UidType anTrace[2] = { iUnitUID, -1 };
 						KncSend( PI_GS_USER, iUnitUID, PI_GS_GAME_DB, 0, anTrace, DBE_QUIT_USER_PVP_RESULT_UPDATE_NOT, kPacket );
 
-						START_LOG( cout, L"대전 결과 패킷을 받을 GSUser가 없어서 자동으로 DB에 결과 업데이트 합니다!" )
+						START_LOG( cout, L"No GSUser available for the match result packet; updating the result in the database automatically!" )
 							<< BUILD_LOG( kPacket.m_iUnitUID )
 							<< BUILD_LOG( kData_.m_iCurrentRating )
 							<< BUILD_LOG( kData_.m_iCurrentMaxRating )
@@ -481,7 +481,7 @@ void KCnProxy::ProcbyNotExistUser( const KEventPtr& spEvent_, std::vector<UidTyp
 				}
 				else
 				{
-					START_LOG( cout, L"게임 시작 타이머를 받아야할 유저가 없다! 접종됐나? 그러면 방에서도 이탈 처리하자!" )
+					START_LOG( cout, L"No user available to receive the game start timer; did they disconnect? Remove them from the room as well!" )
 						<< BUILD_LOG( iUnitUID );
 
 					// 방에서 이탈 요청!

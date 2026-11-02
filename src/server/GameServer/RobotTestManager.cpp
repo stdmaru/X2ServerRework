@@ -35,7 +35,7 @@ void KRobotTestManager::FileOpen( int iPatternIndex )
 {
 	if( m_wfsRobotScript.is_open() )
 	{
-		START_LOG( cerr, L"이미 파일이 오픈되어 있습니다!" )
+		START_LOG( cerr, L"File is already open!" )
 			<< END_LOG;
 		return;
 	}
@@ -58,7 +58,7 @@ void KRobotTestManager::FileOpen( int iPatternIndex )
 
 	m_iPatternIndex = iPatternIndex;
 
-	START_LOG( cout, L"로봇 패턴 스크립트 파일 오픈 성공!" )
+	START_LOG( cout, L"Successfully opened robot pattern script file!" )
 		<< BUILD_LOG( strFilename );
 }
 
@@ -69,14 +69,14 @@ void KRobotTestManager::FileClose()
 
 	m_wfsRobotScript.close();
 
-	START_LOG( cout, L"로봇 패턴 스크립트 파일 닫기 성공!" );
+	START_LOG( cout, L"Robot pattern script file closed successfully!" );
 }
 
 void KRobotTestManager::RobotPet_LUA( bool bVal )
 {
     m_bIsRobotPet = bVal;
 
-	START_LOG( cout, L"로봇 펫 적용 여부 저장!" )
+	START_LOG( cout, L"Saved the robot pet enabled setting!" )
 		<< BUILD_LOG( m_bIsRobotPet );
 }
 
@@ -202,7 +202,7 @@ void KRobotTestManager::RobotFullEquip( const std::wstring& wstrNickName, int iU
 		const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iItemID );
 		if( pItemTemplet == NULL )
 		{
-			START_LOG( cerr, L"아이템이 없을리가 없는데?" )
+			START_LOG( cerr, L"The item should exist." )
 				<< BUILD_LOG( iItemID )
 				<< END_LOG;
 			continue;
@@ -293,7 +293,7 @@ int KRobotTestManager::GetRandomEquipItem( int iSlotID, int iUnitType )
 	mit = m_mapRandomEquip[iSlotID].find( iUnitType );
 	if( mit == m_mapRandomEquip[iSlotID].end() )
 	{
-		START_LOG( cerr, L"어라? 랜덤장착그룹이 없네?" )
+		START_LOG( cerr, L"Huh? Random equipment group is missing?" )
 			<< BUILD_LOG( iSlotID )
 			<< BUILD_LOG( iUnitType )
 			<< END_LOG;

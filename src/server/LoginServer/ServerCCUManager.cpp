@@ -115,7 +115,7 @@ void KServerCCUManager::DBUpdateCCUInfo()
 	//	kPacket.m_wstrRegDate = ( CStringW )( m_tNextUpdateTime.Format( _T( "%Y-%m-%d %H:%M:%S" ) ) );
 	//	SendToLogDB( DBE_UPDATE_CCU_INFO_NOT, kPacket );
 
-	//	START_LOG( cout, L"동접 정보 업데이트 타임 1분 누락 발생! 보정값을 업데이트 합니다!" )
+	//	START_LOG( cout, L"Concurrent-user data missed a one-minute update interval; applying a correction!" )
 	//		<< BUILD_LOG( tCurrentTime.GetMinute() )
 	//		<< BUILD_LOG( m_tNextUpdateTime.GetMinute() )
 	//		<< BUILD_LOG( kPacket.m_wstrRegDate );

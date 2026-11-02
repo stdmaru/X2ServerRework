@@ -416,7 +416,7 @@ void KGSGameDBThread::ProcessEvent( const KEventPtr& spEvent_ )
         CASE( DBE_GET_CREATE_UNIT_TODAY_COUNT_REQ );
 
     default:
-        START_LOG( cerr, L"이벤트 핸들러가 정의되지 않았음. " << spEvent_->GetIDStr() );
+        START_LOG( cerr, L"No event handler is defined. " << spEvent_->GetIDStr() );
     }
 
 	//////////////////////////////////////////////////////////////////////////
@@ -483,7 +483,7 @@ bool KGSGameDBThread::Query_SelectUnit( IN const UidType iUserUID, IN const KEGS
 	{
 		kAck.m_iOK = NetError::ERR_SELECT_UNIT_05;
 
-		START_LOG( cerr, L"gup_select_unit 호출 실패!" )
+		START_LOG( cerr, L"Failed to call gup_select_unit!" )
 			<< BUILD_LOG( kAck.m_iOK )
 			<< BUILD_LOG( kReq.m_iUnitUID )
 			<< END_LOG;
@@ -504,7 +504,7 @@ bool KGSGameDBThread::Query_SelectUnit( IN const UidType iUserUID, IN const KEGS
 		}
 		//}}
 
-		START_LOG( cerr, L"gup_select_unit 호출 실패!" )
+		START_LOG( cerr, L"Failed to call gup_select_unit!" )
 			<< BUILD_LOG( NetError::GetErrStr( kAck.m_iOK ) )
 			<< BUILD_LOG( kReq.m_iUnitUID )
 			<< END_LOG;
@@ -555,7 +555,7 @@ bool KGSGameDBThread::Query_SelectUnit( IN const UidType iUserUID, IN const KEGS
 	{
 		kAck.m_iOK = NetError::ERR_SELECT_UNIT_00;
 
-		START_LOG( cerr, L"gup_get_unit_info_by_unituid 호출 실패!" )
+		START_LOG( cerr, L"Failed to call gup_get_unit_info_by_unituid!" )
 			<< BUILD_LOG( kAck.m_iOK )
 			<< BUILD_LOG( kReq.m_iUnitUID )
 			<< END_LOG;
@@ -582,7 +582,7 @@ bool KGSGameDBThread::Query_SelectUnit( IN const UidType iUserUID, IN const KEGS
 		if ( kAck.m_kUnitInfo.m_UnitSkillData.m_nActiveSkillPagesNumber < 1 ||
 			kAck.m_kUnitInfo.m_UnitSkillData.m_nActiveSkillPagesNumber > kAck.m_kUnitInfo.m_UnitSkillData.m_nTheNumberOfSkillPagesAvailable )
 		{
-			START_LOG( cerr, L"현재 사용 중인 페이지 이상함" )
+			START_LOG( cerr, L"Invalid currently active page" )
 				<< BUILD_LOG( kAck.m_iOK )
 				<< BUILD_LOG( kReq.m_iUnitUID )
 				<< BUILD_LOG( kAck.m_kUnitInfo.m_UnitSkillData.m_nActiveSkillPagesNumber )
@@ -620,7 +620,7 @@ bool KGSGameDBThread::Query_SelectUnit( IN const UidType iUserUID, IN const KEGS
 	{
 		kAck.m_iOK = NetError::ERR_SELECT_UNIT_05;
 
-		START_LOG( cerr, L"P_GUnitLastPosition_SEL 호출 실패!" )
+		START_LOG( cerr, L"Failed to call P_GUnitLastPosition_SEL!" )
 			<< BUILD_LOG( NetError::GetErrStr( kAck.m_iOK ) )
 			<< BUILD_LOG( kReq.m_iUnitUID )
 			<< END_LOG;
@@ -681,7 +681,7 @@ bool KGSGameDBThread::Query_SelectUnit( IN const UidType iUserUID, IN const KEGS
 	{
 		kAck.m_iOK = NetError::ERR_SELECT_UNIT_05;
 
-		START_LOG( cerr, L"P_GUnitPlayInfo_SEL 호출 실패!" )
+		START_LOG( cerr, L"Failed to call P_GUnitPlayInfo_SEL!" )
 			<< BUILD_LOG( kAck.m_iOK )
 			<< BUILD_LOG( kReq.m_iUnitUID )
 			<< END_LOG;
@@ -724,7 +724,7 @@ bool KGSGameDBThread::Query_SelectUnit( IN const UidType iUserUID, IN const KEGS
 
 			default:
 				{
-					START_LOG( cerr, L"정의되지 않은 쿨타임 타입입니다!" )
+					START_LOG( cerr, L"Undefined cooldown type!" )
 						<< BUILD_LOG( kReq.m_iUnitUID )
 						<< BUILD_LOG( iCoolTimeType )
 						<< END_LOG;
@@ -762,7 +762,7 @@ bool KGSGameDBThread::Query_SelectUnit( IN const UidType iUserUID, IN const KEGS
 	{
 		kAck.m_iOK = NetError::ERR_SELECT_UNIT_05;
 
-		START_LOG( cerr, L"P_GUnitPVP_Season2_SEL 호출 실패!" )
+		START_LOG( cerr, L"Failed to call P_GUnitPVP_Season2_SEL!" )
 			<< BUILD_LOG( kAck.m_iOK )
 			<< BUILD_LOG( kReq.m_iUnitUID )
 			<< END_LOG;
@@ -786,7 +786,7 @@ bool KGSGameDBThread::Query_SelectUnit( IN const UidType iUserUID, IN const KEGS
 	{
 		kAck.m_iOK = NetError::ERR_SELECT_UNIT_05;
 
-		START_LOG( cerr, L"gup_get_unit_lastpoint 호출 실패!" )
+		START_LOG( cerr, L"Failed to call gup_get_unit_lastpoint!" )
 			<< BUILD_LOG( kAck.m_iOK )
 			<< BUILD_LOG( kReq.m_iUnitUID )
 			<< END_LOG;
@@ -848,13 +848,13 @@ bool KGSGameDBThread::Query_SelectUnit( IN const UidType iUserUID, IN const KEGS
 	//////////////////////////////////////////////////////////////////////////
 	if( Query_GetInventory( kReq.m_iUnitUID, kAck.m_mapInventorySlotSize, kAck.m_mapItem, kAck.m_mapPetItem ) == false )
 	{
-		START_LOG( cerr, L"인벤토리 정보 얻기 실패!" )
+		START_LOG( cerr, L"Failed to retrieve inventory information!" )
 			<< BUILD_LOG( kReq.m_iUnitUID )
 			<< END_LOG;
 
 		kAck.m_iOK = NetError::ERR_SELECT_UNIT_05;
 
-		START_LOG( cerr, L"Query_GetInventory() 호출 실패!" )
+		START_LOG( cerr, L"Failed to call Query_GetInventory()!" )
 			<< BUILD_LOG( kAck.m_iOK )
 			<< BUILD_LOG( kReq.m_iUnitUID )
 			<< END_LOG;
@@ -878,7 +878,7 @@ bool KGSGameDBThread::Query_SelectUnit( IN const UidType iUserUID, IN const KEGS
 			//}}
 			if( mit2 != kAck.m_kUnitInfo.m_mapEquippedItem.end() )
 			{
-				START_LOG( cerr, L"장착 슬롯이 중복됨." )
+				START_LOG( cerr, L"Duplicate equipment slot." )
 					<< BUILD_LOG( mit->second.m_iItemUID )
 					//{{ 2011. 12. 15	최육사	인벤토리 슬롯ID크기 늘리기
 					<< BUILD_LOG( mit->second.m_sSlotID )
@@ -905,7 +905,7 @@ bool KGSGameDBThread::Query_SelectUnit( IN const UidType iUserUID, IN const KEGS
 	{
 		kAck.m_iOK = NetError::ERR_SELECT_UNIT_03;
 
-		START_LOG( cerr, L"gup_get_resurrection_stone 호출 실패!" )
+		START_LOG( cerr, L"Failed to call gup_get_resurrection_stone!" )
 			<< BUILD_LOG( kAck.m_iOK )
 			<< BUILD_LOG( kReq.m_iUnitUID )
 			<< END_LOG;
@@ -927,7 +927,7 @@ bool KGSGameDBThread::Query_SelectUnit( IN const UidType iUserUID, IN const KEGS
 	{
 		kAck.m_iOK = NetError::ERR_SELECT_UNIT_03;
 
-		START_LOG( cerr, L"gup_get_resurrection_stone_autopay 호출 실패!" )
+		START_LOG( cerr, L"Failed to call gup_get_resurrection_stone_autopay!" )
 			<< BUILD_LOG( kAck.m_iOK )
 			<< BUILD_LOG( kReq.m_iUnitUID )
 			<< END_LOG;
@@ -1053,7 +1053,7 @@ bool KGSGameDBThread::Query_SelectUnit( IN const UidType iUserUID, IN const KEGS
 			if( kAck.m_kUnitInfo.m_iTitleID != 0 )
 			//}}
 			{
-				START_LOG( cerr, L"장착중인 칭호가 또 있네?" )
+				START_LOG( cerr, L"Another title is already equipped?" )
 					<< BUILD_LOG( kReq.m_iUnitUID )
 					//{{ 2010. 11. 17	최육사	칭호 데이터 크기 늘이기
 					<< BUILD_LOG( kAck.m_kUnitInfo.m_iTitleID )
@@ -1084,7 +1084,7 @@ bool KGSGameDBThread::Query_SelectUnit( IN const UidType iUserUID, IN const KEGS
 
 		if( iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"칭호 장착 해제 업데이트 실패!" )
+			START_LOG( cerr, L"Failed to update title unequip!" )
 				<< BUILD_LOG( iOK )
 				<< BUILD_LOG( kReq.m_iUnitUID )
 				<< END_LOG;
@@ -1101,7 +1101,7 @@ bool KGSGameDBThread::Query_SelectUnit( IN const UidType iUserUID, IN const KEGS
 
 		if( iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"칭호 장착 업데이트 실패!" )
+			START_LOG( cerr, L"Failed to update equipped title!" )
 				<< BUILD_LOG( iOK )
 				<< BUILD_LOG( kReq.m_iUnitUID )
 				//{{ 2010. 11. 17	최육사	칭호 데이터 크기 늘이기
@@ -1142,7 +1142,7 @@ bool KGSGameDBThread::Query_SelectUnit( IN const UidType iUserUID, IN const KEGS
 		}
 		if( bRet == true )
 		{
-			START_LOG( clog, L"보유중인데 진행 하려는 타이틀 미션이 있다!" )
+			START_LOG( clog, L"Attempting a title mission that is already owned!" )
 				<< BUILD_LOG( kReq.m_iUnitUID )
 				<< BUILD_LOG( kTitle.m_iTitleID )
 				<< BUILD_LOG( kMission.m_iID );
@@ -1176,7 +1176,7 @@ bool KGSGameDBThread::Query_SelectUnit( IN const UidType iUserUID, IN const KEGS
 	}
 	else
 	{
-		START_LOG( cerr, L"캐시스킬포인트 정보 얻어오기 실패로 기본값을 넣어줌." )
+		START_LOG( cerr, L"Failed to retrieve cash skill point information; using the default value." )
 			<< BUILD_LOG( kReq.m_iUnitUID )
 			<< END_LOG;
 
@@ -1231,7 +1231,7 @@ bool KGSGameDBThread::Query_SelectUnit( IN const UidType iUserUID, IN const KEGS
 	if ( kAck.m_kUnitInfo.m_UnitSkillData.m_nTheNumberOfSkillPagesAvailable
 		!= static_cast<unsigned char>( kAck.m_vecUserSkillPageData.size() ) )
 	{
-		START_LOG( cerr, L"전체 페이지 수가 이상한데..?" )
+		START_LOG( cerr, L"Invalid total page count?" )
 			<< BUILD_LOG( kReq.m_iUnitUID )
 			<< BUILD_LOG( kAck.m_kUnitInfo.m_UnitSkillData.m_nTheNumberOfSkillPagesAvailable )
 			<< BUILD_LOG( kAck.m_vecUserSkillPageData.size() )
@@ -1267,7 +1267,7 @@ bool KGSGameDBThread::Query_SelectUnit( IN const UidType iUserUID, IN const KEGS
 		if ( iSkillPageNumber < 1 ||
 			 iSkillPageNumber > static_cast<int>( kAck.m_vecUserSkillPageData.size() ) )
 		{
-			START_LOG( cerr, L"스킬 페이지 번호가 이상함(gup_get_skill_slot_new)" )
+			START_LOG( cerr, L"Invalid skill page number (gup_get_skill_slot_new)." )
 				<< BUILD_LOG( kReq.m_iUnitUID )
 				<< BUILD_LOG( kAck.m_vecUserSkillPageData.size() )
 				<< BUILD_LOG( iSkillPageNumber )
@@ -1318,7 +1318,7 @@ bool KGSGameDBThread::Query_SelectUnit( IN const UidType iUserUID, IN const KEGS
 
 			if( iOK != 0 )
 			{
-				START_LOG( cerr, L"기존에 있던 캐릭터의 스킬 슬롯 데이터 생성실패" )
+				START_LOG( cerr, L"Failed to create skill slot data for an existing character." )
 					<< BUILD_LOG( kReq.m_iUnitUID )
 					<< BUILD_LOG( iSkillPageIndex + 1 )
 					<< END_LOG;
@@ -1326,7 +1326,7 @@ bool KGSGameDBThread::Query_SelectUnit( IN const UidType iUserUID, IN const KEGS
 				return false;
 			}
 
-			START_LOG( clog, L"========= 기존 캐릭터 스킬슬롯이 없어 새로 생성 성공 ===========" )
+			START_LOG( clog, L"========= No existing character skill slots; created new slots successfully ==========" )
 				<< BUILD_LOG( kReq.m_iUnitUID )
 				;
 		}
@@ -1351,7 +1351,7 @@ bool KGSGameDBThread::Query_SelectUnit( IN const UidType iUserUID, IN const KEGS
 		if ( iSkillPageNumber < 1 ||
 			iSkillPageNumber > static_cast<int>( kAck.m_vecUserSkillPageData.size() ) )
 		{
-			START_LOG( cerr, L"스킬 페이지 번호가 이상함 (gup_get_skill_slot2_new)" )
+			START_LOG( cerr, L"Invalid skill page number (gup_get_skill_slot2_new)." )
 				<< BUILD_LOG( kReq.m_iUnitUID )
 				<< BUILD_LOG( kAck.m_vecUserSkillPageData.size() )
 				<< BUILD_LOG( iSkillPageNumber )
@@ -1373,7 +1373,7 @@ bool KGSGameDBThread::Query_SelectUnit( IN const UidType iUserUID, IN const KEGS
 
 	if ( !bConductedOnceAtLeast )
 	{
-		START_LOG( cerr, L"스킬 슬롯 B 사용 안함" )
+		START_LOG( cerr, L"Skill slot B is not in use" )
 			<< BUILD_LOG( kReq.m_iUnitUID )
 			<< END_LOG;
 
@@ -1398,7 +1398,7 @@ bool KGSGameDBThread::Query_SelectUnit( IN const UidType iUserUID, IN const KEGS
 	}
 	else
 	{
-		START_LOG( clog, L"기술의 노트 스킬 슬롯 정보가 없습니다. 업데이트 된적이 없는듯.." )
+		START_LOG( clog, L"Skill note skill slot information is missing; it may never have been updated." )
 			<< BUILD_LOG( kReq.m_iUnitUID );
 
 		// 0으로 초기화
@@ -1443,7 +1443,7 @@ bool KGSGameDBThread::Query_SelectUnit( IN const UidType iUserUID, IN const KEGS
 	{
 		kAck.m_iOK = NetError::ERR_COMMUNITY_OPT_02;
 
-		START_LOG( cerr, L"gup_get_community_opt_unituid 호출 실패!" )
+		START_LOG( cerr, L"Failed to call gup_get_community_opt_unituid!" )
 			<< BUILD_LOG( kAck.m_iOK )
 			<< BUILD_LOG( kReq.m_iUnitUID )
 			<< END_LOG;
@@ -1646,7 +1646,7 @@ bool KGSGameDBThread::Query_SelectUnit( IN const UidType iUserUID, IN const KEGS
 		// Port: the original also tested m_ucMemberShipGrade == -1, always false for a u_char (in MSVC too): dropped
 		if( kAck.m_kUnitInfo.m_kUserGuildInfo.m_iHonorPoint == -1 )
 		{
-			START_LOG( cerr, L"길드원 등급 및 명예 포인트 정보 얻기 실패!" )
+			START_LOG( cerr, L"Failed to retrieve guild member rank and honor point information!" )
 				<< BUILD_LOG( kReq.m_iUnitUID )
 				<< END_LOG;
 
@@ -1690,7 +1690,7 @@ bool KGSGameDBThread::Query_SelectUnit( IN const UidType iUserUID, IN const KEGS
 		{
 			if( kAck.m_iSummonedPetUID != 0 )
 			{
-				START_LOG( cerr, L"엇? 소환된 펫이 또있네!? 있을수 없는 에러!" )
+				START_LOG( cerr, L"Another summoned pet exists? This should never happen!" )
 					<< BUILD_LOG( kReq.m_iUnitUID )
 					<< BUILD_LOG( kAck.m_iSummonedPetUID )
 					<< BUILD_LOG( kInfo.m_iPetUID )
@@ -1852,7 +1852,7 @@ bool KGSGameDBThread::Query_SelectUnit( IN const UidType iUserUID, IN const KEGS
 	{
 	case NetError::NET_OK:
 		{
-			START_LOG( clog, L"헤니르 보상 횟수 얻기 성공" )
+			START_LOG( clog, L"Successfully retrieved Henir reward count" )
 				<< BUILD_LOG( kReq.m_iUnitUID )
 				<< BUILD_LOG( kAck.m_PacketHenirRewardCount.m_iNormal )
 				<< BUILD_LOG( kAck.m_PacketHenirRewardCount.m_iPremium )
@@ -1861,7 +1861,7 @@ bool KGSGameDBThread::Query_SelectUnit( IN const UidType iUserUID, IN const KEGS
 		}break;
 	case -1:
 		{
-			START_LOG( cerr, L"헤니르 보상 횟수 얻기 실패 - GUnit에 없는 유닛 or 삭제된 유닛" )
+			START_LOG( cerr, L"Failed to retrieve the Henir reward count; the unit is missing from GUnit or was deleted." )
 				<< BUILD_LOG( iOK )
 				<< BUILD_LOG( kReq.m_iUnitUID )
 				<< BUILD_LOG( kAck.m_PacketHenirRewardCount.m_iNormal )
@@ -1873,7 +1873,7 @@ bool KGSGameDBThread::Query_SelectUnit( IN const UidType iUserUID, IN const KEGS
 		}break;
 	case -2:
 		{
-			START_LOG( cerr, L"헤니르 보상 횟수 초기화 실패 - 초기화 업데이트 실패" )
+			START_LOG( cerr, L"Failed to reset the Henir reward count; the database update failed." )
 				<< BUILD_LOG( iOK )
 				<< BUILD_LOG( kReq.m_iUnitUID )
 				<< BUILD_LOG( kAck.m_PacketHenirRewardCount.m_iNormal )
@@ -1885,7 +1885,7 @@ bool KGSGameDBThread::Query_SelectUnit( IN const UidType iUserUID, IN const KEGS
 		}break;
 	case -3:
 		{
-			START_LOG( cerr, L"헤니르 보상 횟수 얻기 실패 - 헤니르 테이블에 데이터가 없거나 여러개" )
+			START_LOG( cerr, L"Failed to retrieve the Henir reward count; the Henir table has no data or multiple entries." )
 				<< BUILD_LOG( iOK )
 				<< BUILD_LOG( kReq.m_iUnitUID )
 				<< BUILD_LOG( kAck.m_PacketHenirRewardCount.m_iNormal )
@@ -1897,7 +1897,7 @@ bool KGSGameDBThread::Query_SelectUnit( IN const UidType iUserUID, IN const KEGS
 		}break;
 	default:
 		{
-			START_LOG( cerr, L"헤니르 보상 횟수 얻기 실패 - 이상한 이유?!" )
+			START_LOG( cerr, L"Failed to retrieve the Henir reward count for an unexpected reason." )
 				<< BUILD_LOG( iOK )
 				<< BUILD_LOG( kReq.m_iUnitUID )
 				<< BUILD_LOG( kAck.m_PacketHenirRewardCount.m_iNormal )
@@ -1931,7 +1931,7 @@ bool KGSGameDBThread::Query_SelectUnit( IN const UidType iUserUID, IN const KEGS
 		else
 			kAck.m_kUnitInfo.m_trWarpVipEndData = 0LL;
 
-		START_LOG( clog, L"[TEST] VIP 정보 잘 가져왔는지 체크" )
+		START_LOG( clog, L"[TEST] Checking whether VIP information was retrieved correctly." )
 			<< BUILD_LOG( wstrVipEndDate.c_str() )
 			<< BUILD_LOG( wstrVipRegDate.c_str() )
 			<< BUILD_LOG( iPeriod )
@@ -1939,7 +1939,7 @@ bool KGSGameDBThread::Query_SelectUnit( IN const UidType iUserUID, IN const KEGS
 	}
 	else
 	{
-		START_LOG( clog, L"코보 익스프레스 VIP 정보 가져오기 실패!! VIP 구매 한 적이 없는 유저다." )
+		START_LOG( clog, L"Failed to retrieve Kobo Express VIP information; user may never have purchased VIP." )
 			<< BUILD_LOG( kReq.m_iUnitUID )
 			<< END_LOG;
 
@@ -2011,7 +2011,7 @@ bool KGSGameDBThread::Query_SelectUnit( IN const UidType iUserUID, IN const KEGS
 end_proc:
 	kAck.m_iOK = NetError::ERR_SELECT_UNIT_05;
 
-	START_LOG( cerr, L"케릭터 정보 얻어오는 과정 실패!" )
+	START_LOG( cerr, L"Failed to retrieve character information!" )
 		<< BUILD_LOG( kAck.m_iOK )
 		<< BUILD_LOG( kReq.m_iUnitUID )
 		<< END_LOG;
@@ -2080,7 +2080,7 @@ bool KGSGameDBThread::Query_GetInventory( IN const UidType iUnitUID,
 		}
 		else
 		{
-			START_LOG( cerr, L"중복되는 ItemUID가 있습니다. 있을 수 없는 에러!" )
+			START_LOG( cerr, L"Duplicate ItemUID found; this should never happen!" )
 				<< BUILD_LOG( iItemUID )
 				<< BUILD_LOG( iPetUID )
 				<< END_LOG;
@@ -2278,7 +2278,7 @@ bool KGSGameDBThread::Query_GetInventory( IN const UidType iUnitUID,
 					break;
 
 				default:
-					START_LOG( cerr, L"속성 강화 슬롯 넘버가 이상합니다." )
+					START_LOG( cerr, L"Invalid enchantment slot number." )
 						<< BUILD_LOG( kInventoryItemInfo.m_iItemUID )
 						<< BUILD_LOG( kAttribInfo.first )
 						<< BUILD_LOG( kAttribInfo.second )
@@ -2296,7 +2296,7 @@ bool KGSGameDBThread::Query_GetInventory( IN const UidType iUnitUID,
 			mitPet = mapPetItemList.find( kInventoryItemInfo.m_iItemUID );
 			if( mitPet == mapPetItemList.end() )
 			{
-				START_LOG( cerr, L"펫 아이템 정보에서 해당 아이템을 찾지 못했다! 일어나면 안되는 에러!" )
+				START_LOG( cerr, L"Could not find item in pet item information; this should never happen!" )
 					<< BUILD_LOG( iUnitUID )
 					<< BUILD_LOG( kInventoryItemInfo.m_iItemUID )
 					<< END_LOG;
@@ -2330,7 +2330,7 @@ bool KGSGameDBThread::Query_GetInventory( IN const UidType iUnitUID,
 	return true;
 
 end_proc:
-	START_LOG( cerr, L"캐릭터 인벤토리 얻기 실패!" )
+	START_LOG( cerr, L"Failed to retrieve character inventory!" )
 		<< BUILD_LOG( iUnitUID )
 		<< END_LOG;
     return false;
@@ -2346,7 +2346,7 @@ bool KGSGameDBThread::Query_InsertItemList( IN const SEnum::GET_ITEM_REASON eGet
 {
 	if( SEnum::IsValidGetItemReason( eGetItemReason ) == false )
 	{
-		START_LOG( cerr, L"유효하지않은 아이템 생성 사유입니다!" )
+		START_LOG( cerr, L"Invalid item creation reason!" )
 			<< BUILD_LOG( eGetItemReason )
 			<< BUILD_LOG( iUnitUID )
 			<< BUILD_LOG( vecItemInfo.size() )
@@ -2389,7 +2389,7 @@ bool KGSGameDBThread::Query_InsertItemList( IN const SEnum::GET_ITEM_REASON eGet
 
 		if( iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"아이템 삽입 실패." )
+			START_LOG( cerr, L"Failed to insert item." )
 				<< BUILD_LOG( iOK )
 				<< BUILD_LOG( iUnitUID )
 				<< BUILD_LOG( kNewItemInfo.m_iItemID )
@@ -2424,7 +2424,7 @@ bool KGSGameDBThread::Query_InsertItemList( IN const SEnum::GET_ITEM_REASON eGet
 
 			if( iOK != NetError::NET_OK )
 			{
-				START_LOG( cerr, L"밀봉 정보 업데이트 실패." )
+				START_LOG( cerr, L"Failed to update sealing information." )
 					<< BUILD_LOG( iOK )
 					<< BUILD_LOG( iItemUID )
 					<< BUILD_LOGc( kNewItemInfoResult.m_ucSealData )
@@ -2490,7 +2490,7 @@ bool KGSGameDBThread::Query_InsertItemList( IN const SEnum::GET_ITEM_REASON eGet
 
 				if( iOK != NetError::NET_OK )
 				{
-					START_LOG( cerr, L"아이템 소켓 정보 업데이트 실패." )
+					START_LOG( cerr, L"Failed to update the item socket information." )
 						<< BUILD_LOG( iOK )
 						<< BUILD_LOG( iUnitUID )
 						<< BUILD_LOG( iItemUID )
@@ -2545,7 +2545,7 @@ bool KGSGameDBThread::Query_InsertItemList( IN const SEnum::GET_ITEM_REASON eGet
 
 				if( iOK != NetError::NET_OK )
 				{
-					START_LOG( cerr, L"랜덤 소켓 정보 업데이트 실패." )
+					START_LOG( cerr, L"Failed to update random socket information." )
 						<< BUILD_LOG( iOK )
 						<< BUILD_LOG( iUnitUID )
 						<< BUILD_LOG( iItemUID )
@@ -2758,7 +2758,7 @@ void KGSGameDBThread::Query_UpdateSealItem( IN const std::set< int >& setSealIte
 end_proc:
 		if( iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"봉인 DB 업데이트 실패." )
+			START_LOG( cerr, L"Failed to update the seal information in the database." )
 				<< BUILD_LOG( iOK )
 				<< BUILD_LOG( mit->first )
 				<< BUILD_LOGc( mit->second.m_ucSealData )
@@ -2793,7 +2793,7 @@ void KGSGameDBThread::Query_UpdateDungeonClear( UidType iUnitUID, std::map< int,
 
         if( iOK != NetError::NET_OK )
         {
-            START_LOG( cerr, L"던전 클리어 정보 업데이트 실패." )
+            START_LOG( cerr, L"Failed to update dungeon clear information." )
                 << BUILD_LOG( iOK )
                 << END_LOG;
 
@@ -2835,7 +2835,7 @@ void KGSGameDBThread::Query_UpdateDungeonPlay( IN UidType iUnitUID, IN std::map<
 
 		if( iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"던전 플레이 정보 업데이트 실패." )
+			START_LOG( cerr, L"Failed to update dungeon play information." )
 				<< BUILD_LOG( iOK )
 				<< BUILD_LOG( mitDungeonPlayInfo->second.m_iDungeonID )
 				<< BUILD_LOG( mitDungeonPlayInfo->second.m_iPlayTimes )
@@ -2871,7 +2871,7 @@ void KGSGameDBThread::Query_UpdateTCClear( UidType iUnitUID, std::map< int, KTCC
 
 		if( iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"훈련소 클리어 정보 업데이트 실패." )
+			START_LOG( cerr, L"Failed to update training room clear information." )
 				<< BUILD_LOG( iOK )
 				<< END_LOG;
 
@@ -2923,7 +2923,7 @@ bool KGSGameDBThread::Query_UpdateItemQuantity( UidType iUnitUID, std::map< UidT
 
             if( iOK != NetError::NET_OK )
             {
-                START_LOG( cerr, L"아이템 정보 업데이트 실패." )
+                START_LOG( cerr, L"Failed to update item information." )
                     << BUILD_LOG( iOK )
 					<< BUILD_LOG( iUnitUID )
 					<< BUILD_LOG( mit->first )
@@ -2933,7 +2933,7 @@ bool KGSGameDBThread::Query_UpdateItemQuantity( UidType iUnitUID, std::map< UidT
 				//{{ 2008. 10. 23  최육사	증분값 버그한번 잡아보자~!
 				if( iOK == -5 )
 				{
-					START_LOG( cout, L"증분값 업데이트 버그 발생!" )
+					START_LOG( cout, L"Increment update bug!" )
 						<< BUILD_LOG( iOK )
 						<< BUILD_LOG( iUnitUID )
 						<< BUILD_LOG( mit->first )
@@ -2946,7 +2946,7 @@ bool KGSGameDBThread::Query_UpdateItemQuantity( UidType iUnitUID, std::map< UidT
         }
         else
         {
-            START_LOG( cerr, L"아이템 수량 업데이트중 BeginFetch 실패." );
+            START_LOG( cerr, L"BeginFetch failed while updating item quantity." );
         }
 
 end_proc:
@@ -2989,7 +2989,7 @@ bool KGSGameDBThread::Query_UpdateItemEndurance( IN UidType iUnitUID, IN std::ma
 
 			if( iOK != NetError::NET_OK )
 			{
-				START_LOG( cerr, L"아이템 정보 업데이트 실패." )
+				START_LOG( cerr, L"Failed to update item information." )
 					<< BUILD_LOG( iOK )
 					<< BUILD_LOG( iUnitUID )
 					<< BUILD_LOG( mit->first )
@@ -2999,7 +2999,7 @@ bool KGSGameDBThread::Query_UpdateItemEndurance( IN UidType iUnitUID, IN std::ma
 		}
 		else
 		{
-			START_LOG( cerr, L"아이템 내구도 업데이트중 BeginFetch 실패." );
+			START_LOG( cerr, L"BeginFetch failed while updating item durability." );
 		}
 
 end_proc:
@@ -3096,7 +3096,7 @@ void KGSGameDBThread::Query_UpdateItemPosition( IN UidType iUnitUID, IN std::map
 
 			if( iOK != NetError::NET_OK )
 			{
-				START_LOG( cerr, L"아이템 위치 업데이트 실패." )
+				START_LOG( cerr, L"Failed to update the item position." )
 					<< BUILD_LOG( iOK )
 					<< BUILD_LOG( iUnitUID )
 					<< BUILD_LOG( mit->first )
@@ -3108,7 +3108,7 @@ void KGSGameDBThread::Query_UpdateItemPosition( IN UidType iUnitUID, IN std::map
 		}
 		else
 		{
-			START_LOG( cerr, L"아이템 위치 업데이트중 BeginFetch 실패." );
+			START_LOG( cerr, L"BeginFetch failed while updating item location." );
 		}
 
 end_proc:
@@ -3143,7 +3143,7 @@ void KGSGameDBThread::Query_DeleteItem( IN std::vector< KDeletedItemInfo >& vecD
 
             if( iOK != NetError::NET_OK )
             {
-                START_LOG( cerr, L"아이템 삭제 실패." )
+                START_LOG( cerr, L"Failed to delete the item." )
                     << BUILD_LOG( iOK )
 					<< BUILD_LOG( vit->m_iItemUID )
 					<< BUILD_LOGc( vit->m_ucDeleteReason )
@@ -3152,7 +3152,7 @@ void KGSGameDBThread::Query_DeleteItem( IN std::vector< KDeletedItemInfo >& vecD
         }
         else
         {
-            START_LOG( cerr, L"아이템 삭제 중 BeginFetch 실패." );
+            START_LOG( cerr, L"BeginFetch failed while deleting item." );
         }
 end_proc:
         if( iOK != NetError::NET_OK )
@@ -3182,7 +3182,7 @@ bool KGSGameDBThread::Query_GetGuildMemberGrade( IN UidType iUnitUID, OUT u_char
 	// ran; kept that way (docs/porting/server-game.md, Pendências)
 	if( false )
 	{
-		START_LOG( cwarn, L"길드원 등급 정보가 존재하지 않음." )
+		START_LOG( cwarn, L"Guild member rank information does not exist." )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 
@@ -3238,7 +3238,7 @@ end_proc:
 	}
 	else
 	{
-		START_LOG( cerr, L"캐릭터 기본 정보 업데이트 실패." )
+		START_LOG( cerr, L"Failed to update character base information." )
 			<< BUILD_LOG( iOK )
 			<< BUILD_LOG( kReq.m_iUnitUID )
 			<< BUILD_LOG( kReq.m_iEXP )
@@ -3301,7 +3301,7 @@ end_proc:
 	}
 	else
 	{
-		START_LOG( cerr, L"유닛 대전 정보 업데이트 실패." )
+		START_LOG( cerr, L"Failed to update unit PvP information." )
 			<< BUILD_LOG( iOK )
 			//{{ 2012. 06. 22	박세훈	2012 대전 시즌2
 			<< BUILD_LOG( kReq.m_iUnitUID )
@@ -3358,7 +3358,7 @@ end_proc:
 	}
 	else
 	{
-		START_LOG( cerr, L"유닛 대전 정보 업데이트 실패." )
+		START_LOG( cerr, L"Failed to update unit PvP information." )
 			<< BUILD_LOG( iOK )
 			//{{ 2012. 06. 22	박세훈	2012 대전 시즌2
 			<< BUILD_LOG( kNot.m_iUnitUID )
@@ -3394,7 +3394,7 @@ bool KGSGameDBThread::Query_UpdateLastGamePoint( IN const KDBE_UPDATE_UNIT_INFO_
 end_proc:
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"로그 오프 ED체크 정보 업데이트 실패." )
+		START_LOG( cerr, L"Failed to update ED check information on logout." )
 			<< BUILD_LOG( iOK )
 			<< BUILD_LOG( kReq.m_iUnitUID )
 			<< BUILD_LOG( kReq.m_iRealDataED )
@@ -3425,7 +3425,7 @@ bool KGSGameDBThread::Query_UpdateResurrectionStone( IN const KDBE_UPDATE_UNIT_I
 		}
 		else
 		{
-			START_LOG( cerr, L"부활석 업데이트 실패." )
+			START_LOG( cerr, L"Failed to update resurrection stone." )
 				<< BUILD_LOG( iOK )
 				<< BUILD_LOG( kReq.m_iUnitUID )
 				<< BUILD_LOG( kReq.m_iNumResurrectionStone )
@@ -3451,7 +3451,7 @@ bool KGSGameDBThread::Query_UpdateResurrectionStone( IN const KDBE_UPDATE_UNIT_I
 		}
 		else
 		{
-			START_LOG( cerr, L"자동결제 부활석 업데이트 실패." )
+			START_LOG( cerr, L"Failed to update auto-payment resurrection stone." )
 				<< BUILD_LOG( iOK )
 				<< BUILD_LOG( kReq.m_iUnitUID )
 				<< BUILD_LOG( kReq.m_iNumAutoPaymentResStone )
@@ -3464,7 +3464,7 @@ bool KGSGameDBThread::Query_UpdateResurrectionStone( IN const KDBE_UPDATE_UNIT_I
 	return true;
 
 end_proc:
-	START_LOG( cerr, L"부활석 정보 업데이트 실패!" )
+	START_LOG( cerr, L"Failed to update resurrection stone information!" )
 		<< BUILD_LOG( kReq.m_iUnitUID )
 		<< BUILD_LOG( kReq.m_iNumResurrectionStone )
 		<< BUILD_LOG( kReq.m_iNumAutoPaymentResStone )
@@ -3479,7 +3479,7 @@ bool KGSGameDBThread::Query_UpdateQuestInfo( IN const KDBE_UPDATE_UNIT_INFO_REQ&
 	{
 		if( kQuestInfo.m_vecClearData.size() != 5 )
 		{
-			START_LOG( cerr, L"퀘스트 진행 정보가 5개가 아니다! 절대 일어나서는 안되는 에러!" )
+			START_LOG( cerr, L"Quest progress information count is not five; this should never happen!" )
 				<< BUILD_LOG( kReq.m_iUnitUID )
 				<< BUILD_LOG( kQuestInfo.m_iQuestID )
 				<< BUILD_LOG( kQuestInfo.m_vecClearData.size() )
@@ -3505,7 +3505,7 @@ bool KGSGameDBThread::Query_UpdateQuestInfo( IN const KDBE_UPDATE_UNIT_INFO_REQ&
 
 		if( iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"퀘스트 진행 정보 업데이트 실패!" )
+			START_LOG( cerr, L"Failed to update quest progress information!" )
 				<< BUILD_LOG( iOK )
 				<< BUILD_LOG( kReq.m_iUnitUID )
 				<< BUILD_LOG( kQuestInfo.m_iQuestID )
@@ -3533,7 +3533,7 @@ bool KGSGameDBThread::Query_UpdateQuestInfo( IN const KDBE_UPDATE_UNIT_INFO_REQ&
 
 		if( iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"퀘스트 포기 정보 업데이트 실패!" )
+			START_LOG( cerr, L"Failed to update quest abandonment information!" )
 				<< BUILD_LOG( kReq.m_iUnitUID )
 				<< BUILD_LOG( iGiveUpQuestID )
 				<< END_LOG;
@@ -3544,7 +3544,7 @@ bool KGSGameDBThread::Query_UpdateQuestInfo( IN const KDBE_UPDATE_UNIT_INFO_REQ&
 	return true;
 
 end_proc:
-	START_LOG( cerr, L"퀘스트 정보 업데이트 실패!" )
+	START_LOG( cerr, L"Failed to update quest information!" )
 		<< BUILD_LOG( kReq.m_iUnitUID )
 		<< END_LOG;
 	return false;
@@ -3557,7 +3557,7 @@ bool KGSGameDBThread::Query_UpdateTitleInfo( IN const KDBE_UPDATE_UNIT_INFO_REQ&
 	{
 		if( kMission.m_vecClearData.size() != 5 )
 		{
-			START_LOG( cerr, L"칭호 클리어 정보가 5개가 아니다! 절대 일어나서는 안되는 에러!" )
+			START_LOG( cerr, L"Title completion information count is not five; this should never happen!" )
 				<< BUILD_LOG( kReq.m_iUnitUID )
 				<< BUILD_LOG( kMission.m_iTitleID )
 				<< BUILD_LOG( kMission.m_vecClearData.size() )
@@ -3583,7 +3583,7 @@ bool KGSGameDBThread::Query_UpdateTitleInfo( IN const KDBE_UPDATE_UNIT_INFO_REQ&
 
 		if( iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"미션 정보 업데이트 실패!" )
+			START_LOG( cerr, L"Failed to update mission information!" )
 				<< BUILD_LOG( iOK )
 				<< BUILD_LOG( kReq.m_iUnitUID )
 				<< BUILD_LOG( kMission.m_iTitleID )
@@ -3617,7 +3617,7 @@ bool KGSGameDBThread::Query_UpdateTitleInfo( IN const KDBE_UPDATE_UNIT_INFO_REQ&
 
 		if( iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"칭호 장착 정보 업데이트 실패!" )
+			START_LOG( cerr, L"Failed to update equipped title information!" )
 				<< BUILD_LOG( iOK )
 				<< BUILD_LOG( kReq.m_iUnitUID )
 				<< BUILD_LOG( kReq.m_iInitTitleID )
@@ -3662,7 +3662,7 @@ bool KGSGameDBThread::Query_UpdateTitleInfo( IN const KDBE_UPDATE_UNIT_INFO_REQ&
 	return true;
 
 end_proc:
-	START_LOG( cerr, L"칭호 정보 업데이트 실패!" )
+	START_LOG( cerr, L"Failed to update title information!" )
 		<< BUILD_LOG( kReq.m_iUnitUID )
 		<< END_LOG;
     return false;
@@ -3681,7 +3681,7 @@ bool KGSGameDBThread::Query_UpdateSkillSlotInfo( IN const KDBE_UPDATE_UNIT_INFO_
 
 		if ( vecSkillIDInSlots.size() < 4 )
 		{
-			START_LOG( cerr, L"스킬 슬롯 정보가 이상합니다!" )
+			START_LOG( cerr, L"Invalid skill slot information!" )
 				<< BUILD_LOG( kReq.m_iUnitUID )
 				<< BUILD_LOG( vecSkillIDInSlots.size() )
 				<< END_LOG;
@@ -3707,7 +3707,7 @@ bool KGSGameDBThread::Query_UpdateSkillSlotInfo( IN const KDBE_UPDATE_UNIT_INFO_
 
 			if( iOK != NetError::NET_OK )
 			{
-				START_LOG( cerr, L"스킬 슬롯 정보 업데이트 실패!" )
+				START_LOG( cerr, L"Failed to update skill slot information!" )
 					<< BUILD_LOG( kReq.m_iUnitUID )
 					<< BUILD_LOG( vecSkillIDInSlots[0] )
 					<< BUILD_LOG( vecSkillIDInSlots[1] )
@@ -3744,7 +3744,7 @@ bool KGSGameDBThread::Query_UpdateSkillSlotInfo( IN const KDBE_UPDATE_UNIT_INFO_
 
 			if( iOK != NetError::NET_OK )
 			{
-				START_LOG( cerr, L"스킬 슬롯B 정보 업데이트 실패!" )
+				START_LOG( cerr, L"Failed to update skill slot B information!" )
 					<< BUILD_LOG( kReq.m_iUnitUID )
 					<< BUILD_LOG( vecSkillIDInSlots[4] )
 					<< BUILD_LOG( vecSkillIDInSlots[5] )
@@ -3762,7 +3762,7 @@ bool KGSGameDBThread::Query_UpdateSkillSlotInfo( IN const KDBE_UPDATE_UNIT_INFO_
 	return true;
 
 end_proc:
-	START_LOG( cerr, L"스킬 슬롯 정보 업데이트 실패!" )
+	START_LOG( cerr, L"Failed to update skill slot information!" )
 		<< BUILD_LOG( kReq.m_iUnitUID )
 		<< END_LOG;
 	return false;
@@ -3793,7 +3793,7 @@ bool KGSGameDBThread::Query_UpdateCommunityOption( IN const KDBE_UPDATE_UNIT_INF
 end_proc:
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"커뮤니티 옵션 정보 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update community option information!" )
 			<< BUILD_LOG( kReq.m_iUnitUID )
 			<< BUILD_LOGc( kReq.m_kDenyOptions.m_cDenyFriendShip )
 			<< BUILD_LOGc( kReq.m_kDenyOptions.m_cDenyInviteGuild )
@@ -3825,7 +3825,7 @@ bool KGSGameDBThread::Query_UpdateWishList( IN const UidType iUserUID, IN const 
 end_proc:
 		if( iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"장바구니 DB업데이트 실패!" )
+			START_LOG( cerr, L"Failed to update shopping cart in database!" )
 				<< BUILD_LOG( iOK )
 				<< BUILD_LOG( iUserUID )
 				<< BUILD_LOG( mitWishList->first )
@@ -3864,7 +3864,7 @@ bool KGSGameDBThread::Query_UpdateRankingInfo( IN const KDBE_UPDATE_UNIT_INFO_RE
 end_proc:
 		if( iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"헤니르 랭킹 정보 DB업데이트 실패!" )
+			START_LOG( cerr, L"Failed to update Henir ranking information in the database!" )
 				<< BUILD_LOG( iOK )
 				<< BUILD_LOG( kReq.m_iUnitUID )
 				<< BUILD_LOG( kRankingInfo.m_iStageCount )
@@ -3908,7 +3908,7 @@ bool KGSGameDBThread::Query_UpdateGuildInfo( IN const KDBE_UPDATE_UNIT_INFO_REQ&
 
 		if( iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"길드 로그아웃 처리 실패!" )
+			START_LOG( cerr, L"Failed to process guild logout!" )
 				<< BUILD_LOG( iOK )
 				<< BUILD_LOG( kReq.m_iUnitUID )
 				<< BUILD_LOG( kReq.m_iGuildUID )
@@ -3933,7 +3933,7 @@ bool KGSGameDBThread::Query_UpdateGuildInfo( IN const KDBE_UPDATE_UNIT_INFO_REQ&
 
 		if( iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"길드원 명예 포인트 업데이트 실패." )
+			START_LOG( cerr, L"Failed to update guild member honor points." )
 				<< BUILD_LOG( iOK )
 				<< BUILD_LOG( kReq.m_iUnitUID )
 				<< BUILD_LOG( kReq.m_iGuildUID )
@@ -3948,7 +3948,7 @@ bool KGSGameDBThread::Query_UpdateGuildInfo( IN const KDBE_UPDATE_UNIT_INFO_REQ&
 	return true;
 
 end_proc:
-	START_LOG( cerr, L"길드 정보 업데이트 실패." )
+	START_LOG( cerr, L"Failed to update guild information." )
 		<< BUILD_LOG( kReq.m_iUnitUID )
 		<< BUILD_LOG( kReq.m_iGuildUID )
 		<< END_LOG;
@@ -3972,7 +3972,7 @@ bool KGSGameDBThread::Query_UpdateConnectTimeEventInfo( IN const UidType iUserUI
 
 			if( iOK != NetError::NET_OK )
 			{
-				START_LOG( cerr, L"이벤트 타임 DB업데이트 실패?" )
+				START_LOG( cerr, L"Failed to update the event time in the database." )
 					<< BUILD_LOG( iOK )
 					<< BUILD_LOG( iUserUID )
 					<< BUILD_LOG( kEventInfo.m_iEventUID )
@@ -3993,7 +3993,7 @@ bool KGSGameDBThread::Query_UpdateConnectTimeEventInfo( IN const UidType iUserUI
 
 			if( iOK != NetError::NET_OK )
 			{
-				START_LOG( cerr, L"이벤트 타임 DB업데이트 실패?" )
+				START_LOG( cerr, L"Failed to update the event time in the database." )
 					<< BUILD_LOG( iOK )
 					<< BUILD_LOG( kReq.m_iUnitUID )
 					<< BUILD_LOG( kEventInfo.m_iEventUID )
@@ -4006,7 +4006,7 @@ bool KGSGameDBThread::Query_UpdateConnectTimeEventInfo( IN const UidType iUserUI
 	return true;
 
 end_proc:
-	START_LOG( cerr, L"접속 시간 이벤트 DB업데이트 실패" )
+	START_LOG( cerr, L"Failed to update connection-time event in the database." )
 		<< BUILD_LOG( iUserUID )
 		<< BUILD_LOG( kReq.m_iUnitUID )
 		<< END_LOG;
@@ -4041,7 +4041,7 @@ bool KGSGameDBThread::Query_UpdatePetInfo( IN const KDBE_UPDATE_UNIT_INFO_REQ& k
 end_proc:
 		if( iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"펫 정보 업데이트 실패!" )
+			START_LOG( cerr, L"Failed to update the pet information!" )
 				<< BUILD_LOG( iOK )
 				<< BUILD_LOG( kPet.m_iPetUID )
 				<< BUILD_LOGc( kPet.m_cEvolutionStep )
@@ -4082,7 +4082,7 @@ bool KGSGameDBThread::Query_UpdateGameCountInfo( IN const KDBE_UPDATE_UNIT_INFO_
 end_proc:
 		if( iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"캐릭터 게임 카운트 정보 업데이트!" )
+			START_LOG( cerr, L"Updating character game-count information." )
 				<< BUILD_LOG( iOK )
 				<< BUILD_LOG( kReq.m_iUnitUID )
 				<< BUILD_LOG( mitCGC->first )
@@ -4114,7 +4114,7 @@ bool KGSGameDBThread::Query_UpdateHenirRewardCount( IN const KDBE_UPDATE_UNIT_IN
 end_proc:
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"캐릭터 게임 카운트 정보 업데이트!" )
+		START_LOG( cerr, L"Updating character game-count information." )
 			<< BUILD_LOG( iOK )
 			<< BUILD_LOG( kReq.m_iUnitUID )
 			<< BUILD_LOG( kReq.m_kHenirRewardCnt.m_iNormal )
@@ -4148,7 +4148,7 @@ bool KGSGameDBThread::Query_UpdateLastPosition( IN const KDBE_UPDATE_UNIT_INFO_R
 end_proc:
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"유닛 마을 위치 정보 업데이트 실패." )
+		START_LOG( cerr, L"Failed to update unit town location." )
 			<< BUILD_LOG( iOK )
 			<< BUILD_LOG( kReq.m_iUnitUID )
 			<< BUILD_LOG( kReq.m_kLastPos.m_iMapID )
@@ -4169,7 +4169,7 @@ bool KGSGameDBThread::Query_UpdateGamePlayStatus( IN const KDBE_UPDATE_UNIT_INFO
     KGamePlayStatus kPlayStatus;
 	if( kReq.m_kGamePlayStatus.Get( kPlayStatus ) == false )
 	{
-		START_LOG( cerr, L"게임 플레이 상태 정보가 없다? GSUser에서 무조건 받아오지 않나?" )
+		START_LOG( cerr, L"No gameplay status information; should this not always come from GSUser?" )
 			<< BUILD_LOG( kReq.m_iUnitUID )
 			<< END_LOG;
 		return false;
@@ -4197,7 +4197,7 @@ bool KGSGameDBThread::Query_UpdateGamePlayStatus( IN const KDBE_UPDATE_UNIT_INFO
 
 		if( iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"캐릭터 플레이 정보 저장 실패!" )
+			START_LOG( cerr, L"Failed to save the character's play information!" )
 				<< BUILD_LOG( iOK )
 				<< BUILD_LOG( kReq.m_iUnitUID )
 				<< BUILD_LOG( kPlayStatus.m_iMaxHP )
@@ -4226,7 +4226,7 @@ bool KGSGameDBThread::Query_UpdateGamePlayStatus( IN const KDBE_UPDATE_UNIT_INFO
 			if( index >= 8 )
 			{
 				// 배열 사이즈 오버 이므로 확인 필요
-				START_LOG( cerr, L"스킬 배열 index 가 오버 되었습니다." )
+				START_LOG( cerr, L"Skill array index is out of range." )
 					<< BUILD_LOG( kReq.m_iUnitUID )
 					<< BUILD_LOG( index )
 					<< BUILD_LOG( mit->first )
@@ -4269,7 +4269,7 @@ bool KGSGameDBThread::Query_UpdateGamePlayStatus( IN const KDBE_UPDATE_UNIT_INFO
 
 		if( iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"캐릭터 스킬 쿨타임 정보 저장 실패!" )
+			START_LOG( cerr, L"Failed to save character skill cooldown information!" )
 				<< BUILD_LOG( iOK )
 				<< BUILD_LOG( kReq.m_iUnitUID )
 				<< BUILD_LOG( arrySlotID[0] )
@@ -4374,7 +4374,7 @@ bool KGSGameDBThread::Query_UpdateGamePlayStatus( IN const KDBE_UPDATE_UNIT_INFO
 
 				if( iOK != NetError::NET_OK )
 				{
-					START_LOG( cerr, L"캐릭터 퀵 슬롯 쿨타임 정보 저장 실패!" )
+					START_LOG( cerr, L"Failed to save character quick-slot cooldown information!" )
 						<< BUILD_LOG( iOK )
 						<< BUILD_LOG( kReq.m_iUnitUID )
 						<< BUILD_LOG( arryTempSlotID[0] )
@@ -4424,7 +4424,7 @@ bool KGSGameDBThread::Query_UpdateGamePlayStatus( IN const KDBE_UPDATE_UNIT_INFO
 
 			if( iOK != NetError::NET_OK )
 			{
-				START_LOG( cerr, L"캐릭터 플레이 정보 저장 실패!" )
+				START_LOG( cerr, L"Failed to save the character's play information!" )
 					<< BUILD_LOG( iOK )
 					<< BUILD_LOG( kReq.m_iUnitUID )
 					<< BUILD_LOG( it->first )
@@ -4437,7 +4437,7 @@ bool KGSGameDBThread::Query_UpdateGamePlayStatus( IN const KDBE_UPDATE_UNIT_INFO
 	return true;
 
 end_proc:
-	START_LOG( cerr, L"캐릭터 플레이 정보 저장 실패!" )
+	START_LOG( cerr, L"Failed to save the character's play information!" )
 		<< BUILD_LOG( kReq.m_iUnitUID )
 		<< END_LOG;
 	return false;
@@ -4466,7 +4466,7 @@ bool KGSGameDBThread::Query_UpdateBuffEffect( IN const KDBE_UPDATE_UNIT_INFO_REQ
 end_proc:
 		if( iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"버프 정보 업데이트 실패!" )
+			START_LOG( cerr, L"Failed to update buff information!" )
 				<< BUILD_LOG( kReq.m_iUnitUID )
 				<< BUILD_LOG( kRecordBuffInfo.m_iBuffID )
 				<< BUILD_LOG( kRecordBuffInfo.m_wstrStartTime )
@@ -4551,7 +4551,7 @@ bool KGSGameDBThread::Query_UpdateShareItem( IN const KDBE_UPDATE_SHARE_ITEM_REQ
 
 			if( kAck.m_iOK != NetError::NET_OK )
 			{
-				START_LOG( cerr, L"은행 공유 : 아이템 정보 업데이트 실패." )
+				START_LOG( cerr, L"Bank sharing: failed to update item information." )
 					<< BUILD_LOG( kAck.m_iOK )
 					<< BUILD_LOG( mit->second.m_iUnitUID )
 					<< BUILD_LOG( mit->first )
@@ -4561,7 +4561,7 @@ bool KGSGameDBThread::Query_UpdateShareItem( IN const KDBE_UPDATE_SHARE_ITEM_REQ
 		}
 		else
 		{
-			START_LOG( cerr, L"은행 공유 : 아이템 내구도 업데이트중 BeginFetch 실패." );
+			START_LOG( cerr, L"Shared bank: BeginFetch failed while updating item durability." );
 		}
 	}
 
@@ -4581,7 +4581,7 @@ bool KGSGameDBThread::Query_UpdateShareItem( IN const KDBE_UPDATE_SHARE_ITEM_REQ
 
 			if( kAck.m_iOK != NetError::NET_OK )
 			{
-				START_LOG( cerr, L"은행 공유 : 아이템 정보 업데이트 실패." )
+				START_LOG( cerr, L"Bank sharing: failed to update item information." )
 					<< BUILD_LOG( kAck.m_iOK )
 					<< BUILD_LOG( mit->second.m_iUnitUID )
 					<< BUILD_LOG( mit->first )
@@ -4591,7 +4591,7 @@ bool KGSGameDBThread::Query_UpdateShareItem( IN const KDBE_UPDATE_SHARE_ITEM_REQ
 				//{{ 2008. 10. 23  최육사	증분값 버그한번 잡아보자~!
 				if( kAck.m_iOK == -5 )
 				{
-					START_LOG( cout, L"은행 공유 : 증분값 업데이트 버그 발생!" )
+					START_LOG( cout, L"Shared bank: increment update bug!" )
 						<< BUILD_LOG( kAck.m_iOK )
 						<< BUILD_LOG( mit->second.m_iUnitUID )
 						<< BUILD_LOG( mit->first )
@@ -4604,7 +4604,7 @@ bool KGSGameDBThread::Query_UpdateShareItem( IN const KDBE_UPDATE_SHARE_ITEM_REQ
 		}
 		else
 		{
-			START_LOG( cerr, L"은행 공유 : 아이템 수량 업데이트중 BeginFetch 실패." );
+			START_LOG( cerr, L"Shared bank: BeginFetch failed while updating item quantity." );
 		}
 	}
 
@@ -4626,7 +4626,7 @@ bool KGSGameDBThread::Query_UpdateShareItem( IN const KDBE_UPDATE_SHARE_ITEM_REQ
 
 			if( kAck.m_iOK != NetError::NET_OK )
 			{
-				START_LOG( cerr, L"은행 공유 : 아이템 위치 업데이트 실패." )
+				START_LOG( cerr, L"Bank sharing: failed to update the item position." )
 					<< BUILD_LOG( kAck.m_iOK )
 					<< BUILD_LOG( iItemUID )
 					<< BUILD_LOG( iCategory )
@@ -4636,7 +4636,7 @@ bool KGSGameDBThread::Query_UpdateShareItem( IN const KDBE_UPDATE_SHARE_ITEM_REQ
 		}
 		else
 		{
-			START_LOG( cerr, L"은행 공유 : 아이템 위치 업데이트 BeginFetch 실패." );
+			START_LOG( cerr, L"Shared bank: BeginFetch failed while updating item location." );
 		}
 	}
 
@@ -4665,7 +4665,7 @@ bool KGSGameDBThread::Query_UpdateShareItem( IN const KDBE_UPDATE_SHARE_ITEM_REQ
 
 			if( kAck.m_iOK != NetError::NET_OK )
 			{
-				START_LOG( cerr, L"은행 공유 : 공유은행으로 아이템 넣기 실패" )
+				START_LOG( cerr, L"Bank sharing: failed to deposit an item into the shared bank." )
 					<< BUILD_LOG( kAck.m_iOK )
 					<< BUILD_LOG( kShareInfo.m_iFromUnitUID )
 					<< BUILD_LOG( kShareInfo.m_iToUnitUID )
@@ -4684,7 +4684,7 @@ bool KGSGameDBThread::Query_UpdateShareItem( IN const KDBE_UPDATE_SHARE_ITEM_REQ
 		}
 		else
 		{
-			START_LOG( cerr, L"은행 공유 : 공유은행으로 아이템 넣기 BeginFetch 실패." );
+			START_LOG( cerr, L"Shared bank: BeginFetch failed while inserting item." );
 		}
 	}
 
@@ -4713,7 +4713,7 @@ bool KGSGameDBThread::Query_UpdateShareItem( IN const KDBE_UPDATE_SHARE_ITEM_REQ
 
 			if( kAck.m_iOK != NetError::NET_OK )
 			{
-				START_LOG( cerr, L"은행 공유 : 공유은행에서 아이템 꺼내기 실패" )
+				START_LOG( cerr, L"Bank sharing: failed to retrieve an item from the shared bank." )
 					<< BUILD_LOG( kAck.m_iOK )
 					<< BUILD_LOG( kShareInfo.m_iFromUnitUID )
 					<< BUILD_LOG( kShareInfo.m_iToUnitUID )
@@ -4732,7 +4732,7 @@ bool KGSGameDBThread::Query_UpdateShareItem( IN const KDBE_UPDATE_SHARE_ITEM_REQ
 		}
 		else
 		{
-			START_LOG( cerr, L"은행 공유 : 공유은행에서 아이템 꺼내기 BeginFetch 실패." );
+			START_LOG( cerr, L"Bank sharing: BeginFetch failed while retrieving an item from the shared bank." );
 		}
 	}
 
@@ -4747,7 +4747,7 @@ bool KGSGameDBThread::Query_UpdateShareItem( IN const KDBE_UPDATE_SHARE_ITEM_REQ
 
 			if( kAck.m_iOK != NetError::NET_OK )
 			{
-				START_LOG( cerr, L"은행 공유 : 아이템 삭제 실패." )
+				START_LOG( cerr, L"Bank sharing: failed to delete the item." )
 					<< BUILD_LOG( kAck.m_iOK )
 					<< BUILD_LOG( iItemUID )
 					<< END_LOG;
@@ -4755,7 +4755,7 @@ bool KGSGameDBThread::Query_UpdateShareItem( IN const KDBE_UPDATE_SHARE_ITEM_REQ
 		}
 		else
 		{
-			START_LOG( cerr, L"은행 공유 : 공유은행에서 아이템 꺼내기 BeginFetch 실패." );
+			START_LOG( cerr, L"Bank sharing: BeginFetch failed while retrieving an item from the shared bank." );
 		}
 	}
 
@@ -4853,14 +4853,14 @@ IMPL_ON_FUNC( DBE_UPDATE_UNIT_INFO_REQ )
 	//{{ 2008. 10. 23  최육사	증분값 업데이트 실패
 	if( bUpdateFailed )
 	{
-		START_LOG( cout, L"증분값 업데이트 실패!" )
+		START_LOG( cout, L"Failed to update the increment value!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_bFinal );
 
 		std::map< UidType, int >::const_iterator mitQC = kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.begin();
 		for( ; mitQC != kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.end(); ++mitQC )
 		{
-			START_LOG( cout, L"아이템 정보" )
+			START_LOG( cout, L"Item information" )
 				<< BUILD_LOG( mitQC->first )
 				<< BUILD_LOG( mitQC->second );
 		}
@@ -5015,7 +5015,7 @@ _IMPL_ON_FUNC( DBE_MY_UNIT_AND_INVENTORY_INFO_LIST_REQ, std::wstring )
 		//////////////////////////////////////////////////////////////////////////
 		if( CXSLUnit::IsValidUnitClass( static_cast<CXSLUnit::UNIT_CLASS>(kUnitInfo.m_cUnitClass) ) == false )
 		{
-			START_LOG( cout, L"[알림] 등록되지 않은 유닛 클래스입니다!" )
+			START_LOG( cout, L"[Notice] Unregistered unit class!" )
 				<< BUILD_LOG( kUnitInfo.m_nUnitUID )
 				<< BUILD_LOG( kUnitInfo.m_wstrNickName )
 				<< BUILD_LOGc( kUnitInfo.m_cUnitClass );
@@ -5161,7 +5161,7 @@ _IMPL_ON_FUNC( DBE_MY_UNIT_AND_INVENTORY_INFO_LIST_REQ, std::wstring )
 //			//}}
             if( mit != vit->m_mapEquippedItem.end() )
             {
-                START_LOG( cerr, L"장착 아이템 정보가 중복됨." )
+                START_LOG( cerr, L"Duplicate equipped item information." )
                     << BUILD_LOG( kInventoryItemInfo.m_iItemUID )
 					//{{ 2011. 12. 15	최육사	인벤토리 슬롯ID크기 늘리기
 //#ifdef SERV_EXPAND_SLOT_ID_DATA_SIZE
@@ -5226,7 +5226,7 @@ _IMPL_ON_FUNC( DBE_MY_UNIT_AND_INVENTORY_INFO_LIST_REQ, std::wstring )
 				break;
 
 			default:
-				START_LOG( cerr, L"속성 강화 슬롯 넘버가 이상합니다." )
+				START_LOG( cerr, L"Invalid enchantment slot number." )
 					<< BUILD_LOG( iItemUID )
 					<< BUILD_LOG( iAttribEnchantSlotNo )
 					<< BUILD_LOG( iAttribEnchantID )
@@ -5265,7 +5265,7 @@ _IMPL_ON_FUNC( DBE_MY_UNIT_AND_INVENTORY_INFO_LIST_REQ, std::wstring )
 	//2. 은행 공유 유무를 패킷에 넣자.
 	if(kPacket.m_iOK != NetError::NET_OK)
 	{
-		START_LOG(clog2, L"지헌로그:은행공유가 활성화 되어 있지 않다.")
+		START_LOG(clog2, L"Jiheon log: shared bank is not enabled.")
 			<< BUILD_LOG(LAST_SENDER_UID)
 			<< BUILD_LOG(kPacket.m_iOK)
 			<< END_LOG;
@@ -5296,7 +5296,7 @@ IMPL_ON_FUNC( DBE_GAME_CREATE_UNIT_REQ )
     KEGS_CREATE_UNIT_ACK kPacket;
     kPacket.m_iOK = NetError::ERR_ODBC_01;
 
-    START_LOG( clog, L"유닛 생성" )
+    START_LOG( clog, L"Creating unit" )
         << BUILD_LOG( kPacket_.m_wstrNickName )
         << BUILD_LOG( kPacket_.m_iClass );
 
@@ -5306,7 +5306,7 @@ IMPL_ON_FUNC( DBE_GAME_CREATE_UNIT_REQ )
 
 		if ( !((tempChar >= 'a' && tempChar <= 'z') || (tempChar >= 'A' && tempChar <= 'Z') || (tempChar >= '0' && tempChar <= '9')))
 		{
-			START_LOG( cerr, L"[ERROR] 닉네임에 잘못된 문자 포함!" )
+			START_LOG( cerr, L"[ERROR] Nickname contains invalid characters!" )
 				<< BUILD_LOG( kPacket_.m_wstrNickName )
 				<< END_LOG;
 
@@ -5348,7 +5348,7 @@ IMPL_ON_FUNC( DBE_GAME_CREATE_UNIT_REQ )
 		case -222:  kPacket.m_iOK = NetError::ERR_CREATE_UNIT_06;	break;
 		case -23:   kPacket.m_iOK = NetError::ERR_CREATE_UNIT_09;	break;
 		default:
-			START_LOG( cerr, L"gup_create_unit: 정의되지 않은 결과값입니다." )
+			START_LOG( cerr, L"gup_create_unit: undefined result value." )
 				<< BUILD_LOG( kPacket.m_iOK )
 				<< END_LOG;
 			break;
@@ -5418,7 +5418,7 @@ IMPL_ON_FUNC( DBE_GAME_CREATE_UNIT_REQ )
 	}
 	else
 	{
-		START_LOG( cerr, L"P_GUnitPVP_Season2_SEL 호출 실패!" )
+		START_LOG( cerr, L"Failed to call P_GUnitPVP_Season2_SEL!" )
 			<< BUILD_LOG( kPacket.m_kUnitInfo.m_nUnitUID )
 			<< END_LOG;
 
@@ -5436,7 +5436,7 @@ IMPL_ON_FUNC( DBE_GAME_CREATE_UNIT_REQ )
 	}
 	else
 	{
-		START_LOG( cerr, L"캐릭터 생성시 옷입히기 쿼리 실패!" )
+		START_LOG( cerr, L"Failed to run the character appearance query during character creation!" )
 			<< BUILD_LOG( kPacket.m_kUnitInfo.m_nUnitUID )
 			<< END_LOG;
 
@@ -5446,7 +5446,7 @@ IMPL_ON_FUNC( DBE_GAME_CREATE_UNIT_REQ )
 
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"캐릭터 생성시 옷입히기 쿼리 실패!" )
+		START_LOG( cerr, L"Failed to run the character appearance query during character creation!" )
 			<< BUILD_LOG( kPacket.m_kUnitInfo.m_nUnitUID )
 			<< BUILD_LOG( iOK )
 			<< END_LOG;
@@ -5563,7 +5563,7 @@ _IMPL_ON_FUNC( DBE_GAME_DELETE_UNIT_REQ, KEGS_DELETE_UNIT_REQ )
 	}
 	else
 	{
-		START_LOG( cerr, L"캐릭터 삭제 조건 사전 체크 결과 값이 왜 없지??" )
+		START_LOG( cerr, L"Character deletion pre-check returned no result." )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iUserUID )
 			<< END_LOG;
@@ -5575,7 +5575,7 @@ _IMPL_ON_FUNC( DBE_GAME_DELETE_UNIT_REQ, KEGS_DELETE_UNIT_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"캐릭터 삭제 조건 사전 체크 에러!" )
+		START_LOG( cerr, L"Character deletion pre-check failed!" )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iUserUID )
@@ -5676,7 +5676,7 @@ _IMPL_ON_FUNC( DBE_GAME_DELETE_UNIT_REQ, KEGS_DELETE_UNIT_REQ )
 
 		if( Query_GetGuildMemberGrade( kPacket_.m_iUnitUID, ucGuildMemberShipGrade ) == false )
 		{
-			START_LOG( cerr, L"길드원 등급 정보 얻기 실패. GuildUID는 유효한데 DB에는 등급정보가 없다? 있을수 없는에러!" )
+			START_LOG( cerr, L"Failed to retrieve guild member rank; the GuildUID is valid, but the rank is missing from the database. This should never happen!" )
 				<< BUILD_LOG( kPacket.m_iOK )
 				<< BUILD_LOG( kPacket_.m_iUnitUID )
 				<< END_LOG;
@@ -5706,7 +5706,7 @@ _IMPL_ON_FUNC( DBE_GAME_DELETE_UNIT_REQ, KEGS_DELETE_UNIT_REQ )
 
 		if( kPacket.m_iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"길드 탈퇴 실패." )
+			START_LOG( cerr, L"Failed to leave the guild." )
 				<< BUILD_LOG( kPacket.m_iOK )
 				<< BUILD_LOG( kPacket_.m_iUnitUID )
 				<< BUILD_LOG( kPacket.m_iGuildUID )
@@ -5739,7 +5739,7 @@ _IMPL_ON_FUNC( DBE_GAME_DELETE_UNIT_REQ, KEGS_DELETE_UNIT_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"캐릭터 삭제 대기 처리 실패!" )
+		START_LOG( cerr, L"Failed to queue character deletion!" )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
@@ -5847,7 +5847,7 @@ _IMPL_ON_FUNC( DBE_GAME_FINAL_DELETE_UNIT_REQ, KEGS_FINAL_DELETE_UNIT_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"캐릭터 최종 삭제 처리 실패!" )
+		START_LOG( cerr, L"Failed to permanently delete the character!" )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
@@ -5896,7 +5896,7 @@ _IMPL_ON_FUNC( DBE_GAME_RESTORE_UNIT_REQ, KEGS_RESTORE_UNIT_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"캐릭터 복구 처리 실패!" )
+		START_LOG( cerr, L"Failed to restore the character!" )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iUserUID )
@@ -6072,13 +6072,13 @@ IMPL_ON_FUNC( DBE_BUY_ED_ITEM_REQ )
 	//{{ 2008. 10. 23  최육사	증분값 업데이트 실패
 	if( bUpdateFailed )
 	{
-		START_LOG( cout, L"증분값 업데이트 실패!" )
+		START_LOG( cout, L"Failed to update the increment value!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID );
 
 		std::map< UidType, int >::const_iterator mitQC = kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.begin();
 		for( ; mitQC != kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.end(); ++mitQC )
 		{
-			START_LOG( cout, L"아이템 정보" )
+			START_LOG( cout, L"Item information" )
 				<< BUILD_LOG( mitQC->first )
 				<< BUILD_LOG( mitQC->second );
 		}
@@ -6106,7 +6106,7 @@ IMPL_ON_FUNC( DBE_BUY_ED_ITEM_REQ )
 	if( Query_InsertItemList( static_cast<SEnum::GET_ITEM_REASON>( iGetItemReason ), kPacket_.m_iUnitUID, vecInsertItemList, kPacket.m_mapItemInfo ) == false )
 		//}}
 	{
-		START_LOG( cerr, L"아이템 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update the item!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
 	}
@@ -6132,13 +6132,13 @@ IMPL_ON_FUNC( DBE_INSERT_ITEM_REQ )
 	//{{ 2008. 10. 23  최육사	증분값 업데이트 실패
 	if( bUpdateFailed )
 	{
-		START_LOG( cout, L"증분값 업데이트 실패!" )
+		START_LOG( cout, L"Failed to update the increment value!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID );
 
 		std::map< UidType, int >::const_iterator mitQC = kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.begin();
 		for( ; mitQC != kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.end(); ++mitQC )
 		{
-			START_LOG( cout, L"아이템 정보" )
+			START_LOG( cout, L"Item information" )
 				<< BUILD_LOG( mitQC->first )
 				<< BUILD_LOG( mitQC->second );
 		}
@@ -6149,7 +6149,7 @@ IMPL_ON_FUNC( DBE_INSERT_ITEM_REQ )
 	if( Query_InsertItemList( static_cast<SEnum::GET_ITEM_REASON>(kPacket_.m_cGetItemReason), kPacket_.m_iUnitUID, kPacket_.m_vecItemInfo, kPacket.m_mapItemInfo ) == false )
 	//}}
 	{
-		START_LOG( cerr, L"아이템 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update the item!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
 	}
@@ -6175,13 +6175,13 @@ IMPL_ON_FUNC( DBE_NEW_QUEST_REQ )
 	//{{ 2008. 10. 23  최육사	증분값 업데이트 실패
 	if( bUpdateFailed )
 	{
-		START_LOG( cout, L"증분값 업데이트 실패!" )
+		START_LOG( cout, L"Failed to update the increment value!" )
 			<< BUILD_LOG( kPacket_.m_UnitUID );
 
 		std::map< UidType, int >::const_iterator mitQC = kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.begin();
 		for( ; mitQC != kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.end(); ++mitQC )
 		{
-			START_LOG( cout, L"아이템 정보" )
+			START_LOG( cout, L"Item information" )
 				<< BUILD_LOG( mitQC->first )
 				<< BUILD_LOG( mitQC->second );
 		}
@@ -6192,7 +6192,7 @@ IMPL_ON_FUNC( DBE_NEW_QUEST_REQ )
 	if( Query_InsertItemList( SEnum::GIR_QUEST_REWARD, kPacket_.m_UnitUID, kPacket_.m_vecItemInfo, kPacket.m_mapItemInfo ) == false )
 		//}}
 	{
-		START_LOG( cerr, L"퀘스트 수락 보상 아이템 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update the quest acceptance reward item!" )
 			<< BUILD_LOG( kPacket_.m_UnitUID )
 			<< END_LOG;
 
@@ -6212,7 +6212,7 @@ IMPL_ON_FUNC( DBE_NEW_QUEST_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"퀘스트 DB 생성 실패." )
+		START_LOG( cerr, L"Failed to create quest in database." )
 			<< BUILD_LOG( LAST_SENDER_UID )
 			<< BUILD_LOG( kPacket.m_iQuestID )
 			<< BUILD_LOG( kPacket.m_iOK )
@@ -6240,7 +6240,7 @@ IMPL_ON_FUNC( DBE_GIVE_UP_QUEST_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"퀘스트 DB 삭제 실패." )
+		START_LOG( cerr, L"Failed to delete quest from database." )
 			<< BUILD_LOG( LAST_SENDER_UID )
 			<< BUILD_LOG( kPacket.m_iQuestID )
 			<< BUILD_LOG( kPacket.m_iOK )
@@ -6286,7 +6286,7 @@ IMPL_ON_FUNC( DBE_QUEST_COMPLETE_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"퀘스트 완료 DB 업데이트 실패." )
+		START_LOG( cerr, L"Failed to update quest completion in database." )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_UnitUID )
 			<< BUILD_LOG( kPacket_.m_iQuestID )
@@ -6319,13 +6319,13 @@ IMPL_ON_FUNC( DBE_QUEST_COMPLETE_REQ )
 		//{{ 2008. 10. 23  최육사	증분값 업데이트 실패
 		if( bUpdateFailed )
 		{
-			START_LOG( cout, L"증분값 업데이트 실패!" )
+			START_LOG( cout, L"Failed to update the increment value!" )
 				<< BUILD_LOG( kPacket_.m_UnitUID );
 
 			std::map< UidType, int >::const_iterator mitQC = kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.begin();
 			for( ; mitQC != kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.end(); ++mitQC )
 			{
-				START_LOG( cout, L"아이템 정보" )
+				START_LOG( cout, L"Item information" )
 					<< BUILD_LOG( mitQC->first )
 					<< BUILD_LOG( mitQC->second );
 			}
@@ -6336,7 +6336,7 @@ IMPL_ON_FUNC( DBE_QUEST_COMPLETE_REQ )
 		if( Query_InsertItemList( SEnum::GIR_QUEST_REWARD, kPacket_.m_UnitUID, kPacket_.m_vecItemInfo, kPacket.m_mapItemInfo ) == false )
 		//}}
 		{
-			START_LOG( cerr, L"퀘스트 보상 아이템 업데이트 실패!" )
+			START_LOG( cerr, L"Failed to update the quest reward item!" )
 				<< BUILD_LOG( kPacket_.m_UnitUID )
 				<< END_LOG;
 			goto end_proc;
@@ -6364,7 +6364,7 @@ IMPL_ON_FUNC( DBE_QUEST_COMPLETE_REQ )
 			{
 				kPacket.m_iOK = NetError::ERR_QUEST_10;
 
-				START_LOG( cerr, L"DB 처리 실패로 인한 유닛 퀘스트완료 전직실패.!" )
+				START_LOG( cerr, L"Class advancement failed because the unit quest completion database operation failed!" )
 					<< BUILD_LOG( LAST_SENDER_UID )
 					<< BUILD_LOG( NetError::GetErrStr( kPacket.m_iOK ) )
 					<< END_LOG;
@@ -6376,7 +6376,7 @@ IMPL_ON_FUNC( DBE_QUEST_COMPLETE_REQ )
 			{
 				kPacket.m_iOK = NetError::ERR_QUEST_10;
 
-				START_LOG( cerr, L"유닛 퀘스트완료 전직실패.!" )
+				START_LOG( cerr, L"Unit quest completion class advancement failed!" )
 					<< BUILD_LOG( LAST_SENDER_UID )
 					<< BUILD_LOG( NetError::GetErrStr( kPacket.m_iOK ) )
 					<< END_LOG;
@@ -6520,7 +6520,7 @@ IMPL_ON_FUNC( DBE_INIT_SKILL_TREE_REQ )
 
 		if( kPacket.m_iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"DB 스킬초기화 실패.!" )
+			START_LOG( cerr, L"Failed to reset skills in the database!" )
 				<< BUILD_LOG( kPacket.m_iOK )
 				<< BUILD_LOG( kPacket_.m_iUnitUID )
 				<< BUILD_LOG( kPacket_.m_iItemUID )
@@ -6650,7 +6650,7 @@ IMPL_ON_FUNC( DBE_ADMIN_AUTO_GET_ALL_SKILL_REQ )
 
 		if( kPacket.m_iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"치트키 스킬 초기화 실패" )
+			START_LOG( cerr, L"Failed to reset skills with cheat." )
 				<< BUILD_LOG( LAST_SENDER_UID )
 				<< BUILD_LOG( kPacket_.m_iUnitUID )
 				<< BUILD_LOG( kPacket.m_iOK )
@@ -6922,13 +6922,13 @@ IMPL_ON_FUNC( DBE_INSERT_TRADE_ITEM_REQ )
 	//{{ 2008. 10. 23  최육사	증분값 업데이트 실패
 	if( bUpdateFailed )
 	{
-		START_LOG( cout, L"증분값 업데이트 실패!" )
+		START_LOG( cout, L"Failed to update the increment value!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID );
 
 		std::map< UidType, int >::const_iterator mitQC = kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.begin();
 		for( ; mitQC != kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.end(); ++mitQC )
 		{
-			START_LOG( cout, L"아이템 정보" )
+			START_LOG( cout, L"Item information" )
 				<< BUILD_LOG( mitQC->first )
 				<< BUILD_LOG( mitQC->second );
 		}
@@ -6939,7 +6939,7 @@ IMPL_ON_FUNC( DBE_INSERT_TRADE_ITEM_REQ )
 	if( Query_InsertItemList( SEnum::GIR_TRADE, kPacket_.m_iUnitUID, kPacket_.m_vecItemInfo, kPacket.m_mapItemInfo ) == false )
 	//}}
 	{
-		START_LOG( cerr, L"아이템 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update the item!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
 	}
@@ -6963,13 +6963,13 @@ IMPL_ON_FUNC( DBE_INSERT_TRADE_ITEM_BY_SERVER_NOT )
 	//{{ 2008. 10. 23  최육사	증분값 업데이트 실패
 	if( bUpdateFailed )
 	{
-		START_LOG( cout, L"증분값 업데이트 실패!" )
+		START_LOG( cout, L"Failed to update the increment value!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID );
 
 		std::map< UidType, int >::const_iterator mitQC = kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.begin();
 		for( ; mitQC != kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.end(); ++mitQC )
 		{
-			START_LOG( cout, L"아이템 정보" )
+			START_LOG( cout, L"Item information" )
 				<< BUILD_LOG( mitQC->first )
 				<< BUILD_LOG( mitQC->second );
 		}
@@ -6980,7 +6980,7 @@ IMPL_ON_FUNC( DBE_INSERT_TRADE_ITEM_BY_SERVER_NOT )
 	if( Query_InsertItemList( SEnum::GIR_TRADE_EXCEPTION, kPacket_.m_iUnitUID, kPacket_.m_vecItemInfo, mapDummy ) == false )
 	//}}
 	{
-		START_LOG( cerr, L"아이템 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update the item!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
 	}
@@ -6995,7 +6995,7 @@ IMPL_ON_FUNC( DBE_INSERT_TRADE_ITEM_BY_SERVER_NOT )
 
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"개인거래중 종료로 인한 서버 강제 ED업데이트 실패!" )
+		START_LOG( cerr, L"Failed to force an ED update on the server after the private trade ended!" )
 			<< BUILD_LOG( iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iED )
@@ -7003,14 +7003,14 @@ IMPL_ON_FUNC( DBE_INSERT_TRADE_ITEM_BY_SERVER_NOT )
 	}
 
 	//////////////////////////////////////////////////////////////////////////
-	START_LOG( cout, L"개인거래 또는 개인상점중 종료로 인한 서버 강제 거래아이템 업데이트!" )
+	START_LOG( cout, L"Forcing a trade item update on the server because the private trade or shop ended!" )
 		<< BUILD_LOG( kPacket_.m_iUnitUID )
 		<< BUILD_LOG( kPacket_.m_iED );
 
 	mit = kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.begin();
 	for( ; mit != kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.end(); ++mit )
 	{
-		START_LOG( cout, L"수량 변동" )
+		START_LOG( cout, L"Quantity change" )
 			<< BUILD_LOG( mit->first )
 			<< BUILD_LOG( mit->second );
 	}
@@ -7018,14 +7018,14 @@ IMPL_ON_FUNC( DBE_INSERT_TRADE_ITEM_BY_SERVER_NOT )
 	vit = kPacket_.m_kItemQuantityUpdate.m_vecDeleted.begin();
 	for( ; vit != kPacket_.m_kItemQuantityUpdate.m_vecDeleted.end(); ++vit )
 	{
-		START_LOG( cout, L"아이템 삭제" )
+		START_LOG( cout, L"Item deleted" )
 			<< BUILD_LOG( vit->m_iItemUID );
 	}
 
 	vitIT = kPacket_.m_vecItemInfo.begin();
 	for( ; vitIT != kPacket_.m_vecItemInfo.end(); ++vitIT )
 	{
-		START_LOG( cout, L"아이템 생성" )
+		START_LOG( cout, L"Item created" )
 			<< BUILD_LOG( vitIT->m_iItemID )
 			<< BUILD_LOGc( vitIT->m_cUsageType )
 			<< BUILD_LOG( vitIT->m_iQuantity )
@@ -7041,7 +7041,7 @@ IMPL_ON_FUNC( DBE_INSERT_TRADE_ITEM_BY_SERVER_NOT )
 		//}}
 		for( ; vitS != vitIT->m_vecItemSocket.begin(); ++vitS )
 		{
-			START_LOG( cout, L"아이템 생성 : 소켓" )
+			START_LOG( cout, L"Item creation: socket" )
 				<< BUILD_LOG( *vitS );
 		}
 	}
@@ -7066,13 +7066,13 @@ _IMPL_ON_FUNC( DBE_INSERT_PURCHASED_CASH_ITEM_REQ, KDBE_INSERT_ITEM_REQ )
 	//{{ 2008. 10. 23  최육사	증분값 업데이트 실패
 	if( bUpdateFailed )
 	{
-		START_LOG( cout, L"증분값 업데이트 실패!" )
+		START_LOG( cout, L"Failed to update the increment value!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID );
 
 		std::map< UidType, int >::const_iterator mitQC = kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.begin();
 		for( ; mitQC != kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.end(); ++mitQC )
 		{
-			START_LOG( cout, L"아이템 정보" )
+			START_LOG( cout, L"Item information" )
 				<< BUILD_LOG( mitQC->first )
 				<< BUILD_LOG( mitQC->second );
 		}
@@ -7083,7 +7083,7 @@ _IMPL_ON_FUNC( DBE_INSERT_PURCHASED_CASH_ITEM_REQ, KDBE_INSERT_ITEM_REQ )
 	if( Query_InsertItemList( SEnum::GIR_BUY_CASH_ITEM, kPacket_.m_iUnitUID, kPacket_.m_vecItemInfo, kPacket.m_mapItemInfo ) == false )
 	//}}
 	{
-		START_LOG( cerr, L"아이템 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update the item!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
 	}
@@ -7110,13 +7110,13 @@ IMPL_ON_FUNC( DBE_INSERT_PURCHASED_CASH_PACKAGE_REQ )
 	//{{ 2008. 10. 23  최육사	증분값 업데이트 실패
 	if( bUpdateFailed )
 	{
-		START_LOG( cout, L"증분값 업데이트 실패!" )
+		START_LOG( cout, L"Failed to update the increment value!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID );
 
 		std::map< UidType, int >::const_iterator mitQC = kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.begin();
 		for( ; mitQC != kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.end(); ++mitQC )
 		{
-			START_LOG( cout, L"아이템 정보" )
+			START_LOG( cout, L"Item information" )
 				<< BUILD_LOG( mitQC->first )
 				<< BUILD_LOG( mitQC->second );
 		}
@@ -7127,7 +7127,7 @@ IMPL_ON_FUNC( DBE_INSERT_PURCHASED_CASH_PACKAGE_REQ )
 	if( Query_InsertItemList( SEnum::GIR_BUY_CASH_PACKAGE, kPacket_.m_iUnitUID, kPacket_.m_vecItemInfo, kPacket.m_mapItemInfo ) == false )
 	//}}
 	{
-		START_LOG( cerr, L"아이템 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update the item!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
 	}
@@ -7153,13 +7153,13 @@ IMPL_ON_FUNC( DBE_OPEN_RANDOM_ITEM_REQ )
 	//{{ 2008. 10. 23  최육사	증분값 업데이트 실패
 	if( bUpdateFailed )
 	{
-		START_LOG( cout, L"증분값 업데이트 실패!" )
+		START_LOG( cout, L"Failed to update the increment value!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID );
 
 		std::map< UidType, int >::const_iterator mitQC = kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.begin();
 		for( ; mitQC != kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.end(); ++mitQC )
 		{
-			START_LOG( cout, L"아이템 정보" )
+			START_LOG( cout, L"Item information" )
 				<< BUILD_LOG( mitQC->first )
 				<< BUILD_LOG( mitQC->second );
 		}
@@ -7173,7 +7173,7 @@ IMPL_ON_FUNC( DBE_OPEN_RANDOM_ITEM_REQ )
 	//}}
 	//}}
 	{
-		START_LOG( cerr, L"랜덤 큐브 아이템 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update the random cube item!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
 
@@ -7213,13 +7213,13 @@ IMPL_ON_FUNC( DBE_ITEM_MANUFACTURE_REQ )
 	//{{ 2008. 10. 23  최육사	증분값 업데이트 실패
 	if( bUpdateFailed )
 	{
-		START_LOG( cout, L"증분값 업데이트 실패!" )
+		START_LOG( cout, L"Failed to update the increment value!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID );
 
 		std::map< UidType, int >::const_iterator mitQC = kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.begin();
 		for( ; mitQC != kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.end(); ++mitQC )
 		{
-			START_LOG( cout, L"아이템 정보" )
+			START_LOG( cout, L"Item information" )
 				<< BUILD_LOG( mitQC->first )
 				<< BUILD_LOG( mitQC->second );
 		}
@@ -7230,7 +7230,7 @@ IMPL_ON_FUNC( DBE_ITEM_MANUFACTURE_REQ )
 	if( Query_InsertItemList( SEnum::GIR_MANUFACTURE, kPacket_.m_iUnitUID, kPacket_.m_vecItemInfo, kPacket.m_mapItemInfo ) == false )
 	//}}
 	{
-		START_LOG( cerr, L"아이템 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update the item!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
 
@@ -7273,13 +7273,13 @@ IMPL_ON_FUNC( DBE_RESOLVE_ITEM_REQ )
 	//{{ 2008. 10. 23  최육사	증분값 업데이트 실패
 	if( bUpdateFailed )
 	{
-		START_LOG( cout, L"증분값 업데이트 실패!" )
+		START_LOG( cout, L"Failed to update the increment value!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID );
 
 		std::map< UidType, int >::const_iterator mitQC = kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.begin();
 		for( ; mitQC != kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.end(); ++mitQC )
 		{
-			START_LOG( cout, L"아이템 정보" )
+			START_LOG( cout, L"Item information" )
 				<< BUILD_LOG( mitQC->first )
 				<< BUILD_LOG( mitQC->second );
 		}
@@ -7290,7 +7290,7 @@ IMPL_ON_FUNC( DBE_RESOLVE_ITEM_REQ )
 	if( Query_InsertItemList( SEnum::GIR_RESOLVE_ITEM, kPacket_.m_iUnitUID, kPacket_.m_vecItemInfo, kPacket.m_mapItemInfo ) == false )
 	//}}
 	{
-		START_LOG( cerr, L"아이템 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update the item!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
 
@@ -7341,7 +7341,7 @@ _IMPL_ON_FUNC( DBE_CHANGE_NICK_NAME_REQ, KEGS_CHANGE_NICK_NAME_REQ )
 
 			default:
 				{
-					START_LOG( cerr, L"정의되지 않은 에러! sp가 바꼈나?" )
+					START_LOG( cerr, L"Undefined error! Did the SP change?" )
 						<< BUILD_LOG( kPacket.m_iOK )
 						<< BUILD_LOG( kPacket_.m_iUnitUID )
 						<< BUILD_LOG( kPacket_.m_wstrNickName )
@@ -7391,7 +7391,7 @@ _IMPL_ON_FUNC( DBE_CHANGE_NICK_NAME_REQ, KEGS_CHANGE_NICK_NAME_REQ )
 
 			default:
 				{
-					START_LOG( cerr, L"정의되지 않은 에러! sp가 바꼈나?" )
+					START_LOG( cerr, L"Undefined error! Did the SP change?" )
 						<< BUILD_LOG( kPacket.m_iOK )
 						<< BUILD_LOG( kPacket_.m_iUnitUID )
 						<< BUILD_LOG( kPacket_.m_wstrNickName )
@@ -7536,13 +7536,13 @@ IMPL_ON_FUNC( DBE_INSERT_BUY_PERSONAL_SHOP_ITEM_REQ )
 	//{{ 2008. 10. 23  최육사	증분값 업데이트 실패
 	if( bUpdateFailed )
 	{
-		START_LOG( cout, L"증분값 업데이트 실패!" )
+		START_LOG( cout, L"Failed to update the increment value!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID );
 
 		std::map< UidType, int >::const_iterator mitQC = kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.begin();
 		for( ; mitQC != kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.end(); ++mitQC )
 		{
-			START_LOG( cout, L"아이템 정보" )
+			START_LOG( cout, L"Item information" )
 				<< BUILD_LOG( mitQC->first )
 				<< BUILD_LOG( mitQC->second );
 		}
@@ -7553,7 +7553,7 @@ IMPL_ON_FUNC( DBE_INSERT_BUY_PERSONAL_SHOP_ITEM_REQ )
 	if( Query_InsertItemList( SEnum::GIR_PERSONAL_SHOP, kPacket_.m_iUnitUID, kPacket_.m_vecItemInfo, kPacket.m_mapItemInfo ) == false )
 	//}}
 	{
-		START_LOG( cerr, L"아이템 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update the item!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
 	}
@@ -7583,7 +7583,7 @@ IMPL_ON_FUNC( DBE_ENCHANT_ITEM_REQ )
 	{
 		std::wstring wstrEnchantResult = NetError::GetErrStr( kPacket_.m_iEnchantResult );
 
-		START_LOG( cerr, L"강화 레벨 업데이트 실패." )
+		START_LOG( cerr, L"Failed to update enhancement level." )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iItemUID )
@@ -7601,13 +7601,13 @@ IMPL_ON_FUNC( DBE_ENCHANT_ITEM_REQ )
 	//{{ 2008. 10. 23  최육사	증분값 업데이트 실패
 	if( bUpdateFailed )
 	{
-		START_LOG( cout, L"증분값 업데이트 실패!" )
+		START_LOG( cout, L"Failed to update the increment value!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID );
 
 		std::map< UidType, int >::const_iterator mitQC = kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.begin();
 		for( ; mitQC != kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.end(); ++mitQC )
 		{
-			START_LOG( cout, L"아이템 정보" )
+			START_LOG( cout, L"Item information" )
 				<< BUILD_LOG( mitQC->first )
 				<< BUILD_LOG( mitQC->second );
 		}
@@ -7637,7 +7637,7 @@ IMPL_ON_FUNC( DBE_RESTORE_ITEM_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"사용불가 아이템 복구 실패." )
+		START_LOG( cerr, L"Failed to restore the unusable item." )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iItemUID )
@@ -7654,12 +7654,12 @@ IMPL_ON_FUNC( DBE_RESTORE_ITEM_REQ )
 	//{{ 2008. 10. 23  최육사	증분값 업데이트 실패
 	if( bUpdateFailed )
 	{
-		START_LOG( cout, L"증분값 업데이트 실패!" );
+		START_LOG( cout, L"Failed to update the increment value!" );
 
 		std::map< UidType, int >::const_iterator mitQC = kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.begin();
 		for( ; mitQC != kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.end(); ++mitQC )
 		{
-			START_LOG( cout, L"아이템 정보" )
+			START_LOG( cout, L"Item information" )
 				<< BUILD_LOG( mitQC->first )
 				<< BUILD_LOG( mitQC->second );
 		}
@@ -7724,7 +7724,7 @@ IMPL_ON_FUNC( DBE_SOCKET_ITEM_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"아이템 소켓 정보 업데이트 실패." )
+		START_LOG( cerr, L"Failed to update the item socket information." )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iItemUID )
@@ -7744,13 +7744,13 @@ IMPL_ON_FUNC( DBE_SOCKET_ITEM_REQ )
 	//{{ 2008. 10. 23  최육사	증분값 업데이트 실패
 	if( bUpdateFailed )
 	{
-		START_LOG( cout, L"증분값 업데이트 실패!" )
+		START_LOG( cout, L"Failed to update the increment value!" )
 			<< BUILD_LOG( LAST_SENDER_UID );
 
 		std::map< UidType, int >::const_iterator mitQC = kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.begin();
 		for( ; mitQC != kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.end(); ++mitQC )
 		{
-			START_LOG( cout, L"아이템 정보" )
+			START_LOG( cout, L"Item information" )
 				<< BUILD_LOG( mitQC->first )
 				<< BUILD_LOG( mitQC->second );
 		}
@@ -7792,7 +7792,7 @@ IMPL_ON_FUNC( DBE_RECOMMEND_USER_REQ )
 			//}}
 		default:
 			{
-				START_LOG( cerr, L"추천인 등록이 실패하였습니다!" )
+				START_LOG( cerr, L"Failed to register the recommender!" )
 					<< BUILD_LOG( kPacket.m_iOK )
 					<< BUILD_LOG( kPacket_.m_iUnitUID )
 					<< BUILD_LOG( kPacket_.m_wstrNickName )
@@ -7900,7 +7900,7 @@ IMPL_ON_FUNC( DBE_PREPARE_INSERT_LETTER_TO_POST_REQ )
 			//}}
 
 		default:
-			START_LOG( cerr, L"정의되지 않은 에러~!" )
+			START_LOG( cerr, L"Undefined error!" )
 				<< BUILD_LOG( kPacket.m_iOK )
 				<< BUILD_LOG( kPacket_.m_iFromUnitUID )
 				<< BUILD_LOG( kPacket_.m_wstrToNickName )
@@ -7951,13 +7951,13 @@ IMPL_ON_FUNC( DBE_INSERT_LETTER_TO_POST_REQ )
 	//{{ 2008. 10. 23  최육사	증분값 업데이트 실패
 	if( bUpdateFailed )
 	{
-		START_LOG( cout, L"증분값 업데이트 실패!" )
+		START_LOG( cout, L"Failed to update the increment value!" )
 			<< BUILD_LOG( kPacket_.m_iFromUnitUID );
 
 		std::map< UidType, int >::const_iterator mitQC = kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.begin();
 		for( ; mitQC != kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.end(); ++mitQC )
 		{
-			START_LOG( cout, L"아이템 정보" )
+			START_LOG( cout, L"Item information" )
 				<< BUILD_LOG( mitQC->first )
 				<< BUILD_LOG( mitQC->second );
 		}
@@ -8035,7 +8035,7 @@ IMPL_ON_FUNC( DBE_INSERT_LETTER_TO_POST_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"편지 쓰기 DB isnert실패! 일어나면 안되는 에러!!" )
+		START_LOG( cerr, L"Failed to insert the letter into the database; this should never happen!" )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iFromUnitUID )
 			<< BUILD_LOG( kPacket_.m_wstrToNickName	)
@@ -8202,7 +8202,7 @@ IMPL_ON_FUNC( DBE_READ_LETTER_NOT )
 
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"편지 읽기 DB업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update letter read status in the database!" )
 			<< BUILD_LOG( kPacket_.m_iPostNo )
 			<< BUILD_LOG( iOK )
 			<< END_LOG;
@@ -8258,7 +8258,7 @@ IMPL_ON_FUNC( DBE_GET_ITEM_FROM_LETTER_REQ )
 			if( kPacket.m_iOK != NetError::NET_OK )
 			{
 				kPacket.m_iWeddingUID = 0;
-				START_LOG( cerr, L"웨딩 관련 우편인데...결혼식장UID 를 얻지 못했다" )
+				START_LOG( cerr, L"Wedding-related mail, but could not retrieve wedding hall UID." )
 					<< BUILD_LOG( kPacket_.m_iPostNo )
 					<< BUILD_LOG( kPacket.m_iOK )
 					<< END_LOG;
@@ -8287,7 +8287,7 @@ IMPL_ON_FUNC( DBE_GET_ITEM_FROM_LETTER_REQ )
 			if( kPacket.m_iOK != NetError::NET_OK )
 			{
 				kPacket.m_iWeddingUID = 0;
-				START_LOG( cerr, L"웨딩 관련 우편인데..." )
+				START_LOG( cerr, L"Wedding-related mail..." )
 					<< BUILD_LOG( kPacket_.m_iPostNo )
 					<< BUILD_LOG( kPacket.m_iOK )
 					<< END_LOG;
@@ -8308,7 +8308,7 @@ IMPL_ON_FUNC( DBE_GET_ITEM_FROM_LETTER_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"편지 첨부물 받아가기 DB업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update letter attachment collection in the database!" )
 			<< BUILD_LOG( kPacket_.m_iPostNo )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< END_LOG;
@@ -8329,7 +8329,7 @@ IMPL_ON_FUNC( DBE_GET_ITEM_FROM_LETTER_REQ )
 
 	if( Query_InsertItemList( SEnum::GIR_FROM_LETTER, kPacket_.m_iUnitUID, kPacket_.m_vecItemInfo, kPacket.m_mapItemInfo ) == false )
 	{
-		START_LOG( cerr, L"아이템 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update the item!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iPostNo )
 			<< END_LOG;
@@ -8351,7 +8351,7 @@ IMPL_ON_FUNC( DBE_GET_ITEM_FROM_LETTER_REQ )
 
 			if( iOK != NetError::NET_OK )
 			{
-				START_LOG( cerr, L"청첩장 아이템 기록 실패!" )
+				START_LOG( cerr, L"Failed to record wedding invitation item!" )
 					<< BUILD_LOG( mit->first )
 					<< BUILD_LOG( kPacket.m_iWeddingUID )
 					<< END_LOG;
@@ -8385,7 +8385,7 @@ IMPL_ON_FUNC( DBE_DELETE_LETTER_NOT )
 end_proc:
 		if( iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"편지 삭제 DB업데이트 실패!" )
+			START_LOG( cerr, L"Failed to update letter deletion in the database!" )
 				<< BUILD_LOG( *vit )
 				<< BUILD_LOG( iOK )
 				<< END_LOG;
@@ -8413,7 +8413,7 @@ IMPL_ON_FUNC( DBE_DEL_TUTORIAL_REQ )
 
 		if( kPacket.m_iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"사제리스트 디비삭제 실패.!" )
+			START_LOG( cerr, L"Failed to delete mentor list from the database!" )
 				<< BUILD_LOG( kPacket.m_iOK )
 				<< BUILD_LOG( kPacket_.m_iTeacherUID )
 				<< BUILD_LOG( kPacket_.m_iStudentUID )
@@ -8455,7 +8455,7 @@ IMPL_ON_FUNC( DBE_INSERT_TUTORIAL_REQ )
 				break;
 			}
 
-			START_LOG( cerr, L"사제관계 맺기 DB처리 실패.!" )
+			START_LOG( cerr, L"Failed to process mentor relationship in the database!" )
 				<< BUILD_LOG( kPacket.m_iTeacherUID )
 				<< BUILD_LOG( kPacket.m_kStudentUnitInfo.m_iUnitUID )
 				<< BUILD_LOG( NetError::GetErrStr( kPacket.m_iOK ) )
@@ -8488,13 +8488,13 @@ IMPL_ON_FUNC( DBE_RESET_SKILL_REQ )
 	//{{ 2008. 10. 23  최육사	증분값 업데이트 실패
 	if( bUpdateFailed )
 	{
-		START_LOG( cout, L"증분값 업데이트 실패!" )
+		START_LOG( cout, L"Failed to update the increment value!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID );
 
 		std::map< UidType, int >::const_iterator mitQC = kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.begin();
 		for( ; mitQC != kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.end(); ++mitQC )
 		{
-			START_LOG( cout, L"아이템 정보" )
+			START_LOG( cout, L"Item information" )
 				<< BUILD_LOG( mitQC->first )
 				<< BUILD_LOG( mitQC->second );
 		}
@@ -8503,7 +8503,7 @@ IMPL_ON_FUNC( DBE_RESET_SKILL_REQ )
 
 	if( !kPacket.m_kItemQuantityUpdate.m_mapQuantityChange.empty() || !kPacket.m_kItemQuantityUpdate.m_vecDeleted.empty() )
 	{
-		START_LOG( cerr, L"스킬 초기화 아이템 DB에서 수량감소 혹은 삭제 실패." )
+		START_LOG( cerr, L"Failed to decrement or delete the skill reset item in the database." )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
 		kPacket.m_iOK = NetError::ERR_RESET_SKILL_02;
@@ -8529,7 +8529,7 @@ IMPL_ON_FUNC( DBE_RESET_SKILL_REQ )
 
 		if( kPacket.m_iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"스킬 초기화 DB쿼리 실패 반환." )
+			START_LOG( cerr, L"Skill reset database query failed." )
 				<< BUILD_LOG( kPacket_.m_iUnitUID )
 				<< BUILD_LOG( kPacket_.m_iDelSkillID )
 				<< BUILD_LOG( kPacket_.m_iActiveSkillPageNumber )
@@ -8625,7 +8625,7 @@ IMPL_ON_FUNC( DBE_EXPAND_INVENTORY_SLOT_REQ )
         }
         else
         {
-            START_LOG( cerr, L"인벤토리 확장 실패." )
+            START_LOG( cerr, L"Failed to expand inventory." )
                 << BUILD_LOG( iOK )
 				<< BUILD_LOG( kPacket_.m_iUnitUID )
 				<< BUILD_LOG( mit->first )
@@ -8660,7 +8660,7 @@ IMPL_ON_FUNC( DBE_EXPAND_SKILL_SLOT_REQ )
 
 		if( kPacket.m_iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"스킬슬롯B 확장 실패." )
+			START_LOG( cerr, L"Failed to expand skill slot B." )
 				<< BUILD_LOG( kPacket.m_iOK )
 				<< BUILD_LOG( kPacket_.m_iUnitUID )
 				<< BUILD_LOG( kPacket_.m_iPeriodExpire )
@@ -8692,7 +8692,7 @@ IMPL_ON_FUNC( DBE_EXPAND_CHAR_SLOT_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"캐릭터 슬롯 확장 실패." )
+		START_LOG( cerr, L"Failed to expand character slots." )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( LAST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_iExpandSlotSize )
@@ -8760,7 +8760,7 @@ IMPL_ON_FUNC( DBE_UPDATE_EVENT_TIME_REQ )
 				}
 				else
 				{
-					START_LOG( cerr, L"이벤트 타임 DB업데이트 실패?" )
+					START_LOG( cerr, L"Failed to update the event time in the database." )
 						<< BUILD_LOG( kPacket.m_iOK )
 						<< BUILD_LOG( kPacket_.m_iUnitUID )
 						<< BUILD_LOG( vit->m_iEventUID )
@@ -8784,7 +8784,7 @@ IMPL_ON_FUNC( DBE_UPDATE_EVENT_TIME_REQ )
 				}
 				else
 				{
-					START_LOG( cerr, L"이벤트 타임 DB업데이트 실패?" )
+					START_LOG( cerr, L"Failed to update the event time in the database." )
 						<< BUILD_LOG( kPacket.m_iOK )
 						<< BUILD_LOG( kPacket_.m_iUnitUID )
 						<< BUILD_LOG( vit->m_iEventUID )
@@ -8829,7 +8829,7 @@ IMPL_ON_FUNC( DBE_UPDATE_EVENT_TIME_REQ )
 				}
 				else
 				{
-					START_LOG( cerr, L"이벤트 타임 DB업데이트 실패?" )
+					START_LOG( cerr, L"Failed to update the event time in the database." )
 						<< BUILD_LOG( kPacket.m_iOK )
 						<< BUILD_LOG( kPacket_.m_iUnitUID )
 						<< BUILD_LOG( vitCT->m_iEventUID )
@@ -8854,7 +8854,7 @@ IMPL_ON_FUNC( DBE_UPDATE_EVENT_TIME_REQ )
 				}
 				else
 				{
-					START_LOG( cerr, L"이벤트 타임 DB업데이트 실패?" )
+					START_LOG( cerr, L"Failed to update the event time in the database." )
 						<< BUILD_LOG( kPacket.m_iOK )
 						<< BUILD_LOG( kPacket_.m_iUnitUID )
 						<< BUILD_LOG( vitCT->m_iEventUID )
@@ -8966,7 +8966,7 @@ IMPL_ON_FUNC( DBE_ATTRIB_ENCHANT_ITEM_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"속성 강화 정보 업데이트 실패." )
+		START_LOG( cerr, L"Failed to update attribute enhancement information." )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iItemUID )
@@ -8983,13 +8983,13 @@ IMPL_ON_FUNC( DBE_ATTRIB_ENCHANT_ITEM_REQ )
 	//{{ 2008. 10. 23  최육사	증분값 업데이트 실패
 	if( bUpdateFailed )
 	{
-		START_LOG( cout, L"증분값 업데이트 실패!" )
+		START_LOG( cout, L"Failed to update the increment value!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID );
 
 		std::map< UidType, int >::const_iterator mitQC = kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.begin();
 		for( ; mitQC != kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.end(); ++mitQC )
 		{
-			START_LOG( cout, L"아이템 정보" )
+			START_LOG( cout, L"Item information" )
 				<< BUILD_LOG( mitQC->first )
 				<< BUILD_LOG( mitQC->second );
 		}
@@ -9014,13 +9014,13 @@ IMPL_ON_FUNC( DBE_IDENTIFY_ITEM_REQ )
 	//{{ 2008. 10. 23  최육사	증분값 업데이트 실패
 	if( bUpdateFailed )
 	{
-		START_LOG( cout, L"증분값 업데이트 실패!" )
+		START_LOG( cout, L"Failed to update the increment value!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID );
 
 		std::map< UidType, int >::const_iterator mitQC = kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.begin();
 		for( ; mitQC != kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.end(); ++mitQC )
 		{
-			START_LOG( cout, L"아이템 정보" )
+			START_LOG( cout, L"Item information" )
 				<< BUILD_LOG( mitQC->first )
 				<< BUILD_LOG( mitQC->second );
 		}
@@ -9031,7 +9031,7 @@ IMPL_ON_FUNC( DBE_IDENTIFY_ITEM_REQ )
 	if( Query_InsertItemList( SEnum::GIR_IDENTIFY_ITEM, kPacket_.m_iUnitUID, kPacket_.m_vecItemInfo, kPacket.m_mapItemInfo ) == false )
 	//}}
 	{
-		START_LOG( cerr, L"감정된 아이템 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update the appraised item!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
 
@@ -9142,7 +9142,7 @@ IMPL_ON_FUNC( DBE_INSERT_TITLE_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-        START_LOG( cerr, L"칭호 업데이트가 실패했다? 일어날수 없는 에러." )
+        START_LOG( cerr, L"Title update failed; this should never happen." )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iTitleID )
 			<< BUILD_LOG( kPacket_.m_sPeriod )
@@ -9182,7 +9182,7 @@ IMPL_ON_FUNC( DBE_ENCHANT_ATTACH_ITEM_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"강화 레벨 부여 실패." )
+		START_LOG( cerr, L"Failed to assign enhancement level." )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iItemUID )
@@ -9199,12 +9199,12 @@ IMPL_ON_FUNC( DBE_ENCHANT_ATTACH_ITEM_REQ )
 	//{{ 2008. 10. 23  최육사	증분값 업데이트 실패
 	if( bUpdateFailed )
 	{
-		START_LOG( cout, L"증분값 업데이트 실패!" );
+		START_LOG( cout, L"Failed to update the increment value!" );
 
 		std::map< UidType, int >::const_iterator mitQC = kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.begin();
 		for( ; mitQC != kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.end(); ++mitQC )
 		{
-			START_LOG( cout, L"아이템 정보" )
+			START_LOG( cout, L"Item information" )
 				<< BUILD_LOG( mitQC->first )
 				<< BUILD_LOG( mitQC->second );
 		}
@@ -9236,13 +9236,13 @@ IMPL_ON_FUNC( DBE_ITEM_EXCHANGE_REQ )
 	//{{ 2008. 10. 23  최육사	증분값 업데이트 실패
 	if( bUpdateFailed )
 	{
-		START_LOG( cout, L"증분값 업데이트 실패!" )
+		START_LOG( cout, L"Failed to update the increment value!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID );
 
 		std::map< UidType, int >::const_iterator mitQC = kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.begin();
 		for( ; mitQC != kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.end(); ++mitQC )
 		{
-			START_LOG( cout, L"아이템 정보" )
+			START_LOG( cout, L"Item information" )
 				<< BUILD_LOG( mitQC->first )
 				<< BUILD_LOG( mitQC->second );
 		}
@@ -9253,7 +9253,7 @@ IMPL_ON_FUNC( DBE_ITEM_EXCHANGE_REQ )
 	if( Query_InsertItemList( SEnum::GIR_EXCHANGE_ITEM, kPacket_.m_iUnitUID, kPacket_.m_vecItemInfo, kPacket.m_mapItemInfo ) == false )
 	//}}
 	{
-		START_LOG( cerr, L"아이템 교환 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update the item exchange!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
 
@@ -9301,7 +9301,7 @@ IMPL_ON_FUNC( DBE_DELETE_NICK_NAME_REQ )
 		case -1:
 		case -2:
 			{
-				START_LOG( cerr, L"닉네임 변경 실패!" )
+				START_LOG( cerr, L"Failed to change nickname!" )
 					<< BUILD_LOG( kPacket.m_iOK )
 					<< BUILD_LOG( kPacket_.m_iUnitUID )
 					<< BUILD_LOG( kPacket_.m_wstrNickName )
@@ -9313,7 +9313,7 @@ IMPL_ON_FUNC( DBE_DELETE_NICK_NAME_REQ )
 
 		default:
 			{
-				START_LOG( cerr, L"정의되지 않은 에러! sp가 바꼈나?" )
+				START_LOG( cerr, L"Undefined error! Did the SP change?" )
 					<< BUILD_LOG( kPacket.m_iOK )
 					<< BUILD_LOG( kPacket_.m_iUnitUID )
 					<< BUILD_LOG( kPacket_.m_wstrNickName )
@@ -9526,7 +9526,7 @@ IMPL_ON_FUNC( DBE_UNSEAL_SKILL_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"봉인스킬 봉인해제 실패!" )
+		START_LOG( cerr, L"Failed to unseal the skill!" )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iSkillID )
@@ -9556,13 +9556,13 @@ IMPL_ON_FUNC( DBE_GET_ITEM_INSERT_TO_INVENTORY_REQ )
 	//{{ 2008. 10. 23  최육사	증분값 업데이트 실패
 	if( bUpdateFailed )
 	{
-		START_LOG( cout, L"증분값 업데이트 실패!" )
+		START_LOG( cout, L"Failed to update the increment value!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID );
 
 		std::map< UidType, int >::const_iterator mitQC = kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.begin();
 		for( ; mitQC != kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.end(); ++mitQC )
 		{
-			START_LOG( cout, L"아이템 정보" )
+			START_LOG( cout, L"Item information" )
 				<< BUILD_LOG( mitQC->first )
 				<< BUILD_LOG( mitQC->second );
 		}
@@ -9573,7 +9573,7 @@ IMPL_ON_FUNC( DBE_GET_ITEM_INSERT_TO_INVENTORY_REQ )
 	if( Query_InsertItemList( SEnum::GIR_DUNGEON_DROP, kPacket_.m_iUnitUID, kPacket_.m_vecItemInfo, kPacket.m_mapItemInfo ) == false )
 	//}}
 	{
-		START_LOG( cerr, L"실시간 아이템아이템 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update the item in real time!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
 
@@ -9616,13 +9616,13 @@ IMPL_ON_FUNC( DBE_GET_TEMP_ITEM_REQ )
 	//{{ 2008. 10. 23  최육사	증분값 업데이트 실패
 	if( bUpdateFailed )
 	{
-		START_LOG( cout, L"증분값 업데이트 실패!" )
+		START_LOG( cout, L"Failed to update the increment value!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID );
 
 		std::map< UidType, int >::const_iterator mitQC = kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.begin();
 		for( ; mitQC != kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.end(); ++mitQC )
 		{
-			START_LOG( cout, L"아이템 정보" )
+			START_LOG( cout, L"Item information" )
 				<< BUILD_LOG( mitQC->first )
 				<< BUILD_LOG( mitQC->second );
 		}
@@ -9633,7 +9633,7 @@ IMPL_ON_FUNC( DBE_GET_TEMP_ITEM_REQ )
 	if( Query_InsertItemList( SEnum::GIR_TEMP_INVENTORY, kPacket_.m_iUnitUID, kPacket_.m_vecItemInfo, kPacket.m_mapItemInfo ) == false )
 	//}}
 	{
-		START_LOG( cerr, L"실시간 아이템아이템 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update the item in real time!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
 
@@ -9686,7 +9686,7 @@ IMPL_ON_FUNC( DBE_REQUEST_FRIEND_REQ )
 	// 2014.03.03 이지헌 sp 반환값을 정확히 알기 위해서 로그 위치를 위로 올렸습니다.
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"친구 요청 실패" )
+		START_LOG( cerr, L"Failed to send friend request." )
 			<< BUILD_LOG( LAST_SENDER_UID )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket.m_iUnitUID )
@@ -9741,7 +9741,7 @@ IMPL_ON_FUNC( DBE_ACCEPT_FRIEND_REQ )
 
     if( kPacket.m_iOK != NetError::NET_OK )
     {
-        START_LOG( cerr, L"친구 수락 실패." )
+        START_LOG( cerr, L"Failed to accept friend request." )
             << BUILD_LOG( kPacket.m_iOK )
             << BUILD_LOG( LAST_SENDER_UID )
             << BUILD_LOG( kPacket_.m_iUnitUID )
@@ -9769,7 +9769,7 @@ IMPL_ON_FUNC( DBE_DENY_FRIEND_REQ )
 
     if( kPacket.m_iOK != NetError::NET_OK )
     {
-        START_LOG( cerr, L"친구 거절 실패." )
+        START_LOG( cerr, L"Failed to reject friend request." )
             << BUILD_LOG( kPacket.m_iOK )
             << BUILD_LOG( LAST_SENDER_UID )
             << BUILD_LOG( kPacket_.m_iUnitUID )
@@ -9802,7 +9802,7 @@ IMPL_ON_FUNC( DBE_BLOCK_FRIEND_REQ )
 
     if( kPacket.m_iOK != NetError::NET_OK )
     {
-        START_LOG( cerr, L"친구 차단 실패." )
+        START_LOG( cerr, L"Failed to block friend." )
             << BUILD_LOG( kPacket.m_iOK )
             << BUILD_LOG( LAST_SENDER_UID )
             << BUILD_LOG( kPacket_.m_iUnitUID )
@@ -9835,7 +9835,7 @@ IMPL_ON_FUNC( DBE_UNBLOCK_FRIEND_REQ )
 
     if( kPacket.m_iOK != NetError::NET_OK )
     {
-        START_LOG( cerr, L"친구 차단 해제 실패." )
+        START_LOG( cerr, L"Failed to unblock friend." )
             << BUILD_LOG( kPacket.m_iOK )
             << BUILD_LOG( LAST_SENDER_UID )
             << BUILD_LOG( kPacket_.m_iUnitUID )
@@ -9863,7 +9863,7 @@ IMPL_ON_FUNC( DBE_DELETE_FRIEND_REQ )
 
     if( kPacket.m_iOK != NetError::NET_OK )
     {
-        START_LOG( cerr, L"친구 삭제 실패." )
+        START_LOG( cerr, L"Failed to delete friend." )
             << BUILD_LOG( kPacket.m_iOK )
             << BUILD_LOG( LAST_SENDER_UID )
             << BUILD_LOG( kPacket_.m_iUnitUID )
@@ -9892,7 +9892,7 @@ IMPL_ON_FUNC( DBE_MOVE_FRIEND_REQ )
 
     if( kPacket.m_iOK != NetError::NET_OK )
     {
-        START_LOG( cerr, L"친구 그룹 이동 실패." )
+        START_LOG( cerr, L"Failed to move friend group." )
             << BUILD_LOG( kPacket.m_iOK )
             << BUILD_LOG( LAST_SENDER_UID )
             << BUILD_LOG( kPacket_.m_iUnitUID )
@@ -9922,7 +9922,7 @@ IMPL_ON_FUNC( DBE_MAKE_FRIEND_GROUP_REQ )
 
     if( kPacket.m_iOK != NetError::NET_OK )
     {
-        START_LOG( cerr, L"친구 그룹 만들기 실패." )
+        START_LOG( cerr, L"Failed to create friend group." )
             << BUILD_LOG( kPacket.m_iOK )
             << BUILD_LOG( LAST_SENDER_UID )
             << BUILD_LOG( kPacket_.m_iUnitUID )
@@ -9952,7 +9952,7 @@ IMPL_ON_FUNC( DBE_RENAME_FRIEND_GROUP_REQ )
 
     if( kPacket.m_iOK != NetError::NET_OK )
     {
-        START_LOG( cerr, L"친구 그룹 이름 변경 실패." )
+        START_LOG( cerr, L"Failed to rename friend group." )
             << BUILD_LOG( kPacket.m_iOK )
             << BUILD_LOG( LAST_SENDER_UID )
             << BUILD_LOG( kPacket_.m_iUnitUID )
@@ -9981,7 +9981,7 @@ IMPL_ON_FUNC( DBE_DELETE_FRIEND_GROUP_REQ )
 
     if( kPacket.m_iOK != NetError::NET_OK )
     {
-        START_LOG( cerr, L"친구 그룹 삭제 실패." )
+        START_LOG( cerr, L"Failed to delete friend group." )
             << BUILD_LOG( kPacket.m_iOK )
             << BUILD_LOG( LAST_SENDER_UID )
             << BUILD_LOG( kPacket_.m_iUnitUID )
@@ -10007,7 +10007,7 @@ IMPL_ON_FUNC( DBE_FRIEND_MESSAGE_NOT )
 
     if( iOK != NetError::NET_OK )
     {
-        START_LOG( cerr, L"친구 메세지 남기기 실패." )
+        START_LOG( cerr, L"Failed to leave friend message." )
             << BUILD_LOG( iOK )
             << BUILD_LOG( kPacket_.m_iSenderUnitUID )
             << BUILD_LOG( kPacket_.m_wstrReceiverNickName )
@@ -10034,7 +10034,7 @@ IMPL_ON_FUNC( DBE_ADMIN_GET_ITEM_SET_NOT )
 
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"아이템 세트 치트 실패!" )
+		START_LOG( cerr, L"Item set cheat failed!" )
 			<< BUILD_LOG( iOK )
 			<< BUILD_LOG( kPacket_.m_wstrNickName )
 			<< END_LOG;
@@ -10063,7 +10063,7 @@ IMPL_ON_FUNC( DBE_SEAL_ITEM_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"봉인 DB 업데이트 실패." )
+		START_LOG( cerr, L"Failed to update the seal information in the database." )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iItemUID )
 			<< BUILD_LOGc( kPacket_.m_ucSealResult )
@@ -10079,13 +10079,13 @@ IMPL_ON_FUNC( DBE_SEAL_ITEM_REQ )
 	//{{ 2008. 10. 23  최육사	증분값 업데이트 실패
 	if( bUpdateFailed )
 	{
-		START_LOG( cout, L"증분값 업데이트 실패!" )
+		START_LOG( cout, L"Failed to update the increment value!" )
 			<< BUILD_LOG( kPacket_.m_iItemUID );
 
 		std::map< UidType, int >::const_iterator mitQC = kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.begin();
 		for( ; mitQC != kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.end(); ++mitQC )
 		{
-			START_LOG( cout, L"아이템 정보" )
+			START_LOG( cout, L"Item information" )
 				<< BUILD_LOG( mitQC->first )
 				<< BUILD_LOG( mitQC->second );
 		}
@@ -10113,7 +10113,7 @@ IMPL_ON_FUNC( DBE_UNSEAL_ITEM_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"봉인해제 DB 업데이트 실패." )
+		START_LOG( cerr, L"Failed to update the unsealing information in the database." )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iItemUID )
 			<< BUILD_LOGc( kPacket_.m_ucSealResult )
@@ -10129,13 +10129,13 @@ IMPL_ON_FUNC( DBE_UNSEAL_ITEM_REQ )
 	//{{ 2008. 10. 23  최육사	증분값 업데이트 실패
 	if( bUpdateFailed )
 	{
-		START_LOG( cout, L"증분값 업데이트 실패!" )
+		START_LOG( cout, L"Failed to update the increment value!" )
 			<< BUILD_LOG( kPacket_.m_iItemUID );
 
 		std::map< UidType, int >::const_iterator mitQC = kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.begin();
 		for( ; mitQC != kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.end(); ++mitQC )
 		{
-			START_LOG( cout, L"아이템 정보" )
+			START_LOG( cout, L"Item information" )
 				<< BUILD_LOG( mitQC->first )
 				<< BUILD_LOG( mitQC->second );
 		}
@@ -10201,7 +10201,7 @@ IMPL_ON_FUNC( DBE_JOIN_GUILD_REQ )
 	{
 		if( kPacket.m_iOK == -3 )
 		{
-			START_LOG( cwarn, L"길드 최대 가입 인원 부족." )
+			START_LOG( cwarn, L"The guild has reached its member limit." )
 				<< BUILD_LOG( kPacket.m_iOK )
 				<< BUILD_LOG( kPacket_.m_iGuildUID )
 				<< BUILD_LOG( kPacket_.m_kJoinGuildMember.m_iUnitUID )
@@ -10209,7 +10209,7 @@ IMPL_ON_FUNC( DBE_JOIN_GUILD_REQ )
 		}
 		else
 		{
-			START_LOG( cerr, L"길드 가입 실패." )
+			START_LOG( cerr, L"Failed to join guild." )
 				<< BUILD_LOG( kPacket.m_iOK )
 				<< BUILD_LOG( kPacket_.m_iGuildUID )
 				<< BUILD_LOG( kPacket_.m_kJoinGuildMember.m_iUnitUID )
@@ -10260,7 +10260,7 @@ IMPL_ON_FUNC( DBE_CHANGE_GUILD_MEMBER_GRADE_REQ )
 
 		if( kPacket.m_iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"길드마스터 위임 실패." )
+			START_LOG( cerr, L"Failed to transfer guild master status." )
 				<< BUILD_LOG( kPacket.m_iOK )
 				<< BUILD_LOG( kPacket_.m_iUnitUID )
 				<< BUILD_LOG( kPacket_.m_iTargetUnitUID )
@@ -10292,7 +10292,7 @@ IMPL_ON_FUNC( DBE_CHANGE_GUILD_MEMBER_GRADE_REQ )
 
 		if( kPacket.m_iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"길드원 등급 변경 실패." )
+			START_LOG( cerr, L"Failed to change guild member rank." )
 				<< BUILD_LOG( kPacket.m_iOK )
 				<< BUILD_LOG( kPacket_.m_iUnitUID )
 				<< BUILD_LOG( kPacket_.m_iGuildUID )
@@ -10332,7 +10332,7 @@ IMPL_ON_FUNC( DBE_CHANGE_GUILD_MESSAGE_REQ )
 
 	if( Query_GetGuildMemberGrade( kPacket_.m_iUnitUID, ucGuildMemberShipGrade ) == false )
 	{
-		START_LOG( cerr, L"길드원 등급 정보 얻기 실패." )
+		START_LOG( cerr, L"Failed to retrieve the guild member's rank." )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
 
@@ -10363,7 +10363,7 @@ IMPL_ON_FUNC( DBE_CHANGE_GUILD_MESSAGE_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"길드 메시지 변경 실패." )
+		START_LOG( cerr, L"Failed to change guild message." )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
@@ -10402,7 +10402,7 @@ IMPL_ON_FUNC( DBE_KICK_GUILD_MEMBER_REQ )
 
 	if( Query_GetGuildMemberGrade( kPacket_.m_iUnitUID, ucGuildMemberShipGrade ) == false )
 	{
-		START_LOG( cerr, L"길드원 등급 정보 얻기 실패." )
+		START_LOG( cerr, L"Failed to retrieve the guild member's rank." )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
 
@@ -10417,7 +10417,7 @@ IMPL_ON_FUNC( DBE_KICK_GUILD_MEMBER_REQ )
 
 		if( Query_GetGuildMemberGrade( kPacket_.m_iTargetUnitUID, ucTargetMemberShipGrade ) == false )
 		{
-			START_LOG( cerr, L"길드원 등급 정보 얻기 실패." )
+			START_LOG( cerr, L"Failed to retrieve the guild member's rank." )
 				<< BUILD_LOG( kPacket_.m_iTargetUnitUID )
 				<< END_LOG;
 
@@ -10482,7 +10482,7 @@ IMPL_ON_FUNC( DBE_KICK_GUILD_MEMBER_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"길드원 명예 포인트 초기화 실패." )
+		START_LOG( cerr, L"Failed to reset guild member honor points." )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
@@ -10512,7 +10512,7 @@ IMPL_ON_FUNC( DBE_KICK_GUILD_MEMBER_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"길드 탈퇴 실패." )
+		START_LOG( cerr, L"Failed to leave the guild." )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iTargetUnitUID )
@@ -10554,7 +10554,7 @@ IMPL_ON_FUNC( DBE_CHANGE_GUILD_MEMBER_MESSAGE_REQ )
 
 		if( Query_GetGuildMemberGrade( kPacket_.m_iUnitUID, ucGuildMemberShipGrade ) == false )
 		{
-			START_LOG( cerr, L"길드원 등급 정보 얻기 실패." )
+			START_LOG( cerr, L"Failed to retrieve the guild member's rank." )
 				<< BUILD_LOG( kPacket_.m_iUnitUID )
 				<< END_LOG;
 
@@ -10567,7 +10567,7 @@ IMPL_ON_FUNC( DBE_CHANGE_GUILD_MEMBER_MESSAGE_REQ )
 
 		if( Query_GetGuildMemberGrade( kPacket_.m_iTargetUnitUID, ucTargerGrade ) == false )
 		{
-			START_LOG( cerr, L"길드원 등급 정보 얻기 실패." )
+			START_LOG( cerr, L"Failed to retrieve the guild member's rank." )
 				<< BUILD_LOG( kPacket_.m_iTargetUnitUID )
 				<< END_LOG;
 
@@ -10580,7 +10580,7 @@ IMPL_ON_FUNC( DBE_CHANGE_GUILD_MEMBER_MESSAGE_REQ )
 		{
 		case SEnum::GUG_MASTER:
 			{
-				START_LOG( cerr, L"다른 누군가가 길드마스터의 인사말을 절대변경할수없다!" )
+				START_LOG( cerr, L"Someone other than the guild master attempted to change the greeting!" )
 					<< BUILD_LOG( kPacket_.m_iGuildUID )
 					<< BUILD_LOG( kPacket_.m_iUnitUID )
 					<< BUILD_LOG( kPacket_.m_iTargetUnitUID )
@@ -10617,7 +10617,7 @@ IMPL_ON_FUNC( DBE_CHANGE_GUILD_MEMBER_MESSAGE_REQ )
 
 		default:
 			{
-				START_LOG( cerr, L"길드원 등급 정보 얻기 실패." )
+				START_LOG( cerr, L"Failed to retrieve the guild member's rank." )
 					<< BUILD_LOG( kPacket.m_iOK )
 					<< BUILD_LOG( kPacket_.m_iTargetUnitUID )
 					<< END_LOG;
@@ -10642,7 +10642,7 @@ IMPL_ON_FUNC( DBE_CHANGE_GUILD_MEMBER_MESSAGE_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"길드 탈퇴 실패." )
+		START_LOG( cerr, L"Failed to leave the guild." )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iTargetUnitUID )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
@@ -10679,7 +10679,7 @@ IMPL_ON_FUNC( DBE_DISBAND_GUILD_REQ )
 
 	if( Query_GetGuildMemberGrade( kPacket_.m_iUnitUID, ucGuildMemberShipGrade ) == false )
 	{
-		START_LOG( cerr, L"길드원 등급 정보 얻기 실패." )
+		START_LOG( cerr, L"Failed to retrieve the guild member's rank." )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
 
@@ -10690,7 +10690,7 @@ IMPL_ON_FUNC( DBE_DISBAND_GUILD_REQ )
 	// 길드 마스터만 길드해산을 할수있다
 	if( ucGuildMemberShipGrade != SEnum::GUG_MASTER )
 	{
-		START_LOG( cerr, L"길드 마스터가 아닌데 길드해산을 하려함!" )
+		START_LOG( cerr, L"Attempted to disband the guild without being the guild master!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( ucGuildMemberShipGrade )
 			<< END_LOG;
@@ -10715,7 +10715,7 @@ IMPL_ON_FUNC( DBE_DISBAND_GUILD_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"길드 탈퇴 실패." )
+		START_LOG( cerr, L"Failed to leave the guild." )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
@@ -10755,7 +10755,7 @@ IMPL_ON_FUNC( DBE_EXPAND_GUILD_MAX_MEMBER_REQ )
 
 	if( Query_GetGuildMemberGrade( kPacket_.m_iUnitUID, ucGuildMemberShipGrade ) == false )
 	{
-		START_LOG( cerr, L"길드원 등급 정보 얻기 실패." )
+		START_LOG( cerr, L"Failed to retrieve the guild member's rank." )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
 
@@ -10767,7 +10767,7 @@ IMPL_ON_FUNC( DBE_EXPAND_GUILD_MAX_MEMBER_REQ )
 	if( ucGuildMemberShipGrade != SEnum::GUG_MASTER  &&
 		ucGuildMemberShipGrade != SEnum::GUG_SYSOP )
 	{
-		START_LOG( cerr, L"길드 마스터 또는 길드 관리자가 아닌데 길드 인원 확장을 하려함!" )
+		START_LOG( cerr, L"Attempted to expand guild capacity without being the guild master or an administrator!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( ucGuildMemberShipGrade )
 			<< END_LOG;
@@ -10794,7 +10794,7 @@ IMPL_ON_FUNC( DBE_EXPAND_GUILD_MAX_MEMBER_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"길드 정보 얻기 실패." )
+		START_LOG( cerr, L"Failed to retrieve guild information." )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
@@ -10806,7 +10806,7 @@ IMPL_ON_FUNC( DBE_EXPAND_GUILD_MAX_MEMBER_REQ )
 
 	if( kGuildInfo.m_usMaxNumMember >= KGuildInfo::GUILD_MAX_MEMBER_LIMIT )
 	{
-		START_LOG( cerr, L"길드 인원을 더이상 확장할 수 없습니다." )
+		START_LOG( cerr, L"Guild capacity cannot be expanded any further." )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
@@ -10834,7 +10834,7 @@ IMPL_ON_FUNC( DBE_EXPAND_GUILD_MAX_MEMBER_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"길드 인원 확장 실패." )
+		START_LOG( cerr, L"Failed to expand guild capacity." )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
@@ -10873,7 +10873,7 @@ IMPL_ON_FUNC( DBE_UPDATE_GUILD_EXP_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"길드원 명예 포인트 업데이트 실패." )
+		START_LOG( cerr, L"Failed to update guild member honor points." )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
@@ -10908,7 +10908,7 @@ IMPL_ON_FUNC( DBE_UPDATE_GUILD_EXP_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"길드 정보 얻기 실패." )
+		START_LOG( cerr, L"Failed to retrieve guild information." )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
@@ -10922,7 +10922,7 @@ IMPL_ON_FUNC( DBE_UPDATE_GUILD_EXP_REQ )
 	// 길드 제한 레벨 체크
 	if( kGuildInfo.m_iGuildEXP >= kPacket_.m_iGuildLimitEXP )
 	{
-		START_LOG( clog, L"더이상 길드 경험치를 획득할 수 없습니다." )
+		START_LOG( clog, L"No more guild experience can be earned." )
 			<< BUILD_LOG( kGuildInfo.m_iGuildEXP )
 			<< BUILD_LOG( kPacket_.m_iGuildLimitEXP );
 
@@ -10958,7 +10958,7 @@ IMPL_ON_FUNC( DBE_UPDATE_GUILD_EXP_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"길드 EXP 업데이트 실패." )
+		START_LOG( cerr, L"Failed to update guild EXP." )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
@@ -11005,13 +11005,13 @@ IMPL_ON_FUNC( DBE_RESET_GUILD_SKILL_REQ )
 	//{{ 2008. 10. 23  최육사	증분값 업데이트 실패
 	if( bUpdateFailed )
 	{
-		START_LOG( cout, L"증분값 업데이트 실패!" )
+		START_LOG( cout, L"Failed to update the increment value!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID );
 
 		std::map< UidType, int >::const_iterator mitQC = kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.begin();
 		for( ; mitQC != kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.end(); ++mitQC )
 		{
-			START_LOG( cout, L"아이템 정보" )
+			START_LOG( cout, L"Item information" )
 				<< BUILD_LOG( mitQC->first )
 				<< BUILD_LOG( mitQC->second );
 		}
@@ -11020,7 +11020,7 @@ IMPL_ON_FUNC( DBE_RESET_GUILD_SKILL_REQ )
 
 	if( !kPacket.m_kItemQuantityUpdate.m_mapQuantityChange.empty()  ||  !kPacket.m_kItemQuantityUpdate.m_vecDeleted.empty() )
 	{
-		START_LOG( cerr, L"길드 스킬 초기화 아이템 DB에서 수량감소 혹은 삭제 실패." )
+		START_LOG( cerr, L"Failed to decrement or delete the guild skill reset item in the database." )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
 
@@ -11043,7 +11043,7 @@ IMPL_ON_FUNC( DBE_RESET_GUILD_SKILL_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"길드 스킬 되돌리기 DB쿼리 실패." )
+		START_LOG( cerr, L"Guild skill rollback database query failed." )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
 			<< BUILD_LOG( kPacket_.m_iGuildSkillID )
@@ -11078,7 +11078,7 @@ IMPL_ON_FUNC( DBE_RESET_GUILD_SKILL_REQ )
 
 		if( kPacket.m_iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"길드 스킬 되돌리기한 이후에 기간제 스킬 포인트 DB업데이트 하다 실패!" )
+			START_LOG( cerr, L"Failed to update timed skill points in the database after rolling back guild skills!" )
 				<< BUILD_LOG( kPacket.m_iOK )
 				<< BUILD_LOG( LAST_SENDER_UID )
 				<< BUILD_LOG( kPacket_.m_iGuildUID )
@@ -11111,7 +11111,7 @@ IMPL_ON_FUNC( DBE_RESET_GUILD_SKILL_REQ )
 
 		if( kPacket.m_iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"길드 스킬 되돌리기한 이후에 시스킬 포인트 DB업데이트 하다 실패!" )
+			START_LOG( cerr, L"Failed to update guild skill points in the database after rolling back guild skills!" )
 				<< BUILD_LOG( kPacket.m_iOK )
 				<< BUILD_LOG( LAST_SENDER_UID )
 				<< BUILD_LOG( kPacket_.m_iGuildUID )
@@ -11154,13 +11154,13 @@ IMPL_ON_FUNC( DBE_INIT_GUILD_SKILL_REQ )
 	//{{ 2008. 10. 23  최육사	증분값 업데이트 실패
 	if( bUpdateFailed )
 	{
-		START_LOG( cout, L"증분값 업데이트 실패!" )
+		START_LOG( cout, L"Failed to update the increment value!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID );
 
 		std::map< UidType, int >::const_iterator mitQC = kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.begin();
 		for( ; mitQC != kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.end(); ++mitQC )
 		{
-			START_LOG( cout, L"아이템 정보" )
+			START_LOG( cout, L"Item information" )
 				<< BUILD_LOG( mitQC->first )
 				<< BUILD_LOG( mitQC->second );
 		}
@@ -11169,7 +11169,7 @@ IMPL_ON_FUNC( DBE_INIT_GUILD_SKILL_REQ )
 
 	if( !kPacket.m_kItemQuantityUpdate.m_mapQuantityChange.empty()  ||  !kPacket.m_kItemQuantityUpdate.m_vecDeleted.empty() )
 	{
-		START_LOG( cerr, L"길드 스킬 초기화 아이템 DB에서 수량감소 혹은 삭제 실패." )
+		START_LOG( cerr, L"Failed to decrement or delete the guild skill reset item in the database." )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
 
@@ -11190,7 +11190,7 @@ IMPL_ON_FUNC( DBE_INIT_GUILD_SKILL_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"길드 스킬 초기화 DB쿼리 실패.!" )
+		START_LOG( cerr, L"Guild skill reset database query failed!" )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
@@ -11240,13 +11240,13 @@ IMPL_ON_FUNC( DBE_CHECK_TIME_EVENT_COMPLETE_REQ )
 	//{{ 2008. 10. 23  최육사	증분값 업데이트 실패
 	if( bUpdateFailed )
 	{
-		START_LOG( cout, L"증분값 업데이트 실패!" )
+		START_LOG( cout, L"Failed to update the increment value!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID );
 
 		std::map< UidType, int >::const_iterator mitQC = kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.begin();
 		for( ; mitQC != kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.end(); ++mitQC )
 		{
-			START_LOG( cout, L"아이템 정보" )
+			START_LOG( cout, L"Item information" )
 				<< BUILD_LOG( mitQC->first )
 				<< BUILD_LOG( mitQC->second );
 		}
@@ -11257,7 +11257,7 @@ IMPL_ON_FUNC( DBE_CHECK_TIME_EVENT_COMPLETE_REQ )
 	if( Query_InsertItemList( SEnum::GIR_XMAS_EVENT, kPacket_.m_iUnitUID, kPacket_.m_vecItemInfo, kPacket.m_mapItemInfo ) == false )
 	//}}
 	{
-		START_LOG( cerr, L"이벤트 보상 아이템 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update the event reward item!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
 
@@ -11291,7 +11291,7 @@ IMPL_ON_FUNC( DBE_CHECK_TIME_EVENT_COMPLETE_REQ )
 
 		if( iOK <= 0 )
 		{
-			START_LOG( cerr, L"이벤트 타임 DB업데이트 실패?" )
+			START_LOG( cerr, L"Failed to update the event time in the database." )
 				<< BUILD_LOG( iOK )
 				<< BUILD_LOG( kPacket_.m_iUnitUID )
 				<< BUILD_LOG( vit->m_iEventUID )
@@ -11329,7 +11329,7 @@ IMPL_ON_FUNC( DBE_CHECK_TIME_EVENT_COMPLETE_REQ )
 
 			if( kPacket.m_iOK != NetError::NET_OK )
 			{
-				START_LOG( cerr, L"이벤트 타임 DB업데이트 실패?" )
+				START_LOG( cerr, L"Failed to update the event time in the database." )
 					<< BUILD_LOG( kPacket.m_iOK )
 					<< BUILD_LOG( kPacket_.m_iUnitUID )
 					<< BUILD_LOG( vit->m_iEventUID )
@@ -11352,7 +11352,7 @@ IMPL_ON_FUNC( DBE_CHECK_TIME_EVENT_COMPLETE_REQ )
 
 			if( iOK != NetError::NET_OK )
 			{
-				START_LOG( cerr, L"이벤트 타임 DB업데이트 실패?" )
+				START_LOG( cerr, L"Failed to update the event time in the database." )
 					<< BUILD_LOG( iOK )
 					<< BUILD_LOG( kPacket_.m_iUnitUID )
 					<< BUILD_LOG( vit->m_iEventUID )
@@ -11395,7 +11395,7 @@ IMPL_ON_FUNC( DBE_GET_NICKNAME_BY_UNITUID_REQ )
 			m_kODBC.EndFetch();
 		}
 
-		START_LOG( clog2, L"[테스트로그]")
+		START_LOG( clog2, L"[Test log]")
 			<< BUILD_LOG( fromUnitUID )
 			<< BUILD_LOG( wstrNickName )
 			<< END_LOG;
@@ -11459,7 +11459,7 @@ IMPL_ON_FUNC( DBE_EXPAND_SKILL_NOTE_PAGE_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"기술의 노트 페이지 확장 실패!" )
+		START_LOG( cerr, L"Failed to expand skill note pages!" )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOGc( kPacket_.m_cExpandedMaxPageNum )
@@ -11490,7 +11490,7 @@ IMPL_ON_FUNC( DBE_REG_SKILL_NOTE_MEMO_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"기술의 노트 메모 등록 실패!" )
+		START_LOG( cerr, L"Failed to register skill note memo!" )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iMemoID )
@@ -11522,12 +11522,12 @@ IMPL_ON_FUNC( DBE_CREATE_PET_REQ )
 	//{{ 2008. 10. 23  최육사	증분값 업데이트 실패
 	if( bUpdateFailed )
 	{
-		START_LOG( cout, L"증분값 업데이트 실패!" )
+		START_LOG( cout, L"Failed to update the increment value!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID );
 
 		for( const auto& kItem : kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange )
 		{
-			START_LOG( cout, L"아이템 정보" )
+			START_LOG( cout, L"Item information" )
 				<< BUILD_LOG( kItem.first )
 				<< BUILD_LOG( kItem.second );
 		}
@@ -11560,7 +11560,7 @@ IMPL_ON_FUNC( DBE_CREATE_PET_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"펫 생성 실패!" )
+		START_LOG( cerr, L"Failed to create the pet!" )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOGc( kPacket_.m_kPetInfo.m_iPetID )
@@ -11587,7 +11587,7 @@ IMPL_ON_FUNC( DBE_CREATE_PET_REQ )
 
 		if( kPacket.m_iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"펫의 오토 루팅 기능 DB 업데이트에 실패 하였습니다." )
+			START_LOG( cerr, L"Failed to update the pet auto-loot setting in the database." )
 				<< BUILD_LOG( kPacket.m_iOK )
 				<< BUILD_LOG( kPacket.m_kPetInfo.m_iPetUID )
 				<< END_LOG;
@@ -11619,12 +11619,12 @@ IMPL_ON_FUNC( DBE_SUMMON_PET_REQ )
 	//{{ 2008. 10. 23  최육사	증분값 업데이트 실패
 	if( bUpdateFailed )
 	{
-		START_LOG( cout, L"증분값 업데이트 실패!" )
+		START_LOG( cout, L"Failed to update the increment value!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID );
 
 		for( const auto& kItem : kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange )
 		{
-			START_LOG( cout, L"아이템 정보" )
+			START_LOG( cout, L"Item information" )
 				<< BUILD_LOG( kItem.first )
 				<< BUILD_LOG( kItem.second );
 		}
@@ -11645,7 +11645,7 @@ IMPL_ON_FUNC( DBE_SUMMON_PET_REQ )
 
 		if( kPacket.m_iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"펫 소환 해제 실패!" )
+			START_LOG( cerr, L"Failed to unsummon the pet!" )
 				<< BUILD_LOG( kPacket.m_iOK )
 				<< BUILD_LOG( kPacket_.m_iBeforeSummonPetUID )
 				<< END_LOG;
@@ -11669,7 +11669,7 @@ IMPL_ON_FUNC( DBE_SUMMON_PET_REQ )
 
 		if( kPacket.m_iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"펫 소환 실패!" )
+			START_LOG( cerr, L"Failed to summon the pet!" )
 				<< BUILD_LOG( kPacket.m_iOK )
 				<< BUILD_LOG( kPacket_.m_iSummonPetUID )
 				<< END_LOG;
@@ -11699,12 +11699,12 @@ IMPL_ON_FUNC( DBE_CHANGE_PET_NAME_REQ )
 	//{{ 2008. 10. 23  최육사	증분값 업데이트 실패
 	if( bUpdateFailed )
 	{
-		START_LOG( cout, L"증분값 업데이트 실패!" )
+		START_LOG( cout, L"Failed to update the increment value!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID );
 
 		for( const auto& kItem : kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange )
 		{
-			START_LOG( cout, L"아이템 정보" )
+			START_LOG( cout, L"Item information" )
 				<< BUILD_LOG( kItem.first )
 				<< BUILD_LOG( kItem.second );
 		}
@@ -11713,7 +11713,7 @@ IMPL_ON_FUNC( DBE_CHANGE_PET_NAME_REQ )
 
 	if( kPacket.m_kItemQuantityUpdate.m_mapQuantityChange.find( kPacket_.m_iItemUID ) != kPacket.m_kItemQuantityUpdate.m_mapQuantityChange.end() )
 	{
-		START_LOG( cerr, L"DBE_CHANGE_GUILD_NAME_REQ: 수량 감소 실패" )
+		START_LOG( cerr, L"DBE_CHANGE_GUILD_NAME_REQ: failed to decrement the quantity." )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iItemUID )
 			<< END_LOG;
@@ -11727,7 +11727,7 @@ IMPL_ON_FUNC( DBE_CHANGE_PET_NAME_REQ )
 		{
 			if( kDeletedItemInfo.m_iItemUID == kPacket_.m_iItemUID )
 			{
-				START_LOG( cerr, L"DBE_CHANGE_GUILD_NAME_REQ: 아이템 삭제 실패" )
+				START_LOG( cerr, L"DBE_CHANGE_GUILD_NAME_REQ: failed to delete the item." )
 					<< BUILD_LOG( kPacket_.m_iUnitUID )
 					<< BUILD_LOG( kPacket_.m_iItemUID )
 					<< END_LOG;
@@ -11754,7 +11754,7 @@ IMPL_ON_FUNC( DBE_CHANGE_PET_NAME_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"펫 이름 변경 실패! ( 아이템 복구 이슈 발생 )" )
+		START_LOG( cerr, L"Failed to change pet name (item restoration issue occurred)!" )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOGc( kPacket_.m_kPetInfo.m_iPetUID )
@@ -11808,7 +11808,7 @@ IMPL_ON_FUNC( DBE_RESET_PERIOD_ITEM_REQ )
 		}
 		else
 		{
-			START_LOG( cerr, L"기간 초기화 아이템 DB업데이트 실패!" )
+			START_LOG( cerr, L"Failed to update the duration-reset item in the database!" )
 				<< BUILD_LOG( kPacket.m_iOK )
 				<< BUILD_LOG( kPacket_.m_iUnitUID )
 				<< BUILD_LOG( mit->first )
@@ -11851,7 +11851,7 @@ IMPL_ON_FUNC( DBE_ATTRIB_ATTACH_ITEM_REQ )
 
 		if( kPacket.m_iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"0번 슬롯 속성 부여 업데이트 실패." )
+			START_LOG( cerr, L"Failed to update the enchantment in slot 0." )
 				<< BUILD_LOG( kPacket.m_iOK )
 				<< BUILD_LOG( kPacket_.m_iUnitUID )
 				<< BUILD_LOG( kPacket_.m_iItemUID )
@@ -11880,7 +11880,7 @@ IMPL_ON_FUNC( DBE_ATTRIB_ATTACH_ITEM_REQ )
 
 		if( kPacket.m_iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"1번 슬롯 속성 부여 업데이트 실패." )
+			START_LOG( cerr, L"Failed to update the enchantment in slot 1." )
 				<< BUILD_LOG( kPacket.m_iOK )
 				<< BUILD_LOG( kPacket_.m_iUnitUID )
 				<< BUILD_LOG( kPacket_.m_iItemUID )
@@ -11909,7 +11909,7 @@ IMPL_ON_FUNC( DBE_ATTRIB_ATTACH_ITEM_REQ )
 
 		if( kPacket.m_iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"2번 슬롯 속성 부여 업데이트 실패." )
+			START_LOG( cerr, L"Failed to update the enchantment in slot 2." )
 				<< BUILD_LOG( kPacket.m_iOK )
 				<< BUILD_LOG( kPacket_.m_iUnitUID )
 				<< BUILD_LOG( kPacket_.m_iItemUID )
@@ -11928,12 +11928,12 @@ IMPL_ON_FUNC( DBE_ATTRIB_ATTACH_ITEM_REQ )
 	//{{ 2008. 10. 23  최육사	증분값 업데이트 실패
 	if( bUpdateFailed )
 	{
-		START_LOG( cout, L"증분값 업데이트 실패!" );
+		START_LOG( cout, L"Failed to update the increment value!" );
 
 		std::map< UidType, int >::const_iterator mitQC = kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.begin();
 		for( ; mitQC != kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.end(); ++mitQC )
 		{
-			START_LOG( cout, L"아이템 정보" )
+			START_LOG( cout, L"Item information" )
 				<< BUILD_LOG( mitQC->first )
 				<< BUILD_LOG( mitQC->second );
 		}
@@ -11973,7 +11973,7 @@ IMPL_ON_FUNC( DBE_INSERT_PERIOD_PSHOP_AGENCY_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"대리 상인 기간 설정 실패!" )
+		START_LOG( cerr, L"Failed to set the proxy shop duration!" )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_sAgencyPeriod )
@@ -12002,13 +12002,13 @@ IMPL_ON_FUNC( DBE_PREPARE_REG_PSHOP_AGENCY_ITEM_REQ )
 	//{{ 2008. 10. 23  최육사	증분값 업데이트 실패
 	if( bUpdateFailed )
 	{
-		START_LOG( cout, L"증분값 업데이트 실패!" )
+		START_LOG( cout, L"Failed to update the increment value!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID );
 
 		std::map< UidType, int >::const_iterator mitQC = kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.begin();
 		for( ; mitQC != kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.end(); ++mitQC )
 		{
-			START_LOG( cout, L"아이템 정보" )
+			START_LOG( cout, L"Item information" )
 				<< BUILD_LOG( mitQC->first )
 				<< BUILD_LOG( mitQC->second );
 		}
@@ -12040,13 +12040,13 @@ IMPL_ON_FUNC( DBE_INSERT_TO_INVENTORY_PICK_UP_FROM_PSHOP_AGENCY_REQ )
 	//{{ 2008. 10. 23  최육사	증분값 업데이트 실패
 	if( bUpdateFailed )
 	{
-		START_LOG( cout, L"증분값 업데이트 실패!" )
+		START_LOG( cout, L"Failed to update the increment value!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID );
 
 		std::map< UidType, int >::const_iterator mitQC = kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.begin();
 		for( ; mitQC != kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.end(); ++mitQC )
 		{
-			START_LOG( cout, L"아이템 정보" )
+			START_LOG( cout, L"Item information" )
 				<< BUILD_LOG( mitQC->first )
 				<< BUILD_LOG( mitQC->second );
 		}
@@ -12057,7 +12057,7 @@ IMPL_ON_FUNC( DBE_INSERT_TO_INVENTORY_PICK_UP_FROM_PSHOP_AGENCY_REQ )
 	if( Query_InsertItemList( SEnum::GIR_PICK_UP_PSHOP, kPacket_.m_iUnitUID, kPacket_.m_vecItemInfo, kPacket.m_mapItemInfo ) == false )
 		//}}
 	{
-		START_LOG( cerr, L"아이템 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update the item!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
 	}
@@ -12228,7 +12228,7 @@ _IMPL_ON_FUNC( DBE_GET_SHARE_BANK_REQ, KEGS_GET_SHARE_BANK_REQ )
 
 			if( kInventoryItemInfo.m_cSlotCategory != CXSLInventory::ST_BANK )
 			{
-				START_LOG( cerr, L"은행 공유 : 은행 카테고리가 아닌데 들어옴" )
+				START_LOG( cerr, L"Shared bank: received item from a non-bank category" )
 					<< BUILD_LOG( kAck.m_iUnitUID )
 					<< BUILD_LOG( kInventoryItemInfo.m_iItemUID )
 					<< BUILD_LOG( kInventoryItemInfo.m_cSlotCategory )
@@ -12275,7 +12275,7 @@ _IMPL_ON_FUNC( DBE_GET_SHARE_BANK_REQ, KEGS_GET_SHARE_BANK_REQ )
 				break;
 
 			default:
-				START_LOG( cerr, L"은행 공유 : 속성 강화 슬롯 넘버가 이상합니다." )
+				START_LOG( cerr, L"Shared bank: invalid attribute enhancement slot number." )
 					<< BUILD_LOG( kAck.m_iUnitUID )
 					<< BUILD_LOG( iItemUID )
 					<< BUILD_LOG( iAttribEnchantSlotNo )
@@ -12286,7 +12286,7 @@ _IMPL_ON_FUNC( DBE_GET_SHARE_BANK_REQ, KEGS_GET_SHARE_BANK_REQ )
 		}
 		else
 		{
-			START_LOG( cerr, L"은행 공유 : 속성정보는 있는데 아이템은 없다?" )
+			START_LOG( cerr, L"Shared bank: attribute information exists, but item is missing?" )
 				<< BUILD_LOG( kAck.m_iUnitUID )
 				<< BUILD_LOG( iItemUID )
 				<< BUILD_LOG( iAttribEnchantSlotNo )
@@ -12313,7 +12313,7 @@ _IMPL_ON_FUNC( DBE_GET_SHARE_BANK_REQ, KEGS_GET_SHARE_BANK_REQ )
 		}
 		else
 		{
-			START_LOG( cerr, L"은행 공유 : 봉인정보는 있는데 아이템은 없다?" )
+			START_LOG( cerr, L"Shared bank: sealing information exists, but item is missing?" )
 				<< BUILD_LOG( kAck.m_iUnitUID )
 				<< BUILD_LOG( iItemUID )
 				<< BUILD_LOG( iSealCnt )
@@ -12332,7 +12332,7 @@ IMPL_ON_FUNC( DBE_UPDATE_SHARE_ITEM_REQ )
 
 	if( Query_UpdateShareItem( kPacket_, kAck ) == false )
 	{
-		START_LOG( cerr, L"공유 은행 아이템 정보 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update shared bank item information!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
 	}
@@ -12346,7 +12346,7 @@ _IMPL_ON_FUNC( DBE_UPDATE_SHARE_ITEM_FOR_MOVE_SLOT_REQ, KDBE_UPDATE_SHARE_ITEM_R
 
 	if( Query_UpdateShareItem( kPacket_, kAck ) == false )
 	{
-		START_LOG( cerr, L"공유 은행 아이템 정보 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update shared bank item information!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
 	}
@@ -12369,7 +12369,7 @@ _IMPL_ON_FUNC( DBE_UPDATE_SEAL_DATA_NOT, KDBE_SEAL_ITEM_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"봉인 DB 업데이트 실패." )
+		START_LOG( cerr, L"Failed to update the seal information in the database." )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iItemUID )
 			<< BUILD_LOGc( kPacket_.m_ucSealResult )
@@ -12432,7 +12432,7 @@ IMPL_ON_FUNC( DBE_SHARING_BACK_OPEN_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"계정은행 뚫기 SP 실패!" )
+		START_LOG( cerr, L"Failed to unlock the account bank SP!" )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iUserUID )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
@@ -12465,7 +12465,7 @@ IMPL_ON_FUNC( DBE_INSERT_ADVERTISEMENT_EVENT_INFO_NOT )
 
 		if( iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"실시간 광고 이벤트 정보 기록 실패" )
+			START_LOG( cerr, L"Failed to record real-time advertisement event information." )
 				<< BUILD_LOG( iOK )
 				<< END_LOG;
 		}
@@ -12509,13 +12509,13 @@ IMPL_ON_FUNC( DBE_USE_ITEM_IN_INVENTORY_REQ )
 	//{{ 2008. 10. 23  최육사	증분값 업데이트 실패
 	if( bUpdateFailed )
 	{
-		START_LOG( cout, L"증분값 업데이트 실패!" )
+		START_LOG( cout, L"Failed to update the increment value!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID );
 
 		std::map< UidType, int >::const_iterator mitQC = kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.begin();
 		for( ; mitQC != kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.end(); ++mitQC )
 		{
-			START_LOG( cout, L"아이템 정보" )
+			START_LOG( cout, L"Item information" )
 				<< BUILD_LOG( mitQC->first )
 				<< BUILD_LOG( mitQC->second );
 		}
@@ -12552,7 +12552,7 @@ IMPL_ON_FUNC( DBE_BUY_UNIT_CLASS_CHANGE_REQ )
 		{
 		case -1:
 			{
-				START_LOG( cerr, L"전직 변경 아이템 실패! UnitClass 변경 실패 - 해당 유닛이 없는 경우" )
+				START_LOG( cerr, L"Class-change item failed: could not change UnitClass because the unit does not exist." )
 					<< BUILD_LOG( kPacket_.m_iOK )
 					<< BUILD_LOG( kPacket_.m_iUnitUID )
 					<< BUILD_LOG( kPacket_.m_iNewUnitClass )
@@ -12560,7 +12560,7 @@ IMPL_ON_FUNC( DBE_BUY_UNIT_CLASS_CHANGE_REQ )
 			}break;
 		case -2:
 			{
-				START_LOG( cerr, L"전직 변경 아이템 실패! UnitClass 변경 실패 - 업데이트 실패" )
+				START_LOG( cerr, L"Class-change item failed: UnitClass update failed." )
 					<< BUILD_LOG( kPacket_.m_iOK )
 					<< BUILD_LOG( kPacket_.m_iUnitUID )
 					<< BUILD_LOG( kPacket_.m_iNewUnitClass )
@@ -12568,7 +12568,7 @@ IMPL_ON_FUNC( DBE_BUY_UNIT_CLASS_CHANGE_REQ )
 			}break;
 		default:
 			{
-				START_LOG( cerr, L"전직 변경 아이템 실패! UnitClass 변경 실패" )
+				START_LOG( cerr, L"Class-change item failed: failed to update UnitClass." )
 					<< BUILD_LOG( kPacket_.m_iOK )
 					<< BUILD_LOG( kPacket_.m_iUnitUID )
 					<< BUILD_LOG( kPacket_.m_iNewUnitClass )
@@ -12618,7 +12618,7 @@ IMPL_ON_FUNC( DBE_BUY_UNIT_CLASS_CHANGE_REQ )
 			{
 			case -1:
 				{
-					START_LOG( cerr, L"DB 스킬초기화 실패.! - 습득 스킬 지우기 실패" )
+					START_LOG( cerr, L"Skill reset failed in the database: failed to delete learned skills." )
 						<< BUILD_LOG( kPacket_.m_iOK )
 						<< BUILD_LOG( kPacket_.m_iUnitUID )
 						<< BUILD_LOG( kPacket_.m_iSPoint )
@@ -12635,7 +12635,7 @@ IMPL_ON_FUNC( DBE_BUY_UNIT_CLASS_CHANGE_REQ )
 				}break;
 			case -2:
 				{
-					START_LOG( cerr, L"DB 스킬초기화 실패.!- 스킬 포인트 보상 실패" )
+					START_LOG( cerr, L"Skill reset failed in the database: failed to grant skill points." )
 						<< BUILD_LOG( kPacket_.m_iOK )
 						<< BUILD_LOG( kPacket_.m_iUnitUID )
 						<< BUILD_LOG( kPacket_.m_iSPoint )
@@ -12645,7 +12645,7 @@ IMPL_ON_FUNC( DBE_BUY_UNIT_CLASS_CHANGE_REQ )
 				}break;
 			case -3:
 				{
-					START_LOG( cerr, L"DB 스킬초기화 실패.!- 캐시 스킬 포인트 보상 실패" )
+					START_LOG( cerr, L"Skill reset failed in the database: failed to grant cash skill points." )
 						<< BUILD_LOG( kPacket_.m_iOK )
 						<< BUILD_LOG( kPacket_.m_iUnitUID )
 						<< BUILD_LOG( kPacket_.m_iSPoint )
@@ -12655,7 +12655,7 @@ IMPL_ON_FUNC( DBE_BUY_UNIT_CLASS_CHANGE_REQ )
 				}break;
 			case -4:
 				{
-					START_LOG( cerr, L"DB 스킬초기화 실패.!- 스킬 슬롯A 초기화 실패" )
+					START_LOG( cerr, L"Skill reset failed in the database: failed to reset skill slot A." )
 						<< BUILD_LOG( kPacket_.m_iOK )
 						<< BUILD_LOG( kPacket_.m_iUnitUID )
 						<< BUILD_LOG( kPacket_.m_iSPoint )
@@ -12665,7 +12665,7 @@ IMPL_ON_FUNC( DBE_BUY_UNIT_CLASS_CHANGE_REQ )
 				}break;
 			case -5:
 				{
-					START_LOG( cerr, L"DB 스킬초기화 실패.!- 스킬 슬롯B 초기화 실패" )
+					START_LOG( cerr, L"Skill reset failed in the database: failed to reset skill slot B." )
 						<< BUILD_LOG( kPacket_.m_iOK )
 						<< BUILD_LOG( kPacket_.m_iUnitUID )
 						<< BUILD_LOG( kPacket_.m_iSPoint )
@@ -12674,7 +12674,7 @@ IMPL_ON_FUNC( DBE_BUY_UNIT_CLASS_CHANGE_REQ )
 				}break;
 			case -6:
 				{
-					START_LOG( cerr, L"DB 스킬초기화 실패.! - 기본 스킬 레벨 1로 변경" )
+					START_LOG( cerr, L"Skill reset failed in the database: failed to set base skill level to 1." )
 						<< BUILD_LOG( kPacket_.m_iOK )
 						<< BUILD_LOG( kPacket_.m_iUnitUID )
 						<< BUILD_LOG( kPacket_.m_iSPoint )
@@ -12684,7 +12684,7 @@ IMPL_ON_FUNC( DBE_BUY_UNIT_CLASS_CHANGE_REQ )
 				}break;
 			default:
 				{
-					START_LOG( cerr, L"DB 스킬초기화 실패.!" )
+					START_LOG( cerr, L"Failed to reset skills in the database!" )
 						<< BUILD_LOG( kPacket_.m_iOK )
 						<< BUILD_LOG( kPacket_.m_iUnitUID )
 						<< BUILD_LOG( kPacket_.m_iSPoint )
@@ -12715,7 +12715,7 @@ IMPL_ON_FUNC( DBE_BUY_UNIT_CLASS_CHANGE_REQ )
 			{
 			case -1:
 				{
-					START_LOG( cerr, L"전직 변경 아이템 실패! Skill 변경 실패 - 해당 유닛이 없는 경우" )
+					START_LOG( cerr, L"Class-change item failed: unit does not exist." )
 						<< BUILD_LOG( kPacket_.m_iOK )
 						<< BUILD_LOG( kPacket_.m_iUnitUID )
 						<< BUILD_LOG( mitSkill->first )
@@ -12724,7 +12724,7 @@ IMPL_ON_FUNC( DBE_BUY_UNIT_CLASS_CHANGE_REQ )
 				}break;
 			case -2:
 				{
-					START_LOG( cerr, L"전직 변경 아이템 실패! Skill 변경 실패 - 해당 캐시 스킬이 봉인해제되지 않은 경우" )
+					START_LOG( cerr, L"Class-change item failed: cash skill is not unsealed." )
 						<< BUILD_LOG( kPacket_.m_iOK )
 						<< BUILD_LOG( kPacket_.m_iUnitUID )
 						<< BUILD_LOG( mitSkill->first )
@@ -12733,7 +12733,7 @@ IMPL_ON_FUNC( DBE_BUY_UNIT_CLASS_CHANGE_REQ )
 				}break;
 			default:
 				{
-					START_LOG( cerr, L"전직 변경 아이템 실패! Skill 변경 실패" )
+					START_LOG( cerr, L"Class-change item failed: failed to update skill." )
 						<< BUILD_LOG( kPacket_.m_iOK )
 						<< BUILD_LOG( kPacket_.m_iUnitUID )
 						<< BUILD_LOG( mitSkill->first )
@@ -12760,7 +12760,7 @@ IMPL_ON_FUNC( DBE_BUY_UNIT_CLASS_CHANGE_REQ )
 			{
 			case -1:
 				{
-					START_LOG( cerr, L"전직 변경 아이템 실패! Memo 변경 실패 - 해당 유닛이 없는 경우" )
+					START_LOG( cerr, L"Class-change item failed: unit does not exist." )
 						<< BUILD_LOG( kPacket_.m_iOK )
 						<< BUILD_LOG( kPacket_.m_iUnitUID )
 						<< BUILD_LOG( mitMemo->first )
@@ -12769,7 +12769,7 @@ IMPL_ON_FUNC( DBE_BUY_UNIT_CLASS_CHANGE_REQ )
 				}break;
 			case -2:
 				{
-					START_LOG( cerr, L"전직 변경 아이템 실패! Memo 변경 실패 - 해당 메모가 기술의 노트에 기록되지 않은 경우" )
+					START_LOG( cerr, L"Class-change item failed: memo is not recorded in the skill note." )
 						<< BUILD_LOG( kPacket_.m_iOK )
 						<< BUILD_LOG( kPacket_.m_iUnitUID )
 						<< BUILD_LOG( mitMemo->first )
@@ -12778,7 +12778,7 @@ IMPL_ON_FUNC( DBE_BUY_UNIT_CLASS_CHANGE_REQ )
 				}break;
 			default:
 				{
-					START_LOG( cerr, L"전직 변경 아이템 실패! Memo 변경 실패" )
+					START_LOG( cerr, L"Class-change item failed: failed to update memo." )
 						<< BUILD_LOG( kPacket_.m_iOK )
 						<< BUILD_LOG( kPacket_.m_iUnitUID )
 						<< BUILD_LOG( mitMemo->first )
@@ -12806,7 +12806,7 @@ IMPL_ON_FUNC( DBE_BUY_UNIT_CLASS_CHANGE_REQ )
 			{
 			case -1:
 				{
-					START_LOG( cerr, L"전직 변경 아이템 실패! Item 변경 실패 - 해당 유닛이 없는 경우" )
+					START_LOG( cerr, L"Class-change item failed: unit does not exist." )
 						<< BUILD_LOG( kPacket_.m_iOK )
 						<< BUILD_LOG( kPacket_.m_iUnitUID )
 						<< BUILD_LOG( mitItem->first )
@@ -12815,7 +12815,7 @@ IMPL_ON_FUNC( DBE_BUY_UNIT_CLASS_CHANGE_REQ )
 				}break;
 			case -2:
 				{
-					START_LOG( cerr, L"전직 변경 아이템 실패! Item 변경 실패 - 해당 아이템이 인벤토리에 없는 경우" )
+					START_LOG( cerr, L"Class-change item failed: item is not in the inventory." )
 						<< BUILD_LOG( kPacket_.m_iOK )
 						<< BUILD_LOG( kPacket_.m_iUnitUID )
 						<< BUILD_LOG( mitItem->first )
@@ -12824,7 +12824,7 @@ IMPL_ON_FUNC( DBE_BUY_UNIT_CLASS_CHANGE_REQ )
 				}break;
 			default:
 				{
-					START_LOG( cerr, L"전직 변경 아이템 실패! Item 변경 실패" )
+					START_LOG( cerr, L"Class-change item failed: failed to update item." )
 						<< BUILD_LOG( kPacket_.m_iOK )
 						<< BUILD_LOG( kPacket_.m_iUnitUID )
 						<< BUILD_LOG( mitItem->first )
@@ -12852,7 +12852,7 @@ IMPL_ON_FUNC( DBE_BUY_UNIT_CLASS_CHANGE_REQ )
 			{
 			case -1:
 				{
-					START_LOG( cerr, L"전직 변경 Quest 삭제 실패 - 해당 유닛이 없는 경우" )
+					START_LOG( cerr, L"Failed to delete class-change quest because the unit does not exist." )
 						<< BUILD_LOG( kPacket_.m_iOK )
 						<< BUILD_LOG( kPacket_.m_iUnitUID )
 						<< BUILD_LOG( kPacket_.m_vecDeleteCompleteQuest[unSize] )
@@ -12860,7 +12860,7 @@ IMPL_ON_FUNC( DBE_BUY_UNIT_CLASS_CHANGE_REQ )
 				}break;
 			case -2:
 				{
-					START_LOG( cerr, L"전직 변경 Quest 삭제 실패 - 퀘스트가 완료되지 않은 경우" )
+					START_LOG( cerr, L"Failed to delete class-change quest because it is not complete." )
 						<< BUILD_LOG( kPacket_.m_iOK )
 						<< BUILD_LOG( kPacket_.m_iUnitUID )
 						<< BUILD_LOG( kPacket_.m_vecDeleteCompleteQuest[unSize] )
@@ -12868,7 +12868,7 @@ IMPL_ON_FUNC( DBE_BUY_UNIT_CLASS_CHANGE_REQ )
 				}break;
 			default:
 				{
-					START_LOG( cerr, L"전직 변경 Quest 삭제 실패" )
+					START_LOG( cerr, L"Failed to delete class-change quest." )
 						<< BUILD_LOG( kPacket_.m_iOK )
 						<< BUILD_LOG( kPacket_.m_iUnitUID )
 						<< BUILD_LOG( kPacket_.m_vecDeleteCompleteQuest[unSize] )
@@ -12895,7 +12895,7 @@ IMPL_ON_FUNC( DBE_BUY_UNIT_CLASS_CHANGE_REQ )
 			{
 			case -1:
 				{
-					START_LOG( cerr, L"전직 변경 진행 중 Quest 삭제 실패 - 해당 유닛이 없는 경우" )
+					START_LOG( cerr, L"Failed to delete in-progress class-change quest because unit does not exist." )
 						<< BUILD_LOG( kPacket_.m_iOK )
 						<< BUILD_LOG( kPacket_.m_iUnitUID )
 						<< BUILD_LOG( kPacket_.m_vecDeleteInProgressQuest[unSize] )
@@ -12903,7 +12903,7 @@ IMPL_ON_FUNC( DBE_BUY_UNIT_CLASS_CHANGE_REQ )
 				}break;
 			case -2:
 				{
-					START_LOG( cerr, L"전직 변경 진행 중 Quest 삭제 실패 - 퀘스트가 완료되지 않은 경우" )
+					START_LOG( cerr, L"Failed to delete in-progress class-change quest because it is not complete." )
 						<< BUILD_LOG( kPacket_.m_iOK )
 						<< BUILD_LOG( kPacket_.m_iUnitUID )
 						<< BUILD_LOG( kPacket_.m_vecDeleteInProgressQuest[unSize] )
@@ -12911,7 +12911,7 @@ IMPL_ON_FUNC( DBE_BUY_UNIT_CLASS_CHANGE_REQ )
 				}break;
 			default:
 				{
-					START_LOG( cerr, L"전직 변경 진행 중 Quest 삭제 실패" )
+					START_LOG( cerr, L"Failed to delete in-progress class-change quest." )
 						<< BUILD_LOG( kPacket_.m_iOK )
 						<< BUILD_LOG( kPacket_.m_iUnitUID )
 						<< BUILD_LOG( kPacket_.m_vecDeleteInProgressQuest[unSize] )
@@ -12937,7 +12937,7 @@ IMPL_ON_FUNC( DBE_BUY_UNIT_CLASS_CHANGE_REQ )
 			{
 			case -1:
 				{
-					START_LOG( cerr, L"전직 변경 아이템 실패! 완료 Quest 변경 실패 - 해당 유닛이 없는 경우" )
+					START_LOG( cerr, L"Class-change item failed: unit does not exist for completed quest update." )
 						<< BUILD_LOG( kPacket_.m_iOK )
 						<< BUILD_LOG( kPacket_.m_iUnitUID )
 						<< BUILD_LOG( mitCompleteQuest->first )
@@ -12946,7 +12946,7 @@ IMPL_ON_FUNC( DBE_BUY_UNIT_CLASS_CHANGE_REQ )
 				}break;
 			case -2:
 				{
-					START_LOG( cerr, L"전직 변경 아이템 실패! 완료 Quest 변경 실패 - 해당 퀘스트가 완료되지 않은 경우" )
+					START_LOG( cerr, L"Class-change item failed: quest is not complete." )
 						<< BUILD_LOG( kPacket_.m_iOK )
 						<< BUILD_LOG( kPacket_.m_iUnitUID )
 						<< BUILD_LOG( mitCompleteQuest->first )
@@ -12955,7 +12955,7 @@ IMPL_ON_FUNC( DBE_BUY_UNIT_CLASS_CHANGE_REQ )
 				}break;
 			default:
 				{
-					START_LOG( cerr, L"전직 변경 아이템 실패! 완료 Quest 변경 실패" )
+					START_LOG( cerr, L"Class-change item failed: failed to update completed quest." )
 						<< BUILD_LOG( kPacket_.m_iOK )
 						<< BUILD_LOG( kPacket_.m_iUnitUID )
 						<< BUILD_LOG( mitCompleteQuest->first )
@@ -12985,7 +12985,7 @@ IMPL_ON_FUNC( DBE_BUY_UNIT_CLASS_CHANGE_REQ )
 			{
 			case -1:
 				{
-					START_LOG( cerr, L"전직 변경 아이템 실패! 진행 Quest 변경 실패 - 해당 유닛이 없는 경우" )
+					START_LOG( cerr, L"Class-change item failed: unit does not exist for in-progress quest update." )
 						<< BUILD_LOG( kPacket_.m_iOK )
 						<< BUILD_LOG( kPacket_.m_iUnitUID )
 						<< BUILD_LOG( mitInProgressQuest->first )
@@ -12994,7 +12994,7 @@ IMPL_ON_FUNC( DBE_BUY_UNIT_CLASS_CHANGE_REQ )
 				}break;
 			case -2:
 				{
-					START_LOG( cerr, L"전직 변경 아이템 실패! 진행 Quest 변경 실패 - 해당 퀘스트가 진행중이지 않은 경우 " )
+					START_LOG( cerr, L"Class-change item failed: quest is not in progress " )
 						<< BUILD_LOG( kPacket_.m_iOK )
 						<< BUILD_LOG( kPacket_.m_iUnitUID )
 						<< BUILD_LOG( mitInProgressQuest->first )
@@ -13003,7 +13003,7 @@ IMPL_ON_FUNC( DBE_BUY_UNIT_CLASS_CHANGE_REQ )
 				}break;
 			default:
 				{
-					START_LOG( cerr, L"전직 변경 아이템 실패! 진행 Quest 변경 실패" )
+					START_LOG( cerr, L"Class-change item failed: failed to update in-progress quest." )
 						<< BUILD_LOG( kPacket_.m_iOK )
 						<< BUILD_LOG( kPacket_.m_iUnitUID )
 						<< BUILD_LOG( mitInProgressQuest->first )
@@ -13040,13 +13040,13 @@ IMPL_ON_FUNC( DBE_TRADE_COMPLETE_REQ )
 	//{{ 2008. 10. 23  최육사	증분값 업데이트 실패
 	if( bUpdateFailed )
 	{
-		START_LOG( cout, L"증분값 업데이트 실패!" )
+		START_LOG( cout, L"Failed to update the increment value!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID );
 
 		std::map< UidType, int >::const_iterator mitQC = kPacket_.m_kQuantityUpdate.m_mapQuantityChange.begin();
 		for( ; mitQC != kPacket_.m_kQuantityUpdate.m_mapQuantityChange.end(); ++mitQC )
 		{
-			START_LOG( cout, L"아이템 정보" )
+			START_LOG( cout, L"Item information" )
 				<< BUILD_LOG( mitQC->first )
 				<< BUILD_LOG( mitQC->second );
 		}
@@ -13079,7 +13079,7 @@ IMPL_ON_FUNC( DBE_ADMIN_CHEAT_GET_ALL_SKILL_REQ )
 			// 해제에 실패하면 해당 스킬은 찍지 않는다.
 			if( iOK != NetError::NET_OK )
 			{
-				START_LOG( cerr, L"봉인스킬 봉인해제 실패!" )
+				START_LOG( cerr, L"Failed to unseal the skill!" )
 					<< BUILD_LOG( iOK )
 					<< BUILD_LOG( kPacket_.m_iUnitUID )
 					<< BUILD_LOG( iSkillID )
@@ -13154,7 +13154,7 @@ IMPL_ON_FUNC( DBE_ADMIN_CASH_SKILL_POINT_DATE_CHANGE_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"치트 쿼리 호출 실패!" )
+		START_LOG( cerr, L"Failed to call cheat query!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_wstrModifyDate )
 			<< END_LOG;
@@ -13189,7 +13189,7 @@ IMPL_ON_FUNC( DBE_SYNC_ED_REQ )
 	// 해제에 실패하면 해당 스킬은 찍지 않는다.
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"ED 동기화 실패!!" )
+		START_LOG( cerr, L"ED synchronization failed!" )
 			<< BUILD_LOG( LAST_SENDER_UID )
 			<< BUILD_LOG( kPacket.m_kInfo.m_iFromUnitUID )
 			<< BUILD_LOG( iTotalChangeED )
@@ -13229,13 +13229,13 @@ _IMPL_ON_FUNC( DBE_NEW_ACCOUNT_QUEST_GAME_DB_REQ, KDBE_NEW_QUEST_REQ )
 	//{{ 2008. 10. 23  최육사	증분값 업데이트 실패
 	if( bUpdateFailed )
 	{
-		START_LOG( cout, L"증분값 업데이트 실패!" )
+		START_LOG( cout, L"Failed to update the increment value!" )
 			<< BUILD_LOG( kPacket_.m_UnitUID );
 
 		std::map< UidType, int >::const_iterator mitQC = kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.begin();
 		for( ; mitQC != kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.end(); ++mitQC )
 		{
-			START_LOG( cout, L"아이템 정보" )
+			START_LOG( cout, L"Item information" )
 				<< BUILD_LOG( mitQC->first )
 				<< BUILD_LOG( mitQC->second );
 		}
@@ -13245,7 +13245,7 @@ _IMPL_ON_FUNC( DBE_NEW_ACCOUNT_QUEST_GAME_DB_REQ, KDBE_NEW_QUEST_REQ )
 	//{{ 2010. 9. 8	최육사	아이템 획득 사유
 	if( Query_InsertItemList( SEnum::GIR_QUEST_REWARD, kPacket_.m_UnitUID, kPacket_.m_vecItemInfo, kPacket.m_mapItemInfo ) == false )
 	{
-		START_LOG( cerr, L"퀘스트 수락 보상 아이템 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update the quest acceptance reward item!" )
 			<< BUILD_LOG( kPacket_.m_UnitUID )
 			<< END_LOG;
 
@@ -13284,13 +13284,13 @@ _IMPL_ON_FUNC( DBE_ACCOUNT_QUEST_COMPLETE_GAME_DB_REQ, KDBE_ACCOUNT_QUEST_COMPLE
 		//{{ 2008. 10. 23  최육사	증분값 업데이트 실패
 		if( bUpdateFailed )
 		{
-			START_LOG( cout, L"증분값 업데이트 실패!" )
+			START_LOG( cout, L"Failed to update the increment value!" )
 				<< BUILD_LOG( kPacket_.m_kQuestReq.m_UnitUID );
 
 			std::map< UidType, int >::const_iterator mitQC = kPacket_.m_kQuestReq.m_kItemQuantityUpdate.m_mapQuantityChange.begin();
 			for( ; mitQC != kPacket_.m_kQuestReq.m_kItemQuantityUpdate.m_mapQuantityChange.end(); ++mitQC )
 			{
-				START_LOG( cout, L"아이템 정보" )
+				START_LOG( cout, L"Item information" )
 					<< BUILD_LOG( mitQC->first )
 					<< BUILD_LOG( mitQC->second );
 			}
@@ -13299,7 +13299,7 @@ _IMPL_ON_FUNC( DBE_ACCOUNT_QUEST_COMPLETE_GAME_DB_REQ, KDBE_ACCOUNT_QUEST_COMPLE
 
 		if( Query_InsertItemList( SEnum::GIR_QUEST_REWARD, kPacket_.m_kQuestReq.m_UnitUID, kPacket_.m_kQuestReq.m_vecItemInfo, kPacket.m_mapItemInfo ) == false )
 		{
-			START_LOG( cerr, L"퀘스트 보상 아이템 업데이트 실패!" )
+			START_LOG( cerr, L"Failed to update the quest reward item!" )
 				<< BUILD_LOG( kPacket_.m_kQuestReq.m_UnitUID )
 				<< END_LOG;
 			goto end_proc;
@@ -13324,7 +13324,7 @@ IMPL_ON_FUNC( DBE_PET_AUTO_LOOTING_NOT )
 
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"펫의 오토 루팅 기능 DB 업데이트에 실패 하였습니다." )
+		START_LOG( cerr, L"Failed to update the pet auto-loot setting in the database." )
 			<< BUILD_LOG( kPacket_.m_iPetUID )
 			<< END_LOG;
 	}
@@ -13351,7 +13351,7 @@ IMPL_ON_FUNC( DBE_CHANGE_PET_ID_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"변신 물약 허용 가능한 펫의 DB 업데이트에 실패 하였습니다." )
+		START_LOG( cerr, L"Failed to update the database for a pet allowed to use transformation potions." )
 			<< BUILD_LOG( kPacket_.m_iPetUID )
 			<< END_LOG;
 	}
@@ -13381,7 +13381,7 @@ IMPL_ON_FUNC( DBE_INSERT_WARP_VIP_REQ )
 		m_kODBC.EndFetch();
 	}
 
-	START_LOG( clog, L"[TEST] VIP 기간 DB에 업데이트 했습니다." )
+	START_LOG( clog, L"[TEST] Updated the VIP duration in the database." )
 		<< BUILD_LOG( kPacket_.m_iUnitUID )
 		<< BUILD_LOG( kPacket_.m_iPeriod )
 		<< BUILD_LOG( kAck.m_wstrEndDate.c_str() )
@@ -13447,12 +13447,12 @@ IMPL_ON_FUNC( DBE_CREATE_RIDING_PET_REQ )
 	//{{ 2008. 10. 23  최육사	증분값 업데이트 실패
 	if( bUpdateFailed )
 	{
-		START_LOG( cout, L"증분값 업데이트 실패!" )
+		START_LOG( cout, L"Failed to update the increment value!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID );
 
 		for( const auto& kItem : kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange )
 		{
-			START_LOG( cout, L"아이템 정보" )
+			START_LOG( cout, L"Item information" )
 				<< BUILD_LOG( kItem.first )
 				<< BUILD_LOG( kItem.second );
 		}
@@ -13477,7 +13477,7 @@ IMPL_ON_FUNC( DBE_CREATE_RIDING_PET_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"라이딩 펫 생성 실패!" )
+		START_LOG( cerr, L"Failed to create the riding pet!" )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_usCreatePetID )
@@ -13511,7 +13511,7 @@ IMPL_ON_FUNC( DBE_RELEASE_RIDING_PET_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"라이딩 펫 놓아주기 실패!" )
+		START_LOG( cerr, L"Failed to release riding pet!" )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket.m_iRidingPetUID )
 			<< END_LOG;
@@ -13655,7 +13655,7 @@ IMPL_ON_FUNC( DBE_COUPLE_MAKING_SUCCESS_REQ )
 	{
 		kAck.m_tDate = tNow.GetTime();
 
-		START_LOG( clog, L"커플 맺기 성공!" )
+		START_LOG( clog, L"Successfully formed couple!" )
 			<< BUILD_LOG( kAck.m_iOK )
 			<< BUILD_LOG( kAck.m_wstrRequestUnitName )
 			<< BUILD_LOG( kAck.m_wstrAcceptUnitName )
@@ -13689,14 +13689,14 @@ IMPL_ON_FUNC( DBE_WEDDING_PROPOSE_REQ )
 	// 증분값 업데이트 실패
 	if( bUpdateFailed )
 	{
-		START_LOG( cout, L"증분값 업데이트 실패!" )
+		START_LOG( cout, L"Failed to update the increment value!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
 
 		std::map< UidType, int >::const_iterator mitQC = kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.begin();
 		for( ; mitQC != kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.end(); ++mitQC )
 		{
-			START_LOG( cout, L"아이템 정보" )
+			START_LOG( cout, L"Item information" )
 				<< BUILD_LOG( mitQC->first )
 				<< BUILD_LOG( mitQC->second );
 		}
@@ -13739,7 +13739,7 @@ IMPL_ON_FUNC( DBE_WEDDING_PROPOSE_REQ )
 		if( Quety_WeddingLetter( LAST_SENDER_UID, kPacket_, kAck ) == false )
 		{
 			// 뭔가 실패 했다!
-			START_LOG( cerr, L"결혼 관련 우편 발송 실패!!" )
+			START_LOG( cerr, L"Failed to send marriage-related mail!" )
 				<< END_LOG;
 
 			kAck.m_iOK = NetError::ERR_RELATIONSHIP_20;
@@ -13808,7 +13808,7 @@ bool KGSGameDBThread::Quety_WeddingLetter( IN UidType iSendUserUID, IN KDBE_WEDD
 
 			if( iOK == NetError::NET_OK )
 			{
-				START_LOG( cerr, L"우편의 Wedding 정보 insert 성공" )
+				START_LOG( cerr, L"Successfully inserted wedding information into the mail." )
 					<< BUILD_LOG( iOK )
 					<< BUILD_LOG( kInfo.m_iPostNo )
 					<< BUILD_LOG( kAck.m_iWeddingUID )
@@ -13846,7 +13846,7 @@ bool KGSGameDBThread::Quety_WeddingLetter( IN UidType iSendUserUID, IN KDBE_WEDD
 		}
 		else
 		{
-			START_LOG( cerr, L"결혼식 예약 우편 발송 실패" )
+			START_LOG( cerr, L"Failed to send the wedding reservation mail." )
 				<< BUILD_LOG( iOK )
 				<< BUILD_LOG( kInfo.m_iFromUnitUID )
 				<< BUILD_LOG( kInfo.m_iToUnitUID )
@@ -13902,7 +13902,7 @@ bool KGSGameDBThread::Quety_WeddingLetter( IN UidType iSendUserUID, IN KDBE_WEDD
 
 			if( iOK == NetError::NET_OK )
 			{
-				START_LOG( cerr, L"우편의 Wedding 정보 insert 성공" )
+				START_LOG( cerr, L"Successfully inserted wedding information into the mail." )
 					<< BUILD_LOG( iOK )
 					<< BUILD_LOG( kInfo.m_iPostNo )
 					<< BUILD_LOG( kAck.m_iWeddingUID )
@@ -13940,7 +13940,7 @@ bool KGSGameDBThread::Quety_WeddingLetter( IN UidType iSendUserUID, IN KDBE_WEDD
 		}
 		else
 		{
-			START_LOG( cerr, L"결혼식 예약 우편 발송 실패" )
+			START_LOG( cerr, L"Failed to send the wedding reservation mail." )
 				<< BUILD_LOG( iOK )
 				<< BUILD_LOG( kInfo.m_iFromUnitUID )
 				<< BUILD_LOG( kInfo.m_iToUnitUID )
@@ -13998,7 +13998,7 @@ bool KGSGameDBThread::Quety_WeddingLetter( IN UidType iSendUserUID, IN KDBE_WEDD
 
 			if( iOK == NetError::NET_OK )
 			{
-				START_LOG( cerr, L"우편의 Wedding 정보 insert 성공" )
+				START_LOG( cerr, L"Successfully inserted wedding information into the mail." )
 					<< BUILD_LOG( iOK )
 					<< BUILD_LOG( kInfo.m_iPostNo )
 					<< BUILD_LOG( kAck.m_iWeddingUID )
@@ -14007,7 +14007,7 @@ bool KGSGameDBThread::Quety_WeddingLetter( IN UidType iSendUserUID, IN KDBE_WEDD
 		}
 		else
 		{
-			START_LOG( cerr, L"결혼식 예약 우편 발송 실패" )
+			START_LOG( cerr, L"Failed to send the wedding reservation mail." )
 				<< BUILD_LOG( iOK )
 				<< BUILD_LOG( kInfo.m_iFromUnitUID )
 				<< BUILD_LOG( kInfo.m_iToUnitUID )
@@ -14050,7 +14050,7 @@ bool KGSGameDBThread::Query_UpdateLastLogOffDate( IN const KDBE_UPDATE_UNIT_INFO
 end_proc:
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"유닛 마지막 로그오프 시간 업데이트 실패." )
+		START_LOG( cerr, L"Failed to update unit's last logout time." )
 			<< BUILD_LOG( iOK )
 			<< BUILD_LOG( kReq.m_iUnitUID )
 			<< BUILD_LOG( wstrLastDate )
@@ -14169,7 +14169,7 @@ _IMPL_ON_FUNC( DBE_WEDDING_ITEM_INFO_REQ, KEGS_WEDDING_ITEM_INFO_REQ )
 		}
 		else
 		{
-			START_LOG( cerr, L"아이템에 매칭된 웨딩 정보가 없습니다." )
+			START_LOG( cerr, L"No wedding information is matched to the item." )
 				<< BUILD_LOG( LAST_SENDER_UID )
 				<< BUILD_LOG( iItemUID )
 				<< END_LOG;
@@ -14229,7 +14229,7 @@ IMPL_ON_FUNC( DBE_BREAK_UP_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"헤어지기 실패!" )
+		START_LOG( cerr, L"Failed to break up!" )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iMyUnitUID )
 			<< BUILD_LOG( kPacket_.m_iLoverUnitUID )
@@ -14257,7 +14257,7 @@ IMPL_ON_FUNC( DBE_ADMIN_CHANGE_COUPLE_DATE_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"커플 날짜 변경 오류 치트키 오류" )
+		START_LOG( cerr, L"Couple date change error: cheat key error" )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iLoverUnitUID )
@@ -14269,7 +14269,7 @@ IMPL_ON_FUNC( DBE_ADMIN_CHANGE_COUPLE_DATE_REQ )
 
 	kPacket.m_iOK = NetError::NET_OK;
 
-	START_LOG( cout, L"커플 날짜 변경 성공!" )
+	START_LOG( cout, L"Successfully changed couple date!" )
 		<< BUILD_LOG( kPacket.m_iOK )
 		<< BUILD_LOG( kPacket_.m_iUnitUID )
 		<< BUILD_LOG( kPacket_.m_iLoverUnitUID )
@@ -14297,14 +14297,14 @@ IMPL_ON_FUNC( DBE_CHANGE_LOVE_WORD_REQ )
 	// 증분값 업데이트 실패
 	if( bUpdateFailed )
 	{
-		START_LOG( cout, L"증분값 업데이트 실패!" )
+		START_LOG( cout, L"Failed to update the increment value!" )
 			<< BUILD_LOG( kPacket_.m_iUseUnitUID )
 			<< END_LOG;
 
 		std::map< UidType, int >::const_iterator mitQC = kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.begin();
 		for( ; mitQC != kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.end(); ++mitQC )
 		{
-			START_LOG( cout, L"아이템 정보" )
+			START_LOG( cout, L"Item information" )
 				<< BUILD_LOG( mitQC->first )
 				<< BUILD_LOG( mitQC->second );
 		}
@@ -14331,7 +14331,7 @@ IMPL_ON_FUNC( DBE_CHANGE_LOVE_WORD_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"애칭 변경 실패!" )
+		START_LOG( cerr, L"Failed to change the nickname!" )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iUseUnitUID )
 			<< BUILD_LOG( kPacket_.m_iLoverUnitUID )
@@ -14418,7 +14418,7 @@ IMPL_ON_FUNC( DBE_INSERT_WEDDING_REWARD_REQ )
 
 		if( kPacket.m_iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"인연 정보 갱신 오류!" )
+			START_LOG( cerr, L"Failed to update relationship information!" )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iLoverUnitUID )
@@ -14472,7 +14472,7 @@ IMPL_ON_FUNC( DBE_ITEM_EVALUATE_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"아이템 소켓 정보 업데이트 실패." )
+		START_LOG( cerr, L"Failed to update the item socket information." )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iItemUID )
@@ -14504,13 +14504,13 @@ IMPL_ON_FUNC( DBE_RESTORE_ITEM_EVALUATE_REQ )
 	//{{ 2008. 10. 23  최육사	증분값 업데이트 실패
 	if( bUpdateFailed )
 	{
-		START_LOG( cout, L"증분값 업데이트 실패!" )
+		START_LOG( cout, L"Failed to update the increment value!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID );
 
 		std::map< UidType, int >::const_iterator mitQC = kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.begin();
 		for( ; mitQC != kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.end(); ++mitQC )
 		{
-			START_LOG( cout, L"아이템 정보" )
+			START_LOG( cout, L"Item information" )
 				<< BUILD_LOG( mitQC->first )
 				<< BUILD_LOG( mitQC->second );
 		}
@@ -14537,7 +14537,7 @@ IMPL_ON_FUNC( DBE_RESTORE_ITEM_EVALUATE_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"아이템 소켓 정보 업데이트 실패." )
+		START_LOG( cerr, L"Failed to update the item socket information." )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iTargetItemUID )
@@ -14569,13 +14569,13 @@ IMPL_ON_FUNC( DBE_ITEM_CONVERT_REQ )
 	//{{ 2008. 10. 23  최육사	증분값 업데이트 실패
 	if( bUpdateFailed )
 	{
-		START_LOG( cout, L"증분값 업데이트 실패!" )
+		START_LOG( cout, L"Failed to update the increment value!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID );
 
 		std::map< UidType, int >::const_iterator mitQC = kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.begin();
 		for( ; mitQC != kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.end(); ++mitQC )
 		{
-			START_LOG( cout, L"아이템 정보" )
+			START_LOG( cout, L"Item information" )
 				<< BUILD_LOG( mitQC->first )
 				<< BUILD_LOG( mitQC->second );
 		}
@@ -14584,7 +14584,7 @@ IMPL_ON_FUNC( DBE_ITEM_CONVERT_REQ )
 
 	if( Query_InsertItemList( SEnum::GIR_RANDOM_ITEM, kPacket_.m_iUnitUID, kPacket_.m_vecItemInfo, kPacket.m_mapItemInfo, false ) == false )
 	{
-		START_LOG( cerr, L"아이템 교환시 아이템 DB 추가 실패!" )
+		START_LOG( cerr, L"Failed to add the item to the database during the item exchange!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
 
@@ -14617,13 +14617,13 @@ IMPL_ON_FUNC( DBE_READY_TO_SOSUN_EVENT_REQ )
 	//{{ 2008. 10. 23  최육사	증분값 업데이트 실패
 	if( bUpdateFailed )
 	{
-		START_LOG( cout, L"증분값 업데이트 실패!" )
+		START_LOG( cout, L"Failed to update the increment value!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID );
 
 		std::map< UidType, int >::const_iterator mitQC = kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.begin();
 		for( ; mitQC != kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.end(); ++mitQC )
 		{
-			START_LOG( cout, L"아이템 정보" )
+			START_LOG( cout, L"Item information" )
 				<< BUILD_LOG( mitQC->first )
 				<< BUILD_LOG( mitQC->second );
 		}
@@ -14634,7 +14634,7 @@ IMPL_ON_FUNC( DBE_READY_TO_SOSUN_EVENT_REQ )
 	if( Query_InsertItemList( SEnum::GIR_ENCHANTMENT_EXTRACTION_ITEM, kPacket_.m_iUnitUID, kPacket_.m_vecItemInfo, kPacket.m_mapItemInfo ) == false )
 		//}}
 	{
-		START_LOG( cerr, L"아라 1차 전직 이름 맞추기 이벤트 보상 아이템 획득 실패" )
+		START_LOG( cerr, L"Failed to obtain the reward item for Ara's first-class advancement name event." )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
 
@@ -14720,7 +14720,7 @@ IMPL_ON_FUNC( DBE_EVENT_MAKING_SUCCESS_REQ )
 	{
 		kAck.m_tDate = tNow.GetTime();
 
-		START_LOG( clog, L"가상 결혼 성공!" )
+		START_LOG( clog, L"Virtual marriage succeeded!" )
 			<< BUILD_LOG( kAck.m_iOK )
 			<< BUILD_LOG( kAck.m_wstrRequestUnitName )
 			<< BUILD_LOG( kAck.m_wstrAcceptUnitName )
@@ -14752,7 +14752,7 @@ IMPL_ON_FUNC( DBE_EVENT_MAKING_SUCCESS_ACCEPTOR_REQ )
 
 	if( kAck.m_iOK == NetError::NET_OK )
 	{
-		START_LOG( clog, L"수락자 아이템 삭제 성공" )
+		START_LOG( clog, L"Successfully deleted the accepter's item" )
 			<< BUILD_LOG( kAck.m_iOK )
 			<< BUILD_LOG( static_cast<int>(kAck.m_kItemQuantityUpdate.m_vecDeleted.size()) )
 			<< BUILD_LOG( static_cast<int>(kPacket_.m_vecDeleted.size()) )
@@ -14809,7 +14809,7 @@ IMPL_ON_FUNC( DBE_RELEASE_PET_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"펫 놓아주기 실패!" )
+		START_LOG( cerr, L"Failed to release pet!" )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iPetUID )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
@@ -14889,7 +14889,7 @@ IMPL_ON_FUNC( DBE_USE_GM_TOOL_INSERT_ITEM_INFO_NOT )
 		}
 		else
 		{
-			START_LOG( cerr, L"DB 아이템 리스트가 중복되는 게 있다고???" )
+			START_LOG( cerr, L"There are duplicate items in the database item list?" )
 				<< BUILD_LOG( iItemID )
 				<< END_LOG;
 			continue;
@@ -14971,13 +14971,13 @@ IMPL_ON_FUNC( DBE_ITEM_EXTRACT_REQ )
 	//{{ 2008. 10. 23  최육사	증분값 업데이트 실패
 	if( bUpdateFailed )
 	{
-		START_LOG( cout, L"증분값 업데이트 실패!" )
+		START_LOG( cout, L"Failed to update the increment value!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID );
 
 		std::map< UidType, int >::const_iterator mitQC = kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.begin();
 		for( ; mitQC != kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.end(); ++mitQC )
 		{
-			START_LOG( cout, L"아이템 정보" )
+			START_LOG( cout, L"Item information" )
 				<< BUILD_LOG( mitQC->first )
 				<< BUILD_LOG( mitQC->second );
 		}
@@ -14986,7 +14986,7 @@ IMPL_ON_FUNC( DBE_ITEM_EXTRACT_REQ )
 
 	if( Query_InsertItemList( SEnum::GIR_ITEM_EXTRACT, kPacket_.m_iUnitUID, kPacket_.m_vecItemInfo, kPacket.m_mapItemInfo, false ) == false )
 	{
-		START_LOG( cerr, L"추출 아이템 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update the extracted item!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
 
@@ -14999,7 +14999,7 @@ IMPL_ON_FUNC( DBE_ITEM_EXTRACT_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"추출 아이템 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update the extracted item!" )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< END_LOG;
 	}
@@ -15020,13 +15020,13 @@ IMPL_ON_FUNC( DBE_USE_FINALITY_SKILL_REQ )
 	//{{ 2008. 10. 23  최육사	증분값 업데이트 실패
 	if( bUpdateFailed )
 	{
-		START_LOG( cout, L"증분값 업데이트 실패!" )
+		START_LOG( cout, L"Failed to update the increment value!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID );
 
 		std::map< UidType, int >::const_iterator mitQC = kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.begin();
 		for( ; mitQC != kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.end(); ++mitQC )
 		{
-			START_LOG( cout, L"아이템 정보" )
+			START_LOG( cout, L"Item information" )
 				<< BUILD_LOG( mitQC->first )
 				<< BUILD_LOG( mitQC->second );
 		}
@@ -15073,7 +15073,7 @@ IMPL_ON_FUNC( DBE_EXPAND_BANK_INVENTORY_REQ )
         }
         else
         {
-            START_LOG( cerr, L"ED를 통한 은행 확장 실패." )
+            START_LOG( cerr, L"Failed to expand the bank using ED." )
                 << BUILD_LOG( iOK )
                 << BUILD_LOG( kPacket_.m_iUnitUID )
                 << BUILD_LOG( mit->first )
@@ -15130,13 +15130,13 @@ IMPL_ON_FUNC( DBE_SOCKET_EXPAND_ITEM_REQ )
 
 	if( bUpdateFailed )
 	{
-		START_LOG( cout, L"증분값 업데이트 실패!" )
+		START_LOG( cout, L"Failed to update the increment value!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID );
 
 		std::map< UidType, int >::const_iterator mitQC = kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.begin();
 		for( ; mitQC != kPacket_.m_kItemQuantityUpdate.m_mapQuantityChange.end(); ++mitQC )
 		{
-			START_LOG( cout, L"아이템 정보" )
+			START_LOG( cout, L"Item information" )
 				<< BUILD_LOG( mitQC->first )
 				<< BUILD_LOG( mitQC->second );
 		}
@@ -15174,7 +15174,7 @@ _IMPL_ON_FUNC( DBE_CHARACTER_LIST_REQ, std::wstring )
     }
     else
     {
-        START_LOG( cerr, L"캐릭터 리스트 요청시 UserUID 이상 " )
+        START_LOG( cerr, L"Invalid UserUID in character list request: " )
             << BUILD_LOG( nUserUID )
             << END_LOG;
     }
@@ -15263,7 +15263,7 @@ IMPL_ON_FUNC( DBE_EXPAND_SKILL_PAGE_REQ )
 
 			if( iOK != NetError::NET_OK )
 			{
-				START_LOG( cerr, L"스킬 페이지 확장 실패 (P_GSkill_Expand_INS)" )
+				START_LOG( cerr, L"Failed to expand skill page (P_GSkill_Expand_INS)." )
 					<< BUILD_LOG( LAST_SENDER_UID )
 					<< BUILD_LOG( kPacket_.m_iUnitUID )
 					<< BUILD_LOG( iSkillPagesNumberToBeAdded )
@@ -15300,7 +15300,7 @@ IMPL_ON_FUNC( DBE_EXPAND_SKILL_PAGE_REQ )
 
 				if( iOK != NetError::NET_OK )
 				{
-					START_LOG( cerr, L"추가된 페이지에 기본을 스킬 등록 하지 못 했습니다." )
+					START_LOG( cerr, L"Failed to register default skill on the added page." )
 						<< BUILD_LOG( LAST_SENDER_UID )
 						<< BUILD_LOG( kPacket_.m_iUnitUID )
 						<< BUILD_LOG( kPacket_.m_iDefaultSkill[i] )
@@ -15359,7 +15359,7 @@ IMPL_ON_FUNC( DBE_DECIDE_TO_USE_THIS_SKILL_PAGE_REQ )
 
 	case -1:		// 확장 자체를 한 적이 없음
 		{
-			START_LOG( cerr, L"확장 자체를 한 적이 없음 (P_GSkill_Expand_UPD_Active)" )
+			START_LOG( cerr, L"No expansion was ever performed (P_GSkill_Expand_UPD_Active)." )
 				<< BUILD_LOG( LAST_SENDER_UID )
 				<< BUILD_LOG( kPacket_.m_iUnitUID )
 				<< BUILD_LOG( kPacket_.m_iSkillPagesNumberToBeActive )
@@ -15372,7 +15372,7 @@ IMPL_ON_FUNC( DBE_DECIDE_TO_USE_THIS_SKILL_PAGE_REQ )
 
 	case -2:		// Update 실패
 		{
-			START_LOG( cerr, L"Update 실패 (P_GSkill_Expand_UPD_Active)" )
+			START_LOG( cerr, L"Update failed (P_GSkill_Expand_UPD_Active)." )
 				<< BUILD_LOG( LAST_SENDER_UID )
 				<< BUILD_LOG( kPacket_.m_iUnitUID )
 				<< BUILD_LOG( kPacket_.m_iSkillPagesNumberToBeActive )

@@ -351,7 +351,7 @@ void KLoginUser::ProcessEvent( const KEventPtr& spEvent_ )
     CASE_NOPARAM( E_RESERVE_DESTROY );
 
     default:
-        dbg::cerr << L"이벤트 핸들러가 정의되지 않았음. " << spEvent_->GetIDStr();
+        dbg::cerr << L"Event handler is not defined. " << spEvent_->GetIDStr();
     }
 
     dwElapTime = ::GetTickCount() - dwElapTime;
@@ -399,7 +399,7 @@ void KLoginUser::LoginEnd()
 
 		if( dwDelayTick > 30000 )
 		{
-			START_LOG( cout, L"[경고!] Login Tick 지연시간이 30초를 넘었다!" )
+			START_LOG( cout, L"[Warning] Login Tick delay exceeded 30 seconds!" )
 				<< BUILD_LOG( dwDelayTick );
 		}
 	}
@@ -451,14 +451,14 @@ void KLoginUser::OnDestroy()
 	//{{ 2009. 1. 30  최육사	객체 소멸 로그
 	if( GetDisconnectReason() == KStatistics::eSIColDR_Server_Shutdown )
 	{
-		START_LOG( cout, L"서버 셧다운으로 인한 LoginUser객체 소멸" );
+		START_LOG( cout, L"Destroying LoginUser object during server shutdown." );
 	}
 	else
 	{
-		START_LOG( cout2, L"비정상적인 원인으로 인한 LoginUser객체 소멸" )
+		START_LOG( cout2, L"Destroying LoginUser object due to an abnormal cause." )
 			<< BUILD_LOG( GetIPStr() )
 			<< BUILD_LOG( GetDisconnectReason() )
-			<< dbg::tab << L"종료 사유 : " << KStatistics::GetDissconnectReasonString( GetDisconnectReason() ) << dbg::endl
+			<< dbg::tab << L"Disconnect reason: " << KStatistics::GetDissconnectReasonString( GetDisconnectReason() ) << dbg::endl
 			<< BUILD_LOG( GetLastIocpFailedError() );
 
 		//{{ 2010. 10. 11	최육사	서버간 접속 끊김 로그
@@ -510,7 +510,7 @@ bool KLoginUser::RoutePacket( const KEvent* pkEvent_ )
         }
         else if( iEval > 0 )
         {
-            START_LOG( cerr, L"현재는 센터 서버가 최상위 서버이다." )
+            START_LOG( cerr, L"The CenterServer is currently the top-level server." )
                 << BUILD_LOG( pkEvent_->m_kDestPerformer.m_dwPerformerID )
                 << BUILD_LOG( pkEvent_->m_usEventID )
                 << BUILD_LOG( pkEvent_->GetIDStr() )
@@ -538,12 +538,12 @@ bool KLoginUser::RoutePacket( const KEvent* pkEvent_ )
 				//}}
                 return true;
             case PC_NX_AUTH:
-                START_LOG( cerr, L"넥슨 국내인증이 아님." )
+                START_LOG( cerr, L"This is not Nexon Korea authentication." )
                     << BUILD_LOG( KSimLayer::GetKObj()->GetAuthFlag() )
                     << END_LOG;
                 return true;
             default:
-                START_LOG( cerr, L"도착지가 이상한 패킷." )
+                START_LOG( cerr, L"Packet has an invalid destination." )
                     << BUILD_LOG( pkEvent_->m_kDestPerformer.m_dwPerformerID )
                     << END_LOG;
                 return true;
@@ -592,7 +592,7 @@ _IMPL_ON_FUNC( ELG_VERIFY_SERVER_CONNECT_REQ, KECN_VERIFY_SERVER_CONNECT_REQ )
 
 	if( kPacket_.m_kNetAddress.m_wstrIP != KncUtil::toWideString( GetIPStr() ) )
 	{
-		START_LOG( cerr, L"유효하지 않은 IP" )
+		START_LOG( cerr, L"Invalid IP address." )
 			<< BUILD_LOG( kPacket_.m_kNetAddress.m_wstrIP )
 			<< BUILD_LOG( GetIPStr() );
 
@@ -630,7 +630,7 @@ _IMPL_ON_FUNC( DBE_VERIFY_SERVER_CONNECT_ACK, KECN_VERIFY_SERVER_CONNECT_ACK )
     }
 	else
 	{
-		START_LOG( cout2, L"게임서버와 정상적으로 접속하였습니다!" )
+		START_LOG( cout2, L"Successfully connected to the game server!" )
 			<< BUILD_LOG( kPacket_.m_nUID )
 			<< BUILD_LOG( kPacket_.m_strName );
 
@@ -763,7 +763,7 @@ IMPL_ON_FUNC( ELG_REGISTER_USER_REQ )
     kPacket.m_iOK = GetKLoginSimLayer()->RegUser( FIRST_SENDER_UID, GetUID(), kPacket_, false );
     if( kPacket.m_iOK != NetError::NET_OK )
     {
-        START_LOG( cerr, L"유저 등록 중 에러." )
+        START_LOG( cerr, L"Error while registering user." )
             << BUILD_LOG( FIRST_SENDER_UID )
             << BUILD_LOG( kPacket_.m_wstrUserID )
             << BUILD_LOG( GetUID() )
@@ -834,7 +834,7 @@ IMPL_ON_FUNC( ELG_CHANNEL_CHANGE_REGISTER_USER_REQ )
 	//}}
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"유저 등록 중 에러." )
+		START_LOG( cerr, L"Error while registering user." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_kRegUserReq.m_wstrUserID )
 			<< BUILD_LOG( GetUID() )
@@ -929,7 +929,7 @@ IMPL_ON_FUNC( ELG_REGISTER_UNIT_NOT )
     int iOK = GetKLoginSimLayer()->RegUnit( FIRST_SENDER_UID, kPacket_.m_nUnitUID, kPacket_.m_wstrUnitNickName, kPacket_.m_uiKNMSerialNum, kPacket_.m_bDenyFriendShip );
     if( iOK != NetError::NET_OK )
     {
-        START_LOG( cerr, L"캐릭터 등록 실패" )
+        START_LOG( cerr, L"Failed to register character." )
             << BUILD_LOG( iOK )
             << BUILD_LOG( NetError::GetErrStr( iOK ) )
             << END_LOG;
@@ -987,7 +987,7 @@ IMPL_ON_FUNC( ELG_UNIT_DISCONNECT_NOT )
 	{
         if( SiKGuildManager()->LogoutGuildMember( kPacket_.m_iGuildUID, kPacket_.m_iUnitUID ) == false )
 		{
-			START_LOG( cerr, L"길드 유저 로그아웃 실패!" )
+			START_LOG( cerr, L"Failed to log out guild user!" )
 				<< BUILD_LOG( kPacket_.m_iGuildUID )
 				<< BUILD_LOG( kPacket_.m_iUnitUID )
 				<< END_LOG;
@@ -1049,7 +1049,7 @@ IMPL_ON_FUNC( ELG_SEARCH_UNIT_REQ )
 
 	default:
 		{
-			START_LOG( cerr, L"이상한 eventid가 담겨져 왔습니다." )
+			START_LOG( cerr, L"Received an invalid event ID." )
 				<< BUILD_LOG( KEvent::GetIDStr( kPacket_.m_usEventID ) )
 				<< END_LOG;
 		}
@@ -1101,7 +1101,7 @@ _IMPL_ON_FUNC( ELG_KNM_REQUEST_NEW_FRIEND_INFO_REQ, KEGS_KNM_REQUEST_NEW_FRIEND_
 	{
 		kPacket.m_iOK	= NetError::ERR_KNM_02;
 
-		START_LOG( cerr, L"친구등록할 유닛 UID 가 없네.ㅡ=ㅡ^" )
+		START_LOG( cerr, L"No Unit UID found for friend registration." )
 			<< BUILD_LOG( kUserInfo.m_nUnitUID )
 			<< BUILD_LOG( kUserInfo.m_wstrUnitNickName )
 			<< END_LOG;
@@ -1370,7 +1370,7 @@ _IMPL_ON_FUNC( ELG_ADMIN_KICK_USER_REQ, KEGS_ADMIN_KICK_USER_REQ )
 
     if( kInfo.m_nGSUID <= 0 || kInfo.m_nUserUID <= 0 )
     {
-        START_LOG( cerr, L"유저 정보 이상." )
+        START_LOG( cerr, L"Invalid user information." )
             << BUILD_LOG( FIRST_SENDER_UID )
             << BUILD_LOG( kPacket_.m_wstrUnitNickName )
             << BUILD_LOG( kInfo.m_nGSUID )
@@ -1440,7 +1440,7 @@ _IMPL_ON_FUNC( ELG_TUTORIAL_UPDATE_UNIT_INFO_NOT, KEGS_TUTORIAL_UPDATE_UNIT_INFO
 	KUserList::KGSUserInfo kUserInfo;
 	if( GetKLoginSimLayer()->GetGSUserInfoByUnitUID( kPacket_.m_iReceiverUID, kUserInfo ) == false )
 	{
-		START_LOG( clog, L"찾는 유저가 없음.!" )
+		START_LOG( clog, L"User not found!" )
 			<< BUILD_LOG( kPacket_.m_iReceiverUID )
 			<< BUILD_LOG( kPacket_.m_kTutorialUnitInfo.m_iUnitUID )
 			<< BUILD_LOG( FIRST_SENDER_UID )
@@ -1460,7 +1460,7 @@ IMPL_ON_FUNC( ELG_DEL_TUTORIAL_NOT )
 	KUserList::KGSUserInfo kUserInfo;
 	if( GetKLoginSimLayer()->GetGSUserInfoByUnitUID( kPacket_.m_iReceiverUnitUID, kUserInfo ) == false )
 	{
-		START_LOG( clog, L"찾는 유저가 없음.!" )
+		START_LOG( clog, L"User not found!" )
 			<< BUILD_LOG( kPacket_.m_iReceiverUnitUID )
 			<< BUILD_LOG( kPacket_.m_iDeleteUnitUID )
 			<< BUILD_LOG( FIRST_SENDER_UID )
@@ -1488,7 +1488,7 @@ IMPL_ON_FUNC( ELG_REQUEST_TUTORIAL_NOT )
 	KUserList::KGSUserInfo kUserInfo;
 	if( GetKLoginSimLayer()->GetGSUserInfoByUnitUID( kPacket_.m_iReceiverUnitUID, kUserInfo ) == false )
 	{
-		START_LOG( clog, L"찾는 유저가 없음.!" )
+		START_LOG( clog, L"User not found!" )
 			<< BUILD_LOG( kPacket_.m_iReceiverUnitUID )
 			<< BUILD_LOG( kPacket_.m_kTutorialUnitInfo.m_iUnitUID )
 			<< BUILD_LOG( FIRST_SENDER_UID )
@@ -1507,7 +1507,7 @@ _IMPL_ON_FUNC( ELG_REQUEST_TUTORIAL_REPLY_NOT, KEGS_REQUEST_TUTORIAL_REPLY_NOT )
 	KUserList::KGSUserInfo kUserInfo;
 	if( GetKLoginSimLayer()->GetGSUserInfoByUnitUID( kPacket_.m_iReceiverUnitUID, kUserInfo ) == false )
 	{
-		START_LOG( clog, L"찾는 유저가 없음.!" )
+		START_LOG( clog, L"User not found!" )
 			<< BUILD_LOG( kPacket_.m_iReceiverUnitUID )
 			<< BUILD_LOG( kPacket_.m_kTutorialUnitInfo.m_iUnitUID )
 			<< BUILD_LOG( FIRST_SENDER_UID )
@@ -1527,7 +1527,7 @@ _IMPL_ON_FUNC( ELG_REQUEST_TUTORIAL_REPLY_NOT, KEGS_REQUEST_TUTORIAL_REPLY_NOT )
 //	KUserList::KGSUserInfo kUserInfo;
 //	if( GetKLoginSimLayer()->GetGSUserInfoByUnitNickName( kPacket_.m_wstrReceiverNickName, kUserInfo ) == false )
 //	{
-//		START_LOG( clog, L"찾는 유저가 없음.!" )
+//		START_LOG( clog, L"User not found!" )
 //			<< BUILD_LOG( kPacket_.m_wstrReceiverNickName )
 //			<< BUILD_LOG( kPacket_.m_iSenderUID )
 //			<< BUILD_LOG( FIRST_SENDER_UID )
@@ -1546,7 +1546,7 @@ _IMPL_ON_FUNC( ELG_REQUEST_TUTORIAL_REPLY_NOT, KEGS_REQUEST_TUTORIAL_REPLY_NOT )
 //	KUserList::KGSUserInfo kUserInfo;
 //	if( GetKLoginSimLayer()->GetGSUserInfoByUnitUID( kPacket_.m_iReceiverUID, kUserInfo ) == false )
 //	{
-//		START_LOG( clog, L"찾는 유저가 없음.!" )
+//		START_LOG( clog, L"User not found!" )
 //			<< BUILD_LOG( kPacket_.m_iReceiverUID )
 //			<< BUILD_LOG( kPacket_.m_iMemberUID )
 //			<< BUILD_LOG( FIRST_SENDER_UID )
@@ -1638,7 +1638,7 @@ IMPL_ON_FUNC( ELG_NEW_RECORD_HENIR_RANKING_NOT )
 	// 유저가 헤니르 시공을 클리어하여 랭킹 등록을 요청하였음!
 	if( SiKRankingManager()->NewRecordHenirRanking( kPacket_.m_kNewRecordRanking ) == false )
 	{
-		START_LOG( clog, L"랭킹 등록 시도하였으나 순위안에 들지 못하였음" )
+		START_LOG( clog, L"Ranking submission did not place within the ranked positions." )
 			<< BUILD_LOG( kPacket_.m_kNewRecordRanking.m_wstrNickName )
 			<< BUILD_LOG( kPacket_.m_kNewRecordRanking.m_iStageCount )
 			<< BUILD_LOG( kPacket_.m_kNewRecordRanking.m_ulPlayTime );
@@ -1696,7 +1696,7 @@ IMPL_ON_FUNC( ELG_GET_WEB_RANKING_REFRESH_NOT )
 
 	default:
 		{
-            START_LOG( cerr, L"대전&던전 랭킹 타입이 이상합니다." )
+            START_LOG( cerr, L"Invalid PvP/Dungeon ranking type." )
 				<< BUILD_LOGc( kPacket_.m_cRankingRefreshType )
 				<< END_LOG;
 		}
@@ -1738,7 +1738,7 @@ IMPL_ON_FUNC( ELG_UPDATE_DENY_FRIEND_SHIP_NOT )
 
 	if( !GetKLoginSimLayer()->SetDenyFriendShip( kPacket_.m_iUnitUID, kPacket_.m_bDenyFriendShip ) )
 	{
-		START_LOG( cwarn, L"친구 차단 옵션을 업데이트 실패!" )
+		START_LOG( cwarn, L"Failed to update friend block option!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOGc( kPacket_.m_bDenyFriendShip )
 			<< END_LOG;
@@ -1758,7 +1758,7 @@ _IMPL_ON_FUNC( ELG_FIND_FRIEND_UNIT_INFO_REQ, KEGS_UPDATE_FRIEND_INFO_REQ )
 	{
 		// 친구가 현재 접속해 있지 않다!
 
-		START_LOG( clog, L"친구가 접속중이지 않다!" )
+		START_LOG( clog, L"The friend is not online!" )
 			<< BUILD_LOG( LAST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_wstrFriendNickName );
 
@@ -1975,7 +1975,7 @@ IMPL_ON_FUNC( ELG_CREATE_GUILD_RESULT_REQ )
 	// DB로부터 받아온 길드 정보 업데이트
 	if( SiKGuildManager()->UpdateGuildInfo( kPacket_.m_kGuildInfo ) == false )
 	{
-		START_LOG( cerr, L"길드 정보 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update guild information!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_kGuildInfo.m_iGuildUID )
 			<< END_LOG;
@@ -1986,7 +1986,7 @@ IMPL_ON_FUNC( ELG_CREATE_GUILD_RESULT_REQ )
 	// 길드 멤버 정보 업데이트
 	if( SiKGuildManager()->UpdateGuildMemberList( kPacket_.m_kGuildInfo.m_iGuildUID, kPacket_.m_vecMemberList ) == false )
 	{
-		START_LOG( cerr, L"길드 멤버 정보 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update guild member information!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_kGuildInfo.m_iGuildUID )
 			<< END_LOG;
@@ -1997,7 +1997,7 @@ IMPL_ON_FUNC( ELG_CREATE_GUILD_RESULT_REQ )
 	//{{ 2009. 12. 3  최육사	길드스킬
 	if( SiKGuildManager()->UpdateGuildSkill( kPacket_.m_kGuildInfo.m_iGuildUID, kPacket_.m_kGuildSkillInfo ) == false )
 	{
-		START_LOG( cerr, L"길드 스킬 정보 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update guild skill information!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_kGuildInfo.m_iGuildUID )
 			<< END_LOG;
@@ -2009,7 +2009,7 @@ IMPL_ON_FUNC( ELG_CREATE_GUILD_RESULT_REQ )
 	// 있다면 자신의 길드멤버정보를 업데이트한다!
 	if( SiKGuildManager()->LoginGuildMember( kPacket_.m_kGuildInfo.m_iGuildUID, kPacket_.m_kLoginGuildMember ) == false )
 	{
-		START_LOG( cerr, L"길드 멤버 로그인 정보 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update guild member login information!" )
 			<< BUILD_LOG( kPacket_.m_kGuildInfo.m_iGuildUID )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
@@ -2051,7 +2051,7 @@ IMPL_ON_FUNC( ELG_GET_GUILD_INFO_REQ )
 	// 있다면 자신의 길드멤버정보를 업데이트한다!
 	if( SiKGuildManager()->LoginGuildMember( kPacket_.m_iGuildUID, kPacket_.m_kLoginGuildMember ) == false )
 	{
-		START_LOG( cerr, L"길드 멤버 로그인 정보 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update guild member login information!" )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
@@ -2069,7 +2069,7 @@ IMPL_ON_FUNC( DBE_GET_GUILD_INFO_ACK )
 
 	if( kPacket_.m_iOK != NetError::NET_OK )
 	{
-	    START_LOG( cerr, L"DB로부터 길드 정보 얻기 실패! guilduid는 있는데 길드정보가 없다?" )
+	    START_LOG( cerr, L"Failed to get guild information from the database: GuildUID exists, but guild data is missing?" )
 			<< BUILD_LOG( kPacket_.m_kGuildInfo.m_iGuildUID )
 			<< BUILD_LOG( kPacket_.m_kLoginGuildMember.m_iUnitUID )
 			<< END_LOG;
@@ -2080,7 +2080,7 @@ IMPL_ON_FUNC( DBE_GET_GUILD_INFO_ACK )
 	// DB로부터 받아온 길드 정보 업데이트
 	if( SiKGuildManager()->UpdateGuildInfo( kPacket_.m_kGuildInfo ) == false )
 	{
-		START_LOG( cerr, L"길드 정보 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update guild information!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_kGuildInfo.m_iGuildUID )
 			<< END_LOG;
@@ -2102,7 +2102,7 @@ IMPL_ON_FUNC( DBE_GET_GUILD_INFO_ACK )
 	// 길드 멤버 정보 업데이트
 	if( SiKGuildManager()->UpdateGuildMemberList( kPacket_.m_kGuildInfo.m_iGuildUID, kPacket_.m_vecMemberList ) == false )
 	{
-		START_LOG( cerr, L"길드 멤버 정보 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update guild member information!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_kGuildInfo.m_iGuildUID )
 			<< END_LOG;
@@ -2114,7 +2114,7 @@ IMPL_ON_FUNC( DBE_GET_GUILD_INFO_ACK )
 
 	if( SiKGuildManager()->UpdateGuildSkill( kPacket_.m_kGuildInfo.m_iGuildUID, kPacket_.m_kGuildSkillInfo ) == false )
 	{
-		START_LOG( cerr, L"길드 스킬 정보 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update guild skill information!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_kGuildInfo.m_iGuildUID )
 			<< END_LOG;
@@ -2129,7 +2129,7 @@ IMPL_ON_FUNC( DBE_GET_GUILD_INFO_ACK )
 	KUserList::KGSUserInfo kGSUserInfo;
 	if( GetKLoginSimLayer()->GetGSUserInfoByUnitUID( kPacket_.m_kLoginGuildMember.m_iUnitUID, kGSUserInfo ) == false )
 	{
-		START_LOG( clog, L"DB로부터 길드정보를 가져오는 사이에 유저가 로그아웃을 한것임." )
+		START_LOG( clog, L"The user logged out while guild information was being loaded from the database." )
 			<< BUILD_LOG( kPacket_.m_kGuildInfo.m_iGuildUID )
 			<< BUILD_LOG( kPacket_.m_kLoginGuildMember.m_iUnitUID );
 
@@ -2140,7 +2140,7 @@ IMPL_ON_FUNC( DBE_GET_GUILD_INFO_ACK )
 	// 있다면 자신의 길드멤버정보를 업데이트한다!
 	if( SiKGuildManager()->LoginGuildMember( kPacket_.m_kGuildInfo.m_iGuildUID, kPacket_.m_kLoginGuildMember ) == false )
 	{
-		START_LOG( cerr, L"길드 멤버 로그인 정보 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update guild member login information!" )
 			<< BUILD_LOG( kPacket_.m_kGuildInfo.m_iGuildUID )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
@@ -2165,7 +2165,7 @@ IMPL_ON_FUNC( ELG_GET_GUILD_USER_LIST_REQ )
 	// GuidUID에 해당되는 길드멤버 리스트를 얻자!
 	if( SiKGuildManager()->GetGuildUserList( kPacket_, kPacket ) == false )
 	{
-		START_LOG( cerr, L"길드 유저리스트 얻기 실패!" )
+		START_LOG( cerr, L"Failed to get guild user list!" )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
 			<< END_LOG;
 	}
@@ -2270,7 +2270,7 @@ IMPL_ON_FUNC( ELG_INVITE_GUILD_FIND_USER_ACK )
 
 	default:
 		{
-			START_LOG( cerr, L"정의 되지 않은 eventid입니다." )
+			START_LOG( cerr, L"Undefined event ID." )
 				<< BUILD_LOG( KEvent::GetIDStr( kPacket_.m_usEventID ) )
 				<< END_LOG;
 		}
@@ -2321,7 +2321,7 @@ IMPL_ON_FUNC( ELG_JOIN_GUILD_REQ )
 	// 예약된 정보를 지운다
 	if( SiKGuildManager()->RemoveReserve( kPacket_.m_iGuildUID, kPacket_.m_kLoginGuildMember.m_iUnitUID ) == false )
 	{
-		START_LOG( cerr, L"길드 가입 예약 정보 삭제 실패!" )
+		START_LOG( cerr, L"Failed to delete guild application reservation!" )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
 			<< BUILD_LOG( kPacket_.m_kLoginGuildMember.m_iUnitUID )
 			<< END_LOG;
@@ -2334,7 +2334,7 @@ IMPL_ON_FUNC( ELG_JOIN_GUILD_REQ )
 	// 있다면 길드 가입 정보를 업데이트 한다!
 	if( SiKGuildManager()->JoinGuildMember( kPacket_.m_iGuildUID, kPacket_.m_kLoginGuildMember, true ) == false )
 	{
-		START_LOG( cerr, L"길드 멤버 로그인 정보 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update guild member login information!" )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
@@ -2400,7 +2400,7 @@ _IMPL_ON_FUNC( ELG_UPDATE_CHANGE_GUILD_MEMBER_GRADE_NOT, KDBE_CHANGE_GUILD_MEMBE
     // 변경된 정보를 업데이트하고 길드원들에게 알린다!
 	if( SiKGuildManager()->UpdateChangeGuildMemberGrade( kPacket_ ) == false )
 	{
-		START_LOG( cerr, L"길드 멤버 등급 변경 업데이트 실패" )
+		START_LOG( cerr, L"Failed to update guild member rank." )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
 			<< BUILD_LOG( kPacket_.m_iTargetUnitUID )
 			<< BUILD_LOGc( kPacket_.m_ucMemberShipGrade )
@@ -2432,7 +2432,7 @@ _IMPL_ON_FUNC( ELG_UPDATE_CHANGE_GUILD_MESSAGE_NOT, KDBE_CHANGE_GUILD_MESSAGE_AC
 	// 변경된 정보를 업데이트
 	if( SiKGuildManager()->UpdateChangeGuildMessage( kPacket_ ) == false )
 	{
-		START_LOG( cerr, L"길드 메시지 변경 업데이트 실패" )
+		START_LOG( cerr, L"Failed to update guild message." )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
 			<< BUILD_LOG( kPacket_.m_wstrMessage )
 			<< END_LOG;
@@ -2447,7 +2447,7 @@ _IMPL_ON_FUNC( ELG_UPDATE_KICK_GUILD_MEMBER_NOT, KDBE_KICK_GUILD_MEMBER_ACK )
 	std::wstring wstrGuildName;
 	if( SiKGuildManager()->UpdateKickGuildMember( kPacket_, wstrGuildName ) == false )
 	{
-		START_LOG( cerr, L"길드원 탈퇴 업데이트 실패" )
+		START_LOG( cerr, L"Failed to update guild member withdrawal." )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iTargetUnitUID )
@@ -2489,7 +2489,7 @@ _IMPL_ON_FUNC( ELG_UPDATE_CHANGE_GUILD_MEMBER_MESSAGE_NOT, KDBE_CHANGE_GUILD_MEM
 	// 변경된 정보를 업데이트하고 길드원들에게 알린다!
 	if( SiKGuildManager()->UpdateChangeGuildMemberMessage( kPacket_ ) == false )
 	{
-		START_LOG( cerr, L"길드원 인사말 변경 정보 업데이트 실패" )
+		START_LOG( cerr, L"Failed to update guild member greeting." )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
 			<< BUILD_LOG( kPacket_.m_iTargetUnitUID )
 			<< BUILD_LOG( kPacket_.m_wstrMessage )
@@ -2504,7 +2504,7 @@ _IMPL_ON_FUNC( ELG_UPDATE_DISBAND_GUILD_NOT, KDBE_DISBAND_GUILD_ACK )
 	// 길드가 해산되었으므로 길드정보를 지우자!
 	if( SiKGuildManager()->DisbandGuild( kPacket_.m_iGuildUID ) == false )
 	{
-		START_LOG( cerr, L"길드 해산 업데이트 실패" )
+		START_LOG( cerr, L"Failed to disband guild." )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
 			<< END_LOG;
 	}
@@ -2537,7 +2537,7 @@ IMPL_ON_FUNC( ELG_UPDATE_GUILD_MEMBER_INFO_NOT )
 	if( SiKGuildManager()->UpdateGuildMemberInfo( kPacket_.m_iGuildUID, kPacket_.m_kMemberInfo ) == false )
 	{
 		// 시간차로 발생 가능하다.
-		START_LOG( cwarn, L"길드 멤버 정보 업데이트 실패" )
+		START_LOG( cwarn, L"Failed to update guild member information." )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
 			<< END_LOG;
 	}
@@ -2570,7 +2570,7 @@ _IMPL_ON_FUNC( DLG_UPDATE_EXPAND_GUILD_MAX_MEMBER_NOT, KDBE_EXPAND_GUILD_MAX_MEM
 	// 길드 멤버 최대 인원 확장!
 	if( SiKGuildManager()->UpdateGuildMaxMember( kPacket_.m_iGuildUID, kPacket_.m_usMaxNumMember ) == false )
 	{
-		START_LOG( cerr, L"길드 최대 인원 정보 업데이트 실패" )
+		START_LOG( cerr, L"Failed to update guild member limit." )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
 			<< BUILD_LOG( kPacket_.m_usMaxNumMember )
 			<< END_LOG;
@@ -2585,7 +2585,7 @@ _IMPL_ON_FUNC( ELG_UPDATE_GUILD_EXP_NOT, KDBE_UPDATE_GUILD_EXP_ACK )
 	// 길드 경험치 업데이트
 	if( SiKGuildManager()->UpdateGuildEXP( kPacket_.m_iGuildUID, kPacket_ ) == false )
 	{
-		START_LOG( cerr, L"길드 경험치 정보 업데이트 실패" )
+		START_LOG( cerr, L"Failed to update guild experience." )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
 			<< BUILD_LOG( kPacket_.m_iGuildEXP )
 			<< END_LOG;
@@ -2692,7 +2692,7 @@ IMPL_ON_FUNC( ELG_CHANGE_GUILD_NAME_RESULT_REQ )
 	KGuildPtr kGuildPtr = SiKGuildManager()->GetGuild( kPacket_.m_iGuildUID );
 	if( kGuildPtr == NULL )
 	{
-		START_LOG( cerr, L"GuildUID에 해당하는 Guild가 존재하지 않습니다. ( GameServer와 LoginServer 데이터 불일치 발생 가능성")
+		START_LOG( cerr, L"No guild exists for GuildUID. GameServer and LoginServer data may be inconsistent.")
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
 			<< BUILD_LOG( kPacket_.m_wstrGuildName )
 			<< END_LOG;
@@ -2741,7 +2741,7 @@ IMPL_ON_FUNC( ELG_FIND_DELETE_CHAR_IN_RANKING_NOT )
 	{
 		if( SiKRankingManager()->DeleteRecord( *vit, kPacket_.m_iUnitUID ) == false )
 		{
-            START_LOG( cerr, L"캐릭터 삭제로 인한 랭킹 정보 삭제 처리 실패! " )
+            START_LOG( cerr, L"Failed to delete ranking information after character deletion! " )
 				<< BUILD_LOG( kPacket_.m_iUnitUID )
 				<< BUILD_LOG( *vit );
 		}
@@ -2822,7 +2822,7 @@ _IMPL_ON_FUNC( ELG_RESET_GUILD_SKILL_DEL_ITEM_ACK, KDBE_RESET_GUILD_SKILL_ACK )
 	// 길드 스킬 되돌리기
 	if( SiKGuildManager()->ResetGuildSkill( kPacket_ ) == false )
 	{
-        START_LOG( cerr, L"길드 스킬 되돌리기 실패! 절대 일어날수 없는 에러!" )
+        START_LOG( cerr, L"Failed to refund guild skill! This should never happen!" )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
 			<< BUILD_LOG( kPacket_.m_iGuildSkillID )
 			<< END_LOG;
@@ -2855,7 +2855,7 @@ _IMPL_ON_FUNC( ELG_INIT_GUILD_SKILL_DEL_ITEM_ACK, KDBE_INIT_GUILD_SKILL_ACK )
 	// 길드 스킬 초기화
 	if( SiKGuildManager()->InitGuildSkill( kPacket_ ) == false )
 	{
-		START_LOG( cerr, L"길드 스킬 초기화 실패! 절대 일어날수 없는 에러!" )
+		START_LOG( cerr, L"Failed to reset guild skills! This should never happen!" )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
 			<< BUILD_LOG( kPacket_.m_iGuildSPoint )
 			<< BUILD_LOG( kPacket_.m_iGuildCSPoint )
@@ -2870,7 +2870,7 @@ IMPL_ON_FUNC( ELG_INSERT_GUILD_CASH_SKILL_POINT_NOT )
 	// 길드 캐쉬 스킬 포인트
 	if( SiKGuildManager()->InsertGuildCashSkillPoint( kPacket_ ) == false )
 	{
-		START_LOG( cerr, L"길드 캐쉬 스킬 포인트 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update guild cash skill points!" )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
 			<< BUILD_LOG( kPacket_.m_iGuildCSPoint )
 			<< END_LOG;
@@ -2884,7 +2884,7 @@ IMPL_ON_FUNC( ELG_ADMIN_GET_GUILD_SKILL_POINT_REQ )
 	// 길드 스킬 포인트 치트
 	if( SiKGuildManager()->AdminInsertGuildSkillPoint( kPacket_ ) == false )
 	{
-		START_LOG( cwarn, L"길드 스킬 포인트 치트 사용 실패!" )
+		START_LOG( cwarn, L"Failed to use guild skill point cheat!" )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iGuildSPoint )
@@ -2946,7 +2946,7 @@ IMPL_ON_FUNC( ELG_GET_GUILD_SKILL_IN_BOARD_REQ )
 	// 광고가 등록된 길드인지 확인한다.
 	if( SiKGuildBoardManager()->IsExistGuildAd( kPacket_.m_iGuildUID ) == false )
 	{
-		START_LOG( cerr, L"광고가 등록되지 않은 길드의 스킬 보기를 요청하였습니다." )
+		START_LOG( cerr, L"Requested guild skill information for a guild without an advertisement." )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
 			<< END_LOG;
 
@@ -2978,7 +2978,7 @@ IMPL_ON_FUNC( DBE_GET_GUILD_SKILL_IN_BOARD_ACK )
     // GuildBoardManager에 길드스킬정보를 저장해두자!
 	if( SiKGuildBoardManager()->SetGuildSkillInfo( kPacket_.m_iGuildUID, kPacket_.m_kGuildSkillInfo ) == false )
 	{
-		START_LOG( cerr, L"DB로부터 받아온 길드 스킬 정보 업데이트 실패" )
+		START_LOG( cerr, L"Failed to update guild skill information received from the database." )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
 			<< END_LOG;
 	}
@@ -3043,7 +3043,7 @@ IMPL_ON_FUNC( DBE_REGISTRATION_GUILD_AD_ACK )
 
 	if( kPacket_.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cwarn, L"DB에 길드 광고 등록 실패!" )
+		START_LOG( cwarn, L"Failed to register guild advertisement in the database!" )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
@@ -3058,7 +3058,7 @@ IMPL_ON_FUNC( DBE_REGISTRATION_GUILD_AD_ACK )
 
 	if( SiKGuildManager()->MakeGuildAdInfo( kPacket_, kGuildAdInfo ) == false )
 	{
-		START_LOG( cerr, L"길드 광고 정보 만들기 실패! 절대 일어나서는 안되는에러!" )
+		START_LOG( cerr, L"Failed to create guild advertisement information! This should never happen!" )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
@@ -3107,7 +3107,7 @@ IMPL_ON_FUNC( ELG_MODIFY_REG_GUILD_AD_REQ )
 	// 이미 해당 길드에서 등록한 길드광고가 있는지 확인
 	if( SiKGuildBoardManager()->IsExistGuildAd( kPacket_.m_iGuildUID ) == false )
 	{
-		START_LOG( cerr, L"이미 등록한 길드 광고가 있는 경우에만 패킷이 와야함." )
+		START_LOG( cerr, L"Packet should only be received when an advertisement is already registered." )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
@@ -3120,7 +3120,7 @@ IMPL_ON_FUNC( ELG_MODIFY_REG_GUILD_AD_REQ )
 	// 그렇다면 기간이 다된 광고인지 확인
 	if( SiKGuildBoardManager()->IsExpiredGuildAd( kPacket_.m_iGuildUID ) == true )
 	{
-		START_LOG( cerr, L"기간이 아직 다 되지 않은 광고가 있는 경우에만 패킷이 와야함." )
+		START_LOG( cerr, L"Packet should only be received when an advertisement has not yet expired." )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
@@ -3145,7 +3145,7 @@ IMPL_ON_FUNC( DBE_MODIFY_REG_GUILD_AD_ACK )
 
 	if( kPacket_.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cwarn, L"DB에 길드 광고 정보 수정 실패!" )
+		START_LOG( cwarn, L"Failed to update guild advertisement information in the database!" )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
@@ -3160,7 +3160,7 @@ IMPL_ON_FUNC( DBE_MODIFY_REG_GUILD_AD_ACK )
 
 	if( SiKGuildManager()->MakeGuildAdInfo( kPacket_, kGuildAdInfo ) == false )
 	{
-		START_LOG( cerr, L"길드 광고 정보 만들기 실패! 절대 일어나서는 안되는에러!" )
+		START_LOG( cerr, L"Failed to create guild advertisement information! This should never happen!" )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
@@ -3241,7 +3241,7 @@ IMPL_ON_FUNC( ELG_GET_APPLY_JOIN_GUILD_LIST_REQ )
 
 		if( SiKGuildBoardManager()->IsExistApplyJoinGuild( kPacket_.m_iGuildUID, kPacket_.m_iUnitUID ) == false )
 		{
-			START_LOG( clog, L"길드 가입 신청 리스트를 볼수 없는 유저입니다." )
+			START_LOG( clog, L"User is not allowed to view the guild application list." )
 				<< BUILD_LOG( kPacket_.m_iGuildUID )
 				<< BUILD_LOG( kPacket_.m_iUnitUID )
 				<< END_LOG;
@@ -3257,7 +3257,7 @@ IMPL_ON_FUNC( ELG_GET_APPLY_JOIN_GUILD_LIST_REQ )
 		// 길드 가입자 리스트를 볼수 있는 길드원인지 체크
 		if( SiKGuildManager()->CheckGetApplyJoinGuildList( kPacket_ ) == false )
 		{
-			START_LOG( clog, L"길드 가입 신청 리스트를 볼수 없는 유저입니다." )
+			START_LOG( clog, L"User is not allowed to view the guild application list." )
 				<< BUILD_LOG( kPacket_.m_iGuildUID )
 				<< BUILD_LOG( kPacket_.m_iUnitUID )
 				<< END_LOG;
@@ -3271,7 +3271,7 @@ IMPL_ON_FUNC( ELG_GET_APPLY_JOIN_GUILD_LIST_REQ )
 	// 길드 가입자 리스트 얻기
 	if( SiKGuildBoardManager()->GetApplyJoinGuildList( kPacket_, kPacket ) == false )
 	{
-		START_LOG( cerr, L"길드 가입 신청 리스트 받아오기 실패!" )
+		START_LOG( cerr, L"Failed to retrieve guild application list!" )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
@@ -3330,7 +3330,7 @@ IMPL_ON_FUNC( DBE_DELETE_APLLY_FOR_ACCEPT_JOIN_GUILD_ACK )
 	// 길드 가입 수락이 가능한지 체크
 	if( SiKGuildManager()->CheckInviteCondition( kPacket_.m_iGuildUID, kPacket_.m_iApplyJoinUnitUID, kPacket_.m_iUnitUID, kPacket ) == false )
 	{
-		START_LOG( cerr, L"길드 가입 수락 권한이 없습니다. 먼저 체크를 했었을텐데.. 절대 일어나선 안되는 에러" )
+		START_LOG( cerr, L"Guild application acceptance was not authorized; this should have been checked already. This must never happen." )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
 			<< BUILD_LOG( kPacket_.m_iApplyJoinUnitUID )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
@@ -3357,7 +3357,7 @@ IMPL_ON_FUNC( DBE_DELETE_APLLY_FOR_ACCEPT_JOIN_GUILD_ACK )
 		kPacketToDB.m_iGuildUID = kPacket_.m_iGuildUID;
 		if( SiKGuildBoardManager()->MakeGuildMemberInfoForAcceptJoinGuild( kPacket_.m_iGuildUID, kPacket_.m_iApplyJoinUnitUID, kPacketToDB.m_kJoinGuildMemberInfo ) == false )
 		{
-			START_LOG( cerr, L"길드 가입 수락 실패!" )
+			START_LOG( cerr, L"Failed to accept guild application!" )
 				<< BUILD_LOG( kPacket_.m_iGuildUID )
 				<< BUILD_LOG( kPacket_.m_iApplyJoinUnitUID )
 				<< END_LOG;
@@ -3379,7 +3379,7 @@ IMPL_ON_FUNC( DBE_DELETE_APLLY_FOR_ACCEPT_JOIN_GUILD_ACK )
 	// 정상적으로 삭제처리가 되었으면 가입 신청 리스트에서도 삭제
 	if( SiKGuildBoardManager()->DeleteApplyJoinGuild( kPacket_.m_iApplyJoinUnitUID ) == false )
 	{
-		START_LOG( cerr, L"존재하는 가입신청인지 체크 했는데 삭제 실패했다?" )
+		START_LOG( cerr, L"The application was confirmed to exist, but deletion failed?" )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
 			<< BUILD_LOG( kPacket_.m_iApplyJoinUnitUID )
 			<< END_LOG;
@@ -3404,7 +3404,7 @@ IMPL_ON_FUNC( ELG_DELETE_APPLY_JOIN_GUILD_REQ )
 				return;
 			}
 
-			START_LOG( cerr, L"존재하지 않는 가입 신청입니다." )
+			START_LOG( cerr, L"Guild application does not exist." )
 				<< BUILD_LOG( kPacket_.m_iGuildUID )
 				<< BUILD_LOG( kPacket_.m_iDeletedUnitUID )
 				<< END_LOG;
@@ -3419,7 +3419,7 @@ IMPL_ON_FUNC( ELG_DELETE_APPLY_JOIN_GUILD_REQ )
 		// 존재하는 가입 신청인지 확인
 		if( SiKGuildBoardManager()->IsExistApplyJoinGuild( kPacket_.m_iGuildUID, kPacket_.m_iDeletedUnitUID ) == false )
 		{
-			START_LOG( cerr, L"존재하지 않는 가입 신청입니다." )
+			START_LOG( cerr, L"Guild application does not exist." )
 				<< BUILD_LOG( kPacket_.m_iGuildUID )
 				<< BUILD_LOG( kPacket_.m_iDeletedUnitUID )
 				<< END_LOG;
@@ -3435,7 +3435,7 @@ IMPL_ON_FUNC( ELG_DELETE_APPLY_JOIN_GUILD_REQ )
 		// 존재하는 가입 신청인지 확인
 		if( SiKGuildBoardManager()->IsExistApplyJoinGuild( kPacket_.m_iGuildUID, kPacket_.m_iDeletedUnitUID ) == false )
 		{
-			START_LOG( cerr, L"존재하지 않는 가입 신청입니다." )
+			START_LOG( cerr, L"Guild application does not exist." )
 				<< BUILD_LOG( kPacket_.m_iGuildUID )
 				<< BUILD_LOG( kPacket_.m_iDeletedUnitUID )
 				<< END_LOG;
@@ -3448,7 +3448,7 @@ IMPL_ON_FUNC( ELG_DELETE_APPLY_JOIN_GUILD_REQ )
 		// 삭제 가능한 길드 등급인지 검사
 		if( SiKGuildManager()->CheckDeleteApplyJoin( kPacket_ ) == false )
 		{
-			START_LOG( cerr, L"길드 가입 신청을 삭제할 권한이 없습니다." )
+			START_LOG( cerr, L"Not authorized to delete guild application." )
 				<< BUILD_LOG( kPacket_.m_iGuildUID )
 				<< BUILD_LOG( kPacket_.m_iUnitUID )
 				<< BUILD_LOG( kPacket_.m_iDeletedUnitUID )
@@ -3480,7 +3480,7 @@ IMPL_ON_FUNC( DBE_DELETE_APPLY_JOIN_GUILD_ACK )
 	// 길드 가입 신청 삭제
 	if( SiKGuildBoardManager()->DeleteApplyJoinGuild( kPacket_.m_iDeletedUnitUID ) == false )
 	{
-		START_LOG( cerr, L"길드 가입 신청을 삭제할 권한이 없습니다." )
+		START_LOG( cerr, L"Not authorized to delete guild application." )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iDeletedUnitUID )
@@ -3572,7 +3572,7 @@ IMPL_ON_FUNC( ELG_ADMIN_SHOW_ED_CHEAT_ACK )
 	KUserList::KGSUserInfo kUserInfo;
 	if( GetKLoginSimLayer()->GetGSUserInfoByUserUID( kPacket_.m_iSenderUserUID, kUserInfo ) == false )
 	{
-		START_LOG( cerr, L"운영자가 현재 접속중이 아닙니다." )
+		START_LOG( cerr, L"The operator is not currently online." )
 			<< BUILD_LOG( kPacket_.m_iSenderUserUID )
 			<< END_LOG;
 		return;
@@ -3594,7 +3594,7 @@ IMPL_ON_FUNC( ELG_REG_REJECTED_USER_NOT )
 {
 	VERIFY_STATE( ( 1, KDefaultFSM::S_LOGINED ) );
 
-	START_LOG( cout, L"해킹 의심 유저 접속 제한 조치!" )
+	START_LOG( cout, L"Restricting suspected hacker from logging in!" )
 		<< BUILD_LOG( kPacket_.m_iUserUID );
 
 	SiKAccountBlockManager()->AddBlockedAccount( kPacket_.m_iUserUID, KAccountBlockManager::BT_CONNECT_BLOCK );
@@ -3609,7 +3609,7 @@ _IMPL_ON_FUNC( ELG_REG_TRADE_BLOCK_USER_NOT, KELG_REG_REJECTED_USER_NOT )
 {
 	VERIFY_STATE( ( 1, KDefaultFSM::S_LOGINED ) );
 
-	START_LOG( cout, L"해킹 의심 유저 거래 제한 조치!" )
+	START_LOG( cout, L"Restricting suspected hacker from trading!" )
 		<< BUILD_LOG( kPacket_.m_iUserUID );
 
 	SiKAccountBlockManager()->AddBlockedAccount( kPacket_.m_iUserUID, KAccountBlockManager::BT_TRADE_BLOCK );
@@ -3710,7 +3710,7 @@ IMPL_ON_FUNC( ELG_INVITE_PARTY_FIND_RECEIVER_REQ )
 		}
 		else
 		{
-			START_LOG( cerr, L"클라이언트에서 반드시 닉네임 정보를 보냈을텐데 닉네임이 비어서 왔네.." )
+			START_LOG( cerr, L"The client should have sent the nickname, but it was empty..." )
 				<< BUILD_LOG( kPacket_.m_iHostUnitUID )
 				<< BUILD_LOG( kPacket_.m_wstrHostNickName )
 				<< BUILD_LOG( kPacket_.m_iReceiverUnitUID )
@@ -3738,7 +3738,7 @@ _IMPL_ON_FUNC( DBE_CHECK_NICKNAME_FOR_INVITE_PARTY_ACK, KELG_INVITE_PARTY_FIND_R
 	KUserList::KGSUserInfo kUserInfo;
 	if( GetKLoginSimLayer()->GetGSUserInfoByUnitUID( kPacket_.m_iHostUnitUID, kUserInfo ) == false )
 	{
-		START_LOG( cerr, L"파티 초대자의 정보를 찾지 못하였습니다!" )
+		START_LOG( cerr, L"Failed to find party inviter information!" )
 			<< BUILD_LOG( kPacket_.m_iHostUnitUID )
 			<< END_LOG;
 		return;
@@ -3754,7 +3754,7 @@ _IMPL_ON_FUNC( ELG_INVITE_PARTY_GET_RECEIVER_USER_INFO_ACK, KELG_INVITE_PARTY_FI
 	KUserList::KGSUserInfo kUserInfo;
 	if( GetKLoginSimLayer()->GetGSUserInfoByUnitUID( kPacket_.m_iHostUnitUID, kUserInfo ) == false )
 	{
-		START_LOG( cerr, L"파티 초대자의 정보를 찾지 못하였습니다!" )
+		START_LOG( cerr, L"Failed to find party inviter information!" )
 			<< BUILD_LOG( kPacket_.m_iHostUnitUID )
 			<< END_LOG;
 		return;
@@ -3774,7 +3774,7 @@ IMPL_ON_FUNC( ELG_UPDATE_USER_UNIT_BUFF_INFO_REQ )
 	{
 		if( SiKBuffManager()->DeleteUnitBuffInfo( kPacket_.m_iUnitUID, kPacket_.m_vecDeActivateBuff ) == false )
 		{
-			START_LOG( clog, L"버프 매니저에 유닛의 버프 정보를 삭제 하지 못했습니다." )
+			START_LOG( clog, L"Failed to remove the Unit's buff information from the buff manager." )
 				<< BUILD_LOG( kPacket_.m_iUnitUID )
 				<< END_LOG;
 		}
@@ -3784,7 +3784,7 @@ IMPL_ON_FUNC( ELG_UPDATE_USER_UNIT_BUFF_INFO_REQ )
 	{
 		if( SiKBuffManager()->AddUnitBuffInfo( kPacket_.m_iUnitUID, kPacket_.m_vecActivateBuff ) == false )
 		{
-			START_LOG( clog, L"버프 매니저에 유닛의 버프 정보를 추가 하지 못했습니다." )
+			START_LOG( clog, L"Failed to add the Unit's buff information to the buff manager." )
 				<< BUILD_LOG( kPacket_.m_iUnitUID )
 				<< END_LOG;
 		}
@@ -3794,7 +3794,7 @@ IMPL_ON_FUNC( ELG_UPDATE_USER_UNIT_BUFF_INFO_REQ )
 
 	if( SiKBuffManager()->GetUnitAllBuffInfo( kPacket_.m_iUnitUID, kPacket.m_kUnitBuffInfo ) == false )
 	{
-		START_LOG( clog, L"버프 매니저에 유닛의 버프 정보를 가져오지 못했습니다." )
+		START_LOG( clog, L"Failed to get the Unit's buff information from the buff manager." )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
 	}
@@ -3802,7 +3802,7 @@ IMPL_ON_FUNC( ELG_UPDATE_USER_UNIT_BUFF_INFO_REQ )
 	// 확인 로그
 	if( kPacket.m_kUnitBuffInfo.m_mapBuffInfo.size() > 100 )
 	{
-		START_LOG( cerr, L"헐! 하나의 캐릭터에 걸린 버프 갯수가 100개를 넘었다!!" )
+		START_LOG( cerr, L"Whoa! A character has more than 100 buffs!!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( kPacket.m_kUnitBuffInfo.m_mapBuffInfo.size() )
 			<< END_LOG;
@@ -3832,12 +3832,12 @@ IMPL_ON_FUNC( ELG_ADMIN_DELETE_GUILD_ADD_NOT )
 		kPacketNot.m_vecDeleteGuildAd.push_back( kPacket_.m_iGuildUID );
 		SendToGameDB( DBE_DELETE_GUILD_AD_LIST_NOT, kPacketNot );
 
-		START_LOG( cout, L"길드 광고 삭제 성공!" )
+		START_LOG( cout, L"Guild advertisement deleted!" )
 			<< BUILD_LOG( kPacket_.m_iGuildUID );
 	}
 	else
 	{
-		START_LOG( cout, L"길드 광고 삭제 실패!" )
+		START_LOG( cout, L"Failed to delete guild advertisement!" )
 			<< BUILD_LOG( kPacket_.m_iGuildUID );
 	}
 }
@@ -3847,7 +3847,7 @@ IMPL_ON_FUNC( ELG_ADMIN_DELETE_HENIR_RANKING_RANK_NOT )
 {
 	if( kPacket_.m_iRankingType < 0  ||  kPacket_.m_iRankingType > SEnum::RT_MONTH_RANKING )
 	{
-		START_LOG( cerr, L"RankingType이 이상합니다!" )
+		START_LOG( cerr, L"Invalid RankingType!" )
 			<< BUILD_LOG( kPacket_.m_iRankingType )
 			<< END_LOG;
 		return;
@@ -3855,13 +3855,13 @@ IMPL_ON_FUNC( ELG_ADMIN_DELETE_HENIR_RANKING_RANK_NOT )
 
 	if( SiKRankingManager()->DeleteSearchRank( kPacket_.m_iRankingType, kPacket_.m_iRank ) )
 	{
-		START_LOG( cout, L"랭킹 기록 삭제 성공!" )
+		START_LOG( cout, L"Ranking record deleted!" )
 			<< BUILD_LOG( kPacket_.m_iRankingType )
 			<< BUILD_LOG( kPacket_.m_iRank );
 	}
 	else
 	{
-		START_LOG( cout, L"랭킹 기록 삭제 실패!" )
+		START_LOG( cout, L"Failed to delete ranking record!" )
 			<< BUILD_LOG( kPacket_.m_iRankingType )
 			<< BUILD_LOG( kPacket_.m_iRank );
 	}
@@ -3871,7 +3871,7 @@ IMPL_ON_FUNC( ELG_ADMIN_DELETE_HENIR_RANKING_NICKNAME_NOT )
 {
 	if( kPacket_.m_iRankingType < 0  ||  kPacket_.m_iRankingType > SEnum::RT_MONTH_RANKING )
 	{
-		START_LOG( cerr, L"RankingType이 이상합니다!" )
+		START_LOG( cerr, L"Invalid RankingType!" )
 			<< BUILD_LOG( kPacket_.m_iRankingType )
 			<< END_LOG;
 		return;
@@ -3879,13 +3879,13 @@ IMPL_ON_FUNC( ELG_ADMIN_DELETE_HENIR_RANKING_NICKNAME_NOT )
 
 	if( SiKRankingManager()->DeleteRecord( kPacket_.m_iRankingType, kPacket_.m_wstrNickName ) )
 	{
-		START_LOG( cout, L"랭킹 기록 삭제 성공!" )
+		START_LOG( cout, L"Ranking record deleted!" )
 			<< BUILD_LOG( kPacket_.m_iRankingType )
 			<< BUILD_LOG( kPacket_.m_wstrNickName );
 	}
 	else
 	{
-		START_LOG( cout, L"랭킹 기록 삭제 실패!" )
+		START_LOG( cout, L"Failed to delete ranking record!" )
 			<< BUILD_LOG( kPacket_.m_iRankingType )
 			<< BUILD_LOG( kPacket_.m_wstrNickName );
 	}
@@ -3895,7 +3895,7 @@ IMPL_ON_FUNC( ELG_ADMIN_DELETE_HENIR_RANKING_UNITUID_NOT )
 {
 	if( kPacket_.m_iRankingType < 0  ||  kPacket_.m_iRankingType > SEnum::RT_MONTH_RANKING )
 	{
-		START_LOG( cerr, L"RankingType이 이상합니다!" )
+		START_LOG( cerr, L"Invalid RankingType!" )
 			<< BUILD_LOG( kPacket_.m_iRankingType )
 			<< END_LOG;
 		return;
@@ -3903,13 +3903,13 @@ IMPL_ON_FUNC( ELG_ADMIN_DELETE_HENIR_RANKING_UNITUID_NOT )
 
 	if( SiKRankingManager()->DeleteRecord( kPacket_.m_iRankingType, kPacket_.m_iUnitUID ) )
 	{
-		START_LOG( cout, L"랭킹 기록 삭제 성공!" )
+		START_LOG( cout, L"Ranking record deleted!" )
 			<< BUILD_LOG( kPacket_.m_iRankingType )
 			<< BUILD_LOG( kPacket_.m_iUnitUID );
 	}
 	else
 	{
-		START_LOG( cout, L"랭킹 기록 삭제 실패!" )
+		START_LOG( cout, L"Failed to delete ranking record!" )
 			<< BUILD_LOG( kPacket_.m_iRankingType )
 			<< BUILD_LOG( kPacket_.m_iUnitUID );
 	}
@@ -4059,7 +4059,7 @@ IMPL_ON_FUNC( ELG_ADD_WEDDING_HALL_INFO_NOT )
 {
 	if( SiKWeddingHallManager()->AddWeddingInfo( kPacket_.m_kWeddingHallInfo ) == false )
 	{
-		START_LOG( cerr, L"결혼식 정보 입력 실패!" )
+		START_LOG( cerr, L"Failed to enter wedding information!" )
 			<< BUILD_LOG( kPacket_.m_kWeddingHallInfo.m_iWeddingUID )
 			<< BUILD_LOGc( kPacket_.m_kWeddingHallInfo.m_cWeddingHallType )
 			<< BUILD_LOGc( kPacket_.m_kWeddingHallInfo.m_cOfficiantNPC )
@@ -4189,7 +4189,7 @@ IMPL_ON_FUNC( ELG_CHECK_WEDDING_HALL_INFO_REQ )
 
 	if( SiKWeddingHallManager()->GetWeddingInfo( kPacket_.m_iWeddingUID, kPacket.m_kWeddingInfo ) == false )
 	{
-		START_LOG( cerr, L"존재하지 않는 결혼식장 UID 입니다." )
+		START_LOG( cerr, L"Wedding hall UID does not exist." )
 			<< BUILD_LOG( kPacket_.m_iWeddingUID )
 			<< END_LOG;
 

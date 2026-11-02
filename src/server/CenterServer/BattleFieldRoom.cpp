@@ -156,7 +156,7 @@ void KBattleFieldRoom::SetRoomInfo( const KRoomInfo& kInfo )
 
 	if( kInfo.m_cGetItemType <= CXSLRoom::DGIT_NONE || kInfo.m_cGetItemType >= CXSLRoom::DGIT_END )
 	{
-		START_LOG( cwarn, L"던전게임 아이템 습득타입이 잘못되었음.!" )
+		START_LOG( cwarn, L"Invalid dungeon item-acquisition type!" )
 			<< BUILD_LOGc( m_cGetItemType )
 			<< BUILD_LOGc( kInfo.m_cGetItemType )
 			<< BUILD_LOGc( kInfo.m_iDungeonID )
@@ -295,7 +295,7 @@ void KBattleFieldRoom::ProcessNativeEvent( const KEventPtr& spEvent_ )
 	CASE( ERM_BOSS_FIELD_LOG_NOT );
 
     default:
-        START_LOG( cerr, L"이벤트 핸들러가 정의되지 않았음 - " << spEvent_->GetIDStr() )
+        START_LOG( cerr, L"Event handler is not defined - " << spEvent_->GetIDStr() )
             << BUILD_LOG( spEvent_->m_usEventID );
     }
 }
@@ -320,7 +320,7 @@ void KBattleFieldRoom::StartGame()
     const int iPlayingUserCount = m_spUserManager->GetNumPlaying();
     if( iPlayingUserCount < 1 || iPlayingUserCount > 12 )
     {
-        START_LOG( cerr, L"플레이 중인 유저 수가 이상함." )
+        START_LOG( cerr, L"Invalid number of users in play." )
             << BUILD_LOG( iPlayingUserCount )
             << END_LOG;
     }
@@ -339,7 +339,7 @@ void KBattleFieldRoom::StartPlay()
 	{
 		if( m_spUserManager->GetNumMember() == 1 )
 		{
-			START_LOG( cout, L"이미 KRoomFSM::S_PLAY상태인데 또 StartPlay를 하려고 하네!? 해킹인가?" )
+			START_LOG( cout, L"StartPlay called while already in KRoomFSM::S_PLAY; possible hack attempt." )
 				<< BUILD_LOG( GetStateIDString() )
 				<< BUILD_LOG( GetTotalPlayTime() )
 				<< BUILD_LOG( m_kTimer[TM_PLAY].elapsed() )
@@ -348,7 +348,7 @@ void KBattleFieldRoom::StartPlay()
 			KRoomUserPtr spUser = m_spUserManager->GetHostUser();
 			if( spUser != NULL )
 			{
-				START_LOG( cout, L"어떤 유저가 이렇게 이상한 동작을 하는지 확인해보자!" )
+				START_LOG( cout, L"Identify which user is behaving this way!" )
 					<< BUILD_LOG( spUser->GetCID() )
 					<< BUILD_LOG( spUser->GetNickName() );
 
@@ -375,7 +375,7 @@ void KBattleFieldRoom::EndPlay()
 	// 플레이 타임이 정상적으로 계산되어 나오는지 확인해보자!
 	if( GetTotalPlayTime() < 0.0 )
 	{
-		START_LOG( cout, L"로딩시간을 뺀 실제 던전 플레이 시간이 마이너스값이다! 있을 수 없는 에러!" )
+		START_LOG( cout, L"Actual dungeon play time is negative after subtracting loading time; this should never happen!" )
 			<< BUILD_LOG( GetStateIDString() )
 			<< BUILD_LOG( GetTotalPlayTime() )
 			<< BUILD_LOG( m_kTimer[TM_PLAY].elapsed() )
@@ -428,7 +428,7 @@ void KBattleFieldRoom::HandleTimeOutUser( std::map< UidType, UidType >& mapUserC
 		KRoomUserPtr spRoomUser = m_spUserManager->GetUser( mit->first );
 		if( spRoomUser == NULL )
 		{
-			START_LOG( cerr, L"해당 유저가 존재하지 않습니다!" )
+			START_LOG( cerr, L"The specified user does not exist!" )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -439,7 +439,7 @@ void KBattleFieldRoom::HandleTimeOutUser( std::map< UidType, UidType >& mapUserC
 
 		if( !m_spUserManager->LeaveRoom( mit->first ) )
 		{
-			START_LOG( cerr, L"방 나가기 실패." )
+			START_LOG( cerr, L"Failed to leave room." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 		}
@@ -458,7 +458,7 @@ void KBattleFieldRoom::HandleTimeOutUser( std::map< UidType, UidType >& mapUserC
 
 	if( GetStateID() == KRoomFSM::S_LOAD  ||  GetStateID() == KRoomFSM::S_RESULT )
 	{
-		START_LOG( cerr, L"배틀필드에서는 사용하지 않는 상태입니다!" )
+		START_LOG( cerr, L"This state is not used in the Battlefield!" )
 			<< BUILD_LOG( GetStateIDString() )
 			<< BUILD_LOG( mapUserCIDNGS.size() )
 			<< END_LOG;
@@ -475,7 +475,7 @@ void KBattleFieldRoom::HandleTimeOutUser( std::map< UidType, UidType >& mapUserC
 
 void KBattleFieldRoom::DeleteZombie( std::vector<UidType>& vecZombieUnit )
 {
-	START_LOG( cout2, L"[알림] 배틀필드 좀비 유저 삭제!" )
+	START_LOG( cout2, L"[Notice] Removing a zombie user from the Battlefield!" )
 		<< BUILD_LOG( vecZombieUnit.size() );
 
 	for( const UidType iUnitUID : vecZombieUnit )
@@ -483,7 +483,7 @@ void KBattleFieldRoom::DeleteZombie( std::vector<UidType>& vecZombieUnit )
 		KRoomUserPtr spUser = m_spUserManager->GetUser( iUnitUID );
 		if( IS_NOT_NULL( spUser ) )
 		{
-			START_LOG( cout2, L"[알림] 배틀필드 좀비 유저 삭제!" )
+			START_LOG( cout2, L"[Notice] Removing a zombie user from the Battlefield!" )
 				<< BUILD_LOG( spUser->GetNickName() )
 				<< BUILD_LOG( spUser->IsHost() );
 
@@ -493,14 +493,14 @@ void KBattleFieldRoom::DeleteZombie( std::vector<UidType>& vecZombieUnit )
 		}
 		else
 		{
-			START_LOG( cerr, L"룸유저 포인터 이상.!" )
+			START_LOG( cerr, L"Invalid room user pointer!" )
 				<< BUILD_LOG( iUnitUID )
 				<< END_LOG;
 		}
 
 		if( m_spUserManager->LeaveRoom( iUnitUID ) == false )
 		{
-			START_LOG( cerr, L"좀비 유저 방 나가기 실패." )
+			START_LOG( cerr, L"Failed to remove zombie user from room." )
 				<< BUILD_LOG( GetStateIDString() )
 				<< BUILD_LOG( vecZombieUnit.size() )
 				<< BUILD_LOG( iUnitUID )
@@ -559,7 +559,7 @@ void KBattleFieldRoom::CloseRoom()
 	// 초기화 하기 전에 검사 한번만~
 	if( m_spUserManager->GetNumTotalParty() != 0  ||  m_spUserManager->GetNumMemberTotalParty() != 0 )
 	{
-		START_LOG( cout, L"[경고] 배틀필드를 닫을려고 하는데 삭제되어있어야할 정보가 아직 살아있다! 이래서 버그가.." )
+		START_LOG( cout, L"[Warning] Data that should have been deleted is still present while closing the Battlefield; this may cause bugs." )
 			<< BUILD_LOG( m_spUserManager->GetNumTotalParty() )
 			<< BUILD_LOG( m_spUserManager->GetNumMemberTotalParty() );
 	}
@@ -672,7 +672,7 @@ void KBattleFieldRoom::CheckMonsterRespawn()
 	dwElapTime = ::GetTickCount() - dwElapTime;
 	if( m_dwMonsterRespawnCheckTick < dwElapTime )
 	{
-		START_LOG( cout, L"[알림]몬스터 리스폰 체크 타임 최대 시간 갱신!" )
+		START_LOG( cout, L"[Notice] Updated maximum monster-respawn check time!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( dwElapTime )
 			<< BUILD_LOG( m_dwMonsterRespawnCheckTick );
@@ -717,7 +717,7 @@ bool KBattleFieldRoom::IsDropDieState( char cState )
 		return false;
 	}
 
-	START_LOG( cerr, L"npc유닛이 죽은 상태가 이상합니다." )
+	START_LOG( cerr, L"Invalid dead state for NPC unit." )
 		<< BUILD_LOGc( cState )
 		<< END_LOG;
 
@@ -757,7 +757,7 @@ void KBattleFieldRoom::CheckIntrudeUserLoadComplete()
 			KRoomUserPtr spRoomUser = m_spUserManager->GetUser( iUnitUID );
 			if( spRoomUser == NULL )
 			{
-				START_LOG( cerr, L"해당 캐릭터를 찾을 수 없습니다!" )
+				START_LOG( cerr, L"Could not find the specified character!" )
 					<< BUILD_LOG( iUnitUID )
 					<< END_LOG;
 				continue;
@@ -818,7 +818,7 @@ void KBattleFieldRoom::CheckNpcP2PSyncUser( IN const bool bForce /*= false*/ )
 	KRoomUserPtr spRoomUser = m_spUserManager->GetHostUser();
 	if( spRoomUser == NULL )
 	{
-		START_LOG( cerr, L"방장을 찾는데에 실패하였습니다! 절대 일어나면 안되는 에러!" )
+		START_LOG( cerr, L"Failed to find room host; this should never happen!" )
 			<< BUILD_LOG( kNot.m_vecNonNpcSyncUserList.size() )
 			<< END_LOG;
 		return;
@@ -876,7 +876,7 @@ void KBattleFieldRoom::OnLeaveRoom( IN const UidType iLAST_SENDER_UID, IN const 
 	KRoom::OnLeaveRoom( iLAST_SENDER_UID, iFIRST_SENDER_UID, kPacket_, usEventIDAck );
 
 	//=== 게임중 이탈 결과처리 ===
-	START_LOG( clog, L"=== BATTLE FIELD : 배틀필드는 이탈한다고 페널티를 주지 않습니다. ===" )
+	START_LOG( clog, L"=== BATTLEFIELD: Leaving does not incur a penalty. ===" )
 		<< BUILD_LOG( iFIRST_SENDER_UID )
 		<< END_LOG;
 
@@ -897,7 +897,7 @@ void KBattleFieldRoom::OnLeaveRoom( IN const UidType iLAST_SENDER_UID, IN const 
 	KRoomUserPtr spRoomUser = m_spUserManager->GetUser( iFIRST_SENDER_UID );
 	if( spRoomUser == NULL )
 	{
-		START_LOG( cerr, L"유저를 찾을 수 없습니다!" )
+		START_LOG( cerr, L"User not found!" )
 			<< BUILD_LOG( iFIRST_SENDER_UID )
 			<< END_LOG;
 		return;
@@ -981,7 +981,7 @@ void KBattleFieldRoom::OnLeaveRoom( IN const UidType iLAST_SENDER_UID, IN const 
 
 	if( GetStateID() == KRoomFSM::S_LOAD )
 	{
-		START_LOG( cerr, L"배틀필드에서는 로딩 상태를 쓰지 않습니다!" )
+		START_LOG( cerr, L"Loading state is not used in the Battlefield!" )
 			<< BUILD_LOG( iFIRST_SENDER_UID )
 			<< END_LOG;
 	}
@@ -1008,7 +1008,7 @@ void KBattleFieldRoom::IncreasePartyFever( IN const std::map< UidType, float >& 
 		if( IS_NULL( spRoomUser ) )
 		{
 			// 시간차로 방에서 이미 방을 이탈한 유저인 경우엔 정상적인 상황입니다. 따라서 에러로그레벨을 cwarn으로 낮춥니다.
-			START_LOG( cwarn, L"해당 유저가 없습니다!" )
+			START_LOG( cwarn, L"Specified user does not exist!" )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			return;
@@ -1044,7 +1044,7 @@ IMPL_ON_FUNC( ERM_OPEN_BATTLE_FIELD_REQ )
 	// 배틀필드 ID 검증
 	if( SiCXSLBattleFieldManager()->IsExistBattleFieldID( static_cast<SEnum::BATTLE_FIELD_ID>(kPacket_.m_kRoomInfo.m_iBattleFieldID) ) == false )
 	{
-		START_LOG( cerr, L"유효하지 않은 배틀필드ID입니다!" )
+		START_LOG( cerr, L"Invalid Battlefield ID!" )
 			<< BUILD_LOG( kPacket_.m_kRoomInfo.m_iBattleFieldID )
 			<< BUILD_LOG( kPacket_.m_kBattleFieldJoinInfo.m_iBattleFieldID )
 			<< BUILD_LOG( kPacket_.m_kBattleFieldJoinInfo.m_iStartPosIndex )
@@ -1076,7 +1076,7 @@ IMPL_ON_FUNC( ERM_OPEN_BATTLE_FIELD_REQ )
 				 , false
 				 ) == false )
 	{
-        START_LOG( cerr, L"방 입장 실패. 배틀필드를 생성하는것인데 여기서 실패가 났다! 절대 일어나서는 안되는 문제!" )
+        START_LOG( cerr, L"Failed to enter room while creating a Battlefield; this should never happen!" )
             << BUILD_LOG( FIRST_SENDER_UID )
             << BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetBattleFieldID() )
@@ -1162,7 +1162,7 @@ IMPL_ON_FUNC( ERM_JOIN_BATTLE_FIELD_REQ )
 	// 제대로 찾아 왔는지 보자!
 	if( GetBattleFieldID() != kPacket_.m_kBattleFieldJoinInfo.m_iBattleFieldID )
 	{
-		START_LOG( cerr, L"다른 배틀필드에 입장했다! 헐 버그다!" )
+		START_LOG( cerr, L"User entered a different Battlefield; unexpected state!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetBattleFieldID() )
@@ -1187,7 +1187,7 @@ IMPL_ON_FUNC( ERM_JOIN_BATTLE_FIELD_REQ )
 				 , false
 				 ) == false )
 	{
-		START_LOG( cerr, L"방 입장 실패." )
+		START_LOG( cerr, L"Failed to enter room." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( NetError::GetLastErrMsg() )
@@ -1217,7 +1217,7 @@ IMPL_ON_FUNC( ERM_JOIN_BATTLE_FIELD_REQ )
 	// 해당 유저는 바로 게임 시작 처리 하자!
 	if( m_spUserManager->StartPlay( kPacket_.m_kRoomUserInfo.m_nUnitUID ) == false )
 	{
-		START_LOG( cerr, L"게임 시작 처리 실패!" )
+		START_LOG( cerr, L"Failed to start the game!" )
 			<< BUILD_LOG( kPacket_.m_kRoomUserInfo.m_nUnitUID )
 			<< BUILD_LOG( GetUID() )
 			<< END_LOG;
@@ -1289,7 +1289,7 @@ _IMPL_ON_FUNC( ERM_BATTLE_FIELD_JOIN_USER_LOAD_COMPLETE_NOT, KEGS_BATTLE_FIELD_J
 {
 	if( GetStateID() != KRoomFSM::S_PLAY )
 	{
-		START_LOG( cerr, L"처리 가능한 상태가 아닙니다!" )
+		START_LOG( cerr, L"Current state does not allow processing!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetStateIDString() )
 			<< END_LOG;
@@ -1298,7 +1298,7 @@ _IMPL_ON_FUNC( ERM_BATTLE_FIELD_JOIN_USER_LOAD_COMPLETE_NOT, KEGS_BATTLE_FIELD_J
 
 	if( m_spUserManager->UnregIntrudeUnitLoadUserList( kPacket_.m_iLoadedUnitUID, FIRST_SENDER_UID ) == false )
 	{
-		START_LOG( cerr, L"난입자 로딩 완료 정보 등록을 실패하였습니다." )
+		START_LOG( cerr, L"Failed to register joiner loading-complete information." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kPacket_.m_iLoadedUnitUID )
 			<< BUILD_LOG( FIRST_SENDER_UID )
@@ -1431,7 +1431,7 @@ _IMPL_ON_FUNC( ERM_NPC_UNIT_DIE_REQ, KEGS_NPC_UNIT_DIE_REQ )
 		KRoomUserPtr spUser = m_spRoomUserManager->GetUser( FIRST_SENDER_UID );
 		if( spUser == NULL )
 		{
-			START_LOG( cwarn, L"패킷을 보낸 유저가 존재하지 않는다?" )
+			START_LOG( cwarn, L"The user who sent the packet does not exist." )
 				<< BUILD_LOG( FIRST_SENDER_UID )
 				<< END_LOG;
 			return;
@@ -1439,7 +1439,7 @@ _IMPL_ON_FUNC( ERM_NPC_UNIT_DIE_REQ, KEGS_NPC_UNIT_DIE_REQ )
 
 		if( spUser->IsHost() == false )
 		{
-			START_LOG( cwarn, L"호스트 유저가 아닌데도 ERM_NPC_UNIT_DIE_REQ 패킷을 날려왔다." )
+			START_LOG( cwarn, L"ERM_NPC_UNIT_DIE_REQ packet received from a non-host user." )
 				<< BUILD_LOG( FIRST_SENDER_UID )
 				<< END_LOG;
 
@@ -1580,7 +1580,7 @@ _IMPL_ON_FUNC( ERM_GET_ITEM_REQ, KEGS_GET_ITEM_REQ )
 	KRoomUserPtr spGetUser = m_spUserManager->GetUser( FIRST_SENDER_UID );
 	if( spGetUser == NULL )
 	{
-		START_LOG( cerr, L"습득하려는 유저가 없당." )
+		START_LOG( cerr, L"User attempting to acquire the item is missing." )
 		<< BUILD_LOG( FIRST_SENDER_UID )
 		<< BUILD_LOG( kPacket_.m_iDropItemUID )
 		<< BUILD_LOG( kPacket_.m_kItemInfo.m_iItemID )
@@ -1596,7 +1596,7 @@ _IMPL_ON_FUNC( ERM_GET_ITEM_REQ, KEGS_GET_ITEM_REQ )
 	mit = m_mapDropItem.find( kPacket_.m_iDropItemUID );
 	if( mit == m_mapDropItem.end() )
 	{
-		START_LOG( cerr, L"습득할려는 아이템이 없음" )
+		START_LOG( cerr, L"The item to acquire does not exist." )
 			<< BUILD_LOG( kPacket_.m_iDropItemUID )
 			<< BUILD_LOG( kPacket_.m_kItemInfo.m_iItemID )
 			<< END_LOG;
@@ -1610,7 +1610,7 @@ _IMPL_ON_FUNC( ERM_GET_ITEM_REQ, KEGS_GET_ITEM_REQ )
 	// 2. 아이템 종류 검사
 	if( kPacket_.m_kItemInfo.m_iItemID != pItemData->m_iItemID )
 	{
-		START_LOG( cerr, L"습득할려는 아이템의 종류가 잘못되었음." )
+		START_LOG( cerr, L"Invalid type for the item being acquired." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_iDropItemUID )
 			<< BUILD_LOG( kPacket_.m_kItemInfo.m_iItemID )
@@ -1631,7 +1631,7 @@ _IMPL_ON_FUNC( ERM_GET_ITEM_REQ, KEGS_GET_ITEM_REQ )
 	// 4. 획득 가능한 유저인가?
 	if( pItemData->IsGetItemPossibleUnit( FIRST_SENDER_UID ) == false )
 	{
-		START_LOG( cerr, L"아이템을 획득 할 수 없는 캐릭터인데 획득 요청을 보냈군.. 해킹인가?" )
+		START_LOG( cerr, L"Character is not eligible to acquire items but sent an acquisition request; possible hack attempt." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_iDropItemUID )
 			<< END_LOG;
@@ -1660,7 +1660,7 @@ _IMPL_ON_FUNC( ERM_GET_ITEM_REQ, KEGS_GET_ITEM_REQ )
 		float fPartyBonusRate = m_spUserManager->GetBattleFieldPartyBonusRate( kNot.m_GetUnitUID );
 		if( m_spUserManager->AddBattleFieldRewardED( pItemData->m_cNpcLevel, kNot.m_GetUnitUID, fPartyBonusRate, pItemData->m_iED, pItemData->m_mapDamageByUser, kNot ) == false )
 		{
-			START_LOG( cerr, L"ED보상처리가 이상합니다!" )
+			START_LOG( cerr, L"Invalid ED reward processing!" )
 				<< BUILD_LOG( kNot.m_GetUnitUID )
 				<< BUILD_LOGc( pItemData->m_cNpcLevel )
 				<< BUILD_LOG( pItemData->m_iNpcMaxHP )
@@ -1681,7 +1681,7 @@ _IMPL_ON_FUNC( ERM_GET_ITEM_REQ, KEGS_GET_ITEM_REQ )
 		const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( pItemData->m_iItemID );
 		if( pItemTemplet == NULL )
 		{
-			START_LOG( cerr, L"Item Templet 정보가 없음. 이상한 아이템 먹었네." )
+			START_LOG( cerr, L"Item template information is missing; an unexpected item was acquired." )
 				<< BUILD_LOG( FIRST_SENDER_UID )
 				<< BUILD_LOG( pItemData->m_iItemID )
 				<< END_LOG;
@@ -1771,7 +1771,7 @@ _IMPL_ON_FUNC( ERM_GET_ITEM_REQ, KEGS_GET_ITEM_REQ )
 				}
 				else
 				{
-					START_LOG( cerr, L"드롭 획득 아이템 공지를 날리려는데 존재하지 않는 아이템입니다" )
+					START_LOG( cerr, L"Cannot announce the acquired drop: item does not exist." )
 						<< BUILD_LOG( kNot.m_GetUnitUID )
 						<< BUILD_LOG( pItemData->m_iItemID )
 						<< END_LOG;
@@ -1779,7 +1779,7 @@ _IMPL_ON_FUNC( ERM_GET_ITEM_REQ, KEGS_GET_ITEM_REQ )
 			}
 			else
 			{
-				START_LOG( cerr, L"드롭 획득 아이템 공지를 날리려는데 방에 유저가 없습니다" )
+				START_LOG( cerr, L"Cannot announce the acquired drop: the room has no users." )
 					<< BUILD_LOG( kNot.m_GetUnitUID )
 					<< END_LOG;
 			}
@@ -1840,7 +1840,7 @@ IMPL_ON_FUNC( ERM_GET_ITEM_COMPLETE_NOT )
 	{
 		if( !m_spUserManager->AddItem( kPacket_.m_iUnitUID, mit->first ) )
 		{
-			START_LOG( cerr, L"아이템 획득 정보 업데이트 실패!" )
+			START_LOG( cerr, L"Failed to update item acquisition information!" )
 				<< BUILD_LOG( kPacket_.m_iUnitUID )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
@@ -1854,7 +1854,7 @@ _IMPL_ON_FUNC( ERM_DUNGEON_PLAY_INFO_TO_SERVER_NOT, KEGS_DUNGEON_PLAY_INFO_TO_SE
 {
 	if( GetStateID() != KRoomFSM::S_PLAY )
 	{
-		START_LOG( cwarn, L"패킷이 허용되는 방 상태가 아님." )
+		START_LOG( cwarn, L"Packet is not allowed in the current room state." )
 			<< BUILD_LOG( GetStateIDString() )
 			<< END_LOG;
 
@@ -1863,7 +1863,7 @@ _IMPL_ON_FUNC( ERM_DUNGEON_PLAY_INFO_TO_SERVER_NOT, KEGS_DUNGEON_PLAY_INFO_TO_SE
 
 	if( !m_spUserManager->SetDungeonPlayInfo( FIRST_SENDER_UID, kPacket_ ) )
 	{
-		START_LOG( cwarn, L"업데이트 실패했네?" )
+		START_LOG( cwarn, L"Update failed." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
 	}
@@ -1912,7 +1912,7 @@ _IMPL_ON_FUNC( ERM_CHECK_INVALID_USER_NOT, UidType )
 
 	if( GetStateID() == KRoomFSM::S_LOAD  ||  GetStateID() == KRoomFSM::S_RESULT )
 	{
-		START_LOG( cerr, L"배틀필드에서는 사용하지 않는 상태입니다!" )
+		START_LOG( cerr, L"This state is not used in the Battlefield!" )
 			<< BUILD_LOG( GetStateIDString() )
 			<< BUILD_LOG( iCount )
 			<< END_LOG;
@@ -1974,7 +1974,7 @@ _IMPL_ON_FUNC( ERM_RESURRECT_TO_CONTINUE_DUNGEON_REQ, KEGS_RESURRECT_TO_CONTINUE
 	KRoomUserPtr roomSlotPtr = m_spUserManager->GetUser( kPacketNot.m_iUnitUID );
 	if( roomSlotPtr == NULL )
 	{
-		START_LOG( cerr, L"방에 룸유저 객체가 존재하지 않음." )
+		START_LOG( cerr, L"No room-user object exists in the room." )
 			<< BUILD_LOG( m_cRoomType )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
@@ -2053,7 +2053,7 @@ IMPL_ON_FUNC_NOPARAM( ERM_BATTLE_FIELD_NPC_LOAD_COMPLETE_REQ )
 
     if( m_spRoomUserManager->IsExist( FIRST_SENDER_UID ) == false )
 	{
-		START_LOG( cerr, L"해당 방에 유저가 없는데 패킷이 날아왔다!" )
+		START_LOG( cerr, L"Packet received for a room with no users!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
@@ -2065,7 +2065,7 @@ IMPL_ON_FUNC_NOPARAM( ERM_BATTLE_FIELD_NPC_LOAD_COMPLETE_REQ )
 
 	if( m_spRoomUserManager->SetBattleFieldNpcSyncSubjects( FIRST_SENDER_UID, true ) == false )
 	{
-		START_LOG( cerr, L"NPC 동기화 대상자로 선정 실패!" )
+		START_LOG( cerr, L"Failed to select NPC synchronization target!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
@@ -2125,7 +2125,7 @@ IMPL_ON_FUNC( ERM_UPDATE_PARTY_INFO_TO_BATTLE_FIELD_NOT )
 {
 	if( GetStateID() != KRoomFSM::S_PLAY )
 	{
-		START_LOG( cerr, L"잘못된 상태에서 패킷이 도착함." )
+		START_LOG( cerr, L"Packet received in an invalid state." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
@@ -2147,13 +2147,13 @@ IMPL_ON_FUNC( ERM_DUMP_ROOM_MONSTER_NOT )
 	{
 		if( m_kMonsterManager.IsMonsterAlive( kPacket_.m_iNpcUID ) == false )
 		{
-			START_LOG( cout, L"[덤프] 해당 몬스터는 죽었습니다!" )
+			START_LOG( cout, L"[Dump] The specified monster is dead!" )
 				<< BUILD_LOG( kPacket_.m_wstrNickName )
 				<< BUILD_LOG( kPacket_.m_iNpcUID );
 		}
 		else
 		{
-			START_LOG( cout, L"[덤프] 해당 몬스터는 살아있습니다!" )
+			START_LOG( cout, L"[Dump] The specified monster is alive!" )
 				<< BUILD_LOG( kPacket_.m_wstrNickName )
 				<< BUILD_LOG( kPacket_.m_iNpcUID );
 
@@ -2173,7 +2173,7 @@ IMPL_ON_FUNC( ERM_DUMP_BATTLE_FIELD_NOT )
 {
 	if( GetStateID() != KRoomFSM::S_PLAY )
 	{
-		START_LOG( clog, L"플레이 중인 방이 아니면 체크할 필요 없다." )
+		START_LOG( clog, L"No check is needed unless the room is in play." )
 			<< BUILD_LOG( kPacket_.m_wstrNickName )
 			<< END_LOG;
 		return;
@@ -2189,7 +2189,7 @@ IMPL_ON_FUNC( ERM_DUMP_BATTLE_FIELD_NOT )
 		// 호스트가 제대로 있는지 검사
 		if( m_spUserManager->GetHostCount() != 1 )
 		{
-			START_LOG( cout, L"host가 1명이 아니다!! 이런 병신같은 일이!!!" )
+			START_LOG( cout, L"There is not exactly one host; this should never happen!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( m_spUserManager->GetNumMember() )
 				<< BUILD_LOG( m_spUserManager->GetHostCount() );
@@ -2198,7 +2198,7 @@ IMPL_ON_FUNC( ERM_DUMP_BATTLE_FIELD_NOT )
 		// 좀비 체크 여부
 		if( m_spUserManager->ZU_IsCheckZU() == false )
 		{
-			START_LOG( cout, L"유저는 존재하는데 좀비 유저 체크가 꺼져있다!" )
+			START_LOG( cout, L"User exists, but zombie-user checking is disabled!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( m_spUserManager->GetNumMember() )
 				<< BUILD_LOG( m_spUserManager->ZU_IsCheckZU() );
@@ -2219,7 +2219,7 @@ IMPL_ON_FUNC( ERM_DUMP_BATTLE_FIELD_NOT )
 			KRoomUserPtr spRoomUser = m_spUserManager->GetUser( iUnitUID );
 			if( IS_NULL( spRoomUser ) )
 			{
-				START_LOG( cerr, L"포인터값이 이상합니다." )
+				START_LOG( cerr, L"Invalid pointer value." )
 					<< BUILD_LOG( iUnitUID )
 					<< END_LOG;
 				continue;
@@ -2228,13 +2228,13 @@ IMPL_ON_FUNC( ERM_DUMP_BATTLE_FIELD_NOT )
 			if( spRoomUser->GetNickName() != kPacket_.m_wstrNickName )
 				continue;
 
-			START_LOG( cout, L"해당 유저를 찾았습니다!" )
+			START_LOG( cout, L"Found the specified user!" )
 				<< BUILD_LOG( spRoomUser->GetNickName() )
 				<< BUILD_LOG( spRoomUser->IsHost() );
 
 			if( spRoomUser->GetPartyUID() == 0 )
 			{
-				START_LOG( cout, L"파티에 속해 있지 않습니다!" )
+				START_LOG( cout, L"Not in a party!" )
 					<< BUILD_LOG( spRoomUser->GetNickName() );
 				continue;
 			}
@@ -2242,21 +2242,21 @@ IMPL_ON_FUNC( ERM_DUMP_BATTLE_FIELD_NOT )
 			std::vector< UidType > vecPartyMemberList;
 			if( m_spUserManager->GetPartyMemberListInfo( spRoomUser->GetPartyUID(), vecPartyMemberList ) == false )
 			{
-				START_LOG( cerr, L"파티 리스트 정보가 없습니다! 일어나서는 안되는 에러!" )
+				START_LOG( cerr, L"Party-list information is missing; this should never happen!" )
 					<< BUILD_LOG( iUnitUID )
 					<< BUILD_LOG( spRoomUser->GetPartyUID() )
 					<< END_LOG;
 				continue;
 			}
 
-			START_LOG( cout, L"파티에 속해 있습니다!" )
+			START_LOG( cout, L"Already in a party!" )
 				<< BUILD_LOG( spRoomUser->GetNickName() )
 				<< BUILD_LOG( spRoomUser->GetPartyUID() )
 				<< BUILD_LOG( vecPartyMemberList.size() );
 
 			for( const UidType iPartyMemberUnitUID : vecPartyMemberList )
 			{
-				START_LOG( cout, L"파티원 UnitUID : " << iPartyMemberUnitUID );
+				START_LOG( cout, L"Party member UnitUID: " << iPartyMemberUnitUID );
 			}
 		}
 	}
@@ -2268,7 +2268,7 @@ IMPL_ON_FUNC_NOPARAM( ERM_BATTLE_FIELD_ZU_ECHO_ACK )
 {
 	if( GetStateID() != KRoomFSM::S_PLAY )
 	{
-		START_LOG( cerr, L"잘못된 상태에서 패킷이 도착함." )
+		START_LOG( cerr, L"Packet received in an invalid state." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
@@ -2282,7 +2282,7 @@ IMPL_ON_FUNC_NOPARAM( ERM_BATTLE_FIELD_ZOMBIE_ALERT_NOT )
 {
 	if( GetStateID() != KRoomFSM::S_PLAY )
 	{
-		START_LOG( cerr, L"잘못된 상태에서 패킷이 도착함." )
+		START_LOG( cerr, L"Packet received in an invalid state." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
@@ -2311,7 +2311,7 @@ IMPL_ON_FUNC( ERM_KILL_ZOMBIE_USER_IN_BATTLE_FIELD_NOT )
 {
 	if( GetStateID() != KRoomFSM::S_PLAY )
 	{
-		START_LOG( clog, L"플레이 중인 방이 아니면 체크할 필요 없다." )
+		START_LOG( clog, L"No check is needed unless the room is in play." )
 			<< BUILD_LOG( kPacket_.m_wstrNickName )
 			<< END_LOG;
 		return;
@@ -2330,7 +2330,7 @@ IMPL_ON_FUNC( ERM_KILL_ZOMBIE_USER_IN_BATTLE_FIELD_NOT )
 		KRoomUserPtr spRoomUser = m_spUserManager->GetUser( iUnitUID );
 		if( IS_NULL( spRoomUser ) )
 		{
-			START_LOG( cerr, L"포인터값이 이상합니다." )
+			START_LOG( cerr, L"Invalid pointer value." )
 				<< BUILD_LOG( iUnitUID )
 				<< END_LOG;
 			continue;
@@ -2339,7 +2339,7 @@ IMPL_ON_FUNC( ERM_KILL_ZOMBIE_USER_IN_BATTLE_FIELD_NOT )
 		if( spRoomUser->GetNickName() != kPacket_.m_wstrNickName )
 			continue;
 
-		START_LOG( cout, L"좀비 유저를 찾았습니다! 해당 유저를 강제로 이탈 시킵니다!" )
+		START_LOG( cout, L"Zombie user found; forcibly removing the user!" )
 			<< BUILD_LOG( spRoomUser->GetNickName() )
 			<< BUILD_LOG( spRoomUser->IsHost() );
 
@@ -2356,7 +2356,7 @@ IMPL_ON_FUNC_NOPARAM( ERM_BATTLE_FIELD_DANGEROUS_VALUE_REQ )
 {
 	if( GetStateID() != KRoomFSM::S_PLAY )
 	{
-		START_LOG( cerr, L"잘못된 상태에서 패킷이 도착함." )
+		START_LOG( cerr, L"Packet received in an invalid state." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
@@ -2461,7 +2461,7 @@ bool KBattleFieldRoom::GetPVPUserList( IN UINT& uiViewPage, IN UINT& uiTotalPage
 
 		if( vecUserListCopy.size() <= uiBeginIndex )
 		{
-			START_LOG( cerr, L"일어날 수 없는 에러!" )
+			START_LOG( cerr, L"This should never happen!" )
 				<< BUILD_LOG( uiViewPage )
 				<< BUILD_LOG( uiTotalPage )
 				<< BUILD_LOG( uiBeginIndex )
@@ -2493,7 +2493,7 @@ void KBattleFieldRoom::MakePacket_BattleFieldLeaveLog( IN const UidType iUnitUID
 	KRoomUserPtr spRoomUser = m_spUserManager->GetUser( iUnitUID );
 	if( spRoomUser == NULL )
 	{
-		START_LOG( cerr, L"유저를 찾을 수 없습니다!" )
+		START_LOG( cerr, L"User not found!" )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 		return;
@@ -2593,7 +2593,7 @@ void KBattleFieldRoom::CheckEventMonster()
 	dwElapTime = GetTickCount() - dwElapTime;
 	if( m_dwMonsterRespawnCheckTick < dwElapTime )
 	{
-		START_LOG( cout, L"[알림] 이벤트 몬스터 체크 타임 최대 시간 갱신!" )
+		START_LOG( cout, L"[Notice] Updated maximum event-monster check time!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( dwElapTime )
 			<< BUILD_LOG( m_dwMonsterRespawnCheckTick );
@@ -2639,7 +2639,7 @@ void KBattleFieldRoom::CheckMiddleBossMonster()
 
             SendToLogDB( ELOG_GEN_FIELD_MIDDLE_BOSS_STAT_NOT, kLog );
 
-            START_LOG( cwarn, L"필드 중간 보스 생성 통계 테스트 " )
+            START_LOG( cwarn, L"Field miniboss spawn statistics test " )
                 << BUILD_LOG( kLog.m_nFieldID )
                 << BUILD_LOG( kLog.m_nSpawnID )
                 //<< BUILD_LOG( kLog.m_nNumGenBoss )
@@ -2651,7 +2651,7 @@ void KBattleFieldRoom::CheckMiddleBossMonster()
 	dwElapTime = ::GetTickCount() - dwElapTime;
 	if( m_dwMonsterRespawnCheckTick < dwElapTime )
 	{
-		START_LOG( cout, L"[알림]중간 보스 몬스터 체크 타임 최대 시간 갱신!" )
+		START_LOG( cout, L"[Notice] Updated maximum miniboss check time!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( dwElapTime )
 			<< BUILD_LOG( m_dwMonsterRespawnCheckTick );
@@ -2666,7 +2666,7 @@ void KBattleFieldRoom::BattleFieldMiddleBossDropProcess( IN const KEGS_NPC_UNIT_
 	const CXSLUnitManager::NPCUnitTemplet* pNPCTemplet = SiCXSLUnitManager()->GetNPCUnitTemplet( (CXSLUnitManager::NPC_UNIT_ID)kDieNpcInfo.m_iNPCID );
 	if( pNPCTemplet == NULL )
 	{
-		START_LOG( cwarn, L"NPC Unit Templet 읽기 오류.!" )
+		START_LOG( cwarn, L"Failed to read NPC unit template!" )
 			<< BUILD_LOG( kDieNpcInfo.m_iNPCID )
 			<< END_LOG;
 		return;
@@ -2698,7 +2698,7 @@ void KBattleFieldRoom::BattleFieldMiddleBossDropProcess( IN const KEGS_NPC_UNIT_
 		{
 			if( m_kMonsterManager.IsExistMonster( static_cast<int>(kPacket_.m_uiAttUnit) ) == true )
 			{
-				START_LOG( clog, L"몹끼리 죽였네!!" )
+				START_LOG( clog, L"A monster killed another monster!!" )
 					<< BUILD_LOG( kDieNpcInfo.m_iNPCID )
 					<< BUILD_LOG( kPacket_.m_uiAttUnit );
 
@@ -2776,7 +2776,7 @@ void KBattleFieldRoom::BattleFieldMiddleBossDropProcess( IN const KEGS_NPC_UNIT_
 			kNpcDietNot.m_EXPList.clear();
 			//////////////////////////////////////////////////////////////////////////
 
-			START_LOG( cerr, L"배틀 필드 npc drop info 얻어오기 실패" )
+			START_LOG( cerr, L"Failed to retrieve Battlefield NPC drop information." )
 				<< BUILD_LOG( GetBattleFieldID() )
 				<< BUILD_LOG( kDieNpcInfo.m_iNPCID )
 				<< END_LOG;
@@ -2798,7 +2798,7 @@ void KBattleFieldRoom::BattleFieldMiddleBossDropProcess( IN const KEGS_NPC_UNIT_
 			kNpcDietNot.m_EXPList.clear();
 			//////////////////////////////////////////////////////////////////////////
 
-			START_LOG( cerr, L"보내려는  리스트를 찾을 수가 없다." )
+			START_LOG( cerr, L"Could not find the list to send." )
 				<< END_LOG;
 
 			//////////////////////////////////////////////////////////////////////////
@@ -2900,7 +2900,7 @@ void KBattleFieldRoom::BattleFieldMiddleBossDropProcess( IN const KEGS_NPC_UNIT_
 													  , sDropDataNpc
 													  ) == false )
 			{
-				START_LOG( cerr, L"Drop Item Data 얻어오기 실패 ===" )
+				START_LOG( cerr, L"Failed to retrieve drop item data ===" )
 					<< BUILD_LOG( GetBattleFieldID() )
 					<< BUILD_LOG( kDieNpcInfo.m_iNPCID )
 					<< END_LOG;
@@ -2998,7 +2998,7 @@ void KBattleFieldRoom::BattleFieldMiddleBossDropProcess( IN const KEGS_NPC_UNIT_
 			{
 				if( SiKDropTable()->BattleFieldStaticDropItem( GetBattleFieldID(), sDropDataStatic, fTotalDropRate ) == false )
 				{
-					START_LOG( cerr, L"Drop Item Data 얻어오기 실패 ===" )
+					START_LOG( cerr, L"Failed to retrieve drop item data ===" )
 						<< BUILD_LOG( GetBattleFieldID() )
 						<< END_LOG;
 				}
@@ -3012,7 +3012,7 @@ void KBattleFieldRoom::BattleFieldMiddleBossDropProcess( IN const KEGS_NPC_UNIT_
 				//{{ 2012. 12. 16  드롭 이벤트 - 김민성
 				if( SiKAttribNpcTable()->AttribNpcDropItem( static_cast<int>(CXSLDungeon::DL_EXPERT), static_cast<int>(kDieNpcInfo.m_cLevel), fTotalDropRate, m_fItemDropEventProbRate, sDropDataAttribNpc.m_vecItemID ) == false )
 				{
-					START_LOG( cerr, L"속성 몬스터 아이템 드롭 실패!" )
+					START_LOG( cerr, L"Failed to drop an attribute monster item!" )
 						<< BUILD_LOG( CXSLDungeon::DL_EXPERT )
 						<< END_LOG;
 				}
@@ -3022,7 +3022,7 @@ void KBattleFieldRoom::BattleFieldMiddleBossDropProcess( IN const KEGS_NPC_UNIT_
 
 				if( SiKDropTable()->AttribNpcSpecialDrop( CXSLDungeon::DL_EXPERT, fTotalDropRate, sDropDataAttribNpc.m_vecItemID ) == false )
 				{
-					START_LOG( cerr, L"속성 몬스터 스페셜 아이템 드롭 실패!" )
+					START_LOG( cerr, L"Failed to drop an attribute monster special item!" )
 						<< BUILD_LOG( CXSLDungeon::DL_EXPERT )
 						<< END_LOG;
 				}
@@ -3060,7 +3060,7 @@ void KBattleFieldRoom::BattleFieldMiddleBossDropProcess( IN const KEGS_NPC_UNIT_
 				{
 					if( NetError::GetLastError() != NetError::NET_OK )
 					{
-						START_LOG( cerr, L"퀘스트 드롭 아이템 받아오기 실패.!" )
+						START_LOG( cerr, L"Failed to retrieve quest drop items!" )
 							<< BUILD_LOG( kPacket_.m_uiAttUnit )
 							<< BUILD_LOG( m_iDungeonID )
 							<< BUILD_LOG( NetError::GetLastErrMsg() )
@@ -3169,7 +3169,7 @@ void KBattleFieldRoom::BattleFieldMiddleBossDropProcess( IN const KEGS_NPC_UNIT_
 						}
 						else
 						{
-							START_LOG( cerr, L"존재하지 않는 itemid이다. 세팅오류인가?" )
+							START_LOG( cerr, L"ItemID does not exist; is the configuration wrong?" )
 								<< BUILD_LOG( iTimeDropItemID )
 								<< END_LOG;
 						}
@@ -3177,7 +3177,7 @@ void KBattleFieldRoom::BattleFieldMiddleBossDropProcess( IN const KEGS_NPC_UNIT_
 				}
 				else
 				{
-					START_LOG( cwarn, L"이벤트 아이템 획득 처리 하려는데 유저정보가 없다!" )
+					START_LOG( cwarn, L"Cannot process event item acquisition: user information is missing!" )
 						<< BUILD_LOG( kPacket_.m_uiAttUnit )
 						<< END_LOG;
 				}
@@ -3192,7 +3192,7 @@ void KBattleFieldRoom::BattleFieldNormalDropProcess( const IN KEGS_NPC_UNIT_DIE_
 	const CXSLUnitManager::NPCUnitTemplet* pNPCTemplet = SiCXSLUnitManager()->GetNPCUnitTemplet( (CXSLUnitManager::NPC_UNIT_ID)kDieNpcInfo.m_iNPCID );
 	if( pNPCTemplet == NULL )
 	{
-		START_LOG( cwarn, L"NPC Unit Templet 읽기 오류.!" )
+		START_LOG( cwarn, L"Failed to read NPC unit template!" )
 			<< BUILD_LOG( kDieNpcInfo.m_iNPCID )
 			<< END_LOG;
 		return;
@@ -3226,7 +3226,7 @@ void KBattleFieldRoom::BattleFieldNormalDropProcess( const IN KEGS_NPC_UNIT_DIE_
 		{
 			if( m_kMonsterManager.IsExistMonster( static_cast<int>(kPacket_.m_uiAttUnit) ) == true )
 			{
-				START_LOG( clog, L"몹끼리 죽였네!!" )
+				START_LOG( clog, L"A monster killed another monster!!" )
 					<< BUILD_LOG( kDieNpcInfo.m_iNPCID )
 					<< BUILD_LOG( kPacket_.m_uiAttUnit );
 
@@ -3297,7 +3297,7 @@ void KBattleFieldRoom::BattleFieldNormalDropProcess( const IN KEGS_NPC_UNIT_DIE_
 			kNpcDietNot.m_EXPList.clear();
 			//////////////////////////////////////////////////////////////////////////
 
-			START_LOG( cerr, L"배틀 필드 npc drop info 얻어오기 실패" )
+			START_LOG( cerr, L"Failed to retrieve Battlefield NPC drop information." )
 				<< BUILD_LOG( GetBattleFieldID() )
 				<< BUILD_LOG( kDieNpcInfo.m_iNPCID )
 				<< END_LOG;
@@ -3319,7 +3319,7 @@ void KBattleFieldRoom::BattleFieldNormalDropProcess( const IN KEGS_NPC_UNIT_DIE_
 			kNpcDietNot.m_EXPList.clear();
 			//////////////////////////////////////////////////////////////////////////
 
-			START_LOG( cerr, L"보내려는  리스트를 찾을 수가 없다." )
+			START_LOG( cerr, L"Could not find the list to send." )
 				<< END_LOG;
 
 			//////////////////////////////////////////////////////////////////////////
@@ -3408,7 +3408,7 @@ void KBattleFieldRoom::BattleFieldNormalDropProcess( const IN KEGS_NPC_UNIT_DIE_
 													  , 1.0f
 													  , sDropDataNpc ) == false )
 			{
-				START_LOG( cerr, L"Drop Item Data 얻어오기 실패 ===" )
+				START_LOG( cerr, L"Failed to retrieve drop item data ===" )
 					<< BUILD_LOG( GetBattleFieldID() )
 					<< BUILD_LOG( kDieNpcInfo.m_iNPCID )
 					<< END_LOG;
@@ -3450,7 +3450,7 @@ void KBattleFieldRoom::BattleFieldNormalDropProcess( const IN KEGS_NPC_UNIT_DIE_
 			{
 				if( SiKDropTable()->BattleFieldStaticDropItem( GetBattleFieldID(), sDropDataStatic, fTotalDropRate ) == false )
 				{
-					START_LOG( cerr, L"Drop Item Data 얻어오기 실패 ===" )
+					START_LOG( cerr, L"Failed to retrieve drop item data ===" )
 						<< BUILD_LOG( GetBattleFieldID() )
 						<< END_LOG;
 				}
@@ -3464,7 +3464,7 @@ void KBattleFieldRoom::BattleFieldNormalDropProcess( const IN KEGS_NPC_UNIT_DIE_
 				//{{ 2012. 12. 16  드롭 이벤트 - 김민성
 				if( SiKAttribNpcTable()->AttribNpcDropItem( static_cast<int>(CXSLDungeon::DL_EXPERT), static_cast<int>(kDieNpcInfo.m_cLevel), fTotalDropRate, m_fItemDropEventProbRate, sDropDataAttribNpc.m_vecItemID ) == false )
 				{
-					START_LOG( cerr, L"속성 몬스터 아이템 드롭 실패!" )
+					START_LOG( cerr, L"Failed to drop an attribute monster item!" )
 						<< BUILD_LOG( CXSLDungeon::DL_EXPERT )
 						<< END_LOG;
 				}
@@ -3473,7 +3473,7 @@ void KBattleFieldRoom::BattleFieldNormalDropProcess( const IN KEGS_NPC_UNIT_DIE_
 
 				if( SiKDropTable()->AttribNpcSpecialDrop( CXSLDungeon::DL_EXPERT, fTotalDropRate, sDropDataAttribNpc.m_vecItemID ) == false )
 				{
-					START_LOG( cerr, L"속성 몬스터 스페셜 아이템 드롭 실패!" )
+					START_LOG( cerr, L"Failed to drop an attribute monster special item!" )
 						<< BUILD_LOG( CXSLDungeon::DL_EXPERT )
 						<< END_LOG;
 				}
@@ -3510,7 +3510,7 @@ void KBattleFieldRoom::BattleFieldNormalDropProcess( const IN KEGS_NPC_UNIT_DIE_
 				{
 					if( NetError::GetLastError() != NetError::NET_OK )
 					{
-						START_LOG( cerr, L"퀘스트 드롭 아이템 받아오기 실패.!" )
+						START_LOG( cerr, L"Failed to retrieve quest drop items!" )
 							<< BUILD_LOG( kPacket_.m_uiAttUnit )
 							<< BUILD_LOG( m_iDungeonID )
 							<< BUILD_LOG( NetError::GetLastErrMsg() )
@@ -3619,7 +3619,7 @@ void KBattleFieldRoom::BattleFieldNormalDropProcess( const IN KEGS_NPC_UNIT_DIE_
 						}
 						else
 						{
-							START_LOG( cerr, L"존재하지 않는 itemid이다. 세팅오류인가?" )
+							START_LOG( cerr, L"ItemID does not exist; is the configuration wrong?" )
 								<< BUILD_LOG( iTimeDropItemID )
 								<< END_LOG;
 						}
@@ -3627,7 +3627,7 @@ void KBattleFieldRoom::BattleFieldNormalDropProcess( const IN KEGS_NPC_UNIT_DIE_
 				}
 				else
 				{
-					START_LOG( cwarn, L"이벤트 아이템 획득 처리 하려는데 유저정보가 없다!" )
+					START_LOG( cwarn, L"Cannot process event item acquisition: user information is missing!" )
 						<< BUILD_LOG( kPacket_.m_uiAttUnit )
 						<< END_LOG;
 				}
@@ -3644,7 +3644,7 @@ _IMPL_ON_FUNC( ERM_ADMIN_BATTLE_FIELD_INCREASE_DANGER_REQ, KEGS_ADMIN_BATTLE_FIE
 
 	if( GetStateID() != KRoomFSM::S_PLAY )
 	{
-		START_LOG( cerr, L"잘못된 상태에서 패킷이 도착함." )
+		START_LOG( cerr, L"Packet received in an invalid state." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
@@ -3675,7 +3675,7 @@ _IMPL_ON_FUNC( ERM_BATTLE_FIELD_NPC_DAMAGED_MAP_REQ, KEGS_BATTLE_FIELD_NPC_DAMAG
 {
 	if( GetStateID() != KRoomFSM::S_PLAY )
 	{
-		START_LOG( cerr, L"잘못된 상태에서 패킷이 도착함." )
+		START_LOG( cerr, L"Packet received in an invalid state." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
@@ -3693,7 +3693,7 @@ _IMPL_ON_FUNC( ERM_SYNC_BATTLE_FIELD_DAMAGED_MAP_NOT, KEGS_SYNC_BATTLE_FIELD_DAM
 {
 	if( GetStateID() != KRoomFSM::S_PLAY )
 	{
-		START_LOG( cerr, L"잘못된 상태에서 패킷이 도착함." )
+		START_LOG( cerr, L"Packet received in an invalid state." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
@@ -3713,7 +3713,7 @@ IMPL_ON_FUNC( ERM_CALL_MY_LOVER_CHECK_ROOM_REQ )
 {
 	if( GetStateID() != KRoomFSM::S_PLAY )
 	{
-		START_LOG( cerr, L"잘못된 상태에서 패킷이 도착함." )
+		START_LOG( cerr, L"Packet received in an invalid state." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
@@ -3771,7 +3771,7 @@ IMPL_ON_FUNC( ERM_CALL_MY_LOVER_JOIN_BATTLE_FIELD_REQ )
 	// 제대로 찾아 왔는지 보자!
 	if( GetBattleFieldID() != kPacket_.m_kBattleFieldJoinInfo.m_iBattleFieldID )
 	{
-		START_LOG( cerr, L"다른 배틀필드에 입장했다! 헐 버그다!" )
+		START_LOG( cerr, L"User entered a different Battlefield; unexpected state!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetBattleFieldID() )
@@ -3786,7 +3786,7 @@ IMPL_ON_FUNC( ERM_CALL_MY_LOVER_JOIN_BATTLE_FIELD_REQ )
 	// 배틀필드에 입장 처리 한다!
 	if( EnterRoom( kPacket_.m_kRoomUserInfo, kPacket_.m_kBattleFieldJoinInfo, false ) == false )
 	{
-		START_LOG( cerr, L"방 입장 실패." )
+		START_LOG( cerr, L"Failed to enter room." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( NetError::GetLastErrMsg() )
@@ -3816,7 +3816,7 @@ IMPL_ON_FUNC( ERM_CALL_MY_LOVER_JOIN_BATTLE_FIELD_REQ )
 	// 해당 유저는 바로 게임 시작 처리 하자!
 	if( m_spUserManager->StartPlay( kPacket_.m_kRoomUserInfo.m_nUnitUID ) == false )
 	{
-		START_LOG( cerr, L"게임 시작 처리 실패!" )
+		START_LOG( cerr, L"Failed to start the game!" )
 			<< BUILD_LOG( kPacket_.m_kRoomUserInfo.m_nUnitUID )
 			<< BUILD_LOG( GetUID() )
 			<< END_LOG;
@@ -4016,7 +4016,7 @@ void KBattleFieldRoom::BattleFieldBossDropProcess( const IN KEGS_NPC_UNIT_DIE_RE
 	const CXSLUnitManager::NPCUnitTemplet* pNPCTemplet = SiCXSLUnitManager()->GetNPCUnitTemplet( (CXSLUnitManager::NPC_UNIT_ID)kDieNpcInfo.m_iNPCID );
 	if( pNPCTemplet == NULL )
 	{
-		START_LOG( cwarn, L"NPC Unit Templet 읽기 오류.!" )
+		START_LOG( cwarn, L"Failed to read NPC unit template!" )
 			<< BUILD_LOG( kDieNpcInfo.m_iNPCID )
 			<< END_LOG;
 		return;
@@ -4048,7 +4048,7 @@ void KBattleFieldRoom::BattleFieldBossDropProcess( const IN KEGS_NPC_UNIT_DIE_RE
 		{
 			if( m_kMonsterManager.IsExistMonster( static_cast<int>(kPacket_.m_uiAttUnit) ) == true )
 			{
-				START_LOG( clog, L"몹끼리 죽였네!!" )
+				START_LOG( clog, L"A monster killed another monster!!" )
 					<< BUILD_LOG( kDieNpcInfo.m_iNPCID )
 					<< BUILD_LOG( kPacket_.m_uiAttUnit );
 
@@ -4127,7 +4127,7 @@ void KBattleFieldRoom::BattleFieldBossDropProcess( const IN KEGS_NPC_UNIT_DIE_RE
 		kNpcDietNot.m_EXPList.clear();
 		//////////////////////////////////////////////////////////////////////////
 
-		START_LOG( cerr, L"배틀 필드 npc drop info 얻어오기 실패" )
+		START_LOG( cerr, L"Failed to retrieve Battlefield NPC drop information." )
 			<< BUILD_LOG( GetBattleFieldID() )
 			<< BUILD_LOG( kDieNpcInfo.m_iNPCID )
 			<< END_LOG;
@@ -4149,7 +4149,7 @@ void KBattleFieldRoom::BattleFieldBossDropProcess( const IN KEGS_NPC_UNIT_DIE_RE
 		kNpcDietNot.m_EXPList.clear();
 		//////////////////////////////////////////////////////////////////////////
 
-		START_LOG( cerr, L"보내려는  리스트를 찾을 수가 없다." )
+		START_LOG( cerr, L"Could not find the list to send." )
 			<< END_LOG;
 
 		//////////////////////////////////////////////////////////////////////////
@@ -4241,7 +4241,7 @@ void KBattleFieldRoom::BattleFieldBossDropProcess( const IN KEGS_NPC_UNIT_DIE_RE
 												  , sDropDataNpc
 												  ) == false )
 		{
-			START_LOG( cerr, L"Drop Item Data 얻어오기 실패 ===" )
+			START_LOG( cerr, L"Failed to retrieve drop item data ===" )
 				<< BUILD_LOG( GetBattleFieldID() )
 				<< BUILD_LOG( kDieNpcInfo.m_iNPCID )
 				<< END_LOG;
@@ -4287,7 +4287,7 @@ void KBattleFieldRoom::BattleFieldBossDropProcess( const IN KEGS_NPC_UNIT_DIE_RE
 		{
 			if( SiKDropTable()->BattleFieldStaticDropItem( GetBattleFieldID(), sDropDataStatic, fTotalDropRate ) == false )
 			{
-				START_LOG( cerr, L"Drop Item Data 얻어오기 실패 ===" )
+				START_LOG( cerr, L"Failed to retrieve drop item data ===" )
 					<< BUILD_LOG( GetBattleFieldID() )
 					<< END_LOG;
 			}
@@ -4301,7 +4301,7 @@ void KBattleFieldRoom::BattleFieldBossDropProcess( const IN KEGS_NPC_UNIT_DIE_RE
 			//{{ 2012. 12. 16  드롭 이벤트 - 김민성
 			if( SiKAttribNpcTable()->AttribNpcDropItem( static_cast<int>(CXSLDungeon::DL_EXPERT), static_cast<int>(kDieNpcInfo.m_cLevel), fTotalDropRate, m_fItemDropEventProbRate, sDropDataAttribNpc.m_vecItemID ) == false )
 			{
-				START_LOG( cerr, L"속성 몬스터 아이템 드롭 실패!" )
+				START_LOG( cerr, L"Failed to drop an attribute monster item!" )
 					<< BUILD_LOG( CXSLDungeon::DL_EXPERT )
 					<< END_LOG;
 			}
@@ -4311,7 +4311,7 @@ void KBattleFieldRoom::BattleFieldBossDropProcess( const IN KEGS_NPC_UNIT_DIE_RE
 
 			if( SiKDropTable()->AttribNpcSpecialDrop( CXSLDungeon::DL_EXPERT, fTotalDropRate, sDropDataAttribNpc.m_vecItemID ) == false )
 			{
-				START_LOG( cerr, L"속성 몬스터 스페셜 아이템 드롭 실패!" )
+				START_LOG( cerr, L"Failed to drop an attribute monster special item!" )
 					<< BUILD_LOG( CXSLDungeon::DL_EXPERT )
 					<< END_LOG;
 			}
@@ -4349,7 +4349,7 @@ void KBattleFieldRoom::BattleFieldBossDropProcess( const IN KEGS_NPC_UNIT_DIE_RE
 			{
 				if( NetError::GetLastError() != NetError::NET_OK )
 				{
-					START_LOG( cerr, L"퀘스트 드롭 아이템 받아오기 실패.!" )
+					START_LOG( cerr, L"Failed to retrieve quest drop items!" )
 						<< BUILD_LOG( kPacket_.m_uiAttUnit )
 						<< BUILD_LOG( m_iDungeonID )
 						<< BUILD_LOG( NetError::GetLastErrMsg() )
@@ -4585,7 +4585,7 @@ int KBattleFieldRoom::MiddleBossMonsterDieProcess( IN const UidType iUnitUID, IN
 	kLog.m_nFieldID = GetBattleFieldID();
 	SendToLogDB( ELOG_KILL_FIELD_MIDDLE_BOSS_STAT_NOT, kLog );
 
-	START_LOG( cwarn, L"필드 중간 보스 킬 통계 테스트 " )
+	START_LOG( cwarn, L"Field miniboss kill statistics test " )
 		<< BUILD_LOG( kLog.m_nFieldID )
 		//<< BUILD_LOG( kLog.m_nDieNPCUID )
 		<< BUILD_LOG( kLog.m_nNumUser )

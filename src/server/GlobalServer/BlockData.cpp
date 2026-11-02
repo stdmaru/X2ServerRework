@@ -44,7 +44,7 @@ void KBlockData::SetBlockInfo( const KBlockInfo& kInfo )
 	{
 		if( KncUtil::ConvertStringToCTime( kInfo.m_wstrStartDate, m_tStartTime ) == false )
 		{
-			START_LOG( cerr, L"DB에서 받아온 날짜 정보값이 이상합니다." )
+			START_LOG( cerr, L"Invalid date value received from the database." )
 				<< BUILD_LOG( kInfo.m_wstrStartDate )
 				<< END_LOG;
 		}
@@ -54,7 +54,7 @@ void KBlockData::SetBlockInfo( const KBlockInfo& kInfo )
 	{
 		if( KncUtil::ConvertStringToCTime( kInfo.m_wstrEndDate, m_tEndTime ) == false )
 		{
-			START_LOG( cerr, L"DB에서 받아온 날짜 정보값이 이상합니다." )
+			START_LOG( cerr, L"Invalid date value received from the database." )
 				<< BUILD_LOG( kInfo.m_wstrEndDate )
 				<< END_LOG;
 		}

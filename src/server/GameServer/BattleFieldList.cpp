@@ -25,7 +25,7 @@ KGSBattleFieldRoomPtr KBattleFieldList::GetRoomInfo( IN const UidType iRoomUID, 
 	{
 		if( bErrorLog )
 		{
-			START_LOG( cerr, L"방 정보가 존재하지 않습니다." )
+			START_LOG( cerr, L"Room information does not exist." )
 				<< BUILD_LOG( iRoomUID )
 				<< END_LOG;
 		}
@@ -40,7 +40,7 @@ bool KBattleFieldList::AddRoomInfo( IN const KBattleFieldRoomInfo& kInfo )
 {
 	if( IsExist( kInfo.m_RoomUID ) == true )
 	{
-		START_LOG( cerr, L"이미 존재하는 방입니다" )
+		START_LOG( cerr, L"Room already exists." )
 			<< BUILD_LOG( kInfo.m_RoomUID )
 			<< END_LOG;
 		return false;
@@ -49,7 +49,7 @@ bool KBattleFieldList::AddRoomInfo( IN const KBattleFieldRoomInfo& kInfo )
 	KGSBattleFieldRoomPtr spRoomInfo( new KGSBattleFieldRoom( kInfo ) );
 	if( spRoomInfo == NULL )
 	{
-		START_LOG( cerr, L"방정보 포인터값 생성 실패!" )
+		START_LOG( cerr, L"Failed to create room information pointer!" )
 			<< BUILD_LOG( kInfo.m_iBattleFieldID )
 			<< END_LOG;
 		return false;
@@ -64,7 +64,7 @@ bool KBattleFieldList::DelRoomInfo( IN const UidType iRoomUID )
 {
 	if( IsExist( iRoomUID ) == false )
 	{
-		START_LOG( cerr, L"없는 방을 지우려고 하였습니다" )
+		START_LOG( cerr, L"Attempted to delete a nonexistent room." )
 			<< BUILD_LOG( iRoomUID )
 			<< END_LOG;
 		return false;
@@ -77,7 +77,7 @@ bool KBattleFieldList::DelRoomInfo( IN const UidType iRoomUID )
 	{
         if( (*vitDEL) == NULL )
 		{
-			START_LOG( cerr, L"방 포인터값이 이상합니다!" )
+			START_LOG( cerr, L"Invalid room pointer!" )
 				<< BUILD_LOG( iRoomUID )
 				<< END_LOG;
 			continue;
@@ -104,7 +104,7 @@ void KBattleFieldList::DelRoomInfoByCnServerUID( IN const UidType iCnServerUID )
 	{
 		if( IS_NULL( spGSBattleFieldRoom ) )
 		{
-			START_LOG( cerr, L"방 포인터값이 이상합니다!" )
+			START_LOG( cerr, L"Invalid room pointer!" )
 				<< BUILD_LOG( iCnServerUID )
 				<< END_LOG;
 			continue;
@@ -129,7 +129,7 @@ bool KBattleFieldList::UpdateRoomInfo( IN const KBattleFieldRoomInfo& kInfo )
     KGSBattleFieldRoomPtr spRoomInfo = GetRoomInfo( kInfo.m_RoomUID );
 	if( spRoomInfo == NULL )
 	{
-		START_LOG( cerr, L"방 정보 포인터값이 이상합니다" )
+		START_LOG( cerr, L"Invalid room information pointer." )
 			<< BUILD_LOG( kInfo.m_RoomUID )
 			<< END_LOG;
 		return false;
@@ -143,7 +143,7 @@ UidType KBattleFieldList::GetBattleFieldRoomUID_MaxPartyMemberCount( IN const Ui
 {
 	if( iPartyUID == 0 )
 	{
-		START_LOG( cerr, L"파티UID값이 0이다. 이런건 미리 검사 해야지!" )
+		START_LOG( cerr, L"PartyUID is zero; this should have been checked earlier!" )
 			<< BUILD_LOG( iPartyUID )
 			<< END_LOG;
 		return 0;
@@ -157,7 +157,7 @@ UidType KBattleFieldList::GetBattleFieldRoomUID_MaxPartyMemberCount( IN const Ui
 	{
 		if( IS_NULL( spRoomInfo ) )
 		{
-			START_LOG( cerr, L"방 포인터값이 이상합니다" )
+			START_LOG( cerr, L"Invalid room pointer." )
 				<< END_LOG;
 			continue;
 		}
@@ -243,7 +243,7 @@ UidType KBattleFieldList::GetBattleFieldRoomUID_AllRandom()
 	{
 		if( IS_NULL( spRoomInfo ) )
 		{
-			START_LOG( cerr, L"방 포인터값이 이상합니다" )
+			START_LOG( cerr, L"Invalid room pointer." )
 				<< END_LOG;
 			continue;
 		}

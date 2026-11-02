@@ -21,7 +21,7 @@ IMPL_ON_FUNC( EGS_AUTO_PARTY_DUNGEON_GAME_REQ )
 
 	if( GetRoomUID() != 0  &&  CXSLRoom::GetRoomType( GetRoomUID() ) != CXSLRoom::RT_BATTLE_FIELD )
 	{
-		START_LOG( cerr, L"자동 파티 신청을 할수 없는 곳에서 신청 요청을 하였습니다!" )
+		START_LOG( cerr, L"Auto-party application received in a location where applications are not allowed!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
@@ -36,7 +36,7 @@ IMPL_ON_FUNC( EGS_AUTO_PARTY_DUNGEON_GAME_REQ )
 	// 재집결을 위한 휴식 버프가 걸려있으면 자동 파티 신청을 하지 못한다.
 	if( m_kUserBuffManager.IsBuffActivated( CXSLBuffManager::BTI_DEBUFF_REST_OF_RELLY ) == true )
 	{
-		START_LOG( clog, L"재집결을 위한 휴식버프로 인해 자동 파티 신청을 할수 없다!" )
+		START_LOG( clog, L"Cannot request auto-party while the regrouping rest buff is active!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
@@ -51,7 +51,7 @@ IMPL_ON_FUNC( EGS_AUTO_PARTY_DUNGEON_GAME_REQ )
 	// 자동 매칭 등록을 할수 있는지 조건 체크
 	if( m_kUserDungeonManager.GetAutoPartyWaitNumber() != 0  ||  m_kUserDungeonManager.GetAutoPartyUID() != 0 )
 	{
-		START_LOG( cerr, L"이미 자동 파티 대기 상태입니다." )
+		START_LOG( cerr, L"Already waiting for an auto-party." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( m_kUserDungeonManager.GetAutoPartyWaitNumber() )
@@ -67,7 +67,7 @@ IMPL_ON_FUNC( EGS_AUTO_PARTY_DUNGEON_GAME_REQ )
 	// 공식 대전 매칭 중인지 확인!!
 	if( GetMatchUID() != 0 )
 	{
-		START_LOG( cerr, L"공식 대전 매칭 중인데 던전 자동 매칭 요청이 들어왔다!!" )
+		START_LOG( cerr, L"Received a dungeon auto-match request during official PvP matchmaking!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
@@ -81,7 +81,7 @@ IMPL_ON_FUNC( EGS_AUTO_PARTY_DUNGEON_GAME_REQ )
 	// 룸 리스트 조회 중인지 확인!!
 	if( GetRoomListID() != 0 )
 	{
-		START_LOG( cerr, L"룸 리스트 조회 중에 던전 자동 매칭 요청이 들어왔다!!" )
+		START_LOG( cerr, L"Received a dungeon auto-match request while querying the room list!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
@@ -95,7 +95,7 @@ IMPL_ON_FUNC( EGS_AUTO_PARTY_DUNGEON_GAME_REQ )
 	// DungeonID검증
 	if( !SiCXSLDungeonManager()->VerifyDungeonID( kPacket_.m_iDungeonID + static_cast<int>(kPacket_.m_DifficultyLevel) ) )
 	{
-		START_LOG( cerr, L"존재하지않는 DungeonID입니다. 클라에서 검사했을텐데.." )
+		START_LOG( cerr, L"The DungeonID does not exist; the client should have checked this." )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( kPacket_.m_iDungeonID )
 			<< BUILD_LOGc( kPacket_.m_DifficultyLevel )
@@ -110,7 +110,7 @@ IMPL_ON_FUNC( EGS_AUTO_PARTY_DUNGEON_GAME_REQ )
 	// HenirDungeonMode검증
 	if( CXSLDungeon::IsValidDungeonMode( static_cast<CXSLDungeon::DUNGEON_MODE>(kPacket_.m_cDungeonMode) ) == false )
 	{
-		START_LOG( cerr, L"비정상적인 HenirDungeonMode값입니다." )
+		START_LOG( cerr, L"Invalid HenirDungeonMode value." )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( kPacket_.m_iDungeonID )
 			<< BUILD_LOG( (int)kPacket_.m_cDungeonMode )
@@ -162,7 +162,7 @@ IMPL_ON_FUNC( EPM_CHECK_FOR_AUTO_PARTY_MAKING_REQ )
 	// 파티 소속인지 확인!
 	if( GetPartyUID() == 0 )
 	{
-		START_LOG( cerr, L"파티 소속이 아닌데 이런 패킷이 날아왔네?" )
+		START_LOG( cerr, L"Received this packet while not in a party?" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
@@ -177,7 +177,7 @@ IMPL_ON_FUNC( EPM_CHECK_FOR_AUTO_PARTY_MAKING_REQ )
 	// 재집결을 위한 휴식 버프가 걸려있으면 자동 파티 신청을 하지 못한다.
 	if( m_kUserBuffManager.IsBuffActivated( CXSLBuffManager::BTI_DEBUFF_REST_OF_RELLY ) == true )
 	{
-		START_LOG( clog, L"재집결을 위한 휴식버프로 인해 자동 파티 신청을 할수 없다!" )
+		START_LOG( clog, L"Cannot request auto-party while the regrouping rest buff is active!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
@@ -217,7 +217,7 @@ IMPL_ON_FUNC( EPM_GET_PARTY_INFO_FOR_AUTO_PARTY_MAKING_ACK )
 			}
 			else
 			{
-				START_LOG( cerr, L"던전 입장권 정보를 찾지 못했다!" )
+				START_LOG( cerr, L"Could not find the dungeon entry ticket information!" )
 					<< BUILD_LOG( GetCharUID() )
 					<< BUILD_LOG( iDungeonID )
 					<< BUILD_LOG( eDungeonMode )
@@ -228,7 +228,7 @@ IMPL_ON_FUNC( EPM_GET_PARTY_INFO_FOR_AUTO_PARTY_MAKING_ACK )
 		else if( kPacket_.m_iOK != NetError::ERR_PARTY_61 )
 			//}}
 		{
-			START_LOG( cerr, L"자동 파티 매칭 정보 얻어오기 실패!" )
+			START_LOG( cerr, L"Failed to retrieve auto-party matchmaking information!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( GetCharName() )
 				<< BUILD_LOG( NetError::GetErrStr( kPacket_.m_iOK ) )
@@ -263,7 +263,7 @@ _IMPL_ON_FUNC( EGB_REG_AUTO_PARTY_WAIT_LIST_SUCCESS_NOT, KEGS_REG_AUTO_PARTY_WAI
 
 	if( m_kUserDungeonManager.GetAutoPartyWaitNumber() != 0 )
 	{
-		START_LOG( cerr, L"이미 자동 파티 대기자인데 또 등록하는게 왔네? 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"Received another registration for a user already waiting for auto-party; this should never happen!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
@@ -293,7 +293,7 @@ _IMPL_ON_FUNC( EGB_AUTO_PARTY_MAKING_SUCCESS_NOT, KEGS_AUTO_PARTY_MAKING_SUCCESS
 	// 이미 등록되어 있다구?
 	if( m_kUserDungeonManager.GetAutoPartyUID() != 0 )
 	{
-		START_LOG( cerr, L"이미 자동 파티 인데 또 자동파티가 됐네? 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"User already in an auto-party was added again; this should never happen!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
@@ -327,7 +327,7 @@ IMPL_ON_FUNC( EGS_AUTO_PARTY_MAKING_SUCCESS_REPLY_NOT )
 
 	if( m_kUserDungeonManager.GetAutoPartyUID() == 0 )
 	{
-		START_LOG( clog, L"현재 자동 파티에 등록된 상태가 아닌데 응답을 하려고 하네? 시간차 때문인가?" )
+		START_LOG( clog, L"Attempted to respond while not registered for auto-party; could this be a timing issue?" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
@@ -347,7 +347,7 @@ IMPL_ON_FUNC_NOPARAM( EGS_CANCEL_AUTO_PARTY_MAKING_REQ )
 
 	if( m_kUserDungeonManager.GetAutoPartyWaitNumber() == 0  &&  m_kUserDungeonManager.GetAutoPartyUID() == 0 )
 	{
-		START_LOG( cerr, L"자동 파티를 신청한적이 없는데 취소요청이 왔네?" )
+		START_LOG( cerr, L"Received an auto-party cancellation without a previous application?" )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( GetRoomListID() )
 			<< END_LOG;
@@ -378,7 +378,7 @@ _IMPL_ON_FUNC( EGB_UNREG_AUTO_PARTY_WAIT_LIST_NOT, KEGS_UNREG_AUTO_PARTY_WAIT_LI
 
 	if( m_kUserDungeonManager.GetAutoPartyWaitNumber() == 0 )
 	{
-		START_LOG( cerr, L"원래부터 자동 파티 신청된 유저가 아닌데 왔다?" )
+		START_LOG( cerr, L"Received this for a user who never applied for auto-party?" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
@@ -402,7 +402,7 @@ IMPL_ON_FUNC( EGB_REMAKING_AUTO_PARTY_NOT )
 	// 자동 매칭 등록을 할수 있는지 조건 체크
 	if( m_kUserDungeonManager.GetAutoPartyWaitNumber() != 0  ||  m_kUserDungeonManager.GetAutoPartyUID() != 0 )
 	{
-		START_LOG( cerr, L"이미 자동 파티 대기 상태입니다." )
+		START_LOG( cerr, L"Already waiting for an auto-party." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( m_kUserDungeonManager.GetAutoPartyWaitNumber() )
@@ -414,7 +414,7 @@ IMPL_ON_FUNC( EGB_REMAKING_AUTO_PARTY_NOT )
 	// DungeonID검증
 	if( !SiCXSLDungeonManager()->VerifyDungeonID( kPacket_.m_kAutoPartyInfo.m_iDungeonID + static_cast<int>(kPacket_.m_kAutoPartyInfo.m_cDifficultyLevel) ) )
 	{
-		START_LOG( cerr, L"존재하지않는 DungeonID입니다. 클라에서 검사했을텐데.." )
+		START_LOG( cerr, L"The DungeonID does not exist; the client should have checked this." )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( kPacket_.m_kAutoPartyInfo.m_iDungeonID )
 			<< BUILD_LOGc( kPacket_.m_kAutoPartyInfo.m_cDifficultyLevel )
@@ -425,7 +425,7 @@ IMPL_ON_FUNC( EGB_REMAKING_AUTO_PARTY_NOT )
 	// HenirDungeonMode검증
 	if( CXSLDungeon::IsValidDungeonMode( static_cast<CXSLDungeon::DUNGEON_MODE>(kPacket_.m_kAutoPartyInfo.m_cDungeonMode) ) == false )
 	{
-		START_LOG( cerr, L"비정상적인 HenirDungeonMode값입니다." )
+		START_LOG( cerr, L"Invalid HenirDungeonMode value." )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( kPacket_.m_kAutoPartyInfo.m_iDungeonID )
 			<< BUILD_LOG( (int)kPacket_.m_kAutoPartyInfo.m_cDungeonMode )
@@ -473,7 +473,7 @@ _IMPL_ON_FUNC( EGB_AUTO_PARTY_CLOSE_NOT, KEGS_AUTO_PARTY_CLOSE_NOT )
 
 	if( m_kUserDungeonManager.GetAutoPartyUID() == 0 )
 	{
-		START_LOG( cerr, L"원래부터 자동 파티된 유저가 아닌데 왔다?" )
+		START_LOG( cerr, L"Received this for a user who was never in an auto-party?" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
@@ -498,7 +498,7 @@ IMPL_ON_FUNC( EGB_GET_REGROUP_PARTY_INFO_REQ )
 
 	if( m_kUserDungeonManager.GetAutoPartyUID() == 0  ||  m_kUserDungeonManager.GetAutoPartyUID() != kPacket_.m_iAutoPartyUID )
 	{
-		START_LOG( cerr, L"현재 자동 파티에 등록된 상태가 아닌데 파티 재배치에 대한 응답을 하려고 한다!" )
+		START_LOG( cerr, L"Attempted to respond to a party rearrangement while not registered in auto-party!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
@@ -542,7 +542,7 @@ _IMPL_ON_FUNC( EGB_REGROUP_PARTY_FOR_AUTO_PARTY_DUNGEON_GAME_REQ, KEPM_REGROUP_P
 
 	if( m_kUserDungeonManager.GetAutoPartyUID() == 0  ||  m_kUserDungeonManager.GetAutoPartyUID() != kPacket_.m_iAutoPartyUID )
 	{
-		START_LOG( cerr, L"현재 자동 파티에 등록된 상태가 아닌데 파티 재배치에 대한 응답을 하려고 한다!" )
+		START_LOG( cerr, L"Attempted to respond to a party rearrangement while not registered in auto-party!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
@@ -559,7 +559,7 @@ _IMPL_ON_FUNC( EGB_REGROUP_PARTY_FOR_AUTO_PARTY_DUNGEON_GAME_REQ, KEPM_REGROUP_P
 
 	if( GetPartyUID() > 0  ||  GetCandidatePartyUID() > 0 )
 	{
-		START_LOG( cerr, L"지금 시점에는 파티 소속이 되면 안된다! 절대 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"The user must not be in a party at this point; this should never happen!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
@@ -620,7 +620,7 @@ _IMPL_ON_FUNC( EGB_REGROUP_PARTY_FOR_AUTO_PARTY_DUNGEON_GAME_REQ, KEPM_REGROUP_P
 
 			default:
 				{
-					START_LOG( cerr, L"잘못된 상태값입니다!" )
+					START_LOG( cerr, L"Invalid state value!" )
 						<< BUILD_LOG( GetCharUID() )
 						<< END_LOG;
 
@@ -647,7 +647,7 @@ _IMPL_ON_FUNC( EPM_REGROUP_PARTY_FOR_AUTO_PARTY_DUNGEON_GAME_ACK, KEPM_REGROUP_P
 
 	if( m_kUserDungeonManager.GetAutoPartyUID() == 0  ||  m_kUserDungeonManager.GetAutoPartyUID() != kPacket_.m_iAutoPartyUID )
 	{
-		START_LOG( cerr, L"현재 자동 파티에 등록된 상태가 아닌데 파티 재배치에 대한 응답을 하려고 한다!" )
+		START_LOG( cerr, L"Attempted to respond to a party rearrangement while not registered in auto-party!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
@@ -665,7 +665,7 @@ _IMPL_ON_FUNC( EPM_REGROUP_PARTY_NOT, KEGS_REGROUP_PARTY_NOT )
 
 	if( GetPartyUID() != 0  &&  GetPartyUID() != kPacket_.m_kPartyInfo.m_iPartyUID )
 	{
-		START_LOG( cerr, L"다른 파티 소속인데 이 패킷을 이 시점에 받다니.. 뭔가 문제가 있다!" )
+		START_LOG( cerr, L"Received this packet at this point while belonging to another party; something is wrong!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
@@ -676,7 +676,7 @@ _IMPL_ON_FUNC( EPM_REGROUP_PARTY_NOT, KEGS_REGROUP_PARTY_NOT )
 
 	if( GetCandidatePartyUID() != 0  &&  GetCandidatePartyUID() != kPacket_.m_kPartyInfo.m_iPartyUID )
 	{
-		START_LOG( cerr, L"다른 파티에 가입 신청 상태인데 이 패킷을 이 시점에 받다니.. 뭔가 문제가 있다!" )
+		START_LOG( cerr, L"Received this packet while applying to join another party; something is wrong!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
@@ -723,7 +723,7 @@ IMPL_ON_FUNC( EPM_LEAVE_PARTY_BY_AUTO_PARTY_NOT )
 	//{{ 2010. 03. 29  최육사	파티 이탈 예외
 	if( GetPartyUID() == 0 )
 	{
-		START_LOG( cerr, L"이탈 요청한 이후에 현재 PartyUID가 0이다! 절대로 있을수 없는 에러!" )
+		START_LOG( cerr, L"The current PartyUID is zero after a leave request; this should never happen!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetPartyUID() )
 			<< BUILD_LOG( kPacket_.m_iPartyUID )
@@ -733,7 +733,7 @@ IMPL_ON_FUNC( EPM_LEAVE_PARTY_BY_AUTO_PARTY_NOT )
 	{
 		if( GetPartyUID() != kPacket_.m_iPartyUID )
 		{
-			START_LOG( cerr, L"이탈요청한 PartyUID와 현재 PartyUID가 다르다! 절대로 있을수 없는 에러!" )
+			START_LOG( cerr, L"The PartyUID in the leave request does not match the current PartyUID; this should never happen!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( GetPartyUID() )
 				<< BUILD_LOG( kPacket_.m_iPartyUID )
@@ -763,7 +763,7 @@ _IMPL_ON_FUNC( EPM_PREPARE_FOR_REGROUP_PARTY_AND_CHECK_NEW_HOST_NOT, KEPM_REQUES
 
 	if( m_kUserDungeonManager.GetAutoPartyUID() != 0 )
 	{
-		START_LOG( cerr, L"현재 자동 파티에 등록된 상태인데 파티 재결합을 시도하려고 한다!" )
+		START_LOG( cerr, L"Attempted to rejoin a party while already registered for auto-party!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
@@ -774,7 +774,7 @@ _IMPL_ON_FUNC( EPM_PREPARE_FOR_REGROUP_PARTY_AND_CHECK_NEW_HOST_NOT, KEPM_REQUES
 
 	if( GetPartyUID() > 0  ||  GetCandidatePartyUID() > 0 )
 	{
-		START_LOG( cerr, L"지금 시점에는 파티 소속이 되면 안된다! 절대 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"The user must not be in a party at this point; this should never happen!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )

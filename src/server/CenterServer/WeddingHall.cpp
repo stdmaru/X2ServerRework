@@ -113,7 +113,7 @@ void KWeddingHall::SetRoomInfo( const KRoomInfo& kInfo )
 
 	if( kInfo.m_cGetItemType <= CXSLRoom::DGIT_NONE || kInfo.m_cGetItemType >= CXSLRoom::DGIT_END )
 	{
-		START_LOG( cwarn, L"던전게임 아이템 습득타입이 잘못되었음.!" )
+		START_LOG( cwarn, L"Invalid dungeon item-acquisition type!" )
 			<< BUILD_LOGc( m_cGetItemType )
 			<< BUILD_LOGc( kInfo.m_cGetItemType )
 			<< BUILD_LOGc( kInfo.m_iDungeonID )
@@ -153,7 +153,7 @@ void KWeddingHall::ProcessNativeEvent( const KEventPtr& spEvent_ )
 	_CASE( ERM_SQUARE_UNIT_SYNC_DATA_REQ, KEGS_SQUARE_UNIT_SYNC_DATA_REQ );
 	_CASE( ERM_CHECK_INVALID_USER_NOT, UidType );
     default:
-        START_LOG( cerr, L"이벤트 핸들러가 정의되지 않았음 - " << spEvent_->GetIDStr() )
+        START_LOG( cerr, L"Event handler is not defined - " << spEvent_->GetIDStr() )
             << BUILD_LOG( spEvent_->m_usEventID );
     }
 }
@@ -169,7 +169,7 @@ void KWeddingHall::StartGame()
     const int iPlayingUserCount = m_spUserManager->GetNumPlaying();
     if( iPlayingUserCount < 1 || iPlayingUserCount > m_spUserManager->GetMaxSlot() )
     {
-        START_LOG( cerr, L"플레이 중인 유저 수가 이상함." )
+        START_LOG( cerr, L"Invalid number of users in play." )
             << BUILD_LOG( iPlayingUserCount )
             << END_LOG;
     }
@@ -215,7 +215,7 @@ void KWeddingHall::HandleTimeOutUser( std::map< UidType, UidType >& mapUserCIDNG
 		KRoomUserPtr spRoomUser = m_spUserManager->GetUser( mit->first );
 		if( spRoomUser == NULL )
 		{
-			START_LOG( cerr, L"해당 유저가 존재하지 않습니다!" )
+			START_LOG( cerr, L"The specified user does not exist!" )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -225,7 +225,7 @@ void KWeddingHall::HandleTimeOutUser( std::map< UidType, UidType >& mapUserCIDNG
 
 		if( !m_spUserManager->LeaveRoom( mit->first ) )
 		{
-			START_LOG( cerr, L"방 나가기 실패." )
+			START_LOG( cerr, L"Failed to leave room." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 		}
@@ -243,7 +243,7 @@ void KWeddingHall::HandleTimeOutUser( std::map< UidType, UidType >& mapUserCIDNG
 
 	if( GetStateID() == KRoomFSM::S_LOAD  ||  GetStateID() == KRoomFSM::S_RESULT )
 	{
-		START_LOG( cerr, L"배틀필드에서는 사용하지 않는 상태입니다!" )
+		START_LOG( cerr, L"This state is not used in the Battlefield!" )
 			<< BUILD_LOG( GetStateIDString() )
 			<< BUILD_LOG( mapUserCIDNGS.size() )
 			<< END_LOG;
@@ -260,7 +260,7 @@ void KWeddingHall::HandleTimeOutUser( std::map< UidType, UidType >& mapUserCIDNG
 
 void KWeddingHall::DeleteZombie( std::vector<UidType>& vecZombieUnit )
 {
-	START_LOG( cout2, L"[알림] 배틀필드 좀비 유저 삭제!" )
+	START_LOG( cout2, L"[Notice] Removing a zombie user from the Battlefield!" )
 		<< BUILD_LOG( vecZombieUnit.size() );
 
 	for( const UidType iUnitUID : vecZombieUnit )
@@ -268,7 +268,7 @@ void KWeddingHall::DeleteZombie( std::vector<UidType>& vecZombieUnit )
 		KRoomUserPtr spUser = m_spUserManager->GetUser( iUnitUID );
 		if( IS_NOT_NULL( spUser ) )
 		{
-			START_LOG( cout2, L"[알림] 배틀필드 좀비 유저 삭제!" )
+			START_LOG( cout2, L"[Notice] Removing a zombie user from the Battlefield!" )
 				<< BUILD_LOG( spUser->GetNickName() )
 				<< BUILD_LOG( spUser->IsHost() );
 
@@ -278,14 +278,14 @@ void KWeddingHall::DeleteZombie( std::vector<UidType>& vecZombieUnit )
 		}
 		else
 		{
-			START_LOG( cerr, L"룸유저 포인터 이상.!" )
+			START_LOG( cerr, L"Invalid room user pointer!" )
 				<< BUILD_LOG( iUnitUID )
 				<< END_LOG;
 		}
 
 		if( m_spUserManager->LeaveRoom( iUnitUID ) == false )
 		{
-			START_LOG( cerr, L"좀비 유저 방 나가기 실패." )
+			START_LOG( cerr, L"Failed to remove zombie user from room." )
 				<< BUILD_LOG( GetStateIDString() )
 				<< BUILD_LOG( vecZombieUnit.size() )
 				<< BUILD_LOG( iUnitUID )
@@ -343,7 +343,7 @@ void KWeddingHall::CloseRoom()
 	// 초기화 하기 전에 검사 한번만~
 	if( m_spUserManager->GetNumMember() != 0 )
 	{
-		START_LOG( cout, L"[경고] 결혼식장을 닫을려고 하는데 삭제되어있어야할 정보가 아직 살아있다! 이래서 버그가.." )
+		START_LOG( cout, L"[Warning] Data that should have been deleted is still present while closing the wedding hall; this may cause bugs." )
 			<< BUILD_LOG( m_spUserManager->GetNumMember() )
 			<< END_LOG;
 	}
@@ -379,7 +379,7 @@ void KWeddingHall::OnLeaveRoom( IN const UidType iLAST_SENDER_UID, IN const UidT
 	KRoom::OnLeaveRoom( iLAST_SENDER_UID, iFIRST_SENDER_UID, kPacket_, usEventIDAck );
 
 	//=== 게임중 이탈 결과처리 ===
-	START_LOG( clog, L"=== WEDDING HALL : 결혼식장을 이탈한다고 페널티를 주지 않습니다. ===" )
+	START_LOG( clog, L"=== WEDDING HALL: Leaving does not incur a penalty. ===" )
 		<< BUILD_LOG( iFIRST_SENDER_UID )
 		<< END_LOG;
 
@@ -393,7 +393,7 @@ void KWeddingHall::OnLeaveRoom( IN const UidType iLAST_SENDER_UID, IN const UidT
 	KRoomUserPtr spRoomUser = m_spUserManager->GetUser( iFIRST_SENDER_UID );
 	if( spRoomUser == NULL )
 	{
-		START_LOG( cerr, L"유저를 찾을 수 없습니다!" )
+		START_LOG( cerr, L"User not found!" )
 			<< BUILD_LOG( iFIRST_SENDER_UID )
 			<< END_LOG;
 		return;
@@ -437,7 +437,7 @@ void KWeddingHall::OnLeaveRoom( IN const UidType iLAST_SENDER_UID, IN const UidT
 
 	if( GetStateID() == KRoomFSM::S_LOAD )
 	{
-		START_LOG( cerr, L"결혼식장에서는 로딩 상태를 쓰지 않습니다!" )
+		START_LOG( cerr, L"Loading state is not used in the wedding hall!" )
 			<< BUILD_LOG( iFIRST_SENDER_UID )
 			<< END_LOG;
 	}
@@ -484,7 +484,7 @@ bool KWeddingHall::CheckWeddingHallInfo( KWeddingHallInfo& kWeddingInfo )
 {
 	if( m_kHallInfo.m_iWeddingUID != kWeddingInfo.m_iWeddingUID )
 	{
-		 START_LOG( cerr, L"결혼식장 UID 값이 다릅니다." )
+		 START_LOG( cerr, L"Wedding hall UID does not match." )
 			 << BUILD_LOG( m_kHallInfo.m_iWeddingUID )
 			 << BUILD_LOG( kWeddingInfo.m_iWeddingUID )
 			 << END_LOG;
@@ -494,7 +494,7 @@ bool KWeddingHall::CheckWeddingHallInfo( KWeddingHallInfo& kWeddingInfo )
 
 	if( m_kHallInfo.m_bSuccess == true )
 	{
-		START_LOG( cerr, L"결혼식이 완료된 방입니다." )
+		START_LOG( cerr, L"The wedding room is already complete." )
 			<< BUILD_LOG( m_kHallInfo.m_iWeddingUID )
 			<< BUILD_LOG( m_kHallInfo.m_bSuccess )
 			<< END_LOG;
@@ -538,7 +538,7 @@ IMPL_ON_FUNC( ERM_OPEN_WEDDING_HALL_REQ )
     // 슬롯에 생성 요청자를 넣는다.
     if( m_spUserManager->EnterRoom( kPacket_.m_kRoomUserInfo, false ) == false )
     {
-        START_LOG( cerr, L"방 입장 실패. 배틀필드를 생성하는것인데 여기서 실패가 났다! 절대 일어나서는 안되는 문제!" )
+        START_LOG( cerr, L"Failed to enter room while creating a Battlefield; this should never happen!" )
             << BUILD_LOG( FIRST_SENDER_UID )
             << BUILD_LOG( GetUID() )
 			<< BUILD_LOG( NetError::GetLastErrMsg() )
@@ -611,7 +611,7 @@ IMPL_ON_FUNC( ERM_JOIN_WEDDING_HALL_REQ )
 	// 제대로 찾아 왔는지 보자!
 	if( CheckWeddingHallInfo( kPacket_.m_kWeddingInfo ) == false )
 	{
-		START_LOG( cerr, L"결혼식장에 입장했다! 헐 버그다!" )
+		START_LOG( cerr, L"Entered a wedding hall unexpectedly; possible bug!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetWeddingHallUID() )
@@ -625,7 +625,7 @@ IMPL_ON_FUNC( ERM_JOIN_WEDDING_HALL_REQ )
 	// 배틀필드에 입장 처리 한다!
 	if( m_spUserManager->EnterRoom( kPacket_.m_kRoomUserInfo, false ) == false )
 	{
-		START_LOG( cerr, L"결혼식장 입장 실패." )
+		START_LOG( cerr, L"Failed to enter wedding hall." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( NetError::GetLastErrMsg() )
@@ -653,7 +653,7 @@ IMPL_ON_FUNC( ERM_JOIN_WEDDING_HALL_REQ )
 	// 해당 유저는 바로 게임 시작 처리 하자!
 	if( m_spUserManager->StartPlay( kPacket_.m_kRoomUserInfo.m_nUnitUID ) == false )
 	{
-		START_LOG( cerr, L"게임 시작 처리 실패!" )
+		START_LOG( cerr, L"Failed to start the game!" )
 			<< BUILD_LOG( kPacket_.m_kRoomUserInfo.m_nUnitUID )
 			<< BUILD_LOG( GetUID() )
 			<< END_LOG;
@@ -931,7 +931,7 @@ _IMPL_ON_FUNC( ERM_CHECK_INVALID_USER_NOT, UidType )
 
 	if( GetStateID() == KRoomFSM::S_LOAD  ||  GetStateID() == KRoomFSM::S_RESULT )
 	{
-		START_LOG( cerr, L"결혼에서는 사용하지 않는 상태입니다!" )
+		START_LOG( cerr, L"This state is not used for weddings!" )
 			<< BUILD_LOG( GetStateIDString() )
 			<< BUILD_LOG( iCount )
 			<< END_LOG;

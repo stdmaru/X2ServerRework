@@ -238,7 +238,7 @@ IMPL_ON_FUNC_NOPARAM( EGS_DUNGEON_SECRET_STAGE_ENTER_CHECK_REQ )
 
 	if( GetPartyUID() <= 0 )
 	{
-		START_LOG( cerr, L"partyuid값이 이상하다! 절대 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"Invalid partyuid; this should never happen!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetPartyUID() )
 			<< BUILD_LOG( GetRoomUID() )
@@ -254,7 +254,7 @@ IMPL_ON_FUNC_NOPARAM( EGS_DUNGEON_SECRET_STAGE_ENTER_CHECK_REQ )
 	if( SiKPartyListManager()->E_DungeonSecretStageEnterCheck( GetThisPtr<KGSUser>() ) == false )
 	//}}
 	{
-		START_LOG( cerr, L"비밀 스테이지 입장 조건 체크 실패" )
+		START_LOG( cerr, L"Failed to check secret-stage entry requirements." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetPartyUID() )
 			<< END_LOG;
@@ -338,7 +338,7 @@ _IMPL_ON_FUNC( ERM_END_GAME_DUNGEON_RESULT_DATA_NOT, KEGS_END_GAME_DUNGEON_RESUL
 	// RoomType 검사
 	if( CXSLRoom::GetRoomType( GetRoomUID() ) != CXSLRoom::RT_DUNGEON )
 	{
-		START_LOG( cerr, L"RoomType이 던전이 아닌데 던전결과창 정보가 내려왔다?" )
+		START_LOG( cerr, L"Received dungeon results even though the RoomType is not a dungeon." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetRoomUID() )
 			<< BUILD_LOG( CXSLRoom::GetRoomType( GetRoomUID() ) )
@@ -686,7 +686,7 @@ IMPL_ON_FUNC( ERM_UPDATE_DUNGEON_UNIT_INFO_NOT )
 						break;
 
 					default:
-						START_LOG( cerr, "난이도 정보가 이상합니다!" )
+						START_LOG( cerr, "Invalid difficulty information!" )
 							<< BUILD_LOG( kPacket_.m_iDungeonID )
 							<< BUILD_LOG( iDifficulty )
 							<< END_LOG;
@@ -743,7 +743,7 @@ IMPL_ON_FUNC( ERM_UPDATE_DUNGEON_UNIT_INFO_NOT )
 		}
 		else
 		{
-			START_LOG( cerr, L"랭킹정보가 이상하다? 일어나서는 안되는 에러!" )
+			START_LOG( cerr, L"Invalid ranking information; this should never happen!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( kPacket_.m_kHenirRankingInfo.size() )
 				<< END_LOG;
@@ -813,7 +813,7 @@ IMPL_ON_FUNC( ERM_UPDATE_DUNGEON_UNIT_INFO_NOT )
 			int iItemID = mitResultItem->first;
 			KItemInfo kItemInfo = mitResultItem->second;
 
-			START_LOG( clog, L"소모되는 아이템" )
+			START_LOG( clog, L"Item being consumed" )
 				<< BUILD_LOG( iItemID )
 				<< BUILD_LOG( kItemInfo.m_iQuantity );
 
@@ -968,7 +968,7 @@ IMPL_ON_FUNC( EGS_RESURRECT_TO_CONTINUE_DUNGEON_REQ )
 	if( IsHenirDungeonChallengeMode() )
 	{
 		// 헤니르 시공에서 도전모드는 부활석 사용 불가!
-		START_LOG( cerr, L"클라이언트에서 도전모드인지 체크했을텐데.." )
+		START_LOG( cerr, L"The client should have checked whether this is challenge mode." )
 			<< BUILD_LOG( GetCharUID() )
 			<< END_LOG;
 
@@ -998,7 +998,7 @@ IMPL_ON_FUNC( EGS_RESURRECT_TO_CONTINUE_DUNGEON_REQ )
 		//{{ 2011. 10. 12	최육사	컨텐츠 관리자
 		if( SiKGSContentManager()->IsEnableCashShop() == false )
 		{
-			START_LOG( clog, L"캐쉬샵 점검중 캐쉬 부활석 사용 요청" )
+			START_LOG( clog, L"Cash resurrection stone use requested while cash shop is under maintenance" )
 				<< BUILD_LOG( GetName() );
 
 			KEGS_RESURRECT_TO_CONTINUE_DUNGEON_ACK kPacketAck;
@@ -1030,7 +1030,7 @@ IMPL_ON_FUNC( EGS_RESURRECT_TO_CONTINUE_DUNGEON_REQ )
 		KBillProductInfo kBillProductInfo;
 		if( !SiKBillManager()->GetProductInfo( ciResurrectionStoneID, kBillProductInfo ) )
 		{
-			START_LOG( cerr, L"실시간 부활석 상품 정보 추출 실패." )
+			START_LOG( cerr, L"Failed to retrieve the real-time resurrection stone product information." )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( GetCharName() )
 				<< END_LOG;
@@ -1114,7 +1114,7 @@ IMPL_ON_FUNC( EGS_RESURRECT_TO_CONTINUE_DUNGEON_ACK )
 		//{{ 2009. 10. 14  최육사	자동결제 부활석
 		if( m_iNumResurrectionStone <= 0  &&  m_iNumAutoPaymentResStone <= 0 )
 		{
-			START_LOG( cerr, L"소환석 부족. 이미 이전에 확인한 내용이기 때문에 이런 상황이 벌어지면 안된다." )
+			START_LOG( cerr, L"Not enough summoning stones; this was already checked and should never happen." )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( m_iNumResurrectionStone )
 				<< BUILD_LOG( m_iNumAutoPaymentResStone )
@@ -1285,7 +1285,7 @@ IMPL_ON_FUNC( ERM_DUNGEON_USER_STATISTICS_NOT )
 		break;
 
 	default:
-		START_LOG( cerr, L"이런 결과 타입은 없음." )
+		START_LOG( cerr, L"This result type does not exist." )
 			<< BUILD_LOGc( kPacket_.m_cGameResult )
 			<< END_LOG;
 		break;
@@ -1340,7 +1340,7 @@ IMPL_ON_FUNC( ERM_TC_USER_STATISTICS_NOT )
 		break;
 
 	default:
-		START_LOG( cerr, L"이런 결과 타입은 없음." )
+		START_LOG( cerr, L"This result type does not exist." )
 			<< BUILD_LOGc( kPacket_.m_cGameResult )
 			<< END_LOG;
 		break;
@@ -1354,7 +1354,7 @@ IMPL_ON_FUNC( EGS_WORLD_TRIGGER_RELOCATION_REQ )
 
 	if( GetRoomUID() == 0 )
 	{
-		START_LOG( cerr, L"방 상태인데 RoomUID가 없네? 이상하다." )
+		START_LOG( cerr, L"The user is in a room state, but has no RoomUID." )
 			<< BUILD_LOG( GetCharUID() )
 			<< END_LOG;
 
@@ -1390,7 +1390,7 @@ IMPL_ON_FUNC( EGS_BAD_ATTITUDE_USER_CHECK_INFO_NOT )
 
 	if( GetRoomUID() == 0 )
 	{
-		START_LOG( cerr, L"방 상태인데 RoomUID가 없네? 이상하다." )
+		START_LOG( cerr, L"The user is in a room state, but has no RoomUID." )
 			<< BUILD_LOG( GetCharUID() )
 			<< END_LOG;
 		return;
@@ -1417,7 +1417,7 @@ IMPL_ON_FUNC( EGS_FORCED_EXIT_VOTE_REQ )
 
 	if( GetRoomUID() == 0 )
 	{
-		START_LOG( cerr, L"방 상태인데 RoomUID가 없네? 이상하다." )
+		START_LOG( cerr, L"The user is in a room state, but has no RoomUID." )
 			<< BUILD_LOG( GetCharUID() )
 			<< END_LOG;
 		return;
@@ -1432,7 +1432,7 @@ IMPL_ON_FUNC( EGS_DEFENCE_DUNGEON_WAVE_ID_NOT )
 
 	if( GetRoomUID() == 0 )
 	{
-		START_LOG( cerr, L"방 상태인데 RoomUID가 없네? 이상하다." )
+		START_LOG( cerr, L"The user is in a room state, but has no RoomUID." )
 			<< BUILD_LOG( GetCharUID() )
 			<< END_LOG;
 		return;
@@ -1469,7 +1469,7 @@ IMPL_ON_FUNC( ERM_PREPARE_FOR_DEFENCE_DUNGEON_REQ )
 	//////////////////////////////////////////////////////////////////////////
 	if( GetRoomUID() == 0 )
 	{
-		START_LOG( cerr, L"현재 방에 입장한 상태가 아닙니다!" )
+		START_LOG( cerr, L"The user is not currently in a room!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
@@ -1478,7 +1478,7 @@ IMPL_ON_FUNC( ERM_PREPARE_FOR_DEFENCE_DUNGEON_REQ )
 
 	if( CXSLRoom::GetRoomType( GetRoomUID() ) != CXSLRoom::RT_DUNGEON )
 	{
-		START_LOG( cerr, L"현재 던전 방에 입장한 상태가 아닙니다!" )
+		START_LOG( cerr, L"The user is not currently in a dungeon room!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( GetRoomUID() )
@@ -1598,7 +1598,7 @@ IMPL_ON_FUNC( EGS_ENTER_DEFENCE_DUNGEON_POPUP_REPLY_NOT )
 	//////////////////////////////////////////////////////////////////////////
 	if( GetRoomUID() == 0 )
 	{
-		START_LOG( cerr, L"현재 방에 입장한 상태가 아닙니다!" )
+		START_LOG( cerr, L"The user is not currently in a room!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
@@ -1607,7 +1607,7 @@ IMPL_ON_FUNC( EGS_ENTER_DEFENCE_DUNGEON_POPUP_REPLY_NOT )
 
 	if( CXSLRoom::GetRoomType( GetRoomUID() ) != CXSLRoom::RT_DUNGEON )
 	{
-		START_LOG( cerr, L"현재 던전 방에 입장한 상태가 아닙니다!" )
+		START_LOG( cerr, L"The user is not currently in a dungeon room!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( GetRoomUID() )

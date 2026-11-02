@@ -30,7 +30,7 @@ bool KAutoPartyUserManager::Enter( IN const KAutoPartyUserInfo& kInfo )
 {
     if( IsExist( kInfo.m_iUnitUID ) == true )
 	{
-		START_LOG( cerr, L"이미 입장해 있는 유저입니다!" )
+		START_LOG( cerr, L"The user has already joined." )
 			<< BUILD_LOG( kInfo.m_iUnitUID )
 			<< END_LOG;
 		return false;
@@ -38,7 +38,7 @@ bool KAutoPartyUserManager::Enter( IN const KAutoPartyUserInfo& kInfo )
 
 	if( (int)( m_mapMember.size() + 1 )  > GetLimitPlayerCount() )
 	{
-		START_LOG( cerr, L"최대 입장 인원 제한에 걸렸습니다." )
+		START_LOG( cerr, L"The maximum number of members has been reached." )
 			<< BUILD_LOG( kInfo.m_iUnitUID )
 			<< BUILD_LOG( GetLimitPlayerCount() )
 			<< BUILD_LOG( m_mapMember.size() )
@@ -58,7 +58,7 @@ bool KAutoPartyUserManager::Enter( IN const std::vector< KAutoPartyUserInfo >& v
 
 	if( (int)( m_mapMember.size() + iAutoPartyReqMemberCount )  > GetLimitPlayerCount() )
 	{
-		START_LOG( cerr, L"최대 입장 인원 제한에 걸렸습니다." )
+		START_LOG( cerr, L"The maximum number of members has been reached." )
 			<< BUILD_LOG( GetLimitPlayerCount() )
 			<< BUILD_LOG( m_mapMember.size() )
 			<< BUILD_LOG( iAutoPartyReqMemberCount )
@@ -70,7 +70,7 @@ bool KAutoPartyUserManager::Enter( IN const std::vector< KAutoPartyUserInfo >& v
 	{
 		if( Enter( kInfo ) == false )
 		{
-			START_LOG( cerr, L"자동 파티 입장 처리 실패!" )
+			START_LOG( cerr, L"Failed to process the automatic party join." )
 				<< END_LOG;
 		}
 	}
@@ -88,7 +88,7 @@ KAutoPartyUserPtr KAutoPartyUserManager::GetUser( IN const UidType iUnitUID )
     mit = m_mapMember.find( iUnitUID );
     if( mit == m_mapMember.end() )
     {
-        START_LOG( cerr, L"존재하지 않는 유저." )
+        START_LOG( cerr, L"User does not exist." )
             << BUILD_LOG( iUnitUID )
             << END_LOG;
 
@@ -115,7 +115,7 @@ bool KAutoPartyUserManager::DeleteUser( IN const UidType iUnitUID )
     mit = m_mapMember.find( iUnitUID );
     if( mit == m_mapMember.end() )
     {
-        START_LOG( cerr, L"존재하지 않는 룸유저임." )
+        START_LOG( cerr, L"Room user does not exist." )
             << BUILD_LOG( iUnitUID )
             << END_LOG;
         return true;
@@ -135,7 +135,7 @@ bool KAutoPartyUserManager::Accept( IN const UidType iUnitUID )
 	KAutoPartyUserPtr spAutoPartyUser = GetUser( iUnitUID );
 	if( spAutoPartyUser == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 유저입니다!" )
+		START_LOG( cerr, L"User does not exist." )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 		return false;
@@ -151,7 +151,7 @@ bool KAutoPartyUserManager::IsAllPlayersAccept()
 	{
 		if( !mit->second )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room-user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			return false;
@@ -174,7 +174,7 @@ void KAutoPartyUserManager::ClearAllPlayerRegroupPartyInfo()
 		KAutoPartyUserPtr spAutoPartyUser = mit->second;
 		if( spAutoPartyUser == NULL )
 		{
-			START_LOG( cerr, L"매치 유저 포인터값이 이상합니다." )
+			START_LOG( cerr, L"Invalid match-user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -190,7 +190,7 @@ bool KAutoPartyUserManager::UpdateRegroupPartyInfo( IN const KPartyUserInfo& kPa
 	KAutoPartyUserPtr spAutoPartyUser = GetUser( kPartyUserInfo.m_iUnitUID );
 	if( spAutoPartyUser == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 유저입니다!" )
+		START_LOG( cerr, L"User does not exist." )
 			<< BUILD_LOG( kPartyUserInfo.m_iUnitUID )
 			<< END_LOG;
 		return false;
@@ -208,7 +208,7 @@ bool KAutoPartyUserManager::IsAllPlayersUpdatedRegroupPartyInfo()
 	{
 		if( !mit->second )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room-user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			return false;
@@ -238,7 +238,7 @@ bool KAutoPartyUserManager::GetRegroupPartyInfo( OUT std::vector< KRegroupPartyU
 		KAutoPartyUserPtr spAutoPartyUser = mit->second;
 		if( spAutoPartyUser == NULL )
 		{
-			START_LOG( cerr, L"자동 파티 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid automatic party user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			return false;
@@ -249,7 +249,7 @@ bool KAutoPartyUserManager::GetRegroupPartyInfo( OUT std::vector< KRegroupPartyU
 		// 파티 재결성을 위한 KPartyUserInfo
 		if( spAutoPartyUser->GetPartyUserInfo( kRegroupPartyUserInfo.m_kPartyUserInfo ) == false )
 		{
-			START_LOG( cerr, L"파티 유저 정보가 없다!" )
+			START_LOG( cerr, L"Party-user data is missing." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			return false;
@@ -258,7 +258,7 @@ bool KAutoPartyUserManager::GetRegroupPartyInfo( OUT std::vector< KRegroupPartyU
 		// 방에 입장하기 위한 KRoomUserInfo
 		if( spAutoPartyUser->GetPartyRoomUserInfo( kRegroupPartyUserInfo.m_kPartyRoomUserInfo ) == false )
 		{
-			START_LOG( cerr, L"룸 유저 정보가 없다!" )
+			START_LOG( cerr, L"Room-user data is missing." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			return false;
@@ -295,7 +295,7 @@ void KAutoPartyUserManager::GetAutoPartyCancelUserList( OUT std::vector< UidType
 	{
 		if( !mit->second )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room-user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;

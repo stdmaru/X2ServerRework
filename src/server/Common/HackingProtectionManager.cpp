@@ -49,7 +49,7 @@ void KHackingProtectionManager::UpdateHackingToolList( IN const KDBE_CHECK_HACKI
 	}
 	else if( m_iReleaseTick > kInfo.m_iReleaseTick )
 	{
-		START_LOG( cerr, L"ReleaseTick값이 더 작아졌다. 일어날수 없는 에러!" )
+		START_LOG( cerr, L"ReleaseTick decreased. This should never happen." )
 			<< BUILD_LOG( m_iReleaseTick )
 			<< BUILD_LOG( kInfo.m_iReleaseTick )
 			<< END_LOG;
@@ -64,7 +64,7 @@ void KHackingProtectionManager::UpdateHackingToolList( IN const KDBE_CHECK_HACKI
 	m_vecHackingToolList.clear();
 	m_vecHackingToolList = kInfo.m_vecHackingToolList;
 
-	START_LOG( cout, L"해킹 툴 리스트가 업데이트 되었습니다!" )
+	START_LOG( cout, L"Hacking tool list updated." )
 		<< BUILD_LOG( m_vecHackingToolList.size() );
 }
 

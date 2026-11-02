@@ -47,7 +47,7 @@ void KDungeonMonsterManager::IncreaseMonsterDieCount( IN const char cMonsterType
 	case CXSLUnitManager::MTF_MIDDLE_BOSS_NPC:	++m_kNpcDieCount.m_iMiddleBossDieCount;		break;
 	case CXSLUnitManager::MTF_BOSS_NPC:			++m_kNpcDieCount.m_iBossDieCount;			break;
 	default:
-		START_LOG( cerr, L"이상한 몬스터 타입 입니다!" )
+		START_LOG( cerr, L"Unexpected monster type!" )
 			<< BUILD_LOGc( cMonsterTypeFator )
 			<< END_LOG;
 		return;
@@ -79,7 +79,7 @@ bool KDungeonMonsterManager::InsertSubStageNpcList( IN const int iStageID, IN co
 	KSubStageKey kSubStageKey( iStageID, iSubStageID );
 	if( m_mapSubStageNpcInfo.find( kSubStageKey ) != m_mapSubStageNpcInfo.end() )
 	{
-		START_LOG( cerr, L"이미 등록된 서브 스테이지 등장 NPC정보가 있다?" )
+		START_LOG( cerr, L"Substage spawn NPC information is already registered." )
 			<< BUILD_LOG( iStageID )
 			<< BUILD_LOG( iSubStageID )
 			<< BUILD_LOG( m_mapSubStageNpcInfo.size() )
@@ -103,7 +103,7 @@ void KDungeonMonsterManager::GetSubStageNpcList( IN int iStageID, IN int iSubSta
 	mit = m_mapSubStageNpcInfo.find( kSubStageKey );
 	if( mit == m_mapSubStageNpcInfo.end() )
 	{
-		START_LOG( clog, L"Npc가 없는 스테이지입니다. 에러는 아님 - 나중에 clog 로 바꿔주자" )
+		START_LOG( clog, L"This stage has no NPCs; not an error. Change to clog later." )
 			<< BUILD_LOG( iStageID )
 			<< BUILD_LOG( iSubStageID )
 			<< END_LOG;
@@ -160,7 +160,7 @@ bool KDungeonMonsterManager::IsAllSubStageNpcDie( IN const int iStageID, IN cons
 	mit = m_mapSubStageNpcInfo.find( kSubStageKey );
 	if( mit == m_mapSubStageNpcInfo.end() )
 	{
-		START_LOG( cerr, L"Npc가 없는 스테이지인데 모든NPC 죽여달라고 요청패킷이 왔네? 해킹인가?" )
+		START_LOG( cerr, L"Received a request to kill all NPCs on a stage with no NPCs; possible hack attempt." )
 			<< BUILD_LOG( iStageID )
 			<< BUILD_LOG( iSubStageID )
 			<< END_LOG;
@@ -178,7 +178,7 @@ bool KDungeonMonsterManager::IsAllSubStageNpcDie( IN const int iStageID, IN cons
 			bool bIsDie = false;
 			if( IsExistMonster( iNpcUID, bIsDie ) == false )
 			{
-				START_LOG( cerr, L"일반 npc 리스트에 있던 NpcUID로 검사했더니 NPC_DATA는 없네?" )
+				START_LOG( cerr, L"NPC_DATA is missing for the NpcUID in the normal NPC list." )
 					<< BUILD_LOG( iStageID )
 					<< BUILD_LOG( iSubStageID )
 					<< BUILD_LOG( iNpcUID )
@@ -189,7 +189,7 @@ bool KDungeonMonsterManager::IsAllSubStageNpcDie( IN const int iStageID, IN cons
 			// npc가 죽지 않았다면?
 			if( bIsDie == false )
 			{
-				START_LOG( cerr, L"모든 npc가 죽지도 않았는데 모든 몬스터 죽여달라고 패킷이 왔네.. 해킹인가?" )
+				START_LOG( cerr, L"Received a kill-all-monsters request although not all NPCs are dead; possible hack attempt." )
 					<< BUILD_LOG( iStageID )
 					<< BUILD_LOG( iSubStageID )
 					<< BUILD_LOG( iNpcUID )
@@ -206,7 +206,7 @@ bool KDungeonMonsterManager::IsAllSubStageNpcDie( IN const int iStageID, IN cons
 			bool bIsDie = false;
 			if( IsExistMonster( iNpcUID, bIsDie ) == false )
 			{
-				START_LOG( cerr, L"보스 리스트에 있던 NpcUID로 검사했더니 NPC_DATA는 없네?" )
+				START_LOG( cerr, L"NPC_DATA is missing for the NpcUID in the boss list." )
 					<< BUILD_LOG( iStageID )
 					<< BUILD_LOG( iSubStageID )
 					<< BUILD_LOG( iNpcUID )
@@ -217,7 +217,7 @@ bool KDungeonMonsterManager::IsAllSubStageNpcDie( IN const int iStageID, IN cons
 			// 보스가 죽지 않았다면?
 			if( bIsDie == false )
 			{
-				START_LOG( cerr, L"보스가 죽지도 않았는데 모든 몬스터 죽여달라고 패킷이 왔네.. 해킹인가?" )
+				START_LOG( cerr, L"Received a kill-all-monsters request while the boss is still alive; possible hack attempt." )
 					<< BUILD_LOG( iStageID )
 					<< BUILD_LOG( iSubStageID )
 					<< BUILD_LOG( iNpcUID )

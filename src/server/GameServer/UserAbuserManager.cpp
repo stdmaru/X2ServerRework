@@ -79,7 +79,7 @@ void KUserAbuserManager::InitCharAbuser( IN KGSUserPtr spUser )
 {
 	if( spUser == NULL )
 	{
-		START_LOG( cerr, L"유저 포인터값이 이상합니다." )
+		START_LOG( cerr, L"Invalid user pointer." )
 			<< END_LOG;
 		return;
 	}
@@ -95,7 +95,7 @@ void KUserAbuserManager::RegEDAbuser( IN KGSUserPtr spUser )
 {
 	if( spUser == NULL )
 	{
-		START_LOG( cerr, L"유저 포인터값이 이상합니다." )
+		START_LOG( cerr, L"Invalid user pointer." )
 			<< END_LOG;
 		return;
 	}
@@ -110,7 +110,7 @@ void KUserAbuserManager::RegEDAbuser( IN KGSUserPtr spUser )
 		// 이제부터 넌 ED어뷰저다!
 		m_bIsCharAbuser[CAT_ED_ABUSER] = true;
 
-		START_LOG( cout, L"[알림] ED 감시 대상자로 등록되었습니다!" )
+		START_LOG( cout, L"[Notice] Added to the ED monitoring list!" )
 			<< BUILD_LOG( spUser->GetName() )
 			<< BUILD_LOG( spUser->GetCharName() );
 
@@ -125,7 +125,7 @@ void KUserAbuserManager::RegItemAbuser( IN KGSUserPtr spUser )
 {
 	if( spUser == NULL )
 	{
-		START_LOG( cerr, L"유저 포인터값이 이상합니다." )
+		START_LOG( cerr, L"Invalid user pointer." )
 			<< END_LOG;
 		return;
 	}
@@ -140,7 +140,7 @@ void KUserAbuserManager::RegItemAbuser( IN KGSUserPtr spUser )
 		// 이제부터 넌 아이템어뷰저다!
 		m_bIsCharAbuser[CAT_ITEM_ABUSER] = true;
 
-		START_LOG( cout, L"[알림] 아이템 감시 대상자로 등록되었습니다!" )
+		START_LOG( cout, L"[Notice] Added to the item monitoring list!" )
 			<< BUILD_LOG( spUser->GetName() )
 			<< BUILD_LOG( spUser->GetCharName() );
 
@@ -156,7 +156,7 @@ void KUserAbuserManager::RegPacketMornitoring( IN KGSUserPtr spUser )
 {
 	if( spUser == NULL )
 	{
-		START_LOG( cerr, L"유저 포인터값이 이상합니다." )
+		START_LOG( cerr, L"Invalid user pointer." )
 			<< END_LOG;
 		return;
 	}
@@ -171,7 +171,7 @@ void KUserAbuserManager::RegPacketMornitoring( IN KGSUserPtr spUser )
 		// 이제부터 넌 패킷 감시다!
 		m_bIsAccountAbuser[AT_MORNITORING_ABUSER] = true;
 
-		START_LOG( cout, L"[알림] 패킷 감시 대상자로 등록되었습니다!" )
+		START_LOG( cout, L"[Notice] Added to the packet monitoring list!" )
 			<< BUILD_LOG( spUser->GetName() )
 			<< BUILD_LOG( spUser->GetCharName() );
 
@@ -214,7 +214,7 @@ void KUserAbuserManager::CheckItemAbuser( IN KGSUserPtr spUser, IN const int iGe
 {
 	if( spUser == NULL )
 	{
-		START_LOG( cerr, L"유저 포인터값이 이상합니다." )
+		START_LOG( cerr, L"Invalid user pointer." )
 			<< END_LOG;
 		return;
 	}
@@ -242,7 +242,7 @@ void KUserAbuserManager::CheckEDAbuser( IN KGSUserPtr spUser, IN const int iGetE
 {
 	if( spUser == NULL )
 	{
-		START_LOG( cerr, L"유저 포인터값이 이상합니다." )
+		START_LOG( cerr, L"Invalid user pointer." )
 			<< END_LOG;
 		return;
 	}
@@ -400,7 +400,7 @@ void KUserAbuserManager::IncreaseGetItemCount( IN KGSUserPtr spUser, IN int iCou
 		{
 			//m_bIsAccountAbuser[AT_MORNITORING_ABUSER] = true;
 
-			START_LOG( cout, L"아이템 획득 카운트가 5000개를 넘어서 해킹 의심 유저로 체크함!" )
+			START_LOG( cout, L"Item acquisition count exceeded 5,000; marking user as suspected of hacking!" )
 				<< BUILD_LOG( spUser->GetName() )
 				<< BUILD_LOG( spUser->GetUID() )
 				<< BUILD_LOGc( spUser->GetAuthLevel() )
@@ -472,7 +472,7 @@ bool KUserAbuserManager::IsAutoHackLevelUpUser( IN u_char ucCurrentCharLevel
 	{
 		std::wstring wstrLevelUpTime = (const wchar_t*)m_tLastLevelUpTime.Format(_T("%Y-%m-%d %H:%M:%S"));
 
-		START_LOG( cout, L"오토핵 의심 유저 발견! 캐릭터가 레벨업한 시간 간격이 1분 미만입니다!" )
+		START_LOG( cout, L"User suspected of an auto-leveling hack: character leveled up less than one minute after the previous level!" )
 			<< BUILD_LOG( wstrLevelUpTime );
 		return true;
 	}

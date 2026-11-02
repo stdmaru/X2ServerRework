@@ -53,7 +53,7 @@ bool KDungeonEventManager::CheckTimeDropEventMonster( IN int iDungeonID, IN int 
 	// 등장하는 몬스터가 한마리도 없으면 이벤트 몬스터도 출현시키지 않는다.
 	if( kNot.m_mapNPCData.size() <= 0 )
 	{
-		START_LOG( cerr, L"이벤트 몬스터 출현 결정중 몬스터 정보가 없다?" )
+		START_LOG( cerr, L"Monster information is missing while determining event monster spawns." )
 			<< BUILD_LOG( iStageID )
 			<< BUILD_LOG( kNot.m_mapNPCData.size() )
 			<< END_LOG;

@@ -47,7 +47,7 @@ void KChannelManager::Tick()
 			{
 				m_fMaxWaitingTime = fWaitingTime;
 
-				START_LOG( cout, L"채널이동예약시간이 15초가 넘게 걸림 WaitingTime : " << m_fMaxWaitingTime );
+				START_LOG( cout, L"Channel transfer reservation took over 15 seconds. WaitingTime: " << m_fMaxWaitingTime );
 			}
 		}
 	}
@@ -87,7 +87,7 @@ void KChannelManager::Init( int iServerGroupID, int iChannelID, const KChannelBo
 	m_iServerGroupID = iServerGroupID;
 	m_iGameServChannelID = iChannelID;
 
-	START_LOG( cout, L"게임서버 채널ID 설정 완료!" )
+	START_LOG( cout, L"GameServer channel ID configured!" )
 		<< BUILD_LOG( m_iServerGroupID )
 		<< BUILD_LOG( m_iGameServChannelID );
 
@@ -95,7 +95,7 @@ void KChannelManager::Init( int iServerGroupID, int iChannelID, const KChannelBo
 	{
 		m_kBonusInfo = kInfo;
 
-		START_LOG( cout, L"게임서버 채널 보너스 적용!" )
+		START_LOG( cout, L"Applied the GameServer channel bonus!" )
 			<< BUILD_LOG( m_kBonusInfo.m_iBeginLv )
 			<< BUILD_LOG( m_kBonusInfo.m_iEndLv )
 			<< BUILD_LOG( m_kBonusInfo.m_iPerExp )
@@ -129,7 +129,7 @@ void KChannelManager::UpdateChannelList( const std::map< int, KChannelInfo >& ma
 
 			if( GetMaxUser() != mit->second.m_iMaxUser )
 			{
-				START_LOG( cout, L"채널 최대 접속 인원 설정이 변경되었습니다!" )
+				START_LOG( cout, L"The channel maximum-user setting has changed!" )
 					<< BUILD_LOG( iServerUID )
 					<< BUILD_LOG( GetMaxUser() )
 					<< BUILD_LOG( mit->second.m_iMaxUser );
@@ -161,7 +161,7 @@ void KChannelManager::UpdateChannelList( const std::map< int, KChannelInfo >& ma
 	//{{ 2011. 12. 16	최육사	동접 최대 인원 실시간 적용
 	if( bUpdatedMaxUser == false )
 	{
-		START_LOG( cerr, L"채널리스트에 현재 채널 정보가 없습니다!" )
+		START_LOG( cerr, L"The current channel is missing from the channel list!" )
 			<< BUILD_LOG( iServerUID )
 			<< BUILD_LOG( mapChannelList.size() )
 			<< END_LOG;
@@ -202,7 +202,7 @@ void KChannelManager::UpdateChannelBonusList( const std::map< int, KChannelBonus
 
 	if( mit == mapChannelBonusList.end() )
 	{
-		START_LOG(cerr, L"게임서버 채널 보너스 변경 할수가 없다")
+		START_LOG(cerr, L"Cannot change the GameServer channel bonus.")
 			<< BUILD_LOG( m_iGameServChannelID )
 			<< BUILD_LOG( m_mapChannelBonusList.size() )
 			<< END_LOG;
@@ -240,7 +240,7 @@ bool KChannelManager::NewChannelChangeUser( UidType iUnitUID, const KChannelChan
 {
 	if( IsExistChannelChangeUser( iUnitUID ) )
 	{
-		START_LOG( cerr, L"이미 채널이동 예약이 되어있는 유저임" )
+		START_LOG( cerr, L"User already has a channel transfer scheduled." )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 
@@ -257,7 +257,7 @@ bool KChannelManager::DelChannelChangeUser( UidType iUnitUID, KChannelChangeInfo
 	std::map< UidType, KChannelChangeUserInfo >::iterator mit = m_mapChannelChangeUserList.find( iUnitUID );
 	if( mit == m_mapChannelChangeUserList.end() )
 	{
-		START_LOG( cerr, L"등록되지 않은 유저 정보를 삭제하려고 했습니다" )
+		START_LOG( cerr, L"Attempted to delete information for an unregistered user." )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 
@@ -272,7 +272,7 @@ bool KChannelManager::DelChannelChangeUser( UidType iUnitUID, KChannelChangeInfo
 		{
 			m_fMaxWaitingTime = fWaitingTime;
 
-			START_LOG( cout, L"채널이동시간이 5초가 넘음 최대시간 갱신 WaitingTime : " << m_fMaxWaitingTime );
+			START_LOG( cout, L"Channel transfer took over 5 seconds; updating maximum duration. WaitingTime: " << m_fMaxWaitingTime );
 		}
 	}
 

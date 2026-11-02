@@ -73,7 +73,7 @@ void CXSLPartyManager::SetActivateFeverPoint_LUA( int iFever )
 {
 	if( iFever < 0 )
 	{
-		START_LOG( cerr, L"스크립트 값이 이상합니다." )
+		START_LOG( cerr, L"Invalid script value." )
 			<< BUILD_LOG( iFever )
 			<< END_LOG;
 		return;
@@ -81,7 +81,7 @@ void CXSLPartyManager::SetActivateFeverPoint_LUA( int iFever )
 
 	m_iActivateFeverPoint = iFever;
 
-	START_LOG( cout, L"[파티] 피버 활성화 포인트" )
+	START_LOG( cout, L"[Party] Fever activation points: " )
 		<< BUILD_LOG( GetActivateFeverPoint() );
 }
 
@@ -89,14 +89,14 @@ bool CXSLPartyManager::SetMaxFeverPointByNumMember_LUA( int iNumMember, int iMax
 {
 	if( iNumMember < 0  ||  iMaxFever < 0 )
 	{
-		START_LOG( cerr, L"스크립트 값이 이상합니다." )
+		START_LOG( cerr, L"Invalid script value." )
 			<< BUILD_LOG( iNumMember )
 			<< BUILD_LOG( iMaxFever )
 			<< END_LOG;
 		return false;
 	}
 
-	START_LOG( cout, L"[파티] 파티 멤버 수별 최대 fever수치" )
+	START_LOG( cout, L"[Party] Maximum fever by party size: " )
 		<< BUILD_LOG( iNumMember )
 		<< BUILD_LOG( iMaxFever );
 
@@ -108,7 +108,7 @@ bool CXSLPartyManager::SetIncreasePartyFeverByNumMember_LUA( int iNumMember, int
 {
 	if( iNumMember < 0  ||  iMin < 0 || iMax < 0 )
 	{
-		START_LOG( cerr, L"스크립트 값이 이상합니다." )
+		START_LOG( cerr, L"Invalid script value." )
 			<< BUILD_LOG( iNumMember )
 			<< BUILD_LOG( iMin )
 			<< BUILD_LOG( iMax )
@@ -116,7 +116,7 @@ bool CXSLPartyManager::SetIncreasePartyFeverByNumMember_LUA( int iNumMember, int
 		return false;
 	}
 
-	START_LOG( cout, L"[파티] 파티 멤버 수별 fever증가 수치" )
+	START_LOG( cout, L"[Party] Fever increase by party size: " )
 		<< BUILD_LOG( iNumMember )
 		<< BUILD_LOG( iMin )
 		<< BUILD_LOG( iMax );
@@ -135,7 +135,7 @@ void CXSLPartyManager::SetDungeonSecretStageEnterFactor_LUA( float fBasePercent,
 {
 	if( fBasePercent < 0.f  ||  fPartyFeverFactor < 0.f )
 	{
-		START_LOG( cerr, L"스크립트 값이 이상합니다." )
+		START_LOG( cerr, L"Invalid script value." )
 			<< BUILD_LOG( fBasePercent )
 			<< BUILD_LOG( fPartyFeverFactor )
 			<< END_LOG;
@@ -145,7 +145,7 @@ void CXSLPartyManager::SetDungeonSecretStageEnterFactor_LUA( float fBasePercent,
 	m_fBasePercent = fBasePercent;
 	m_fPartyFeverFactor = fPartyFeverFactor;
 
-	START_LOG( cout, L"[파티] 헤니르 시공 비던 입장 상수값" )
+	START_LOG( cout, L"[Party] Henir and Secret Dungeon entry constants: " )
 		<< BUILD_LOG( fBasePercent )
 		<< BUILD_LOG( fPartyFeverFactor );
 }
@@ -180,7 +180,7 @@ short CXSLPartyManager::GetMaxFeverPointByNumMember( IN const short sPartyFever,
 	mit = m_mapMaxFeverPoint.find( iPartyNumMember );
 	if( mit == m_mapMaxFeverPoint.end() )
 	{
-		START_LOG( clog, L"정의 되어있지 않은 값은 0으로 처리!" )
+		START_LOG( clog, L"Undefined values are treated as zero." )
 			<< BUILD_LOG( iPartyNumMember )
 			<< BUILD_LOG( sPartyFever );
 		return 0;
@@ -199,7 +199,7 @@ int	CXSLPartyManager::GetIncreasePartyFever( IN const int iNumMember )
 	mit = m_mapIncreasePartyFever.find( iNumMember );
 	if( mit == m_mapIncreasePartyFever.end() )
 	{
-		START_LOG( clog, L"피버 상승 값이 없으므로 0을 반환!" )
+		START_LOG( clog, L"No fever increase value; returning zero." )
 			<< BUILD_LOG( iNumMember );
 		return 0;
 	}

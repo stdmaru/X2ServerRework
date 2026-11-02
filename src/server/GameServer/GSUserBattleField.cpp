@@ -38,7 +38,7 @@ IMPL_ON_FUNC( EGS_JOIN_BATTLE_FIELD_REQ )
 	// 배틀필드ID검증
 	if( SiCXSLBattleFieldManager()->IsExistBattleFieldID( static_cast<SEnum::BATTLE_FIELD_ID>(iBattleFieldID) ) == false )
 	{
-		START_LOG( cerr, L"유효하지 않은 배틀필드ID입니다!" )
+		START_LOG( cerr, L"Invalid battlefield ID!" )
 			<< BUILD_LOG( iBattleFieldID )
 			<< BUILD_LOG( iStartPosIndex )
 			<< BUILD_LOG( bMoveForMyParty )
@@ -108,7 +108,7 @@ IMPL_ON_FUNC( EGS_JOIN_BATTLE_FIELD_REQ )
 					UidType iJoinBFRoomUID = 0;
 					if( SiKBattleFieldListManager()->GetRoomUIDForJoinBattleField( iBattleFieldID, GetCharUID(), GetRoomUID(), GetPartyUID(), iJoinBFRoomUID ) == false )
 					{
-						START_LOG( clog, L"필드에 들어갈 수 없는 상태입니다." )
+						START_LOG( clog, L"The user is in a state that prevents field entry." )
 							<< BUILD_LOG( GetCharUID() )
 							<< BUILD_LOG( iBattleFieldID )
 							<< END_LOG;
@@ -137,7 +137,7 @@ IMPL_ON_FUNC( EGS_JOIN_BATTLE_FIELD_REQ )
 		case CXSLRoom::RT_SQUARE:
 		case CXSLRoom::RT_TRAININGCENTER:
 			{
-				START_LOG( cerr, L"해당 방에서 배틀필드로는 이동할 수 없습니다!" )
+				START_LOG( cerr, L"Cannot move to a battlefield from this room!" )
 					<< BUILD_LOG( GetUID() )
 					<< BUILD_LOG( GetCharUID() )
 					<< BUILD_LOG( iBattleFieldID )
@@ -156,7 +156,7 @@ IMPL_ON_FUNC( EGS_JOIN_BATTLE_FIELD_REQ )
 	{
 		if( GetRoomUID() != 0 )
 		{
-			START_LOG( cerr, L"필드 상태인데 RoomUID값이 존재한다! 버그다!" )
+			START_LOG( cerr, L"RoomUID is set while the user is in the field; this is a bug!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( iBattleFieldID )
@@ -233,7 +233,7 @@ IMPL_ON_FUNC( EGS_JOIN_BATTLE_FIELD_REQ )
 
 		default:
 			{
-				START_LOG( cerr, L"이상한 방에 입장한 상태에서 배틀필드로 들어가려고 하네?" )
+				START_LOG( cerr, L"Attempted to enter a battlefield while in an invalid room." )
 					<< BUILD_LOG( GetCharName() )
 					<< BUILD_LOG( CXSLRoom::GetRoomType( GetRoomUID() ) )
 					<< END_LOG;
@@ -252,7 +252,7 @@ IMPL_ON_FUNC( EGS_JOIN_BATTLE_FIELD_REQ )
 	UidType iJoinBFRoomUID = 0;
 	if( SiKBattleFieldListManager()->GetRoomUIDForJoinBattleField( iBattleFieldID, GetCharUID(), GetBeforeRoomUID(), GetPartyUID(), iJoinBFRoomUID ) == false )
 	{
-		START_LOG( clog, L"필드에 들어갈 수 없는 상태입니다." )
+		START_LOG( clog, L"The user is in a state that prevents field entry." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( iBattleFieldID )
 			<< END_LOG;
@@ -268,7 +268,7 @@ IMPL_ON_FUNC( EGS_JOIN_BATTLE_FIELD_REQ )
 		//{{ 2013. 01. 08	최육사	방에서 필드로 돌아오지 못하는 버그 수정
 		if( GetRoomUID() != 0 )
 		{
-			START_LOG( cerr, L"새로운 배틀필드를 생성하려는데 지금 다른방에 입장해있다! 일어나서는 안되는 에러!" )
+			START_LOG( cerr, L"Attempted to create a battlefield while already in another room; this should never happen!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( GetCharName() )
@@ -315,7 +315,7 @@ IMPL_ON_FUNC( EPM_GET_PARTY_INFO_FOR_JOIN_BATTLE_FIELD_ACK )
 	// 상태 오류 검사
 	if( kPacket_.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"배틀필드 입장을 위한 파티 정보 얻기 실패!" )
+		START_LOG( cerr, L"Failed to retrieve party information for battlefield entry!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( NetError::GetErrStr( kPacket_.m_iOK ) )
 			<< END_LOG;
@@ -358,7 +358,7 @@ IMPL_ON_FUNC( EPM_GET_PARTY_INFO_FOR_JOIN_BATTLE_FIELD_ACK )
 			}
 			else
 			{
-				START_LOG( cerr, L"이상한 방에 입장한 상태에서 배틀필드로 들어가려고 하네?" )
+				START_LOG( cerr, L"Attempted to enter a battlefield while in an invalid room." )
 					<< BUILD_LOG( GetCharName() )
 					<< BUILD_LOG( CXSLRoom::GetRoomType( GetRoomUID() ) )
 					<< END_LOG;
@@ -375,7 +375,7 @@ IMPL_ON_FUNC( EPM_GET_PARTY_INFO_FOR_JOIN_BATTLE_FIELD_ACK )
 	UidType iJoinBFRoomUID = 0;
 	if( SiKBattleFieldListManager()->GetRoomUIDForJoinBattleField( kPacket_.m_kBattleFieldJoinInfo.m_iBattleFieldID, GetCharUID(), GetBeforeRoomUID(), GetPartyUID(), iJoinBFRoomUID ) == false )
 	{
-		START_LOG( clog, L"필드에 들어갈 수 없는 상태입니다." )
+		START_LOG( clog, L"The user is in a state that prevents field entry." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_kBattleFieldJoinInfo.m_iBattleFieldID )
 			<< END_LOG;
@@ -391,7 +391,7 @@ IMPL_ON_FUNC( EPM_GET_PARTY_INFO_FOR_JOIN_BATTLE_FIELD_ACK )
 		//{{ 2013. 01. 08	최육사	방에서 필드로 돌아오지 못하는 버그 수정
 		if( GetRoomUID() != 0 )
 		{
-			START_LOG( cerr, L"새로운 배틀필드를 생성하려는데 지금 다른방에 입장해있다! 일어나서는 안되는 에러!" )
+			START_LOG( cerr, L"Attempted to create a battlefield while already in another room; this should never happen!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( GetCharName() )
@@ -440,7 +440,7 @@ _IMPL_ON_FUNC( ERM_LEAVE_ROOM_FOR_JOIN_BATTLE_FIELD_ACK, KEGS_LEAVE_ROOM_ACK )
 
 	if( kPacket_.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"배틀필드 입장을 위한 방이탈 처리가 실패하였습니다!" )
+		START_LOG( cerr, L"Failed to leave the room before entering the battlefield!" )
 			<< BUILD_LOG( NetError::GetErrStr( kPacket_.m_iOK ) )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_kBattleFieldJoinInfo.m_iBattleFieldID )
@@ -469,7 +469,7 @@ _IMPL_ON_FUNC( ERM_LEAVE_ROOM_FOR_JOIN_BATTLE_FIELD_ACK, KEGS_LEAVE_ROOM_ACK )
 	UidType iJoinBFRoomUID = 0;
 	if( SiKBattleFieldListManager()->GetRoomUIDForJoinBattleField( kPacket_.m_kBattleFieldJoinInfo.m_iBattleFieldID, GetCharUID(), GetBeforeRoomUID(), GetPartyUID(), iJoinBFRoomUID ) == false )
 	{
-		START_LOG( clog, L"필드에 들어갈 수 없는 상태입니다." )
+		START_LOG( clog, L"The user is in a state that prevents field entry." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_kBattleFieldJoinInfo.m_iBattleFieldID )
 			<< END_LOG;
@@ -485,7 +485,7 @@ _IMPL_ON_FUNC( ERM_LEAVE_ROOM_FOR_JOIN_BATTLE_FIELD_ACK, KEGS_LEAVE_ROOM_ACK )
 		//{{ 2013. 01. 08	최육사	방에서 필드로 돌아오지 못하는 버그 수정
 		if( GetRoomUID() != 0 )
 		{
-			START_LOG( cerr, L"새로운 배틀필드를 생성하려는데 지금 다른방에 입장해있다! 일어나서는 안되는 에러!" )
+			START_LOG( cerr, L"Attempted to create a battlefield while already in another room; this should never happen!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( GetCharName() )
@@ -534,7 +534,7 @@ _IMPL_ON_FUNC( ERM_LEAVE_BATTLE_FIELD_FOR_JOIN_BATTLE_FIELD_ACK, KEGS_LEAVE_ROOM
 
 	if( kPacket_.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"배틀필드 입장을 위한 방이탈 처리가 실패하였습니다!" )
+		START_LOG( cerr, L"Failed to leave the room before entering the battlefield!" )
 			<< BUILD_LOG( NetError::GetErrStr( kPacket_.m_iOK ) )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_kBattleFieldJoinInfo.m_iBattleFieldID )
@@ -562,7 +562,7 @@ _IMPL_ON_FUNC( ERM_LEAVE_BATTLE_FIELD_FOR_JOIN_BATTLE_FIELD_ACK, KEGS_LEAVE_ROOM
 	UidType iJoinBFRoomUID = 0;
 	if( SiKBattleFieldListManager()->GetRoomUIDForJoinBattleField( kPacket_.m_kBattleFieldJoinInfo.m_iBattleFieldID, GetCharUID(), GetBeforeRoomUID(), GetPartyUID(), iJoinBFRoomUID ) == false )
 	{
-		START_LOG( clog, L"필드에 들어갈 수 없는 상태입니다." )
+		START_LOG( clog, L"The user is in a state that prevents field entry." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_kBattleFieldJoinInfo.m_iBattleFieldID )
 			<< END_LOG;
@@ -578,7 +578,7 @@ _IMPL_ON_FUNC( ERM_LEAVE_BATTLE_FIELD_FOR_JOIN_BATTLE_FIELD_ACK, KEGS_LEAVE_ROOM
 		//{{ 2013. 01. 08	최육사	방에서 필드로 돌아오지 못하는 버그 수정
 		if( GetRoomUID() != 0 )
 		{
-			START_LOG( cerr, L"새로운 배틀필드를 생성하려는데 지금 다른방에 입장해있다! 일어나서는 안되는 에러!" )
+			START_LOG( cerr, L"Attempted to create a battlefield while already in another room; this should never happen!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( GetCharName() )
@@ -713,7 +713,7 @@ IMPL_ON_FUNC( ERM_JOIN_BATTLE_FIELD_ACK )
                 // 이미 방에 입장한 상태라면 방에서 먼저 나가자!
 				if( GetRoomUID() != 0 )
 				{
-					START_LOG( cerr, L"배틀필드에 입장하려는데 아직 다른 방에 입장한 상태이다. 일어나서는 안되는 에러!" )
+					START_LOG( cerr, L"Attempted to enter battlefield while still in another room; this should never happen!" )
 						<< BUILD_LOG( GetUID() )
 						<< BUILD_LOG( GetCharUID() )
 						<< BUILD_LOG( GetCharName() )
@@ -847,7 +847,7 @@ _IMPL_ON_FUNC( ERM_JOIN_BATTLE_FIELD_NOT, KEGS_JOIN_BATTLE_FIELD_NOT )
 
 	if( GetRoomUID() == 0  ||  CXSLRoom::GetRoomType( GetRoomUID() ) != CXSLRoom::RT_BATTLE_FIELD )
 	{
-		START_LOG( cerr, L"배틀필드에 입장한 상태가 아닌데 이 패킷이 오네? 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"Received this packet without being in the battlefield; this should never happen!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetRoomUID() )
 			<< END_LOG;
@@ -915,7 +915,7 @@ _IMPL_ON_FUNC( ERM_BATTLE_FIELD_NPC_LOAD_NOT, KEGS_BATTLE_FIELD_NPC_LOAD_NOT )
 	// 현재 입장한 배틀필드에 맞는 몬스터 출현 정보인지 체크!
 	if( kPacket_.m_iBattleFieldID != GetMapID() )
 	{
-		START_LOG( cerr, L"배틀필드 NPC 정보 동기화 id가 달라서 무효처리! 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"Battlefield NPC information sync ID mismatch; discarding, though this should never happen!" )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( GetPartyUID() )
 			<< BUILD_LOG( GetRoomUID() )
@@ -933,7 +933,7 @@ IMPL_ON_FUNC_NOPARAM( EGS_BATTLE_FIELD_NPC_LOAD_COMPLETE_REQ )
 
 	if( GetRoomUID() == 0 )
 	{
-		START_LOG( cerr, L"배틀필드 NPC 로딩 완료 패킷을 보냈는데 지금 현재 방에 입장한 상태가 아니다? 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"Sent battlefield NPC loading complete packet, but the user is not in a room; this should never happen!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
@@ -950,7 +950,7 @@ IMPL_ON_FUNC_NOPARAM( EGS_BATTLE_FIELD_NPC_LOAD_COMPLETE_REQ )
 	//{{ 2012. 12. 07	최육사	배틀필드 시스템
 	if( CXSLRoom::GetRoomType( GetRoomUID() ) != CXSLRoom::RT_BATTLE_FIELD )
 	{
-		START_LOG( cerr, L"배틀필드 NPC 로딩 완료 패킷을 보냈는데 지금 현재 배틀필드방이 아니라 다른방에 입장한 상태이다!" )
+		START_LOG( cerr, L"Sent battlefield NPC loading complete packet, but the user is in a different room!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
@@ -1055,7 +1055,7 @@ IMPL_ON_FUNC( ERM_BATTLE_FIELD_ZU_ECHO_REQ )
 
     if( kPacket_.m_iUnitUID != GetCharUID() )
 	{
-		START_LOG( cerr, L"다른 캐릭터에게 배틀필드 좀비 유저 에코 패킷이 왔습니다!" )
+		START_LOG( cerr, L"Received a battlefield zombie-user echo packet for another character!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
@@ -1064,7 +1064,7 @@ IMPL_ON_FUNC( ERM_BATTLE_FIELD_ZU_ECHO_REQ )
 
 	if( GetRoomUID() == 0 )
 	{
-		START_LOG( cerr, L"상태는 방인데 RoomUID값은 0이다?" )
+		START_LOG( cerr, L"State indicates a room, but RoomUID is 0?" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
@@ -1073,7 +1073,7 @@ IMPL_ON_FUNC( ERM_BATTLE_FIELD_ZU_ECHO_REQ )
 
 	if( CXSLRoom::GetRoomType( GetRoomUID() ) != CXSLRoom::RT_BATTLE_FIELD )
 	{
-		START_LOG( cerr, L"현재 배틀필드 방이 아닌데 배틀필드 좀비 패킷을 처리하려한다?" )
+		START_LOG( cerr, L"Attempted to process battlefield zombie packet outside a battlefield room?" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( CXSLRoom::GetRoomType( GetRoomUID() ) )
@@ -1084,7 +1084,7 @@ IMPL_ON_FUNC( ERM_BATTLE_FIELD_ZU_ECHO_REQ )
 	//{{ 2012. 11. 20	최육사		배틀필드 좀비 유저 체크 강화
 	if( GetRoomUID() != kPacket_.m_iRoomUID )
 	{
-		START_LOG( cerr, L"GSUser에 등록된 RoomUID와 배틀필드 방 RoomUID값이 틀리다! 이건 심각한데?" )
+		START_LOG( cerr, L"The RoomUID registered on GSUser differs from the battlefield room RoomUID; this is a serious error!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( GetRoomUID() )

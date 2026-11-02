@@ -62,7 +62,7 @@ void KClassChangeTable::SetClassGroupID_Lua( IN int iClassGroup, IN int iUnitCla
 {
 	if( iClassGroup <= 0 || iUnitClass <= CXSLUnit::UC_NONE || iUnitClass >= CXSLUnit::UC_MAX )
 	{
-		START_LOG( cerr, L"직업 변경에 필요한 직업관련 스크립트 파싱 실패!" )
+		START_LOG( cerr, L"Failed to parse the class-change class script." )
 			<< BUILD_LOG( iClassGroup )
 			<< BUILD_LOG( iUnitClass )
 			<< END_LOG;
@@ -72,7 +72,7 @@ void KClassChangeTable::SetClassGroupID_Lua( IN int iClassGroup, IN int iUnitCla
 	std::map< int, int >::iterator mitClassGroupID = m_mapClassGroupID.find( iUnitClass );
 	if( mitClassGroupID != m_mapClassGroupID.end() )
 	{
-		START_LOG( cerr, L"직업 변경에 필요한 직업관련 중복 파싱!" )
+		START_LOG( cerr, L"Duplicate class data while parsing class-change scripts." )
 			<< BUILD_LOG( iClassGroup )
 			<< BUILD_LOG( iUnitClass )
 			<< END_LOG;
@@ -94,7 +94,7 @@ void KClassChangeTable::SetClassGroupID_Lua( IN int iClassGroup, IN int iUnitCla
 		std::vector< int >::iterator vit = mitGroupID->second.begin();
 		if( vit == mitGroupID->second.end() )
 		{
-			START_LOG( cerr, L"ClassGroupID 에 데이터가 있다고 했는데....비어있다. 다시 넣자!" )
+			START_LOG( cerr, L"ClassGroupID was expected to contain data, but is empty. Reinsert the data." )
 				<< BUILD_LOG( iClassGroup )
 				<< BUILD_LOG( iUnitClass )
 				<< END_LOG;
@@ -132,7 +132,7 @@ void KClassChangeTable::SetClassChange_Skill_Lua( IN int iSkillGroup, IN int iSk
 {
 	if( iSkillGroup <= 0 || iSkill <= 0 || iUnitClass <= CXSLUnit::UC_NONE || iUnitClass >= CXSLUnit::UC_MAX )
 	{
-		START_LOG( cerr, L"직업 변경에 필요한 스킬관련 스크립트 파싱 실패!" )
+		START_LOG( cerr, L"Failed to parse the class-change skill script." )
 			<< BUILD_LOG( iSkillGroup )
 			<< BUILD_LOG( iSkill )
 			<< BUILD_LOG( iUnitClass )
@@ -144,7 +144,7 @@ void KClassChangeTable::SetClassChange_Skill_Lua( IN int iSkillGroup, IN int iSk
 	std::map< int, int >::iterator mitSkillGroupID = m_mapSkillGroupID.find( iSkill );
 	if( mitSkillGroupID != m_mapSkillGroupID.end() )
 	{
-		START_LOG( clog, L"스킬 별 그룹 아이디 중복 파싱!!! 상위 직종은 하위 직종의 스킬을 가질 수 있으므로 오류가 아니다" )
+		START_LOG( clog, L"Duplicate skill group ID while parsing. This is expected because advanced classes can use skills from their base classes." )
 			<< BUILD_LOG( iSkillGroup )
 			<< BUILD_LOG( iSkill )
 			<< BUILD_LOG( iUnitClass )
@@ -169,7 +169,7 @@ void KClassChangeTable::SetClassChange_Skill_Lua( IN int iSkillGroup, IN int iSk
 		std::map< int, int >::iterator mitGroup = mit->second.find( iUnitClass );
 		if( mitGroup != mit->second.end() )
 		{
-			START_LOG( clog, L"직업 변경에 필요한 스킬관련 중복 파싱!" )
+			START_LOG( clog, L"Duplicate skill data while parsing class-change scripts." )
 				<< BUILD_LOG( iSkillGroup )
 				<< BUILD_LOG( iSkill )
 				<< BUILD_LOG( iUnitClass )
@@ -186,7 +186,7 @@ void KClassChangeTable::SetClassChange_Memo_Lua( IN int iMemoGroup, IN int iMemo
 {
 	if( iMemoGroup < 0 || iMemo <= 0 || iUnitClass <= CXSLUnit::UC_NONE || iUnitClass >= CXSLUnit::UC_MAX )
 	{
-		START_LOG( cerr, L"직업 변경에 필요한 메모관련 스크립트 파싱 실패!" )
+		START_LOG( cerr, L"Failed to parse the class-change memo script." )
 			<< BUILD_LOG( iMemoGroup )
 			<< BUILD_LOG( iMemo )
 			<< BUILD_LOG( iUnitClass )
@@ -198,7 +198,7 @@ void KClassChangeTable::SetClassChange_Memo_Lua( IN int iMemoGroup, IN int iMemo
 	std::map< int, int >::iterator mitMemoGroupID = m_mapMemoGroupID.find( iMemo );
 	if( mitMemoGroupID != m_mapMemoGroupID.end() )
 	{
-		START_LOG( clog, L"메모 별 그룹 아이디 중복 파싱!!!" )
+		START_LOG( clog, L"Duplicate memo group ID while parsing." )
 			<< BUILD_LOG( iMemoGroup )
 			<< BUILD_LOG( iMemo )
 			<< BUILD_LOG( iUnitClass )
@@ -223,7 +223,7 @@ void KClassChangeTable::SetClassChange_Memo_Lua( IN int iMemoGroup, IN int iMemo
 		std::map< int, int >::iterator mitGroup = mit->second.find( iUnitClass );
 		if( mitGroup != mit->second.end() )
 		{
-			START_LOG( cerr, L"직업 변경에 필요한 메모관련 중복 파싱!" )
+			START_LOG( cerr, L"Duplicate memo data while parsing class-change scripts." )
 				<< BUILD_LOG( iMemoGroup )
 				<< BUILD_LOG( iMemo )
 				<< BUILD_LOG( iUnitClass )
@@ -240,7 +240,7 @@ void KClassChangeTable::SetClassChange_InventoryItem_Lua( IN int iItemGroup, IN 
 {
 	if( iItemGroup < 0 || iItem <= 0 || iUnitClass <= CXSLUnit::UC_NONE || iUnitClass >= CXSLUnit::UC_MAX )
 	{
-		START_LOG( cerr, L"직업 변경에 필요한 메모관련 스크립트 파싱 실패!" )
+		START_LOG( cerr, L"Failed to parse the class-change memo script." )
 			<< BUILD_LOG( iItemGroup )
 			<< BUILD_LOG( iItem )
 			<< BUILD_LOG( iUnitClass )
@@ -252,7 +252,7 @@ void KClassChangeTable::SetClassChange_InventoryItem_Lua( IN int iItemGroup, IN 
 	std::map< int, int >::iterator mitItemGroupID = m_mapItemGroupID.find( iItem );
 	if( mitItemGroupID != m_mapItemGroupID.end() )
 	{
-		START_LOG( clog, L"아이템 별 그룹 아이디 중복 파싱!!!" )
+		START_LOG( clog, L"Duplicate item group ID while parsing." )
 			<< BUILD_LOG( iItemGroup )
 			<< BUILD_LOG( iItem )
 			<< BUILD_LOG( iUnitClass )
@@ -277,7 +277,7 @@ void KClassChangeTable::SetClassChange_InventoryItem_Lua( IN int iItemGroup, IN 
 		std::map< int, int >::iterator mitGroup = mit->second.find( iUnitClass );
 		if( mitGroup != mit->second.end() )
 		{
-			START_LOG( cerr, L"직업 변경에 필요한 메모관련 중복 파싱!" )
+			START_LOG( cerr, L"Duplicate memo data while parsing class-change scripts." )
 				<< BUILD_LOG( iItemGroup )
 				<< BUILD_LOG( iItem )
 				<< BUILD_LOG( iUnitClass )
@@ -294,7 +294,7 @@ void KClassChangeTable::SetClassChange_Quest_Lua( IN int iQuestGroup, IN int iQu
 {
 	if( iQuestGroup <= 0 || iQuest <= 0 || iUnitClass <= CXSLUnit::UC_NONE || iUnitClass >= CXSLUnit::UC_MAX )
 	{
-		START_LOG( cerr, L"직업 변경에 필요한 메모관련 스크립트 파싱 실패!" )
+		START_LOG( cerr, L"Failed to parse the class-change memo script." )
 			<< BUILD_LOG( iQuestGroup )
 			<< BUILD_LOG( iQuest )
 			<< BUILD_LOG( iUnitClass )
@@ -306,7 +306,7 @@ void KClassChangeTable::SetClassChange_Quest_Lua( IN int iQuestGroup, IN int iQu
 	std::map< int, int >::iterator mitQuestGroupID = m_mapQuestGroupID.find( iQuest );
 	if( mitQuestGroupID != m_mapQuestGroupID.end() )
 	{
-		START_LOG( clog, L"스킬 별 그룹 아이디 중복 파싱!!!" )
+		START_LOG( clog, L"Duplicate skill group ID while parsing." )
 			<< BUILD_LOG( iQuestGroup )
 			<< BUILD_LOG( iQuest )
 			<< BUILD_LOG( iUnitClass )
@@ -331,7 +331,7 @@ void KClassChangeTable::SetClassChange_Quest_Lua( IN int iQuestGroup, IN int iQu
 		std::map< int, int >::iterator mitGroup = mit->second.find( iUnitClass );
 		if( mitGroup != mit->second.end() )
 		{
-			START_LOG( clog, L"직업 변경에 필요한 메모관련 중복 파싱!" )
+			START_LOG( clog, L"Duplicate memo data while parsing class-change scripts." )
 				<< BUILD_LOG( iQuestGroup )
 				<< BUILD_LOG( iQuest )
 				<< BUILD_LOG( iUnitClass )
@@ -356,7 +356,7 @@ void KClassChangeTable::SetClassChange_Quest_Lua( IN int iQuestGroup, IN int iQu
 		std::map< int, int >::iterator mitGroup = mit->second.find( iQuest );
 		if( mitGroup != mit->second.end() )
 		{
-			START_LOG( cerr, L"직업 변경에 필요한 메모관련 중복 파싱!" )
+			START_LOG( cerr, L"Duplicate memo data while parsing class-change scripts." )
 				<< BUILD_LOG( iQuestGroup )
 				<< BUILD_LOG( iQuest )
 				<< BUILD_LOG( iUnitClass )
@@ -372,7 +372,7 @@ void KClassChangeTable::SetClassChange_DelQuest_Lua( IN int iQuest )
 {
 	if( iQuest <= 0 )
 	{
-		START_LOG( cerr, L"잘못된 Quest 입니다." )
+		START_LOG( cerr, L"Invalid quest." )
 			<< BUILD_LOG( iQuest )
 			<< END_LOG;
 	}
@@ -380,7 +380,7 @@ void KClassChangeTable::SetClassChange_DelQuest_Lua( IN int iQuest )
 	std::set<int>::iterator sit = m_setClassChangeDeleteQuest.find( iQuest );
 	if( sit != m_setClassChangeDeleteQuest.end() )
 	{
-		START_LOG( cerr, L"중복된 Quest 입니다." )
+		START_LOG( cerr, L"Duplicate quest." )
 			<< BUILD_LOG( iQuest )
 			<< END_LOG;
 		return;
@@ -396,7 +396,7 @@ bool KClassChangeTable::GetClassGroupID( IN int& iClass, OUT int& iClassGroupID 
 	std::map< int, int >::iterator mit = m_mapClassGroupID.find( iClass );
 	if( mit == m_mapClassGroupID.end() )
 	{
-		START_LOG( clog, L"해당 iClass에 해당하는 iClassGroupID 가 존재하지 않는다!" )
+		START_LOG( clog, L"No iClassGroupID exists for this iClass." )
 			<< BUILD_LOG( iClass )
 			<< BUILD_LOG( iClassGroupID )
 			<< END_LOG;
@@ -414,7 +414,7 @@ bool KClassChangeTable::GetSkillGroupID( IN int& iSkill, OUT int& iSkillGroupID 
 	std::map< int, int >::iterator mit = m_mapSkillGroupID.find( iSkill );
 	if( mit == m_mapSkillGroupID.end() )
 	{
-		START_LOG( clog, L"해당 iSkill에 해당하는 iClassGroupID 가 존재하지 않는다!" )
+		START_LOG( clog, L"No iClassGroupID exists for this iSkill." )
 			<< BUILD_LOG( iSkill )
 			<< BUILD_LOG( iSkillGroupID )
 			<< END_LOG;
@@ -432,7 +432,7 @@ bool KClassChangeTable::GetMemoGroupID( IN int& iMemo, OUT int& iMemoGroupID )
 	std::map< int, int >::iterator mit = m_mapMemoGroupID.find( iMemo );
 	if( mit == m_mapMemoGroupID.end() )
 	{
-		START_LOG( clog, L"해당 iMemo에 해당하는 iClassGroupID 가 존재하지 않는다!" )
+		START_LOG( clog, L"No iClassGroupID exists for this iMemo." )
 			<< BUILD_LOG( iMemo )
 			<< BUILD_LOG( iMemoGroupID )
 			<< END_LOG;
@@ -450,7 +450,7 @@ bool KClassChangeTable::GetItemGroupID( IN int& iItem, OUT int& iItemGroupID )
 	std::map< int, int >::iterator mit = m_mapItemGroupID.find( iItem );
 	if( mit == m_mapItemGroupID.end() )
 	{
-		START_LOG( clog, L"해당 iItem에 해당하는 iClassGroupID 가 존재하지 않는다!" )
+		START_LOG( clog, L"No iClassGroupID exists for this iItem." )
 			<< BUILD_LOG( iItem )
 			<< BUILD_LOG( iItemGroupID )
 			<< END_LOG;
@@ -468,7 +468,7 @@ bool KClassChangeTable::GetQuestGroupID( IN int& iQuest, OUT int& iQuestGroupID 
 	std::map< int, int >::iterator mit = m_mapQuestGroupID.find( iQuest );
 	if( mit == m_mapQuestGroupID.end() )
 	{
-		START_LOG( clog, L"해당 iQuest에 해당하는 iClassGroupID 가 존재하지 않는다!" )
+		START_LOG( clog, L"No iClassGroupID exists for this iQuest." )
 			<< BUILD_LOG( iQuest )
 			<< BUILD_LOG( iQuestGroupID )
 			<< END_LOG;
@@ -486,7 +486,7 @@ bool KClassChangeTable::GetUnitClassList( IN int& iClassGroupID, OUT std::vector
 	std::map< int, std::vector< int > >::iterator mit = m_mapUnitClassGroupID.find( iClassGroupID );
 	if( mit == m_mapUnitClassGroupID.end() )
 	{
-		START_LOG( clog, L"해당 iClassGroupID에 해당하는 ClassList 가 존재하지 않는다!" )
+		START_LOG( clog, L"No ClassList exists for this iClassGroupID." )
 			<< BUILD_LOG( iClassGroupID )
 			<< END_LOG;
 		return false;
@@ -504,7 +504,7 @@ bool KClassChangeTable::GetClassChange_NewSkill( IN int& iNewUnitClass, IN int i
 
 	if( GetSkillGroupID( iOldSkill, iOldSkillGroupID ) == false )
 	{
-		START_LOG( cerr, L"해당 iSkill에 해당하는 iSkillGroupID 가 존재하지 않는다!" )
+		START_LOG( cerr, L"No iSkillGroupID exists for this iSkill." )
 			<< BUILD_LOG( iNewUnitClass )
 			<< BUILD_LOG( iOldSkill )
 			<< BUILD_LOG( iNewSkill )
@@ -515,7 +515,7 @@ bool KClassChangeTable::GetClassChange_NewSkill( IN int& iNewUnitClass, IN int i
 	std::map< int, std::map< int, int > >::const_iterator mit = m_mapClassChangeSkill.find( iOldSkillGroupID );
 	if( mit == m_mapClassChangeSkill.end() )
 	{
-		START_LOG( cerr, L"해당 iSkill에 해당하는 SkillList 가 존재하지 않는다!" )
+		START_LOG( cerr, L"No SkillList exists for this iSkill." )
 			<< BUILD_LOG( iNewUnitClass )
 			<< BUILD_LOG( iOldSkill )
 			<< BUILD_LOG( iNewSkill )
@@ -527,7 +527,7 @@ bool KClassChangeTable::GetClassChange_NewSkill( IN int& iNewUnitClass, IN int i
 	std::map< int, int >::const_iterator mitList = mit->second.find( iNewUnitClass );
 	if( mitList == mit->second.end() )
 	{
-		START_LOG( clog, L"해당 iNewUnitClass에 해당하는 NewSkill 가 존재하지 않는다!" )
+		START_LOG( clog, L"No NewSkill exists for this iNewUnitClass." )
 			<< BUILD_LOG( iNewUnitClass )
 			<< BUILD_LOG( iOldSkill )
 			<< BUILD_LOG( iNewSkill )
@@ -549,7 +549,7 @@ bool KClassChangeTable::GetClassChange_NewMemo( IN int& iNewUnitClass, IN int& i
 
 	if( GetMemoGroupID( iOldMemo, iOldMemoGroupID ) == false )
 	{
-		START_LOG( clog, L"해당 iClass에 해당하는 iClassGroupID 가 존재하지 않는다!" )
+		START_LOG( clog, L"No iClassGroupID exists for this iClass." )
 			<< BUILD_LOG( iNewUnitClass )
 			<< BUILD_LOG( iOldMemo )
 			<< BUILD_LOG( iNewMemo )
@@ -560,7 +560,7 @@ bool KClassChangeTable::GetClassChange_NewMemo( IN int& iNewUnitClass, IN int& i
 	std::map< int, std::map< int, int > >::const_iterator mit = m_mapClassChangeMemo.find( iOldMemoGroupID );
 	if( mit == m_mapClassChangeMemo.end() )
 	{
-		START_LOG( cerr, L"해당 iMemo에 해당하는 MemoList 가 존재하지 않는다!" )
+		START_LOG( cerr, L"No MemoList exists for this iMemo." )
 			<< BUILD_LOG( iNewUnitClass )
 			<< BUILD_LOG( iOldMemo )
 			<< BUILD_LOG( iNewMemo )
@@ -572,7 +572,7 @@ bool KClassChangeTable::GetClassChange_NewMemo( IN int& iNewUnitClass, IN int& i
 	std::map< int, int >::const_iterator mitList = mit->second.find( iNewUnitClass );
 	if( mitList == mit->second.end() )
 	{
-		START_LOG( clog, L"해당 iNewUnitClass에 해당하는 NewMemo 가 존재하지 않는다!" )
+		START_LOG( clog, L"No NewMemo exists for this iNewUnitClass." )
 			<< BUILD_LOG( iNewUnitClass )
 			<< BUILD_LOG( iOldMemo )
 			<< BUILD_LOG( iNewMemo )
@@ -594,7 +594,7 @@ bool KClassChangeTable::GetClassChange_NewItem( IN int& iNewUnitClass, IN int& i
 
 	if( GetItemGroupID( iOldItem, iOldItemGroupID ) == false )
 	{
-		START_LOG( clog, L"해당 iClass에 해당하는 iClassGroupID 가 존재하지 않는다!" )
+		START_LOG( clog, L"No iClassGroupID exists for this iClass." )
 			<< BUILD_LOG( iNewUnitClass )
 			<< BUILD_LOG( iOldItem )
 			<< BUILD_LOG( iNewItem )
@@ -605,7 +605,7 @@ bool KClassChangeTable::GetClassChange_NewItem( IN int& iNewUnitClass, IN int& i
 	std::map< int, std::map< int, int > >::const_iterator mit = m_mapClassChangeItem.find( iOldItemGroupID );
 	if( mit == m_mapClassChangeItem.end() )
 	{
-		START_LOG( cerr, L"해당 iItem에 해당하는 ItemList 가 존재하지 않는다!" )
+		START_LOG( cerr, L"No ItemList exists for this iItem." )
 			<< BUILD_LOG( iNewUnitClass )
 			<< BUILD_LOG( iOldItem )
 			<< BUILD_LOG( iNewItem )
@@ -617,7 +617,7 @@ bool KClassChangeTable::GetClassChange_NewItem( IN int& iNewUnitClass, IN int& i
 	std::map< int, int >::const_iterator mitList = mit->second.find( iNewUnitClass );
 	if( mitList == mit->second.end() )
 	{
-		START_LOG( clog, L"해당 iNewUnitClass에 해당하는 NewItem 가 존재하지 않는다!" )
+		START_LOG( clog, L"No NewItem exists for this iNewUnitClass." )
 			<< BUILD_LOG( iNewUnitClass )
 			<< BUILD_LOG( iOldItem )
 			<< BUILD_LOG( iNewItem )
@@ -639,7 +639,7 @@ bool KClassChangeTable::GetClassChange_NewQuest( IN int& iNewUnitClass, IN int& 
 
 	if( GetQuestGroupID( iOldQuest, iOldQuestGroupID ) == false )
 	{
-		START_LOG( clog, L"해당 iClass에 해당하는 iClassGroupID 가 존재하지 않는다!" )
+		START_LOG( clog, L"No iClassGroupID exists for this iClass." )
 			<< BUILD_LOG( iNewUnitClass )
 			<< BUILD_LOG( iOldQuest )
 			<< BUILD_LOG( iNewQuest )
@@ -650,7 +650,7 @@ bool KClassChangeTable::GetClassChange_NewQuest( IN int& iNewUnitClass, IN int& 
 	std::map< int, std::map< int, int > >::const_iterator mit = m_mapClassChangeQuest.find( iOldQuestGroupID );
 	if( mit == m_mapClassChangeQuest.end() )
 	{
-		START_LOG( cerr, L"해당 iQuest에 해당하는 QuestList 가 존재하지 않는다!" )
+		START_LOG( cerr, L"No QuestList exists for this iQuest." )
 			<< BUILD_LOG( iNewUnitClass )
 			<< BUILD_LOG( iOldQuest )
 			<< BUILD_LOG( iNewQuest )
@@ -662,7 +662,7 @@ bool KClassChangeTable::GetClassChange_NewQuest( IN int& iNewUnitClass, IN int& 
 	std::map< int, int >::const_iterator mitList = mit->second.find( iNewUnitClass );
 	if( mitList == mit->second.end() )
 	{
-		START_LOG( clog, L"해당 iNewUnitClass에 해당하는 NewQuest 가 존재하지 않는다!" )
+		START_LOG( clog, L"No NewQuest exists for this iNewUnitClass." )
 			<< BUILD_LOG( iNewUnitClass )
 			<< BUILD_LOG( iOldQuest )
 			<< BUILD_LOG( iNewQuest )
@@ -682,7 +682,7 @@ bool KClassChangeTable::GetClassQuestList( IN int& iUnitClass, OUT std::map< int
 
 	if( iUnitClass <= CXSLUnit::UC_NONE || iUnitClass >= CXSLUnit::UC_MAX )
 	{
-		START_LOG( cerr, L"존재하지 않는 UnitClass 입니다." )
+		START_LOG( cerr, L"UnitClass does not exist." )
 			<< BUILD_LOG( iUnitClass )
 			<< END_LOG;
 		return false;
@@ -691,7 +691,7 @@ bool KClassChangeTable::GetClassQuestList( IN int& iUnitClass, OUT std::map< int
 	std::map< int, std::map< int, int > >::const_iterator mit = m_mapClassChangeQuestList.find( iUnitClass );
 	if( mit == m_mapClassChangeQuestList.end() )
 	{
-		START_LOG( cerr, L"데이터가 없다? 존재하지 않는 UnitClass 인가? 아니면 스크립트가 빠져있나?" )
+		START_LOG( cerr, L"No data found. Does the UnitClass not exist, or is its script missing?" )
 			<< BUILD_LOG( iUnitClass )
 			<< END_LOG;
 		return false;
@@ -708,7 +708,7 @@ bool KClassChangeTable::CompareUnitClass( IN int& iNowUnitClass, IN int& iNewUni
 	int iNewGroupID = 0;
 	if( GetClassGroupID( iNowUnitClass, iNowGroupID ) == false )
 	{
-		START_LOG( cerr, L"UnitGroupID 가 존재하지 않는 iNowGroupID 이다." )
+		START_LOG( cerr, L"iNowGroupID does not exist in UnitGroupID." )
 			<< BUILD_LOG( iNowUnitClass )
 			<< BUILD_LOG( iNewUnitClass )
 			<< BUILD_LOG( iNowGroupID )
@@ -719,7 +719,7 @@ bool KClassChangeTable::CompareUnitClass( IN int& iNowUnitClass, IN int& iNewUni
 	}
 	if( GetClassGroupID( iNewUnitClass, iNewGroupID ) == false )
 	{
-		START_LOG( cerr, L"UnitGroupID 가 존재하지 않는 iNewGroupID 이다." )
+		START_LOG( cerr, L"iNewGroupID does not exist in UnitGroupID." )
 			<< BUILD_LOG( iNowUnitClass )
 			<< BUILD_LOG( iNewUnitClass )
 			<< BUILD_LOG( iNowGroupID )

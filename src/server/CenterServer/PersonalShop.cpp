@@ -95,7 +95,7 @@ bool KPersonalShop::IsEmpty()
 {
 	if( m_kPersonalShopUserManager.GetNumMember() < 0 )
 	{
-		START_LOG( cerr, L"개인 상점 인원 수가 이상함." )
+		START_LOG( cerr, L"Invalid personal-shop user count." )
 			<< BUILD_LOG( m_kPersonalShopUserManager.GetNumMember() )
 			<< END_LOG;
 	}
@@ -107,7 +107,7 @@ bool KPersonalShop::IsFull()
 {
 	if( m_kPersonalShopUserManager.GetNumMember() > m_kPersonalShopUserManager.GetMaxMember() )
 	{
-		START_LOG( cerr, L"개인상점 인원 수가 이상함." )
+		START_LOG( cerr, L"Invalid personal-shop user count." )
 			<< BUILD_LOG( m_kPersonalShopUserManager.GetNumMember() )
 			<< BUILD_LOG( m_kPersonalShopUserManager.GetMaxMember() )
 			<< END_LOG;
@@ -206,7 +206,7 @@ void KPersonalShop::SendPShopListInfo( int _iCode, std::vector<KSellPersonalShop
 	BroadCastSameGroupGS( ERM_PERSONAL_SHOP_INFO_NOT, kNot );
 	//}}
 
-	START_LOG( clog, L"상점개설 아이템 전송.!" )
+	START_LOG( clog, L"Sending shop-opening item!" )
 		<< BUILD_LOG( kNot.m_vecItemInfo.size() )
 		<< BUILD_LOG( NetError::GetErrStr(_iCode) )
 		;
@@ -260,7 +260,7 @@ IMPL_ON_FUNC( ERM_OPEN_PERSONAL_SHOP_REQ )
 	// 같은 서버군의 센터에 거래방을 생성한건지 확인!
 	if( KBaseServer::GetKObj()->GetServerGroupID() != KncUid::ExtractServerGroupID( FIRST_SENDER_UID ) )
 	{
-		START_LOG( cerr2, L"다른 서버군의 유저가 센터 개인상점방을 생성하였습니다! 이러면 거래로그 이상하게 남아요!" )
+		START_LOG( cerr2, L"A user from another server group created a Center personal-shop room; trade logs may be incorrect!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( LAST_SENDER_UID )
 			<< BUILD_LOG( KBaseServer::GetKObj()->GetServerGroupID() )
@@ -287,7 +287,7 @@ IMPL_ON_FUNC( ERM_OPEN_PERSONAL_SHOP_REQ )
 	// 상점을 개설할수있는 비용이 있는지 검사한다.
 	if( kPacket_.m_iED < PS_OPENING_ED )
 	{
-		START_LOG( clog, L"상점 개설비용이 부족해 상점을 열수없음.!" )
+		START_LOG( clog, L"Not enough funds to open the shop!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_iED )
 			<< BUILD_LOG( PS_OPENING_ED );
@@ -308,7 +308,7 @@ IMPL_ON_FUNC( ERM_OPEN_PERSONAL_SHOP_REQ )
 
 	if( !m_kPersonalShopUserManager.EnterPersonalShop( kInfo ) )
 	{
-		START_LOG( cerr, L"개인상점 유저 추가 실패." )
+		START_LOG( cerr, L"Failed to add personal-shop user." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( LAST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_iUserUID )
@@ -353,7 +353,7 @@ IMPL_ON_FUNC( ERM_REG_PERSONAL_SHOP_ITEM_REQ )
 
 		UidType iHostUID = 0;
 		m_kPersonalShopUserManager.GetHostUID( iHostUID );
-		START_LOG( cerr, L"개인상점 개설자가 아닌데 판매물품을 등록 하려고함.!" )
+		START_LOG( cerr, L"A non-owner attempted to register items for sale in a personal shop!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( iHostUID )
 			<< END_LOG;
@@ -372,7 +372,7 @@ IMPL_ON_FUNC( ERM_REG_PERSONAL_SHOP_ITEM_REQ )
 		{
 			kPacket.m_iOK = NetError::ERR_PERSONAL_SHOP_23;
 
-			START_LOG( cout, L"판매 액수값이 한계치를 넘어섰다. 버그유저로 의심됨.." )
+			START_LOG( cout, L"Sale amount exceeds the limit; user may be exploiting a bug." )
 				<< BUILD_LOG( FIRST_SENDER_UID )
 				<< BUILD_LOG( iPricePerOne )
 				<< BUILD_LOG( iItemQuantity )
@@ -388,7 +388,7 @@ IMPL_ON_FUNC( ERM_REG_PERSONAL_SHOP_ITEM_REQ )
 	{
 		kPacket.m_iOK = NetError::ERR_PERSONAL_SHOP_07;
 
-		START_LOG( cerr, L"개인상점 물품이 등록되어있는데 다시 등록패킷이 날아옴.!" )
+		START_LOG( cerr, L"Received a duplicate item-registration packet for a personal shop!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( m_vecSellItemInfo.size() )
 			<< BUILD_LOG( kPacket_.m_vecSellItemInfo.size() )
@@ -450,7 +450,7 @@ IMPL_ON_FUNC( ERM_JOIN_PERSONAL_SHOP_REQ )
 	//{{ 2010. 05. 18  최육사	대전 던전 서버군 통합
 	if( m_kPersonalShopUserManager.IsHostUserSameServerGroup( kPacket_.m_iUnitUID ) == false )
 	{
-		START_LOG( cerr, L"개인상점방은 해당 서버군의 유저만 들어올 수 있습니다." )
+		START_LOG( cerr, L"Only users from this server group can enter personal-shop rooms." )
 			<< BUILD_LOG( GetKCnServer()->GetServerGroupID() )
 			<< BUILD_LOG( KncUid::ExtractServerGroupID( kPacket_.m_iUnitUID ) )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
@@ -474,7 +474,7 @@ IMPL_ON_FUNC( ERM_JOIN_PERSONAL_SHOP_REQ )
 
 	if( !m_kPersonalShopUserManager.EnterPersonalShop( kInfo ) )
 	{
-		START_LOG( cwarn, L"개인상점 유저 추가 실패." )
+		START_LOG( cwarn, L"Failed to add personal-shop user." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( LAST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_iUserUID )
@@ -495,7 +495,7 @@ IMPL_ON_FUNC( ERM_JOIN_PERSONAL_SHOP_REQ )
 
 	if( m_kPersonalShopUserManager.GetHostNickName( kPacket.m_wstrNickName ) == false )
 	{
-		START_LOG( cerr, L"호스트 닉네임 얻기 실패.!" )
+		START_LOG( cerr, L"Failed to retrieve host nickname!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
 	}
@@ -514,7 +514,7 @@ _IMPL_ON_FUNC( ERM_BREAK_PERSONAL_SHOP_REQ, KEGS_BREAK_PERSONAL_SHOP_REQ )
 
 	if( !m_kPersonalShopUserManager.LeavePersonalShop( FIRST_SENDER_UID ) )
 	{
-		START_LOG( cerr, L"개인상점 나가기 실패." )
+		START_LOG( cerr, L"Failed to leave personal shop." )
 			<< END_LOG;
 
 		if( kPacket_.m_iReason != NetError::NOT_LEAVE_ROOM_REASON_01 )
@@ -545,7 +545,7 @@ IMPL_ON_FUNC( ERM_LEAVE_PERSONAL_SHOP_REQ )
 
 	if( m_kPersonalShopUserManager.IsHost( FIRST_SENDER_UID ) == true )
 	{
-		START_LOG( cerr, L"개설자가 LEAVE 를 보냄.!이런.." )
+		START_LOG( cerr, L"The creator sent LEAVE; unexpected." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
 
@@ -555,7 +555,7 @@ IMPL_ON_FUNC( ERM_LEAVE_PERSONAL_SHOP_REQ )
 
 	if( !m_kPersonalShopUserManager.LeavePersonalShop( FIRST_SENDER_UID ) )
 	{
-		START_LOG( cerr, L"개인상점 나가기 실패." )
+		START_LOG( cerr, L"Failed to leave personal shop." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
 
@@ -572,7 +572,7 @@ IMPL_ON_FUNC( ERM_LEAVE_PERSONAL_SHOP_REQ )
 	{
 		StateTransition( KPersonalShopFSM::I_TO_CLOSE );
 
-		START_LOG( cerr, L"개인상점 leave 처리인데 사람이 없음.!" )
+		START_LOG( cerr, L"Processing personal-shop leave, but no user is present!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( m_wstrPersonalShopName )
 			<< BUILD_LOG( m_vecSellItemInfo.size() )
@@ -609,7 +609,7 @@ IMPL_ON_FUNC( ERM_BUY_PERSONAL_SHOP_ITEM_REQ )
 		{
 			kPacket.m_iOK = NetError::ERR_PERSONAL_SHOP_17;
 
-			START_LOG( cerr, L"판매중인 아이템이 거래가능한 카테고리가 아니다." )
+			START_LOG( cerr, L"Item for sale belongs to a non-tradeable category." )
 				<< BUILD_LOG( FIRST_SENDER_UID )
 				<< BUILD_LOGc( m_vecSellItemInfo[uiSellItemIndex].m_kInventoryItemInfo.m_cSlotCategory )
 				<< END_LOG;
@@ -622,7 +622,7 @@ IMPL_ON_FUNC( ERM_BUY_PERSONAL_SHOP_ITEM_REQ )
 		{
 			kPacket.m_iOK = NetError::ERR_PERSONAL_SHOP_14;
 
-			START_LOG( cerr, L"판매물품이 부족함." )
+			START_LOG( cerr, L"Insufficient items for sale." )
 				<< BUILD_LOG( FIRST_SENDER_UID )
 				<< BUILD_LOG( m_vecSellItemInfo[uiSellItemIndex].m_kInventoryItemInfo.m_kItemInfo.m_iQuantity )
 				<< BUILD_LOG( kPacket_.m_iBuyQuantity )
@@ -640,7 +640,7 @@ IMPL_ON_FUNC( ERM_BUY_PERSONAL_SHOP_ITEM_REQ )
 		{
 			kPacket.m_iOK = NetError::ERR_PERSONAL_SHOP_24;
 
-			START_LOG( cout, L"구매 액수값이 한계치를 넘어섰다. 버그유저로 의심됨.." )
+			START_LOG( cout, L"Purchase amount exceeds the limit; user may be exploiting a bug." )
 				<< BUILD_LOG( FIRST_SENDER_UID )
 				<< BUILD_LOG( iPricePerOne )
 				<< BUILD_LOG( iItemQuantity )
@@ -662,7 +662,7 @@ IMPL_ON_FUNC( ERM_BUY_PERSONAL_SHOP_ITEM_REQ )
 		{
 			kPacket.m_iOK = NetError::ERR_PERSONAL_SHOP_16;
 
-			START_LOG( clog, L"ED가 부족하여 물품을 구매할수 없음.!" )
+			START_LOG( clog, L"Not enough ED to purchase the item!" )
 				<< BUILD_LOG( FIRST_SENDER_UID )
 				<< BUILD_LOG( iTotalPrice )
 				<< BUILD_LOG( kPacket_.m_iBuyUnitNowED )
@@ -679,7 +679,7 @@ IMPL_ON_FUNC( ERM_BUY_PERSONAL_SHOP_ITEM_REQ )
 		{
 			kPacket.m_iOK = NetError::ERR_PERSONAL_SHOP_05;
 
-			START_LOG( cerr, L"한번에 구매가능한 아이템 종류는 한종류뿐인데? 일어날수 없는 에러!" )
+			START_LOG( cerr, L"Only one item type can be purchased at a time; this should never happen!" )
 				<< BUILD_LOG( FIRST_SENDER_UID )
 				<< BUILD_LOG( kPacket_.m_vecItemInfoTemp.size() )
 				<< END_LOG;
@@ -707,7 +707,7 @@ IMPL_ON_FUNC( ERM_BUY_PERSONAL_SHOP_ITEM_REQ )
 			{
 				kPacket.m_iOK = NetError::ERR_PERSONAL_SHOP_05;
 
-				START_LOG( cerr, L"유저가 존재하지 않음." )
+				START_LOG( cerr, L"User does not exist." )
 					<< BUILD_LOG( FIRST_SENDER_UID )
 					<< BUILD_LOG( kPacket_.m_iBuyQuantity )
 					<< BUILD_LOG( kPacket_.m_iBuyItemUID )
@@ -723,7 +723,7 @@ IMPL_ON_FUNC( ERM_BUY_PERSONAL_SHOP_ITEM_REQ )
 	{
 		kPacket.m_iOK = NetError::ERR_PERSONAL_SHOP_15;
 
-		START_LOG( cerr, L"판매물품 없음." )
+		START_LOG( cerr, L"No items for sale." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_iBuyQuantity )
 			<< BUILD_LOG( kPacket_.m_iBuyItemUID )
@@ -737,7 +737,7 @@ IMPL_ON_FUNC( ERM_BUY_PERSONAL_SHOP_ITEM_REQ )
 	{
 		kPacket.m_iOK = NetError::ERR_PERSONAL_SHOP_05;
 
-		START_LOG( cerr, L"유저가 존재하지 않음." )
+		START_LOG( cerr, L"User does not exist." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_iBuyQuantity )
 			<< BUILD_LOG( kPacket_.m_iBuyItemUID )
@@ -764,7 +764,7 @@ IMPL_ON_FUNC( ERM_BUY_PERSONAL_SHOP_ITEM_REQ )
 		}
 		else
 		{
-			START_LOG( cerr, L"개인상점 판매자 GSUID 얻기 실패.!" )
+			START_LOG( cerr, L"Failed to retrieve personal-shop seller GSUID!" )
 				<< BUILD_LOG( iHostUID )
 				<< END_LOG;
 
@@ -775,7 +775,7 @@ IMPL_ON_FUNC( ERM_BUY_PERSONAL_SHOP_ITEM_REQ )
 	}
 	else
 	{
-		START_LOG( cerr, L"개인상점 판매자 UID 얻기 실패.!" )
+		START_LOG( cerr, L"Failed to retrieve personal-shop seller UID!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( m_wstrPersonalShopName )
 			<< END_LOG;
@@ -805,7 +805,7 @@ IMPL_ON_FUNC( ERM_CONFIRM_BUY_PERSONAL_SHOP_ITEM_ACK )
 	UidType iBuyUnitUID = kPacket_.m_iBuyUnitUID;
 	if( m_kPersonalShopUserManager.GetPersonalShopUserGS( iBuyUnitUID, iBuyUnitGSUID ) == false )
 	{
-		START_LOG( cerr, L"구매자 서버 UID 찾기 실패.!" )
+		START_LOG( cerr, L"Failed to find buyer server UID!" )
 			<< BUILD_LOG( iBuyUnitUID )
 			<< BUILD_LOG( m_kPersonalShopUserManager.GetNumMember() )
 			<< BUILD_LOG( m_kPersonalShopUserManager.GetMaxMember() )
@@ -816,7 +816,7 @@ IMPL_ON_FUNC( ERM_CONFIRM_BUY_PERSONAL_SHOP_ITEM_ACK )
 
 	if( kPacket_.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"개인상점 구매실패.!" )
+		START_LOG( cerr, L"Personal-shop purchase failed!" )
 			<< BUILD_LOG( NetError::GetErrStr( kPacket_.m_iOK ) )
 			<< BUILD_LOG( iBuyUnitUID )
 			<< END_LOG
@@ -831,7 +831,7 @@ IMPL_ON_FUNC( ERM_CONFIRM_BUY_PERSONAL_SHOP_ITEM_ACK )
 	{
 		if( m_kPersonalShopUserManager.GetPersonalShopUserGS( iHostUID, iHostGSUID ) == false )
 		{
-			START_LOG( cerr, L"개인상점 판매자 GSUID 얻기 실패.!" )
+			START_LOG( cerr, L"Failed to retrieve personal-shop seller GSUID!" )
 				<< BUILD_LOG( iHostUID )
 				<< END_LOG;
 
@@ -842,7 +842,7 @@ IMPL_ON_FUNC( ERM_CONFIRM_BUY_PERSONAL_SHOP_ITEM_ACK )
 	}
 	else
 	{
-		START_LOG( cerr, L"개인상점 판매자 UID 얻기 실패.!" )
+		START_LOG( cerr, L"Failed to retrieve personal-shop seller UID!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( m_wstrPersonalShopName )
 			<< END_LOG;
@@ -867,7 +867,7 @@ IMPL_ON_FUNC( ERM_CONFIRM_BUY_PERSONAL_SHOP_ITEM_ACK )
 		{
 			kPacket.m_iOK = NetError::ERR_PERSONAL_SHOP_14;
 
-			START_LOG( cwarn, L"판매물품이 부족함." )
+			START_LOG( cwarn, L"Insufficient items for sale." )
 				<< BUILD_LOG( FIRST_SENDER_UID )
 				<< BUILD_LOG( vitItem->m_kInventoryItemInfo.m_kItemInfo.m_iQuantity )
 				<< BUILD_LOG( kPacket_.m_iBuyQuantity )
@@ -883,7 +883,7 @@ IMPL_ON_FUNC( ERM_CONFIRM_BUY_PERSONAL_SHOP_ITEM_ACK )
 			{
 				kPacket_.m_iBuyQuantity = 1;
 
-				START_LOG( cerr, L"수량성 아이템이 아닌데 사는 개수가 1이상임." )
+				START_LOG( cerr, L"Purchase quantity exceeds one for a non-stackable item." )
 					<< BUILD_LOG( m_wstrPersonalShopName )
 					<< BUILD_LOG( iHostUID )
 					<< BUILD_LOG( iBuyUnitUID )
@@ -901,7 +901,7 @@ IMPL_ON_FUNC( ERM_CONFIRM_BUY_PERSONAL_SHOP_ITEM_ACK )
 		{
 			kPacket.m_iOK = NetError::ERR_PERSONAL_SHOP_25;
 
-			START_LOG( cerr, L"구매자 UID 찾기 실패.!" )
+			START_LOG( cerr, L"Failed to find buyer UID!" )
 				<< BUILD_LOG( iBuyUnitUID )
 				<< BUILD_LOG( m_kPersonalShopUserManager.GetNumMember() )
 				<< BUILD_LOG( m_kPersonalShopUserManager.GetMaxMember() )
@@ -972,7 +972,7 @@ IMPL_ON_FUNC( ERM_CONFIRM_BUY_PERSONAL_SHOP_ITEM_ACK )
 	{
 		kPacket.m_iOK = NetError::ERR_PERSONAL_SHOP_15;
 
-		START_LOG( cwarn, L"판매물품 없음." )
+		START_LOG( cwarn, L"No items for sale." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			//<< BUILD_LOG( m_kPersonalShopUserManager.GetHostUID() )
 			<< BUILD_LOG( kPacket_.m_iBuyItemUID )
@@ -999,7 +999,7 @@ IMPL_ON_FUNC( DBE_BUY_PERSONAL_SHOP_ITEM_COMPLETE_ACK )
 
 	if( kPacket_.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"개인상점 구매실패.!" )
+		START_LOG( cerr, L"Personal-shop purchase failed!" )
 			<< BUILD_LOG( NetError::GetErrStr( kPacket_.m_iOK ) )
 			<< BUILD_LOG( kPacket_.m_kResult.m_iBuyUnitUID )
 			<< BUILD_LOG( kPacket_.m_kResult.m_iSellUnitUID )

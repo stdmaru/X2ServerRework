@@ -57,7 +57,7 @@ bool KUserSpiritManager::CheckingSpirit( IN const int iDungeonID, IN const bool 
 	// 0. 던전ID값이 유효한지 체크하자!
 	if( iDungeonID == 0 )
 	{
-		START_LOG( cerr, L"던전ID값이 유효하지 않다!" )
+		START_LOG( cerr, L"Invalid dungeon ID!" )
 			<< BUILD_LOG( iDungeonID )
 			<< END_LOG;
 		return false;
@@ -164,7 +164,7 @@ bool KUserSpiritManager::DecreaseSpirit( IN const int iDungeonID,
 		// 던전ID값이 유효한지 체크하자!
 		if( iDungeonID == 0 )
 		{
-			START_LOG( cerr, L"던전ID값이 유효하지 않다!" )
+			START_LOG( cerr, L"Invalid dungeon ID!" )
 				<< BUILD_LOG( iDungeonID )
 				<< END_LOG;
 			return false;

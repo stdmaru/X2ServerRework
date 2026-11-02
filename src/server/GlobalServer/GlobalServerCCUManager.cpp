@@ -46,7 +46,7 @@ int	KGlobalServerCCUManager::GetNowTotalCCU()
 	mit = m_mapCCUInfo.begin();
 	if( mit == m_mapCCUInfo.end() )
 	{
-		START_LOG( cerr, L"동접 데이터가 존재하지 않는다." );
+		START_LOG( cerr, L"Concurrent-user data does not exist." );
 		return 0;
 	}
 	for( ; mit != m_mapCCUInfo.end() ; ++mit )

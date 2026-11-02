@@ -86,7 +86,7 @@ void KField::CheckZombieUser( UidType nCID )
 	KFieldUserPtr spZombieUser = m_kFieldUserManager.GetUser( nCID );
 	if( spZombieUser == NULL )
 	{
-		START_LOG( cerr, L"존재하는 유저인지 미리 체크했는데 유저포인터 얻기 실패했네?" )
+		START_LOG( cerr, L"User existence was checked, but retrieving the user pointer failed?" )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 		return;
@@ -99,7 +99,7 @@ void KField::CheckZombieUser( UidType nCID )
 	int	iY = KSectorID::ExtractY( spZombieUser->GetMySectorID() );
 	int	iZ = KSectorID::ExtractZ( spZombieUser->GetMySectorID() );
 
-	START_LOG( cout, L"필드에 좀비유저가 있다!" )
+	START_LOG( cout, L"Zombie user found in field!" )
 		<< BUILD_LOG( spZombieUser.use_count() )
 		<< BUILD_LOG( kZombieUserInfo.m_iUnitUID )
 		<< BUILD_LOG( kZombieUserInfo.m_wstrNickName )
@@ -125,7 +125,7 @@ void KField::CheckZombieUser( UidType nCID )
 	KETR_CHANGE_USER_LIST_IN_SECTOR_NOT kChangeToOtherNot;
 	if( !m_kFieldUserManager.LeaveField( nCID, kChangeToOtherNot.m_vecUID ) )
 	{
-		START_LOG( cerr, L"좀비유저 이탈처리 실패." )
+		START_LOG( cerr, L"Failed to remove the zombie user." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 		return;
@@ -225,7 +225,7 @@ void KField::ProcessEvent( const KEventPtr& spEvent_ )
 	_CASE( ERM_UNSUMMON_RIDING_PET_NOT, KEGS_UNSUMMON_RIDING_PET_NOT );
 
 	default:
-		START_LOG( cerr, L"없는 패킷이 필드에 날아온다 ;ㅁ;" )
+		START_LOG( cerr, L"Unknown packet received by the field." )
 			<< BUILD_LOG( KEvent::GetIDStr( spEvent_->m_usEventID ) )
 			<< END_LOG;
 		break;
@@ -245,7 +245,7 @@ IMPL_ON_FUNC_NOPARAM( ERM_OPEN_FIELD_NOT )
 {
 	if( GetStateID() != KFieldFSM::S_INIT )
 	{
-		START_LOG( cerr, L"필드가 초기 상태가 아님." )
+		START_LOG( cerr, L"Field is not in the initial state." )
 			<< BUILD_LOG( GetStateID() )
 			<< BUILD_LOG( GetStateIDString() )
 			<< END_LOG;
@@ -270,7 +270,7 @@ IMPL_ON_FUNC( ERM_JOIN_FIELD_REQ )
 	// FieldUID 검사
 	if( kPacket_.m_iFieldUID != GetUID() )
 	{
-		START_LOG( cerr, L"있을수 없는 에러! FieldUID가 다르다니!?" )
+		START_LOG( cerr, L"This should never happen! The FieldUID does not match!" )
 			<< BUILD_LOG( kPacket_.m_iFieldUID )
 			<< BUILD_LOG( GetUID() )
 			<< END_LOG;
@@ -319,7 +319,7 @@ _IMPL_ON_FUNC( ERM_JOIN_FIELD_CHANNEL_CHANGE_REQ, KERM_JOIN_FIELD_REQ )
 	// FieldUID 검사
 	if( kPacket_.m_iFieldUID != GetUID() )
 	{
-		START_LOG( cerr, L"있을수 없는 에러! FieldUID가 다르다니!?" )
+		START_LOG( cerr, L"This should never happen! The FieldUID does not match!" )
 			<< BUILD_LOG( kPacket_.m_iFieldUID )
 			<< BUILD_LOG( GetUID() )
 			<< END_LOG;
@@ -372,7 +372,7 @@ IMPL_ON_FUNC( ERM_LEAVE_FIELD_REQ )
     KETR_CHANGE_USER_LIST_IN_SECTOR_NOT kChangeToOtherNot;
 	if( !m_kFieldUserManager.LeaveField( FIRST_SENDER_UID, kChangeToOtherNot.m_vecUID ) )
 	{
-		START_LOG( cerr, L"필드 나가기 실패." )
+		START_LOG( cerr, L"Failed to leave the field." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_iMapID )
 			<< BUILD_LOG( NetError::GetErrStr( kPacket_.m_iReason ) )
@@ -469,7 +469,7 @@ IMPL_ON_FUNC( ERM_OPTION_UPDATE_NOT )
 	// 필드 옵션 업데이트
 	if( !m_kFieldUserManager.SetFieldOption( FIRST_SENDER_UID, kPacket_.m_kFieldOption ) )
 	{
-        START_LOG( cerr, L"필드 옵션 업데이트 실패!" )
+        START_LOG( cerr, L"Failed to update field options!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
 	}
@@ -484,7 +484,7 @@ IMPL_ON_FUNC( ERM_UPDATE_PARTY_NOT )
     // 파티 정보 업데이트
     if( !m_kFieldUserManager.SetParty( FIRST_SENDER_UID, kPacket_.m_iPartyUID, kPacket_.m_setPartyUIDList, kChangeToThisNot.m_vecNewUserList, kChangeToThisNot.m_vecDelUserList ) )
     {
-        START_LOG( cerr, L"파티 정보 업데이트 실패!" )
+        START_LOG( cerr, L"Failed to update party information!" )
             << BUILD_LOG( FIRST_SENDER_UID )
             << BUILD_LOG( kPacket_.m_setPartyUIDList.size() )
             << END_LOG;
@@ -514,7 +514,7 @@ _IMPL_ON_FUNC( ERM_CHAT_REQ, KEGS_CHAT_REQ )
 
 	if( kPacket_.m_cChatPacketType != KEGS_CHAT_REQ::CPT_TOTAL )
 	{
-		START_LOG( cerr, L"일반채팅 패킷타입이 아닌데 여기왔네?" )
+		START_LOG( cerr, L"Received an unexpected non-general-chat packet type here?" )
 			<< BUILD_LOGc( kPacket_.m_cChatPacketType )
 			<< END_LOG;
 
@@ -567,7 +567,7 @@ _IMPL_ON_FUNC( ERM_CHAT_REQ, KEGS_CHAT_REQ )
 	}
 	else
 	{
-		START_LOG( cerr, L"이상한 채팅 타입." )
+		START_LOG( cerr, L"Invalid chat type." )
 			<< BUILD_LOGc( kPacket_.m_cRoomChatType )
 			<< END_LOG;
 
@@ -616,7 +616,7 @@ IMPL_ON_FUNC( ERM_REQUEST_TRADE_REPLY_NOT )
 IMPL_ON_FUNC_NOPARAM( DMP_DUMP_EVENT_NOT )
 {
 	dbg::cout << L"MapID  : " << m_iMapID << dbg::endl;
-	dbg::cout << L"유저수 : " << m_kFieldUserManager.GetNumMember() << dbg::endl;
+	dbg::cout << L"User count: " << m_kFieldUserManager.GetNumMember() << dbg::endl;
 
 	m_kFieldUserManager.Dump();
 
@@ -635,7 +635,7 @@ _IMPL_ON_FUNC( ERM_FIELD_USER_LIST_REQ, KEGS_COMMUNITY_USER_LIST_REQ )
 	if( !m_kFieldUserManager.GetFieldUserList( kPacket_.m_uiViewPage, kPacket.m_uiTotalPage, kPacket.m_vecUserList, kPacket_.m_bMode ) )
 	//}}
 	{
-		START_LOG( cerr, L"필드 유저 리스트 얻기 실패!" )
+		START_LOG( cerr, L"Failed to retrieve the field user list!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_uiViewPage )
 			<< END_LOG;
@@ -663,7 +663,7 @@ IMPL_ON_FUNC( ERM_UPDATE_FRIEND_NOT )
 	// 친구 정보 업데이트
 	if( !m_kFieldUserManager.SetFriend( FIRST_SENDER_UID, kPacket_.m_setFriendUIDList, kChangeToThisNot.m_vecNewUserList, kChangeToThisNot.m_vecDelUserList ) )
 	{
-		START_LOG( cerr, L"친구 정보 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update friend information!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_setFriendUIDList.size() )
 			<< END_LOG;
@@ -686,7 +686,7 @@ IMPL_ON_FUNC( ERM_CHANGE_FIELD_USER_INFO_NOT )
 	// 캐릭터 정보 업데이트
 	if( !m_kFieldUserManager.SetFieldUserInfo( kPacket_.m_kInfo ) )
 	{
-		START_LOG( cerr, L"캐릭터 정보 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update character information!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
 		return;
@@ -713,7 +713,7 @@ IMPL_ON_FUNC( ERM_SUMMON_PET_NOT )
 
 	if( m_kFieldUserManager.SetPetInfo( FIRST_SENDER_UID, kPacket_.m_vecPetInfo ) == false )
 	{
-		START_LOG( cerr, L"펫 정보 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update the pet information!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_vecPetInfo.size() )
 			<< END_LOG;
@@ -751,7 +751,7 @@ IMPL_ON_FUNC( ERM_PET_EVOLUTION_NOT )
 	// petinfo 업데이트
 	if( m_kFieldUserManager.SetPetInfo( FIRST_SENDER_UID, kPacket_.m_kEvolutionPetInfo ) == false )
 	{
-		START_LOG( cerr, L"펫 정보 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update the pet information!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_kEvolutionPetInfo.m_iPetUID )
 			<< END_LOG;
@@ -782,7 +782,7 @@ IMPL_ON_FUNC( ERM_FIELD_USER_LIST_MONITORING_MODE_REQ )
 
 	if( !m_kFieldUserManager.GetFieldUserList( kPacket_.m_uiViewPage, kPacket.m_uiTotalPage, kPacket.m_vecUserList, true ) )
 	{
-		START_LOG( cerr, L"필드 유저 리스트 얻기 실패!" )
+		START_LOG( cerr, L"Failed to retrieve the field user list!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_uiViewPage )
 			<< END_LOG;
@@ -803,7 +803,7 @@ IMPL_ON_FUNC( ERM_TOGGLE_INVISIBLE_NOT )
 	KFieldUserPtr spFieldUser = m_kFieldUserManager.GetUser( kPacket_.m_iUnitUID );
 	if( !spFieldUser )
 	{
-		START_LOG( cerr, L"유저 검색 실패." )
+		START_LOG( cerr, L"Failed to search for the user." )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
 	}
@@ -826,7 +826,7 @@ _IMPL_ON_FUNC( ERM_SUMMON_RIDING_PET_NOT, KEGS_SUMMON_RIDING_PET_NOT )
 
 	if( m_kFieldUserManager.SetRidingPetInfo( kPacket_.m_iUnitUID, kPacket_.m_iRidingPetUID, kPacket_.m_usRidingPetID ) == false )
 	{
-		START_LOG( cerr, L"라이딩 펫 정보 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update riding pet information!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_usRidingPetID )
 			<< END_LOG;
@@ -850,7 +850,7 @@ _IMPL_ON_FUNC( ERM_UNSUMMON_RIDING_PET_NOT, KEGS_UNSUMMON_RIDING_PET_NOT )
 
 	if( m_kFieldUserManager.SetRidingPetInfo( kPacket_.m_iUnitUID, 0, 0 ) == false )
 	{
-		START_LOG( cerr, L"라이딩 펫 정보 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update riding pet information!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
 		return;
@@ -923,7 +923,7 @@ IMPL_ON_FUNC( ERM_CALL_MY_LOVER_LEAVE_FIELD_REQ )
 	KETR_CHANGE_USER_LIST_IN_SECTOR_NOT kChangeToOtherNot;
 	if( !m_kFieldUserManager.LeaveField( FIRST_SENDER_UID, kChangeToOtherNot.m_vecUID ) )
 	{
-		START_LOG( cerr, L"필드 나가기 실패." )
+		START_LOG( cerr, L"Failed to leave the field." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_iMapID )
 			<< BUILD_LOG( NetError::GetErrStr( kPacket_.m_iReason ) )

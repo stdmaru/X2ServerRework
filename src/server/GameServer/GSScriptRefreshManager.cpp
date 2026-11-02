@@ -131,7 +131,7 @@ void KGSScriptRefreshManager::RegToLua( lua_State* pLuaState )
 
 void KGSScriptRefreshManager::ItemManager_LUA()
 {
-	START_LOG( cout, L"ItemManager 클래스 스크립트 실시간 패치!" );
+	START_LOG( cout, L"Hot-reloading ItemManager class script!" );
 
 	// 게임서버의 ItemManager 갱신 요청!
 	RefreshOrderToCnServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GS_ITEM_MANAGER );
@@ -143,7 +143,7 @@ void KGSScriptRefreshManager::ItemManager_LUA()
 
 void KGSScriptRefreshManager::RandomItemManager_LUA()
 {
-	START_LOG( cout, L"RandomItemManager 클래스 스크립트 실시간 패치!" );
+	START_LOG( cout, L"Hot-reloading RandomItemManager class script!" );
 
 	// 게임서버의 RandomItemManager 갱신 요청!
 	RefreshOrderToCnServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GS_RANDOM_ITEM_MANAGER );
@@ -152,7 +152,7 @@ void KGSScriptRefreshManager::RandomItemManager_LUA()
 
 void KGSScriptRefreshManager::ManufactureItemManager_LUA()
 {
-	START_LOG( cout, L"ManufactureItemManager 클래스 스크립트 실시간 패치!" );
+	START_LOG( cout, L"Hot-reloading ManufactureItemManager class script!" );
 
 	// 게임서버의 ManufactureItemManager 갱신 요청!
 	RefreshOrderToCnServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GS_MANUFACTURE_ITEM_MANAGER );
@@ -161,7 +161,7 @@ void KGSScriptRefreshManager::ManufactureItemManager_LUA()
 
 void KGSScriptRefreshManager::RewardTable_LUA()
 {
-	START_LOG( cout, L"RewardTable 클래스 스크립트 실시간 패치!" );
+	START_LOG( cout, L"Hot-reloading RewardTable class script!" );
 
 	// 게임서버의 RewardTable 갱신 요청!
 	RefreshOrderToCnServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GS_REWARD_TABLE );
@@ -170,7 +170,7 @@ void KGSScriptRefreshManager::RewardTable_LUA()
 
 void KGSScriptRefreshManager::QuestManager_LUA()
 {
-	START_LOG( cout, L"QuestManager 클래스 스크립트 실시간 패치!" );
+	START_LOG( cout, L"Hot-reloading QuestManager class script!" );
 
 	// 게임서버의 QuestManager 갱신 요청!
 	RefreshOrderToCnServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GS_QUEST_MANAGER );
@@ -187,7 +187,7 @@ void KGSScriptRefreshManager::QuestManager_LUA()
 
 void KGSScriptRefreshManager::TitleManager_LUA()
 {
-	START_LOG( cout, L"TitleManager 클래스 스크립트 실시간 패치!" );
+	START_LOG( cout, L"Hot-reloading TitleManager class script!" );
 
 	// 게임서버의 TitleManager 갱신 요청!
 	RefreshOrderToCnServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GS_TITLE_MANAGER );
@@ -200,7 +200,7 @@ void KGSScriptRefreshManager::TitleManager_LUA()
 
 void KGSScriptRefreshManager::DungeonManager_LUA()
 {
-	START_LOG( cout, L"DungeonManager 클래스 스크립트 실시간 패치!" );
+	START_LOG( cout, L"Hot-reloading DungeonManager class script!" );
 
 	// 게임서버의 DungeonManager 갱신 요청!
 	RefreshOrderToCnServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GS_DUNGEON_MANAGER );
@@ -213,7 +213,7 @@ void KGSScriptRefreshManager::DungeonManager_LUA()
 
 void KGSScriptRefreshManager::DropTable_LUA()
 {
-	START_LOG( cout, L"DropTable 클래스 스크립트 실시간 패치!" );
+	START_LOG( cout, L"Hot-reloading DropTable class script!" );
 
 	// 센터서버의 DropTable 갱신 요청!
 	RefreshOrderToCnServerBroadCast( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_CN_DROP_TABLE );
@@ -223,7 +223,7 @@ void KGSScriptRefreshManager::DropTable_LUA()
 
 void KGSScriptRefreshManager::GameEventScriptManager_LUA()
 {
-	START_LOG( cout, L"GameEventScriptManager 클래스 스크립트 실시간 패치!" );
+	START_LOG( cout, L"Hot-reloading GameEventScriptManager class script!" );
 
 	// 게임서버의 GameEventScriptManager 갱신 요청!
 	RefreshOrderToCnServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GS_GAME_EVENT_SCRIPT_MANAGER );
@@ -236,7 +236,7 @@ void KGSScriptRefreshManager::GameEventScriptManager_LUA()
 
 void KGSScriptRefreshManager::MapData_LUA()
 {
-	START_LOG( cout, L"MapData 클래스 스크립트 실시간 패치!" );
+	START_LOG( cout, L"Hot-reloading MapData class script!" );
 
 	// 게임서버의 MapData 갱신 요청!
 	RefreshOrderToCnServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GS_MAP_DATA );
@@ -246,7 +246,7 @@ void KGSScriptRefreshManager::MapData_LUA()
 
 void KGSScriptRefreshManager::GuildManager_LUA()
 {
-	START_LOG( cout, L"GuildManager 클래스 스크립트 실시간 패치!" );
+	START_LOG( cout, L"Hot-reloading GuildManager class script!" );
 
 	// 게임서버의 GuildManager 갱신 요청!
 	RefreshOrderToCnServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GS_GUILD_MANAGER );
@@ -258,7 +258,7 @@ void KGSScriptRefreshManager::GuildManager_LUA()
 
 void KGSScriptRefreshManager::GameSysVal_LUA()
 {
-	START_LOG( cout, L"GameSysVal 클래스 스크립트 실시간 패치!" );
+	START_LOG( cout, L"Hot-reloading GameSysVal class script!" );
 
 	// 게임서버의 Game Sys Val 갱신 요청!
 	RefreshOrderToCnServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GS_GAME_SYS_VAL );
@@ -275,7 +275,7 @@ void KGSScriptRefreshManager::GameSysVal_LUA()
 
 void KGSScriptRefreshManager::ResolveItemManager_LUA()
 {
-	START_LOG( cout, L"ResolveItemManager 클래스 스크립트 실시간 패치!" );
+	START_LOG( cout, L"Hot-reloading ResolveItemManager class script!" );
 
 	// 게임서버의 Resolve Item Manager 갱신 요청!
 	RefreshOrderToCnServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GS_RESOLVE_ITEM_MANAGER );
@@ -285,7 +285,7 @@ void KGSScriptRefreshManager::ResolveItemManager_LUA()
 
 void KGSScriptRefreshManager::EnchantItemManager_LUA()
 {
-	START_LOG( cout, L"EnchantItemManager 클래스 스크립트 실시간 패치!" );
+	START_LOG( cout, L"Hot-reloading EnchantItemManager class script!" );
 
 	// 게임서버의 Enchant Item Manager 갱신 요청!
 	RefreshOrderToCnServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GS_ENCHANT_ITEM_MANAGER );
@@ -295,7 +295,7 @@ void KGSScriptRefreshManager::EnchantItemManager_LUA()
 
 void KGSScriptRefreshManager::SocketItem_LUA()
 {
-	START_LOG( cout, L"SocketItem 클래스 스크립트 실시간 패치!" );
+	START_LOG( cout, L"Hot-reloading SocketItem class script!" );
 
 	// 게임서버의 Socket Item 갱신 요청!
 	RefreshOrderToCnServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GS_SOCKET_ITEM );
@@ -305,7 +305,7 @@ void KGSScriptRefreshManager::SocketItem_LUA()
 
 void KGSScriptRefreshManager::AttribEnchantItem_LUA()
 {
-	START_LOG( cout, L"AttribEnchantItem 클래스 스크립트 실시간 패치!" );
+	START_LOG( cout, L"Hot-reloading AttribEnchantItem class script!" );
 
 	// 게임서버의 Attrib Enchant Item 갱신 요청!
 	RefreshOrderToCnServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GS_ATTRIB_ENCHANT_ITEM );
@@ -315,7 +315,7 @@ void KGSScriptRefreshManager::AttribEnchantItem_LUA()
 
 void KGSScriptRefreshManager::RecommendUserTable_LUA()
 {
-	START_LOG( cout, L"RecommendUserTable 클래스 스크립트 실시간 패치!" );
+	START_LOG( cout, L"Hot-reloading RecommendUserTable class script!" );
 
 	// 게임서버의 Recommend User Table 갱신 요청!
 	RefreshOrderToCnServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GS_RECOMMEND_USER_TABLE );
@@ -325,7 +325,7 @@ void KGSScriptRefreshManager::RecommendUserTable_LUA()
 
 void KGSScriptRefreshManager::ExpTable_LUA()
 {
-	START_LOG( cout, L"ExpTable 클래스 스크립트 실시간 패치!" );
+	START_LOG( cout, L"Hot-reloading ExpTable class script!" );
 
 	// 게임서버의 Exp Table 갱신 요청!
 	RefreshOrderToCnServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GS_EXP_TABLE );
@@ -336,7 +336,7 @@ void KGSScriptRefreshManager::ExpTable_LUA()
 //{{ 2010. 9. 11	최육사	펫 시스템
 void KGSScriptRefreshManager::PetManager_LUA()
 {
-	START_LOG( cout, L"PetManager 클래스 스크립트 실시간 패치!" );
+	START_LOG( cout, L"Hot-reloading PetManager class script!" );
 
 	// 게임서버의 Pet Manager 갱신 요청!
 	RefreshOrderToCnServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GS_PET_MANAGER );
@@ -348,7 +348,7 @@ void KGSScriptRefreshManager::PetManager_LUA()
 
 void KGSScriptRefreshManager::AttribNpcTable_LUA()
 {
-	START_LOG( cout, L"AttribNpcTable 클래스 스크립트 실시간 패치!" );
+	START_LOG( cout, L"Hot-reloading AttribNpcTable class script!" );
 
 	// 센터서버의 Attrib Npc Table 갱신 요청!
 	RefreshOrderToCnServerBroadCast( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_CN_ATTRIB_NPC_TABLE );
@@ -359,7 +359,7 @@ void KGSScriptRefreshManager::AttribNpcTable_LUA()
 //{{ 2010. 10. 05	최육사	센터서버 해킹체크
 void KGSScriptRefreshManager::CnHackingCheckManager_LUA()
 {
-	START_LOG( cout, L"CnHackingCheckManager 클래스 스크립트 실시간 패치!" );
+	START_LOG( cout, L"Hot-reloading CnHackingCheckManager class script!" );
 
 	// 센터서버의 Cn Hacking Check Manager 갱신 요청!
 	RefreshOrderToCnServerBroadCast( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_CN_HACKING_CHECK_MANAGER );
@@ -373,7 +373,7 @@ void KGSScriptRefreshManager::CnHackingCheckManager_LUA()
 
 void KGSScriptRefreshManager::AbuserLogManager_LUA()
 {
-	START_LOG( cout, L"AbuserLogManager 클래스 스크립트 실시간 패치!" );
+	START_LOG( cout, L"Hot-reloading AbuserLogManager class script!" );
 
 	// 게임서버의 Abuser Log Manager 갱신 요청!
 	RefreshOrderToCnServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GS_ABUSER_LOG_MANAGER );
@@ -387,7 +387,7 @@ void KGSScriptRefreshManager::AbuserLogManager_LUA()
 //{{ 2011. 02. 23	최육사	던전 랭크 개편
 void KGSScriptRefreshManager::ResultProcess_LUA()
 {
-	START_LOG( cout, L"ResultProcess 클래스 스크립트 실시간 패치!" );
+	START_LOG( cout, L"Hot-reloading ResultProcess class script!" );
 
 	// 센터서버의 ResultProcess 갱신 요청!
 	RefreshOrderToCnServerBroadCast( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_CN_RESULT_PROCESS );
@@ -399,7 +399,7 @@ void KGSScriptRefreshManager::ResultProcess_LUA()
 //{{ 2011. 04. 13  김민성  글로벌 서버 추가
 void KGSScriptRefreshManager::WorldMissionManager_LUA()
 {
-	START_LOG( cout, L"WorldMissionManager 클래스 스크립트 실시간 패치!" );
+	START_LOG( cout, L"Hot-reloading WorldMissionManager class script!" );
 
 	// 글로벌서버의 WorldMissionManager 갱신 요청!
 	RefreshOrderToGBServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GB_WORLD_MISSION_MANAGER );
@@ -411,7 +411,7 @@ void KGSScriptRefreshManager::WorldMissionManager_LUA()
 //{{ 2011. 07. 23	최육사	대전 개편
 void KGSScriptRefreshManager::PvpMatchManager_LUA()
 {
-	START_LOG( cout, L"PvpMatchManager 클래스 스크립트 실시간 패치!" );
+	START_LOG( cout, L"Hot-reloading PvpMatchManager class script!" );
 
 	// 게임서버의 Pvp Match Manager 갱신 요청!
 	RefreshOrderToCnServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GS_PVP_MATCH_MANAGER );
@@ -427,7 +427,7 @@ void KGSScriptRefreshManager::PvpMatchManager_LUA()
 
 void KGSScriptRefreshManager::PvpMatchResultTable_LUA()
 {
-	START_LOG( cout, L"PvpMatchResultTable 클래스 스크립트 실시간 패치!" );
+	START_LOG( cout, L"Hot-reloading PvpMatchResultTable class script!" );
 
 	// 센터서버의 Pvp Match Result Table 갱신 요청!
 	RefreshOrderToCnServerBroadCast( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_CN_PVP_MATCH_RESULT_TABLE );
@@ -439,7 +439,7 @@ void KGSScriptRefreshManager::PvpMatchResultTable_LUA()
 //{{ 2011. 08. 24	최육사	시공 개편
 void KGSScriptRefreshManager::HenirResultTable_LUA()
 {
-	START_LOG( cout, L"HenirResultTable 클래스 스크립트 실시간 패치!" );
+	START_LOG( cout, L"Hot-reloading HenirResultTable class script!" );
 
 	// 센터서버의 Henir Result Table 갱신 요청!
 	RefreshOrderToCnServerBroadCast( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_CN_HENIR_RESULT_TABLE );
@@ -452,7 +452,7 @@ void KGSScriptRefreshManager::HenirResultTable_LUA()
 //{{ 2011. 10. 12	최육사	컨텐츠 관리자
 void KGSScriptRefreshManager::ContentManager_LUA()
 {
-	START_LOG( cout, L"ContentManager 클래스 스크립트 실시간 패치!" );
+	START_LOG( cout, L"Hot-reloading ContentManager class script!" );
 
 	// 게임서버의 ContentManager 갱신 요청!
 	RefreshOrderToCnServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GS_CONTENT_MANAGER );
@@ -464,7 +464,7 @@ void KGSScriptRefreshManager::ContentManager_LUA()
 //{{ 2011. 12. 26	최육사	배틀필드 시스템
 void KGSScriptRefreshManager::BattleFieldManager_LUA()
 {
-	START_LOG( cout, L"BattleFieldManager 클래스 스크립트 실시간 패치!" );
+	START_LOG( cout, L"Hot-reloading BattleFieldManager class script!" );
 
 	// 글로벌서버의 Battle Field Manager 갱신 요청!
 	RefreshOrderToGBServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GB_BATTLE_FIELD_MANAGER );
@@ -480,7 +480,7 @@ void KGSScriptRefreshManager::BattleFieldManager_LUA()
 
 void KGSScriptRefreshManager::AutoPartyScriptManager_LUA()
 {
-	START_LOG( cout, L"AutoPartyScriptManager 클래스 스크립트 실시간 패치!");
+	START_LOG( cout, L"Hot-reloading AutoPartyScriptManager class script!");
 
 	// 글로벌서버의 AutoPartyScriptManager 갱신 요청!
 	RefreshOrderToGBServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GB_AUTO_PARTY_SCRIPT_MANAGER );
@@ -495,7 +495,7 @@ void KGSScriptRefreshManager::AutoPartyScriptManager_LUA()
 
 void KGSScriptRefreshManager::PartyManager_LUA()
 {
-	START_LOG( cout, L"PartyManager 클래스 스크립트 실시간 패치!" );
+	START_LOG( cout, L"Hot-reloading PartyManager class script!" );
 
 	// 센터서버의 Party Manager 갱신 요청!
 	RefreshOrderToCnServerBroadCast( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_CN_PARTY_MANAGER );
@@ -510,7 +510,7 @@ void KGSScriptRefreshManager::PartyManager_LUA()
 //{{ 2013. 01. 09 던전 강퇴 시스템 - 김민성
 void KGSScriptRefreshManager::BadAttitudeTable_LUA()
 {
-	START_LOG( cout, L"BadAttitudeTable 클래스 스크립트 실시간 패치!" );
+	START_LOG( cout, L"Hot-reloading BadAttitudeTable class script!" );
 
 	// 센터서버의 BadAttitudeTable 갱신 요청!
 	RefreshOrderToCnServerBroadCast( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_CN_BAD_ATTITUDE_TABLE );
@@ -522,7 +522,7 @@ void KGSScriptRefreshManager::BadAttitudeTable_LUA()
 //{{ 2013. 04. 15	최육사	어둠의 문 개편
 void KGSScriptRefreshManager::DefenceDungeonManager_LUA()
 {
-	START_LOG( cout, L"Defence Dungeon Manager 클래스 스크립트 실시간 패치!" );
+	START_LOG( cout, L"Hot-reloading Defence Dungeon Manager class script!" );
 
 	// 센터서버의 Defence Dungeon Manager 갱신 요청!
 	RefreshOrderToCnServerBroadCast( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_CN_DEFENCE_DUNGEON_MANAGER );
@@ -533,7 +533,7 @@ void KGSScriptRefreshManager::DefenceDungeonManager_LUA()
 
 void KGSScriptRefreshManager::BuffManager_LUA()
 {
-	START_LOG( cout, L"Buff Manager 클래스 스크립트 실시간 패치!" );
+	START_LOG( cout, L"Hot-reloading Buff Manager class script!" );
 
 	// 센터서버의 Buff Manager 갱신 요청!
 	RefreshOrderToCnServerBroadCast( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_CN_BUFF_MANAGER );
@@ -560,7 +560,7 @@ void KGSScriptRefreshManager::Init()
 		kAutoPath.GetPullPath( strFile );
 		if( 0 != LUA_DOFILE( m_pRefreshLuaState, strFile.c_str() ) )
 		{
-			START_LOG( cerr, L"GSScriptRefreshManager : Enum 정보 로드 실패.!" );
+			START_LOG( cerr, L"GSScriptRefreshManager: failed to load enum information!" );
 			return;
 		}
 	}
@@ -572,7 +572,7 @@ void KGSScriptRefreshManager::Init()
 		kAutoPath.GetPullPath( strFile );
 		if( 0 != LUA_DOFILE( m_pRefreshLuaState, strFile.c_str() ) )
 		{
-			START_LOG( cerr, L"GSScriptRefreshManager : DungeonEnum 정보 로드 실패.!" );
+			START_LOG( cerr, L"GSScriptRefreshManager: failed to load DungeonEnum information!" );
 			return;
 		}
 	}
@@ -583,7 +583,7 @@ void KGSScriptRefreshManager::Init()
 	// 스레드 시작!
 	KThreadManager::BeginThread();
 
-	START_LOG( cout, L"스크립트 리프레쉬 스레드 시작!" );
+	START_LOG( cout, L"Starting script refresh thread!" );
 }
 
 KThread* KGSScriptRefreshManager::CreateThread()
@@ -632,7 +632,7 @@ void KGSScriptRefreshManager::RefreshOrderToGBServer( IN int iOrderType )
 //{{ 2011.10.14     김민성    운영자 기능은 특정 IP 에서만 사용 가능
 void KGSScriptRefreshManager::CompanyIPTable_LUA()
 {
-	START_LOG( cout, L"CompanyIPTable 클래스 스크립트 실시간 패치!" );
+	START_LOG( cout, L"Hot-reloading CompanyIPTable class script!" );
 
 	// 게임서버의 TitleManager 갱신 요청!
 	RefreshOrderToCnServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GS_COMPANY_IP_TABLE );
@@ -644,7 +644,7 @@ void KGSScriptRefreshManager::CompanyIPTable_LUA()
 //{{ 2011. 11. 21  김민성	전직 변경 아이템
 void KGSScriptRefreshManager::ClassChangeTable_LUA()
 {
-	START_LOG( cout, L"ClassChangeTable 클래스 스크립트 실시간 패치!" );
+	START_LOG( cout, L"Hot-reloading ClassChangeTable class script!" );
 
 	// 게임서버의 TitleManager 갱신 요청!
 	RefreshOrderToCnServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GS_CLASS_CHANGE_TABLE );
@@ -656,7 +656,7 @@ void KGSScriptRefreshManager::ClassChangeTable_LUA()
 //{{ 2012. 01. 27	박세훈	String Filter 실시간 스크립트 갱신
 void KGSScriptRefreshManager::StringFilter_LUA()
 {
-	START_LOG( cout, L"StringFitler 클래스 스크립트 실시간 패치!" );
+	START_LOG( cout, L"Hot-reloading StringFitler class script!" );
 
 	// 게임서버의 String Fitler 갱신 요청!
 	RefreshOrderToCnServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GS_STRING_FILTER );
@@ -668,7 +668,7 @@ void KGSScriptRefreshManager::StringFilter_LUA()
 //{{ 2012. 04. 25	박세훈	어둠의 문 개편
 void KGSScriptRefreshManager::WorldMissionManager_IncreaseCrystalCount_LUA( int iIncreaseCrystalNum )
 {
-	START_LOG( cout, L"WorldMissionManager 보호된 수정의 개수 증가를 요청합니다.");
+	START_LOG( cout, L"Requesting an increase to WorldMissionManager's protected modification count.");
 
 	KncSend( PI_GS_SERVER, GetUID(), PI_GLOBAL_SERVER, 0, NULL, EGB_INCREASE_THE_PROTECTED_CRYSTAL_COUNT_NOT, iIncreaseCrystalNum );
 
@@ -677,7 +677,7 @@ void KGSScriptRefreshManager::WorldMissionManager_IncreaseCrystalCount_LUA( int 
 
 void KGSScriptRefreshManager::WorldMissionManager_ResetIncreaseCrystalCount_LUA( void )
 {
-	START_LOG( cout, L"WorldMissionManager 보호된 수정의 개수 초기화를 요청합니다.");
+	START_LOG( cout, L"Requesting a reset of WorldMissionManager's protected modification count.");
 
 	KncSend( PI_GS_SERVER, GetUID(), PI_GLOBAL_SERVER, 0, NULL, EGB_RESET_INCREASE_THE_PROTECTED_CRYSTAL_COUNT_NOT, char() );
 
@@ -697,7 +697,7 @@ void KGSScriptRefreshManager::WorldMissionManager_ResetIncreaseCrystalCount_LUA(
 //{{ 2013. 02. 19	최육사	로그 시스템 개선
 void KGSScriptRefreshManager::LogManager_LUA()
 {
-	START_LOG( cout, L"KLogManager 클래스 스크립트 실시간 패치!");
+	START_LOG( cout, L"Hot-reloading KLogManager class script!");
 
 	// 게임서버의 KLogManager 갱신 요청!
 	RefreshOrderToCnServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GS_LOG_MANAGER );
@@ -717,7 +717,7 @@ void KGSScriptRefreshManager::LogManager_LUA()
 
 void KGSScriptRefreshManager::RidingPetManager_LUA()
 {
-	START_LOG( cout, L"RidingPetManager 클래스 스크립트 실시간 패치!" );
+	START_LOG( cout, L"Hot-reloading RidingPetManager class script!" );
 
 	// 게임서버의 Riding Pet Manager 갱신 요청!
 	RefreshOrderToCnServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GS_RIDING_PET_MANAGER );
@@ -725,7 +725,7 @@ void KGSScriptRefreshManager::RidingPetManager_LUA()
 
 void KGSScriptRefreshManager::SkillTree_LUA( void )
 {
-	START_LOG( cout, L"SkillTree 클래스 스크립트 실시간 패치!" );
+	START_LOG( cout, L"Hot-reloading SkillTree class script!" );
 
 	// 게임서버의 SkillTree 갱신 요청!
 	RefreshOrderToCnServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GS_SKILL_TREE );
@@ -736,7 +736,7 @@ void KGSScriptRefreshManager::SkillTree_LUA( void )
 
 void KGSScriptRefreshManager::FieldBossData_LUA( void )
 {
-	START_LOG( cout, L"CXSLFieldBossData 클래스 스크립트 실시간 패치!" );
+	START_LOG( cout, L"Hot-reloading CXSLFieldBossData class script!" );
 
 	// 게임서버 갱신 요청!
 	RefreshOrderToCnServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GS_FIELD_BOSS_DATA );
@@ -755,7 +755,7 @@ void KGSScriptRefreshManager::FieldBossData_LUA( void )
 
 void KGSScriptRefreshManager::EDInventoryExpand_LUA()
 {
-    START_LOG( cout, L"InventoryExpand 클래스 스크립트 실시간 패치!" );
+    START_LOG( cout, L"Hot-reloading InventoryExpand class script!" );
     // 게임서버의 InventoryExpand 갱신 요청!
     RefreshOrderToCnServer( KESR_SCRIPT_REFRESH_ORDER_NOT::OT_GS_ED_INVENTORY_EXPAND );
 }

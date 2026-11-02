@@ -22,7 +22,7 @@ bool KPVPLobbyManager::AddPVPUser( IN KCommunityUserInfo& kInfo_, IN UidType nGS
 	// 유령유저가 있는지 검사
 	if( IsExist( kInfo_.m_iUnitUID ) )
 	{
-		START_LOG( cerr, L"pvp유저를 추가하려는데 이미 유저가 있다!? 유령유저인가!" )
+		START_LOG( cerr, L"Cannot add PvP user: user already exists! Is it a ghost user?" )
 			<< BUILD_LOG( kInfo_.m_iUnitUID )
 			<< END_LOG;
 
@@ -37,7 +37,7 @@ bool KPVPLobbyManager::AddPVPUser( IN KCommunityUserInfo& kInfo_, IN UidType nGS
 	KPVPUserPtr spAddUser = KPVPUserPtr( new KPVPUser( kInfo_, nGSUID ) );
 	if( spAddUser == NULL )
 	{
-		START_LOG( cerr, L"pvp user 생성실패!?" )
+		START_LOG( cerr, L"Failed to create PvP user!" )
 			<< BUILD_LOG( kInfo_.m_iUnitUID )
 			<< BUILD_LOG( nGSUID )
 			<< END_LOG;
@@ -51,7 +51,7 @@ bool KPVPLobbyManager::AddPVPUser( IN KCommunityUserInfo& kInfo_, IN UidType nGS
 
 	if( !pairResult.second )
 	{
-		START_LOG( cerr, L"pvp user 등록 실패!? 일어날수없는에러!" )
+		START_LOG( cerr, L"Failed to register PvP user; this should never happen!" )
 			<< BUILD_LOG( kInfo_.m_iUnitUID )
 			<< BUILD_LOG( nGSUID )
 			<< END_LOG;
@@ -70,7 +70,7 @@ bool KPVPLobbyManager::RemovePVPUser( IN UidType iUnitUID )
 	KPVPUserPtr spPVPUser = Get( iUnitUID );
 	if( spPVPUser == NULL )
 	{
-		START_LOG( cerr, L"pvp유저를 삭제하려는데 유저가 없다!?" )
+		START_LOG( cerr, L"Cannot remove PvP user: user does not exist!" )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 
@@ -84,7 +84,7 @@ bool KPVPLobbyManager::RemovePVPUser( IN UidType iUnitUID )
 	{
 		if( *vitRemove == NULL )
 		{
-            START_LOG( cerr, L"유저를 삭제하려는데 null값이다?!" )
+            START_LOG( cerr, L"Attempted to delete user, but pointer is null!" )
 				<< BUILD_LOG( iUnitUID )
 				<< END_LOG;
 			continue;
@@ -101,7 +101,7 @@ bool KPVPLobbyManager::RemovePVPUser( IN UidType iUnitUID )
 	}
 	else
 	{
-		START_LOG( cerr, L"vector에서 유저를 못찾았다? map에는 있는데?" )
+		START_LOG( cerr, L"Could not find the user in the vector, even though it is in the map?" )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 	}
@@ -117,7 +117,7 @@ bool KPVPLobbyManager::UpdatePVPUserInfo( IN UidType iUnitUID, IN char cState, I
 	if( spPVPUser == NULL )
 	{
 		// 시간차로 발생가능
-		START_LOG( cwarn, L"pvp유저정보를 갱신하려는데 유저가 없다!?" )
+		START_LOG( cwarn, L"Cannot update PvP user information: user does not exist!" )
 			<< BUILD_LOG( iUnitUID )
 			<< BUILD_LOGc( cState )
 			<< END_LOG;
@@ -164,7 +164,7 @@ bool KPVPLobbyManager::GetPVPUserList( IN UINT& uiViewPage, IN UINT& uiTotalPage
 
 		if( m_vecPVPUserList.size() <= uiBeginIndex )
 		{
-			START_LOG( cerr, L"일어날 수 없는 에러!" )
+			START_LOG( cerr, L"This should never happen!" )
 				<< BUILD_LOG( uiViewPage )
 				<< BUILD_LOG( uiTotalPage )
 				<< BUILD_LOG( uiBeginIndex )
@@ -182,7 +182,7 @@ bool KPVPLobbyManager::GetPVPUserList( IN UINT& uiViewPage, IN UINT& uiTotalPage
 		KPVPUserPtr spPVPUser = *vit;
 		if( spPVPUser == NULL )
 		{
-			START_LOG( cerr, L"pvp user 포인터가 이상합니다." )
+			START_LOG( cerr, L"Invalid PvP user pointer." )
 				<< END_LOG;
 		}
 		else
@@ -210,7 +210,7 @@ void KPVPLobbyManager::RemovePVPUserDisconnectGS( IN UidType nGSUID )
 	{
 		if( *vit == NULL )
 		{
-			START_LOG( cerr, L"pvp user 포인터가 이상하다!?" )
+			START_LOG( cerr, L"Invalid PvP user pointer!" )
 				<< BUILD_LOG( nGSUID )
 				<< END_LOG;
 			continue;
@@ -227,7 +227,7 @@ void KPVPLobbyManager::RemovePVPUserDisconnectGS( IN UidType nGSUID )
 	{
 		if( !RemovePVPUser( *vitRemove ) )
 		{
-			START_LOG( cerr, L"유저 삭제 실패!" )
+			START_LOG( cerr, L"Failed to delete user!" )
 				<< BUILD_LOG( *vitRemove )
 				<< END_LOG;
 		}
@@ -240,7 +240,7 @@ KPVPUserPtr KPVPLobbyManager::Get( IN UidType iUnitUID )
 	mit = m_mapPVPUserList.find( iUnitUID );
 	if( mit == m_mapPVPUserList.end() )
 	{
-		START_LOG( cwarn, L"pvp user를 찾을수 없습니다." )
+		START_LOG( cwarn, L"Could not find PvP user." )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 

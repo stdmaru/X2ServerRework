@@ -39,7 +39,7 @@ bool KRewardTable::AddRewardData_LUA( int iRewardID, int iItemID, int iQuantity,
 {
 	if( iRewardID <= 0  ||  iItemID <= 0  ||  iQuantity <= 0  ||  sPeriod < 0 )
 	{
-		START_LOG( cerr, L"잘못된 스크립트 정보입니다." )
+		START_LOG( cerr, L"Invalid script information." )
 			<< BUILD_LOG( iRewardID )
 			<< BUILD_LOG( iItemID )
 			<< BUILD_LOG( iQuantity )
@@ -84,7 +84,7 @@ void KRewardTable::GetRewardItem( IN const KPostItemInfo& kPostItemInfo, OUT std
 	if( mit == m_mapRewardData.end() )
 
 	{
-		START_LOG( cerr, L"존재하지 않는 RewardID입니다." )
+		START_LOG( cerr, L"The RewardID does not exist." )
 			<< BUILD_LOG( kPostItemInfo.m_iScriptIndex )
 			<< END_LOG;
 		return;
@@ -95,7 +95,7 @@ void KRewardTable::GetRewardItem( IN const KPostItemInfo& kPostItemInfo, OUT std
 		const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( kReward.m_iRewardItemID );
 		if( pItemTemplet == NULL )
 		{
-			START_LOG( cerr, L"아이템 템플릿 정보를 찾을 수 없습니다." )
+			START_LOG( cerr, L"Could not find the item template information." )
 				<< BUILD_LOG( kReward.m_iRewardItemID )
 				<< END_LOG;
 			continue;
@@ -145,7 +145,7 @@ bool KRewardTable::GetRewardInfo( IN int iRewardID, OUT std::map< int, int >& ma
 	mit = m_mapRewardData.find( iRewardID );
 	if( mit == m_mapRewardData.end() )
 	{
-		START_LOG( cerr, L"존재하지 않는 RewardID입니다." )
+		START_LOG( cerr, L"The RewardID does not exist." )
 			<< BUILD_LOG( iRewardID )
 			<< END_LOG;
 		return false;

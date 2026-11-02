@@ -99,7 +99,7 @@ IMPL_ON_FUNC( EGS_INVITE_PVP_ROOM_REQ )
 	KRoomInfoPtr spRoomInfo = SiKRoomListManager()->GetRoomInfo( GetRoomUID() );
 	if( !spRoomInfo )
 	{
-		START_LOG( cerr, L"대전방 초대를 하려는데 방정보가 없다?" )
+		START_LOG( cerr, L"Attempted to invite to a PvP room, but room information is missing?" )
 			<< BUILD_LOG( GetRoomUID() )
 			<< END_LOG;
 
@@ -298,7 +298,7 @@ IMPL_ON_FUNC( EGS_CHANGE_READY_REQ )
 
 	if( GetTradeUID() != 0 )
 	{
-		START_LOG( cerr, L"거래 중 레디 변경." )
+		START_LOG( cerr, L"Ready status changed during trade." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetTradeUID() )
 			<< BUILD_LOG( GetRoomUID() )
@@ -336,7 +336,7 @@ IMPL_ON_FUNC( EGS_CHANGE_READY_REQ )
 	}
 	else
 	{
-		START_LOG( cerr, L"방에 입장해있는데 RoomUID가 없다?" )
+		START_LOG( cerr, L"The user is in a room but has no RoomUID." )
 			<< BUILD_LOG( GetRoomUID() )
 			<< END_LOG;
 
@@ -824,7 +824,7 @@ IMPL_ON_FUNC( ERM_UPDATE_PVP_UNIT_INFO_NOT )
 			std::map< int, int >::iterator mit;
 			for( mit = kUpdatePacketNot.m_mapItemObtained.begin(); mit != kUpdatePacketNot.m_mapItemObtained.end(); ++mit )
 			{
-				START_LOG( clog2, L"획득 아이템." )
+				START_LOG( clog2, L"Acquired item." )
 					<< BUILD_LOG( mit->first )
 					<< BUILD_LOG( mit->second );
 			}
@@ -861,7 +861,7 @@ IMPL_ON_FUNC( ERM_UPDATE_PVP_UNIT_INFO_NOT )
 	{
 		if( GetRoomListID() != SiKRoomListManager()->GetPvpOffcialRoomListID() )
 		{
-			START_LOG( cerr, L"공식 매치인데 RoomListID값이 이상합니다! 버그다!" )
+			START_LOG( cerr, L"Invalid RoomListID in an official match; this is a bug!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( GetCharName() )
 				<< BUILD_LOG( GetRoomListID() )
@@ -927,7 +927,7 @@ IMPL_ON_FUNC( ERM_PVP_USER_STATISTICS_NOT )
 		break;
 
 	default:
-		START_LOG( cerr, L"이런 결과 타입은 없음." )
+		START_LOG( cerr, L"This result type does not exist." )
 			<< BUILD_LOGc( kPacket_.m_cGameResult )
 			<< END_LOG;
 		break;

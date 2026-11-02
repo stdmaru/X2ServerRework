@@ -39,7 +39,7 @@ bool KUserPetManager::AddUserPet( IN const KPetInfo& kPetInfo, IN const std::map
 	KUserPetPtr spPet( new KUserPet( kPetInfo, mapPetItem, bCreatePet ) );
 	if( spPet == NULL )
 	{
-		START_LOG( cerr, L"펫 포인터 생성 실패! 있을 수 없는 에러!" )
+		START_LOG( cerr, L"Failed to create pet pointer; this should never happen!" )
 			<< BUILD_LOG( kPetInfo.m_iPetUID )
 			<< END_LOG;
 
@@ -51,7 +51,7 @@ bool KUserPetManager::AddUserPet( IN const KPetInfo& kPetInfo, IN const std::map
 
 	if( m_mapPetList.find( kPetInfo.m_iPetUID ) != m_mapPetList.end() )
 	{
-		START_LOG( cerr, L"이미 등록된 펫이네? 있을 수 없는 에러!" )
+		START_LOG( cerr, L"Pet is already registered; this should never happen!" )
 			<< BUILD_LOG( kPetInfo.m_iPetUID )
 			<< END_LOG;
 
@@ -64,7 +64,7 @@ bool KUserPetManager::AddUserPet( IN const KPetInfo& kPetInfo, IN const std::map
 	{
 		if( spPet == NULL )
 		{
-			START_LOG( cerr, L"펫 포인터 값이 이상합니다." )
+			START_LOG( cerr, L"Invalid pet pointer value." )
 				<< END_LOG;
 			continue;
 		}
@@ -94,7 +94,7 @@ bool KUserPetManager::DelUserPet( IN UidType iPetUID )
 	// map컨테이너에서 등록 안된 펫인지 검사
 	if( m_mapPetList.find( iPetUID ) == m_mapPetList.end() )
 	{
-		START_LOG( cerr, L"등록 안된 펫이네? 있을 수 없는 에러!" )
+		START_LOG( cerr, L"Unregistered pet; this should never happen!" )
 			<< BUILD_LOG( iPetUID )
 			<< END_LOG;
 	}
@@ -105,7 +105,7 @@ bool KUserPetManager::DelUserPet( IN UidType iPetUID )
 	{
 		if( *vit == NULL )
 		{
-			START_LOG( cerr, L"펫 포인터 값이 이상합니다." )
+			START_LOG( cerr, L"Invalid pet pointer value." )
 				<< END_LOG;
 			continue;
 		}
@@ -204,7 +204,7 @@ void KUserPetManager::Init( IN KGSUserPtr /*spUser*/,
 		// 실제 존재하는 PetID인지 검사!
 		if( SiCXSLPetManager()->IsExistPetID( kPet.m_iPetID ) == false )
 		{
-			START_LOG( cerr, L"존재하지 않는 PetID가 DB에 있었습니다!" )
+			START_LOG( cerr, L"A nonexistent PetID was found in the database!" )
 				<< BUILD_LOG( kPet.m_iPetUID )
 				<< BUILD_LOGc( kPet.m_iPetID )
 				<< END_LOG;
@@ -244,7 +244,7 @@ void KUserPetManager::Init( IN KGSUserPtr /*spUser*/,
 		KUserPetPtr spSummonedPet = GetSummonedPet();
 		if( spSummonedPet == NULL )
 		{
-			START_LOG( cerr, L"펫 정보 얻을려고 했더니 펫이 없다? 있을 수 없는 에러!" )
+			START_LOG( cerr, L"Pet information was requested, but the pet is missing; this should never happen!" )
 				<< BUILD_LOG( GetSummonedPetUID() )
 				<< END_LOG;
 			return;
@@ -266,7 +266,7 @@ KUserPetPtr KUserPetManager::GetPet( IN UidType iPetUID )
 	mit = m_mapPetList.find( iPetUID );
 	if( mit == m_mapPetList.end() )
 	{
-		START_LOG( cwarn, L"찾는 펫이 없습니다.!" )
+		START_LOG( cwarn, L"Pet not found!" )
 			<< BUILD_LOG( iPetUID )
 			<< END_LOG;
 
@@ -275,7 +275,7 @@ KUserPetPtr KUserPetManager::GetPet( IN UidType iPetUID )
 
 	if( mit->second == NULL )
 	{
-		START_LOG( cerr, L"펫 포인터 이상.!" )
+		START_LOG( cerr, L"Invalid pet pointer!" )
 			<< BUILD_LOG( iPetUID )
 			<< END_LOG;
 
@@ -290,7 +290,7 @@ bool KUserPetManager::GetPetInfo( IN UidType iPetUID, OUT KPetInfo& kPetInfo )
 	KUserPetPtr spPet = GetPet( iPetUID );
 	if( spPet == NULL )
 	{
-		START_LOG( cerr, L"보유 하고 있지 않는 PetUID입니다." )
+		START_LOG( cerr, L"The PetUID is not owned by this user." )
 			<< BUILD_LOG( iPetUID )
 			<< BUILD_LOG( m_mapPetList.size() )
 			<< END_LOG;
@@ -323,7 +323,7 @@ void KUserPetManager::GetSummonedPetInfo( OUT std::vector< KPetInfo >& vecPet )
 	KPetInfo kInfo;
 	if( GetPetInfo( GetSummonedPetUID(), kInfo ) == false )
 	{
-		START_LOG( cerr, L"소환된 펫으로 설정된 PetUID가 실제로는 없는 펫이다? 있을 수 없는 에러!" )
+		START_LOG( cerr, L"The summoned pet's PetUID does not refer to an existing pet; this should never happen!" )
 			<< BUILD_LOG( GetSummonedPetUID() )
 			<< END_LOG;
 		return;
@@ -343,7 +343,7 @@ void KUserPetManager::GetSummonedPetInfo( OUT std::vector< KFieldPetInfo >& vecP
 	KPetInfo kInfo;
 	if( GetPetInfo( GetSummonedPetUID(), kInfo ) == false )
 	{
-		START_LOG( cerr, L"소환된 펫으로 설정된 PetUID가 실제로는 없는 펫이다? 있을 수 없는 에러!" )
+		START_LOG( cerr, L"The summoned pet's PetUID does not refer to an existing pet; this should never happen!" )
 			<< BUILD_LOG( GetSummonedPetUID() )
 			<< END_LOG;
 		return;
@@ -364,7 +364,7 @@ bool KUserPetManager::GetPetInventory( IN UidType iPetUID, OUT std::map< UidType
 	KUserPetPtr spPet = GetPet( iPetUID );
 	if( spPet == NULL )
 	{
-		START_LOG( cerr, L"존재 하지 않는 펫입니다!" )
+		START_LOG( cerr, L"Pet does not exist!" )
 			<< BUILD_LOG( iPetUID )
 			<< END_LOG;
 
@@ -384,7 +384,7 @@ void KUserPetManager::GetDBUpdatePetInfo( OUT std::vector< KPetInfo >& vecPetInf
 	{
 		if( mit->second == NULL )
 		{
-			START_LOG( cerr, L"펫 포인터값이 이상합니다." )
+			START_LOG( cerr, L"Invalid pet pointer value." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -436,7 +436,7 @@ bool KUserPetManager::IsSummonedPetHungry()
     KUserPetPtr spPet = GetSummonedPet();
 	if( spPet == NULL )
 	{
-		START_LOG( cerr, L"소환된 펫이 없는데 배고픈 상태인지 체크하네?" )
+		START_LOG( cerr, L"Checked whether a pet is hungry when none is summoned?" )
 			<< BUILD_LOG( GetSummonedPetUID() )
 			<< END_LOG;
 		return false;
@@ -451,7 +451,7 @@ bool KUserPetManager::UpdatePetInventory( IN UidType iPetUID, IN const std::map<
 	KUserPetPtr spPet = GetPet( iPetUID );
 	if( spPet == NULL )
 	{
-		START_LOG( cerr, L"펫 정보를 업데이트 하려고 하는데 펫이 존재 하지 않습니다!" )
+		START_LOG( cerr, L"Attempted to update pet information, but pet does not exist!" )
 			<< BUILD_LOG( iPetUID )
 			<< END_LOG;
 
@@ -473,7 +473,7 @@ void KUserPetManager::OnDeselectUnit( IN KGSUserPtr spUser )
 	KUserPetPtr spSummonedPet = GetSummonedPet();
 	if( spSummonedPet == NULL )
 	{
-		START_LOG( cerr, L"소환된 PetUID값은 있는데 펫 정보는 없네? 일어나면 안되는 에러!" )
+		START_LOG( cerr, L"Summoned PetUID exists, but pet information is missing; this should never happen!" )
 			<< BUILD_LOG( GetSummonedPetUID() )
 			<< END_LOG;
 		return;
@@ -516,7 +516,7 @@ bool KUserPetManager::DecreaseSatietyOnDungeonRoom( IN char cUserCount, IN short
 	KUserPetPtr spSummonedPet = GetSummonedPet();
 	if( spSummonedPet == NULL )
 	{
-		START_LOG( cerr, L"펫 정보를 찾을 수 없습니다!" )
+		START_LOG( cerr, L"Could not find the pet information!" )
 			<< BUILD_LOG( GetSummonedPetUID() )
 			<< END_LOG;
 		return false;
@@ -547,7 +547,7 @@ bool KUserPetManager::DecreaseSatietyOnPvpRoom( IN char cUserCount, IN const boo
 	KUserPetPtr spSummonedPet = GetSummonedPet();
 	if( spSummonedPet == NULL )
 	{
-		START_LOG( cerr, L"펫 정보를 찾을 수 없습니다!" )
+		START_LOG( cerr, L"Could not find the pet information!" )
 			<< BUILD_LOG( GetSummonedPetUID() )
 			<< END_LOG;
 		return false;
@@ -578,7 +578,7 @@ bool KUserPetManager::CheckAutoFeed( IN KGSUserPtr spUser, OUT bool& bIsFirstFee
 	KUserPetPtr spSummonedPet = GetSummonedPet();
 	if( spSummonedPet == NULL )
 	{
-		START_LOG( cerr, L"펫 정보를 찾을 수 없습니다!" )
+		START_LOG( cerr, L"Could not find the pet information!" )
 			<< BUILD_LOG( GetSummonedPetUID() )
 			<< END_LOG;
 		return false;
@@ -607,7 +607,7 @@ bool KUserPetManager::CheckAutoFeed( IN KGSUserPtr spUser, OUT bool& bIsFirstFee
 	if( spSummonedPet->Feed( spUser->GetLevel(), kNotAutoFeed.m_iFeedItemID, bIsFirstFeed, kNotSatiety.m_sCurrentSatiety, kNotIntimacy.m_iCurrentIntimacy, iAddIntimacy ) == false )
 	//}}
 	{
-		START_LOG( cerr, L"먹이 먹기 실패! 미리 체크 했는데 에러가 뜨네! 절대 일어나면 안되는 에러!" )
+		START_LOG( cerr, L"Failed to feed pet despite the prior check; this should never happen!" )
 			<< BUILD_LOG( NetError::GetLastErrMsg() )
 			<< BUILD_LOGc( spUser->GetLevel() )
 			<< BUILD_LOG( kNotAutoFeed.m_iFeedItemID )
@@ -634,7 +634,7 @@ void KUserPetManager::GetStatByPetSkill( IN bool bIsDungeon, IN const KStat& kBa
 	KUserPetPtr spPet = GetSummonedPet();
 	if( spPet == NULL )
 	{
-		START_LOG( cerr, L"소환된 펫UI는 있는데 실제 펫 정보는 없다?" )
+		START_LOG( cerr, L"The summoned pet UI exists, but the pet information is missing." )
 			<< BUILD_LOG( GetSummonedPetUID() )
 			<< END_LOG;
 		return;
@@ -653,7 +653,7 @@ void KUserPetManager::GetStatIncreaseRateByPetSkill( IN bool bIsDungeon, IN OUT 
 	KUserPetPtr spPet = GetSummonedPet();
 	if( spPet == NULL )
 	{
-		START_LOG( cerr, L"소환된 펫UI는 있는데 실제 펫 정보는 없다?" )
+		START_LOG( cerr, L"The summoned pet UI exists, but the pet information is missing." )
 			<< BUILD_LOG( GetSummonedPetUID() )
 			<< END_LOG;
 		return;
@@ -689,7 +689,7 @@ bool KUserPetManager::Handler_EGS_CREATE_PET_REQ( IN const KEGS_CREATE_PET_REQ& 
 
 	if( ePetID == CXSLPetManager::PUI_NONE )
 	{
-		START_LOG( cerr, L"펫 생성 아이템도 아니면서 사용하려고 했다!" )
+		START_LOG( cerr, L"Attempted to use an item that is not a pet creation item!" )
 			<< BUILD_LOG( kReq.m_iItemUID )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
@@ -708,7 +708,7 @@ bool KUserPetManager::Handler_EGS_CREATE_PET_REQ( IN const KEGS_CREATE_PET_REQ& 
 	// 5. 새로운 펫 정보 생성!
 	if( SiCXSLPetManager()->MakeNewPetInfo( ePetID, kReq.m_wstrPetName, kPacketToDB.m_kPetInfo ) == false )
 	{
-		START_LOG( cerr, L"새로운 펫 정보 생성 실패!" )
+		START_LOG( cerr, L"Failed to create new pet information!" )
 			<< BUILD_LOG( ePetID )
 			<< BUILD_LOG( kReq.m_wstrPetName )
 			<< END_LOG;
@@ -730,7 +730,7 @@ bool KUserPetManager::Handler_DBE_CREATE_PET_ACK( IN const KDBE_CREATE_PET_ACK& 
 	// 예약된 펫 정보가 있는지 확인
 	if( m_mapCreatePetReserve.empty() == true )
 	{
-		START_LOG( cerr, L"예약된 펫 정보가 없는데 펫 생성 결과처리를 하네? 있을 수 없는 에러!" )
+		START_LOG( cerr, L"Processed pet creation result without reserved pet information; this should never happen!" )
 			<< BUILD_LOG( kAck.m_kPetInfo.m_iPetUID )
 			<< BUILD_LOGc( kAck.m_kPetInfo.m_iPetID )
 			<< BUILD_LOG( kAck.m_kPetInfo.m_wstrPetName )
@@ -743,7 +743,7 @@ bool KUserPetManager::Handler_DBE_CREATE_PET_ACK( IN const KDBE_CREATE_PET_ACK& 
 	// 예약된 펫이 맞는지 확인하자!
 	if( m_mapCreatePetReserve.find( kAck.m_kPetInfo.m_wstrPetName ) == m_mapCreatePetReserve.end() )
 	{
-		START_LOG( cerr, L"예약된 펫은 있는데 생성요청했던 펫의 닉네임은 없네? 있을 수 없는 에러!" )
+		START_LOG( cerr, L"Reserved pet exists, but the requested pet nickname is missing; this should never happen!" )
 			<< BUILD_LOG( kAck.m_kPetInfo.m_iPetUID )
 			<< BUILD_LOGc( kAck.m_kPetInfo.m_iPetID )
 			<< BUILD_LOG( kAck.m_kPetInfo.m_wstrPetName )
@@ -760,7 +760,7 @@ bool KUserPetManager::Handler_DBE_CREATE_PET_ACK( IN const KDBE_CREATE_PET_ACK& 
     // 혹시나 해서 검사해봄
 	if( IsExistPet( kAck.m_kPetInfo.m_iPetUID ) == true )
 	{
-		START_LOG( cerr, L"똑같은 PetUID가 발급 되었네? 아니면 두번 업데이트 된건가? 있을 수 없는 에러!" )
+		START_LOG( cerr, L"Duplicate PetUID issued, or updated twice; this should never happen!" )
 			<< BUILD_LOG( kAck.m_kPetInfo.m_iPetUID )
 			<< BUILD_LOGc( kAck.m_kPetInfo.m_iPetID )
 			<< BUILD_LOG( kAck.m_kPetInfo.m_wstrPetName )
@@ -774,7 +774,7 @@ bool KUserPetManager::Handler_DBE_CREATE_PET_ACK( IN const KDBE_CREATE_PET_ACK& 
 	// 혹시나 해서 검사해봄
 	if( IsExistPet( kAck.m_kPetInfo.m_wstrPetName ) == true )
 	{
-		START_LOG( cerr, L"똑같은 펫 이름이 있네? 아니면 두번 업데이트 된건가? 있을 수 없는 에러!" )
+		START_LOG( cerr, L"Duplicate pet name, or updated twice; this should never happen!" )
 			<< BUILD_LOG( kAck.m_kPetInfo.m_iPetUID )
 			<< BUILD_LOGc( kAck.m_kPetInfo.m_iPetID )
 			<< BUILD_LOG( kAck.m_kPetInfo.m_wstrPetName )
@@ -821,7 +821,7 @@ void KUserPetManager::Handler_EGS_GET_PET_LIST_REQ( IN const KEGS_GET_PET_LIST_R
 
 		if( m_vecPetList.size() <= uiBeginIndex )
 		{
-			START_LOG( cerr, L"일어날 수 없는 에러!" )
+			START_LOG( cerr, L"This should never happen!" )
 				<< BUILD_LOG( kAck.m_nViewPage )
 				<< BUILD_LOG( kAck.m_nTotalPage )
 				<< BUILD_LOG( uiBeginIndex )
@@ -861,7 +861,7 @@ bool KUserPetManager::Handler_EGS_SUMMON_PET_REQ( IN KGSUserPtr spUser, IN const
 		// 이미 소환된 펫이 있는지 확인한다.
 		if( GetSummonedPetUID() == 0 )
 		{
-			START_LOG( cerr, L"소환된 펫이 없는데 뭘 소환해제할려는거냐!" )
+			START_LOG( cerr, L"Attempted to unsummon a pet when none is summoned!" )
 				<< BUILD_LOG( GetSummonedPetUID() )
 				<< END_LOG;
 
@@ -875,7 +875,7 @@ bool KUserPetManager::Handler_EGS_SUMMON_PET_REQ( IN KGSUserPtr spUser, IN const
 		// 이미 소환된 펫을 다시 소환하려고 하는게 아닌지 확인한다.
 		if( GetSummonedPetUID() == kReq.m_iSummonPetUID )
 		{
-			START_LOG( cerr, L"이미 소환되어 있는 펫인데 또 소환하려고 한다!" )
+			START_LOG( cerr, L"Attempted to summon an already summoned pet!" )
 				<< BUILD_LOG( GetSummonedPetUID() )
 				<< END_LOG;
 
@@ -892,7 +892,7 @@ bool KUserPetManager::Handler_EGS_SUMMON_PET_REQ( IN KGSUserPtr spUser, IN const
 		KUserPetPtr spSummonedPet = GetSummonedPet();
 		if( spSummonedPet == NULL )
 		{
-			START_LOG( cerr, L"소환 PetUID는 존재하는데 펫 정보는 없다? 있을 수 없는 에러!" )
+			START_LOG( cerr, L"Summoned PetUID exists, but pet information is missing; this should never happen!" )
 				<< BUILD_LOG( GetSummonedPetUID() )
 				<< END_LOG;
 
@@ -936,7 +936,7 @@ bool KUserPetManager::Handler_DBE_SUMMON_PET_ACK( IN const KDBE_SUMMON_PET_ACK& 
 
 	if( kAck.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"DB에서 펫 소환 처리 실패!" )
+		START_LOG( cerr, L"Failed to process the pet summon in the database!" )
 			<< BUILD_LOG( NetError::GetErrStr( kAck.m_iOK ) )
 			<< BUILD_LOG( kAck.m_iSummonPetUID )
 			<< END_LOG;
@@ -948,7 +948,7 @@ bool KUserPetManager::Handler_DBE_SUMMON_PET_ACK( IN const KDBE_SUMMON_PET_ACK& 
     // 소환하려던 펫이 맞는지 검사!
 	if( GetSummonedPetUID() != kAck.m_iSummonPetUID )
 	{
-		START_LOG( cerr, L"DB업데이트 하러 갈때 저장했던 PutUID와 다르다!? 일어나면 안되는 없는에러!" )
+		START_LOG( cerr, L"The PutUID saved before the database update does not match; this should never happen!" )
 			<< BUILD_LOG( GetSummonedPetUID() )
 			<< BUILD_LOG( kAck.m_iSummonPetUID )
 			<< END_LOG;
@@ -963,7 +963,7 @@ bool KUserPetManager::Handler_DBE_SUMMON_PET_ACK( IN const KDBE_SUMMON_PET_ACK& 
 		KUserPetPtr spSummonedPet = GetSummonedPet();
 		if( spSummonedPet == NULL )
 		{
-			START_LOG( cerr, L"펫 정보 얻을려고 했더니 펫이 없다? 있을 수 없는 에러!" )
+			START_LOG( cerr, L"Pet information was requested, but the pet is missing; this should never happen!" )
 				<< BUILD_LOG( GetSummonedPetUID() )
 				<< END_LOG;
 
@@ -993,7 +993,7 @@ bool KUserPetManager::Handler_EGS_COMMANDS_FOR_PETS_REQ( IN KGSUserPtr spUser, I
 	// 소환된 펫이 있는지 체크!
 	if( GetSummonedPetUID() == 0 )
 	{
-		START_LOG( cerr, L"소환된 펫이 없는데 명령을 내렸다! 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"Issued a command when no pet is summoned; this should never happen!" )
 			<< BUILD_LOG( spUser->GetCharUID() )
 			<< BUILD_LOGc( kReq.m_cActionType )
 			<< BUILD_LOG( m_mapPetList.size() )
@@ -1007,7 +1007,7 @@ bool KUserPetManager::Handler_EGS_COMMANDS_FOR_PETS_REQ( IN KGSUserPtr spUser, I
 	KUserPetPtr spSummonedPet = GetSummonedPet();
 	if( spSummonedPet == NULL )
 	{
-		START_LOG( cerr, L"소환된 펫 정보가 존재하지 않습니다! 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"Summoned pet information does not exist; this should never happen!" )
 			<< BUILD_LOG( GetSummonedPetUID() )
 			<< BUILD_LOGc( kReq.m_cActionType )
 			<< END_LOG;
@@ -1019,7 +1019,7 @@ bool KUserPetManager::Handler_EGS_COMMANDS_FOR_PETS_REQ( IN KGSUserPtr spUser, I
 	// 펫에게 명령을 내리자!
 	if( spSummonedPet->CommandsForPet( static_cast<CXSLPetManager::PET_ACTION_COMMAND>(kReq.m_cActionType), ePetActionResult ) == false )
 	{
-		START_LOG( cerr, L"펫에게 명령 주기가 실패하였습니다!" )
+		START_LOG( cerr, L"Failed to issue command to pet!" )
 			<< BUILD_LOG( GetSummonedPetUID() )
 			<< BUILD_LOGc( kReq.m_cActionType )
 			<< END_LOG;
@@ -1040,7 +1040,7 @@ bool KUserPetManager::Handler_EGS_FEED_PETS_REQ( IN char cLevel, IN int iFeedIte
     // 현재 소환된 펫이 있는지 체크!
 	if( GetSummonedPetUID() == 0 )
 	{
-		START_LOG( cerr, L"소환된 펫이 없는데 먹이를 주려고 하네? 있을 수 없는에러!" )
+		START_LOG( cerr, L"Attempted to feed a pet when none is summoned; this should never happen!" )
 			<< BUILD_LOG( iFeedItemID )
 			<< END_LOG;
 
@@ -1052,7 +1052,7 @@ bool KUserPetManager::Handler_EGS_FEED_PETS_REQ( IN char cLevel, IN int iFeedIte
 	KUserPetPtr spSummonedPet = GetSummonedPet();
 	if( spSummonedPet == NULL )
 	{
-		START_LOG( cerr, L"소환 펫의 PetUID값은 있는데 펫 정보는 없네?" )
+		START_LOG( cerr, L"A summoned pet has a PetUID, but its pet data is missing." )
 			<< BUILD_LOG( GetSummonedPetUID() )
 			<< END_LOG;
 
@@ -1081,7 +1081,7 @@ bool KUserPetManager::Handler_EGS_SET_AUTO_FEED_PETS_REQ( IN const KEGS_SET_AUTO
 	// 현재 소환된 펫이 있는지 체크!
 	if( GetSummonedPetUID() == 0 )
 	{
-		START_LOG( cerr, L"소환된 펫이 없는데 자동 먹이 기능 세팅을 하려고 하네? 있을 수 없는에러!" )
+		START_LOG( cerr, L"Attempted to set auto-feed when no pet is summoned; this should never happen!" )
 			<< BUILD_LOG( kReq.m_bAutoFeed )
 			<< END_LOG;
 
@@ -1093,7 +1093,7 @@ bool KUserPetManager::Handler_EGS_SET_AUTO_FEED_PETS_REQ( IN const KEGS_SET_AUTO
 	KUserPetPtr spSummonedPet = GetSummonedPet();
 	if( spSummonedPet == NULL )
 	{
-		START_LOG( cerr, L"소환 펫의 PetUID값은 있는데 펫 정보는 없네?" )
+		START_LOG( cerr, L"A summoned pet has a PetUID, but its pet data is missing." )
 			<< BUILD_LOG( GetSummonedPetUID() )
 			<< END_LOG;
 
@@ -1104,7 +1104,7 @@ bool KUserPetManager::Handler_EGS_SET_AUTO_FEED_PETS_REQ( IN const KEGS_SET_AUTO
 	// 이미 되어있는 세팅인지 체크!
 	if( spSummonedPet->IsAutoFeed() == kReq.m_bAutoFeed )
 	{
-		START_LOG( cerr, L"이미 세팅된 내용을 또 세팅하려고 합니다." )
+		START_LOG( cerr, L"Attempted to set information that is already set." )
 			<< BUILD_LOG( GetSummonedPetUID() )
 			<< BUILD_LOG( kReq.m_bAutoFeed )
 			<< END_LOG;
@@ -1126,7 +1126,7 @@ bool KUserPetManager::Handler_EGS_PET_EVOLUTION_REQ( IN UidType iPetUID, OUT KEG
 	KUserPetPtr spPet = GetPet( iPetUID );
 	if( spPet == NULL )
 	{
-		START_LOG( cerr, L"소환 펫의 PetUID값은 있는데 펫 정보는 없네?" )
+		START_LOG( cerr, L"A summoned pet has a PetUID, but its pet data is missing." )
 			<< BUILD_LOG( iPetUID )
 			<< END_LOG;
 
@@ -1164,7 +1164,7 @@ bool KUserPetManager::Handler_EGS_ADMIN_CHANGE_PET_INFO_NOT( IN const KEGS_ADMIN
 	// 현재 소환된 펫이 있는지 체크!
 	if( GetSummonedPetUID() == 0 )
 	{
-		START_LOG( cout, L"소환된 펫이 없는데 펫 치트를 썼네? 영자님 치트좀 제대로 쓰세요!" )
+		START_LOG( cout, L"Used a pet cheat when no pet is summoned; administrator, please use the cheat correctly!" )
 			<< BUILD_LOG( spUser->GetCharName() )
 			<< BUILD_LOG( kNot.m_iCheatType )
 			<< BUILD_LOG( kNot.m_iValue );
@@ -1175,7 +1175,7 @@ bool KUserPetManager::Handler_EGS_ADMIN_CHANGE_PET_INFO_NOT( IN const KEGS_ADMIN
 	KUserPetPtr spSummonedPet = GetSummonedPet();
 	if( spSummonedPet == NULL )
 	{
-		START_LOG( cerr, L"소환 펫의 PetUID값은 있는데 펫 정보는 없네?" )
+		START_LOG( cerr, L"A summoned pet has a PetUID, but its pet data is missing." )
 			<< BUILD_LOG( GetSummonedPetUID() )
 			<< END_LOG;
 		return false;
@@ -1252,7 +1252,7 @@ bool KUserPetManager::Handler_EGS_ADMIN_CHANGE_PET_INFO_NOT( IN const KEGS_ADMIN
 
 	default:
 		{
-			START_LOG( cerr, L"이상한 펫 치트타입이 왔습니다! 해킹 아니야?" )
+			START_LOG( cerr, L"Received an invalid pet cheat type; possible hacking!" )
 				<< BUILD_LOG( spUser->GetCharUID() )
 				<< BUILD_LOG( kNot.m_iCheatType )
 				<< BUILD_LOG( kNot.m_iValue )
@@ -1300,7 +1300,7 @@ int KUserPetManager::GetExistPetNum( void )
 {
 	if( m_mapPetList.size() != m_vecPetList.size() )
 	{
-		START_LOG( cerr, L"컨테이너에 저장된 펫 정보가 일치하지 않습니다." )
+		START_LOG( cerr, L"Pet information stored in container does not match." )
 			<< BUILD_LOG( m_mapPetList.size() )
 			<< BUILD_LOG( m_vecPetList.size() )
 			<< END_LOG;
@@ -1329,7 +1329,7 @@ bool KUserPetManager::IsExpirePet( IN UidType iPetUID, OUT int& iPetID )
 	KUserPetPtr spPet = GetPet( iPetUID );
 	if( spPet == NULL )
 	{
-		START_LOG( cerr, L"보유 하고 있지 않는 PetUID입니다." )
+		START_LOG( cerr, L"The PetUID is not owned by this user." )
 			<< BUILD_LOG( iPetUID )
 			<< BUILD_LOG( m_mapPetList.size() )
 			<< END_LOG;

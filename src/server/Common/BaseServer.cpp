@@ -210,7 +210,7 @@ bool KBaseServer::Init()
 	}
 	else
 	{
-		START_LOG( cerr, L"서버 켤때 필요한 전달인자가 부족합니다!" )
+		START_LOG( cerr, L"Not enough arguments to start the server." )
 			<< BUILD_LOG( m_vecCmdArgs.size() )
 			<< END_LOG;
         return false;
@@ -277,14 +277,14 @@ void KBaseServer::Run( bool bRunInterpreter_ )
 void KBaseServer::ShutDown()
 {
 	//{{ 2009. 12. 15  최육사	서버관리
-	START_LOG( cout, L"---------------------------------------- 서버 종료 덤프 ----------------------------------------" );
+	START_LOG( cout, L"---------------------------------------- Server shutdown dump ----------------------------------------" );
 	//{{ 2010. 8. 29	최육사	이벤트 큐 사이즈 덤프
 	DumpToLogFile();
 	//}}
 	KSimLayer::GetKObj()->DumpToLogFile();
 	KNetLayer::GetKObj()->DumpToLogFile();
 	SiKDBLayer()->DumpToLogFile();
-	START_LOG( cout, L"---------------------------------------- 서버 종료 덤프 ----------------------------------------" );
+	START_LOG( cout, L"---------------------------------------- Server shutdown dump ----------------------------------------" );
 	//}}
 
     KNetLayer::GetKObj()->CloseAccepter();  // 가장먼저 새로운 접속을 막는다.
@@ -426,7 +426,7 @@ void KBaseServer::LoadINIFile( const wchar_t* szFileName_ )
 
 	if( !m_stringTable.LoadIni( m_strIniFilePath.c_str() ) )
 	{
-		START_LOG( cerr, L"INI 파일을 읽어 오지 못했습니다." )
+		START_LOG( cerr, L"Failed to read the INI file." )
 			<< BUILD_LOG( m_strIniFilePath )
 			<< END_LOG;
 	}
@@ -438,7 +438,7 @@ const std::wstring& KBaseServer::GetMainVersion() const
 {
 	if( m_eUseVersion < 0  ||  m_eUseVersion >= VE_MAX )
 	{
-		START_LOG( cerr, L"잘못된 버전 인덱스 입니다!" )
+		START_LOG( cerr, L"Invalid version index." )
 			<< BUILD_LOG( m_eUseVersion )
 			<< END_LOG;
 
@@ -495,7 +495,7 @@ void KBaseServer::SetServerInfo( const KServerInfo& kServerInfo )
 {
 	if( GetServerGroupID() != kServerInfo.m_iServerGroupID )
 	{
-		START_LOG( cerr, L"명령인자로 받은 ServerGroupID와 DB로부터 서버인증받은 ServerGroupID가 다릅니다!" )
+		START_LOG( cerr, L"ServerGroupID from the command line does not match the ID authenticated by the database." )
 			<< BUILD_LOG( GetServerGroupID() )
 			<< BUILD_LOG( kServerInfo.m_iServerGroupID )
 			<< END_LOG;
@@ -518,7 +518,7 @@ void KBaseServer::SetServerInfo( const KServerInfo& kServerInfo )
 	m_cServerRollType = kServerInfo.m_cServerRollType;
 	if( m_cServerRollType != KServerInfo::SRT_NONE )
 	{
-		START_LOG( cout, L"--- 서버별 역할 부여 ---" )
+		START_LOG( cout, L"--- Assigning roles by server ---" )
 			<< BUILD_LOGc( GetServerRollType() );
 	}
 	//}}

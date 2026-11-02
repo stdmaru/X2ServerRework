@@ -76,7 +76,7 @@ void KChannelAccountDBThread::ProcessEvent( const KEventPtr& spEvent_ )
 		//}}
 
     default:
-        START_LOG( cerr, L"이벤트 핸들러가 정의되지 않았음. " << spEvent_->GetIDStr() );
+        START_LOG( cerr, L"Event handler is not defined. " << spEvent_->GetIDStr() );
     }
 }
 
@@ -196,7 +196,7 @@ IMPL_ON_FUNC( DBE_CH_USER_GENERAL_LOGIN_REQ )
 		if( kPacket.m_iOK != NetError::NET_OK )
 		{
 			// OTP update failed
-			START_LOG( clog, L"OTP 업데이트 실패." )
+			START_LOG( clog, L"OTP update failed." )
 				<< BUILD_LOG( kPacket.m_iOK )
 				<< END_LOG;
 		}
@@ -251,7 +251,7 @@ IMPL_ON_FUNC( DBE_CH_USER_KOGOTP_LOGIN_REQ )
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
 		// 계정 DB 인증 실패
-		START_LOG( clog, L"존재하지 않거나 삭제/비번 다른 계정." )
+		START_LOG( clog, L"Account does not exist, is deleted, or has a password mismatch." )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< END_LOG;
 
@@ -290,7 +290,7 @@ IMPL_ON_FUNC( DBE_CH_USER_KOGOTP_LOGIN_REQ )
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
 		// OTP 검증 실패
-		START_LOG( clog, L"OTP 검증 실패." )
+		START_LOG( clog, L"OTP verification failed." )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket.m_iUserUID )
 			<< BUILD_LOG( kPacket.m_wstrOTP )
@@ -328,7 +328,7 @@ IMPL_ON_FUNC( DBE_CH_USER_KOGOTP_LOGIN_REQ )
 		if( kPacket.m_iOK != NetError::NET_OK )
 		{
 			// OTP 업데이트 실패
-			START_LOG( clog, L"OTP 업데이트 실패." )
+			START_LOG( clog, L"OTP update failed." )
 				<< BUILD_LOG( kPacket.m_iOK )
 				<< END_LOG;
 		}
@@ -374,7 +374,7 @@ IMPL_ON_FUNC( DBE_GASH_USER_LOGIN_REQ )
     if( kPacket.m_iOK != NetError::NET_OK )
     {
         // 계정 DB 인증 실패
-        START_LOG( clog, L"존재하지 않거나 삭제/비번 다른 계정." )
+        START_LOG( clog, L"Account does not exist, is deleted, or has a password mismatch." )
             << BUILD_LOG( kPacket.m_iOK )
             << END_LOG;
 
@@ -401,7 +401,7 @@ IMPL_ON_FUNC( DBE_GASH_USER_LOGIN_REQ )
             DWORD dwAuthFlag = KSimLayer::GetKObj()->GetAuthFlag();
             if( dwAuthFlag != KSimLayer::AF_GAMANIA_TAIWAN )
             {
-                START_LOG( cerr, L"인증 플래그 이상." )
+                START_LOG( cerr, L"Invalid authentication flag." )
                     << BUILD_LOG( dwAuthFlag )
                     << END_LOG;
 
@@ -435,7 +435,7 @@ IMPL_ON_FUNC( DBE_GASH_USER_LOGIN_REQ )
             if( kPacket.m_iOK != NetError::NET_OK )
             {
                 // 신규 유저 생성 실패.
-                START_LOG( clog, L"신규 유저 생성 실패." )
+                START_LOG( clog, L"Failed to create new user." )
                     << BUILD_LOG( kPacket.m_iOK )
                     << END_LOG;
             }
@@ -463,7 +463,7 @@ IMPL_ON_FUNC( DBE_GASH_USER_LOGIN_REQ )
         if( kPacket.m_iOK != NetError::NET_OK )
         {
             // OTP 업데이트 실패
-            START_LOG( clog, L"OTP 업데이트 실패." )
+            START_LOG( clog, L"OTP update failed." )
                 << BUILD_LOG( kPacket.m_iOK )
                 << END_LOG;
         }

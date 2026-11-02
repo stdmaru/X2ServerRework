@@ -275,7 +275,7 @@ IMPL_ON_FUNC( ERM_OPEN_TRADE_ACK )
 
 	if( kPacket_.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"개인 거래 생성 실패.!" )
+		START_LOG( cerr, L"Failed to create a private trade!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( kPacket_.m_iOK )
@@ -306,7 +306,7 @@ IMPL_ON_FUNC( ERM_ACCEPT_JOIN_TRADE_NOT )
 
 	if( GetTradeUID() != 0 )
 	{
-		START_LOG( cerr, L"이미 다른 거래에 속해 있음." )
+		START_LOG( cerr, L"Already belongs to another trade." )
 			<< BUILD_LOG( GetTradeUID() )
 			<< END_LOG;
 
@@ -331,7 +331,7 @@ IMPL_ON_FUNC( ERM_JOIN_TRADE_ACK )
 
 	if( kPacket_.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"개인 거래 조인 실패." )
+		START_LOG( cerr, L"Failed to join the private trade." )
 			<< BUILD_LOG( kPacket_.m_iOK )
 			<< BUILD_LOG( NetError::GetErrStr( kPacket_.m_iOK ) )
 			<< END_LOG;
@@ -374,7 +374,7 @@ IMPL_ON_FUNC( EGS_BREAK_TRADE_REQ )
 		GetStateID() == KGSFSM::S_LOGINED ||
 		GetStateID() == KGSFSM::S_SERVER_SELECT )
 	{
-		START_LOG( cerr, L"잘못된 상태!" )
+		START_LOG( cerr, L"Invalid state!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
@@ -382,7 +382,7 @@ IMPL_ON_FUNC( EGS_BREAK_TRADE_REQ )
 
 	if( GetTradeUID() == 0 )
 	{
-		START_LOG( cerr, L"개인 거래 UID 이상.!" )
+		START_LOG( cerr, L"Invalid personal trade UID!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
@@ -406,7 +406,7 @@ _IMPL_ON_FUNC( ERM_BREAK_TRADE_REQ, KEGS_BREAK_TRADE_REQ )
 
 	if( GetTradeUID() == 0 )
 	{
-		START_LOG( cerr, L"개인 거래 UID 이상.!" )
+		START_LOG( cerr, L"Invalid personal trade UID!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
@@ -424,7 +424,7 @@ _IMPL_ON_FUNC( ERM_BREAK_TRADE_ACK, KEGS_BREAK_TRADE_ACK )
 		GetStateID() == KGSFSM::S_LOGINED ||
 		GetStateID() == KGSFSM::S_SERVER_SELECT )
 	{
-		START_LOG( cerr, L"잘못된 상태!" )
+		START_LOG( cerr, L"Invalid state!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
@@ -454,7 +454,7 @@ _IMPL_ON_FUNC( ERM_BREAK_TRADE_NOT, KEGS_BREAK_TRADE_NOT )
 		GetStateID() == KGSFSM::S_LOGINED ||
 		GetStateID() == KGSFSM::S_SERVER_SELECT )
 	{
-		START_LOG( cerr, L"잘못된 상태!" )
+		START_LOG( cerr, L"Invalid state!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
@@ -494,7 +494,7 @@ IMPL_ON_FUNC( EGS_UPDATE_TRADE_ITEM_REQ )
 		//{{ 2012. 03. 29	최육사	Inventory Lock 기능
 		if( m_kInventory.IsLocked() == true )
 		{
-			START_LOG( cout, L"인벤토리 락이 걸려있는 상태입니다!" )
+			START_LOG( cout, L"The inventory is locked!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharName() )
@@ -534,7 +534,7 @@ IMPL_ON_FUNC( EGS_UPDATE_TRADE_ITEM_REQ )
 
 		if( GetTradeUID() == 0 )
 		{
-			START_LOG( cerr, L"현재 개인거래중인 상태가 아닌데 개인거래 아이템 업데이트 패킷이 왔다." )
+			START_LOG( cerr, L"Received a personal trade item update packet while not in a personal trade." )
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
 
@@ -553,7 +553,7 @@ IMPL_ON_FUNC( EGS_UPDATE_TRADE_ITEM_REQ )
 		kPacketAck.m_iOK = m_kInventory.CheckItemForTrade( kPacket_.m_iItemUID, kPacket_.m_iQuantity, kPacket.m_kInventoryItemInfo );
 		if( kPacketAck.m_iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"등록하려는 아이템 이상" )
+			START_LOG( cerr, L"Invalid item to register." )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( GetName() )
@@ -608,7 +608,7 @@ IMPL_ON_FUNC( EGS_UPDATE_TRADE_ED_REQ )
 		//{{ 2012. 03. 29	최육사	Inventory Lock 기능
 		if( m_kInventory.IsLocked() == true )
 		{
-			START_LOG( cout, L"인벤토리 락이 걸려있는 상태입니다!" )
+			START_LOG( cout, L"The inventory is locked!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharName() )
@@ -648,7 +648,7 @@ IMPL_ON_FUNC( EGS_UPDATE_TRADE_ED_REQ )
 		//{{ 2011. 04. 11	최육사	거래 제한
 		if( kPacket_.m_iED > SEnum::UI_MAX_TRADE_ED )
 		{
-			START_LOG( cerr, L"최대 거래 제한 액수를 초과하였습니다! 해킹인가?" )
+			START_LOG( cerr, L"The maximum trade limit was exceeded; possible hacking!" )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharName() )
 				<< BUILD_LOG( kPacket_.m_iED )
@@ -663,7 +663,7 @@ IMPL_ON_FUNC( EGS_UPDATE_TRADE_ED_REQ )
 		//{{ 2010. 03. 17  최육사	상태 오류 수정
 		if( GetTradeUID() == 0 )
 		{
-			START_LOG( cerr, L"개인거래중인 상태가 아닌데 개인거래 이벤트가 오네?" )
+			START_LOG( cerr, L"Received a private trade event while not in a private trade?" )
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
 
@@ -675,7 +675,7 @@ IMPL_ON_FUNC( EGS_UPDATE_TRADE_ED_REQ )
 
 		if( kPacket_.m_iED < 0 || kPacket_.m_iED > GetED() )
 		{
-			START_LOG( cerr, L"이건.. 해킹인가?" )
+			START_LOG( cerr, L"Could this be hacking?" )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( kPacket_.m_iED )
 				<< BUILD_LOG( GetED() )
@@ -716,7 +716,7 @@ IMPL_ON_FUNC_NOPARAM( EGS_OFFER_TRADE_REQ )
 	//{{ 2010. 03. 17  최육사	상태 오류 수정
 	if( GetTradeUID() == 0 )
 	{
-		START_LOG( cerr, L"개인거래중이 아닌데 개인거래 이벤트가 오네?" )
+		START_LOG( cerr, L"Received a private trade event when no private trade is active?" )
 			<< BUILD_LOG( GetCharUID() )
 			<< END_LOG;
 		return;
@@ -751,7 +751,7 @@ IMPL_ON_FUNC_NOPARAM( EGS_APPROVE_TRADE_REQ )
 		KEGS_APPROVE_TRADE_ACK kAck;
 		if( m_kInventory.IsLocked() == true )
 		{
-			START_LOG( cout, L"인벤토리 락이 걸려있는 상태입니다!" )
+			START_LOG( cout, L"The inventory is locked!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharName() )
@@ -795,7 +795,7 @@ IMPL_ON_FUNC( ERM_CONFIRM_TRADE_REQ )
 
 	if( m_kInventory.CheckTradeItemOut( kPacket_.m_vecItemOut, kPacketAck.m_kItemQuantityUpdateTemp, CXSLRoom::RT_TRADE ) == false )
 	{
-		START_LOG( cerr, L"개인거래 confirm 체크 실패!" )
+		START_LOG( cerr, L"Personal trade confirmation check failed!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< END_LOG;
 
@@ -820,7 +820,7 @@ IMPL_ON_FUNC( ERM_CONFIRM_TRADE_REQ )
 
 	if( kPacket_.m_iEDOut > GetED() )
 	{
-		START_LOG( cerr, L"이건.. 해킹인가?" )
+		START_LOG( cerr, L"Could this be hacking?" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iEDOut )
 			<< BUILD_LOG( GetED() )
@@ -857,7 +857,7 @@ IMPL_ON_FUNC( ERM_CONFIRM_TRADE_NOT )
 	//{{ 2010. 05. 18  최육사	대전 던전 서버군 통합
 	if( IsSameServerGroupUID( kPacket_.m_iTradeUID ) == false )
 	{
-		START_LOG( cerr, L"다른 서버군의 TradeUID인데 이곳으로 어떻게 왔지? 절대 일어나면 안되는 에러!" )
+		START_LOG( cerr, L"Received a TradeUID from another server group; this should never happen!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( kPacket_.m_iTradeUID )
@@ -919,7 +919,7 @@ IMPL_ON_FUNC( ERM_CONFIRM_TRADE_NOT )
 		if( m_iED.GetChangeValue() != 0 )
 		//}}
 		{
-			START_LOG( cerr, L"개인 거래 이전에 서버-DB 동기화가 되지 않았다." )
+			START_LOG( cerr, L"Server-database synchronization was not completed before the private trade." )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetCharUID() )
 				//{{ 2012. 10. 02	최육사		ED&아이템 모니터링 시스템
@@ -1120,7 +1120,7 @@ _IMPL_ON_FUNC( ERM_DB_UPDATE_TRADE_COMPLETE_NOT, KERM_DB_UPDATE_TRADE_RESULT_NOT
 		{
 			for( const KInventoryItemInfo& kInsertItemInfo : vecInsertInventoryTemp )
 			{
-				START_LOG( cerr, L"추가가 실패했다고?!" )
+				START_LOG( cerr, L"Adding the item failed?!" )
 					<< BUILD_LOG( GetCharUID() )
 					<< BUILD_LOG( kInsertItemInfo.m_iItemUID )
 					<< BUILD_LOG( kInsertItemInfo.m_sSlotID )

@@ -244,7 +244,7 @@ void KGSLogDBThread::ProcessEvent( const KEventPtr& spEvent_ )
 		CASE( DBE_UNLIMITED_SECOND_CHANGE_JOB_NOT );
 
     default:
-        START_LOG( cerr, L"이벤트 핸들러가 정의되지 않았음. " << spEvent_->GetIDStr() );
+        START_LOG( cerr, L"No event handler is defined. " << spEvent_->GetIDStr() );
     }
 
 	//////////////////////////////////////////////////////////////////////////
@@ -399,7 +399,7 @@ _IMPL_ON_FUNC( ELOG_STAT_PVP_MAP, KStatisticsData )
 	{
 		if( mit->first.m_vecIntKey.empty() )
 		{
-			START_LOG( cerr, L"유닛 ID가 비었음." )
+			START_LOG( cerr, L"Unit ID is empty." )
 				<< END_LOG;
 
 			continue;
@@ -411,7 +411,7 @@ _IMPL_ON_FUNC( ELOG_STAT_PVP_MAP, KStatisticsData )
 		{
 			if( vit == mit->second.end() )
 			{
-				START_LOG( clog2, L"카운트 데이터가 비었음." )
+				START_LOG( clog2, L"The count data is empty." )
 					<< BUILD_LOG( iWorldID )
 					<< BUILD_LOG( iIndex )
 					<< END_LOG;
@@ -438,7 +438,7 @@ _IMPL_ON_FUNC( ELOG_STAT_PVP_MAP, KStatisticsData )
 			m_kODBC.EndFetch();
 		}
 
-		START_LOG( clog2, L"대전 맵 통계 [검사]" )
+		START_LOG( clog2, L"PvP map statistics [check]" )
 			<< BUILD_LOG( iWorldID )
 			<< BUILD_LOG( aiCount[KStatistics::eSIColPvpMap_PlayCount] )
 			<< BUILD_LOG( iOK );
@@ -461,7 +461,7 @@ _IMPL_ON_FUNC( ELOG_STAT_FPS, KStatisticsData )
 	{
 		if( mit->first.m_vecIntKey.empty() )
 		{
-			START_LOG( cerr, L"통계키값이 비었음" )
+			START_LOG( cerr, L"The statistics key is empty." )
 				<< END_LOG;
 
 			continue;
@@ -473,7 +473,7 @@ _IMPL_ON_FUNC( ELOG_STAT_FPS, KStatisticsData )
 		{
 			if( vit == mit->second.end() )
 			{
-				START_LOG( clog2, L"카운트 데이터가 비었음." )
+				START_LOG( clog2, L"The count data is empty." )
 					<< BUILD_LOG( iGameMode )
 					<< BUILD_LOG( iIndex )
 					<< END_LOG;
@@ -508,7 +508,7 @@ _IMPL_ON_FUNC( ELOG_STAT_FPS, KStatisticsData )
 			m_kODBC.EndFetch();
 		}
 
-		START_LOG( clog2, L"FPS 통계 [검사]" )
+		START_LOG( clog2, L"FPS statistics [check]" )
 			<< BUILD_LOG( iGameMode )
 			<< BUILD_LOG( aiCount[KStatistics::eSIColFps_0_20] )
 			<< BUILD_LOG( aiCount[KStatistics::eSIColFps_21_30] )
@@ -564,7 +564,7 @@ _IMPL_ON_FUNC( DBE_SERVER_ON_REQ, KNetAddress )
     }
     else
     {
-        START_LOG( cerr, L"게임 서버 인증 실패." )
+        START_LOG( cerr, L"Game server authentication failed." )
             << BUILD_LOG( kPacket_.m_wstrIP )
 			<< END_LOG;
 
@@ -641,7 +641,7 @@ _IMPL_ON_FUNC( DBE_SERVER_ON_REQ, KNetAddress )
 
 		if( kPacket.m_iChannelID <= 0 )
 		{
-			START_LOG( cerr, L"해당 게임서버의 채널id가 이상합니다" )
+			START_LOG( cerr, L"Invalid channel ID for this game server." )
 				<< BUILD_LOG( kPacket.m_kServerInfo.m_iUID )
 				<< BUILD_LOG( kPacket.m_iChannelID )
 				<< END_LOG;
@@ -652,7 +652,7 @@ _IMPL_ON_FUNC( DBE_SERVER_ON_REQ, KNetAddress )
 	}
 	else
 	{
-		START_LOG( cerr, L"게임서버의 채널정보가 없다? 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"No channel information for the game server; this should never happen!" )
 			<< BUILD_LOG( kPacket.m_kServerInfo.m_iUID )
 			<< END_LOG;
 
@@ -674,7 +674,7 @@ _IMPL_ON_FUNC( DBE_SERVER_ON_REQ, KNetAddress )
 
 		if( iChannelID != kPacket.m_iChannelID )
 		{
-			START_LOG( cerr, L"채널 보너스 정보가 이상합니다" )
+			START_LOG( cerr, L"Invalid channel bonus information." )
 				<< BUILD_LOG( kPacket.m_kServerInfo.m_iUID )
 				<< BUILD_LOG( iChannelID )
 				<< BUILD_LOG( kPacket.m_iChannelID )
@@ -802,7 +802,7 @@ IMPL_ON_FUNC( DBE_CHANNEL_LIST_REQ )
 
 				if( iChannelID != mit->first )
 				{
-					START_LOG( cerr, L"채널 보너스 정보가 이상합니다" )
+					START_LOG( cerr, L"Invalid channel bonus information." )
 						<< BUILD_LOG( iChannelID )
 						<< BUILD_LOG( mit->first )
 						<< END_LOG;
@@ -837,7 +837,7 @@ IMPL_ON_FUNC_NOPARAM( DBE_SERVER_OFF_NOT )
 
         if( iOK != NetError::NET_OK )
         {
-            START_LOG( cerr, L"서버 켜짐 표시 실패." )
+            START_LOG( cerr, L"Failed to set server status to online." )
                 << BUILD_LOG( GetKGameServer()->GetUID() )
                 << END_LOG;
 
@@ -872,7 +872,7 @@ IMPL_ON_FUNC( ELOG_USER_STATISTICS )
 
 	if( kPacket_.m_iUnitUID <= 0 )
 	{
-		START_LOG( cerr, L"유닛UID가 이상합니다." )
+		START_LOG( cerr, L"Invalid UnitUID." )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
 
@@ -949,7 +949,7 @@ IMPL_ON_FUNC( ELOG_USER_STATISTICS )
 
 			if( mit->first.first != KUserStatistics::USTable_Dungeon )
 			{
-				START_LOG( cerr, L"던전통계테이블도 아닌것이 던전통계에 들어왔다?" )
+				START_LOG( cerr, L"A non-dungeon statistics table entry was added to dungeon statistics?" )
 					<< BUILD_LOG( mit->first.first )
 					<< END_LOG;
 
@@ -977,7 +977,7 @@ IMPL_ON_FUNC( ELOG_USER_STATISTICS )
 		{
 			if( mit->first.first != KUserStatistics::USTable_TrainingCenter )
 			{
-				START_LOG( cerr, L"훈련소통계테이블도 아닌것이 훈련소통계에 들어왔다?" )
+				START_LOG( cerr, L"A non-training statistics table entry was added to training statistics?" )
 					<< BUILD_LOG( mit->first.first )
 					<< END_LOG;
 
@@ -1232,7 +1232,7 @@ _IMPL_ON_FUNC( ELOG_STAT_ED, KStatisticsData )
 	{
 		if( mit->first.m_vecIntKey.empty() )
 		{
-			START_LOG( cerr, L"통계키값이 비었음" )
+			START_LOG( cerr, L"The statistics key is empty." )
 				<< END_LOG;
 
 			continue;
@@ -1243,7 +1243,7 @@ _IMPL_ON_FUNC( ELOG_STAT_ED, KStatisticsData )
 		{
 			if( vit == mit->second.end() )
 			{
-				START_LOG( clog2, L"카운트 데이터가 비었음." )
+				START_LOG( clog2, L"The count data is empty." )
 					<< BUILD_LOG( iIndex )
 					<< END_LOG;
 
@@ -1328,7 +1328,7 @@ _IMPL_ON_FUNC( ELOG_STAT_ED, KStatisticsData )
 				m_kODBC.EndFetch();
 			}
 
-		START_LOG( clog2, L"ED 통계 [검사]" )
+		START_LOG( clog2, L"ED statistics [check]" )
 			<< BUILD_LOG( aiCount[KStatistics::eSIColDB_ED_PDungeon] )
 			<< BUILD_LOG( aiCount[KStatistics::eSIColDB_ED_PTraining] )
 			<< BUILD_LOG( aiCount[KStatistics::eSIColDB_ED_PQuest] )
@@ -1389,7 +1389,7 @@ _IMPL_ON_FUNC( ELOG_STAT_QUEST, KStatisticsData )
 	{
 		if( mit->first.m_vecIntKey.empty() )
 		{
-			START_LOG( cerr, L"통계키값이 비었음" )
+			START_LOG( cerr, L"The statistics key is empty." )
 				<< END_LOG;
 
 			continue;
@@ -1402,7 +1402,7 @@ _IMPL_ON_FUNC( ELOG_STAT_QUEST, KStatisticsData )
 		{
 			if( vit == mit->second.end() )
 			{
-				START_LOG( clog2, L"카운트 데이터가 비었음." )
+				START_LOG( clog2, L"The count data is empty." )
 					<< BUILD_LOG( iQuestID )
 					<< BUILD_LOG( iIndex )
 					<< END_LOG;
@@ -1434,7 +1434,7 @@ _IMPL_ON_FUNC( ELOG_STAT_QUEST, KStatisticsData )
 			m_kODBC.EndFetch();
 		}
 
-		START_LOG( clog2, L"FPS 통계 [검사]" )
+		START_LOG( clog2, L"FPS statistics [check]" )
 			<< BUILD_LOG( iQuestID )
 			<< BUILD_LOG( aiCount[KStatistics::eSIColQuest_Accept] )
 			<< BUILD_LOG( aiCount[KStatistics::eSIColQuest_GiveUp] )
@@ -1467,7 +1467,7 @@ _IMPL_ON_FUNC( ELOG_STAT_DISCONNECT_USERFSM, KStatisticsData )
 	{
 		if( mit->first.m_vecIntKey.empty() )
 		{
-			START_LOG( cerr, L"통계키값이 비었음" )
+			START_LOG( cerr, L"The statistics key is empty." )
 				<< END_LOG;
 
 			continue;
@@ -1480,7 +1480,7 @@ _IMPL_ON_FUNC( ELOG_STAT_DISCONNECT_USERFSM, KStatisticsData )
 		{
 			if( vit == mit->second.end() )
 			{
-				START_LOG( clog2, L"카운트 데이터가 비었음." )
+				START_LOG( clog2, L"The count data is empty." )
 					<< BUILD_LOG( iIndex )
 					<< END_LOG;
 
@@ -1518,7 +1518,7 @@ _IMPL_ON_FUNC( ELOG_STAT_DISCONNECT_USERFSM, KStatisticsData )
 			m_kODBC.EndFetch();
 		}
 
-		START_LOG( clog2, L"Disconnect userfsm 통계" )
+		START_LOG( clog2, L"Disconnect user FSM statistics." )
 			<< BUILD_LOG( iServerUID )
 			<< BUILD_LOG( aiCount[KStatistics::eSIColDU_S_INIT] )
 			<< BUILD_LOG( aiCount[KStatistics::eSIColDU_S_UID_UPDATED] )
@@ -1548,7 +1548,7 @@ _IMPL_ON_FUNC( ELOG_STAT_DISCONNECT_REASON, KStatisticsData )
 	{
 		if( mit->first.m_vecIntKey.empty() )
 		{
-			START_LOG( cerr, L"통계키값이 비었음" )
+			START_LOG( cerr, L"The statistics key is empty." )
 				<< END_LOG;
 
 			continue;
@@ -1561,7 +1561,7 @@ _IMPL_ON_FUNC( ELOG_STAT_DISCONNECT_REASON, KStatisticsData )
 		{
 			if( vit == mit->second.end() )
 			{
-				START_LOG( clog2, L"카운트 데이터가 비었음." )
+				START_LOG( clog2, L"The count data is empty." )
 					<< BUILD_LOG( iIndex )
 					<< END_LOG;
 
@@ -1646,7 +1646,7 @@ _IMPL_ON_FUNC( ELOG_STAT_DISCONNECT_REASON, KStatisticsData )
 			m_kODBC.EndFetch();
 		}
 
-		START_LOG( clog2, L"Disconnect reason 통계" )
+		START_LOG( clog2, L"Disconnect reason statistics." )
 			<< BUILD_LOG( iServerUID )
 			<< BUILD_LOG( aiCount[KStatistics::eSIColDR_No_Reason] )
 			<< BUILD_LOG( aiCount[KStatistics::eSIColDR_Unknown] )
@@ -1725,7 +1725,7 @@ _IMPL_ON_FUNC( ELOG_STAT_DISCONNECT_REASON, KStatisticsData )
 					m_kODBC.EndFetch();
 				}
 
-				START_LOG( clog2, L"Disconnect reason 통계 개편" )
+				START_LOG( clog2, L"Disconnect reason statistics update." )
 					<< BUILD_LOG( iServerUID )
 					<< BUILD_LOG( wstrCurTime )
 					<< BUILD_LOG( i )
@@ -1954,7 +1954,7 @@ IMPL_ON_FUNC( ELOG_ITEM_ABUSER_LOG_NOT )
 
 		if( iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"아이템 어뷰저 로그 DB업데이트 실패!" )
+			START_LOG( cerr, L"Failed to update the item-abuser log in the database!" )
 				<< BUILD_LOG( iOK )
 				<< BUILD_LOG( kPacket_.m_iUnitUID )
 				<< BUILD_LOG( kLogInfo.m_iRewardState )
@@ -1992,7 +1992,7 @@ IMPL_ON_FUNC( ELOG_ENCHANT_ABUSER_LOG_NOT )
 
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"아이템 어뷰저 로그 DB업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update the item-abuser log in the database!" )
 			<< BUILD_LOG( iOK )
 			<< BUILD_LOG( kPacket_.m_iUserUID )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
@@ -2046,7 +2046,7 @@ IMPL_ON_FUNC( ELOG_CASH_ITEM_RESOLVE_LOG_NOT )
 end_proc:
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"캐쉬 아이템 분해 로그 DB업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update cash item dismantling log in the database!" )
 			<< BUILD_LOG( iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iItemUID )
@@ -2080,7 +2080,7 @@ IMPL_ON_FUNC( ELOG_ENCHANT_ITEM_BREAK_LOG_NOT )
 end_proc:
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"강화 파괴 로그 DB업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update the enhancement destruction log in the database!" )
 			<< BUILD_LOG( iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iItemUID )
@@ -2125,7 +2125,7 @@ IMPL_ON_FUNC( DBE_ABUSER_LIST_REQ )
 		}
 		else
 		{
-			START_LOG( clog, L"Abuser List와는 관계없는 ReleaseTick입니다." )
+			START_LOG( clog, L"This ReleaseTick is unrelated to the abuser list." )
 				<< BUILD_LOG( iAbuserType );
 		}
 	}
@@ -2178,7 +2178,7 @@ IMPL_ON_FUNC( DBE_REG_ABUSER_AUTOMATIC_NOT )
 end_proc:
 		if( iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"어뷰저 자동 등록 실패!" )
+			START_LOG( cerr, L"Failed to automatically register the abuser!" )
 				<< BUILD_LOG( iOK )
 				<< BUILD_LOG( iType )
 				<< BUILD_LOG( iUID )
@@ -2213,7 +2213,7 @@ end_proc:
 	{
 		//{{ 2011.5.23 지헌 : 강화시 성공 확률 증가 아이템 추가 - 로그 남기기
 		// 파괴 방지까지 합쳐서 한번에 적용.
-		START_LOG( cerr, L"강화 보조제 로그 등록 실패!" )
+		START_LOG( cerr, L"Failed to record the enhancement aid log!" )
 			<< BUILD_LOG( iOK )
 			<< BUILD_LOG( kPacket_.m_iItemUID )
 			<< BUILD_LOGc( kPacket_.m_cBeforeLevel )
@@ -2247,7 +2247,7 @@ IMPL_ON_FUNC( ELOG_RESTORE_ITEM_LOG_NOT )
 end_proc:
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"강화 깨짐 복구 로그 등록 실패!" )
+		START_LOG( cerr, L"Failed to record the enhancement-break recovery log!" )
 			<< BUILD_LOG( iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iItemUID )
@@ -2282,7 +2282,7 @@ IMPL_ON_FUNC( ELOG_ATTACH_ITEM_ENCHANT_LOG_NOT )
 end_proc:
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"강화 부여 로그 등록 실패!" )
+		START_LOG( cerr, L"Failed to record the enhancement assignment log!" )
 			<< BUILD_LOG( iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iAttachItemID )
@@ -2317,7 +2317,7 @@ IMPL_ON_FUNC( ELOG_CHARM_ITEM_LOG_NOT )
 end_proc:
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"매력 아이템 사용 로그 등록 실패!" )
+		START_LOG( cerr, L"Failed to record charm item usage log!" )
 			<< BUILD_LOG( iOK )
 			<< BUILD_LOG( kPacket_.m_iCharmItemID )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
@@ -2348,7 +2348,7 @@ IMPL_ON_FUNC( ELOG_DELETE_NICK_NAME_NOT )
 end_proc:
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"닉네임 초기화 로그 실패!" )
+		START_LOG( cerr, L"Failed to write nickname reset log!" )
 			<< BUILD_LOG( iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_wstrNickName )
@@ -2375,7 +2375,7 @@ IMPL_ON_FUNC( ELOG_CHANGE_NICK_NAME_NOT )
 end_proc:
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"닉네임 변경 로그 실패!" )
+		START_LOG( cerr, L"Failed to write nickname change log!" )
 			<< BUILD_LOG( iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_wstrNickName )
@@ -2405,7 +2405,7 @@ IMPL_ON_FUNC( ELOG_INIT_SKILL_TREE_NOT )
 end_proc:
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"스킬트리 초기화 로그 실패!" )
+		START_LOG( cerr, L"Failed to record skill tree reset log!" )
 			<< BUILD_LOG( iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iItemUID )
@@ -2439,7 +2439,7 @@ IMPL_ON_FUNC( ELOG_INSERT_CASH_SKILL_POINT_NOT )
 end_proc:
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"캐시스킬포인트 사용시작 로그 실패!" )
+		START_LOG( cerr, L"Failed to record cash skill point usage start!" )
 			<< BUILD_LOG( iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iUnitLevel )
@@ -2470,7 +2470,7 @@ IMPL_ON_FUNC( ELOG_MEGAPHONE_LOG_NOT )
 end_proc:
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"메가폰 사용 로그 등록 실패!" )
+		START_LOG( cerr, L"Failed to record megaphone usage log!" )
 			<< BUILD_LOG( iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iItemID )
@@ -2493,7 +2493,7 @@ IMPL_ON_FUNC( ELOG_ABNORMAL_DISCONNECT )
 		continue;
 
 end_proc:
-		START_LOG( cerr, L"비정상 종료 통계 DB업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update abnormal shutdown statistics in the database!" )
 			<< BUILD_LOG( kPacket_.m_iServerUID )
 			<< BUILD_LOG( mit->first )
 			<< BUILD_LOG( mit->second )
@@ -2524,7 +2524,7 @@ IMPL_ON_FUNC( ELOG_USE_SEAL_ITEM_NOT )
 end_proc:
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"밀봉 사용 로그 등록 실패!" )
+		START_LOG( cerr, L"Failed to record sealing item usage log!" )
 			<< BUILD_LOG( iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iDestItemUID )
@@ -2549,7 +2549,7 @@ IMPL_ON_FUNC( ELOG_TRAFFIC_ATTACKER_LOG_NOT )
 	return;
 
 end_proc:
-	START_LOG( cerr, L"트래픽 공격자 로그 등록 실패!" )
+	START_LOG( cerr, L"Failed to record traffic attacker log!" )
 		<< BUILD_LOG( kPacket_.m_wstrUserID )
 		<< BUILD_LOG( kPacket_.m_iChannelID )
 		<< END_LOG;
@@ -2625,7 +2625,7 @@ IMPL_ON_FUNC( DBE_SPIRIT_STATISTICS_NOT )
 	return;
 
 end_proc:
-	START_LOG( cerr, L"근성도 통계 정보 DB업데이트 실패!" )
+	START_LOG( cerr, L"Failed to update stamina statistics in the database!" )
 		<< BUILD_LOG( iOK )
 		<< BUILD_LOG( kPacket_.m_iUnitUID )
 		<< BUILD_LOG( kPacket_.m_iSpiritPlayTime )
@@ -2670,7 +2670,7 @@ IMPL_ON_FUNC( ELOG_ATTRIB_ATTACH_ITEM_LOG_NOT )
 end_proc:
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"속성 부여 로그 등록 실패!" )
+		START_LOG( cerr, L"Failed to record attribute assignment log!" )
 			<< BUILD_LOG( iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iAttachItemID )
@@ -2721,7 +2721,7 @@ IMPL_ON_FUNC( ELOG_USER_CHARACTER_LOG_NOT )
 end_proc:
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"캐릭터 로그 등록 실패!" )
+		START_LOG( cerr, L"Failed to record character log!" )
 			<< BUILD_LOG( iOK )
 			<< BUILD_LOG( kPacket_.m_wstrRegDate )
 			<< BUILD_LOG( kPacket_.m_iUserUID )
@@ -2773,7 +2773,7 @@ IMPL_ON_FUNC( ELOG_BUY_CASH_ITEM_LOG_NOT )
 end_proc:
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"캐쉬템 로그 등록 실패!" )
+		START_LOG( cerr, L"Failed to record cash item log!" )
 			<< BUILD_LOG( iOK )
 			<< BUILD_LOG( kPacket_.m_iUserUID )
             << BUILD_LOG( kPacket_.m_iUnitUID )
@@ -2876,7 +2876,7 @@ IMPL_ON_FUNC( DBE_WRITE_LETTER_AND_TRADE_MOINTORING_REQ )
 			}break;
 		default:
 			{
-				START_LOG( cout, L"우편 및 거래 감시 로그 기록 실패!!  :")
+				START_LOG( cout, L"Failed to record mail and trade monitoring log: ")
 					<< BUILD_LOG( kPacket_.m_iRecvUnitUID )
 					<< BUILD_LOGc( kPacket_.m_cType )
 					<< END_LOG;
@@ -2887,7 +2887,7 @@ IMPL_ON_FUNC( DBE_WRITE_LETTER_AND_TRADE_MOINTORING_REQ )
 	{
 		kPacket.m_iOK = static_cast<int>(kPacket_.m_cType);
 
-		START_LOG( cout, L"우편 및 거래 감시 로그 기록 성공!!  :")
+		START_LOG( cout, L"Mail and trade monitoring log recorded successfully: ")
 			<< BUILD_LOG( kPacket_.m_iRecvUnitUID )
 			<< BUILD_LOGc( kPacket_.m_cType )
 			<< BUILD_LOG( kPacket_.m_wstrRegDate )
@@ -2914,7 +2914,7 @@ _IMPL_ON_FUNC( ELOG_STAT_ITEM_DB, KStatisticsData )
 		const std::vector< int >& vecIntKey = mit->first.m_vecIntKey;
 		if( vecIntKey.empty() )
 		{
-			START_LOG( cerr, L"통계키값이 비었음" )
+			START_LOG( cerr, L"The statistics key is empty." )
 				<< END_LOG;
 			continue;
 		}
@@ -2926,7 +2926,7 @@ _IMPL_ON_FUNC( ELOG_STAT_ITEM_DB, KStatisticsData )
 		{
 			if( vit == mit->second.end() )
 			{
-				START_LOG( clog2, L"카운트 데이터가 비었음." )
+				START_LOG( clog2, L"The count data is empty." )
 					<< BUILD_LOG( iIndex )
 					<< END_LOG;
 
@@ -2988,7 +2988,7 @@ _IMPL_ON_FUNC( ELOG_STAT_ITEM_DB, KStatisticsData )
 			m_kODBC.EndFetch();
 		}
 
-		START_LOG( clog2, L"아이템 통계 [검사]" )
+		START_LOG( clog2, L"Item statistics [check]" )
 			<< BUILD_LOG( iItemID )
 			<< BUILD_LOG( aiCount[KStatistics::SI_ITEM_TRADE] )
 			<< BUILD_LOG( aiCount[KStatistics::SI_ITEM_PERSONAL_SHOP] )
@@ -3054,7 +3054,7 @@ IMPL_ON_FUNC( DBE_FIRST_WRITE_SECURITY_TYPE_NOT )
 end_proc:
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"2차 보안 타입 기록 로그 SP 호출 실패!!" )
+		START_LOG( cerr, L"Failed to call the stored procedure to log the secondary security type!" )
 			<< BUILD_LOG( iOK )
 			<< BUILD_LOG( kPacket_.m_iUserUID )
 			<< BUILD_LOG( kPacket_.m_iSecurityType )
@@ -3126,7 +3126,7 @@ IMPL_ON_FUNC( ELOG_ITEM_TRADE_ERROR_NOT )
 
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"은행 공유 : 에러 로그 입력 실패!" )
+		START_LOG( cerr, L"Shared bank: failed to write error log!" )
 			<< BUILD_LOG( iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iType )
@@ -3165,7 +3165,7 @@ IMPL_ON_FUNC( DBE_FIRST_WRITE_COME_BACK_INFO_NOT )
 end_proc:
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"휴면 복귀 유저 정보 DB 입력 실패!!" )
+		START_LOG( cerr, L"Failed to insert returning-user information into the database!" )
 			<< BUILD_LOG( iOK )
 			<< BUILD_LOG( kPacket_.m_iUserUID )
 			<< BUILD_LOG( kPacket_.m_iAge )
@@ -3209,7 +3209,7 @@ IMPL_ON_FUNC( ELOG_HIGH_ENCHANT_ITEM_LOG_NOT )
 end_proc:
 		if( iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"고강 아이템 강화 로그 기록 실패" )
+			START_LOG( cerr, L"Failed to record high-level item enhancement log." )
 				<< BUILD_LOG( iOK )
 				<< BUILD_LOG( kPacket_.m_iUnitUID )
 				<< BUILD_LOG( kPacket_.m_iItemUID )
@@ -3250,7 +3250,7 @@ IMPL_ON_FUNC( DBE_BUY_AP_ITEM_LOG_NOT )
 end_proc:
 		if( iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"AP 아이템 구매 로그 기록 실패!" )
+			START_LOG( cerr, L"Failed to log the AP item purchase!" )
 				<< BUILD_LOG( iOK )
 				<< BUILD_LOG( kPacket_.m_iUnitUID )
 				<< BUILD_LOG( kPacket_.m_iItemID )
@@ -3292,7 +3292,7 @@ IMPL_ON_FUNC( DBE_UPDATE_PAKCET_MORNITORING_LOG_NOT )
 
 		if( iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"AP 아이템 구매 로그 기록 실패!" )
+			START_LOG( cerr, L"Failed to log the AP item purchase!" )
 				<< BUILD_LOG( iOK )
 				<< BUILD_LOG( iServerUID )
 				<< BUILD_LOG( kInfo.m_usEventID )
@@ -3358,7 +3358,7 @@ IMPL_ON_FUNC( DBE_UPDATE_PAKCET_MORNITORING_LOG_NOT )
 
 		if( iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"AP 아이템 구매 로그 기록 실패!" )
+			START_LOG( cerr, L"Failed to log the AP item purchase!" )
 				<< BUILD_LOG( iOK )
 				<< BUILD_LOG( iServerUID )
 				<< BUILD_LOG( kInfo.m_usEventID )
@@ -3405,7 +3405,7 @@ IMPL_ON_FUNC( DBE_UPDATE_PAKCET_MORNITORING_LOG_NOT )
 	return;
 
 end_proc:
-	START_LOG( cerr, L"패킷 처리 관련 로그 DB기록 실패!" )
+	START_LOG( cerr, L"Failed to write packet processing information to the log database!" )
 		<< BUILD_LOG( kPacket_.m_vecCnProxyPacketCountInfo.size() )
 		<< BUILD_LOG( kPacket_.m_vecGSUserPacketLatencyInfo.size() )
 		<< END_LOG;
@@ -3450,7 +3450,7 @@ _IMPL_ON_FUNC( DBE_BAD_ATTITUDE_USER_LOG_NOT, KERM_BAD_ATTITUDE_USER_LOG_NOT )
 
 		if( iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"던전 강퇴 로그 입력 실패" )
+			START_LOG( cerr, L"Failed to write the dungeon kick log." )
 				<< BUILD_LOG( iOK )
 				<< BUILD_LOG( kPacket_.m_iUnitUID )
 				<< BUILD_LOG( kPacket_.m_iDungeonIDAndDif )
@@ -3467,7 +3467,7 @@ _IMPL_ON_FUNC( DBE_BAD_ATTITUDE_USER_LOG_NOT, KERM_BAD_ATTITUDE_USER_LOG_NOT )
 	return;
 
 end_proc:
-	START_LOG( cerr, L"던전 강퇴 로그 입력 실패" )
+	START_LOG( cerr, L"Failed to write the dungeon kick log." )
 		<< BUILD_LOG( iOK )
 		<< BUILD_LOG( kPacket_.m_iUnitUID )
 		<< BUILD_LOG( kPacket_.m_iDungeonIDAndDif )
@@ -3507,7 +3507,7 @@ IMPL_ON_FUNC( DBE_TICK_PERFORMANCE_LOG_NOT )
 end_proc:
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"SimLayer Tick 퍼포먼스 로그 기록 실패!" )
+		START_LOG( cerr, L"Failed to write SimLayer tick performance data to the log!" )
 			<< BUILD_LOG( kPacket_.m_iServerUID )
 			<< BUILD_LOG( kPacket_.m_iServerType )
 			<< BUILD_LOG( kPacket_.m_dwMaxTickCount )
@@ -3571,7 +3571,7 @@ IMPL_ON_FUNC( DBE_ITEM_EXCHANGE_LOG_NOT )
 
 		if( iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"교환 결과 로그 기록 실패" )
+			START_LOG( cerr, L"Failed to record exchange result log." )
 				<< BUILD_LOG( kPacket_.m_iUnitUID )
 				<< BUILD_LOG( kPacket_.m_iUserUID )
 				<< BUILD_LOG( kPacket_.m_iSourceItemID )
@@ -3616,7 +3616,7 @@ IMPL_ON_FUNC( DBE_LOG_STATISTICS_INFO_NOT )
 end_proc:
 		if( iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"Log Statistics 정보 기록 실패!" )
+			START_LOG( cerr, L"Failed to write log statistics!" )
 				<< BUILD_LOG( iServerUID )
 				<< BUILD_LOG( kInfo.m_wstrFunctionName )
 				<< BUILD_LOG( kInfo.m_wstrFileName )
@@ -3774,7 +3774,7 @@ IMPL_ON_FUNC( DBE_CHANGE_PET_ID_LOG_NOT )
 end_proc:
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"할로윈 요정 펫 로그 남기기 실패" )
+		START_LOG( cerr, L"Failed to record Halloween fairy pet log." )
 			<< BUILD_LOG( iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iPetUID )
@@ -3804,7 +3804,7 @@ IMPL_ON_FUNC( DBE_UNLIMITED_SECOND_CHANGE_JOB_NOT )
 end_proc:
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"무제한 전직 변경권 사용 기록 실패!" )
+		START_LOG( cerr, L"Failed to record use of the unlimited class-change ticket!" )
 			<< BUILD_LOG( iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iOldUnitClass )

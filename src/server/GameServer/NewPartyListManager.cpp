@@ -34,7 +34,7 @@ KGSPartyPtr KPartyListManager::GetParty( IN UidType iPartyUID )
 	mit = m_mapPartyInfo.find( iPartyUID );
 	if( mit == m_mapPartyInfo.end() )
 	{
-		START_LOG( cwarn, L"찾는 파티가 없습니다.!" )
+		START_LOG( cwarn, L"Party not found!" )
 			<< BUILD_LOG( iPartyUID )
 			<< END_LOG;
 
@@ -43,7 +43,7 @@ KGSPartyPtr KPartyListManager::GetParty( IN UidType iPartyUID )
 
 	if( mit->second == NULL )
 	{
-		START_LOG( cerr, L"파티 포인터 이상.!" )
+		START_LOG( cerr, L"Invalid party pointer!" )
 			<< BUILD_LOG( iPartyUID )
 			<< END_LOG;
 
@@ -58,7 +58,7 @@ bool KPartyListManager::GetDungeonInfo( IN UidType iPartyUID, OUT int& iDungeonI
 	KGSPartyPtr spParty = GetParty( iPartyUID );
 	if( spParty == NULL )
 	{
-		START_LOG( cwarn, L"던전 정보를 찾을 파티가 없음." )
+		START_LOG( cwarn, L"No party available to look up dungeon information." )
 			<< BUILD_LOG( iPartyUID )
 			<< END_LOG;
 
@@ -78,7 +78,7 @@ bool KPartyListManager::GetPartyUserList( IN UidType iPartyUID, OUT std::vector<
 	KGSPartyPtr spParty = GetParty( iPartyUID );
 	if( spParty == NULL )
 	{
-		START_LOG( cerr, L"파티 정보를 찾을 파티가 없음." )
+		START_LOG( cerr, L"No party found for the requested party information." )
 			<< BUILD_LOG( iPartyUID )
 			<< END_LOG;
 
@@ -108,7 +108,7 @@ bool KPartyListManager::IsPartyMember( IN UidType iPartyUID, IN UidType iUnitUID
 	KGSPartyPtr spParty = GetParty( iPartyUID );
 	if( spParty == NULL )
 	{
-		START_LOG( cerr, L"파티 정보를 찾을 파티가 없음." )
+		START_LOG( cerr, L"No party found for the requested party information." )
 			<< BUILD_LOG( iPartyUID )
 			<< END_LOG;
 
@@ -123,7 +123,7 @@ bool KPartyListManager::GetPartyNumMember( IN UidType iPartyUID, OUT int& iNumMe
 	KGSPartyPtr spParty = GetParty( iPartyUID );
 	if( spParty == NULL )
 	{
-		START_LOG( cerr, L"파티 정보를 찾을 파티가 없음." )
+		START_LOG( cerr, L"No party found for the requested party information." )
 			<< BUILD_LOG( iPartyUID )
 			<< END_LOG;
 
@@ -141,7 +141,7 @@ bool KPartyListManager::GetPartyFeverExpRate( IN UidType iPartyUID, OUT float& f
 	KGSPartyPtr spParty = GetParty( iPartyUID );
 	if( spParty == NULL )
 	{
-		START_LOG( cwarn, L"파티 정보를 찾을 파티가 없음." )
+		START_LOG( cwarn, L"No party found for the requested party information." )
 			<< BUILD_LOG( iPartyUID )
 			<< END_LOG;
 
@@ -159,7 +159,7 @@ bool KPartyListManager::GetPartyFever( IN const UidType iPartyUID, OUT short& sP
 	KGSPartyPtr spParty = GetParty( iPartyUID );
 	if( spParty == NULL )
 	{
-		START_LOG( cwarn, L"파티 정보를 찾을 파티가 없음." )
+		START_LOG( cwarn, L"No party found for the requested party information." )
 			<< BUILD_LOG( iPartyUID )
 			<< END_LOG;
 
@@ -377,7 +377,7 @@ bool KPartyListManager::E_CreatePartyInSameField( IN KGSUserPtr spHost, IN KGSUs
 
 	if( spHost->GetPartyUID() != 0 )
 	{
-		START_LOG( cerr, L"파티 정보가 존재하면 안됩니다!" )
+		START_LOG( cerr, L"Party information should not exist!" )
 			<< BUILD_LOG( spHost->GetPartyUID() )
 			<< END_LOG;
 
@@ -388,7 +388,7 @@ bool KPartyListManager::E_CreatePartyInSameField( IN KGSUserPtr spHost, IN KGSUs
 	// 파티 가입 예약 상태인지 검사 ( 이 부분을 주석 처리하면 중복 초대가 가능해집니다. )
 	if( spHost->GetCandidatePartyUID() != 0 )
 	{
-		START_LOG( cerr, L"파티 예약 정보가 존재하면 안됩니다!" )
+		START_LOG( cerr, L"Party reservation information should not exist!" )
 			<< BUILD_LOG( spHost->GetCandidatePartyUID() )
 			<< END_LOG;
 
@@ -414,7 +414,7 @@ bool KPartyListManager::E_InvitePartyInSameField( IN KGSUserPtr spHost, IN KGSUs
 
 	if( spHost->GetPartyUID() == 0 )
 	{
-		START_LOG( cerr, L"파티 정보가 존재하지 않습니다." )
+		START_LOG( cerr, L"The party information does not exist." )
 			<< BUILD_LOG( spHost->GetPartyUID() )
 			<< END_LOG;
 
@@ -425,7 +425,7 @@ bool KPartyListManager::E_InvitePartyInSameField( IN KGSUserPtr spHost, IN KGSUs
 	// 파티 가입 예약 상태인지 검사 ( 이 부분을 주석 처리하면 중복 초대가 가능해집니다. )
 	if( spHost->GetCandidatePartyUID() != 0 )
 	{
-		START_LOG( cerr, L"파티 예약 정보가 존재하면 안됩니다!" )
+		START_LOG( cerr, L"Party reservation information should not exist!" )
 			<< BUILD_LOG( spHost->GetCandidatePartyUID() )
 			<< END_LOG;
 
@@ -436,7 +436,7 @@ bool KPartyListManager::E_InvitePartyInSameField( IN KGSUserPtr spHost, IN KGSUs
 	KGSPartyPtr spParty = GetParty( spHost->GetPartyUID() );
 	if( spParty == NULL )
 	{
-		START_LOG( cerr, L"파티 정보가 존재하지 않습니다." )
+		START_LOG( cerr, L"The party information does not exist." )
 			<< BUILD_LOG( spHost->GetPartyUID() )
 			<< END_LOG;
 
@@ -469,7 +469,7 @@ bool KPartyListManager::E_CreatePartyFarFieldCheckHost(	IN KGSUserPtr spHost, IN
 
 	if( spHost->GetPartyUID() != 0 )
 	{
-		START_LOG( cerr, L"파티 정보가 존재하면 안됩니다!" )
+		START_LOG( cerr, L"Party information should not exist!" )
 			<< BUILD_LOG( spHost->GetPartyUID() )
 			<< END_LOG;
 
@@ -480,7 +480,7 @@ bool KPartyListManager::E_CreatePartyFarFieldCheckHost(	IN KGSUserPtr spHost, IN
 	// 파티 가입 예약 상태인지 검사 ( 이 부분을 주석 처리하면 중복 초대가 가능해집니다. )
 	if( spHost->GetCandidatePartyUID() != 0 )
 	{
-		START_LOG( cerr, L"파티 대기자 정보가 존재하면 안됩니다!" )
+		START_LOG( cerr, L"Party waiting-list information should not exist!" )
 			<< BUILD_LOG( spHost->GetCandidatePartyUID() )
 			<< END_LOG;
 
@@ -511,7 +511,7 @@ bool KPartyListManager::E_InvitePartyFarFieldCheckHost( IN KGSUserPtr spHost, IN
 
 	if( spHost->GetPartyUID() == 0 )
 	{
-		START_LOG( cerr, L"파티 정보가 없는데 초대하려고 했습니다." )
+		START_LOG( cerr, L"Attempted to invite to a party with no party information." )
 			<< BUILD_LOG( spHost->GetPartyUID() )
 			<< END_LOG;
 
@@ -522,7 +522,7 @@ bool KPartyListManager::E_InvitePartyFarFieldCheckHost( IN KGSUserPtr spHost, IN
 	// 파티 가입 예약 상태인지 검사 ( 이 부분을 주석 처리하면 중복 초대가 가능해집니다. )
 	if( spHost->GetCandidatePartyUID() != 0 )
 	{
-		START_LOG( cerr, L"파티 대기자 정보가 존재하면 안됩니다!" )
+		START_LOG( cerr, L"Party waiting-list information should not exist!" )
 			<< BUILD_LOG( spHost->GetCandidatePartyUID() )
 			<< END_LOG;
 
@@ -533,7 +533,7 @@ bool KPartyListManager::E_InvitePartyFarFieldCheckHost( IN KGSUserPtr spHost, IN
 	KGSPartyPtr spParty = GetParty( spHost->GetPartyUID() );
 	if( spParty == NULL )
 	{
-		START_LOG( cerr, L"파티 정보가 존재하지 않습니다." )
+		START_LOG( cerr, L"The party information does not exist." )
 			<< BUILD_LOG( spHost->GetPartyUID() )
 			<< END_LOG;
 
@@ -677,7 +677,7 @@ bool KPartyListManager::E_LeavePartyReq( IN KGSUserPtr spUser, IN const KEGS_LEA
 		// 파티 가입 예약인지..?
 		if( spUser->GetCandidatePartyUID() > 0  &&  spUser->GetPartyUID() != spUser->GetCandidatePartyUID() )
 		{
-			START_LOG( cwarn, L"파티 소속인데다 예약도 되있네? 일어나서는 안되는 에러!" )
+			START_LOG( cwarn, L"User is in a party and also reserved; this should never happen!" )
 				<< BUILD_LOG( spUser->GetPartyUID() )
 				<< BUILD_LOG( spUser->GetCandidatePartyUID() )
 				<< END_LOG;
@@ -700,7 +700,7 @@ bool KPartyListManager::E_LeavePartyReq( IN KGSUserPtr spUser, IN const KEGS_LEA
 		}
 		else
 		{
-			START_LOG( cerr, L"파티 이탈 하려고하는데 PartyUID가 없다?" )
+			START_LOG( cerr, L"Attempted to leave party, but PartyUID is missing?" )
 				<< BUILD_LOG( spUser->GetPartyUID() )
 				<< BUILD_LOG( spUser->GetCandidatePartyUID() )
 				<< END_LOG;
@@ -853,7 +853,7 @@ void KPartyListManager::E_OpenPartyList( IN const KPartyInfo& kPartyInfo, IN con
 	// 이미 존재하는 파티인지 검사
 	if( m_mapPartyInfo.find( kPartyInfo.m_iPartyUID ) != m_mapPartyInfo.end() )
 	{
-		START_LOG( cerr, L"이미 파티리스트에 해당 파티정보가 있습니다! 유령파티인가?" )
+		START_LOG( cerr, L"Party information already exists in the party list; is this a ghost party?" )
 			<< BUILD_LOG( kPartyInfo.m_iPartyUID )
 			<< END_LOG;
 
@@ -865,7 +865,7 @@ void KPartyListManager::E_OpenPartyList( IN const KPartyInfo& kPartyInfo, IN con
 	KGSPartyPtr spParty( new KGSParty( kPartyInfo ) );
 	if( spParty == NULL )
 	{
-		START_LOG( cerr, L"파티 정보 생성 실패! 절대 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"Failed to create party information; this should never happen!" )
 			<< BUILD_LOG( kPartyInfo.m_wstrPartyName )
 			<< BUILD_LOG( vecPartyUser.size() )
 			<< END_LOG;
@@ -889,7 +889,7 @@ void KPartyListManager::E_ClosePartyList( IN const UidType iPartyUID )
 	KGSPartyPtr spParty = GetParty( iPartyUID );
 	if( spParty == NULL )
 	{
-		START_LOG( cwarn, L"삭제하려는 파티가 없습니다." )
+		START_LOG( cwarn, L"The party to delete does not exist." )
 			<< BUILD_LOG( iPartyUID )
 			<< END_LOG;
 		return;
@@ -907,7 +907,7 @@ bool KPartyListManager::E_AddPartyList( IN const UidType iPartyUID )
 	KGSPartyPtr spParty = GetParty( iPartyUID );
 	if( spParty == NULL )
 	{
-		START_LOG( cwarn, L"파티 리스트에 추가하려는 파티가 없습니다." )
+		START_LOG( cwarn, L"Party to add to the party list does not exist." )
 			<< BUILD_LOG( iPartyUID )
 			<< END_LOG;
 		return false;
@@ -922,7 +922,7 @@ bool KPartyListManager::E_AddPartyList( IN const UidType iPartyUID )
 	const int iMapID = CXSLMapData::GetMapID( iDungeonID );
 	if( iMapID == SEnum::VMI_INVALID )
 	{
-		START_LOG( cerr, L"파티리스트 [추가]할려니 던전아이디가 이상함." )
+		START_LOG( cerr, L"Invalid dungeon ID while adding to party list." )
 			<< BUILD_LOG( iDungeonID )
 			<< END_LOG;
 		return false;
@@ -946,7 +946,7 @@ bool KPartyListManager::E_DelPartyList( IN const UidType iPartyUID )
 	KGSPartyPtr spParty = GetParty( iPartyUID );
 	if( spParty == NULL )
 	{
-		START_LOG( cwarn, L"삭제하려는 파티가 없습니다." )
+		START_LOG( cwarn, L"The party to delete does not exist." )
 			<< BUILD_LOG( iPartyUID )
 			<< END_LOG;
 		return false;
@@ -962,7 +962,7 @@ bool KPartyListManager::E_DelPartyList( IN const UidType iPartyUID )
 
 	if( iMapID == SEnum::VMI_INVALID )
 	{
-		START_LOG( cerr, L"파티리스트 [삭제]할려니 던전아이디가 이상함." )
+		START_LOG( cerr, L"Invalid dungeon ID while deleting from party list." )
 			<< BUILD_LOG( spParty->GetPartyName() )
 			<< BUILD_LOG( spParty->GetNumMember() )
 			<< BUILD_LOG( iDungeonID )
@@ -1160,7 +1160,7 @@ void KPartyListManager::E_UpdatePartyInfo( IN const KPartyInfo& kPartyInfo )
 	KGSPartyPtr spParty = GetParty( kPartyInfo.m_iPartyUID );
 	if( spParty == NULL )
 	{
-		START_LOG( cwarn, L"업데이트 하려는 파티가 없습니다." )
+		START_LOG( cwarn, L"The party to update does not exist." )
 			<< BUILD_LOG( kPartyInfo.m_iPartyUID )
 			<< END_LOG;
 		return;
@@ -1175,7 +1175,7 @@ void KPartyListManager::E_UpdatePartyFever(	IN const UidType iPartyUID, IN const
 	KGSPartyPtr spParty = GetParty( iPartyUID );
 	if( spParty == NULL )
 	{
-		START_LOG( cwarn, L"업데이트 하려는 파티가 없습니다." )
+		START_LOG( cwarn, L"The party to update does not exist." )
 			<< BUILD_LOG( iPartyUID )
 			<< END_LOG;
 		return;
@@ -1195,7 +1195,7 @@ void KPartyListManager::E_AddPartyMemberInPartyList( IN UidType iPartyUID, IN co
     KGSPartyPtr spParty = GetParty( iPartyUID );
 	if( spParty == NULL )
 	{
-		START_LOG( cwarn, L"파티원을 등록할 파티정보가 없습니다." )
+		START_LOG( cwarn, L"No party information available to register member." )
 			<< BUILD_LOG( iPartyUID )
 			<< END_LOG;
 		return;
@@ -1210,7 +1210,7 @@ void KPartyListManager::E_DelPartyMemberInPartyList( IN UidType iPartyUID, IN Ui
 	KGSPartyPtr spParty = GetParty( iPartyUID );
 	if( spParty == NULL )
 	{
-		START_LOG( cwarn, L"파티원을 삭제할 파티정보가 없습니다." )
+		START_LOG( cwarn, L"No party information available to delete member." )
 			<< BUILD_LOG( iPartyUID )
 			<< END_LOG;
 		return;
@@ -1225,7 +1225,7 @@ void KPartyListManager::E_UpdatePartyMemberInfo( IN UidType iPartyUID, IN const 
 	KGSPartyPtr spParty = GetParty( iPartyUID );
 	if( spParty == NULL )
 	{
-		START_LOG( cwarn, L"파티원 정보를 업데이트할 파티정보가 없습니다." )
+		START_LOG( cwarn, L"No party information available to update member information." )
 			<< BUILD_LOG( iPartyUID )
 			<< END_LOG;
 		return;

@@ -55,14 +55,14 @@ void KTRServerDumpManager::DumpToLogFile()
 
 	//////////////////////////////////////////////////////////////////////////
 	// 덤프 출력
-	dbg::cout << L"TRThreadManager에 푸쉬된 이벤트 수  : " << iEventCount << dbg::endl;
+	dbg::cout << L"Events pushed to TRThreadManager: " << iEventCount << dbg::endl;
 	//dbg::cout << L"TRWorkerThread가 가져가지 않은 남은 이벤트 : " << iQueueSize << dbg::endl;
 
 	//dbg::cout << L"전체 TRUser수 : " << iTot << dbg::endl;
 	//dbg::cout << L"인증 TRUser수 : " << iReg << dbg::endl << dbg::endl;
 
-	dbg::cout << L"Send   사이즈 : " << uiSendSize << dbg::endl;
-	dbg::cout << L"Send   카운트 : " << uiSendCount << dbg::endl << dbg::endl;
+	dbg::cout << L"Send   size: " << uiSendSize << dbg::endl;
+	dbg::cout << L"Send   count: " << uiSendCount << dbg::endl << dbg::endl;
 
 	//dbg::cout << L"Field Sync카운트 : " << iFieldSyncCount << dbg::endl << dbg::endl;
 
@@ -232,7 +232,7 @@ void KTRServer::OnAccept_( SOCKET sock, const SOCKADDR_IN& sinRemote )
 			m_kMaxTimeInfo.m_cTime    = CTime::GetCurrentTime();
 			m_kMaxTimeInfo.m_dwTerm   = dwElapTime;
 
-			START_LOG( clog2, L"accepter 객체 생성 대기시간 갱신. Remote IP : " << m_kMaxTimeInfo.m_strIP )
+			START_LOG( clog2, L"Updated accepter object creation wait time. Remote IP: " << m_kMaxTimeInfo.m_strIP )
 				<< BUILD_LOG( m_kMaxTimeInfo.m_dwTerm );
 		}
 	}   // locking scope

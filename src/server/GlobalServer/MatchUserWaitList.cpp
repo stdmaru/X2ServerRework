@@ -35,7 +35,7 @@ UidType KMatchUserWaitList::GetPartyUID() const
 
 		if( iPartyUID != spMatchUser->GetPartyUID() )
 		{
-			START_LOG( cerr, L"엇.. 이거 이상한데.. 같은 멤버인데 PartyUID가 틀리네? 절대 일어나서는 안되는 에러!" )
+			START_LOG( cerr, L"Unexpected PartyUID for the same member; this should never happen." )
 				<< BUILD_LOG( iPartyUID )
 				<< BUILD_LOG( spMatchUser->GetPartyUID() )
 				<< END_LOG;
@@ -54,7 +54,7 @@ void KMatchUserWaitList::GetUnitUIDList( OUT std::vector< UidType >& vecUnitUIDL
 	{
         if( spMatchUser == NULL )
 		{
-			START_LOG( cerr, L"매치 유저 포인터값이 이상합니다!" )
+			START_LOG( cerr, L"Invalid match-user pointer." )
 				<< END_LOG;
 			continue;
 		}
@@ -71,7 +71,7 @@ void KMatchUserWaitList::GetMatchUserInfoList( OUT std::vector< KMatchUserInfo >
 	{
 		if( spMatchUser == NULL )
 		{
-			START_LOG( cerr, L"매치 유저 포인터값이 이상합니다!" )
+			START_LOG( cerr, L"Invalid match-user pointer." )
 				<< END_LOG;
 			continue;
 		}
@@ -88,7 +88,7 @@ KMatchUserPtr KMatchUserWaitList::GetMatchUser( IN const UidType iUnitUID )
 	std::map< UidType, KMatchUserPtr >::iterator mit = m_mapMember.find( iUnitUID );
 	if( mit == m_mapMember.end() )
 	{
-		START_LOG( cwarn, L"찾는 매치유저가 없습니다.!" )
+		START_LOG( cwarn, L"Match user not found." )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 
@@ -97,7 +97,7 @@ KMatchUserPtr KMatchUserWaitList::GetMatchUser( IN const UidType iUnitUID )
 
 	if( mit->second == NULL )
 	{
-		START_LOG( cerr, L"매치 유저 포인터 이상.!" )
+		START_LOG( cerr, L"Invalid match-user pointer." )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 
@@ -111,14 +111,14 @@ bool KMatchUserWaitList::AddMatchUser( KMatchUserPtr spMatchUser )
 {
 	if( spMatchUser == NULL )
 	{
-		START_LOG( cerr, L"매치 유저 포인터값이 이상함." )
+		START_LOG( cerr, L"Invalid match-user pointer." )
 			<< END_LOG;
 		return false;
 	}
 
 	if( IsExistMatchUser( spMatchUser->GetCharUID() ) == true )
 	{
-		START_LOG( cerr, L"이미 매치유저가 등록되어있습니다! 절대 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"Match user is already registered; this should never happen." )
 			<< BUILD_LOG( spMatchUser->GetCharUID() )
 			<< END_LOG;
 		return false;
@@ -157,7 +157,7 @@ int	KMatchUserWaitList::GetRatingAverage() const
 	{
         if( spMatchUser == NULL )
 		{
-			START_LOG( cerr, L"매치 유저 포인터값이 이상합니다." )
+			START_LOG( cerr, L"Invalid match-user pointer." )
 				<< END_LOG;
 			continue;
 		}
@@ -168,7 +168,7 @@ int	KMatchUserWaitList::GetRatingAverage() const
 	const int iNumMember = static_cast<int>(m_vecWaitList.size());
 	if( iNumMember == 0 )
 	{
-		START_LOG( cerr, L"유령 대기자 리스트다! 절대 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"This is a ghost wait list; this should never happen." )
 			<< BUILD_LOG( GetMatchWaitNumber() )
 			<< END_LOG;
 		return 0;
@@ -193,7 +193,7 @@ int	KMatchUserWaitList::GetRatingWeightAverage() const
 	{
 		if( spMatchUser == NULL )
 		{
-			START_LOG( cerr, L"매치 유저 포인터값이 이상합니다." )
+			START_LOG( cerr, L"Invalid match-user pointer." )
 				<< END_LOG;
 			continue;
 		}
@@ -217,7 +217,7 @@ bool KMatchUserWaitList::IsPossibleMatchMakingBegin() const
 	{
 		if( spMatchUser == NULL )
 		{
-			START_LOG( cerr, L"매치 유저 포인터값이 이상합니다." )
+			START_LOG( cerr, L"Invalid match-user pointer." )
 				<< END_LOG;
 			continue;
 		}
@@ -235,7 +235,7 @@ bool KMatchUserWaitList::IsAllPlayersSameRank( IN const CXSLUnit::PVP_RANK eRank
 	{
 		if( !spMatchUser )
 		{
-			START_LOG( cerr, L"매치 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid match-user pointer." )
 				<< END_LOG;
 			return false;
 		}
@@ -264,7 +264,7 @@ bool KMatchUserWaitList::IsAllPlayersArrangeRank( void )
 	{
 		if( !spMatchUser )
 		{
-			START_LOG( cerr, L"매치 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid match-user pointer." )
 				<< END_LOG;
 			return false;
 		}
@@ -283,7 +283,7 @@ bool KMatchUserWaitList::IsAllPlayersBeginner( void )
 	{
 		if( !spMatchUser )
 		{
-			START_LOG( cerr, L"매치 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid match-user pointer." )
 				<< END_LOG;
 			return false;
 		}

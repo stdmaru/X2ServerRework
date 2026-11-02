@@ -41,7 +41,7 @@ void KHenirRanking::SetRefreshTime( const int iRankingType, const int iWeekOfMon
 
 			//////////////////////////////////////////////////////////////////////////
 			CStringW strRefreshTime = (CStringW)m_tRefreshTime.Format( _T("%Y-%m-%d %H:%M:%S") );
-			START_LOG( cout, L"일간 랭킹 갱신 일자 설정!" )
+			START_LOG( cout, L"Daily ranking refresh date set!" )
 				<< BUILD_LOG( strRefreshTime.GetBuffer() );
 			//////////////////////////////////////////////////////////////////////////
 		}
@@ -68,7 +68,7 @@ void KHenirRanking::SetRefreshTime( const int iRankingType, const int iWeekOfMon
 
 			//////////////////////////////////////////////////////////////////////////
 			CStringW strRefreshTime = (CStringW)m_tRefreshTime.Format( _T("%Y-%m-%d %H:%M:%S") );
-			START_LOG( cout, L"주간 랭킹 갱신 일자 설정!" )
+			START_LOG( cout, L"Weekly ranking refresh date set!" )
 				<< BUILD_LOG( strRefreshTime.GetBuffer() );
 			//////////////////////////////////////////////////////////////////////////
 		}
@@ -101,7 +101,7 @@ void KHenirRanking::SetRefreshTime( const int iRankingType, const int iWeekOfMon
 
 			//////////////////////////////////////////////////////////////////////////
 			CStringW strRefreshTime = (CStringW)m_tRefreshTime.Format( _T("%Y-%m-%d %H:%M:%S") );
-			START_LOG( cout, L"월간 랭킹 갱신 일자 설정!" )
+			START_LOG( cout, L"Monthly ranking refresh date set!" )
 				<< BUILD_LOG( strRefreshTime.GetBuffer() );
 			//////////////////////////////////////////////////////////////////////////
 		}
@@ -110,7 +110,7 @@ void KHenirRanking::SetRefreshTime( const int iRankingType, const int iWeekOfMon
 
 	default:
 		{
-            START_LOG( cerr, L"랭킹 타입이 이상합니다. 갱신날짜 설정 실패!" )
+            START_LOG( cerr, L"Invalid ranking type; failed to set refresh date!" )
 				<< BUILD_LOG( m_iRankingType )
 				<< END_LOG;
 		}
@@ -129,7 +129,7 @@ void KHenirRanking::NextRefreshTimeSet()
 
 			//////////////////////////////////////////////////////////////////////////
 			CStringW strRefreshTime = (CStringW)m_tRefreshTime.Format( _T("%Y-%m-%d %H:%M:%S") );
-			START_LOG( cout, L"일간 랭킹 갱신 일자를 다음 갱신 날짜로 수정 완료!" )
+			START_LOG( cout, L"Daily ranking refresh date advanced to the next refresh date!" )
 				<< BUILD_LOG( strRefreshTime.GetBuffer() );
 			//////////////////////////////////////////////////////////////////////////
 		}
@@ -141,7 +141,7 @@ void KHenirRanking::NextRefreshTimeSet()
 
 			//////////////////////////////////////////////////////////////////////////
 			CStringW strRefreshTime = (CStringW)m_tRefreshTime.Format( _T("%Y-%m-%d %H:%M:%S") );
-			START_LOG( cout, L"주간 랭킹 갱신 일자를 다음 갱신 날짜로 수정 완료!" )
+			START_LOG( cout, L"Weekly ranking refresh date advanced to the next refresh date!" )
 				<< BUILD_LOG( strRefreshTime.GetBuffer() );
 			//////////////////////////////////////////////////////////////////////////
 		}
@@ -161,7 +161,7 @@ void KHenirRanking::NextRefreshTimeSet()
 
 			//////////////////////////////////////////////////////////////////////////
 			CStringW strRefreshTime = (CStringW)m_tRefreshTime.Format( _T("%Y-%m-%d %H:%M:%S") );
-			START_LOG( cout, L"월간 랭킹 갱신 일자를 다음 갱신 날짜로 수정 완료!" )
+			START_LOG( cout, L"Monthly ranking refresh date advanced to the next refresh date!" )
 				<< BUILD_LOG( strRefreshTime.GetBuffer() );
 			//////////////////////////////////////////////////////////////////////////
 		}
@@ -170,7 +170,7 @@ void KHenirRanking::NextRefreshTimeSet()
 
 	default:
 		{
-			START_LOG( cerr, L"랭킹 타입이 이상합니다. 갱신날짜 설정 실패!" )
+			START_LOG( cerr, L"Invalid ranking type; failed to set refresh date!" )
 				<< BUILD_LOG( m_iRankingType )
 				<< END_LOG;
 		}
@@ -184,14 +184,14 @@ void KHenirRanking::SetRewardBeginTime( const std::wstring& wstrBeginTime )
 
 	if( KncUtil::ConvertStringToCTime( wstrTemp, m_tRewardBeginTime ) == false )
 	{
-        START_LOG( cerr, L"랭킹 시작시각 등록 실패!" )
+        START_LOG( cerr, L"Failed to register ranking start time!" )
 			<< BUILD_LOG( m_iRankingType )
 			<< BUILD_LOG( wstrBeginTime )
 			<< END_LOG;
 	}
 	else
 	{
-		START_LOG( cout, L"랭킹 시작시각 등록 성공!" )
+		START_LOG( cout, L"Ranking start time registered!" )
 			<< BUILD_LOG( m_iRankingType )
 			<< BUILD_LOG( wstrBeginTime );
 	}
@@ -313,7 +313,7 @@ bool KHenirRanking::CheckNewRecord( IN const KHenirRankingInfo& kNewRankingInfo 
 	// 0. 해당 서버군 유저인지 확인한다!
 	if( KncUid::ExtractServerGroupID( kNewRankingInfo.m_iUnitUID ) != GetKLoginServer()->GetServerGroupID() )
 	{
-		START_LOG( cerr, L"해당 서버군 유저가 아니라서 랭킹 등록 실패!" )
+		START_LOG( cerr, L"Ranking registration failed; the user is not in this server group!" )
 			<< BUILD_LOG( kNewRankingInfo.m_iUnitUID )
 			<< BUILD_LOG( KncUid::ExtractServerGroupID( kNewRankingInfo.m_iUnitUID ) )
 			<< BUILD_LOG( GetKLoginServer()->GetServerGroupID() )
@@ -358,7 +358,7 @@ bool KHenirRanking::CheckNewRecord( IN const KHenirRankingInfo& kNewRankingInfo 
 	vitTR = m_vecRankingInfo.rbegin();
 	if( vitTR == m_vecRankingInfo.rend() )
 	{
-		START_LOG( cerr, L"랭킹 리스트가 이상함" )
+		START_LOG( cerr, L"Invalid ranking list." )
 			<< BUILD_LOG( kNewRankingInfo.m_iUnitUID )
 			<< END_LOG;
 
@@ -398,7 +398,7 @@ bool KHenirRanking::DeleteRecord( IN const std::wstring& wstrNickName )
 
 	if( vitFind == m_vecRankingInfo.end() )
 	{
-		START_LOG( cout, L"랭킹에서 지울 유저를 찾지 못했다!" )
+		START_LOG( cout, L"Could not find the user to remove from the ranking list!" )
 			<< BUILD_LOG( wstrNickName )
 			<< BUILD_LOG( m_iRankingType )
 			<< BUILD_LOG( m_vecRankingInfo.size() )
@@ -407,7 +407,7 @@ bool KHenirRanking::DeleteRecord( IN const std::wstring& wstrNickName )
 		return false;
 	}
 
-	START_LOG( cout2, L"----- 랭킹 삭제 정보 -----" )
+	START_LOG( cout2, L"----- Ranking deletion details -----" )
 		<< BUILD_LOG( vitFind->m_iRank )
 		<< BUILD_LOG( vitFind->m_iStageCount )
 		<< BUILD_LOG( vitFind->m_ulPlayTime )

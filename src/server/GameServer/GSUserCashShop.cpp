@@ -46,7 +46,7 @@ IMPL_ON_FUNC( EGS_PURCHASED_CASH_ITEM_LIST_REQ )
 	//{{ 2011. 10. 12	최육사	컨텐츠 관리자
 	if( SiKGSContentManager()->IsEnableCashShop() == false )
 	{
-		START_LOG( clog, L"캐쉬샵 점검중 캐쉬샵 인벤토리 정보 요청" )
+		START_LOG( clog, L"Cash shop inventory information requested during maintenance." )
 			<< BUILD_LOG( GetName() );
 
 		KEGS_PURCHASED_CASH_ITEM_LIST_ACK kPacketAck;
@@ -174,7 +174,7 @@ IMPL_ON_FUNC( ENX_BT_NISMS_INVENTORY_PICK_UP_ONCE_ACK )
 {
 	if( kPacket_.m_ulResult != 1 )
 	{
-		START_LOG( cerr, L"캐쉬 아이템 가져 오기 실패." )
+		START_LOG( cerr, L"Failed to retrieve the cash item." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( kPacket_.m_ulResult )
@@ -208,7 +208,7 @@ IMPL_ON_FUNC( ENX_BT_NISMS_INVENTORY_PICK_UP_ONCE_ACK )
 	{
 		if( kPacket_.m_vecNXBTSubProductInfo.empty() )
 		{
-			START_LOG( cerr, L"패키지 상품인데 상품정보가 없다?" )
+			START_LOG( cerr, L"Package product information is missing?" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( kPacket_.m_ulProductNo )
@@ -218,7 +218,7 @@ IMPL_ON_FUNC( ENX_BT_NISMS_INVENTORY_PICK_UP_ONCE_ACK )
 		int iPackageItemID = _wtoi( kPacket_.m_wstrProductID.c_str() );
 		if( iPackageItemID <= 0 )
 		{
-			START_LOG( cerr, L"아이템 ID 변환 실패." )
+			START_LOG( cerr, L"Failed to convert the item ID." )
 				<< BUILD_LOG( kPacket_.m_ulProductNo )
 				<< BUILD_LOG( iPackageItemID )
 				<< END_LOG;
@@ -247,7 +247,7 @@ IMPL_ON_FUNC( ENX_BT_NISMS_INVENTORY_PICK_UP_ONCE_ACK )
 			int iItemID = _wtoi( subProductInfo.m_wstrProductID.c_str() );
 			if( iItemID <= 0 )
 			{
-				START_LOG( cerr, L"아이템 ID 변환 실패." )
+				START_LOG( cerr, L"Failed to convert the item ID." )
 					<< BUILD_LOG( kPacket_.m_ulProductNo )
 					<< BUILD_LOG( iItemID )
 					<< END_LOG;
@@ -261,7 +261,7 @@ IMPL_ON_FUNC( ENX_BT_NISMS_INVENTORY_PICK_UP_ONCE_ACK )
 			const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iItemID );
 			if( pItemTemplet == NULL )
 			{
-				START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )
+				START_LOG( cerr, L"Failed to retrieve the item template." )
 					<< BUILD_LOG( iItemID )
 					<< END_LOG;
 
@@ -464,7 +464,7 @@ IMPL_ON_FUNC( ENX_BT_NISMS_INVENTORY_PICK_UP_ONCE_ACK )
 						}
 						else
 						{
-							START_LOG( cerr, L"현재 사용하고 있는 캐시스킬포인트와 다른 것으로 기간연장 하려고함!!" )
+							START_LOG( cerr, L"Attempted to extend the duration using a different cash skill point than the one currently in use!" )
 								<< BUILD_LOG( GetCharUID() )
 								<< BUILD_LOG( pItemTemplet->m_ItemID )
 								//{{ 2009. 12. 2  최육사	캐쉬템기간타입변경
@@ -604,7 +604,7 @@ IMPL_ON_FUNC( ENX_BT_NISMS_INVENTORY_PICK_UP_ONCE_ACK )
 		const int iItemID = _wtoi( kPacket_.m_wstrProductID.c_str() );
 		if( iItemID <= 0 )
 		{
-			START_LOG( cerr, L"아이템 ID 변환 실패." )
+			START_LOG( cerr, L"Failed to convert the item ID." )
 				<< BUILD_LOG( kPacket_.m_ulProductNo )
 				<< BUILD_LOG( iItemID )
 				<< END_LOG;
@@ -618,7 +618,7 @@ IMPL_ON_FUNC( ENX_BT_NISMS_INVENTORY_PICK_UP_ONCE_ACK )
 		const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iItemID );
 		if( pItemTemplet == NULL )
 		{
-			START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )
+			START_LOG( cerr, L"Failed to retrieve the item template." )
 				<< BUILD_LOG( iItemID )
 				<< END_LOG;
 
@@ -902,7 +902,7 @@ IMPL_ON_FUNC( ENX_BT_NISMS_INVENTORY_PICK_UP_ONCE_ACK )
 					}
 					else
 					{
-						START_LOG( cerr, L"현재 사용하고 있는 캐시스킬포인트와 다른 것으로 기간연장 하려고함!!" )
+						START_LOG( cerr, L"Attempted to extend the duration using a different cash skill point than the one currently in use!" )
 							<< BUILD_LOG( GetCharUID() )
 							<< BUILD_LOG( pItemTemplet->m_ItemID )
 							<< BUILD_LOG( kPacket_.m_usProductExpire )
@@ -983,7 +983,7 @@ IMPL_ON_FUNC( ENX_BT_NISMS_INVENTORY_PICK_UP_ONCE_ACK )
 				}
 				else
 				{
-					START_LOG( cerr, L"기술의 노트를 습득하려고 하는데 페이지 수 얻기를 실패하였습니다." )
+					START_LOG( cerr, L"Failed to retrieve the page count while acquiring the skill note." )
 						<< BUILD_LOG( GetCharUID() )
 						<< BUILD_LOG( GetLevel() )
 						<< END_LOG;
@@ -1071,7 +1071,7 @@ IMPL_ON_FUNC( ENX_BT_NISMS_INVENTORY_PICK_UP_ONCE_ACK )
 					int iDefaultSkill[6] = {0,};
 					if( SiCXSLSkillTree()->GetUnitClassDefaultSkill( kPacket.m_cUnitClass, iDefaultSkill[0], iDefaultSkill[1], iDefaultSkill[2], iDefaultSkill[3], iDefaultSkill[4], iDefaultSkill[5] ) == false )
 					{
-						START_LOG( cerr, L"전직시 지급하려는 기본 스킬이 이상함" )
+						START_LOG( cerr, L"Invalid base skill to grant upon class advancement." )
 							<< BUILD_LOG( kPacket.m_iUnitUID )
 							<< BUILD_LOGc( kPacket.m_cUnitClass )
 							<< END_LOG;
@@ -1109,7 +1109,7 @@ IMPL_ON_FUNC( ENX_BT_NISMS_INVENTORY_PICK_UP_ONCE_ACK )
 					}
 					else
 					{
-						START_LOG( cerr, L"캐쉬 아이템 픽업 과정에서 실패가 났다! 복귀 해야 할 듯 한데!!!" )
+						START_LOG( cerr, L"Failed to pick up the cash item; the operation should be rolled back!" )
 							<< BUILD_LOG( GetCharUID() )
 							<< BUILD_LOG( iItemID )
 							<< END_LOG;
@@ -1214,7 +1214,7 @@ IMPL_ON_FUNC( EGS_GET_PURCHASED_PACKAGE_CASH_ITEM_REQ )
 	//{{ 2011. 10. 12	최육사	컨텐츠 관리자
 	if( SiKGSContentManager()->IsEnableCashShop() == false )
 	{
-		START_LOG( clog, L"캐쉬샵 점검중 패키지 구성 상품 pick up 요청" )
+		START_LOG( clog, L"Package contents pickup requested while cash shop is under maintenance" )
 			<< BUILD_LOG( GetName() );
 
 		KEGS_GET_PURCHASED_PACKAGE_CASH_ITEM_ACK kPacketAck;
@@ -1241,7 +1241,7 @@ IMPL_ON_FUNC( EGS_GET_PURCHASED_PACKAGE_CASH_ITEM_REQ )
 	m_veciPackageBuyCheck.clear();
 	if( iItemID <= 0 )
 	{
-		START_LOG( cerr, L"아이템 ID 변환 실패." )
+		START_LOG( cerr, L"Failed to convert the item ID." )
 			<< BUILD_LOG( kPacket_.m_ulPackageProductNo )
 			<< BUILD_LOG( kPacket_.m_wstrPackageProductID )
 			<< BUILD_LOG( iItemID )
@@ -1345,7 +1345,7 @@ IMPL_ON_FUNC( EGS_GET_PURCHASED_PACKAGE_CASH_ITEM_REQ )
 	// 3. 패키지 상품인지 ProductKind를 검사한다.
 	if( kPacket_.m_byteProductKind != 1  ||  kPacket_.m_vecPickUpPackageInfo.empty() )
 	{
-		START_LOG( cerr, L"패키지 상품이 아닌데 패키지 패킷으로 왔다?" )
+		START_LOG( cerr, L"Received a package packet for a non-package product?" )
 			<< BUILD_LOG( kPacket_.m_ulPackageProductNo )
 			<< BUILD_LOG( kPacket_.m_byteProductKind )
 			<< END_LOG;
@@ -1368,7 +1368,7 @@ IMPL_ON_FUNC( EGS_GET_PURCHASED_PACKAGE_CASH_ITEM_REQ )
 			const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iMemberItemID );
 			if( pItemTemplet == NULL )
 			{
-				START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )
+				START_LOG( cerr, L"Failed to retrieve the item template." )
 					<< BUILD_LOG( iMemberItemID )
 					<< END_LOG;
 
@@ -1444,7 +1444,7 @@ IMPL_ON_FUNC( EGS_GET_PURCHASED_PACKAGE_CASH_ITEM_REQ )
 					// 일반 멤버쉽이 아니면 구매할 수 없다!
 					if( m_kInventory.GetBankMemberShip() != CXSLInventory::MPB_NORMAL )
 					{
-						START_LOG( cwarn, L"구매 가능한 등급이 아닙니다." )
+						START_LOG( cwarn, L"The user's rank does not allow this purchase." )
 							<< BUILD_LOG( GetCharUID() )
 							<< BUILD_LOG( GetCharName() )
 							<< BUILD_LOG( m_kInventory.GetBankMemberShip() )
@@ -1459,7 +1459,7 @@ IMPL_ON_FUNC( EGS_GET_PURCHASED_PACKAGE_CASH_ITEM_REQ )
 					// 인벤토리에 루리엘 신용보증서가 있으면 마지막 회원권은 구매할 수 없다!
 					if( m_kInventory.IsExistWithBank( CXSLItem::SI_BANK_MEMBERSHIP_UPGRADE ) == true )
 					{
-						START_LOG( cwarn, L"루리엘 신용보증서가 인벤토리에 있으면 마지막 회원권은 구매못함." )
+						START_LOG( cwarn, L"The final membership ticket cannot be purchased while a Luriel credit guarantee is in the inventory." )
 							<< BUILD_LOG( GetCharUID() )
 							<< BUILD_LOG( GetCharName() )
 							<< END_LOG;
@@ -1473,7 +1473,7 @@ IMPL_ON_FUNC( EGS_GET_PURCHASED_PACKAGE_CASH_ITEM_REQ )
 					KNXBTProductInfo kProductInfo;
 					if( !SiKNexonBillingTCPManager()->GetProductInfo( kPickUpPackageInfo.m_ulProductNo, kProductInfo ) )
 					{
-						START_LOG( cerr, L"프로덕트 정보 추출 실패." )
+						START_LOG( cerr, L"Failed to retrieve product information." )
 							<< BUILD_LOG( GetCharUID() )
 							<< BUILD_LOG( GetCharName() )
 							<< BUILD_LOG( kPickUpPackageInfo.m_ulProductNo )
@@ -1710,7 +1710,7 @@ IMPL_ON_FUNC( ENX_BT_NISMS_INVENTORY_PICK_UP_FOR_PACKAGE_ACK )
 	// 1. 빌링 결과 체크
 	if( kPacket_.m_ulResult != 1 )
 	{
-		START_LOG( cerr, L"캐쉬 아이템 가져 오기 실패." )
+		START_LOG( cerr, L"Failed to retrieve the cash item." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( kPacket_.m_ulResult )
@@ -1723,7 +1723,7 @@ IMPL_ON_FUNC( ENX_BT_NISMS_INVENTORY_PICK_UP_FOR_PACKAGE_ACK )
 	// 2. 임시 저장 패키지 정보 얻기
 	if( !m_kUserCashInventory.GetPickUpPackageInfo( kPacket_.m_ulProductNo, kPickUpPackageInfo ) )
 	{
-		START_LOG( cerr, L"임시 저장한 패키지 구성상품 정보가 없습니다." )
+		START_LOG( cerr, L"No information for the temporarily saved package contents." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( kPacket_.m_ulProductNo )
@@ -1737,7 +1737,7 @@ IMPL_ON_FUNC( ENX_BT_NISMS_INVENTORY_PICK_UP_FOR_PACKAGE_ACK )
 	iItemID = kPacket_.m_ulSubProductNo;
 	if( iItemID <= 0 )
 	{
-		START_LOG( cerr, L"아이템 ID 변환 실패." )
+		START_LOG( cerr, L"Failed to convert the item ID." )
 			<< BUILD_LOG( kPacket_.m_ulProductNo )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
@@ -1749,7 +1749,7 @@ IMPL_ON_FUNC( ENX_BT_NISMS_INVENTORY_PICK_UP_FOR_PACKAGE_ACK )
 	pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iItemID );
 	if( pItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )
+		START_LOG( cerr, L"Failed to retrieve the item template." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 
@@ -1964,7 +1964,7 @@ IMPL_ON_FUNC( ENX_BT_NISMS_INVENTORY_PICK_UP_FOR_PACKAGE_ACK )
 				}
 				else
 				{
-					START_LOG( cerr, L"현재 사용하고 있는 캐시스킬포인트와 다른 것으로 기간연장 하려고함!!" )
+					START_LOG( cerr, L"Attempted to extend the duration using a different cash skill point than the one currently in use!" )
 						<< BUILD_LOG( GetCharUID() )
 						<< BUILD_LOG( pItemTemplet->m_ItemID )
 						<< BUILD_LOG( kPickUpPackageInfo.GetProductExpire() )
@@ -2115,7 +2115,7 @@ IMPL_ON_FUNC( EGS_CASH_PRODUCT_INFO_REQ )
 	//{{ 2011. 10. 12	최육사	컨텐츠 관리자
 	if( SiKGSContentManager()->IsEnableCashShop() == false )
 	{
-		START_LOG( clog, L"캐쉬샵 점검중 상품 리스트 요청" )
+		START_LOG( clog, L"Product list requested during cash shop maintenance." )
 			<< BUILD_LOG( GetName() );
 
 		kPacket.m_bFinal = true;
@@ -2167,7 +2167,7 @@ _IMPL_ON_FUNC( ENX_BT_PURCHASE_ITEM_ACK, KEGS_BUY_CASH_ITEM_ACK )
 		KNXBTProductInfo kProductInfo;
 		if( SiKNexonBillingTCPManager()->GetProductInfo( kReq.m_ulProductNo, kProductInfo ) == false )
 		{
-			START_LOG( cerr, L"존재하지 않는 상품을 구매하였습니다!" )
+			START_LOG( cerr, L"Attempted to purchase a product that does not exist!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( kReq.m_ulProductNo )
 				<< END_LOG;
@@ -2213,7 +2213,7 @@ IMPL_ON_FUNC( EGS_PRESENT_CASH_ITEM_REQ )
 	//{{ 2011. 10. 12	최육사	컨텐츠 관리자
 	if( SiKGSContentManager()->IsEnableCashShop() == false )
 	{
-		START_LOG( clog, L"캐쉬샵 점검중 상품 선물하기 요청" )
+		START_LOG( clog, L"Gift product request received while cash shop is under maintenance" )
 			<< BUILD_LOG( GetName() );
 
 		KEGS_PRESENT_CASH_ITEM_ACK kPacketAck;
@@ -2273,7 +2273,7 @@ IMPL_ON_FUNC( EGS_PRESENT_CASH_ITEM_REQ )
 		int iItemID = SiKBillManager()->GetItemID( vit->m_ulProductNo );;
 		if( iItemID <= 0 )
 		{
-			START_LOG( cerr, L"아이템 ID 변환 실패." )
+			START_LOG( cerr, L"Failed to convert the item ID." )
 				<< BUILD_LOG( vit->m_ulProductNo )
 				<< BUILD_LOG( iItemID )
 				<< END_LOG;
@@ -2287,7 +2287,7 @@ IMPL_ON_FUNC( EGS_PRESENT_CASH_ITEM_REQ )
 		const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iItemID );
 		if( pItemTemplet == NULL )
 		{
-			START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )
+			START_LOG( cerr, L"Failed to retrieve the item template." )
 				<< BUILD_LOG( iItemID )
 				<< END_LOG;
 
@@ -2302,7 +2302,7 @@ IMPL_ON_FUNC( EGS_PRESENT_CASH_ITEM_REQ )
 		{
 			if(kBillProductInfo2.m_bEnableGift == false)
 			{
-				START_LOG( cerr, L"선물할 수 없는 아이템" )
+				START_LOG( cerr, L"This item cannot be gifted." )
 					<< BUILD_LOG( vit->m_ulProductNo )
 					<< BUILD_LOG( iItemID )
 					<< END_LOG;
@@ -2371,7 +2371,7 @@ IMPL_ON_FUNC( EGS_BUY_CASH_ITEM_AUTOMATIC_PAYMENT_REQ )
 	//{{ 2011. 10. 12	최육사	컨텐츠 관리자
 	if( SiKGSContentManager()->IsEnableCashShop() == false )
 	{
-		START_LOG( clog, L"캐쉬샵 점검중 자동결제 상품 체크 요청" )
+		START_LOG( clog, L"Auto-payment product check requested while cash shop is under maintenance" )
 			<< BUILD_LOG( GetName() );
 
 		kPacket.m_iOK = NetError::ERR_CONTENT_00;
@@ -2389,7 +2389,7 @@ IMPL_ON_FUNC( EGS_BUY_CASH_ITEM_AUTOMATIC_PAYMENT_REQ )
 	// 존재하는 상품인지 검사
 	if( !SiKNexonBillingTCPManager()->GetProductInfo( kPacket_.m_ulProductNo, kProductInfo ) )
 	{
-		START_LOG( cerr, L"프로덕트 정보 추출 실패." )
+		START_LOG( cerr, L"Failed to retrieve product information." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( kPacket_.m_ulProductNo )
@@ -2420,7 +2420,7 @@ IMPL_ON_FUNC( EGS_BUY_CASH_ITEM_AUTOMATIC_PAYMENT_REQ )
 	kPacket.m_wstrTransactionID += L"_";
 	kPacket.m_wstrTransactionID += wszNumber;
 
-	START_LOG( clog, L"자동결제 상품 구매 정보 얻기" )
+	START_LOG( clog, L"Retrieving auto-payment product purchase information" )
 		<< BUILD_LOG( GetCharName() )
 		<< BUILD_LOG( kPacket.m_byDomainType )
 		<< BUILD_LOG( kPacket.m_ulProductNo )
@@ -2440,7 +2440,7 @@ IMPL_ON_FUNC( ENX_BT_CHECK_AUTO_PAYMENT_USER_ACK )
 		// 자동결제 부활석 갯수가 0개일때만 1개 채워줌.
 		if( m_iNumAutoPaymentResStone == 0 )
 		{
-			START_LOG( clog, L"자동결제 부활석을 리필합니다!" )
+			START_LOG( clog, L"Refilling the auto-billed resurrection stones!" )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharName() )
 				<< BUILD_LOG( m_iNumAutoPaymentResStone );
@@ -2460,7 +2460,7 @@ IMPL_ON_FUNC( ENX_BT_CHECK_AUTO_PAYMENT_USER_ACK )
 	}
 	else
 	{
-		START_LOG( clog, L"자동결제 유저가 아닌가보군!" )
+		START_LOG( clog, L"The user does not appear to have automatic billing enabled!" )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( kPacket_.m_ulResult );
@@ -2516,7 +2516,7 @@ IMPL_ON_FUNC( DBE_INSERT_CASH_SKILL_POINT_ACK )
 
 	if( kPacket_.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"캐시 스킬 포인트 구매 DB 업데이트 실패!!" )
+		START_LOG( cerr, L"Failed to update the cash skill point purchase in the database!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iCSPoint )
 			<< BUILD_LOG( kPacket_.m_iOK )
@@ -2598,7 +2598,7 @@ IMPL_ON_FUNC( DBE_EXPIRE_CASH_SKILL_POINT_ACK )
 			for ( UINT i = 0; i < kPacket_.m_vecRetrievedSPoint.size(); i++ )
 				iSumSPoint += kPacket_.m_vecRetrievedSPoint[i];
 
-			START_LOG( cerr, L"cash skill expire 실패, 있을수 없는 에러!" )
+			START_LOG( cerr, L"Cash skill expiration failed; this should never happen!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( iSumSPoint )
 				<< BUILD_LOG( kPacket_.m_iOK )
@@ -2614,7 +2614,7 @@ IMPL_ON_FUNC( DBE_EXPIRE_CASH_SKILL_POINT_ACK )
 	{
 		if( GetAuthLevel() < SEnum::UAL_GM  )
 		{
-			START_LOG( cerr, L"캐시 스킬 포인트 기간 만료 결과 처리시점에 스킬 포인트 값이 비정상입니다." )
+			START_LOG( cerr, L"Invalid skill point value while processing cash skill point expiration." )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharName() )
 				//<< BUILD_LOG( kPacket_.m_iRetrievedSPoint )
@@ -2692,7 +2692,7 @@ IMPL_ON_FUNC( EGS_MODIFY_WISH_LIST_REQ )
 			const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iWishItemID );
 			if( pItemTemplet == NULL )
 			{
-				START_LOG( cerr, L"존재하지 않는 아이템을 장바구니에 등록하려 했음." )
+				START_LOG( cerr, L"Attempted to add a nonexistent item to the shopping cart." )
 					<< BUILD_LOG( GetCharUID() )
 					<< BUILD_LOG( iWishItemID )
 					<< END_LOG;
@@ -2720,7 +2720,7 @@ IMPL_ON_FUNC( EGS_MODIFY_WISH_LIST_REQ )
 
 			if( !m_kUserWishList.AddWish( iWishItemID ) )
 			{
-				START_LOG( cerr, L"장바구니에 상품 등록 실패." )
+				START_LOG( cerr, L"Failed to add product to shopping cart." )
 					<< BUILD_LOG( GetCharUID() )
 					<< BUILD_LOG( iWishItemID )
 					<< BUILD_LOG( NetError::GetLastErrMsg() )
@@ -2739,7 +2739,7 @@ IMPL_ON_FUNC( EGS_MODIFY_WISH_LIST_REQ )
 			// 장바구니 삭제
 			if( !m_kUserWishList.DelWish( *vit ) )
 			{
-				START_LOG( cerr, L"장바구니에 상품 삭제중 이상발생." )
+				START_LOG( cerr, L"Error while deleting product from shopping cart." )
 					<< BUILD_LOG( GetCharUID() )
 					<< BUILD_LOG( *vit )
 					<< BUILD_LOG( NetError::GetLastErrMsg() )
@@ -2763,7 +2763,7 @@ IMPL_ON_FUNC( EGS_CASH_ITEM_REFUND_REQ )
 	//{{ 2011. 10. 12	최육사	컨텐츠 관리자
 	if( SiKGSContentManager()->IsEnableCashShop() == false )
 	{
-		START_LOG( clog, L"캐쉬샵 점검중 청약 철회 요청" )
+		START_LOG( clog, L"Purchase cancellation requested while cash shop is under maintenance" )
 			<< BUILD_LOG( GetName() );
 
 		KEGS_CASH_ITEM_REFUND_ACK kPacketAck;
@@ -2777,7 +2777,7 @@ IMPL_ON_FUNC( EGS_CASH_ITEM_REFUND_REQ )
 	std::wstring wstrRequestID;
 	if( SiKNexonBillingTCPManager()->GetCashItemRefundRequestID( wstrRequestID ) == false )
 	{
-		START_LOG( cerr, L"청약 철회 기능 동작중에 RequestID발급이 실패하였습니다!" )
+		START_LOG( cerr, L"Failed to issue a RequestID while processing a cancellation request!" )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
 
@@ -2809,7 +2809,7 @@ IMPL_ON_FUNC( EGS_CASH_ITEM_REFUND_REQ )
 	}
 	else
 	{
-		START_LOG( cerr, L"청약 철회 요청 시 클라가 주는 값이 이상하다!" )
+		START_LOG( cerr, L"Invalid value received from client for purchase cancellation request!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( kPacket_.m_ulOrderNo )
@@ -2955,7 +2955,7 @@ _IMPL_ON_FUNC( DBE_BUY_UNIT_CLASS_CHANGE_ACK, KDBE_BUY_UNIT_CLASS_CHANGE_REQ )
 
 		default:
 			{
-				START_LOG( cerr, L"이상한 방 타입." )
+				START_LOG( cerr, L"Invalid room type." )
 					<< BUILD_LOG( CXSLRoom::GetRoomType( GetRoomUID() ) )
 					<< BUILD_LOG( GetCharUID() )
 					<< END_LOG;
@@ -3082,7 +3082,7 @@ IMPL_ON_FUNC( DBE_INSERT_WARP_VIP_ACK )
 			SetWarpVipEndDate( ctVipEndDate.GetTime() );
 			kPacket.m_trWarpVipEndDate = ctVipEndDate.GetTime();
 
-			START_LOG( clog, L"[TEST] 워프 VIP 구매 종료 시간 수정 적용" )
+			START_LOG( clog, L"[TEST] Applied the updated Warp VIP purchase expiration time." )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( kPacket_.m_wstrEndDate.c_str() )
 				<< BUILD_LOG( ctVipEndDate.GetTime() )
@@ -3090,7 +3090,7 @@ IMPL_ON_FUNC( DBE_INSERT_WARP_VIP_ACK )
 		}
 		else
 		{
-			START_LOG( cerr, L"워프 VIP 구매 종료 시간 이상!" )
+			START_LOG( cerr, L"Invalid Warp VIP purchase expiration time!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( kPacket_.m_wstrEndDate.c_str() )
 				<< END_LOG;
@@ -3101,7 +3101,7 @@ IMPL_ON_FUNC( DBE_INSERT_WARP_VIP_ACK )
 	}
 	else
 	{
-		START_LOG( cerr, L"워프 VIP 구매 DB 업데이트 실패!!" )
+		START_LOG( cerr, L"Failed to update Warp VIP purchase in the database!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_wstrEndDate.c_str() )
 			<< BUILD_LOG( kPacket_.m_iOK )

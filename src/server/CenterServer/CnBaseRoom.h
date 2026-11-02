@@ -22,9 +22,9 @@ SmartPointer( KCnBaseRoom );
 	packet kPacket; \
 	if( !m_pkCurrentState->CheckState varg ) \
 { \
-	START_LOG( cerr, L"상태 오류. Name : " << m_strName ) \
-	<< L"    현재 상태 : " << GetStateIDString() << dbg::endl \
-	<< L"    허용 상태 : " L ## #varg << END_LOG; \
+	START_LOG( cerr, L"State error. Name: " << m_strName ) \
+	<< L"    Current state: " << GetStateIDString() << dbg::endl \
+	<< L"    Allowed states: " L ## #varg << END_LOG; \
 	kPacket.m_iOK = neterror; \
 	SendToGSCharacter( LAST_SENDER_UID, FIRST_SENDER_UID, eventid, kPacket ); \
 	return; \
@@ -39,9 +39,9 @@ SmartPointer( KCnBaseRoom );
 	packet kPacket; \
 	if( !m_pkCurrentState->CheckState varg ) \
 { \
-	START_LOG( cwarn, L"상태 오류. Name : " << m_strName ) \
-	<< L"    현재 상태 : " << GetStateIDString() << dbg::endl \
-	<< L"    허용 상태 : " L ## #varg << END_LOG; \
+	START_LOG( cwarn, L"State error. Name: " << m_strName ) \
+	<< L"    Current state: " << GetStateIDString() << dbg::endl \
+	<< L"    Allowed states: " L ## #varg << END_LOG; \
 	kPacket.m_iOK = neterror; \
 	SendToGSCharacter( LAST_SENDER_UID, FIRST_SENDER_UID, eventid, kPacket ); \
 	return; \
@@ -58,16 +58,16 @@ SmartPointer( KCnBaseRoom );
 	if( m_pkCurrentState->CheckState warg ) \
 { \
 	START_LOG_WITH_NAME( cwarn ) \
-	<< L"    현재 상태 : " << GetStateIDString() << dbg::endl \
-	<< L"    허용 상태 : " L ## #varg << END_LOG; \
+	<< L"    Current state: " << GetStateIDString() << dbg::endl \
+	<< L"    Allowed states: " L ## #varg << END_LOG; \
 	SendToGSCharacter( LAST_SENDER_UID, FIRST_SENDER_UID, eventid, kPacket ); \
 	return; \
 } \
 else if( !m_pkCurrentState->CheckState varg ) \
 { \
-	START_LOG( cerr, L"상태 오류. Name : " << m_strName ) \
-	<< L"    현재 상태 : " << GetStateIDString() << dbg::endl \
-	<< L"    허용 상태 : " L ## #varg << END_LOG; \
+	START_LOG( cerr, L"State error. Name: " << m_strName ) \
+	<< L"    Current state: " << GetStateIDString() << dbg::endl \
+	<< L"    Allowed states: " L ## #varg << END_LOG; \
 	kPacket.m_iOK = vneterror; \
 	SendToGSCharacter( LAST_SENDER_UID, FIRST_SENDER_UID, eventid, kPacket ); \
 	return; \
@@ -81,9 +81,9 @@ else if( !m_pkCurrentState->CheckState varg ) \
 	packet kPacket; \
 	if( !m_pkCurrentState->CheckState varg ) \
 { \
-	START_LOG( cerr, L"상태 오류. Name : " << m_strName ) \
-	<< L"    현재 상태 : " << GetStateIDString() << dbg::endl \
-	<< L"    허용 상태 : " L ## #varg << END_LOG; \
+	START_LOG( cerr, L"State error. Name: " << m_strName ) \
+	<< L"    Current state: " << GetStateIDString() << dbg::endl \
+	<< L"    Allowed states: " L ## #varg << END_LOG; \
 	kPacket.m_iOK = NetError::ERR_ROOM_09; \
 	kPacket.m_cChatPacketType = KEGS_CHAT_REQ::CPT_TOTAL; \
 	SendToGSCharacter( LAST_SENDER_UID, FIRST_SENDER_UID, eventid, kPacket ); \

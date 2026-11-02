@@ -38,7 +38,7 @@ void KPvpMatchResultTable::AddPvpExpRewardInfo_LUA( int iLevel, int iExp )
 {
     if( iLevel < 0  ||  iExp < 0 )
 	{
-		START_LOG( cerr, L"경험치 보상 테이블 값이 이상합니다." )
+		START_LOG( cerr, L"Invalid experience-reward table value." )
 			<< BUILD_LOG( iLevel )
 			<< BUILD_LOG( iExp )
 			<< END_LOG;
@@ -195,7 +195,7 @@ int	KPvpMatchResultTable::GetExpByLevel( IN const int iLevel ) const
 	mit = m_mapPvpExpReward.find( iLevel );
 	if( mit == m_mapPvpExpReward.end() )
 	{
-		START_LOG( cerr, L"존재하지 않는 레벨별 경험치 정보입니다!" )
+		START_LOG( cerr, L"Per-level experience information does not exist!" )
 			<< BUILD_LOGc( iLevel )
 			<< END_LOG;
         return 0;

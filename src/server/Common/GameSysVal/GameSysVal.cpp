@@ -366,7 +366,7 @@ void KGameSysVal::AddPCBang_LUA( int iPcBangType, float fEXPRate, float fEDRate,
 {
 	if( iPcBangType < 0 )
 	{
-		START_LOG( cerr, L"피씨방 타입 이상!" )
+		START_LOG( cerr, L"Invalid PC Bang type." )
 			<< BUILD_LOG( iPcBangType )
 			<< END_LOG;
 
@@ -378,7 +378,7 @@ void KGameSysVal::AddPCBang_LUA( int iPcBangType, float fEXPRate, float fEDRate,
 
 	if( fEXPRate < 0.0f )
 	{
-		START_LOG( cerr, L"피씨방 EXP 보상확률 이상.!" )
+		START_LOG( cerr, L"Invalid PC Bang EXP reward rate." )
 			<< BUILD_LOG( fEXPRate )
 			<< END_LOG;
 
@@ -387,7 +387,7 @@ void KGameSysVal::AddPCBang_LUA( int iPcBangType, float fEXPRate, float fEDRate,
 
 	if( fEDRate < 0.0f )
 	{
-		START_LOG( cerr, L"피씨방 ED 보상확률 이상.!" )
+		START_LOG( cerr, L"Invalid PC Bang ED reward rate." )
 			<< BUILD_LOG( fEDRate )
 			<< END_LOG;
 
@@ -396,7 +396,7 @@ void KGameSysVal::AddPCBang_LUA( int iPcBangType, float fEXPRate, float fEDRate,
 
 	if( fVSPointRate < 0.0f )
 	{
-		START_LOG( cerr, L"피씨방 VSPoint 보상확률 이상.!" )
+		START_LOG( cerr, L"Invalid PC Bang VS Point reward rate." )
 			<< BUILD_LOG( fVSPointRate )
 			<< END_LOG;
 
@@ -405,7 +405,7 @@ void KGameSysVal::AddPCBang_LUA( int iPcBangType, float fEXPRate, float fEDRate,
 
 	if( fPetEXPRate < 0.0f )
 	{
-		START_LOG( cerr, L"피씨방 Pet 보상확률 이상.!" )
+		START_LOG( cerr, L"Invalid PC Bang pet reward rate." )
 			<< BUILD_LOG( fPetEXPRate )
 			<< END_LOG;
 
@@ -414,7 +414,7 @@ void KGameSysVal::AddPCBang_LUA( int iPcBangType, float fEXPRate, float fEDRate,
 
 	if( iAdditionalHenirReward < 0 )
 	{
-		START_LOG( cerr, L"헤니르 추가 보상 횟수이상.!" )
+		START_LOG( cerr, L"Invalid Henir bonus reward count." )
 			<< BUILD_LOG( iAdditionalHenirReward )
 			<< END_LOG;
 
@@ -433,7 +433,7 @@ void KGameSysVal::AddPCBang_LUA( int iPcBangType, float fEXPRate, float fEDRate,
 	kPcBangReward.m_bTitle					= bTitle;
 
 
-	START_LOG( cout2, L"피씨방 타입별 보너스 추가!" )
+	START_LOG( cout2, L"PC Bang bonuses added by type." )
 		<< BUILD_LOG( kPcBangReward.m_iPcBangType )
 		<< BUILD_LOG( kPcBangReward.m_fEXPRate )
 		<< BUILD_LOG( kPcBangReward.m_fEDRate )
@@ -452,7 +452,7 @@ void KGameSysVal::AddLimitsMaxLevel_LUA( int iMaxLevel )
 {
 	if( iMaxLevel < 1 || iMaxLevel > 80  )
 	{
-		START_LOG( cerr, L"제한 레벨 수치이상.!" )
+		START_LOG( cerr, L"Invalid level limit." )
 			<< BUILD_LOG( iMaxLevel )
 			<< END_LOG;
 
@@ -461,7 +461,7 @@ void KGameSysVal::AddLimitsMaxLevel_LUA( int iMaxLevel )
 
 	m_iLimitsMaxLevel = iMaxLevel;
 
-	START_LOG( cout2, L"제한레벨 설정.!" )
+	START_LOG( cout2, L"Level limit configured." )
 		<< BUILD_LOG( m_iLimitsMaxLevel )
 		;
 }
@@ -470,7 +470,7 @@ void KGameSysVal::AddPremiumEXP_LUA( float fPremiumEXP )
 {
 	if( fPremiumEXP < 0.0f )
 	{
-		START_LOG( cerr, L"프리미엄 경험치 아이템 EXP 보상확률 이상.!" )
+		START_LOG( cerr, L"Invalid premium experience-item EXP reward rate." )
 			<< BUILD_LOG( fPremiumEXP )
 			<< END_LOG;
 
@@ -479,7 +479,7 @@ void KGameSysVal::AddPremiumEXP_LUA( float fPremiumEXP )
 
 	m_fValue[GSVT_PREMIUM_EXP] = fPremiumEXP;
 
-	START_LOG( cout2, L"프리미엄 아이템 EXP 보너스 확률.!" )
+	START_LOG( cout2, L"Premium item EXP bonus rate: " )
 		<< BUILD_LOG( m_fValue[GSVT_PREMIUM_EXP] )
 		;
 
@@ -490,7 +490,7 @@ void KGameSysVal::AddVIPEXP_LUA( float fVIPEXP )
 {
 	if( fVIPEXP < 0.00f )
 	{
-		START_LOG( cerr, L"VIP 아이템 EXP 보상확률 이상.!" )
+		START_LOG( cerr, L"Invalid VIP item EXP reward rate." )
 			<< BUILD_LOG( fVIPEXP )
 			<< END_LOG;
 
@@ -498,7 +498,7 @@ void KGameSysVal::AddVIPEXP_LUA( float fVIPEXP )
 	}
 	m_fValue[GSVT_VIP_EXP] = fVIPEXP;
 
-	START_LOG( cout2, L"VIP EXP 보너스 확률.!" )
+	START_LOG( cout2, L"VIP EXP bonus rate: " )
 		<< BUILD_LOG( m_fValue[GSVT_VIP_EXP] )
 		;
 
@@ -510,7 +510,7 @@ void KGameSysVal::SetGuestUserLimitLevel_LUA( int iGuestUserLimitLevel )
 {
 	if( iGuestUserLimitLevel < 1 )
 	{
-		START_LOG( cerr, L"레벨 수치이상.!" )
+		START_LOG( cerr, L"Invalid level value." )
 			<< BUILD_LOG( iGuestUserLimitLevel )
 			<< END_LOG;
 
@@ -519,7 +519,7 @@ void KGameSysVal::SetGuestUserLimitLevel_LUA( int iGuestUserLimitLevel )
 
 	m_iGuestUserLimitLevel = iGuestUserLimitLevel;
 
-	START_LOG( cout2, L"체험ID 제한레벨 설정.!" )
+	START_LOG( cout2, L"Trial ID level limit configured." )
 		<< BUILD_LOG( m_iGuestUserLimitLevel )
 		;
 }
@@ -573,7 +573,7 @@ void KGameSysVal::AddPcBangPremiumItem_LUA( char cUnitType, int iItemID )
         mit->second.push_back( iItemID );
 	}
 
-	START_LOG( clog2, L"PC방 프리미엄 아이템" )
+	START_LOG( clog2, L"PC Bang premium item: " )
 		<< BUILD_LOGc( cUnitType )
 		<< BUILD_LOGc( iItemID );
 }
@@ -586,7 +586,7 @@ void KGameSysVal::SetIsHackUserRegRejected_LUA( bool bVal )
 {
 	m_bIsHackUserRegRejected = bVal;
 
-	START_LOG( cout2, L"핵 유저 발견시 DB에 접속 차단 등록 여부!" )
+	START_LOG( cout2, L"Register a login block in the database when a suspected cheater is detected: " )
 		<< BUILD_LOG( m_bIsHackUserRegRejected );
 }
 
@@ -594,7 +594,7 @@ void KGameSysVal::SetIsHackUserRegMonitors_LUA( bool bVal )
 {
 	m_bIsHackUserRegMonitors = bVal;
 
-	START_LOG( cout2, L"핵 유저 발견시 DB에 해킹 감시 대상 유저 등록 여부!" )
+	START_LOG( cout2, L"Register suspected cheaters in the database for hack monitoring: " )
 		<< BUILD_LOG( m_bIsHackUserRegMonitors );
 }
 
@@ -602,7 +602,7 @@ void KGameSysVal::SetIsHackUserKick_LUA( bool bVal )
 {
 	m_bIsHackUserKick = bVal;
 
-	START_LOG( cout2, L"핵 유저 발견시 즉시 유저 강제 접속 종료 여부!" )
+	START_LOG( cout2, L"Immediately disconnect suspected cheaters: " )
 		<< BUILD_LOG( m_bIsHackUserKick );
 }
 
@@ -612,7 +612,7 @@ void KGameSysVal::SetDisagreeHackUserFunc_LUA( bool bVal )
 {
 	m_bDisagreeHackUserFunc = bVal;
 
-	START_LOG( cout2, L"동의 안한 핵 유저에 관한 처리 여부!" )
+	START_LOG( cout2, L"Handle suspected cheaters who have not agreed to the terms: " )
 		<< BUILD_LOG( m_bDisagreeHackUserFunc );
 }
 
@@ -621,7 +621,7 @@ void KGameSysVal::SetIsHackUserBlockTrade_LUA( bool bVal )
 {
 	m_bIsHackUserBlockTrade = bVal;
 
-	START_LOG( cout2, L"핵 유저 발견시 즉시 거래 정지 처리 여부!" )
+	START_LOG( cout2, L"Immediately suspend trading when a suspected cheater is detected: " )
 		<< BUILD_LOG( m_bIsHackUserBlockTrade );
 }
 //}}
@@ -632,7 +632,7 @@ void KGameSysVal::SetAccountStatisticsStartDate_LUA( const char* strDate )
 	std::wstring wstrAccountStatisticsStartDate = KncUtil::toWideString( std::string( strDate ) );
 	LIF( KncUtil::ConvertStringToCTime( wstrAccountStatisticsStartDate, m_tAccountStatisticsStartDate ) );
 
-	START_LOG( cout2, L"계정 통계 남기는 시작 날짜!" )
+	START_LOG( cout2, L"Account statistics start date: " )
 		<< BUILD_LOG( wstrAccountStatisticsStartDate );
 }
 //}}
@@ -643,7 +643,7 @@ void KGameSysVal::SetCharStatisticsStartDate_LUA( const char* strDate )
 	std::wstring wstrCharStatisticsStartDate = KncUtil::toWideString( std::string( strDate ) );
 	LIF( KncUtil::ConvertStringToCTime( wstrCharStatisticsStartDate, m_tCharStatisticsStartDate ) );
 
-	START_LOG( cout2, L"캐릭터 통계 남기는 시작 날짜!" )
+	START_LOG( cout2, L"Character statistics start date: " )
 		<< BUILD_LOG( wstrCharStatisticsStartDate );
 }
 //}}
@@ -731,21 +731,21 @@ void KGameSysVal::SetBlockPersonalTrade_LUA( bool bVal )
 {
 	m_bBlockPersonalTrade = bVal;
 
-	START_LOG( cout, L"개인 거래 차단 여부 : " << m_bBlockPersonalTrade );
+	START_LOG( cout, L"Block private trades: " << m_bBlockPersonalTrade );
 }
 
 void KGameSysVal::SetBlockPersonalShop_LUA( bool bVal )
 {
 	m_bBlockPersonalShop = bVal;
 
-	START_LOG( cout, L"개인 상점 차단 여부 : " << m_bBlockPersonalShop );
+	START_LOG( cout, L"Block personal shops: " << m_bBlockPersonalShop );
 }
 
 void KGameSysVal::SetBlockSendLetter_LUA( bool bVal )
 {
 	m_bBlockSendLetter = bVal;
 
-	START_LOG( cout, L"우편 전송 차단 여부 : " << m_bBlockSendLetter );
+	START_LOG( cout, L"Block mail sending: " << m_bBlockSendLetter );
 }
 //}}
 
@@ -754,7 +754,7 @@ void KGameSysVal::SetMachineIDBlock_LUA( bool bVal )
 {
 	m_bMachineIDBlock = bVal;
 
-	START_LOG( cout, L"머신 ID 블럭 기능 동작 여부 : " << m_bMachineIDBlock );
+	START_LOG( cout, L"Machine ID blocking enabled: " << m_bMachineIDBlock );
 }
 
 bool KGameSysVal::IsMachineIDBlock() const
@@ -768,7 +768,7 @@ void KGameSysVal::SetHackUserPacketMornitor_LUA( bool bVal )
 {
 	m_bIsHackUserPacketMornitor = bVal;
 
-	START_LOG( cout, L"오토핵 유저 패킷 모니터링 여부 : " << m_bIsHackUserPacketMornitor );
+	START_LOG( cout, L"Monitor packets from suspected bot users: " << m_bIsHackUserPacketMornitor );
 }
 //}}
 
@@ -776,19 +776,19 @@ void KGameSysVal::SetIsNewUnitTradeBlock_LUA( bool bVal )
 {
 	m_bIsNewUnitTradeBlock = bVal;
 
-	START_LOG( cout, L"신규 유닛 거래 제한 여부 : " << m_bIsNewUnitTradeBlock );
+	START_LOG( cout, L"Restrict trading for new characters: " << m_bIsNewUnitTradeBlock );
 }
 void KGameSysVal::SetNewUnitTradeBlockDay_LUA( int iVal )
 {
 	m_iNewUnitTradeBlockDay = iVal;
 
-	START_LOG( cout, L"신규 유닛 거래 제한 여부 : " << m_iNewUnitTradeBlockDay );
+	START_LOG( cout, L"New-character trading restriction duration (days): " << m_iNewUnitTradeBlockDay );
 }
 void KGameSysVal::SetNewUnitTradeBlockUnitClass_LUA( int iVal )
 {
 	m_iNewUnitTradeBlockUnitClass = iVal;
 
-	START_LOG( cout, L"신규 유닛 거래 제한 여부 : " << m_iNewUnitTradeBlockUnitClass );
+	START_LOG( cout, L"Character class subject to the new-character trading restriction: " << m_iNewUnitTradeBlockUnitClass );
 }
 
 //{{ 2011. 08. 17	최육사	머신ID 중복 접속 차단
@@ -796,7 +796,7 @@ void KGameSysVal::SetMachineIDDuplicateCheck_LUA( bool bVal )
 {
 	m_bMachineIDDuplicateCheck = bVal;
 
-	START_LOG( cout, L"머신 ID 중복 접속 체크 기능 동작 여부 : " << m_bMachineIDDuplicateCheck );
+	START_LOG( cout, L"Machine ID duplicate-login check enabled: " << m_bMachineIDDuplicateCheck );
 }
 
 bool KGameSysVal::IsMachineIDDuplicateCheck() const
@@ -810,46 +810,46 @@ void KGameSysVal::SetLimitsCountOfLetter_Lua( int iCount )
 {
 	m_iLimitConutOfLetter = iCount ;
 
-	START_LOG( cout, L"우편 전송 횟수 감시 기능 - 전송 횟수 설정 : " << m_iLimitConutOfLetter );
+	START_LOG( cout, L"Mail-sending monitor - message limit: " << m_iLimitConutOfLetter );
 }
 void KGameSysVal::SetLetterMonitoringCheckTime_Lua( int iTime )
 {
 	m_iLetterMonitoringCheckTime = iTime * 60;
 
-	START_LOG( cout, L"우편 전송 횟수 감시 기능 - 시간 설정(초) : " << m_iLetterMonitoringCheckTime );
+	START_LOG( cout, L"Mail-sending monitor - interval (seconds): " << m_iLetterMonitoringCheckTime );
 }
 
 void KGameSysVal::SetLetterAndTradeMonitoringIsOn_Lua( bool bIsOn )
 {
 	m_bLetterAndTradeMonitoringIsOn = bIsOn;
 
-	START_LOG( cout, L"우편 and 거래 감시 기능 : " << m_bLetterAndTradeMonitoringIsOn );
+	START_LOG( cout, L"Mail and trade monitoring enabled: " << m_bLetterAndTradeMonitoringIsOn );
 }
 
 void KGameSysVal::SetLimitsCountOfTrade_Lua( int iCount )
 {
 	m_iLimitConutOfTrade = iCount;
 
-	START_LOG( cout, L"거래 횟수 감시 기능 - 거래 횟수 설정 : " << m_iLimitConutOfTrade );
+	START_LOG( cout, L"Trade monitor - trade limit: " << m_iLimitConutOfTrade );
 }
 
 void KGameSysVal::SetTradeMonitoringCheckTime_Lua( int iTime )
 {
 	m_iTradeMonitoringCheckTime = iTime * 60;
 
-	START_LOG( cout, L"거래 횟수 감시 기능 - 시간 설정(초) : " << m_iTradeMonitoringCheckTime );
+	START_LOG( cout, L"Trade monitor - interval (seconds): " << m_iTradeMonitoringCheckTime );
 }
 
 void KGameSysVal::SetMonitoringMinED_Lua( int iMin )
 {
 	m_iMonitoringMinED = iMin;
-	START_LOG( cout, L"거래 최소 금액 설정(ED) : " << m_iMonitoringMinED );
+	START_LOG( cout, L"Minimum trade amount (ED): " << m_iMonitoringMinED );
 }
 
 void KGameSysVal::SetMonitoringMaxED_Lua( int iMax )
 {
 	m_iMonitoringMaxED = iMax;
-	START_LOG( cout, L"거래 최대 금액 설정(ED) : " << m_iMonitoringMaxED );
+	START_LOG( cout, L"Maximum trade amount (ED): " << m_iMonitoringMaxED );
 }
 //}}
 
@@ -859,7 +859,7 @@ void KGameSysVal::SetDeserializeFailCheckCount_LUA( int iCount )
 {
 	m_iDeserializeFailCheckCount = iCount;
 
-	START_LOG( cout, L"Deserialize Fail Check Count 세팅" )
+	START_LOG( cout, L"Deserialize failure check count: " )
 		<< BUILD_LOG( m_iDeserializeFailCheckCount );
 }
 
@@ -867,7 +867,7 @@ void KGameSysVal::SetDeserializeFailCheck_LUA( bool bVal )
 {
 	m_bDeserializeFailCheck = bVal;
 
-	START_LOG( cout, L"Deserialize Fail Check 여부" )
+	START_LOG( cout, L"Deserialize failure check enabled: " )
 		<< BUILD_LOG( m_bDeserializeFailCheck );
 }
 //}}
@@ -877,7 +877,7 @@ void KGameSysVal::SetComeBackReward_LUA( int iStep, int iDays )
 {
 	if( iStep <= 0 || iDays <= 0 )
 	{
-		START_LOG( cerr, L"휴면 복귀 보상 단계별 날짜 정보가 이상합니다." )
+		START_LOG( cerr, L"Invalid date information for a returning-player reward stage." )
 			<< BUILD_LOG( iStep )
 			<< BUILD_LOG( iDays )
 			<< END_LOG;
@@ -887,7 +887,7 @@ void KGameSysVal::SetComeBackReward_LUA( int iStep, int iDays )
 	std::map< int, int >::iterator	mit = m_mapComeBackRewardCondition.find( iStep );
 	if( mit != m_mapComeBackRewardCondition.end() )
 	{
-		START_LOG( cerr, L"휴면 복귀 보상 단계별 날짜 정보가 이미 존재 합니다." )
+		START_LOG( cerr, L"Date information for this returning-player reward stage already exists." )
 			<< BUILD_LOG( iStep )
 			<< BUILD_LOG( iDays )
 			<< END_LOG;
@@ -895,7 +895,7 @@ void KGameSysVal::SetComeBackReward_LUA( int iStep, int iDays )
 	}
 	m_mapComeBackRewardCondition.insert( std::make_pair( iStep, iDays ) );
 
-	START_LOG( clog, L"휴면 복귀 보상 단계별 날짜 정보가 추가 되었습니다." )
+	START_LOG( clog, L"Added date information for a returning-player reward stage." )
 		<< BUILD_LOG( iStep )
 		<< BUILD_LOG( iDays )
 		<< END_LOG;
@@ -918,7 +918,7 @@ void KGameSysVal::SetEventCubeOpenStartTime_LUA( int iYear, int iMonth, int iDay
 {
 	m_tEventCubeStart = CTime( iYear, iMonth, iDay, iHour, iMin, iSec );
 
-	START_LOG( cout, L"현자의 주문서 이벤트 시작 시간" )
+	START_LOG( cout, L"Sage's Scroll event start time: " )
 		<< BUILD_LOG( iYear )
 		<< BUILD_LOG( iMonth )
 		<< BUILD_LOG( iDay )
@@ -932,7 +932,7 @@ void KGameSysVal::SetEventCubeOpenEndTime_LUA( int iYear, int iMonth, int iDay, 
 {
 	m_tEventCubeEnd = CTime( iYear, iMonth, iDay, iHour, iMin, iSec );
 
-	START_LOG( cout, L"현자의 주문서 이벤트 종료 시간" )
+	START_LOG( cout, L"Sage's Scroll event end time: " )
 		<< BUILD_LOG( iYear )
 		<< BUILD_LOG( iMonth )
 		<< BUILD_LOG( iDay )
@@ -955,7 +955,7 @@ void KGameSysVal::SetEnchantEventStartTime_LUA( int iYear, int iMonth, int iDay,
 	{
 		std::wstring wstrBeginTime	= ( m_tEventEnchantStart.Format( _T( "%Y-%m-%d %H:%M:%S" ) ) ).GetString();
 
-		START_LOG( cout, L"강화 이벤트 시작 시간" )
+		START_LOG( cout, L"Enhancement event start time: " )
 			<< BUILD_LOG( wstrBeginTime )
 			<< END_LOG;
 	}
@@ -969,7 +969,7 @@ void KGameSysVal::SetEnchantEventEndTime_LUA( int iYear, int iMonth, int iDay, i
 	{
 		std::wstring wstrEndTime	= ( m_tEventEnchantEnd.Format( _T( "%Y-%m-%d %H:%M:%S" ) ) ).GetString();
 
-		START_LOG( cout, L"강화 이벤트 종료 시간" )
+		START_LOG( cout, L"Enhancement event end time: " )
 			<< BUILD_LOG( wstrEndTime )
 			<< END_LOG;
 	}
@@ -981,13 +981,13 @@ bool KGameSysVal::IsEnchantEvent()
 
 	if( m_tEventEnchantStart <= tNow && tNow <= m_tEventEnchantEnd )
 	{
-		START_LOG( clog, L"지금은 이벤트 강화 시간!!!" )
+		START_LOG( clog, L"Event enhancement period is active." )
 			<< END_LOG;
 
 		return true;
 	}
 
-	START_LOG( clog, L"지금은 이벤트 강화 시간이 아니다!!!" )
+	START_LOG( clog, L"Event enhancement period is not active." )
 		<< END_LOG;
 	return false;
 }
@@ -1004,7 +1004,7 @@ void KGameSysVal::SetHackingUserKick_LUA( bool bValue )
 {
 	m_bHackingUserKick = bValue;
 
-	START_LOG( cout, L"해킹 유저 킥 설정" )
+	START_LOG( cout, L"Kick suspected cheaters: " )
 		<< BUILD_LOG( m_bHackingUserKick )
 		<< END_LOG;
 }
@@ -1019,7 +1019,7 @@ void KGameSysVal::SetMonitoringLetterAndTradeBlockTime_LUA( int hh, int mm, int 
 	CTimeSpan tDuration = CTimeSpan( 0, 0, 0, iDuration_s );
 	m_tLetterAndTradeBlockEndTime += tDuration;
 
-	START_LOG( cout, L"우편 및 거래 감시 실시간 계정 블록 시간 설정" )
+	START_LOG( cout, L"Real-time account-block duration for mail and trade monitoring: " )
 		<< BUILD_LOG( hh )
 		<< BUILD_LOG( mm )
 		<< BUILD_LOG( ss )
@@ -1051,7 +1051,7 @@ void KGameSysVal::SetEnableOpenRandomCubeDelaySystem_LUA( bool bValue )
 {
 	m_bEnableOpenRandomCubeDelaySystem = bValue;
 
-	START_LOG( cout, L"랜덤 큐브 오픈 딜레이 시스템 : 활성화 여부" )
+	START_LOG( cout, L"Random cube opening delay system enabled: " )
 		<< BUILD_LOG( m_bEnableOpenRandomCubeDelaySystem );
 }
 
@@ -1059,7 +1059,7 @@ void KGameSysVal::SetOpenRandomCubeDelayTime_LUA( double fTime )
 {
 	m_fOpenRandomCubeDelayTime = fTime;
 
-	START_LOG( cout, L"랜덤 큐브 오픈 딜레이 시스템 : 딜레이 시간" )
+	START_LOG( cout, L"Random cube opening delay: " )
 		<< BUILD_LOG( m_fOpenRandomCubeDelayTime );
 }
 
@@ -1067,7 +1067,7 @@ void KGameSysVal::SetOpenRandomCubeDelayCount_LUA( int iCount )
 {
 	m_iOpenRandomCubeDelayCount = iCount;
 
-	START_LOG( cout, L"랜덤 큐브 오픈 딜레이 시스템 : 시간당 오픈 카운트" )
+	START_LOG( cout, L"Random cube openings allowed per hour: " )
 		<< BUILD_LOG( m_iOpenRandomCubeDelayCount );
 }
 //}}
@@ -1082,7 +1082,7 @@ void KGameSysVal::SetPvpEventTime_LUA( int iDayType, int iCountNum, int iStartHo
 {
 	if( iDayType < 0 || iCountNum < 0 || iStartHour < 0 || iStartMin < 0 || iEndtHour < 0 || iEndMin < 0 )
 	{
-		START_LOG( cerr, L"PVP EVENT TIME SETTING 실패!" )
+		START_LOG( cerr, L"Failed to set the PvP event time." )
 			<< BUILD_LOG( iDayType )
 			<< BUILD_LOG( iCountNum )
 			<< BUILD_LOG( iStartHour )
@@ -1118,7 +1118,7 @@ void KGameSysVal::SetPvpEventTime_LUA( int iDayType, int iCountNum, int iStartHo
 		}
 		else
 		{
-			START_LOG( cerr, L"PVP EVENT TIME SETTING 중복 요청!" )
+			START_LOG( cerr, L"Duplicate PvP event time-setting request." )
 				<< BUILD_LOG( iDayType )
 				<< BUILD_LOG( iCountNum )
 				<< BUILD_LOG( iStartHour )
@@ -1145,7 +1145,7 @@ void KGameSysVal::SetPvpEventTime_LUA( int iDayType, int iCountNum, int iStartHo
 		}
 		else
 		{
-			START_LOG( cerr, L"PVP EVENT TIME SETTING 중복 요청!" )
+			START_LOG( cerr, L"Duplicate PvP event time-setting request." )
 				<< BUILD_LOG( iDayType )
 				<< BUILD_LOG( iCountNum )
 				<< BUILD_LOG( iStartHour )
@@ -1176,7 +1176,7 @@ bool KGameSysVal::IsPvpEventTime( CTime& tNow, int& iIndex, std::wstring& wstrLa
 	{
 		if( KncUtil::ConvertStringToCTime( wstrLastTime, tLastTime ) == false )
 		{
-			START_LOG( clog, L"시간 변환 실패!" )
+			START_LOG( clog, L"Time conversion failed." )
 				<< BUILD_LOG( wstrLastTime )
 				<< END_LOG;
 		}
@@ -1199,7 +1199,7 @@ bool KGameSysVal::IsPvpEventTime( CTime& tNow, int& iIndex, std::wstring& wstrLa
 		}break;
 	default:
 		{
-			START_LOG( cerr, L"존재하지 않는 요일입니다." )
+			START_LOG( cerr, L"Day of the week does not exist." )
 				<< BUILD_LOG( iDayOfWeek )
 				<< END_LOG;
 
@@ -1210,7 +1210,7 @@ bool KGameSysVal::IsPvpEventTime( CTime& tNow, int& iIndex, std::wstring& wstrLa
 	std::map< int, std::map< int, CTimeSpan > >::iterator mitS = m_mapStartPvpEvent.find( iDayType );
 	if( mitS == m_mapStartPvpEvent.end() )
 	{
-		START_LOG( cerr, L"존재하지 않는 데이터입니다." )
+		START_LOG( cerr, L"Data does not exist." )
 			<< BUILD_LOG( iDayOfWeek )
 			<< BUILD_LOG( iDayType )
 			<< END_LOG;
@@ -1221,7 +1221,7 @@ bool KGameSysVal::IsPvpEventTime( CTime& tNow, int& iIndex, std::wstring& wstrLa
 	std::map< int, std::map< int, CTimeSpan > >::iterator mitE = m_mapEndPvpEvent.find( iDayType );
 	if( mitE == m_mapEndPvpEvent.end() )
 	{
-		START_LOG( cerr, L"존재하지 않는 데이터입니다." )
+		START_LOG( cerr, L"Data does not exist." )
 			<< BUILD_LOG( iDayOfWeek )
 			<< BUILD_LOG( iDayType )
 			<< END_LOG;
@@ -1251,7 +1251,7 @@ bool KGameSysVal::IsPvpEventTime( CTime& tNow, int& iIndex, std::wstring& wstrLa
 			}
 			else
 			{
-				START_LOG( cerr, L"존재하지 않는 데이터입니다." )
+				START_LOG( cerr, L"Data does not exist." )
 					<< BUILD_LOG( iDayOfWeek )
 					<< BUILD_LOG( iDayType )
 					<< BUILD_LOG( mitStart->first )
@@ -1279,7 +1279,7 @@ void KGameSysVal::SetCheckChangeHostTime_LUA( int iCheckTime )
 {
 	m_iCheckChangeHostTime = iCheckTime;
 
-	START_LOG( cout2, L"핑 체크하여 방장 변경 시간이 변경 되었습니다." )
+	START_LOG( cout2, L"Room leader change timeout updated based on the ping check." )
 		<< BUILD_LOG( m_iCheckChangeHostTime )
 		<< END_LOG;
 }
@@ -1288,7 +1288,7 @@ void KGameSysVal::SetBattleFieldCheckChangeHostTime_LUA( int iCheckTime )
 {
 	m_iBattleFieldCheckChangeHostTime = iCheckTime;
 
-	START_LOG( cout2, L"핑 체크하여 필드 방장 변경 시간이 변경 되었습니다." )
+	START_LOG( cout2, L"Field leader change timeout updated based on the ping check." )
 		<< BUILD_LOG( m_iBattleFieldCheckChangeHostTime )
 		<< END_LOG;
 }
@@ -1418,14 +1418,14 @@ int KGameSysVal::GetLimitsLevel()
 void KGameSysVal::SetDungeonClearPaymentItemID_LUA( int iItemID )
 {
 	m_iPaymentItemID = iItemID;
-	START_LOG( cout, L"던전 클리어 지급 중복 금지 아이템 등록!" )
+	START_LOG( cout, L"Registered items that cannot be awarded more than once for a dungeon clear." )
 		<< BUILD_LOG( m_iPaymentItemID );
 }
 
 void KGameSysVal::SetProcessCommunication_Lua( IN bool bProcessCommunicationON )
 {
 	m_bProcessCommunicationON = bProcessCommunicationON;
-	START_LOG( cout, L"서버 관리툴과의 통신 모드" )
+	START_LOG( cout, L"Server management tool communication mode: " )
 		<< BUILD_LOG( m_bProcessCommunicationON );
 }
 
@@ -1449,7 +1449,7 @@ void KGameSysVal::SetLanBugOutCheckOption_Lua( void )
 	LUA_GET_VALUE( luaMgr,	"fLanBugOutCheckTerm",			m_fLanBugOutCheckTerm,			0.0f	);
 	LUA_GET_VALUE( luaMgr,	"fLanBugOutCheckRepeatTerm",	m_fLanBugOutCheckRepeatTerm,	0.5f	);
 
-	START_LOG( cout, L"랜선렉 방지 코드: 인자 정보 수정" )
+	START_LOG( cout, L"Wired-network lag prevention: argument information updated." )
 		<< BUILD_LOG( m_bLanBugOutCheck )
 		<< BUILD_LOG( m_byteLanBugOutCheckMaxCount )
 		<< BUILD_LOG( m_fLanBugOutCheckTime )
@@ -1477,7 +1477,7 @@ void KGameSysVal::SetLanBugOutVerifyOption_Lua( void )
 	LUA_GET_VALUE( luaMgr,	"fLanBugOutVerifyTerm",			m_fLanBugOutVerifyTerm,			0.0f	);
 	LUA_GET_VALUE( luaMgr,	"fLanBugOutVerifyRepeatTerm",	m_fLanBugOutVerifyRepeatTerm,	0.5f	);
 
-	START_LOG( cout, L"랜선렉 방지 코드: 인자 정보 수정" )
+	START_LOG( cout, L"Wired-network lag prevention: argument information updated." )
 		<< BUILD_LOG( m_bLanBugOutVerify )
 		<< BUILD_LOG( m_byteLanBugOutVerifyMaxCount )
 		<< BUILD_LOG( m_fLanBugOutVerifyTime )
@@ -1495,7 +1495,7 @@ void KGameSysVal::ResetTimeEnchantEventInfo_Lua( void ) const
 
 	if( iPfID != PI_GLOBAL_SERVER )
 	{
-		START_LOG( cerr, L"글로벌 서버에서만 사용할 수 있습니다." )
+		START_LOG( cerr, L"This option is available only on the GlobalServer." )
 			<< BUILD_LOG( iPfID )
 			<< END_LOG;
 		return;
@@ -1510,7 +1510,7 @@ void KGameSysVal::ResetExchangeLimitInfo_Lua( void ) const
 
 	if( iPfID != PI_GLOBAL_SERVER )
 	{
-		START_LOG( cerr, L"글로벌 서버에서만 사용할 수 있습니다." )
+		START_LOG( cerr, L"This option is available only on the GlobalServer." )
 			<< BUILD_LOG( iPfID )
 			<< END_LOG;
 		return;
@@ -1525,7 +1525,7 @@ void KGameSysVal::AfterWorkStorageMessageDeleteTerm_Second_LUA( IN int iAwsCrite
 	m_iAwsUnderTerm			= iAwsUnderTerm;
 	m_iAwsAboveOrEqualTerm	= iAwsAboveOrEqualTerm;
 
-	START_LOG( cout, L"AfterWorkStorage 정보 설정 완료" )
+	START_LOG( cout, L"AfterWorkStorage information configured." )
 		<< BUILD_LOG( m_iAwsCriterionNum )
 		<< BUILD_LOG( m_iAwsUnderTerm )
 		<< BUILD_LOG( m_iAwsAboveOrEqualTerm )

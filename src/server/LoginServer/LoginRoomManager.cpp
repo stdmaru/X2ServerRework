@@ -126,7 +126,7 @@ bool KLoginRoomManager::CreateEmptyRoom()
 	KLoginBaseRoomPtr spRoom( CreateRoom() );
 	if( spRoom == NULL )
 	{
-		START_LOG( cerr, L"방 생성 실패!" )
+		START_LOG( cerr, L"Failed to create room!" )
 			<< END_LOG;
         return false;
 	}
@@ -162,7 +162,7 @@ void KLoginRoomManager::Tick()
 	{
 		if( spRoom == NULL )
 		{
-			START_LOG( cerr, L"룸 포인터 이상." )
+			START_LOG( cerr, L"Invalid room pointer." )
 				<< END_LOG;
 			continue;
 		}
@@ -230,7 +230,7 @@ UidType KLoginRoomManager::OpenRoom()
 		KLoginBaseRoomPtr spRoom = Get( mit->first );
 		if( spRoom == NULL )
 		{
-			START_LOG( cerr, L"빈 방 인덱스가 이상함." )
+			START_LOG( cerr, L"Invalid empty-room index." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 		}
@@ -243,7 +243,7 @@ UidType KLoginRoomManager::OpenRoom()
 			}
 			else
 			{
-				START_LOG( cerr, L"빈 방 리스트에 있지만 방 상태가 이상함." )
+				START_LOG( cerr, L"Room state is invalid even though it is in the empty-room list." )
 					<< BUILD_LOG( spRoom->GetStateID() )
 					<< BUILD_LOG( spRoom->GetStateIDString() )
 					<< END_LOG;
@@ -253,7 +253,7 @@ UidType KLoginRoomManager::OpenRoom()
 
 	if( mit == m_mapEmptyRoomList.end() )
 	{
-		START_LOG( cerr, L"빈 방을 찾을 수 없음." )
+		START_LOG( cerr, L"No empty room found." )
 			<< END_LOG;
 
 		return 0;
@@ -270,7 +270,7 @@ bool KLoginRoomManager::CloseRoom( UidType iRoomUID )
 	const CXSLRoom::ROOM_TYPE eRoomType = ( CXSLRoom::ROOM_TYPE )KncUid::ExtractReservedID( iRoomUID );
 	if( eRoomType < 0 || eRoomType >= CXSLRoom::RT_TOTAL_NUM )
 	{
-		START_LOG( cerr, L"룸 타입이 이상함." )
+		START_LOG( cerr, L"Invalid room type." )
 			<< BUILD_LOG( eRoomType )
 			<< BUILD_LOG( ( int )CXSLRoom::RT_TOTAL_NUM )
 			<< END_LOG;
@@ -284,7 +284,7 @@ bool KLoginRoomManager::CloseRoom( UidType iRoomUID )
 	mit = m_mapEmptyRoomList.find( iRoomUID );
 	if( mit != m_mapEmptyRoomList.end() )
 	{
-		START_LOG( cerr, L"빈 방리스트에 넣으려는 ID의 방이 이미 있음." )
+		START_LOG( cerr, L"The room ID being added is already in the empty-room list." )
 			<< BUILD_LOG( iRoomUID )
 			<< END_LOG;
 
@@ -294,7 +294,7 @@ bool KLoginRoomManager::CloseRoom( UidType iRoomUID )
 	KLoginBaseRoomPtr spRoom = Get( iRoomUID );
 	if( !spRoom )
 	{
-		START_LOG( cerr, L"해당 UID의 방이 없음." )
+		START_LOG( cerr, L"No room found for this UID." )
 			<< BUILD_LOG( iRoomUID )
 			<< END_LOG;
 
@@ -304,7 +304,7 @@ bool KLoginRoomManager::CloseRoom( UidType iRoomUID )
 	// 모든 방 FSM 들은 INIT, CLOSE, WAIT 를 가지며 이들의 값도 같다.
 	if( spRoom->GetStateID() != KBaseRoomFSM::S_CLOSE )
 	{
-		START_LOG( cerr, L"방 상태 이상." )
+		START_LOG( cerr, L"Invalid room state." )
 			<< BUILD_LOG( spRoom->GetStateID() )
 			<< BUILD_LOG( iRoomUID )
 			<< END_LOG;
@@ -331,7 +331,7 @@ void KLoginRoomManager::QueueingEventToRoomByRoomUID( IN const UidType iRoomUID,
 	KLoginBaseRoomPtr spRoom = Get( iRoomUID );
 	if( spRoom == NULL )
 	{
-		START_LOG( cerr, L"존재 하지 않는 방입니다!" )
+		START_LOG( cerr, L"Room does not exist!" )
 			<< BUILD_LOG( iRoomUID )
 			<< END_LOG;
 		return;
@@ -371,13 +371,13 @@ void KLoginRoomManager::QueueingEventToRoom( const KEventPtr& spEvent_ )
 			break;
 		case ERM_OPEN_PSHOP_AGENCY_BY_SERVER_NOT:
 			{
-				START_LOG( cerr, L"개설 가능한 대리상인 방이 없습니다! 일어나서는 안되는 에러!" )
+				START_LOG( cerr, L"No room is available for a hired merchant. This should never happen!" )
 					<< END_LOG;
 
 			}
 			break;
 		default:
-			START_LOG( cerr, L"이벤트의 목표 방 UID가 이상함." )
+			START_LOG( cerr, L"Invalid event target room UID." )
 				<< BUILD_LOG( iRoomUID )
 				<< BUILD_LOG( KEvent::GetIDStr( spEvent_->m_usEventID ) )
 				<< END_LOG;
@@ -388,7 +388,7 @@ void KLoginRoomManager::QueueingEventToRoom( const KEventPtr& spEvent_ )
 	KLoginBaseRoomPtr spRoom = Get( iRoomUID );
 	if( spRoom == NULL )
 	{
-		START_LOG( cwarn, L"방 검색 실패." )
+		START_LOG( cwarn, L"Room search failed." )
 			<< BUILD_LOG( iRoomUID )
 			<< END_LOG;
 		return;
@@ -426,7 +426,7 @@ void KLoginRoomManager::SetZUTickTime( double dfTickTime )
 {
 	m_dfZUTickTime = dfTickTime;
 
-	START_LOG( cout2, L"Zombie User 체크 시간설정.!" )
+	START_LOG( cout2, L"Zombie User check interval set!" )
 		<< BUILD_LOG( m_dfZUTickTime );
 }
 
@@ -445,7 +445,7 @@ bool KLoginRoomManager::AddPShopOwner( IN const UidType iUnitUID, IN const UidTy
 	UidType iCheckRoomUID = 0;
 	if( GetPShopAgencyUIDByUnitUID( iUnitUID, iCheckRoomUID ) == true )
 	{
-		START_LOG( cerr, L"이미 등록되어 있는 유저입니다. 절대 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"User is already registered. This should never happen!" )
 			<< BUILD_LOG( iUnitUID )
 			<< BUILD_LOG( iCheckRoomUID )
 			<< BUILD_LOG( iRoomUID )
@@ -462,7 +462,7 @@ void KLoginRoomManager::DelPShopOwner( IN const UidType iUnitUID )
 	UidType iCheckRoomUID = 0;
 	if( GetPShopAgencyUIDByUnitUID( iUnitUID, iCheckRoomUID ) == false )
 	{
-		START_LOG( cerr, L"등록되어 있는 유저가 아닙니다! 절대 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"User is not registered. This should never happen!" )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 		return;

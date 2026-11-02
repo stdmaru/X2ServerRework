@@ -31,7 +31,7 @@ KPersonalShopUserPtr KPersonalShopUserManager::GetUser( UidType nCID )
 
 	if( mit == m_mapPersonalShopUser.end() )
 	{
-		START_LOG( cwarn, L"존재하지 않는 유저." )
+		START_LOG( cwarn, L"User does not exist." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -45,7 +45,7 @@ bool KPersonalShopUserManager::AddUser( KPersonalShopUserPtr spPersonalShopUser 
 {
 	if( !spPersonalShopUser )
 	{
-		START_LOG( cerr, L"유저 포인터 이상." )
+		START_LOG( cerr, L"Invalid user pointer." )
 			<< END_LOG;
 
 		return false;
@@ -56,7 +56,7 @@ bool KPersonalShopUserManager::AddUser( KPersonalShopUserPtr spPersonalShopUser 
 
 	if( mit != m_mapPersonalShopUser.end() )
 	{
-		START_LOG( cerr, L"이미 존재하는 개인상점 유저임." )
+		START_LOG( cerr, L"Personal shop user already exists." )
 			<< BUILD_LOG( spPersonalShopUser->GetCID() )
 			<< END_LOG;
 
@@ -74,7 +74,7 @@ bool KPersonalShopUserManager::DeleteUser( UidType nCID )
 
 	if( mit == m_mapPersonalShopUser.end() )
 	{
-		START_LOG( cerr, L"존재하지 않는 개인상점 유저임." )
+		START_LOG( cerr, L"Personal shop user does not exist." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -94,7 +94,7 @@ int KPersonalShopUserManager::DeleteUserByGsUID( IN UidType nGsUID, OUT std::vec
 	{
 		if( !mit->second )
 		{
-			START_LOG( cerr, L"개인상점 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid personal shop user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 
@@ -122,13 +122,13 @@ bool KPersonalShopUserManager::EnterPersonalShop( IN const KPersonalShopUserInfo
 		//{{ 2009. 8. 25  최육사	코드 정리
 		if( NetError::GetLastError() == NetError::ERR_PERSONAL_SHOP_04 )
 		{
-			START_LOG( cwarn, L"개인상점 유저 생성 실패. 개인상점 입장가능 인원 초과" )
+			START_LOG( cwarn, L"Failed to create personal shop user: shop capacity exceeded." )
 				<< BUILD_LOG( ( int )m_mapPersonalShopUser.size() )
 				<< END_LOG;
 		}
 		else
 		{
-			START_LOG( cerr, L"개인상점 유저 생성 실패." )
+			START_LOG( cerr, L"Failed to create personal shop user." )
 				<< BUILD_LOG( ( int )m_mapPersonalShopUser.size() )
 				<< END_LOG;
 		}
@@ -139,7 +139,7 @@ bool KPersonalShopUserManager::EnterPersonalShop( IN const KPersonalShopUserInfo
 
 	if( AddUser( spPersonalShopUser ) == false )
 	{
-		START_LOG( cerr, L"개인상점 유저 추가실패." )
+		START_LOG( cerr, L"Failed to add personal shop user." )
 			<< BUILD_LOG( spPersonalShopUser->GetCID() )
 			<< END_LOG;
 
@@ -170,7 +170,7 @@ bool KPersonalShopUserManager::EnterPShopAgencyOwner( IN const KPersonalShopUser
 	KPersonalShopUserPtr spPersonalShopUser = MakeUser( kInfo, true );
 	if( !spPersonalShopUser )
 	{
-		START_LOG( cerr, L"대리상점 개설자 유저 생성 실패." )
+		START_LOG( cerr, L"Failed to create proxy shop owner user." )
 			<< BUILD_LOG( ( int )m_mapPersonalShopUser.size() )
 			<< END_LOG;
 		return false;
@@ -178,7 +178,7 @@ bool KPersonalShopUserManager::EnterPShopAgencyOwner( IN const KPersonalShopUser
 
 	if( AddUser( spPersonalShopUser ) == false )
 	{
-		START_LOG( cerr, L"개인상점 유저 추가실패." )
+		START_LOG( cerr, L"Failed to add personal shop user." )
 			<< BUILD_LOG( spPersonalShopUser->GetCID() )
 			<< END_LOG;
 
@@ -209,13 +209,13 @@ bool KPersonalShopUserManager::EnterPShopAgencyCustomer( IN const KPersonalShopU
 		//{{ 2009. 8. 25  최육사	코드 정리
 		if( NetError::GetLastError() == NetError::ERR_PERSONAL_SHOP_04 )
 		{
-			START_LOG( cwarn, L"개인상점 유저 생성 실패. 개인상점 입장가능 인원 초과" )
+			START_LOG( cwarn, L"Failed to create personal shop user: shop capacity exceeded." )
 				<< BUILD_LOG( ( int )m_mapPersonalShopUser.size() )
 				<< END_LOG;
 		}
 		else
 		{
-			START_LOG( cerr, L"개인상점 유저 생성 실패." )
+			START_LOG( cerr, L"Failed to create personal shop user." )
 				<< BUILD_LOG( ( int )m_mapPersonalShopUser.size() )
 				<< END_LOG;
 		}
@@ -226,7 +226,7 @@ bool KPersonalShopUserManager::EnterPShopAgencyCustomer( IN const KPersonalShopU
 
 	if( AddUser( spPersonalShopUser ) == false )
 	{
-		START_LOG( cerr, L"개인상점 유저 추가실패." )
+		START_LOG( cerr, L"Failed to add personal shop user." )
 			<< BUILD_LOG( spPersonalShopUser->GetCID() )
 			<< END_LOG;
 
@@ -243,7 +243,7 @@ bool KPersonalShopUserManager::LeavePersonalShop( UidType nCID )
 	KPersonalShopUserPtr spPersonalShopUser = GetUser( nCID );
 	if( !spPersonalShopUser )
 	{
-		START_LOG( cwarn, L"유저가 없음." )
+		START_LOG( cwarn, L"User not found." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -262,7 +262,7 @@ bool KPersonalShopUserManager::CreatePersonalShopAgency( IN const KPersonalShopU
 	m_spPShopAgencyUser = MakeUser( kInfo );
 	if( m_spPShopAgencyUser == NULL )
 	{
-		START_LOG( cerr, L"대리상점 유저 생성 실패." )
+		START_LOG( cerr, L"Failed to create proxy shop user." )
 			<< BUILD_LOG( ( int )m_mapPersonalShopUser.size() )
 			<< END_LOG;
 		return false;
@@ -275,7 +275,7 @@ bool KPersonalShopUserManager::DeletePersonalShopAgency( IN UidType nCID )
 {
 	if( IsPShopAgencyHost( nCID ) == false )
 	{
-		START_LOG( cerr, L"대리상점 개설자가 아닌데 대리상인을 종료하려고 하네?" )
+		START_LOG( cerr, L"Attempted to close a proxy shop without being its owner." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 		return false;
@@ -302,7 +302,7 @@ bool KPersonalShopUserManager::GetPersonalShopUserGS( UidType nCID, UidType& nGS
 		}
 		else
 		{
-			START_LOG( cerr, L"개인상점 유저 포인터 이상.!" )
+			START_LOG( cerr, L"Invalid personal shop user pointer." )
 				<< BUILD_LOG( nCID )
 				<< END_LOG;
 		}
@@ -310,7 +310,7 @@ bool KPersonalShopUserManager::GetPersonalShopUserGS( UidType nCID, UidType& nGS
 	}
 	else
 	{
-		START_LOG( cwarn, L"찾는 개인상점 유저가 없음.!" )
+		START_LOG( cwarn, L"Personal shop user not found." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 	}
@@ -327,7 +327,7 @@ void KPersonalShopUserManager::GetUserList( OUT std::map< UidType, std::set< Uid
 	{
 		if( !mit->second )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 
@@ -349,7 +349,7 @@ void KPersonalShopUserManager::GetUserList( OUT std::vector< UidType >& vecUidLi
 	{
 		if( !mit->second )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 
@@ -786,7 +786,7 @@ KPersonalShopUserPtr KPersonalShopUserManager::MakeUser( IN const KPersonalShopU
 {
 	if( m_mapPersonalShopUser.size() >= m_dwMaxUser  &&  bForce == false )
 	{
-		START_LOG( cwarn, L"개인상점 룸이 가득 찼음." )
+		START_LOG( cwarn, L"Personal shop room is full." )
 			<< BUILD_LOG( kInfo.m_iGSUID )
 			<< BUILD_LOG( kInfo.m_iUnitUID )
 			<< BUILD_LOG( m_dwMaxUser )
@@ -819,7 +819,7 @@ bool KPersonalShopUserManager::IsHost( UidType nCID )
 	}
 	else
 	{
-		START_LOG( cerr, L"찾는 개인상점 유저가 없음.!" )
+		START_LOG( cerr, L"Personal shop user not found." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 	}
@@ -845,7 +845,7 @@ bool KPersonalShopUserManager::GetHostUID( UidType& nUID )
 		}
 	}
 
-	START_LOG( cerr, L"개인상점 호스트가 없음.!" )
+	START_LOG( cerr, L"Personal shop host not found." )
 		<< BUILD_LOG( m_mapPersonalShopUser.size() )
 		<< END_LOG;
 
@@ -868,7 +868,7 @@ bool KPersonalShopUserManager::GetHostNickName( std::wstring& wstrNickName )
 		}
 	}
 
-	START_LOG( cerr, L"개인상점 호스트가 없음.!" )
+	START_LOG( cerr, L"Personal shop host not found." )
 		<< BUILD_LOG( m_mapPersonalShopUser.size() )
 		<< END_LOG;
 
@@ -881,7 +881,7 @@ UidType KPersonalShopUserManager::GetPShopAgencyHostUnitUID() const
 {
 	if( m_spPShopAgencyUser == NULL )
 	{
-		START_LOG( cerr, L"대리상인 정보가 존재하지 않습니다!" )
+		START_LOG( cerr, L"Proxy shop information does not exist." )
 			<< END_LOG;
 		return 0;
 	}
@@ -893,7 +893,7 @@ UidType KPersonalShopUserManager::GetPShopAgencyHostGSUID() const
 {
 	if( m_spPShopAgencyUser == NULL )
 	{
-		START_LOG( cerr, L"대리상인 정보가 존재하지 않습니다!" )
+		START_LOG( cerr, L"Proxy shop information does not exist." )
 			<< END_LOG;
 		return 0;
 	}
@@ -905,7 +905,7 @@ bool KPersonalShopUserManager::GetPShopAgencyHostNickName( OUT std::wstring& wst
 {
 	if( m_spPShopAgencyUser == NULL )
 	{
-		START_LOG( cerr, L"대리상인 정보가 존재하지 않습니다!" )
+		START_LOG( cerr, L"Proxy shop information does not exist." )
 			<< END_LOG;
 		return false;
 	}
@@ -918,7 +918,7 @@ bool KPersonalShopUserManager::IsPShopAgencyHost( IN const UidType iUnitUID ) co
 {
 	if( m_spPShopAgencyUser == NULL )
 	{
-		START_LOG( cerr, L"대리상인 정보가 존재하지 않습니다!" )
+		START_LOG( cerr, L"Proxy shop information does not exist." )
 			<< END_LOG;
 		return false;
 	}
@@ -934,7 +934,7 @@ bool KPersonalShopUserManager::SetUpdateTemp( UidType nCID, const KItemQuantityU
 
 	if( !spUser )
 	{
-		START_LOG( cerr, L"유저가 존재하지 않음." )
+		START_LOG( cerr, L"User does not exist." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -951,7 +951,7 @@ bool KPersonalShopUserManager::GetUpdateTemp( UidType nCID, KItemQuantityUpdate&
 
 	if( !spUser )
 	{
-		START_LOG( cerr, L"유저가 존재하지 않음." )
+		START_LOG( cerr, L"User does not exist." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -970,7 +970,7 @@ bool KPersonalShopUserManager::IsHostUserSameServerGroup( IN UidType iUnitUID )
 	UidType iHostUID = 0;
 	if( GetHostUID( iHostUID ) == false )
 	{
-		START_LOG( cerr, L"개인상점 개설자 정보가 없다?" )
+		START_LOG( cerr, L"Personal shop owner information is missing." )
 			<< BUILD_LOG( iHostUID )
 			<< END_LOG;
 
@@ -979,7 +979,7 @@ bool KPersonalShopUserManager::IsHostUserSameServerGroup( IN UidType iUnitUID )
 
 	if( KncUid::ExtractServerGroupID( iUnitUID ) != KncUid::ExtractServerGroupID( iHostUID ) )
 	{
-		START_LOG( cerr, L"개인상점 개설자와 입장요청자가 서로 다른 서버군이다? 절대 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"Personal shop owner and entry requester are in different server groups. This should never happen." )
 			<< BUILD_LOG( iUnitUID )
 			<< BUILD_LOG( iHostUID )
 			<< END_LOG;
@@ -998,7 +998,7 @@ bool KPersonalShopUserManager::IsPShopAgencyHostUserSameServerGroup( IN UidType 
 	const UidType iHostUID = GetPShopAgencyHostUnitUID();
 	if( iHostUID == 0 )
 	{
-		START_LOG( cerr, L"개인상점 개설자 정보가 없다?" )
+		START_LOG( cerr, L"Personal shop owner information is missing." )
 			<< BUILD_LOG( iHostUID )
 			<< END_LOG;
 
@@ -1007,7 +1007,7 @@ bool KPersonalShopUserManager::IsPShopAgencyHostUserSameServerGroup( IN UidType 
 
 	if( KncUid::ExtractServerGroupID( iUnitUID ) != KncUid::ExtractServerGroupID( iHostUID ) )
 	{
-		START_LOG( cerr, L"개인상점 개설자와 입장요청자가 서로 다른 서버군이다? 절대 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"Personal shop owner and entry requester are in different server groups. This should never happen." )
 			<< BUILD_LOG( iUnitUID )
 			<< BUILD_LOG( iHostUID )
 			<< END_LOG;
@@ -1030,7 +1030,7 @@ bool KPersonalShopUserManager::IsSquare( UidType _nCID )
 	}
 	else
 	{
-		START_LOG( cerr, L"찾는 개인상점 유저가 없음.!" )
+		START_LOG( cerr, L"Personal shop user not found." )
 			<< BUILD_LOG( _nCID )
 			<< END_LOG;
 	}

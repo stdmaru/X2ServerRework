@@ -100,7 +100,7 @@ void CXSLFieldBossData::SetData_LUA( void )
 		{
 			if( iSocketExpandItemForWeapon <= 0 )
 			{
-				START_LOG( cerr, L"잘못된 인자 값이 설정 되었습니다.")
+				START_LOG( cerr, L"Invalid argument value." )
 					<< BUILD_LOG( iSocketExpandItemForWeapon )
 					<< END_LOG;
 				continue;
@@ -108,7 +108,7 @@ void CXSLFieldBossData::SetData_LUA( void )
 
 			if( m_setSocketExpandItemForWeapon.insert( iSocketExpandItemForWeapon ).second == false )
 			{
-				START_LOG( cerr, L"이미 설정되어 있는 값입니다.")
+				START_LOG( cerr, L"Value is already set." )
 					<< BUILD_LOG( iSocketExpandItemForWeapon )
 					<< END_LOG;
 				continue;
@@ -124,7 +124,7 @@ void CXSLFieldBossData::SetData_LUA( void )
 		{
 			if( iSocketExpandItemForDefence <= 0 )
 			{
-				START_LOG( cerr, L"잘못된 인자 값이 설정 되었습니다.")
+				START_LOG( cerr, L"Invalid argument value." )
 					<< BUILD_LOG( iSocketExpandItemForDefence )
 					<< END_LOG;
 				continue;
@@ -132,7 +132,7 @@ void CXSLFieldBossData::SetData_LUA( void )
 
 			if( m_setSocketExpandItemForDefence.insert( iSocketExpandItemForDefence ).second == false )
 			{
-				START_LOG( cerr, L"이미 설정되어 있는 값입니다.")
+				START_LOG( cerr, L"Value is already set." )
 					<< BUILD_LOG( iSocketExpandItemForDefence )
 					<< END_LOG;
 				continue;
@@ -144,7 +144,7 @@ void CXSLFieldBossData::SetData_LUA( void )
 	// 보상 아이템 정보
 	if( _PrecedenceAndRewardDataParsing( luaManager ) == false )
 	{
-		START_LOG( cerr, L"FieldBossData.lua 보상 정보 읽기에 실패하였습니다." )
+		START_LOG( cerr, L"Failed to read reward information from FieldBossData.lua." )
 			<< END_LOG;
 	}
 
@@ -158,7 +158,7 @@ void CXSLFieldBossData::SetData_LUA( void )
 		{
 			if( ( iVillageMapID <= SEnum::VMI_INVALID ) || ( SEnum::VMI_BATTLE_FIELD_END <= iVillageMapID ) )
 			{
-				START_LOG( cerr, L"잘못된 인자 값이 설정 되었습니다.")
+				START_LOG( cerr, L"Invalid argument value." )
 					<< BUILD_LOG( iLastestCorrectedVillageMapID )
 					<< BUILD_LOG( iVillageMapID )
 					<< END_LOG;
@@ -167,7 +167,7 @@ void CXSLFieldBossData::SetData_LUA( void )
 
 			if( m_setPortalLocation.insert( iVillageMapID ).second == false )
 			{
-				START_LOG( cerr, L"이미 설정되어 있는 값입니다.")
+				START_LOG( cerr, L"Value is already set." )
 					<< BUILD_LOG( iLastestCorrectedVillageMapID )
 					<< BUILD_LOG( iVillageMapID )
 					<< END_LOG;
@@ -186,7 +186,7 @@ void CXSLFieldBossData::_CheckData( void ) const
 {
 	if( m_iFieldBossCoolTime_M <= m_iPortalHoldingTime_M )
 	{
-		START_LOG( cerr, L"포탈의 유지 시간은 필드 보스의 재 출현 제한 시간보다 작아야 합니다.")
+		START_LOG( cerr, L"Portal duration must be shorter than the field boss respawn cooldown." )
 			<< BUILD_LOG( m_iPortalHoldingTime_M )
 			<< BUILD_LOG( m_iFieldBossCoolTime_M )
 			<< END_LOG;
@@ -280,7 +280,7 @@ bool CXSLFieldBossData::_RewardParsing( IN KLuaManager& luaManager, OUT std::map
 
 		if( mapReward.insert( std::map<int, byte>::value_type( iItemID, byteNum ) ).second == false )
 		{
-			START_LOG( cerr, L"RewardInfo에 중복되는 iItemID가 설정되어 있습니다." )
+			START_LOG( cerr, L"Duplicate iItemID in RewardInfo." )
 				<< BUILD_LOG( iItemID )
 				<< END_LOG;
 

@@ -79,7 +79,7 @@ bool KUserCashInventory::SetSocketForCash( const std::map< int, int >& mapSocket
 		const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( mitSocket->first );
 		if( pItemTemplet == NULL )
 		{
-			START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )
+			START_LOG( cerr, L"Failed to retrieve the item template." )
 				<< BUILD_LOG( mitSocket->first )
 				<< END_LOG;
 
@@ -91,7 +91,7 @@ bool KUserCashInventory::SetSocketForCash( const std::map< int, int >& mapSocket
 		if( SiCXSLSocketItem()->CheckCashItemSocketID( iItemType, mitSocket->second ) == false )
 		{
 			// 존재하지 않는 소켓 정보 입니다.
-			START_LOG( cerr, L"[테스트]존재하지 않는 소켓 정보로 아이템을 셋팅하려 합니다." )
+			START_LOG( cerr, L"[Test] Attempted to configure an item using a nonexistent socket." )
 				<< BUILD_LOG( mitSocket->first )
 				<< BUILD_LOG( mitSocket->second )
 				<< BUILD_LOG( iItemType )
@@ -108,7 +108,7 @@ bool KUserCashInventory::SetSocketForCash( const std::map< int, int >& mapSocket
 		if( SiCXSLSocketItem()->CheckCashItemGroupID( mitGroup->first, mitGroup->second ) == false )
 		{
 			// 존재하지 않는 그룹 정보 입니다.
-			START_LOG( cerr, L"[테스트]존재하지 않는 그룹 정보로 아이템을 셋팅하려 합니다." )
+			START_LOG( cerr, L"[Test] Attempted to configure an item using a nonexistent group." )
 				<< BUILD_LOG( mitGroup->first )
 				<< BUILD_LOG( mitGroup->second )
 				<< END_LOG;

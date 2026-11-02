@@ -29,7 +29,7 @@ void KGuildSkillTree::UpdateGuildSkillTree( IN const KGuildSkillInfo& kInfo )
 
 		if( m_mapSkillTree.find( kGuildSkillData.m_iSkillID ) != m_mapSkillTree.end() )
 		{
-			START_LOG( cerr, L"중복된 스킬을 보유하고 있음." )
+			START_LOG( cerr, L"Duplicate skill found." )
 				<< BUILD_LOG( kGuildSkillData.m_iSkillID )
 				<< BUILD_LOG( kGuildSkillData.m_cSkillLevel )
 				<< BUILD_LOG( kGuildSkillData.m_cSkillCSPoint )
@@ -46,7 +46,7 @@ void KGuildSkillTree::UpdateGuildSkillTree( IN const KGuildSkillInfo& kInfo )
 		{
 			if( static_cast<int>(kGuildSkillData.m_cSkillLevel) > pSkillTreeTemplet->m_iMasterSkillLevel )
 			{
-				START_LOG( cerr, L"최고레벨보다 높은 레벨의 스킬이 DB에 있음" )
+				START_LOG( cerr, L"The database contains a skill above the maximum level." )
 					<< BUILD_LOG( kGuildSkillData.m_iSkillID )
 					<< BUILD_LOGc( kGuildSkillData.m_cSkillLevel )
 					<< BUILD_LOG( pSkillTreeTemplet->m_iMasterSkillLevel )
@@ -168,7 +168,7 @@ bool KGuildSkillTree::IsMasterSkillLevel( IN int iSkillID )
 	const CXSLSkillTree::SkillTemplet* pSkillTemplet = SiCXSLSkillTree()->GetSkillTemplet( iSkillID );
 	if( NULL == pSkillTemplet )
 	{
-		START_LOG( cerr, L"길드 스킬이 최고 레벨인지 확인하려는데 스킬 템플릿이 NULL" )
+		START_LOG( cerr, L"Guild skill template is NULL while checking for maximum skill level." )
 			<< BUILD_LOG( iSkillID )
 			<< END_LOG;
 
@@ -182,7 +182,7 @@ bool KGuildSkillTree::IsMasterSkillLevel( IN int iSkillID )
 		int iMasterSkillLevel = SiCXSLSkillTree()->GetMasterGuildSkillLevel( iSkillID );
 		if( kGuildSkillData.m_iSkillLevel > iMasterSkillLevel )
 		{
-			START_LOG( cerr, L"길드 스킬이 최고 레벨인지 확인하려는데 스킬 레벨이 최고레벨보다 높다" )
+			START_LOG( cerr, L"Guild skill level exceeds the maximum while checking for maximum skill level." )
 				<< BUILD_LOG( iSkillID )
 				<< BUILD_LOG( kGuildSkillData.m_iSkillLevel )
 				<< BUILD_LOG( iMasterSkillLevel )
@@ -208,7 +208,7 @@ bool KGuildSkillTree::IsAllPrecedingSkillMasterLevel( int iSkillID )
 	const CXSLSkillTree::SkillTreeTemplet* pSkillTreeTemplet = SiCXSLSkillTree()->GetGuildSkillTreeTemplet( iSkillID );
 	if( NULL == pSkillTreeTemplet )
 	{
-		START_LOG( cerr, L"스킬트리 템플릿이 없음_preceding" )
+		START_LOG( cerr, L"Skill tree template is missing: preceding." )
 			<< BUILD_LOG( iSkillID )
 			<< END_LOG;
 
@@ -231,7 +231,7 @@ bool KGuildSkillTree::IsAllFollowingSkillLevelZero( int iSkillID )
 	const CXSLSkillTree::SkillTreeTemplet* pSkillTreeTemplet = SiCXSLSkillTree()->GetGuildSkillTreeTemplet( iSkillID );
 	if( pSkillTreeTemplet == NULL )
 	{
-		START_LOG( cerr, L"스킬트리 템플릿이 없음_following" )
+		START_LOG( cerr, L"Skill tree template is missing: following." )
 			<< BUILD_LOG( iSkillID )
 			<< END_LOG;
 
@@ -253,7 +253,7 @@ bool KGuildSkillTree::IsTierOpened( int iSkillID )
 	const CXSLSkillTree::SkillTreeTemplet* pSkillTreeTemplet = SiCXSLSkillTree()->GetGuildSkillTreeTemplet( iSkillID );
 	if( pSkillTreeTemplet == NULL )
 	{
-		START_LOG( cerr, L"스킬트리 템플릿이 없음_IsTierOpened" )
+		START_LOG( cerr, L"Skill tree template is missing: IsTierOpened." )
 			<< BUILD_LOG( iSkillID )
 			<< END_LOG;
 
@@ -418,7 +418,7 @@ void KGuildSkillTree::CalcUsedSPointAndCSPoint( OUT int& iSPoint, OUT int& iCSPo
 		{
 			if( kGuildSkillData.m_iSkillCSPoint > kGuildSkillData.m_iSkillLevel )
 			{
-				START_LOG( cerr, L"스킬 레벨 < 스킬 CSP" )
+				START_LOG( cerr, L"Skill level is less than Skill CSP." )
 					<< BUILD_LOG( iSkillID )
 					<< BUILD_LOG( kGuildSkillData.m_iSkillLevel )
 					<< BUILD_LOG( kGuildSkillData.m_iSkillCSPoint )
@@ -432,7 +432,7 @@ void KGuildSkillTree::CalcUsedSPointAndCSPoint( OUT int& iSPoint, OUT int& iCSPo
 		{
 			if( kGuildSkillData.m_iSkillCSPoint > 0 )
 			{
-				START_LOG( cwarn, L"스킬 레벨이 0이하인데 SkillCSP가 0보다 큼!" )
+				START_LOG( cwarn, L"Skill level is 0 or less, but SkillCSP is greater than 0!" )
 					<< BUILD_LOG( iSkillID )
 					<< BUILD_LOG( kGuildSkillData.m_iSkillLevel )
 					<< BUILD_LOG( kGuildSkillData.m_iSkillCSPoint )
@@ -441,7 +441,7 @@ void KGuildSkillTree::CalcUsedSPointAndCSPoint( OUT int& iSPoint, OUT int& iCSPo
 		}
 		else
 		{
-			START_LOG( cwarn, L"스킬 레벨이 0보다 작다!" )
+			START_LOG( cwarn, L"Skill level is below 0!" )
 				<< BUILD_LOG( iSkillID )
 				<< BUILD_LOG( kGuildSkillData.m_iSkillLevel )
 				<< BUILD_LOG( kGuildSkillData.m_iSkillCSPoint )

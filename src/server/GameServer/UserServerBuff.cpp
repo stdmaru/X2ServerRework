@@ -23,7 +23,7 @@ void KUserServerBuff::InitPeriod( IN const CTime& tStartTime )
 	const CXSLBuffManager::BuffTemplet* pBuffTemplet = SiCXSLBuffManager()->GetBuffTemplet( GetBuffID() );
 	if( pBuffTemplet == NULL )
 	{
-		START_LOG( cerr, L"존재 하지 않는 버프입니다!" )
+		START_LOG( cerr, L"The specified buff does not exist!" )
 			<< BUILD_LOG( GetBuffID() )
 			<< END_LOG;
 		return;
@@ -63,7 +63,7 @@ void KUserServerBuff::InitPeriod( IN const CTime& tStartTime )
 			// 현재 어문의 종료 시간을 구한 다음에, 그걸 useTime과 비교해보자.
 			if( SiKGSWorldMissionManager()->GetDefenseDungeonEndTime( tDefenseDungeonBuffStartTime, m_tEndTime ) == false )
 			{
-				START_LOG( cerr, L"디펜스 던전의 알맞은 종료 시점이 없습니다.")
+				START_LOG( cerr, L"No valid end time is set for the defense dungeon.")
 					<< END_LOG;
 				return;
 			}

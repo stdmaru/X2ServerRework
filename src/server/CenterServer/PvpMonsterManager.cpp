@@ -54,7 +54,7 @@ bool KPvpMonsterManager::CreatePvpMonster( IN const KNPCUnitReq& kCreateNpcInfo,
 
 	if( mit == m_mapPvpNpcInfo.end() )
 	{
-		START_LOG( cerr, L"대전 NPC정보가 없는데 생성요청이 왔다!? 절대 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"PvP NPC creation requested without NPC information; this should never happen!" )
 			<< BUILD_LOG( kCreateNpcInfo.m_NPCID )
 			<< END_LOG;
 		return false;
@@ -69,7 +69,7 @@ bool KPvpMonsterManager::CreatePvpMonster( IN const KNPCUnitReq& kCreateNpcInfo,
 	// 3. 대전 전용 NPC생성!
 	if( CreateMonster( iPvpNpcUID, kCreateNpcInfo ) == false )
 	{
-		START_LOG( cerr, L"대전 NPC 생성 실패!" )
+		START_LOG( cerr, L"Failed to create PvP NPC!" )
 			<< BUILD_LOG( kCreateNpcInfo.m_NPCID )
 			<< END_LOG;
 		return false;
@@ -84,7 +84,7 @@ void KPvpMonsterManager::SetPvpNpcInfo( IN const std::map< UidType, KPvpNpcInfo 
 {
     if( m_mapPvpNpcInfo.empty() == false )
 	{
-		START_LOG( cerr, L"대전 NPC 정보가 남아있는데 업데이트 하려고 한다!" )
+		START_LOG( cerr, L"Attempted to update PvP NPC information that is already present!" )
 			<< BUILD_LOG( m_mapPvpNpcInfo.size() )
 			<< BUILD_LOG( mapPvpNpcInfo.size() )
 			<< END_LOG;

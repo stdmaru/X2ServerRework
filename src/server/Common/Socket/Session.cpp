@@ -75,7 +75,7 @@ void KSkSession::OnRecvCompleted( DWORD dwTransfered_ )
             }
             else
             {
-                START_LOG( clog, L"세션 객체가 소멸되었음." );
+                START_LOG( clog, L"Session object has been destroyed." );
             }
 
             // buffer management
@@ -113,7 +113,7 @@ void KSkSession::OnSocketError()
     }
     else
     {
-        START_LOG( clog, L"Session 객체가 이미 지워짐." )
+        START_LOG( clog, L"Session object has already been deleted." )
             << END_LOG;
     }
 }
@@ -127,7 +127,7 @@ void KSkSession::OnAcceptConnection()
     }
     else
     {
-        START_LOG( clog, L"Session 객체가 이미 지워짐." )
+        START_LOG( clog, L"Session object has already been deleted." )
             << END_LOG;
     }
 }
@@ -200,7 +200,7 @@ KSession::~KSession(void)
 	}
 	else
 	{
-		START_LOG( cerr, L"소켓오브젝트 포인터 이상." )
+		START_LOG( cerr, L"Invalid socket object pointer." )
 			<< END_LOG;
 	}
 
@@ -214,7 +214,7 @@ KSession::~KSession(void)
 
     if( m_nSPIndex != 0 )
     {
-        START_LOG( clog, L"SA 삭제. Name : " << m_strName << L", SPI : " << m_nSPIndex );
+        START_LOG( clog, L"SA deleted. Name: " << m_strName << L", SPI: " << m_nSPIndex );
         KncSecurity::GetSADB().Delete( m_nSPIndex );
         m_nSPIndex = 0;
     }
@@ -392,7 +392,7 @@ bool KSession::SendPacket( IN const KEvent& kEvent )
             ms_kMaxPacketInfo.m_cTime       = CTime::GetCurrentTime();
             ms_kMaxPacketInfo.m_nDataSize   = kbuff.GetLength();
             ms_kMaxPacketInfo.m_nPacketSize = bsbuff.length();
-            START_LOG( clog2, L"패킷 최대사이즈 갱신. Name : " << m_strName )
+            START_LOG( clog2, L"Maximum packet size updated. Name: " << m_strName )
                 << BUILD_LOG( ms_kMaxPacketInfo.m_strDataDesc )
                 << BUILD_LOG( ms_kMaxPacketInfo.m_nDataSize )
                 << BUILD_LOG( ms_kMaxPacketInfo.m_nPacketSize );
@@ -409,7 +409,7 @@ bool KSession::SendPacket( IN const KEvent& kEvent )
 	//{{ 2012. 02. 01	최육사	recv buffer full
 	if( bsbuff.length() > MAX_PACKET_SIZE )
 	{
-		START_LOG( cout, L"[check] max packet size를 넘어서는 패킷이 전송되었습니다. recv buffer full이 예상됩니다!" )
+		START_LOG( cout, L"[Check] A packet larger than the maximum packet size was sent; the receive buffer may be full." )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( kEvent.GetIDStr() )
 			<< BUILD_LOG( bsbuff.length() );
@@ -524,7 +524,7 @@ bool KSession::Connect( const char* szIP_, unsigned short usPort_ )
 
     if( !m_bAuthKeyRecved )  // 키를 받지 못했다면
     {
-        START_LOG( cerr, L"서버에서 보안 키를 받지 못했습니다. name:" << m_strName << L", 대기시간:"
+        START_LOG( cerr, L"Did not receive a security key from the server. Name: " << m_strName << L", wait time: "
             << ::GetTickCount() - dwWaitStartTick );
         ReserveDestroy();
         return false;
@@ -604,7 +604,7 @@ void KSession::OnRecvCompleted( IN const KncSecurity::KByteStream& payload_ )
             ks.EndReading();
 
             KncSecurity::GetSADB().Insert( m_nSPIndex, kSA );
-            START_LOG( clog, m_strName << L", 보안키 설정. spi:" << m_nSPIndex  );
+            START_LOG( clog, m_strName << L", security key configured. SPI: " << m_nSPIndex  );
 
             m_bAuthKeyRecved = true;
         }
@@ -694,7 +694,7 @@ void KSession::OnDestroy()
 				ms_kPacketAuthInfo.m_strName	  = m_strName;
 				ms_kPacketAuthInfo.m_cRegTime	  = CTime::GetCurrentTime();
 				ms_kPacketAuthInfo.m_uiMaxFailCnt = uiPacketAuthFailCnt;
-				START_LOG( clog2, L"Packet Auth Fail 갱신. Name : " << m_strName )
+				START_LOG( clog2, L"Packet authentication failure count updated. Name: " << m_strName )
 					<< BUILD_LOG( ms_kPacketAuthInfo.m_uiMaxFailCnt );
 			}
 		}
@@ -707,7 +707,7 @@ void KSession::OnDestroy()
         }
         else
         {
-            START_LOG( cerr, L"소켓오브젝트의 키 값 얻기 실패." )
+            START_LOG( cerr, L"Failed to get the socket object's key." )
                 << BUILD_LOG( GetUID() )
                 << BUILD_LOG( GetName() )
                 << END_LOG;

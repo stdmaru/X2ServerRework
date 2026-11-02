@@ -76,7 +76,7 @@ void KLoginAccountDBThread::ProcessEvent( const KEventPtr& spEvent_ )
 	   //{{ 2013. 3. 18	박세훈	 로컬 랭킹 시스템
 	   //}}
 	default:
-        START_LOG( cerr, L"이벤트 핸들러가 정의되지 않았음. " << spEvent_->GetIDStr() );
+        START_LOG( cerr, L"Event handler is not defined." << spEvent_->GetIDStr() );
     }
 
 	//////////////////////////////////////////////////////////////////////////
@@ -112,7 +112,7 @@ _IMPL_ON_FUNC( DBE_NEW_USER_JOIN_REQ, KEGS_NEW_USER_JOIN_REQ )
     if( kPacket.m_iOK != NetError::NET_OK )
     {
         // 사내 계정 생성 실패.
-        START_LOG( clog, L"신규 유저 생성 실패." )
+        START_LOG( clog, L"Failed to create new user." )
             << BUILD_LOG( kPacket.m_iOK )
             << BUILD_LOG( kPacket.m_iUserUID )
             << END_LOG;
@@ -187,7 +187,7 @@ IMPL_ON_FUNC( ELG_NEXON_USER_AUTHENTICATE_REQ )
     if( kPacket.m_iOK != NetError::NET_OK )
     {
         // 계정 DB 인증 실패
-        START_LOG( cwarn, L"존재하지 않거나 삭제/비번 다른 계정." )
+        START_LOG( cwarn, L"Account does not exist, was deleted, or has a different password." )
             << BUILD_LOG( kPacket.m_iOK )
             << END_LOG;
 
@@ -203,7 +203,7 @@ IMPL_ON_FUNC( ELG_NEXON_USER_AUTHENTICATE_REQ )
             kPacket.m_iOK = NetError::ERR_VERIFY_06;
             break;
         default:
-			START_LOG( cerr, L"쿼리에 정의 되지 않은 오류 입니다!" )
+			START_LOG( cerr, L"An error occurred that is not defined for this query!" )
 				<< BUILD_LOG( kPacket_.m_kAuthenticateReq.m_bDebugAuth )
 				<< BUILD_LOG( kPacket_.m_kAuthenticateReq.m_wstrUserID )
 				<< BUILD_LOG( wstrPassword )
@@ -243,7 +243,7 @@ IMPL_ON_FUNC( ELG_NEXON_USER_AUTHENTICATE_REQ )
                 break;
             // 해외 인증 다 해당됨 (해외의 경우 Game Server 접속 시 인증은 계정 생성 하지 않음.)
             default:
-				START_LOG( cerr, L"이 인증모드에서는 이미 계정 생성이 되어 있어야 한다." )
+				START_LOG( cerr, L"An account must already exist in this authentication mode." )
 					<< BUILD_LOG( dwAuthFlag )
 					<< END_LOG;
 				goto end_proc;
@@ -276,7 +276,7 @@ IMPL_ON_FUNC( ELG_NEXON_USER_AUTHENTICATE_REQ )
             else
             {
                 // 신규 유저 생성 실패.
-                START_LOG( clog, L"신규 유저 생성 실패." )
+                START_LOG( clog, L"Failed to create new user." )
                     << BUILD_LOG( kPacket.m_iOK )
                     << END_LOG;
             }
@@ -297,7 +297,7 @@ IMPL_ON_FUNC( ELG_NEXON_USER_AUTHENTICATE_REQ )
 		if( kPacket.m_iOK != NetError::NET_OK )
 		{
 			// OTP 검증 실패
-			START_LOG( clog, L"OTP 검증 실패." )
+			START_LOG( clog, L"OTP verification failed." )
 				<< BUILD_LOG( kPacket.m_iOK )
 				<< BUILD_LOG( kPacket.m_kAccountInfo.m_nUserUID )
 				<< BUILD_LOG( wstrPassword )
@@ -331,7 +331,7 @@ IMPL_ON_FUNC( ELG_NEXON_USER_AUTHENTICATE_REQ )
 		if( kPacket.m_iOK != NetError::NET_OK )
 		{
 			// OTP 업데이트 실패
-			START_LOG( clog, L"OTP 업데이트 실패." )
+			START_LOG( clog, L"OTP update failed." )
 				<< BUILD_LOG( kPacket.m_iOK )
 				<< END_LOG;
 
@@ -371,7 +371,7 @@ IMPL_ON_FUNC( ELG_NEXON_USER_AUTHENTICATE_REQ )
 
 		default:
 			{
-				START_LOG( cerr, L"해킹유저 타입이상.!" )
+				START_LOG( cerr, L"Invalid hack-user type!" )
 					<< BUILD_LOG( kPacket.m_kAccountInfo.m_nUserUID )
 					<< BUILD_LOG( kPacket_.m_kAuthenticateReq.m_wstrUserID )
 					<< BUILD_LOG( iOK )
@@ -465,7 +465,7 @@ IMPL_ON_FUNC( ELG_CHANNEL_CHANGE_NEXON_USER_AUTHENTICATE_REQ )
 	if( kPacket.m_kUserAuthAck.m_iOK != NetError::NET_OK )
 	{
 		// 계정 DB 인증 실패
-		START_LOG( clog, L"존재하지 않거나 삭제/비번 다른 계정." )
+		START_LOG( clog, L"Account does not exist, was deleted, or has a different password." )
 			<< BUILD_LOG( kPacket.m_kUserAuthAck.m_iOK )
 			<< END_LOG;
 
@@ -502,7 +502,7 @@ IMPL_ON_FUNC( ELG_CHANNEL_CHANGE_NEXON_USER_AUTHENTICATE_REQ )
 		if( kPacket.m_kUserAuthAck.m_iOK != NetError::NET_OK )
 		{
 			// OTP 검증 실패
-			START_LOG( clog, L"OTP 검증 실패." )
+			START_LOG( clog, L"OTP verification failed." )
 				<< BUILD_LOG( kPacket.m_kUserAuthAck.m_iOK )
 				<< BUILD_LOG( kPacket.m_kUserAuthAck.m_kAccountInfo.m_nUserUID )
 				<< BUILD_LOG( wstrPassword )
@@ -537,7 +537,7 @@ IMPL_ON_FUNC( ELG_CHANNEL_CHANGE_NEXON_USER_AUTHENTICATE_REQ )
             if( kPacket.m_kUserAuthAck.m_iOK != NetError::NET_OK )
             {
                 // OTP 업데이트 실패
-                START_LOG( clog, L"OTP 업데이트 실패." )
+                START_LOG( clog, L"OTP update failed." )
                     << BUILD_LOG( kPacket.m_kUserAuthAck.m_iOK )
                     << END_LOG;
 
@@ -578,7 +578,7 @@ IMPL_ON_FUNC( ELG_CHANNEL_CHANGE_NEXON_USER_AUTHENTICATE_REQ )
 
 		default:
 			{
-				START_LOG( cerr, L"해킹유저 타입이상.!" )
+				START_LOG( cerr, L"Invalid hack-user type!" )
 					<< BUILD_LOG( kPacket.m_kUserAuthAck.m_kAccountInfo.m_nUserUID )
 					<< BUILD_LOG( kPacket_.m_kUserAuthReq.m_kAuthenticateReq.m_wstrUserID )
 					<< BUILD_LOG( iOK )
@@ -662,7 +662,7 @@ IMPL_ON_FUNC( DBE_UPDATE_IS_LOGIN_NOT )
 
 end_proc:
 	LOG_SUCCESS( iOK == NetError::NET_OK )
-		<< BUILD_LOG( L"Guest User 로그인 정보 갱신.!" )
+		<< BUILD_LOG( L"Guest user login information updated!" )
 		<< BUILD_LOG( kPacket_.m_iUserUID )
 		<< BUILD_LOG( kPacket_.m_bIsLogin )
 		;
@@ -792,7 +792,7 @@ _IMPL_ON_FUNC( DBE_REG_REJECTED_USER_NOT, KELG_REG_REJECTED_USER_NOT )
 end_proc:
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"Rejected User 등록 실패.!" )
+		START_LOG( cerr, L"Failed to register rejected user!" )
 			<< BUILD_LOG( iOK )
 			<< BUILD_LOG( kPacket_.m_iUserUID )
 			<< BUILD_LOGc( kPacket_.m_cRejectedReason )
@@ -818,7 +818,7 @@ _IMPL_ON_FUNC( DBE_REG_TRADE_BLOCK_USER_NOT, KELG_REG_REJECTED_USER_NOT )
 end_proc:
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"Trade Block User 등록 실패.!" )
+		START_LOG( cerr, L"Failed to register trade-blocked user!" )
 			<< BUILD_LOG( iOK )
 			<< BUILD_LOG( kPacket_.m_iUserUID )
 			<< BUILD_LOGc( kPacket_.m_cRejectedReason )

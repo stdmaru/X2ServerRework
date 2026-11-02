@@ -106,7 +106,7 @@ bool KActorManager::Delete( const UidType nUID_ )
     mit = m_mapUID.find( nUID_ );
     if( mit == m_mapUID.end() )
     {
-        START_LOG( cerr, L"삭제하고자 하는 UID가 없음" )
+        START_LOG( cerr, L"UID to delete does not exist." )
             << BUILD_LOG( nUID_ )
             << BUILD_LOG( m_mapUID.size() )
             << END_LOG;
@@ -118,7 +118,7 @@ bool KActorManager::Delete( const UidType nUID_ )
 
     if( vit == m_vecAct.end() ) // 삭제해야 할 실제 포인터를 찾지 못함.
     {
-        START_LOG( cerr, L"삭제해야 할 실제 포인터가 vector에 없음" )
+        START_LOG( cerr, L"Pointer to delete was not found in the vector." )
             << BUILD_LOG( nUID_ )
             << BUILD_LOG( m_vecAct.size() );
     }

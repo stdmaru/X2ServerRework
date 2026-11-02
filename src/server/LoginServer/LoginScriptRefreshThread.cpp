@@ -26,12 +26,12 @@
 
 #define _CASE_REFRESH_SCRIPT( flag, classname, functionname ) \
 case KESR_SCRIPT_REFRESH_ORDER_NOT::flag: \
-	START_LOG( cout, L ## #classname L" 스크립트 갱신을 시작합니다!" ); \
+	START_LOG( cout, L ## #classname L" Script refresh started!" ); \
 	{ \
 		KLocker lock( classname::GetTempCS() ); \
 		if( SiTemp##classname()->functionname( SiKLoginScriptRefreshManager()->GetRefreshLuaState() ) == false ) \
 		{ \
-			START_LOG( cerr, L"스크립트 갱신 실패.!" ) \
+			START_LOG( cerr, L"Script refresh failed!" ) \
 			<< END_LOG; \
 			return; \
 		} \
@@ -62,7 +62,7 @@ void KLoginScriptRefreshThread::ProcessEvent( const KEventPtr& spEvent_ )
    _CASE( ESR_ORDER_TO_REFRESH_MANAGER_REQ, KESR_SCRIPT_REFRESH_ORDER_NOT );
 
 	default:
-		START_LOG( cerr, L"핸들러가 지정되지 않은 이벤트." )
+		START_LOG( cerr, L"No handler is assigned to this event." )
 			<< BUILD_LOG( spEvent_->m_usEventID )
 			<< BUILD_LOG( spEvent_->GetIDStr() )
 			<< END_LOG;
@@ -71,7 +71,7 @@ void KLoginScriptRefreshThread::ProcessEvent( const KEventPtr& spEvent_ )
 	dwElapTime = ::GetTickCount() - dwElapTime;
 	if( dwElapTime > 3000 )
 	{
-		START_LOG( cwarn, L"이벤트 처리 소요 시간." )
+		START_LOG( cwarn, L"Event processing duration." )
 			<< BUILD_LOG( spEvent_->GetIDStr() )
 			<< BUILD_LOG( spEvent_->m_usEventID )
 			<< BUILD_LOG( dwElapTime );
@@ -112,7 +112,7 @@ _IMPL_ON_FUNC( ESR_ORDER_TO_REFRESH_MANAGER_REQ, KESR_SCRIPT_REFRESH_ORDER_NOT )
 
 	default:
 		{
-			START_LOG( cerr, L"이쪽으로 오면 안되는 타입인데?" )
+			START_LOG( cerr, L"Unexpected type reached this code path." )
 				<< BUILD_LOG( kPacket_.m_iOrderType )
 				<< END_LOG;
 		}

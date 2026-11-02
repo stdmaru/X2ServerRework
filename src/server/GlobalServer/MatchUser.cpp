@@ -33,7 +33,7 @@ bool KMatchUser::Accept()
 {
 	if( IsAccepted() == true )
 	{
-		START_LOG( cerr, L"이미 동의한 상태이다!" )
+		START_LOG( cerr, L"The user has already accepted." )
 			<< BUILD_LOG( GetCharUID() )
 			<< END_LOG;
 		return false;
@@ -65,7 +65,7 @@ void KMatchUser::UpdateRoomUserInfo( IN const KRoomUserInfo& kRoomUserInfo )
 {
 	if( IsEmptyRoomUserInfo() == false )
 	{
-		START_LOG( cerr, L"이미 RoomUserInfo가 있는데 또 업데이트 하러 들어왔네? 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"RoomUserInfo already exists and is being updated again; this should never happen." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( m_vecRoomUserInfo.size() )
 			<< END_LOG;
@@ -82,7 +82,7 @@ bool KMatchUser::GetRoomUserInfo( OUT KRoomUserInfo& kRoomUserInfo )
 {
 	if( IsEmptyRoomUserInfo() == true )
 	{
-		START_LOG( cerr, L"RoomUserInfo가 비어있다! 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"RoomUserInfo is empty; this should never happen." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( m_vecRoomUserInfo.size() )
 			<< END_LOG;

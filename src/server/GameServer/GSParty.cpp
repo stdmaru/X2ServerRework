@@ -24,7 +24,7 @@ void KGSParty::AddMember( IN const KPartyUserInfo& kUserInfo )
 {
     if( IsMember( kUserInfo.m_iUnitUID ) )
 	{
-		START_LOG( cerr, L"이미 파티 멤버인데 또 파티 멤버로 등록하려함!" )
+		START_LOG( cerr, L"Attempted to register an existing party member again!" )
 			<< BUILD_LOG( GetPartyUID() )
 			<< BUILD_LOG( kUserInfo.m_iUnitUID )
 			<< END_LOG;
@@ -41,7 +41,7 @@ void KGSParty::DeleteMember( IN UidType nCID )
 {
 	if( !IsMember( nCID ) )
 	{
-		START_LOG( cerr, L"파티 멤버가 아닌데 멤버에서 삭제하려함!" )
+		START_LOG( cerr, L"Attempted to remove a non-member from the party!" )
 			<< BUILD_LOG( GetPartyUID() )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
@@ -70,7 +70,7 @@ UidType KGSParty::GetHostUID()
 		}
 	}
 
-	START_LOG( cerr, L"파티장이 없다.? 있을수 없는 에러!" )
+	START_LOG( cerr, L"No party leader; this should never happen!" )
 		<< BUILD_LOG( GetPartyUID() )
 		<< END_LOG;
 
@@ -108,7 +108,7 @@ void KGSParty::UpdatePartyUserInfo( IN const KPartyUserInfo& kInfo )
 	mit = m_mapMember.find( kInfo.m_iUnitUID );
 	if( mit == m_mapMember.end() )
 	{
-		START_LOG( cwarn, L"정보를 갱신하려는 유저가 없다!" )
+		START_LOG( cwarn, L"No user to update information for!" )
 			<< BUILD_LOG( kInfo.m_iUnitUID )
 			<< END_LOG;
         return;

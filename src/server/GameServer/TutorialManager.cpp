@@ -58,7 +58,7 @@ bool KTutorialManager::AddUnit( KTutorialUnitInfo& kInfo )
 			//m_mapUnitInfo.insert( std::make_pair( kInfo.m_iUnitUID, kInfo ) );
 			m_vecUnitInfo.push_back( kInfo );
 
-			START_LOG( clog, L"제자 유저 등록.." )
+			START_LOG( clog, L"Registering apprentice user..." )
 				<< BUILD_LOG( kInfo.m_iUnitUID )
 				<< BUILD_LOGc( kInfo.m_ucLevel )
 				<< BUILD_LOG( kInfo.m_wstrNickName )
@@ -69,7 +69,7 @@ bool KTutorialManager::AddUnit( KTutorialUnitInfo& kInfo )
 		//레벨조건이 틀릴경우.
 		else
 		{
-			START_LOG( cerr, L"제자등록중 레벨조건이 맞지 않음." )
+			START_LOG( cerr, L"The level requirement was not met while registering the apprentice." )
 				<< BUILD_LOG( kInfo.m_iUnitUID )
 				<< BUILD_LOGc( kInfo.m_ucLevel )
 				<< BUILD_LOG( kInfo.m_wstrNickName )
@@ -79,7 +79,7 @@ bool KTutorialManager::AddUnit( KTutorialUnitInfo& kInfo )
 	}
 	else
 	{
-		START_LOG( cerr, L"이미 등록된 유저임." )
+		START_LOG( cerr, L"User is already registered." )
 			<< BUILD_LOG( kInfo.m_iUnitUID )
 			<< BUILD_LOGc( kInfo.m_ucLevel )
 			<< BUILD_LOG( kInfo.m_wstrNickName )
@@ -98,7 +98,7 @@ bool KTutorialManager::DeleteUnit( UidType iUnitUID )
 	{
 		if( vit->m_iUnitUID == iUnitUID )
 		{
-			START_LOG( clog, L"제자유닉 삭제.!" )
+			START_LOG( clog, L"Deleting apprentice UID!" )
 				<< BUILD_LOG( vit->m_iUnitUID )
 				<< BUILD_LOGc( vit->m_ucLevel )
 				<< BUILD_LOG( vit->m_wstrNickName )
@@ -110,7 +110,7 @@ bool KTutorialManager::DeleteUnit( UidType iUnitUID )
 		}
 	}
 
-	START_LOG( cerr, L"삭제하려는 제자유닛이 없음.!" )
+	START_LOG( cerr, L"The apprentice unit to delete does not exist!" )
 		<< BUILD_LOG( iUnitUID )
 		<< END_LOG;
 
@@ -162,7 +162,7 @@ bool KTutorialManager::GetTutorPageInfo( IN KEGS_TUTORIAL_STUDENT_LIST_REQ& kReq
 		{
 			if( iS != (int)m_vecUnitInfo.size() )
 			{
-				START_LOG( cerr, L"제자 리스트 페이지 요청실패.!" )
+				START_LOG( cerr, L"Failed to request apprentice list page!" )
 					<< BUILD_LOG( (int)STUDENT_PAGE_NUM )
 					<< BUILD_LOG( iS )
 					<< BUILD_LOG( iE )
@@ -176,7 +176,7 @@ bool KTutorialManager::GetTutorPageInfo( IN KEGS_TUTORIAL_STUDENT_LIST_REQ& kReq
 
 	if( kAck.m_vecTutorialStudentList.size() > STUDENT_PAGE_NUM )
 	{
-		START_LOG( cerr, L"사제 페이시 개수이상.!" )
+		START_LOG( cerr, L"Invalid number of mentor pages!" )
 			<< BUILD_LOG( kAck.m_vecTutorialStudentList.size() )
 			<< BUILD_LOG( (int)STUDENT_PAGE_NUM )
 			<< END_LOG;
@@ -210,7 +210,7 @@ std::wstring KTutorialManager::GetDelReason( TUTORIAL_DEL_REASON eReason )
 {
 	if( eReason < TDR_DISCONNECT_DAY || eReason >= TDR_TOTAL_NUM )
 	{
-		START_LOG( cerr, L"사제관계 삭제 타입이 이상함.!" )
+		START_LOG( cerr, L"Invalid mentor relationship deletion type!" )
 			<< BUILD_LOG( eReason )
 			<< END_LOG;
 

@@ -42,14 +42,14 @@ bool CXSLDungeonManager::OpenScriptFile_AllDungeonScriptLoad( IN lua_State* pLua
 {
 	if( OpenScriptFile( pLuaState ) == false )
 	{
-		START_LOG( cerr, L"던전 스크립트 파싱 실패!" )
+		START_LOG( cerr, L"Failed to parse the dungeon script." )
 			<< END_LOG;
 		return false;
 	}
 
 	if( m_mapDungeonData.empty() )
 	{
-		START_LOG( cerr, L"던전 스크립트 파싱 실패!" )
+		START_LOG( cerr, L"Failed to parse the dungeon script." )
 			<< BUILD_LOG( m_mapDungeonData.size() )
 			<< END_LOG;
 		return false;
@@ -68,7 +68,7 @@ bool CXSLDungeonManager::OpenScriptFile_AllDungeonScriptLoad( IN lua_State* pLua
 			// 던전 스크립트 파싱!
             if( pairRet.first->second.OpenScriptFile() == false )
 			{
-				START_LOG( cerr, L"던전 스크립트 파싱 실패!" )
+				START_LOG( cerr, L"Failed to parse the dungeon script." )
 					<< BUILD_LOG( mit->second.m_DungeonID )
 					<< END_LOG;
 
@@ -79,7 +79,7 @@ bool CXSLDungeonManager::OpenScriptFile_AllDungeonScriptLoad( IN lua_State* pLua
 		}
 	}
 
-	START_LOG( cout2, L"던전 스크립트 로딩 시간 : " )
+	START_LOG( cout2, L"Dungeon script load time: " )
 		<< BUILD_LOG( GetTickCount() - dwTime );
 	return true;
 }
@@ -110,7 +110,7 @@ bool CXSLDungeonManager::AddDungeonData_LUA()
 	{
 		dungeonData.m_vecAdditionalTicket.push_back( std::make_pair( dungeonData.m_RequireItemID, dungeonData.m_RequireItemCount ) );
 
-		START_LOG( cout, L"기본 티켓 추가 성공" )
+		START_LOG( cout, L"Default ticket added successfully." )
 			<< BUILD_LOG( dungeonData.m_RequireItemID )
 			<< BUILD_LOG( dungeonData.m_RequireItemCount )
 			<< END_LOG;
@@ -128,7 +128,7 @@ bool CXSLDungeonManager::AddDungeonData_LUA()
 			{
 				dungeonData.m_vecAdditionalTicket.push_back( std::make_pair( iRequireItemID, iRequireItemCount ) );
 
-				START_LOG( cout, L"추가 티켓 추가 성공" )
+				START_LOG( cout, L"Additional ticket added successfully." )
 					<< BUILD_LOG( iRequireItemID )
 					<< BUILD_LOG( iRequireItemCount )
 					<< END_LOG;
@@ -199,7 +199,7 @@ int CXSLDungeonManager::GetNPCDropTime( IN const int nDungeonID, IN const int iS
 	mit = m_mapDungeon.find( (SEnum::DUNGEON_ID)nDungeonID );
 	if( mit == m_mapDungeon.end() )
 	{
-		START_LOG( cerr, L" ::: DUNGEON DATA를 찾지 못했음 ::: 던전 스크립트가 정상인지 확인 바랍니다~!!!" )
+		START_LOG( cerr, L" ::: DUNGEON DATA NOT FOUND ::: Check that the dungeon script is valid." )
 			<< BUILD_LOG( nDungeonID )
 			<< END_LOG;
 
@@ -215,7 +215,7 @@ float CXSLDungeonManager::GetNPCExpRate( IN const int nDungeonID, IN const int i
 	mit = m_mapDungeon.find( (SEnum::DUNGEON_ID)nDungeonID );
 	if( mit == m_mapDungeon.end() )
 	{
-		START_LOG( cerr, L" ::: DUNGEON DATA를 찾지 못했음 ::: 던전 스크립트가 정상인지 확인 바랍니다~!!!" )
+		START_LOG( cerr, L" ::: DUNGEON DATA NOT FOUND ::: Check that the dungeon script is valid." )
 			<< BUILD_LOG( nDungeonID )
 			<< END_LOG;
 
@@ -233,7 +233,7 @@ bool CXSLDungeonManager::GetNPCData( IN const int nDungeonID, IN const int nStag
 	mit = m_mapDungeon.find( (SEnum::DUNGEON_ID)nDungeonID );
 	if( mit == m_mapDungeon.end() )
 	{
-		START_LOG( cerr, L" ::: DUNGEON DATA를 찾지 못했음 ::: 던전 스크립트가 정상인지 확인 바랍니다~!!!" )
+		START_LOG( cerr, L" ::: DUNGEON DATA NOT FOUND ::: Check that the dungeon script is valid." )
 			<< BUILD_LOG( nDungeonID )
 			<< BUILD_LOG( nStageNum )
 			<< END_LOG;
@@ -245,7 +245,7 @@ bool CXSLDungeonManager::GetNPCData( IN const int nDungeonID, IN const int nStag
 	if( mit->second.GetNPCData( nStageNum, iRelativeMonsterLevel, kNot, bIsBossStage ) == false )
 	//}}
 	{
-		START_LOG( cerr, L" ::: STAGE DATA를 찾지 못했음 ::: " )
+		START_LOG( cerr, L" ::: STAGE DATA NOT FOUND ::: " )
 			<< BUILD_LOG( nDungeonID )
 			<< BUILD_LOG( nStageNum )
 			<< END_LOG;
@@ -262,7 +262,7 @@ bool CXSLDungeonManager::GetDungeonName( IN int nDungeonID, OUT std::wstring& st
 	mit = m_mapDungeon.find( (SEnum::DUNGEON_ID)nDungeonID );
 	if( mit == m_mapDungeon.end() )
 	{
-		START_LOG( cerr, L" ::: DUNGEON DATA를 찾지 못했음 ::: " )
+		START_LOG( cerr, L" ::: DUNGEON DATA NOT FOUND ::: " )
 			<< BUILD_LOG( nDungeonID )
 			<< END_LOG;
 
@@ -284,7 +284,7 @@ int CXSLDungeonManager::GetDungeonMinLevel( IN int nDungeonID ) const
 	}
 	else
 	{
-		START_LOG( cerr, L"던전데이터(MaxLevel) 찾기 실패.!" )
+		START_LOG( cerr, L"Failed to find dungeon data (MaxLevel)." )
 			<< BUILD_LOG( nDungeonID )
 			<< END_LOG;
 	}
@@ -304,7 +304,7 @@ int CXSLDungeonManager::GetDungeonMaxLevel( IN int nDungeonID ) const
 	}
 	else
 	{
-		START_LOG( cerr, L"던전데이터(MaxLevel) 찾기 실패.!" )
+		START_LOG( cerr, L"Failed to find dungeon data (MaxLevel)." )
 			<< BUILD_LOG( nDungeonID )
 			<< END_LOG;
 	}
@@ -323,7 +323,7 @@ int CXSLDungeonManager::GetDungeonNpcLevel( IN const int iDungeonID ) const
 	}
 	else
 	{
-		START_LOG( cerr, L"던전데이터(NpcLevel) 찾기 실패.!" )
+		START_LOG( cerr, L"Failed to find dungeon data (NpcLevel)." )
 			<< BUILD_LOG( iDungeonID )
 			<< END_LOG;
 	}
@@ -344,7 +344,7 @@ int CXSLDungeonManager::GetRequireDungeonID( IN int nDungeonID )
 	}
 	else
 	{
-		START_LOG( cerr, L"던전데이터(RequireDungeonID) 찾기 실패.!" )
+		START_LOG( cerr, L"Failed to find dungeon data (RequireDungeonID)." )
 			<< BUILD_LOG( nDungeonID )
 			<< END_LOG;
 	}
@@ -363,7 +363,7 @@ int	CXSLDungeonManager::GetRequireItemLevel( IN const int iDungeonID ) const
 	}
 	else
 	{
-		START_LOG( cerr, L"던전데이터(m_RequireItemLevel) 찾기 실패.!" )
+		START_LOG( cerr, L"Failed to find dungeon data (m_RequireItemLevel)." )
 			<< BUILD_LOG( iDungeonID )
 			<< END_LOG;
 	}
@@ -379,7 +379,7 @@ CXSLDungeonStage::STAGE_TYPE CXSLDungeonManager::GetStageType( IN int iDungeonID
 	mit = m_mapDungeon.find( static_cast<SEnum::DUNGEON_ID>(iDungeonID) );
 	if( mit == m_mapDungeon.end() )
 	{
-		START_LOG( cerr, L"던전 정보가 없습니다!" )
+		START_LOG( cerr, L"Dungeon information is missing." )
 			<< BUILD_LOG( iDungeonID )
 			<< END_LOG;
 
@@ -405,7 +405,7 @@ bool CXSLDungeonManager::GetTicketInformation( IN int nDungeonID, OUT std::vecto
 	}
 	else
 	{
-		START_LOG( cerr, L"던전데이터(m_mapDungeonData) 찾기 실패.!" )
+		START_LOG( cerr, L"Failed to find dungeon data (m_mapDungeonData)." )
 			<< BUILD_LOG( nDungeonID )
 			<< END_LOG;
 	}
@@ -427,7 +427,7 @@ bool CXSLDungeonManager::GetRequireItemIDAndCount( IN int nDungeonID, IN CXSLDun
 		{
 		default:
 			{
-				START_LOG( cerr, L"던전데이터(RequireItemID) 오류!" )
+				START_LOG( cerr, L"Invalid dungeon data (RequireItemID)." )
 					<< BUILD_LOG( nDungeonID )
 					<< BUILD_LOG( (int)eDungeonMode )
 					<< END_LOG;
@@ -447,7 +447,7 @@ bool CXSLDungeonManager::GetRequireItemIDAndCount( IN int nDungeonID, IN CXSLDun
 				{
 				default:
 					{
-						START_LOG( cerr, L"헤니르 던전 모드 오류!" )
+						START_LOG( cerr, L"Invalid Henir dungeon mode." )
 							<< BUILD_LOG( nDungeonID )
 							<< BUILD_LOG( (int)eDungeonMode )
 							<< END_LOG;
@@ -479,7 +479,7 @@ bool CXSLDungeonManager::GetRequireItemIDAndCount( IN int nDungeonID, IN CXSLDun
 				{
 				default:
 					{
-						START_LOG( cerr, L"비밀 던전 모드 오류!" )
+						START_LOG( cerr, L"Invalid Secret Dungeon mode." )
 							<< BUILD_LOG( nDungeonID )
 							<< BUILD_LOG( (int)eDungeonMode )
 							<< END_LOG;
@@ -508,7 +508,7 @@ bool CXSLDungeonManager::GetRequireItemIDAndCount( IN int nDungeonID, IN CXSLDun
 	}
 	else
 	{
-		START_LOG( cerr, L"던전데이터(RequireItemID) 찾기 실패.!" )
+		START_LOG( cerr, L"Failed to find dungeon data (RequireItemID)." )
 			<< BUILD_LOG( nDungeonID )
 			<< BUILD_LOG( (int)eDungeonMode )
 			<< END_LOG;
@@ -531,7 +531,7 @@ bool CXSLDungeonManager::GetRequireSpiritCount( IN int nDungeonID, OUT int& nSpi
 	}
 	else
 	{
-		START_LOG( cerr, L"던전데이터(RequireSpirit) 찾기 실패.!" )
+		START_LOG( cerr, L"Failed to find dungeon data (RequireSpirit)." )
 			<< BUILD_LOG( nDungeonID )
 			<< END_LOG;
 	}
@@ -546,7 +546,7 @@ int CXSLDungeonManager::GetStartPosByRandom( IN int nDungeonID, IN int iStageInd
 	mit = m_mapDungeon.find( (SEnum::DUNGEON_ID)nDungeonID );
 	if( mit == m_mapDungeon.end() )
 	{
-		START_LOG( cerr, L" ::: DUNGEON DATA를 찾지 못했음 ::: " )
+		START_LOG( cerr, L" ::: DUNGEON DATA NOT FOUND ::: " )
 			<< BUILD_LOG( nDungeonID )
 			<< BUILD_LOG( iStageIndex )
 			<< BUILD_LOG( iSubStageIndex )
@@ -568,7 +568,7 @@ void CXSLDungeonManager::GetExtraNpcInfo( IN int nDungeonID, IN int iStageIndex,
 	mit = m_mapDungeon.find( (SEnum::DUNGEON_ID)nDungeonID );
 	if( mit == m_mapDungeon.end() )
 	{
-		START_LOG( cerr, L" ::: DUNGEON DATA를 찾지 못했음 ::: " )
+		START_LOG( cerr, L" ::: DUNGEON DATA NOT FOUND ::: " )
 			<< BUILD_LOG( nDungeonID )
 			<< BUILD_LOG( iStageIndex )
 			<< BUILD_LOG( iSubStageIndex )
@@ -590,7 +590,7 @@ float CXSLDungeonManager::GetPoisonTimeLimit( IN int nDungeonID )
 	}
 	else
 	{
-		START_LOG( cerr, L"던전데이터(PoisonTimeLimit) 찾기 실패.!" )
+		START_LOG( cerr, L"Failed to find dungeon data (PoisonTimeLimit)." )
 			<< BUILD_LOG( nDungeonID )
 			<< END_LOG;
 	}
@@ -608,7 +608,7 @@ float CXSLDungeonManager::GetExtraStagePoisonTimeLimit( IN int nDungeonID )
 	}
 	else
 	{
-		START_LOG( cerr, L"던전데이터(ExtraStagePoisonTimeLimit) 찾기 실패.!" )
+		START_LOG( cerr, L"Failed to find dungeon data (ExtraStagePoisonTimeLimit)." )
 			<< BUILD_LOG( nDungeonID )
 			<< END_LOG;
 	}
@@ -631,7 +631,7 @@ float CXSLDungeonManager::GetPlayTimeLimit( IN int nDungeonID )
 	}
 	else
 	{
-		START_LOG( cerr, L"던전데이터(PlayTimeLimit) 찾기 실패.!" )
+		START_LOG( cerr, L"Failed to find dungeon data (PlayTimeLimit)." )
 			<< BUILD_LOG( nDungeonID )
 			<< END_LOG;
 	}
@@ -652,7 +652,7 @@ CXSLDungeon::DUNGEON_TYPE CXSLDungeonManager::GetDungeonType( IN int nDungeonID 
 	}
 	else
 	{
-		START_LOG( cerr, L"던전타입(DungeonType) 찾기 실패.!" )
+		START_LOG( cerr, L"Failed to find dungeon type (DungeonType)." )
 			<< BUILD_LOG( nDungeonID )
 			<< END_LOG;
 	}
@@ -666,7 +666,7 @@ void CXSLDungeonManager::SetSecretDungeonExtraStageNpcLevel_LUA( int iLevel )
 {
 	if( iLevel < 0 )
 	{
-		START_LOG( cerr, L"level값이 이상합니다." )
+		START_LOG( cerr, L"Invalid level value." )
 			<< BUILD_LOG( iLevel )
 			<< END_LOG;
 		return;
@@ -679,7 +679,7 @@ void CXSLDungeonManager::AddExtraStageCondition_LUA( int iBeginLevel, int iEndLe
 {
 	if( iBeginLevel < 0  ||  iEndLevel < 0  ||  fFactor < 0 )
 	{
-		START_LOG( cerr, L"스크립트 세팅값이 이상합니다." )
+		START_LOG( cerr, L"Invalid script configuration value." )
 			<< BUILD_LOG( iBeginLevel )
 			<< BUILD_LOG( iEndLevel )
 			<< BUILD_LOG( fFactor )
@@ -708,7 +708,7 @@ float CXSLDungeonManager::GetExtraStageConditionFactor( IN char cLevel )
 	mit = m_mapExtraStageConditionFactor.find( cLevel );
 	if( mit == m_mapExtraStageConditionFactor.end() )
 	{
-		START_LOG( cerr, L"해당 레벨에 대한 데이터가 없습니다. 절대 일어날수 없는에러!" )
+		START_LOG( cerr, L"No data exists for this level. This should never happen." )
 			<< BUILD_LOGc( cLevel )
 			<< END_LOG;
 
@@ -730,7 +730,7 @@ bool CXSLDungeonManager::IsFixedMembers( IN int nDungeonID )
 	}
 	else
 	{
-		START_LOG( cerr, L"던전데이터(m_usFixedMembers) 찾기 실패.!" )
+		START_LOG( cerr, L"Failed to find dungeon data (m_usFixedMembers)." )
 			<< BUILD_LOG( nDungeonID )
 			<< END_LOG;
 	}
@@ -748,7 +748,7 @@ short CXSLDungeonManager::GetFixedMembers( IN int nDungeonID )
 	}
 	else
 	{
-		START_LOG( cerr, L"던전데이터(m_usFixedMembers) 찾기 실패.!" )
+		START_LOG( cerr, L"Failed to find dungeon data (m_usFixedMembers)." )
 			<< BUILD_LOG( nDungeonID )
 			<< END_LOG;
 	}
@@ -766,7 +766,7 @@ bool CXSLDungeonManager::IsEventDungeon( IN int nDungeonID )
 	}
 	else
 	{
-		START_LOG( cerr, L"던전데이터(m_bEventDungeon) 찾기 실패.!" )
+		START_LOG( cerr, L"Failed to find dungeon data (m_bEventDungeon)." )
 			<< BUILD_LOG( nDungeonID )
 			<< END_LOG;
 	}
@@ -786,7 +786,7 @@ bool CXSLDungeonManager::IsSwitchingWithEventInfo( IN int nDungeonID )
 	}
 	else
 	{
-		START_LOG( cerr, L"던전데이터(m_bSwitchingWithEventInfo) 찾기 실패.!" )
+		START_LOG( cerr, L"Failed to find dungeon data (m_bSwitchingWithEventInfo)." )
 			<< BUILD_LOG( nDungeonID )
 			<< END_LOG;
 	}
@@ -812,7 +812,7 @@ bool CXSLDungeonManager::GetCanBeEnteredDungeonID( IN const std::map< int, KDung
 		mitDI = m_mapDungeonData.find( static_cast<SEnum::DUNGEON_ID>(mit->first) );
 		if( mitDI == m_mapDungeonData.end() )
 		{
-			START_LOG( cerr, L"클리어 했는데 던전데이터에는 없는 던전이네?" )
+			START_LOG( cerr, L"Dungeon was cleared, but it is missing from the dungeon data." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -880,7 +880,7 @@ int CXSLDungeonManager::GetSecretStageEnteringEvent( IN const int nDungeonID, IN
 	mit = m_mapDungeon.find( (SEnum::DUNGEON_ID)nDungeonID );
 	if( mit == m_mapDungeon.end() )
 	{
-		START_LOG( cerr, L" ::: DUNGEON DATA를 찾지 못했음 ::: 던전 스크립트가 정상인지 확인 바랍니다~!!!" )
+		START_LOG( cerr, L" ::: DUNGEON DATA NOT FOUND ::: Check that the dungeon script is valid." )
 			<< BUILD_LOG( nDungeonID )
 			<< END_LOG;
 
@@ -896,7 +896,7 @@ bool CXSLDungeonManager::GetNextStage( OUT CXSLDungeonSubStage::NextStageData& k
 	mit = m_mapDungeon.find( (SEnum::DUNGEON_ID)nDungeonID );
 	if( mit == m_mapDungeon.end() )
 	{
-		START_LOG( cerr, L" ::: DUNGEON DATA를 찾지 못했음 ::: 던전 스크립트가 정상인지 확인 바랍니다~!!!" )
+		START_LOG( cerr, L" ::: DUNGEON DATA NOT FOUND ::: Check that the dungeon script is valid." )
 			<< BUILD_LOG( nDungeonID )
 			<< END_LOG;
 
@@ -912,7 +912,7 @@ bool CXSLDungeonManager::GetLimitedPlayTimes( IN const int nDungeonID, OUT int& 
 	mit = m_mapDungeon.find( (SEnum::DUNGEON_ID)nDungeonID );
 	if( mit == m_mapDungeon.end() )
 	{
-		START_LOG( cerr, L" ::: DUNGEON DATA를 찾지 못했음 ::: 던전 스크립트가 정상인지 확인 바랍니다~!!!" )
+		START_LOG( cerr, L" ::: DUNGEON DATA NOT FOUND ::: Check that the dungeon script is valid." )
 			<< BUILD_LOG( nDungeonID )
 			<< END_LOG;
 
@@ -933,7 +933,7 @@ bool CXSLDungeonManager::GetLimitedClearTimes( IN const int nDungeonID, OUT int&
 	mit = m_mapDungeon.find( (SEnum::DUNGEON_ID)nDungeonID );
 	if( mit == m_mapDungeon.end() )
 	{
-		START_LOG( cerr, L" ::: DUNGEON DATA를 찾지 못했음 ::: 던전 스크립트가 정상인지 확인 바랍니다~!!!" )
+		START_LOG( cerr, L" ::: DUNGEON DATA NOT FOUND ::: Check that the dungeon script is valid." )
 			<< BUILD_LOG( nDungeonID )
 			<< END_LOG;
 

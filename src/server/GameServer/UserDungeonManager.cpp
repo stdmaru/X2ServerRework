@@ -52,7 +52,7 @@ void KUserDungeonManager::Init( IN const bool bUnlimitedEvent			// 무제한 인
 		|| ( iEventCnt < 0 )
 		)
 	{
-		START_LOG( cerr, L"헤니르 보상 획득 - 0 보다 작은 값으로 초기화 한다?!")
+		START_LOG( cerr, L"Henir reward acquisition initialized to a value below zero?")
 			<< BUILD_LOG( bUnlimitedEvent )
 			<< BUILD_LOG( iLimitEvent )
 			<< BUILD_LOG( iNormalCnt )
@@ -204,7 +204,7 @@ void KUserDungeonManager::GetAutoPartyBonusDungeonList( IN const int iVillageMap
 	const CXSLMapData::SLocalMapInfo* pLocalMapIDList = SiCXSLMapData()->GetLocalMapList( iVillageMapID );
 	if( IS_NULL( pLocalMapIDList ) )
 	{
-		START_LOG( cerr, L"로컬맵 리스트 정보를 얻을수 없습니다!" )
+		START_LOG( cerr, L"Could not retrieve local map list information!" )
 			<< BUILD_LOG( iVillageMapID )
 			<< END_LOG;
 		return;

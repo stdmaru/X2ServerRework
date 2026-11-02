@@ -78,7 +78,7 @@ bool CXSLBattleField::OpenScriptFile()
 
 	if( m_wstrLineMapFileName.empty() )
 	{
-		START_LOG( cout, L"[알림] 해당 필드에는 라인맵 스크립트가 없네요!" )
+		START_LOG( cout, L"[Notice] No line-map script exists for this field." )
 			<< BUILD_LOG( m_eBattleFieldID )
 			<< END_LOG;
 		return true;
@@ -97,7 +97,7 @@ bool CXSLBattleField::OpenScriptFile()
 
 	if( m_wstrNpcTableFileName.empty() )
 	{
-		START_LOG( cout, L"[알림] 해당 필드에는 NPC 스크립트가 없네요!" )
+		START_LOG( cout, L"[Notice] No NPC script exists for this field." )
 			<< BUILD_LOG( m_eBattleFieldID )
 			<< END_LOG;
 		return true;
@@ -129,7 +129,7 @@ bool CXSLBattleField::LoadBattleFieldData( IN const SEnum::BATTLE_FIELD_ID eBatt
 	LUA_GET_VALUE(				kLuaManager, L"NPC_TABLE_FILE_NAME",						m_wstrNpcTableFileName,		L"" );
 	if( m_wstrNpcTableFileName.empty() )
 	{
-		START_LOG( cout, L"[알림] 해당 배틀필드는 NPC테이블 정보가 없습니다! 몬스터가 출현하지 않을 수 있으니 참고 바랍니다." )
+		START_LOG( cout, L"[Notice] This battlefield has no NPC table information; monsters may not appear." )
 			<< BUILD_LOG( eBattleFieldID );
 	}
 
@@ -210,7 +210,7 @@ bool CXSLBattleField::LoadBattleFieldData( IN const SEnum::BATTLE_FIELD_ID eBatt
 						}
 						else
 						{
-							START_LOG( cerr, L"존재하는 중보 그룹 ID 입력입니다." )
+							START_LOG( cerr, L"Duplicate intermediate-boss group ID." )
 								<< BUILD_LOG( eBattleFieldID )
 								<< END_LOG;
 						}
@@ -243,7 +243,7 @@ bool CXSLBattleField::LoadBattleFieldData( IN const SEnum::BATTLE_FIELD_ID eBatt
 
 		if( iTotalRate < 100 || iTotalRate > 100 )
 		{
-			START_LOG( cerr, L"중보 그룹 확률값이 이상합니다." )
+			START_LOG( cerr, L"Invalid intermediate-boss group probability." )
 				<< BUILD_LOG( eBattleFieldID )
 				<< BUILD_LOG( iTotalRate )
 				<< END_LOG;
@@ -357,7 +357,7 @@ bool CXSLBattleField::AddSpawnMonsterGroup_LUA()
 
 	if( m_mapNpcGroupList.find( sNpcGroup.m_iGroupID ) != m_mapNpcGroupList.end() )
 	{
-		START_LOG( cerr, L"이미 등록된 몬스터 그룹입니다!" )
+		START_LOG( cerr, L"Monster group is already registered." )
 			<< BUILD_LOG( m_eBattleFieldID )
 			<< BUILD_LOG( sNpcGroup.m_iGroupID )
 			<< END_LOG;
@@ -386,7 +386,7 @@ bool CXSLBattleField::LoadLineMapData_LUA( int iStartPos, D3DXVECTOR3 vPos, bool
 	mitMSP = m_mapMonsterStartPos.find( iStartPos );
 	if( mitMSP != m_mapMonsterStartPos.end() )
 	{
-		START_LOG( cerr, L"이미 존재하는 Start Pos값입니다." )
+		START_LOG( cerr, L"Start position already exists." )
 			<< BUILD_LOG( iStartPos )
 			<< END_LOG;
 		return false;
@@ -554,7 +554,7 @@ bool CXSLBattleField::GetCreateMonsterList( IN const int /*iPlayerCount*/, OUT s
 	{
 		if( m_vecRespawnNpcGroupList.empty() == true )
 		{
-			START_LOG( cerr, L"몬스터 생성을 하려고 하는데 NPC 그룹이 비어있습니다! 절대 일어나서는 안되는 에러!" )
+			START_LOG( cerr, L"Cannot create monsters because the NPC group is empty. This should never happen." )
 				<< BUILD_LOG( m_eBattleFieldID )
 				<< BUILD_LOG( m_vecRespawnNpcGroupList.size() )
 				<< BUILD_LOG( iCreateMonsterCount )
@@ -634,7 +634,7 @@ bool CXSLBattleField::GetCreateBossMonsterList( OUT std::vector<KNPCUnitReq>& ve
 	{
 		if( m_vecBossNpcGroupList.empty() == true )
 		{
-			START_LOG( cerr, L"몬스터 생성을 하려고 하는데 NPC 그룹이 비어있습니다! 절대 일어나서는 안되는 에러!" )
+			START_LOG( cerr, L"Cannot create monsters because the NPC group is empty. This should never happen." )
 				<< BUILD_LOG( m_eBattleFieldID )
 				<< BUILD_LOG( m_vecBossNpcGroupList.size() )
 				<< BUILD_LOG( iCreateMonsterCount )
@@ -736,7 +736,7 @@ bool CXSLBattleField::GetRespawnMonsterList( IN const CXSLBattleField::KBattleFi
 		const SSpawnNpcGroup* pSpawnNpcGroup = GetSpawnNpcGroup( iGroupID );
 		if( IS_NULL( pSpawnNpcGroup ) )
 		{
-			START_LOG( cerr, L"존재 하지 않는 몬스터 그룹인데 리스폰 하려고 하였습니다." )
+			START_LOG( cerr, L"Attempted to respawn a nonexistent monster group." )
 				<< BUILD_LOG( m_eBattleFieldID )
 				<< BUILD_LOG( iGroupID )
 				<< END_LOG;
@@ -756,7 +756,7 @@ bool CXSLBattleField::GetRespawnMonsterList( IN const CXSLBattleField::KBattleFi
 			}
 			else
 			{
-				START_LOG( cerr, L"몬스터 리스폰 실패! 절대 일어나서는 안되는 에러!" )
+				START_LOG( cerr, L"Failed to respawn monsters. This should never happen." )
 					<< BUILD_LOG( m_eBattleFieldID )
 					<< BUILD_LOG( iGroupID )
 					<< END_LOG;
@@ -788,7 +788,7 @@ bool CXSLBattleField::GetBattieFieldMiddleBossMonsterInfo( IN const int iDangero
 	{
 		if( kMiddleBossLot.AddCase( sRandomInfo.m_iSpawnID, static_cast<float>(sRandomInfo.m_iSpawnRate) ) == false )
 		{
-			START_LOG( cerr, L"몬스터 출현 확률 결정에 문제가 생겼다!" )
+			START_LOG( cerr, L"Failed to determine the monster spawn probability." )
 				<< BUILD_LOG( sRandomInfo.m_iSpawnID )
 				<< BUILD_LOG( sRandomInfo.m_iSpawnRate )
 				<< END_LOG;
@@ -797,7 +797,7 @@ bool CXSLBattleField::GetBattieFieldMiddleBossMonsterInfo( IN const int iDangero
 
 	if( kMiddleBossLot.GetCaseNum() == 0 )
 	{
-		START_LOG( clog, L"위험도에 따른 보스 몬스터 정보를 찾지 못하였습니다!" )
+		START_LOG( clog, L"Could not find boss monster information for this danger level." )
 		<< BUILD_LOG( iDangerousValue )
 		<< END_LOG;
 
@@ -808,7 +808,7 @@ bool CXSLBattleField::GetBattieFieldMiddleBossMonsterInfo( IN const int iDangero
 	int iSpawnID = kMiddleBossLot.Decision();
 	if( iSpawnID == KLottery::CASE_BLANK )
 	{
-		START_LOG( clog, L"위험도에 따른 보스 몬스터 정보를 찾지 못하였습니다!" )
+		START_LOG( clog, L"Could not find boss monster information for this danger level." )
 			<< BUILD_LOG( iDangerousValue )
 			<< END_LOG;
 
@@ -829,7 +829,7 @@ bool CXSLBattleField::GetBattieFieldMiddleBossMonsterInfo( IN const int iDangero
 			const CXSLBattleField::SSpawnNpcGroup* pNpcSpawnGroup = GetSpawnNpcGroup( iSpawnGroupID );
 			if( IS_NULL( pNpcSpawnGroup ) )
 			{
-				START_LOG( cerr, L"보스 몬스터가 출현할 스폰 그룹이 없습니다!" )
+				START_LOG( cerr, L"No spawn group is available for the boss monster." )
 					<< BUILD_LOG( iSpawnGroupID )
 					<< END_LOG;
 				return false;
@@ -850,7 +850,7 @@ bool CXSLBattleField::GetBattieFieldMiddleBossMonsterInfo( IN const int iDangero
 
 				if( MakeMiddleBossMonsterInfo( mitSNG->second, pNpcSpawnGroup->IsSiegeMonster( mitSNG->first ), sRiskInfo, kInfo ) == false )
 				{
-					START_LOG( cerr, L"중간 보스 몬스터 정보를 생성하지 못하였습니다!" )
+					START_LOG( cerr, L"Failed to create intermediate-boss information." )
 						<< BUILD_LOG( iSpawnGroupID )
 						<< END_LOG;
 					return false;
@@ -879,7 +879,7 @@ bool CXSLBattleField::GetBattieFieldMiddleBossMonsterInfo( IN const int iDangero
 	}
 #endif // DELETE_INCORRECT_ERROR_LOG
 
-	START_LOG( clog, L"위험도에 따른 보스 몬스터 정보를 찾지 못하였습니다!" )
+	START_LOG( clog, L"Could not find boss monster information for this danger level." )
 		<< BUILD_LOG( iDangerousValue )
 		<< END_LOG;
 
@@ -958,7 +958,7 @@ int	CXSLBattleField::GetMonsterStartPosByRandom( IN const std::vector< int >& ve
 		if( mit == m_mapLineIndexRandomStartPos.end() )
 		{
 			// 오류가 아니라 정상적인 상황입니다.
-			START_LOG( clog, L"해당 라인맵 인덱스에는 StartPos 정보가 없습니다." )
+			START_LOG( clog, L"No StartPos information exists for this line-map index." )
 				<< BUILD_LOG( m_eBattleFieldID )
 				<< BUILD_LOG( iLineMapIndex )
 				<< END_LOG;
@@ -973,7 +973,7 @@ int	CXSLBattleField::GetMonsterStartPosByRandom( IN const std::vector< int >& ve
 
 	if( kLotStartPosRandom.Empty() == true )
 	{
-		START_LOG( cerr, L"랜덤 결과값이 없습니다. 일어나서는 안되는 에러! 몬스터의 출현 위치가 랜덤하게 결정됩니다!!" )
+		START_LOG( cerr, L"No random result is available. This should never happen; the monster spawn position will be randomized." )
 			<< BUILD_LOG( m_eBattleFieldID )
 			<< BUILD_LOG( vecLineMapIndexList.size() )
 			<< END_LOG;
@@ -989,7 +989,7 @@ bool CXSLBattleField::GetMonsterStartPosInfo( IN const int iStartPos, OUT VECTOR
 	mit = m_mapMonsterStartPos.find( iStartPos );
 	if( mit == m_mapMonsterStartPos.end() )
 	{
-		START_LOG( cerr, L"존재하지않는 Start Position입니다" )
+		START_LOG( cerr, L"Start position does not exist." )
 			<< BUILD_LOG( m_eBattleFieldID )
 			<< BUILD_LOG( iStartPos )
 			<< END_LOG;
@@ -1007,7 +1007,7 @@ const CXSLBattleField::SSpawnNpcGroup* CXSLBattleField::GetSpawnNpcGroup( IN con
 	mit = m_mapNpcGroupList.find( iGroupID );
 	if( mit == m_mapNpcGroupList.end() )
 	{
-		START_LOG( cerr, L"존재 하지 않는 몬스터 그룹입니다." )
+		START_LOG( cerr, L"Monster group does not exist." )
 			<< BUILD_LOG( iGroupID )
 			<< END_LOG;
 		return NULL;
@@ -1048,7 +1048,7 @@ bool CXSLBattleField::CreateMonsterFromSpawnNpcGroup( IN const SSpawnNpcGroup& s
 			// 몬스터 출현 확률을 결정!
 			if( kMonsterLot.AddCase( static_cast<int>(sSpawnNpcInfo.m_eNpcID), sSpawnNpcInfo.m_fRate ) == false )
 			{
-                START_LOG( cerr, L"몬스터 출현 확률 결정에 문제가 생겼다!" )
+                START_LOG( cerr, L"Failed to determine the monster spawn probability." )
 					<< BUILD_LOG( mitSN->first )
 					<< BUILD_LOG( sSpawnNpcInfo.m_eNpcID )
 					<< BUILD_LOG( sSpawnNpcInfo.m_fRate )
@@ -1072,7 +1072,7 @@ bool CXSLBattleField::CreateMonsterFromSpawnNpcGroup( IN const SSpawnNpcGroup& s
 	int iResultNpcID = kMonsterLot.Decision();
 	if( iResultNpcID == KLottery::CASE_BLANK )
 	{
-		START_LOG( cerr, L"몬스터 랜덤 결정이 실패했다! 절대 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"Failed to select a random monster. This should never happen." )
 			<< BUILD_LOG( iResultNpcID )
 			<< BUILD_LOG( kMonsterLot.GetTotalProb() )
 			<< END_LOG;
@@ -1092,7 +1092,7 @@ bool CXSLBattleField::CreateMonsterFromSpawnNpcGroup( IN const SSpawnNpcGroup& s
 		iResultNpcID = kSameMonsterLot.DecisionSameProb();
 		if( iResultNpcID == KLottery::CASE_BLANK )
 		{
-			START_LOG( cerr, L"몬스터 랜덤 결정이 완전히 실패했다! 절대 일어나서는 안되는 에러!" )
+			START_LOG( cerr, L"Failed completely to select a random monster. This should never happen." )
 				<< BUILD_LOG( iResultNpcID )
 				<< BUILD_LOG( kMonsterLot.GetCaseNum() )
 				<< END_LOG;
@@ -1103,7 +1103,7 @@ bool CXSLBattleField::CreateMonsterFromSpawnNpcGroup( IN const SSpawnNpcGroup& s
 	// 4. 출현할 몬스터가 결정되었다면 출현 세팅을 하자!
 	if( MakeMonsterInfo( sSpawnNpcGroup, iResultNpcID, kInfo ) == false )
 	{
-		START_LOG( cerr, L"몬스터 정보 생성 실패!" )
+		START_LOG( cerr, L"Failed to create monster information." )
 			<< BUILD_LOG( sSpawnNpcGroup.m_iGroupID )
 			<< BUILD_LOG( iResultNpcID )
 			<< END_LOG;
@@ -1119,7 +1119,7 @@ bool CXSLBattleField::MakeMonsterInfo( IN const SSpawnNpcGroup& sSpawnNpcGroup, 
 	const CXSLUnitManager::NPCUnitTemplet* pNpcTemplet = SiCXSLUnitManager()->GetNPCUnitTemplet( static_cast<CXSLUnitManager::NPC_UNIT_ID>(iNpcID) );
 	if( pNpcTemplet == NULL )
 	{
-		START_LOG( cerr, L"존재하지않는 NpcID입니다!" )
+		START_LOG( cerr, L"NpcID does not exist." )
 			<< BUILD_LOG( iNpcID )
 			<< END_LOG;
 		return false;
@@ -1129,7 +1129,7 @@ bool CXSLBattleField::MakeMonsterInfo( IN const SSpawnNpcGroup& sSpawnNpcGroup, 
 	mitSNG = sSpawnNpcGroup.m_mapSpawnNpcList.find( iNpcID );
 	if( mitSNG == sSpawnNpcGroup.m_mapSpawnNpcList.end() )
 	{
-		START_LOG( cerr, L"등록되지않은 NpcID입니다!" )
+		START_LOG( cerr, L"NpcID is not registered." )
 			<< BUILD_LOG( sSpawnNpcGroup.m_iGroupID )
 			<< BUILD_LOG( iNpcID )
 			<< END_LOG;
@@ -1146,7 +1146,7 @@ bool CXSLBattleField::MakeMonsterInfo( IN const SSpawnNpcGroup& sSpawnNpcGroup, 
 		kInfo.m_nStartPos		= GetMonsterStartPosByRandom( mitSNG->second.m_vecPetrolLineIndex );
 		if( kInfo.m_nStartPos == -1 )
 		{
-			START_LOG( cerr, L"랜덤한 몬스터 등장위치를 얻지 못했습니다!" )
+			START_LOG( cerr, L"Failed to get a random monster spawn position." )
 				<< BUILD_LOG( m_eBattleFieldID )
 				<< BUILD_LOG( sSpawnNpcGroup.m_iGroupID )
 				<< BUILD_LOG( iNpcID )
@@ -1218,7 +1218,7 @@ bool CXSLBattleField::GetEventMonsterCreateInfo( OUT KNPCUnitReq& kInfo )
 	const CXSLUnitManager::NPCUnitTemplet* pNpcTemplet = SiCXSLUnitManager()->GetNPCUnitTemplet( static_cast<CXSLUnitManager::NPC_UNIT_ID>( kInfo.m_NPCID ) );
 	if( pNpcTemplet == NULL )
 	{
-		START_LOG( cerr, L"존재하지않는 NpcID입니다!" )
+		START_LOG( cerr, L"NpcID does not exist." )
 			<< BUILD_LOG( kInfo.m_NPCID )
 			<< END_LOG;
 		return false;
@@ -1226,7 +1226,7 @@ bool CXSLBattleField::GetEventMonsterCreateInfo( OUT KNPCUnitReq& kInfo )
 
 	if( m_vecRespawnNpcGroupList.empty() == true )
 	{
-		START_LOG( cerr, L"가져올 수 있는 NPC 정보가 없습니다." )
+		START_LOG( cerr, L"No NPC information is available to retrieve." )
 			<< BUILD_LOG( m_eBattleFieldID )
 			<< BUILD_LOG( m_sWorldID )
 			<< END_LOG;
@@ -1257,7 +1257,7 @@ bool CXSLBattleField::GetEventMonsterCreateInfo( OUT KNPCUnitReq& kInfo )
 		kInfo.m_nStartPos		= GetMonsterStartPosByRandom( vecPetrolLineIndex );
 		if( kInfo.m_nStartPos == -1 )
 		{
-			START_LOG( cerr, L"랜덤한 몬스터 등장위치를 얻지 못했습니다!" )
+			START_LOG( cerr, L"Failed to get a random monster spawn position." )
 				<< BUILD_LOG( m_eBattleFieldID )
 				<< BUILD_LOG( kInfo.m_NPCID )
 				<< BUILD_LOG( vecPetrolLineIndex.size() )

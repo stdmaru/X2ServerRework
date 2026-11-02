@@ -134,7 +134,7 @@ ImplToStringW( KMatchMakingManager )
 
 void KMatchMakingManager::Command_LUA( char cType )
 {
-    START_LOG( cout, L"매치 메이킹 개발자 전용 커맨드!" )
+    START_LOG( cout, L"Developer-only matchmaking command." )
 		<< BUILD_LOGc( cType );
 
 	KEGB_MATCH_MAKING_ADMIN_COMMAND_NOT kPacket;
@@ -176,7 +176,7 @@ bool KMatchMakingManager::Init()
 void KMatchMakingManager::ClearAllMatchInfo()
 {
 	//////////////////////////////////////////////////////////////////////////
-	START_LOG( cout2, L"[경고!] 모든 매치 정보를 초기화 시킵니다!" );
+	START_LOG( cout2, L"[Warning] Resetting all match data." );
 	//////////////////////////////////////////////////////////////////////////
 	// 매치 종료 처리!
 	std::vector< UidType > vecMatchList;
@@ -259,7 +259,7 @@ KMatchPtr KMatchMakingManager::MakeMatch( IN const SEnum::MATCH_TYPE eMatchType 
 	KMatchPtr spMatch( new KMatch( ++m_iLastMatchUID, eMatchType ) );
 	if( spMatch == NULL )
 	{
-		START_LOG( cerr, L"KCnPartyPtr new 할당실패." )
+		START_LOG( cerr, L"Failed to allocate KCnPartyPtr." )
 			<< BUILD_LOG( m_iLastMatchUID )
 			<< END_LOG;
 
@@ -277,7 +277,7 @@ KMatchUserPtr KMatchMakingManager::MakeUser( IN const SEnum::MATCH_TYPE eMatchTy
 	KMatchUserPtr spMatchUser( new KMatchUser( kInfo ) );
 	if( spMatchUser == NULL )
 	{
-		START_LOG( cerr, L"매치 유저 생성 실패!" )
+		START_LOG( cerr, L"Failed to create a match user." )
 			<< BUILD_LOG( kInfo.m_iUnitUID )
 			<< END_LOG;
 
@@ -294,7 +294,7 @@ KMatchUserPtr KMatchMakingManager::GetMatchWaitUserByUnitUID( IN const UidType i
 	std::map< UidType, KMatchUserPtr >::iterator mit = m_mapMatchWaitUser.find( iUnitUID );
 	if( mit == m_mapMatchWaitUser.end() )
 	{
-		START_LOG( cwarn, L"찾는 매치유저가 없습니다.!" )
+		START_LOG( cwarn, L"Match user not found." )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 
@@ -303,7 +303,7 @@ KMatchUserPtr KMatchMakingManager::GetMatchWaitUserByUnitUID( IN const UidType i
 
 	if( mit->second == NULL )
 	{
-		START_LOG( cerr, L"매치 유저 포인터 이상.!" )
+		START_LOG( cerr, L"Invalid match-user pointer." )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 
@@ -318,7 +318,7 @@ KMatchUserWaitListPtr KMatchMakingManager::GetMatchWaitListByWaitNumber( IN cons
 	std::map< int, KMatchUserWaitListPtr >::iterator mit = m_mapMatchWaitList.find( iWaitNumber );
 	if( mit == m_mapMatchWaitList.end() )
 	{
-		START_LOG( cwarn, L"찾는 매치 대기자 리스트가 없습니다.!" )
+		START_LOG( cwarn, L"Match wait list not found." )
 			<< BUILD_LOG( iWaitNumber )
 			<< END_LOG;
 
@@ -327,7 +327,7 @@ KMatchUserWaitListPtr KMatchMakingManager::GetMatchWaitListByWaitNumber( IN cons
 
 	if( mit->second == NULL )
 	{
-		START_LOG( cerr, L"매치 매치 대기자 리스트 포인터 이상.!" )
+		START_LOG( cerr, L"Invalid match wait-list pointer." )
 			<< BUILD_LOG( iWaitNumber )
 			<< END_LOG;
 
@@ -342,7 +342,7 @@ KMatchUserWaitListPtr KMatchMakingManager::GetMatchWaitListByPartyUID( IN const 
 	std::map< UidType, KMatchUserWaitListPtr >::iterator mit = m_mapMatchWaitParty.find( iPartyUID );
 	if( mit == m_mapMatchWaitParty.end() )
 	{
-		START_LOG( cwarn, L"찾는 매치 대기자 리스트가 없습니다.!" )
+		START_LOG( cwarn, L"Match wait list not found." )
 			<< BUILD_LOG( iPartyUID )
 			<< END_LOG;
 
@@ -351,7 +351,7 @@ KMatchUserWaitListPtr KMatchMakingManager::GetMatchWaitListByPartyUID( IN const 
 
 	if( mit->second == NULL )
 	{
-		START_LOG( cerr, L"매치 매치 대기자 리스트 포인터 이상.!" )
+		START_LOG( cerr, L"Invalid match wait-list pointer." )
 			<< BUILD_LOG( iPartyUID )
 			<< END_LOG;
 
@@ -366,7 +366,7 @@ KMatchPtr KMatchMakingManager::GetMatch( IN UidType iMatchUID )
 	std::map< UidType, KMatchPtr >::iterator mit = m_mapMatch.find( iMatchUID );
 	if( mit == m_mapMatch.end() )
 	{
-		START_LOG( cwarn, L"찾는 매치가 없습니다.!" )
+		START_LOG( cwarn, L"Match not found." )
 			<< BUILD_LOG( iMatchUID )
 			<< END_LOG;
 
@@ -375,7 +375,7 @@ KMatchPtr KMatchMakingManager::GetMatch( IN UidType iMatchUID )
 
 	if( mit->second == NULL )
 	{
-		START_LOG( cerr, L"매치 포인터 이상.!" )
+		START_LOG( cerr, L"Invalid match pointer." )
 			<< BUILD_LOG( iMatchUID )
 			<< END_LOG;
 
@@ -390,7 +390,7 @@ KMatchPtr KMatchMakingManager::CreateMatch( IN const SEnum::MATCH_TYPE eMatchTyp
 	KMatchPtr spMatch = MakeMatch( eMatchType );
 	if( spMatch == NULL )
 	{
-		START_LOG( cerr, L"매치 생성 실패!" )
+		START_LOG( cerr, L"Failed to create a match." )
 			<< BUILD_LOG( eMatchType )
 			<< END_LOG;
 
@@ -414,7 +414,7 @@ void KMatchMakingManager::DestroyMatch( IN const UidType iMatchUID )
 	KMatchPtr spMatch = GetMatch( iMatchUID );
 	if( spMatch == NULL )
 	{
-		START_LOG( cerr, L"삭제하려는 매치 정보가 없습니다!" )
+		START_LOG( cerr, L"Match data to delete was not found." )
 			<< BUILD_LOG( iMatchUID )
 			<< END_LOG;
 		return;
@@ -461,7 +461,7 @@ void KMatchMakingManager::QueueingEventToMatch( IN const KEventPtr& spEvent_ )
 	KMatchPtr spMatch = GetMatch( iMatchUID );
 	if( spMatch == NULL )
 	{
-		START_LOG( cwarn, L"매치 검색 실패." )
+		START_LOG( cwarn, L"Failed to find a match." )
 			<< BUILD_LOG( iMatchUID )
 			<< BUILD_LOG( spEvent_->GetIDStr() )
 			<< END_LOG;
@@ -479,7 +479,7 @@ void KMatchMakingManager::QueueingToAll( IN const KEventPtr& spEvent )
 	{
 		if( mit->second == NULL )
 		{
-			START_LOG( cerr, L"파티 포인터 이상" )
+			START_LOG( cerr, L"Invalid party pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -494,7 +494,7 @@ bool KMatchMakingManager::RegMatchWaitList( IN const SEnum::MATCH_TYPE eType, IN
 	// 1. 매치 인원 수가 맞는지 체크!
 	if( KMatch::GetMatchPlayerCount( eType ) < (int)vecMatchUserList.size() )
 	{
-		START_LOG( cerr, L"매치 대기자 리스트 생성 실패!" )
+		START_LOG( cerr, L"Failed to create the match wait list." )
 			<< BUILD_LOG( eType )
 			<< BUILD_LOG( KMatch::GetMatchPlayerCount( eType ) )
 			<< BUILD_LOG( vecMatchUserList.size() )
@@ -506,7 +506,7 @@ bool KMatchMakingManager::RegMatchWaitList( IN const SEnum::MATCH_TYPE eType, IN
 	KMatchUserWaitListPtr spWaitList( new KMatchUserWaitList( ++m_iLastWaitNumber ) );
 	if( spWaitList == NULL )
 	{
-		START_LOG( cerr, L"매치 대기자 리스트 생성 실패!" )
+		START_LOG( cerr, L"Failed to create the match wait list." )
 			<< BUILD_LOG( eType )
 			<< END_LOG;
 		return false;
@@ -518,7 +518,7 @@ bool KMatchMakingManager::RegMatchWaitList( IN const SEnum::MATCH_TYPE eType, IN
 		// 이미 등록된 캐릭터 인지 검사
 		if( IsExistInWaitListByUnitUID( kInfo.m_iUnitUID ) == true )
 		{
-			START_LOG( cerr, L"이미 매치에 등록되어있는 유저!" )
+			START_LOG( cerr, L"User is already registered for a match." )
 				<< BUILD_LOG( eType )
 				<< BUILD_LOG( kInfo.m_iUnitUID )
 				<< END_LOG;
@@ -530,7 +530,7 @@ bool KMatchMakingManager::RegMatchWaitList( IN const SEnum::MATCH_TYPE eType, IN
 		{
 			if( IsExistInWaitListByPartyUID( kInfo.m_iPartyUID ) == true )
 			{
-				START_LOG( cerr, L"이미 등록된 파티 정보 입니다! 절대 일어나서는 안되는 에러!" )
+				START_LOG( cerr, L"Party data is already registered; this should never happen." )
 					<< BUILD_LOG( eType )
 					<< BUILD_LOG( kInfo.m_iPartyUID )
 					<< END_LOG;
@@ -541,7 +541,7 @@ bool KMatchMakingManager::RegMatchWaitList( IN const SEnum::MATCH_TYPE eType, IN
         KMatchUserPtr spMatchUser = MakeUser( eType, kInfo );
 		if( spMatchUser == NULL )
 		{
-			START_LOG( cerr, L"대기자 리스트 생성 중 매치 유저 생성 실패!" )
+			START_LOG( cerr, L"Failed to create a match user while creating the wait list." )
 				<< BUILD_LOG( eType )
 				<< BUILD_LOG( kInfo.m_iUnitUID )
 				<< END_LOG;
@@ -557,7 +557,7 @@ bool KMatchMakingManager::RegMatchWaitList( IN const SEnum::MATCH_TYPE eType, IN
 
 	if( spWaitList->GetNumMember() == 0 )
 	{
-		START_LOG( cerr, L"대기자 리스트를 생성하지 못하였습니다." )
+		START_LOG( cerr, L"Failed to create the wait list." )
 			<< BUILD_LOG( eType )
 			<< END_LOG;
 		return false;
@@ -594,7 +594,7 @@ bool KMatchMakingManager::UnRegMatchWaitListByUnitUID( IN const UidType iUnitUID
 	KMatchUserPtr spMatchUser = GetMatchWaitUserByUnitUID( iUnitUID );
 	if( spMatchUser == NULL )
 	{
-		START_LOG( cerr, L"대기자 리스트 등록해제를 하려고 하는데 유저를 찾지 못하였습니다." )
+		START_LOG( cerr, L"Could not find the user while removing them from the wait list." )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 		return false;
@@ -604,7 +604,7 @@ bool KMatchMakingManager::UnRegMatchWaitListByUnitUID( IN const UidType iUnitUID
 	const SEnum::MATCH_TYPE eMatchType = static_cast<SEnum::MATCH_TYPE>(spMatchUser->GetMatchType());
 	if( eMatchType < 0  ||  eMatchType > SEnum::MT_MAX )
 	{
-		START_LOG( cerr, L"매치 타입이 이상합니다! 절대 일어날수 없는 에러!" )
+		START_LOG( cerr, L"Invalid match type; this should never happen." )
 			<< BUILD_LOG( iUnitUID )
 			<< BUILD_LOG( eMatchType )
 			<< BUILD_LOG( iUnRegReason )
@@ -621,7 +621,7 @@ bool KMatchMakingManager::UnRegMatchWaitListByUnitUID( IN const UidType iUnitUID
 	{
 		if( (*lit) == NULL )
 		{
-			START_LOG( cerr, L"대기자 리스트 포인터값이 이상합니다" )
+			START_LOG( cerr, L"Invalid wait-list pointer." )
 				<< END_LOG;
 			continue;
 		}
@@ -644,7 +644,7 @@ bool KMatchMakingManager::UnRegMatchWaitListByUnitUID( IN const UidType iUnitUID
 	}
 	else
 	{
-		START_LOG( cerr, L"대기자 리스트에 매치유저가 없다! 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"No match user is in the wait list; this should never happen." )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 	}
@@ -668,7 +668,7 @@ bool KMatchMakingManager::UnRegMatchWaitListByWaitNumber( IN const int iWaitNumb
 	KMatchUserWaitListPtr spMatchWaitList = GetMatchWaitListByWaitNumber( iWaitNumber );
 	if( spMatchWaitList == NULL )
 	{
-		START_LOG( cerr, L"대기자 리스트 등록해제를 하려고 하는데 리스트를 찾지 못하였습니다." )
+		START_LOG( cerr, L"Could not find the list while removing a user from the wait list." )
 			<< BUILD_LOG( iWaitNumber )
 			<< END_LOG;
 		return false;
@@ -680,7 +680,7 @@ bool KMatchMakingManager::UnRegMatchWaitListByWaitNumber( IN const int iWaitNumb
 	{
 		if( IsExistInWaitListByPartyUID( iPartyUID ) == false )
 		{
-			START_LOG( cerr, L"PartyUID로 대기자리스트를 찾지 못했다? 절대 일어나서는 안되는 에러!" )
+			START_LOG( cerr, L"Could not find the wait list by PartyUID; this should never happen." )
 				<< BUILD_LOG( iWaitNumber )
 				<< BUILD_LOG( NetError::GetErrStr( iUnRegReason ) )
 				<< BUILD_LOG( wstrCancelUnitNickName )
@@ -712,7 +712,7 @@ bool KMatchMakingManager::UnRegMatchWaitListByPartyUID( IN const UidType iPartyU
 	KMatchUserWaitListPtr spWaitList = GetMatchWaitListByPartyUID( iPartyUID );
 	if( spWaitList == NULL )
 	{
-		START_LOG( cerr, L"이탈 요청한 PartyUID가 등록되어 있지 않네?" )
+		START_LOG( cerr, L"PartyUID in the leave request is not registered." )
 			<< BUILD_LOG( iPartyUID )
 			<< BUILD_LOG( NetError::GetErrStr( iUnRegReason ) )
 			<< BUILD_LOG( iRequestCancelUnitUID )
@@ -724,7 +724,7 @@ bool KMatchMakingManager::UnRegMatchWaitListByPartyUID( IN const UidType iPartyU
 	KMatchUserPtr spCancelMatchUser = spWaitList->GetMatchUser( iRequestCancelUnitUID );
 	if( spCancelMatchUser == NULL )
 	{
-		START_LOG( cerr, L"이탈 요청한 PartyUID에 해당되는 캐릭터가 없네? 이건 처리하면 안되겠다." )
+		START_LOG( cerr, L"No character is associated with the PartyUID in the leave request; cannot process it." )
 			<< BUILD_LOG( iPartyUID )
 			<< BUILD_LOG( NetError::GetErrStr( iUnRegReason ) )
 			<< BUILD_LOG( iRequestCancelUnitUID )
@@ -767,7 +767,7 @@ bool KMatchMakingManager::FindTheOpponent( IN const SEnum::MATCH_TYPE& eType,
 
 		if( spTargetUserList == NULL )
 		{
-			START_LOG( cerr, L"대기자 리스트 포인터값이 이상합니다." )
+			START_LOG( cerr, L"Invalid wait-list pointer." )
 				<< END_LOG;
 			continue;
 		}
@@ -854,7 +854,7 @@ bool KMatchMakingManager::_CheckTheMemberNum( IN const SEnum::MATCH_TYPE& eType,
 		listMatchMakingWaitList.erase( it );
 		if( spTargetUserList == NULL )
 		{
-			START_LOG( cerr, L"대기자 리스트 포인터값이 이상합니다." )
+			START_LOG( cerr, L"Invalid wait-list pointer." )
 				<< END_LOG;
 			continue;
 		}
@@ -875,7 +875,7 @@ bool KMatchMakingManager::_CheckTheMemberNum( IN const SEnum::MATCH_TYPE& eType,
 			}
 			else if( 2 < i2NumPartyCount )
 			{
-				START_LOG( cerr, L"하나의 매칭에서 2인 파티의 수가 이미 2개를 넘어섰습니다.")
+				START_LOG( cerr, L"A match already contains more than two two-person parties.")
 					<< BUILD_LOG( i2NumPartyCount )
 					<< END_LOG;
 				return false;
@@ -946,7 +946,7 @@ void KMatchMakingManager::MatchMakingForWaitUser( IN const SEnum::MATCH_TYPE eTy
 		++uiLoopCount;
 		if( uiLoopCount > uiTotalListSize )
 		{
-			START_LOG( cerr, L"잘못된 동작을 하였습니다! 절대 일어나서는 안되는 에러!" )
+			START_LOG( cerr, L"Invalid operation; this should never happen." )
 				<< BUILD_LOG( uiLoopCount )
 				<< BUILD_LOG( uiTotalListSize )
 				<< END_LOG;
@@ -968,7 +968,7 @@ void KMatchMakingManager::MatchMakingForWaitUser( IN const SEnum::MATCH_TYPE eTy
 		listMatchMakingWaitList.pop_front();
 		if( spFrontMatchWaitUser == NULL )
 		{
-			START_LOG( cerr, L"매치 대기자 리스트 포인터값이 이상합니다." )
+			START_LOG( cerr, L"Invalid match wait-list pointer." )
 				<< END_LOG;
 			continue;
 		}
@@ -1009,7 +1009,7 @@ void KMatchMakingManager::MatchMakingForWaitUser( IN const SEnum::MATCH_TYPE eTy
 			// 대기자 리스트에서 매치 요청자 삭제!
 			if( UnRegMatchWaitListByWaitNumber( spFrontMatchWaitUser->GetMatchWaitNumber(), NetError::NOT_LEAVE_MATCH_WAIT_REASON_00 ) == false )
 			{
-				START_LOG( cerr, L"대기자 리스트에서 매치 요청자 삭제 실패! 일어 나서는 안되는 에러!" )
+				START_LOG( cerr, L"Failed to remove the match requester from the wait list; this should never happen." )
 					<< BUILD_LOG( eType )
 					<< BUILD_LOG( spFrontMatchWaitUser->GetMatchWaitNumber() )
 					<< END_LOG;
@@ -1020,7 +1020,7 @@ void KMatchMakingManager::MatchMakingForWaitUser( IN const SEnum::MATCH_TYPE eTy
 			KMatchPtr spNewMatch = CreateMatch( eType, vecSourceUserInfo );
 			if( spNewMatch == NULL )
 			{
-				START_LOG( cerr, L"새로운 매치 생성 실패!" )
+				START_LOG( cerr, L"Failed to create a new match." )
 					<< BUILD_LOG( eType )
 					<< END_LOG;
 				break;
@@ -1032,7 +1032,7 @@ void KMatchMakingManager::MatchMakingForWaitUser( IN const SEnum::MATCH_TYPE eTy
                 KMatchUserWaitListPtr spWaitList = GetMatchWaitListByWaitNumber( iMatchWaitNumber );
 				if( spWaitList == NULL )
 				{
-					START_LOG( cerr, L"대기자 리스트가 존재하지 않는다! 여기와서 이러면 어떻해.. 일어나면 안되는 에러!" )
+					START_LOG( cerr, L"The wait list does not exist; this should never happen." )
 						<< BUILD_LOG( eType )
 						<< BUILD_LOG( iMatchWaitNumber )
 						<< END_LOG;
@@ -1045,7 +1045,7 @@ void KMatchMakingManager::MatchMakingForWaitUser( IN const SEnum::MATCH_TYPE eTy
 				// 대기자 리스트에서 삭제하자!
 				if( UnRegMatchWaitListByWaitNumber( iMatchWaitNumber, NetError::NOT_LEAVE_MATCH_WAIT_REASON_00 ) == false )
 				{
-					START_LOG( cerr, L"대기자 리스트에서 매치 요청자 삭제 실패!" )
+					START_LOG( cerr, L"Failed to remove the match requester from the wait list." )
 						<< BUILD_LOG( eType )
 						<< BUILD_LOG( spWaitList->GetMatchWaitNumber() )
 						<< END_LOG;
@@ -1055,7 +1055,7 @@ void KMatchMakingManager::MatchMakingForWaitUser( IN const SEnum::MATCH_TYPE eTy
 				// 매치에 입장 시키자!
 				if( spNewMatch->Enter( vecNewEnterUser ) == false )
 				{
-					START_LOG( cerr, L"추가인원 입장 실패! 정상에러인가?" )
+					START_LOG( cerr, L"Failed to add another member. Is this an expected error?" )
 						<< BUILD_LOG( vecNewEnterUser.size() )
 						<< END_LOG;
 					break;
@@ -1067,7 +1067,7 @@ void KMatchMakingManager::MatchMakingForWaitUser( IN const SEnum::MATCH_TYPE eTy
 				{
 					if( (*litD) == NULL )
 					{
-						START_LOG( cerr, L"포인터값이 이상합니다." )
+						START_LOG( cerr, L"Invalid pointer." )
 							<< END_LOG;
 						continue;
 					}
@@ -1085,7 +1085,7 @@ void KMatchMakingManager::MatchMakingForWaitUser( IN const SEnum::MATCH_TYPE eTy
 			// 최종적으로 매치가 성사되었는지 확인하자!
 			if( spNewMatch->CheckMatchMakingSuccess() == false )
 			{
-				START_LOG( clog, L"매칭이 실패했다!" )
+				START_LOG( clog, L"Matchmaking failed." )
 					<< BUILD_LOG( spNewMatch->GetMatchUID() )
 					<< END_LOG;
 			}
@@ -1104,7 +1104,7 @@ void KMatchMakingManager::ProcessEvent( IN const KEventPtr& spEvent_ )
 		CASE( EGB_MATCH_MAKING_ADMIN_COMMAND_NOT );
 
 	default:
-		START_LOG( cerr, L"이벤트 핸들러가 정의되지 않았음. " << spEvent_->GetIDStr() );
+		START_LOG( cerr, L"Event handler is not defined: " << spEvent_->GetIDStr() );
 	}
 }
 
@@ -1117,7 +1117,7 @@ IMPL_ON_FUNC( EGB_REQUEST_MATCH_MAKING_REQ )
 	SEnum::MATCH_TYPE eMatchType;
 	if( KMatch::GetMatchTypeByMatchInfo( kPacket_.m_cPvpGameType, kPacket_.m_cPvpPlayerCount, eMatchType ) == false )
 	{
-		START_LOG( cerr, L"잘못된 매치 요청 정보입니다!" )
+		START_LOG( cerr, L"Invalid match request data." )
 			<< BUILD_LOG( LAST_SENDER_UID )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
@@ -1130,7 +1130,7 @@ IMPL_ON_FUNC( EGB_REQUEST_MATCH_MAKING_REQ )
 	// 매치 대기자 리스트에 등록!
 	if( RegMatchWaitList( eMatchType, kPacket_.m_vecMatchUserInfo, kPacket_.m_bRegFrontOfList ) == false )
 	{
-		START_LOG( cerr, L"매치 대기자 리스트에 등록이 실패하였습니다!" )
+		START_LOG( cerr, L"Failed to add the user to the match wait list." )
 			<< BUILD_LOG( LAST_SENDER_UID )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( eMatchType )
@@ -1162,7 +1162,7 @@ IMPL_ON_FUNC( EGB_CANCEL_MATCH_MAKING_REQ )
 	{
 		if( UnRegMatchWaitListByPartyUID( kPacket_.m_iPartyUID, kPacket_.m_iReason, FIRST_SENDER_UID ) == false )
 		{
-			START_LOG( cerr, L"PartyUID로 대기자 리스트에 삭제 실패!" )
+			START_LOG( cerr, L"Failed to remove the wait list by PartyUID." )
 				<< BUILD_LOG( FIRST_SENDER_UID )
 				<< BUILD_LOG( kPacket_.m_iPartyUID )
 				<< END_LOG;
@@ -1175,14 +1175,14 @@ IMPL_ON_FUNC( EGB_CANCEL_MATCH_MAKING_REQ )
 	{
         if( UnRegMatchWaitListByUnitUID( FIRST_SENDER_UID, kPacket_.m_iReason ) == false )
 		{
-			START_LOG( cerr, L"대기자 리스트에 삭제 실패!" )
+			START_LOG( cerr, L"Failed to remove the wait list." )
 				<< BUILD_LOG( FIRST_SENDER_UID )
 				<< END_LOG;
 		}
 
 		if( kPacket_.m_iPartyUID != 0 )
 		{
-			START_LOG( cerr, L"이미 PartyUID로 삭제 했을텐데.. 아직 있네? 머지?" )
+			START_LOG( cerr, L"The wait list was already removed by PartyUID, but it is still present. What happened?" )
 				<< BUILD_LOG( LAST_SENDER_UID )
 				<< BUILD_LOG( FIRST_SENDER_UID )
 				<< BUILD_LOG( kPacket_.m_iPartyUID )
@@ -1191,7 +1191,7 @@ IMPL_ON_FUNC( EGB_CANCEL_MATCH_MAKING_REQ )
 
 		if( kPacket_.m_iMatchUID != 0 )
 		{
-			START_LOG( cerr, L"대기자 리스트에 등록되어있는데 MatchUID값이 유효하다! 오류인듯?" )
+			START_LOG( cerr, L"A user is on the wait list but has a valid MatchUID; this appears to be an error." )
 				<< BUILD_LOG( LAST_SENDER_UID )
 				<< BUILD_LOG( FIRST_SENDER_UID )
 				<< BUILD_LOG( kPacket_.m_iMatchUID )
@@ -1231,7 +1231,7 @@ _IMPL_ON_FUNC( ESR_ORDER_TO_REFRESH_MANAGER_REQ, KESR_SCRIPT_REFRESH_ORDER_NOT )
 
 	default:
 		{
-			START_LOG( cerr, L"이쪽으로 오면 안되는 타입인데?" )
+			START_LOG( cerr, L"Unexpected type reached this code path." )
 				<< BUILD_LOG( kPacket_.m_iOrderType )
 				<< END_LOG;
 		}
@@ -1241,7 +1241,7 @@ _IMPL_ON_FUNC( ESR_ORDER_TO_REFRESH_MANAGER_REQ, KESR_SCRIPT_REFRESH_ORDER_NOT )
 
 IMPL_ON_FUNC_NOPARAM( EGB_CHECK_INVALID_MATCH_NOT )
 {
-    START_LOG( cout, L"GlobalUser객체가 소멸되어 현재 매치 신청 또는 매치들을 모두 삭제처리합니다!" )
+    START_LOG( cout, L"GlobalUser object was destroyed; removing its pending match requests and matches." )
 		<< END_LOG;
 
 	ClearAllMatchInfo();
@@ -1249,7 +1249,7 @@ IMPL_ON_FUNC_NOPARAM( EGB_CHECK_INVALID_MATCH_NOT )
 
 IMPL_ON_FUNC( EGB_MATCH_MAKING_ADMIN_COMMAND_NOT )
 {
-    START_LOG( cout, L"개발자 커맨드에 의한 동작 시작!" )
+    START_LOG( cout, L"Starting operation from a developer command." )
 		<< BUILD_LOGc( kPacket_.m_cType );
 
 	switch( kPacket_.m_cType )
@@ -1268,7 +1268,7 @@ IMPL_ON_FUNC( EGB_MATCH_MAKING_ADMIN_COMMAND_NOT )
 
 	default:
 		{
-			START_LOG( cerr, L"잘못된 커맨드 입니다!" )
+			START_LOG( cerr, L"Invalid command." )
 				<< BUILD_LOGc( kPacket_.m_cType )
 				<< END_LOG;
 		}

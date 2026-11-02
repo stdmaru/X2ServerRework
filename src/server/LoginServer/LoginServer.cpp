@@ -157,7 +157,7 @@ KThread*        CreateDBThread( int iDBConnectionInfo, const wchar_t* szDSN, boo
 	case KDBLayer::DC_KOG_BILLING:
 		return new KLoginBillingDBThread( szDSN, bDBConnStr );
     default:
-        START_LOG( cerr, L"접속하려는 DB 종류가 이상함." )
+        START_LOG( cerr, L"Invalid database type for connection." )
             << BUILD_LOG( iDBConnectionInfo )
             << END_LOG;
         return new KLoginAccountDBThread( szDSN, bDBConnStr );
@@ -292,7 +292,7 @@ bool KLoginServer::DestroyAllSession()
 
     KActorManager* pkActorManager = KActorManager::GetKObj();
 
-    START_LOG( cout, L"현재 유저 : " << pkActorManager->GetCount() << L" 명" );
+    START_LOG( cout, L"Current users: " << pkActorManager->GetCount() << L" users" );
 
 	//{{ 2009. 1. 30  최육사	서버 셧다운 종료 사유 설정
 	int iIndex = KStatistics::eSIColDR_Server_Shutdown;
@@ -471,7 +471,7 @@ void KLoginServer::ProcessEvent( const KEventPtr& spEvent_ )
 
 
     default:
-        START_LOG( cerr, L"이벤트 핸들러가 정의되지 않았음. " << spEvent_->GetIDStr() );
+        START_LOG( cerr, L"Event handler is not defined." << spEvent_->GetIDStr() );
     }
 
     dwElapTime = ::GetTickCount() - dwElapTime;
@@ -519,7 +519,7 @@ _IMPL_ON_FUNC( ELG_CLEAR_RANKING_NOT, bool )
 	// 랭킹 초기화
 	SiKRankingManager()->CheckRankingClearAndReward( true );
 
-	START_LOG( cout, L"랭킹 수동 초기화 및 보상처리 완료!" );
+	START_LOG( cout, L"Manual ranking reset and reward processing completed!" );
 }
 
 IMPL_ON_FUNC_NOPARAM( DMP_DUMP_RANKING_MANAGER_NOT )
@@ -536,11 +536,11 @@ IMPL_ON_FUNC( ELG_ADMIN_NEW_RECORD_NOT )
 {
 	if( SiKRankingManager()->NewRecordHenirRanking( kPacket_.m_kNewRecordRanking, kPacket_.m_iRankingType ) )
 	{
-		START_LOG( cout, L"랭킹 기록 추가 성공!" );
+		START_LOG( cout, L"Ranking record added!" );
 	}
 	else
 	{
-		START_LOG( cout, L"랭킹 기록 추가 실패!" );
+		START_LOG( cout, L"Failed to add ranking record!" );
 	}
 };
 
@@ -548,13 +548,13 @@ IMPL_ON_FUNC( ELG_ADMIN_DELETE_RECORD_NOT )
 {
 	if( SiKRankingManager()->DeleteRecord( kPacket_.m_iRankingType, kPacket_.m_wstrNickName ) )
 	{
-        START_LOG( cout, L"랭킹 기록 삭제 성공!" )
+        START_LOG( cout, L"Ranking record deleted!" )
 			<< BUILD_LOG( kPacket_.m_iRankingType )
 			<< BUILD_LOG( kPacket_.m_wstrNickName );
 	}
 	else
 	{
-		START_LOG( cout, L"랭킹 기록 삭제 실패!" )
+		START_LOG( cout, L"Failed to delete ranking record!" )
 			<< BUILD_LOG( kPacket_.m_iRankingType )
 			<< BUILD_LOG( kPacket_.m_wstrNickName );
 	}
@@ -608,7 +608,7 @@ IMPL_ON_FUNC( DBE_GUILD_LEVEL_UP_ACK )
 	// 길드 레벨업 업데이트 결과 처리
 	if( SiKGuildManager()->UpdateGuildLevelResult( kPacket_.m_iGuildUID, kPacket_ ) == false )
 	{
-		START_LOG( cerr, L"길드 레벨업 업데이트 결과 처리 실패" )
+		START_LOG( cerr, L"Failed to process guild level-up update result." )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
 			<< BUILD_LOGc( kPacket_.m_ucGuildLevel )
 			<< END_LOG;
@@ -653,7 +653,7 @@ IMPL_ON_FUNC( DBE_INSERT_GUILD_CASH_SKILL_POINT_ACK )
 	// 길드 매니저에 결과 업데이트
 	if( SiKGuildManager()->InsertGuildCashSkillPointResult( kPacket_ ) == false )
 	{
-		START_LOG( cerr, L"길드 캐쉬 스킬 포인트 업데이트 결과 처리 실패" )
+		START_LOG( cerr, L"Failed to process guild cash skill point update result." )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
 			<< END_LOG;
 	}
@@ -664,7 +664,7 @@ IMPL_ON_FUNC( DBE_EXPIRE_GUILD_CASH_SKILL_POINT_ACK )
 	// 길드 매니저에 결과 업데이트
 	if( SiKGuildManager()->ExpireGuildCashSkillPointResult( kPacket_ ) == false )
 	{
-		START_LOG( cerr, L"길드 캐쉬 스킬 포인트 기간종료 결과 처리 실패" )
+		START_LOG( cerr, L"Failed to process guild cash skill point expiration result." )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
 			<< END_LOG;
 	}
@@ -675,7 +675,7 @@ _IMPL_ON_FUNC( DBE_ADMIN_GET_GUILD_SKILL_POINT_ACK, KELG_ADMIN_GET_GUILD_SKILL_P
 	// 치트 결과 업데이트
     if( SiKGuildManager()->AdminInsertGuildSkillPointResult( kPacket_ ) == false )
 	{
-		START_LOG( cerr, L"길드 스킬 포인트 치트 결과 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update guild skill point cheat result!" )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
 			<< END_LOG;
 	}
@@ -696,7 +696,7 @@ IMPL_ON_FUNC( DBE_ACCEPT_JOIN_GUILD_ACK )
 	// 예약된 정보를 지운다
 	if( SiKGuildManager()->RemoveReserve( kPacket_.m_iGuildUID, kPacket_.m_kJoinGuildMemberInfo.m_iUnitUID ) == false )
 	{
-		START_LOG( cerr, L"길드 가입 예약 정보 삭제 실패!" )
+		START_LOG( cerr, L"Failed to delete guild application reservation!" )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
 			<< BUILD_LOG( kPacket_.m_kJoinGuildMemberInfo.m_iUnitUID )
 			<< END_LOG;
@@ -709,7 +709,7 @@ IMPL_ON_FUNC( DBE_ACCEPT_JOIN_GUILD_ACK )
 	// 길드 가입 처리!
 	if( SiKGuildManager()->JoinGuildMember( kPacket_.m_iGuildUID, kPacket_.m_kJoinGuildMemberInfo, false ) == false )
 	{
-		START_LOG( cerr, L"길드 멤버 로그인 정보 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update guild member login information!" )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
 			<< BUILD_LOG( kPacket_.m_kJoinGuildMemberInfo.m_iUnitUID )
 			<< END_LOG;
@@ -771,7 +771,7 @@ IMPL_ON_FUNC( DBE_CHECK_ACCOUNT_BLOCK_LIST_ACK )
 						int iOK = NetError::ERR_ADMIN_COMMAND_07;
 						SendToGSUser( kInfo.m_nGSUID, kInfo.m_nUserUID, E_KICK_USER_NOT, iOK );
 
-						START_LOG( cout, L"접속 차단 대상자을 실시간으로 KICK합니다!" )
+						START_LOG( cout, L"Kicking newly blocked users immediately!" )
 							<< BUILD_LOG( kInfo.m_nGSUID )
 							<< BUILD_LOG( kInfo.m_nUserUID )
 							<< BUILD_LOG( iUserUID );
@@ -791,7 +791,7 @@ IMPL_ON_FUNC( DBE_CHECK_ACCOUNT_BLOCK_LIST_ACK )
 						kNot.m_bIsTradeBlock = true;
 						SendToGSUser( kInfo.m_nGSUID, kInfo.m_nUserUID, ELG_TRADE_BLOCK_NOT, kNot );
 
-						START_LOG( cout, L"거래 차단 대상자을 실시간으로 적용합니다!" )
+						START_LOG( cout, L"Applying trade blocks to users immediately!" )
 							<< BUILD_LOG( kInfo.m_nGSUID )
 							<< BUILD_LOG( kInfo.m_nUserUID )
 							<< BUILD_LOG( iUserUID );
@@ -833,7 +833,7 @@ IMPL_ON_FUNC( DBE_CHECK_ACCOUNT_BLOCK_LIST_ACK )
 						kNot.m_bIsTradeBlock = false;
 						SendToGSUser( kInfo.m_nGSUID, kInfo.m_nUserUID, ELG_TRADE_BLOCK_NOT, kNot );
 
-						START_LOG( cout, L"거래 차단 대상자을 실시간으로 해제합니다!" )
+						START_LOG( cout, L"Removing trade blocks from users immediately!" )
 							<< BUILD_LOG( kInfo.m_nGSUID )
 							<< BUILD_LOG( kInfo.m_nUserUID )
 							<< BUILD_LOG( iUserUID );
@@ -859,7 +859,7 @@ IMPL_ON_FUNC( DBE_CHECK_ACCOUNT_BLOCK_LIST_ACK )
 			int iOK = NetError::ERR_ADMIN_COMMAND_07;
 			SendToGSUser( kInfo.m_nGSUID, kInfo.m_nUserUID, E_KICK_USER_NOT, iOK );
 
-			START_LOG( cout, L"머신ID 차단 대상자을 실시간으로 차단합니다!" )
+			START_LOG( cout, L"Blocking users by machine ID immediately!" )
 				<< BUILD_LOG( kInfo.m_nGSUID )
 				<< BUILD_LOG( kInfo.m_nUserUID )
 				<< BUILD_LOG( strMachineID );
@@ -884,7 +884,7 @@ _IMPL_ON_FUNC( ESR_ORDER_TO_REFRESH_MANAGER_REQ, KESR_SCRIPT_REFRESH_ORDER_NOT )
 	}
 	else
 	{
-		START_LOG( cerr, L"이쪽으로 오면 안되는 갱신 요청 타입입니다!" )
+		START_LOG( cerr, L"Invalid refresh request type!" )
 			<< BUILD_LOG( kPacket_.m_iOrderType )
 			<< END_LOG;
 	}
@@ -914,7 +914,7 @@ _IMPL_ON_FUNC( ESR_ORDER_TO_REFRESH_MANAGER_ACK, KESR_SCRIPT_REFRESH_ORDER_NOT )
 
 	default:
 		{
-			START_LOG( cerr, L"이쪽으로 오면 안되는 타입인데?" )
+			START_LOG( cerr, L"Unexpected type reached this code path." )
 				<< BUILD_LOG( kPacket_.m_iOrderType )
 				<< END_LOG;
 		}
@@ -931,7 +931,7 @@ IMPL_ON_FUNC( DBE_GET_MODULE_INFO_LIST_ACK )
 	SiKDLLManager()->Init( kPacket_.m_vecModuleList );
 	//}}
 
-	START_LOG( cout, L"DLL 모듈 리스트 업데이트 완료!" )
+	START_LOG( cout, L"DLL module list updated!" )
 		<< BUILD_LOG( kPacket_.m_vecModuleList.size() );
 }
 
@@ -967,7 +967,7 @@ IMPL_ON_FUNC( DBE_LOAD_PSHOP_AGENCY_ACK )
 {
 	if( kPacket_.m_vecOpenPShopAgency.empty() )
 	{
-		START_LOG( cout, L"개설된 대리 상인이 없습니다!" )
+		START_LOG( cout, L"No hired merchant shop is open!" )
 			<< BUILD_LOG( kPacket_.m_vecOpenPShopAgency.size() );
 		return;
 	}
@@ -978,7 +978,7 @@ IMPL_ON_FUNC( DBE_LOAD_PSHOP_AGENCY_ACK )
 	{
 		if( kPacket.m_vecSellItemInfo.empty() )
 		{
-			START_LOG( clog, L"판매 아이템이 비어있습니다! 자동으로 상점개설을 하지 않습니다!" )
+			START_LOG( clog, L"No items are for sale; will not open a shop automatically!" )
 				<< BUILD_LOG( kPacket.m_iUnitUID );
 			continue;
 		}
@@ -991,7 +991,7 @@ IMPL_ON_FUNC( DBE_LOAD_PSHOP_AGENCY_ACK )
 		++iOpenPShopAgencyCount;
 	}
 
-	START_LOG( cout, L"DB에 저장된 대리상인 자동 개설 완료!" )
+	START_LOG( cout, L"Automatically opened hired shops saved to the database!" )
 		<< BUILD_LOG( iOpenPShopAgencyCount );
 }
 
@@ -1018,7 +1018,7 @@ _IMPL_ON_FUNC( ERM_PSHOP_AGENCY_MESSAGE_NOT, KEGS_PSHOP_AGENCY_MESSAGE_NOT )
 IMPL_ON_FUNC( ELG_RANKING_TITLE_REWARD_NOT )
 {
 	// 특정 서버만 업데이트 하도록 할것!
-	START_LOG( cout, L"랭킹 매니저의 요청으로 랭킹 칭호 보상 지급을 시작합니다!" )
+	START_LOG( cout, L"Starting guild title reward distribution at the ranking manager's request!" )
 		<< BUILD_LOG( kPacket_.m_mapTitleReward.size() );
 
 	// GameDB에 타이틀을 insert해준다.
@@ -1040,7 +1040,7 @@ IMPL_ON_FUNC( ELG_RANKING_TITLE_REWARD_NOT )
 			const CXSLTitleManager::TitleTemplet* pTitleInfo = SiCXSLTitleManager()->GetTitleTemplet( kRewardInfo.m_iTitleID );
 			if( pTitleInfo == NULL )
 			{
-				START_LOG( cerr, L"존재하지 않는 칭호입니다!" )
+				START_LOG( cerr, L"Title does not exist!" )
 					<< BUILD_LOG( kRewardInfo.m_iTitleID )
 					<< END_LOG;
 
@@ -1082,7 +1082,7 @@ IMPL_ON_FUNC( DBE_LOAD_WEDDING_HALL_INFO_ACK )
 {
 	if( kPacket_.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"DB에 있는 결혼식 정보를 받아오기 실패!" )
+		START_LOG( cerr, L"Failed to load wedding information from the database!" )
 			<< BUILD_LOG( kPacket_.m_iOK )
 			<< END_LOG;
 		return;
@@ -1117,7 +1117,7 @@ IMPL_ON_FUNC( EPUBLISHER_REG_USER_ACK )
 		KELG_REGISTER_USER_GLOBAL_PUBLISHER_ACK kPacketAck;
 		kPacketAck.m_iOK = kPacket_.m_iOK;
 		kPacketAck.m_wstrServiceAccountID = kPacket_.m_wstrServiceAccountID;
-		START_LOG( clog, L"PC방 유저 체크." )
+		START_LOG( clog, L"Checking PC-bang user." )
 			<< BUILD_LOG( kPacket_.m_iOK )
 			<< BUILD_LOG( kPacket_.m_wstrServiceAccountID )
 			<< END_LOG;
@@ -1128,7 +1128,7 @@ IMPL_ON_FUNC( EPUBLISHER_REG_USER_ACK )
 	}
 	else
 	{
-		START_LOG( cerr, L"유저 게임 서버 검색 실패." )
+		START_LOG( cerr, L"Failed to find the user's game server." )
 			<< BUILD_LOG( kPacket_.m_iOK )
 			<< BUILD_LOG( kPacket_.m_wstrServiceAccountID )
 			<< END_LOG;

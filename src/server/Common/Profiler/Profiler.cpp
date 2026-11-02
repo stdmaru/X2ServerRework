@@ -91,7 +91,7 @@ void KProfiler::Begin( wchar_t* lpwName )
 	// 2. 최대크기 넘어서면 리턴
     if( i >= MAX_PROFILE_SAMPLE )
 	{
-		START_LOG( cerr, L"샘플이 모자라!" )
+		START_LOG( cerr, L"Not enough samples." )
 			<< BUILD_LOG( i )
 			<< END_LOG;
 		return;
@@ -172,7 +172,7 @@ void KProfiler::End( wchar_t* lpwName )
 			}
 			else
 			{
-				START_LOG( cerr, L"profile instance가 0이다? begin이 안되었나?" )
+				START_LOG( cerr, L"Profile instance is zero. Was begin() called?" )
 					<< BUILD_LOG( lpwName )
 					<< END_LOG;
 			}
@@ -181,7 +181,7 @@ void KProfiler::End( wchar_t* lpwName )
 		++i;
 	}
 
-	START_LOG( cerr, L"end를 찾지 못했다!?" )
+	START_LOG( cerr, L"Could not find end." )
 		<< BUILD_LOG( lpwName )
 		<< END_LOG;
 }
@@ -288,7 +288,7 @@ void KProfiler::DumpProfileOutput( std::wostream& stm_ )
 		// 1. 걸린시간비율을 히스토리에 저장 및 가공한다
 		if( !StoreProfileInHistory( m_oSample[i].m_wszName, m_oSample[i] ) )
 		{
-			START_LOG( cerr, L"저장 실패!" )
+			START_LOG( cerr, L"Failed to save." )
 				<< BUILD_LOG( i )
 				<< END_LOG;
 			continue;
@@ -298,7 +298,7 @@ void KProfiler::DumpProfileOutput( std::wostream& stm_ )
 		unsigned int uiHistoryIndex = 0;
 		if( !GetProfileFromHistory( m_oSample[i].m_wszName, uiHistoryIndex ) )
 		{
-			START_LOG( cerr, L"인덱스 얻기 실패!" )
+			START_LOG( cerr, L"Failed to get the index." )
 				<< BUILD_LOG( i )
 				<< END_LOG;
 			continue;
@@ -442,7 +442,7 @@ void KProfiler::DumpToLogFile()
 		// 1. 걸린시간비율을 히스토리에 저장 및 가공한다
 		if( !StoreProfileInHistory( m_oSample[i].m_wszName, m_oSample[i] ) )
 		{
-			START_LOG( cerr, L"저장 실패!" )
+			START_LOG( cerr, L"Failed to save." )
 				<< BUILD_LOG( i )
 				<< END_LOG;
 			continue;
@@ -452,7 +452,7 @@ void KProfiler::DumpToLogFile()
 		unsigned int uiHistoryIndex = 0;
 		if( !GetProfileFromHistory( m_oSample[i].m_wszName, uiHistoryIndex ) )
 		{
-			START_LOG( cerr, L"인덱스 얻기 실패!" )
+			START_LOG( cerr, L"Failed to get the index." )
 				<< BUILD_LOG( i )
 				<< END_LOG;
 			continue;
@@ -531,7 +531,7 @@ bool KProfiler::StoreProfileInHistory( wchar_t* lpwName, const PROFILE_SAMPLE& o
 		return true;
 	}
 
-	START_LOG( cerr, L"남은 샘플 히스토리가 없다!" )
+	START_LOG( cerr, L"No sample history remains." )
 		<< BUILD_LOG( lpwName )
 		<< BUILD_LOG( i )
 		<< END_LOG;

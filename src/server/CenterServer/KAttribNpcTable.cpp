@@ -59,7 +59,7 @@ bool KAttribNpcTable::SetAttribSubStageCount_LUA( char cDungeonType, char cMode,
 {
 	if( cDungeonType < 0  ||  cMode < 0  ||  iSubStageCount < 0 )
 	{
-		START_LOG( cerr, L"속성 NPC 드롭 테이블 정보가 이상합니다." )
+		START_LOG( cerr, L"Invalid attribute NPC drop-table information." )
 			<< BUILD_LOGc( cDungeonType )
 			<< BUILD_LOGc( cMode )
 			<< BUILD_LOG( iSubStageCount )
@@ -80,7 +80,7 @@ bool KAttribNpcTable::SetNpcDropCount_LUA( char cDungeonType, int iPlayerCount, 
 {
 	if( cDungeonType < 0  ||  iPlayerCount < 1  ||  iNpcDropCount < 0 )
 	{
-		START_LOG( cerr, L"속성 NPC 드롭 카운트 테이블 정보가 이상합니다." )
+		START_LOG( cerr, L"Invalid attribute NPC drop-count table information." )
 			<< BUILD_LOGc( cDungeonType )
 			<< BUILD_LOGc( iPlayerCount )
 			<< BUILD_LOG( iNpcDropCount )
@@ -115,7 +115,7 @@ bool KAttribNpcTable::AddAttribNpcInfo_LUA()
 
 	if( eDungeonMode == CXSLDungeon::DM_INVALID  &&  iDifficuly == -1 )
 	{
-		START_LOG( cerr, L"던전 난이도 정보가 이상합니다!" )
+		START_LOG( cerr, L"Invalid dungeon difficulty information!" )
 			<< BUILD_LOG( eDungeonType )
 			<< BUILD_LOG( eDungeonMode )
 			<< BUILD_LOG( iDifficuly )
@@ -370,7 +370,7 @@ bool KAttribNpcTable::AddAttribNpcInfo_LUA()
 	}
 	else
 	{
-		START_LOG( cerr, L"잘못된 던전 타입입니다!" )
+		START_LOG( cerr, L"Invalid dungeon type!" )
 			<< BUILD_LOG( eDungeonType )
 			<< END_LOG;
 		goto end_proc;
@@ -379,7 +379,7 @@ bool KAttribNpcTable::AddAttribNpcInfo_LUA()
 	return true;
 
 end_proc:
-	START_LOG( cerr, L"속성 NPC 스크립트 파싱 실패.!" )
+	START_LOG( cerr, L"Failed to parse attribute NPC script!" )
 		<< END_LOG;
 
 	return false;
@@ -391,7 +391,7 @@ bool KAttribNpcTable::AddAttribDropInfo_LUA( int iNpcLv, int iNormalDropGroupID,
 {
 	if( iNpcLv <= 0  ||  iNormalDropGroupID <= 0  ||  iHardDropGroupID <= 0  ||  iExpertDropGroupID <= 0 )
 	{
-		START_LOG( cerr, L"속성 NPC 드롭 테이블 정보가 이상합니다." )
+		START_LOG( cerr, L"Invalid attribute NPC drop-table information." )
 			<< BUILD_LOG( iNpcLv )
 			<< BUILD_LOG( iNormalDropGroupID )
 			<< BUILD_LOG( iHardDropGroupID )
@@ -413,7 +413,7 @@ bool KAttribNpcTable::AddAttribDropGroupInfo_LUA( int iDropGroupID, int iDropTab
 {
 	if( iDropGroupID <= 0  ||  iDropTableGroupID <= 0  ||  fRate <= 0.0f )
 	{
-		START_LOG( cerr, L"속성 NPC 드롭 그룹 정보가 이상합니다." )
+		START_LOG( cerr, L"Invalid attribute NPC drop-group information." )
 			<< BUILD_LOG( iDropGroupID )
 			<< BUILD_LOG( iDropTableGroupID )
 			<< BUILD_LOG( fRate )
@@ -440,7 +440,7 @@ bool KAttribNpcTable::AddNoDropNpc_LUA( int iNpcID )
 {
 	if( iNpcID <= 0 )
 	{
-		START_LOG( cerr, L"NPC ID 정보가 이상합니다." )
+		START_LOG( cerr, L"Invalid NPC ID information." )
 			<< BUILD_LOG( iNpcID )
 			<< BUILD_LOG( static_cast<int>(m_setNoDropNpc.size()) )
 			<< END_LOG;
@@ -558,7 +558,7 @@ void KAttribNpcTable::GetAttribEnchantValue( IN int iAttribType, OUT char& cAttr
 		break;
 
 	default:
-		START_LOG( cerr, L"정의되지 않은 타입입니다." )
+		START_LOG( cerr, L"Undefined type." )
 			<< BUILD_LOG( iAttribType )
 			<< END_LOG;
 		break;
@@ -600,7 +600,7 @@ bool KAttribNpcTable::GetAttribNpcInfo( IN const CXSLDungeon::DUNGEON_TYPE eDung
 		mit = m_mapAttribNpc[AND_NORMAL].find( kKey );
 		if( mit == m_mapAttribNpc[AND_NORMAL].end() )
 		{
-			START_LOG( cerr, L"속성 몬스터 정보를 찾지 못했다!" )
+			START_LOG( cerr, L"Could not find attribute monster information!" )
 				<< BUILD_LOGc( cNpcLv )
 				<< BUILD_LOGc( cMode )
 				<< BUILD_LOG( m_mapAttribNpc[AND_NORMAL].size() )
@@ -613,7 +613,7 @@ bool KAttribNpcTable::GetAttribNpcInfo( IN const CXSLDungeon::DUNGEON_TYPE eDung
 		mit = m_mapAttribNpc[AND_SECRET].find( kKey );
 		if( mit == m_mapAttribNpc[AND_SECRET].end() )
 		{
-			START_LOG( cerr, L"속성 몬스터 정보를 찾지 못했다!" )
+			START_LOG( cerr, L"Could not find attribute monster information!" )
 				<< BUILD_LOGc( cNpcLv )
 				<< BUILD_LOGc( cMode )
 				<< BUILD_LOG( m_mapAttribNpc[AND_SECRET].size() )
@@ -623,7 +623,7 @@ bool KAttribNpcTable::GetAttribNpcInfo( IN const CXSLDungeon::DUNGEON_TYPE eDung
 	}
 	else
 	{
-		START_LOG( cerr, L"잘못된 던전타입입니다." )
+		START_LOG( cerr, L"Invalid dungeon type." )
 			<< BUILD_LOGc( eDungeonType )
 			<< END_LOG;
 		return false;
@@ -632,7 +632,7 @@ bool KAttribNpcTable::GetAttribNpcInfo( IN const CXSLDungeon::DUNGEON_TYPE eDung
 	const CXSLUnitManager::NPCUnitStat* pNpcUnitStat = SiCXSLUnitManager()->GetNPCUnitStat( static_cast<CXSLUnitManager::NPC_UNIT_ID>(iNpcID) );
 	if( pNpcUnitStat == NULL )
 	{
-		START_LOG( cerr, L"NPC Unit Stat이 존재하지 않는 NpcID입니다." )
+		START_LOG( cerr, L"NPC ID has no NPC Unit Stat." )
 			<< BUILD_LOGc( eDungeonType )
 			<< BUILD_LOGc( cMode )
 			<< BUILD_LOG( iNpcID )
@@ -710,7 +710,7 @@ bool KAttribNpcTable::GetAttribNpcInfo( IN const CXSLDungeon::DUNGEON_TYPE eDung
 		break;
 
 	default:
-		START_LOG( cerr, L"이상한 NPC 타입이 들어왔다?" )
+		START_LOG( cerr, L"Unexpected NPC type received." )
 			<< BUILD_LOGc( eDungeonType )
 			<< BUILD_LOGc( cMode )
 			<< BUILD_LOG( iNpcID )
@@ -746,7 +746,7 @@ bool KAttribNpcTable::GetAttribNpcInfoExtraStage( IN const int iNpcID, OUT KAttr
 	const CXSLUnitManager::NPCUnitStat* pNpcUnitStat = SiCXSLUnitManager()->GetNPCUnitStat( static_cast<CXSLUnitManager::NPC_UNIT_ID>(iNpcID) );
 	if( pNpcUnitStat == NULL )
 	{
-		START_LOG( cerr, L"NPC Unit Stat이 존재하지 않는 NpcID입니다." )
+		START_LOG( cerr, L"NPC ID has no NPC Unit Stat." )
 			<< BUILD_LOG( iNpcID )
 			<< END_LOG;
 		return false;
@@ -821,7 +821,7 @@ bool KAttribNpcTable::GetAttribNpcInfoExtraStage( IN const int iNpcID, OUT KAttr
 		break;
 
 	default:
-		START_LOG( cerr, L"이상한 NPC 타입이 들어왔다?" )
+		START_LOG( cerr, L"Unexpected NPC type received." )
 			<< BUILD_LOG( iNpcID )
 			<< BUILD_LOG( pNpcUnitStat->m_DamageType )
 			<< END_LOG;
@@ -847,7 +847,7 @@ bool KAttribNpcTable::AttribNpcDropItem( IN int iDifficulty, IN int iNpcLv, IN c
 	mit = m_mapAttribDropTable.find( iNpcLv );
 	if( mit == m_mapAttribDropTable.end() )
 	{
-		START_LOG( cerr, L"드롭테이블에 등록되지 않은 NPC Lv정보." )
+		START_LOG( cerr, L"NPC level is not registered in the drop table." )
 			<< BUILD_LOG( iNpcLv )
 			<< END_LOG;
 		return false;
@@ -858,7 +858,7 @@ bool KAttribNpcTable::AttribNpcDropItem( IN int iDifficulty, IN int iNpcLv, IN c
 	mitDrop = mit->second.find( iDifficulty );
 	if( mitDrop == mit->second.end() )
 	{
-		START_LOG( cerr, L"난이도 데이터가 이상하다?" )
+		START_LOG( cerr, L"Invalid difficulty data." )
 			<< BUILD_LOG( iDifficulty )
 			<< BUILD_LOG( iNpcLv )
 			<< END_LOG;
@@ -872,7 +872,7 @@ bool KAttribNpcTable::AttribNpcDropItem( IN int iDifficulty, IN int iNpcLv, IN c
 	mitRandom = m_mapAttribDropGroup.find( iDropGroupID );
 	if( mitRandom == m_mapAttribDropGroup.end() )
 	{
-		START_LOG( cerr, L"존재하지 않는 드롭 테이블 그룹ID입니다." )
+		START_LOG( cerr, L"Drop-table group ID does not exist." )
 			<< BUILD_LOG( iDifficulty )
 			<< BUILD_LOG( iNpcLv )
 			<< BUILD_LOG( iDropGroupID )

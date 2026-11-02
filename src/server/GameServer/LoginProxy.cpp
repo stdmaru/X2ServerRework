@@ -58,7 +58,7 @@ void KLoginProxy::ProcessEvent( const KEventPtr& spEvent_ )
 		//}}
         CASE_NOPARAM( E_RESERVE_DESTROY );
 	default:
-		START_LOG( cerr, L"이벤트 핸들러가 정의되지 않았음 - " << spEvent_->GetIDStr() );
+		START_LOG( cerr, L"No event handler is defined - " << spEvent_->GetIDStr() );
 	}
 }
 
@@ -78,15 +78,15 @@ void KLoginProxy::OnDestroy()
 	//{{ 2009. 1. 30  최육사	객체 소멸 로그
 	if( GetDisconnectReason() == KStatistics::eSIColDR_Server_Shutdown )
 	{
-		START_LOG( cout, L"서버 셧다운으로 인한 LoginProxy객체 소멸" )
+		START_LOG( cout, L"Destroying the LoginProxy object due to server shutdown." )
 			<< BUILD_LOG( GetProxyID() );
 	}
 	else
 	{
-		START_LOG( cout2, L"비정상적인 원인으로 인한 LoginProxy객체 소멸" )
+		START_LOG( cout2, L"Destroying the LoginProxy object due to an abnormal condition." )
 			<< BUILD_LOG( GetProxyID() )
 			<< BUILD_LOG( GetDisconnectReason() )
-			<< dbg::tab << L"종료 사유 : " << KStatistics::GetDissconnectReasonString( GetDisconnectReason() ) << dbg::endl
+			<< dbg::tab << L"Shutdown reason: " << KStatistics::GetDissconnectReasonString( GetDisconnectReason() ) << dbg::endl
 			<< BUILD_LOG( GetLastIocpFailedError() );
 
 		//{{ 2010. 10. 11	최육사	서버간 접속 끊김 로그
@@ -122,7 +122,7 @@ _IMPL_ON_FUNC( ELG_VERIFY_SERVER_CONNECT_ACK, KECN_VERIFY_SERVER_CONNECT_ACK )
 		SetUID( kPacket_.m_iServerUID );
 
 		//{{ 2010. 04. 16  최육사	로그 추가
-		START_LOG( cout2, L"로그인서버와 정상적으로 접속하였습니다!" )
+		START_LOG( cout2, L"Connected to the LoginServer successfully!" )
 			<< BUILD_LOG( kPacket_.m_iServerUID );
 		//}}
 	}
@@ -161,7 +161,7 @@ bool KLoginProxy::RoutePacket( const KEventPtr& spEvent_ )
 		}
 		else if( iEval > 0 )
 		{
-			START_LOG( cerr, L"상위 서버로 보낼 이벤트가 오면 안된다." )
+			START_LOG( cerr, L"An event for an upstream server should not be received here." )
 				<< BUILD_LOG( spEvent_->m_kDestPerformer.m_dwPerformerID )
 				<< BUILD_LOG( spEvent_->m_usEventID )
 				<< BUILD_LOG( spEvent_->GetIDStr() )
@@ -181,7 +181,7 @@ bool KLoginProxy::RoutePacket( const KEventPtr& spEvent_ )
 					{
 						ProcbyNotExistUser( spEvent_, vecUID );
 
-						START_LOG( cwarn, L"패킷전달 유닛이 없음." )
+						START_LOG( cwarn, L"No packet forwarding unit is available." )
 							<< BUILD_LOG( KEvent::GetIDStr( spEvent_->m_usEventID ) )
 							<< BUILD_LOG( iNotExistUserCnt )
 							<< END_LOG;
@@ -200,7 +200,7 @@ bool KLoginProxy::RoutePacket( const KEventPtr& spEvent_ )
 					{
 						ProcbyNotExistUser( spEvent_, vecUID );
 
-						START_LOG( cwarn, L"패킷전달 유닛이 없음." )
+						START_LOG( cwarn, L"No packet forwarding unit is available." )
 							<< BUILD_LOG( KEvent::GetIDStr( spEvent_->m_usEventID ) )
 							<< BUILD_LOG( iNotExistUserCnt )
 							<< END_LOG;
@@ -215,7 +215,7 @@ bool KLoginProxy::RoutePacket( const KEventPtr& spEvent_ )
 				SiKDBLayer()->QueueingEvent( spEvent_ );
 				return true;
 			default:
-				START_LOG( cerr, L"도착지가 이상한 패킷." )
+				START_LOG( cerr, L"Packet has an invalid destination." )
 					<< BUILD_LOG( spEvent_->m_kDestPerformer.m_dwPerformerID )
 					<< END_LOG;
 				return true;
@@ -259,7 +259,7 @@ void KLoginProxy::ProcbyNotExistUser( const KEventPtr& spEvent_, std::vector<Uid
 					spEvent_->m_kbuff.Reset();
 
 					// 일단 에러로그 찍자!
-					START_LOG( cerr, L"유닛 정보 얻을려고 했는데 시간차로 유저가 끊겨버렸군!" )
+					START_LOG( cerr, L"The user disconnected before the unit information could be retrieved." )
 						<< BUILD_LOG( vecUID[i] )
 						<< END_LOG;
 				}
@@ -331,7 +331,7 @@ void KLoginProxy::ProcbyNotExistUser( const KEventPtr& spEvent_, std::vector<Uid
 
 					default:
 						{
-							START_LOG( cerr, L"이런 방 타입의 좀비 체크 패킷은 보낸적이 없을텐데?" )
+							START_LOG( cerr, L"A zombie-check packet should not have been sent for this room type." )
 								<< BUILD_LOG( kData_.m_iRoomUID )
 								<< END_LOG;
 						}

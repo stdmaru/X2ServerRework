@@ -71,7 +71,7 @@ bool KAutoPartyScriptManager::AddAutoPartyDungeonInfo_LUA( int iDungeonMode, int
 {
 	if( iDungeonMode < 0  ||  iDungeonIDWithDif < 0  ||  iBeginLevel < 0  ||  iEndLevel < 0 )
 	{
-		START_LOG( cerr, L"매치 정보가 이상합니다." )
+		START_LOG( cerr, L"Invalid matchmaking information." )
 			<< BUILD_LOG( iDungeonMode )
 			<< BUILD_LOG( iDungeonIDWithDif )
 			<< BUILD_LOG( iBeginLevel )
@@ -93,14 +93,14 @@ void KAutoPartyScriptManager::SetSameUnitTypeWaitTime_LUA( double fWaitTime )
 {
 	m_fSameUnitTypeWaitTime = fWaitTime;
 
-	START_LOG( cout, L"[자동 파티 설정] 같은 종류 캐릭터 매칭 대기 시간 : " << m_fSameUnitTypeWaitTime );
+	START_LOG( cout, L"[Auto-party settings] Matchmaking wait time for the same character type: " << m_fSameUnitTypeWaitTime );
 }
 
 void KAutoPartyScriptManager::SetDirectGameStartWaitTime_LUA( double fWaitTime )
 {
 	m_fDirectGameStartWaitTime = fWaitTime;
 
-	START_LOG( cout, L"[자동 파티 설정] 바로 게임 시작하는 매칭 대기 시간 : " << m_fDirectGameStartWaitTime );
+	START_LOG( cout, L"[Auto-party settings] Matchmaking wait time before starting the game immediately: " << m_fDirectGameStartWaitTime );
 }
 
 //{{ 2012. 11. 14	최육사		자동파티 대기열 난이도 통합
@@ -108,7 +108,7 @@ void KAutoPartyScriptManager::SetSameDifficultyLevelWaitTime_LUA( double fWaitTi
 {
 	m_fSameDifficultyLevelWaitTime = fWaitTime;
 
-	START_LOG( cout, L"[자동 파티 설정] 같은 난이도 매칭 대기 시간 : " << m_fSameDifficultyLevelWaitTime );
+	START_LOG( cout, L"[Auto-party settings] Matchmaking wait time for the same difficulty: " << m_fSameDifficultyLevelWaitTime );
 }
 //}}
 
@@ -116,7 +116,7 @@ void KAutoPartyScriptManager::SetAutoPartyBonusTime_LUA( double fBonusTime )
 {
 	m_fAutoPartyBonusTime = fBonusTime;
 
-	START_LOG( cout, L"[자동 파티 설정] 자동 파티 보너스 적용 시간!" )
+	START_LOG( cout, L"[Auto-party settings] Auto-party bonus duration: " )
 		<< BUILD_LOG( GetAutoPartyBonusTime() );
 }
 
@@ -124,7 +124,7 @@ void KAutoPartyScriptManager::SetAutoPartyMakingBeginCount_LUA( int iAutoPartyMa
 {
 	m_iAutoPartyMakingBeginCount = iAutoPartyMakingBeginCount;
 
-	START_LOG( cout, L"[자동 파티 설정] 자동 파티 매칭 시작 대기자 인원 수" )
+	START_LOG( cout, L"[Auto-party settings] Minimum number of queued players to start matchmaking: " )
 		<< BUILD_LOG( GetAutoPartyMakingBeginCount() );
 }
 
@@ -132,7 +132,7 @@ void KAutoPartyScriptManager::SetCheckWaitUserCount_LUA( int iCheckWaitUserCount
 {
 	m_iCheckWaitUserCount = iCheckWaitUserCount;
 
-	START_LOG( cout, L"[자동 파티 설정] 자동 파티 대기자 리스트 세팅 카운트" )
+	START_LOG( cout, L"[Auto-party settings] Number of players in the auto-party queue: " )
 		<< BUILD_LOG( GetCheckWaitUserCount() );
 }
 
@@ -141,7 +141,7 @@ void KAutoPartyScriptManager::SetAutoPartyMatchingSuccessNum_LUA( IN int iDungeo
 {
 	if( ( iDungeon < 0 ) || ( iNum < 1 ) )
 	{
-		START_LOG( cerr, L"잘못된 인자값입니다.")
+		START_LOG( cerr, L"Invalid argument." )
 			<< BUILD_LOG( iDungeon )
 			<< BUILD_LOG( iNum )
 			<< END_LOG;
@@ -150,7 +150,7 @@ void KAutoPartyScriptManager::SetAutoPartyMatchingSuccessNum_LUA( IN int iDungeo
 	std::pair< std::map<int, int>::iterator, bool > pairResult = m_mapAutoPartyMatchingSuccessNum.insert( std::map<int, int>::value_type( iDungeon, iNum ) );
 	if( pairResult.second == false )
 	{
-		START_LOG( cerr, L"이미 정의되어 있는 iDungeon 입니다.")
+		START_LOG( cerr, L"iDungeon is already defined." )
 			<< BUILD_LOG( iDungeon )
 			<< END_LOG;
 	}
@@ -162,7 +162,7 @@ void KAutoPartyScriptManager::SetIsAllMemberCheckSameUnitTypeTime_LUA( bool bVal
 {
 	m_bIsAllMemberCheckSameUnitTypeTime = bVal;
 
-	START_LOG( cout, L"[자동 파티 설정] 자동 파티 매칭시 같은 유닛인지 체크 여부" )
+	START_LOG( cout, L"[Auto-party settings] Check whether queued players use the same character: " )
 		<< BUILD_LOG( IsCheckAllMemberSameUnitTypeTime() );
 }
 
@@ -170,7 +170,7 @@ void KAutoPartyScriptManager::SetIsAllMemberCheckSameDifficultyLevelTime_LUA( bo
 {
 	m_bIsAllMemberCheckSameDifficultyLevelTime = bVal;
 
-	START_LOG( cout, L"[자동 파티 설정] 자동 파티 매칭시 다른 난이도 인지 체크 여부" )
+	START_LOG( cout, L"[Auto-party settings] Check whether queued players have different difficulty settings: " )
 		<< BUILD_LOG( IsCheckAllMemberSameDifficultyLevelTime() );
 }
 
@@ -178,7 +178,7 @@ void KAutoPartyScriptManager::SetIsAllMemberCheckDirectGameStartTime_LUA( bool b
 {
 	m_bIsAllMemberCheckDirectGameStartTime = bVal;
 
-	START_LOG( cout, L"[자동 파티 설정] 자동 파티 매칭시 인원 수 부족해도 바로 시작 여부" )
+	START_LOG( cout, L"[Auto-party settings] Start immediately even when the party is not full: " )
 		<< BUILD_LOG( IsCheckAllMemberDirectGameStartTime() );
 }
 //}}

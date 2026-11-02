@@ -76,7 +76,7 @@ bool KDBLayer::AddDBConnectionInfo_LUA( int iDBConnection, const char* szDSN, in
 {
     if( !szDSN )
     {
-        START_LOG( cerr, L"DSN 문자열 포인터가 NULL임." )
+        START_LOG( cerr, L"DSN string pointer is null." )
             << BUILD_LOG( iDBConnection )
             << BUILD_LOG( nThread )
             << END_LOG;
@@ -87,7 +87,7 @@ bool KDBLayer::AddDBConnectionInfo_LUA( int iDBConnection, const char* szDSN, in
     std::map< int, KDBThreadManagerPtr >::iterator mit = m_mapDBAgent.find( iDBConnection );
     if( mit != m_mapDBAgent.end() )
     {
-        START_LOG( cerr, L"이미 존재하는 DB임." )
+        START_LOG( cerr, L"Database already exists." )
             << BUILD_LOG( iDBConnection )
             << BUILD_LOG( szDSN )
             << BUILD_LOG( nThread )
@@ -105,7 +105,7 @@ bool KDBLayer::AddDBConnectionInfo_LUA( int iDBConnection, const char* szDSN, in
 		KBaseServer::GetKObj()->GetCmdArgs( vecCmdArgs );
 		if( vecCmdArgs.size() < 2 )
 		{
-			START_LOG( cerr, L"DB Connection String으로 세팅되어있는데 DBConn ID와 PW가 입력되지 않았습니다." )
+			START_LOG( cerr, L"Database connection string is configured, but the DB connection ID and password were not provided." )
 				<< BUILD_LOG( iDBConnection )
 				<< BUILD_LOG( szDSN )
 				<< BUILD_LOG( nThread )
@@ -136,7 +136,7 @@ bool KDBLayer::AddDBConnectionByString( IN const int iDBType, IN const std::wstr
 {
 	if( wstrDBConnectionString.empty() )
 	{
-		START_LOG( cerr, L"DSN 문자열 포인터가 NULL임." )
+		START_LOG( cerr, L"DSN string pointer is null." )
 			<< BUILD_LOG( iDBType )
 			<< BUILD_LOG( iThreadCount )
 			<< END_LOG;
@@ -146,7 +146,7 @@ bool KDBLayer::AddDBConnectionByString( IN const int iDBType, IN const std::wstr
 	std::map< int, KDBThreadManagerPtr >::iterator mit = m_mapDBAgent.find( iDBType );
 	if( mit != m_mapDBAgent.end() )
 	{
-		START_LOG( cerr, L"이미 존재하는 DB임." )
+		START_LOG( cerr, L"Database already exists." )
 			<< BUILD_LOG( iDBType )
 			<< BUILD_LOG( iThreadCount )
 			<< END_LOG;
@@ -166,7 +166,7 @@ bool KDBLayer::SetManagerDBConnectionInfo_LUA( int iServerClass, const char* szD
 {
 	if( !szDSN )
 	{
-		START_LOG( cerr, L"DSN 문자열 포인터가 NULL임." )
+		START_LOG( cerr, L"DSN string pointer is null." )
 			<< END_LOG;
 		return false;
 	}
@@ -178,7 +178,7 @@ bool KDBLayer::SetManagerDBConnectionInfo_LUA( int iServerClass, const char* szD
 		KBaseServer::GetKObj()->GetCmdArgs( vecCmdArgs );
 		if( vecCmdArgs.size() < 2 )
 		{
-			START_LOG( cerr, L"DB Connection String으로 세팅되어있는데 DBConn ID와 PW가 입력되지 않았습니다." )
+			START_LOG( cerr, L"Database connection string is configured, but the DB connection ID and password were not provided." )
 				<< BUILD_LOG( szDSN )
 				<< BUILD_LOG( vecCmdArgs.size() )
 				<< END_LOG;
@@ -197,7 +197,7 @@ bool KDBLayer::SetManagerDBConnectionInfo_LUA( int iServerClass, const char* szD
 	std::vector< KDBConnectionInfo > vecDBConnectionInfo;
 	if( kDBConnectionManager.GetDBConnectionInfoFromManagerDB( iServerClass, wstrDSN.c_str(), bDBConnStr, vecDBConnectionInfo ) == false )
 	{
-		START_LOG( cerr, L"DB접속정보를 가져오지 못하였습니다!" )
+		START_LOG( cerr, L"Failed to retrieve database connection information." )
 			<< BUILD_LOG( iServerClass )
 			<< BUILD_LOG( szDSN )
 			<< BUILD_LOG( bDBConnStr )
@@ -209,7 +209,7 @@ bool KDBLayer::SetManagerDBConnectionInfo_LUA( int iServerClass, const char* szD
 	{
 		if( AddDBConnectionByString( kInfo.m_iDBType, kInfo.m_wstrConnectionString, kInfo.m_iThreadCount ) == false )
 		{
-			START_LOG( cerr, L"DB 접속 정보 추가 실패!" )
+			START_LOG( cerr, L"Failed to add database connection information." )
 				<< BUILD_LOG( kInfo.m_iDBType )
 				<< BUILD_LOG( kInfo.m_iThreadCount )
 				<< END_LOG;
@@ -262,7 +262,7 @@ void KDBLayer::QueueingEvent( const KEventPtr& spEvent_ )
         mit = m_mapDBAgent.find( DC_ACCOUNT );
         if( mit == m_mapDBAgent.end() )
         {
-            START_LOG( cerr, L"Account DB Agent 가 없음." )
+            START_LOG( cerr, L"Account database agent is unavailable." )
                 << END_LOG;
             return;
         }
@@ -271,7 +271,7 @@ void KDBLayer::QueueingEvent( const KEventPtr& spEvent_ )
         mit = m_mapDBAgent.find( DC_GAME );
         if( mit == m_mapDBAgent.end() )
         {
-            START_LOG( cerr, L"Game DB Agent 가 없음." )
+            START_LOG( cerr, L"Game database agent is unavailable." )
                 << END_LOG;
             return;
         }
@@ -280,7 +280,7 @@ void KDBLayer::QueueingEvent( const KEventPtr& spEvent_ )
         mit = m_mapDBAgent.find( DC_LOG );
         if( mit == m_mapDBAgent.end() )
         {
-            START_LOG( cerr, L"Log DB Agent 가 없음." )
+            START_LOG( cerr, L"Log database agent is unavailable." )
                 << END_LOG;
             return;
         }
@@ -293,7 +293,7 @@ void KDBLayer::QueueingEvent( const KEventPtr& spEvent_ )
 		mit = m_mapDBAgent.find( DC_SMS );
 		if( mit == m_mapDBAgent.end() )
 		{
-			START_LOG( cerr, L"SMS DB Agent 가 없음." )
+			START_LOG( cerr, L"SMS database agent is unavailable." )
 				<< END_LOG;
 			return;
 		}
@@ -302,7 +302,7 @@ void KDBLayer::QueueingEvent( const KEventPtr& spEvent_ )
         mit = m_mapDBAgent.find( DC_GAME_2ND );
         if( mit == m_mapDBAgent.end() )
         {
-            START_LOG( cerr, L"GAME 2nd DB Agent 가 없음." )
+            START_LOG( cerr, L"Secondary game database agent is unavailable." )
                 << END_LOG;
             return;
         }
@@ -311,7 +311,7 @@ void KDBLayer::QueueingEvent( const KEventPtr& spEvent_ )
         mit = m_mapDBAgent.find( DC_LOG_2ND );
         if( mit == m_mapDBAgent.end() )
         {
-            START_LOG( cerr, L"LOG 2nd DB Agent 가 없음." )
+            START_LOG( cerr, L"Secondary log database agent is unavailable." )
                 << END_LOG;
             return;
         }
@@ -320,7 +320,7 @@ void KDBLayer::QueueingEvent( const KEventPtr& spEvent_ )
 		mit = m_mapDBAgent.find( DC_KOG_BILLING );
 		if( mit == m_mapDBAgent.end() )
 		{
-			START_LOG( cerr, L"KOG Billing DB Agent 가 없음." )
+			START_LOG( cerr, L"KOG billing database agent is unavailable." )
 				<< END_LOG;
 			return;
 		}
@@ -329,7 +329,7 @@ void KDBLayer::QueueingEvent( const KEventPtr& spEvent_ )
 		mit = m_mapDBAgent.find( DC_PUBLISHER_BILLING );
 		if( mit == m_mapDBAgent.end() )
 		{
-			START_LOG( cerr, L"Publisher Billing DB Agent 가 없음." )
+			START_LOG( cerr, L"Publisher billing database agent is unavailable." )
 				<< END_LOG;
 			return;
 		}
@@ -341,7 +341,7 @@ void KDBLayer::QueueingEvent( const KEventPtr& spEvent_ )
 		//}}
 
     default:
-        START_LOG( cerr, L"무슨 DB를 찾는고?" )
+        START_LOG( cerr, L"Which database are you looking for?" )
             << BUILD_LOG( spEvent_->m_kDestPerformer.m_dwPerformerID )
             << BUILD_LOG( spEvent_->m_usEventID )
             << BUILD_LOG( spEvent_->GetIDStr() )

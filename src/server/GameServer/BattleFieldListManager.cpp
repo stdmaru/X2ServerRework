@@ -34,7 +34,7 @@ KBattleFieldListPtr KBattleFieldListManager::GetBattleFieldRoomList( IN const in
 	mit = m_mapBattleFieldList.find( iBattleFieldID );
 	if( mit == m_mapBattleFieldList.end() )
 	{
-		START_LOG( cerr, L"해당 배틀필드 리스트 정보가 존재하지 않습니다!" )
+		START_LOG( cerr, L"Battlefield list information does not exist!" )
 			<< BUILD_LOG( iBattleFieldID )
 			<< END_LOG;
 
@@ -57,7 +57,7 @@ void KBattleFieldListManager::UpdateBattleFieldRoomInfo( IN const KBattleFieldRo
 	KBattleFieldListPtr spRoomList = GetBattleFieldRoomList( kRoomInfo.m_iBattleFieldID );
 	if( spRoomList == NULL )
 	{
-		START_LOG( cerr, L"방 리스트 정보 포인터값이 이상합니다!" )
+		START_LOG( cerr, L"Invalid room list information pointer!" )
 			<< BUILD_LOG( kRoomInfo.m_iBattleFieldID )
 			<< END_LOG;
 		return;
@@ -77,7 +77,7 @@ void KBattleFieldListManager::DeleteBattleFieldRoomInfo( IN const KBattleFieldRo
 {
 	if( IsExist( kRoomInfo.m_iBattleFieldID ) == false )
 	{
-		START_LOG( cerr, L"해당 배틀필드의 방리스트가 존재하지 않습니다!" )
+		START_LOG( cerr, L"Room list for this battlefield does not exist!" )
 			<< BUILD_LOG( kRoomInfo.m_iBattleFieldID )
 			<< END_LOG;
 		return;
@@ -86,7 +86,7 @@ void KBattleFieldListManager::DeleteBattleFieldRoomInfo( IN const KBattleFieldRo
 	KBattleFieldListPtr spRoomList = GetBattleFieldRoomList( kRoomInfo.m_iBattleFieldID );
 	if( spRoomList == NULL )
 	{
-		START_LOG( cerr, L"방 리스트 정보 포인터값이 이상합니다!" )
+		START_LOG( cerr, L"Invalid room list information pointer!" )
 			<< BUILD_LOG( kRoomInfo.m_iBattleFieldID )
 			<< END_LOG;
 		return;
@@ -106,7 +106,7 @@ void KBattleFieldListManager::DeleteBattleFieldRoomInfo( IN const UidType iCnSer
 		KBattleFieldListPtr spBattleFieldList = mit->second;
 		if( IS_NULL( spBattleFieldList ) )
 		{
-			START_LOG( cerr, L"포인터값이 유효하지 않습니다!" )
+			START_LOG( cerr, L"The pointer is invalid!" )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -132,7 +132,7 @@ bool KBattleFieldListManager::GetRoomUIDForJoinBattleField( IN const int iBattle
 	KBattleFieldListPtr spRoomList = GetBattleFieldRoomList( iBattleFieldID );
 	if( IS_NULL( spRoomList ) )
 	{
-		START_LOG( cerr, L"존재하지 않는 배틀필드 방 리스트 정보 포인터값이 이상합니다!" )
+		START_LOG( cerr, L"Invalid pointer to nonexistent battlefield room list information!" )
 			<< BUILD_LOG( iBattleFieldID )
 			<< END_LOG;
 

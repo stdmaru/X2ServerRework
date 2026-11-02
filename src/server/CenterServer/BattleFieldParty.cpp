@@ -40,7 +40,7 @@ bool KBattleFieldParty::JoinPartyMember( IN const UidType iUnitUID )
 {
 	if( IsPartyMember( iUnitUID ) == true )
 	{
-		START_LOG( cerr, L"이미 파티 멤버인데 또 들어올려고 하네?" )
+		START_LOG( cerr, L"Party member is attempting to join again." )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 		return false;
@@ -53,7 +53,7 @@ bool KBattleFieldParty::LeavePartyMember( IN const UidType iUnitUID )
 {
 	if( IsPartyMember( iUnitUID ) == false )
 	{
-		START_LOG( cerr, L"파티 멤버가 아닌데 삭제하려고 하네?" )
+		START_LOG( cerr, L"Attempted to remove a user who is not a party member." )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 		return false;

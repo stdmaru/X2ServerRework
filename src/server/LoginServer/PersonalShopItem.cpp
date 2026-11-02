@@ -37,7 +37,7 @@ KPersonalShopItem::KPersonalShopItem( const KSellPShopItemBackupData& kInfo )
 	// 대리상점 DB 테이블에서 불러오는 아이템 이므로 대리상점 전용 ItemUID어야만 합니다.
 	if( IsPShopAgencyItemUID() == false )
 	{
-		START_LOG( cerr, L"DB에서 불러왔는데 왜 대리상점 전용 ItemUID가 아니지?" )
+		START_LOG( cerr, L"Loaded from the database, but why is this not a hired-shop ItemUID?" )
 			<< BUILD_LOG( GetItemUID() )
 			<< END_LOG;
 	}
@@ -81,7 +81,7 @@ bool KPersonalShopItem::BuyItem( IN const char /*cPersonalShopType*/,
 {
 	if( IsPShopAgencyItemUID() == false )
 	{
-		START_LOG( cerr, L"이 아이템은 아직 대리상점 전용 ItemUID가 발급되지 않았습니다. 절대로 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"This item has not yet been assigned a hired-shop ItemUID. This should never happen!" )
 			<< BUILD_LOG( GetItemUID() )
 			<< END_LOG;
 		return false;
@@ -89,7 +89,7 @@ bool KPersonalShopItem::BuyItem( IN const char /*cPersonalShopType*/,
 
 	if( GetShopItemState() != SIS_SALE )
 	{
-		START_LOG( cerr, L"해당 아이템은 현재 구매가능한 상태가 아닙니다!" )
+		START_LOG( cerr, L"This item is not currently available for purchase!" )
 			<< BUILD_LOG( GetItemUID() )
 			<< BUILD_LOG( GetShopItemState() )
 			<< END_LOG;
@@ -98,7 +98,7 @@ bool KPersonalShopItem::BuyItem( IN const char /*cPersonalShopType*/,
 
 	if( iBuyQuantity > GetQuantity() )
 	{
-		START_LOG( cerr, L"구매하려는 수량만큼 아이템 수량이 존재하지 않습니다! 일어날수 없는 에러!" )
+		START_LOG( cerr, L"Not enough items to fulfill the requested quantity! This should be impossible!" )
 			<< BUILD_LOG( GetItemUID() )
 			<< BUILD_LOG( iBuyQuantity )
 			<< BUILD_LOG( GetQuantity() )

@@ -66,7 +66,7 @@ int KGSBattleFieldRoom::CalcJoinUserCountWithReservedUserCount() const
 		if( mitPL == m_kRoomInfo.m_mapPartyList.end() )
 		{
 			// 에러로그가 너무 많이찍혀서 로그 레벨을 낮춘다.
-			START_LOG( cwarn, L"파티UID값은 있는데 파티 리스트에는 해당 파티 정보가 없다? 일어나서는 안되는 에러!" )
+			START_LOG( cwarn, L"PartyUID exists, but party information is missing from the party list; this should never happen!" )
 				<< BUILD_LOG( iUnitUID )
 				<< BUILD_LOG( iPartyUID )
 				<< END_LOG;
@@ -77,7 +77,7 @@ int KGSBattleFieldRoom::CalcJoinUserCountWithReservedUserCount() const
 		if( setPartyMemberList.find( iUnitUID ) == setPartyMemberList.end() )
 		{
 			// 에러로그가 너무 많이찍혀서 로그 레벨을 낮춘다.
-			START_LOG( cwarn, L"파티 리스트에 파티 정보는 있는데 해당 유저가 파티 소속이 아니다? 일어나서는 안되는 에러!" )
+			START_LOG( cwarn, L"Party exists in the list, but user is not a member; this should never happen!" )
 				<< BUILD_LOG( iUnitUID )
 				<< BUILD_LOG( iPartyUID )
 				<< BUILD_LOG( setPartyMemberList.size() )

@@ -98,7 +98,7 @@ void KGameEventReward::SetServerGroupID( IN const int iServerGroupID )
 
 void KGameEventReward::Dump()
 {
-	START_LOG( cout2, L"보상 이벤트 확률셋팅.!" )
+	START_LOG( cout2, L"Reward event probability configured." )
 		<< BUILD_LOG( GetUID() )
 		<< BUILD_LOG( GetEventName() )
 		<< BUILD_LOG( m_sData.m_fEXPRate )

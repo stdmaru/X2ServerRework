@@ -67,7 +67,7 @@ void KGuildBoardManager::UpdateGuildBoardInfo( IN const KDBE_GET_GUILD_BOARD_INF
 		{
 			if( InsertApplyJoinGuild( *vitAJ ) == false )
 			{
-				START_LOG( cerr, L"길드 가입 신청자 정보 업데이트 실패!" )
+				START_LOG( cerr, L"Failed to update guild applicant information!" )
 					<< BUILD_LOG( vitAJ->m_iApplyJoinGuildUID )
 					<< BUILD_LOG( vitAJ->m_iUnitUID )
 					<< END_LOG;
@@ -82,7 +82,7 @@ void KGuildBoardManager::UpdateGuildBoardInfo( IN const KDBE_GET_GUILD_BOARD_INF
 
 	if( !kPacketNot.m_vecDeleteApply.empty() )
 	{
-		START_LOG( cerr, L"길드 광고가 없어서 강제 삭제 처리된 가입 신청 리스트!" )
+		START_LOG( cerr, L"Guild applications were forcibly removed because the guild advertisement no longer exists!" )
 			<< BUILD_LOG( kPacketNot.m_vecDeleteApply.size() );
 
         SendToGameDB( DBE_DELETE_GUILD_AD_LIST_NOT, kPacketNot );
@@ -91,7 +91,7 @@ void KGuildBoardManager::UpdateGuildBoardInfo( IN const KDBE_GET_GUILD_BOARD_INF
 	// 3. 길드 광고 삭제 체크
 	CheckGuildAdDeleteTime( true );
 
-	START_LOG( cout, L"길드 게시판 정보 업데이트 완료!" )
+	START_LOG( cout, L"Guild board information updated!" )
 		<< BUILD_LOG( kInfo.m_vecGuildAdList.size() )
 		<< BUILD_LOG( kInfo.m_vecApplyJoinGuildList.size() );
 }
@@ -113,7 +113,7 @@ KGuildAdPtr KGuildBoardManager::GetGuildAd( IN int iGuildUID )
 	std::map< int, KGuildAdPtr >::iterator mit = m_mapGuildAd.find( iGuildUID );
 	if( mit == m_mapGuildAd.end() )
 	{
-		START_LOG( clog, L"길드 광고 정보 찾기 실패!" )
+		START_LOG( clog, L"Failed to find guild advertisement information!" )
 			<< BUILD_LOG( iGuildUID );
 
 		return KGuildAdPtr();
@@ -121,7 +121,7 @@ KGuildAdPtr KGuildBoardManager::GetGuildAd( IN int iGuildUID )
 
 	if( mit->second == NULL )
 	{
-		START_LOG( cerr, L"길드 포인터 이상.!" )
+		START_LOG( cerr, L"Invalid guild pointer!" )
 			<< BUILD_LOG( iGuildUID )
 			<< END_LOG;
 
@@ -136,7 +136,7 @@ bool KGuildBoardManager::IsExpiredGuildAd( IN int iGuildUID )
 	KGuildAdPtr spGuildAd = GetGuildAd( iGuildUID );
 	if( spGuildAd == NULL )
 	{
-		START_LOG( cerr, L"길드 광고 정보가 존재하지 않습니다." )
+		START_LOG( cerr, L"Guild advertisement does not exist." )
 			<< BUILD_LOG( iGuildUID )
 			<< END_LOG;
 
@@ -166,7 +166,7 @@ void KGuildBoardManager::InsertGuildAd( IN const KGuildAdInfo& kInfo )
 	// 2. 기간 만료된 광고인지 체크해서 만료되었다면 리스트에는 넣지 말자!
 	if( spGuildAd->GetCTimeEndDate() < CTime::GetCurrentTime() )
 	{
-		START_LOG( clog, L"기간 만료된 광고라서 기간만료 리스트에 넣습니다." )
+		START_LOG( clog, L"Advertisement expired; adding it to the expired list." )
 			<< BUILD_LOG( spGuildAd->GetGuildUID() );
 
 		ExpiredGuildAd( kInfo.m_iGuildUID );
@@ -184,7 +184,7 @@ void KGuildBoardManager::InsertGuildAd( IN const KGuildAdInfo& kInfo )
 
 				if( (*vit)->GetGuildUID() == kInfo.m_iGuildUID )
 				{
-					START_LOG( cerr, L"guild vector에 중복된 guild가 있다!" )
+					START_LOG( cerr, L"Duplicate guild in the guild vector!" )
 						<< BUILD_LOG( kInfo.m_iGuildUID )
 						<< END_LOG;
 
@@ -275,7 +275,7 @@ void KGuildBoardManager::ExpiredGuildAd( IN int iGuildUID )
 	KGuildAdPtr spGuildAd = GetGuildAd( iGuildUID );
 	if( spGuildAd == NULL )
 	{
-		START_LOG( cerr, L"기간 만료된 광고 정보가 없습니다. 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"No expired advertisement information was found. This should never happen!" )
 			<< BUILD_LOG( iGuildUID )
 			<< END_LOG;
 		return;
@@ -290,7 +290,7 @@ void KGuildBoardManager::ExpiredGuildAd( IN int iGuildUID )
 
 			if( (*vit)->GetGuildUID() == iGuildUID )
 			{
-				START_LOG( cerr, L"기간 만료된 길드 광고 정보가 중복되면 안되는데 중복된게 있네?" )
+				START_LOG( cerr, L"Duplicate expired guild advertisement information was found; duplicates are not allowed!" )
 					<< BUILD_LOG( iGuildUID )
 					<< END_LOG;
 
@@ -336,7 +336,7 @@ void KGuildBoardManager::UnexpiredGuildAd( IN const KGuildAdInfo& kInfo )
 	KGuildAdPtr spGuildAd = GetGuildAd( kInfo.m_iGuildUID );
 	if( spGuildAd == NULL )
 	{
-		START_LOG( cerr, L"기간 만료된 광고 정보가 없습니다. 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"No expired advertisement information was found. This should never happen!" )
 			<< BUILD_LOG( kInfo.m_iGuildUID )
 			<< END_LOG;
 		return;
@@ -352,7 +352,7 @@ void KGuildBoardManager::UnexpiredGuildAd( IN const KGuildAdInfo& kInfo )
 
 			if( (*vit)->GetGuildUID() == kInfo.m_iGuildUID )
 			{
-				START_LOG( cerr, L"guild vector에 중복된 guild가 있다!" )
+				START_LOG( cerr, L"Duplicate guild in the guild vector!" )
 					<< BUILD_LOG( kInfo.m_iGuildUID )
 					<< END_LOG;
 
@@ -578,7 +578,7 @@ bool KGuildBoardManager::IsExistApplyJoinGuild( IN int iGuildUID, IN UidType iUn
 	if( mit == m_mapApplyJoinGuildList.end() )
 	{
 		// 발생 가능한 예외 입니다.
-		START_LOG( clog, L"존재하지않는 가입 신청입니다." )
+		START_LOG( clog, L"Guild application does not exist." )
 			<< BUILD_LOG( iGuildUID )
 			<< BUILD_LOG( iUnitUID );
 
@@ -587,7 +587,7 @@ bool KGuildBoardManager::IsExistApplyJoinGuild( IN int iGuildUID, IN UidType iUn
 
 	if( iGuildUID != mit->second )
 	{
-		START_LOG( cerr, L"가입 신청한 길드가 다릅니다. 있을수 없는 에러!" )
+		START_LOG( cerr, L"The applied-for guild does not match. This should be impossible!" )
 			<< BUILD_LOG( iGuildUID )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
@@ -598,7 +598,7 @@ bool KGuildBoardManager::IsExistApplyJoinGuild( IN int iGuildUID, IN UidType iUn
 	KGuildAdPtr spGuildAd = GetGuildAd( iGuildUID );
 	if( spGuildAd == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 길드 광고에 가입 신청을 삭제하려고 하네?" )
+		START_LOG( cerr, L"Attempted to delete an application for a nonexistent guild advertisement." )
 			<< BUILD_LOG( iUnitUID )
 			<< BUILD_LOG( iGuildUID )
 			<< END_LOG;
@@ -608,7 +608,7 @@ bool KGuildBoardManager::IsExistApplyJoinGuild( IN int iGuildUID, IN UidType iUn
 
 	if( spGuildAd->IsExistMyApplyJoinGuild( iUnitUID ) == false )
 	{
-		START_LOG( cerr, L"길드 광고에 가입 신청이 등록되어있지 않다!" )
+		START_LOG( cerr, L"No application is registered for this guild advertisement!" )
 			<< BUILD_LOG( iUnitUID )
 			<< BUILD_LOG( iGuildUID )
 			<< END_LOG;
@@ -629,7 +629,7 @@ bool KGuildBoardManager::GetMyApplyJoinGuildUID( IN UidType iUnitUID, OUT int& i
 	if( mit == m_mapApplyJoinGuildList.end() )
 	{
 		// 에러가 아니다.
-		START_LOG( clog, L"존재하지않는 가입 신청입니다." )
+		START_LOG( clog, L"Guild application does not exist." )
 			<< BUILD_LOG( iGuildUID )
 			<< BUILD_LOG( iUnitUID );
 
@@ -645,7 +645,7 @@ bool KGuildBoardManager::InsertApplyJoinGuild( IN const KApplyJoinGuildInfo& kIn
 	KGuildAdPtr spGuildAd = GetGuildAd( kInfo.m_iApplyJoinGuildUID );
 	if( spGuildAd == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 길드 광고에 가입 신청을 하려고 하네?" )
+		START_LOG( cerr, L"Attempted to apply to a nonexistent guild advertisement." )
 			<< BUILD_LOG( kInfo.m_iApplyJoinGuildUID )
 			<< BUILD_LOG( kInfo.m_iUnitUID )
 			<< END_LOG;
@@ -666,7 +666,7 @@ bool KGuildBoardManager::DeleteApplyJoinGuild( IN UidType iUnitUID )
 	std::map< UidType, int >::iterator mit = m_mapApplyJoinGuildList.find( iUnitUID );
 	if( mit == m_mapApplyJoinGuildList.end() )
 	{
-		START_LOG( cerr, L"가입 신청한적이 없는데 가입신청을 지우려 합니다." )
+		START_LOG( cerr, L"Attempted to remove a guild application that was never submitted." )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 
@@ -676,7 +676,7 @@ bool KGuildBoardManager::DeleteApplyJoinGuild( IN UidType iUnitUID )
 	KGuildAdPtr spGuildAd = GetGuildAd( mit->second );
 	if( spGuildAd == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 길드 광고에 가입 신청을 삭제하려고 하네?" )
+		START_LOG( cerr, L"Attempted to delete an application for a nonexistent guild advertisement." )
 			<< BUILD_LOG( iUnitUID )
 			<< BUILD_LOG( mit->second )
 			<< END_LOG;
@@ -695,7 +695,7 @@ bool KGuildBoardManager::DeleteApplyJoinGuildList( IN int iGuildUID, OUT std::ve
 	KGuildAdPtr spGuildAd = GetGuildAd( iGuildUID );
 	if( spGuildAd == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 길드 광고입니다." )
+		START_LOG( cerr, L"Guild advertisement does not exist." )
 			<< BUILD_LOG( iGuildUID )
 			<< END_LOG;
 
@@ -719,7 +719,7 @@ void KGuildBoardManager::NewGuildAd( IN const KGuildAdInfo& kInfo )
 {
 	if( IsExistGuildAd( kInfo.m_iGuildUID ) == true )
 	{
-		START_LOG( cerr, L"이미 등록되어있는 길드 광고를 등록하려 했습니다." )
+		START_LOG( cerr, L"Attempted to register a guild advertisement that is already registered." )
 			<< BUILD_LOG( kInfo.m_iGuildUID )
 			<< END_LOG;
 
@@ -738,7 +738,7 @@ bool KGuildBoardManager::ApplyJoinGuild( IN const KELG_APPLY_JOIN_GUILD_REQ& kIn
 	KGuildAdPtr spGuildAd = GetGuildAd( kInfo.m_kApplyJoinGuildInfo.m_iApplyJoinGuildUID );
 	if( spGuildAd == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 길드 광고에 가입 신청을 하려고 하네?" )
+		START_LOG( cerr, L"Attempted to apply to a nonexistent guild advertisement." )
 			<< BUILD_LOG( kInfo.m_kApplyJoinGuildInfo.m_iApplyJoinGuildUID )
 			<< BUILD_LOG( kInfo.m_kApplyJoinGuildInfo.m_iUnitUID )
 			<< END_LOG;
@@ -770,7 +770,7 @@ bool KGuildBoardManager::ApplyJoinGuild( IN const KELG_APPLY_JOIN_GUILD_REQ& kIn
 		{
             if( DeleteApplyJoinGuild( kInfo.m_kApplyJoinGuildInfo.m_iUnitUID ) == false )
 			{
-				START_LOG( cerr, L"기존 가입 신청 삭제 실패!" )
+				START_LOG( cerr, L"Failed to remove the existing guild application!" )
 					<< BUILD_LOG( kInfo.m_kApplyJoinGuildInfo.m_iUnitUID )
 					<< END_LOG;
 
@@ -794,7 +794,7 @@ bool KGuildBoardManager::ApplyJoinGuild( IN const KELG_APPLY_JOIN_GUILD_REQ& kIn
 	// 가입 신청
     if( InsertApplyJoinGuild( kInfo.m_kApplyJoinGuildInfo ) == false )
 	{
-		START_LOG( cerr, L"가입 신청 실패!" )
+		START_LOG( cerr, L"Failed to submit guild application!" )
 			<< BUILD_LOG( kInfo.m_kApplyJoinGuildInfo.m_iApplyJoinGuildUID )
 			<< BUILD_LOG( kInfo.m_kApplyJoinGuildInfo.m_iUnitUID )
 			<< BUILD_LOG( kInfo.m_bOldApplyDelete )
@@ -811,7 +811,7 @@ void KGuildBoardManager::RollbackApplyJoinGuild( IN const KDBE_APPLY_JOIN_GUILD_
 {
     if( DeleteApplyJoinGuild( kInfo.m_kApplyJoinGuildInfo.m_iUnitUID ) == false )
 	{
-		START_LOG( cerr, L"길드 가입 신청 롤백 실패!" )
+		START_LOG( cerr, L"Failed to roll back guild application!" )
 			<< BUILD_LOG( kInfo.m_kApplyJoinGuildInfo.m_iApplyJoinGuildUID )
 			<< BUILD_LOG( kInfo.m_kApplyJoinGuildInfo.m_iUnitUID )
 			<< END_LOG;
@@ -823,7 +823,7 @@ void KGuildBoardManager::UpdateApplyJoinGuildInfo( IN const KDBE_APPLY_JOIN_GUIL
 	KGuildAdPtr spGuildAd = GetGuildAd( kInfo.m_kApplyJoinGuildInfo.m_iApplyJoinGuildUID );
 	if( spGuildAd == NULL )
 	{
-		START_LOG( cerr, L"길드광고가 존재하지 않습니다. 있을수 없는에러!" )
+		START_LOG( cerr, L"Guild advertisement does not exist. This should be impossible!" )
 			<< BUILD_LOG( kInfo.m_kApplyJoinGuildInfo.m_iApplyJoinGuildUID )
 			<< BUILD_LOG( kInfo.m_kApplyJoinGuildInfo.m_iUnitUID )
 			<< END_LOG;
@@ -845,7 +845,7 @@ void KGuildBoardManager::GetGuildAdList( IN const KELG_GET_GUILD_AD_LIST_REQ& kR
 
 	if( SORT_TYPE >= AST_MAX )
 	{
-		START_LOG( cerr, L"존재하지 않는 길드 광고 타입입니다." )
+		START_LOG( cerr, L"Unknown guild advertisement type." )
 			<< BUILD_LOGc( SORT_TYPE )
 			<< END_LOG;
 		return;
@@ -874,7 +874,7 @@ void KGuildBoardManager::GetGuildAdList( IN const KELG_GET_GUILD_AD_LIST_REQ& kR
 
 		if( m_vecGuildAd[SORT_TYPE].size() <= uiBeginIndex )
 		{
-			START_LOG( cerr, L"일어날 수 없는 에러!" )
+			START_LOG( cerr, L"Unexpected error!" )
 				<< BUILD_LOG( kAck.m_uiViewPage )
 				<< BUILD_LOG( kAck.m_uiTotalPage )
 				<< BUILD_LOG( uiBeginIndex )
@@ -891,7 +891,7 @@ void KGuildBoardManager::GetGuildAdList( IN const KELG_GET_GUILD_AD_LIST_REQ& kR
 	{
 		if( (*vit) == NULL )
 		{
-			START_LOG( cerr, L"길드 광고 포인터가 이상합니다." )
+			START_LOG( cerr, L"Invalid guild advertisement pointer." )
 				<< END_LOG;
 			break;
 		}
@@ -922,7 +922,7 @@ bool KGuildBoardManager::GetApplyJoinGuildList( IN const KELG_GET_APPLY_JOIN_GUI
 	KGuildAdPtr spGuildAd = GetGuildAd( kReq.m_iGuildUID );
 	if( spGuildAd == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 길드 광고입니다." )
+		START_LOG( cerr, L"Guild advertisement does not exist." )
 			<< BUILD_LOG( kReq.m_iGuildUID )
 			<< END_LOG;
 
@@ -939,7 +939,7 @@ bool KGuildBoardManager::MakeGuildMemberInfoForAcceptJoinGuild( IN int iGuildUID
 	KGuildAdPtr spGuildAd = GetGuildAd( iGuildUID );
 	if( spGuildAd == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 길드 광고입니다." )
+		START_LOG( cerr, L"Guild advertisement does not exist." )
 			<< BUILD_LOG( iGuildUID )
 			<< END_LOG;
 
@@ -949,7 +949,7 @@ bool KGuildBoardManager::MakeGuildMemberInfoForAcceptJoinGuild( IN int iGuildUID
 	KApplyJoinGuildInfo kApplyInfo;
 	if( spGuildAd->GetApplyJoinGuildInfo( iUnitUID, kApplyInfo ) == false )
 	{
-		START_LOG( cerr, L"길드 가입 신청 정보 얻기 실패!" )
+		START_LOG( cerr, L"Failed to get guild application information!" )
 			<< BUILD_LOG( iGuildUID )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
@@ -971,7 +971,7 @@ bool KGuildBoardManager::GetGuildSkillInfo( IN int iGuildUID, OUT KGuildSkillInf
 	KGuildAdPtr spGuildAd = GetGuildAd( iGuildUID );
 	if( spGuildAd == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 길드 광고입니다." )
+		START_LOG( cerr, L"Guild advertisement does not exist." )
 			<< BUILD_LOG( iGuildUID )
 			<< END_LOG;
 
@@ -986,7 +986,7 @@ bool KGuildBoardManager::SetGuildSkillInfo( IN int iGuildUID, IN const KGuildSki
 	KGuildAdPtr spGuildAd = GetGuildAd( iGuildUID );
 	if( spGuildAd == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 길드 광고입니다." )
+		START_LOG( cerr, L"Guild advertisement does not exist." )
 			<< BUILD_LOG( iGuildUID )
 			<< END_LOG;
 
@@ -1002,7 +1002,7 @@ bool KGuildBoardManager::DeleteGuildSkillInfo( IN int iGuildUID )
 	KGuildAdPtr spGuildAd = GetGuildAd( iGuildUID );
 	if( spGuildAd == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 길드 광고입니다." )
+		START_LOG( cerr, L"Guild advertisement does not exist." )
 			<< BUILD_LOG( iGuildUID )
 			<< END_LOG;
 
@@ -1018,7 +1018,7 @@ bool KGuildBoardManager::UpdateGuildAdInfo( IN const KGuildAdInfo& kInfo )
 	KGuildAdPtr spGuildAd = GetGuildAd( kInfo.m_iGuildUID );
 	if( spGuildAd == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 길드 광고입니다." )
+		START_LOG( cerr, L"Guild advertisement does not exist." )
 			<< BUILD_LOG( kInfo.m_iGuildUID )
 			<< END_LOG;
 

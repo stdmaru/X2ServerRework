@@ -68,7 +68,7 @@ bool CXSLRandomItemManager::AddRandomItemTemplet_LUA()
 	//{{ 2011. 12. 14	최육사	서버 에러 로그 버그 수정
 	if( SiCXSLItemManager()->GetItemTemplet( randomItemData.m_ItemID ) == NULL )
 	{
-		START_LOG( cwarn, L"Item.lua에 등록되지 않은 아이템 입니다. 랜덤 큐브 테이블에 포함할수 없습니다!" )
+		START_LOG( cwarn, L"Item is not registered in Item.lua and cannot be included in the random cube table." )
 			<< BUILD_LOG( randomItemData.m_ItemID );
 		return false;
 	}
@@ -94,7 +94,7 @@ bool CXSLRandomItemManager::AddRandomItemTemplet_LUA()
 	randomItemData.m_byteUseCondition	= static_cast<byte>( iTemp );
 	if( ( randomItemData.m_byteUseCondition <= CXSLItem::UC_NONE ) || ( CXSLItem::UC_ONE_CLASS < randomItemData.m_byteUseCondition ) )
 	{
-		START_LOG( cerr, L"유효한 USE_CONDITION 값이 아닙니다." )
+		START_LOG( cerr, L"Invalid USE_CONDITION value." )
 			<< BUILD_LOG( randomItemData.m_byteUseCondition )
 			<< END_LOG;
 		goto end_proc;
@@ -142,7 +142,7 @@ bool CXSLRandomItemManager::AddRandomItemTemplet_LUA()
 			{
 				if( unitData.m_cUnitClass != CXSLUnit::UC_NONE )
 				{
-					START_LOG( cerr, L"m_UseCondition, m_cUnitClass 에 설정된 값이 의미상 일치하지 않습니다.")
+					START_LOG( cerr, L"Configured m_UseCondition and m_cUnitClass values are inconsistent.")
 						<< BUILD_LOG( randomItemData.m_byteUseCondition )
 						<< BUILD_LOG( unitData.m_cUnitClass )
 						<< END_LOG;
@@ -154,7 +154,7 @@ bool CXSLRandomItemManager::AddRandomItemTemplet_LUA()
 				if( ( unitData.m_cUnitClass != CXSLUnit::GetUnitClassBaseGrade( static_cast<CXSLUnit::UNIT_CLASS>( unitData.m_cUnitClass ) ) ) ||
 					( unitData.m_iItemGroupID == 0 ) )
 				{
-					START_LOG( cerr, L"정상적인 큐브가 아닙니다!")
+					START_LOG( cerr, L"Invalid cube." )
 						<< BUILD_LOG( randomItemData.m_byteUseCondition )
 						<< BUILD_LOGc( unitData.m_cUnitClass )
 						<< BUILD_LOG( unitData.m_iItemGroupID )
@@ -165,7 +165,7 @@ bool CXSLRandomItemManager::AddRandomItemTemplet_LUA()
 			else if( ( CXSLUnit::IsValidUnitClass( static_cast<CXSLUnit::UNIT_CLASS>( unitData.m_cUnitClass ) ) != true ) ||
 					 ( unitData.m_iItemGroupID == 0 ) )
 			{
-				START_LOG( cerr, L"정상적인 큐브가 아닙니다!")
+				START_LOG( cerr, L"Invalid cube." )
 					<< BUILD_LOG( randomItemData.m_byteUseCondition )
 					<< BUILD_LOG( unitData.m_cUnitClass )
 					<< BUILD_LOG( unitData.m_iItemGroupID )
@@ -184,7 +184,7 @@ bool CXSLRandomItemManager::AddRandomItemTemplet_LUA()
 
 	if (randomItemData.m_vecUnitData.size() <= 0)
 	{
-		START_LOG( cerr, L"정상적인 큐브가 아닙니다! m_vecUnitData Size 0임" )
+		START_LOG( cerr, L"Invalid cube: m_vecUnitData is empty." )
 			<< BUILD_LOG( randomItemData.m_ItemID )
 			<< BUILD_LOG( randomItemData.m_KeyItemID )
 			<< BUILD_LOG( randomItemData.m_RequiredKeyCount )
@@ -203,7 +203,7 @@ bool CXSLRandomItemManager::AddRandomItemTemplet_LUA()
 	// 이미 등록된 랜덤 테이블인지 검사한다!
 	if( GetRandomItemData( randomItemData.m_ItemID, randomItemData.m_KeyItemID ) != NULL )
 	{
-		START_LOG( cerr, L"이미 등록된 랜덤 아이템 테이블입니다. 데이터가 중복되네요.." )
+		START_LOG( cerr, L"Random item table is already registered; duplicate data found." )
 			<< BUILD_LOG( randomItemData.m_ItemID )
 			<< BUILD_LOG( randomItemData.m_KeyItemID )
 			<< END_LOG;
@@ -235,7 +235,7 @@ bool CXSLRandomItemManager::AddRandomItemTemplet_LUA()
 	return true;
 
 end_proc:
-	START_LOG( cerr, L"랜덤 상자 데이터 파싱 실패.!" )
+	START_LOG( cerr, L"Failed to parse random box data." )
 		<< BUILD_LOG( randomItemData.m_ItemID )
 		<< END_LOG;
 
@@ -257,7 +257,7 @@ bool CXSLRandomItemManager::AddRandomItemGroup_LUA( int iGroupID, int iItemID, f
 
 	if( iGroupID <= 0 || iItemID <= 0 || fRate <= 0.0f || iPeriod < 0  || iQuantity < 0 )
 	{
-		START_LOG( cerr, L"랜덤 아이템 그룹데이터 파싱 실패.!" )
+		START_LOG( cerr, L"Failed to parse random item group data." )
 			<< BUILD_LOG( iGroupID )
 			<< BUILD_LOG( iItemID )
 			<< BUILD_LOG( fRate )
@@ -282,7 +282,7 @@ bool CXSLRandomItemManager::AddRandomItemGroup_LUA( int iGroupID, int iItemID, f
 		mit->second.m_vecItemData.push_back( itemData );
 		if( mit->second.m_kLottery.AddCaseIntegerCast( iItemID, fRate, iPeriod, iQuantity ) == false )
 		{
-			START_LOG( cerr, L"랜덤 아이템 확률 설정 실패!" )
+			START_LOG( cerr, L"Failed to configure random item probabilities." )
 				<< BUILD_LOG( iGroupID )
 				<< BUILD_LOG( iItemID )
 				<< BUILD_LOG( fRate )
@@ -298,7 +298,7 @@ bool CXSLRandomItemManager::AddRandomItemGroup_LUA( int iGroupID, int iItemID, f
 		itemGDList.m_vecItemData.push_back( itemData );
 		if( itemGDList.m_kLottery.AddCaseIntegerCast( iItemID, fRate, iPeriod, iQuantity ) == false )
 		{
-			START_LOG( cerr, L"랜덤 아이템 확률 설정 실패!" )
+			START_LOG( cerr, L"Failed to configure random item probabilities." )
 				<< BUILD_LOG( iGroupID )
 				<< BUILD_LOG( iItemID )
 				<< BUILD_LOG( fRate )
@@ -360,7 +360,7 @@ bool CXSLRandomItemManager::AddRandomItemMappingData_LUA( int nIndex, int iCubeI
 
 	if( iCubeID <= 0 || iBeforeGroupID <= 0 || iAfterGroupID <= 0 )
 	{
-		START_LOG( cerr, L"랜덤 아이템 매핑 정보 그룹데이터 파싱 실패.!" )
+		START_LOG( cerr, L"Failed to parse random item mapping group data." )
 			<< BUILD_LOG( nIndex )
 			<< BUILD_LOG( iCubeID )
 			<< BUILD_LOG( iKeyItemID )
@@ -394,7 +394,7 @@ bool CXSLRandomItemManager::AddRandomItemMappingTime_LUA( int nIndex,  const cha
 
 	if( KncUtil::ConvertStringToCTime( wstrScriptStartDate, tStartTime ) == false)
 	{
-		START_LOG( cerr, L"tStartTime CTime 형식으로 치환 실패" )
+		START_LOG( cerr, L"Failed to convert tStartTime to CTime." )
 			<< BUILD_LOG( wstrScriptStartDate )
 			<< END_LOG;
 		return false;
@@ -402,7 +402,7 @@ bool CXSLRandomItemManager::AddRandomItemMappingTime_LUA( int nIndex,  const cha
 
 	if( KncUtil::ConvertStringToCTime( wstrScriptEndDate, tEndTime ) == false)
 	{
-		START_LOG( cerr, L"tEndTime CTime 형식으로 치환 실패" )
+		START_LOG( cerr, L"Failed to convert tEndTime to CTime." )
 			<< BUILD_LOG( wstrScriptEndDate )
 			<< END_LOG;
 		return false;
@@ -411,7 +411,7 @@ bool CXSLRandomItemManager::AddRandomItemMappingTime_LUA( int nIndex,  const cha
 	// 시간예외 처리 (월)
 	if( tStartTime.GetMonth() > 12 || tEndTime.GetMonth() > 12 )
 	{
-		START_LOG( cerr, L"1년은 12월까지 있습니다. RandomItemTable.lua 확인" )
+		START_LOG( cerr, L"A year has only 12 months. Check RandomItemTable.lua." )
 			<< BUILD_LOG( nIndex )
 			<< BUILD_LOG( wstrScriptStartDate )
 			<< BUILD_LOG( wstrScriptEndDate )
@@ -421,7 +421,7 @@ bool CXSLRandomItemManager::AddRandomItemMappingTime_LUA( int nIndex,  const cha
 	// 시간예외 처리 (일)
 	if( tStartTime.GetDay() > 31 || tEndTime.GetDay() > 31 )
 	{
-		START_LOG( cerr, L"1달은 31일을 넘지 않습니다. RandomItemTable.lua 확인" )
+		START_LOG( cerr, L"A month cannot have more than 31 days. Check RandomItemTable.lua." )
 			<< BUILD_LOG( nIndex )
 			<< BUILD_LOG( wstrScriptStartDate )
 			<< BUILD_LOG( wstrScriptEndDate )
@@ -431,7 +431,7 @@ bool CXSLRandomItemManager::AddRandomItemMappingTime_LUA( int nIndex,  const cha
 	// 시간예외 처리 (시간)
 	if( tStartTime.GetHour() > 23 || tEndTime.GetHour() > 23 )
 	{
-		START_LOG( cerr, L"1루는 24시간을 넘지 않습니다. RandomItemTable.lua 확인" )
+		START_LOG( cerr, L"A day cannot have more than 24 hours. Check RandomItemTable.lua." )
 			<< BUILD_LOG( nIndex )
 			<< BUILD_LOG( wstrScriptStartDate )
 			<< BUILD_LOG( wstrScriptEndDate )
@@ -453,7 +453,7 @@ bool CXSLRandomItemManager::AddAttractionItemInfo_LUA( int iItemID, bool bNotify
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iItemID );
 	if( pItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 아이템을 매력아이템으로 등록하였음!" )
+		START_LOG( cerr, L"Nonexistent item registered as an attractive item." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 
@@ -475,7 +475,7 @@ bool CXSLRandomItemManager::AddSealRandomItemInfo_LUA( int iItemID )
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iItemID );
 	if( pItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 아이템을 밀봉 랜덤 아이템으로 등록하였음!" )
+		START_LOG( cerr, L"Nonexistent item registered as a sealed random item." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 
@@ -491,7 +491,7 @@ bool CXSLRandomItemManager::AddNotifyResultItemInfo_LUA( int iItemID )
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iItemID );
 	if( pItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 아이템을 전체 공지 아이템으로 등록하였음!" )
+		START_LOG( cerr, L"Nonexistent item registered as a global announcement item." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 
@@ -533,7 +533,7 @@ bool CXSLRandomItemManager::MakeNotifyMsgAttrationItem( IN const int iRewardItem
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iRewardItemID );
 	if( pItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 아이템입니다!" )
+		START_LOG( cerr, L"Item does not exist." )
 			<< BUILD_LOG( iRewardItemID )
 			<< END_LOG;
 
@@ -544,7 +544,7 @@ bool CXSLRandomItemManager::MakeNotifyMsgAttrationItem( IN const int iRewardItem
 	mit = m_mapAttractionItem.find( iRewardItemID );
 	if( mit == m_mapAttractionItem.end() )
 	{
-		START_LOG( cerr, L"매력아이템이 아닙니다! 전체공지를 날릴수 없음!" )
+		START_LOG( cerr, L"Item is not an attractive item; cannot send a global announcement." )
 			<< BUILD_LOG( iRewardItemID )
 			<< END_LOG;
 
@@ -553,7 +553,7 @@ bool CXSLRandomItemManager::MakeNotifyMsgAttrationItem( IN const int iRewardItem
 
 	if( mit->second.m_bNotifyMsg == false  ||  m_bIsNotifyMsg == false )
 	{
-		START_LOG( clog, L"매력아이템 획득했으나 전체 공지 날리지 않음!" )
+		START_LOG( clog, L"Attractive item obtained, but no global announcement was sent." )
 			<< BUILD_LOG( iRewardItemID )
 			<< END_LOG;
 
@@ -579,7 +579,7 @@ bool CXSLRandomItemManager::MakeNotifyMsgRandomResultItem( IN const int iRewardI
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iRewardItemID );
 	if( pItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 아이템입니다!" )
+		START_LOG( cerr, L"Item does not exist." )
 			<< BUILD_LOG( iRewardItemID )
 			<< END_LOG;
 
@@ -611,7 +611,7 @@ bool CXSLRandomItemManager::GetResultItem( IN char cUnitClass, IN const RandomIt
 
 	if( pRandomItemData == NULL )
 	{
-		START_LOG( cerr, L"랜덤정보 포인터가 이상하다." )
+		START_LOG( cerr, L"Invalid random information pointer." )
 			<< END_LOG;
 
 		goto end_proc;
@@ -697,7 +697,7 @@ bool CXSLRandomItemManager::GetResultItem( IN char cUnitClass, IN const RandomIt
 		int iPeriod = mit->second.m_kLottery.GetParam1( iItemID );
 		if( iPeriod == KLottery::PARAM_BLANK )
 		{
-			START_LOG( cerr, L"해당 케이스의 파라미터가 존재하지 않음. 큐브랜덤을 돌렸는데 기간제 정보가 없네? 확률 100프로 확인해보자" )
+			START_LOG( cerr, L"Parameter for this case is missing. Random cube result has no duration information; check whether the probability is 100%." )
 				<< BUILD_LOG( iGroupID )
 				<< BUILD_LOG( iItemID )
 				<< BUILD_LOG( iPeriod )
@@ -710,7 +710,7 @@ bool CXSLRandomItemManager::GetResultItem( IN char cUnitClass, IN const RandomIt
 		int iQuantity = mit->second.m_kLottery.GetParam2( iItemID );
 		if( iQuantity == KLottery::PARAM_BLANK )
 		{
-			START_LOG( cerr, L"해당 케이스의 파라미터가 존재하지 않음. 큐브랜덤을 돌렸는데 수량 정보가 없네..?  확률 100프로 확인해보자" )
+			START_LOG( cerr, L"Parameter for this case is missing. Random cube result has no quantity information; check whether the probability is 100%." )
 				<< BUILD_LOG( iGroupID )
 				<< BUILD_LOG( iItemID )
 				<< BUILD_LOG( iPeriod )
@@ -724,7 +724,7 @@ bool CXSLRandomItemManager::GetResultItem( IN char cUnitClass, IN const RandomIt
 		const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iItemID );
 		if( pItemTemplet == NULL )
 		{
-			START_LOG( cerr, L"아이템 템플릿 정보를 찾을 수 없습니다." )
+			START_LOG( cerr, L"Item template information not found." )
 				<< BUILD_LOG( iItemID )
 				<< END_LOG;
 		}
@@ -749,7 +749,7 @@ bool CXSLRandomItemManager::GetResultItem( IN char cUnitClass, IN const RandomIt
 			const CXSLItem::ItemTemplet* pItemTempletBonus = SiCXSLItemManager()->GetItemTemplet( iBonusItemID );
 			if( pItemTempletBonus == NULL )
 			{
-				START_LOG( cerr, L"아이템 템플릿 정보를 찾을 수 없습니다." )
+				START_LOG( cerr, L"Item template information not found." )
 					<< BUILD_LOG( iBonusItemID )
 					<< END_LOG;
 			}
@@ -774,7 +774,7 @@ bool CXSLRandomItemManager::GetResultItem( IN char cUnitClass, IN const RandomIt
 			int iPeriod = mit->second.m_kLottery.GetParam1( mit->second.m_vecItemData[i].m_iItemID );
 			if( iPeriod == KLottery::PARAM_BLANK )
 			{
-				START_LOG( cerr, L"해당 케이스의 파라미터가 존재하지 않음. 큐브랜덤을 돌렸는데 기간제 정보가 없네..?" )
+				START_LOG( cerr, L"Parameter for this case is missing. Random cube result has no duration information." )
 					<< BUILD_LOG( iGroupID )
 					<< BUILD_LOG( mit->second.m_vecItemData[i].m_iItemID )
 					<< BUILD_LOG( iPeriod )
@@ -787,7 +787,7 @@ bool CXSLRandomItemManager::GetResultItem( IN char cUnitClass, IN const RandomIt
 			int iQuantity = mit->second.m_kLottery.GetParam2( mit->second.m_vecItemData[i].m_iItemID );
 			if( iQuantity == KLottery::PARAM_BLANK )
 			{
-				START_LOG( cerr, L"해당 케이스의 파라미터가 존재하지 않음. 큐브랜덤을 돌렸는데 수량 정보가 없네..?" )
+				START_LOG( cerr, L"Parameter for this case is missing. Random cube result has no quantity information." )
 					<< BUILD_LOG( iGroupID )
 					<< BUILD_LOG( mit->second.m_vecItemData[i].m_iItemID )
 					<< BUILD_LOG( iPeriod )
@@ -801,7 +801,7 @@ bool CXSLRandomItemManager::GetResultItem( IN char cUnitClass, IN const RandomIt
 			const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( mit->second.m_vecItemData[i].m_iItemID );
 			if( pItemTemplet == NULL )
 			{
-				START_LOG( cerr, L"아이템 템플릿 정보를 찾을 수 없습니다." )
+				START_LOG( cerr, L"Item template information not found." )
 					<< BUILD_LOG( mit->second.m_vecItemData[i].m_iItemID )
 					<< END_LOG;
 			}
@@ -830,7 +830,7 @@ bool CXSLRandomItemManager::GetResultItem( IN char cUnitClass, IN const RandomIt
 				const CXSLItem::ItemTemplet* pItemTempletBonus = SiCXSLItemManager()->GetItemTemplet( iBonusItemID );
 				if( pItemTempletBonus == NULL )
 				{
-					START_LOG( cerr, L"아이템 템플릿 정보를 찾을 수 없습니다." )
+					START_LOG( cerr, L"Item template information not found." )
 						<< BUILD_LOG( iBonusItemID )
 						<< END_LOG;
 				}
@@ -859,7 +859,7 @@ bool CXSLRandomItemManager::GetResultItem( IN char cUnitClass, IN const RandomIt
 end_proc:
 	SET_ERROR( ERR_RANDOM_ITEM_02 );
 
-	START_LOG( cwarn, L"랜덤 아이템 구룹찾기 실패.!" )
+	START_LOG( cwarn, L"Failed to find the random item group." )
 		<< BUILD_LOG( pRandomItemData->m_ItemID )
 		<< BUILD_LOGc( cUnitClass )
 		<< END_LOG;
@@ -876,7 +876,7 @@ void CXSLRandomItemManager::AddCharmItem_LUA( IN int iItemID, IN int iBonusItemI
 
 	if( pairResult.second == false )
 	{
-		START_LOG( cerr, L"동일한 ItemID의 매력 아이템이 이미 등록되어 있습니다." )
+		START_LOG( cerr, L"An attractive item with this ItemID is already registered." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 	}

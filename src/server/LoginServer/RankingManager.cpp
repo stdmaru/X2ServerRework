@@ -62,7 +62,7 @@ bool KRankingManager::AddHenirRankingInfo_LUA( int iRankingType, int iLastRank, 
 {
 	if( iRankingType < 0  ||  iHour < 0  ||  iDayOfWeek < 0  ||  iWeekOfMonth < 0 )
 	{
-		START_LOG( cerr, L"헤니르의 시공 랭킹 스크립트 내용이 이상합니다!" )
+		START_LOG( cerr, L"Henir's Time and Space ranking script is invalid!" )
 			<< BUILD_LOG( iRankingType )
 			<< BUILD_LOG( iLastRank )
 			<< BUILD_LOG( iHour )
@@ -84,7 +84,7 @@ bool KRankingManager::AddRankingRewardInfo_LUA( int iRankingType, int iRank, int
 {
 	if( iRankingType < 0  ||  iRank <= 0  ||  iTitleID <= 0  ||  sPeriod < 0 )
 	{
-		START_LOG( cerr, L"랭킹 타이틀 보상 스크립트 내용이 이상합니다!" )
+		START_LOG( cerr, L"Ranking title reward script is invalid!" )
 			<< BUILD_LOG( iRankingType )
 			<< BUILD_LOG( iRank )
 			<< BUILD_LOG( iTitleID )
@@ -119,7 +119,7 @@ bool KRankingManager::SetRankingRewardBeginDate_LUA( int iRankingType, const cha
 {
 	if( iRankingType < 0  ||  iRankingType > SEnum::RT_MONTH_RANKING )
 	{
-		START_LOG( cerr, L"Ranking정보가 이상합니다!" )
+		START_LOG( cerr, L"Invalid ranking information!" )
 			<< BUILD_LOG( iRankingType )
 			<< END_LOG;
 
@@ -131,7 +131,7 @@ bool KRankingManager::SetRankingRewardBeginDate_LUA( int iRankingType, const cha
 	std::map< int, KHenirRanking >::iterator mit = m_mapHenirRanking.find( iRankingType );
 	if( mit == m_mapHenirRanking.end() )
 	{
-		START_LOG( cerr, L"존재하지 않는 랭킹정보의 보상시작시각을 등록하려하였음!" )
+		START_LOG( cerr, L"Attempted to register a reward start time for nonexistent ranking information!" )
 			<< BUILD_LOG( iRankingType )
 			<< END_LOG;
 
@@ -180,7 +180,7 @@ void KRankingManager::NewRecord_LUA( int iRankingType, int iStageCount, UINT ulP
 {
 	if( iRankingType < 0  ||  iRankingType > SEnum::RT_MONTH_RANKING  ||  iStageCount < 0 )
 	{
-		START_LOG( cerr, L"Ranking정보가 이상합니다!" )
+		START_LOG( cerr, L"Invalid ranking information!" )
 			<< BUILD_LOG( iRankingType )
 			<< BUILD_LOG( iStageCount )
 			<< END_LOG;
@@ -205,7 +205,7 @@ void KRankingManager::NewRecord_LUA( int iRankingType, int iStageCount, UINT ulP
 
 	if( iUnitUID < 0  ||  iUnitClass < 0  ||  iLevel <= 0  ||  kNot.m_kNewRecordRanking.m_wstrNickName.empty() )
 	{
-		START_LOG( cerr, L"Ranking Unit정보가 이상합니다!" )
+		START_LOG( cerr, L"Invalid ranking Unit information!" )
 			<< BUILD_LOG( iUnitUID )
 			<< BUILD_LOG( kNot.m_kNewRecordRanking.m_wstrNickName )
 			<< BUILD_LOG( iUnitClass )
@@ -230,7 +230,7 @@ void KRankingManager::DeleteRecord_LUA( int iRankingType, const char* pNickName 
 {
 	if( iRankingType < 0  ||  iRankingType > SEnum::RT_MONTH_RANKING )
 	{
-		START_LOG( cerr, L"RankingType이 이상합니다!" )
+		START_LOG( cerr, L"Invalid RankingType!" )
 			<< BUILD_LOG( iRankingType )
 			<< END_LOG;
 		return;
@@ -238,7 +238,7 @@ void KRankingManager::DeleteRecord_LUA( int iRankingType, const char* pNickName 
 
 	if( pNickName == NULL )
 	{
-		START_LOG( cerr, L"Ranking NickName이 이상합니다!" )
+		START_LOG( cerr, L"Invalid ranking nickname!" )
 			<< END_LOG;
 		return;
 	}
@@ -280,7 +280,7 @@ void KRankingManager::Init()
 
 		CStringW strRefreshTime = (CStringW)m_tResetRankingTime.Format( _T("%Y-%m-%d %H:%M:%S") );
 
-		START_LOG( cout, L"대전/던전레벨 랭킹 갱신 시각 설정!" << strRefreshTime.GetBuffer() );
+		START_LOG( cout, L"PvP/Dungeon ranking refresh time set!" << strRefreshTime.GetBuffer() );
 	}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -336,7 +336,7 @@ void KRankingManager::TickHenirRanking()
 	// 3. Init()함수 호출 후 DB로부터 저장된 랭킹 받아오기가 실패했다면..
 	if( !m_bInit )
 	{
-		START_LOG( cerr, L"5초안에 헤니르 시공 랭킹정보를 DB로부터 받지 못하였습니다. 다시 랭킹 정보 요청합니다." );
+		START_LOG( cerr, L"Henir's Time and Space ranking data was not received from the database within 5 seconds. Requesting it again." );
 
 		// 5초안에 DB로부터 랭킹 정보를 못받으면 다시 받아오도록 하자!
 		SendToLogDB( DBE_GET_HENIR_RANKING_INFO_REQ );
@@ -388,7 +388,7 @@ bool KRankingManager::BackupRankingLogFile( IN int iRankingType, IN bool bSendTo
 	mit = m_mapHenirRanking.find( iRankingType );
 	if( mit == m_mapHenirRanking.end() )
 	{
-		START_LOG( cerr, L"존재하지 않는 랭킹타입의 랭킹정보를 LogFile로 남기려 했다" )
+		START_LOG( cerr, L"Attempted to write a nonexistent ranking type to the log file." )
 			<< BUILD_LOG( iRankingType )
 			<< END_LOG;
 
@@ -417,7 +417,7 @@ bool KRankingManager::BackupRankingLogFile( IN int iRankingType, IN bool bSendTo
 	}
 
 	// 확인 로그
-	START_LOG( cout, L"랭킹 초기화에 따른 랭킹 정보 TEXT파일 백업 처리 완료!" )
+	START_LOG( cout, L"Ranking data backed up to a text file after ranking reset!" )
 		<< BUILD_LOG( iRankingType )
 		<< BUILD_LOG( vecRankingList.size() )
 		<< BUILD_LOG( bSendToFTP );
@@ -443,7 +443,7 @@ void KRankingManager::RefreshTimeFileBackup()
 		::WritePrivateProfileStringW( L"Ranking Refresh Time", cstrRankingType.GetBuffer(), cstrRefreshTime.GetBuffer(), wstrFilePath.c_str() );
 	}
 
-	START_LOG( cout, L"서버 종료 전 랭킹 갱신 시각 백업 완료!" )
+	START_LOG( cout, L"Ranking refresh time backed up before server shutdown!" )
 		<< BUILD_LOG( wstrFilePath );
 }
 
@@ -461,7 +461,7 @@ bool KRankingManager::CheckRefreshTimeFileBackup()
 	ifs.open( std::filesystem::path( wstrFilePath ) );
 	if( !ifs.is_open() )
 	{
-		START_LOG( cout, L"RefreshTimeBackup파일이 없습니다! [참고] 서버를 처음 동작시켰을 경우 파일이 없을 수 있습니다." )
+		START_LOG( cout, L"RefreshTimeBackup file is missing! [Note] It may not exist when the server is run for the first time." )
 			<< BUILD_LOG( wstrFilePath );
 
 		return true;
@@ -490,7 +490,7 @@ bool KRankingManager::CheckRefreshTimeFileBackup()
 		// 랭킹 보상 처리
 		if( RankingRewardProcess( mit->first ) == false )
 		{
-			START_LOG( clog, L"보상처리 실패! 예약해놓고 다음 Tick에 다시한번 시도하자!" )
+			START_LOG( clog, L"Reward processing failed! It has been scheduled for another attempt on the next Tick." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 
@@ -501,7 +501,7 @@ bool KRankingManager::CheckRefreshTimeFileBackup()
 		// FTP로 전송
 		if( BackupRankingLogFile( mit->first, true ) == false )
 		{
-			START_LOG( cerr, L"파일백업 및 FTP전송 실패!" )
+			START_LOG( cerr, L"File backup or FTP transfer failed!" )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			// 로그만 찍자~
@@ -517,7 +517,7 @@ bool KRankingManager::CheckRefreshTimeFileBackup()
 
 		::WritePrivateProfileStringW( L"Ranking Refresh Time", cstrRankingType.GetBuffer(), cstrRefreshTime.GetBuffer(), wstrFilePath.c_str() );
 
-		START_LOG( cout, L"서버 종료 시간동안 RefreshTime이 포함되어있어서 서버켜자마자 보상처리함!" )
+		START_LOG( cout, L"RefreshTime fell within the server shutdown period; processing rewards immediately after startup!" )
 			<< BUILD_LOG( mit->first )
 			<< BUILD_LOG( tBackupRefreshTime.GetTime() );
 	}
@@ -544,7 +544,7 @@ void KRankingManager::CheckRankingClearAndReward( bool bForce /*= false*/ )
 		// 랭킹 보상 처리
 		if( RankingRewardProcess( mit->first ) == false )
 		{
-			START_LOG( cerr, L"랭킹 보상 처리 실패!" )
+			START_LOG( cerr, L"Ranking reward processing failed!" )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -553,7 +553,7 @@ void KRankingManager::CheckRankingClearAndReward( bool bForce /*= false*/ )
 		// FTP로 전송
 		if( BackupRankingLogFile( mit->first, true ) == false )
 		{
-			START_LOG( cerr, L"파일백업 및 FTP전송 실패!" )
+			START_LOG( cerr, L"File backup or FTP transfer failed!" )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			// 로그만 찍자~
@@ -607,7 +607,7 @@ void KRankingManager::GetHenirRankingInfo( IN int iRankingType, OUT std::map< in
 	mit = m_mapHenirRanking.find( iRankingType );
 	if( mit == m_mapHenirRanking.end() )
 	{
-		START_LOG( cerr, L"존재하지 않는 랭킹타입입니다." )
+		START_LOG( cerr, L"Ranking type does not exist." )
 			<< BUILD_LOG( iRankingType )
 			<< END_LOG;
 
@@ -626,7 +626,7 @@ void KRankingManager::InitHenirRanking( const std::map< int, std::vector< KHenir
 		mitHR = m_mapHenirRanking.find( mit->first );
 		if( mitHR == m_mapHenirRanking.end() )
 		{
-			START_LOG( cerr, L"DB로 부터 받은 랭킹리스트의 RankingType이 서버에 등록되지 않았다!" )
+			START_LOG( cerr, L"The RankingType in the ranking list received from the database is not registered on the server!" )
 				<< BUILD_LOG( mit->first )
 				<< BUILD_LOG( mit->second.size() )
 				<< END_LOG;
@@ -636,7 +636,7 @@ void KRankingManager::InitHenirRanking( const std::map< int, std::vector< KHenir
 		// 랭킹 리스트 정보 업데이트
 		mitHR->second.SetRankingInfo( mit->second );
 
-		START_LOG( cout, L"DB로부터 헤니르의 시공 랭킹 정보 받기 성공!" )
+		START_LOG( cout, L"Successfully received Henir's Time and Space ranking information from the database!" )
 			<< BUILD_LOG( mit->first )
 			<< BUILD_LOG( mit->second.size() );
 	}
@@ -687,14 +687,14 @@ bool KRankingManager::NewRecordHenirRanking( IN const KHenirRankingInfo& kNewRec
 	mit = m_mapHenirRanking.find( iRankingType );
 	if( mit == m_mapHenirRanking.end() )
 	{
-		START_LOG( cerr, L"존재하지 않는 랭킹타입입니다." )
+		START_LOG( cerr, L"Ranking type does not exist." )
 			<< BUILD_LOG( iRankingType )
 			<< END_LOG;
 
 		return false;
 	}
 
-	START_LOG( cout2, L"----- 랭킹 추가 정보 -----" )
+	START_LOG( cout2, L"----- Ranking addition details -----" )
 		<< BUILD_LOG( kNewRecord.m_iStageCount )
 		<< BUILD_LOG( kNewRecord.m_ulPlayTime )
 		<< BUILD_LOG( kNewRecord.m_tRegDate )
@@ -722,7 +722,7 @@ bool KRankingManager::DeleteRecord( int iRankingType, const std::wstring& wstrNi
 	mit = m_mapHenirRanking.find( iRankingType );
 	if( mit == m_mapHenirRanking.end() )
 	{
-		START_LOG( cerr, L"존재하지 않는 RankingType입니다." )
+		START_LOG( cerr, L"RankingType does not exist." )
 			<< BUILD_LOG( iRankingType )
 			<< END_LOG;
 
@@ -738,7 +738,7 @@ bool KRankingManager::DeleteRecord( int iRankingType, UidType iUnitUID )
 	mit = m_mapHenirRanking.find( iRankingType );
 	if( mit == m_mapHenirRanking.end() )
 	{
-		START_LOG( cerr, L"존재하지 않는 RankingType입니다." )
+		START_LOG( cerr, L"RankingType does not exist." )
 			<< BUILD_LOG( iRankingType )
 			<< END_LOG;
 
@@ -756,7 +756,7 @@ bool KRankingManager::DeleteSearchRank( int iRankingType, int iRank)
 	mit = m_mapHenirRanking.find( iRankingType );
 	if( mit == m_mapHenirRanking.end() )
 	{
-		START_LOG( cerr, L"존재하지 않는 RankingType입니다." )
+		START_LOG( cerr, L"RankingType does not exist." )
 			<< BUILD_LOG( iRankingType )
 			<< END_LOG;
 
@@ -786,7 +786,7 @@ bool KRankingManager::RankingRewardProcess( IN int iRankingType )
 	mit = m_mapHenirRanking.find( iRankingType );
 	if( mit == m_mapHenirRanking.end() )
 	{
-		START_LOG( cerr, L"존재하지 않는 RankingType입니다." )
+		START_LOG( cerr, L"RankingType does not exist." )
 			<< BUILD_LOG( iRankingType )
 			<< END_LOG;
 
@@ -817,7 +817,7 @@ bool KRankingManager::RankingRewardProcess( IN int iRankingType )
 	//}}
 
 	// 4. 확인 로그
-	START_LOG( cout, L"랭킹 칭호 보상 처리 완료!" )
+	START_LOG( cout, L"Ranking title rewards processed!" )
 		<< BUILD_LOG( iRankingType )
 		<< BUILD_LOG( kPacketNot.m_mapTitleReward.size() );
 
@@ -880,7 +880,7 @@ void KRankingManager::UpdateDungeonRanking( const std::vector< KDungeonRankingIn
 		}
 	}
 
-	START_LOG( cout, L"던전 랭킹 갱신!" )
+	START_LOG( cout, L"Dungeon ranking refreshed!" )
 		<< BUILD_LOG( m_mapDungeonRanking.size() )
 		<< BUILD_LOG( m_vecDungeonRanking.size() );
 }
@@ -901,7 +901,7 @@ void KRankingManager::UpdatePvpRanking( const std::vector< KPvpRankingInfo >& ve
 		}
 	}
 
-	START_LOG( cout, L"대전 랭킹 갱신!" )
+	START_LOG( cout, L"PvP ranking refreshed!" )
 		<< BUILD_LOG( m_mapPvpRanking.size() )
 		<< BUILD_LOG( m_vecPvpRanking.size() );
 }

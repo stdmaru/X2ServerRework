@@ -60,7 +60,7 @@ void KGlobalGameDBThread::ProcessEvent( const KEventPtr& spEvent_ )
 	   _CASE( DBE_CHECK_NICKNAME_FOR_INVITE_PARTY_REQ, KELG_INVITE_PARTY_FIND_RECEIVER_REQ );
 
 	default:
-        START_LOG( cerr, L"이벤트 핸들러가 정의되지 않았음. " << spEvent_->GetIDStr() );
+        START_LOG( cerr, L"Event handler is not defined: " << spEvent_->GetIDStr() );
     }
 
 	//////////////////////////////////////////////////////////////////////////

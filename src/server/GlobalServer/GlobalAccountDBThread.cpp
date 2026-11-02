@@ -62,7 +62,7 @@ void KGlobalAccountDBThread::ProcessEvent( const KEventPtr& spEvent_ )
 		//}}
 
 	default:
-        START_LOG( cerr, L"이벤트 핸들러가 정의되지 않았음. " << spEvent_->GetIDStr() );
+        START_LOG( cerr, L"Event handler is not defined: " << spEvent_->GetIDStr() );
     }
 
 	//////////////////////////////////////////////////////////////////////////

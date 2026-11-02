@@ -49,7 +49,7 @@ bool KLottery::AddCase( int nCaseID, double dProbability, int nParam1 /*= PARAM_
 {
     if( m_dTotalProb + dProbability > 100.000001 )
     {
-        START_LOG( cerr, L"100퍼센트를 넘는 확률 설정을 시도." )
+        START_LOG( cerr, L"Attempted to set a probability above 100%." )
             << BUILD_LOG( nCaseID )
             << BUILD_LOG( dProbability )
             << BUILD_LOG( m_dTotalProb )
@@ -84,7 +84,7 @@ bool KLottery::AddCaseIntegerCast( int nCaseID, double dProbability, int nParam1
 {
 	if( static_cast<int>(m_dTotalProb + dProbability) > 100 )
 	{
-		START_LOG( cerr, L"100.1퍼센트를 넘는 확률 설정을 시도." )
+		START_LOG( cerr, L"Attempted to set a probability above 100.1%." )
 			<< BUILD_LOG( nCaseID )
 			<< BUILD_LOG( dProbability )
 			<< BUILD_LOG( m_dTotalProb )
@@ -314,7 +314,7 @@ bool KLottery::AddDuplicateCaseIntegerCast( int nCaseID, double dProbability, in
 {
 	if( static_cast<int>(m_dTotalProb + dProbability) > 100 )
 	{
-		START_LOG( cerr, L"100.1퍼센트를 넘는 확률 설정을 시도." )
+		START_LOG( cerr, L"Attempted to set a probability above 100.1%." )
 			<< BUILD_LOG( nCaseID )
 			<< BUILD_LOG( dProbability )
 			<< BUILD_LOG( m_dTotalProb )

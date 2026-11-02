@@ -13,7 +13,7 @@ SmartPointer( KRoom );
 #define VERIFY_HOST( eventid ) \
 if( !IsHost( FIRST_SENDER_UID ) ) \
 { \
-    START_LOG( cerr, L"방장이 아닌데 요청함." ) \
+    START_LOG( cerr, L"Request received from a non-host." ) \
     << BUILD_LOG( FIRST_SENDER_UID ) \
     << END_LOG; \
     kPacket.m_iOK = NetError::ERR_ROOM_08; \

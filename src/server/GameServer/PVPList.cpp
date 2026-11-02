@@ -40,7 +40,7 @@ UidType KPVPList::GetWaitingRoomUID( IN KEGS_QUICK_JOIN_REQ& kReq )
 				spRoomInfo = ( *vit );
 				if( !spRoomInfo )
 				{
-					START_LOG( cerr, L"룸 정보 포인터 이상." );
+					START_LOG( cerr, L"Invalid room information pointer." );
 					continue;
 				}
 
@@ -81,7 +81,7 @@ UidType KPVPList::GetWaitingRoomUID( IN KEGS_QUICK_JOIN_REQ& kReq )
 				spRoomInfo = ( *vit );
 				if( !spRoomInfo )
 				{
-					START_LOG( cerr, L"룸 정보 포인터 이상." );
+					START_LOG( cerr, L"Invalid room information pointer." );
 					continue;
 				}
 
@@ -117,7 +117,7 @@ UidType KPVPList::GetWaitingRoomUID( IN KEGS_QUICK_JOIN_REQ& kReq )
 
 	default:
 		{
-			START_LOG( cerr, L"대전채널 타입이 이상함.!" )
+			START_LOG( cerr, L"Invalid PvP channel type!" )
 				<< BUILD_LOG( GetID() )
 				<< BUILD_LOG( GetType() )
 				<< BUILD_LOG( kReq.m_iOption )
@@ -160,7 +160,7 @@ bool KPVPList::AddRoomInfo( KRoomInfoPtr spRoomInfo_ )
 
 	default:
 		{
-			START_LOG( cerr, L"대전타입별 방정보 추가가 이상함." )
+			START_LOG( cerr, L"Invalid room information added for a PvP type." )
 				<< BUILD_LOGc( spRoomInfo_->m_PVPGameType )
 				<< END_LOG;
 
@@ -185,7 +185,7 @@ bool KPVPList::DelRoomInfo( KRoomInfoPtr spRoomInfo_ )
 
 	if( vit == m_vecRoomList.end() )
 	{
-		START_LOG( cerr, L"삭제하고자 하는 방정보가 없음." )
+		START_LOG( cerr, L"Room information to delete does not exist." )
 			<< BUILD_LOG(	spRoomInfo_->m_RoomUID )
 			<< BUILD_LOG(	spRoomInfo_->m_uiRoomListID )
 			<< BUILD_LOG(	spRoomInfo_->m_RoomName )
@@ -217,7 +217,7 @@ bool KPVPList::DelRoomInfo( KRoomInfoPtr spRoomInfo_ )
 			}
 			else
 			{
-				START_LOG( cerr, L"삭제할려는 타입별 대전방이 없음." )
+				START_LOG( cerr, L"No battle room of the specified type exists to delete." )
 					<< L"CXSLRoom::PGT_TEAM" << dbg::endl
 					<< BUILD_LOG( spRoomInfo_->m_RoomUID )
 					<< BUILD_LOG( spRoomInfo_->m_uiRoomListID )
@@ -244,7 +244,7 @@ bool KPVPList::DelRoomInfo( KRoomInfoPtr spRoomInfo_ )
 			}
 			else
 			{
-				START_LOG( cerr, L"삭제할려는 타입별 대전방이 없음." )
+				START_LOG( cerr, L"No battle room of the specified type exists to delete." )
 					<< L"CXSLRoom::PGT_TEAM_DEATH" << dbg::endl
 					<< BUILD_LOG(	spRoomInfo_->m_RoomUID )
 					<< BUILD_LOG(	spRoomInfo_->m_uiRoomListID )
@@ -271,7 +271,7 @@ bool KPVPList::DelRoomInfo( KRoomInfoPtr spRoomInfo_ )
 			}
 			else
 			{
-				START_LOG( cerr, L"삭제할려는 타입별 대전방이 없음." )
+				START_LOG( cerr, L"No battle room of the specified type exists to delete." )
 					<< L"CXSLRoom::PGT_SURVIVAL" << dbg::endl
 					<< BUILD_LOG(	spRoomInfo_->m_RoomUID )
 					<< BUILD_LOG(	spRoomInfo_->m_uiRoomListID )
@@ -284,7 +284,7 @@ bool KPVPList::DelRoomInfo( KRoomInfoPtr spRoomInfo_ )
 
 	default:
 		{
-			START_LOG( cerr, L"삭제할려는 대전 방타입이 이상함.!" )
+			START_LOG( cerr, L"Invalid PvP room type to delete!" )
 				<< BUILD_LOGc( spRoomInfo_->m_PVPGameType )
 				<< END_LOG;
 
@@ -378,7 +378,7 @@ bool KPVPList::GetRoomInfoPage( IN KEGS_ROOM_LIST_REQ& kReq_, OUT KEGS_ROOM_LIST
 		{
 			if( nS != (int)pvecRoomList->size() )
 			{
-				START_LOG( cerr, L"페이지 요청실패.!" )
+				START_LOG( cerr, L"Page request failed!" )
 					<< BUILD_LOG( GetPageNum() )
 					<< BUILD_LOG( nS )
 					<< BUILD_LOG( nE )
@@ -393,7 +393,7 @@ bool KPVPList::GetRoomInfoPage( IN KEGS_ROOM_LIST_REQ& kReq_, OUT KEGS_ROOM_LIST
 
 	if( kAck_.m_vRoomInfo.size() > GetPageNum() )
 	{
-		START_LOG( cerr, L"방정보 개수 이상.!(PVP)" )
+		START_LOG( cerr, L"Invalid PvP room information count!" )
 			<< BUILD_LOG( kAck_.m_vRoomInfo.size() )
 			<< BUILD_LOG( GetPageNum() )
 			<< BUILD_LOG( nS )

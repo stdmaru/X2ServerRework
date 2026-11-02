@@ -122,7 +122,7 @@ void KLoginGameDBThread::ProcessEvent( const KEventPtr& spEvent_ )
 	   //}
 
 	default:
-        START_LOG( cerr, L"이벤트 핸들러가 정의되지 않았음. " << spEvent_->GetIDStr() );
+        START_LOG( cerr, L"Event handler is not defined." << spEvent_->GetIDStr() );
     }
 
 	//////////////////////////////////////////////////////////////////////////
@@ -157,7 +157,7 @@ bool KLoginGameDBThread::DeleteApplyJoinGuildList( IN int iGuildUID, IN UidType 
 end_proc:
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"길드 가입 신청 삭제 실패." )
+		START_LOG( cerr, L"Failed to delete guild application." )
 			<< BUILD_LOG( iOK )
 			<< BUILD_LOG( iGuildUID )
 			<< BUILD_LOG( iUnitUID )
@@ -178,7 +178,7 @@ bool KLoginGameDBThread::DeleteApplyJoinGuildList( IN const std::vector< KApplyD
 	{
 		if( DeleteApplyJoinGuildList( vit->m_iGuildUID, vit->m_iUnitUID ) == false )
 		{
-			START_LOG( cerr, L"길드 가입 신청 삭제 실패." )
+			START_LOG( cerr, L"Failed to delete guild application." )
 				<< BUILD_LOG( vit->m_iGuildUID )
 				<< BUILD_LOG( vit->m_iUnitUID )
 				<< END_LOG;
@@ -270,7 +270,7 @@ IMPL_ON_FUNC( DBE_GET_GUILD_INFO_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"길드 정보 얻기 실패." )
+		START_LOG( cerr, L"Failed to get guild information." )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
@@ -325,7 +325,7 @@ IMPL_ON_FUNC( DBE_GET_GUILD_INFO_REQ )
 	}
 	else
 	{
-		START_LOG( cerr, L"길드스킬포인트 정보 얻어오기 실패로 기본값을 넣어줌." )
+		START_LOG( cerr, L"Could not get guild skill point information; using the default value." )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
 			<< END_LOG;
 
@@ -380,7 +380,7 @@ IMPL_ON_FUNC( DBE_GUILD_LEVEL_UP_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"길드 레벨 업데이트 실패." )
+		START_LOG( cerr, L"Failed to update guild level." )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
 			<< BUILD_LOGc( kPacket_.m_ucGuildLevel )
@@ -406,7 +406,7 @@ IMPL_ON_FUNC( DBE_GUILD_LEVEL_UP_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"길드 스킬 포인트 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update guild skill points!" )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
 			<< BUILD_LOGc( kPacket_.m_ucGuildLevel )
@@ -459,7 +459,7 @@ IMPL_ON_FUNC( DBE_GET_GUILD_SKILL_REQ )
 
 		if( kPacket.m_iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"기간제 길드 스킬 포인트 DB업데이트 실패!" )
+			START_LOG( cerr, L"Failed to update time-limited guild skill points in the database!" )
 				<< BUILD_LOG( kPacket.m_iOK )
 				<< BUILD_LOG( kPacket_.m_iGuildUID )
 				<< BUILD_LOG( kPacket_.m_iGuildCSPoint )
@@ -490,7 +490,7 @@ IMPL_ON_FUNC( DBE_GET_GUILD_SKILL_REQ )
 
 		if( kPacket.m_iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"길드 스킬 포인트 DB업데이트 실패!" )
+			START_LOG( cerr, L"Failed to update guild skill points in the database!" )
 				<< BUILD_LOG( kPacket.m_iOK )
 				<< BUILD_LOG( kPacket_.m_iGuildUID )
 				<< BUILD_LOG( kPacket_.m_iUnitUID )
@@ -522,7 +522,7 @@ IMPL_ON_FUNC( DBE_GET_GUILD_SKILL_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"길드 스킬 배우기 DB업데이트 실패!" )
+		START_LOG( cerr, L"Failed to learn guild skill in the database!" )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
@@ -672,7 +672,7 @@ IMPL_ON_FUNC( DBE_EXPIRE_GUILD_CASH_SKILL_POINT_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"길드 스킬 포인트 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update guild skill points!" )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
 			<< BUILD_LOG( kPacket_.m_iGuildSPoint )
@@ -751,7 +751,7 @@ _IMPL_ON_FUNC( DBE_ADMIN_GET_GUILD_SKILL_POINT_REQ, KELG_ADMIN_GET_GUILD_SKILL_P
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"길드 스킬 포인트 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update guild skill points!" )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
 			<< BUILD_LOG( kPacket_.m_iGuildSPoint )
@@ -844,7 +844,7 @@ _IMPL_ON_FUNC( DBE_GET_GUILD_SKILL_IN_BOARD_REQ, KELG_GET_GUILD_SKILL_IN_BOARD_R
 	}
 	else
 	{
-		START_LOG( cerr, L"길드스킬포인트 정보 얻어오기 실패로 기본값을 넣어줌." )
+		START_LOG( cerr, L"Could not get guild skill point information; using the default value." )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
 			<< END_LOG;
 
@@ -899,7 +899,7 @@ IMPL_ON_FUNC( DBE_REGISTRATION_GUILD_AD_REQ )
 
 		if( kPacket.m_iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"길드 광고 삭제 실패." )
+			START_LOG( cerr, L"Failed to delete guild advertisement." )
 				<< BUILD_LOG( kPacket.m_iOK )
 				<< BUILD_LOG( kPacket_.m_iGuildUID )
 				<< END_LOG;
@@ -923,7 +923,7 @@ IMPL_ON_FUNC( DBE_REGISTRATION_GUILD_AD_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"길드 광고 등록 실패!" )
+		START_LOG( cerr, L"Failed to register guild advertisement!" )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
 			<< BUILD_LOG( kPacket_.m_sPeriod )
@@ -963,7 +963,7 @@ _IMPL_ON_FUNC( DBE_MODIFY_REG_GUILD_AD_REQ, KELG_MODIFY_REG_GUILD_AD_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"길드 광고 삭제 실패." )
+		START_LOG( cerr, L"Failed to delete guild advertisement." )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
 			<< END_LOG;
@@ -984,7 +984,7 @@ _IMPL_ON_FUNC( DBE_MODIFY_REG_GUILD_AD_REQ, KELG_MODIFY_REG_GUILD_AD_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"길드 광고 등록 실패!" )
+		START_LOG( cerr, L"Failed to register guild advertisement!" )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
 			<< BUILD_LOG( kPacket_.m_sPeriod )
@@ -1013,7 +1013,7 @@ IMPL_ON_FUNC( DBE_APPLY_JOIN_GUILD_REQ )
 	// 길드 가입 신청 삭제
 	if( DeleteApplyJoinGuildList( kPacket_.m_vecDeleteApply ) == false )
 	{
-		START_LOG( cerr, L"길드 가입 신청 삭제 실패." )
+		START_LOG( cerr, L"Failed to delete guild application." )
 			<< BUILD_LOG( kPacket_.m_vecDeleteApply.size() )
 			<< END_LOG;
 
@@ -1036,7 +1036,7 @@ IMPL_ON_FUNC( DBE_APPLY_JOIN_GUILD_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"길드 광고 등록 실패!" )
+		START_LOG( cerr, L"Failed to register guild advertisement!" )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_kApplyJoinGuildInfo.m_iApplyJoinGuildUID )
 			<< BUILD_LOG( kPacket_.m_kApplyJoinGuildInfo.m_iUnitUID )
@@ -1067,7 +1067,7 @@ _IMPL_ON_FUNC( DBE_DELETE_APLLY_FOR_ACCEPT_JOIN_GUILD_REQ, KELG_ACCEPT_JOIN_GUIL
 	// 길드 가입 신청 삭제
 	if( DeleteApplyJoinGuildList( kPacket_.m_iGuildUID, kPacket_.m_iApplyJoinUnitUID ) == false )
 	{
-		START_LOG( cerr, L"길드 가입 신청 삭제 실패." )
+		START_LOG( cerr, L"Failed to delete guild application." )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
 			<< BUILD_LOG( kPacket_.m_iApplyJoinUnitUID )
@@ -1105,7 +1105,7 @@ IMPL_ON_FUNC( DBE_ACCEPT_JOIN_GUILD_REQ )
 	{
 		if( kPacket.m_iOK == -3 )
 		{
-			START_LOG( cwarn, L"길드 최대 가입 인원 부족." )
+			START_LOG( cwarn, L"Guild has insufficient capacity for new members." )
 				<< BUILD_LOG( kPacket.m_iOK )
 				<< BUILD_LOG( kPacket_.m_iGuildUID )
 				<< BUILD_LOG( kPacket_.m_kJoinGuildMemberInfo.m_iUnitUID )
@@ -1113,7 +1113,7 @@ IMPL_ON_FUNC( DBE_ACCEPT_JOIN_GUILD_REQ )
 		}
 		else
 		{
-			START_LOG( cerr, L"길드 가입 실패." )
+			START_LOG( cerr, L"Failed to join guild." )
 				<< BUILD_LOG( kPacket.m_iOK )
 				<< BUILD_LOG( kPacket_.m_iGuildUID )
 				<< BUILD_LOG( kPacket_.m_kJoinGuildMemberInfo.m_iUnitUID )
@@ -1145,7 +1145,7 @@ _IMPL_ON_FUNC( DBE_DELETE_APPLY_JOIN_GUILD_REQ, KELG_DELETE_APPLY_JOIN_GUILD_REQ
 	// 길드 가입 신청 삭제
 	if( DeleteApplyJoinGuildList( kPacket_.m_iGuildUID, kPacket_.m_iDeletedUnitUID ) == false )
 	{
-		START_LOG( cerr, L"길드 가입 신청 삭제 실패." )
+		START_LOG( cerr, L"Failed to delete guild application." )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
 			<< BUILD_LOG( kPacket_.m_iDeletedUnitUID )
 			<< END_LOG;
@@ -1175,7 +1175,7 @@ IMPL_ON_FUNC( DBE_DELETE_GUILD_AD_LIST_NOT )
 end_proc:
 			if( iOK != NetError::NET_OK )
 			{
-				START_LOG( cerr, L"길드 광고 삭제 실패." )
+				START_LOG( cerr, L"Failed to delete guild advertisement." )
 					<< BUILD_LOG( iOK )
 					<< BUILD_LOG( *vit )
 					<< END_LOG;
@@ -1186,7 +1186,7 @@ end_proc:
 	// 길드 가입 신청 삭제
 	if( DeleteApplyJoinGuildList( kPacket_.m_vecDeleteApply ) == false )
 	{
-        START_LOG( cerr, L"길드 가입 신청 삭제 실패!" )
+        START_LOG( cerr, L"Failed to delete guild application!" )
 			<< BUILD_LOG( kPacket_.m_vecDeleteApply.size() )
 			<< END_LOG;
 	}
@@ -1350,7 +1350,7 @@ IMPL_ON_FUNC_NOPARAM( DBE_LOAD_PSHOP_AGENCY_REQ )
 			if( kInfo.m_vecSellItemInfo.empty() == false )
 				continue;
 
-			START_LOG( cerr, L"등록된 아이템이 없는데 개설된 상태입니다! 강제로 상점을 닫습니다!" )
+			START_LOG( cerr, L"The shop is open but has no registered items. Closing it forcibly!" )
 				<< BUILD_LOG( kInfo.m_iUserUID )
 				<< BUILD_LOG( kInfo.m_iUnitUID )
 				<< BUILD_LOG( kInfo.m_wstrNickName )
@@ -1374,7 +1374,7 @@ IMPL_ON_FUNC_NOPARAM( DBE_LOAD_PSHOP_AGENCY_REQ )
 
 			if( iOK != NetError::NET_OK )
 			{
-				START_LOG( cerr, L"대리 상인 닫기 실패!" )
+				START_LOG( cerr, L"Failed to close hired merchant shop!" )
 					<< BUILD_LOG( iOK )
 					<< BUILD_LOG( kInfo.m_iUnitUID )
 					<< END_LOG;
@@ -1407,7 +1407,7 @@ _IMPL_ON_FUNC( DBE_OPEN_PSHOP_AGENCY_REQ, KERM_OPEN_PERSONAL_SHOP_ACK )
 
 	if( kPacket_.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"대리 상인 UID 등록 실패!" )
+		START_LOG( cerr, L"Failed to register hired merchant UID!" )
 			<< BUILD_LOG( kPacket_.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iPersonalShopUID )
@@ -1440,7 +1440,7 @@ _IMPL_ON_FUNC( DBE_BREAK_PSHOP_AGENCY_REQ, KERM_BREAK_PSHOP_AGENCY_NOT )
 
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"대리 상인 닫기 실패!" )
+		START_LOG( cerr, L"Failed to close hired merchant shop!" )
 			<< BUILD_LOG( iOK )
 			<< BUILD_LOG( kPacket_.m_iHostUID )
 			<< END_LOG;
@@ -1476,7 +1476,7 @@ _IMPL_ON_FUNC( DBE_REG_PSHOP_AGENCY_ITEM_REQ, KERM_REG_PERSONAL_SHOP_ITEM_ACK )
 
 	if( kPacket_.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"대리 상점 이름 등록 실패!" )
+		START_LOG( cerr, L"Failed to register hired shop name!" )
 			<< BUILD_LOG( kPacket_.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_wstrPersonalShopName )
@@ -1551,7 +1551,7 @@ _IMPL_ON_FUNC( DBE_REG_PSHOP_AGENCY_ITEM_REQ, KERM_REG_PERSONAL_SHOP_ITEM_ACK )
             // slect pshopitem..
             GetPShopItem( kPacket_.m_iUnitUID, kPacket_.m_vecAddCompleteItemInfo );
 
-            START_LOG( cerr, L"대리상점 등록 SP 호출이 실패 했습니다." )
+            START_LOG( cerr, L"Failed to call the stored procedure to register the hired shop." )
                 << BUILD_LOG( kPacket_.m_iOK )
                 << BUILD_LOG( kPacket_.m_iUnitUID )
                 << BUILD_LOG( GET_LAST_QUERY() )
@@ -1651,7 +1651,7 @@ IMPL_ON_FUNC( DBE_BUY_PSHOP_AGENCY_ITEM_REQ )
 
 		if( kPacket_.m_iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"대리 상점 구매 SP 호출이 실패 했습니다." )
+			START_LOG( cerr, L"Failed to call the stored procedure to purchase from the hired shop." )
 				<< BUILD_LOG( kPacket_.m_iOK )
 				<< END_LOG;
 
@@ -1694,7 +1694,7 @@ IMPL_ON_FUNC( DBE_STOP_SALE_PSHOP_AGENCY_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"대리 상인 판매 중지 요청 실패." )
+		START_LOG( cerr, L"Failed to stop hired merchant sales." )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
@@ -1789,7 +1789,7 @@ IMPL_ON_FUNC( DBE_PICK_UP_FROM_PSHOP_AGENCY_REQ )
 
 		if( kPacket.m_iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"대리상점 회수 SP 호출이 실패 했습니다." )
+			START_LOG( cerr, L"Failed to call the stored procedure to reclaim hired shop items." )
 				<< BUILD_LOG( kPacket.m_iOK )
                 << BUILD_LOG( GET_LAST_QUERY() )
 				<< END_LOG;
@@ -1866,7 +1866,7 @@ IMPL_ON_FUNC( DBE_INSERT_TITLE_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"칭호 업데이트가 실패했다? 일어날수 없는 에러." )
+		START_LOG( cerr, L"Failed to update title. This should never happen." )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iTitleID )
 			<< BUILD_LOG( kPacket_.m_sPeriod )
@@ -1898,7 +1898,7 @@ IMPL_ON_FUNC( DBE_CREATE_GUILD_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( clog, L"길드 생성할 수 없는것으로 체크됨!" )
+		START_LOG( clog, L"Guild creation was marked as unavailable!" )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_wstrGuildName );
@@ -1936,7 +1936,7 @@ IMPL_ON_FUNC( DBE_CREATE_GUILD_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"길드 생성 실패!" )
+		START_LOG( cerr, L"Failed to create guild!" )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_wstrGuildName )
@@ -1976,7 +1976,7 @@ IMPL_ON_FUNC( DBE_CREATE_GUILD_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"길드 생성 직후에 스킬 포인트 1포인트 insert가 실패하였다. 있을수 없는에러!" )
+		START_LOG( cerr, L"Failed to insert the initial guild skill point immediately after guild creation. This should be impossible!" )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket.m_kCreatedGuildInfo.m_iGuildUID )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
@@ -2052,7 +2052,7 @@ IMPL_ON_FUNC( DBE_CHANGE_GUILD_NAME_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"길드 이름 변경 실패! ( 아이템 복구 이슈 발생 )" )
+		START_LOG( cerr, L"Failed to change guild name! (Item recovery issue.)" )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
@@ -2090,7 +2090,7 @@ IMPL_ON_FUNC( DBE_CHANGE_GUILD_NAME_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"길드 정보 얻기 실패" )
+		START_LOG( cerr, L"Failed to get guild information." )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
@@ -2204,7 +2204,7 @@ IMPL_ON_FUNC( DBE_WEDDING_HALL_INFO_UPDATE_NOT )
 		{
 			bResult = false;
 
-			START_LOG( cerr, L"결혼 예약 데이터 update 실패!!" )
+			START_LOG( cerr, L"Failed to update wedding reservation data!!" )
 				<< BUILD_LOG( mit->second.m_iWeddingUID )
 				<< BUILD_LOG( mit->second.m_iGroom )
 				<< BUILD_LOG( mit->second.m_iBride )
@@ -2216,7 +2216,7 @@ IMPL_ON_FUNC( DBE_WEDDING_HALL_INFO_UPDATE_NOT )
 	}
 
 end_proc:
-	START_LOG( cout, L"결혼 예약 데이터 update 결과 : " )
+	START_LOG( cout, L"Wedding reservation update result: " )
 		<< BUILD_LOG( bResult )
 		<< END_LOG;
 }
@@ -2308,7 +2308,7 @@ _IMPL_ON_FUNC( DBE_RELATIONSHIP_INFO_GAME_DB_REQ, KELG_RELATIONSHIP_INFO_REQ )
 
 				if( mit != kAck.m_mapOtherUnitEquippedItem.end() )
 				{
-					START_LOG( cerr, L"장착 아이템 정보가 중복됨." )
+					START_LOG( cerr, L"Duplicate equipped item information." )
 						<< BUILD_LOG( kInventoryItemInfo.m_iItemUID )
 						<< BUILD_LOG( static_cast<int>(kInventoryItemInfo.m_sSlotID) )
 						<< BUILD_LOG( kInventoryItemInfo.m_kItemInfo.m_iItemID )
@@ -2320,14 +2320,14 @@ _IMPL_ON_FUNC( DBE_RELATIONSHIP_INFO_GAME_DB_REQ, KELG_RELATIONSHIP_INFO_REQ )
 
 	kAck.m_iOK = NetError::NET_OK;
 
-	START_LOG( cout, L"연인의 장착장비 정보 얻기 확인!" )
+	START_LOG( cout, L"Checking for the partner's equipped item information!" )
 		<< END_LOG;
 
 end_proc:
 
 	if( kAck.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"연인의 장착장비 정보 얻기 실패!" )
+		START_LOG( cerr, L"Failed to get the partner's equipped item information!" )
 			<< BUILD_LOG( kAck.m_iOK )
 			<< END_LOG;
 	}
@@ -2386,7 +2386,7 @@ end_proc:
 
 	if( kPacket_.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"결혼식 예약자 닉네임 얻기 실패!" )
+		START_LOG( cerr, L"Failed to get the wedding reserver's nickname!" )
 			<< BUILD_LOG( kPacket_.m_iOK )
 			<< END_LOG;
 	}

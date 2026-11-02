@@ -9,7 +9,7 @@
 #define CASE_SCRIPT_REFRESH_SWAP_INSTANCE( flag, className ) \
 case KESR_SCRIPT_REFRESH_ORDER_NOT::flag: \
 	className::SwapInstance(); \
-	START_LOG( cout, L ## #className L" 스크립트 갱신을 완료하였습니다!" ); \
+	START_LOG( cout, L ## #className L" Script refresh completed!" ); \
 	Si##className()->DumpToLogFile(); \
 	break; \
 
@@ -46,7 +46,7 @@ void KLoginRMEventProcess::ProcessEvent( const KEventPtr& spEvent_ )
 	CASE( ERM_CHECK_MY_PSHOP_AGENCY_INFO_REQ );
 
 	default:
-		START_LOG( cerr, L"핸들러가 지정되지 않은 이벤트." )
+		START_LOG( cerr, L"No handler is assigned to this event." )
 			<< BUILD_LOG( spEvent_->m_usEventID )
 			<< BUILD_LOG( spEvent_->GetIDStr() )
 			<< END_LOG;
@@ -55,7 +55,7 @@ void KLoginRMEventProcess::ProcessEvent( const KEventPtr& spEvent_ )
 	dwElapTime = ::GetTickCount() - dwElapTime;
 	if( dwElapTime > 3000 )
 	{
-		START_LOG( cwarn, L"이벤트 처리 소요 시간." )
+		START_LOG( cwarn, L"Event processing duration." )
 			<< BUILD_LOG( spEvent_->GetIDStr() )
 			<< BUILD_LOG( spEvent_->m_usEventID )
 			<< BUILD_LOG( dwElapTime );
@@ -85,7 +85,7 @@ IMPL_ON_FUNC( ERM_OPEN_PSHOP_AGENCY_BY_SERVER_NOT )
 	UidType iRoomUID = GetKLoginRoomManager()->OpenRoom();
 	if( iRoomUID <= 0 )
 	{
-		START_LOG( cerr, L"서버에서 자동으로 대리상점 개설을 하려고하는데 빈 방이 없습니다! 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"The server attempted to open a hired shop automatically, but no room is available. This should never happen!" )
 			<< END_LOG;
 		return;
 	}
@@ -117,14 +117,14 @@ IMPL_ON_FUNC( ERM_CHECK_MY_PSHOP_AGENCY_INFO_REQ )
         UidType iRoomUID = GetKLoginRoomManager()->OpenRoom();
         if( iRoomUID <= 0 )
         {
-            START_LOG( cerr, L"서버에서 자동으로 대리상점 개설을 하려고하는데 빈 방이 없습니다! 일어나서는 안되는 에러!" )
+            START_LOG( cerr, L"The server attempted to open a hired shop automatically, but no room is available. This should never happen!" )
                 << END_LOG;
             return;
         }
 
         if ( kData.m_wstrAgencyExpirationDate.empty() )
         {
-            START_LOG( cerr, L"서버에서 자동으로 대리상점 개설시도(복원)에서 만료일이 빈 문제 발생 " )
+            START_LOG( cerr, L"The expiration date is missing while restoring an automatically opened hired shop." )
                 << BUILD_LOG( kPacket_.m_iUserUID )
                 << BUILD_LOG( kPacket_.m_iUnitUID )
                 << END_LOG;
@@ -135,7 +135,7 @@ IMPL_ON_FUNC( ERM_CHECK_MY_PSHOP_AGENCY_INFO_REQ )
         spEvent->SetData( PI_LOGIN_ROOM, NULL, ERM_OPEN_PSHOP_AGENCY_BY_SERVER_NOT, kData );
         GetKLoginRoomManager()->QueueingEventToRoomByRoomUID( iRoomUID, spEvent );
 
-		START_LOG( cerr, L"DB에는 개설되었다고 되어있는데 실제로 대리상점 방은 개설 안되었다? 버그! 또는 예외상황!" )
+		START_LOG( cerr, L"The database says the shop is open, but no hired-shop room is open. Bug or exceptional condition!" )
             << BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
 

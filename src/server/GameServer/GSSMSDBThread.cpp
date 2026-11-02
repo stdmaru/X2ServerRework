@@ -26,7 +26,7 @@ void KGSSMSDBThread::ProcessEvent( const KEventPtr& spEvent_ )
 	   //}}
 
 	default:
-		START_LOG( cerr, L"이벤트 핸들러가 정의되지 않았음. " << spEvent_->GetIDStr() );
+		START_LOG( cerr, L"Event handler is not defined. " << spEvent_->GetIDStr() );
 	}
 }
 
@@ -57,12 +57,12 @@ IMPL_ON_FUNC( DBE_SEND_PHONE_MSG_NOT )
             );
 	}
 
-	START_LOG( cout2, L"휴대폰 메세지 보내기 성공!" )
+	START_LOG( cout2, L"Mobile message sent successfully!" )
 		<< BUILD_LOG( kPacket_.m_wstrSMSMessage );
 	return;
 
 end_proc:
-	START_LOG( cerr, L"휴대폰 메세지 보내기 실패!" )
+	START_LOG( cerr, L"Failed to send mobile message!" )
 		<< BUILD_LOG( kPacket_.m_wstrSMSMessage );
 }
 

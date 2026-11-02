@@ -62,7 +62,7 @@ void KPacketMornitoring::CheckPacketProcessingLatency( IN const u_short usEventI
 {
 	if( usEventID >= EVENT_EVENTID_SENTINEL )
 	{
-		START_LOG( cerr, L"비 정상적인 eventid값입니다!" )
+		START_LOG( cerr, L"Invalid event ID." )
 			<< BUILD_LOG( usEventID )
 			<< END_LOG;
 		return;
@@ -80,7 +80,7 @@ void KPacketMornitoring::CheckLoginProxyPacketProcessingCount( IN const u_short 
 {
 	if( usEventID >= EVENT_EVENTID_SENTINEL )
 	{
-		START_LOG( cerr, L"비 정상적인 eventid값입니다!" )
+		START_LOG( cerr, L"Invalid event ID." )
 			<< BUILD_LOG( usEventID )
 			<< END_LOG;
 		return;
@@ -93,7 +93,7 @@ void KPacketMornitoring::CheckCnProxyPacketProcessingCount( IN const u_short usE
 {
 	if( usEventID >= EVENT_EVENTID_SENTINEL )
 	{
-		START_LOG( cerr, L"비 정상적인 eventid값입니다!" )
+		START_LOG( cerr, L"Invalid event ID." )
 			<< BUILD_LOG( usEventID )
 			<< END_LOG;
 		return;
@@ -106,7 +106,7 @@ void KPacketMornitoring::CheckGlobalProxyPacketProcessingCount( IN const u_short
 {
 	if( usEventID >= EVENT_EVENTID_SENTINEL )
 	{
-		START_LOG( cerr, L"비 정상적인 eventid값입니다!" )
+		START_LOG( cerr, L"Invalid event ID." )
 			<< BUILD_LOG( usEventID )
 			<< END_LOG;
 		return;

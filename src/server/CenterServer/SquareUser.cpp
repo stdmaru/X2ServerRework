@@ -106,7 +106,7 @@ void KSquareUser::SetPersonalShopData( const KSquarePersonalShopInfo& kInfo, OUT
 	kNot.m_iUnitUID				= GetCID();
 	kNot.m_wstrPersonalShopName	= m_kSquareUserInfo.m_wstrPersonalShopName;
 
-	START_LOG( clog, L"광장 개인상점 정보 셋팅.!" )
+	START_LOG( clog, L"Setting up square personal-shop information!" )
 		<< BUILD_LOGc( kInfo.m_cPersonalShopState )
 		<< BUILD_LOGc( kInfo.m_cPersonalShopType )
 		<< BUILD_LOG( kInfo.m_iPersonalShopUID )

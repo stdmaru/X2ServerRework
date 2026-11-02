@@ -32,7 +32,7 @@ bool KTempInventory::AddTempInventoryItem( IN const int iItemID
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iItemID );
 	if( pItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )
+		START_LOG( cerr, L"Failed to retrieve the item template." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 
@@ -110,7 +110,7 @@ bool KTempInventory::PrepareTempItemToInventory( IN int iTempItemUID, OUT int& i
 	mit = m_mapTempInventory.find( iTempItemUID );
 	if( mit == m_mapTempInventory.end() )
 	{
-		START_LOG( cerr, L"존재하지 않는 임시 저장 아이템을 가져오려 했습니다." )
+		START_LOG( cerr, L"Attempted to retrieve a nonexistent temporarily stored item." )
 			<< BUILD_LOG( iTempItemUID )
 			<< BUILD_LOG( static_cast<int>( m_mapTempInventory.size() ) )
 			<< END_LOG;
@@ -121,7 +121,7 @@ bool KTempInventory::PrepareTempItemToInventory( IN int iTempItemUID, OUT int& i
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( mit->second.m_iItemID );
 	if( pItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )
+		START_LOG( cerr, L"Failed to retrieve the item template." )
 			<< BUILD_LOG( mit->second.m_iItemID )
 			<< END_LOG;
 
@@ -153,7 +153,7 @@ bool KTempInventory::DeleteTempItem( IN int iTempItemUID )
 	mit = m_mapTempInventory.find( iTempItemUID );
 	if( mit == m_mapTempInventory.end() )
 	{
-		START_LOG( cerr, L"존재하지 않는 임시 저장 아이템을 삭제하려고 했습니다." )
+		START_LOG( cerr, L"Attempted to delete a nonexistent temporarily stored item." )
 			<< BUILD_LOG( iTempItemUID )
 			<< END_LOG;
 

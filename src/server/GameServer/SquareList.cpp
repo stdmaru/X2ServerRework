@@ -70,7 +70,7 @@ bool KSquareList::DelSquareInfo( KSquareInfoPtr spSquareInfo_ )
 
 	if( vit == m_vecSquareList.end() )
 	{
-		START_LOG( cerr, L"삭제하고자 하는 광장정보가 없음." )
+		START_LOG( cerr, L"Plaza information to delete does not exist." )
 			<< BUILD_LOG( spSquareInfo_->m_cSquareType )
 			<< BUILD_LOG( spSquareInfo_->m_iSquareUID )
 			<< BUILD_LOG( spSquareInfo_->m_wstrRoomName )
@@ -159,7 +159,7 @@ bool KSquareList::GetSquareInfoPage( IN KEGS_SQUARE_LIST_REQ& kReq_, OUT KEGS_SQ
 		{
 			if( nS != (int)pvecSquareList->size() )
 			{
-				START_LOG( cerr, L"페이지 요청실패.!" )
+				START_LOG( cerr, L"Page request failed!" )
 					<< BUILD_LOG( GetPageNum() )
 					<< BUILD_LOG( nS )
 					<< BUILD_LOG( nE )

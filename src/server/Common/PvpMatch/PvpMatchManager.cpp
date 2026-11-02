@@ -73,7 +73,7 @@ void KPvpMatchManager::SetMaxRankingPoint_LUA( int iMaxRankingPoint )
 {
 	if( iMaxRankingPoint < 0 )
 	{
-		START_LOG( cerr, L"최대 랭킹 포인트값이 이상합니다." )
+		START_LOG( cerr, L"Invalid maximum ranking points." )
 			<< BUILD_LOG( iMaxRankingPoint )
 			<< END_LOG;
 		return;
@@ -86,7 +86,7 @@ void KPvpMatchManager::SetMaxArenaPoint_LUA( int iMaxArenaPoint )
 {
 	if( iMaxArenaPoint < 0 )
 	{
-		START_LOG( cerr, L"최대 아레나 포인트값이 이상합니다." )
+		START_LOG( cerr, L"Invalid maximum arena points." )
 			<< BUILD_LOG( iMaxArenaPoint )
 			<< END_LOG;
 		return;
@@ -99,7 +99,7 @@ void KPvpMatchManager::SetMatchMakingBeginCount_LUA( int iMatchMakingBeginCount 
 {
 	if( iMatchMakingBeginCount < 0 )
 	{
-		START_LOG( cerr, L"매치 메이킹 시작 카운트가 이상합니다." )
+		START_LOG( cerr, L"Invalid matchmaking start count." )
 			<< BUILD_LOG( iMatchMakingBeginCount )
 			<< END_LOG;
 		return;
@@ -112,7 +112,7 @@ void KPvpMatchManager::SetMatchWeightValue_LUA( int iEnum, int iWeightValue )
 {
 	if( iEnum < 0  ||  iEnum >= MWE_MAX )
 	{
-		START_LOG( cerr, L"대전 매치 가중치 enum이 이상합니다!" )
+		START_LOG( cerr, L"Invalid PvP matchmaking weight enum." )
 			<< BUILD_LOG( iEnum )
 			<< END_LOG;
 		return;
@@ -125,7 +125,7 @@ void KPvpMatchManager::SetCheckWaitUserCount_LUA( int iCheckCount )
 {
 	if( iCheckCount < 0 )
 	{
-		START_LOG( cerr, L"매치 정보가 이상합니다." )
+		START_LOG( cerr, L"Invalid match information." )
 			<< BUILD_LOG( iCheckCount )
 			<< END_LOG;
 		return;
@@ -138,7 +138,7 @@ void KPvpMatchManager::SetGapMinMaxRating_LUA( int iGapMinMaxRating )
 {
 	if( iGapMinMaxRating < 0 )
 	{
-		START_LOG( cerr, L"매치 정보가 이상합니다." )
+		START_LOG( cerr, L"Invalid match information." )
 			<< BUILD_LOG( iGapMinMaxRating )
 			<< END_LOG;
 		return;
@@ -151,7 +151,7 @@ bool KPvpMatchManager::AddPvpMatchInfo_LUA( int iMatchType, int iKillNum, float 
 {
 	if( iMatchType < 0  ||  iKillNum < 0  ||  fPlayTime < 0.f )
 	{
-		START_LOG( cerr, L"매치 정보가 이상합니다." )
+		START_LOG( cerr, L"Invalid match information." )
 			<< BUILD_LOG( iMatchType )
 			<< BUILD_LOG( iKillNum )
 			<< BUILD_LOG( fPlayTime )
@@ -170,7 +170,7 @@ bool KPvpMatchManager::AddPvpMapForMatch_LUA( int iAddMapID )
 {
 	if( IsExistMapID( static_cast<short>(iAddMapID) ) == true )
 	{
-		START_LOG( cerr, L"동일한 맵이 또 있네?" )
+		START_LOG( cerr, L"Duplicate map entry." )
 			<< BUILD_LOG( iAddMapID )
 			<< END_LOG;
 		return false;
@@ -245,7 +245,7 @@ void KPvpMatchManager::AddPvpNpcInfo_LUA()
 	return;
 
 end_proc:
-	START_LOG( cerr, L"스크립트 파싱 실패!" )
+	START_LOG( cerr, L"Failed to parse the script." )
 		<< BUILD_LOG( iNpcID )
 		<< BUILD_LOG( iUnitClass )
 		<< BUILD_LOG( sPvpNpcInfo.m_Rating )
@@ -271,7 +271,7 @@ void KPvpMatchManager::SetHeroPvpNpcFactor_LUA( float fFactor )
 {
 	if( fFactor < 0.0 )
 	{
-		START_LOG( cerr, L"상수 정보가 이상합니다." )
+		START_LOG( cerr, L"Invalid constant information." )
 			<< BUILD_LOG( fFactor )
 			<< END_LOG;
 		return;
@@ -289,7 +289,7 @@ bool KPvpMatchManager::GetPvpMatchInfo( IN const int iMatchType, OUT char& cWinK
 	mit = m_mapPvpMatchInfo.find( iMatchType );
 	if( mit == m_mapPvpMatchInfo.end() )
 	{
-        START_LOG( cerr, L"해당 매치 타입에 대한 정보가 없습니다! 절대 일어나서는 안되는 에러!" )
+        START_LOG( cerr, L"No information exists for this match type. This should never happen." )
 			<< BUILD_LOG( iMatchType )
 			<< END_LOG;
 		return false;
@@ -352,7 +352,7 @@ bool KPvpMatchManager::DecisionPvpMap( IN const bool bIsNpcPvpMode, IN const std
 			{
 				if( IsExistMapID( mit->first ) == false )
 				{
-					START_LOG( cerr, L"어? 존재하지 않는 MapID가 있네? 일어나서는 안되는 에러!" )
+					START_LOG( cerr, L"MapID does not exist. This should never happen." )
 						<< BUILD_LOG( mit->first )
 						<< END_LOG;
 					continue;
@@ -363,7 +363,7 @@ bool KPvpMatchManager::DecisionPvpMap( IN const bool bIsNpcPvpMode, IN const std
 
 			if( kPvpMapRandom.Empty() == true )
 			{
-				START_LOG( cerr, L"그래도 맵 랜덤 정보가 비어있네? 서버 코드 오류거나 기획상 잘못된걸거야! 일어나서는 안되는 에러다!" )
+				START_LOG( cerr, L"Map randomization data is empty. This may indicate a server-code or configuration error; this should never happen." )
 					<< BUILD_LOG( m_vecPvpMapInfo.size() )
 					<< BUILD_LOG( mapSelectedMap.size() )
 					<< END_LOG;
@@ -377,7 +377,7 @@ bool KPvpMatchManager::DecisionPvpMap( IN const bool bIsNpcPvpMode, IN const std
 
 	if( IsExistMapID( sMapID ) == false )
 	{
-		START_LOG( cerr, L"랜덤으로 결정된 대전맵이 등록된 대전맵이 아니네? 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"Randomly selected PvP map is not registered. This should never happen." )
 			<< BUILD_LOG( sMapID )
 			<< END_LOG;
 
@@ -391,7 +391,7 @@ int	KPvpMatchManager::GetMatchWeightValue( IN const MATCH_WEIGHT_ENUM eEnum ) co
 {
 	if( eEnum < 0  ||  eEnum >= MWE_MAX )
 	{
-		START_LOG( cerr, L"대전 매치 가중치 enum이 이상합니다!" )
+		START_LOG( cerr, L"Invalid PvP matchmaking weight enum." )
 			<< BUILD_LOG( eEnum )
 			<< END_LOG;
 		return -1;
@@ -404,7 +404,7 @@ int KPvpMatchManager::GetRatingByTeam( IN const std::map< UidType, int >& mapTea
 {
 	if( mapTeamMemberInfo.empty()  ||  mapTeamMemberInfo.size() > SEnum::PE_MAX_MATCH_PLAYER_COUNT )
 	{
-		START_LOG( cerr, L"팀 레이팅을 계산하려는데 인원수가 이상하다!" )
+		START_LOG( cerr, L"Invalid player count while calculating team ratings." )
 			<< BUILD_LOG( mapTeamMemberInfo.size() )
 			<< END_LOG;
 		return -1;
@@ -445,7 +445,7 @@ int KPvpMatchManager::GetRatingByTeam( IN const std::map< UidType, int >& mapTea
 	// 가중치 총합이 0인 경우는 절대로 일어나서는
 	if( iTotalWeightValue <= 0 )
 	{
-		START_LOG( cerr, L"가중치 총합이 이상하다! 절대 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"Invalid total weight. This should never happen." )
 			<< BUILD_LOG( mapTeamMemberInfo.size() )
 			<< BUILD_LOG( iTotalWeightValue )
 			<< END_LOG;
@@ -527,7 +527,7 @@ bool KPvpMatchManager::GetPvpNpcInfo( IN const bool bIsAllPlayersBeginner, IN co
 		const SPvpNpcInfo* pPvpNpcInfo = GetPvpNpcInfo( iPvpNpcID );
 		if( pPvpNpcInfo == NULL )
 		{
-			START_LOG( cerr, L"대전 NPC정보가 없습니다!" )
+			START_LOG( cerr, L"PvP NPC information is missing." )
 				<< BUILD_LOG( bIsAllPlayersBeginner )
 				<< BUILD_LOG( iPvpNpcID )
 				<< END_LOG;
@@ -572,7 +572,7 @@ bool KPvpMatchManager::GetPvpNpcInfo( IN const bool bIsAllPlayersBeginner, IN co
 		const SPvpNpcInfo* pPvpNpcInfo = GetPvpNpcInfo( iPvpNpcID );
 		if( pPvpNpcInfo == NULL )
 		{
-			START_LOG( cerr, L"대전 NPC정보가 없습니다!" )
+			START_LOG( cerr, L"PvP NPC information is missing." )
 				<< BUILD_LOG( bIsAllPlayersBeginner )
 				<< BUILD_LOG( iPvpNpcID )
 				<< END_LOG;
@@ -627,7 +627,7 @@ const KPvpMatchManager::SPvpNpcInfo* KPvpMatchManager::GetPvpNpcInfo( IN const i
 	mit = m_mapPvpNpcInfo.find( iNpcID );
 	if( mit == m_mapPvpNpcInfo.end() )
 	{
-		START_LOG( cerr, L"존재 하지 않는 대전 NPC 정보 입니다!" )
+		START_LOG( cerr, L"PvP NPC information does not exist." )
 			<< BUILD_LOG( iNpcID )
 			<< END_LOG;
 
@@ -644,7 +644,7 @@ void KPvpMatchManager::GetPvpNpcNameByRandom( OUT std::wstring& wstrName ) const
 	mit = m_mapPvpNpcName.find( iNameIndex );
 	if( mit == m_mapPvpNpcName.end() )
 	{
-		START_LOG( cerr, L"존재하지 않는 index네? 스크립트 파싱이 잘못되었나?" )
+		START_LOG( cerr, L"Index does not exist. Was the script parsed incorrectly?" )
 			<< BUILD_LOG( iNameIndex )
 			<< END_LOG;
 		return;

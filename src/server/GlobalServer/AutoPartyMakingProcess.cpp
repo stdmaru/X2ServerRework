@@ -184,7 +184,7 @@ KAutoPartyMakingProcess::~KAutoPartyMakingProcess()
 void KAutoPartyMakingProcess::ClearAllAutoPartyInfo()
 {
 	//////////////////////////////////////////////////////////////////////////
-	START_LOG( cout2, L"[경고!] 모든 자동 파티 정보를 초기화 시킵니다!" );
+	START_LOG( cout2, L"[Warning] Resetting all automatic party data." );
 	//////////////////////////////////////////////////////////////////////////
 
 	//////////////////////////////////////////////////////////////////////////
@@ -267,7 +267,7 @@ int	KAutoPartyMakingProcess::GetWaitUserCountByWaitNumber( IN const UidType iWai
     KAutoPartyUserWaitListPtr spWaitList = GetAutoPartyWaitListByWaitNumber( iWaitNumber );
 	if( IS_NULL( spWaitList ) )
 	{
-		START_LOG( cwarn, L"존재 하지 않는 대기리스트 입니다." )
+		START_LOG( cwarn, L"Wait list does not exist." )
 			<< BUILD_LOG( iWaitNumber )
 			<< END_LOG;
 		return 0;
@@ -297,7 +297,7 @@ KAutoPartyPtr KAutoPartyMakingProcess::MakeAutoParty( IN const KAutoPartyConditi
 	KAutoPartyPtr spAutoParty( new KAutoParty( iAutoPartyUID, kConditionInfo ) );
 	if( spAutoParty == NULL )
 	{
-		START_LOG( cerr, L"KAutoParty new 할당실패." )
+		START_LOG( cerr, L"Failed to allocate KAutoParty." )
 			<< BUILD_LOG( iAutoPartyUID )
 			<< END_LOG;
 
@@ -316,7 +316,7 @@ KAutoPartyUserPtr KAutoPartyMakingProcess::MakeUser( IN const KAutoPartyUserInfo
 	KAutoPartyUserPtr  spAutoPartyUser( new KAutoPartyUser( kInfo ) );
 	if( spAutoPartyUser == NULL )
 	{
-		START_LOG( cerr, L"자동 파티 유저 생성 실패!" )
+		START_LOG( cerr, L"Failed to create an automatic party user." )
 			<< BUILD_LOG( kInfo.m_iUnitUID )
 			<< END_LOG;
 
@@ -332,7 +332,7 @@ KAutoPartyUserPtr KAutoPartyMakingProcess::GetAutoPartyWaitUserByUnitUID( IN con
 	std::map< UidType, KAutoPartyUserPtr  >::iterator mit = m_mapAutoPartyWaitUser.find( iUnitUID );
 	if( mit == m_mapAutoPartyWaitUser.end() )
 	{
-		START_LOG( cwarn, L"찾는 매치유저가 없습니다.!" )
+		START_LOG( cwarn, L"Match user not found." )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 
@@ -341,7 +341,7 @@ KAutoPartyUserPtr KAutoPartyMakingProcess::GetAutoPartyWaitUserByUnitUID( IN con
 
 	if( mit->second == NULL )
 	{
-		START_LOG( cerr, L"매치 유저 포인터 이상.!" )
+		START_LOG( cerr, L"Invalid match-user pointer." )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 
@@ -356,7 +356,7 @@ KAutoPartyUserWaitListPtr KAutoPartyMakingProcess::GetAutoPartyWaitListByWaitNum
 	std::map< UidType, KAutoPartyUserWaitListPtr >::iterator mit = m_mapAutoPartyWaitList.find( iWaitNumber );
 	if( mit == m_mapAutoPartyWaitList.end() )
 	{
-		START_LOG( cwarn, L"찾는 매치 대기자 리스트가 없습니다.!" )
+		START_LOG( cwarn, L"Match wait list not found." )
 			<< BUILD_LOG( iWaitNumber )
 			<< END_LOG;
 
@@ -365,7 +365,7 @@ KAutoPartyUserWaitListPtr KAutoPartyMakingProcess::GetAutoPartyWaitListByWaitNum
 
 	if( mit->second == NULL )
 	{
-		START_LOG( cerr, L"매치 매치 대기자 리스트 포인터 이상.!" )
+		START_LOG( cerr, L"Invalid match wait-list pointer." )
 			<< BUILD_LOG( iWaitNumber )
 			<< END_LOG;
 
@@ -381,7 +381,7 @@ KAutoPartyPtr KAutoPartyMakingProcess::CreateAutoParty( IN const std::vector< KA
 	KAutoPartyPtr spAutoParty = MakeAutoParty( kInfo );
 	if( spAutoParty == NULL )
 	{
-		START_LOG( cerr, L"매치 생성 실패!" )
+		START_LOG( cerr, L"Failed to create a match." )
 			<< END_LOG;
 
 		return KAutoPartyPtr();
@@ -409,7 +409,7 @@ bool KAutoPartyMakingProcess::RegAutoPartyWaitList( IN const std::vector< KAutoP
 	// 1. 자동 파티 인원 수가 맞는지 체크!
 	if( SEnum::AUTO_PARTY_TOTAL_PLAYER_COUNT < (int)vecAutoPartyUserList.size() )
 	{
-		START_LOG( cerr, L"매치 대기자 리스트 생성 실패!" )
+		START_LOG( cerr, L"Failed to create the match wait list." )
 			<< BUILD_LOG( SEnum::AUTO_PARTY_TOTAL_PLAYER_COUNT )
 			<< BUILD_LOG( vecAutoPartyUserList.size() )
 			<< END_LOG;
@@ -420,7 +420,7 @@ bool KAutoPartyMakingProcess::RegAutoPartyWaitList( IN const std::vector< KAutoP
 	KAutoPartyUserWaitListPtr spWaitList( new KAutoPartyUserWaitList( NewWaitNumber() ) );
 	if( spWaitList == NULL )
 	{
-		START_LOG( cerr, L"매치 대기자 리스트 생성 실패!" )
+		START_LOG( cerr, L"Failed to create the match wait list." )
 			<< END_LOG;
 		return false;
 	}
@@ -431,7 +431,7 @@ bool KAutoPartyMakingProcess::RegAutoPartyWaitList( IN const std::vector< KAutoP
 		// 이미 등록된 캐릭터 인지 검사
 		if( IsExistInWaitListByUnitUID( kInfo.m_iUnitUID ) == true )
 		{
-			START_LOG( cerr, L"이미 매치에 등록되어있는 유저!" )
+			START_LOG( cerr, L"User is already registered for a match." )
 				<< BUILD_LOG( kInfo.m_iUnitUID )
 				<< END_LOG;
 			return false;
@@ -440,7 +440,7 @@ bool KAutoPartyMakingProcess::RegAutoPartyWaitList( IN const std::vector< KAutoP
         KAutoPartyUserPtr spAutoPartyUser = MakeUser( kInfo );
 		if( spAutoPartyUser == NULL )
 		{
-			START_LOG( cerr, L"대기자 리스트 생성 중 매치 유저 생성 실패!" )
+			START_LOG( cerr, L"Failed to create a match user while creating the wait list." )
 				<< BUILD_LOG( kInfo.m_iUnitUID )
 				<< END_LOG;
 			return false;
@@ -455,7 +455,7 @@ bool KAutoPartyMakingProcess::RegAutoPartyWaitList( IN const std::vector< KAutoP
 
 	if( spWaitList->GetNumMember() == 0 )
 	{
-		START_LOG( cerr, L"대기자 리스트를 생성하지 못하였습니다." )
+		START_LOG( cerr, L"Failed to create the wait list." )
 			<< END_LOG;
 		return false;
 	}
@@ -465,7 +465,7 @@ bool KAutoPartyMakingProcess::RegAutoPartyWaitList( IN const std::vector< KAutoP
 	//{{ 2012. 12. 04 던전 매칭 레벨 평균 레벨로 변경 - 김민성
 	if( GetListTypeByLevelCondition( spWaitList->GetAverageUnitLevel(), iListType ) == false )
 	{
-		START_LOG( cwarn, L"리스트 타입을 구하지 못했습니다!" )
+		START_LOG( cwarn, L"Failed to determine the list type." )
 			<< BUILD_LOGc( spWaitList->GetAverageUnitLevel() )
 			<< BUILD_LOGc( GetDungeonMode() )
 			<< BUILD_LOG( GetDungeonIDWithDif() )
@@ -522,7 +522,7 @@ bool KAutoPartyMakingProcess::UnRegAutoPartyWaitListByUnitUID( IN const UidType 
 	KAutoPartyUserPtr spAutoPartyUser = GetAutoPartyWaitUserByUnitUID( iUnitUID );
 	if( spAutoPartyUser == NULL )
 	{
-		START_LOG( cerr, L"대기자 리스트 등록해제를 하려고 하는데 유저를 찾지 못하였습니다." )
+		START_LOG( cerr, L"Could not find the user while removing them from the wait list." )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 		return false;
@@ -537,7 +537,7 @@ bool KAutoPartyMakingProcess::UnRegAutoPartyWaitListByUnitUID( IN const UidType 
 	{
 		if( (*lit) == NULL )
 		{
-			START_LOG( cerr, L"대기자 리스트 포인터값이 이상합니다" )
+			START_LOG( cerr, L"Invalid wait-list pointer." )
 				<< END_LOG;
 			continue;
 		}
@@ -560,7 +560,7 @@ bool KAutoPartyMakingProcess::UnRegAutoPartyWaitListByUnitUID( IN const UidType 
 	}
 	else
 	{
-		START_LOG( cerr, L"대기자 리스트에 매치유저가 없다! 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"No match user is in the wait list; this should never happen." )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 	}
@@ -584,7 +584,7 @@ bool KAutoPartyMakingProcess::UnRegAutoPartyWaitListByWaitNumber( IN const UidTy
 	KAutoPartyUserWaitListPtr spAutoPartyWaitList = GetAutoPartyWaitListByWaitNumber( iWaitNumber );
 	if( spAutoPartyWaitList == NULL )
 	{
-		START_LOG( cerr, L"대기자 리스트 등록해제를 하려고 하는데 리스트를 찾지 못하였습니다." )
+		START_LOG( cerr, L"Could not find the list while removing a user from the wait list." )
 			<< BUILD_LOG( iWaitNumber )
 			<< END_LOG;
 		return false;
@@ -628,7 +628,7 @@ void KAutoPartyMakingProcess::MakingAutoPartyProcessing( OUT std::vector< KAutoP
 		++uiLoopCount;
 		if( uiLoopCount > uiTotalListSize )
 		{
-			START_LOG( cerr, L"잘못된 동작을 하였습니다! 절대 일어나서는 안되는 에러!" )
+			START_LOG( cerr, L"Invalid operation; this should never happen." )
 				<< BUILD_LOG( uiLoopCount )
 				<< BUILD_LOG( uiTotalListSize )
 				<< END_LOG;
@@ -650,7 +650,7 @@ void KAutoPartyMakingProcess::MakingAutoPartyProcessing( OUT std::vector< KAutoP
 		listAutoPartyMakingWaitList.pop_front();
 		if( spFrontAutoPartyWaitUser == NULL )
 		{
-			START_LOG( cerr, L"자동 파티 대기자 리스트 포인터값이 이상합니다." )
+			START_LOG( cerr, L"Invalid automatic party wait-list pointer." )
 				<< END_LOG;
 			continue;
 		}
@@ -726,7 +726,7 @@ void KAutoPartyMakingProcess::MakingAutoPartyProcessing( OUT std::vector< KAutoP
 						KAutoPartyUserWaitListPtr spWaitList = GetAutoPartyWaitListByWaitNumber( iAutoPartyWaitNumber );
 						if( IS_NULL( spWaitList ) )
 						{
-							START_LOG( cerr, L"대기자 리스트가 존재하지 않는다! 여기와서 이러면 어떻해.. 일어나면 안되는 에러!" )
+							START_LOG( cerr, L"The wait list does not exist; this should never happen." )
 								<< BUILD_LOG( iAutoPartyWaitNumber )
 								<< END_LOG;
 							break;
@@ -760,7 +760,7 @@ void KAutoPartyMakingProcess::MakingAutoPartyProcessing( OUT std::vector< KAutoP
 			// 대기자 리스트에서 매치 요청자 삭제!
 			if( UnRegAutoPartyWaitListByWaitNumber( spFrontAutoPartyWaitUser->GetWaitNumber(), NetError::NOT_LEAVE_AUTO_PARTY_WAIT_REASON_00 ) == false )
 			{
-				START_LOG( cerr, L"대기자 리스트에서 매치 요청자 삭제 실패! 일어 나서는 안되는 에러!" )
+				START_LOG( cerr, L"Failed to remove the match requester from the wait list; this should never happen." )
 					<< BUILD_LOG( spFrontAutoPartyWaitUser->GetWaitNumber() )
 					<< END_LOG;
 				break;
@@ -772,7 +772,7 @@ void KAutoPartyMakingProcess::MakingAutoPartyProcessing( OUT std::vector< KAutoP
 			//}}
 			if( spNewAutoParty == NULL )
 			{
-				START_LOG( cerr, L"새로운 매치 생성 실패!" )
+				START_LOG( cerr, L"Failed to create a new match." )
 					<< END_LOG;
 				break;
 			}
@@ -783,7 +783,7 @@ void KAutoPartyMakingProcess::MakingAutoPartyProcessing( OUT std::vector< KAutoP
                 KAutoPartyUserWaitListPtr spWaitList = GetAutoPartyWaitListByWaitNumber( iAutoPartyWaitNumber );
 				if( spWaitList == NULL )
 				{
-					START_LOG( cerr, L"대기자 리스트가 존재하지 않는다! 여기와서 이러면 어떻해.. 일어나면 안되는 에러!" )
+					START_LOG( cerr, L"The wait list does not exist; this should never happen." )
 						<< BUILD_LOG( iAutoPartyWaitNumber )
 						<< END_LOG;
 					break;
@@ -803,7 +803,7 @@ void KAutoPartyMakingProcess::MakingAutoPartyProcessing( OUT std::vector< KAutoP
 				// 대기자 리스트에서 삭제하자!
 				if( UnRegAutoPartyWaitListByWaitNumber( iAutoPartyWaitNumber, NetError::NOT_LEAVE_AUTO_PARTY_WAIT_REASON_00 ) == false )
 				{
-					START_LOG( cerr, L"대기자 리스트에서 자동 파티 요청자 삭제 실패!" )
+					START_LOG( cerr, L"Failed to remove the automatic party requester from the wait list." )
 						<< BUILD_LOG( spWaitList->GetWaitNumber() )
 						<< END_LOG;
 					break;
@@ -812,7 +812,7 @@ void KAutoPartyMakingProcess::MakingAutoPartyProcessing( OUT std::vector< KAutoP
 				// 자동 파티에 입장 시키자!
 				if( spNewAutoParty->Enter( vecNewEnterUser ) == false )
 				{
-					START_LOG( cerr, L"추가인원 입장 실패! 정상에러인가?" )
+					START_LOG( cerr, L"Failed to add another member. Is this an expected error?" )
 						<< BUILD_LOG( vecNewEnterUser.size() )
 						<< END_LOG;
 					break;
@@ -824,7 +824,7 @@ void KAutoPartyMakingProcess::MakingAutoPartyProcessing( OUT std::vector< KAutoP
 				{
 					if( (*litD) == NULL )
 					{
-						START_LOG( cerr, L"포인터값이 이상합니다." )
+						START_LOG( cerr, L"Invalid pointer." )
 							<< END_LOG;
 						continue;
 					}
@@ -842,7 +842,7 @@ void KAutoPartyMakingProcess::MakingAutoPartyProcessing( OUT std::vector< KAutoP
 			// 최종적으로 자동파티가 성사되었는지 확인하자!
 			if( spNewAutoParty->CheckAutoPartyMakingSuccess() == false )
 			{
-				START_LOG( clog, L"자동 파티 성공 처리에 실패했다!" )
+				START_LOG( clog, L"Failed to process automatic party success." )
 					<< BUILD_LOG( spNewAutoParty->GetAutoPartyUID() )
 					<< END_LOG;
 			}
@@ -872,7 +872,7 @@ void KAutoPartyMakingProcess::AutoPartyProcess_GetWaitUserListByOptimalCondition
 	{
 		if( spTargetUserList == NULL )
 		{
-			START_LOG( cerr, L"대기자 리스트 포인터값이 이상합니다." )
+			START_LOG( cerr, L"Invalid wait-list pointer." )
 				<< END_LOG;
 			continue;
 		}
@@ -948,7 +948,7 @@ void KAutoPartyMakingProcess::AutoPartyProcess_GetWaitNumberListForCompleteMakeA
 	{
 		if( spTargetUserList == NULL )
 		{
-			START_LOG( cerr, L"대기자 리스트 포인터값이 이상합니다." )
+			START_LOG( cerr, L"Invalid wait-list pointer." )
 				<< END_LOG;
 			continue;
 		}
@@ -1037,7 +1037,7 @@ void KAutoPartyMakingProcess::DecreaseAutoPartyWaitUserCount( IN const int iList
 
 	if( mit->second < 0 )
 	{
-		START_LOG( cerr, L"어떻게 0보다 작게 나올수 있지?" )
+		START_LOG( cerr, L"How can this be less than zero?" )
 			<< BUILD_LOG( mit->second )
 			<< END_LOG;
 

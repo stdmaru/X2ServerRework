@@ -43,7 +43,7 @@ void KUserPersonalShopManager::SetPShopAgencyExpirationDate( IN const std::wstri
 
 	if( KncUtil::ConvertStringToCTime( wstrAgencyExpirationDate, m_tAgencyExpirationDate ) == false )
 	{
-		START_LOG( cerr, L"문자열 시간 변환 실패." )
+		START_LOG( cerr, L"Failed to convert the time string." )
 			<< BUILD_LOG( wstrAgencyExpirationDate )
 			<< END_LOG;
 		return;

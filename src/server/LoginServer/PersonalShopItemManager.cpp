@@ -42,14 +42,14 @@ void KPersonalShopItemManager::GetSellPersonalShopItemInfoList( OUT std::vector<
 	{
 		if( spItemInfo == NULL )
 		{
-			START_LOG( cerr, L"아이템 정보가 이상합니다!" )
+			START_LOG( cerr, L"Invalid item information!" )
 				<< END_LOG;
 			continue;
 		}
 
 		if( spItemInfo->IsPShopAgencyItemUID() == false )
 		{
-			START_LOG( cerr, L"대리상인 전용 ItemUID가 아닙니다! 절대 일어나서는 안되는 오류!" )
+			START_LOG( cerr, L"This is not a hired-merchant ItemUID! This should never happen!" )
 				<< BUILD_LOG( spItemInfo->GetItemUID() )
 				<< END_LOG;
 			continue;
@@ -80,7 +80,7 @@ void KPersonalShopItemManager::GetSellPersonalShopItemInfoList( OUT std::vector<
 
 		default:
 			{
-				START_LOG( cerr, L"물품 리스트 요청 타입이 이상합니다!" )
+				START_LOG( cerr, L"Invalid item-list request type!" )
 					<< BUILD_LOG( eType )
 					<< END_LOG;
 			}
@@ -100,7 +100,7 @@ bool KPersonalShopItemManager::GetSellPersonalShopItemInfo( IN const UidType iIt
 	KPersonalShopItemPtr spItemInfo = GetPersonalShopItem( iItemUID );
 	if( spItemInfo == NULL )
 	{
-		START_LOG( cerr, L"아이템이 존재하지 않습니다!" )
+		START_LOG( cerr, L"Item does not exist!" )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -117,7 +117,7 @@ KPersonalShopItemPtr KPersonalShopItemManager::GetPersonalShopItem( IN const Uid
 	mit = m_mapSellItemInfo.find( iItemUID );
 	if( mit == m_mapSellItemInfo.end() )
 	{
-		START_LOG( cwarn, L"아이템 정보가 존재하지 않습니다!" )
+		START_LOG( cwarn, L"Item information does not exist!" )
 			<< BUILD_LOG( m_mapSellItemInfo.size() );
 
 		return KPersonalShopItemPtr();
@@ -130,7 +130,7 @@ bool KPersonalShopItemManager::AddSellItemInfo( IN const KSellPersonalShopItemIn
 {
 	if( IsExistItem( kInfo.m_kInventoryItemInfo.m_iItemUID ) == true )
 	{
-		START_LOG( cerr, L"이미 존재하는 아이템 입니다!" )
+		START_LOG( cerr, L"Item already exists!" )
 			<< BUILD_LOG( kInfo.m_kInventoryItemInfo.m_iItemUID )
 			<< END_LOG;
 		return false;
@@ -139,7 +139,7 @@ bool KPersonalShopItemManager::AddSellItemInfo( IN const KSellPersonalShopItemIn
 	KPersonalShopItemPtr spItemInfo = KPersonalShopItemPtr( new KPersonalShopItem( kInfo ) );
 	if( spItemInfo == NULL )
 	{
-		START_LOG( cerr, L"아이템 정보 생성을 실패하였습니다." )
+		START_LOG( cerr, L"Failed to create item information." )
 			<< BUILD_LOG( kInfo.m_kInventoryItemInfo.m_iItemUID )
 			<< END_LOG;
 		return false;
@@ -154,7 +154,7 @@ bool KPersonalShopItemManager::AddSellItemInfo( IN const KSellPShopItemBackupDat
 {
 	if( IsExistItem( kInfo.m_kSellPShopItemInfo.m_kInventoryItemInfo.m_iItemUID ) == true )
 	{
-		START_LOG( cerr, L"이미 존재하는 아이템 입니다!" )
+		START_LOG( cerr, L"Item already exists!" )
 			<< BUILD_LOG( kInfo.m_kSellPShopItemInfo.m_kInventoryItemInfo.m_iItemUID )
 			<< END_LOG;
 		return false;
@@ -165,7 +165,7 @@ bool KPersonalShopItemManager::AddSellItemInfo( IN const KSellPShopItemBackupDat
 	KPersonalShopItemPtr spItemInfo = KPersonalShopItemPtr( new KPersonalShopItem( kInfo ) );
 	if( spItemInfo == NULL )
 	{
-		START_LOG( cerr, L"아이템 정보 생성을 실패하였습니다." )
+		START_LOG( cerr, L"Failed to create item information." )
 			<< BUILD_LOG( kInfo.m_kSellPShopItemInfo.m_kInventoryItemInfo.m_iItemUID )
 			<< END_LOG;
 		return false;
@@ -186,7 +186,7 @@ void KPersonalShopItemManager::DelSellItemInfo( IN const UidType iItemUID )
 	{
 		if( (*vit) == NULL )
 		{
-			START_LOG( cerr, L"아이템 포인터 값이 이상합니다!" )
+			START_LOG( cerr, L"Invalid item pointer!" )
 				<< END_LOG;
 			continue;
 		}
@@ -210,7 +210,7 @@ void KPersonalShopItemManager::UpdateSellItemList( IN const std::vector< KSellPe
 	{
 		if( IsExistItem( kInfo.m_kInventoryItemInfo.m_iItemUID ) == true )
 		{
-			START_LOG( cerr, L"중복된 아이템이 있습니다. 절대 일어나서는 안되는 에러!" )
+			START_LOG( cerr, L"Duplicate item found. This should never happen!" )
 				<< BUILD_LOG( kInfo.m_kInventoryItemInfo.m_iItemUID )
 				<< END_LOG;
 			continue;
@@ -226,7 +226,7 @@ void KPersonalShopItemManager::UpdateSellItemBackupDataList( IN const std::vecto
 	{
 		if( IsExistItem( kInfo.m_kSellPShopItemInfo.m_kInventoryItemInfo.m_iItemUID ) == true )
 		{
-			START_LOG( cerr, L"DB로부터 받은 백업 아이템 데이터를 넣는데 중복된게 있다? 절대 일어나서는 안되는 에러!" )
+			START_LOG( cerr, L"Duplicate item found while inserting backed-up item data from the database. This should never happen!" )
 				<< BUILD_LOG( kInfo.m_kSellPShopItemInfo.m_kInventoryItemInfo.m_iItemUID )
 				<< END_LOG;
 			continue;
@@ -234,7 +234,7 @@ void KPersonalShopItemManager::UpdateSellItemBackupDataList( IN const std::vecto
 
 		if( kInfo.m_kSellPShopItemInfo.m_cPShopItemType != KSellPersonalShopItemInfo::SPIT_PSHOP_AGENCY )
 		{
-			START_LOG( cerr, L"대리상인 전용 ItemUID타입이 아닙니다! 절대 일어나서는 안되는 에러!" )
+			START_LOG( cerr, L"Invalid hired-merchant ItemUID type! This should never happen!" )
 				<< BUILD_LOG( kInfo.m_kSellPShopItemInfo.m_kInventoryItemInfo.m_iItemUID )
 				<< BUILD_LOGc( kInfo.m_kSellPShopItemInfo.m_cPShopItemType )
 				<< END_LOG;
@@ -254,7 +254,7 @@ bool KPersonalShopItemManager::PrepareForBuyItem( IN const UidType /*iHostUnitUI
 	if( spItemInfo == NULL )
 	{
 		// 시간차로 발생할 수 있는 오류임!
-		START_LOG( cwarn, L"아이템이 존재하지 않습니다!" )
+		START_LOG( cwarn, L"Item does not exist!" )
 			<< BUILD_LOG( kReq.m_iBuyItemUID )
 			<< END_LOG;
 
@@ -268,7 +268,7 @@ bool KPersonalShopItemManager::PrepareForBuyItem( IN const UidType /*iHostUnitUI
 	// 1. 대리상점 전용 ItemUID가 맞는지 검사
 	if( spItemInfo->IsPShopAgencyItemUID() == false )
 	{
-		START_LOG( cerr, L"대리상점 전용 ItemUID가 아닙니다! 절대 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"This is not a hired-shop ItemUID! This should never happen!" )
 			<< BUILD_LOGc( spItemInfo->GetItemUID() )
 			<< END_LOG;
 
@@ -279,7 +279,7 @@ bool KPersonalShopItemManager::PrepareForBuyItem( IN const UidType /*iHostUnitUI
 	// 1. 해당 아이템이 현재 구매 가능한 상태인지 검사
 	if( spItemInfo->GetShopItemState() != KPersonalShopItem::SIS_SALE )
 	{
-		START_LOG( clog, L"현재 해당 아이템은 구매 가능한 상태가 아닙니다!" )
+		START_LOG( clog, L"This item is not currently available for purchase!" )
 			<< BUILD_LOGc( spItemInfo->GetShopItemState() )
 			<< END_LOG;
 
@@ -290,7 +290,7 @@ bool KPersonalShopItemManager::PrepareForBuyItem( IN const UidType /*iHostUnitUI
 	// 1. 거래 가능한 카테고리의 아이템인지?
 	if( CXSLInventory::IsTradePossibleCategory( spItemInfo->GetSlotCategory() ) == false )
 	{
-		START_LOG( cerr, L"판매중인 아이템이 거래가능한 카테고리가 아니다." )
+		START_LOG( cerr, L"An item for sale belongs to a non-tradable category." )
 			<< BUILD_LOGc( spItemInfo->GetSlotCategory() )
 			<< END_LOG;
 
@@ -303,7 +303,7 @@ bool KPersonalShopItemManager::PrepareForBuyItem( IN const UidType /*iHostUnitUI
 	{
 		if( kReq.m_iBuyQuantity > 1 )
 		{
-			START_LOG( cerr, L"수량성 아이템이 아닌데 사는 개수가 1이상임. 버그인가? 해킹인가?" )
+			START_LOG( cerr, L"The quantity to buy is greater than 1 for a non-stackable item. Bug or hack?" )
 				<< BUILD_LOGc( spItemInfo->GetUsageType() )
 				<< BUILD_LOG( kReq.m_iBuyQuantity )
 				<< END_LOG;
@@ -313,7 +313,7 @@ bool KPersonalShopItemManager::PrepareForBuyItem( IN const UidType /*iHostUnitUI
 	// 3. 수량 검사
 	if( spItemInfo->GetQuantity() < kReq.m_iBuyQuantity )
 	{
-		START_LOG( cerr, L"판매물품이 부족함." )
+		START_LOG( cerr, L"Not enough items for sale." )
 			<< BUILD_LOG( spItemInfo->GetQuantity() )
 			<< BUILD_LOG( kReq.m_iBuyQuantity )
 			<< END_LOG;
@@ -329,7 +329,7 @@ bool KPersonalShopItemManager::PrepareForBuyItem( IN const UidType /*iHostUnitUI
 
 	if( iCheckTotalPrice < 0  ||  iCheckTotalPrice > SEnum::UI_MAX_ED_CHAR_HAVE )
 	{
-		START_LOG( cout, L"구매 액수값이 한계치를 넘어섰다. 버그유저로 의심됨.." )
+		START_LOG( cout, L"Purchase amount exceeds the limit. User may be exploiting a bug..." )
 			<< BUILD_LOG( iPricePerOne )
 			<< BUILD_LOG( iItemQuantity )
 			<< BUILD_LOG( iCheckTotalPrice );
@@ -347,7 +347,7 @@ bool KPersonalShopItemManager::PrepareForBuyItem( IN const UidType /*iHostUnitUI
 	// 6. 구매자가 물품살 ED가 있는지 검사.
 	if( iTotalPrice > kReq.m_iBuyUnitNowED )
 	{
-		START_LOG( clog, L"ED가 부족하여 물품을 구매할수 없음.!" )
+		START_LOG( clog, L"Not enough ED to purchase the item!" )
 			<< BUILD_LOG( iTotalPrice )
 			<< BUILD_LOG( kReq.m_iBuyUnitNowED );
 
@@ -369,7 +369,7 @@ bool KPersonalShopItemManager::PrepareForBuyItem( IN const UidType /*iHostUnitUI
 
 		if( kResult.m_vecItemInfoTemp.size() > 1 )
 		{
-			START_LOG( cerr, L"한번에 구매가능한 아이템 종류는 한종류뿐인데? 일어날수 없는 에러!" )
+			START_LOG( cerr, L"Only one item type can be purchased at a time. This should be impossible!" )
 				<< BUILD_LOG( kResult.m_vecItemInfoTemp.size() )
 				<< END_LOG;
 
@@ -397,7 +397,7 @@ bool KPersonalShopItemManager::PrepareForBuyItem( IN const UidType /*iHostUnitUI
 
 			if( bIsBuyItemExist == false )
 			{
-				START_LOG( cerr, L"아이템이 존재하지 않음." )
+				START_LOG( cerr, L"Item does not exist." )
 					<< BUILD_LOG( kReq.m_iBuyQuantity )
 					<< BUILD_LOG( kReq.m_iBuyItemUID )
 					<< END_LOG;
@@ -421,7 +421,7 @@ bool KPersonalShopItemManager::PrepareForBuyItem( IN const UidType /*iHostUnitUI
 		kSellItemTemp ) == false )
 	//}}
 	{
-		START_LOG( cerr, L"아이템이 존재하지 않음." )
+		START_LOG( cerr, L"Item does not exist." )
 			<< BUILD_LOG( kReq.m_iBuyQuantity )
 			<< BUILD_LOG( kReq.m_iBuyItemUID )
 			<< END_LOG;
@@ -439,7 +439,7 @@ bool KPersonalShopItemManager::Confirm( IN const UidType iItemUID, IN const bool
 	KPersonalShopItemPtr spItemInfo = GetPersonalShopItem( iItemUID );
 	if( spItemInfo == NULL )
 	{
-		START_LOG( cerr, L"아이템이 존재하지 않습니다! 절대 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"Item does not exist! This should never happen!" )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -456,7 +456,7 @@ bool KPersonalShopItemManager::IsAllItemSoldOut() const
 	{
 		if( spItemInfo == NULL )
 		{
-			START_LOG( cerr, L"아이템 정보가 이상합니다!" )
+			START_LOG( cerr, L"Invalid item information!" )
 				<< END_LOG;
 			continue;
 		}
@@ -475,7 +475,7 @@ bool KPersonalShopItemManager::IsAllItemOnSale() const
 	{
 		if( spItemInfo == NULL )
 		{
-			START_LOG( cerr, L"아이템 정보가 이상합니다!" )
+			START_LOG( cerr, L"Invalid item information!" )
 				<< END_LOG;
 			continue;
 		}
@@ -503,7 +503,7 @@ bool KPersonalShopItemManager::PrepareForPickUp( IN const std::vector< UidType >
 		KPersonalShopItemPtr spItemInfo = GetPersonalShopItem( iItemUID );
 		if( spItemInfo == NULL )
 		{
-			START_LOG( cerr, L"아이템이 존재하지 않습니다!" )
+			START_LOG( cerr, L"Item does not exist!" )
 				<< BUILD_LOG( iItemUID )
 				<< END_LOG;
 
@@ -514,7 +514,7 @@ bool KPersonalShopItemManager::PrepareForPickUp( IN const std::vector< UidType >
 		// 대리상점 전용 ItemUID가 아니라면 PickUp할수 없다!
 		if( spItemInfo->IsPShopAgencyItemUID() == false )
 		{
-			START_LOG( cerr, L"대리상점 전용 ItemUID가 아닙니다! 절대 일어날수 없는 에러!" )
+			START_LOG( cerr, L"This is not a hired-shop ItemUID! This should be impossible!" )
 				<< BUILD_LOG( iItemUID )
 				<< END_LOG;
 
@@ -564,7 +564,7 @@ bool KPersonalShopItemManager::PickUp( IN const std::vector< UidType >& vecPickU
 		KPersonalShopItemPtr spItemInfo = GetPersonalShopItem( iItemUID );
 		if( spItemInfo == NULL )
 		{
-			START_LOG( cerr, L"아이템이 존재하지 않습니다!" )
+			START_LOG( cerr, L"Item does not exist!" )
 				<< BUILD_LOG( iItemUID )
 				<< END_LOG;
 
@@ -575,7 +575,7 @@ bool KPersonalShopItemManager::PickUp( IN const std::vector< UidType >& vecPickU
 		// 대리상점 전용 ItemUID가 아니라면 가져올수 없다!
 		if( spItemInfo->IsPShopAgencyItemUID() == false  )
 		{
-			START_LOG( cerr, L"대리상점 전용 ItemUID가 아닌데 가져오기를 하려고 합니다! 절대 일어나서는 안되는 에러!" )
+			START_LOG( cerr, L"Attempted to retrieve an item that is not a hired-shop ItemUID! This should never happen!" )
 				<< BUILD_LOG( iItemUID )
 				<< END_LOG;
 
@@ -603,7 +603,7 @@ bool KPersonalShopItemManager::PickUp( IN const std::vector< UidType >& vecPickU
 		KPersonalShopItemPtr spItemInfo = GetPersonalShopItem( iItemUID );
 		if( spItemInfo == NULL )
 		{
-			START_LOG( cerr, L"아이템이 존재하지 않습니다!" )
+			START_LOG( cerr, L"Item does not exist!" )
 				<< BUILD_LOG( iItemUID )
 				<< END_LOG;
 			continue;
@@ -629,7 +629,7 @@ void KPersonalShopItemManager::UnPickUp( IN const std::vector< UidType >& vecPic
 		KPersonalShopItemPtr spItemInfo = GetPersonalShopItem( iItemUID );
 		if( spItemInfo == NULL )
 		{
-			START_LOG( cerr, L"아이템이 존재하지 않습니다! 이미 검사 했는데? 절대 일어나서는 안되는 에러!" )
+			START_LOG( cerr, L"Item does not exist, although it was already checked. This should never happen!" )
 				<< BUILD_LOG( iItemUID )
 				<< END_LOG;
 			continue;
@@ -638,7 +638,7 @@ void KPersonalShopItemManager::UnPickUp( IN const std::vector< UidType >& vecPic
 		// 대리상점 전용 ItemUID가 아니라면 PickUp할수 없다!
 		if( spItemInfo->IsPShopAgencyItemUID() == false )
 		{
-			START_LOG( cerr, L"대리상점 전용 ItemUID가 아닙니다! 절대 일어날수 없는 에러!" )
+			START_LOG( cerr, L"This is not a hired-shop ItemUID! This should be impossible!" )
 				<< BUILD_LOG( iItemUID )
 				<< END_LOG;
 		}
@@ -646,7 +646,7 @@ void KPersonalShopItemManager::UnPickUp( IN const std::vector< UidType >& vecPic
 		// 현재 판매가 진행중인 아이템이라면 가져올수 없다!
 		if( spItemInfo->GetShopItemState() != KPersonalShopItem::SIS_PICK_UP )
 		{
-			START_LOG( cerr, L"Pick Up 상태가 아닌데 Pick Up취소를 요청하네?" )
+			START_LOG( cerr, L"Requested Pick Up cancellation while not in Pick Up state." )
 				<< BUILD_LOG( iItemUID )
 				<< END_LOG;
 			continue;
@@ -678,7 +678,7 @@ void KPersonalShopItemManager::PickUpComplete( IN const std::vector< UidType >& 
 		KPersonalShopItemPtr spItemInfo = GetPersonalShopItem( iItemUID );
 		if( spItemInfo == NULL )
 		{
-			START_LOG( cerr, L"아이템이 존재하지 않습니다! 이미 검사 했는데? 절대 일어나서는 안되는 에러!" )
+			START_LOG( cerr, L"Item does not exist, although it was already checked. This should never happen!" )
 				<< BUILD_LOG( iItemUID )
 				<< END_LOG;
 			continue;
@@ -687,7 +687,7 @@ void KPersonalShopItemManager::PickUpComplete( IN const std::vector< UidType >& 
 		// 대리상점 전용 ItemUID가 아니라면 PickUp할수 없다!
 		if( spItemInfo->IsPShopAgencyItemUID() == false )
 		{
-			START_LOG( cerr, L"대리상점 전용 ItemUID가 아닙니다! 절대 일어날수 없는 에러!" )
+			START_LOG( cerr, L"This is not a hired-shop ItemUID! This should be impossible!" )
 				<< BUILD_LOG( iItemUID )
 				<< END_LOG;
 		}
@@ -695,7 +695,7 @@ void KPersonalShopItemManager::PickUpComplete( IN const std::vector< UidType >& 
 		// 현재 판매가 진행중인 아이템이라면 가져올수 없다!
 		if( spItemInfo->GetShopItemState() != KPersonalShopItem::SIS_PICK_UP )
 		{
-			START_LOG( cerr, L"Pick Up 상태가 아닌데 Pick Up취소를 요청하네? 절대 일어나서는 안되는 에러!" )
+			START_LOG( cerr, L"Requested Pick Up cancellation while not in Pick Up state. This should never happen!" )
 				<< BUILD_LOG( iItemUID )
 				<< END_LOG;
 			continue;

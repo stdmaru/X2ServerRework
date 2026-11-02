@@ -45,7 +45,7 @@ KFieldUserPtr KFieldUserManager::GetUser( UidType nCID )
 
 	if( mit == m_mapUserList.end() )
 	{
-		START_LOG( cwarn, L"존재하지 않는 유저." )
+		START_LOG( cwarn, L"User does not exist." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -62,7 +62,7 @@ bool KFieldUserManager::GetSectorID( UidType nCID, SectorID& iSectorID )
 	KFieldUserPtr spFieldUser = GetUser( nCID );
 	if( !spFieldUser )
 	{
-		START_LOG( cerr, L"유저 찾기 실패" )
+		START_LOG( cerr, L"Failed to find the user." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 		return false;
@@ -79,7 +79,7 @@ bool KFieldUserManager::AddUser( KFieldUserPtr spFieldUser,
 {
 	if( !spFieldUser )
 	{
-		START_LOG( cerr, L"유저 포인터 이상." )
+		START_LOG( cerr, L"Invalid user pointer." )
 			<< END_LOG;
 
 		return false;
@@ -96,7 +96,7 @@ bool KFieldUserManager::AddUser( KFieldUserPtr spFieldUser,
 
     if( !pairResult.second )
     {
-        START_LOG( cerr, L"이미 존재하는 필드 유저임." )
+        START_LOG( cerr, L"The field user already exists." )
             << BUILD_LOG( spFieldUser->GetCID() )
             << END_LOG;
 
@@ -106,7 +106,7 @@ bool KFieldUserManager::AddUser( KFieldUserPtr spFieldUser,
 	//{{ 2009. 1. 15  최육사	유저 리스트
 	if( !AddUserList( spFieldUser ) )
 	{
-		START_LOG( cerr, L"유저 리스트에 이미 해당 유저가 존재하고 있다." )
+		START_LOG( cerr, L"User already exists in the user list." )
 			<< BUILD_LOG( spFieldUser->GetCID() )
 			<< END_LOG;
 
@@ -116,7 +116,7 @@ bool KFieldUserManager::AddUser( KFieldUserPtr spFieldUser,
 		// 다시 리스트에 추가
 		if( !AddUserList( spFieldUser ) )
 		{
-			START_LOG( cerr, L"리스트에 중복유저 지우고 추가되어야 하는데?" )
+			START_LOG( cerr, L"Duplicate user should have been removed from the list before adding." )
 				<< BUILD_LOG( spFieldUser->GetCID() )
 				<< END_LOG;
 			return false;
@@ -143,7 +143,7 @@ bool KFieldUserManager::RemoveUser( UidType nCID,
 	//{{ 2009. 1. 15  최육사	유저 리스트
 	if( !RemoveUserList( nCID ) )
 	{
-		START_LOG( cerr, L"유저 리스트에서 삭제하려는데 유저가 없다?" )
+		START_LOG( cerr, L"Attempted to remove user from the list, but user is missing?" )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 	}
@@ -153,7 +153,7 @@ bool KFieldUserManager::RemoveUser( UidType nCID,
 	mit = m_mapUserList.find( nCID );
 	if( mit == m_mapUserList.end() )
 	{
-		START_LOG( cerr, L"존재하지 않는 필드 유저임." )
+		START_LOG( cerr, L"Field user does not exist." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 		return false;
@@ -161,7 +161,7 @@ bool KFieldUserManager::RemoveUser( UidType nCID,
 
     if( !mit->second )
     {
-        START_LOG( cerr, L"필드 유저 포인터 이상" )
+        START_LOG( cerr, L"Invalid field user pointer" )
             << BUILD_LOG( nCID )
             << END_LOG;
 
@@ -187,7 +187,7 @@ bool KFieldUserManager::MoveUser( KFieldUserPtr spFieldUser,
 {
     if( !spFieldUser )
     {
-        START_LOG( cerr, L"유저 포인터 이상" )
+        START_LOG( cerr, L"Invalid user pointer." )
             << BUILD_LOG( iDestSectorID )
             << END_LOG;
 
@@ -216,7 +216,7 @@ bool KFieldUserManager::MoveUser( KFieldUserPtr spFieldUser,
     // 원래 있었던 섹터에서 나가자
     if( !RemoveUserFromSector( iSrcSectorID, iUnitUID ) )
     {
-        START_LOG( cerr, L"섹터에서 나가기 실패." )
+        START_LOG( cerr, L"Failed to leave sector." )
             << BUILD_LOG( iUnitUID )
             << BUILD_LOG( iDestSectorID )
             << END_LOG;
@@ -227,7 +227,7 @@ bool KFieldUserManager::MoveUser( KFieldUserPtr spFieldUser,
     // 해당 섹터에 들어가자
     if( !AddUserToSector( iDestSectorID, spFieldUser ) )
     {
-        START_LOG( cerr, L"섹터에 유저 추가 실패" )
+        START_LOG( cerr, L"Failed to add user to sector." )
             << BUILD_LOG( iDestSectorID )
             << BUILD_LOG( iUnitUID )
             << END_LOG;
@@ -263,7 +263,7 @@ bool KFieldUserManager::MoveUser( KFieldUserPtr spFieldUser,
 	{
         if( !mitOtherUnit->second )
         {
-            START_LOG( cerr, L"포인터 이상" )
+            START_LOG( cerr, L"Invalid pointer" )
                 << BUILD_LOG( mitOtherUnit->first )
                 << END_LOG;
 
@@ -277,7 +277,7 @@ bool KFieldUserManager::MoveUser( KFieldUserPtr spFieldUser,
 			// 나의 send 리스트에서 이 유저를 뺀다
 			if( !spFieldUser->DelEventSendUser( mitOtherUnit->first ) )
 			{
-				START_LOG( cerr, L"센드 리스트 이상" )
+				START_LOG( cerr, L"Invalid send list." )
 					<< BUILD_LOG( iUnitUID )
 					<< END_LOG;
 			}
@@ -297,7 +297,7 @@ bool KFieldUserManager::MoveUser( KFieldUserPtr spFieldUser,
 			// 이 유저의 send 리스트에서 날 뺀다.
 			if( !mitOtherUnit->second->DelEventSendUser( iUnitUID ) )
 			{
-				START_LOG( cerr, L"센드 리스트 이상" )
+				START_LOG( cerr, L"Invalid send list." )
 					<< BUILD_LOG( mitOtherUnit->first )
 					<< END_LOG;
 			}
@@ -321,7 +321,7 @@ bool KFieldUserManager::MoveUser( KFieldUserPtr spFieldUser,
 	{
         if( !mitOtherUnit->second )
         {
-            START_LOG( cerr, L"유닛 포인터 이상." )
+            START_LOG( cerr, L"Invalid unit pointer." )
                 << BUILD_LOG( mitOtherUnit->first )
                 << END_LOG;
 
@@ -335,7 +335,7 @@ bool KFieldUserManager::MoveUser( KFieldUserPtr spFieldUser,
 			// 나의 send list에 이 유저를 추가해야 한다.
 			if( !spFieldUser->AddEventSendUser( mitOtherUnit->first ) )
 			{
-				START_LOG( cerr, L"센드 리스트 이상" )
+				START_LOG( cerr, L"Invalid send list." )
 					<< BUILD_LOG( iUnitUID )
 					<< END_LOG;
 			}
@@ -355,7 +355,7 @@ bool KFieldUserManager::MoveUser( KFieldUserPtr spFieldUser,
 			// 이 유저의 send 리스트에 날 추가한다.
 			if( !mitOtherUnit->second->AddEventSendUser( iUnitUID ) )
 			{
-				START_LOG( cerr, L"센드 리스트 이상" )
+				START_LOG( cerr, L"Invalid send list." )
 					<< BUILD_LOG( mitOtherUnit->first )
 					<< END_LOG;
 			}
@@ -390,7 +390,7 @@ bool KFieldUserManager::MoveUser( UidType iUnitUID,
     KFieldUserPtr spFieldUser = GetUser( iUnitUID );
     if( !spFieldUser )
     {
-        START_LOG( cerr, L"유저 검색 실패." )
+        START_LOG( cerr, L"Failed to search for the user." )
             << BUILD_LOG( iUnitUID )
             << END_LOG;
 
@@ -410,7 +410,7 @@ bool KFieldUserManager::MoveUser( KFieldUserPtr spFieldUser,
 {
     if( !spFieldUser )
     {
-        START_LOG( cerr, L"유저 포인터 이상" )
+        START_LOG( cerr, L"Invalid user pointer." )
             << END_LOG;
 
         return false;
@@ -423,7 +423,7 @@ bool KFieldUserManager::MoveUser( KFieldUserPtr spFieldUser,
 
     if( !MoveUser( spFieldUser, GetDestSectorID( vPos ), kFieldUserInfoOfThis, vecNearbyUnitAddedThis, vecNearbyUnitRemovedThis, vecNearbyUnitAddedToThis, vecNearbyUnitRemovedFromThis ) )
     {
-        START_LOG( cerr, L"유저 이동 실패" )
+        START_LOG( cerr, L"Failed to move the user." )
             << BUILD_LOG( spFieldUser->GetCID() )
             << END_LOG;
 
@@ -451,7 +451,7 @@ bool KFieldUserManager::MoveUser( UidType iUnitUID,
 
     if( !MoveUser( iUnitUID, iSectorID, kFieldUserInfoOfThis, vecNearbyUnitAddedThis, vecNearbyUnitRemovedThis, vecNearbyUnitAddedToThis, vecNearbyUnitRemovedFromThis ) )
     {
-        START_LOG( cerr, L"유저 이동 실패" )
+        START_LOG( cerr, L"Failed to move the user." )
             << BUILD_LOG( iUnitUID )
             << END_LOG;
 
@@ -460,7 +460,7 @@ bool KFieldUserManager::MoveUser( UidType iUnitUID,
 
     if( !UpdateUserPos( iUnitUID, vPos ) )
     {
-        START_LOG( cerr, L"유저 위치 업데이트 실패." )
+        START_LOG( cerr, L"Failed to update user location." )
             << BUILD_LOG( iUnitUID )
             << END_LOG;
 
@@ -480,7 +480,7 @@ bool KFieldUserManager::EnterField( const KERM_JOIN_FIELD_REQ& kJoinUser,
 	KFieldUserPtr spFieldUser = MakeUser( kJoinUser.m_kFieldUserInfo, kJoinUser.m_setPartyUIDList, kJoinUser.m_setFriendUIDList, kJoinUser.m_kFieldOption );
 	if( !spFieldUser )
 	{
-		START_LOG( cerr, L"필드 유저 생성 실패." )
+		START_LOG( cerr, L"Failed to create field user." )
 			<< BUILD_LOG( ( int )GetNumMember() )
 			<< END_LOG;
 
@@ -489,7 +489,7 @@ bool KFieldUserManager::EnterField( const KERM_JOIN_FIELD_REQ& kJoinUser,
 
 	if( !AddUser( spFieldUser, kJoinUser.m_kFieldUserInfo.m_vPos, vecNearbyUnitAddedThis, vecNearbyUnitAddedToThis ) )
 	{
-		START_LOG( cerr, L"필드 유저 추가 실패." )
+		START_LOG( cerr, L"Failed to add field user." )
 			<< BUILD_LOG( spFieldUser->GetCID() )
 			<< END_LOG;
 
@@ -506,7 +506,7 @@ bool KFieldUserManager::LeaveField( UidType nCID, std::vector< UidType >& vecNea
 	KFieldUserPtr spFieldUser = GetUser( nCID );
 	if( !spFieldUser )
 	{
-		START_LOG( cerr, L"필드 나가기중 유저 찾기 실패!" )
+		START_LOG( cerr, L"Failed to find user while leaving field!" )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -515,7 +515,7 @@ bool KFieldUserManager::LeaveField( UidType nCID, std::vector< UidType >& vecNea
 
 	if( !RemoveUser( nCID, vecNearbyUnitRemovedThis ) )
     {
-        START_LOG( cerr, L"필드 나가기 실패" )
+        START_LOG( cerr, L"Failed to leave field" )
             << BUILD_LOG( nCID )
             << END_LOG;
 
@@ -534,7 +534,7 @@ bool KFieldUserManager::AddUserList( KFieldUserPtr spFieldUser )
 		KFieldUserPtr spCheckFieldUser = *vit;
 		if( spCheckFieldUser == NULL )
 		{
-			START_LOG( cerr, L"필드유저 포인터가 이상합니다." )
+			START_LOG( cerr, L"Invalid field user pointer." )
 				<< BUILD_LOG( spFieldUser->GetCID() )
 				<< END_LOG;
 			continue;
@@ -542,7 +542,7 @@ bool KFieldUserManager::AddUserList( KFieldUserPtr spFieldUser )
 
 		if( spCheckFieldUser->GetCID() == spFieldUser->GetCID() )
 		{
-			START_LOG( cerr, L"이미 존재하는 필드 유저임." )
+			START_LOG( cerr, L"The field user already exists." )
 				<< BUILD_LOG( spFieldUser->GetCID() )
 				<< END_LOG;
 			return false;
@@ -561,7 +561,7 @@ bool KFieldUserManager::RemoveUserList( UidType nCID )
 		KFieldUserPtr spCheckFieldUser = *vit;
 		if( spCheckFieldUser == NULL )
 		{
-			START_LOG( cerr, L"필드유저 포인터가 이상합니다." )
+			START_LOG( cerr, L"Invalid field user pointer." )
 				<< BUILD_LOG( nCID )
 				<< END_LOG;
 			continue;
@@ -573,7 +573,7 @@ bool KFieldUserManager::RemoveUserList( UidType nCID )
 
 	if( m_vecUserList.end() == vit )
 	{
-		START_LOG( cerr, L"유저리스트에서 유저를 삭제하려는데 유저가 없습니다." )
+		START_LOG( cerr, L"Attempted to remove user from list, but user is missing." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 		return false;
@@ -611,7 +611,7 @@ bool KFieldUserManager::GetFieldUserList( UINT& uiViewPage, UINT& uiTotalPage, s
 
 		if( m_vecUserList.size() <= uiBeginIndex )
 		{
-			START_LOG( cerr, L"일어날 수 없는 에러!" )
+			START_LOG( cerr, L"This should never happen!" )
 				<< BUILD_LOG( uiViewPage )
 				<< BUILD_LOG( uiTotalPage )
 				<< BUILD_LOG( uiBeginIndex )
@@ -633,7 +633,7 @@ bool KFieldUserManager::GetFieldUserList( UINT& uiViewPage, UINT& uiTotalPage, s
 		KFieldUserPtr spFieldUser = *vit;
 		if( spFieldUser == NULL )
 		{
-			START_LOG( cerr, L"필드 유저 포인터가 이상합니다." )
+			START_LOG( cerr, L"Invalid field user pointer." )
 				<< END_LOG;
 		}
 		else
@@ -665,7 +665,7 @@ bool KFieldUserManager::SetUserEquippedTitle( IN UidType nCID, IN int iEquippedT
 	KFieldUserPtr spFieldUser = GetUser( nCID );
 	if( !spFieldUser )
 	{
-		START_LOG( cerr, L"유저가 없음." )
+		START_LOG( cerr, L"The user does not exist." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -683,7 +683,7 @@ bool KFieldUserManager::SetUserEquipItem( IN UidType nCID, IN std::vector< KInve
 	KFieldUserPtr spFieldUser = GetUser( nCID );
 	if( !spFieldUser )
 	{
-		START_LOG( cerr, L"유저가 없음." )
+		START_LOG( cerr, L"The user does not exist." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -699,7 +699,7 @@ bool KFieldUserManager::SetFieldOption( IN UidType nCID, IN const KFieldOption& 
 	KFieldUserPtr spFieldUser = GetUser( nCID );
 	if( !spFieldUser )
 	{
-		START_LOG( cerr, L"필드 옵션을 업데이트 하려고 하는데 필드유저가 없다?" )
+		START_LOG( cerr, L"Attempted to update field options, but field user is missing?" )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 		return false;
@@ -717,7 +717,7 @@ bool KFieldUserManager::SetParty( IN UidType nCID, IN UidType iPartyUID, IN cons
     KFieldUserPtr spFieldUser = GetUser( nCID );
     if( !spFieldUser )
     {
-        START_LOG( cerr, L"유저 찾기 실패" )
+        START_LOG( cerr, L"Failed to find the user." )
             << BUILD_LOG( nCID )
 			<< BUILD_LOG( setParty.size() )
             << END_LOG;
@@ -732,7 +732,7 @@ bool KFieldUserManager::SetParty( IN UidType nCID, IN UidType iPartyUID, IN cons
 	{
         if( setPartyRev.find( nCID ) == setPartyRev.end() )
 		{
-			START_LOG( cerr, L"파티 리스트를 업데이트 하려고 하는데 내가 파티리스트에 없다?" )
+			START_LOG( cerr, L"Attempted to update the party list, but this user is not in it." )
 				<< BUILD_LOG( nCID )
 				<< BUILD_LOG( setPartyRev.size() )
 				<< END_LOG;
@@ -772,7 +772,7 @@ bool KFieldUserManager::SetParty( IN UidType nCID, IN UidType iPartyUID, IN cons
 
 					// 다른 필드에 있으므로 필드유저정보를 보낼필요가 없음, 따라서 로그는 cwarn처리함.
 
-                    START_LOG( cwarn, L"유저 찾기 실패" )
+                    START_LOG( cwarn, L"Failed to find the user." )
                         << BUILD_LOG( *sitParty )
                         << END_LOG;
 
@@ -799,7 +799,7 @@ bool KFieldUserManager::SetParty( IN UidType nCID, IN UidType iPartyUID, IN cons
 
 					// 다른 필드에 있으므로 필드유저정보를 보낼필요가 없음, 따라서 로그는 cwarn처리함.
 
-                    START_LOG( cwarn, L"유저 찾기 실패" )
+                    START_LOG( cwarn, L"Failed to find the user." )
                         << BUILD_LOG( *sitParty )
                         << END_LOG;
 
@@ -850,7 +850,7 @@ bool KFieldUserManager::SetFriend( IN UidType nCID, IN const std::set< UidType >
 	KFieldUserPtr spFieldUser = GetUser( nCID );
 	if( !spFieldUser )
 	{
-		START_LOG( cerr, L"유저 찾기 실패" )
+		START_LOG( cerr, L"Failed to find the user." )
 			<< BUILD_LOG( nCID )
 			<< BUILD_LOG( setFriend.size() )
 			<< END_LOG;
@@ -865,7 +865,7 @@ bool KFieldUserManager::SetFriend( IN UidType nCID, IN const std::set< UidType >
 	{
 		if( setFriendRev.find( nCID ) != setFriendRev.end() )
 		{
-			START_LOG( cerr, L"친구 리스트를 업데이트 하려고 하는데 내가 친구리스트에 있다?" )
+			START_LOG( cerr, L"Attempted to update friend list, but user is already in the list?" )
 				<< BUILD_LOG( nCID )
 				<< BUILD_LOG( setFriendRev.size() )
 				<< END_LOG;
@@ -905,7 +905,7 @@ bool KFieldUserManager::SetFriend( IN UidType nCID, IN const std::set< UidType >
 
 					// 다른 필드에 있으므로 필드유저정보를 보낼필요가 없음, 따라서 로그는 cwarn처리함.
 
-					START_LOG( cwarn, L"유저 찾기 실패" )
+					START_LOG( cwarn, L"Failed to find the user." )
 						<< BUILD_LOG( *sitFriend )
 						<< END_LOG;
 
@@ -932,7 +932,7 @@ bool KFieldUserManager::SetFriend( IN UidType nCID, IN const std::set< UidType >
 
 					// 다른 필드에 있으므로 필드유저정보를 보낼필요가 없음, 따라서 로그는 cwarn처리함.
 
-					START_LOG( cwarn, L"유저 찾기 실패" )
+					START_LOG( cwarn, L"Failed to find the user." )
 						<< BUILD_LOG( *sitFriend )
 						<< END_LOG;
 
@@ -976,7 +976,7 @@ bool KFieldUserManager::SetFieldUserInfo( IN const KFieldUserInfo& kInfo )
 	KFieldUserPtr spFieldUser = GetUser( kInfo.m_iUnitUID );
 	if( !spFieldUser )
 	{
-		START_LOG( cerr, L"변경된 유저 정보를 업데이트 하려고 하는데 필드유저가 없다?" )
+		START_LOG( cerr, L"Attempted to update changed user information, but the field user is missing?" )
 			<< BUILD_LOG( kInfo.m_iUnitUID )
 			<< END_LOG;
 
@@ -995,7 +995,7 @@ bool KFieldUserManager::SetPetInfo( IN UidType nCID, IN const std::vector< KPetI
 	KFieldUserPtr spFieldUser = GetUser( nCID );
 	if( !spFieldUser )
 	{
-		START_LOG( cerr, L"현재 위치 정보를 업데이트 하려고 하는데 필드유저가 없다?" )
+		START_LOG( cerr, L"Attempted to update the current location, but the field user is missing." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 		return false;
@@ -1019,7 +1019,7 @@ bool KFieldUserManager::UpdateUserPos( UidType nCID, const VECTOR3& UserPos )
 	KFieldUserPtr spFieldUser = GetUser( nCID );
 	if( !spFieldUser )
 	{
-		START_LOG( cerr, L"현재 위치 정보를 업데이트 하려고 하는데 필드유저가 없다?" )
+		START_LOG( cerr, L"Attempted to update the current location, but the field user is missing." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 		return false;
@@ -1038,7 +1038,7 @@ bool KFieldUserManager::AddUserToSector( SectorID iSectorID, KFieldUserPtr spUse
 
     if( !spUser )
     {
-        START_LOG( cerr, L"필드 유저 포인터 이상." )
+        START_LOG( cerr, L"Invalid field user pointer." )
             << BUILD_LOG( iSectorID )
             << END_LOG;
 
@@ -1048,7 +1048,7 @@ bool KFieldUserManager::AddUserToSector( SectorID iSectorID, KFieldUserPtr spUse
     UidType nCID = spUser->GetCID();
     if( nCID <= 0 )
     {
-        START_LOG( cerr, L"캐릭터 UID이상." )
+        START_LOG( cerr, L"Invalid character UID." )
             << BUILD_LOG( nCID )
             << END_LOG;
 
@@ -1067,7 +1067,7 @@ bool KFieldUserManager::AddUserToSector( SectorID iSectorID, KFieldUserPtr spUse
     {
         if( !mitSector->second )
         {
-            START_LOG( cerr, L"유저 리스트 포인터 이상." )
+            START_LOG( cerr, L"Invalid user list pointer." )
                 << BUILD_LOG( iSectorID )
                 << END_LOG;
 
@@ -1079,7 +1079,7 @@ bool KFieldUserManager::AddUserToSector( SectorID iSectorID, KFieldUserPtr spUse
 
         if( !pairResult.second )
         {
-            START_LOG( cerr, L"이미 존재하는 유저임." )
+            START_LOG( cerr, L"User already exists." )
                 << BUILD_LOG( nCID )
                 << END_LOG;
 
@@ -1101,7 +1101,7 @@ bool KFieldUserManager::RemoveUserFromSector( SectorID iSectorID, UidType nCID )
     std::map< SectorID, FieldUserListPtr >::iterator mitSector = m_mapSectorUser.find( iSectorID );
     if( mitSector == m_mapSectorUser.end() )
     {
-        START_LOG( cerr, L"없는 섹터가 있네..?" )
+        START_LOG( cerr, L"Sector does not exist?" )
             << BUILD_LOG( iSectorID )
             << END_LOG;
         return false;
@@ -1109,7 +1109,7 @@ bool KFieldUserManager::RemoveUserFromSector( SectorID iSectorID, UidType nCID )
 
     if( !mitSector->second )
     {
-        START_LOG( cerr, L"유저 리스트 맵 포인터 이상." )
+        START_LOG( cerr, L"Invalid user list map pointer." )
             << BUILD_LOG( iSectorID )
             << END_LOG;
 
@@ -1120,7 +1120,7 @@ bool KFieldUserManager::RemoveUserFromSector( SectorID iSectorID, UidType nCID )
     std::map< UidType, KFieldUserPtr >::iterator mitUser = mitSector->second->find( nCID );
     if( mitUser == mitSector->second->end() )
     {
-        START_LOG( cerr, L"유저 검색 실패." )
+        START_LOG( cerr, L"Failed to search for the user." )
             << BUILD_LOG( iSectorID )
             << BUILD_LOG( nCID )
             << END_LOG;
@@ -1164,7 +1164,7 @@ bool KFieldUserManager::GetBroadcastDestination( UidType nCID, std::vector< UidT
 	KFieldUserPtr spFieldUser = GetUser( nCID );
 	if( !spFieldUser )
 	{
-		START_LOG( cerr, L"유저 찾기 실패" )
+		START_LOG( cerr, L"Failed to find the user." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 		return false;
@@ -1178,7 +1178,7 @@ KFieldUserPtr KFieldUserManager::MakeUser( const KFieldUserInfo& kFieldUserInfo,
 {
 	if( GetNumMember() >= GetNumMaxUser() )
 	{
-		START_LOG( cwarn, L"필드 한계인원을 넘었는데 더 생성할려고 하네.?ㅁ?" )
+		START_LOG( cwarn, L"Attempted to create more users than the field capacity allows?" )
 			<< BUILD_LOG( kFieldUserInfo.m_iUnitUID )
 			<< BUILD_LOG( kFieldUserInfo.m_wstrNickName )
 			<< END_LOG;
@@ -1204,7 +1204,7 @@ KFieldUserPtr KFieldUserManager::MakeUser( const KFieldUserInfo& kFieldUserInfo,
 	{
 		if( setPartyRev.find( kFieldUserInfo.m_iUnitUID ) == setPartyRev.end() )
 		{
-			START_LOG( cerr, L"파티 리스트를 업데이트 하려고 하는데 내가 파티리스트에 없다?" )
+			START_LOG( cerr, L"Attempted to update the party list, but this user is not in it." )
 				<< BUILD_LOG( kFieldUserInfo.m_iUnitUID )
 				<< BUILD_LOG( setPartyRev.size() )
 				<< END_LOG;
@@ -1215,7 +1215,7 @@ KFieldUserPtr KFieldUserManager::MakeUser( const KFieldUserInfo& kFieldUserInfo,
 	{
 		if( setFriendRev.find( kFieldUserInfo.m_iUnitUID ) != setFriendRev.end() )
 		{
-			START_LOG( cerr, L"친구리스트에 나 자신이 포함되어있네?" )
+			START_LOG( cerr, L"I am included in my own friend list?" )
 				<< BUILD_LOG( kFieldUserInfo.m_iUnitUID )
 				<< BUILD_LOG( setFriendRev.size() )
 				<< END_LOG;
@@ -1246,7 +1246,7 @@ void KFieldUserManager::GetAddedSectorUnitList( SectorID iSectorID, std::map< Ui
 
     if( !mitSector->second )
     {
-        START_LOG( cerr, L"유저 리스트 포인터 이상" )
+        START_LOG( cerr, L"Invalid user list pointer" )
             << BUILD_LOG( iSectorID )
             << END_LOG;
 
@@ -1306,7 +1306,7 @@ void KFieldUserManager::RefreshUser_ED( std::map< UidType, int >& mapUnit_ED )
 		KFieldUserPtr spCheckFieldUser = *vit;
 		if( spCheckFieldUser == NULL )
 		{
-			START_LOG( cerr, L"필드유저 포인터가 이상합니다." )
+			START_LOG( cerr, L"Invalid field user pointer." )
 				<< BUILD_LOG( spCheckFieldUser->GetCID() )
 				<< END_LOG;
 			continue;
@@ -1327,7 +1327,7 @@ bool KFieldUserManager::SetRidingPetInfo( IN const UidType iUnitUID, IN const Ui
 	KFieldUserPtr spFieldUser = GetUser( iUnitUID );
 	if( spFieldUser == NULL )
 	{
-		START_LOG( cerr, L"현재 라이딩 펫 정보를 업데이트 하려고 하는데 필드 유저가 없다?" )
+		START_LOG( cerr, L"Attempted to update current riding pet information, but field user is missing?" )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 		return false;

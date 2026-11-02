@@ -118,7 +118,7 @@ void KChannelUser::ProcessEvent( const KEventPtr& spEvent_ )
 
 
     default:
-        dbg::cerr << L"이벤트 핸들러가 정의되지 않았음. " << spEvent_->GetIDStr();
+        dbg::cerr << L"Event handler is not defined. " << spEvent_->GetIDStr();
     }
 
     dwElapTime = ::GetTickCount() - dwElapTime;
@@ -298,7 +298,7 @@ bool KChannelUser::RoutePacket( const KEvent* pkEvent_ )
         }
         else if( iEval > 0 )
         {
-            START_LOG( cerr, L"현재는 채널 서버가 최상위 서버이다." )
+            START_LOG( cerr, L"The channel server is currently the top-level server." )
                 << BUILD_LOG( pkEvent_->m_kDestPerformer.m_dwPerformerID )
                 << BUILD_LOG( pkEvent_->m_usEventID )
                 << BUILD_LOG( pkEvent_->GetIDStr() )
@@ -320,7 +320,7 @@ bool KChannelUser::RoutePacket( const KEvent* pkEvent_ )
                 SiKDBLayer()->QueueingEvent( spEvent );
                 return true;
             default:
-                START_LOG( cerr, L"도착지가 이상한 패킷." )
+                START_LOG( cerr, L"Invalid packet destination." )
                     << BUILD_LOG( pkEvent_->m_kDestPerformer.m_dwPerformerID )
                     << END_LOG;
                 return true;
@@ -351,7 +351,7 @@ void KChannelUser::InitRepeatEventFilter()
 	if( m_kRepeatEventFilter.GetRegCount() != m_kRepeatEventFilter.GetReqEventCount()  ||
 		m_kRepeatEventFilter.GetRegCount() != m_kRepeatEventFilter.GetAckEventCount() )
 	{
-		START_LOG( cerr, L"등록한 이벤트 필터의 갯수가 틀립니다. 등록실패한 이벤트가 존재!" )
+		START_LOG( cerr, L"Registered event filter counts do not match; some events failed to register!" )
 			<< BUILD_LOG( m_kRepeatEventFilter.GetRegCount() )
 			<< BUILD_LOG( m_kRepeatEventFilter.GetReqEventCount() )
 			<< BUILD_LOG( m_kRepeatEventFilter.GetAckEventCount() )
@@ -562,9 +562,9 @@ IMPL_ON_FUNC_NOPARAM( ECH_GET_CHANNEL_LIST_REQ )
 
 	default:
 		{
-			START_LOG( cerr, L"상태 오류. Name : " << m_strName )
-				<< L"    현재 상태 : " << GetStateIDString() << dbg::endl
-				<< L"    허용 상태 : KCHFSM::S_LOGINED" << END_LOG;
+			START_LOG( cerr, L"State error. Name: " << m_strName )
+				<< L"    Current state: " << GetStateIDString() << dbg::endl
+				<< L"    Allowed state: KCHFSM::S_LOGINED" << END_LOG;
 			return;
 		}
 		break;
@@ -636,7 +636,7 @@ IMPL_ON_FUNC_NOPARAM( ECH_GET_CHANNEL_LIST_REQ )
 
 	default:
 		{
-			START_LOG( cerr, L"존재 하지 않는 모드입니다!" )
+			START_LOG( cerr, L"Unsupported mode!" )
 				<< BUILD_LOG( SiKWaitQueueManager()->GetMode() )
 				<< END_LOG;
 		}
@@ -707,7 +707,7 @@ IMPL_ON_FUNC( DBE_GET_CONCURRENT_USER_INFO_ACK )
 
 	if( KncUtil::ConvertStringToCTime( kPacket_.m_wstrDate, tCCUDate ) == false )
 	{
-		START_LOG( cerr, L"날짜 변경 실패!" )
+		START_LOG( cerr, L"Failed to convert date!" )
 			<< BUILD_LOG( kPacket_.m_iServerUID )
 			<< BUILD_LOG( kPacket_.m_cCCUType )
 			<< BUILD_LOG( kPacket_.m_wstrDate )
@@ -721,7 +721,7 @@ IMPL_ON_FUNC( DBE_GET_CONCURRENT_USER_INFO_ACK )
 		if( SiKCCUToolManager()->NewCCUData( kPacket_.m_iServerUID, tCCUDate.GetTime(), kPacket_.m_vecCCUInfo ) == false )
 		{
 			//[동접툴] 로그 삭제
-			START_LOG( cerr, L"동접 정보 추가 실패! 기존 정보 있는듯?" )
+			START_LOG( cerr, L"Failed to add concurrent user data; it may already exist!" )
 				<< BUILD_LOG( kPacket_.m_iServerUID )
 				<< BUILD_LOG( kPacket_.m_cCCUType )
 				<< BUILD_LOG( kPacket_.m_wstrDate )
@@ -755,7 +755,7 @@ IMPL_ON_FUNC( E_TOOL_CHECK_LOGIN_REQ )
 	// ID, PW 둘 중 하나라도 특수 문자가 포함 되어 있다면
 	if( KODBC::IsInvalidMarkIn( kPacket_.m_wstrID ) || KODBC::IsInvalidMarkIn( kPacket_.m_wstrPW ) )
 	{
-		START_LOG( cout, L"특수 문자 사용한 ID, PW 입력으로 접속 종료!")
+		START_LOG( cout, L"Disconnecting because the ID or password contains special characters!")
 			<< BUILD_LOG( kPacket_.m_wstrID )
 			<< BUILD_LOG( kPacket_.m_wstrPW )
 			<< END_LOG;
@@ -778,7 +778,7 @@ IMPL_ON_FUNC( DBE_GET_CONCURRENT_USER_LOGIN_ACK )
 
 	if( kPacket_.m_iAuthLevel < 0 )
 	{
-		START_LOG( cout, L"로그인 실패로 인한 접속 종료!")
+		START_LOG( cout, L"Disconnecting because login failed!")
 		<< BUILD_LOG( kPacket_.m_iAuthLevel )
 			<< END_LOG;
 		ReserveDestroy();
@@ -909,7 +909,7 @@ void KChannelUser::SendChannelList()
 		kPacketAck.m_wstrCurrentTime = ( CStringW )tCurrent.Format( _T( "%Y-%m-%d %H:%M:%S" ) );
 
 
-		START_LOG( clog, L"[테스트 로그] Send Packet Token 정상 확인" )
+		START_LOG( clog, L"[Test log] Send packet token verified successfully" )
 			<< BUILD_LOG( kPacketAck.m_iOK )
 			<< BUILD_LOG( kPacketAck.m_wstrUserID )
 			<< BUILD_LOG( kPacketAck.m_iUserUID )
@@ -957,7 +957,7 @@ void KChannelUser::SendChannelList()
 		kPacketAck.m_wstrPassport = kPacket_.m_wstrOTP;
 		kPacketAck.m_wstrPurchaseTok = L"";	// 토큰 값은 GENERAL_LOGIN에서 받음. 여기선 NULL 세팅
 
-		START_LOG( clog, L"[테스트 로그] Send Packet Token 정상 확인" )
+		START_LOG( clog, L"[Test log] Send packet token verified successfully" )
 			<< BUILD_LOG( kPacketAck.m_iOK )
 			<< BUILD_LOG( kPacketAck.m_wstrUserID )
 			<< BUILD_LOG( kPacketAck.m_iUserUID )

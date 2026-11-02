@@ -165,7 +165,7 @@ void KCnParty::SetDungeonMode( const CXSLDungeon::DUNGEON_MODE eDungeonMode )
 {
 	if( CXSLDungeon::IsValidDungeonMode( eDungeonMode ) == false )
 	{
-		START_LOG( cerr, L"비정상적인 DugneonMode값임." )
+		START_LOG( cerr, L"Invalid DungeonMode value." )
 			<< BUILD_LOG( eDungeonMode )
 			<< END_LOG;
 
@@ -204,7 +204,7 @@ void KCnParty::Tick()
 		{
 			if( m_tTimer[TE_CHECK_PLAY_CONDITION].elapsed() > 5.0 )
 			{
-				START_LOG( cerr, L"파티 던전 게임 시작 조건 체크를 각 파티원들에게 전송하였는데 5초이상 응답이 없었다. 일어나서는 안되는 에러!" )
+				START_LOG( cerr, L"No response for over 5 seconds to the party dungeon start-condition check; this should never happen!" )
 					<< BUILD_LOG( GetUID() )
 					<< BUILD_LOG( m_kPartyUserManager.GetNumMember() )
 					<< END_LOG;
@@ -219,7 +219,7 @@ void KCnParty::Tick()
 		{
 			if( m_tTimer[TE_CHECK_AUTO_PARTY].elapsed() > 5.0 )
 			{
-				START_LOG( cerr, L"자동 파티 신청을 위한 체크를 보냈는데 5초동안 응답이 없었다. 일어나서는 안되는 에러!" )
+				START_LOG( cerr, L"No response for 5 seconds to the auto-party request check; this should never happen!" )
 					<< BUILD_LOG( GetUID() )
 					<< BUILD_LOG( m_kPartyUserManager.GetNumMember() )
 					<< END_LOG;
@@ -244,7 +244,7 @@ void KCnParty::Tick()
 		{
 			if( m_tTimer[TE_PREPARE_FOR_PLAY].elapsed() > 5.0 )
 			{
-				START_LOG( cerr, L"파티 게임 시작을 위한 정보 수집을 보냈는데 5초동안 응답이 없었다. 일어나서는 안되는 에러!" )
+				START_LOG( cerr, L"No response for 5 seconds to the party game-start information request; this should never happen!" )
 					<< BUILD_LOG( GetUID() )
 					<< BUILD_LOG( m_kPartyUserManager.GetNumMember() )
 					<< END_LOG;
@@ -448,7 +448,7 @@ void KCnParty::UpdateJoinRoomInfoAndGetOnOffResult( IN const UidType iUnitUID, I
 	// 방 입장 정보를 업데이트
 	if( m_kPartyUserManager.UpdateJoinRoomInfoAndGetOnOffResult( iUnitUID, kPartyUserJoinRoomInfo, vecOnMoveButton, vecOffMoveButton ) == false )
 	{
-		START_LOG( cerr, L"파티유저 방 입장 정보를 업데이트 실패하였습니다!" )
+		START_LOG( cerr, L"Failed to update party-user room-entry information!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
@@ -461,7 +461,7 @@ void KCnParty::UpdateJoinRoomInfoAndGetOnOffResult( IN const UidType iUnitUID, I
 		KCnPartyUserPtr spPartyUser = m_kPartyUserManager.GetPartyUser( iUnitUID );
 		if( spPartyUser == NULL )
 		{
-			START_LOG( cerr, L"파티유저가 존재하지 않습니다!" )
+			START_LOG( cerr, L"Party user does not exist!" )
 				<< BUILD_LOG( iUnitUID )
 				<< END_LOG;
 			continue;
@@ -477,7 +477,7 @@ void KCnParty::UpdateJoinRoomInfoAndGetOnOffResult( IN const UidType iUnitUID, I
 		KCnPartyUserPtr spPartyUser = m_kPartyUserManager.GetPartyUser( iUnitUID );
 		if( spPartyUser == NULL )
 		{
-			START_LOG( cerr, L"파티유저가 존재하지 않습니다!" )
+			START_LOG( cerr, L"Party user does not exist!" )
 				<< BUILD_LOG( iUnitUID )
 				<< END_LOG;
 			continue;
@@ -507,7 +507,7 @@ void KCnParty::CheckAllMembersPlayCondition()
 {
 	if( GetStateID() != KCnPartyFSM::S_CHECK_PLAY_CONDITION )
 	{
-		START_LOG( cerr, L"잘못된 상태에서 함수가 호출되었습니다!" )
+		START_LOG( cerr, L"Function called in an invalid state!" )
 			<< BUILD_LOG( GetStateIDString() )
 			<< END_LOG;
 		return;
@@ -520,7 +520,7 @@ void KCnParty::CheckAllMembersPlayCondition()
 		KCnPartyUserPtr spHost = m_kPartyUserManager.GetHostPtr();
 		if( IS_NULL( spHost ) )
 		{
-			START_LOG( cerr, L"파티장이 존재하지 않습니다! 일어나서는 안되는 에러!" )
+			START_LOG( cerr, L"Party leader does not exist; this should never happen!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( m_kPartyUserManager.GetNumMember() )
 				<< END_LOG;
@@ -567,7 +567,7 @@ void KCnParty::FailProcessPlayCondition( IN const int iNetError, IN const UidTyp
 {
 	if( GetStateID() != KCnPartyFSM::S_CHECK_PLAY_CONDITION )
 	{
-		START_LOG( cerr, L"잘못된 상태에서 함수가 호출되었습니다!" )
+		START_LOG( cerr, L"Function called in an invalid state!" )
 			<< BUILD_LOG( GetStateIDString() )
 			<< END_LOG;
 		return;
@@ -583,7 +583,7 @@ void KCnParty::FailProcessPlayCondition( IN const int iNetError, IN const UidTyp
 	KCnPartyUserPtr spHost = m_kPartyUserManager.GetHostPtr();
 	if( spHost == NULL )
 	{
-		START_LOG( cerr, L"파티장이 없다! 절대로 있을수 없는 에러!" )
+		START_LOG( cerr, L"Party leader is missing; this should never happen!" )
 			<< BUILD_LOG( GetUID() )
 			<< END_LOG;
 		return;
@@ -602,7 +602,7 @@ void KCnParty::CheckAllMembersAutoParty()
 {
 	if( GetStateID() != KCnPartyFSM::S_CHECK_AUTO_PARTY )
 	{
-		START_LOG( cerr, L"잘못된 상태에서 함수가 호출되었습니다!" )
+		START_LOG( cerr, L"Function called in an invalid state!" )
 			<< BUILD_LOG( GetStateIDString() )
 			<< END_LOG;
 		return;
@@ -621,7 +621,7 @@ void KCnParty::CheckAllMembersAutoParty()
 		KCnPartyUserPtr spPartyHost = m_kPartyUserManager.GetHostPtr();
 		if( spPartyHost == NULL )
 		{
-			START_LOG( cerr, L"파티장이 없네? 있을수 없는 에러!" )
+			START_LOG( cerr, L"Party leader is missing; this should never happen!" )
 				<< BUILD_LOG( GetUID() )
 				<< END_LOG;
 			return;
@@ -644,7 +644,7 @@ void KCnParty::FailProcessAutoParty( IN const int iNetError, IN const std::wstri
 {
 	if( GetStateID() != KCnPartyFSM::S_CHECK_AUTO_PARTY )
 	{
-		START_LOG( cerr, L"잘못된 상태에서 함수가 호출되었습니다!" )
+		START_LOG( cerr, L"Function called in an invalid state!" )
 			<< BUILD_LOG( GetStateIDString() )
 			<< END_LOG;
 		return;
@@ -660,7 +660,7 @@ void KCnParty::FailProcessAutoParty( IN const int iNetError, IN const std::wstri
 	KCnPartyUserPtr spPartyHost = m_kPartyUserManager.GetHostPtr();
 	if( spPartyHost == NULL )
 	{
-		START_LOG( cerr, L"파티장이 없네? 있을수 없는 에러!" )
+		START_LOG( cerr, L"Party leader is missing; this should never happen!" )
 			<< BUILD_LOG( GetUID() )
 			<< END_LOG;
 		return;
@@ -680,7 +680,7 @@ void KCnParty::CheckAllMembersAcceptForPlay()
 {
 	if( GetStateID() != KCnPartyFSM::S_ACCEPT_FOR_PLAY )
 	{
-		START_LOG( cerr, L"잘못된 상태에서 함수가 호출되었습니다!" )
+		START_LOG( cerr, L"Function called in an invalid state!" )
 			<< BUILD_LOG( GetStateIDString() )
 			<< END_LOG;
 		return;
@@ -713,7 +713,7 @@ void KCnParty::FailProcessAcceptForPlay( IN const int iNetError, IN const UidTyp
 {
 	if( GetStateID() != KCnPartyFSM::S_ACCEPT_FOR_PLAY )
 	{
-		START_LOG( cerr, L"잘못된 상태에서 함수가 호출되었습니다!" )
+		START_LOG( cerr, L"Function called in an invalid state!" )
 			<< BUILD_LOG( GetStateIDString() )
 			<< END_LOG;
 		return;
@@ -733,7 +733,7 @@ void KCnParty::FailProcessPrepareForPlay( IN const int iNetError )
 {
 	if( GetStateID() != KCnPartyFSM::S_PREPARE_FOR_PLAY )
 	{
-		START_LOG( cerr, L"잘못된 상태에서 함수가 호출되었습니다!" )
+		START_LOG( cerr, L"Function called in an invalid state!" )
 			<< BUILD_LOG( GetStateIDString() )
 			<< END_LOG;
 		return;
@@ -755,7 +755,7 @@ bool KCnParty::LeaveCandidateMember( IN const UidType iUnitUID )
 	KCnPartyUserPtr spCandidateUser = m_kPartyUserManager.GetCandidateUser( iUnitUID );
 	if( IS_NULL( spCandidateUser ) )
 	{
-		START_LOG( cerr, L"파티 가입 예약된 유저가 아닙니다!" )
+		START_LOG( cerr, L"User is not reserved to join the party!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
@@ -883,7 +883,7 @@ void KCnParty::CloseParty( IN const int iReason )
 			KCnPartyUserPtr spHost = m_kPartyUserManager.GetHostPtr();
 			if( IS_NULL( spHost ) )
 			{
-				START_LOG( cerr, L"파티장 포인터가 잘못되었음.!" )
+				START_LOG( cerr, L"Invalid party-leader pointer!" )
 					<< END_LOG;
 			}
 			else
@@ -972,7 +972,7 @@ void KCnParty::ProcessEvent( const KEventPtr& spEvent_ )
 	   //}}
 
 	default:
-		START_LOG( cerr, L"이벤트 핸들러가 정의되지 않았음. " << spEvent_->GetIDStr() );
+		START_LOG( cerr, L"Event handler is not defined. " << spEvent_->GetIDStr() );
 	}
 }
 
@@ -986,7 +986,7 @@ IMPL_ON_FUNC( EPM_CREATE_PARTY_BY_INVITE_REQ )
 	// 새로운 파티 생성 및 파티장 입장
 	if( m_kPartyUserManager.Create( kPacket_.m_kHostPartyUserInfo ) == false )
 	{
-		START_LOG( cerr, L"생성한 파티에 유저 입장실패.!" )
+		START_LOG( cerr, L"Failed to add user to newly created party!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kPacket_.m_kHostPartyUserInfo.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_kHostPartyUserInfo.m_wstrNickName )
@@ -1002,7 +1002,7 @@ IMPL_ON_FUNC( EPM_CREATE_PARTY_BY_INVITE_REQ )
 	// 개발자 로그
 	if( kPacket_.m_cAuthLevel >= SEnum::UAL_DEVELOPER )
 	{
-		START_LOG( cout, L"개발자 파티 생성 성공!" )
+		START_LOG( cout, L"Developer party created successfully!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kPacket_.m_kHostPartyUserInfo.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_kHostPartyUserInfo.m_wstrNickName );
@@ -1032,7 +1032,7 @@ IMPL_ON_FUNC( EPM_CREATE_PARTY_BY_INVITE_REQ )
 	//대기자 명단에 넣고..
 	if( m_kPartyUserManager.JoinCandidate( kPacket_.m_kReceiverPartyUserInfo, true, kPacket_.m_kHostPartyUserInfo.m_iUnitUID ) == false )
 	{
-		START_LOG( cerr, L"파티 대기자 리스트 등록 실패.!" )
+		START_LOG( cerr, L"Failed to add party member to wait list!" )
 			<< BUILD_LOG( kPacket_.m_kHostPartyUserInfo.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_kHostPartyUserInfo.m_wstrNickName )
 			<< END_LOG;
@@ -1106,7 +1106,7 @@ IMPL_ON_FUNC( EPM_INVITE_PARTY_REQ )
 	// 파티장만 초대 가능하도록 수정
 	if( m_kPartyUserManager.GetHostUID() != FIRST_SENDER_UID )
 	{
-		START_LOG( clog, L"파티장만 초대 가능합니다." )
+		START_LOG( clog, L"Only the party leader can invite users." )
 			<< BUILD_LOG( kPacket_.m_iPartyUID )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
@@ -1120,7 +1120,7 @@ IMPL_ON_FUNC( EPM_INVITE_PARTY_REQ )
 	KCnPartyUserPtr spHost = m_kPartyUserManager.GetPartyUser( FIRST_SENDER_UID );
 	if( spHost == NULL )
 	{
-		START_LOG( cerr, L"파티장 유저 정보가 없음." )
+		START_LOG( cerr, L"Party leader user information is missing." )
 			<< BUILD_LOG( kPacket_.m_iPartyUID )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
@@ -1133,7 +1133,7 @@ IMPL_ON_FUNC( EPM_INVITE_PARTY_REQ )
 	//이미 파티소속이거나 대기자 거나
 	if( m_kPartyUserManager.IsMemberOrCandidate( kPacket_.m_kPartyUserInfo.m_iUnitUID ) == true )
 	{
-		START_LOG( cwarn, L"이미 해당파티에 소속되어 있음." )
+		START_LOG( cwarn, L"Already belongs to the specified party." )
 			<< BUILD_LOG( kPacket_.m_iPartyUID )
 			<< BUILD_LOG( kPacket_.m_kPartyUserInfo.m_wstrNickName )
 			<< END_LOG;
@@ -1146,7 +1146,7 @@ IMPL_ON_FUNC( EPM_INVITE_PARTY_REQ )
 	//게임중인지..
 	if( IsPlaying() == true )
 	{
-		START_LOG( cerr, L"파티가 이미 게임중." )
+		START_LOG( cerr, L"Party is already in a game." )
 			<< BUILD_LOG( kPacket_.m_iPartyUID )
 			<< BUILD_LOG( m_kPartyUserManager.GetNumTotal() )
 			<< END_LOG;
@@ -1160,7 +1160,7 @@ IMPL_ON_FUNC( EPM_INVITE_PARTY_REQ )
 	//들어갈 자리가 잇는지..
 	if( m_kPartyUserManager.GetNumTotal() >= m_kPartyUserManager.GetMaxMember() )
 	{
-		START_LOG( clog, L"파티에 들어갈 자리가 없음.!" )
+		START_LOG( clog, L"No room available in the party!" )
 			<< BUILD_LOG( kPacket_.m_iPartyUID )
 			<< BUILD_LOG( m_kPartyUserManager.GetNumTotal() )
 			<< BUILD_LOG( m_kPartyUserManager.GetMaxMember() )
@@ -1187,7 +1187,7 @@ IMPL_ON_FUNC( EPM_INVITE_PARTY_REQ )
 	//대기자 명단에 넣고..
 	if( m_kPartyUserManager.JoinCandidate( kPacket_.m_kPartyUserInfo, true, FIRST_SENDER_UID ) == false )
 	{
-		START_LOG( cerr, L"파티 대기자 리스트 등록 실패.!" )
+		START_LOG( cerr, L"Failed to add party member to wait list!" )
 			<< BUILD_LOG( kPacket_.m_iPartyUID )
 			<< BUILD_LOG( spHost->GetCharName() )
 			<< END_LOG;
@@ -1253,7 +1253,7 @@ IMPL_ON_FUNC( EPM_INVITE_PARTY_REPLY_NOT )
 		else
 		{
 			//파티장에게 거절 여부를 알려주는것인데 없으므로 패킷은 날리지 않는다.
-			START_LOG( cwarn, L"초대거절을 알려줄 파티장이 없음.!" )
+			START_LOG( cwarn, L"No party leader available to notify about the invitation rejection!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( kPacket_.m_kPartyUserInfo.m_iUnitUID )
@@ -1266,7 +1266,7 @@ IMPL_ON_FUNC( EPM_INVITE_PARTY_REPLY_NOT )
 	//정회원으로 등록을 시킨다.
 	if( m_kPartyUserManager.JoinMember( kPacket_.m_kPartyUserInfo ) == false )
 	{
-		START_LOG( cerr, L"파티 유저등록 실패.!" )
+		START_LOG( cerr, L"Failed to register party user!" )
 			<< BUILD_LOG( kPacket_.m_kPartyUserInfo.m_wstrNickName )
 			<< BUILD_LOG( GetUID() )
 			<< END_LOG;
@@ -1287,7 +1287,7 @@ IMPL_ON_FUNC( EPM_INVITE_PARTY_REPLY_NOT )
 		KCnPartyUserPtr spHost = m_kPartyUserManager.GetHostPtr();
 		if( spHost == NULL )
 		{
-			START_LOG( cerr, L"파티장이 존재하지 않는다? 절대 일어나서는 안되는 에러!" )
+			START_LOG( cerr, L"Party leader does not exist; this should never happen!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( FIRST_SENDER_UID )
 				<< END_LOG;
@@ -1384,7 +1384,7 @@ IMPL_ON_FUNC( EPM_UPDATE_PARTY_USER_INFO_NOT )
 	KCnPartyUserPtr spUser = m_kPartyUserManager.GetPartyUser( FIRST_SENDER_UID );
 	if( spUser == NULL )
 	{
-		START_LOG( cerr, L"파티 유저 정보를 갱신할 유저가 없습니다." )
+		START_LOG( cerr, L"No party user is available to update." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
@@ -1422,7 +1422,7 @@ IMPL_ON_FUNC( EPM_UPDATE_PARTY_USER_INFO_NOT )
 	{
 		if( m_kPartyUserManager.ChangeReady( kPacket_.m_iUnitUID, false ) == false )
 		{
-			START_LOG( cerr, L"필드 이동시 레뒤 변경 실패." )
+			START_LOG( cerr, L"Failed to change ready state during field transition." )
 				<< BUILD_LOG( kPacket_.m_iPartyUID )
 				<< BUILD_LOG( m_kPartyUserManager.GetNumTotal() )
 				<< BUILD_LOG( kPacket_.m_iUnitUID )
@@ -1445,7 +1445,7 @@ IMPL_ON_FUNC( EPM_LEAVE_PARTY_REQ )
 	case KCnPartyFSM::S_INIT:
 		{
 			// 시간차로 발생할수 있는 문제이므로 에러로그 레벨을 cwarn으로 낮춘다.
-			START_LOG( cwarn, L"이미 닫혀있는 파티인데 이탈 요청이 왔다! 하지만 시간차로 발생할 수 있는 문제임." )
+			START_LOG( cwarn, L"Leave request received for an already closed party; this may occur due to timing." )
 				<< BUILD_LOG( LAST_SENDER_UID )
 				<< BUILD_LOG( FIRST_SENDER_UID )
 				<< END_LOG;
@@ -1463,8 +1463,8 @@ IMPL_ON_FUNC( EPM_LEAVE_PARTY_REQ )
 
 	default:
 		{
-			START_LOG( cerr, L"상태 오류. Name : " << m_strName )
-				<< L"    현재 상태 : " << GetStateIDString() << dbg::endl
+			START_LOG( cerr, L"State error. Name: " << m_strName )
+				<< L"    Current state: " << GetStateIDString() << dbg::endl
 				<< END_LOG;
 
 			KEPM_LEAVE_PARTY_ACK kPacket;
@@ -1497,7 +1497,7 @@ IMPL_ON_FUNC( EPM_LEAVE_PARTY_REQ )
 		// 이탈할 유저 정보를 찾는다.
 		if( m_kPartyUserManager.GetUserInfo( iLeavePartyUnitUID, kLeaveUserInfo ) == false )
 		{
-			START_LOG( cerr, L"파티이탈할 유저 정보가 없습니다." )
+			START_LOG( cerr, L"Information for the user leaving the party is missing." )
 				<< BUILD_LOG( kPacket_.m_iPartyUID )
 				<< BUILD_LOG( iLeavePartyUnitUID )
 				<< END_LOG;
@@ -1518,7 +1518,7 @@ IMPL_ON_FUNC( EPM_LEAVE_PARTY_REQ )
 	else
 	{
 		// 대기자 였었는데 대기시간오버로 대기자에서 자동삭제된 경우 발생할 수 있다.
-		START_LOG( cwarn, L"파티이탈할 유저 정보가 없습니다." )
+		START_LOG( cwarn, L"Information for the user leaving the party is missing." )
 			<< BUILD_LOG( kPacket_.m_iPartyUID )
 			<< BUILD_LOG( iLeavePartyUnitUID )
 			<< END_LOG;
@@ -1605,7 +1605,7 @@ end_proc:
 					KCnPartyUserPtr spHost = m_kPartyUserManager.GetHostPtr();
 					if( spHost == NULL )
 					{
-						START_LOG( cerr, L"파티장 찾기 실패!" )
+						START_LOG( cerr, L"Failed to find party leader!" )
 							<< BUILD_LOG( GetUID() )
 							<< END_LOG;
 						return;
@@ -1631,7 +1631,7 @@ IMPL_ON_FUNC( EPM_PARTY_CHANGE_READY_REQ )
 	{
 		// [참고] 파티위임이 되고난직후 ready변경을 시도했을 경우 발생 가능한 오류
 
-		START_LOG( cwarn, L"파티장은 레디변경이 오면안된다." )
+		START_LOG( cwarn, L"Party leader should not receive a ready-state change." )
 			<< BUILD_LOG( kPacket_.m_iPartyUID )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( m_kPartyUserManager.GetHostUID() )
@@ -1644,7 +1644,7 @@ IMPL_ON_FUNC( EPM_PARTY_CHANGE_READY_REQ )
 
 	if( m_kPartyUserManager.ChangeReady( FIRST_SENDER_UID, kPacket_.m_bReady ) == false )
 	{
-		START_LOG( cerr, L"파티원의 레디 변경 실패." )
+		START_LOG( cerr, L"Failed to change party member ready state." )
 			<< BUILD_LOG( kPacket_.m_iPartyUID )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_bReady )
@@ -1672,7 +1672,7 @@ IMPL_ON_FUNC( EPM_PARTY_CHANGE_DUNGEON_REQ )
 
 	if( m_kPartyUserManager.IsMember( FIRST_SENDER_UID ) == false )
 	{
-		START_LOG( cerr, L"파티 멤버가 아닙니다." )
+		START_LOG( cerr, L"Not a party member." )
 			<< BUILD_LOG( kPacket_.m_iPartyUID )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
@@ -1685,7 +1685,7 @@ IMPL_ON_FUNC( EPM_PARTY_CHANGE_DUNGEON_REQ )
 	const UidType iHostUID = m_kPartyUserManager.GetHostUID();
 	if( FIRST_SENDER_UID != iHostUID )
 	{
-		START_LOG( cerr, L"파티장이 아닌데 던전정보 변경을 신청함." )
+		START_LOG( cerr, L"Dungeon-information change requested by someone who is not the party leader." )
 			<< BUILD_LOG( kPacket_.m_iPartyUID )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( iHostUID )
@@ -1764,7 +1764,7 @@ IMPL_ON_FUNC( EPM_PARTY_GAME_START_REQ )
 	const UidType iHostUID = m_kPartyUserManager.GetHostUID();
 	if( FIRST_SENDER_UID != iHostUID )
 	{
-		START_LOG( cerr, L"파티장이 아닌데 던전게임 시작을 보냄." )
+		START_LOG( cerr, L"Dungeon-game start requested by someone who is not the party leader." )
 			<< BUILD_LOG( kPacket_.m_iPartyUID )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( iHostUID )
@@ -1778,7 +1778,7 @@ IMPL_ON_FUNC( EPM_PARTY_GAME_START_REQ )
 	// 파티장을 포함해서 파티원수가 1명뿐인경우 게임시작을 할수 없습니다!
 	if( m_kPartyUserManager.GetNumMember() <= PE_CLOSE_PARTY_NUM_MEMBER )
 	{
-		START_LOG( cwarn, L"현재 파티원수가 부족하여 파티 게임 시작을 할 수 없습니다!" )
+		START_LOG( cwarn, L"Not enough party members to start the party game!" )
 			<< BUILD_LOG( kPacket_.m_iPartyUID )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( iHostUID )
@@ -1795,7 +1795,7 @@ IMPL_ON_FUNC( EPM_PARTY_GAME_START_REQ )
 		// 헤니르 시공 도전 모드는 같은 서버군의 유저끼리만 플레이 할 수 있다!
 		if( m_kPartyUserManager.IsAllPartyMembersSameServerGroup( iHostUID ) == false )
 		{
-			START_LOG( cerr, L"헤니르 시공 도전 모드는 같은 서버군유저끼리만 플레이 가능! 이미 체크 했을 텐데.." )
+			START_LOG( cerr, L"Henir challenge mode is only available to users in the same server group; this should already be checked." )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( iHostUID )
 				<< END_LOG;
@@ -1840,7 +1840,7 @@ IMPL_ON_FUNC( EPM_CHECK_DUNGEON_GAME_PLAY_CONDITION_ACK )
 	// 조건 체크를 만족한 유저는 체크 등록 하자!
 	if( m_kPartyUserManager.SetCheckedPlayCondition( FIRST_SENDER_UID ) == false )
 	{
-		START_LOG( cerr, L"조건 체크를 등록하려는 유저가 파티원이 아닙니다!" )
+		START_LOG( cerr, L"User registering the condition check is not a party member!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( GetName() )
@@ -1866,7 +1866,7 @@ _IMPL_ON_FUNC( EPM_PARTY_GAME_START_OPINION_CHECK_REPLY_NOT, KEGS_PARTY_GAME_STA
 	// 해당 파티원의 Accept정보를 저장합니다.
 	if( m_kPartyUserManager.ChangeReady( FIRST_SENDER_UID, true ) == false )
 	{
-        START_LOG( cerr, L"해당 파티원이 존재하지 않습니다!" )
+        START_LOG( cerr, L"The specified party member does not exist!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
@@ -1887,7 +1887,7 @@ IMPL_ON_FUNC( EPM_CHECK_FOR_PARTY_GAME_START_ACK )
 	KCnPartyUserPtr spUser = m_kPartyUserManager.GetPartyUser( FIRST_SENDER_UID );
 	if( spUser == NULL )
 	{
-		START_LOG( cerr, L"게임시작 체크패킷 응답이 왔는데 소속 파티원이 아니다?" )
+		START_LOG( cerr, L"Received game-start check response from a user who is not in the party." )
 			<< BUILD_LOG( kPacket_.m_iPartyUID )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
@@ -1900,7 +1900,7 @@ IMPL_ON_FUNC( EPM_CHECK_FOR_PARTY_GAME_START_ACK )
 	KCnPartyUserPtr spHost = m_kPartyUserManager.GetHostPtr();
 	if( spHost == NULL )
 	{
-		START_LOG( cerr, L"파티장 정보가 없습니다. 있을수 없는 에러!" )
+		START_LOG( cerr, L"Party leader information is missing; this should never happen!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( m_kPartyUserManager.GetNumMember() )
 			<< END_LOG;
@@ -1910,7 +1910,7 @@ IMPL_ON_FUNC( EPM_CHECK_FOR_PARTY_GAME_START_ACK )
 	// NetError가 OK값이 아니라면..
 	if( kPacket_.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"여기까지 왔는데 게임을 만족하지 않는 멤버가 존재한다! 오류인가 예외상황인가?" )
+		START_LOG( cerr, L"A member who does not meet the game requirements reached this point; error or exception?" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( m_kPartyUserManager.GetNumMember() )
 			<< END_LOG;
@@ -1923,7 +1923,7 @@ IMPL_ON_FUNC( EPM_CHECK_FOR_PARTY_GAME_START_ACK )
 	// 도착한 PartyRoomUserInfo를 검사
 	if( kPacket_.m_vecUserInfo.empty() )
 	{
-		START_LOG( cerr, L"게임시작 체크패킷 응답이 왔는데 PartyRoomUserInfo가 비어있다?" )
+		START_LOG( cerr, L"Received game-start check response, but PartyRoomUserInfo is empty." )
 			<< BUILD_LOG( kPacket_.m_iPartyUID )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
@@ -1954,7 +1954,7 @@ IMPL_ON_FUNC( EPM_CHECK_FOR_PARTY_GAME_START_ACK )
 	KERM_PARTY_OPEN_DUNGEON_ROOM_REQ kPacket;
 	if( m_kPartyUserManager.GetDungeonRoomUserInfoList( kPacket.m_vecUserInfo ) == false )
 	{
-		START_LOG( cerr, L"파티를 통한 던전게임 시작준비중 유저정보 수집실패.!" )
+		START_LOG( cerr, L"Failed to collect user information while preparing to start a party dungeon game!" )
 			<< BUILD_LOG( GetUID() )
 			<< END_LOG;
 
@@ -2005,7 +2005,7 @@ IMPL_ON_FUNC( EPM_CHECK_FOR_PARTY_GAME_START_ACK )
 	//case ERM_PARTY_GAME_REPLAY_START_REQ: usEventID = EPM_PARTY_GAME_REPLAY_START_NOT; break;
 	default:
 		{
-			START_LOG( cerr, L"파티를 통한 던전게임 시작준비중 유저정보 수집실패.!" )
+			START_LOG( cerr, L"Failed to collect user information while preparing to start a party dungeon game!" )
 				<< BUILD_LOG( GetUID() )
 				<< END_LOG;
 
@@ -2037,7 +2037,7 @@ IMPL_ON_FUNC( EPM_END_GAME_NOT )
 
 	if( FIRST_SENDER_UID != m_kPartyUserManager.GetHostUID() )
 	{
-		START_LOG( cwarn, L"파티장이 아닌데 E_EndGame을 호출했다?" )
+		START_LOG( cwarn, L"E_EndGame was called by someone who is not the party leader." )
 			<< BUILD_LOG( kPacket_.m_iPartyUID )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( m_kPartyUserManager.GetHostUID() )
@@ -2056,7 +2056,7 @@ IMPL_ON_FUNC( EPM_PARTY_CHANGE_HOST_REQ )
 	//파티장 확인.
 	if( FIRST_SENDER_UID != m_kPartyUserManager.GetHostUID() )
 	{
-		START_LOG( cerr, L"파티장이 아닌데 파티장 변경을 신청함." )
+		START_LOG( cerr, L"Party-leader change requested by someone who is not the party leader." )
 			<< BUILD_LOG( kPacket_.m_iPartyUID )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( m_kPartyUserManager.GetHostUID() )
@@ -2072,7 +2072,7 @@ IMPL_ON_FUNC( EPM_PARTY_CHANGE_HOST_REQ )
 	if( spNewHost == NULL )
 	{
 		// 시간차로 발생할 수 있는 오류임.
-		START_LOG( cwarn, L"새로 임명할 파티장이 없습니다." )
+		START_LOG( cwarn, L"No party leader available to appoint." )
 			<< BUILD_LOG( kPacket_.m_iPartyUID )
 			<< BUILD_LOG( kPacket_.m_iNewHostUnitUID )
 			<< BUILD_LOG( FIRST_SENDER_UID )
@@ -2086,7 +2086,7 @@ IMPL_ON_FUNC( EPM_PARTY_CHANGE_HOST_REQ )
 	//////////////////////////////////////////////////////////////////////////
 	if( ( GetDungeonID() + static_cast<int>(GetDungeonDif()) ) <= 0 )
 	{
-		START_LOG( cerr, L"dungeonid값이 이상하다!" )
+		START_LOG( cerr, L"Invalid dungeon ID!" )
 			<< BUILD_LOG( GetDungeonID() )
 			<< BUILD_LOGc( GetDungeonDif() )
 			<< END_LOG;
@@ -2120,7 +2120,7 @@ IMPL_ON_FUNC( EPM_CHECK_PARTY_CHANGE_HOST_ACK )
 	KCnPartyUserPtr spOldHost = m_kPartyUserManager.GetHostPtr();
 	if( spOldHost == NULL )
 	{
-		START_LOG( cerr, L"현재 파티장이 없습니다." )
+		START_LOG( cerr, L"There is currently no party leader." )
 			<< BUILD_LOG( kPacket_.m_iPartyUID )
 			<< BUILD_LOG( kPacket_.m_iNewHostUnitUID )
 			<< BUILD_LOG( kPacket_.m_iOldHostUnitUID )
@@ -2133,7 +2133,7 @@ IMPL_ON_FUNC( EPM_CHECK_PARTY_CHANGE_HOST_ACK )
 	//파티장 확인.
 	if( kPacket_.m_iOldHostUnitUID != spOldHost->GetCharUID() )
 	{
-		START_LOG( cerr, L"파티장이 아닌데 파티장 변경을 신청함." )
+		START_LOG( cerr, L"Party-leader change requested by someone who is not the party leader." )
 			<< BUILD_LOG( kPacket_.m_iPartyUID )
 			<< BUILD_LOG( kPacket_.m_iOldHostUnitUID )
 			<< BUILD_LOG( spOldHost->GetCharUID() )
@@ -2160,7 +2160,7 @@ IMPL_ON_FUNC( EPM_CHECK_PARTY_CHANGE_HOST_ACK )
 	KCnPartyUserPtr spNewHost = m_kPartyUserManager.GetPartyUser( kPacket_.m_iNewHostUnitUID );
 	if( spNewHost == NULL )
 	{
-		START_LOG( cerr, L"새로 임명할 파티장이 없습니다." )
+		START_LOG( cerr, L"No party leader available to appoint." )
 			<< BUILD_LOG( kPacket_.m_iPartyUID )
 			<< BUILD_LOG( kPacket_.m_iNewHostUnitUID )
 			<< BUILD_LOG( kPacket_.m_iOldHostUnitUID )
@@ -2175,7 +2175,7 @@ IMPL_ON_FUNC( EPM_CHECK_PARTY_CHANGE_HOST_ACK )
 
 	if( m_kPartyUserManager.ChangeHost( kPacket_.m_iNewHostUnitUID ) == false )
 	{
-		START_LOG( cerr, L"파티장 변경실패." )
+		START_LOG( cerr, L"Failed to change party leader." )
 			<< BUILD_LOG( kPacket_.m_iPartyUID )
 			<< BUILD_LOG( kPacket_.m_iOldHostUnitUID )
 			<< BUILD_LOG( kPacket_.m_iNewHostUnitUID )
@@ -2233,7 +2233,7 @@ IMPL_ON_FUNC( EPM_PARTY_CHANGE_NUM_OF_PER_REQ )
 	//파티장 확인.
 	if( FIRST_SENDER_UID != m_kPartyUserManager.GetHostUID() )
 	{
-		START_LOG( cerr, L"파티장이 아닌데 파티최대인원 변경을 신청함." )
+		START_LOG( cerr, L"Party capacity change requested by someone who is not the party leader." )
 			<< BUILD_LOG( kPacket_.m_iPartyUID )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( m_kPartyUserManager.GetHostUID() )
@@ -2247,7 +2247,7 @@ IMPL_ON_FUNC( EPM_PARTY_CHANGE_NUM_OF_PER_REQ )
 	//현재 설정된 최대인원과 틀려야함.
 	if( m_kPartyUserManager.GetMaxMember() == kPacket_.m_cNumOfPer )
 	{
-		START_LOG( cwarn, L"현재 최대설정과 같은 설정값이 옴.")
+		START_LOG( cwarn, L"Received a setting equal to the current maximum.")
 			<< BUILD_LOG( kPacket_.m_iPartyUID )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( m_kPartyUserManager.GetHostUID() )
@@ -2262,7 +2262,7 @@ IMPL_ON_FUNC( EPM_PARTY_CHANGE_NUM_OF_PER_REQ )
 	if( m_kPartyUserManager.GetNumTotal() > kPacket_.m_cNumOfPer )
 	{
 		// [참고] 시간차로 발생할수 있는 문제이므로 cwarn
-		START_LOG( cwarn, L"현재 존재하는 유저보다 작은 설정값이 날아옴." )
+		START_LOG( cwarn, L"Received a setting lower than the current user count." )
 			<< BUILD_LOG( kPacket_.m_iPartyUID )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( m_kPartyUserManager.GetHostUID() )
@@ -2310,7 +2310,7 @@ IMPL_ON_FUNC( EPM_PARTY_CHANGE_GET_ITEM_TYPE_REQ )
 	//파티장 확인.
 	if( FIRST_SENDER_UID != m_kPartyUserManager.GetHostUID() )
 	{
-		START_LOG( cerr, L"파티장이 아닌데 던전게임 아이템먹는 방식 변경을 신청함." )
+		START_LOG( cerr, L"Dungeon item-acquisition mode change requested by someone who is not the party leader." )
 			<< BUILD_LOG( kPacket_.m_iPartyUID )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( m_kPartyUserManager.GetHostUID() )
@@ -2343,7 +2343,7 @@ IMPL_ON_FUNC( EPM_PARTY_BAN_USER_REQ )
 	//파티장 확인.
 	if( FIRST_SENDER_UID != m_kPartyUserManager.GetHostUID() )
 	{
-		START_LOG( cerr, L"파티장이 아닌데 파티강퇴 을 신청함." )
+		START_LOG( cerr, L"Party ejection requested by someone who is not the party leader." )
 			<< BUILD_LOG( kPacket_.m_iPartyUID )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( m_kPartyUserManager.GetHostUID() )
@@ -2359,7 +2359,7 @@ IMPL_ON_FUNC( EPM_PARTY_BAN_USER_REQ )
 	if( spBanUser == NULL )
 	{
 		// [참고] 시간차로 유저가 없을수 있다
-		START_LOG( cwarn, L"파티에서 강퇴할 유저가 없습니다." )
+		START_LOG( cwarn, L"No user to eject from party." )
 			<< BUILD_LOG( kPacket_.m_iPartyUID )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
@@ -2383,7 +2383,7 @@ IMPL_ON_FUNC( EPM_PARTY_BAN_USER_REQ )
 					, NetError::NOT_LEAVE_PARTY_REASON_07
 					) == false )
 	{
-		START_LOG( cerr, L"강퇴를 위한 파티원 정보 삭제 처리가 실패하였습니다!" )
+		START_LOG( cerr, L"Failed to remove party-member information for ejection!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( NetError::GetLastErrMsg() )
@@ -2425,7 +2425,7 @@ IMPL_ON_FUNC( EPM_CHAT_REQ )
 			if( spWhisper == NULL )
 			{
 				// 시간차로 대상자가 파티이탈 할 수 있으므로 발생할 수 있는 오류임.
-				START_LOG( cwarn, L"파티 채팅 상대자가 없음." )
+				START_LOG( cwarn, L"Party chat recipient is missing." )
 					<< BUILD_LOG( GetUID() )
 					<< BUILD_LOG( FIRST_SENDER_UID )
 					<< BUILD_LOG( kPacket_.m_ToUnitUID )
@@ -2448,7 +2448,7 @@ IMPL_ON_FUNC( EPM_CHAT_REQ )
 
 	default:
 		{
-			START_LOG( cerr, L"이상한 채팅 타입." )
+			START_LOG( cerr, L"Unexpected chat type." )
 				<< BUILD_LOGc( kPacket_.m_cRoomChatType )
 				<< END_LOG;
 
@@ -2538,7 +2538,7 @@ _IMPL_ON_FUNC( EPM_CHECK_INVALID_USER_NOT, UidType )
 						) == false )
 
 		{
-            START_LOG( cerr, L"유효하지 않은 파티원 정보를 삭제하다가 실패하였습니다!" )
+            START_LOG( cerr, L"Failed to remove invalid party-member information!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( iDeleteUnitUID )
 				<< BUILD_LOG( NetError::GetLastErrMsg() )
@@ -2561,7 +2561,7 @@ IMPL_ON_FUNC( EPM_PARTY_CHANGE_CHECK_MIN_LEVEL_REQ )
 	//파티장인지 검사
 	if( FIRST_SENDER_UID != m_kPartyUserManager.GetHostUID() )
 	{
-		START_LOG( cerr, L"파티장이 아닌데 최소 레벨 입장 제한 변경을 신청함." )
+		START_LOG( cerr, L"Minimum entry-level change requested by someone who is not the party leader." )
 			<< BUILD_LOG( kPacket_.m_iPartyUID )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( m_kPartyUserManager.GetHostUID() )
@@ -2575,7 +2575,7 @@ IMPL_ON_FUNC( EPM_PARTY_CHANGE_CHECK_MIN_LEVEL_REQ )
 	//현재 설정과 같은지 검사.
 	if( GetCheckLowLevel() == kPacket_.m_bCheck )
 	{
-		START_LOG( cwarn, L"현재설정과 같은 최소 레벨 입장 제한 설정값." )
+		START_LOG( cwarn, L"Minimum entry-level setting is unchanged." )
 			<< BUILD_LOG( kPacket_.m_iPartyUID )
 			<< BUILD_LOG( GetCheckLowLevel() )
 			<< BUILD_LOG( kPacket_.m_bCheck )
@@ -2621,7 +2621,7 @@ _IMPL_ON_FUNC( EPM_CHANGE_PARTY_TYPE_REQ, KEGS_CHANGE_PARTY_TYPE_REQ )
 	//파티장인지 검사
 	if( FIRST_SENDER_UID != m_kPartyUserManager.GetHostUID() )
 	{
-		START_LOG( cerr, L"파티장이 아닌데 파티 타입을 변경 하려함." )
+		START_LOG( cerr, L"Party-type change requested by someone who is not the party leader." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( m_kPartyUserManager.GetHostUID() )
 			<< END_LOG;
@@ -2634,7 +2634,7 @@ _IMPL_ON_FUNC( EPM_CHANGE_PARTY_TYPE_REQ, KEGS_CHANGE_PARTY_TYPE_REQ )
 	// 파티 타입 체크
 	if( GetPartyType() == kPacket_.m_cPartyType )
 	{
-		START_LOG( cerr, L"이미 해당 타입인데 또 바꿀려고 하네?" )
+		START_LOG( cerr, L"Attempted to change to the current type." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOGc( GetPartyType() )
@@ -2651,7 +2651,7 @@ _IMPL_ON_FUNC( EPM_CHANGE_PARTY_TYPE_REQ, KEGS_CHANGE_PARTY_TYPE_REQ )
 		// 던전파티에서 대전파티로 변경할때 구성인원 수가 4명이면 변경하지 못한다.
 		if( m_kPartyUserManager.GetNumMember() >= PE_LIMIT_PARTY_MEBMER )
 		{
-			START_LOG( cerr, L"파티인원이 4명일때는 대전파티로 변경이 불가능하다!" )
+			START_LOG( cerr, L"A four-member party cannot be changed to a PvP party!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( FIRST_SENDER_UID )
 				<< BUILD_LOGc( kPacket_.m_cPartyType )
@@ -2666,7 +2666,7 @@ _IMPL_ON_FUNC( EPM_CHANGE_PARTY_TYPE_REQ, KEGS_CHANGE_PARTY_TYPE_REQ )
 		// 파티인원중 레벨이 10렙이 안되는 유저가 있는경우 대전파티로 변경이 불가능.
 		if( m_kPartyUserManager.IsAllPartyMemberEqualOrOverThisLevel( SEnum::PE_PVP_OFFICIAL_LIMIT_LEVEL ) == false )
 		{
-			START_LOG( cerr, L"파티원중에 10레벨이 안되는 멤버가 있습니다!" )
+			START_LOG( cerr, L"A party member is below level 10!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( FIRST_SENDER_UID )
 				<< BUILD_LOGc( kPacket_.m_cPartyType )
@@ -2724,7 +2724,7 @@ IMPL_ON_FUNC( EPM_GET_PARTY_INFO_FOR_MATCH_MAKING_REQ )
 		// 재신청이 아니라면 파티장인지 검사하자!
 		if( FIRST_SENDER_UID != m_kPartyUserManager.GetHostUID() )
 		{
-			START_LOG( cerr, L"파티장이 아닌데 매치 메이킹을 신청하려함." )
+			START_LOG( cerr, L"Matchmaking requested by someone who is not the party leader." )
 				<< BUILD_LOG( FIRST_SENDER_UID )
 				<< BUILD_LOG( m_kPartyUserManager.GetHostUID() )
 				<< END_LOG;
@@ -2738,7 +2738,7 @@ IMPL_ON_FUNC( EPM_GET_PARTY_INFO_FOR_MATCH_MAKING_REQ )
 	// 공식대전은 10레벨 이상만 가능합니다.
 	if( m_kPartyUserManager.IsAllPartyMemberEqualOrOverThisLevel( SEnum::PE_PVP_OFFICIAL_LIMIT_LEVEL ) == false )
 	{
-		START_LOG( cerr, L"파티원중에 10레벨이 안되는 멤버가 있습니다!" )
+		START_LOG( cerr, L"A party member is below level 10!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
 
@@ -2765,7 +2765,7 @@ _IMPL_ON_FUNC( EPM_PVP_PARTY_CHANGE_MATCH_INFO_REQ, KEGS_PVP_PARTY_CHANGE_MATCH_
 	//파티장인지 검사
 	if( FIRST_SENDER_UID != m_kPartyUserManager.GetHostUID() )
 	{
-		START_LOG( cerr, L"파티장이 아닌데 매치 정보를 수정하려함." )
+		START_LOG( cerr, L"Match information update requested by someone who is not the party leader." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( m_kPartyUserManager.GetHostUID() )
 			<< END_LOG;
@@ -2779,7 +2779,7 @@ _IMPL_ON_FUNC( EPM_PVP_PARTY_CHANGE_MATCH_INFO_REQ, KEGS_PVP_PARTY_CHANGE_MATCH_
 	if( kPacket_.m_cPvpGameType != CXSLRoom::PGT_TEAM  &&
 		kPacket_.m_cPvpGameType != CXSLRoom::PGT_TEAM_DEATH )
 	{
-		START_LOG( cerr, L"대전 파티에서 세팅 가능한 대전 타입이 아닙니다." )
+		START_LOG( cerr, L"This PvP type cannot be set for a PvP party." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( m_kPartyUserManager.GetHostUID() )
 			<< BUILD_LOGc( kPacket_.m_cPvpGameType )
@@ -2841,7 +2841,7 @@ IMPL_ON_FUNC( EPM_GET_PARTY_INFO_FOR_AUTO_PARTY_MAKING_REQ )
 	//파티장인지 검사
 	if( FIRST_SENDER_UID != m_kPartyUserManager.GetHostUID() )
 	{
-		START_LOG( cerr, L"파티장이 아닌데 매치 정보를 수정하려함." )
+		START_LOG( cerr, L"Match information update requested by someone who is not the party leader." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( m_kPartyUserManager.GetHostUID() )
 			<< END_LOG;
@@ -2914,7 +2914,7 @@ IMPL_ON_FUNC( EPM_CHECK_FOR_AUTO_PARTY_MAKING_ACK )
 	// 해당 파티원 체크 상태 업데이트!
 	if( m_kPartyUserManager.SetCheckedForAutoParty( FIRST_SENDER_UID ) == false )
 	{
-		START_LOG( cerr, L"파티원 체크 등록 실패!" )
+		START_LOG( cerr, L"Failed to register party-member check!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
@@ -2934,7 +2934,7 @@ IMPL_ON_FUNC( EPM_REGROUP_PARTY_FOR_AUTO_PARTY_DUNGEON_GAME_REQ )
 	// 재집결하는 파티원수 검사
 	if( static_cast<int>(kPacket_.m_vecRegroupPartyUserInfo.size()) > CXSLPartyManager::PE_MAX_PARTY_NUM )
 	{
-        START_LOG( cerr, L"재 집결하는 파티원수가 4명을 넘었다! 일어나서는 안되는 에러!" )
+        START_LOG( cerr, L"More than four party members are regrouping; this should never happen!" )
 			<< BUILD_LOG( kPacket_.m_vecRegroupPartyUserInfo.size() )
 			<< END_LOG;
 	}
@@ -2942,7 +2942,7 @@ IMPL_ON_FUNC( EPM_REGROUP_PARTY_FOR_AUTO_PARTY_DUNGEON_GAME_REQ )
 	// 새로운 파티 생성 및 모든 새로운 파티원들 입장 처리
 	if( m_kPartyUserManager.Create( kPacket_.m_vecRegroupPartyUserInfo ) == false )
 	{
-		START_LOG( cerr, L"생성한 파티에 유저 리스트 입장실패.!" )
+		START_LOG( cerr, L"Failed to add user list to newly created party!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kPacket_.m_vecRegroupPartyUserInfo.size() )
 			<< END_LOG;
@@ -2957,7 +2957,7 @@ IMPL_ON_FUNC( EPM_REGROUP_PARTY_FOR_AUTO_PARTY_DUNGEON_GAME_REQ )
 	{
 		if( m_kPartyUserManager.ChangeHost( kPacket_.m_iAutoPartyHostUnitUID ) == false )
 		{
-			START_LOG( cerr, L"파티장 변경실패." )
+			START_LOG( cerr, L"Failed to change party leader." )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( m_kPartyUserManager.GetHostUID() )
 				<< BUILD_LOG( kPacket_.m_iAutoPartyHostUnitUID )
@@ -2976,7 +2976,7 @@ IMPL_ON_FUNC( EPM_REGROUP_PARTY_FOR_AUTO_PARTY_DUNGEON_GAME_REQ )
 		KCnPartyUserPtr spUser = m_kPartyUserManager.GetPartyUser( kRegroupPartyUserInfo.m_kPartyRoomUserInfo.m_kRoomUserInfo.m_nUnitUID );
 		if( spUser == NULL )
 		{
-			START_LOG( cerr, L"게임시작 체크패킷 응답이 왔는데 소속 파티원이 아니다?" )
+			START_LOG( cerr, L"Received game-start check response from a user who is not in the party." )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( kRegroupPartyUserInfo.m_kPartyRoomUserInfo.m_kRoomUserInfo.m_nUnitUID )
 				<< END_LOG;
@@ -3036,7 +3036,7 @@ IMPL_ON_FUNC( EPM_REGROUP_PARTY_FOR_AUTO_PARTY_DUNGEON_GAME_REQ )
 
 		if( m_kPartyUserManager.GetDungeonRoomUserInfoList( kPacketStartGame.m_vecUserInfo ) == false )
 		{
-			START_LOG( cerr, L"파티를 통한 던전게임 시작준비중 유저정보 수집실패.!" )
+			START_LOG( cerr, L"Failed to collect user information while preparing to start a party dungeon game!" )
 				<< BUILD_LOG( GetUID() )
 				<< END_LOG;
 
@@ -3048,7 +3048,7 @@ IMPL_ON_FUNC( EPM_REGROUP_PARTY_FOR_AUTO_PARTY_DUNGEON_GAME_REQ )
 		spHost = m_kPartyUserManager.GetHostPtr();
 		if( spHost == NULL )
 		{
-			START_LOG( cerr, L"파티장 정보가 없습니다. 있을수 없는 에러!" )
+			START_LOG( cerr, L"Party leader information is missing; this should never happen!" )
 				<< BUILD_LOG( GetUID() )
 				<< END_LOG;
 
@@ -3120,7 +3120,7 @@ IMPL_ON_FUNC( EPM_REQUEST_REGROUP_PARTY_NOT )
 	// 새로운 파티 생성 및 모든 새로운 파티원들 입장 처리
 	if( m_kPartyUserManager.Create( kPacket_.m_vecRegroupPartyUserInfo ) == false )
 	{
-		START_LOG( cerr, L"생성한 파티에 유저 리스트 입장실패.!" )
+		START_LOG( cerr, L"Failed to add user list to newly created party!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kPacket_.m_vecRegroupPartyUserInfo.size() )
 			<< END_LOG;
@@ -3202,7 +3202,7 @@ IMPL_ON_FUNC( EPM_REQUEST_REGROUP_PARTY_NOT )
 			}
 			else
 			{
-				START_LOG( cerr, L"파티유저 포인터값이 존재하지 않는다!" )
+				START_LOG( cerr, L"Party-user pointer is missing!" )
 					<< BUILD_LOG( kPacket_.m_iOldHostUnitUID )
 					<< END_LOG;
 			}
@@ -3258,7 +3258,7 @@ IMPL_ON_FUNC_NOPARAM( EPM_END_GAME_REGROUP_PARTY_NOT )
 		KCnPartyUserPtr spLeaveUser = m_kPartyUserManager.GetPartyUser( iUnitUID );
 		if( IS_NULL( spLeaveUser ) )
 		{
-			START_LOG( cerr, L"파티에서 이탈시킬 유저가 없습니다." )
+			START_LOG( cerr, L"No user to remove from party." )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( iUnitUID )
 				<< END_LOG;
@@ -3274,7 +3274,7 @@ IMPL_ON_FUNC_NOPARAM( EPM_END_GAME_REGROUP_PARTY_NOT )
 						, NetError::NOT_LEAVE_PARTY_REASON_08
 						) == false )
 		{
-			START_LOG( cerr, L"파티 재결합을 위한 파티원 이탈 처리 실패!" )
+			START_LOG( cerr, L"Failed to process party-member departure for party regrouping!" )
 				<< BUILD_LOG( iUnitUID )
 				<< END_LOG;
 		}
@@ -3330,7 +3330,7 @@ IMPL_ON_FUNC_NOPARAM( EPM_END_GAME_REGROUP_PARTY_NOT )
 			}
 			else
 			{
-				START_LOG( cerr, L"파티유저 포인터값이 존재하지 않는다!" )
+				START_LOG( cerr, L"Party-user pointer is missing!" )
 					<< BUILD_LOG( iNewHostUID )
 					<< END_LOG;
 			}
@@ -3349,7 +3349,7 @@ _IMPL_ON_FUNC( EPM_UPDATE_GAME_PLAY_STATUS_NOT, KPartyMemberStatus )
 
 	if( m_kPartyUserManager.SetPartyMemberStatus( FIRST_SENDER_UID, kPacket_ ) == false )
 	{
-		START_LOG( cerr, L"파티 유저 플레이 정보 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update party-user play information!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
 		return;
@@ -3374,7 +3374,7 @@ IMPL_ON_FUNC( EPM_UPDATE_PVP_INFO_NOT )
 	KCnPartyUserPtr spPartyUser = m_kPartyUserManager.GetPartyUser( FIRST_SENDER_UID );
 	if( spPartyUser == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 파티 멤버입니다!" )
+		START_LOG( cerr, L"Party member does not exist!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;

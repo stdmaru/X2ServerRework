@@ -140,7 +140,7 @@ void KCnUser::SendToGSUser( UidType nToGSUID, UidType nToGSUser, unsigned short 
 	}
 	else
 	{
-		START_LOG( cerr, L"타 게임서버로 패킷 보내기 실패.? 왜왜" )
+		START_LOG( cerr, L"Failed to send packet to another GameServer." )
 			<< BUILD_LOG( nToGSUID )
 			<< BUILD_LOG( nToGSUser )
 			<< BUILD_LOG( usEventID )

@@ -33,7 +33,7 @@ KUserPet::KUserPet( const KPetInfo& kInfo, const std::map< UidType, std::map< Ui
 	// 펫 최대 친밀도 설정
 	if( SiCXSLPetManager()->GetEvolutionStepMaxIntimacy( GetPetID(), GetEvolutionStep(), m_iMaxIntimacy ) == false )
 	{
-		START_LOG( cerr, L"펫의 최대 친밀도값 얻기가 실패하였습니다!" )
+		START_LOG( cerr, L"Failed to retrieve the pet's maximum affection value!" )
 			<< BUILD_LOG( GetPetUID() )
 			<< BUILD_LOGc( GetPetID() )
 			<< BUILD_LOGc( GetEvolutionStep() )
@@ -118,7 +118,7 @@ void KUserPet::GetStatByPetSkill( IN bool bIsDungeon, IN const KStat& kBaseStat,
 	// 펫 소켓 옵션 얻기
 	if( SiCXSLPetManager()->GetAuraSkillOption( static_cast<CXSLPetManager::PET_UNIT_ID>(GetPetID()), GetEvolutionStep(), vecAuraSkillOption ) == false )
 	{
-		START_LOG( cerr, L"존재 하지 않는 PetID입니다!" )
+		START_LOG( cerr, L"The PetID does not exist!" )
 			<< BUILD_LOGc( GetPetID() )
 			<< BUILD_LOGc( GetEvolutionStep() )
 			<< END_LOG;
@@ -151,7 +151,7 @@ void KUserPet::GetStatIncreaseRateByPetSkill( IN bool bIsDungeon, IN OUT KStatIn
 	// 펫 소켓 옵션 얻기
 	if( SiCXSLPetManager()->GetAuraSkillOption( static_cast<CXSLPetManager::PET_UNIT_ID>(GetPetID()), GetEvolutionStep(), vecAuraSkillOption ) == false )
 	{
-		START_LOG( cerr, L"존재 하지 않는 PetID입니다!" )
+		START_LOG( cerr, L"The PetID does not exist!" )
 			<< BUILD_LOGc( GetPetID() )
 			<< BUILD_LOGc( GetEvolutionStep() )
 			<< END_LOG;
@@ -250,7 +250,7 @@ void KUserPet::UpdatePetInfo( IN const KPetInfo& kPetInfo )
 	//}}
 	if( KncUtil::ConvertStringToCTime( kPetInfo.m_wstrLastFeedDate, m_tFirstFeedDate ) == false )
 	{
-		START_LOG( cerr, L"첫 먹이 시각 정보 변환 실패." )
+		START_LOG( cerr, L"Failed to convert first feeding time." )
 			<< BUILD_LOG( kPetInfo.m_iPetUID )
 			<< BUILD_LOG( kPetInfo.m_wstrLastFeedDate )
 			<< END_LOG;
@@ -268,7 +268,7 @@ void KUserPet::UpdatePetInfo( IN const KPetInfo& kPetInfo )
 
 	if( KncUtil::ConvertStringToCTime( kPetInfo.m_wstrLastSummonDate, m_tLastSummonDate ) == false )
 	{
-		START_LOG( cerr, L"마지막 소환 시각 정보 변환 실패." )
+		START_LOG( cerr, L"Failed to convert last summon time." )
 			<< BUILD_LOG( kPetInfo.m_iPetUID )
 			<< BUILD_LOG( kPetInfo.m_wstrLastSummonDate )
 			<< END_LOG;
@@ -279,7 +279,7 @@ void KUserPet::UpdatePetInfo( IN const KPetInfo& kPetInfo )
 
 	if( KncUtil::ConvertStringToCTime( kPetInfo.m_wstrRegDate, m_tRegDate ) == false )
 	{
-		START_LOG( cerr, L"펫 생성 시각 정보 변환 실패." )
+		START_LOG( cerr, L"Failed to convert pet creation time." )
 			<< BUILD_LOG( kPetInfo.m_iPetUID )
 			<< BUILD_LOG( kPetInfo.m_wstrRegDate )
 			<< END_LOG;
@@ -297,7 +297,7 @@ void KUserPet::UpdatePetInfo( IN const KPetInfo& kPetInfo )
 		}
 		else
 		{
-			START_LOG( cerr, L"만료 시각 정보 변환 실패." )
+			START_LOG( cerr, L"Failed to convert expiration time." )
 				<< BUILD_LOG( kPetInfo.m_iPetUID )
 				<< BUILD_LOG( kPetInfo.m_wstrDestroyDate )
 				<< END_LOG;
@@ -318,7 +318,7 @@ bool KUserPet::CommandsForPet( IN CXSLPetManager::PET_ACTION_COMMAND eActionComm
 	// 정상적인 명령인지 체크!
 	if( CXSLPetManager::IsValidCommand( eActionCommand ) == false )
 	{
-		START_LOG( cerr, L"정상적인 명령값이 아닙니다!" )
+		START_LOG( cerr, L"Invalid command value!" )
 			<< BUILD_LOG( GetPetUID() )
 			<< BUILD_LOG( eActionCommand )
 			<< END_LOG;
@@ -332,7 +332,7 @@ bool KUserPet::CommandsForPet( IN CXSLPetManager::PET_ACTION_COMMAND eActionComm
 	case CXSLPetManager::PAC_EAT:
 	case CXSLPetManager::PAC_STUFFED:
 		{
-			START_LOG( cerr, L"이곳으로 오면 안되는 명령입니다!" )
+			START_LOG( cerr, L"This command should not reach here!" )
 				<< BUILD_LOG( GetPetUID() )
 				<< BUILD_LOG( eActionCommand )
 				<< END_LOG;
@@ -352,7 +352,7 @@ bool KUserPet::CommandsForPet( IN CXSLPetManager::PET_ACTION_COMMAND eActionComm
 	// 최대 친밀도값 검사
 	if( GetMaxIntimacy() <= 0 )
 	{
-		START_LOG( cerr, L"최대 친밀도값이 이상합니다. 펫에게 명령내리기 실패!" )
+		START_LOG( cerr, L"Invalid maximum intimacy value; failed to command pet!" )
 			<< BUILD_LOG( GetPetUID() )
 			<< BUILD_LOG( GetMaxIntimacy() )
 			<< BUILD_LOG( eActionCommand )
@@ -422,7 +422,7 @@ void KUserPet::DecreaseSatietyOnDungeonRoom( IN char cUserCount, IN short sSubSt
 	//{{ 2012. 06. 01	김민성       특정 스테이지에서 펫 포만도가 감소하지 않는 오류 수정
 	if( sDecreaseSatiety < 1 )
 	{
-		START_LOG( clog, L"펫 포만도 감소값이 이상합니다!" )
+		START_LOG( clog, L"Invalid pet fullness decrease value!" )
 			<< BUILD_LOGc( GetPetID() )
 			<< BUILD_LOGc( GetEvolutionStep() )
 			<< BUILD_LOG( sSubStageExpNpcNum )
@@ -467,7 +467,7 @@ void KUserPet::DecreaseSatietyOnPvpRoom( IN char cUserCount, IN const bool& bHav
 	//{{ 2012. 06. 01	김민성       특정 스테이지에서 펫 포만도가 감소하지 않는 오류 수정
 	if( sDecreaseSatiety < 1 )
 	{
-		START_LOG( clog, L"펫 포만도 감소값이 이상합니다!" )
+		START_LOG( clog, L"Invalid pet fullness decrease value!" )
 			<< BUILD_LOGc( GetPetID() )
 			<< BUILD_LOGc( GetEvolutionStep() )
 			<< END_LOG;
@@ -501,7 +501,7 @@ short KUserPet::IncreaseSatiety( IN short sIncreaseSatiety )
 
 	if( sIncreaseSatiety <=  0 )
 	{
-		START_LOG( cwarn, L"증가시키려는 포만도 값이 이상함." )
+		START_LOG( cwarn, L"Invalid satiety amount to increase." )
 			<< BUILD_LOG( sIncreaseSatiety )
 			<< END_LOG;
 
@@ -510,7 +510,7 @@ short KUserPet::IncreaseSatiety( IN short sIncreaseSatiety )
 
 	if( GetSatiety() < 0 )
 	{
-		START_LOG( cerr, L"포만도 값이 이상함." )
+		START_LOG( cerr, L"Invalid fullness value." )
 			<< BUILD_LOG( GetSatiety() )
 			<< END_LOG;
 
@@ -539,7 +539,7 @@ short KUserPet::DecreaseSatiety( IN short sDecreaseSatiety )
 
 	if( sDecreaseSatiety <=  0 )
 	{
-		START_LOG( cerr, L"감소시키려는 포만도 값이 이상함." )
+		START_LOG( cerr, L"Invalid value for the satiety to decrease." )
 			<< BUILD_LOG( sDecreaseSatiety )
 			<< END_LOG;
 
@@ -548,7 +548,7 @@ short KUserPet::DecreaseSatiety( IN short sDecreaseSatiety )
 
 	if( GetSatiety() < 0 )
 	{
-		START_LOG( cerr, L"포만도 값이 이상함." )
+		START_LOG( cerr, L"Invalid fullness value." )
 			<< BUILD_LOG( GetSatiety() )
 			<< END_LOG;
 
@@ -574,7 +574,7 @@ int KUserPet::IncreaseIntimacy( IN int iIncreaseIntimacy )
 
 	if( iIncreaseIntimacy <=  0 )
 	{
-		START_LOG( cerr, L"증가시키려는 친밀도 값이 이상함." )
+		START_LOG( cerr, L"Invalid intimacy amount to increase." )
 			<< BUILD_LOG( iIncreaseIntimacy )
 			<< END_LOG;
 
@@ -583,7 +583,7 @@ int KUserPet::IncreaseIntimacy( IN int iIncreaseIntimacy )
 
 	if( GetIntimacy() < 0 )
 	{
-		START_LOG( cerr, L"포만도 값이 이상함." )
+		START_LOG( cerr, L"Invalid fullness value." )
 			<< BUILD_LOG( GetIntimacy() )
 			<< END_LOG;
 
@@ -609,7 +609,7 @@ int KUserPet::DecreaseIntimacy( IN int iDecreaseIntimacy )
 
 	if( iDecreaseIntimacy <=  0 )
 	{
-		START_LOG( cerr, L"감소시키려는 친밀도 값이 이상함." )
+		START_LOG( cerr, L"Invalid value for the intimacy to decrease." )
 			<< BUILD_LOG( iDecreaseIntimacy )
 			<< END_LOG;
 
@@ -618,7 +618,7 @@ int KUserPet::DecreaseIntimacy( IN int iDecreaseIntimacy )
 
 	if( GetIntimacy() < 0 )
 	{
-		START_LOG( cerr, L"친밀도 값이 이상함." )
+		START_LOG( cerr, L"Invalid intimacy value." )
 			<< BUILD_LOG( GetIntimacy() )
 			<< END_LOG;
 
@@ -644,7 +644,7 @@ short KUserPet::IncreaseExtroversion( IN short sIncreaseExtroversion )
 
 	if( sIncreaseExtroversion <=  0 )
 	{
-		START_LOG( cerr, L"증가시키려는 외향성값이 이상함." )
+		START_LOG( cerr, L"Invalid extroversion amount to increase." )
 			<< BUILD_LOG( sIncreaseExtroversion )
 			<< END_LOG;
 
@@ -655,7 +655,7 @@ short KUserPet::IncreaseExtroversion( IN short sIncreaseExtroversion )
 	if( GetExtroversion() < CXSLPetManager::PE_MIN_EXTROVERSION ||
 		GetExtroversion() > CXSLPetManager::PE_MAX_EXTROVERSION )
 	{
-		START_LOG( cerr, L"외향성 값이 이상함." )
+		START_LOG( cerr, L"Invalid sociability value." )
 			<< BUILD_LOG( GetExtroversion() )
 			<< END_LOG;
 		return GetExtroversion();
@@ -692,7 +692,7 @@ short KUserPet::DecreaseExtroversion( IN short sDecreaseExtroversion )
 
 	if( sDecreaseExtroversion <=  0 )
 	{
-		START_LOG( cerr, L"감소시키려는 외향성 값이 이상함." )
+		START_LOG( cerr, L"Invalid value for the extroversion to decrease." )
 			<< BUILD_LOG( sDecreaseExtroversion )
 			<< END_LOG;
 
@@ -703,7 +703,7 @@ short KUserPet::DecreaseExtroversion( IN short sDecreaseExtroversion )
 	if( GetExtroversion() < CXSLPetManager::PE_MIN_EXTROVERSION ||
 		GetExtroversion() > CXSLPetManager::PE_MAX_EXTROVERSION )
 	{
-		START_LOG( cerr, L"외향성 값이 이상함." )
+		START_LOG( cerr, L"Invalid sociability value." )
 			<< BUILD_LOG( GetExtroversion() )
 			<< END_LOG;
 	}
@@ -740,7 +740,7 @@ short KUserPet::IncreaseEmotion( IN short sIncreaseEmotion )
 
 	if( sIncreaseEmotion <=  0 )
 	{
-		START_LOG( cerr, L"증가시키려는 감수성 값이 이상함." )
+		START_LOG( cerr, L"Invalid sensitivity amount to increase." )
 			<< BUILD_LOG( sIncreaseEmotion )
 			<< END_LOG;
 
@@ -750,7 +750,7 @@ short KUserPet::IncreaseEmotion( IN short sIncreaseEmotion )
 	if( GetEmotion() < CXSLPetManager::PE_MIN_EMOTION ||
 		GetEmotion() > CXSLPetManager::PE_MAX_EMOTION )
 	{
-		START_LOG( cerr, L"감수성 값이 이상함." )
+		START_LOG( cerr, L"Invalid sensitivity value." )
 			<< BUILD_LOG( GetEmotion() )
 			<< END_LOG;
 	}
@@ -787,7 +787,7 @@ short KUserPet::DecreaseEmotion( IN short sDecreaseEmotion )
 
 	if( sDecreaseEmotion <=  0 )
 	{
-		START_LOG( cerr, L"감소시키려는 감수성 값이 이상함." )
+		START_LOG( cerr, L"Invalid value for the amount of sensitivity to decrease." )
 			<< BUILD_LOG( sDecreaseEmotion )
 			<< END_LOG;
 
@@ -798,7 +798,7 @@ short KUserPet::DecreaseEmotion( IN short sDecreaseEmotion )
 	if( GetEmotion() < CXSLPetManager::PE_MIN_EMOTION ||
 		GetEmotion() > CXSLPetManager::PE_MAX_EMOTION )
 	{
-		START_LOG( cerr, L"감수성 값이 이상함." )
+		START_LOG( cerr, L"Invalid sensitivity value." )
 			<< BUILD_LOG( GetEmotion() )
 			<< END_LOG;
 	}
@@ -845,7 +845,7 @@ bool KUserPet::IsPetSpecialFeed() const
 	// 최대 친밀도 값 검사
 	if( GetMaxIntimacy() <= 0 )
 	{
-		START_LOG( cerr, L"최대 친밀도 값이 이상합니다!" )
+		START_LOG( cerr, L"Invalid maximum intimacy value!" )
 			<< BUILD_LOG( GetPetUID() )
 			<< BUILD_LOGc( GetPetID() )
 			<< BUILD_LOG( GetMaxIntimacy() )
@@ -883,7 +883,7 @@ bool KUserPet::Feed( IN char cLevel, IN int iFeedItemID, OUT bool& bIsFirstFeed,
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iFeedItemID );
 	if( pItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 아이템을 먹이로 주려고 했습니다!" )
+		START_LOG( cerr, L"Attempted to feed a nonexistent item!" )
 			<< BUILD_LOG( iFeedItemID )
 			<< END_LOG;
 
@@ -924,7 +924,7 @@ bool KUserPet::Feed( IN char cLevel, IN int iFeedItemID, OUT bool& bIsFirstFeed,
 			// 식사한 만큼 포만도 증가량을 얻자!
 			if( SiCXSLPetManager()->CalcIncreaseSatietyForFeed( GetPetID(), iFeedItemID, cLevel, sIncreaseSatiety ) == false )
 			{
-				START_LOG( cerr, L"장비 먹이 포만도 증가량 얻기 실패!" )
+				START_LOG( cerr, L"Failed to retrieve equipment feed satiety increase!" )
 					<< BUILD_LOG( GetPetUID() )
 					<< BUILD_LOGc( GetPetID() )
 					<< BUILD_LOG( pItemTemplet->m_Price )
@@ -963,7 +963,7 @@ bool KUserPet::Feed( IN char cLevel, IN int iFeedItemID, OUT bool& bIsFirstFeed,
 			// 펫 먹이 캐쉬템인지 확인하고 포만도 증가량을 얻자!
 			if( SiCXSLPetManager()->GetCashPetFeedItemInfo( iFeedItemID, sIncreaseSatiety ) == false )
 			{
-				START_LOG( clog, L"캐쉬 먹이 포만도 증가량 얻기 실패! 먹이 아이템이 아닌가?" )
+				START_LOG( clog, L"Failed to retrieve cash food satiety increase; is this not a food item?" )
 					<< BUILD_LOG( GetPetUID() )
 					<< BUILD_LOG( iFeedItemID )
 					<< END_LOG;
@@ -975,7 +975,7 @@ bool KUserPet::Feed( IN char cLevel, IN int iFeedItemID, OUT bool& bIsFirstFeed,
 		break;
 
 	default:
-		START_LOG( clog, L"펫의 먹이로 줄 수 없는 아이템 타입입니다." )
+		START_LOG( clog, L"This item type cannot be fed to a pet." )
 			<< BUILD_LOG( iFeedItemID )
 			<< BUILD_LOG( pItemTemplet->m_ItemType )
 			<< END_LOG;
@@ -1051,7 +1051,7 @@ bool KUserPet::Evolution( OUT KPetInfo& kResultPetInfo, OUT int& iPetCategorySlo
 	char cNextEvolutionStep = 0;
 	if( SiCXSLPetManager()->CheckNextEvolution( GetPetID(), GetEvolutionStep(), cNextEvolutionStep ) == false )
 	{
-		START_LOG( cerr, L"진화 할 수 없는 진화단계입니다!" )
+		START_LOG( cerr, L"Invalid evolution stage!" )
 			<< BUILD_LOG( GetPetUID() )
 			<< BUILD_LOGc( GetPetID() )
 			<< BUILD_LOGc( GetEvolutionStep() )
@@ -1064,7 +1064,7 @@ bool KUserPet::Evolution( OUT KPetInfo& kResultPetInfo, OUT int& iPetCategorySlo
 	// 친밀도가 100%가 되었을때 진화가 가능하다!
 	if( GetIntimacy() != GetMaxIntimacy() )
 	{
-		START_LOG( cerr, L"친밀도가 100%가 아닌데 진화 요청이 들어왔다!" )
+		START_LOG( cerr, L"Evolution request received when intimacy is below 100%!" )
 			<< BUILD_LOG( GetPetUID() )
 			<< BUILD_LOGc( GetPetID() )
 			<< BUILD_LOG( GetIntimacy() )
@@ -1081,7 +1081,7 @@ bool KUserPet::Evolution( OUT KPetInfo& kResultPetInfo, OUT int& iPetCategorySlo
 	// 펫 최대 친밀도 재설정
 	if( SiCXSLPetManager()->GetEvolutionStepMaxIntimacy( GetPetID(), GetEvolutionStep(), m_iMaxIntimacy ) == false )
 	{
-		START_LOG( cerr, L"펫의 최대 친밀도값 얻기가 실패하였습니다!" )
+		START_LOG( cerr, L"Failed to retrieve the pet's maximum affection value!" )
 			<< BUILD_LOG( GetPetUID() )
 			<< BUILD_LOGc( GetPetID() )
 			<< BUILD_LOGc( GetEvolutionStep() )
@@ -1115,7 +1115,7 @@ bool KUserPet::Evolution_Cheat( IN char cEvolutionStep, OUT KPetInfo& kResultPet
 	{
 		if( SiCXSLPetManager()->CheckNextEvolution( GetPetID(), ( cEvolutionStep - 1 ), cNextEvolutionStep ) == false )
 		{
-			START_LOG( cout, L"진화 할 수 없는 진화 단계 입니다! 개발자님 치트 제대로 써주세요!" )
+			START_LOG( cout, L"Invalid evolution stage; developer, please use the cheat correctly!" )
 				<< BUILD_LOG( GetPetUID() )
 				<< BUILD_LOGc( GetPetID() )
 				<< BUILD_LOGc( cEvolutionStep )
@@ -1130,7 +1130,7 @@ bool KUserPet::Evolution_Cheat( IN char cEvolutionStep, OUT KPetInfo& kResultPet
 	// 펫 최대 친밀도 재설정
 	if( SiCXSLPetManager()->GetEvolutionStepMaxIntimacy( GetPetID(), GetEvolutionStep(), m_iMaxIntimacy ) == false )
 	{
-		START_LOG( cerr, L"펫의 최대 친밀도값 얻기가 실패하였습니다!" )
+		START_LOG( cerr, L"Failed to retrieve the pet's maximum affection value!" )
 			<< BUILD_LOG( GetPetUID() )
 			<< BUILD_LOGc( GetPetID() )
 			<< BUILD_LOGc( GetEvolutionStep() )
@@ -1159,7 +1159,7 @@ void KUserPet::CheckExtroversion()
 	short sChangeExtroversion = 0;
 	if( SiCXSLPetManager()->CheckExtroversion( GetPetID(), GetExtroversion(), m_iCumulativeIntimacy, sChangeExtroversion ) == false )
 	{
-		START_LOG( cerr, L"존재하지 않는 PetID값입니다." )
+		START_LOG( cerr, L"The PetID does not exist." )
 			<< BUILD_LOG( GetPetUID() )
 			<< BUILD_LOGc( GetPetID() )
 			<< END_LOG;
@@ -1187,7 +1187,7 @@ void KUserPet::CheckEmotion()
 	short sChangeEmotion = 0;
 	if( SiCXSLPetManager()->CheckEmotion( GetPetID(), GetEmotion(), m_iCumulativeSatiety, m_iFeedCount, sChangeEmotion ) == false )
 	{
-		START_LOG( cerr, L"존재하지 않는 PetID값입니다." )
+		START_LOG( cerr, L"The PetID does not exist." )
 			<< BUILD_LOG( GetPetUID() )
 			<< BUILD_LOGc( GetPetID() )
 			<< END_LOG;

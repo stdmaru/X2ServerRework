@@ -149,7 +149,7 @@ void KGlobalMissionManager::Reset_LUA()
 {
 	m_kTimerMissionStart.restart();
 
-	START_LOG( cout, L"글로벌 미션 정보 리셋" )
+	START_LOG( cout, L"Resetting global mission data." )
 		<< END_LOG;
 }
 
@@ -158,7 +158,7 @@ int KGlobalMissionManager::IncreaseGlobalMissionClearCount( std::wstring& wstrGl
 	std::map< std::wstring, KGlobalMissionInfo >::iterator mit = m_mapGlobalMissionInfo.find( wstrGlobalMissionDay );
 	if( mit == m_mapGlobalMissionInfo.end() )
 	{
-		START_LOG( cerr, L"존재하지 않는 글로벌 미션이다." )
+		START_LOG( cerr, L"Global mission does not exist." )
 			<< BUILD_LOG( wstrGlobalMissionDay )
 			<< BUILD_LOG( iNowCount )
 			<< END_LOG;
@@ -168,7 +168,7 @@ int KGlobalMissionManager::IncreaseGlobalMissionClearCount( std::wstring& wstrGl
 
 	if(mit->second.m_bActive != true)
 	{
-		START_LOG( cerr, L"이미 끝난 글로벌 미션이다." )
+		START_LOG( cerr, L"Global mission has already ended." )
 			<< BUILD_LOG( wstrGlobalMissionDay )
 			<< BUILD_LOG( iNowCount )
 			<< END_LOG;
@@ -178,7 +178,7 @@ int KGlobalMissionManager::IncreaseGlobalMissionClearCount( std::wstring& wstrGl
 
 	if( iNowCount <= 0 )
 	{
-		START_LOG( cerr, L"클리어 카운트 수가 이상하다." )
+		START_LOG( cerr, L"Invalid clear count." )
 			<< BUILD_LOG( wstrGlobalMissionDay )
 			<< BUILD_LOG( iNowCount )
 			<< END_LOG;
@@ -262,7 +262,7 @@ void KGlobalMissionManager::StartMission( std::wstring wstrGlobalMissionDay, boo
 
 	BroadCastGlobalMission( KEGB_UPDATE_GLOBAL_MISSION_INFO_NOT::FT_BEGIN, wstrGlobalMissionDay );
 
-	START_LOG( cout2, L"글로벌 미션 시작!" )
+	START_LOG( cout2, L"Global mission started." )
 		<< BUILD_LOG( wstrGlobalMissionDay )
 		<< END_LOG;
 }
@@ -282,7 +282,7 @@ void KGlobalMissionManager::EndMission( std::wstring wstrGlobalMissionDay )
 		//	이벤트 종료
 		if( bSuccess )	//	성공
 		{
-			START_LOG( cout2, L"글로벌 미션 성공!" )
+			START_LOG( cout2, L"Global mission succeeded." )
 				<< BUILD_LOG( mit->first )
 				<< BUILD_LOG( mit->second.m_iMissionType )
 				<< BUILD_LOG( mit->second.m_iClearCondition )
@@ -294,7 +294,7 @@ void KGlobalMissionManager::EndMission( std::wstring wstrGlobalMissionDay )
 		}
 		else
 		{
-			START_LOG( cout2, L"글로벌 미션 실패!" )
+			START_LOG( cout2, L"Global mission failed." )
 				<< BUILD_LOG( mit->first )
 				<< BUILD_LOG( mit->second.m_iMissionType)
 				<< BUILD_LOG( mit->second.m_iClearCondition )
@@ -316,14 +316,14 @@ void KGlobalMissionManager::SetGlobalMissionSuccess_LUA( bool bSuccess, std::wst
 {
 	if( bSuccess )	//	성공
 	{
-		START_LOG( cout2, L"글로벌 미션 성공 상태로 강제 셋팅!" )
+		START_LOG( cout2, L"Forcing global mission status to succeeded." )
 			<< END_LOG;
 
 		BroadCastGlobalMission( KEGB_UPDATE_GLOBAL_MISSION_INFO_NOT::FT_SUCCESS, wstrGlobalMissionDay );
 	}
 	else
 	{
-		START_LOG( cout2, L"글로벌 미션 실패 상태로 강제 셋팅!" )
+		START_LOG( cout2, L"Forcing global mission status to failed." )
 			<< END_LOG;
 
 		BroadCastGlobalMission( KEGB_UPDATE_GLOBAL_MISSION_INFO_NOT::FT_FAIL, wstrGlobalMissionDay );
@@ -364,7 +364,7 @@ bool KGlobalMissionManager::SetTodayMissionTime()
 			mit->second.m_wstrMissionStartTime = strTodayStartTime.GetString();
 			mit->second.m_iRemainSecond = mit->second.m_iDurationMinute * 60;
 
-			START_LOG( clog, L"글로벌 미션 세팅1" )
+			START_LOG( clog, L"Setting global mission (1)." )
 				<< BUILD_LOG(mit->first)
 				<< BUILD_LOG(mit->second.m_wstrMissionStartTime)
 				<< BUILD_LOG(mit->second.m_iDurationMinute)
@@ -390,7 +390,7 @@ bool KGlobalMissionManager::SetTodayMissionTime()
 			mit->second.m_wstrMissionStartTime = strTodayStartTime.GetString();
 			mit->second.m_iRemainSecond = mit->second.m_iDurationMinute * 60;
 
-			START_LOG( clog, L"글로벌 미션 세팅2" )
+			START_LOG( clog, L"Setting global mission (2)." )
 				<< BUILD_LOG(mit->first)
 				<< BUILD_LOG(mit->second.m_wstrMissionStartTime)
 				<< BUILD_LOG(mit->second.m_iDurationMinute)
@@ -414,7 +414,7 @@ bool KGlobalMissionManager::SetTodayMissionTime()
 			CTimeSpan gap = tTodayTime - tTodayMissionTime;
 			mit->second.m_iRemainSecond =  static_cast<int>((mit->second.m_iDurationMinute * 60) - gap.GetTotalSeconds() );
 
-			START_LOG( clog, L"글로벌 미션 세팅3" )
+			START_LOG( clog, L"Setting global mission (3)." )
 				<< BUILD_LOG(mit->first)
 				<< BUILD_LOG(mit->second.m_wstrMissionStartTime)
 				<< BUILD_LOG(mit->second.m_iDurationMinute)
@@ -484,7 +484,7 @@ int KGlobalMissionManager::GetCorrectMissionTime( std::wstring wstrGlobalMissonD
 	int iGap = static_cast<int>(tTimeDiff.GetTotalSeconds());
 	if( iGap < 0 )
 	{
-		START_LOG( clog, L"던전 미션이 시작하지 않았습니다." )
+		START_LOG( clog, L"The dungeon mission has not started." )
 			<< BUILD_LOG(mit->second.m_iDurationMinute)
 			<< BUILD_LOG(iGap)
 			<< END_LOG;

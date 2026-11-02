@@ -71,7 +71,7 @@ void CXSLPetManager::SetNewPetInfo_LUA( char cEvolutionStep, short sSatiety, int
 	m_kNewPetInfo.m_sExtroversion	= sExtroversion;
 	m_kNewPetInfo.m_sEmotion		= sEmotion;
 
-	START_LOG( cout, L"펫 생성 초기값 세팅!" )
+	START_LOG( cout, L"Initializing pet creation values." )
 		<< BUILD_LOGc( m_kNewPetInfo.m_cEvolutionStep )
 		<< BUILD_LOG( m_kNewPetInfo.m_sSatiety )
 		<< BUILD_LOG( m_kNewPetInfo.m_iIntimacy )
@@ -205,7 +205,7 @@ bool CXSLPetManager::AddPetTemplet_LUA()
 
 	if( m_mapPetTemplet.find( petData.m_PetId) != m_mapPetTemplet.end() )
 	{
-		START_LOG( cerr ,L"이미 등록된 펫 정보입니다!" )
+		START_LOG( cerr ,L"Pet information is already registered." )
 			<< BUILD_LOG( petData.m_PetId )
 			<< END_LOG;
 
@@ -216,7 +216,7 @@ bool CXSLPetManager::AddPetTemplet_LUA()
 	return true;
 
 end_proc:
-	START_LOG( cerr, L"펫 스크립트 파싱 파싱 실패.!" )
+	START_LOG( cerr, L"Failed to parse the pet script." )
 		<< BUILD_LOG( petData.m_PetId )
 		<< END_LOG;
 
@@ -227,7 +227,7 @@ bool CXSLPetManager::AddPetCreateItemInfo_LUA( int iItemID, int iPetID, short sP
 {
 	if( IsExistPetID( iPetID ) == false )
 	{
-		START_LOG( cerr, L"등록 되지 않은 PetID입니다!" )
+		START_LOG( cerr, L"PetID is not registered." )
 			<< BUILD_LOG( iPetID )
 			<< END_LOG;
 		return false;
@@ -235,7 +235,7 @@ bool CXSLPetManager::AddPetCreateItemInfo_LUA( int iItemID, int iPetID, short sP
 
 	if( m_mapPetCreateItem.find( iItemID ) != m_mapPetCreateItem.end() )
 	{
-		START_LOG( cerr, L"이미 등록된 ItemID입니다!" )
+		START_LOG( cerr, L"ItemID is already registered." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 		return false;
@@ -244,7 +244,7 @@ bool CXSLPetManager::AddPetCreateItemInfo_LUA( int iItemID, int iPetID, short sP
 	// 펫 인벤토리가 있는데 기간제라면 에러!
 	if( HasPetInventory( iPetID ) == true && sPeriod != -1 )
 	{
-		START_LOG( cerr, L"인벤토리가 있는 펫에 기간을 등록했습니다!" )
+		START_LOG( cerr, L"Duration was assigned to a pet that has an inventory." )
 			<< BUILD_LOG( iItemID )
 			<< BUILD_LOG( iPetID )
 			<< BUILD_LOG( sPeriod )
@@ -260,7 +260,7 @@ bool CXSLPetManager::AddRandomPetCreateItemInfo_LUA( int iItemID, int iPetID, fl
 {
 	if( IsExistPetID( iPetID ) == false )
 	{
-		START_LOG( cerr, L"등록 되지 않은 PetID입니다!" )
+		START_LOG( cerr, L"PetID is not registered." )
 			<< BUILD_LOG( iPetID )
 			<< END_LOG;
 		return false;
@@ -288,7 +288,7 @@ CXSLPetManager::PET_UNIT_ID CXSLPetManager::GetRandomPetIDByItemID( IN int iItem
 	mit = m_mapRandomPetCreateItem.find( iItemID );
 	if( mit == m_mapRandomPetCreateItem.end() )
 	{
-		START_LOG( cerr, L"펫 생성 아이템이 아닌데?" )
+		START_LOG( cerr, L"Item is not a pet creation item." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 
@@ -298,7 +298,7 @@ CXSLPetManager::PET_UNIT_ID CXSLPetManager::GetRandomPetIDByItemID( IN int iItem
 	int iPetID = mit->second.Decision();
 	if( iPetID == KLottery::CASE_BLANK )
 	{
-		START_LOG( cerr, L"랜덤 펫 ID 얻기 실패" )
+		START_LOG( cerr, L"Failed to get a random pet ID." )
 			<< BUILD_LOG( iPetID )
 			<< END_LOG;
 
@@ -312,7 +312,7 @@ bool CXSLPetManager::AddTransformPetItemInfo_LUA( int iTransformID, int iPetCrea
 {
 	if( IsExistPetID( iPetID ) == false )
 	{
-		START_LOG( cerr, L"등록 되지 않은 PetID입니다!" )
+		START_LOG( cerr, L"PetID is not registered." )
 			<< BUILD_LOG( iPetID )
 			<< END_LOG;
 		return false;
@@ -330,7 +330,7 @@ bool CXSLPetManager::AddTransformPetItemInfo_LUA( int iTransformID, int iPetCrea
 	}
 	else
 	{
-		START_LOG( cerr, L"레어 펫은 중복 불가능 입니다!!!" )
+		START_LOG( cerr, L"Rare pets cannot be duplicated." )
 			<< BUILD_LOG( iTransformID )
 			<< BUILD_LOG( iPetCreateItemID )
 			<< BUILD_LOG( iPetID )
@@ -376,7 +376,7 @@ CXSLPetManager::PET_UNIT_ID CXSLPetManager::GetTransformPetID( IN const int iUse
 		int iPetID = kLot.Decision();
 		if( iPetID == KLottery::CASE_BLANK )
 		{
-			START_LOG( cerr, L"랜덤 펫 ID 얻기 실패" )
+			START_LOG( cerr, L"Failed to get a random pet ID." )
 				<< BUILD_LOG( iPetID )
 				<< END_LOG;
 
@@ -393,7 +393,7 @@ bool CXSLPetManager::AddPetCashFeedItemInfo_LUA( int iItemID, short sIncreaseSat
 {
 	if( m_mapPetCashFeedItem.find( iItemID ) != m_mapPetCashFeedItem.end() )
 	{
-		START_LOG( cerr, L"이미 등록된 ItemID입니다!" )
+		START_LOG( cerr, L"ItemID is already registered." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 		return false;
@@ -407,7 +407,7 @@ bool CXSLPetManager::AddSpecialFeedItemID_LUA( int iItemID )
 {
 	if( m_setSpecialFeedItemID.find( iItemID ) != m_setSpecialFeedItemID.end() )
 	{
-		START_LOG( cerr, L"이미 등록된 ItemID입니다!" )
+		START_LOG( cerr, L"ItemID is already registered." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 		return false;
@@ -422,7 +422,7 @@ bool CXSLPetManager::AddPetSatietyDecreaseFactor_LUA( int iEvolutionStep, double
 {
 	if( iEvolutionStep < 0  ||  fFactor < 0.0 )
 	{
-		START_LOG( cerr, L"펫 포만도 소모량 세팅값이 이상합니다!" )
+		START_LOG( cerr, L"Invalid pet fullness consumption setting." )
 			<< BUILD_LOG( iEvolutionStep )
 			<< BUILD_LOG( fFactor )
 			<< END_LOG;
@@ -440,7 +440,7 @@ const CXSLPetManager::PetTemplet* CXSLPetManager::GetPetTemplet( IN int iPetID )
 	mit = m_mapPetTemplet.find( static_cast<PET_UNIT_ID>(iPetID) );
 	if( mit == m_mapPetTemplet.end() )
 	{
-		START_LOG( cerr, L"존재하지 않는 PetID입니다!" )
+		START_LOG( cerr, L"PetID does not exist." )
 			<< BUILD_LOG( iPetID )
 			<< END_LOG;
 
@@ -455,7 +455,7 @@ int	CXSLPetManager::GetPetInventorySlotSize( IN int iPetID, IN char cEvolutionSt
 	const PetTemplet* pPetTemplet = GetPetTemplet( iPetID );
 	if( pPetTemplet == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 펫ID입니다!" )
+		START_LOG( cerr, L"PetID does not exist." )
 			<< BUILD_LOG( iPetID )
 			<< END_LOG;
 		return 0;
@@ -465,7 +465,7 @@ int	CXSLPetManager::GetPetInventorySlotSize( IN int iPetID, IN char cEvolutionSt
 		static_cast<u_int>(cEvolutionStep) >= pPetTemplet->m_InvenSlot_Width_Size.size()  ||
 		static_cast<u_int>(cEvolutionStep) >= pPetTemplet->m_InvenSlot_Height_Size.size() )
 	{
-		START_LOG( cerr, L"진화 단계 값이 이상합니다!" )
+		START_LOG( cerr, L"Invalid evolution stage value." )
 			<< BUILD_LOGc( cEvolutionStep )
 			<< BUILD_LOG( pPetTemplet->m_InvenSlot_Width_Size.size() )
 			<< BUILD_LOG( pPetTemplet->m_InvenSlot_Height_Size.size() )
@@ -490,7 +490,7 @@ void CXSLPetManager::GetPetIDByItemID( IN const int iItemID, OUT PET_UNIT_ID& eP
 		if( ePetID != PUI_NONE )
 			return;
 
-		START_LOG( cerr, L"펫 생성 아이템이 아닌데?" )
+		START_LOG( cerr, L"Item is not a pet creation item." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 
@@ -506,7 +506,7 @@ bool CXSLPetManager::HasPetInventory( IN int iPetID ) const
 	const PetTemplet* pPetTemplet = GetPetTemplet( iPetID );
 	if( pPetTemplet == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 PetID입니다!" )
+		START_LOG( cerr, L"PetID does not exist." )
 			<< BUILD_LOG( iPetID )
 			<< END_LOG;
 		return false;
@@ -533,7 +533,7 @@ bool CXSLPetManager::GetCashPetFeedItemInfo( IN int iItemID, OUT short& sIncreas
 	mit = m_mapPetCashFeedItem.find( iItemID );
 	if( mit == m_mapPetCashFeedItem.end() )
 	{
-		START_LOG( cwarn, L"펫 전용 먹이 아이템이 아닌데?" )
+		START_LOG( cwarn, L"Item is not pet food." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 
@@ -549,7 +549,7 @@ bool CXSLPetManager::GetEvolutionStepMaxIntimacy( IN int iPetID, IN char cEvolut
 	const PetTemplet* pPetTemplet = GetPetTemplet( iPetID );
 	if( pPetTemplet == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 PetID입니다!" )
+		START_LOG( cerr, L"PetID does not exist." )
 			<< BUILD_LOG( iPetID )
 			<< END_LOG;
 		return false;
@@ -557,7 +557,7 @@ bool CXSLPetManager::GetEvolutionStepMaxIntimacy( IN int iPetID, IN char cEvolut
 
 	if( cEvolutionStep < 0 )
 	{
-		START_LOG( cerr, L"진화 단계 값이 이상합니다!" )
+		START_LOG( cerr, L"Invalid evolution stage value." )
 			<< BUILD_LOG( iPetID )
 			<< BUILD_LOGc( cEvolutionStep )
 			<< END_LOG;
@@ -566,7 +566,7 @@ bool CXSLPetManager::GetEvolutionStepMaxIntimacy( IN int iPetID, IN char cEvolut
 
     if( pPetTemplet->m_Evolution_Step_Max.size() <= static_cast<u_int>(cEvolutionStep) )
 	{
-		START_LOG( cerr, L"해당 PetID 정보에는 존재하지 않는 진화 단계 값입니다." )
+		START_LOG( cerr, L"Evolution stage does not exist for this PetID." )
 			<< BUILD_LOG( iPetID )
 			<< BUILD_LOG( pPetTemplet->m_Evolution_Step_Max.size() )
 			<< BUILD_LOGc( cEvolutionStep )
@@ -583,7 +583,7 @@ bool CXSLPetManager::CheckNextEvolution( IN int iPetID, IN char cCurrentEvolutio
 	const PetTemplet* pPetTemplet = GetPetTemplet( iPetID );
 	if( pPetTemplet == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 PetID입니다!" )
+		START_LOG( cerr, L"PetID does not exist." )
 			<< BUILD_LOG( iPetID )
 			<< END_LOG;
 		return false;
@@ -591,7 +591,7 @@ bool CXSLPetManager::CheckNextEvolution( IN int iPetID, IN char cCurrentEvolutio
 
 	if( 0 > cCurrentEvolutionStep  ||  cCurrentEvolutionStep > pPetTemplet->m_Evolution_All_Step )
 	{
-		START_LOG( cerr, L"현재 진화단계값이 이상합니다!" )
+		START_LOG( cerr, L"Invalid current evolution stage." )
 			<< BUILD_LOG( iPetID )
 			<< BUILD_LOGc( cCurrentEvolutionStep )
 			<< END_LOG;
@@ -600,7 +600,7 @@ bool CXSLPetManager::CheckNextEvolution( IN int iPetID, IN char cCurrentEvolutio
 
 	if( cCurrentEvolutionStep == pPetTemplet->m_Evolution_All_Step )
 	{
-		START_LOG( clog, L"진화할 수 없는 진화단계값입니다." )
+		START_LOG( clog, L"Evolution stage cannot be evolved further." )
 			<< BUILD_LOG( iPetID )
 			<< BUILD_LOGc( cCurrentEvolutionStep )
 			<< END_LOG;
@@ -616,7 +616,7 @@ bool CXSLPetManager::CalcIncreaseSatietyForFeed( IN int iPetID, IN int iFeedItem
 	const PetTemplet* pPetTemplet = GetPetTemplet( iPetID );
 	if( pPetTemplet == NULL )
 	{
-		START_LOG( cerr, L"존재 하지 않는 펫ID값 입니다!" )
+		START_LOG( cerr, L"PetID does not exist." )
 			<< BUILD_LOGc( iPetID )
 			<< END_LOG;
 		return false;
@@ -625,7 +625,7 @@ bool CXSLPetManager::CalcIncreaseSatietyForFeed( IN int iPetID, IN int iFeedItem
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iFeedItemID );
 	if( pItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"존재 하지 않는 아이템입니다." )
+		START_LOG( cerr, L"Item does not exist." )
 			<< BUILD_LOG( iFeedItemID )
 			<< END_LOG;
 		return false;
@@ -641,7 +641,7 @@ bool CXSLPetManager::CalcIncreaseSatietyForFeed( IN int iPetID, IN int iFeedItem
 	case CXSLUnit::EP_DEFENCE_FOOT:	fEquipItemFactor = 96.0;	break;
 	default:
 		{
-			START_LOG( cerr, L"펫에게 먹이로 줄수 없는 아이템입니다!" )
+			START_LOG( cerr, L"Item cannot be fed to a pet." )
 				<< BUILD_LOG( iFeedItemID )
 				<< BUILD_LOG( pItemTemplet->m_EqipPosition )
 				<< END_LOG;
@@ -667,7 +667,7 @@ bool CXSLPetManager::CheckExtroversion( IN int iPetID, IN short sCurExtroversion
 	const PetTemplet* pPetTemplet = GetPetTemplet( iPetID );
 	if( pPetTemplet == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 PetID값입니다." )
+		START_LOG( cerr, L"PetID does not exist." )
 			<< BUILD_LOG( iPetID )
 			<< END_LOG;
 		return false;
@@ -677,7 +677,7 @@ bool CXSLPetManager::CheckExtroversion( IN int iPetID, IN short sCurExtroversion
 	//if( sCurExtroversion < PET_ENUM::PE_MIN_EMOTION  ||  sCurExtroversion > PET_ENUM::PE_MAX_EMOTION )
 	if( sCurExtroversion < PE_MIN_EXTROVERSION  ||  sCurExtroversion > PE_MAX_EXTROVERSION )
 	{
-		START_LOG( cerr, L"외향지수 수치가 이상합니다!" )
+		START_LOG( cerr, L"Invalid sociability value." )
 			<< BUILD_LOG( sCurExtroversion )
 			<< END_LOG;
 	}
@@ -719,7 +719,7 @@ bool CXSLPetManager::CheckEmotion( IN int iPetID, IN short sCurEmotion, IN int i
 	const PetTemplet* pPetTemplet = GetPetTemplet( iPetID );
 	if( pPetTemplet == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 PetID값입니다." )
+		START_LOG( cerr, L"PetID does not exist." )
 			<< BUILD_LOG( iPetID )
 			<< END_LOG;
 		return false;
@@ -727,7 +727,7 @@ bool CXSLPetManager::CheckEmotion( IN int iPetID, IN short sCurEmotion, IN int i
 
 	if( sCurEmotion < PE_MIN_EMOTION  ||  sCurEmotion > PE_MAX_EMOTION )
 	{
-		START_LOG( cerr, L"감성지수 수치가 이상합니다!" )
+		START_LOG( cerr, L"Invalid sensitivity value." )
 			<< BUILD_LOG( sCurEmotion )
 			<< END_LOG;
 	}
@@ -768,7 +768,7 @@ bool CXSLPetManager::MakeNewPetInfo( IN PET_UNIT_ID ePetID, IN const std::wstrin
 {
 	if( IsExistPetID( ePetID ) == false )
 	{
-		START_LOG( cerr, L"존재하지 않는 펫입니다!" )
+		START_LOG( cerr, L"Pet does not exist." )
 			<< BUILD_LOG( ePetID )
 			<< END_LOG;
 		return false;
@@ -805,7 +805,7 @@ bool CXSLPetManager::GetAuraSkillOption( IN PET_UNIT_ID ePetID, IN char cEvoluti
 	const PetTemplet* pPetTemplet = GetPetTemplet( ePetID );
 	if( pPetTemplet == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 펫ID입니다!" )
+		START_LOG( cerr, L"PetID does not exist." )
 			<< BUILD_LOG( ePetID )
 			<< END_LOG;
 		return false;
@@ -813,7 +813,7 @@ bool CXSLPetManager::GetAuraSkillOption( IN PET_UNIT_ID ePetID, IN char cEvoluti
 
 	if( cEvolutionStep < 0  ||  static_cast<u_int>(cEvolutionStep) >= pPetTemplet->m_PetStatus.size() )
 	{
-		START_LOG( cerr, L"해당 진화 단계에 대한 상태값이 존재하지 않습니다!" )
+		START_LOG( cerr, L"No state value exists for this evolution stage." )
 			<< BUILD_LOG( ePetID )
 			<< BUILD_LOGc( cEvolutionStep )
 			<< END_LOG;
@@ -859,7 +859,7 @@ short CXSLPetManager::CalcDecreaseSatietyValueOnDungeonRoom( IN const PET_UNIT_I
 	const PetTemplet* pPetTemplet = GetPetTemplet( ePetID );
 	if( pPetTemplet == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 펫ID입니다!" )
+		START_LOG( cerr, L"PetID does not exist." )
 			<< BUILD_LOG( ePetID )
 			<< END_LOG;
 		return 0;
@@ -867,7 +867,7 @@ short CXSLPetManager::CalcDecreaseSatietyValueOnDungeonRoom( IN const PET_UNIT_I
 
 	if( cEvolutionStep < 0  ||  static_cast<u_int>(cEvolutionStep) >= pPetTemplet->m_PetStatus.size() )
 	{
-		START_LOG( cerr, L"해당 진화 단계에 대한 상태값이 존재하지 않습니다!" )
+		START_LOG( cerr, L"No state value exists for this evolution stage." )
 			<< BUILD_LOG( ePetID )
 			<< BUILD_LOGc( cEvolutionStep )
 			<< END_LOG;
@@ -880,7 +880,7 @@ short CXSLPetManager::CalcDecreaseSatietyValueOnDungeonRoom( IN const PET_UNIT_I
 	mit = m_mapPetSatietyDecreaseFactor.find( iPetStatus );
 	if( mit == m_mapPetSatietyDecreaseFactor.end() )
 	{
-		START_LOG( cerr, L"등록되지 않은 진화등급입니다." )
+		START_LOG( cerr, L"Evolution grade is not registered." )
 			<< BUILD_LOG( ePetID )
 			<< BUILD_LOGc( cEvolutionStep )
 			<< BUILD_LOG( iPetStatus )
@@ -898,7 +898,7 @@ short CXSLPetManager::CalcDecreaseSatietyValueOnPvpRoom( IN const PET_UNIT_ID eP
 	const PetTemplet* pPetTemplet = GetPetTemplet( ePetID );
 	if( pPetTemplet == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 펫ID입니다!" )
+		START_LOG( cerr, L"PetID does not exist." )
 			<< BUILD_LOG( ePetID )
 			<< END_LOG;
 		return 0;
@@ -906,7 +906,7 @@ short CXSLPetManager::CalcDecreaseSatietyValueOnPvpRoom( IN const PET_UNIT_ID eP
 
 	if( cEvolutionStep < 0  ||  static_cast<u_int>(cEvolutionStep) >= pPetTemplet->m_PetStatus.size() )
 	{
-		START_LOG( cerr, L"해당 진화 단계에 대한 상태값이 존재하지 않습니다!" )
+		START_LOG( cerr, L"No state value exists for this evolution stage." )
 			<< BUILD_LOG( ePetID )
 			<< BUILD_LOGc( cEvolutionStep )
 			<< END_LOG;
@@ -919,7 +919,7 @@ short CXSLPetManager::CalcDecreaseSatietyValueOnPvpRoom( IN const PET_UNIT_ID eP
 	mit = m_mapPetSatietyDecreaseFactor.find( iPetStatus );
 	if( mit == m_mapPetSatietyDecreaseFactor.end() )
 	{
-		START_LOG( cerr, L"등록되지 않은 진화등급입니다." )
+		START_LOG( cerr, L"Evolution grade is not registered." )
 			<< BUILD_LOG( ePetID )
 			<< BUILD_LOGc( cEvolutionStep )
 			<< BUILD_LOG( iPetStatus )
@@ -996,7 +996,7 @@ int CXSLPetManager::CalcChangeIntimacyValue( IN CXSLRoom::ROOM_TYPE eRoomType, I
 	}
 	else
 	{
-		START_LOG( cerr, L"펫 포만도 수치값이 이상합니다!" )
+		START_LOG( cerr, L"Invalid pet fullness value." )
 			<< BUILD_LOG( sSatiety )
 			<< END_LOG;
 		return 0;
@@ -1027,7 +1027,7 @@ int CXSLPetManager::CalcChangeIntimacyValue( IN CXSLRoom::ROOM_TYPE eRoomType, I
 
 	default:
 		{
-			START_LOG( cerr, L"대전방도 던전방도 아닌데 친밀도 계산으로 하려고 하네?" )
+			START_LOG( cerr, L"Attempted to calculate affinity outside a PvP or dungeon room." )
 				<< BUILD_LOG( eRoomType )
 				<< END_LOG;
 			return 0;
@@ -1043,7 +1043,7 @@ void CXSLPetManager::IncreaseSpecialFeedIntimacyRate_LUA( IN float fIncreaseRate
 {
 	if( fIncreaseRate > 1.0f || fIncreaseRate < 0.0f ) // the original used && (never true)
 	{
-		START_LOG( cerr, L"특별한 펫 먹이 친밀도 증가 수치가 이상합니다" )
+		START_LOG( cerr, L"Invalid special pet food affinity increase value." )
 			<< BUILD_LOG( fIncreaseRate )
 			<< END_LOG;
 
@@ -1057,7 +1057,7 @@ void CXSLPetManager::DecreaseSpecialFeedIntimacyRate_LUA( IN float fDecreaseRate
 {
 	if( fDecreaseRate > 1.0f || fDecreaseRate < 0.0f ) // the original used && (never true)
 	{
-		START_LOG( cerr, L"특별한 펫 먹이 친밀도 감소 수치가 이상합니다" )
+		START_LOG( cerr, L"Invalid special pet food affinity decrease value." )
 			<< BUILD_LOG( fDecreaseRate )
 			<< END_LOG;
 
@@ -1074,7 +1074,7 @@ bool CXSLPetManager::IsEvolutionExceptionPet( IN const int iPetID ) const
 	std::map< PET_UNIT_ID, PetTemplet >::const_iterator it = m_mapPetTemplet.find( static_cast<PET_UNIT_ID>( iPetID ) );
 	if( it == m_mapPetTemplet.end() )
 	{
-		START_LOG( cerr, L"존재하지 않는 PetID입니다!" )
+		START_LOG( cerr, L"PetID does not exist." )
 			<< BUILD_LOG( iPetID )
 			<< END_LOG;
 		return false;

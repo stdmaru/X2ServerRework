@@ -81,7 +81,7 @@ bool KTrade::IsEmpty()
 {
 	if( m_kTradeUserManager.GetNumMember() < 0 )
 	{
-		START_LOG( cerr, L"개인 거래 인원 수가 이상함." )
+		START_LOG( cerr, L"Invalid number of personal-trade users." )
 			<< BUILD_LOG( m_kTradeUserManager.GetNumMember() )
 			<< END_LOG;
 	}
@@ -93,7 +93,7 @@ bool KTrade::IsFull()
 {
 	if( m_kTradeUserManager.GetNumMember() > m_kTradeUserManager.GetMaxMember() )
 	{
-		START_LOG( cerr, L"개인 거래 인원 수가 이상함." )
+		START_LOG( cerr, L"Invalid number of personal-trade users." )
 			<< BUILD_LOG( m_kTradeUserManager.GetNumMember() )
 			<< BUILD_LOG( m_kTradeUserManager.GetMaxMember() )
 			<< END_LOG;
@@ -133,7 +133,7 @@ void KTrade::ProcessEvent( const KEventPtr& spEvent_ )
 	//}}
 
 	default:
-		START_LOG( cerr, L"핸들러가 정의되지 않았음." )
+		START_LOG( cerr, L"Handler is not defined." )
 			<< BUILD_LOG( KEvent::GetIDStr( spEvent_->m_usEventID ) )
 			<< END_LOG;
 		break;
@@ -190,7 +190,7 @@ IMPL_ON_FUNC( ERM_OPEN_TRADE_REQ )
 	// 같은 서버군의 센터에 거래방을 생성한건지 확인!
 	if( KBaseServer::GetKObj()->GetServerGroupID() != KncUid::ExtractServerGroupID( FIRST_SENDER_UID ) )
 	{
-        START_LOG( cerr2, L"다른 서버군의 유저가 센터 거래방을 생성하였습니다! 이러면 거래로그 이상하게 남아요!" )
+        START_LOG( cerr2, L"A user from another server group created a Center trade room; trade logs may be incorrect!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( LAST_SENDER_UID )
 			<< BUILD_LOG( KBaseServer::GetKObj()->GetServerGroupID() )
@@ -214,7 +214,7 @@ IMPL_ON_FUNC( ERM_OPEN_TRADE_REQ )
 	//}}
 	if( !m_kTradeUserManager.EnterTrade( kInfo ) )
 	{
-		START_LOG( cerr, L"개인 거래 유저 추가 실패." )
+		START_LOG( cerr, L"Failed to add personal-trade user." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( LAST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_wstrSenderNickName )
@@ -250,7 +250,7 @@ _IMPL_ON_FUNC( ERM_BREAK_TRADE_REQ, KEGS_BREAK_TRADE_REQ )
 
 	if( !m_kTradeUserManager.LeaveTrade( FIRST_SENDER_UID ) )
 	{
-		START_LOG( cerr, L"거래 나가기 실패." )
+		START_LOG( cerr, L"Failed to leave trade." )
 			<< END_LOG;
 
 		if( kPacket_.m_iReason != NetError::NOT_LEAVE_ROOM_REASON_01 )
@@ -275,9 +275,9 @@ IMPL_ON_FUNC( ERM_JOIN_TRADE_REQ )
 	KERM_JOIN_TRADE_ACK kPacket;
 	if( GetStateID() != KTradeFSM::S_WAIT )
 	{
-		START_LOG( cerr, L"상태 오류. Name : " << m_strName )
-			<< L"    현재 상태 : " << GetStateIDString() << dbg::endl
-			<< L"    허용 상태 : " << L"KTradeFSM::S_WAIT" << END_LOG;
+		START_LOG( cerr, L"State error. Name: " << m_strName )
+			<< L"    Current state: " << GetStateIDString() << dbg::endl
+			<< L"    Allowed states: " << L"KTradeFSM::S_WAIT" << END_LOG;
 		kPacket.m_iOK = NetError::ERR_ROOM_09;
 		SendToGSCharacter( LAST_SENDER_UID, FIRST_SENDER_UID, ERM_JOIN_TRADE_ACK, kPacket );
 		return;
@@ -288,7 +288,7 @@ IMPL_ON_FUNC( ERM_JOIN_TRADE_REQ )
 	//{{ 2010. 05. 18  최육사	대전 던전 서버군 통합
 	if( m_kTradeUserManager.IsAllTradeUsersSameServerGroup( kPacket_.m_kMemberInfo.m_iUnitUID ) == false )
 	{
-		START_LOG( cerr, L"개인거래방은 해당 서버군의 유저만 들어올 수 있습니다." )
+		START_LOG( cerr, L"Only users from this server group can enter personal-trade rooms." )
 			<< BUILD_LOG( GetKCnServer()->GetServerGroupID() )
 			<< BUILD_LOG( KncUid::ExtractServerGroupID( kPacket_.m_kMemberInfo.m_iUnitUID ) )
 			<< BUILD_LOG( kPacket_.m_kMemberInfo.m_iUnitUID )
@@ -302,7 +302,7 @@ IMPL_ON_FUNC( ERM_JOIN_TRADE_REQ )
 
 	if( !m_kTradeUserManager.EnterTrade( kPacket_.m_kMemberInfo ) )
 	{
-		START_LOG( cerr, L"유저 추가 실패." )
+		START_LOG( cerr, L"Failed to add user." )
 			<< BUILD_LOG( kPacket_.m_kMemberInfo.m_iGSUID )
 			<< BUILD_LOG( kPacket_.m_kMemberInfo.m_iUnitUID )
 			<< END_LOG;
@@ -387,7 +387,7 @@ IMPL_ON_FUNC( ERM_UPDATE_TRADE_ITEM_REQ )
 	//{{ 2009. 4. 6  최육사		상태체크
 	if( !m_kTradeUserManager.CheckStateUpdateTradeItem( FIRST_SENDER_UID ) )
 	{
-		START_LOG( cerr, L"개인거래 아이템을 등록 또는 해제할 수 있는 상태가 아닙니다." )
+		START_LOG( cerr, L"Current state does not allow registering or removing personal-trade items." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
 
@@ -404,7 +404,7 @@ IMPL_ON_FUNC( ERM_UPDATE_TRADE_ITEM_REQ )
 		// 아이템 추가
 		if( !m_kTradeUserManager.IsCanInsertTradeItem( FIRST_SENDER_UID ) )
 		{
-			START_LOG( cerr, L"거래 가능한 아이템 수량 제한." )
+			START_LOG( cerr, L"Tradeable item quantity limit reached." )
 				<< BUILD_LOG( FIRST_SENDER_UID )
 				<< END_LOG;
 
@@ -415,7 +415,7 @@ IMPL_ON_FUNC( ERM_UPDATE_TRADE_ITEM_REQ )
 
 		if( m_kTradeUserManager.GetTradeItem( FIRST_SENDER_UID, kPacket_.m_kInventoryItemInfo.m_iItemUID, kInventoryItemInfo ) )
 		{
-			START_LOG( cerr, L"이미 올린 아이템이네." )
+			START_LOG( cerr, L"This item has already been offered." )
 				<< BUILD_LOG( FIRST_SENDER_UID )
 				<< END_LOG;
 
@@ -426,7 +426,7 @@ IMPL_ON_FUNC( ERM_UPDATE_TRADE_ITEM_REQ )
 
 		if( !m_kTradeUserManager.UpdateTradeItem( FIRST_SENDER_UID, kPacket_.m_kInventoryItemInfo ) )
 		{
-			START_LOG( cerr, L"거래 아이템 업데이트 실패." )
+			START_LOG( cerr, L"Failed to update trade item." )
 				<< BUILD_LOG( FIRST_SENDER_UID )
 				<< END_LOG;
 
@@ -440,7 +440,7 @@ IMPL_ON_FUNC( ERM_UPDATE_TRADE_ITEM_REQ )
 		// 아이템 삭제
 		if( !m_kTradeUserManager.GetTradeItem( FIRST_SENDER_UID, kPacket_.m_kInventoryItemInfo.m_iItemUID, kInventoryItemInfo ) )
 		{
-			START_LOG( cerr, L"아이템을 삭제하려는데 존재하지 않는 아이템?" )
+			START_LOG( cerr, L"Attempted to remove a nonexistent item." )
 				<< BUILD_LOG( FIRST_SENDER_UID )
 				<< END_LOG;
 
@@ -468,7 +468,7 @@ IMPL_ON_FUNC( ERM_UPDATE_TRADE_ITEM_REQ )
 
 		if( !m_kTradeUserManager.RemoveTradeItem( FIRST_SENDER_UID, kPacket_.m_kInventoryItemInfo.m_iItemUID ) )
 		{
-			START_LOG( cerr, L"거래 아이템 삭제 실패." )
+			START_LOG( cerr, L"Failed to remove trade item." )
 				<< BUILD_LOG( FIRST_SENDER_UID )
 				<< END_LOG;
 
@@ -501,7 +501,7 @@ IMPL_ON_FUNC( ERM_UPDATE_TRADE_ED_REQ )
     int iED;
     if( !m_kTradeUserManager.GetTradeED( FIRST_SENDER_UID, iED ) )
     {
-        START_LOG( cerr, L"거래 ED 검색 실패." )
+        START_LOG( cerr, L"Failed to retrieve trade ED." )
             << BUILD_LOG( FIRST_SENDER_UID )
             << END_LOG;
 
@@ -520,7 +520,7 @@ IMPL_ON_FUNC( ERM_UPDATE_TRADE_ED_REQ )
 
 	if( !m_kTradeUserManager.UpdateTradeED( FIRST_SENDER_UID, kPacket_ ) )
 	{
-		START_LOG( cerr, L"거래 ED 업데이트 실패." )
+		START_LOG( cerr, L"Failed to update trade ED." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
 
@@ -548,7 +548,7 @@ IMPL_ON_FUNC_NOPARAM( ERM_OFFER_TRADE_REQ )
 	int iED = 0;
 	if( !m_kTradeUserManager.GetTradeED( FIRST_SENDER_UID, iED ) )
 	{
-		START_LOG( cerr, L"유저를 찾을 수 없습니다." )
+		START_LOG( cerr, L"User not found." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
 
@@ -560,7 +560,7 @@ IMPL_ON_FUNC_NOPARAM( ERM_OFFER_TRADE_REQ )
 	KTradeUserPtr spOtherUser = m_kTradeUserManager.GetOtherUser( FIRST_SENDER_UID );
 	if( spOtherUser == NULL )
 	{
-		START_LOG( cerr, L"거래 상대를 찾을 수 없습니다" )
+		START_LOG( cerr, L"Trade partner not found." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
 
@@ -571,7 +571,7 @@ IMPL_ON_FUNC_NOPARAM( ERM_OFFER_TRADE_REQ )
 
 	if( !spOtherUser->CheckMaxED( iED ) )
 	{
-		START_LOG( clog, L"거래하려는 상대방의 ED가 최대 보유 가능량을 초과했습니다." )
+		START_LOG( clog, L"Trade partner’s ED exceeds the maximum amount allowed." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( iED );
 
@@ -583,7 +583,7 @@ IMPL_ON_FUNC_NOPARAM( ERM_OFFER_TRADE_REQ )
 
 	if( !m_kTradeUserManager.Offer( FIRST_SENDER_UID ) )
 	{
-		START_LOG( cerr, L"거래 아이템 등록 실패." )
+		START_LOG( cerr, L"Failed to register trade item." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
 
@@ -617,7 +617,7 @@ IMPL_ON_FUNC_NOPARAM( ERM_APPROVE_TRADE_REQ )
 	// 해당 유저정보에 거래 승인 등록!
 	if( !m_kTradeUserManager.Approve( FIRST_SENDER_UID ) )
 	{
-		START_LOG( cerr, L"거래 승인 실패." )
+		START_LOG( cerr, L"Failed to approve trade." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
 
@@ -639,7 +639,7 @@ IMPL_ON_FUNC_NOPARAM( ERM_APPROVE_TRADE_REQ )
 		m_kTradeUserManager.GetUserInfoList( vecUserList );
 		if( ( int )vecUserList.size() != 2 )
 		{
-			START_LOG( cerr, L"거래 유저 수가 이상함." )
+			START_LOG( cerr, L"Invalid number of trade users." )
 				<< BUILD_LOG( ( int )vecUserList.size() )
 				<< END_LOG;
 
@@ -692,16 +692,16 @@ IMPL_ON_FUNC( ERM_CONFIRM_TRADE_ACK )
 {
 	if( GetStateID() != KTradeFSM::S_CONFIRM )
 	{
-		START_LOG( cerr, L"상태 오류. Name : " << m_strName )
-			<< L"    현재 상태 : " << GetStateIDString() << dbg::endl
-			<< L"    허용 상태 : " << L"KTradeFSM::S_CONFIRM" << END_LOG;
+		START_LOG( cerr, L"State error. Name: " << m_strName )
+			<< L"    Current state: " << GetStateIDString() << dbg::endl
+			<< L"    Allowed states: " << L"KTradeFSM::S_CONFIRM" << END_LOG;
 
 		return;
 	}
 
 	if( kPacket_.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"인벤토리 확인 중 오류." )
+		START_LOG( cerr, L"Error while checking inventory." )
 			<< BUILD_LOG( kPacket_.m_iOK )
 			<< BUILD_LOG( NetError::GetErrStr( kPacket_.m_iOK ) )
 			<< END_LOG;
@@ -713,7 +713,7 @@ IMPL_ON_FUNC( ERM_CONFIRM_TRADE_ACK )
 	//{{ 2009. 2. 10  최육사	개인거래 버그 예방
 	if( !m_kTradeUserManager.Confirm( FIRST_SENDER_UID, kPacket_ ) )
 	{
-		START_LOG( cerr, L"거래 전 최종 확인 실패." )
+		START_LOG( cerr, L"Final pre-trade check failed." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
 
@@ -727,7 +727,7 @@ IMPL_ON_FUNC( ERM_CONFIRM_TRADE_ACK )
 		m_kTradeUserManager.GetUserInfoList( vecUserList );
 		if( ( int )vecUserList.size() != 2 )
 		{
-			START_LOG( cerr, L"거래 유저 수가 이상함." )
+			START_LOG( cerr, L"Invalid number of trade users." )
 				<< BUILD_LOG( ( int )vecUserList.size() )
 				<< END_LOG;
 
@@ -801,16 +801,16 @@ IMPL_ON_FUNC( ERM_DB_UPDATE_TRADE_RESULT_NOT )
 {
 	if( GetStateID() != KTradeFSM::S_DB_UPDATE )
 	{
-		START_LOG( cerr, L"상태 오류. Name : " << m_strName )
-			<< L"    현재 상태 : " << GetStateIDString() << dbg::endl
-			<< L"    허용 상태 : " << L"KTradeFSM::S_CONFIRM" << END_LOG;
+		START_LOG( cerr, L"State error. Name: " << m_strName )
+			<< L"    Current state: " << GetStateIDString() << dbg::endl
+			<< L"    Allowed states: " << L"KTradeFSM::S_CONFIRM" << END_LOG;
 		return;
 	}
 
 	// DB업데이트 정보 등록!
 	if( m_kTradeUserManager.SetDBUpdateInfo( FIRST_SENDER_UID, kPacket_ ) == false )
 	{
-		START_LOG( cerr, L"거래 DB업데이트 정보 등록 실패." )
+		START_LOG( cerr, L"Failed to register trade database update information." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
 
@@ -824,7 +824,7 @@ IMPL_ON_FUNC( ERM_DB_UPDATE_TRADE_RESULT_NOT )
 		m_kTradeUserManager.GetUserInfoList( vecUserList );
 		if( ( int )vecUserList.size() != 2 )
 		{
-			START_LOG( cerr, L"거래 유저 수가 이상함." )
+			START_LOG( cerr, L"Invalid number of trade users." )
 				<< BUILD_LOG( ( int )vecUserList.size() )
 				<< END_LOG;
 
@@ -838,7 +838,7 @@ IMPL_ON_FUNC( ERM_DB_UPDATE_TRADE_RESULT_NOT )
 		{
 			if( m_kTradeUserManager.GetDBUpdateInfo( kUserInfo.m_iUnitUID, kPacketToDB.m_vecDBUpdate ) == false )
 			{
-				START_LOG( cerr, L"거래 DB처리 정보가 없습니다! 절대 일어나서는 안되는 에러!" )
+				START_LOG( cerr, L"Trade database processing information is missing; this should never happen!" )
 					<< BUILD_LOG( kUserInfo.m_iUnitUID )
 					<< END_LOG;
 
@@ -849,7 +849,7 @@ IMPL_ON_FUNC( ERM_DB_UPDATE_TRADE_RESULT_NOT )
 
 		if( static_cast<int>(kPacketToDB.m_vecDBUpdate.size()) != 2 )
 		{
-			START_LOG( cerr, L"개인 거래인데 두명의 정보가 아니다?!" )
+			START_LOG( cerr, L"Personal trade does not have information for exactly two users!" )
 				<< BUILD_LOG( static_cast<int>(kPacketToDB.m_vecDBUpdate.size()) )
 				<< END_LOG;
 		}
@@ -862,15 +862,15 @@ IMPL_ON_FUNC( DBE_DB_UPDATE_TRADE_RESULT_ACK )
 {
 	if( GetStateID() != KTradeFSM::S_DB_UPDATE )
 	{
-		START_LOG( cerr, L"상태 오류. Name : " << m_strName )
-			<< L"    현재 상태 : " << GetStateIDString() << dbg::endl
-			<< L"    허용 상태 : " << L"KTradeFSM::S_DB_UPDATE" << END_LOG;
+		START_LOG( cerr, L"State error. Name: " << m_strName )
+			<< L"    Current state: " << GetStateIDString() << dbg::endl
+			<< L"    Allowed states: " << L"KTradeFSM::S_DB_UPDATE" << END_LOG;
 		return;
 	}
 
 	if( kPacket_.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"DB업데이트가 실패하였습니다! 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"Database update failed; this should never happen!" )
 			<< BUILD_LOG( NetError::GetErrStr( kPacket_.m_iOK ) )
 			<< BUILD_LOG( kPacket_.m_vecDBUpdate.size() )
 			<< END_LOG;
@@ -886,7 +886,7 @@ IMPL_ON_FUNC( DBE_DB_UPDATE_TRADE_RESULT_ACK )
 		KTradeUserPtr spTradeUser = m_kTradeUserManager.GetUser( UserInfo.m_iUnitUID );
 		if( spTradeUser == NULL )
 		{
-			START_LOG( cerr, L"거래중인 유저 정보가 없습니다. 절대 일어나서는 안되는 에러!" )
+			START_LOG( cerr, L"Information for the user in the trade is missing; this should never happen!" )
 				<< BUILD_LOG( UserInfo.m_iUnitUID )
 				<< END_LOG;
 			continue;
@@ -899,7 +899,7 @@ IMPL_ON_FUNC( DBE_DB_UPDATE_TRADE_RESULT_ACK )
 		KTradeUserInfo kOther;
 		if( !m_kTradeUserManager.GetOtherTradeUserInfo( TradeUserInfo.m_iUnitUID, kOther ) )
 		{
-			START_LOG( cerr, L"거래 상대를 알아내지 못함." )
+			START_LOG( cerr, L"Could not identify the trade partner." )
 				<< BUILD_LOG( UserInfo.m_iUnitUID )
 				<< END_LOG;
 
@@ -912,7 +912,7 @@ IMPL_ON_FUNC( DBE_DB_UPDATE_TRADE_RESULT_ACK )
 		{
 			if( vecItemOut[ui].m_iItemUID <= 0 )
 			{
-				START_LOG( cerr, L"거래된 아이템uid가 이상함." )
+				START_LOG( cerr, L"Invalid traded-item UID." )
 					<< BUILD_LOG( TradeUserInfo.m_iUnitUID )
 					<< BUILD_LOG( kOther.m_iUnitUID )
 					<< BUILD_LOG( vecItemOut[ui].m_iItemUID )
@@ -956,7 +956,7 @@ IMPL_ON_FUNC( DBE_DB_UPDATE_TRADE_RESULT_ACK )
 		KTradeUserPtr spTradeUser = m_kTradeUserManager.GetUser( kPacketNot.m_iUnitUID );
 		if( spTradeUser == NULL )
 		{
-			START_LOG( cerr, L"거래중인 유저 정보가 없습니다. 절대 일어나서는 안되는 에러!" )
+			START_LOG( cerr, L"Information for the user in the trade is missing; this should never happen!" )
 				<< BUILD_LOG( kPacketNot.m_iUnitUID )
 				<< END_LOG;
 			continue;

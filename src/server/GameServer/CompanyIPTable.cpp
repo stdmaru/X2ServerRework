@@ -37,7 +37,7 @@ bool KCompanyIPTable::AddCompanyIP_LUA( const char* szAddIP )
 
 	if( szAddIP == NULL )
 	{
-		START_LOG( cerr, L"[운영자 치트 사용 환경]IP 스트링 이상." )
+		START_LOG( cerr, L"[Operator cheat environment] Invalid IP string." )
 			<< END_LOG;
 
 		return false;
@@ -46,14 +46,14 @@ bool KCompanyIPTable::AddCompanyIP_LUA( const char* szAddIP )
 	std::string strIP = szAddIP;
 	if( strIP.size() < 1 || strIP.size() > 15 )
 	{
-		START_LOG( cerr, L"[운영자 치트 사용 환경]추가하려는 IP 이상." )
+		START_LOG( cerr, L"[Operator cheat environment] Invalid IP address to add." )
 			<< BUILD_LOG( strIP.size() )
 			<< END_LOG;
 
 		return false;
 	}
 
-	START_LOG( cout, L"=== [운영자 치트 사용 환경] ADD IP ===" )
+	START_LOG( cout, L"=== [Operator cheat environment] ADD IP ===" )
 		<< BUILD_LOG( strIP.c_str() )
 		<< BUILD_LOG( strIP.size() )
 		<< L"================"
@@ -74,7 +74,7 @@ bool KCompanyIPTable::CheckIP( const char* szIP )
 
 	if( szIP == NULL )
 	{
-		START_LOG( cerr, L"IP가 없다고?? 없어도 되는 건가?" )
+		START_LOG( cerr, L"No IP address is set. Is that allowed?" )
 			<< END_LOG;
 
 		return false;
@@ -83,7 +83,7 @@ bool KCompanyIPTable::CheckIP( const char* szIP )
 	std::string strIP = szIP;
 	if( strIP.size() < 1 || strIP.size() > 15 )
 	{
-		START_LOG( cerr, L"이상한 IP 입니다." )
+		START_LOG( cerr, L"Invalid IP address." )
 			<< BUILD_LOG( strIP.size() )
 			<< END_LOG;
 
@@ -99,7 +99,7 @@ bool KCompanyIPTable::CheckIP( const char* szIP )
 		}
 	}
 
-	START_LOG( cerr, L"운영자 치트 사용 권한이 없는 IP 입니다." )
+	START_LOG( cerr, L"This IP is not authorized to use operator cheats." )
 		<< BUILD_LOG( strIP )
 		<< END_LOG;
 

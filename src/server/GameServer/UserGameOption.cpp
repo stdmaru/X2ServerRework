@@ -30,7 +30,7 @@ bool KUserGameOption::SetDenyOptions( const KDenyOptions& kDenyOptions )
 {
 	if( kDenyOptions.m_cDenyFriendShip < 0  ||  kDenyOptions.m_cDenyFriendShip > KDenyOptions::DOS_OFF )
 	{
-		START_LOG( cerr, L"존재하지않는 커뮤니티옵션 상태값!" )
+		START_LOG( cerr, L"The community option state does not exist!" )
 			<< BUILD_LOGc( kDenyOptions.m_cDenyFriendShip )
 			<< END_LOG;
 
@@ -39,7 +39,7 @@ bool KUserGameOption::SetDenyOptions( const KDenyOptions& kDenyOptions )
 
 	if( kDenyOptions.m_cDenyInviteGuild < 0  ||  kDenyOptions.m_cDenyInviteGuild > KDenyOptions::DOS_ONLY_FRIEND )
 	{
-		START_LOG( cerr, L"존재하지않는 커뮤니티옵션 상태값!" )
+		START_LOG( cerr, L"The community option state does not exist!" )
 			<< BUILD_LOGc( kDenyOptions.m_cDenyInviteGuild )
 			<< END_LOG;
 
@@ -48,7 +48,7 @@ bool KUserGameOption::SetDenyOptions( const KDenyOptions& kDenyOptions )
 
 	if( kDenyOptions.m_cDenyParty < 0  ||  kDenyOptions.m_cDenyParty > KDenyOptions::DOS_ONLY_FRIEND )
 	{
-		START_LOG( cerr, L"존재하지않는 커뮤니티옵션 상태값!" )
+		START_LOG( cerr, L"The community option state does not exist!" )
 			<< BUILD_LOGc( kDenyOptions.m_cDenyParty )
 			<< END_LOG;
 
@@ -57,7 +57,7 @@ bool KUserGameOption::SetDenyOptions( const KDenyOptions& kDenyOptions )
 
 	if( kDenyOptions.m_cDenyPersonalTrade < 0  ||  kDenyOptions.m_cDenyPersonalTrade > KDenyOptions::DOS_ONLY_FRIEND )
 	{
-		START_LOG( cerr, L"존재하지않는 커뮤니티옵션 상태값!" )
+		START_LOG( cerr, L"The community option state does not exist!" )
 			<< BUILD_LOGc( kDenyOptions.m_cDenyPersonalTrade )
 			<< END_LOG;
 
@@ -67,7 +67,7 @@ bool KUserGameOption::SetDenyOptions( const KDenyOptions& kDenyOptions )
 	//{{ 2013. 04. 01	 인연 시스템 - 김민성
 	if( kDenyOptions.m_cDenyRequestCouple < 0  ||  kDenyOptions.m_cDenyRequestCouple > KDenyOptions::DOS_ONLY_FRIEND )
 	{
-		START_LOG( cerr, L"존재하지않는 커뮤니티옵션 상태값!" )
+		START_LOG( cerr, L"The community option state does not exist!" )
 			<< BUILD_LOGc( kDenyOptions.m_cDenyRequestCouple )
 			<< END_LOG;
 
@@ -76,7 +76,7 @@ bool KUserGameOption::SetDenyOptions( const KDenyOptions& kDenyOptions )
 	//}
     if ( kDenyOptions.m_cDenyInvitePracticePVP < 0 || kDenyOptions.m_cDenyInvitePracticePVP > KDenyOptions::DOS_ONLY_FRIEND )
     {
-        START_LOG( cerr, L"존재하지않는 커뮤니티옵션 상태값!" )
+        START_LOG( cerr, L"The community option state does not exist!" )
             << BUILD_LOGc( kDenyOptions.m_cDenyInvitePracticePVP )
             << END_LOG;
 
@@ -124,7 +124,7 @@ void KUserGameOption::DelChatBlackListUnit( UidType iUnitUID, std::wstring& wstr
 	}
 	else
 	{
-		START_LOG( cerr, L"블랙리스트에서 삭제할 유저를 찾지 못했습니다." )
+		START_LOG( cerr, L"Could not find the user to remove from the blacklist." )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 	}

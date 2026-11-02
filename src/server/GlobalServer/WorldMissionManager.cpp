@@ -162,7 +162,7 @@ void KWorldMissionManager::Tick()
 			}
 			else
 			{
-				START_LOG( clog, L"오늘 중 디펜스 던전이 없다?!" )
+				START_LOG( clog, L"No defense dungeon is scheduled for today." )
 					<< END_LOG;
 			}
 			return;
@@ -189,7 +189,7 @@ void KWorldMissionManager::InitMissionData( void )
 
 	BuffProcess();
 
-	START_LOG( cout, L"월드미션 초기화" )
+	START_LOG( cout, L"Resetting the world mission." )
 		<< BUILD_LOG( m_iStartedCrystalCount )
 		<< BUILD_LOG( m_iProtectedCrystalCount )
 		<< BUILD_LOG( m_iMissionTime )
@@ -222,7 +222,7 @@ void KWorldMissionManager::IncreaseProtectedCrystalCount( IN const int iProtecte
 
 	m_iProtectedCrystalCount = iTemp;
 
-	START_LOG( clog, L"보호된 수정 갯수 증감 요청" )
+	START_LOG( clog, L"Received a request to change the protected crystal count." )
 		<< BUILD_LOG( iProtectedCrystalCount )
 		<< BUILD_LOG( m_iProtectedCrystalCount )
 		<<END_LOG;
@@ -304,7 +304,7 @@ void KWorldMissionManager::StartMission( IN const bool IsReStart /*= false */)
 
 	BroadCastMission( KEGB_UPDATE_MISSION_INFO_NOT::FT_BEGIN );
 
-	START_LOG( cout2, L"월드미션 시작!" )
+	START_LOG( cout2, L"World mission started." )
 		<< END_LOG;
 }
 
@@ -321,7 +321,7 @@ void KWorldMissionManager::EndMission( void )
 	//	이벤트 종료
 	if( bSuccess )	//	성공
 	{
-		START_LOG( cout2, L"월드미션 성공!" )
+		START_LOG( cout2, L"World mission succeeded." )
 			<< BUILD_LOG( m_iProtectedCrystalCount )
 			<< END_LOG;
 
@@ -330,7 +330,7 @@ void KWorldMissionManager::EndMission( void )
 	}
 	else
 	{
-		START_LOG( cout2, L"월드미션 실패!" )
+		START_LOG( cout2, L"World mission failed." )
 			<< BUILD_LOG( m_iProtectedCrystalCount )
 			<< END_LOG;
 
@@ -344,14 +344,14 @@ void KWorldMissionManager::SetMissionSuccess_LUA(bool bSuccess)
 {
 	if( bSuccess )	//	성공
 	{
-		START_LOG( cout2, L"월드미션 성공 상태로 강제 셋팅!" )
+		START_LOG( cout2, L"Forcing world mission status to succeeded." )
 			<< END_LOG;
 
 		BroadCastMission( KEGB_UPDATE_MISSION_INFO_NOT::FT_SUCCESS );
 	}
 	else
 	{
-		START_LOG( cout2, L"월드미션 실패 상태로 강제 셋팅!" )
+		START_LOG( cout2, L"Forcing world mission status to failed." )
 			<< END_LOG;
 
 		BroadCastMission( KEGB_UPDATE_MISSION_INFO_NOT::FT_FAIL );
@@ -362,7 +362,7 @@ void KWorldMissionManager::WorldMissionDump_LUA()
 {
 	m_iTotalCCU = SiKGlobalServerCCUManager()->GetNowTotalCCU();
 
-	START_LOG( cout, L"WorldMission 상테 체크" )
+	START_LOG( cout, L"Checking WorldMission status." )
 		<< BUILD_LOG( m_iTotalCCU )
 		<< BUILD_LOG( m_iMissionTime )
 		<< BUILD_LOG( m_iNextDOT )
@@ -381,7 +381,7 @@ void KWorldMissionManager::SetDefenseOpenTime_LUA( int iDayOfWeek, int iStartHou
 		(iStartMin  < 0  || iStartMin  > 59 ) ||		// 분 0~59 사이가 아닐때
 		(iDurationTime < 1) )							// 유지시간이 1 보다 작을때
 	{
-		START_LOG( cerr, L"디펜스 던전 요일 셋팅 값이 이상합니다." )
+		START_LOG( cerr, L"Invalid defense dungeon day setting." )
 			<< BUILD_LOG( iDayOfWeek )
 			<< BUILD_LOG( iStartHour )
 			<< BUILD_LOG( iStartMin )
@@ -403,7 +403,7 @@ void KWorldMissionManager::SetDefenseOpenTime_LUA( int iDayOfWeek, int iStartHou
 		{
 			if( vit->m_iStartHour == iStartHour && vit->m_iStartMinute == iStartMin )	// 중복 되는 정보는 무시
 			{
-				START_LOG( cerr, L"디펜스 던전 오픈 시간이 중복 되었습니다." )
+				START_LOG( cerr, L"Duplicate defense dungeon opening time." )
 					<< BUILD_LOG( iDayOfWeek )
 					<< BUILD_LOG( iStartHour )
 					<< BUILD_LOG( iStartMin )
@@ -421,7 +421,7 @@ void KWorldMissionManager::SetDefenseOpenTime_LUA( int iDayOfWeek, int iStartHou
 		vecTemp.push_back( _info );
 		m_mapDefenseOpenTime.insert( std::make_pair( iDayOfWeek, vecTemp) );
 	}
-	START_LOG( clog, L"디펜스 던전 오픈 시간 추가가 완료 되었습니다." )
+	START_LOG( clog, L"Defense dungeon opening time added." )
 		<< BUILD_LOG( iDayOfWeek )
 		<< BUILD_LOG( iStartHour )
 		<< BUILD_LOG( iStartMin )
@@ -436,7 +436,7 @@ bool KWorldMissionManager::SetTodayMissionTime( void )
 	std::map< int, std::vector< KDefenseOpenTime > >::iterator mit = m_mapDefenseOpenTime.find( m_tToDayMissionTime.GetDayOfWeek() );
 	if( mit == m_mapDefenseOpenTime.end() )
 	{
-		START_LOG( cerr, L"디펜스 던전 시간 셋팅 값이 존재 하지 않습니다." );
+		START_LOG( cerr, L"Defense dungeon time setting does not exist." );
 		return false;
 	}
 
@@ -453,7 +453,7 @@ bool KWorldMissionManager::SetTodayMissionTime( void )
 
 			m_tToDayMissionTime = CTime( m_tToDayMissionTime.GetYear(), m_tToDayMissionTime.GetMonth(), m_tToDayMissionTime.GetDay(), vit->m_iStartHour, vit->m_iStartMinute, 0 );
 
-			START_LOG( cout, L"디펜스 던전 시간 셋팅 완료!!" )
+			START_LOG( cout, L"Defense dungeon times configured." )
 				<< BUILD_LOG(vit->m_iStartHour)
 				<< BUILD_LOG(vit->m_iStartMinute)
 				<< BUILD_LOG(m_iNextDOT)
@@ -470,7 +470,7 @@ bool KWorldMissionManager::SetTodayMissionTime( void )
 
 				m_tToDayMissionTime = CTime( m_tToDayMissionTime.GetYear(), m_tToDayMissionTime.GetMonth(), m_tToDayMissionTime.GetDay(), vit->m_iStartHour, vit->m_iStartMinute, 0 );
 
-				START_LOG( cout, L"디펜스 던전 시간 셋팅 완료!!" )
+				START_LOG( cout, L"Defense dungeon times configured." )
 					<< BUILD_LOG(vit->m_iStartHour)
 					<< BUILD_LOG(vit->m_iStartMinute)
 					<< BUILD_LOG(m_iNextDOT)
@@ -503,7 +503,7 @@ bool KWorldMissionManager::SetTodayMissionTime( void )
 			KReq.m_wsrtStartTime = m_tToDayMissionTime.Format(_T("%Y-%m-%d %H:%M:%S"));
 			SendToLogDB( DBE_GET_DEFENCE_CRYSTAL_REQ, KReq );
 
-			START_LOG( cout, L"디펜스 던전 시간 셋팅 완료!!" )
+			START_LOG( cout, L"Defense dungeon times configured." )
 				<< BUILD_LOG(vit->m_iStartHour)
 				<< BUILD_LOG(vit->m_iStartMinute)
 				<< BUILD_LOG(m_iNextDOT)
@@ -516,7 +516,7 @@ bool KWorldMissionManager::SetTodayMissionTime( void )
 	m_bActive = false;
 	m_iNextDOT = 0;
 	SetMissionTime( 0 );
-	START_LOG( clog, L"오늘 디펜스 던전 시간 지났습니다." );
+	START_LOG( clog, L"Today's defense dungeon has already ended." );
 
 	return false;
 }
@@ -561,7 +561,7 @@ int KWorldMissionManager::GetCorrectMissionTime( void ) const
 
 	if( iGap < 0 )
 	{
-		START_LOG( clog, L"던전 미션이 시작하지 않았습니다." )
+		START_LOG( clog, L"The dungeon mission has not started." )
 			<< BUILD_LOG(m_iMissionTime)
 			<< BUILD_LOG(iGap)
 			<< END_LOG;
@@ -589,7 +589,7 @@ void KWorldMissionManager::SetInitMissionInfo( IN const KDBE_GET_DEFENCE_CRYSTAL
 {
 	if( KncUtil::ConvertStringToCTime( KPacket.m_wsrtStartTime, m_tToDayMissionTime ) == false )
 	{
-		START_LOG( cerr, L"월드 미션 시작 시간이 이상합니다. 변환 실패!" )
+		START_LOG( cerr, L"Invalid world mission start time; conversion failed." )
 			<< BUILD_LOG( KPacket.m_wsrtStartTime )
 			<< END_LOG;
 		return;
@@ -614,7 +614,7 @@ void KWorldMissionManager::SetMissionData( void )
 
 	BuffProcess();
 
-	START_LOG( cout, L"월드미션 초기화" )
+	START_LOG( cout, L"Resetting the world mission." )
 		<< BUILD_LOG( m_iStartedCrystalCount )
 		<< BUILD_LOG( m_iProtectedCrystalCount )
 		<< BUILD_LOG( m_iReduceCount )
@@ -655,7 +655,7 @@ int KWorldMissionManager::CheckWorldBuff( void ) const
 	std::map< int, std::vector< KDefenseOpenTime > >::const_iterator mit = m_mapDefenseOpenTime.find( tCurrent.GetDayOfWeek() );
 	if( mit == m_mapDefenseOpenTime.end() )
 	{
-		START_LOG( cerr, L"디펜스 던전 시간 셋팅 값이 존재 하지 않습니다." );
+		START_LOG( cerr, L"Defense dungeon time setting does not exist." );
 		return CXSLBuffManager::BTI_NONE;
 	}
 	return CXSLBuffManager::BTI_NONE;

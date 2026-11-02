@@ -48,7 +48,7 @@ void KBattleFieldGameManager::CheckReserveEliteMonsterDropEvent( IN const int iB
 
 	if( SiCXSLBattleFieldManager()->GetEliteMonsterDropValue() == 0 )
 	{
-		START_LOG( cerr, L"엘리트 몬스터 출현 상수값이 0이다! 절대 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"Elite monster spawn constant is zero; this should never happen!" )
 			<< BUILD_LOG( SiCXSLBattleFieldManager()->GetEliteMonsterDropValue() )
 			<< END_LOG;
 		return;

@@ -45,7 +45,7 @@ void KMaxProcessTime::CheckMaxProcessTime( const std::wstring& wstrMsg, float fE
     {
         if( m_listElapsedTimeRank.empty() )
         {
-            START_LOG( cerr, L"리스트가 비었음. 발생할 수 없는 상황." )
+            START_LOG( cerr, L"List is empty; this should never happen." )
                 << BUILD_LOG( m_iNumRecord )
                 << END_LOG;
 
@@ -62,15 +62,15 @@ void KMaxProcessTime::Dump()
 {
     KLocker lock( m_cs );
 
-    dbg::cout << L"--> 최대 처리 시간. 기록 수 : " << m_iNumRecord << L"개" << dbg::endl << dbg::endl;
+    dbg::cout << L"--> Maximum processing times. Record count: " << m_iNumRecord << L" records" << dbg::endl << dbg::endl;
 
     std::list< KElapsedTimeRecord >::iterator lit;
     for( lit = m_listElapsedTimeRank.begin(); lit != m_listElapsedTimeRank.end(); lit++ )
     {
         std::wstring wstrTime = ( lit->m_cTime.Format( _T( "%Y-%m-%d %H:%M:%S" ) ) ).GetString();
-        dbg::cout << L"    이름 : " << lit->m_wstrMsg << dbg::endl
-                  << L"    소요 시간 : " << lit->m_fElapsedTime << dbg::endl
-                  << L"    발생 시각 : " << wstrTime.c_str() << dbg::endl << dbg::endl;
+        dbg::cout << L"    Name: " << lit->m_wstrMsg << dbg::endl
+                  << L"    Elapsed time: " << lit->m_fElapsedTime << dbg::endl
+                  << L"    Occurred at: " << wstrTime.c_str() << dbg::endl << dbg::endl;
     }
 
     dbg::cout << dbg::endl;

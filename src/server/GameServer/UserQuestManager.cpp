@@ -52,7 +52,7 @@ void KUserQuestManager::SetUnitQuest( IN OUT std::vector< KQuestInstance >& vecQ
 			continue;
 #endif // SERV_LOG_UNDEFINED_QUEST_TEMPLET
 
-			START_LOG( cerr, L"QUEST TEMPLET가 없음." )
+			START_LOG( cerr, L"The quest template is missing." )
 				<< BUILD_LOG( kQuestInstance.m_iID )
 				<< BUILD_LOG( kQuestInstance.m_OwnorUnitUID )
 				<< END_LOG;
@@ -76,7 +76,7 @@ void KUserQuestManager::SetUnitQuest( IN OUT std::vector< KQuestInstance >& vecQ
 			const CXSLQuestManager::SubQuestTemplet* pSubTemplet = SiCXSLQuestManager()->GetSubQuestTemplet( pQuestTemplet->m_vecSubQuest[uiIndexSub] );
 			if( pSubTemplet == NULL )
 			{
-				START_LOG( cerr, L"SUB QUEST TEMPLET가 없음." )
+				START_LOG( cerr, L"The sub-quest template is missing." )
 					<< BUILD_LOG( kQuest.m_iID )
 					<< BUILD_LOG( pQuestTemplet->m_vecSubQuest[uiIndexSub] )
 					<< BUILD_LOG( kQuest.m_OwnorUnitUID )
@@ -246,7 +246,7 @@ void KUserQuestManager::SetUnitQuest( IN OUT std::vector< KQuestInstance >& vecQ
 
 			default:
 				{
-					START_LOG( cerr, L"없는 서브퀘스트 타입." )
+					START_LOG( cerr, L"The sub-quest type does not exist." )
 						<< BUILD_LOG( pSubTemplet->m_eClearType )
 						<< BUILD_LOG( kQuest.m_iID )
 						<< BUILD_LOG( kQuest.m_OwnorUnitUID )
@@ -315,7 +315,7 @@ bool KUserQuestManager::AddQuest( IN KQuestInstance& kInfo )
 
 	if( IsQuest( kInfo.m_iID ) == true )
 	{
-		START_LOG( cerr, L"동일한 QUEST 수행중.. 왜 또왔노..?" )
+		START_LOG( cerr, L"The same quest is already in progress; why was it requested again?" )
 			<< BUILD_LOG( kInfo.m_iID )
 			<< BUILD_LOG( kInfo.m_OwnorUnitUID )
 			<< END_LOG;
@@ -337,7 +337,7 @@ bool KUserQuestManager::RemoveQuest( IN int iQuestID )
 	mit = m_mapQuesting.find( iQuestID );
 	if( mit == m_mapQuesting.end() )
 	{
-		START_LOG( cerr, L"없는걸 지우네 .헐~!" )
+		START_LOG( cerr, L"Attempted to delete something that does not exist!" )
 			<< BUILD_LOG( iQuestID )
 			<< END_LOG;
 
@@ -360,7 +360,7 @@ bool KUserQuestManager::Handler_EGS_NEW_QUEST_REQ( IN const KEGS_NEW_QUEST_REQ& 
 	const CXSLQuestManager::QuestTemplet* pQuestTemplet = SiCXSLQuestManager()->GetQuestTemplet( kReq.m_iQuestID );
 	if( pQuestTemplet == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 퀘스트.!" )
+		START_LOG( cerr, L"Quest does not exist!" )
 			<< BUILD_LOG( kReq.m_iQuestID )
 			<< END_LOG;
 
@@ -405,7 +405,7 @@ bool KUserQuestManager::Handler_EGS_NEW_QUEST_REQ( IN const KEGS_NEW_QUEST_REQ& 
 	//이미 하고 있는 퀘스트인지..
 	if( IsQuest( kReq.m_iQuestID ) == true )
 	{
-		START_LOG( cwarn, L"이미 가지고 있는 퀘스트를 등록하려함" )
+		START_LOG( cwarn, L"Attempted to register a quest that is already owned." )
 			<< BUILD_LOG( kReq.m_iQuestID );
 
 		SET_ERROR( ERR_QUEST_01 );
@@ -417,7 +417,7 @@ bool KUserQuestManager::Handler_EGS_NEW_QUEST_REQ( IN const KEGS_NEW_QUEST_REQ& 
 	{
 		if( IsChangeJobQuest() == true )
 		{
-			START_LOG( cerr, L"전직퀘를 하고있는데 새로운 전직퀘스트를 시작 할려고함.!" )
+			START_LOG( cerr, L"Attempted to start a new class-advancement quest while one is already in progress!" )
 				<< BUILD_LOG( spUser->GetCharUID() )
 				<< BUILD_LOG( spUser->GetCharName() )
 				<< BUILD_LOG( pQuestTemplet->m_iID )
@@ -434,7 +434,7 @@ bool KUserQuestManager::Handler_EGS_NEW_QUEST_REQ( IN const KEGS_NEW_QUEST_REQ& 
 	{
 		if( GetQuestCompleteCount( kReq.m_iQuestID ) > 0 )
 		{
-			START_LOG( cwarn, L"이미 클리어한 퀘스트.!" )
+			START_LOG( cwarn, L"Quest is already complete!" )
 				<< BUILD_LOG( kReq.m_iQuestID )
 				<< END_LOG;
 
@@ -451,7 +451,7 @@ bool KUserQuestManager::Handler_EGS_NEW_QUEST_REQ( IN const KEGS_NEW_QUEST_REQ& 
 		{
 			if( pCompleteQuestInfo->m_tCompleteDate == 0 )
 			{
-				START_LOG( cerr, L"퀘스트 완료는 했는데 완료날짜 정보가 이상합니다." )
+				START_LOG( cerr, L"The quest is complete, but its completion date is invalid." )
 					<< BUILD_LOG( kReq.m_iQuestID )
 					<< END_LOG;
 
@@ -480,7 +480,7 @@ bool KUserQuestManager::Handler_EGS_NEW_QUEST_REQ( IN const KEGS_NEW_QUEST_REQ& 
 			{
 				if( CheckCompletedQuestToday( iBeforeQuestID ) == false )
 				{
-					START_LOG( clog, L"오늘 이전 퀘스트들을 완료 안했음" )
+					START_LOG( clog, L"Previous quests were not completed today." )
 						<< BUILD_LOG( kReq.m_iQuestID )
 						<< BUILD_LOG( iBeforeQuestID )
 						;
@@ -499,7 +499,7 @@ bool KUserQuestManager::Handler_EGS_NEW_QUEST_REQ( IN const KEGS_NEW_QUEST_REQ& 
 	{
 		if( pQuestTemplet->m_Condition.m_eUnitType != spUser->GetUnitType() )
 		{
-			START_LOG( cerr, L"QUEST 수행가능 유닛이 아님.! 누구냐.. 넌." )
+			START_LOG( cerr, L"This unit cannot perform the quest! Who is this?" )
 				<< BUILD_LOG( pQuestTemplet->m_Condition.m_eUnitType )
 				<< BUILD_LOGc( spUser->GetUnitType() );
 
@@ -514,7 +514,7 @@ bool KUserQuestManager::Handler_EGS_NEW_QUEST_REQ( IN const KEGS_NEW_QUEST_REQ& 
 		//유닛과 맞지 않는 퀘스트로 체크하여 시작할수 없음.
 		if( pQuestTemplet->m_Condition.m_setUnitClass.find( static_cast<CXSLUnit::UNIT_CLASS>(spUser->GetUnitClass()) ) == pQuestTemplet->m_Condition.m_setUnitClass.end() )
 		{
-			START_LOG( cerr, L"QUEST 수행가능 유닛이 아님.! 누구냐.. 넌." )
+			START_LOG( cerr, L"This unit cannot perform the quest! Who is this?" )
 				<< BUILD_LOG( pQuestTemplet->m_Condition.m_setUnitClass.size() )
 				<< BUILD_LOGc( spUser->GetUnitClass() );
 
@@ -532,7 +532,7 @@ bool KUserQuestManager::Handler_EGS_NEW_QUEST_REQ( IN const KEGS_NEW_QUEST_REQ& 
 	{
 		if( GetQuestCompleteCount( iBeforeQuestID ) == 0 )
 		{
-			START_LOG( clog, L"어여가서 하나 더해오셔.. !!" )
+			START_LOG( clog, L"Go and complete one more!" )
 				<< BUILD_LOG( kReq.m_iQuestID )
 				<< BUILD_LOG( iBeforeQuestID )
 				;
@@ -550,7 +550,7 @@ bool KUserQuestManager::Handler_EGS_NEW_QUEST_REQ( IN const KEGS_NEW_QUEST_REQ& 
 			kReq.m_iTalkNPCID != CXSLUnitManager::NUI_BILLBOARD
 			)
 		{
-			START_LOG( cerr, L"잘못된 NPC에게 QUEST를 받았음..모지..?" )
+			START_LOG( cerr, L"Received a quest from an invalid NPC." )
 				<< BUILD_LOG( pQuestTemplet->m_eStartNPCID )
 				<< BUILD_LOG( kReq.m_iTalkNPCID )
 				<< END_LOG;
@@ -564,7 +564,7 @@ bool KUserQuestManager::Handler_EGS_NEW_QUEST_REQ( IN const KEGS_NEW_QUEST_REQ& 
 	// 퀘스트를 받기 낮은 레벨이라면
 	if( pQuestTemplet->m_Condition.m_iLevel	> spUser->GetLevel() )
 	{
-		START_LOG( clog, L"레벨 좀 더 올려봐봐..ㅡㅡ^" )
+		START_LOG( clog, L"Try increasing the level a bit more." )
 			<< BUILD_LOG( pQuestTemplet->m_Condition.m_iLevel )
 			<< BUILD_LOGc( spUser->GetLevel() )
 			<< END_LOG;
@@ -576,7 +576,7 @@ bool KUserQuestManager::Handler_EGS_NEW_QUEST_REQ( IN const KEGS_NEW_QUEST_REQ& 
 	//	m_iLimitLevel 가 -1 이면 존재하지 않는다는 의미
 	if( pQuestTemplet->m_Condition.m_iLimitLevel != -1 && pQuestTemplet->m_Condition.m_iLimitLevel < spUser->GetLevel() )
 	{
-		START_LOG( clog, L"레벨 넘 높잖아..ㅡㅡ^" )
+		START_LOG( clog, L"Level is too high." )
 			<< BUILD_LOG( pQuestTemplet->m_Condition.m_iLimitLevel )
 			<< BUILD_LOGc( spUser->GetLevel() )
 			<< END_LOG;
@@ -592,7 +592,7 @@ bool KUserQuestManager::Handler_EGS_NEW_QUEST_REQ( IN const KEGS_NEW_QUEST_REQ& 
 
 		if( iTodayQuest <= 0 || pQuestTemplet->m_iID != iTodayQuest )
 		{
-			START_LOG( clog, L"오늘 할 수 있는 일일 랜덤 퀘스트가 아니다!" )
+			START_LOG( clog, L"This is not a daily random quest available today!" )
 				<< BUILD_LOG( pQuestTemplet->m_iID )
 				<< BUILD_LOG( pQuestTemplet->m_iRandomGroupID )
 				<< BUILD_LOGc( iTodayQuest )
@@ -614,7 +614,7 @@ bool KUserQuestManager::Handler_EGS_NEW_QUEST_REQ( IN const KEGS_NEW_QUEST_REQ& 
 			{
 				if( spUser->IsExistInventoryItemWithBank( mitRI->first ) == true )
 				{
-					START_LOG( clog, L"퀘스트 수락시 받는 보상이 이미 인벤토리에 있으면 퀘스트 수락 못함." )
+					START_LOG( clog, L"Cannot accept the quest because its reward is already in the inventory." )
 						<< BUILD_LOG( pQuestTemplet->m_iID )
 						<< BUILD_LOG( mitRI->first )
 						<< END_LOG;
@@ -627,7 +627,7 @@ bool KUserQuestManager::Handler_EGS_NEW_QUEST_REQ( IN const KEGS_NEW_QUEST_REQ& 
 			// 퀘스트 수락 보상이 들어갈만한 빈슬롯이 있는지 검사
 			if( spUser->IsEnoughSpaceExist( pQuestTemplet->m_mapAcceptRewardItem ) == false )
 			{
-				START_LOG( clog, L"퀘스트 수락시 받는 보상이 들어갈 인벤토리 빈공간이 부족합니다." )
+				START_LOG( clog, L"Not enough inventory space for the quest acceptance reward." )
 					<< BUILD_LOG( pQuestTemplet->m_iID )
 					<< BUILD_LOG( pQuestTemplet->m_mapAcceptRewardItem.size() )
 					<< END_LOG;
@@ -644,7 +644,7 @@ bool KUserQuestManager::Handler_EGS_NEW_QUEST_REQ( IN const KEGS_NEW_QUEST_REQ& 
 				const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( mit->first );
 				if( pItemTemplet == NULL )
 				{
-					START_LOG( cerr, L"아이템 템플릿 포인터 이상.!" )
+					START_LOG( cerr, L"Invalid item template pointer!" )
 						<< BUILD_LOG( mit->first )
 						<< END_LOG;
 					continue;
@@ -756,7 +756,7 @@ void KUserQuestManager::Handler_EGS_GIVE_UP_QUEST_REQ( IN KEGS_GIVE_UP_QUEST_REQ
 		const CXSLQuestManager::QuestTemplet* pQuestTemplet = SiCXSLQuestManager()->GetQuestTemplet( kReq.m_iQuestID );
 		if( pQuestTemplet == NULL )
 		{
-			START_LOG( cerr, L"존재하지 않는 퀘스트ID입니다." )
+			START_LOG( cerr, L"Quest ID does not exist." )
 				<< BUILD_LOG( kReq.m_iQuestID )
 				<< END_LOG;
 			return; // 통계값을 처리하지 않고 리턴
@@ -810,7 +810,7 @@ void KUserQuestManager::Handler_ERM_NPC_UNIT_DIE_NOT( IN const int iDungeonID,
 		const CXSLQuestManager::QuestTemplet* pQuestTemplet = SiCXSLQuestManager()->GetQuestTemplet( kQuestInstance.m_iID );
 		if( pQuestTemplet == NULL )
 		{
-			START_LOG( cerr, L"QUEST TEMPLET 얻어오기 실패.!" )
+			START_LOG( cerr, L"Failed to retrieve the quest template!" )
 				<< BUILD_LOG( kQuestInstance.m_iID )
 				<< BUILD_LOG( spUser->GetCharUID() )
 				<< BUILD_LOG( spUser->GetCharName() )
@@ -833,7 +833,7 @@ void KUserQuestManager::Handler_ERM_NPC_UNIT_DIE_NOT( IN const int iDungeonID,
 			const CXSLQuestManager::SubQuestTemplet* pSubQuestTemplet = SiCXSLQuestManager()->GetSubQuestTemplet( pQuestTemplet->m_vecSubQuest[iIndexSub] );
 			if( pSubQuestTemplet == NULL )
 			{
-				START_LOG( cerr, L"SUB QUEST TEMPLET 얻어오기 실패.!" )
+				START_LOG( cerr, L"Failed to retrieve the sub-quest template!" )
 					<< BUILD_LOG( pQuestTemplet->m_vecSubQuest[iIndexSub] )
 					<< BUILD_LOG( spUser->GetCharUID() )
 					<< BUILD_LOG( spUser->GetCharName() )
@@ -909,7 +909,7 @@ void KUserQuestManager::Handler_ERM_NPC_UNIT_DIE_NOT( IN const int iDungeonID,
 
 				kNot.m_vecQuestInst.push_back( kQuestInstance );
 
-				START_LOG( clog, L"퀘스트 SQT_NPC_HUNT 수행" )
+				START_LOG( clog, L"Processing quest SQT_NPC_HUNT" )
 					<< BUILD_LOG( iMonsterID )
 					<< BUILD_LOG( spUser->GetCharName() )
 					<< BUILD_LOG( spUser->GetUserName() )
@@ -996,7 +996,7 @@ void KUserQuestManager::Handler_EGS_TALK_WITH_NPC_REQ( IN int iNPCID, IN KGSUser
 
 							kNot.m_vecQuestInst.push_back( *pkQuestInstance );
 
-							START_LOG( clog, L"퀘스트 SQT_NPC_TALK 수행" )
+							START_LOG( clog, L"Performing quest SQT_NPC_TALK." )
 								<< BUILD_LOG( iNPCID )
 								<< BUILD_LOG( spUser->GetCharName() )
 								<< BUILD_LOG( spUser->GetUserName() )
@@ -1011,7 +1011,7 @@ void KUserQuestManager::Handler_EGS_TALK_WITH_NPC_REQ( IN int iNPCID, IN KGSUser
 					}
 					else
 					{
-						START_LOG( cerr, L"SUB QUEST TEMPLET 얻어오기 실패.!" )
+						START_LOG( cerr, L"Failed to retrieve the sub-quest template!" )
 							<< BUILD_LOG( pQuestTemplet->m_vecSubQuest[iIndexSub] )
 							<< BUILD_LOG( spUser->GetCharUID() )
 							<< BUILD_LOG( spUser->GetCharName() )
@@ -1024,7 +1024,7 @@ void KUserQuestManager::Handler_EGS_TALK_WITH_NPC_REQ( IN int iNPCID, IN KGSUser
 		}
 		else
 		{
-			START_LOG( cerr, L"QUEST TEMPLET 얻어오기 실패.!" )
+			START_LOG( cerr, L"Failed to retrieve the quest template!" )
 				<< BUILD_LOG( pkQuestInstance->m_iID )
 				<< BUILD_LOG( spUser->GetCharUID() )
 				<< BUILD_LOG( spUser->GetCharName() )
@@ -1075,7 +1075,7 @@ void KUserQuestManager::Handler_OnDungeonClear( IN const KGSUserPtr spUser,
 		const CXSLQuestManager::QuestTemplet* pQuestTemplet = SiCXSLQuestManager()->GetQuestTemplet( kQuestInstance.m_iID );
 		if( pQuestTemplet == NULL )
 		{
-			START_LOG( cerr, L"QUEST TEMPLET 얻어오기 실패.!" )
+			START_LOG( cerr, L"Failed to retrieve the quest template!" )
 				<< BUILD_LOG( kQuestInstance.m_iID )
 				<< BUILD_LOG( spUser->GetCharUID() )
 				<< BUILD_LOG( spUser->GetCharName() )
@@ -1100,7 +1100,7 @@ void KUserQuestManager::Handler_OnDungeonClear( IN const KGSUserPtr spUser,
 			const CXSLQuestManager::SubQuestTemplet* pSubQuestTemplet = SiCXSLQuestManager()->GetSubQuestTemplet( iSubQuestID );
 			if( pSubQuestTemplet == NULL )
 			{
-				START_LOG( cerr, L"QUEST TEMPLET 얻어오기 실패.!" )
+				START_LOG( cerr, L"Failed to retrieve the quest template!" )
 					<< BUILD_LOG( iSubQuestID )
 					<< BUILD_LOG( spUser->GetCharUID() )
 					<< BUILD_LOG( spUser->GetCharName() )
@@ -1460,7 +1460,7 @@ void KUserQuestManager::Handler_OnDungeonClear( IN const KGSUserPtr spUser,
 					break;
 				}
 
-				START_LOG( clog, L"퀘스트 SQT_DUNGEON_TIME or SQT_DUNGEON_RANK 수행" )
+				START_LOG( clog, L"Processing quest SQT_DUNGEON_TIME or SQT_DUNGEON_RANK" )
 					<< BUILD_LOGc( cRank )
 					<< BUILD_LOG( iPlayTime )
 					<< BUILD_LOG( spUser->GetCharName() )
@@ -1496,7 +1496,7 @@ void KUserQuestManager::Handler_OnPVPPlay( IN int iGameType
 	const int iPvpChannelClass = SiKRoomListManager()->GetPVPChannelClassByRoomListID( spUser->GetRoomListID() );
 	if( iPvpChannelClass == KPVPChannelInfo::PCC_PLAY )
 	{
-		START_LOG( clog, L"연습채널은 퀘스트 클리어 조건에 만족되지 않음." );
+		START_LOG( clog, L"The practice channel does not satisfy the quest completion requirements." );
 		return;
 	}
 	//}}
@@ -1553,7 +1553,7 @@ void KUserQuestManager::Handler_OnPVPPlay_AccumulatedOfficialMatchCount( IN KGSU
 		const CXSLQuestManager::QuestTemplet* pQuestTemplet = SiCXSLQuestManager()->GetQuestTemplet( pkQuestInstance->m_iID );
 		if( pQuestTemplet == NULL )
 		{
-			START_LOG( cerr, L"QUEST TEMPLET 얻어오기 실패.!" )
+			START_LOG( cerr, L"Failed to retrieve the quest template!" )
 				<< BUILD_LOG( pkQuestInstance->m_iID )
 				<< BUILD_LOG( spUser->GetCharUID() )
 				<< BUILD_LOG( spUser->GetCharName() )
@@ -1578,7 +1578,7 @@ void KUserQuestManager::Handler_OnPVPPlay_AccumulatedOfficialMatchCount( IN KGSU
 			const CXSLQuestManager::SubQuestTemplet* pSubQuestTemplet = SiCXSLQuestManager()->GetSubQuestTemplet( pQuestTemplet->m_vecSubQuest[iIndexSub] );
 			if( pSubQuestTemplet == NULL )
 			{
-				START_LOG( cerr, L"SUB QUEST TEMPLET 얻어오기 실패.!" )
+				START_LOG( cerr, L"Failed to retrieve the sub-quest template!" )
 					<< BUILD_LOG( pQuestTemplet->m_vecSubQuest[iIndexSub] )
 					<< BUILD_LOG( spUser->GetCharUID() )
 					<< BUILD_LOG( spUser->GetCharName() )
@@ -1606,7 +1606,7 @@ void KUserQuestManager::Handler_OnPVPPlay_AccumulatedOfficialMatchCount( IN KGSU
 
 			kNot.m_vecQuestInst.push_back( *pkQuestInstance );
 
-			START_LOG( clog, L"공식 대전 퀘스트 수행!" )
+			START_LOG( clog, L"Performing official PvP quest!" )
 				<< BUILD_LOG( spUser->GetCharName() )
 				<< BUILD_LOG( spUser->GetUserName() )
 				<< BUILD_LOG( pSubQuestTemplet->m_wstrDescription )
@@ -1638,7 +1638,7 @@ void KUserQuestManager::Handler_OnPVPWin( IN int iGameType
 	const int iPvpChannelClass = SiKRoomListManager()->GetPVPChannelClassByRoomListID( spUser->GetRoomListID() );
 	if( iPvpChannelClass == KPVPChannelInfo::PCC_PLAY )
 	{
-		START_LOG( clog, L"연습채널은 퀘스트 클리어 조건에 만족되지 않음." );
+		START_LOG( clog, L"The practice channel does not satisfy the quest completion requirements." );
 		return;
 	}
 	//}}
@@ -1680,7 +1680,7 @@ void KUserQuestManager::Handler_OnPVPKill( IN int iGameType
 	const int iPvpChannelClass = SiKRoomListManager()->GetPVPChannelClassByRoomListID( spUser->GetRoomListID() );
 	if( iPvpChannelClass == KPVPChannelInfo::PCC_PLAY )
 	{
-		START_LOG( clog, L"연습채널은 퀘스트 클리어 조건에 만족되지 않음." );
+		START_LOG( clog, L"The practice channel does not satisfy the quest completion requirements." );
 		return;
 	}
 	//}}
@@ -1745,7 +1745,7 @@ void KUserQuestManager::OnPVP( IN CXSLQuestManager::SUB_QUEST_TYPE eSubQuestType
 		const CXSLQuestManager::QuestTemplet* pQuestTemplet = SiCXSLQuestManager()->GetQuestTemplet( pkQuestInstance->m_iID );
 		if( pQuestTemplet == NULL )
 		{
-			START_LOG( cerr, L"QUEST TEMPLET 얻어오기 실패.!" )
+			START_LOG( cerr, L"Failed to retrieve the quest template!" )
 				<< BUILD_LOG( pkQuestInstance->m_iID )
 				<< BUILD_LOG( spUser->GetCharUID() )
 				<< BUILD_LOG( spUser->GetCharName() )
@@ -1770,7 +1770,7 @@ void KUserQuestManager::OnPVP( IN CXSLQuestManager::SUB_QUEST_TYPE eSubQuestType
 			const CXSLQuestManager::SubQuestTemplet* pSubQuestTemplet = SiCXSLQuestManager()->GetSubQuestTemplet( pQuestTemplet->m_vecSubQuest[iIndexSub] );
 			if( pSubQuestTemplet == NULL )
 			{
-				START_LOG( cerr, L"SUB QUEST TEMPLET 얻어오기 실패.!" )
+				START_LOG( cerr, L"Failed to retrieve the sub-quest template!" )
 					<< BUILD_LOG( pQuestTemplet->m_vecSubQuest[iIndexSub] )
 					<< BUILD_LOG( spUser->GetCharUID() )
 					<< BUILD_LOG( spUser->GetCharName() )
@@ -1876,7 +1876,7 @@ void KUserQuestManager::OnPVP( IN CXSLQuestManager::SUB_QUEST_TYPE eSubQuestType
 				//{{ 2013. 2. 21	박세훈	대전 NPC 퀘스트에 에픽 NPC 만 카운트 되게 수정
 			default:
 				{
-					START_LOG( cwarn, L"OnPvp로 처리되지 않는 서브 퀘스트 타입입니다." )
+					START_LOG( cwarn, L"This sub-quest type is not handled by OnPvp." )
 						<< BUILD_LOG( spUser->GetCharName() )
 						<< BUILD_LOG( spUser->GetCharUID() )
 						<< BUILD_LOG( eSubQuestType )
@@ -1888,7 +1888,7 @@ void KUserQuestManager::OnPVP( IN CXSLQuestManager::SUB_QUEST_TYPE eSubQuestType
 
 			kNot.m_vecQuestInst.push_back( *pkQuestInstance );
 
-			START_LOG( clog, L"퀘스트 대전쪽 수행.!" )
+			START_LOG( clog, L"Processing PvP quest!" )
 				<< BUILD_LOG( iGameType )
 				<< BUILD_LOG( spUser->GetCharName() )
 				<< BUILD_LOG( spUser->GetUserName() )
@@ -1925,7 +1925,7 @@ void KUserQuestManager::Handler_OnEnchantItem( IN KGSUserPtr spUser, IN const in
 		const CXSLQuestManager::QuestTemplet* pQuestTemplet = SiCXSLQuestManager()->GetQuestTemplet( kQuestInstance.m_iID );
 		if( pQuestTemplet == NULL )
 		{
-			START_LOG( cerr, L"QUEST TEMPLET 얻어오기 실패.!" )
+			START_LOG( cerr, L"Failed to retrieve the quest template!" )
 				<< BUILD_LOG( kQuestInstance.m_iID )
 				<< BUILD_LOG( spUser->GetCharUID() )
 				<< BUILD_LOG( spUser->GetCharName() )
@@ -1949,7 +1949,7 @@ void KUserQuestManager::Handler_OnEnchantItem( IN KGSUserPtr spUser, IN const in
 			const CXSLQuestManager::SubQuestTemplet* pSubQuestTemplet = SiCXSLQuestManager()->GetSubQuestTemplet( pQuestTemplet->m_vecSubQuest[uiIndexSub] );
 			if( pSubQuestTemplet == NULL )
 			{
-				START_LOG( cerr, L"SUB QUEST 가 비어있습니다!" )
+				START_LOG( cerr, L"The sub-quest is empty!" )
 					<< BUILD_LOG( kQuestInstance.m_iID )
 					<< BUILD_LOG( spUser->GetCharUID() )
 					<< BUILD_LOG( spUser->GetCharName() )
@@ -1988,7 +1988,7 @@ void KUserQuestManager::Handler_OnEnchantItem( IN KGSUserPtr spUser, IN const in
 
 				kNot.m_vecQuestInst.push_back( kQuestInstance );
 
-				START_LOG( clog, L"퀘스트 SQT_ITEM_ENCHANT 수행" )
+				START_LOG( clog, L"Processing quest SQT_ITEM_ENCHANT" )
 					<< BUILD_LOG( iItemID )
 					<< BUILD_LOG( iEnchantLevel )
 					<< BUILD_LOG( spUser->GetCharName() )
@@ -2029,7 +2029,7 @@ void KUserQuestManager::Handler_OnSocketItem( IN KGSUserPtr spUser, IN const int
 		const CXSLQuestManager::QuestTemplet* pQuestTemplet = SiCXSLQuestManager()->GetQuestTemplet( kQuestInstance.m_iID );
 		if( pQuestTemplet == NULL )
 		{
-			START_LOG( cerr, L"QUEST TEMPLET 얻어오기 실패.!" )
+			START_LOG( cerr, L"Failed to retrieve the quest template!" )
 				<< BUILD_LOG( kQuestInstance.m_iID )
 				<< BUILD_LOG( spUser->GetCharUID() )
 				<< BUILD_LOG( spUser->GetCharName() )
@@ -2053,7 +2053,7 @@ void KUserQuestManager::Handler_OnSocketItem( IN KGSUserPtr spUser, IN const int
 			const CXSLQuestManager::SubQuestTemplet* pSubQuestTemplet = SiCXSLQuestManager()->GetSubQuestTemplet( pQuestTemplet->m_vecSubQuest[uiIndexSub] );
 			if( pSubQuestTemplet == NULL )
 			{
-				START_LOG( cerr, L"SUB QUEST 가 비어있습니다!" )
+				START_LOG( cerr, L"The sub-quest is empty!" )
 					<< BUILD_LOG( kQuestInstance.m_iID )
 					<< BUILD_LOG( spUser->GetCharUID() )
 					<< BUILD_LOG( spUser->GetCharName() )
@@ -2097,7 +2097,7 @@ void KUserQuestManager::Handler_OnSocketItem( IN KGSUserPtr spUser, IN const int
 
 			kNot.m_vecQuestInst.push_back( kQuestInstance );
 
-			START_LOG( clog, L"퀘스트 SQT_ITEM_SOCKET 수행" )
+			START_LOG( clog, L"Processing quest SQT_ITEM_SOCKET" )
 				<< BUILD_LOG( iItemID )
 				<< BUILD_LOG( spUser->GetCharName() )
 				<< BUILD_LOG( spUser->GetUserName() )
@@ -2135,7 +2135,7 @@ void KUserQuestManager::Handler_OnAttribEnchantItem( IN KGSUserPtr spUser, IN co
 		const CXSLQuestManager::QuestTemplet* pQuestTemplet = SiCXSLQuestManager()->GetQuestTemplet( kQuestInstance.m_iID );
 		if( pQuestTemplet == NULL )
 		{
-			START_LOG( cerr, L"QUEST TEMPLET 얻어오기 실패.!" )
+			START_LOG( cerr, L"Failed to retrieve the quest template!" )
 				<< BUILD_LOG( kQuestInstance.m_iID )
 				<< BUILD_LOG( spUser->GetCharUID() )
 				<< BUILD_LOG( spUser->GetCharName() )
@@ -2159,7 +2159,7 @@ void KUserQuestManager::Handler_OnAttribEnchantItem( IN KGSUserPtr spUser, IN co
 			const CXSLQuestManager::SubQuestTemplet* pSubQuestTemplet = SiCXSLQuestManager()->GetSubQuestTemplet( pQuestTemplet->m_vecSubQuest[uiIndexSub] );
 			if( pSubQuestTemplet == NULL )
 			{
-				START_LOG( cerr, L"SUB QUEST 가 비어있습니다!" )
+				START_LOG( cerr, L"The sub-quest is empty!" )
 					<< BUILD_LOG( kQuestInstance.m_iID )
 					<< BUILD_LOG( spUser->GetCharUID() )
 					<< BUILD_LOG( spUser->GetCharName() )
@@ -2207,7 +2207,7 @@ void KUserQuestManager::Handler_OnAttribEnchantItem( IN KGSUserPtr spUser, IN co
 
 				kNot.m_vecQuestInst.push_back( kQuestInstance );
 
-				START_LOG( clog, L"퀘스트 SQT_ITEM_ATTRIB 수행" )
+				START_LOG( clog, L"Processing quest SQT_ITEM_ATTRIB" )
 					<< BUILD_LOG( iItemID )
 					<< BUILD_LOG( spUser->GetCharName() )
 					<< BUILD_LOG( spUser->GetUserName() )
@@ -2246,7 +2246,7 @@ void KUserQuestManager::Handler_OnResolveItem( IN KGSUserPtr spUser, IN const in
 		const CXSLQuestManager::QuestTemplet* pQuestTemplet = SiCXSLQuestManager()->GetQuestTemplet( kQuestInstance.m_iID );
 		if( pQuestTemplet == NULL )
 		{
-			START_LOG( cerr, L"QUEST TEMPLET 얻어오기 실패.!" )
+			START_LOG( cerr, L"Failed to retrieve the quest template!" )
 				<< BUILD_LOG( kQuestInstance.m_iID )
 				<< BUILD_LOG( spUser->GetCharUID() )
 				<< BUILD_LOG( spUser->GetCharName() )
@@ -2270,7 +2270,7 @@ void KUserQuestManager::Handler_OnResolveItem( IN KGSUserPtr spUser, IN const in
 			const CXSLQuestManager::SubQuestTemplet* pSubQuestTemplet = SiCXSLQuestManager()->GetSubQuestTemplet( pQuestTemplet->m_vecSubQuest[uiIndexSub] );
 			if( pSubQuestTemplet == NULL )
 			{
-				START_LOG( cerr, L"SUB QUEST 가 비어있습니다!" )
+				START_LOG( cerr, L"The sub-quest is empty!" )
 					<< BUILD_LOG( kQuestInstance.m_iID )
 					<< BUILD_LOG( spUser->GetCharUID() )
 					<< BUILD_LOG( spUser->GetCharName() )
@@ -2309,7 +2309,7 @@ void KUserQuestManager::Handler_OnResolveItem( IN KGSUserPtr spUser, IN const in
 
 			kNot.m_vecQuestInst.push_back( kQuestInstance );
 
-			START_LOG( clog, L"퀘스트 SQT_ITEM_RESOLVE 수행" )
+			START_LOG( clog, L"Processing quest SQT_ITEM_RESOLVE" )
 				<< BUILD_LOG( iItemID )
 				<< BUILD_LOG( spUser->GetCharName() )
 				<< BUILD_LOG( spUser->GetUserName() )
@@ -2350,7 +2350,7 @@ void KUserQuestManager::Handler_OnUseSkillPoint( IN KGSUserPtr spUser, IN const 
 		const CXSLQuestManager::QuestTemplet* pQuestTemplet = SiCXSLQuestManager()->GetQuestTemplet( kQuestInstance.m_iID );
 		if( pQuestTemplet == NULL )
 		{
-			START_LOG( cerr, L"QUEST TEMPLET 얻어오기 실패.!" )
+			START_LOG( cerr, L"Failed to retrieve the quest template!" )
 				<< BUILD_LOG( kQuestInstance.m_iID )
 				<< BUILD_LOG( spUser->GetCharUID() )
 				<< BUILD_LOG( spUser->GetCharName() )
@@ -2374,7 +2374,7 @@ void KUserQuestManager::Handler_OnUseSkillPoint( IN KGSUserPtr spUser, IN const 
 			const CXSLQuestManager::SubQuestTemplet* pSubQuestTemplet = SiCXSLQuestManager()->GetSubQuestTemplet( pQuestTemplet->m_vecSubQuest[uiIndexSub] );
 			if( pSubQuestTemplet == NULL )
 			{
-				START_LOG( cerr, L"SUB QUEST 가 비어있습니다!" )
+				START_LOG( cerr, L"The sub-quest is empty!" )
 					<< BUILD_LOG( kQuestInstance.m_iID )
 					<< BUILD_LOG( spUser->GetCharUID() )
 					<< BUILD_LOG( spUser->GetCharName() )
@@ -2413,7 +2413,7 @@ void KUserQuestManager::Handler_OnUseSkillPoint( IN KGSUserPtr spUser, IN const 
 
 			kNot.m_vecQuestInst.push_back( kQuestInstance );
 
-			START_LOG( clog, L"퀘스트 SQT_USE_SKILL_POINT 수행" )
+			START_LOG( clog, L"Processing quest SQT_USE_SKILL_POINT" )
 				<< BUILD_LOG( iSkillID )
 				<< BUILD_LOG( spUser->GetCharName() )
 				<< BUILD_LOG( spUser->GetUserName() )
@@ -2452,7 +2452,7 @@ void KUserQuestManager::Handler_OnEnterTheVillage( IN KGSUserPtr spUser )
 		const CXSLQuestManager::QuestTemplet* pQuestTemplet = SiCXSLQuestManager()->GetQuestTemplet( kQuestInstance.m_iID );
 		if( pQuestTemplet == NULL )
 		{
-			START_LOG( cerr, L"QUEST TEMPLET 얻어오기 실패.!" )
+			START_LOG( cerr, L"Failed to retrieve the quest template!" )
 				<< BUILD_LOG( kQuestInstance.m_iID )
 				<< BUILD_LOG( spUser->GetCharUID() )
 				<< BUILD_LOG( spUser->GetCharName() )
@@ -2476,7 +2476,7 @@ void KUserQuestManager::Handler_OnEnterTheVillage( IN KGSUserPtr spUser )
 			const CXSLQuestManager::SubQuestTemplet* pSubQuestTemplet = SiCXSLQuestManager()->GetSubQuestTemplet( pQuestTemplet->m_vecSubQuest[uiIndexSub] );
 			if( pSubQuestTemplet == NULL )
 			{
-				START_LOG( cerr, L"SUB QUEST 가 비어있습니다!" )
+				START_LOG( cerr, L"The sub-quest is empty!" )
 					<< BUILD_LOG( kQuestInstance.m_iID )
 					<< BUILD_LOG( spUser->GetCharUID() )
 					<< BUILD_LOG( spUser->GetCharName() )
@@ -2516,7 +2516,7 @@ void KUserQuestManager::Handler_OnEnterTheVillage( IN KGSUserPtr spUser )
 
 				kNot.m_vecQuestInst.push_back( kQuestInstance );
 
-				START_LOG( clog, L"퀘스트 SQT_VISIT_VILLAGE 수행" )
+				START_LOG( clog, L"Processing quest SQT_VISIT_VILLAGE" )
 					<< BUILD_LOG( spUser->GetMapID() )
 					<< BUILD_LOG( spUser->GetCharName() )
 					<< BUILD_LOG( spUser->GetUserName() )
@@ -2556,7 +2556,7 @@ void KUserQuestManager::Handler_OnEnterTheBattleField( IN KGSUserPtr spUser )
 		const CXSLQuestManager::QuestTemplet* pQuestTemplet = SiCXSLQuestManager()->GetQuestTemplet( kQuestInstance.m_iID );
 		if( pQuestTemplet == NULL )
 		{
-			START_LOG( cerr, L"QUEST TEMPLET 얻어오기 실패.!" )
+			START_LOG( cerr, L"Failed to retrieve the quest template!" )
 				<< BUILD_LOG( kQuestInstance.m_iID )
 				<< BUILD_LOG( spUser->GetCharUID() )
 				<< BUILD_LOG( spUser->GetCharName() )
@@ -2580,7 +2580,7 @@ void KUserQuestManager::Handler_OnEnterTheBattleField( IN KGSUserPtr spUser )
 			const CXSLQuestManager::SubQuestTemplet* pSubQuestTemplet = SiCXSLQuestManager()->GetSubQuestTemplet( pQuestTemplet->m_vecSubQuest[uiIndexSub] );
 			if( pSubQuestTemplet == NULL )
 			{
-				START_LOG( cerr, L"SUB QUEST 가 비어있습니다!" )
+				START_LOG( cerr, L"The sub-quest is empty!" )
 					<< BUILD_LOG( kQuestInstance.m_iID )
 					<< BUILD_LOG( spUser->GetCharUID() )
 					<< BUILD_LOG( spUser->GetCharName() )
@@ -2619,7 +2619,7 @@ void KUserQuestManager::Handler_OnEnterTheBattleField( IN KGSUserPtr spUser )
 
 				kNot.m_vecQuestInst.push_back( kQuestInstance );
 
-				START_LOG( clog, L"퀘스트 SQT_VISIT_FIELD 수행" )
+				START_LOG( clog, L"Processing quest SQT_VISIT_FIELD" )
 					<< BUILD_LOG( spUser->GetMapID() )
 					<< BUILD_LOG( spUser->GetCharName() )
 					<< BUILD_LOG( spUser->GetUserName() )
@@ -2678,7 +2678,7 @@ void KUserQuestManager::Handler_EGS_QUEST_COMPLETE_REQ( IN const KEGS_QUEST_COMP
 	pQuestTemplet = SiCXSLQuestManager()->GetQuestTemplet( kReq.m_iQuestID );
 	if( pQuestTemplet == NULL )
 	{
-		START_LOG( cerr, L"퀘스트 진행중인데 템플릿 데이터가 없다." )
+		START_LOG( cerr, L"The quest is in progress, but its template data is missing." )
 			<< BUILD_LOG( kReq.m_iQuestID )
 			<< BUILD_LOG( spUser->GetCharName() )
 			<< BUILD_LOG( spUser->GetUserName() )
@@ -2725,7 +2725,7 @@ void KUserQuestManager::Handler_EGS_QUEST_COMPLETE_REQ( IN const KEGS_QUEST_COMP
 		const CXSLQuestManager::QuestTemplet* pAfterQuestTemplet = SiCXSLQuestManager()->GetQuestTemplet( *vitAfterQuest );
 		if( pAfterQuestTemplet == NULL )
 		{
-			START_LOG( cerr, L"존재하지 않는 퀘스트가 after퀘스트로 등록되어있습니다!" )
+			START_LOG( cerr, L"Nonexistent quest is registered as an after-quest!" )
 				<< BUILD_LOG( pQuestTemplet->m_iID )
 				<< BUILD_LOG( *vitAfterQuest )
 				<< END_LOG;
@@ -2745,7 +2745,7 @@ void KUserQuestManager::Handler_EGS_QUEST_COMPLETE_REQ( IN const KEGS_QUEST_COMP
 			{
 				if( spUser->IsExistInventoryItemWithBank( mitRI->first ) == true )
 				{
-					START_LOG( clog, L"퀘스트 수락시 받는 보상이 이미 인벤토리에 있으면 퀘스트 수락 못함." )
+					START_LOG( clog, L"Cannot accept the quest because its reward is already in the inventory." )
 						<< BUILD_LOG( pAfterQuestTemplet->m_iID )
 						<< BUILD_LOG( mitRI->first )
 						<< END_LOG;
@@ -2763,7 +2763,7 @@ void KUserQuestManager::Handler_EGS_QUEST_COMPLETE_REQ( IN const KEGS_QUEST_COMP
 	// AfterQuest(복수 일수도 있음) 수락 보상이 들어갈만한 빈슬롯이 있는지 검사
 	if( spUser->IsEnoughSpaceExist( mapAcceptRewardItem ) == false )
 	{
-		START_LOG( clog, L"퀘스트 수락시 받는 보상이 들어갈 인벤토리 빈공간이 부족합니다." )
+		START_LOG( clog, L"Not enough inventory space for the quest acceptance reward." )
 			<< BUILD_LOG( mapAcceptRewardItem.size() )
 			<< END_LOG;
 
@@ -2785,7 +2785,7 @@ void KUserQuestManager::Handler_EGS_QUEST_COMPLETE_REQ( IN const KEGS_QUEST_COMP
 		const CXSLQuestManager::SubQuestTemplet* pSubQuestTemplet = SiCXSLQuestManager()->GetSubQuestTemplet( iSubQuestID );
 		if( pSubQuestTemplet == NULL )
 		{
-			START_LOG( cerr, L"퀘스트 진행중인데 서브템플릿 데이터가 없다." )
+			START_LOG( cerr, L"The quest is in progress, but its sub-template data is missing." )
 				<< BUILD_LOG( kReq.m_iQuestID )
 				<< BUILD_LOG( iSubQuestID )
 				<< BUILD_LOG( spUser->GetCharName() )
@@ -2813,7 +2813,7 @@ void KUserQuestManager::Handler_EGS_QUEST_COMPLETE_REQ( IN const KEGS_QUEST_COMP
 			//{{ 2009. 8. 7  최육사		은행
 			if( spUser->IsEnoughItemExistOnlyInventory( mapItemInfo ) == false )
 			{
-				START_LOG( cerr, L"성공한 퀘스트가 아닌데 성공체크가 날아왔다?" )
+				START_LOG( cerr, L"Received a success check for a quest that did not succeed." )
 					<< BUILD_LOG( kReq.m_iQuestID )
 					<< BUILD_LOG( iSubQuestID )
 					<< BUILD_LOG( spUser->GetCharName() )
@@ -2829,7 +2829,7 @@ void KUserQuestManager::Handler_EGS_QUEST_COMPLETE_REQ( IN const KEGS_QUEST_COMP
 			if( pKQuestInst->m_vecSubQuestInstance[iIndexSub].m_bIsSuccess == false )
 			{
 				//{{ 2009. 4. 6  최육사		에러로그 추가
-				START_LOG( cerr, L"성공한 퀘스트가 아닌데 성공체크가 날아왔다?" )
+				START_LOG( cerr, L"Received a success check for a quest that did not succeed." )
 					<< BUILD_LOG( kReq.m_iQuestID )
 					<< BUILD_LOG( iSubQuestID )
 					<< BUILD_LOG( spUser->GetCharName() )
@@ -2866,7 +2866,7 @@ void KUserQuestManager::Handler_EGS_QUEST_COMPLETE_REQ( IN const KEGS_QUEST_COMP
 
 			if( kDBReq.m_cChangeUnitClass == spUser->GetUnitClass() )
 			{
-				START_LOG( cerr, L"전직할려는 퀘스트 보상 Unit Class가 현재 class와 동일함.?" )
+				START_LOG( cerr, L"The Unit Class in the class-advancement quest reward matches the current class." )
 					<< BUILD_LOG( spUser->GetCharUID() )
 					<< BUILD_LOG( spUser->GetCharName() )
 					<< BUILD_LOGc( spUser->GetUnitClass() )
@@ -2880,7 +2880,7 @@ void KUserQuestManager::Handler_EGS_QUEST_COMPLETE_REQ( IN const KEGS_QUEST_COMP
 			int iDefaultSkill[6] = {0,};
 			if( SiCXSLSkillTree()->GetUnitClassDefaultSkill( kDBReq.m_cChangeUnitClass, iDefaultSkill[0], iDefaultSkill[1], iDefaultSkill[2], iDefaultSkill[3], iDefaultSkill[4], iDefaultSkill[5] ) == false )
 			{
-				START_LOG( cerr, L"전직시 지급하려는 기본 스킬이 이상함" )
+				START_LOG( cerr, L"Invalid base skill to grant upon class advancement." )
 					<< BUILD_LOG( spUser->GetCharUID() )
 					<< BUILD_LOG( spUser->GetCharName() )
 					<< BUILD_LOGc( spUser->GetUnitClass() )
@@ -2914,7 +2914,7 @@ void KUserQuestManager::Handler_EGS_QUEST_COMPLETE_REQ( IN const KEGS_QUEST_COMP
 			//선택보상 수량이 최대선택 수량보다 많으면 예외처리..
 			if( (int)kReq.m_mapSelectItemID.size() > pQuestTemplet->m_SelectReward.m_iSelectionCount )
 			{
-				START_LOG( cerr, L"퀘스트 선택보상 수량이 최대선택 수량보다 많음.!" )
+				START_LOG( cerr, L"The quantity of selected quest rewards exceeds the allowed maximum!" )
 					<< BUILD_LOG( kReq.m_mapSelectItemID.size() )
 					<< BUILD_LOG( pQuestTemplet->m_SelectReward.m_iSelectionCount )
 					<< END_LOG;
@@ -2937,7 +2937,7 @@ void KUserQuestManager::Handler_EGS_QUEST_COMPLETE_REQ( IN const KEGS_QUEST_COMP
 					const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( kQuestSelectReward.m_iItemID );
 					if( pItemTemplet == NULL )
 					{
-						START_LOG( cerr, L"아이템 템플릿 포인터 이상.!" )
+						START_LOG( cerr, L"Invalid item template pointer!" )
 							<< BUILD_LOG( kQuestSelectReward.m_iItemID )
 							<< BUILD_LOG( spUser->GetCharName() )
 							<< END_LOG;
@@ -2969,7 +2969,7 @@ void KUserQuestManager::Handler_EGS_QUEST_COMPLETE_REQ( IN const KEGS_QUEST_COMP
 						}
 						else
 						{
-							START_LOG( cerr, L"존재하지 않는 소켓옵션을 퀘스트 보상 아이템에 넣으려 했습니다." )
+							START_LOG( cerr, L"Attempted to add a nonexistent socket option to a quest reward item." )
 								<< BUILD_LOG( kReq.m_iQuestID )
 								<< BUILD_LOG( kItemInfo.m_iItemID )
 								<< BUILD_LOG( iRewardSocketOption )
@@ -2979,7 +2979,7 @@ void KUserQuestManager::Handler_EGS_QUEST_COMPLETE_REQ( IN const KEGS_QUEST_COMP
 
 					mapItem.insert( std::make_pair( kItemInfo.m_iItemID, kItemInfo ) );
 
-					START_LOG( clog, L"퀘스트 선택 아이템 처리" )
+					START_LOG( clog, L"Processing selected quest items." )
 						<< BUILD_LOG( kQuestSelectReward.m_iItemID );
 				}
 			}
@@ -2988,7 +2988,7 @@ void KUserQuestManager::Handler_EGS_QUEST_COMPLETE_REQ( IN const KEGS_QUEST_COMP
 			{
 				SET_ERROR( ERR_QUEST_15 );
 
-				START_LOG( cerr, L"퀘스트 템플릿에서 선택보상 아이템 찾기 실패.!" )
+				START_LOG( cerr, L"Failed to find the selected reward item in the quest template!" )
 					<< BUILD_LOG( kReq.m_iQuestID )
 					<< BUILD_LOG( kReq.m_mapSelectItemID.size() )
 					<< END_LOG;
@@ -3005,7 +3005,7 @@ void KUserQuestManager::Handler_EGS_QUEST_COMPLETE_REQ( IN const KEGS_QUEST_COMP
 				const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( kQuestRewardData.m_iItemID );
 				if( pItemTemplet == NULL )
 				{
-					START_LOG( cerr, L"아이템 템플릿 포인터 이상.!" )
+					START_LOG( cerr, L"Invalid item template pointer!" )
 						<< BUILD_LOG( pQuestTemplet->m_iID )
 						<< BUILD_LOG( kQuestRewardData.m_iItemID )
 						<< BUILD_LOG( spUser->GetCharName() )
@@ -3038,7 +3038,7 @@ void KUserQuestManager::Handler_EGS_QUEST_COMPLETE_REQ( IN const KEGS_QUEST_COMP
 					}
 					else
 					{
-						START_LOG( cerr, L"존재하지 않는 소켓옵션을 퀘스트 보상 아이템에 넣으려 했습니다." )
+						START_LOG( cerr, L"Attempted to add a nonexistent socket option to a quest reward item." )
 							<< BUILD_LOG( kReq.m_iQuestID )
 							<< BUILD_LOG( kItemInfo.m_iItemID )
 							<< BUILD_LOG( iRewardSocketOption )
@@ -3200,7 +3200,7 @@ void KUserQuestManager::Handler_DBE_QUEST_COMPLETE_ACK( IN const KDBE_QUEST_COMP
 
 	if( IsQuest( iQuestID ) == false )
 	{
-		START_LOG( cerr, L"+ㅁ+;; 완료한 퀘스트가 진행중 퀘스트에 없네." )
+		START_LOG( cerr, L"The completed quest is missing from the in-progress quest list." )
 			<< BUILD_LOG( iQuestID )
 			<< BUILD_LOG( NetError::GetLastErrMsg() )
 			<< END_LOG;
@@ -3209,7 +3209,7 @@ void KUserQuestManager::Handler_DBE_QUEST_COMPLETE_ACK( IN const KDBE_QUEST_COMP
 		goto end_proc;
 	}
 
-	START_LOG( clog, L"퀘스트 완료 ::::" )
+	START_LOG( clog, L"Quest completed: " )
 		<< BUILD_LOG( spUser->GetCharUID() )
 		<< BUILD_LOG( spUser->GetCharName() )
 		<< BUILD_LOG( spUser->GetUserName() )
@@ -3235,7 +3235,7 @@ void KUserQuestManager::Handler_DBE_QUEST_COMPLETE_ACK( IN const KDBE_QUEST_COMP
 		const CXSLQuestManager::QuestTemplet* pQuestTemplet = SiCXSLQuestManager()->GetQuestTemplet( iQuestID );
 		if( pQuestTemplet == NULL )
 		{
-			START_LOG( cerr, L"QUEST TEMPLET 얻어오기 실패.!" )
+			START_LOG( cerr, L"Failed to retrieve the quest template!" )
 				<< BUILD_LOG( iQuestID )
 				<< BUILD_LOG( spUser->GetCharUID() )
 				<< BUILD_LOG( spUser->GetCharName() )
@@ -3370,7 +3370,7 @@ void KUserQuestManager::Handler_DBE_QUEST_COMPLETE_ACK( IN const KDBE_QUEST_COMP
 			kTempReq.m_iTalkNPCID = CXSLUnitManager::NUI_NONE;
 			if( Handler_EGS_NEW_QUEST_REQ( kTempReq, spUser, true, false ) == false )
 			{
-				START_LOG( cwarn, L"[에픽] New Quest Req Fail.!(After)" )
+				START_LOG( cwarn, L"[Epic] New quest request failed (after)." )
 					<< BUILD_LOG( spUser->GetCharName() )
 					<< BUILD_LOG( pQuestTemplet->m_iID )
 					<< END_LOG;
@@ -3423,7 +3423,7 @@ bool KUserQuestManager::IsChangeJobQuest()
 		}
 		else
 		{
-			START_LOG( cerr, L"퀘스트 템플릿 포인터 이상.!" )
+			START_LOG( cerr, L"Invalid quest template pointer!" )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 
@@ -3557,7 +3557,7 @@ void KUserQuestManager::GetOngoingQuestForRoom( IN KGSUserPtr spUser, OUT std::m
 		const CXSLQuestManager::QuestTemplet* pQuestTemplet = SiCXSLQuestManager()->GetQuestTemplet( kQuestInstance.m_iID );
 		if( pQuestTemplet == NULL )
 		{
-			START_LOG( cerr, L"QUEST TEMPLET가 없음." )
+			START_LOG( cerr, L"The quest template is missing." )
 				<< BUILD_LOG( kQuestInstance.m_iID )
 				<< BUILD_LOG( kQuestInstance.m_OwnorUnitUID )
 				<< END_LOG;
@@ -3580,7 +3580,7 @@ void KUserQuestManager::GetOngoingQuestForRoom( IN KGSUserPtr spUser, OUT std::m
 			const CXSLQuestManager::SubQuestTemplet* pSubTemplet = SiCXSLQuestManager()->GetSubQuestTemplet( pQuestTemplet->m_vecSubQuest[uiIndexSub] );
 			if( pSubTemplet == NULL )
 			{
-				START_LOG( cerr, L"SUB QUEST TEMPLET가 없음." )
+				START_LOG( cerr, L"The sub-quest template is missing." )
 					<< BUILD_LOG( kQuestInstance.m_iID )
 					<< BUILD_LOG( kQuestInstance.m_OwnorUnitUID )
 					<< END_LOG;
@@ -3780,7 +3780,7 @@ void KUserQuestManager::InitEventQuest( IN KGSUserPtr spUser )
 		const CXSLQuestManager::QuestTemplet* pQuestTemplet = SiCXSLQuestManager()->GetQuestTemplet( mitQT->second.m_iID );
 		if( pQuestTemplet == NULL )
 		{
-			START_LOG( cerr, L"퀘스트 템플릿 정보가 없습니다." )
+			START_LOG( cerr, L"Quest template information is missing." )
 				<< BUILD_LOG( mitQT->second.m_iID )
 				<< END_LOG;
 
@@ -3861,7 +3861,7 @@ void KUserQuestManager::CheckQuestEvent( IN KGSUserPtr spUser )
 
 			if( Handler_EGS_NEW_QUEST_REQ( kTempReq, spUser, true, false ) == false )
 			{
-				START_LOG( cwarn, L"[에픽] New Quest Req Fail.!(After)" )
+				START_LOG( cwarn, L"[Epic] New quest request failed (after)." )
 					<< BUILD_LOG( spUser->GetCharName() )
 					<< BUILD_LOG( iQuestID )
 					<< END_LOG;
@@ -3953,7 +3953,7 @@ void KUserQuestManager::CheckEpicQuest_SuccessStateChange( IN int iMapID, IN KGS
 
 		if( false == Handler_EGS_NEW_QUEST_REQ(kTempReq, spUser) )
 		{
-			START_LOG( cwarn, L"[에픽] New Quest Req Fail.!(State Change)" )
+			START_LOG( cwarn, L"[Epic] New quest request failed (state change)." )
 				<< BUILD_LOG( spUser->GetCharName() )
 				<< BUILD_LOG( pTemplet->m_iID )
 				<< BUILD_LOG( iMapID )
@@ -3976,7 +3976,7 @@ void KUserQuestManager::CheckEpicQuest_NewQuestByBeforeQuest( IN KGSUserPtr spUs
 	{
 		if( pEpicQuest == NULL )
 		{
-			START_LOG( cerr, L"에픽 퀘스트 포인터값이 이상합니다!" )
+			START_LOG( cerr, L"Invalid epic quest pointer!" )
 				<< BUILD_LOG( vecEpicQuestTemplet.size() )
 				<< END_LOG;
 			continue;
@@ -4020,7 +4020,7 @@ void KUserQuestManager::CheckEpicQuest_NewQuestByBeforeQuest( IN KGSUserPtr spUs
 			if( Handler_EGS_NEW_QUEST_REQ( kTempReq, spUser, true, bSendAck ) == false )
 			//}}
 			{
-				START_LOG( cwarn, L"[에픽] New Quest Req Fail.!(Before)" )
+				START_LOG( cwarn, L"[Epic] New quest request failed (before)." )
 					<< BUILD_LOG( spUser->GetCharName() )
 					<< BUILD_LOG( kTempReq.m_iQuestID )
 					<< END_LOG;
@@ -4034,7 +4034,7 @@ void KUserQuestManager::CheckEpicQuest_NewQuestByAfterQuest( IN const int iQuest
 	const CXSLQuestManager::QuestTemplet* pQuestTemplet = SiCXSLQuestManager()->GetQuestTemplet( iQuestID );
 	if( pQuestTemplet == NULL )
 	{
-		START_LOG( cwarn, L"존재하지 않는 퀘스트 ID입니다!" )
+		START_LOG( cwarn, L"Quest ID does not exist!" )
 			<< BUILD_LOG( iQuestID )
 			<< END_LOG;
 		return;
@@ -4058,7 +4058,7 @@ void KUserQuestManager::CheckEpicQuest_NewQuestByAfterQuest( IN const int iQuest
 		const CXSLQuestManager::QuestTemplet* pAfterQuestTemplet = SiCXSLQuestManager()->GetQuestTemplet( iAfterQuestID );
 		if( IS_NULL( pAfterQuestTemplet ) )
 		{
-			START_LOG( cerr, L"존재 하지 않는 퀘스트 정보입니다!" )
+			START_LOG( cerr, L"Quest information does not exist!" )
 				<< BUILD_LOG( iQuestID )
 				<< BUILD_LOG( iAfterQuestID )
 				<< END_LOG;
@@ -4076,7 +4076,7 @@ void KUserQuestManager::CheckEpicQuest_NewQuestByAfterQuest( IN const int iQuest
 				// 에픽과 이벤트는 수락하게 한다.
 				if( ( pAfterQuestTemplet->m_eQuestType == CXSLQuestManager::QT_EPIC || pAfterQuestTemplet->m_eQuestType == CXSLQuestManager::QT_EVENT ) == false )
 				{
-					START_LOG( clog, L"강제 수락이 아닌데(캐릭터선택시)...After Quest 로 셋팅된 퀘스트가 에픽, 이벤트가 아니다." )
+					START_LOG( clog, L"A quest set as an After Quest during character selection is neither an Epic nor an event quest, and is not being force-accepted." )
 						<< BUILD_LOG( iAfterQuestID )
 						<< END_LOG;
 					continue;
@@ -4098,7 +4098,7 @@ void KUserQuestManager::CheckEpicQuest_NewQuestByAfterQuest( IN const int iQuest
 		kTempReq.m_iTalkNPCID = CXSLUnitManager::NUI_NONE;
 		if( Handler_EGS_NEW_QUEST_REQ( kTempReq, spUser, true, bSendAck ) == false )
 		{
-			START_LOG( cwarn, L"[에픽] New Quest Req Fail.!(After)" )
+			START_LOG( cwarn, L"[Epic] New quest request failed (after)." )
 				<< BUILD_LOG( spUser->GetCharName() )
 				<< BUILD_LOG( pQuestTemplet->m_iID )
 				<< END_LOG;
@@ -4151,7 +4151,7 @@ bool KUserQuestManager::ExistHaveExpInDungeon( IN UidType CharUID, IN const std:
 	std::map< UidType, bool >::const_iterator mit = mapHaveExpInDungeon.find( CharUID );
 	if( mit == mapHaveExpInDungeon.end() )
 	{
-		START_LOG( cwarn, L"경험치 정보가 없다. 경험치를 못얻는 유저인가?" )
+		START_LOG( cwarn, L"No experience information; is this a user who cannot gain experience?" )
 			<< BUILD_LOG( CharUID )
 			<< BUILD_LOG( mapHaveExpInDungeon.size() )
 			<< END_LOG;
@@ -4217,7 +4217,7 @@ bool KUserQuestManager::CheckIsGoingComplete( IN const int iQuestID, IN KGSUserP
 	const CXSLQuestManager::QuestTemplet* pQuestTemplet = SiCXSLQuestManager()->GetQuestTemplet( iQuestID );
 	if( pQuestTemplet == NULL )
 	{
-		START_LOG( cerr, L"퀘스트 진행중인데 템플릿 데이터가 없다." )
+		START_LOG( cerr, L"The quest is in progress, but its template data is missing." )
 			<< BUILD_LOG( iQuestID )
 			<< BUILD_LOG( spUser->GetCharName() )
 			<< BUILD_LOG( spUser->GetUserName() )
@@ -4240,7 +4240,7 @@ bool KUserQuestManager::CheckIsGoingComplete( IN const int iQuestID, IN KGSUserP
 		const CXSLQuestManager::SubQuestTemplet* pSubQuestTemplet = SiCXSLQuestManager()->GetSubQuestTemplet( iSubQuestID );
 		if( pSubQuestTemplet == NULL )
 		{
-			START_LOG( cerr, L"퀘스트 진행중인데 서브템플릿 데이터가 없다." )
+			START_LOG( cerr, L"The quest is in progress, but its sub-template data is missing." )
 				<< BUILD_LOG( iQuestID )
 				<< BUILD_LOG( iSubQuestID )
 				<< BUILD_LOG( spUser->GetCharName() )
@@ -4293,7 +4293,7 @@ void KUserQuestManager::CountUseItem( IN KGSUserPtr spUser, IN const int /*iDung
 		const CXSLQuestManager::QuestTemplet* pQuestTemplet = SiCXSLQuestManager()->GetQuestTemplet( kQuestInstance.m_iID );
 		if( pQuestTemplet == NULL )
 		{
-			START_LOG( cerr, L"QUEST TEMPLET 얻어오기 실패.!" )
+			START_LOG( cerr, L"Failed to retrieve the quest template!" )
 				<< BUILD_LOG( kQuestInstance.m_iID )
 				<< BUILD_LOG( spUser->GetCharUID() )
 				<< BUILD_LOG( spUser->GetCharName() )
@@ -4317,7 +4317,7 @@ void KUserQuestManager::CountUseItem( IN KGSUserPtr spUser, IN const int /*iDung
 			const CXSLQuestManager::SubQuestTemplet* pSubQuestTemplet = SiCXSLQuestManager()->GetSubQuestTemplet( pQuestTemplet->m_vecSubQuest[uiIndexSub] );
 			if( pSubQuestTemplet == NULL )
 			{
-				START_LOG( cerr, L"SUB QUEST 가 비어있습니다!" )
+				START_LOG( cerr, L"The sub-quest is empty!" )
 					<< BUILD_LOG( kQuestInstance.m_iID )
 					<< BUILD_LOG( spUser->GetCharUID() )
 					<< BUILD_LOG( spUser->GetCharName() )
@@ -4391,7 +4391,7 @@ void KUserQuestManager::GetCompleteChangeClassQuest( OUT std::vector< KCompleteQ
 		}
 		else
 		{
-			START_LOG( cerr, L"퀘스트 템플릿 포인터 이상.!" )
+			START_LOG( cerr, L"Invalid quest template pointer!" )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 
@@ -4413,7 +4413,7 @@ void KUserQuestManager::GetInProgressClassChangeQuest( OUT std::vector< KQuestIn
 		}
 		else
 		{
-			START_LOG( cerr, L"퀘스트 템플릿 포인터 이상.!" )
+			START_LOG( cerr, L"Invalid quest template pointer!" )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 
@@ -4435,7 +4435,7 @@ void KUserQuestManager::GetCompleteChangeClassQuest( OUT std::vector< int >& vec
 		}
 		else
 		{
-			START_LOG( cerr, L"퀘스트 템플릿 포인터 이상.!" )
+			START_LOG( cerr, L"Invalid quest template pointer!" )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 
@@ -4457,7 +4457,7 @@ void KUserQuestManager::GetInProgressClassChangeQuest( OUT std::vector< int >& v
 		}
 		else
 		{
-			START_LOG( cerr, L"퀘스트 템플릿 포인터 이상.!" )
+			START_LOG( cerr, L"Invalid quest template pointer!" )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 
@@ -4489,7 +4489,7 @@ void KUserQuestManager::SetClassChangeQuest( IN UidType iUnitUID, IN std::map< i
 		}
 		else
 		{
-			START_LOG( cerr, L"이런 완료된 퀘스트를 가지고 있지 않다고?! 있다고 해서 기록한거잖아!!" )
+			START_LOG( cerr, L"The completed quest is missing, even though it was recorded as present!" )
 				<< BUILD_LOG( iUnitUID )
 				<< BUILD_LOG( mitComplete->first )
 				<< BUILD_LOG( mitComplete->second )
@@ -4508,7 +4508,7 @@ void KUserQuestManager::SetClassChangeQuest( IN UidType iUnitUID, IN std::map< i
 			const CXSLQuestManager::QuestTemplet* pQuestTemplet = SiCXSLQuestManager()->GetQuestTemplet( mitInProgress->second );
 			if( pQuestTemplet == NULL )
 			{
-				START_LOG( cerr, L"QUEST TEMPLET가 없음." )
+				START_LOG( cerr, L"The quest template is missing." )
 					<< BUILD_LOG( mitInProgress->first )
 					<< BUILD_LOG( mitInProgress->second )
 					<< END_LOG;
@@ -4527,7 +4527,7 @@ void KUserQuestManager::SetClassChangeQuest( IN UidType iUnitUID, IN std::map< i
 				const CXSLQuestManager::SubQuestTemplet* pSubTemplet = SiCXSLQuestManager()->GetSubQuestTemplet( pQuestTemplet->m_vecSubQuest[uiIndexSub] );
 				if( pSubTemplet == NULL )
 				{
-					START_LOG( cerr, L"SUB QUEST TEMPLET가 없음." )
+					START_LOG( cerr, L"The sub-quest template is missing." )
 						<< BUILD_LOG( kTempQuestInstance.m_iID )
 						<< BUILD_LOG( pQuestTemplet->m_vecSubQuest[uiIndexSub] )
 						<< BUILD_LOG( kTempQuestInstance.m_OwnorUnitUID )
@@ -4548,7 +4548,7 @@ void KUserQuestManager::SetClassChangeQuest( IN UidType iUnitUID, IN std::map< i
 		}
 		else
 		{
-			START_LOG( cerr, L"이런 완료된 퀘스트를 가지고 있지 않다고?! 있다고 해서 기록한거잖아!!" )
+			START_LOG( cerr, L"The completed quest is missing, even though it was recorded as present!" )
 				<< BUILD_LOG( mitInProgress->first )
 				<< BUILD_LOG( mitInProgress->second )
 				<< END_LOG;
@@ -4568,7 +4568,7 @@ void KUserQuestManager::SetClassChangeDeleteQuest( IN UidType iUnitUID, IN std::
 		}
 		else
 		{
-			START_LOG( cerr, L"이런 진행중 퀘스트를 가지고 있지 않다고?! 있다고 해서 지운다고한거잖아!!" )
+			START_LOG( cerr, L"In-progress quest is missing? It was recorded as present for deletion!" )
 				<< BUILD_LOG( iUnitUID )
 				<< BUILD_LOG( vecDeleteInProgressQuest[index] )
 				<< END_LOG;
@@ -4585,7 +4585,7 @@ void KUserQuestManager::SetClassChangeDeleteQuest( IN UidType iUnitUID, IN std::
 		}
 		else
 		{
-			START_LOG( cerr, L"이런 완료된 퀘스트를 가지고 있지 않다고?! 있다고 해서 지운다고한거잖아!!" )
+			START_LOG( cerr, L"Completed quest is missing? It was recorded as present for deletion!" )
 				<< BUILD_LOG( iUnitUID )
 				<< BUILD_LOG( vecDeleteCompleteQuest[index] )
 				<< END_LOG;
@@ -4678,7 +4678,7 @@ void KUserQuestManager::CheckEventQuest( IN KGSUserPtr spUser )
 		const CXSLQuestManager::QuestTemplet* pQuestTemplet = SiCXSLQuestManager()->GetQuestTemplet( mit->first );
 		if( pQuestTemplet == NULL )
 		{
-			START_LOG( clog, L"존재하지 않는 퀘스트 ID입니다! 스크립트 상에서 삭제된 퀘스트 입니다." )
+			START_LOG( clog, L"The quest ID does not exist; it was removed from the script!" )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			vecDeleteQuest.push_back( mit->first );
@@ -4721,7 +4721,7 @@ void KUserQuestManager::CheckEventQuest( IN KGSUserPtr spUser )
 
 				if( Handler_EGS_NEW_QUEST_REQ( kTempReq, spUser, true, true ) == false )
 				{
-					START_LOG( cwarn, L"신규 이벤트 퀘스트 수락 실패!" )
+					START_LOG( cwarn, L"Failed to accept new event quest!" )
 						<< BUILD_LOG( spUser->GetCharName() )
 						<< BUILD_LOG( kTempReq.m_iQuestID )
 						<< END_LOG;
@@ -4765,7 +4765,7 @@ void KUserQuestManager::CheckResetDayEventQuest_AutoAccept( IN KGSUserPtr spUser
 		{
 			if( pCompleteQuestInfo->m_tCompleteDate == 0 )
 			{
-				START_LOG( cerr, L"퀘스트 완료는 했는데 완료날짜 정보가 이상합니다." )
+				START_LOG( cerr, L"The quest is complete, but its completion date is invalid." )
 					<< BUILD_LOG( mit->first )
 					<< END_LOG;
 
@@ -4801,7 +4801,7 @@ void KUserQuestManager::CheckResetDayEventQuest_AutoAccept( IN KGSUserPtr spUser
 			kTempReq.m_iTalkNPCID = CXSLUnitManager::NUI_NONE;
 			if( Handler_EGS_NEW_QUEST_REQ( kTempReq, spUser, true, false ) == false )
 			{
-				START_LOG( cwarn, L"[에픽] New Quest Req Fail.!(After)" )
+				START_LOG( cwarn, L"[Epic] New quest request failed (after)." )
 					<< BUILD_LOG( spUser->GetCharName() )
 					<< BUILD_LOG( mit->first )
 					<< END_LOG;
@@ -4825,7 +4825,7 @@ void KUserQuestManager::CheckLimitLevelQuest( IN KGSUserPtr spUser )
 		const CXSLQuestManager::QuestTemplet* pQuestTemplet = SiCXSLQuestManager()->GetQuestTemplet( mit->first );
 		if( pQuestTemplet == NULL )
 		{
-			START_LOG( clog, L"존재하지 않는 퀘스트 ID입니다! 스크립트 상에서 삭제된 퀘스트 입니다." )
+			START_LOG( clog, L"The quest ID does not exist; it was removed from the script!" )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -4864,7 +4864,7 @@ void KUserQuestManager::Handler_OnEnterTheDungeon( IN KGSUserPtr spUser )
 		const CXSLQuestManager::QuestTemplet* pQuestTemplet = SiCXSLQuestManager()->GetQuestTemplet( kQuestInstance.m_iID );
 		if( pQuestTemplet == NULL )
 		{
-			START_LOG( cerr, L"QUEST TEMPLET 얻어오기 실패.!" )
+			START_LOG( cerr, L"Failed to retrieve the quest template!" )
 				<< BUILD_LOG( kQuestInstance.m_iID )
 				<< BUILD_LOG( spUser->GetCharUID() )
 				<< BUILD_LOG( spUser->GetCharName() )
@@ -4888,7 +4888,7 @@ void KUserQuestManager::Handler_OnEnterTheDungeon( IN KGSUserPtr spUser )
 			const CXSLQuestManager::SubQuestTemplet* pSubQuestTemplet = SiCXSLQuestManager()->GetSubQuestTemplet( pQuestTemplet->m_vecSubQuest[uiIndexSub] );
 			if( pSubQuestTemplet == NULL )
 			{
-				START_LOG( cerr, L"SUB QUEST 가 비어있습니다!" )
+				START_LOG( cerr, L"The sub-quest is empty!" )
 					<< BUILD_LOG( kQuestInstance.m_iID )
 					<< BUILD_LOG( spUser->GetCharUID() )
 					<< BUILD_LOG( spUser->GetCharName() )
@@ -4928,7 +4928,7 @@ void KUserQuestManager::Handler_OnEnterTheDungeon( IN KGSUserPtr spUser )
 
 				kNot.m_vecQuestInst.push_back( kQuestInstance );
 
-				START_LOG( clog, L"퀘스트 SQT_VISIT_DUNGEON 수행" )
+				START_LOG( clog, L"Performing quest SQT_VISIT_DUNGEON." )
 					<< BUILD_LOG( spUser->GetMapID() )
 					<< BUILD_LOG( spUser->GetCharName() )
 					<< BUILD_LOG( spUser->GetUserName() )
@@ -4966,7 +4966,7 @@ void KUserQuestManager::Handler_OnFindNPC( IN KGSUserPtr spUser, std::vector< in
 		const CXSLQuestManager::QuestTemplet* pQuestTemplet = SiCXSLQuestManager()->GetQuestTemplet( kQuestInstance.m_iID );
 		if( pQuestTemplet == NULL )
 		{
-			START_LOG( cerr, L"QUEST TEMPLET 얻어오기 실패.!" )
+			START_LOG( cerr, L"Failed to retrieve the quest template!" )
 				<< BUILD_LOG( kQuestInstance.m_iID )
 				<< BUILD_LOG( spUser->GetCharUID() )
 				<< BUILD_LOG( spUser->GetCharName() )
@@ -4990,7 +4990,7 @@ void KUserQuestManager::Handler_OnFindNPC( IN KGSUserPtr spUser, std::vector< in
 			const CXSLQuestManager::SubQuestTemplet* pSubQuestTemplet = SiCXSLQuestManager()->GetSubQuestTemplet( pQuestTemplet->m_vecSubQuest[uiIndexSub] );
 			if( pSubQuestTemplet == NULL )
 			{
-				START_LOG( cerr, L"SUB QUEST 가 비어있습니다!" )
+				START_LOG( cerr, L"The sub-quest is empty!" )
 					<< BUILD_LOG( kQuestInstance.m_iID )
 					<< BUILD_LOG( spUser->GetCharUID() )
 					<< BUILD_LOG( spUser->GetCharName() )
@@ -5058,7 +5058,7 @@ void KUserQuestManager::Handler_OnFindNPC( IN KGSUserPtr spUser, std::vector< in
 
 			kNot.m_vecQuestInst.push_back( kQuestInstance );
 
-			START_LOG( clog, L"퀘스트 SQT_VISIT_DUNGEON 수행" )
+			START_LOG( clog, L"Performing quest SQT_VISIT_DUNGEON." )
 				<< BUILD_LOG( spUser->GetMapID() )
 				<< BUILD_LOG( spUser->GetCharName() )
 				<< BUILD_LOG( spUser->GetUserName() )
@@ -5085,7 +5085,7 @@ bool KUserQuestManager::CheckCompleteSubQuest_BeforGroup( IN int iQuestID, IN in
 	const CXSLQuestManager::QuestTemplet* pQuestTemplet = SiCXSLQuestManager()->GetQuestTemplet( iQuestID );
 	if( pQuestTemplet == NULL )
 	{
-		START_LOG( cerr, L"QuestTemplet 포인터 이상.!" )
+		START_LOG( cerr, L"Invalid QuestTemplet pointer!" )
 			<< BUILD_LOG( iQuestID )
 			<< END_LOG;
 
@@ -5114,7 +5114,7 @@ bool KUserQuestManager::CheckCompleteSubQuest_BeforGroup( IN int iQuestID, IN in
 	// 그룹을 찾지 못했다
 	if( iGroupID == 0 )
 	{
-		START_LOG( cwarn, L"서브 퀘스트의 그룹 정보를 찾지 못했다. " )
+		START_LOG( cwarn, L"Could not find the sub-quest group information. " )
 			<< BUILD_LOG( iQuestID )
 			<< BUILD_LOG( iSubQuestID )
 			<< END_LOG;
@@ -5233,7 +5233,7 @@ void KUserQuestManager::CheckEpicQuest_EnterDungeon( IN int iDungeonID, IN KGSUs
 
 		if( false == Handler_EGS_NEW_QUEST_REQ(kTempReq, spUser) )
 		{
-			START_LOG( cwarn, L"[에픽] New Quest Req Fail.!(State Change)" )
+			START_LOG( cwarn, L"[Epic] New quest request failed (state change)." )
 				<< BUILD_LOG( spUser->GetCharName() )
 				<< BUILD_LOG( pTemplet->m_iID )
 				<< BUILD_LOG( iDungeonID )
@@ -5295,7 +5295,7 @@ void KUserQuestManager::CheckEpicQuest_EnterBattleField( IN int iMapID, IN KGSUs
 
 		if( false == Handler_EGS_NEW_QUEST_REQ(kTempReq, spUser) )
 		{
-			START_LOG( cwarn, L"[에픽] New Quest Req Fail.!(State Change)" )
+			START_LOG( cwarn, L"[Epic] New quest request failed (state change)." )
 				<< BUILD_LOG( spUser->GetCharName() )
 				<< BUILD_LOG( pTemplet->m_iID )
 				<< BUILD_LOG( iMapID )
@@ -5311,7 +5311,7 @@ bool KUserQuestManager::IsSuitableLevelUser( IN UidType CharUID, IN const std::m
 	std::map< UidType, bool >::const_iterator mit = mapSuitableLevelInfo.find( CharUID );
 	if( mit == mapSuitableLevelInfo.end() )
 	{
-		START_LOG( cwarn, L"적정 레벨 유저 정보가 없당?" )
+		START_LOG( cwarn, L"No user information is available for the recommended level." )
 			<< BUILD_LOG( CharUID )
 			<< BUILD_LOG( mapSuitableLevelInfo.size() )
 			<< END_LOG;
@@ -5369,7 +5369,7 @@ void KUserQuestManager::Handler_EGS_SKILL_USE_REQ( IN int iSkillID, IN KGSUserPt
 
 								kNot.m_vecQuestInst.push_back( kQuestInstance );
 
-								START_LOG( clog, L"퀘스트 SQT_SKILL_USE 수행" )
+								START_LOG( clog, L"Processing quest SQT_SKILL_USE" )
 									<< BUILD_LOG( iSkillID )
 									<< BUILD_LOG( spUser->GetCharName() )
 									<< BUILD_LOG( spUser->GetUserName() )
@@ -5384,7 +5384,7 @@ void KUserQuestManager::Handler_EGS_SKILL_USE_REQ( IN int iSkillID, IN KGSUserPt
 					}
 					else
 					{
-						START_LOG( cerr, L"SUB QUEST TEMPLET 얻어오기 실패.!" )
+						START_LOG( cerr, L"Failed to retrieve the sub-quest template!" )
 							<< BUILD_LOG( pQuestTemplet->m_vecSubQuest[iIndexSub] )
 							<< BUILD_LOG( spUser->GetCharUID() )
 							<< BUILD_LOG( spUser->GetCharName() )
@@ -5397,7 +5397,7 @@ void KUserQuestManager::Handler_EGS_SKILL_USE_REQ( IN int iSkillID, IN KGSUserPt
 		}
 		else
 		{
-			START_LOG( cerr, L"QUEST TEMPLET 얻어오기 실패.!" )
+			START_LOG( cerr, L"Failed to retrieve the quest template!" )
 				<< BUILD_LOG( kQuestInstance.m_iID )
 				<< BUILD_LOG( spUser->GetCharUID() )
 				<< BUILD_LOG( spUser->GetCharName() )
@@ -5431,7 +5431,7 @@ void KUserQuestManager::Handler_OnLearnNewSkill( IN KGSUserPtr spUser, IN std::v
 		const CXSLQuestManager::QuestTemplet* pQuestTemplet = SiCXSLQuestManager()->GetQuestTemplet( pkQuestInstance->m_iID );
 		if( pQuestTemplet == NULL )
 		{
-			START_LOG( cerr, L"QUEST TEMPLET 얻어오기 실패.!" )
+			START_LOG( cerr, L"Failed to retrieve the quest template!" )
 				<< BUILD_LOG( pkQuestInstance->m_iID )
 				<< BUILD_LOG( spUser->GetCharUID() )
 				<< BUILD_LOG( spUser->GetCharName() )
@@ -5456,7 +5456,7 @@ void KUserQuestManager::Handler_OnLearnNewSkill( IN KGSUserPtr spUser, IN std::v
 			const CXSLQuestManager::SubQuestTemplet* pSubQuestTemplet = SiCXSLQuestManager()->GetSubQuestTemplet( pQuestTemplet->m_vecSubQuest[iIndexSub] );
 			if( pSubQuestTemplet == NULL )
 			{
-				START_LOG( cerr, L"SUB QUEST TEMPLET 얻어오기 실패.!" )
+				START_LOG( cerr, L"Failed to retrieve the sub-quest template!" )
 					<< BUILD_LOG( pQuestTemplet->m_vecSubQuest[iIndexSub] )
 					<< BUILD_LOG( spUser->GetCharUID() )
 					<< BUILD_LOG( spUser->GetCharName() )
@@ -5494,7 +5494,7 @@ void KUserQuestManager::Handler_OnLearnNewSkill( IN KGSUserPtr spUser, IN std::v
 
 			kNot.m_vecQuestInst.push_back( *pkQuestInstance );
 
-			START_LOG( clog, L"새로운 스킬 배우기 퀘스트 수행!" )
+			START_LOG( clog, L"Processing learn-new-skill quest!" )
 				<< BUILD_LOG( spUser->GetCharName() )
 				<< BUILD_LOG( spUser->GetUserName() )
 				<< BUILD_LOG( pSubQuestTemplet->m_wstrDescription )

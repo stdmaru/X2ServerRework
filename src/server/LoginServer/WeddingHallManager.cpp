@@ -116,7 +116,7 @@ bool KWeddingHallManager::AddWeddingInfo( IN KWeddingHallInfo& kWeddingInfo )
 	std::map< int, KWeddingHallInfo >::iterator mit = m_mapWeddingHallDBData.find( kWeddingInfo.m_iWeddingUID );
 	if( mit != m_mapWeddingHallDBData.end() )
 	{
-		START_LOG( cerr, L"[테스트]존재하는 결혼식 정보 입니다. 중복 정보 입력 하려 합니다." )
+		START_LOG( cerr, L"[Test] Wedding information already exists; attempting to insert a duplicate." )
 			<< BUILD_LOG( kWeddingInfo.m_iWeddingUID )
 			<< BUILD_LOG( kWeddingInfo.m_iGroom )
 			<< BUILD_LOG( kWeddingInfo.m_iBride )
@@ -139,7 +139,7 @@ bool KWeddingHallManager::UpdateWeddingInfo( IN KWeddingHallInfo& kWeddingInfo )
 	std::map< int, KWeddingHallInfo >::iterator mit = m_mapWeddingHallDBData.find( kWeddingInfo.m_iWeddingUID );
 	if( mit == m_mapWeddingHallDBData.end() )
 	{
-		START_LOG( cerr, L"[테스트]존재하지 않는 결혼식 UID 가 아닙니다." )
+		START_LOG( cerr, L"[Test] Wedding UID does not exist." )
 			<< BUILD_LOG( kWeddingInfo.m_iWeddingUID )
 			<< END_LOG;
 
@@ -154,7 +154,7 @@ bool KWeddingHallManager::DeleteWeddingInfo( IN int iWeddingUID )
 {
 	if( iWeddingUID <= 0 )
 	{
-		START_LOG( cerr, L"정상적인 결혼식 UID 가 아닙니다." )
+		START_LOG( cerr, L"Invalid wedding UID." )
 			<< BUILD_LOG( iWeddingUID )
 			<< END_LOG;
 
@@ -164,7 +164,7 @@ bool KWeddingHallManager::DeleteWeddingInfo( IN int iWeddingUID )
 	std::map< int, KWeddingHallInfo >::iterator mit = m_mapWeddingHallDBData.find( iWeddingUID );
 	if( mit == m_mapWeddingHallDBData.end() )
 	{
-		START_LOG( cerr, L"[테스트]존재하지 않는 결혼식 UID 가 아닙니다." )
+		START_LOG( cerr, L"[Test] Wedding UID does not exist." )
 			<< BUILD_LOG( iWeddingUID )
 			<< END_LOG;
 
@@ -180,7 +180,7 @@ bool KWeddingHallManager::GetWeddingInfo( IN int iWeddingUID, OUT KWeddingHallIn
 {
 	if( iWeddingUID <= 0 )
 	{
-		START_LOG( cerr, L"정상적인 결혼식 UID 가 아닙니다." )
+		START_LOG( cerr, L"Invalid wedding UID." )
 			<< BUILD_LOG( iWeddingUID )
 			<< END_LOG;
 
@@ -190,7 +190,7 @@ bool KWeddingHallManager::GetWeddingInfo( IN int iWeddingUID, OUT KWeddingHallIn
 	std::map< int, KWeddingHallInfo >::iterator mit = m_mapWeddingHallDBData.find( iWeddingUID );
 	if( mit == m_mapWeddingHallDBData.end() )
 	{
-		START_LOG( cerr, L"[테스트]존재하지 않는 결혼식 UID 가 아닙니다." )
+		START_LOG( cerr, L"[Test] Wedding UID does not exist." )
 			<< BUILD_LOG( iWeddingUID )
 			<< END_LOG;
 

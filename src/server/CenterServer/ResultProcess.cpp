@@ -757,7 +757,7 @@ bool KResultProcess::Result_DUNGEON( IN OUT KRoomUserManagerPtr spRoomUserManage
 	const int iEndNumMember = spRoomUserManager->GetNumMember();
 	if( iEndNumMember <= 0 )
 	{
-		START_LOG( cerr, L"남은 유저가 없는데 결과처리가 실행됨.!" )
+		START_LOG( cerr, L"Result processing started with no users remaining!" )
 			<< BUILD_LOG( iEndNumMember )
 			<< END_LOG;
 
@@ -826,7 +826,7 @@ bool KResultProcess::Result_DUNGEON( IN OUT KRoomUserManagerPtr spRoomUserManage
 		KRoomUserPtr spRoomUser = spRoomUserManager->GetUser( i );
 		if( spRoomUser == NULL )
 		{
-			START_LOG( cerr, L"룸유저 포인터 이상.!" )
+			START_LOG( cerr, L"Invalid room user pointer!" )
 				<< BUILD_LOG( i )
 				<< END_LOG;
 			continue;
@@ -883,7 +883,7 @@ bool KResultProcess::Result_DUNGEON( IN OUT KRoomUserManagerPtr spRoomUserManage
 						spRoomUser->AddItem( mitHR->second.m_iItemID, mitHR->second.m_iQuantity );
 
 						//////////////////////////////////////////////////////////////////////////
-						START_LOG( clog, L"도전 보상!" )
+						START_LOG( clog, L"Challenge reward!" )
 							<< BUILD_LOG( spRoomUser->GetNickName() )
 							<< BUILD_LOG( mitHR->second.m_iItemID )
 							<< BUILD_LOG( mitHR->second.m_iQuantity );
@@ -892,7 +892,7 @@ bool KResultProcess::Result_DUNGEON( IN OUT KRoomUserManagerPtr spRoomUserManage
 				}
 				else
 				{
-					START_LOG( cerr, L"헤니르의 시공 도전 보상 정보를 찾지 못하였습니다." )
+					START_LOG( cerr, L"Could not find Henir challenge reward information." )
 						<< BUILD_LOG( kDungeonUnitInfo.m_UnitUID )
 						<< BUILD_LOG( iStageID )
 						<< END_LOG;
@@ -1013,7 +1013,7 @@ bool KResultProcess::Result_DUNGEON( IN OUT KRoomUserManagerPtr spRoomUserManage
 				const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( CXSLItem::RI_AUTO_PARTY_BONUS );
 				if( pItemTemplet == NULL )
 				{
-					START_LOG( cerr, L"아이템 정보가 존재하지 않습니다! 보상 지급 실패!" )
+					START_LOG( cerr, L"Item information does not exist; failed to grant reward!" )
 						<< BUILD_LOG( CXSLItem::RI_AUTO_PARTY_BONUS )
 						<< END_LOG;
 				}
@@ -1070,7 +1070,7 @@ bool KResultProcess::Result_DUNGEON( IN OUT KRoomUserManagerPtr spRoomUserManage
 				//}}
 				else
 				{
-					START_LOG( cerr, L"헤니르의 시공 보상 정보를 찾지 못하였습니다." )
+					START_LOG( cerr, L"Could not find Henir reward information." )
 						<< BUILD_LOG( iClearStageCount )
 						<< BUILD_LOGc( cDungeonMode )
 						<< END_LOG;
@@ -1435,7 +1435,7 @@ int KResultProcess::DecidePVPWinTeam( IN const float fTotalPlayTime, IN const fl
 
 		if( !pkRoomUser )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( i )
 				<< END_LOG;
 		}
@@ -1515,7 +1515,7 @@ int KResultProcess::DecidePVPWinTeam( IN const float fTotalPlayTime, IN const fl
 			}
 			else
 			{
-				START_LOG( cwarn, L"승리팀 식별중 남은팀이 한팀도 없음.!" )
+				START_LOG( cwarn, L"No teams remain while identifying the winning team!" )
 					<< BUILD_LOG( spRoomUserManager->GetNumMember() )
 					<< END_LOG;
 
@@ -1596,7 +1596,7 @@ void KResultProcess::AddDungeonPartyBonus_LUA( float fTwo, float fThree, float f
 	m_fPartyBonus[NUM_03]	= fThree;
 	m_fPartyBonus[NUM_04]	= fFour;
 
-	START_LOG( cout2, L"던전게임 파티 보너스 확률.!" )
+	START_LOG( cout2, L"Dungeon-party bonus probability!" )
 		<< BUILD_LOG( m_fPartyBonus[NUM_02] )
 		<< BUILD_LOG( m_fPartyBonus[NUM_03] )
 		<< BUILD_LOG( m_fPartyBonus[NUM_04] )
@@ -1610,7 +1610,7 @@ float KResultProcess::GetDungeonPartyBonusRate( int iNumber )
 		return m_fPartyBonus[iNumber];
 	}
 
-	START_LOG( cerr, L"던전게임 파티 인원수가 잘못되었음." )
+	START_LOG( cerr, L"Invalid dungeon-party member count." )
 		<< BUILD_LOG( iNumber )
 		<< END_LOG;
 
@@ -1848,7 +1848,7 @@ bool KResultProcess::Result_DefenceDUNGEON( IN OUT KRoomUserManagerPtr spRoomUse
 	const int iEndNumMember = spRoomUserManager->GetNumMember();
 	if( iEndNumMember <= 0 )
 	{
-		START_LOG( cerr, L"남은 유저가 없는데 결과처리가 실행됨.!" )
+		START_LOG( cerr, L"Result processing started with no users remaining!" )
 			<< BUILD_LOG( iEndNumMember )
 			<< END_LOG;
 
@@ -1917,7 +1917,7 @@ bool KResultProcess::Result_DefenceDUNGEON( IN OUT KRoomUserManagerPtr spRoomUse
 		KRoomUserPtr spRoomUser = spRoomUserManager->GetUser( i );
 		if( spRoomUser == NULL )
 		{
-			START_LOG( cerr, L"룸유저 포인터 이상.!" )
+			START_LOG( cerr, L"Invalid room user pointer!" )
 				<< BUILD_LOG( i )
 				<< END_LOG;
 			continue;
@@ -2034,7 +2034,7 @@ bool KResultProcess::Result_DefenceDUNGEON( IN OUT KRoomUserManagerPtr spRoomUse
 			const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( CXSLItem::RI_AUTO_PARTY_BONUS );
 			if( pItemTemplet == NULL )
 			{
-				START_LOG( cerr, L"아이템 정보가 존재하지 않습니다! 보상 지급 실패!" )
+				START_LOG( cerr, L"Item information does not exist; failed to grant reward!" )
 					<< BUILD_LOG( CXSLItem::RI_AUTO_PARTY_BONUS )
 					<< END_LOG;
 			}
@@ -2291,7 +2291,7 @@ float KResultProcess::GetDungeonModePartyBonusRate( char cDungeonMode )
 		}break;
 	default:
 		{
-			START_LOG( cerr, L"던전게임 모드가 잘못되었음." )
+			START_LOG( cerr, L"Invalid dungeon-game mode." )
 				<< BUILD_LOG( cDungeonMode )
 				<< END_LOG;
 		}
@@ -2312,7 +2312,7 @@ float KResultProcess::GetDungeonPartyDifficultyBonusRate( char cDifficulty )
 		}break;
 	default:
 		{
-			START_LOG( cerr, L"던전게임 난이도가 잘못되었음." )
+			START_LOG( cerr, L"Invalid dungeon-game difficulty." )
 				<< BUILD_LOG( cDifficulty )
 				<< END_LOG;
 		}
@@ -2327,7 +2327,7 @@ void KResultProcess::AddDungeonPartyDifficultyBonus_LUA( float fNormal, float fH
 	m_fPartyDifficultyBonus[CXSLDungeon::DL_HARD]	= fHard;
 	m_fPartyDifficultyBonus[CXSLDungeon::DL_EXPERT]	= fExpert;
 
-	START_LOG( cout2, L"던전게임 파티 난이도 보너스 확률.!" )
+	START_LOG( cout2, L"Dungeon-party difficulty bonus probability!" )
 		<< BUILD_LOG( m_fPartyDifficultyBonus[CXSLDungeon::DL_NORMAL] )
 		<< BUILD_LOG( m_fPartyDifficultyBonus[CXSLDungeon::DL_HARD] )
 		<< BUILD_LOG( m_fPartyDifficultyBonus[CXSLDungeon::DL_EXPERT] )
@@ -2340,7 +2340,7 @@ void KResultProcess::AddDungeonModePartyBonus_LUA( float fNormal, float fHenir, 
 	m_fDungeonModePartyBonus[CXSLDungeon::DT_HENIR]		= fHenir;
 	m_fDungeonModePartyBonus[CXSLDungeon::DT_SECRET]	= fSecret;
 
-	START_LOG( cout2, L"던전게임 모드 난이도 보너스 확률.!" )
+	START_LOG( cout2, L"Dungeon-game mode difficulty bonus probability!" )
 		<< BUILD_LOG( m_fDungeonModePartyBonus[CXSLDungeon::DT_NORMAL] )
 		<< BUILD_LOG( m_fDungeonModePartyBonus[CXSLDungeon::DT_HENIR] )
 		<< BUILD_LOG( m_fDungeonModePartyBonus[CXSLDungeon::DT_SECRET] )

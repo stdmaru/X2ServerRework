@@ -249,7 +249,7 @@ void KLBSUdpEcho::_ProcessRecvData()
 
 					pkActor->SetP2PInternalPort( kXPT_PORT_CHECK_REQ.m_usInternalPort );
 
-					START_LOG( clog, L"IP, 포트 확인" )
+					START_LOG( clog, L"Checking IP address and port." )
 						<< BUILD_LOG( pkActor->GetP2PInternalIP() )
 						<< BUILD_LOG( kXPT_PORT_CHECK_REQ.m_usInternalPort )
 						<< END_LOG;
@@ -258,7 +258,7 @@ void KLBSUdpEcho::_ProcessRecvData()
 				}
 				else
 				{
-					START_LOG( cwarn, L"pkActor 찾기 실패.!" )
+					START_LOG( cwarn, L"Failed to find pkActor." )
 						<< BUILD_LOG( kXPT_PORT_CHECK_REQ.m_UserUID )
 						<< END_LOG;
 				}

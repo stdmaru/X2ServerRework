@@ -91,7 +91,7 @@ void KAbuserLogManager::SetAbuserEventLogEnable_LUA( bool bEnable )
 {
     m_bAbuserEventLogEnable = bEnable;
 
-	START_LOG( cout, L"어뷰저 이벤트 로그 동작 여부!" )
+	START_LOG( cout, L"Abuser event logging enabled: " )
 		<< BUILD_LOG( m_bAbuserEventLogEnable );
 }
 
@@ -100,7 +100,7 @@ void KAbuserLogManager::SetAbuserCheckLevelUp_LUA( bool bEnable )
 {
 	m_bAbuserCheckLevelUp = bEnable;
 
-	START_LOG( cout, L"레벨업 간격 체크 동작 여부!" )
+	START_LOG( cout, L"Level-up interval check enabled: " )
 		<< BUILD_LOG( m_bAbuserCheckLevelUp );
 }
 //}}
@@ -117,7 +117,7 @@ void KAbuserLogManager::AddJoinAccountCheckIP_LUA( const char* pIP )
 {
 	if( pIP == NULL )
 	{
-		START_LOG( cerr, L"IP 스트링 이상." )
+		START_LOG( cerr, L"Invalid IP string." )
 			<< END_LOG;
 
 		return;
@@ -126,7 +126,7 @@ void KAbuserLogManager::AddJoinAccountCheckIP_LUA( const char* pIP )
 	std::string strIP = pIP;
 	if( strIP.size() < 1 || strIP.size() > 15 )
 	{
-		START_LOG( cerr, L"추가하려는 IP 이상." )
+		START_LOG( cerr, L"Invalid IP address to add." )
 			<< BUILD_LOG( strIP.size() )
 			<< END_LOG;
 
@@ -149,7 +149,7 @@ void KAbuserLogManager::SetGetItemCountMinMax_LUA( int iGetItemCountMin, int iGe
 	m_iGetItemCountMin = iGetItemCountMin;
 	m_iGetItemCountMax = iGetItemCountMax;
 
-	START_LOG( cout, L"오토핵 유저 아이템 획득 카운트 체크!" )
+	START_LOG( cout, L"Checking item acquisition counts for suspected bot users." )
 		<< BUILD_LOG( m_iGetItemCountMin )
 		<< BUILD_LOG( m_iGetItemCountMax );
 }
@@ -289,7 +289,7 @@ int KAbuserLogManager::ChangeEnchantAbuserResult( int iEnchantResult )
 	case NetError::ERR_ENCHANT_RESULT_04: return ERS_BROKEN;
 	default:
 		{
-			START_LOG( cerr, L"정의 되지 않은 강화 결과입니다." )
+			START_LOG( cerr, L"Undefined enhancement result." )
 				<< BUILD_LOG( iEnchantResult )
 				<< END_LOG;
 		}
@@ -352,7 +352,7 @@ bool KAbuserLogManager::JoinAccountCheckIP( const std::wstring& wstrIP ) const
 	std::string strIP = KncUtil::toNarrowString( wstrIP );
 	if( strIP.size() < 1 || strIP.size() > 15 )
 	{
-		START_LOG( cerr, L"비교하려는 IP 길이 이상." )
+		START_LOG( cerr, L"Invalid IP address length for comparison." )
 			<< BUILD_LOG( strIP.size() )
 			<< END_LOG;
 
@@ -365,7 +365,7 @@ bool KAbuserLogManager::JoinAccountCheckIP( const std::wstring& wstrIP ) const
 	{
 		if( vit->size() < 1 || vit->size() > 15 )
 		{
-			START_LOG( cerr, L"비교하려는 IP 이상." )
+			START_LOG( cerr, L"Invalid IP address for comparison." )
 				<< BUILD_LOG( vit->size() )
 				<< END_LOG;
 

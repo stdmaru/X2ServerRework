@@ -27,7 +27,7 @@ void KGSLogDBThread2nd::ProcessEvent( const KEventPtr& spEvent_ )
         CASE( DBE_CHANNEL_LIST_REQ );
 
     default:
-        START_LOG( cerr, L"이벤트 핸들러가 정의되지 않았음. " << spEvent_->GetIDStr() );
+        START_LOG( cerr, L"No event handler is defined. " << spEvent_->GetIDStr() );
 
     }
 }
@@ -93,7 +93,7 @@ IMPL_ON_FUNC( DBE_CHANNEL_LIST_REQ )
 
                 if( iChannelID != mit->first )
                 {
-                    START_LOG( cerr, L"채널 보너스 정보가 이상합니다" )
+                    START_LOG( cerr, L"Invalid channel bonus information." )
                         << BUILD_LOG( iChannelID )
                         << BUILD_LOG( mit->first )
                         << END_LOG;

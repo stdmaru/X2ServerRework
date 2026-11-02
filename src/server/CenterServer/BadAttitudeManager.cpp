@@ -52,7 +52,7 @@ bool KBadAttitudeManager::RemoveUnit( IN UidType iUnitUID, OUT KBadAttitudeInfo&
 
 		m_mapUnitInfoList.erase( mit );
 
-		START_LOG( clog, L"유저 삭제 성공!" )
+		START_LOG( clog, L"User removed successfully!" )
 			<< BUILD_LOG( iUnitUID )
 			<< BUILD_LOG( iBeforeUnitCount )
 			<< BUILD_LOG( static_cast<int>(m_mapUnitInfoList.size()) )
@@ -60,7 +60,7 @@ bool KBadAttitudeManager::RemoveUnit( IN UidType iUnitUID, OUT KBadAttitudeInfo&
 	}
 	else
 	{
-		START_LOG( cerr, L"존재하지 않는 유저를 지우려고 합니다." )
+		START_LOG( cerr, L"Attempting to remove a nonexistent user." )
 			<< BUILD_LOG( iUnitUID )
 			<< BUILD_LOG( static_cast<int>(m_mapUnitInfoList.size()) )
 			<< END_LOG;
@@ -92,7 +92,7 @@ void KBadAttitudeManager::IncreaseBadAttitudeOnePoint( IN UidType iUnitUID )
 	}
 	else
 	{
-		START_LOG( cerr, L"존재하지 않는 유저에게 불량 점수를 추가하려고 합니다." )
+		START_LOG( cerr, L"Attempted to add abuser points to a nonexistent user." )
 			<< BUILD_LOG( iUnitUID )
 			<< BUILD_LOG( static_cast<int>(m_mapUnitInfoList.size()) )
 			<< END_LOG;
@@ -104,7 +104,7 @@ void KBadAttitudeManager::IncreaseVoteOnePoint( IN UidType iBadAttitudeUnitUID, 
 	std::map<UidType, KBadAttitudeInfo>::iterator mitVoteUnit = m_mapUnitInfoList.find( iVoteUnitUID );
 	if( mitVoteUnit == m_mapUnitInfoList.end() )
 	{
-		START_LOG( cerr, L"존재하지 않는 유저가 투표하려 합니다." )
+		START_LOG( cerr, L"A nonexistent user is attempting to vote." )
 			<< BUILD_LOG( iBadAttitudeUnitUID )
 			<< BUILD_LOG( iVoteUnitUID )
 			<< END_LOG;
@@ -123,7 +123,7 @@ void KBadAttitudeManager::IncreaseVoteOnePoint( IN UidType iBadAttitudeUnitUID, 
 		}
 		else
 		{
-			START_LOG( clog, L"중보 투표를 하려고 합니다." )
+			START_LOG( clog, L"Starting miniboss vote." )
 				<< BUILD_LOG( iBadAttitudeUnitUID )
 				<< BUILD_LOG( iVoteUnitUID )
 				<< BUILD_LOG( static_cast<int>(mit->second.m_setVotedUnitUID.size()) )
@@ -132,7 +132,7 @@ void KBadAttitudeManager::IncreaseVoteOnePoint( IN UidType iBadAttitudeUnitUID, 
 	}
 	else
 	{
-		START_LOG( cerr, L"존재하지 않는 유저에게 강퇴 투표 점수를 추가하려고 합니다." )
+		START_LOG( cerr, L"Attempted to add kick-vote points to a nonexistent user." )
 			<< BUILD_LOG( iBadAttitudeUnitUID )
 			<< BUILD_LOG( iVoteUnitUID )
 			<< BUILD_LOG( static_cast<int>(m_mapUnitInfoList.size()) )
@@ -151,7 +151,7 @@ void KBadAttitudeManager::CheckBadAttitudeUnit( OUT std::vector<UidType>& vecNew
 
 	if( iBadAttitudeCutLinePoint <= 0 || iForceExitPoint <= 0 )
 	{
-		START_LOG( cerr, L"던전 타입별 불량 점수 강퇴 추가 점수 값이 이상합니다." )
+		START_LOG( cerr, L"Invalid additional kick points for abuser score by dungeon type." )
 			<< BUILD_LOG( m_eDungeonType )
 			<< BUILD_LOG( iBadAttitudeCutLinePoint )
 			<< BUILD_LOG( iForceExitPoint )
@@ -278,7 +278,7 @@ void KBadAttitudeManager::SetUnitSubStageInfo( IN UidType iUnitUID, IN int iStag
 {
 	if( iStage < 0 || iSubStage < 0 )
 	{
-		START_LOG( cerr, L"스테이지 구분 값이 이상합니다." )
+		START_LOG( cerr, L"Invalid stage classification value." )
 			<< BUILD_LOG( iUnitUID )
 			<< BUILD_LOG( iStage )
 			<< BUILD_LOG( iSubStage )
@@ -292,7 +292,7 @@ void KBadAttitudeManager::SetUnitSubStageInfo( IN UidType iUnitUID, IN int iStag
 	std::map<UidType, KBadAttitudeInfo>::iterator mit = m_mapUnitInfoList.find( iUnitUID );
 	if( mit == m_mapUnitInfoList.end() )
 	{
-		START_LOG( cerr, L"존재하지 않는 유저에 값을 셋팅 하려 합니다." )
+		START_LOG( cerr, L"Attempted to set a value for a nonexistent user." )
 			<< BUILD_LOG( iUnitUID )
 			<< BUILD_LOG( iStage )
 			<< BUILD_LOG( iSubStage )
@@ -305,7 +305,7 @@ void KBadAttitudeManager::SetUnitSubStageInfo( IN UidType iUnitUID, IN int iStag
 
 	if( iStage < mit->second.m_kRankInfo.m_iStage && iSubStage < mit->second.m_kRankInfo.m_iSubStage )
 	{
-		START_LOG( cerr, L"새로운 서브 스테이지 정보가 아닙니다" )
+		START_LOG( cerr, L"This is not new substage information." )
 			<< BUILD_LOG( iUnitUID )
 			<< BUILD_LOG( iStage )
 			<< BUILD_LOG( iSubStage )
@@ -325,7 +325,7 @@ void KBadAttitudeManager::SetUnitSubStageInfo( IN UidType iUnitUID, IN int iStag
 	}
 	else
 	{
-		START_LOG( clog, L"존재하지 않는 스테이지, 서브 스테이지에서의 몬스터 점수를 얻으려 합니다." )
+		START_LOG( clog, L"Attempted to retrieve monster score for a nonexistent stage or substage." )
 			<< BUILD_LOG( iStage )
 			<< BUILD_LOG( iSubStage )
 			<< END_LOG;
@@ -403,7 +403,7 @@ void KBadAttitudeManager::SetDefenceDungeonWaveID( IN int iWaveID )
 {
 	if( m_iWaveID > iWaveID )
 	{
-		START_LOG( cerr, L"이전 wave id 가 큽니다?!" )
+		START_LOG( cerr, L"Previous wave ID is greater than expected?!" )
 			<< BUILD_LOG( m_iWaveID )
 			<< BUILD_LOG( iWaveID )
 			<< END_LOG;
@@ -421,7 +421,7 @@ bool KBadAttitudeManager::GetUnitData( IN UidType iUnitUID, OUT KBadAttitudeInfo
 	}
 	else
 	{
-		START_LOG( cerr, L"존재하지 않는 유저의 정보를 얻으로 합니다." )
+		START_LOG( cerr, L"Attempting to retrieve information for a nonexistent user." )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 

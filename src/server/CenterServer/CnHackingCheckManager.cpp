@@ -79,7 +79,7 @@ void KCnHackingCheckManager::SetDungeonResultCheckEnable_LUA( bool bVal )
 {
 	m_bDungeonResultCheckEnable = bVal;
 
-	START_LOG( cout, L"던전 클리어 결과 핵 유저 체크 동작 여부 설정!" )
+	START_LOG( cout, L"Set whether to check for hacks in dungeon-clear results!" )
 		<< BUILD_LOG( IsDungeonResultCheckEnable() );
 }
 
@@ -131,7 +131,7 @@ bool KCnHackingCheckManager::SetDungeonResultHackUserCheckData_LUA()
 		luaManager.EndTable();
 	}
 
-	START_LOG( cout, L"[ 던전 결과 핵 유저 체크 설정 ]" )
+	START_LOG( cout, L"[ Dungeon-result hack check settings ]" )
 		<< BUILD_LOG( m_kDungeonResultCheckData.m_bClear )
 		<< BUILD_LOG( m_kDungeonResultCheckData.m_iStartedMember )
 		<< BUILD_LOG( m_kDungeonResultCheckData.m_eComboRank )
@@ -154,7 +154,7 @@ void KCnHackingCheckManager::SetDungeonClearTimeCheckEnable_LUA( bool bVal )
 {
 	m_bDungeonClearTimeCheckEnable = bVal;
 
-	START_LOG( cout, L"던전 클리어 타임 핵 유저 체크 동작 여부 설정!" )
+	START_LOG( cout, L"Set whether to check for hacks in dungeon-clear times!" )
 		<< BUILD_LOG( IsDungeonClearTimeCheckEnable() );
 }
 
@@ -200,7 +200,7 @@ bool KCnHackingCheckManager::SetDungeonClearTimeHackUserCheckData_LUA()
 		luaManager.EndTable();
 	}
 
-	START_LOG( cout, L"[ 던전 클리어 타임 핵 유저 체크 설정 ]" )
+	START_LOG( cout, L"[ Dungeon-clear-time hack check settings ]" )
 		<< BUILD_LOG( m_kDungeonClearTimeCheckData.m_bClear )
 		<< BUILD_LOG( m_kDungeonClearTimeCheckData.m_iStartedMember )
 		<< BUILD_LOG( m_kDungeonClearTimeCheckData.m_setCheckUnitClass.size() )
@@ -221,7 +221,7 @@ void KCnHackingCheckManager::SetHenirClearTimeCheckEnable_LUA( bool bVal )
 {
     m_bHenirClearTimeCheckEnable = bVal;
 
-    START_LOG( cout, L"헤니르시공 클리어 타임 핵 유저 체크 동작 여부 설정!" )
+    START_LOG( cout, L"Set whether to check Henir clear times for hacks!" )
         << BUILD_LOG( IsHenirClearTimeCheckEnable() );
 }
 bool KCnHackingCheckManager::SetHenirClearTimeHackUserCheckData_LUA()
@@ -359,7 +359,7 @@ bool KCnHackingCheckManager::CheckDungeonClearTimeAutoHackUser( IN const char cA
 	// 10. 운영자라면 패스!
 	if( cAuthLevel >= SEnum::UAL_GM )
 	{
-		START_LOG( cout, L"비정상적인 플레이를 했지만 운영자 등급이므로 핵유저로 처리하지 않습니다!" )
+		START_LOG( cout, L"Abnormal gameplay detected, but the user has administrator privileges and will not be flagged as a hacker." )
 			<< BUILD_LOGc( cAuthLevel )
 			<< BUILD_LOG( iUserUID )
 			<< BUILD_LOG( iDungeonID )
@@ -401,20 +401,20 @@ void KCnHackingCheckManager::Tick()
 	CTime tCurTime = CTime::GetCurrentTime();
 	CTime t30MinutesBeforeTime = tCurTime - CTimeSpan( 0, 0, 30, 0 );
 
-	kPacketNot.m_wstrSMSMessage += L"[던전10초만에깬 유저 출현!] ";
+	kPacketNot.m_wstrSMSMessage += L"[A user cleared the dungeon in 10 seconds!] ";
 	kPacketNot.m_wstrSMSMessage += (const wchar_t*)t30MinutesBeforeTime.Format(_T("%Y-%m-%d %H:%M:%S"));
 	kPacketNot.m_wstrSMSMessage += L" ~ ";
 	kPacketNot.m_wstrSMSMessage += (const wchar_t*)tCurTime.Format(_T("%Y-%m-%d %H:%M:%S"));
 	kPacketNot.m_wstrSMSMessage += L", [";
-	kPacketNot.m_wstrSMSMessage += x2::str( x2::wformat( L"%d회" ) % iDungeonClearTimeCheckCount );
+	kPacketNot.m_wstrSMSMessage += x2::str( x2::wformat( L"%d times" ) % iDungeonClearTimeCheckCount );
 	kPacketNot.m_wstrSMSMessage += L"]";
 	kPacketNot.m_wstrSMSMessage += L", [";
-	kPacketNot.m_wstrSMSMessage += x2::str( x2::wformat( L"%d계정" ) % uiCheckUserCount );
+	kPacketNot.m_wstrSMSMessage += x2::str( x2::wformat( L"%d accounts" ) % uiCheckUserCount );
 	kPacketNot.m_wstrSMSMessage += L"]";
 
 	SendToSMSDB( DBE_SEND_PHONE_MSG_NOT, kPacketNot );
 
-	START_LOG( cout, L"오토핵 유저 출현! SMS 문자 전송!" )
+	START_LOG( cout, L"Auto-hack user detected; sending SMS!" )
 		<< BUILD_LOG( kPacketNot.m_wstrSMSMessage )
 		<< BUILD_LOG( m_vecPhoneNumList.size() );
 }

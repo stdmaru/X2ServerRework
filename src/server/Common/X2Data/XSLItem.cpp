@@ -446,7 +446,7 @@ bool CXSLItem::UpdateEnchantedItemCubeReward( IN const int iCubeItemID, IN OUT K
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( kInsertItemInfo.m_iItemID );
 	if( pItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"아이템 정보 가 없습니다." )
+		START_LOG( cerr, L"Item information does not exist." )
 			<< BUILD_LOG( iCubeItemID )
 			<< BUILD_LOG( kInsertItemInfo.m_iItemID )
 			<< END_LOG;

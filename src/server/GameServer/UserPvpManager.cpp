@@ -152,7 +152,7 @@ void KUserPvpManager::AdjustInitValue( IN const UidType iUnitUID )
 {
 	if( ( m_ePvpRank < CXSLUnit::PVPRANK_RANK_E ) || ( CXSLUnit::PVPRANK_RANK_SSS < m_ePvpRank ) )
 	{
-		START_LOG( cerr, L"있을 수 없는 랭크 정보가 들어왔습니다!! DB 데이터 점검 및 코드 오류 체크가 필요합니다!!")
+		START_LOG( cerr, L"Received impossible rank information; check database data and code for errors!")
 			<< BUILD_LOG( iUnitUID )
 			<< BUILD_LOG( m_ePvpRank )
 			<< END_LOG;
@@ -160,7 +160,7 @@ void KUserPvpManager::AdjustInitValue( IN const UidType iUnitUID )
 
 	if( m_iAPoint < KPMV_AP_MIN )
 	{
-		START_LOG( cerr, L"있을 수 없는 AP 정보가 들어왔습니다!! DB 데이터 점검 및 코드 오류 체크가 필요합니다!!")
+		START_LOG( cerr, L"Received impossible AP information; check database data and code for errors!")
 			<< BUILD_LOG( iUnitUID )
 			<< BUILD_LOG( m_iAPoint )
 			<< END_LOG;
@@ -168,7 +168,7 @@ void KUserPvpManager::AdjustInitValue( IN const UidType iUnitUID )
 
 	if( m_fKFactor < static_cast<float>( KPMV_KFACTOR_MIN ) )
 	{
-		START_LOG( cerr, L"KFactor가 최소 수치보다 작습니다. 최소 수치로 보정합니다.")
+		START_LOG( cerr, L"KFactor is below the minimum; clamping it to the minimum.")
 			<< BUILD_LOG( iUnitUID )
 			<< BUILD_LOG( m_fKFactor )
 			<< BUILD_LOG( KPMV_KFACTOR_MIN )
@@ -178,7 +178,7 @@ void KUserPvpManager::AdjustInitValue( IN const UidType iUnitUID )
 	}
 	else if( static_cast<float>( KPMV_KFACTOR_MAX ) < m_fKFactor )
 	{
-		START_LOG( cerr, L"KFactor가 최대 수치보다 큽니다. 최대 수치로 보정합니다.")
+		START_LOG( cerr, L"KFactor exceeds the maximum; clamping it to the maximum.")
 			<< BUILD_LOG( iUnitUID )
 			<< BUILD_LOG( m_fKFactor )
 			<< BUILD_LOG( KPMV_KFACTOR_MAX )
@@ -189,7 +189,7 @@ void KUserPvpManager::AdjustInitValue( IN const UidType iUnitUID )
 
 	if( m_iRating < KPMV_RATING_MIN )
 	{
-		START_LOG( cerr, L"Rating이 최소 수치보다 작습니다. 최소 수치로 보정합니다.")
+		START_LOG( cerr, L"Rating is below the minimum; clamping it to the minimum.")
 			<< BUILD_LOG( iUnitUID )
 			<< BUILD_LOG( m_iRating )
 			<< BUILD_LOG( KPMV_RATING_MIN )
@@ -199,7 +199,7 @@ void KUserPvpManager::AdjustInitValue( IN const UidType iUnitUID )
 	}
 	else if( KPMV_RATING_MAX < m_iRating )
 	{
-		START_LOG( cerr, L"Rating이 최대 수치보다 큽니다. 최대 수치로 보정합니다.")
+		START_LOG( cerr, L"Rating exceeds the maximum; clamping it to the maximum.")
 			<< BUILD_LOG( iUnitUID )
 			<< BUILD_LOG( m_iRating )
 			<< BUILD_LOG( KPMV_RATING_MAX )
@@ -323,7 +323,7 @@ bool KUserPvpManager::UpdateWinLose( IN const int iWin, IN const int iLose, IN c
 {
 	if( iWin > 1  &&  iLose > 1 )
 	{
-		START_LOG( cerr, L"승리결과 값이 동시에 2개가 셋팅되어 왔다.!" )
+		START_LOG( cerr, L"Two win-result values were set simultaneously!" )
 			<< BUILD_LOG( iWin )
 			<< BUILD_LOG( iLose )
 			<< END_LOG;
@@ -331,7 +331,7 @@ bool KUserPvpManager::UpdateWinLose( IN const int iWin, IN const int iLose, IN c
 	}
 	if( iWin > 1 )
 	{
-		START_LOG( cerr, L"WIN 포인트 이상.!" )
+		START_LOG( cerr, L"Invalid WIN points!" )
 			<< BUILD_LOG( iWin )
 			<< END_LOG;
 		//iWin = 1;
@@ -339,7 +339,7 @@ bool KUserPvpManager::UpdateWinLose( IN const int iWin, IN const int iLose, IN c
 	}
 	if( iLose > 1 )
 	{
-		START_LOG( cerr, L"LOSE 포인트 이상.!" )
+		START_LOG( cerr, L"Invalid LOSE points!" )
 			<< BUILD_LOG( iLose )
 			<< END_LOG;
 
@@ -376,7 +376,7 @@ void KUserPvpManager::AddKFactor( IN const float& fKFactor )
 	{
 		fAddKFactor = -( GetKFactor() );
 
-		START_LOG( cerr, L"현재 KFactor와 증분값을 합했을때 0보다 작다! 절대 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"Current KFactor plus increment is below zero; this should never happen!" )
 			<< BUILD_LOG( GetKFactor() )
 			<< BUILD_LOG( fAddKFactor )
 			<< END_LOG;
@@ -386,7 +386,7 @@ void KUserPvpManager::AddKFactor( IN const float& fKFactor )
 	{
 		fAddKFactor = ( 500.f - GetKFactor() );
 
-		START_LOG( cerr, L"현재 KFactor와 증분값을 합했을때 500보다 크다! 절대 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"Current KFactor plus increment exceeds 500; this should never happen!" )
 			<< BUILD_LOG( GetKFactor() )
 			<< BUILD_LOG( fAddKFactor )
 			<< END_LOG;
@@ -418,7 +418,7 @@ void KUserPvpManager::UpdatePvpResult( IN const KERM_UPDATE_PVP_UNIT_INFO_NOT kD
 	// 승패 업데이트
 	if( UpdateWinLose( kData.m_iWin, kData.m_iLose, kData.m_bIsOfficialMatch ) == false )
 	{
-		START_LOG( cerr, L"승패 정보 업데이트 실패! 승패 값이 이상합니다!" )
+		START_LOG( cerr, L"Failed to update win/loss information; invalid win/loss value!" )
 			<< BUILD_LOG( kData.m_iWin )
 			<< BUILD_LOG( kData.m_iLose )
 			<< END_LOG;
@@ -434,7 +434,7 @@ void KUserPvpManager::UpdatePvpResult( IN const KERM_UPDATE_PVP_UNIT_INFO_NOT kD
 	//////////////////////////////////////////////////////////////////////////
 	if( kData.m_iWin > 0  &&  kData.m_iAPoint < 0 )
 	{
-        START_LOG( cout, L"[대전결과확인] 이겼는데 Arena Point값이 마이너스로 들어온다! 문제가 있다!" )
+        START_LOG( cout, L"[PvP result check] Winner received negative Arena Points; investigate!" )
 			<< BUILD_LOG( kData.m_iWin )
 			<< BUILD_LOG( kData.m_iAPoint );
 	}

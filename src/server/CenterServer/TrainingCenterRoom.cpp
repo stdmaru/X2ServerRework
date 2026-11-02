@@ -118,7 +118,7 @@ IMPL_ON_FUNC( ERM_OPEN_TC_ROOM_REQ )
 	// 슬롯에 생성 요청자를 넣는다.
 	if( !m_spRoomUserManager->EnterRoom( kPacket_.m_kRoomUserInfo, false ) )
     {
-        START_LOG( cerr, L"방 입장 실패." )
+        START_LOG( cerr, L"Failed to enter room." )
             << BUILD_LOG( FIRST_SENDER_UID )
             << BUILD_LOG( GetUID() )
             << END_LOG;
@@ -174,7 +174,7 @@ _IMPL_ON_FUNC( ERM_END_TC_GAME_REQ, KEGS_END_TC_GAME_REQ )
 	}
 	else
 	{
-		START_LOG( cerr, L"훈련소 방삭제 실패.! 아직 인원이 남아있다." )
+		START_LOG( cerr, L"Failed to delete training room; users are still inside!" )
 			<< BUILD_LOG( m_spRoomUserManager->GetNumMember() )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG
@@ -218,7 +218,7 @@ _IMPL_ON_FUNC( ERM_LEAVE_TC_ROOM_REQ, KERM_LEAVE_ROOM_REQ )
 	if( GetStateID() == KRoomFSM::S_LOAD || GetStateID() == KRoomFSM::S_PLAY )
 	{
 		//=== 게임중 이탈 결과처리 ===
-		START_LOG( clog, L"=== TRAINING GAME : 게임중 이탈시 결과처리 ===" )
+		START_LOG( clog, L"=== TRAINING GAME: Process results when leaving during a game ===" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
 	}
@@ -254,7 +254,7 @@ _IMPL_ON_FUNC( ERM_LEAVE_TC_ROOM_REQ, KERM_LEAVE_ROOM_REQ )
 	}
 	else
 	{
-		START_LOG( cerr, L"훈련소 방삭제 실패.! 아직 인원이 남아있다." )
+		START_LOG( cerr, L"Failed to delete training room; users are still inside!" )
 			<< BUILD_LOG( m_spRoomUserManager->GetNumMember() )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG

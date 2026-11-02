@@ -88,7 +88,7 @@ KGuildPtr KGuildManager::GetGuild( IN int iGuildUID )
 	if( mit == m_mapGuild.end() )
 	{
 		// 시간차로 발생할 수 있는 에러임.
-		START_LOG( cwarn, L"길드 정보 찾기 실패!" )
+		START_LOG( cwarn, L"Failed to find guild information!" )
 			<< BUILD_LOG( iGuildUID );
 
 		return KGuildPtr();
@@ -96,7 +96,7 @@ KGuildPtr KGuildManager::GetGuild( IN int iGuildUID )
 
 	if( mit->second == NULL )
 	{
-		START_LOG( cerr, L"길드 포인터 이상.!" )
+		START_LOG( cerr, L"Invalid guild pointer!" )
 			<< BUILD_LOG( iGuildUID )
 			<< END_LOG;
 
@@ -123,7 +123,7 @@ void KGuildManager::InsertGuild( IN const KGuildInfo& kInfo )
 
 		if( (*vit)->GetUID() == kInfo.m_iGuildUID )
 		{
-			START_LOG( cerr, L"guild vector에 중복된 guild가 있다!" )
+			START_LOG( cerr, L"Duplicate guild in the guild vector!" )
 				<< BUILD_LOG( kInfo.m_iGuildUID )
 				<< END_LOG;
 
@@ -172,7 +172,7 @@ bool KGuildManager::GetGuildInfo( IN int iGuildUID, OUT KEGS_GUILD_INFO_NOT& kIn
 {
 	if( IsExistGuild( iGuildUID ) == false )
 	{
-		START_LOG( clog, L"길드 정보 찾기 실패!" )
+		START_LOG( clog, L"Failed to find guild information!" )
 			<< BUILD_LOG( iGuildUID );
 
 		// 길드 정보를 못얻은것은 오류가 아니다.
@@ -182,7 +182,7 @@ bool KGuildManager::GetGuildInfo( IN int iGuildUID, OUT KEGS_GUILD_INFO_NOT& kIn
 	KGuildPtr spGuild = GetGuild( iGuildUID );
 	if( spGuild == NULL )
 	{
-		START_LOG( cerr, L"위에서 이미 검사 했는데? 일어날수 없는 에러!" )
+		START_LOG( cerr, L"This was already checked above. This should be impossible!" )
 			<< BUILD_LOG( iGuildUID )
 			<< END_LOG;
 
@@ -200,7 +200,7 @@ bool KGuildManager::GetGuildSkillInfo( IN int iGuildUID, OUT KGuildSkillInfo& kI
 	KGuildPtr spGuild = GetGuild( iGuildUID );
 	if( spGuild == NULL )
 	{
-		START_LOG( clog, L"길드 정보 찾기 실패!" )
+		START_LOG( clog, L"Failed to find guild information!" )
 			<< BUILD_LOG( iGuildUID );
 
 		return false;
@@ -214,7 +214,7 @@ bool KGuildManager::UpdateGuildInfo( IN const KGuildInfo& kGuildInfo )
 {
 	if( IsExistGuild( kGuildInfo.m_iGuildUID ) == true )
 	{
-		START_LOG( cerr, L"이미 길드정보가 생성되어 있습니다!" )
+		START_LOG( cerr, L"Guild information has already been created!" )
 			<< BUILD_LOG( kGuildInfo.m_iGuildUID )
 			<< END_LOG;
 
@@ -232,7 +232,7 @@ bool KGuildManager::UpdateGuildMemberList( IN int iGuildUID, IN const std::vecto
 	KGuildPtr spGuild = GetGuild( iGuildUID );
 	if( spGuild == NULL )
 	{
-		START_LOG( cerr, L"길드 정보 찾기 실패!" )
+		START_LOG( cerr, L"Failed to find guild information!" )
 			<< BUILD_LOG( iGuildUID )
 			<< END_LOG;
 
@@ -249,7 +249,7 @@ bool KGuildManager::UpdateGuildSkill( IN int iGuildUID, IN const KGuildSkillInfo
 	KGuildPtr spGuild = GetGuild( iGuildUID );
 	if( spGuild == NULL )
 	{
-		START_LOG( cerr, L"길드 정보 찾기 실패!" )
+		START_LOG( cerr, L"Failed to find guild information!" )
 			<< BUILD_LOG( iGuildUID )
 			<< END_LOG;
 
@@ -266,7 +266,7 @@ bool KGuildManager::CheckJoinGuild( IN int iGuildUID, IN UidType iUnitUID, OUT U
 	KGuildPtr spGuild = GetGuild( iGuildUID );
 	if( spGuild == NULL )
 	{
-		START_LOG( cerr, L"길드 정보 찾기 실패!" )
+		START_LOG( cerr, L"Failed to find guild information!" )
 			<< BUILD_LOG( iGuildUID )
 			<< END_LOG;
 
@@ -281,7 +281,7 @@ bool KGuildManager::RemoveReserve( IN int iGuildUID, IN UidType iUnitUID )
 	KGuildPtr spGuild = GetGuild( iGuildUID );
 	if( spGuild == NULL )
 	{
-		START_LOG( cerr, L"길드 정보 찾기 실패!" )
+		START_LOG( cerr, L"Failed to find guild information!" )
 			<< BUILD_LOG( iGuildUID )
 			<< END_LOG;
 
@@ -297,7 +297,7 @@ bool KGuildManager::JoinGuildMember( IN int iGuildUID, IN const KGuildMemberInfo
 	KGuildPtr spGuild = GetGuild( iGuildUID );
 	if( spGuild == NULL )
 	{
-		START_LOG( cerr, L"길드 정보 찾기 실패!" )
+		START_LOG( cerr, L"Failed to find guild information!" )
 			<< BUILD_LOG( iGuildUID )
 			<< END_LOG;
 
@@ -312,7 +312,7 @@ bool KGuildManager::LoginGuildMember( IN int iGuildUID, IN const KGuildMemberInf
 	KGuildPtr spGuild = GetGuild( iGuildUID );
 	if( spGuild == NULL )
 	{
-		START_LOG( cerr, L"길드 정보 찾기 실패!" )
+		START_LOG( cerr, L"Failed to find guild information!" )
 			<< BUILD_LOG( iGuildUID )
 			<< END_LOG;
 
@@ -327,7 +327,7 @@ bool KGuildManager::LogoutGuildMember( IN int iGuildUID, IN UidType iUnitUID )
 	KGuildPtr spGuild = GetGuild( iGuildUID );
 	if( spGuild == NULL )
 	{
-		START_LOG( cerr, L"길드 정보 찾기 실패!" )
+		START_LOG( cerr, L"Failed to find guild information!" )
 			<< BUILD_LOG( iGuildUID )
 			<< END_LOG;
 
@@ -353,7 +353,7 @@ bool KGuildManager::CheckInviteCondition( IN int iGuildUID, IN UidType iReceiver
 	KGuildPtr spGuild = GetGuild( iGuildUID );
 	if( spGuild == NULL )
 	{
-		START_LOG( cerr, L"길드 정보 찾기 실패!" )
+		START_LOG( cerr, L"Failed to find guild information!" )
 			<< BUILD_LOG( iGuildUID )
 			<< END_LOG;
 
@@ -369,7 +369,7 @@ bool KGuildManager::GetGuildUserList( IN const KELG_GET_GUILD_USER_LIST_REQ& kRe
 	KGuildPtr spGuild = GetGuild( kReq.m_iGuildUID );
 	if( spGuild == NULL )
 	{
-		START_LOG( cerr, L"길드 정보 찾기 실패!" )
+		START_LOG( cerr, L"Failed to find guild information!" )
 			<< BUILD_LOG( kReq.m_iGuildUID )
 			<< END_LOG;
 
@@ -386,7 +386,7 @@ bool KGuildManager::GuildChat( IN const KELG_CHAT_REQ& kInfo )
 	KGuildPtr spGuild = GetGuild( kInfo.m_iChatData );
 	if( spGuild == NULL )
 	{
-		START_LOG( cerr, L"길드 정보 찾기 실패!" )
+		START_LOG( cerr, L"Failed to find guild information!" )
 			<< BUILD_LOG( kInfo.m_iChatData )
 			<< END_LOG;
 
@@ -402,7 +402,7 @@ bool KGuildManager::CheckChangeGradeGuild( IN const KELG_CHECK_CHANGE_GUILD_MEMB
 	KGuildPtr spGuild = GetGuild( kReq.m_iGuildUID );
 	if( spGuild == NULL )
 	{
-		START_LOG( cerr, L"길드 정보 찾기 실패!" )
+		START_LOG( cerr, L"Failed to find guild information!" )
 			<< BUILD_LOG( kReq.m_iGuildUID )
 			<< END_LOG;
 
@@ -418,7 +418,7 @@ bool KGuildManager::UpdateChangeGuildMemberGrade( IN const KDBE_CHANGE_GUILD_MEM
 	KGuildPtr spGuild = GetGuild( kInfo.m_iGuildUID );
 	if( spGuild == NULL )
 	{
-		START_LOG( cerr, L"길드 정보 찾기 실패!" )
+		START_LOG( cerr, L"Failed to find guild information!" )
 			<< BUILD_LOG( kInfo.m_iGuildUID )
 			<< END_LOG;
 
@@ -434,7 +434,7 @@ bool KGuildManager::UpdateChangeGuildMessage( IN const KDBE_CHANGE_GUILD_MESSAGE
 	KGuildPtr spGuild = GetGuild( kInfo.m_iGuildUID );
 	if( spGuild == NULL )
 	{
-		START_LOG( cerr, L"길드 정보 찾기 실패!" )
+		START_LOG( cerr, L"Failed to find guild information!" )
 			<< BUILD_LOG( kInfo.m_iGuildUID )
 			<< END_LOG;
 
@@ -450,7 +450,7 @@ bool KGuildManager::UpdateKickGuildMember( IN const KDBE_KICK_GUILD_MEMBER_ACK& 
 	KGuildPtr spGuild = GetGuild( kInfo.m_iGuildUID );
 	if( spGuild == NULL )
 	{
-		START_LOG( cerr, L"길드 정보 찾기 실패!" )
+		START_LOG( cerr, L"Failed to find guild information!" )
 			<< BUILD_LOG( kInfo.m_iGuildUID )
 			<< END_LOG;
 
@@ -470,7 +470,7 @@ bool KGuildManager::UpdateChangeGuildMemberMessage( IN const KDBE_CHANGE_GUILD_M
 	KGuildPtr spGuild = GetGuild( kInfo.m_iGuildUID );
 	if( spGuild == NULL )
 	{
-		START_LOG( cerr, L"길드 정보 찾기 실패!" )
+		START_LOG( cerr, L"Failed to find guild information!" )
 			<< BUILD_LOG( kInfo.m_iGuildUID )
 			<< END_LOG;
 
@@ -485,7 +485,7 @@ bool KGuildManager::DisbandGuild( IN int iGuildUID )
 {
 	if( IsExistGuild( iGuildUID ) == false )
 	{
-		START_LOG( cerr, L"길드를 해체하려고 하는데 길드 정보를 찾을수없다!" )
+		START_LOG( cerr, L"Could not find guild information while attempting to disband the guild!" )
 			<< BUILD_LOG( iGuildUID )
 			<< END_LOG;
 
@@ -503,7 +503,7 @@ bool KGuildManager::UpdateGuildMemberInfo( IN int iGuildUID, IN const KGuildMemb
 	if( spGuild == NULL )
 	{
 		// 시간차로 발생 가능하다.
-		START_LOG( cwarn, L"길드 정보 찾기 실패!" )
+		START_LOG( cwarn, L"Failed to find guild information!" )
 			<< BUILD_LOG( iGuildUID )
 			<< END_LOG;
 
@@ -518,7 +518,7 @@ bool KGuildManager::CheckGuildMaxMember( IN const KELG_CHECK_EXPAND_GUILD_MAX_ME
 	KGuildPtr spGuild = GetGuild( kInfo.m_iGuildUID );
 	if( spGuild == NULL )
 	{
-		START_LOG( cerr, L"길드 정보 찾기 실패!" )
+		START_LOG( cerr, L"Failed to find guild information!" )
 			<< BUILD_LOG( kInfo.m_iGuildUID )
 			<< END_LOG;
 
@@ -534,7 +534,7 @@ bool KGuildManager::UpdateGuildMaxMember( IN int iGuildUID, IN u_short usMaxNumM
 	KGuildPtr spGuild = GetGuild( iGuildUID );
 	if( spGuild == NULL )
 	{
-		START_LOG( cerr, L"길드 정보 찾기 실패!" )
+		START_LOG( cerr, L"Failed to find guild information!" )
 			<< BUILD_LOG( iGuildUID )
 			<< END_LOG;
 
@@ -551,7 +551,7 @@ bool KGuildManager::UpdateGuildEXP( IN int iGuildUID, IN const KDBE_UPDATE_GUILD
 	KGuildPtr spGuild = GetGuild( iGuildUID );
 	if( spGuild == NULL )
 	{
-		START_LOG( cerr, L"길드 정보 찾기 실패!" )
+		START_LOG( cerr, L"Failed to find guild information!" )
 			<< BUILD_LOG( iGuildUID )
 			<< END_LOG;
 
@@ -567,7 +567,7 @@ bool KGuildManager::UpdateGuildLevelResult( IN int iGuildUID, IN const KDBE_GUIL
 	KGuildPtr spGuild = GetGuild( iGuildUID );
 	if( spGuild == NULL )
 	{
-		START_LOG( cerr, L"길드 정보 찾기 실패!" )
+		START_LOG( cerr, L"Failed to find guild information!" )
 			<< BUILD_LOG( iGuildUID )
 			<< END_LOG;
 
@@ -588,7 +588,7 @@ bool KGuildManager::CheckLearnGuildSkill( IN const KELG_GET_GUILD_SKILL_REQ& kRe
 	KGuildPtr spGuild = GetGuild( kReq.m_iGuildUID );
 	if( spGuild == NULL )
 	{
-		START_LOG( cerr, L"길드 정보 찾기 실패!" )
+		START_LOG( cerr, L"Failed to find guild information!" )
 			<< BUILD_LOG( kReq.m_iGuildUID )
 			<< END_LOG;
 
@@ -604,7 +604,7 @@ bool KGuildManager::InsertGuildSkill( IN const KDBE_GET_GUILD_SKILL_ACK& kAck )
 	KGuildPtr spGuild = GetGuild( kAck.m_iGuildUID );
 	if( spGuild == NULL )
 	{
-		START_LOG( cerr, L"길드 정보 찾기 실패!" )
+		START_LOG( cerr, L"Failed to find guild information!" )
 			<< BUILD_LOG( kAck.m_iGuildUID )
 			<< END_LOG;
 
@@ -620,7 +620,7 @@ bool KGuildManager::CheckResetGuildSkill( IN const KELG_RESET_GUILD_SKILL_REQ& k
 	KGuildPtr spGuild = GetGuild( kReq.m_iGuildUID );
 	if( spGuild == NULL )
 	{
-		START_LOG( cerr, L"길드 정보 찾기 실패!" )
+		START_LOG( cerr, L"Failed to find guild information!" )
 			<< BUILD_LOG( kReq.m_iGuildUID )
 			<< END_LOG;
 
@@ -636,7 +636,7 @@ bool KGuildManager::ResetGuildSkill( IN const KDBE_RESET_GUILD_SKILL_ACK& kAck )
 	KGuildPtr spGuild = GetGuild( kAck.m_iGuildUID );
 	if( spGuild == NULL )
 	{
-		START_LOG( cerr, L"길드 정보 찾기 실패!" )
+		START_LOG( cerr, L"Failed to find guild information!" )
 			<< BUILD_LOG( kAck.m_iGuildUID )
 			<< END_LOG;
 
@@ -653,7 +653,7 @@ bool KGuildManager::CheckInitGuildSkill( IN const KELG_INIT_GUILD_SKILL_REQ& kRe
 	KGuildPtr spGuild = GetGuild( kReq.m_iGuildUID );
 	if( spGuild == NULL )
 	{
-		START_LOG( cerr, L"길드 정보 찾기 실패!" )
+		START_LOG( cerr, L"Failed to find guild information!" )
 			<< BUILD_LOG( kReq.m_iGuildUID )
 			<< END_LOG;
 
@@ -669,7 +669,7 @@ bool KGuildManager::InitGuildSkill( IN const KDBE_INIT_GUILD_SKILL_ACK& kAck )
 	KGuildPtr spGuild = GetGuild( kAck.m_iGuildUID );
 	if( spGuild == NULL )
 	{
-		START_LOG( cerr, L"길드 정보 찾기 실패!" )
+		START_LOG( cerr, L"Failed to find guild information!" )
 			<< BUILD_LOG( kAck.m_iGuildUID )
 			<< END_LOG;
 
@@ -686,7 +686,7 @@ bool KGuildManager::InsertGuildCashSkillPoint( IN const KELG_INSERT_GUILD_CASH_S
 	KGuildPtr spGuild = GetGuild( kNot.m_iGuildUID );
 	if( spGuild == NULL )
 	{
-		START_LOG( cerr, L"길드 정보 찾기 실패!" )
+		START_LOG( cerr, L"Failed to find guild information!" )
 			<< BUILD_LOG( kNot.m_iGuildUID )
 			<< END_LOG;
 
@@ -701,7 +701,7 @@ bool KGuildManager::InsertGuildCashSkillPointResult( IN const KDBE_INSERT_GUILD_
 	KGuildPtr spGuild = GetGuild( kAck.m_iGuildUID );
 	if( spGuild == NULL )
 	{
-		START_LOG( cerr, L"길드 정보 찾기 실패!" )
+		START_LOG( cerr, L"Failed to find guild information!" )
 			<< BUILD_LOG( kAck.m_iGuildUID )
 			<< END_LOG;
 
@@ -717,7 +717,7 @@ bool KGuildManager::ExpireGuildCashSkillPointResult( IN const KDBE_EXPIRE_GUILD_
 	KGuildPtr spGuild = GetGuild( kAck.m_iGuildUID );
 	if( spGuild == NULL )
 	{
-		START_LOG( cerr, L"길드 정보 찾기 실패!" )
+		START_LOG( cerr, L"Failed to find guild information!" )
 			<< BUILD_LOG( kAck.m_iGuildUID )
 			<< END_LOG;
 
@@ -733,7 +733,7 @@ bool KGuildManager::AdminInsertGuildSkillPoint( IN const KELG_ADMIN_GET_GUILD_SK
 	KGuildPtr spGuild = GetGuild( kReq.m_iGuildUID );
 	if( spGuild == NULL )
 	{
-		START_LOG( cerr, L"길드 정보 찾기 실패!" )
+		START_LOG( cerr, L"Failed to find guild information!" )
 			<< BUILD_LOG( kReq.m_iGuildUID )
 			<< END_LOG;
 
@@ -748,7 +748,7 @@ bool KGuildManager::AdminInsertGuildSkillPointResult( IN const KELG_ADMIN_GET_GU
 	KGuildPtr spGuild = GetGuild( kAck.m_iGuildUID );
 	if( spGuild == NULL )
 	{
-		START_LOG( cerr, L"길드 정보 찾기 실패!" )
+		START_LOG( cerr, L"Failed to find guild information!" )
 			<< BUILD_LOG( kAck.m_iGuildUID )
 			<< END_LOG;
 
@@ -769,7 +769,7 @@ bool KGuildManager::CheckRegistrationGuildAd( IN int iGuildUID, IN UidType iUnit
 	KGuildPtr spGuild = GetGuild( iGuildUID );
 	if( spGuild == NULL )
 	{
-		START_LOG( cerr, L"길드 정보 찾기 실패!" )
+		START_LOG( cerr, L"Failed to find guild information!" )
 			<< BUILD_LOG( iGuildUID )
 			<< END_LOG;
 
@@ -785,7 +785,7 @@ bool KGuildManager::MakeGuildAdInfo( IN const KDBE_REGISTRATION_GUILD_AD_ACK& kA
 	KGuildPtr spGuild = GetGuild( kAck.m_iGuildUID );
 	if( spGuild == NULL )
 	{
-		START_LOG( cerr, L"길드 정보 찾기 실패!" )
+		START_LOG( cerr, L"Failed to find guild information!" )
 			<< BUILD_LOG( kAck.m_iGuildUID )
 			<< END_LOG;
 
@@ -801,7 +801,7 @@ bool KGuildManager::ResultRegGuildAd( IN int iGuildUID, IN const std::wstring& w
 	KGuildPtr spGuild = GetGuild( iGuildUID );
 	if( spGuild == NULL )
 	{
-		START_LOG( cerr, L"길드 정보 찾기 실패!" )
+		START_LOG( cerr, L"Failed to find guild information!" )
 			<< BUILD_LOG( iGuildUID )
 			<< END_LOG;
 
@@ -817,7 +817,7 @@ bool KGuildManager::CheckGetApplyJoinGuildList( IN const KELG_GET_APPLY_JOIN_GUI
 	KGuildPtr spGuild = GetGuild( kReq.m_iGuildUID );
 	if( spGuild == NULL )
 	{
-		START_LOG( cerr, L"길드 정보 찾기 실패!" )
+		START_LOG( cerr, L"Failed to find guild information!" )
 			<< BUILD_LOG( kReq.m_iGuildUID )
 			<< END_LOG;
 
@@ -833,7 +833,7 @@ bool KGuildManager::CheckDeleteApplyJoin( IN const KELG_DELETE_APPLY_JOIN_GUILD_
 	KGuildPtr spGuild = GetGuild( kReq.m_iGuildUID );
 	if( spGuild == NULL )
 	{
-		START_LOG( cerr, L"길드 정보 찾기 실패!" )
+		START_LOG( cerr, L"Failed to find guild information!" )
 			<< BUILD_LOG( kReq.m_iGuildUID )
 			<< END_LOG;
 
@@ -851,7 +851,7 @@ bool KGuildManager::ReserveGuildName( IN const UidType& iUnitUID, IN const std::
 {
 	if( iUnitUID <= 0 )
 	{
-		START_LOG( cerr, L"UnitUID 값이 0 입니다.")
+		START_LOG( cerr, L"UnitUID is 0.")
 			<< BUILD_LOG( iUnitUID )
 			<< BUILD_LOG( wstrGuildName )
 			<< END_LOG;
@@ -874,7 +874,7 @@ bool KGuildManager::CancelGuildName( IN const UidType& iUnitUID )
 {
 	if( iUnitUID <= 0 )
 	{
-		START_LOG( cerr, L"UnitUID 값이 0 입니다.")
+		START_LOG( cerr, L"UnitUID is 0.")
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 
@@ -897,7 +897,7 @@ bool KGuildManager::GetReservedGuildName( IN const UidType& iUnitUID, OUT std::w
 {
 	if( iUnitUID <= 0 )
 	{
-		START_LOG( cerr, L"UnitUID 값이 0 입니다.")
+		START_LOG( cerr, L"UnitUID is 0.")
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 
@@ -919,7 +919,7 @@ bool KGuildManager::CheckReservedGuildName( IN const UidType& iUnitUID )
 {
 	if( iUnitUID <= 0 )
 	{
-		START_LOG( cerr, L"UnitUID 값이 0 입니다.")
+		START_LOG( cerr, L"UnitUID is 0.")
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 
@@ -940,7 +940,7 @@ void KGuildManager::TimeRefresh( IN const UidType& iUnitUID )
 {
 	if( iUnitUID <= 0 )
 	{
-		START_LOG( cerr, L"UnitUID 값이 0 입니다.")
+		START_LOG( cerr, L"UnitUID is 0.")
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 

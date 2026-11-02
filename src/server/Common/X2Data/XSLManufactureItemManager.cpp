@@ -62,7 +62,7 @@ bool CXSLManufactureItemManager::AddManufactureTemplet_LUA()
 	{
 		if( SEnum::IsValidServerGroupID( iServerGroupID ) == false )
 		{
-			START_LOG( cerr, L"정상적인 서버군ID값이 아닙니다." )
+			START_LOG( cerr, L"Invalid server group ID." )
 				<< BUILD_LOG( iServerGroupID )
 				<< BUILD_LOG( iManufactureID );
 			return false;
@@ -70,7 +70,7 @@ bool CXSLManufactureItemManager::AddManufactureTemplet_LUA()
 
 		if( KBaseServer::GetKObj()->GetServerGroupID() != iServerGroupID )
 		{
-			START_LOG( clog2, L"서버군이 다르므로 해당 제조는 파싱하지 않습니다." )
+			START_LOG( clog2, L"Skipping this manufacturing recipe because it belongs to a different server group." )
 				<< BUILD_LOG( iServerGroupID )
 				<< BUILD_LOG( iManufactureID );
 
@@ -111,7 +111,7 @@ bool CXSLManufactureItemManager::AddManufactureTemplet_LUA()
 	}
 	else
 	{
-		START_LOG( cerr, L"ManufactureItemTable.lua(m_MaterialTable) 열기실패.!" )
+		START_LOG( cerr, L"Failed to open ManufactureItemTable.lua (m_MaterialTable)." )
 			<< END_LOG;
 		return false;
 	}
@@ -146,7 +146,7 @@ bool CXSLManufactureItemManager::AddManufactureResultTemplet_LUA()
 	{
 		if( SEnum::IsValidServerGroupID( iServerGroupID ) == false )
 		{
-			START_LOG( cerr, L"정상적인 서버군ID값이 아닙니다." )
+			START_LOG( cerr, L"Invalid server group ID." )
 				<< BUILD_LOG( iServerGroupID )
 				<< BUILD_LOG( iManufactureID );
 			return false;
@@ -154,7 +154,7 @@ bool CXSLManufactureItemManager::AddManufactureResultTemplet_LUA()
 
 		if( KBaseServer::GetKObj()->GetServerGroupID() != iServerGroupID )
 		{
-			START_LOG( clog2, L"서버군이 다르므로 해당 제조결과는 파싱하지 않습니다." )
+			START_LOG( clog2, L"Skipping this manufacturing result because it belongs to a different server group." )
 				<< BUILD_LOG( iServerGroupID )
 				<< BUILD_LOG( iManufactureID );
 			return true;
@@ -170,13 +170,13 @@ bool CXSLManufactureItemManager::AddManufactureResultTemplet_LUA()
 		//{{ 2011. 12. 14	최육사	서버 에러 로그 버그 수정
 		if( m_setDifServerGroupManufactureID.find( iManufactureID ) != m_setDifServerGroupManufactureID.end() )
 		{
-			START_LOG( cout, L"해당 서버군에서는 제조할수 없는 제조ID입니다." )
+			START_LOG( cout, L"This manufacturing ID is unavailable to this server group." )
 				<< BUILD_LOG( iManufactureID )
 				<< END_LOG;
 		}
 		else
 		{
-			START_LOG( cerr, L"잘못된 제조ID입니다." )
+			START_LOG( cerr, L"Invalid manufacturing ID." )
 				<< BUILD_LOG( iManufactureID )
 				<< END_LOG;
 		}
@@ -218,7 +218,7 @@ bool CXSLManufactureItemManager::AddManufactureResultGroupWithRate_LUA( int iGro
 {
 	if( iGroupID <= 0  ||  iItemID <= 0  ||  fRate <= 0.0f )
 	{
-		START_LOG( cerr, L"Manufacture Result Group 정보가 이상합니다!" )
+		START_LOG( cerr, L"Invalid Manufacture Result Group information." )
 			<< BUILD_LOG( iGroupID )
 			<< BUILD_LOG( iItemID )
 			<< BUILD_LOG( fRate )
@@ -271,7 +271,7 @@ int CXSLManufactureItemManager::GetManufactureResultItemID( int iGroupID ) const
 	mit = m_mapResultGroup.find( iGroupID );
 	if( mit == m_mapResultGroup.end() )
 	{
-		START_LOG( cerr, L"없는 그룹ID가 제조 테이블에 등록되어있다?" )
+		START_LOG( cerr, L"Manufacturing table references a nonexistent group ID." )
 			<< BUILD_LOG( iGroupID )
 			<< END_LOG;
 
@@ -288,7 +288,7 @@ int CXSLManufactureItemManager::GetManufactureResultItemIDPeriod(int iGroupID, i
 	mit = m_mapResultGroup.find( iGroupID );
 	if( mit == m_mapResultGroup.end() )
 	{
-		START_LOG( cerr, L"없는 그룹ID가 제조 테이블에 등록되어있다?" )
+		START_LOG( cerr, L"Manufacturing table references a nonexistent group ID." )
 			<< BUILD_LOG( iGroupID )
 			<< END_LOG;
 
@@ -320,7 +320,7 @@ bool CXSLManufactureItemManager::IsItemSealed( int iItemID ) const
 }
 void CXSLManufactureItemManager::CheckSealedState_Lua( int iItemID ) const
 {
-	START_LOG( cerr, L"발렌타인 이벤트 '애증의 초콜릿 봉인 여부 정보 확인'" )
+	START_LOG( cerr, L"Valentine's event: checking whether the Love-Hate Chocolate is sealed." )
 		<< BUILD_LOG( m_mapIsSealed.size() )
 		<< END_LOG;
 
@@ -333,7 +333,7 @@ void CXSLManufactureItemManager::CheckSealedState_Lua( int iItemID ) const
 		cit = m_mapIsSealed.find( iItemID );
 		if( cit == m_mapIsSealed.end() )
 		{
-			START_LOG( cerr, L"봉인된 상태가 아니거나 해당하는 아이템이 존재하지 않습니다." )
+			START_LOG( cerr, L"Item is not sealed or does not exist." )
 				<< END_LOG;
 		}
 		else

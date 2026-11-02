@@ -123,7 +123,7 @@ void CXSLMapData::AddLocalMapInfo_LUA( int iVillageMapID, int iDungeonMode, int 
 {
 	if( iVillageMapID < 0  ||  iDungeonIDWithDif < 0 )
 	{
-		START_LOG( cerr, L"잘못된 정보입니다!" )
+		START_LOG( cerr, L"Invalid information." )
 			<< BUILD_LOG( iVillageMapID )
 			<< BUILD_LOG( iDungeonIDWithDif )
 			<< END_LOG;
@@ -191,7 +191,7 @@ bool CXSLMapData::CheckMapData( const int iMapID )
 		return true;
 	}
 
-	START_LOG( cerr, L"맵데이터 포인터 이상.!" )
+	START_LOG( cerr, L"Invalid map data pointer." )
 		<< END_LOG;
 
 	return false;
@@ -205,7 +205,7 @@ bool CXSLMapData::CheckRequireData( IN const int iMapID, IN const u_char ucLevel
 	const sMAP_DATA* pMapData = GetMapData( iMapID );
 	if( pMapData == NULL )
 	{
-		START_LOG( cerr, L"맵데이터 포인터 이상.!" )
+		START_LOG( cerr, L"Invalid map data pointer." )
 			<< END_LOG;
 
 		SET_ERROR( ERR_FIELD_00 );
@@ -214,7 +214,7 @@ bool CXSLMapData::CheckRequireData( IN const int iMapID, IN const u_char ucLevel
 
 	if( static_cast<int>(ucLevel) < pMapData->m_iRequireMinLevel )
 	{
-		START_LOG( clog, L"입장 레벨 보다 낮음." )
+		START_LOG( clog, L"Level is below the entry requirement." )
 			<< BUILD_LOG( static_cast<int>(ucLevel) )
 			<< BUILD_LOG( pMapData->m_iRequireMinLevel )
 			<< BUILD_LOG( pMapData->m_iRequireMaxLevel )
@@ -233,7 +233,7 @@ bool CXSLMapData::CheckRequireData( IN const int iMapID, IN const u_char ucLevel
 		mit = mapClearInfo.find( pMapData->m_vecRequireDungeonID[i] );
 		if( mit == mapClearInfo.end() )
 		{
-			START_LOG( clog, L"클리어 해야할 던전이 부족함." )
+			START_LOG( clog, L"Not enough dungeons have been cleared." )
 				<< BUILD_LOG( pMapData->m_vecRequireDungeonID[i] )
 				;
 
@@ -388,7 +388,7 @@ int CXSLMapData::GetMapID( int iDungeonID )
 	//}}
 	else
 	{
-		START_LOG( cerr, L"DungeonID값이 이상합니다." )
+		START_LOG( cerr, L"Invalid DungeonID value." )
 			<< BUILD_LOG( iDungeonID )
 			<< END_LOG;
 	}
@@ -423,7 +423,7 @@ const CXSLMapData::SLocalMapInfo* CXSLMapData::GetLocalMapList( IN const int iVi
 	mit = m_mapLocalMap.find( iVillageMapID );
 	if( mit == m_mapLocalMap.end() )
 	{
-		START_LOG( cerr, L"등록되지 않은 맵ID입니다!" )
+		START_LOG( cerr, L"Map ID is not registered." )
 			<< BUILD_LOG( iVillageMapID )
 			<< END_LOG;
 

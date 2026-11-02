@@ -67,7 +67,7 @@ using namespace std::placeholders;
 #define CASE_SCRIPT_REFRESH_SWAP_INSTANCE( flag, className ) \
 case KESR_SCRIPT_REFRESH_ORDER_NOT::flag: \
 	className::SwapInstance( g_pLua ); \
-	START_LOG( cout, L ## #className L" 스크립트 갱신을 완료하였습니다!" ); \
+	START_LOG( cout, L ## #className L" Script refresh completed!" ); \
 	Si##className()->DumpToLogFile(); \
 	break; \
 
@@ -126,7 +126,7 @@ KThread*        CreateDBThread( int iDBConnectionInfo, const wchar_t* szDSN, boo
 		return new KCnSMSDBThread( szDSN, bDBConnStr );
 
     default:
-        START_LOG( cerr, L"접속하려는 DB 종류가 이상함." )
+        START_LOG( cerr, L"Invalid database type for connection." )
             << BUILD_LOG( iDBConnectionInfo )
             << END_LOG;
         return new KCnAccountDBThread( szDSN, bDBConnStr );
@@ -234,7 +234,7 @@ bool KCnServer::DestroyAllSession()
 
     KActorManager* pkActorManager = KActorManager::GetKObj();
 
-    START_LOG( cout, L"현재 유저 : " << pkActorManager->GetCount() << L" 명" );
+    START_LOG( cout, L"Current user: " << pkActorManager->GetCount() << L" players" );
 
 	//{{ 2009. 1. 30  최육사	서버 셧다운 종료 사유 설정
 	int iIndex = KStatistics::eSIColDR_Server_Shutdown;
@@ -324,7 +324,7 @@ void KCnServer::ProcessEvent( const KEventPtr& spEvent_ )
 	   _CASE( ECN_DEL_COMMON_FLAG_NOT, KECN_DEL_COMMON_FLAG_NOT );
 
     default:
-        START_LOG( cerr, L"이벤트 핸들러가 정의되지 않았음. " << spEvent_->GetIDStr() );
+        START_LOG( cerr, L"Event handler is not defined. " << spEvent_->GetIDStr() );
     }
 
     dwElapTime = ::GetTickCount() - dwElapTime;
@@ -412,7 +412,7 @@ _IMPL_ON_FUNC( ESR_ORDER_TO_CENTER_SERVER_NOT, KESR_SCRIPT_REFRESH_ORDER_NOT )
 	}
 	else
 	{
-		START_LOG( cerr, L"정의되지 않은 스크립트 갱신 요청 타입입니다!" )
+		START_LOG( cerr, L"Undefined script-refresh request type!" )
 			<< BUILD_LOG( kPacket_.m_iOrderType )
 			<< END_LOG;
 	}
@@ -430,7 +430,7 @@ _IMPL_ON_FUNC( ESR_ORDER_TO_REFRESH_MANAGER_ACK, KESR_SCRIPT_REFRESH_ORDER_NOT )
 
 	default:
 		{
-			START_LOG( cerr, L"이쪽으로 오면 안되는 타입인데?" )
+			START_LOG( cerr, L"Unexpected type reached this point." )
 				<< BUILD_LOG( kPacket_.m_iOrderType )
 				<< END_LOG;
 		}
@@ -466,7 +466,7 @@ IMPL_ON_FUNC( DBE_CHECK_TIME_DROP_RESULT_ACK )
 	// 시간 드롭 아이템을 체크 실패했다면?
 	if( kPacket_.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"특정 시각 드롭 이벤트 실패 했는데 여기로 왔네? 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"Timed-drop event failed but reached this path; this should never happen!" )
 			<< BUILD_LOG( NetError::GetErrStr( kPacket_.m_iOK ) )
 			<< BUILD_LOG( kPacket_.m_iGSUID )
 			<< BUILD_LOG( kPacket_.m_iUserUID )
@@ -555,7 +555,7 @@ IMPL_ON_FUNC( DBE_CHECK_EVENT_UPDATE_ACK )
 		int iNewReleaseTick = cmit->second;
 		if( iOldReleaseTick != iNewReleaseTick )
 		{
-			START_LOG( cout2, L"이벤트 바뀐 것을 확인하였으므로 새로 받아옵니다." )
+			START_LOG( cout2, L"Event changes detected; retrieving updated data." )
 				<< BUILD_LOG( iOldReleaseTick )
 				<< BUILD_LOG( iNewReleaseTick )
 				<< END_LOG;

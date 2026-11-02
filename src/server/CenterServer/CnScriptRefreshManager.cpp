@@ -43,7 +43,7 @@ void KCnScriptRefreshManager::Init()
 		kAutoPath.GetPullPath( strFile );
 		if( 0 != LUA_DOFILE( m_pRefreshLuaState, strFile.c_str() ) )
 		{
-			START_LOG( cerr, L"CnScriptRefreshManager : Enum 정보 로드 실패.!" );
+			START_LOG( cerr, L"CnScriptRefreshManager: Failed to load Enum information!" );
 			return;
 		}
 	}
@@ -55,7 +55,7 @@ void KCnScriptRefreshManager::Init()
 		kAutoPath.GetPullPath( strFile );
 		if( 0 != LUA_DOFILE( m_pRefreshLuaState, strFile.c_str() ) )
 		{
-			START_LOG( cerr, L"CnScriptRefreshManager : DungeonEnum 정보 로드 실패.!" );
+			START_LOG( cerr, L"CnScriptRefreshManager: Failed to load DungeonEnum information!" );
 			return;
 		}
 	}
@@ -66,7 +66,7 @@ void KCnScriptRefreshManager::Init()
 	// 스레드 시작!
 	KThreadManager::BeginThread();
 
-	START_LOG( cout, L"스크립트 리프레쉬 스레드 시작!" );
+	START_LOG( cout, L"Script-refresh thread started!" );
 }
 
 KThread* KCnScriptRefreshManager::CreateThread()

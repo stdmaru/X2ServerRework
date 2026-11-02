@@ -110,7 +110,7 @@ KThread*        CreateDBThread( int iDBConnectionInfo, const wchar_t* szDSN, boo
 		//{{ 2012. 03. 13	김민성		실시간 동접 하락 체크 sms
 		//}}
     default:
-        START_LOG( cerr, L"접속하려는 DB 종류가 이상함." )
+        START_LOG( cerr, L"Invalid database connection type." )
             << BUILD_LOG( iDBConnectionInfo )
             << END_LOG;
         return new KChannelLogDBThread( szDSN, bDBConnStr );
@@ -197,7 +197,7 @@ bool KChannelServer::DestroyAllSession()
 
     KActorManager* pkActorManager = KActorManager::GetKObj();
 
-    START_LOG( cout, L"현재 유저 : " << pkActorManager->GetCount() << L" 명" );
+    START_LOG( cout, L"Current user count: " << pkActorManager->GetCount() << L" users" );
 
     pkActorManager->ForEach( std::bind( &KActor::ReserveDestroy, _1 ) );
 
@@ -276,7 +276,7 @@ void KChannelServer::UpdateServerGroupList( const std::map< int, KServerGroupInf
 		std::map< int, KServerGroupInfo >::iterator mit;
 		for( mit = m_mapServerGroupList.begin(); mit != m_mapServerGroupList.end(); ++mit )
 		{
-			START_LOG( cout, L"서버군 :" )
+			START_LOG( cout, L"Server group:" )
 				<< BUILD_LOG( mit->second.m_iOrder )
 				<< BUILD_LOG( mit->second.m_iServerGroupUID )
 				<< BUILD_LOG( mit->second.m_wstrServerGroupName )
@@ -318,7 +318,7 @@ void KChannelServer::UpdateChannelList( const std::map< int, KChannelInfo >& map
 		std::map< int, KChannelInfo >::iterator mit;
 		for( mit = m_mapChannelList.begin(); mit != m_mapChannelList.end(); ++mit )
 		{
-			START_LOG( cout, L"채널 이름 : " << mit->second.m_wstrChannelName << L",  IP : " << mit->second.m_wstrIP << L",  Port : " << mit->second.m_usMasterPort );
+			START_LOG( cout, L"Channel name: " << mit->second.m_wstrChannelName << L",  IP: " << mit->second.m_wstrIP << L",  Port: " << mit->second.m_usMasterPort );
 		}
 
 		m_bIsFirstUpdate = true;
@@ -363,7 +363,7 @@ void KChannelServer::ProcessEvent( const KEventPtr& spEvent_ )
 		//}}
 		CASE( DBE_SERVERGROUP_LIST_ACK );
     default:
-        START_LOG( cerr, L"이벤트 핸들러가 정의되지 않았음. " << spEvent_->GetIDStr() );
+        START_LOG( cerr, L"Event handler is not defined. " << spEvent_->GetIDStr() );
     }
 
     dwElapTime = ::GetTickCount() - dwElapTime;
@@ -422,7 +422,7 @@ IMPL_ON_FUNC( DBE_CHECK_ACCOUNT_BLOCK_LIST_ACK )
 	std::vector< std::string > vecBlockMachineIDList;
 	SiKMachineBlockManager()->UpdateMachineBlockList( kPacket_, vecBlockMachineIDList );
 
-	START_LOG( cout2, L"MachinBlock ID 목록 갱싱 성공!" );
+	START_LOG( cout2, L"Machine block ID list refreshed successfully!" );
 }
 //}}
 
@@ -446,7 +446,7 @@ _IMPL_ON_FUNC( ESR_ORDER_TO_REFRESH_MANAGER_ACK, KESR_SCRIPT_REFRESH_ORDER_NOT )
 
 	default:
 		{
-			START_LOG( cerr, L"이쪽으로 오면 안되는 타입인데?" )
+			START_LOG( cerr, L"Unexpected order type." )
 				<< BUILD_LOG( kPacket_.m_iOrderType )
 				<< END_LOG;
 		}
@@ -488,7 +488,7 @@ void KChannelServer::PlusLoginResultCount(KLoginResultInfo::LOGIN_RESULT_TYPE_EN
 {
 	if( eResultType < KLoginResultInfo::LRTE_SUCCESS || KLoginResultInfo::LRTE_SENTINEL < eResultType )
 	{
-		START_LOG( cerr, L"유효하지않은 로그인 결과 사유입니다!" )
+		START_LOG( cerr, L"Invalid login result reason!" )
 			<< BUILD_LOG( eResultType )
 			<< END_LOG;
 		return ;
@@ -496,7 +496,7 @@ void KChannelServer::PlusLoginResultCount(KLoginResultInfo::LOGIN_RESULT_TYPE_EN
 
 	m_kLoginResultInfo.m_vecResultCount[eResultType]++;
 
-	START_LOG( clog, L"로그인 결과 사유 카운트 증가!!" )
+	START_LOG( clog, L"Login result reason count incremented!" )
 		<< BUILD_LOG( eResultType )
 		<< BUILD_LOG( m_kLoginResultInfo.m_vecResultCount[eResultType] )
 		<< END_LOG;

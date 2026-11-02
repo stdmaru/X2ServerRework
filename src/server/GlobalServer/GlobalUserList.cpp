@@ -29,7 +29,7 @@ bool KGlobalUserList::GetGSUserInfoByUnitUID( IN const UidType iUnitUID, OUT KGS
 
     if( IS_NULL( mit->second ) )
     {
-        START_LOG( cerr, L"포인터 이상." )
+        START_LOG( cerr, L"Invalid pointer." )
             << BUILD_LOG( iUnitUID )
             << END_LOG;
         return false;
@@ -47,7 +47,7 @@ bool KGlobalUserList::GetGSUserInfoByUnitNickName( IN const UidType iServerGroup
 	if( ( iServerGroupID <= SEnum::SGI_INVALID ) || ( SEnum::SGI_END <= iServerGroupID ) )
 #endif // EXTEND_SERVER_GROUP_MASK
 	{
-		START_LOG( cerr, L"잘못된 ServerGroupID 입니다." )
+		START_LOG( cerr, L"Invalid ServerGroupID." )
 			<< BUILD_LOG( iServerGroupID )
 			<< BUILD_LOG( wstrUnitNickName )
 			<< END_LOG;
@@ -68,7 +68,7 @@ bool KGlobalUserList::GetGSUserInfoByUnitNickName( IN const UidType iServerGroup
 
 	if( IS_NULL( mit->second ) )
 	{
-		START_LOG( cerr, L"포인터 이상." )
+		START_LOG( cerr, L"Invalid pointer." )
 			<< BUILD_LOG( wstrUnitNickName )
 			<< END_LOG;
 
@@ -91,7 +91,7 @@ bool KGlobalUserList::GetGSUserInfoByUserUID( IN const UidType iUserUID, OUT KGS
 
 	if( IS_NULL( mit->second ) )
 	{
-		START_LOG( cerr, L"포인터 이상." )
+		START_LOG( cerr, L"Invalid pointer." )
 			<< BUILD_LOG( iUserUID )
 			<< END_LOG;
 		return false;
@@ -104,12 +104,12 @@ bool KGlobalUserList::GetGSUserInfoByUserUID( IN const UidType iUserUID, OUT KGS
 
 void KGlobalUserList::UnRegAllUserOfThisGS( IN const UidType iGSUID )
 {
-    START_LOG( cout, L"게임 서버 죽은 후 처리." )
+    START_LOG( cout, L"Processing after the game server has stopped." )
         << BUILD_LOG( iGSUID );
 
     if( iGSUID <= 0 )
     {
-        START_LOG( cerr, L"서버 UID 이상." )
+        START_LOG( cerr, L"Invalid server UID." )
             << BUILD_LOG( iGSUID )
             << END_LOG;
 
@@ -122,7 +122,7 @@ void KGlobalUserList::UnRegAllUserOfThisGS( IN const UidType iGSUID )
     {
         if( IS_NULL( mitUnitUID->second ) )
         {
-            START_LOG( cerr, L"유저 정보 포인터 이상." )
+            START_LOG( cerr, L"Invalid user-data pointer." )
                 << BUILD_LOG( mitUnitUID->first )
                 << END_LOG;
 
@@ -145,7 +145,7 @@ int KGlobalUserList::RegUnit( IN const KRegUnitInfo& kUnitInfo )
 {
     if( kUnitInfo.m_iUserUID <= 0 )
     {
-        START_LOG( cerr, L"유저 UID 이상." )
+        START_LOG( cerr, L"Invalid user UID." )
             << BUILD_LOG( kUnitInfo.m_iUserUID )
             << END_LOG;
 
@@ -154,7 +154,7 @@ int KGlobalUserList::RegUnit( IN const KRegUnitInfo& kUnitInfo )
 
     if( kUnitInfo.m_iUnitUID <= 0 )
     {
-        START_LOG( cerr, L"유닛 UID 이상." )
+        START_LOG( cerr, L"Invalid unit UID." )
             << BUILD_LOG( kUnitInfo.m_iUserUID )
             << BUILD_LOG( kUnitInfo.m_iUnitUID )
             << END_LOG;
@@ -164,7 +164,7 @@ int KGlobalUserList::RegUnit( IN const KRegUnitInfo& kUnitInfo )
 
     if( kUnitInfo.m_wstrUnitNickName.empty() )
     {
-        START_LOG( cerr, L"유닛 닉네임 이상." )
+        START_LOG( cerr, L"Invalid unit nickname." )
 			<< BUILD_LOG( kUnitInfo.m_iUserUID )
 			<< BUILD_LOG( kUnitInfo.m_iUnitUID )
             << END_LOG;
@@ -177,13 +177,13 @@ int KGlobalUserList::RegUnit( IN const KRegUnitInfo& kUnitInfo )
     mitUnitUID = m_mapUnitUID.find( kUnitInfo.m_iUnitUID );
     if( mitUnitUID != m_mapUnitUID.end() )
     {
-        START_LOG( cerr, L"이미 등록되어 있는 UnitUID입니다! 설마 중복 선택 캐릭터 인가!! 일어나서는 안되는 에러!" )
+        START_LOG( cerr, L"UnitUID is already registered; could this be a duplicate character selection? This should never happen." )
             << BUILD_LOG( kUnitInfo.m_iUnitUID )
             << END_LOG;
 
         if( IS_NULL( mitUnitUID->second ) )
         {
-            START_LOG( cerr, L"포인터 이상." )
+            START_LOG( cerr, L"Invalid pointer." )
                 << BUILD_LOG( kUnitInfo.m_iUserUID )
                 << BUILD_LOG( kUnitInfo.m_iUnitUID )
                 << BUILD_LOG( kUnitInfo.m_wstrUnitNickName )
@@ -202,7 +202,7 @@ int KGlobalUserList::RegUnit( IN const KRegUnitInfo& kUnitInfo )
 	const UidType iServerGroupID = KncUid::ExtractServerGroupID( kUnitInfo.m_iUnitUID );
 	if( ( iServerGroupID <= SEnum::SGI_INVALID ) || ( SEnum::SGI_END <= iServerGroupID ) )
 	{
-		START_LOG( cerr, L"잘못된 ServerGroupID 입니다." )
+		START_LOG( cerr, L"Invalid ServerGroupID." )
 			<< BUILD_LOG( kUnitInfo.m_iUnitUID )
 			<< BUILD_LOG( iServerGroupID )
 			<< BUILD_LOG( kUnitInfo.m_wstrUnitNickName )
@@ -217,13 +217,13 @@ int KGlobalUserList::RegUnit( IN const KRegUnitInfo& kUnitInfo )
     mitUnitNickName = mapUnitNickName.find( kUnitInfo.m_wstrUnitNickName );
     if( mitUnitNickName != mapUnitNickName.end() )
     {
-        START_LOG( cerr, L"UnReg 되지 않은 유닛 닉네임." )
+        START_LOG( cerr, L"Unit nickname is still registered." )
             << BUILD_LOG( kUnitInfo.m_wstrUnitNickName )
             << END_LOG;
 
         if( IS_NULL( mitUnitNickName->second ) )
         {
-            START_LOG( cerr, L"포인터 이상." )
+            START_LOG( cerr, L"Invalid pointer." )
                 << BUILD_LOG( kUnitInfo.m_iUserUID )
                 << BUILD_LOG( kUnitInfo.m_iUnitUID )
                 << BUILD_LOG( kUnitInfo.m_wstrUnitNickName )
@@ -233,7 +233,7 @@ int KGlobalUserList::RegUnit( IN const KRegUnitInfo& kUnitInfo )
 		{
 			if( mitUnitNickName->second->m_nUnitUID != kUnitInfo.m_iUnitUID )
 			{
-				START_LOG( cerr, L"캐릭터 정보가 이상합니다! 닉네임은 같은데 UnitUID가 다른 유저가 존재함! 일어나서는 안되는 에러!" )
+				START_LOG( cerr, L"Inconsistent character data: a user with the same nickname has a different UnitUID; this should never happen." )
 					<< BUILD_LOG( mitUnitNickName->second->m_nUnitUID )
 					<< BUILD_LOG( kUnitInfo.m_iUnitUID )
 					<< BUILD_LOG( kUnitInfo.m_wstrUnitNickName )
@@ -276,7 +276,7 @@ bool KGlobalUserList::UnRegUnit( IN const UidType iUnitUID )
 {
     if( iUnitUID <= 0 )
     {
-        START_LOG( cerr, L"UnitUID 이상." )
+        START_LOG( cerr, L"Invalid UnitUID." )
             << BUILD_LOG( iUnitUID )
             << END_LOG;
         return false;
@@ -286,7 +286,7 @@ bool KGlobalUserList::UnRegUnit( IN const UidType iUnitUID )
     mitUnitUID = m_mapUnitUID.find( iUnitUID );
     if( mitUnitUID == m_mapUnitUID.end() )
     {
-        START_LOG( cerr, L"삭제 하려는 유닛이 없습니다!" )
+        START_LOG( cerr, L"Unit to delete was not found." )
             << BUILD_LOG( iUnitUID )
             << END_LOG;
         return false;
@@ -294,7 +294,7 @@ bool KGlobalUserList::UnRegUnit( IN const UidType iUnitUID )
 
     if( IS_NULL( mitUnitUID->second ) )
     {
-        START_LOG( cerr, L"포인터 이상." )
+        START_LOG( cerr, L"Invalid pointer." )
             << BUILD_LOG( iUnitUID )
             << END_LOG;
 
@@ -303,7 +303,7 @@ bool KGlobalUserList::UnRegUnit( IN const UidType iUnitUID )
 
     if( mitUnitUID->second->m_wstrUnitNickName.empty() )
     {
-        START_LOG( cerr, L"닉네임은 등록되지 않음." )
+        START_LOG( cerr, L"Nickname is not registered." )
             << BUILD_LOG( iUnitUID )
             << BUILD_LOG( mitUnitUID->second->m_nUnitUID )
             << END_LOG;
@@ -319,7 +319,7 @@ bool KGlobalUserList::UnRegUnit( IN const UidType iUnitUID )
 	const UidType iServerGroupID = KncUid::ExtractServerGroupID( iUnitUID );
 	if( ( iServerGroupID <= SEnum::SGI_INVALID ) || ( SEnum::SGI_END <= iServerGroupID ) )
 	{
-		START_LOG( cerr, L"잘못된 ServerGroupID 입니다." )
+		START_LOG( cerr, L"Invalid ServerGroupID." )
 			<< BUILD_LOG( iUnitUID )
 			<< BUILD_LOG( iServerGroupID )
 			<< END_LOG;
@@ -334,7 +334,7 @@ bool KGlobalUserList::UnRegUnit( IN const UidType iUnitUID )
         mitUnitNickName = mapUnitNickName.find( mitUnitUID->second->m_wstrUnitNickName );
         if( mitUnitNickName == mapUnitNickName.end() )
         {
-            START_LOG( cerr, L"유닛 닉네임으로 검색 실패." )
+            START_LOG( cerr, L"Failed to find the unit by nickname." )
                 << BUILD_LOG( mitUnitUID->second->m_wstrUnitNickName )
                 << END_LOG;
         }
@@ -342,7 +342,7 @@ bool KGlobalUserList::UnRegUnit( IN const UidType iUnitUID )
         {
             if( IS_NULL( mitUnitNickName->second ) )
             {
-                START_LOG( cerr, L"포인터 이상." )
+                START_LOG( cerr, L"Invalid pointer." )
                     << BUILD_LOG( mitUnitUID->second->m_wstrUnitNickName )
                     << END_LOG;
             }
@@ -375,7 +375,7 @@ bool KGlobalUserList::UnRegUnit( IN const UidType iUnitUID )
 	iRet = ArgChk_HeroPvpUserServerGroupID( iServerGroupID ); \
 	if( iRet == NetError::ERR_HERO_PVP_USER_LIST_01 ) \
 	{ \
-		START_LOG( cerr, L"서버 그룹 아이디가 잘못되었습니다.") \
+		START_LOG( cerr, L"Invalid server group ID.") \
 			<< BUILD_LOG( iServerGroupID ) \
 			<< END_LOG; \
 	} \
@@ -386,13 +386,13 @@ bool KGlobalUserList::UnRegUnit( IN const UidType iUnitUID )
 	iRet = ArgChk_HeroPvpUserNickName( wstrNickName ); \
 	if( iRet == NetError::ERR_HERO_PVP_USER_LIST_03 ) \
 	{ \
-		START_LOG( cerr, L"닉네임 길이가 잘못되었습니다.") \
+		START_LOG( cerr, L"Invalid nickname length.") \
 		<< BUILD_LOG( wstrNickName ) \
 		<< END_LOG; \
 	} \
 	else if( iRet == NetError::ERR_HERO_PVP_USER_LIST_04 ) \
 	{ \
-		START_LOG( cerr, L"--/;/따옴표/쉼표/공백 등은 사용할 수 없습니다.") \
+		START_LOG( cerr, L"Characters such as --, /, ;, quotes, commas, and spaces are not allowed.") \
 		<< BUILD_LOG( wstrNickName ) \
 		<< END_LOG; \
 	} \
@@ -452,7 +452,7 @@ int KGlobalUserList::AddHeroPvpUser( IN const UidType iServerGroupID, IN const s
 	iOK = FindHeroPvpUnit( iServerGroupID, wstrNickName );
 	if( iOK == NetError::NET_OK )
 	{
-		START_LOG( cerr, L"영웅 대전 후보 리스트에 이미 존재하는 유닛입니다." )
+		START_LOG( cerr, L"Unit is already in the Heroic Match candidate list." )
 			<< BUILD_LOG( iServerGroupID )
 			<< BUILD_LOG( wstrNickName )
 			<< END_LOG;

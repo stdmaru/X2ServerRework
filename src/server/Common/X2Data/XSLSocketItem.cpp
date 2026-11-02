@@ -121,7 +121,7 @@ int CXSLSocketItem::GetSocketCount( IN int iItemGrade, IN int iItemType ) const
 		break;
 
 	default:
-		START_LOG( cerr, L"존재하지 않는 ItemGrade입니다." )
+		START_LOG( cerr, L"ItemGrade does not exist." )
 			<< BUILD_LOG( iItemGrade )
 			<< BUILD_LOG( bIsWeapon )
 			<< END_LOG;
@@ -192,7 +192,7 @@ bool CXSLSocketItem::VerifySocketCount( IN int iItemGrade, IN bool bIsWeapon, IN
 		break;
 
 	default:
-		START_LOG( cerr, L"존재하지 않는 ItemGrade입니다." )
+		START_LOG( cerr, L"ItemGrade does not exist." )
 			<< BUILD_LOG( iItemGrade )
 			<< BUILD_LOG( bIsWeapon )
 			<< BUILD_LOG( iSocketCount )
@@ -988,7 +988,7 @@ CXSLSocketItem::SOCKET_DATA_TYPE CXSLSocketItem::GetSocketDataType( IN int iItem
 		}
 		break;
 	default:
-		START_LOG( cerr, L"등록되지 않은 마법석 ItemID입니다." )
+		START_LOG( cerr, L"Magic stone ItemID is not registered." )
 			<< BUILD_LOG( iItemID )
 			<< BUILD_LOG( iItemType )
 			<< END_LOG;
@@ -1019,7 +1019,7 @@ bool CXSLSocketItem::GetResultItem( IN int iMagicStoneItemID, IN int iItemType, 
 	SOCKET_DATA_TYPE eSocketDataType = GetSocketDataType( iMagicStoneItemID, iItemType );
 	if( eSocketDataType == SDT_NONE )
 	{
-		START_LOG( cerr, L"잘못된 마법석 ItemID임." )
+		START_LOG( cerr, L"Invalid magic stone ItemID." )
 			<< BUILD_LOG( iMagicStoneItemID )
 			<< END_LOG;
 
@@ -1032,7 +1032,7 @@ bool CXSLSocketItem::GetResultItem( IN int iMagicStoneItemID, IN int iItemType, 
 	mit = m_mapSocketRandom.find( eSocketDataType );
 	if( mit == m_mapSocketRandom.end() )
 	{
-		START_LOG( cerr, L"아이템 소켓 랜덤 정보 얻기 실패.!" )
+		START_LOG( cerr, L"Failed to get random item socket information." )
 			<< BUILD_LOG( eSocketDataType )
 			<< END_LOG;
 
@@ -1044,7 +1044,7 @@ bool CXSLSocketItem::GetResultItem( IN int iMagicStoneItemID, IN int iItemType, 
 	int iGroupID = mit->second.Decision();
 	if( iGroupID == KLottery::CASE_BLANK )
 	{
-		START_LOG( cerr, L"아이템 소켓 그룹ID 얻기 실패.!" )
+		START_LOG( cerr, L"Failed to get item socket group ID." )
 			<< BUILD_LOG( eSocketDataType )
 			<< END_LOG;
 
@@ -1056,7 +1056,7 @@ bool CXSLSocketItem::GetResultItem( IN int iMagicStoneItemID, IN int iItemType, 
 	mitSG = m_mapSocketGroup.find( iGroupID );
 	if( mitSG == m_mapSocketGroup.end() )
 	{
-		START_LOG( cerr, L"아이템 소켓 그룹 정보 얻기 실패.!" )
+		START_LOG( cerr, L"Failed to get item socket group information." )
 			<< BUILD_LOG( eSocketDataType )
 			<< BUILD_LOG( iGroupID )
 			<< END_LOG;
@@ -1093,7 +1093,7 @@ bool CXSLSocketItem::GetResultItem( IN int iMagicStoneItemID, IN int iItemType, 
 
 	if( iResultSocketOption == KLotterySameProb< int >::CASE_BLANK )
 	{
-		START_LOG( cerr, L"일어날 수 없는에러!" )
+		START_LOG( cerr, L"This error should never occur." )
 			<< BUILD_LOG( eSocketDataType )
 			<< BUILD_LOG( iGroupID )
 			<< BUILD_LOG( iEnchantLevel )
@@ -1217,7 +1217,7 @@ bool CXSLSocketItem::CalcInsertSocketCost( IN int iItemID, IN int iMagicStoneIte
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iItemID );
 	if( pItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 아이템 정보 입니다." )
+		START_LOG( cerr, L"Item information does not exist." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 
@@ -1227,7 +1227,7 @@ bool CXSLSocketItem::CalcInsertSocketCost( IN int iItemID, IN int iMagicStoneIte
 	const CXSLItem::ItemTemplet* pMagicStoneTemplet = SiCXSLItemManager()->GetItemTemplet( iMagicStoneItemID );
 	if( pMagicStoneTemplet == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 아이템 정보 입니다." )
+		START_LOG( cerr, L"Item information does not exist." )
 			<< BUILD_LOG( iMagicStoneItemID )
 			<< END_LOG;
 
@@ -1243,7 +1243,7 @@ bool CXSLSocketItem::CalcInsertSocketCost( IN int iItemID, IN int iMagicStoneIte
 	case CXSLItem::IG_RARE:		fItemGradeFactor = 1.5; break;
 	case CXSLItem::IG_NORMAL:	fItemGradeFactor = 1.0; break;
 	default:
-		START_LOG( cerr, L"이상한 등급의 아이템에다가 소켓을 박을려고 하네?" )
+		START_LOG( cerr, L"Attempted to add a socket to an item with an invalid grade." )
 			<< BUILD_LOGc( pMagicStoneTemplet->m_ItemGrade )
 			<< END_LOG;
 		return false;
@@ -1307,7 +1307,7 @@ bool CXSLSocketItem::GetSocketOptionStat(	IN const std::vector< int >& vecSocket
 	if( iItemLevel <= 0 )	// 잘못된 레벨의 값
 	{
 		uiHP_OnePoint = 0;
-		START_LOG( cerr, L"옵션 수치화 레벨 값이 잘못되었다" );
+		START_LOG( cerr, L"Invalid option conversion level value." );
 	}
 	else
 	{
@@ -1325,7 +1325,7 @@ bool CXSLSocketItem::GetSocketOptionStat(	IN const std::vector< int >& vecSocket
 		const SocketData* pSocketData = GetSocketData( sSocketOptionID );
 		if( pSocketData == NULL )
 		{
-			START_LOG( cerr, L"존재하지않는 소켓옵션이 세팅되어 있습니다." )
+			START_LOG( cerr, L"An unregistered socket option is configured." )
 				<< BUILD_LOG( sSocketOptionID )
 				<< END_LOG;
 
@@ -1392,7 +1392,7 @@ void CXSLSocketItem::GetSocketOptionIncreaseRate( IN const std::vector< int >& v
 		const SocketData* pSocketData = GetSocketData( iSocketOptionID );
 		if( pSocketData == NULL )
 		{
-			START_LOG( cerr, L"존재하지않는 소켓옵션이 세팅되어 있습니다." )
+			START_LOG( cerr, L"An unregistered socket option is configured." )
 				<< BUILD_LOG( iSocketOptionID )
 				<< END_LOG;
 			continue;
@@ -1441,7 +1441,7 @@ bool CXSLSocketItem::AddSocketData_LUA()
 	LUA_GET_VALUE_RETURN_ERR(		luaManager, L"ID",		kSocketData.m_ID,		0,							wstrLuaErr, return false; );
 	if( kSocketData.m_ID <= 0 )
 	{
-		START_LOG( cerr, L"소켓 옵션ID에 0 이하의 값을 사용할 수 없습니다." )
+		START_LOG( cerr, L"Socket option ID must be greater than zero." )
 			<< BUILD_LOG( kSocketData.m_ID )
 			<< END_LOG;
 		return false;
@@ -1454,7 +1454,7 @@ bool CXSLSocketItem::AddSocketData_LUA()
 	if( kSocketData.m_ID > INT_MAX )
 	//}}
 	{
-		START_LOG( cerr, L"short타입의 범위를 넘어서는 소켓 옵션ID입니다!" )
+		START_LOG( cerr, L"Socket option ID exceeds the range of the short type." )
 			<< BUILD_LOG( kSocketData.m_ID )
 			<< END_LOG;
 	}
@@ -1572,7 +1572,7 @@ bool CXSLSocketItem::AddSocketData_LUA()
 
 	if( m_mapSocketData.find( kSocketData.m_ID ) != m_mapSocketData.end() )
 	{
-		START_LOG( cerr, L"이미 등록된 소켓 정보입니다! 소켓 아이템 ID 중복 발견!" )
+		START_LOG( cerr, L"Socket information is already registered; duplicate socket item ID found." )
 			<< BUILD_LOG( kSocketData.m_ID )
 			<< END_LOG;
 		return false;
@@ -1589,7 +1589,7 @@ bool CXSLSocketItem::AddSocketRandomData_LUA( int iSocketDataType, int iGroupID,
 {
 	if( iSocketDataType <= 0 || iGroupID <= 0 || fRate <= 0.0f )
 	{
-		START_LOG( cerr, L"소켓 옵션 정보가 이상합니다." )
+		START_LOG( cerr, L"Invalid socket option information." )
 			<< BUILD_LOG( iSocketDataType )
 			<< BUILD_LOG( iGroupID )
 			<< BUILD_LOG( fRate )
@@ -1609,7 +1609,7 @@ bool CXSLSocketItem::AddSocketRandomData_LUA( int iSocketDataType, int iGroupID,
 	{
 		if( !mit->second.AddCase( iGroupID, fRate ) )
 		{
-			START_LOG( cerr, L"소켓 랜덤 정보 확률 오버!" )
+			START_LOG( cerr, L"Socket random information probability exceeds the limit." )
 				<< BUILD_LOG( iSocketDataType )
 				<< BUILD_LOG( iGroupID )
 				<< BUILD_LOG( fRate )
@@ -1625,7 +1625,7 @@ bool CXSLSocketItem::AddSocketGroup_LUA( int iGroupID, int iBeginEnchantLv, int 
 {
 	if( iGroupID <= 0 || iBeginEnchantLv < 0 || iEndEnchantLv <= 0 || iOptionID <= 0 || fRate <= 0.0f )
 	{
-		START_LOG( cerr, L"소켓 옵션 정보가 이상합니다." )
+		START_LOG( cerr, L"Invalid socket option information." )
 			<< BUILD_LOG( iGroupID )
 			<< BUILD_LOG( iBeginEnchantLv )
 			<< BUILD_LOG( iEndEnchantLv )
@@ -1664,7 +1664,7 @@ bool CXSLSocketItem::AddSocketGroup_LUA( int iGroupID, int iBeginEnchantLv, int 
 		{
             if( !mitSG->second.AddCase( iOptionID, fRate ) )
 			{
-				START_LOG( cerr, L"소켓 그룹 정보 확률 오버!" )
+				START_LOG( cerr, L"Socket group information probability exceeds the limit." )
 					<< BUILD_LOG( iGroupID )
 					<< BUILD_LOG( iBeginEnchantLv )
 					<< BUILD_LOG( iEndEnchantLv )
@@ -1694,7 +1694,7 @@ bool CXSLSocketItem::AddSetItemData_LUA()
 
 	if( kSetItemData.m_SetID <= 0 )
 	{
-		START_LOG( cerr, L"setID값이 이상합니다." )
+		START_LOG( cerr, L"Invalid setID value." )
 			<< BUILD_LOG( kSetItemData.m_SetID )
 			<< END_LOG;
 		return false;
@@ -1722,7 +1722,7 @@ bool CXSLSocketItem::AddSetItemData_LUA()
 			//{{ 2011. 07. 25    김민성    아이템 옵션ID 데이터 사이즈 증가
 			if( optionNum > INT_MAX )
 			{
-				START_LOG( cerr, L"int타입의 범위를 넘어서는 소켓 옵션ID입니다!" )
+				START_LOG( cerr, L"Socket option ID exceeds the range of the int type." )
 					<< BUILD_LOG( kSetItemData.m_SetID )
 					<< BUILD_LOG( kSetItemData.m_SetName )
 					<< BUILD_LOG( optionNum )
@@ -1809,7 +1809,7 @@ void CXSLSocketItem::AddSocektGroupDataForCashAvatar_LUA()
 
 	if( setSocketList.size() <= 0 )
 	{
-		START_LOG( cerr, L"[테스트]소켓ID 정보가 없다." )
+		START_LOG( cerr, L"[Test] Socket ID information is missing." )
 			<< BUILD_LOG( iItemType )
 			<< BUILD_LOG( static_cast<int>(setSocketList.size()) )
 			<< END_LOG;
@@ -1819,7 +1819,7 @@ void CXSLSocketItem::AddSocektGroupDataForCashAvatar_LUA()
 	// 그룹 id 는 - 값 일 수 있음
 	if( iGroupID == 0 || iItemType == CXSLItem::IT_NONE )
 	{
-		START_LOG( cerr, L"[테스트]파싱이 이상합니당." )
+		START_LOG( cerr, L"[Test] Parsing error." )
 			<< BUILD_LOG( iGroupID )
 			<< BUILD_LOG( iItemType )
 			<< END_LOG;
@@ -1864,7 +1864,7 @@ bool CXSLSocketItem::CheckCashItemSocketID( IN int iType, IN int iSocketID )
 	std::map< int, std::set< int > >::iterator mit = m_mapItemTypeSocketList.find( iType );
 	if( mit == m_mapItemTypeSocketList.end() )
 	{
-		START_LOG( cerr, L"[테스트]존재 하지 않는 아이템 타입입니다." )
+		START_LOG( cerr, L"[Test] Item type does not exist." )
 			<< BUILD_LOG( iType )
 			<< BUILD_LOG( iSocketID )
 			<< END_LOG;
@@ -1885,7 +1885,7 @@ bool CXSLSocketItem::CheckCashItemGroupID( IN int iSocketID, IN int iGroupID )
 	std::map< int, std::set< int > >::iterator mit = m_mapItemGroupSocketList.find( iGroupID );
 	if( mit == m_mapItemGroupSocketList.end() )
 	{
-		START_LOG( cerr, L"[테스트]존재 하지 않는 그룹 ID 입니다." )
+		START_LOG( cerr, L"[Test] Group ID does not exist." )
 			<< BUILD_LOG( iGroupID )
 			<< BUILD_LOG( iSocketID )
 			<< END_LOG;
@@ -1907,7 +1907,7 @@ bool CXSLSocketItem::AddRandomSocketGroupInfo_LUA( int iGroupID, int iOptionID, 
 {
 	if( iGroupID <= 0 || iOptionID <= 0 || fRate <= 0.0f )
 	{
-		START_LOG( cerr, L"소켓 옵션 정보가 이상합니다." )
+		START_LOG( cerr, L"Invalid socket option information." )
 			<< BUILD_LOG( iGroupID )
 			<< BUILD_LOG( iOptionID )
 			<< BUILD_LOG( fRate )
@@ -1936,7 +1936,7 @@ bool CXSLSocketItem::EvaluateItemRandomSocket( IN const int iItemID, OUT std::ve
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iItemID );
 	if( IS_NULL( pItemTemplet ) )
 	{
-		START_LOG( cerr, L"존재 하지 않는 아이템 입니다!" )
+		START_LOG( cerr, L"Item does not exist." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 		return false;
@@ -1948,7 +1948,7 @@ bool CXSLSocketItem::EvaluateItemRandomSocket( IN const int iItemID, OUT std::ve
 		mit = m_mapRandomSocketGroup.find( iRandomSocketGroupID );
 		if( mit == m_mapRandomSocketGroup.end() )
 		{
-			START_LOG( cerr, L"존재 하지 않는 랜덤 소켓 그룹 id입니다!" )
+			START_LOG( cerr, L"Random socket group ID does not exist." )
 				<< BUILD_LOG( iItemID )
 				<< BUILD_LOG( iRandomSocketGroupID )
 				<< END_LOG;
@@ -1971,7 +1971,7 @@ bool CXSLSocketItem::AddMiracleCubeInfo_LUA( int iItemID, int iMinLevel, int iMa
 {
 	if( iItemID <= 0 || iMinLevel < 0 || iMaxLevel < 0 )
 	{
-		START_LOG( cerr, L"미라클 큐브 정보가 이상합니다." )
+		START_LOG( cerr, L"Invalid Miracle Cube information." )
 			<< BUILD_LOG( iItemID )
 			<< BUILD_LOG( iMinLevel )
 			<< BUILD_LOG( iMaxLevel )
@@ -1983,7 +1983,7 @@ bool CXSLSocketItem::AddMiracleCubeInfo_LUA( int iItemID, int iMinLevel, int iMa
 	mit = m_mapMiracleCubeTable.find( iItemID );
 	if( mit != m_mapMiracleCubeTable.end() )
 	{
-		START_LOG( cerr, L"이미 등록된 미라클 큐브 정보입니다." )
+		START_LOG( cerr, L"Miracle Cube information is already registered." )
 			<< BUILD_LOG( iItemID )
 			<< BUILD_LOG( iMinLevel )
 			<< BUILD_LOG( iMaxLevel )
@@ -2004,7 +2004,7 @@ bool CXSLSocketItem::IsCanUseMiracleCube( IN const int iMiracleCubeItemID, IN co
 	mit = m_mapMiracleCubeTable.find( iMiracleCubeItemID );
 	if( mit == m_mapMiracleCubeTable.end() )
 	{
-		START_LOG( cerr, L"미라클 큐브가 아닙니다." )
+		START_LOG( cerr, L"Item is not a Miracle Cube." )
 			<< BUILD_LOG( iMiracleCubeItemID )
 			<< END_LOG;
 		return false;
@@ -2025,7 +2025,7 @@ void CXSLSocketItem::GetAndAddStatRelationLevel( IN const std::vector< int >& ve
 		const SocketData* pSocketData = GetSocketData( iOptionID );
 		if( IS_NULL( pSocketData ) )
 		{
-			START_LOG( cerr, L"존재 하지 않는 옵션 ID입니다." )
+			START_LOG( cerr, L"Option ID does not exist." )
 				<< BUILD_LOG( iOptionID )
 				<< END_LOG;
             continue;

@@ -226,7 +226,7 @@ KActorProxy* CreateProxy( int iProxyType )
 {
 	if( iProxyType < 0 || iProxyType >= KProxyManager::PT_NUM )
 	{
-		START_LOG( cerr, L"프록시 타입이 이상함." )
+		START_LOG( cerr, L"Invalid proxy type." )
 			<< BUILD_LOG( iProxyType )
 			<< END_LOG;
 
@@ -251,7 +251,7 @@ KActorProxy* CreateProxy( int iProxyType )
 		return pkProxy;
 		//}} 2011. 04. 13  김민성  글로벌 서버 추가
 	default:
-		START_LOG( cerr, L"프록시 타입이 이상함." )
+		START_LOG( cerr, L"Invalid proxy type." )
 			<< BUILD_LOG( iProxyType )
 			<< END_LOG;
 		return NULL;
@@ -272,7 +272,7 @@ void KGSSimLayer::Init()
 		kAutoPath.GetPullPath( strFile );
 		if( 0 != LUA_DOFILE( g_pLua, strFile.c_str() ) )
 		{
-			START_LOG( cerr, L"Enum 정보 로드 실패.!" )
+			START_LOG( cerr, L"Failed to load enum data." )
 				<< BUILD_LOG( KncUtil::toWideString( strFile ) );
 			//{{ 2011. 02. 07	최육사	스크립트 파싱 오류 리포트
 			KBaseServer::GetKObj()->AddFailScriptFileName( L"Enum.lua" );
@@ -280,7 +280,7 @@ void KGSSimLayer::Init()
 		}
 		else
 		{
-			START_LOG( cout, L"Enum 정보 로드 성공.!" );
+			START_LOG( cout, L"Enum data loaded successfully." );
 		}
 	}
 
@@ -292,14 +292,14 @@ void KGSSimLayer::Init()
 		kAutoPath.GetPullPath( strFile );
 		if( 0 != LUA_DOFILE( g_pLua, strFile.c_str() ) )
 		{
-			START_LOG( cerr, L"DungeonEnum 정보 로드 실패.!" )
+			START_LOG( cerr, L"Failed to load the dungeon enum." )
 				<< BUILD_LOG( KncUtil::toWideString( strFile ) );
 			//{{ 2011. 02. 07	최육사	스크립트 파싱 오류 리포트
 			KBaseServer::GetKObj()->AddFailScriptFileName( L"DungeonEnum.lua" );
 		}
 		else
 		{
-			START_LOG( cout, L"DungeonEnum 정보 로드 성공.!" );
+			START_LOG( cout, L"Dungeon enum loaded successfully." );
 		}
 	}
 
@@ -311,7 +311,7 @@ void KGSSimLayer::Init()
 		kAutoPath.GetPullPath( strFile );
 		if( SiCXSLCashItemManager()->OpenScriptFile( strFile.c_str() ) == false )
 		{
-			START_LOG( cerr, L"Cash Item Data 정보 로드 실패.!" )
+			START_LOG( cerr, L"Failed to load cash item data." )
 			<< BUILD_LOG( KncUtil::toWideString( strFile ) );
 			//{{ 2011. 02. 07	최육사	스크립트 파싱 오류 리포트
 			KBaseServer::GetKObj()->AddFailScriptFileName( L"CashItemData.lua" );
@@ -319,7 +319,7 @@ void KGSSimLayer::Init()
 		}
 		else
 		{
-			START_LOG( cout, L"Cash Item Data 정보 로드 성공.!" );
+			START_LOG( cout, L"Cash item data loaded successfully." );
 		}
 	}
 	//}}
@@ -348,7 +348,7 @@ void KGSSimLayer::Init()
 		kAutoPath.GetPullPath( strFile );
 		if( 0 != LUA_DOFILE( g_pLua, strFile.c_str() ) )
 		{
-			START_LOG( cerr, L"Map Data Enum 정보 로드 실패.!" )
+			START_LOG( cerr, L"Failed to load the map data enum." )
 				<< BUILD_LOG( KncUtil::toWideString( strFile ) );
 			//{{ 2011. 02. 07	최육사	스크립트 파싱 오류 리포트
 			KBaseServer::GetKObj()->AddFailScriptFileName( L"DLG_Map_Enum.lua" );
@@ -356,7 +356,7 @@ void KGSSimLayer::Init()
 		}
 		else
 		{
-			START_LOG( cout, L"Map Data Enum 정보 로드 성공.!" );
+			START_LOG( cout, L"Map data enum loaded successfully." );
 		}
 	}
 
@@ -367,7 +367,7 @@ void KGSSimLayer::Init()
 		kAutoPath.GetPullPath( strFile );
 		if( SiCXSLUnitManager()->OpenScriptFile( strFile.c_str() ) == false )
 		{
-			START_LOG( cerr, L"Unit 정보 로드 실패.!" )
+			START_LOG( cerr, L"Failed to load unit data." )
 				<< BUILD_LOG( KncUtil::toWideString( strFile ) );
 			//{{ 2011. 02. 07	최육사	스크립트 파싱 오류 리포트
 			KBaseServer::GetKObj()->AddFailScriptFileName( L"UnitTemplet.lua" );
@@ -375,7 +375,7 @@ void KGSSimLayer::Init()
 		}
 		else
 		{
-			START_LOG( cout, L"Unit 정보 로드 성공.!" );
+			START_LOG( cout, L"Unit data loaded successfully." );
 		}
 	}
 
@@ -383,9 +383,9 @@ void KGSSimLayer::Init()
 		CXSLDungeonManager::RegScriptName( "DungeonData.lua" );
 
 		if( SiCXSLDungeonManager()->OpenScriptFile_AllDungeonScriptLoad( g_pLua ) == false )
-			START_LOG( cerr, L"Dungeon Manager 정보 로드 실패.!" );
+			START_LOG( cerr, L"Failed to load the dungeon manager." );
 		else
-			START_LOG( cout, L"Dungeon Manager 정보 로드 성공.!" );
+			START_LOG( cout, L"Dungeon manager loaded successfully." );
 
 		//{{ 2011. 02. 07	최육사	스크립트 파싱 오류 리포트
 		if( SiCXSLDungeonManager()->IsLuaPasingSuccess() == false )
@@ -470,7 +470,7 @@ void KGSSimLayer::Init()
 		kAutoPath.GetPullPath( strFile );
 		if( SiCXSLCashItemManager()->OpenScriptFile( strFile.c_str() ) == false )
 		{
-			START_LOG( cerr, L"Cash Package Item 정보 로드 실패.!" )
+			START_LOG( cerr, L"Failed to load cash package items." )
 				<< BUILD_LOG( KncUtil::toWideString( strFile ) );
 			//{{ 2011. 02. 07	최육사	스크립트 파싱 오류 리포트
 			KBaseServer::GetKObj()->AddFailScriptFileName( L"PackageItemData.lua" );
@@ -478,7 +478,7 @@ void KGSSimLayer::Init()
 		}
 		else
 		{
-			START_LOG( cout, L"Cash Package Item 정보 로드 성공.!" );
+			START_LOG( cout, L"Cash package items loaded successfully." );
 		}
 	}
 
@@ -489,7 +489,7 @@ void KGSSimLayer::Init()
 		kAutoPath.GetPullPath( strFile );
 		if( SiCXSLCashItemManager()->OpenScriptFile( strFile.c_str() ) == false )
 		{
-			START_LOG( cerr, L"Cash Item Price 정보 로드 실패.!" )
+			START_LOG( cerr, L"Failed to load cash item prices." )
 				<< BUILD_LOG( KncUtil::toWideString( strFile ) );
 
 			//{{ 2011. 02. 07	최육사	스크립트 파싱 오류 리포트
@@ -498,7 +498,7 @@ void KGSSimLayer::Init()
 		}
 		else
 		{
-			START_LOG( cout, L"Cash Item Price 정보 로드 성공.!" );
+			START_LOG( cout, L"Cash item prices loaded successfully." );
 		}
 	}
 
@@ -529,7 +529,7 @@ void KGSSimLayer::Init()
 		kAutoPath.GetPullPath( strFile );
 		if( SiKRoomListManager()->OpenScriptFile( strFile.c_str() ) == false )
 		{
-			START_LOG( cerr, L"Room List 생성 실패.!" )
+			START_LOG( cerr, L"Failed to create the room list." )
 				<< BUILD_LOG( KncUtil::toWideString( strFile ) );
 			//{{ 2011. 02. 07	최육사	스크립트 파싱 오류 리포트
 			KBaseServer::GetKObj()->AddFailScriptFileName( L"RoomListData.lua" );
@@ -537,7 +537,7 @@ void KGSSimLayer::Init()
 		}
 		else
 		{
-			START_LOG( cout, L"Room List 생성 성공.!" );
+			START_LOG( cout, L"Room list created successfully." );
 		}
 	}
 	//}}
@@ -554,14 +554,14 @@ void KGSSimLayer::Init()
 		kAutoPath.GetPullPath( strFile );
 		if( SiKStatTable()->OpenScriptFile( strFile.c_str() ) == false )
 		{
-			START_LOG( cerr, L"STAT TABLE 정보 로드 실패.!" );
+			START_LOG( cerr, L"Failed to load the stat table." );
 			//{{ 2011. 02. 07	최육사	스크립트 파싱 오류 리포트
 			KBaseServer::GetKObj()->AddFailScriptFileName( L"StatTable.lua" );
 			//}}
 		}
 		else
 		{
-			START_LOG( cout, L"STAT TABLE 정보 로드 성공.!" );
+			START_LOG( cout, L"Stat table loaded successfully." );
 		}
 	}
 
@@ -599,7 +599,7 @@ void KGSSimLayer::Init()
 		kAutoPath.GetPullPath( strFile );
 		if ( SiKTrainingCenterTable()->OpenScriptFile( strFile.c_str() ) == false )
 		{
-			START_LOG( cerr, L"훈련소 로드 실패.!" )
+			START_LOG( cerr, L"Failed to load the training center." )
 				<< BUILD_LOG( KncUtil::toWideString( strFile ) );
 			//{{ 2011. 02. 07	최육사	스크립트 파싱 오류 리포트
 			KBaseServer::GetKObj()->AddFailScriptFileName( L"TrainingCenterTemplet" );
@@ -607,7 +607,7 @@ void KGSSimLayer::Init()
 		}
 		else
 		{
-			START_LOG( cout, L"훈련소 로드 성공.!" );
+			START_LOG( cout, L"Training center loaded successfully." );
 		}
 	}
 
@@ -618,7 +618,7 @@ void KGSSimLayer::Init()
 		kAutoPath.GetPullPath( strFile );
 		if ( SiKSpiritTable()->OpenScriptFile( strFile.c_str() ) == false )
 		{
-			START_LOG( cerr, L"레벨별 근성도 로드 실패.!" )
+			START_LOG( cerr, L"Failed to load level-based stamina data." )
 				<< BUILD_LOG( KncUtil::toWideString( strFile ) );
 			//{{ 2011. 02. 07	최육사	스크립트 파싱 오류 리포트
 			KBaseServer::GetKObj()->AddFailScriptFileName( L"SpiritTable.lua" );
@@ -626,7 +626,7 @@ void KGSSimLayer::Init()
 		}
 		else
 		{
-			START_LOG( cout, L"레벨별 근성도 로드 성공.!" );
+			START_LOG( cout, L"Level-based stamina data loaded successfully." );
 		}
 	}
 
@@ -662,7 +662,7 @@ void KGSSimLayer::Init()
 		kAutoPath.GetPullPath( strFile );
 		if( 0 != LUA_DOFILE( g_pLua, strFile.c_str() ) )
 		{
-			START_LOG( cerr, L"Field Data 정보 로드 실패.!" )
+			START_LOG( cerr, L"Failed to load field data." )
 				<< BUILD_LOG( KncUtil::toWideString( strFile ) );
 			//{{ 2011. 02. 07	최육사	스크립트 파싱 오류 리포트
 			KBaseServer::GetKObj()->AddFailScriptFileName( L"FieldData.lua" );
@@ -670,7 +670,7 @@ void KGSSimLayer::Init()
 		}
 		else
 		{
-			START_LOG( cout, L"Field Data 정보 로드 성공.!" );
+			START_LOG( cout, L"Field data loaded successfully." );
 		}
 	}
 
@@ -770,9 +770,9 @@ void KGSSimLayer::Init()
 		CXSLBattleFieldManager::RegScriptName( "BattleFieldData.lua" );
 
 		if( SiCXSLBattleFieldManager()->OpenScriptFile_AllBattleFieldScriptLoad( g_pLua ) == false )
-			START_LOG( cerr, L"Battle Field Manager 정보 로드 실패.!" );
+			START_LOG( cerr, L"Failed to load the battlefield manager." );
 		else
-			START_LOG( cout, L"Battle Field Manager 정보 로드 성공.!" );
+			START_LOG( cout, L"Battlefield manager loaded successfully." );
 
 		//{{ 2011. 02. 07	최육사	스크립트 파싱 오류 리포트
 		if( SiCXSLBattleFieldManager()->IsLuaPasingSuccess() == false )
@@ -807,9 +807,9 @@ void KGSSimLayer::Init()
 	//{{ 2013. 05. 20	최육사	아이템 개편
 	{
 		if( SiCXSLCharacterStatTable()->OpenScriptFile_CharacterStatTable() == false )
-			START_LOG( cerr, L"Character Stat Table 정보 로드 실패.!" );
+			START_LOG( cerr, L"Failed to load the character stat table." );
 		else
-			START_LOG( cout, L"Character Stat Table 정보 로드 성공.!" );
+			START_LOG( cout, L"Character stat table loaded successfully." );
 	}
 	//}}
 
@@ -1046,7 +1046,7 @@ void KGSSimLayer::AddIP( const char* szAddIP )
 {
     if( szAddIP == NULL )
     {
-        START_LOG( cerr, L"IP 스트링 이상." )
+        START_LOG( cerr, L"Invalid IP string." )
             << END_LOG;
 
         return;
@@ -1055,7 +1055,7 @@ void KGSSimLayer::AddIP( const char* szAddIP )
     std::string strIP = szAddIP;
     if( strIP.size() < 1 || strIP.size() > 15 )
     {
-        START_LOG( cerr, L"추가하려는 IP 이상." )
+        START_LOG( cerr, L"Invalid IP address to add." )
             << BUILD_LOG( strIP.size() )
             << END_LOG;
 
@@ -1085,7 +1085,7 @@ bool KGSSimLayer::CheckIP( const char* szIP )
 
     if( szIP == NULL )
     {
-        START_LOG( cerr, L"비교하려는 IP 이상." )
+        START_LOG( cerr, L"Invalid IP address for comparison." )
             << END_LOG;
 
         return false;
@@ -1094,7 +1094,7 @@ bool KGSSimLayer::CheckIP( const char* szIP )
     std::string strIP = szIP;
     if( strIP.size() < 1 || strIP.size() > 15 )
     {
-        START_LOG( cerr, L"비교하려는 IP 길이 이상." )
+        START_LOG( cerr, L"Invalid IP address length for comparison." )
             << BUILD_LOG( strIP.size() )
             << END_LOG;
 
@@ -1106,7 +1106,7 @@ bool KGSSimLayer::CheckIP( const char* szIP )
 	{
         if( vit->size() < 1 || vit->size() > 15 )
         {
-            START_LOG( cerr, L"비교하려는 IP 이상." )
+            START_LOG( cerr, L"Invalid IP address for comparison." )
                 << BUILD_LOG( vit->size() )
                 << END_LOG;
 
@@ -1171,7 +1171,7 @@ void KGSSimLayer::SendToDBAbnormalReason( bool bFinal )
 
 		if( bFinal )
 		{
-			START_LOG( cout, L"비정상 종료 세부 사유 통계 DB 업데이트!" );
+			START_LOG( cout, L"Updating abnormal shutdown reason statistics in the database!" );
 		}
 	}
 }

@@ -54,7 +54,7 @@ bool CXSLResolveItemManager::SetJackpotProb_LUA( float fRate )
 {
 	if( !m_kJackpotLottery.AddCase( JP_JACKPOT, fRate ) )
 	{
-		START_LOG( cerr, L"대박 확률 설정 실패!" )
+		START_LOG( cerr, L"Failed to configure jackpot probability." )
 			<< BUILD_LOG( fRate )
 			<< END_LOG;
 		return false;
@@ -71,7 +71,7 @@ bool CXSLResolveItemManager::AddResolveDataBrokenPiece_LUA( int iResolveResultTy
 {
 	if( iItemID <= 0  ||  iResolveResultType < RRT_EL_FLOUR  ||  iResolveResultType >= RRT_MAX )
 	{
-		START_LOG( cerr, L"분해 그룹 데이터 파싱 실패.!" )
+		START_LOG( cerr, L"Failed to parse dismantling group data." )
 			<< BUILD_LOG( iItemID )
 			<< BUILD_LOG( iResolveResultType )
 			<< END_LOG;
@@ -94,7 +94,7 @@ bool CXSLResolveItemManager::AddResolveDataBrokenPiece_LUA( int iResolveResultTy
 	return true;
 
 error_proc:
-	START_LOG( cerr, L"분해 스크립트 파싱 실패!" )
+	START_LOG( cerr, L"Failed to parse the dismantling script." )
 		<< BUILD_LOG( iResolveResultType )
 		<< BUILD_LOG( iItemID )
 		<< BUILD_LOG( kResolveData.m_iUnitCost )
@@ -113,7 +113,7 @@ bool CXSLResolveItemManager::AddResolveData_LUA( int iItemGrade, int iItemID )
 {
 	if( iItemGrade <= 0 || iItemID <= 0 )
 	{
-		START_LOG( cerr, L"분해 마법석 데이터 파싱 실패.!" )
+		START_LOG( cerr, L"Failed to parse dismantling magic stone data." )
 			<< BUILD_LOG( iItemGrade )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
@@ -151,7 +151,7 @@ bool CXSLResolveItemManager::AddResolveData_LUA( int iItemGrade, int iItemID )
 	return true;
 
 error_proc:
-	START_LOG( cerr, L"스크립트 파싱 실패!" )
+	START_LOG( cerr, L"Failed to parse the script." )
 		<< BUILD_LOG( iItemGrade )
 		<< BUILD_LOG( iItemID )
 		<< BUILD_LOG( fRate )
@@ -169,7 +169,7 @@ void CXSLResolveItemManager::AddWeaponResolveBrokenPieceRate_LUA( int iItemType,
 {
 	if( m_kWeaponResolveLottery.AddCase( iItemType, fRate ) == false )
 	{
-		START_LOG( cerr, L"무기 분해 파편 확률 세팅 실패!" )
+		START_LOG( cerr, L"Failed to configure weapon dismantling fragment probabilities." )
 			<< BUILD_LOG( iItemType )
 			<< BUILD_LOG( fRate )
 			<< END_LOG;
@@ -180,7 +180,7 @@ void CXSLResolveItemManager::AddArmorResolveBrokenPieceRate_LUA( int iItemType, 
 {
 	if( m_kArmorResolveLottery.AddCase( iItemType, fRate ) == false )
 	{
-		START_LOG( cerr, L"방어구 분해 파편 확률 세팅 실패!" )
+		START_LOG( cerr, L"Failed to configure armor dismantling fragment probabilities." )
 			<< BUILD_LOG( iItemType )
 			<< BUILD_LOG( fRate )
 			<< END_LOG;
@@ -193,7 +193,7 @@ double CXSLResolveItemManager::GetJackpotTime() const
 	const int iRandomValue = m_iMaxJackpotTime - m_iMinJackpotTime;
 	if( iRandomValue <= 0 )
 	{
-		START_LOG( cerr, L"분해 대박 확률값이 0이거나 0보다 작다. 0 나누기 연산 경고!" )
+		START_LOG( cerr, L"Dismantling jackpot probability is zero or negative; division by zero may occur." )
 			<< BUILD_LOG( m_iMinJackpotTime )
 			<< BUILD_LOG( m_iMaxJackpotTime )
 			<< BUILD_LOG( iRandomValue )
@@ -269,7 +269,7 @@ bool CXSLResolveItemManager::GetResultItem( IN const int iItemGrade,
 			}
 			else
 			{
-                START_LOG( cerr, L"기획상 꽝이 없을텐데 꽝이 나왔네?" )
+                START_LOG( cerr, L"A losing result occurred even though the configuration should not allow one." )
 					<< BUILD_LOG( iItemType )
 					<< BUILD_LOG( iResolveItemType )
 					<< END_LOG;
@@ -312,7 +312,7 @@ bool CXSLResolveItemManager::GetResultItem( IN const int iItemGrade,
 			}
 			else
 			{
-				START_LOG( cerr, L"기획상 꽝이 없을텐데 꽝이 나왔네?" )
+				START_LOG( cerr, L"A losing result occurred even though the configuration should not allow one." )
 					<< BUILD_LOG( iItemType )
 					<< BUILD_LOG( iResolveItemType )
 					<< END_LOG;
@@ -322,7 +322,7 @@ bool CXSLResolveItemManager::GetResultItem( IN const int iItemGrade,
 
 	default:
 		{
-			START_LOG( cerr, L"분해 할 수 없는 아이템 타입 입니다!" )
+			START_LOG( cerr, L"Item type cannot be dismantled." )
 				<< BUILD_LOG( iItemType )
 				<< END_LOG;
 			goto end_proc;
@@ -335,7 +335,7 @@ bool CXSLResolveItemManager::GetResultItem( IN const int iItemGrade,
 end_proc:
 	SET_ERROR( ERR_RESOLVE_ITEM_02 );
 
-	START_LOG( cerr, L"분해 아이템 그룹찾기 실패.!" )
+	START_LOG( cerr, L"Failed to find the dismantling item group." )
 		<< BUILD_LOG( iItemGrade )
 		<< BUILD_LOG( iEqipLevel )
 		<< BUILD_LOG( iItemType )
@@ -380,7 +380,7 @@ void CXSLResolveItemManager::ResolveResult_EnchantStone( IN const SResolveData& 
 			const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iResultItemID );
 			if( pItemTemplet == NULL )
 			{
-				START_LOG( cerr, L"아이템 템플릿 정보를 찾을 수 없습니다." )
+				START_LOG( cerr, L"Item template information not found." )
 					<< BUILD_LOG( iResultItemID )
 					<< END_LOG;
 			}
@@ -407,7 +407,7 @@ void CXSLResolveItemManager::ResolveResult_BrokenPiece( IN RESOLVE_RESULT_TYPE e
 {
 	if( eType < RRT_EL_FLOUR  ||  eType >= RRT_MAX )
 	{
-		START_LOG( cerr, L"분해 결과 타입이 이상합니다!" )
+		START_LOG( cerr, L"Invalid dismantling result type." )
 			<< BUILD_LOG( eType )
 			<< END_LOG;
 		return;
@@ -443,7 +443,7 @@ void CXSLResolveItemManager::ResolveResult_BrokenPiece( IN RESOLVE_RESULT_TYPE e
 			const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( kResolveData.m_iItemID );
 			if( pItemTemplet == NULL )
 			{
-				START_LOG( cerr, L"아이템 템플릿 정보를 찾을 수 없습니다." )
+				START_LOG( cerr, L"Item template information not found." )
 					<< BUILD_LOG( kResolveData.m_iItemID )
 					<< END_LOG;
 			}

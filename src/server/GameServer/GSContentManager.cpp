@@ -37,7 +37,7 @@ void KGSContentManager::SetEnableCashShop_LUA( bool bVal )
 {
 	m_bEnableCashShop = bVal;
 
-	START_LOG( cout, L"[컨텐츠 매니저] 캐쉬샵 기능 : " << m_bEnableCashShop );
+	START_LOG( cout, L"[Content Manager] Cash shop feature: " << m_bEnableCashShop );
 }
 
 

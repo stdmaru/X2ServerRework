@@ -58,7 +58,7 @@ bool CXSLRoom::IsValidWinKillNum( char cPvpGameType, char cWinKillNum )
 
 	default:
 		{
-			START_LOG( cerr, L"대전 타입이 이상합니다." )
+			START_LOG( cerr, L"Invalid PvP type." )
 				<< BUILD_LOGc( cPvpGameType )
 				<< END_LOG;
 
@@ -125,7 +125,7 @@ bool CXSLRoom::IsValidPvpPlayTime( char cPvpGameType, int iPlayTime )
 
 	default:
 		{
-			START_LOG( cerr, L"대전 타입이 이상합니다." )
+			START_LOG( cerr, L"Invalid PvP type." )
 				<< BUILD_LOGc( cPvpGameType )
 				<< END_LOG;
 
