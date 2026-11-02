@@ -1,7 +1,8 @@
 # Local services for development (docs/tools/development-database.md).
 #   docker compose -f docker/docker-compose.yml up -d     start (data stays in the x2-mssql-data volume)
 #   docker/mssql/restore.sh                               restore _database/*.bak
-# Listens only on 127.0.0.1. The sa password is for this local container; set X2_DB_PASSWORD before the first start to change it.
+# SQL binds only to 127.0.0.1; published server ports bind all host interfaces (see docs/running.md#network-ports).
+# Development only. The sa password is local; set X2_DB_PASSWORD before first start to change it.
 name: x2
 
 # Core runtime template

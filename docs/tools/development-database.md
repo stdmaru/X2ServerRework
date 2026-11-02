@@ -30,6 +30,9 @@ docker compose -f docker/docker-compose.yml down -v           # remove container
   `docker/docker-compose.yml` and can be changed with `X2_DB_PASSWORD` (before first `up`, and also in `restore.sh`). Variables may
   be in `docker/.env` (not versioned; template `docker/.env.example`), read by `docker compose`, `restore.sh`, `docker/build.sh`,
   and CMake; shell value takes precedence over file (2026-10-31).
+- The server containers also publish their client-facing ports on all host interfaces; the inter-server listeners are not published.
+  This Compose file is for development, not a production deployment. See [Run the servers › Network ports](../running.md#network-ports)
+  for the port list and public firewall guidance.
 - `restore.sh` copies `.bak` files into container (SQL Server runs as uid 10001, which may not read mounted files), then restores
   each with `MOVE` for logical files. Accepts specific files: `docker/mssql/restore.sh _database/Game01.bak`.
 - **Data adjusted for development** (`restore.sh` runs after restoring `Statistics`): `LServerList.PublicIP/PrivateIP/IP`
