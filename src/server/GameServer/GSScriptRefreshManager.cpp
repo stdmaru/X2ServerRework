@@ -583,7 +583,7 @@ void KGSScriptRefreshManager::Init()
 	// 스레드 시작!
 	KThreadManager::BeginThread();
 
-	START_LOG( cout, L"Starting script refresh thread!" )
+	START_LOG( cout, L"Starting script refresh thread!" );
 }
 
 KThread* KGSScriptRefreshManager::CreateThread()
