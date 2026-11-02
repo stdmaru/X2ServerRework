@@ -122,6 +122,8 @@ The wiki under `docs/` is the project's memory. It is organized as a **navigable
   CI). Integrate changes into `main` through a well english-described pull request; do not merge locally or push directly to `main`. Never force-push to
   `main`.
 - Commit message format: `type: summary` (`feat`, `fix`, `docs`, `refactor`, `chore`), with a body explaining why.
+- Follow [CONTRIBUTING.md](CONTRIBUTING.md) for pull request descriptions. Agents are strongly encouraged to open a draft PR
+  when creating a work branch, before implementation starts, and to keep its summary and checklist current throughout the work.
 
 ### Branches
 
@@ -129,8 +131,9 @@ The wiki under `docs/` is the project's memory. It is organized as a **navigable
   `tools/docs/check_links.py` reports no issues. Never work directly on it.
 - **Use one short-lived branch per roadmap step**, named `area/topic`. Areas: `platform`, `kncsdk`, `server`, `client`, `tools`,
   `docs`, `build`. Examples: `tools/server-flags`, `server/common-import`, `build/windows-clang-cl`.
-- **Open a pull request from each work branch to `main`** when its roadmap step is complete. If `main` has moved, rebase the branch
-  onto `main` and push the updated work branch before updating the PR.
+- **Open a draft pull request from each work branch to `main` as early as possible**, ideally when creating the branch. Update it
+  as work progresses and mark it ready for review when its roadmap step is complete. If `main` has moved, rebase the branch onto
+  `main` and push the updated work branch before updating the PR.
 - Before requesting integration, run a clean build, tests, the link checker, and Windows validation
   (`tools/win/winbuild.sh` or a CI run). Integrate through the PR after its checks pass and it is approved; preserve linear history
   by using GitHub's rebase-and-merge option. Do not merge the PR locally or push its changes directly to `main`.
