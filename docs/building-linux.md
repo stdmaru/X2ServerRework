@@ -5,6 +5,9 @@
 There are two options. The **recommended option is the container** (`docker/build.sh`): it uses the same Ubuntu image as CI
 (decision T24), and the host only needs Docker. Native builds also work, but are not continuously verified.
 
+Linux builds support both x86_64 and arm64 with the same CMake presets. Both architectures are built and tested in
+[GitHub Actions](tools/ci.md).
+
 Both use the same presets:
 
 | Preset | Compiler | Type | Dev tools (`X2_DEV_TOOLS`) |

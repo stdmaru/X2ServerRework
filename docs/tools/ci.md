@@ -7,8 +7,9 @@ was replaced by clang-cl on Windows, T26).
 
 ## Minutes (budget)
 
-Repository is private: **2,000 Actions minutes/month**, with Windows minutes charged at **2×**. As of 2026-10-30, a full run cost
-~80–110 billed minutes (Linux jobs 16–22 min with cold ccache, Windows 14 min × 2). Therefore:
+Repository is private: **2,000 Actions minutes/month**, with Windows minutes charged at **2×**. Before the ARM64 job was added,
+a full run cost ~80–110 billed minutes as of 2026-10-30 (Linux jobs 16–22 min with cold ccache, Windows 14 min × 2). The current
+total is higher due to the additional Linux ARM64 job. Therefore:
 
 - **Automatic only on push to `main`** (when integrating), not when push changes only `docs/`, `*.md`, or `.claude/`.
 - **Work branches:** run Linux matrix locally for free (`docker/build.sh`, [Build environment](build-environment.md)). Trigger CI manually
@@ -16,16 +17,17 @@ Repository is private: **2,000 Actions minutes/month**, with Windows minutes cha
   `gh workflow run ci.yml --ref <branch>` (or `-f jobs=linux` / `-f jobs=all`). Then `gh run list --branch <branch>`.
 - **Before integration,** full local Linux matrix must pass and Windows must pass on test machine (`tools/win/winbuild.sh`,
   [Build environment](build-environment.md#windows-clang-cl-over-ssh)); trigger Windows CI only when machine unavailable.
-- **CI Linux uses 2 jobs:** Clang Debug (dev tools ON) and GCC Release (dev tools OFF). Clang Release, the distributed build, stays in local matrix.
+- **Linux matrix has 3 entries:** Clang Debug on x86_64 and ARM64, plus GCC Release on x86_64 (dev tools OFF; verification only).
+  Clang Release, the distributed build, stays in the local matrix.
 - **`timeout-minutes`** on all jobs; a new push to same branch cancels previous run.
 - Branches restore ccache data only from `main`, so they benefit from a warm cache after `main` has run.
 
-Linux jobs use [build environment](build-environment.md) image (Ubuntu, T24), same as `docker/build.sh`; Windows job uses Windows runner (T26).
+Linux jobs use the [build environment](build-environment.md) image (Ubuntu, T24), same as `docker/build.sh`; Windows job uses a
+Windows runner (T26). Linux CI includes native x86_64 and ARM64 runners.
 
 | Job | What it does |
 |---|---|
-| Build image | Publishes image to `ghcr.io/<owner>/x2-build:<Dockerfile hash>` (private, like repository); rebuilds only when `Dockerfile` changes |
-| Clang Debug, GCC Release (check) | Builds `linux-debug` (Clang) and `linux-gcc` (GCC, verification only) presets, runs `ctest` |
+| Linux x86_64: Clang Debug, GCC Release (check); Linux ARM64: Clang Debug | Builds `linux-debug` on x86_64 and ARM64 and `linux-gcc` on x86_64 (verification only), then runs `ctest` for each job |
 | clang-cl Debug | `windows-latest` runner (outside Ubuntu image): Visual Studio x64 environment (`ilammy/msvc-dev-cmd`) and runner LLVM clang-cl, `windows-debug` preset (`-k 0`: all errors in one pass), `ctest`. Distributed Windows build (T26) and only place Windows is compiled; LuaJIT via `msvcbuild.bat` (T25). Windows minutes count 2× for private repos |
 | Importer and wiki | `tools/import/tests/test_condres.py`, `test_flagsim.py`, and `tools/docs/check_links.py` |
 

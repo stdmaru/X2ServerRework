@@ -5,6 +5,8 @@
 One page (or subfolder) per `src/` module: status, changes from the original, local decisions, and pending work.
 The overall plan is in [Project › Roadmap](../project/roadmap.md).
 
+Linux builds and tests are verified on x86_64 and arm64. ARM64 runtime validation currently covers LoginServer authentication.
+
 | Module | Status | Page |
 |---|---|---|
 | `src/platform` | Linux (Clang, GCC) and Windows (clang-cl) build and tests pass | [Platform](platform.md) |

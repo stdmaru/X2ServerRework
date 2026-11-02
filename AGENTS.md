@@ -34,10 +34,10 @@ finally, the client.
 - **Only one variant: US / `_SERVICE_`.** Debug/dev/admin tools are gated by `X2_DEV_TOOLS` (see
   [Debug and development](docs/original/debug-and-development.md)). Discard other countries, anti-cheat, publisher integrations,
   and legacy code.
-- **64-bit only: x86_64 today, arm64 in the future.** Windows (clang-cl) and Linux (Clang; GCC as a check) build from the same
-  CMake project (decision T26). `_WIN32` paths are compiled and tested on a Windows machine over SSH
-  (`tools/win/winbuild.sh`) and in the CI **clang-cl** job. No x86 assembly/intrinsics, do not assume `char` is signed or
-  unsigned (the build forces `-fsigned-char`), and do not use `volatile` for thread synchronization.
+- **64-bit only: x86_64 on Windows and Linux, and arm64 on Linux.** Linux builds use Clang (GCC is an additional check);
+  Windows uses clang-cl. All build from the same CMake project (decision T26). `_WIN32` paths are compiled and tested on a
+  Windows machine over SSH (`tools/win/winbuild.sh`) and in the CI **clang-cl** job. No x86 assembly/intrinsics, do not
+  assume `char` is signed or unsigned (the build forces `-fsigned-char`), and do not use `volatile` for thread synchronization.
 - `windows.h` and system APIs belong only in `src/platform` (`x2::platform`). Ported code includes
   `x2/platform/win32.h` instead of `<windows.h>`, `<atltime.h>`, or `<tchar.h>`. See [Platform](docs/porting/platform.md).
 - Modules marked `frozen = true` in `tools/import/modules/` have already been ported by hand; the importer refuses to write
