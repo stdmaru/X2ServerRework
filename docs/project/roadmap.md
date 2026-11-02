@@ -100,6 +100,7 @@ See [Server — Windows dependencies](../original/server.md).
 - [x] `server/login-build`: LoginServer compiles without warnings (Clang, GCC, clang-cl), without Nexon (KR) or country-specific files (2026-10-31). See [Server: LoginServer](../porting/server-login.md).
 - [x] `server/login-run`: LoginServer on Linux (`x2_run_login`), original client from character list through **town** (2026-10-31). Leaving for a field stops at `ERM_OPEN_BATTLE_FIELD_REQ`, which goes to CenterServer.
 - [x] `server/login-arm64-alignment`: LoginServer SIGBUS diagnosed in `KUserList::RegUser`; packing that misaligned the mutex removed, regression test passes on Linux x86_64 Release (2026-11-01). ARM64 validation also passed: the server no longer crashes during authentication. See [Server: LoginServer](../porting/server-login.md).
+- [x] `build/linux-arm64`: Linux ARM64 build and full test suite pass (2026-11-01). ARM64 is a supported build target; adding it to GitHub Actions remains planned.
 - [x] `server/center-import`: CenterServer imported (2026-10-31). See [Server: CenterServer](../porting/server-center.md).
 - [x] `server/center-build`: CenterServer compiles without warnings (Clang, GCC, clang-cl), without KSMS (2026-10-31). See [Server: CenterServer](../porting/server-center.md).
 - [x] `server/center-run`: CenterServer on Linux (`x2_run_center`), original client reaches a **field** and a **dungeon** (2026-10-31). See [Server: CenterServer](../porting/server-center.md).

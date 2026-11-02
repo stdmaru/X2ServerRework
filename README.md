@@ -17,6 +17,9 @@ the ported servers work with the original `elsword.exe`, without changing the cl
 | GameServer | characters, towns, fields, dungeons, items, quests, PvP | runs | builds |
 | GlobalServer | global missions, automatic matchmaking, PvP, user counts | runs | builds |
 
+Linux builds are supported on x86_64 and arm64. The full build and test suite have passed on arm64, and LoginServer
+authentication has been verified there. GitHub Actions currently validates x86_64; ARM64 CI coverage is still planned.
+
 All original servers have been ported. With the original client, login, character selection, the town, fields, and a dungeon
 are already working with all six servers running together.
 Everything builds without warnings and the tests pass on Windows, but the servers have only been run on Linux.

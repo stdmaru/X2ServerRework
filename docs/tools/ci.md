@@ -22,6 +22,9 @@ Repository is private: **2,000 Actions minutes/month**, with Windows minutes cha
 
 Linux jobs use [build environment](build-environment.md) image (Ubuntu, T24), same as `docker/build.sh`; Windows job uses Windows runner (T26).
 
+Linux ARM64 is a supported build target, and its build and test suite have been verified. The current workflow only validates
+x86_64; adding a native ARM64 CI job is planned, not a prerequisite for ARM64 support.
+
 | Job | What it does |
 |---|---|
 | Build image | Publishes image to `ghcr.io/<owner>/x2-build:<Dockerfile hash>` (private, like repository); rebuilds only when `Dockerfile` changes |
