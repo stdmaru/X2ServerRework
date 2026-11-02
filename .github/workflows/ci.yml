@@ -1,9 +1,11 @@
+
 # Build and tests (docs/tools/ci.md).
-# The Linux jobs run in the project's Ubuntu build image (docker/build/Dockerfile, decision T24), the same one used by
-# docker/build.sh for local builds. The image is published to GHCR, tagged by the Dockerfile's hash, and only
-# rebuilt when the Dockerfile changes.
+# Linux jobs build the project's Ubuntu 26.04 build image locally (docker/build/Dockerfile),
+# the same one used by docker/build.sh for local builds.
+# The image is never published: it exists only on the runner.
+# Each architecture/compiler combination runs as an independent job.
 # Windows is built with clang-cl on a Windows runner (T26).
-# The build must have no warnings (AGENTS.md): any "warning:" in the log fails the job.
+# The build must have no warnings (AGENTS.md): any warning in the log fails the job.
 name: CI
 
 # Minutes are limited (private repository, 2000/month; Windows counts 2x): automatic only on main, after an
@@ -27,124 +29,158 @@ concurrency:
 
 permissions:
   contents: read
-  packages: read
 
 defaults:
   run:
     shell: bash
 
 jobs:
-  image:
-    name: Build image
-    if: github.event_name == 'push' || inputs.jobs != 'windows'
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    permissions:
-      contents: read
-      packages: write
-    outputs:
-      image: ${{ steps.tag.outputs.image }}
-    steps:
-      - uses: actions/checkout@v4
-      - name: Tag
-        id: tag
-        run: |
-          tag=$(sha256sum docker/build/Dockerfile | cut -c1-16)
-          echo "image=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/x2-build:$tag" >> "$GITHUB_OUTPUT"
-      - name: Log in to GHCR
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
-      - name: Build and push (if new)
-        env:
-          IMAGE: ${{ steps.tag.outputs.image }}
-        run: |
-          if docker manifest inspect "$IMAGE" >/dev/null 2>&1; then
-            echo "$IMAGE already published"
-          else
-            docker build -t "$IMAGE" docker/build
-            docker push "$IMAGE"
-          fi
-
   linux:
     name: ${{ matrix.name }}
-    needs: image
-    runs-on: ubuntu-latest
-    timeout-minutes: 40
-    container:
-      image: ${{ needs.image.outputs.image }}
-      credentials:
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+    if: github.event_name == 'push' || inputs.jobs != 'windows'
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 60
+
     strategy:
       fail-fast: false
       matrix:
         include:
-          # Clang Release (the shipped Linux build) stays in the local matrix: same diagnostics as Clang Debug
-          - name: Clang Debug
+          - name: linux-x86_64
+            runner: ubuntu-26.04
             preset: linux-debug
-          - name: GCC Release (check)
+
+          - name: linux-x86_64-gcc
+            runner: ubuntu-26.04
             preset: linux-gcc
+
+          - name: linux-arm64
+            runner: ubuntu-26.04-arm
+            preset: linux-debug
+
+
     env:
+      BUILD_IMAGE: x2-build:ci
       CCACHE_DIR: ${{ github.workspace }}/.ccache
+
     steps:
       - uses: actions/checkout@v4
+
       - name: ccache
         uses: actions/cache@v4
         with:
           path: .ccache
-          key: ccache-ubuntu-${{ matrix.preset }}-${{ github.sha }}
-          restore-keys: ccache-ubuntu-${{ matrix.preset }}-
+          key: ccache-${{ matrix.name }}-${{ github.sha }}
+          restore-keys: |
+            ccache-${{ matrix.name }}-
+
+      - name: Prepare build environment
+        run: |
+          mkdir -p "$CCACHE_DIR"
+          docker build -t "$BUILD_IMAGE" docker/build
+
       - name: Configure
-        run: cmake --preset ${{ matrix.preset }} -DX2_RUN_FOLDERS=OFF   # no client or database on the runner
+        run: |
+          docker run --rm \
+            --user "$(id -u):$(id -g)" \
+            -e CCACHE_DIR=/workspace/.ccache \
+            -v "$GITHUB_WORKSPACE:/workspace" \
+            -w /workspace \
+            "$BUILD_IMAGE" \
+            cmake --preset "${{ matrix.preset }}" -DX2_RUN_FOLDERS=OFF
+
       - name: Build
         run: |
           set -o pipefail
-          cmake --build build/${{ matrix.preset }} 2>&1 | tee build.log
-          ! grep -n "warning:" build.log
+          docker run --rm \
+            --user "$(id -u):$(id -g)" \
+            -e CCACHE_DIR=/workspace/.ccache \
+            -v "$GITHUB_WORKSPACE:/workspace" \
+            -w /workspace \
+            "$BUILD_IMAGE" \
+            bash -c "
+              set -o pipefail
+              cmake --build build/${{ matrix.preset }} 2>&1 | tee build.log
+              ! grep -n 'warning:' build.log
+            "
+
       - name: Test
-        run: ctest --test-dir build/${{ matrix.preset }} --output-on-failure
+        run: |
+          docker run --rm \
+            --user "$(id -u):$(id -g)" \
+            -e CCACHE_DIR=/workspace/.ccache \
+            -v "$GITHUB_WORKSPACE:/workspace" \
+            -w /workspace \
+            "$BUILD_IMAGE" \
+            ctest --test-dir "build/${{ matrix.preset }}" --output-on-failure
 
   windows:
-    name: clang-cl Debug
+    name: ${{ matrix.name }}
     if: github.event_name == 'push' || inputs.jobs != 'linux'
-    # The Windows build that ships (T26), on a real Windows: Visual Studio's headers, STL and linker with the
-    # runner's LLVM clang-cl. Not in the Ubuntu image. Windows minutes cost 2x on private repositories.
-    runs-on: windows-latest
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 40
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: windows-x86_64
+            runner: windows-latest
+            preset: windows-debug
+            architecture: x64
+
+          # Enable when Windows ARM64 builds are ready:
+          # - name: windows-arm64
+          #   runner: windows-11-arm
+          #   preset: windows-arm64-debug
+          #   architecture: arm64
+
     defaults:
       run:
         # not Git Bash: its /usr/bin/link would shadow the Visual Studio linker that msvcbuild.bat calls
         shell: pwsh
+
     steps:
       - uses: actions/checkout@v4
-      - name: Visual Studio environment (x64)
+
+      - name: Visual Studio environment
         uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: ${{ matrix.architecture }}
+
       - name: Versions
         run: |
           clang-cl --version
           cmake --version
+
       - name: Configure
-        run: cmake --preset windows-debug -DX2_RUN_FOLDERS=OFF
+        run: cmake --preset ${{ matrix.preset }} -DX2_RUN_FOLDERS=OFF
+
       - name: Build
         run: |
-          cmake --build build/windows-debug -- -k 0 2>&1 | Tee-Object -FilePath build.log   # every error in one run
+          cmake --build build/${{ matrix.preset }} -- -k 0 2>&1 | Tee-Object -FilePath build.log
           $status = $LASTEXITCODE
+
           # clang-cl, and cl/link (LuaJIT, linker)
           $warnings = Select-String -Path build.log -Pattern 'warning( [A-Z]+[0-9]+)?:'
           if ($warnings) { $warnings; exit 1 }
+
           exit $status
+
       - name: Test
-        run: ctest --test-dir build/windows-debug --output-on-failure
+        run: ctest --test-dir build/${{ matrix.preset }} --output-on-failure
 
   checks:
     name: Importer and wiki
     if: github.event_name == 'push' || inputs.jobs != 'windows'
-    runs-on: ubuntu-latest   # plain Python scripts: no need to pull the image
+    runs-on: ubuntu-26.04
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+
       - name: Importer tests
         run: |
           python3 tools/import/tests/test_condres.py
           python3 tools/import/tests/test_flagsim.py
+
       - name: Wiki links
         run: python3 tools/docs/check_links.py
