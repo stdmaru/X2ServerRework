@@ -536,10 +536,11 @@ _IMPL_ON_FUNC( DBE_SERVER_ON_REQ, KNetAddress )
     kPacket.m_iOK = NetError::ERR_ODBC_01;
 
 	//{{ 2013. 01. 17	최육사	서버간 통신 사설IP 적용
-	DO_QUERY( L"exec dbo.P_LServerList_By_PublicIP_SEL", L"%d, %d, N\'%s\'",
+	DO_QUERY( L"exec dbo.P_LServerList_By_PublicIP_SEL", L"%d, %d, N\\'%s\\', %d",
 		% KBaseServer::GetKObj()->GetServerGroupID()
 		% KBaseServer::ESC_GAME
 		% kPacket_.m_wstrIP
+		% kPacket_.m_usPort
 		);
 	//}}
 
