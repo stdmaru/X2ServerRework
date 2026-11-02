@@ -52,7 +52,7 @@ ImplToStringW( KAutoPartyMakingManager )
 
 void KAutoPartyMakingManager::Command_LUA( char cType )
 {
-    START_LOG( cout, L"자동 파티 메이킹 개발자 전용 커맨드!" )
+    START_LOG( cout, L"Developer-only automatic party matching command." )
 		<< BUILD_LOGc( cType );
 
 	KEGB_AUTO_PARTY_MAKING_ADMIN_COMMAND_NOT kPacket;
@@ -92,7 +92,7 @@ bool KAutoPartyMakingManager::Init()
 	const std::vector< KAutoPartyMakingProcessCondition >& vecAutoPartyDungeonInfo = SiKAutoPartyScriptManager()->GetAutoPartyDungeonInfo();
 	if( vecAutoPartyDungeonInfo.empty() == true )
 	{
-		START_LOG( cerr, L"자동 파티 스크립트가 제대로 파싱되지 않았습니다! 자동파티 매니저를 동작시키지 않습니다!" )
+		START_LOG( cerr, L"Failed to parse the automatic party script; the automatic party manager will not start." )
 			<< END_LOG;
 		return false;
 	}
@@ -144,7 +144,7 @@ bool KAutoPartyMakingManager::Init()
 			}
 			else
 			{
-				START_LOG( cerr, L"일반던전인데 동일한 DungeonID값이 존재해서는 안됩니다!" )
+				START_LOG( cerr, L"A normal dungeon must not have a duplicate DungeonID." )
 					<< BUILD_LOG( iDungeonIDWithDif )
 					<< END_LOG;
 			}
@@ -157,7 +157,7 @@ bool KAutoPartyMakingManager::Init()
 void KAutoPartyMakingManager::ClearAllAutoPartyInfo()
 {
 	//////////////////////////////////////////////////////////////////////////
-	START_LOG( cout2, L"[경고!] 모든 자동 파티 정보를 초기화 시킵니다!" );
+	START_LOG( cout2, L"[Warning] Resetting all automatic party data." );
 	//////////////////////////////////////////////////////////////////////////
 
 	// 자동 파티 종료 처리!
@@ -250,7 +250,7 @@ KAutoPartyMakingProcess* KAutoPartyMakingManager::GetAutoPartyMakingProcess( IN 
 			mit	= m_mapAutoPartyMakingProcess.find( kKey );
 			if( mit	== m_mapAutoPartyMakingProcess.end() )
 			{
-				START_LOG( cerr, L"해당 던전ID는 자동 매칭 할수 없습니다! " )
+				START_LOG( cerr, L"This DungeonID cannot be used for automatic matching." )
 					<< BUILD_LOGc( iDungeonMode )
 					<< BUILD_LOG( iDungeonIDWithDif )
 					<< END_LOG;
@@ -272,7 +272,7 @@ KAutoPartyMakingProcess* KAutoPartyMakingManager::GetAutoPartyMakingProcess( IN 
 			mit	= m_mapAutoPartyMakingProcess.find( kKey );
 			if( mit	== m_mapAutoPartyMakingProcess.end() )
 			{
-				START_LOG( cerr, L"해당 던전ID는 자동 매칭 할수 없습니다! " )
+				START_LOG( cerr, L"This DungeonID cannot be used for automatic matching." )
 					<< BUILD_LOGc( iDungeonMode )
 					<< BUILD_LOG( iDungeonIDWithDif )
 					<< END_LOG;
@@ -292,7 +292,7 @@ KAutoPartyMakingProcess* KAutoPartyMakingManager::GetAutoPartyMakingProcess( IN 
 	mit	= m_mapAutoPartyMakingProcess.find( kKey );
 	if( mit	== m_mapAutoPartyMakingProcess.end() )
 	{
-		START_LOG( cerr, L"해당 던전ID는 자동 매칭 할수 없습니다! " )
+		START_LOG( cerr, L"This DungeonID cannot be used for automatic matching." )
 			<< BUILD_LOGc( iDungeonMode )
 			<< BUILD_LOG( iDungeonIDWithDif )
 			<< END_LOG;
@@ -315,7 +315,7 @@ void KAutoPartyMakingManager::RefreshTimerAutoPartyGameStart( IN const int iDung
 	KAutoPartyMakingProcess* pAutoPartyMakingProcess = GetAutoPartyMakingProcess( iDungeonMode, iDungeonIDWithDif );
 	if( IS_NULL( pAutoPartyMakingProcess ) )
 	{
-		START_LOG( cerr, L"존재 하지 않는 자동파티 던전 정보입니다!" )
+		START_LOG( cerr, L"Automatic party dungeon data does not exist." )
 			<< BUILD_LOG( iDungeonMode )
 			<< BUILD_LOG( iDungeonIDWithDif )
 			<< END_LOG;
@@ -330,7 +330,7 @@ KAutoPartyPtr KAutoPartyMakingManager::GetAutoParty( IN const UidType iAutoParty
 	std::map< UidType, KAutoPartyPtr >::iterator mit = m_mapAutoParty.find( iAutoPartyUID );
 	if( mit == m_mapAutoParty.end() )
 	{
-		START_LOG( cwarn, L"찾는 매치가 없습니다.!" )
+		START_LOG( cwarn, L"Match not found." )
 			<< BUILD_LOG( iAutoPartyUID )
 			<< END_LOG;
 
@@ -339,7 +339,7 @@ KAutoPartyPtr KAutoPartyMakingManager::GetAutoParty( IN const UidType iAutoParty
 
 	if( mit->second == NULL )
 	{
-		START_LOG( cerr, L"매치 포인터 이상.!" )
+		START_LOG( cerr, L"Invalid match pointer." )
 			<< BUILD_LOG( iAutoPartyUID )
 			<< END_LOG;
 
@@ -353,14 +353,14 @@ bool KAutoPartyMakingManager::AddAutoParty( IN KAutoPartyPtr spAutoParty )
 {
 	if( spAutoParty == NULL )
 	{
-		START_LOG( cerr, L"추가 하려는 자동 파티 정보가 이상합니다!" )
+		START_LOG( cerr, L"Invalid automatic party data to add." )
 			<< END_LOG;
 		return false;
 	}
 
 	if( GetAutoParty( spAutoParty->GetAutoPartyUID() ) != NULL )
 	{
-		START_LOG( cerr, L"이미 해당 AutoPartyUID값이 리스트에 존재합니다. 기존의 파티정보 역시 삭제하겠습니다." )
+		START_LOG( cerr, L"This AutoPartyUID is already in the list; removing the existing party data as well." )
 			<< BUILD_LOG( spAutoParty->GetAutoPartyUID() )
 			<< END_LOG;
 
@@ -378,7 +378,7 @@ void KAutoPartyMakingManager::DestroyAutoParty( IN const UidType iAutoPartyUID )
 	KAutoPartyPtr spAutoParty = GetAutoParty( iAutoPartyUID );
 	if( spAutoParty == NULL )
 	{
-		START_LOG( cerr, L"삭제하려는 매치 정보가 없습니다!" )
+		START_LOG( cerr, L"Match data to delete was not found." )
 			<< BUILD_LOG( iAutoPartyUID )
 			<< END_LOG;
 		return;
@@ -410,7 +410,7 @@ void KAutoPartyMakingManager::QueueingToAll( IN const KEventPtr& spEvent )
 	{
 		if( mit->second == NULL )
 		{
-			START_LOG( cerr, L"파티 포인터 이상" )
+			START_LOG( cerr, L"Invalid party pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -440,7 +440,7 @@ void KAutoPartyMakingManager::ProcessEvent( IN const KEventPtr& spEvent_ )
 			KAutoPartyPtr spAutoParty = GetAutoParty( iAutoPartyUID );
 			if( spAutoParty == NULL )
 			{
-				START_LOG( cwarn, L"매치 검색 실패." )
+				START_LOG( cwarn, L"Failed to find a match." )
 					<< BUILD_LOG( iAutoPartyUID )
 					<< BUILD_LOG( spEvent_->GetIDStr() )
 					<< END_LOG;
@@ -499,7 +499,7 @@ IMPL_ON_FUNC( EGB_REQUEST_AUTO_PARTY_MAKING_REQ )
 	KAutoPartyMakingProcess* pAutoPartyMakingProcess = GetAutoPartyMakingProcess( iDungeonMode, iDungeonIDWithDif );
 	if( pAutoPartyMakingProcess == NULL )
 	{
-		START_LOG( cerr, L"해당 자동 파티 요청 정보로는 자동 파티 신청을 할수 없습니다! " )
+		START_LOG( cerr, L"Cannot apply for an automatic party with this request data." )
 			<< BUILD_LOG( LAST_SENDER_UID )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( iDungeonMode )
@@ -517,7 +517,7 @@ IMPL_ON_FUNC( EGB_REQUEST_AUTO_PARTY_MAKING_REQ )
 	if( pAutoPartyMakingProcess->RegAutoPartyWaitList( kPacket_.m_vecAutoPartyUser, kPacket_.m_kAutoPartyCondition, iAutoPartyWaitNumber ) == false )
 	//}}
 	{
-		START_LOG( cerr, L"자동 파티 대기자 리스트에 등록이 실패하였습니다!" )
+		START_LOG( cerr, L"Failed to add the user to the automatic party wait list." )
 			<< BUILD_LOG( LAST_SENDER_UID )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_vecAutoPartyUser.size() )
@@ -568,7 +568,7 @@ IMPL_ON_FUNC( EGB_CANCEL_AUTO_PARTY_MAKING_REQ )
 
 			if( pAutoPartyMakingProcess->UnRegAutoPartyWaitListByWaitNumber( kPacket_.m_iAutoPartyWaitNumber, kPacket_.m_iReason ) == false )
 			{
-				START_LOG( cerr, L"자동 파티 신청 해제 실패!" )
+				START_LOG( cerr, L"Failed to cancel the automatic party application." )
 					<< BUILD_LOG( LAST_SENDER_UID )
 					<< BUILD_LOG( FIRST_SENDER_UID )
 					<< BUILD_LOG( kPacket_.m_iAutoPartyWaitNumber )
@@ -578,7 +578,7 @@ IMPL_ON_FUNC( EGB_CANCEL_AUTO_PARTY_MAKING_REQ )
 		}
 		else
 		{
-			START_LOG( cerr, L"자동 파티 신청 해제 하려는데 자동 파티 등록 정보가 없네? 시간차 문제인가?" )
+			START_LOG( cerr, L"Cannot cancel the automatic party application: registration data is missing. Could this be a timing issue?" )
 				<< BUILD_LOG( LAST_SENDER_UID )
 				<< BUILD_LOG( FIRST_SENDER_UID )
 				<< BUILD_LOG( kPacket_.m_iAutoPartyWaitNumber )
@@ -588,7 +588,7 @@ IMPL_ON_FUNC( EGB_CANCEL_AUTO_PARTY_MAKING_REQ )
 
 		if( kPacket_.m_iAutoPartyUID != 0 )
 		{
-			START_LOG( cerr, L"대기인원인데 자동파티에 소속되어있네? 절대 일어나서는 안되는 에러!" )
+			START_LOG( cerr, L"A waiting user is already assigned to an automatic party; this should never happen." )
 				<< BUILD_LOG( LAST_SENDER_UID )
 				<< BUILD_LOG( FIRST_SENDER_UID )
 				<< BUILD_LOG( kPacket_.m_iAutoPartyWaitNumber )
@@ -613,7 +613,7 @@ IMPL_ON_FUNC( EGB_CANCEL_AUTO_PARTY_MAKING_REQ )
 		}
 		else
 		{
-			START_LOG( cerr, L"자동 파티 이탈 처리 하려는데 자동 파티 정보가 없네? 시간차 문제인가?" )
+			START_LOG( cerr, L"Cannot remove the user from the automatic party: party data is missing. Could this be a timing issue?" )
 				<< BUILD_LOG( LAST_SENDER_UID )
 				<< BUILD_LOG( FIRST_SENDER_UID )
 				<< BUILD_LOG( kPacket_.m_iAutoPartyUID )
@@ -624,7 +624,7 @@ IMPL_ON_FUNC( EGB_CANCEL_AUTO_PARTY_MAKING_REQ )
 
 IMPL_ON_FUNC_NOPARAM( EGB_CHECK_INVALID_AUTO_PARTY_NOT )
 {
-    START_LOG( cout, L"GlobalUser객체가 소멸되어 모든 자동 파티 정보를 삭제합니다!" )
+    START_LOG( cout, L"GlobalUser object was destroyed; removing all automatic party data." )
 		<< END_LOG;
 
 	ClearAllAutoPartyInfo();
@@ -632,7 +632,7 @@ IMPL_ON_FUNC_NOPARAM( EGB_CHECK_INVALID_AUTO_PARTY_NOT )
 
 IMPL_ON_FUNC( EGB_AUTO_PARTY_MAKING_ADMIN_COMMAND_NOT )
 {
-    START_LOG( cout, L"개발자 커맨드에 의한 동작 시작!" )
+    START_LOG( cout, L"Starting operation from a developer command." )
 		<< BUILD_LOGc( kPacket_.m_cType );
 
 	switch( kPacket_.m_cType )
@@ -651,7 +651,7 @@ IMPL_ON_FUNC( EGB_AUTO_PARTY_MAKING_ADMIN_COMMAND_NOT )
 
 	default:
 		{
-			START_LOG( cerr, L"잘못된 커맨드 입니다!" )
+			START_LOG( cerr, L"Invalid command." )
 				<< BUILD_LOGc( kPacket_.m_cType )
 				<< END_LOG;
 		}
@@ -667,7 +667,7 @@ _IMPL_ON_FUNC( ESR_ORDER_TO_REFRESH_MANAGER_REQ, KESR_SCRIPT_REFRESH_ORDER_NOT )
 
 	default:
 		{
-			START_LOG( cerr, L"이쪽으로 오면 안되는 타입인데?" )
+			START_LOG( cerr, L"Unexpected type reached this code path." )
 				<< BUILD_LOG( kPacket_.m_iOrderType )
 				<< END_LOG;
 		}
@@ -683,7 +683,7 @@ IMPL_ON_FUNC( EGB_REQUEST_AUTO_PARTY_WAIT_USER_COUNT_NOT )
 	// 정상적인 WaitNumber인지 체크
 	if( kPacket_.m_iAutoPartyWaitNumber == 0 )
 	{
-		START_LOG( cerr, L"WaitNumber가 0인데 대기열 카운트 얻으러 왔네?" )
+		START_LOG( cerr, L"Attempted to get the wait-queue count with WaitNumber set to 0." )
 			<< BUILD_LOG( LAST_SENDER_UID )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_iAutoPartyWaitNumber )
@@ -695,7 +695,7 @@ IMPL_ON_FUNC( EGB_REQUEST_AUTO_PARTY_WAIT_USER_COUNT_NOT )
 	KAutoPartyMakingProcess* pAutoPartyMakingProcess = GetAutoPartyMakingProcess( kPacket_.m_iAutoPartyWaitNumber );
 	if( IS_NULL( pAutoPartyMakingProcess ) )
 	{
-		START_LOG( cerr, L"대기열 카운트 얻기 실패!" )
+		START_LOG( cerr, L"Failed to get the wait-queue count." )
 			<< BUILD_LOG( LAST_SENDER_UID )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_iAutoPartyWaitNumber )

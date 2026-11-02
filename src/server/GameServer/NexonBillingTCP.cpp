@@ -76,7 +76,7 @@ void KNexonBillingTCP::ProcessEvent( const KEventPtr& spEvent_ )
 
 
 	default:
-		START_LOG( cerr, L"핸들러가 지정되지 않은 이벤트." )
+		START_LOG( cerr, L"Event has no handler assigned." )
 			<< BUILD_LOG( spEvent_->m_usEventID )
 			<< BUILD_LOG( spEvent_->GetIDStr() )
 			<< END_LOG;
@@ -85,7 +85,7 @@ void KNexonBillingTCP::ProcessEvent( const KEventPtr& spEvent_ )
 	dwElapTime = ::GetTickCount() - dwElapTime;
 	if( dwElapTime > 3000 )
 	{
-		START_LOG( cwarn, L"이벤트 처리 소요 시간." )
+		START_LOG( cwarn, L"Event processing duration." )
 			<< BUILD_LOG( spEvent_->GetIDStr() )
 			<< BUILD_LOG( spEvent_->m_usEventID )
 			<< BUILD_LOG( dwElapTime );
@@ -125,7 +125,7 @@ IMPL_ON_FUNC( ENX_BT_HEART_BEAT_ACK )
 		//{{ 2010. 01. 28  최육사	빌링예외처리
 		if( SiKNexonBillingTCPManager()->GetProductPageNumber() != 0 )
 		{
-			START_LOG( cout, L"이미 상품 리스트를 다시 받는 중입니다. 상품 리스트를 모두 받을때까지 상품 정보 갱신 요청은 무시됩니다." )
+			START_LOG( cout, L"Already receiving the product list; product information update requests will be ignored until it is received." )
 				<< BUILD_LOG( SiKNexonBillingTCPManager()->GetProductPageNumber() );
 			return;
 		}
@@ -148,7 +148,7 @@ IMPL_ON_FUNC( ENX_BT_HEART_BEAT_ACK )
         spPacket->Write( kPacket );
         SiKNexonBillingTCPManager()->QueueingSendPacket( spPacket );
 
-		START_LOG( cout, L"상품정보가 바뀌었습니다, 상품리스트를 다시 받습니다." );
+		START_LOG( cout, L"Product information changed; requesting the product list again." );
 		return;
     }
 
@@ -190,7 +190,7 @@ IMPL_ON_FUNC( ENX_BT_PRODUCT_INQUIRY_ACK )
         {
 			//////////////////////////////////////////////////////////////////////////
 			//{{ 2010. 01. 28  최육사	빌링예외처리
-			START_LOG( cout, L"Release Tick 갱신" )
+			START_LOG( cout, L"Release Tick updated." )
 				<< BUILD_LOG( kPacket_.m_iReleaseTick );
 			//}}
 			//////////////////////////////////////////////////////////////////////////
@@ -225,7 +225,7 @@ IMPL_ON_FUNC( ENX_BT_PRODUCT_INQUIRY_ACK )
 			kEvent.SetData( PI_GS_PROXY, NULL, EGS_CASH_PRODUCT_INFO_CHANGED_NOT );
 			KActorManager::GetKObj()->SendToAll( kEvent );
 
-			START_LOG( cout, L"빌링서버로부터 모든 상품 리스트를 다 받았습니다!" )
+			START_LOG( cout, L"Received the complete product list from the billing server!" )
 				<< BUILD_LOG( SiKNexonBillingTCPManager()->GetTotalProductCount() );
         }
     }
@@ -257,7 +257,7 @@ IMPL_ON_FUNC( ENX_BT_CHECK_BALANCE_ACK )
 
     if( iUserUID <= 0 )
     {
-        START_LOG( cerr, L"패킷 번호에 해당하는 UserUID를 찾지 못함." )
+        START_LOG( cerr, L"Could not find the UserUID for the packet number." )
             << BUILD_LOG( kPacket_.m_ulPacketNo )
             << END_LOG;
 
@@ -281,7 +281,7 @@ IMPL_ON_FUNC( ENX_BT_CHECK_BALANCE_ACK )
 		//}}
     default:
         kPacket.m_iOK = NetError::ERR_NX_SHOP_04;
-		START_LOG( cerr, L"잔액 조회 못하는 이유가 무엇인가?" )
+		START_LOG( cerr, L"Why did the balance lookup fail?" )
 			<< BUILD_LOG( iUserUID )
 			<< BUILD_LOG( kPacket_.m_ulResult );
         break;
@@ -319,7 +319,7 @@ IMPL_ON_FUNC( ENX_BT_PURCHASE_ITEM_ACK )
 
     if( iUserUID <= 0 )
     {
-        START_LOG( cerr, L"패킷 번호에 해당하는 UserUID를 찾지 못함." )
+        START_LOG( cerr, L"Could not find the UserUID for the packet number." )
             << BUILD_LOG( kPacket_.m_ulPacketNo )
             << END_LOG;
 
@@ -384,7 +384,7 @@ IMPL_ON_FUNC( ENX_BT_PURCHASE_ITEM_ACK )
 		kPacket.m_iOK = NetError::ERR_NX_COUPON_20;	// 쿠폰 총 사용 횟수를 초과하여 사용하실 수 없습니다.
 		break;
 	case 99:
-		START_LOG( cout, L"넥슨 빌링 DB오류로 인해 구매 실패!" )
+		START_LOG( cout, L"Purchase failed due to a Nexon Billing database error!" )
 			<< BUILD_LOG( kPacket_.m_ulOrderNo );
 		kPacket.m_iOK = NetError::ERR_BUY_CASH_ITEM_01;
 		break;
@@ -417,7 +417,7 @@ IMPL_ON_FUNC( ENX_BT_PURCHASE_ITEM_ACK )
 		//{{ 2012. 04. 02	김민성		넥슨 auth soap, 통합 맴버쉽
 		//}}
     default:
-		START_LOG( cerr, L"정의되지 않은 캐쉬아이템 구매 에러 코드입니다." )
+		START_LOG( cerr, L"Undefined cash item purchase error code." )
 			<< BUILD_LOG( kPacket_.m_ulResult )
 			<< END_LOG;
 
@@ -434,7 +434,7 @@ IMPL_ON_FUNC( ENX_BT_PURCHASE_ITEM_ACK )
             const int iItemID = SiKNexonBillingTCPManager()->GetItemID( vit->m_ulProductNo );
             if( iItemID <= 0 )
             {
-                START_LOG( cerr, L"아이템 ID 변환 실패." )
+                START_LOG( cerr, L"Failed to convert the item ID." )
                     << BUILD_LOG( vit->m_ulProductNo )
                     << BUILD_LOG( iItemID )
                     << END_LOG;
@@ -536,7 +536,7 @@ IMPL_ON_FUNC( ENX_BT_PURCHASE_ITEM_ACK )
 			kPacket.m_vecPurchaseReqInfo.push_back( kPRInfo );
 		}
 
-		START_LOG( cerr, L"아이템 구매 실패" )
+		START_LOG( cerr, L"Failed to purchase item." )
 			<< BUILD_LOG( kPacket_.m_ulResult )
 			<< BUILD_LOG( NetError::GetErrStr( kPacket.m_iOK ) )
 			<< BUILD_LOG( iUserUID )
@@ -547,7 +547,7 @@ IMPL_ON_FUNC( ENX_BT_PURCHASE_ITEM_ACK )
 			KNXBTProductInfo kProductInfo;
 			if( SiKNexonBillingTCPManager()->GetProductInfo( kProductAckInfo.m_ulProductNo, kProductInfo ) == false )
 			{
-				START_LOG( cerr, L"ProductInfo를 찾을 수 없습니다." )
+				START_LOG( cerr, L"Could not find ProductInfo." )
 					<< BUILD_LOG( kProductInfo.m_ulProductNo )
 					<< END_LOG;
 				continue;
@@ -557,7 +557,7 @@ IMPL_ON_FUNC( ENX_BT_PURCHASE_ITEM_ACK )
 			int iItemID = _wtoi( kProductInfo.m_wstrProductID.c_str() );
 			if( iItemID <= 0 )
 			{
-				START_LOG( cerr, L"아이템 ID 변환 실패." )
+				START_LOG( cerr, L"Failed to convert the item ID." )
 					<< BUILD_LOG( kProductInfo.m_ulProductNo )
 					<< BUILD_LOG( kProductInfo.m_wstrProductID )
 					<< BUILD_LOG( iItemID )
@@ -565,7 +565,7 @@ IMPL_ON_FUNC( ENX_BT_PURCHASE_ITEM_ACK )
 				continue;
 			}
 
-			START_LOG( cerr, L"구매 실패 상품 정보" )
+			START_LOG( cerr, L"Information for the failed purchase item" )
 				<< BUILD_LOG( kProductAckInfo.m_ulProductNo )
 				<< BUILD_LOG( kProductAckInfo.m_usOrderQuantity )
 				<< BUILD_LOG( kProductInfo.m_wstrProductID )
@@ -613,7 +613,7 @@ IMPL_ON_FUNC( ENX_BT_PURCHASE_GIFT_ACK )
 
 	if( iUserUID <= 0 )
 	{
-		START_LOG( cerr, L"패킷 번호에 해당하는 UserUID를 찾지 못함." )
+		START_LOG( cerr, L"Could not find the UserUID for the packet number." )
 			<< BUILD_LOG( kPacket_.m_ulPacketNo )
 			<< END_LOG;
 
@@ -704,7 +704,7 @@ IMPL_ON_FUNC( ENX_BT_PURCHASE_GIFT_ACK )
 		//{{ 2012. 04. 02	김민성		넥슨 auth soap, 통합 맴버쉽
 		//}}
 	default:
-		START_LOG( cerr, L"정의되지 않은 선물 구매 에러 코드입니다." )
+		START_LOG( cerr, L"Undefined gift purchase error code." )
 			<< BUILD_LOG( kPacket_.m_ulResult )
 			<< END_LOG;
 
@@ -769,7 +769,7 @@ IMPL_ON_FUNC( ENX_BT_PURCHASE_GIFT_ACK )
 	}
 	else
 	{
-		START_LOG( cerr, L"아이템 선물 실패" )
+		START_LOG( cerr, L"Failed to gift item." )
 			<< BUILD_LOG( kPacket_.m_ulResult )
 			<< BUILD_LOG( NetError::GetErrStr( kPacket.m_iOK ) )
 			<< BUILD_LOG( iUserUID )
@@ -816,7 +816,7 @@ IMPL_ON_FUNC( ENX_BT_CHECK_AUTO_PAYMENT_USER_ACK )
 
 	if( iUserUID <= 0 )
 	{
-		START_LOG( cerr, L"패킷 번호에 해당하는 UserUID를 찾지 못함." )
+		START_LOG( cerr, L"Could not find the UserUID for the packet number." )
 			<< BUILD_LOG( kPacket_.m_ulPacketNo )
 			<< BUILD_LOG( kPacket_.m_ulResult )
 			<< END_LOG;
@@ -899,7 +899,7 @@ IMPL_ON_FUNC( ENX_BT_COUPON_USING_ACK )
 		//}}
     default:
         kPacket.m_iOK = NetError::ERR_NX_COUPON_04;
-		START_LOG( cerr, L"정의되지 않은 쿠폰 에러코드입니다." )
+		START_LOG( cerr, L"Undefined coupon error code." )
 		    << BUILD_LOG( kPacket_.m_ulResult )
 		    << END_LOG;
         break;
@@ -910,7 +910,7 @@ IMPL_ON_FUNC( ENX_BT_COUPON_USING_ACK )
 
     if( iUserUID <= 0 )
     {
-        START_LOG( cerr, L"패킷 번호에 해당하는 UserUID를 찾지 못함." )
+        START_LOG( cerr, L"Could not find the UserUID for the packet number." )
             << BUILD_LOG( kPacket_.m_ulPacketNo )
             << END_LOG;
 
@@ -950,7 +950,7 @@ IMPL_ON_FUNC( ENX_BT_NISMS_INVENTORY_INQUIRY_ACK )
 
     if( iUserUID <= 0 )
     {
-        START_LOG( cerr, L"패킷 번호에 해당하는 UserUID를 찾지 못함." )
+        START_LOG( cerr, L"Could not find the UserUID for the packet number." )
             << BUILD_LOG( kPacket_.m_ulPacketNo )
             << END_LOG;
 
@@ -992,7 +992,7 @@ IMPL_ON_FUNC( ENX_BT_NISMS_INVENTORY_CHECK_ACK )
 
 	if( iUserUID <= 0 )
 	{
-		START_LOG( cerr, L"패킷 번호에 해당하는 UserUID를 찾지 못함." )
+		START_LOG( cerr, L"Could not find the UserUID for the packet number." )
 			<< BUILD_LOG( kPacket_.m_ulPacketNo )
 			<< END_LOG;
 
@@ -1049,7 +1049,7 @@ IMPL_ON_FUNC( ENX_BT_NISMS_INVENTORY_READABLE_ACK )
 
 	if( iUserUID <= 0 )
 	{
-		START_LOG( cerr, L"패킷 번호에 해당하는 UserUID를 찾지 못함." )
+		START_LOG( cerr, L"Could not find the UserUID for the packet number." )
 			<< BUILD_LOG( kPacket_.m_ulPacketNo )
 			<< END_LOG;
 
@@ -1147,7 +1147,7 @@ IMPL_ON_FUNC( ENX_BT_NISMS_INVENTORY_PICK_UP_ACK )
 
     if( iUserUID <= 0 )
     {
-        START_LOG( cerr, L"패킷 번호에 해당하는 UserUID를 찾지 못함." )
+        START_LOG( cerr, L"Could not find the UserUID for the packet number." )
             << BUILD_LOG( kPacket_.m_ulPacketNo )
             << BUILD_LOG( kPacket_.m_ulOrderNo )
             << BUILD_LOG( kPacket_.m_ulProductNo )
@@ -1187,7 +1187,7 @@ IMPL_ON_FUNC( ENX_BT_NISMS_INVENTORY_PICK_UP_ROLLBACK_ACK )
 
     if( iUserUID <= 0 )
     {
-        START_LOG( cerr, L"패킷 번호에 해당하는 UserUID를 찾지 못함." )
+        START_LOG( cerr, L"Could not find the UserUID for the packet number." )
             << BUILD_LOG( kPacket_.m_ulPacketNo )
             << BUILD_LOG( kPacket_.m_ulOrderNo )
             << BUILD_LOG( kPacket_.m_ulProductNo )
@@ -1238,7 +1238,7 @@ IMPL_ON_FUNC( ENX_BT_NISMS_INVENTORY_PICK_UP_ONCE_ACK )
 
     if( iUserUID <= 0 )
     {
-        START_LOG( cerr, L"패킷 번호에 해당하는 UserUID를 찾지 못함." )
+        START_LOG( cerr, L"Could not find the UserUID for the packet number." )
             << BUILD_LOG( kPacket_.m_ulPacketNo )
             << BUILD_LOG( kPacket_.m_ulOrderNo )
             << BUILD_LOG( kPacket_.m_ulProductNo )
@@ -1301,7 +1301,7 @@ IMPL_ON_FUNC( ENX_BT_NISMS_INVENTORY_PICK_UP_FOR_PACKAGE_ACK )
 
 	if( iUserUID <= 0 )
 	{
-		START_LOG( cerr, L"패킷 번호에 해당하는 UserUID를 찾지 못함." )
+		START_LOG( cerr, L"Could not find the UserUID for the packet number." )
 			<< BUILD_LOG( kPacket_.m_ulPacketNo )
 			<< BUILD_LOG( kPacket_.m_ulOrderNo )
 			<< BUILD_LOG( kPacket_.m_ulPackageProductNo )
@@ -1355,7 +1355,7 @@ IMPL_ON_FUNC( ENX_BT_REFUND_ACK )
 
 	if( iUserUID <= 0 )
 	{
-		START_LOG( cerr, L"패킷 번호에 해당하는 UserUID를 찾지 못함." )
+		START_LOG( cerr, L"Could not find the UserUID for the packet number." )
 			<< BUILD_LOG( kPacket_.m_ulPacketNo )
 			<< END_LOG;
 
@@ -1396,7 +1396,7 @@ IMPL_ON_FUNC( ENX_BT_REFUND_ACK )
 		//}}
 
 	default:
-		START_LOG( cerr, L"정의되지 않은 청약철회 에러 코드입니다." )
+		START_LOG( cerr, L"Undefined purchase cancellation error code." )
 			<< BUILD_LOG( kPacket_.m_ulResult )
 			<< END_LOG;
 

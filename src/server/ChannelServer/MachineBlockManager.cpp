@@ -42,7 +42,7 @@ void KMachineBlockManager::Tick()
 
 void KMachineBlockManager::Init()
 {
-	START_LOG( cout, L"계정 블럭 리스트 요청!" );
+	START_LOG( cout, L"Requesting account block list!" );
 
 	KDBE_CHECK_ACCOUNT_BLOCK_LIST_REQ kPacket;
 	GetReleaseTick( kPacket.m_mapReleaseTick );
@@ -84,7 +84,7 @@ void KMachineBlockManager::UpdateMachineBlockList( IN const KDBE_CHECK_ACCOUNT_B
 			m_setMachineIDBlockList.insert( strNewMachineID );
 		}
 
-		START_LOG( cout, L"머신 ID 블럭 리스트 업데이트!" )
+		START_LOG( cout, L"Updating machine ID block list!" )
 			<< BUILD_LOG( uiOldCount )
 			<< BUILD_LOG( m_setMachineIDBlockList.size() )
 			<< BUILD_LOG( vecBlockMachineIDList.size() );

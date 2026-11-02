@@ -50,7 +50,7 @@ void KGSWorldMissionManager::UpdateMissionInfo( IN const KEGB_GET_MISSION_INFO_A
 	{
 	case KEGB_GET_MISSION_INFO_ACK::FT_NONE:
 		{
-			START_LOG( cerr, L"받아서는 안되는 타입" )
+			START_LOG( cerr, L"Unexpected type received." )
 				<< BUILD_LOG( kPacketAck.m_iFlag )
 				<< END_LOG;
 
@@ -89,7 +89,7 @@ void KGSWorldMissionManager::UpdateMissionInfo( IN const KEGB_GET_MISSION_INFO_A
 		} break;
 	default:
 		{
-			START_LOG( cerr, L"받아서는 안되는 타입" )
+			START_LOG( cerr, L"Unexpected type received." )
 				<< BUILD_LOG( kPacketAck.m_iFlag )
 				<< END_LOG;
 
@@ -99,7 +99,7 @@ void KGSWorldMissionManager::UpdateMissionInfo( IN const KEGB_GET_MISSION_INFO_A
 
 	m_iTickCount++;
 
-	START_LOG( clog, L"월드 미션 정보 변경" )
+	START_LOG( clog, L"World mission information changed" )
 		<< BUILD_LOG( kPacketAck.m_iFlag )
 		<< BUILD_LOG( kPacketAck.m_bActive )
 		<< BUILD_LOG( kPacketAck.m_iWorldCrystalCount )
@@ -117,7 +117,7 @@ void KGSWorldMissionManager::GetMissionInfo( OUT KEGS_WORLD_MISSION_UPDATE_NOT &
 	kOut.m_iWorldMaxCrystalCount	= m_iWorldMaxCrystalCount;
 	kOut.m_iMissionStartRemainTime	= GetMissionStartRemainTime();
 
-	START_LOG( clog, L"월드 미션 정보" )
+	START_LOG( clog, L"World mission information" )
 		<< BUILD_LOG( kOut.m_bActive )
 		<< BUILD_LOG( kOut.m_iRemainTime )
 		<< BUILD_LOG( kOut.m_iWorldCrystalCount )
@@ -139,14 +139,14 @@ bool KGSWorldMissionManager::UpdateWorldBuffInfo( IN const KEGB_UPDATE_WORLD_BUF
 
 	if( m_usWorldBuff == CXSLBuffManager::BTI_NONE )	// 되도록이면 범위 안에 들어가는지 체크하는 것이 좋다.
 	{
-		START_LOG( clog, L"월드 버프가 변경 되었습니다! 월드 버프 종료!!" )
+		START_LOG( clog, L"World buff changed! Ending world buff!" )
 			<< BUILD_LOG( m_usWorldBuff )
 			<< BUILD_LOG( m_usWorldBuffDurationTime )
 			<< END_LOG;
 	}
 	else
 	{
-		START_LOG( clog, L"월드 버프가 변경 되었습니다! 월드 버프 시전!!" )
+		START_LOG( clog, L"World buff changed! Applying world buff!" )
 			<< BUILD_LOG( m_usWorldBuff )
 			<< BUILD_LOG( m_usWorldBuffDurationTime )
 			<< END_LOG;
@@ -243,7 +243,7 @@ int KGSWorldMissionManager::GetWorldCrystalCount( void )
 		m_iWorldCrystalCount = WBSC_STEP_THREE;
 	}
 
-	START_LOG( clog, L"월드 크리스탈 갯수 확인" )
+	START_LOG( clog, L"Checking world crystal count" )
 		<< BUILD_LOG( m_iWorldCrystalCount )
 		<< END_LOG;
 
@@ -260,7 +260,7 @@ bool KGSWorldMissionManager::GetDefenseDungeonEndTime( OUT CTime& tStartTime, OU
 	// 해당 요일에 예약된 오픈 시간 존재 여부 검사.
 	if( mit == m_mapDefenseOpenTime.end() )
 	{
-		START_LOG( cerr, L"디펜스 던전 시간 셋팅 값이 존재 하지 않습니다." );
+		START_LOG( cerr, L"Defense dungeon time setting is missing." );
 		return false;
 	}
 
@@ -295,7 +295,7 @@ bool KGSWorldMissionManager::GetDefenseDungeonEndTime( OUT CTime& tStartTime, OU
 	CStringW currentTime = tCurrentTime.Format(_T("%Y-%m-%d %H:%M:%S"));
 	std::wstring wstrCurrentTime = currentTime.GetString();
 
-	START_LOG( cerr, L"디펜스 던전 EndTime 검색 실패")
+	START_LOG( cerr, L"Failed to retrieve the defense dungeon EndTime.")
 		<< BUILD_LOG( m_bActive )
 		<< BUILD_LOG( wstrCurrentTime )
 		<< BUILD_LOG( wstrStartTime )
@@ -323,7 +323,7 @@ void KGSWorldMissionManager::UpdateMissionStartTime( IN std::wstring& wstrDate )
 {
 	if( KncUtil::ConvertStringToCTime( wstrDate, m_tWorldMissionNextStartTime ) == false )
 	{
-		START_LOG( cerr, L"시간 변경 실패!" )
+		START_LOG( cerr, L"Failed to change time!" )
 			<< BUILD_LOG( m_tWorldMissionNextStartTime.GetYear() )
 			<< BUILD_LOG( m_tWorldMissionNextStartTime.GetMonth() )
 			<< BUILD_LOG( m_tWorldMissionNextStartTime.GetDay() )

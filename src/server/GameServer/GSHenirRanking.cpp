@@ -69,7 +69,7 @@ void KGSHenirRanking::GetRankingInfo( IN OUT UINT& uiViewPage, OUT UINT& uiTotal
 
 		if( m_vecRankingInfo.size() <= uiBeginIndex )
 		{
-			START_LOG( cerr, L"일어날 수 없는 에러!" )
+			START_LOG( cerr, L"This should never happen!" )
 				<< BUILD_LOG( uiViewPage )
 				<< BUILD_LOG( uiTotalPage )
 				<< BUILD_LOG( uiBeginIndex )

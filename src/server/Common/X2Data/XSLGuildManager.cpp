@@ -46,7 +46,7 @@ ImplementLuaScriptParser( CXSLGuildManager )
 
 void CXSLGuildManager::SetLimitGuildLevel_LUA( u_char ucGuildLevel )
 {
-	START_LOG( cout, L"길드 레벨 제한 : " << static_cast<int>(ucGuildLevel) );
+	START_LOG( cout, L"Guild level limit: " << static_cast<int>(ucGuildLevel) );
 
 	m_ucLimitLevel = ucGuildLevel;
 }
@@ -55,7 +55,7 @@ bool CXSLGuildManager::AddGuildEXP_LUA( u_char ucGuildLevel, int iNeedEXP, int i
 {
 	if( iNeedEXP < 0  ||  iTotalEXP < 0 ) // ucGuildLevel is unsigned
 	{
-		START_LOG( cerr, L"길드 경험치 테이블 정보가 이상합니다." )
+		START_LOG( cerr, L"Invalid guild experience table information." )
 			<< BUILD_LOGc( ucGuildLevel )
 			<< BUILD_LOG( iNeedEXP )
 			<< BUILD_LOG( iTotalEXP )
@@ -75,7 +75,7 @@ bool CXSLGuildManager::SetCharLevelFactor_LUA( u_char ucBeginLv, u_char ucEndLv,
 {
 	if( ucBeginLv < 1  ||  ucEndLv < ucBeginLv  ||  fFactor <= 0.0f )
 	{
-        START_LOG( cerr, L"명예 포인트 캐릭터 상수값 세팅이 이상합니다." )
+        START_LOG( cerr, L"Invalid character honor point constant configuration." )
 			<< BUILD_LOGc( ucBeginLv )
 			<< BUILD_LOGc( ucEndLv )
 			<< BUILD_LOG( fFactor )
@@ -96,7 +96,7 @@ bool CXSLGuildManager::SetGuildMemberGradeFactor_LUA( u_char ucGuildMemberGrade,
 {
 	if( SEnum::GUG_INVALID >= ucGuildMemberGrade  ||  SEnum::GUG_NEW_USER < ucGuildMemberGrade  ||  fFactor <= 0.0f )
 	{
-		START_LOG( cerr, L"명예 포인트 길드원 등급 상수값 세팅이 이상합니다." )
+		START_LOG( cerr, L"Invalid guild member rank honor point constant configuration." )
 			<< BUILD_LOGc( ucGuildMemberGrade )
 			<< BUILD_LOG( fFactor )
 			<< END_LOG;
@@ -112,7 +112,7 @@ bool CXSLGuildManager::SetPcBangFactor_LUA( double fFactor )
 {
 	if( fFactor < 1.f )
 	{
-		START_LOG( cerr, L"길드 pc방 상수값 오류! pc방 상수의 최소값은 1.f입니다" )
+		START_LOG( cerr, L"Invalid guild PC Bang constant; the minimum value is 1.0." )
 			<< BUILD_LOG( fFactor )
 			<< END_LOG;
 
@@ -128,7 +128,7 @@ bool CXSLGuildManager::SetPvpMemberFactor_LUA( int iPvpMember, double fFactor )
 {
 	if( iPvpMember <= 0  ||  fFactor <= 0.0f )
 	{
-		START_LOG( cerr, L"대전 인원 상수값이 이상합니다." )
+		START_LOG( cerr, L"Invalid PvP player-count constant." )
 			<< BUILD_LOG( iPvpMember )
 			<< BUILD_LOG( fFactor )
 			<< END_LOG;
@@ -153,7 +153,7 @@ double CXSLGuildManager::GetCharacterLevelFactor( IN u_char ucLevel ) const
 		}
 	}
 
-	START_LOG( cerr, L"factor값 못찾았음" )
+	START_LOG( cerr, L"Factor value not found." )
 		<< BUILD_LOGc( ucLevel )
 		<< END_LOG;
 
@@ -165,7 +165,7 @@ double CXSLGuildManager::GetMemberGradeFactor( IN u_char ucGuildMemberGrade ) co
 	std::map< u_char, double >::const_iterator mit = m_mapMemberGradeFactor.find( ucGuildMemberGrade );
 	if( mit == m_mapMemberGradeFactor.end() )
 	{
-		START_LOG( cerr, L"길드원 등급 상수값이 존재하지 않습니다." )
+		START_LOG( cerr, L"Guild member rank constant does not exist." )
 			<< BUILD_LOGc( ucGuildMemberGrade )
 			<< END_LOG;
 
@@ -180,7 +180,7 @@ double CXSLGuildManager::GetPvpMemberFactor( IN int iPvpMemberCount ) const
 	std::map< int, double >::const_iterator mit = m_mapPvpMemberFactor.find( iPvpMemberCount );
 	if( mit == m_mapPvpMemberFactor.end() )
 	{
-		START_LOG( cerr, L"대전 인원수 상수값이 존재하지 않습니다." )
+		START_LOG( cerr, L"PvP player-count constant does not exist." )
 			<< BUILD_LOG( iPvpMemberCount )
 			<< END_LOG;
 

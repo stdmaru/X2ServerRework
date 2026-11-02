@@ -87,7 +87,7 @@ bool CXSLTitleManager::AddTitleInfo_LUA()
 	return true;
 
 end_proc:
-	START_LOG( cerr, L"타이틀 스크립트 파싱 실패.!" )
+	START_LOG( cerr, L"Failed to parse the title script." )
 		<< BUILD_LOG( kTitleInfo.m_iTitleID )
 		<< END_LOG;
 
@@ -153,7 +153,7 @@ bool CXSLTitleManager::AddTitleMissionInfo_LUA()
 	pTitleTemplet = GetTitleTemplet( kMissionTemplet.m_iMissionID );
 	if( pTitleTemplet == NULL )
 	{
-		START_LOG( cwarn, L"미션에 해당되는 칭호정보가 존재하지 않습니다." )
+		START_LOG( cwarn, L"No title information exists for this mission." )
 			<< BUILD_LOG( kMissionTemplet.m_iMissionID )
 			<< END_LOG;
 
@@ -170,7 +170,7 @@ bool CXSLTitleManager::AddTitleMissionInfo_LUA()
 	return true;
 LoadFail:
 
-	START_LOG( cerr, L"TitleMission 스크립트 파싱 실패!" )
+	START_LOG( cerr, L"Failed to parse the TitleMission script." )
 		<< BUILD_LOG( kMissionTemplet.m_iMissionID )
 		<< END_LOG;
 	return false;
@@ -239,7 +239,7 @@ bool CXSLTitleManager::GetUseItemTitleInfoBySubMissionID( IN const int iSubMissi
 		const MissionTemplet* pMissionTemplet = GetMissionInfo( iMissionID );
 		if( pMissionTemplet == NULL )
 		{
-			START_LOG( cerr, L"존재하지 않는 미션입니다!" )
+			START_LOG( cerr, L"Mission does not exist." )
 				<< BUILD_LOG( iMissionID )
 				<< END_LOG;
 			continue;
@@ -253,7 +253,7 @@ bool CXSLTitleManager::GetUseItemTitleInfoBySubMissionID( IN const int iSubMissi
 
 			if( bFindSuccess )
 			{
-				START_LOG( cwarn, L"이미 찾았는데 또 나왔네? 이건 버그다!" )
+				START_LOG( cwarn, L"Duplicate result found; this is a bug." )
 					<< BUILD_LOG( iSubMissionID_ )
 					<< BUILD_LOG( iMissionID )
 					<< END_LOG;
@@ -467,7 +467,7 @@ bool CXSLTitleManager::LoadClearCondition( KLuaManager& luaManager, SubMissionTe
 				TitleSimpleInfo kInfo;
 				if( GetUseItemTitleInfoBySubMissionID( kSubMissionTemplet.m_iSubMissionID, kInfo ) == false )
 				{
-					START_LOG( clog, L"칭호 획득 아이템 정보 얻기 실패!" )
+					START_LOG( clog, L"Failed to get title acquisition item information." )
 						<< BUILD_LOG( kSubMissionTemplet.m_iSubMissionID )
 						<< BUILD_LOG( kSubMissionTemplet.m_ClearCondition.m_iItemID )
 						<< END_LOG;
@@ -476,7 +476,7 @@ bool CXSLTitleManager::LoadClearCondition( KLuaManager& luaManager, SubMissionTe
 
 				if( GetUseItemTitleInfoByItemID( kSubMissionTemplet.m_ClearCondition.m_iItemID, kInfo ) == true )
 				{
-					START_LOG( cerr, L"이미 등록된 칭호 획득 아이템 정보 입니다!" )
+					START_LOG( cerr, L"Title acquisition item information is already registered." )
 						<< BUILD_LOG( kSubMissionTemplet.m_iSubMissionID )
 						<< BUILD_LOG( kSubMissionTemplet.m_ClearCondition.m_iItemID )
 						<< END_LOG;
@@ -602,7 +602,7 @@ bool CXSLTitleManager::LoadClearCondition( KLuaManager& luaManager, SubMissionTe
 
 		default:
 			{
-				START_LOG( cerr, L"Sub Mission ClearCondition Type 별 읽어 오기 실패.!" )
+				START_LOG( cerr, L"Failed to read sub-mission clear conditions by type." )
 					<< BUILD_LOG( kSubMissionTemplet.m_iSubMissionID )
 					<< BUILD_LOG( kSubMissionTemplet.m_wstrDescription )
 					<< BUILD_LOG( kSubMissionTemplet.m_eClearType )
@@ -618,7 +618,7 @@ bool CXSLTitleManager::LoadClearCondition( KLuaManager& luaManager, SubMissionTe
 	}
 
 error_proc:
-	START_LOG( cerr, L"Sub Mission ClearCondition Type 별 읽어 오기 실패.!" )
+	START_LOG( cerr, L"Failed to read sub-mission clear conditions by type." )
 		<< BUILD_LOG( kSubMissionTemplet.m_iSubMissionID )
 		<< BUILD_LOG( kSubMissionTemplet.m_wstrDescription )
 		<< BUILD_LOG( kSubMissionTemplet.m_eClearType )

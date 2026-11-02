@@ -46,7 +46,7 @@ bool KRecommendUserTable::AddRecommendUserData_LUA( u_char ucLevel, int iRewardI
 {
 	if( ucLevel <= 1 || iRewardID <= 0 )
 	{
-		START_LOG( cerr, L"추천인 테이블 정보 파싱 실패!" )
+		START_LOG( cerr, L"Failed to parse recommender table information!" )
 			<< BUILD_LOG( ucLevel )
 			<< BUILD_LOG( iRewardID )
 			<< END_LOG;

@@ -32,7 +32,7 @@ void KGSGlobalMissionManager::UpdateGlobalMissionInfo( IN const KEGB_GET_GLOBAL_
 	{
 	case KEGB_GET_GLOBAL_MISSION_INFO_ACK::FT_NONE:
 		{
-			START_LOG( cerr, L"받아서는 안되는 타입" )
+			START_LOG( cerr, L"Unexpected type received." )
 				<< BUILD_LOG( kPacketAck.m_iFlag )
 				<< END_LOG;
 
@@ -56,7 +56,7 @@ void KGSGlobalMissionManager::UpdateGlobalMissionInfo( IN const KEGB_GET_GLOBAL_
 		} break;
 	default:
 		{
-			START_LOG( cerr, L"받아서는 안되는 타입" )
+			START_LOG( cerr, L"Unexpected type received." )
 				<< BUILD_LOG( kPacketAck.m_iFlag )
 				<< END_LOG;
 
@@ -66,7 +66,7 @@ void KGSGlobalMissionManager::UpdateGlobalMissionInfo( IN const KEGB_GET_GLOBAL_
 
 	m_iTickCount++;
 
-	START_LOG( clog, L"글로벌 미션 정보 변경" )
+	START_LOG( clog, L"Global mission information changed" )
 		<< BUILD_LOG( m_iTickCount )
 		<< END_LOG;
 }

@@ -25,7 +25,7 @@ ImplToStringW( KRandomItemEventManager )
 
 void KRandomItemEventManager::Init()
 {
-	START_LOG( cout, L"특정 시각 획득 랜덤 큐브 이벤트 정보 요청!" );
+	START_LOG( cout, L"Requesting timed random cube event information!" );
 
 	SendToLogDB( DBE_GET_TIME_RANDOM_ITEM_EVENT_INFO_REQ );
 }
@@ -41,7 +41,7 @@ void KRandomItemEventManager::UpdateEventInfo( IN const std::vector< KTimeOpenRa
 		kEventData.m_iItemID		= kInfo.m_iItemID;
 		if( KncUtil::ConvertStringToCTime( kInfo.m_wstrDropTime, kEventData.m_tDropTime ) == false )
 		{
-			START_LOG( cerr, L"이벤트 시작 시간 정보 변환을 실패하였습니다!" )
+			START_LOG( cerr, L"Failed to convert event start time!" )
 				<< BUILD_LOG( kInfo.m_iID )
 				<< BUILD_LOG( kInfo.m_wstrDropTime )
 				<< END_LOG;
@@ -50,7 +50,7 @@ void KRandomItemEventManager::UpdateEventInfo( IN const std::vector< KTimeOpenRa
 		//{{ 2011. 07. 04    김민성    네이버 프로모션
 		if( KncUtil::ConvertStringToCTime( kInfo.m_wstrDropEndTime, kEventData.m_tDropEndTime ) == false )
 		{
-			START_LOG( cerr, L"이벤트 시작 시간 정보 변환을 실패하였습니다!" )
+			START_LOG( cerr, L"Failed to convert event start time!" )
 				<< BUILD_LOG( kInfo.m_iID )
 				<< BUILD_LOG( kInfo.m_wstrDropEndTime )
 				<< END_LOG;
@@ -88,7 +88,7 @@ void KRandomItemEventManager::UpdateEventInfo( IN const std::vector< KTimeOpenRa
 
 	m_setGetRewardUserUIDList = setGetRewardUserUIDList;
 
-	START_LOG( cout, L"특정 시각 획득 랜덤 큐브 이벤트 정보 업데이트!" )
+	START_LOG( cout, L"Updating timed random cube event information!" )
 		<< BUILD_LOG( m_mapEventInfo.size() )
 		<< BUILD_LOG( m_setGetRewardUserUIDList.size() );
 }

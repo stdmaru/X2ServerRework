@@ -192,7 +192,7 @@ void KGlobalUser::SendToGSCharacter( UidType nToGSUID, UidType nToUnitUID, unsig
 	}
 	else
 	{
-		START_LOG( cerr, L"타 게임서버로 패킷 보내기 실패.? 왜왜" )
+		START_LOG( cerr, L"Failed to send a packet to another game server. Why?" )
 			<< BUILD_LOG( nToGSUID )
 			<< BUILD_LOG( nToUnitUID )
 			<< BUILD_LOG( KEvent::GetIDStr( usEventID ) )
@@ -228,7 +228,7 @@ void KGlobalUser::SendToGSUser( UidType nToGSUID, UidType nToGSUser, unsigned sh
 	}
 	else
 	{
-		START_LOG( cerr, L"타 게임서버로 패킷 보내기 실패.? 왜왜" )
+		START_LOG( cerr, L"Failed to send a packet to another game server. Why?" )
 			<< BUILD_LOG( nToGSUID )
 			<< BUILD_LOG( nToGSUser )
 			<< BUILD_LOG( KEvent::GetIDStr( usEventID ) )

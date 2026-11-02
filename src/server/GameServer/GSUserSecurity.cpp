@@ -51,7 +51,7 @@ IMPL_ON_FUNC_NOPARAM( EGS_AGREE_HACK_USER_REQ )
 	{
 		SendToAccountDB( DBE_AGREE_HACK_USER_REQ, GetUID() );
 
-		START_LOG( clog, L"해킹유저 동의.!" )
+		START_LOG( clog, L"Hacking-user consent!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( m_kNexonAccountInfo.m_wstrID )
 			<< END_LOG;
@@ -63,7 +63,7 @@ IMPL_ON_FUNC_NOPARAM( EGS_AGREE_HACK_USER_REQ )
 	kPacket.m_iOK = NetError::ERR_HACK_USER_00;
 	SendPacket( EGS_AGREE_HACK_USER_ACK, kPacket );
 
-	START_LOG( cerr, L"해킹유저 리스트에 등록된 유저가 아닌데 패킷이 날아옴.!" )
+	START_LOG( cerr, L"Received packet from user not registered on hacking-user list!" )
 		<< BUILD_LOG( GetUID() )
 		<< BUILD_LOG( m_kNexonAccountInfo.m_wstrID )
 		<< END_LOG;
@@ -81,7 +81,7 @@ _IMPL_ON_FUNC( DBE_AGREE_HACK_USER_ACK, KEGS_AGREE_HACK_USER_ACK )
 		return;
 	}
 
-	START_LOG( cerr, L"해킹유저 동의 디비 업데이트 실패.!" )
+	START_LOG( cerr, L"Failed to update hacking-user consent in database!" )
 		<< BUILD_LOG( GetUID() )
 		<< BUILD_LOG( m_kNexonAccountInfo.m_wstrID )
 		<< END_LOG;
@@ -94,7 +94,7 @@ IMPL_ON_FUNC_NOPARAM( EGS_REPORT_HACK_USER_NOT )
 	//특별한 스테이트 제한이 없다. 흠!!
 	if( m_cHackingUserType == SEnum::HUT_NORMAL )
 	{
-		START_LOG( clog, L"해킹 유저 신고.!" )
+		START_LOG( clog, L"Reporting a user for hacking!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( GetCharName() )
@@ -107,7 +107,7 @@ IMPL_ON_FUNC_NOPARAM( EGS_REPORT_HACK_USER_NOT )
 	}
 	else
 	{
-		START_LOG( cwarn, L"이미 신고된 유저임.!" )
+		START_LOG( cwarn, L"The user has already been reported!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( GetCharName() )
@@ -130,7 +130,7 @@ IMPL_ON_FUNC_NOPARAM( EGS_DUNGEON_KILLALLNPC_CHECK_REQ )
 
 	if( GetRoomUID() <= 0 )
 	{
-		START_LOG( cerr, L"방이 아닌데 이 패킷을 날렸네?" )
+		START_LOG( cerr, L"Sent this packet while not in a room?" )
 			<< BUILD_LOG( GetCharUID() )
 			<< END_LOG;
 
@@ -139,7 +139,7 @@ IMPL_ON_FUNC_NOPARAM( EGS_DUNGEON_KILLALLNPC_CHECK_REQ )
 
 	if( CXSLRoom::GetRoomType( GetRoomUID() ) != CXSLRoom::RT_DUNGEON )
 	{
-		START_LOG( cerr, L"던전방이 아닌데 이 패킷을 날렸네?" )
+		START_LOG( cerr, L"Sent this packet outside a dungeon room?" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( CXSLRoom::GetRoomType( GetRoomUID() ) )
 			<< END_LOG;
@@ -172,7 +172,7 @@ _IMPL_ON_FUNC( ERM_SERVER_CHECK_HACK_USER_NOT, KEGS_SERVER_CHECK_HACK_USER_REQ )
 	// 운영자면 해킹 유저로 처리 되지 않는다.
 	if( GetAuthLevel() >= SEnum::UAL_GM )
 	{
-		START_LOG( cout, L"운영자가 해킹유저로 판단되었지만 해킹유저등록 및 계정 차단을 하지는 않음." )
+		START_LOG( cout, L"Operator was identified as a hacking user, but was not registered or blocked." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( GetUserName() )
@@ -287,7 +287,7 @@ _IMPL_ON_FUNC( ERM_SERVER_CHECK_HACK_USER_NOT, KEGS_SERVER_CHECK_HACK_USER_REQ )
 		//}}
 	default:
 		{
-			START_LOG( cerr, L"등록되지 않는 핵유저 체크 타입 입니다!" )
+			START_LOG( cerr, L"Unregistered hacking-user check type!" )
 				<< BUILD_LOGc( kPacket_.m_cHackingCheckType )
 				<< END_LOG;
 		}
@@ -322,7 +322,7 @@ IMPL_ON_FUNC( ELG_TRADE_BLOCK_NOT )
 
 	if( kPacket_.m_bIsTradeBlock )
 	{
-		START_LOG( cout, L"해킹 의심으로 인해 개인 거래가 차단되었습니다!" )
+		START_LOG( cout, L"Private trade blocked due to suspected hacking!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetName() )
@@ -330,7 +330,7 @@ IMPL_ON_FUNC( ELG_TRADE_BLOCK_NOT )
 	}
 	else
 	{
-		START_LOG( cout, L"개인 거래 차단이 해제되었습니다!" )
+		START_LOG( cout, L"Personal trade blocking has been lifted!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetName() )
@@ -367,7 +367,7 @@ IMPL_ON_FUNC( DBE_GET_SECOND_SECURITY_INFO_ACK )
 	{
 		if( KncUtil::ConvertStringToCTime( kPacket_.m_wstrLastAuthDate, tLasstAuthDate ) == false )
 		{
-			START_LOG( cerr, L"문자열 시간 변환 실패." )
+			START_LOG( cerr, L"Failed to convert the time string." )
 				<< BUILD_LOG( kPacket_.m_wstrLastAuthDate )
 				<< END_LOG;
 		}
@@ -445,14 +445,14 @@ IMPL_ON_FUNC( EGS_AUTH_SECOND_SECURITY_REQ )
 		kReq.m_iUserID = GetUID();
 		kReq.m_wstrCurrTime = tCurr.Format( _T( "%Y-%m-%d %H:%M:%S" ) );
 
-		START_LOG( clog, L"2차 보안 인증 성공!!" )
+		START_LOG( clog, L"Secondary security authentication succeeded!" )
 			<< BUILD_LOG( GetUID() )
 			<< END_LOG;
 		SendToAccountDB( DBE_SEUCCESS_SECOND_SECURITY_REQ, kReq );
 	}
 	else
 	{
-		START_LOG( clog, L"2차 보안 인증 실패!!" )
+		START_LOG( clog, L"Secondary security authentication failed!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( m_iFailedCount )
 			<< END_LOG;
@@ -495,7 +495,7 @@ IMPL_ON_FUNC( DBE_SEUCCESS_SECOND_SECURITY_ACK )
 
 		if( KncUtil::ConvertStringToCTime( kPacket_.m_wstrCurrTime, tLastLogin ) == false )
 		{
-			START_LOG( cerr, L"시간을 문자열로 변환 실패!!!" )
+			START_LOG( cerr, L"Failed to convert the time to a string!!!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( kAck.m_iOK )
 				<< BUILD_LOG( kPacket_.m_wstrCurrTime )
@@ -554,7 +554,7 @@ IMPL_ON_FUNC( EGS_CREATE_SECOND_SECURITY_REQ )
 	// 문자열 무결성 검사( 숫자로만, 4~6자리 인가? )
 	if( CheckIntegritySecondSecurityPW( kPacket_.m_wstrSecondPW, kAck.m_iOK ) == false )
 	{
-		START_LOG( clog, L"2차 보안 비밀번호의 값이 이상합니다." )
+		START_LOG( clog, L"The secondary security password is invalid." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kPacket_.m_wstrSecondPW )
 			<< END_LOG;
@@ -568,17 +568,17 @@ IMPL_ON_FUNC( EGS_CREATE_SECOND_SECURITY_REQ )
 	//{{  2011.12.20     김민성    2차 보안 패드 비밀번호 암호화
 	// 암호화 하여 DB에 저장
 	std::string strPW = KncUtil::toNarrowString( kPacket_.m_wstrSecondPW );
-	START_LOG( clog, L"2차 보안 비밀번호의 값이 이상합니다." )
+	START_LOG( clog, L"The secondary security password is invalid." )
 		<< BUILD_LOG( GetUID() )
 		<< BUILD_LOG( strPW )
 		<< END_LOG;
 	std::string strChangePW = KServerSNMaker::GetCRCFromString( strPW );
-	START_LOG( clog, L"2차 보안 비밀번호의 값이 이상합니다." )
+	START_LOG( clog, L"The secondary security password is invalid." )
 		<< BUILD_LOG( GetUID() )
 		<< BUILD_LOG( strChangePW )
 		<< END_LOG;
 	kReq.m_wstrSecondPW = KncUtil::toWideString( strChangePW.c_str() );
-	START_LOG( clog, L"2차 보안 비밀번호의 값이 이상합니다." )
+	START_LOG( clog, L"The secondary security password is invalid." )
 		<< BUILD_LOG( GetUID() )
 		<< BUILD_LOG( kReq.m_wstrSecondPW )
 		<< END_LOG;
@@ -595,7 +595,7 @@ IMPL_ON_FUNC( DBE_CREATE_SECOND_SECURITY_ACK )
 		SetSecondPW( kPacket_.m_wstrSecondPW );
 		SetSuccessSecondSecurity( true );
 
-		START_LOG( clog, L"2차 보안 생성 성공!!" )
+		START_LOG( clog, L"Successfully enabled secondary security!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kPacket_.m_wstrSecondPW )
 			<< END_LOG;
@@ -625,17 +625,17 @@ IMPL_ON_FUNC( EGS_DELETE_SECOND_SECURITY_REQ )
 	//{{  2011.12.20     김민성    2차 보안 패드 비밀번호 암호화
 	// 암호화
 	std::string strPW = KncUtil::toNarrowString( kPacket_.m_wstrSecondPW );
-	START_LOG( clog, L"2차 보안 비밀번호의 값이 이상합니다." )
+	START_LOG( clog, L"The secondary security password is invalid." )
 		<< BUILD_LOG( GetUID() )
 		<< BUILD_LOG( strPW )
 		<< END_LOG;
 	std::string strChangePW = KServerSNMaker::GetCRCFromString( strPW );
-	START_LOG( clog, L"2차 보안 비밀번호의 값이 이상합니다." )
+	START_LOG( clog, L"The secondary security password is invalid." )
 		<< BUILD_LOG( GetUID() )
 		<< BUILD_LOG( strChangePW )
 		<< END_LOG;
 	kPacket_.m_wstrSecondPW = KncUtil::toWideString( strChangePW.c_str() );
-	START_LOG( clog, L"2차 보안 비밀번호의 값이 이상합니다." )
+	START_LOG( clog, L"The secondary security password is invalid." )
 		<< BUILD_LOG( GetUID() )
 		<< BUILD_LOG( kPacket_.m_wstrSecondPW )
 		<< END_LOG;
@@ -643,7 +643,7 @@ IMPL_ON_FUNC( EGS_DELETE_SECOND_SECURITY_REQ )
 
 	if( IsSameSecondSecurityPW( kPacket_.m_wstrSecondPW ) == false )
 	{
-		START_LOG( clog, L"2차 보안 비밀번호의 값이 틀렸습니다." )
+		START_LOG( clog, L"The secondary security password is incorrect." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kPacket_.m_wstrSecondPW )
 			<< END_LOG;
@@ -670,24 +670,24 @@ IMPL_ON_FUNC( EGS_DELETE_SECOND_SECURITY_VERIFY_REQ )
 	//{{  2011.12.20     김민성    2차 보안 패드 비밀번호 암호화
 	// 암호화
 	std::string strPW = KncUtil::toNarrowString( kPacket_.m_wstrSecondPW );
-	START_LOG( clog, L"2차 보안 비밀번호의 값이 이상합니다." )
+	START_LOG( clog, L"The secondary security password is invalid." )
 		<< BUILD_LOG( GetUID() )
 		<< BUILD_LOG( strPW )
 		<< END_LOG;
 	std::string strChangePW = KServerSNMaker::GetCRCFromString( strPW );
-	START_LOG( clog, L"2차 보안 비밀번호의 값이 이상합니다." )
+	START_LOG( clog, L"The secondary security password is invalid." )
 		<< BUILD_LOG( GetUID() )
 		<< BUILD_LOG( strChangePW )
 		<< END_LOG;
 	kPacket_.m_wstrSecondPW = KncUtil::toWideString( strChangePW.c_str() );
-	START_LOG( clog, L"2차 보안 비밀번호의 값이 이상합니다." )
+	START_LOG( clog, L"The secondary security password is invalid." )
 		<< BUILD_LOG( GetUID() )
 		<< BUILD_LOG( kPacket_.m_wstrSecondPW )
 		<< END_LOG;
 	//}}
 	if( IsSameSecondSecurityPW( kPacket_.m_wstrSecondPW ) == false )
 	{
-		START_LOG( clog, L"2차 보안 비밀번호의 값이 틀렸습니다." )
+		START_LOG( clog, L"The secondary security password is incorrect." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kPacket_.m_wstrSecondPW )
 			<< END_LOG;
@@ -719,7 +719,7 @@ IMPL_ON_FUNC( DBE_DELETE_SECOND_SECURITY_ACK )
 		SetSecondPWFailedCount( 0 );
 		SetSuccessSecondSecurity( false );
 
-		START_LOG( clog, L"2차 보안 해지 성공!!" )
+		START_LOG( clog, L"Successfully disabled secondary security!" )
 			<< BUILD_LOG( GetUID() )
 			<< END_LOG;
 	}
@@ -738,7 +738,7 @@ IMPL_ON_FUNC( EGS_CHANGE_SECOND_SECURITY_PW_REQ )
 	if( CheckIntegritySecondSecurityPW( kPacket_.m_wstrNewSecondPW, kAck.m_iOK ) == false ||
 		CheckIntegritySecondSecurityPW( kPacket_.m_wstrOldSecondPW, kAck.m_iOK ) == false )
 	{
-		START_LOG( clog, L"2차 보안 비밀번호의 값이 이상합니다." )
+		START_LOG( clog, L"The secondary security password is invalid." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kPacket_.m_wstrNewSecondPW )
 			<< BUILD_LOG( kPacket_.m_wstrOldSecondPW )
@@ -757,7 +757,7 @@ IMPL_ON_FUNC( EGS_CHANGE_SECOND_SECURITY_PW_REQ )
 	//}}
 	if( IsSameSecondSecurityPW( kPacket_.m_wstrOldSecondPW ) == false )
 	{
-		START_LOG( clog, L"2차 보안 비밀번호의 값이 틀렸습니다." )
+		START_LOG( clog, L"The secondary security password is incorrect." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kPacket_.m_wstrNewSecondPW )
 			<< BUILD_LOG( kPacket_.m_wstrOldSecondPW )
@@ -779,7 +779,7 @@ IMPL_ON_FUNC( EGS_CHANGE_SECOND_SECURITY_PW_REQ )
 	//}}
 	if( IsSameSecondSecurityPW( kPacket_.m_wstrNewSecondPW ) == true )
 	{
-		START_LOG( clog, L"2차 보안의 새비밀번호가 이전 비밀번호와 동일합니다." )
+		START_LOG( clog, L"The new secondary security password is the same as the previous password." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kPacket_.m_wstrNewSecondPW )
 			<< BUILD_LOG( kPacket_.m_wstrOldSecondPW )
@@ -807,7 +807,7 @@ IMPL_ON_FUNC( DBE_CHANGE_SECOND_SECURITY_PW_ACK )
 		SetSecondPW( kPacket_.m_wstrSecondPW );
 		SetSecondPWFailedCount( 0 );
 
-		START_LOG( clog, L"2차 보안 비밀번호 변경 성공!!" )
+		START_LOG( clog, L"Successfully changed the secondary security password!" )
 			<< BUILD_LOG( GetUID() )
 			<< END_LOG;
 	}
@@ -890,7 +890,7 @@ IMPL_ON_FUNC( EGS_CHECK_MACHINE_ID_REQ )
 	// 문자열 길이 체크!
 	if( kPacket_.m_strMachineID.empty()  ||  kPacket_.m_strMachineID.size() > 24 )
 	{
-		START_LOG( cerr, L"머신ID값이 이상합니다! 접속 차단!" )
+		START_LOG( cerr, L"Invalid machine ID; blocking the connection!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( kPacket_.m_strMachineID )
@@ -912,7 +912,7 @@ IMPL_ON_FUNC( EGS_CHECK_MACHINE_ID_REQ )
 	std::wstring wstrMachineID = KncUtil::toWideString( kPacket_.m_strMachineID );
 	if( KODBC::IsInvalidMarkInForMachineID( wstrMachineID ) == true )
 	{
-		START_LOG( cerr, L"머신ID값이 이상합니다! 접속 차단!" )
+		START_LOG( cerr, L"Invalid machine ID; blocking the connection!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( kPacket_.m_strMachineID )
@@ -933,7 +933,7 @@ IMPL_ON_FUNC( EGS_CHECK_MACHINE_ID_REQ )
 	//{{ 2011. 09. 07	최육사	머신 ID 기능 업데이트
 	if( m_kUserSecurityManager.CheckValidMachineID( kPacket_.m_strMachineID ) == false )
 	{
-		START_LOG( cout, L"[알림] 머신ID가 유효하지 않다! 접속 차단 시키자!" )
+		START_LOG( cout, L"[Notice] Invalid machine ID; blocking the connection!" )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( kPacket_.m_strMachineID );
@@ -988,7 +988,7 @@ IMPL_ON_FUNC( EGS_SERVER_CHECK_HACK_USER_ACK )
 	char cLastSendType = KEGS_SERVER_CHECK_HACK_USER_REQ::HCT_NONE;
 	if( m_kUserHackingManager.SetHackingUserReciveType( kPacket_.m_cHackingCheckType, cLastSendType ) == false )
 	{
-		START_LOG( cerr, L"해킹 유저 패킷을 보냈는데 잘못된 응답이다." )
+		START_LOG( cerr, L"Sent the suspected hacker packet, but received an invalid response." )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOGc( cLastSendType )
 			<< BUILD_LOGc( kPacket_.m_cHackingCheckType )
@@ -1048,7 +1048,7 @@ IMPL_ON_FUNC( DBE_GET_PURE_SECOND_SECURITY_INFO_ACK )
     {
         if( KncUtil::ConvertStringToCTime( kPacket_.m_wstrLastAuthDate, tLastAuthDate ) == false )
         {
-            START_LOG( cerr, L"문자열 시간 변환 실패." )
+            START_LOG( cerr, L"Failed to convert the time string." )
                 << BUILD_LOG( kPacket_.m_wstrLastAuthDate )
                 << END_LOG;
         }

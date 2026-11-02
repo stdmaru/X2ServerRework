@@ -94,7 +94,7 @@ void KLoginLogDBThread::ProcessEvent( const KEventPtr& spEvent_ )
         CASE_NOPARAM( DBE_SERVER_OFF_NOT );
 
     default:
-        START_LOG( cerr, L"이벤트 핸들러가 정의되지 않았음. " << spEvent_->GetIDStr() );
+        START_LOG( cerr, L"Event handler is not defined." << spEvent_->GetIDStr() );
     }
 
 	//////////////////////////////////////////////////////////////////////////
@@ -132,7 +132,7 @@ _IMPL_ON_FUNC( DBE_SERVER_ON_REQ, KNetAddress )
 
     if( !m_kODBC.BeginFetch() )
     {
-        START_LOG( cerr, L"로긴 서버 인증 실패." )
+        START_LOG( cerr, L"Login server authentication failed." )
             << BUILD_LOG( kPacket_.m_wstrIP )
 			<< END_LOG;
 
@@ -162,7 +162,7 @@ _IMPL_ON_FUNC( DBE_SERVER_ON_REQ, KNetAddress )
 	//}}
 	if( !m_kODBC.BeginFetch() )
 	{
-		START_LOG( cerr, L"난 누군가의 로긴 서버다." )
+		START_LOG( cerr, L"I am a login server." )
 			<< BUILD_LOG( kPacket.m_kServerInfo.m_iUID )
 			<< END_LOG;
 
@@ -183,7 +183,7 @@ _IMPL_ON_FUNC( DBE_SERVER_ON_REQ, KNetAddress )
 
         if( kPacket.m_iOK != NetError::NET_OK )
         {
-            START_LOG( cerr, L"서버 켜짐 표시 실패." )
+            START_LOG( cerr, L"Failed to mark the server as running." )
                 << BUILD_LOG( kPacket.m_kServerInfo.m_iUID )
                 << END_LOG;
 
@@ -450,7 +450,7 @@ IMPL_ON_FUNC( DBE_DELETE_RANKING_INFO_NOT )
 			DO_QUERY( L"exec dbo.P_Rank_SpaceTime_Day_DEL", L"%d", % KBaseServer::GetKObj()->GetServerGroupID() );
 			//}}
 
-			START_LOG( cout, L"헤니르 시공 일일 랭킹 DB에서 삭제 완료!" );
+			START_LOG( cout, L"Deleted daily Henir's Time and Space rankings from the database!" );
 		}
 		break;
 
@@ -461,7 +461,7 @@ IMPL_ON_FUNC( DBE_DELETE_RANKING_INFO_NOT )
 			DO_QUERY( L"exec dbo.P_Rank_SpaceTime_Week_DEL", L"%d", % KBaseServer::GetKObj()->GetServerGroupID() );
 			//}}
 
-            START_LOG( cout, L"헤니르 시공 주간 랭킹 DB에서 삭제 완료!" );
+            START_LOG( cout, L"Deleted weekly Henir's Time and Space rankings from the database!" );
 		}
 		break;
 
@@ -472,14 +472,14 @@ IMPL_ON_FUNC( DBE_DELETE_RANKING_INFO_NOT )
 			DO_QUERY( L"exec dbo.P_Rank_SpaceTime_Month_DEL", L"%d", % KBaseServer::GetKObj()->GetServerGroupID() );
 			//}}
 
-			START_LOG( cout, L"헤니르 시공 월간 랭킹 DB에서 삭제 완료!" );
+			START_LOG( cout, L"Deleted monthly Henir's Time and Space rankings from the database!" );
 		}
 		break;
 
 
 	default:
 		{
-			START_LOG( cerr, L"DB테이블이 없는 랭킹타입을 초기화하려 하였습니다" )
+			START_LOG( cerr, L"Attempted to reset a ranking type with no corresponding database table." )
 				<< BUILD_LOG( kPacket_.m_iRankingType )
 				<< END_LOG;
 		}
@@ -537,7 +537,7 @@ IMPL_ON_FUNC( DBE_BACKUP_RANKING_INFO_NOT )
 
 		default:
 			{
-				START_LOG( cerr, L"DB테이블이 없는 랭킹타입을 초기화하려 하였습니다" )
+				START_LOG( cerr, L"Attempted to reset a ranking type with no corresponding database table." )
 					<< BUILD_LOG( iRankingType )
 					<< END_LOG;
 
@@ -612,7 +612,7 @@ IMPL_ON_FUNC( DBE_BACKUP_RANKING_INFO_NOT )
 
 			default:
 				{
-					START_LOG( cerr, L"이상한 랭킹타입 입니다" )
+					START_LOG( cerr, L"Invalid ranking type." )
 						<< BUILD_LOG( iRankingType )
 						<< END_LOG;
 					continue;
@@ -626,7 +626,7 @@ IMPL_ON_FUNC( DBE_BACKUP_RANKING_INFO_NOT )
 
 			//	if( iOK != NetError::NET_OK )
 			//	{
-			//		START_LOG( cerr, L"헤니르의 시공 랭킹 정보 업데이트 실패" )
+			//		START_LOG( cerr, L"Failed to update Henir's Time and Space ranking information." )
 			//			<< BUILD_LOG( mit->first )
 			//			<< BUILD_LOG( kRankingInfo.m_iRank )
 			//			<< BUILD_LOG( kRankingInfo.m_iUnitUID )
@@ -641,7 +641,7 @@ IMPL_ON_FUNC( DBE_BACKUP_RANKING_INFO_NOT )
 			//}
 		}
 
-		START_LOG( cout, L"헤니르의 시공 랭킹 정보 DB백업 완료!" )
+		START_LOG( cout, L"Backed up Henir's Time and Space ranking information to the database!" )
 			<< BUILD_LOG( iRankingType )
 			<< BUILD_LOG( vecRanking.size() );
 	}
@@ -702,7 +702,7 @@ IMPL_ON_FUNC( DBE_UPDATE_CCU_INFO_NOT )
 
 		//if( iOK != NetError::NET_OK )
 		//{
-		//	START_LOG( cerr, L"동접 정보 기록에 실패하였습니다!" )
+		//	START_LOG( cerr, L"Failed to record concurrent-user information!" )
 		//		<< BUILD_LOG( kPacket_.m_wstrRegDate )
 		//		<< BUILD_LOG( kInfo.m_iServerUID )
 		//		<< BUILD_LOG( kInfo.m_iConcurrentUser )
@@ -785,7 +785,7 @@ _IMPL_ON_FUNC( DBE_UPDATE_MODULE_INFO_LIST_REQ, KDBE_GET_MODULE_INFO_LIST_ACK )
 			if( iOK != NetError::NET_OK )
 			{
 				//{{  2012. 1. 30	김민성		한방핵 방어(해킹 프로세스 검사)
-				START_LOG( cerr, L"모듈 정보 insert실패!" )
+				START_LOG( cerr, L"Failed to insert module information!" )
 					<< BUILD_LOG( kNewModuleInfo.m_wstrModuleName )
 					<< BUILD_LOG( kNewModuleInfo.m_iCount )
 					<< BUILD_LOG( kNewModuleInfo.m_bAllow )
@@ -815,7 +815,7 @@ _IMPL_ON_FUNC( DBE_UPDATE_MODULE_INFO_LIST_REQ, KDBE_GET_MODULE_INFO_LIST_ACK )
 
 			if( iOK != NetError::NET_OK )
 			{
-				START_LOG( cerr, L"모듈 정보 update실패!" )
+				START_LOG( cerr, L"Failed to update module information!" )
 					<< BUILD_LOG( kInfo.m_iModuleUID )
 					<< BUILD_LOG( kInfo.m_iCount )
 					<< END_LOG;
@@ -952,7 +952,7 @@ IMPL_ON_FUNC_NOPARAM( DBE_SERVER_OFF_NOT )
 
         if( iOK != NetError::NET_OK )
         {
-            START_LOG( cerr, L"서버 종료 표시 실패." )
+            START_LOG( cerr, L"Failed to mark the server as stopped." )
                 << BUILD_LOG( GetKLoginServer()->GetUID() )
                 << END_LOG;
 
@@ -988,7 +988,7 @@ IMPL_ON_FUNC( DBE_TICK_PERFORMANCE_LOG_NOT )
 end_proc:
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"SimLayer Tick 퍼포먼스 로그 기록 실패!" )
+		START_LOG( cerr, L"Failed to record SimLayer Tick performance log!" )
 			<< BUILD_LOG( kPacket_.m_iServerUID )
 			<< BUILD_LOG( kPacket_.m_iServerType )
 			<< BUILD_LOG( kPacket_.m_dwMaxTickCount )
@@ -1029,7 +1029,7 @@ IMPL_ON_FUNC( DBE_LOG_STATISTICS_INFO_NOT )
 end_proc:
 		if( iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"Log Statistics 정보 기록 실패!" )
+			START_LOG( cerr, L"Failed to record log statistics!" )
 				<< BUILD_LOG( iServerUID )
 				<< BUILD_LOG( kInfo.m_wstrFunctionName )
 				<< BUILD_LOG( kInfo.m_wstrFileName )

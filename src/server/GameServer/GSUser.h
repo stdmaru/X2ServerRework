@@ -144,14 +144,14 @@
 #define _VERIFY_POINTER( pointer, ret ) \
 	if( !_CrtIsValidHeapPointer( pointer ) ) \
 	{ \
-		START_LOG( cerr, L ## #pointer L"포인터 값 이상. (state:" << GetStateIDString() << L", name:" << m_strName << L")" ); \
+		START_LOG( cerr, L ## #pointer L"Invalid pointer value (state:" << GetStateIDString() << L", name:" << m_strName << L")" ); \
 		return ret; \
 	}
 #else
 #define _VERIFY_POINTER( pointer, ret ) \
 	if( pointer == NULL ) \
 	{ \
-		START_LOG( cerr, L ## #pointer L"포인터 값 이상. (state:" << GetStateIDString() << L", name:" << m_strName << L")" ); \
+		START_LOG( cerr, L ## #pointer L"Invalid pointer value (state:" << GetStateIDString() << L", name:" << m_strName << L")" ); \
 		return ret; \
 	}
 #endif //#ifdef _DEBUG
@@ -168,9 +168,9 @@
 	} \
 	if( !m_pkCurrentState->CheckState varg ) \
 	{ \
-		START_LOG( loglevel, L"상태 오류. [return ack] Name : " << m_strName ) \
-			<< L"    현재 상태 : " << GetStateIDString() << dbg::endl \
-			<< L"    허용 상태 : " L ## #varg << END_LOG; \
+		START_LOG( loglevel, L"State error [return ack]. Name: " << m_strName ) \
+			<< L"    Current state: " << GetStateIDString() << dbg::endl \
+			<< L"    Allowed state: " L ## #varg << END_LOG; \
 		ackPacket kAck; \
 		kAck.m_iOK = NetError::ERR_WRONG_STATE_00; \
 		SendPacket( ackEventid, kAck ); \
@@ -218,9 +218,9 @@ _NEGATIVE_VERIFY_STATE_REPEAT_FILTER : !_JUST_VERIFY_STATE_REPEAT_FILTER 와 동
 	} \
 	if( !m_pkCurrentState->CheckState varg ) \
 	{ \
-	START_LOG( loglevel, L"상태 오류. [return ack] Name : " << m_strName ) \
-	<< L"    현재 상태 : " << GetStateIDString() << dbg::endl \
-	<< L"    허용 상태 : " L ## #varg << END_LOG; \
+	START_LOG( loglevel, L"State error [return ack]. Name: " << m_strName ) \
+	<< L"    Current state: " << GetStateIDString() << dbg::endl \
+	<< L"    Allowed state: " L ## #varg << END_LOG; \
 	ackPacket kAck; \
 	kAck.m_iOK = NetError::ERR_WRONG_STATE_00; \
 	SendPacket( ackEventid, kAck ); \
@@ -240,9 +240,9 @@ _NEGATIVE_VERIFY_STATE_REPEAT_FILTER : !_JUST_VERIFY_STATE_REPEAT_FILTER 와 동
 	} \
 	if( !m_pkCurrentState->CheckState varg ) \
 	{ \
-	START_LOG( loglevel, L"상태 오류. [return ack] Name : " << m_strName ) \
-	<< L"    현재 상태 : " << GetStateIDString() << dbg::endl \
-	<< L"    허용 상태 : " L ## #varg << END_LOG; \
+	START_LOG( loglevel, L"State error [return ack]. Name: " << m_strName ) \
+	<< L"    Current state: " << GetStateIDString() << dbg::endl \
+	<< L"    Allowed state: " L ## #varg << END_LOG; \
 	ackPacket kAck; \
 	kAck.m_iOK = NetError::ERR_WRONG_STATE_00; \
 	SendPacket( ackEventid, kAck ); \
@@ -1819,7 +1819,7 @@ void KGSUser::_SendToPShopRoom( UidType nTo, unsigned short usEventID, const T& 
 		break;
 
 	default:
-		START_LOG( cerr, L"개인상점 방이 아닌데 패킷을 보내려고 하네?" )
+		START_LOG( cerr, L"Attempted to send a packet outside a personal shop room." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetPersonalShopUID() )
 			<< BUILD_LOG( eRoomType )
@@ -1843,7 +1843,7 @@ void KGSUser::SendToPShopRoom( unsigned short usEventID, const T& data )
 		break;
 
 	default:
-		START_LOG( cerr, L"개인상점 방이 아닌데 패킷을 보내려고 하네?" )
+		START_LOG( cerr, L"Attempted to send a packet outside a personal shop room." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetPersonalShopUID() )
 			<< BUILD_LOG( eRoomType )

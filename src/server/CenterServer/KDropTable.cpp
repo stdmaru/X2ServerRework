@@ -169,7 +169,7 @@ void KDropTable::SetPVPFailRate_LUA( IN int iEnumKey, IN float fRate )
 	}
 	else
 	{
-		START_LOG( cerr, L"대전 드롭아이텝 습들 실패 확률 셋팅 실패" )
+		START_LOG( cerr, L"Failed to set PvP item-acquisition failure probability." )
 			<< BUILD_LOG( iEnumKey )
 			<< BUILD_LOG( fRate )
 			<< END_LOG;
@@ -206,7 +206,7 @@ bool KDropTable::DecisionbyAllItem( OUT int& iGroup, OUT int& iItemID )
 
 	if( m_mapPVPDropItem.size() <= 0 )
 	{
-		START_LOG( cerr, L"대전 드롭아이템 데이터가 없음.!" )
+		START_LOG( cerr, L"PvP drop-item data is missing!" )
 			<< BUILD_LOG( m_mapPVPDropItem.size() )
 			<< END_LOG;
 
@@ -225,12 +225,12 @@ bool KDropTable::DecisionbyAllItem( OUT int& iGroup, OUT int& iItemID )
 
 			if( iDecision == KLottery::CASE_BLANK )
 			{
-				START_LOG( cerr, L"대전 드롭아이템 드롭확률 셋팅오류.!" )
+				START_LOG( cerr, L"Invalid PvP drop-item probability setting!" )
 					<< END_LOG;
 				return 0;
 			}
 
-			START_LOG( clog, L"대전 드롭 아이템" )
+			START_LOG( clog, L"PvP drop item" )
 				<< BUILD_LOG( iDecision )
 				<< END_LOG;
 
@@ -244,7 +244,7 @@ bool KDropTable::DecisionbyAllItem( OUT int& iGroup, OUT int& iItemID )
 		++mit;
 	}
 
-	START_LOG( cerr, L"대전 드롭아이템 실패.!" )
+	START_LOG( cerr, L"PvP drop item failed!" )
 		<< END_LOG;
 
 	return false;
@@ -259,7 +259,7 @@ bool KDropTable::DecisionbyGroupItem( IN int iGroup, OUT int& iItemID )
 
 	if( mit == m_mapPVPDropItem.end() )
 	{
-		START_LOG( cerr, L"드롭된 아이템 그룹아이디가 이상함.!" )
+		START_LOG( cerr, L"Invalid dropped-item group ID!" )
 			<< BUILD_LOG( iGroup )
 			<< END_LOG;
 
@@ -270,12 +270,12 @@ bool KDropTable::DecisionbyGroupItem( IN int iGroup, OUT int& iItemID )
 
 	if( iDecision == KLottery::CASE_BLANK )
 	{
-		START_LOG( cerr, L"대전 드롭아이템 드롭확률 셋팅오류.!" )
+		START_LOG( cerr, L"Invalid PvP drop-item probability setting!" )
 			<< END_LOG;
 		return false;
 	}
 
-	START_LOG( clog, L"대전 드롭 아이템" )
+	START_LOG( clog, L"PvP drop item" )
 		<< BUILD_LOG( iDecision )
 		<< END_LOG;
 
@@ -289,7 +289,7 @@ float KDropTable::GetPVPDropFailRate( PVP_FAILRATE eKey )
 	if( eKey < 0 ||
 		eKey >= PF_END )
 	{
-		START_LOG( cerr, L"대전 드롭아이템 : 실패확률 찾을 키가 이상함." )
+		START_LOG( cerr, L"PvP drop item: invalid key for failure probability." )
 			<< BUILD_LOG( eKey )
 			<< END_LOG;
 		return 0.f;
@@ -318,7 +318,7 @@ bool KDropTable::AddAttribNpcSpecialDrop_LUA( IN char cDifficulty, IN int iItemI
 		iItemID <= 0  ||
 		fDropRate <= 0.0f )
 	{
-		START_LOG( cerr, L"속성 몬스터 스페셜 드롭 정보가 이상합니다." )
+		START_LOG( cerr, L"Invalid attribute-monster special-drop information." )
 			<< BUILD_LOGc( cDifficulty )
 			<< BUILD_LOG( iItemID )
 			<< BUILD_LOG( fDropRate )
@@ -329,7 +329,7 @@ bool KDropTable::AddAttribNpcSpecialDrop_LUA( IN char cDifficulty, IN int iItemI
 
 	if( SiCXSLItemManager()->GetItemTemplet( iItemID ) == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 아이템을 NPC 스페셜 드롭 테이블에 등록하여 했음." )
+		START_LOG( cerr, L"Attempted to register a nonexistent item in the NPC special-drop table." )
 			<< BUILD_LOGc( cDifficulty )
 			<< BUILD_LOG( iItemID )
 			<< BUILD_LOG( fDropRate )
@@ -385,7 +385,7 @@ int KDropTable::GetNpcExp( IN char cNpcLv )
 	std::map< int, int >::const_iterator mit = m_mapNpcExpTable.find( static_cast<int>(cNpcLv) );
 	if( mit == m_mapNpcExpTable.end() )
 	{
-        START_LOG( cwarn, L"등록되어있지않은 Npc레벨입니다." )
+        START_LOG( cwarn, L"NPC level is not registered." )
 			<< BUILD_LOGc( cNpcLv )
 			<< END_LOG;
 
@@ -410,7 +410,7 @@ void KDropTable::AddToGroup_LUA( int nGroupID, int nItemID, float fProbability )
 
     if( !mit->second.AddCaseIntegerCast( nItemID, fProbability ) )
 	{
-		START_LOG( cerr, L"드롭 그룹 확률이 이상함!" )
+		START_LOG( cerr, L"Invalid drop-group probability!" )
 			<< BUILD_LOG( nGroupID )
 			<< BUILD_LOG( nItemID )
 			<< BUILD_LOG( fProbability )
@@ -446,7 +446,7 @@ void KDropTable::AddMonsterDropInfo_LUA()
 
 		if( mit != m_mapMonsterDrop.end() )
 		{
-			START_LOG( cerr, L"이벤트 아이디가 중복으로 들어옴." )
+			START_LOG( cerr, L"Duplicate event ID received." )
 				<< END_LOG;
 
 			return;
@@ -470,7 +470,7 @@ void KDropTable::AddMonsterDropInfo_LUA()
 			//{{ 2008. 10. 24  최육사	드롭 그룹 체크
 			if( SiCXSLItemManager()->GetItemTemplet( nItemID ) == NULL )
 			{
-				START_LOG( cerr, L"존재하지 않는 ItemID가 DropTable에 세팅되어 있습니다." )
+				START_LOG( cerr, L"DropTable references a nonexistent ItemID." )
 					<< BUILD_LOG( kInfo.m_nDungeonID )
 					<< BUILD_LOG( kInfo.m_nMonsterID )
 					<< BUILD_LOG( nTableIndex )
@@ -508,7 +508,7 @@ void KDropTable::AddMonsterDropInfo_LUA()
 			//{{ 2008. 10. 24  최육사	드롭 그룹 체크
 			if( m_mapDropGroup.find( nGroupID ) == m_mapDropGroup.end() )
 			{
-				START_LOG( cerr, L"존재하지 않는 DropGroupID가 DropTable에 세팅되어 있습니다." )
+				START_LOG( cerr, L"DropTable references a nonexistent DropGroupID." )
 					<< BUILD_LOG( kInfo.m_nDungeonID )
 					<< BUILD_LOG( kInfo.m_nMonsterID )
 					<< BUILD_LOG( nTableIndex )
@@ -564,7 +564,7 @@ void KDropTable::AddHenirMonsterDropInfo_LUA()
 
 		if( mit != m_mapHenirNpcDrop.end() )
 		{
-			START_LOG( cerr, L"이벤트 아이디가 중복으로 들어옴." )
+			START_LOG( cerr, L"Duplicate event ID received." )
 				<< END_LOG;
 
 			return;
@@ -588,7 +588,7 @@ void KDropTable::AddHenirMonsterDropInfo_LUA()
 			//{{ 2008. 10. 24  최육사	드롭 그룹 체크
 			if( SiCXSLItemManager()->GetItemTemplet( nItemID ) == NULL )
 			{
-				START_LOG( cerr, L"존재하지 않는 ItemID가 DropTable에 세팅되어 있습니다." )
+				START_LOG( cerr, L"DropTable references a nonexistent ItemID." )
 					<< BUILD_LOG( kInfo.m_iHenirDungeonMode )
 					<< BUILD_LOG( kInfo.m_nMonsterID )
 					<< BUILD_LOG( nTableIndex )
@@ -626,7 +626,7 @@ void KDropTable::AddHenirMonsterDropInfo_LUA()
 			//{{ 2008. 10. 24  최육사	드롭 그룹 체크
 			if( m_mapDropGroup.find( nGroupID ) == m_mapDropGroup.end() )
 			{
-				START_LOG( cerr, L"존재하지 않는 DropGroupID가 DropTable에 세팅되어 있습니다." )
+				START_LOG( cerr, L"DropTable references a nonexistent DropGroupID." )
 					<< BUILD_LOG( kInfo.m_iHenirDungeonMode )
 					<< BUILD_LOG( kInfo.m_nMonsterID )
 					<< BUILD_LOG( nTableIndex )
@@ -679,7 +679,7 @@ void KDropTable::AddExtraStageMonsterDropInfo_LUA()
 	mit = m_mapExtraStageNpcDrop.find( kInfo.m_nMonsterID );
 	if( mit != m_mapExtraStageNpcDrop.end() )
 	{
-		START_LOG( cerr, L"몬스터 ID가 중복으로 들어옴." )
+		START_LOG( cerr, L"Duplicate monster ID received." )
 			<< BUILD_LOG( kInfo.m_nMonsterID )
 			<< END_LOG;
 		return;
@@ -702,7 +702,7 @@ void KDropTable::AddExtraStageMonsterDropInfo_LUA()
 			//{{ 2008. 10. 24  최육사	드롭 그룹 체크
 			if( SiCXSLItemManager()->GetItemTemplet( nItemID ) == NULL )
 			{
-				START_LOG( cerr, L"존재하지 않는 ItemID가 DropTable에 세팅되어 있습니다." )
+				START_LOG( cerr, L"DropTable references a nonexistent ItemID." )
 					<< BUILD_LOG( kInfo.m_nMonsterID )
 					<< BUILD_LOG( nTableIndex )
 					<< BUILD_LOG( nItemID )
@@ -738,7 +738,7 @@ void KDropTable::AddExtraStageMonsterDropInfo_LUA()
 			//{{ 2008. 10. 24  최육사	드롭 그룹 체크
 			if( m_mapDropGroup.find( nGroupID ) == m_mapDropGroup.end() )
 			{
-				START_LOG( cerr, L"존재하지 않는 DropGroupID가 DropTable에 세팅되어 있습니다." )
+				START_LOG( cerr, L"DropTable references a nonexistent DropGroupID." )
 					<< BUILD_LOG( kInfo.m_nMonsterID )
 					<< BUILD_LOG( nTableIndex )
 					<< BUILD_LOG( nGroupID )
@@ -792,7 +792,7 @@ void KDropTable::AddStaticDropInfo_LUA()
 	mit = m_mapStaticDrop.find( kInfo.m_nDungeonID );
 	if( mit != m_mapStaticDrop.end() )
 	{
-		START_LOG( cerr, L"던전 아이디가 중복으로 들어옴." )
+		START_LOG( cerr, L"Duplicate dungeon ID received." )
 			<< BUILD_LOG( kInfo.m_nDungeonID )
 			<< END_LOG;
 		return;
@@ -813,7 +813,7 @@ void KDropTable::AddStaticDropInfo_LUA()
 			//{{ 2008. 10. 24  최육사	드롭 그룹 체크
 			if( SiCXSLItemManager()->GetItemTemplet( nItemID ) == NULL )
 			{
-				START_LOG( cerr, L"존재하지 않는 ItemID가 DropTable에 세팅되어 있습니다." )
+				START_LOG( cerr, L"DropTable references a nonexistent ItemID." )
 					<< BUILD_LOG( kInfo.m_nDungeonID )
 					<< BUILD_LOG( nTableIndex )
 					<< BUILD_LOG( nItemID )
@@ -869,7 +869,7 @@ void KDropTable::AddBattleFieldNpcDropInfo_LUA()
 
 		if( mit != m_mapBattleFieldNpcDrop.end() )
 		{
-			START_LOG( cerr, L"이벤트 아이디가 중복으로 들어옴." )
+			START_LOG( cerr, L"Duplicate event ID received." )
 				<< END_LOG;
 
 			return;
@@ -893,7 +893,7 @@ void KDropTable::AddBattleFieldNpcDropInfo_LUA()
 			//{{ 2008. 10. 24  최육사	드롭 그룹 체크
 			if( SiCXSLItemManager()->GetItemTemplet( nItemID ) == NULL )
 			{
-				START_LOG( cerr, L"존재하지 않는 ItemID가 DropTable에 세팅되어 있습니다." )
+				START_LOG( cerr, L"DropTable references a nonexistent ItemID." )
 					<< BUILD_LOG( kInfo.m_nBattleFieldID )
 					<< BUILD_LOG( kInfo.m_nMonsterID )
 					<< BUILD_LOG( nTableIndex )
@@ -931,7 +931,7 @@ void KDropTable::AddBattleFieldNpcDropInfo_LUA()
 			//{{ 2008. 10. 24  최육사	드롭 그룹 체크
 			if( m_mapDropGroup.find( nGroupID ) == m_mapDropGroup.end() )
 			{
-				START_LOG( cerr, L"존재하지 않는 DropGroupID가 DropTable에 세팅되어 있습니다." )
+				START_LOG( cerr, L"DropTable references a nonexistent DropGroupID." )
 					<< BUILD_LOG( kInfo.m_nBattleFieldID )
 					<< BUILD_LOG( kInfo.m_nMonsterID )
 					<< BUILD_LOG( nTableIndex )
@@ -984,7 +984,7 @@ void KDropTable::AddBattleFieldStaticDropInfo_LUA()
 	mit = m_mapBattleFieldStaticDrop.find( kInfo.m_nBattleFieldID );
 	if( mit != m_mapBattleFieldStaticDrop.end() )
 	{
-		START_LOG( cerr, L"던전 아이디가 중복으로 들어옴." )
+		START_LOG( cerr, L"Duplicate dungeon ID received." )
 			<< BUILD_LOG( kInfo.m_nBattleFieldID )
 			<< END_LOG;
 		return;
@@ -1005,7 +1005,7 @@ void KDropTable::AddBattleFieldStaticDropInfo_LUA()
 			//{{ 2008. 10. 24  최육사	드롭 그룹 체크
 			if( SiCXSLItemManager()->GetItemTemplet( nItemID ) == NULL )
 			{
-				START_LOG( cerr, L"존재하지 않는 ItemID가 DropTable에 세팅되어 있습니다." )
+				START_LOG( cerr, L"DropTable references a nonexistent ItemID." )
 					<< BUILD_LOG( kInfo.m_nBattleFieldID )
 					<< BUILD_LOG( nTableIndex )
 					<< BUILD_LOG( nItemID )
@@ -1039,7 +1039,7 @@ bool KDropTable::AddNotifyDropItemInfo_LUA( int iItemID )
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iItemID );
 	if( pItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 아이템을 드롭획득공지 아이템으로 등록하려 했습니다!" )
+		START_LOG( cerr, L"Attempted to register a nonexistent item as a drop-acquisition notice item!" )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 
@@ -1056,7 +1056,7 @@ bool KDropTable::AddNpcExpTable_LUA( int iNpcLv, int iEXP )
 {
 	if( iNpcLv <= 0  ||  iEXP <= 0 )
 	{
-		START_LOG( cerr, L"npc 경험치 세팅값이 이상합니다." )
+		START_LOG( cerr, L"Invalid NPC experience settings." )
 			<< BUILD_LOG( iNpcLv )
 			<< BUILD_LOG( iEXP )
 			<< END_LOG;
@@ -1074,7 +1074,7 @@ void KDropTable::SetManyEDDropNpcEvent_LUA( bool bVal )
 {
     m_bIsDropManyEDEvent = bVal;
 
-	START_LOG( cout, L"ED 많이 드롭하는 NPC이벤트 세팅! : " )
+	START_LOG( cout, L"Configuring the high-ED-drop NPC event: " )
 		<< BUILD_LOG( m_bIsDropManyEDEvent );
 }
 
@@ -1082,7 +1082,7 @@ bool KDropTable::AddManyEDDropNpc_LUA( int iNpcID, float fMultiplyDropED, float 
 {
 	if( iNpcID <= 0  ||  fMultiplyDropED <= 0  ||  fMultiplyDropEDCount <= 0 )
 	{
-		START_LOG( cerr, L"many ed drop 세팅값이 이상합니다." )
+		START_LOG( cerr, L"Invalid many-ED-drop settings." )
 			<< BUILD_LOG( iNpcID )
 			<< BUILD_LOG( fMultiplyDropED )
 			<< BUILD_LOG( fMultiplyDropEDCount )
@@ -1246,7 +1246,7 @@ bool KDropTable::NpcDropItem( IN const int iNpcID,
 					mit = m_mapDropGroup.find( nCaseID );
 					if( mit == m_mapDropGroup.end() )
 					{
-						START_LOG( cerr, L"아이템 그룹 정보 오류" )
+						START_LOG( cerr, L"Invalid item-group information." )
 							<< BUILD_LOG( nCaseID )
 							<< BUILD_LOG( nCaseParam )
 							<< BUILD_LOG( m_mapDropGroup.size() );
@@ -1573,7 +1573,7 @@ bool KDropTable::StaticDropItem( IN int nDungeonID, OUT DROP_DATA& sDropData, IN
 	mit = m_mapStaticDrop.find( nDungeonID );
 	if( mit == m_mapStaticDrop.end() )
 	{
-		START_LOG( clog, L"해당 던전에 대한 전체드롭 세팅이 없다" )
+		START_LOG( clog, L"No global-drop settings exist for this dungeon." )
 			<< BUILD_LOG( nDungeonID );
 		return true;
 	}
@@ -1642,7 +1642,7 @@ void KDropTable::SetTimeDropInfo( IN const std::vector< KTimeDropInfo >& vecTime
 		std::wstring wstrDropTime = kTimeDropInfo.m_wstrDropTime;
 		if( KncUtil::ConvertStringToCTime( wstrDropTime, tTimeDrop ) == false )
 		{
-			START_LOG( cerr, L"Drop Time 파싱 실패!" )
+			START_LOG( cerr, L"Failed to parse drop time!" )
 				<< BUILD_LOG( kTimeDropInfo.m_iTimeDropID )
 				<< BUILD_LOG( kTimeDropInfo.m_wstrDropTime )
 				<< END_LOG;
@@ -1654,7 +1654,7 @@ void KDropTable::SetTimeDropInfo( IN const std::vector< KTimeDropInfo >& vecTime
 		const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( kTimeDropInfo.m_iDropItemID );
 		if( pItemTemplet == NULL )
 		{
-			START_LOG( cerr, L"존재하지 않는 itemid가 등록되어있습니다." )
+			START_LOG( cerr, L"A nonexistent ItemID is registered." )
 				<< BUILD_LOG( kTimeDropInfo.m_iTimeDropID )
 				<< BUILD_LOG( kTimeDropInfo.m_iDropItemID )
 				<< END_LOG;
@@ -1665,7 +1665,7 @@ void KDropTable::SetTimeDropInfo( IN const std::vector< KTimeDropInfo >& vecTime
 		// 지났으면 업데이트 안함
         if( tTimeDrop <= tCurTime )
 		{
-			START_LOG( clog, L"날짜 지난 이벤트" )
+			START_LOG( clog, L"Expired event." )
 				<< BUILD_LOG( kTimeDropInfo.m_iTimeDropID )
 				<< BUILD_LOG( kTimeDropInfo.m_wstrDropTime );
 
@@ -1687,7 +1687,7 @@ void KDropTable::SetTimeDropInfo( IN const std::vector< KTimeDropInfo >& vecTime
 		m_vecTimeDrop.push_back( kInfo );
 		m_mapTimeDrop.insert( std::make_pair( kInfo.m_iTimeDropID, kInfo ) );
 
-		START_LOG( cout, L"시간 드롭 이벤트 등록!" )
+		START_LOG( cout, L"Registering timed-drop event!" )
 			<< BUILD_LOG( kInfo.m_iTimeDropID )
 			<< BUILD_LOG( kInfo.m_wstrItemName )
 			<< BUILD_LOG( kTimeDropInfo.m_wstrDropTime )
@@ -1715,7 +1715,7 @@ bool KDropTable::CheckTimeDrop( OUT int& iTimeDropID, OUT int& iDropItemID )
 		iTimeDropID = vit->m_iTimeDropID;
 		iDropItemID = vit->m_iItemID;
 
-		START_LOG( clog2, L"특정 시간에 드롭하기 성공!" )
+		START_LOG( clog2, L"Timed drop succeeded!" )
 			<< BUILD_LOG( iTimeDropID )
 			<< BUILD_LOG( iDropItemID );
 
@@ -1738,7 +1738,7 @@ bool KDropTable::RollbackTimeDrop( IN int iTimeDropID )
 	mit = m_mapTimeDrop.find( iTimeDropID );
 	if( mit == m_mapTimeDrop.end() )
 	{
-		START_LOG( cerr, L"존재하지 않는 시간 드롭 정보입니다." )
+		START_LOG( cerr, L"Timed-drop information does not exist." )
 			<< BUILD_LOG( iTimeDropID )
 			<< END_LOG;
 
@@ -1748,7 +1748,7 @@ bool KDropTable::RollbackTimeDrop( IN int iTimeDropID )
 	// 롤백!
 	m_vecTimeDrop.insert( m_vecTimeDrop.begin(), mit->second );
 
-	START_LOG( clog2, L"특정 시간에 드롭 아이템을 롤백하였습니다." )
+	START_LOG( clog2, L"Rolled back timed-drop items." )
 		<< BUILD_LOG( iTimeDropID );
 
 	return true;
@@ -1819,7 +1819,7 @@ bool KDropTable::AddPaymentDungeon_LUA( IN int iDungeonID )
 
 	if( sData.m_bPartyPay == true && sData.m_iConsumingItemID > 0 )
 	{
-		START_LOG( cerr, L"파티 지급과 아이템 소모는 같이 쓰면 안 된다!" )
+		START_LOG( cerr, L"Party rewards and item consumption cannot be used together!" )
 			<< BUILD_LOG( sData.m_bPartyPay )
 			<< BUILD_LOG( sData.m_iConsumingItemID )
 			<< END_LOG;
@@ -1836,7 +1836,7 @@ bool KDropTable::AddPaymentDungeon_LUA( IN int iDungeonID )
 	{
 		if( KncUtil::ConvertStringToCTime( wstrDate, sData.m_tBeginDate ) == false )
 		{
-			START_LOG( cerr, L"시간 변환 실패" )
+			START_LOG( cerr, L"Time conversion failed." )
 				<< BUILD_LOG( wstrDate )
 				<< BUILD_LOG( iDungeonID )
 				<< BUILD_LOG( sData.m_iItemID )
@@ -1855,7 +1855,7 @@ bool KDropTable::AddPaymentDungeon_LUA( IN int iDungeonID )
 	{
 		if( KncUtil::ConvertStringToCTime( wstrDate, sData.m_tEndDate ) == false )
 		{
-			START_LOG( cerr, L"시간 변환 실패" )
+			START_LOG( cerr, L"Time conversion failed." )
 				<< BUILD_LOG( wstrDate )
 				<< BUILD_LOG( iDungeonID )
 				<< BUILD_LOG( sData.m_iItemID )
@@ -1873,7 +1873,7 @@ bool KDropTable::AddPaymentDungeon_LUA( IN int iDungeonID )
 	// 입력 값 검사(필수값들만 검사)
 	if( ( iDungeonID < 0 ) || ( sData.m_iItemID <=0 ) || ( sData.m_fRate > 100.f ) || ( sData.m_iQuantity < 1 ) || ( sData.m_fPcBangUserRate > 100.f ))
 	{
-		START_LOG( cerr, L"던전 클리어시 아이템 지급 관련 세팅값이 이상합니다." )
+		START_LOG( cerr, L"Invalid item-reward settings for dungeon clear." )
 			<< BUILD_LOG( iDungeonID )
 			<< BUILD_LOG( sData.m_iItemID )
 			<< BUILD_LOG( sData.m_fRate )
@@ -2059,7 +2059,7 @@ bool KDropTable::GetPaymentItemInfo( IN const DUNGEON_CLEAR_REWARD& sData, IN bo
 
 	if( Cal.Decision() == KLottery::CASE_BLANK )
 	{
-		START_LOG( clog, L"획득 확률 계산 - 지급 확률 미달로 인한 지급 실패" )
+		START_LOG( clog, L"Acquisition probability calculation: failed to grant due to insufficient grant probability." )
 			<< BUILD_LOG( sData.m_iItemID )
 			<< BUILD_LOG( sData.m_fRate )
 			<< END_LOG;
@@ -2070,7 +2070,7 @@ bool KDropTable::GetPaymentItemInfo( IN const DUNGEON_CLEAR_REWARD& sData, IN bo
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( sData.m_iItemID );
 	if( pItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"아이템 정보가 존재하지 않습니다! 던전 클리어시 아이템 지급 실패!!" )
+		START_LOG( cerr, L"Item information is missing; failed to grant item on dungeon clear!!" )
 			<< BUILD_LOG( sData.m_iItemID )
 			<< END_LOG;
 		return false;
@@ -2181,7 +2181,7 @@ void KDropTable::ProcessPaymentItem( IN const std::map< int, std::vector< DUNGEO
 					const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( vit->m_iConsumingItemID );
 					if( pItemTemplet == NULL )
 					{
-						START_LOG( cerr, L"아이템 정보가 존재하지 않습니다! 던전 클리어시 아이템 소모 실패!!" )
+						START_LOG( cerr, L"Item information is missing; failed to consume item on dungeon clear!!" )
 							<< BUILD_LOG( vit->m_iConsumingItemID )
 							<< END_LOG;
 					}
@@ -2193,7 +2193,7 @@ void KDropTable::ProcessPaymentItem( IN const std::map< int, std::vector< DUNGEO
 						kConsumingItemInfo.m_iQuantity	 = -1;
 						kConsumingItemInfo.m_sEndurance = pItemTemplet->m_Endurance;
 
-						START_LOG( clog, L"소모되는 아이템" )
+						START_LOG( clog, L"Item to consume" )
 							<< BUILD_LOG( kConsumingItemInfo.m_iItemID )
 							<< BUILD_LOG( kConsumingItemInfo.m_iQuantity );
 
@@ -2231,7 +2231,7 @@ bool KDropTable::AddUnPaymentCondition_LUA( IN int iDungeonID )
 	//{{ 2012. 05. 9	박세훈	어둠의 문 개편
 	if( ( iDungeonID < 0 ) || ( sData.m_iItemID <=0 ) || ( sData.m_fRate > 100.f ) || ( sData.m_iQuantity < 1 ) || ( sData.m_fPcBangUserRate > 100.f ))
 	{
-		START_LOG( cerr, L"던전 클리어시 아이템 지급 [제한] 관련 세팅값이 이상합니다." )
+		START_LOG( cerr, L"Invalid settings for [limited] item rewards on dungeon clear." )
 			<< BUILD_LOG( iDungeonID )
 			<< BUILD_LOG( sData.m_iItemID )
 			<< BUILD_LOG( sData.m_fRate )
@@ -2256,7 +2256,7 @@ bool KDropTable::_CheckPaymentCondition(IN const DUNGEON_CLEAR_REWARD& dcr, KRoo
 {
 	if( dcr.m_bMustParty == true && spRoomUserManager->GetNumMember() == 1 )
 	{
-		START_LOG(clog, L"던전 클리어 아이템 지급 : 솔플은 지급 안한다!")
+		START_LOG(clog, L"Dungeon-clear rewards: no reward for solo play!")
 			<< END_LOG;
 		return false;
 	}
@@ -2265,7 +2265,7 @@ bool KDropTable::_CheckPaymentCondition(IN const DUNGEON_CLEAR_REWARD& dcr, KRoo
 	// 개인 지급
 	if(dcr.m_bPartyPay == false)
 	{
-		START_LOG(clog, L"던전 클리어 아이템 지급 : 개인 지급 체크 시작")
+		START_LOG(clog, L"Dungeon-clear rewards: starting individual reward checks.")
 			<< END_LOG;
 
 		spRoomUser->GetRoomUserInfo( sRoomUserInfo );
@@ -2274,7 +2274,7 @@ bool KDropTable::_CheckPaymentCondition(IN const DUNGEON_CLEAR_REWARD& dcr, KRoo
 		{
 			if( spRoomUser->IsAllyNPC( dcr.m_iAllyNPCID ) == false )
 			{
-				START_LOG( cwarn, L"NPC 동료가 없습니다." )
+				START_LOG( cwarn, L"No NPC companion is available." )
 					<< BUILD_LOGc( dcr.m_iAllyNPCID )
 					<< END_LOG;
 
@@ -2286,7 +2286,7 @@ bool KDropTable::_CheckPaymentCondition(IN const DUNGEON_CLEAR_REWARD& dcr, KRoo
 		{
 			if( spRoomUser->HasSpecialItem( dcr.m_iConsumingItemID ) == false )
 			{
-				START_LOG( cwarn, L"소모할 아이템이 없습니다." )
+				START_LOG( cwarn, L"No item to consume." )
 					<< BUILD_LOGc( dcr.m_iConsumingItemID )
 					<< END_LOG;
 
@@ -2297,7 +2297,7 @@ bool KDropTable::_CheckPaymentCondition(IN const DUNGEON_CLEAR_REWARD& dcr, KRoo
 	}
 	else// 파티 지급
 	{
-		START_LOG(clog, L"던전 클리어 아이템 지급 : 파티 지급 체크 시작")
+		START_LOG(clog, L"Dungeon-clear rewards: starting party reward checks.")
 			<< END_LOG;
 		for( int i = 0; i < spRoomUserManager->GetNumMember(); ++i )
 		{
@@ -2317,7 +2317,7 @@ bool KDropTable::_CheckPaymentConditionDetail(IN const DUNGEON_CLEAR_REWARD& dcr
 	if( _CheckTitlePass( sRoomUserInfo, spRoomUserManager, dcr ) == false )
 		return false;
 
-	START_LOG(clog2, L"던전 클리어 아이템 지급 : 세부 항목 체크 1 - 타이틀 통과")
+	START_LOG(clog2, L"Dungeon-clear rewards: check 1 passed - title requirement.")
 		<< END_LOG;
 
 	// 2. 퀘스트 체크
@@ -2335,14 +2335,14 @@ bool KDropTable::_CheckPaymentConditionDetail(IN const DUNGEON_CLEAR_REWARD& dcr
 			return false;
 	}
 
-	START_LOG(clog2, L"던전 클리어 아이템 지급 : 세부 항목 체크 2 -퀘스트 통과")
+	START_LOG(clog2, L"Dungeon-clear rewards: check 2 passed - quest requirement.")
 		<< END_LOG;
 
 	// 3. 레벨 체크
 	if((dcr.m_iMinLv <= sRoomUserInfo.m_ucLevel && dcr.m_iMaxLv >= sRoomUserInfo.m_ucLevel) == false)
 		return false;
 
-	START_LOG(clog2, L"던전 클리어 아이템 지급 : 세부 항목 체크 3 - 레벨 통과")
+	START_LOG(clog2, L"Dungeon-clear rewards: check 3 passed - level requirement.")
 		<< END_LOG;
 
 	if(dcr.m_eUnitType != CXSLUnit::UT_NONE)
@@ -2352,7 +2352,7 @@ bool KDropTable::_CheckPaymentConditionDetail(IN const DUNGEON_CLEAR_REWARD& dcr
 			return false;
 	}
 
-	START_LOG(clog2, L"던전 클리어 아이템 지급 : 세부 항목 체크 4 - 캐릭터 통과")
+	START_LOG(clog2, L"Dungeon-clear rewards: check 4 passed - character requirement.")
 		<< END_LOG;
 
 	if(dcr.m_cUnitClass != CXSLUnit::UC_NONE && dcr.m_cUnitClass != sRoomUserInfo.m_cUnitClass)
@@ -2360,7 +2360,7 @@ bool KDropTable::_CheckPaymentConditionDetail(IN const DUNGEON_CLEAR_REWARD& dcr
 		return false;
 	}
 
-	START_LOG(clog2, L"던전 클리어 아이템 지급 : 세부 항목 체크 4 - 클래스 통과")
+	START_LOG(clog2, L"Dungeon-clear rewards: check 4 passed - class requirement.")
 		<< END_LOG;
 
 	// 5. 복귀유저 체크
@@ -2369,7 +2369,7 @@ bool KDropTable::_CheckPaymentConditionDetail(IN const DUNGEON_CLEAR_REWARD& dcr
 		if(sRoomUserInfo.m_bComeBackUser != true)
 			return false;
 	}
-	START_LOG(clog2, L"던전 클리어 아이템 지급 : 세부 항목 체크 5 - 복귀유저 통과")
+	START_LOG(clog2, L"Dungeon-clear rewards: check 5 passed - returning-player requirement.")
 		<< END_LOG;
 
 	// 착용 악세사리 체크
@@ -2382,10 +2382,10 @@ bool KDropTable::_CheckPaymentConditionDetail(IN const DUNGEON_CLEAR_REWARD& dcr
 		if(sRoomUserInfo.m_bUseItem != true)
 			return false;
 	}
-	START_LOG(clog2, L"던전 클리어 아이템 지급 : 세부 항목 체크 6 - 아이템 사용 통과")
+	START_LOG(clog2, L"Dungeon-clear rewards: check 6 passed - item-use requirement.")
 		<< END_LOG;
 
-	START_LOG(clog2, L"던전 클리어 아이템 지급 : 세부 항목 체크 모두 통과!!")
+	START_LOG(clog2, L"Dungeon-clear rewards: all checks passed!!")
 		<< END_LOG;
 
 	return true;
@@ -2440,7 +2440,7 @@ bool KDropTable::_CheckEquippedItemPass( IN KRoomUserInfo& sRoomUserInfo, IN KRo
 			if( dcr.m_iEquippedItemID2 == 0 )
 			{
 				// 아이템 조건이 1개일 경우 본인이 착용하고 있으면 OK
-				START_LOG(clog2, L"던전 클리어 아이템 지급 : 세부 항목 체크 5 - 아이템 착용 통과(혼자)")
+				START_LOG(clog2, L"Dungeon-clear rewards: check 5 passed - solo item-equipped requirement.")
 					<< END_LOG;
 				bPassEquippedItem = true;
 			}
@@ -2454,7 +2454,7 @@ bool KDropTable::_CheckEquippedItemPass( IN KRoomUserInfo& sRoomUserInfo, IN KRo
 					spRoomUserForParty->GetRoomUserInfo( tempRoomUserInfo );
 					if(_CheckEquippedItem(tempRoomUserInfo, dcr.m_iEquippedItemID2 ) == true)
 					{
-						START_LOG(clog2, L"던전 클리어 아이템 지급 : 세부 항목 체크 5 - 아이템 착용 통과(둘)")
+						START_LOG(clog2, L"Dungeon-clear rewards: check 5 passed - both users have the item equipped.")
 							<< END_LOG;
 						bPassEquippedItem = true;
 						break;
@@ -2466,7 +2466,7 @@ bool KDropTable::_CheckEquippedItemPass( IN KRoomUserInfo& sRoomUserInfo, IN KRo
 		{
 			if( dcr.m_iEquippedItemID1 == 0 )
 			{
-				START_LOG(cerr, L"던전 클리어 아이템 지급 : 2번째 아이템 셋팅 되어 있는데 1번째 아이템ID가 없다.")
+				START_LOG(cerr, L"Dungeon-clear rewards: second item is configured, but the first ItemID is missing.")
 					<< END_LOG;
 			}
 			else
@@ -2479,7 +2479,7 @@ bool KDropTable::_CheckEquippedItemPass( IN KRoomUserInfo& sRoomUserInfo, IN KRo
 					spRoomUserForParty->GetRoomUserInfo( tempRoomUserInfo );
 					if(_CheckEquippedItem(tempRoomUserInfo, dcr.m_iEquippedItemID1 ) == true)
 					{
-						START_LOG(clog2, L"던전 클리어 아이템 지급 : 세부 항목 체크 5 - 아이템 착용 통과(둘)")
+						START_LOG(clog2, L"Dungeon-clear rewards: check 5 passed - both users have the item equipped.")
 							<< END_LOG;
 						bPassEquippedItem = true;
 						break;
@@ -2504,7 +2504,7 @@ bool KDropTable::_CheckTitlePass( IN KRoomUserInfo& sRoomUserInfo, IN KRoomUserM
 			if( dcr.m_iTitleID2 == 0 )
 			{
 				// 타이틀 조건이 1개일 경우 본인이 착용하고 있으면 OK
-				START_LOG(clog2, L"던전 클리어 아이템 지급 : 세부 항목 체크 1 - 타이틀 통과(혼자)")
+				START_LOG(clog2, L"Dungeon-clear rewards: check 1 passed - solo title requirement.")
 					<< END_LOG;
 				bPassTitle = true;
 			}
@@ -2518,7 +2518,7 @@ bool KDropTable::_CheckTitlePass( IN KRoomUserInfo& sRoomUserInfo, IN KRoomUserM
 					spRoomUserForParty->GetRoomUserInfo( tempRoomUserInfo );
 					if( dcr.m_iTitleID2 == tempRoomUserInfo.m_iTitleID )
 					{
-						START_LOG(clog2, L"던전 클리어 아이템 지급 : 세부 항목 체크 1 - 타이틀 통과(둘)")
+						START_LOG(clog2, L"Dungeon-clear rewards: check 1 passed - both users meet the title requirement.")
 							<< END_LOG;
 						bPassTitle = true;
 						break;
@@ -2530,7 +2530,7 @@ bool KDropTable::_CheckTitlePass( IN KRoomUserInfo& sRoomUserInfo, IN KRoomUserM
 		{
 			if( dcr.m_iTitleID == 0 )
 			{
-				START_LOG(cerr, L"던전 클리어 아이템 지급 : 2번째 타이틀 셋팅 되어 있는데 1번째 타이틀ID가 없다.")
+				START_LOG(cerr, L"Dungeon-clear rewards: second title is configured, but the first title ID is missing.")
 					<< END_LOG;
 			}
 			else
@@ -2543,7 +2543,7 @@ bool KDropTable::_CheckTitlePass( IN KRoomUserInfo& sRoomUserInfo, IN KRoomUserM
 					spRoomUserForParty->GetRoomUserInfo( tempRoomUserInfo );
 					if( dcr.m_iTitleID == tempRoomUserInfo.m_iTitleID )
 					{
-						START_LOG(clog2, L"던전 클리어 아이템 지급 : 세부 항목 체크 1 - 타이틀 착용 통과(둘)")
+						START_LOG(clog2, L"Dungeon-clear rewards: check 1 passed - both users have the title equipped.")
 							<< END_LOG;
 						bPassTitle = true;
 						break;
@@ -2565,7 +2565,7 @@ bool KDropTable::AddHenirSpecialNpcDropInfo_LUA( int iNpcID, int iItemID, int iQ
 {
     if( iNpcID < 0  ||  iItemID <= 0  ||  iQuantity < 0 )
 	{
-        START_LOG( cerr, L"헤니르 시공 NPC 특수 드롭 정보가 이상합니다." )
+        START_LOG( cerr, L"Invalid Henir NPC special-drop information." )
 			<< BUILD_LOG( iNpcID )
 			<< BUILD_LOG( iItemID )
 			<< BUILD_LOG( iQuantity )
@@ -2585,7 +2585,7 @@ bool KDropTable::AddHenirSpecialNpcDropInfo_LUA( int iNpcID, int iItemID, int iQ
 	{
 		if( mit->second.m_mapDropInfo.find( iItemID ) != mit->second.m_mapDropInfo.end() )
 		{
-			START_LOG( cerr, L"이미 등록된 헤니르 시공 NPC 특수 드롭 정보입니다!" )
+			START_LOG( cerr, L"Henir NPC special-drop information is already registered!" )
 				<< BUILD_LOG( iNpcID )
 				<< BUILD_LOG( iItemID )
 				<< BUILD_LOG( iQuantity )
@@ -2610,7 +2610,7 @@ void KDropTable::GetHenirSpecialNpcDropInfo( IN const int iNpcID,IN float fTotal
 	mit = m_mapHenirSpecialNpcDrop.find( iNpcID );
 	if( mit == m_mapHenirSpecialNpcDrop.end() )
 	{
-		START_LOG( clog, L"해당 몬스터에 대한 특수 드롭 정보가 없습니다!" )
+		START_LOG( clog, L"No special-drop information for the specified monster!" )
 			<< BUILD_LOG( iNpcID )
 			<< END_LOG;
 		return;
@@ -2645,7 +2645,7 @@ bool KDropTable::GetComeBackBuffDropCount( IN const int& iRoomMember )
 	case 4: fRate = 4.0f;  break;
 	default:
 		{
-			START_LOG( cerr, L"파티 인원수가 잘못 되었다" )
+			START_LOG( cerr, L"Invalid party member count." )
 				<< BUILD_LOG( iRoomMember )
 				<< BUILD_LOG( fRate )
 				<< END_LOG;
@@ -2658,7 +2658,7 @@ bool KDropTable::GetComeBackBuffDropCount( IN const int& iRoomMember )
 
 	if( Cal.Decision() == KLottery::CASE_BLANK )
 	{
-		START_LOG( clog, L"획득 확률 계산 - 지급 확률 미달로 인한 지급 실패" )
+		START_LOG( clog, L"Acquisition probability calculation: failed to grant due to insufficient grant probability." )
 			<< BUILD_LOG( iRoomMember )
 			<< BUILD_LOG( fRate )
 			<< END_LOG;
@@ -2843,7 +2843,7 @@ bool KDropTable::BattleFieldNpcDropItem( IN const KBattleFieldNpcDropInfo& kDrop
 					mit = m_mapDropGroup.find( nCaseID );
 					if( mit == m_mapDropGroup.end() )
 					{
-						START_LOG( cerr, L"아이템 그룹 정보 오류" )
+						START_LOG( cerr, L"Invalid item-group information." )
 							<< BUILD_LOG( nCaseID )
 							<< BUILD_LOG( nCaseParam )
 							<< BUILD_LOG( m_mapDropGroup.size() );
@@ -2889,7 +2889,7 @@ bool KDropTable::BattleFieldStaticDropItem( IN const SEnum::BATTLE_FIELD_ID eBat
 	mit = m_mapBattleFieldStaticDrop.find( eBattleFieldID );
 	if( mit == m_mapBattleFieldStaticDrop.end() )
 	{
-		START_LOG( clog, L"해당 던전에 대한 전체드롭 세팅이 없다" )
+		START_LOG( clog, L"No global-drop settings exist for this dungeon." )
 			<< BUILD_LOG( eBattleFieldID );
 		return true;
 	}
@@ -2931,7 +2931,7 @@ void KDropTable::SetEnchantItemDropEvent_LUA( void )
 {
 	if( m_kEnchantItemDropEventInfo.empty() == false )
 	{
-		START_LOG( cerr, L"강화 아이템 드랍 이벤트가 이미 설정되어 있습니다.")
+		START_LOG( cerr, L"Enhancement-item drop event is already configured.")
 			<< BUILD_LOG( m_kEnchantItemDropEventInfo.m_vecEIDESettingInfo.size() )
 			<< END_LOG;
 		return;
@@ -2943,7 +2943,7 @@ void KDropTable::SetEnchantItemDropEvent_LUA( void )
 	LUA_GET_VALUE_RETURN( luaManager,	L"m_wstrBeginDate",	wstrBeginDate,	L"",	return );
 	if( KncUtil::ConvertStringToCTime( wstrBeginDate, m_kEnchantItemDropEventInfo.m_tBeginDate ) == false )
 	{
-		START_LOG( cerr, L"강화 아이템 드랍 이벤트 시작 시간 변환 실패")
+		START_LOG( cerr, L"Failed to convert enhancement-item drop-event start time.")
 			<< BUILD_LOG( wstrBeginDate )
 			<< END_LOG;
 		return;
@@ -2953,7 +2953,7 @@ void KDropTable::SetEnchantItemDropEvent_LUA( void )
 	LUA_GET_VALUE_RETURN( luaManager,	L"m_wstrEndDate",	wstrEndDate,	L"",	return );
 	if( KncUtil::ConvertStringToCTime( wstrEndDate, m_kEnchantItemDropEventInfo.m_tEndDate ) == false )
 	{
-		START_LOG( cerr, L"강화 아이템 드랍 이벤트 종료 시간 변환 실패")
+		START_LOG( cerr, L"Failed to convert enhancement-item drop-event end time.")
 			<< BUILD_LOG( wstrEndDate )
 			<< END_LOG;
 		return;
@@ -2961,7 +2961,7 @@ void KDropTable::SetEnchantItemDropEvent_LUA( void )
 
 	if( m_kEnchantItemDropEventInfo.m_tEndDate <= m_kEnchantItemDropEventInfo.m_tBeginDate )
 	{
-		START_LOG( cerr, L"강화 아이템 드랍 이벤트 시간 정보가 올바르지 않습니다.")
+		START_LOG( cerr, L"Invalid enhancement-item drop-event time information.")
 			<< BUILD_LOG( wstrBeginDate )
 			<< BUILD_LOG( wstrEndDate )
 			<< END_LOG;
@@ -2996,7 +2996,7 @@ void KDropTable::SetEnchantItemDropEvent_LUA( void )
 
 		m_kEnchantItemDropEventInfo.m_vecEIDESettingInfo.push_back( m_kEIDESettingInfo );
 
-		START_LOG( cout, L"현자의 장비 이벤트 세팅" )
+		START_LOG( cout, L"Configuring Sage equipment event." )
 			<< BUILD_LOG( m_kEIDESettingInfo.m_iMinLevel )
 			<< BUILD_LOG( m_kEIDESettingInfo.m_iMaxLevel )
 			<< BUILD_LOG( m_kEIDESettingInfo.m_kLottery.GetTotalProb() )
@@ -3004,7 +3004,7 @@ void KDropTable::SetEnchantItemDropEvent_LUA( void )
 			<< END_LOG;
 	}
 
-	START_LOG( cout, L"현자의 장비 이벤트 세팅 완료" )
+	START_LOG( cout, L"Sage equipment event configured." )
 		<< BUILD_LOG( wstrBeginDate )
 		<< BUILD_LOG( wstrEndDate )
 		<< BUILD_LOG( m_kEnchantItemDropEventInfo.m_vecEIDESettingInfo.size() )
@@ -3016,7 +3016,7 @@ end_proc:
 	// 실패 처리
 	m_kEnchantItemDropEventInfo.m_vecEIDESettingInfo.clear();
 
-	START_LOG( cerr, L"인챈트 레벨 및 확률 설정을 읽어오는데 실패하였습니다." )
+	START_LOG( cerr, L"Failed to read enchantment-level and probability settings." )
 		<< END_LOG;
 }
 
@@ -3034,7 +3034,7 @@ void KDropTable::EnchantItemDropEventProcess( IN const int iItemID, OUT char& cE
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iItemID );
 	if( pItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 아이템입니다." )
+		START_LOG( cerr, L"Item does not exist." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 		return;

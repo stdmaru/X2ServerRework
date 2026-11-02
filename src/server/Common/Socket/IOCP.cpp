@@ -72,7 +72,7 @@ bool KIocp::DeleteCompKey( IN DWORD dwKey_ )
     std::map< DWORD, KSocketObjectPtr >::iterator mit = m_mapSockObj.find( dwKey_ );
     if( mit == m_mapSockObj.end() )
     {
-        START_LOG( cerr, L"지우려는 completion key에 대한 세션이 없음." )
+        START_LOG( cerr, L"No session exists for the completion key being removed." )
             << BUILD_LOG( dwKey_ )
             << END_LOG;
 
@@ -81,7 +81,7 @@ bool KIocp::DeleteCompKey( IN DWORD dwKey_ )
 
     if( !mit->second )
     {
-        START_LOG( cerr, L"IOCP에 등록된 소켓 오브젝트 포인터가 이상함." )
+        START_LOG( cerr, L"Invalid socket object pointer registered with IOCP." )
             << BUILD_LOG( mit->first )
             << END_LOG;
     }
@@ -108,7 +108,7 @@ void KIocp::OnIOCompleted( IN DWORD dwKey_, IN DWORD dwBytesTransfer_, IN KOVERL
 
     if( !spSockObj )
     {
-        START_LOG( cwarn, L"IO가 종료된 소켓의 세션 포인터를 찾을 수 없음. Key : " << dwKey_ )
+        START_LOG( cwarn, L"Could not find the session for a socket whose I/O has ended. Key: " << dwKey_ )
             << BUILD_LOG( dwBytesTransfer_ )
             << END_LOG;
         return;
@@ -149,7 +149,7 @@ void KIocp::OnClosedByLocal( IN DWORD dwKey_, IN int iError_ )
     }
     else
     {
-        START_LOG( clog, L"소켓 오브젝트 없음. 세션 객체 소멸되었음." )
+        START_LOG( clog, L"Socket object not found; session object has been destroyed." )
             << BUILD_LOG( dwKey_ )
             << END_LOG;
     }
@@ -171,7 +171,7 @@ KSocketObjectPtr KIocp::GetSockObj( DWORD dwKey_ )
 
     if( mit == m_mapSockObj.end() )
     {
-        START_LOG( clog2, L"요청한 소켓의 포인터를 찾을 수 없음. Key : " << dwKey_ )
+        START_LOG( clog2, L"Could not find the requested socket pointer. Key: " << dwKey_ )
             << BUILD_LOG( m_mapSockObj.size() )
             << END_LOG;
         return KSocketObjectPtr();

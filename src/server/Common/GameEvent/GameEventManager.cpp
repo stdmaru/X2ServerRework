@@ -96,7 +96,7 @@ void KGameEventManager::Tick()
 					std::wstring wstrEventEnd(strEnd.GetString());
 					// Port: KSMS management tool notification removed (out of scope)
 
-					START_LOG( cout2, L"이벤트 종료.!" )
+					START_LOG( cout2, L"Event ended." )
 						<< BUILD_LOG( mit->second->GetUID() )
 						<< BUILD_LOG( mit->second->GetEventName() )
 						<< BUILD_LOG( mit->second->GetType() )
@@ -179,7 +179,7 @@ void KGameEventManager::Tick()
 						CStringW strEnd = mit->second->GetEndDate().Format(_T("%Y-%m-%d %H:%M:%S"));
 						std::wstring wstrEventEnd = strEnd.GetString();
 						// Port: KSMS management tool notification removed (out of scope)
-						START_LOG( cout2, L"이벤트 시작.!" )
+						START_LOG( cout2, L"Event started." )
 							<< BUILD_LOG( mit->second->GetUID() )
 							<< BUILD_LOG( mit->second->GetEventName() )
 							<< BUILD_LOG( mit->second->GetType() )
@@ -335,7 +335,7 @@ void KGameEventManager::SetEvent( IN const std::vector< KEventInfo >& vecEventLi
 
 		default:
 			{
-				START_LOG( cerr, L"없는 이벤트 타입이거나 미구현 이벤트 기능임.!" )
+				START_LOG( cerr, L"Unknown event type or unimplemented event feature." )
 					<< BUILD_LOG( kEventInfo.m_iEventUID )
 					<< BUILD_LOG( kEventInfo.m_iEventType )
 					<< BUILD_LOG( kEventInfo.m_wstrEventName )
@@ -905,7 +905,7 @@ void KGameEventManager::CheckEnableEventQuest( IN OUT std::map< int, KEventQuest
 
 				if( tmpCompletQuestInfo.m_tCompleteDate == 0 )
 				{
-					START_LOG( cerr, L"퀘스트 완료는 했는데 완료날짜 정보가 이상합니다." )
+					START_LOG( cerr, L"Quest is marked complete, but its completion date is invalid." )
 						<< BUILD_LOG( iQuestID )
 						<< END_LOG;
 
@@ -1005,7 +1005,7 @@ void KGameEventManager::InitTimeEventForCharInit( IN const std::vector< KConnect
 	{
 		if( !KncUtil::ConvertStringToCTime( vecEventTime[ui].m_wstrEventTime, tEventTime ) )
 		{
-			START_LOG( cerr, L"문자열 시간 변환 실패." )
+			START_LOG( cerr, L"Failed to convert the time string." )
 				<< BUILD_LOG( vecEventTime[ui].m_wstrEventTime )
 				<< END_LOG;
 
@@ -1110,7 +1110,7 @@ void KGameEventManager::CheckEnableConnectTimeEventForCharInit( IN OUT ConnectEv
 	if( ( kFactor.m_pMapEventTime == NULL ) ||
 		( kFactor.m_pSetCompletedEvent == NULL ) )
 	{
-		START_LOG( cerr, L"접속 이벤트 인자 값 이상!! ( 있어선 안되는 오류입니다. 즉시 확인해주세요 )" )
+		START_LOG( cerr, L"Invalid login-event argument. This error should not occur; please investigate immediately." )
 			<< BUILD_LOG( kFactor.m_pMapEventTime )
 			<< BUILD_LOG( kFactor.m_pSetCompletedEvent )
 			<< END_LOG;
@@ -1157,7 +1157,7 @@ void KGameEventManager::CheckEnableConnectTimeEvent( IN OUT ConnectEventFactorSe
 		( kFactor.m_pMapEventTime == NULL  ) ||
 		( kFactor.m_pSetCompletedEvent == NULL  ) )
 	{
-		START_LOG( cerr, L"접속 이벤트 인자 값 이상!! ( 있어선 안되는 오류입니다. 즉시 확인해주세요 )" )
+		START_LOG( cerr, L"Invalid login-event argument. This error should not occur; please investigate immediately." )
 			<< BUILD_LOG( kFactor.m_iUnitUID )
 			<< BUILD_LOG( kFactor.m_pVecBeginEvent )
 			<< BUILD_LOG( kFactor.m_pVecEndEvent )
@@ -1219,7 +1219,7 @@ void KGameEventManager::CheckEnableConnectTimeEvent( IN OUT ConnectEventFactorSe
 			{
 				if( pEvent->GetMinMaxRewardID( static_cast<int>( kFactor.m_ucLevel ) ) == 0 )
 				{
-					START_LOG( clog, L"보상 받을 레벨이 아니라서 이벤트 대상에서 제외!" )
+					START_LOG( clog, L"Excluded from the event because the character is not at an eligible reward level." )
 						<< END_LOG;
 					continue;
 				}
@@ -1270,14 +1270,14 @@ void KGameEventManager::CheckEnableConnectTimeEvent( IN OUT ConnectEventFactorSe
 
 			if( pEvent->IsOnlySteamUserEvent() == true && kFactor.m_bIsSteamUser == false )
 			{
-				START_LOG( clog, L"[TEST] 스팀유저 전용인데 스팀유저가 아니라서 패스" )
+				START_LOG( clog, L"[TEST] Skipping: this event is for Steam users, but the user is not on Steam." )
 					<< END_LOG;
 				continue;
 			}
 
 			if( pEvent->IsOnlyNotSteamUserEvent() == true && kFactor.m_bIsSteamUser == true )
 			{
-				START_LOG( clog, L"[TEST] NOT스팀유저 전용인데 스팀유저라서 패스" )
+				START_LOG( clog, L"[TEST] Skipping: this event is for non-Steam users, but the user is on Steam." )
 					<< END_LOG;
 				continue;
 			}
@@ -1420,7 +1420,7 @@ void KGameEventManager::CheckConnectTimeEvent( IN OUT ConnectEventFactorSet& kFa
 		( kFactor.m_pMapEventTime == NULL  ) ||
 		( kFactor.m_pSetCompletedEvent == NULL  ) )
 	{
-		START_LOG( cerr, L"접속 이벤트 인자 값 이상!! ( 있어선 안되는 오류입니다. 즉시 확인해주세요 )" )
+		START_LOG( cerr, L"Invalid login-event argument. This error should not occur; please investigate immediately." )
 			<< BUILD_LOG( kFactor.m_iUnitUID )
 			<< BUILD_LOG( kFactor.m_pVecUpdatedTime )
 			<< BUILD_LOG( kFactor.m_pVecBeginEvent )
@@ -1930,7 +1930,7 @@ void KGameEventManager::DeleteDirectRewardAndGetDBUpdateInfo( IN OUT std::map< i
 //{{ 2010. 11. 15	최육사	이벤트 스크립트 실시간 패치
 void KGameEventManager::RefreshEventScript()
 {
-	START_LOG( cout, L"이벤트 스크립트 실시간 패치 적용" );
+	START_LOG( cout, L"Applying live event-script patch." );
 
 	for( int iGET = 0; iGET < KGameEvent::GET_MAX; ++iGET )
 	{
@@ -1975,7 +1975,7 @@ void KGameEventManager::RefreshEventScript()
 					//}}
 					if( pEventData == NULL )
 					{
-						START_LOG( cerr, L"이벤트 스크립트 정보가 없습니다.!" )
+						START_LOG( cerr, L"Event script information is missing." )
 							<< BUILD_LOG( mit->second->GetUID() )
 							<< BUILD_LOG( mit->second->GetType() )
 							<< BUILD_LOG( pEvent->GetEventName() )
@@ -1990,7 +1990,7 @@ void KGameEventManager::RefreshEventScript()
 						pEvent->SetDropRate( pEventData->m_fDropRate );
 						pEvent->SetWithPlayPcBang( pEventData->m_bWithPlayPcBang );
 
-						START_LOG( cout, L"드롭 이벤트 스크립트 변경" )
+						START_LOG( cout, L"Drop event script updated." )
 							<< BUILD_LOG( mit->second->GetUID() )
 							<< BUILD_LOG( pEvent->GetEventName() )
 							<< BUILD_LOG( pEvent->GetScriptID() )
@@ -2011,7 +2011,7 @@ void KGameEventManager::RefreshEventScript()
 					//}}
 					if( pEventData == NULL )
 					{
-						START_LOG( cerr, L"이벤트 스크립트 정보가 없습니다.!" )
+						START_LOG( cerr, L"Event script information is missing." )
 							<< BUILD_LOG( mit->second->GetUID() )
 							<< BUILD_LOG( mit->second->GetType() )
 							<< BUILD_LOG( pEvent->GetEventName() )
@@ -2055,7 +2055,7 @@ void KGameEventManager::RefreshEventScript()
 
 						pEvent->Dump();
 
-						START_LOG( cout, L"던전 보상 이벤트 스크립트 변경" )
+						START_LOG( cout, L"Dungeon reward event script updated." )
 							<< BUILD_LOG( mit->second->GetUID() )
 							<< BUILD_LOG( pEvent->GetEventName() )
 							<< BUILD_LOG( pEvent->GetScriptID() )
@@ -2089,7 +2089,7 @@ void KGameEventManager::RefreshEventScript()
 					//}}
 					if( pEventData == NULL )
 					{
-						START_LOG( cerr, L"이벤트 스크립트 정보가 없습니다.!" )
+						START_LOG( cerr, L"Event script information is missing." )
 							<< BUILD_LOG( mit->second->GetUID() )
 							<< BUILD_LOG( mit->second->GetType() )
 							<< BUILD_LOG( pEvent->GetEventName() )
@@ -2153,7 +2153,7 @@ void KGameEventManager::RefreshEventScript()
 						pEvent->SetOnlyNotSteamUserEvent( pEventData->m_bOnlyNotSteamUser );
 						pEvent->SetUnitClassLevel( pEventData->m_iUnitClassLevel );
 
-						START_LOG( cout, L"접속 시간 이벤트 스크립트 변경" )
+						START_LOG( cout, L"Login-time event script updated." )
 							<< BUILD_LOG( mit->second->GetUID() )
 							<< BUILD_LOG( pEvent->GetEventName() )
 							<< BUILD_LOG( pEvent->GetScriptID() )
@@ -2198,7 +2198,7 @@ void KGameEventManager::RefreshEventScript()
 					//}}
 					if( pEventData == NULL )
 					{
-						START_LOG( cerr, L"이벤트 스크립트 정보가 없습니다.!" )
+						START_LOG( cerr, L"Event script information is missing." )
 							<< BUILD_LOG( mit->second->GetUID() )
 							<< BUILD_LOG( mit->second->GetType() )
 							<< BUILD_LOG( pEvent->GetEventName() )
@@ -2229,7 +2229,7 @@ void KGameEventManager::RefreshEventScript()
 						pEvent->SetAccountEvent( pEventData->m_bAccountEvent );
 						//}}
 
-						START_LOG( cout, L"누적 시간 이벤트 스크립트 변경" )
+						START_LOG( cout, L"Cumulative-time event script updated." )
 							<< BUILD_LOG( mit->second->GetUID() )
 							<< BUILD_LOG( pEvent->GetEventName() )
 							<< BUILD_LOG( pEvent->GetScriptID() )
@@ -2255,7 +2255,7 @@ void KGameEventManager::RefreshEventScript()
 					//}}
 					if( pEventData == NULL )
 					{
-						START_LOG( cerr, L"이벤트 스크립트 정보가 없습니다.!" )
+						START_LOG( cerr, L"Event script information is missing." )
 							<< BUILD_LOG( mit->second->GetUID() )
 							<< BUILD_LOG( mit->second->GetType() )
 							<< BUILD_LOG( pEvent->GetEventName() )
@@ -2279,7 +2279,7 @@ void KGameEventManager::RefreshEventScript()
 						//}}
 
 
-						START_LOG( cout, L"누적 시간 이벤트 스크립트 변경" )
+						START_LOG( cout, L"Cumulative-time event script updated." )
 							<< BUILD_LOG( mit->second->GetUID() )
 							<< BUILD_LOG( mit->second->GetType() )
 							<< BUILD_LOG( pEvent->GetEventName() )
@@ -2305,7 +2305,7 @@ void KGameEventManager::RefreshEventScript()
 
 					if( pEventData == NULL )
 					{
-						START_LOG( cerr, L"이벤트 스크립트 정보가 없습니다.!" )
+						START_LOG( cerr, L"Event script information is missing." )
 							<< BUILD_LOG( mit->second->GetUID() )
 							<< BUILD_LOG( mit->second->GetType() )
 							<< BUILD_LOG( pEvent->GetEventName() )
@@ -2318,7 +2318,7 @@ void KGameEventManager::RefreshEventScript()
 					{
 						pEvent->SetQuestItemDropRate( pEventData->m_fQuestItemDropRate );
 
-						START_LOG( cout, L"드롭 이벤트 스크립트 변경" )
+						START_LOG( cout, L"Drop event script updated." )
 							<< BUILD_LOG( mit->second->GetUID() )
 							<< BUILD_LOG( pEvent->GetEventName() )
 							<< BUILD_LOG( pEvent->GetScriptID() )
@@ -2336,7 +2336,7 @@ void KGameEventManager::RefreshEventScript()
 
 					if( pEventData == NULL )
 					{
-						START_LOG( cerr, L"이벤트 스크립트 정보가 없습니다.!" )
+						START_LOG( cerr, L"Event script information is missing." )
 							<< BUILD_LOG( mit->second->GetUID() )
 							<< BUILD_LOG( mit->second->GetType() )
 							<< BUILD_LOG( pEvent->GetEventName() )
@@ -2349,7 +2349,7 @@ void KGameEventManager::RefreshEventScript()
 					{
 						pEvent->SetDefenseDungeonOpenRate( pEventData->m_fDefenseDungeonOpenRate );
 
-						START_LOG( cout, L"어둠의 문 오픈 확률 이벤트 스크립트 변경" )
+						START_LOG( cout, L"Gate of Darkness opening-rate event script updated." )
 							<< BUILD_LOG( mit->second->GetUID() )
 							<< BUILD_LOG( pEvent->GetEventName() )
 							<< BUILD_LOG( pEvent->GetScriptID() )
@@ -2371,7 +2371,7 @@ bool KGameEventManager::RefreshEventTime( IN const KEventInfo& kInfo, OUT KGameE
 {
 	if( pkGameEvent == NULL )
 	{
-		START_LOG( cerr, L"이벤트객체 포인터 이상.!" )
+		START_LOG( cerr, L"Invalid event object pointer." )
 			<< BUILD_LOG( kInfo.m_iEventUID )
 			<< BUILD_LOG( kInfo.m_wstrEventName )
 			<< BUILD_LOG( kInfo.m_wstrBeginDate )
@@ -2387,7 +2387,7 @@ bool KGameEventManager::RefreshEventTime( IN const KEventInfo& kInfo, OUT KGameE
 
 	if( KncUtil::ConvertStringToCTime( kInfo.m_wstrBeginDate, ctBegin ) == false )
 	{
-		START_LOG( cerr, L"문자열 시간조립 실패.!" )
+		START_LOG( cerr, L"Failed to assemble the time string." )
 			<< BUILD_LOG( kInfo.m_wstrBeginDate )
 			<< END_LOG;
 
@@ -2396,7 +2396,7 @@ bool KGameEventManager::RefreshEventTime( IN const KEventInfo& kInfo, OUT KGameE
 
 	if( KncUtil::ConvertStringToCTime( kInfo.m_wstrEndDate, ctEnd ) == false )
 	{
-		START_LOG( cerr, L"문자열 시간조립 실패.!" )
+		START_LOG( cerr, L"Failed to assemble the time string." )
 			<< BUILD_LOG( kInfo.m_wstrEndDate )
 			<< END_LOG;
 
@@ -2409,7 +2409,7 @@ bool KGameEventManager::RefreshEventTime( IN const KEventInfo& kInfo, OUT KGameE
 	wstrTime = ( CStringW )( pkGameEvent->GetBeginDate().Format( _T( "%Y-%m-%d %H:%M:%S" ) ) );
 	if( pkGameEvent->GetBeginDate() != ctBegin )
 	{
-		START_LOG( cout2, L"이벤트 시작시간 수정.!" )
+		START_LOG( cout2, L"Event start time updated." )
 			<< BUILD_LOG( kInfo.m_iEventUID )
 			<< BUILD_LOG( kInfo.m_wstrEventName )
 			<< BUILD_LOG( kInfo.m_wstrBeginDate )
@@ -2423,7 +2423,7 @@ bool KGameEventManager::RefreshEventTime( IN const KEventInfo& kInfo, OUT KGameE
 	wstrTime = ( CStringW )( pkGameEvent->GetEndDate().Format( _T( "%Y-%m-%d %H:%M:%S" ) ) );
 	if( pkGameEvent->GetEndDate() != ctEnd )
 	{
-		START_LOG( cout2, L"이벤트 종료시간 수정.!" )
+		START_LOG( cout2, L"Event end time updated." )
 			<< BUILD_LOG( kInfo.m_iEventUID )
 			<< BUILD_LOG( kInfo.m_wstrEventName )
 			<< BUILD_LOG( kInfo.m_wstrEndDate )
@@ -2442,7 +2442,7 @@ bool KGameEventManager::SetPeriodEventTime( IN const KEventInfo& kInfo, OUT CTim
 {
 	if( KncUtil::ConvertStringToCTime( kInfo.m_wstrBeginDate, ctBegin ) == false )
 	{
-		START_LOG( cerr, L"문자열 시간조립 실패.!" )
+		START_LOG( cerr, L"Failed to assemble the time string." )
 			<< BUILD_LOG( kInfo.m_iEventType )
 			<< BUILD_LOG( kInfo.m_wstrEventName )
 			<< BUILD_LOG( kInfo.m_wstrBeginDate )
@@ -2453,7 +2453,7 @@ bool KGameEventManager::SetPeriodEventTime( IN const KEventInfo& kInfo, OUT CTim
 
 	if( KncUtil::ConvertStringToCTime( kInfo.m_wstrEndDate, ctEnd ) == false )
 	{
-		START_LOG( cerr, L"문자열 시간조립 실패.!" )
+		START_LOG( cerr, L"Failed to assemble the time string." )
 			<< BUILD_LOG( kInfo.m_iEventType )
 			<< BUILD_LOG( kInfo.m_wstrEventName )
 			<< BUILD_LOG( kInfo.m_wstrEndDate )
@@ -2478,7 +2478,7 @@ void KGameEventManager::AddQuestEvent( IN const KEventInfo& kInfo )
 	{
 		if( RefreshEventTime( kInfo, mit->second ) == false )
 		{
-			START_LOG( cerr, L"이벤트 진행시간 갱신실패.!" )
+			START_LOG( cerr, L"Failed to update the event duration." )
 				<< BUILD_LOG( kInfo.m_iEventUID )
 				<< END_LOG;
 		}
@@ -2490,7 +2490,7 @@ void KGameEventManager::AddQuestEvent( IN const KEventInfo& kInfo )
 
 		if( SetPeriodEventTime( kInfo, ctBegin, ctEnd ) == false )
 		{
-			START_LOG( cerr, L"이벤트 기간설정 실패.!" )
+			START_LOG( cerr, L"Failed to set the event period." )
 				<< BUILD_LOG( kInfo.m_iEventType )
 				<< BUILD_LOG( kInfo.m_wstrEventName )
 				<< END_LOG;
@@ -2521,7 +2521,7 @@ void KGameEventManager::AddQuestEvent( IN const KEventInfo& kInfo )
 		std::wstring wstrEventEnd = strEnd.GetString();
 		// Port: KSMS management tool notification removed (out of scope)
 
-		START_LOG( cout2, L"신규 이벤트 등록.!" )
+		START_LOG( cout2, L"New event registered." )
 			<< BUILD_LOG( kInfo.m_iEventUID )
 			<< BUILD_LOG( kInfo.m_iEventType )
 			<< BUILD_LOG( kInfo.m_wstrEventName )
@@ -2547,7 +2547,7 @@ void KGameEventManager::AddItemDropEvent( IN const KEventInfo& kInfo )
 	{
 		if( RefreshEventTime( kInfo, mit->second ) == false )
 		{
-			START_LOG( cerr, L"이벤트 진행시간 갱신실패.!" )
+			START_LOG( cerr, L"Failed to update the event duration." )
 				<< BUILD_LOG( kInfo.m_iEventUID )
 				<< END_LOG;
 		}
@@ -2559,7 +2559,7 @@ void KGameEventManager::AddItemDropEvent( IN const KEventInfo& kInfo )
 
 		if( SetPeriodEventTime( kInfo, ctBegin, ctEnd ) == false )
 		{
-			START_LOG( cerr, L"이벤트 기간설정 실패.!" )
+			START_LOG( cerr, L"Failed to set the event period." )
 				<< BUILD_LOG( kInfo.m_iEventType )
 				<< BUILD_LOG( kInfo.m_wstrEventName )
 				<< END_LOG;
@@ -2576,7 +2576,7 @@ void KGameEventManager::AddItemDropEvent( IN const KEventInfo& kInfo )
 		//}}
 		//}}
 		{
-			START_LOG( cerr, L"보상이벤트 스크립트가 없습니다.!" )
+			START_LOG( cerr, L"Reward event script is missing." )
 				<< BUILD_LOG( kInfo.m_iEventUID )
 				<< BUILD_LOG( kInfo.m_wstrEventName )
 				<< BUILD_LOG( kInfo.m_iScriptID )
@@ -2614,7 +2614,7 @@ void KGameEventManager::AddItemDropEvent( IN const KEventInfo& kInfo )
 		std::wstring wstrEventEnd = strEnd.GetString();
 		// Port: KSMS management tool notification removed (out of scope)
 
-		START_LOG( cout2, L"신규 이벤트 등록.!" )
+		START_LOG( cout2, L"New event registered." )
 			<< BUILD_LOG( kInfo.m_iEventUID )
 			<< BUILD_LOG( kInfo.m_iEventType )
 			<< BUILD_LOG( kInfo.m_wstrEventName )
@@ -2642,7 +2642,7 @@ void KGameEventManager::AddRewardEvent( IN const KEventInfo& kInfo )
 	{
         if( RefreshEventTime( kInfo, mit->second ) == false )
 		{
-			START_LOG( cerr, L"이벤트 진행시간 갱신실패.!" )
+			START_LOG( cerr, L"Failed to update the event duration." )
 				<< BUILD_LOG( kInfo.m_iEventUID )
 				<< END_LOG;
 		}
@@ -2654,7 +2654,7 @@ void KGameEventManager::AddRewardEvent( IN const KEventInfo& kInfo )
 
 		if( SetPeriodEventTime( kInfo, ctBegin, ctEnd ) == false )
 		{
-			START_LOG( cerr, L"이벤트 기간설정 실패.!" )
+			START_LOG( cerr, L"Failed to set the event period." )
 				<< BUILD_LOG( kInfo.m_iEventType )
 				<< BUILD_LOG( kInfo.m_wstrEventName )
 				<< END_LOG;
@@ -2669,7 +2669,7 @@ void KGameEventManager::AddRewardEvent( IN const KEventInfo& kInfo )
 		//}}
 		if( pEventData == NULL )
 		{
-			START_LOG( cerr, L"보상이벤트 스크립트가 없습니다.!" )
+			START_LOG( cerr, L"Reward event script is missing." )
 				<< BUILD_LOG( kInfo.m_iEventUID )
 				<< BUILD_LOG( kInfo.m_wstrEventName )
 				<< BUILD_LOG( kInfo.m_iScriptID )
@@ -2720,7 +2720,7 @@ void KGameEventManager::AddRewardEvent( IN const KEventInfo& kInfo )
 		std::wstring wstrEventEnd = strEnd.GetString();
 		// Port: KSMS management tool notification removed (out of scope)
 
-		START_LOG( cout2, L"신규 이벤트 등록.!" )
+		START_LOG( cout2, L"New event registered." )
             << BUILD_LOG( kInfo.m_iEventUID )
 			<< BUILD_LOG( kInfo.m_iEventType )
 			<< BUILD_LOG( kInfo.m_wstrEventName )
@@ -2747,7 +2747,7 @@ void KGameEventManager::AddMonsterEvent( IN const KEventInfo& kInfo )
 	{
 		if( RefreshEventTime( kInfo, mit->second ) == false )
 		{
-			START_LOG( cerr, L"이벤트 진행시간 갱신실패.!" )
+			START_LOG( cerr, L"Failed to update the event duration." )
 				<< BUILD_LOG( kInfo.m_iEventUID )
 				<< END_LOG;
 		}
@@ -2759,7 +2759,7 @@ void KGameEventManager::AddMonsterEvent( IN const KEventInfo& kInfo )
 
 		if( SetPeriodEventTime( kInfo, ctBegin, ctEnd ) == false )
 		{
-			START_LOG( cerr, L"이벤트 기간설정 실패.!" )
+			START_LOG( cerr, L"Failed to set the event period." )
 				<< BUILD_LOG( kInfo.m_iEventType )
 				<< BUILD_LOG( kInfo.m_wstrEventName )
 				<< END_LOG;
@@ -2788,7 +2788,7 @@ void KGameEventManager::AddMonsterEvent( IN const KEventInfo& kInfo )
 		std::wstring wstrEventEnd = strEnd.GetString();
 		// Port: KSMS management tool notification removed (out of scope)
 
-		START_LOG( cout2, L"신규 이벤트 등록.!" )
+		START_LOG( cout2, L"New event registered." )
 			<< BUILD_LOG( kInfo.m_iEventUID )
 			<< BUILD_LOG( kInfo.m_iEventType )
 			<< BUILD_LOG( kInfo.m_wstrEventName )
@@ -2815,7 +2815,7 @@ void KGameEventManager::AddTournamentEvent( IN const KEventInfo& kInfo )
 	{
 		if( RefreshEventTime( kInfo, mit->second ) == false )
 		{
-			START_LOG( cerr, L"이벤트 진행시간 갱신실패.!" )
+			START_LOG( cerr, L"Failed to update the event duration." )
 				<< BUILD_LOG( kInfo.m_iEventUID )
 				<< END_LOG;
 		}
@@ -2827,7 +2827,7 @@ void KGameEventManager::AddTournamentEvent( IN const KEventInfo& kInfo )
 
 		if( SetPeriodEventTime( kInfo, ctBegin, ctEnd ) == false )
 		{
-			START_LOG( cerr, L"이벤트 기간설정 실패.!" )
+			START_LOG( cerr, L"Failed to set the event period." )
 				<< BUILD_LOG( kInfo.m_iEventType )
 				<< BUILD_LOG( kInfo.m_wstrEventName )
 				<< END_LOG;
@@ -2848,7 +2848,7 @@ void KGameEventManager::AddTournamentEvent( IN const KEventInfo& kInfo )
 
 		m_mapIngEventData[KGameEvent::GET_TOURNAMENT].insert( std::make_pair( kInfo.m_iEventUID, pEvent ) );
 
-		START_LOG( cout2, L"신규 이벤트 등록.!" )
+		START_LOG( cout2, L"New event registered." )
 			<< BUILD_LOG( kInfo.m_iEventUID )
 			<< BUILD_LOG( kInfo.m_iEventType )
 			<< BUILD_LOG( kInfo.m_wstrEventName )
@@ -2873,7 +2873,7 @@ void KGameEventManager::AddSpiritEvent( IN const KEventInfo& kInfo )
 	{
 		if( RefreshEventTime( kInfo, mit->second ) == false )
 		{
-			START_LOG( cerr, L"이벤트 진행시간 갱신실패.!" )
+			START_LOG( cerr, L"Failed to update the event duration." )
 				<< BUILD_LOG( kInfo.m_iEventUID )
 				<< END_LOG;
 		}
@@ -2885,7 +2885,7 @@ void KGameEventManager::AddSpiritEvent( IN const KEventInfo& kInfo )
 
 		if( SetPeriodEventTime( kInfo, ctBegin, ctEnd ) == false )
 		{
-			START_LOG( cerr, L"이벤트 기간설정 실패.!" )
+			START_LOG( cerr, L"Failed to set the event period." )
 				<< BUILD_LOG( kInfo.m_iEventType )
 				<< BUILD_LOG( kInfo.m_wstrEventName )
 				<< END_LOG;
@@ -2911,7 +2911,7 @@ void KGameEventManager::AddSpiritEvent( IN const KEventInfo& kInfo )
 		CStringW strEnd = ctEnd.Format(_T("%Y-%m-%d %H:%M:%S"));
 		std::wstring wstrEventEnd = strEnd.GetString();
 		// Port: KSMS management tool notification removed (out of scope)
-		START_LOG( cout2, L"신규 이벤트 등록.!" )
+		START_LOG( cout2, L"New event registered." )
 			<< BUILD_LOG( kInfo.m_iEventUID )
 			<< BUILD_LOG( kInfo.m_iEventType )
 			<< BUILD_LOG( kInfo.m_wstrEventName )
@@ -2937,7 +2937,7 @@ void KGameEventManager::AddConnectTimeEvent( IN const KEventInfo& kInfo )
 	{
 		if( RefreshEventTime( kInfo, mit->second ) == false )
 		{
-			START_LOG( cerr, L"이벤트 진행시간 갱신실패.!" )
+			START_LOG( cerr, L"Failed to update the event duration." )
 				<< BUILD_LOG( kInfo.m_iEventUID )
 				<< END_LOG;
 		}
@@ -2949,7 +2949,7 @@ void KGameEventManager::AddConnectTimeEvent( IN const KEventInfo& kInfo )
 
 		if( SetPeriodEventTime( kInfo, ctBegin, ctEnd ) == false )
 		{
-			START_LOG( cerr, L"이벤트 기간설정 실패.!" )
+			START_LOG( cerr, L"Failed to set the event period." )
 				<< BUILD_LOG( kInfo.m_iEventType )
 				<< BUILD_LOG( kInfo.m_wstrEventName )
 				<< END_LOG;
@@ -2964,7 +2964,7 @@ void KGameEventManager::AddConnectTimeEvent( IN const KEventInfo& kInfo )
 		//}}
 		if( pEventData == NULL )
 		{
-			START_LOG( cerr, L"보상이벤트 스크립트가 없습니다.!" )
+			START_LOG( cerr, L"Reward event script is missing." )
 				<< BUILD_LOG( kInfo.m_iEventUID )
 				<< BUILD_LOG( kInfo.m_wstrEventName )
 				<< BUILD_LOG( kInfo.m_iScriptID )
@@ -3039,7 +3039,7 @@ void KGameEventManager::AddConnectTimeEvent( IN const KEventInfo& kInfo )
 		// Port: KSMS management tool notification removed (out of scope)
 
 
-		START_LOG( cout2, L"신규 이벤트 등록.!" )
+		START_LOG( cout2, L"New event registered." )
 			<< BUILD_LOG( kInfo.m_iEventUID )
 			<< BUILD_LOG( kInfo.m_iEventType )
 			<< BUILD_LOG( kInfo.m_wstrEventName )
@@ -3067,7 +3067,7 @@ void KGameEventManager::AddSecretDungeonEvent( IN const KEventInfo& kInfo )
 	{
 		if( RefreshEventTime( kInfo, mit->second ) == false )
 		{
-			START_LOG( cerr, L"이벤트 진행시간 갱신실패.!" )
+			START_LOG( cerr, L"Failed to update the event duration." )
 				<< BUILD_LOG( kInfo.m_iEventUID )
 				<< END_LOG;
 		}
@@ -3079,7 +3079,7 @@ void KGameEventManager::AddSecretDungeonEvent( IN const KEventInfo& kInfo )
 
 		if( SetPeriodEventTime( kInfo, ctBegin, ctEnd ) == false )
 		{
-			START_LOG( cerr, L"이벤트 기간설정 실패.!" )
+			START_LOG( cerr, L"Failed to set the event period." )
 				<< BUILD_LOG( kInfo.m_iEventType )
 				<< BUILD_LOG( kInfo.m_wstrEventName )
 				<< END_LOG;
@@ -3094,7 +3094,7 @@ void KGameEventManager::AddSecretDungeonEvent( IN const KEventInfo& kInfo )
 		//}}
 		if( pEventData == NULL )
 		{
-			START_LOG( cerr, L"보상이벤트 스크립트가 없습니다.!" )
+			START_LOG( cerr, L"Reward event script is missing." )
 				<< BUILD_LOG( kInfo.m_iEventUID )
 				<< BUILD_LOG( kInfo.m_wstrEventName )
 				<< BUILD_LOG( kInfo.m_iScriptID )
@@ -3126,7 +3126,7 @@ void KGameEventManager::AddSecretDungeonEvent( IN const KEventInfo& kInfo )
 		std::wstring wstrEventEnd = strEnd.GetString();
 		// Port: KSMS management tool notification removed (out of scope)
 
-		START_LOG( cout2, L"신규 이벤트 등록.!" )
+		START_LOG( cout2, L"New event registered." )
 			<< BUILD_LOG( kInfo.m_iEventUID )
 			<< BUILD_LOG( kInfo.m_iEventType )
 			<< BUILD_LOG( kInfo.m_wstrEventName )
@@ -3151,7 +3151,7 @@ void KGameEventManager::AddNotifyMSGEvent( IN const KEventInfo& kInfo )
 	{
 		if( RefreshEventTime( kInfo, mit->second ) == false )
 		{
-			START_LOG( cerr, L"이벤트 진행시간 갱신실패.!" )
+			START_LOG( cerr, L"Failed to update the event duration." )
 				<< BUILD_LOG( kInfo.m_iEventUID )
 				<< END_LOG;
 		}
@@ -3163,7 +3163,7 @@ void KGameEventManager::AddNotifyMSGEvent( IN const KEventInfo& kInfo )
 
 		if( SetPeriodEventTime( kInfo, ctBegin, ctEnd ) == false )
 		{
-			START_LOG( cerr, L"이벤트 기간설정 실패.!" )
+			START_LOG( cerr, L"Failed to set the event period." )
 				<< BUILD_LOG( kInfo.m_iEventType )
 				<< BUILD_LOG( kInfo.m_wstrEventName )
 				<< END_LOG;
@@ -3194,7 +3194,7 @@ void KGameEventManager::AddNotifyMSGEvent( IN const KEventInfo& kInfo )
 		std::wstring wstrEventEnd = strEnd.GetString();
 		// Port: KSMS management tool notification removed (out of scope)
 
-		START_LOG( cout2, L"신규 이벤트 등록.!" )
+		START_LOG( cout2, L"New event registered." )
 			<< BUILD_LOG( kInfo.m_iEventUID )
 			<< BUILD_LOG( kInfo.m_iEventType )
 			<< BUILD_LOG( kInfo.m_wstrEventName )
@@ -3221,7 +3221,7 @@ void KGameEventManager::AddCumulativeTimeEvent( IN const KEventInfo& kInfo )
 	{
 		if( RefreshEventTime( kInfo, mit->second ) == false )
 		{
-			START_LOG( cerr, L"이벤트 진행시간 갱신실패.!" )
+			START_LOG( cerr, L"Failed to update the event duration." )
 				<< BUILD_LOG( kInfo.m_iEventUID )
 				<< END_LOG;
 		}
@@ -3233,7 +3233,7 @@ void KGameEventManager::AddCumulativeTimeEvent( IN const KEventInfo& kInfo )
 
 		if( SetPeriodEventTime( kInfo, ctBegin, ctEnd ) == false )
 		{
-			START_LOG( cerr, L"이벤트 기간설정 실패.!" )
+			START_LOG( cerr, L"Failed to set the event period." )
 				<< BUILD_LOG( kInfo.m_iEventType )
 				<< BUILD_LOG( kInfo.m_wstrEventName )
 				<< END_LOG;
@@ -3248,7 +3248,7 @@ void KGameEventManager::AddCumulativeTimeEvent( IN const KEventInfo& kInfo )
 		//}}
 		if( pEventData == NULL )
 		{
-			START_LOG( cerr, L"보상이벤트 스크립트가 없습니다.!" )
+			START_LOG( cerr, L"Reward event script is missing." )
 				<< BUILD_LOG( kInfo.m_iEventUID )
 				<< BUILD_LOG( kInfo.m_wstrEventName )
 				<< BUILD_LOG( kInfo.m_iScriptID )
@@ -3294,7 +3294,7 @@ void KGameEventManager::AddCumulativeTimeEvent( IN const KEventInfo& kInfo )
 		std::wstring wstrEventEnd = strEnd.GetString();
 		// Port: KSMS management tool notification removed (out of scope)
 
-		START_LOG( cout2, L"신규 이벤트 등록.!" )
+		START_LOG( cout2, L"New event registered." )
 			<< BUILD_LOG( kInfo.m_iEventUID )
 			<< BUILD_LOG( kInfo.m_iEventType )
 			<< BUILD_LOG( kInfo.m_wstrEventName )
@@ -3321,7 +3321,7 @@ void KGameEventManager::AddHenirRewardCountEvent( IN const KEventInfo& kInfo )
 	{
 		if( RefreshEventTime( kInfo, mit->second ) == false )
 		{
-			START_LOG( cerr, L"이벤트 진행시간 갱신실패.!" )
+			START_LOG( cerr, L"Failed to update the event duration." )
 				<< BUILD_LOG( kInfo.m_iEventUID )
 				<< END_LOG;
 		}
@@ -3333,7 +3333,7 @@ void KGameEventManager::AddHenirRewardCountEvent( IN const KEventInfo& kInfo )
 
 		if( SetPeriodEventTime( kInfo, ctBegin, ctEnd ) == false )
 		{
-			START_LOG( cerr, L"이벤트 기간설정 실패.!" )
+			START_LOG( cerr, L"Failed to set the event period." )
 				<< BUILD_LOG( kInfo.m_iEventType )
 				<< BUILD_LOG( kInfo.m_wstrEventName )
 				<< END_LOG;
@@ -3348,7 +3348,7 @@ void KGameEventManager::AddHenirRewardCountEvent( IN const KEventInfo& kInfo )
 		//}}
 		if( pEventData == NULL )
 		{
-			START_LOG( cerr, L"보상이벤트 스크립트가 없습니다.!" )
+			START_LOG( cerr, L"Reward event script is missing." )
 				<< BUILD_LOG( kInfo.m_iEventUID )
 				<< BUILD_LOG( kInfo.m_wstrEventName )
 				<< BUILD_LOG( kInfo.m_iScriptID )
@@ -3385,7 +3385,7 @@ void KGameEventManager::AddHenirRewardCountEvent( IN const KEventInfo& kInfo )
 		std::wstring wstrEventEnd = strEnd.GetString();
 		// Port: KSMS management tool notification removed (out of scope)
 
-		START_LOG( cout2, L"신규 이벤트 등록.!" )
+		START_LOG( cout2, L"New event registered." )
 			<< BUILD_LOG( kInfo.m_iEventUID )
 			<< BUILD_LOG( kInfo.m_iEventType )
 			<< BUILD_LOG( kInfo.m_wstrEventName )
@@ -3464,7 +3464,7 @@ void KGameEventManager::AddQuestItemDropEvent( IN const KEventInfo& kInfo )
 	{
 		if( RefreshEventTime( kInfo, mit->second ) == false )
 		{
-			START_LOG( cerr, L"이벤트 진행시간 갱신실패.!" )
+			START_LOG( cerr, L"Failed to update the event duration." )
 				<< BUILD_LOG( kInfo.m_iEventUID )
 				<< END_LOG;
 		}
@@ -3476,7 +3476,7 @@ void KGameEventManager::AddQuestItemDropEvent( IN const KEventInfo& kInfo )
 
 		if( SetPeriodEventTime( kInfo, ctBegin, ctEnd ) == false )
 		{
-			START_LOG( cerr, L"이벤트 기간설정 실패.!" )
+			START_LOG( cerr, L"Failed to set the event period." )
 				<< BUILD_LOG( kInfo.m_iEventType )
 				<< BUILD_LOG( kInfo.m_wstrEventName )
 				<< END_LOG;
@@ -3490,7 +3490,7 @@ void KGameEventManager::AddQuestItemDropEvent( IN const KEventInfo& kInfo )
 		//}}
 		if( pEventData == NULL )
 		{
-			START_LOG( cerr, L"보상이벤트 스크립트가 없습니다.!" )
+			START_LOG( cerr, L"Reward event script is missing." )
 				<< BUILD_LOG( kInfo.m_iEventUID )
 				<< BUILD_LOG( kInfo.m_wstrEventName )
 				<< BUILD_LOG( kInfo.m_iScriptID )
@@ -3519,7 +3519,7 @@ void KGameEventManager::AddQuestItemDropEvent( IN const KEventInfo& kInfo )
 		std::wstring wstrEventEnd = strEnd.GetString();
 		// Port: KSMS management tool notification removed (out of scope)
 
-		START_LOG( cout2, L"신규 이벤트 등록.!" )
+		START_LOG( cout2, L"New event registered." )
 			<< BUILD_LOG( kInfo.m_iEventUID )
 			<< BUILD_LOG( kInfo.m_iEventType )
 			<< BUILD_LOG( kInfo.m_wstrEventName )
@@ -3576,7 +3576,7 @@ void KGameEventManager::AddAdvertisementEvent( IN const KEventInfo& kInfo )
 	{
 		if( RefreshEventTime( kInfo, mit->second ) == false )
 		{
-			START_LOG( cerr, L"이벤트 진행시간 갱신실패.!" )
+			START_LOG( cerr, L"Failed to update the event duration." )
 				<< BUILD_LOG( kInfo.m_iEventUID )
 				<< END_LOG;
 		}
@@ -3588,7 +3588,7 @@ void KGameEventManager::AddAdvertisementEvent( IN const KEventInfo& kInfo )
 
 		if( SetPeriodEventTime( kInfo, ctBegin, ctEnd ) == false )
 		{
-			START_LOG( cerr, L"이벤트 기간설정 실패.!" )
+			START_LOG( cerr, L"Failed to set the event period." )
 				<< BUILD_LOG( kInfo.m_iEventType )
 				<< BUILD_LOG( kInfo.m_wstrEventName )
 				<< END_LOG;
@@ -3601,7 +3601,7 @@ void KGameEventManager::AddAdvertisementEvent( IN const KEventInfo& kInfo )
 		//}}
 		if( pEventData == NULL )
 		{
-			START_LOG( cerr, L"광고 스크립트가 없습니다.!" )
+			START_LOG( cerr, L"Advertisement script is missing." )
 				<< BUILD_LOG( kInfo.m_iEventUID )
 				<< BUILD_LOG( kInfo.m_wstrEventName )
 				<< BUILD_LOG( kInfo.m_iScriptID )
@@ -3632,7 +3632,7 @@ void KGameEventManager::AddAdvertisementEvent( IN const KEventInfo& kInfo )
 		std::wstring wstrEventEnd = strEnd.GetString();
 		// Port: KSMS management tool notification removed (out of scope)
 
-		START_LOG( cout2, L"신규 이벤트 등록.!" )
+		START_LOG( cout2, L"New event registered." )
 			<< BUILD_LOG( kInfo.m_iEventUID )
 			<< BUILD_LOG( kInfo.m_iEventType )
 			<< BUILD_LOG( kInfo.m_wstrEventName )
@@ -3755,7 +3755,7 @@ bool KGameEventManager::IsEnableDungeon( int nDunegonID, bool bEventDungeon )
 
 		if( mitIngEventData->second->GetScriptID() == nDunegonID )
 		{
-			START_LOG( clog, L"켜진 던전" )
+			START_LOG( clog, L"Enabled dungeon" )
 				<< BUILD_LOG( nDunegonID )
 				<< BUILD_LOG( bEventDungeon )
 				;
@@ -3764,7 +3764,7 @@ bool KGameEventManager::IsEnableDungeon( int nDunegonID, bool bEventDungeon )
 		}
 	}
 
-	START_LOG( clog, L"꺼진 던전" )
+	START_LOG( clog, L"Disabled dungeon" )
 		<< BUILD_LOG( nDunegonID )
 		<< BUILD_LOG( bEventDungeon )
 		;
@@ -3803,7 +3803,7 @@ void KGameEventManager::CheckEnableEventDungeon( IN OUT std::map< int, bool >& m
 		if( mitCheckDungeon != mapCheckDungeon.end() )
 			mitCheckDungeon->second = true;
 
-		START_LOG( clog, L"켜진 던전" )
+		START_LOG( clog, L"Enabled dungeon" )
 			<< BUILD_LOG( iIngDungeonID )
 			;
 	}
@@ -3821,7 +3821,7 @@ void KGameEventManager::AddDungeonEvent( IN const KEventInfo& kInfo )
 	{
 		if( RefreshEventTime( kInfo, mit->second ) == false )
 		{
-			START_LOG( cerr, L"이벤트 진행시간 갱신실패.!" )
+			START_LOG( cerr, L"Failed to update the event duration." )
 				<< BUILD_LOG( kInfo.m_iEventUID )
 				<< END_LOG;
 		}
@@ -3833,7 +3833,7 @@ void KGameEventManager::AddDungeonEvent( IN const KEventInfo& kInfo )
 
 		if( SetPeriodEventTime( kInfo, ctBegin, ctEnd ) == false )
 		{
-			START_LOG( cerr, L"이벤트 기간설정 실패.!" )
+			START_LOG( cerr, L"Failed to set the event period." )
 				<< BUILD_LOG( kInfo.m_iEventType )
 				<< BUILD_LOG( kInfo.m_wstrEventName )
 				<< END_LOG;
@@ -3862,7 +3862,7 @@ void KGameEventManager::AddDungeonEvent( IN const KEventInfo& kInfo )
 		std::wstring wstrEventEnd = strEnd.GetString();
 		// Port: KSMS management tool notification removed (out of scope)
 
-		START_LOG( cout2, L"신규 이벤트 등록.!" )
+		START_LOG( cout2, L"New event registered." )
 			<< BUILD_LOG( kInfo.m_iEventUID )
 			<< BUILD_LOG( kInfo.m_iEventType )
 			<< BUILD_LOG( kInfo.m_wstrEventName )
@@ -3883,7 +3883,7 @@ void KGameEventManager::AddMaxLevelEvent( IN const KEventInfo& kInfo )
 	{
 		if( RefreshEventTime( kInfo, mit->second ) == false )
 		{
-			START_LOG( cerr, L"이벤트 진행시간 갱신실패.!" )
+			START_LOG( cerr, L"Failed to update the event duration." )
 				<< BUILD_LOG( kInfo.m_iEventUID )
 				<< END_LOG;
 		}
@@ -3895,7 +3895,7 @@ void KGameEventManager::AddMaxLevelEvent( IN const KEventInfo& kInfo )
 
 		if( SetPeriodEventTime( kInfo, ctBegin, ctEnd ) == false )
 		{
-			START_LOG( cerr, L"이벤트 기간설정 실패.!" )
+			START_LOG( cerr, L"Failed to set the event period." )
 				<< BUILD_LOG( kInfo.m_iEventType )
 				<< BUILD_LOG( kInfo.m_wstrEventName )
 				<< END_LOG;
@@ -3925,7 +3925,7 @@ void KGameEventManager::AddMaxLevelEvent( IN const KEventInfo& kInfo )
 		std::wstring wstrEventEnd = strEnd.GetString();
 		// Port: KSMS management tool notification removed (out of scope)
 
-		START_LOG( cout2, L"신규 이벤트 등록.!" )
+		START_LOG( cout2, L"New event registered." )
 			<< BUILD_LOG( kInfo.m_iEventUID )
 			<< BUILD_LOG( kInfo.m_iEventType )
 			<< BUILD_LOG( kInfo.m_wstrEventName )
@@ -3946,7 +3946,7 @@ void KGameEventManager::AddContents( IN const KEventInfo& kInfo )
 	{
 		if( RefreshEventTime( kInfo, mit->second ) == false )
 		{
-			START_LOG( cerr, L"이벤트 진행시간 갱신실패.!" )
+			START_LOG( cerr, L"Failed to update the event duration." )
 				<< BUILD_LOG( kInfo.m_iEventUID )
 				<< END_LOG;
 		}
@@ -3958,7 +3958,7 @@ void KGameEventManager::AddContents( IN const KEventInfo& kInfo )
 
 		if( SetPeriodEventTime( kInfo, ctBegin, ctEnd ) == false )
 		{
-			START_LOG( cerr, L"이벤트 기간설정 실패.!" )
+			START_LOG( cerr, L"Failed to set the event period." )
 				<< BUILD_LOG( kInfo.m_iEventType )
 				<< BUILD_LOG( kInfo.m_wstrEventName )
 				<< END_LOG;
@@ -3987,7 +3987,7 @@ void KGameEventManager::AddContents( IN const KEventInfo& kInfo )
 		std::wstring wstrEventEnd = strEnd.GetString();
 		// Port: KSMS management tool notification removed (out of scope)
 
-		START_LOG( cout2, L"신규 이벤트 등록.!" )
+		START_LOG( cout2, L"New event registered." )
 			<< BUILD_LOG( kInfo.m_iEventUID )
 			<< BUILD_LOG( kInfo.m_iEventType )
 			<< BUILD_LOG( kInfo.m_wstrEventName )
@@ -4042,7 +4042,7 @@ void KGameEventManager::AddCodeEvent( IN const KEventInfo& kInfo )
 	{
 		if( RefreshEventTime( kInfo, mit->second ) == false )
 		{
-			START_LOG( cerr, L"이벤트 진행시간 갱신실패.!" )
+			START_LOG( cerr, L"Failed to update the event duration." )
 				<< BUILD_LOG( kInfo.m_iEventUID )
 				<< END_LOG;
 		}
@@ -4054,7 +4054,7 @@ void KGameEventManager::AddCodeEvent( IN const KEventInfo& kInfo )
 
 		if( SetPeriodEventTime( kInfo, ctBegin, ctEnd ) == false )
 		{
-			START_LOG( cerr, L"이벤트 기간설정 실패.!" )
+			START_LOG( cerr, L"Failed to set the event period." )
 				<< BUILD_LOG( kInfo.m_iEventType )
 				<< BUILD_LOG( kInfo.m_wstrEventName )
 				<< END_LOG;
@@ -4083,7 +4083,7 @@ void KGameEventManager::AddCodeEvent( IN const KEventInfo& kInfo )
 		std::wstring wstrEventEnd = strEnd.GetString();
 		// Port: KSMS management tool notification removed (out of scope)
 
-		START_LOG( cout2, L"신규 이벤트 등록.!" )
+		START_LOG( cout2, L"New event registered." )
 			<< BUILD_LOG( kInfo.m_iEventUID )
 			<< BUILD_LOG( kInfo.m_iEventType )
 			<< BUILD_LOG( kInfo.m_wstrEventName )
@@ -4145,7 +4145,7 @@ void KGameEventManager::CheckEnableCode( OUT std::map< int, bool >& mapCheckCode
 		if( mitCheckCode != mapCheckCode.end() )
 			mitCheckCode->second = true;
 
-		START_LOG( clog, L"켜진 코드 enum" )
+		START_LOG( clog, L"Enabled code enum" )
 			<< BUILD_LOG( iIngCodeID )
 			;
 	}
@@ -4234,7 +4234,7 @@ void KGameEventManager::GetWarningEventQuest( OUT KEGS_EVENT_QUEST_CHECK_FOR_ADM
 
 		if( pQuestTemplet == NULL )
 		{
-			START_LOG( cout, L"[테스트] 없는 퀘스트 ID가 이벤트로 등록이 되었습니다." )
+			START_LOG( cout, L"[Test] A nonexistent quest ID was registered as an event." )
 				<< BUILD_LOG( iQuestID );
 		}
 		else
@@ -4249,7 +4249,7 @@ void KGameEventManager::GetWarningEventQuest( OUT KEGS_EVENT_QUEST_CHECK_FOR_ADM
 
 	if( kPacket_.m_vecWarningQuestID.empty() == false )
 	{
-		START_LOG( cout, L"[테스트] TimeEvent 셋팅이 안된 퀘스트가 DB에 등록되어 있습니다! 확인 필요!!" )
+		START_LOG( cout, L"[Test] A quest without a TimeEvent setting is registered in the database. Please check." )
 			<< BUILD_LOG( wstrMsg.str().c_str() );
 	}
 }
@@ -4268,7 +4268,7 @@ void KGameEventManager::AddDefenseDungeonOpenRateEvent( IN const KEventInfo& kIn
 	{
 		if( RefreshEventTime( kInfo, mit->second ) == false )
 		{
-			START_LOG( cerr, L"이벤트 진행시간 갱신실패.!" )
+			START_LOG( cerr, L"Failed to update the event duration." )
 				<< BUILD_LOG( kInfo.m_iEventUID )
 				<< END_LOG;
 		}
@@ -4280,7 +4280,7 @@ void KGameEventManager::AddDefenseDungeonOpenRateEvent( IN const KEventInfo& kIn
 
 		if( SetPeriodEventTime( kInfo, ctBegin, ctEnd ) == false )
 		{
-			START_LOG( cerr, L"이벤트 기간설정 실패.!" )
+			START_LOG( cerr, L"Failed to set the event period." )
 				<< BUILD_LOG( kInfo.m_iEventType )
 				<< BUILD_LOG( kInfo.m_wstrEventName )
 				<< END_LOG;
@@ -4293,7 +4293,7 @@ void KGameEventManager::AddDefenseDungeonOpenRateEvent( IN const KEventInfo& kIn
 		//}}
 		if( pEventData == NULL )
 		{
-			START_LOG( cerr, L"보상이벤트 스크립트가 없습니다.!" )
+			START_LOG( cerr, L"Reward event script is missing." )
 				<< BUILD_LOG( kInfo.m_iEventUID )
 				<< BUILD_LOG( kInfo.m_wstrEventName )
 				<< BUILD_LOG( kInfo.m_iScriptID )
@@ -4314,7 +4314,7 @@ void KGameEventManager::AddDefenseDungeonOpenRateEvent( IN const KEventInfo& kIn
 
 		m_mapIngEventData[KGameEvent::GET_DEFENSE_DUNGEON].insert( std::make_pair( kInfo.m_iEventUID, pEvent ) );
 
-		START_LOG( cout2, L"신규 이벤트 등록.!" )
+		START_LOG( cout2, L"New event registered." )
 			<< BUILD_LOG( kInfo.m_iEventUID )
 			<< BUILD_LOG( kInfo.m_iEventType )
 			<< BUILD_LOG( kInfo.m_wstrEventName )

@@ -61,7 +61,7 @@ void KGSRelayDBThread::ProcessEvent( const KEventPtr& spEvent_ )
 		CASE( DBE_UPDATE_REWARD_COMPLETE_JP_EVENT_NOT );
 
     default:
-        START_LOG( cerr, L"이벤트 핸들러가 정의되지 않았음. " << spEvent_->GetIDStr() );
+        START_LOG( cerr, L"No event handler is defined. " << spEvent_->GetIDStr() );
     }
 
 	//////////////////////////////////////////////////////////////////////////
@@ -96,7 +96,7 @@ IMPL_ON_FUNC( DBE_UPDATE_USER_INFO_TO_RELAY_DB_JP_EVENT_NOT )
 end_proc:
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"캐릭터 정보를 중계DB로 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update the character information in the relay database!" )
 			<< BUILD_LOG( iOK )
 			<< BUILD_LOG( kPacket_.m_wstrUserID )
 			<< BUILD_LOG( kPacket_.m_iUserUID )
@@ -162,7 +162,7 @@ IMPL_ON_FUNC( DBE_UPDATE_REWARD_COMPLETE_JP_EVENT_NOT )
 end_proc:
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"보상 ID값을 DB에 업데이트 하는데 실패했다!" )
+		START_LOG( cerr, L"Failed to update reward ID in the database!" )
 			<< BUILD_LOG( iOK )
 			<< BUILD_LOG( kPacket_.m_iRID )
 			<< END_LOG;

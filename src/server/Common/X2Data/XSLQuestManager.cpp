@@ -66,7 +66,7 @@ bool CXSLQuestManager::AddQuestTemplet_LUA()
 	{
 		if( SEnum::IsValidServerGroupID( iServerGroupID ) == false )
 		{
-			START_LOG( cerr, L"정상적인 서버군ID값이 아닙니다." )
+			START_LOG( cerr, L"Invalid server group ID." )
 				<< BUILD_LOG( iServerGroupID )
 				<< BUILD_LOG( kQuestTemplet.m_iID );
 			return false;
@@ -74,7 +74,7 @@ bool CXSLQuestManager::AddQuestTemplet_LUA()
 
 		if( KBaseServer::GetKObj()->GetServerGroupID() != iServerGroupID )
 		{
-			START_LOG( clog2, L"서버군이 다르므로 해당 퀘스트는 파싱하지 않습니다." )
+			START_LOG( clog2, L"Skipping this quest because it belongs to a different server group." )
 				<< BUILD_LOG( iServerGroupID )
 				<< BUILD_LOG( kQuestTemplet.m_iID );
 			return true;
@@ -208,7 +208,7 @@ bool CXSLQuestManager::AddQuestTemplet_LUA()
 						{
 							if( buf == iSubQuestID )
 							{
-								START_LOG( cerr, L"동일한 서브 퀘스트가 그룹핑 되어 있다." )
+								START_LOG( cerr, L"Duplicate subquest group." )
 									<< BUILD_LOG( kQuestTemplet.m_iID )
 									<< BUILD_LOG( iSubQuestID )
 									<< BUILD_LOG( buf )
@@ -316,7 +316,7 @@ bool CXSLQuestManager::AddQuestTemplet_LUA()
 		}
 		else
 		{
-			START_LOG( cerr, L"[에픽관련] 방금넣은 에픽 데이터가 없음." )
+			START_LOG( cerr, L"[Epic] Newly added epic data was not found." )
 				<< BUILD_LOG( kQuestTemplet.m_iID )
 				<< END_LOG;
 		}
@@ -362,7 +362,7 @@ bool CXSLQuestManager::AddQuestTemplet_LUA()
 		}
 		else
 		{
-			START_LOG( cerr, L"[에픽관련] 방금넣은 에픽 데이터가 없음." )
+			START_LOG( cerr, L"[Epic] Newly added epic data was not found." )
 				<< BUILD_LOG( kQuestTemplet.m_iID )
 				<< END_LOG;
 		}
@@ -381,7 +381,7 @@ bool CXSLQuestManager::AddQuestTemplet_LUA()
 			{
 				if( (*vitRandom) == kQuestTemplet.m_iID )
 				{
-					START_LOG( cerr, L"중복되는 랜덤 퀘스트가 있다." )
+					START_LOG( cerr, L"Duplicate random quest." )
 						<< BUILD_LOG( kQuestTemplet.m_iID )
 						<< BUILD_LOG( kQuestTemplet.m_iRandomGroupID )
 						<< END_LOG;
@@ -408,7 +408,7 @@ bool CXSLQuestManager::AddQuestTemplet_LUA()
 	}
 	else
 	{
-		START_LOG( cerr, L"정의 되지 않은 퀘스트 타입입니다." )
+		START_LOG( cerr, L"Undefined quest type." )
 			<< BUILD_LOG( kQuestTemplet.m_iID )
 			<< BUILD_LOG( static_cast<int>(kQuestTemplet.m_eQuestType) )
 			<< END_LOG;
@@ -483,7 +483,7 @@ bool CXSLQuestManager::GetQuestConditionItemList( int iQuestID, std::map< int, i
 
 	if( pQuestTemplet == NULL )
 	{
-		START_LOG( cerr, L"QuestTemplet 포인터 이상.!" )
+		START_LOG( cerr, L"Invalid QuestTemplet pointer." )
 			<< BUILD_LOG( iQuestID )
 			<< END_LOG;
 
@@ -507,7 +507,7 @@ bool CXSLQuestManager::GetQuestConditionItemList( int iQuestID, std::map< int, i
 		}
 		else
 		{
-			START_LOG( cerr, L"SubQuestTemplet 포인터 이상.!" )
+			START_LOG( cerr, L"Invalid SubQuestTemplet pointer." )
 				<< BUILD_LOG( iSubQuestID )
 				<< END_LOG;
 		}
@@ -522,7 +522,7 @@ bool CXSLQuestManager::IsSubItemCondition( int iQuestID )
 
 	if( pQuestTemplet == NULL )
 	{
-		START_LOG( cerr, L"QuestTemplet 포인터 이상.!" )
+		START_LOG( cerr, L"Invalid QuestTemplet pointer." )
 			<< BUILD_LOG( iQuestID )
 			<< END_LOG;
 
@@ -546,7 +546,7 @@ bool CXSLQuestManager::IsSubItemCondition( int iQuestID )
 		}
 		else
 		{
-			START_LOG( cerr, L"SubQuestTemplet 포인터 이상.!" )
+			START_LOG( cerr, L"Invalid SubQuestTemplet pointer." )
 				<< BUILD_LOG( iSubQuestID )
 				<< END_LOG;
 		}
@@ -560,7 +560,7 @@ bool CXSLQuestManager::IsEpicQuest( IN int iQuestID_ )
 	const QuestTemplet* pQuestTemplet = GetQuestTemplet( iQuestID_ );
 	if( pQuestTemplet == NULL )
 	{
-		START_LOG( cerr, L"QuestTemplet 포인터 이상.!" )
+		START_LOG( cerr, L"Invalid QuestTemplet pointer." )
 			<< BUILD_LOG( iQuestID_ )
 			<< END_LOG;
 
@@ -712,7 +712,7 @@ bool CXSLQuestManager::LoadQuestCondition( KLuaManager& luaManager, QuestConditi
 		//if( questCondition.m_eUnitType != CXSLUnit::UT_NONE && questCondition.m_eUnitClass != CXSLUnit::UC_NONE )
 		if( questCondition.m_eUnitType != CXSLUnit::UT_NONE && questCondition.m_setUnitClass.empty() == false )
 		{
-			START_LOG( cerr, L"Unit 식별값이 잘못되었음.!" )
+			START_LOG( cerr, L"Invalid unit identifier." )
 				<< BUILD_LOG( questCondition.m_eUnitType )
 				//<< BUILD_LOG( questCondition.m_eUnitClass )
 				<< END_LOG;
@@ -1173,7 +1173,7 @@ bool CXSLQuestManager::LoadClearCondition( KLuaManager& luaManager, SubQuestTemp
 
 				if( kSubQuestTemplet.m_ClearCondition.m_setVillageMapID.size() <= 0 )
 				{
-					START_LOG( cerr ,L"스크립트 파싱 실패 - SQT_VISIT_VILLAGE" )
+					START_LOG( cerr ,L"Failed to parse script - SQT_VISIT_VILLAGE." )
 						<< BUILD_LOG( static_cast<int>(kSubQuestTemplet.m_ClearCondition.m_setVillageMapID.size()) )
 						<< END_LOG;
 
@@ -1200,7 +1200,7 @@ bool CXSLQuestManager::LoadClearCondition( KLuaManager& luaManager, SubQuestTemp
 				// 없으면 에러
 				if( kSubQuestTemplet.m_ClearCondition.m_setBattleFieldID.size() <= 0 )
 				{
-					START_LOG( cerr ,L"스크립트 파싱 실패 - SQT_VISIT_FIELD" )
+					START_LOG( cerr ,L"Failed to parse script - SQT_VISIT_FIELD." )
 						<< BUILD_LOG( static_cast<int>(kSubQuestTemplet.m_ClearCondition.m_setBattleFieldID.size()) )
 						<< END_LOG;
 
@@ -1228,7 +1228,7 @@ bool CXSLQuestManager::LoadClearCondition( KLuaManager& luaManager, SubQuestTemp
 				// 없으면 에러
 				if( kSubQuestTemplet.m_ClearCondition.m_setDungeonID.size() <= 0 )
 				{
-					START_LOG( cerr ,L"스크립트 파싱 실패 - SQT_VISIT_DUNGEON" )
+					START_LOG( cerr ,L"Failed to parse script - SQT_VISIT_DUNGEON." )
 						<< BUILD_LOG( static_cast<int>(kSubQuestTemplet.m_ClearCondition.m_setDungeonID.size()) )
 						<< END_LOG;
 
@@ -1383,7 +1383,7 @@ bool CXSLQuestManager::LoadClearCondition( KLuaManager& luaManager, SubQuestTemp
 			break;
 		default:
 			{
-				START_LOG( cerr, L"Sub Quest ClearCondition Type 별 읽어 오기 실패.!" )
+				START_LOG( cerr, L"Failed to read subquest clear conditions by type." )
 					<< BUILD_LOG( kSubQuestTemplet.m_iID )
 					<< BUILD_LOG( kSubQuestTemplet.m_wstrDescription )
 					<< BUILD_LOG( kSubQuestTemplet.m_eClearType )
@@ -1401,7 +1401,7 @@ bool CXSLQuestManager::LoadClearCondition( KLuaManager& luaManager, SubQuestTemp
 
 error_proc:
 
-	START_LOG( cerr, L"Sub Quest ClearCondition 읽어 오기 실패.!" )
+	START_LOG( cerr, L"Failed to read subquest clear conditions." )
 		<< BUILD_LOG( kSubQuestTemplet.m_iID )
 		<< BUILD_LOG( kSubQuestTemplet.m_wstrDescription )
 		<< BUILD_LOG( kSubQuestTemplet.m_eClearType )
@@ -1490,7 +1490,7 @@ void CXSLQuestManager::GetQuestListByType( IN QUEST_TYPE eType, OUT std::map< in
 
 	if( QT_NORMAL > eType || eType >= QT_END )
 	{
-		START_LOG( cerr, L"정상적인 퀘스트 타입이 아닙니다." )
+		START_LOG( cerr, L"Invalid quest type." )
 			<< BUILD_LOG( static_cast<int>(eType) )
 			<< END_LOG;
 		return;
@@ -1644,7 +1644,7 @@ bool CXSLQuestManager::IsEpicAndNormalQuest( IN int iQuestID )
 	const QuestTemplet* pQuestTemplet = GetQuestTemplet( iQuestID );
 	if( pQuestTemplet == NULL )
 	{
-		START_LOG( cerr, L"QuestTemplet 포인터 이상.!" )
+		START_LOG( cerr, L"Invalid QuestTemplet pointer." )
 			<< BUILD_LOG( iQuestID )
 			<< END_LOG;
 
@@ -1696,7 +1696,7 @@ bool CXSLQuestManager::AddAccountQuestTemplet_LUA()
 	{
 		if( SEnum::IsValidServerGroupID( iServerGroupID ) == false )
 		{
-			START_LOG( cerr, L"정상적인 서버군ID값이 아닙니다." )
+			START_LOG( cerr, L"Invalid server group ID." )
 				<< BUILD_LOG( iServerGroupID )
 				<< BUILD_LOG( kQuestTemplet.m_iID );
 			return false;
@@ -1704,7 +1704,7 @@ bool CXSLQuestManager::AddAccountQuestTemplet_LUA()
 
 		if( KBaseServer::GetKObj()->GetServerGroupID() != iServerGroupID )
 		{
-			START_LOG( clog2, L"서버군이 다르므로 해당 퀘스트는 파싱하지 않습니다." )
+			START_LOG( clog2, L"Skipping this quest because it belongs to a different server group." )
 				<< BUILD_LOG( iServerGroupID )
 				<< BUILD_LOG( kQuestTemplet.m_iID );
 			return true;
@@ -1828,7 +1828,7 @@ bool CXSLQuestManager::AddAccountQuestTemplet_LUA()
 						{
 							if( buf == iSubQuestID )
 							{
-								START_LOG( cerr, L"동일한 서브 퀘스트가 그룹핑 되어 있다." )
+								START_LOG( cerr, L"Duplicate subquest group." )
 									<< BUILD_LOG( kQuestTemplet.m_iID )
 									<< BUILD_LOG( iSubQuestID )
 									<< BUILD_LOG( buf )
@@ -1929,7 +1929,7 @@ bool CXSLQuestManager::AddAccountQuestTemplet_LUA()
 		}
 		else
 		{
-			START_LOG( cerr, L"[계정관련] 방금넣은 계정 퀘스트 데이터가 없음." )
+			START_LOG( cerr, L"[Account] Newly added account quest data was not found." )
 				<< BUILD_LOG( kQuestTemplet.m_iID )
 				<< END_LOG;
 		}
@@ -1967,7 +1967,7 @@ bool CXSLQuestManager::AddAccountQuestDate_LUA()
 	pQuestTemplet = GetAccountQuestTemplet( iAccountQuestID );
 	if( pQuestTemplet == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 계정 QUEST 입니다." )
+		START_LOG( cerr, L"Account quest does not exist." )
 			<< BUILD_LOG( iAccountQuestID )
 			<< BUILD_LOG( wstrErrLua )
 			<< END_LOG;
@@ -1977,7 +1977,7 @@ bool CXSLQuestManager::AddAccountQuestDate_LUA()
 	LUA_GET_VALUE_RETURN_ERR(		luaManager, L"BeginDate",			wstrBegin,		L"",	wstrErrLua, goto LoadFail; );
 	if( KncUtil::ConvertStringToCTime( wstrBegin, kAccountQuestDateInfo.m_tBegin ) == false )
 	{
-		START_LOG( cerr, L"계정 QUEST 유효 기간 시작 시간이 잘못되었습니다." )
+		START_LOG( cerr, L"Invalid account quest validity start time." )
 			<< BUILD_LOG( iAccountQuestID )
 			<< BUILD_LOG( wstrBegin )
 			<< BUILD_LOG( wstrErrLua )
@@ -1988,7 +1988,7 @@ bool CXSLQuestManager::AddAccountQuestDate_LUA()
 	LUA_GET_VALUE_RETURN_ERR(		luaManager, L"EndDate",				wstrEnd,		L"",	wstrErrLua, goto LoadFail; );
 	if( KncUtil::ConvertStringToCTime( wstrEnd, kAccountQuestDateInfo.m_tEnd ) == false )
 	{
-		START_LOG( cerr, L"계정 QUEST 유효 기간 종료 시간이 잘못되었습니다." )
+		START_LOG( cerr, L"Invalid account quest validity end time." )
 			<< BUILD_LOG( iAccountQuestID )
 			<< BUILD_LOG( wstrEnd )
 			<< BUILD_LOG( wstrErrLua )
@@ -1999,7 +1999,7 @@ bool CXSLQuestManager::AddAccountQuestDate_LUA()
 	LUA_GET_VALUE_RETURN_ERR(		luaManager, L"DayOfWeek",			kAccountQuestDateInfo.m_iDayOfWeek,		0,	wstrErrLua, goto LoadFail; );
 	if( kAccountQuestDateInfo.m_iDayOfWeek < 1 || kAccountQuestDateInfo.m_iDayOfWeek > 7 )
 	{
-		START_LOG( cerr, L"계정 QUEST 요일 정보가 잘못되었습니다." )
+		START_LOG( cerr, L"Invalid account quest day-of-week information." )
 			<< BUILD_LOG( iAccountQuestID )
 			<< BUILD_LOG( kAccountQuestDateInfo.m_iDayOfWeek )
 			<< BUILD_LOG( wstrErrLua )
@@ -2013,7 +2013,7 @@ bool CXSLQuestManager::AddAccountQuestDate_LUA()
 		std::map< int, AccountQuestDateInfo >::iterator mit = m_mapAccountQuestDayOfWeekInfo.find( iAccountQuestID );
 		if( mit != m_mapAccountQuestDayOfWeekInfo.end() )
 		{
-			START_LOG( cerr, L"계정 QUEST 날짜 정보가 중복되었습니다." )
+			START_LOG( cerr, L"Duplicate account quest date information." )
 				<< BUILD_LOG( iAccountQuestID )
 				<< BUILD_LOG( wstrBegin )
 				<< BUILD_LOG( wstrEnd )
@@ -2025,7 +2025,7 @@ bool CXSLQuestManager::AddAccountQuestDate_LUA()
 
 	m_mapAccountQuestDayOfWeekInfo.insert( std::make_pair( iAccountQuestID, kAccountQuestDateInfo ) );
 
-	START_LOG( cout, L"계정 QUEST 날짜 정보가 정상적으로 입력 되었습니다.." )
+	START_LOG( cout, L"Account quest date information was entered successfully." )
 		<< BUILD_LOG( iAccountQuestID )
 		<< END_LOG;
 
@@ -2044,7 +2044,7 @@ bool CXSLQuestManager::IsValidAccountQuestDate( IN int iAccountQuestID, IN CTime
 	std::map< int, AccountQuestDateInfo >::iterator mit = m_mapAccountQuestDayOfWeekInfo.find( iAccountQuestID );
 	if( mit == m_mapAccountQuestDayOfWeekInfo.end() )
 	{
-		START_LOG( clog, L"오류 아님. 없을 수 있음. 계정 QUEST 날짜 정보가 없습니다." )
+		START_LOG( clog, L"Account quest date information is missing; this may be expected." )
 			<< BUILD_LOG( iAccountQuestID )
 			<< END_LOG;
 		return true;
@@ -2052,7 +2052,7 @@ bool CXSLQuestManager::IsValidAccountQuestDate( IN int iAccountQuestID, IN CTime
 
 	if( mit->second.m_tBegin > tNowTime )
 	{
-		START_LOG( clog, L"계정 QUEST 의 유효 날짜가 되지 않았습니다." )
+		START_LOG( clog, L"Account quest is not yet within its valid date range." )
 			<< BUILD_LOG( iAccountQuestID )
 			<< BUILD_LOG( mit->second.m_tBegin.GetYear() )
 			<< BUILD_LOG( mit->second.m_tBegin.GetMonth() )
@@ -2066,7 +2066,7 @@ bool CXSLQuestManager::IsValidAccountQuestDate( IN int iAccountQuestID, IN CTime
 	}
 	if( mit->second.m_tEnd < tNowTime )
 	{
-		START_LOG( clog, L"계정 QUEST 의 유효 날짜가 지났습니다." )
+		START_LOG( clog, L"Account quest validity period has expired." )
 			<< BUILD_LOG( iAccountQuestID )
 			<< BUILD_LOG( mit->second.m_tEnd.GetYear() )
 			<< BUILD_LOG( mit->second.m_tEnd.GetMonth() )
@@ -2081,7 +2081,7 @@ bool CXSLQuestManager::IsValidAccountQuestDate( IN int iAccountQuestID, IN CTime
 
 	if( mit->second.m_iDayOfWeek != tNowTime.GetDayOfWeek() )
 	{
-		START_LOG( clog, L"요일이 맞지 않습니다." )
+		START_LOG( clog, L"Day of the week does not match." )
 			<< BUILD_LOG( iAccountQuestID )
 			<< BUILD_LOG( mit->second.m_tEnd.GetYear() )
 			<< BUILD_LOG( mit->second.m_tEnd.GetMonth() )

@@ -261,7 +261,7 @@ KThread*        CreateDBThread( int iDBConnectionInfo, const wchar_t* szDSN, boo
 
 
     default:
-        START_LOG( cerr, L"접속하려는 DB 종류가 이상함." )
+        START_LOG( cerr, L"Invalid database type for connection." )
             << BUILD_LOG( iDBConnectionInfo )
             << END_LOG;
         return new KGSGameDBThread( szDSN, bDBConnStr );
@@ -367,11 +367,11 @@ void KGameServer::OnServerReadyComplete()
 		{
 			if( SiKNexonBillingTCPManager()->IsFirstConnectSucc() )
 			{
-				START_LOG( cout, L"넥슨 빌링 인증 서버 처음 접속 성공!" );
+				START_LOG( cout, L"Connected to the Nexon billing authentication server for the first time!" );
 			}
 			else
 			{
-				START_LOG( cerr, L"넥슨 빌링 인증 서버 접속 실패." )
+				START_LOG( cerr, L"Failed to connect to the Nexon billing authentication server." )
 					<< END_LOG;
 
 				// First Connect Success체크 해야만 접속끊겼을때 에러로그 출력함.
@@ -413,7 +413,7 @@ void KGameServer::OnServerReadyComplete()
 		SiKNexonBillingTCPManager()->GetCashProductList( kPacketToLogDB.m_vecCashProductList );
 		SendToLogDB( ELOG_CASH_PRODUCT_LIST_UPDATE_NOT, kPacketToLogDB );
 
-		START_LOG( cout, L"--- 통계를 위한 캐쉬 아이템 리스트 업데이트 ---" )
+		START_LOG( cout, L"--- Updating the cash item list for statistics ---" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kPacketToLogDB.m_vecCashProductList.size() );
 	}
@@ -489,7 +489,7 @@ bool KGameServer::DestroyAllSession()
 
     KActorManager* pkActorManager = KActorManager::GetKObj();
 
-    START_LOG( cout, L"현재 유저 : " << pkActorManager->GetCount() << L" 명" );
+    START_LOG( cout, L"Current users: " << pkActorManager->GetCount() << L" users" );
 
 	int iIndex = KStatistics::eSIColDR_Server_Shutdown;
 
@@ -787,7 +787,7 @@ void KGameServer::ProcessEvent( const KEventPtr& spEvent_ )
 
 
     default:
-        START_LOG( cerr, L"이벤트 핸들러가 정의되지 않았음 - " << spEvent_->GetIDStr() )
+        START_LOG( cerr, L"No event handler is defined - " << spEvent_->GetIDStr() )
             << BUILD_LOG( spEvent_->m_usEventID );
     }
 
@@ -905,7 +905,7 @@ IMPL_ON_FUNC( ERM_ROOM_LIST_INFO_NOT )
         }
         break;
     default:
-        START_LOG( cerr, L"룸 정보 변경 코드가 이상함." )
+        START_LOG( cerr, L"Invalid room information change code." )
             << BUILD_LOG( kPacket_.m_iCode )
             << END_LOG;
 
@@ -918,7 +918,7 @@ IMPL_ON_FUNC( ERM_SQUARE_LIST_INFO_NOT )
 	//{{ 2010. 05. 22  최육사	대전 던전 서버군 통합
 	if( KncUid::ExtractServerGroupID( kPacket_.m_kSquareInfo.m_iSquareUID ) != GetServerGroupID() )
 	{
-		START_LOG( cerr, L"다른 서버군의 광장 정보입니다. 이쪽으로 오면 안되는데.." )
+		START_LOG( cerr, L"Plaza information belongs to another server group; it should not have arrived here." )
 			<< BUILD_LOG( kPacket_.m_kSquareInfo.m_iSquareUID )
 			<< BUILD_LOG( KncUid::ExtractServerGroupID( kPacket_.m_kSquareInfo.m_iSquareUID ) )
 			<< BUILD_LOG( GetServerGroupID() )
@@ -947,7 +947,7 @@ IMPL_ON_FUNC( ERM_SQUARE_LIST_INFO_NOT )
 		}
 		break;
 	default:
-		START_LOG( cerr, L"광장 정보 변경 코드가 이상함." )
+		START_LOG( cerr, L"Invalid plaza information change code." )
 			<< BUILD_LOG( kPacket_.m_iCode )
 			<< END_LOG;
 
@@ -997,7 +997,7 @@ IMPL_ON_FUNC( ENX_UPDATE_PRODUCT_LIST_NOT )
 		kPacketToLogDB.m_vecCashProductList = kPacket_.m_vecCashProductList;
 		SendToLogDB( ELOG_CASH_PRODUCT_LIST_UPDATE_NOT, kPacketToLogDB );
 
-		START_LOG( cout, L"--- 통계를 위한 캐쉬 아이템 리스트 업데이트 ---" )
+		START_LOG( cout, L"--- Updating the cash item list for statistics ---" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kPacketToLogDB.m_vecCashProductList.size() );
 	}
@@ -1047,7 +1047,7 @@ IMPL_ON_FUNC( DBE_ABUSER_LIST_ACK )
 	if( kPacket_.m_mapAbuserList.empty() )
 		return;
 
-	START_LOG( cout, L"어뷰저 리스트 갱신!" );
+	START_LOG( cout, L"Updated the abuser list!" );
 
 	// 어뷰저 리스트 업데이트
 	SiKAbuserLogManager()->UpdateAbuserList( kPacket_.m_mapAbuserList );
@@ -1061,7 +1061,7 @@ IMPL_ON_FUNC( ERM_UPDATE_FIELD_INFO_NOT )
 	// 필드 정보 업데이트
 	SiCXSLMapData()->UpdateFieldInfo( kPacket_.m_iMapID, kPacket_.m_iFieldUID );
 
-	START_LOG( cout, L"필드 정보 업데이트!" )
+	START_LOG( cout, L"Field information updated!" )
 		<< BUILD_LOG( kPacket_.m_iMapID )
 		<< BUILD_LOG( kPacket_.m_iFieldUID );
 }
@@ -1072,7 +1072,7 @@ IMPL_ON_FUNC( ECN_NEW_PVP_USER_INFO_NOT )
 {
 	if( !SiKPVPLobbyManager()->AddPVPUser( kPacket_.m_kUserInfo, kPacket_.m_nGSUID ) )
 	{
-        START_LOG( cerr, L"pvp user 추가 실패!" )
+        START_LOG( cerr, L"Failed to add the PvP user!" )
 			<< BUILD_LOG( kPacket_.m_nGSUID )
 			<< BUILD_LOG( kPacket_.m_kUserInfo.m_iUnitUID )
 			<< END_LOG;
@@ -1088,7 +1088,7 @@ IMPL_ON_FUNC( ECN_UPDATE_PVP_USER_INFO_NOT )
 		{
 			if( !SiKPVPLobbyManager()->RemovePVPUser( vit->m_iUnitUID ) )
 			{
-				START_LOG( cerr, L"pvp user 삭제 실패!" )
+				START_LOG( cerr, L"Failed to remove PvP user!" )
 					<< BUILD_LOG( vit->m_iUnitUID )
 					<< END_LOG;
 			}
@@ -1097,7 +1097,7 @@ IMPL_ON_FUNC( ECN_UPDATE_PVP_USER_INFO_NOT )
 		{
 			if( !SiKPVPLobbyManager()->UpdatePVPUserInfo( vit->m_iUnitUID, vit->m_cState, vit->m_iStateCode, vit->m_iRoomUID ) )
 			{
-				START_LOG( cwarn, L"pvp user 갱신 실패!" )
+				START_LOG( cwarn, L"Failed to update PvP user!" )
 					<< BUILD_LOG( vit->m_iUnitUID )
 					<< BUILD_LOGc( vit->m_cState )
 					<< BUILD_LOG( vit->m_iStateCode )
@@ -1135,7 +1135,7 @@ IMPL_ON_FUNC( ECN_CHECK_CHANNEL_CHANGE_REQ )
 	// 들어갈수 있는 공간이 5%가 되어야 채널이동 가능
 	if( ( static_cast<float>( iMaxUser - iNowUser ) / static_cast<float>( iMaxUser ) ) < 0.05f )
 	{
-		START_LOG( clog, L"채널의 동접 여유공간이 부족하여 채널이동할수 없습니다" )
+		START_LOG( clog, L"Cannot transfer channels because there is not enough concurrent-user capacity." )
 			<< BUILD_LOG( SiKChannelManager()->GetChannelID() )
 			<< BUILD_LOG( iMaxUser )
 			<< BUILD_LOG( iNowUser )
@@ -1148,7 +1148,7 @@ IMPL_ON_FUNC( ECN_CHECK_CHANNEL_CHANGE_REQ )
 	// 채널 입장 예약
 	if( SiKChannelManager()->NewChannelChangeUser( kPacket_.m_iCharUID, kPacket_.m_kChangeUserInfo ) == false )
 	{
-		START_LOG( cerr, L"채널 입장 예약 실패" )
+		START_LOG( cerr, L"Failed to reserve channel entry" )
 			<< BUILD_LOG( kPacket_.m_iCharUID )
 			<< END_LOG;
 
@@ -1182,7 +1182,7 @@ IMPL_ON_FUNC( ELG_GET_RANKING_FOR_GS_RANKING_MANAGER_ACK )
 
 IMPL_ON_FUNC( ELG_HENIR_RANKING_REFRESH_NOT )
 {
-	START_LOG( clog2, L"로그인서버로부터 헤니르 랭킹정보가 도착했다!" )
+	START_LOG( clog2, L"Received Henir ranking information from the login server!" )
 		<< BUILD_LOG( kPacket_.m_mapHenirRanking.size() );
 
 	// 갱신된 헤니르의 시공 랭킹 정보 업데이트
@@ -1204,7 +1204,7 @@ IMPL_ON_FUNC( ERM_INCREASE_PARTY_FEVER_NOT )
 	if( SiKPartyListManager()->E_IncreasePartyFever( kPacket_ ) == false )
 	//}}
 	{
-        START_LOG( cerr, L"파티 사기 수치 증가 실패!" )
+        START_LOG( cerr, L"Failed to increase the party fraud value!" )
 			<< BUILD_LOG( kPacket_.m_iPartyUID )
 			<< END_LOG;
 	}
@@ -1217,7 +1217,7 @@ IMPL_ON_FUNC( ERM_MAX_PARTY_FEVER_NOT )
 	// 파티 사기수치 최대 증가
 	if( SiKPartyListManager()->E_MaxPartyFever( kPacket_ ) == false )
 	{
-		START_LOG( cerr, L"파티 사기 수치 증가 실패!" )
+		START_LOG( cerr, L"Failed to increase the party fraud value!" )
 			<< BUILD_LOG( kPacket_.m_iPartyUID )
 			<< END_LOG;
 	}
@@ -1230,7 +1230,7 @@ IMPL_ON_FUNC( DBE_JOIN_GUILD_ACK )
 {
 	if( kPacket_.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"길드 가입 실패! 절대 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"Guild membership failed; this should never happen!" )
 			<< BUILD_LOG( kPacket_.m_iGuildUID )
 			<< BUILD_LOG( kPacket_.m_kJoinGuildMember.m_iUnitUID )
 			<< BUILD_LOG( NetError::GetErrStr( kPacket_.m_iOK ) )
@@ -1399,7 +1399,7 @@ IMPL_ON_FUNC( ERM_PERSONAL_SHOP_INFO_NOT )
 		break;
 
 	default:
-		START_LOG( cerr, L"개인상점 아이템 리스트 변경코드 오류." )
+		START_LOG( cerr, L"Personal shop item list change code error." )
 			<< BUILD_LOG( kPacket_.m_iCode )
 			<< END_LOG;
 		break;
@@ -1431,7 +1431,7 @@ _IMPL_ON_FUNC( ESR_ORDER_TO_GAME_SERVER_NOT, KESR_SCRIPT_REFRESH_ORDER_NOT )
 	}
 	else
 	{
-		START_LOG( cerr, L"이쪽으로 오면 안되는 갱신 요청 타입입니다!" )
+		START_LOG( cerr, L"Invalid update request type for this handler!" )
 			<< BUILD_LOG( kPacket_.m_iOrderType )
 			<< END_LOG;
 	}
@@ -1522,7 +1522,7 @@ _IMPL_ON_FUNC( ESR_ORDER_TO_REFRESH_MANAGER_ACK, KESR_SCRIPT_REFRESH_ORDER_NOT )
     CASE_SCRIPT_REFRESH_SWAP_INSTANCE( OT_GS_ED_INVENTORY_EXPAND, CXSLEDInventoryExpand );
 	default:
 		{
-			START_LOG( cerr, L"이쪽으로 오면 안되는 타입인데?" )
+			START_LOG( cerr, L"This type should not reach this point." )
 				<< BUILD_LOG( kPacket_.m_iOrderType )
 				<< END_LOG;
 		}
@@ -1565,7 +1565,7 @@ _IMPL_ON_FUNC( ESR_ORDER_TO_REFRESH_MANAGER_ACK, KESR_SCRIPT_REFRESH_ORDER_NOT )
 			KActorManager::GetKObj()->SendToAll( kEvent );
 		}
 
-		START_LOG( cout, L"[컨텐츠 관리자] 캐쉬샵 상점의 온오프 정보를 클라이언트로 브로드캐스팅 하였습니다!" )
+		START_LOG( cout, L"[Content manager] Broadcast cash shop on/off status to clients!" )
 			<< BUILD_LOG( kNot.m_bCashShopOpen );
 	}
 	//}}
@@ -1614,7 +1614,7 @@ IMPL_ON_FUNC( EGB_UPDATE_MISSION_START_TIME_NOT )
 
 	if( kPacket_.m_wsrtStartTime.empty() == true)
 	{
-		START_LOG( cerr, L"월드 버프 시간이 비었다고 한다." )
+		START_LOG( cerr, L"The world buff duration is empty." )
 			<< BUILD_LOG( kPacket_.m_wsrtStartTime )
 			<< END_LOG;
 	}
@@ -1696,7 +1696,7 @@ IMPL_ON_FUNC( ERM_BATTLE_FIELD_ROOM_INFO_NOT )
 
 	default:
 		{
-			START_LOG( cerr, L"배틀필드 방 정보 업데이트" )
+			START_LOG( cerr, L"Updating battlefield room information" )
 				<< BUILD_LOGc( kPacket_.m_cType )
 				<< END_LOG;
 		}
@@ -1747,7 +1747,7 @@ IMPL_ON_FUNC( DBE_CHECK_EVENT_UPDATE_ACK )
 		int iNewReleaseTick = cmit->second;
 		if( iOldReleaseTick != iNewReleaseTick )
 		{
-			START_LOG( cout2, L"이벤트 바뀐 것을 확인하였으므로 새로 받아옵니다." )
+			START_LOG( cout2, L"Event changed; retrieving the latest information." )
 				<< BUILD_LOG( iOldReleaseTick )
 				<< BUILD_LOG( iNewReleaseTick )
 				<< END_LOG;
@@ -1795,7 +1795,7 @@ IMPL_ON_FUNC( ERM_WEDDING_HALL_INFO_NOT )
 
 	default:
 		{
-			START_LOG( cerr, L"결혼식장 정보 업데이트" )
+			START_LOG( cerr, L"Updating wedding hall information" )
 				<< BUILD_LOGc( kPacket_.m_cType )
 				<< END_LOG;
 		}

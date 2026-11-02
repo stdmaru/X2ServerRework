@@ -52,7 +52,7 @@ void KUserRecommendManager::GetRecommendUserList( IN OUT u_int& uiViewPage, OUT 
 
 		if( m_vecRecommendUserList.size() <= uiBeginIndex )
 		{
-			START_LOG( cerr, L"일어날 수 없는 에러!" )
+			START_LOG( cerr, L"This should never happen!" )
 				<< BUILD_LOG( uiViewPage )
 				<< BUILD_LOG( uiTotalPage )
 				<< BUILD_LOG( uiBeginIndex )
@@ -80,7 +80,7 @@ void KUserRecommendManager::AddRecommendUser( IN const KRecommendUserInfo& kInfo
 {
 	if( IsInitRecommendUserList() == false )
 	{
-		START_LOG( clog, L"추천인 리스트가 초기화 되지 않았는데 리스트에 추가하려한다." );
+		START_LOG( clog, L"Attempted to add to the recommender list before it was initialized." );
 		return;
 	}
 
@@ -91,7 +91,7 @@ void KUserRecommendManager::ModifyRecommendUser( IN const KELG_RECOMMEND_USER_IN
 {
 	if( IsInitRecommendUserList() == false )
 	{
-		START_LOG( clog, L"추천인 리스트가 초기화 되지 않았는데 리스트에 추가하려한다." );
+		START_LOG( clog, L"Attempted to add to the recommender list before it was initialized." );
 		return;
 	}
 
@@ -122,7 +122,7 @@ void KUserRecommendManager::ModifyRecommendUser( IN const KELG_RECOMMEND_USER_IN
 			break;
 
 		default:
-			START_LOG( cerr, L"이상한 추천인 정보 타입이 왔습니다." )
+			START_LOG( cerr, L"Received an invalid recommender information type." )
 				<< BUILD_LOG( kInfo.m_iRecommendedUnitUID )
 				<< BUILD_LOG( kInfo.m_iRecommendUnitUID )
 				<< BUILD_LOGc( kInfo.m_cType )

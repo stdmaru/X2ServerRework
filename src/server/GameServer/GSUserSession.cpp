@@ -96,7 +96,7 @@ IMPL_ON_FUNC( DBE_UPDATE_UNIT_INFO_ACK )
 		}
 		else
 		{
-			START_LOG( cerr, L"던전 클리어 정보가 있어야하는데 없음." )
+			START_LOG( cerr, L"Dungeon clear information is expected but missing." )
 				<< BUILD_LOG( *vitDungeonClear )
 				<< END_LOG;
 		}
@@ -113,7 +113,7 @@ IMPL_ON_FUNC( DBE_UPDATE_UNIT_INFO_ACK )
 		}
 		else
 		{
-			START_LOG( cerr, L"훈련소 클리어 정보가 있어야하는데 없음." )
+			START_LOG( cerr, L"Training room clear information is expected but missing." )
 				<< BUILD_LOG( *vitTCClear )
 				<< END_LOG;
 		}
@@ -221,7 +221,7 @@ IMPL_ON_FUNC( DBE_UPDATE_UNIT_INFO_ACK )
 		break;
 		//}}
 	default:
-		START_LOG( cerr, L"정의되지 않은 이벤트가 왔습니다." )
+		START_LOG( cerr, L"Received an undefined event." )
 			<< BUILD_LOG( kPacket_.m_iEventID )
 			<< BUILD_LOG( KEvent::GetIDStr( static_cast<u_short>(kPacket_.m_iEventID) ) )
 			<< END_LOG;
@@ -269,12 +269,12 @@ IMPL_ON_FUNC( EGS_VERIFY_ACCOUNT_REQ )
 	kPacket_.m_bDebugAuth = false; // 해외팀에서는 bDebugAuth를 이용한 예외상황 고려안함
 
 	SetSteamClientUser( kPacket_.m_bSteamClient );
-	START_LOG( clog, L"[TEST] 스팀 클라 유저로 등록")
+	START_LOG( clog, L"[TEST] Registered as a Steam client user.")
 		<< BUILD_LOG( IsSteamClientUser())
 		<< END_LOG;
 
 	SetAeriaClientUser( kPacket_.m_bAeriaClient );
-	START_LOG( clog, L"[TEST] 아리아 클라 유저로 등록")
+	START_LOG( clog, L"[TEST] Registered as an Aria client user.")
 		<< BUILD_LOG( IsAeriaClientUser())
 		<< END_LOG;
 
@@ -284,7 +284,7 @@ IMPL_ON_FUNC( EGS_VERIFY_ACCOUNT_REQ )
 
 	kPacket.m_kNexonAccountInfo.m_uChannelCode = static_cast<UINT8>(kPacket.m_kAuthenticateReq.m_iChannelingCode);
 
-	START_LOG( clog, L"[TEST] 채널링 코드 출력")
+	START_LOG( clog, L"[TEST] Displaying the channeling code.")
 		<< BUILD_LOG( kPacket_.m_iChannelingCode )
 		<< END_LOG;
 
@@ -319,7 +319,7 @@ IMPL_ON_FUNC( EGS_VERIFY_ACCOUNT_REQ )
 		{
 			if( m_kUserSecurityManager.CheckValidMachineID( kPacket_.m_strMachineID ) == false )
 			{
-				START_LOG( cout, L"[알림] 머신ID가 유효하지 않다! 클라이언트로 알림 패킷을 쏘자!" )
+				START_LOG( cout, L"[Notice] Invalid machine ID; sending a notification packet to the client!" )
 					<< BUILD_LOG( kPacket_.m_wstrHWID )
 					<< BUILD_LOG( kPacket_.m_wstrUserID )
 					<< BUILD_LOG( kPacket_.m_wstrPasswd )
@@ -366,7 +366,7 @@ IMPL_ON_FUNC( ELG_NEXON_USER_AUTHENTICATE_ACK )
 	if( kPacket_.m_iOK == NetError::ERR_VERIFY_24 )
 	{
 		// 인증은 성공 했지만 ATL 2.0 이 아니라면
-		START_LOG( cerr, L"통합 맴버십 ATL 등급 확인 결과" )
+		START_LOG( cerr, L"Integrated membership ATL tier check result." )
 			<< BUILD_LOG( kPacket_.m_iOK )
 			<< END_LOG;
 
@@ -384,7 +384,7 @@ IMPL_ON_FUNC( ELG_NEXON_USER_AUTHENTICATE_ACK )
 	// 넥슨 인증 결과 처리
 	if( OnNexonUserAuthenticateAck( kPacket_, kPacket ) == false )
 	{
-		START_LOG( cerr, L"넥슨 인증 실패!" )
+		START_LOG( cerr, L"Nexon authentication failed!" )
 			<< BUILD_LOG( kPacket_.m_kAccountInfo.m_wstrID )
 			<< BUILD_LOG( NetError::GetErrStr( kPacket.m_iOK ) )
 			<< END_LOG;
@@ -406,7 +406,7 @@ IMPL_ON_FUNC( ELG_NEXON_USER_AUTHENTICATE_ACK )
 	kPacketReq.m_ucChannelCode = kPacket_.m_kNexonAccountInfo.m_uChannelCode;
 	if( GetAuthLevel() >= SEnum::UAL_DEVELOPER )
 	{
-		START_LOG( cout, L"[확인] 채널링 코드 확인" )
+		START_LOG( cout, L"[Check] Verifying the channeling code." )
 			<< BUILD_LOG( kPacket_.m_kNexonAccountInfo.m_uChannelCode )
 			<< BUILD_LOG( m_kNexonAccountInfo.m_uChannelCode )
 			<< BUILD_LOG( kPacketReq.m_ucChannelCode );
@@ -511,7 +511,7 @@ IMPL_ON_FUNC( ELG_NEXON_USER_AUTHENTICATE_ACK )
 
 	if( KncUtil::ConvertStringToCTime( kPacket_.m_kAccountInfo.m_wstrLastLogin, tLastLogin ) == false )
 	{
-		START_LOG( cerr, L"시간을 문자열로 변환 실패!!!" )
+		START_LOG( cerr, L"Failed to convert the time to a string!!!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kPacket_.m_kAccountInfo.m_wstrLastLogin )
 			<< END_LOG;
@@ -616,7 +616,7 @@ IMPL_ON_FUNC( ELG_REGISTER_USER_GLOBAL_PUBLISHER_ACK )
 
 	default:
 		{
-			START_LOG( cerr, L"이상한 상태. 로그인 처리를 무시합니다." )
+			START_LOG( cerr, L"Unexpected state. Ignoring login processing." )
 				<< BUILD_LOG( GetStateID() )
 				<< BUILD_LOG( GetStateIDString() )
 				<< BUILD_LOG( GetName() )
@@ -651,7 +651,7 @@ IMPL_ON_FUNC( ELG_REGISTER_USER_GLOBAL_PUBLISHER_ACK )
 //////////////////////////////////////////////////////////////////////////
 		m_kUserPcBangManager.SetIsPcBang( false );
 		m_kUserPcBangManager.SetPcBangType(-1);	// PC방 아닌경우 -1값 0도 피씨방임
-		START_LOG( clog2, L"PC방아님...PUBLISHER CHECK" )
+		START_LOG( clog2, L"Not a PC Bang user... publisher check" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( KncUtil::toWideString( KSession::GetIPStr() ) );
 	}
@@ -703,7 +703,7 @@ _IMPL_ON_FUNC( ELG_REGISTER_NEXON_USER_ACK, KENX_AUTH_LOGIN_ACK )
 			// 만약 PC방 프리미엄을 받을 수 있는 유저라면?
 			if( kPacket_.m_byteAuthorizeResult == 1 )
 			{
-				START_LOG( cout, L"인증 타임 아웃으로 인해 PC방 프리미엄 취소!" )
+				START_LOG( cout, L"PC Bang premium canceled because authentication timed out!" )
 					<< BUILD_LOG( kPacket_.m_wstrUserID );
 
 				// 인증 타임 아웃으로 인해 PC방 프리미엄 취소하고 일반 유저로 로그인 재 요청!
@@ -717,7 +717,7 @@ _IMPL_ON_FUNC( ELG_REGISTER_NEXON_USER_ACK, KENX_AUTH_LOGIN_ACK )
 
 	default:
 		{
-			START_LOG( cerr, L"이상한 상태. 로그인 처리를 무시합니다." )
+			START_LOG( cerr, L"Unexpected state. Ignoring login processing." )
 				<< BUILD_LOG( GetStateID() )
 				<< BUILD_LOG( GetStateIDString() )
 				<< BUILD_LOG( GetName() )
@@ -737,7 +737,7 @@ _IMPL_ON_FUNC( ELG_REGISTER_NEXON_USER_ACK, KENX_AUTH_LOGIN_ACK )
 	{
 	case 0: // forbidden, 미가입 PC방
 		{
-			START_LOG( clog, L"PC방 인증 서버 응답 forbidden" )
+			START_LOG( clog, L"PC Bang authentication server returned forbidden." )
 				<< BUILD_LOG( GetIPStr() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetUID() )
@@ -796,7 +796,7 @@ _IMPL_ON_FUNC( ELG_REGISTER_NEXON_USER_ACK, KENX_AUTH_LOGIN_ACK )
 
 			default:
 				{
-					START_LOG( cerr, L"정의되지 않은 Option값입니다." )
+					START_LOG( cerr, L"Undefined option value." )
 						<< BUILD_LOGc( kPacket_.m_byteOption )
 						<< END_LOG;
 				}
@@ -829,7 +829,7 @@ _IMPL_ON_FUNC( ELG_REGISTER_NEXON_USER_ACK, KENX_AUTH_LOGIN_ACK )
 
 	case 3: // Terminate - 게임 실행을 차단하고 인증서버로 로그아웃 패킷을 전송한다.
 		{
-			START_LOG( clog, L"PC방 인증 서버 응답 Terminate" )
+			START_LOG( clog, L"PC Bang authentication server returned Terminate." )
 				<< BUILD_LOG( GetIPStr() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetUID() )
@@ -842,7 +842,7 @@ _IMPL_ON_FUNC( ELG_REGISTER_NEXON_USER_ACK, KENX_AUTH_LOGIN_ACK )
 		break;
 
 	default:
-		START_LOG( cerr, L"결과 값 이상." )
+		START_LOG( cerr, L"Invalid result value." )
 			<< BUILD_LOG( kPacket_.m_byteAuthorizeResult )
 			<< END_LOG;
 		break;
@@ -896,7 +896,7 @@ _IMPL_ON_FUNC( ELG_REGISTER_NEXON_CHANNEL_CHANGE_USER_ACK, KENX_AUTH_LOGIN_ACK )
 
 	default:
 		{
-			START_LOG( cerr, L"이상한 상태. 로그인 처리를 무시합니다." )
+			START_LOG( cerr, L"Unexpected state. Ignoring login processing." )
 				<< BUILD_LOG( GetStateID() )
 				<< BUILD_LOG( GetStateIDString() )
 				<< BUILD_LOG( GetName() )
@@ -916,7 +916,7 @@ _IMPL_ON_FUNC( ELG_REGISTER_NEXON_CHANNEL_CHANGE_USER_ACK, KENX_AUTH_LOGIN_ACK )
 	{
 	case 0: // forbidden, 미가입 PC방
 		{
-			START_LOG( clog, L"PC방 인증 서버 응답 forbidden" )
+			START_LOG( clog, L"PC Bang authentication server returned forbidden." )
 				<< BUILD_LOG( GetIPStr() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetUID() )
@@ -951,7 +951,7 @@ _IMPL_ON_FUNC( ELG_REGISTER_NEXON_CHANNEL_CHANGE_USER_ACK, KENX_AUTH_LOGIN_ACK )
 			// 채널 이동 전후 PC방 프리미엄 정보 비교
 			if( IsPcBang() == false )
 			{
-				START_LOG( cerr, L"채널이동하기 전에는 PC방이 아니었는데 채널 이동 후 PC방이다?" )
+				START_LOG( cerr, L"User was not in a PC Bang before channel transfer but is now?" )
 					<< BUILD_LOG( GetIPStr() )
 					<< BUILD_LOG( GetName() )
 					<< BUILD_LOG( GetUID() )
@@ -967,7 +967,7 @@ _IMPL_ON_FUNC( ELG_REGISTER_NEXON_CHANNEL_CHANGE_USER_ACK, KENX_AUTH_LOGIN_ACK )
 			// 채널 이동 전후 PC방 프리미엄 정보 비교
 			if( IsPcBang() == true )
 			{
-				START_LOG( cerr, L"채널이동하기 전에는 PC방이었는데 채널 이동 후 PC방이 아니다?" )
+				START_LOG( cerr, L"User was in a PC Bang before channel transfer but is not now?" )
 					<< BUILD_LOG( GetIPStr() )
 					<< BUILD_LOG( GetName() )
 					<< BUILD_LOG( GetUID() )
@@ -978,7 +978,7 @@ _IMPL_ON_FUNC( ELG_REGISTER_NEXON_CHANNEL_CHANGE_USER_ACK, KENX_AUTH_LOGIN_ACK )
 
 	case 3: // Terminate - 게임 실행을 차단하고 인증서버로 로그아웃 패킷을 전송한다.
 		{
-			START_LOG( clog, L"PC방 인증 서버 응답 Terminate" )
+			START_LOG( clog, L"PC Bang authentication server returned Terminate." )
 				<< BUILD_LOG( GetIPStr() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetUID() )
@@ -991,7 +991,7 @@ _IMPL_ON_FUNC( ELG_REGISTER_NEXON_CHANNEL_CHANGE_USER_ACK, KENX_AUTH_LOGIN_ACK )
 		break;
 
 	default:
-		START_LOG( cerr, L"결과 값 이상." )
+		START_LOG( cerr, L"Invalid result value." )
 			<< BUILD_LOG( kPacket_.m_byteAuthorizeResult )
 			<< END_LOG;
 		break;
@@ -1052,7 +1052,7 @@ IMPL_ON_FUNC( ENX_AUTH_TERMINATE_NOT )
 
 	default:
 		{
-			START_LOG( cerr, L"정의 되지 않은 option값입니다." )
+			START_LOG( cerr, L"Undefined option value." )
 				<< BUILD_LOG( kPacket_.m_byteOption )
 				<< BUILD_LOGc( kPacketNot.m_cType )
 				<< END_LOG;
@@ -1119,7 +1119,7 @@ _IMPL_ON_FUNC( ENX_USER_TERMINATE_NOT, KENX_COMMON_ACK_NOT )
 
 	default:
 		{
-			START_LOG( cerr, L"정의 되지 않은 option값입니다." )
+			START_LOG( cerr, L"Undefined option value." )
 				<< BUILD_LOG( kPacket_.m_byteOption )
 				<< END_LOG;
 		}
@@ -1289,7 +1289,7 @@ IMPL_ON_FUNC_NOPARAM( EGS_STATE_CHANGE_SERVER_SELECT_REQ )
 			KEGS_STATE_CHANGE_SERVER_SELECT_ACK kPacket;
 			kPacket.m_iOK = NetError::ERR_HACK_USER_02;
 
-			START_LOG( cwarn, L"해킹신고유저인데 동의를 하지않아 종료시킴." )
+			START_LOG( cwarn, L"Terminated reported hacking user for not providing consent." )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( m_kNexonAccountInfo.m_wstrID )
 				<< END_LOG;
@@ -1359,7 +1359,7 @@ IMPL_ON_FUNC_NOPARAM( EGS_GET_SERVER_SET_DATA_REQ )
 		kServerSetData.serverSetName = L"솔레스";
 		if( iMaxCCU <= 0 )
 		{
-			START_LOG( cwarn, L"최대 동접 수치가 이상함." )
+			START_LOG( cwarn, L"Invalid maximum concurrent-user count." )
 				<< BUILD_LOG( mit->first )
 				<< BUILD_LOG( iMaxCCU )
 				<< END_LOG;
@@ -1460,7 +1460,7 @@ IMPL_ON_FUNC( EGS_CHECK_CHANNEL_CHANGE_REQ )
 	// 필드상태가 아니면 이동할수 없다
 	if( GetFieldUID() <= 0  ||  GetRoomUID() > 0  ||  GetRoomListID() > 0 )
 	{
-		START_LOG( cwarn, L"채널 이동 할수 있는 위치가 아닙니다." )
+		START_LOG( cwarn, L"Channel transfer is not allowed from this location." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetFieldUID() )
 			<< BUILD_LOG( GetRoomUID() )
@@ -1476,7 +1476,7 @@ IMPL_ON_FUNC( EGS_CHECK_CHANNEL_CHANGE_REQ )
 	// 채널이동 쿨타임
 	if( m_kTimer[TM_UNIT_DURATION].elapsed() < 5.0 )
 	{
-		START_LOG( cwarn, L"채널이동 쿨타임." )
+		START_LOG( cwarn, L"Channel transfer cooldown." )
 			<< BUILD_LOG( GetCharUID() )
 			<< END_LOG;
 
@@ -1491,7 +1491,7 @@ IMPL_ON_FUNC( EGS_CHECK_CHANNEL_CHANGE_REQ )
 	// 같은 채널을 이동하려고 한다면 실패처리!
 	if( SiKChannelManager()->GetChannelID() == kPacket_.m_iChannelID )
 	{
-		START_LOG( cwarn, L"이동 하려는 채널과 현재 채널이 같음." )
+		START_LOG( cwarn, L"The destination channel is the same as the current channel." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( SiKChannelManager()->GetChannelID() )
 			<< BUILD_LOG( kPacket_.m_iChannelID )
@@ -1506,7 +1506,7 @@ IMPL_ON_FUNC( EGS_CHECK_CHANNEL_CHANGE_REQ )
 	// 이동할수 있는 채널인지 검사
 	if( SiKChannelManager()->GetServerUIDByChannelID( kPacket_.m_iChannelID, iGSUID ) == false )
 	{
-		START_LOG( cerr, L"존재하지 않는 ChannelID입니다" )
+		START_LOG( cerr, L"ChannelID does not exist." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iChannelID )
 			<< END_LOG;
@@ -1572,7 +1572,7 @@ IMPL_ON_FUNC( EGS_CONNECT_CHANNEL_CHANGE_REQ )
 	// 채널 이동 예약 검사
 	if( SiKChannelManager()->IsExistChannelChangeUser( kPacket_.m_kSelectUnitReq.m_iUnitUID ) == false )
 	{
-		START_LOG( cerr, L"채널 이동 예약이 안되어있음!" )
+		START_LOG( cerr, L"No channel transfer is scheduled!" )
 			<< BUILD_LOG( kPacket_.m_kSelectUnitReq.m_iUnitUID )
 			<< END_LOG;
 
@@ -1583,7 +1583,7 @@ IMPL_ON_FUNC( EGS_CONNECT_CHANNEL_CHANGE_REQ )
 	// 해당 유저가 접속할 수 있도록 예약정보 제거
 	if( SiKChannelManager()->DelChannelChangeUser( kPacket_.m_kSelectUnitReq.m_iUnitUID, kPacket.m_kChangeUserInfo ) == false )
 	{
-		START_LOG( cerr, L"채널 이동 예약이 안되어있음!" )
+		START_LOG( cerr, L"No channel transfer is scheduled!" )
 			<< BUILD_LOG( kPacket_.m_kSelectUnitReq.m_iUnitUID )
 			<< END_LOG;
 
@@ -1648,7 +1648,7 @@ IMPL_ON_FUNC( EGS_CONNECT_CHANNEL_CHANGE_REQ )
 		{
 			if( m_kUserSecurityManager.CheckValidMachineID( kPacket_.m_kVerifyAccountReq.m_strMachineID ) == false )
 			{
-				START_LOG( cout, L"[알림] 머신ID가 유효하지 않다! 클라이언트로 알림 패킷을 쏘자!" )
+				START_LOG( cout, L"[Notice] Invalid machine ID; sending a notification packet to the client!" )
 					<< BUILD_LOG( kPacket_.m_kVerifyAccountReq.m_wstrHWID )
 					<< BUILD_LOG( kPacket_.m_kVerifyAccountReq.m_wstrUserID )
 					<< BUILD_LOG( kPacket_.m_kVerifyAccountReq.m_wstrPasswd )
@@ -1694,7 +1694,7 @@ IMPL_ON_FUNC( ELG_CHANNEL_CHANGE_NEXON_USER_AUTHENTICATE_ACK )
 
 	if( OnNexonUserAuthenticateAck( kPacket_.m_kUserAuthAck, kPacketAck.m_kVerifyAccountAck ) == false )
 	{
-		START_LOG( cerr, L"넥슨 인증 실패!" )
+		START_LOG( cerr, L"Nexon authentication failed!" )
 			<< BUILD_LOG( NetError::GetErrStr( kPacketAck.m_kVerifyAccountAck.m_iOK ) )
 			<< END_LOG;
 
@@ -1779,7 +1779,7 @@ IMPL_ON_FUNC( ELG_CHANNEL_CHANGE_NEXON_USER_AUTHENTICATE_ACK )
 		{
 			if( KncUtil::ConvertStringToCTime( kPacket_.m_wstrLastAuthDate, tLasstAuthDate ) == false )
 			{
-				START_LOG( cerr, L"문자열 시간 변환 실패." )
+				START_LOG( cerr, L"Failed to convert the time string." )
 					<< BUILD_LOG( kPacket_.m_wstrLastAuthDate )
 					<< END_LOG;
 			}
@@ -1871,7 +1871,7 @@ IMPL_ON_FUNC( DBE_CHANNEL_CHANGE_GAME_SELECT_UNIT_ACK )
 		//{{ 2012. 09. 26	최육사		우편 복사 버그 수정
 		if( kPacket_.m_kSelectUnitAck.m_iOK == NetError::ERR_SELECT_UNIT_07 )
 		{
-			START_LOG( cout, L"UserUID소속이 아닌 UnitUID로 캐릭터를 선택한 유저가 나타났다!" )
+			START_LOG( cout, L"A user attempted to select a character using a UnitUID that does not belong to their UserUID!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetUserID() )
 				<< BUILD_LOG( GetCharUID() )
@@ -2058,7 +2058,7 @@ IMPL_ON_FUNC( EGS_JOIN_FIELD_CHANNEL_CHANGE_REQ )
 	// 채널이동전에 저장했던 mapid와 진입요청 mapid가 일치하는지 검사
 	if( GetMapID() != kPacket_.m_iMapID )
 	{
-		START_LOG( cerr, L"채널이동 한건데 mapid가 틀리다? 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"Map ID mismatch after channel transfer; this should never happen!" )
 			<< BUILD_LOG( GetMapID() )
 			<< BUILD_LOG( kPacket_.m_iMapID )
 			<< BUILD_LOG( GetCharUID() )
@@ -2073,7 +2073,7 @@ IMPL_ON_FUNC( EGS_JOIN_FIELD_CHANNEL_CHANGE_REQ )
 	if( !CheckEnterTheVillage( kPacket_.m_iMapID, iTempLevel, iTempDungeonID ) )
 	//}}
 	{
-		START_LOG( cwarn, L"마을에 입장할 수 있는 조건이 안됨." )
+		START_LOG( cwarn, L"The requirements for entering town are not met." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iMapID )
 			<< END_LOG;
@@ -2084,7 +2084,7 @@ IMPL_ON_FUNC( EGS_JOIN_FIELD_CHANNEL_CHANGE_REQ )
 
 	if( GetFieldUID() > 0 )
 	{
-		START_LOG( cerr, L"채널이동 한건데 필드에 들어와있다? 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"User is already in a field after channel transfer; this should never happen!" )
 			<< BUILD_LOG( kPacket_.m_iMapID )
 			<< BUILD_LOG( GetCharUID() )
 			<< END_LOG;
@@ -2095,7 +2095,7 @@ IMPL_ON_FUNC( EGS_JOIN_FIELD_CHANNEL_CHANGE_REQ )
 
 	if( !SiCXSLMapData()->VerifyMapID( kPacket_.m_iMapID ) )
 	{
-		START_LOG( cerr, L"필드에 입장하려는데 MapID가 이상합니다." )
+		START_LOG( cerr, L"Invalid MapID when attempting to enter the field." )
 			<< BUILD_LOG( kPacket_.m_iMapID )
 			<< BUILD_LOG( GetCharUID() )
 			<< END_LOG;
@@ -2108,7 +2108,7 @@ IMPL_ON_FUNC( EGS_JOIN_FIELD_CHANNEL_CHANGE_REQ )
 	// FieldUId를 얻는다.
 	if( !SiCXSLMapData()->GetFieldUID( GetMapID(), kPacket.m_iFieldUID ) )
 	{
-		START_LOG( cerr, L"잘못된 맵 정보" )
+		START_LOG( cerr, L"Invalid map information." )
 			<< BUILD_LOG( GetMapID() )
 			<< END_LOG;
 
@@ -2164,7 +2164,7 @@ _IMPL_ON_FUNC( ERM_JOIN_FIELD_CHANNEL_CHANGE_ACK, KERM_JOIN_FIELD_ACK )
 		//{{ 2009. 5. 13  최육사	P2P포트 체크
 		if( GetP2PIP().empty() )
 		{
-			START_LOG( cerr, L"채널이동후 P2P포트 체크 실패!" )
+			START_LOG( cerr, L"Failed to check P2P port after channel transfer!" )
 				<< BUILD_LOG( GetUID() )
 				<< END_LOG;
 		}
@@ -2285,7 +2285,7 @@ _IMPL_ON_FUNC( ELG_USER_DISCONNECT_ACK, KELG_USER_DISCONNECT_REQ )
 	case EGS_DISCONNECT_FOR_SERVER_SELECT_REQ:  usEventIDAck = EGS_DISCONNECT_FOR_SERVER_SELECT_ACK; break;
 	case EGS_DISCONNECT_FOR_CHANNEL_CHANGE_REQ: usEventIDAck = EGS_DISCONNECT_FOR_CHANNEL_CHANGE_ACK; break;
 	default:
-		START_LOG( cerr, L"잘못된 req이벤트로 disconnect되었습니다." )
+		START_LOG( cerr, L"Disconnected due to an invalid request event." )
 			<< BUILD_LOG( KEvent::GetIDStr( kPacket_.m_usEventID ) )
 			<< END_LOG;
 	}
@@ -2331,7 +2331,7 @@ IMPL_ON_FUNC( EGS_CLIENT_QUIT_REQ )
 		break;
 
 	default:
-		START_LOG( cerr, L"잘못된 disconnect reason 통계 인덱스임." )
+		START_LOG( cerr, L"Invalid disconnect reason statistics index." )
 			<< BUILD_LOG( kPacket_.m_iReason )
 			<< END_LOG;
 		break;
@@ -2435,7 +2435,7 @@ IMPL_ON_FUNC( EGB_UPDATE_BLOCK_RESULT_NOT )
 
 		default:
 			{
-				START_LOG( cerr, L"정의 되지 않은 타입 입니다." )
+				START_LOG( cerr, L"Undefined type." )
 					<< BUILD_LOG( mit->first )
 					<< BUILD_LOG( mit->second )
 					<< END_LOG;

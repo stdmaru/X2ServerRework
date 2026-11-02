@@ -42,7 +42,7 @@ void KUserTitleManager::Init( IN bool bIsPcBang, IN OUT std::vector< KMissionIns
 		const CXSLTitleManager::MissionTemplet* pMissionTemplet = SiCXSLTitleManager()->GetMissionInfo( kMissionInstance.m_iID );
 		if( pMissionTemplet == NULL )
 		{
-			START_LOG( cwarn, L"미션 템플릿이 존재하지 않습니다." )
+			START_LOG( cwarn, L"Mission template does not exist." )
 				<< BUILD_LOG( kMissionInstance.m_iID )
 				<< END_LOG;
 			continue;
@@ -62,7 +62,7 @@ void KUserTitleManager::Init( IN bool bIsPcBang, IN OUT std::vector< KMissionIns
 			const CXSLTitleManager::SubMissionTemplet* pSubMissionTemplet = SiCXSLTitleManager()->GetSubMissionInfo( pMissionTemplet->m_vecSubMission[iIdx] );
 			if( pSubMissionTemplet == NULL )
 			{
-				START_LOG( cerr, L"서브 미션 템플릿이 존재하지 않습니다." )
+				START_LOG( cerr, L"The sub-mission template does not exist." )
 					<< BUILD_LOG( kMissionInstance.m_iID )
 					<< BUILD_LOG( pMissionTemplet->m_vecSubMission[iIdx] )
 					<< END_LOG;
@@ -230,7 +230,7 @@ void KUserTitleManager::Init( IN bool bIsPcBang, IN OUT std::vector< KMissionIns
 
 			default:
 				{
-					START_LOG( cerr, L"없는 서브 미션 타입." )
+					START_LOG( cerr, L"Unknown sub-mission type." )
 						<< BUILD_LOG( pSubMissionTemplet->m_eClearType )
 						<< BUILD_LOG( kSubMission.m_iID )
 						<< END_LOG;
@@ -267,7 +267,7 @@ void KUserTitleManager::Init( IN bool bIsPcBang, IN OUT std::vector< KMissionIns
 		CTime tEndDate;
 		if( !KncUtil::ConvertStringToCTime( kTitle.m_wstrEndDate, tEndDate ) )
 		{
-			START_LOG( cerr, L"문자열 시간 변환 실패." )
+			START_LOG( cerr, L"Failed to convert the time string." )
 				<< BUILD_LOG( kTitle.m_wstrEndDate )
 				<< END_LOG;
 			continue;
@@ -297,7 +297,7 @@ void KUserTitleManager::Init( IN bool bIsPcBang, IN OUT std::vector< KMissionIns
 		}
 		else
 		{
-			START_LOG( cerr, L"이미 pc방 칭호가 있다? 발생하면 안되는 오류!" )
+			START_LOG( cerr, L"PC Bang title already exists; this should never happen!" )
 				<< END_LOG;
 		}
 	}
@@ -374,7 +374,7 @@ void KUserTitleManager::CheckNewMission( IN KGSUserPtr spUser, IN bool bFirst /*
 			const CXSLTitleManager::SubMissionTemplet* pSubMissionTemplet = SiCXSLTitleManager()->GetSubMissionInfo( kMissionTemplet.m_vecSubMission[iIdx] );
 			if( pSubMissionTemplet == NULL )
 			{
-				START_LOG( cerr, L"서브 미션 템플릿이 존재하지 않습니다." )
+				START_LOG( cerr, L"The sub-mission template does not exist." )
 					<< BUILD_LOG( kMission.m_iID )
 					<< BUILD_LOG( kMissionTemplet.m_vecSubMission[iIdx] )
 					<< END_LOG;
@@ -429,7 +429,7 @@ void KUserTitleManager::OnNpcUnitDie( IN const int iDungeonID, IN const char cDi
 		const CXSLTitleManager::MissionTemplet* pMissionTemplet = SiCXSLTitleManager()->GetMissionInfo( kMissionInstance.m_iID );
 		if( pMissionTemplet == NULL )
 		{
-			START_LOG( cerr, L"MISSION TEMPLET 얻어오기 실패.!" )
+			START_LOG( cerr, L"Failed to retrieve the mission template!" )
 				<< BUILD_LOG( kMissionInstance.m_iID )
 				<< BUILD_LOG( spUser->GetCharUID() )
 				<< BUILD_LOG( spUser->GetCharName() )
@@ -441,7 +441,7 @@ void KUserTitleManager::OnNpcUnitDie( IN const int iDungeonID, IN const char cDi
 
 		if( kMissionInstance.m_vecSubMissionInstance.size() != pMissionTemplet->m_vecSubMission.size() )
 		{
-			START_LOG( cerr, L"MISSION TEMPLET 과 INSTANCE 의 SUB MISSION 개수가 틀림! 스크립트 확인 필요!" )
+			START_LOG( cerr, L"The mission template and instance have different sub-mission counts; check the script!" )
 				<< BUILD_LOG( kMissionInstance.m_iID )
 				<< BUILD_LOG( spUser->GetCharUID() )
 				<< BUILD_LOG( spUser->GetCharName() )
@@ -456,7 +456,7 @@ void KUserTitleManager::OnNpcUnitDie( IN const int iDungeonID, IN const char cDi
 			const CXSLTitleManager::SubMissionTemplet* pSubMissionTemplet = SiCXSLTitleManager()->GetSubMissionInfo( pMissionTemplet->m_vecSubMission[nSub] );
 			if( pSubMissionTemplet == NULL )
 			{
-				START_LOG( cerr, L"SUB MISSION TEMPLET 얻어오기 실패.!" )
+				START_LOG( cerr, L"Failed to retrieve the sub-mission template!" )
 					<< BUILD_LOG( pMissionTemplet->m_vecSubMission[nSub] )
 					<< BUILD_LOG( spUser->GetCharUID() )
 					<< BUILD_LOG( spUser->GetCharName() )
@@ -514,7 +514,7 @@ void KUserTitleManager::OnNpcUnitDie( IN const int iDungeonID, IN const char cDi
 
 				kNot.m_vecMissionInst.push_back( kMissionInstance );
 
-				START_LOG( clog, L"미션 TMCT_NPC_HUNT 수행" )
+				START_LOG( clog, L"Processing mission TMCT_NPC_HUNT" )
 					<< BUILD_LOG( iMonsterID )
 					<< BUILD_LOG( spUser->GetCharName() )
 					<< BUILD_LOG( spUser->GetUserName() )
@@ -561,7 +561,7 @@ void KUserTitleManager::OnTalkWithNpc( IN int iNPCID, IN KGSUserPtr spUser )
 		const CXSLTitleManager::MissionTemplet* pMissionTemplet = SiCXSLTitleManager()->GetMissionInfo( kMissionInstance.m_iID );
 		if( pMissionTemplet == NULL )
 		{
-			START_LOG( cerr, L"MISSION TEMPLET 얻어오기 실패.!" )
+			START_LOG( cerr, L"Failed to retrieve the mission template!" )
 				<< BUILD_LOG( kMissionInstance.m_iID )
 				<< BUILD_LOG( spUser->GetCharUID() )
 				<< BUILD_LOG( spUser->GetCharName() )
@@ -573,7 +573,7 @@ void KUserTitleManager::OnTalkWithNpc( IN int iNPCID, IN KGSUserPtr spUser )
 
 		if( kMissionInstance.m_vecSubMissionInstance.size() != pMissionTemplet->m_vecSubMission.size() )
 		{
-			START_LOG( cerr, L"MISSION TEMPLET 과 INSTANCE 의 SUB MISSION 개수가 틀림! 스크립트 확인 필요!" )
+			START_LOG( cerr, L"The mission template and instance have different sub-mission counts; check the script!" )
 				<< BUILD_LOG( kMissionInstance.m_iID )
 				<< BUILD_LOG( spUser->GetCharUID() )
 				<< BUILD_LOG( spUser->GetCharName() )
@@ -588,7 +588,7 @@ void KUserTitleManager::OnTalkWithNpc( IN int iNPCID, IN KGSUserPtr spUser )
 			const CXSLTitleManager::SubMissionTemplet* pSubMissionTemplet = SiCXSLTitleManager()->GetSubMissionInfo( pMissionTemplet->m_vecSubMission[nSub] );
 			if( pSubMissionTemplet == NULL )
 			{
-				START_LOG( cerr, L"SUB MISSION TEMPLET 얻어오기 실패.!" )
+				START_LOG( cerr, L"Failed to retrieve the sub-mission template!" )
 					<< BUILD_LOG( pMissionTemplet->m_vecSubMission[nSub] )
 					<< BUILD_LOG( spUser->GetCharUID() )
 					<< BUILD_LOG( spUser->GetCharName() )
@@ -611,7 +611,7 @@ void KUserTitleManager::OnTalkWithNpc( IN int iNPCID, IN KGSUserPtr spUser )
 
 				kNot.m_vecMissionInst.push_back( kMissionInstance );
 
-				START_LOG( clog, L"미션 TMCT_NPC_TALK 수행" )
+				START_LOG( clog, L"Processing mission TMCT_NPC_TALK" )
 					<< BUILD_LOG( iNPCID )
 					<< BUILD_LOG( spUser->GetCharName() )
 					<< BUILD_LOG( spUser->GetUserName() )
@@ -660,7 +660,7 @@ void KUserTitleManager::OnDungeonClear( IN KGSUserPtr spUser, IN int iDungeonID,
 		const CXSLTitleManager::MissionTemplet* pMissionTemplet = SiCXSLTitleManager()->GetMissionInfo( kMissionInstance.m_iID );
 		if( pMissionTemplet == NULL )
 		{
-			START_LOG( cerr, L"MISSION TEMPLET 얻어오기 실패.!" )
+			START_LOG( cerr, L"Failed to retrieve the mission template!" )
 				<< BUILD_LOG( kMissionInstance.m_iID )
 				<< BUILD_LOG( spUser->GetCharUID() )
 				<< BUILD_LOG( spUser->GetCharName() )
@@ -672,7 +672,7 @@ void KUserTitleManager::OnDungeonClear( IN KGSUserPtr spUser, IN int iDungeonID,
 
 		if( kMissionInstance.m_vecSubMissionInstance.size() != pMissionTemplet->m_vecSubMission.size() )
 		{
-			START_LOG( cerr, L"MISSION TEMPLET 과 INSTANCE 의 SUB MISSION 개수가 틀림! 스크립트 확인 필요!" )
+			START_LOG( cerr, L"The mission template and instance have different sub-mission counts; check the script!" )
 				<< BUILD_LOG( kMissionInstance.m_iID )
 				<< BUILD_LOG( spUser->GetCharUID() )
 				<< BUILD_LOG( spUser->GetCharName() )
@@ -687,7 +687,7 @@ void KUserTitleManager::OnDungeonClear( IN KGSUserPtr spUser, IN int iDungeonID,
 			const CXSLTitleManager::SubMissionTemplet* pSubMissionTemplet = SiCXSLTitleManager()->GetSubMissionInfo( pMissionTemplet->m_vecSubMission[nSub] );
 			if( pSubMissionTemplet == NULL )
 			{
-				START_LOG( cerr, L"SUB MISSION TEMPLET 얻어오기 실패.!" )
+				START_LOG( cerr, L"Failed to retrieve the sub-mission template!" )
 					<< BUILD_LOG( pMissionTemplet->m_vecSubMission[nSub] )
 					<< BUILD_LOG( spUser->GetCharUID() )
 					<< BUILD_LOG( spUser->GetCharName() )
@@ -998,7 +998,7 @@ void KUserTitleManager::OnDungeonClear( IN KGSUserPtr spUser, IN int iDungeonID,
 					}
 				}
 
-				START_LOG( clog, L"미션 TMCT_DUNGEON_TIME or TMCT_DUNGEON_RANK 수행" )
+				START_LOG( clog, L"Processing mission TMCT_DUNGEON_TIME or TMCT_DUNGEON_RANK" )
 					<< BUILD_LOGc( cRank )
 					<< BUILD_LOG( iPlayTime )
 					<< BUILD_LOG( spUser->GetCharName() )
@@ -1045,7 +1045,7 @@ void KUserTitleManager::OnQuestComplete( IN int iQuestID, IN KGSUserPtr spUser )
 		const CXSLTitleManager::MissionTemplet* pMissionTemplet = SiCXSLTitleManager()->GetMissionInfo( kMissionInstance.m_iID );
 		if( pMissionTemplet == NULL )
 		{
-			START_LOG( cerr, L"MISSION TEMPLET 얻어오기 실패.!" )
+			START_LOG( cerr, L"Failed to retrieve the mission template!" )
 				<< BUILD_LOG( kMissionInstance.m_iID )
 				<< BUILD_LOG( spUser->GetCharUID() )
 				<< BUILD_LOG( spUser->GetCharName() )
@@ -1057,7 +1057,7 @@ void KUserTitleManager::OnQuestComplete( IN int iQuestID, IN KGSUserPtr spUser )
 
 		if( kMissionInstance.m_vecSubMissionInstance.size() != pMissionTemplet->m_vecSubMission.size() )
 		{
-			START_LOG( cerr, L"MISSION TEMPLET 과 INSTANCE 의 SUB MISSION 개수가 틀림! 스크립트 확인 필요!" )
+			START_LOG( cerr, L"The mission template and instance have different sub-mission counts; check the script!" )
 				<< BUILD_LOG( kMissionInstance.m_iID )
 				<< BUILD_LOG( spUser->GetCharUID() )
 				<< BUILD_LOG( spUser->GetCharName() )
@@ -1072,7 +1072,7 @@ void KUserTitleManager::OnQuestComplete( IN int iQuestID, IN KGSUserPtr spUser )
 			const CXSLTitleManager::SubMissionTemplet* pSubMissionTemplet = SiCXSLTitleManager()->GetSubMissionInfo( pMissionTemplet->m_vecSubMission[nSub] );
 			if( pSubMissionTemplet == NULL )
 			{
-				START_LOG( cerr, L"SUB MISSION TEMPLET 얻어오기 실패.!" )
+				START_LOG( cerr, L"Failed to retrieve the sub-mission template!" )
 					<< BUILD_LOG( pMissionTemplet->m_vecSubMission[nSub] )
 					<< BUILD_LOG( spUser->GetCharUID() )
 					<< BUILD_LOG( spUser->GetCharName() )
@@ -1092,7 +1092,7 @@ void KUserTitleManager::OnQuestComplete( IN int iQuestID, IN KGSUserPtr spUser )
 
 				kNot.m_vecMissionInst.push_back( kMissionInstance );
 
-				START_LOG( clog, L"미션 TMCT_QUEST 수행" )
+				START_LOG( clog, L"Processing mission TMCT_QUEST" )
 					<< BUILD_LOG( spUser->GetCharName() )
 					<< BUILD_LOG( spUser->GetUserName() )
 					<< BUILD_LOG( pSubMissionTemplet->m_wstrDescription )
@@ -1138,7 +1138,7 @@ void KUserTitleManager::OnUseItem( IN const int iItemID, IN KGSUserPtr spUser )
 		const CXSLTitleManager::MissionTemplet* pMissionTemplet = SiCXSLTitleManager()->GetMissionInfo( kMissionInstance.m_iID );
 		if( pMissionTemplet == NULL )
 		{
-			START_LOG( cerr, L"MISSION TEMPLET 얻어오기 실패.!" )
+			START_LOG( cerr, L"Failed to retrieve the mission template!" )
 				<< BUILD_LOG( kMissionInstance.m_iID )
 				<< BUILD_LOG( spUser->GetCharUID() )
 				<< BUILD_LOG( spUser->GetCharName() )
@@ -1150,7 +1150,7 @@ void KUserTitleManager::OnUseItem( IN const int iItemID, IN KGSUserPtr spUser )
 
 		if( kMissionInstance.m_vecSubMissionInstance.size() != pMissionTemplet->m_vecSubMission.size() )
 		{
-			START_LOG( cerr, L"MISSION TEMPLET 과 INSTANCE 의 SUB MISSION 개수가 틀림! 스크립트 확인 필요!" )
+			START_LOG( cerr, L"The mission template and instance have different sub-mission counts; check the script!" )
 				<< BUILD_LOG( kMissionInstance.m_iID )
 				<< BUILD_LOG( spUser->GetCharUID() )
 				<< BUILD_LOG( spUser->GetCharName() )
@@ -1165,7 +1165,7 @@ void KUserTitleManager::OnUseItem( IN const int iItemID, IN KGSUserPtr spUser )
 			const CXSLTitleManager::SubMissionTemplet* pSubMissionTemplet = SiCXSLTitleManager()->GetSubMissionInfo( pMissionTemplet->m_vecSubMission[nSub] );
 			if( pSubMissionTemplet == NULL )
 			{
-				START_LOG( cerr, L"SUB MISSION TEMPLET 얻어오기 실패.!" )
+				START_LOG( cerr, L"Failed to retrieve the sub-mission template!" )
 					<< BUILD_LOG( pMissionTemplet->m_vecSubMission[nSub] )
 					<< BUILD_LOG( spUser->GetCharUID() )
 					<< BUILD_LOG( spUser->GetCharName() )
@@ -1185,7 +1185,7 @@ void KUserTitleManager::OnUseItem( IN const int iItemID, IN KGSUserPtr spUser )
 
 				kNot.m_vecMissionInst.push_back( kMissionInstance );
 
-				START_LOG( clog, L"미션 TMCT_USE_ITEM 수행" )
+				START_LOG( clog, L"Processing mission TMCT_USE_ITEM" )
 					<< BUILD_LOG( spUser->GetCharName() )
 					<< BUILD_LOG( spUser->GetUserName() )
 					<< BUILD_LOG( pSubMissionTemplet->m_wstrDescription )
@@ -1219,7 +1219,7 @@ void KUserTitleManager::CheckCompleteMission( IN int iMissionID, IN KGSUserPtr s
 	KMissionInstance* pMissionInstance = GetMissionInstance( iMissionID );
 	if( pMissionInstance == NULL )
 	{
-		START_LOG( cerr, L"진행중인 미션이 아닙니다!" )
+		START_LOG( cerr, L"The mission is not in progress!" )
 			<< BUILD_LOG( iMissionID )
 			<< BUILD_LOG( spUser->GetCharUID() )
 			<< BUILD_LOG( spUser->GetCharName() )
@@ -1230,7 +1230,7 @@ void KUserTitleManager::CheckCompleteMission( IN int iMissionID, IN KGSUserPtr s
 	const CXSLTitleManager::MissionTemplet* pMissionTemplet = SiCXSLTitleManager()->GetMissionInfo( iMissionID );
 	if( pMissionTemplet == NULL )
 	{
-		START_LOG( cerr, L"MISSION TEMPLET 얻어오기 실패.!" )
+		START_LOG( cerr, L"Failed to retrieve the mission template!" )
 			<< BUILD_LOG( iMissionID )
 			<< BUILD_LOG( spUser->GetCharUID() )
 			<< BUILD_LOG( spUser->GetCharName() )
@@ -1243,7 +1243,7 @@ void KUserTitleManager::CheckCompleteMission( IN int iMissionID, IN KGSUserPtr s
 		const CXSLTitleManager::SubMissionTemplet* pSubMissionTemplet = SiCXSLTitleManager()->GetSubMissionInfo( pMissionTemplet->m_vecSubMission[nSub] );
 		if( pSubMissionTemplet == NULL )
 		{
-			START_LOG( cerr, L"SUB MISSION TEMPLET 얻어오기 실패.!" )
+			START_LOG( cerr, L"Failed to retrieve the sub-mission template!" )
 				<< BUILD_LOG( pMissionTemplet->m_vecSubMission[nSub] )
 				<< BUILD_LOG( spUser->GetCharUID() )
 				<< BUILD_LOG( spUser->GetCharName() )
@@ -1257,7 +1257,7 @@ void KUserTitleManager::CheckCompleteMission( IN int iMissionID, IN KGSUserPtr s
 
 	if( !SiCXSLTitleManager()->IsExistTitleID( pMissionInstance->m_iID ) )
 	{
-		START_LOG( cerr, L"미션ID와 타이틀ID가 일치하지 않는게 있다?" )
+		START_LOG( cerr, L"Mission ID and title ID do not match?" )
 			<< BUILD_LOG( pMissionInstance->m_iID )
 			<< END_LOG;
 		return;
@@ -1302,7 +1302,7 @@ bool KUserTitleManager::AddTitle( IN int iTitleID, IN std::wstring&	wstrEndDate,
 	CTime tEndDate;
 	if( !KncUtil::ConvertStringToCTime( kTitle.m_wstrEndDate, tEndDate ) )
 	{
-		START_LOG( cerr, L"문자열 시간 변환 실패." )
+		START_LOG( cerr, L"Failed to convert the time string." )
 			<< BUILD_LOG( kTitle.m_iTitleID )
 			<< BUILD_LOG( kTitle.m_wstrEndDate )
 			<< END_LOG;
@@ -1324,7 +1324,7 @@ bool KUserTitleManager::AddTitle( IN int iTitleID, IN std::wstring&	wstrEndDate,
 	}
 	else
 	{
-		START_LOG( clog, L"기존 타이틀 정보에 덮어씌워서 기간연장하자!" )
+		START_LOG( clog, L"Overwrite the existing title information to extend its duration!" )
 			<< BUILD_LOG( kTitle.m_iTitleID )
 			<< BUILD_LOG( mit->second.m_iTitleID )
 			<< BUILD_LOG( kTitle.m_wstrEndDate )
@@ -1345,7 +1345,7 @@ bool KUserTitleManager::EquipTitle( IN int iTitleID )
 	{
 		if( !SiCXSLTitleManager()->IsExistTitleID( iTitleID ) )
 		{
-			START_LOG( cerr, L"존재하지 않는 칭호를 장착하려고 하네..?" )
+			START_LOG( cerr, L"Attempted to equip a title that does not exist." )
 				<< BUILD_LOG( iTitleID )
 				<< END_LOG;
 
@@ -1365,7 +1365,7 @@ bool KUserTitleManager::EquipTitle( IN int iTitleID )
 		mit = m_mapTitle.find( iTitleID );
 		if( mit == m_mapTitle.end() )
 		{
-			START_LOG( cerr, L"가지고 있지도 않은 칭호를 장착하려고 하네..? 해킹인가?" )
+			START_LOG( cerr, L"Attempted to equip a title the user does not own; possible hacking?" )
 				<< BUILD_LOG( iTitleID )
 				<< END_LOG;
 
@@ -1406,7 +1406,7 @@ void KUserTitleManager::GetEquippedStat( IN bool bIsDungeon, IN const KStat& kBa
 	const CXSLTitleManager::TitleTemplet* pTitleInfo = SiCXSLTitleManager()->GetTitleTemplet( GetEquippedTitleID() );
 	if( pTitleInfo == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 타이틀을 장착중?" )
+		START_LOG( cerr, L"A nonexistent title is equipped." )
 			<< BUILD_LOG( GetEquippedTitleID() )
 			<< END_LOG;
 		return;
@@ -1441,7 +1441,7 @@ void KUserTitleManager::GetEquippedTitleBonusRate( IN const bool bIsDungeon, OUT
 	const CXSLTitleManager::TitleTemplet* pTitleInfo = SiCXSLTitleManager()->GetTitleTemplet( GetEquippedTitleID() );
 	if( pTitleInfo == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 타이틀을 장착중?" )
+		START_LOG( cerr, L"A nonexistent title is equipped." )
 			<< BUILD_LOG( GetEquippedTitleID() )
 			<< END_LOG;
 		return;
@@ -1453,7 +1453,7 @@ void KUserTitleManager::GetEquippedTitleBonusRate( IN const bool bIsDungeon, OUT
 		const CXSLSocketItem::SocketData* pSocketData = SiCXSLSocketItem()->GetSocketData( iSocketOption );
 		if( pSocketData == NULL )
 		{
-			START_LOG( cerr, L"존재하지않는 소켓옵션이 타이틀의 소켓옵션으로 세팅되어 있습니다." )
+			START_LOG( cerr, L"A nonexistent socket option is set as the title's socket option." )
 				<< BUILD_LOG( GetEquippedTitleID() )
 				<< BUILD_LOG( iSocketOption )
 				<< END_LOG;
@@ -1487,7 +1487,7 @@ void KUserTitleManager::ExpireTitle( IN KGSUserPtr spUser )
 		mit = m_mapTitle.find( m_iEquippedTitle );
 		if( mit == m_mapTitle.end() )
 		{
-			START_LOG( cerr, L"보유하지 않은 타이틀을 장착중입니다?" )
+			START_LOG( cerr, L"Attempted to equip a title that is not owned?" )
 				<< BUILD_LOG( m_iEquippedTitle )
 				<< END_LOG;
 
@@ -1556,7 +1556,7 @@ void KUserTitleManager::DeleteUpdateMission( IN OUT std::vector< KMissionInstanc
 	if( sit != m_setDBupdateMission.end() )
 	{
 		m_setDBupdateMission.erase( sit );
-		START_LOG( clog, L"m_setDBupdateMission 완료 미션 삭제 완료" )
+		START_LOG( clog, L"Removed completed missions from m_setDBupdateMission." )
 			<< BUILD_LOG( iMissionID )
 			<< END_LOG;
 	}
@@ -1573,7 +1573,7 @@ void KUserTitleManager::DeleteUpdateMission( IN OUT std::vector< KMissionInstanc
 		if( vit != vecMission.end() )
 		{
 			vecMission.erase( vit );
-			START_LOG( clog, L"vecMission 완료 미션 삭제 완료" )
+			START_LOG( clog, L"Removed completed missions from vecMission." )
 				<< BUILD_LOG( iMissionID )
 				<< END_LOG;
 		}
@@ -1596,7 +1596,7 @@ void KUserTitleManager::GetUpdateInfo( IN bool bIsPcBang, OUT int& iInitTitleID,
 		mit = m_mapMission.find( *sit );
 		if( mit == m_mapMission.end() )
 		{
-			START_LOG( cerr, L"미션 인스턴스 정보가 없는데 DB업데이트를 하려하네?" )
+			START_LOG( cerr, L"Attempted a database update without mission instance information?" )
 				<< BUILD_LOG( *sit )
 				<< END_LOG;
 			continue;
@@ -1667,7 +1667,7 @@ bool KUserTitleManager::GivePetFeed( IN const CXSLItem::ITEM_GRADE eGrade, IN KG
 		const CXSLTitleManager::MissionTemplet* pMissionTemplet = SiCXSLTitleManager()->GetMissionInfo( kMissionInstance.m_iID );
 		if( pMissionTemplet == NULL )
 		{
-			START_LOG( cerr, L"MISSION TEMPLET 얻어오기 실패.!" )
+			START_LOG( cerr, L"Failed to retrieve the mission template!" )
 				<< BUILD_LOG( kMissionInstance.m_iID )
 				<< BUILD_LOG( spUser->GetCharUID() )
 				<< BUILD_LOG( spUser->GetCharName() )
@@ -1682,7 +1682,7 @@ bool KUserTitleManager::GivePetFeed( IN const CXSLItem::ITEM_GRADE eGrade, IN KG
 			const CXSLTitleManager::SubMissionTemplet* pSubMissionTemplet = SiCXSLTitleManager()->GetSubMissionInfo( pMissionTemplet->m_vecSubMission[nSub] );
 			if( pSubMissionTemplet == NULL )
 			{
-				START_LOG( cerr, L"SUB MISSION TEMPLET 얻어오기 실패.!" )
+				START_LOG( cerr, L"Failed to retrieve the sub-mission template!" )
 					<< BUILD_LOG( pMissionTemplet->m_vecSubMission[nSub] )
 					<< BUILD_LOG( spUser->GetCharUID() )
 					<< BUILD_LOG( spUser->GetCharName() )
@@ -1708,7 +1708,7 @@ bool KUserTitleManager::GivePetFeed( IN const CXSLItem::ITEM_GRADE eGrade, IN KG
 				kNot.m_vecMissionInst.push_back( kMissionInstance );
 				AddUpdateMission( kMissionInstance.m_iID );
 
-				START_LOG( clog, L"미션 TMCT_GIVE_PET_FEED 수행" )
+				START_LOG( clog, L"Processing mission TMCT_GIVE_PET_FEED" )
 					<< BUILD_LOG( spUser->GetCharName() )
 					<< BUILD_LOG( spUser->GetUserName() )
 					<< BUILD_LOG( pSubMissionTemplet->m_wstrDescription )
@@ -1754,7 +1754,7 @@ void KUserTitleManager::OnUserUnitDie( IN KEGS_USER_UNIT_DIE_REQ::USER_UNIT_DIE_
 		const CXSLTitleManager::MissionTemplet* pMissionTemplet = SiCXSLTitleManager()->GetMissionInfo( kMissionInstance.m_iID );
 		if( pMissionTemplet == NULL )
 		{
-			START_LOG( cerr, L"MISSION TEMPLET 얻어오기 실패.!" )
+			START_LOG( cerr, L"Failed to retrieve the mission template!" )
 				<< BUILD_LOG( kMissionInstance.m_iID )
 				<< BUILD_LOG( spUser->GetCharUID() )
 				<< BUILD_LOG( spUser->GetCharName() )
@@ -1766,7 +1766,7 @@ void KUserTitleManager::OnUserUnitDie( IN KEGS_USER_UNIT_DIE_REQ::USER_UNIT_DIE_
 
 		if( kMissionInstance.m_vecSubMissionInstance.size() != pMissionTemplet->m_vecSubMission.size() )
 		{
-			START_LOG( cerr, L"MISSION TEMPLET 과 INSTANCE 의 SUB MISSION 개수가 틀림! 스크립트 확인 필요!" )
+			START_LOG( cerr, L"The mission template and instance have different sub-mission counts; check the script!" )
 				<< BUILD_LOG( kMissionInstance.m_iID )
 				<< BUILD_LOG( spUser->GetCharUID() )
 				<< BUILD_LOG( spUser->GetCharName() )
@@ -1781,7 +1781,7 @@ void KUserTitleManager::OnUserUnitDie( IN KEGS_USER_UNIT_DIE_REQ::USER_UNIT_DIE_
 			const CXSLTitleManager::SubMissionTemplet* pSubMissionTemplet = SiCXSLTitleManager()->GetSubMissionInfo( pMissionTemplet->m_vecSubMission[nSub] );
 			if( pSubMissionTemplet == NULL )
 			{
-				START_LOG( cerr, L"SUB MISSION TEMPLET 얻어오기 실패.!" )
+				START_LOG( cerr, L"Failed to retrieve the sub-mission template!" )
 					<< BUILD_LOG( pMissionTemplet->m_vecSubMission[nSub] )
 					<< BUILD_LOG( spUser->GetCharUID() )
 					<< BUILD_LOG( spUser->GetCharName() )
@@ -1808,7 +1808,7 @@ void KUserTitleManager::OnUserUnitDie( IN KEGS_USER_UNIT_DIE_REQ::USER_UNIT_DIE_
 
 				kNot.m_vecMissionInst.push_back( kMissionInstance );
 
-				START_LOG( clog, L"미션 TMCT_USER_UNIT_DIE 수행" )
+				START_LOG( clog, L"Processing mission TMCT_USER_UNIT_DIE" )
 					<< BUILD_LOG( eReason )
 					<< BUILD_LOG( spUser->GetCharName() )
 					<< BUILD_LOG( spUser->GetUserName() )
@@ -1858,7 +1858,7 @@ void KUserTitleManager::OnSocketItem( IN KGSUserPtr spUser, IN int iItemLevel, I
 		const CXSLTitleManager::MissionTemplet* pMissionTemplet = SiCXSLTitleManager()->GetMissionInfo( kMissionInstance.m_iID );
 		if( pMissionTemplet == NULL )
 		{
-			START_LOG( cerr, L"MISSION TEMPLET 얻어오기 실패.!" )
+			START_LOG( cerr, L"Failed to retrieve the mission template!" )
 				<< BUILD_LOG( kMissionInstance.m_iID )
 				<< BUILD_LOG( spUser->GetCharUID() )
 				<< BUILD_LOG( spUser->GetCharName() )
@@ -1873,7 +1873,7 @@ void KUserTitleManager::OnSocketItem( IN KGSUserPtr spUser, IN int iItemLevel, I
 			const CXSLTitleManager::SubMissionTemplet* pSubMissionTemplet = SiCXSLTitleManager()->GetSubMissionInfo( pMissionTemplet->m_vecSubMission[nSub] );
 			if( pSubMissionTemplet == NULL )
 			{
-				START_LOG( cerr, L"SUB MISSION TEMPLET 얻어오기 실패.!" )
+				START_LOG( cerr, L"Failed to retrieve the sub-mission template!" )
 					<< BUILD_LOG( pMissionTemplet->m_vecSubMission[nSub] )
 					<< BUILD_LOG( spUser->GetCharUID() )
 					<< BUILD_LOG( spUser->GetCharName() )
@@ -1900,7 +1900,7 @@ void KUserTitleManager::OnSocketItem( IN KGSUserPtr spUser, IN int iItemLevel, I
 
 				kNot.m_vecMissionInst.push_back( kMissionInstance );
 
-				START_LOG( clog, L"미션 TMCT_ITEM_SOCKET 수행" )
+				START_LOG( clog, L"Processing mission TMCT_ITEM_SOCKET" )
 					<< BUILD_LOG( spUser->GetCharName() )
 					<< BUILD_LOG( spUser->GetUserName() )
 					<< BUILD_LOG( pSubMissionTemplet->m_wstrDescription )
@@ -1947,7 +1947,7 @@ void KUserTitleManager::OnEnchantItemLevel( IN KGSUserPtr spUser, IN int iItemLe
 		const CXSLTitleManager::MissionTemplet* pMissionTemplet = SiCXSLTitleManager()->GetMissionInfo( kMissionInstance.m_iID );
 		if( pMissionTemplet == NULL )
 		{
-			START_LOG( cerr, L"MISSION TEMPLET 얻어오기 실패.!" )
+			START_LOG( cerr, L"Failed to retrieve the mission template!" )
 				<< BUILD_LOG( kMissionInstance.m_iID )
 				<< BUILD_LOG( spUser->GetCharUID() )
 				<< BUILD_LOG( spUser->GetCharName() )
@@ -1962,7 +1962,7 @@ void KUserTitleManager::OnEnchantItemLevel( IN KGSUserPtr spUser, IN int iItemLe
 			const CXSLTitleManager::SubMissionTemplet* pSubMissionTemplet = SiCXSLTitleManager()->GetSubMissionInfo( pMissionTemplet->m_vecSubMission[nSub] );
 			if( pSubMissionTemplet == NULL )
 			{
-				START_LOG( cerr, L"SUB MISSION TEMPLET 얻어오기 실패.!" )
+				START_LOG( cerr, L"Failed to retrieve the sub-mission template!" )
 					<< BUILD_LOG( pMissionTemplet->m_vecSubMission[nSub] )
 					<< BUILD_LOG( spUser->GetCharUID() )
 					<< BUILD_LOG( spUser->GetCharName() )
@@ -1992,7 +1992,7 @@ void KUserTitleManager::OnEnchantItemLevel( IN KGSUserPtr spUser, IN int iItemLe
 
 					kNot.m_vecMissionInst.push_back( kMissionInstance );
 
-					START_LOG( clog, L"미션 TMCT_ITEM_ENCHANT_LEVEL 수행" )
+					START_LOG( clog, L"Processing mission TMCT_ITEM_ENCHANT_LEVEL" )
 						<< BUILD_LOG( spUser->GetCharName() )
 						<< BUILD_LOG( spUser->GetUserName() )
 						<< BUILD_LOG( pSubMissionTemplet->m_wstrDescription )
@@ -2019,7 +2019,7 @@ void KUserTitleManager::OnEnchantItemLevel( IN KGSUserPtr spUser, IN int iItemLe
 
 					kNot.m_vecMissionInst.push_back( kMissionInstance );
 
-					START_LOG( clog, L"미션 TMCT_ITEM_ENCHANT_COUNT 수행" )
+					START_LOG( clog, L"Performing mission TMCT_ITEM_ENCHANT_COUNT." )
 						<< BUILD_LOG( spUser->GetCharName() )
 						<< BUILD_LOG( spUser->GetUserName() )
 						<< BUILD_LOG( pSubMissionTemplet->m_wstrDescription )
@@ -2066,7 +2066,7 @@ void KUserTitleManager::OnAttribItem( IN KGSUserPtr spUser, IN int iItemLevel )
 		const CXSLTitleManager::MissionTemplet* pMissionTemplet = SiCXSLTitleManager()->GetMissionInfo( kMissionInstance.m_iID );
 		if( pMissionTemplet == NULL )
 		{
-			START_LOG( cerr, L"MISSION TEMPLET 얻어오기 실패.!" )
+			START_LOG( cerr, L"Failed to retrieve the mission template!" )
 				<< BUILD_LOG( kMissionInstance.m_iID )
 				<< BUILD_LOG( spUser->GetCharUID() )
 				<< BUILD_LOG( spUser->GetCharName() )
@@ -2081,7 +2081,7 @@ void KUserTitleManager::OnAttribItem( IN KGSUserPtr spUser, IN int iItemLevel )
 			const CXSLTitleManager::SubMissionTemplet* pSubMissionTemplet = SiCXSLTitleManager()->GetSubMissionInfo( pMissionTemplet->m_vecSubMission[nSub] );
 			if( pSubMissionTemplet == NULL )
 			{
-				START_LOG( cerr, L"SUB MISSION TEMPLET 얻어오기 실패.!" )
+				START_LOG( cerr, L"Failed to retrieve the sub-mission template!" )
 					<< BUILD_LOG( pMissionTemplet->m_vecSubMission[nSub] )
 					<< BUILD_LOG( spUser->GetCharUID() )
 					<< BUILD_LOG( spUser->GetCharName() )
@@ -2108,7 +2108,7 @@ void KUserTitleManager::OnAttribItem( IN KGSUserPtr spUser, IN int iItemLevel )
 
 				kNot.m_vecMissionInst.push_back( kMissionInstance );
 
-				START_LOG( clog, L"미션 TMCT_ITEM_ATTRIB 수행" )
+				START_LOG( clog, L"Processing mission TMCT_ITEM_ATTRIB" )
 					<< BUILD_LOG( spUser->GetCharName() )
 					<< BUILD_LOG( spUser->GetUserName() )
 					<< BUILD_LOG( pSubMissionTemplet->m_wstrDescription )
@@ -2154,7 +2154,7 @@ void KUserTitleManager::OnResolveItem( IN KGSUserPtr spUser )
 		const CXSLTitleManager::MissionTemplet* pMissionTemplet = SiCXSLTitleManager()->GetMissionInfo( kMissionInstance.m_iID );
 		if( pMissionTemplet == NULL )
 		{
-			START_LOG( cerr, L"MISSION TEMPLET 얻어오기 실패.!" )
+			START_LOG( cerr, L"Failed to retrieve the mission template!" )
 				<< BUILD_LOG( kMissionInstance.m_iID )
 				<< BUILD_LOG( spUser->GetCharUID() )
 				<< BUILD_LOG( spUser->GetCharName() )
@@ -2169,7 +2169,7 @@ void KUserTitleManager::OnResolveItem( IN KGSUserPtr spUser )
 			const CXSLTitleManager::SubMissionTemplet* pSubMissionTemplet = SiCXSLTitleManager()->GetSubMissionInfo( pMissionTemplet->m_vecSubMission[nSub] );
 			if( pSubMissionTemplet == NULL )
 			{
-				START_LOG( cerr, L"SUB MISSION TEMPLET 얻어오기 실패.!" )
+				START_LOG( cerr, L"Failed to retrieve the sub-mission template!" )
 					<< BUILD_LOG( pMissionTemplet->m_vecSubMission[nSub] )
 					<< BUILD_LOG( spUser->GetCharUID() )
 					<< BUILD_LOG( spUser->GetCharName() )
@@ -2195,7 +2195,7 @@ void KUserTitleManager::OnResolveItem( IN KGSUserPtr spUser )
 
 				kNot.m_vecMissionInst.push_back( kMissionInstance );
 
-				START_LOG( clog, L"미션 TMCT_ITEM_RESOLVE 수행" )
+				START_LOG( clog, L"Processing mission TMCT_ITEM_RESOLVE" )
 					<< BUILD_LOG( spUser->GetCharName() )
 					<< BUILD_LOG( spUser->GetUserName() )
 					<< BUILD_LOG( pSubMissionTemplet->m_wstrDescription )

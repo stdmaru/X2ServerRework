@@ -45,7 +45,7 @@ bool KPersonalShopItemList::AddItemInfo( KERM_PERSONAL_SHOP_INFO_NOT & _kNot )
 		// 카테고리 키 검사.
 		if( false == CheckSlotCategoryID(kInsertItem.m_kSellItemInfo.m_kInventoryItemInfo.m_cSlotCategory) )
 		{
-			START_LOG( cerr, L"카테고리 키 이상.!" )
+			START_LOG( cerr, L"Invalid category key!" )
 				<< BUILD_LOG( kInsertItem.m_kSellItemInfo.m_kInventoryItemInfo.m_iItemUID )
 				<< BUILD_LOG( kInsertItem.m_kSellItemInfo.m_kInventoryItemInfo.m_kItemInfo.m_iItemID )
 				<< BUILD_LOGc( kInsertItem.m_kSellItemInfo.m_kInventoryItemInfo.m_cSlotCategory )
@@ -64,7 +64,7 @@ bool KPersonalShopItemList::AddItemInfo( KERM_PERSONAL_SHOP_INFO_NOT & _kNot )
 			kItemList.push_back(kInsertItem);
 			m_mapItemInfo.insert( std::make_pair(InvSlotCategoryID(kInsertItem.m_kSellItemInfo), kItemList) );
 
-			START_LOG( clog, L"카테고리 만들어 삽입." )
+			START_LOG( clog, L"Creating and inserting category." )
 				<< BUILD_LOG( kInsertItem.m_kSellItemInfo.m_kInventoryItemInfo.m_kItemInfo.m_iItemID )
 				<< BUILD_LOG( kInsertItem.m_wstrSellerNickName );
 			continue;
@@ -85,7 +85,7 @@ bool KPersonalShopItemList::AddItemInfo( KERM_PERSONAL_SHOP_INFO_NOT & _kNot )
 				// 아이템 아이디 체크.
 				if( pListItem == NULL || pInsertItem == NULL )
 				{
-					START_LOG( cerr, L"잘못된 아이템 아이디.!" )
+					START_LOG( cerr, L"Invalid item ID!" )
 						<< BUILD_LOG( (*lit).m_kSellItemInfo.m_kInventoryItemInfo.m_kItemInfo.m_iItemID )
 						<< BUILD_LOG( kInsertItem.m_kSellItemInfo.m_kInventoryItemInfo.m_kItemInfo.m_iItemID )
 						<< END_LOG;
@@ -112,7 +112,7 @@ bool KPersonalShopItemList::AddItemInfo( KERM_PERSONAL_SHOP_INFO_NOT & _kNot )
 									mit->second.insert( lit, kInsertItem );
 									bIsInsert = true;
 
-									START_LOG( clog, L"가격별 아이템 정렬 삽입" )
+									START_LOG( clog, L"Inserting item in price-sorted order" )
 										<< BUILD_LOG( pInsertItem->m_Name )
 										<< BUILD_LOG( pInsertItem->m_ItemID );
 									break;
@@ -123,7 +123,7 @@ bool KPersonalShopItemList::AddItemInfo( KERM_PERSONAL_SHOP_INFO_NOT & _kNot )
 								mit->second.insert( lit, kInsertItem );
 								bIsInsert = true;
 
-								START_LOG( clog, L"등급별 아이템 정렬 삽입" )
+								START_LOG( clog, L"Inserting items sorted by rank." )
 									<< BUILD_LOG( pInsertItem->m_Name )
 									<< BUILD_LOG( pInsertItem->m_ItemID );
 								break;
@@ -134,7 +134,7 @@ bool KPersonalShopItemList::AddItemInfo( KERM_PERSONAL_SHOP_INFO_NOT & _kNot )
 							mit->second.insert( lit, kInsertItem );
 							bIsInsert = true;
 
-							START_LOG( clog, L"캐릭터별 아이템 정렬 삽입" )
+							START_LOG( clog, L"Inserting items sorted by character." )
 								<< BUILD_LOG( pInsertItem->m_Name )
 								<< BUILD_LOG( pInsertItem->m_ItemID );
 							break;
@@ -145,7 +145,7 @@ bool KPersonalShopItemList::AddItemInfo( KERM_PERSONAL_SHOP_INFO_NOT & _kNot )
 						mit->second.insert( lit, kInsertItem );
 						bIsInsert = true;
 
-						START_LOG( clog, L"레벨별 아이템 정렬 삽입" )
+						START_LOG( clog, L"Inserting items sorted by level." )
 							<< BUILD_LOG( pInsertItem->m_Name )
 							<< BUILD_LOG( pInsertItem->m_ItemID );
 						break;
@@ -156,7 +156,7 @@ bool KPersonalShopItemList::AddItemInfo( KERM_PERSONAL_SHOP_INFO_NOT & _kNot )
 					mit->second.insert( lit, kInsertItem );
 					bIsInsert = true;
 
-					START_LOG( clog, L"부위별 아이템 정렬 삽입" )
+					START_LOG( clog, L"Inserting items sorted by body part." )
 						<< BUILD_LOG( pInsertItem->m_Name )
 						<< BUILD_LOG( pInsertItem->m_ItemID );
 					break;
@@ -167,7 +167,7 @@ bool KPersonalShopItemList::AddItemInfo( KERM_PERSONAL_SHOP_INFO_NOT & _kNot )
 			{
 				mit->second.push_back(kInsertItem);
 
-				START_LOG( clog, L"push_back 아이템 정렬 삽입" )
+				START_LOG( clog, L"Inserting a sorted item with push_back." )
 					<< BUILD_LOG( kInsertItem.m_kSellItemInfo.m_kInventoryItemInfo.m_kItemInfo.m_iItemID )
 					<< BUILD_LOG( kInsertItem.m_wstrSellerNickName );
 			}
@@ -186,7 +186,7 @@ bool KPersonalShopItemList::DelItemInfo( KERM_PERSONAL_SHOP_INFO_NOT & _kNot )
 		// 카테고리 키 검사.
 		if( false == CheckSlotCategoryID(kDelItemInfo.m_kInventoryItemInfo.m_cSlotCategory) )
 		{
-			START_LOG( cerr, L"카테고리 키 이상.!" )
+			START_LOG( cerr, L"Invalid category key!" )
 				<< BUILD_LOG( kDelItemInfo.m_kInventoryItemInfo.m_iItemUID )
 				<< BUILD_LOG( kDelItemInfo.m_kInventoryItemInfo.m_kItemInfo.m_iItemID )
 				<< BUILD_LOGc( kDelItemInfo.m_kInventoryItemInfo.m_cSlotCategory )
@@ -201,7 +201,7 @@ bool KPersonalShopItemList::DelItemInfo( KERM_PERSONAL_SHOP_INFO_NOT & _kNot )
 		// 카테고리 리스트가 없다면..
 		if( mit == m_mapItemInfo.end() )
 		{
-			START_LOG( cerr, L"카테로리 리스트가 존재하지 않음." )
+			START_LOG( cerr, L"Category list does not exist." )
 				<< BUILD_LOGc( kDelItemInfo.m_kInventoryItemInfo.m_cSlotCategory )
 				<< BUILD_LOG( _kNot.m_wstrSellerNickName )
 				<< END_LOG;
@@ -216,7 +216,7 @@ bool KPersonalShopItemList::DelItemInfo( KERM_PERSONAL_SHOP_INFO_NOT & _kNot )
 				if( (*lit).m_kSellItemInfo.m_kInventoryItemInfo.m_iItemUID ==
 					kDelItemInfo.m_kInventoryItemInfo.m_iItemUID )
 				{
-					START_LOG( clog, L"아이템 리스트 삭제성공." )
+					START_LOG( clog, L"Successfully deleted item list entry." )
 						<< BUILD_LOG( (*lit).m_wstrSellerNickName )
 						<< BUILD_LOG( (*lit).m_kSellItemInfo.m_kInventoryItemInfo.m_kItemInfo.m_iItemID )
 						;
@@ -254,7 +254,7 @@ bool KPersonalShopItemList::DelItemInfo( const UidType & _iCenterUID )
 		}
 	}
 
-	START_LOG( clog, L"센터가 셧다운되어 삭제된 아이템 정보 개수." )
+	START_LOG( clog, L"Number of item records deleted because the center server shut down." )
 		<< BUILD_LOG( iDelCnt )
 		;
 
@@ -269,7 +269,7 @@ bool KPersonalShopItemList::ChangeItemInfo( KERM_PERSONAL_SHOP_INFO_NOT & _kNot 
 		// 카테고리 키 검사.
 		if( false == CheckSlotCategoryID(kChangeItemInfo.m_kInventoryItemInfo.m_cSlotCategory) )
 		{
-			START_LOG( cerr, L"카테고리 키 이상.!" )
+			START_LOG( cerr, L"Invalid category key!" )
 				<< BUILD_LOG( kChangeItemInfo.m_kInventoryItemInfo.m_iItemUID )
 				<< BUILD_LOG( kChangeItemInfo.m_kInventoryItemInfo.m_kItemInfo.m_iItemID )
 				<< BUILD_LOGc( kChangeItemInfo.m_kInventoryItemInfo.m_cSlotCategory )
@@ -284,7 +284,7 @@ bool KPersonalShopItemList::ChangeItemInfo( KERM_PERSONAL_SHOP_INFO_NOT & _kNot 
 		// 카테고리 리스트가 없다면..
 		if( mit == m_mapItemInfo.end() )
 		{
-			START_LOG( cerr, L"카테고리 리스트가 존재하지 않음." )
+			START_LOG( cerr, L"Category list does not exist." )
 				<< BUILD_LOGc( kChangeItemInfo.m_kInventoryItemInfo.m_cSlotCategory )
 				<< BUILD_LOG( _kNot.m_wstrSellerNickName )
 				<< END_LOG;
@@ -299,7 +299,7 @@ bool KPersonalShopItemList::ChangeItemInfo( KERM_PERSONAL_SHOP_INFO_NOT & _kNot 
 				if( (*lit).m_kSellItemInfo.m_kInventoryItemInfo.m_iItemUID ==
 					kChangeItemInfo.m_kInventoryItemInfo.m_iItemUID )
 				{
-					START_LOG( clog, L"아이템 리스트 수정성공." )
+					START_LOG( clog, L"Successfully updated item list entry." )
 						<< BUILD_LOG( (*lit).m_wstrSellerNickName )
 						<< BUILD_LOG( (*lit).m_kSellItemInfo.m_kInventoryItemInfo.m_kItemInfo.m_iItemID )
 						;
@@ -322,7 +322,7 @@ void KPersonalShopItemList::GetSearchList( IN KEGS_SEARCH_TRADE_BOARD_REQ & kReq
 	{
 		if( kReq.m_wstrFinder.empty() == true )
 		{
-			START_LOG( cerr, L"카테고리 키 이상." )
+			START_LOG( cerr, L"Invalid category key." )
 				<< BUILD_LOGc( kReq.m_cSlotCategory )
 				<< END_LOG;
 
@@ -341,7 +341,7 @@ void KPersonalShopItemList::GetSearchList( IN KEGS_SEARCH_TRADE_BOARD_REQ & kReq
 
 					if( NULL == pListItem )
 					{
-						START_LOG( cerr, L"아이템 아이디가 잘못되었음." )
+						START_LOG( cerr, L"Invalid item ID." )
 							<< BUILD_LOG( kItemInfo.m_kSellItemInfo.m_kInventoryItemInfo.m_kItemInfo.m_iItemID )
 							<< BUILD_LOG( kItemInfo.m_wstrSellerNickName )
 							<< END_LOG;
@@ -404,7 +404,7 @@ void KPersonalShopItemList::GetSearchList( IN KEGS_SEARCH_TRADE_BOARD_REQ & kReq
 	//# 카테고리 리스트가 없다면..
 	if( mit == m_mapItemInfo.end() )
 	{
-		START_LOG( clog, L"검색할려는 카테고리 아이템 리스트가 없음." )
+		START_LOG( clog, L"No item list exists for the category being searched." )
 			<< BUILD_LOGc( kReq.m_cSlotCategory )
 			<< END_LOG;
 		kAck.m_iOK = NetError::ERR_PERSONAL_SHOP_30;
@@ -420,7 +420,7 @@ void KPersonalShopItemList::GetSearchList( IN KEGS_SEARCH_TRADE_BOARD_REQ & kReq
 
 		if( NULL == pListItem )
 		{
-			START_LOG( cerr, L"아이템 아이디가 잘못되었음." )
+			START_LOG( cerr, L"Invalid item ID." )
 				<< BUILD_LOG( kItemInfo.m_kSellItemInfo.m_kInventoryItemInfo.m_kItemInfo.m_iItemID )
 				<< BUILD_LOG( kItemInfo.m_wstrSellerNickName )
 				<< END_LOG;
@@ -535,7 +535,7 @@ void KPersonalShopItemList::GetStrictSearchList( IN KEGS_SEARCH_TRADE_BOARD_REQ 
     {
         if( kReq.m_wstrFinder.empty() == true )
         {
-            START_LOG( cerr, L"카테고리 키 이상." )
+            START_LOG( cerr, L"Invalid category key." )
                 << BUILD_LOGc( kReq.m_cSlotCategory )
                 << END_LOG;
 
@@ -554,7 +554,7 @@ void KPersonalShopItemList::GetStrictSearchList( IN KEGS_SEARCH_TRADE_BOARD_REQ 
 
                     if( NULL == pListItem )
                     {
-                        START_LOG( cerr, L"아이템 아이디가 잘못되었음." )
+                        START_LOG( cerr, L"Invalid item ID." )
                             << BUILD_LOG( kItemInfo.m_kSellItemInfo.m_kInventoryItemInfo.m_kItemInfo.m_iItemID )
                             << BUILD_LOG( kItemInfo.m_wstrSellerNickName )
                             << END_LOG;
@@ -615,7 +615,7 @@ void KPersonalShopItemList::GetStrictSearchList( IN KEGS_SEARCH_TRADE_BOARD_REQ 
     //# 카테고리 리스트가 없다면..
     if( mit == m_mapItemInfo.end() )
     {
-        START_LOG( clog, L"검색할려는 카테고리 아이템 리스트가 없음." )
+        START_LOG( clog, L"No item list exists for the category being searched." )
             << BUILD_LOGc( kReq.m_cSlotCategory )
             << END_LOG;
         kAck.m_iOK = NetError::ERR_PERSONAL_SHOP_30;
@@ -631,7 +631,7 @@ void KPersonalShopItemList::GetStrictSearchList( IN KEGS_SEARCH_TRADE_BOARD_REQ 
 
         if( NULL == pListItem )
         {
-            START_LOG( cerr, L"아이템 아이디가 잘못되었음." )
+            START_LOG( cerr, L"Invalid item ID." )
                 << BUILD_LOG( kItemInfo.m_kSellItemInfo.m_kInventoryItemInfo.m_kItemInfo.m_iItemID )
                 << BUILD_LOG( kItemInfo.m_wstrSellerNickName )
                 << END_LOG;

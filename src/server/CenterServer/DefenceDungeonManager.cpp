@@ -67,7 +67,7 @@ bool KDefenceDungeonManager::DecisionEnterDefenceDungeon( IN const int iDungeonI
 		iDungeonNpcLevel = SiCXSLDungeonManager()->GetDungeonNpcLevel( iDungeonID );
 		if( iDungeonNpcLevel == 0 )
 		{
-			START_LOG( cerr, L"던전 npc 레벨 정보가 이상합니다!" )
+			START_LOG( cerr, L"Invalid dungeon NPC level information!" )
 				<< BUILD_LOG( iDungeonID )
 				<< END_LOG;
 			return false;
@@ -96,7 +96,7 @@ bool KDefenceDungeonManager::DecisionEnterDefenceDungeon( IN const int iDungeonI
 	if(b100PerEventOn)
 	{
 		fEnterDefenceRate = 100.f;
-		START_LOG( clog, L"김석근_어둠의 문 100% 이벤트 돌입!" )
+		START_LOG( clog, L"Kim Seok-geun Gate of Darkness 100% event started!" )
 			<< BUILD_LOG( fEnterDefenceRate )
 			<< END_LOG;
 	}

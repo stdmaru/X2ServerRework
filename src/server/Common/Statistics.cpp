@@ -91,7 +91,7 @@ void KStatistics::SetFlushTime( IN const int iHour )
 
 	std::wstring wstrFlushTime = (const wchar_t*)m_tFlushTime.Format(_T("%Y-%m-%d %H:%M:%S"));
 
-	START_LOG( cout, L"특정 시각에 DB통계 Flush 시각 세팅!" )
+	START_LOG( cout, L"Database statistics flush time configured." )
 		<< BUILD_LOG( m_iStatisticsID )
 		<< BUILD_LOG( wstrFlushTime )
 		<< BUILD_LOG( m_bTimeFlush );
@@ -263,7 +263,7 @@ unsigned short KStatistics::GetEventID()
 		//}}
 
 	default:
-		START_LOG( cerr, L"통계 ID에 대한 event id가 대응되지 않았음." )
+		START_LOG( cerr, L"No event ID is mapped to the statistics ID." )
 			<< BUILD_LOG( m_iStatisticsID )
 			<< END_LOG;
 		return EVENT_EVENTID_SENTINEL;
@@ -368,7 +368,7 @@ int  KStatistics::GetDisconnectUserFSM( int iStateID )
 		return eSIColDU_S_ROOM;
 	}
 
-	START_LOG( cerr, L"존재하지 않는 GSFSM값입니다" )
+	START_LOG( cerr, L"GSFSM value does not exist." )
 		<< BUILD_LOG( iStateID )
 		<< END_LOG;
 

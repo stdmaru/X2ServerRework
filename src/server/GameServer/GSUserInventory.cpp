@@ -66,7 +66,7 @@ IMPL_ON_FUNC( EGS_BUY_ED_ITEM_REQ )
 		{
 			if( GetAuthLevel() < SEnum::UAL_GM )
 			{
-				START_LOG( cerr, L"운영자도 아닌데 감히." )
+				START_LOG( cerr, L"Unauthorized attempt to use an operator-only feature." )
 					<< BUILD_LOG( GetName() )
 					<< BUILD_LOG( GetUID() )
 					<< BUILD_LOG( GetCharUID() )
@@ -106,7 +106,7 @@ IMPL_ON_FUNC( EGS_BUY_ED_ITEM_REQ )
 		//{{ 2012. 03. 29	최육사	Inventory Lock 기능
 		if( m_kInventory.IsLocked() == true )
 		{
-			START_LOG( cout, L"인벤토리 락이 걸려있는 상태입니다!" )
+			START_LOG( cout, L"The inventory is locked!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharName() )
@@ -139,7 +139,7 @@ IMPL_ON_FUNC( EGS_BUY_ED_ITEM_REQ )
 
 		if( kPacketAck.m_iOK == NetError::ERR_BUY_ED_ITEM_06 )
 		{
-			START_LOG( cout, L"NPC상점에서 팔지 않는 아이템을 구매하려 했습니다! 해킹유저로 의심됩니다!" )
+			START_LOG( cout, L"Attempted to buy an item not sold by the NPC shop; suspected hacking!" )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharName() )
 				<< BUILD_LOG( GetCharUID() );
@@ -303,7 +303,7 @@ IMPL_ON_FUNC( EGS_SELL_ED_ITEM_REQ )
 		//{{ 2009. 10. 15  최육사	거래 예외처리
 		if( GetTradeUID() > 0  ||  GetPersonalShopUID() > 0 )
 		{
-			START_LOG( cwarn, L"거래중에는 사용할 수 없는 기능!" )
+			START_LOG( cwarn, L"This feature is unavailable during a trade!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
 
@@ -316,7 +316,7 @@ IMPL_ON_FUNC( EGS_SELL_ED_ITEM_REQ )
 		//{{ 2010. 03. 18  최육사	클라이언트 데이터 검증
 		if( kPacket_.m_iQuantity < 0 )
 		{
-			START_LOG( cout2, L"아이템 판매 패킷의 수량값이 마이너스 값입니다. 해킹유저로 의심됨." )
+			START_LOG( cout2, L"Item sale packet has a negative quantity; suspected hacking." )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( kPacket_.m_iItemUID )
@@ -331,7 +331,7 @@ IMPL_ON_FUNC( EGS_SELL_ED_ITEM_REQ )
 		//{{ 2012. 03. 29	최육사	Inventory Lock 기능
 		if( m_kInventory.IsLocked() == true )
 		{
-			START_LOG( cout, L"인벤토리 락이 걸려있는 상태입니다!" )
+			START_LOG( cout, L"The inventory is locked!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharName() )
@@ -375,7 +375,7 @@ IMPL_ON_FUNC( EGS_SELL_ED_ITEM_REQ )
 						// sn 블럭은 일단 빼자
 
 
-						START_LOG( clog2, L"팔지 못하는 아이템을 팔려고 합니다. 제재 합시다." )
+						START_LOG( clog2, L"Attempted to sell an item that cannot be sold; apply a penalty." )
 							<< BUILD_LOG( GetUID() )
 							<< BUILD_LOG( GetCharName() )
 							<< BUILD_LOG( kInfo.m_kItemInfo.m_iItemID)
@@ -588,7 +588,7 @@ IMPL_ON_FUNC( EGS_CHANGE_INVENTORY_SLOT_ITEM_REQ )
 		//{{ 2012. 03. 29	최육사	Inventory Lock 기능
 		if( m_kInventory.IsLocked() == true )
 		{
-			START_LOG( cout, L"인벤토리 락이 걸려있는 상태입니다!" )
+			START_LOG( cout, L"The inventory is locked!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharName() )
@@ -617,7 +617,7 @@ IMPL_ON_FUNC( EGS_CHANGE_INVENTORY_SLOT_ITEM_REQ )
 	{
 		if( kPacket_.m_iShareUnitUID != m_kInventory.GetShareUnitUID() )
 		{
-			START_LOG( cwarn, L"클라이언트와 서버가 보고 있는 캐릭터가 다르다!" )
+			START_LOG( cwarn, L"The character selected by the client does not match the server!" )
 				<< BUILD_LOG( (int)kPacket_.m_cFromSlotType )
 				<< BUILD_LOG( kPacket_.m_iFromSlotID )
 				<< BUILD_LOG( (int)kPacket_.m_cToSlotType )
@@ -633,7 +633,7 @@ IMPL_ON_FUNC( EGS_CHANGE_INVENTORY_SLOT_ITEM_REQ )
 
 		if( kPacket_.m_cToSlotType == CXSLInventory::ST_SHARE_BANK && m_kInventory.GetShareBankSize() <= kPacket_.m_iToSlotID )
 		{
-			START_LOG( cwarn, L"공유은행 크기보다 큰 곳에 넣으려 했다!" )
+			START_LOG( cwarn, L"Attempted to insert an item beyond the shared bank capacity!" )
 				<< BUILD_LOG( (int)kPacket_.m_cFromSlotType )
 				<< BUILD_LOG( kPacket_.m_iFromSlotID )
 				<< BUILD_LOG( (int)kPacket_.m_cToSlotType )
@@ -883,7 +883,7 @@ IMPL_ON_FUNC( EGS_DELETE_ITEM_REQ )
 		//{{ 2012. 03. 29	최육사	Inventory Lock 기능
 		if( m_kInventory.IsLocked() == true )
 		{
-			START_LOG( cout, L"인벤토리 락이 걸려있는 상태입니다!" )
+			START_LOG( cout, L"The inventory is locked!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharName() )
@@ -960,7 +960,7 @@ IMPL_ON_FUNC( EGS_USE_QUICK_SLOT_REQ )
 		//{{ 2009. 7. 3  최육사		헤니르 시공
 		if( IsHenirDungeonChallengeMode() )
 		{
-			START_LOG( cerr, L"클라이언트에서 이벤트 던전인지 체크했을텐데.." )
+			START_LOG( cerr, L"The client should have checked whether this is an event dungeon." )
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
 
@@ -973,7 +973,7 @@ IMPL_ON_FUNC( EGS_USE_QUICK_SLOT_REQ )
 		//{{ 2012. 03. 29	최육사	Inventory Lock 기능
 		if( m_kInventory.IsLocked() == true )
 		{
-			START_LOG( cout, L"인벤토리 락이 걸려있는 상태입니다!" )
+			START_LOG( cout, L"The inventory is locked!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharName() )
@@ -1021,7 +1021,7 @@ IMPL_ON_FUNC( EGS_USE_QUICK_SLOT_REQ )
 	//}}
 	{
 		// cool time에 걸려 사용못하는 경우가 있음.
-		START_LOG( cwarn, L"퀵슬롯 아이템 사용 실패." )
+		START_LOG( cwarn, L"Failed to use the quick-slot item." )
 			//{{ 2011. 12. 15	최육사	인벤토리 슬롯ID크기 늘리기
 //#ifdef SERV_EXPAND_SLOT_ID_DATA_SIZE
 			<< BUILD_LOG( kPacket_.m_sSlotID )
@@ -1090,7 +1090,7 @@ IMPL_ON_FUNC( EGS_USE_DEFENCE_DUNGEON_QUICK_SLOT_REQ )
 		//{{ 2009. 7. 3  최육사		헤니르 시공
 		if( IsHenirDungeonChallengeMode() )
 		{
-			START_LOG( cerr, L"클라이언트에서 이벤트 던전인지 체크했을텐데.." )
+			START_LOG( cerr, L"The client should have checked whether this is an event dungeon." )
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
 
@@ -1103,7 +1103,7 @@ IMPL_ON_FUNC( EGS_USE_DEFENCE_DUNGEON_QUICK_SLOT_REQ )
 		//{{ 2012. 03. 29	최육사	Inventory Lock 기능
 		if( m_kInventory.IsLocked() == true )
 		{
-			START_LOG( cout, L"인벤토리 락이 걸려있는 상태입니다!" )
+			START_LOG( cout, L"The inventory is locked!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharUID() )
@@ -1124,7 +1124,7 @@ IMPL_ON_FUNC( EGS_USE_DEFENCE_DUNGEON_QUICK_SLOT_REQ )
 	if( m_kInventory.UseDefenceDungeonQuickSlotItem( ( int )kPacket_.m_sSlotID, kPacket.m_ItemID, kPacket.m_InventorySlotInfo ) == false )
 	{
 		// cool time에 걸려 사용못하는 경우가 있음.
-		START_LOG( cwarn, L"퀵슬롯 아이템 사용 실패." )
+		START_LOG( cwarn, L"Failed to use the quick-slot item." )
 			<< BUILD_LOG( kPacket_.m_sSlotID )
 			<< BUILD_LOG( kPacket.m_ItemID )
 			<< END_LOG;
@@ -1182,7 +1182,7 @@ IMPL_ON_FUNC( EGS_REPAIR_ITEM_REQ )
 		//{{ 2012. 03. 29	최육사	Inventory Lock 기능
 		if( m_kInventory.IsLocked() == true )
 		{
-			START_LOG( cout, L"인벤토리 락이 걸려있는 상태입니다!" )
+			START_LOG( cout, L"The inventory is locked!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharName() )
@@ -1339,7 +1339,7 @@ IMPL_ON_FUNC( EGS_OPEN_RANDOM_ITEM_REQ )
 		//{{ 2009. 10. 15  최육사	거래 예외처리
 		if( GetTradeUID() > 0  ||  GetPersonalShopUID() > 0 )
 		{
-			START_LOG( cwarn, L"거래중에는 사용할 수 없는 기능!" )
+			START_LOG( cwarn, L"This feature is unavailable during a trade!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
 
@@ -1352,7 +1352,7 @@ IMPL_ON_FUNC( EGS_OPEN_RANDOM_ITEM_REQ )
 		//{{ 2012. 03. 29	최육사	Inventory Lock 기능
 		if( m_kInventory.IsLocked() == true )
 		{
-			START_LOG( cout, L"인벤토리 락이 걸려있는 상태입니다!" )
+			START_LOG( cout, L"The inventory is locked!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharName() )
@@ -1378,7 +1378,7 @@ IMPL_ON_FUNC( EGS_OPEN_RANDOM_ITEM_REQ )
 	const int iRandomItemID = m_kInventory.GetItemID( kPacket_.m_iItemUID );
 	if( iRandomItemID == 0 )
 	{
-		START_LOG( cerr, L"존재하지 않는 아이템 입니다!" )
+		START_LOG( cerr, L"The item does not exist!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iItemUID )
 			<< END_LOG;
@@ -1416,7 +1416,7 @@ IMPL_ON_FUNC( EGS_OPEN_RANDOM_ITEM_REQ )
 		if(  tStartTime < tCurr && tEndTime > tCurr )
 		{
 
-			START_LOG( clog, L"ModifyMapItemGroup, 큐브매핑작업Start" )
+			START_LOG( clog, L"ModifyMapItemGroup: starting cube mapping." )
 				<< BUILD_LOG( nIndexData )
 				<< BUILD_LOG( tStartTime.GetYear() )
 				<< BUILD_LOG( tStartTime.GetMonth() )
@@ -1432,7 +1432,7 @@ IMPL_ON_FUNC( EGS_OPEN_RANDOM_ITEM_REQ )
 
 			if(!SiCXSLRandomItemManager()->ModifyMapItemGroup(mitRIData->second))
 			{
-				START_LOG( cerr, L"해당 랜덤 아이템에 대한 키템 정보가 없다. 있을수 없는에러!" )
+				START_LOG( cerr, L"Key item information is missing for this random item; this should never happen!" )
 					<< BUILD_LOG( mitRIData->second.iCubeID )
 					<< BUILD_LOG( mitRIData->second.iKeyItemID )
 					<< END_LOG;
@@ -1623,7 +1623,7 @@ IMPL_ON_FUNC( EGS_OPEN_RANDOM_ITEM_REQ )
 	}
 	else
 	{
-		START_LOG( cerr, L"AfterWorkStorage: Key값을 얻을 수 없습니다." )
+		START_LOG( cerr, L"AfterWorkStorage: Could not retrieve the key." )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( GetCharUID() )
 			<< END_LOG;
@@ -1645,7 +1645,7 @@ IMPL_ON_FUNC( ELG_CHECK_TIME_RANDOM_ITEM_EVENT_ACK )
 	//{{ 2009. 10. 15  최육사	거래 예외처리
 	if( GetTradeUID() > 0  ||  GetPersonalShopUID() > 0 )
 	{
-		START_LOG( cerr, L"거래중에는 사용할 수 없는 기능! 이미 검사했는데?" )
+		START_LOG( cerr, L"This feature cannot be used during a trade; wasn't this already checked?" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iItemUID )
 			<< BUILD_LOG( kPacket_.m_iEventItemID )
@@ -1670,7 +1670,7 @@ IMPL_ON_FUNC( ELG_CHECK_TIME_RANDOM_ITEM_EVENT_ACK )
 	const int iRandomItemID = m_kInventory.GetItemID( kPacket_.m_iItemUID );
 	if( iRandomItemID == 0 )
 	{
-		START_LOG( cerr, L"존재하지 않는 아이템 입니다!" )
+		START_LOG( cerr, L"The item does not exist!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iItemUID )
 			<< END_LOG;
@@ -1923,7 +1923,7 @@ IMPL_ON_FUNC( DBE_OPEN_RANDOM_ITEM_ACK )
 		// 한번 오픈 관련 초기화 해주고, 시간되서 안에 들어가는 경우에 다시 해주자!
 		if(!SiCXSLRandomItemManager()->RestoreMapItemGroup(mitRIData->second))
 		{
-			START_LOG( cerr, L"해당 랜덤 아이템에 대한 키템 정보가 없다. 있을수 없는에러!" )
+			START_LOG( cerr, L"Key item information is missing for this random item; this should never happen!" )
 				<< BUILD_LOG( mitRIData->second.iCubeID )
 				<< BUILD_LOG( mitRIData->second.iKeyItemID )
 				<< END_LOG;
@@ -1988,7 +1988,7 @@ IMPL_ON_FUNC( EGS_ITEM_MANUFACTURE_REQ )
 		//{{ 2009. 10. 15  최육사	거래 예외처리
 		if( GetTradeUID() > 0  ||  GetPersonalShopUID() > 0 )
 		{
-			START_LOG( cwarn, L"거래중에는 사용할 수 없는 기능!" )
+			START_LOG( cwarn, L"This feature is unavailable during a trade!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
 
@@ -2001,7 +2001,7 @@ IMPL_ON_FUNC( EGS_ITEM_MANUFACTURE_REQ )
 		//{{ 2012. 03. 29	최육사	Inventory Lock 기능
 		if( m_kInventory.IsLocked() == true )
 		{
-			START_LOG( cout, L"인벤토리 락이 걸려있는 상태입니다!" )
+			START_LOG( cout, L"The inventory is locked!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharName() )
@@ -2125,7 +2125,7 @@ IMPL_ON_FUNC( EGS_RESOLVE_ITEM_REQ )
 		//{{ 2009. 10. 15  최육사	거래 예외처리
 		if( GetTradeUID() > 0  ||  GetPersonalShopUID() > 0 )
 		{
-			START_LOG( cwarn, L"거래중에는 사용할 수 없는 기능!" )
+			START_LOG( cwarn, L"This feature is unavailable during a trade!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
 
@@ -2138,7 +2138,7 @@ IMPL_ON_FUNC( EGS_RESOLVE_ITEM_REQ )
 		//{{ 2012. 03. 29	최육사	Inventory Lock 기능
 		if( m_kInventory.IsLocked() == true )
 		{
-			START_LOG( cout, L"인벤토리 락이 걸려있는 상태입니다!" )
+			START_LOG( cout, L"The inventory is locked!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharName() )
@@ -2215,7 +2215,7 @@ IMPL_ON_FUNC( EGS_RESOLVE_ITEM_REQ )
 	std::map< int, int >::iterator mit;
 	for( mit = kPacketToDB.m_mapInsertedItem.begin(); mit != kPacketToDB.m_mapInsertedItem.end(); mit++ )
 	{
-		START_LOG( clog2, L"분해 획득 아이템." )
+		START_LOG( clog2, L"Item obtained from dismantling." )
 			<< BUILD_LOG( mit->first )
 			<< BUILD_LOG( mit->second );
 	}
@@ -2291,7 +2291,7 @@ IMPL_ON_FUNC( EGS_ENCHANT_ITEM_REQ )
 		//{{ 2009. 10. 15  최육사	거래 예외처리
 		if( GetTradeUID() > 0  ||  GetPersonalShopUID() > 0 )
 		{
-			START_LOG( cwarn, L"거래중에는 사용할 수 없는 기능!" )
+			START_LOG( cwarn, L"This feature is unavailable during a trade!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
 
@@ -2305,7 +2305,7 @@ IMPL_ON_FUNC( EGS_ENCHANT_ITEM_REQ )
 		{
 			if( GetAuthLevel() < SEnum::UAL_GM )
 			{
-				START_LOG( cerr, L"운영자도 아닌데 감히." )
+				START_LOG( cerr, L"Unauthorized attempt to use an operator-only feature." )
 					<< BUILD_LOG( GetName() )
 					<< BUILD_LOG( GetUID() )
 					<< BUILD_LOG( GetCharUID() )
@@ -2326,7 +2326,7 @@ IMPL_ON_FUNC( EGS_ENCHANT_ITEM_REQ )
 		//{{ 2012. 03. 29	최육사	Inventory Lock 기능
 		if( m_kInventory.IsLocked() == true )
 		{
-			START_LOG( cout, L"인벤토리 락이 걸려있는 상태입니다!" )
+			START_LOG( cout, L"The inventory is locked!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharName() )
@@ -2351,7 +2351,7 @@ IMPL_ON_FUNC( EGS_ENCHANT_ITEM_REQ )
 	int iEnchantLevel;
 	if( m_kInventory.GetEnchantLevel( kPacket_.m_iItemUID, iEnchantLevel ) == false )
 	{
-		START_LOG( cerr, L"강화 레벨 얻기 실패." )
+		START_LOG( cerr, L"Failed to retrieve the enhancement level." )
 			<< BUILD_LOG( kPacket_.m_iItemUID )
 			<< END_LOG;
 
@@ -2436,7 +2436,7 @@ IMPL_ON_FUNC( EGS_ENCHANT_ITEM_REQ )
 	//}}
 	//}}
 
-	START_LOG( clog, L"아이템 강화." )
+	START_LOG( clog, L"Item enhancement." )
 		<< BUILD_LOG( NetError::GetLastError() )
 		<< BUILD_LOG( NetError::GetLastErrMsg() );
 
@@ -2533,7 +2533,7 @@ IMPL_ON_FUNC( DBE_ENCHANT_ITEM_ACK )
 
 	if( kPacket_.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"강화 정보 DB업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update the enhancement information in the database!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( NetError::GetErrStr( kPacket_.m_iOK ) )
 			<< END_LOG;
@@ -2567,7 +2567,7 @@ IMPL_ON_FUNC( DBE_ENCHANT_ITEM_ACK )
 			}
 			else
 			{
-				START_LOG( cerr, L"존재하지 않는 아이템을 강화했다? 보상 지급 실패!" )
+				START_LOG( cerr, L"Attempted to enhance a nonexistent item; failed to grant reward!" )
 					<< BUILD_LOG( GetCharUID() )
 					<< BUILD_LOG( kPacket_.m_iItemID )
 					<< END_LOG;
@@ -2605,7 +2605,7 @@ IMPL_ON_FUNC( DBE_ENCHANT_ITEM_ACK )
 			}
 			else
 			{
-				START_LOG( cerr, L"존재하지 않는 아이템을 강화했다? 공지 날리기 실패!" )
+				START_LOG( cerr, L"Attempted to enhance a nonexistent item; failed to send the notice!" )
 					<< BUILD_LOG( GetCharUID() )
 					<< BUILD_LOG( kPacket_.m_iItemID )
 					<< END_LOG;
@@ -2641,7 +2641,7 @@ IMPL_ON_FUNC( EGS_SOCKET_ITEM_REQ )
 		//{{ 2009. 10. 15  최육사	거래 예외처리
 		if( GetTradeUID() > 0  ||  GetPersonalShopUID() > 0 )
 		{
-			START_LOG( cwarn, L"거래중에는 사용할 수 없는 기능!" )
+			START_LOG( cwarn, L"This feature is unavailable during a trade!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
 
@@ -2656,7 +2656,7 @@ IMPL_ON_FUNC( EGS_SOCKET_ITEM_REQ )
 		{
 			if( GetAuthLevel() < SEnum::UAL_GM )
 			{
-				START_LOG( cerr, L"운영자도 아닌데 감히" )
+				START_LOG( cerr, L"Unauthorized attempt to use an operator-only feature." )
 					<< BUILD_LOG( GetUID() )
 					<< BUILD_LOG( GetName() )
 					<< BUILD_LOGc( GetAuthLevel() )
@@ -2672,7 +2672,7 @@ IMPL_ON_FUNC( EGS_SOCKET_ITEM_REQ )
 		//{{ 2012. 03. 29	최육사	Inventory Lock 기능
 		if( m_kInventory.IsLocked() == true )
 		{
-			START_LOG( cout, L"인벤토리 락이 걸려있는 상태입니다!" )
+			START_LOG( cout, L"The inventory is locked!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharName() )
@@ -2792,7 +2792,7 @@ IMPL_ON_FUNC( EGS_ATTRIB_ENCHANT_ITEM_REQ )
 		//{{ 2009. 10. 15  최육사	거래 예외처리
 		if( GetTradeUID() > 0  ||  GetPersonalShopUID() > 0 )
 		{
-			START_LOG( cwarn, L"거래중에는 사용할 수 없는 기능!" )
+			START_LOG( cwarn, L"This feature is unavailable during a trade!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
 
@@ -2805,7 +2805,7 @@ IMPL_ON_FUNC( EGS_ATTRIB_ENCHANT_ITEM_REQ )
 		//{{ 2012. 03. 29	최육사	Inventory Lock 기능
 		if( m_kInventory.IsLocked() == true )
 		{
-			START_LOG( cout, L"인벤토리 락이 걸려있는 상태입니다!" )
+			START_LOG( cout, L"The inventory is locked!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharName() )
@@ -2899,7 +2899,7 @@ IMPL_ON_FUNC( EGS_IDENTIFY_ITEM_REQ )
 		//{{ 2009. 10. 15  최육사	거래 예외처리
 		if( GetTradeUID() > 0  ||  GetPersonalShopUID() > 0 )
 		{
-			START_LOG( cwarn, L"거래중에는 사용할 수 없는 기능!" )
+			START_LOG( cwarn, L"This feature is unavailable during a trade!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
 
@@ -2912,7 +2912,7 @@ IMPL_ON_FUNC( EGS_IDENTIFY_ITEM_REQ )
 		//{{ 2012. 03. 29	최육사	Inventory Lock 기능
 		if( m_kInventory.IsLocked() == true )
 		{
-			START_LOG( cout, L"인벤토리 락이 걸려있는 상태입니다!" )
+			START_LOG( cout, L"The inventory is locked!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharName() )
@@ -2944,7 +2944,7 @@ IMPL_ON_FUNC( EGS_IDENTIFY_ITEM_REQ )
 	std::map< int, int >::iterator mit;
 	for( mit = kPacketToDB.m_mapInsertedItem.begin(); mit != kPacketToDB.m_mapInsertedItem.end(); mit++ )
 	{
-		START_LOG( clog2, L"랜덤 획득 아이템." )
+		START_LOG( clog2, L"Randomly acquired item." )
 			<< BUILD_LOG( mit->first )
 			<< BUILD_LOG( mit->second );
 	}
@@ -3015,7 +3015,7 @@ IMPL_ON_FUNC( EGS_USE_ITEM_IN_INVENTORY_REQ )
 		//{{ 2012. 03. 29	최육사	Inventory Lock 기능
 		if( m_kInventory.IsLocked() == true )
 		{
-			START_LOG( cout, L"인벤토리 락이 걸려있는 상태입니다!" )
+			START_LOG( cout, L"The inventory is locked!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharName() )
@@ -3279,7 +3279,7 @@ IMPL_ON_FUNC( EGS_USE_ITEM_IN_INVENTORY_REQ )
 			{
 				if( SiCXSLItemManager()->GetItemCSPoint( iUsedItemID ) != m_kSkillTree.GetMaxCSPoint() )
 				{
-					START_LOG( cwarn, L"현재 사용하고 있는 캐시스킬포인트와 다른 것으로 기간연장 하려고함!!" )
+					START_LOG( cwarn, L"Attempted to extend the duration using a different cash skill point than the one currently in use!" )
 						<< BUILD_LOG( GetCharUID() )
 						<< BUILD_LOG( m_kSkillTree.GetMaxCSPoint() )
 						<< BUILD_LOG( m_kSkillTree.GetCSPointEndDateString() )
@@ -3621,7 +3621,7 @@ IMPL_ON_FUNC( DBE_USE_ITEM_IN_INVENTORY_ACK )
 			}
 			else
 			{
-				START_LOG( cerr, L"기술의 노트 페이지 정보 얻기 실패! 절대 일어날 수 없는 에러!" )
+				START_LOG( cerr, L"Failed to retrieve skill note page information; this should never happen!" )
 					<< BUILD_LOGc( GetLevel() )
 					<< END_LOG;
 			}
@@ -3765,7 +3765,7 @@ IMPL_ON_FUNC( DBE_USE_ITEM_IN_INVENTORY_ACK )
 				}
 				else
 				{
-					START_LOG( cerr, L"현재 사용하고 있는 캐시스킬포인트와 다른 것으로 기간연장 하려고함!! 위에서 이미 검사했을텐데.." )
+					START_LOG( cerr, L"Attempted to extend duration using a different cash skill point than the active one; it should have been checked above." )
 						<< BUILD_LOG( GetCharUID() )
 						<< BUILD_LOG( m_kSkillTree.GetMaxCSPoint() )
 						<< BUILD_LOG( m_kSkillTree.GetCSPointEndDateString() )
@@ -3885,7 +3885,7 @@ IMPL_ON_FUNC( DBE_USE_ITEM_IN_INVENTORY_ACK )
 						// 혹시나 해서 스킬찍었는지도 검사
 						if ( m_kSkillTree.IsExistOnUsedPage( iSkillID ) )
 						{
-							START_LOG( cerr, L"봉인해제도 안되었는데 스킬포인트를 어떻게 찍었지?" )
+							START_LOG( cerr, L"How were skill points assigned before unsealing?" )
 								<< BUILD_LOG( GetCharUID() )
 								<< BUILD_LOG( iSkillID )
 								<< END_LOG;
@@ -3938,7 +3938,7 @@ IMPL_ON_FUNC( EGS_RESTORE_ITEM_REQ )
 		//{{ 2009. 10. 15  최육사	거래 예외처리
 		if( GetTradeUID() > 0  ||  GetPersonalShopUID() > 0 )
 		{
-			START_LOG( cwarn, L"거래중에는 사용할 수 없는 기능!" )
+			START_LOG( cwarn, L"This feature is unavailable during a trade!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
 
@@ -3951,7 +3951,7 @@ IMPL_ON_FUNC( EGS_RESTORE_ITEM_REQ )
 		//{{ 2012. 03. 29	최육사	Inventory Lock 기능
 		if( m_kInventory.IsLocked() == true )
 		{
-			START_LOG( cout, L"인벤토리 락이 걸려있는 상태입니다!" )
+			START_LOG( cout, L"The inventory is locked!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharName() )
@@ -4035,7 +4035,7 @@ IMPL_ON_FUNC( EGS_ENCHANT_ATTACH_ITEM_REQ )
 		//{{ 2009. 10. 15  최육사	거래 예외처리
 		if( GetTradeUID() > 0  ||  GetPersonalShopUID() > 0 )
 		{
-			START_LOG( cwarn, L"거래중에는 사용할 수 없는 기능!" )
+			START_LOG( cwarn, L"This feature is unavailable during a trade!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
 
@@ -4048,7 +4048,7 @@ IMPL_ON_FUNC( EGS_ENCHANT_ATTACH_ITEM_REQ )
 		//{{ 2012. 03. 29	최육사	Inventory Lock 기능
 		if( m_kInventory.IsLocked() == true )
 		{
-			START_LOG( cout, L"인벤토리 락이 걸려있는 상태입니다!" )
+			START_LOG( cout, L"The inventory is locked!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharName() )
@@ -4136,7 +4136,7 @@ IMPL_ON_FUNC( EGS_ITEM_EXCHANGE_REQ )
 		//{{ 2009. 10. 15  최육사	거래 예외처리
 		if( GetTradeUID() > 0  ||  GetPersonalShopUID() > 0 )
 		{
-			START_LOG( cwarn, L"거래중에는 사용할 수 없는 기능!" )
+			START_LOG( cwarn, L"This feature is unavailable during a trade!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
 
@@ -4150,7 +4150,7 @@ IMPL_ON_FUNC( EGS_ITEM_EXCHANGE_REQ )
 		//{{ 2012. 03. 29	최육사	Inventory Lock 기능
 		if( m_kInventory.IsLocked() == true )
 		{
-			START_LOG( cout, L"인벤토리 락이 걸려있는 상태입니다!" )
+			START_LOG( cout, L"The inventory is locked!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharName() )
@@ -4187,7 +4187,7 @@ IMPL_ON_FUNC( EGS_ITEM_EXCHANGE_REQ )
 	{
 	case KGameServer::ELR_NOT_INITED:
 		{
-			START_LOG( cerr, L"ExchangeLimit가 아직 초기화 되지 않은 상태입니다.")
+			START_LOG( cerr, L"ExchangeLimit has not been initialized.")
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( GetCharName() )
@@ -4223,7 +4223,7 @@ IMPL_ON_FUNC( EGS_ITEM_EXCHANGE_REQ )
 			}
 			else
 			{
-				START_LOG( cerr, L"AfterWorkStorage: Key값을 얻을 수 없습니다." )
+				START_LOG( cerr, L"AfterWorkStorage: Could not retrieve the key." )
 					<< BUILD_LOG( GetCharName() )
 					<< BUILD_LOG( GetCharUID() )
 					<< END_LOG;
@@ -4250,7 +4250,7 @@ IMPL_ON_FUNC( EGS_ITEM_EXCHANGE_REQ )
 			}
 			else
 			{
-				START_LOG( cerr, L"AfterWorkStorage: Key값을 얻을 수 없습니다." )
+				START_LOG( cerr, L"AfterWorkStorage: Could not retrieve the key." )
 					<< BUILD_LOG( GetCharName() )
 					<< BUILD_LOG( GetCharUID() )
 					<< END_LOG;
@@ -4264,7 +4264,7 @@ IMPL_ON_FUNC( EGS_ITEM_EXCHANGE_REQ )
 
 	default:
 		{
-			START_LOG( cerr, L"DecreaseExchangeLimit: 알 수 없는 결과 값입니다.")
+			START_LOG( cerr, L"DecreaseExchangeLimit: unknown result value.")
 				<< BUILD_LOG( iResult )
 				<< END_LOG;
 
@@ -4367,7 +4367,7 @@ IMPL_ON_FUNC( EGS_SEAL_ITEM_REQ )
 		//{{ 2009. 10. 15  최육사	거래 예외처리
 		if( GetTradeUID() > 0  ||  GetPersonalShopUID() > 0 )
 		{
-			START_LOG( cwarn, L"거래중에는 사용할 수 없는 기능!" )
+			START_LOG( cwarn, L"This feature is unavailable during a trade!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
 
@@ -4380,7 +4380,7 @@ IMPL_ON_FUNC( EGS_SEAL_ITEM_REQ )
 		//{{ 2012. 03. 29	최육사	Inventory Lock 기능
 		if( m_kInventory.IsLocked() == true )
 		{
-			START_LOG( cout, L"인벤토리 락이 걸려있는 상태입니다!" )
+			START_LOG( cout, L"The inventory is locked!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharName() )
@@ -4432,7 +4432,7 @@ IMPL_ON_FUNC( DBE_SEAL_ITEM_ACK )
 
 	if( kPacket_.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"봉인 정보 DB업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update the sealing information in the database!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( NetError::GetErrStr( kPacket_.m_iOK ) )
 			<< END_LOG;
@@ -4458,7 +4458,7 @@ IMPL_ON_FUNC( EGS_UNSEAL_ITEM_REQ )
 		//{{ 2009. 10. 15  최육사	거래 예외처리
 		if( GetTradeUID() > 0  ||  GetPersonalShopUID() > 0 )
 		{
-			START_LOG( cwarn, L"거래중에는 사용할 수 없는 기능!" )
+			START_LOG( cwarn, L"This feature is unavailable during a trade!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
 
@@ -4471,7 +4471,7 @@ IMPL_ON_FUNC( EGS_UNSEAL_ITEM_REQ )
 		//{{ 2012. 03. 29	최육사	Inventory Lock 기능
 		if( m_kInventory.IsLocked() == true )
 		{
-			START_LOG( cout, L"인벤토리 락이 걸려있는 상태입니다!" )
+			START_LOG( cout, L"The inventory is locked!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharName() )
@@ -4514,7 +4514,7 @@ IMPL_ON_FUNC( DBE_UNSEAL_ITEM_ACK )
 
 	if( kPacket_.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"봉인 해제 정보 DB업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update the unsealing information in the database!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( NetError::GetErrStr( kPacket_.m_iOK ) )
 			<< END_LOG;
@@ -4547,7 +4547,7 @@ IMPL_ON_FUNC( DBE_RESET_PERIOD_ITEM_ACK )
 
 	if( kPacket_.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"기간 초기화 아이템 DB업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update the duration-reset item in the database!" )
 			<< BUILD_LOG( kPacket_.m_iOK )
 			<< BUILD_LOG( kPacket_.m_vecItemPeriodInfo.size() )
 			<< END_LOG;
@@ -4587,7 +4587,7 @@ IMPL_ON_FUNC( EGS_ATTRIB_ATTACH_ITEM_REQ )
 
 		if( GetTradeUID() > 0  ||  GetPersonalShopUID() > 0 )
 		{
-			START_LOG( cwarn, L"거래중에는 사용할 수 없는 기능!" )
+			START_LOG( cwarn, L"This feature is unavailable during a trade!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
 
@@ -4599,7 +4599,7 @@ IMPL_ON_FUNC( EGS_ATTRIB_ATTACH_ITEM_REQ )
 		//{{ 2012. 03. 29	최육사	Inventory Lock 기능
 		if( m_kInventory.IsLocked() == true )
 		{
-			START_LOG( cout, L"인벤토리 락이 걸려있는 상태입니다!" )
+			START_LOG( cout, L"The inventory is locked!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharName() )
@@ -4621,7 +4621,7 @@ IMPL_ON_FUNC( EGS_ATTRIB_ATTACH_ITEM_REQ )
 
 	if( iAttachItemID <= 0 )
 	{
-		START_LOG( cwarn, L"아이템 정보를 찾지 못했습니다." )
+		START_LOG( cwarn, L"Could not find the item information." )
 			<< BUILD_LOG( iAttachItemID )
 			<< END_LOG;
 
@@ -4692,7 +4692,7 @@ IMPL_ON_FUNC( DBE_ATTRIB_ATTACH_ITEM_ACK )
 	if( kPacket_.m_iOK != NetError::NET_OK )
 	{
 		// 부여 DB업데이트 실패
-		START_LOG( cwarn, L"속성 부여 DB 업데이트 실패." )
+		START_LOG( cwarn, L"Failed to update attribute assignment in the database." )
 			<< END_LOG;
 
 		kPacket.m_iOK = NetError::ERR_ODBC_01;
@@ -4720,7 +4720,7 @@ IMPL_ON_FUNC( EGS_SORT_CATEGORY_ITEM_REQ )
 		//{{ 2012. 03. 29	최육사	Inventory Lock 기능
 		if( m_kInventory.IsLocked() == true )
 		{
-			START_LOG( cout, L"인벤토리 락이 걸려있는 상태입니다!" )
+			START_LOG( cout, L"The inventory is locked!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharUID() )
@@ -4801,7 +4801,7 @@ IMPL_ON_FUNC( DBE_SHARING_BACK_OPEN_ACK )
 	if( kPacket_.m_iOK != NetError::NET_OK )
 	{
 		// 은행 공유 실패
-		START_LOG( cerr, L"계정 은행 뚫기 실패!" )
+		START_LOG( cerr, L"Failed to unlock the account bank!" )
 			<< BUILD_LOG(kPacket_.m_iOK)
 			<< END_LOG;
 
@@ -5048,7 +5048,7 @@ IMPL_ON_FUNC( EGS_ITEM_EVALUATE_REQ )
 		//{{ 2009. 10. 15  최육사	거래 예외처리
 		if( GetTradeUID() > 0  ||  GetPersonalShopUID() > 0 )
 		{
-			START_LOG( cwarn, L"거래중에는 사용할 수 없는 기능!" )
+			START_LOG( cwarn, L"This feature is unavailable during a trade!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
 
@@ -5061,7 +5061,7 @@ IMPL_ON_FUNC( EGS_ITEM_EVALUATE_REQ )
 		//{{ 2012. 03. 29	최육사	Inventory Lock 기능
 		if( m_kInventory.IsLocked() == true )
 		{
-			START_LOG( cout, L"인벤토리 락이 걸려있는 상태입니다!" )
+			START_LOG( cout, L"The inventory is locked!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharUID() )
@@ -5112,7 +5112,7 @@ IMPL_ON_FUNC( DBE_ITEM_EVALUATE_ACK )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, "감정 결과 업데이트 실패! DB오류 인가?" )
+		START_LOG( cerr, "Failed to update the appraisal result; database error?" )
 			<< BUILD_LOG( kPacket_.m_iItemUID )
 			<< BUILD_LOG( kPacket_.m_iCost )
 			<< BUILD_LOG( kPacket_.m_vecRandomSocket.size() )
@@ -5123,7 +5123,7 @@ IMPL_ON_FUNC( DBE_ITEM_EVALUATE_ACK )
 	// DB업데이트가 성공했다면 인벤토리에 해당 아이템에도 정보를 업데이트 하자!
 	if( m_kInventory.ItemEvaluateResult( kPacket_.m_iItemUID, kPacket_.m_vecRandomSocket, kPacket.m_vecInventorySlotInfo ) == false )
 	{
-		START_LOG( cerr, "감정 결과 업데이트 실패! 일어나서는 안되는 에러!" )
+		START_LOG( cerr, "Failed to update appraisal results; this should never happen!" )
 			<< BUILD_LOG( kPacket_.m_iItemUID )
 			<< BUILD_LOG( kPacket_.m_iCost )
 			<< BUILD_LOG( kPacket_.m_vecRandomSocket.size() )
@@ -5177,7 +5177,7 @@ IMPL_ON_FUNC( EGS_RESTORE_ITEM_EVALUATE_REQ )
 		//{{ 2009. 10. 15  최육사	거래 예외처리
 		if( GetTradeUID() > 0  ||  GetPersonalShopUID() > 0 )
 		{
-			START_LOG( cwarn, L"거래중에는 사용할 수 없는 기능!" )
+			START_LOG( cwarn, L"This feature is unavailable during a trade!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
 
@@ -5190,7 +5190,7 @@ IMPL_ON_FUNC( EGS_RESTORE_ITEM_EVALUATE_REQ )
 		//{{ 2012. 03. 29	최육사	Inventory Lock 기능
 		if( m_kInventory.IsLocked() == true )
 		{
-			START_LOG( cout, L"인벤토리 락이 걸려있는 상태입니다!" )
+			START_LOG( cout, L"The inventory is locked!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharUID() )
@@ -5237,7 +5237,7 @@ IMPL_ON_FUNC( DBE_RESTORE_ITEM_EVALUATE_ACK )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, "미감정 결과 업데이트 실패! DB오류 인가?" )
+		START_LOG( cerr, "Failed to update the appraisal result; database error?" )
 			<< BUILD_LOG( kPacket_.m_iTargetItemUID )
 			<< END_LOG;
 		goto end_proc;
@@ -5246,7 +5246,7 @@ IMPL_ON_FUNC( DBE_RESTORE_ITEM_EVALUATE_ACK )
 	// DB업데이트가 성공했다면 인벤토리에 해당 아이템에도 정보를 업데이트 하자!
 	if( m_kInventory.RestoreItemEvaluateResult( kPacket_.m_iTargetItemUID, kPacket.m_vecInventorySlotInfo ) == false )
 	{
-		START_LOG( cerr, "미감정 결과 업데이트 실패! 일어나서는 안되는 에러!" )
+		START_LOG( cerr, "Failed to update unidentified appraisal results; this should never happen!" )
 			<< BUILD_LOG( kPacket_.m_iTargetItemUID )
 			<< BUILD_LOG( kPacket.m_vecInventorySlotInfo.size() )
 			<< END_LOG;
@@ -5268,7 +5268,7 @@ IMPL_ON_FUNC( EGS_ITEM_CONVERT_REQ )
 		//{{ 2009. 10. 15  최육사	거래 예외처리
 		if( GetTradeUID() > 0  ||  GetPersonalShopUID() > 0 )
 		{
-			START_LOG( cwarn, L"거래중에는 사용할 수 없는 기능!" )
+			START_LOG( cwarn, L"This feature is unavailable during a trade!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
 
@@ -5281,7 +5281,7 @@ IMPL_ON_FUNC( EGS_ITEM_CONVERT_REQ )
 		//{{ 2012. 03. 29	최육사	Inventory Lock 기능
 		if( m_kInventory.IsLocked() == true )
 		{
-			START_LOG( cout, L"인벤토리 락이 걸려있는 상태입니다!" )
+			START_LOG( cout, L"The inventory is locked!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharUID() )
@@ -5359,7 +5359,7 @@ IMPL_ON_FUNC( EGB_TIME_ENCHANT_EVENT_CUBE_NOT )
 	KOpenRandomItemStorage kStorage;
 	if( m_kAfterWorkStorage.RetrieveData( kPacket_.m_iAfterWorkStorageKey, kStorage ) != KAfterWorkStorage::AWS_SUCCEED )
 	{
-		START_LOG( cerr, L"AfterWorkStorage: 꺼내오기 실패" )
+		START_LOG( cerr, L"AfterWorkStorage: Failed to retrieve the item." )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( GetCharUID() )
 			<< END_LOG;
@@ -5630,7 +5630,7 @@ IMPL_ON_FUNC( EGB_EXCHANGE_LIMIT_ACK )
 
 	if( m_kAfterWorkStorage.RetrieveData( kPacket_.m_iAfterWorkStorageKey, kStorage ) != KAfterWorkStorage::AWS_SUCCEED )
 	{
-		START_LOG( cerr, L"AfterWorkStorage: 꺼내오기 실패" )
+		START_LOG( cerr, L"AfterWorkStorage: Failed to retrieve the item." )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( GetCharUID() )
 			<< END_LOG;
@@ -5722,7 +5722,7 @@ IMPL_ON_FUNC_NOPARAM( EGS_READY_TO_SOSUN_EVENT_REQ )
 
 	if( m_kInventory.IsEnoughEmptySlot( CXSLInventory::ST_SPECIAL, 1 ) == false )
 	{
-		START_LOG(cerr, L"인벤토리 공간 부족")
+		START_LOG(cerr, L"Not enough inventory space.")
 			<< END_LOG;
 
 		KEGS_READY_TO_SOSUN_EVENT_ACK kPacketAck;
@@ -5731,7 +5731,7 @@ IMPL_ON_FUNC_NOPARAM( EGS_READY_TO_SOSUN_EVENT_REQ )
 		SendPacket( EGS_READY_TO_SOSUN_EVENT_ACK, kPacketAck );
 	}
 
-	START_LOG(cout, L"아라 1차 전직 이름 맞추기 이벤트")
+	START_LOG(cout, L"Ara first-class advancement name-guessing event")
 		<< BUILD_LOG( kPacketDB.m_iFirstUnitClass )
 		<< END_LOG;
 
@@ -5739,7 +5739,7 @@ IMPL_ON_FUNC_NOPARAM( EGS_READY_TO_SOSUN_EVENT_REQ )
 	{
 		LIF( NetError::GetLastError() != NetError::NET_OK );
 
-		START_LOG(cerr, L"아라 1차 전직 이름 맞추기 이벤트 보상 지급 실패?")
+		START_LOG(cerr, L"Failed to grant reward for Ara first-class advancement name-guessing event?")
 			<< BUILD_LOG( kPacketDB.m_iFirstUnitClass )
 			<< END_LOG;
 
@@ -6344,7 +6344,7 @@ IMPL_ON_FUNC( EGS_ITEM_EXTRACT_REQ )
 		//{{ 2009. 10. 15  최육사	거래 예외처리
 		if( GetTradeUID() > 0  ||  GetPersonalShopUID() > 0 )
 		{
-			START_LOG( cwarn, L"거래중에는 사용할 수 없는 기능!" )
+			START_LOG( cwarn, L"This feature is unavailable during a trade!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
 
@@ -6358,7 +6358,7 @@ IMPL_ON_FUNC( EGS_ITEM_EXTRACT_REQ )
 		//{{ 2012. 03. 29	최육사	Inventory Lock 기능
 		if( m_kInventory.IsLocked() == true )
 		{
-			START_LOG( cout, L"인벤토리 락이 걸려있는 상태입니다!" )
+			START_LOG( cout, L"The inventory is locked!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharUID() )
@@ -6458,7 +6458,7 @@ IMPL_ON_FUNC( EGS_USE_FINALITY_SKILL_REQ )
 	{
 		if( true == m_kInventory.IsExistOnlyInventory(CXSLItem::EI_INFINITY_EL_ESSENCE_ITEM_EVENT) )
 		{
-			START_LOG( clog, L"[TEST] 엘의 정수 공급기 소지하고 하엑 사용" )
+			START_LOG( clog, L"[TEST] Use HA while carrying an El Essence dispenser." )
 				<< BUILD_LOG( GetCharName() );
 
 			KEGS_USE_FINALITY_SKILL_ACK kPacket;
@@ -6469,7 +6469,7 @@ IMPL_ON_FUNC( EGS_USE_FINALITY_SKILL_REQ )
 		}
 		else
 		{
-			START_LOG( cerr, L"엘의 정수 공급기 소지하고 있다고 클라에서 왔는데, 서버에는 없다?" )
+			START_LOG( cerr, L"The client reports an El Essence dispenser, but the server does not have one." )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetCharName() );
 
@@ -6658,7 +6658,7 @@ IMPL_ON_FUNC( DBE_EXPAND_BANK_INVENTORY_ACK )
 
     default:
         {
-            START_LOG( cerr, L"이상한 이벤트가 왔다?" )
+            START_LOG( cerr, L"Received an unexpected event." )
                 << BUILD_LOG( GetCharUID() )
                 << BUILD_LOG( KEvent::GetIDStr( kPacket_.m_usEventID ) )
                 << END_LOG;
@@ -6807,7 +6807,7 @@ end_proc:
         kAck.m_iOK = NetError::GetLastError();
         SendPacket( EGS_EXPAND_INVENTORY_ED_ACK, kAck );
 
-        START_LOG( cerr, L"인벤토리 ED 로 확장 실패 , User ID :" << GetUserID() )
+        START_LOG( cerr, L"Failed to expand inventory with ED, User ID: " << GetUserID() )
             << BUILD_LOG( NetError::GetLastErrMsg() )
             << END_LOG;
     }
@@ -6823,7 +6823,7 @@ IMPL_ON_FUNC( EGS_SOCKET_EXPAND_ITEM_REQ )
 	//{{ 2009. 10. 15  최육사	거래 예외처리
 	if( GetTradeUID() > 0  ||  GetPersonalShopUID() > 0 )
 	{
-		START_LOG( cwarn, L"거래중에는 사용할 수 없는 기능!" )
+		START_LOG( cwarn, L"This feature is unavailable during a trade!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< END_LOG;
 
@@ -6837,7 +6837,7 @@ IMPL_ON_FUNC( EGS_SOCKET_EXPAND_ITEM_REQ )
 	//{{ 2012. 03. 29	최육사	Inventory Lock 기능
 	if( m_kInventory.IsLocked() == true )
 	{
-		START_LOG( cout, L"인벤토리 락이 걸려있는 상태입니다!" )
+		START_LOG( cout, L"The inventory is locked!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( GetCharUID() )
@@ -7018,7 +7018,7 @@ IMPL_ON_FUNC( DBE_SOCKET_EXPAND_ITEM_ACK )
 		KItemInfo kInfo;
 		if( m_kInventory.UpdateExpandedSocketNum( kPacket_.m_iItemUID, kPacket_.m_byteExpandedSocketNum ) == false )
 		{
-			START_LOG( cerr, L"추가된 소켓 슬롯 정보를 갱신할 대상 아이템이 없습니다. 있어서는 안되는 오류입니다. 로직을 확인 해주세요." )
+			START_LOG( cerr, L"No item exists whose added socket slot information can be updated. This should never happen; check the logic." )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( kPacket_.m_iItemUID )
 				<< BUILD_LOG( kPacket_.m_byteExpandedSocketNum )
@@ -7029,7 +7029,7 @@ IMPL_ON_FUNC( DBE_SOCKET_EXPAND_ITEM_ACK )
 			int	iCategory, iSlotID;
 			if( m_kInventory.GetCategorySlot( kPacket_.m_iItemUID, iCategory, iSlotID ) == false )
 			{
-				START_LOG( cerr, L"아이템 정보를 찾지 못하였습니다." )
+				START_LOG( cerr, L"Could not find item information." )
 					<< BUILD_LOG( GetCharUID() )
 					<< BUILD_LOG( kPacket_.m_iItemUID )
 					<< END_LOG;
@@ -7045,7 +7045,7 @@ IMPL_ON_FUNC( DBE_SOCKET_EXPAND_ITEM_ACK )
 			}
 			else
 			{
-				START_LOG( cerr, L"갱신 완료한 아이템의 정보를 찾을 수 없습니다. 이상한 문제입니다." )
+				START_LOG( cerr, L"Could not find the information for the updated item; unexpected error." )
 					<< BUILD_LOG( GetCharUID() )
 					<< BUILD_LOG( kPacket_.m_iItemUID )
 					<< END_LOG;

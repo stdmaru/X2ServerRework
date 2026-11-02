@@ -39,7 +39,7 @@ void KUserWishList::InitWishList( const std::map< int, int >& mapWishList )
 	{
 		if( !DelWish( *vit ) )
 		{
-			START_LOG( cerr, L"판매중지된 상품을 찜리스트에서 제거하기 실패!" )
+			START_LOG( cerr, L"Failed to remove a delisted product from the wish list!" )
 				<< BUILD_LOG( *vit )
 				<< END_LOG;
 		}
@@ -63,7 +63,7 @@ void KUserWishList::GetWishList( std::map< int, int >& mapWishList )
 		{
 			if( !DelWish( nProductID ) )												// 주의! DelWish()하고 나면 m_arrWishList[iIdx].GetSlotData()의 값이 바뀜.
 			{																			// 예) m_arrWishList[1]의 데이터가 m_arrWishList[0]으로 이동함.
-				START_LOG( cerr, L"판매중지된 상품을 찜리스트에서 제거하기 실패!" )
+				START_LOG( cerr, L"Failed to remove a delisted product from the wish list!" )
 					<< BUILD_LOG( nProductID )
 					<< END_LOG;
 			}
@@ -101,7 +101,7 @@ bool KUserWishList::AddWish( int iItemID )
 	{
 		if( m_arrWishList[iIdx].GetSlotData() == iItemID )
 		{
-			START_LOG( cerr, L"이미 있는걸 등록하려고 하네? 일단은 통과시키자." )
+			START_LOG( cerr, L"Attempted to register an existing entry; allowing it for now." )
 				<< BUILD_LOG( iIdx )
 				<< BUILD_LOG( iItemID )
 				<< END_LOG;
@@ -150,7 +150,7 @@ bool KUserWishList::DelWish( int iItemID )
 		}
 	}
 
-	START_LOG( cerr, L"등록되지도 않은걸 삭제하려고 하네.. 일단은 통과시키자." )
+	START_LOG( cerr, L"Attempted to delete a nonexistent entry; allowing it for now." )
 		<< BUILD_LOG( iItemID )
 		<< END_LOG;
 	return false;

@@ -140,7 +140,7 @@ void KGlobalSimLayer::Init()
 		kAutoPath.GetPullPath( strFile );
 		if( 0 != luaL_dofile( g_pLua, strFile.c_str() ) )
 		{
-			START_LOG( cerr, L"Enum 정보 로드 실패.!" )
+			START_LOG( cerr, L"Failed to load enum data." )
 				<< BUILD_LOG( KncUtil::toWideString( strFile ) );
 
 			//{{ 2011. 02. 07	최육사	스크립트 파싱 오류 리포트
@@ -149,7 +149,7 @@ void KGlobalSimLayer::Init()
 		}
 		else
 		{
-			START_LOG( cout, L"Enum 정보 로드 성공.!" );
+			START_LOG( cout, L"Successfully loaded enum data." );
 		}
 	}
 
@@ -161,7 +161,7 @@ void KGlobalSimLayer::Init()
 		kAutoPath.GetPullPath( strFile );
 		if( 0 != luaL_dofile( g_pLua, strFile.c_str() ) )
 		{
-			START_LOG( cerr, L"DungeonEnum 정보 로드 실패.!" )
+			START_LOG( cerr, L"Failed to load DungeonEnum data." )
 				<< BUILD_LOG( KncUtil::toWideString( strFile ) );
 
 			//{{ 2011. 02. 07	최육사	스크립트 파싱 오류 리포트
@@ -170,7 +170,7 @@ void KGlobalSimLayer::Init()
 		}
 		else
 		{
-			START_LOG( cout, L"DungeonEnum 정보 로드 성공.!" );
+			START_LOG( cout, L"Successfully loaded DungeonEnum data." );
 		}
 	}
 
@@ -196,9 +196,9 @@ void KGlobalSimLayer::Init()
 		CXSLDungeonManager::RegScriptName( "DungeonData.lua" );
 
 		if( SiCXSLDungeonManager()->OpenScriptFile_AllDungeonScriptLoad( g_pLua ) == false )
-			START_LOG( cerr, L"Dungeon Manager 정보 로드 실패.!" );
+			START_LOG( cerr, L"Failed to load dungeon manager data." );
 		else
-			START_LOG( cout, L"Dungeon Manager 정보 로드 성공.!" );
+			START_LOG( cout, L"Successfully loaded dungeon manager data." );
 
 		//{{ 2011. 02. 07	최육사	스크립트 파싱 오류 리포트
 		if( SiCXSLDungeonManager()->IsLuaPasingSuccess() == false )
@@ -234,9 +234,9 @@ void KGlobalSimLayer::Init()
 
 		CXSLBattleFieldManager::RegScriptName( "BattleFieldData.lua" );
 		if( SiCXSLBattleFieldManager()->OpenScriptFile_AllBattleFieldScriptLoad( g_pLua ) == false )
-			START_LOG( cerr, L"Battle Field Manager 정보 로드 실패.!" );
+			START_LOG( cerr, L"Failed to load battle field manager data." );
 		else
-			START_LOG( cout, L"Battle Field Manager 정보 로드 성공.!" );
+			START_LOG( cout, L"Successfully loaded battle field manager data." );
 
 		//{{ 2011. 02. 07	최육사	스크립트 파싱 오류 리포트
 		if( SiCXSLBattleFieldManager()->IsLuaPasingSuccess() == false )

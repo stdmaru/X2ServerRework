@@ -31,7 +31,7 @@ KLogStream::~KLogStream()
 	KLogInfoPtr spLogInfo = KLogInfoPtr( new KLogInfo( m_kLogInfo ) );
 	if( spLogInfo == NULL )
 	{
-		START_LOG( cerr, L"log 데이터 생성 실패!" )
+		START_LOG( cerr, L"Failed to create log data." )
 			<< END_LOG;
 		return;
 	}

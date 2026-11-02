@@ -34,7 +34,7 @@ bool KWeddingHallUserManager::EnterRoom( IN const KRoomUserInfo& kInfo, IN const
 	// 이미 입장해있는 유저인지 체크!
 	if( IsExist( kInfo.m_nUnitUID ) == true )
 	{
-		START_LOG( cerr, L"이미 입장해있는 유저 입니다!" )
+		START_LOG( cerr, L"User has already entered!" )
 			<< BUILD_LOG( kInfo.m_nUnitUID )
 			<< BUILD_LOG( kInfo.m_iPartyUID )
 			<< END_LOG;
@@ -53,7 +53,7 @@ bool KWeddingHallUserManager::EnterRoom( IN const KRoomUserInfo& kInfo, IN const
 	// 실제 입장 처리 한다!
 	if( KRoomUserManager::EnterRoom( kInfo, bConsiderTeam ) == false )
 	{
-		START_LOG( cerr, L"방에 입장 처리 실패!" )
+		START_LOG( cerr, L"Failed to process room entry!" )
 			<< BUILD_LOG( kInfo.m_nUnitUID )
 			<< BUILD_LOG( kInfo.m_iPartyUID )
 			<< END_LOG;
@@ -68,7 +68,7 @@ bool KWeddingHallUserManager::EnterRoom( IN const KRoomUserInfo& kInfo, IN const
 	{
 		if( RegIntrudeUnitLoadUserList( kInfo.m_nUnitUID, vecUnitUIDList ) == false )
 		{
-			START_LOG( cerr, L"유저 정보 로드 대기자 리스트 등록 실패!" )
+			START_LOG( cerr, L"Failed to add user to the information-load wait list!" )
 				<< BUILD_LOG( kInfo.m_nUnitUID )
 				<< BUILD_LOG( vecUnitUIDList.size() )
 				<< END_LOG;
@@ -96,7 +96,7 @@ bool KWeddingHallUserManager::RegIntrudeUnitLoadUserList( IN const UidType iUnit
 	KRoomUserPtr spRoomUser = GetUser( iUnitUID );
 	if( spRoomUser == NULL )
 	{
-		START_LOG( cerr, L"해당 유저를 찾을수가 없습니다!" )
+		START_LOG( cerr, L"Could not find the specified user!" )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 		return false;
@@ -122,7 +122,7 @@ bool KWeddingHallUserManager::UnregIntrudeUnitLoadUserList( IN const UidType iUn
 	KRoomUserPtr spRoomUser = GetUser( iUnitUID );
 	if( spRoomUser == NULL )
 	{
-		START_LOG( cerr, L"해당 유저를 찾을수가 없습니다!" )
+		START_LOG( cerr, L"Could not find the specified user!" )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 		return false;
@@ -153,7 +153,7 @@ void KWeddingHallUserManager::CheckAndGetIntrudeUnitLoadCompleteUserList( OUT st
 		KRoomUserPtr spRoomUser = mit->second;
 		if( spRoomUser == NULL )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -182,7 +182,7 @@ bool KWeddingHallUserManager::GetRoomUserList( std::map< UidType, KRoomUserPtr >
 	{
 		if( !mit->second )
 		{
-			START_LOG( cwarn, L"룸 유저 포인터 이상." )
+			START_LOG( cwarn, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -207,7 +207,7 @@ void KWeddingHallUserManager::GetRoomUserList( OUT std::vector< UidType >& vecUi
 	{
 		if( !mit->second )
 		{
-			START_LOG( cwarn, L"룸 유저 포인터 이상." )
+			START_LOG( cwarn, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -221,7 +221,7 @@ void KWeddingHallUserManager::GetRoomSlotInfo( std::vector< KRoomSlotInfo >& vec
 {
 	if( CheckUserlistType( eType ) == false )
 	{
-		START_LOG( cerr, L"유저리스트 타입 이상.!" )
+		START_LOG( cerr, L"Invalid user list type!" )
 			<< BUILD_LOG( (int)eType )
 			<< END_LOG;
 		return;
@@ -248,7 +248,7 @@ bool KWeddingHallUserManager::IsExistGroomAndBride( USERLIST_TYPE eType /*= UT_G
 	{
 		if( !mit->second )
 		{
-			START_LOG( cwarn, L"룸 유저 포인터 이상." )
+			START_LOG( cwarn, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -259,7 +259,7 @@ bool KWeddingHallUserManager::IsExistGroomAndBride( USERLIST_TYPE eType /*= UT_G
 			if( IsExistGroom == true )
 			{
 				// 신랑이 한명보다 많다?!
-				START_LOG( cerr, L"신랑이 한명이 아니다?!" )
+				START_LOG( cerr, L"There is not exactly one groom?!" )
 					<< END_LOG;
 			}
 
@@ -270,7 +270,7 @@ bool KWeddingHallUserManager::IsExistGroomAndBride( USERLIST_TYPE eType /*= UT_G
 			if( IsExistBride == true )
 			{
 				// 신부이 한명보다 많다?!
-				START_LOG( cerr, L"신부이 한명이 아니다?!" )
+				START_LOG( cerr, L"There is not exactly one bride?!" )
 					<< END_LOG;
 			}
 

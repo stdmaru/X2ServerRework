@@ -57,7 +57,7 @@ bool KGSRankingManager::GetRankingInfo( IN const KEGS_GET_RANKING_INFO_REQ& kReq
 
 	default:
 		{
-			START_LOG( cerr, L"존재하지 않는 Ranking type입니다" )
+			START_LOG( cerr, L"Ranking type does not exist." )
 				<< BUILD_LOG( kAck.m_iRankingType )
 				<< END_LOG;
 
@@ -138,7 +138,7 @@ void KGSRankingManager::UpdateHenirRanking( const std::map< int, std::vector< KH
 			mitGSR = m_mapHenirRanking.find( mit->first );
 			if( mitGSR == m_mapHenirRanking.end() )
 			{
-				START_LOG( cerr, L"KGSRanking객체 생성이 안되었나? 있을수 없는 에러!" )
+				START_LOG( cerr, L"Could not create the KGSRanking object; this should never happen!" )
 					<< BUILD_LOG( mit->first )
 					<< END_LOG;
 				continue;
@@ -173,7 +173,7 @@ void KGSRankingManager::UpdateHenirRanking( const std::map< int, std::vector< KH
 			mitGSR = m_mapHenirRanking.find( mit->first );
 			if( mitGSR == m_mapHenirRanking.end() )
 			{
-				START_LOG( cerr, L"KGSRanking객체 생성이 안되었나? 있을수 없는 에러!" )
+				START_LOG( cerr, L"Could not create the KGSRanking object; this should never happen!" )
 					<< BUILD_LOG( mit->first )
 					<< END_LOG;
 				continue;
@@ -198,7 +198,7 @@ void KGSRankingManager::UpdateDungeonAndPvpRanking( IN const KELG_WEB_RANKING_RE
 			if( kInfo.m_bInit )
 			{
 				m_vecDungeonRanking.clear();
-				START_LOG( cout, L"vector 던전 랭킹 초기화!" );
+				START_LOG( cout, L"Resetting vector dungeon rankings!" );
 			}
 
 			std::vector< KDungeonRankingInfo >::const_iterator vit;
@@ -210,7 +210,7 @@ void KGSRankingManager::UpdateDungeonAndPvpRanking( IN const KELG_WEB_RANKING_RE
 			// 전체 크기를 비교하여 더 받을지 말지를 결정
 			if( kInfo.m_uiTotalSize <= m_vecDungeonRanking.size() )
 			{
-				START_LOG( cout, L"vector 던전 랭킹 갱신 완료!" )
+				START_LOG( cout, L"Updated vector dungeon rankings!" )
 					<< BUILD_LOG( m_vecDungeonRanking.size() );
 			}
 			else
@@ -231,7 +231,7 @@ void KGSRankingManager::UpdateDungeonAndPvpRanking( IN const KELG_WEB_RANKING_RE
 			if( kInfo.m_bInit )
 			{
 				m_mapDungeonRanking.clear();
-				START_LOG( cout, L"map 던전 랭킹 초기화!" );
+				START_LOG( cout, L"Reset map dungeon rankings!" );
 			}
 
 			std::map< UidType, KDungeonRankingInfo >::const_iterator mit;
@@ -243,7 +243,7 @@ void KGSRankingManager::UpdateDungeonAndPvpRanking( IN const KELG_WEB_RANKING_RE
 			// 전체 크기를 비교하여 더 받을지 말지를 결정
 			if( kInfo.m_uiTotalSize <= m_mapDungeonRanking.size() )
 			{
-				START_LOG( cout, L"map 던전 랭킹 갱신 완료!" )
+				START_LOG( cout, L"Updated map dungeon rankings!" )
 					<< BUILD_LOG( m_mapDungeonRanking.size() );
 			}
 			else
@@ -264,7 +264,7 @@ void KGSRankingManager::UpdateDungeonAndPvpRanking( IN const KELG_WEB_RANKING_RE
 			if( kInfo.m_bInit )
 			{
 				m_vecPvpRanking.clear();
-				START_LOG( cout, L"vector 대전 랭킹 초기화!" );
+				START_LOG( cout, L"Reset vector PvP rankings!" );
 			}
 
 			std::vector< KPvpRankingInfo >::const_iterator vit;
@@ -276,7 +276,7 @@ void KGSRankingManager::UpdateDungeonAndPvpRanking( IN const KELG_WEB_RANKING_RE
 			// 전체 크기를 비교하여 더 받을지 말지를 결정
 			if( kInfo.m_uiTotalSize <= m_vecPvpRanking.size() )
 			{
-				START_LOG( cout, L"vector 대전 랭킹 갱신 완료!" )
+				START_LOG( cout, L"Updated vector PvP rankings!" )
 					<< BUILD_LOG( m_vecPvpRanking.size() );
 			}
 			else
@@ -299,7 +299,7 @@ void KGSRankingManager::UpdateDungeonAndPvpRanking( IN const KELG_WEB_RANKING_RE
 			if( kInfo.m_bInit )
 			{
 				m_mapPvpRanking.clear();
-				START_LOG( cout, L"map 대전 랭킹 초기화!" );
+				START_LOG( cout, L"Reset map PvP rankings!" );
 			}
 
 			std::map< UidType, KPvpRankingInfo >::const_iterator mit;
@@ -311,7 +311,7 @@ void KGSRankingManager::UpdateDungeonAndPvpRanking( IN const KELG_WEB_RANKING_RE
 			// 전체 크기를 비교하여 더 받을지 말지를 결정
 			if( kInfo.m_uiTotalSize <= m_mapPvpRanking.size() )
 			{
-				START_LOG( cout, L"map 대전 랭킹 갱신 완료!" )
+				START_LOG( cout, L"Updated map PvP rankings!" )
 					<< BUILD_LOG( m_mapPvpRanking.size() );
 			}
 			else
@@ -330,7 +330,7 @@ void KGSRankingManager::UpdateDungeonAndPvpRanking( IN const KELG_WEB_RANKING_RE
 
 	default:
 		{
-			START_LOG( cerr, L"이상한 대전&던전 랭킹 타입입니다." )
+			START_LOG( cerr, L"Invalid PvP or dungeon ranking type." )
 				<< BUILD_LOGc( kInfo.m_cRankingRefreshType )
 				<< END_LOG;
 		}
@@ -365,7 +365,7 @@ void KGSRankingManager::GetDungeonRankingPage( IN OUT UINT& uiViewPage, OUT UINT
 
 		if( m_vecDungeonRanking.size() <= uiBeginIndex )
 		{
-			START_LOG( cerr, L"일어날 수 없는 에러!" )
+			START_LOG( cerr, L"This should never happen!" )
 				<< BUILD_LOG( uiViewPage )
 				<< BUILD_LOG( uiTotalPage )
 				<< BUILD_LOG( uiBeginIndex )
@@ -416,7 +416,7 @@ void KGSRankingManager::GetPvpRankingPage( IN OUT UINT& uiViewPage, OUT UINT& ui
 
 		if( m_vecPvpRanking.size() <= uiBeginIndex )
 		{
-			START_LOG( cerr, L"일어날 수 없는 에러!" )
+			START_LOG( cerr, L"This should never happen!" )
 				<< BUILD_LOG( uiViewPage )
 				<< BUILD_LOG( uiTotalPage )
 				<< BUILD_LOG( uiBeginIndex )

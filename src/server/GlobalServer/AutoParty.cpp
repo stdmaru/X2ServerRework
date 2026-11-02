@@ -85,7 +85,7 @@ void KAutoParty::Tick()
 			{
 				m_tTimer[APTE_REGROUP_PARTY].restart();
 
-				START_LOG( cerr, L"1분동안 플레이 준비상태가 지속되었다. 강제로 자동 파티를 닫자!" )
+				START_LOG( cerr, L"Party preparation has lasted for one minute; closing automatic party matching." )
 					<< BUILD_LOG( GetAutoPartyUID() )
 					<< END_LOG;
 
@@ -124,7 +124,7 @@ void KAutoParty::OnDestroy()
 {
 	if( GetStateID() != KAutoPartyFSM::S_CLOSE )
 	{
-		START_LOG( cerr, L"이상한 상태에서 종료처리가 되고 있습니다!" )
+		START_LOG( cerr, L"Attempting to close from an unexpected state." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetStateID() )
 			<< END_LOG;
@@ -153,7 +153,7 @@ void KAutoParty::CloseAutoPartyByCancel( IN const UidType iCancelUnitUID )
 		KAutoPartyUserPtr spCancelUser = m_kAutoPartyUserManager.GetUser( iCancelUnitUID );
 		if( spCancelUser == NULL )
 		{
-			START_LOG( cerr, L"유저 포인터값이 이상합니다." )
+			START_LOG( cerr, L"Invalid user pointer." )
 				<< BUILD_LOG( GetAutoPartyUID() )
 				<< BUILD_LOG( iCancelUnitUID )
 				<< END_LOG;
@@ -177,7 +177,7 @@ void KAutoParty::CloseAutoPartyByCancel( IN const UidType iCancelUnitUID )
 			KAutoPartyUserPtr spAutoPartyUser = m_kAutoPartyUserManager.GetUser( iUnitUID );
 			if( spAutoPartyUser == NULL )
 			{
-				START_LOG( cerr, L"유저 포인터값이 이상합니다." )
+				START_LOG( cerr, L"Invalid user pointer." )
 					<< BUILD_LOG( GetAutoPartyUID() )
 					<< BUILD_LOG( iUnitUID )
 					<< END_LOG;
@@ -241,7 +241,7 @@ void KAutoParty::CloseAutoPartyByCancel( IN const UidType iCancelUnitUID )
 			KAutoPartyUserPtr spAutoPartyUser = m_kAutoPartyUserManager.GetUser( iUnitUID );
 			if( spAutoPartyUser == NULL )
 			{
-				START_LOG( cerr, L"유저 포인터값이 이상합니다." )
+				START_LOG( cerr, L"Invalid user pointer." )
 					<< BUILD_LOG( GetAutoPartyUID() )
 					<< BUILD_LOG( iUnitUID )
 					<< END_LOG;
@@ -278,7 +278,7 @@ void KAutoParty::CloseAutoPartyByCancel( IN const std::vector<UidType>& vecCance
 		KAutoPartyUserPtr spAutoPartyUser = m_kAutoPartyUserManager.GetUser( iUnitUID );
 		if( spAutoPartyUser == NULL )
 		{
-			START_LOG( cerr, L"유저 포인터값이 이상합니다." )
+			START_LOG( cerr, L"Invalid user pointer." )
 				<< BUILD_LOG( GetAutoPartyUID() )
 				<< BUILD_LOG( iUnitUID )
 				<< END_LOG;
@@ -293,7 +293,7 @@ void KAutoParty::CloseAutoPartyByCancel( IN const std::vector<UidType>& vecCance
 			KAutoPartyUserPtr spCancelUser = m_kAutoPartyUserManager.GetUser( iCancelUnitUID );
 			if( spCancelUser == NULL )
 			{
-				START_LOG( cerr, L"유저 포인터값이 이상합니다." )
+				START_LOG( cerr, L"Invalid user pointer." )
 					<< BUILD_LOG( GetAutoPartyUID() )
 					<< BUILD_LOG( iCancelUnitUID )
 					<< END_LOG;
@@ -364,7 +364,7 @@ void KAutoParty::CloseAutoPartyByCancel( IN const std::vector<UidType>& vecCance
 		KAutoPartyUserPtr spAutoPartyUser = m_kAutoPartyUserManager.GetUser( iUnitUID );
 		if( spAutoPartyUser == NULL )
 		{
-			START_LOG( cerr, L"유저 포인터값이 이상합니다." )
+			START_LOG( cerr, L"Invalid user pointer." )
 				<< BUILD_LOG( GetAutoPartyUID() )
 				<< BUILD_LOG( iUnitUID )
 				<< END_LOG;
@@ -393,7 +393,7 @@ bool KAutoParty::CheckAutoPartyMakingSuccess()
 
 	default:
 		{
-			START_LOG( cerr, L"현재 상태가 이상합니다!" )
+			START_LOG( cerr, L"Unexpected current state." )
 				<< BUILD_LOG( GetAutoPartyUID() )
 				<< BUILD_LOG( GetStateIDString() )
 				<< END_LOG;
@@ -454,7 +454,7 @@ void KAutoParty::ProcessEvent( const KEventPtr& spEvent_ )
 	   _CASE( EGB_REGROUP_PARTY_FOR_AUTO_PARTY_DUNGEON_GAME_ACK, KEPM_REGROUP_PARTY_FOR_AUTO_PARTY_DUNGEON_GAME_ACK );
 
 	default:
-		START_LOG( cerr, L"이벤트 핸들러가 정의되지 않았음. " << spEvent_->GetIDStr() );
+		START_LOG( cerr, L"Event handler is not defined: " << spEvent_->GetIDStr() );
 	}
 }
 
@@ -470,7 +470,7 @@ IMPL_ON_FUNC( EGB_CANCEL_AUTO_PARTY_MAKING_REQ )
 
 	default:
 		{
-            START_LOG( cerr, L"이상한 상태에서 패킷이 도착하였습니다." )
+            START_LOG( cerr, L"Packet received in an unexpected state." )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( LAST_SENDER_UID )
 				<< BUILD_LOG( FIRST_SENDER_UID )
@@ -483,7 +483,7 @@ IMPL_ON_FUNC( EGB_CANCEL_AUTO_PARTY_MAKING_REQ )
 	// 해당 유저가 존재하는지 검사!
 	if( m_kAutoPartyUserManager.IsExist( FIRST_SENDER_UID ) == false )
 	{
-		START_LOG( cerr, L"매치에 포함된 유저도 아닌데 매치 취소요청이 왔네? 먼가 문제가 있군.." )
+		START_LOG( cerr, L"Received a match-cancel request from a user who is not in the match; something is wrong." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( LAST_SENDER_UID )
 			<< BUILD_LOG( FIRST_SENDER_UID )
@@ -514,7 +514,7 @@ _IMPL_ON_FUNC( EGB_AUTO_PARTY_MAKING_SUCCESS_REPLY_NOT, KEGS_AUTO_PARTY_MAKING_S
 	{
 		if( m_kAutoPartyUserManager.Accept( FIRST_SENDER_UID ) == false )
 		{
-			START_LOG( cerr, L"수락을 실패하였습니다!" )
+			START_LOG( cerr, L"Failed to accept the request." )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( FIRST_SENDER_UID )
 				<< END_LOG;
@@ -557,7 +557,7 @@ IMPL_ON_FUNC( EGB_GET_REGROUP_PARTY_INFO_ACK )
 	// 파티 재배치를 위한 정보 업데이트!
 	if( m_kAutoPartyUserManager.UpdateRegroupPartyInfo( kPacket_.m_kPartyUserInfo, kPacket_.m_kPartyRoomUserInfo ) == false )
 	{
-		START_LOG( cerr, L"해당 매치 유저의 RegroupPartyInfo 업데이트가 실패하였다." )
+		START_LOG( cerr, L"Failed to update RegroupPartyInfo for the match user." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( LAST_SENDER_UID )
 			<< BUILD_LOG( FIRST_SENDER_UID )
@@ -582,7 +582,7 @@ IMPL_ON_FUNC( EGB_GET_REGROUP_PARTY_INFO_ACK )
 		if( m_kAutoPartyUserManager.GetRegroupPartyInfo( kPacketReq.m_vecRegroupPartyUserInfo, kPacketReq.m_iAutoPartyHostUnitUID ) == false )
 		//}}
 		{
-			START_LOG( cerr, L"해당 매치 유저의 RegroupPartyInfo 정보를 불러오기가 실패하였다." )
+			START_LOG( cerr, L"Failed to load RegroupPartyInfo for the match user." )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( LAST_SENDER_UID )
 				<< BUILD_LOG( FIRST_SENDER_UID )
@@ -596,7 +596,7 @@ IMPL_ON_FUNC( EGB_GET_REGROUP_PARTY_INFO_ACK )
 		// 파티 재결성하는 인원수를 체크!
 		if( kPacketReq.m_vecRegroupPartyUserInfo.size() > 4 )
 		{
-			START_LOG( cerr, L"자동 파티 매칭 인원수가 4명을 넘었다! 일어나서는 안되는 에러!" )
+			START_LOG( cerr, L"Automatic party matching exceeded four members; this should never happen." )
 				<< BUILD_LOG( kPacketReq.m_vecRegroupPartyUserInfo.size() )
 				<< END_LOG;
 		}
@@ -646,7 +646,7 @@ _IMPL_ON_FUNC( EGB_REGROUP_PARTY_FOR_AUTO_PARTY_DUNGEON_GAME_ACK, KEPM_REGROUP_P
     // 자동 파티 재편성 실패!
 	if( kPacket_.m_iOK != NetError::NET_OK )
 	{
-        START_LOG( cerr, L"자동 파티 재편성 실패!" )
+        START_LOG( cerr, L"Failed to regroup the automatic party." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( LAST_SENDER_UID )
 			<< BUILD_LOG( FIRST_SENDER_UID )

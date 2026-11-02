@@ -57,7 +57,7 @@ bool KUserManager::Delete( const UidType nUID_ )
 
         if( !spUser )
         {
-            START_LOG( cerr, L"삭제하고자 하는 유저가 없음" )
+            START_LOG( cerr, L"User to delete does not exist." )
                 << BUILD_LOG( nUID_ )
                 << BUILD_LOG( m_mapUID.size() )
                 << BUILD_LOG( m_mapCID.size() )
@@ -81,7 +81,7 @@ bool KUserManager::DeleteByCID( const UidType nCID_ )
 
         if( !spUser )
         {
-            START_LOG( cerr, L"삭제하고자 하는 CID가 없음" )
+            START_LOG( cerr, L"CID to delete does not exist." )
                 << BUILD_LOG( nCID_ )
                 << BUILD_LOG( m_mapUID.size() )
                 << BUILD_LOG( m_mapCID.size() )
@@ -175,7 +175,7 @@ int KUserManager::MultiQueueingByCID( const KEventPtr& spEvent_, std::vector<Uid
 			vecUID.push_back( *sit );
 			++iNotExistUserCnt;
 
-			START_LOG( cwarn, L"m_mapCID에서 CID를 못찾음. GSUser에 Event Queueing실패!" )
+			START_LOG( cwarn, L"Could not find the CID in m_mapCID; failed to queue an event to GSUser!" )
 				<< BUILD_LOG( spEvent_->GetFirstSenderUID() )
 				<< BUILD_LOG( spEvent_->GetLastSenderUID() )
 				<< BUILD_LOG( spEvent_->m_kDestPerformer.m_dwPerformerID )
@@ -188,7 +188,7 @@ int KUserManager::MultiQueueingByCID( const KEventPtr& spEvent_, std::vector<Uid
 
 	if( setUID.empty() )
 	{
-		START_LOG( cwarn, L"DestPerformer에 UID가 하나도 들어있지 않음!" )
+		START_LOG( cwarn, L"No UID is set in DestPerformer!" )
 			<< BUILD_LOG( spEvent_->GetFirstSenderUID() )
 			<< BUILD_LOG( spEvent_->GetLastSenderUID() )
 			<< BUILD_LOG( spEvent_->m_kDestPerformer.m_dwPerformerID )

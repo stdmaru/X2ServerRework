@@ -39,7 +39,7 @@ void KBadAttitudeTable::AddBadAttitudeCutLinePoint_LUA( CXSLDungeon::DUNGEON_TYP
 	std::map< CXSLDungeon::DUNGEON_TYPE, int >::iterator mit = m_mapBadAttitudeCutLinePoint.find( eDungeonType );
 	if( mit != m_mapBadAttitudeCutLinePoint.end() )	// 있다면 중복인데...
 	{
-		START_LOG( cerr, L"(불량유저)존재하는 던전 타입 입니다. 중복으로 셋팅 하려고 합니다. 데이터를 교체 합니다." )
+		START_LOG( cerr, L"(Abuser) Dungeon type already exists; replacing its data." )
 			<< BUILD_LOG( static_cast<int>(eDungeonType) )
 			<< BUILD_LOG( mit->second )
 			<< BUILD_LOG( iPoint )
@@ -51,7 +51,7 @@ void KBadAttitudeTable::AddBadAttitudeCutLinePoint_LUA( CXSLDungeon::DUNGEON_TYP
 	{
 		m_mapBadAttitudeCutLinePoint.insert( std::make_pair( eDungeonType, iPoint ) );
 
-		START_LOG( cout, L"던전 타입별 불량유저 포인트 셋팅 성공!" )
+		START_LOG( cout, L"Configured abuser points by dungeon type!" )
 			<< BUILD_LOG( static_cast<int>(eDungeonType) )
 			<< BUILD_LOG( iPoint )
 			<< END_LOG;
@@ -63,7 +63,7 @@ void KBadAttitudeTable::AddForceExitPoint_LUA( CXSLDungeon::DUNGEON_TYPE eDungeo
 	std::map< CXSLDungeon::DUNGEON_TYPE, int >::iterator mit = m_mapForceExitPoint.find( eDungeonType );
 	if( mit != m_mapForceExitPoint.end() )	// 있다면 중복인데...
 	{
-		START_LOG( cerr, L"(강퇴 추가 점수)존재하는 던전 타입 입니다. 중복으로 셋팅 하려고 합니다. 데이터를 교체 합니다." )
+		START_LOG( cerr, L"(Additional kick points) Dungeon type already exists; replacing its data." )
 			<< BUILD_LOG( static_cast<int>(eDungeonType) )
 			<< BUILD_LOG( mit->second )
 			<< BUILD_LOG( iPoint )
@@ -75,7 +75,7 @@ void KBadAttitudeTable::AddForceExitPoint_LUA( CXSLDungeon::DUNGEON_TYPE eDungeo
 	{
 		m_mapForceExitPoint.insert( std::make_pair( eDungeonType, iPoint ) );
 
-		START_LOG( cout, L"던전 타입별 강퇴 추가 포인트 셋팅 성공!" )
+		START_LOG( cout, L"Configured additional kick points by dungeon type!" )
 			<< BUILD_LOG( static_cast<int>(eDungeonType) )
 			<< BUILD_LOG( iPoint )
 			<< END_LOG;

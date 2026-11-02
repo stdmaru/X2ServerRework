@@ -65,7 +65,7 @@ void KUserLogManager::DumpLogFile( IN KGSUserPtr spUser, IN USER_LOG_TYPE eUserL
 			break;
 
 		default:
-			START_LOG( cerr, L"이상한 user log type입니다." )
+			START_LOG( cerr, L"Invalid user log type." )
 				<< BUILD_LOG( eUserLogType )
 				<< END_LOG;
             return;

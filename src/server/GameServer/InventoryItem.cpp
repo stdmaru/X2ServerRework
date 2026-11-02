@@ -95,7 +95,7 @@ int KInventoryItem::GetQuantity() const
     {
         if( m_iQuantity != 1 )
         {
-            START_LOG( cerr, L"수량 아이템이 아닌데 수량 값이 1이 아님." )
+            START_LOG( cerr, L"Non-stackable item has a quantity other than 1." )
                 << BUILD_LOG( m_iItemUID )
                 << BUILD_LOG( m_iItemID )
                 << BUILD_LOG( m_iUsageType )
@@ -116,7 +116,7 @@ int KInventoryItem::GetEndurance() const
     {
         if( m_iEndurance != 0 )
         {
-            START_LOG( cerr, L"내구도 아이템이 아닌데 내구도 값이 0이 아님." )
+            START_LOG( cerr, L"Item is not a durability item, but its durability value is not zero." )
                 << BUILD_LOG( m_iItemUID )
                 << BUILD_LOG( m_iItemID )
                 << BUILD_LOG( m_iUsageType )
@@ -136,7 +136,7 @@ int KInventoryItem::GetEnchantLevel() const
     const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( m_iItemID );
     if( pItemTemplet == NULL )
     {
-        START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )
+        START_LOG( cerr, L"Failed to retrieve the item template." )
             << BUILD_LOG( m_iItemID )
             << END_LOG;
 
@@ -175,7 +175,7 @@ const std::vector< int >& KInventoryItem::GetItemSocketList() const
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( m_iItemID );
 	if( pItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )
+		START_LOG( cerr, L"Failed to retrieve the item template." )
 			<< BUILD_LOG( m_iItemID )
 			<< END_LOG;
 	}
@@ -190,7 +190,7 @@ bool KInventoryItem::GetItemSocketOption( IN const int iSocketIndex, OUT int& iS
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( m_iItemID );
 	if( pItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )
+		START_LOG( cerr, L"Failed to retrieve the item template." )
 			<< BUILD_LOG( m_iItemID )
 			<< END_LOG;
 		return false;
@@ -201,7 +201,7 @@ bool KInventoryItem::GetItemSocketOption( IN const int iSocketIndex, OUT int& iS
 	// 소켓 인덱스 검사
 	if( iSocketIndex < 0 || iSocketIndex >= iMaxSocketCount )
 	{
-		START_LOG( cerr, L"아이템의 소켓 인덱스가 이상함." )
+		START_LOG( cerr, L"Invalid item socket index." )
 			<< BUILD_LOG( m_iItemUID )
 			<< BUILD_LOG( m_iItemID )
 			<< BUILD_LOG( pItemTemplet->m_ItemGrade )
@@ -253,7 +253,7 @@ const std::vector< int >& KInventoryItem::GetRandomSocketList() const
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( GetItemID() );
 	if( pItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )
+		START_LOG( cerr, L"Failed to retrieve the item template." )
 			<< BUILD_LOG( GetItemID() )
 			<< END_LOG;
 	}
@@ -266,7 +266,7 @@ bool KInventoryItem::GetRandomSocketOption( IN const int iSocketIndex, OUT int& 
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( GetItemID() );
 	if( pItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )
+		START_LOG( cerr, L"Failed to retrieve the item template." )
 			<< BUILD_LOG( GetItemID() )
 			<< END_LOG;
 		return false;
@@ -275,7 +275,7 @@ bool KInventoryItem::GetRandomSocketOption( IN const int iSocketIndex, OUT int& 
 	// 소켓 인덱스 검사
 	if( iSocketIndex < 0 || iSocketIndex >= CXSLSocketItem::RSC_MAX )
 	{
-		START_LOG( cerr, L"아이템의 소켓 인덱스가 이상함." )
+		START_LOG( cerr, L"Invalid item socket index." )
 			<< BUILD_LOG( GetItemUID() )
 			<< BUILD_LOG( GetItemID() )
 			<< BUILD_LOG( pItemTemplet->m_ItemGrade )
@@ -329,7 +329,7 @@ void KInventoryItem::CheckAndUpdateItemState()
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( GetItemID() );
 	if( IS_NULL( pItemTemplet ) )
 	{
-		START_LOG( cerr, L"스크립트에 없는 itemid입니다." )
+		START_LOG( cerr, L"Item ID is not in the script." )
 			<< BUILD_LOG( GetItemID() )
 			<< END_LOG;
 
@@ -412,7 +412,7 @@ bool KInventoryItem::IsQuantityFull() const
 {
     if( m_iUsageType != CXSLItem::PT_QUANTITY )
     {
-        START_LOG( cerr, L"수량아이템이 아닌데 가득 찼는지 확인함." )
+        START_LOG( cerr, L"Checked whether a non-stackable item was full." )
             << BUILD_LOG( m_iItemUID )
             << BUILD_LOG( m_iItemID )
             << BUILD_LOG( m_iUsageType )
@@ -428,7 +428,7 @@ bool KInventoryItem::IsQuantityFull() const
     const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( m_iItemID );
     if( pItemTemplet == NULL )
     {
-        START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )
+        START_LOG( cerr, L"Failed to retrieve the item template." )
             << BUILD_LOG( m_iItemID )
             << END_LOG;
 
@@ -444,7 +444,7 @@ bool KInventoryItem::IsBroken() const
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( m_iItemID );
 	if( pItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )
+		START_LOG( cerr, L"Failed to retrieve the item template." )
 			<< BUILD_LOG( m_iItemID )
 			<< END_LOG;
 
@@ -471,7 +471,7 @@ bool KInventoryItem::IsQuantityExhausted() const
 {
     if( m_iUsageType != CXSLItem::PT_QUANTITY )
     {
-        START_LOG( cerr, L"수량아이템이 아닌데 다썼는지 확인함." )
+        START_LOG( cerr, L"Checked whether a non-stackable item was used up." )
             << BUILD_LOG( m_iItemUID )
             << BUILD_LOG( m_iItemID )
             << BUILD_LOG( m_iUsageType )
@@ -502,7 +502,7 @@ bool KInventoryItem::IsPeriodExpired() const
 
 	if( m_wstrExpirationDate.empty() )
 	{
-		START_LOG( cerr, L"기간제 아이템인데 만료일이 없음." )
+		START_LOG( cerr, L"Timed item has no expiration date." )
 			<< BUILD_LOG( m_iItemUID )
 			<< END_LOG;
 
@@ -512,7 +512,7 @@ bool KInventoryItem::IsPeriodExpired() const
 	CTime tExpirationTime;
 	if( !KncUtil::ConvertStringToCTime( m_wstrExpirationDate, tExpirationTime ) )
 	{
-		START_LOG( cerr, L"문자열 시간 변환 실패." )
+		START_LOG( cerr, L"Failed to convert the time string." )
 			<< BUILD_LOG( m_wstrExpirationDate )
 			<< END_LOG;
 
@@ -538,7 +538,7 @@ int KInventoryItem::GetRemainedQuantityCapacity() const
     const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( m_iItemID );
     if( pItemTemplet == NULL )
     {
-        START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )
+        START_LOG( cerr, L"Failed to retrieve the item template." )
             << BUILD_LOG( m_iItemID )
             << END_LOG;
 
@@ -560,7 +560,7 @@ int KInventoryItem::GetEnduranceToRestore() const
     const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( m_iItemID );
     if( pItemTemplet == NULL )
     {
-        START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )
+        START_LOG( cerr, L"Failed to retrieve the item template." )
             << BUILD_LOG( m_iItemID )
             << END_LOG;
 
@@ -578,7 +578,7 @@ void KInventoryItem::IncreaseQuantity( int iQuantity, int& iIncreased )
 
     if( m_iUsageType != CXSLItem::PT_QUANTITY )
     {
-        START_LOG( clog, L"수량성 아이템이 아님." )
+        START_LOG( clog, L"This is not a stackable item." )
             << BUILD_LOG( m_iUsageType )
             << END_LOG;
 
@@ -587,7 +587,7 @@ void KInventoryItem::IncreaseQuantity( int iQuantity, int& iIncreased )
 
     if( iQuantity <=  0 )
     {
-        START_LOG( cerr, L"증가시키려는 수량 값이 이상함." )
+        START_LOG( cerr, L"Invalid quantity increase value." )
             << BUILD_LOG( iQuantity )
             << END_LOG;
 
@@ -596,7 +596,7 @@ void KInventoryItem::IncreaseQuantity( int iQuantity, int& iIncreased )
 
     if( m_iQuantity <= 0 )
     {
-        START_LOG( cerr, L"수량 값이 이상함." )
+        START_LOG( cerr, L"Invalid quantity value." )
             << BUILD_LOG( m_iQuantity )
             << END_LOG;
 
@@ -617,7 +617,7 @@ void KInventoryItem::DecreaseQuantity( int iQuantity, int& iDecreased )
 
     if( m_iUsageType != CXSLItem::PT_QUANTITY )
     {
-        START_LOG( clog, L"수량성 아이템이 아님." )
+        START_LOG( clog, L"This is not a stackable item." )
             << BUILD_LOG( m_iUsageType )
             << END_LOG;
 
@@ -626,7 +626,7 @@ void KInventoryItem::DecreaseQuantity( int iQuantity, int& iDecreased )
 
     if( iQuantity <=  0 )
     {
-        START_LOG( cerr, L"감소시키려는 수량 값이 이상함." )
+        START_LOG( cerr, L"Invalid quantity to decrease." )
             << BUILD_LOG( iQuantity )
             << END_LOG;
 
@@ -635,7 +635,7 @@ void KInventoryItem::DecreaseQuantity( int iQuantity, int& iDecreased )
 
     if( m_iQuantity <= 0 )
     {
-        START_LOG( cerr, L"수량 값이 이상함." )
+        START_LOG( cerr, L"Invalid quantity value." )
             << BUILD_LOG( m_iQuantity )
             << END_LOG;
 
@@ -655,7 +655,7 @@ void KInventoryItem::IncreaseEndurance( int iEndurance, int& iIncreased )
 
     if( m_iUsageType != CXSLItem::PT_ENDURANCE )
     {
-        START_LOG( clog, L"내구도 아이템이 아님." )
+        START_LOG( clog, L"This is not a durability item." )
             << BUILD_LOG( m_iUsageType )
             << END_LOG;
 
@@ -664,7 +664,7 @@ void KInventoryItem::IncreaseEndurance( int iEndurance, int& iIncreased )
 
     if( iEndurance <=  0 )
     {
-        START_LOG( cerr, L"증가시키려는 내구도 값이 이상함." )
+        START_LOG( cerr, L"Invalid durability amount to increase." )
             << BUILD_LOG( iEndurance )
             << END_LOG;
 
@@ -673,7 +673,7 @@ void KInventoryItem::IncreaseEndurance( int iEndurance, int& iIncreased )
 
     if( m_iEndurance < 0 )
     {
-        START_LOG( cerr, L"내구도 값이 이상함." )
+        START_LOG( cerr, L"Invalid durability value." )
             << BUILD_LOG( m_iEndurance )
             << END_LOG;
 
@@ -694,7 +694,7 @@ void KInventoryItem::DecreaseEndurance( int iEndurance, int& iDecreased )
 
     if( m_iUsageType != CXSLItem::PT_ENDURANCE )
     {
-        START_LOG( clog, L"내구도 아이템이 아님." )
+        START_LOG( clog, L"This is not a durability item." )
 			<< BUILD_LOG( m_iItemID )
             << BUILD_LOG( m_iUsageType )
             << END_LOG;
@@ -704,7 +704,7 @@ void KInventoryItem::DecreaseEndurance( int iEndurance, int& iDecreased )
 
     if( iEndurance <=  0 )
     {
-        START_LOG( cerr, L"감소시키려는 내구도 값이 이상함." )
+        START_LOG( cerr, L"Invalid value for the durability to decrease." )
 			<< BUILD_LOG( m_iItemID )
             << BUILD_LOG( iEndurance )
             << END_LOG;
@@ -714,7 +714,7 @@ void KInventoryItem::DecreaseEndurance( int iEndurance, int& iDecreased )
 
     if( m_iEndurance < 0 )
     {
-        START_LOG( cerr, L"내구도 값이 이상함." )
+        START_LOG( cerr, L"Invalid durability value." )
             << BUILD_LOG( m_iEndurance )
             << END_LOG;
 
@@ -735,7 +735,7 @@ void KInventoryItem::IncreaseEnchantLevel( int iEnchantLevel, int& iIncreased )
     const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( m_iItemID );
     if( pItemTemplet == NULL )
     {
-        START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )
+        START_LOG( cerr, L"Failed to retrieve the item template." )
             << BUILD_LOG( m_iItemID )
             << END_LOG;
 
@@ -744,7 +744,7 @@ void KInventoryItem::IncreaseEnchantLevel( int iEnchantLevel, int& iIncreased )
 
     if( !pItemTemplet->m_bCanEnchant )
     {
-        START_LOG( clog, L"강화할 수 있는 아이템이 아님." )
+        START_LOG( clog, L"This item cannot be enhanced." )
             << BUILD_LOG( m_iItemID )
             << END_LOG;
 
@@ -754,7 +754,7 @@ void KInventoryItem::IncreaseEnchantLevel( int iEnchantLevel, int& iIncreased )
 	// 무조건 양수만 가능!
 	if( iEnchantLevel <=  0 )
 	{
-		START_LOG( cerr, L"증가시키려는 강화값이 이상함." )
+		START_LOG( cerr, L"Invalid enhancement value to increase." )
 			<< BUILD_LOG( iEnchantLevel )
 			<< END_LOG;
 
@@ -763,7 +763,7 @@ void KInventoryItem::IncreaseEnchantLevel( int iEnchantLevel, int& iIncreased )
 
 	if( m_iEnchantLevel < -(CXSLEnchantItemManager::MAX_ENCHANT_LEVEL)  ||  m_iEnchantLevel > CXSLEnchantItemManager::MAX_ENCHANT_LEVEL )
 	{
-		START_LOG( cerr, L"강화 레벨값이 범위를 벗어났다." )
+		START_LOG( cerr, L"The enhancement level is out of range." )
 			<< BUILD_LOG( m_iItemID )
 			<< BUILD_LOG( iEnchantLevel )
 			<< BUILD_LOG( m_iEnchantLevel )
@@ -787,7 +787,7 @@ void KInventoryItem::DecreaseEnchantLevel( int iEnchantLevel, int& iDecreased )
     const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( m_iItemID );
     if( pItemTemplet == NULL )
     {
-        START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )
+        START_LOG( cerr, L"Failed to retrieve the item template." )
             << BUILD_LOG( m_iItemID )
             << END_LOG;
 
@@ -796,7 +796,7 @@ void KInventoryItem::DecreaseEnchantLevel( int iEnchantLevel, int& iDecreased )
 
     if( !pItemTemplet->m_bCanEnchant )
     {
-        START_LOG( clog, L"강화할 수 있는 아이템이 아님." )
+        START_LOG( clog, L"This item cannot be enhanced." )
             << BUILD_LOG( m_iItemID )
             << END_LOG;
 
@@ -805,7 +805,7 @@ void KInventoryItem::DecreaseEnchantLevel( int iEnchantLevel, int& iDecreased )
 
 	if( iEnchantLevel <=  0 )
 	{
-		START_LOG( cerr, L"감소시키려는 강화 레벨값이 이상함." )
+		START_LOG( cerr, L"Invalid value for the enhancement level to decrease." )
 			<< BUILD_LOG( iEnchantLevel )
 			<< END_LOG;
 
@@ -814,7 +814,7 @@ void KInventoryItem::DecreaseEnchantLevel( int iEnchantLevel, int& iDecreased )
 
 	if( m_iEnchantLevel < -( CXSLEnchantItemManager::MAX_ENCHANT_LEVEL )  ||  m_iEnchantLevel > CXSLEnchantItemManager::MAX_ENCHANT_LEVEL )
 	{
-		START_LOG( cerr, L"강화 레벨값이 범위를 벗어났다." )
+		START_LOG( cerr, L"The enhancement level is out of range." )
 			<< BUILD_LOG( m_iItemID )
 			<< BUILD_LOG( iEnchantLevel )
 			<< BUILD_LOG( m_iEnchantLevel )
@@ -835,7 +835,7 @@ void KInventoryItem::SetPosition( int iCategory, int iSlotID )
 {
     if( iCategory <= CXSLInventory::ST_NONE || iCategory >= CXSLInventory::ST_END )
     {
-        START_LOG( cerr, L"이상한 카테고리." )
+        START_LOG( cerr, L"Invalid category." )
             << BUILD_LOG( iCategory )
             << BUILD_LOG( iSlotID )
             << END_LOG;
@@ -843,7 +843,7 @@ void KInventoryItem::SetPosition( int iCategory, int iSlotID )
 
     if( iSlotID < 0 )
     {
-        START_LOG( cerr, L"이상한 슬롯 ID." )
+        START_LOG( cerr, L"Invalid slot ID." )
             << BUILD_LOG( iCategory )
             << BUILD_LOG( iSlotID )
             << END_LOG;
@@ -863,7 +863,7 @@ void KInventoryItem::PrepareIncreaseQuantity( IN int iQuantity, OUT int& iIncrea
 
 	if( m_iUsageType != CXSLItem::PT_QUANTITY )
 	{
-		START_LOG( clog, L"수량성 아이템이 아님." )
+		START_LOG( clog, L"This is not a stackable item." )
 			<< BUILD_LOG( m_iUsageType )
 			<< END_LOG;
 
@@ -872,7 +872,7 @@ void KInventoryItem::PrepareIncreaseQuantity( IN int iQuantity, OUT int& iIncrea
 
 	if( iQuantity <=  0 )
 	{
-		START_LOG( cerr, L"증가시키려는 수량 값이 이상함." )
+		START_LOG( cerr, L"Invalid quantity increase value." )
 			<< BUILD_LOG( iQuantity )
 			<< END_LOG;
 
@@ -881,7 +881,7 @@ void KInventoryItem::PrepareIncreaseQuantity( IN int iQuantity, OUT int& iIncrea
 
 	if( m_iQuantity <= 0 )
 	{
-		START_LOG( cerr, L"수량 값이 이상함." )
+		START_LOG( cerr, L"Invalid quantity value." )
 			<< BUILD_LOG( m_iQuantity )
 			<< END_LOG;
 
@@ -902,7 +902,7 @@ void KInventoryItem::SetPosition( IN int iCategory, IN int iSlotID, IN UidType i
 {
 	if( iCategory <= CXSLInventory::ST_NONE || iCategory >= CXSLInventory::ST_END )
 	{
-		START_LOG( cerr, L"이상한 카테고리." )
+		START_LOG( cerr, L"Invalid category." )
 			<< BUILD_LOG( iCategory )
 			<< BUILD_LOG( iSlotID )
 			<< END_LOG;
@@ -910,7 +910,7 @@ void KInventoryItem::SetPosition( IN int iCategory, IN int iSlotID, IN UidType i
 
 	if( iSlotID < 0 )
 	{
-		START_LOG( cerr, L"이상한 슬롯 ID." )
+		START_LOG( cerr, L"Invalid slot ID." )
 			<< BUILD_LOG( iCategory )
 			<< BUILD_LOG( iSlotID )
 			<< END_LOG;
@@ -952,7 +952,7 @@ bool KInventoryItem::SetItemSocketOption( IN const int iSocketIndex, IN const in
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( m_iItemID );
 	if( pItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )
+		START_LOG( cerr, L"Failed to retrieve the item template." )
 			<< BUILD_LOG( m_iItemID )
 			<< END_LOG;
 
@@ -964,7 +964,7 @@ bool KInventoryItem::SetItemSocketOption( IN const int iSocketIndex, IN const in
 	// 소켓 인덱스 검사
 	if( iSocketIndex < 0 || iSocketIndex >= iMaxSocketCount )
 	{
-		START_LOG( cerr, L"아이템의 소켓 인덱스가 이상함." )
+		START_LOG( cerr, L"Invalid item socket index." )
 			<< BUILD_LOG( m_iItemUID )
 			<< BUILD_LOG( m_iItemID )
 			<< BUILD_LOG( pItemTemplet->m_ItemGrade )
@@ -1022,7 +1022,7 @@ bool KInventoryItem::SetAttribEnchant( char cAttribEnchantSlotID, char cAttribEn
 			//}}
 
 		default:
-			START_LOG( cerr, L"속성강화 슬롯ID가 이상합니다." )
+			START_LOG( cerr, L"Invalid attribute enhancement slot ID." )
 				<< BUILD_LOGc( cAttribEnchantSlotID )
 				<< BUILD_LOGc( cAttribEnchantType )
 				<< END_LOG;
@@ -1031,7 +1031,7 @@ bool KInventoryItem::SetAttribEnchant( char cAttribEnchantSlotID, char cAttribEn
 	}
 	else
 	{
-		START_LOG( cerr, L"정의된 속성강화값이 아닙니다." )
+		START_LOG( cerr, L"This is not a defined attribute enhancement value." )
 			<< BUILD_LOGc( cAttribEnchantSlotID )
 			<< BUILD_LOGc( cAttribEnchantType )
 			<< END_LOG;
@@ -1047,7 +1047,7 @@ bool KInventoryItem::Seal()
 {
 	if( IsSealed() )
 	{
-		START_LOG( cerr, L"이미 봉인되어 있습니다." )
+		START_LOG( cerr, L"Already sealed." )
 			<< END_LOG;
 
 		return false;
@@ -1056,7 +1056,7 @@ bool KInventoryItem::Seal()
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( m_iItemID );
 	if( pItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )
+		START_LOG( cerr, L"Failed to retrieve the item template." )
 			<< BUILD_LOG( m_iItemID )
 			<< END_LOG;
 
@@ -1075,7 +1075,7 @@ bool KInventoryItem::Unseal()
 {
 	if( !IsSealed() )
 	{
-		START_LOG( cerr, L"이미 봉인해제되어 있습니다." )
+		START_LOG( cerr, L"Already unsealed." )
 			<< END_LOG;
 
 		return false;
@@ -1098,7 +1098,7 @@ void KInventoryItem::UpdatePeriod( IN short sPeriod, IN const std::wstring& wstr
 {
 	if( m_sPeriod == 0  &&  sPeriod != 0 )
 	{
-		START_LOG( cerr, L"기간제가 아닌데 기간제로 바꿀려고 하네? 기획상 이런 기능은 없다!" )
+		START_LOG( cerr, L"Attempted to make a non-timed item timed; this feature is not intended!" )
 			<< BUILD_LOG( GetItemUID() )
 			<< BUILD_LOG( GetItemID() )
 			<< BUILD_LOG( m_sPeriod )
@@ -1211,7 +1211,7 @@ int KInventoryItem::GetMaxSocketCount( void ) const
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( m_iItemID );
 	if( pItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )
+		START_LOG( cerr, L"Failed to retrieve the item template." )
 			<< BUILD_LOG( m_iItemID )
 			<< END_LOG;
 		return 0;

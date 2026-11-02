@@ -114,7 +114,7 @@ void KUserUnitManager::ReservedReturnToFieldInfo( IN const KReturnToFieldInfo& k
 {
     if( m_vecReservedReturnToFieldInfo.empty() == false )
 	{
-		START_LOG( cerr, L"필드 복귀 정보를 예약하려는데 이미 예약되어있다! 절대 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"Attempted to reserve field return information that is already reserved; this should never happen!" )
 			<< BUILD_LOG( m_vecReservedReturnToFieldInfo.size() )
 			<< END_LOG;
 	}

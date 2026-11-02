@@ -57,7 +57,7 @@ void KGSBillingDBThread::ProcessEvent( const KEventPtr& spEvent_ )
 
 
 	default:
-		START_LOG( cerr, L"이벤트 핸들러가 정의되지 않았음. " << spEvent_->GetIDStr() );
+		START_LOG( cerr, L"No event handler is defined. " << spEvent_->GetIDStr() );
 	}
 }
 
@@ -95,7 +95,7 @@ int KGSBillingDBThread::DoQuery_GetReleaseTick( OUT std::map<int, int> & mapRele
 
 		mapReleaseTick.insert(std::make_pair(relaseTickType, releaseTick ) );
 
-		START_LOG( clog2, L"ReleaseTick 정보 갱신" )
+		START_LOG( clog2, L"ReleaseTick information updated." )
 			<< BUILD_LOG( releaseTick )
 			<< BUILD_LOG( relaseTickType );
 	}
@@ -252,7 +252,7 @@ void KGSBillingDBThread::DoQuery_GetCheckBonusEvent( OUT std::vector<std::wstrin
 	}
 
 end_proc:
-	START_LOG( clog, L"보너스 캐쉬 이벤트 시작" )
+	START_LOG( clog, L"Starting bonus cash event" )
 		<< END_LOG;
 }
 
@@ -1077,7 +1077,7 @@ _IMPL_ON_FUNC( EBILL_INVENTORY_INQUIRY_REQ, KEGS_BILL_INVENTORY_INQUIRY_REQ )
 
 	if( kPacket_.m_iCurrentPage <= 0 )
 	{
-		START_LOG( cerr, L"페이지 수 이상" )
+		START_LOG( cerr, L"Invalid page count" )
 			<< BUILD_LOG( kPacket_.m_iCurrentPage )
 			<< END_LOG;
 
@@ -1088,7 +1088,7 @@ _IMPL_ON_FUNC( EBILL_INVENTORY_INQUIRY_REQ, KEGS_BILL_INVENTORY_INQUIRY_REQ )
 
 	if( kPacket_.m_nItemPerPage <= 0 )
 	{
-		START_LOG( cerr, L"페이지 당 아이템 수 이상" )
+		START_LOG( cerr, L"Invalid number of items per page" )
 			<< BUILD_LOG( kPacket_.m_nItemPerPage )
 			<< END_LOG;
 
@@ -1207,7 +1207,7 @@ _IMPL_ON_FUNC( EBILL_PREPARE_BUY_PRODUCT_REQ, KEBILL_BUY_PRODUCT_REQ )
 
 		if(iOK != NetError::NET_OK)
 		{
-			START_LOG( cerr, L"Buy_Product 사전 체크는 통과인데 왜 로그 남기다가 에러가 나지?" )
+			START_LOG( cerr, L"Buy_Product passed the pre-check, but logging failed unexpectedly." )
 				<< BUILD_LOG( iOK )
 				<< BUILD_LOG( kBillBuyInfo.m_wstrOrderID )
 				<< BUILD_LOG( kPacket_.m_wstrTotalOrderID )
@@ -1438,7 +1438,7 @@ _IMPL_ON_FUNC( EBILL_PREPARE_GIFT_ITEM_REQ, KEBILL_GIFT_ITEM_REQ )
 
 		if(iOK != NetError::NET_OK)
 		{
-			START_LOG( cerr, L"Gift_Item 사전 체크는 통과인데 왜 로그 남기다가 에러가 나지?" )
+			START_LOG( cerr, L"Gift_Item passed the pre-check, but logging failed unexpectedly." )
 				<< BUILD_LOG( iOK )
 				<< BUILD_LOG( kBillBuyInfo.m_wstrOrderID )
 				<< BUILD_LOG( kPacket_.m_wstrTotalOrderID )
@@ -1570,7 +1570,7 @@ _IMPL_ON_FUNC( EBILL_USE_COUPON_RESERVE_REQ, KEBILL_USE_COUPON_REQ )
 			break;
 		}
 
-		START_LOG( cerr, L"빌링 트랜잭션 번호 생성 실패 (쿠폰)" )
+		START_LOG( cerr, L"Failed to generate billing transaction number (coupon)." )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< END_LOG;
 
@@ -1593,7 +1593,7 @@ _IMPL_ON_FUNC( EBILL_USE_COUPON_RESERVE_REQ, KEBILL_USE_COUPON_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"퍼블리셔 쿠폰 주문 등록 실패." )
+		START_LOG( cerr, L"Failed to register publisher coupon order." )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_wstrSerialCode )
 			<< BUILD_LOG( kPacket.m_kPacketReq.m_wstrTransaction )
@@ -1627,7 +1627,7 @@ IMPL_ON_FUNC( EBILL_USE_COUPON_RESULT_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"퍼블리셔 쿠폰 사용 DB 기록 실패." )
+		START_LOG( cerr, L"Failed to record publisher coupon use in the database." )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( NetError::GetErrStr( kPacket.m_iOK ) )
 			<< END_LOG;
@@ -1664,7 +1664,7 @@ IMPL_ON_FUNC( EBILL_USE_COUPON_RESULT_REQ )
 		break;
 	}
 
-	START_LOG( clog, L"쿠폰 사용 결과" )
+	START_LOG( clog, L"Coupon use result" )
 		<< BUILD_LOG( kPacket_.m_wstrTransaction )
 		<< BUILD_LOG( kPacket_.m_iRet )
 		<< BUILD_LOG( kPacket_.m_iChargeItem )

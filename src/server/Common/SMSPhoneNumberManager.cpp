@@ -55,7 +55,7 @@ void KSMSPhoneNumberManager::AddPhoneNumber_LUA( int iType, const char* pPhoneNu
 {
 	if( iType < 0  ||  iType >= PNLT_MAX )
 	{
-		START_LOG( cerr, L"정의되지 않은 타입값이 넘어왔습니다!" )
+		START_LOG( cerr, L"Received an undefined type value." )
 			<< BUILD_LOG( iType )
 			<< BUILD_LOG( pPhoneNum )
 			<< END_LOG;
@@ -74,7 +74,7 @@ void KSMSPhoneNumberManager::GetPhoneNumberList( IN const PHONE_NUMBER_LIST_TYPE
 
 	if( eType < 0  ||  eType >= PNLT_MAX )
 	{
-		START_LOG( cerr, L"잘못된 폰 넘버 타입입니다!" )
+		START_LOG( cerr, L"Invalid phone number type." )
 			<< BUILD_LOG( eType )
 			<< END_LOG;
 		return;

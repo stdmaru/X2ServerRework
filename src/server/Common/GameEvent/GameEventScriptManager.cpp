@@ -264,7 +264,7 @@ void KGameEventScriptManager::AddReward_LUA( IN int iID )
 		{
 			mit->second.m_mapMinMaxReward.insert( std::make_pair( pairMinMaxLevel, sData.m_iEventReward ) );
 
-			START_LOG( clog, L"이벤트 보상 그룹 설정!" )
+			START_LOG( clog, L"Event reward group configured." )
 				<< BUILD_LOG( iID )
 				<< BUILD_LOG( mit->second.m_mapMinMaxReward.size() );
 			return;
@@ -313,7 +313,7 @@ void KGameEventScriptManager::Init()
 	m_bNotifyMSGEvent = ( KBaseServer::GetKObj()->GetUID() == m_iNotifyCnServerUID );
 	if( m_bNotifyMSGEvent )
 	{
-		START_LOG( cout, L"공지 이벤트를 날릴 센터 서버로 등록되었음!" );
+		START_LOG( cout, L"Registered as the center server for sending announcement events." );
 	}
 }
 
@@ -322,7 +322,7 @@ const KGameEventScriptManager::EVENT_DATA* KGameEventScriptManager::GetEventData
 	std::map< int, EVENT_DATA >::const_iterator mit = m_mapEventData.find( iScriptID );
 	if( mit == m_mapEventData.end() )
 	{
-		START_LOG( cerr, L"존재 하지 않는 이벤트입니다." )
+		START_LOG( cerr, L"Event does not exist." )
 			<< BUILD_LOG( iScriptID )
 			<< END_LOG;
 
@@ -361,7 +361,7 @@ void KGameEventScriptManager::AddConnectEventUserGroup_LUA( int iEventGroupID, U
 
 	if( it->second.insert( iUserUID ).second == false )
 	{
-		START_LOG( cerr, L"이벤트 유저 그룹에 이미 중복되는 값이 존재합니다." )
+		START_LOG( cerr, L"Duplicate value in the event user group." )
 			<< BUILD_LOG( iEventGroupID )
 			<< BUILD_LOG( iUserUID )
 			<< END_LOG;
@@ -376,7 +376,7 @@ bool KGameEventScriptManager::CheckEventGroup( IN const int iEventGroupID, IN co
 	std::map< int, std::set<UidType> >::const_iterator it = m_mapEventUserGroup.find( iEventGroupID );
 	if( it == m_mapEventUserGroup.end() )
 	{
-		START_LOG( cerr, L"존재하지 않는 이벤트 그룹입니다." )
+		START_LOG( cerr, L"Event group does not exist." )
 			<< BUILD_LOG( iEventGroupID )
 			<< BUILD_LOG( iUserUID )
 			<< END_LOG;
@@ -391,7 +391,7 @@ void KGameEventScriptManager::AddAdvertisement_LUA( IN int iID )
 {
 	if( m_mapAdvertisementData.find( iID ) != m_mapAdvertisementData.end() )
 	{
-		START_LOG( cerr, L"같은 아이디 광고 스크립트.!" )
+		START_LOG( cerr, L"Advertisement script has a duplicate ID." )
 			<< BUILD_LOG( iID )
 			<< END_LOG;
 		return;
@@ -411,7 +411,7 @@ const KGameEventScriptManager::EVENT_DATA* KGameEventScriptManager::GetAdvertise
 	std::map< int, EVENT_DATA >::const_iterator mit = m_mapAdvertisementData.find( iScriptID );
 	if( mit == m_mapEventData.end() )
 	{
-		START_LOG( cerr, L"존재 하지 않는 이벤트입니다." )
+		START_LOG( cerr, L"Event does not exist." )
 			<< BUILD_LOG( iScriptID )
 			<< END_LOG;
 

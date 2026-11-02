@@ -32,7 +32,7 @@ UidType KAutoPartyUserWaitList::GetPartyUID() const
 
 		if( iPartyUID != spAutoPartyUser->GetOldPartyUID() )
 		{
-			START_LOG( cerr, L"엇.. 이거 이상한데.. 같은 멤버인데 PartyUID가 틀리네? 절대 일어나서는 안되는 에러!" )
+			START_LOG( cerr, L"Unexpected PartyUID for the same member; this should never happen." )
 				<< BUILD_LOG( iPartyUID )
 				<< BUILD_LOG( spAutoPartyUser->GetOldPartyUID() )
 				<< END_LOG;
@@ -51,7 +51,7 @@ void KAutoPartyUserWaitList::GetUnitUIDList( OUT std::vector< UidType >& vecUnit
 	{
         if( spAutoPartyUser == NULL )
 		{
-			START_LOG( cerr, L"매치 유저 포인터값이 이상합니다!" )
+			START_LOG( cerr, L"Invalid match-user pointer." )
 				<< END_LOG;
 			continue;
 		}
@@ -68,7 +68,7 @@ void KAutoPartyUserWaitList::GetAutoPartyUserInfoList( OUT std::vector< KAutoPar
 	{
 		if( spAutoPartyUser == NULL )
 		{
-			START_LOG( cerr, L"매치 유저 포인터값이 이상합니다!" )
+			START_LOG( cerr, L"Invalid match-user pointer." )
 				<< END_LOG;
 			continue;
 		}
@@ -88,7 +88,7 @@ u_char KAutoPartyUserWaitList::GetTopUnitLevel() const
 	{
 		if( spAutoPartyUser == NULL )
 		{
-			START_LOG( cerr, L"자동 파티 유저 포인터값이 이상합니다" )
+			START_LOG( cerr, L"Invalid automatic party-user pointer." )
 				<< END_LOG;
 			return 0;
 		}
@@ -108,7 +108,7 @@ u_char KAutoPartyUserWaitList::GetAverageUnitLevel() const
 	{
 		if( spAutoPartyUser == NULL )
 		{
-			START_LOG( cerr, L"자동 파티 유저 포인터값이 이상합니다" )
+			START_LOG( cerr, L"Invalid automatic party-user pointer." )
 				<< END_LOG;
 			return 0;
 		}
@@ -118,7 +118,7 @@ u_char KAutoPartyUserWaitList::GetAverageUnitLevel() const
 
 	if( GetNumMember() == 0 )
 	{
-		START_LOG( cerr, L"평균값을 구할려고 하는데 현재 멤버 수가 0입니다. 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"Cannot calculate the average with zero members; this should never happen." )
 			<< BUILD_LOG( GetWaitNumber() )
 			<< END_LOG;
 		return 0;
@@ -139,7 +139,7 @@ u_char KAutoPartyUserWaitList::GetLevelForListType() const
 	{
 		if( IS_NULL( spAutoPartyUser ) )
 		{
-			START_LOG( cerr, L"자동 파티 유저 포인터값이 이상합니다" )
+			START_LOG( cerr, L"Invalid automatic party-user pointer." )
 				<< END_LOG;
 			return 0;
 		}
@@ -153,7 +153,7 @@ u_char KAutoPartyUserWaitList::GetLevelForListType() const
 
     if( iAverageIncludeUserCount == 0 )
 	{
-		START_LOG( cerr, L"캐릭터 평균 레벨값을 구할 대상이 한명도 없습니다. 절대 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"No characters are available to calculate the average level; this should never happen." )
 			<< BUILD_LOG( iAverageIncludeUserCount )
 			<< END_LOG;
 		return 0;
@@ -168,7 +168,7 @@ bool KAutoPartyUserWaitList::IsExistUnitType( IN const char cUnitType ) const
 	{
 		if( spAutoPartyUser == NULL )
 		{
-			START_LOG( cerr, L"자동 파티 유저 포인터값이 이상합니다" )
+			START_LOG( cerr, L"Invalid automatic party-user pointer." )
 				<< END_LOG;
 			return 0;
 		}
@@ -186,7 +186,7 @@ bool KAutoPartyUserWaitList::CheckSameUnitType( IN KAutoPartyUserWaitListPtr spA
 	{
 		if( spAutoPartyUser == NULL )
 		{
-			START_LOG( cerr, L"자동 파티 유저 포인터값이 이상합니다" )
+			START_LOG( cerr, L"Invalid automatic party-user pointer." )
 				<< END_LOG;
 			return 0;
 		}
@@ -203,7 +203,7 @@ bool KAutoPartyUserWaitList::CheckSameDifficultyLevel( IN KAutoPartyUserWaitList
 {
 	if( IS_NULL( spAutoPartyUserWaitList ) )
 	{
-		START_LOG( cerr, L"대기 리스트 포인터값이 이상합니다" )
+		START_LOG( cerr, L"Invalid wait-list pointer." )
 			<< END_LOG;
 		return false;
 	}
@@ -217,7 +217,7 @@ KAutoPartyUserPtr KAutoPartyUserWaitList::GetAutoPartyUser( IN const UidType iUn
 	std::map< UidType, KAutoPartyUserPtr >::iterator mit = m_mapMember.find( iUnitUID );
 	if( mit == m_mapMember.end() )
 	{
-		START_LOG( cwarn, L"찾는 매치유저가 없습니다.!" )
+		START_LOG( cwarn, L"Match user not found." )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 
@@ -226,7 +226,7 @@ KAutoPartyUserPtr KAutoPartyUserWaitList::GetAutoPartyUser( IN const UidType iUn
 
 	if( mit->second == NULL )
 	{
-		START_LOG( cerr, L"매치 유저 포인터 이상.!" )
+		START_LOG( cerr, L"Invalid match-user pointer." )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 
@@ -240,14 +240,14 @@ bool KAutoPartyUserWaitList::AddAutoPartyUser( KAutoPartyUserPtr spAutoPartyUser
 {
 	if( spAutoPartyUser == NULL )
 	{
-		START_LOG( cerr, L"매치 유저 포인터값이 이상함." )
+		START_LOG( cerr, L"Invalid match-user pointer." )
 			<< END_LOG;
 		return false;
 	}
 
 	if( IsExistAutoPartyUser( spAutoPartyUser->GetCharUID() ) == true )
 	{
-		START_LOG( cerr, L"이미 매치유저가 등록되어있습니다! 절대 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"Match user is already registered; this should never happen." )
 			<< BUILD_LOG( spAutoPartyUser->GetCharUID() )
 			<< END_LOG;
 		return false;
@@ -284,7 +284,7 @@ void KAutoPartyUserWaitList::SetAutoPartyBonus( IN const bool bAutoPartyBonus )
 	{
 		if( IS_NULL( spAutoPartyUser ) )
 		{
-			START_LOG( cerr, L"자동 파티 유저 포인터값이 이상합니다" )
+			START_LOG( cerr, L"Invalid automatic party-user pointer." )
 				<< END_LOG;
 			continue;
 		}

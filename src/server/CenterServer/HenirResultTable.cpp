@@ -57,7 +57,7 @@ bool KHenirResultTable::AddHenirResultItemInfo_LUA( IN int iStageCount, IN char 
 {
 	if( iStageCount <= 0  ||  cHenirDungeonMode < 0  ||  iItemGroupID <= 0  ||  iRandomCount <= 0 )
 	{
-		START_LOG( cerr, L"Henir 보상 스크립트 파싱 실패!" )
+		START_LOG( cerr, L"Failed to parse Henir reward script!" )
 			<< BUILD_LOG( iStageCount )
 			<< BUILD_LOGc( cHenirDungeonMode )
 			<< BUILD_LOG( iItemGroupID )
@@ -96,7 +96,7 @@ bool KHenirResultTable::AddHenirResultItemGroup_LUA( IN int iItemGroupID, IN int
 {
 	if( iItemGroupID <= 0  ||  iItemID < 0  ||  iQuantity <= 0  ||  fRate <= 0.0f )
 	{
-		START_LOG( cerr, L"Henir 보상 스크립트 파싱 실패!" )
+		START_LOG( cerr, L"Failed to parse Henir reward script!" )
 			<< BUILD_LOG( iItemGroupID )
 			<< BUILD_LOG( iItemID )
 			<< BUILD_LOG( iQuantity )
@@ -109,7 +109,7 @@ bool KHenirResultTable::AddHenirResultItemGroup_LUA( IN int iItemGroupID, IN int
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iItemID );
 	if( pItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 itemid가 보상으로 설정되었습니다." )
+		START_LOG( cerr, L"A nonexistent ItemID is configured as a reward." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 
@@ -127,7 +127,7 @@ bool KHenirResultTable::AddHenirResultItemGroup_LUA( IN int iItemGroupID, IN int
 	{
 		if( !mit->second.AddCase( iItemID, fRate, iQuantity ) )
 		{
-			START_LOG( cerr, L"확률 설정이 이상합니다." )
+			START_LOG( cerr, L"Invalid probability setting." )
 				<< BUILD_LOG( iItemGroupID )
 				<< END_LOG;
 
@@ -142,7 +142,7 @@ bool KHenirResultTable::AddResurrectionStage_LUA( IN int iStageCount )
 {
     if( iStageCount < 0 )
 	{
-		START_LOG( cerr, L"스테이지 정보가 이상합니다" )
+		START_LOG( cerr, L"Invalid stage information." )
 			<< BUILD_LOG( iStageCount )
 			<< END_LOG;
 		return false;
@@ -157,7 +157,7 @@ bool KHenirResultTable::AddClearTempInventoryStage_LUA( IN int iStageID )
 {
 	if( iStageID < 0 )
 	{
-		START_LOG( cerr, L"스테이지 정보가 이상합니다" )
+		START_LOG( cerr, L"Invalid stage information." )
 			<< BUILD_LOG( iStageID )
 			<< END_LOG;
 		return false;
@@ -172,7 +172,7 @@ bool KHenirResultTable::AddClearNotifyStage_LUA( IN int iStageCount )
 {
 	if( iStageCount < 0 )
 	{
-		START_LOG( cerr, L"스테이지 정보가 이상합니다" )
+		START_LOG( cerr, L"Invalid stage information." )
 			<< BUILD_LOG( iStageCount )
 			<< END_LOG;
 		return false;
@@ -187,7 +187,7 @@ bool KHenirResultTable::AddHenirChallangeRewardInfo_LUA( IN int iStageID, IN int
 {
 	if( iStageID < 0  ||  iItemID < 0  ||  iQuantity < 0 )
 	{
-		START_LOG( cerr, L"Henir 도전 보상 스크립트 파싱 실패!" )
+		START_LOG( cerr, L"Failed to parse Henir challenge reward script!" )
 			<< BUILD_LOG( iStageID )
 			<< BUILD_LOG( iItemID )
 			<< BUILD_LOG( iQuantity )
@@ -207,7 +207,7 @@ bool KHenirResultTable::AddHenirChallangeRewardInfo_LUA( IN int iStageID, IN int
 	{
 		if( mit->second.m_mapReward.find( iItemID ) != mit->second.m_mapReward.end() )
 		{
-			START_LOG( cerr, L"이미 등록된 Henir 도전 보상 정보입니다!" )
+			START_LOG( cerr, L"Henir challenge reward information is already registered!" )
 				<< BUILD_LOG( iStageID )
 				<< BUILD_LOG( iItemID )
 				<< BUILD_LOG( iQuantity )
@@ -233,7 +233,7 @@ bool KHenirResultTable::GetHenirRewardItem( IN const int iStageID, IN const char
 	mit = m_mapHenirReward.find( kKey );
 	if( mit == m_mapHenirReward.end() )
 	{
-		START_LOG( cerr, L"해당 key값의 보상정보가 없다? 세팅이 잘못 되었나?" )
+		START_LOG( cerr, L"No reward information for the specified key; is the configuration wrong?" )
 			<< BUILD_LOG( iStageID )
 			<< BUILD_LOGc( cDungeonMode )
 			<< END_LOG;
@@ -249,7 +249,7 @@ bool KHenirResultTable::GetHenirRewardItem( IN const int iStageID, IN const char
 		std::map< int, KLottery >::const_iterator mit = m_mapRewardGroup.find( vit->m_iGroupID );
 		if( mit == m_mapRewardGroup.end() )
 		{
-			START_LOG( cerr, L"존재하지 않는 ItemGroupID가 보상으로 등록되어있음!" )
+			START_LOG( cerr, L"A nonexistent ItemGroupID is configured as a reward!" )
 				<< BUILD_LOG( iStageID )
 				<< BUILD_LOGc( cDungeonMode )
 				<< BUILD_LOG( vit->m_iGroupID )
@@ -264,7 +264,7 @@ bool KHenirResultTable::GetHenirRewardItem( IN const int iStageID, IN const char
 			int iRewardItemID = mit->second.Decision();
 			if( iRewardItemID == KLottery::CASE_BLANK )
 			{
-				START_LOG( cerr, L"확률이 100%가 아니네?!" )
+				START_LOG( cerr, L"Probability does not total 100%?!" )
 					<< BUILD_LOG( iStageID )
 					<< BUILD_LOGc( cDungeonMode )
 					<< BUILD_LOG( vit->m_iGroupID )
@@ -276,7 +276,7 @@ bool KHenirResultTable::GetHenirRewardItem( IN const int iStageID, IN const char
 			int iQuantity = mit->second.GetParam1( iRewardItemID );
 			if( iQuantity == KLottery::PARAM_BLANK )
 			{
-				START_LOG( cerr, L"수량값이 저장 안되어있네?" )
+				START_LOG( cerr, L"Quantity value is missing." )
 					<< BUILD_LOG( iStageID )
 					<< BUILD_LOGc( cDungeonMode )
 					<< BUILD_LOG( vit->m_iGroupID )
@@ -289,7 +289,7 @@ bool KHenirResultTable::GetHenirRewardItem( IN const int iStageID, IN const char
 			const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iRewardItemID );
 			if( pItemTemplet == NULL )
 			{
-				START_LOG( cerr, L"존재하지 않는 itemid인데 헤니르 보상으로 등록되어있네?" )
+				START_LOG( cerr, L"A nonexistent ItemID is registered as a Henir reward." )
 					<< BUILD_LOG( iStageID )
 					<< BUILD_LOGc( cDungeonMode )
 					<< BUILD_LOG( vit->m_iGroupID )
@@ -329,7 +329,7 @@ bool KHenirResultTable::GetHenirChallangeRewardItem( IN const int iStageID, IN O
 	mit = m_mapChallangeReward.find( iStageID );
 	if( mit == m_mapChallangeReward.end() )
 	{
-		START_LOG( cerr, L"해당 스테이지에 대한 도전 보상 정보가 없다." )
+		START_LOG( cerr, L"No challenge reward information for the specified stage." )
 			<< BUILD_LOG( iStageID )
 			<< END_LOG;
 		return false;
@@ -348,7 +348,7 @@ bool KHenirResultTable::GetHenirChallangeRewardItem( IN const int iStageID, IN O
 		const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iRewardItemID );
 		if( pItemTemplet == NULL )
 		{
-			START_LOG( cerr, L"존재하지 않는 itemid인데 헤니르 보상으로 등록되어있네?" )
+			START_LOG( cerr, L"A nonexistent ItemID is registered as a Henir reward." )
 				<< BUILD_LOG( iStageID )
 				<< BUILD_LOGc( iRewardItemID )
 				<< BUILD_LOG( iRewardItemID )
@@ -380,7 +380,7 @@ bool KHenirResultTable::GetHenirChallangeRewardItem( IN const int iStageID, IN O
 bool KHenirResultTable::SetEnbleNotify_LUA( IN bool bVal )
 {
 	m_bNofity = bVal;
-	START_LOG( cout, L"해니르 클리어 공지 셋팅 : " << m_bNofity );
+	START_LOG( cout, L"Setting Henir clear notification: " << m_bNofity );
 	return true;
 }
 bool KHenirResultTable::GetEnbleNotify()

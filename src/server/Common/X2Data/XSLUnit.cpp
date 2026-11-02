@@ -132,7 +132,7 @@ CXSLUnit::PVP_RANK CXSLUnit::ComputeNewPVPRank( IN CXSLUnit::PVP_RANK eCurrentPv
 			}
 			[[fallthrough]]; // rating above the table: report it
 		default:
-			START_LOG( cerr, L"현재 랭크에 대한 정보가 이상함!" )
+			START_LOG( cerr, L"Invalid information for the current rank." )
 				<< BUILD_LOG( static_cast<PVP_RANK>( cNowPvpRank ) )
 				<< BUILD_LOG( iNowRating )
 				<< END_LOG;

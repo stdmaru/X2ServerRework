@@ -108,7 +108,7 @@ bool CXSLBuffManager::AddBuffInfo_LUA()
 	return true;
 
 end_proc:
-	START_LOG( cerr, L"버프 스크립트 파싱 실패.!" )
+	START_LOG( cerr, L"Failed to parse the buff script." )
 		<< BUILD_LOG( kBuffInfo.m_eBuffID )
 		<< END_LOG;
 

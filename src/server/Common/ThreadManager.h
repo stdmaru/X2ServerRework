@@ -49,7 +49,7 @@ public:
             m_kMaxProcessingInfo.m_cTime       = CTime::GetCurrentTime();
             m_kMaxProcessingInfo.m_dwTerm      = dwElapTime;
 
-            START_LOG( clog2, L"이벤트 처리 최대 소요시간 갱신. Sender : "/* << spEventPtr->m_nSenderUID*/ )
+            START_LOG( clog2, L"Maximum event processing duration updated. Sender: "/* << spEventPtr->m_nSenderUID*/ )
                 << BUILD_LOG( m_kMaxProcessingInfo.m_strEventID )
                 << BUILD_LOG( m_kMaxProcessingInfo.m_dwTerm );
         }

@@ -121,7 +121,7 @@ void KCnSimLayer::RegToLua()
 //////////////////////////////////////////////////////////////////////////
 void KCnSimLayer::DisconnectAllCnUser_LUA()
 {
-	START_LOG( cout, L"모든 CnUser 접속 끊기!" );
+	START_LOG( cout, L"Disconnecting all CnUser connections!" );
 
 	KActorManager* pkActorManager = KActorManager::GetKObj();
 
@@ -146,7 +146,7 @@ void KCnSimLayer::Init()
 		kAutoPath.GetPullPath( strFile );
 		if( 0 != LUA_DOFILE( L, strFile.c_str() ) )
 		{
-			START_LOG( cerr, L"Enum 정보 로드 실패.!" )
+			START_LOG( cerr, L"Failed to load Enum information!" )
 				<< BUILD_LOG( KncUtil::toWideString( strFile ) );
 			//{{ 2011. 02. 07	최육사	스크립트 파싱 오류 리포트
 			KBaseServer::GetKObj()->AddFailScriptFileName( L"Enum.lua" );
@@ -154,7 +154,7 @@ void KCnSimLayer::Init()
 		}
 		else
 		{
-			START_LOG( cout, L"Enum 정보 로드 성공.!" );
+			START_LOG( cout, L"Enum information loaded successfully!" );
 		}
 	}
 
@@ -165,7 +165,7 @@ void KCnSimLayer::Init()
 		kAutoPath.GetPullPath( strFile );
 		if( 0 != LUA_DOFILE( L, strFile.c_str() ) )
 		{
-			START_LOG( cerr, L"DungeonEnum 정보 로드 실패.!" )
+			START_LOG( cerr, L"Failed to load DungeonEnum information!" )
 				<< BUILD_LOG( KncUtil::toWideString( strFile ) );
 			//{{ 2011. 02. 07	최육사	스크립트 파싱 오류 리포트
 			KBaseServer::GetKObj()->AddFailScriptFileName( L"DungeonEnum.lua" );
@@ -173,7 +173,7 @@ void KCnSimLayer::Init()
 		}
 		else
 		{
-			START_LOG( cout, L"DungeonEnum 정보 로드 성공.!" );
+			START_LOG( cout, L"DungeonEnum information loaded successfully!" );
 		}
 	}
 
@@ -195,7 +195,7 @@ void KCnSimLayer::Init()
 		kAutoPath.GetPullPath( strFile );
 		if( 0 != LUA_DOFILE( L, strFile.c_str() ) )
 		{
-			START_LOG( cerr, L"DLG_Map_Enum 정보 로드 실패.!" )
+			START_LOG( cerr, L"Failed to load DLG_Map_Enum information!" )
 				<< BUILD_LOG( KncUtil::toWideString( strFile ) );
 			//{{ 2011. 02. 07	최육사	스크립트 파싱 오류 리포트
 			KBaseServer::GetKObj()->AddFailScriptFileName( L"DLG_Map_Enum.lua" );
@@ -203,7 +203,7 @@ void KCnSimLayer::Init()
 		}
 		else
 		{
-			START_LOG( cout, L"DLG_Map_Enum 정보 로드 성공.!" );
+			START_LOG( cout, L"DLG_Map_Enum information loaded successfully!" );
 		}
 	}
 
@@ -246,9 +246,9 @@ void KCnSimLayer::Init()
 		//}}
 
 		if( SiCXSLDungeonManager()->OpenScriptFile_AllDungeonScriptLoad( g_pLua ) == false )
-			START_LOG( cerr, L"Dungeon Manager 정보 로드 실패.!" );
+			START_LOG( cerr, L"Failed to load Dungeon Manager information!" );
 		else
-			START_LOG( cout, L"Dungeon Manager 정보 로드 성공.!" );
+			START_LOG( cout, L"Dungeon Manager information loaded successfully!" );
 
 		//{{ 2011. 02. 07	최육사	스크립트 파싱 오류 리포트
 		if( SiCXSLDungeonManager()->IsLuaPasingSuccess() == false )
@@ -286,7 +286,7 @@ void KCnSimLayer::Init()
 		kAutoPath.GetPullPath( strFile );
 		if( SiCXSLUnitManager()->OpenNPCScriptFile( strFile.c_str() ) == false )
 		{
-			START_LOG( cerr, L"NPC 정보 로드 실패.!" )
+			START_LOG( cerr, L"Failed to load NPC information!" )
 				<< BUILD_LOG( KncUtil::toWideString( strFile ) );
 			//{{ 2011. 02. 07	최육사	스크립트 파싱 오류 리포트
 			KBaseServer::GetKObj()->AddFailScriptFileName( L"NPCTemplet.lua" );
@@ -294,7 +294,7 @@ void KCnSimLayer::Init()
 		}
 		else
 		{
-			START_LOG( cout, L"NPC 정보 로드 성공.!" );
+			START_LOG( cout, L"NPC information loaded successfully!" );
 		}
 	}
 
@@ -305,7 +305,7 @@ void KCnSimLayer::Init()
 		kAutoPath.GetPullPath( strFile );
 		if( SiCXSLUnitManager()->OpenNPCStatScriptFile( strFile.c_str() ) == false )
 		{
-			START_LOG( cerr, L"NPC Stat 정보 로드 실패.!" )
+			START_LOG( cerr, L"Failed to load NPC Stat information!" )
 				<< BUILD_LOG( KncUtil::toWideString( strFile ) );
 			//{{ 2011. 02. 07	최육사	스크립트 파싱 오류 리포트
 			KBaseServer::GetKObj()->AddFailScriptFileName( L"NPCStat.lua" );
@@ -313,7 +313,7 @@ void KCnSimLayer::Init()
 		}
 		else
 		{
-			START_LOG( cout, L"NPC Stat 정보 로드 성공.!" );
+			START_LOG( cout, L"NPC Stat information loaded successfully!" );
 		}
 	}
 
@@ -369,9 +369,9 @@ void KCnSimLayer::Init()
 		//}
 
 		if( SiCXSLBattleFieldManager()->OpenScriptFile_AllBattleFieldScriptLoad( g_pLua ) == false )
-			START_LOG( cerr, L"Battle Field Manager 정보 로드 실패.!" );
+			START_LOG( cerr, L"Failed to load Battlefield Manager information!" );
 		else
-			START_LOG( cout, L"Battle Field Manager 정보 로드 성공.!" );
+			START_LOG( cout, L"Battlefield Manager information loaded successfully!" );
 
 		//{{ 2011. 02. 07	최육사	스크립트 파싱 오류 리포트
 		if( SiCXSLBattleFieldManager()->IsLuaPasingSuccess() == false )

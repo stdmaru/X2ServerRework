@@ -63,7 +63,7 @@ void KSkTRUser::OnRecvCompleted( DWORD dwTransfered_ )
             }
             else
             {
-                START_LOG( clog, L"TRUser 객체가 이미 지워짐." )
+                START_LOG( clog, L"The TRUser object has already been deleted." )
                     << END_LOG;
             }
 
@@ -90,7 +90,7 @@ void KSkTRUser::OnSocketError()
     }
     else
     {
-        START_LOG( clog, L"TRUser 객체가 이미 지워짐." )
+        START_LOG( clog, L"The TRUser object has already been deleted." )
             << END_LOG;
     }
 }
@@ -104,7 +104,7 @@ void KSkTRUser::OnAcceptConnection()
     }
     else
     {
-        START_LOG( clog, L"TRUser 객체가 이미 지워짐." )
+        START_LOG( clog, L"The TRUser object has already been deleted." )
             << END_LOG;
     }
 }
@@ -155,7 +155,7 @@ void KTRUser::Tick()
 {
 	if( GetStateID() == KTRUserFSM::STATE_EXIT )
 	{
-		START_LOG( cout, "종료 상태에서 다시 Tick 으로 들어 왔다" );
+		START_LOG( cout, "Tick called again after shutdown." );
 		return ;
 	}
 
@@ -185,7 +185,7 @@ void KTRUser::Tick()
             KTRUserPtr spTRUser = shared_from_this();
 		    if( !SiKTRServer()->GetTRUserManager().Insert( spTRUser ) )     // 등록한다.
 		    {
-			    START_LOG( cwarn, L"Unit UID 등록실패.!" )
+			    START_LOG( cwarn, L"Failed to register the Unit UID!" )
 				    << BUILD_LOG( m_iUnitUID )
 				    << END_LOG;
 

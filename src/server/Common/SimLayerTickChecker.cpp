@@ -41,7 +41,7 @@ void KSimLayerTickChecker::CheckSimLayerTick()
 
 		if( dwDelayTick > 30000 )
 		{
-			START_LOG( cout, L"[경고!] SimLayer Tick 지연시간이 30초를 넘었다!" )
+			START_LOG( cout, L"[Warning] SimLayer tick delay exceeded 30 seconds." )
 				<< BUILD_LOG( dwDelayTick );
 		}
 	}

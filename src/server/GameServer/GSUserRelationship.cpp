@@ -722,7 +722,7 @@ IMPL_ON_FUNC( DBE_WEDDING_PROPOSE_ACK )
 	CTime tDate;
 	if( KncUtil::ConvertStringToCTime( kPacket_.m_wstrWeddingDate, tDate ) == false )
 	{
-		START_LOG( cerr, L"결혼식 시간 변환 실패")
+		START_LOG( cerr, L"Failed to convert wedding time.")
 			<< BUILD_LOG( kPacket_.m_wstrWeddingDate )
 			<< END_LOG;
 	}
@@ -779,7 +779,7 @@ IMPL_ON_FUNC( EGS_WEDDING_ITEM_INFO_REQ )
 		KItemInfo kItem;
 		if( m_kInventory.GetItemInfo( iItemUID, kItem ) == false )
 		{
-			START_LOG( cerr, L"존재하지 않는 아이템에 대한 정보를 요청합니다." )
+			START_LOG( cerr, L"Requested information about a nonexistent item." )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( iItemUID )
 				<< END_LOG;
@@ -793,7 +793,7 @@ IMPL_ON_FUNC( EGS_WEDDING_ITEM_INFO_REQ )
 		char cWeddingStatus = SEnum::WS_NONE;
 		if( m_kUserRelationshipManager.IsWeddingItem( kItem.m_iItemID, cWeddingStatus ) == false )
 		{
-			START_LOG( cerr, L"웨딩 관련 아이템이 아닌데 정보를 요청합니다." )
+			START_LOG( cerr, L"Requested information for an item unrelated to weddings." )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( iItemUID )
 				<< END_LOG;
@@ -999,7 +999,7 @@ IMPL_ON_FUNC( ELG_CALL_MY_LOVER_STATE_CHANGE_FIELD_NOT )
 	{
 		kPacketAck.m_iOK = NetError::GetLastError();
 
-		START_LOG( cwarn, L"마을에 입장할 수 있는 조건이 안됨." )
+		START_LOG( cwarn, L"The requirements for entering town are not met." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iMapID )
 			<< BUILD_LOG( kPacketAck.m_iOK )
@@ -1027,7 +1027,7 @@ IMPL_ON_FUNC( ELG_CALL_MY_LOVER_STATE_CHANGE_FIELD_NOT )
 	{
 		if( !SiCXSLMapData()->VerifyMapID( kPacket_.m_iMapID ) )
 		{
-			START_LOG( cerr, L"필드에 입장하려는데 MapID가 이상합니다." )
+			START_LOG( cerr, L"Invalid MapID when attempting to enter the field." )
 				<< BUILD_LOG( kPacket_.m_iMapID )
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
@@ -1156,7 +1156,7 @@ IMPL_ON_FUNC( ERM_CALL_MY_LOVER_LEAVE_FIELD_ACK )
 			// 이동할 필드의 FieldUId를 얻는다.
 			if( !SiCXSLMapData()->VerifyMapID( kPacket_.m_iMapID ) )
 			{
-				START_LOG( cerr, L"필드에 입장하려는데 MapID가 이상합니다." )
+				START_LOG( cerr, L"Invalid MapID when attempting to enter the field." )
 					<< BUILD_LOG( kPacket_.m_iMapID )
 					<< BUILD_LOG( GetCharUID() )
 					<< END_LOG;
@@ -1184,7 +1184,7 @@ IMPL_ON_FUNC( ERM_CALL_MY_LOVER_LEAVE_FIELD_ACK )
 		}
 		else
 		{
-			START_LOG( cerr, L"필드 이탈 실패!" )
+			START_LOG( cerr, L"Failed to leave the field!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
 		}
@@ -1375,7 +1375,7 @@ IMPL_ON_FUNC( EGS_JOIN_WEDDING_HALL_REQ )
 	if( m_kInventory.GetItemInfo( kPacket_.m_iItemUID, kItemInfo ) == false )
 	{
 		// 존재 하지 안는 아이템이다.
-		START_LOG( cerr, L"존재하지 않는 아이템 입니다." )
+		START_LOG( cerr, L"Item does not exist." )
 			<< BUILD_LOG( kPacket_.m_iItemUID )
 			<< BUILD_LOG( kPacket_.m_iWeddingUID )
 			<< END_LOG;
@@ -1391,7 +1391,7 @@ IMPL_ON_FUNC( EGS_JOIN_WEDDING_HALL_REQ )
 	if( m_kUserRelationshipManager.IsWeddingItem( kItemInfo.m_iItemID, cWeddingStatus ) == false )
 	{
 		// 결혼식장 입장 가능 아이템이 아닙니다.
-		START_LOG( cerr, L"결혼식장에 입장 가능한 아이템이 아닙니다." )
+		START_LOG( cerr, L"This item does not allow entry to the wedding hall." )
 			<< BUILD_LOG( kPacket_.m_iItemUID )
 			<< BUILD_LOG( kPacket_.m_iWeddingUID )
 			<< BUILD_LOG( kItemInfo.m_iItemID )
@@ -1424,7 +1424,7 @@ IMPL_ON_FUNC( EGS_JOIN_WEDDING_HALL_REQ )
 		default:
 			{
 				// 결혼식장에 입장 가능한 위치가 아닙니다.
-				START_LOG( cerr, L"결혼식장에 입장 가능한 위치가 아닙니다." )
+				START_LOG( cerr, L"This location does not allow entry to the wedding hall." )
 					<< BUILD_LOG( kPacket_.m_iItemUID )
 					<< BUILD_LOG( kPacket_.m_iWeddingUID )
 					<< BUILD_LOG( kItemInfo.m_iItemID )
@@ -1472,7 +1472,7 @@ IMPL_ON_FUNC( ELG_CHECK_WEDDING_HALL_INFO_ACK )
 
 		default:
 			{
-				START_LOG( cerr, L"해당 방에서 결혼식는 이동할 수 없습니다!" )
+				START_LOG( cerr, L"Cannot move to a wedding from this room!" )
 					<< BUILD_LOG( GetUID() )
 					<< BUILD_LOG( GetCharUID() )
 					<< BUILD_LOG( kPacket_.m_kWeddingInfo.m_iWeddingUID )
@@ -1489,7 +1489,7 @@ IMPL_ON_FUNC( ELG_CHECK_WEDDING_HALL_INFO_ACK )
 	{
 		if( GetRoomUID() != 0 )
 		{
-			START_LOG( cerr, L"필드 상태인데 RoomUID값이 존재한다! 버그다!" )
+			START_LOG( cerr, L"RoomUID is set while the user is in the field; this is a bug!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( kPacket_.m_kWeddingInfo.m_iWeddingUID )
@@ -1524,7 +1524,7 @@ IMPL_ON_FUNC( ELG_CHECK_WEDDING_HALL_INFO_ACK )
 
 		default:
 			{
-				START_LOG( cerr, L"이상한 방에 입장한 상태에서 배틀필드로 들어가려고 하네?" )
+				START_LOG( cerr, L"Attempted to enter a battlefield while in an invalid room." )
 					<< BUILD_LOG( GetCharName() )
 					<< BUILD_LOG( CXSLRoom::GetRoomType( GetRoomUID() ) )
 					<< END_LOG;
@@ -1543,7 +1543,7 @@ IMPL_ON_FUNC( ELG_CHECK_WEDDING_HALL_INFO_ACK )
 	if( pWeddingHallInfo == NULL )
 	{
 		// 정보가 없다.
-		START_LOG( cerr, L"[테스트]결혼식장 정보가 없다? 새로 만드는 것이 맞는거 같은데...." )
+		START_LOG( cerr, L"[Test] Wedding hall information is missing; it may need to be created." )
 			<< BUILD_LOG( kPacket_.m_kWeddingInfo.m_iWeddingUID )
 			<< END_LOG;
 
@@ -1556,7 +1556,7 @@ IMPL_ON_FUNC( ELG_CHECK_WEDDING_HALL_INFO_ACK )
 	//////////////////////////////////////////////////////////////////////////
 	KWeddingHallInfo kInfo;
 	pWeddingHallInfo->GetWeddingHallInfo( kInfo );
-	START_LOG( cout, L"[테스트]결혼식 입장 정보 확인" )
+	START_LOG( cout, L"[Test] Checking wedding hall entry information." )
 		<< BUILD_LOG( kInfo.m_iWeddingUID )
 		<< BUILD_LOG( kInfo.m_iRoomUID )
 		<< BUILD_LOG( kInfo.m_iGroom )
@@ -1606,7 +1606,7 @@ _IMPL_ON_FUNC( ERM_LEAVE_BATTLE_FIELD_FOR_JOIN_WEDDING_HALL_ACK, KERM_LEAVE_BATT
 	if( pWeddingHallInfo == NULL )
 	{
 		// 정보가 없다.
-		START_LOG( cerr, L"[테스트]결혼식장 정보가 없다? 새로 만드는 것이 맞는거 같은데...." )
+		START_LOG( cerr, L"[Test] Wedding hall information is missing; it may need to be created." )
 			<< BUILD_LOG( kPacket_.m_kWeddingInfo.m_iWeddingUID )
 			<< END_LOG;
 
@@ -1620,7 +1620,7 @@ _IMPL_ON_FUNC( ERM_LEAVE_BATTLE_FIELD_FOR_JOIN_WEDDING_HALL_ACK, KERM_LEAVE_BATT
 	{
 		if( GetRoomUID() != 0 )
 		{
-			START_LOG( cerr, L"새로운 배틀필드를 생성하려는데 지금 다른방에 입장해있다! 일어나서는 안되는 에러!" )
+			START_LOG( cerr, L"Attempted to create a battlefield while already in another room; this should never happen!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( GetCharName() )
@@ -1806,7 +1806,7 @@ IMPL_ON_FUNC_NOPARAM( EGS_CHECK_BREAK_UP_REQ )
 
 	if( m_kUserRelationshipManager.IsCouple() == false && m_kUserRelationshipManager.IsMarried() == false )
 	{
-		START_LOG( cerr, L"이별 가능한 상태가 아닙니다." )
+		START_LOG( cerr, L"The user is not in a state that allows a breakup." )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOGc( m_kUserRelationshipManager.GetRelationshipType() )
 			<< END_LOG;
@@ -1828,7 +1828,7 @@ IMPL_ON_FUNC_NOPARAM( EGS_CHECK_BREAK_UP_REQ )
 
 		default:
 			{
-				START_LOG( cerr, L"이별 가능한 위치가 아닙니다." )
+				START_LOG( cerr, L"The user is not in a location where a breakup is allowed." )
 					<< BUILD_LOG( GetCharName() )
 					<< BUILD_LOGc( m_kUserRelationshipManager.GetRelationshipType() )
 					<< BUILD_LOG( CXSLRoom::GetRoomType( GetRoomUID() ) )
@@ -1862,7 +1862,7 @@ IMPL_ON_FUNC_NOPARAM( EGS_BREAK_UP_REQ )
 
 	if( m_kUserRelationshipManager.IsCouple() == false && m_kUserRelationshipManager.IsMarried() == false )
 	{
-		START_LOG( cerr, L"이별 가능한 상태가 아닙니다." )
+		START_LOG( cerr, L"The user is not in a state that allows a breakup." )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOGc( m_kUserRelationshipManager.GetRelationshipType() )
 			<< END_LOG;
@@ -1884,7 +1884,7 @@ IMPL_ON_FUNC_NOPARAM( EGS_BREAK_UP_REQ )
 
 		default:
 			{
-				START_LOG( cerr, L"이별 가능한 위치가 아닙니다." )
+				START_LOG( cerr, L"The user is not in a location where a breakup is allowed." )
 					<< BUILD_LOG( GetCharName() )
 					<< BUILD_LOGc( m_kUserRelationshipManager.GetRelationshipType() )
 					<< BUILD_LOG( CXSLRoom::GetRoomType( GetRoomUID() ) )
@@ -2034,7 +2034,7 @@ IMPL_ON_FUNC_NOPARAM( EGS_START_WEDDING_REQ )
 	// 결혼 시작은 커플 상태에서만 가능
 	if( m_kUserRelationshipManager.IsCouple() == false )
 	{
-		START_LOG( cerr, L"결혼 가능한 상태가 아닙니다." )
+		START_LOG( cerr, L"The user is not in a state that allows marriage." )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOGc( m_kUserRelationshipManager.GetRelationshipType() )
 			<< END_LOG;
@@ -2057,7 +2057,7 @@ IMPL_ON_FUNC_NOPARAM( EGS_START_WEDDING_REQ )
 
 		default:
 			{
-				START_LOG( cerr, L"가능한 위치가 아닙니다." )
+				START_LOG( cerr, L"This is not a valid location." )
 					<< BUILD_LOG( GetCharName() )
 					<< BUILD_LOGc( m_kUserRelationshipManager.GetRelationshipType() )
 					<< BUILD_LOG( CXSLRoom::GetRoomType( GetRoomUID() ) )
@@ -2096,7 +2096,7 @@ IMPL_ON_FUNC( EGS_START_WEDDING_ASK_ACK )
 	// 결혼 시작은 커플 상태에서만 가능
 	if( m_kUserRelationshipManager.IsCouple() == false )
 	{
-		START_LOG( cerr, L"결혼 가능한 상태가 아닙니다." )
+		START_LOG( cerr, L"The user is not in a state that allows marriage." )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOGc( m_kUserRelationshipManager.GetRelationshipType() )
 			<< END_LOG;
@@ -2115,7 +2115,7 @@ IMPL_ON_FUNC( EGS_START_WEDDING_ASK_ACK )
 			break;
 		default:
 			{
-				START_LOG( cerr, L"결혼식방에 입장한 상태가 아니다?!" )
+				START_LOG( cerr, L"The user is not in the wedding room!" )
 					<< BUILD_LOG( GetCharName() )
 					<< BUILD_LOGc( m_kUserRelationshipManager.GetRelationshipType() )
 					<< END_LOG;
@@ -2306,7 +2306,7 @@ IMPL_ON_FUNC( DBE_INSERT_WEDDING_REWARD_ACK )
 {
 	if( kPacket_.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"결혼시스템 기념일, 타이틀 보상 지급 실패!" )
+		START_LOG( cerr, L"Marriage system anniversary: failed to grant title reward!" )
 			<< END_LOG;
 
 		return;
@@ -2351,7 +2351,7 @@ IMPL_ON_FUNC( DBE_WRITE_RELATIONSHIP_INFO_LOG_ACK )
 {
 	if( kPacket_.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"결혼시스템 기념일, 로그 기록 실패!" )
+		START_LOG( cerr, L"Marriage system anniversary: failed to write log!" )
 			<< END_LOG;
 
 		return;

@@ -95,7 +95,7 @@ void KGlobalLogDBThread::ProcessEvent( const KEventPtr& spEvent_ )
 		//}} 2012. 09. 06	임홍락	글로벌 미션 매니저
 
     default:
-        START_LOG( cerr, L"이벤트 핸들러가 정의되지 않았음. " << spEvent_->GetIDStr() );
+        START_LOG( cerr, L"Event handler is not defined: " << spEvent_->GetIDStr() );
     }
 
 	//////////////////////////////////////////////////////////////////////////
@@ -133,7 +133,7 @@ _IMPL_ON_FUNC( DBE_SERVER_ON_REQ, KNetAddress )
 
     if( !m_kODBC.BeginFetch() )
     {
-        START_LOG( cerr, L"글로벌 서버 인증 실패." )
+        START_LOG( cerr, L"Global server authentication failed." )
             << BUILD_LOG( kPacket_.m_wstrIP )
 			<< END_LOG;
 
@@ -161,7 +161,7 @@ _IMPL_ON_FUNC( DBE_SERVER_ON_REQ, KNetAddress )
 	DO_QUERY( L"exec dbo.lup_get_LGlobalProxy", L"%d", % kPacket.m_kServerInfo.m_iServerGroupID );
 	if( !m_kODBC.BeginFetch() )
 	{
-		START_LOG( cerr, L"난 누군가의 로긴 서버다." )
+		START_LOG( cerr, L"Failed to retrieve the global proxy ID." )
 			<< BUILD_LOG( kPacket.m_kServerInfo.m_iUID )
 			<< END_LOG;
 
@@ -182,7 +182,7 @@ _IMPL_ON_FUNC( DBE_SERVER_ON_REQ, KNetAddress )
 
         if( kPacket.m_iOK != NetError::NET_OK )
         {
-            START_LOG( cerr, L"서버 켜짐 표시 실패." )
+            START_LOG( cerr, L"Failed to mark the server as online." )
                 << BUILD_LOG( kPacket.m_kServerInfo.m_iUID )
                 << END_LOG;
 
@@ -258,7 +258,7 @@ IMPL_ON_FUNC_NOPARAM( DBE_SERVER_OFF_NOT )
 
         if( iOK != NetError::NET_OK )
         {
-            START_LOG( cerr, L"서버 종료 표시 실패." )
+            START_LOG( cerr, L"Failed to mark the server as offline." )
                 << BUILD_LOG( GetKGlobalServer()->GetUID() )
                 << END_LOG;
 
@@ -290,7 +290,7 @@ IMPL_ON_FUNC( DBE_INCREASE_DEFENCE_CRYSTAL_REQ )
 
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"월드 미션 정보 입력 실패" )
+		START_LOG( cerr, L"Failed to insert world mission data." )
 			<< BUILD_LOG( kPacket_.m_wsrtStartTime )
 			<< BUILD_LOG( kPacket_.m_iProtectedCrystalCount )
 			<< BUILD_LOG( kPacket_.m_iTargetCrystal )
@@ -315,7 +315,7 @@ IMPL_ON_FUNC( DBE_GET_DEFENCE_CRYSTAL_REQ )
 		FETCH_DATA( kPacket_.m_iTargetCrystal
 				 >> kPacket_.m_iProtectedCrystalCount );
 
-		START_LOG( cout, L"월드 미션 정보 얻기 성공" )
+		START_LOG( cout, L"Successfully retrieved world mission data." )
 			<< BUILD_LOG( kPacket_.m_wsrtStartTime )
 			<< BUILD_LOG( kPacket_.m_iProtectedCrystalCount )
 			<< BUILD_LOG( kPacket_.m_iTargetCrystal )
@@ -354,7 +354,7 @@ IMPL_ON_FUNC( DBE_TICK_PERFORMANCE_LOG_NOT )
 end_proc:
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"SimLayer Tick 퍼포먼스 로그 기록 실패!" )
+		START_LOG( cerr, L"Failed to record SimLayer tick performance data." )
 			<< BUILD_LOG( kPacket_.m_iServerUID )
 			<< BUILD_LOG( kPacket_.m_iServerType )
 			<< BUILD_LOG( kPacket_.m_dwMaxTickCount )
@@ -448,7 +448,7 @@ IMPL_ON_FUNC( DBE_LOG_STATISTICS_INFO_NOT )
 end_proc:
 		if( iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"Log Statistics 정보 기록 실패!" )
+			START_LOG( cerr, L"Failed to record log statistics." )
 				<< BUILD_LOG( iServerUID )
 				<< BUILD_LOG( kInfo.m_wstrFunctionName )
 				<< BUILD_LOG( kInfo.m_wstrFileName )
@@ -484,7 +484,7 @@ IMPL_ON_FUNC_NOPARAM( DBE_TIME_ENCHANT_EVENT_INFO_REQ )
 
 		if( KncUtil::ConvertStringToCTime( wstrBeginDate, tBeginDate ) == false )
 		{
-			START_LOG( cerr, L"강화 부여 이벤트 시작 시각 변환 실패" )
+			START_LOG( cerr, L"Failed to convert the enhancement event start time." )
 				<< BUILD_LOG( kInfo.m_iEventUID )
 				<< BUILD_LOG( wstrBeginDate )
 				<< BUILD_LOG( wstrEndDate )
@@ -495,7 +495,7 @@ IMPL_ON_FUNC_NOPARAM( DBE_TIME_ENCHANT_EVENT_INFO_REQ )
 
 		if( KncUtil::ConvertStringToCTime( wstrEndDate, tEndDate ) == false )
 		{
-			START_LOG( cerr, L"강화 부여 이벤트 종료 시각 변환 실패" )
+			START_LOG( cerr, L"Failed to convert the enhancement event end time." )
 				<< BUILD_LOG( kInfo.m_iEventUID )
 				<< BUILD_LOG( wstrBeginDate )
 				<< BUILD_LOG( wstrEndDate )
@@ -546,7 +546,7 @@ end_proc:
 	else
 	{
 		kPacket.m_cEnchantLevel = 0;
-		START_LOG( cerr, L"특정 시각 강화 부여 이벤트 처리 실패" )
+		START_LOG( cerr, L"Failed to process the timed enhancement event." )
 			<< BUILD_LOG( iOK )
 			<< BUILD_LOG( kPacket_.m_kTimeEnchantEventInfo.m_iEventUID )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
@@ -589,7 +589,7 @@ IMPL_ON_FUNC_NOPARAM( DBE_EXCHANGE_LIMIT_INFO_REQ )
 
 		if( KncUtil::ConvertStringToCTime( wstrBeginDate, tBeginDate ) == false )
 		{
-			START_LOG( cerr, L"교환 제한 시작 시각 변환 실패" )
+			START_LOG( cerr, L"Failed to convert the exchange-restriction start time." )
 				<< BUILD_LOG( kInfo.m_iLimitUID )
 				<< END_LOG;
 			continue;
@@ -597,7 +597,7 @@ IMPL_ON_FUNC_NOPARAM( DBE_EXCHANGE_LIMIT_INFO_REQ )
 
 		if( KncUtil::ConvertStringToCTime( wstrEndDate, tEndDate ) == false )
 		{
-			START_LOG( cerr, L"교환 제한 종료 시각 변환 실패" )
+			START_LOG( cerr, L"Failed to convert the exchange-restriction end time." )
 				<< BUILD_LOG( kInfo.m_iLimitUID )
 				<< END_LOG;
 			continue;
@@ -634,7 +634,7 @@ IMPL_ON_FUNC_NOPARAM( DBE_EXCHANGE_LIMIT_INFO_REQ )
 			std::map< int, int >::const_iterator itFind = mapTargetID.find( kInfo.m_iLimitUID );
 			if( itFind == mapTargetID.end() )
 			{
-				START_LOG( cerr, L"제한 목록 대상 정보를 가져올 수 없습니다." )
+				START_LOG( cerr, L"Could not retrieve restricted-list target data." )
 					<< BUILD_LOG( kInfo.m_iLimitUID )
 					<< END_LOG;
 
@@ -648,7 +648,7 @@ IMPL_ON_FUNC_NOPARAM( DBE_EXCHANGE_LIMIT_INFO_REQ )
 			std::map< int, std::set< int > >::const_iterator itFind = mapTargetItemInfo.find( iTargetID );
 			if( itFind == mapTargetItemInfo.end() )
 			{
-				START_LOG( cerr, L"제한 목록 대상 정보를 가져올 수 없습니다." )
+				START_LOG( cerr, L"Could not retrieve restricted-list target data." )
 					<< BUILD_LOG( kInfo.m_iLimitUID )
 					<< BUILD_LOG( iTargetID )
 					<< END_LOG;
@@ -694,7 +694,7 @@ end_proc:
 	{
 		kPacket.m_iOK = NetError::ERR_EXCHANGE_LIMIT_01;
 
-		START_LOG( cerr, L"교환 제한 시스템 유저 정보 업데이트 실패" )
+		START_LOG( cerr, L"Failed to update exchange-restriction user data." )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iGSUID )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
@@ -726,7 +726,7 @@ IMPL_ON_FUNC( DBE_EXCHANGE_LIMIT_INFO_ROLLBACK_NOT )
 end_proc:
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"교환 제한 정보 롤백 실패!" )
+		START_LOG( cerr, L"Failed to roll back exchange-restriction data." )
 			<< BUILD_LOG( kPacket_.m_iRollBackUID )
 			<< END_LOG;
 	}
@@ -748,7 +748,7 @@ IMPL_ON_FUNC( DBE_UPDATE_GLOBAL_MISSION_INFO_REQ )
 
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"글로벌 미션 정보 입력 실패" )
+		START_LOG( cerr, L"Failed to insert global mission data." )
 			<< BUILD_LOG( kPacket_.m_wstrGlobalMissionDay )
 			<< BUILD_LOG( kPacket_.m_iNowCount )
 			<< END_LOG;
@@ -780,7 +780,7 @@ IMPL_ON_FUNC( DBE_GET_GLOBAL_MISSION_INFO_REQ )
 		if( false == KncUtil::ConvertStringToCTime( wstrGlobalMissionBeginDate, tGlobalMissionBeginDate ) ||
 			false == KncUtil::ConvertStringToCTime( wstrGlobalMissionEndDate, tGlobalMissionEndDate ) )
 		{
-			START_LOG( cout, L"글로벌 미션 정보 얻는 도중 시간 변환 실패" )
+			START_LOG( cout, L"Failed to convert the time while retrieving global mission data." )
 				<< BUILD_LOG( wstrGlobalMissionBeginDate )
 				<< BUILD_LOG( wstrGlobalMissionEndDate )
 				<< BUILD_LOG( kGlobalMissionInfo.m_iMissionType )
@@ -796,7 +796,7 @@ IMPL_ON_FUNC( DBE_GET_GLOBAL_MISSION_INFO_REQ )
 
 			kPacket_.m_mapGlobalMissionInfo.insert( std::make_pair( wstrGlobalMissionBeginDate, kGlobalMissionInfo ) );
 
-			START_LOG( cout, L"글로벌 미션 정보 얻기 성공" )
+			START_LOG( cout, L"Successfully retrieved global mission data." )
 				<< BUILD_LOG( wstrGlobalMissionBeginDate )
 				<< BUILD_LOG( kGlobalMissionInfo.m_iMissionType )
 				<< BUILD_LOG( kGlobalMissionInfo.m_iClearCondition )
@@ -830,7 +830,7 @@ IMPL_ON_FUNC( DBE_INSERT_CONNECT_EVENT_REQ )
 
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"글로벌 미션 보상 이벤트 설정 실패" )
+		START_LOG( cerr, L"Failed to configure the global mission reward event." )
 			<< BUILD_LOG( kPacket_.m_wstrEventName )
 			<< BUILD_LOG( kPacket_.m_iEventType )
 			<< BUILD_LOG( kPacket_.m_wstrNextDayStartTime )
@@ -840,7 +840,7 @@ IMPL_ON_FUNC( DBE_INSERT_CONNECT_EVENT_REQ )
 			<< END_LOG;
 	}
 
-	START_LOG( cout, L"글로벌 미션 보상 이벤트 시작" )
+	START_LOG( cout, L"Starting the global mission reward event." )
 		<< BUILD_LOG( kPacket_.m_wstrEventName )
 		<< BUILD_LOG( kPacket_.m_iEventType )
 		<< BUILD_LOG( kPacket_.m_wstrNextDayStartTime )

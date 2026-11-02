@@ -80,7 +80,7 @@ bool CXSLAttribEnchantItem::AddEnchantRequire_LUA( int iAttribEnchantType, int i
 	return true;
 
 fail_proc:
-	START_LOG( cerr, L"스크립트 파싱 실패!" )
+	START_LOG( cerr, L"Failed to parse the script." )
 		<< BUILD_LOG( iAttribEnchantType )
 		<< BUILD_LOG( iEquipLv )
 		<< BUILD_LOG( iLow )
@@ -96,7 +96,7 @@ bool CXSLAttribEnchantItem::AddRandomAttribSingle_LUA( char cEncahntType, float 
 {
 	if( fRate < 0.0f )
 	{
-		START_LOG( cerr, L"싱글 랜덤 속성 확률값이 이상합니다." )
+		START_LOG( cerr, L"Invalid single random attribute probability." )
 			<< BUILD_LOGc( cEncahntType )
 			<< BUILD_LOG( fRate )
 			<< END_LOG;
@@ -110,7 +110,7 @@ bool CXSLAttribEnchantItem::AddRandomAttribDual_LUA( char cSingleEncahntType, ch
 {
 	if( fRate < 0.0f )
 	{
-		START_LOG( cerr, L"듀얼 랜덤 속성 확률값이 이상합니다." )
+		START_LOG( cerr, L"Invalid dual random attribute probability." )
 			<< BUILD_LOGc( cSingleEncahntType )
 			<< BUILD_LOGc( cDualEncahntType )
 			<< BUILD_LOG( fRate )
@@ -134,7 +134,7 @@ bool CXSLAttribEnchantItem::AddRandomAttribDual_LUA( char cSingleEncahntType, ch
 	return true;
 
 err_proc:
-	START_LOG( cerr, L"스크립트 파싱 실패!" )
+	START_LOG( cerr, L"Failed to parse the script." )
 		<< BUILD_LOGc( cSingleEncahntType )
 		<< BUILD_LOGc( cDualEncahntType )
 		<< BUILD_LOG( fRate )
@@ -147,7 +147,7 @@ bool CXSLAttribEnchantItem::AddRandomAttribTriple_LUA( char cSingleEncahntType, 
 {
 	if( fRate < 0.0f )
 	{
-		START_LOG( cerr, L"듀얼 랜덤 속성 확률값이 이상합니다." )
+		START_LOG( cerr, L"Invalid dual random attribute probability." )
 			<< BUILD_LOGc( cSingleEncahntType )
 			<< BUILD_LOGc( cDualEncahntType )
 			<< BUILD_LOGc( cTripleEnchantType )
@@ -195,7 +195,7 @@ bool CXSLAttribEnchantItem::AddRandomAttribTriple_LUA( char cSingleEncahntType, 
 	return true;
 
 err_proc:
-	START_LOG( cerr, L"스크립트 파싱 실패!" )
+	START_LOG( cerr, L"Failed to parse the script." )
 		<< BUILD_LOGc( cSingleEncahntType )
 		<< BUILD_LOGc( cDualEncahntType )
 		<< BUILD_LOGc( cTripleEnchantType )
@@ -209,7 +209,7 @@ bool CXSLAttribEnchantItem::AddIdentifyInfo_LUA( int iSourceItemID, int iRequire
 {
 	if( iSourceItemID <= 0  ||  iRequireItemID <= 0  ||  iResultItemID <= 0  ||  fRate < 0.0f )
 	{
-		START_LOG( cerr, L"감정 데이터가 이상합니다." )
+		START_LOG( cerr, L"Invalid appraisal data." )
 			<< BUILD_LOG( iSourceItemID )
 			<< BUILD_LOG( iRequireItemID )
 			<< BUILD_LOG( iResultItemID )
@@ -235,7 +235,7 @@ bool CXSLAttribEnchantItem::AddIdentifyInfo_LUA( int iSourceItemID, int iRequire
 	return true;
 
 err_proc:
-	START_LOG( cerr, L"스크립트 파싱 실패!" )
+	START_LOG( cerr, L"Failed to parse the script." )
 		<< BUILD_LOG( iSourceItemID )
 		<< BUILD_LOG( iRequireItemID )
 		<< BUILD_LOG( iResultItemID )
@@ -250,7 +250,7 @@ bool CXSLAttribEnchantItem::AddAttribAttachInfo_LUA( int iItemID, char cSlot0, c
 {
 	if( iItemID <= 0  ||  cSlot0 < 0  ||  cSlot1 < 0  ||  cSlot2 < 0 )
 	{
-		START_LOG( cerr, L"감정 데이터가 이상합니다." )
+		START_LOG( cerr, L"Invalid appraisal data." )
 			<< BUILD_LOG( iItemID )
 			<< BUILD_LOG( cSlot0 )
 			<< BUILD_LOG( cSlot1 )
@@ -277,7 +277,7 @@ bool CXSLAttribEnchantItem::GetAttribAttachInfo( IN int iAttachItemID, OUT KItem
 	std::map< int, KItemAttributeEnchantInfo >::const_iterator mit = m_mapAttribAttachInfo.find( iAttachItemID );
 	if( mit == m_mapAttribAttachInfo.end() )
 	{
-		START_LOG( cerr, L"속성 부여 아이템이 아닌데 정보를 요청하였습니다! 클라이언트에서 검사했을텐데.." )
+		START_LOG( cerr, L"Attribute information requested for a non-attribute item. The client should have validated this." )
 			<< BUILD_LOG( iAttachItemID )
 			<< END_LOG;
 		return false;
@@ -350,7 +350,7 @@ CXSLAttribEnchantItem::ATTRIB_COUNT_TYPE CXSLAttribEnchantItem::GetAttribCountTy
 		}
 	}
 
-	START_LOG( cerr, L"로직상 이쪽으로 빠져나올수 없다." )
+	START_LOG( cerr, L"Execution should never reach this point." )
 		<< END_LOG;
 
 	return ACT_NONE;
@@ -398,7 +398,7 @@ char CXSLAttribEnchantItem::GetAttribEnchantType( IN ATTRIB_COUNT_TYPE eCountTyp
 		break;
 	}
 
-	START_LOG( cerr, L"사용되지 않는 타입인데 이쪽으로 왔네?" )
+	START_LOG( cerr, L"Reached an unused type." )
 		<< BUILD_LOG( eCountType )
 		<< BUILD_LOG( bWeapon )
 		<< END_LOG;
@@ -416,7 +416,7 @@ bool CXSLAttribEnchantItem::GetRequireItemCount_Insert( IN ATTRIB_COUNT_TYPE eCo
 	mit = m_mapEnchantRequireInfo.find( pairKey );
 	if( mit == m_mapEnchantRequireInfo.end() )
 	{
-		START_LOG( cerr, L"존재하지 않는 속성강화 정보입니다." )
+		START_LOG( cerr, L"Attribute enhancement information does not exist." )
 			<< BUILD_LOG( pairKey.first )
 			<< BUILD_LOG( pairKey.second )
 			<< END_LOG;
@@ -428,7 +428,7 @@ bool CXSLAttribEnchantItem::GetRequireItemCount_Insert( IN ATTRIB_COUNT_TYPE eCo
 	mitGrade = mit->second.find( iItemGrade );
 	if( mitGrade == mit->second.end() )
 	{
-		START_LOG( cerr, L"아이템 등급 정보가 이상합니다." )
+		START_LOG( cerr, L"Invalid item grade information." )
 			<< BUILD_LOG( pairKey.first )
 			<< BUILD_LOG( pairKey.second )
 			<< BUILD_LOG( iItemGrade )
@@ -483,7 +483,7 @@ bool CXSLAttribEnchantItem::GetRequireED_Insert( IN ATTRIB_COUNT_TYPE eCountType
 		//}}
 
 	default:
-		START_LOG( cerr, L"이상한 속성강화 타입입니다." )
+		START_LOG( cerr, L"Invalid attribute enhancement type." )
 			<< BUILD_LOG( eCountType )
 			<< BUILD_LOG( bWeapon )
 			<< END_LOG;
@@ -521,7 +521,7 @@ bool CXSLAttribEnchantItem::GetRequireED_Remove( IN ATTRIB_COUNT_TYPE eCountType
 			//}}
 
 		default:
-			START_LOG( cerr, L"이상한 속성강화카운트 타입입니다." )
+			START_LOG( cerr, L"Invalid attribute enhancement count type." )
 				<< BUILD_LOG( eCountType )
 				<< BUILD_LOG( bWeapon )
 				<< END_LOG;
@@ -548,7 +548,7 @@ bool CXSLAttribEnchantItem::GetRequireED_Remove( IN ATTRIB_COUNT_TYPE eCountType
 			//}}
 
 		default:
-			START_LOG( cerr, L"이상한 속성강화카운트 타입입니다." )
+			START_LOG( cerr, L"Invalid attribute enhancement count type." )
 				<< BUILD_LOG( eCountType )
 				<< BUILD_LOG( bWeapon )
 				<< END_LOG;
@@ -578,7 +578,7 @@ int	CXSLAttribEnchantItem::GetRequireEDFactor( int iItemGrade )
 		return 6;
 
 	default:
-		START_LOG( cerr, L"아이템 등급이 이상하다?" )
+		START_LOG( cerr, L"Invalid item grade." )
 			<< BUILD_LOG( iItemGrade )
 			<< END_LOG;
 
@@ -644,7 +644,7 @@ char CXSLAttribEnchantItem::GetRandomAttribResult( IN ATTRIB_COUNT_TYPE eCurrent
 			mit = m_mapRandomAttribDual.find( cFirstAttribEnchant );
 			if( mit == m_mapRandomAttribDual.end() )
 			{
-				START_LOG( cerr, L"해당 속성강화의 랜덤테이블 얻기 실패." )
+				START_LOG( cerr, L"Failed to get the random table for this attribute enhancement." )
 					<< BUILD_LOGc( cFirstAttribEnchant )
 					<< END_LOG;
 
@@ -665,7 +665,7 @@ char CXSLAttribEnchantItem::GetRandomAttribResult( IN ATTRIB_COUNT_TYPE eCurrent
 			mit = m_mapRandomAttribTriple.find( kKey );
 			if( mit == m_mapRandomAttribTriple.end() )
 			{
-				START_LOG( cerr, L"해당 속성강화의 랜덤테이블 얻기 실패." )
+				START_LOG( cerr, L"Failed to get the random table for this attribute enhancement." )
 					<< BUILD_LOGc( cFirstAttribEnchant )
 					<< BUILD_LOGc( cSecondAttribEnchant )
 					<< END_LOG;
@@ -681,7 +681,7 @@ char CXSLAttribEnchantItem::GetRandomAttribResult( IN ATTRIB_COUNT_TYPE eCurrent
 
 	default:
 		{
-			START_LOG( cerr, L"잘못된 COUNT_TYPE입니다." )
+			START_LOG( cerr, L"Invalid COUNT_TYPE." )
 				<< BUILD_LOG( eCurrentCountType )
 				<< END_LOG;
 
@@ -692,7 +692,7 @@ char CXSLAttribEnchantItem::GetRandomAttribResult( IN ATTRIB_COUNT_TYPE eCurrent
 
 	if( cResultCase == KLottery::CASE_BLANK )
 	{
-		START_LOG( cerr, L"속성 확률이 이상합니다." )
+		START_LOG( cerr, L"Invalid attribute probability." )
 			<< BUILD_LOG( eCurrentCountType )
 			<< BUILD_LOGc( cFirstAttribEnchant )
 			<< BUILD_LOGc( cSecondAttribEnchant )
@@ -758,7 +758,7 @@ bool CXSLAttribEnchantItem::IsPossibleAttribEnchant( IN OUT char& cAttribEnchant
 			//}}
 
 		default:
-			START_LOG( cerr, L"속성강화 슬롯값이 이상합니다." )
+			START_LOG( cerr, L"Invalid attribute enhancement slot value." )
 				<< BUILD_LOGc( cAttribEnchantSlotNo )
 				<< END_LOG;
 
@@ -817,7 +817,7 @@ bool CXSLAttribEnchantItem::IsPossibleAttribEnchant( IN OUT char& cAttribEnchant
 				}
 				else
 				{
-					START_LOG( cerr, L"속성 값이 이상합니다!" )
+					START_LOG( cerr, L"Invalid attribute value." )
 						<< BUILD_LOGc( kInfo.m_cAttribEnchant0 )
 						<< BUILD_LOGc( kInfo.m_cAttribEnchant1 )
 						<< BUILD_LOGc( kInfo.m_cAttribEnchant2 )
@@ -844,7 +844,7 @@ bool CXSLAttribEnchantItem::IsPossibleAttribEnchant( IN OUT char& cAttribEnchant
 				mit = m_mapRandomAttribTriple.find( kKey );
 				if( mit == m_mapRandomAttribTriple.end() )
 				{
-					START_LOG( cerr, L"두개 박혀있는데 테이블에는 정보가 없네?" )
+					START_LOG( cerr, L"Two attributes are already applied, but no matching table entry exists." )
 						<< BUILD_LOGc( cFirstAttribType )
 						<< BUILD_LOGc( cSecondAttribType )
 						<< END_LOG;
@@ -855,7 +855,7 @@ bool CXSLAttribEnchantItem::IsPossibleAttribEnchant( IN OUT char& cAttribEnchant
 				// 트리플 속성 랜덤 테이블에 해당 속성값이 있나? 있으면 박을수 있는거다!
 				if( mit->second.IsExistCase( cAttribEnchantType ) == false )
 				{
-					START_LOG( cerr, L"클라이언트에서 박을수있는지 검사 했을텐데?" )
+					START_LOG( cerr, L"The client should have checked whether this attribute can be applied." )
 						<< BUILD_LOGc( cFirstAttribType )
 						<< BUILD_LOGc( cSecondAttribType )
 						<< BUILD_LOGc( cAttribEnchantType )
@@ -868,7 +868,7 @@ bool CXSLAttribEnchantItem::IsPossibleAttribEnchant( IN OUT char& cAttribEnchant
 
 		default:
 			{
-				START_LOG( cerr, L"이미 트리플 속성이다! 더 박을수가 없다!" )
+				START_LOG( cerr, L"Item already has three attributes; no more can be applied." )
 					<< BUILD_LOGc( kInfo.m_cAttribEnchant0 )
 					<< BUILD_LOGc( kInfo.m_cAttribEnchant1 )
 					<< BUILD_LOGc( kInfo.m_cAttribEnchant2 )
@@ -919,7 +919,7 @@ bool CXSLAttribEnchantItem::IsPossibleAttribEnchant( IN OUT char& cAttribEnchant
 			//}}
 
 		default:
-			START_LOG( cerr, L"속성강화 슬롯값이 이상합니다." )
+			START_LOG( cerr, L"Invalid attribute enhancement slot value." )
 				<< BUILD_LOGc( cAttribEnchantSlotNo )
 				<< END_LOG;
 
@@ -955,7 +955,7 @@ bool CXSLAttribEnchantItem::IsPossibleToPush( IN char cExistingType, IN char cTy
 {
 	if( cExistingType == ET_NONE  ||  cTypeToAdd == ET_NONE )
 	{
-		START_LOG( cerr, L"검사 하려는 타입이 이상합니다." )
+		START_LOG( cerr, L"Invalid type to check." )
 			<< BUILD_LOGc( cExistingType )
 			<< BUILD_LOGc( cTypeToAdd )
 			<< END_LOG;

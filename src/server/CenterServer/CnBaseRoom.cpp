@@ -67,7 +67,7 @@ void KCnBaseRoom::SendRoomCountInfo( CXSLRoom::ROOM_TYPE eType, bool bOpen )
 {
 	if( eType < 0  ||  eType >= CXSLRoom::RT_TOTAL_NUM )
 	{
-		START_LOG( cerr, L"RoomType이 이상합니다.!" )
+		START_LOG( cerr, L"Invalid RoomType!" )
 			<< BUILD_LOG( eType )
 			<< END_LOG;
 		return;

@@ -67,7 +67,7 @@ void KCnGameDBThread::ProcessEvent( const KEventPtr& spEvent_ )
 		//}
 
 	default:
-        START_LOG( cerr, L"이벤트 핸들러가 정의되지 않았음. " << spEvent_->GetIDStr() );
+        START_LOG( cerr, L"Event handler is not defined. " << spEvent_->GetIDStr() );
     }
 
 	//////////////////////////////////////////////////////////////////////////
@@ -93,7 +93,7 @@ bool KCnGameDBThread::Query_InsertItemList( IN const SEnum::GET_ITEM_REASON eGet
 {
 	if( SEnum::IsValidGetItemReason( eGetItemReason ) == false )
 	{
-		START_LOG( cerr, L"유효하지않은 아이템 생성 사유입니다!" )
+		START_LOG( cerr, L"Invalid item-creation reason!" )
 			<< BUILD_LOG( eGetItemReason )
 			<< BUILD_LOG( iUnitUID )
 			<< BUILD_LOG( vecItemInfo.size() )
@@ -134,7 +134,7 @@ bool KCnGameDBThread::Query_InsertItemList( IN const SEnum::GET_ITEM_REASON eGet
 
 		if( iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"아이템 삽입 실패." )
+			START_LOG( cerr, L"Failed to insert item." )
 				<< BUILD_LOG( iOK )
 				<< BUILD_LOG( iUnitUID )
 				<< BUILD_LOG( kNewItemInfo.m_iItemID )
@@ -171,7 +171,7 @@ bool KCnGameDBThread::Query_InsertItemList( IN const SEnum::GET_ITEM_REASON eGet
 
 			if( iOK != NetError::NET_OK )
 			{
-				START_LOG( cerr, L"밀봉 정보 업데이트 실패." )
+				START_LOG( cerr, L"Failed to update sealing information." )
 					<< BUILD_LOG( iOK )
 					<< BUILD_LOG( iItemUID )
 					<< BUILD_LOGc( kNewItemInfoResult.m_ucSealData )
@@ -237,7 +237,7 @@ bool KCnGameDBThread::Query_InsertItemList( IN const SEnum::GET_ITEM_REASON eGet
 
 				if( iOK != NetError::NET_OK )
 				{
-					START_LOG( cerr, L"아이템 소켓 정보 업데이트 실패." )
+					START_LOG( cerr, L"Failed to update item socket information." )
 						<< BUILD_LOG( iOK )
 						<< BUILD_LOG( iUnitUID )
 						<< BUILD_LOG( iItemUID )
@@ -291,7 +291,7 @@ bool KCnGameDBThread::Query_UpdateItemQuantity( IN const UidType iUnitUID,
 
 			if( iOK != NetError::NET_OK )
 			{
-				START_LOG( cerr, L"아이템 정보 업데이트 실패." )
+				START_LOG( cerr, L"Failed to update item information." )
 					<< BUILD_LOG( iOK )
 					<< BUILD_LOG( iUnitUID )
 					<< BUILD_LOG( mit->first )
@@ -301,7 +301,7 @@ bool KCnGameDBThread::Query_UpdateItemQuantity( IN const UidType iUnitUID,
 				//{{ 2008. 10. 23  최육사	증분값 버그한번 잡아보자~!
 				if( iOK == -5 )
 				{
-					START_LOG( cout, L"증분값 업데이트 버그 발생!" )
+					START_LOG( cout, L"Increment-value update bug detected!" )
 						<< BUILD_LOG( iOK )
 						<< BUILD_LOG( iUnitUID )
 						<< BUILD_LOG( mit->first )
@@ -314,7 +314,7 @@ bool KCnGameDBThread::Query_UpdateItemQuantity( IN const UidType iUnitUID,
 		}
 		else
 		{
-			START_LOG( cerr, L"아이템 수량 업데이트중 BeginFetch 실패." );
+			START_LOG( cerr, L"BeginFetch failed while updating item quantity." );
 		}
 
 end_proc:
@@ -350,7 +350,7 @@ void KCnGameDBThread::Query_DeleteItem( IN const std::vector< KDeletedItemInfo >
 
 			if( iOK != NetError::NET_OK )
 			{
-				START_LOG( cerr, L"아이템 삭제 실패." )
+				START_LOG( cerr, L"Failed to remove item." )
 					<< BUILD_LOG( iOK )
 					<< BUILD_LOG( vit->m_iItemUID )
 					<< BUILD_LOGc( vit->m_ucDeleteReason )
@@ -359,7 +359,7 @@ void KCnGameDBThread::Query_DeleteItem( IN const std::vector< KDeletedItemInfo >
 		}
 		else
 		{
-			START_LOG( cerr, L"아이템 삭제 중 BeginFetch 실패." );
+			START_LOG( cerr, L"BeginFetch failed while removing item." );
 		}
 end_proc:
 		if( iOK != NetError::NET_OK )
@@ -479,7 +479,7 @@ IMPL_ON_FUNC( DBE_DB_UPDATE_TRADE_RESULT_REQ )
 
 		if( kPacketAck.m_iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"개인 거래 SP 호출이 실패 했습니다." )
+			START_LOG( cerr, L"Personal-trade stored procedure call failed." )
 				<< BUILD_LOG( kPacketAck.m_iOK )
 				<< END_LOG;
 
@@ -608,7 +608,7 @@ IMPL_ON_FUNC( DBE_BUY_PERSONAL_SHOP_ITEM_COMPLETE_REQ )
 
 			if( kPacketAck.m_iOK != NetError::NET_OK )
 			{
-				START_LOG( cerr, L"개인 거래 SP 호출이 실패 했습니다." )
+				START_LOG( cerr, L"Personal-trade stored procedure call failed." )
 					<< BUILD_LOG( kPacketAck.m_iOK )
 					<< END_LOG;
 
@@ -668,7 +668,7 @@ IMPL_ON_FUNC( DBE_WEDDING_COMPLETE_REQ )
 
 		if( kPacket.m_iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"결혼식 정보 기록 실패!" )
+			START_LOG( cerr, L"Failed to record wedding information!" )
 				<< BUILD_LOG( kPacket_.m_iWeddingUID )
 				<< BUILD_LOG( kPacket_.m_iGroom )
 				<< BUILD_LOG( kPacket_.m_iBride )
@@ -678,7 +678,7 @@ IMPL_ON_FUNC( DBE_WEDDING_COMPLETE_REQ )
 	}
 	else
 	{
-		START_LOG( cerr, L"결혼하기 정보 기록 실패!" )
+		START_LOG( cerr, L"Failed to record wedding information!" )
 			<< BUILD_LOG( kPacket_.m_iWeddingUID )
 			<< BUILD_LOG( kPacket_.m_iGroom )
 			<< BUILD_LOG( kPacket_.m_iBride )

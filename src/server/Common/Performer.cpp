@@ -53,7 +53,7 @@ void KPerformer::Tick()
         // 050220. 이벤트 포인터가 NULL인지 감지한다.
         if( !spEvent )
         {
-            START_LOG( cerr, L"이벤트 포인터가 NULL 임." )
+            START_LOG( cerr, L"Event pointer is null." )
                 << END_LOG;
 
             continue;

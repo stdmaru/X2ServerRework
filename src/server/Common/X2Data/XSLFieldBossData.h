@@ -74,7 +74,7 @@ bool CXSLFieldBossData::_SetData( OUT T1& typeValue, IN const T2 typeMinValue, I
 		|| ( typeMaxValue < typeSetValue )
 		)
 	{
-		START_LOG( cerr, L"설정할 수 있는 범위의 값이 아닙니다.")
+		START_LOG( cerr, L"Value is outside the allowed range." )
 			<< BUILD_LOG( typeMinValue )
 			<< BUILD_LOG( typeSetValue )
 			<< BUILD_LOG( typeMaxValue )

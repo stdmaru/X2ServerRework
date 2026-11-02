@@ -116,7 +116,7 @@ void KUserSecurityManager::SetKickRandomTime( int iMinTime, int iRange )
 	m_iKickRandomTime = rand() % iRange + iMinTime;
 	m_tKickTimer.restart();
 
-	START_LOG( clog2, L"랜덤 시간 뒤에 종료되게 랜덤 시간 셋팅" )
+	START_LOG( clog2, L"Setting a random delay before termination." )
 		<< BUILD_LOG( m_iKickRandomTime )
 		<< END_LOG;
 }
@@ -125,7 +125,7 @@ void KUserSecurityManager::SetKickState( IN char cState )
 {
 	m_cKickState = cState;
 
-	START_LOG( clog2, L"강제 종료 타입 셋팅" )
+	START_LOG( clog2, L"Setting forced-termination type" )
 		<< BUILD_LOGc( m_cKickState )
 		<< END_LOG;
 }

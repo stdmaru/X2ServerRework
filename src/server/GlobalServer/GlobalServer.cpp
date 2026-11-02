@@ -140,7 +140,7 @@ KThread*        CreateDBThread( int iDBConnectionInfo, const wchar_t* szDSN, boo
 		//{{ 2010. 10. 12	최육사	서버 모니터링
 		//}}
 	default:
-		START_LOG( cerr, L"접속하려는 DB 종류가 이상함." )
+		START_LOG( cerr, L"Invalid database type for the connection." )
 			<< BUILD_LOG( iDBConnectionInfo )
 			<< END_LOG;
 		return new KGlobalLogDBThread( szDSN, bDBConnStr );
@@ -237,7 +237,7 @@ bool KGlobalServer::DestroyAllSession()
 
 	KActorManager* pkActorManager = KActorManager::GetKObj();
 
-	START_LOG( cout, L"현재 유저 : " << pkActorManager->GetCount() << L" 명" );
+	START_LOG( cout, L"Currently connected: " << pkActorManager->GetCount() << L" users" );
 
 	//{{ 2009. 1. 30  최육사	서버 셧다운 종료 사유 설정
 	int iIndex = KStatistics::eSIColDR_Server_Shutdown;
@@ -384,7 +384,7 @@ void KGlobalServer::ProcessEvent( const KEventPtr& spEvent_ )
 		CASE( DBE_GET_GLOBAL_MISSION_INFO_ACK );
 
 	default:
-		START_LOG( cerr, L"이벤트 핸들러가 정의되지 않았음. " << spEvent_->GetIDStr() );
+		START_LOG( cerr, L"Event handler is not defined: " << spEvent_->GetIDStr() );
 	}
 
 	dwElapTime = ::GetTickCount() - dwElapTime;
@@ -433,7 +433,7 @@ _IMPL_ON_FUNC( ESR_ORDER_TO_GLOBAL_SERVER_NOT, KESR_SCRIPT_REFRESH_ORDER_NOT )
 	}
 	else
 	{
-		START_LOG( cerr, L"이쪽으로 오면 안되는 갱신 요청 타입입니다!" )
+		START_LOG( cerr, L"Unexpected refresh request type." )
 			<< BUILD_LOG( kPacket_.m_iOrderType )
 			<< END_LOG;
 	}
@@ -481,7 +481,7 @@ _IMPL_ON_FUNC( ESR_ORDER_TO_REFRESH_MANAGER_ACK, KESR_SCRIPT_REFRESH_ORDER_NOT )
 
 	default:
 		{
-			START_LOG( cerr, L"이쪽으로 오면 안되는 타입인데?" )
+			START_LOG( cerr, L"Unexpected type reached this code path." )
 				<< BUILD_LOG( kPacket_.m_iOrderType )
 				<< END_LOG;
 		}
@@ -508,16 +508,16 @@ IMPL_ON_FUNC( DBE_GET_DEFENCE_CRYSTAL_ACK )
 //{{ 2012. 04. 25	박세훈	어둠의 문 개편
 _IMPL_ON_FUNC( EGB_INCREASE_THE_PROTECTED_CRYSTAL_COUNT_NOT, int )
 {
-	START_LOG( cout, L"WorldMissionManager 보호된 수정의 개수 증가 처리 시작.");
+	START_LOG( cout, L"Starting to increment the protected crystal count in WorldMissionManager.");
 	SiKWorldMissionManager()->IncreaseProtectedCrystalCount( kPacket_ );
-	START_LOG( cout, L"WorldMissionManager 보호된 수정의 개수 증가 처리 완료.");
+	START_LOG( cout, L"Finished incrementing the protected crystal count in WorldMissionManager.");
 }
 
 IMPL_ON_FUNC_NOPARAM( EGB_RESET_INCREASE_THE_PROTECTED_CRYSTAL_COUNT_NOT )
 {
-	START_LOG( cout, L"WorldMissionManager 보호된 수정의 개수 초기화 처리 시작.");
+	START_LOG( cout, L"Starting to reset the protected crystal count in WorldMissionManager.");
 	SiKWorldMissionManager()->ResetProtectedCrystalCount();
-	START_LOG( cout, L"WorldMissionManager 보호된 수정의 개수 초기화 처리 완료.");
+	START_LOG( cout, L"Finished resetting the protected crystal count in WorldMissionManager.");
 }
 //}}
 
@@ -563,7 +563,7 @@ IMPL_ON_FUNC( DBE_CHECK_EVENT_UPDATE_ACK )
 		int iNewReleaseTick = cmit->second;
 		if( iOldReleaseTick != iNewReleaseTick )
 		{
-			START_LOG( cout2, L"이벤트 바뀐 것을 확인하였으므로 새로 받아옵니다." )
+			START_LOG( cout2, L"An event change was detected; retrieving the data again." )
 				<< BUILD_LOG( iOldReleaseTick )
 				<< BUILD_LOG( iNewReleaseTick )
 				<< END_LOG;
@@ -716,7 +716,7 @@ IMPL_ON_FUNC( DBE_TIME_ENCHANT_EVENT_INFO_ACK )
 		m_mapTimeEnchantEventInfo.insert( std::map<int, KTimeEnchantEventInfo>::value_type( kInfo.m_iEventUID, kInfo ) );
 	}
 
-	START_LOG( cout, L"특정 시각 강화 부여 이벤트 설정" )
+	START_LOG( cout, L"Configuring the timed enhancement event." )
 		<< BUILD_LOG( m_iTimeEnchantEventUID )
 		<< BUILD_LOG( m_mapTimeEnchantEventInfo.size() )
 		<< END_LOG;
@@ -886,7 +886,7 @@ IMPL_ON_FUNC( DBE_EXCHANGE_LIMIT_INFO_ACK )
 
 	CheckExchangeLimit( true );
 
-	START_LOG( cout, L"교환 제한 정보 설정" )
+	START_LOG( cout, L"Configuring exchange-restriction data." )
 		<< BUILD_LOG( m_iExchangeLimitUID )
 		<< BUILD_LOG( m_listExchangeLimitInfo.size() )
 		<< END_LOG;

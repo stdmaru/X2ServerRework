@@ -46,7 +46,7 @@ void KBattleFieldMonsterManager::StartGame( IN const SEnum::BATTLE_FIELD_ID eBat
 	{
 		if( FirstCreateBossMonster( eBattleFieldID ) == false )
 		{
-			START_LOG( cerr, L"몬스터 소환 실패! 절대 일어나서는 안되는 에러!" )
+			START_LOG( cerr, L"Failed to summon monster; this should never happen!" )
 				<< BUILD_LOG( eBattleFieldID )
 				<< BUILD_LOG( iPlayerCount )
 				<< END_LOG;
@@ -56,7 +56,7 @@ void KBattleFieldMonsterManager::StartGame( IN const SEnum::BATTLE_FIELD_ID eBat
 	{
 		if( FirstCreateMonster( eBattleFieldID, iPlayerCount ) == false )
 		{
-			START_LOG( cerr, L"몬스터 소환 실패! 절대 일어나서는 안되는 에러!" )
+			START_LOG( cerr, L"Failed to summon monster; this should never happen!" )
 				<< BUILD_LOG( eBattleFieldID )
 				<< BUILD_LOG( iPlayerCount )
 				<< END_LOG;
@@ -73,7 +73,7 @@ bool KBattleFieldMonsterManager::FirstCreateBossMonster( IN const SEnum::BATTLE_
 	KNPCList kBattleFieldNpcList;
 	if( SiCXSLBattleFieldManager()->GetCreateBossMonsterList( eBattleFieldID, kBattleFieldNpcList ) == false )
 	{
-		START_LOG( cerr, L"배틀필드 NPC리스트 받아오기 실패!" )
+		START_LOG( cerr, L"Failed to retrieve the Battlefield NPC list!" )
 			<< BUILD_LOG( eBattleFieldID )
 			<< END_LOG;
 		return false;
@@ -85,7 +85,7 @@ bool KBattleFieldMonsterManager::FirstCreateBossMonster( IN const SEnum::BATTLE_
 		// 몬스터 생성!
 		if( CreateMonster( kNpcInfo, kNpcInfo.m_UID ) == false )
 		{
-			START_LOG( cerr, L"몬스터 생성을 실패하였습니다!" )
+			START_LOG( cerr, L"Failed to create monster!" )
 				<< BUILD_LOG( kNpcInfo.m_NPCID )
 				<< END_LOG;
 			continue;
@@ -154,7 +154,7 @@ bool KBattleFieldMonsterManager::FirstCreateMonster( IN const SEnum::BATTLE_FIEL
 														  iPlayerCount,
 														  kBattleFieldNpcList ) == false )
 	{
-		START_LOG( cerr, L"배틀필드 NPC리스트 받아오기 실패!" )
+		START_LOG( cerr, L"Failed to retrieve the Battlefield NPC list!" )
 			<< BUILD_LOG( eBattleFieldID )
 			<< BUILD_LOG( iPlayerCount )
 			<< END_LOG;
@@ -167,7 +167,7 @@ bool KBattleFieldMonsterManager::FirstCreateMonster( IN const SEnum::BATTLE_FIEL
 		// 몬스터 생성!
 		if( CreateMonster( kNpcInfo, kNpcInfo.m_UID ) == false )
 		{
-			START_LOG( cerr, L"몬스터 생성을 실패하였습니다!" )
+			START_LOG( cerr, L"Failed to create monster!" )
 				<< BUILD_LOG( kNpcInfo.m_NPCID )
 				<< END_LOG;
 			continue;
@@ -262,7 +262,7 @@ bool KBattleFieldMonsterManager::CheckRespawnMonster( IN const SEnum::BATTLE_FIE
 														   mapRespawnReadyNpcCount,
 														   kBattleFieldNpcList ) == false )
 	{
-		START_LOG( cerr, L"배틀필드 NPC리스트 받아오기 실패!" )
+		START_LOG( cerr, L"Failed to retrieve the Battlefield NPC list!" )
 			<< BUILD_LOG( eBattleFieldID )
 			<< BUILD_LOG( kAliveMonsterCountInfo.GetTotalMonsterCount() )
 			<< BUILD_LOG( mapRespawnReadyNpcCount.size() )
@@ -276,7 +276,7 @@ bool KBattleFieldMonsterManager::CheckRespawnMonster( IN const SEnum::BATTLE_FIE
 		// 몬스터 생성!
 		if( CreateMonster( kNpcInfo, kNpcInfo.m_UID ) == false )
 		{
-			START_LOG( cerr, L"몬스터 생성을 실패하였습니다!" )
+			START_LOG( cerr, L"Failed to create monster!" )
 				<< BUILD_LOG( kNpcInfo.m_NPCID )
 				<< END_LOG;
 			continue;
@@ -307,7 +307,7 @@ bool KBattleFieldMonsterManager::CheckRespawnMonster( IN const SEnum::BATTLE_FIE
 		KAttribEnchantNpcInfo kAttribNpcInfo;
 		if( SiKAttribNpcTable()->GetAttribNpcInfo( CXSLDungeon::DT_NORMAL, cDifficultyLevel, kNpcInfo.m_Level, kNpcInfo.m_NPCID, kAttribNpcInfo ) == false )
 		{
-			START_LOG( cerr, L"속성 몬스터 정보 얻기 실패!" )
+			START_LOG( cerr, L"Failed to retrieve attribute-monster information!" )
 				<< BUILD_LOGc( cDifficultyLevel )
 				<< BUILD_LOG( kNpcInfo.m_NPCID )
 				<< BUILD_LOGc( kNpcInfo.m_Level )
@@ -318,7 +318,7 @@ bool KBattleFieldMonsterManager::CheckRespawnMonster( IN const SEnum::BATTLE_FIE
 		// 속성 몬스터 정보를 임시저장소에 보관하자!
 		if( SetAttribMonster( kNpcInfo.m_UID, kAttribNpcInfo ) == false )
 		{
-			START_LOG( cerr, L"속성 정보를 등록하는데 실패 하였다!" )
+			START_LOG( cerr, L"Failed to register attribute information!" )
 				<< BUILD_LOG( kNpcInfo.m_UID )
 				<< END_LOG;
 			continue;
@@ -350,7 +350,7 @@ void KBattleFieldMonsterManager::GetAliveMonsterList( OUT std::vector< KNPCUnitR
 		// 해당 몬스터가 살아있는지 확인!
 		if( IsMonsterAlive( mit->first ) == false )
 		{
-			START_LOG( cerr, L"죽은 몬스터를 리스트에 넣을려고 한다!" )
+			START_LOG( cerr, L"Attempted to add a dead monster to the list!" )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -374,7 +374,7 @@ void KBattleFieldMonsterManager::GetAliveMonsterList( OUT std::vector< KNPCUnitR
 		// 해당 몬스터가 살아있는지 확인!
 		if( IsEventMonsterAlive( mit->first ) == false )
 		{
-			START_LOG( cerr, L"죽은 몬스터를 리스트에 넣을려고 한다!" )
+			START_LOG( cerr, L"Attempted to add a dead monster to the list!" )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -412,7 +412,7 @@ bool KBattleFieldMonsterManager::SetFieldMonsterDie( IN const int iNpcUID, IN co
 	// 몬스터 죽음 처리 하기 전에 그룹ID를 얻는다.
 	if( GetMonsterGroupID( iNpcUID, iGroupID ) == false )
 	{
-		START_LOG( cerr, L"살아있는 몬스터가 아닙니다!" )
+		START_LOG( cerr, L"Monster is not alive!" )
 			<< BUILD_LOG( iNpcUID  )
 			<< END_LOG;
 		return false;
@@ -464,7 +464,7 @@ bool KBattleFieldMonsterManager::SetAttribMonster( IN const int iNpcUID, IN cons
 	mit = m_mapNpcInfoForClient.find( iNpcUID );
 	if( mit == m_mapNpcInfoForClient.end() )
 	{
-		START_LOG( cerr, L"존재하지 않는 몬스터 입니다!" )
+		START_LOG( cerr, L"Monster does not exist!" )
 			<< BUILD_LOG( iNpcUID )
 			<< END_LOG;
 		return false;
@@ -472,7 +472,7 @@ bool KBattleFieldMonsterManager::SetAttribMonster( IN const int iNpcUID, IN cons
 
 	if( mit->second.m_vecAttribNpcInfo.empty() == false )
 	{
-		START_LOG( cerr, L"이미 속성 정보가 있는 몬스터 입니다. 일어날수 없는 에러!" )
+		START_LOG( cerr, L"Monster already has attribute information; this should never happen!" )
 			<< BUILD_LOG( iNpcUID )
 			<< BUILD_LOG( mit->second.m_vecAttribNpcInfo.size() )
 			<< END_LOG;
@@ -489,7 +489,7 @@ bool KBattleFieldMonsterManager::IsAttribNpc( IN const int iNpcUID )
 	mit = m_mapNpcInfoForClient.find( iNpcUID );
 	if( mit == m_mapNpcInfoForClient.end() )
 	{
-		START_LOG( clog, L"존재하지 않는 몬스터 입니다!" )
+		START_LOG( clog, L"Monster does not exist!" )
 			<< BUILD_LOG( iNpcUID )
 			<< END_LOG;
 		return false;
@@ -508,7 +508,7 @@ void KBattleFieldMonsterManager::IncreaseMonsterDieCount( IN const char cMonster
 	case CXSLUnitManager::MTF_MIDDLE_BOSS_NPC:	++m_kNpcDieCount.m_iMiddleBossDieCount;		break;
 	case CXSLUnitManager::MTF_BOSS_NPC:			++m_kNpcDieCount.m_iBossDieCount;			break;
 	default:
-		START_LOG( cerr, L"이상한 몬스터 타입 입니다!" )
+		START_LOG( cerr, L"Unexpected monster type!" )
 			<< BUILD_LOGc( cMonsterTypeFator )
 			<< END_LOG;
 		return;
@@ -525,7 +525,7 @@ void KBattleFieldMonsterManager::SetNpcOwner( IN const int iNPCUID, IN const Uid
 	}
 	else
 	{
-		START_LOG( cerr, L"중복 되는 npc uid 를 등록하려고 한다." )
+		START_LOG( cerr, L"Attempted to register a duplicate NPC UID." )
 			<< BUILD_LOGc( iNPCUID )
 			<< BUILD_LOGc( iOwnerUnit )
 			<< END_LOG;
@@ -537,7 +537,7 @@ void KBattleFieldMonsterManager::EraseNpcOwner( IN const int iNPCUID )
 	std::map< int, UidType >::iterator mit = m_mapNpcOwner.find( iNPCUID );
 	if( mit == m_mapNpcOwner.end() )
 	{
-		START_LOG( clog, L"없는 npc uid 를 지우려 한다." )
+		START_LOG( clog, L"Attempted to remove a nonexistent NPC UID." )
 			<< BUILD_LOGc( iNPCUID )
 			<< END_LOG;
 	}
@@ -664,7 +664,7 @@ void KBattleFieldMonsterManager::StartedMonsterEventProcess( IN const std::vecto
 				bool bResult = SiCXSLBattleFieldManager()->GetEventMonsterCreateInfo( eBattleFieldID, kNpcInfo );
 				if( bResult == false )
 				{
-					START_LOG( cerr, L"배틀필드 NPC리스트 받아오기 실패!" )
+					START_LOG( cerr, L"Failed to retrieve the Battlefield NPC list!" )
 						<< BUILD_LOG( eBattleFieldID )
 						<< END_LOG;
 					return;
@@ -755,7 +755,7 @@ void KBattleFieldMonsterManager::CreateEventMonster( IN const KNPCUnitReq& kNpcI
 
 	if( CXSLUnitManager::IsValidMonsterGrade( static_cast<CXSLUnitManager::MONSTER_GRADE>( kNpcInfo.m_cMonsterGrade ) ) == false )
 	{
-		START_LOG( cerr, L"몬스터 등급 정보가 이상합니다!" )
+		START_LOG( cerr, L"Invalid monster grade information!" )
 			<< BUILD_LOG( kNpcInfo.m_NPCID )
 			<< BUILD_LOGc( kNpcInfo.m_cMonsterGrade )
 			<< END_LOG;
@@ -886,7 +886,7 @@ void KBattleFieldMonsterManager::CheckRespawnEventMonster( IN const SEnum::BATTL
 	{
 		if( m_mapDieEventNpcList.find( iNpcUID ) == m_mapDieEventNpcList.end() )
 		{
-			START_LOG( cwarn, L"m_mapDieEventNpcList에서 이벤트 몬스터의 리스폰 데이터를 찾을 수 없습니다." )
+			START_LOG( cwarn, L"Could not find event-monster respawn data in m_mapDieEventNpcList." )
 				<< BUILD_LOG( eBattleFieldID )
 				<< BUILD_LOG( iNpcUID )
 				<< END_LOG;
@@ -908,7 +908,7 @@ void KBattleFieldMonsterManager::CheckRespawnEventMonster( IN const SEnum::BATTL
 		// 존재하지 않는 이벤트라면, 리스폰을 할 수 없다. ( 이벤트가 종료될 때 당연 리스폰 정보도 삭제되어야 한다! )
 		if( itSetEventMonsterUID == itMapEventMonster->second.end() )
 		{
-			START_LOG( cwarn, L"존재하지 않는 이벤트에 소속된 이벤트 몬스터를 리스폰 시키려 하였습니다." )
+			START_LOG( cwarn, L"Attempted to respawn an event monster belonging to a nonexistent event." )
 				<< BUILD_LOG( eBattleFieldID )
 				<< BUILD_LOG( iNpcUID )
 				<< END_LOG;
@@ -958,7 +958,7 @@ void KBattleFieldMonsterManager::CheckRespawnEventMonster( IN const SEnum::BATTL
 				bool bResult = SiCXSLBattleFieldManager()->GetEventMonsterCreateInfo( eBattleFieldID, kNpcInfo );
 				if( bResult == false )
 				{
-					START_LOG( cerr, L"배틀필드 NPC리스트 받아오기 실패!" )
+					START_LOG( cerr, L"Failed to retrieve the Battlefield NPC list!" )
 						<< BUILD_LOG( eBattleFieldID )
 						<< END_LOG;
 					return;
@@ -1069,7 +1069,7 @@ int KBattleFieldMonsterManager::GetAttribNpcAttribCount( IN const int iNpcUID )
 	mit = m_mapNpcInfoForClient.find( iNpcUID );
 	if( mit == m_mapNpcInfoForClient.end() )
 	{
-		START_LOG( clog, L"존재하지 않는 몬스터 입니다!" )
+		START_LOG( clog, L"Monster does not exist!" )
 			<< BUILD_LOG( iNpcUID )
 			<< END_LOG;
 		return 0;
@@ -1101,7 +1101,7 @@ bool KBattleFieldMonsterManager::CheckMiddleBossMonster( IN const SEnum::BATTLE_
 	std::vector<KNPCUnitReq> vecMiddleBossNpcInfo;
 	if( SiCXSLBattleFieldManager()->GetBattieFieldMiddleBossMonsterInfo( eBattleFieldID, iDangerousValue, vecMiddleBossNpcInfo ) == false )
 	{
-		START_LOG( cerr, L"보스 몬스터 출현 실패!" )
+		START_LOG( cerr, L"Failed to spawn boss monster!" )
 			<< BUILD_LOG( eBattleFieldID )
 			<< BUILD_LOG( iDangerousValue )
 			<< END_LOG;
@@ -1132,7 +1132,7 @@ void KBattleFieldMonsterManager::CreateMiddleBossMonster( IN const KNPCUnitReq& 
 
 	if( CXSLUnitManager::IsValidMonsterGrade( static_cast<CXSLUnitManager::MONSTER_GRADE>( kNpcInfo.m_cMonsterGrade ) ) == false )
 	{
-		START_LOG( cerr, L"몬스터 등급 정보가 이상합니다!" )
+		START_LOG( cerr, L"Invalid monster grade information!" )
 			<< BUILD_LOG( kNpcInfo.m_NPCID )
 			<< BUILD_LOGc( kNpcInfo.m_cMonsterGrade )
 			<< END_LOG;

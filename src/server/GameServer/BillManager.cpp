@@ -270,7 +270,7 @@ void KBillManager::ProcessEvent( const KEventPtr& spEvent_ )
 	{
 		CASE( EBILL_CHECK_PRODUCT_INFO_ACK );
 	default:
-		START_LOG( cerr, "핸들러가 지정되지 않은 이벤트." )
+		START_LOG( cerr, "Event has no handler assigned." )
 			<< BUILD_LOG( spEvent_->m_usEventID )
 			<< BUILD_LOG( spEvent_->GetIDStr() )
 			<< END_LOG;
@@ -279,7 +279,7 @@ void KBillManager::ProcessEvent( const KEventPtr& spEvent_ )
 	dwElapTime = ::GetTickCount() - dwElapTime;
 	if( dwElapTime > 3000 )
 	{
-		START_LOG( cwarn, L"이벤트 처리 소요 시간." )
+		START_LOG( cwarn, L"Event processing duration." )
 			<< BUILD_LOG( spEvent_->GetIDStr() )
 			<< BUILD_LOG( spEvent_->m_usEventID )
 			<< BUILD_LOG( dwElapTime );
@@ -387,7 +387,7 @@ bool KBillManager::CheckBonusPeriodTime(std::vector<std::wstring> &_vecStartTime
 
 		if(KncUtil::ConvertStringToCTime(_vecStartTime[i],ctBegin) == false)
 		{
-			START_LOG( cerr, L"보너스 캐쉬 이벤트 시작 문자열 시간조립 실패.!" )
+			START_LOG( cerr, L"Failed to assemble the bonus cash event start time string!" )
 				<< BUILD_LOG(_vecStartTime[i] )
 				<< END_LOG;
 
@@ -396,7 +396,7 @@ bool KBillManager::CheckBonusPeriodTime(std::vector<std::wstring> &_vecStartTime
 
 		if(KncUtil::ConvertStringToCTime(_vecEndTime[i],ctEnd) == false)
 		{
-			START_LOG( cerr, L"보너스 캐쉬 이벤트 종료 문자열 시간조립 실패.!" )
+			START_LOG( cerr, L"Failed to assemble the bonus cash event end time string!" )
 				<< BUILD_LOG(_vecEndTime[i] )
 				<< END_LOG;
 
@@ -409,14 +409,14 @@ bool KBillManager::CheckBonusPeriodTime(std::vector<std::wstring> &_vecStartTime
 			if(_vecEndTime.empty() == false)
 				_vecEndTime.erase(_vecEndTime.begin()+i);
 
-			START_LOG( clog, L"해당 보너스 캐쉬 이벤트 종료.!" )
+			START_LOG( clog, L"This bonus cash event has ended!" )
 				<< BUILD_LOG( _vecStartTime[i] )
 				<< BUILD_LOG( _vecEndTime[i] )
 				;
 		}
 		else if(ctBegin <= tCurrentTime && ctEnd >= tCurrentTime )
 		{
-			START_LOG( clog, L"해당 보너스 캐쉬 이벤트 시작.!" )
+			START_LOG( clog, L"The bonus cash event has started!" )
 				<< BUILD_LOG( _vecStartTime[i] )
 				<< BUILD_LOG( _vecEndTime[i] )
 				;
@@ -482,7 +482,7 @@ IMPL_ON_FUNC( EBILL_CHECK_PRODUCT_INFO_ACK )
 		else
 		{
 
-			START_LOG( clog, L"보너스 릴리즈 Tick 은 추가 되었지만 시간 정보 값이 없다. 보너스 이벤트 진행할게 없음" )
+			START_LOG( clog, L"Bonus release tick was added, but no time information is available; no bonus event can run." )
 				<< BUILD_LOG( GetReleaseTick(CSRTT_BONUS_EVENT) )
 				<< BUILD_LOG( bonusEventTick )
 				<< BUILD_LOG( kPacket_.m_vecStartEvent.size() )

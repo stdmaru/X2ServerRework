@@ -140,7 +140,7 @@ void KGlobalUser::ProcessEvent( const KEventPtr& spEvent_ )
     CASE_NOPARAM( E_RESERVE_DESTROY );
 
     default:
-        dbg::cerr << L"이벤트 핸들러가 정의되지 않았음. " << spEvent_->GetIDStr();
+        dbg::cerr << L"Event handler is not defined: " << spEvent_->GetIDStr();
     }
 
     dwElapTime = ::GetTickCount() - dwElapTime;
@@ -210,14 +210,14 @@ void KGlobalUser::OnDestroy()
 	//{{ 2009. 1. 30  최육사	객체 소멸 로그
 	if( GetDisconnectReason() == KStatistics::eSIColDR_Server_Shutdown )
 	{
-		START_LOG( cout, L"서버 셧다운으로 인한 GlobalUser객체 소멸" );
+		START_LOG( cout, L"GlobalUser object destroyed due to server shutdown." );
 	}
 	else
 	{
-		START_LOG( cout2, L"비정상적인 원인으로 인한 GlobalUser객체 소멸" )
+		START_LOG( cout2, L"GlobalUser object destroyed unexpectedly." )
 			<< BUILD_LOG( GetDisconnectReason() )
 			<< BUILD_LOG( GetIPStr() )
-			<< dbg::tab << L"종료 사유 : " << KStatistics::GetDissconnectReasonString( GetDisconnectReason() ) << dbg::endl;
+			<< dbg::tab << L"Reason: " << KStatistics::GetDissconnectReasonString( GetDisconnectReason() ) << dbg::endl;
 
 		//{{ 2010. 10. 11	최육사	서버간 접속 끊김 로그
 		CTime kRegDate = CTime::GetCurrentTime();
@@ -263,7 +263,7 @@ bool KGlobalUser::RoutePacket( const KEvent* pkEvent_ )
         }
         else if( iEval > 0 )
         {
-            START_LOG( cerr, L"현재는 센터 서버가 최상위 서버이다." )
+            START_LOG( cerr, L"The CenterServer is currently the top-level server." )
                 << BUILD_LOG( pkEvent_->m_kDestPerformer.m_dwPerformerID )
                 << BUILD_LOG( pkEvent_->m_usEventID )
                 << BUILD_LOG( pkEvent_->GetIDStr() )
@@ -296,7 +296,7 @@ bool KGlobalUser::RoutePacket( const KEvent* pkEvent_ )
 				return true;
 				//}}
             default:
-                START_LOG( cerr, L"도착지가 이상한 패킷." )
+                START_LOG( cerr, L"Packet has an invalid destination." )
                     << BUILD_LOG( pkEvent_->m_kDestPerformer.m_dwPerformerID )
                     << END_LOG;
                 return true;
@@ -319,7 +319,7 @@ _IMPL_ON_FUNC( EGB_VERIFY_SERVER_CONNECT_REQ, KECN_VERIFY_SERVER_CONNECT_REQ )
 
 	if( kPacket_.m_kNetAddress.m_wstrIP != KncUtil::toWideString( GetIPStr() ) )
 	{
-		START_LOG( cerr, L"유효하지 않은 IP" )
+		START_LOG( cerr, L"Invalid IP address." )
 			<< BUILD_LOG( kPacket_.m_kNetAddress.m_wstrIP )
 			<< BUILD_LOG( GetIPStr() );
 
@@ -353,7 +353,7 @@ _IMPL_ON_FUNC( DBE_VERIFY_SERVER_CONNECT_ACK, KECN_VERIFY_SERVER_CONNECT_ACK )
 	else
 	{
 		//{{ 2010. 04. 16  최육사	로그 추가
-		START_LOG( cout2, L"게임서버와 정상적으로 접속하였습니다!" )
+		START_LOG( cout2, L"Successfully connected to the GameServer." )
 			<< BUILD_LOG( kPacket_.m_nUID )
 			<< BUILD_LOG( kPacket_.m_strName );
 		//}}
@@ -416,7 +416,7 @@ _IMPL_ON_FUNC( EGB_CLEAR_MISSION_DUNGEON_NOT, KEGB_CLEAR_MISSION_DUNGEON_NOT )
 {
 	SiKWorldMissionManager()->IncreaseProtectedCrystalCount( kPacket_ );
 
-	START_LOG( clog, L"디펜스 던전 클리어 (보호한 수정의 수)" )
+	START_LOG( clog, L"Defense dungeon cleared (number of protected crystals)." )
 		<< BUILD_LOG( kPacket_ )
 		<< END_LOG;
 }
@@ -426,7 +426,7 @@ _IMPL_ON_FUNC( EGB_UPDATE_CCU_INFO_NOT, KELG_UPDATE_CCU_INFO_NOT )
 	// 동접 정보 집계
 	SiKGlobalServerCCUManager()->UpdateCCUInfo( kPacket_.m_kCCUInfo );
 
-	START_LOG( clog, L"CCU 데이터를 받았습니다." )
+	START_LOG( clog, L"Received CCU data." )
 		<< BUILD_LOG( kPacket_.m_kCCUInfo.m_iConcurrentUser )
 		<< END_LOG;
 }
@@ -453,7 +453,7 @@ IMPL_ON_FUNC( EGB_REGISTER_UNIT_NOT )
 	int iOK = GetKGlobalSimLayer()->RegUnit( kPacket_.m_kUnitInfo );
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"캐릭터 등록 실패" )
+		START_LOG( cerr, L"Failed to register the character." )
 			<< BUILD_LOG( iOK )
 			<< BUILD_LOG( NetError::GetErrStr( iOK ) )
 			<< END_LOG;
@@ -534,7 +534,7 @@ _IMPL_ON_FUNC( DBE_CHECK_NICKNAME_FOR_INVITE_PARTY_ACK, KELG_INVITE_PARTY_FIND_R
 	KGlobalUserList::KGSUserInfo kUserInfo;
 	if( GetKGlobalSimLayer()->GetGSUserInfoByUnitUID( kPacket_.m_iHostUnitUID, kUserInfo ) == false )
 	{
-		START_LOG( cerr, L"파티 초대자의 정보를 찾지 못하였습니다!" )
+		START_LOG( cerr, L"Could not find the party inviter's data." )
 			<< BUILD_LOG( kPacket_.m_iHostUnitUID )
 			<< END_LOG;
 		return;
@@ -550,7 +550,7 @@ _IMPL_ON_FUNC( EGB_INVITE_PARTY_GET_RECEIVER_USER_INFO_ACK, KELG_INVITE_PARTY_FI
 	KGlobalUserList::KGSUserInfo kUserInfo;
 	if( GetKGlobalSimLayer()->GetGSUserInfoByUnitUID( kPacket_.m_iHostUnitUID, kUserInfo ) == false )
 	{
-		START_LOG( cerr, L"파티 초대자의 정보를 찾지 못하였습니다!" )
+		START_LOG( cerr, L"Could not find the party inviter's data." )
 			<< BUILD_LOG( kPacket_.m_iHostUnitUID )
 			<< END_LOG;
 		return;
@@ -604,7 +604,7 @@ IMPL_ON_FUNC( EGB_CHECK_BLOCK_USER_NOT )
 
 		default:
 			{
-				START_LOG( cerr, L"정의 되지 않은 블럭 타입 입니다." )
+				START_LOG( cerr, L"Block type is not defined." )
 					<< BUILD_LOG( kPacket_.m_vecBlockType.size() )
 					<< BUILD_LOG( kPacket_.m_iUserUID )
 					<< BUILD_LOG( kPacket_.m_iUnitUID )
@@ -853,7 +853,7 @@ IMPL_ON_FUNC( EGB_EXCHANGE_LIMIT_REQ )
 		break;
 
 	default:
-		START_LOG( cerr, L"RetrieveExchangeLimitData: 정의되지 않은 오류입니다." )
+		START_LOG( cerr, L"RetrieveExchangeLimitData: undefined error." )
 			<< BUILD_LOG( iResult )
 			<< BUILD_LOG( kPacket_.m_iGSUID )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
@@ -898,7 +898,7 @@ int KGlobalUser::BossFieldOpenProcess( IN const int iVillageMapID, IN const __ti
 	int iPortalDestination;
 	if( SiCXSLBattleFieldManager()->GetRandomBossFieldID( iPortalDestination ) == false )
 	{
-		START_LOG( cerr, L"필드 보스 시스템에서 사용할 보스 필드정보가 존재하지 않습니다." )
+		START_LOG( cerr, L"Boss field data for the field-boss system does not exist." )
 			<<END_LOG;
 
 		return NetError::ERR_FIELD_BOSS_06;	// 보스 필드정보가 존재하지 않습니다.

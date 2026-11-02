@@ -63,7 +63,7 @@ bool CXSLCashItemManager::AddPackageItemData_LUA( int iPackageItemID, int iItemI
 {
 	if( iPackageItemID <= 0 || iItemID <= 0 )
 	{
-		START_LOG( cerr, L"캐쉬 패키지 아이템 정보 읽기 실패!" )
+		START_LOG( cerr, L"Failed to read cash package item information." )
 			<< BUILD_LOG( iPackageItemID )
 			<< BUILD_LOG( usProductPieces )
 			<< END_LOG;
@@ -92,7 +92,7 @@ bool CXSLCashItemManager::AddPackageItemData_LUA( int iPackageItemID, int iItemI
 		{
 			if( vit->m_iItemID == iItemID )
 			{
-				START_LOG( cerr, L"하나의 패키지에 중복되는 구성상품 ItemID가 존재합니다." )
+				START_LOG( cerr, L"Duplicate component ItemID in a package." )
 					<< BUILD_LOG( iPackageItemID )
 					<< BUILD_LOG( iItemID )
 					<< END_LOG;
@@ -110,7 +110,7 @@ bool CXSLCashItemManager::AddCashItemPrice_LUA( int iItemID, int iPrice )
 {
 	if( iItemID <= 0  ||  iPrice <= 0 )
 	{
-		START_LOG( cerr, L"넥슨 빌링 상품 가격 정보가 이상합니다." )
+		START_LOG( cerr, L"Invalid Nexon billing product price information." )
 			<< BUILD_LOG( iItemID )
 			<< BUILD_LOG( iPrice )
 			<< END_LOG;
@@ -130,7 +130,7 @@ bool CXSLCashItemManager::AddCashItemGroup_LUA( int iGroupID, int iItemID)
 
 	if( mit != m_mapCashItemGroup.end() )  // 기존에 등록된 동일 아이템이 있으면? 오류
 	{
-		START_LOG( cerr, L"이미 등록 된 아이템 입니다." )
+		START_LOG( cerr, L"Item is already registered." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 		return false;
@@ -150,7 +150,7 @@ bool CXSLCashItemManager::AddCashItemResolveAdd_LUA( int iGroupID, int iItemID, 
 	{
 		if( mit == m_mapCashItemGroup.end() )
 		{
-			START_LOG( cerr, L"캐쉬 아이템 그룹 정보가 이상합니다." )
+			START_LOG( cerr, L"Invalid cash item group information." )
 				<< BUILD_LOG( iGroupID )
 				<< END_LOG;
 			return false;
@@ -159,7 +159,7 @@ bool CXSLCashItemManager::AddCashItemResolveAdd_LUA( int iGroupID, int iItemID, 
 
 	if( iItemID <= 0 )
 	{
-		START_LOG( cerr, L"넥슨 빌링 상품 가격 정보가 이상합니다." )
+		START_LOG( cerr, L"Invalid Nexon billing product price information." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 		return false;
@@ -200,7 +200,7 @@ bool CXSLCashItemManager::GetCashItemResolveAddFromScript( int iItemID, VecResol
 	{
 		// 여기 등록 안되는 아이템들도 많으므로 에러 로그는 남기지 않는다.
 		/*
-		START_LOG( cerr, L"그룹 등록이 안된 아이템 입니다." )
+		START_LOG( cerr, L"Item is not registered in a group." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 		*/
@@ -213,7 +213,7 @@ bool CXSLCashItemManager::GetCashItemResolveAddFromScript( int iItemID, VecResol
 	mit2 = m_mapCashItemResolveGroup.find( group );
 	if( mit2 == m_mapCashItemResolveGroup.end() )
 	{
-		START_LOG( cerr, L"그룹에 등록된 결과 아이템이 없습니다." )
+		START_LOG( cerr, L"No result item is registered in the group." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 
@@ -254,7 +254,7 @@ bool CXSLCashItemManager::AddCashItemServerGroupData_LUA( int iServerGroupID, in
 {
 	if( !SEnum::IsValidServerGroupID( iServerGroupID )  ||  iItemID <= 0 )
 	{
-		START_LOG( cerr, L"서버군별 캐쉬샵 안보이는 상품 정보값이 이상합니다." )
+		START_LOG( cerr, L"Invalid hidden cash shop product information for the server group." )
 			<< BUILD_LOG( iServerGroupID )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
@@ -276,7 +276,7 @@ bool CXSLCashItemManager::AddCashItemProductNoData_LUA( int iServerGroupID, unsi
 {
 	if( !SEnum::IsValidServerGroupID( iServerGroupID )  ||  ulProductNo <= 0 )
 	{
-		START_LOG( cerr, L"ProductNo별 캐쉬샵 안보이는 상품 정보값이 이상합니다." )
+		START_LOG( cerr, L"Invalid hidden cash shop product information for the ProductNo." )
 			<< BUILD_LOG( iServerGroupID )
 			<< BUILD_LOG( ulProductNo )
 			<< END_LOG;

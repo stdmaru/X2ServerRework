@@ -75,7 +75,7 @@ bool KCCUToolManager::SetCCUData( IN CCUDate iCCUDate, IN UidType iServerID, IN 
 	if( mapit == m_mapCCU.end() )
 	{
 		//[동접툴] 로그 삭제
-		START_LOG( cerr, L"동접 데이터가 없는데 갱신 하려 한다!" )
+		START_LOG( cerr, L"Attempted to update missing concurrent user data!" )
 			<< BUILD_LOG( iServerID )
 			<< BUILD_LOG( iCCUDate )
 			<< END_LOG;
@@ -106,7 +106,7 @@ bool KCCUToolManager::GetExistCCU( IN const KE_TOOL_GET_CCU_INFO_REQ& kReq, OUT 
 
 	if( KncUtil::ConvertStringToCTime( kReq.m_wstrDate, tCutTime ) == false )
 	{
-		START_LOG( cerr, L"시간 변경 실패!" )
+		START_LOG( cerr, L"Failed to change time!" )
 			<< BUILD_LOG( kReq.m_wstrDate )
 			<< BUILD_LOG( kReq.m_iServerUID )
 			<< BUILD_LOG( kReq.m_cCCUType )
@@ -169,7 +169,7 @@ bool KCCUToolManager::GetExistCCU( IN const KE_TOOL_GET_CCU_INFO_REQ& kReq, OUT 
 		}break;
 	default:
 		{
-			START_LOG( cerr, L"이상한 타입입니다" )
+			START_LOG( cerr, L"Invalid type." )
 				<< BUILD_LOGc( kReq.m_cCCUType )
 				<< END_LOG;
 

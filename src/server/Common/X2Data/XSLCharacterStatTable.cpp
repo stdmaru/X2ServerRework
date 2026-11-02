@@ -95,7 +95,7 @@ bool CXSLCharacterStatTable::OpenScriptFile_CharacterStatTable()
 			if( CXSLUnit::EP_NONE == eEqipPosition )
 			{
 				luaManager.EndTable();
-				START_LOG( cerr, L"아이템 장착 위치 정보가 이상합니다." )
+				START_LOG( cerr, L"Invalid item equipment slot information." )
 					<< END_LOG;
 				break;
 			}
@@ -128,7 +128,7 @@ bool CXSLCharacterStatTable::OpenScriptFile_CharacterStatTable()
 			if( CXSLUnit::UT_NONE == eUnitType ) // the original compared with UC_NONE (also 0)
 			{
 				luaManager.EndTable();
-				START_LOG( cerr, L"유닛 타입 정보가 이상합니다." )
+				START_LOG( cerr, L"Invalid unit type information." )
 					<< END_LOG;
 				break;
 			}
@@ -161,7 +161,7 @@ bool CXSLCharacterStatTable::OpenScriptFile_CharacterStatTable()
 			if( CXSLUnit::UC_NONE == eUnitClass ) // the original compared with UT_NONE (also 0)
 			{
 				luaManager.EndTable();
-				START_LOG( cerr, L"유닛 클래스 정보가 이상합니다." )
+				START_LOG( cerr, L"Invalid unit class information." )
 					<< END_LOG;
 				break;
 			}
@@ -191,7 +191,7 @@ const CXSLCharacterStatTable::KCharStatData* CXSLCharacterStatTable::GetUnitType
 	mit = m_mapCharStatDataTable.find( iUnitType );
 	if( mit == m_mapCharStatDataTable.end() )
 	{
-		START_LOG( cerr, L"유닛 타입 정보가 없습니다." )
+		START_LOG( cerr, L"Unit type information is missing." )
 			<< BUILD_LOG( iUnitType )
 			<< END_LOG;
 		return NULL;
@@ -206,7 +206,7 @@ const CXSLCharacterStatTable::KCharStatData* CXSLCharacterStatTable::GetUnitClas
 	mit = m_mapClassStatDataTable.find( iUnitClass );
 	if( mit == m_mapClassStatDataTable.end() )
 	{
-		START_LOG( cerr, L"유닛 클래스 정보가 없습니다." )
+		START_LOG( cerr, L"Unit class information is missing." )
 			<< BUILD_LOG( iUnitClass )
 			<< END_LOG;
 		return NULL;
@@ -221,7 +221,7 @@ const CXSLCharacterStatTable::KCharStatData* CXSLCharacterStatTable::GetEqipStat
 	mit = m_mapEqipStatDataTable.find( iEqipPosition );
 	if( mit == m_mapEqipStatDataTable.end() )
 	{
-		START_LOG( cerr, L"장착 위치 정보가 없습니다." )
+		START_LOG( cerr, L"Equipment slot information is missing." )
 			<< BUILD_LOG( iEqipPosition )
 			<< END_LOG;
 		return NULL;
@@ -252,7 +252,7 @@ bool CXSLCharacterStatTable::CalcCommonItemStat( IN const CXSLItem::ItemTemplet*
 	const KCharStatData* pAData = GetAData( cUnitType, cUnitClass );
 	if( IS_NULL( pAData ) )
 	{
-		START_LOG( cerr, L"A 정보를 구하지 못했습니다." )
+		START_LOG( cerr, L"Failed to get A information." )
 			<< BUILD_LOGc( cUnitType )
 			<< BUILD_LOGc( cUnitClass )
 			<< END_LOG;
@@ -263,7 +263,7 @@ bool CXSLCharacterStatTable::CalcCommonItemStat( IN const CXSLItem::ItemTemplet*
 	const KCharStatData* pBData = GetUnitTypeStatData( cUnitType );
 	if( IS_NULL( pBData ) )
 	{
-		START_LOG( cerr, L"B 정보를 구하지 못했습니다." )
+		START_LOG( cerr, L"Failed to get B information." )
 			<< BUILD_LOGc( cUnitType )
 			<< END_LOG;
 		return false;
@@ -273,7 +273,7 @@ bool CXSLCharacterStatTable::CalcCommonItemStat( IN const CXSLItem::ItemTemplet*
 	const KCharStatData* pCData = GetEqipStatData( pItemTemplet->m_EqipPosition );
 	if( IS_NULL( pBData ) )
 	{
-		START_LOG( cerr, L"C 정보를 구하지 못했습니다." )
+		START_LOG( cerr, L"Failed to get C information." )
 			<< BUILD_LOGc( pItemTemplet->m_EqipPosition )
 			<< END_LOG;
 		return false;

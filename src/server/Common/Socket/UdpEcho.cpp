@@ -94,7 +94,7 @@ void KUdpEcho::Loop()
 
     if( ret != sizeof( KUdpToServer ) ) // only KUdpToServer is ever expected
     {
-        START_LOG( cerr, L"전달받은 데이터 크기 이상. wanted : " << sizeof(KUdpToServer) )
+        START_LOG( cerr, L"Invalid received data size. Expected: " << sizeof(KUdpToServer) )
             << BUILD_LOG( ret )
             << BUILD_LOG( x2::platform::IpToString(sender.sin_addr) )
             << BUILD_LOG( ntohs(sender.sin_port) )

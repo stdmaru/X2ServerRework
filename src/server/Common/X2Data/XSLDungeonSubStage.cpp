@@ -121,7 +121,7 @@ bool CXSLDungeonSubStage::SubStageData::FetchNPCData( IN bool bScriptCheck, KLua
 
 	if( pNPCData->m_UnitID == CXSLUnitManager::NUI_NONE )
 	{
-		START_LOG( cerr, L"NPC ID값이 NONE입니다! 정상 데이터인지 확인 필요!" );
+		START_LOG( cerr, L"NPC ID is NONE. Check that the data is valid." );
 		return false;
 	}
 
@@ -143,7 +143,7 @@ bool CXSLDungeonSubStage::SubStageData::FetchNPCData( IN bool bScriptCheck, KLua
 	}
 	else
 	{
-		START_LOG( cerr, L"Monster START_POS TABLE 열기 실패.!" )
+		START_LOG( cerr, L"Failed to open the Monster START_POS table." )
 			<< BUILD_LOG( pNPCData->m_UnitID )
 			<< BUILD_LOG( pNPCData->m_bSubNPC )
 			<< END_LOG;
@@ -198,7 +198,7 @@ bool CXSLDungeonSubStage::SubStageData::FetchNPCData( IN bool bScriptCheck, KLua
 			if( pNPCData->m_MonsterGrade != CXSLUnitManager::MG_MIDDLE_BOSS_NPC  &&
 				pNPCData->m_MonsterGrade != CXSLUnitManager::MG_BOSS_NPC )
 			{
-				START_LOG( cerr, L"보스 게이지 값은 true인데 MonsterType은 일반몬스터로 되어있다!" )
+				START_LOG( cerr, L"Boss gauge is enabled, but MonsterType is set to a normal monster." )
 					<< BUILD_LOG( pNPCData->m_UnitID )
 					<< BUILD_LOGc( pNPCData->m_MonsterGrade )
 					<< END_LOG;
@@ -209,7 +209,7 @@ bool CXSLDungeonSubStage::SubStageData::FetchNPCData( IN bool bScriptCheck, KLua
 		{
 			if( pNPCData->m_MonsterGrade == CXSLUnitManager::MG_BOSS_NPC )
 			{
-				START_LOG( cerr, L"보스 게이지 값은 false인데 MonsterType은 보스몬스터로 되어있다!" )
+				START_LOG( cerr, L"Boss gauge is disabled, but MonsterType is set to a boss monster." )
 					<< BUILD_LOG( pNPCData->m_UnitID )
 					<< BUILD_LOGc( pNPCData->m_MonsterGrade )
 					<< END_LOG;
@@ -297,7 +297,7 @@ bool CXSLDungeonSubStage::SubStageData::LoadNPCData( IN bool bScriptCheck, KLuaM
 	{
 		// 존재하면 안되는데 존재한다.
 		// 여기는 NPC_GROUP 이 하나 뿐일때만 들어오는 함수이다. 존재한다면 이상하다.
-		START_LOG( cerr, L"중복으로 몬스터 그룹을 지정하려 합니다." )
+		START_LOG( cerr, L"Attempted to assign a monster group more than once." )
 			<< BUILD_LOG( iGroupID )
 			<< BUILD_LOG( static_cast<int>(vecNPCList.size()) )
 			<< END_LOG;
@@ -349,7 +349,7 @@ bool CXSLDungeonSubStage::SubStageData::New_LoadNPCData( IN bool bScriptCheck, K
 		{
 			if( fRate <= 0.f )
 			{
-				START_LOG( cerr, L"NPC_GROUP_RATE 값이 이상합니다." )
+				START_LOG( cerr, L"Invalid NPC_GROUP_RATE value." )
 					<< BUILD_LOG( iGroupRateID )
 					<< BUILD_LOG( fRate )
 					<< END_LOG;
@@ -358,7 +358,7 @@ bool CXSLDungeonSubStage::SubStageData::New_LoadNPCData( IN bool bScriptCheck, K
 		}
 		else
 		{
-			START_LOG( cerr, L"NPC_GROUP_RATE 값이 존재하지 않습니다." )
+			START_LOG( cerr, L"NPC_GROUP_RATE value does not exist." )
 				<< BUILD_LOG( iGroupRateID )
 				<< BUILD_LOG( fRate )
 				<< END_LOG;
@@ -374,7 +374,7 @@ bool CXSLDungeonSubStage::SubStageData::New_LoadNPCData( IN bool bScriptCheck, K
 	// TotalRate 가 100 이 되지 않으면 에러
 	if( m_kNpcGroupRate.GetTotalProb() < 100.f )
 	{
-		START_LOG( cerr, L"Total NPC_GROUP_RATE 값이 이상합니다." )
+		START_LOG( cerr, L"Invalid total NPC_GROUP_RATE value." )
 			<< BUILD_LOG( m_kNpcGroupRate.GetTotalProb() )
 			<< END_LOG;
 	}
@@ -449,7 +449,7 @@ bool CXSLDungeonSubStage::SubStageData::New_LoadNPCData( IN bool bScriptCheck, K
 		{
 			// 존재하면 안되는데 존재한다.
 			// 여기는 NPC_GROUP 이 하나 뿐일때만 들어오는 함수이다. 존재한다면 이상하다.
-			START_LOG( cerr, L"중복으로 몬스터 그룹을 지정하려 합니다." )
+			START_LOG( cerr, L"Attempted to assign a monster group more than once." )
 				<< BUILD_LOG( iGroupID )
 				<< BUILD_LOG( static_cast<int>(vecNPCDataList.size()) )
 				<< END_LOG;
@@ -465,7 +465,7 @@ int CXSLDungeonSubStage::SubStageData::GetRandomNpcGruopID()
 	int iGroupID = m_kNpcGroupRate.Decision();
 	if( iGroupID < 0)
 	{
-		START_LOG( cerr, L"Stage 에 출현하는 NPC Group ID 값을 뽑아내지 못했다? 파싱할때 확인 했는데..." )
+		START_LOG( cerr, L"Failed to get the NPC Group ID for this stage; it should have been checked during parsing." )
 			<< BUILD_LOG( m_kNpcGroupRate.GetCaseNum() )
 			<< BUILD_LOG( m_kNpcGroupRate.GetTotalProb() )
 			<< BUILD_LOG( iGroupID )
@@ -483,7 +483,7 @@ int CXSLDungeonSubStage::SubStageData::GetSecretStageEnteringEvent( IN int iClea
 {
 	if( ( iClearConditionIndex < 0 ) || ( m_vecClearCondData.size() <= static_cast<unsigned int>( iClearConditionIndex ) ) )
 	{
-		START_LOG( cerr, L"존재하지 않는 CLEAR_COND 인덱스. 해킹! 또는 서버/클라의 정보가 다름" )
+		START_LOG( cerr, L"CLEAR_COND index does not exist. Possible hacking or a server/client data mismatch." )
 			<< BUILD_LOG( m_vecClearCondData.size() )
 			<< BUILD_LOG( iClearConditionIndex )
 			<< END_LOG;
@@ -515,7 +515,7 @@ bool CXSLDungeonSubStage::SubStageData::GetNextStage( OUT CXSLDungeonSubStage::N
 {
 	if( ( iClearConditionIndex < 0 ) || ( m_vecClearCondData.size() <= static_cast<unsigned int>( iClearConditionIndex ) ) )
 	{
-		START_LOG( cerr, L"존재하지 않는 CLEAR_COND 인덱스. 해킹! 또는 서버/클라의 정보가 다름" )
+		START_LOG( cerr, L"CLEAR_COND index does not exist. Possible hacking or a server/client data mismatch." )
 			<< BUILD_LOG( m_vecClearCondData.size() )
 			<< BUILD_LOG( iClearConditionIndex )
 			<< END_LOG;
@@ -563,7 +563,7 @@ bool CXSLDungeonSubStage::SubStageData::GetNextStage( OUT CXSLDungeonSubStage::N
 		}
 	}
 
-	START_LOG( cerr, L"각 스테이지 갈 확률을 다 더했을 때 100이 안 됨" )
+	START_LOG( cerr, L"Total probability of proceeding to the stages is less than 100%." )
 		<< BUILD_LOG( iCumulativeRate )
 		<< BUILD_LOG( iRandomNumber )
 		<< END_LOG;

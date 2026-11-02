@@ -949,7 +949,7 @@ void CKTDNUDP::LanBugCheckProcess( void )
 
 				if( ++it->second.m_byteCount < byteCheckCount )
 				{
-					START_LOG( clog, L"감시자 패킷 지연 판정" )
+					START_LOG( clog, L"Monitor packet delay detected." )
 						<< BUILD_LOG( it->first )
 						<< BUILD_LOG( it->second.m_byteCount )
 						<< BUILD_LOG( it->second.m_byteMaxCount );
@@ -962,7 +962,7 @@ void CKTDNUDP::LanBugCheckProcess( void )
 					continue;
 				}
 
-				START_LOG( clog, L"랜선렉 유저로 판정!!" )
+				START_LOG( clog, L"Classified as a connection-lag user." )
 					<< BUILD_LOG( it->first )
 					<< BUILD_LOG( it->second.m_byteCount )
 					<< BUILD_LOG( it->second.m_byteMaxCount );
@@ -1005,7 +1005,7 @@ void CKTDNUDP::LanBugCheckProcess( void )
 					kInfo.m_iRoomUID		= it->second.m_iRoomUID;
 					kInfo.m_iUnitUID		= it->first;
 
-					START_LOG( clog, L"랜선렉 로그: 피 신고자 감시 종료." )
+					START_LOG( clog, L"Connection-lag log: monitoring of the reported user ended." )
 						<< BUILD_LOG( kInfo.m_iUnitUID )
 						<< BUILD_LOG( it->second.m_byteCount )
 						<< BUILD_LOG( it->second.m_byteMaxCount );
@@ -1027,7 +1027,7 @@ void CKTDNUDP::LanBugCheckProcess( void )
                 it->second.m_dwRepeatTimerStamp = dwCurTimeStamp;
 
 				// 클라이언트에 보냄
-				START_LOG( clog, L"랜선렉 로그: 피 신고자 감시 체크 패킷 출발." )
+				START_LOG( clog, L"Connection-lag log: sending a monitoring check packet to the reported user." )
 					<< BUILD_LOG( it->first )
 					<< BUILD_LOG( it->second.m_iHeartBeatUID )
 					<< BUILD_LOG( it->second.m_byteCount )
@@ -1087,7 +1087,7 @@ void CKTDNUDP::LanBugCheckProcess( void )
 
 				if( ++it->second.m_byteCount < byteVerifyCount )
 				{
-					START_LOG( clog2, L"검증자 패킷 지연 판정" )
+					START_LOG( clog2, L"Validator packet delay detected." )
 						<< BUILD_LOG( it->first )
 						<< BUILD_LOG( it->second.m_byteCount )
 						<< BUILD_LOG( it->second.m_byteMaxCount );
@@ -1100,7 +1100,7 @@ void CKTDNUDP::LanBugCheckProcess( void )
 					continue;
 				}
 
-				START_LOG( clog, L"팅버그 유저로 판정!!" )
+				START_LOG( clog, L"Classified as a disconnect-bug user." )
 					<< BUILD_LOG( it->first )
 					<< BUILD_LOG( it->second.m_byteCount )
 					<< BUILD_LOG( it->second.m_byteMaxCount );
@@ -1144,7 +1144,7 @@ void CKTDNUDP::LanBugCheckProcess( void )
 					kInfo.m_iRoomUID		= it->second.m_iRoomUID;
 					kInfo.m_iUnitUID		= it->first;
 
-					START_LOG( clog2, L"랜선렉 로그: 신고자 검증 종료." )
+					START_LOG( clog2, L"Connection-lag log: reporter verification ended." )
 						<< BUILD_LOG( kInfo.m_iUnitUID )
 						<< BUILD_LOG( it->second.m_byteCount )
 						<< BUILD_LOG( it->second.m_byteMaxCount );
@@ -1166,7 +1166,7 @@ void CKTDNUDP::LanBugCheckProcess( void )
                 it->second.m_dwRepeatTimerStamp = dwCurTimeStamp;
 
 				// 클라이언트에 보냄
-				START_LOG( clog2, L"랜선렉 로그: 신고자 검증 체크 패킷 출발." )
+				START_LOG( clog2, L"Connection-lag log: sending a verification check packet to the reporter." )
 					<< BUILD_LOG( it->first )
 					<< BUILD_LOG( it->second.m_iHeartBeatUID )
 					<< BUILD_LOG( it->second.m_byteCount )
@@ -1225,7 +1225,7 @@ void CKTDNUDP::_ProcessMonitoringNot( const LB_INFO_STRUCT& kInfo )
 				pairResult.first->second.m_iHeartBeatUID	= iHeartBeatUID;
 
 				// 클라이언트에 보냄
-				START_LOG( clog, L"랜선렉 로그: 피 신고자 감시 시작" )
+				START_LOG( clog, L"Connection-lag log: monitoring of the reported user started." )
 					<< BUILD_LOG( kInfo.m_iUnitUID )
 					<< BUILD_LOG( iHeartBeatUID );
 
@@ -1243,13 +1243,13 @@ void CKTDNUDP::_ProcessMonitoringNot( const LB_INFO_STRUCT& kInfo )
 			if( sLB_INFO_STRUCT_CHECKER.m_iRoomUID == pairResult.first->second.m_iRoomUID )
 			{
 				// 이미 등록되어 있는 것과 정보가 동일하다면, 덮어 씌우지 않는다.
-				START_LOG( clog, L"랜선렉 로그: 이미 감시 중인 피 신고자입니다." )
+				START_LOG( clog, L"Connection-lag log: the reported user is already being monitored." )
 					<< BUILD_LOG( kInfo.m_iUnitUID );
 				return;
 			}
 
 			// 정보를 덮어 씌우고, 시간을 초기화 한다.
-			START_LOG( clog, L"랜선렉 로그: 피 신고자의 정보를 갱신합니다." )
+			START_LOG( clog, L"Connection-lag log: updating the reported user's information." )
 				<< BUILD_LOG( kInfo.m_iUnitUID );
 			pairResult.first->second.m_iRoomUID = sLB_INFO_STRUCT_CHECKER.m_iRoomUID;
 		}
@@ -1262,7 +1262,7 @@ void CKTDNUDP::_ProcessMonitoringNot( const LB_INFO_STRUCT& kInfo )
 			if( it == m_mapCheckInfo.end() )
 			{
 				// 대상 감시자가 존재하지 않습니다.
-				START_LOG( clog, L"랜선렉 로그: 감시 상태에서 해제하려는 피 신고자가 존재하지 않습니다." )
+				START_LOG( clog, L"Connection-lag log: cannot stop monitoring; the reported user is not registered." )
 					<< BUILD_LOG( kInfo.m_iUnitUID );
 				return;
 			}
@@ -1270,13 +1270,13 @@ void CKTDNUDP::_ProcessMonitoringNot( const LB_INFO_STRUCT& kInfo )
 			if( kInfo.m_iRoomUID != it->second.m_iRoomUID )
 			{
 				// Room 정보가 일치하지 않으므로 해당 Unit을 감시에서 제외시키지 않습니다.
-				START_LOG( clog, L"랜선렉 로그: 피 신고자에 대한 정보가 일치하지 않아 감시 상태를 해제할 수 없습니다." )
+				START_LOG( clog, L"Connection-lag log: cannot stop monitoring because the reported user's information does not match." )
 					<< BUILD_LOG( kInfo.m_iUnitUID );
 				return;
 			}
 
 			// 감시 대상 제거
-			START_LOG( clog, L"랜선렉 로그: 피 신고자 감시 종료. ( 요청 )" )
+			START_LOG( clog, L"Connection-lag log: request to stop monitoring the reported user." )
 				<< BUILD_LOG( kInfo.m_iUnitUID );
 			m_mapCheckInfo.erase( it );
 		}
@@ -1301,7 +1301,7 @@ void CKTDNUDP::_ProcessMonitoringNot( const LB_INFO_STRUCT& kInfo )
 				pairResult.first->second.m_iHeartBeatUID	= iHeartBeatUID;
 
 				// 클라이언트에 보냄
-				START_LOG( clog2, L"랜선렉 로그: 신고자 검증 시작" )
+				START_LOG( clog2, L"Connection-lag log: reporter verification started." )
 					<< BUILD_LOG( kInfo.m_iUnitUID )
 					<< BUILD_LOG( iHeartBeatUID );
 
@@ -1318,13 +1318,13 @@ void CKTDNUDP::_ProcessMonitoringNot( const LB_INFO_STRUCT& kInfo )
 			if( sLB_INFO_STRUCT_VERIFY.m_iRoomUID == pairResult.first->second.m_iRoomUID )
 			{
 				// 이미 등록되어 있는 것과 정보가 동일하다면, 덮어 씌우지 않는다.
-				START_LOG( clog2, L"랜선렉 로그: 이미 검증 중인 신고자입니다." )
+				START_LOG( clog2, L"Connection-lag log: the reporter is already being verified." )
 					<< BUILD_LOG( kInfo.m_iUnitUID );
 				return;
 			}
 
 			// 정보를 덮어 씌운다.
-			START_LOG( clog2, L"랜선렉 로그: 신고자의 정보를 갱신합니다." )
+			START_LOG( clog2, L"Connection-lag log: updating the reporter's information." )
 				<< BUILD_LOG( kInfo.m_iUnitUID );
 			pairResult.first->second.m_iRoomUID = sLB_INFO_STRUCT_VERIFY.m_iRoomUID;
 		}
@@ -1337,7 +1337,7 @@ void CKTDNUDP::_ProcessMonitoringNot( const LB_INFO_STRUCT& kInfo )
 			if( it == m_mapVerifyInfo.end() )
 			{
 				// 대상 피 검증자가 존재하지 않습니다.
-				START_LOG( clog2, L"랜선렉 로그: 검증 상태에서 해제하려는 신고자가 존재하지 않습니다." )
+				START_LOG( clog2, L"Connection-lag log: cannot stop verification; the reporter is not registered." )
 					<< BUILD_LOG( kInfo.m_iUnitUID );
 				return;
 			}
@@ -1345,13 +1345,13 @@ void CKTDNUDP::_ProcessMonitoringNot( const LB_INFO_STRUCT& kInfo )
 			if( kInfo.m_iRoomUID != it->second.m_iRoomUID )
 			{
 				// Room 정보가 일치하지 않으므로 해당 Unit을 감시에서 제외시키지 않습니다.
-				START_LOG( clog2, L"랜선렉 로그: 신고자에 대한 정보가 일치하지 않아 검증 상태를 해제할 수 없습니다." )
+				START_LOG( clog2, L"Connection-lag log: cannot stop verification because the reporter's information does not match." )
 					<< BUILD_LOG( kInfo.m_iUnitUID );
 				return;
 			}
 
 			// 감시 대상 제거
-			START_LOG( clog2, L"랜선렉 로그: 신고자 검증 종료. ( 요청 )" )
+			START_LOG( clog2, L"Connection-lag log: request to stop reporter verification." )
 				<< BUILD_LOG( kInfo.m_iUnitUID );
 			m_mapVerifyInfo.erase( it );
 		}
@@ -1561,7 +1561,7 @@ void CKTDNUDP::ProcessRecvData()
 					    //it->second.m_kTimer.restart();
                         it->second.m_dwTimerStamp = ::GetTickCount();
 
-					    START_LOG( clog2, L"랜선렉 로그: 신고자 검증 체크 패킷 도착" )
+					    START_LOG( clog2, L"Connection-lag log: reporter verification check packet received." )
 						    << BUILD_LOG( pSSP_CONNECT_CHECK_ACK->m_iUnitUID )
 						    << BUILD_LOG( pSSP_CONNECT_CHECK_ACK->m_iHeartBeatUID );
 				    }
@@ -1569,7 +1569,7 @@ void CKTDNUDP::ProcessRecvData()
 				    {
 					    // 제시간에 도착하지 못함. 악용 유저로 판단.
 					    // Tick에서 처리 하도록 하자.
-					    START_LOG( clog2, L"랜선렉 로그: 신고자 검증 체크 패킷 도착( TimeOut )" )
+					    START_LOG( clog2, L"Connection-lag log: reporter verification check packet timed out." )
 						    << BUILD_LOG( pSSP_CONNECT_CHECK_ACK->m_iUnitUID )
 						    << BUILD_LOG( pSSP_CONNECT_CHECK_ACK->m_iHeartBeatUID );
 				    }
@@ -1603,7 +1603,7 @@ void CKTDNUDP::ProcessRecvData()
 					    it->second.m_fCheckTerm	= SiKGameSysVal()->GetLanBugOutCheckTerm();
 					    //it->second.m_kTimer.restart();
                         it->second.m_dwTimerStamp = ::GetTickCount();
-					    START_LOG( clog, L"랜선렉 로그: 신고자 감시 체크 패킷 도착" )
+					    START_LOG( clog, L"Connection-lag log: reporter monitoring check packet received." )
 						    << BUILD_LOG( pSSP_HEART_BEAT_ACK->m_iUnitUID )
 						    << BUILD_LOG( pSSP_HEART_BEAT_ACK->m_iHeartBeatUID );
 				    }
@@ -1611,7 +1611,7 @@ void CKTDNUDP::ProcessRecvData()
 				    {
 					    // 제시간에 도착하지 못함. 악용 유저로 판단.
 					    // Tick에서 처리 하도록 하자.
-					    START_LOG( clog, L"랜선렉 로그: 신고자 감시 체크 패킷 도착( TimeOut )" )
+					    START_LOG( clog, L"Connection-lag log: reporter monitoring check packet timed out." )
 						    << BUILD_LOG( pSSP_HEART_BEAT_ACK->m_iUnitUID )
 						    << BUILD_LOG( pSSP_HEART_BEAT_ACK->m_iHeartBeatUID );
 				    }

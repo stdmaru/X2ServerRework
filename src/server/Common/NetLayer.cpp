@@ -231,7 +231,7 @@ void KNetLayer::OnAccept_( SOCKET sock, const SOCKADDR_IN& sinRemote )
             m_kMaxTimeInfo.m_cTime    = CTime::GetCurrentTime();
             m_kMaxTimeInfo.m_dwTerm   = dwElapTime;
 
-            START_LOG( clog2, L"accepter 객체 생성 대기시간 갱신. Remote IP : " << m_kMaxTimeInfo.m_strIP )
+            START_LOG( clog2, L"Accepter object creation wait time updated. Remote IP: " << m_kMaxTimeInfo.m_strIP )
                 << BUILD_LOG( m_kMaxTimeInfo.m_dwTerm );
         }
     }   // locking scope
@@ -255,5 +255,5 @@ void KNetLayer::ResetMaxTimeInfo()
     m_kMaxTimeInfo.m_dwTerm = 0;
     m_kMaxTimeInfo.m_cTime = CTime::GetCurrentTime();
     m_kMaxTimeInfo.m_strIP = (const wchar_t*)m_kMaxTimeInfo.m_cTime.Format(_T("%Y-%m-%d %H:%M:%S"));
-    m_kMaxTimeInfo.m_strIP.append( L" 에 데이터 초기화 되었습니다." );
+    m_kMaxTimeInfo.m_strIP.append( L" data was initialized." );
 }

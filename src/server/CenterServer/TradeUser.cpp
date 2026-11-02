@@ -40,7 +40,7 @@ bool KTradeUser::InsertTradeItemInfo( const KInventoryItemInfo& kInfo )
 {
     if( m_bOffer || m_bApproval || m_bConfirm )
     {
-        START_LOG( cerr, L"교환 아이템을 변경할 수 없는 상태임." )
+        START_LOG( cerr, L"Current state does not allow changing trade items." )
             << BUILD_LOG( m_bOffer )
             << BUILD_LOG( m_bApproval )
             << BUILD_LOG( m_bConfirm )
@@ -73,7 +73,7 @@ bool KTradeUser::SetTradeED( int iTradeED )
 {
     if( m_bOffer || m_bApproval || m_bConfirm )
     {
-        START_LOG( cerr, L"교환 ED를 변경할 수 없는 상태임." )
+        START_LOG( cerr, L"Current state does not allow changing the trade ED." )
             << BUILD_LOG( m_bOffer )
             << BUILD_LOG( m_bApproval )
             << BUILD_LOG( m_bConfirm )

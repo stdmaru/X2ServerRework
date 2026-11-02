@@ -76,7 +76,7 @@ _IMPL_ON_FUNC( EGS_ADMIN_QUEST_COMPLETE_REQ, KEGS_QUEST_COMPLETE_REQ )
 		//}}
 
 
-		START_LOG( cout, L"운영자도 자동 퀘스트 클리어" )
+		START_LOG( cout, L"Operator also clears the quest automatically" )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( kPacket_.m_iQuestID );
 
@@ -87,7 +87,7 @@ _IMPL_ON_FUNC( EGS_ADMIN_QUEST_COMPLETE_REQ, KEGS_QUEST_COMPLETE_REQ )
 	}
 	else
 	{
-		START_LOG( cerr, L"운영자도 아닌데 감히 +ㅁ+/" )
+		START_LOG( cerr, L"Unauthorized attempt to use an operator-only feature!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
@@ -99,7 +99,7 @@ IMPL_ON_FUNC_NOPARAM( EGS_ADMIN_SERVER_STATUS_REQ )
 	KEGS_ADMIN_SERVER_STATUS_ACK kPacket;
 	if( GetAuthLevel() < SEnum::UAL_GM )
 	{
-		START_LOG( cerr, L"운영자가 아닌데 감히.." )
+		START_LOG( cerr, L"Unauthorized attempt to use an operator-only feature." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( GetUserName() )
@@ -129,7 +129,7 @@ IMPL_ON_FUNC( EGS_NOTIFY_MSG_REQ )
 {
 	if( GetAuthLevel() < SEnum::UAL_GM )
 	{
-		START_LOG( cerr, L"운영자가 아닌데 감히.." )
+		START_LOG( cerr, L"Unauthorized attempt to use an operator-only feature." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( GetUserName() )
@@ -145,7 +145,7 @@ IMPL_ON_FUNC( EGS_NOTIFY_MSG_REQ )
 	}
 	else
 	{
-		START_LOG( cerr, L"잘못된 GM공지 타입입니다!" )
+		START_LOG( cerr, L"Invalid GM announcement type!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOGc( kPacket_.m_cNotifyType )
 			<< END_LOG;
@@ -161,7 +161,7 @@ IMPL_ON_FUNC( EGS_ADMIN_MODIFY_UNIT_LEVEL_REQ )
 {
 	if( GetAuthLevel() < SEnum::UAL_GM )
 	{
-		START_LOG( cerr, L"운영자가 아닌데 감히.." )
+		START_LOG( cerr, L"Unauthorized attempt to use an operator-only feature." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( GetUserName() )
@@ -172,7 +172,7 @@ IMPL_ON_FUNC( EGS_ADMIN_MODIFY_UNIT_LEVEL_REQ )
 
 	if( x2::platform::IEquals(kPacket_.m_wstrUnitNickName,GetCharName()) == false )
 	{
-		START_LOG( cerr, L"치트로 다른 캐릭터의 레벨을 수정할 수 없다!" )
+		START_LOG( cerr, L"Cannot modify another character's level with a cheat!" )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( kPacket_.m_wstrUnitNickName )
 			<< BUILD_LOGc( GetAuthLevel() )
@@ -263,7 +263,7 @@ IMPL_ON_FUNC( EGS_ADMIN_CHANGE_AUTH_LEVEL_REQ )
 	{
 		if( GetAuthLevel() < SEnum::UAL_DEVELOPER )
 		{
-			START_LOG( cerr, L"운영자가 아닌데 감히.." )
+			START_LOG( cerr, L"Unauthorized attempt to use an operator-only feature." )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetUserName() )
@@ -278,7 +278,7 @@ IMPL_ON_FUNC( EGS_ADMIN_CHANGE_AUTH_LEVEL_REQ )
 		//{{ 2010. 12. 22	최육사	SQL인젝션방지
 		if( KODBC::IsInvalidMarkIn( kPacket_.m_wstrUserID ) )
 		{
-			START_LOG( cout, L"개발자님! ID좀 잘 좀 입력하세요!" )
+			START_LOG( cout, L"Developer, please enter the ID correctly!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( kPacket_.m_wstrUserID );
 
@@ -298,7 +298,7 @@ IMPL_ON_FUNC( EGS_ADMIN_CHANGE_AUTH_LEVEL_REQ )
 	}
 	else
 	{
-		START_LOG( cerr, L"본섭에서 사용 불가!" )
+		START_LOG( cerr, L"Unavailable on the live server!" )
 			<< END_LOG;
 	}
 }
@@ -312,7 +312,7 @@ IMPL_ON_FUNC( EGS_ADMIN_GET_AUTH_LEVEL_LIST_REQ )
 {
 	if( GetAuthLevel() < SEnum::UAL_DEVELOPER )
 	{
-		START_LOG( cerr, L"운영자가 아닌데 감히.." )
+		START_LOG( cerr, L"Unauthorized attempt to use an operator-only feature." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( GetUserName() )
@@ -342,7 +342,7 @@ IMPL_ON_FUNC( EGS_ADMIN_CHANGE_ED_REQ )
 {
 	if( GetAuthLevel() < SEnum::UAL_GM )
 	{
-		START_LOG( cerr, L"운영자도 아닌데 감히" )
+		START_LOG( cerr, L"Unauthorized attempt to use an operator-only feature." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOGc( GetAuthLevel() )
@@ -354,7 +354,7 @@ IMPL_ON_FUNC( EGS_ADMIN_CHANGE_ED_REQ )
 
 	if( x2::platform::IEquals(kPacket_.m_wstrUnitNickName,GetCharName()) == false )
 	{
-		START_LOG( cerr, L"치트로 다른 캐릭터의 ED를 수정할 수 없다!" )
+		START_LOG( cerr, L"Cannot modify another character's ED with a cheat!" )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( kPacket_.m_wstrUnitNickName )
 			<< BUILD_LOGc( GetAuthLevel() )
@@ -389,7 +389,7 @@ IMPL_ON_FUNC( EGS_ADMIN_KICK_USER_REQ )
 {
 	if( GetAuthLevel() < SEnum::UAL_GM )
 	{
-		START_LOG( cerr, L"운영자도 아닌데 감히" )
+		START_LOG( cerr, L"Unauthorized attempt to use an operator-only feature." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOGc( GetAuthLevel() )
@@ -422,7 +422,7 @@ IMPL_ON_FUNC( EGS_ADMIN_CHANGE_SKILL_POINT_REQ )
 {
 	if( GetAuthLevel() < SEnum::UAL_GM )
 	{
-		START_LOG( cerr, L"운영자가 아닌데 감히..?ㅁ?" )
+		START_LOG( cerr, L"Unauthorized attempt to use an operator-only feature." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
@@ -432,7 +432,7 @@ IMPL_ON_FUNC( EGS_ADMIN_CHANGE_SKILL_POINT_REQ )
 	if ( kPacket_.m_iActiveSkillPageNumber != m_kSkillTree.GetActiveSkillPageNumber() )
 	{
 		SET_ERROR( ERR_SKILL_PAGE_01 );
-		START_LOG( cerr, L"활성된 스킬 페이지 번호가 이상합니다 (EGS_ADMIN_CHANGE_SKILL_POINT_REQ)" )
+		START_LOG( cerr, L"Invalid active skill page number (EGS_ADMIN_CHANGE_SKILL_POINT_REQ)." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iActiveSkillPageNumber )
 			<< BUILD_LOG( m_kSkillTree.GetActiveSkillPageNumber() )
@@ -480,7 +480,7 @@ IMPL_ON_FUNC( EGS_ADMIN_INIT_SKILL_TREE_REQ )
 {
 	if( GetAuthLevel() < SEnum::UAL_DEVELOPER )
 	{
-		START_LOG( cerr, L"운영자가 아닌데 감히..?ㅁ?" )
+		START_LOG( cerr, L"Unauthorized attempt to use an operator-only feature." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
@@ -493,7 +493,7 @@ IMPL_ON_FUNC( EGS_ADMIN_INIT_SKILL_TREE_REQ )
 
 	if ( kPacket_.m_iActiveSkillPageNumber != m_kSkillTree.GetActiveSkillPageNumber() )
 	{
-		START_LOG( cerr, L"활성된 스킬 페이지 번호가 이상합니다 (EGS_ADMIN_INIT_SKILL_TREE_REQ)" )
+		START_LOG( cerr, L"Invalid active skill page number (EGS_ADMIN_INIT_SKILL_TREE_REQ)." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iActiveSkillPageNumber )
 			<< BUILD_LOG( m_kSkillTree.GetActiveSkillPageNumber() )
@@ -515,7 +515,7 @@ IMPL_ON_FUNC( EGS_ADMIN_INIT_SKILL_TREE_REQ )
 
 	if( !SiCXSLSkillTree()->GetUnitClassDefaultSkill( GetUnitClass(), iDefaultSkillID1, iDefaultSkillID2, iDefaultSkillID3, iDefaultSkillID4, iDefaultSkillID5, iDefaultSkillID6 ) )
 	{
-		START_LOG( cerr, L"유닛타입이 이상함." )
+		START_LOG( cerr, L"Invalid unit type." )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetUnitType() )
@@ -531,7 +531,7 @@ IMPL_ON_FUNC( EGS_ADMIN_INIT_SKILL_TREE_REQ )
 	int iRetrievedCSPoint = 0;
 	if( SiCXSLSkillTree()->GetCalcInitSkillPoint( GetLevel(), iRetrievedSPoint ) == false )
 	{
-		START_LOG( cerr, L"레벨로 환산된 sp 정보가 이상합니다." )
+		START_LOG( cerr, L"Invalid SP information converted from the level." )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( static_cast<int>(GetLevel()) )
 			<< BUILD_LOG( iRetrievedSPoint )
@@ -551,7 +551,7 @@ IMPL_ON_FUNC( EGS_ADMIN_INIT_SKILL_TREE_REQ )
 	{
 		if( 0 != m_kSkillTree.GetCSPoint() )
 		{
-			START_LOG( cerr, L"cash skill point기한이 다되었는데 스킬트리에 csp가 남아있다." )
+			START_LOG( cerr, L"The cash skill point has expired, but CSP remains in the skill tree." )
 				<< BUILD_LOG( GetCharName() )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( iRetrievedSPoint )
@@ -600,7 +600,7 @@ _IMPL_ON_FUNC( DBE_ADMIN_INIT_SKILL_TREE_ACK, KEGS_ADMIN_INIT_SKILL_TREE_ACK )
 
 		if( !SiCXSLSkillTree()->GetUnitClassDefaultSkill( GetUnitClass(), iDefaultSkillID[0], iDefaultSkillID[1], iDefaultSkillID[2], iDefaultSkillID[3], iDefaultSkillID[4], iDefaultSkillID[5] ) )
 		{
-			START_LOG( cerr, L"유닛타입이 이상함." )
+			START_LOG( cerr, L"Invalid unit type." )
 				<< BUILD_LOG( GetCharName() )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( GetUnitType() )
@@ -616,7 +616,7 @@ _IMPL_ON_FUNC( DBE_ADMIN_INIT_SKILL_TREE_ACK, KEGS_ADMIN_INIT_SKILL_TREE_ACK )
 	}
 	else
 	{
-		START_LOG( cerr, L"스킬 트리 관련 치트 응답 실패")
+		START_LOG( cerr, L"Failed to respond to skill tree cheat.")
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iOK )
@@ -636,7 +636,7 @@ IMPL_ON_FUNC_NOPARAM( EGS_ADMIN_INCREASE_PARTY_FEVER_POINT_NOT )
 
 	if( GetAuthLevel() < SEnum::UAL_DEVELOPER )
 	{
-		START_LOG( cerr, L"개발자도 아닌데 감히" )
+		START_LOG( cerr, L"Unauthorized attempt to use a developer-only feature." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOGc( GetAuthLevel() )
@@ -654,14 +654,14 @@ IMPL_ON_FUNC_NOPARAM( EGS_ADMIN_INCREASE_PARTY_FEVER_POINT_NOT )
 		if( SiKPartyListManager()->E_IncreasePartyFever( kNot ) == false )
 			//}}
 		{
-			START_LOG( cerr, L"파티 사기 수치 증가 실패!" )
+			START_LOG( cerr, L"Failed to increase the party fraud value!" )
 				<< BUILD_LOG( GetPartyUID() )
 				<< END_LOG;
 		}
 	}
 	else
 	{
-		START_LOG( cwarn, L"파티uid가 이상합니다!" )
+		START_LOG( cwarn, L"Invalid party UID!" )
 			<< BUILD_LOG( GetPartyUID() )
 			<< END_LOG;
 	}
@@ -677,7 +677,7 @@ IMPL_ON_FUNC( EGS_ADMIN_CHANGE_SPIRIT_REQ )
 
 	if( GetAuthLevel() < SEnum::UAL_GM )
 	{
-		START_LOG( cerr, L"운영자도 아닌데 감히" )
+		START_LOG( cerr, L"Unauthorized attempt to use an operator-only feature." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOGc( GetAuthLevel() )
@@ -727,7 +727,7 @@ IMPL_ON_FUNC( EGS_ADMIN_SET_PC_BANG_REQ )
 
 	if( GetAuthLevel() < SEnum::UAL_GM )
 	{
-		START_LOG( cerr, L"운영자 이상만 가능." )
+		START_LOG( cerr, L"Operator privileges required." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( GetUserName() )
@@ -758,7 +758,7 @@ IMPL_ON_FUNC( EGS_ADMIN_CHANGE_VSPOINT_REQ )
 
 	if( GetAuthLevel() < SEnum::UAL_GM )
 	{
-		START_LOG( cerr, L"운영자도 아닌데 감히" )
+		START_LOG( cerr, L"Unauthorized attempt to use an operator-only feature." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOGc( GetAuthLevel() )
@@ -807,7 +807,7 @@ IMPL_ON_FUNC( EGS_ADMIN_CHANGE_UNIT_CLASS_REQ )
 {
 	if( GetAuthLevel() < SEnum::UAL_DEVELOPER )
 	{
-		START_LOG( cerr, L"운영자가 아닌데 감히.." )
+		START_LOG( cerr, L"Unauthorized attempt to use an operator-only feature." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( GetUserName() )
@@ -840,7 +840,7 @@ IMPL_ON_FUNC( EGS_ADMIN_CHANGE_UNIT_CLASS_REQ )
 	// 유닛 클래스 검사
 	if( CXSLUnit::IsValidUnitClass( static_cast<CXSLUnit::UNIT_CLASS>(kPacket_.m_cUnitClass) ) == false )
 	{
-		START_LOG( cout, L"존재하지 않는 유닛 클래스로 치트를 사용하였습니다. 영자님 제대로 입력해주세요." )
+		START_LOG( cout, L"Cheat used with a nonexistent unit class; administrator, please enter it correctly." )
 			<< BUILD_LOG( GetUserName() )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOGc( kPacket_.m_cUnitClass )
@@ -857,7 +857,7 @@ IMPL_ON_FUNC( EGS_ADMIN_CHANGE_UNIT_CLASS_REQ )
 	int iDefaultSkill[6] = {0,};
 	if( SiCXSLSkillTree()->GetUnitClassDefaultSkill( kPacket_.m_cUnitClass, iDefaultSkill[0], iDefaultSkill[1], iDefaultSkill[2], iDefaultSkill[3], iDefaultSkill[4], iDefaultSkill[5] ) == false )
 	{
-		START_LOG( cerr, L"전직시 지급하려는 기본 스킬이 이상함" )
+		START_LOG( cerr, L"Invalid base skill to grant upon class advancement." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOGc( kPacket_.m_cUnitClass )
@@ -983,7 +983,7 @@ IMPL_ON_FUNC( EGS_ADMIN_AUTO_GET_ALL_SKILL_REQ )
 	// 레벨에 따라 배울수있는 스킬 다 찍기
 	if( GetAuthLevel() < SEnum::UAL_DEVELOPER )
 	{
-		START_LOG( cerr, L"운영자가 아닌데 감히.." )
+		START_LOG( cerr, L"Unauthorized attempt to use an operator-only feature." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( GetUserName() )
@@ -1002,7 +1002,7 @@ IMPL_ON_FUNC( EGS_ADMIN_AUTO_GET_ALL_SKILL_REQ )
 
 	if ( kPacket_.m_iActiveSkillPageNumber != m_kSkillTree.GetActiveSkillPageNumber() )
 	{
-		START_LOG( cerr, L"활성된 스킬 페이지 번호가 이상합니다 (EGS_ADMIN_AUTO_GET_ALL_SKILL_REQ)" )
+		START_LOG( cerr, L"Invalid active skill page number (EGS_ADMIN_AUTO_GET_ALL_SKILL_REQ)." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iActiveSkillPageNumber )
 			<< BUILD_LOG( m_kSkillTree.GetActiveSkillPageNumber() )
@@ -1022,7 +1022,7 @@ IMPL_ON_FUNC( EGS_ADMIN_AUTO_GET_ALL_SKILL_REQ )
 		kPacketToDB.m_iNewDefaultSkill5,
 		kPacketToDB.m_iNewDefaultSkill6 ) )
 	{
-		START_LOG( cerr, L"유닛타입이 이상함." )
+		START_LOG( cerr, L"Invalid unit type." )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetUnitType() )
@@ -1038,7 +1038,7 @@ IMPL_ON_FUNC( EGS_ADMIN_AUTO_GET_ALL_SKILL_REQ )
 	int iRetrievedCSPoint = 0;
 	if( SiCXSLSkillTree()->GetCalcInitSkillPoint( GetLevel(), iRetrievedSPoint ) == false )
 	{
-		START_LOG( cerr, L"레벨로 환산된 sp 정보가 이상합니다." )
+		START_LOG( cerr, L"Invalid SP information converted from the level." )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( static_cast<int>(GetLevel()) )
 			<< BUILD_LOG( iRetrievedSPoint )
@@ -1058,7 +1058,7 @@ IMPL_ON_FUNC( EGS_ADMIN_AUTO_GET_ALL_SKILL_REQ )
 	{
 		if( 0 != m_kSkillTree.GetCSPoint() )
 		{
-			START_LOG( cerr, L"cash skill point기한이 다되었는데 스킬트리에 csp가 남아있다." )
+			START_LOG( cerr, L"The cash skill point has expired, but CSP remains in the skill tree." )
 				<< BUILD_LOG( GetCharName() )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( iRetrievedSPoint )
@@ -1198,7 +1198,7 @@ IMPL_ON_FUNC( EGS_ADMIN_GET_SKILL_REQ )
 	// 레벨에 따라 배울수있는 스킬 다 찍기
 	if( GetAuthLevel() < SEnum::UAL_DEVELOPER )
 	{
-		START_LOG( cerr, L"운영자가 아닌데 감히.." )
+		START_LOG( cerr, L"Unauthorized attempt to use an operator-only feature." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( GetUserName() )
@@ -1212,7 +1212,7 @@ IMPL_ON_FUNC( EGS_ADMIN_GET_SKILL_REQ )
 
 	if ( kPacket_.m_iActiveSkillPageNumber != m_kSkillTree.GetActiveSkillPageNumber() )
 	{
-		START_LOG( cerr, L"활성된 스킬 페이지 번호가 이상합니다 (EGS_ADMIN_GET_SKILL_REQ)" )
+		START_LOG( cerr, L"Invalid active skill page number (EGS_ADMIN_GET_SKILL_REQ)." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iActiveSkillPageNumber )
 			<< BUILD_LOG( m_kSkillTree.GetActiveSkillPageNumber() )
@@ -1327,7 +1327,7 @@ IMPL_ON_FUNC( EGS_ADMIN_GET_TITLE_CHEAT_REQ )
 	KEGS_ADMIN_GET_TITLE_CHEAT_ACK kPacketAck;
 	if( GetAuthLevel() < SEnum::UAL_GM )
 	{
-		START_LOG( cerr, L"운영자가 아닌데 감히.." )
+		START_LOG( cerr, L"Unauthorized attempt to use an operator-only feature." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( GetUserName() )
@@ -1386,7 +1386,7 @@ IMPL_ON_FUNC_NOPARAM( EGS_ADMIN_GET_ITEM_SET_NOT )
 
 	if( GetAuthLevel() < SEnum::UAL_DEVELOPER )
 	{
-		START_LOG( cerr, L"개발자도 아닌데 감히" )
+		START_LOG( cerr, L"Unauthorized attempt to use a developer-only feature." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOGc( GetAuthLevel() )
@@ -1412,7 +1412,7 @@ _IMPL_ON_FUNC( EGS_ADMIN_GUEST_USER_MODE_NOT, bool )
 
 	if( GetAuthLevel() < SEnum::UAL_DEVELOPER )
 	{
-		START_LOG( cerr, L"개발자도 아닌데 감히" )
+		START_LOG( cerr, L"Unauthorized attempt to use a developer-only feature." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOGc( GetAuthLevel() )
@@ -1424,7 +1424,7 @@ _IMPL_ON_FUNC( EGS_ADMIN_GUEST_USER_MODE_NOT, bool )
 	// 체험ID 모드 변경
 	m_kNexonAccountInfo.m_byteGuestUser = ( kPacket_ ? 1 : 0 );
 
-	START_LOG( cout, L"개발자가 체험ID 모드를 변경하였습니다!" )
+	START_LOG( cout, L"A developer changed the trial ID mode!" )
 		<< BUILD_LOG( GetName() )
 		<< BUILD_LOG( IsGuestUser() );
 
@@ -1450,7 +1450,7 @@ IMPL_ON_FUNC( EGS_ADMIN_GET_GUILD_SKILL_POINT_REQ )
 
 	if( GetAuthLevel() < SEnum::UAL_GM )
 	{
-		START_LOG( cerr, L"운영자도 아닌데 감히" )
+		START_LOG( cerr, L"Unauthorized attempt to use an operator-only feature." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOGc( GetAuthLevel() )
@@ -1479,7 +1479,7 @@ IMPL_ON_FUNC( EGS_ADMIN_GET_GUILD_SKILL_POINT_REQ )
 	}
 
 	// 길드 스킬 치트
-	START_LOG( cout, L"운영자가 길드 스킬 포인트 치트를 사용하였습니다!" )
+	START_LOG( cout, L"An operator used the guild skill point cheat!" )
 		<< BUILD_LOG( GetName() )
 		<< BUILD_LOG( GetCharName() )
 		<< BUILD_LOG( m_kUserGuildManager.GetGuildName() )
@@ -1515,7 +1515,7 @@ IMPL_ON_FUNC( EGS_ADMIN_CHANGE_PET_INFO_NOT )
 
 	if( GetAuthLevel() < SEnum::UAL_GM )
 	{
-		START_LOG( cerr, L"운영자가 아닌데 감히.." )
+		START_LOG( cerr, L"Unauthorized attempt to use an operator-only feature." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( GetUserName() )
@@ -1533,7 +1533,7 @@ IMPL_ON_FUNC( EGS_ADMIN_CHANGE_PET_INFO_NOT )
 	int iPetInventorySlotSize = 0;
 	if( m_kUserPetManager.Handler_EGS_ADMIN_CHANGE_PET_INFO_NOT( kPacket_, GetThisPtr<KGSUser>(), kPetInfo, iPetInventorySlotSize ) == false )
 	{
-		START_LOG( cout, L"펫 개발자 치트 실패!" );
+		START_LOG( cout, L"Pet developer cheat failed!" );
 		return;
 	}
 
@@ -1550,7 +1550,7 @@ IMPL_ON_FUNC( EGS_ADMIN_CHANGE_PET_INFO_NOT )
 			kPacketAck.m_kEvolutionResultPetInfo = kPetInfo;
 			SendPacket( EGS_PET_EVOLUTION_ACK, kPacketAck );
 
-			START_LOG( cout, L"펫 진화 치트 성공!" )
+			START_LOG( cout, L"Pet evolution cheat succeeded!" )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( kPetInfo.m_wstrPetName )
 				<< BUILD_LOG( kPacket_.m_iValue )
@@ -1582,7 +1582,7 @@ IMPL_ON_FUNC( EGS_ADMIN_CHANGE_PET_INFO_NOT )
 			{
 				if( GetRoomUID() <= 0 )
 				{
-					START_LOG( cerr, L"룸 UID 이상." )
+					START_LOG( cerr, L"Invalid room UID." )
 						<< BUILD_LOG( GetRoomUID() )
 						<< BUILD_LOG( GetCharUID() )
 						<< END_LOG;
@@ -1612,7 +1612,7 @@ IMPL_ON_FUNC( EGS_ADMIN_CHANGE_PET_INFO_NOT )
 
 				default:
 					{
-						START_LOG( cerr, L"이상한 방 타입." )
+						START_LOG( cerr, L"Invalid room type." )
 							<< BUILD_LOG( CXSLRoom::GetRoomType( GetRoomUID() ) )
 							<< BUILD_LOG( GetCharUID() )
 							<< END_LOG;
@@ -1642,7 +1642,7 @@ IMPL_ON_FUNC( EGS_ADMIN_CHANGE_PET_INFO_NOT )
 			// 자동 먹이 기능 체크!
 			CheckAutoFeed();
 
-			START_LOG( cout, L"펫 포만도 치트 성공!" )
+			START_LOG( cout, L"Pet satiety cheat succeeded!" )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( kPetInfo.m_wstrPetName )
 				<< BUILD_LOG( kPacket_.m_iValue )
@@ -1667,7 +1667,7 @@ IMPL_ON_FUNC( EGS_ADMIN_CHANGE_PET_INFO_NOT )
 				SendPacket( EGS_CHANGED_PET_INTIMACY_NOT, kNot );
 			}
 
-			START_LOG( cout, L"펫 친밀도 치트 성공!" )
+			START_LOG( cout, L"Pet affection cheat succeeded!" )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( kPetInfo.m_wstrPetName )
 				<< BUILD_LOG( kPacket_.m_iValue )
@@ -1678,7 +1678,7 @@ IMPL_ON_FUNC( EGS_ADMIN_CHANGE_PET_INFO_NOT )
 
 	case KEGS_ADMIN_CHANGE_PET_INFO_NOT::PCT_EXTROVERSION:
 		{
-			START_LOG( cout, L"펫 외향성 치트 성공!" )
+			START_LOG( cout, L"Pet sociability cheat succeeded!" )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( kPetInfo.m_wstrPetName )
 				<< BUILD_LOG( kPacket_.m_iValue )
@@ -1689,7 +1689,7 @@ IMPL_ON_FUNC( EGS_ADMIN_CHANGE_PET_INFO_NOT )
 
 	case KEGS_ADMIN_CHANGE_PET_INFO_NOT::PCT_EMOTION:
 		{
-			START_LOG( cout, L"펫 감수성 치트 성공!" )
+			START_LOG( cout, L"Pet sensitivity cheat succeeded!" )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( kPetInfo.m_wstrPetName )
 				<< BUILD_LOG( kPacket_.m_iValue )
@@ -1709,7 +1709,7 @@ IMPL_ON_FUNC( EGS_ADMIN_SHOW_ED_CHEAT_REQ )
 
 	if( GetAuthLevel() < SEnum::UAL_GM )
 	{
-		START_LOG( cerr, L"운영자가 아닌데 감히.." )
+		START_LOG( cerr, L"Unauthorized attempt to use an operator-only feature." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( GetUserName() )
@@ -1754,7 +1754,7 @@ IMPL_ON_FUNC( EGS_ADMIN_PSHOP_AGENCY_CHEAT_REQ )
 
 	if( GetAuthLevel() < SEnum::UAL_GM )
 	{
-		START_LOG( cerr, L"운영자가 아닌데 감히.." )
+		START_LOG( cerr, L"Unauthorized attempt to use an operator-only feature." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( GetUserName() )
@@ -1783,7 +1783,7 @@ IMPL_ON_FUNC( EGS_ADMIN_CHANNELING_CODE_CHEAT_NOT )
 
 	if( GetAuthLevel() < SEnum::UAL_DEVELOPER )
 	{
-		START_LOG( cerr, L"개발자가 아닌데 감히.." )
+		START_LOG( cerr, L"Unauthorized attempt to use a developer-only feature." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( GetUserName() )
@@ -1794,7 +1794,7 @@ IMPL_ON_FUNC( EGS_ADMIN_CHANNELING_CODE_CHEAT_NOT )
 	// 치트 적용
 	m_kNexonAccountInfo.m_uChannelCode = static_cast<UINT8>(kPacket_.m_iChannelingCode);
 
-	START_LOG( cout, L"개발자가 채널링 치트 코드를 사용하였습니다!" )
+	START_LOG( cout, L"A developer used a channeling cheat code!" )
 		<< BUILD_LOG( GetName() )
 		<< BUILD_LOG( GetUserName() )
 		<< BUILD_LOG( GetChannelCode() );
@@ -1813,7 +1813,7 @@ IMPL_ON_FUNC( EGS_ADMIN_HENIR_REWARD_CHEAT_NOT )
 
 	if( GetAuthLevel() < SEnum::UAL_DEVELOPER )
 	{
-		START_LOG( cerr, L"개발자가 아닌데 감히.." )
+		START_LOG( cerr, L"Unauthorized attempt to use a developer-only feature." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( GetUserName() )
@@ -1824,7 +1824,7 @@ IMPL_ON_FUNC( EGS_ADMIN_HENIR_REWARD_CHEAT_NOT )
 	// 치트 적용
 	m_kUserDungeonManager.SetPossibleHenirRewardNormalCount( kPacket_.m_iHenirRewardNormalCnt );
 
-	START_LOG( cout, L"개발자가 채널링 치트 코드를 사용하였습니다!" )
+	START_LOG( cout, L"A developer used a channeling cheat code!" )
 		<< BUILD_LOG( GetUserName() )
 		<< BUILD_LOG( m_kUserDungeonManager.GetPossibleHenirRewardNormalCount() );
 
@@ -1842,7 +1842,7 @@ IMPL_ON_FUNC( EGS_ADMIN_ED_MONITORING_CHEAT_NOT )
 
 	if( GetAuthLevel() < SEnum::UAL_DEVELOPER )
 	{
-		START_LOG( cerr, L"개발자가 아닌데 감히.." )
+		START_LOG( cerr, L"Unauthorized attempt to use a developer-only feature." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( GetUserName() )
@@ -1853,7 +1853,7 @@ IMPL_ON_FUNC( EGS_ADMIN_ED_MONITORING_CHEAT_NOT )
 	// 치트 적용
 	m_kUserHackingManager.SetEDMonitoringMode( kPacket_.m_bEDMonitoringMode );
 
-	START_LOG( cout, L"개발자가 ED 감시 치트 코드를 사용하였습니다!" )
+	START_LOG( cout, L"A developer used the ED monitoring cheat!" )
 		<< BUILD_LOG( GetUserName() )
 		<< BUILD_LOG( m_kUserDungeonManager.GetPossibleHenirRewardNormalCount() );
 
@@ -1871,7 +1871,7 @@ IMPL_ON_FUNC( EGS_ADMIN_NPC_UNIT_CREATE_REQ )
 
 	if( GetAuthLevel() < SEnum::UAL_GM )
 	{
-		START_LOG( cerr, L"GM이 아닌데 감히.." )
+		START_LOG( cerr, L"Unauthorized attempt to use a GM-only feature." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( GetUserName() )
@@ -1908,7 +1908,7 @@ IMPL_ON_FUNC( EGS_ADMIN_CASH_SKILL_POINT_DATE_CHANGE_REQ )
 
 	if( GetAuthLevel() < SEnum::UAL_DEVELOPER )
 	{
-		START_LOG( cerr, L"개발자가 아닌데 감히.." )
+		START_LOG( cerr, L"Unauthorized attempt to use a developer-only feature." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( GetUserName() )
@@ -1920,7 +1920,7 @@ IMPL_ON_FUNC( EGS_ADMIN_CASH_SKILL_POINT_DATE_CHANGE_REQ )
 	std::wstring wstrModifyDate = x2::str( x2::wformat( L"%04d-%02d-%02d %02d:%02d:00" ) % kPacket_.m_iYear % kPacket_.m_iMonth % kPacket_.m_iDay % kPacket_.m_iHour % kPacket_.m_iMinute );
 
 	// 치트 적용
-	START_LOG( cout, L"개발자가 캐쉬 스킬 포인트 기간을 변경하는 치트 코드를 사용하였습니다!" )
+	START_LOG( cout, L"A developer used a cheat to change the cash skill point duration!" )
 		<< BUILD_LOG( GetUserName() )
 		<< BUILD_LOG( GetCharName() )
 		<< BUILD_LOG( wstrModifyDate );
@@ -1942,7 +1942,7 @@ _IMPL_ON_FUNC( DBE_ADMIN_CASH_SKILL_POINT_DATE_CHANGE_ACK, KEGS_ADMIN_CASH_SKILL
 
 	if( kPacket_.m_iOK == NetError::NET_OK )
 	{
-		START_LOG( cout, L"캐쉬 스킬 포인트 기간 변경 치트 성공!" )
+		START_LOG( cout, L"Cash skill point duration change cheat succeeded!" )
 			<< BUILD_LOG( GetUserName() )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( kPacket_.m_wstrCspEndDate );
@@ -1951,7 +1951,7 @@ _IMPL_ON_FUNC( DBE_ADMIN_CASH_SKILL_POINT_DATE_CHANGE_ACK, KEGS_ADMIN_CASH_SKILL
 	}
 	else
 	{
-		START_LOG( cerr, L"캐쉬 스킬 포인트 기간 변경 치트 실패!" )
+		START_LOG( cerr, L"Cash skill point duration change cheat failed!" )
 			<< BUILD_LOG( GetUserName() )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( kPacket_.m_wstrCspEndDate )
@@ -1968,7 +1968,7 @@ IMPL_ON_FUNC( EGS_ADMIN_CHEAT_GET_ALL_SKILL_REQ )
 {
 	if( GetAuthLevel() < SEnum::UAL_DEVELOPER )
 	{
-		START_LOG( cerr, L"운영자가 아닌데 감히..?ㅁ?" )
+		START_LOG( cerr, L"Unauthorized attempt to use an operator-only feature." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
@@ -1981,7 +1981,7 @@ IMPL_ON_FUNC( EGS_ADMIN_CHEAT_GET_ALL_SKILL_REQ )
 
 	if ( kPacket_.m_iActiveSkillPageNumber != m_kSkillTree.GetActiveSkillPageNumber() )
 	{
-		START_LOG( cerr, L"활성된 스킬 페이지 번호가 이상합니다 (EGS_ADMIN_CHEAT_GET_ALL_SKILL_REQ)" )
+		START_LOG( cerr, L"Invalid active skill page number (EGS_ADMIN_CHEAT_GET_ALL_SKILL_REQ)." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iActiveSkillPageNumber )
 			<< BUILD_LOG( m_kSkillTree.GetActiveSkillPageNumber() )
@@ -1997,7 +1997,7 @@ IMPL_ON_FUNC( EGS_ADMIN_CHEAT_GET_ALL_SKILL_REQ )
 	const CXSLSkillTree::SkillTreeTempletMap* pSkillTreeTempletMap = SiCXSLSkillTree()->GetSkillTreeTemplet( GetUnitClass() );
 	if( pSkillTreeTempletMap == NULL )
 	{
-		START_LOG( cerr, L"해당 클래스의 스킬 정보를 얻어올 수 없습니다.")
+		START_LOG( cerr, L"Could not retrieve skill information for the specified class.")
 			<< BUILD_LOG( GetUnitClass() )
 			<< END_LOG;
 
@@ -2050,7 +2050,7 @@ IMPL_ON_FUNC( DBE_ADMIN_CHEAT_GET_ALL_SKILL_ACK )
 {
 	if( kPacket_.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"일부 스킬에 대해서 실패하였습니다!" )
+		START_LOG( cerr, L"Failed for some skills!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< END_LOG;
 	}
@@ -2079,7 +2079,7 @@ IMPL_ON_FUNC( DBE_ADMIN_CHEAT_GET_ALL_SKILL_ACK )
 	const CXSLSkillTree::SkillTreeTempletMap* pSkillTreeTempletMap = SiCXSLSkillTree()->GetSkillTreeTemplet( GetUnitClass() );
 	if( pSkillTreeTempletMap == NULL )
 	{
-		START_LOG( cerr, L"해당 클래스의 스킬 정보를 얻어올 수 없습니다.")
+		START_LOG( cerr, L"Could not retrieve skill information for the specified class.")
 			<< BUILD_LOG( GetUnitClass() )
 			<< END_LOG;
 	}
@@ -2110,7 +2110,7 @@ IMPL_ON_FUNC_NOPARAM( EGS_BATTLE_FIELD_DANGEROUS_VALUE_NOT )
 
 	if( GetAuthLevel() < SEnum::UAL_DEVELOPER )
 	{
-		START_LOG( cerr, L"운영자가 아닌데 감히..?ㅁ?" )
+		START_LOG( cerr, L"Unauthorized attempt to use an operator-only feature." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
@@ -2129,7 +2129,7 @@ IMPL_ON_FUNC_NOPARAM( EGS_BATTLE_FIELD_DANGEROUS_VALUE_NOT )
 			{
 				SendToCnRoom( ERM_BATTLE_FIELD_DANGEROUS_VALUE_REQ );
 
-				START_LOG( cout, L"배틀 필드 위험도 확인!." )
+				START_LOG( cout, L"Checking battlefield risk level." )
 					<< BUILD_LOG( GetCharUID() )
 					<< BUILD_LOG( GetCharName() )
 					<< BUILD_LOG( GetRoomUID() )
@@ -2138,7 +2138,7 @@ IMPL_ON_FUNC_NOPARAM( EGS_BATTLE_FIELD_DANGEROUS_VALUE_NOT )
 			break;
 
 		default:
-			START_LOG( cerr, L"배틀 필드가 아닌데 위험도 확인을 하려 합니다." )
+			START_LOG( cerr, L"Attempted to check threat outside a battlefield." )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( GetCharName() )
 				<< BUILD_LOG( GetRoomUID() )
@@ -2153,7 +2153,7 @@ _IMPL_ON_FUNC( ERM_BATTLE_FIELD_DANGEROUS_VALUE_ACK, int )
 	kPacket.m_iDangerousValue = kPacket_;
 	SendPacket( EGS_BATTLE_FIELD_DANGEROUS_VALUE_NOT, kPacket );
 
-	START_LOG( cout, L"현재 배틀 필드의 위험도를 확인합니다." )
+	START_LOG( cout, L"Checking current battlefield threat." )
 		<< BUILD_LOG( GetRoomUID() )
 		<< BUILD_LOG( kPacket.m_iDangerousValue )
 		<< END_LOG;
@@ -2165,7 +2165,7 @@ IMPL_ON_FUNC_NOPARAM( EGS_ADMIN_HERO_PVP_USER_LIST_REQ )
 {
 	if( GetAuthLevel() < SEnum::UAL_DEVELOPER )
 	{
-		START_LOG( cerr, L"운영자가 아닌데 감히.." )
+		START_LOG( cerr, L"Unauthorized attempt to use an operator-only feature." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( GetUserName() )
@@ -2191,7 +2191,7 @@ IMPL_ON_FUNC( EGS_ADMIN_HERO_PVP_USER_ADD_REQ )
 {
 	if( GetAuthLevel() < SEnum::UAL_DEVELOPER )
 	{
-		START_LOG( cerr, L"운영자가 아닌데 감히.." )
+		START_LOG( cerr, L"Unauthorized attempt to use an operator-only feature." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( GetUserName() )
@@ -2217,7 +2217,7 @@ IMPL_ON_FUNC( EGS_ADMIN_HERO_PVP_USER_REMOVE_REQ )
 {
 	if( GetAuthLevel() < SEnum::UAL_DEVELOPER )
 	{
-		START_LOG( cerr, L"운영자가 아닌데 감히.." )
+		START_LOG( cerr, L"Unauthorized attempt to use an operator-only feature." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( GetUserName() )
@@ -2243,7 +2243,7 @@ IMPL_ON_FUNC( EGS_ADMIN_NOTIFY_HERO_PVP_USER_REQ )
 {
 	if( GetAuthLevel() < SEnum::UAL_DEVELOPER )
 	{
-		START_LOG( cerr, L"운영자가 아닌데 감히.." )
+		START_LOG( cerr, L"Unauthorized attempt to use an operator-only feature." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( GetUserName() )
@@ -2260,7 +2260,7 @@ IMPL_ON_FUNC( EGS_ADMIN_NOTIFY_HERO_PVP_USER_REQ )
 	{
 		if( ( kPacket_.m_wstrNickName.size() < 2 ) || ( 13 < kPacket_.m_wstrNickName.size() ) )
 		{
-			START_LOG( cerr, L"캐릭터 닉네임 길이가 잘못되었습니다.")
+			START_LOG( cerr, L"Invalid character nickname length.")
 				<< BUILD_LOG( GetCharName() )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( kPacket_.m_wstrNickName )
@@ -2278,7 +2278,7 @@ IMPL_ON_FUNC( EGS_ADMIN_NOTIFY_HERO_PVP_USER_REQ )
 		if( ( kPacket_.m_iServerGroupID <= SEnum::SGI_INVALID ) || ( SEnum::SGI_END <= kPacket_.m_iServerGroupID ) )
 #endif // EXTEND_SERVER_GROUP_MASK
 		{
-			START_LOG( cerr, L"잘못된 서버군 아이디")
+			START_LOG( cerr, L"Invalid server group ID")
 				<< BUILD_LOG( GetCharName() )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( kPacket_.m_iServerGroupID )
@@ -2336,7 +2336,7 @@ IMPL_ON_FUNC( EGS_ADMIN_OBSERVER_MODE_REQ )
 
 	if( GetAuthLevel() < SEnum::UAL_GM )
 	{
-		START_LOG( cerr, L"운영자가 아닌데 감히.." )
+		START_LOG( cerr, L"Unauthorized attempt to use an operator-only feature." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( GetUserName() )
@@ -2366,7 +2366,7 @@ IMPL_ON_FUNC( EGS_ADMIN_DELETE_GUILD_ADD_NOT )
 
 	if( GetAuthLevel() < SEnum::UAL_GM )
 	{
-		START_LOG( cerr, L"운영자가 아닌데 감히..?ㅁ?" )
+		START_LOG( cerr, L"Unauthorized attempt to use an operator-only feature." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( GetUserName() )
@@ -2393,7 +2393,7 @@ IMPL_ON_FUNC( EGS_ADMIN_DELETE_HENIR_RANKING_RANK_NOT )
 
 	if( GetAuthLevel() < SEnum::UAL_GM )
 	{
-		START_LOG( cerr, L"운영자가 아닌데 감히..?ㅁ?" )
+		START_LOG( cerr, L"Unauthorized attempt to use an operator-only feature." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( GetUserName() )
@@ -2403,7 +2403,7 @@ IMPL_ON_FUNC( EGS_ADMIN_DELETE_HENIR_RANKING_RANK_NOT )
 
 	if( kPacket_.m_iRank < 1 || kPacket_.m_iRank > 100 )
 	{
-		START_LOG( cerr, L"1위 부터 100위 까지만 삭제 가능" )
+		START_LOG( cerr, L"Only ranks 1 through 100 can be deleted." )
 			<< END_LOG;
 		return;
 	}
@@ -2427,7 +2427,7 @@ IMPL_ON_FUNC( EGS_ADMIN_DELETE_HENIR_RANKING_NICKNAME_NOT )
 
 	if( GetAuthLevel() < SEnum::UAL_GM )
 	{
-		START_LOG( cerr, L"운영자가 아닌데 감히..?ㅁ?" )
+		START_LOG( cerr, L"Unauthorized attempt to use an operator-only feature." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( GetUserName() )
@@ -2454,7 +2454,7 @@ IMPL_ON_FUNC( EGS_ADMIN_DELETE_HENIR_RANKING_UNITUID_NOT )
 
 	if( GetAuthLevel() < SEnum::UAL_GM )
 	{
-		START_LOG( cerr, L"운영자가 아닌데 감히..?ㅁ?" )
+		START_LOG( cerr, L"Unauthorized attempt to use an operator-only feature." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( GetUserName() )
@@ -2485,7 +2485,7 @@ IMPL_ON_FUNC( EGS_ADMIN_BATTLE_FIELD_INCREASE_DANGER_REQ )
 
 	if( GetAuthLevel() < SEnum::UAL_GM )
 	{
-		START_LOG( cerr, L"운영자가 아닌데 감히..위험도 증가 하려고 했음" )
+		START_LOG( cerr, L"Unauthorized attempt to increase the risk level." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( GetUserName() )
@@ -2504,7 +2504,7 @@ IMPL_ON_FUNC( EGS_ADMIN_BATTLE_FIELD_INCREASE_DANGER_REQ )
 			{
 				SendToCnRoom( ERM_ADMIN_BATTLE_FIELD_INCREASE_DANGER_REQ, kPacket_ );
 
-				START_LOG( cout, L"배틀 필드 위험도 확인!." )
+				START_LOG( cout, L"Checking battlefield risk level." )
 					<< BUILD_LOG( GetCharUID() )
 					<< BUILD_LOG( GetCharName() )
 					<< BUILD_LOG( GetRoomUID() )
@@ -2514,7 +2514,7 @@ IMPL_ON_FUNC( EGS_ADMIN_BATTLE_FIELD_INCREASE_DANGER_REQ )
 
 		default:
 			{
-				START_LOG( cerr, L"배틀 필드가 아닌데 위험도 증가 하려 합니다." )
+				START_LOG( cerr, L"Attempted to increase threat outside a battlefield." )
 					<< BUILD_LOG( GetCharUID() )
 					<< BUILD_LOG( GetCharName() )
 					<< BUILD_LOG( GetRoomUID() )
@@ -2532,7 +2532,7 @@ _IMPL_ON_FUNC( ERM_ADMIN_BATTLE_FIELD_INCREASE_DANGER_ACK, KEGS_ADMIN_BATTLE_FIE
 {
 	SendPacket( EGS_ADMIN_BATTLE_FIELD_INCREASE_DANGER_ACK, kPacket_ );
 
-	START_LOG( cout, L"현재 배틀 필드의 위험도를 증가합니다." )
+	START_LOG( cout, L"Increasing current battlefield threat." )
 		<< BUILD_LOG( GetRoomUID() )
 		<< BUILD_LOG( kPacket_.m_iDanger )
 		<< END_LOG;
@@ -2549,7 +2549,7 @@ IMPL_ON_FUNC( EGS_ADMIN_CHANGE_COUPLE_DATE_REQ )
 {
 	if( GetAuthLevel() < SEnum::UAL_GM )
 	{
-		START_LOG( cerr, L"운영자가 아닌데 감히..위험도 증가 하려고 했음" )
+		START_LOG( cerr, L"Unauthorized attempt to increase the risk level." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( GetUserName() )
@@ -2569,7 +2569,7 @@ IMPL_ON_FUNC( EGS_ADMIN_CHANGE_COUPLE_DATE_REQ )
 		return;
 	}
 
-	START_LOG( cout, L"커플 맺은 시간을 변경합니다." )
+	START_LOG( cout, L"Changing couple formation time." )
 		<< BUILD_LOG( GetRoomUID() )
 		<< BUILD_LOG( kPacket_.m_iAddHour )
 		<< END_LOG;
@@ -2592,7 +2592,7 @@ _IMPL_ON_FUNC( DBE_ADMIN_CHANGE_COUPLE_DATE_ACK, KEGS_ADMIN_CHANGE_COUPLE_DATE_A
 {
 	if( kPacket_.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"커플 날짜 변경치트키 사용 오류!" )
+		START_LOG( cerr, L"Error using couple date change cheat!" )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
 	}
@@ -2606,7 +2606,7 @@ IMPL_ON_FUNC( EGS_ADMIN_BOSS_FIELD_GATE_OPEN_REQ )
 {
 	if( GetAuthLevel() < SEnum::UAL_GM )
 	{
-		START_LOG( cwarn, L"허용되지 않은 권한을 사용하려 하였습니다." )
+		START_LOG( cwarn, L"Attempted to use an unauthorized permission." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( GetUserName() )
@@ -2642,7 +2642,7 @@ IMPL_ON_FUNC_NOPARAM( EGS_ADMIN_BOSS_FIELD_GATE_CLOSE_NOT )
 {
 	if( GetAuthLevel() < SEnum::UAL_GM )
 	{
-		START_LOG( cwarn, L"허용되지 않은 권한을 사용하려 하였습니다." )
+		START_LOG( cwarn, L"Attempted to use an unauthorized permission." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( GetUserName() )
@@ -2660,7 +2660,7 @@ IMPL_ON_FUNC( EGS_ADMIN_GET_TOTAL_DANGEROUS_VALUE_REQ )
 {
 	if( GetAuthLevel() < SEnum::UAL_GM )
 	{
-		START_LOG( cwarn, L"허용되지 않은 권한을 사용하려 하였습니다." )
+		START_LOG( cwarn, L"Attempted to use an unauthorized permission." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( GetUserName() )
@@ -2696,7 +2696,7 @@ IMPL_ON_FUNC( EGS_ADMIN_SET_TOTAL_DANGEROUS_VALUE_REQ )
 {
 	if( GetAuthLevel() < SEnum::UAL_GM )
 	{
-		START_LOG( cwarn, L"허용되지 않은 권한을 사용하려 하였습니다." )
+		START_LOG( cwarn, L"Attempted to use an unauthorized permission." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( GetUserName() )

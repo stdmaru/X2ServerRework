@@ -145,7 +145,7 @@ void KThreadManager::EndThread( DWORD dwTimeOut_/* = 10000 */ )
 
     m_bTerminateReserved = true;
 
-    START_LOG( cout, L"모든 스레드가 종료되도록 대기합니다." );
+    START_LOG( cout, L"Waiting for all threads to shut down." );
 
     DWORD dwWaitTick = ::GetTickCount();
     while( m_nTerminateCount < m_vecThread.size() && ::GetTickCount() - dwWaitTick < dwTimeOut_ )
@@ -153,7 +153,7 @@ void KThreadManager::EndThread( DWORD dwTimeOut_/* = 10000 */ )
         ::Sleep( 20 );
     }
 
-    START_LOG( cout, L"대기 후 남은 스레드 수 : " << m_vecThread.size() - m_nTerminateCount )
+    START_LOG( cout, L"Threads remaining after the wait: " << m_vecThread.size() - m_nTerminateCount )
         << BUILD_LOG( m_vecThread.size() )
         << BUILD_LOG( m_nTerminateCount );
 
@@ -166,11 +166,11 @@ void KThreadManager::SetThreadNum( size_t nThreadNum_ )
 
     if( nThreadNum_ == m_vecThread.size() )
     {
-        std::cout << " 현재 " << nThreadNum_ << "개의 스레드가 동작 중입니다." << std::endl;
+        std::cout << " " << nThreadNum_ << " threads are currently running." << std::endl;
         return;
     }
 
-    std::cout << " 스레드 수 조절. " << m_vecThread.size() << " -> " << nThreadNum_ << std::endl;
+    std::cout << " Adjusting thread count. " << m_vecThread.size() << " -> " << nThreadNum_ << std::endl;
 
     if( nThreadNum_ < m_vecThread.size() )    // 스레드를 줄여야 한다.
     {
@@ -188,5 +188,5 @@ void KThreadManager::SetThreadNum( size_t nThreadNum_ )
         }
     }
 
-    std::cout << "최종 스레드 갯수 : " << m_vecThread.size() << std::endl;
+    std::cout << "Final thread count: " << m_vecThread.size() << std::endl;
 }

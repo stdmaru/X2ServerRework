@@ -99,7 +99,7 @@ void KFieldManager::Tick()
 		}
 		else
 		{
-			START_LOG( cerr, L"field pointer 이상.!" )
+			START_LOG( cerr, L"Invalid field pointer!" )
 				<< END_LOG;
 		}
 	}
@@ -139,7 +139,7 @@ UidType KFieldManager::OpenField()
 
 	if( m_mapEmptyFieldList.empty() )
 	{
-		START_LOG( cerr, L"빈 필드가 없음." )
+		START_LOG( cerr, L"No empty field." )
 			<< END_LOG;
 
 		return 0;
@@ -151,7 +151,7 @@ UidType KFieldManager::OpenField()
 		KFieldPtr spField = Get( mit->first );
 		if( spField == NULL )
 		{
-			START_LOG( cerr, L"빈 필드 인덱스가 이상함." )
+			START_LOG( cerr, L"Invalid empty field index." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 		}
@@ -164,7 +164,7 @@ UidType KFieldManager::OpenField()
 			}
 			else
 			{
-				START_LOG( cerr, L"empty field 리스트에 있지만 방 상태가 이상함." )
+				START_LOG( cerr, L"Room state is invalid for an entry in the empty field list." )
 					<< BUILD_LOG( spField->GetStateID() )
 					<< BUILD_LOG( spField->GetStateIDString() )
 					<< END_LOG;
@@ -174,7 +174,7 @@ UidType KFieldManager::OpenField()
 
 	if( mit == m_mapEmptyFieldList.end() )
 	{
-		START_LOG( cerr, L"empty field 을 찾을 수 없음." )
+		START_LOG( cerr, L"Could not find an empty field." )
 			<< END_LOG;
 
 		return 0;
@@ -194,7 +194,7 @@ bool KFieldManager::CloseField( UidType iFieldUID )
 	mit = m_mapEmptyFieldList.find( iFieldUID );
 	if( mit != m_mapEmptyFieldList.end() )
 	{
-		START_LOG( cerr, L"empty field 리스트에 넣으려는 ID의 방이 이미 있음." )
+		START_LOG( cerr, L"The room for the ID being added to the empty field list already exists." )
 			<< BUILD_LOG( iFieldUID )
 			<< END_LOG;
 
@@ -204,7 +204,7 @@ bool KFieldManager::CloseField( UidType iFieldUID )
 	KFieldPtr spField = Get( iFieldUID );
 	if( !spField )
 	{
-		START_LOG( cerr, L"해당 UID의 field 이 없음." )
+		START_LOG( cerr, L"No field exists for this UID." )
 			<< BUILD_LOG( iFieldUID )
 			<< END_LOG;
 
@@ -214,7 +214,7 @@ bool KFieldManager::CloseField( UidType iFieldUID )
 	// 모든 field FSM 들은 INIT, CLOSE, WAIT 를 가지며 이들의 값도 같다.
 	if( spField->GetStateID() != KFieldFSM::S_CLOSE )
 	{
-		START_LOG( cerr, L"field 상태 이상." )
+		START_LOG( cerr, L"Invalid field state." )
 			<< BUILD_LOG( spField->GetStateID() )
 			<< BUILD_LOG( iFieldUID )
 			<< END_LOG;
@@ -249,14 +249,14 @@ void KFieldManager::QueueingEventToRoom( const KEventPtr& spEvent_ )
 		{
 		case ERM_OPEN_FIELD_NOT:
 			{
-				START_LOG( cerr, L"필드 생성 실패.!" )
+				START_LOG( cerr, L"Failed to create field!" )
 					<< BUILD_LOG( iFieldUID )
 					<< END_LOG;
 				return;
 			}
 
 		default:
-			START_LOG( cerr, L"이벤트의 목표 방 UID가 이상함." )
+			START_LOG( cerr, L"Invalid target room UID for event." )
 				<< BUILD_LOG( iFieldUID )
 				<< BUILD_LOG( KEvent::GetIDStr( spEvent_->m_usEventID ) )
 				<< END_LOG;
@@ -267,7 +267,7 @@ void KFieldManager::QueueingEventToRoom( const KEventPtr& spEvent_ )
 	KFieldPtr spField = Get( iFieldUID );
 	if( spField == NULL )
 	{
-		START_LOG( cerr, L"field 검색 실패.!" )
+		START_LOG( cerr, L"Failed to find the field!" )
 			<< BUILD_LOG( iFieldUID )
 			<< END_LOG;
 		return;
@@ -368,7 +368,7 @@ void KFieldManager::AddFieldInfo_LUA()
 	}
 	else
 	{
-		START_LOG( cerr, L"FIELD INFO 잘못되었음.!(꼭다시 확인)" )
+		START_LOG( cerr, L"Invalid field information; please check it again!" )
 			<< BUILD_LOG( sInfo.m_iID )
 			<< BUILD_LOG( sInfo.m_kTileInfo.m_NumX )
 			<< BUILD_LOG( sInfo.m_kTileInfo.m_NumY )
@@ -397,7 +397,7 @@ KFieldPtr KFieldManager::Get( UidType iFieldUID )
 
 	if( mit->second == NULL )
 	{
-		START_LOG( cerr, L"field pointer 이상.!" )
+		START_LOG( cerr, L"Invalid field pointer!" )
 			<< BUILD_LOG( iFieldUID )
 			<< END_LOG;
 

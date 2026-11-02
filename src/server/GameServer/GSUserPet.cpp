@@ -29,7 +29,7 @@ IMPL_ON_FUNC( EGS_CREATE_PET_REQ )
 		//{{ 2012. 03. 29	최육사	Inventory Lock 기능
 		if( m_kInventory.IsLocked() == true )
 		{
-			START_LOG( cout, L"인벤토리 락이 걸려있는 상태입니다!" )
+			START_LOG( cout, L"The inventory is locked!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharName() )
@@ -78,7 +78,7 @@ IMPL_ON_FUNC( EGS_CREATE_PET_REQ )
 	KInventoryItemInfo kInvenotyItem;
 	if( m_kInventory.DeleteItem( kPacket_.m_iItemUID, kInvenotyItem, KDeletedItemInfo::DR_PET_CREATE_ITEM ) == false )
 	{
-		START_LOG( cerr, L"아이템이 존재 하는지 검사를 했는데 삭제 실패 했네? 있을 수 없는 에러!" )
+		START_LOG( cerr, L"The item was verified to exist, but deletion failed; this should never happen!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iItemUID )
 			<< END_LOG;
@@ -122,7 +122,7 @@ IMPL_ON_FUNC( DBE_CREATE_PET_ACK )
 	// 펫 생성 결과 처리
 	if( m_kUserPetManager.Handler_DBE_CREATE_PET_ACK( kPacket_ ) == false )
 	{
-		START_LOG( cerr, L"펫 생성 실패! 여기까지 왔는데 생성 실패는 있을 수 없다!" )
+		START_LOG( cerr, L"Pet creation failed here; this should never happen!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( NetError::GetLastErrMsg() )
 			<< END_LOG;
@@ -168,7 +168,7 @@ IMPL_ON_FUNC( EGS_SUMMON_PET_REQ )
 		//{{ 2012. 03. 29	최육사	Inventory Lock 기능
 		if( m_kInventory.IsLocked() == true )
 		{
-			START_LOG( cout, L"인벤토리 락이 걸려있는 상태입니다!" )
+			START_LOG( cout, L"The inventory is locked!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharName() )
@@ -184,7 +184,7 @@ IMPL_ON_FUNC( EGS_SUMMON_PET_REQ )
 		{
 			if( CXSLRoom::GetRoomType( GetRoomUID() ) == CXSLRoom::RT_SQUARE  &&  GetRoomUID() > 0 )
 			{
-				START_LOG( cerr, L"거래 광장에서는 펫 소환을 할 수 없습니다!" )
+				START_LOG( cerr, L"Pets cannot be summoned in the trading square!" )
 					<< BUILD_LOG( GetCharUID() )
 					<< BUILD_LOG( kPacket_.m_iSummonPetUID )
 					<< END_LOG;
@@ -198,7 +198,7 @@ IMPL_ON_FUNC( EGS_SUMMON_PET_REQ )
 		{
 			if( GetRoomListID() != 0 )
 			{
-				START_LOG( cerr, L"대전 로비에서는 펫 소환을 할 수 없습니다!" )
+				START_LOG( cerr, L"Pets cannot be summoned in the PvP lobby!" )
 					<< BUILD_LOG( GetCharUID() )
 					<< BUILD_LOG( kPacket_.m_iSummonPetUID )
 					<< END_LOG;
@@ -219,7 +219,7 @@ IMPL_ON_FUNC( EGS_SUMMON_PET_REQ )
 	{
 		if( kPacket_.m_iSummonPetUID == 0 )
 		{
-			START_LOG( cerr, L"펫 소환 해제 요청 실패!" )
+			START_LOG( cerr, L"Failed to request pet dismissal!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( GetStateIDString() )
 				<< BUILD_LOG( GetRoomUID() )
@@ -232,7 +232,7 @@ IMPL_ON_FUNC( EGS_SUMMON_PET_REQ )
 		}
 		else
 		{
-			START_LOG( cerr, L"펫 소환 요청 실패!" )
+			START_LOG( cerr, L"Failed to request pet summon!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( GetStateIDString() )
 				<< BUILD_LOG( GetRoomUID() )
@@ -267,7 +267,7 @@ IMPL_ON_FUNC( EGS_SUMMON_PET_REQ )
 	{
 		if( mapRemovedPetItem.size() > 0 )
 		{
-			START_LOG( cerr, L"소환된 펫은 없었는데 펫 인벤토리에 아이템은 있었다? 절대 일어나서는 안되는 에러!!" )
+			START_LOG( cerr, L"Pet inventory contained an item despite no summoned pet; this should never happen!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( mapRemovedPetItem.size() )
 				<< END_LOG;
@@ -278,7 +278,7 @@ IMPL_ON_FUNC( EGS_SUMMON_PET_REQ )
 		// 해당 펫에 최신 인벤토리 정보를 저장하자! -> 이걸 외부로 노출시키는게 께름칙하군.. 방법을 찾아보자..
 		if( m_kUserPetManager.UpdatePetInventory( kPacketToDB.m_iBeforeSummonPetUID, mapRemovedPetItem ) == false )
 		{
-			START_LOG( cerr, L"펫 인벤토리 정보 업데이트 실패!" )
+			START_LOG( cerr, L"Failed to update pet inventory information!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( kPacketToDB.m_iBeforeSummonPetUID )
 				<< BUILD_LOG( mapRemovedPetItem.size() )
@@ -314,7 +314,7 @@ IMPL_ON_FUNC( DBE_SUMMON_PET_ACK )
 	int iPetCategorySlotSize = 0;
 	if( m_kUserPetManager.Handler_DBE_SUMMON_PET_ACK( kPacket_, kPacket.m_kSummonedPetInfo, iPetCategorySlotSize, mapPetItem ) == false )
 	{
-		START_LOG( cerr, L"펫 소환 실패!" )
+		START_LOG( cerr, L"Failed to summon the pet!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( NetError::GetLastErrMsg() )
 			<< BUILD_LOG( kPacket_.m_iSummonPetUID )
@@ -373,7 +373,7 @@ IMPL_ON_FUNC( DBE_SUMMON_PET_ACK )
 	{
 		if( GetRoomUID() <= 0 )
 		{
-			START_LOG( cerr, L"룸 UID 이상." )
+			START_LOG( cerr, L"Invalid room UID." )
 				<< BUILD_LOG( GetRoomUID() )
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
@@ -406,7 +406,7 @@ IMPL_ON_FUNC( DBE_SUMMON_PET_ACK )
 
 		default:
 			{
-				START_LOG( cerr, L"이상한 방 타입." )
+				START_LOG( cerr, L"Invalid room type." )
 					<< BUILD_LOG( CXSLRoom::GetRoomType( GetRoomUID() ) )
 					<< BUILD_LOG( GetCharUID() )
 					<< END_LOG;
@@ -443,7 +443,7 @@ IMPL_ON_FUNC( EGS_COMMANDS_FOR_PETS_REQ )
 		// 펫이 소환되지 않았는데 펫 명령이 왔다. 강제로 소환해제 시키자.
 		if( kPacket.m_iOK == NetError::ERR_PET_06 )
 		{
-			START_LOG( cout, L"펫이 소환되지 않았는데 펫 명령이 왔다. 강제로 소환해제 시키자!" )
+			START_LOG( cout, L"Received pet command when no pet is summoned; forcibly dismissing it!" )
 				<< BUILD_LOG( GetCharUID() );
 			KEGS_SUMMON_PET_NOT kPacketNot;
 			kPacketNot.m_iUnitUID = GetCharUID();
@@ -490,7 +490,7 @@ IMPL_ON_FUNC( ERM_DECREASE_PET_SATIETY_NOT )
 		{
 			if( GetRoomUID() <= 0 )
 			{
-				START_LOG( cerr, L"룸 UID 이상." )
+				START_LOG( cerr, L"Invalid room UID." )
 					<< BUILD_LOG( GetRoomUID() )
 					<< BUILD_LOG( GetCharUID() )
 					<< END_LOG;
@@ -518,7 +518,7 @@ IMPL_ON_FUNC( ERM_DECREASE_PET_SATIETY_NOT )
 
 			default:
 				{
-					START_LOG( cerr, L"이상한 방 타입." )
+					START_LOG( cerr, L"Invalid room type." )
 						<< BUILD_LOG( CXSLRoom::GetRoomType( GetRoomUID() ) )
 						<< BUILD_LOG( GetCharUID() )
 						<< END_LOG;
@@ -563,7 +563,7 @@ IMPL_ON_FUNC( EGS_FEED_PETS_REQ )
 		//{{ 2012. 03. 29	최육사	Inventory Lock 기능
 		if( m_kInventory.IsLocked() == true )
 		{
-			START_LOG( cout, L"인벤토리 락이 걸려있는 상태입니다!" )
+			START_LOG( cout, L"The inventory is locked!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharName() )
@@ -580,7 +580,7 @@ IMPL_ON_FUNC( EGS_FEED_PETS_REQ )
 		{
 			if( CXSLRoom::GetRoomType( GetRoomUID() ) == CXSLRoom::RT_SQUARE  &&  GetRoomUID() > 0 )
 			{
-				START_LOG( cerr, L"거래 광장에서는 펫 먹이를 줄 수 없습니다!" )
+				START_LOG( cerr, L"Pets cannot be fed in the trading square!" )
 					<< BUILD_LOG( GetCharUID() )
 					<< END_LOG;
 
@@ -593,7 +593,7 @@ IMPL_ON_FUNC( EGS_FEED_PETS_REQ )
 		{
 			if( GetRoomListID() != 0 )
 			{
-				START_LOG( cerr, L"대전 로비에서는 펫 먹이를 줄 수 없습니다!" )
+				START_LOG( cerr, L"Pets cannot be fed in the PvP lobby!" )
 					<< BUILD_LOG( GetCharUID() )
 					<< END_LOG;
 
@@ -606,7 +606,7 @@ IMPL_ON_FUNC( EGS_FEED_PETS_REQ )
 		// 먹이를 주려고 하는 아이템이 실제로 존재하는 아이템인지 체크!
 		if( m_kInventory.IsExist( kPacket_.m_iItemUID ) == false )
 		{
-			START_LOG( cerr, L"존재하지 않는 아이템을 먹이로 주려고 했다!" )
+			START_LOG( cerr, L"Attempted to feed a nonexistent item!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( kPacket_.m_iItemUID )
 				<< END_LOG;
@@ -646,7 +646,7 @@ IMPL_ON_FUNC( EGS_FEED_PETS_REQ )
 	// 해당 아이템 삭제!
 	if( m_kInventory.FeedPetInInventory( kPacket_.m_iItemUID, kPacket.m_vecInventorySlotInfo ) == false )
 	{
-		START_LOG( cerr, L"위에서 아이템이 있는지 체크 했는데 먹이 아이템 삭제 실패했다? 절대 일어나면 안되는 에러!" )
+		START_LOG( cerr, L"Failed to delete pet food after checking it existed; this should never happen!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iItemUID )
 			<< END_LOG;
@@ -666,7 +666,7 @@ IMPL_ON_FUNC( EGS_FEED_PETS_REQ )
 		KUserPetPtr spSummonedPet = m_kUserPetManager.GetSummonedPet();
 		if( spSummonedPet == NULL )
 		{
-			START_LOG( cerr, L"소환 펫의 PetUID값은 있는데 펫 정보는 없네?" )
+			START_LOG( cerr, L"A summoned pet has a PetUID, but its pet data is missing." )
 				<< BUILD_LOG( m_kUserPetManager.GetSummonedPet() )
 				<< END_LOG;
 			return;
@@ -707,7 +707,7 @@ IMPL_ON_FUNC( EGS_FEED_PETS_REQ )
 	{
 		if( GetRoomUID() <= 0 )
 		{
-			START_LOG( cerr, L"룸 UID 이상." )
+			START_LOG( cerr, L"Invalid room UID." )
 				<< BUILD_LOG( GetRoomUID() )
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
@@ -742,7 +742,7 @@ IMPL_ON_FUNC( EGS_FEED_PETS_REQ )
 
 		default:
 			{
-				START_LOG( cerr, L"이상한 방 타입." )
+				START_LOG( cerr, L"Invalid room type." )
 					<< BUILD_LOG( CXSLRoom::GetRoomType( GetRoomUID() ) )
 					<< BUILD_LOG( GetCharUID() )
 					<< END_LOG;
@@ -755,7 +755,7 @@ IMPL_ON_FUNC( EGS_FEED_PETS_REQ )
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iFeedItemID );
 	if( pItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 아이템입니다!" )
+		START_LOG( cerr, L"The item does not exist!" )
 			<< BUILD_LOG( iFeedItemID )
 			<< END_LOG;
 
@@ -800,7 +800,7 @@ IMPL_ON_FUNC( EGS_PET_EVOLUTION_REQ )
 	{
 		if( CXSLRoom::GetRoomType( GetRoomUID() ) == CXSLRoom::RT_SQUARE  &&  GetRoomUID() > 0 )
 		{
-			START_LOG( cerr, L"거래 광장에서는 펫 진화를 할 수 없습니다!" )
+			START_LOG( cerr, L"Pets cannot evolve in the trading plaza!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
 
@@ -813,7 +813,7 @@ IMPL_ON_FUNC( EGS_PET_EVOLUTION_REQ )
 	{
 		if( GetRoomListID() != 0 )
 		{
-			START_LOG( cerr, L"대전 로비에서는 펫 진화를 할 수 없습니다!" )
+			START_LOG( cerr, L"Pets cannot evolve in the PvP lobby!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
 
@@ -869,7 +869,7 @@ IMPL_ON_FUNC( EGS_PET_EVOLUTION_REQ )
 	{
 		if( GetRoomUID() <= 0 )
 		{
-			START_LOG( cerr, L"룸 UID 이상." )
+			START_LOG( cerr, L"Invalid room UID." )
 				<< BUILD_LOG( GetRoomUID() )
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
@@ -899,7 +899,7 @@ IMPL_ON_FUNC( EGS_PET_EVOLUTION_REQ )
 
 		default:
 			{
-				START_LOG( cerr, L"이상한 방 타입." )
+				START_LOG( cerr, L"Invalid room type." )
 					<< BUILD_LOG( CXSLRoom::GetRoomType( GetRoomUID() ) )
 					<< BUILD_LOG( GetCharUID() )
 					<< END_LOG;
@@ -933,7 +933,7 @@ IMPL_ON_FUNC( EGS_CHANGE_PET_NAME_REQ )
 		//{{ 2012. 03. 29	최육사	Inventory Lock 기능
 		if( m_kInventory.IsLocked() == true )
 		{
-			START_LOG( cout, L"인벤토리 락이 걸려있는 상태입니다!" )
+			START_LOG( cout, L"The inventory is locked!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharUID() )
@@ -971,7 +971,7 @@ IMPL_ON_FUNC( EGS_CHANGE_PET_NAME_REQ )
 	// 2. 사용한 아이템이 펫 이름 변경권 아이템이 맞는가?
 	if( CXSLItem::IsPetNameChangeCashItem( iItemID ) == false )
 	{
-		START_LOG( cerr, L"펫이름 변경 아이템도 아니면서 사용하려고 했다!" )
+		START_LOG( cerr, L"Attempted to use an item that does not change a pet's name!" )
 			<< BUILD_LOG( kPacket_.m_iItemUID )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
@@ -1021,7 +1021,7 @@ IMPL_ON_FUNC( EGS_CHANGE_PET_NAME_REQ )
 	KInventoryItemInfo kInvenotyItem;
 	if( m_kInventory.DeleteItem( kPacket_.m_iItemUID, kInvenotyItem, KDeletedItemInfo::DR_PET_NAME_CHANGE ) == false )
 	{
-		START_LOG( cerr, L"아이템이 존재 하는지 검사를 했는데 삭제 실패 했네? 있을 수 없는 에러!" )
+		START_LOG( cerr, L"The item was verified to exist, but deletion failed; this should never happen!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iItemUID )
 			<< END_LOG;
@@ -1069,7 +1069,7 @@ IMPL_ON_FUNC( DBE_CHANGE_PET_NAME_ACK )
 	// 혹시나 해서 검사해봄
 	if( m_kUserPetManager.IsExistPet( kPacket_.m_kPetInfo.m_iPetUID ) == false )
 	{
-		START_LOG( cerr, L"존재하지 않는 Pet의 이름이 변경 되었네? 있을 수 없는 에러!" )
+		START_LOG( cerr, L"Name of nonexistent pet was changed; this should never happen!" )
 			<< BUILD_LOG( kPacket_.m_kPetInfo.m_iPetUID )
 			<< BUILD_LOGc( kPacket_.m_kPetInfo.m_iPetID )
 			<< BUILD_LOG( kPacket_.m_kPetInfo.m_wstrPetName )
@@ -1188,7 +1188,7 @@ IMPL_ON_FUNC( EGS_GET_RIDING_PET_LIST_REQ )
 			KDBE_GET_RIDING_PET_LIST_REQ KPacketToDB;
 			if( m_kAfterWorkStorage.InsertData( PI_GS_USER, GetUID(), NULL, EGS_GET_RIDING_PET_LIST_REQ, kPacket_, KPacketToDB.m_iAfterWorkStorageKey ) != KAfterWorkStorage::AWS_SUCCEED )
 			{
-				START_LOG( cerr, L"Riding Pet System: Key값을 얻을 수 없습니다." )
+				START_LOG( cerr, L"Riding Pet System: Could not retrieve the key." )
 					<< BUILD_LOG( GetCharName() )
 					<< BUILD_LOG( GetCharUID() )
 					<< END_LOG;
@@ -1259,7 +1259,7 @@ IMPL_ON_FUNC( EGS_SUMMON_RIDING_PET_REQ )
 			KDBE_GET_RIDING_PET_LIST_REQ KPacketToDB;
 			if( m_kAfterWorkStorage.InsertData( PI_GS_USER, GetUID(), NULL, EGS_SUMMON_RIDING_PET_REQ, kPacket_, KPacketToDB.m_iAfterWorkStorageKey ) != KAfterWorkStorage::AWS_SUCCEED )
 			{
-				START_LOG( cerr, L"Riding Pet System: Key값을 얻을 수 없습니다." )
+				START_LOG( cerr, L"Riding Pet System: Could not retrieve the key." )
 					<< BUILD_LOG( GetCharName() )
 					<< BUILD_LOG( GetCharUID() )
 					<< END_LOG;
@@ -1366,7 +1366,7 @@ IMPL_ON_FUNC( EGS_UNSUMMON_RIDING_PET_REQ )
 			KDBE_GET_RIDING_PET_LIST_REQ KPacketToDB;
 			if( m_kAfterWorkStorage.InsertData( PI_GS_USER, GetUID(), NULL, EGS_UNSUMMON_RIDING_PET_REQ, kPacket_, KPacketToDB.m_iAfterWorkStorageKey ) != KAfterWorkStorage::AWS_SUCCEED )
 			{
-				START_LOG( cerr, L"Riding Pet System: Key값을 얻을 수 없습니다." )
+				START_LOG( cerr, L"Riding Pet System: Could not retrieve the key." )
 					<< BUILD_LOG( GetCharName() )
 					<< BUILD_LOG( GetCharUID() )
 					<< END_LOG;
@@ -1461,7 +1461,7 @@ IMPL_ON_FUNC( EGS_CREATE_RIDING_PET_REQ )
 				//{{ 2012. 03. 29	최육사	Inventory Lock 기능
 				if( m_kInventory.IsLocked() == true )
 				{
-					START_LOG( cout, L"인벤토리 락이 걸려있는 상태입니다!" )
+					START_LOG( cout, L"The inventory is locked!" )
 						<< BUILD_LOG( GetUID() )
 						<< BUILD_LOG( GetName() )
 						<< BUILD_LOG( GetCharUID() )
@@ -1501,7 +1501,7 @@ IMPL_ON_FUNC( EGS_CREATE_RIDING_PET_REQ )
 			KInventoryItemInfo kInvenotyItem;
 			if( m_kInventory.DeleteItem( kPacket_.m_iItemUID, kInvenotyItem, KDeletedItemInfo::DR_RIDING_PET_CREATE_ITEM ) == false )
 			{
-				START_LOG( cerr, L"아이템이 존재 하는지 검사를 했는데 삭제 실패 했네? 있을 수 없는 에러!" )
+				START_LOG( cerr, L"The item was verified to exist, but deletion failed; this should never happen!" )
 					<< BUILD_LOG( GetCharUID() )
 					<< BUILD_LOG( kPacket_.m_iItemUID )
 					<< END_LOG;
@@ -1536,7 +1536,7 @@ IMPL_ON_FUNC( EGS_CREATE_RIDING_PET_REQ )
 			KDBE_GET_RIDING_PET_LIST_REQ KPacketToDB;
 			if( m_kAfterWorkStorage.InsertData( PI_GS_USER, GetUID(), NULL, EGS_CREATE_RIDING_PET_REQ, kPacket_, KPacketToDB.m_iAfterWorkStorageKey ) != KAfterWorkStorage::AWS_SUCCEED )
 			{
-				START_LOG( cerr, L"Riding Pet System: Key값을 얻을 수 없습니다." )
+				START_LOG( cerr, L"Riding Pet System: Could not retrieve the key." )
 					<< BUILD_LOG( GetCharName() )
 					<< BUILD_LOG( GetCharUID() )
 					<< END_LOG;
@@ -1585,7 +1585,7 @@ IMPL_ON_FUNC( DBE_GET_RIDING_PET_LIST_ACK )
 	{
 		if( m_kUserRidingPetManager.Init( kPacket_.m_vecRidingPetList ) != KUserRidingPetManager::RIDING_PET_SUCCEED )
 		{
-			START_LOG( cerr, L"Riding Pet System: 정보 초기화 실패" )
+			START_LOG( cerr, L"Riding Pet System: failed to initialize information." )
 				<< BUILD_LOG( GetCharName() )
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
@@ -1606,7 +1606,7 @@ IMPL_ON_FUNC( DBE_GET_RIDING_PET_LIST_ACK )
 				|| ( spEvent == NULL )
 				)
 			{
-				START_LOG( cerr, L"After Work Storage: 꺼내오기 실패" )
+				START_LOG( cerr, L"After Work Storage: Failed to retrieve the item." )
 					<< BUILD_LOG( GetCharName() )
 					<< BUILD_LOG( GetCharUID() )
 					<< END_LOG;
@@ -1631,7 +1631,7 @@ IMPL_ON_FUNC( DBE_GET_RIDING_PET_LIST_ACK )
 				|| ( spEvent == NULL )
 				)
 			{
-				START_LOG( cerr, L"After Work Storage: 꺼내오기 실패" )
+				START_LOG( cerr, L"After Work Storage: Failed to retrieve the item." )
 					<< BUILD_LOG( GetCharName() )
 					<< BUILD_LOG( GetCharUID() )
 					<< END_LOG;
@@ -1658,7 +1658,7 @@ IMPL_ON_FUNC( DBE_CREATE_RIDING_PET_ACK )
 		const int iOK = m_kUserRidingPetManager.AddRidingPet( kPacket_.m_kCreatedPetInfo, true );
 		if( iOK != KUserRidingPetManager::RIDING_PET_SUCCEED )
 		{
-			START_LOG( cerr, L"Riding Pet System: 초기화 되지 않은 KUserRidingPetManager에 생성된 라이딩 펫 정보를 저장하려 하였습니다." )
+			START_LOG( cerr, L"Riding Pet System: attempted to save a created riding pet to an uninitialized KUserRidingPetManager." )
 				<< BUILD_LOG( iOK )
 				<< BUILD_LOG( GetCharName() )
 				<< BUILD_LOG( GetCharUID() )
@@ -1709,7 +1709,7 @@ IMPL_ON_FUNC( EGS_RELEASE_RIDING_PET_REQ )
 			KDBE_GET_RIDING_PET_LIST_REQ KPacketToDB;
 			if( m_kAfterWorkStorage.InsertData( PI_GS_USER, GetUID(), NULL, EGS_RELEASE_RIDING_PET_REQ, kPacket_, KPacketToDB.m_iAfterWorkStorageKey ) != KAfterWorkStorage::AWS_SUCCEED )
 			{
-				START_LOG( cerr, L"Riding Pet System: Key값을 얻을 수 없습니다." )
+				START_LOG( cerr, L"Riding Pet System: Could not retrieve the key." )
 					<< BUILD_LOG( GetCharName() )
 					<< BUILD_LOG( GetCharUID() )
 					<< END_LOG;
@@ -1865,7 +1865,7 @@ IMPL_ON_FUNC( EGS_UPDATE_RIDING_PET_NOT )
 
 	if( iOK != KUserRidingPetManager::RIDING_PET_SUCCEED )
 	{
-		START_LOG( cwarn, L"Riding Pet System: 라이딩 펫 스테미너 값 갱신 실패" )
+		START_LOG( cwarn, L"Riding Pet System: failed to update riding pet stamina." )
 			<< BUILD_LOG( iOK )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( GetCharUID() )

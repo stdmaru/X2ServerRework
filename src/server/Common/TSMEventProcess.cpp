@@ -59,7 +59,7 @@ void KTSMEventProcess::ProcessEvent( const KEventPtr& spEvent_ )
 #endif // SERV_LOG_UNDEFINED_QUEST_TEMPLET
 
 	default:
-		START_LOG( cerr, L"핸들러가 지정되지 않은 이벤트." )
+		START_LOG( cerr, L"Event has no handler assigned." )
 			<< BUILD_LOG( spEvent_->m_usEventID )
 			<< BUILD_LOG( spEvent_->GetIDStr() )
 			<< END_LOG;
@@ -68,7 +68,7 @@ void KTSMEventProcess::ProcessEvent( const KEventPtr& spEvent_ )
 	dwElapTime = ::GetTickCount() - dwElapTime;
 	if( dwElapTime > 3000 )
 	{
-		START_LOG( cwarn, L"이벤트 처리 소요 시간." )
+		START_LOG( cwarn, L"Event processing duration: " )
 			<< BUILD_LOG( spEvent_->GetIDStr() )
 			<< BUILD_LOG( spEvent_->m_usEventID )
 			<< BUILD_LOG( dwElapTime );
@@ -94,28 +94,28 @@ IMPL_ON_FUNC_NOPARAM( EGS_SEND_STATISTICS_LOCLOG_REQ )
 {
 	KSIManager.OnFlushLocalLog( true );
 
-	START_LOG( cout, L"게임서버 텍스트 통계 백업!" );
+	START_LOG( cout, L"Backing up GameServer text statistics." );
 }
 
 IMPL_ON_FUNC_NOPARAM( EGS_SEND_STATISTICS_DBLOG_REQ )
 {
     KSIManager.FlushData();
 
-	START_LOG( cout, L"게임서버 DB 통계 백업!" );
+	START_LOG( cout, L"Backing up GameServer database statistics." );
 }
 
 IMPL_ON_FUNC_NOPARAM( ECN_SEND_STATISTICS_LOCLOG_REQ )
 {
 	KSIManager.OnFlushLocalLog( true );
 
-	START_LOG( cout, L"센터서버 텍스트 통계 백업!" );
+	START_LOG( cout, L"Backing up CenterServer text statistics." );
 }
 
 IMPL_ON_FUNC_NOPARAM( ECN_SEND_STATISTICS_DBLOG_REQ )
 {
     KSIManager.FlushData();
 
-	START_LOG( cout, L"센터서버 DB 통계 백업!" );
+	START_LOG( cout, L"Backing up CenterServer database statistics." );
 }
 
 IMPL_ON_FUNC( E_HENIR_RANKING_LOG_NOT )
@@ -303,7 +303,7 @@ IMPL_ON_FUNC( E_LOCAL_LOG_SERVER_DISCONNECT_NOT )
 		break;
 
 	default:
-		START_LOG( cerr, L"잘못된 로그 타입입니다!" )
+		START_LOG( cerr, L"Invalid log type." )
 			<< BUILD_LOGc( kPacket_.m_cLogType )
 			<< END_LOG;
 		return;
@@ -359,7 +359,7 @@ IMPL_ON_FUNC( E_LOCAL_LOG_BILLING_PACKET_NOT )
 		break;
 
 	default:
-		START_LOG( cerr, L"잘못된 로그 타입입니다!" )
+		START_LOG( cerr, L"Invalid log type." )
 			<< BUILD_LOGc( kPacket_.m_cLogType )
 			<< END_LOG;
 		return;

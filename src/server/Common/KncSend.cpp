@@ -113,7 +113,7 @@ void KncSend( DWORD dwPIFrom_, UidType nFrom_, KEventPtr spEvent_ )
 			}
 			break;
         default:
-            START_LOG( cerr, L"글쎄 누구한테 보내는 거냐." )
+            START_LOG( cerr, L"Who is this supposed to be sent to?" )
                 << BUILD_LOG( dwPIFrom_ )
                 << BUILD_LOG( spEvent_->m_kDestPerformer.m_dwPerformerID )
                 << BUILD_LOG( spEvent_->m_usEventID )
@@ -127,7 +127,7 @@ void KncSend( DWORD dwPIFrom_, UidType nFrom_, KEventPtr spEvent_ )
         // 하위 서버에 보내는 이벤트이다.
         if( GetPerformerClass( dwPIFrom_ ) == PC_USER )
         {
-            START_LOG( cerr, L"SendPacket을 써라." )
+            START_LOG( cerr, L"Use SendPacket." )
                 << BUILD_LOG( dwPIFrom_ )
                 << BUILD_LOG( spEvent_->m_kDestPerformer.m_dwPerformerID )
                 << BUILD_LOG( spEvent_->m_usEventID )
@@ -138,7 +138,7 @@ void KncSend( DWORD dwPIFrom_, UidType nFrom_, KEventPtr spEvent_ )
 
         if( spEvent_->IsEmptyTrace() )
         {
-            START_LOG( cerr, L"어디로 보내야 하나.." )
+            START_LOG( cerr, L"Where should this be sent?" )
                 << BUILD_LOG( dwPIFrom_ )
                 << BUILD_LOG( spEvent_->m_kDestPerformer.m_dwPerformerID )
                 << BUILD_LOG( spEvent_->m_usEventID )

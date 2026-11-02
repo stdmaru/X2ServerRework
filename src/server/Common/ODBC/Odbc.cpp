@@ -340,12 +340,12 @@ bool KODBC::ReConnect()
 
     if( !bRet )
     {
-        dbg::cerr << L"재접속 시도 실패" << END_LOG;
+        dbg::cerr << L"Reconnection attempt failed." << END_LOG;
         return false;
     }
     else
     {
-        START_LOG( cout, L"재접속 성공" );
+        START_LOG( cout, L"Reconnected successfully." );
         return true;
     }
 }
@@ -378,7 +378,7 @@ bool KODBC::Query( const std::wstring& wstrQuery )
 {
 	if( wstrQuery.length() > QUERY_BUFFER_SIZE )
 	{
-		START_LOG( cerr, L"쿼리 스트링 길이가 너무 길다!" )
+		START_LOG( cerr, L"Query string is too long." )
 			<< BUILD_LOG( wstrQuery.length() )
 			<< BUILD_LOG( wstrQuery )
 			<< END_LOG;
@@ -418,7 +418,7 @@ bool KODBC::Query( const std::wstring& wstrQuery )
 
 			if( !bRet )
 			{
-				dbg::cerr << L"재접속 시도 실패" << END_LOG;
+				dbg::cerr << L"Reconnection attempt failed." << END_LOG;
 				return false;
 			}
 			else
@@ -439,7 +439,7 @@ bool KODBC::Query( const std::wstring& wstrQuery )
 			ms_kMaxProcessingInfo.m_cTime       = CTime::GetCurrentTime();
 			ms_kMaxProcessingInfo.m_dwTerm      = dwElapTime;
 
-			START_LOG( clog2, L"쿼리 최대 소요시간 갱신." )
+			START_LOG( clog2, L"Maximum query duration updated." )
 				<< BUILD_LOG( ms_kMaxProcessingInfo.m_strQuery )
 				<< BUILD_LOG( ms_kMaxProcessingInfo.m_dwTerm );
 		}
@@ -454,7 +454,7 @@ bool KODBC::Query( const std::wstring& wstrQuery )
 	{
 		const SQLRETURN ret2 = ReadDiag( SQL_HANDLE_STMT, m_hStmt );
 
-		START_LOG( cerr, L"Query 실패!!")
+		START_LOG( cerr, L"Query failed.")
 			<< BUILD_LOG( ret )
 			<< BUILD_LOG( ret2 )
 			<< BUILD_LOG( m_sqlState )

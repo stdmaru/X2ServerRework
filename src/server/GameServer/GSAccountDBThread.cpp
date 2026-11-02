@@ -154,7 +154,7 @@ void KGSAccountDBThread::ProcessEvent( const KEventPtr& spEvent_ )
 
         CASE( DBE_GET_PURE_SECOND_SECURITY_INFO_REQ );
     default:
-        START_LOG( cerr, L"이벤트 핸들러가 정의되지 않았음. " << spEvent_->GetIDStr() );
+        START_LOG( cerr, L"No event handler is defined. " << spEvent_->GetIDStr() );
     }
 
 	//////////////////////////////////////////////////////////////////////////
@@ -263,7 +263,7 @@ IMPL_ON_FUNC_NOPARAM( DBE_UPDATE_LOGIN_TIME_NOT )
 end_proc:
     if( iOK != NetError::NET_OK )
     {
-        START_LOG( cerr, L"최근 로그인 시각 업데이트 실패." )
+        START_LOG( cerr, L"Failed to update last login time." )
             << BUILD_LOG( iOK )
             << BUILD_LOG( FIRST_SENDER_UID )
             << END_LOG;
@@ -370,7 +370,7 @@ _IMPL_ON_FUNC( DBE_ACCOUNT_CREATE_UNIT_REQ, KEGS_CREATE_UNIT_ACK )
 	//#ifdef SERV_VERSION_FLAG
 	if( KSimLayer::GetKObj()->GetVersionFlag() == KSimLayer::VF_INTERNAL )
 	{
-		START_LOG( cout, L"사내 테스트 버전 게임서버에서 새로운 캐릭터가 생성되었습니다!" )
+		START_LOG( cout, L"A new character was created on an internal test game server!" )
 			<< BUILD_LOG( kPacket_.m_kUnitInfo.m_wstrNickName );
 
 		kPacket_.m_iOK = NetError::NET_OK;
@@ -416,7 +416,7 @@ _IMPL_ON_FUNC( DBE_ACCOUNT_SELECT_UNIT_REQ, KDBE_SELECT_UNIT_ACK )
 	//#ifdef SERV_VERSION_FLAG
 	if( KSimLayer::GetKObj()->GetVersionFlag() == KSimLayer::VF_INTERNAL )
 	{
-		START_LOG( cout, L"사내 테스트 버전 게임서버에서 캐릭터가 선택되었습니다!" )
+		START_LOG( cout, L"Character selected on an internal test game server!" )
 			<< BUILD_LOG( kPacket_.m_kUnitInfo.m_wstrNickName );
 
 		kPacket_.m_iOK = NetError::NET_OK;
@@ -428,7 +428,7 @@ _IMPL_ON_FUNC( DBE_ACCOUNT_SELECT_UNIT_REQ, KDBE_SELECT_UNIT_ACK )
 
 		if( kPacket_.m_kUnitInfo.m_uiKNMSerialNum == 0 )
 		{
-			START_LOG( cerr, L"넥슨 메신저SN값이 이상합니다. 새로운 메신저SN값을 발급합니다." )
+			START_LOG( cerr, L"Invalid Nexon Messenger SN; issuing a new one." )
 				<< BUILD_LOG( kPacket_.m_kUnitInfo.m_nUnitUID )
 				<< BUILD_LOG( kPacket_.m_kUnitInfo.m_uiKNMSerialNum )
 				<< END_LOG;
@@ -450,7 +450,7 @@ _IMPL_ON_FUNC( DBE_ACCOUNT_SELECT_UNIT_REQ, KDBE_SELECT_UNIT_ACK )
 
 			if( iOK != NetError::NET_OK )
 			{
-				START_LOG( cerr, L"넥슨메신저SN 재발급 실패!?" )
+				START_LOG( cerr, L"Failed to reissue the Nexon Messenger SN!" )
 					<< BUILD_LOG( LAST_SENDER_UID )
 					<< BUILD_LOG( GetKGameServer()->GetServerGroupID() )
 					<< BUILD_LOG( kPacket_.m_kUnitInfo.m_nUnitUID )
@@ -556,7 +556,7 @@ _IMPL_ON_FUNC( DBE_CHANNEL_CHANGE_ACCOUNT_SELECT_UNIT_REQ, KDBE_CHANNEL_CHANGE_G
 	//#ifdef SERV_VERSION_FLAG
 	if( KSimLayer::GetKObj()->GetVersionFlag() == KSimLayer::VF_INTERNAL )
 	{
-		START_LOG( cout, L"사내 테스트 버전 게임서버에서 채널 이동으로 인해 캐릭터가 자동으로 재선택되었습니다!" )
+		START_LOG( cout, L"Character automatically reselected after channel transfer on an internal test game server!" )
 			<< BUILD_LOG( kPacket_.m_kSelectUnitAck.m_kUnitInfo.m_wstrNickName );
 
 		kPacket_.m_kSelectUnitAck.m_iOK = NetError::NET_OK;
@@ -570,7 +570,7 @@ _IMPL_ON_FUNC( DBE_CHANNEL_CHANGE_ACCOUNT_SELECT_UNIT_REQ, KDBE_CHANNEL_CHANGE_G
 
 		if( kPacket_.m_kSelectUnitAck.m_kUnitInfo.m_uiKNMSerialNum == 0 )
 		{
-			START_LOG( cerr, L"넥슨 메신저SN값이 이상합니다. 새로운 메신저SN값을 발급합니다." )
+			START_LOG( cerr, L"Invalid Nexon Messenger SN; issuing a new one." )
 				<< BUILD_LOG( kPacket_.m_kSelectUnitAck.m_kUnitInfo.m_nUnitUID )
 				<< BUILD_LOG( kPacket_.m_kSelectUnitAck.m_kUnitInfo.m_uiKNMSerialNum )
 				<< END_LOG;
@@ -593,7 +593,7 @@ _IMPL_ON_FUNC( DBE_CHANNEL_CHANGE_ACCOUNT_SELECT_UNIT_REQ, KDBE_CHANNEL_CHANGE_G
 
 			if( iOK != NetError::NET_OK )
 			{
-				START_LOG( cerr, L"넥슨메신저SN 재발급 실패!?" )
+				START_LOG( cerr, L"Failed to reissue the Nexon Messenger SN!" )
 					<< BUILD_LOG( LAST_SENDER_UID )
 					<< BUILD_LOG( GetKGameServer()->GetServerGroupID() )
 					<< BUILD_LOG( kPacket_.m_kSelectUnitAck.m_kUnitInfo.m_nUnitUID )
@@ -699,7 +699,7 @@ _IMPL_ON_FUNC( DBE_ACCOUNT_DELETE_UNIT_REQ, KEGS_FINAL_DELETE_UNIT_ACK )
 	//#ifdef SERV_VERSION_FLAG
 	if( KSimLayer::GetKObj()->GetVersionFlag() == KSimLayer::VF_INTERNAL )
 	{
-		START_LOG( cout, L"사내 테스트 버전 게임서버에서 캐릭터가 삭제 되었습니다!" )
+		START_LOG( cout, L"Character deleted on an internal test game server!" )
 			<< BUILD_LOG( kPacket_.m_wstrNickName );
 
 		kPacket_.m_iOK = NetError::NET_OK;
@@ -737,7 +737,7 @@ IMPL_ON_FUNC_NOPARAM( DBE_RECOMMEND_USER_NOT )
 end_proc:
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"MUser 테이블의 추천인 flag 갱신 실패!" )
+		START_LOG( cerr, L"Failed to update the recommender flag in the MUser table!" )
 			<< BUILD_LOG( LAST_SENDER_UID )
 			<< END_LOG;
 	}
@@ -760,7 +760,7 @@ _IMPL_ON_FUNC( DBE_AGREE_HACK_USER_REQ, UidType )
 	{
 		kPacket.m_iOK = NetError::ERR_HACK_USER_01;
 
-		START_LOG( cerr, L"해킹 동의 데이터 업데이트 실패.!" )
+		START_LOG( cerr, L"Failed to update hacking consent data!" )
 			<< BUILD_LOG( kPacket_ )
 			<< END_LOG;
 	}
@@ -785,7 +785,7 @@ _IMPL_ON_FUNC( DBE_REPORT_HACK_USER_NOT, UidType )
 end_proc:
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"해킹유저 신고등록 실패.!" )
+		START_LOG( cerr, L"Failed to register hacking-user report!" )
 			<< BUILD_LOG( iOK )
 			<< BUILD_LOG( kPacket_ )
 			<< END_LOG;
@@ -800,7 +800,7 @@ _IMPL_ON_FUNC( DBE_GET_MY_MESSENGER_SN_REQ, KEGS_GET_MY_MESSENGER_SN_REQ )
 	//#ifdef SERV_VERSION_FLAG
 	if( KSimLayer::GetKObj()->GetVersionFlag() == KSimLayer::VF_INTERNAL )
 	{
-		START_LOG( cout, L"사내 테스트 버전 게임서버에서 메신저SN을 요청하였습니다!" )
+		START_LOG( cout, L"MessengerSN requested from an internal test game server!" )
 			<< BUILD_LOG( kPacket_ );
 
 		kPacket.m_iOK = NetError::NET_OK;
@@ -814,7 +814,7 @@ _IMPL_ON_FUNC( DBE_GET_MY_MESSENGER_SN_REQ, KEGS_GET_MY_MESSENGER_SN_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"넥슨 메신져 SN 요청 실패.!" )
+		START_LOG( cerr, L"Failed to request the Nexon Messenger SN!" )
 			<< BUILD_LOG( kPacket_ )
 			<< BUILD_LOG( NetError::GetErrStr(kPacket.m_iOK) )
 			<< END_LOG;
@@ -838,7 +838,7 @@ IMPL_ON_FUNC( DBE_JOIN_ACCOUNT_CHECK_IP_LOG_NOT )
 end_proc:
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"특정 IP로 계정 생성되는 정보 로그 남기기 실패!" )
+		START_LOG( cerr, L"Failed to log account creation from a specific IP!" )
 			<< BUILD_LOG( iOK )
 			<< BUILD_LOG( kPacket_.m_iUserUID )
 			<< BUILD_LOG( kPacket_.m_wstrLoginIP )
@@ -878,7 +878,7 @@ IMPL_ON_FUNC( DBE_GET_PURE_SECOND_SECURITY_INFO_REQ )
     {
         kPacket.m_iOK = NetError::ERR_SECOND_SECURITY_AUTH_FAILED_LIMIT;
 
-        START_LOG( clog, L"2차 비밀번호 입력 실패 10회 이상" )
+        START_LOG( clog, L"The secondary password has been entered incorrectly at least 10 times." )
             << BUILD_LOG( kPacket.m_bUseSecondPW )
             << BUILD_LOG( kPacket.m_iFailedCount );
         goto end_proc;
@@ -919,7 +919,7 @@ IMPL_ON_FUNC( DBE_GET_SECOND_SECURITY_INFO_REQ )
 	{
 		kPacket.m_iOK = NetError::ERR_SECOND_SECURITY_AUTH_FAILED_LIMIT;
 
-		START_LOG( clog, L"2차 비밀번호 입력 실패 10회 이상" )
+		START_LOG( clog, L"The secondary password has been entered incorrectly at least 10 times." )
 			<< BUILD_LOG( kPacket.m_bUseSecondPW )
 			<< BUILD_LOG( kPacket.m_iFailedCount );
 		goto end_proc;
@@ -940,7 +940,7 @@ IMPL_ON_FUNC( DBE_GET_SECOND_SECURITY_INFO_REQ )
 		m_kODBC.EndFetch();
 	}
 
-	START_LOG( clog, L"유저의 휴면 복귀 정보를 DB에서 얻어오기 성공!!" )
+	START_LOG( clog, L"Successfully retrieved the user's dormant-return information from the database!" )
 		<< BUILD_LOG( kPacket_.m_iUserUID )
 		<< BUILD_LOG( kPacket.m_wstrComeBackBuffEndDate )
 		<< BUILD_LOG( kPacket.m_bIsComeBackUser )
@@ -952,7 +952,7 @@ IMPL_ON_FUNC( DBE_GET_SECOND_SECURITY_INFO_REQ )
 	{
 		if( KncUtil::ConvertStringToCTime( kPacket.m_wstrComeBackBuffEndDate , tEndDate ) == false )
 		{
-			START_LOG( cerr, L"날짜 변환 실패!!!" )
+			START_LOG( cerr, L"Failed to convert the date!!!" )
 				<< BUILD_LOG( kPacket_.m_iUserUID )
 				<< BUILD_LOG( kPacket.m_wstrComeBackBuffEndDate )
 				<< END_LOG;
@@ -984,7 +984,7 @@ IMPL_ON_FUNC( DBE_GET_SECOND_SECURITY_INFO_REQ )
 					kPacket.m_bIsFirst = true;
 					kPacket.m_bIsComeBackUser = true;	// 복귀 유저가 맞다!
 
-					START_LOG( clog, L"마지막 접속 시간으로 휴면 유저 판단 및 보상 등급 판단" )
+					START_LOG( clog, L"Determining dormant-user status and reward tier from the last login time." )
 						<< BUILD_LOG( kPacket_.m_iUserUID )
 						<< BUILD_LOG( kPacket.m_wstrComeBackBuffEndDate )
 						<< BUILD_LOG( kPacket.m_bIsComeBackUser )
@@ -1012,7 +1012,7 @@ IMPL_ON_FUNC( DBE_GET_SECOND_SECURITY_INFO_REQ )
 
 					if( _iOK != NetError::NET_OK )
 					{
-						START_LOG( cerr, L"잘못된 복귀 유저 정보 입력실패!!" )
+						START_LOG( cerr, L"Failed to insert invalid returning-user information!" )
 							<< BUILD_LOG( kPacket_.m_iUserUID )
 							<< BUILD_LOG( kPacket.m_wstrComeBackBuffEndDate )
 							<< BUILD_LOG( kPacket.m_bIsComeBackUser )
@@ -1020,7 +1020,7 @@ IMPL_ON_FUNC( DBE_GET_SECOND_SECURITY_INFO_REQ )
 							<< END_LOG;
 					}
 
-					START_LOG( clog, L"마지막 접속 시간을 보고 휴면 복귀 유저거 아니라고 판단" )
+					START_LOG( clog, L"Determined from the last login time that the user is not returning from inactivity." )
 						<< BUILD_LOG( kPacket_.m_iUserUID )
 						<< BUILD_LOG( kPacket.m_wstrComeBackBuffEndDate )
 						<< BUILD_LOG( kPacket.m_bIsComeBackUser )
@@ -1037,7 +1037,7 @@ IMPL_ON_FUNC( DBE_GET_SECOND_SECURITY_INFO_REQ )
 			kPacket.m_bIsFirst = false;
 			kPacket.m_bIsComeBackUser = true;
 
-			START_LOG( clog, L"이미 휴면 복귀 유저!!" )
+			START_LOG( clog, L"User is already marked as returning from inactivity!" )
 				<< BUILD_LOG( kPacket_.m_iUserUID )
 				<< BUILD_LOG( kPacket.m_wstrComeBackBuffEndDate )
 				<< BUILD_LOG( kPacket.m_bIsComeBackUser )
@@ -1070,7 +1070,7 @@ IMPL_ON_FUNC( DBE_GET_SECOND_SECURITY_INFO_REQ )
 				kPacket.m_bIsFirst = true;
 				kPacket.m_bIsComeBackUser = true;
 
-				START_LOG( clog, L"마지막 접속 시간으로 휴면 유저 판단 및 보상 등급 판단" )
+				START_LOG( clog, L"Determining dormant-user status and reward tier from the last login time." )
 					<< BUILD_LOG( kPacket_.m_iUserUID )
 					<< BUILD_LOG( kPacket.m_wstrComeBackBuffEndDate )
 					<< BUILD_LOG( kPacket.m_bIsComeBackUser )
@@ -1086,7 +1086,7 @@ IMPL_ON_FUNC( DBE_GET_SECOND_SECURITY_INFO_REQ )
 				kPacket.m_bIsComeBackUser = false;
 				kPacket.m_wstrComeBackBuffEndDate = L"";
 
-				START_LOG( clog, L"마지막 접속 시간이 없다. 새 유저가 접속하였다." )
+				START_LOG( clog, L"No previous login time; a new user has connected." )
 					<< BUILD_LOG( kPacket_.m_iUserUID )
 					<< BUILD_LOG( kPacket.m_wstrComeBackBuffEndDate )
 					<< BUILD_LOG( kPacket.m_bIsComeBackUser )
@@ -1139,7 +1139,7 @@ IMPL_ON_FUNC( DBE_SEUCCESS_SECOND_SECURITY_REQ )
 end_proc:
 	if( kAck.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"2차 보안 인증 성공 기록 실패!!" )
+		START_LOG( cerr, L"Failed to record successful secondary security authentication!" )
 			<< BUILD_LOG( kAck.m_iOK )
 			<< BUILD_LOG( kAck.m_wstrCurrTime )
 			<< END_LOG;
@@ -1162,7 +1162,7 @@ _IMPL_ON_FUNC( DBE_FAILED_SECOND_SECURITY_REQ, UidType )
 
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"2차 보안 인증 실패 기록 실패!!" )
+		START_LOG( cerr, L"Failed to record failed secondary security authentication!" )
 			<< BUILD_LOG( iOK )
 			<< BUILD_LOG( kPacket_ )
 			<< BUILD_LOG( iFailedCount )
@@ -1172,7 +1172,7 @@ _IMPL_ON_FUNC( DBE_FAILED_SECOND_SECURITY_REQ, UidType )
 	{
 		if( iFailedCount >= 10 )
 		{
-			START_LOG( clog, L"실패 카운트가 10이상인 경우 10으로 보정!" )
+			START_LOG( clog, L"Failure count is at least 10; clamping to 10!" )
 				<< BUILD_LOG( kPacket_ )
 				<< BUILD_LOG( iFailedCount )
 				<< END_LOG;
@@ -1200,7 +1200,7 @@ IMPL_ON_FUNC( DBE_CREATE_SECOND_SECURITY_REQ )
 end_proc:
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"2차 보안 생성 실패!!" )
+		START_LOG( cerr, L"Failed to enable secondary security!" )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iUserID )
 			<< BUILD_LOG( kPacket_.m_wstrSecondPW )
@@ -1224,7 +1224,7 @@ IMPL_ON_FUNC( DBE_DELETE_SECOND_SECURITY_REQ )
 end_proc:
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"2차 보안 삭제 실패!!" )
+		START_LOG( cerr, L"Failed to delete secondary security!" )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iUserID )
 			<< BUILD_LOG( kPacket_.m_wstrSecondPW )
@@ -1249,7 +1249,7 @@ IMPL_ON_FUNC( DBE_CHANGE_SECOND_SECURITY_PW_REQ )
 end_proc:
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"2차 보안 비밀번호 변경 실패!!" )
+		START_LOG( cerr, L"Failed to change the secondary security password!" )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iUserID )
 			<< BUILD_LOG( kPacket_.m_wstrOldSecondPW  )
@@ -1273,7 +1273,7 @@ IMPL_ON_FUNC( DBE_UPDATE_SECURITY_TYPE_NOT )
 end_proc:
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"유저 보안 사용 여부 DB 기록 실패!!" )
+		START_LOG( cerr, L"Failed to record user security status in the database!" )
 			<< BUILD_LOG( iOK )
 			<< BUILD_LOG( kPacket_.m_iUserUID )
 			<< BUILD_LOG( kPacket_.m_iSecurityType )
@@ -1290,7 +1290,7 @@ bool KGSAccountDBThread::CheckIsComeBackUser( IN std::wstring& wstrLastDate, OUT
 
 	if( KncUtil::ConvertStringToCTime( wstrLastDate, tLastConnect ) == false )
 	{
-		START_LOG( cerr, L"시간 변경 실패" )
+		START_LOG( cerr, L"Failed to change time." )
 			<< BUILD_LOG( wstrLastDate )
 			<< END_LOG;
 		return false;
@@ -1305,7 +1305,7 @@ bool KGSAccountDBThread::CheckIsComeBackUser( IN std::wstring& wstrLastDate, OUT
 		cStrLast.Format(L"%d/%d/%d %d:%d:%d", tLastConnect.GetYear(), tLastConnect.GetMonth(), tLastConnect.GetDay(), tLastConnect.GetHour(),
 			tLastConnect.GetMinute(), tLastConnect.GetSecond());
 
-		START_LOG( clog, L"계산된 날짜 값이 이상합니다" )
+		START_LOG( clog, L"The calculated date value is invalid." )
 			<< BUILD_LOG( tSpanLastConnect.GetDays() )
 			<< BUILD_LOG( cStrCurr.GetBuffer())
 			<< BUILD_LOG( cStrLast.GetBuffer())
@@ -1353,7 +1353,7 @@ bool KGSAccountDBThread::CheckIsComeBackUser( IN std::wstring& wstrLastDate, OUT
 	default:
 		{
 			wstrEndBuffDate = L"2000-01-01 00:00:00";
-			START_LOG( clog, L"복귀유저 보상 단계가 잘못 되었다" )
+			START_LOG( clog, L"Invalid returning-user reward stage." )
 				<< BUILD_LOG( iRewardStep )
 				<< BUILD_LOG( tSpanLastConnect.GetDays() )
 				<< END_LOG;
@@ -1371,7 +1371,7 @@ bool KGSAccountDBThread::CheckComeBackFirst( IN std::wstring& wstrEndDate )
 
 	if( KncUtil::ConvertStringToCTime( wstrEndDate , tEndDate ) == false )
 	{
-		START_LOG( cerr, L"날짜 변환 실패!!!" )
+		START_LOG( cerr, L"Failed to convert the date!!!" )
 			<< BUILD_LOG( wstrEndDate )
 			<< END_LOG;
 		return false;
@@ -1409,7 +1409,7 @@ IMPL_ON_FUNC( DBE_WRITE_COME_BACK_REWARD_NOT )
 end_proc:
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"휴면 복귀 정보가 입력되지 않았습니다." )
+		START_LOG( cerr, L"Dormant-user return information was not provided." )
 			<< BUILD_LOG( kPacket_.m_iUserUID )
 			<< BUILD_LOG( kPacket_.m_iRewardStep )
 			<< BUILD_LOG( kPacket_.m_wstrComeBackBuffEndDate )
@@ -1435,7 +1435,7 @@ IMPL_ON_FUNC( DBE_WRITE_COME_BACK_END_NOT )
 end_proc:
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"휴면 복귀 정보가 입력되지 않았습니다." )
+		START_LOG( cerr, L"Dormant-user return information was not provided." )
 			<< BUILD_LOG( kPacket_ )
 			<< BUILD_LOG( iOK )
 			<< END_LOG;
@@ -1460,7 +1460,7 @@ IMPL_ON_FUNC( DBE_WRITE_COME_BACK_LOGOUT_NOT )
 end_proc:
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"휴면 복귀 정보용 로그아웃 기록 실패!!" )
+		START_LOG( cerr, L"Failed to record logout for returning-user information!" )
 			<< BUILD_LOG( kPacket_.m_iUserUID )
 			<< BUILD_LOG( kPacket_.m_wsrtLogOutDate )
 			<< BUILD_LOG( iOK )
@@ -1595,7 +1595,7 @@ IMPL_ON_FUNC( DBE_CHAT_OPTION_INFO_WRITE_REQ )
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
 		kPacket.m_iOK = NetError::ERR_CHAT_OPTION_01;
-		START_LOG( cerr, L"채팅 옵션 정보 저장 실패!!" )
+		START_LOG( cerr, L"Failed to save chat option information!" )
 			<< BUILD_LOG( kPacket_.m_iUserUID )
 			<< BUILD_LOG( kPacket_.m_cIndex )
 			<< BUILD_LOG( kPacket_.m_bValue )
@@ -1692,7 +1692,7 @@ _IMPL_ON_FUNC( DBE_NEW_ACCOUNT_QUEST_REQ, KDBE_NEW_QUEST_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"계정 퀘스트 DB 생성 실패." )
+		START_LOG( cerr, L"Failed to create the account quest database entry." )
 			<< BUILD_LOG( LAST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_iQuestID )
 			<< BUILD_LOG( kPacket.m_iOK )
@@ -1746,7 +1746,7 @@ _IMPL_ON_FUNC( DBE_ACCOUNT_QUEST_COMPLETE_REQ, KDBE_QUEST_COMPLETE_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"계정 퀘스트 완료 DB 업데이트 실패." )
+		START_LOG( cerr, L"Failed to update account quest completion in the database." )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_UnitUID )
@@ -1781,7 +1781,7 @@ IMPL_ON_FUNC( DBE_ACCOUNT_QUEST_UPDATE_NOT )
 	{
 		if( kInfo.m_vecClearData.size() != 5 )
 		{
-			START_LOG( cerr, L"퀘스트 클리어 정보가 5개가 아니다! 절대 일어나서는 안되는 에러!" )
+			START_LOG( cerr, L"Quest completion information count is not five; this should never happen!" )
 				<< BUILD_LOG( kPacket_.m_iUserUID )
 				<< BUILD_LOG( kInfo.m_iQuestID )
 				<< BUILD_LOG( kInfo.m_vecClearData.size() )
@@ -1807,7 +1807,7 @@ IMPL_ON_FUNC( DBE_ACCOUNT_QUEST_UPDATE_NOT )
 
 		if( iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"계정 퀘스트 DB 생성 실패." )
+			START_LOG( cerr, L"Failed to create the account quest database entry." )
 				<< BUILD_LOG( kPacket_.m_iUserUID )
 				<< BUILD_LOG( kInfo.m_iQuestID )
 				<< BUILD_LOG( iOK )
@@ -1817,7 +1817,7 @@ IMPL_ON_FUNC( DBE_ACCOUNT_QUEST_UPDATE_NOT )
 
 	return;
 end_proc:
-	START_LOG( cerr, L"아왜!!!!계정 퀘스트 DB 생성 실패." )
+	START_LOG( cerr, L"Oh no! Failed to create account quest in the database." )
 		<< BUILD_LOG( kPacket_.m_iUserUID )
 		<< END_LOG;
 }
@@ -1846,7 +1846,7 @@ IMPL_ON_FUNC( DBE_ITEM_EXCHANGE_LIMIT_CHECK_REQ )
 
 		if( kAck.m_iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"계정 퀘스트 DB 생성 실패." )
+			START_LOG( cerr, L"Failed to create the account quest database entry." )
 				<< BUILD_LOG( FIRST_SENDER_UID )
 				<< BUILD_LOG( kPacket_.m_kReq.m_iSourceItemID )
 				<< BUILD_LOG( kPacket_.m_kReq.m_iDestItemID )

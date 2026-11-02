@@ -86,7 +86,7 @@ bool KUserPartyManager::RegWaitPartyUser( IN const UidType iUnitUID )
 {
 	if( IsWaitPartyUser( iUnitUID ) == true )
 	{
-		START_LOG( cerr, L"이미 해당 유저는 파티초대인원으로 등록되어있습니다." )
+		START_LOG( cerr, L"User is already registered as a party invitee." )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 		return false;
@@ -102,7 +102,7 @@ bool KUserPartyManager::UnregWaitPartyUser( IN const UidType iUnitUID )
 {
 	if( IsWaitPartyUser( iUnitUID ) == true )
 	{
-		START_LOG( cerr, L"이미 해당 유저는 파티초대인원으로 등록된적이 없습니다." )
+		START_LOG( cerr, L"User was never registered as a party invitee." )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 		return false;

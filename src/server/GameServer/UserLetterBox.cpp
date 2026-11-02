@@ -36,7 +36,7 @@ void KUserLetterBox::Init( IN KGSUserPtr spUser,
 {
 	if( !spUser )
 	{
-		START_LOG( cerr, L"GSUser포인터값이 이상합니다." )
+		START_LOG( cerr, L"Invalid GSUser pointer." )
 			<< END_LOG;
 		return;
 	}
@@ -70,14 +70,14 @@ bool ComRenewalLetter( const KPostItemTitleInfo& _First, const KPostItemTitleInf
 	wstrTemp = _First.m_wstrRegDate;
 	if( KncUtil::ConvertStringToCTime(wstrTemp, ctFirst) == false )
 	{
-		START_LOG(cwarn, L"편지 등록날짜가 이상함.!")
+		START_LOG(cwarn, L"Invalid mail registration date!")
 			<< BUILD_LOG( _First.m_wstrRegDate )
 			<< END_LOG;
 	}
 	wstrTemp = _Last.m_wstrRegDate;
 	if( KncUtil::ConvertStringToCTime(wstrTemp, ctLast) == false )
 	{
-		START_LOG( cwarn, L"편지 등록날짜가 이상함.!" )
+		START_LOG( cwarn, L"Invalid mail registration date!" )
 			<< BUILD_LOG( _Last.m_wstrRegDate )
 			<< END_LOG;
 	}
@@ -134,7 +134,7 @@ void KUserLetterBox::GetRenewalLetter( IN KGSUserPtr spUser, OUT int& iNewUserLe
 	const DWORD dwLatency = ::GetTickCount() - dwBeginTick;
 	if( dwLatency > 3000 )
 	{
-		START_LOG( cout, L"[모니터링] 우편 리스트 정렬하는데 무려 3초이상 걸렸네! 헐!!!" )
+		START_LOG( cout, L"[Monitoring] Sorting the mail list took over three seconds!" )
 			<< BUILD_LOG( spUser->GetUID() )
 			<< BUILD_LOG( spUser->GetCharUID() )
 			<< BUILD_LOG( spUser->GetCharName() )
@@ -248,7 +248,7 @@ bool KUserLetterBox::IsSystemLetter( IN UidType iPostNo )
 	mit = m_mapLetters.find( iPostNo );
 	if( mit == m_mapLetters.end() )
 	{
-		START_LOG( cerr, L"편지가 없네.." )
+		START_LOG( cerr, L"No mail found." )
 			<< BUILD_LOG( iPostNo )
 			<< END_LOG;
 		return false;
@@ -264,7 +264,7 @@ bool KUserLetterBox::IsItemIDLetter( IN const UidType iPostNo )
 	mit = m_mapLetters.find( iPostNo );
 	if( mit == m_mapLetters.end() )
 	{
-		START_LOG( cerr, L"편지가 없네.." )
+		START_LOG( cerr, L"No mail found." )
 			<< BUILD_LOG( iPostNo )
 			<< END_LOG;
 		return false;
@@ -388,7 +388,7 @@ bool KUserLetterBox::GetItemInfo( UidType iPostNo, KItemInfo& kNewItemInfo )
 	//{{ 2012. 04. 17	최육사	퀘스트 조건 마을 입장
 	if( KPostItemInfo::IsItemIDLetter( kPostItemInfo.m_cScriptType ) == false )
 	{
-		START_LOG( cerr, L"일반편지 또는 GM메시지가 아닌데 아이템정보를 얻으려 합니다." )
+		START_LOG( cerr, L"Attempted to retrieve item information for something other than regular mail or a GM message." )
 			<< BUILD_LOG( iPostNo )
 			<< BUILD_LOG( kPostItemInfo.m_cScriptType )
 			<< END_LOG;
@@ -399,7 +399,7 @@ bool KUserLetterBox::GetItemInfo( UidType iPostNo, KItemInfo& kNewItemInfo )
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( kPostItemInfo.m_iScriptIndex );
 	if( pItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"아이템 템플릿이 존재하지 않습니다." )
+		START_LOG( cerr, L"Item template does not exist." )
 			<< BUILD_LOG( iPostNo )
 			<< BUILD_LOG( kPostItemInfo.m_iScriptIndex )
 			<< END_LOG;
@@ -431,7 +431,7 @@ char KUserLetterBox::GetLetterType( IN UidType iPostNo )
 	mit = m_mapLetters.find( iPostNo );
 	if( mit == m_mapLetters.end() )
 	{
-		START_LOG( cerr, L"편지가 없네.." )
+		START_LOG( cerr, L"No mail found." )
 			<< BUILD_LOG( iPostNo )
 			<< END_LOG;
 		return false;
@@ -445,7 +445,7 @@ bool KUserLetterBox::GetLetterList( IN char cLetterListType, IN int iPageNo, OUT
 
 	if( iPageNo <= 0 )
 	{
-		START_LOG( cerr, L"페이지 요청이 이상합니다." )
+		START_LOG( cerr, L"Invalid page request." )
 			<< BUILD_LOGc( cLetterListType )
 			<< BUILD_LOG( iPageNo )
 			<< END_LOG;

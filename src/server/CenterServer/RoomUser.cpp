@@ -261,7 +261,7 @@ void KRoomUser::EndGame()
 {
     if( !SetReady( false ) )
     {
-        START_LOG( cerr, L"레디 상태 변경 실패." )
+        START_LOG( cerr, L"Failed to change ready state." )
             << BUILD_LOG( GetCID() )
             << END_LOG;
     }
@@ -372,7 +372,7 @@ void KRoomUser::SetUserEquipItem( std::vector< KInventoryItemInfo >& vecChangedI
 				m_kRoomUserInfo.m_mapEquippedItem[vit->m_sSlotID] = ( *vit );
 				//}}
 
-				START_LOG( clog, L"장비교체 됨." )
+				START_LOG( clog, L"Equipment changed." )
 					<< BUILD_LOG( vit->m_iItemUID )
 					<< BUILD_LOG( vit->m_kItemInfo.m_iItemID )
 					;
@@ -388,7 +388,7 @@ void KRoomUser::AddItem( int iItemID, int iQuantity )
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iItemID );
 	if( pItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )
+		START_LOG( cerr, L"Failed to retrieve item template." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 
@@ -533,7 +533,7 @@ bool KRoomUser::TradeRejectedBy( UidType nCID )
     std::map< UidType, x2::Timer >::iterator mit = m_mapTradeRequest.find( nCID );
     if( mit == m_mapTradeRequest.end() )
     {
-        START_LOG( cwarn, L"거래 신청 중이 아닌데 거절 당했다." )
+        START_LOG( cwarn, L"Trade request was rejected even though no request was pending." )
             << BUILD_LOG( GetCID() )
             << BUILD_LOG( nCID )
             << END_LOG;
@@ -609,7 +609,7 @@ bool KRoomUser::GetQuestDropItem( IN const int iDungeonID,
 		const CXSLQuestManager::QuestTemplet* pQuestTemplet = SiCXSLQuestManager()->GetQuestTemplet( mitQ->first );
 		if( pQuestTemplet == NULL )
 		{
-			START_LOG( cerr, L"존재 하지 않는 퀘스트입니다." )
+			START_LOG( cerr, L"Quest does not exist." )
 				<< BUILD_LOG( mitQ->first )
 				<< END_LOG;
 			continue;
@@ -624,7 +624,7 @@ bool KRoomUser::GetQuestDropItem( IN const int iDungeonID,
 			const CXSLQuestManager::SubQuestTemplet* pSubTemplet = SiCXSLQuestManager()->GetSubQuestTemplet( mitS->first );
 			if( pSubTemplet == NULL )
 			{
-				START_LOG( cerr, L"SUB QUEST TEMPLET 포인터 이상.!" )
+				START_LOG( cerr, L"Invalid SUB QUEST TEMPLATE pointer!" )
 					<< BUILD_LOG( mitS->first )
 					<< BUILD_LOG( mitS->second.m_iInInventoryItemCount )
 					<< BUILD_LOG( mitS->second.m_bSussece )
@@ -738,7 +738,7 @@ bool KRoomUser::GetQuestDropItem( IN const int iDungeonID,
 
 	if( sInfo.m_vecDropQuestItem.size() > 0 )
 	{
-		START_LOG( clog, L"퀘스트 아이템 드롭.!" )
+		START_LOG( clog, L"Quest item drop!" )
 			<< BUILD_LOG( sInfo.m_vecDropQuestItem.size() )
 			;
 
@@ -780,7 +780,7 @@ bool KRoomUser::GetQuestDropItemInBattleField( IN const int iBattleFieldID, IN c
 		const CXSLQuestManager::QuestTemplet* pQuestTemplet = SiCXSLQuestManager()->GetQuestTemplet( mitQ->first );
 		if( pQuestTemplet == NULL )
 		{
-			START_LOG( cerr, L"존재 하지 않는 퀘스트입니다." )
+			START_LOG( cerr, L"Quest does not exist." )
 				<< BUILD_LOG( mitQ->first )
 				<< END_LOG;
 			continue;
@@ -796,7 +796,7 @@ bool KRoomUser::GetQuestDropItemInBattleField( IN const int iBattleFieldID, IN c
 			const CXSLQuestManager::SubQuestTemplet* pSubTemplet = SiCXSLQuestManager()->GetSubQuestTemplet( mitS->first );
 			if( pSubTemplet == NULL )
 			{
-				START_LOG( cerr, L"SUB QUEST TEMPLET 포인터 이상.!" )
+				START_LOG( cerr, L"Invalid SUB QUEST TEMPLATE pointer!" )
 					<< BUILD_LOG( mitS->first )
 //{{ QUEST 개편 - 김민성
 					<< BUILD_LOG( mitS->second.m_iInInventoryItemCount )
@@ -883,7 +883,7 @@ bool KRoomUser::GetQuestDropItemInBattleField( IN const int iBattleFieldID, IN c
 
 	if( sInfo.m_vecDropQuestItem.size() > 0 )
 	{
-		START_LOG( clog, L"퀘스트 아이템 드롭.!" )
+		START_LOG( clog, L"Quest item drop!" )
 			<< BUILD_LOG( sInfo.m_vecDropQuestItem.size() )
 			;
 
@@ -963,7 +963,7 @@ void KRoomUser::UpdatePetInfo( IN const std::vector< KPetInfo >& vecPetInfo )
 
 	if( vecPetInfo.size() > 1 )
 	{
-		START_LOG( cerr, L"펫 정보가 1개보다 많다! 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"More than one pet record was found; this should never happen!" )
 			<< BUILD_LOG( GetCID() )
 			<< END_LOG;
 
@@ -977,7 +977,7 @@ bool KRoomUser::UpdatePetSatiety( IN UidType iPetUID, IN short sSatiety )
 {
 	if( m_kRoomUserInfo.m_vecPet.empty() == true )
 	{
-		START_LOG( cerr, L"펫도 없는데 포만도를 업데이트 하려고 한다!" )
+		START_LOG( cerr, L"Attempted to update fullness for a nonexistent pet!" )
 			<< BUILD_LOG( GetCID() )
 			<< END_LOG;
 		return false;
@@ -985,7 +985,7 @@ bool KRoomUser::UpdatePetSatiety( IN UidType iPetUID, IN short sSatiety )
 
 	if( m_kRoomUserInfo.m_vecPet.size() > 1 )
 	{
-		START_LOG( cerr, L"펫 정보가 1개보다 많다! 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"More than one pet record was found; this should never happen!" )
 			<< BUILD_LOG( GetCID() )
 			<< END_LOG;
 
@@ -996,7 +996,7 @@ bool KRoomUser::UpdatePetSatiety( IN UidType iPetUID, IN short sSatiety )
 	{
 		if( kPet.m_iPetUID != iPetUID )
 		{
-			START_LOG( cerr, L"펫 포만도를 업데이트 하려고 하는데 PetUID값이 다르다?!" )
+			START_LOG( cerr, L"PetUID mismatch while updating pet fullness!" )
 				<< BUILD_LOG( kPet.m_iPetUID )
 				<< BUILD_LOG( iPetUID )
 				<< END_LOG;
@@ -1015,7 +1015,7 @@ bool KRoomUser::UpdatePetIntimacy( IN UidType iPetUID, IN int iIntimacy )
 {
 	if( m_kRoomUserInfo.m_vecPet.empty() == true )
 	{
-		START_LOG( cerr, L"펫도 없는데 포만도를 업데이트 하려고 한다!" )
+		START_LOG( cerr, L"Attempted to update fullness for a nonexistent pet!" )
 			<< BUILD_LOG( GetCID() )
 			<< END_LOG;
 		return false;
@@ -1023,7 +1023,7 @@ bool KRoomUser::UpdatePetIntimacy( IN UidType iPetUID, IN int iIntimacy )
 
 	if( m_kRoomUserInfo.m_vecPet.size() > 1 )
 	{
-		START_LOG( cerr, L"펫 정보가 1개보다 많다! 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"More than one pet record was found; this should never happen!" )
 			<< BUILD_LOG( GetCID() )
 			<< END_LOG;
 
@@ -1034,7 +1034,7 @@ bool KRoomUser::UpdatePetIntimacy( IN UidType iPetUID, IN int iIntimacy )
 	{
 		if( kPet.m_iPetUID != iPetUID )
 		{
-			START_LOG( cerr, L"펫 친밀도를 업데이트 하려고 하는데 PetUID값이 다르다?!" )
+			START_LOG( cerr, L"PetUID mismatch while updating pet intimacy!" )
 				<< BUILD_LOG( kPet.m_iPetUID )
 				<< BUILD_LOG( iPetUID )
 				<< END_LOG;
@@ -1058,7 +1058,7 @@ int KRoomUser::GetPetID() const
 
 	if( m_kRoomUserInfo.m_vecPet.size() > 1 )
 	{
-		START_LOG( cerr, L"펫 정보가 1개보다 많다! 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"More than one pet record was found; this should never happen!" )
 			<< BUILD_LOG( GetCID() )
 			<< END_LOG;
 
@@ -1082,7 +1082,7 @@ char KRoomUser::GetPetEvolutionStep() const
 
 	if( m_kRoomUserInfo.m_vecPet.size() > 1 )
 	{
-		START_LOG( cerr, L"펫 정보가 1개보다 많다! 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"More than one pet record was found; this should never happen!" )
 			<< BUILD_LOG( GetCID() )
 			<< END_LOG;
 
@@ -1118,7 +1118,7 @@ void KRoomUser::GetOngoingQuest( IN int iSubQuestType, OUT std::map< int, KSubQu
 			const CXSLQuestManager::SubQuestTemplet* pSubQuestTemplet = SiCXSLQuestManager()->GetSubQuestTemplet( mitSQ->first );
 			if( pSubQuestTemplet == NULL )
 			{
-				START_LOG( cerr, L"존재하지 않는 서브 퀘스트 입니다!" )
+				START_LOG( cerr, L"Subquest does not exist!" )
 					<< BUILD_LOG( mitSQ->first )
 					<< END_LOG;
 				continue;
@@ -1152,7 +1152,7 @@ void KRoomUser::CheckItemEquipQuestCondition( IN bool bIsGameStart )
 			const CXSLQuestManager::SubQuestTemplet* pSubQuestTemplet = SiCXSLQuestManager()->GetSubQuestTemplet( mitSQ->first );
 			if( pSubQuestTemplet == NULL )
 			{
-				START_LOG( cerr, L"존재하지 않는 서브 퀘스트 입니다!" )
+				START_LOG( cerr, L"Subquest does not exist!" )
 					<< BUILD_LOG( mitSQ->first )
 					<< END_LOG;
 				continue;
@@ -1221,7 +1221,7 @@ bool KRoomUser::AddAllyNPC( IN const KNPCUnitReq& kNPCUnit )
 {
 	m_mapAllyNPCUnit.insert( std::make_pair( kNPCUnit.m_UID, kNPCUnit ) );
 
-	START_LOG( clog, L"친구NPC 목록에 추가되었습니다." )
+	START_LOG( clog, L"Added to friend NPC list." )
 		<< BUILD_LOG( m_kRoomUserInfo.m_nUnitUID )
 		<< BUILD_LOG( kNPCUnit.m_UID );
 		;
@@ -1248,7 +1248,7 @@ void KRoomUser::DeleteAllyNPC( IN const UidType iNPCUID )
 
 	if( mitAllyNPCUnit != m_mapAllyNPCUnit.end() )
 	{
-		START_LOG( clog, L"친구NPC가 죽었습니다." )
+		START_LOG( clog, L"Friend NPC died." )
 			<< BUILD_LOG( iNPCUID )
 			<< BUILD_LOG( mitAllyNPCUnit->second.m_NPCID );
 		;
@@ -1272,7 +1272,7 @@ bool KRoomUser::AddCaughtBuffSkill( IN const int iBuffEnum, IN const float fBuff
 		float Remaintime = _BuffInfo.m_fBuffTime - static_cast<float>(_BuffInfo.m_tBuffTimer.elapsed());
 		if( Remaintime < 0.0f )
 		{
-			START_LOG( cerr, L"버프의 남은 시간이 이상하다!!" )
+			START_LOG( cerr, L"Invalid remaining buff duration!!" )
 				<< BUILD_LOG( _BuffInfo.m_fBuffTime )
 				<< BUILD_LOG( _BuffInfo.m_tBuffTimer.elapsed() )
 				<< END_LOG;
@@ -1429,7 +1429,7 @@ bool KRoomUser::CheckCompleteSubQuest_BeforGroup( IN int iQuestID, IN int iSubQu
 	const CXSLQuestManager::QuestTemplet* pQuestTemplet = SiCXSLQuestManager()->GetQuestTemplet( iQuestID );
 	if( pQuestTemplet == NULL )
 	{
-		START_LOG( cerr, L"QuestTemplet 포인터 이상.!" )
+		START_LOG( cerr, L"Invalid QuestTemplet pointer!" )
 			<< BUILD_LOG( iQuestID )
 			<< END_LOG;
 
@@ -1457,7 +1457,7 @@ bool KRoomUser::CheckCompleteSubQuest_BeforGroup( IN int iQuestID, IN int iSubQu
 	// 그룹을 찾지 못했다
 	if( iMainGroupID == 0 )
 	{
-		START_LOG( cwarn, L"서브 퀘스트의 그룹 정보를 찾지 못했다. " )
+		START_LOG( cwarn, L"Could not find subquest group information. " )
 			<< BUILD_LOG( iQuestID )
 			<< BUILD_LOG( iSubQuestID )
 			<< END_LOG;
@@ -1506,7 +1506,7 @@ bool KRoomUser::CheckCompleteSubQuest_BeforGroup( IN int iQuestID, IN int iSubQu
 				const CXSLQuestManager::SubQuestTemplet* pSubQuestTemplet = SiCXSLQuestManager()->GetSubQuestTemplet( mitSub->first );
 				if( pSubQuestTemplet == NULL )
 				{
-					START_LOG( cerr, L"SubQuestTemplet 포인터 이상.!" )
+					START_LOG( cerr, L"Invalid SubQuestTemplet pointer!" )
 						<< BUILD_LOG( mitSub->first )
 						<< END_LOG;
 
@@ -1546,7 +1546,7 @@ bool KRoomUser::CheckFindNPCQuest( IN int iMapID, IN std::vector< int >& /*vecNp
 		const CXSLQuestManager::QuestTemplet* pQuestTemplet = SiCXSLQuestManager()->GetQuestTemplet( mit->first );
 		if( pQuestTemplet == NULL )
 		{
-			START_LOG( cerr, L"QUEST TEMPLET 얻어오기 실패.!" )
+			START_LOG( cerr, L"Failed to retrieve QUEST TEMPLATE!" )
 				<< BUILD_LOG( mit->first )
 				<< BUILD_LOG( m_kRoomUserInfo.m_nUnitUID )
 				<< END_LOG;
@@ -1562,7 +1562,7 @@ bool KRoomUser::CheckFindNPCQuest( IN int iMapID, IN std::vector< int >& /*vecNp
 			const CXSLQuestManager::SubQuestTemplet* pSubQuestTemplet = SiCXSLQuestManager()->GetSubQuestTemplet( pQuestTemplet->m_vecSubQuest[uiIndexSub] );
 			if( pSubQuestTemplet == NULL )
 			{
-				START_LOG( cerr, L"SUB QUEST 가 비어있습니다!" )
+				START_LOG( cerr, L"SUB QUEST is empty!" )
 					<< BUILD_LOG( pQuestTemplet->m_iID )
 					<< BUILD_LOG( pQuestTemplet->m_vecSubQuest[uiIndexSub] )
 					<< BUILD_LOG( m_kRoomUserInfo.m_nUnitUID )

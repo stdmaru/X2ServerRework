@@ -52,7 +52,7 @@ bool KUserRidingPet::IsExpirationRidingPet( void ) const
 	CTime tDestroyDate;
 	if( KncUtil::ConvertStringToCTime( m_kInfo.m_wstrDestroyDate, tDestroyDate ) == false )
 	{
-		START_LOG( cerr, L"기간제 펫 만료 일자 오류" )
+		START_LOG( cerr, L"Invalid timed pet expiration date." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( m_kInfo.m_wstrDestroyDate )
 			<< END_LOG;

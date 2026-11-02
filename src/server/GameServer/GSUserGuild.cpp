@@ -76,7 +76,7 @@ IMPL_ON_FUNC( EGS_CREATE_GUILD_REQ )
 		// 현재 내가 길드원인 경우에는 길드 생성이 불가능하다!
 		if( GetGuildUID() > 0 )
 		{
-			START_LOG( cerr, L"이미 길드에 가입한 상태라 길드 생성 불가! 일어나서는 안되는 에러" )
+			START_LOG( cerr, L"Cannot create a guild while already in one; this should never happen!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( GetGuildUID() )
 				<< END_LOG;
@@ -89,7 +89,7 @@ IMPL_ON_FUNC( EGS_CREATE_GUILD_REQ )
 		//{{ 2012. 03. 29	최육사	Inventory Lock 기능
 		if( m_kInventory.IsLocked() == true )
 		{
-			START_LOG( cout, L"인벤토리 락이 걸려있는 상태입니다!" )
+			START_LOG( cout, L"The inventory is locked!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharName() )
@@ -144,7 +144,7 @@ IMPL_ON_FUNC( ELG_CREATE_GUILD_ACK )
 	// 길드 생성 성공했으니 아이템들을 지우자!
 	if( m_kInventory.UseGuildFoundationItem( kPacket_.m_iItemUID, kPacketAck.m_vecInventorySlotInfo, false ) == false )
 	{
-		START_LOG( cerr, L"길드 생성 아이템 삭제 실패! 검사했는데? 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"Failed to delete the guild creation item after checking it; this should never happen!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iItemUID )
 			<< END_LOG;
@@ -234,7 +234,7 @@ IMPL_ON_FUNC( ELG_CREATE_GUILD_ACK )
 
 		default:
 			{
-				START_LOG( cerr, L"이상한 방 타입." )
+				START_LOG( cerr, L"Invalid room type." )
 					<< BUILD_LOG( CXSLRoom::GetRoomType( GetRoomUID() ) )
 					<< BUILD_LOG( GetCharUID() )
 					<< END_LOG;
@@ -270,7 +270,7 @@ IMPL_ON_FUNC( EGS_GET_GUILD_USER_LIST_REQ )
 	// 내가 길드 소속인지 보자
 	if( GetGuildUID() <= 0 )
 	{
-		START_LOG( cerr, L"길드소속도 아닌데 길드유저리스트 얻을려고 하네?" )
+		START_LOG( cerr, L"Attempted to retrieve the guild user list without belonging to a guild?" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetGuildUID() )
 			<< END_LOG;
@@ -357,7 +357,7 @@ _IMPL_ON_FUNC( ELG_GUILD_MESSAGE_NOT, KEGS_GUILD_MESSAGE_NOT )
 
 				default:
 					{
-						START_LOG( cerr, L"이상한 방 타입." )
+						START_LOG( cerr, L"Invalid room type." )
 							<< BUILD_LOG( CXSLRoom::GetRoomType( GetRoomUID() ) )
 							<< BUILD_LOG( GetCharUID() )
 							<< END_LOG;
@@ -417,7 +417,7 @@ IMPL_ON_FUNC( EGS_INVITE_GUILD_REQ )
 
 	if( GetGuildUID() <= 0 )
 	{
-		START_LOG( cerr, L"길드에 가입되어있지 않은데 길드초대를 하려함." )
+		START_LOG( cerr, L"Attempted to invite to a guild without being in one." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetGuildUID() )
 			<< END_LOG;
@@ -473,7 +473,7 @@ IMPL_ON_FUNC( ELG_INVITE_GUILD_FIND_USER_REQ )
 	// 제대로 왔는감?
 	if( kPacket_.m_iReceiverUnitUID != GetCharUID() )
 	{
-		START_LOG( cerr, L"초대장이 잘못왔다!? 일어나서는 안되는에러!" )
+		START_LOG( cerr, L"Invalid invitation received; this should never happen!" )
 			<< BUILD_LOG( kPacket_.m_iReceiverUnitUID )
 			<< BUILD_LOG( GetCharUID() )
 			<< END_LOG;
@@ -495,7 +495,7 @@ IMPL_ON_FUNC( ELG_INVITE_GUILD_FIND_USER_REQ )
 	// 초대하려는 길드와 같은 길드원인지 체크
 	if( GetGuildUID() == kPacket_.m_kGuildInfo.m_iGuildUID )
 	{
-		START_LOG( cerr, L"이미 우리 길드원이네? GuildManager에서 검사했을텐데.." )
+		START_LOG( cerr, L"Already a member of this guild; GuildManager should have checked this." )
 			<< BUILD_LOG( GetGuildUID() )
 			<< BUILD_LOG( GetCharUID() )
 			<< END_LOG;
@@ -647,7 +647,7 @@ IMPL_ON_FUNC( ELG_JOIN_GUILD_ACK )
 
 		default:
 			{
-				START_LOG( cerr, L"이상한 방 타입." )
+				START_LOG( cerr, L"Invalid room type." )
 					<< BUILD_LOG( CXSLRoom::GetRoomType( GetRoomUID() ) )
 					<< BUILD_LOG( GetCharUID() )
 					<< END_LOG;
@@ -665,7 +665,7 @@ IMPL_ON_FUNC( EGS_CHANGE_GUILD_MEMBER_GRADE_REQ )
 
 	if( GetGuildUID() <= 0 )
 	{
-		START_LOG( cerr, L"길드원이 아닌데 길드등급변경을 하려고 합니다!" )
+		START_LOG( cerr, L"Attempted to change guild rank without being a guild member!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< END_LOG;
 
@@ -678,7 +678,7 @@ IMPL_ON_FUNC( EGS_CHANGE_GUILD_MEMBER_GRADE_REQ )
 	// 자기 자신의 길드 등급은 변경할수 없다
 	if( kPacket_.m_iUnitUID == GetCharUID() )
 	{
-		START_LOG( cerr, L"자기 자신의 등급은 변경불가! 클라에서 체크 안하는가?" )
+		START_LOG( cerr, L"Cannot change your own rank; shouldn't the client check this?" )
 			<< BUILD_LOG( GetCharUID() )
 			<< END_LOG;
 
@@ -747,7 +747,7 @@ IMPL_ON_FUNC( EGS_CHANGE_GUILD_MESSAGE_REQ )
 
 	if( GetGuildUID() <= 0 )
 	{
-		START_LOG( cerr, L"길드원이 아닌데 길드메시지를 변경하려고 합니다!" )
+		START_LOG( cerr, L"Attempted to change the guild message without being a guild member!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< END_LOG;
 
@@ -792,7 +792,7 @@ IMPL_ON_FUNC( EGS_KICK_GUILD_MEMBER_REQ )
 
 	if( GetGuildUID() <= 0 )
 	{
-		START_LOG( cerr, L"길드원이 아닌데 길드 탈퇴 또는 길드원 강퇴를 하려고 합니다!" )
+		START_LOG( cerr, L"Attempted to leave the guild or expel a member without being a guild member!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< END_LOG;
 
@@ -845,7 +845,7 @@ IMPL_ON_FUNC( EGS_CHANGE_GUILD_MEMBER_MESSAGE_REQ )
 
 	if( GetGuildUID() <= 0 )
 	{
-		START_LOG( cerr, L"길드원이 아닌데 길드원 인사말 변경을 하려고 합니다!" )
+		START_LOG( cerr, L"Attempted to change a guild member's greeting without being a guild member!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< END_LOG;
 
@@ -901,7 +901,7 @@ IMPL_ON_FUNC_NOPARAM( EGS_DISBAND_GUILD_REQ )
 
 	if( GetGuildUID() <= 0 )
 	{
-		START_LOG( cerr, L"길드원이 아닌데 길드해산을 하려고 합니다!" )
+		START_LOG( cerr, L"Attempted to disband the guild without being a guild member!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< END_LOG;
 
@@ -972,7 +972,7 @@ IMPL_ON_FUNC( DBE_DISBAND_GUILD_ACK )
 
 			default:
 				{
-					START_LOG( cerr, L"이상한 방 타입." )
+					START_LOG( cerr, L"Invalid room type." )
 						<< BUILD_LOG( CXSLRoom::GetRoomType( GetRoomUID() ) )
 						<< BUILD_LOG( GetCharUID() )
 						<< END_LOG;
@@ -1048,7 +1048,7 @@ IMPL_ON_FUNC( EGS_CHANGE_GUILD_NAME_CHECK_REQ )
 	// 1. 길드에 소속되어있지 않다면, 길드 이름을 바꿀 수 없다.
 	if( GetGuildUID() <= 0 )
 	{
-		START_LOG( cerr, L"길드에 소속되어있지 않은데 길드 이름을 변경하려고 합니다!" )
+		START_LOG( cerr, L"Attempted to change the guild name without belonging to a guild!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< END_LOG;
 
@@ -1062,7 +1062,7 @@ IMPL_ON_FUNC( EGS_CHANGE_GUILD_NAME_CHECK_REQ )
 	// 2. 현재 내가 길드마스터가 아닌 경우에는 길드 이름 변경이 불가능하다!
 	if( ucMemberShipGrade != SEnum::GUG_MASTER )
 	{
-		START_LOG( cerr, L"길드 마스터가 아닌데 길드 이름을 변경 하려함!" )
+		START_LOG( cerr, L"Attempted to change the guild name without being the guild master!" )
 			<< BUILD_LOG( m_nUnitUID )
 			<< BUILD_LOG( ucMemberShipGrade )
 			<< END_LOG;
@@ -1189,7 +1189,7 @@ IMPL_ON_FUNC( ELG_CHANGE_GUILD_NAME_ACK )
 	// 혹시나 해서 검사해봄
 	if( m_kUserGuildManager.GetGuildUID() != kPacket_.m_kGuildInfo.m_iGuildUID )
 	{
-		START_LOG( cerr, L"GuildUID 정보가 일치하지 않습니다. ( 조작 가능성 있음 )" )
+		START_LOG( cerr, L"GuildUID information does not match (possible tampering)." )
 			<< BUILD_LOG( kPacket_.m_kGuildInfo.m_iGuildUID )
 			<< BUILD_LOG( m_kUserGuildManager.GetGuildUID() )
 			<< BUILD_LOG( kPacket_.m_kGuildInfo.m_wstrGuildName )
@@ -1255,7 +1255,7 @@ IMPL_ON_FUNC( ELG_CHANGE_GUILD_NAME_ACK )
 
 		default:
 			{
-				START_LOG( cerr, L"이상한 방 타입." )
+				START_LOG( cerr, L"Invalid room type." )
 					<< BUILD_LOG( CXSLRoom::GetRoomType( GetRoomUID() ) )
 					<< BUILD_LOG( GetCharUID() )
 					<< END_LOG;
@@ -1282,7 +1282,7 @@ IMPL_ON_FUNC( EGS_GET_GUILD_SKILL_REQ )
 	// 길드 소속인지 검사
 	if( GetGuildUID() <= 0 )
 	{
-		START_LOG( cerr, L"길드 소속이 아닌데 길드스킬을 배우려고한다." )
+		START_LOG( cerr, L"Attempted to learn a guild skill without belonging to a guild." )
 			<< BUILD_LOG( GetGuildUID() )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iGuildSkillID )
@@ -1296,7 +1296,7 @@ IMPL_ON_FUNC( EGS_GET_GUILD_SKILL_REQ )
 	// 길드 마스터 등급인지 검사
 	if( m_kUserGuildManager.GetMemberShipGrade() != SEnum::GUG_MASTER )
 	{
-		START_LOG( cerr, L"길드마스터 등급이 아닌데 길드스킬을 배우려고한다." )
+		START_LOG( cerr, L"Attempted to learn a guild skill without guild master rank." )
 			<< BUILD_LOG( GetGuildUID() )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOGc( m_kUserGuildManager.GetMemberShipGrade() )
@@ -1365,7 +1365,7 @@ IMPL_ON_FUNC( EGS_RESET_GUILD_SKILL_REQ )
 		//{{ 2012. 03. 29	최육사	Inventory Lock 기능
 		if( m_kInventory.IsLocked() == true )
 		{
-			START_LOG( cout, L"인벤토리 락이 걸려있는 상태입니다!" )
+			START_LOG( cout, L"The inventory is locked!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharName() )
@@ -1380,7 +1380,7 @@ IMPL_ON_FUNC( EGS_RESET_GUILD_SKILL_REQ )
 		// 길드 소속인지 검사
 		if( GetGuildUID() <= 0 )
 		{
-			START_LOG( cerr, L"길드 소속이 아닌데 길드스킬 되돌리기를 하려고 한다." )
+			START_LOG( cerr, L"Attempted to revert a guild skill while not in a guild." )
 				<< BUILD_LOG( GetGuildUID() )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( kPacket_.m_iGuildSkillID )
@@ -1394,7 +1394,7 @@ IMPL_ON_FUNC( EGS_RESET_GUILD_SKILL_REQ )
 		// 길드 마스터 등급인지 검사
 		if( m_kUserGuildManager.GetMemberShipGrade() != SEnum::GUG_MASTER )
 		{
-			START_LOG( cerr, L"길드마스터 등급이 아닌데 길드스킬 되돌리기를 하려고 한다." )
+			START_LOG( cerr, L"Attempted to roll back guild skills without guild master rank." )
 				<< BUILD_LOG( GetGuildUID() )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOGc( m_kUserGuildManager.GetMemberShipGrade() )
@@ -1408,7 +1408,7 @@ IMPL_ON_FUNC( EGS_RESET_GUILD_SKILL_REQ )
 		// 인벤토리에 길드 스킬 되돌리기 메달이 있는지 검사
 		if( m_kInventory.ResetGuildSkillItemCheckOnly() == false )
 		{
-			START_LOG( cerr, L"길드 스킬 초기화 아이템이 인벤토리에 없음." )
+			START_LOG( cerr, L"Guild skill reset item is not in the inventory." )
 				<< BUILD_LOG( GetGuildUID() )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( kPacket_.m_iGuildSkillID )
@@ -1442,7 +1442,7 @@ _IMPL_ON_FUNC( ELG_RESET_GUILD_SKILL_DEL_ITEM_REQ, KDBE_RESET_GUILD_SKILL_REQ )
 	// 길드 스킬 되돌리기 메달을 삭제하자!
 	if( m_kInventory.ResetGuildSkillItem( kPacket_.m_vecUpdatedInventorySlot ) == false )
 	{
-		START_LOG( cerr, L"길드 스킬 초기화 아이템이 인벤토리에 없음. 미리 검사했는데.." )
+		START_LOG( cerr, L"Guild skill reset item is missing from inventory despite the earlier check." )
 			<< BUILD_LOG( GetGuildUID() )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iGuildSkillID )
@@ -1484,7 +1484,7 @@ _IMPL_ON_FUNC( ELG_RESET_GUILD_SKILL_NOT, KEGS_RESET_GUILD_SKILL_NOT )
 	// 유저 길드 매니저에 적용
 	if( m_kUserGuildManager.ResetGuildSkill( kPacket_ ) == false )
 	{
-		START_LOG( cerr, L"길드 스킬 삭제 실패!" )
+		START_LOG( cerr, L"Failed to delete guild skill!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< END_LOG;
 		return;
@@ -1524,7 +1524,7 @@ IMPL_ON_FUNC( EGS_INIT_GUILD_SKILL_REQ )
 		//{{ 2012. 03. 29	최육사	Inventory Lock 기능
 		if( m_kInventory.IsLocked() == true )
 		{
-			START_LOG( cout, L"인벤토리 락이 걸려있는 상태입니다!" )
+			START_LOG( cout, L"The inventory is locked!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharName() )
@@ -1539,7 +1539,7 @@ IMPL_ON_FUNC( EGS_INIT_GUILD_SKILL_REQ )
 		// 길드 소속인지 검사
 		if( GetGuildUID() <= 0 )
 		{
-			START_LOG( cerr, L"길드 소속이 아닌데 길드스킬 초기화를 하려고 한다." )
+			START_LOG( cerr, L"Attempted to reset guild skills while not in a guild." )
 				<< BUILD_LOG( GetGuildUID() )
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
@@ -1552,7 +1552,7 @@ IMPL_ON_FUNC( EGS_INIT_GUILD_SKILL_REQ )
 		// 길드 마스터 등급인지 검사
 		if( m_kUserGuildManager.GetMemberShipGrade() != SEnum::GUG_MASTER )
 		{
-			START_LOG( cerr, L"길드마스터 등급이 아닌데 길드스킬 초기화를 하려고 한다." )
+			START_LOG( cerr, L"Attempted to reset guild skills without guild master rank." )
 				<< BUILD_LOG( GetGuildUID() )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOGc( m_kUserGuildManager.GetMemberShipGrade() )
@@ -1566,7 +1566,7 @@ IMPL_ON_FUNC( EGS_INIT_GUILD_SKILL_REQ )
 		// 인벤토리에 길드 스킬 초기화 아이템이 있는지 검사
 		if( m_kInventory.InitGuildSkillItemCheckOnly( kPacket_.m_iItemUID ) == false )
 		{
-			START_LOG( cerr, L"스킬초기화 아이템이 없는데 패킷 날아옴.!" )
+			START_LOG( cerr, L"Received a skill-reset packet, but the item is missing!" )
 				<< BUILD_LOG( GetCharName() )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( kPacket_.m_iItemUID )
@@ -1779,7 +1779,7 @@ IMPL_ON_FUNC( EGS_REGISTRATION_GUILD_AD_REQ )
 
 	if( GetGuildUID() <= 0 )
 	{
-		START_LOG( cerr, L"길드원이 아닌데 길드 광고를 신청하려고 합니다." )
+		START_LOG( cerr, L"A non-member attempted to request a guild advertisement." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetGuildUID() )
 			<< END_LOG;
@@ -1792,7 +1792,7 @@ IMPL_ON_FUNC( EGS_REGISTRATION_GUILD_AD_REQ )
 	if( m_kUserGuildManager.GetMemberShipGrade() != SEnum::GUG_MASTER  &&
 		m_kUserGuildManager.GetMemberShipGrade() != SEnum::GUG_SYSOP )
 	{
-		START_LOG( cerr, L"길드 광고를 등록할 수 없는 길드원등급입니다." )
+		START_LOG( cerr, L"This guild member rank cannot register a guild advertisement." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetGuildUID() )
 			<< BUILD_LOGc( m_kUserGuildManager.GetMemberShipGrade() )
@@ -1807,7 +1807,7 @@ IMPL_ON_FUNC( EGS_REGISTRATION_GUILD_AD_REQ )
 	std::string strAdMessage = KncUtil::toNarrowString( kPacket_.m_wstrAdMessage );
 	if( strAdMessage.size() > 80 )
 	{
-		START_LOG( cerr, L"광고 글자 길이가 너무 깁니다. 클라에서 체크했을텐데.." )
+		START_LOG( cerr, L"The advertisement text is too long; the client should have checked this." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetGuildUID() )
 			<< BUILD_LOG( kPacket_.m_wstrAdMessage )
@@ -1822,7 +1822,7 @@ IMPL_ON_FUNC( EGS_REGISTRATION_GUILD_AD_REQ )
 	// 요청 가능한 기간인지 검사 ( 광고 등록 기간 1일 ~ 5일 가능 )
 	if( kPacket_.m_sPeriod < 0  ||  kPacket_.m_sPeriod > 5 )
 	{
-		START_LOG( cerr, L"요청 가능한 광고 등록 기간이 아닙니다." )
+		START_LOG( cerr, L"Guild advertisements cannot be registered at this time." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetGuildUID() )
 			<< BUILD_LOG( kPacket_.m_sPeriod )
@@ -1837,7 +1837,7 @@ IMPL_ON_FUNC( EGS_REGISTRATION_GUILD_AD_REQ )
 	const int iCost = kPacket_.m_sPeriod * 3000; // 하루에 3000ED
 	if( iCost > GetED() )
 	{
-		START_LOG( clog, L"수수료가 부족해서 광고 등록을 할 수 없습니다." )
+		START_LOG( clog, L"Not enough funds to pay the fee and register the advertisement." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetGuildUID() )
 			<< BUILD_LOG( kPacket_.m_sPeriod )
@@ -1925,7 +1925,7 @@ IMPL_ON_FUNC( EGS_MODIFY_REG_GUILD_AD_REQ )
 
 	if( GetGuildUID() <= 0 )
 	{
-		START_LOG( cerr, L"길드원이 아닌데 길드 광고를 신청하려고 합니다." )
+		START_LOG( cerr, L"A non-member attempted to request a guild advertisement." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetGuildUID() )
 			<< END_LOG;
@@ -1938,7 +1938,7 @@ IMPL_ON_FUNC( EGS_MODIFY_REG_GUILD_AD_REQ )
 	if( m_kUserGuildManager.GetMemberShipGrade() != SEnum::GUG_MASTER  &&
 		m_kUserGuildManager.GetMemberShipGrade() != SEnum::GUG_SYSOP )
 	{
-		START_LOG( cerr, L"길드 광고를 등록할 수 없는 길드원등급입니다." )
+		START_LOG( cerr, L"This guild member rank cannot register a guild advertisement." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetGuildUID() )
 			<< BUILD_LOGc( m_kUserGuildManager.GetMemberShipGrade() )
@@ -1953,7 +1953,7 @@ IMPL_ON_FUNC( EGS_MODIFY_REG_GUILD_AD_REQ )
 	std::string strAdMessage = KncUtil::toNarrowString( kPacket_.m_wstrAdMessage );
 	if( strAdMessage.size() > 80 )
 	{
-		START_LOG( cerr, L"광고 글자 길이가 너무 깁니다. 클라에서 체크했을텐데.." )
+		START_LOG( cerr, L"The advertisement text is too long; the client should have checked this." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetGuildUID() )
 			<< BUILD_LOG( kPacket_.m_wstrAdMessage )
@@ -1968,7 +1968,7 @@ IMPL_ON_FUNC( EGS_MODIFY_REG_GUILD_AD_REQ )
 	// 요청 가능한 기간인지 검사 ( 광고 등록 기간 1일 ~ 5일 가능 )
 	if( kPacket_.m_sPeriod < 0  ||  kPacket_.m_sPeriod > 5 )
 	{
-		START_LOG( cerr, L"요청 가능한 광고 등록 기간이 아닙니다." )
+		START_LOG( cerr, L"Guild advertisements cannot be registered at this time." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetGuildUID() )
 			<< BUILD_LOG( kPacket_.m_sPeriod )
@@ -1983,7 +1983,7 @@ IMPL_ON_FUNC( EGS_MODIFY_REG_GUILD_AD_REQ )
 	const int iCost = kPacket_.m_sPeriod * 3000; // 하루에 3000ED
 	if( iCost > GetED() )
 	{
-		START_LOG( clog, L"수수료가 부족해서 광고 등록을 할 수 없습니다." )
+		START_LOG( clog, L"Not enough funds to pay the fee and register the advertisement." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetGuildUID() )
 			<< BUILD_LOG( kPacket_.m_sPeriod )
@@ -2077,7 +2077,7 @@ IMPL_ON_FUNC( EGS_APPLY_JOIN_GUILD_REQ )
 	std::string strMessage = KncUtil::toNarrowString( kPacket_.m_wstrMessage );
 	if( strMessage.size() > 80 )
 	{
-		START_LOG( cerr, L"가입 메시지 글자 길이가 너무 깁니다. 클라에서 체크했을텐데.." )
+		START_LOG( cerr, L"The join message is too long; the client should have checked this." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetGuildUID() )
 			<< BUILD_LOG( kPacket_.m_wstrMessage )
@@ -2092,7 +2092,7 @@ IMPL_ON_FUNC( EGS_APPLY_JOIN_GUILD_REQ )
 	// 이미 길드에 가입된 유저인지 체크
 	if( GetGuildUID() > 0 )
 	{
-		START_LOG( cerr, L"이미 길드에 가입된 유저인데 길드 가입 신청을 하려고 했음. 클라에서 검사 했을텐데.." )
+		START_LOG( cerr, L"User already belongs to a guild but attempted to apply to join one; the client should have checked this." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetGuildUID() )
 			<< END_LOG;
@@ -2155,7 +2155,7 @@ IMPL_ON_FUNC( EGS_ACCEPT_JOIN_GUILD_REQ )
 
 	if( GetGuildUID() <= 0 )
 	{
-		START_LOG( cerr, L"길드원이 아닌데 길드 가입 수락을 하려고 한다." )
+		START_LOG( cerr, L"Attempted to accept a guild membership request without being a guild member." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetGuildUID() )
 			<< END_LOG;
@@ -2168,7 +2168,7 @@ IMPL_ON_FUNC( EGS_ACCEPT_JOIN_GUILD_REQ )
 	if( m_kUserGuildManager.GetMemberShipGrade() != SEnum::GUG_MASTER  &&
 		m_kUserGuildManager.GetMemberShipGrade() != SEnum::GUG_SYSOP )
 	{
-		START_LOG( cerr, L"길드 가입 수락을 할 수 없는 길드원등급입니다." )
+		START_LOG( cerr, L"Guild member rank does not allow accepting membership requests." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetGuildUID() )
 			<< BUILD_LOGc( m_kUserGuildManager.GetMemberShipGrade() )
@@ -2208,7 +2208,7 @@ IMPL_ON_FUNC( EGS_DELETE_APPLY_JOIN_GUILD_REQ )
 		if( m_kUserGuildManager.GetMemberShipGrade() != SEnum::GUG_MASTER  &&
 			m_kUserGuildManager.GetMemberShipGrade() != SEnum::GUG_SYSOP )
 		{
-			START_LOG( cwarn, L"길드 가입 신청 삭제를 할 수 없는 길드원등급입니다." )
+			START_LOG( cwarn, L"Guild member rank does not allow deleting membership applications." )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( GetGuildUID() )
 				<< BUILD_LOGc( m_kUserGuildManager.GetMemberShipGrade() )

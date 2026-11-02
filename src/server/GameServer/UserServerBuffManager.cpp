@@ -41,7 +41,7 @@ bool KUserServerBuffManager::ActivateBuff( IN KBuffInfo& kBuff, OUT std::vector<
 	//////////////////////////////////////////////////////////////////////////
 	if( kBuff.m_kFactorInfo.m_BuffIdentity.m_eBuffTempletID == CXSLBuffManager::BTI_BUFF_GATE_DEFENCE )
 	{
-		START_LOG( clog, L"[버프체크] 어둠의 문 방어 버프가 활성화 됩니다!" )
+		START_LOG( clog, L"[Buff check] Gate of Darkness defense buff is being activated!" )
 			<< BUILD_LOG( kBuff.m_kFactorInfo.m_BuffIdentity.m_eBuffTempletID );
 	}
 	//////////////////////////////////////////////////////////////////////////
@@ -50,7 +50,7 @@ bool KUserServerBuffManager::ActivateBuff( IN KBuffInfo& kBuff, OUT std::vector<
 	const CXSLBuffManager::BuffTemplet* pBuffTemplet = SiCXSLBuffManager()->GetBuffTemplet( kBuff.m_kFactorInfo.m_BuffIdentity.m_eBuffTempletID );
 	if( pBuffTemplet == NULL )
 	{
-		START_LOG( cerr, L"존재 하지 않는 버프입니다!" )
+		START_LOG( cerr, L"The specified buff does not exist!" )
 			<< BUILD_LOG( kBuff.m_kFactorInfo.m_BuffIdentity.m_eBuffTempletID )
 			<< END_LOG;
 		return false;
@@ -99,7 +99,7 @@ bool KUserServerBuffManager::DeactivateBuff( IN const int iBuffID, IN OUT std::v
 	//////////////////////////////////////////////////////////////////////////
 	if( iBuffID == CXSLBuffManager::BTI_BUFF_GATE_DEFENCE )
 	{
-		START_LOG( clog, L"[버프체크] 어둠의 문 방어 버프가 비활성화 됩니다!" )
+		START_LOG( clog, L"[Buff check] Gate of Darkness defense buff is being deactivated!" )
 			<< BUILD_LOG( iBuffID );
 	}
 	//////////////////////////////////////////////////////////////////////////
@@ -107,7 +107,7 @@ bool KUserServerBuffManager::DeactivateBuff( IN const int iBuffID, IN OUT std::v
 
 	if( IsBuffActivated( iBuffID ) == false )
 	{
-		START_LOG( cerr, L"이미 삭제된 버프입니다." )
+		START_LOG( cerr, L"The buff has already been deleted." )
 			<< BUILD_LOG( iBuffID )
 			<< END_LOG;
 		return false;
@@ -122,7 +122,7 @@ bool KUserServerBuffManager::DeactivateBuff( IN const int iBuffID, IN OUT std::v
 	}
 	else
 	{
-		START_LOG( cerr, L"존재하지 않는 버프 입니다." )
+		START_LOG( cerr, L"Buff does not exist." )
 			<< BUILD_LOG( iBuffID )
 			<< END_LOG;
 		return false;
@@ -156,7 +156,7 @@ void KUserServerBuffManager::GetBuffList( OUT std::vector< KBuffInfo >& vecBuffI
 		const CXSLBuffManager::BuffTemplet* pBuffInfo = SiCXSLBuffManager()->GetBuffTemplet( mit->second.m_kFactorInfo.m_BuffIdentity.m_eBuffTempletID );
 		if( pBuffInfo == NULL )
 		{
-			START_LOG( cerr, L"존재하지 않는 버프 ID가 적용 중?" )
+			START_LOG( cerr, L"A nonexistent buff ID is being applied." )
 				<< BUILD_LOG( mit->second.m_kFactorInfo.m_BuffIdentity.m_eBuffTempletID )
 				<< END_LOG;
 			continue;
@@ -182,7 +182,7 @@ void KUserServerBuffManager::GetBuffIDList( OUT std::vector< int >& vecBuffID, I
 		const CXSLBuffManager::BuffTemplet* pBuffInfo = SiCXSLBuffManager()->GetBuffTemplet( mit->second.m_kFactorInfo.m_BuffIdentity.m_eBuffTempletID );
 		if( pBuffInfo == NULL )
 		{
-			START_LOG( cerr, L"존재하지 않는 버프 ID가 적용 중?" )
+			START_LOG( cerr, L"A nonexistent buff ID is being applied." )
 				<< BUILD_LOG( mit->second.m_kFactorInfo.m_BuffIdentity.m_eBuffTempletID )
 				<< END_LOG;
 			continue;
@@ -208,7 +208,7 @@ void KUserServerBuffManager::GetBuffFactorList( OUT std::vector< KBuffFactor >& 
 		const CXSLBuffManager::BuffTemplet* pBuffInfo = SiCXSLBuffManager()->GetBuffTemplet( mit->second.m_kFactorInfo.m_BuffIdentity.m_eBuffTempletID );
 		if( pBuffInfo == NULL )
 		{
-			START_LOG( cerr, L"존재하지 않는 버프 ID가 적용 중?" )
+			START_LOG( cerr, L"A nonexistent buff ID is being applied." )
 				<< BUILD_LOG( mit->second.m_kFactorInfo.m_BuffIdentity.m_eBuffTempletID )
 				<< END_LOG;
 			continue;
@@ -229,7 +229,7 @@ void KUserServerBuffManager::GetBuffBonusRate( IN OUT KRoomUserInfo& kRoomUserIn
 		const CXSLBuffManager::BuffTemplet* pBuffInfo = SiCXSLBuffManager()->GetBuffTemplet( mit->second.m_kFactorInfo.m_BuffIdentity.m_eBuffTempletID );
 		if( pBuffInfo == NULL )
 		{
-			START_LOG( cerr, L"존재하지 않는 버프 ID가 적용 중?" )
+			START_LOG( cerr, L"A nonexistent buff ID is being applied." )
 				<< BUILD_LOG( mit->second.m_kFactorInfo.m_BuffIdentity.m_eBuffTempletID )
 				<< END_LOG;
 			continue;
@@ -247,7 +247,7 @@ void KUserServerBuffManager::GetBuffBonusRate( IN OUT KRoomUserInfo& kRoomUserIn
 			const CXSLSocketItem::SocketData* pSocketData = SiCXSLSocketItem()->GetSocketData( iSocketOption );
 			if( pSocketData == NULL )
 			{
-				START_LOG( cerr, L"존재하지않는 소켓옵션이 버프의 소켓 옵션으로 세팅되어 있습니다." )
+				START_LOG( cerr, L"A nonexistent socket option is set as the buff's socket option." )
 					<< BUILD_LOG( pBuffInfo->m_eBuffID )
 					<< BUILD_LOG( iSocketOption )
 					<< END_LOG;
@@ -285,7 +285,7 @@ void KUserServerBuffManager::CheckBuffPeriod( OUT std::vector< int >& vecDeactiv
 				//////////////////////////////////////////////////////////////////////////
 				if( mit->second.m_kFactorInfo.m_BuffIdentity.m_eBuffTempletID == CXSLBuffManager::BTI_BUFF_GATE_DEFENCE )
 				{
-					START_LOG( clog, L"[버프체크] 어둠의 문 방어 버프가 시간 제한에 걸렸습니다!" )
+					START_LOG( clog, L"[Buff check] Gate of Darkness defense buff expired!" )
 						<< BUILD_LOG( mit->second.m_kFactorInfo.m_BuffIdentity.m_eBuffTempletID );
 				}
 				//////////////////////////////////////////////////////////////////////////
@@ -334,7 +334,7 @@ void KUserServerBuffManager::OnLeaveDungeonRoom( IN KGSUserPtr /*spUser*/, OUT s
 		const CXSLBuffManager::BuffTemplet* pBuffTemplet = SiCXSLBuffManager()->GetBuffTemplet( mit->second.m_kFactorInfo.m_BuffIdentity.m_eBuffTempletID );
 		if( pBuffTemplet == NULL )
 		{
-			START_LOG( cerr, L"존재 하지 않는 버프입니다!" )
+			START_LOG( cerr, L"The specified buff does not exist!" )
 				<< BUILD_LOG( mit->second.m_kFactorInfo.m_BuffIdentity.m_eBuffTempletID )
 				<< END_LOG;
 			continue;
@@ -366,7 +366,7 @@ void KUserServerBuffManager::OnLeaveDungeonRoom( IN KGSUserPtr /*spUser*/, OUT s
 					//////////////////////////////////////////////////////////////////////////
 					if( mit->second.m_kFactorInfo.m_BuffIdentity.m_eBuffTempletID == CXSLBuffManager::BTI_BUFF_GATE_DEFENCE )
 					{
-						START_LOG( clog, L"[버프체크] 어둠의 문 방어 버프가 던전 이탈로 삭제됩니다." )
+						START_LOG( clog, L"[Buff check] Gate of Darkness defense buff removed because the user left the dungeon." )
 							<< BUILD_LOG( mit->second.m_kFactorInfo.m_BuffIdentity.m_eBuffTempletID );
 					}
 					//////////////////////////////////////////////////////////////////////////
@@ -409,7 +409,7 @@ void KUserServerBuffManager::OnLeaveBattleField( IN KGSUserPtr /*spUser*/, OUT s
 		const CXSLBuffManager::BuffTemplet* pBuffTemplet = SiCXSLBuffManager()->GetBuffTemplet( mit->second.m_kFactorInfo.m_BuffIdentity.m_eBuffTempletID );
 		if( pBuffTemplet == NULL )
 		{
-			START_LOG( cerr, L"존재 하지 않는 버프입니다!" )
+			START_LOG( cerr, L"The specified buff does not exist!" )
 				<< BUILD_LOG( mit->second.m_kFactorInfo.m_BuffIdentity.m_eBuffTempletID )
 				<< END_LOG;
 			continue;
@@ -448,7 +448,7 @@ void KUserServerBuffManager::OnEndDungeonGame( IN KGSUserPtr /*spUser*/, IN cons
 		const CXSLBuffManager::BuffTemplet* pBuffTemplet = SiCXSLBuffManager()->GetBuffTemplet( mit->second.m_kFactorInfo.m_BuffIdentity.m_eBuffTempletID );
 		if( pBuffTemplet == NULL )
 		{
-			START_LOG( cerr, L"존재 하지 않는 버프입니다!" )
+			START_LOG( cerr, L"The specified buff does not exist!" )
 				<< BUILD_LOG( mit->second.m_kFactorInfo.m_BuffIdentity.m_eBuffTempletID )
 				<< END_LOG;
 			continue;
@@ -487,7 +487,7 @@ void KUserServerBuffManager::OnEndDungeonGame( IN KGSUserPtr /*spUser*/, IN cons
 					//////////////////////////////////////////////////////////////////////////
 					if( mit->second.m_kFactorInfo.m_BuffIdentity.m_eBuffTempletID == CXSLBuffManager::BTI_BUFF_GATE_DEFENCE )
 					{
-						START_LOG( clog, L"[버프체크] 어둠의 문 방어 버프가 던전 종료로 삭제됩니다." )
+						START_LOG( clog, L"[Buff check] Gate of Darkness defense buff removed because the dungeon ended." )
 							<< BUILD_LOG( mit->second.m_kFactorInfo.m_BuffIdentity.m_eBuffTempletID );
 					}
 					//////////////////////////////////////////////////////////////////////////
@@ -514,7 +514,7 @@ void KUserServerBuffManager::OnUserDied( IN KGSUserPtr /*spUser*/, std::vector< 
 		const CXSLBuffManager::BuffTemplet* pBuffTemplet = SiCXSLBuffManager()->GetBuffTemplet( mit->second.m_kFactorInfo.m_BuffIdentity.m_eBuffTempletID );
 		if( pBuffTemplet == NULL )
 		{
-			START_LOG( cerr, L"존재 하지 않는 버프입니다!" )
+			START_LOG( cerr, L"The specified buff does not exist!" )
 				<< BUILD_LOG( mit->second.m_kFactorInfo.m_BuffIdentity.m_eBuffTempletID )
 				<< END_LOG;
 			continue;
@@ -527,7 +527,7 @@ void KUserServerBuffManager::OnUserDied( IN KGSUserPtr /*spUser*/, std::vector< 
 			//////////////////////////////////////////////////////////////////////////
 			if( mit->second.m_kFactorInfo.m_BuffIdentity.m_eBuffTempletID == CXSLBuffManager::BTI_BUFF_GATE_DEFENCE )
 			{
-				START_LOG( clog, L"[버프체크] 어둠의 문 방어 버프가 캐릭터 사망으로 삭제됩니다." )
+				START_LOG( clog, L"[Buff check] Gate of Darkness defense buff removed because the character died." )
 					<< BUILD_LOG( mit->second.m_kFactorInfo.m_BuffIdentity.m_eBuffTempletID );
 			}
 			//////////////////////////////////////////////////////////////////////////
@@ -550,7 +550,7 @@ void KUserServerBuffManager::OnLeavePVPRoom( IN KGSUserPtr /*spUser*/, OUT std::
 		const CXSLBuffManager::BuffTemplet* pBuffTemplet = SiCXSLBuffManager()->GetBuffTemplet( mit->second.m_kFactorInfo.m_BuffIdentity.m_eBuffTempletID );
 		if( pBuffTemplet == NULL )
 		{
-			START_LOG( cerr, L"존재 하지 않는 버프입니다!" )
+			START_LOG( cerr, L"The specified buff does not exist!" )
 				<< BUILD_LOG( mit->second.m_kFactorInfo.m_BuffIdentity.m_eBuffTempletID )
 				<< END_LOG;
 			continue;

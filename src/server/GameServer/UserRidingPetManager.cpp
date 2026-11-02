@@ -34,7 +34,7 @@ int KUserRidingPetManager::Init( IN const std::vector<KRidingPetInfo>& vecRiding
 	{
 		if( AddRidingPet( kInfo ) != RIDING_PET_SUCCEED )
 		{
-			START_LOG( cerr, L"Riding Pet System: 펫 정보 초기화에 실패하였습니다." )
+			START_LOG( cerr, L"Riding Pet System: failed to initialize pet information." )
 				<< BUILD_LOG( kInfo.m_iRidingPetUID )
 				<< END_LOG;
 		}

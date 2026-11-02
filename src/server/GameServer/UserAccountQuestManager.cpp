@@ -53,7 +53,7 @@ bool KUserAccountQuestManager::AddAccountQuest( IN KQuestInstance& kInfo )
 
 	if( IsAccountQuesting( kInfo.m_iID ) == true )
 	{
-		START_LOG( cerr, L"동일한 QUEST 수행중.. 왜 또왔노..?" )
+		START_LOG( cerr, L"The same quest is already in progress; why was it requested again?" )
 			<< BUILD_LOG( kInfo.m_iID )
 			<< BUILD_LOG( kInfo.m_OwnorUnitUID )
 			<< END_LOG;
@@ -75,7 +75,7 @@ bool KUserAccountQuestManager::RemoveAccountQuest( IN int iAccountQuestID )
 	mit = m_mapAccountQuesting.find( iAccountQuestID );
 	if( mit == m_mapAccountQuesting.end() )
 	{
-		START_LOG( cerr, L"없는걸 지우네 .헐~!" )
+		START_LOG( cerr, L"Attempted to delete something that does not exist!" )
 			<< BUILD_LOG( iAccountQuestID )
 			<< END_LOG;
 
@@ -108,7 +108,7 @@ void KUserAccountQuestManager::SetAccountQuest( IN std::vector< KQuestInstance >
 			continue;
 #endif // SERV_LOG_UNDEFINED_QUEST_TEMPLET
 
-			START_LOG( cerr, L"계정 QUEST TEMPLET가 없음." )
+			START_LOG( cerr, L"Account quest template is missing." )
 				<< BUILD_LOG( kQuestInstance.m_iID )
 				<< BUILD_LOG( kQuestInstance.m_OwnorUnitUID )
 				<< END_LOG;
@@ -127,7 +127,7 @@ void KUserAccountQuestManager::SetAccountQuest( IN std::vector< KQuestInstance >
 			const CXSLQuestManager::SubQuestTemplet* pSubTemplet = SiCXSLQuestManager()->GetSubQuestTemplet( pQuestTemplet->m_vecSubQuest[uiIndexSub] );
 			if( pSubTemplet == NULL )
 			{
-				START_LOG( cerr, L"SUB QUEST TEMPLET가 없음." )
+				START_LOG( cerr, L"The sub-quest template is missing." )
 					<< BUILD_LOG( kQuest.m_iID )
 					<< BUILD_LOG( pQuestTemplet->m_vecSubQuest[uiIndexSub] )
 					<< BUILD_LOG( kQuest.m_OwnorUnitUID )
@@ -157,7 +157,7 @@ void KUserAccountQuestManager::SetAccountQuest( IN std::vector< KQuestInstance >
 				//}
 			default:
 				{
-					START_LOG( cerr, L"없는 서브퀘스트 타입." )
+					START_LOG( cerr, L"The sub-quest type does not exist." )
 						<< BUILD_LOG( pSubTemplet->m_eClearType )
 						<< BUILD_LOG( kQuest.m_iID )
 						<< BUILD_LOG( kQuest.m_OwnorUnitUID )
@@ -209,7 +209,7 @@ void KUserAccountQuestManager::CheckAccountQuest_NewQuestByAfterQuest( IN const 
 	const CXSLQuestManager::QuestTemplet* pQuestTemplet = SiCXSLQuestManager()->GetAccountQuestTemplet( iQuestID );
 	if( pQuestTemplet == NULL )
 	{
-		START_LOG( cwarn, L"존재하지 않는 계정 퀘스트 ID입니다!" ) // cwarn 으로 변경하기
+		START_LOG( cwarn, L"Account quest ID does not exist!" ) // cwarn 으로 변경하기
 			<< BUILD_LOG( iQuestID )
 			<< END_LOG;
 		return;
@@ -225,7 +225,7 @@ void KUserAccountQuestManager::CheckAccountQuest_NewQuestByAfterQuest( IN const 
 		const CXSLQuestManager::QuestTemplet* pAfterQuestTemplet = SiCXSLQuestManager()->GetAccountQuestTemplet( iAfterQuestID );
 		if( IS_NULL( pAfterQuestTemplet ) )
 		{
-			START_LOG( cerr, L"존재 하지 않는 계정 퀘스트 정보입니다!" )
+			START_LOG( cerr, L"Account quest information does not exist!" )
 				<< BUILD_LOG( iQuestID )
 				<< BUILD_LOG( iAfterQuestID )
 				<< END_LOG;
@@ -241,7 +241,7 @@ void KUserAccountQuestManager::CheckAccountQuest_NewQuestByAfterQuest( IN const 
 				// 에픽과 이벤트는 수락하게 한다.
 				if( ( pAfterQuestTemplet->m_eQuestType == CXSLQuestManager::QT_EPIC || pAfterQuestTemplet->m_eQuestType == CXSLQuestManager::QT_EVENT ) == false )
 				{
-					START_LOG( clog, L"강제 수락이 아닌데(캐릭터선택시)...After Quest 로 셋팅된 퀘스트가 에픽, 이벤트가 아니다." ) // clog 로 변경하기
+					START_LOG( clog, L"A quest set as an After Quest during character selection is neither an Epic nor an event quest, and is not being force-accepted." ) // clog 로 변경하기
 						<< BUILD_LOG( iAfterQuestID )
 						<< END_LOG;
 					continue;
@@ -281,7 +281,7 @@ void KUserAccountQuestManager::CheckAccountQuest_NewQuestByBeforeQuest( IN KGSUs
 	{
 		if( pAccountQuest == NULL )
 		{
-			START_LOG( cerr, L"계정 퀘스트 포인터값이 이상합니다!" )
+			START_LOG( cerr, L"Invalid account quest pointer!" )
 				<< BUILD_LOG( vecAccountQuestTemplet.size() )
 				<< END_LOG;
 			continue;
@@ -368,7 +368,7 @@ void KUserAccountQuestManager::CheckAccountQuest( IN KGSUserPtr spUser )
 		{
 			if( pAccountQuest == NULL )
 			{
-				START_LOG( cerr, L"계정 퀘스트 포인터값이 이상합니다!" )
+				START_LOG( cerr, L"Invalid account quest pointer!" )
 					<< BUILD_LOG( vecAccountQuestTemplet.size() )
 					<< END_LOG;
 				continue;
@@ -387,7 +387,7 @@ void KUserAccountQuestManager::CheckAccountQuest( IN KGSUserPtr spUser )
 
 				if( Handler_EGS_NEW_QUEST_REQ_Account( kTempReq, spUser ) == false )
 				{
-					START_LOG( cwarn, L"신규 계정 퀘스트 수락 실패!" )
+					START_LOG( cwarn, L"Failed to accept new account quest!" )
 						<< BUILD_LOG( spUser->GetCharName() )
 						<< BUILD_LOG( kTempReq.m_iQuestID )
 						<< END_LOG;
@@ -414,7 +414,7 @@ bool KUserAccountQuestManager::Handler_EGS_NEW_QUEST_REQ_Account( IN const KEGS_
 	const CXSLQuestManager::QuestTemplet* pQuestTemplet = SiCXSLQuestManager()->GetAccountQuestTemplet( kReq.m_iQuestID );
 	if( pQuestTemplet == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 계정 퀘스트.!" )
+		START_LOG( cerr, L"Account quest does not exist!" )
 			<< BUILD_LOG( kReq.m_iQuestID )
 			<< END_LOG;
 
@@ -435,7 +435,7 @@ bool KUserAccountQuestManager::Handler_EGS_NEW_QUEST_REQ_Account( IN const KEGS_
 	//이미 하고 있는 퀘스트인지..
 	if( IsAccountQuesting( kReq.m_iQuestID ) == true )
 	{
-		START_LOG( cwarn, L"이미 가지고 있는 계정 퀘스트를 등록하려함" )
+		START_LOG( cwarn, L"Attempted to register an account quest that is already owned." )
 			<< BUILD_LOG( kReq.m_iQuestID )
 			<< END_LOG;
 
@@ -451,7 +451,7 @@ bool KUserAccountQuestManager::Handler_EGS_NEW_QUEST_REQ_Account( IN const KEGS_
 		{
 			if( pCompleteQuestInfo->m_tCompleteDate == 0 )
 			{
-				START_LOG( cerr, L"퀘스트 완료는 했는데 완료날짜 정보가 이상합니다." )
+				START_LOG( cerr, L"The quest is complete, but its completion date is invalid." )
 					<< BUILD_LOG( kReq.m_iQuestID )
 					<< END_LOG;
 
@@ -494,7 +494,7 @@ bool KUserAccountQuestManager::Handler_EGS_NEW_QUEST_REQ_Account( IN const KEGS_
 	{
 		if( GetAccountQuestCompleteCount( iBeforeQuestID ) == 0 )
 		{
-			START_LOG( clog, L"어여가서 하나 더해오셔.. !!" )
+			START_LOG( clog, L"Go and complete one more!" )
 				<< BUILD_LOG( kReq.m_iQuestID )
 				<< BUILD_LOG( iBeforeQuestID )
 				<< END_LOG;
@@ -507,7 +507,7 @@ bool KUserAccountQuestManager::Handler_EGS_NEW_QUEST_REQ_Account( IN const KEGS_
 	// 퀘스트를 받기 낮은 레벨이라면
 	if( pQuestTemplet->m_Condition.m_iLevel	> spUser->GetLevel() )
 	{
-		START_LOG( clog, L"계정 퀘스트인데 이런 조건은 정상적이지 않은것 같음" )
+		START_LOG( clog, L"This condition appears invalid for an account quest." )
 			<< BUILD_LOG( pQuestTemplet->m_Condition.m_iLevel )
 			<< BUILD_LOGc( spUser->GetLevel() )
 			<< END_LOG;
@@ -518,7 +518,7 @@ bool KUserAccountQuestManager::Handler_EGS_NEW_QUEST_REQ_Account( IN const KEGS_
 	//	m_iLimitLevel 가 -1 이면 존재하지 않는다는 의미
 	if( pQuestTemplet->m_Condition.m_iLimitLevel != -1 && pQuestTemplet->m_Condition.m_iLimitLevel < spUser->GetLevel() )
 	{
-		START_LOG( clog, L"계정 퀘스트인데 이런 조건은 정상적이지 않은것 같음" )
+		START_LOG( clog, L"This condition appears invalid for an account quest." )
 			<< BUILD_LOG( pQuestTemplet->m_Condition.m_iLimitLevel )
 			<< BUILD_LOGc( spUser->GetLevel() )
 			<< END_LOG;
@@ -537,7 +537,7 @@ bool KUserAccountQuestManager::Handler_EGS_NEW_QUEST_REQ_Account( IN const KEGS_
 			{
 				if( spUser->IsExistInventoryItemWithBank( mitRI->first ) == true )
 				{
-					START_LOG( clog, L"퀘스트 수락시 받는 보상이 이미 인벤토리에 있으면 퀘스트 수락 못함." )
+					START_LOG( clog, L"Cannot accept the quest because its reward is already in the inventory." )
 						<< BUILD_LOG( pQuestTemplet->m_iID )
 						<< BUILD_LOG( mitRI->first )
 						<< END_LOG;
@@ -549,7 +549,7 @@ bool KUserAccountQuestManager::Handler_EGS_NEW_QUEST_REQ_Account( IN const KEGS_
 			// 퀘스트 수락 보상이 들어갈만한 빈슬롯이 있는지 검사
 			if( spUser->IsEnoughSpaceExist( pQuestTemplet->m_mapAcceptRewardItem ) == false )
 			{
-				START_LOG( clog, L"퀘스트 수락시 받는 보상이 들어갈 인벤토리 빈공간이 부족합니다." )
+				START_LOG( clog, L"Not enough inventory space for the quest acceptance reward." )
 					<< BUILD_LOG( pQuestTemplet->m_iID )
 					<< BUILD_LOG( pQuestTemplet->m_mapAcceptRewardItem.size() )
 					<< END_LOG;
@@ -565,7 +565,7 @@ bool KUserAccountQuestManager::Handler_EGS_NEW_QUEST_REQ_Account( IN const KEGS_
 				const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( mit->first );
 				if( pItemTemplet == NULL )
 				{
-					START_LOG( cerr, L"아이템 템플릿 포인터 이상.!" )
+					START_LOG( cerr, L"Invalid item template pointer!" )
 						<< BUILD_LOG( mit->first )
 						<< END_LOG;
 					continue;
@@ -657,7 +657,7 @@ void KUserAccountQuestManager::Handler_EGS_QUEST_COMPLETE_REQ_Account( IN const 
 	pQuestTemplet = SiCXSLQuestManager()->GetAccountQuestTemplet( kReq.m_iQuestID );
 	if( pQuestTemplet == NULL )
 	{
-		START_LOG( cerr, L"계정 퀘스트 진행중인데 템플릿 데이터가 없다." )
+		START_LOG( cerr, L"Account quest is in progress, but template data is missing." )
 			<< BUILD_LOG( kReq.m_iQuestID )
 			<< BUILD_LOG( spUser->GetCharName() )
 			<< BUILD_LOG( spUser->GetUserName() )
@@ -676,7 +676,7 @@ void KUserAccountQuestManager::Handler_EGS_QUEST_COMPLETE_REQ_Account( IN const 
 		const CXSLQuestManager::QuestTemplet* pAfterQuestTemplet = SiCXSLQuestManager()->GetAccountQuestTemplet( *vitAfterQuest );
 		if( pAfterQuestTemplet == NULL )
 		{
-			START_LOG( cerr, L"존재하지 않는 계정 퀘스트가 after퀘스트로 등록되어있습니다!" )
+			START_LOG( cerr, L"Nonexistent account quest is registered as an after-quest!" )
 				<< BUILD_LOG( pQuestTemplet->m_iID )
 				<< BUILD_LOG( *vitAfterQuest )
 				<< END_LOG;
@@ -696,7 +696,7 @@ void KUserAccountQuestManager::Handler_EGS_QUEST_COMPLETE_REQ_Account( IN const 
 			{
 				if( spUser->IsExistInventoryItemWithBank( mitRI->first ) == true )
 				{
-					START_LOG( clog, L"퀘스트 수락시 받는 보상이 이미 인벤토리에 있으면 퀘스트 수락 못함." )
+					START_LOG( clog, L"Cannot accept the quest because its reward is already in the inventory." )
 						<< BUILD_LOG( pAfterQuestTemplet->m_iID )
 						<< BUILD_LOG( mitRI->first )
 						<< END_LOG;
@@ -714,7 +714,7 @@ void KUserAccountQuestManager::Handler_EGS_QUEST_COMPLETE_REQ_Account( IN const 
 	// AfterQuest(복수 일수도 있음) 수락 보상이 들어갈만한 빈슬롯이 있는지 검사
 	if( spUser->IsEnoughSpaceExist( mapAcceptRewardItem ) == false )
 	{
-		START_LOG( clog, L"퀘스트 수락시 받는 보상이 들어갈 인벤토리 빈공간이 부족합니다." )
+		START_LOG( clog, L"Not enough inventory space for the quest acceptance reward." )
 			<< BUILD_LOG( mapAcceptRewardItem.size() )
 			<< END_LOG;
 
@@ -736,7 +736,7 @@ void KUserAccountQuestManager::Handler_EGS_QUEST_COMPLETE_REQ_Account( IN const 
 		const CXSLQuestManager::SubQuestTemplet* pSubQuestTemplet = SiCXSLQuestManager()->GetSubQuestTemplet( iSubQuestID );
 		if( pSubQuestTemplet == NULL )
 		{
-			START_LOG( cerr, L"퀘스트 진행중인데 서브템플릿 데이터가 없다." )
+			START_LOG( cerr, L"The quest is in progress, but its sub-template data is missing." )
 				<< BUILD_LOG( kReq.m_iQuestID )
 				<< BUILD_LOG( iSubQuestID )
 				<< BUILD_LOG( spUser->GetCharName() )
@@ -780,7 +780,7 @@ void KUserAccountQuestManager::Handler_EGS_QUEST_COMPLETE_REQ_Account( IN const 
 			if( pKQuestInst->m_vecSubQuestInstance[iIndexSub].m_bIsSuccess == false )
 			{
 				//{{ 2009. 4. 6  최육사		에러로그 추가
-				START_LOG( cerr, L"성공한 퀘스트가 아닌데 성공체크가 날아왔다?" )
+				START_LOG( cerr, L"Received a success check for a quest that did not succeed." )
 					<< BUILD_LOG( kReq.m_iQuestID )
 					<< BUILD_LOG( iSubQuestID )
 					<< BUILD_LOG( spUser->GetCharName() )
@@ -816,7 +816,7 @@ void KUserAccountQuestManager::Handler_EGS_QUEST_COMPLETE_REQ_Account( IN const 
 
 			if( kDBReq.m_cChangeUnitClass == spUser->GetUnitClass() )
 			{
-				START_LOG( cerr, L"전직할려는 퀘스트 보상 Unit Class가 현재 class와 동일함.?" )
+				START_LOG( cerr, L"The Unit Class in the class-advancement quest reward matches the current class." )
 					<< BUILD_LOG( spUser->GetCharUID() )
 					<< BUILD_LOG( spUser->GetCharName() )
 					<< BUILD_LOGc( spUser->GetUnitClass() )
@@ -836,7 +836,7 @@ void KUserAccountQuestManager::Handler_EGS_QUEST_COMPLETE_REQ_Account( IN const 
 			//선택보상 수량이 최대선택 수량보다 많으면 예외처리..
 			if( (int)kReq.m_mapSelectItemID.size() > pQuestTemplet->m_SelectReward.m_iSelectionCount )
 			{
-				START_LOG( cerr, L"퀘스트 선택보상 수량이 최대선택 수량보다 많음.!" )
+				START_LOG( cerr, L"The quantity of selected quest rewards exceeds the allowed maximum!" )
 					<< BUILD_LOG( kReq.m_mapSelectItemID.size() )
 					<< BUILD_LOG( pQuestTemplet->m_SelectReward.m_iSelectionCount )
 					<< END_LOG;
@@ -859,7 +859,7 @@ void KUserAccountQuestManager::Handler_EGS_QUEST_COMPLETE_REQ_Account( IN const 
 					const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( kQuestSelectReward.m_iItemID );
 					if( pItemTemplet == NULL )
 					{
-						START_LOG( cerr, L"아이템 템플릿 포인터 이상.!" )
+						START_LOG( cerr, L"Invalid item template pointer!" )
 							<< BUILD_LOG( kQuestSelectReward.m_iItemID )
 							<< BUILD_LOG( spUser->GetCharName() )
 							<< END_LOG;
@@ -891,7 +891,7 @@ void KUserAccountQuestManager::Handler_EGS_QUEST_COMPLETE_REQ_Account( IN const 
 						}
 						else
 						{
-							START_LOG( cerr, L"존재하지 않는 소켓옵션을 퀘스트 보상 아이템에 넣으려 했습니다." )
+							START_LOG( cerr, L"Attempted to add a nonexistent socket option to a quest reward item." )
 								<< BUILD_LOG( kReq.m_iQuestID )
 								<< BUILD_LOG( kItemInfo.m_iItemID )
 								<< BUILD_LOG( iRewardSocketOption )
@@ -901,7 +901,7 @@ void KUserAccountQuestManager::Handler_EGS_QUEST_COMPLETE_REQ_Account( IN const 
 
 					mapItem.insert( std::make_pair( kItemInfo.m_iItemID, kItemInfo ) );
 
-					START_LOG( clog, L"퀘스트 선택 아이템 처리" )
+					START_LOG( clog, L"Processing selected quest items." )
 						<< BUILD_LOG( kQuestSelectReward.m_iItemID );
 				}
 			}
@@ -910,7 +910,7 @@ void KUserAccountQuestManager::Handler_EGS_QUEST_COMPLETE_REQ_Account( IN const 
 			{
 				SET_ERROR( ERR_QUEST_15 );
 
-				START_LOG( cerr, L"퀘스트 템플릿에서 선택보상 아이템 찾기 실패.!" )
+				START_LOG( cerr, L"Failed to find the selected reward item in the quest template!" )
 					<< BUILD_LOG( kReq.m_iQuestID )
 					<< BUILD_LOG( kReq.m_mapSelectItemID.size() )
 					<< END_LOG;
@@ -927,7 +927,7 @@ void KUserAccountQuestManager::Handler_EGS_QUEST_COMPLETE_REQ_Account( IN const 
 				const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( kQuestRewardData.m_iItemID );
 				if( pItemTemplet == NULL )
 				{
-					START_LOG( cerr, L"아이템 템플릿 포인터 이상.!" )
+					START_LOG( cerr, L"Invalid item template pointer!" )
 						<< BUILD_LOG( pQuestTemplet->m_iID )
 						<< BUILD_LOG( kQuestRewardData.m_iItemID )
 						<< BUILD_LOG( spUser->GetCharName() )
@@ -960,7 +960,7 @@ void KUserAccountQuestManager::Handler_EGS_QUEST_COMPLETE_REQ_Account( IN const 
 					}
 					else
 					{
-						START_LOG( cerr, L"존재하지 않는 소켓옵션을 퀘스트 보상 아이템에 넣으려 했습니다." )
+						START_LOG( cerr, L"Attempted to add a nonexistent socket option to a quest reward item." )
 							<< BUILD_LOG( kReq.m_iQuestID )
 							<< BUILD_LOG( kItemInfo.m_iItemID )
 							<< BUILD_LOG( iRewardSocketOption )
@@ -1061,7 +1061,7 @@ void KUserAccountQuestManager::Handler_DBE_QUEST_COMPLETE_ACK_Account( IN const 
 
 	if( IsAccountQuesting( iQuestID ) == false )
 	{
-		START_LOG( cerr, L"+ㅁ+;; 계정 퀘스트가 진행중 퀘스트에 없네." )
+		START_LOG( cerr, L"The account quest is missing from the in-progress quest list." )
 			<< BUILD_LOG( iQuestID )
 			<< BUILD_LOG( NetError::GetLastErrMsg() )
 			<< END_LOG;
@@ -1070,7 +1070,7 @@ void KUserAccountQuestManager::Handler_DBE_QUEST_COMPLETE_ACK_Account( IN const 
 		goto end_proc;
 	}
 
-	START_LOG( clog, L"계정 퀘스트 완료 ::::" )
+	START_LOG( clog, L"Account quest completed: " )
 		<< BUILD_LOG( spUser->GetCharUID() )
 		<< BUILD_LOG( spUser->GetCharName() )
 		<< BUILD_LOG( spUser->GetUserName() )
@@ -1096,7 +1096,7 @@ void KUserAccountQuestManager::Handler_DBE_QUEST_COMPLETE_ACK_Account( IN const 
 		const CXSLQuestManager::QuestTemplet* pQuestTemplet = SiCXSLQuestManager()->GetAccountQuestTemplet( iQuestID );
 		if( pQuestTemplet == NULL )
 		{
-			START_LOG( cerr, L"ACCOUNT QUEST TEMPLET 얻어오기 실패.!" )
+			START_LOG( cerr, L"Failed to retrieve the account quest template!" )
 				<< BUILD_LOG( iQuestID )
 				<< BUILD_LOG( spUser->GetCharUID() )
 				<< BUILD_LOG( spUser->GetCharName() )
@@ -1201,7 +1201,7 @@ void KUserAccountQuestManager::Handler_DBE_QUEST_COMPLETE_ACK_Account( IN const 
 			kTempReq.m_iTalkNPCID = CXSLUnitManager::NUI_NONE;
 			if( Handler_EGS_NEW_QUEST_REQ_Account( kTempReq, spUser ) == false )
 			{
-				START_LOG( cwarn, L"[에픽] New Account Quest Req Fail.!(After)" )
+				START_LOG( cwarn, L"[Epic] New account quest request failed (after)." )
 					<< BUILD_LOG( spUser->GetCharName() )
 					<< BUILD_LOG( pQuestTemplet->m_iID )
 					<< END_LOG;
@@ -1240,7 +1240,7 @@ void KUserAccountQuestManager::Handler_CharaterLevelUp_Account( IN KGSUserPtr sp
 		const CXSLQuestManager::QuestTemplet* pQuestTemplet = SiCXSLQuestManager()->GetAccountQuestTemplet( kQuestInstance.m_iID );
 		if( pQuestTemplet == NULL )
 		{
-			START_LOG( cerr, L"Account QUEST TEMPLET 얻어오기 실패.!" )
+			START_LOG( cerr, L"Failed to retrieve the account quest template!" )
 				<< BUILD_LOG( kQuestInstance.m_iID )
 				<< BUILD_LOG( spUser->GetCharUID() )
 				<< BUILD_LOG( spUser->GetCharName() )
@@ -1267,7 +1267,7 @@ void KUserAccountQuestManager::Handler_CharaterLevelUp_Account( IN KGSUserPtr sp
 			const CXSLQuestManager::SubQuestTemplet* pSubQuestTemplet = SiCXSLQuestManager()->GetSubQuestTemplet( pQuestTemplet->m_vecSubQuest[uiIndexSub] );
 			if( pSubQuestTemplet == NULL )
 			{
-				START_LOG( cerr, L"SUB QUEST 가 비어있습니다!" )
+				START_LOG( cerr, L"The sub-quest is empty!" )
 					<< BUILD_LOG( kQuestInstance.m_iID )
 					<< BUILD_LOG( spUser->GetCharUID() )
 					<< BUILD_LOG( spUser->GetCharName() )
@@ -1303,7 +1303,7 @@ void KUserAccountQuestManager::Handler_CharaterLevelUp_Account( IN KGSUserPtr sp
 
 				kNot.m_vecQuestInst.push_back( kQuestInstance );
 
-				START_LOG( clog, L"Account 퀘스트 SQT_CHAR_LEVEL_UP 수행" )
+				START_LOG( clog, L"Performing account quest SQT_CHAR_LEVEL_UP." )
 					<< BUILD_LOG( static_cast<int>( spUser->GetLevel() ) )
 					<< BUILD_LOG( spUser->GetCharName() )
 					<< BUILD_LOG( spUser->GetUserName() )
@@ -1329,7 +1329,7 @@ bool KUserAccountQuestManager::CheckCompleteSubQuest_BeforGroup_AccountQuest( IN
 	const CXSLQuestManager::QuestTemplet* pQuestTemplet = SiCXSLQuestManager()->GetAccountQuestTemplet( iQuestID );
 	if( pQuestTemplet == NULL )
 	{
-		START_LOG( cerr, L"QuestTemplet 포인터 이상.!" )
+		START_LOG( cerr, L"Invalid QuestTemplet pointer!" )
 			<< BUILD_LOG( iQuestID )
 			<< END_LOG;
 
@@ -1358,7 +1358,7 @@ bool KUserAccountQuestManager::CheckCompleteSubQuest_BeforGroup_AccountQuest( IN
 	// 그룹을 찾지 못했다
 	if( iGroupID == 0 )
 	{
-		START_LOG( cwarn, L"서브 퀘스트의 그룹 정보를 찾지 못했다. " )
+		START_LOG( cwarn, L"Could not find the sub-quest group information. " )
 			<< BUILD_LOG( iQuestID )
 			<< BUILD_LOG( iSubQuestID )
 			<< END_LOG;
@@ -1483,7 +1483,7 @@ void KUserAccountQuestManager::Handler_OnDungeonClear( IN const KGSUserPtr spUse
 		const CXSLQuestManager::QuestTemplet* pQuestTemplet = SiCXSLQuestManager()->GetAccountQuestTemplet( kQuestInstance.m_iID );
 		if( pQuestTemplet == NULL )
 		{
-			START_LOG( cerr, L"ACCOUNT QUEST TEMPLET 얻어오기 실패.!" )
+			START_LOG( cerr, L"Failed to retrieve the account quest template!" )
 				<< BUILD_LOG( kQuestInstance.m_iID )
 				<< BUILD_LOG( spUser->GetCharUID() )
 				<< BUILD_LOG( spUser->GetCharName() )
@@ -1510,7 +1510,7 @@ void KUserAccountQuestManager::Handler_OnDungeonClear( IN const KGSUserPtr spUse
 			const CXSLQuestManager::SubQuestTemplet* pSubQuestTemplet = SiCXSLQuestManager()->GetSubQuestTemplet( pQuestTemplet->m_vecSubQuest[uiIndexSub] );
 			if( pSubQuestTemplet == NULL )
 			{
-				START_LOG( cerr, L"SUB QUEST 가 비어있습니다!" )
+				START_LOG( cerr, L"The sub-quest is empty!" )
 					<< BUILD_LOG( kQuestInstance.m_iID )
 					<< BUILD_LOG( spUser->GetCharUID() )
 					<< BUILD_LOG( spUser->GetCharName() )
@@ -1590,7 +1590,7 @@ void KUserAccountQuestManager::Handler_OnDungeonClear( IN const KGSUserPtr spUse
 
 				default:
 					{
-						START_LOG( cerr, L"존재하지 않는 Accout Quest 의 클리어 타입입니다." )
+						START_LOG( cerr, L"Clear type for nonexistent account quest." )
 							<< BUILD_LOG( pQuestTemplet->m_iID )
 							<< BUILD_LOG( pSubQuestTemplet->m_iID )
 							<< BUILD_LOG( pSubQuestTemplet->m_eClearType )
@@ -1600,7 +1600,7 @@ void KUserAccountQuestManager::Handler_OnDungeonClear( IN const KGSUserPtr spUse
 					break;
 				}
 
-				START_LOG( clog, L"Account Quest 관련 던전 종료시 퀘스트 조건 완료" )
+				START_LOG( clog, L"Completing the account quest condition when the related dungeon ends." )
 					<< BUILD_LOG( spUser->GetCharName() )
 					<< BUILD_LOG( spUser->GetUserName() )
 					<< BUILD_LOG( pSubQuestTemplet->m_wstrDescription )
@@ -1623,7 +1623,7 @@ bool KUserAccountQuestManager::IsSuitableLevelUser( IN UidType CharUID, IN const
 	std::map< UidType, bool >::const_iterator mit = mapSuitableLevelInfo.find( CharUID );
 	if( mit == mapSuitableLevelInfo.end() )
 	{
-		START_LOG( cwarn, L"적정 레벨 유저 정보가 없당?" )
+		START_LOG( cwarn, L"No user information is available for the recommended level." )
 			<< BUILD_LOG( CharUID )
 			<< BUILD_LOG( mapSuitableLevelInfo.size() )
 			<< END_LOG;
@@ -1665,7 +1665,7 @@ void KUserAccountQuestManager::CheckResetDayAccountQuest_AutoAccept( IN KGSUserP
 		{
 			if( pCompleteQuestInfo->m_tCompleteDate == 0 )
 			{
-				START_LOG( cerr, L"퀘스트 완료는 했는데 완료날짜 정보가 이상합니다." )
+				START_LOG( cerr, L"The quest is complete, but its completion date is invalid." )
 					<< BUILD_LOG( pAccountQuestTemplet->m_iID )
 					<< END_LOG;
 

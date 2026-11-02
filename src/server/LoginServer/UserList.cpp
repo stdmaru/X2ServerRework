@@ -36,7 +36,7 @@ bool KUserList::GetGSUserInfoByUserUID( UidType iUserUID, KGSUserInfo& kInfo )
 
     if( !mit->second )
     {
-        START_LOG( cerr, L"포인터 이상." )
+        START_LOG( cerr, L"Invalid pointer." )
             << BUILD_LOG( iUserUID )
             << END_LOG;
 
@@ -59,7 +59,7 @@ bool KUserList::GetGSUserInfoByUserID( const std::wstring& wstrUserID, KUserList
 
     if( !mit->second )
     {
-        START_LOG( cerr, L"포인터 이상." )
+        START_LOG( cerr, L"Invalid pointer." )
             << BUILD_LOG( wstrUserID )
             << END_LOG;
 
@@ -82,7 +82,7 @@ bool KUserList::GetGSUserInfoByUnitUID( UidType iUnitUID, KGSUserInfo& kInfo )
 
     if( !mit->second )
     {
-        START_LOG( cerr, L"포인터 이상." )
+        START_LOG( cerr, L"Invalid pointer." )
             << BUILD_LOG( iUnitUID )
             << END_LOG;
 
@@ -109,7 +109,7 @@ bool KUserList::GetGSUserInfoByUnitNickName( std::wstring& wstrUnitNickName, KGS
 
     if( !mit->second )
     {
-        START_LOG( cerr, L"포인터 이상." )
+        START_LOG( cerr, L"Invalid pointer." )
             << BUILD_LOG( wstrUnitNickName )
             << END_LOG;
 
@@ -134,7 +134,7 @@ bool KUserList::GetGSUserInfoByMachineID( IN const std::string& strMachineID, KU
 
 	if( !mit->second )
 	{
-		START_LOG( cerr, L"포인터 이상." )
+		START_LOG( cerr, L"Invalid pointer." )
 			<< BUILD_LOG( strMachineID )
 			<< END_LOG;
 
@@ -151,7 +151,7 @@ int KUserList::RegUser( IN const UidType iUserUID, IN const UidType iGSUID, IN c
 	// 1. 전달인자 값 검사
     if( iUserUID <= 0 )
     {
-        START_LOG( cerr, L"유저 UID 이상." )
+        START_LOG( cerr, L"Invalid user UID." )
             << BUILD_LOG( iUserUID )
             << END_LOG;
 
@@ -160,7 +160,7 @@ int KUserList::RegUser( IN const UidType iUserUID, IN const UidType iGSUID, IN c
 
     if( kInfo_.m_wstrUserID.empty() )
     {
-        START_LOG( cerr, L"유저 ID 이상." )
+        START_LOG( cerr, L"Invalid user ID." )
             << BUILD_LOG( iUserUID )
             << END_LOG;
 
@@ -169,7 +169,7 @@ int KUserList::RegUser( IN const UidType iUserUID, IN const UidType iGSUID, IN c
 
     if( iGSUID <= 0 )
     {
-        START_LOG( cerr, L"게임 서버 UID 이상." )
+        START_LOG( cerr, L"Invalid game server UID." )
             << BUILD_LOG( iGSUID )
             << END_LOG;
 
@@ -209,7 +209,7 @@ int KUserList::RegUser( IN const UidType iUserUID, IN const UidType iGSUID, IN c
 		{
 			if( kInfo_.m_strMachineID.empty() )
 			{
-				START_LOG( cout, L"[알림] 머신ID가 비어있는 유저 발견!" )
+				START_LOG( cout, L"[Notice] Found a user with an empty machine ID!" )
 					<< BUILD_LOG( kInfo_.m_wstrUserID )
 					<< BUILD_LOGc( kInfo_.m_cAuthLevel )
 					<< BUILD_LOG( kInfo_.m_iChannelID )
@@ -233,7 +233,7 @@ int KUserList::RegUser( IN const UidType iUserUID, IN const UidType iGSUID, IN c
 								KActorManager::GetKObj()->Get( kUserInfo.m_nGSUID, spServer );
 								if( IS_NOT_NULL( spServer ) )
 								{
-									START_LOG( cout, L"[알림] 머신ID 중복 접속!! 기존에 접속해 있던 유저를 접속 종료 시킵니다!" )
+									START_LOG( cout, L"[Notice] Duplicate machine ID login! Disconnecting the existing session!" )
 										<< BUILD_LOG( kUserInfo.m_nUserUID )
 										<< BUILD_LOG( kUserInfo.m_wstrUserID )
 										<< BUILD_LOG( kInfo_.m_wstrUserID )
@@ -249,7 +249,7 @@ int KUserList::RegUser( IN const UidType iUserUID, IN const UidType iGSUID, IN c
 							}
 							//}}
 
-							START_LOG( cout, L"[알림] 머신ID가 중복되는 유저가 있습니다! 해킹유저인가!?" )
+							START_LOG( cout, L"[Notice] Multiple users with the same machine ID! Possible hacking?" )
 								<< BUILD_LOG( kInfo_.m_wstrUserID )
 								<< BUILD_LOG( kInfo_.m_strMachineID );
 
@@ -258,7 +258,7 @@ int KUserList::RegUser( IN const UidType iUserUID, IN const UidType iGSUID, IN c
 						}
 						else
 						{
-							START_LOG( cout, L"[알림] 일반 계정으로 동일머신 중복 접속하였으나 서버 버전이 사내 버전이므로 정상 접속 처리 합니다." )
+							START_LOG( cout, L"[Notice] Duplicate machine login by a regular account accepted because this is an in-house server version." )
 								<< BUILD_LOG( kInfo_.m_wstrUserID )
 								<< BUILD_LOGc( kInfo_.m_cAuthLevel )
 								<< BUILD_LOG( kInfo_.m_iChannelID )
@@ -267,7 +267,7 @@ int KUserList::RegUser( IN const UidType iUserUID, IN const UidType iGSUID, IN c
 					}
 					else
 					{
-						START_LOG( cout, L"[알림] 운영자 또는 개발자가 동일 머신으로 중복 접속 시도를 하였습니다! 확인 바랍니다." )
+						START_LOG( cout, L"[Notice] An operator or developer attempted to log in twice from the same machine. Please investigate." )
 							<< BUILD_LOG( kInfo_.m_wstrUserID )
 							<< BUILD_LOGc( kInfo_.m_cAuthLevel )
 							<< BUILD_LOG( kInfo_.m_iChannelID )
@@ -283,13 +283,13 @@ int KUserList::RegUser( IN const UidType iUserUID, IN const UidType iGSUID, IN c
     mitUserUID = m_mapUserUID.find( iUserUID );
     if( mitUserUID != m_mapUserUID.end() )
     {
-        START_LOG( cerr, L"유저 정보 존재." )
+        START_LOG( cerr, L"User information exists." )
             << BUILD_LOG( iUserUID )
             << END_LOG;
 
         if( !mitUserUID->second )
         {
-            START_LOG( cerr, L"포인터 이상." )
+            START_LOG( cerr, L"Invalid pointer." )
                 << BUILD_LOG( iUserUID )
                 << END_LOG;
 
@@ -302,7 +302,7 @@ int KUserList::RegUser( IN const UidType iUserUID, IN const UidType iGSUID, IN c
             {
                 if( mitUserID->second )
                 {
-                    START_LOG( cerr, L"포인터 이상이 아님." )
+                    START_LOG( cerr, L"Pointer is valid." )
                         << BUILD_LOG( iUserUID )
                         << BUILD_LOG( mitUserID->first )
                         << BUILD_LOG( mitUserID->second->m_nUserUID )
@@ -322,7 +322,7 @@ int KUserList::RegUser( IN const UidType iUserUID, IN const UidType iGSUID, IN c
 
         if( mitUserUID->second->m_nGSUID == iGSUID )
         {
-            START_LOG( cerr, L"같은 게임 서버 이중접속." )  // 이미 검사를 한 경우이므로 일어날 수 없다.
+            START_LOG( cerr, L"Duplicate connection to the same game server." )  // 이미 검사를 한 경우이므로 일어날 수 없다.
                 << BUILD_LOG( iUserUID )                    // 아니면 이전 문제로 정보가 안지워진 경우이다.
                 << BUILD_LOG( kInfo_.m_wstrUserID )
                 << BUILD_LOG( iGSUID )
@@ -333,7 +333,7 @@ int KUserList::RegUser( IN const UidType iUserUID, IN const UidType iGSUID, IN c
             mitUserID = m_mapUserID.find( kInfo_.m_wstrUserID );
             if( mitUserID != m_mapUserID.end() )
             {
-                START_LOG( cerr, L"UserID 맵에 있음." )
+                START_LOG( cerr, L"UserID exists in the map." )
                     << BUILD_LOG( iUserUID )
                     << BUILD_LOG( kInfo_.m_wstrUserID )
                     << BUILD_LOG( iGSUID )
@@ -343,7 +343,7 @@ int KUserList::RegUser( IN const UidType iUserUID, IN const UidType iGSUID, IN c
             }
             else
             {
-                START_LOG( cerr, L"UserID 맵에 없음." )
+                START_LOG( cerr, L"UserID is not in the map." )
                     << BUILD_LOG( iUserUID )
                     << BUILD_LOG( kInfo_.m_wstrUserID )
                     << BUILD_LOG( iGSUID )
@@ -363,7 +363,7 @@ int KUserList::RegUser( IN const UidType iUserUID, IN const UidType iGSUID, IN c
         KActorManager::GetKObj()->Get( mitUserUID->second->m_nGSUID, spServer );
         if( spServer )   // 타 서버간 이중접속
         {
-            START_LOG( cerr2, L"타 서버간 이중접속 감지." )
+            START_LOG( cerr2, L"Duplicate connection detected across servers." )
                 << BUILD_LOG( spServer->GetName() )
                 << BUILD_LOG( iUserUID )
                 << BUILD_LOG( kInfo_.m_wstrUserID )
@@ -386,7 +386,7 @@ int KUserList::RegUser( IN const UidType iUserUID, IN const UidType iGSUID, IN c
             if( !spServerCurrent )
             {
                 // 서버가 죽기 직전 인증 요청을 한 것일까? 어쨌든 이 유저를 리스트에 추가하면 안된다.
-                START_LOG( cerr, L"인증 요청을 한 유저의 게임 서버가 연결되어 있지 않음." )
+                START_LOG( cerr, L"The game server for the user making the authentication request is not connected." )
                     << BUILD_LOG( iGSUID )
                     << BUILD_LOG( iUserUID )
                     << END_LOG;
@@ -400,7 +400,7 @@ int KUserList::RegUser( IN const UidType iUserUID, IN const UidType iGSUID, IN c
             mitUserID = m_mapUserID.find( kInfo_.m_wstrUserID );
             if( mitUserID != m_mapUserID.end() )
             {
-                START_LOG( cerr, L"UserID 맵에 있음." )
+                START_LOG( cerr, L"UserID exists in the map." )
                     << BUILD_LOG( iUserUID )
                     << BUILD_LOG( kInfo_.m_wstrUserID )
                     << BUILD_LOG( iGSUID )
@@ -410,7 +410,7 @@ int KUserList::RegUser( IN const UidType iUserUID, IN const UidType iGSUID, IN c
             }
             else
             {
-                START_LOG( cerr, L"UserID 맵에 없음." )
+                START_LOG( cerr, L"UserID is not in the map." )
                     << BUILD_LOG( iUserUID )
                     << BUILD_LOG( kInfo_.m_wstrUserID )
                     << BUILD_LOG( iGSUID )
@@ -433,7 +433,7 @@ int KUserList::RegUser( IN const UidType iUserUID, IN const UidType iGSUID, IN c
     mitUserID = m_mapUserID.find( kInfo_.m_wstrUserID );
     if( mitUserID != m_mapUserID.end() )
     {
-        START_LOG( cerr, L"UserUID 맵에서 없다고 확인되었는데 UserID 맵에는 있음." )
+        START_LOG( cerr, L"UserUID is not in the map, but UserID is in the map." )
             << BUILD_LOG( iUserUID )
             << BUILD_LOG( kInfo_.m_wstrUserID )
             << END_LOG;
@@ -467,7 +467,7 @@ bool KUserList::UnRegUser( IN const UidType iUserUID )
 	// 1. 전달인자 검사
     if( iUserUID <= 0 )
     {
-        START_LOG( cerr, L"유저 UID 이상." )
+        START_LOG( cerr, L"Invalid user UID." )
             << BUILD_LOG( iUserUID )
             << END_LOG;
 
@@ -481,7 +481,7 @@ bool KUserList::UnRegUser( IN const UidType iUserUID )
     mitUserUID = m_mapUserUID.find( iUserUID );
     if( mitUserUID == m_mapUserUID.end() )
     {
-        START_LOG( cerr, L"삭제하려는 유저가 없음." )
+        START_LOG( cerr, L"User to delete was not found." )
             << BUILD_LOG( iUserUID )
             << END_LOG;
 
@@ -490,7 +490,7 @@ bool KUserList::UnRegUser( IN const UidType iUserUID )
 
     if( !mitUserUID->second )
     {
-        START_LOG( cerr, L"유저 정보 포인터 이상." )
+        START_LOG( cerr, L"Invalid user information pointer." )
             << BUILD_LOG( iUserUID )
             << END_LOG;
 
@@ -506,7 +506,7 @@ bool KUserList::UnRegUser( IN const UidType iUserUID )
 	// 3. 유닛 정보가 아직 남아있는지 검사
 	if( mitUserUID->second->m_nUnitUID > 0 )
 	{
-		START_LOG( cerr, L"유닛정보가 지워지지 않았는데 유저정보를 지우려 한다!" )
+		START_LOG( cerr, L"Attempted to delete user information before deleting unit information!" )
 			<< BUILD_LOG( iUserUID )
 			<< BUILD_LOG( mitUserUID->second->m_nUnitUID )
 			<< END_LOG;
@@ -518,7 +518,7 @@ bool KUserList::UnRegUser( IN const UidType iUserUID )
 	// 4. 유저 정보 삭제
     if( kInfo.m_wstrUserID.empty() )
     {
-        START_LOG( cerr, L"유저 아이디 이상." )
+        START_LOG( cerr, L"Invalid user ID." )
             << BUILD_LOG( iUserUID )
             << END_LOG;
     }
@@ -527,7 +527,7 @@ bool KUserList::UnRegUser( IN const UidType iUserUID )
         mitUserID = m_mapUserID.find( kInfo.m_wstrUserID );
         if( mitUserID == m_mapUserID.end() )
         {
-            START_LOG( cerr, L"유저 ID 로 검색 실패." )
+            START_LOG( cerr, L"Failed to find user by ID." )
                 << BUILD_LOG( kInfo.m_wstrUserID )
                 << BUILD_LOG( iUserUID )
                 << END_LOG;
@@ -542,7 +542,7 @@ bool KUserList::UnRegUser( IN const UidType iUserUID )
 	// 머신ID정보 삭제
 	if( kInfo.m_strMachineID.empty() )
 	{
-		START_LOG( cout, L"[알림] 머신ID가 비어있는 유저가 로그 아웃 하였습니다!" )
+		START_LOG( cout, L"[Notice] A user with an empty machine ID logged out!" )
 			<< BUILD_LOG( kInfo.m_wstrUserID )
 			<< BUILD_LOGc( kInfo.m_cAuthLevel )
 			<< BUILD_LOG( kInfo.m_iChannelID );
@@ -553,7 +553,7 @@ bool KUserList::UnRegUser( IN const UidType iUserUID )
 		mitMachineID = m_mapMachineID.find( kInfo.m_strMachineID );
 		if( mitMachineID == m_mapMachineID.end() )
 		{
-			START_LOG( cerr, L"머신ID 로 검색 실패." )
+			START_LOG( cerr, L"Failed to find user by machine ID." )
 				<< BUILD_LOG( kInfo.m_strMachineID )
 				<< BUILD_LOG( iUserUID )
 				<< END_LOG;
@@ -581,12 +581,12 @@ bool KUserList::UnRegUser( IN const UidType iUserUID )
 
 void KUserList::UnRegAllUserOfThisGS( IN const UidType iGSUID )
 {
-    START_LOG( cout, L"게임 서버 죽은 후 처리." )
+    START_LOG( cout, L"Handling after game server disconnect." )
         << BUILD_LOG( iGSUID );
 
     if( iGSUID <= 0 )
     {
-        START_LOG( cerr, L"서버 UID 이상." )
+        START_LOG( cerr, L"Invalid server UID." )
             << BUILD_LOG( iGSUID )
             << END_LOG;
 
@@ -599,7 +599,7 @@ void KUserList::UnRegAllUserOfThisGS( IN const UidType iGSUID )
     {
         if( !mitUserUID->second )
         {
-            START_LOG( cerr, L"유저 정보 포인터 이상." )
+            START_LOG( cerr, L"Invalid user information pointer." )
                 << BUILD_LOG( mitUserUID->first )
                 << END_LOG;
 
@@ -625,7 +625,7 @@ int KUserList::RegUnit( IN const UidType iUserUID, IN const UidType iUnitUID, IN
 {
     if( iUserUID <= 0 )
     {
-        START_LOG( cerr, L"유저 UID 이상." )
+        START_LOG( cerr, L"Invalid user UID." )
             << BUILD_LOG( iUserUID )
             << END_LOG;
 
@@ -634,7 +634,7 @@ int KUserList::RegUnit( IN const UidType iUserUID, IN const UidType iUnitUID, IN
 
     if( iUnitUID <= 0 )
     {
-        START_LOG( cerr, L"유닛 UID 이상." )
+        START_LOG( cerr, L"Invalid unit UID." )
             << BUILD_LOG( iUserUID )
             << BUILD_LOG( iUnitUID )
             << END_LOG;
@@ -644,7 +644,7 @@ int KUserList::RegUnit( IN const UidType iUserUID, IN const UidType iUnitUID, IN
 
     if( wstrUnitNickName.empty() )
     {
-        START_LOG( cerr, L"유닛 닉네임 이상." )
+        START_LOG( cerr, L"Invalid unit nickname." )
             << BUILD_LOG( iUserUID )
             << BUILD_LOG( iUnitUID )
             << END_LOG;
@@ -654,7 +654,7 @@ int KUserList::RegUnit( IN const UidType iUserUID, IN const UidType iUnitUID, IN
 
 	if( uiKNMSerialNum <= 0  )
 	{
-		START_LOG( cerr, L"유닛 메신져 SN 이상." )
+		START_LOG( cerr, L"Invalid unit messenger SN." )
 			<< BUILD_LOG( iUserUID )
 			<< BUILD_LOG( iUnitUID )
 			<< BUILD_LOG( uiKNMSerialNum )
@@ -667,7 +667,7 @@ int KUserList::RegUnit( IN const UidType iUserUID, IN const UidType iUnitUID, IN
     mitUserUID = m_mapUserUID.find( iUserUID );
     if( mitUserUID == m_mapUserUID.end() )
     {
-        START_LOG( cerr, L"유닛을 등록하려는데 계정이 등록되어 있지 않음." )
+        START_LOG( cerr, L"Attempted to register a unit whose account is not registered." )
             << BUILD_LOG( iUserUID )
             << BUILD_LOG( iUnitUID )
             << END_LOG;
@@ -677,7 +677,7 @@ int KUserList::RegUnit( IN const UidType iUserUID, IN const UidType iUnitUID, IN
 
     if( !mitUserUID->second )
     {
-        START_LOG( cerr, L"포인터 이상." )
+        START_LOG( cerr, L"Invalid pointer." )
             << BUILD_LOG( iUserUID )
             << BUILD_LOG( iUnitUID )
             << END_LOG;
@@ -690,13 +690,13 @@ int KUserList::RegUnit( IN const UidType iUserUID, IN const UidType iUnitUID, IN
     mitUnitUID = m_mapUnitUID.find( mitUserUID->second->m_nUnitUID );
     if( mitUnitUID != m_mapUnitUID.end() )
     {
-        START_LOG( cerr, L"UnReg 되지 않은 유닛." )
+        START_LOG( cerr, L"Unit has not been unregistered." )
             << BUILD_LOG( mitUnitUID->first )
             << END_LOG;
 
         if( !mitUnitUID->second )
         {
-            START_LOG( cerr, L"포인터 이상." )
+            START_LOG( cerr, L"Invalid pointer." )
                 << BUILD_LOG( iUserUID )
                 << BUILD_LOG( iUnitUID )
                 << BUILD_LOG( wstrUnitNickName )
@@ -715,13 +715,13 @@ int KUserList::RegUnit( IN const UidType iUserUID, IN const UidType iUnitUID, IN
     mitUnitNickName = m_mapUnitNickName.find( mitUserUID->second->m_wstrUnitNickName );
     if( mitUnitNickName != m_mapUnitNickName.end() )
     {
-        START_LOG( cerr, L"UnReg 되지 않은 유닛 닉네임." )
+        START_LOG( cerr, L"Unit nickname has not been unregistered." )
             << BUILD_LOG( mitUnitNickName->first )
             << END_LOG;
 
         if( !mitUnitNickName->second )
         {
-            START_LOG( cerr, L"포인터 이상." )
+            START_LOG( cerr, L"Invalid pointer." )
                 << BUILD_LOG( iUserUID )
                 << BUILD_LOG( iUnitUID )
                 << BUILD_LOG( wstrUnitNickName )
@@ -751,7 +751,7 @@ bool KUserList::UnRegUnit( IN const UidType iUserUID )
 {
     if( iUserUID <= 0 )
     {
-        START_LOG( cerr, L"유저 UID 이상." )
+        START_LOG( cerr, L"Invalid user UID." )
             << BUILD_LOG( iUserUID )
             << END_LOG;
 
@@ -762,7 +762,7 @@ bool KUserList::UnRegUnit( IN const UidType iUserUID )
     mitUserUID = m_mapUserUID.find( iUserUID );
     if( mitUserUID == m_mapUserUID.end() )
     {
-        START_LOG( cerr, L"유닛을 삭제하려는데 계정이 등록되어 있지 않음." )
+        START_LOG( cerr, L"Attempted to delete a unit whose account is not registered." )
             << BUILD_LOG( iUserUID )
             << END_LOG;
 
@@ -771,7 +771,7 @@ bool KUserList::UnRegUnit( IN const UidType iUserUID )
 
     if( !mitUserUID->second )
     {
-        START_LOG( cerr, L"포인터 이상." )
+        START_LOG( cerr, L"Invalid pointer." )
             << BUILD_LOG( iUserUID )
             << END_LOG;
 
@@ -784,7 +784,7 @@ bool KUserList::UnRegUnit( IN const UidType iUserUID )
         mitUnitUID = m_mapUnitUID.find( mitUserUID->second->m_nUnitUID );
         if( mitUnitUID == m_mapUnitUID.end() )
         {
-            START_LOG( cerr, L"유닛 UID 로 검색 실패." )
+            START_LOG( cerr, L"Failed to find unit by UID." )
                 << BUILD_LOG( mitUserUID->second->m_nUnitUID )
                 << END_LOG;
         }
@@ -792,7 +792,7 @@ bool KUserList::UnRegUnit( IN const UidType iUserUID )
         {
             if( !mitUnitUID->second )
             {
-                START_LOG( cerr, L"포인터 이상." )
+                START_LOG( cerr, L"Invalid pointer." )
                     << BUILD_LOG( iUserUID )
                     << BUILD_LOG( mitUserUID->second->m_nUnitUID )
                     << END_LOG;
@@ -806,7 +806,7 @@ bool KUserList::UnRegUnit( IN const UidType iUserUID )
 
         if( mitUserUID->second->m_wstrUnitNickName.empty() )
         {
-            START_LOG( cerr, L"유닛 UID는 등록이 되어있는데 닉네임은 등록되지 않음." )
+            START_LOG( cerr, L"Unit UID is registered, but nickname is not." )
                 << BUILD_LOG( iUserUID )
                 << BUILD_LOG( mitUserUID->second->m_nUnitUID )
                 << END_LOG;
@@ -816,7 +816,7 @@ bool KUserList::UnRegUnit( IN const UidType iUserUID )
     {
         if( !mitUserUID->second->m_wstrUnitNickName.empty() )
         {
-            START_LOG( cerr, L"유닛 UID는 등록이 안되어있는데 닉네임은 있음." )
+            START_LOG( cerr, L"Unit UID is not registered, but nickname is." )
                 << BUILD_LOG( iUserUID )
                 << BUILD_LOG( mitUserUID->second->m_wstrUnitNickName )
                 << END_LOG;
@@ -829,7 +829,7 @@ bool KUserList::UnRegUnit( IN const UidType iUserUID )
         mitUnitNickName = m_mapUnitNickName.find( mitUserUID->second->m_wstrUnitNickName );
         if( mitUnitNickName == m_mapUnitNickName.end() )
         {
-            START_LOG( cerr, L"유닛 닉네임으로 검색 실패." )
+            START_LOG( cerr, L"Failed to find unit by nickname." )
                 << BUILD_LOG( mitUserUID->second->m_wstrUnitNickName )
                 << END_LOG;
         }
@@ -837,7 +837,7 @@ bool KUserList::UnRegUnit( IN const UidType iUserUID )
         {
             if( !mitUnitNickName->second )
             {
-                START_LOG( cerr, L"포인터 이상." )
+                START_LOG( cerr, L"Invalid pointer." )
                     << BUILD_LOG( iUserUID )
                     << BUILD_LOG( mitUserUID->second->m_wstrUnitNickName )
                     << END_LOG;
@@ -874,7 +874,7 @@ bool KUserList::SetDenyFriendShip( UidType iUnitUID, bool bDenyFriendShip )
 	if( !mit->second )
 	{
 		// 시간차로 발생가능.
-		START_LOG( cwarn, L"포인터 이상." )
+		START_LOG( cwarn, L"Invalid pointer." )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 
@@ -911,7 +911,7 @@ bool KUserList::RegAuthWaitUser( IN const KUserList::KGSUserInfo& kUserInfo )
 	mit = m_mapAuthWaitUser.find( kUserInfo.m_nUserUID );
 	if( mit != m_mapAuthWaitUser.end() )
 	{
-		START_LOG( cerr, L"이미 인증 대기자로 등록된 유저입니다!" )
+		START_LOG( cerr, L"User is already registered as awaiting authentication!" )
 			<< BUILD_LOG( kUserInfo.m_nUserUID )
 			<< BUILD_LOG( kUserInfo.m_wstrUserID )
 			<< END_LOG;
@@ -955,13 +955,13 @@ void KUserList::Tick()
 		KUserList::KGSUserInfo kInfo;
 		if( GetGSUserInfoByUserUID( iUserUID, kInfo ) == false )
 		{
-			START_LOG( cerr, L"유저 게임 서버 검색 실패." )
+			START_LOG( cerr, L"Failed to find the user's game server." )
 				<< BUILD_LOG( iUserUID )
 				<< END_LOG;
 			continue;
 		}
 
-		START_LOG( cout, L"넥슨 PC방 인증 서버 : 인증 시간 지연으로 강제로 게임 시작 처리!" )
+		START_LOG( cout, L"Nexon PC-bang authentication server: authentication timed out; forcing the game to start!" )
 			<< BUILD_LOG( kInfo.m_wstrUserID );
 
 		KENX_AUTH_LOGIN_ACK kPacketAuth;

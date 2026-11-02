@@ -33,7 +33,7 @@ void KUserEventManager::InitTimeEvent( IN KGameEventManager::ConnectEventFactorS
 	if( ( kFactor.m_pVecConnectTimeEvent == NULL ) ||
 		( kFactor.m_pVecCumulativeTimeEvent == NULL ) )
 	{
-		START_LOG( cerr, L"접속 이벤트 인자 값 이상!! ( 있어선 안되는 오류입니다. 즉시 확인해주세요 )" )
+		START_LOG( cerr, L"Invalid connection event argument; this should never happen. Check immediately." )
 			<< BUILD_LOG( kFactor.m_pVecConnectTimeEvent )
 			<< BUILD_LOG( kFactor.m_pVecCumulativeTimeEvent )
 			<< END_LOG;
@@ -65,7 +65,7 @@ void KUserEventManager::InitTimeEvent( IN KGameEventManager::ConnectEventFactorS
 	{
 		if( !KncUtil::ConvertStringToCTime( ( *kFactor.m_pVecConnectTimeEvent )[ui].m_wstrEventTime, tEventTime ) )
 		{
-			START_LOG( cerr, L"문자열 시간 변환 실패." )
+			START_LOG( cerr, L"Failed to convert the time string." )
 				<< BUILD_LOG( ( *kFactor.m_pVecConnectTimeEvent )[ui].m_wstrEventTime )
 				<< END_LOG;
 

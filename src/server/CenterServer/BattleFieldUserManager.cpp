@@ -39,7 +39,7 @@ bool KBattleFieldUserManager::EnterRoom( IN const KRoomUserInfo& kInfo, IN const
 	// 이미 입장해있는 유저인지 체크!
 	if( IsExist( kInfo.m_nUnitUID ) == true )
 	{
-		START_LOG( cerr, L"이미 입장해있는 유저 입니다!" )
+		START_LOG( cerr, L"User has already entered!" )
 			<< BUILD_LOG( kInfo.m_nUnitUID )
 			<< BUILD_LOG( kInfo.m_iPartyUID )
 			<< END_LOG;
@@ -63,7 +63,7 @@ bool KBattleFieldUserManager::EnterRoom( IN const KRoomUserInfo& kInfo, IN const
 		{
 			// [memo] 시간차로 발생할수 있는 문제. cerr를 cwarn으로 낮출까..? ( 최육사 )
 
-			START_LOG( cerr, L"현재 방에 입장할 공간이 없다!방에 입장 처리 실패!" )
+			START_LOG( cerr, L"No room-entry space is available; failed to enter room!" )
 				<< BUILD_LOG( kInfo.m_nUnitUID )
 				<< BUILD_LOG( kInfo.m_iPartyUID )
 				<< BUILD_LOG( GetMaxSlot() )
@@ -79,7 +79,7 @@ bool KBattleFieldUserManager::EnterRoom( IN const KRoomUserInfo& kInfo, IN const
 	// 실제 입장 처리 한다!
 	if( KRoomUserManager::EnterRoom( kInfo, bConsiderTeam ) == false )
 	{
-		START_LOG( cerr, L"방에 입장 처리 실패!" )
+		START_LOG( cerr, L"Failed to process room entry!" )
 			<< BUILD_LOG( kInfo.m_nUnitUID )
 			<< BUILD_LOG( kInfo.m_iPartyUID )
 			<< END_LOG;
@@ -91,7 +91,7 @@ bool KBattleFieldUserManager::EnterRoom( IN const KRoomUserInfo& kInfo, IN const
 	// 룸유저에 입장 성공했다면 배틀필드 파티 리스트에도 추가하자!
 	if( AddRoomUserInBattleFieldPartyList( kInfo.m_nUnitUID, kInfo.m_iPartyUID, kJoinInfo.m_vecPartyMemberList ) == false )
 	{
-		START_LOG( cerr, L"파티 멤버 정보 추가 실패!" )
+		START_LOG( cerr, L"Failed to add party-member information!" )
 			<< BUILD_LOG( kInfo.m_nUnitUID )
 			<< BUILD_LOG( kInfo.m_iPartyUID )
 			<< END_LOG;
@@ -106,7 +106,7 @@ bool KBattleFieldUserManager::EnterRoom( IN const KRoomUserInfo& kInfo, IN const
 	{
 		if( RegIntrudeUnitLoadUserList( kInfo.m_nUnitUID, vecUnitUIDList ) == false )
 		{
-			START_LOG( cerr, L"유저 정보 로드 대기자 리스트 등록 실패!" )
+			START_LOG( cerr, L"Failed to add user to the information-load wait list!" )
 				<< BUILD_LOG( kInfo.m_nUnitUID )
 				<< BUILD_LOG( vecUnitUIDList.size() )
 				<< END_LOG;
@@ -128,7 +128,7 @@ bool KBattleFieldUserManager::LeaveRoom( IN const UidType iUnitUID )
 {
 	if( DelRoomUserInBattleFieldPartyList( iUnitUID ) == false )
 	{
-		START_LOG( cerr, L"파티 멤버 정보 삭제 실패!" )
+		START_LOG( cerr, L"Failed to remove party-member information!" )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 	}
@@ -167,7 +167,7 @@ void KBattleFieldUserManager::GetAllPartyMemberListInfo( OUT std::map< UidType, 
 			if( mitPL == mapAllPartyMemberList.end() )
 			{
 				// 에러로그가 너무 많이찍혀서 로그 레벨을 낮춘다.
-				START_LOG( cwarn, L"파티UID값은 있는데 파티 리스트에는 해당 파티 정보가 없다? 일어나서는 안되는 에러!" )
+				START_LOG( cwarn, L"Party UID exists, but the party is absent from the party list; this should never happen!" )
 					<< BUILD_LOG( iUnitUID )
 					<< BUILD_LOG( iPartyUID )
 					<< END_LOG;
@@ -178,7 +178,7 @@ void KBattleFieldUserManager::GetAllPartyMemberListInfo( OUT std::map< UidType, 
 			if( setPartyMemberList.find( iUnitUID ) == setPartyMemberList.end() )
 			{
 				// 에러로그가 너무 많이찍혀서 로그 레벨을 낮춘다.
-				START_LOG( cwarn, L"파티 리스트에 파티 정보는 있는데 해당 유저가 파티 소속이 아니다? 일어나서는 안되는 에러!" )
+				START_LOG( cwarn, L"Party exists in the party list, but the user is not a member; this should never happen!" )
 					<< BUILD_LOG( iUnitUID )
 					<< BUILD_LOG( iPartyUID )
 					<< BUILD_LOG( setPartyMemberList.size() )
@@ -197,7 +197,7 @@ bool KBattleFieldUserManager::GetPartyMemberListInfo( IN const UidType iPartyUID
 	mit = m_mapPartyList.find( iPartyUID );
 	if( mit == m_mapPartyList.end() )
 	{
-		START_LOG( cerr, L"파티를 찾지 못하였습니다!" )
+		START_LOG( cerr, L"Party not found!" )
 			<< BUILD_LOG( iPartyUID )
 			<< END_LOG;
 		return false;
@@ -226,7 +226,7 @@ bool KBattleFieldUserManager::AddRoomUserInBattleFieldPartyList( IN const UidTyp
 
 	if( mit->second.IsPartyMember( iUnitUID ) == false )
 	{
-		START_LOG( cerr, L"예약된 유저가 아닌데 파티원 정보를 추가하려고 한다!" )
+		START_LOG( cerr, L"Attempted to add party-member information for a user who is not reserved!" )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 		return false;
@@ -240,7 +240,7 @@ bool KBattleFieldUserManager::DelRoomUserInBattleFieldPartyList( IN const UidTyp
 	KRoomUserPtr spRoomUser = GetUser( iUnitUID );
 	if( spRoomUser == NULL )
 	{
-		START_LOG( cerr, L"유저가 존재하지 않는데 지울려고 했음!" )
+		START_LOG( cerr, L"Attempted to remove a nonexistent user!" )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 		return false;
@@ -253,7 +253,7 @@ bool KBattleFieldUserManager::DelRoomUserInBattleFieldPartyList( IN const UidTyp
 	mitP = m_mapPartyList.find( spRoomUser->GetPartyUID() );
 	if( mitP == m_mapPartyList.end() )
 	{
-		START_LOG( cwarn, L"해당 파티 정보가 존재하지 않습니다!" )
+		START_LOG( cwarn, L"The specified party information does not exist!" )
 			<< BUILD_LOG( spRoomUser->GetPartyUID() )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
@@ -312,7 +312,7 @@ bool KBattleFieldUserManager::IsPartyMembersSameGuild( IN const UidType iUnitUID
 	KRoomUserPtr spRoomUser = GetUser( iUnitUID );
 	if( spRoomUser == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 유저입니다!" )
+		START_LOG( cerr, L"User does not exist!" )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 		return false;
@@ -333,7 +333,7 @@ bool KBattleFieldUserManager::IsPartyMembersSameGuild( IN const UidType iUnitUID
 	{
 		if( !mit->second )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			return false;
@@ -359,7 +359,7 @@ bool KBattleFieldUserManager::RegIntrudeUnitLoadUserList( IN const UidType iUnit
 	KRoomUserPtr spRoomUser = GetUser( iUnitUID );
 	if( spRoomUser == NULL )
 	{
-		START_LOG( cerr, L"해당 유저를 찾을수가 없습니다!" )
+		START_LOG( cerr, L"Could not find the specified user!" )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 		return false;
@@ -385,7 +385,7 @@ bool KBattleFieldUserManager::UnregIntrudeUnitLoadUserList( IN const UidType iUn
 	KRoomUserPtr spRoomUser = GetUser( iUnitUID );
 	if( spRoomUser == NULL )
 	{
-		START_LOG( cerr, L"해당 유저를 찾을수가 없습니다!" )
+		START_LOG( cerr, L"Could not find the specified user!" )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 		return false;
@@ -416,7 +416,7 @@ void KBattleFieldUserManager::CheckAndGetIntrudeUnitLoadCompleteUserList( OUT st
 		KRoomUserPtr spRoomUser = mit->second;
 		if( spRoomUser == NULL )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -452,7 +452,7 @@ int	 KBattleFieldUserManager::GetSamePartyMember( IN const UidType iUnitUID, USE
 	KRoomUserPtr spRoomUser = GetUser( iUnitUID );
 	if( spRoomUser == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 유저입니다!" )
+		START_LOG( cerr, L"User does not exist!" )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 		return 1;
@@ -466,7 +466,7 @@ int	 KBattleFieldUserManager::GetSamePartyMember( IN const UidType iUnitUID, USE
 	{
 		if( !mit->second )
 		{
-			START_LOG( cwarn, L"룸 유저 포인터 이상." )
+			START_LOG( cwarn, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -494,7 +494,7 @@ int KBattleFieldUserManager::GetSamePartyLiveMember( IN const UidType iUnitUID, 
 	KRoomUserPtr spRoomUser = GetUser( iUnitUID );
 	if( spRoomUser == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 유저입니다!" )
+		START_LOG( cerr, L"User does not exist!" )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 		return 1;
@@ -508,7 +508,7 @@ int KBattleFieldUserManager::GetSamePartyLiveMember( IN const UidType iUnitUID, 
 	{
 		if( !mit->second )
 		{
-			START_LOG( cwarn, L"룸 유저 포인터 이상." )
+			START_LOG( cwarn, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -542,7 +542,7 @@ bool KBattleFieldUserManager::GetRoomUserList( std::map< UidType, KRoomUserPtr >
 	{
 		if( !mit->second )
 		{
-			START_LOG( cwarn, L"룸 유저 포인터 이상." )
+			START_LOG( cwarn, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -582,7 +582,7 @@ bool KBattleFieldUserManager::AddBattleFieldRewardEXP( IN const UidType iUnitUID
 	KRoomUserPtr spExpRewardRoomUser = GetUser( iUnitUID );
 	if( IS_NULL( spExpRewardRoomUser ) )
 	{
-		START_LOG( cerr, L"존재하지 않는 유저에게 exp 를 지급하려 한다." )
+		START_LOG( cerr, L"Attempted to grant EXP to a nonexistent user." )
 			<< BUILD_LOG( iUnitUID )
 			<< BUILD_LOG( iExp )
 			<< END_LOG;
@@ -688,7 +688,7 @@ bool KBattleFieldUserManager::AddBattleFieldRewardEXP( IN const UidType iUnitUID
 		//}}
 	}
 
-	START_LOG( clog, L"::: 내가 받은 EXP :::" )
+	START_LOG( clog, L"::: EXP received :::" )
 		<< BUILD_LOG( spExpRewardRoomUser->GetCID() )
 		<< BUILD_LOG( kEXPData.m_iEXP )
 		<< BUILD_LOG( kEXPData.m_iPartyEXP )
@@ -715,7 +715,7 @@ bool KBattleFieldUserManager::AddBattleFieldRewardED( IN const char cNpcLevel,
 
 	if( iED <= 0 )
 	{
-		START_LOG( cwarn, L"ED가 0인경우도 있나?" )
+		START_LOG( cwarn, L"Can ED really be zero?" )
 			<< BUILD_LOG( iED )
 			<< END_LOG;
 		return false;
@@ -726,7 +726,7 @@ bool KBattleFieldUserManager::AddBattleFieldRewardED( IN const char cNpcLevel,
 		std::map< UidType, float >::const_iterator mit = mapDamageByUser.find( iUserUID );
 		if( mit == mapDamageByUser.end() )
 		{
-			START_LOG( cerr, L"습득 가능 유저가 아닌데....어떻게?!" )
+			START_LOG( cerr, L"User is not eligible to acquire the item; how did this happen?!" )
 				<< BUILD_LOG( iUserUID )
 				<< BUILD_LOGc( cNpcLevel )
 				<< END_LOG;
@@ -738,7 +738,7 @@ bool KBattleFieldUserManager::AddBattleFieldRewardED( IN const char cNpcLevel,
 	std::map< UidType, KRoomUserPtr >::iterator mit = m_mapRoomUser[UT_GAME].find( iUserUID );
 	if( mit == m_mapRoomUser[UT_GAME].end() )
 	{
-		START_LOG( cerr, L"존재하지 않는 유저랍니다." )
+		START_LOG( cerr, L"User does not exist." )
 			<< BUILD_LOG( iUserUID )
 			<< BUILD_LOGc( cNpcLevel )
 			<< END_LOG;
@@ -798,7 +798,7 @@ bool KBattleFieldUserManager::GetItemWithRandom( IN const std::map< UidType, flo
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iItemID );
 	if( pItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"Item Templet 정보가 없음. 일어날 수 없는 에러" )
+		START_LOG( cerr, L"Item template information is missing; this should never happen." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 		return false;
@@ -816,7 +816,7 @@ bool KBattleFieldUserManager::GetItemWithRandom( IN const std::map< UidType, flo
 			KRoomUserPtr spRoomUser = GetUser( mit->first );
 			if( spRoomUser == NULL )
 			{
-				START_LOG( cerr, L"룸 유저 포인터 이상. CUID : " << mit->first );
+				START_LOG( cerr, L"Invalid room user pointer. CUID: " << mit->first );
 				continue;
 			}
 
@@ -862,7 +862,7 @@ bool KBattleFieldUserManager::GetItemWithRandom( IN const std::map< UidType, flo
 	const int iResultCase = kGetItemRandom.Decision();
 	if( iResultCase == KLottery::CASE_BLANK )
 	{
-		START_LOG( cerr, L"아이템 획득할 유저가 없습니다!" )
+		START_LOG( cerr, L"No user available to acquire the item!" )
 			<< BUILD_LOG( kGetItemRandom.GetCaseNum() )
 			<< END_LOG;
 		return false;
@@ -872,7 +872,7 @@ bool KBattleFieldUserManager::GetItemWithRandom( IN const std::map< UidType, flo
 	mitIdx = mapUnitUIDByIndex.find( iResultCase );
 	if( mitIdx == mapUnitUIDByIndex.end() )
 	{
-		START_LOG( cerr, L"아이템 획득할 유저를 찾지 못했습니다!" )
+		START_LOG( cerr, L"Could not find the user who should acquire the item!" )
 			<< BUILD_LOG( iResultCase )
 			<< END_LOG;
 		return false;
@@ -881,7 +881,7 @@ bool KBattleFieldUserManager::GetItemWithRandom( IN const std::map< UidType, flo
 	KRoomUserPtr spSelectedUser = GetUser( mitIdx->second );
 	if( spSelectedUser == NULL )
 	{
-		START_LOG( cerr, L"아이템 획득할 유저를 찾지 못했습니다!" )
+		START_LOG( cerr, L"Could not find the user who should acquire the item!" )
 			<< BUILD_LOG( iResultCase )
 			<< END_LOG;
 		return false;
@@ -898,7 +898,7 @@ void KBattleFieldUserManager::UpdatePartyInfo( IN const UidType iUnitUID, IN con
 	KRoomUserPtr spRoomUser = GetUser( iUnitUID );
 	if( spRoomUser == NULL )
 	{
-		START_LOG( cerr, L"존재 하지 않는 유저 입니다!" )
+		START_LOG( cerr, L"User does not exist!" )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 		return;
@@ -934,7 +934,7 @@ void KBattleFieldUserManager::UpdatePartyInfo( IN const UidType iUnitUID, IN con
 		{
 			if( DelRoomUserInBattleFieldPartyList( iUnitUID ) == false )
 			{
-				START_LOG( cerr, L"파티에 소속되어 있었는데 파티 정보는 없네? 일어나서는 안되는 에러!" )
+				START_LOG( cerr, L"User belongs to a party, but party information is missing; this should never happen!" )
 					<< BUILD_LOG( iUnitUID )
 					<< BUILD_LOG( iPartyUID )
 					<< END_LOG;
@@ -966,7 +966,7 @@ bool KBattleFieldUserManager::GetQuestDropItem( IN const int iBattleFieldID, IN 
 	{
 		if( IS_NULL( mit->second ) )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -1012,7 +1012,7 @@ bool KBattleFieldUserManager::GetQuestDropItem( IN const UidType iUnitUID, IN co
 	{
 		if( IS_NULL( mit->second ) )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			return false;
@@ -1053,7 +1053,7 @@ bool KBattleFieldUserManager::IsComeBackUserInParty( IN UidType iUnitUID )
 	KRoomUserPtr spRoomUser = GetUser( iUnitUID );
 	if( spRoomUser == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 유저입니다!" )
+		START_LOG( cerr, L"User does not exist!" )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 		return false;
@@ -1067,7 +1067,7 @@ bool KBattleFieldUserManager::IsComeBackUserInParty( IN UidType iUnitUID )
 	{
 		if( !mit->second )
 		{
-			START_LOG( cwarn, L"룸 유저 포인터 이상." )
+			START_LOG( cwarn, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -1111,7 +1111,7 @@ float KBattleFieldUserManager::GetPartyTotalDamage( IN const UidType iUnitUID,
 	if( spRoomUser == NULL )
 	{
 		// 시간차로 방을 이탈했다면 오류가 아니다.
-		START_LOG( cwarn, L"존재하지 않는 유저입니다!" )
+		START_LOG( cwarn, L"User does not exist!" )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 		return 0.f;
@@ -1136,7 +1136,7 @@ float KBattleFieldUserManager::GetPartyTotalDamage( IN const UidType iUnitUID,
 	{
 		if( !mit->second )
 		{
-			START_LOG( cwarn, L"룸 유저 포인터 이상." )
+			START_LOG( cwarn, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -1162,7 +1162,7 @@ bool KBattleFieldUserManager::RequestTradeTo( UidType nCID, UidType nCIDTo )
     KRoomUserPtr spRoomUser = GetUser( nCID );
     if( !spRoomUser )
     {
-        START_LOG( cwarn, L"유저가 없음." )
+        START_LOG( cwarn, L"User is missing." )
             << BUILD_LOG( nCID )
             << END_LOG;
 
@@ -1172,7 +1172,7 @@ bool KBattleFieldUserManager::RequestTradeTo( UidType nCID, UidType nCIDTo )
     KRoomUserPtr spRoomUserTo = GetUser( nCIDTo );
     if( !spRoomUserTo )
     {
-        START_LOG( cwarn, L"유저가 없음." )
+        START_LOG( cwarn, L"User is missing." )
             << BUILD_LOG( nCIDTo )
             << END_LOG;
 
@@ -1181,7 +1181,7 @@ bool KBattleFieldUserManager::RequestTradeTo( UidType nCID, UidType nCIDTo )
 
     if( spRoomUser->GetStateID() != KRoomUserFSM::S_PLAY )
     {
-        START_LOG( cwarn, L"신청하는 유저의 상태가 이상함." )
+        START_LOG( cwarn, L"Invalid state for the requesting user." )
             << BUILD_LOG( nCID )
             << BUILD_LOG( spRoomUser->GetStateID() )
             << BUILD_LOG( spRoomUser->GetStateIDString() )
@@ -1192,7 +1192,7 @@ bool KBattleFieldUserManager::RequestTradeTo( UidType nCID, UidType nCIDTo )
 
     if( spRoomUserTo->GetStateID() != KRoomUserFSM::S_PLAY )
     {
-        START_LOG( cwarn, L"신청받는 유저의 상태가 이상함." )
+        START_LOG( cwarn, L"Invalid state for the user receiving the request." )
             << BUILD_LOG( nCIDTo )
             << BUILD_LOG( spRoomUserTo->GetStateID() )
             << BUILD_LOG( spRoomUserTo->GetStateIDString() )
@@ -1209,7 +1209,7 @@ bool KBattleFieldUserManager::TradeAcceptedBy( UidType nCID, UidType nCIDAccepto
 	KRoomUserPtr spRoomUser = GetUser( nCID );
 	if( !spRoomUser )
 	{
-		START_LOG( cwarn, L"유저가 없음." )
+		START_LOG( cwarn, L"User is missing." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -1219,7 +1219,7 @@ bool KBattleFieldUserManager::TradeAcceptedBy( UidType nCID, UidType nCIDAccepto
 	KRoomUserPtr spRoomUserAcceptor = GetUser( nCIDAcceptor );
 	if( !spRoomUserAcceptor )
 	{
-		START_LOG( cwarn, L"유저가 없음." )
+		START_LOG( cwarn, L"User is missing." )
 			<< BUILD_LOG( nCIDAcceptor )
 			<< END_LOG;
 
@@ -1228,7 +1228,7 @@ bool KBattleFieldUserManager::TradeAcceptedBy( UidType nCID, UidType nCIDAccepto
 
 	if( spRoomUserAcceptor->GetStateID() != KRoomUserFSM::S_PLAY )
 	{
-		START_LOG( cwarn, L"신청받는 유저의 상태가 이상함." )
+		START_LOG( cwarn, L"Invalid state for the user receiving the request." )
 			<< BUILD_LOG( nCIDAcceptor )
 			<< BUILD_LOG( spRoomUserAcceptor->GetStateID() )
 			<< BUILD_LOG( spRoomUserAcceptor->GetStateIDString() )
@@ -1255,7 +1255,7 @@ void KBattleFieldUserManager::CalculatePartyRank( IN const std::map< UidType, fl
 		KRoomUserPtr spUser = GetUser( mitDamage->first );
 		if( !spUser )
 		{
-			START_LOG( cwarn, L"룸 유저 포인터 이상." )
+			START_LOG( cwarn, L"Invalid room user pointer." )
 				<< BUILD_LOG( mitDamage->first )
 				<< END_LOG;
 			continue;
@@ -1277,7 +1277,7 @@ void KBattleFieldUserManager::CalculatePartyRank( IN const std::map< UidType, fl
 		{
 			if( !mit->second )
 			{
-				START_LOG( cwarn, L"룸 유저 포인터 이상." )
+				START_LOG( cwarn, L"Invalid room user pointer." )
 					<< BUILD_LOG( mit->first )
 					<< END_LOG;
 				continue;
@@ -1356,7 +1356,7 @@ void KBattleFieldUserManager::GetPartyLevelFactor( IN const UidType iUnitUID, IN
 	if( spRoomUser == NULL )
 	{
 		// 시간차로 방을 이탈했다면 오류가 아니다.
-		START_LOG( cwarn, L"존재하지 않는 유저입니다!" )
+		START_LOG( cwarn, L"User does not exist!" )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 		return;
@@ -1378,7 +1378,7 @@ void KBattleFieldUserManager::GetPartyLevelFactor( IN const UidType iUnitUID, IN
 	{
 		if( !mit->second )
 		{
-			START_LOG( cwarn, L"룸 유저 포인터 이상." )
+			START_LOG( cwarn, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -1401,7 +1401,7 @@ void KBattleFieldUserManager::GetPartyLevelFactor( IN const UidType iUnitUID, IN
 void KBattleFieldUserManager::ZombieAlert_CheckStart()
 {
 
-	START_LOG( clog, L"유령유저 ALERT 체크시작.!" );
+	START_LOG( clog, L"Started ghost-user alert check!" );
 
 	//유령유저 체크 시작하기전 시간 초기화
 	for( int i = UT_GAME; i < UT_TOTAL_NUM; ++i )
@@ -1413,7 +1413,7 @@ void KBattleFieldUserManager::ZombieAlert_CheckStart()
 		{
 			if( !mit->second )
 			{
-				START_LOG( cerr, L"룸 유저 포인터 이상." )
+				START_LOG( cerr, L"Invalid room user pointer." )
 					<< BUILD_LOG( mit->first )
 					<< END_LOG;
 				continue;
@@ -1442,7 +1442,7 @@ bool KBattleFieldUserManager::ZombieAlert_CheckStart(  IN const UidType nCID )
 	KRoomUserPtr spRoomUser = GetUser( nCID, UT_GAME );
 	if( !spRoomUser )
 	{
-		START_LOG( cerr, L"룸 유저 검색 실패." )
+		START_LOG( cerr, L"Failed to find room user." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -1462,7 +1462,7 @@ bool KBattleFieldUserManager::ZombieAlert_CheckStart(  IN const UidType nCID )
 
 void KBattleFieldUserManager::ZombieAlert_CheckEnd()
 {
-	START_LOG( clog, L"유령유저 ALERT 체크종료.!" );
+	START_LOG( clog, L"Finished ghost-user alert check!" );
 
 	//유령유저 체크 중지.
 	m_bIsCheckZombieAlert = false;
@@ -1484,7 +1484,7 @@ bool KBattleFieldUserManager::ZombieAlert_Tick()
 	{
 		if( !mit->second )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 
@@ -1528,7 +1528,7 @@ void KBattleFieldUserManager::GetUnitListGroupdByParty( OUT std::vector< std::se
 	{
 		if( it->second == NULL )
 		{
-			START_LOG( cwarn, L"룸 유저 포인터 이상." )
+			START_LOG( cwarn, L"Invalid room user pointer." )
 				<< BUILD_LOG( it->first )
 				<< END_LOG;
 			continue;

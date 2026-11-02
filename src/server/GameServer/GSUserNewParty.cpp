@@ -38,7 +38,7 @@ IMPL_ON_FUNC( EGS_INVITE_PARTY_REQ )
 	// 데이터 검증
 	if( kPacket_.m_iReceiverUID <= 0  &&  kPacket_.m_wstrNickName.empty() )
 	{
-		START_LOG( cerr, L"초대할려는 캐릭터 정보가 이상합니다!" )
+		START_LOG( cerr, L"Invalid character information for invitation!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
@@ -78,7 +78,7 @@ IMPL_ON_FUNC( EGS_INVITE_PARTY_REQ )
 				// 초대를 하면서 파티를 생성하는 동작을 한다!
 				if( SiKPartyListManager()->E_CreatePartyInSameField( GetThisPtr<KGSUser>(), spReceiver ) == false )
 				{
-					START_LOG( cwarn, L"같은 필드에 있는 유저를 함께 파티 생성 실패!" )
+					START_LOG( cwarn, L"Failed to create a party with a user in the same field!" )
 						<< BUILD_LOG( GetPartyUID() )
 						<< BUILD_LOG( GetCharName() )
 						<< BUILD_LOG( spReceiver->GetCharName() )
@@ -106,7 +106,7 @@ IMPL_ON_FUNC( EGS_INVITE_PARTY_REQ )
 				// 그냥 파티 초대 동작을 한다!
 				if( SiKPartyListManager()->E_InvitePartyInSameField( GetThisPtr<KGSUser>(), spReceiver ) == false )
 				{
-					START_LOG( cwarn, L"같은 필드에 있는 유저를 파티 초대 실패!" )
+					START_LOG( cwarn, L"Failed to invite a user in the same field to the party!" )
 						<< BUILD_LOG( GetPartyUID() )
 						<< BUILD_LOG( GetCharName() )
 						<< BUILD_LOG( spReceiver->GetCharName() )
@@ -155,7 +155,7 @@ IMPL_ON_FUNC( EGS_INVITE_PARTY_REQ )
 			// 로그인 서버로 보내서 체크하고 초대와 함께 파티 생성 동작을 한다.
 			if( SiKPartyListManager()->E_CreatePartyFarFieldCheckHost( GetThisPtr<KGSUser>(), kPacket_.m_wstrNickName ) == false )
 			{
-				START_LOG( cwarn, L"파티 초대자가 파티초대를 할 수 있는 조건에 만족하지 않습니다." )
+				START_LOG( cwarn, L"The party inviter does not meet the requirements for inviting a player." )
 					<< BUILD_LOG( GetPartyUID() )
 					<< BUILD_LOG( GetCharName() )
 					<< BUILD_LOG( kPacket_.m_wstrNickName )
@@ -172,7 +172,7 @@ IMPL_ON_FUNC( EGS_INVITE_PARTY_REQ )
 			// 파티 초대자에 대한 검사를 하자.
 			if( SiKPartyListManager()->E_InvitePartyFarFieldCheckHost( GetThisPtr<KGSUser>(), kPacket_.m_wstrNickName ) == false )
 			{
-				START_LOG( cwarn, L"파티 초대자가 파티초대를 할 수 있는 조건에 만족하지 않습니다." )
+				START_LOG( cwarn, L"The party inviter does not meet the requirements for inviting a player." )
 					<< BUILD_LOG( GetPartyUID() )
 					<< BUILD_LOG( GetCharName() )
 					<< BUILD_LOG( kPacket_.m_wstrNickName )
@@ -228,7 +228,7 @@ _IMPL_ON_FUNC( ELG_INVITE_PARTY_GET_RECEIVER_USER_INFO_REQ, KELG_INVITE_PARTY_FI
 
 	if( SiKPartyListManager()->E_InvitePartyFarFieldCheckReceiver( GetThisPtr<KGSUser>(), kPacket_ ) == false )
 	{
-		START_LOG( clog, L"파티 초대 대상자가 초대될수 없는 상태입니다." )
+		START_LOG( clog, L"The invitee cannot be invited in their current state." )
 			<< BUILD_LOG( kPacket_.m_wstrHostNickName )
 			<< END_LOG;
 
@@ -257,7 +257,7 @@ _IMPL_ON_FUNC( EGB_INVITE_PARTY_GET_RECEIVER_USER_INFO_REQ, KELG_INVITE_PARTY_FI
 
 	if( SiKPartyListManager()->E_InvitePartyFarFieldCheckReceiver( GetThisPtr<KGSUser>(), kPacket_ ) == false )
 	{
-		START_LOG( clog, L"파티 초대 대상자가 초대될수 없는 상태입니다." )
+		START_LOG( clog, L"The invitee cannot be invited in their current state." )
 			<< BUILD_LOG( kPacket_.m_wstrHostNickName )
 			<< END_LOG;
 
@@ -370,7 +370,7 @@ IMPL_ON_FUNC( EGS_INVITE_PARTY_REPLY_NOT )
 
 	if( SiKPartyListManager()->E_InvitePartyReply( GetThisPtr<KGSUser>(), kPacket_ ) == false )
 	{
-		START_LOG( cerr, L"파티 초대에 의한 입장 실패." )
+		START_LOG( cerr, L"Failed to enter via party invitation." )
 			<< BUILD_LOG( kPacket_.m_iPartyUID )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
@@ -402,7 +402,7 @@ IMPL_ON_FUNC( EGS_LEAVE_PARTY_REQ )
 	{
 		// [참고] 파티이탈하기전에 강퇴당했다면 시간차로 발생가능
 
-		START_LOG( cwarn, L"파티를 탈퇴하기전인데 UID가 없다.?" )
+		START_LOG( cwarn, L"UID is missing before party departure?" )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
 
@@ -414,7 +414,7 @@ IMPL_ON_FUNC( EGS_LEAVE_PARTY_REQ )
 
 	if( SiKPartyListManager()->E_LeavePartyReq( GetThisPtr<KGSUser>(), kPacket_ ) == false )
 	{
-		START_LOG( cerr, L"파티 나가기 실패.!" )
+		START_LOG( cerr, L"Failed to leave the party!" )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( NetError::GetErrStr(kPacket_.m_iReason) )
 			<< END_LOG;
@@ -436,7 +436,7 @@ IMPL_ON_FUNC( EPM_LEAVE_PARTY_ACK )
 		//{{ 2010. 03. 29  최육사	파티 이탈 예외
 		if( GetPartyUID() == 0 )
 		{
-			START_LOG( clog, L"이탈 요청한 이후에 현재 PartyUID가 0이군.." )
+			START_LOG( clog, L"Current PartyUID is zero after a leave request." )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( GetPartyUID() )
 				<< BUILD_LOG( kPacket_.m_iPartyUID )
@@ -446,7 +446,7 @@ IMPL_ON_FUNC( EPM_LEAVE_PARTY_ACK )
 		{
 			if( GetPartyUID() != kPacket_.m_iPartyUID )
 			{
-				START_LOG( cerr, L"이탈요청한 PartyUID와 현재 PartyUID가 다르다! 절대로 있을수 없는 에러!" )
+				START_LOG( cerr, L"The PartyUID in the leave request does not match the current PartyUID; this should never happen!" )
 					<< BUILD_LOG( GetCharUID() )
 					<< BUILD_LOG( GetPartyUID() )
 					<< BUILD_LOG( kPacket_.m_iPartyUID )
@@ -501,7 +501,7 @@ IMPL_ON_FUNC( EPM_LEAVE_PARTY_ACK )
 			default:
 				{
 					// 정상적인 상황이 아니므로 에러로그를 남긴다.
-					START_LOG( cerr, L"파티 맺고 있었는데 던전이 아닌 방에 들어와있네?" )
+					START_LOG( cerr, L"Party exists, but user is in a non-dungeon room?" )
 						<< BUILD_LOG( GetCharUID() )
 						<< BUILD_LOG( CXSLRoom::GetRoomType( GetRoomUID() ) )
 						<< END_LOG;
@@ -574,7 +574,7 @@ _IMPL_ON_FUNC( EPM_LEAVE_PARTY_NOT, KEGS_LEAVE_PARTY_NOT )
 
 	if( GetPartyUID() == 0  ||  GetPartyUID() != kPacket_.m_iPartyUID )
 	{
-		START_LOG( cwarn, L"다른 파티에 대한 이탈 처리가 왔다! 일어나서는 안되는 에러!" )
+		START_LOG( cwarn, L"Received a leave request for another party; this should never happen!" )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( GetPartyUID() )
 			<< BUILD_LOG( kPacket_.m_iPartyUID );
@@ -626,7 +626,7 @@ IMPL_ON_FUNC( EGS_PARTY_CHANGE_READY_REQ )
 	// partyuid
 	if( GetPartyUID() == 0 )
 	{
-		START_LOG( cerr, L"파티UID 이상.!" )
+		START_LOG( cerr, L"Invalid PartyUID!" )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
 
@@ -638,7 +638,7 @@ IMPL_ON_FUNC( EGS_PARTY_CHANGE_READY_REQ )
 	//파티의 던전정보를 찾아서..
 	if( SiKPartyListManager()->GetDungeonInfo( GetPartyUID(), iDungeonID, cDifficultyLevel, cDungeonMode ) == false )
 	{
-		START_LOG( cerr, L"파티의 던전정보 찾기 실패.!" )
+		START_LOG( cerr, L"Failed to find party dungeon information!" )
 			<< BUILD_LOG( GetPartyUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
@@ -652,7 +652,7 @@ IMPL_ON_FUNC( EGS_PARTY_CHANGE_READY_REQ )
 	{
 		if( GetLevel() > SiKGameSysVal()->GetGuestUserLimitLevel() )
 		{
-			START_LOG( cerr, L"클라이언트에서 체험ID가 레벨20되었을때 유저를 캐릭선택으로 이동시켰을텐데 아직 게임을 하고있네?" )
+			START_LOG( cerr, L"The client should return a trial character to character selection at level 20, but the user is still playing." )
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
 
@@ -742,7 +742,7 @@ IMPL_ON_FUNC( EGS_PARTY_CHANGE_READY_REQ )
 	// 레디 변경
 	if( SiKPartyListManager()->E_ChangeReadyReq( GetThisPtr<KGSUser>(), kPacket_.m_bReady ) == false )
 	{
-		START_LOG( cwarn, L"파티 레디 변경 실패." )
+		START_LOG( cwarn, L"Failed to change party ready state." )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( GetPartyUID() )
 			<< BUILD_LOG( static_cast<int>(kPacket_.m_bReady) )
@@ -766,7 +766,7 @@ IMPL_ON_FUNC( EGS_PARTY_CHANGE_DUNGEON_REQ )
 	// PartyUID검증
 	if( GetPartyUID() == 0 )
 	{
-		START_LOG( cerr, L"파티UID 이상.!" )
+		START_LOG( cerr, L"Invalid PartyUID!" )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( kPacket_.m_iDungeonID )
 			<< BUILD_LOGc( kPacket_.m_DifficultyLevel )
@@ -779,7 +779,7 @@ IMPL_ON_FUNC( EGS_PARTY_CHANGE_DUNGEON_REQ )
 	// DungeonID검증
 	if( !SiCXSLDungeonManager()->VerifyDungeonID( kPacket_.m_iDungeonID + static_cast<int>(kPacket_.m_DifficultyLevel) ) )
 	{
-		START_LOG( cerr, L"존재하지않는 DungeonID입니다. 클라에서 검사했을텐데.." )
+		START_LOG( cerr, L"The DungeonID does not exist; the client should have checked this." )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( kPacket_.m_iDungeonID )
 			<< BUILD_LOGc( kPacket_.m_DifficultyLevel )
@@ -792,7 +792,7 @@ IMPL_ON_FUNC( EGS_PARTY_CHANGE_DUNGEON_REQ )
 	//{{ 2009. 7. 30  최육사	HenirDungeonMode검증
 	if( CXSLDungeon::IsValidDungeonMode( static_cast<CXSLDungeon::DUNGEON_MODE>(kPacket_.m_cDungeonMode) ) == false )
 	{
-		START_LOG( cerr, L"비정상적인 HenirDungeonMode값입니다." )
+		START_LOG( cerr, L"Invalid HenirDungeonMode value." )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( kPacket_.m_iDungeonID )
 			<< BUILD_LOG( (int)kPacket_.m_cDungeonMode )
@@ -860,7 +860,7 @@ IMPL_ON_FUNC( EGS_PARTY_CHANGE_DUNGEON_REQ )
 		KGSPartyPtr spParty = SiKPartyListManager()->GetParty( GetPartyUID() );
 		if( spParty == NULL )
 		{
-			START_LOG( cerr, L"파티 UID 이상.!" )
+			START_LOG( cerr, L"Invalid party UID!" )
 				<< BUILD_LOG( GetCharName() )
 				<< END_LOG;
 
@@ -905,7 +905,7 @@ IMPL_ON_FUNC( EGS_PARTY_CHANGE_DUNGEON_REQ )
 		}
 		else
 		{
-			START_LOG( cerr, L"패킷 변조 의심 유저입니다.")
+			START_LOG( cerr, L"User suspected of packet tampering.")
 				<< END_LOG;
 
 			kAck.m_iOK = NetError::ERR_PARTY_22;
@@ -918,7 +918,7 @@ IMPL_ON_FUNC( EGS_PARTY_CHANGE_DUNGEON_REQ )
 	// 던전 변경
 	if( SiKPartyListManager()->E_ChangeDungeon( GetThisPtr<KGSUser>(), kPacket_ ) == false )
 	{
-		START_LOG( cerr, L"던전변경 실패." )
+		START_LOG( cerr, L"Failed to change dungeon." )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( GetPartyUID() )
 			<< BUILD_LOG( kPacket_.m_iDungeonID )
@@ -942,7 +942,7 @@ IMPL_ON_FUNC( EGS_QUICK_START_DUNGEON_GAME_REQ )
 	// 던전 자동 매칭 중인지 확인!!
 	if( m_kUserDungeonManager.GetAutoPartyWaitNumber() != 0  ||  m_kUserDungeonManager.GetAutoPartyUID() != 0 )
 	{
-		START_LOG( cerr, L"자동 매칭 중인데 바로 시작 요청이 들어왔다!!" )
+		START_LOG( cerr, L"Received an immediate start request during matchmaking!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
@@ -954,7 +954,7 @@ IMPL_ON_FUNC( EGS_QUICK_START_DUNGEON_GAME_REQ )
 	// 공식 대전 매칭 중인지 확인!!
 	if( GetMatchUID() != 0 )
 	{
-		START_LOG( cerr, L"공식 대전 매칭 중인데 던전 시작 요청이 들어왔다!!" )
+		START_LOG( cerr, L"Received a dungeon start request during official PvP matchmaking!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
@@ -966,7 +966,7 @@ IMPL_ON_FUNC( EGS_QUICK_START_DUNGEON_GAME_REQ )
 	// 룸 리스트 조회 중인지 확인!!
 	if( GetRoomListID() != 0 )
 	{
-		START_LOG( cerr, L"룸 리스트 조회 중에 던전 시작 요청이 들어왔다!!" )
+		START_LOG( cerr, L"Received a dungeon start request while querying the room list!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
@@ -1030,7 +1030,7 @@ IMPL_ON_FUNC( EGS_QUICK_START_DUNGEON_GAME_REQ )
 
 			default:
 				{
-					START_LOG( cerr, L"잘못된 상태값입니다!" )
+					START_LOG( cerr, L"Invalid state value!" )
 						<< BUILD_LOG( GetCharUID() )
 						<< END_LOG;
 
@@ -1047,7 +1047,7 @@ IMPL_ON_FUNC( EGS_QUICK_START_DUNGEON_GAME_REQ )
 		// 8. 파티 게임 시작
 		if( SiKPartyListManager()->E_GameStart( GetThisPtr<KGSUser>(), kPacket_ ) == false )
 		{
-			START_LOG( cerr, L"던전게임 시작하기 실패.!" )
+			START_LOG( cerr, L"Failed to start dungeon!" )
 				<< BUILD_LOG( GetCharName() )
 				<< BUILD_LOG( kPacket_.m_iDungeonID )
 				<< BUILD_LOGc( kPacket_.m_DifficultyLevel )
@@ -1068,7 +1068,7 @@ IMPL_ON_FUNC( EPM_CHECK_DUNGEON_GAME_PLAY_CONDITION_REQ )
 
 	if( GetPartyUID() == 0 )
 	{
-		START_LOG( cerr, L"파티 소속도 아닌데 파티 던전 게임 시작 체크 패킷이 왔네?" )
+		START_LOG( cerr, L"Received party dungeon start-check packet while not in a party?" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
@@ -1103,7 +1103,7 @@ IMPL_ON_FUNC( EGS_PARTY_GAME_START_OPINION_CHECK_REPLY_NOT )
 
 	if( GetPartyUID() == 0 )
 	{
-		START_LOG( cerr, L"파티 소속이 아닌데 게임 시작에 대한 응답을 하네? 시간차 문제인듯" )
+		START_LOG( cerr, L"Responded to game start while not in a party; likely a timing issue." )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
 		return;
@@ -1118,7 +1118,7 @@ IMPL_ON_FUNC( ERM_SINGLE_OPEN_DUNGEON_ROOM_ACK )
 
 	if( kPacket_.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"던전 혼자 플레이 하기 시작 실패!" )
+		START_LOG( cerr, L"Failed to start solo dungeon play!" )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( NetError::GetErrStr( kPacket_.m_iOK ) )
 			<< END_LOG;
@@ -1167,7 +1167,7 @@ _IMPL_ON_FUNC( EPM_PARTY_GAME_START_FAILED_NOT, KEGS_PARTY_GAME_START_FAILED_NOT
 
 	if( GetPartyUID() == 0 )
 	{
-		START_LOG( cerr, L"파티 소속이 아닌데 게임 시작 실패 패킷이 오네?" )
+		START_LOG( cerr, L"Received game start failure packet while not in a party?" )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
 		return;
@@ -1184,7 +1184,7 @@ IMPL_ON_FUNC( ERM_PARTY_OPEN_DUNGEON_ROOM_ACK )
 	{
 		if( GetPartyUID() == 0 )
 		{
-			START_LOG( cerr, L"파티를 통해 던전을 생성햇는데 파티 UID가 없음.!" )
+			START_LOG( cerr, L"Dungeon was created through a party, but PartyUID is missing!" )
 				<< BUILD_LOG( GetCharName() )
 				<< END_LOG;
 		}
@@ -1257,7 +1257,7 @@ IMPL_ON_FUNC( ERM_PARTY_OPEN_DUNGEON_ROOM_NOT )
 			{
 				if( m_kUserDungeonManager.IncreaseHenirRewardCount() == false )
 				{
-					START_LOG( clog, L"헤니르 보상 획득 횟수 증가 실패!! 더이상 증갈 할 수 없으니 보상 받을 수 없다." )
+					START_LOG( clog, L"Failed to increase Henir reward count; it cannot be increased further, so no reward can be granted." )
 						<< BUILD_LOG( GetCharName() )
 						<< BUILD_LOG( m_kUserDungeonManager.GetPossibleHenirRewardNormalCount() )
 						<< BUILD_LOG( m_kUserDungeonManager.GetPossibleHenirRewardPremiumCount() )
@@ -1297,7 +1297,7 @@ IMPL_ON_FUNC( ERM_PARTY_OPEN_DUNGEON_ROOM_NOT )
 			//}}
 			{
 				// 우선 게임시작시 아이템이 없으면 오류니 로그를 남겨본다..
-				START_LOG( cerr, L"던전게임 시작시 필요아이템이 없음.!" )
+				START_LOG( cerr, L"Required item missing when starting dungeon!" )
 					<< BUILD_LOG( GetCharName() )
 					<< BUILD_LOG( iRequireDungeonID )
 					<< BUILD_LOG( (int)eDungeonMode )
@@ -1319,7 +1319,7 @@ IMPL_ON_FUNC( ERM_PARTY_OPEN_DUNGEON_ROOM_NOT )
 
 	default:
 		{
-			START_LOG( cerr, L"일어날수 없는 에러!" )
+			START_LOG( cerr, L"This should never happen!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( CXSLRoom::GetRoomType( GetRoomUID() ) )
 				<< END_LOG;
@@ -1491,7 +1491,7 @@ IMPL_ON_FUNC( EGS_PARTY_CHANGE_HOST_REQ )
 
 	if( GetPartyUID() == 0 )
 	{
-		START_LOG( cerr, L"파티 UID 이상.!" )
+		START_LOG( cerr, L"Invalid party UID!" )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
 
@@ -1505,7 +1505,7 @@ IMPL_ON_FUNC( EGS_PARTY_CHANGE_HOST_REQ )
 	if( SiKPartyListManager()->E_ChangeHost( GetThisPtr<KGSUser>(), kPacket_ ) == false )
 		//}}
 	{
-		START_LOG( cwarn, L"파티장 바꾸기 실패.!" )
+		START_LOG( cwarn, L"Failed to change party leader!" )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( GetPartyUID() )
 			<< END_LOG;
@@ -1518,7 +1518,7 @@ IMPL_ON_FUNC( EGS_PARTY_BAN_USER_REQ )
 
 	if( GetPartyUID() == 0 )
 	{
-		START_LOG( cerr, L"파티 UID 이상.!" )
+		START_LOG( cerr, L"Invalid party UID!" )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
 
@@ -1541,7 +1541,7 @@ IMPL_ON_FUNC( EGS_PARTY_BAN_USER_REQ )
 	if( SiKPartyListManager()->E_BanUser( GetThisPtr<KGSUser>(), kPacket_ ) == false )
 		//}}
 	{
-		START_LOG( cwarn, L"파티강퇴 실패.!" )
+		START_LOG( cwarn, L"Failed to kick party member!" )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( GetPartyUID() )
 			<< END_LOG;
@@ -1587,7 +1587,7 @@ IMPL_ON_FUNC( EGS_PARTY_CHANGE_GET_ITEM_TYPE_REQ )
 
 	if( GetPartyUID() == 0 )
 	{
-		START_LOG( cerr, L"파티 UID 이상.!" )
+		START_LOG( cerr, L"Invalid party UID!" )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
 
@@ -1601,7 +1601,7 @@ IMPL_ON_FUNC( EGS_PARTY_CHANGE_GET_ITEM_TYPE_REQ )
 	if( SiKPartyListManager()->E_ChangeGetItemtype( GetThisPtr<KGSUser>(), kPacket_ ) == false )
 		//}}
 	{
-		START_LOG( cerr, L"던전게임 아이템 습득방식 변경실패." )
+		START_LOG( cerr, L"Failed to change dungeon item acquisition method." )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( GetPartyUID() )
 			<< END_LOG;
@@ -1614,7 +1614,7 @@ IMPL_ON_FUNC( EGS_PARTY_CHANGE_NUM_OF_PER_REQ )
 
 	if( GetPartyUID() == 0 )
 	{
-		START_LOG( cerr, L"파티 UID 이상.!" )
+		START_LOG( cerr, L"Invalid party UID!" )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
 
@@ -1628,7 +1628,7 @@ IMPL_ON_FUNC( EGS_PARTY_CHANGE_NUM_OF_PER_REQ )
 	if( SiKPartyListManager()->E_ChangeNumOfPer( GetThisPtr<KGSUser>(), kPacket_ ) == false )
 		//}}
 	{
-		START_LOG( cwarn, L"파티 인원병경 실패.!" )
+		START_LOG( cwarn, L"Failed to change party member count!" )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( GetPartyUID() )
 			<< END_LOG;
@@ -1642,7 +1642,7 @@ IMPL_ON_FUNC( EGS_PARTY_LIMIT_LEVEL_REQ )
 
 	if( GetPartyUID() == 0 )
 	{
-		START_LOG( cerr, L"파티 UID 이상.!" )
+		START_LOG( cerr, L"Invalid party UID!" )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
 
@@ -1655,7 +1655,7 @@ IMPL_ON_FUNC( EGS_PARTY_LIMIT_LEVEL_REQ )
 	//{{ 2010. 03. 02  최육사	채널 통합 파티
 		//}}
 	{
-		START_LOG( cwarn, L"파티 렙제 옵션 변경 실패.!" )
+		START_LOG( cwarn, L"Failed to change party level restriction option!" )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( GetPartyUID() )
 			<< END_LOG;
@@ -1669,7 +1669,7 @@ IMPL_ON_FUNC( EPM_CREATE_PARTY_BY_INVITE_ACK )
 
 	if( kPacket_.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"파티 생성 실패!" )
+		START_LOG( cerr, L"Failed to create party!" )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( NetError::GetErrStr( kPacket_.m_iOK ) )
 			<< END_LOG;
@@ -1703,7 +1703,7 @@ _IMPL_ON_FUNC( EPM_JOIN_PARTY_NOT, KEGS_JOIN_PARTY_NOT )
 			{
 				if( GetPartyUID() != kInfo.m_iPartyUID )
 				{
-					START_LOG( cerr, L"이미 파티 소속인데 또 파티 가입처리가 되었군.. 기존파티는 이탈 시키자!" )
+					START_LOG( cerr, L"User joined another party while already in one; removing them from the previous party!" )
 						<< BUILD_LOG( GetCharUID() )
 						<< BUILD_LOG( GetCharName() )
 						<< BUILD_LOG( GetPartyUID() )
@@ -1748,7 +1748,7 @@ _IMPL_ON_FUNC( EPM_JOIN_PARTY_NOT, KEGS_JOIN_PARTY_NOT )
 
 		if( GetPartyUID() <= 0 )
 		{
-			START_LOG( cerr, L"파티UID값이 이상합니다. 절대 일어나서는 안되는에러!" )
+			START_LOG( cerr, L"Invalid PartyUID; this should never happen!" )
 				<< BUILD_LOG( GetPartyUID() )
 				<< BUILD_LOG( NetError::GetErrStr( kPacket_.m_iOK ) )
 				<< BUILD_LOG( kPacket_.m_vecPartyInfo.size() )
@@ -1817,7 +1817,7 @@ _IMPL_ON_FUNC( EPM_CLOSE_PARTY_NOT, KEGS_CLOSE_PARTY_NOT )
 
 	if( GetPartyUID() == 0  ||  GetPartyUID() != kPacket_.m_iPartyUID )
 	{
-		START_LOG( cerr, L"관련 없는 파티인데 파티 닫기 처리가 왔다!" )
+		START_LOG( cerr, L"Received a party-close request for an unrelated party!" )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( GetPartyUID() )
 			<< END_LOG;
@@ -1913,7 +1913,7 @@ IMPL_ON_FUNC( EPM_PARTY_GAME_START_ACK )
 		}
 		else
 		{
-			START_LOG( cerr, L"던전 입장권 정보를 찾지 못했다!" )
+			START_LOG( cerr, L"Could not find the dungeon entry ticket information!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( kPacket_.m_iDungeonID )
 				<< BUILD_LOG( kPacket_.m_iDungeonMode )
@@ -1939,7 +1939,7 @@ IMPL_ON_FUNC( EPM_CHECK_FOR_PARTY_GAME_START_REQ )
 	// 파티 소속인지 검사
 	if( GetPartyUID() <= 0 )
 	{
-		START_LOG( cerr, L"파티원이 아닌데 파티장이 게임 시작하자는 이벤트가 왔다?" )
+		START_LOG( cerr, L"Received party leader's game-start event while not in the party?" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetPartyUID() )
 			<< END_LOG;
@@ -1952,7 +1952,7 @@ IMPL_ON_FUNC( EPM_CHECK_FOR_PARTY_GAME_START_REQ )
 	// 다른 파티원인지 검사
 	if( GetPartyUID() != kPacket_.m_iPartyUID )
 	{
-		START_LOG( cerr, L"해당 소속 파티원이 아닌데 다른 파티장이 게임 시작하자는 이벤트가 왔다?" )
+		START_LOG( cerr, L"Received another party leader's game-start event while not belonging to that party?" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetPartyUID() )
 			<< BUILD_LOG( kPacket_.m_iPartyUID )
@@ -1971,7 +1971,7 @@ IMPL_ON_FUNC( EPM_CHECK_FOR_PARTY_GAME_START_REQ )
 			{
 				if( GetStateID() == KGSFSM::S_ROOM  &&  CXSLRoom::GetRoomType( GetRoomUID() ) != CXSLRoom::RT_BATTLE_FIELD )
 				{
-					START_LOG( cwarn, L"파티장과 같은 상태가 아니라서 게임을 시작할수 없음." )
+					START_LOG( cwarn, L"Cannot start game because party member state differs from party leader." )
 						<< BUILD_LOG( KEvent::GetIDStr( kPacket_.m_usEventID ) )
 						<< BUILD_LOG( GetStateIDString() )
 						<< END_LOG;
@@ -2002,7 +2002,7 @@ IMPL_ON_FUNC( EPM_CHECK_FOR_PARTY_GAME_START_REQ )
 
 	default:
 		{
-			START_LOG( cerr, L"잘못된 이벤트 정보 입니다. 절대 일어날수없는에러!" )
+			START_LOG( cerr, L"Invalid event information; this should never happen!" )
 				<< BUILD_LOG( KEvent::GetIDStr( kPacket_.m_usEventID ) )
 				<< END_LOG;
 
@@ -2068,7 +2068,7 @@ IMPL_ON_FUNC( EPM_CHECK_PARTY_CHANGE_HOST_REQ )
 	// 해당 파티가 맞는지 검사
 	if( kPacket_.m_iPartyUID != GetPartyUID() )
 	{
-		START_LOG( cerr, L"파티 소속이 아닌데 파티장 변경 요청이 들어왔군." )
+		START_LOG( cerr, L"Received a party leader change request from a user who is not in the party." )
 			<< BUILD_LOG( kPacket_.m_iPartyUID )
 			<< BUILD_LOG( GetPartyUID() )
 			<< END_LOG;
@@ -2081,7 +2081,7 @@ IMPL_ON_FUNC( EPM_CHECK_PARTY_CHANGE_HOST_REQ )
 	// 해당 유저가 맞는지 검사
 	if( kPacket_.m_iNewHostUnitUID != GetCharUID() )
 	{
-		START_LOG( cerr, L"파티 소속이 아닌데 파티장 변경 요청이 들어왔군." )
+		START_LOG( cerr, L"Received a party leader change request from a user who is not in the party." )
 			<< BUILD_LOG( kPacket_.m_iPartyUID )
 			<< BUILD_LOG( kPacket_.m_iNewHostUnitUID )
 			<< BUILD_LOG( GetCharUID() )
@@ -2099,7 +2099,7 @@ IMPL_ON_FUNC( EPM_CHECK_PARTY_CHANGE_HOST_REQ )
 			//바뀔파티장이 현재 설정된 던전을 할수있는지 확인.
 			if( CheckingSpirit( kPacket_.m_iDungeonID ) == false )
 			{
-				START_LOG( cwarn, L"새로 임명될 유저가 현재 설정된 던전을 수행할수없음." )
+				START_LOG( cwarn, L"The newly assigned user cannot enter the currently selected dungeon." )
 					<< BUILD_LOG( kPacket_.m_iPartyUID )
 					<< BUILD_LOG( kPacket_.m_iNewHostUnitUID )
 					<< BUILD_LOG( GetCharUID() )
@@ -2115,7 +2115,7 @@ IMPL_ON_FUNC( EPM_CHECK_PARTY_CHANGE_HOST_REQ )
 
 			if( CheckRequiredItemToEnterDungeonRoom( iDungeonID, eDungeonMode ) == false )
 			{
-				START_LOG( cwarn, L"새로 임명될 유저가 현재 설정된 던전을 수행할수없음." )
+				START_LOG( cwarn, L"The newly assigned user cannot enter the currently selected dungeon." )
 					<< BUILD_LOG( kPacket_.m_iPartyUID )
 					<< BUILD_LOG( kPacket_.m_iNewHostUnitUID )
 					<< BUILD_LOG( GetCharUID() )
@@ -2128,7 +2128,7 @@ IMPL_ON_FUNC( EPM_CHECK_PARTY_CHANGE_HOST_REQ )
 
 			if( CheckLimitedPlayTimes( iDungeonID ) == false )
 			{
-				START_LOG( cwarn, L"새로 임명될 유저가 현재 설정된 던전을 수행할수없음." )
+				START_LOG( cwarn, L"The newly assigned user cannot enter the currently selected dungeon." )
 					<< BUILD_LOG( kPacket_.m_iPartyUID )
 					<< BUILD_LOG( kPacket_.m_iNewHostUnitUID )
 					<< BUILD_LOG( GetCharUID() )
@@ -2146,7 +2146,7 @@ IMPL_ON_FUNC( EPM_CHECK_PARTY_CHANGE_HOST_REQ )
 				mit = m_mapDungeonClear.find( iRequireDungeonID );
 				if( mit == m_mapDungeonClear.end() )
 				{
-					START_LOG( cwarn, L"새로 임명될 유저가 현재 설정된 던전을 수행할수없음." )
+					START_LOG( cwarn, L"The newly assigned user cannot enter the currently selected dungeon." )
 						<< BUILD_LOG( kPacket_.m_iPartyUID )
 						<< BUILD_LOG( kPacket_.m_iNewHostUnitUID )
 						<< BUILD_LOG( GetCharUID() )
@@ -2165,7 +2165,7 @@ IMPL_ON_FUNC( EPM_CHECK_PARTY_CHANGE_HOST_REQ )
 			// 대전 파티 제한 레벨
 			if( GetLevel() < SEnum::PE_PVP_OFFICIAL_LIMIT_LEVEL )
 			{
-				START_LOG( cwarn, L"공식 대전을 하기에 부족한 캐릭터 레벨입니다." )
+				START_LOG( cwarn, L"The character level is too low for official PvP." )
 					<< BUILD_LOG( GetUID() )
 					<< BUILD_LOG( GetCharUID() )
 					<< BUILD_LOG( GetMatchUID() )
@@ -2181,7 +2181,7 @@ IMPL_ON_FUNC( EPM_CHECK_PARTY_CHANGE_HOST_REQ )
 
 	default:
 		{
-			START_LOG( cerr, L"파티 타입이 이상합니다!" )
+			START_LOG( cerr, L"Invalid party type!" )
 				<< BUILD_LOG( kPacket_.m_iPartyUID )
 				<< BUILD_LOG( kPacket_.m_iNewHostUnitUID )
 				<< BUILD_LOG( GetCharUID() )
@@ -2271,7 +2271,7 @@ IMPL_ON_FUNC( EPM_PARTY_BAN_USER_NOT )
 	//{{ 2010. 03. 29  최육사	파티 이탈 예외
 	if( GetPartyUID() == 0 )
 	{
-		START_LOG( cerr, L"이탈 요청한 이후에 현재 PartyUID가 0이다! 절대로 있을수 없는 에러!" )
+		START_LOG( cerr, L"The current PartyUID is zero after a leave request; this should never happen!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetPartyUID() )
 			<< BUILD_LOG( kPacket_.m_iPartyUID )
@@ -2281,7 +2281,7 @@ IMPL_ON_FUNC( EPM_PARTY_BAN_USER_NOT )
 	{
 		if( GetPartyUID() != kPacket_.m_iPartyUID )
 		{
-			START_LOG( cerr, L"이탈요청한 PartyUID와 현재 PartyUID가 다르다! 절대로 있을수 없는 에러!" )
+			START_LOG( cerr, L"The PartyUID in the leave request does not match the current PartyUID; this should never happen!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( GetPartyUID() )
 				<< BUILD_LOG( kPacket_.m_iPartyUID )
@@ -2312,7 +2312,7 @@ IMPL_ON_FUNC( EPM_PARTY_BAN_USER_NOT )
 		}
 		else
 		{
-			START_LOG( cerr, L"던전방이 아닌데 파티를 맺고 있었네?" )
+			START_LOG( cerr, L"Party exists even though this is not a dungeon room?" )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( CXSLRoom::GetRoomType( GetRoomUID() ) )
 				<< END_LOG;
@@ -2394,7 +2394,7 @@ IMPL_ON_FUNC( EGS_PARTY_CHANGE_CHECK_MIN_LEVEL_REQ )
 
 	if( GetPartyUID() == 0 )
 	{
-		START_LOG( cerr, L"파티 UID 이상.!" )
+		START_LOG( cerr, L"Invalid party UID!" )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
 
@@ -2408,7 +2408,7 @@ IMPL_ON_FUNC( EGS_PARTY_CHANGE_CHECK_MIN_LEVEL_REQ )
 	KGSPartyPtr spParty = SiKPartyListManager()->GetParty( GetPartyUID() );
 	if( spParty == NULL )
 	{
-		START_LOG( cerr, L"파티 UID 이상.!" )
+		START_LOG( cerr, L"Invalid party UID!" )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
 
@@ -2432,7 +2432,7 @@ IMPL_ON_FUNC( EGS_PARTY_CHANGE_CHECK_MIN_LEVEL_REQ )
 
 	if( SiKPartyListManager()->E_ChangeCheckMinLevel( GetThisPtr<KGSUser>(), kPacket_ ) == false )
 	{
-		START_LOG( cerr, L"파티 최소 레벨 입장 제한 설정 실패!" )
+		START_LOG( cerr, L"Failed to set party minimum level restriction!" )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( GetPartyUID() )
 			<< END_LOG;

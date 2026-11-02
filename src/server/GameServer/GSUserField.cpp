@@ -51,7 +51,7 @@ IMPL_ON_FUNC( EGS_STATE_CHANGE_FIELD_REQ )
 	{
 		kPacketAck.m_iOK = NetError::GetLastError();
 
-		START_LOG( cwarn, L"마을에 입장할 수 있는 조건이 안됨." )
+		START_LOG( cwarn, L"The requirements for entering town are not met." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iMapID )
 			<< BUILD_LOG( kPacketAck.m_iOK )
@@ -76,7 +76,7 @@ IMPL_ON_FUNC( EGS_STATE_CHANGE_FIELD_REQ )
 	{
 		if( !SiCXSLMapData()->VerifyMapID( kPacket_.m_iMapID ) )
 		{
-			START_LOG( cerr, L"필드에 입장하려는데 MapID가 이상합니다." )
+			START_LOG( cerr, L"Invalid MapID when attempting to enter the field." )
 				<< BUILD_LOG( kPacket_.m_iMapID )
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
@@ -223,7 +223,7 @@ IMPL_ON_FUNC( ERM_LEAVE_FIELD_ACK )
 			// 이동할 필드의 FieldUId를 얻는다.
 			if( !SiCXSLMapData()->VerifyMapID( kPacket_.m_iMapID ) )
 			{
-				START_LOG( cerr, L"필드에 입장하려는데 MapID가 이상합니다." )
+				START_LOG( cerr, L"Invalid MapID when attempting to enter the field." )
 					<< BUILD_LOG( kPacket_.m_iMapID )
 					<< BUILD_LOG( GetCharUID() )
 					<< END_LOG;
@@ -246,7 +246,7 @@ IMPL_ON_FUNC( ERM_LEAVE_FIELD_ACK )
 		}
 		else
 		{
-			START_LOG( cerr, L"필드 이탈 실패!" )
+			START_LOG( cerr, L"Failed to leave the field!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
 		}
@@ -265,7 +265,7 @@ IMPL_ON_FUNC( EGS_FIELD_LOADING_COMPLETE_REQ )
 
 	if( GetCharUID() == 0 )
 	{
-		START_LOG( cerr, L"캐릭터 정보가 유효하지 않는데 마을 입장 하려 한다?!" )
+		START_LOG( cerr, L"Attempted to enter town with invalid character information!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_ucLastTouchLineIndex )
 			<< BUILD_LOG( kPacket_.m_usLastPosValue )
@@ -278,7 +278,7 @@ IMPL_ON_FUNC( EGS_FIELD_LOADING_COMPLETE_REQ )
 
 	if( GetFieldUID() > 0 )
 	{
-		START_LOG( cerr, L"필드에 입장검사도 안했는데 이 패킷이 오네?" )
+		START_LOG( cerr, L"Received this packet without checking field entry?" )
 			<< BUILD_LOG( GetCharUID() )
 			<< END_LOG;
 
@@ -293,7 +293,7 @@ IMPL_ON_FUNC( EGS_FIELD_LOADING_COMPLETE_REQ )
 		// FieldUId를 얻는다.
 		if( !SiCXSLMapData()->GetFieldUID( GetMapID(), kPacket.m_iFieldUID ) )
 		{
-			START_LOG( cerr, L"잘못된 맵 정보" )
+			START_LOG( cerr, L"Invalid map information." )
 				<< BUILD_LOG( GetMapID() )
 				<< END_LOG;
 
@@ -494,7 +494,7 @@ IMPL_ON_FUNC( EGS_FIELD_UNIT_SYNC_DATA_NOT )
 	// 필드 싱크 패킷 간격 체크 - 상태에러를 피하기위해 상태검사보다 위에서 체크합니다.
 	if( m_kTimer[TM_FIELD_SYNC_GAP].elapsed() < 1.5 )
 	{
-		START_LOG( cwarn, L"필드 싱크 간격이 1.5초 이내입니다!" )
+		START_LOG( cwarn, L"Field sync interval is less than 1.5 seconds!" )
 			<< BUILD_LOG( GetCharUID() );
 		return;
 	}
@@ -510,7 +510,7 @@ IMPL_ON_FUNC( EGS_FIELD_UNIT_SYNC_DATA_NOT )
 	{
 		if( GetFieldUID() == 0 )
 		{
-			START_LOG( cwarn, L"fieldUID가 0인데 sync패킷이 오네." )
+			START_LOG( cwarn, L"Received a sync packet with fieldUID 0." )
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
 
@@ -534,7 +534,7 @@ IMPL_ON_FUNC( EGS_FIELD_UNIT_SYNC_DATA_NOT )
 	{
 		if( GetRoomUID() == 0 )
 		{
-			START_LOG( cerr, L"RoomUID가 0인데 sync패킷이 오네." )
+			START_LOG( cerr, L"Received a sync packet with RoomUID 0." )
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
 			return;
@@ -553,7 +553,7 @@ IMPL_ON_FUNC( EGS_FIELD_UNIT_SYNC_DATA_NOT )
 		case CXSLRoom::RT_SQUARE:
 			{
 				// 필드에서 광장 입장시 시간차로 발생할 수 있는 오류임.
-				START_LOG( cwarn, L"광장에 입장한 상태인데 Field Sync를 보냈음." )
+				START_LOG( cwarn, L"Sent Field Sync while already in the plaza." )
 					<< BUILD_LOG( GetCharUID() )
 					<< END_LOG;
 			}
@@ -561,7 +561,7 @@ IMPL_ON_FUNC( EGS_FIELD_UNIT_SYNC_DATA_NOT )
 
 		default:
 			{
-				START_LOG( cerr, L"던전방도 아케이드방도 아닌데 field sync를 보낸다?" )
+				START_LOG( cerr, L"Sent field sync outside a dungeon or arcade room?" )
 					<< BUILD_LOG( GetCharUID() )
 					<< BUILD_LOG( (int)eRoomType )
 					<< END_LOG;
@@ -573,7 +573,7 @@ IMPL_ON_FUNC( EGS_FIELD_UNIT_SYNC_DATA_NOT )
 	}
 	else
 	{
-		START_LOG( cerr, L"필드 싱크를 보내는중 상태가 이상합니다." )
+		START_LOG( cerr, L"Invalid state while sending field sync." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetStateID() )
 			<< BUILD_LOG( GetStateIDString() )
@@ -623,7 +623,7 @@ IMPL_ON_FUNC( EGS_COMMUNITY_USER_LIST_REQ )
 		{
 			if( !SiKPVPLobbyManager()->GetPVPUserList( kPacket_.m_uiViewPage, kPacket.m_uiTotalPage, kPacket.m_vecUserList ) )
 			{
-				START_LOG( cerr, L"pvp user list얻기 실패!" )
+				START_LOG( cerr, L"Failed to retrieve the PvP user list!" )
 					<< BUILD_LOG( kPacket_.m_uiViewPage )
 					<< END_LOG;
 			}
@@ -637,7 +637,7 @@ IMPL_ON_FUNC( EGS_COMMUNITY_USER_LIST_REQ )
 		else
 		{
 			// 시간차로 발생가능함.
-			START_LOG( cwarn, L"어디에서 요청한겨?" )
+			START_LOG( cwarn, L"Where did this request come from?" )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( GetFieldUID() )
 				<< BUILD_LOG( GetRoomListID() )
@@ -651,7 +651,7 @@ IMPL_ON_FUNC( EGS_COMMUNITY_USER_LIST_REQ )
 	{
 		if( GetRoomUID() == 0 )
 		{
-			START_LOG( cerr, L"던전 라운지에 입장한 상태가 아닌데 필드 유저 리스트를 요구한다?" )
+			START_LOG( cerr, L"Requested the field user list while not in the dungeon lobby." )
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
 
@@ -667,7 +667,7 @@ IMPL_ON_FUNC( EGS_COMMUNITY_USER_LIST_REQ )
 				// 대전방이라면..
 				if( !SiKPVPLobbyManager()->GetPVPUserList( kPacket_.m_uiViewPage, kPacket.m_uiTotalPage, kPacket.m_vecUserList ) )
 				{
-					START_LOG( cerr, L"pvp user list얻기 실패!" )
+					START_LOG( cerr, L"Failed to retrieve the PvP user list!" )
 						<< BUILD_LOG( kPacket_.m_uiViewPage )
 						<< END_LOG;
 				}
@@ -684,7 +684,7 @@ IMPL_ON_FUNC( EGS_COMMUNITY_USER_LIST_REQ )
 				// 배틀 필드이라면..룸에서 목록을 받아와야 함
 				SendToCnRoom( ERM_COMMUNITY_IN_BATTLE_FIELD_REQ, kPacket_ );
 
-				START_LOG( clog, L"배틀 필드에서 커뮤니티 정보 확인" )
+				START_LOG( clog, L"Checking community information in battlefield" )
 					<< BUILD_LOG( GetName() )
 					<< BUILD_LOG( GetRoomUID() )
 					<< END_LOG;
@@ -695,7 +695,7 @@ IMPL_ON_FUNC( EGS_COMMUNITY_USER_LIST_REQ )
 			//}}
 		case CXSLRoom::RT_SQUARE:
 			{
-				START_LOG( cwarn, L"클라이언트에서 이거 안날려야 하는데?" )
+				START_LOG( cwarn, L"The client should not send this?" )
 					<< BUILD_LOG( GetCharUID() )
 					<< BUILD_LOG( CXSLRoom::GetRoomType( GetRoomUID() ) )
 					<< END_LOG;
@@ -711,7 +711,7 @@ IMPL_ON_FUNC( EGS_COMMUNITY_USER_LIST_REQ )
 		if( !SiKPartyListManager()->GetPartyUserList( GetPartyUID(), kPacket.m_vecUserList ) )
 			//}}
 		{
-			START_LOG( cerr, L"파티유저가 아닌데 던전 라운지에 입장해서 필드유저리스트를 요구한다?" )
+			START_LOG( cerr, L"Non-party user entered dungeon lobby and requested field user list?" )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( GetPartyUID() )
 				<< END_LOG;
@@ -771,7 +771,7 @@ IMPL_ON_FUNC( EGS_UPDATE_FRIEND_INFO_REQ )
 
 	if( GetCharUID() <= 0 )
 	{
-		START_LOG( cwarn, L"캐릭터 선택도 안됐는데 친구정보요청이 날아오네?" )
+		START_LOG( cwarn, L"Friend information requested before character selection?" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_wstrFriendNickName )
@@ -836,7 +836,7 @@ IMPL_ON_FUNC( EGS_ED_MONITORING_BLOCK_REQ )
 
 	if( GetAuthLevel() < SEnum::UAL_DEVELOPER )
 	{
-		START_LOG( cerr, L"개발자가 아닌데 감히.." )
+		START_LOG( cerr, L"Unauthorized attempt to use a developer-only feature." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( GetUserName() )
@@ -851,7 +851,7 @@ IMPL_ON_FUNC( EGS_ED_MONITORING_BLOCK_REQ )
 	if( spUser == NULL )
 	{
 		// 시간차로 유저가 존재하지 않을 수 있다.
-		START_LOG( cwarn, L"유저가 없네.!" )
+		START_LOG( cwarn, L"User does not exist!" )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
@@ -890,7 +890,7 @@ IMPL_ON_FUNC( EGS_ED_MONITORING_BLOCK_REQ )
 		}break;
 	default:
 		{
-			START_LOG( cerr, L"ED 감시 모니터링 타입이 정상적인 타입이 아닙니다." )
+			START_LOG( cerr, L"Invalid ED monitoring type." )
 				<< BUILD_LOG( kPacket_.m_iUnitUID )
 				<< BUILD_LOGc( kPacket_.m_ucType )
 				<< END_LOG;
@@ -928,7 +928,7 @@ IMPL_ON_FUNC( EGS_COMMUNITY_USER_LIST_MONITORING_MODE_REQ )
 				if( spReceiver == NULL )
 				{
 					// 시간차로 유저가 존재하지 않을 수 있다.
-					START_LOG( cerr, L"초대할려는 유저가 없네.!" )
+					START_LOG( cerr, L"User to invite does not exist!" )
 						<< BUILD_LOG( GetCharName() )
 						<< BUILD_LOG( iUnitUID )
 						<< END_LOG;
@@ -946,7 +946,7 @@ IMPL_ON_FUNC( EGS_COMMUNITY_USER_LIST_MONITORING_MODE_REQ )
 	{
 		if( GetRoomUID() == 0 )
 		{
-			START_LOG( cerr, L"던전 라운지에 입장한 상태가 아닌데 필드 유저 리스트를 요구한다?" )
+			START_LOG( cerr, L"Requested the field user list while not in the dungeon lobby." )
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
 		}
@@ -971,7 +971,7 @@ IMPL_ON_FUNC( EGS_COMMUNITY_USER_LIST_MONITORING_MODE_REQ )
 			}break;
 		case CXSLRoom::RT_SQUARE:
 			{
-				START_LOG( clog, L"클라이언트에서 이거 처리하지 않으니 그냥 패스" )
+				START_LOG( clog, L"The client does not handle this, so skipping." )
 					<< BUILD_LOG( GetCharUID() )
 					<< BUILD_LOG( CXSLRoom::GetRoomType( GetRoomUID() ) )
 					<< END_LOG;

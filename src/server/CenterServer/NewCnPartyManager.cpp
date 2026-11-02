@@ -66,7 +66,7 @@ void KCnPartyManager::Init()
 		KCnPartyPtr spParty( new KCnParty( iPartyUID ) );
 		if( spParty == NULL )
 		{
-			START_LOG( cerr, L"KCnPartyPtr new 할당실패." )
+			START_LOG( cerr, L"Failed to allocate KCnPartyPtr." )
 				<< BUILD_LOG( iPartyUID )
 				<< END_LOG;
 
@@ -93,7 +93,7 @@ void KCnPartyManager::Tick()
 	{
 		if( mit->second == NULL )
 		{
-			START_LOG( cerr, L"파티 포인터 이상" )
+			START_LOG( cerr, L"Invalid party pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 
@@ -115,7 +115,7 @@ KCnPartyPtr KCnPartyManager::GetParty( IN UidType iPartyUID )
 	std::map< UidType, KCnPartyPtr >::iterator mit = m_mapParty.find( iPartyUID );
 	if( mit == m_mapParty.end() )
 	{
-		START_LOG( cwarn, L"찾는 파티가 없습니다.!" )
+		START_LOG( cwarn, L"Party not found!" )
 			<< BUILD_LOG( iPartyUID )
 			<< END_LOG;
 
@@ -124,7 +124,7 @@ KCnPartyPtr KCnPartyManager::GetParty( IN UidType iPartyUID )
 
 	if( mit->second == NULL )
 	{
-		START_LOG( cerr, L"파티 포인터 이상.!" )
+		START_LOG( cerr, L"Invalid party pointer!" )
 			<< BUILD_LOG( iPartyUID )
 			<< END_LOG;
 
@@ -169,7 +169,7 @@ void KCnPartyManager::QueueingEventToParty( const KEventPtr& spEvent_ )
 	KCnPartyPtr spParty = GetParty( iPartyUID );
 	if( spParty == NULL )
 	{
-		START_LOG( cerr, L"파티 검색 실패." )
+		START_LOG( cerr, L"Failed to find party." )
 			<< BUILD_LOG( iPartyUID )
 			<< BUILD_LOG( spEvent_->GetIDStr() )
 			<< END_LOG;
@@ -187,7 +187,7 @@ void KCnPartyManager::QueueingToAll( const KEventPtr& spEvent )
 	{
 		if( mit->second == NULL )
 		{
-			START_LOG( cerr, L"파티 포인터 이상" )
+			START_LOG( cerr, L"Invalid party pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -207,7 +207,7 @@ void KCnPartyManager::ProcessEvent( const KEventPtr& spEvent_ )
 	   _CASE( EPM_CHECK_INVALID_USER_NOT, UidType );
 
 	default:
-		START_LOG( cerr, L"이벤트 핸들러가 정의되지 않았음. " << spEvent_->GetIDStr() );
+		START_LOG( cerr, L"Event handler is not defined. " << spEvent_->GetIDStr() );
 	}
 }
 
@@ -217,7 +217,7 @@ IMPL_ON_FUNC( EPM_CREATE_PARTY_BY_INVITE_REQ )
 	KCnPartyPtr spParty = OpenParty();
 	if( spParty == NULL )
 	{
-		START_LOG( cerr, L"생성할 빈파티 객체가 없음." )
+		START_LOG( cerr, L"No empty party object is available to create." )
 			<< BUILD_LOG( kPacket_.m_kHostPartyUserInfo.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_kHostPartyUserInfo.m_wstrNickName )
 			<< END_LOG;
@@ -243,7 +243,7 @@ IMPL_ON_FUNC( EPM_REGROUP_PARTY_FOR_AUTO_PARTY_DUNGEON_GAME_REQ )
 	KCnPartyPtr spParty = OpenParty();
 	if( spParty == NULL )
 	{
-		START_LOG( cerr, L"생성할 빈파티 객체가 없음." )
+		START_LOG( cerr, L"No empty party object is available to create." )
 			<< BUILD_LOG( LAST_SENDER_UID )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
@@ -269,7 +269,7 @@ IMPL_ON_FUNC( EPM_REQUEST_REGROUP_PARTY_NOT )
 	KCnPartyPtr spParty = OpenParty();
 	if( spParty == NULL )
 	{
-		START_LOG( cerr, L"생성할 빈파티 객체가 없음." )
+		START_LOG( cerr, L"No empty party object is available to create." )
 			<< BUILD_LOG( LAST_SENDER_UID )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
@@ -293,7 +293,7 @@ _IMPL_ON_FUNC( EPM_CHECK_INVALID_USER_NOT, UidType )
 		KCnPartyPtr spParty = mit->second;
 		if( spParty == NULL )
 		{
-			START_LOG( cerr, L"파티 포인터 이상" )
+			START_LOG( cerr, L"Invalid party pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -314,7 +314,7 @@ KCnPartyPtr KCnPartyManager::OpenParty()
 	std::set< UidType >::iterator sit = m_setSpareUID.begin();
 	if( sit == m_setSpareUID.end() )
 	{
-		START_LOG( cerr, L"파티를 새로 열어야 하는데 빈리스트에 없다.?" )
+		START_LOG( cerr, L"Party must be reopened but is missing from the empty list." )
 			<< END_LOG;
 
 		return KCnPartyPtr();
@@ -323,7 +323,7 @@ KCnPartyPtr KCnPartyManager::OpenParty()
 	KCnPartyPtr spParty = GetParty( *sit );
 	if( spParty == NULL )
 	{
-		START_LOG( cerr, L"새로 개설할 파티 객체가 없음." )
+		START_LOG( cerr, L"No party object is available to create." )
 			<< END_LOG;
 
 		return KCnPartyPtr();
@@ -346,7 +346,7 @@ void KCnPartyManager::CloseParty( IN KCnPartyPtr spParty, bool bClosePartyList /
 	std::set< UidType >::iterator sit = m_setSpareUID.find( spParty->GetUID() );
 	if( sit != m_setSpareUID.end() )
 	{
-		START_LOG( cerr, L"파티를 닫을려는데 이미 닫혀있따..?" )
+		START_LOG( cerr, L"Attempted to close a party that is already closed." )
 			<< BUILD_LOG( spParty->GetUID() )
 			<< END_LOG;
 		return;
@@ -386,7 +386,7 @@ void KCnPartyManager::CloseParty( IN KCnPartyPtr spParty, bool bClosePartyList /
 
 	default:
 		{
-			START_LOG( cerr, L"파티를 닫으려는데 상태가 이상함. 있을수 없는 에러!" )
+			START_LOG( cerr, L"Invalid party state while closing; this should never happen!" )
 				<< BUILD_LOG( spParty->GetStateIDString() )
 				<< END_LOG;
 		}

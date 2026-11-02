@@ -84,7 +84,7 @@ bool KBillingScriptManager::AddProductCategoryModifyForItemID_LUA( int iItemID, 
 {
 	if( iItemID <= 0  ||  iServiceCategoryNo <= 0  ||  iTestServCategoryNo <= 0 )
 	{
-		START_LOG( cerr, L"잘못된 상품 카테고리 정보 입니다." )
+		START_LOG( cerr, L"Invalid product category information." )
 			<< BUILD_LOG( iItemID )
 			<< BUILD_LOG( iServiceCategoryNo )
 			<< BUILD_LOG( iTestServCategoryNo )
@@ -94,7 +94,7 @@ bool KBillingScriptManager::AddProductCategoryModifyForItemID_LUA( int iItemID, 
 
 	if( IsExistProductCategoryModifyInfoForItemID( iItemID ) == true )
 	{
-		START_LOG( cerr, L"이미 등록된 정보 입니다!" )
+		START_LOG( cerr, L"Information is already registered!" )
 			<< BUILD_LOG( iItemID )
 			<< BUILD_LOG( iServiceCategoryNo )
 			<< BUILD_LOG( iTestServCategoryNo )
@@ -115,7 +115,7 @@ bool KBillingScriptManager::GetModifiedProductCategoryForItemID( IN const int iI
 	mit = m_mapProductCategoryModifyForItemID.find( iItemID );
 	if( mit == m_mapProductCategoryModifyForItemID.end() )
 	{
-		START_LOG( cerr, L"해당 상품에 대한 카테고리 수정 정보는 존재하지 않습니다." )
+		START_LOG( cerr, L"No category modification information exists for this product." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 		return false;

@@ -48,7 +48,7 @@ void KWaitQueueManager::SetMode_LUA( int iMode )
 {
     m_eMode = static_cast<WQ_ENUM>(iMode);
 
-	START_LOG( cout, L"대기열 모드" )
+	START_LOG( cout, L"Wait queue mode" )
 		<< BUILD_LOG( m_eMode );
 }
 
@@ -56,7 +56,7 @@ void KWaitQueueManager::SetSendTimeGap_LUA( double fTimeGap )
 {
 	m_fSendTimeGap = fTimeGap;
 
-	START_LOG( cout, L"동접 정보 가져오는 시간 간격" )
+	START_LOG( cout, L"Concurrent user count polling interval" )
 		<< BUILD_LOG( fTimeGap );
 }
 
@@ -67,7 +67,7 @@ void KWaitQueueManager::SetTotalCCULimit_LUA( int iServerGroupID, int iCCU )
 
 	m_iTotalCCULimit = iCCU;
 
-	START_LOG( cout, L"대기열 세팅 : 최대 동접 제한 인원 설정!" )
+	START_LOG( cout, L"Wait queue configured: maximum concurrent user limit set!" )
 		<< BUILD_LOG( iServerGroupID )
 		<< BUILD_LOG( m_iTotalCCULimit );
 }
@@ -82,7 +82,7 @@ void KWaitQueueManager::Tick()
 	// 이미 동접 요청을 보냈나?
 	if( m_bSendGetCCU == true )
 	{
-		START_LOG( cout, L"동접 정보 요청시간이 1초를 넘었다!" );
+		START_LOG( cout, L"Concurrent user count request took more than 1 second!" );
 		return;
 	}
 
@@ -129,7 +129,7 @@ bool KWaitQueueManager::RegWaitUser( IN const UidType iUID )
 {
     if( IsExist( iUID ) == true )
 	{
-		START_LOG( cerr, L"이미 등록된 유저 입니다!" )
+		START_LOG( cerr, L"User is already registered!" )
 			<< BUILD_LOG( iUID )
 			<< END_LOG;
 		return false;
@@ -145,7 +145,7 @@ bool KWaitQueueManager::UnRegWaitUser( IN const UidType iUID )
 {
     if( IsExist( iUID ) == false )
 	{
-		START_LOG( clog, L"등록되지 않은 유저 입니다!" )
+		START_LOG( clog, L"User is not registered!" )
 			<< BUILD_LOG( iUID )
 			<< END_LOG;
 		return false;

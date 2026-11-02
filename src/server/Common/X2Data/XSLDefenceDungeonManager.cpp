@@ -64,7 +64,7 @@ void CXSLDefenceDungeonManager::AddEnterLevelCondition_LUA( int iLevel, float fR
 {
 	if( iLevel < 0  ||  fRate < 0.f )
 	{
-		START_LOG( cerr, L"잘못된 정보 입니다!" )
+		START_LOG( cerr, L"Invalid information." )
 			<< BUILD_LOG( iLevel )
 			<< BUILD_LOG( fRate )
 			<< END_LOG;
@@ -205,7 +205,7 @@ bool CXSLDefenceDungeonManager::InsertSocketOptionForDefenceDungeonItem( IN cons
 	mit = m_mapManufactureItem.find( iItemID );
 	if( mit == m_mapManufactureItem.end() )
 	{
-		START_LOG( cerr, L"먼저 검사 했을텐데? 등록되지 않은 아이템 입니다!" )
+		START_LOG( cerr, L"This should have been checked already. Item is not registered." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 		return false;
@@ -217,7 +217,7 @@ bool CXSLDefenceDungeonManager::InsertSocketOptionForDefenceDungeonItem( IN cons
 
 		if( GetResultRandomSocketOption( iGroupID, vecSocketOption, iSocketOptionID ) == false )
 		{
-			START_LOG( cerr, L"소켓 정보 얻기 실패!" )
+			START_LOG( cerr, L"Failed to get socket information." )
 				<< BUILD_LOG( iItemID )
 				<< BUILD_LOG( iGroupID )
 				<< END_LOG;
@@ -238,7 +238,7 @@ bool CXSLDefenceDungeonManager::GetResultRandomSocketOption( IN const int iGroup
 	mit = m_mapSocketOptRandomGroup.find( iGroupID );
 	if( mit == m_mapSocketOptRandomGroup.end() )
 	{
-		START_LOG( cerr, L"존재하지 않는 그룹ID입니다!" )
+		START_LOG( cerr, L"Group ID does not exist." )
 			<< BUILD_LOG( iGroupID )
 			<< END_LOG;
 		return false;
@@ -264,7 +264,7 @@ bool CXSLDefenceDungeonManager::GetResultRandomSocketOption( IN const int iGroup
 		iResult = kLotSocketOption.GetFirstCase();
 		if( iResult == KLottery::CASE_BLANK )
 		{
-			START_LOG( cerr, L"비어있는 확률이 존재합니다!" )
+			START_LOG( cerr, L"An empty probability entry exists." )
 				<< BUILD_LOG( iGroupID )
 				<< END_LOG;
 			return false;
@@ -279,7 +279,7 @@ bool CXSLDefenceDungeonManager::GetResultSpecialCardByDefenceDungeonItem( IN con
 {
 	if( iDefenceDungeonPhase < 0  ||  iDefenceDungeonPhase >= DDP_PHASE_END )
 	{
-		START_LOG( cerr, L"어둠의 문 페이즈 값이 이상합니다!" )
+		START_LOG( cerr, L"Invalid Gate of Darkness phase value." )
 			<< BUILD_LOG( iDefenceDungeonPhase )
 			<< END_LOG;
 		return false;
@@ -313,7 +313,7 @@ void CXSLDefenceDungeonManager::GetResultQuickSlotItem( IN const int iDefenceDun
 
 	if( iDefenceDungeonPhase < 0  ||  iDefenceDungeonPhase >= DDP_PHASE_END )
 	{
-		START_LOG( cerr, L"어둠의 문 페이즈 값이 이상합니다!" )
+		START_LOG( cerr, L"Invalid Gate of Darkness phase value." )
 			<< BUILD_LOG( iDefenceDungeonPhase )
 			<< END_LOG;
 		return;
@@ -344,7 +344,7 @@ void CXSLDefenceDungeonManager::GetResultQuickSlotItem( IN const int iDefenceDun
 			mit = m_mapQuickSlotItemGroup.find( iGroupID );
 			if( mit == m_mapQuickSlotItemGroup.end() )
 			{
-				START_LOG( cerr, L"존재 하지 않는 그룹ID" )
+				START_LOG( cerr, L"Group ID does not exist." )
 					<< BUILD_LOG( iGroupID )
 					<< END_LOG;
 				continue;
@@ -394,7 +394,7 @@ void CXSLDefenceDungeonManager::AddOldDefenceItemID_LUA( int iItemID )
 {
 	if( iItemID <= 0 )
 	{
-		START_LOG( cerr, L"잘못된 정보 입니다!" )
+		START_LOG( cerr, L"Invalid information." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 		return;

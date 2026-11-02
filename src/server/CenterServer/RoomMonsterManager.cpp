@@ -44,7 +44,7 @@ bool KRoomMonsterManager::CreateMonster( IN const KNPCUnitReq& kNpcInfo, OUT int
 {
 	if( CXSLUnitManager::IsValidMonsterGrade( static_cast<CXSLUnitManager::MONSTER_GRADE>(kNpcInfo.m_cMonsterGrade) ) == false )
 	{
-        START_LOG( cerr, L"몬스터 등급 정보가 이상합니다!" )
+        START_LOG( cerr, L"Invalid monster grade information!" )
 			<< BUILD_LOG( kNpcInfo.m_NPCID )
 			<< BUILD_LOGc( kNpcInfo.m_cMonsterGrade )
 			<< END_LOG;
@@ -188,7 +188,7 @@ bool KRoomMonsterManager::SetMonsterRebirth( IN const int iNpcUID )
 
 void KRoomMonsterManager::PrintLuaLog_LUA( int iType, double fValue )
 {
-    START_LOG( cout, L"루아 로그 확인" )
+    START_LOG( cout, L"Check Lua log." )
 		<< BUILD_LOG( iType )
 		<< BUILD_LOG( fValue );
 }
@@ -227,7 +227,7 @@ bool KRoomMonsterManager::GetMonsterGroupID( IN const int iNpcUID, OUT int& iGro
 	mit	= m_mapAliveNpcList.find( iNpcUID );
 	if( mit	== m_mapAliveNpcList.end() )
 	{
-		START_LOG( cerr, L"존재하는 몬스터가 아닙니다!" )
+		START_LOG( cerr, L"Monster does not exist!" )
 			<< BUILD_LOG( iNpcUID )
 			<< END_LOG;
 		return false;

@@ -110,7 +110,7 @@ bool KUserSkillTree::SetSkillIDToSlotUsedPage( IN const int iSlotID_, IN const i
 	}
 	else
 	{
-		START_LOG( cerr, L"사용하려는 스킬페이지의 번호가 이상합니다. SetSkillIDToSlotUsedPage" )
+		START_LOG( cerr, L"Invalid skill page number for use (SetSkillIDToSlotUsedPage)." )
 			<< BUILD_LOG( GetActiveSkillPageNumber() )
 			<< END_LOG;
 	}
@@ -126,7 +126,7 @@ int KUserSkillTree::GetSkillIDFromSlotUsedPage( IN const int iSlotID_ ) const
 	}
 	else
 	{
-		START_LOG( cerr, L"사용하려는 스킬페이지의 번호가 이상합니다. GetSkillIDFromSlotUsedPage" )
+		START_LOG( cerr, L"Invalid skill page number for use (GetSkillIDFromSlotUsedPage)." )
 			<< BUILD_LOG( GetActiveSkillPageNumber() )
 			<< END_LOG;
 	}
@@ -322,7 +322,7 @@ void KUserSkillTree::GetSkillSlot( OUT KSkillData aSkillSlot[] )
 {
 	if( !aSkillSlot )
 	{
-		START_LOG( cerr, L"스킬 슬롯이 NULL" )
+		START_LOG( cerr, L"Skill slot is NULL" )
 			<< END_LOG;
 
 		return;
@@ -390,7 +390,7 @@ bool KUserSkillTree::SkillUnseal( int iSkillID )
 {
 	if( IsSkillUnsealed( iSkillID ) )
 	{
-		START_LOG( cerr, L"이미 봉인해제된 스킬입니다. 일어나서는 안되는 에러! 검사했을텐데.." )
+		START_LOG( cerr, L"Skill is already unsealed; this should never happen, as it should have been checked." )
 			<< BUILD_LOG( iSkillID )
 			<< END_LOG;
 
@@ -420,7 +420,7 @@ void KUserSkillTree::ExpandSkillSlotB( std::wstring& wstrSkillSlotBEndDate )
 
 	if( !KncUtil::ConvertStringToCTime( wstrSkillSlotBEndDate, m_tSkillSlotBEndDate ) )
 	{
-		START_LOG( cerr, L"문자열 시간 변환 실패." )
+		START_LOG( cerr, L"Failed to convert the time string." )
 			<< BUILD_LOG( wstrSkillSlotBEndDate )
 			<< END_LOG;
 
@@ -490,7 +490,7 @@ bool KUserSkillTree::IsAllPrecedingSkillLearned( int iSkillID, std::map< int, KG
 	const CXSLSkillTree::SkillTreeTemplet* pSkillTreeTemplet = SiCXSLSkillTree()->GetSkillTreeTemplet( m_iUnitClass, iSkillID );
 	if( NULL == pSkillTreeTemplet )
 	{
-		START_LOG( cerr, L"스킬트리 템플릿이 없음_preceding" )
+		START_LOG( cerr, L"Skill tree template is missing (preceding)." )
 			<< BUILD_LOG( m_iUnitClass )
 			<< BUILD_LOG( iSkillID )
 			<< END_LOG;
@@ -502,7 +502,7 @@ bool KUserSkillTree::IsAllPrecedingSkillLearned( int iSkillID, std::map< int, KG
 	{
 		if ( !IsActiveSkillPageNumberValid() )
 		{
-			START_LOG( cerr, L"사용하려는 스킬페이지의 번호가 이상합니다. (IsAllPrecedingSkillLearned)" )
+			START_LOG( cerr, L"Invalid skill page number for use (IsAllPrecedingSkillLearned)." )
 				<< BUILD_LOG( GetActiveSkillPageNumber() )
 				<< END_LOG;
 			return false;
@@ -529,7 +529,7 @@ bool KUserSkillTree::IsAllFollowingSkillLevelZero( int iSkillID )
 	const CXSLSkillTree::SkillTreeTemplet* pSkillTreeTemplet = SiCXSLSkillTree()->GetSkillTreeTemplet( m_iUnitClass, iSkillID );
 	if( NULL == pSkillTreeTemplet )
 	{
-		START_LOG( cerr, L"스킬트리 템플릿이 없음_following" )
+		START_LOG( cerr, L"Skill tree template is missing (following)." )
 			<< BUILD_LOG( m_iUnitClass )
 			<< BUILD_LOG( iSkillID )
 			<< END_LOG;
@@ -649,7 +649,7 @@ void KUserSkillTree::SetSkillSolotBEndDate( IN const std::wstring& wstrSkillSlot
 	}
 	else if( !KncUtil::ConvertStringToCTime( wstrSkillSlotBEndDate, m_tSkillSlotBEndDate ) )
 	{
-		START_LOG( cerr, L"문자열 시간 변환 실패." )
+		START_LOG( cerr, L"Failed to convert the time string." )
 			<< BUILD_LOG( wstrSkillSlotBEndDate )
 			<< END_LOG;
 
@@ -685,7 +685,7 @@ void KUserSkillTree::SetClassChangeSkill( IN std::map< int, int >& mapSkill )
 		}
 		else
 		{
-			START_LOG( cerr, L"이런 스킬을 가지고 있지 않다고?! 있다고 해서 기록한거잖아!!" )
+			START_LOG( cerr, L"Skill is not owned? It was recorded as owned!" )
 				<< BUILD_LOG( mit->first )
 				<< BUILD_LOG( mit->second )
 				<< END_LOG;
@@ -756,7 +756,7 @@ int KUserSkillTree::GetSkillLevel( IN int iSkillID_ ) const
 {
 	if ( !IsActiveSkillPageNumberValid() )
 	{
-		START_LOG( cerr, L"사용하려는 스킬페이지의 번호가 이상합니다. GetCSPointUsedSkillPage" )
+		START_LOG( cerr, L"Invalid skill page number in GetCSPointUsedSkillPage." )
 			<< BUILD_LOG( GetActiveSkillPageNumber() )
 			<< END_LOG;
 		return 0;
@@ -784,7 +784,7 @@ int KUserSkillTree::GetSPoint() const
 	}
 	else
 	{
-		START_LOG( cerr, L"사용하려는 스킬페이지의 번호가 이상합니다. GetCSPointUsedSkillPage" )
+		START_LOG( cerr, L"Invalid skill page number in GetCSPointUsedSkillPage." )
 			<< BUILD_LOG( GetActiveSkillPageNumber() )
 			<< END_LOG;
 	}
@@ -800,7 +800,7 @@ void KUserSkillTree::SubtractSPoint( IN const int iSPoint_ )
 	}
 	else
 	{
-		START_LOG( cerr, L"사용하려는 스킬페이지의 번호가 이상합니다. SetCSPoint" )
+		START_LOG( cerr, L"Invalid skill page number in SetCSPoint." )
 			<< BUILD_LOG( GetActiveSkillPageNumber() )
 			<< END_LOG;
 	}
@@ -823,7 +823,7 @@ void KUserSkillTree::AddSPoint( IN const int iSkillPagesIndex_, IN const int iSP
 	if ( iSkillPagesIndex_ < 0
 		|| iSkillPagesIndex_ >= static_cast<int>( m_vecSkillPageData.size() ) )
 	{
-		START_LOG( cerr, L"사용하려는 스킬페이지의 번호가 이상합니다. SetCSPoint" )
+		START_LOG( cerr, L"Invalid skill page number in SetCSPoint." )
 			<< BUILD_LOG( iSkillPagesIndex_ + 1 )
 			<< END_LOG;
 		return;
@@ -840,7 +840,7 @@ void KUserSkillTree::SetSPoint( IN const int iSPoint_ )
 	}
 	else
 	{
-		START_LOG( cerr, L"사용하려는 스킬페이지의 번호가 이상합니다. SetCSPoint" )
+		START_LOG( cerr, L"Invalid skill page number in SetCSPoint." )
 			<< BUILD_LOG( GetActiveSkillPageNumber() )
 			<< END_LOG;
 	}
@@ -851,7 +851,7 @@ void KUserSkillTree::SetSPoint( IN const int iSkillPagesIndex_, IN const int iSP
 	if ( iSkillPagesIndex_ < 0
 		|| iSkillPagesIndex_ >= static_cast<int>( m_vecSkillPageData.size() ) )
 	{
-		START_LOG( cerr, L"사용하려는 스킬페이지의 번호가 이상합니다. SetCSPoint" )
+		START_LOG( cerr, L"Invalid skill page number in SetCSPoint." )
 			<< BUILD_LOG( iSkillPagesIndex_ + 1 )
 			<< END_LOG;
 		return;
@@ -885,7 +885,7 @@ int KUserSkillTree::GetCSPoint() const
 	}
 	else
 	{
-		START_LOG( cerr, L"사용하려는 스킬페이지의 번호가 이상합니다. GetCSPointUsedSkillPage" )
+		START_LOG( cerr, L"Invalid skill page number in GetCSPointUsedSkillPage." )
 			<< BUILD_LOG( GetActiveSkillPageNumber() )
 			<< END_LOG;
 	}
@@ -898,7 +898,7 @@ void KUserSkillTree::SetCSPoint( IN const int iSkillPagesIndex_, IN const int iC
 	if ( iSkillPagesIndex_ < 0
 		|| iSkillPagesIndex_ >= static_cast<int>( m_vecSkillPageData.size() ) )
 	{
-		START_LOG( cerr, L"사용하려는 스킬페이지의 번호가 이상합니다. SetCSPoint" )
+		START_LOG( cerr, L"Invalid skill page number in SetCSPoint." )
 			<< BUILD_LOG( iSkillPagesIndex_ + 1 )
 			<< END_LOG;
 		return;
@@ -989,7 +989,7 @@ bool KUserSkillTree::IsExistOnThisPage( IN const int iSkillID_, IN const int iSk
 	if ( iSkillPagesIndex_ < 0
 		|| iSkillPagesIndex_ >= static_cast<int>( m_vecSkillPageData.size() ) )
 	{
-		START_LOG( cerr, L"사용하려는 스킬페이지의 번호가 이상합니다. IsExistOnThisPage" )
+		START_LOG( cerr, L"Invalid skill page number for use (IsExistOnThisPage)." )
 			<< BUILD_LOG( iSkillPagesIndex_ + 1 )
 			<< END_LOG;
 		return false;
@@ -1058,7 +1058,7 @@ void KUserSkillTree::CalcUsedSPointAndCSPoint( OUT std::vector<int>& vecSPoint_,
 				= SiCXSLSkillTree()->GetSkillTemplet( mit->first );
 			if ( pSkillTemplet == NULL )
 			{
-				START_LOG( cerr, L"존재하지 않는 스킬 정보 입니다." )
+				START_LOG( cerr, L"Skill information does not exist." )
 					<< BUILD_LOG( mit->first )
 					<< END_LOG;
 				continue;
@@ -1087,7 +1087,7 @@ void KUserSkillTree::CalcUsedSPointAndCSPoint( OUT std::vector<int>& vecSPoint_,
 			{
 				if( userSkillData.m_iSkillCSPoint > 0 )
 				{
-					START_LOG( cwarn, L"스킬 레벨이 0이하인데 SkillCSP가 0보다 큼!" )
+					START_LOG( cwarn, L"Skill level is at or below zero, but SkillCSP is positive!" )
 						<< BUILD_LOG( iSkillID )
 						<< BUILD_LOG( userSkillData.m_iSkillLevel )
 						<< BUILD_LOG( userSkillData.m_iSkillCSPoint )
@@ -1096,7 +1096,7 @@ void KUserSkillTree::CalcUsedSPointAndCSPoint( OUT std::vector<int>& vecSPoint_,
 			}
 			else
 			{
-				START_LOG( cwarn, L"스킬 레벨이 0보다 작다!" )
+				START_LOG( cwarn, L"Skill level is below zero!" )
 					<< BUILD_LOG( iSkillID )
 					<< BUILD_LOG( userSkillData.m_iSkillLevel )
 					<< BUILD_LOG( userSkillData.m_iSkillCSPoint )
@@ -1340,7 +1340,7 @@ void KUserSkillTree::GetSkillStat( OUT KStat& kStat_, IN const SkillDataMap& map
 
 		if( pSkillTemplet == NULL )
 		{
-			START_LOG( cerr, L"스킬 템플릿 포인트 이상.!" )
+			START_LOG( cerr, L"Invalid skill template pointer!" )
 				<< BUILD_LOG( mit->first )
 				<< BUILD_LOG( userSkillData.m_iSkillLevel )
 				<< END_LOG;
@@ -1363,7 +1363,7 @@ void KUserSkillTree::GetSkillStat( OUT KStat& kStat_, IN const SkillDataMap& map
 			{
 				if( pSkillTemplet->m_vecStat.size() <= 0)
 				{
-					START_LOG( cerr, L"[테스트] 이런게 찍히면 안된다!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" )
+					START_LOG( cerr, L"[Test] This message should never appear!" )
 						<< END_LOG;
 					continue;
 				}
@@ -1389,7 +1389,7 @@ bool KUserSkillTree::IsMasterSkillLevel( IN const int iSkillID_,
 		= SiCXSLSkillTree()->GetSkillTemplet( iSkillID_ );
 	if( NULL == pSkillTemplet )
 	{
-		START_LOG( cerr, L"스킬이 최고 레벨인지 확인하려는데 스킬 템플릿이 NULL" )
+		START_LOG( cerr, L"Skill template is null while checking whether the skill is at max level." )
 			<< BUILD_LOG( iSkillID_ )
 			<< END_LOG;
 
@@ -1403,7 +1403,7 @@ bool KUserSkillTree::IsMasterSkillLevel( IN const int iSkillID_,
 		int iMasterSkillLevel = SiCXSLSkillTree()->GetMasterSkillLevel( m_iUnitClass, iSkillID_ );
 		if( userSkillData.m_iSkillLevel > iMasterSkillLevel )
 		{
-			START_LOG( cerr, L"스킬이 최고 레벨인지 확인하려는데 스킬 레벨이 최고레벨보다 높다" )
+			START_LOG( cerr, L"Skill level exceeds the maximum while checking whether it is at the maximum." )
 				<< BUILD_LOG( m_iUnitClass )
 				<< BUILD_LOG( iSkillID_ )
 				<< BUILD_LOG( userSkillData.m_iSkillLevel )
@@ -1431,7 +1431,7 @@ bool KUserSkillTree::IsSkillLearned( IN const int iSkillID_, IN const SkillDataM
 		= SiCXSLSkillTree()->GetSkillTemplet( iSkillID_ );
 	if ( NULL == pSkillTemplet )
 	{
-		START_LOG( cerr, L"스킬이 최고 레벨인지 확인하려는데 스킬 템플릿이 NULL" )
+		START_LOG( cerr, L"Skill template is null while checking whether the skill is at max level." )
 			<< BUILD_LOG( iSkillID_ )
 			<< END_LOG;
 
@@ -1468,7 +1468,7 @@ bool KUserSkillTree::GetNecessarySkillPoint( IN OUT std::map< int, KGetSkillInfo
 		const CXSLSkillTree::SkillTemplet* pSkillTemplet = SiCXSLSkillTree()->GetSkillTemplet( mit->first );
 		if( NULL == pSkillTemplet )
 		{
-			START_LOG( cerr, L"스킬 템플릿이 NULL" )
+			START_LOG( cerr, L"Skill template is null." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 
@@ -1485,7 +1485,7 @@ bool KUserSkillTree::GetNecessarySkillPoint( IN OUT std::map< int, KGetSkillInfo
 				int iUpgradeLevel = mit->second.m_iSkillLevel - userSkillData.m_iSkillLevel;
 				if( iUpgradeLevel < 0 )
 				{
-					START_LOG( cerr, L"스킬 레벨이 이상하다" )
+					START_LOG( cerr, L"Invalid skill level." )
 						<< BUILD_LOG( mit->first )
 						<< BUILD_LOG( iUpgradeLevel )
 						<< END_LOG;
@@ -1513,7 +1513,7 @@ bool KUserSkillTree::GetNecessarySkillPoint( IN OUT std::map< int, KGetSkillInfo
 				int iUpgradeLevel = mit->second.m_iSkillLevel - 1; // 스킬 습득 레벨 제거
 				if( iUpgradeLevel < 0 )
 				{
-					START_LOG( cerr, L"스킬 레벨이 이상하다" )
+					START_LOG( cerr, L"Invalid skill level." )
 						<< BUILD_LOG( mit->first )
 						<< BUILD_LOG( iUpgradeLevel )
 						<< END_LOG;
@@ -1543,7 +1543,7 @@ bool KUserSkillTree::GetNecessarySkillPoint( IN OUT std::map< int, KGetSkillInfo
 			int iUpgradeLevel = mit->second.m_iSkillLevel - 1; // 스킬 습득 레벨 제거
 			if( iUpgradeLevel < 0 )
 			{
-				START_LOG( cerr, L"스킬 레벨이 이상하다" )
+				START_LOG( cerr, L"Invalid skill level." )
 					<< BUILD_LOG( mit->first )
 					<< BUILD_LOG( iUpgradeLevel )
 					<< END_LOG;
@@ -1599,7 +1599,7 @@ void KUserSkillTree::GetTierSkillList( OUT std::vector< int >& vecTierSkillList_
 			= SiCXSLSkillTree()->GetSkillTemplet( mitMySkill->first );
 		if( NULL == pSkillTemplet )
 		{
-			START_LOG( cerr, L"스킬 템플릿이 NULL" )
+			START_LOG( cerr, L"Skill template is null." )
 				<< BUILD_LOG( mitMySkill->first )
 				<< END_LOG;
 
@@ -1610,7 +1610,7 @@ void KUserSkillTree::GetTierSkillList( OUT std::vector< int >& vecTierSkillList_
 			= SiCXSLSkillTree()->GetSkillTreeTemplet( m_iUnitClass, mitMySkill->first );
 		if( NULL == pSkillTreeTemplet )
 		{
-			START_LOG( cerr, L"스킬 트리 템플릿이 NULL" )
+			START_LOG( cerr, L"Skill tree template is NULL" )
 				<< BUILD_LOG( mitMySkill->first )
 				<< END_LOG;
 
@@ -1675,7 +1675,7 @@ bool KUserSkillTree::CheckGetNewSkill( IN std::map< int, KGetSkillInfo >& mapGet
 	{
 		if ( !IsActiveSkillPageNumberValid() )
 		{
-			START_LOG( cerr, L"사용하려는 스킬페이지의 번호가 이상합니다. (CheckGetNewSkill)" )
+			START_LOG( cerr, L"Invalid skill page number for use (CheckGetNewSkill)." )
 				<< BUILD_LOG( GetActiveSkillPageNumber() )
 				<< END_LOG;
 
@@ -1737,7 +1737,7 @@ bool KUserSkillTree::CheckGetNewSkill( IN std::map< int, KGetSkillInfo >& mapGet
 		// 4. 습득 가능 Unit Class 검사
 		if( IsMyUnitClassSkill( mit->first ) == false )
 		{
-			START_LOG( cerr, L"자신의 클래스와 다른 스킬을 획득하려함.!" )
+			START_LOG( cerr, L"Attempted to acquire a skill for a different class!" )
 				<< BUILD_LOG( iUnitClass )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
@@ -1878,7 +1878,7 @@ void KUserSkillTree::InitializeEquippedSkillSlot( const int iSkillPagesIndex_ )
 	if ( iSkillPagesIndex_ < 0
 		|| iSkillPagesIndex_ >= static_cast<int>( m_vecSkillPageData.size() ) )
 	{
-		START_LOG( cerr, L"초기화 하려는 스킬페이지 번호가 이상함. (InitializeEquippedSkillSlot)"  )
+		START_LOG( cerr, L"Invalid skill page number to reset (InitializeEquippedSkillSlot)."  )
 			<< BUILD_LOG( iSkillPagesIndex_ + 1 )
 			<< BUILD_LOG( m_vecSkillPageData.size() )
 			<< END_LOG;
@@ -1902,7 +1902,7 @@ void KUserSkillTree::InitializeLearnedSkillTree( const int iSkillPagesIndex_ )
 	if ( iSkillPagesIndex_ < 0
 		|| iSkillPagesIndex_ >= static_cast<int>( m_vecSkillPageData.size() ) )
 	{
-		START_LOG( cerr, L"초기화 하려는 스킬페이지 번호가 이상함. (InitializeLearnedSkillTree)" )
+		START_LOG( cerr, L"Invalid skill page number to reset (InitializeLearnedSkillTree)." )
 			<< BUILD_LOG( iSkillPagesIndex_ + 1)
 			<< BUILD_LOG( m_vecSkillPageData.size() )
 			<< END_LOG;
@@ -1927,7 +1927,7 @@ void KUserSkillTree::SetSkillPageDataWithLearnedSkills( OUT SkillPageData& skill
 		// 그 반환값을 살펴보는 것이 효율적이라고 생각하여 변경 하였음
 		if ( pairReturned.second == false )
 		{
-			START_LOG( cerr, L"중복된 스킬을 보유하고 있음." )
+			START_LOG( cerr, L"Duplicate skill owned." )
 				<< BUILD_LOG( userSkillData.m_iSkillID )
 				<< BUILD_LOG( userSkillData.m_cSkillLevel )
 				<< BUILD_LOG( userSkillData.m_cSkillCSPoint )
@@ -1944,7 +1944,7 @@ void KUserSkillTree::SetSkillPageDataWithLearnedSkills( OUT SkillPageData& skill
 		{
 			if ( static_cast<int>( userSkillData.m_cSkillLevel ) > pSkillTreeTemplet->m_iMasterSkillLevel )
 			{
-				START_LOG( cerr, L"최고레벨보다 높은 레벨의 스킬이 DB에 있음" )
+				START_LOG( cerr, L"Skill above maximum level exists in the database." )
 					<< BUILD_LOG( m_iUnitClass )
 					<< BUILD_LOG( userSkillData.m_iSkillID )
 					<< BUILD_LOG( userSkillData.m_cSkillLevel )
@@ -1977,7 +1977,7 @@ bool KUserSkillTree::CanUpdateSkillLevelAndCSPOnThisPage( IN const int iSkillID_
 	if ( iSkillPageIndex_ < 0
 		|| iSkillPageIndex_ >= static_cast<int>( m_vecSkillPageData.size() ) )
 	{
-		START_LOG( cerr, L"사용하려는 스킬페이지의 번호가 이상합니다. CanUpdateSkillLevelAndCSPOnThisPage" )
+		START_LOG( cerr, L"Invalid skill page number for use (CanUpdateSkillLevelAndCSPOnThisPage)." )
 			<< BUILD_LOG( iSkillPageIndex_ )
 			<< END_LOG;
 		return false;

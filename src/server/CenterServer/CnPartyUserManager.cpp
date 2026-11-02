@@ -84,7 +84,7 @@ void KCnPartyUserManager::Tick( OUT std::vector< UidType >& vecDeleteCadidateUse
 			}
 			else
 			{
-				START_LOG( cerr, L"대기자 대기시간이 10초가 넘었는데 포인터가 잘못되었음." )
+				START_LOG( cerr, L"Wait-list entry has waited over 10 seconds and has an invalid pointer." )
 					<< END_LOG;
 			}
 		}
@@ -100,7 +100,7 @@ bool KCnPartyUserManager::GetUserInfo( IN UidType nCID, OUT KPartyUserInfo& kInf
 	KCnPartyUserPtr spPartyUser = GetPartyUser( nCID );
 	if( spPartyUser == NULL )
 	{
-		START_LOG( cerr, L"정보를 요청한 유저가 없음." )
+		START_LOG( cerr, L"User requesting information is missing." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 		return false;
@@ -119,7 +119,7 @@ void KCnPartyUserManager::GetUserInfoList( OUT std::vector< KPartyUserInfo >& kI
 	{
 		if( mit->second == NULL )
 		{
-			START_LOG( cerr, L"유저포인터 이상.!" )
+			START_LOG( cerr, L"Invalid user pointer!" )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -142,7 +142,7 @@ bool KCnPartyUserManager::GetDungeonRoomUserInfoList( OUT std::vector< KPartyRoo
 	{
 		if( mit->second == NULL )
 		{
-			START_LOG( cerr, L"유저포인터 이상.!" )
+			START_LOG( cerr, L"Invalid user pointer!" )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -168,7 +168,7 @@ void KCnPartyUserManager::GetListUserInfoList( OUT std::vector< KPartyListUserIn
 	{
 		if( mit->second == NULL )
 		{
-			START_LOG( cerr, L"유저포인터 이상.!" )
+			START_LOG( cerr, L"Invalid user pointer!" )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -195,7 +195,7 @@ void KCnPartyUserManager::GetMatchUserInfoList( IN const UidType iPartyUID, OUT 
 		KCnPartyUserPtr spPartyUser = mit->second;
 		if( spPartyUser == NULL )
 		{
-			START_LOG( cerr, L"유저포인터 이상.!" )
+			START_LOG( cerr, L"Invalid user pointer!" )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -220,7 +220,7 @@ void KCnPartyUserManager::GetAutoPartyUserInfoList( IN const KOldPartyInfo& kOld
 		KCnPartyUserPtr spPartyUser = mit->second;
 		if( spPartyUser == NULL )
 		{
-			START_LOG( cerr, L"유저포인터 이상.!" )
+			START_LOG( cerr, L"Invalid user pointer!" )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -242,7 +242,7 @@ bool KCnPartyUserManager::GetGSUID( IN const UidType nCID, OUT UidType& iGSUID )
 	mit = m_mapMember.find( nCID );
 	if( mit == m_mapMember.end() )
 	{
-		START_LOG( cerr, L"파티 멤버 정보를 찾을 수 없습니다." )
+		START_LOG( cerr, L"Party member information not found." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 		return false;
@@ -250,7 +250,7 @@ bool KCnPartyUserManager::GetGSUID( IN const UidType nCID, OUT UidType& iGSUID )
 
 	if( IS_NULL( mit->second ) )
 	{
-		START_LOG( cerr, L"파티 멤버 포인터가 이상합니다." )
+		START_LOG( cerr, L"Invalid party member pointer." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -269,7 +269,7 @@ void KCnPartyUserManager::GetUnitUIDList( OUT std::set< UidType >& setUidList ) 
 	{
 		if( mit->second == NULL )
 		{
-			START_LOG( cerr, L"유저포인터 이상.!" )
+			START_LOG( cerr, L"Invalid user pointer!" )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -286,7 +286,7 @@ void KCnPartyUserManager::GetUnitUIDList( OUT std::vector< UidType >& vecUidList
 	{
 		if( mit->second == NULL )
 		{
-			START_LOG( cerr, L"유저포인터 이상.!" )
+			START_LOG( cerr, L"Invalid user pointer!" )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -318,7 +318,7 @@ void KCnPartyUserManager::ClearDungeonRoomUserInfoList()
 	{
 		if( mit->second == NULL )
 		{
-			START_LOG( cerr, L"유저포인터 이상.!" )
+			START_LOG( cerr, L"Invalid user pointer!" )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -335,7 +335,7 @@ bool KCnPartyUserManager::IsAllCheckedGameStart()
 	{
 		if( mit->second == NULL )
 		{
-			START_LOG( cerr, L"유저포인터 이상.!" )
+			START_LOG( cerr, L"Invalid user pointer!" )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -358,7 +358,7 @@ KCnPartyUserPtr KCnPartyUserManager::GetHostPtr() const
 	// [2012-12-07][최육사] 파티원이 아예 없을때 호출되는 경우도 있는것 같다. 이경우에 대한 예외처리.
 	if( m_mapMember.empty() == true )
 	{
-		START_LOG( cerr, L"파티 멤버가 한명도 없는데 이 함수가 호출되었다!" )
+		START_LOG( cerr, L"This function was called when the party has no members!" )
 			<< BUILD_LOG( m_mapMember.size() )
 			<< END_LOG;
 
@@ -378,7 +378,7 @@ KCnPartyUserPtr KCnPartyUserManager::GetHostPtr() const
 		}
 	}
 
-	START_LOG( cerr, L"파티장이 없다.? ㅠㅂㅠ 제발 날 힘들게 하지 말아줘~~" )
+	START_LOG( cerr, L"Party leader is missing; this should never happen." )
 		<< END_LOG;
 
 	return KCnPartyUserPtr();
@@ -389,7 +389,7 @@ UidType KCnPartyUserManager::GetHostUID() const
 	KCnPartyUserPtr spHost = GetHostPtr();
 	if( spHost == NULL )
 	{
-		START_LOG( cerr, L"파티장이 없음." )
+		START_LOG( cerr, L"Party leader is missing." )
 			<< END_LOG;
 
 		return 0;
@@ -404,7 +404,7 @@ KCnPartyUserPtr KCnPartyUserManager::GetPartyUser( IN const UidType nCID )
 	mit = m_mapMember.find( nCID );
 	if( mit == m_mapMember.end() )
 	{
-		START_LOG( cwarn, L"파티 멤버 정보를 찾을 수 없습니다." )
+		START_LOG( cwarn, L"Party member information not found." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -413,7 +413,7 @@ KCnPartyUserPtr KCnPartyUserManager::GetPartyUser( IN const UidType nCID )
 
 	if( mit->second == NULL )
 	{
-		START_LOG( cerr, L"파티 멤버 포인터가 이상합니다." )
+		START_LOG( cerr, L"Invalid party member pointer." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -429,7 +429,7 @@ KCnPartyUserPtr KCnPartyUserManager::GetCandidateUser( IN const UidType nCID )
 	mit = m_mapCandidate.find( nCID );
 	if( mit == m_mapCandidate.end() )
 	{
-		START_LOG( cwarn, L"파티 대기자 정보를 찾을 수 없습니다." )
+		START_LOG( cwarn, L"Party wait-list information not found." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -438,7 +438,7 @@ KCnPartyUserPtr KCnPartyUserManager::GetCandidateUser( IN const UidType nCID )
 
 	if( mit->second.m_spUser == NULL )
 	{
-		START_LOG( cerr, L"파티 대기자 포인터가 이상합니다." )
+		START_LOG( cerr, L"Invalid party wait-list pointer." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -452,7 +452,7 @@ bool KCnPartyUserManager::AddCandidate( IN const KPartyUserInfo& kUserInfo, IN c
 {
 	if( kUserInfo.m_iUnitUID <= 0 )
 	{
-		START_LOG( cerr, L"캐릭터 UID 이상" )
+		START_LOG( cerr, L"Invalid character UID" )
 			<< BUILD_LOG( kUserInfo.m_iUnitUID )
 			<< END_LOG;
 
@@ -461,7 +461,7 @@ bool KCnPartyUserManager::AddCandidate( IN const KPartyUserInfo& kUserInfo, IN c
 
 	if( IsCandidate( kUserInfo.m_iUnitUID ) == true )
 	{
-		START_LOG( cerr, L"이미 후보 회원임" )
+		START_LOG( cerr, L"Already a candidate member." )
 			<< BUILD_LOG( kUserInfo.m_iUnitUID )
 			<< END_LOG;
 
@@ -484,7 +484,7 @@ bool KCnPartyUserManager::AddMember( IN const KPartyUserInfo& kUserInfo )
 {
 	if( kUserInfo.m_iUnitUID <= 0 )
 	{
-		START_LOG( cerr, L"캐릭터 UID 이상" )
+		START_LOG( cerr, L"Invalid character UID" )
 			<< BUILD_LOG( kUserInfo.m_iUnitUID )
 			<< END_LOG;
 
@@ -494,7 +494,7 @@ bool KCnPartyUserManager::AddMember( IN const KPartyUserInfo& kUserInfo )
 	std::map< UidType, KCnPartyUserPtr >::iterator mit = m_mapMember.find( kUserInfo.m_iUnitUID );
 	if( mit != m_mapMember.end() )
 	{
-		START_LOG( cerr, L"이미 정회원임" )
+		START_LOG( cerr, L"Already a full member." )
 			<< BUILD_LOG( kUserInfo.m_iUnitUID )
 			<< END_LOG;
 
@@ -520,7 +520,7 @@ bool KCnPartyUserManager::AddMember( IN const KPartyUserInfo& kUserInfo )
 			CTime tUserBuffEnd;
 			if( KncUtil::ConvertStringToCTime( kUserInfo.m_wsrtComeBackEnd, tUserBuffEnd ) == false )
 			{
-				START_LOG( cerr, L"문자열 시간조립 실패.!" )
+				START_LOG( cerr, L"Failed to assemble time string!" )
 					<< BUILD_LOG( kUserInfo.m_iGSUID )
 					<< BUILD_LOG( kUserInfo.m_wsrtComeBackEnd )
 					<< END_LOG;
@@ -545,7 +545,7 @@ bool KCnPartyUserManager::AddMember( IN const KPartyUserInfo& kUserInfo )
 	// 파티장 체크
 	if( GetHostUID() == 0 )
 	{
-		START_LOG( cerr, L"파티장 설정이 잘못되었다!" )
+		START_LOG( cerr, L"Invalid party leader assignment!" )
 			<< BUILD_LOG( kUserInfo.m_wstrNickName )
 			<< END_LOG;
 	}
@@ -558,7 +558,7 @@ bool KCnPartyUserManager::DeleteCandidate( IN UidType nCID )
 	std::map< UidType, KWaitingUserInfo >::iterator mit = m_mapCandidate.find( nCID );
 	if( mit == m_mapCandidate.end() )
 	{
-		START_LOG( cerr, L"후보 회원에 존재하지 않음" )
+		START_LOG( cerr, L"Not found among candidate members." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -576,7 +576,7 @@ bool KCnPartyUserManager::DeleteMember( IN UidType nCID )
 	std::map< UidType, KCnPartyUserPtr >::iterator mit = m_mapMember.find( nCID );
 	if( mit == m_mapMember.end() )
 	{
-		START_LOG( cerr, L"정회원에 존재하지 않음" )
+		START_LOG( cerr, L"Not found among full members." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -598,7 +598,7 @@ bool KCnPartyUserManager::DeleteMember( IN UidType nCID )
 		// 파티장 체크
 		if( GetHostUID() == 0 )
 		{
-			START_LOG( cerr, L"파티장 설정이 잘못되었다!" )
+			START_LOG( cerr, L"Invalid party leader assignment!" )
 				<< BUILD_LOG( nCID )
 				<< END_LOG;
 		}
@@ -661,7 +661,7 @@ bool KCnPartyUserManager::Create( IN const KPartyUserInfo& kUserInfo )
 {
 	if( kUserInfo.m_iUnitUID <= 0 )
 	{
-		START_LOG( cerr, L"캐릭터 UID 이상" )
+		START_LOG( cerr, L"Invalid character UID" )
 			<< BUILD_LOG( kUserInfo.m_iUnitUID )
 			<< END_LOG;
 
@@ -670,7 +670,7 @@ bool KCnPartyUserManager::Create( IN const KPartyUserInfo& kUserInfo )
 
 	if( GetNumTotal() > 0 )
 	{
-		START_LOG( cerr, L"빈 파티가 아님" )
+		START_LOG( cerr, L"Party is not empty." )
 			<< BUILD_LOG( GetNumTotal() )
 			<< END_LOG;
 
@@ -685,7 +685,7 @@ bool KCnPartyUserManager::JoinCandidate( IN const KPartyUserInfo& kUserInfo, IN 
 {
 	if( kUserInfo.m_iUnitUID <= 0 )
 	{
-		START_LOG( cerr, L"캐릭터 UID 이상" )
+		START_LOG( cerr, L"Invalid character UID" )
 			<< BUILD_LOG( kUserInfo.m_iUnitUID )
 			<< END_LOG;
 
@@ -694,7 +694,7 @@ bool KCnPartyUserManager::JoinCandidate( IN const KPartyUserInfo& kUserInfo, IN 
 
 	if( GetNumTotal() < 1 )
 	{
-		START_LOG( cerr, L"파티원이 없는 파티임" )
+		START_LOG( cerr, L"Party has no members." )
 			<< BUILD_LOG( GetNumMember() )
 			<< BUILD_LOG( GetNumCandidate() )
 			<< BUILD_LOG( GetNumTotal() )
@@ -709,7 +709,7 @@ bool KCnPartyUserManager::JoinCandidate( IN const KPartyUserInfo& kUserInfo, IN 
 		// 시간차로 발생 가능한 오류임.
 		// 예외1 : 파티리스트의 갱신간격은 3초임, 현재 파티인원 정보가 갱신되기전에 유저가 파티 가입 시도하면 발생가능함.
 
-		START_LOG( cwarn, L"파티 수용 인원이 가득 참." )
+		START_LOG( cwarn, L"Party is full." )
 			<< BUILD_LOG( GetNumMember() )
 			<< BUILD_LOG( GetNumCandidate() )
 			<< BUILD_LOG( GetNumTotal() )
@@ -721,7 +721,7 @@ bool KCnPartyUserManager::JoinCandidate( IN const KPartyUserInfo& kUserInfo, IN 
 
 	if( IsMemberOrCandidate( kUserInfo.m_iUnitUID ) )
 	{
-		START_LOG( cerr, L"이미 파티에 존재하는 유저임" )
+		START_LOG( cerr, L"User is already in the party." )
 			<< BUILD_LOG( GetNumTotal() )
 			<< BUILD_LOG( kUserInfo.m_iUnitUID )
 			<< END_LOG;
@@ -737,7 +737,7 @@ bool KCnPartyUserManager::JoinMember( IN const KPartyUserInfo& kUserInfo )
 {
 	if( kUserInfo.m_iUnitUID <= 0 )
 	{
-		START_LOG( cerr, L"캐릭터 UID 이상" )
+		START_LOG( cerr, L"Invalid character UID" )
 			<< BUILD_LOG( kUserInfo.m_iUnitUID )
 			<< END_LOG;
 
@@ -746,7 +746,7 @@ bool KCnPartyUserManager::JoinMember( IN const KPartyUserInfo& kUserInfo )
 
 	if( !IsCandidate( kUserInfo.m_iUnitUID ) )
 	{
-		START_LOG( cerr, L"후보 회원이 아님" )
+		START_LOG( cerr, L"Not a candidate member." )
 			<< BUILD_LOG( kUserInfo.m_iUnitUID )
 			<< END_LOG;
 
@@ -755,7 +755,7 @@ bool KCnPartyUserManager::JoinMember( IN const KPartyUserInfo& kUserInfo )
 
 	if( IsMember( kUserInfo.m_iUnitUID ) )
 	{
-		START_LOG( cerr, L"이미 정회원임" )
+		START_LOG( cerr, L"Already a full member." )
 			<< BUILD_LOG( kUserInfo.m_iUnitUID )
 			<< END_LOG;
 
@@ -772,7 +772,7 @@ bool KCnPartyUserManager::LeaveCandidate( IN UidType iUnitUID )
 {
 	if( iUnitUID <= 0 )
 	{
-		START_LOG( cerr, L"캐릭터 UID 이상" )
+		START_LOG( cerr, L"Invalid character UID" )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 
@@ -781,7 +781,7 @@ bool KCnPartyUserManager::LeaveCandidate( IN UidType iUnitUID )
 
 	if( !IsCandidate( iUnitUID ) )
 	{
-		START_LOG( cerr, L"후보 회원이 아님" )
+		START_LOG( cerr, L"Not a candidate member." )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 
@@ -796,7 +796,7 @@ bool KCnPartyUserManager::LeaveMember( IN UidType iUnitUID )
 {
 	if( iUnitUID <= 0 )
 	{
-		START_LOG( cerr, L"캐릭터 UID 이상" )
+		START_LOG( cerr, L"Invalid character UID" )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 
@@ -805,7 +805,7 @@ bool KCnPartyUserManager::LeaveMember( IN UidType iUnitUID )
 
 	if( !IsMember( iUnitUID ) )
 	{
-		START_LOG( cerr, L"정회원이 아님." )
+		START_LOG( cerr, L"Not a full member." )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 
@@ -821,7 +821,7 @@ bool KCnPartyUserManager::IsHost( IN UidType nCID )
 	KCnPartyUserPtr spPartyUser = GetPartyUser( nCID );
 	if( spPartyUser == NULL )
 	{
-		START_LOG( cerr, L"파티장 체크할 유저가 없음.!" )
+		START_LOG( cerr, L"No user available for party-leader check!" )
 			<< BUILD_LOG( nCID )
 			<< BUILD_LOG( m_mapMember.size() )
 			<< END_LOG;
@@ -883,7 +883,7 @@ bool KCnPartyUserManager::IsAllPartyMemberEqualOrOverThisLevel( IN const u_char 
 		KCnPartyUserPtr spPartyUser = mit->second;
 		if( spPartyUser == NULL )
 		{
-			START_LOG( cerr, L"파티원 포인터값이 이상합니다!" )
+			START_LOG( cerr, L"Invalid party-member pointer value!" )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			return false;
@@ -902,7 +902,7 @@ bool KCnPartyUserManager::ChangeReady( IN UidType nCID, IN bool bIsReady )
 	KCnPartyUserPtr spPartyUser = GetPartyUser( nCID );
 	if( spPartyUser == NULL )
 	{
-		START_LOG( cerr, L"정회원에 존재하지 않음" )
+		START_LOG( cerr, L"Not found among full members." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -939,7 +939,7 @@ bool KCnPartyUserManager::ChangeHost( IN UidType iNewHostUID )
 	KCnPartyUserPtr spOldHostUser = GetHostPtr();
 	if( spOldHostUser == NULL )
 	{
-		START_LOG( cerr, L"파티장을 찾을수 없음.!" )
+		START_LOG( cerr, L"Party leader not found!" )
 			<< END_LOG;
 		return false;
 	}
@@ -947,7 +947,7 @@ bool KCnPartyUserManager::ChangeHost( IN UidType iNewHostUID )
 	KCnPartyUserPtr spNewHostUser = GetPartyUser( iNewHostUID );
 	if( spNewHostUser == NULL )
 	{
-		START_LOG( cerr, L"변경될 파티장을 찾을수 없음.!" )
+		START_LOG( cerr, L"Could not find the party leader to replace!" )
 			<< BUILD_LOG( spOldHostUser->GetCharUID() )
 			<< BUILD_LOG( iNewHostUID )
 			<< END_LOG;
@@ -960,7 +960,7 @@ bool KCnPartyUserManager::ChangeHost( IN UidType iNewHostUID )
 	// 파티장 체크
 	if( GetHostUID() == 0 )
 	{
-		START_LOG( cerr, L"파티장 설정이 잘못되었다!" )
+		START_LOG( cerr, L"Invalid party leader assignment!" )
 			<< BUILD_LOG( iNewHostUID )
 			<< END_LOG;
 	}
@@ -993,7 +993,7 @@ bool KCnPartyUserManager::CheckComeBackUserInParty()
 		KCnPartyUserPtr pCnPartyUser = mit->second;
 		if( pCnPartyUser == NULL)
 		{
-			START_LOG( cerr, L"CnPartyUser 포인터가 이상하다!" )
+			START_LOG( cerr, L"Invalid CnPartyUser pointer!" )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -1017,7 +1017,7 @@ void KCnPartyUserManager::SetComeBackBuffEnd( IN const std::wstring& wstrBuffEnd
 	{
 		if( KncUtil::ConvertStringToCTime( wstrBuffEnd, m_tComeBackBuffEnd ) == false )
 		{
-			START_LOG( cerr, L"문자열 시간조립 실패.!" )
+			START_LOG( cerr, L"Failed to assemble time string!" )
 				<< BUILD_LOG( wstrBuffEnd )
 				<< END_LOG;
 
@@ -1061,7 +1061,7 @@ bool KCnPartyUserManager::SetPartyMemberStatus( IN const UidType iUnitUID, IN co
 	KCnPartyUserPtr spCnPartyUser = GetPartyUser( iUnitUID );
 	if( IS_NULL( spCnPartyUser ) )
 	{
-		START_LOG( cerr, L"존재 하지 않는 유저입니다." )
+		START_LOG( cerr, L"User does not exist." )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 		return false;
@@ -1079,7 +1079,7 @@ short KCnPartyUserManager::GetOldPartyFeverPoint() const
 		KCnPartyUserPtr spCnPartyUser = mit->second;
 		if( IS_NULL( spCnPartyUser ) )
 		{
-			START_LOG( cerr, L"CnPartyUser 포인터가 이상하다!" )
+			START_LOG( cerr, L"Invalid CnPartyUser pointer!" )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -1107,7 +1107,7 @@ bool KCnPartyUserManager::UpdateJoinRoomInfoAndGetOnOffResult( IN const UidType 
 	KCnPartyUserPtr spPartyUser = GetPartyUser( iUnitUID );
 	if( spPartyUser == NULL )
 	{
-		START_LOG( cerr, L"방 입장 정보를 저장할 유저를 찾지 못하였습니다!" )
+		START_LOG( cerr, L"Could not find the user whose room-entry information should be saved!" )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 		return false;
@@ -1129,7 +1129,7 @@ bool KCnPartyUserManager::UpdateJoinRoomInfoAndGetOnOffResult( IN const UidType 
 			KCnPartyUserPtr spCheckPartyUser = mit->second;
 			if( spCheckPartyUser == NULL )
 			{
-				START_LOG( cerr, L"방 입장 정보를 저장할 유저를 찾지 못하였습니다!" )
+				START_LOG( cerr, L"Could not find the user whose room-entry information should be saved!" )
 					<< BUILD_LOG( mit->first )
 					<< END_LOG;
 				continue;
@@ -1248,7 +1248,7 @@ void KCnPartyUserManager::GetUnitUIDListAboutEndGameRegroupParty( OUT std::vecto
 
 	default:
 		{
-            START_LOG( cerr, L"현재 파티원 수가 이상합니다!" )
+            START_LOG( cerr, L"Invalid current party member count!" )
 				<< BUILD_LOG( GetNumMember() )
 				<< END_LOG;
 		}
@@ -1266,7 +1266,7 @@ void KCnPartyUserManager::GetCheckedSameOldParty( OUT std::map< UidType, std::se
 		KCnPartyUserPtr spPartyUser = mit->second;
 		if( spPartyUser == NULL )
 		{
-			START_LOG( cerr, L"방 입장 정보를 저장할 유저를 찾지 못하였습니다!" )
+			START_LOG( cerr, L"Could not find the user whose room-entry information should be saved!" )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -1346,7 +1346,7 @@ void KCnPartyUserManager::CheckRegroup1Member( OUT std::vector< KRegroupPartyUse
 		KCnPartyUserPtr spPartyUser = mit->second;
 		if( spPartyUser == NULL )
 		{
-			START_LOG( cerr, L"방 입장 정보를 저장할 유저를 찾지 못하였습니다!" )
+			START_LOG( cerr, L"Could not find the user whose room-entry information should be saved!" )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -1464,7 +1464,7 @@ void KCnPartyUserManager::CheckRegroup4Member( OUT std::vector< KRegroupPartyUse
 			KCnPartyUserPtr spPartyUser = GetPartyUser( iUnitUID );
 			if( spPartyUser == NULL )
 			{
-				START_LOG( cerr, L"방 입장 정보를 저장할 유저를 찾지 못하였습니다!" )
+				START_LOG( cerr, L"Could not find the user whose room-entry information should be saved!" )
 					<< BUILD_LOG( iUnitUID )
 					<< END_LOG;
 				continue;
@@ -1492,7 +1492,7 @@ bool KCnPartyUserManager::ChangeOldPartyHost( OUT UidType& iNewHostUID )
 		KCnPartyUserPtr spPartyUser = mit->second;
 		if( spPartyUser == NULL )
 		{
-			START_LOG( cerr, L"자동 파티 체크값 초기화할 유저를 찾지 못하였습니다!" )
+			START_LOG( cerr, L"Could not find the user whose auto-party check value should be reset!" )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -1510,7 +1510,7 @@ bool KCnPartyUserManager::ChangeOldPartyHost( OUT UidType& iNewHostUID )
 
 		if( iNewHostUID != kInfo.m_iOldHostUnitUID )
 		{
-			START_LOG( cerr, L"옜날에 같은 파티원이었는데 파티장은 달랐다? 이상한 일이네.." )
+			START_LOG( cerr, L"The user was previously in the same party, but the leader differs; unexpected." )
 				<< BUILD_LOG( iNewHostUID )
 				<< BUILD_LOG( kInfo.m_iOldHostUnitUID )
 				<< END_LOG;
@@ -1534,7 +1534,7 @@ void KCnPartyUserManager::ClearCheckedForAutoParty()
 		KCnPartyUserPtr spPartyUser = mit->second;
 		if( spPartyUser == NULL )
 		{
-			START_LOG( cerr, L"자동 파티 체크값 초기화할 유저를 찾지 못하였습니다!" )
+			START_LOG( cerr, L"Could not find the user whose auto-party check value should be reset!" )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -1549,7 +1549,7 @@ bool KCnPartyUserManager::SetCheckedForAutoParty( IN const UidType iUnitUID )
     KCnPartyUserPtr spPartyUser = GetPartyUser( iUnitUID );
 	if( spPartyUser == NULL )
 	{
-		START_LOG( cerr, L"파티 유저가 존재하지 않습니다!" )
+		START_LOG( cerr, L"Party user does not exist!" )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 		return false;
@@ -1570,7 +1570,7 @@ bool KCnPartyUserManager::IsAllPartyMembersCheckedForAutoParty() const
 		KCnPartyUserPtr spPartyUser = mit->second;
 		if( spPartyUser == NULL )
 		{
-			START_LOG( cerr, L"자동 파티 체크값 초기화할 유저를 찾지 못하였습니다!" )
+			START_LOG( cerr, L"Could not find the user whose auto-party check value should be reset!" )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -1592,7 +1592,7 @@ void KCnPartyUserManager::ClearCheckedPlayCondition()
 		KCnPartyUserPtr spPartyUser = mit->second;
 		if( spPartyUser == NULL )
 		{
-			START_LOG( cerr, L"자동 파티 체크값 초기화할 유저를 찾지 못하였습니다!" )
+			START_LOG( cerr, L"Could not find the user whose auto-party check value should be reset!" )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -1607,7 +1607,7 @@ bool KCnPartyUserManager::SetCheckedPlayCondition( IN const UidType iUnitUID )
 	KCnPartyUserPtr spPartyUser = GetPartyUser( iUnitUID );
 	if( spPartyUser == NULL )
 	{
-		START_LOG( cerr, L"파티 유저가 존재하지 않습니다!" )
+		START_LOG( cerr, L"Party user does not exist!" )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 		return false;
@@ -1628,7 +1628,7 @@ bool KCnPartyUserManager::IsAllPartyMembersCheckedPlayCondition() const
 		KCnPartyUserPtr spPartyUser = mit->second;
 		if( spPartyUser == NULL )
 		{
-			START_LOG( cerr, L"자동 파티 체크값 초기화할 유저를 찾지 못하였습니다!" )
+			START_LOG( cerr, L"Could not find the user whose auto-party check value should be reset!" )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;

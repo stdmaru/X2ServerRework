@@ -162,7 +162,7 @@ bool KRoomListManager::OpenPVPRoomList( KGSUserPtr spUser_, KEGS_OPEN_PVP_ROOM_L
 
 	kInfo.m_iOK	= NetError::ERR_CHANNEL_00;
 
-	START_LOG( cerr, L"PVP CHANNEL 들어가지 못함 이런~" )
+	START_LOG( cerr, L"Failed to enter the PvP channel." )
 		<< BUILD_LOG( spUser_->GetCharName() )
 		<< BUILD_LOG( spUser_->GetName() )
 		<< BUILD_LOG( kInfo.m_iConnectChannelID )
@@ -193,7 +193,7 @@ bool KRoomListManager::ChangePVPRoomList( IN KGSUserPtr spUser_, IN UINT uiRoomL
 		spRoomList->GetPVPChannelClass() != KPVPChannelInfo::PCC_PLAY  &&
 		spRoomList->GetPVPChannelClass() != KPVPChannelInfo::PCC_TOURNAMENT )
 	{
-		START_LOG( cerr, L"대전개편 이후에는 이 채널은 못 들어가요!" )
+		START_LOG( cerr, L"This channel is unavailable after the PvP rework!" )
 			<< BUILD_LOG( uiRoomListID )
 			<< BUILD_LOG( spRoomList->GetPVPChannelClass() )
 			<< END_LOG;
@@ -205,7 +205,7 @@ bool KRoomListManager::ChangePVPRoomList( IN KGSUserPtr spUser_, IN UINT uiRoomL
 	KRoomListPtr spRoomListNow = Get( spUser_->GetRoomListID() );
 	if( spRoomListNow == NULL )
 	{
-		START_LOG( cerr, L"기존 채널이 없음.!" )
+		START_LOG( cerr, L"Channel does not exist!" )
 			<< BUILD_LOG( spUser_->GetCharUID() )
 			<< BUILD_LOG( spUser_->GetCharName() )
 			<< END_LOG;
@@ -244,7 +244,7 @@ KRoomList::ROOM_LIST_TYPE KRoomListManager::GetRoomListType( IN UINT uiRoomListI
 
 	if( spRoomList == NULL )
 	{
-		START_LOG( cerr, L"이동할 채널 포인터가 잘못 되었음.!" )
+		START_LOG( cerr, L"Invalid destination channel pointer!" )
 			<< BUILD_LOG( uiRoomListID )
 			<< END_LOG;
 
@@ -270,7 +270,7 @@ int KRoomListManager::GetPVPChannelClassByRoomListID( IN UINT uiRoomListID )
 
 	default:
 		{
-			START_LOG( cerr, L"대전채널이 아닌데 대전 클래스 기능 함수를 요청함.!" )
+			START_LOG( cerr, L"Requested a PvP class function outside a PvP channel!" )
 				<< BUILD_LOG( uiRoomListID )
 				<< END_LOG;
 		}
@@ -284,7 +284,7 @@ int	KRoomListManager::GetPVPChannelClassByRoomUID( IN UidType iRoomUID )
 	KRoomInfoPtr spRoomInfo = GetRoomInfo( iRoomUID );
 	if( spRoomInfo == NULL )
 	{
-		START_LOG( cwarn, L"해당 방이 존재하지 않습니다." ) // 시간차로 생긴 문제일 확률이 높다
+		START_LOG( cwarn, L"Room does not exist." ) // 시간차로 생긴 문제일 확률이 높다
 			<< BUILD_LOG( iRoomUID )
 			<< END_LOG;
 
@@ -293,7 +293,7 @@ int	KRoomListManager::GetPVPChannelClassByRoomUID( IN UidType iRoomUID )
 
 	if( spRoomInfo->m_RoomType != CXSLRoom::RT_PVP )
 	{
-		START_LOG( cerr, L"대전방도 아닌데 PVP Channel Class 요청.!" )
+		START_LOG( cerr, L"Requested PVP Channel Class outside a PvP room!" )
 			<< BUILD_LOG( iRoomUID )
 			<< BUILD_LOGc( spRoomInfo->m_RoomType )
 			<< END_LOG;
@@ -320,7 +320,7 @@ UidType KRoomListManager::GetWaitingRoomUID( IN UINT uiRoomListID, IN KEGS_QUICK
 
 	default:
 		{
-			START_LOG( cerr, L"대전/던전 채널이 아닌데 대기방 기능 함수를 요청함.!" )
+			START_LOG( cerr, L"Requested a waiting-room function outside a PvP or dungeon channel!" )
 				<< BUILD_LOG( uiRoomListID )
 				<< BUILD_LOG( kReq.m_iOption )
 				<< BUILD_LOG( static_cast<int>(kReq.m_bIsItemMode) )
@@ -347,7 +347,7 @@ bool KRoomListManager::GetRoomInfoPage( IN UINT uiRoomListID, IN KEGS_ROOM_LIST_
 
 	default:
 		{
-			START_LOG( cerr, L"대전/던전 방이 아닌데 방리스트를 요청함.!" )
+			START_LOG( cerr, L"Requested the room list outside a PvP or dungeon room!" )
 				<< BUILD_LOG( uiRoomListID )
 				<< END_LOG;
 		}
@@ -360,7 +360,7 @@ bool KRoomListManager::GetSquareInfoPage( IN KEGS_SQUARE_LIST_REQ& kReq, OUT KEG
 {
 	if( m_spSquare == NULL )
 	{
-		START_LOG( cerr, L"광장 채널 포인터 이상.!" )
+		START_LOG( cerr, L"Invalid square channel pointer!" )
 			<< BUILD_LOG( m_spSquare )
 			<< END_LOG;
 
@@ -375,7 +375,7 @@ bool KRoomListManager::GetSquareInfoPage( IN KEGS_SQUARE_LIST_REQ& kReq, OUT KEG
 		return spRoomList->GetSquareInfoPage( kReq, kAck );
 	}
 
-	START_LOG( cerr, L"광장채널이 아닌데 광장리스트를 요청함.!" )
+	START_LOG( cerr, L"Requested the plaza list from a non-plaza channel!" )
 		<< END_LOG;
 
 	return false;
@@ -390,7 +390,7 @@ bool KRoomListManager::AddRoomInfo( const KRoomInfo& kRoomInfo )
 
 	if( mit != m_mapRoomInfoList.end() )
 	{
-		START_LOG( cwarn, L"이미 있는 아이디의 방 정보 추가 요청. 서버가 뻐더 버렸나..?" )
+		START_LOG( cwarn, L"Attempted to add room information for an existing ID; possible server hang?" )
 			<< BUILD_LOG( kRoomInfo.m_RoomUID )
 			<< BUILD_LOG( kRoomInfo.m_RoomName )
 			<< END_LOG;
@@ -437,7 +437,7 @@ bool KRoomListManager::ChangeRoomInfo( const KRoomInfo& kRoomInfo )
 		return true;
 	}
 
-	START_LOG( cwarn, L"방정보 수정 실행중 해당방정보가 없음.(RoomUID가 없음)" )
+	START_LOG( cwarn, L"Room information is missing during update (RoomUID is missing)." )
 		<< BUILD_LOG( kRoomInfo.m_RoomUID )
 		<< BUILD_LOG( kRoomInfo.m_RoomName );
 
@@ -453,7 +453,7 @@ KRoomInfoPtr KRoomListManager::GetRoomInfo( const UidType nRoomUID )
 	if( mit == m_mapRoomInfoList.end() )
 	{
 		// [참고] 시간차로 방이 존재하지 않을 수 있다.
-		START_LOG( cwarn, L"정보를 읽어올 방정보가 없음." )
+		START_LOG( cwarn, L"No room information is available to read." )
 			<< BUILD_LOG( nRoomUID )
 			<< END_LOG;
 
@@ -470,7 +470,7 @@ bool KRoomListManager::DelRoomInfo( const KRoomInfo& kRoomInfo )
 
 	if( mit == m_mapRoomInfoList.end() )
 	{
-		START_LOG( cerr, L"삭제하려는 방을 못찾음." )
+		START_LOG( cerr, L"Could not find the room to delete." )
 			<< BUILD_LOG( kRoomInfo.m_RoomUID )
 			<< END_LOG;
 
@@ -479,7 +479,7 @@ bool KRoomListManager::DelRoomInfo( const KRoomInfo& kRoomInfo )
 
 	if( DeleteRoomInfo( kRoomInfo.m_uiRoomListID, mit->second ) == false )
 	{
-		START_LOG( cerr, L"방정보 삭제중 채널정보 잘못되었음." )
+		START_LOG( cerr, L"Invalid channel information while deleting room information." )
 			<< BUILD_LOG( kRoomInfo.m_RoomUID )
 			<< BUILD_LOG( kRoomInfo.m_uiRoomListID )
 			<< BUILD_LOGc( kRoomInfo.m_RoomType )
@@ -539,7 +539,7 @@ void KRoomListManager::ChangeNumPvPRoom( int iGameMode, int iChange )
 
 	if( iTotalValue < 0 )
 	{
-		START_LOG( cerr, L"방 개수 이상." )
+		START_LOG( cerr, L"Invalid room count." )
 			<< BUILD_LOG( iGameMode )
 			<< BUILD_LOG( iChange )
 			<< END_LOG;
@@ -555,7 +555,7 @@ bool KRoomListManager::AddSquareInfo( const KSquareInfo& kSquareInfo )
 
 	if( mit != m_mapSquareInfoList.end() )
 	{
-		START_LOG( cwarn, L"이미 있는 광장정보 추가요청.서버가 뻐더 버렸나..?ㅁ? 아닌데 왔으면 너 피똥싼다." )
+		START_LOG( cwarn, L"Attempted to add existing plaza information; possible server hang?" )
 			<< BUILD_LOG( kSquareInfo.m_iSquareUID )
 			<< BUILD_LOG( kSquareInfo.m_wstrRoomName )
 			<< END_LOG;
@@ -569,7 +569,7 @@ bool KRoomListManager::AddSquareInfo( const KSquareInfo& kSquareInfo )
 
 	if( m_spSquare == NULL )
 	{
-		START_LOG( cerr, L"광장 채널 포인터 이상.!" )
+		START_LOG( cerr, L"Invalid square channel pointer!" )
 			<< BUILD_LOG( m_spSquare )
 			<< END_LOG;
 
@@ -594,7 +594,7 @@ bool KRoomListManager::ChangeSquareInfo( const KSquareInfo& kSquareInfo )
 	}
 
 
-	START_LOG( cwarn, L"광장정보 수정 실행중 해당방정보가 없음.(iSquareUID가 없음)" )
+	START_LOG( cwarn, L"Room information is missing while updating plaza data (iSquareUID is missing)." )
 		<< BUILD_LOG( kSquareInfo.m_iSquareUID )
 		<< BUILD_LOG( kSquareInfo.m_wstrRoomName );
 
@@ -609,7 +609,7 @@ KSquareInfoPtr KRoomListManager::GetSquareInfo( const UidType iSquareUID )
 
 	if( mit == m_mapSquareInfoList.end() )
 	{
-		START_LOG( cerr, L"광장정보가 없음.!ㅁ!." )
+		START_LOG( cerr, L"Square information is missing!" )
 			<< BUILD_LOG( iSquareUID )
 			<< END_LOG;
 
@@ -626,7 +626,7 @@ bool KRoomListManager::DelSquareInfo( const KSquareInfo& kSquareInfo )
 
 	if( mit == m_mapSquareInfoList.end() )
 	{
-		START_LOG( cerr, L"삭제하려는 광장정보가 없네." )
+		START_LOG( cerr, L"Plaza information to delete does not exist." )
 			<< BUILD_LOG( kSquareInfo.m_iSquareUID )
 			<< BUILD_LOG( kSquareInfo.m_wstrRoomName )
 			<< END_LOG;
@@ -636,7 +636,7 @@ bool KRoomListManager::DelSquareInfo( const KSquareInfo& kSquareInfo )
 
 	if( m_spSquare == NULL )
 	{
-		START_LOG( cerr, L"광장 채널 포인터 이상.!" )
+		START_LOG( cerr, L"Invalid square channel pointer!" )
 			<< BUILD_LOG( m_spSquare )
 			<< END_LOG;
 
@@ -683,7 +683,7 @@ KRoomListPtr KRoomListManager::Get( UINT uiRoomListID )
 
 	if( mit == m_mapRoomList.end() )
 	{
-		START_LOG( cwarn, L"존재하지 않는 채널" )
+		START_LOG( cwarn, L"Channel does not exist" )
 			<< BUILD_LOG( uiRoomListID )
 			<< BUILD_LOG( m_mapRoomList.size() );
 
@@ -717,7 +717,7 @@ KRoomListPtr KRoomListManager::GetPVPFreeChannel()
 		}
 	}
 
-	START_LOG( cerr, L"자유채널 포인터 이상.!" )
+	START_LOG( cerr, L"Invalid free-channel pointer!" )
 		<< END_LOG;
 
 	return KRoomListPtr();
@@ -741,7 +741,7 @@ bool KRoomListManager::AddRoomListTemplet_LUA()
 
 	if( nTemp01 == 0 )
 	{
-		START_LOG( cerr, L"채널 아이디 파싱 실패.!" )
+		START_LOG( cerr, L"Failed to parse channel ID!" )
 			<< BUILD_LOG( nTemp01 )
 			<< END_LOG;
 
@@ -752,7 +752,7 @@ bool KRoomListManager::AddRoomListTemplet_LUA()
 
 	if( KRoomList::RLT_NONE >= nTemp02 || KRoomList::RLT_END <= nTemp02 )
 	{
-		START_LOG( cerr, L"채널 타입이 잘못되었음.!" )
+		START_LOG( cerr, L"Invalid channel type!" )
 			<< BUILD_LOG( nTemp01 )
 			<< BUILD_LOG( nTemp02 )
 			<< END_LOG;
@@ -769,7 +769,7 @@ bool KRoomListManager::AddRoomListTemplet_LUA()
 
 			if( spPVPList == NULL )
 			{
-				START_LOG( cerr, L"룸리스트 생성 실패.!" )
+				START_LOG( cerr, L"Failed to create room list!" )
 					<< L"ROOM_LIST_ID"	<< BUILD_LOG( nTemp01 )
 					<< L"ROOM_LIST_TYPE"	<< BUILD_LOG( nTemp02 )
 					<< END_LOG;
@@ -782,7 +782,7 @@ bool KRoomListManager::AddRoomListTemplet_LUA()
 
 			if( nTemp03 == 0 && nTemp04 == 0 )
 			{
-				START_LOG( cerr, L"대전채널 VS 포인터 셋팅 오류.!" )
+				START_LOG( cerr, L"Failed to set PvP channel VS pointer!" )
 					<< BUILD_LOG ( nTemp03 )
 					<< BUILD_LOG ( nTemp04 )
 					<< END_LOG;
@@ -793,7 +793,7 @@ bool KRoomListManager::AddRoomListTemplet_LUA()
 
 			if( nTemp01 == 0 )
 			{
-				START_LOG( cerr, L"대전 채널 클래스 값이상.!" )
+				START_LOG( cerr, L"Invalid PvP channel class value!" )
 					<< BUILD_LOG( nTemp04 )
 					<< END_LOG;
 			}
@@ -819,7 +819,7 @@ bool KRoomListManager::AddRoomListTemplet_LUA()
 
 			if( spSquareList == NULL )
 			{
-				START_LOG( cerr, L"광장리스트 생성 실패.!" )
+				START_LOG( cerr, L"Failed to create plaza list!" )
 					<< L"ROOM_LIST_ID"	<< BUILD_LOG( nTemp01 )
 					<< L"ROOM_LIST_TYPE"	<< BUILD_LOG( nTemp02 )
 					<< END_LOG;
@@ -842,7 +842,7 @@ void KRoomListManager::SetPvpOffcialRoomListID_LUA( UINT nID )
 {
     m_nPvpOffcialRoomListID = nID;
 
-	START_LOG( cout, L"대전 공식 채널 RoomListID 설정 : " << nID );
+	START_LOG( cout, L"Set official PvP channel RoomListID: " << nID );
 }
 //}}
 
@@ -862,7 +862,7 @@ bool KRoomListManager::InsertRoomInfo( IN UINT uiRoomListID, IN KRoomInfoPtr spR
 
 	default:
 		{
-			START_LOG( cerr, L"방채널이 아닌데 방정보를 추가 하려고함." )
+			START_LOG( cerr, L"Attempted to add room information to a non-room channel." )
 				<< BUILD_LOG( uiRoomListID )
 				<< BUILD_LOG( spRoomInfo->m_RoomUID )
 				<< BUILD_LOG( spRoomInfo->m_uiRoomListID )
@@ -891,7 +891,7 @@ bool KRoomListManager::DeleteRoomInfo( IN UINT uiRoomListID, IN KRoomInfoPtr spR
 
 	default:
 		{
-			START_LOG( cerr, L"방채널이 아닌데 방정보를 추가 하려고함." )
+			START_LOG( cerr, L"Attempted to add room information to a non-room channel." )
 				<< BUILD_LOG( uiRoomListID )
 				<< BUILD_LOG( spRoomInfo->m_RoomUID )
 				<< BUILD_LOG( spRoomInfo->m_uiRoomListID )

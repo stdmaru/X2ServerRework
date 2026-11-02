@@ -118,7 +118,7 @@ void KLoginSimLayer::RegToLua()
 //{{ 2012. 09. 03	최육사		중복 접속 버그 수정
 void KLoginSimLayer::SetEnableAuthWait_LUA( bool bEnable )
 {
-	START_LOG( cout, L"PC방 인증 대기 기능 동작 여부 : " << bEnable );
+	START_LOG( cout, L"PC-bang authentication waiting enabled: " << bEnable );
 
 	m_kUserList.SetEnableAuthWait( bEnable );
 }
@@ -196,7 +196,7 @@ void KLoginSimLayer::Init()
 		kAutoPath.GetPullPath( strFile );
 		if( 0 != LUA_DOFILE( g_pLua, strFile.c_str() ) )
 		{
-			START_LOG( cerr, L"Enum 정보 로드 실패.!" )
+			START_LOG( cerr, L"Failed to load Enum information!" )
 				<< BUILD_LOG( KncUtil::toWideString( strFile ) );
 
 			//{{ 2011. 02. 07	최육사	스크립트 파싱 오류 리포트
@@ -205,7 +205,7 @@ void KLoginSimLayer::Init()
 		}
 		else
 		{
-			START_LOG( cout, L"Enum 정보 로드 성공.!" );
+			START_LOG( cout, L"Enum information loaded!" );
 		}
 	}
 
@@ -217,7 +217,7 @@ void KLoginSimLayer::Init()
 		kAutoPath.GetPullPath( strFile );
 		if( 0 != LUA_DOFILE( g_pLua, strFile.c_str() ) )
 		{
-			START_LOG( cerr, L"DungeonEnum 정보 로드 실패.!" )
+			START_LOG( cerr, L"Failed to load DungeonEnum information!" )
 				<< BUILD_LOG( KncUtil::toWideString( strFile ) );
 
 			//{{ 2011. 02. 07	최육사	스크립트 파싱 오류 리포트
@@ -226,7 +226,7 @@ void KLoginSimLayer::Init()
 		}
 		else
 		{
-			START_LOG( cout, L"DungeonEnum 정보 로드 성공.!" );
+			START_LOG( cout, L"DungeonEnum information loaded!" );
 		}
 	}
 
@@ -238,7 +238,7 @@ void KLoginSimLayer::Init()
 		kAutoPath.GetPullPath( strFile );
 		if( SiKRankingManager()->OpenScriptFile( strFile.c_str() ) == false )
 		{
-			START_LOG( cerr, L"Ranking Data 정보 로드 실패.!" )
+			START_LOG( cerr, L"Failed to load ranking data!" )
 				<< BUILD_LOG( KncUtil::toWideString( strFile ) );
 
 			//{{ 2011. 02. 07	최육사	스크립트 파싱 오류 리포트
@@ -247,7 +247,7 @@ void KLoginSimLayer::Init()
 		}
 		else
 		{
-			START_LOG( cout, L"Ranking Data 정보 로드 성공.!" );
+			START_LOG( cout, L"Ranking data loaded!" );
 		}
 	}
 	//}}

@@ -56,7 +56,7 @@
 #define CASE_SCRIPT_REFRESH_SWAP_INSTANCE( flag, className ) \
 case KESR_SCRIPT_REFRESH_ORDER_NOT::flag: \
 	className::SwapInstance( g_pLua ); \
-	START_LOG( cout, L ## #className L" 스크립트 갱신을 완료하였습니다!" ); \
+	START_LOG( cout, L ## #className L" Script refresh completed!" ); \
 	Si##className()->DumpToLogFile(); \
 	break; \
 
@@ -102,7 +102,7 @@ void KCnRMEventProcess::ProcessEvent( const KEventPtr& spEvent_ )
 
 
 	default:
-		START_LOG( cerr, L"핸들러가 지정되지 않은 이벤트." )
+		START_LOG( cerr, L"Event has no assigned handler." )
 			<< BUILD_LOG( spEvent_->m_usEventID )
 			<< BUILD_LOG( spEvent_->GetIDStr() )
 			<< END_LOG;
@@ -111,7 +111,7 @@ void KCnRMEventProcess::ProcessEvent( const KEventPtr& spEvent_ )
 	dwElapTime = ::GetTickCount() - dwElapTime;
 	if( dwElapTime > 3000 )
 	{
-		START_LOG( cwarn, L"이벤트 처리 소요 시간." )
+		START_LOG( cwarn, L"Event processing time." )
 			<< BUILD_LOG( spEvent_->GetIDStr() )
 			<< BUILD_LOG( spEvent_->m_usEventID )
 			<< BUILD_LOG( dwElapTime );
@@ -166,7 +166,7 @@ _IMPL_ON_FUNC( ESR_ORDER_TO_REFRESH_MANAGER_ACK, KESR_SCRIPT_REFRESH_ORDER_NOT )
 
 	default:
 		{
-			START_LOG( cerr, L"이쪽으로 오면 안되는 타입인데?" )
+			START_LOG( cerr, L"Unexpected type reached this point." )
 				<< BUILD_LOG( kPacket_.m_iOrderType )
 				<< END_LOG;
 		}
@@ -203,7 +203,7 @@ IMPL_ON_FUNC( DBE_CHECK_TIME_DROP_RESULT_ACK )
 {
 	if( kPacket_.m_iOK == NetError::NET_OK )
 	{
-		START_LOG( cerr, L"특정 시각 드롭 이벤트 성공했는데 여기로 왔네? 일어나면 안되는 에러!" )
+		START_LOG( cerr, L"Timed-drop event succeeded but reached this path; this should never happen!" )
 			<< BUILD_LOG( NetError::GetErrStr( kPacket_.m_iOK ) )
 			<< BUILD_LOG( kPacket_.m_iGSUID )
 			<< BUILD_LOG( kPacket_.m_iUserUID )
@@ -228,7 +228,7 @@ IMPL_ON_FUNC( DBE_ABUSER_LIST_ACK )
 	if( kPacket_.m_mapAbuserList.empty() )
 		return;
 
-	START_LOG( cout, L"어뷰저 리스트 갱신!" );
+	START_LOG( cout, L"Refreshing abuser list!" );
 
 	// 어뷰저 리스트 업데이트
 	SiKAbuserLogManager()->UpdateAbuserList( kPacket_.m_mapAbuserList );
@@ -253,7 +253,7 @@ IMPL_ON_FUNC( DBE_GET_DUNGEON_EVENT_INFO_ACK )
 {
     SiKDungeonEventManager()->UpdateTimeDropEventMonsterInfo( kPacket_.m_vecEventInfo );
 
-	START_LOG( cout, L"특정 시각 던전 출현 이벤트 몬스터 세팅!" )
+	START_LOG( cout, L"Configuring timed dungeon event monsters!" )
 		<< BUILD_LOG( kPacket_.m_vecEventInfo.size() );
 }
 

@@ -153,7 +153,7 @@ void KNexonBillingTCPManager::EndThread( DWORD /*dwTimeOut*/ /*= 10000*/ )
 	{
 		m_spThreadKeepConnect->End( 3000 );
 
-		START_LOG( cout, L"넥슨 빌링 서버 접속 체크 스레드 종료!" );
+		START_LOG( cout, L"Nexon Billing server connection-check thread stopped!" );
 	}
 	//}}
 
@@ -163,7 +163,7 @@ void KNexonBillingTCPManager::EndThread( DWORD /*dwTimeOut*/ /*= 10000*/ )
     {
 	    m_spThreadSend->End( 10000 );
 
-		START_LOG( cout, L"넥슨 빌링 서버 Send 스레드 종료!" );
+		START_LOG( cout, L"Nexon billing server send thread stopped!" );
     }
 
 	// recv 스레드 죽이기 전에 소켓을 닫자!
@@ -173,7 +173,7 @@ void KNexonBillingTCPManager::EndThread( DWORD /*dwTimeOut*/ /*= 10000*/ )
     {
 	    m_spThreadRecv->End( 3000 );
 
-		START_LOG( cout, L"넥슨 빌링 서버 Recv 스레드 종료!" );
+		START_LOG( cout, L"Nexon billing server receive thread stopped!" );
     }
 }
 //}}
@@ -246,7 +246,7 @@ void KNexonBillingTCPManager::InsertPacketNoUserUID( unsigned long ulPacketNo, U
 {
     if( iUserUID <= 0 )
     {
-        START_LOG( cerr, L"유저 UID 이상." )
+        START_LOG( cerr, L"Invalid user UID." )
             << BUILD_LOG( ulPacketNo )
             << BUILD_LOG( iUserUID )
             << END_LOG;
@@ -259,7 +259,7 @@ void KNexonBillingTCPManager::InsertPacketNoUserUID( unsigned long ulPacketNo, U
 		mit = m_mapPacketNoUserUID.find( ulPacketNo );
 		if( mit != m_mapPacketNoUserUID.end() )
 		{
-			START_LOG( cerr, L"패킷 번호에 해당하는 UserUID 가 이미 등록되어 있다." )
+			START_LOG( cerr, L"UserUID for this packet number is already registered." )
 				<< BUILD_LOG( mit->first )
 				<< BUILD_LOG( mit->second )
 				<< BUILD_LOG( ulPacketNo )
@@ -279,7 +279,7 @@ void KNexonBillingTCPManager::DeletePacketNoUserUID( unsigned long ulPacketNo )
 		mit = m_mapPacketNoUserUID.find( ulPacketNo );
 		if( mit == m_mapPacketNoUserUID.end() )
 		{
-			START_LOG( cerr, L"패킷 번호에 해당하는 UserUID 가 등록되어 있지 않다." )
+			START_LOG( cerr, L"No UserUID is registered for the packet number." )
 				<< BUILD_LOG( ulPacketNo )
 				<< END_LOG;
 
@@ -299,7 +299,7 @@ UidType KNexonBillingTCPManager::GetCorrespondingUserUID( unsigned long ulPacket
 		mit = m_mapPacketNoUserUID.find( ulPacketNo );
 		if( mit == m_mapPacketNoUserUID.end() )
 		{
-			START_LOG( cerr, L"패킷 번호에 해당하는 UserUID 가 등록되어 있지 않다." )
+			START_LOG( cerr, L"No UserUID is registered for the packet number." )
 				<< BUILD_LOG( ulPacketNo )
 				<< END_LOG;
 
@@ -319,7 +319,7 @@ void KNexonBillingTCPManager::AddProductInfo( KNXBTProductInfo kInfo )
     mit = m_mapProductInfo.find( kInfo.m_ulProductNo );
     if( mit != m_mapProductInfo.end() )
     {
-        START_LOG( cwarn, L"프로덕트 정보가 이미 존재함." )
+        START_LOG( cwarn, L"Product information already exists." )
             << BUILD_LOG( GetReleaseTick() )
             << BUILD_LOG( kInfo.m_ulProductNo )
             << BUILD_LOG( mit->second.m_wstrProductID )
@@ -334,7 +334,7 @@ void KNexonBillingTCPManager::AddProductInfo( KNXBTProductInfo kInfo )
 	//{{ 2009. 12. 19  최육사	서버군 확장
 	if( SiCXSLCashItemManager()->IsSellItemInThisServer( iItemID ) == false )
 	{
-		START_LOG( cout, L"현재 서버군에서는 판매되서는 안되는 상품입니다. 리스트에 포함시키지 않습니다." )
+		START_LOG( cout, L"This product must not be sold in this server group; excluding it from the list." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 
@@ -349,7 +349,7 @@ void KNexonBillingTCPManager::AddProductInfo( KNXBTProductInfo kInfo )
 	//{{ 2011. 01. 04  김민성	product no 별 서버군 확장
 	if( SiCXSLCashItemManager()->IsSellItemInThisProductNo( kInfo.m_ulProductNo ) == false )
 	{
-		START_LOG( cout, L"현재 서버군에서는 판매되서는 안되는 상품입니다. 리스트에 포함시키지 않습니다." )
+		START_LOG( cout, L"This product must not be sold in this server group; excluding it from the list." )
 			<< BUILD_LOG( kInfo.m_ulProductNo )
 			<< END_LOG;
 
@@ -449,7 +449,7 @@ int KNexonBillingTCPManager::GetItemID( unsigned long ulProductNo )
     mit = m_mapProductInfo.find( ulProductNo );
     if( mit == m_mapProductInfo.end() )
     {
-        START_LOG( cerr, L"상품 번호 검색 실패." )
+        START_LOG( cerr, L"Failed to look up product number." )
             << BUILD_LOG( ulProductNo )
             << END_LOG;
 
@@ -460,7 +460,7 @@ int KNexonBillingTCPManager::GetItemID( unsigned long ulProductNo )
     iItemID = ::atoi( KncUtil::toNarrowString( mit->second.m_wstrProductID ).c_str() );
     if( iItemID == 0 )
     {
-        START_LOG( cerr, L"아이템 ID 변환 실패." )
+        START_LOG( cerr, L"Failed to convert the item ID." )
             << BUILD_LOG( mit->second.m_wstrProductID )
             << END_LOG;
     }
@@ -675,7 +675,7 @@ void KNexonBillingTCPManager::Recv()
 		( int )( MAX_PACKET_SIZE_NBT - m_ulRecvCP ),
 		0 );
 
-	START_LOG( clog, L"패킷 받음." )
+	START_LOG( clog, L"Packet received." )
 		<< BUILD_LOG( ret );
 
 	if( ret == SOCKET_ERROR )
@@ -697,7 +697,7 @@ void KNexonBillingTCPManager::Recv()
 
 	if( ret == 0 )
 	{
-		START_LOG( cerr, L"소켓 연결이 끊어짐." )
+		START_LOG( cerr, L"Socket connection was lost." )
 			<< END_LOG;
 
 		CLOSE_SOCKET( m_sock );
@@ -772,7 +772,7 @@ void KNexonBillingTCPManager::Send()
 				uiSendQueueSize = m_kSendQueue.size();
 			KCSLOCK_END()
 
-			START_LOG( cerr, L"포인터 이상." )
+			START_LOG( cerr, L"Invalid pointer." )
 				<< BUILD_LOG( uiSendQueueSize )
 				<< END_LOG;
 
@@ -827,7 +827,7 @@ void KNexonBillingTCPManager::OnDisconnectBillingServer( IN const std::wstring& 
 	//{{ 2010. 10. 12	최육사	서버 모니터링
 	//}}
 
-	START_LOG( cout, L"넥슨 빌링 서버 접속 종료!" )
+	START_LOG( cout, L"Disconnected from the Nexon billing server!" )
 		<< BUILD_LOG( wstrReason );
 }
 //}}
@@ -910,14 +910,14 @@ bool KNexonBillingTCPManager::Connect()
     switch( ::WaitForSingleObject( m_spEvent.get(), 5000 ) )
     {
     case WAIT_OBJECT_0: // ack를 제대로 받은 경우.
-        START_LOG( cout, L"넥슨 빌링 서버 Initialize." )
+        START_LOG( cout, L"Initializing Nexon Billing server." )
             << BUILD_LOG( m_bInitialized );
         break;
     case WAIT_TIMEOUT:  // 시간 초과
-        START_LOG( cerr, L"빌링 서버 Initialize 시간 초과." );
+        START_LOG( cerr, L"Billing server initialization timed out." );
         break;
     default:
-        START_LOG( cerr, L"빌링 서버 Initialize 실패." );
+        START_LOG( cerr, L"Failed to initialize the billing server." );
         break;
     }
 
@@ -1001,7 +1001,7 @@ void KNexonBillingTCPManager::MakeEventFromReceivedPacket()
 	KNexonBillingTCPPacket kPacket;
 	if( !kPacket.ReadFromBuffer( ( BYTE* )m_cRecvBuffer ) )
     {
-        START_LOG( cerr, L"버퍼에서 읽기 실패." )
+        START_LOG( cerr, L"Failed to read from the buffer." )
             << END_LOG;
 
         DumpBuffer( ( BYTE* )m_cRecvBuffer, true );
@@ -1029,7 +1029,7 @@ void KNexonBillingTCPManager::MakeEventFromReceivedPacket()
 
 #   include "NexonBillingTCP_def.h"
     default:
-        START_LOG( cerr, L"패킷 타입이 이상함." )
+        START_LOG( cerr, L"Invalid packet type." )
             << BUILD_LOG( kPacket.GetPacketType() )
             << END_LOG;
         DumpBuffer( ( BYTE* )m_cRecvBuffer, true );
@@ -1140,7 +1140,7 @@ bool KNexonBillingTCPManager::GetCashItemRefundRequestID( OUT std::wstring& wstr
 	__int64 iServerUID = KBaseServer::GetKObj()->GetUID();
 	if( iServerUID > 0xFF )
 	{
-		START_LOG( cerr, L"ServerUID가 255를 넘으면 안됩니다!" )
+		START_LOG( cerr, L"ServerUID must not exceed 255!" )
 			<< BUILD_LOG( iServerUID )
 			<< END_LOG;
 		return false;

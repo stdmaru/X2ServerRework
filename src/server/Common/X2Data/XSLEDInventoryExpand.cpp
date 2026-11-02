@@ -60,7 +60,7 @@ bool CXSLEDInventoryExpand::AddBankGradeED_LUA()
     return true;
 
 end_proc:
-    START_LOG( cerr, L"ED은행확장 스크립트 파싱 실패!" )
+    START_LOG( cerr, L"Failed to parse the ED bank expansion script." )
         << BUILD_LOG( mapBankGradeED.size() )
         << END_LOG;
     return false;
@@ -97,7 +97,7 @@ bool CXSLEDInventoryExpand::AddInventoryGradeED_LUA()
     return true;
 
 end_proc:
-    START_LOG( cerr, L"ED 인벤토리 확장 스크립트 파싱 실패!" )
+    START_LOG( cerr, L"Failed to parse the ED inventory expansion script." )
         << BUILD_LOG( mapGradeED.size() )
         << END_LOG;
     return false;

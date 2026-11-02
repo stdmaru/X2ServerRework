@@ -65,7 +65,7 @@ void KBlockListManager::UpdateblockList( IN const int iReleaseTick, IN const std
 
 	if( GetReleaseTick() > iReleaseTick )
 	{
-		START_LOG( cerr, L"DB로부터 받아온 ReleaseTick값이 이상합니다." )
+		START_LOG( cerr, L"Invalid ReleaseTick value received from the database." )
 			<< BUILD_LOG( GetReleaseTick() )
 			<< BUILD_LOG( iReleaseTick )
 			<< BUILD_LOG( mapBlockInfo.size() )
@@ -120,7 +120,7 @@ void KBlockListManager::UpdateblockList( IN const int iReleaseTick, IN const std
 
 		default:
 			{
-				START_LOG( cerr, L"등록되지 않은 블록타입입니다." )
+				START_LOG( cerr, L"Block type is not registered." )
 					<< BUILD_LOGc( iType )
 					<< END_LOG;
 			}
@@ -321,7 +321,7 @@ bool KBlockListManager::AddModuleInfo( IN const KBlockInfo& kInfo )
 {
 	if( m_mapDllBlock.find( kInfo.m_wstrBlockTarget ) != m_mapDllBlock.end() )
 	{
-		START_LOG( cwarn, L"이미 등록되어있는 모듈UID입니다." )
+		START_LOG( cwarn, L"Module UID is already registered." )
 			<< BUILD_LOG( kInfo.m_wstrBlockTarget )
 			<< END_LOG;
 		return false;
@@ -378,7 +378,7 @@ bool KBlockListManager::CheckHackingModuleList( IN const std::vector< std::wstri
 		mit = m_mapDllBlock.find( wstrName );
 		if( mit != m_mapDllBlock.end() )
 		{
-			START_LOG( clog, L"Allow 값이 Black List 입니다." )
+			START_LOG( clog, L"Allow value is set to the blacklist." )
 				<< BUILD_LOG( wstrName )
 				<< END_LOG;
 

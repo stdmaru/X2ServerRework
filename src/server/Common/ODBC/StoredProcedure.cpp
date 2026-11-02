@@ -63,7 +63,7 @@ void KStoredProcedure::GetUnitInfo(  IN const UidType& nUserUID_, OUT std::vecto
 
         if( CXSLUnit::IsValidUnitClass( static_cast<CXSLUnit::UNIT_CLASS>(kUnitInfo.m_cUnitClass) ) == false )
         {
-            START_LOG( cout, L"[알림] 등록되지 않은 유닛 클래스입니다!" )
+            START_LOG( cout, L"[Notice] Unregistered unit class." )
                 << BUILD_LOG( kUnitInfo.m_nUnitUID )
                 << BUILD_LOG( kUnitInfo.m_wstrNickName )
                 << BUILD_LOGc( kUnitInfo.m_cUnitClass );
@@ -144,7 +144,7 @@ void KStoredProcedure::GetEquipItemList( IN std::vector<KUnitInfo>& vecUnitInfo_
 
             if( mit != vit->m_mapEquippedItem.end() )
             {
-                START_LOG( cerr, L"장착 아이템 정보가 중복됨." )
+                START_LOG( cerr, L"Duplicate equipped item information." )
                     << BUILD_LOG( kInventoryItemInfo.m_iItemUID )
                     << BUILD_LOG( kInventoryItemInfo.m_sSlotID )
                     << BUILD_LOG( kInventoryItemInfo.m_kItemInfo.m_iItemID )
@@ -193,7 +193,7 @@ void KStoredProcedure::GetEquipItemList( IN std::vector<KUnitInfo>& vecUnitInfo_
                 break;
 
             default:
-                START_LOG( cerr, L"속성 강화 슬롯 넘버가 이상합니다." )
+                START_LOG( cerr, L"Invalid attribute enhancement slot number." )
                     << BUILD_LOG( iItemUID )
                     << BUILD_LOG( iAttribEnchantSlotNo )
                     << BUILD_LOG( iAttribEnchantID )
@@ -220,7 +220,7 @@ int KStoredProcedure::GetUnitSlotNum( IN const UidType& nUserUID_, IN const std:
         m_kODBC.EndFetch();
     }
 
-    START_LOG( clog, L"P_GUser_MER 실행 로그 " )
+    START_LOG( clog, L"P_GUser_MER execution log: " )
         << BUILD_LOG( nUnitSlot )
         << BUILD_LOG( nUserUID_ )
         << BUILD_LOG( strUserID_ )
@@ -246,7 +246,7 @@ UidType KStoredProcedure::GetUserUID( IN const std::wstring& strUserID_ )
     }
 end_proc:
 
-    START_LOG( clog, L"GetUserUID(get_useruid_by_userid) 실행 로그 " )
+    START_LOG( clog, L"GetUserUID(get_useruid_by_userid) execution log: " )
         << BUILD_LOG( nUserUID )
         << BUILD_LOG( strUserID_ )
         << BUILD_LOG( m_kODBC.GetLastQuery() )

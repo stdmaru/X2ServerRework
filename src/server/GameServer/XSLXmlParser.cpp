@@ -22,7 +22,7 @@ bool CXSLXmlParser::ConvertXMLStringToValue( IN std::map< unsigned short, KPrope
 	std::map< unsigned short, KPropertyValue >::iterator mit = mapProperty.begin();
 	if( mit == mapProperty.end() )
 	{
-		START_LOG( cerr, L"넥슨 세션시스템에서 받은 PropertyValue 값이 하나도 없다!" );
+		START_LOG( cerr, L"No PropertyValue was received from the Nexon session system!" );
 		return false;
 	}
 
@@ -42,7 +42,7 @@ bool CXSLXmlParser::ConvertXMLStringToValue( IN std::map< unsigned short, KPrope
 		iOutUserRetaining = XMLStringToWString( strPropertyValue, iPolicyResultNo );
 	}
 
-	START_LOG( clog, L"이탈방지 세션시스템에서 받은 PropertyValue 값이다!" )
+	START_LOG( clog, L"PropertyValue received from the session anti-disconnect system." )
 		<< BUILD_LOG( iPolicyResultNo )
 		<< BUILD_LOG( iOutUserRetaining )
 		<< END_LOG;

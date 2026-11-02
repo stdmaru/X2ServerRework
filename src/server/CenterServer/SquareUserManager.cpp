@@ -29,7 +29,7 @@ KSquareUserPtr KSquareUserManager::GetUser( UidType nCID )
 
 	if( mit == m_mapSquareUser.end() )
 	{
-		START_LOG( cwarn, L"존재하지 않는 유저." )
+		START_LOG( cwarn, L"User does not exist." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -43,7 +43,7 @@ bool KSquareUserManager::AddUser( KSquareUserPtr spSquareUser )
 {
 	if( !spSquareUser )
 	{
-		START_LOG( cerr, L"유저 포인터 이상." )
+		START_LOG( cerr, L"Invalid user pointer." )
 			<< END_LOG;
 
 		return false;
@@ -54,7 +54,7 @@ bool KSquareUserManager::AddUser( KSquareUserPtr spSquareUser )
 
 	if( mit != m_mapSquareUser.end() )
 	{
-		START_LOG( cerr, L"이미 존재하는 광장 유저임." )
+		START_LOG( cerr, L"Square user already exists." )
 			<< BUILD_LOG( spSquareUser->GetCID() )
 			<< END_LOG;
 
@@ -73,7 +73,7 @@ bool KSquareUserManager::DeleteUser( UidType nCID )
 
 	if( mit == m_mapSquareUser.end() )
 	{
-		START_LOG( cerr, L"존재하지 않는 광장 유저임." )
+		START_LOG( cerr, L"Square user does not exist." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -110,13 +110,13 @@ bool KSquareUserManager::EnterSquare( const KSquareUserInfo& kInfo )
 		//{{ 2009. 1. 28  최육사	에러로그 줄여보자!
 		if( m_mapSquareUser.size() == m_dwMaxUser )
 		{
-			START_LOG( cwarn, L"광장이 유저가 꽉차서 유저 생성 실패." )
+			START_LOG( cwarn, L"Square is full; failed to create user." )
 				<< BUILD_LOG( ( int )m_mapSquareUser.size() )
 				<< END_LOG;
 		}
 		else
 		{
-			START_LOG( cerr, L"광장 유저 생성 실패." )
+			START_LOG( cerr, L"Failed to create square user." )
 				<< BUILD_LOG( ( int )m_mapSquareUser.size() )
 				<< END_LOG;
 		}
@@ -127,7 +127,7 @@ bool KSquareUserManager::EnterSquare( const KSquareUserInfo& kInfo )
 
 	if( AddUser( spSquareUser ) == false )
 	{
-		START_LOG( cerr, L"광장 유저 추가 실패." )
+		START_LOG( cerr, L"Failed to add square user." )
 			<< BUILD_LOG( spSquareUser->GetCID() )
 			<< END_LOG;
 
@@ -157,7 +157,7 @@ bool KSquareUserManager::SetSyncPos( UidType nCID, VECTOR3& vSyncPos )
 	KSquareUserPtr spSquareUser = GetUser( nCID );
 	if( !spSquareUser )
 	{
-		START_LOG( cwarn, L"유저가 없음." )
+		START_LOG( cwarn, L"User is missing." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -178,7 +178,7 @@ void KSquareUserManager::GetUserList( std::map< UidType, std::set< UidType > >& 
     {
         if( !mit->second )
         {
-            START_LOG( cerr, L"룸 유저 포인터 이상." )
+            START_LOG( cerr, L"Invalid room user pointer." )
                 << BUILD_LOG( mit->first )
                 << END_LOG;
 
@@ -199,7 +199,7 @@ void KSquareUserManager::GetUserInfoList( std::vector<KSquareUserInfo>& vecUserI
 	{
 		if( mit->second == NULL )
 		{
-			START_LOG( cerr, L"SQUARE USER 포인터 이상.!" )
+			START_LOG( cerr, L"Invalid square user pointer!" )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 
@@ -225,7 +225,7 @@ bool KSquareUserManager::GetSortSyncPos( UidType nCID, std::vector<KSquareUserPt
 	KSquareUserPtr spMyUser = GetUser( nCID );
 	if( spMyUser == NULL )
 	{
-		START_LOG( cerr, L"SQUARE USER 포인터 이상.!" )
+		START_LOG( cerr, L"Invalid square user pointer!" )
 			<< BUILD_LOG( mit->first )
 			<< END_LOG;
 
@@ -291,7 +291,7 @@ bool KSquareUserManager::GetSquareUserGS( UidType nCID, UidType& nGSUID )
 		}
 		else
 		{
-			START_LOG( cerr, L"광장 유저 포인터 이상.!" )
+			START_LOG( cerr, L"Invalid square-user pointer!" )
 				<< BUILD_LOG( nCID )
 				<< END_LOG
 				;
@@ -299,7 +299,7 @@ bool KSquareUserManager::GetSquareUserGS( UidType nCID, UidType& nGSUID )
 	}
 	else
 	{
-		START_LOG( cwarn, L"찾는 광장유저가 없음.!" )
+		START_LOG( cwarn, L"Square user not found!" )
 			<< BUILD_LOG( nCID )
 			<< END_LOG
 			;
@@ -313,7 +313,7 @@ KSquareUserPtr KSquareUserManager::MakeUser( const KSquareUserInfo& kInfo )
 {
 	if( m_mapSquareUser.size() >= m_dwMaxUser )
 	{
-		START_LOG( cwarn, L"광장 한계인원을 넘었는데 더 생성할려고 하네.?ㅁ?" )
+		START_LOG( cwarn, L"Attempted to create more square users than the capacity allows." )
 			<< BUILD_LOG( kInfo.m_iGSUID )
 			<< BUILD_LOG( kInfo.m_iUnitUID )
 			<< BUILD_LOG( kInfo.m_wstrNickName )
@@ -338,7 +338,7 @@ bool KSquareUserManager::SetSquareUserInfo( IN const KSquareUserInfo& kInfo )
 	KSquareUserPtr spSquareUser = GetUser( kInfo.m_iUnitUID );
 	if( !spSquareUser )
 	{
-		START_LOG( cerr, L"유저가 없음." )
+		START_LOG( cerr, L"User is missing." )
 			<< BUILD_LOG( kInfo.m_iUnitUID )
 			<< END_LOG;
 
@@ -356,7 +356,7 @@ void KSquareUserManager::SetUserEquippedTitle( IN UidType nCID, IN short sEquipp
 
 	if( !spSquareUser )
 	{
-		START_LOG( cerr, L"유저가 없음." )
+		START_LOG( cerr, L"User is missing." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -372,7 +372,7 @@ void KSquareUserManager::SetUserEquipItem( IN UidType nCID, IN std::vector< KInv
 
 	if( !spSquareUser )
 	{
-		START_LOG( cerr, L"유저가 없음." )
+		START_LOG( cerr, L"User is missing." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -388,7 +388,7 @@ bool KSquareUserManager::SetUnitPartyInfo( UidType nCID, bool bIsParty )
 
 	if( !spSquareUser )
 	{
-		START_LOG( cerr, L"유저가 없음." )
+		START_LOG( cerr, L"User is missing." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -409,7 +409,7 @@ bool KSquareUserManager::IsCreatePersonalShop()
 	{
 		if( mit->second == NULL )
 		{
-			START_LOG( cerr, L"SQUARE USER 포인터 이상.!" )
+			START_LOG( cerr, L"Invalid square user pointer!" )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 
@@ -433,7 +433,7 @@ char KSquareUserManager::GetPersonalShopState( UidType nCID )
 
 	if( !spSquareUser )
 	{
-		START_LOG( cerr, L"유저가 없음." )
+		START_LOG( cerr, L"User is missing." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -449,7 +449,7 @@ UidType KSquareUserManager::GetPersonalShopUID( UidType nCID )
 
 	if( !spSquareUser )
 	{
-		START_LOG( cerr, L"유저가 없음." )
+		START_LOG( cerr, L"User is missing." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -465,7 +465,7 @@ bool KSquareUserManager::SetPersonalShopData( IN UidType nCID, IN const KSquareP
 
 	if( !spSquareUser )
 	{
-		START_LOG( cerr, L"유저가 없음." )
+		START_LOG( cerr, L"User is missing." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -482,7 +482,7 @@ bool KSquareUserManager::SetPersonalShopData( IN UidType nCID, IN const KSquareP
 
 void KSquareUserManager::ZU_CheckStart()
 {
-	START_LOG( clog, L"광장 유령유저 체크시작.!" );
+	START_LOG( clog, L"Started square ghost-user check!" );
 
 	//유령유저 체크 시작하기전 시간 초기화
 	//std::map< UidType, KSquareUserPtr >::iterator mit;
@@ -505,7 +505,7 @@ void KSquareUserManager::ZU_CheckStart()
 
 void KSquareUserManager::ZU_CheckEnd()
 {
-	START_LOG( clog, L"광장 유령유저 체크종료.!" );
+	START_LOG( clog, L"Finished square ghost-user check!" );
 
 	//유령유저 체크 중지.
 	m_bIsCheckZU = false;
@@ -534,7 +534,7 @@ bool KSquareUserManager::ZU_Tick( std::vector<UidType>& vecZombieUnit )
 	{
 		if( !mit->second )
 		{
-			START_LOG( cerr, L"광장 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid square-user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 
@@ -569,7 +569,7 @@ void KSquareUserManager::ZU_Refresh( UidType nCID, u_short usEventID )
 		return;
 	}
 
-	START_LOG( clog, L"유령유저 Refresh.!" )
+	START_LOG( clog, L"Refreshing ghost users!" )
 		<< BUILD_LOG( nCID );
 
 	//이벤트가 날아온 유저를 찾는다.
@@ -580,7 +580,7 @@ void KSquareUserManager::ZU_Refresh( UidType nCID, u_short usEventID )
 	{
 		if( !mit->second )
 		{
-			START_LOG( cerr, L"광장유저 포인터 이상.!" )
+			START_LOG( cerr, L"Invalid square-user pointer!" )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 
@@ -592,7 +592,7 @@ void KSquareUserManager::ZU_Refresh( UidType nCID, u_short usEventID )
 	}
 	else
 	{
-		START_LOG( cerr, L"시간을 갱신할 유저가 없음.!" )
+		START_LOG( cerr, L"No user found to update the time!" )
 			<< BUILD_LOG( nCID )
 			<< BUILD_LOG( KEvent::GetIDStr( usEventID ) )
 			<< END_LOG;
@@ -610,7 +610,7 @@ int KSquareUserManager::GetUserED( IN UidType nCID )
 
 	if( !mit->second )
 	{
-		START_LOG( cerr, L"광장유저 포인터 이상.!" )
+		START_LOG( cerr, L"Invalid square-user pointer!" )
 			<< BUILD_LOG( mit->first )
 			<< END_LOG;
 

@@ -107,7 +107,7 @@ bool KInventory::Init( IN const std::map< int, int >& mapSlotSize,
 		{
 			if( CXSLInventory::IsValidBankMemberShip( (CXSLInventory::MEMBERSHIP_PRIVATE_BANK)iSlotSize ) == false )
 			{
-				START_LOG( cerr, L"은행 멤버쉽 정보가 이상합니다. 절대 발생하면 안되는에러!" )
+				START_LOG( cerr, L"Invalid bank membership information; this should never happen!" )
 					<< BUILD_LOG( m_pUser->GetCharUID() )
 					<< BUILD_LOG( iSlotSize )
 					<< END_LOG;
@@ -140,7 +140,7 @@ bool KInventory::Init( IN const std::map< int, int >& mapSlotSize,
 		//{{ 2010. 8. 2	최육사	펫 시스템
 		if( kDB.second.m_cSlotCategory == CXSLInventory::ST_PET )
 		{
-			START_LOG( cerr, L"펫 아이템이 여기에 들어왔다! 일어나서는 안되는 에러!" )
+			START_LOG( cerr, L"Pet item reached this code; this should never happen!" )
 				<< BUILD_LOG( kDB.second.m_iItemUID )
 				<< END_LOG;
 			continue;
@@ -176,7 +176,7 @@ bool KInventory::Init( IN const std::map< int, int >& mapSlotSize,
 			// 인벤 위치 새로 잡기
 			mapNotInsertedItem.insert( std::make_pair( kDB.first, kDB.second.m_kItemInfo ) );
 
-			START_LOG( cout, L"잘못된 카테고리에 들어간 아이템 위치 보정 조치" )
+			START_LOG( cout, L"Correcting item location in an invalid category" )
 				<< BUILD_LOG( m_pUser->GetCharName() )
 				<< BUILD_LOG( m_pUser->GetCharUID() )
 				<< BUILD_LOG( kDB.first )
@@ -228,7 +228,7 @@ bool KInventory::Init( IN const std::map< int, int >& mapSlotSize,
 				// 인벤 위치 새로 잡기
 				mapNotInsertedItem.insert( std::make_pair( kDB.first, kDB.second.m_kItemInfo ) );
 
-				START_LOG( cout, L"슬롯 중복 아이템 위치 보정" )
+				START_LOG( cout, L"Correcting the position of a duplicate-slot item." )
 					<< BUILD_LOG( m_pUser->GetCharName() )
 					<< BUILD_LOG( m_pUser->GetCharUID() )
 					<< BUILD_LOG( kDB.first )
@@ -240,7 +240,7 @@ bool KInventory::Init( IN const std::map< int, int >& mapSlotSize,
         }
         else
         {
-            START_LOG( cerr, L"인벤토리 슬롯 위치 이상." )
+            START_LOG( cerr, L"Invalid inventory slot position." )
 				<< BUILD_LOG( m_pUser->GetCharName() )
 				<< BUILD_LOG( m_pUser->GetCharUID() )
 				<< BUILD_LOG( kDB.second.m_kItemInfo.m_iItemID )
@@ -277,7 +277,7 @@ bool KInventory::Init( IN const std::map< int, int >& mapSlotSize,
 //#endif SERV_EXPAND_SLOT_ID_DATA_SIZE
 			//}}
 			{
-				START_LOG( cerr, L"PC방 아이템을 넣으려는데 슬롯 위치가 이상하다? 있을수없는에러!" )
+				START_LOG( cerr, L"Invalid slot position for a PC Bang item; this should never happen!" )
 					<< BUILD_LOG( m_pUser->GetCharName() )
 					<< BUILD_LOG( m_pUser->GetCharUID() )
 					<< BUILD_LOG( kPcBangItem.m_kItemInfo.m_iItemID )
@@ -304,7 +304,7 @@ bool KInventory::Init( IN const std::map< int, int >& mapSlotSize,
 				KInventoryItemInfo kCheckInfo;
 				LIF( GetInventoryItemInfo( kPcBangItem.m_cSlotCategory, kPcBangItem.m_sSlotID, kCheckInfo ) );
 
-				START_LOG( cerr, L"PC방 아이템을 넣으려는데 슬롯이 비어있지 않다? 있을수 없는에러!" )
+				START_LOG( cerr, L"The slot is not empty when adding a PC Bang item; this should never happen!" )
 					<< BUILD_LOG( m_pUser->GetCharName() )
 					<< BUILD_LOG( m_pUser->GetCharUID() )
 					<< BUILD_LOG( kPcBangItem.m_kItemInfo.m_iItemID )
@@ -330,7 +330,7 @@ bool KInventory::Init( IN const std::map< int, int >& mapSlotSize,
 			m_vecInventorySlot[kItem.GetInventoryCategory()][kItem.GetSlotID()] = kItem.GetItemUID();
 		}
 
-		START_LOG( clog2, L"PC방 전용 아이템 획득!" )
+		START_LOG( clog2, L"Acquired a PC Bang-exclusive item!" )
 			<< BUILD_LOG( vecPcBangPremiumItem.size() );
 	}
 
@@ -379,7 +379,7 @@ void KInventory::GetInventoryInfo( IN const int iCategory, OUT std::map< UidType
 {
 	if( iCategory < GetFirstCategory()  ||  iCategory >= GetSentinelCategory() )
 	{
-		START_LOG( cerr, L"카테고리 이상." )
+		START_LOG( cerr, L"Invalid category." )
 			<< BUILD_LOG( iCategory )
 			<< END_LOG;
 
@@ -413,7 +413,7 @@ void KInventory::GetInventoryInfo( IN const int iCategory, OUT std::vector< KInv
 {
 	if( iCategory < GetFirstCategory()  ||  iCategory >= GetSentinelCategory() )
 	{
-		START_LOG( cerr, L"카테고리 이상." )
+		START_LOG( cerr, L"Invalid category." )
 			<< BUILD_LOG( iCategory )
 			<< END_LOG;
 
@@ -460,7 +460,7 @@ int KInventory::GetBaseSlotSize( IN const int iCategory ) const
 {
     if( iCategory < GetFirstCategory() || iCategory >= GetSentinelCategory() )
     {
-        START_LOG( cerr, L"잘못된 카테고리." )
+        START_LOG( cerr, L"Invalid category." )
             << BUILD_LOG( iCategory )
             << END_LOG;
 
@@ -507,7 +507,7 @@ int KInventory::GetMaxSlotSize( IN const int iCategory ) const
 {
     if( iCategory < GetFirstCategory() || iCategory >= GetSentinelCategory() )
     {
-        START_LOG( cerr, L"잘못된 카테고리." )
+        START_LOG( cerr, L"Invalid category." )
             << BUILD_LOG( iCategory )
             << END_LOG;
 
@@ -558,7 +558,7 @@ int KInventory::GetSlotSize( IN const int iCategory ) const
 {
     if( iCategory < GetFirstCategory() || iCategory >= GetSentinelCategory() )
     {
-        START_LOG( cerr, L"잘못된 카테고리." )
+        START_LOG( cerr, L"Invalid category." )
             << BUILD_LOG( iCategory )
             << END_LOG;
 
@@ -613,7 +613,7 @@ bool KInventory::IsExistInBank( IN const UidType iItemUID ) const
 	int iSlotID = 0;
     if( GetCategorySlot( iItemUID, iCategory, iSlotID ) == false )
 	{
-		START_LOG( cerr, L"아이템이 존재하지 않습니다." )
+		START_LOG( cerr, L"The item does not exist." )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -661,7 +661,7 @@ bool KInventory::IsEnoughItemExist( IN const std::map< int, int >& mapRequiredIt
 		const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( it->first );
 		if( pItemTemplet == NULL )
 		{
-			START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )
+			START_LOG( cerr, L"Failed to retrieve the item template." )
 				<< BUILD_LOG( it->first )
 				<< END_LOG;
 			return false;
@@ -712,7 +712,7 @@ bool KInventory::IsEnoughItemExist( IN const std::map< int, int >& mapRequiredIt
 					}
 					break;
 				default:
-					START_LOG( cerr, L"아이템 사용 타입이 이상함." )
+					START_LOG( cerr, L"Invalid item usage type." )
 						<< BUILD_LOG( it->first )
 						<< BUILD_LOG( iUsageType )
 						<< END_LOG;
@@ -766,7 +766,7 @@ bool KInventory::IsSuitableSlot( int iItemID, int iCategory, int iSlotID )
     const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iItemID );
     if( !pItemTemplet )
     {
-        START_LOG( cerr, L"아이템 템플릿을 찾을 수 없음." )
+        START_LOG( cerr, L"Could not find the item template." )
             << BUILD_LOG( iItemID )
             << END_LOG;
 
@@ -1072,7 +1072,7 @@ bool KInventory::IsSuitableSlot( int iItemID, int iCategory, int iSlotID )
 				return false;
 			}
         default:
-            START_LOG( cerr, L"이상한 슬롯." )
+            START_LOG( cerr, L"Invalid slot." )
                 << BUILD_LOG( iCategory )
                 << BUILD_LOG( iSlotID )
                 << END_LOG;
@@ -1098,7 +1098,7 @@ bool KInventory::IsSuitableSlot( int iItemID, int iCategory, int iSlotID )
 		//}}
 
     default:
-        START_LOG( cerr, L"이상한 슬롯 카테고리." )
+        START_LOG( cerr, L"Invalid slot category." )
             << BUILD_LOG( iCategory )
             << BUILD_LOG( iSlotID )
             << END_LOG;
@@ -1111,7 +1111,7 @@ bool KInventory::IsAbleToEquip( IN int iItemID )
     const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iItemID );
     if( pItemTemplet == NULL )
     {
-        START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )
+        START_LOG( cerr, L"Failed to retrieve the item template." )
             << BUILD_LOG( iItemID )
             << END_LOG;
 
@@ -1131,7 +1131,7 @@ bool KInventory::IsAbleToEquip( IN int iItemID )
 	//{{ 2009. 7. 28  최육사	장착불가 장비아이템
 	if( pItemTemplet->m_bNoEquip == true )
 	{
-		START_LOG( cerr, L"클라이언트에서 장착 못한다고 체크 했을텐데..?" )
+		START_LOG( cerr, L"The client should have checked that this cannot be equipped?" )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 
@@ -1162,7 +1162,7 @@ bool KInventory::IsEnoughSpaceExist( IN const std::map< int, int >& mapItem ) //
         iCategory = GetSuitableCategory( mit->first );
         if( iCategory < CXSLInventory::ST_EQUIP  ||  iCategory > CXSLInventory::ST_AVARTA )
         {
-            START_LOG( cerr, L"카테고리 설정이 이상합니다." )
+            START_LOG( cerr, L"Invalid category setting." )
                 << BUILD_LOG( iCategory )
                 << BUILD_LOG( mit->first )
                 << END_LOG;
@@ -1196,7 +1196,7 @@ bool KInventory::IsEnoughSpaceExist( IN const std::map< int, int >& mapItem ) //
         const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( mit->first );
         if( !pItemTemplet )
         {
-            START_LOG( cerr, L"아이템 템플릿을 찾을 수 없음." )
+            START_LOG( cerr, L"Could not find the item template." )
                 << BUILD_LOG( mit->first )
                 << END_LOG;
 
@@ -1210,7 +1210,7 @@ bool KInventory::IsEnoughSpaceExist( IN const std::map< int, int >& mapItem ) //
             {
                 if( pItemTemplet->m_Quantity <= 0 )
                 {
-                    START_LOG( cerr, L"수량 제한 값이 이상함." )
+                    START_LOG( cerr, L"Invalid quantity limit." )
                         << BUILD_LOG( pItemTemplet->m_Quantity )
                         << END_LOG;
 
@@ -1256,7 +1256,7 @@ bool KInventory::IsEnoughEmptySlot( IN int iCategory, IN int iEmptySlotNum )
 {
 	if( iCategory < GetFirstCategory()  ||  iCategory >= GetSentinelCategory() )
 	{
-		START_LOG( cerr, L"카테고리 이상." )
+		START_LOG( cerr, L"Invalid category." )
 			<< BUILD_LOG( iCategory )
 			<< END_LOG;
 
@@ -1292,7 +1292,7 @@ bool KInventory::IsPeriodExpired( IN UidType iItemUID )
 	mit = m_mapItem.find( iItemUID );
 	if( mit == m_mapItem.end() )
 	{
-		START_LOG( cerr, L"해당 아이템 UID가 없음." )
+		START_LOG( cerr, L"The specified item UID does not exist." )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -1367,7 +1367,7 @@ bool KInventory::IsDBUpdateItem( IN UidType iItemUID ) const
 	mit = m_mapItem.find( iItemUID );
 	if( mit == m_mapItem.end() )
 	{
-		START_LOG( cerr, L"아이템이 존재하지 않습니다." )
+		START_LOG( cerr, L"The item does not exist." )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -1677,7 +1677,7 @@ bool KInventory::GetInventorySlotInfo( IN const int iCategory, IN const int iSlo
 {
     if( !VerifyCategorySlotID( iCategory, iSlotID ) )
     {
-        START_LOG( cerr, L"인벤토리 슬롯 위치 이상." )
+        START_LOG( cerr, L"Invalid inventory slot position." )
             << BUILD_LOG( iCategory )
             << BUILD_LOG( iSlotID )
             << END_LOG;
@@ -1734,7 +1734,7 @@ void KInventory::GetSpecialItem( OUT std::map< int, KInventoryItemInfo >& mapSpe
 			KInventoryItemInfo kInfo;
 			if( !GetInventoryItemInfo( CXSLInventory::ST_SPECIAL, iSlotID, kInfo ) )
 			{
-				START_LOG( cerr, L"인벤토리 아이템 정보 얻기 실패." )
+				START_LOG( cerr, L"Failed to retrieve inventory item information." )
 					<< BUILD_LOG( iSlotID )
 					<< END_LOG;
 
@@ -1758,7 +1758,7 @@ void KInventory::GetEquippedItem( OUT std::map< int, KInventoryItemInfo >& mapEq
             KInventoryItemInfo kInfo;
             if( !GetInventoryItemInfo( CXSLInventory::ST_E_EQUIP, iSlotID, kInfo ) )
             {
-                START_LOG( cerr, L"인벤토리 아이템 정보 얻기 실패." )
+                START_LOG( cerr, L"Failed to retrieve inventory item information." )
                     << BUILD_LOG( iSlotID )
                     << END_LOG;
 
@@ -1782,7 +1782,7 @@ void KInventory::GetEquippedItem( OUT std::vector< KInventoryItemSimpleInfo >& v
 			KInventoryItemSimpleInfo kInfo;
 			if( !GetInventoryItemSimpleInfo( CXSLInventory::ST_E_EQUIP, iSlotID, kInfo ) )
 			{
-				START_LOG( cerr, L"인벤토리 아이템 정보 얻기 실패." )
+				START_LOG( cerr, L"Failed to retrieve inventory item information." )
 					<< BUILD_LOG( iSlotID )
 					<< END_LOG;
 
@@ -1806,7 +1806,7 @@ void KInventory::GetEquippedItem( IN std::set< CXSLItem::ITEM_TYPE >& setItemTyp
 			KInventoryItemInfo kInfo;
 			if( !GetInventoryItemInfo( CXSLInventory::ST_E_EQUIP, iSlotID, kInfo ) )
 			{
-				START_LOG( cerr, L"인벤토리 아이템 정보 얻기 실패." )
+				START_LOG( cerr, L"Failed to retrieve inventory item information." )
 					<< BUILD_LOG( iSlotID )
 					<< END_LOG;
 
@@ -1816,7 +1816,7 @@ void KInventory::GetEquippedItem( IN std::set< CXSLItem::ITEM_TYPE >& setItemTyp
 			const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( kInfo.m_kItemInfo.m_iItemID );
 			if( pItemTemplet == NULL )
 			{
-				START_LOG( cerr, L"아이템 템플릿 포인트 이상.!" )
+				START_LOG( cerr, L"Invalid item template pointer!" )
 					<< BUILD_LOG( kInfo.m_kItemInfo.m_iItemID )
 					<< END_LOG;
 
@@ -1854,7 +1854,7 @@ void KInventory::GetEquippedStat( IN const bool bIsDungeon, IN const KStat& kBas
 
 	if( m_pUser == NULL )
 	{
-		START_LOG( cerr, L"유저 포인터 이상." )
+		START_LOG( cerr, L"Invalid user pointer." )
 			<< END_LOG;
 		return;
 	}
@@ -1870,7 +1870,7 @@ void KInventory::GetEquippedStat( IN const bool bIsDungeon, IN const KStat& kBas
 		KInventoryItemInfo kInfo;
 		if( GetInventoryItemInfo( CXSLInventory::ST_E_EQUIP, i, kInfo ) == false )
 		{
-			START_LOG( cerr, L"인벤토리 아이템 정보 얻기 실패." )
+			START_LOG( cerr, L"Failed to retrieve inventory item information." )
 				<< BUILD_LOG( i )
 				<< END_LOG;
 
@@ -1893,7 +1893,7 @@ void KInventory::GetEquippedStat( IN const bool bIsDungeon, IN const KStat& kBas
 		const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( kInfo.m_kItemInfo.m_iItemID );
 		if( pItemTemplet == NULL )
 		{
-			START_LOG( cerr, L"아이템 템플릿 포인트 이상.!" )
+			START_LOG( cerr, L"Invalid item template pointer!" )
 				<< BUILD_LOG( kInfo.m_kItemInfo.m_iItemID )
 				<< END_LOG;
 
@@ -1903,7 +1903,7 @@ void KInventory::GetEquippedStat( IN const bool bIsDungeon, IN const KStat& kBas
 		// 3. 유닛 레벨과 장착조건 레벨이 틀리면 장착되지 않는다. - 아이템의 레벨조정으로 인한 옵션기능.
 		if( m_pUser->GetLevel() < pItemTemplet->m_UseLevel )
 		{
-			START_LOG( cwarn, L"아이템 장착조건이 되지 않는데 아이템을 착용하고 있음." )
+			START_LOG( cwarn, L"The item is equipped even though its requirements are not met." )
 				<< BUILD_LOG( pItemTemplet->m_ItemID )
 				<< BUILD_LOG( pItemTemplet->m_Name )
 				<< BUILD_LOG( m_pUser->GetLevel() )
@@ -2052,7 +2052,7 @@ void KInventory::GetEquippedStat( IN const bool bIsDungeon, IN const KStat& kBas
 		const CXSLSocketItem::SetItemData* pSetItemData = SiCXSLSocketItem()->GetSetItem( iSetID );
 		if( pSetItemData == NULL )
 		{
-			START_LOG( cerr, L"존재하지 않는 SetID를 가진 아이템을 장착중입니다." )
+			START_LOG( cerr, L"An item with a nonexistent SetID is equipped." )
 				<< BUILD_LOG( iSetID )
 				<< END_LOG;
 			continue;
@@ -2383,7 +2383,7 @@ void KInventory::GetEquippedStatOnlyGMWeapon( KStat& kStat )
 
 	if( !m_pUser )
 	{
-		START_LOG( cerr, L"유저 포인터 이상." )
+		START_LOG( cerr, L"Invalid user pointer." )
 			<< END_LOG;
 
 		return;
@@ -2391,7 +2391,7 @@ void KInventory::GetEquippedStatOnlyGMWeapon( KStat& kStat )
 
 	if( m_pUser->GetAuthLevel() < SEnum::UAL_GM )
 	{
-		START_LOG( cerr, L"GM도 아닌데 이 함수 호출했네? 절대 발생해서는 안되는 에러!" )
+		START_LOG( cerr, L"A non-GM called this function; this should never happen!" )
 			<< BUILD_LOGc( m_pUser->GetAuthLevel() )
 			<< BUILD_LOG( m_pUser->GetCharUID() )
 			<< BUILD_LOG( m_pUser->GetCharName() )
@@ -2407,7 +2407,7 @@ void KInventory::GetEquippedStatOnlyGMWeapon( KStat& kStat )
 			KInventoryItemInfo kInfo;
 			if( !GetInventoryItemInfo( CXSLInventory::ST_E_EQUIP, i, kInfo ) )
 			{
-				START_LOG( cerr, L"인벤토리 아이템 정보 얻기 실패." )
+				START_LOG( cerr, L"Failed to retrieve inventory item information." )
 					<< BUILD_LOG( i )
 					<< END_LOG;
 
@@ -2421,7 +2421,7 @@ void KInventory::GetEquippedStatOnlyGMWeapon( KStat& kStat )
 			const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( kInfo.m_kItemInfo.m_iItemID );
 			if( pItemTemplet == NULL )
 			{
-				START_LOG( cerr, L"아이템 템플릿 포인트 이상.!" )
+				START_LOG( cerr, L"Invalid item template pointer!" )
 					<< BUILD_LOG( kInfo.m_kItemInfo.m_iItemID )
 					<< END_LOG;
 
@@ -2451,7 +2451,7 @@ void KInventory::GetEquippedItemBonusRate( IN const bool bIsDungeonRoom, OUT flo
 			KInventoryItemInfo kInfo;
 			if( !GetInventoryItemInfo( CXSLInventory::ST_E_EQUIP, i, kInfo ) )
 			{
-				START_LOG( cerr, L"인벤토리 아이템 정보 얻기 실패." )
+				START_LOG( cerr, L"Failed to retrieve inventory item information." )
 					<< BUILD_LOG( i )
 					<< END_LOG;
 
@@ -2474,7 +2474,7 @@ void KInventory::GetEquippedItemBonusRate( IN const bool bIsDungeonRoom, OUT flo
 			const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( kInfo.m_kItemInfo.m_iItemID );
 			if( pItemTemplet == NULL )
 			{
-				START_LOG( cerr, L"아이템 템플릿 포인트 이상.!" )
+				START_LOG( cerr, L"Invalid item template pointer!" )
 					<< BUILD_LOG( kInfo.m_kItemInfo.m_iItemID )
 					<< END_LOG;
 
@@ -2484,7 +2484,7 @@ void KInventory::GetEquippedItemBonusRate( IN const bool bIsDungeonRoom, OUT flo
 			// 3. 유닛 레벨과 장착조건 레벨이 틀리면 소켓옵션이 적용되지 않는다. - 아이템의 레벨조정으로 인한 옵션기능.
 			if( m_pUser->GetLevel() < pItemTemplet->m_UseLevel )
 			{
-				START_LOG( cwarn, L"아이템 장착조건이 되지 않는데 아이템을 착용하고 있음." )
+				START_LOG( cwarn, L"The item is equipped even though its requirements are not met." )
 					<< BUILD_LOG( pItemTemplet->m_ItemID )
 					<< BUILD_LOG( pItemTemplet->m_Name )
 					<< BUILD_LOG( m_pUser->GetLevel() )
@@ -2504,7 +2504,7 @@ void KInventory::GetEquippedItemBonusRate( IN const bool bIsDungeonRoom, OUT flo
 				const CXSLSocketItem::SocketData* pSocketData = SiCXSLSocketItem()->GetSocketData( *vit );
 				if( pSocketData == NULL )
 				{
-					START_LOG( cerr, L"소켓 옵션 정보를 찾을수 없습니다." )
+					START_LOG( cerr, L"Could not find the socket option information." )
 						<< BUILD_LOG( *vit )
 						<< END_LOG;
 					continue;
@@ -2537,7 +2537,7 @@ void KInventory::GetEquippedItemBonusRate( IN const bool bIsDungeonRoom, OUT flo
 				const CXSLSocketItem::SocketData* pSocketData = SiCXSLSocketItem()->GetSocketData( *vit );
 				if( pSocketData == NULL )
 				{
-					START_LOG( cerr, L"소켓 옵션 정보를 찾을수 없습니다." )
+					START_LOG( cerr, L"Could not find the socket option information." )
 						<< BUILD_LOG( *vit )
 						<< END_LOG;
 					continue;
@@ -2573,7 +2573,7 @@ void KInventory::GetEquippedItemBonusRate( IN const bool bIsDungeonRoom, OUT flo
 		const CXSLSocketItem::SetItemData* pSetItemData = SiCXSLSocketItem()->GetSetItem( iSetID );
 		if( pSetItemData == NULL )
 		{
-			START_LOG( cerr, L"존재하지 않는 SetID를 가진 아이템을 장착중입니다." )
+			START_LOG( cerr, L"An item with a nonexistent SetID is equipped." )
 				<< BUILD_LOG( iSetID )
 				<< END_LOG;
 			continue;
@@ -2606,7 +2606,7 @@ void KInventory::GetEquippedItemBonusRate( IN const bool bIsDungeonRoom, OUT flo
 			const CXSLSocketItem::SocketData* pSocketData = SiCXSLSocketItem()->GetSocketData( sSocketOptionID );
 			if( pSocketData == NULL )
 			{
-				START_LOG( cerr, L"존재하지않는 소켓옵션이 세팅되어 있습니다." )
+				START_LOG( cerr, L"A nonexistent socket option is set." )
 					<< BUILD_LOG( sSocketOptionID )
 					<< END_LOG;
 				continue;
@@ -2638,7 +2638,7 @@ bool KInventory::GetItemLevel( IN const UidType iItemUID, OUT int& iItemLevel )
     KInventoryItemInfo kInfo;
 	if( GetInventoryItemInfo( iItemUID, kInfo ) == false )
 	{
-		START_LOG( cerr, L"아이템 정보가 존재하지 않습니다!" )
+		START_LOG( cerr, L"The item information does not exist!" )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 		return false;
@@ -2648,7 +2648,7 @@ bool KInventory::GetItemLevel( IN const UidType iItemUID, OUT int& iItemLevel )
 	if( SiCXSLItemManager()->GetItemLevel( m_pUser->GetUnitType(), m_pUser->GetUnitClass(), kInfo.m_kItemInfo, iItemLevel ) == false )
 	//}}
 	{
-		START_LOG( cerr, L"아이템 레벨 정보 얻기를 실패하였습니다!" )
+		START_LOG( cerr, L"Failed to retrieve item level information!" )
 			<< BUILD_LOG( iItemUID )
 			<< BUILD_LOG( kInfo.m_kItemInfo.m_iItemID )
 			<< END_LOG;
@@ -2667,7 +2667,7 @@ void KInventory::IncreaseQuantity( UidType iItemUID, int iQuantity, int& iIncrea
     mit = m_mapItem.find( iItemUID );
     if( mit == m_mapItem.end() )
     {
-        START_LOG( cerr, L"해당 아이템 UID가 없음." )
+        START_LOG( cerr, L"The specified item UID does not exist." )
             << BUILD_LOG( iItemUID )
             << BUILD_LOG( iQuantity )
             << END_LOG;
@@ -2693,7 +2693,7 @@ void KInventory::DecreaseQuantity( IN UidType iItemUID, IN int iQuantity, OUT in
     mit = m_mapItem.find( iItemUID );
     if( mit == m_mapItem.end() )
     {
-        START_LOG( cerr, L"해당 아이템 UID가 없음." )
+        START_LOG( cerr, L"The specified item UID does not exist." )
             << BUILD_LOG( iItemUID )
             << BUILD_LOG( iQuantity )
             << END_LOG;
@@ -2726,7 +2726,7 @@ void KInventory::DecreaseQuantityOrDelete( IN UidType iItemUID, IN int iQuantity
 	mit = m_mapItem.find( iItemUID );
 	if( mit == m_mapItem.end() )
 	{
-		START_LOG( cerr, L"해당 아이템 UID가 없음." )
+		START_LOG( cerr, L"The specified item UID does not exist." )
 			<< BUILD_LOG( iItemUID )
 			<< BUILD_LOG( iQuantity )
 			<< END_LOG;
@@ -2763,7 +2763,7 @@ void KInventory::FixUpInventoryItem( IN OUT std::vector< KInventoryItemInfo >& v
 		const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( kInsertItem.m_kItemInfo.m_iItemID );
 		if( pItemTemplet == NULL )
 		{
-			START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )
+			START_LOG( cerr, L"Failed to retrieve the item template." )
 				<< BUILD_LOG( kInsertItem.m_iItemUID )
 				<< BUILD_LOG( kInsertItem.m_kItemInfo.m_iItemID )
 				<< END_LOG;
@@ -2789,7 +2789,7 @@ void KInventory::FixUpInventoryItem( IN OUT std::vector< KInventoryItemInfo >& v
 		const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( kItem.m_kItemInfo.m_iItemID );
 		if( pItemTemplet == NULL )
 		{
-			START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )
+			START_LOG( cerr, L"Failed to retrieve the item template." )
 				<< BUILD_LOG( kItem.m_kItemInfo.m_iItemID )
 				<< END_LOG;
 
@@ -2799,7 +2799,7 @@ void KInventory::FixUpInventoryItem( IN OUT std::vector< KInventoryItemInfo >& v
 		// 수량이 있는 것만
 		if( kItem.m_kItemInfo.m_iQuantity <= 0 )
 		{
-			START_LOG( clog, L"벌써 지웠는데 왜 또?" )
+			START_LOG( clog, L"Already deleted; why again?" )
 				<< BUILD_LOG( kItem.m_iItemUID );
 			continue;
 		}
@@ -2880,7 +2880,7 @@ void KInventory::FixUpInventoryItem( IN OUT std::vector< KInventoryItemInfo >& v
 		const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( kInsertItem.m_kItemInfo.m_iItemID );
 		if( pItemTemplet == NULL )
 		{
-			START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )
+			START_LOG( cerr, L"Failed to retrieve the item template." )
 				<< BUILD_LOG( kInsertItem.m_kItemInfo.m_iItemID )
 				<< END_LOG;
 
@@ -2897,7 +2897,7 @@ void KInventory::FixUpInventoryItem( IN OUT std::vector< KInventoryItemInfo >& v
 			const CXSLItem::ItemTemplet* pItemTemplet_Copy = SiCXSLItemManager()->GetItemTemplet( kInsertItem_Copy.m_kItemInfo.m_iItemID );
 			if( pItemTemplet_Copy == NULL )
 			{
-				START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )
+				START_LOG( cerr, L"Failed to retrieve the item template." )
 					<< BUILD_LOG( kInsertItem_Copy.m_kItemInfo.m_iItemID )
 					<< END_LOG;
 
@@ -2967,7 +2967,7 @@ void KInventory::FixUpInventoryItem( IN OUT std::vector< KInventoryItemInfo >& v
 			}
 			else
 			{
-				START_LOG( cerr, L"클라 갱신 아이템 벌써 들어가 있으면 안되는 건데...." )
+				START_LOG( cerr, L"Client update item should not already be present." )
 					<< BUILD_LOG( kInsertItem.m_iItemUID )
 					<< BUILD_LOG( kInsertItem.m_kItemInfo.m_iQuantity )
 					<< END_LOG;
@@ -2975,7 +2975,7 @@ void KInventory::FixUpInventoryItem( IN OUT std::vector< KInventoryItemInfo >& v
 		}
 		else
 		{
-			START_LOG( cerr, L"들어오는 아이템에 없다는 건 말이 안된다." )
+			START_LOG( cerr, L"The item should exist in the incoming items." )
 				<< BUILD_LOG( kInsertItem.m_iItemUID )
 				<< BUILD_LOG( kInsertItem.m_kItemInfo.m_iQuantity )
 				<< END_LOG;
@@ -3017,7 +3017,7 @@ void KInventory::IncreaseEndurance( UidType iItemUID, int iEndurance, int& iIncr
     mit = m_mapItem.find( iItemUID );
     if( mit == m_mapItem.end() )
     {
-        START_LOG( cerr, L"해당 아이템 UID가 없음." )
+        START_LOG( cerr, L"The specified item UID does not exist." )
             << BUILD_LOG( iItemUID )
             << BUILD_LOG( iEndurance )
             << END_LOG;
@@ -3040,7 +3040,7 @@ void KInventory::DecreaseEndurance( UidType iItemUID, int iEndurance, int &iDecr
     mit = m_mapItem.find( iItemUID );
     if( mit == m_mapItem.end() )
     {
-        START_LOG( cerr, L"해당 아이템 UID가 없음." )
+        START_LOG( cerr, L"The specified item UID does not exist." )
             << BUILD_LOG( iItemUID )
             << BUILD_LOG( iEndurance )
             << END_LOG;
@@ -3064,7 +3064,7 @@ void KInventory::IncreaseEnchantLevel( UidType iItemUID, int iEnchantLevel, int&
 	mit = m_mapItem.find( iItemUID );
 	if( mit == m_mapItem.end() )
 	{
-		START_LOG( cerr, L"해당 아이템 UID가 없음." )
+		START_LOG( cerr, L"The specified item UID does not exist." )
 			<< BUILD_LOG( iItemUID )
 			<< BUILD_LOG( iEnchantLevel )
 			<< END_LOG;
@@ -3088,7 +3088,7 @@ void KInventory::DecreaseEnchantLevel( UidType iItemUID, int iEnchantLevel, int 
 	mit = m_mapItem.find( iItemUID );
 	if( mit == m_mapItem.end() )
 	{
-		START_LOG( cerr, L"해당 아이템 UID가 없음." )
+		START_LOG( cerr, L"The specified item UID does not exist." )
 			<< BUILD_LOG( iItemUID )
 			<< BUILD_LOG( iEnchantLevel )
 			<< END_LOG;
@@ -3112,7 +3112,7 @@ bool KInventory::SetItemSocketOption( UidType iItemUID, const int iSocketIndex, 
 	mit = m_mapItem.find( iItemUID );
 	if( mit == m_mapItem.end() )
 	{
-		START_LOG( cerr, L"해당 아이템 UID가 없음." )
+		START_LOG( cerr, L"The specified item UID does not exist." )
 			<< BUILD_LOG( iItemUID )
 			<< BUILD_LOG( iSocketIndex )
 			<< BUILD_LOG( iSocketOption )
@@ -3137,7 +3137,7 @@ bool KInventory::SetAttribEnchant( IN UidType iItemUID, IN char cAttribEnchantSl
 	mit = m_mapItem.find( iItemUID );
 	if( mit == m_mapItem.end() )
 	{
-		START_LOG( cerr, L"해당 아이템 UID가 없음." )
+		START_LOG( cerr, L"The specified item UID does not exist." )
 			<< BUILD_LOG( iItemUID )
 			<< BUILD_LOGc( cAttribEnchantSlotID )
 			<< BUILD_LOGc( cAttribEnchantType )
@@ -3162,7 +3162,7 @@ bool KInventory::Seal( IN UidType iItemUID )
 	mit = m_mapItem.find( iItemUID );
 	if( mit == m_mapItem.end() )
 	{
-		START_LOG( cerr, L"해당 아이템 UID가 없음." )
+		START_LOG( cerr, L"The specified item UID does not exist." )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -3179,7 +3179,7 @@ bool KInventory::Unseal( IN UidType iItemUID )
 	mit = m_mapItem.find( iItemUID );
 	if( mit == m_mapItem.end() )
 	{
-		START_LOG( cerr, L"해당 아이템 UID가 없음." )
+		START_LOG( cerr, L"The specified item UID does not exist." )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -3198,7 +3198,7 @@ bool KInventory::InsertItem( IN UidType iItemUID, IN const KItemInfo& kItemInfo,
     mit = m_mapItem.find( iItemUID );
     if( mit != m_mapItem.end() )
     {
-        START_LOG( cerr, L"이미 존재하는 아이템 UID" )
+        START_LOG( cerr, L"The item UID already exists." )
             << BUILD_LOG( iItemUID )
             << END_LOG;
 
@@ -3208,7 +3208,7 @@ bool KInventory::InsertItem( IN UidType iItemUID, IN const KItemInfo& kItemInfo,
     const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( kItemInfo.m_iItemID );
     if( pItemTemplet == NULL )
     {
-        START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )
+        START_LOG( cerr, L"Failed to retrieve the item template." )
             << BUILD_LOG( kItemInfo.m_iItemID )
             << END_LOG;
 
@@ -3334,7 +3334,7 @@ bool KInventory::InsertShareItem( IN const UidType iItemUID, IN const KItemInfo&
 
 	if( cCategory != CXSLInventory::ST_SHARE_BANK )
 	{
-		START_LOG( cerr, L"은행 공유 : 올바른 카테고리가 아님" )
+		START_LOG( cerr, L"Bank sharing: invalid category." )
 			<< BUILD_LOG( iItemUID )
 			<< BUILD_LOGc( cCategory )
 			<< END_LOG;
@@ -3345,7 +3345,7 @@ bool KInventory::InsertShareItem( IN const UidType iItemUID, IN const KItemInfo&
 	int iSlotSize = static_cast<int>(m_vecInventorySlot[static_cast<int>( cCategory )].size());
 	if( sSlotID >= iSlotSize || sSlotID < 0 )
 	{
-		START_LOG( cerr, L"은행 공유 : 슬롯 ID가 들어옴" )
+		START_LOG( cerr, L"Bank sharing: received slot ID." )
 			<< BUILD_LOGc( cCategory )
 			<< BUILD_LOG( sSlotID )
 			<< BUILD_LOG( iSlotSize )
@@ -3358,7 +3358,7 @@ bool KInventory::InsertShareItem( IN const UidType iItemUID, IN const KItemInfo&
 	mit = m_mapItem.find( iItemUID );
 	if( mit != m_mapItem.end() )
 	{
-		START_LOG( cerr, L"이미 존재하는 아이템 UID" )
+		START_LOG( cerr, L"The item UID already exists." )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -3368,7 +3368,7 @@ bool KInventory::InsertShareItem( IN const UidType iItemUID, IN const KItemInfo&
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( kItemInfo.m_iItemID );
 	if( pItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )
+		START_LOG( cerr, L"Failed to retrieve the item template." )
 			<< BUILD_LOG( kItemInfo.m_iItemID )
 			<< END_LOG;
 
@@ -3442,7 +3442,7 @@ bool KInventory::UpdateShareItemPosition( IN const KTradeShareItemResult& kShare
 	mit = m_mapItem.find( kShareResult.m_iBeforeItemUID );
 	if( mit == m_mapItem.end() )
 	{
-		START_LOG( cerr, L"은행 공유 : DB결과 업데이트 중 아이템 정보가 없음" )
+		START_LOG( cerr, L"Bank sharing: item information is missing while updating the database result." )
 			<< BUILD_LOG( kShareResult.m_iBeforeItemUID )
 			<< BUILD_LOG( kShareResult.m_iNewItemUID )
 			<< END_LOG;
@@ -3476,7 +3476,7 @@ bool KInventory::UpdateShareItemPosition( IN const KTradeShareItemResult& kShare
 	m_mapItem.insert( std::make_pair( kShareResult.m_iNewItemUID, kInventoryItem ) );
 	m_vecInventorySlot[static_cast<int>( kInfo.m_cSlotCategory )][kInfo.m_sSlotID] = kInfo.m_iItemUID;
 
-	START_LOG( clog, "은행 공유 : 공유은행에 아이템 추가완료" )
+	START_LOG( clog, "Shared bank: item added successfully" )
 		<< BUILD_LOG( kShareResult.m_iBeforeItemUID )
 		<< BUILD_LOG( kInfo.m_iItemUID )
 		<< BUILD_LOGc( kInfo.m_cSlotCategory )
@@ -3695,7 +3695,7 @@ bool KInventory::GetShareItemNeedDBUpdate( IN const std::set< UidType >& setMove
 		mit = m_mapItem.find( iItemUID );
 		if( mit == m_mapItem.end() )
 		{
-			START_LOG( cerr, L"은행 공유 : 아이템 리스트에 없는 아이템임" )
+			START_LOG( cerr, L"Bank sharing: item is not in the item list." )
 				<< BUILD_LOG( iItemUID )
 				<< END_LOG;
 			return false;
@@ -3709,7 +3709,7 @@ bool KInventory::GetShareItemNeedDBUpdate( IN const std::set< UidType >& setMove
 			//	1. 슬롯 위치 변경 체크
 			if( mit->second.GetInventoryCategory() != CXSLInventory::ST_SHARE_BANK )
 			{
-				START_LOG( cerr, L"은행 공유 : 카테고리가 잘못됨" )
+				START_LOG( cerr, L"Shared bank: invalid category" )
 					<< BUILD_LOG( iItemUID )
 					<< BUILD_LOG( mit->second.GetInventoryCategory() )
 					<< END_LOG;
@@ -3725,7 +3725,7 @@ bool KInventory::GetShareItemNeedDBUpdate( IN const std::set< UidType >& setMove
 				KItemPosition kItemPos( CXSLInventory::ST_BANK, mit->second.GetSlotID() );
 				kReq.m_mapUpdatePosition.insert( std::make_pair( iItemUID, kItemPos ) );
 
-				START_LOG( clog2, L"테스트로그: 위치 바뀐녀석있음" )
+				START_LOG( clog2, L"Test log: item location changed" )
 					<< BUILD_LOG( iItemUID )
 					<< END_LOG;
 
@@ -3752,7 +3752,7 @@ bool KInventory::GetShareItemNeedDBUpdate( IN const std::set< UidType >& setMove
 
 			kReq.m_mapInItem.insert( std::make_pair( iItemUID, kShareInfo ) );
 
-			START_LOG( clog2, L"테스트로그: 아이템 들어온 녀석 있음" )
+			START_LOG( clog2, L"Test log: item received" )
 				<< BUILD_LOG( iItemUID )
 				<< END_LOG;
 
@@ -3825,7 +3825,7 @@ bool KInventory::GetShareItemNeedDBUpdate( IN const std::set< UidType >& setMove
 		mit = m_mapItem.find( iItemUID );
 		if( mit == m_mapItem.end() )
 		{
-			START_LOG( cerr, L"은행 공유 : 아이템 리스트에 없는 아이템임" )
+			START_LOG( cerr, L"Bank sharing: item is not in the item list." )
 				<< BUILD_LOG( iItemUID )
 				<< END_LOG;
 
@@ -3951,7 +3951,7 @@ bool KInventory::DeleteItem( IN UidType iItemUID, OUT KInventoryItemInfo& kInven
     mit = m_mapItem.find( iItemUID );
     if( mit == m_mapItem.end() )
     {
-        START_LOG( cerr, L"아이템 검색 실패. 이미 지워졌을까?" )
+        START_LOG( cerr, L"Failed to find item; was it already deleted?" )
             << BUILD_LOG( iItemUID )
             << END_LOG;
 
@@ -3961,7 +3961,7 @@ bool KInventory::DeleteItem( IN UidType iItemUID, OUT KInventoryItemInfo& kInven
     int iCategory, iSlotID;
     if( !GetCategorySlot( iItemUID, iCategory, iSlotID ) )
     {
-        START_LOG( cerr, L"카테고리, 슬롯 ID 얻기 실패." )
+        START_LOG( cerr, L"Failed to retrieve the category and slot ID." )
             << BUILD_LOG( iItemUID )
             << BUILD_LOG( iCategory )
             << BUILD_LOG( iSlotID )
@@ -3973,7 +3973,7 @@ bool KInventory::DeleteItem( IN UidType iItemUID, OUT KInventoryItemInfo& kInven
 	int iSlotSize = static_cast<int>(m_vecInventorySlot[iCategory].size());
 	if( iSlotID >= iSlotSize || iSlotID < 0 )
 	{
-		START_LOG( cerr, L"은행 공유 : 슬롯 ID가 들어옴" )
+		START_LOG( cerr, L"Bank sharing: received slot ID." )
 			<< BUILD_LOGc( iCategory )
 			<< BUILD_LOG( iSlotID )
 			<< BUILD_LOG( iSlotSize )
@@ -4007,7 +4007,7 @@ bool KInventory::DeleteItem( IN UidType iItemUID, OUT KInventoryItemInfo& kInven
 	//{{ 2010. 01. 04  최육사	PC방 프리미엄 아이템
 	if( mit->second.IsDBUpdate() == false )
 	{
-		START_LOG( clog, L"DB에 업데이트하지 않는 아이템은 삭제 예약 리스트에 넣지 않는다." )
+		START_LOG( clog, L"Do not add items that are not updated in the database to the deletion queue." )
 			<< BUILD_LOG( iItemUID )
 			<< BUILD_LOG( mit->second.GetItemID() )
 			<< BUILD_LOG( iCategory )
@@ -4067,7 +4067,7 @@ bool KInventory::DeleteItemOnlyInventory( IN const std::map< int, int >& mapToDe
         const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( mit->first );
         if( pItemTemplet == NULL )
         {
-            START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )
+            START_LOG( cerr, L"Failed to retrieve the item template." )
                 << BUILD_LOG( mit->first )
                 << END_LOG;
 
@@ -4158,7 +4158,7 @@ bool KInventory::DiscardItem( IN UidType iItemUID, IN int iQuantity, OUT KInvent
 	KInventoryItemInfo kInfo;
 	if( GetInventoryItemInfo( iItemUID, kInfo ) == false )
 	{
-		START_LOG( cerr, L"아이템을 지울려고 하는데 아이템이 없다?" )
+		START_LOG( cerr, L"Attempted to delete an item, but it does not exist?" )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -4169,7 +4169,7 @@ bool KInventory::DiscardItem( IN UidType iItemUID, IN int iQuantity, OUT KInvent
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( kInfo.m_kItemInfo.m_iItemID );
 	if( pItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )
+		START_LOG( cerr, L"Failed to retrieve the item template." )
 			<< BUILD_LOG( kInfo.m_kItemInfo.m_iItemID )
 			<< END_LOG;
 
@@ -4181,7 +4181,7 @@ bool KInventory::DiscardItem( IN UidType iItemUID, IN int iQuantity, OUT KInvent
 
 	if( IsDBUpdateItem( iItemUID ) == false )
 	{
-		START_LOG( cerr, L"PC방 프리미엄 아이템을 버리려고 했습니다." )
+		START_LOG( cerr, L"Attempted to discard a PC Bang premium item." )
 			<< BUILD_LOG( kInfo.m_kItemInfo.m_iItemID )
 			<< END_LOG;
 
@@ -4199,7 +4199,7 @@ bool KInventory::DiscardItem( IN UidType iItemUID, IN int iQuantity, OUT KInvent
 			//{{ 2010. 11. 29	최육사	기간제템 삭제
 			if( pItemTemplet->m_ItemType == CXSLItem::IT_QUEST )
 			{
-				START_LOG( clog, L"되팔기 불능 아이템은 버릴수 없다! 클라이언트에서 체크했을텐데.." )
+				START_LOG( clog, L"Cannot discard an item that cannot be resold; the client should have checked this." )
 					<< BUILD_LOG( kInfo.m_kItemInfo.m_iItemID )
 					<< END_LOG;
 
@@ -4228,7 +4228,7 @@ bool KInventory::DiscardItem( IN UidType iItemUID, IN int iQuantity, OUT KInvent
 		}
 		else if( iQuantity < 0 )
 		{
-			START_LOG( cerr, L"삭제 하려는 아이템 수량값이 이상합니다. 해킹인가..?" )
+			START_LOG( cerr, L"Invalid quantity of items to delete; possible hacking?" )
 				<< BUILD_LOG( iItemUID )
 				<< BUILD_LOG( iQuantity )
 				<< END_LOG;
@@ -4242,7 +4242,7 @@ bool KInventory::DiscardItem( IN UidType iItemUID, IN int iQuantity, OUT KInvent
 
 		if( iQuantity > iTempQuantity )
 		{
-			START_LOG( cerr, L"감소시키려는 수량만큼 실제수량이 존재하지 않는다!" )
+			START_LOG( cerr, L"The actual quantity is less than the amount to decrease!" )
 				<< BUILD_LOG( iItemUID )
 				<< BUILD_LOG( iQuantity )
 				<< BUILD_LOG( iTempQuantity )
@@ -4284,7 +4284,7 @@ bool KInventory::DiscardItem( IN UidType iItemUID, IN int iQuantity, OUT KInvent
 	{
 		if( iQuantity != 1 )
 		{
-			START_LOG( cerr, L"삭제하려는 수량이 맞지 않다!" )
+			START_LOG( cerr, L"Quantity to delete does not match!" )
 				<< BUILD_LOG( iItemUID )
 				<< BUILD_LOG( iQuantity )
 				<< END_LOG;
@@ -4322,7 +4322,7 @@ bool KInventory::UseQuickSlotItem( IN int iSlotID, OUT int& iItemID, OUT KInvent
 		const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iItemID );
 		if( pItemTemplet == NULL )
 		{
-            START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )
+            START_LOG( cerr, L"Failed to retrieve the item template." )
                 << BUILD_LOG( iItemID )
                 << END_LOG;
 
@@ -4355,7 +4355,7 @@ bool KInventory::UseQuickSlotItem( IN int iSlotID, OUT int& iItemID, OUT KInvent
     }
     else
     {
-        START_LOG( cerr, L"아이템이 사용되지 않았다." )
+        START_LOG( cerr, L"The item was not used." )
             << BUILD_LOG( iDecreased )
             << BUILD_LOG( iItemID )
             << END_LOG;
@@ -4378,7 +4378,7 @@ bool KInventory::UseDefenceDungeonQuickSlotItem( IN const int iSlotID, OUT int& 
 		const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iItemID );
 		if( pItemTemplet == NULL )
 		{
-			START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )
+			START_LOG( cerr, L"Failed to retrieve the item template." )
 				<< BUILD_LOG( iItemID )
 				<< END_LOG;
 			return false;
@@ -4409,7 +4409,7 @@ bool KInventory::UseDefenceDungeonQuickSlotItem( IN const int iSlotID, OUT int& 
 	}
 
 
-	START_LOG( cerr, L"아이템이 사용되지 않았다." )
+	START_LOG( cerr, L"The item was not used." )
 		<< BUILD_LOG( iDecreased )
 		<< BUILD_LOG( iItemID )
 		<< END_LOG;
@@ -4425,7 +4425,7 @@ void KInventory::ResetQuickSlotCoolTime()
 		const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( mit->first );
 		if( pItemTemplet == NULL )
 		{
-			START_LOG( cwarn, L"아이템 템플릿을 얻지 못함." )
+			START_LOG( cwarn, L"Failed to retrieve the item template." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -4448,7 +4448,7 @@ bool KInventory::MoveItem( IN UidType iItemUID, IN int iDestCategory, IN int iDe
 	const UidType iSummonedPetUID = m_pUser->GetSummonedPetUID();
 	if( iSummonedPetUID == 0  &&  iDestCategory == CXSLInventory::ST_PET )
 	{
-		START_LOG( cerr, L"소환된 펫도 없는데 펫 인벤토리로 아이템을 이동 시키려고 한다!" )
+		START_LOG( cerr, L"Attempted to move an item into pet inventory when no pet is summoned!" )
 			<< BUILD_LOG( m_pUser->GetCharUID() )
 			<< END_LOG;
 		return false;
@@ -4460,7 +4460,7 @@ bool KInventory::MoveItem( IN UidType iItemUID, IN int iDestCategory, IN int iDe
     mit = m_mapItem.find( iItemUID );
     if( mit == m_mapItem.end() )
     {
-        START_LOG( cerr, L"해당 아이템 UID가 없음." )
+        START_LOG( cerr, L"The specified item UID does not exist." )
             << BUILD_LOG( iItemUID )
 			<< BUILD_LOG( iDestCategory )
 			<< BUILD_LOG( iDestSlotID )
@@ -4473,7 +4473,7 @@ bool KInventory::MoveItem( IN UidType iItemUID, IN int iDestCategory, IN int iDe
     int iSrcCategory, iSrcSlotID;
     if( GetCategorySlot( iItemUID, iSrcCategory, iSrcSlotID ) == false )
     {
-        START_LOG( cerr, L"카테고리, 슬롯 ID 얻기 실패." )
+        START_LOG( cerr, L"Failed to retrieve the category and slot ID." )
             << BUILD_LOG( iItemUID )
             << BUILD_LOG( iSrcCategory )
             << BUILD_LOG( iSrcSlotID )
@@ -4508,7 +4508,7 @@ bool KInventory::MoveItem( IN UidType iItemUID, IN int iDestCategory, IN int iDe
 		//{{ 2008. 12. 21  최육사	사용불가 검사
 		if( IsBrokenItem( iItemUID ) )
 		{
-			START_LOG( cerr, L"사용불가 아이템. 일어날수 없는에러" )
+			START_LOG( cerr, L"The item is unusable; this should never happen." )
 				<< BUILD_LOG( iItemUID )
 				<< END_LOG;
 
@@ -4519,7 +4519,7 @@ bool KInventory::MoveItem( IN UidType iItemUID, IN int iDestCategory, IN int iDe
 		//{{ 2009. 9. 8  최육사		밀봉
 		if( IsSealedItem( iItemUID ) )
 		{
-			START_LOG( cerr, L"밀봉된 아이템. 일어날수 없는에러" )
+			START_LOG( cerr, L"Sealed item encountered; this should never happen." )
 				<< BUILD_LOG( iItemUID )
 				<< END_LOG;
 
@@ -4593,7 +4593,7 @@ bool KInventory::MoveItem( IN UidType iItemUID, IN int iDestCategory, IN int iDe
         mit2 = m_mapItem.find( iDestItemUID );
         if( mit2 == m_mapItem.end() )
         {
-            START_LOG( cerr, L"해당 아이템 UID가 없음." )
+            START_LOG( cerr, L"The specified item UID does not exist." )
                 << BUILD_LOG( iDestCategory )
                 << BUILD_LOG( iDestSlotID )
                 << BUILD_LOG( iDestItemUID )
@@ -4637,7 +4637,7 @@ bool KInventory::MoveItem( IN UidType iItemUID, IN int iDestCategory, IN int iDe
 					DecreaseQuantity( iItemUID, iIncreased, iDecreased, KDeletedItemInfo::DR_MOVE_SLOT );
                     if( iIncreased != iDecreased )
                     {
-                        START_LOG( cerr, L"수량 변화 이상." )
+                        START_LOG( cerr, L"Invalid quantity change." )
                             << BUILD_LOG( iItemUID )
                             << BUILD_LOG( iDestItemUID )
                             << BUILD_LOG( kItemInfoSrc.m_iItemID )
@@ -4773,7 +4773,7 @@ bool KInventory::SortInventory( IN int iCategory, OUT std::vector< KInventoryIte
 
 	if( GetFirstCategory() < iCategory  ||  GetSentinelCategory() >= iCategory )
 	{
-		START_LOG( cerr, L"이상한 카테고리입니다!" )
+		START_LOG( cerr, L"Invalid category!" )
 			<< BUILD_LOG( iCategory )
 			<< END_LOG;
 
@@ -4819,7 +4819,7 @@ bool KInventory::SortInventory( IN int iCategory, OUT std::vector< KInventoryIte
 		KInventoryItemInfo kInfo;
 		if( GetInventorySlotInfo( iCategory, i, kInfo ) == false )
 		{
-			START_LOG( cerr, L"인벤토리 정보 얻기 실패!" )
+			START_LOG( cerr, L"Failed to retrieve inventory information!" )
 				<< BUILD_LOG( iCategory )
 				<< BUILD_LOG( i )
 				<< END_LOG;
@@ -4864,7 +4864,7 @@ bool KInventory::PrepareBuy( IN const std::map< int, int >& mapItem, IN const bo
 
 			if( iBuyItemID <= 0 )
 			{
-				START_LOG( cerr, L"구매하려는 아이템ID가 이상함" )
+				START_LOG( cerr, L"Invalid ItemID for the attempted purchase." )
 					<< BUILD_LOG( iBuyItemID )
 					<< BUILD_LOG( iBuyQuantity )
 					<< END_LOG;
@@ -4876,7 +4876,7 @@ bool KInventory::PrepareBuy( IN const std::map< int, int >& mapItem, IN const bo
 			//{{ 2011. 09. 07	최육사	아이템 구매 예외 처리
 			if( iBuyQuantity <= 0 )
 			{
-				START_LOG( cerr, L"사려는 수량이 이상함" )
+				START_LOG( cerr, L"Invalid quantity to purchase." )
 					<< BUILD_LOG( iBuyItemID )
 					<< BUILD_LOG( iBuyQuantity )
 					<< END_LOG;
@@ -4891,14 +4891,14 @@ bool KInventory::PrepareBuy( IN const std::map< int, int >& mapItem, IN const bo
 			{
 				if( bDebug )
 				{
-					START_LOG( cout, L"Item ID가 아이템 템플릿에 존재하지 않음. 영자님 치트좀 제대로 쓰세염" )
+					START_LOG( cout, L"The Item ID is not in the item template; administrator, please use the cheat correctly." )
 						<< BUILD_LOG( iBuyItemID )
 						<< BUILD_LOG( bDebug )
 						<< END_LOG;
 				}
 				else
 				{
-					START_LOG( cerr, L"Item ID가 아이템 템플릿에 존재하지 않음." )
+					START_LOG( cerr, L"The Item ID is not in the item template." )
 						<< BUILD_LOG( iBuyItemID )
 						<< BUILD_LOG( bDebug )
 						<< END_LOG;
@@ -4913,7 +4913,7 @@ bool KInventory::PrepareBuy( IN const std::map< int, int >& mapItem, IN const bo
 				// NPC상점에서 파는 아이템을 구매하려고 했는지 검사!
 				if( SiCXSLItemManager()->IsNpcSellEDItem( iBuyItemID ) == false )
 				{
-                    START_LOG( cerr, L"NPC상점에서 팔지 않는 아이템을 구매하려 하였습니다! 해킹유저로 의심 됩니다!" )
+                    START_LOG( cerr, L"Attempted to buy an item not sold by the NPC shop; suspected hacking!" )
 						<< BUILD_LOG( iBuyItemID )
 						<< BUILD_LOG( iBuyQuantity )
 						<< END_LOG;
@@ -4973,7 +4973,7 @@ bool KInventory::PrepareBuy( IN const std::map< int, int >& mapItem, IN const bo
 	// 구매 ED 검사
 	if( ( m_pUser->GetED() < iTotalED ) || ( iTotalED < 0 ) )
     {
-		START_LOG( cerr, L"총 구매 금액이 마이너스다. 해킹 유저인가?" )
+		START_LOG( cerr, L"The total purchase amount is negative; possible hacking." )
 			<< BUILD_LOG( m_pUser->GetUID() )
 			<< BUILD_LOG( m_pUser->GetCharUID() )
 			<< BUILD_LOG( m_pUser->GetED() )
@@ -4988,7 +4988,7 @@ bool KInventory::PrepareBuy( IN const std::map< int, int >& mapItem, IN const bo
 	if( ( m_pUser->GetAPoint() < iTotalPvPPoint ) || ( iTotalPvPPoint < 0 ) )
 	//}}
     {
-		START_LOG( cerr, L"총 구매 금액이 마이너스다. 해킹 유저인가?" )
+		START_LOG( cerr, L"The total purchase amount is negative; possible hacking." )
 			<< BUILD_LOG( m_pUser->GetUID() )
 			<< BUILD_LOG( m_pUser->GetCharUID() )
 			<< BUILD_LOG( m_pUser->GetAPoint() )
@@ -5055,7 +5055,7 @@ bool KInventory::PrepareBuy( IN const std::map< int, int >& mapItem, IN const bo
 			const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( mit->first );
 			if( pItemTemplet == NULL )
 			{
-				START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )
+				START_LOG( cerr, L"Failed to retrieve the item template." )
 					<< BUILD_LOG( mit->first )
 					<< END_LOG;
 
@@ -5075,7 +5075,7 @@ bool KInventory::PrepareBuy( IN const std::map< int, int >& mapItem, IN const bo
 
 			if( iMaxQuantity <= 0 )
 			{
-				START_LOG( cerr, L"수량 이상." )
+				START_LOG( cerr, L"Invalid quantity." )
 					<< BUILD_LOG( iMaxQuantity )
 					<< END_LOG;
 
@@ -5128,7 +5128,7 @@ bool KInventory::ProcessSell( IN const UidType iItemUID, IN const int iQuantity,
 
 	if( !m_pUser )
 	{
-		START_LOG( cerr, L"유저 포인터 이상." )
+		START_LOG( cerr, L"Invalid user pointer." )
 			<< END_LOG;
 
 		return false;
@@ -5137,7 +5137,7 @@ bool KInventory::ProcessSell( IN const UidType iItemUID, IN const int iQuantity,
     // 아이템의 존재 여부 확인.
     if( IsExist( iItemUID ) == false )
     {
-        START_LOG( cerr, L"존재하지 않는 아이템 팔기 시도." )
+        START_LOG( cerr, L"Attempted to sell a nonexistent item." )
 			<< BUILD_LOG( m_pUser->GetCharUID() )
             << BUILD_LOG( iItemUID )
             << END_LOG;
@@ -5149,7 +5149,7 @@ bool KInventory::ProcessSell( IN const UidType iItemUID, IN const int iQuantity,
 
 	if( IsDBUpdateItem( iItemUID ) == false )
 	{
-		START_LOG( cerr, L"PC방 프리미엄 아이템을 상점에 팔려고 했습니다." )
+		START_LOG( cerr, L"Attempted to sell a PC Bang premium item to a shop." )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -5165,7 +5165,7 @@ bool KInventory::ProcessSell( IN const UidType iItemUID, IN const int iQuantity,
     const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iItemID );
     if( pItemTemplet == NULL )
     {
-        START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )
+        START_LOG( cerr, L"Failed to retrieve the item template." )
 			<< BUILD_LOG( m_pUser->GetCharUID() )
             << BUILD_LOG( iItemID )
             << END_LOG;
@@ -5176,7 +5176,7 @@ bool KInventory::ProcessSell( IN const UidType iItemUID, IN const int iQuantity,
     // 팔기 불능
     if( pItemTemplet->m_PriceType == CXSLItem::SPT_NONE )
     {
-        START_LOG( cerr, L"팔기 불능 아이템." )
+        START_LOG( cerr, L"This item cannot be sold." )
 			<< BUILD_LOG( m_pUser->GetCharUID() )
             << BUILD_LOG( iItemUID )
             << BUILD_LOG( iItemID )
@@ -5192,7 +5192,7 @@ bool KInventory::ProcessSell( IN const UidType iItemUID, IN const int iQuantity,
 
 		if ( kInfo.m_kItemInfo.m_sPeriod != 0 )
 		{
-			START_LOG( cerr, L"팔기 불능 아이템." )
+			START_LOG( cerr, L"This item cannot be sold." )
 				<< BUILD_LOG( m_pUser->GetCharUID() )
 				<< BUILD_LOG( iItemUID )
 				<< BUILD_LOG( iItemID )
@@ -5210,7 +5210,7 @@ bool KInventory::ProcessSell( IN const UidType iItemUID, IN const int iQuantity,
 		// 정상적인 수량값인지 검증
 		if( iQuantity <= 0  ||  iQuantity > pItemTemplet->m_Quantity )
 		{
-			START_LOG( cerr, L"비정상적인 수량값입니다. 해킹인가..?" )
+			START_LOG( cerr, L"Invalid quantity; possible hacking?" )
 				<< BUILD_LOG( m_pUser->GetUID() )
 				<< BUILD_LOG( m_pUser->GetCharUID() )
 				<< BUILD_LOG( iItemUID )
@@ -5227,7 +5227,7 @@ bool KInventory::ProcessSell( IN const UidType iItemUID, IN const int iQuantity,
         _JIF( GetQuantity( iItemUID, iCurrentQuantity ), return false );
         if( iCurrentQuantity < iQuantity )
         {
-            START_LOG( cerr, L"보유 수량보다 더 많은 수량 팔기 시도" )
+            START_LOG( cerr, L"Attempted to sell more than the quantity owned." )
                 << BUILD_LOG( iItemUID )
                 << BUILD_LOG( iItemID )
                 << BUILD_LOG( iQuantity )
@@ -5241,7 +5241,7 @@ bool KInventory::ProcessSell( IN const UidType iItemUID, IN const int iQuantity,
 	//{{ 2011. 01. 20	최육사	아이템 분해 개편
 	if( GetSellPrice( iItemUID, iQuantity, iED ) == false )
 	{
-		START_LOG( cerr, L"해당 아이템의 되팔기 가격을 얻지 못했습니다! 되팔기 실패!" )
+		START_LOG( cerr, L"Could not retrieve this item's resale price; resale failed!" )
 			<< BUILD_LOG( iItemUID )
 			<< BUILD_LOG( iQuantity )
 			<< END_LOG;
@@ -5252,7 +5252,7 @@ bool KInventory::ProcessSell( IN const UidType iItemUID, IN const int iQuantity,
 	//{{ 2009. 4. 28  최육사	최대ED체크
 	if( m_pUser->CheckMaxED( iED ) == false )
 	{
-		START_LOG( cerr, L"아이템 판매시 최대ED를 초과함! 클라에서 체크했을텐데.." )
+		START_LOG( cerr, L"Item sale exceeds maximum ED; the client should have checked this." )
 			<< BUILD_LOG( m_pUser->GetED() )
 			<< BUILD_LOG( iED )
 			<< END_LOG;
@@ -5354,7 +5354,7 @@ bool KInventory::PrepareInsert( std::map< int, KItemInfo >& mapReward, std::map<
         const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( mitReward->first );
         if( pItemTemplet == NULL )
         {
-            START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )
+            START_LOG( cerr, L"Failed to retrieve the item template." )
                 << BUILD_LOG( mitReward->first )
                 << END_LOG;
 
@@ -5364,7 +5364,7 @@ bool KInventory::PrepareInsert( std::map< int, KItemInfo >& mapReward, std::map<
 		int iQuantity = ( pItemTemplet->m_PeriodType == CXSLItem::PT_QUANTITY ? pItemTemplet->m_Quantity : 1 );
         if( iQuantity <= 0 )
         {
-            START_LOG( cerr, L"수량 이상." )
+            START_LOG( cerr, L"Invalid quantity." )
                 << BUILD_LOG( mitReward->first )
                 << BUILD_LOG( iQuantity )
                 << END_LOG;
@@ -5375,7 +5375,7 @@ bool KInventory::PrepareInsert( std::map< int, KItemInfo >& mapReward, std::map<
 		short sEndurance = ( pItemTemplet->m_PeriodType == CXSLItem::PT_ENDURANCE ? pItemTemplet->m_Endurance : 0 );
 		if( sEndurance < 0 )
 		{
-			START_LOG( cerr, L"내구도 이상." )
+			START_LOG( cerr, L"Invalid durability." )
                 << BUILD_LOG( mitReward->first )
 				<< BUILD_LOG( sEndurance )
 				<< END_LOG;
@@ -5452,7 +5452,7 @@ err_proc:
 			iCategory = GetSuitableCategory( mitRB->first );
 			if( iCategory < CXSLInventory::ST_EQUIP  ||  iCategory > CXSLInventory::ST_AVARTA )
 			{
-				START_LOG( cerr, L"롤백시키기 위해 카테고리 검사하던중 이상한 카테고리 발견" )
+				START_LOG( cerr, L"Found an unexpected category while checking categories for rollback." )
 					<< BUILD_LOG( mitRB->first )
 					<< BUILD_LOG( mitRB->second )
 					<< BUILD_LOG( iCategory )
@@ -5473,7 +5473,7 @@ err_proc:
 					DecreaseQuantity( iCategory, iSlotID, mitRB->second, iDecreased, KDeletedItemInfo::DR_PREPARE_INSERT );
 					if( iDecreased <= 0 )
 					{
-						START_LOG( cerr, L"증가된 만큼 감소(롤백)시켰는데 뭔가 이상하다." )
+						START_LOG( cerr, L"Decrease (rollback) by the increased amount failed unexpectedly." )
 							<< BUILD_LOG( mitRB->first )
 							<< BUILD_LOG( mitRB->second )
 							<< BUILD_LOG( iCategory )
@@ -5540,7 +5540,7 @@ bool KInventory::PrepareInsertForTrade( IN const std::vector< KInventoryItemInfo
 	{
         if( !PrepareInsert( mapRewardQuantity, mapReceived, vecUpdatedItem, vecNewItem, false ) )
 		{
-			START_LOG( cerr, L"개인거래중 prepareInsert 처리 실패! 일어날수 없는 에러!" )
+			START_LOG( cerr, L"prepareInsert failed during a private trade; this should never happen!" )
 				<< BUILD_LOG( mapRewardQuantity.size() )
 				<< END_LOG;
 		}
@@ -5558,7 +5558,7 @@ bool KInventory::PrepareInsertForTrade( IN const std::vector< KInventoryItemInfo
 		const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( vitROO->m_iItemID );
 		if( pItemTemplet == NULL )
 		{
-			START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )
+			START_LOG( cerr, L"Failed to retrieve the item template." )
 				<< BUILD_LOG( vitROO->m_iItemID )
 				<< END_LOG;
 
@@ -5567,7 +5567,7 @@ bool KInventory::PrepareInsertForTrade( IN const std::vector< KInventoryItemInfo
 
 		if( pItemTemplet->m_PeriodType == CXSLItem::PT_QUANTITY )
 		{
-			START_LOG( cerr, L"수량성은 여기 올수 없는데? 있을수 없는 에러!" )
+			START_LOG( cerr, L"A stackable item should not reach this point; this should never happen!" )
 				<< BUILD_LOG( vitROO->m_iItemID )
 				<< END_LOG;
 
@@ -5576,7 +5576,7 @@ bool KInventory::PrepareInsertForTrade( IN const std::vector< KInventoryItemInfo
 
 		if( vitROO->m_iQuantity > 1 )
 		{
-			START_LOG( cerr, L"수량성이 아닌데 수량이 1개가 넘는다?" )
+			START_LOG( cerr, L"A non-stackable item has a quantity greater than one." )
 				<< BUILD_LOG( vitROO->m_iItemID )
 				<< BUILD_LOG( vitROO->m_iQuantity )
 				<< END_LOG;
@@ -5587,7 +5587,7 @@ bool KInventory::PrepareInsertForTrade( IN const std::vector< KInventoryItemInfo
 		short sEndurance = ( pItemTemplet->m_PeriodType == CXSLItem::PT_ENDURANCE ? pItemTemplet->m_Endurance : 0 );
 		if( sEndurance < 0 )
 		{
-			START_LOG( cerr, L"내구도 이상." )
+			START_LOG( cerr, L"Invalid durability." )
 				<< BUILD_LOG( vitROO->m_iItemID )
 				<< BUILD_LOG( sEndurance )
 				<< END_LOG;
@@ -5603,7 +5603,7 @@ bool KInventory::PrepareInsertForTrade( IN const std::vector< KInventoryItemInfo
 			mitEmptySlot = mapEmptySlot.find( GetSuitableCategory( vitROO->m_iItemID ) );
 			if( mitEmptySlot == mapEmptySlot.end() )
 			{
-				START_LOG( cerr, L"어라? 빈공간을 미리 계산했을텐데.." )
+				START_LOG( cerr, L"Unexpectedly, the available space should have been calculated in advance." )
 					<< BUILD_LOG( vitROO->m_iItemID )
 					<< BUILD_LOG( vitROO->m_iQuantity )
 					<< END_LOG;
@@ -5612,7 +5612,7 @@ bool KInventory::PrepareInsertForTrade( IN const std::vector< KInventoryItemInfo
 
 			if( mitEmptySlot->second <= 0 )
 			{
-				START_LOG( cerr, L"어라? 빈공간을 미리 계산했을텐데.." )
+				START_LOG( cerr, L"Unexpectedly, the available space should have been calculated in advance." )
 					<< BUILD_LOG( vitROO->m_iItemID )
 					<< BUILD_LOG( vitROO->m_iQuantity )
 					<< END_LOG;
@@ -5750,7 +5750,7 @@ bool KInventory::DeleteAndInsert( IN const std::map< UidType, int >& mapToDelete
         i = GetSuitableCategory( mitToInsertClone->first );
         if( i < CXSLInventory::ST_EQUIP || i > CXSLInventory::ST_AVARTA )
         {
-            START_LOG( cerr, L"인벤토리 카테고리 이상." )
+            START_LOG( cerr, L"Invalid inventory category." )
                 << BUILD_LOG( mitToInsertClone->first )
                 << BUILD_LOG( i )
                 << END_LOG;
@@ -5777,7 +5777,7 @@ bool KInventory::DeleteAndInsert( IN const std::map< UidType, int >& mapToDelete
         const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( mitToInsertClone->first );
         if( !pItemTemplet )
         {
-            START_LOG( cerr, L"아이템 템플릿을 찾을 수 없음." )
+            START_LOG( cerr, L"Could not find the item template." )
                 << BUILD_LOG( mitToInsertClone->first )
                 << END_LOG;
 
@@ -5791,7 +5791,7 @@ bool KInventory::DeleteAndInsert( IN const std::map< UidType, int >& mapToDelete
             {
                 if( pItemTemplet->m_Quantity <= 0 )
                 {
-                    START_LOG( cerr, L"수량 제한 값이 이상함." )
+                    START_LOG( cerr, L"Invalid quantity limit." )
                         << BUILD_LOG( pItemTemplet->m_Quantity )
                         << END_LOG;
 
@@ -5813,7 +5813,7 @@ bool KInventory::DeleteAndInsert( IN const std::map< UidType, int >& mapToDelete
         int iSuitableCategory = GetSuitableCategory( mitToInsertClone->first );
         if( iSuitableCategory < CXSLInventory::ST_EQUIP || iSuitableCategory > CXSLInventory::ST_AVARTA )
         {
-            START_LOG( cerr, L"인벤토리 카테고리 이상." )
+            START_LOG( cerr, L"Invalid inventory category." )
                 << BUILD_LOG( mitToInsertClone->first )
                 << BUILD_LOG( iSuitableCategory )
                 << END_LOG;
@@ -5846,7 +5846,7 @@ bool KInventory::DeleteAndInsert( IN const std::map< UidType, int >& mapToDelete
         const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iItemID );
         if( pItemTemplet == NULL )
         {
-            START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )
+            START_LOG( cerr, L"Failed to retrieve the item template." )
                 << BUILD_LOG( iItemID )
                 << END_LOG;
 
@@ -5881,7 +5881,7 @@ bool KInventory::DeleteAndInsert( IN const std::map< UidType, int >& mapToDelete
         i = GetSuitableCategory( mitToInsertClone->first );
         if( i < CXSLInventory::ST_EQUIP || i > CXSLInventory::ST_AVARTA )
         {
-            START_LOG( cerr, L"인벤토리 카테고리 이상." )
+            START_LOG( cerr, L"Invalid inventory category." )
                 << BUILD_LOG( mitToInsertClone->first )
                 << BUILD_LOG( i )
                 << END_LOG;
@@ -5929,7 +5929,7 @@ bool KInventory::DeleteAndInsert( IN const std::map< UidType, int >& mapToDelete
         const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( mitToInsertClone->first );
         if( pItemTemplet == NULL )
         {
-            START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )
+            START_LOG( cerr, L"Failed to retrieve the item template." )
                 << BUILD_LOG( mitToInsertClone->first )
                 << END_LOG;
 
@@ -5939,7 +5939,7 @@ bool KInventory::DeleteAndInsert( IN const std::map< UidType, int >& mapToDelete
 		int iQuantity = ( pItemTemplet->m_PeriodType == CXSLItem::PT_QUANTITY ? pItemTemplet->m_Quantity : 1 );
         if( iQuantity <= 0 )
         {
-            START_LOG( cerr, L"수량 이상." )
+            START_LOG( cerr, L"Invalid quantity." )
                 << BUILD_LOG( iQuantity )
                 << END_LOG;
 
@@ -5949,7 +5949,7 @@ bool KInventory::DeleteAndInsert( IN const std::map< UidType, int >& mapToDelete
 		short sEndurance = ( pItemTemplet->m_PeriodType == CXSLItem::PT_ENDURANCE ? pItemTemplet->m_Endurance : 0 );
         if( sEndurance < 0 )
         {
-            START_LOG( cerr, L"내구도 이상." )
+            START_LOG( cerr, L"Invalid durability." )
                 << BUILD_LOG( sEndurance )
                 << END_LOG;
 
@@ -5961,7 +5961,7 @@ bool KInventory::DeleteAndInsert( IN const std::map< UidType, int >& mapToDelete
             mitNumEmptySlotClone = mapNumEmptySlotClone.find( GetSuitableCategory( mitToInsertClone->first ) );
             if( mitNumEmptySlotClone == mapNumEmptySlotClone.end() )
             {
-                START_LOG( cerr, L"빈 슬롯이 없음. 발생하면 안되는 상황." )
+                START_LOG( cerr, L"No empty slot is available; this should never happen." )
                     << BUILD_LOG( mitToInsertClone->first )
                     << BUILD_LOG( GetSuitableCategory( mitToInsertClone->first ) )
                     << END_LOG;
@@ -5971,7 +5971,7 @@ bool KInventory::DeleteAndInsert( IN const std::map< UidType, int >& mapToDelete
 
             if( mitNumEmptySlotClone->second <= 0 )
             {
-                START_LOG( cerr, L"빈 슬롯이 없음. 발생하면 안되는 상황." )
+                START_LOG( cerr, L"No empty slot is available; this should never happen." )
                     << BUILD_LOG( mitToInsertClone->first )
                     << BUILD_LOG( GetSuitableCategory( mitToInsertClone->first ) )
                     << BUILD_LOG( mitNumEmptySlotClone->first )
@@ -6133,7 +6133,7 @@ void KInventory::RollBackInitQuantity( const std::map< UidType, int >& mapChange
         mitItem = m_mapItem.find( mit->first );
         if( mitItem == m_mapItem.end() )
         {
-            START_LOG( cerr, L"수량 롤백하려는 아이템이 없음." )
+            START_LOG( cerr, L"The item to roll back quantity for is missing." )
 				<< BUILD_LOG( m_pUser->GetCharUID() )
 				<< BUILD_LOG( m_pUser->GetCharName() )
                 << BUILD_LOG( mit->first )
@@ -6145,7 +6145,7 @@ void KInventory::RollBackInitQuantity( const std::map< UidType, int >& mapChange
 
         mitItem->second.RollBackInitQuantity( mit->second );
 
-		START_LOG( cerr, L"아이템 수량 DB업뎃실패! 롤백!" )
+		START_LOG( cerr, L"Failed to update item quantity in the database; rolling back!" )
 			<< BUILD_LOG( m_pUser->GetCharUID() )
 			<< BUILD_LOG( m_pUser->GetCharName() )
 			<< BUILD_LOG( mit->first )
@@ -6183,7 +6183,7 @@ void KInventory::RollBackInitEndurance( const std::map< UidType, int >& mapChang
 		mitItem = m_mapItem.find( mit->first );
 		if( mitItem == m_mapItem.end() )
 		{
-            START_LOG( cerr, L"내구도 롤백하려는 아이템이 없음." )
+            START_LOG( cerr, L"The item to roll back durability for is missing." )
                 << BUILD_LOG( mit->first )
                 << BUILD_LOG( mit->second )
                 << END_LOG;
@@ -6193,7 +6193,7 @@ void KInventory::RollBackInitEndurance( const std::map< UidType, int >& mapChang
 
 		mitItem->second.RollBackInitEndurance( mit->second );
 
-		START_LOG( cerr, L"아이템 내구도 DB업뎃실패! 롤백!" )
+		START_LOG( cerr, L"Failed to update item durability in the database; rolling back!" )
 			<< BUILD_LOG( mit->first )
 			<< BUILD_LOG( mit->second )
 			<< END_LOG;
@@ -6220,7 +6220,7 @@ void KInventory::FlushPositionChange( OUT std::map< UidType, KItemPosition >& ma
 			//{{ 2008. 6. 30  최육사  비정상적인 인벤 카테고리 검사
 			if( !VerifyInventoryCategory( mit->second.GetItemID(), mit->second.GetInventoryCategory() ) )
 			{
-				START_LOG( cerr, L"비정상적인 인벤카테고리를 DB업데이트 하려함." )
+				START_LOG( cerr, L"Attempted to update an invalid inventory category in the database." )
 					<< BUILD_LOG( mit->second.GetItemID() )
 					<< BUILD_LOG( mit->second.GetInventoryCategory() )
 					<< END_LOG;
@@ -6244,7 +6244,7 @@ void KInventory::PositionUpdateComplete( IN const std::map< UidType, KItemPositi
 			// 펫 아이템이면 아이템이 없는것은 정상이다.
 			if( mit->second.m_iSlotCategory == CXSLInventory::ST_PET )
 			{
-				START_LOG( clog, L"펫 인벤토리의 슬롯 위치 업데이트 완료하려는 아이템이 현재는 없음." )
+				START_LOG( clog, L"Item to finish pet inventory slot update is no longer present." )
 					<< BUILD_LOG( mit->first )
 					<< BUILD_LOG( mit->second.m_iSlotCategory )
 					<< BUILD_LOG( mit->second.m_iSlotID )
@@ -6253,7 +6253,7 @@ void KInventory::PositionUpdateComplete( IN const std::map< UidType, KItemPositi
 			}
 			else
 			{
-				START_LOG( cerr, L"슬롯 위치 업데이트 완료하려는 아이템이 없음." )
+				START_LOG( cerr, L"The item to complete slot position update for is missing." )
 					<< BUILD_LOG( mit->first )
 					<< BUILD_LOG( mit->second.m_iSlotCategory )
 					<< BUILD_LOG( mit->second.m_iSlotID )
@@ -6307,7 +6307,7 @@ void KInventory::RollBackDeletedItem( const std::vector< KDeletedItemInfo >& vec
 
     m_vecDeletedItem.insert( m_vecDeletedItem.end(), vecDeleted.begin(), vecDeleted.end() );
 
-	START_LOG( cerr, L"삭제된 아이템 DB업뎃실패! 롤백!" )
+	START_LOG( cerr, L"Failed to update deleted item in database; rolling back!" )
 		<< BUILD_LOG( m_pUser->GetCharUID() )
 		<< BUILD_LOG( m_pUser->GetCharName() )
 		<< END_LOG;
@@ -6346,7 +6346,7 @@ void KInventory::DecreaseEquippedItemEndurance( IN const int iEnduranceDamage,
 		KInventoryItemInfo kInfo;
 		if( GetInventoryItemInfo( CXSLInventory::ST_E_EQUIP, i, kInfo ) == false )
 		{
-			START_LOG( cwarn, L"빈슬롯이 아닌지 확인했는데?" )
+			START_LOG( cwarn, L"The slot was expected to be empty, but it is not." )
 				<< BUILD_LOG( i )
 				<< END_LOG;
 			continue;
@@ -6359,7 +6359,7 @@ void KInventory::DecreaseEquippedItemEndurance( IN const int iEnduranceDamage,
         const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( kInfo.m_kItemInfo.m_iItemID );
         if( pItemTemplet == NULL )
         {
-            START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )
+            START_LOG( cerr, L"Failed to retrieve the item template." )
                 << BUILD_LOG( kInfo.m_kItemInfo.m_iItemID )
                 << END_LOG;
 
@@ -6426,7 +6426,7 @@ void KInventory::DecreaseEquippedItemEndurance( IN const int iEnduranceDamage,
 			vecZeroEndurance.push_back( kZeroEndurance );
 		}
 
-        START_LOG( clog, L"내구도 깎임." )
+        START_LOG( clog, L"Durability decreased." )
             << BUILD_LOG( kInfo.m_kItemInfo.m_iItemID )
 			<< BUILD_LOG( iEnduranceDamage )
             << BUILD_LOG( iDamage )
@@ -6454,7 +6454,7 @@ void KInventory::DecreaseEquippedItemEnduranceInBattleField( IN const int iExpDr
 		KInventoryItemInfo kInfo;
 		if( GetInventoryItemInfo( CXSLInventory::ST_E_EQUIP, i, kInfo ) == false )
 		{
-			START_LOG( cwarn, L"빈슬롯이 아닌지 확인했는데?" )
+			START_LOG( cwarn, L"The slot was expected to be empty, but it is not." )
 				<< BUILD_LOG( i )
 				<< END_LOG;
 			continue;
@@ -6467,7 +6467,7 @@ void KInventory::DecreaseEquippedItemEnduranceInBattleField( IN const int iExpDr
 		const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( kInfo.m_kItemInfo.m_iItemID );
 		if( pItemTemplet == NULL )
 		{
-			START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )
+			START_LOG( cerr, L"Failed to retrieve the item template." )
 				<< BUILD_LOG( kInfo.m_kItemInfo.m_iItemID )
 				<< END_LOG;
 
@@ -6529,7 +6529,7 @@ void KInventory::DecreaseEquippedItemEnduranceInBattleField( IN const int iExpDr
 			vecZeroEndurance.push_back( kZeroEndurance );
 		}
 
-		START_LOG( clog, L"내구도 깎임." )
+		START_LOG( clog, L"Durability decreased." )
 			<< BUILD_LOG( kInfo.m_kItemInfo.m_iItemID )
 			<< BUILD_LOG( iDamage )
 			<< BUILD_LOG( iDecreased )
@@ -6556,7 +6556,7 @@ bool KInventory::RepairItem( IN const std::vector< UidType > vecItemUID, OUT int
         const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iItemID );
         if( pItemTemplet == NULL )
         {
-            START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )
+            START_LOG( cerr, L"Failed to retrieve the item template." )
                 << BUILD_LOG( iItemID )
                 << END_LOG;
 
@@ -6647,7 +6647,7 @@ float KInventory::GetRepairItemDiscount()
 			KInventoryItemInfo kInfo;
 			if( !GetInventoryItemInfo( CXSLInventory::ST_E_EQUIP, i, kInfo ) )
 			{
-				START_LOG( cerr, L"인벤토리 아이템 정보 얻기 실패." )
+				START_LOG( cerr, L"Failed to retrieve inventory item information." )
 					<< BUILD_LOG( i )
 					<< END_LOG;
 
@@ -6661,7 +6661,7 @@ float KInventory::GetRepairItemDiscount()
 			const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( kInfo.m_kItemInfo.m_iItemID );
 			if( pItemTemplet == NULL )
 			{
-				START_LOG( cerr, L"아이템 템플릿 포인트 이상.!" )
+				START_LOG( cerr, L"Invalid item template pointer!" )
 					<< BUILD_LOG( kInfo.m_kItemInfo.m_iItemID )
 					<< END_LOG;
 
@@ -6671,7 +6671,7 @@ float KInventory::GetRepairItemDiscount()
 			// 2. 유닛 레벨과 장착조건 레벨이 틀리면 소켓옵션이 적용되지 않는다. - 아이템의 레벨조정으로 인한 옵션기능.
 			if( m_pUser->GetLevel() < pItemTemplet->m_UseLevel )
 			{
-				START_LOG( cwarn, L"아이템 장착조건이 되지 않는데 아이템을 착용하고 있음." )
+				START_LOG( cwarn, L"The item is equipped even though its requirements are not met." )
 					<< BUILD_LOG( pItemTemplet->m_ItemID )
 					<< BUILD_LOG( pItemTemplet->m_Name )
 					<< BUILD_LOG( m_pUser->GetLevel() )
@@ -6691,7 +6691,7 @@ float KInventory::GetRepairItemDiscount()
 				const CXSLSocketItem::SocketData* pSocketData = SiCXSLSocketItem()->GetSocketData( *vit );
 				if( pSocketData == NULL )
 				{
-					START_LOG( cerr, L"소켓 옵션 정보를 찾을수 없습니다." )
+					START_LOG( cerr, L"Could not find the socket option information." )
 						<< BUILD_LOG( *vit )
 						<< END_LOG;
 					continue;
@@ -6711,7 +6711,7 @@ float KInventory::GetRepairItemDiscount()
 				const CXSLSocketItem::SocketData* pSocketData = SiCXSLSocketItem()->GetSocketData( *vit );
 				if( pSocketData == NULL )
 				{
-					START_LOG( cerr, L"소켓 옵션 정보를 찾을수 없습니다." )
+					START_LOG( cerr, L"Could not find the socket option information." )
 						<< BUILD_LOG( *vit )
 						<< END_LOG;
 					continue;
@@ -6785,7 +6785,7 @@ bool KInventory::OpenRandomItem( IN char cUnitClass,
     // 1. 큐브 아이템 존재 여부
     if( IsExist( iItemUID ) == false )
     {
-        START_LOG( cerr, L"인벤토리에 없는 아이템UID인데?" )
+        START_LOG( cerr, L"The item UID is not in the inventory." )
 			<< BUILD_LOG( m_pUser->GetName() )
 			<< BUILD_LOG( m_pUser->GetCharName() )
             << BUILD_LOG( iItemUID )
@@ -6799,7 +6799,7 @@ bool KInventory::OpenRandomItem( IN char cUnitClass,
 	//{{ 2009. 8. 7  최육사		은행
 	if( IsExistInBank( iItemUID ) == true )
 	{
-		START_LOG( cerr, L"은행에 있는아이템은 오픈할수 없다" )
+		START_LOG( cerr, L"Items in the bank cannot be opened." )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -6821,7 +6821,7 @@ bool KInventory::OpenRandomItem( IN char cUnitClass,
 
 		if( pItemTemplet == NULL )
 		{
-			START_LOG( cerr, L"아이템 템플릿 정보 찾기 실패!" )
+			START_LOG( cerr, L"Failed to find the item template information!" )
 				<< BUILD_LOG( iItemID )
 				<< END_LOG;
 
@@ -6832,7 +6832,7 @@ bool KInventory::OpenRandomItem( IN char cUnitClass,
 		// 레벨 조건 검사
 		if(pItemTemplet->m_UseLevel > m_pUser->GetLevel())
 		{
-			START_LOG( cerr, L"큐브보다 낮은 레벨의 유저가 오픈!" )			// cerr 인 이유: 클라에서 걸러진 내용인데 와서 이상함
+			START_LOG( cerr, L"User below the required level attempted to open cube!" )			// cerr 인 이유: 클라에서 걸러진 내용인데 와서 이상함
 				<< BUILD_LOG( iItemID )
 				<< END_LOG;
 
@@ -6847,7 +6847,7 @@ bool KInventory::OpenRandomItem( IN char cUnitClass,
 	const std::map< int, int >* pRandomItemKeyList = SiCXSLRandomItemManager()->GetRandomItemKeyList( iItemID );
 	if( pRandomItemKeyList == NULL )
 	{
-		START_LOG( cerr, L"해당 랜덤 아이템의 키 테이블 정보를 얻지 못함." )
+		START_LOG( cerr, L"Could not retrieve key table information for this random item." )
 			<< BUILD_LOG( iItemUID )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
@@ -6859,7 +6859,7 @@ bool KInventory::OpenRandomItem( IN char cUnitClass,
 	// 3. 키템의 수량이 충분한지 검사
 	if( pRandomItemKeyList->empty() )
 	{
-		START_LOG( cerr, L"해당 랜덤 아이템에 대한 키템 정보가 없다. 있을수 없는에러!" )
+		START_LOG( cerr, L"Key item information is missing for this random item; this should never happen!" )
 			<< BUILD_LOG( iItemUID )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
@@ -6883,7 +6883,7 @@ bool KInventory::OpenRandomItem( IN char cUnitClass,
 
 		if( mitKey->second <= 0 )
 		{
-			START_LOG( cerr, L"필요한 키 아이템 수량 이상." )
+			START_LOG( cerr, L"Invalid quantity of required key item." )
 				<< BUILD_LOG( mitKey->first )
 				<< BUILD_LOG( mitKey->second )
 				<< END_LOG;
@@ -6928,7 +6928,7 @@ bool KInventory::OpenRandomItem( IN char cUnitClass,
 
 	if( pRandomItemData == NULL )
 	{
-		START_LOG( cerr, L"랜덤 아이템 템플릿을 얻지 못함" )
+		START_LOG( cerr, L"Could not retrieve the random item template." )
 			<< BUILD_LOG( iItemUID )
 			<< BUILD_LOG( iItemID )
 			<< BUILD_LOG( iKeyItemID )
@@ -6989,7 +6989,7 @@ bool KInventory::OpenRandomItem( IN char cUnitClass,
 	if( SiCXSLRandomItemManager()->GetResultItem( cUnitClass, pRandomItemData, mapResultItem, mapCheckEmpty, bIsGiveAll ) == false )
 	//}}
 	{
-		START_LOG( cwarn, L"랜덤아이템 받아오기 실패.!" )
+		START_LOG( cwarn, L"Failed to retrieve random item!" )
 			<< BUILD_LOGc( cUnitClass )
 			<< BUILD_LOG( pRandomItemData->m_ItemID )
 			<< BUILD_LOG( mapResultItem.size() )
@@ -7008,7 +7008,7 @@ bool KInventory::OpenRandomItem( IN char cUnitClass,
 		const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iEventItemID );
 		if( pItemTemplet == NULL )
 		{
-			START_LOG( cerr, L"존재 하지 않는 ItemID입니다!" )
+			START_LOG( cerr, L"ItemID does not exist!" )
 				<< BUILD_LOG( m_pUser->GetCharUID() )
 				<< BUILD_LOG( iItemUID )
 				<< BUILD_LOG( iEventItemID )
@@ -7054,7 +7054,7 @@ bool KInventory::OpenRandomItem( IN char cUnitClass,
 					const CXSLItem::ItemTemplet* pItemTempletBonus = SiCXSLItemManager()->GetItemTemplet( iBonusItemID );
 					if( pItemTempletBonus == NULL )
 					{
-						START_LOG( cerr, L"아이템 템플릿 정보를 찾을 수 없습니다." )
+						START_LOG( cerr, L"Could not find the item template information." )
 							<< BUILD_LOG( iBonusItemID )
 							<< END_LOG;
 					}
@@ -7149,7 +7149,7 @@ bool KInventory::ItemManufacture( IN int iManufactureID,
 	const CXSLManufactureItemManager::ManufactureData* pManufactureData = SiCXSLManufactureItemManager()->GetManufactureData( iManufactureID );
 	if( pManufactureData == NULL )
 	{
-		START_LOG( cerr, L"제조 데이터를 얻지 못함" )
+		START_LOG( cerr, L"Could not retrieve crafting data." )
 			<< BUILD_LOG( iManufactureID )
 			<< END_LOG;
 
@@ -7166,7 +7166,7 @@ bool KInventory::ItemManufacture( IN int iManufactureID,
 		mitToDeleteByItemID = mapToDeleteByItemID.find( vitMaterial->m_MaterialItemID );
 		if( mitToDeleteByItemID != mapToDeleteByItemID.end() )
 		{
-			START_LOG( cerr, L"이미 존재하는 재료 아이템 ID" )
+			START_LOG( cerr, L"Material item ID already exists" )
 				<< BUILD_LOG( iManufactureID )
 				<< BUILD_LOG( vitMaterial->m_MaterialItemID )
 				<< END_LOG;
@@ -7198,7 +7198,7 @@ bool KInventory::ItemManufacture( IN int iManufactureID,
 	}
 	else
 	{
-		START_LOG( clog, L"제조 실패!" )
+		START_LOG( clog, L"Crafting failed!" )
 			<< BUILD_LOG( iManufactureID )
 			<< BUILD_LOG( iResultItemID )
 			<< END_LOG;
@@ -7218,7 +7218,7 @@ bool KInventory::ItemManufacture( IN int iManufactureID,
 		const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iResultItemID );
 		if( pItemTemplet == NULL )
 		{
-			START_LOG( cerr, L"아이템 템플릿 정보 찾기 실패!" )
+			START_LOG( cerr, L"Failed to find the item template information!" )
 				<< BUILD_LOG( iResultItemID )
 				<< END_LOG;
 		}
@@ -7246,7 +7246,7 @@ bool KInventory::ItemManufacture( IN int iManufactureID,
 				if( SiCXSLDefenceDungeonManager()->InsertSocketOptionForDefenceDungeonItem( iResultItemID, kInsertItemInfo.m_vecRandomSocket ) == false )
 				//}}
 				{
-					START_LOG( cerr, L"어둠의 문 아이템에 소켓 옵션 박기가 실패하였습니다!" )
+					START_LOG( cerr, L"Failed to add a socket option to a Gate of Darkness item!" )
 						<< BUILD_LOG( iResultItemID )
 						<< END_LOG;
 				}
@@ -7279,7 +7279,7 @@ bool KInventory::ItemManufacture( IN int iManufactureID,
 		const int iCheckEmptyCategory = GetSuitableCategory( iResultItemID );
 		if( IsEnoughEmptySlot( iCheckEmptyCategory, 1 ) == false )
 		{
-			START_LOG(clog2, L"지헌로그:슬롯 검사에서 에러!")
+			START_LOG(clog2, L"Jiheon log: slot validation error!")
 				<<BUILD_LOG( iCheckEmptyCategory)
 				<<BUILD_LOG( iQuantity)
 				<<BUILD_LOG( iResultItemID )
@@ -7307,7 +7307,7 @@ bool KInventory::ItemManufacture( IN int iManufactureID,
 	iED = pManufactureData->m_Cost * iQuantity;
 	if( iED < 0 )
 	{
-		START_LOG( cerr, L"제조 비용이 마이너스입니다. 즉시 확인이 필요합니다!!" )
+		START_LOG( cerr, L"Crafting cost is negative; check immediately!" )
 			<< BUILD_LOG( iManufactureID )
 			<< BUILD_LOG( pManufactureData->m_Cost )
 			<< BUILD_LOG( iQuantity )
@@ -7414,7 +7414,7 @@ bool KInventory::VerifyCategorySlotID( IN const int iCategory, IN const int iSlo
 {
     if( iCategory < GetFirstCategory()  ||  iCategory >= GetSentinelCategory() )
     {
-        START_LOG( cerr, L"카테고리 이상." )
+        START_LOG( cerr, L"Invalid category." )
             << BUILD_LOG( iCategory )
 			<< BUILD_LOG( iSlotID )
             << END_LOG;
@@ -7424,7 +7424,7 @@ bool KInventory::VerifyCategorySlotID( IN const int iCategory, IN const int iSlo
 
     if( iSlotID < 0  ||  iSlotID >= GetSlotSize( iCategory ) )
     {
-        START_LOG( cerr, L"슬롯 ID 이상." )
+        START_LOG( cerr, L"Invalid slot ID." )
 			<< BUILD_LOG( iCategory )
 			<< BUILD_LOG( GetSlotSize( iCategory ) )
             << BUILD_LOG( iSlotID )
@@ -7501,7 +7501,7 @@ int KInventory::GetRemainedQuantityCapacity( UidType iItemUID )
     mit = m_mapItem.find( iItemUID );
     if( mit == m_mapItem.end() )
     {
-        START_LOG( cerr, L"해당 아이템 UID가 없음." )
+        START_LOG( cerr, L"The specified item UID does not exist." )
             << BUILD_LOG( iItemUID )
             << END_LOG;
 
@@ -7522,7 +7522,7 @@ int KInventory::GetEnduranceToRestore( UidType iItemUID )
     mit = m_mapItem.find( iItemUID );
     if( mit == m_mapItem.end() )
     {
-        START_LOG( cerr, L"해당 아이템 UID가 없음." )
+        START_LOG( cerr, L"The specified item UID does not exist." )
             << BUILD_LOG( iItemUID )
             << END_LOG;
 
@@ -7547,7 +7547,7 @@ bool KInventory::CompareLevel( int iItemID )
     const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iItemID );
     if( !pItemTemplet )
     {
-        START_LOG( cerr, L"아이템 템플릿을 찾을 수 없음." )
+        START_LOG( cerr, L"Could not find the item template." )
             << BUILD_LOG( iItemID )
             << END_LOG;
 
@@ -7567,7 +7567,7 @@ bool KInventory::CompareUnitClass( int iItemID )
     const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iItemID );
     if( !pItemTemplet )
     {
-        START_LOG( cerr, L"아이템 템플릿을 찾을 수 없음." )
+        START_LOG( cerr, L"Could not find the item template." )
             << BUILD_LOG( iItemID )
             << END_LOG;
 
@@ -7591,7 +7591,7 @@ bool KInventory::CompareUnitClass( int iItemID )
 
 					if( CXSLUnit::IsValidUnitClass( pItemTemplet->m_UnitClass ) == false )
 					{
-						START_LOG( cerr, L"이상한 유닛 클래스." )
+						START_LOG( cerr, L"Invalid unit class." )
 							<< BUILD_LOG( pItemTemplet->m_UnitClass )
 							<< END_LOG;
 
@@ -7619,7 +7619,7 @@ bool KInventory::CompareUnitClass( int iItemID )
 				break;
 
 			default:
-				START_LOG( cerr, L"이상한 유닛 타입." )
+				START_LOG( cerr, L"Invalid unit type." )
 					<< BUILD_LOG( pItemTemplet->m_UnitType )
 					<< END_LOG;
 
@@ -7686,7 +7686,7 @@ bool KInventory::IsAbleToExpandSlot( IN int iCategory, IN int nSlot )
 {
 	if( iCategory < GetFirstCategory() || iCategory >= GetSentinelCategory() )
 	{
-		START_LOG( cerr, L"잘못된 카테고리." )
+		START_LOG( cerr, L"Invalid category." )
 			<< BUILD_LOG( iCategory )
 			<< END_LOG;
 
@@ -7736,7 +7736,7 @@ void KInventory::ExpandSlot( int iCategory, int iSlot, int& iExpanded )
 		break;
 		//}}
     default:
-        START_LOG( cerr, L"확장할 수 있는 카테고리가 아님." )
+        START_LOG( cerr, L"This category cannot be expanded." )
             << BUILD_LOG( iCategory )
             << BUILD_LOG( iSlot )
             << END_LOG;
@@ -7748,7 +7748,7 @@ void KInventory::ExpandSlot( int iCategory, int iSlot, int& iExpanded )
 	//{{ 2010. 07. 12  허상형	크래쉬 버그 수정
 	if( iExpanded < 0 )
 	{
-		START_LOG( cerr, L"최대 인벤 개수보다 현재 슬롯 개수가 더 많음!! 있으면 안되는 오류" )
+		START_LOG( cerr, L"Current slot count exceeds maximum inventory size; this should never happen!" )
 			<< BUILD_LOG( iCategory )
 			<< BUILD_LOG( iSlot )
 			<< END_LOG;
@@ -7772,7 +7772,7 @@ int KInventory::CheckItemForTrade( UidType iItemUID, int iQuantity, KInventoryIt
 	//{{ 2008. 12. 21  최육사	사용불가 검사
 	if( IsBrokenItem( iItemUID ) )
 	{
-		START_LOG( cerr, L"사용불가 아이템. 일어날수 없는에러" )
+		START_LOG( cerr, L"The item is unusable; this should never happen." )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -7784,7 +7784,7 @@ int KInventory::CheckItemForTrade( UidType iItemUID, int iQuantity, KInventoryIt
 
 	if( IsDBUpdateItem( iItemUID ) == false )
 	{
-		START_LOG( cerr, L"PC방 프리미엄 아이템을 거래하려고 했습니다." )
+		START_LOG( cerr, L"Attempted to trade a PC Bang premium item." )
 			<< BUILD_LOG( kInventoryItemInfo.m_kItemInfo.m_iItemID )
 			<< END_LOG;
 
@@ -7795,7 +7795,7 @@ int KInventory::CheckItemForTrade( UidType iItemUID, int iQuantity, KInventoryIt
 
 	if( kInventoryItemInfo.m_kItemInfo.m_iQuantity < iQuantity )
 	{
-		START_LOG( cerr, L"개인거래 및 개인상점에 등록하려는 상품수량이 이상합니다." )
+		START_LOG( cerr, L"Invalid item quantity to list in a private trade or shop." )
 			<< BUILD_LOG( iItemUID )
 			<< BUILD_LOG( kInventoryItemInfo.m_kItemInfo.m_iQuantity )
 			<< BUILD_LOG( iQuantity )
@@ -7810,7 +7810,7 @@ int KInventory::CheckItemForTrade( UidType iItemUID, int iQuantity, KInventoryIt
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iItemID );
 	if( !pItemTemplet )
 	{
-		START_LOG( cerr, L"아이템 템플릿을 찾을 수 없음." )
+		START_LOG( cerr, L"Could not find the item template." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 
@@ -7850,7 +7850,7 @@ bool KInventory::CheckTradeItemOut( IN const std::vector< KInventoryItemInfo >& 
 
 	if( eType != CXSLRoom::RT_TRADE  &&  eType != CXSLRoom::RT_PERSONAL_SHOP )
 	{
-		START_LOG( cerr, L"잘못된 타입을 넣었음." )
+		START_LOG( cerr, L"An invalid type was inserted." )
 			<< BUILD_LOG( static_cast<int>(eType) )
 			<< END_LOG;
 
@@ -7868,7 +7868,7 @@ bool KInventory::CheckTradeItemOut( IN const std::vector< KInventoryItemInfo >& 
 		{
 			if( bPersonalShop )
 			{
-				START_LOG( cerr, L"개인상점의 경우 반드시 ItemUID가 정상값이어야 한다." )
+				START_LOG( cerr, L"An item in a personal shop must have a valid ItemUID." )
 					<< BUILD_LOG( vit->m_iItemUID )
 					<< END_LOG;
 
@@ -7883,7 +7883,7 @@ bool KInventory::CheckTradeItemOut( IN const std::vector< KInventoryItemInfo >& 
 
 		if( IsShareItem(vit->m_iItemUID) == true )
 		{
-			START_LOG( cerr, L"은행 공유 : 은행 공유 아이템을 거래 하려 했음." )
+			START_LOG( cerr, L"Shared bank: attempted to trade a shared bank item." )
 				<< BUILD_LOG( vit->m_iItemUID )
 				<< END_LOG;
 
@@ -7894,7 +7894,7 @@ bool KInventory::CheckTradeItemOut( IN const std::vector< KInventoryItemInfo >& 
 		KInventoryItemInfo kInfo;
 		if( !GetInventoryItemInfo( vit->m_iItemUID, kInfo ) )
 		{
-			START_LOG( cerr, L"이건.. 해킹인가? 아이템이 없다?" )
+			START_LOG( cerr, L"Possible hacking? Item is missing." )
 				<< BUILD_LOG( vit->m_iItemUID )
 				<< END_LOG;
 
@@ -7908,7 +7908,7 @@ bool KInventory::CheckTradeItemOut( IN const std::vector< KInventoryItemInfo >& 
 
 		if( kInfo.m_kItemInfo.m_iQuantity < vit->m_kItemInfo.m_iQuantity )
 		{
-			START_LOG( cerr, L"이건.. 해킹인가? 수량이 안맞다?" )
+			START_LOG( cerr, L"Possible hacking? Quantity does not match." )
 				<< BUILD_LOG( vit->m_kItemInfo.m_iQuantity )
 				<< BUILD_LOG( kInfo.m_kItemInfo.m_iQuantity )
 				<< END_LOG;
@@ -7928,7 +7928,7 @@ bool KInventory::CheckTradeItemOut( IN const std::vector< KInventoryItemInfo >& 
 		{
 			if( kUpdateTemp.m_mapQuantityChange.find( vit->m_iItemUID ) != kUpdateTemp.m_mapQuantityChange.end() )
 			{
-				START_LOG( cerr, L"ItemUID가 중복되는것이 있다!" )
+				START_LOG( cerr, L"Duplicate ItemUID found!" )
 					<< BUILD_LOG( vit->m_iItemUID )
 					<< END_LOG;
 
@@ -7958,7 +7958,7 @@ bool KInventory::CheckTradeItemIn( IN const std::vector< KInventoryItemInfo >& v
 
 	if( eType != CXSLRoom::RT_TRADE  &&  eType != CXSLRoom::RT_PERSONAL_SHOP )
 	{
-		START_LOG( cerr, L"잘못된 타입을 넣었음." )
+		START_LOG( cerr, L"An invalid type was inserted." )
 			<< BUILD_LOG( static_cast<int>(eType) )
 			<< END_LOG;
 
@@ -7979,7 +7979,7 @@ bool KInventory::CheckTradeItemIn( IN const std::vector< KInventoryItemInfo >& v
 		{
 			if( bPersonalShop )
 			{
-				START_LOG( cerr, L"개인상점의 경우 반드시 ItemUID가 정상값이어야 한다." )
+				START_LOG( cerr, L"An item in a personal shop must have a valid ItemUID." )
 					<< BUILD_LOG( vit->m_iItemUID )
 					<< END_LOG;
 
@@ -8031,7 +8031,7 @@ bool KInventory::CheckTradeItemIn( IN const std::vector< KInventoryItemInfo >& v
 
 	if( !TrialPrepareInsert( vecItemIn, kUpdateTemp, vecUpdateTemp ) )
 	{
-		START_LOG( cerr, L"인벤토리에 공간도 없는데 개인거래를 하려고 하네?" )
+		START_LOG( cerr, L"Attempted private trade despite having no inventory space?" )
 			<< BUILD_LOG( vecItemIn.size() )
 			<< END_LOG;
 
@@ -8072,7 +8072,7 @@ bool KInventory::TrialPrepareInsert( IN const std::vector< KInventoryItemInfo >&
 		const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( vitR->m_kItemInfo.m_iItemID );
 		if( pItemTemplet == NULL )
 		{
-			START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )
+			START_LOG( cerr, L"Failed to retrieve the item template." )
 				<< BUILD_LOG( vitR->m_kItemInfo.m_iItemID )
 				<< END_LOG;
 			continue;
@@ -8101,7 +8101,7 @@ bool KInventory::TrialPrepareInsert( IN const std::vector< KInventoryItemInfo >&
 	{
 		if( !TrialPrepareInsert( mapRewardQuantity, kUpdateTemp, vecUpdateTemp ) )
 		{
-			START_LOG( cerr, L"개인거래중 TrialPrepareInsert 처리 실패! 일어날수 없는 에러!" )
+			START_LOG( cerr, L"TrialPrepareInsert failed during a private trade; this should never happen!" )
 				<< BUILD_LOG( mapRewardQuantity.size() )
 				<< END_LOG;
 		}
@@ -8120,7 +8120,7 @@ bool KInventory::TrialPrepareInsert( IN const std::vector< KInventoryItemInfo >&
 		const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( vitROO->m_iItemID );
 		if( pItemTemplet == NULL )
 		{
-			START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )
+			START_LOG( cerr, L"Failed to retrieve the item template." )
 				<< BUILD_LOG( vitROO->m_iItemID )
 				<< END_LOG;
 			continue;
@@ -8128,7 +8128,7 @@ bool KInventory::TrialPrepareInsert( IN const std::vector< KInventoryItemInfo >&
 
 		if( pItemTemplet->m_PeriodType == CXSLItem::PT_QUANTITY )
 		{
-			START_LOG( cerr, L"수량성은 여기 올수 없는데? 있을수 없는 에러!" )
+			START_LOG( cerr, L"A stackable item should not reach this point; this should never happen!" )
 				<< BUILD_LOG( vitROO->m_iItemID )
 				<< BUILD_LOGc( vitROO->m_cUsageType )
 				<< END_LOG;
@@ -8138,7 +8138,7 @@ bool KInventory::TrialPrepareInsert( IN const std::vector< KInventoryItemInfo >&
 
 		if( vitROO->m_iQuantity > 1 )
 		{
-			START_LOG( cerr, L"수량성이 아닌데 수량이 1개가 넘는다?" )
+			START_LOG( cerr, L"A non-stackable item has a quantity greater than one." )
 				<< BUILD_LOG( vitROO->m_iItemID )
 				<< BUILD_LOG( vitROO->m_iQuantity )
 				<< END_LOG;
@@ -8149,7 +8149,7 @@ bool KInventory::TrialPrepareInsert( IN const std::vector< KInventoryItemInfo >&
 		short sEndurance = ( pItemTemplet->m_PeriodType == CXSLItem::PT_ENDURANCE ? pItemTemplet->m_Endurance : 0 );
 		if( sEndurance < 0 )
 		{
-			START_LOG( cerr, L"내구도 이상." )
+			START_LOG( cerr, L"Invalid durability." )
 				<< BUILD_LOG( vitROO->m_iItemID )
 				<< BUILD_LOG( sEndurance )
 				<< END_LOG;
@@ -8163,7 +8163,7 @@ bool KInventory::TrialPrepareInsert( IN const std::vector< KInventoryItemInfo >&
 			mitEmptySlot = mapEmptySlot.find( GetSuitableCategory( vitROO->m_iItemID ) );
 			if( mitEmptySlot == mapEmptySlot.end() )
 			{
-				START_LOG( cerr, L"어라? 빈공간을 미리 계산했을텐데.." )
+				START_LOG( cerr, L"Unexpectedly, the available space should have been calculated in advance." )
 					<< BUILD_LOG( vitROO->m_iItemID )
 					<< BUILD_LOG( vitROO->m_iQuantity )
 					<< END_LOG;
@@ -8172,7 +8172,7 @@ bool KInventory::TrialPrepareInsert( IN const std::vector< KInventoryItemInfo >&
 
 			if( mitEmptySlot->second <= 0 )
 			{
-				START_LOG( cerr, L"어라? 빈공간을 미리 계산했을텐데.." )
+				START_LOG( cerr, L"Unexpectedly, the available space should have been calculated in advance." )
 					<< BUILD_LOG( vitROO->m_iItemID )
 					<< BUILD_LOG( vitROO->m_iQuantity )
 					<< END_LOG;
@@ -8241,7 +8241,7 @@ bool KInventory::TrialPrepareInsert( IN const std::map< int, KItemInfo >& mapRew
 					// 1-1. 수량성이 아니면 통과
 					if( kInventoryItemInfo.m_kItemInfo.m_cUsageType != CXSLItem::PT_QUANTITY )
 					{
-						START_LOG( clog, L"수량성 아이템이 아님." )
+						START_LOG( clog, L"This is not a stackable item." )
 							<< BUILD_LOGc( kInventoryItemInfo.m_kItemInfo.m_cUsageType )
 							<< END_LOG;
 						continue;
@@ -8250,7 +8250,7 @@ bool KInventory::TrialPrepareInsert( IN const std::map< int, KItemInfo >& mapRew
 					// 1-2. 수량값 검증
 					if( kInventoryItemInfo.m_kItemInfo.m_iQuantity <= 0 )
 					{
-						START_LOG( cerr, L"수량 값이 이상함." )
+						START_LOG( cerr, L"Invalid quantity value." )
 							<< BUILD_LOG( kInventoryItemInfo.m_kItemInfo.m_iQuantity )
 							<< END_LOG;
 						continue;
@@ -8294,7 +8294,7 @@ bool KInventory::TrialPrepareInsert( IN const std::map< int, KItemInfo >& mapRew
 		const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( mitReward->first );
 		if( pItemTemplet == NULL )
 		{
-			START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )
+			START_LOG( cerr, L"Failed to retrieve the item template." )
 				<< BUILD_LOG( mitReward->first )
 				<< END_LOG;
 			continue;
@@ -8303,7 +8303,7 @@ bool KInventory::TrialPrepareInsert( IN const std::map< int, KItemInfo >& mapRew
 		int iQuantity = ( pItemTemplet->m_PeriodType == CXSLItem::PT_QUANTITY ? pItemTemplet->m_Quantity : 1 );
 		if( iQuantity <= 0 )
 		{
-			START_LOG( cerr, L"수량 이상." )
+			START_LOG( cerr, L"Invalid quantity." )
 				<< BUILD_LOG( mitReward->first )
 				<< BUILD_LOG( iQuantity )
 				<< END_LOG;
@@ -8313,7 +8313,7 @@ bool KInventory::TrialPrepareInsert( IN const std::map< int, KItemInfo >& mapRew
 		short sEndurance = ( pItemTemplet->m_PeriodType == CXSLItem::PT_ENDURANCE ? pItemTemplet->m_Endurance : 0 );
 		if( sEndurance < 0 )
 		{
-			START_LOG( cerr, L"내구도 이상." )
+			START_LOG( cerr, L"Invalid durability." )
 				<< BUILD_LOG( mitReward->first )
 				<< BUILD_LOG( sEndurance )
 				<< END_LOG;
@@ -8376,7 +8376,7 @@ void KInventory::GetChannelChangeInventoryInfo( OUT std::vector< KInventoryItemI
 			const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( mit->second.GetItemID() );
 			if( pItemTemplet == NULL )
 			{
-				START_LOG( cerr, L"아이템 정보가 이상합니다." )
+				START_LOG( cerr, L"Invalid item information." )
 					<< BUILD_LOG( mit->second.GetItemID() )
 					<< END_LOG;
 
@@ -8408,7 +8408,7 @@ void KInventory::SetChannelChangeInventoryInfo( IN const std::vector< KInventory
 		if( VerifyCategorySlotID( kInfo.m_cSlotCategory, kInfo.m_sSlotID ) == false )
 		//}}
 		{
-			START_LOG( cerr, L"PC방 아이템을 넣으려는데 슬롯 위치가 이상하다? 있을수없는에러!" )
+			START_LOG( cerr, L"Invalid slot position for a PC Bang item; this should never happen!" )
 				<< BUILD_LOG( kInfo.m_kItemInfo.m_iItemID )
 				<< BUILD_LOGc( kInfo.m_cSlotCategory )
 				//{{ 2011. 12. 15	최육사	인벤토리 슬롯ID크기 늘리기
@@ -8422,7 +8422,7 @@ void KInventory::SetChannelChangeInventoryInfo( IN const std::vector< KInventory
 		if( IsEmptySlot( kInfo.m_cSlotCategory, kInfo.m_sSlotID ) == false )
 		//}}
 		{
-			START_LOG( cerr, L"PC방 아이템을 넣으려는데 슬롯이 비어있지 않다? 있을수 없는에러!" )
+			START_LOG( cerr, L"The slot is not empty when adding a PC Bang item; this should never happen!" )
 				<< BUILD_LOG( kInfo.m_kItemInfo.m_iItemID )
 				<< BUILD_LOGc( kInfo.m_cSlotCategory )
 				//{{ 2011. 12. 15	최육사	인벤토리 슬롯ID크기 늘리기
@@ -8450,7 +8450,7 @@ void KInventory::InitPetInventory( IN UidType iSummonedPetUID, IN int iPetCatego
 	// 소환된 펫이 없다면 패스!
 	if( iSummonedPetUID == 0 )
 	{
-		START_LOG( cerr, L"소환된 펫도 없는데 펫 인벤토리를 초기화 하려고 하네?" )
+		START_LOG( cerr, L"Attempted to initialize pet inventory when no pet is summoned?" )
 			<< BUILD_LOG( iSummonedPetUID )
 			<< BUILD_LOG( iPetCategorySlotSize )
 			<< BUILD_LOG( mapPetItem.size() )
@@ -8468,7 +8468,7 @@ void KInventory::InitPetInventory( IN UidType iSummonedPetUID, IN int iPetCatego
 		// 펫 카테고리 아이템인지 검사
 		if( kDB.second.m_cSlotCategory != CXSLInventory::ST_PET )
 		{
-			START_LOG( cerr, L"펫 아이템이 아닌데 여기에 들어왔다! 일어나서는 안되는 에러!" )
+			START_LOG( cerr, L"Non-pet item reached this code; this should never happen!" )
 				<< BUILD_LOG( kDB.second.m_iItemUID )
 				<< END_LOG;
 			continue;
@@ -8492,7 +8492,7 @@ void KInventory::InitPetInventory( IN UidType iSummonedPetUID, IN int iPetCatego
 		}
 		else
 		{
-			START_LOG( cerr, L"인벤토리 슬롯 위치 이상." )
+			START_LOG( cerr, L"Invalid inventory slot position." )
 				<< BUILD_LOG( m_pUser->GetCharName() )
 				<< BUILD_LOG( m_pUser->GetCharUID() )
 				<< BUILD_LOG( kDB.second.m_kItemInfo.m_iItemID )
@@ -8515,7 +8515,7 @@ void KInventory::ResetPetInventorySize( IN int iPetCategorySlotSize )
 	// 확장하려는 펫 인벤토리 크기 검증
 	if( m_vecInventorySlot[CXSLInventory::ST_PET].size() > uiPetCategorySlotSize )
 	{
-		START_LOG( cerr, L"현재 인벤 크기보다 변경되는 인벤 크기가 더 커야하는데 아니네? 있을 수 없는 에러!" )
+		START_LOG( cerr, L"New inventory size should be greater than current size, but is not; this should never happen!" )
 			<< BUILD_LOG( m_vecInventorySlot[CXSLInventory::ST_PET].size() )
 			<< BUILD_LOG( uiPetCategorySlotSize )
 			<< END_LOG;
@@ -8532,7 +8532,7 @@ void KInventory::ResetPetInventorySize( IN int iPetCategorySlotSize )
 	// 결과 검사!
 	if( uiPetCategorySlotSize != m_vecInventorySlot[CXSLInventory::ST_PET].size() )
 	{
-		START_LOG( cerr, L"현재 펫 인벤 크기와 실제 펫 이벤 슬롯 갯수가 맞지 않는다! 절재 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"Current pet inventory size does not match actual pet inventory slot count; this should never happen!" )
 			<< BUILD_LOG( iPetCategorySlotSize )
 			<< BUILD_LOG( uiPetCategorySlotSize )
 			<< BUILD_LOG( uiAddPetCategorySlotSize )
@@ -8554,7 +8554,7 @@ void KInventory::RemovePetInventory( OUT std::map< UidType, KInventoryItemInfo >
 		KInventoryItemInfo kInfo;
 		if( GetInventoryItemInfo( iItemUID, kInfo ) == false )
 		{
-			START_LOG( cerr, L"슬롯정보에는 있는데 실제 아이템 정보는 없네? 있을 수 없는에러!" )
+			START_LOG( cerr, L"Item is listed in slot information but actual item data is missing; this should never happen!" )
 				<< BUILD_LOG( iItemUID )
 				<< END_LOG;
 			continue;
@@ -8579,7 +8579,7 @@ bool KInventory::FeedPetInInventory( IN UidType iItemUID, OUT std::vector< KInve
 	KInventoryItemInfo kFeedItemInfo;
 	if( GetInventoryItemInfo( iItemUID, kFeedItemInfo ) == false )
 	{
-		START_LOG( cerr, L"아이템이 있는지 검사! 미리 검사하고 들어왔을텐데 이상하군.." )
+		START_LOG( cerr, L"Checking whether the item exists; it should already have been checked." )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 		return false;
@@ -8637,7 +8637,7 @@ bool KInventory::AutoFeedInPetInventory( IN u_char ucLevel, IN bool bOnlyEatSpec
 		const int iItemID = GetItemID( iItemUID );
 		if( iItemID == 0 )
 		{
-			START_LOG( cerr, L"아이템 정보 찾기 실패!" )
+			START_LOG( cerr, L"Failed to find item information!" )
 				<< BUILD_LOG( iItemID )
 				<< END_LOG;
 			continue;
@@ -8657,7 +8657,7 @@ bool KInventory::AutoFeedInPetInventory( IN u_char ucLevel, IN bool bOnlyEatSpec
 		const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iItemID );
 		if( pItemTemplet == NULL )
 		{
-			START_LOG( cerr, L"아이템 정보가 없습니다." )
+			START_LOG( cerr, L"Item information is missing." )
 				<< BUILD_LOG( iItemID )
 				<< END_LOG;
 			continue;
@@ -8737,7 +8737,7 @@ bool KInventory::AutoFeedInPetInventory( IN u_char ucLevel, IN bool bOnlyEatSpec
 		KInventoryItemInfo kFeedItemInfo;
 		if( GetInventoryItemInfo( iSelectedFeedItemUID, kFeedItemInfo ) == false )
 		{
-			START_LOG( cerr, L"아이템이 있는지 검사! 미리 검사하고 들어왔을텐데 이상하군.." )
+			START_LOG( cerr, L"Checking whether the item exists; it should already have been checked." )
 				<< BUILD_LOG( iSelectedFeedItemUID )
 				<< END_LOG;
 			return false;
@@ -8813,7 +8813,7 @@ bool KInventory::UpdatePeriod( IN UidType iItemUID, IN short sPeriod, IN const s
 	mit = m_mapItem.find( iItemUID );
 	if( mit == m_mapItem.end() )
 	{
-		START_LOG( cerr, L"아이템 정보를 찾을 수 없습니다!" )
+		START_LOG( cerr, L"Could not find item information!" )
 			<< BUILD_LOG( iItemUID )
 			<< BUILD_LOG( sPeriod )
 			<< BUILD_LOG( wstrExpirationDate )
@@ -8842,7 +8842,7 @@ bool KInventory::AttribAttachItem( IN UidType iDestItemUID, IN UidType iAttachIt
 	// 1. 속성강화할 아이템 검사
 	if( IsExist( iDestItemUID ) == false  ||  IsExist( iAttachItemUID ) == false )
 	{
-		START_LOG( cerr, L"인벤토리에 없는 아이템UID인데?" )
+		START_LOG( cerr, L"The item UID is not in the inventory." )
 			<< BUILD_LOG( iDestItemUID )
 			<< BUILD_LOG( iAttachItemUID )
 			<< END_LOG;
@@ -8854,7 +8854,7 @@ bool KInventory::AttribAttachItem( IN UidType iDestItemUID, IN UidType iAttachIt
 	//{{ 2009. 8. 7  최육사		은행
 	if( IsExistInBank( iDestItemUID ) == true  ||  IsExistInBank( iAttachItemUID ) == true )
 	{
-		START_LOG( cerr, L"은행에서는 속성강화 못하는데?" )
+		START_LOG( cerr, L"Cannot enchant an item in the bank." )
 			<< BUILD_LOG( iDestItemUID )
 			<< BUILD_LOG( iAttachItemUID )
 			<< END_LOG;
@@ -8867,7 +8867,7 @@ bool KInventory::AttribAttachItem( IN UidType iDestItemUID, IN UidType iAttachIt
 	//{{ 2008. 12. 21  최육사	사용불가 검사
 	if( IsBrokenItem( iDestItemUID ) == true )
 	{
-		START_LOG( cerr, L"사용불가 아이템. 일어날수 없는에러" )
+		START_LOG( cerr, L"The item is unusable; this should never happen." )
 			<< BUILD_LOG( iDestItemUID )
 			<< END_LOG;
 
@@ -8880,7 +8880,7 @@ bool KInventory::AttribAttachItem( IN UidType iDestItemUID, IN UidType iAttachIt
 
 	if( IsDBUpdateItem( iDestItemUID ) == false )
 	{
-		START_LOG( cerr, L"PC방 프리미엄 아이템을 속성강화하려고 했습니다." )
+		START_LOG( cerr, L"Attempted to enchant a PC Bang premium item." )
 			<< BUILD_LOG( iDestItemUID )
 			<< END_LOG;
 
@@ -8894,7 +8894,7 @@ bool KInventory::AttribAttachItem( IN UidType iDestItemUID, IN UidType iAttachIt
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( GetItemID( iDestItemUID ) );
 	if( pItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"아이템 템플릿이 존재하지 않습니다" )
+		START_LOG( cerr, L"The item template does not exist." )
 			<< BUILD_LOG( iDestItemUID )
 			<< END_LOG;
 
@@ -8905,7 +8905,7 @@ bool KInventory::AttribAttachItem( IN UidType iDestItemUID, IN UidType iAttachIt
 	if( pItemTemplet->m_ItemType != CXSLItem::IT_WEAPON  &&
 		pItemTemplet->m_ItemType != CXSLItem::IT_DEFENCE )
 	{
-		START_LOG( cerr, L"무기와 방어구만 속성강화 가능한데.." )
+		START_LOG( cerr, L"Only weapons and armor can be enchanted." )
 			<< BUILD_LOG( iDestItemUID )
 			<< BUILD_LOG( pItemTemplet->m_ItemType )
 			<< END_LOG;
@@ -8920,7 +8920,7 @@ bool KInventory::AttribAttachItem( IN UidType iDestItemUID, IN UidType iAttachIt
 	KItemAttributeEnchantInfo kAttribAttachInfo;
 	if( SiCXSLAttribEnchantItem()->GetAttribAttachInfo( iAttribAttachItemID, kAttribAttachInfo ) == false )
 	{
-		START_LOG( cerr, L"속성 부여 아이템이 아닙니다. 클라이언트에서 검사 했을텐데.." )
+		START_LOG( cerr, L"This is not an attribute item; the client should have checked this." )
 			<< BUILD_LOG( iAttribAttachItemID )
 			<< END_LOG;
 
@@ -8951,7 +8951,7 @@ bool KInventory::AttribAttachItem( IN UidType iDestItemUID, IN UidType iAttachIt
 
 		if( SetAttribEnchant( iDestItemUID, static_cast<char>(iSlotID), cAttribEnchantType ) == false )
 		{
-			START_LOG( cerr, L"이미 검사했는데 에러다?" )
+			START_LOG( cerr, L"An error occurred after the check already passed." )
 				<< BUILD_LOG( iDestItemUID )
 				<< BUILD_LOG( iSlotID )
 				<< BUILD_LOGc( cAttribEnchantType )
@@ -8965,7 +8965,7 @@ bool KInventory::AttribAttachItem( IN UidType iDestItemUID, IN UidType iAttachIt
 	// 6. 부여에 성공하면 아이템 삭제
 	if( DeleteItemOnlyInventory( mapRequireItem, vecUpdated, KDeletedItemInfo::DR_ATTRIB_ATTACH ) == false )
 	{
-		START_LOG( cerr, L"수량 검사를 했는데 삭제 실패? 일어날 수 없는 에러.." )
+		START_LOG( cerr, L"Deletion failed after the quantity check; this should never happen." )
 			<< BUILD_LOG( mapRequireItem.size() )
 			<< BUILD_LOG( vecUpdated.size() )
 			<< END_LOG;
@@ -9015,7 +9015,7 @@ bool KInventory::DeleteItemForPersonalShopAgency( IN const std::vector< KSellPer
 		KInventoryItemInfo kInfo;
 		if( GetInventoryItemInfo( kSellItemInfo.m_kInventoryItemInfo.m_iItemUID, kInfo ) == false )
 		{
-			START_LOG( cerr, L"존재 하지 않는 아이템을 대리상인에 등록하려고 했다!" )
+			START_LOG( cerr, L"Attempted to list a nonexistent item in the agency shop!" )
 				<< BUILD_LOG( m_pUser->GetName() )
 				<< BUILD_LOG( m_pUser->GetCharName() )
 				<< BUILD_LOG( kSellItemInfo.m_kInventoryItemInfo.m_iItemUID )
@@ -9025,7 +9025,7 @@ bool KInventory::DeleteItemForPersonalShopAgency( IN const std::vector< KSellPer
 
 		if( kInfo.m_kItemInfo.m_iQuantity < kSellItemInfo.m_kInventoryItemInfo.m_kItemInfo.m_iQuantity )
 		{
-			START_LOG( cerr, L"인벤토리에 존재 하는 수량보다 더 많은 수량을 대리상인에 등록하려고 했다!" )
+			START_LOG( cerr, L"Attempted to list more items in agency shop than are in inventory!" )
 				<< BUILD_LOG( m_pUser->GetName() )
 				<< BUILD_LOG( m_pUser->GetCharName() )
 				<< BUILD_LOG( kSellItemInfo.m_kInventoryItemInfo.m_iItemUID )
@@ -9039,7 +9039,7 @@ bool KInventory::DeleteItemForPersonalShopAgency( IN const std::vector< KSellPer
 	// 아이템 삭제 처리
 	if( DeleteAndInsert( mapToDelete, mapToInsertDummy, vecInventorySlotInfo, vecNewItem, KDeletedItemInfo::DR_PSHOP_AGENCY ) == false )
 	{
-		START_LOG( cerr, L"대리 상인에 등록할 아이템을 삭제 실패하였음." )
+		START_LOG( cerr, L"Failed to delete the item to be listed in the agency shop." )
 			<< BUILD_LOG( m_pUser->GetName() )
 			<< BUILD_LOG( m_pUser->GetCharName() )
 			<< END_LOG;
@@ -9066,7 +9066,7 @@ int KInventory::GetSuitableCategory( int iItemID )
     const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iItemID );
     if( !pItemTemplet )
     {
-        START_LOG( cerr, L"아이템 템플릿을 찾을 수 없음." )
+        START_LOG( cerr, L"Could not find the item template." )
             << BUILD_LOG( iItemID )
             << END_LOG;
 
@@ -9195,7 +9195,7 @@ void KInventory::GetInventoryItemInfoContainingThisItem( IN const int iItemID
 
 			if( !VerifyCategorySlotID( mit->second.GetInventoryCategory(), mit->second.GetSlotID() ) )
 			{
-				START_LOG( cerr, L"카테고리 또는 슬롯 ID 이상." )
+				START_LOG( cerr, L"Invalid category or slot ID." )
 					<< BUILD_LOG( mit->second.GetInventoryCategory() )
 					<< BUILD_LOG( mit->second.GetSlotID() )
 					<< END_LOG;
@@ -9212,7 +9212,7 @@ void KInventory::GetInventoryItemInfoContainingThisItem( IN const int iItemID
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iItemID );
 	if( !pItemTemplet )
 	{
-		START_LOG( cerr, L"아이템 템플릿을 찾을 수 없음." )
+		START_LOG( cerr, L"Could not find the item template." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 
@@ -9258,7 +9258,7 @@ void KInventory::GetItemUIDListThisItem( IN int iItemID, OUT std::vector< UidTyp
 
 			if( !VerifyCategorySlotID( mit->second.GetInventoryCategory(), mit->second.GetSlotID() ) )
 			{
-				START_LOG( cerr, L"카테고리 또는 슬롯 ID 이상." )
+				START_LOG( cerr, L"Invalid category or slot ID." )
 					<< BUILD_LOG( mit->second.GetInventoryCategory() )
 					<< BUILD_LOG( mit->second.GetSlotID() )
 					<< END_LOG;
@@ -9293,7 +9293,7 @@ bool KInventory::ResolveItem( IN UidType iItemUID,
 
 	if( IsExist( iItemUID ) == false )
 	{
-		START_LOG( cerr, L"인벤토리에 없는 아이템UID인데?" )
+		START_LOG( cerr, L"The item UID is not in the inventory." )
 			<< BUILD_LOG( m_pUser->GetName() )
 			<< BUILD_LOG( m_pUser->GetCharName() )
 			<< BUILD_LOG( iItemUID )
@@ -9307,7 +9307,7 @@ bool KInventory::ResolveItem( IN UidType iItemUID,
 	//{{ 2009. 8. 7  최육사		은행 카테고리검사
 	if( IsExistInBank( iItemUID ) == true )
 	{
-        START_LOG( cerr, L"은행에 있는 아이템은 분해못하는데? 클라에서 체크 안했나?" )
+        START_LOG( cerr, L"Items in the bank cannot be dismantled; didn't the client check?" )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -9319,7 +9319,7 @@ bool KInventory::ResolveItem( IN UidType iItemUID,
 	//{{ 2008. 12. 21  최육사	사용불가 검사
 	if( IsBrokenItem( iItemUID ) )
 	{
-		START_LOG( cerr, L"사용불가 아이템. 일어날수 없는에러" )
+		START_LOG( cerr, L"The item is unusable; this should never happen." )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -9332,7 +9332,7 @@ bool KInventory::ResolveItem( IN UidType iItemUID,
 
 	if( IsDBUpdateItem( iItemUID ) == false )
 	{
-		START_LOG( cerr, L"PC방 프리미엄 아이템을 분해하려고 했습니다." )
+		START_LOG( cerr, L"Attempted to dismantle a PC Bang premium item." )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -9348,7 +9348,7 @@ bool KInventory::ResolveItem( IN UidType iItemUID,
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iItemID );
 	if( pItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"아이템 템플릿을 얻지 못함" )
+		START_LOG( cerr, L"Failed to retrieve the item template." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 
@@ -9360,7 +9360,7 @@ bool KInventory::ResolveItem( IN UidType iItemUID,
 		pItemTemplet->m_ItemType != CXSLItem::IT_DEFENCE  &&
 		pItemTemplet->m_ItemType != CXSLItem::IT_ACCESSORY )
 	{
-		START_LOG( cerr, L"무기나 방어구, 악세사리가 아님." )
+		START_LOG( cerr, L"This is not a weapon, armor, or accessory." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 
@@ -9393,7 +9393,7 @@ bool KInventory::ResolveItem( IN UidType iItemUID,
 				const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet(iItemID);
 				if( pItemTemplet == NULL )
 				{
-					START_LOG( cerr, L"아이템 템플릿 정보를 찾을 수 없습니다." )
+					START_LOG( cerr, L"Could not find the item template information." )
 						<< BUILD_LOG( iItemID )
 						<< END_LOG;
 					return false;
@@ -9411,7 +9411,7 @@ bool KInventory::ResolveItem( IN UidType iItemUID,
 		int iPrice = 0;
 		if( !SiCXSLCashItemManager()->GetCashItemPriceFromScript( iItemID, iPrice ) )
 		{
-			START_LOG( cwarn, L"캐쉬 가격을 얻을 수 없어서 분해 실패했음." )
+			START_LOG( cwarn, L"Dismantling failed because cash price could not be retrieved." )
 				<< BUILD_LOG( iItemUID )
 				<< BUILD_LOG( iItemID )
 				<< END_LOG;
@@ -9422,7 +9422,7 @@ bool KInventory::ResolveItem( IN UidType iItemUID,
 
 		if( iPrice <= 0 )
 		{
-			START_LOG( cerr, L"이게 왜 0원이 나오지?" )
+			START_LOG( cerr, L"Why is this zero ED?" )
 				<< BUILD_LOG( iItemID )
 				<< BUILD_LOG( iPrice )
 				<< END_LOG;
@@ -9452,7 +9452,7 @@ bool KInventory::ResolveItem( IN UidType iItemUID,
         int iQuantity = 0;
 		if( GetQuantity( iItemUID, iQuantity ) == false )
 		{
-			START_LOG( cerr, L"인벤토리에 없는 아이템UID인데?" )
+			START_LOG( cerr, L"The item UID is not in the inventory." )
 				<< BUILD_LOG( iItemUID )
 				<< END_LOG;
 
@@ -9462,7 +9462,7 @@ bool KInventory::ResolveItem( IN UidType iItemUID,
 
 		if( GetSellPrice( iItemUID, iQuantity, iSellPrice ) == false )
 		{
-			START_LOG( cerr, L"해당 아이템의 되팔기 가격을 얻지 못했습니다! 분해 실패!" )
+			START_LOG( cerr, L"Could not retrieve this item's resale price; dismantling failed!" )
 				<< BUILD_LOG( iItemUID )
 				<< END_LOG;
 
@@ -9473,7 +9473,7 @@ bool KInventory::ResolveItem( IN UidType iItemUID,
 		// 분해 작업
 		if( SiCXSLResolveItemManager()->GetResultItem( (int)pItemTemplet->m_ItemGrade, pItemTemplet->m_UseLevel, (int)pItemTemplet->m_ItemType, iSellPrice, bJackpot, mapResultItem ) == false )
 		{
-			START_LOG( cerr, L"분해 결과 아이템 받아오기 실패.!" )
+			START_LOG( cerr, L"Failed to retrieve dismantling result items!" )
 				<< BUILD_LOG( iItemID )
 				<< BUILD_LOG( pItemTemplet->m_ItemGrade )
 				<< BUILD_LOG( pItemTemplet->m_UseLevel )
@@ -9554,7 +9554,7 @@ bool KInventory::EnchantItem( IN UidType iItemUID,
 	// 강화될 아이템 검사
 	if( IsExist( iItemUID ) == false )
 	{
-		START_LOG( cerr, L"인벤토리에 없는 아이템UID인데?" )
+		START_LOG( cerr, L"The item UID is not in the inventory." )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -9565,7 +9565,7 @@ bool KInventory::EnchantItem( IN UidType iItemUID,
 	//{{ 2009. 8. 7  최육사		은행
 	if( IsExistInBank( iItemUID ) == true )
 	{
-		START_LOG( cerr, L"은행에 있는 아이템은 강화 못하는데?" )
+		START_LOG( cerr, L"Items in the bank cannot be enhanced?" )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -9577,7 +9577,7 @@ bool KInventory::EnchantItem( IN UidType iItemUID,
 	//{{ 2009. 9. 9  최육사		밀봉
 	if( IsSealedItem( iItemUID ) == true )
 	{
-		START_LOG( cerr, L"밀봉된 아이템은 강화할 수 없다." )
+		START_LOG( cerr, L"Sealed items cannot be enhanced." )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -9590,7 +9590,7 @@ bool KInventory::EnchantItem( IN UidType iItemUID,
 
 	if( IsDBUpdateItem( iItemUID ) == false )
 	{
-		START_LOG( cerr, L"PC방 프리미엄 아이템을 강화하려고 했습니다." )
+		START_LOG( cerr, L"Attempted to enhance a PC Bang premium item." )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -9606,7 +9606,7 @@ bool KInventory::EnchantItem( IN UidType iItemUID,
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iItemID );
 	if( pItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"아이템 템플릿을 얻지 못함" )
+		START_LOG( cerr, L"Failed to retrieve the item template." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 
@@ -9616,7 +9616,7 @@ bool KInventory::EnchantItem( IN UidType iItemUID,
 
 	if( pItemTemplet->m_bCanEnchant == false )
 	{
-		START_LOG( cerr, L"강화할 수 있는 아이템이 아님." )
+		START_LOG( cerr, L"This item cannot be enhanced." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 
@@ -9627,7 +9627,7 @@ bool KInventory::EnchantItem( IN UidType iItemUID,
 	//{{ 2008. 12. 21  최육사	깨진 아이템이면 강화 불가!
 	if( IsBrokenItem( iItemUID ) )
 	{
-		START_LOG( cerr, L"클라이언트에서 깨진템인지 검사했을텐데..?" )
+		START_LOG( cerr, L"The client should have checked whether the item is broken?" )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -9639,7 +9639,7 @@ bool KInventory::EnchantItem( IN UidType iItemUID,
     int iEnchantLevel;
     if( !GetEnchantLevel( iItemUID, iEnchantLevel ) )
     {
-        START_LOG( cerr, L"강화 레벨 얻기 실패." )
+        START_LOG( cerr, L"Failed to retrieve the enhancement level." )
             << BUILD_LOG( iItemUID )
             << BUILD_LOG( iItemID )
             << END_LOG;
@@ -9671,7 +9671,7 @@ bool KInventory::EnchantItem( IN UidType iItemUID,
 
 				default:
 					{
-						START_LOG( cerr, L"등록되지 않은 이벤트 플루오르스톤 강화 제한 레벨값입니다!" )
+						START_LOG( cerr, L"Unregistered event Fluorite Stone enhancement level limit!" )
 							<< BUILD_LOG( SiCXSLEnchantItemManager()->GetEventSupportMaterialEnchantLimitLevel() )
 							<< END_LOG;
 
@@ -9698,7 +9698,7 @@ bool KInventory::EnchantItem( IN UidType iItemUID,
 
 				default:
 					{
-						START_LOG( cerr, L"등록되지 않은 플루오르스톤 강화 제한 레벨값입니다!" )
+						START_LOG( cerr, L"Unregistered Fluorite Stone enhancement level limit!" )
 							<< BUILD_LOG( SiCXSLEnchantItemManager()->GetSupportMaterialEnchantLimitLevel() )
 							<< END_LOG;
 
@@ -9717,7 +9717,7 @@ bool KInventory::EnchantItem( IN UidType iItemUID,
     {
 		if( iEnchantLevel != CXSLEnchantItemManager::MAX_ENCHANT_LEVEL )
 		{
-			START_LOG( cerr, L"강화 레벨 이상." )
+			START_LOG( cerr, L"Invalid enhancement level." )
 				<< BUILD_LOG( iItemUID )
 				<< BUILD_LOG( iItemID )
 				<< BUILD_LOG( iEnchantLevel )
@@ -9754,7 +9754,7 @@ bool KInventory::EnchantItem( IN UidType iItemUID,
 		break;
 
 	default:
-		START_LOG( cerr, L"무기나 방어구가 아님." )
+		START_LOG( cerr, L"This is not a weapon or armor." )
 			<< BUILD_LOG( iItemUID )
 			<< BUILD_LOG( iItemID )
 			<< BUILD_LOG( pItemTemplet->m_ItemType )
@@ -9796,7 +9796,7 @@ bool KInventory::EnchantItem( IN UidType iItemUID,
 			iEnchantStoneID = SiCXSLEnchantItemManager()->GetEnchantStoneItemID( pItemTemplet->m_UseLevel, pItemTemplet->m_ItemType );
 			if( iEnchantStoneID <= 0 )
 			{
-				START_LOG( cerr, L"일어날수 없는 에러, 강화 정보 스크립트가 잘못되었나?" )
+				START_LOG( cerr, L"This should never happen; is the enhancement information script invalid?" )
 					<< BUILD_LOG( pItemTemplet->m_UseLevel )
 					<< BUILD_LOG( pItemTemplet->m_ItemType )
 					<< END_LOG;
@@ -9842,7 +9842,7 @@ bool KInventory::EnchantItem( IN UidType iItemUID,
 			break;
 
 		default:
-			START_LOG( cerr, L"일어날수 없는 에러, 위에서 이미 검사를 했음." )
+			START_LOG( cerr, L"This should never happen; it was already checked above." )
 				<< BUILD_LOG( pItemTemplet->m_ItemType )
 				<< END_LOG;
 
@@ -9867,7 +9867,7 @@ bool KInventory::EnchantItem( IN UidType iItemUID,
 
 		if( iEnchantStoneUID <= 0 )
 		{
-			START_LOG( cerr, L"인벤에서 강화석을 찾는중 이상한 아이템UID 발견." )
+			START_LOG( cerr, L"Found an invalid item UID while searching for an enhancement stone in the inventory." )
 				<< BUILD_LOG( iEnchantStoneID )
 				<< BUILD_LOGc( vitEStone->m_cSlotCategory )
 				//{{ 2011. 12. 15	최육사	인벤토리 슬롯ID크기 늘리기
@@ -9883,7 +9883,7 @@ bool KInventory::EnchantItem( IN UidType iItemUID,
 
 	if( iEnchantStoneUID <= 0 )
 	{
-	    START_LOG( cerr, L"인벤토리에 해당 강화석이 없다!" )
+	    START_LOG( cerr, L"Required enhancement stone is not in inventory!" )
 			<< BUILD_LOG( pItemTemplet->m_ItemType )
 			<< BUILD_LOG( bIsRareEnchantStone )
 	        << BUILD_LOG( iEnchantStoneID )
@@ -9901,7 +9901,7 @@ bool KInventory::EnchantItem( IN UidType iItemUID,
 
     if( iCategory == CXSLInventory::ST_E_EQUIP )
     {
-        START_LOG( cerr, L"장착 중인 아이템 강화 시도." )
+        START_LOG( cerr, L"Attempted to enhance an equipped item." )
             << BUILD_LOG( iItemUID )
             << BUILD_LOG( iCategory )
             << BUILD_LOG( iSlotID )
@@ -9918,7 +9918,7 @@ bool KInventory::EnchantItem( IN UidType iItemUID,
 	{
 		if( SiCXSLEnchantItemManager()->GetEventEnchantResult( bIsRareEnchantStone, iEnchantLevel + 1, iEnchantResult ) == false )
 		{
-			START_LOG( cerr, L"이벤트 강화 처리 오류!" )
+			START_LOG( cerr, L"Event enhancement processing error!" )
 				<< BUILD_LOG( iItemID )
 				<< BUILD_LOG( iItemUID )
 				<< BUILD_LOG( iEnchantStoneID )
@@ -9935,7 +9935,7 @@ bool KInventory::EnchantItem( IN UidType iItemUID,
 		if( SiCXSLEnchantItemManager()->GetEnchantResult( bIsRareEnchantStone, iEnchantLevel + 1, iEnchantResult ) == false )
 		//}}
 		{
-			START_LOG( cerr, L"강화 처리 오류!" )
+			START_LOG( cerr, L"Enhancement processing error!" )
 				<< BUILD_LOG( iItemID )
 				<< BUILD_LOG( iItemUID )
 				<< BUILD_LOG( iEnchantStoneID )
@@ -9953,7 +9953,7 @@ bool KInventory::EnchantItem( IN UidType iItemUID,
 	{
 		iEnchantResult = NetError::ERR_ENCHANT_RESULT_00;
 
-		START_LOG( cout, L"운영자가 100% 강화성공 치트를 사용하였습니다." )
+		START_LOG( cout, L"An operator used the 100% enhancement success cheat." )
 			<< BUILD_LOG( iEnchantLevel );
 	}
 
@@ -9990,7 +9990,7 @@ bool KInventory::EnchantItem( IN UidType iItemUID,
 			iSupportMaterialItemID = SiCXSLEnchantItemManager()->GetEnchantSupportMaterialItemID( pItemTemplet->m_UseLevel );
 			if( iSupportMaterialItemID <= 0 )
 			{
-				START_LOG( cerr, L"일어날수 없는 에러, 보조제 정보 스크립트가 잘못되었나?" )
+				START_LOG( cerr, L"This should never happen; is the catalyst data script incorrect?" )
 					<< BUILD_LOG( pItemTemplet->m_UseLevel )
 					<< END_LOG;
 
@@ -10024,7 +10024,7 @@ bool KInventory::EnchantItem( IN UidType iItemUID,
 
 			if( iSupportMaterialUID <= 0 )
 			{
-				START_LOG( cerr, L"인벤에서 보조제를 찾는중 이상한 아이템UID 발견." )
+				START_LOG( cerr, L"Found an invalid ItemUID while searching inventory for enhancement aid." )
 					<< BUILD_LOG( iSupportMaterialUID )
 					<< BUILD_LOGc( vitSMaterial->m_cSlotCategory )
 					//{{ 2011. 12. 15	최육사	인벤토리 슬롯ID크기 늘리기
@@ -10114,7 +10114,7 @@ bool KInventory::EnchantItem( IN UidType iItemUID,
         break;
 
 	default:
-		START_LOG( cerr, L"정의되지 않은 강화 결과값입니다." )
+		START_LOG( cerr, L"Undefined enhancement result value." )
 			<< BUILD_LOG( iItemID )
 			<< BUILD_LOG( iEnchantLevel )
 			<< BUILD_LOG( iEnchantResult )
@@ -10127,7 +10127,7 @@ bool KInventory::EnchantItem( IN UidType iItemUID,
 
     if( !GetEnchantLevel( iItemUID, iLevelAfterEnchant ) )
     {
-        START_LOG( cerr, L"강화 레벨 얻기 실패." )
+        START_LOG( cerr, L"Failed to retrieve the enhancement level." )
             << BUILD_LOG( iItemUID )
             << BUILD_LOG( iItemID )
             << END_LOG;
@@ -10204,7 +10204,7 @@ bool KInventory::RestoreItem( IN UidType iItemUID, OUT int& iLevelAfterEnchant, 
 	// 1. 복구될 아이템 검사
 	if( IsExist( iItemUID ) == false )
 	{
-		START_LOG( cerr, L"인벤토리에 없는 아이템UID인데?" )
+		START_LOG( cerr, L"The item UID is not in the inventory." )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -10215,7 +10215,7 @@ bool KInventory::RestoreItem( IN UidType iItemUID, OUT int& iLevelAfterEnchant, 
 	//{{ 2009. 8. 7  최육사		은행
 	if( IsExistInBank( iItemUID ) == true )
 	{
-		START_LOG( cerr, L"은행에서는 복구기능 사용 못하는데?" )
+		START_LOG( cerr, L"Restore feature cannot be used on bank items?" )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -10230,7 +10230,7 @@ bool KInventory::RestoreItem( IN UidType iItemUID, OUT int& iLevelAfterEnchant, 
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iItemID );
 	if( pItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"아이템 템플릿을 얻지 못함" )
+		START_LOG( cerr, L"Failed to retrieve the item template." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 
@@ -10241,7 +10241,7 @@ bool KInventory::RestoreItem( IN UidType iItemUID, OUT int& iLevelAfterEnchant, 
 	// 3. 강화가능한 템인지 검사
 	if( !pItemTemplet->m_bCanEnchant )
 	{
-		START_LOG( cerr, L"강화할 수 있는 아이템이 아닌데 복구를 하려고 한다?" )
+		START_LOG( cerr, L"Attempted to restore an item that cannot be enhanced." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 
@@ -10252,7 +10252,7 @@ bool KInventory::RestoreItem( IN UidType iItemUID, OUT int& iLevelAfterEnchant, 
 	if( pItemTemplet->m_ItemType != CXSLItem::IT_WEAPON  &&
 		pItemTemplet->m_ItemType != CXSLItem::IT_DEFENCE )
 	{
-		START_LOG( cerr, L"강화할 수 있는 아이템이 아닌데 복구를 하려고 한다?" )
+		START_LOG( cerr, L"Attempted to restore an item that cannot be enhanced." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 
@@ -10263,7 +10263,7 @@ bool KInventory::RestoreItem( IN UidType iItemUID, OUT int& iLevelAfterEnchant, 
 	// 4. 사용불가 아이템인지 검사
 	if( !IsBrokenItem( iItemUID ) )
 	{
-		START_LOG( cerr, L"사용불가 아이템만 복구 가능함." )
+		START_LOG( cerr, L"Only unusable items can be restored." )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -10275,7 +10275,7 @@ bool KInventory::RestoreItem( IN UidType iItemUID, OUT int& iLevelAfterEnchant, 
 	int iEnchantLevel;
 	if( !GetEnchantLevel( iItemUID, iEnchantLevel ) )
 	{
-		START_LOG( cerr, L"강화 레벨 얻기 실패." )
+		START_LOG( cerr, L"Failed to retrieve the enhancement level." )
 			<< BUILD_LOG( iItemUID )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
@@ -10287,7 +10287,7 @@ bool KInventory::RestoreItem( IN UidType iItemUID, OUT int& iLevelAfterEnchant, 
 	// 6. 강화레벨 범위 검사
 	if( iEnchantLevel >= 0  ||  iEnchantLevel < (-CXSLEnchantItemManager::MAX_ENCHANT_LEVEL) )
 	{
-		START_LOG( cerr, L"강화 레벨 이상." )
+		START_LOG( cerr, L"Invalid enhancement level." )
 			<< BUILD_LOG( iItemUID )
 			<< BUILD_LOG( iItemID )
 			<< BUILD_LOG( iEnchantLevel )
@@ -10307,7 +10307,7 @@ bool KInventory::RestoreItem( IN UidType iItemUID, OUT int& iLevelAfterEnchant, 
 		iRestoreItemID = SiCXSLEnchantItemManager()->GetRestoreItemID( pItemTemplet->m_UseLevel, CXSLItem::IT_DEFENCE );
 		if( iRestoreItemID <= 0 )
 		{
-			START_LOG( cerr, L"일어날수 없는 에러, 복구석 정보 스크립트가 잘못되었나?" )
+			START_LOG( cerr, L"This should never happen; is the restoration stone data script incorrect?" )
 				<< BUILD_LOG( pItemTemplet->m_UseLevel )
 				<< BUILD_LOG( pItemTemplet->m_ItemType )
 				<< END_LOG;
@@ -10330,7 +10330,7 @@ bool KInventory::RestoreItem( IN UidType iItemUID, OUT int& iLevelAfterEnchant, 
 
 			if( iRestoreItemUID <= 0 )
 			{
-				START_LOG( cerr, L"인벤에서 강화석을 찾는중 이상한 아이템UID 발견." )
+				START_LOG( cerr, L"Found an invalid item UID while searching for an enhancement stone in the inventory." )
 					<< BUILD_LOG( iRestoreItemID )
 					<< BUILD_LOGc( vitRI->m_cSlotCategory )
 					//{{ 2011. 12. 15	최육사	인벤토리 슬롯ID크기 늘리기
@@ -10378,7 +10378,7 @@ bool KInventory::RestoreItem( IN UidType iItemUID, OUT int& iLevelAfterEnchant, 
 			iRestoreItemID = SiCXSLEnchantItemManager()->GetRestoreItemID( pItemTemplet->m_UseLevel, CXSLItem::IT_NONE );
 			if( iRestoreItemID <= 0 )
 			{
-				START_LOG( cerr, L"일어날수 없는 에러, 복구석 정보 스크립트가 잘못되었나?" )
+				START_LOG( cerr, L"This should never happen; is the restoration stone data script incorrect?" )
 					<< BUILD_LOG( pItemTemplet->m_UseLevel )
 					<< BUILD_LOG( pItemTemplet->m_ItemType )
 					<< END_LOG;
@@ -10403,7 +10403,7 @@ bool KInventory::RestoreItem( IN UidType iItemUID, OUT int& iLevelAfterEnchant, 
 
 			if( iRestoreItemUID <= 0 )
 			{
-				START_LOG( cerr, L"인벤에서 강화석을 찾는중 이상한 아이템UID 발견." )
+				START_LOG( cerr, L"Found an invalid item UID while searching for an enhancement stone in the inventory." )
 					<< BUILD_LOG( iRestoreItemID )
 					<< BUILD_LOGc( vitRI->m_cSlotCategory )
 					//{{ 2011. 12. 15	최육사	인벤토리 슬롯ID크기 늘리기
@@ -10420,7 +10420,7 @@ bool KInventory::RestoreItem( IN UidType iItemUID, OUT int& iLevelAfterEnchant, 
 
 	if( iRestoreItemUID <= 0 )
 	{
-		START_LOG( cerr, L"인벤토리에 해당 복구석이 없다!" )
+		START_LOG( cerr, L"Required restoration stone is not in inventory!" )
 			<< BUILD_LOG( pItemTemplet->m_ItemType )
 			<< BUILD_LOG( iRestoreItemID )
 			<< BUILD_LOG( iRestoreItemUID )
@@ -10437,7 +10437,7 @@ bool KInventory::RestoreItem( IN UidType iItemUID, OUT int& iLevelAfterEnchant, 
 
 	if( iCategory == CXSLInventory::ST_E_EQUIP )
 	{
-		START_LOG( cerr, L"장착 중인 아이템 복구 시도." )
+		START_LOG( cerr, L"Attempted to restore an equipped item." )
 			<< BUILD_LOG( iItemUID )
 			<< BUILD_LOG( iCategory )
 			<< BUILD_LOG( iSlotID )
@@ -10468,7 +10468,7 @@ bool KInventory::RestoreItem( IN UidType iItemUID, OUT int& iLevelAfterEnchant, 
 
 	if( !GetEnchantLevel( iItemUID, iLevelAfterEnchant ) )
 	{
-		START_LOG( cerr, L"강화 레벨 얻기 실패. 일어날 수 없는 에러." )
+		START_LOG( cerr, L"Failed to retrieve the enhancement level; this should never happen." )
 			<< BUILD_LOG( iItemUID )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
@@ -10521,7 +10521,7 @@ bool KInventory::SocketItem( IN UidType iItemUID
 	// 1. 소켓 넣을 아이템 검사
 	if( IsExist( iItemUID ) == false )
 	{
-		START_LOG( cerr, L"인벤토리에 없는 아이템UID인데?" )
+		START_LOG( cerr, L"The item UID is not in the inventory." )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -10532,7 +10532,7 @@ bool KInventory::SocketItem( IN UidType iItemUID
 	// 2. 은행에 있는 아이템에는 소켓 못넣음
 	if( IsExistInBank( iItemUID ) == true )
 	{
-		START_LOG( cerr, L"은행에 있는 아이템은 소켓 못넣는데?" )
+		START_LOG( cerr, L"Cannot add a socket to an item in the bank." )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -10543,7 +10543,7 @@ bool KInventory::SocketItem( IN UidType iItemUID
 	// 3. 사용불가 아이템인지 검사
 	if( IsBrokenItem( iItemUID ) )
 	{
-		START_LOG( cerr, L"사용불가 아이템. 일어날수 없는에러" )
+		START_LOG( cerr, L"The item is unusable; this should never happen." )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -10556,7 +10556,7 @@ bool KInventory::SocketItem( IN UidType iItemUID
 	// 4. PC방 전용 아이템인지 검사
 	if( IsDBUpdateItem( iItemUID ) == false )
 	{
-		START_LOG( cerr, L"PC방 프리미엄 아이템에 소켓을 박을려고 했습니다." )
+		START_LOG( cerr, L"Attempted to add a socket to a PC Bang premium item." )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -10573,7 +10573,7 @@ bool KInventory::SocketItem( IN UidType iItemUID
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iItemID );
 	if( pItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"아이템 템플릿을 얻지 못함" )
+		START_LOG( cerr, L"Failed to retrieve the item template." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 
@@ -10585,7 +10585,7 @@ bool KInventory::SocketItem( IN UidType iItemUID
 	// 6. 장착 불가 아이템인지 검사
 	if( pItemTemplet->m_bNoEquip )
 	{
-		START_LOG( clog, L"장착 불가 아이템은 소켓설치 못함." )
+		START_LOG( clog, L"Cannot add sockets to an unequippable item." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 
@@ -10606,7 +10606,7 @@ bool KInventory::SocketItem( IN UidType iItemUID
 			if( SetItemSocketOption( iItemUID, mitCheat->first, static_cast< int >(mitCheat->second) ) == false )
 			//}}
 			{
-				START_LOG( cerr, L"소켓 옵션 넣기 실패!" )
+				START_LOG( cerr, L"Failed to add the socket option!" )
 					<< BUILD_LOG( iItemUID )
 					<< BUILD_LOG( iItemID )
 					<< BUILD_LOG( mitCheat->first )
@@ -10621,7 +10621,7 @@ bool KInventory::SocketItem( IN UidType iItemUID
 		// DB에 업데이트 하기 위한 소켓 옵션 리스트 얻기
 		if( GetItemSocketList( iItemUID, vecSocketResult ) == false )
 		{
-			START_LOG( cerr, L"위에서 아이템의 존재 여부를 검사했다. 절대 일어나서는 안되는 에러!" )
+			START_LOG( cerr, L"The item was checked above; this should never happen!" )
 				<< BUILD_LOG( iItemUID )
 				<< END_LOG;
 
@@ -10648,7 +10648,7 @@ bool KInventory::SocketItem( IN UidType iItemUID
 	int iAssignedSocketCount = 0;
 	if( GetCountAssignedItemSocket( iItemUID, iAssignedSocketCount ) == false )
 	{
-		START_LOG( cerr, L"인벤토리에 없는 아이템UID인데? 아이템 소켓 정보 얻기 실패!" )
+		START_LOG( cerr, L"The item UID is not in the inventory; failed to retrieve its socket information!" )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -10682,7 +10682,7 @@ bool KInventory::SocketItem( IN UidType iItemUID
 		const int iMagicStoneItemID = GetItemID( iMagicStoneUID );
 		if( SiCXSLSocketItem()->IsMagicStoneItemID( iMagicStoneItemID ) == false )
 		{
-			START_LOG( cerr, L"마법석이 아니다!." )
+			START_LOG( cerr, L"This is not a magic stone!" )
 				<< BUILD_LOG( iItemUID )
 				<< BUILD_LOG( iItemID )
 				<< BUILD_LOG( iMagicStoneUID )
@@ -10699,7 +10699,7 @@ bool KInventory::SocketItem( IN UidType iItemUID
 		if( GetItemSocketOption( iItemUID, iSocketSlotID, iSocketOptionID ) == false )
 		//}}
 		{
-			START_LOG( cerr, L"인벤토리에 없는 아이템UID인데? 아이템 소켓 정보 얻기 실패!" )
+			START_LOG( cerr, L"The item UID is not in the inventory; failed to retrieve its socket information!" )
 				<< BUILD_LOG( iItemUID )
 				<< END_LOG;
 
@@ -10716,7 +10716,7 @@ bool KInventory::SocketItem( IN UidType iItemUID
 		int iCost = 0;
 		if( SiCXSLSocketItem()->CalcInsertSocketCost( iItemID, iMagicStoneItemID, iAssignedSocketCount, bIsEmptySlot, iCost ) == false )
 		{
-			START_LOG( cerr, L"소켓 수수료 얻기 실패!" )
+			START_LOG( cerr, L"Failed to get socket fee!" )
 				<< BUILD_LOG( iItemUID )
 				<< BUILD_LOG( iItemID )
 				<< BUILD_LOG( iMagicStoneItemID )
@@ -10749,7 +10749,7 @@ bool KInventory::SocketItem( IN UidType iItemUID
 	// 10. 마법석 수량 검사
 	if( IsEnoughItemExist( mapRequireItemQuantity ) == false )
 	{
-		START_LOG( cerr, L"마법석 수량이 부족합니다." )
+		START_LOG( cerr, L"Not enough magic stones." )
 			<< BUILD_LOG( iItemUID )
 			<< BUILD_LOG( iItemID )
 			<< BUILD_LOG( mapRequireItemQuantity.size() )
@@ -10777,7 +10777,7 @@ bool KInventory::SocketItem( IN UidType iItemUID
 		if( SiCXSLSocketItem()->GetResultItem( iMagicStoneItemID, pItemTemplet->m_ItemType, pItemTemplet->m_PeriodType, pItemTemplet->m_UseLevel, pItemTemplet->m_bFashion, iEnchantLevel, iSocketResult ) == false )
 		//}}
 		{
-			START_LOG( cerr, L"소켓 랜덤 결과 얻기 실패." )
+			START_LOG( cerr, L"Failed to get random socket result." )
 				<< BUILD_LOG( iItemUID )
 				<< BUILD_LOG( iMagicStoneItemID )
 				<< BUILD_LOG( iEnchantLevel )
@@ -10790,7 +10790,7 @@ bool KInventory::SocketItem( IN UidType iItemUID
 		//{{ 2011. 07. 25    김민성    아이템 옵션ID 데이터 사이즈 증가
 		if( SetItemSocketOption( iItemUID, iSocketIndex, iSocketResult ) == false )
 		{
-			START_LOG( cerr, L"소켓 옵션 넣기 실패!" )
+			START_LOG( cerr, L"Failed to add the socket option!" )
 				<< BUILD_LOG( iItemUID )
 				<< BUILD_LOG( iItemID )
 				<< BUILD_LOG( iSocketIndex )
@@ -10811,7 +10811,7 @@ bool KInventory::SocketItem( IN UidType iItemUID
 	// 11. 해당 아이템 소켓 리스트 얻기
 	if( GetItemSocketList( iItemUID, vecSocketResult ) == false )
 	{
-        START_LOG( cerr, L"위에서 아이템의 존재 여부를 검사했다. 절대 일어나서는 안되는 에러!" )
+        START_LOG( cerr, L"The item was checked above; this should never happen!" )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -10871,7 +10871,7 @@ bool KInventory::AttribEnchantItem( IN UidType iItemUID,
 	// 1. 속성강화할 아이템 검사
 	if( IsExist( iItemUID ) == false )
 	{
-		START_LOG( cerr, L"인벤토리에 없는 아이템UID인데?" )
+		START_LOG( cerr, L"The item UID is not in the inventory." )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -10882,7 +10882,7 @@ bool KInventory::AttribEnchantItem( IN UidType iItemUID,
 	//{{ 2009. 8. 7  최육사		은행
 	if( IsExistInBank( iItemUID ) == true )
 	{
-		START_LOG( cerr, L"은행에서는 속성강화 못하는데?" )
+		START_LOG( cerr, L"Cannot enchant an item in the bank." )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -10894,7 +10894,7 @@ bool KInventory::AttribEnchantItem( IN UidType iItemUID,
 	//{{ 2008. 12. 21  최육사	사용불가 검사
 	if( IsBrokenItem( iItemUID ) == true )
 	{
-		START_LOG( cerr, L"사용불가 아이템. 일어날수 없는에러" )
+		START_LOG( cerr, L"The item is unusable; this should never happen." )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -10907,7 +10907,7 @@ bool KInventory::AttribEnchantItem( IN UidType iItemUID,
 
 	if( IsDBUpdateItem( iItemUID ) == false )
 	{
-		START_LOG( cerr, L"PC방 프리미엄 아이템을 속성강화하려고 했습니다." )
+		START_LOG( cerr, L"Attempted to enchant a PC Bang premium item." )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -10920,7 +10920,7 @@ bool KInventory::AttribEnchantItem( IN UidType iItemUID,
 	// 2. 속성강화값 검증
 	if( SiCXSLAttribEnchantItem()->VerifyAttribEnchantType( cAttribEnchantType ) == false )
 	{
-		START_LOG( cerr, L"잘못된 속성강화값입니다." )
+		START_LOG( cerr, L"Invalid attribute enhancement value." )
 			<< BUILD_LOGc( cAttribEnchantType )
 			<< END_LOG;
 
@@ -10933,7 +10933,7 @@ bool KInventory::AttribEnchantItem( IN UidType iItemUID,
 
 	if( GetAttribEnchant( iItemUID, kAttribEnchantInfo ) == false )
 	{
-		START_LOG( cerr, L"인벤토리에 없는 아이템인데 속성강화값을 얻을려고 했다." )
+		START_LOG( cerr, L"Attempted to retrieve attribute enhancement value for an item not in inventory." )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -10945,7 +10945,7 @@ bool KInventory::AttribEnchantItem( IN UidType iItemUID,
 	const int iRequireItemID = CXSLAttribEnchantItem::GetRequireItemID( cAttribEnchantType );
 	if( iRequireItemID < 0 )
 	{
-		START_LOG( cerr, L"해당 속성강화에 필요한 아이템정보를 얻을수가 없습니다." )
+		START_LOG( cerr, L"Could not retrieve item information required for this attribute enhancement." )
 			<< BUILD_LOGc( cAttribEnchantType )
 			<< BUILD_LOG( iRequireItemID )
 			<< END_LOG;
@@ -10962,7 +10962,7 @@ bool KInventory::AttribEnchantItem( IN UidType iItemUID,
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( GetItemID( iItemUID ) );
 	if( pItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"아이템 템플릿이 존재하지 않습니다" )
+		START_LOG( cerr, L"The item template does not exist." )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -10982,7 +10982,7 @@ bool KInventory::AttribEnchantItem( IN UidType iItemUID,
 		break;
 
 	default:
-		START_LOG( cerr, L"무기와 방어구만 속성강화 가능한데.." )
+		START_LOG( cerr, L"Only weapons and armor can be enchanted." )
 			<< BUILD_LOG( iItemUID )
 			<< BUILD_LOG( pItemTemplet->m_ItemType )
 			<< END_LOG;
@@ -11014,7 +11014,7 @@ bool KInventory::AttribEnchantItem( IN UidType iItemUID,
 		if( SiCXSLAttribEnchantItem()->GetRequireItemCount_Insert( eAttribCountType, bWeapon, iAttributeLevel, pItemTemplet->m_ItemGrade, iRequireQuantity ) == false )
 			//}}
 		{
-			START_LOG( cerr, L"속성강화에 필요한 강화석 수량값을 얻을 수가 없습니다." )
+			START_LOG( cerr, L"Could not retrieve the enhancement stone quantity required for attribute enhancement." )
 				<< BUILD_LOG( eAttribCountType )
 				<< BUILD_LOG( bWeapon )
 				<< BUILD_LOG( pItemTemplet->m_UseLevel )
@@ -11039,7 +11039,7 @@ bool KInventory::AttribEnchantItem( IN UidType iItemUID,
 		// 8. 수수료
 		if( !SiCXSLAttribEnchantItem()->GetRequireED_Insert( eAttribCountType, bWeapon, pItemTemplet->m_UseLevel, pItemTemplet->m_ItemGrade, iCost ) )
 		{
-			START_LOG( cerr, L"속성강화에 필요한 ED를 얻을 수가 없습니다." )
+			START_LOG( cerr, L"Could not retrieve the ED required for attribute enhancement." )
 				<< BUILD_LOG( eAttribCountType )
 				<< BUILD_LOG( bWeapon )
 				<< BUILD_LOG( pItemTemplet->m_UseLevel )
@@ -11071,7 +11071,7 @@ bool KInventory::AttribEnchantItem( IN UidType iItemUID,
 		// 8. 수수료
 		if( !SiCXSLAttribEnchantItem()->GetRequireED_Remove( eAttribCountType, bWeapon, pItemTemplet->m_UseLevel, pItemTemplet->m_ItemGrade, iCost ) )
 		{
-			START_LOG( cerr, L"속성석 제거에 필요한 ED를 얻을 수가 없습니다." )
+			START_LOG( cerr, L"Could not retrieve the ED required to remove an attribute stone." )
 				<< BUILD_LOG( eAttribCountType )
 				<< BUILD_LOG( bWeapon )
 				<< BUILD_LOG( pItemTemplet->m_UseLevel )
@@ -11099,7 +11099,7 @@ bool KInventory::AttribEnchantItem( IN UidType iItemUID,
 	// 10. 속성 강화
 	if( SetAttribEnchant( iItemUID, cAttribEnchantSlotNo, cAttribEnchantType ) == false )
 	{
-		START_LOG( cerr, L"이미 검사했는데 에러다?" )
+		START_LOG( cerr, L"An error occurred after the check already passed." )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -11110,7 +11110,7 @@ bool KInventory::AttribEnchantItem( IN UidType iItemUID,
 	// 11. 강화에 성공하면 엘의 조각 삭제
 	if( DeleteItemOnlyInventory( mapRequireItem, vecUpdated, KDeletedItemInfo::DR_ATTRIB_ENCHANT ) == false )
 	{
-		START_LOG( cerr, L"수량 검사를 했는데 삭제 실패? 일어날 수 없는 에러.." )
+		START_LOG( cerr, L"Deletion failed after the quantity check; this should never happen." )
 			<< BUILD_LOG( mapRequireItem.size() )
 			<< BUILD_LOG( vecUpdated.size() )
 			<< END_LOG;
@@ -11171,7 +11171,7 @@ bool KInventory::IdentifyItem( IN UidType iItemUID,
 
 	if( !IsEnoughItemExist( mapChangeItem ) )
 	{
-		START_LOG( cerr, L"인벤토리에 해당 아이템들 수량만큼 없네?" )
+		START_LOG( cerr, L"The inventory does not contain enough of the specified item." )
 			<< BUILD_LOG( iItemUID )
 			<< BUILD_LOG( iQuantity )
 			<< END_LOG;
@@ -11186,7 +11186,7 @@ bool KInventory::IdentifyItem( IN UidType iItemUID,
 	const CXSLAttribEnchantItem::KIdentifyInfo* pKIdentifyInfo = SiCXSLAttribEnchantItem()->GetIdentifyInfo( iItemID );
 	if( pKIdentifyInfo == NULL )
 	{
-		START_LOG( cerr, L"감정 정보 템플릿을 얻지 못함" )
+		START_LOG( cerr, L"Could not retrieve the appraisal information template." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 
@@ -11199,7 +11199,7 @@ bool KInventory::IdentifyItem( IN UidType iItemUID,
 
 	if( !IsEnoughItemExistOnlyInventory( mapRequireItem ) )
 	{
-		START_LOG( cerr, L"인벤토리에 해당 아이템들 수량만큼 없네?" )
+		START_LOG( cerr, L"The inventory does not contain enough of the specified item." )
 			<< BUILD_LOG( pKIdentifyInfo->m_iRequireItemID )
 			<< BUILD_LOG( iQuantity )
 			<< END_LOG;
@@ -11232,7 +11232,7 @@ bool KInventory::IdentifyItem( IN UidType iItemUID,
 		iResultItemID = pKIdentifyInfo->m_kResult.Decision();
 		if( iResultItemID == KLottery::CASE_BLANK )
 		{
-			START_LOG( cerr, L"확률이 100%가 아닌가? 있을수 없는 에러!" )
+			START_LOG( cerr, L"Chance is not 100%; this should never happen!" )
 				<< BUILD_LOG( iItemUID )
 				<< BUILD_LOG( iItemID )
 				<< END_LOG;
@@ -11245,7 +11245,7 @@ bool KInventory::IdentifyItem( IN UidType iItemUID,
 		const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iResultItemID );
 		if( pItemTemplet == NULL )
 		{
-			START_LOG( cerr, L"아이템 템플릿 정보를 찾을 수 없습니다." )
+			START_LOG( cerr, L"Could not find the item template information." )
 				<< BUILD_LOG( iItemUID )
 				<< BUILD_LOG( iItemID )
 				<< BUILD_LOG( iResultItemID )
@@ -11376,7 +11376,7 @@ bool KInventory::ResetSkillItem( OUT KInventoryItemInfo& kInventoryItemInfo )
 
 		if( iItemUID <= 0 )
 		{
-			START_LOG( cerr, L"인벤에서 스킬 초기화 아이템을 찾는중 이상한 아이템UID 발견." )
+			START_LOG( cerr, L"Found an invalid ItemUID while searching inventory for skill reset item." )
 				<< BUILD_LOGc( vitRSI->m_cSlotCategory )
 				//{{ 2011. 12. 15	최육사	인벤토리 슬롯ID크기 늘리기
 				<< BUILD_LOGc( vitRSI->m_sSlotID )
@@ -11420,7 +11420,7 @@ int KInventory::GetEquippedSetItemCount( IN int iSetID )
 		const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( kInventoryItemInfo.m_kItemInfo.m_iItemID );
 		if( pItemTemplet == NULL )
 		{
-            START_LOG( cerr, L"아이템 템플릿 정보가 이상합니다." )
+            START_LOG( cerr, L"Invalid item template information." )
 				<< BUILD_LOG( kInventoryItemInfo.m_kItemInfo.m_iItemID )
 				<< END_LOG;
 			continue;
@@ -11442,7 +11442,7 @@ bool KInventory::GetSellPrice( IN const UidType iItemUID, IN const int iQuantity
 	KInventoryItemInfo kItemInfo;
 	if( GetInventoryItemInfo( iItemUID, kItemInfo ) == false )
 	{
-		START_LOG( cerr, L"존재 하지 않는 아이템 입니다!" )
+		START_LOG( cerr, L"Item does not exist!" )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 		return false;
@@ -11451,7 +11451,7 @@ bool KInventory::GetSellPrice( IN const UidType iItemUID, IN const int iQuantity
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( kItemInfo.m_kItemInfo.m_iItemID );
 	if( pItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"아이템 정보가 존재하지 않습니다!" )
+		START_LOG( cerr, L"The item information does not exist!" )
 			<< BUILD_LOG( iItemUID )
 			<< BUILD_LOG( kItemInfo.m_kItemInfo.m_iItemID )
 			<< END_LOG;
@@ -11500,7 +11500,7 @@ bool KInventory::GetSellPrice( IN const UidType iItemUID, IN const int iQuantity
         break;
 
     default:
-        START_LOG( cerr, L"이상한 아이템 기간 타입." )
+        START_LOG( cerr, L"Invalid item duration type." )
 			<< BUILD_LOG( iItemUID )
 			<< BUILD_LOG( kItemInfo.m_kItemInfo.m_iItemID )
             << BUILD_LOG( pItemTemplet->m_PeriodType )
@@ -11511,7 +11511,7 @@ bool KInventory::GetSellPrice( IN const UidType iItemUID, IN const int iQuantity
 	//{{ 2007. 11. 22  최육사  판매가 교정
 	if( iSellPrice < 0 )
 	{
-		START_LOG( cwarn, L"장비템 수리 안하고 팔았나?" )
+		START_LOG( cwarn, L"Was equipment sold without being repaired?" )
 			<< BUILD_LOG( kItemInfo.m_kItemInfo.m_iItemID )
 			<< BUILD_LOG( iQuantity )
 			<< BUILD_LOG( pItemTemplet->m_PeriodType )
@@ -11535,7 +11535,7 @@ bool KInventory::CheckCanMoveShareItem( IN UidType iItemUID, OUT KDBE_SEAL_ITEM_
 	mit = m_mapItem.find( iItemUID );
 	if( mit == m_mapItem.end() )
 	{
-		START_LOG( cerr, L"해당 아이템 UID가 없음." )
+		START_LOG( cerr, L"The specified item UID does not exist." )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -11546,7 +11546,7 @@ bool KInventory::CheckCanMoveShareItem( IN UidType iItemUID, OUT KDBE_SEAL_ITEM_
 	// 봉인 또는 봉인해제될 아이템 검사
 	if( GetInventoryItemInfo( iItemUID, kItemInfo ) == false )
 	{
-		START_LOG( cerr, L"은행 공유 : 인벤토리에 없는 아이템UID" )
+		START_LOG( cerr, L"Shared bank: ItemUID is not in the inventory" )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -11557,7 +11557,7 @@ bool KInventory::CheckCanMoveShareItem( IN UidType iItemUID, OUT KDBE_SEAL_ITEM_
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iItemID );
 	if( pItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"은행 공유 : 아이템 템플릿 얻기 실패" )
+		START_LOG( cerr, L"Shared bank: failed to retrieve item template" )
 			<< BUILD_LOG( iItemUID )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
@@ -11567,7 +11567,7 @@ bool KInventory::CheckCanMoveShareItem( IN UidType iItemUID, OUT KDBE_SEAL_ITEM_
 
 	if( kItemInfo.m_kItemInfo.m_sPeriod > 0 )
 	{
-		START_LOG( cerr, L"은행 공유 : 기간제 아이템은 이동 할 수 없음" )
+		START_LOG( cerr, L"Shared bank: timed items cannot be moved" )
 			<< BUILD_LOG( iItemUID )
 			<< BUILD_LOG( kItemInfo.m_kItemInfo.m_sPeriod )
 			<< END_LOG;
@@ -11610,7 +11610,7 @@ bool KInventory::CheckCanMoveShareItem( IN UidType iItemUID, OUT KDBE_SEAL_ITEM_
 				pItemTemplet->m_ucMaxSealCount != CXSLInventory::SEAL_COUNT_MAX )
 				)
 			{
-				START_LOG( cerr, L"은행 공유 : 더이상 봉인 가능 횟수를 차감 할 수 없음" )
+				START_LOG( cerr, L"Shared bank: cannot decrement remaining seal count any further" )
 					<< BUILD_LOG( iItemUID )
 					<< BUILD_LOG( mit->second.GetSealCount() )
 					<< END_LOG;
@@ -11620,7 +11620,7 @@ bool KInventory::CheckCanMoveShareItem( IN UidType iItemUID, OUT KDBE_SEAL_ITEM_
 		}
 		else
 		{
-			START_LOG( cerr, L"은행 공유 : 귀속 아이템은 이동할 수 없음" )
+			START_LOG( cerr, L"Shared bank: bound items cannot be moved" )
 				<< BUILD_LOG( iItemUID )
 				<< BUILD_LOG( iItemID )
 				<< END_LOG;
@@ -11649,7 +11649,7 @@ bool KInventory::UseItemInInventory( IN UidType iItemUID, OUT std::vector< KInve
 	const int iItemID = GetItemID( iItemUID );
 	if( iItemID <= 0 )
 	{
-		START_LOG( cerr, L"존재하지 않는 아이템입니다." )
+		START_LOG( cerr, L"The item does not exist." )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -11660,7 +11660,7 @@ bool KInventory::UseItemInInventory( IN UidType iItemUID, OUT std::vector< KInve
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iItemID );
 	if( pItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )
+		START_LOG( cerr, L"Failed to retrieve the item template." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 
@@ -11687,7 +11687,7 @@ bool KInventory::UseItemInInventory( IN UidType iItemUID, OUT std::vector< KInve
 	int iSlotID = 0;
 	if( !GetCategorySlot( iItemUID, iCategory, iSlotID ) )
 	{
-		START_LOG( cerr, L"카테고리 슬롯 정보 얻기 실패!" )
+		START_LOG( cerr, L"Failed to retrieve category slot information!" )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -11704,7 +11704,7 @@ bool KInventory::UseItemInInventory( IN UidType iItemUID, OUT std::vector< KInve
 			DecreaseQuantity( iItemUID, 1, iDecreased, KDeletedItemInfo::DR_USE_ITEM_IN_INVENTORY );
 			if( 1 != iDecreased )
 			{
-				START_LOG( cerr, L"수량 변화 이상." )
+				START_LOG( cerr, L"Invalid quantity change." )
 					<< BUILD_LOG( iItemUID )
 					<< BUILD_LOG( iDecreased )
 					<< END_LOG;
@@ -11718,7 +11718,7 @@ bool KInventory::UseItemInInventory( IN UidType iItemUID, OUT std::vector< KInve
 			KInventoryItemInfo kDelInvenItem;
 			if( !DeleteItem( iItemUID, kDelInvenItem, KDeletedItemInfo::DR_USE_ITEM_IN_INVENTORY ) )
 			{
-				START_LOG( cerr, L"아이템 삭제 실패." )
+				START_LOG( cerr, L"Failed to delete the item." )
 					<< BUILD_LOG( iItemUID )
 					<< END_LOG;
 
@@ -11763,7 +11763,7 @@ bool KInventory::ItemExchangeCheck( IN const int iHouseID
 		// 실제로 해당 아이템이 존재하는지 체크!
 		if( GetInventoryItemInfo( iSourceItemUID, kSrcItemInfo ) == false )
 		{
-			START_LOG( cerr, L"해당 아이템이 인벤토리에 없다!" )
+			START_LOG( cerr, L"The specified item is not in the inventory!" )
 				<< BUILD_LOG( iSourceItemUID )
 				<< END_LOG;
 
@@ -11774,7 +11774,7 @@ bool KInventory::ItemExchangeCheck( IN const int iHouseID
 		// 존재 한다면 수량은 충분한지 체크!
 		if( kSrcItemInfo.m_kItemInfo.m_iQuantity < iSourceQuantity )
 		{
-			START_LOG( cerr, L"해당 아이템의 수량이 충분하지 않다!" )
+			START_LOG( cerr, L"There are not enough of the specified item!" )
 				<< BUILD_LOG( iSourceItemUID )
 				<< BUILD_LOG( iSourceQuantity )
 				<< BUILD_LOG( kSrcItemInfo.m_kItemInfo.m_iQuantity )
@@ -11800,7 +11800,7 @@ bool KInventory::ItemExchangeCheck( IN const int iHouseID
 
 		if( IsEnoughItemExist( mapToDeleteByItemID, true, true ) == false )
 		{
-			START_LOG( cerr, L"인벤토리에 없는 아이템ID인데?" )
+			START_LOG( cerr, L"The item ID is not in the inventory." )
 				<< BUILD_LOG( iSourceItemID )
 				<< BUILD_LOG( iSourceQuantity )
 				<< END_LOG;
@@ -11899,7 +11899,7 @@ bool KInventory::ItemExchange( IN const int iHouseID,
 		// 실제로 해당 아이템이 존재하는지 체크!
 		if( GetInventoryItemInfo( iSourceItemUID, kSrcItemInfo ) == false )
 		{
-			START_LOG( cerr, L"해당 아이템이 인벤토리에 없다!" )
+			START_LOG( cerr, L"The specified item is not in the inventory!" )
 				<< BUILD_LOG( iSourceItemUID )
 				<< END_LOG;
 
@@ -11910,7 +11910,7 @@ bool KInventory::ItemExchange( IN const int iHouseID,
 		// 존재 한다면 수량은 충분한지 체크!
 		if( kSrcItemInfo.m_kItemInfo.m_iQuantity < iSourceQuantity )
 		{
-			START_LOG( cerr, L"해당 아이템의 수량이 충분하지 않다!" )
+			START_LOG( cerr, L"There are not enough of the specified item!" )
 				<< BUILD_LOG( iSourceItemUID )
 				<< BUILD_LOG( iSourceQuantity )
 				<< BUILD_LOG( kSrcItemInfo.m_kItemInfo.m_iQuantity )
@@ -11943,7 +11943,7 @@ bool KInventory::ItemExchange( IN const int iHouseID,
 			}
 			else
 			{
-				START_LOG( cerr, L"인벤토리에 없는 아이템ID인데?" )
+				START_LOG( cerr, L"The item ID is not in the inventory." )
 					<< BUILD_LOG( iSourceItemID )
 					<< BUILD_LOG( iSourceQuantity )
 					<< END_LOG;
@@ -12063,7 +12063,7 @@ bool KInventory::EnchantAttachItem( IN UidType iDestItemUID, IN UidType iAttachI
 	// 1. 부여될 아이템 및 부여아이템 검사
 	if( !IsExist( iDestItemUID )  &&  !IsExist( iAttachItemUID ) )
 	{
-		START_LOG( cerr, L"인벤토리에 없는 아이템UID인데?" )
+		START_LOG( cerr, L"The item UID is not in the inventory." )
 			<< BUILD_LOG( iDestItemUID )
 			<< BUILD_LOG( iAttachItemUID )
 			<< END_LOG;
@@ -12076,7 +12076,7 @@ bool KInventory::EnchantAttachItem( IN UidType iDestItemUID, IN UidType iAttachI
 
 	if( IsDBUpdateItem( iDestItemUID ) == false )
 	{
-		START_LOG( cerr, L"PC방 프리미엄 아이템에 강화 부여를 하려고 했습니다." )
+		START_LOG( cerr, L"Attempted to apply an enhancement to a PC Bang premium item." )
 			<< BUILD_LOG( iDestItemUID )
 			<< END_LOG;
 
@@ -12104,7 +12104,7 @@ bool KInventory::EnchantAttachItem( IN UidType iDestItemUID, IN UidType iAttachI
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iDestItemID );
 	if( pItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"아이템 템플릿을 얻지 못함" )
+		START_LOG( cerr, L"Failed to retrieve the item template." )
 			<< BUILD_LOG( iDestItemID )
 			<< END_LOG;
 
@@ -12116,7 +12116,7 @@ bool KInventory::EnchantAttachItem( IN UidType iDestItemUID, IN UidType iAttachI
 	const CXSLItem::ItemTemplet *pAttachItemTemplet = SiCXSLItemManager()->GetItemTemplet( iAttachItemID );
 	if( pAttachItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"아이템 템플릿을 얻지 못함" )
+		START_LOG( cerr, L"Failed to retrieve the item template." )
 			<< BUILD_LOG( iAttachItemID )
 			<< END_LOG;
 
@@ -12128,7 +12128,7 @@ bool KInventory::EnchantAttachItem( IN UidType iDestItemUID, IN UidType iAttachI
 	// 3. 강화가능한 템인지 검사
 	if( !pItemTemplet->m_bCanEnchant )
 	{
-		START_LOG( cerr, L"강화할 수 있는 아이템이 아닌데 강화부여를 하려고 한다?" )
+		START_LOG( cerr, L"Attempted to apply an enhancement to an item that cannot be enhanced." )
 			<< BUILD_LOG( iDestItemID )
 			<< END_LOG;
 
@@ -12142,7 +12142,7 @@ bool KInventory::EnchantAttachItem( IN UidType iDestItemUID, IN UidType iAttachI
 		if( pItemTemplet->m_ItemType != CXSLItem::IT_WEAPON  &&
 			pItemTemplet->m_ItemType != CXSLItem::IT_DEFENCE )
 		{
-			START_LOG( cerr, L"강화할 수 있는 아이템이 아닌데 강화부여를 하려고 한다?" )
+			START_LOG( cerr, L"Attempted to apply an enhancement to an item that cannot be enhanced." )
 				<< BUILD_LOG( iDestItemID )
 				<< END_LOG;
 
@@ -12154,7 +12154,7 @@ bool KInventory::EnchantAttachItem( IN UidType iDestItemUID, IN UidType iAttachI
 	{
 		if( pItemTemplet->m_ItemType != CXSLItem::IT_DEFENCE )
 		{
-			START_LOG( cerr, L"강화할 수 있는 아이템이 아닌데 강화부여를 하려고 한다?" )
+			START_LOG( cerr, L"Attempted to apply an enhancement to an item that cannot be enhanced." )
 				<< BUILD_LOG( iDestItemID )
 				<< END_LOG;
 
@@ -12164,7 +12164,7 @@ bool KInventory::EnchantAttachItem( IN UidType iDestItemUID, IN UidType iAttachI
 	}
 	else
 	{
-		START_LOG( cerr, L"강화부여 테이블 정보가 이상하다!? 일어날 수 없는 에러!" )
+		START_LOG( cerr, L"Invalid enhancement assignment table data; this should never happen!" )
 			<< BUILD_LOG( iItemType )
 			<< END_LOG;
 
@@ -12182,7 +12182,7 @@ bool KInventory::EnchantAttachItem( IN UidType iDestItemUID, IN UidType iAttachI
 	// 4. 사용불가 아이템인지 검사
 	if( IsBrokenItem( iDestItemUID ) )
 	{
-		START_LOG( cerr, L"사용불가 아이템은 강화부여 불가능." )
+		START_LOG( cerr, L"Unusable items cannot be enhanced." )
 			<< BUILD_LOG( iDestItemUID )
 			<< END_LOG;
 
@@ -12194,7 +12194,7 @@ bool KInventory::EnchantAttachItem( IN UidType iDestItemUID, IN UidType iAttachI
 	int iEnchantLevel;
 	if( !GetEnchantLevel( iDestItemUID, iEnchantLevel ) )
 	{
-		START_LOG( cerr, L"강화 레벨 얻기 실패." )
+		START_LOG( cerr, L"Failed to retrieve the enhancement level." )
 			<< BUILD_LOG( iDestItemUID )
 			<< BUILD_LOG( iDestItemID )
 			<< END_LOG;
@@ -12206,7 +12206,7 @@ bool KInventory::EnchantAttachItem( IN UidType iDestItemUID, IN UidType iAttachI
 	// 6. 목표 아이템의 강화레벨이 부여 강화레벨과 같거나 크면 안된다
 	if( iEnchantLevel >= iAttachEnchantLevel )
 	{
-		START_LOG( cerr, L"목표템 강화레벨이 부여강화레벨과 같거나 크다." )
+		START_LOG( cerr, L"Target item's enhancement level is equal to or greater than the assigned enhancement level." )
 			<< BUILD_LOG( iEnchantLevel )
 			<< BUILD_LOG( iAttachEnchantLevel )
 			<< END_LOG;
@@ -12218,7 +12218,7 @@ bool KInventory::EnchantAttachItem( IN UidType iDestItemUID, IN UidType iAttachI
 	// 7. 강화레벨 범위 검사
 	if( iEnchantLevel < 0  ||  iEnchantLevel > CXSLEnchantItemManager::MAX_ENCHANT_LEVEL )
 	{
-		START_LOG( cerr, L"강화 레벨 이상." )
+		START_LOG( cerr, L"Invalid enhancement level." )
 			<< BUILD_LOG( iDestItemUID )
 			<< BUILD_LOG( iDestItemID )
 			<< BUILD_LOG( iEnchantLevel )
@@ -12235,7 +12235,7 @@ bool KInventory::EnchantAttachItem( IN UidType iDestItemUID, IN UidType iAttachI
 
 	if( iCategory == CXSLInventory::ST_E_EQUIP )
 	{
-		START_LOG( cerr, L"장착 중인 아이템 강화 시도." )
+		START_LOG( cerr, L"Attempted to enhance an equipped item." )
 			<< BUILD_LOG( iDestItemUID )
 			<< BUILD_LOG( iCategory )
 			<< BUILD_LOG( iSlotID )
@@ -12276,7 +12276,7 @@ bool KInventory::EnchantAttachItem( IN UidType iDestItemUID, IN UidType iAttachI
 
 	if( !GetEnchantLevel( iDestItemUID, iLevelAfterEnchant ) )
 	{
-		START_LOG( cerr, L"강화 레벨 얻기 실패. 일어날 수 없는 에러." )
+		START_LOG( cerr, L"Failed to retrieve the enhancement level; this should never happen." )
 			<< BUILD_LOG( iDestItemUID )
 			<< BUILD_LOG( iDestItemID )
 			<< END_LOG;
@@ -12312,7 +12312,7 @@ bool KInventory::SealItem( IN UidType iDestItemUID, IN UidType iSealItemUID, OUT
 	// 봉인 또는 봉인해제될 아이템 검사
 	if( GetInventoryItemInfo( iDestItemUID, kDestItemInfo ) == false )
 	{
-		START_LOG( cerr, L"인벤토리에 없는 아이템UID인데?" )
+		START_LOG( cerr, L"The item UID is not in the inventory." )
 			<< BUILD_LOG( iDestItemUID )
 			<< END_LOG;
 
@@ -12326,7 +12326,7 @@ bool KInventory::SealItem( IN UidType iDestItemUID, IN UidType iSealItemUID, OUT
 	//{{ 2009. 8. 7  최육사		은행
 	if( IsExistInBank( iDestItemUID ) == true )
 	{
-		START_LOG( cerr, L"은행에 있는 아이템은 봉인 또는 봉인해제 못하는데?" )
+		START_LOG( cerr, L"Cannot seal or unseal an item in the bank." )
 			<< BUILD_LOG( iDestItemUID )
 			<< END_LOG;
 
@@ -12339,7 +12339,7 @@ bool KInventory::SealItem( IN UidType iDestItemUID, IN UidType iSealItemUID, OUT
 
 	if( IsDBUpdateItem( iDestItemUID ) == false )
 	{
-		START_LOG( cerr, L"PC방 프리미엄 아이템을 봉인하려고 했습니다." )
+		START_LOG( cerr, L"Attempted to seal a PC Bang premium item." )
 			<< BUILD_LOG( kDestItemInfo.m_kItemInfo.m_iItemID )
 			<< END_LOG;
 
@@ -12353,7 +12353,7 @@ bool KInventory::SealItem( IN UidType iDestItemUID, IN UidType iSealItemUID, OUT
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( kDestItemInfo.m_kItemInfo.m_iItemID );
 	if( pItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"아이템 템플릿을 얻지 못함" )
+		START_LOG( cerr, L"Failed to retrieve the item template." )
 			<< BUILD_LOG( kDestItemInfo.m_kItemInfo.m_iItemID )
 			<< END_LOG;
 
@@ -12367,7 +12367,7 @@ bool KInventory::SealItem( IN UidType iDestItemUID, IN UidType iSealItemUID, OUT
 		pItemTemplet->m_ItemType != CXSLItem::IT_ACCESSORY  &&
 		pItemTemplet->m_bFashion == false )
 	{
-		START_LOG( cerr, L"장비 또는 악세사리 및 아바타 아이템이 아닙니다" )
+		START_LOG( cerr, L"This is not equipment, an accessory, or an avatar item." )
 			<< BUILD_LOG( iDestItemUID )
 			<< BUILD_LOG( pItemTemplet->m_ItemType )
 			<< END_LOG;
@@ -12379,7 +12379,7 @@ bool KInventory::SealItem( IN UidType iDestItemUID, IN UidType iSealItemUID, OUT
 	// 장착중인 아이템인가?
 	if( kDestItemInfo.m_cSlotCategory == CXSLInventory::ST_E_EQUIP )
 	{
-		START_LOG( cerr, L"장착 중인 아이템 봉인 및 봉인해제 시도." )
+		START_LOG( cerr, L"Attempted to seal or unseal an equipped item." )
 			<< BUILD_LOG( iDestItemUID )
 			<< BUILD_LOGc( kDestItemInfo.m_cSlotCategory )
 			<< END_LOG;
@@ -12391,7 +12391,7 @@ bool KInventory::SealItem( IN UidType iDestItemUID, IN UidType iSealItemUID, OUT
 	// 이미 봉인된 아이템인가?
 	if( kDestItemInfo.m_kItemInfo.IsSealedItem() == true )
 	{
-		START_LOG( cerr, L"이미 봉인된 아이템을 봉인하려 합니다!" )
+		START_LOG( cerr, L"Attempted to seal an already sealed item!" )
 			<< BUILD_LOG( iDestItemUID )
 			<< END_LOG;
 
@@ -12404,7 +12404,7 @@ bool KInventory::SealItem( IN UidType iDestItemUID, IN UidType iSealItemUID, OUT
 	{
 		if( kDestItemInfo.m_kItemInfo.m_sEndurance < CXSLItem::EN_MAX_ENDURANCE )
 		{
-			START_LOG( cerr, L"수리되지 않은 아이템은 봉인할 수 없다" )
+			START_LOG( cerr, L"Unrepaired items cannot be sealed." )
 				<< BUILD_LOG( iDestItemUID )
 				<< BUILD_LOG( kDestItemInfo.m_kItemInfo.m_sEndurance )
 				<< END_LOG;
@@ -12417,7 +12417,7 @@ bool KInventory::SealItem( IN UidType iDestItemUID, IN UidType iSealItemUID, OUT
 	// 기간제 아이템인가?
 	if( kDestItemInfo.m_kItemInfo.m_sPeriod > 0 )
 	{
-		START_LOG( cerr, L"기간제 아이템은 봉인할 수 없다!" )
+		START_LOG( cerr, L"Timed items cannot be sealed!" )
 			<< BUILD_LOG( iDestItemUID )
 			<< BUILD_LOG( kDestItemInfo.m_kItemInfo.m_sPeriod )
 			<< END_LOG;
@@ -12429,7 +12429,7 @@ bool KInventory::SealItem( IN UidType iDestItemUID, IN UidType iSealItemUID, OUT
 	// 파괴된 아이템인가?
 	if( IsBrokenItem( iDestItemUID ) == true )
 	{
-		START_LOG( cerr, L"파괴된 아이템은 봉인할 수 없다!" )
+		START_LOG( cerr, L"Destroyed items cannot be sealed!" )
 			<< BUILD_LOG( iDestItemUID )
 			<< END_LOG;
 
@@ -12440,7 +12440,7 @@ bool KInventory::SealItem( IN UidType iDestItemUID, IN UidType iSealItemUID, OUT
 	// 거래 가능한 아이템
 	if( pItemTemplet->m_bVested == false )
 	{
-		START_LOG( cerr, L"거래 가능한 아이템은 봉인할 수 없다" )
+		START_LOG( cerr, L"Tradable items cannot be sealed." )
 			<< BUILD_LOG( iDestItemUID )
 			<< END_LOG;
 
@@ -12455,7 +12455,7 @@ bool KInventory::SealItem( IN UidType iDestItemUID, IN UidType iSealItemUID, OUT
 		&& pItemTemplet->m_ucMaxSealCount != CXSLInventory::SEAL_COUNT_MAX
 		)
 	{
-        START_LOG( cerr, L"봉인 횟수 제한입니다." )
+        START_LOG( cerr, L"Sealing limit reached." )
 			<< BUILD_LOG( iDestItemUID )
 			<< BUILD_LOGc( kDestItemInfo.m_kItemInfo.GetSealCount() )
 			<< BUILD_LOGc( pItemTemplet->m_ucMaxSealCount )
@@ -12476,7 +12476,7 @@ bool KInventory::SealItem( IN UidType iDestItemUID, IN UidType iSealItemUID, OUT
 	case CXSLItem::IG_NORMAL:	iSealItemID = CXSLItem::CI_SEAL_ITEM_NORMAL;	break;
 	default:
 		{
-			START_LOG( cerr, L"봉인할수 없는 아이템 등급입니다!" )
+			START_LOG( cerr, L"This item grade cannot be sealed!" )
 				<< BUILD_LOG( iDestItemUID )
 				<< BUILD_LOG( pItemTemplet->m_ItemGrade )
 				<< END_LOG;
@@ -12490,7 +12490,7 @@ bool KInventory::SealItem( IN UidType iDestItemUID, IN UidType iSealItemUID, OUT
 	KInventoryItemInfo kSealItemInfo;
 	if( GetInventoryItemInfo( iSealItemUID, kSealItemInfo ) == false )
 	{
-		START_LOG( cerr, L"인벤토리에 없는 아이템UID인데?" )
+		START_LOG( cerr, L"The item UID is not in the inventory." )
 			<< BUILD_LOG( iSealItemUID )
 			<< END_LOG;
 
@@ -12501,7 +12501,7 @@ bool KInventory::SealItem( IN UidType iDestItemUID, IN UidType iSealItemUID, OUT
 	//{{ 2009. 8. 7  최육사		은행
 	if( IsExistInBank( iSealItemUID ) == true )
 	{
-		START_LOG( cerr, L"은행에 있는 아이템은 봉인 또는 봉인해제 못하는데?" )
+		START_LOG( cerr, L"Cannot seal or unseal an item in the bank." )
 			<< BUILD_LOG( iSealItemUID )
 			<< END_LOG;
 
@@ -12548,7 +12548,7 @@ bool KInventory::SealItem( IN UidType iDestItemUID, IN UidType iSealItemUID, OUT
 			break;
 		default:
 			{
-				START_LOG( cerr, L"선택한 아이템을 봉인할수 있는 봉인주문서가 아닙니다." )
+				START_LOG( cerr, L"This sealing scroll cannot seal the selected item." )
 					<< BUILD_LOG( iDestItemUID )
 					<< BUILD_LOG( iSealItemUID )
 					<< BUILD_LOG( kSealItemInfo.m_kItemInfo.m_iItemID )
@@ -12569,7 +12569,7 @@ bool KInventory::SealItem( IN UidType iDestItemUID, IN UidType iSealItemUID, OUT
 
 		if( kSealItemInfo.m_kItemInfo.m_iItemID != iSealItemID )
 		{
-			START_LOG( cerr, L"선택한 아이템을 봉인할수 있는 봉인주문서가 아닙니다." )
+			START_LOG( cerr, L"This sealing scroll cannot seal the selected item." )
 				<< BUILD_LOG( iDestItemUID )
 				<< BUILD_LOG( iSealItemUID )
 				<< BUILD_LOG( kSealItemInfo.m_kItemInfo.m_iItemID )
@@ -12584,7 +12584,7 @@ bool KInventory::SealItem( IN UidType iDestItemUID, IN UidType iSealItemUID, OUT
 	// 주문서 수량 검사
 	if( kSealItemInfo.m_kItemInfo.m_iQuantity < CXSLItem::SEAL_ITEM_DECREASE_COUNT )
 	{
-		START_LOG( cerr, L"봉인 주문서가 부족하여 봉인할수 없습니다." )
+		START_LOG( cerr, L"Not enough sealing scrolls to seal the item." )
 			<< BUILD_LOG( iDestItemUID )
 			<< END_LOG;
 
@@ -12595,7 +12595,7 @@ bool KInventory::SealItem( IN UidType iDestItemUID, IN UidType iSealItemUID, OUT
 	// 봉인하기
 	if( Seal( iDestItemUID ) == false )
 	{
-		START_LOG( cerr, L"봉인 실패! 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"Failed to seal item; this should never happen!" )
 			<< BUILD_LOG( iDestItemUID )
 			<< END_LOG;
 
@@ -12629,7 +12629,7 @@ bool KInventory::SealItem( IN UidType iDestItemUID, IN UidType iSealItemUID, OUT
 		}
 		else
 		{
-			START_LOG( cerr, L"봉인 결과 얻기 실패!" )
+			START_LOG( cerr, L"Failed to retrieve the sealing result!" )
 				<< BUILD_LOG( iDestItemUID )
 				<< END_LOG;
 
@@ -12662,7 +12662,7 @@ bool KInventory::UnsealItem( IN UidType iDestItemUID, OUT u_char& ucSealResult, 
 	// 봉인 또는 봉인해제될 아이템 검사
 	if( GetInventoryItemInfo( iDestItemUID, kDestItemInfo ) == false )
 	{
-		START_LOG( cerr, L"인벤토리에 없는 아이템UID인데?" )
+		START_LOG( cerr, L"The item UID is not in the inventory." )
 			<< BUILD_LOG( iDestItemUID )
 			<< END_LOG;
 
@@ -12673,7 +12673,7 @@ bool KInventory::UnsealItem( IN UidType iDestItemUID, OUT u_char& ucSealResult, 
 	//{{ 2009. 8. 7  최육사		은행
 	if( IsExistInBank( iDestItemUID ) == true )
 	{
-		START_LOG( cerr, L"은행에 있는 아이템은 봉인 또는 봉인해제 못하는데?" )
+		START_LOG( cerr, L"Cannot seal or unseal an item in the bank." )
 			<< BUILD_LOG( iDestItemUID )
 			<< END_LOG;
 
@@ -12686,7 +12686,7 @@ bool KInventory::UnsealItem( IN UidType iDestItemUID, OUT u_char& ucSealResult, 
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( kDestItemInfo.m_kItemInfo.m_iItemID );
 	if( pItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"아이템 템플릿을 얻지 못함" )
+		START_LOG( cerr, L"Failed to retrieve the item template." )
 			<< BUILD_LOG( kDestItemInfo.m_kItemInfo.m_iItemID )
 			<< END_LOG;
 
@@ -12703,7 +12703,7 @@ bool KInventory::UnsealItem( IN UidType iDestItemUID, OUT u_char& ucSealResult, 
 		//}}
 		pItemTemplet->m_bFashion == false )
 	{
-		START_LOG( cerr, L"장비 또는 악세사리 및 아바타 아이템이 아닙니다" )
+		START_LOG( cerr, L"This is not equipment, an accessory, or an avatar item." )
 			<< BUILD_LOG( iDestItemUID )
 			<< BUILD_LOG( pItemTemplet->m_ItemType )
 			<< END_LOG;
@@ -12715,7 +12715,7 @@ bool KInventory::UnsealItem( IN UidType iDestItemUID, OUT u_char& ucSealResult, 
 	// 장착중인 아이템인가?
 	if( kDestItemInfo.m_cSlotCategory == CXSLInventory::ST_E_EQUIP )
 	{
-		START_LOG( cerr, L"장착 중인 아이템 봉인 및 봉인해제 시도." )
+		START_LOG( cerr, L"Attempted to seal or unseal an equipped item." )
 			<< BUILD_LOG( iDestItemUID )
 			<< BUILD_LOGc( kDestItemInfo.m_cSlotCategory )
 			<< END_LOG;
@@ -12726,7 +12726,7 @@ bool KInventory::UnsealItem( IN UidType iDestItemUID, OUT u_char& ucSealResult, 
 
 	if( kDestItemInfo.m_kItemInfo.IsSealedItem() == false )
 	{
-		START_LOG( cerr, L"이미 봉인해제된 아이템을 봉인해제 하려 합니다!" )
+		START_LOG( cerr, L"Attempted to unseal an already unsealed item!" )
 			<< BUILD_LOG( iDestItemUID )
 			<< END_LOG;
 
@@ -12737,7 +12737,7 @@ bool KInventory::UnsealItem( IN UidType iDestItemUID, OUT u_char& ucSealResult, 
 	// 봉인해제하기
 	if( Unseal( iDestItemUID ) == false )
 	{
-		START_LOG( cerr, L"봉인 해제 실패! 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"Failed to unseal item; this should never happen!" )
 			<< BUILD_LOG( iDestItemUID )
 			<< END_LOG;
 
@@ -12757,7 +12757,7 @@ bool KInventory::UnsealItem( IN UidType iDestItemUID, OUT u_char& ucSealResult, 
 		}
 		else
 		{
-			START_LOG( cerr, L"봉인 결과 얻기 실패!" )
+			START_LOG( cerr, L"Failed to retrieve the sealing result!" )
 				<< BUILD_LOG( iDestItemUID )
 				<< END_LOG;
 
@@ -12791,7 +12791,7 @@ bool KInventory::UseGuildFoundationItem( IN UidType iItemUID, OUT std::vector< K
 	// 봉인 또는 봉인해제될 아이템 검사
 	if( GetInventoryItemInfo( iItemUID, kItemInfo ) == false )
 	{
-		START_LOG( cerr, L"인벤토리에 없는 아이템UID인데?" )
+		START_LOG( cerr, L"The item UID is not in the inventory." )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -12802,7 +12802,7 @@ bool KInventory::UseGuildFoundationItem( IN UidType iItemUID, OUT std::vector< K
 	// 길드 생성 아이템인가?
 	if( kItemInfo.m_kItemInfo.m_iItemID != CXSLItem::SI_GUILD_FOUNDATION )
 	{
-		START_LOG( cerr, L"길드 생성 아이템이 아니다." )
+		START_LOG( cerr, L"This is not a guild creation item." )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -12813,7 +12813,7 @@ bool KInventory::UseGuildFoundationItem( IN UidType iItemUID, OUT std::vector< K
 	//{{ 2009. 8. 7  최육사		은행
 	if( IsExistInBank( iItemUID ) == true )
 	{
-		START_LOG( cerr, L"은행에 있는 아이템은 사용할수없다." )
+		START_LOG( cerr, L"Items in the bank cannot be used." )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -12828,7 +12828,7 @@ bool KInventory::UseGuildFoundationItem( IN UidType iItemUID, OUT std::vector< K
 		const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( kItemInfo.m_kItemInfo.m_iItemID );
 		if( pItemTemplet == NULL )
 		{
-			START_LOG( cerr, L"아이템 템플릿을 얻지 못함" )
+			START_LOG( cerr, L"Failed to retrieve the item template." )
 				<< BUILD_LOG( kItemInfo.m_kItemInfo.m_iItemID )
 				<< END_LOG;
 
@@ -12906,7 +12906,7 @@ bool KInventory::ResetGuildSkillItem( OUT std::vector< KInventoryItemInfo >& vec
 
 		if( iItemUID <= 0 )
 		{
-			START_LOG( cerr, L"인벤에서 길드 스킬 초기화 아이템을 찾는중 이상한 아이템UID 발견." )
+			START_LOG( cerr, L"Found an invalid ItemUID while searching inventory for guild skill reset item." )
 				<< BUILD_LOGc( vitRSI->m_cSlotCategory )
 				//{{ 2011. 12. 15	최육사	인벤토리 슬롯ID크기 늘리기
 				<< BUILD_LOG( vitRSI->m_sSlotID )
@@ -12940,7 +12940,7 @@ bool KInventory::InitGuildSkillItemCheckOnly( IN UidType iItemUID )
 	// 인벤토리에 길드 스킬 초기화 아이템이 있는지 검사
 	if( IsExist( iItemUID ) == false )
 	{
-		START_LOG( cerr, L"길드스킬초기화 아이템이 없는데 패킷 날아옴.!" )
+		START_LOG( cerr, L"Received a guild skill reset packet, but the item is missing!" )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -12951,7 +12951,7 @@ bool KInventory::InitGuildSkillItemCheckOnly( IN UidType iItemUID )
 
 	if( iItemID != CXSLItem::CI_GUILD_SKILL_INIT_ITEM )
 	{
-		START_LOG( cerr, L"스킬초기화 아이템ID가 이상함." )
+		START_LOG( cerr, L"Invalid skill-reset item ID." )
 			<< BUILD_LOG( iItemUID )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
@@ -12969,7 +12969,7 @@ bool KInventory::InitGuildSkillItem( IN UidType iItemUID, OUT std::vector< KInve
 	// 인벤토리에 길드 스킬 초기화 아이템이 있는지 검사
 	if( IsExist( iItemUID ) == false )
 	{
-		START_LOG( cerr, L"길드스킬초기화 아이템이 없는데 패킷 날아옴.!" )
+		START_LOG( cerr, L"Received a guild skill reset packet, but the item is missing!" )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -12983,7 +12983,7 @@ bool KInventory::InitGuildSkillItem( IN UidType iItemUID, OUT std::vector< KInve
 	int iDecreased = 0;
 	if( GetCategorySlot( iItemUID, iSlotCategory, iSlotID ) == false )
 	{
-		START_LOG( cerr, L"길드스킬초기화 아이템이 없는데 패킷 날아옴.!" )
+		START_LOG( cerr, L"Received a guild skill reset packet, but the item is missing!" )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -13017,7 +13017,7 @@ bool KInventory::GetSlotChangeBEndDate( IN const int iItemID, IN OUT std::wstrin
 	{
 		if( !wstrExpirationDate.empty() )
 		{
-			START_LOG( cerr, L"문자열 시간 변환 실패." )
+			START_LOG( cerr, L"Failed to convert the time string." )
 				<< BUILD_LOG( wstrExpirationDate )
 				<< END_LOG;
 			return false;
@@ -13039,7 +13039,7 @@ bool KInventory::GetSlotChangeBEndDate( IN const int iItemID, IN OUT std::wstrin
 
 			if( !KncUtil::ConvertStringToCTime( wstrInventoryItemDate, tInventoryItemTime ) )
 			{
-				START_LOG( cerr, L"문자열 시간 변환 실패. 해당 아이템은 반드시 기간이 있어야한다. 아이템 정보가 잘못됐나?" )
+				START_LOG( cerr, L"Failed to convert time string. This item must have a duration; is its item information invalid?" )
 					<< BUILD_LOG( iItemID )
 					<< BUILD_LOG( wstrInventoryItemDate )
 					<< END_LOG;
@@ -13070,7 +13070,7 @@ float KInventory::GetRepairTitleDiscount( IN const int iTitleID )
 
 	if( iTitleID == 0 )
 	{
-		START_LOG( clog, L"타이틀 미장착" )
+		START_LOG( clog, L"Title unequipped" )
 			<< BUILD_LOG( iTitleID )
 			<< END_LOG;
 		return fTotalDiscount;
@@ -13079,7 +13079,7 @@ float KInventory::GetRepairTitleDiscount( IN const int iTitleID )
 	const CXSLTitleManager::TitleTemplet* pTitleInfo = SiCXSLTitleManager()->GetTitleTemplet( iTitleID );
 	if( pTitleInfo == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 타이틀을 장착중?" )
+		START_LOG( cerr, L"A nonexistent title is equipped." )
 			<< BUILD_LOG( iTitleID )
 			<< END_LOG;
 		return fTotalDiscount;
@@ -13090,7 +13090,7 @@ float KInventory::GetRepairTitleDiscount( IN const int iTitleID )
 		const CXSLSocketItem::SocketData* pSocketData = SiCXSLSocketItem()->GetSocketData( iSocketOption );
 		if( pSocketData == NULL )
 		{
-			START_LOG( cerr, L"존재하지않는 소켓옵션이 타이틀의 소켓옵션으로 세팅되어 있습니다." )
+			START_LOG( cerr, L"A nonexistent socket option is set as the title's socket option." )
 				<< BUILD_LOG( iTitleID )
 				<< BUILD_LOG( iSocketOption )
 				<< END_LOG;
@@ -13127,7 +13127,7 @@ void KInventory::SetClassChangeItem( IN std::map< UidType, int >& mapItem, OUT s
 		}
 		else
 		{
-			START_LOG( cerr, L"이런 아이템을 가지고 있지 않다고?! 있다고 해서 기록한거잖아!!" )
+			START_LOG( cerr, L"Item is not owned? It was recorded as owned!" )
 				<< BUILD_LOG( mit->first )
 				<< BUILD_LOG( mit->second )
 				<< END_LOG;
@@ -13146,7 +13146,7 @@ bool KInventory::SortCategory( IN const int iCategory, OUT std::vector< UidType 
 	{
 		if( iCategory != CXSLInventory::ST_PC_BANG )
 		{
-			START_LOG( cerr, L"이상한 카테고리입니다!" )
+			START_LOG( cerr, L"Invalid category!" )
 				<< BUILD_LOG( iCategory )
 				<< END_LOG;
 
@@ -13228,7 +13228,7 @@ void KInventory::SortEquipCategory( IN const int iCategory, OUT std::vector< Uid
 			UidType iUnitUID = m_pUser->GetCharUID();
 			int nItemID = mmitInCategoryItem->second.first;
 
-			START_LOG( cerr, L"아이템 템플릿 정보를 찾을 수 없습니다." )
+			START_LOG( cerr, L"Could not find the item template information." )
 				<< BUILD_LOG( iUnitUID )
 				<< BUILD_LOG( nItemID )
 				<< END_LOG;
@@ -13248,7 +13248,7 @@ void KInventory::SortEquipCategory( IN const int iCategory, OUT std::vector< Uid
 			UidType iUnitUID = m_pUser->GetCharUID();
 			int nItemID = mmitUseLevelItem->second.first;
 
-			START_LOG( cerr, L"아이템 템플릿 정보를 찾을 수 없습니다." )
+			START_LOG( cerr, L"Could not find the item template information." )
 				<< BUILD_LOG( iUnitUID )
 				<< BUILD_LOG( nItemID )
 				<< END_LOG;
@@ -13268,7 +13268,7 @@ void KInventory::SortEquipCategory( IN const int iCategory, OUT std::vector< Uid
 			UidType iUnitUID = m_pUser->GetCharUID();
 			int nItemID = mmitEquipTypeItem->second.first;
 
-			START_LOG( cerr, L"아이템 템플릿 정보를 찾을 수 없습니다." )
+			START_LOG( cerr, L"Could not find the item template information." )
 				<< BUILD_LOG( iUnitUID )
 				<< BUILD_LOG( nItemID )
 				<< END_LOG;
@@ -13288,7 +13288,7 @@ void KInventory::SortEquipCategory( IN const int iCategory, OUT std::vector< Uid
 			UidType iUnitUID = m_pUser->GetCharUID();
 			int nItemID = mmitSetItem->second.first;
 
-			START_LOG( cerr, L"아이템 템플릿 정보를 찾을 수 없습니다." )
+			START_LOG( cerr, L"Could not find the item template information." )
 				<< BUILD_LOG( iUnitUID )
 				<< BUILD_LOG( nItemID )
 				<< END_LOG;
@@ -13315,7 +13315,7 @@ void KInventory::SortEquipCategory( IN const int iCategory, OUT std::vector< Uid
 			UidType iUnitUID = m_pUser->GetCharUID();
 			int nItemID = mmitGradeItem->second.first;
 
-			START_LOG( cerr, L"아이템 템플릿 정보를 찾을 수 없습니다." )
+			START_LOG( cerr, L"Could not find the item template information." )
 				<< BUILD_LOG( iUnitUID )
 				<< BUILD_LOG( nItemID )
 				<< END_LOG;
@@ -13481,7 +13481,7 @@ void KInventory::SortNormalCategory( IN const int iCategory, OUT std::vector< Ui
 			UidType iUnitUID = m_pUser->GetCharUID();
 			int nItemID = mmitInCategoryItem->second.first;
 
-			START_LOG( cerr, L"아이템 템플릿 정보를 찾을 수 없습니다." )
+			START_LOG( cerr, L"Could not find the item template information." )
 				<< BUILD_LOG( iUnitUID )
 				<< BUILD_LOG( nItemID )
 				<< END_LOG;
@@ -13507,7 +13507,7 @@ void KInventory::SortNormalCategory( IN const int iCategory, OUT std::vector< Ui
 			UidType iUnitUID = m_pUser->GetCharUID();
 			int nItemID = mmitItem->second.first;
 
-			START_LOG( cerr, L"아이템 템플릿 정보를 찾을 수 없습니다." )
+			START_LOG( cerr, L"Could not find the item template information." )
 				<< BUILD_LOG( iUnitUID )
 				<< BUILD_LOG( nItemID )
 				<< END_LOG;
@@ -13626,7 +13626,7 @@ void KInventory::SetupDefenceDungeonQuickSlotItems( IN const int iDefenceDungeon
 		const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iQuickSlotItemID );
 		if( pItemTemplet == NULL )
 		{
-			START_LOG( cerr, L"존재하지 않는 아이템을 PC방 프리미엄 아이템으로 세팅하였습니다!" )
+			START_LOG( cerr, L"A nonexistent item was configured as a PC Bang premium item!" )
 				<< BUILD_LOG( iQuickSlotItemID )
 				<< END_LOG;
 			continue;
@@ -13650,7 +13650,7 @@ void KInventory::SetupDefenceDungeonQuickSlotItems( IN const int iDefenceDungeon
 		const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iSpeicalCardItemID );
 		if( pItemTemplet == NULL )
 		{
-			START_LOG( cerr, L"존재하지 않는 아이템을 PC방 프리미엄 아이템으로 세팅하였습니다!" )
+			START_LOG( cerr, L"A nonexistent item was configured as a PC Bang premium item!" )
 				<< BUILD_LOG( iSpeicalCardItemID )
 				<< END_LOG;
 		}
@@ -13673,7 +13673,7 @@ void KInventory::SetupDefenceDungeonQuickSlotItems( IN const int iDefenceDungeon
 		const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( SiCXSLDefenceDungeonManager()->GetQuickSlotPotionItemID() );
 		if( pItemTemplet == NULL )
 		{
-			START_LOG( cerr, L"존재하지 않는 아이템을 PC방 프리미엄 아이템으로 세팅하였습니다!" )
+			START_LOG( cerr, L"A nonexistent item was configured as a PC Bang premium item!" )
 				<< BUILD_LOG( SiCXSLDefenceDungeonManager()->GetQuickSlotPotionItemID() )
 				<< END_LOG;
 		}
@@ -13697,7 +13697,7 @@ void KInventory::SetupDefenceDungeonQuickSlotItems( IN const int iDefenceDungeon
 	{
 		if( VerifyCategorySlotID( kDefenceDungeonItem.m_cSlotCategory, kDefenceDungeonItem.m_sSlotID ) == false )
 		{
-			START_LOG( cerr, L"PC방 아이템을 넣으려는데 슬롯 위치가 이상하다? 있을수없는에러!" )
+			START_LOG( cerr, L"Invalid slot position for a PC Bang item; this should never happen!" )
 				<< BUILD_LOG( m_pUser->GetCharName() )
 				<< BUILD_LOG( m_pUser->GetCharUID() )
 				<< BUILD_LOG( kDefenceDungeonItem.m_kItemInfo.m_iItemID )
@@ -13716,7 +13716,7 @@ void KInventory::SetupDefenceDungeonQuickSlotItems( IN const int iDefenceDungeon
 			{
 				LIF( GetInventoryItemInfo( kDefenceDungeonItem.m_cSlotCategory, kDefenceDungeonItem.m_sSlotID, kCheckInfo ) );
 
-				START_LOG( cerr, L"어둠의 문 전용 퀵슬롯 아이템을 넣으려는데 삭제에 실패했다! 있을수 없는에러!" )
+				START_LOG( cerr, L"Failed to delete a Gate of Darkness quick-slot item before adding it; this should never happen!" )
 					<< BUILD_LOG( m_pUser->GetCharName() )
 					<< BUILD_LOG( m_pUser->GetCharUID() )
 					<< BUILD_LOG( kDefenceDungeonItem.m_kItemInfo.m_iItemID )
@@ -13765,7 +13765,7 @@ bool KInventory::ExchangeToEvent( IN int iDeleteItemID, IN int iDeleteItemCount,
 
 	if(vecItemUIDList.size() == 0)
 	{
-		START_LOG(cerr, L"인벤토리에 이벤트 아이템이 없는데 보상을 받으려고 한다.")
+		START_LOG(cerr, L"Attempted to claim a reward without the event item in inventory.")
 			<< BUILD_LOG( iDeleteItemID )
 			<< END_LOG;
 
@@ -13783,7 +13783,7 @@ bool KInventory::ExchangeToEvent( IN int iDeleteItemID, IN int iDeleteItemCount,
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iInsertItemID );
 	if(pItemTemplet == NULL)
 	{
-		START_LOG( cerr, L"아이템 템플릿 포인터 이상.!" )
+		START_LOG( cerr, L"Invalid item template pointer!" )
 			<< BUILD_LOG( iInsertItemID )
 			<< END_LOG;
 
@@ -13814,7 +13814,7 @@ bool KInventory::ExchangeToEvent( IN int iDeleteItemID, IN int iDeleteItemCount,
 */
 	if( DeleteAndInsert(mapDeleteItem, mapInsertItem, vecUpdatedInventorySlot, vecNewItemInfo, KDeletedItemInfo::DR_EXTRACT_ENCHANT) == false )
 	{
-		START_LOG( cerr, L"강화 아이템 추출 기능에서 아이템 지급 및 삭제 부분에서 문제 발생!" )
+		START_LOG( cerr, L"Error while granting and deleting items in the enhancement item extraction feature!" )
 			<< BUILD_LOG( iDeleteItemUID )
 			<< BUILD_LOG( iInsertItemID )
 			<< END_LOG;
@@ -13840,7 +13840,7 @@ bool KInventory::ItemEvaluateCheck( IN const UidType iItemUID, OUT std::vector< 
 	// 1. 소켓 넣을 아이템 검사
 	if( IsExist( iItemUID ) == false )
 	{
-		START_LOG( cerr, L"인벤토리에 없는 아이템UID인데?" )
+		START_LOG( cerr, L"The item UID is not in the inventory." )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -13851,7 +13851,7 @@ bool KInventory::ItemEvaluateCheck( IN const UidType iItemUID, OUT std::vector< 
 	// 2. 은행에 있는 아이템에는 소켓 못넣음
 	if( IsExistInBank( iItemUID ) == true )
 	{
-		START_LOG( cerr, L"은행에 있는 아이템은 소켓 못넣는데?" )
+		START_LOG( cerr, L"Cannot add a socket to an item in the bank." )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -13862,7 +13862,7 @@ bool KInventory::ItemEvaluateCheck( IN const UidType iItemUID, OUT std::vector< 
 	// 3. 사용불가 아이템인지 검사
 	if( IsBrokenItem( iItemUID ) )
 	{
-		START_LOG( cerr, L"사용불가 아이템. 일어날수 없는에러" )
+		START_LOG( cerr, L"The item is unusable; this should never happen." )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -13875,7 +13875,7 @@ bool KInventory::ItemEvaluateCheck( IN const UidType iItemUID, OUT std::vector< 
 	// 4. PC방 전용 아이템인지 검사
 	if( IsDBUpdateItem( iItemUID ) == false )
 	{
-		START_LOG( cerr, L"PC방 프리미엄 아이템에 소켓을 박을려고 했습니다." )
+		START_LOG( cerr, L"Attempted to add a socket to a PC Bang premium item." )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -13891,7 +13891,7 @@ bool KInventory::ItemEvaluateCheck( IN const UidType iItemUID, OUT std::vector< 
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iItemID );
 	if( pItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"아이템 템플릿을 얻지 못함" )
+		START_LOG( cerr, L"Failed to retrieve the item template." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 
@@ -13902,7 +13902,7 @@ bool KInventory::ItemEvaluateCheck( IN const UidType iItemUID, OUT std::vector< 
 	// 6. 장착 불가 아이템인지 검사
 	if( pItemTemplet->m_bNoEquip )
 	{
-		START_LOG( clog, L"장착 불가 아이템은 소켓설치 못함." )
+		START_LOG( clog, L"Cannot add sockets to an unequippable item." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 
@@ -13931,7 +13931,7 @@ bool KInventory::ItemEvaluateCheck( IN const UidType iItemUID, OUT std::vector< 
 
 	default:
 		{
-			START_LOG( clog, L"특정 장착 위치의 아이템을 제외하고는 랜덤 소켓 불가능." )
+			START_LOG( clog, L"Random sockets are not allowed except on items in specific equipment slots." )
 				<< BUILD_LOG( iItemID )
 				<< BUILD_LOG( pItemTemplet->m_EqipPosition )
 				<< END_LOG;
@@ -13945,7 +13945,7 @@ bool KInventory::ItemEvaluateCheck( IN const UidType iItemUID, OUT std::vector< 
 	// 8. 랜덤 소켓 아이템인지 확인
 	if( pItemTemplet->m_vecRandomSocketGroupID.empty() == true )
 	{
-		START_LOG( clog, L"랜덤 소켓 아이템이 아닙니다." )
+		START_LOG( clog, L"This is not a random socket item." )
 			<< BUILD_LOG( iItemID )
 			<< BUILD_LOG( pItemTemplet->m_vecRandomSocketGroupID.size() )
 			<< END_LOG;
@@ -13966,7 +13966,7 @@ bool KInventory::ItemEvaluateCheck( IN const UidType iItemUID, OUT std::vector< 
 	int iAssignedSocketCount = 0;
 	if( GetCountAssignedRandomSocket( iItemUID, iAssignedSocketCount ) == false )
 	{
-		START_LOG( cerr, L"아이템이 존재하지 않습니다." )
+		START_LOG( cerr, L"The item does not exist." )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -13977,7 +13977,7 @@ bool KInventory::ItemEvaluateCheck( IN const UidType iItemUID, OUT std::vector< 
 	// 10. 이미 감정된 아이템인지 확인!
 	if( iAssignedSocketCount != 0 )
 	{
-		START_LOG( cerr, L"이미 감정된 아이템입니다!" )
+		START_LOG( cerr, L"Item has already been appraised!" )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -13988,7 +13988,7 @@ bool KInventory::ItemEvaluateCheck( IN const UidType iItemUID, OUT std::vector< 
 	// 11. 아이템 감정!
 	if( SiCXSLSocketItem()->EvaluateItemRandomSocket( iItemID, vecRandomSocket ) == false )
 	{
-		START_LOG( cerr, L"아이템 감정을 실패하였습니다.!" )
+		START_LOG( cerr, L"Failed to appraise the item!" )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -14011,7 +14011,7 @@ bool KInventory::ItemEvaluateResult( IN const UidType iItemUID, IN const std::ve
 	// 1. 랜덤 소켓 정보를 해당 아이템에 업데이트
 	if( SetRandomSocketOption( iItemUID, vecRandomSocket ) == false )
 	{
-		START_LOG( cerr, L"아이템 감정을 실패하였습니다.!" )
+		START_LOG( cerr, L"Failed to appraise the item!" )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -14101,7 +14101,7 @@ bool KInventory::SetRandomSocketOption( IN const UidType iItemUID, IN const std:
 	mit = m_mapItem.find( iItemUID );
 	if( mit == m_mapItem.end() )
 	{
-		START_LOG( cerr, L"아이템이 존재하지 않습니다!" )
+		START_LOG( cerr, L"Item does not exist!" )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 		return false;
@@ -14120,7 +14120,7 @@ bool KInventory::RestoreItemEvaluateCheck( IN const UidType iSupportItemUID, IN 
 	// 1. 지정된 아이템들이 현재 인벤에 있는지 검사
 	if( IsExist( iSupportItemUID ) == false  ||  IsExist( iTargetItemUID ) == false )
 	{
-		START_LOG( cerr, L"인벤토리에 없는 아이템UID인데?" )
+		START_LOG( cerr, L"The item UID is not in the inventory." )
 			<< BUILD_LOG( iSupportItemUID )
 			<< BUILD_LOG( iTargetItemUID )
 			<< END_LOG;
@@ -14132,7 +14132,7 @@ bool KInventory::RestoreItemEvaluateCheck( IN const UidType iSupportItemUID, IN 
 	// 2. 은행에 있는 아이템에는 사용을 못함
 	if( IsExistInBank( iSupportItemUID ) == true  ||  IsExistInBank( iTargetItemUID ) == true )
 	{
-		START_LOG( cerr, L"은행에 있는 아이템은 소켓 못넣는데?" )
+		START_LOG( cerr, L"Cannot add a socket to an item in the bank." )
 			<< BUILD_LOG( iSupportItemUID )
 			<< BUILD_LOG( iTargetItemUID )
 			<< END_LOG;
@@ -14144,7 +14144,7 @@ bool KInventory::RestoreItemEvaluateCheck( IN const UidType iSupportItemUID, IN 
 	// 3. 사용불가 아이템인지 검사
 	if( IsBrokenItem( iSupportItemUID ) == true  ||  IsBrokenItem( iTargetItemUID ) == true )
 	{
-		START_LOG( cerr, L"사용불가 아이템. 일어날수 없는에러" )
+		START_LOG( cerr, L"The item is unusable; this should never happen." )
 			<< BUILD_LOG( iSupportItemUID )
 			<< BUILD_LOG( iTargetItemUID )
 			<< END_LOG;
@@ -14158,7 +14158,7 @@ bool KInventory::RestoreItemEvaluateCheck( IN const UidType iSupportItemUID, IN 
 	// 4. PC방 전용 아이템인지 검사
 	if( IsDBUpdateItem( iSupportItemUID ) == false  ||  IsDBUpdateItem( iTargetItemUID ) == false )
 	{
-		START_LOG( cerr, L"PC방 프리미엄 아이템에 소켓을 박을려고 했습니다." )
+		START_LOG( cerr, L"Attempted to add a socket to a PC Bang premium item." )
 			<< BUILD_LOG( iSupportItemUID )
 			<< BUILD_LOG( iTargetItemUID )
 			<< END_LOG;
@@ -14173,7 +14173,7 @@ bool KInventory::RestoreItemEvaluateCheck( IN const UidType iSupportItemUID, IN 
 	int iAssignedSocketCount = 0;
 	if( GetCountAssignedRandomSocket( iTargetItemUID, iAssignedSocketCount ) == false )
 	{
-		START_LOG( cerr, L"해당 아이템에서 랜덤 소켓 정보를 얻지 못하였습니다." )
+		START_LOG( cerr, L"Could not retrieve random socket information for this item." )
 			<< BUILD_LOG( iSupportItemUID )
 			<< BUILD_LOG( iTargetItemUID )
 			<< END_LOG;
@@ -14196,7 +14196,7 @@ bool KInventory::RestoreItemEvaluateCheck( IN const UidType iSupportItemUID, IN 
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iTargetItemID );
 	if( IS_NULL( pItemTemplet ) )
 	{
-		START_LOG( cerr, L"아이템 정보가 존재 하지 않습니다." )
+		START_LOG( cerr, L"Item information does not exist." )
 			<< BUILD_LOG( iTargetItemID )
 			<< END_LOG;
 
@@ -14218,7 +14218,7 @@ bool KInventory::RestoreItemEvaluateCheck( IN const UidType iSupportItemUID, IN 
 	// 9. 미라클 큐브 수량 검사
 	if( IsEnoughItemExist( mapRequireItemQuantity ) == false )
 	{
-		START_LOG( cerr, L"미라클 큐브 수량이 부족합니다." )
+		START_LOG( cerr, L"Not enough Miracle Cubes." )
 			<< BUILD_LOG( iSupportItemUID )
 			<< BUILD_LOG( iMiracleCubeItemID )
 			<< BUILD_LOG( mapRequireItemQuantity.size() )
@@ -14255,7 +14255,7 @@ bool KInventory::RestoreItemEvaluateResult( IN const UidType iTargetItemUID, IN 
 	std::vector< int > vecEmptyRandomSocket;
 	if( SetRandomSocketOption( iTargetItemUID, vecEmptyRandomSocket ) == false )
 	{
-		START_LOG( cerr, L"아이템 미감정을 실패하였습니다.!" )
+		START_LOG( cerr, L"Failed to unidentify item!" )
 			<< BUILD_LOG( iTargetItemUID )
 			<< END_LOG;
 
@@ -14291,7 +14291,7 @@ bool KInventory::ItemConvert( IN const UidType& iItemUID,
 	// 실제로 해당 아이템이 존재하는지 체크!
 	if( GetInventoryItemInfo( iItemUID, kSrcItemInfo ) == false )
 	{
-		START_LOG( cerr, L"해당 아이템이 인벤토리에 없다!" )
+		START_LOG( cerr, L"The specified item is not in the inventory!" )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -14302,7 +14302,7 @@ bool KInventory::ItemConvert( IN const UidType& iItemUID,
 	// 기간제 아이템은 교환할 수 없다!
 	if( kSrcItemInfo.m_kItemInfo.m_sPeriod != 0 )
 	{
-		START_LOG( cerr, L"기간제 아이템은 교환할 수 없다!" )
+		START_LOG( cerr, L"Timed items cannot be exchanged!" )
 			<< BUILD_LOG( iItemUID )
 			<< BUILD_LOG( kSrcItemInfo.m_kItemInfo.m_sPeriod )
 			<< END_LOG;
@@ -14317,7 +14317,7 @@ bool KInventory::ItemConvert( IN const UidType& iItemUID,
 
 	if( IsEnoughItemExist( mapToDeleteByItemUID ) == false ) // map = ItemUID, quantity
 	{
-		START_LOG( cerr, L"인벤토리에 없는 아이템ID인데?" )
+		START_LOG( cerr, L"The item ID is not in the inventory." )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 
@@ -14432,7 +14432,7 @@ char KInventory::GetItemState( IN const UidType iItemUID ) const
 
 	if( mit == m_mapItem.end() )
 	{
-		START_LOG( cerr, L"존재하지 않는 아이템입니다." )
+		START_LOG( cerr, L"The item does not exist." )
 			<< BUILD_LOG( iItemUID )
 			<< END_LOG;
 		return KItemInfo::IS_INIT;
@@ -14467,7 +14467,7 @@ bool KInventory::ItemExtract( IN const UidType iSourceItemUID,
 	// 실제로 해당 아이템이 존재하는지 체크!
 	if( GetInventoryItemInfo( iSourceItemUID, kSrcItemInfo ) == false )
 	{
-		START_LOG( cerr, L"해당 아이템이 인벤토리에 없다!" )
+		START_LOG( cerr, L"The specified item is not in the inventory!" )
 			<< BUILD_LOG( iSourceItemUID )
 			<< END_LOG;
 
@@ -14479,7 +14479,7 @@ bool KInventory::ItemExtract( IN const UidType iSourceItemUID,
 	// 존재 한다면 수량은 충분한지 체크!
 	if( kSrcItemInfo.m_kItemInfo.m_iQuantity < iSourceQuantity )
 	{
-		START_LOG( cerr, L"해당 아이템의 수량이 충분하지 않다!" )
+		START_LOG( cerr, L"There are not enough of the specified item!" )
 			<< BUILD_LOG( iSourceItemUID )
 			<< BUILD_LOG( iSourceQuantity )
 			<< BUILD_LOG( kSrcItemInfo.m_kItemInfo.m_iQuantity )
@@ -14507,7 +14507,7 @@ bool KInventory::ItemExtract( IN const UidType iSourceItemUID,
 		}
 		else
 		{
-			START_LOG( cerr, L"인벤토리에 없는 아이템ID인데?" )
+			START_LOG( cerr, L"The item ID is not in the inventory." )
 				<< BUILD_LOG( kSrcItemInfo.m_kItemInfo.m_iItemID )
 				<< BUILD_LOG( iSourceQuantity )
 				<< END_LOG;
@@ -14522,7 +14522,7 @@ bool KInventory::ItemExtract( IN const UidType iSourceItemUID,
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( CXSLAttribEnchantItem::ATI_ESSENCE );
 	if( pItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )
+		START_LOG( cerr, L"Failed to retrieve the item template." )
 			<< BUILD_LOG( CXSLAttribEnchantItem::ATI_ESSENCE )
 			<< END_LOG;
 
@@ -14611,7 +14611,7 @@ bool KInventory::UseFinalitySkill( IN const UidType iSourceItemUID,
 	// 실제로 해당 아이템이 존재하는지 체크!
 	if( GetInventoryItemInfo( iSourceItemUID, kSrcItemInfo ) == false )
 	{
-		START_LOG( cerr, L"해당 아이템이 인벤토리에 없다!" )
+		START_LOG( cerr, L"The specified item is not in the inventory!" )
 			<< BUILD_LOG( iSourceItemUID )
 			<< END_LOG;
 
@@ -14623,7 +14623,7 @@ bool KInventory::UseFinalitySkill( IN const UidType iSourceItemUID,
 	// 존재 한다면 수량은 충분한지 체크!
 	if( kSrcItemInfo.m_kItemInfo.m_iQuantity < iSourceQuantity )
 	{
-		START_LOG( cerr, L"해당 아이템의 수량이 충분하지 않다!" )
+		START_LOG( cerr, L"There are not enough of the specified item!" )
 			<< BUILD_LOG( iSourceItemUID )
 			<< BUILD_LOG( iSourceQuantity )
 			<< BUILD_LOG( kSrcItemInfo.m_kItemInfo.m_iQuantity )
@@ -14638,7 +14638,7 @@ bool KInventory::UseFinalitySkill( IN const UidType iSourceItemUID,
 
 	if( IsEnoughItemExist( mapToDeleteByItemID, true, true ) == false )
 	{
-		START_LOG( cerr, L"인벤토리에 없는 아이템ID인데?" )
+		START_LOG( cerr, L"The item ID is not in the inventory." )
 			<< BUILD_LOG( kSrcItemInfo.m_kItemInfo.m_iItemID )
 			<< BUILD_LOG( iSourceQuantity )
 			<< END_LOG;

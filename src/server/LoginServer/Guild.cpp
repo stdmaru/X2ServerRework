@@ -89,7 +89,7 @@ KGuildMemberInfoPtr KGuild::GetGuildMember( UidType iUnitUID ) const
 	std::map< UidType, KGuildMemberInfoPtr >::const_iterator mit = m_mapGuildMember.find( iUnitUID );
 	if( mit == m_mapGuildMember.end() )
 	{
-		START_LOG( cwarn, L"찾는 길드 멤버가 없습니다.!" )
+		START_LOG( cwarn, L"Guild member not found!" )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 
@@ -98,7 +98,7 @@ KGuildMemberInfoPtr KGuild::GetGuildMember( UidType iUnitUID ) const
 
 	if( mit->second == NULL )
 	{
-		START_LOG( cerr, L"길드 멤버 포인터 이상.!" )
+		START_LOG( cerr, L"Invalid guild member pointer!" )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 
@@ -113,7 +113,7 @@ bool KGuild::IsLoginedMember( IN UidType iUnitUID )
 	KGuildMemberInfoPtr spGuildMember = GetGuildMember( iUnitUID );
 	if( spGuildMember == NULL )
 	{
-		START_LOG( cerr, L"길드원 정보 얻기 실패. 길드원 로그인 실패!" )
+		START_LOG( cerr, L"Failed to get guild member information; member login failed!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
@@ -159,7 +159,7 @@ void KGuild::UpdateGuildMemberList( IN const std::vector< KGuildMemberInfo >& ve
 	// 길드마스터 정보도 업데이트 잘 되었는지 확인
 	if( m_iGuildMasterUnitUID == 0 )
 	{
-		START_LOG( cerr, L"길드원 리스트를 업데이트 했는데 길드마스터가 없다? 절대 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"Guild member list was updated, but the guild master is missing. This should never happen!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( vecMemberInfo.size() )
 			<< END_LOG;
@@ -177,7 +177,7 @@ bool KGuild::InsertGuildMember( IN const KGuildMemberInfo& kMemberInfo )
 {
 	if( IsGuildMember( kMemberInfo.m_iUnitUID ) == true )
 	{
-		START_LOG( cerr, L"이미 길드원 정보가 있다! 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"Guild member information already exists. This should never happen!" )
 			<< BUILD_LOG( kMemberInfo.m_iUnitUID )
 			<< END_LOG;
 
@@ -195,7 +195,7 @@ bool KGuild::InsertGuildMember( IN const KGuildMemberInfo& kMemberInfo )
 		if( m_iGuildMasterUnitUID != 0  &&
 			m_iGuildMasterUnitUID != kMemberInfo.m_iUnitUID )
 		{
-			START_LOG( cerr, L"내가 길드마스터인데 길드 마스터가 또 있네?" )
+			START_LOG( cerr, L"There is already another guild master, even though this user is the guild master?" )
 				<< BUILD_LOG( m_iGuildMasterUnitUID )
 				<< BUILD_LOG( kMemberInfo.m_iUnitUID )
 				<< END_LOG;
@@ -214,7 +214,7 @@ bool KGuild::DeleteGuildMember( IN UidType iUnitUID )
 	std::map< UidType, KGuildMemberInfoPtr >::iterator mit = m_mapGuildMember.find( iUnitUID );
 	if( mit == m_mapGuildMember.end() )
 	{
-		START_LOG( cerr, L"해당 길드원이 아닙니다. 길드원 삭제 실패!" )
+		START_LOG( cerr, L"This user is not a guild member; failed to remove member!" )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 
@@ -223,7 +223,7 @@ bool KGuild::DeleteGuildMember( IN UidType iUnitUID )
 
 	if( mit->second == NULL )
 	{
-		START_LOG( cerr, L"길드원 포인터가 이상합니다. 절대 발생해서는 안되는 에러!" )
+		START_LOG( cerr, L"Invalid guild member pointer. This should never happen!" )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 
@@ -258,7 +258,7 @@ bool KGuild::CheckJoinGuild( IN UidType iUnitUID, OUT UidType& iGuildMasterUnitU
 	// 이미 길드멤버인지 검사
 	if( IsGuildMember( iUnitUID ) == true )
 	{
-		START_LOG( cerr, L"이미 길드원 정보가 있다! 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"Guild member information already exists. This should never happen!" )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 
@@ -293,7 +293,7 @@ bool KGuild::JoinGuildMember( IN const KGuildMemberInfo& kMemberInfo, IN bool bI
 	//{{ 2010. 05. 18  최육사	대전 던전 서버군 통합
 	if( KncUid::ExtractServerGroupID( kMemberInfo.m_iUnitUID ) != GetKLoginServer()->GetServerGroupID() )
 	{
-		START_LOG( cerr, L"다른 서버군의 유저는 길드가입 시킬수 없다!" )
+		START_LOG( cerr, L"Cannot add a user from another server group to the guild!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kMemberInfo.m_iUnitUID )
 			<< BUILD_LOG( GetKLoginServer()->GetServerGroupID() )
@@ -306,7 +306,7 @@ bool KGuild::JoinGuildMember( IN const KGuildMemberInfo& kMemberInfo, IN bool bI
 	// 길드 멤버 정보 생성
 	if( InsertGuildMember( kMemberInfo ) == false )
 	{
-		START_LOG( cerr, L"길드원 정보 생성 실패!" )
+		START_LOG( cerr, L"Failed to create guild member information!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kMemberInfo.m_iUnitUID )
 			<< END_LOG;
@@ -318,7 +318,7 @@ bool KGuild::JoinGuildMember( IN const KGuildMemberInfo& kMemberInfo, IN bool bI
 	KGuildMemberInfoPtr spGuildMember = GetGuildMember( kMemberInfo.m_iUnitUID );
 	if( spGuildMember == NULL )
 	{
-		START_LOG( cerr, L"길드원 정보 얻기 실패. 절대 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"Failed to get guild member information. This should never happen!" )
 			<< BUILD_LOG( kMemberInfo.m_iUnitUID )
 			<< BUILD_LOG( GetUID() )
 			<< END_LOG;
@@ -372,7 +372,7 @@ bool KGuild::KickGuildMemeber( IN UidType iUnitUID, IN UidType iTargetUnitUID )
 	//KGuildMemberInfoPtr spSelfInfo = GetGuildMember( iUnitUID );
 	//if( spSelfInfo == NULL )
 	//{
-	//	START_LOG( cerr, L"자신의 길드정보 찾기 실패.!" )
+	//	START_LOG( cerr, L"Failed to find own guild information!" )
 	//		<< BUILD_LOG( GetUID() )
 	//		<< BUILD_LOG( iUnitUID )
 	//		<< END_LOG;
@@ -384,7 +384,7 @@ bool KGuild::KickGuildMemeber( IN UidType iUnitUID, IN UidType iTargetUnitUID )
 	KGuildMemberInfoPtr spTargetInfo = GetGuildMember( iTargetUnitUID );
 	if( spTargetInfo == NULL )
 	{
-		START_LOG( cerr, L"길드원 정보 얻기 실패." )
+		START_LOG( cerr, L"Failed to get guild member information." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( iTargetUnitUID )
 			<< END_LOG;
@@ -420,7 +420,7 @@ bool KGuild::KickGuildMemeber( IN UidType iUnitUID, IN UidType iTargetUnitUID )
 	// 길드 멤버 정보 삭제
 	if( DeleteGuildMember( iTargetUnitUID ) == false )
 	{
-		START_LOG( cerr, L"길드 멤버 정보 삭제 실패! 일어날수 없는 에러!" )
+		START_LOG( cerr, L"Failed to delete guild member information. This should never happen!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( iTargetUnitUID )
 			<< END_LOG;
@@ -438,7 +438,7 @@ bool KGuild::LoginGuildMember( IN const KGuildMemberInfo& kMemberInfo )
 	KGuildMemberInfoPtr spGuildMember = GetGuildMember( kMemberInfo.m_iUnitUID );
 	if( spGuildMember == NULL )
 	{
-		START_LOG( cerr, L"길드원 정보 얻기 실패. 길드원 로그인 실패!" )
+		START_LOG( cerr, L"Failed to get guild member information; member login failed!" )
 			<< BUILD_LOG( kMemberInfo.m_iUnitUID )
 			<< BUILD_LOG( GetUID() )
 			<< END_LOG;
@@ -533,7 +533,7 @@ bool KGuild::LogoutGuildMember( IN UidType iUnitUID )
 	KGuildMemberInfoPtr spGuildMember = GetGuildMember( iUnitUID );
 	if( spGuildMember == NULL )
 	{
-		START_LOG( cerr, L"길드원 정보 얻기 실패. 길드원 로그아웃 실패!" )
+		START_LOG( cerr, L"Failed to get guild member information; member logout failed!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
@@ -569,7 +569,7 @@ bool KGuild::CheckInviteCondition( IN UidType iReceiverUnitUID, IN UidType iSend
 	KGuildMemberInfoPtr spGuildMember = GetGuildMember( iSenderUnitUID );
 	if( spGuildMember == NULL )
 	{
-		START_LOG( cerr, L"해당 길드원이 아닌데 길드초대를 했다." )
+		START_LOG( cerr, L"A guild invitation was sent to someone who is not a member of this guild." )
 			<< BUILD_LOG( iSenderUnitUID )
 			<< END_LOG;
 
@@ -588,7 +588,7 @@ bool KGuild::CheckInviteCondition( IN UidType iReceiverUnitUID, IN UidType iSend
 
 	default:
 		{
-			START_LOG( cerr, L"길드 초대 권한이 없는데 길드초대를 했다." )
+			START_LOG( cerr, L"A guild invitation was sent without invitation privileges." )
 				<< BUILD_LOG( iSenderUnitUID )
 				<< END_LOG;
 
@@ -600,7 +600,7 @@ bool KGuild::CheckInviteCondition( IN UidType iReceiverUnitUID, IN UidType iSend
 	// 더이상 길드 제한 인원을 늘릴수 없는가?
 	if( GetNumMember() >= KGuildInfo::GUILD_MAX_MEMBER_LIMIT )
 	{
-		START_LOG( clog, L"이미 길드 인원 제한인데 더 확장하려고함" )
+		START_LOG( clog, L"Cannot expand the guild; it is already at its member limit." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( iSenderUnitUID )
 			<< END_LOG;
@@ -613,7 +613,7 @@ bool KGuild::CheckInviteCondition( IN UidType iReceiverUnitUID, IN UidType iSend
 	if( GetMaxMember() <= GetNumMember() )
 	{
 		// 시간차로 발생 가능한 에러임.
-		START_LOG( clog, L"길드원을 더 추가할수 없음." )
+		START_LOG( clog, L"Cannot add more guild members." )
 			<< BUILD_LOG( iSenderUnitUID )
 			<< END_LOG;
 
@@ -625,7 +625,7 @@ bool KGuild::CheckInviteCondition( IN UidType iReceiverUnitUID, IN UidType iSend
 	if( IsGuildMember( iReceiverUnitUID ) == true )
 	{
 		// 시간차로 인해 발생할 수 있는 오류임.
-		START_LOG( cwarn, L"이미 길드원인 유저를 길드초대를 했다." )
+		START_LOG( cwarn, L"A guild invitation was sent to a user who is already a guild member." )
 			<< BUILD_LOG( iReceiverUnitUID )
 			<< END_LOG;
 
@@ -663,7 +663,7 @@ void KGuild::GetGuildUserList( IN const KELG_GET_GUILD_USER_LIST_REQ& kReq, OUT 
 
 	default:
 		{
-			START_LOG( cerr, L"알수없는 길드유저리스트타입입니다." )
+			START_LOG( cerr, L"Unknown guild user-list type." )
 				<< BUILD_LOGc( kReq.m_cGuildUserListType )
 				<< END_LOG;
 		}
@@ -698,7 +698,7 @@ void KGuild::GetGuildMemberPositionGrade( IN OUT UINT& uiViewPage, OUT UINT& uiT
 
 		if( m_vecGuildMember.size() <= uiBeginIndex )
 		{
-			START_LOG( cerr, L"일어날 수 없는 에러!" )
+			START_LOG( cerr, L"Unexpected error!" )
 				<< BUILD_LOG( uiViewPage )
 				<< BUILD_LOG( uiTotalPage )
 				<< BUILD_LOG( uiBeginIndex )
@@ -715,7 +715,7 @@ void KGuild::GetGuildMemberPositionGrade( IN OUT UINT& uiViewPage, OUT UINT& uiT
 	{
 		if( (*vit) == NULL )
 		{
-			START_LOG( cerr, L"길드 멤버 포인터가 이상합니다." )
+			START_LOG( cerr, L"Invalid guild member pointer." )
 				<< END_LOG;
 			break;
 		}
@@ -756,7 +756,7 @@ void KGuild::GetGuildMemberMessageInfo( IN OUT UINT& uiViewPage, OUT UINT& uiTot
 
 		if( m_vecGuildMember.size() <= uiBeginIndex )
 		{
-			START_LOG( cerr, L"일어날 수 없는 에러!" )
+			START_LOG( cerr, L"Unexpected error!" )
 				<< BUILD_LOG( uiViewPage )
 				<< BUILD_LOG( uiTotalPage )
 				<< BUILD_LOG( uiBeginIndex )
@@ -773,7 +773,7 @@ void KGuild::GetGuildMemberMessageInfo( IN OUT UINT& uiViewPage, OUT UINT& uiTot
 	{
 		if( (*vit) == NULL )
 		{
-			START_LOG( cerr, L"길드 멤버 포인터가 이상합니다." )
+			START_LOG( cerr, L"Invalid guild member pointer." )
 				<< END_LOG;
 			break;
 		}
@@ -837,7 +837,7 @@ bool KGuild::CheckChangeGradeGuild( IN const KELG_CHECK_CHANGE_GUILD_MEMBER_GRAD
 	KGuildMemberInfoPtr spGuildMember = GetGuildMember( kReq.m_iUnitUID );
 	if( spGuildMember == NULL )
 	{
-		START_LOG( cerr, L"길드 멤버가 아닙니다." )
+		START_LOG( cerr, L"The user is not a guild member." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kReq.m_iUnitUID )
 			<< END_LOG;
@@ -850,7 +850,7 @@ bool KGuild::CheckChangeGradeGuild( IN const KELG_CHECK_CHANGE_GUILD_MEMBER_GRAD
 	KGuildMemberInfoPtr spTargetMember = GetGuildMember( kReq.m_iTargetUnitUID );
 	if( spTargetMember == NULL )
 	{
-		START_LOG( cerr, L"길드 멤버가 아닙니다." )
+		START_LOG( cerr, L"The user is not a guild member." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kReq.m_iTargetUnitUID )
 			<< END_LOG;
@@ -862,7 +862,7 @@ bool KGuild::CheckChangeGradeGuild( IN const KELG_CHECK_CHANGE_GUILD_MEMBER_GRAD
 	// 3. 변경 대상자의 등급과 변경하려는 등급 비교
 	if( spTargetMember->m_ucMemberShipGrade == kReq.m_ucMemberShipGrade )
 	{
-		START_LOG( cerr, L"이미 변경된 등급입니다." )
+		START_LOG( cerr, L"The rank has already changed." )
 			<< BUILD_LOG( kReq.m_iTargetUnitUID )
 			<< BUILD_LOG( spTargetMember->m_ucMemberShipGrade )
 			<< BUILD_LOGc( kReq.m_ucMemberShipGrade )
@@ -880,7 +880,7 @@ bool KGuild::CheckChangeGradeGuild( IN const KELG_CHECK_CHANGE_GUILD_MEMBER_GRAD
 		{
 			if( spTargetMember->m_ucMemberShipGrade == SEnum::GUG_MASTER )
 			{
-				START_LOG( cerr, L"한길드에 길드마스터가 2명인가? 있을수 없는에러!" )
+				START_LOG( cerr, L"Two guild masters in one guild? This should be impossible!" )
 					<< BUILD_LOG( GetUID() )
 					<< BUILD_LOG( kReq.m_iTargetUnitUID )
 					<< END_LOG;
@@ -921,7 +921,7 @@ bool KGuild::CheckChangeGradeGuild( IN const KELG_CHECK_CHANGE_GUILD_MEMBER_GRAD
 		if( spTargetMember->m_ucMemberShipGrade == SEnum::GUG_MASTER  ||
 			spTargetMember->m_ucMemberShipGrade == SEnum::GUG_SYSOP )
 		{
-			START_LOG( cerr, L"길드 관리자가 길드 마스터 또는 다른 길드관리자의 등급을 변경하려고 하네?" )
+			START_LOG( cerr, L"A guild manager is trying to change the rank of the guild master or another manager." )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( kReq.m_iUnitUID )
 				<< BUILD_LOG( kReq.m_iTargetUnitUID )
@@ -943,7 +943,7 @@ bool KGuild::CheckChangeGradeGuild( IN const KELG_CHECK_CHANGE_GUILD_MEMBER_GRAD
 
 		default:
 			{
-				START_LOG( cerr, L"변경하려는 등급 정보가 이상하다!" )
+				START_LOG( cerr, L"Invalid target rank information!" )
 					<< BUILD_LOG( GetUID() )
 					<< BUILD_LOG( kReq.m_iUnitUID )
 					<< BUILD_LOGc( kReq.m_ucMemberShipGrade )
@@ -956,7 +956,7 @@ bool KGuild::CheckChangeGradeGuild( IN const KELG_CHECK_CHANGE_GUILD_MEMBER_GRAD
 	}
 	else
 	{
-		START_LOG( cerr, L"길드 마스터 또는 길드 관리자가 아닌데 길드원등급변경을 하려고 함." )
+		START_LOG( cerr, L"An attempt was made to change a member's rank by someone who is not the guild master or a manager." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kReq.m_iUnitUID )
 			<< BUILD_LOGc( spGuildMember->m_ucMemberShipGrade )
@@ -981,7 +981,7 @@ bool KGuild::UpdateChangeGuildMemberGrade( IN const KDBE_CHANGE_GUILD_MEMBER_GRA
 		KGuildMemberInfoPtr spGuildMaster = GetGuildMember( m_iGuildMasterUnitUID );
 		if( spGuildMaster == NULL )
 		{
-			START_LOG( cerr, L"길드 마스터 정보 얻기 실패!" )
+			START_LOG( cerr, L"Failed to get guild master information!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( m_iGuildMasterUnitUID )
 				<< END_LOG;
@@ -1008,7 +1008,7 @@ bool KGuild::UpdateChangeGuildMemberGrade( IN const KDBE_CHANGE_GUILD_MEMBER_GRA
 	KGuildMemberInfoPtr spGuildMember = GetGuildMember( kInfo.m_iTargetUnitUID );
 	if( spGuildMember == NULL )
 	{
-		START_LOG( cerr, L"해당 길드원이 아닙니다. 길드원 정보 얻기 실패!" )
+		START_LOG( cerr, L"This user is not a guild member; failed to get member information!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kInfo.m_iTargetUnitUID )
 			<< END_LOG;
@@ -1071,7 +1071,7 @@ bool KGuild::UpdateChangeGuildMemberMessage( IN const KDBE_CHANGE_GUILD_MEMBER_M
 	KGuildMemberInfoPtr spGuildMember = GetGuildMember( kInfo.m_iTargetUnitUID );
 	if( spGuildMember == NULL )
 	{
-		START_LOG( cerr, L"해당 길드원이 아닙니다. 길드원 정보 얻기 실패!" )
+		START_LOG( cerr, L"This user is not a guild member; failed to get member information!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kInfo.m_iTargetUnitUID )
 			<< END_LOG;
@@ -1098,7 +1098,7 @@ bool KGuild::UpdateGuildMemberInfo( IN const KGuildMemberInfo& kInfo )
 	if( spGuildMember == NULL )
 	{
 		// 시간차로 발생 가능한 오류 입니다.
-		START_LOG( cwarn, L"해당 길드원이 아닙니다. 길드원 정보 얻기 실패!" )
+		START_LOG( cwarn, L"This user is not a guild member; failed to get member information!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kInfo.m_iUnitUID )
 			<< END_LOG;
@@ -1137,7 +1137,7 @@ bool KGuild::CheckGuildMaxMember( IN const KELG_CHECK_EXPAND_GUILD_MAX_MEMBER_RE
 	KGuildMemberInfoPtr spGuildMember = GetGuildMember( kInfo.m_iUnitUID );
 	if( spGuildMember == NULL )
 	{
-		START_LOG( cerr, L"해당 길드원이 아닙니다. 길드원 정보 얻기 실패!" )
+		START_LOG( cerr, L"This user is not a guild member; failed to get member information!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kInfo.m_iUnitUID )
 			<< END_LOG;
@@ -1150,7 +1150,7 @@ bool KGuild::CheckGuildMaxMember( IN const KELG_CHECK_EXPAND_GUILD_MAX_MEMBER_RE
 	if( spGuildMember->m_ucMemberShipGrade != SEnum::GUG_MASTER  &&
 		spGuildMember->m_ucMemberShipGrade != SEnum::GUG_SYSOP )
 	{
-		START_LOG( cerr, L"길드 마스터 또는 관리자가 아닌데 길드 인원 확장을 하려 함." )
+		START_LOG( cerr, L"An attempt was made to expand the guild by someone who is not the guild master or a manager." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kInfo.m_iUnitUID )
 			<< BUILD_LOGc( spGuildMember->m_ucMemberShipGrade )
@@ -1163,7 +1163,7 @@ bool KGuild::CheckGuildMaxMember( IN const KELG_CHECK_EXPAND_GUILD_MAX_MEMBER_RE
 	// 길드 인원 확장 여유가 되는가?
 	if( GetMaxMember() >= KGuildInfo::GUILD_MAX_MEMBER_LIMIT )
 	{
-		START_LOG( cwarn, L"이미 길드 인원 제한인데 더 확장하려고함" )
+		START_LOG( cwarn, L"Cannot expand the guild; it is already at its member limit." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kInfo.m_iUnitUID )
 			<< BUILD_LOG( GetMaxMember() )
@@ -1290,7 +1290,7 @@ void KGuild::CheckGuildLevelUp()
 
 		if( CXSLGuildManager::IsValidSkillPointFigure( kPacket.m_iGuildSPoint ) == false )
 		{
-			START_LOG( cerr, L"스킬 포인트 값의 범위가 이상합니다." )
+			START_LOG( cerr, L"Skill point value is out of range." )
 				<< BUILD_LOG( kPacket.m_iGuildUID )
 				<< BUILD_LOG( kPacket.m_wstrGuildName )
 				<< BUILD_LOG( kPacket.m_iGuildSPoint )
@@ -1305,7 +1305,7 @@ void KGuild::UpdateGuildLevelResult( IN const KDBE_GUILD_LEVEL_UP_ACK& kInfo )
 {
 	if( kInfo.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"길드 레벨 및 스킬포인트 DB업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update guild level and skill points in the database!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOGc( kInfo.m_ucGuildLevel )
 			//{{ 2009. 11. 26  최육사	길드스킬
@@ -1343,7 +1343,7 @@ bool KGuild::CheckLearnGuildSkill( IN const KELG_GET_GUILD_SKILL_REQ& kReq, OUT 
 	KGuildMemberInfoPtr spGuildMember = GetGuildMember( kReq.m_iUnitUID );
 	if( spGuildMember == NULL )
 	{
-		START_LOG( cerr, L"해당 길드원이 아닙니다. 길드원 정보 얻기 실패!" )
+		START_LOG( cerr, L"This user is not a guild member; failed to get member information!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kReq.m_iUnitUID )
 			<< END_LOG;
@@ -1355,7 +1355,7 @@ bool KGuild::CheckLearnGuildSkill( IN const KELG_GET_GUILD_SKILL_REQ& kReq, OUT 
 	// 길드 마스터 등급인가?
 	if( spGuildMember->m_ucMemberShipGrade != SEnum::GUG_MASTER )
 	{
-		START_LOG( cerr, L"길드 마스터 또는 관리자가 아닌데 길드 스킬을 배우려 함." )
+		START_LOG( cerr, L"An attempt was made to learn a guild skill by someone who is not the guild master or a manager." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kReq.m_iUnitUID )
 			<< BUILD_LOGc( spGuildMember->m_ucMemberShipGrade )
@@ -1370,7 +1370,7 @@ bool KGuild::CheckLearnGuildSkill( IN const KELG_GET_GUILD_SKILL_REQ& kReq, OUT 
 	// 이미 최고레벨까지 배운 스킬인지 검사
 	if( m_kSkillTree.IsMasterSkillLevel( kReq.m_iGuildSkillID ) == true )
 	{
-		START_LOG( cerr, L"이미 최고 레벨까지 배운 길드 스킬입니다." )
+		START_LOG( cerr, L"This guild skill is already at its maximum level." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kReq.m_iGuildSkillID )
 			<< END_LOG;
@@ -1382,7 +1382,7 @@ bool KGuild::CheckLearnGuildSkill( IN const KELG_GET_GUILD_SKILL_REQ& kReq, OUT 
 	const CXSLSkillTree::SkillTemplet* pSkillTemplet = SiCXSLSkillTree()->GetSkillTemplet( kReq.m_iGuildSkillID );
 	if( pSkillTemplet == NULL )
 	{
-		START_LOG( cerr, L"스킬 템플릿 정보가 없습니다." )
+		START_LOG( cerr, L"Skill template information is missing." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kReq.m_iGuildSkillID )
 			<< END_LOG;
@@ -1394,7 +1394,7 @@ bool KGuild::CheckLearnGuildSkill( IN const KELG_GET_GUILD_SKILL_REQ& kReq, OUT 
 	// 선행스킬을 최고레벨까지 습득했는지 체크
 	if( m_kSkillTree.IsAllPrecedingSkillMasterLevel( kReq.m_iGuildSkillID ) == false )
 	{
-		START_LOG( cerr, L"선행스킬을 아직 마스터레벨까지 습득하지 못했습니다." )
+		START_LOG( cerr, L"The prerequisite skill has not yet reached its maximum level." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kReq.m_iGuildSkillID )
 			<< END_LOG;
@@ -1407,7 +1407,7 @@ bool KGuild::CheckLearnGuildSkill( IN const KELG_GET_GUILD_SKILL_REQ& kReq, OUT 
 	// 선행 tier에 충분한 SP를 소비했는지 체크
 	if( m_kSkillTree.IsTierOpened( kReq.m_iGuildSkillID ) == false )
 	{
-		START_LOG( cerr, L"선행 tire에서 충분한 SP를 소비하지 않았습니다." )
+		START_LOG( cerr, L"Not enough SP has been spent in the prerequisite tier." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kReq.m_iGuildSkillID )
 			<< END_LOG;
@@ -1515,7 +1515,7 @@ bool KGuild::CheckResetGuildSkill( IN const KELG_RESET_GUILD_SKILL_REQ& kReq, OU
 	KGuildMemberInfoPtr spGuildMember = GetGuildMember( kReq.m_iUnitUID );
 	if( spGuildMember == NULL )
 	{
-		START_LOG( cerr, L"해당 길드원이 아닙니다. 길드원 정보 얻기 실패!" )
+		START_LOG( cerr, L"This user is not a guild member; failed to get member information!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kReq.m_iUnitUID )
 			<< END_LOG;
@@ -1527,7 +1527,7 @@ bool KGuild::CheckResetGuildSkill( IN const KELG_RESET_GUILD_SKILL_REQ& kReq, OU
 	// 길드 마스터 등급인가?
 	if( spGuildMember->m_ucMemberShipGrade != SEnum::GUG_MASTER )
 	{
-		START_LOG( cerr, L"길드 마스터 또는 관리자가 아닌데 길드 스킬 되돌리기를 하려 함." )
+		START_LOG( cerr, L"An attempt was made to refund guild skills by someone who is not the guild master or a manager." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kReq.m_iUnitUID )
 			<< BUILD_LOGc( spGuildMember->m_ucMemberShipGrade )
@@ -1543,7 +1543,7 @@ bool KGuild::CheckResetGuildSkill( IN const KELG_RESET_GUILD_SKILL_REQ& kReq, OU
 	const CXSLSkillTree::SkillTemplet* pSkillTemplet = SiCXSLSkillTree()->GetSkillTemplet( kReq.m_iGuildSkillID );
 	if( pSkillTemplet == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 스킬ID를 초기화 하려 했습니다." )
+		START_LOG( cerr, L"Attempted to reset a nonexistent skill ID." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kReq.m_iGuildSkillID )
 			<< END_LOG;
@@ -1557,7 +1557,7 @@ bool KGuild::CheckResetGuildSkill( IN const KELG_RESET_GUILD_SKILL_REQ& kReq, OU
 	int iSkillCSPoint = 0;
 	if( m_kSkillTree.GetSkillLevelAndCSP( kReq.m_iGuildSkillID, iSkillLevel, iSkillCSPoint ) == false )
 	{
-		START_LOG( cerr, L"클라이언트에서 스킬 검사를 했을텐데.." )
+		START_LOG( cerr, L"The client should have checked the skill..." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kReq.m_iGuildSkillID )
 			<< END_LOG;
@@ -1568,7 +1568,7 @@ bool KGuild::CheckResetGuildSkill( IN const KELG_RESET_GUILD_SKILL_REQ& kReq, OU
 
 	if( iSkillLevel < 1 )
 	{
-		START_LOG( cerr, L"클라이언트에서 스킬 검사를 했을텐데.." )
+		START_LOG( cerr, L"The client should have checked the skill..." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kReq.m_iGuildSkillID )
 			<< END_LOG;
@@ -1580,7 +1580,7 @@ bool KGuild::CheckResetGuildSkill( IN const KELG_RESET_GUILD_SKILL_REQ& kReq, OU
 	// 말단 노드 인지 검사
 	if( m_kSkillTree.IsAllFollowingSkillLevelZero( kReq.m_iGuildSkillID ) == false )
 	{
-		START_LOG( cerr, L"클라이언트에서 말단노드 검사를 했을텐데.." )
+		START_LOG( cerr, L"The client should have checked the leaf node..." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kReq.m_iGuildSkillID )
 			<< END_LOG;
@@ -1592,7 +1592,7 @@ bool KGuild::CheckResetGuildSkill( IN const KELG_RESET_GUILD_SKILL_REQ& kReq, OU
 	const CXSLSkillTree::SkillTreeTemplet* pSkillTreeTemplet = SiCXSLSkillTree()->GetGuildSkillTreeTemplet( kReq.m_iGuildSkillID );
 	if( pSkillTreeTemplet == NULL )
 	{
-		START_LOG( cerr, L"트리에 존재하지 않는 길드스킬ID를 되돌리기 하려 했습니다." )
+		START_LOG( cerr, L"Attempted to refund a guild skill ID that is not in the tree." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kReq.m_iGuildSkillID )
 			<< END_LOG;
@@ -1607,7 +1607,7 @@ bool KGuild::CheckResetGuildSkill( IN const KELG_RESET_GUILD_SKILL_REQ& kReq, OU
 	if( pSkillTreeTemplet->m_iTier < 0 ||
 		pSkillTreeTemplet->m_iTier > (int)vecCumulativeTierSPoint.size() - 1 )
 	{
-		START_LOG( cerr, L"스킬 템플릿의 tier index가 이상합니다." )
+		START_LOG( cerr, L"Invalid skill-template tier index." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( pSkillTreeTemplet->m_iTier )
 			<< BUILD_LOG( kReq.m_iGuildSkillID )
@@ -1622,7 +1622,7 @@ bool KGuild::CheckResetGuildSkill( IN const KELG_RESET_GUILD_SKILL_REQ& kReq, OU
 	{
 		if( vecCumulativeTierSPoint[ui-1]-1 < (int)ui * MAGIC_SKILL_POINT_PER_TIER )
 		{
-			START_LOG( cerr, L"후행 tier가 있는 스킬ID를 초기화 하려 했습니다." )
+			START_LOG( cerr, L"Attempted to reset a skill that has a following tier." )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( pSkillTreeTemplet->m_iTier )
 				<< BUILD_LOG( ui )
@@ -1705,7 +1705,7 @@ bool KGuild::CheckInitGuildSkill( IN const KELG_INIT_GUILD_SKILL_REQ& kReq, OUT 
 	KGuildMemberInfoPtr spGuildMember = GetGuildMember( kReq.m_iUnitUID );
 	if( spGuildMember == NULL )
 	{
-		START_LOG( cerr, L"해당 길드원이 아닙니다. 길드원 정보 얻기 실패!" )
+		START_LOG( cerr, L"This user is not a guild member; failed to get member information!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kReq.m_iUnitUID )
 			<< END_LOG;
@@ -1717,7 +1717,7 @@ bool KGuild::CheckInitGuildSkill( IN const KELG_INIT_GUILD_SKILL_REQ& kReq, OUT 
 	// 길드 마스터 등급인가?
 	if( spGuildMember->m_ucMemberShipGrade != SEnum::GUG_MASTER )
 	{
-		START_LOG( cerr, L"길드 마스터 또는 관리자가 아닌데 길드 스킬 초기화를 하려 함." )
+		START_LOG( cerr, L"An attempt was made to reset guild skills by someone who is not the guild master or a manager." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kReq.m_iUnitUID )
 			<< BUILD_LOGc( spGuildMember->m_ucMemberShipGrade )
@@ -1736,7 +1736,7 @@ bool KGuild::CheckInitGuildSkill( IN const KELG_INIT_GUILD_SKILL_REQ& kReq, OUT 
 
 	if( ( iUsedSPoint <= 0 && iUsedCSPoint <= 0 )  ||  ( iUsedSPoint + iUsedCSPoint <= 0 ) )
 	{
-		START_LOG( cwarn, L"스킬을 하나도 배우지 않았거나 기본 스킬만 있는 상태인데( 즉, 더이상 초기화 할 필요가 없는데) 초기화 하려고 함." )
+		START_LOG( cwarn, L"Attempted to reset skills when none, or only default skills, had been learned; there was nothing to reset." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kReq.m_iUnitUID )
 			<< BUILD_LOG( iUsedSPoint )
@@ -1764,7 +1764,7 @@ bool KGuild::CheckInitGuildSkill( IN const KELG_INIT_GUILD_SKILL_REQ& kReq, OUT 
 		}
 		else
 		{
-			START_LOG( cerr, L"cash skill point기한이 다되었는데 스킬트리에 csp가 남아있다." )
+			START_LOG( cerr, L"Cash skill points remain in the skill tree after their expiration." )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( kReq.m_iUnitUID )
 				<< BUILD_LOG( iUsedSPoint )
@@ -1810,7 +1810,7 @@ bool KGuild::InsertGuildCashSkillPoint( IN const KELG_INSERT_GUILD_CASH_SKILL_PO
 	KGuildMemberInfoPtr spGuildMember = GetGuildMember( kNot.m_iUnitUID );
 	if( spGuildMember == NULL )
 	{
-		START_LOG( cerr, L"해당 길드원이 아닙니다. 길드원 정보 얻기 실패!" )
+		START_LOG( cerr, L"This user is not a guild member; failed to get member information!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kNot.m_iUnitUID )
 			<< END_LOG;
@@ -1822,7 +1822,7 @@ bool KGuild::InsertGuildCashSkillPoint( IN const KELG_INSERT_GUILD_CASH_SKILL_PO
 	// 길드 마스터 등급인가?
 	if( spGuildMember->m_ucMemberShipGrade != SEnum::GUG_MASTER )
 	{
-		START_LOG( cerr, L"길드 마스터 또는 관리자가 아닌데 길드 스킬 되돌리기를 하려 함." )
+		START_LOG( cerr, L"An attempt was made to refund guild skills by someone who is not the guild master or a manager." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kNot.m_iUnitUID )
 			<< BUILD_LOGc( spGuildMember->m_ucMemberShipGrade )
@@ -1835,7 +1835,7 @@ bool KGuild::InsertGuildCashSkillPoint( IN const KELG_INSERT_GUILD_CASH_SKILL_PO
 	// 이미 그노시스 대축복 아이템을 사용중이라면 다시 사용할 수 없다.
 	if( m_kSkillTree.IsCashSkillPointExpired() == false )
 	{
-		START_LOG( cerr, L"이미 그노시스 대축복을 사용중이면 다시 사용못함. 체크했을텐데.." )
+		START_LOG( cerr, L"Gnosis's Great Blessing is already active; it cannot be used again. This should have been checked..." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kNot.m_iUnitUID )
 			<< END_LOG;
@@ -1859,7 +1859,7 @@ void KGuild::InsertGuildCashSkillPointResult( IN const KDBE_INSERT_GUILD_CASH_SK
 {
 	if( kAck.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"길드 캐쉬 스킬 포인트 insert DB업데이트 실패!" )
+		START_LOG( cerr, L"Failed to insert guild cash skill points into the database!" )
 			<< BUILD_LOG( kAck.m_iGuildCSPoint )
 			<< BUILD_LOG( kAck.m_iPeriod )
 			<< BUILD_LOG( kAck.m_bUpdateEndDateOnly )
@@ -1890,7 +1890,7 @@ void KGuild::ExpireGuildCashSkillPointResult( IN const KDBE_EXPIRE_GUILD_CASH_SK
 {
 	if( kAck.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"길드 캐쉬 스킬 포인트 기간종료 DB업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update expired guild cash skill points in the database!" )
 			<< BUILD_LOG( kAck.m_iRetrievedSPoint )
 			<< END_LOG;
 		return;
@@ -1916,7 +1916,7 @@ bool KGuild::AdminInsertGuildSkillPoint( IN const KELG_ADMIN_GET_GUILD_SKILL_POI
 	KGuildMemberInfoPtr spGuildMember = GetGuildMember( kReq.m_iUnitUID );
 	if( spGuildMember == NULL )
 	{
-		START_LOG( cwarn, L"해당 길드원이 아닙니다. 길드원 정보 얻기 실패!" )
+		START_LOG( cwarn, L"This user is not a guild member; failed to get member information!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kReq.m_iUnitUID )
 			<< END_LOG;
@@ -1928,7 +1928,7 @@ bool KGuild::AdminInsertGuildSkillPoint( IN const KELG_ADMIN_GET_GUILD_SKILL_POI
 	// 길드 마스터 등급인가?
 	if( spGuildMember->m_ucMemberShipGrade != SEnum::GUG_MASTER )
 	{
-		START_LOG( cwarn, L"길드 마스터가 아닌데 길드 스킬 포인트 치트를 사용하려함." )
+		START_LOG( cwarn, L"Someone who is not the guild master attempted to use the guild skill point cheat." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kReq.m_iUnitUID )
 			<< BUILD_LOGc( spGuildMember->m_ucMemberShipGrade )
@@ -1952,7 +1952,7 @@ void KGuild::AdminInsertGuildSkillPointResult( IN const KELG_ADMIN_GET_GUILD_SKI
 	KGuildMemberInfoPtr spGuildMember = GetGuildMember( kAck.m_iUnitUID );
 	if( spGuildMember == NULL )
 	{
-		START_LOG( cerr, L"해당 길드원이 아닙니다. 길드원 정보 얻기 실패!" )
+		START_LOG( cerr, L"This user is not a guild member; failed to get member information!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kAck.m_iUnitUID )
 			<< END_LOG;
@@ -1962,7 +1962,7 @@ void KGuild::AdminInsertGuildSkillPointResult( IN const KELG_ADMIN_GET_GUILD_SKI
 
 	if( spGuildMember->IsLogined() == false )
 	{
-		START_LOG( cerr, L"로그인 상태가 아닙니다" )
+		START_LOG( cerr, L"The user is not logged in." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kAck.m_iUnitUID )
 			<< END_LOG;
@@ -1990,7 +1990,7 @@ bool KGuild::CheckRegistrationGuildAd( IN IN UidType iUnitUID )
 	KGuildMemberInfoPtr spGuildMember = GetGuildMember( iUnitUID );
 	if( spGuildMember == NULL )
 	{
-		START_LOG( cerr, L"해당 길드원이 아닙니다. 길드원 정보 얻기 실패!" )
+		START_LOG( cerr, L"This user is not a guild member; failed to get member information!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
@@ -2003,7 +2003,7 @@ bool KGuild::CheckRegistrationGuildAd( IN IN UidType iUnitUID )
 	if( spGuildMember->m_ucMemberShipGrade != SEnum::GUG_MASTER  &&
 		spGuildMember->m_ucMemberShipGrade != SEnum::GUG_SYSOP )
 	{
-		START_LOG( cerr, L"길드 광고를 등록할수있는 등급이 아닙니다!" )
+		START_LOG( cerr, L"This rank cannot create guild advertisements!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( iUnitUID )
 			<< BUILD_LOGc( spGuildMember->m_ucMemberShipGrade )
@@ -2021,7 +2021,7 @@ bool KGuild::MakeGuildAdInfo( IN const KDBE_REGISTRATION_GUILD_AD_ACK& kAck, OUT
 	KGuildMemberInfoPtr spGuildMember = GetGuildMember( m_iGuildMasterUnitUID );
 	if( spGuildMember == NULL )
 	{
-		START_LOG( cerr, L"길드 마스터의 정보가 없습니다." )
+		START_LOG( cerr, L"Guild master information is missing." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( m_iGuildMasterUnitUID )
 			<< END_LOG;
@@ -2060,7 +2060,7 @@ bool KGuild::CheckGetApplyJoinGuildList( IN const KELG_GET_APPLY_JOIN_GUILD_LIST
 	KGuildMemberInfoPtr spGuildMember = GetGuildMember( kReq.m_iUnitUID );
 	if( spGuildMember == NULL )
 	{
-		START_LOG( cerr, L"해당 길드원이 아닙니다. 길드원 정보 얻기 실패!" )
+		START_LOG( cerr, L"This user is not a guild member; failed to get member information!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kReq.m_iUnitUID )
 			<< END_LOG;
@@ -2079,7 +2079,7 @@ bool KGuild::CheckDeleteApplyJoin( IN const KELG_DELETE_APPLY_JOIN_GUILD_REQ& kR
 	KGuildMemberInfoPtr spGuildMember = GetGuildMember( kReq.m_iUnitUID );
 	if( spGuildMember == NULL )
 	{
-		START_LOG( cerr, L"해당 길드원이 아닙니다. 길드원 정보 얻기 실패!" )
+		START_LOG( cerr, L"This user is not a guild member; failed to get member information!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kReq.m_iUnitUID )
 			<< END_LOG;
@@ -2092,7 +2092,7 @@ bool KGuild::CheckDeleteApplyJoin( IN const KELG_DELETE_APPLY_JOIN_GUILD_REQ& kR
 	if( spGuildMember->m_ucMemberShipGrade != SEnum::GUG_MASTER  &&
 		spGuildMember->m_ucMemberShipGrade != SEnum::GUG_SYSOP )
 	{
-		START_LOG( cerr, L"길드 가입 신청 삭제 가능한 등급이 아닙니다." )
+		START_LOG( cerr, L"This rank cannot delete guild applications." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kReq.m_iUnitUID )
 			<< BUILD_LOGc( spGuildMember->m_ucMemberShipGrade )

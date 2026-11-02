@@ -136,7 +136,7 @@ IMPL_ON_FUNC( EPUBLISHER_BILLING_BALANCE_ACK )
 	}
 	else if(kPacket_.m_iOK == NetError::NET_OK)
 	{
-		START_LOG( cerr, L"정상 타입의 캐시가 아닌데 어떻게 NET_OK가 나오지!!!" )
+		START_LOG( cerr, L"This is not a valid cash type; how did the result return NET_OK?!" )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( kPacket_.m_iCashType )
 			<< BUILD_LOG( kPacket_.m_ulBalance)
@@ -167,7 +167,7 @@ IMPL_ON_FUNC( EGS_APPLY_COUPON_REQ )
 	//{{ 2011. 10. 12	최육사	컨텐츠 관리자
 	if( SiKGSContentManager()->IsEnableCashShop() == false )
 	{
-		START_LOG( clog, L"캐쉬샵 점검중 쿠폰 사용 요청" )
+		START_LOG( clog, L"Coupon use requested during cash shop maintenance." )
 			<< BUILD_LOG( GetName() );
 
 		KEGS_APPLY_COUPON_ACK kPacketAck;
@@ -177,7 +177,7 @@ IMPL_ON_FUNC( EGS_APPLY_COUPON_REQ )
 	}
 	//}}
 
-	START_LOG( clog, L"쿠폰 입력." )
+	START_LOG( clog, L"Coupon entered." )
 		<< BUILD_LOG( kPacket_.m_wstrCouponSerial );
 
 	KEGS_APPLY_COUPON_ACK kPacketAck;
@@ -205,7 +205,7 @@ IMPL_ON_FUNC( EGS_APPLY_COUPON_REQ )
 		return;
 	}
 
-	START_LOG( clog, L"쿠폰 사용 요청" )
+	START_LOG( clog, L"Coupon use requested." )
 		<< BUILD_LOG( kPacket_.m_wstrCouponSerial )
 		<< END_LOG;
 
@@ -286,7 +286,7 @@ IMPL_ON_FUNC( EBILL_USE_COUPON_ACK )
 		int iItemID = kInfo.m_iProductID;
 		if( iItemID <= 0 )
 		{
-			START_LOG( cerr, L"아이템 ID 변환 실패." )
+			START_LOG( cerr, L"Failed to convert the item ID." )
 				<< BUILD_LOG( iItemID )
 				<< END_LOG;
 
@@ -341,7 +341,7 @@ IMPL_ON_FUNC( EBILL_USE_COUPON_RESERVE_ACK )
 		}
 		else
 		{
-			START_LOG( cerr, L"현재 쿠폰 지원에 문제가 있음" )
+			START_LOG( cerr, L"Coupon support is currently unavailable." )
 				<< BUILD_LOG( dwPublisherBillingConnectType )
 				<< END_LOG;
 
@@ -354,7 +354,7 @@ IMPL_ON_FUNC( EBILL_USE_COUPON_RESERVE_ACK )
 	}
 	else
 	{
-		START_LOG( cerr, L"퍼블 쿠폰 인증 아닌데 왜 여기로 들어오지???" )
+		START_LOG( cerr, L"Not publisher coupon verification; why did execution reach here?" )
 			<< BUILD_LOG( kPacket_.m_kPacketReq.m_PurchaserInfo.m_iUserUID )
 			<< BUILD_LOG( kPacket_.m_kPacketReq.m_PurchaserInfo.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_kPacketReq.m_wstrSerialCode )
@@ -368,7 +368,7 @@ IMPL_ON_FUNC( EBILL_USE_COUPON_RESULT_ACK )
 {
 	if( kPacket_.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"쿠폰 사용 실패." )
+		START_LOG( cerr, L"Failed to use coupon." )
 			<< BUILD_LOG( kPacket_.m_iOK )
 			<< BUILD_LOG( NetError::GetErrStr( kPacket_.m_iOK ) )
 			<< END_LOG;
@@ -402,7 +402,7 @@ IMPL_ON_FUNC( EBILL_USE_COUPON_RESULT_ACK )
 		int iItemID = kInfo.m_iProductID;
 		if( iItemID <= 0 )
 		{
-			START_LOG( cerr, L"아이템 ID 변환 실패." )
+			START_LOG( cerr, L"Failed to convert the item ID." )
 				<< BUILD_LOG( iItemID )
 				<< END_LOG;
 
@@ -437,7 +437,7 @@ IMPL_ON_FUNC( EGS_GET_PURCHASED_CASH_ITEM_REQ )
 	//{{ 2011. 10. 12	최육사	컨텐츠 관리자
 	if( SiKGSContentManager()->IsEnableCashShop() == false )
 	{
-		START_LOG( clog, L"캐쉬샵 점검중 쿠폰 사용 요청" )
+		START_LOG( clog, L"Coupon use requested during cash shop maintenance." )
 			<< BUILD_LOG( GetName() );
 
 		KEGS_APPLY_COUPON_ACK kPacketAck;
@@ -467,7 +467,7 @@ IMPL_ON_FUNC( EGS_BUY_CASH_ITEM_REQ )
 	//{{ 2011. 10. 12	최육사	컨텐츠 관리자
 	if( SiKGSContentManager()->IsEnableCashShop() == false )
 	{
-		START_LOG( clog, L"캐쉬샵 점검중 상품 구매 요청" )
+		START_LOG( clog, L"Product purchase requested during cash shop maintenance." )
 			<< BUILD_LOG( GetName() );
 
 		KEGS_BUY_CASH_ITEM_ACK kPacketAck;
@@ -534,7 +534,7 @@ IMPL_ON_FUNC( EGS_BUY_CASH_ITEM_REQ )
 		if( kBillProductInfo.m_cCategoryNo == CXSLCashItemManager::CSDC_COUPON
 			|| kBillProductInfo.m_cCategoryNo == CXSLCashItemManager::CSDC_NO_SELL_IN_PACKAGE )
 		{
-			START_LOG( cerr, L"쿠폰과 패키지 중 판매 안하는 아이템" )
+			START_LOG( cerr, L"Item not sold as a coupon or package" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( vit->m_ulProductNo )
 				<< END_LOG;
@@ -561,7 +561,7 @@ IMPL_ON_FUNC( EGS_BUY_CASH_ITEM_REQ )
 
 		if( iItemID <= 0 )
 		{
-			START_LOG( cerr, L"아이템 ID 변환 실패." )
+			START_LOG( cerr, L"Failed to convert the item ID." )
 				<< BUILD_LOG( vit->m_ulProductNo )
 				<< BUILD_LOG( iItemID )
 				<< END_LOG;
@@ -575,7 +575,7 @@ IMPL_ON_FUNC( EGS_BUY_CASH_ITEM_REQ )
 		const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iItemID );
 		if( pItemTemplet == NULL )
 		{
-			START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )
+			START_LOG( cerr, L"Failed to retrieve the item template." )
 				<< BUILD_LOG( iItemID )
 				<< END_LOG;
 
@@ -727,7 +727,7 @@ IMPL_ON_FUNC( EGS_BUY_CASH_ITEM_REQ )
 			// 내가 이걸 구매 할수 있는 등급인지 본다!
 			if( m_kInventory.GetMyNextUpgradeBankItemID() != pItemTemplet->m_ItemID )
 			{
-				START_LOG( cerr, L"구매 가능한 등급이 아닙니다." )
+				START_LOG( cerr, L"The user's rank does not allow this purchase." )
 					<< BUILD_LOG( GetCharUID() )
 					<< BUILD_LOG( GetCharName() )
 					<< BUILD_LOG( m_kInventory.GetMyNextUpgradeBankItemID() )
@@ -745,7 +745,7 @@ IMPL_ON_FUNC( EGS_BUY_CASH_ITEM_REQ )
 				// 인벤토리에 루리엘 신용보증서가 있으면 마지막 회원권은 구매할 수 없다!
 				if( m_kInventory.IsExistWithBank( CXSLItem::SI_BANK_MEMBERSHIP_UPGRADE ) == true )
 				{
-					START_LOG( cerr, L"루리엘 신용보증서가 인벤토리에 있으면 마지막 회원권은 구매못함." )
+					START_LOG( cerr, L"The final membership ticket cannot be purchased while a Luriel credit guarantee is in the inventory." )
 						<< BUILD_LOG( GetCharUID() )
 						<< BUILD_LOG( GetCharName() )
 						<< END_LOG;
@@ -760,7 +760,7 @@ IMPL_ON_FUNC( EGS_BUY_CASH_ITEM_REQ )
 			// 주문수량이 한개 이상은 안되!
 			if( vit->m_usOrderQuantity > 1 )
 			{
-				START_LOG( cerr, L"은행 회원권은 1개이상 주문할 수 없다." )
+				START_LOG( cerr, L"Only one bank membership can be ordered." )
 					<< BUILD_LOG( GetCharUID() )
 					<< BUILD_LOG( GetCharName() )
 					<< BUILD_LOG( vit->m_usOrderQuantity )
@@ -781,7 +781,7 @@ IMPL_ON_FUNC( EGS_BUY_CASH_ITEM_REQ )
 			// 일반 멤버쉽이 아니면 구매할 수 없다!
 			if( m_kInventory.GetBankMemberShip() != CXSLInventory::MPB_NORMAL )
 			{
-				START_LOG( cerr, L"구매 가능한 등급이 아닙니다." )
+				START_LOG( cerr, L"The user's rank does not allow this purchase." )
 					<< BUILD_LOG( GetCharUID() )
 					<< BUILD_LOG( GetCharName() )
 					<< BUILD_LOG( m_kInventory.GetBankMemberShip() )
@@ -795,7 +795,7 @@ IMPL_ON_FUNC( EGS_BUY_CASH_ITEM_REQ )
 			// 인벤토리에 루리엘 신용보증서가 있으면 마지막 회원권은 구매할 수 없다!
 			if( m_kInventory.IsExistWithBank( CXSLItem::SI_BANK_MEMBERSHIP_UPGRADE ) == true )
 			{
-				START_LOG( cerr, L"루리엘 신용보증서가 인벤토리에 있으면 마지막 회원권은 구매못함." )
+				START_LOG( cerr, L"The final membership ticket cannot be purchased while a Luriel credit guarantee is in the inventory." )
 					<< BUILD_LOG( GetCharUID() )
 					<< BUILD_LOG( GetCharName() )
 					<< END_LOG;
@@ -808,7 +808,7 @@ IMPL_ON_FUNC( EGS_BUY_CASH_ITEM_REQ )
 			// 주문수량이 한개 이상은 안되!
 			if( vit->m_usOrderQuantity > 1 )
 			{
-				START_LOG( cerr, L"은행 회원권은 1개이상 주문할 수 없다." )
+				START_LOG( cerr, L"Only one bank membership can be ordered." )
 					<< BUILD_LOG( GetCharUID() )
 					<< BUILD_LOG( GetCharName() )
 					<< BUILD_LOG( vit->m_usOrderQuantity )
@@ -928,7 +928,7 @@ IMPL_ON_FUNC( EGS_BUY_CASH_ITEM_REQ )
 			KNXBTProductInfo kProductInfo;
 			if( !SiKNexonBillingTCPManager()->GetProductInfo( vit->m_ulProductNo, kProductInfo ) )
 			{
-				START_LOG( cerr, L"프로덕트 정보 추출 실패." )
+				START_LOG( cerr, L"Failed to retrieve product information." )
 					<< BUILD_LOG( GetCharUID() )
 					<< BUILD_LOG( GetCharName() )
 					<< BUILD_LOG( vit->m_ulProductNo )
@@ -1067,7 +1067,7 @@ IMPL_ON_FUNC( EGS_BUY_CASH_ITEM_REQ )
 						// 혹시나해서 스킬찍었는지도 검사해봄
 						if ( m_kSkillTree.IsExistOnUsedPage( iSkillID ) )
 						{
-							START_LOG( cerr, L"봉인해제도 안되었는데 스킬이 찍혔다? 절대 일어나서는 안되는 에러!" )
+							START_LOG( cerr, L"Skill was assigned even though it was not unsealed; this should never happen!" )
 								<< BUILD_LOG( GetCharUID() )
 								<< BUILD_LOG( iSkillID )
 								<< END_LOG;
@@ -1078,7 +1078,7 @@ IMPL_ON_FUNC( EGS_BUY_CASH_ITEM_REQ )
 						std::vector< int > vecItemList;
 						if( SiCXSLSkillTree()->GetUnsealSkillItemList( iSkillID, vecItemList ) == false )
 						{
-							START_LOG( cerr, L"봉인스킬 아이템 리스트가 없다?" )
+							START_LOG( cerr, L"Sealing skill item list is missing?" )
 								<< BUILD_LOG( GetCharUID() )
 								<< BUILD_LOG( iSkillID )
 								<< END_LOG;
@@ -1112,7 +1112,7 @@ IMPL_ON_FUNC( EGS_BUY_CASH_ITEM_REQ )
 #ifdef CASH_SHOP_LIMIT_LEVEL
 		if( kBillProductInfo.m_cLimitLevel > GetLevel() )
 		{
-			START_LOG( clog, L"구매 레벨 제한" )
+			START_LOG( clog, L"Purchase level restriction" )
 				<< BUILD_LOG( GetCharName() )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( GetLevel() )
@@ -1284,7 +1284,7 @@ IMPL_ON_FUNC( EGS_BILL_PRODUCT_INFO_REQ )
 	//{{ 2011. 10. 12	최육사	컨텐츠 관리자
 	if( SiKGSContentManager()->IsEnableCashShop() == false )
 	{
-		START_LOG( clog, L"캐쉬샵 점검중 상품 리스트 요청" )
+		START_LOG( clog, L"Product list requested during cash shop maintenance." )
 			<< BUILD_LOG( GetName() );
 
 		kPacket.m_bFinal = true;
@@ -1321,7 +1321,7 @@ IMPL_ON_FUNC( EGS_BILL_INVENTORY_INQUIRY_REQ )
 	//{{ 2011. 10. 12	최육사	컨텐츠 관리자
 	if( SiKGSContentManager()->IsEnableCashShop() == false )
 	{
-		START_LOG( clog, L"캐쉬샵 점검중 캐쉬샵 인벤토리 정보 요청" )
+		START_LOG( clog, L"Cash shop inventory information requested during maintenance." )
 			<< BUILD_LOG( GetName() );
 
 		KEGS_PURCHASED_CASH_ITEM_LIST_ACK kPacketAck;
@@ -1479,7 +1479,7 @@ IMPL_ON_FUNC( EBILL_PREPARE_BUY_PRODUCT_ACK )
 			SendToPublisherBillingDB( EBILL_BUY_PRODUCT_REQ, kPacket_.m_kEBILL_BUY_PRODUCT_REQ );
 		else
 		{
-			START_LOG( cerr, L"구입 UseCashType에 문제가 있습니다. 정상값 아님" )
+			START_LOG( cerr, L"Invalid UseCashType for the purchase." )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( kPacket_.m_kEBILL_BUY_PRODUCT_REQ.m_iUseCashType )
 				<< END_LOG;
@@ -1527,7 +1527,7 @@ IMPL_ON_FUNC( EBILL_BUY_PRODUCT_ACK )
 		int iItemID = vit->m_kBillProductInfo.m_iProductID;
 		if( iItemID <= 0 )
 		{
-			START_LOG( cerr, L"아이템 ID 변환 실패." )
+			START_LOG( cerr, L"Failed to convert the item ID." )
 				<< BUILD_LOG( iItemID )
 				<< END_LOG;
 
@@ -1573,7 +1573,7 @@ IMPL_ON_FUNC( EBILL_BUY_PRODUCT_ACK )
 		KBillProductInfo kProductInfo;
 		if( SiKBillManager()->GetProductInfo( kReq.m_kBillProductInfo.m_iProductNo, kProductInfo ) == false )
 		{
-			START_LOG( cerr, L"존재하지 않는 상품을 구매하였습니다!" )
+			START_LOG( cerr, L"Attempted to purchase a product that does not exist!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( kReq.m_kBillProductInfo.m_iProductNo )
 				<< END_LOG;
@@ -1712,7 +1712,7 @@ IMPL_ON_FUNC( EBILL_GIFT_ITEM_ACK )
 		kPacketToLog.m_wstrReceiverUserID = m_kUserCashInventory.GetReceiverUserID();
 		//}}
 
-		START_LOG( clog, L"선물하기 로그 확인" )
+		START_LOG( clog, L"Checking gift log" )
 			<< BUILD_LOG( m_kUserCashInventory.GetReceiverUserID() );
 
 		SendToLogDB( ELOG_BUY_CASH_ITEM_LOG_NOT, kPacketToLog );
@@ -1920,7 +1920,7 @@ IMPL_ON_FUNC( EBILL_PREPARE_GIFT_ITEM_ACK )
 			SendToPublisherBillingDB( EBILL_GIFT_ITEM_REQ, kPacket_.m_kEBILL_GIFT_ITEM_REQ );
 		else
 		{
-			START_LOG( cerr, L"선물 UseCashType에 문제가 있습니다. 정상값 아님" )
+			START_LOG( cerr, L"Invalid UseCashType for gift." )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( kPacket_.m_kEBILL_GIFT_ITEM_REQ.m_iUseCashType )
 				<< END_LOG;

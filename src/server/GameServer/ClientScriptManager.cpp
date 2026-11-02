@@ -48,7 +48,7 @@ bool KClientScriptManager::LoadClientScript( IN const char* pFileName, IN int iS
 
 	m_mapScriptInfo.insert( std::make_pair( iScriptEnum, wstrScriptString ) );
 
-	START_LOG( cout, L"클라이언트 스크립트 로드 성공! : " << KncUtil::toWideString( pFileName ) );
+	START_LOG( cout, L"Client script loaded successfully: " << KncUtil::toWideString( pFileName ) );
 	return true;
 }
 
@@ -58,7 +58,7 @@ bool KClientScriptManager::GetClientScriptInfo( IN int iScriptEnum, OUT std::wst
 	mit = m_mapScriptInfo.find( iScriptEnum );
 	if( mit == m_mapScriptInfo.end() )
 	{
-		START_LOG( cerr, L"존재하지않는 스크립트 입니다." )
+		START_LOG( cerr, L"The script does not exist." )
 			<< BUILD_LOG( iScriptEnum )
 			<< END_LOG;
 		return false;

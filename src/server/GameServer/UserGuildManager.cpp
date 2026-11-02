@@ -58,7 +58,7 @@ void KUserGuildManager::SetMemberShipGrade( IN u_char ucMemberShipGrade )
 	if( SEnum::GUG_MASTER > ucMemberShipGrade  ||
 		SEnum::GUG_NEW_USER < ucMemberShipGrade )
 	{
-		START_LOG( cerr, L"길드 멤버 등급값이 이상합니다. 절대 발생하면 안되는 에러!" )
+		START_LOG( cerr, L"Invalid guild member rank; this should never happen!" )
 			<< BUILD_LOGc( ucMemberShipGrade )
 			<< END_LOG;
 	}
@@ -73,7 +73,7 @@ void KUserGuildManager::OnDecreaseSpirit( IN KGSUserPtr spUser, IN int iDecrease
 
 	if( spUser->GetGuildUID() <= 0 )
 	{
-		START_LOG( cerr, L"길드원이 아닌데 이 함수를 호출했다?" )
+		START_LOG( cerr, L"This function was called by a non-guild member." )
 			<< BUILD_LOG( spUser->GetCharUID() )
 			<< END_LOG;
 		return;
@@ -81,7 +81,7 @@ void KUserGuildManager::OnDecreaseSpirit( IN KGSUserPtr spUser, IN int iDecrease
 
 	if( iDecreaseSpirit < 0 )
 	{
-		START_LOG( cerr, L"소모 근성도값이 마이너스값이 들어오면 안된다. 잘못 계산한듯." )
+		START_LOG( cerr, L"Consumed stamina must not be negative; likely calculated incorrectly." )
 			<< BUILD_LOG( iDecreaseSpirit )
 			<< END_LOG;
 		return;
@@ -107,7 +107,7 @@ void KUserGuildManager::OnUpdatePvpUnitInfo( IN KGSUserPtr spUser, IN int iPvpMe
 
 	if( spUser->GetGuildUID() <= 0 )
 	{
-		START_LOG( cerr, L"길드원이 아닌데 이 함수를 호출했다?" )
+		START_LOG( cerr, L"This function was called by a non-guild member." )
 			<< BUILD_LOG( spUser->GetCharUID() )
 			<< END_LOG;
 		return;
@@ -154,7 +154,7 @@ bool KUserGuildManager::CheckBuyGuildItem( IN KGSUserPtr spUser, IN const std::m
 
 	if( spUser == NULL )
 	{
-		START_LOG( cerr, L"유저 객체 포인터가 이상합니다." )
+		START_LOG( cerr, L"Invalid user object pointer." )
 			<< END_LOG;
 		return false;
 	}
@@ -169,7 +169,7 @@ bool KUserGuildManager::CheckBuyGuildItem( IN KGSUserPtr spUser, IN const std::m
 		// 길드 멤버인지 검사
 		if( spUser->GetGuildUID() > 0 )
 		{
-			START_LOG( cerr, L"길드원이면 길드 창단서를 구매할 수 없다!" )
+			START_LOG( cerr, L"Guild members cannot purchase a guild founding permit!" )
 				<< BUILD_LOG( spUser->GetCharUID() )
 				<< BUILD_LOG( spUser->GetGuildUID() )
 				<< END_LOG;
@@ -309,7 +309,7 @@ void KUserGuildManager::GetGuildSkillStat( KStat& kStat )
 		const CXSLSkillTree::SkillTemplet* pSkillTemplet = SiCXSLSkillTree()->GetSkillTemplet( mit->first );
 		if( pSkillTemplet == NULL )
 		{
-			START_LOG( cerr, L"스킬 템플릿 포인트 이상.!" )
+			START_LOG( cerr, L"Invalid skill template pointer!" )
 				<< BUILD_LOG( mit->first )
 				<< BUILD_LOGc( kGuildSkillData.m_cSkillLevel )
 				<< END_LOG;
@@ -358,7 +358,7 @@ void KUserGuildManager::GetGuildSkillBonusRate( OUT float& fAddGuildBonusExpRate
 			}
 			else
 			{
-				START_LOG( cerr, L"스킬 템플릿 포인트 이상.!" )
+				START_LOG( cerr, L"Invalid skill template pointer!" )
 					<< BUILD_LOG( mit->first )
 					<< BUILD_LOGc( mit->second.m_cSkillLevel )
 					<< END_LOG;
@@ -380,7 +380,7 @@ void KUserGuildManager::GetGuildSkillBonusRate( OUT float& fAddGuildBonusExpRate
 			}
 			else
 			{
-				START_LOG( cerr, L"스킬 템플릿 포인트 이상.!" )
+				START_LOG( cerr, L"Invalid skill template pointer!" )
 					<< BUILD_LOG( mit->first )
 					<< BUILD_LOGc( mit->second.m_cSkillLevel )
 					<< END_LOG;

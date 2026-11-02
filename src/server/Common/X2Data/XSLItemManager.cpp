@@ -323,7 +323,7 @@ bool CXSLItemManager::AddItemTemplet_LUA()
 
 	if( m_ItemTempletIDMap.find( kItemTemplet.m_ItemID ) != m_ItemTempletIDMap.end() )
 	{
-		START_LOG( cerr, L"Item.lua(m_ItemTempletNameMap/m_ItemTempletIDMap) 확인 실패.!" )
+		START_LOG( cerr, L"Failed to validate Item.lua (m_ItemTempletNameMap/m_ItemTempletIDMap)." )
 			<< BUILD_LOG( kItemTemplet.m_Name )
 			<< BUILD_LOG( kItemTemplet.m_ItemID )
 			<< END_LOG;
@@ -359,7 +359,7 @@ bool CXSLItemManager::ItemExchangeData::AddExchangeData( IN const ITEM_EXCHANGE_
 	{
 		if( m_eExchangeType != eExchangeType )
 		{
-			START_LOG( cerr, L"교환 타입이 다르다! 스크립트 작성이 잘못된거 같다!" )
+			START_LOG( cerr, L"Exchange types do not match; the script may be incorrect." )
 				<< BUILD_LOG( m_eExchangeType )
 				<< BUILD_LOG( eExchangeType )
 				<< END_LOG;
@@ -373,7 +373,7 @@ bool CXSLItemManager::ItemExchangeData::AddExchangeData( IN const ITEM_EXCHANGE_
 		{
 			if( m_kLottery.AddCaseIntegerCast( iDestItemID, fDestItemRate, iDestQuantity ) == false )
 			{
-				START_LOG( cerr, L"아이템 교환 확률이 올바르지 않습니다" )
+				START_LOG( cerr, L"Invalid item exchange probability." )
 					<< BUILD_LOG( iDestItemID )
 					<< BUILD_LOG( fDestItemRate )
 					<< BUILD_LOG( iDestQuantity )
@@ -393,7 +393,7 @@ bool CXSLItemManager::ItemExchangeData::AddExchangeData( IN const ITEM_EXCHANGE_
 
 	default:
 		{
-			START_LOG( cerr, L"올바르지 않은 아이템교환 type 입니다" )
+			START_LOG( cerr, L"Invalid item exchange type." )
 				<< BUILD_LOG( (int) eExchangeType )
 				<< BUILD_LOG( iDestItemID )
 				<< BUILD_LOG( fDestItemRate )
@@ -421,7 +421,7 @@ bool CXSLItemManager::AddItemExchangeData_LUA( int iHouseID, ITEM_EXCHANGE_TYPE 
 	// fix!! eNPCID에 대한 체크가 필요
 	if( iSrcItemID <= 0 || iDestItemID <= 0 || iDestQuantity <= 0 || fDestItemRate <= 0.f )
 	{
-		START_LOG( cerr, L"아이템 교환 정보가 이상합니다." )
+		START_LOG( cerr, L"Invalid item exchange information." )
 			<< BUILD_LOG( iSrcItemID )
 			<< BUILD_LOG( iDestItemID )
 			<< BUILD_LOG( iDestQuantity )
@@ -433,7 +433,7 @@ bool CXSLItemManager::AddItemExchangeData_LUA( int iHouseID, ITEM_EXCHANGE_TYPE 
 
 	if( eExchangeType == IET_INVALID )
 	{
-		START_LOG( cerr, L"교환 테이블에 잘못설정된 ExchangeType이 있습니다!" )
+		START_LOG( cerr, L"Invalid ExchangeType in the exchange table." )
 			<< BUILD_LOG( iHouseID )
 			<< BUILD_LOG( eExchangeType )
 			<< BUILD_LOG( iSrcItemID )
@@ -445,7 +445,7 @@ bool CXSLItemManager::AddItemExchangeData_LUA( int iHouseID, ITEM_EXCHANGE_TYPE 
 	// item.lua가 먼저 parsing되었기 때문에 검사 가능..
 	if( GetItemTemplet( iSrcItemID ) == NULL  ||  GetItemTemplet( iDestItemID ) == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 ItemID입니다!" )
+		START_LOG( cerr, L"ItemID does not exist." )
 			<< BUILD_LOG( iSrcItemID )
 			<< BUILD_LOG( iDestItemID )
 			<< BUILD_LOG( fDestItemRate )
@@ -466,7 +466,7 @@ bool CXSLItemManager::AddItemExchangeData_LUA( int iHouseID, ITEM_EXCHANGE_TYPE 
 	{
 		if( SEnum::IsValidServerGroupID( iServerGroupID ) == false )
 		{
-			START_LOG( cerr, L"정상적인 서버군ID값이 아닙니다." )
+			START_LOG( cerr, L"Invalid server group ID." )
 				<< BUILD_LOG( iServerGroupID )
 				<< BUILD_LOG( iHouseID )
 				<< BUILD_LOG( iSrcItemID )
@@ -476,7 +476,7 @@ bool CXSLItemManager::AddItemExchangeData_LUA( int iHouseID, ITEM_EXCHANGE_TYPE 
 
 		if( KBaseServer::GetKObj()->GetServerGroupID() != iServerGroupID )
 		{
-			START_LOG( clog2, L"서버군이 다르므로 해당 교환아이템 정보는 파싱하지 않습니다." )
+			START_LOG( clog2, L"Skipping this exchange item because it belongs to a different server group." )
 				<< BUILD_LOG( iServerGroupID )
 				<< BUILD_LOG( iHouseID )
 				<< BUILD_LOG( iSrcItemID )
@@ -539,7 +539,7 @@ bool CXSLItemManager::AddItemExpandPeriodData_LUA( int iItemID, short sPeriod )
 {
 	if( iItemID <= 0  ||  sPeriod <= 0 )
 	{
-		START_LOG( cerr, L"스크립트 정보가 이상합니다!" )
+		START_LOG( cerr, L"Invalid script information." )
 			<< BUILD_LOG( iItemID )
 			<< BUILD_LOG( sPeriod )
 			<< END_LOG;
@@ -548,7 +548,7 @@ bool CXSLItemManager::AddItemExpandPeriodData_LUA( int iItemID, short sPeriod )
 
 	if( GetItemTemplet( iItemID ) == NULL )
 	{
-		START_LOG( cerr, L"아이템 정보가 존재하지 않습니다.!" )
+		START_LOG( cerr, L"Item information does not exist." )
 			<< BUILD_LOG( iItemID )
 			<< BUILD_LOG( sPeriod )
 			<< END_LOG;
@@ -557,7 +557,7 @@ bool CXSLItemManager::AddItemExpandPeriodData_LUA( int iItemID, short sPeriod )
 
 	if( m_mapExpandPeriodItem.find( iItemID ) != m_mapExpandPeriodItem.end() )
 	{
-		START_LOG( cerr, L"이미 등록된 기간 초기화 아이템 정보입니다.!" )
+		START_LOG( cerr, L"Duration reset item information is already registered." )
 			<< BUILD_LOG( iItemID )
 			<< BUILD_LOG( sPeriod )
 			<< END_LOG;
@@ -592,7 +592,7 @@ bool CXSLItemManager::GetItemExchangeResult( IN const int iHouseID,
 	mitET = m_mapItemExchangeTable.find( iHouseID );
 	if( mitET == m_mapItemExchangeTable.end() )
 	{
-		START_LOG( cerr, L"해당 NPC와 관련된 교환 데이터는 존재하지 않습니다!" )
+		START_LOG( cerr, L"No exchange data exists for this NPC." )
 			<< BUILD_LOG( iHouseID )
 			<< END_LOG;
 		return false;
@@ -605,7 +605,7 @@ bool CXSLItemManager::GetItemExchangeResult( IN const int iHouseID,
 	ItemExchangeTable::const_iterator mit = kExchangeTable.find( ItemExchangeKey( iSrcItemID, iSrcQuantity ) );
 	if( mit == kExchangeTable.end() )
 	{
-		START_LOG( cerr, L"교환 테이블에 없는 아이템입니다! 클라이언트에서 검사 했을텐데?" )
+		START_LOG( cerr, L"Item is missing from the exchange table; the client should have checked this." )
 			<< BUILD_LOG( iSrcItemID )
 			<< BUILD_LOG( iSrcQuantity )
 			<< END_LOG;
@@ -624,7 +624,7 @@ bool CXSLItemManager::GetItemExchangeResult( IN const int iHouseID,
 			int iResultItemID = itemExchangeData.m_kLottery.Decision();
 			if( iResultItemID == KLottery::CASE_BLANK )
 			{
-				START_LOG( cerr, L"확률이 100%일텐데.." )
+				START_LOG( cerr, L"Probability should be 100%." )
 					<< BUILD_LOG( iHouseID )
 					<< BUILD_LOG( iSrcItemID )
 					<< END_LOG;
@@ -635,7 +635,7 @@ bool CXSLItemManager::GetItemExchangeResult( IN const int iHouseID,
 			int iQuantity = itemExchangeData.m_kLottery.GetParam1( iResultItemID );
 			if( iQuantity <= 0 )
 			{
-				START_LOG( cerr, L"설정된 수량값이 이상하다!" )
+				START_LOG( cerr, L"Invalid configured quantity." )
 					<< BUILD_LOG( iHouseID )
 					<< BUILD_LOG( iSrcItemID )
 					<< BUILD_LOG( iQuantity )
@@ -647,7 +647,7 @@ bool CXSLItemManager::GetItemExchangeResult( IN const int iHouseID,
 			const CXSLItem::ItemTemplet* pItemTemplet = GetItemTemplet( iResultItemID );
 			if( pItemTemplet == NULL )
 			{
-				START_LOG( cerr, L"아이템 템플릿 정보를 찾을 수 없습니다." )
+				START_LOG( cerr, L"Item template information not found." )
 					<< BUILD_LOG( iResultItemID )
 					<< END_LOG;
 
@@ -672,7 +672,7 @@ bool CXSLItemManager::GetItemExchangeResult( IN const int iHouseID,
 			mitDestItemPeriod = itemExchangeData.m_mapDestItemPeriod.find( kInsertItemInfo.m_iItemID );
 			if( mitDestItemPeriod == itemExchangeData.m_mapDestItemPeriod.end() )
 			{
-				START_LOG( cerr, L"(기간제교환기능)유저가 고른 itemid가 이상합니다." )
+				START_LOG( cerr, L"(Duration-based exchange) Invalid item ID selected by the user." )
 					<< BUILD_LOG( iHouseID )
 					<< BUILD_LOG( iSrcItemID )
 					<< BUILD_LOG( kInsertItemInfo.m_iItemID )
@@ -693,7 +693,7 @@ bool CXSLItemManager::GetItemExchangeResult( IN const int iHouseID,
 			mitIE = itemExchangeData.m_mapDestItemID.find( iDestItemID );
 			if( mitIE == itemExchangeData.m_mapDestItemID.end() )
 			{
-				START_LOG( cerr, L"유저가 고른 itemid가 이상합니다." )
+				START_LOG( cerr, L"Invalid item ID selected by the user." )
 					<< BUILD_LOG( iHouseID )
 					<< BUILD_LOG( iSrcItemID )
 					<< BUILD_LOG( iDestItemID )
@@ -706,7 +706,7 @@ bool CXSLItemManager::GetItemExchangeResult( IN const int iHouseID,
 			const CXSLItem::ItemTemplet* pItemTemplet = GetItemTemplet( mitIE->first );
 			if( pItemTemplet == NULL )
 			{
-				START_LOG( cerr, L"아이템 템플릿 정보를 찾을 수 없습니다." )
+				START_LOG( cerr, L"Item template information not found." )
 					<< BUILD_LOG( mitIE->first )
 					<< END_LOG;
 
@@ -731,7 +731,7 @@ bool CXSLItemManager::GetItemExchangeResult( IN const int iHouseID,
 			mitDestItemPeriod = itemExchangeData.m_mapDestItemPeriod.find( kInsertItemInfo.m_iItemID );
 			if( mitDestItemPeriod == itemExchangeData.m_mapDestItemPeriod.end() )
 			{
-				START_LOG( cerr, L"(기간제교환기능)유저가 고른 itemid가 이상합니다." )
+				START_LOG( cerr, L"(Duration-based exchange) Invalid item ID selected by the user." )
 					<< BUILD_LOG( iHouseID )
 					<< BUILD_LOG( iSrcItemID )
 					<< BUILD_LOG( kInsertItemInfo.m_iItemID )
@@ -754,7 +754,7 @@ bool CXSLItemManager::GetItemExchangeResult( IN const int iHouseID,
 				const CXSLItem::ItemTemplet* pItemTemplet = GetItemTemplet( mit->first );
 				if( pItemTemplet == NULL )
 				{
-					START_LOG( cerr, L"아이템 템플릿 정보를 찾을 수 없습니다." )
+					START_LOG( cerr, L"Item template information not found." )
 						<< BUILD_LOG( mit->first )
 						<< END_LOG;
 
@@ -779,7 +779,7 @@ bool CXSLItemManager::GetItemExchangeResult( IN const int iHouseID,
 				mitDestItemPeriod = itemExchangeData.m_mapDestItemPeriod.find( kInsertItemInfo.m_iItemID );
 				if( mitDestItemPeriod == itemExchangeData.m_mapDestItemPeriod.end() )
 				{
-					START_LOG( cerr, L"(기간제교환기능)유저가 고른 itemid가 이상합니다." )
+					START_LOG( cerr, L"(Duration-based exchange) Invalid item ID selected by the user." )
 						<< BUILD_LOG( iHouseID )
 						<< BUILD_LOG( iSrcItemID )
 						<< BUILD_LOG( kInsertItemInfo.m_iItemID )
@@ -797,7 +797,7 @@ bool CXSLItemManager::GetItemExchangeResult( IN const int iHouseID,
 
 	default:
 		{
-			START_LOG( cerr, L"이상한 교환 타입입니다." )
+			START_LOG( cerr, L"Invalid exchange type." )
 				<< BUILD_LOG( iHouseID )
 				<< BUILD_LOG( iSrcItemID )
 				<< BUILD_LOG( (int)itemExchangeData.m_eExchangeType )
@@ -820,7 +820,7 @@ bool CXSLItemManager::IsCanSealForCashItem( int iItemID )
 	const CXSLItem::ItemTemplet* pItemTemplet = GetItemTemplet( iItemID );
 	if( pItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"아이템 정보가 없습니다." )
+		START_LOG( cerr, L"Item information is missing." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 
@@ -853,7 +853,7 @@ bool CXSLItemManager::IsCanSealForRandomItem( int iItemID )
 	const CXSLItem::ItemTemplet* pItemTemplet = GetItemTemplet( iItemID );
 	if( pItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"아이템 정보가 없습니다." )
+		START_LOG( cerr, L"Item information is missing." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 
@@ -877,7 +877,7 @@ bool CXSLItemManager::IsSkillNoteMemoItem( int iItemID )
 	const CXSLItem::ItemTemplet* pItemTemplet = GetItemTemplet( iItemID );
 	if( pItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"아이템 정보가 없습니다." )
+		START_LOG( cerr, L"Item information is missing." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 
@@ -1041,7 +1041,7 @@ bool CXSLItemManager::AddShopItemList_LUA()
 	return true;
 
 end_proc:
-	START_LOG( cerr, L"스크립트 파싱 에러!" )
+	START_LOG( cerr, L"Script parsing error." )
 		<< BUILD_LOG( villiageID )
 		<< END_LOG;
 	return false;
@@ -1063,7 +1063,7 @@ bool CXSLItemManager::AddCoolTimeGroupItem_LUA( int iCoolTimeGroupEnum, int iIte
 {
 	if( iCoolTimeGroupEnum < 0  ||  iItemID < 0 )
 	{
-		START_LOG( cerr, L"스크립트 정보가 이상합니다!" )
+		START_LOG( cerr, L"Invalid script information." )
 			<< BUILD_LOG( iCoolTimeGroupEnum )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
@@ -1115,7 +1115,7 @@ bool CXSLItemManager::GetItemLevel( IN const char cUnitType, IN const char cUnit
 	const CXSLItem::ItemTemplet* pItemTemplet = GetItemTemplet( kItemInfo.m_iItemID );
 	if( pItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"아이템 정보가 존재하지 않습니다!" )
+		START_LOG( cerr, L"Item information does not exist." )
 			<< BUILD_LOG( kItemInfo.m_iItemID )
 			<< END_LOG;
 		return false;
@@ -1234,7 +1234,7 @@ bool CXSLItemManager::IsBuffItem( IN int iItemID )
 	const CXSLItem::ItemTemplet* pItemTemplet = GetItemTemplet( iItemID );
 	if( pItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"아이템 정보가 존재하지 않습니다!" )
+		START_LOG( cerr, L"Item information does not exist." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 		return false;
@@ -1261,7 +1261,7 @@ void CXSLItemManager::ItemSealProcess( IN const int iItemID
 	const CXSLItem::ItemTemplet* pItemTemplet = GetItemTemplet( iItemID );
 	if( IS_NULL( pItemTemplet ) )
 	{
-		START_LOG( cerr, L"존재 하지 않는 아이템 정보 입니다." )
+		START_LOG( cerr, L"Item information does not exist." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 		return;
@@ -1299,7 +1299,7 @@ bool CXSLItemManager::AddItemConvertGroup_LUA( int iGroupID, int iItemID )
 {
 	if( iGroupID <= 0  ||  iItemID <= 0 )
 	{
-		START_LOG( cerr, L"스크립트 정보가 이상합니다!" )
+		START_LOG( cerr, L"Invalid script information." )
 			<< BUILD_LOG( iGroupID )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
@@ -1337,7 +1337,7 @@ bool CXSLItemManager::AddItemConvertInfo_LUA()
 		mit = m_mapItemConvertGroup.find( iTargetItemGroup );
 		if( mit == m_mapItemConvertGroup.end() )
 		{
-            START_LOG( cerr, L"존재 하지 않는 GroupID가 지정되었습니다." )
+            START_LOG( cerr, L"Specified GroupID does not exist." )
 				<< BUILD_LOG( iTargetItemGroup )
 				<< END_LOG;
 		}
@@ -1396,7 +1396,7 @@ bool CXSLItemManager::GetResultItemConvert( IN const int iTargetItemID, OUT int&
 	if( mit == m_mapItemConvertTable.end() )
 	{
 		// 에러가 아닙니다.
-		START_LOG( clog, L"교환할 아이템 정보가 없습니다!" )
+		START_LOG( clog, L"Exchange item information is missing." )
 			<< BUILD_LOG( iTargetItemID )
 			<< END_LOG;
 		return false;
@@ -1406,7 +1406,7 @@ bool CXSLItemManager::GetResultItemConvert( IN const int iTargetItemID, OUT int&
 	const int iResult = mit->second.m_kLotResultItemID.DecisionSameProb();
 	if( iResult == KLotterySameProb<int>::CASE_BLANK )
 	{
-		START_LOG( cerr, L"아이템 교환 랜덤 결과값이 이상합니다." )
+		START_LOG( cerr, L"Invalid random item exchange result." )
 			<< BUILD_LOG( iTargetItemID )
 			<< BUILD_LOG( iResult )
 			<< END_LOG;
@@ -1440,7 +1440,7 @@ void CXSLItemManager::AddWeddingCompleteRewardItem_LUA( IN int iItemID, IN int i
 {
 	if( iItemID <= 0 || iCount <= 0 )
 	{
-		START_LOG( cerr, L"정상적인 아이템이 아닙니다." )
+		START_LOG( cerr, L"Invalid item." )
 			<< BUILD_LOG( iItemID )
 			<< BUILD_LOG( iCount )
 			<< END_LOG;
@@ -1450,7 +1450,7 @@ void CXSLItemManager::AddWeddingCompleteRewardItem_LUA( IN int iItemID, IN int i
 	std::map<int,int>::iterator mit = m_mapWeddingCompleteRewardItem.find( iItemID );
 	if( mit != m_mapWeddingCompleteRewardItem.end() )
 	{
-		START_LOG( cerr, L"동일한 아이템이 존재합니다." )
+		START_LOG( cerr, L"Duplicate item." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 		return;
@@ -1468,7 +1468,7 @@ void CXSLItemManager::AddCoupleAnniversaryDayRewardItem_LUA( int iItemID )
 {
 	if( iItemID <= 0 )
 	{
-		START_LOG( cerr, L"정상적인 아이템이 아닙니다." )
+		START_LOG( cerr, L"Invalid item." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 		return;
@@ -1478,7 +1478,7 @@ void CXSLItemManager::AddCoupleAnniversaryDayRewardItem_LUA( int iItemID )
 	{
 		if( iItemID == iID )
 		{
-			START_LOG( cerr, L"동일한 아이템이 존재합니다." )
+			START_LOG( cerr, L"Duplicate item." )
 				<< BUILD_LOG( iItemID )
 				<< END_LOG;
 			return;
@@ -1497,7 +1497,7 @@ void CXSLItemManager::AddWeddingAnniversaryDayRewardItem_LUA( int iItemID )
 {
 	if( iItemID <= 0 )
 	{
-		START_LOG( cerr, L"정상적인 아이템이 아닙니다." )
+		START_LOG( cerr, L"Invalid item." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 		return;
@@ -1507,7 +1507,7 @@ void CXSLItemManager::AddWeddingAnniversaryDayRewardItem_LUA( int iItemID )
 	{
 		if( iItemID == iID )
 		{
-			START_LOG( cerr, L"동일한 아이템이 존재합니다." )
+			START_LOG( cerr, L"Duplicate item." )
 				<< BUILD_LOG( iItemID )
 				<< END_LOG;
 			return;
@@ -1526,7 +1526,7 @@ void CXSLItemManager::AddWeddingAnniversaryDayRewardTitle_LUA( int iDays, int iI
 {
 	if( iItemID <= 0 || iDays <= 0 )
 	{
-		START_LOG( cerr, L"정상적인 날짜 및 아이템이 아닙니다." )
+		START_LOG( cerr, L"Invalid date or item." )
 			<< BUILD_LOG( iDays )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
@@ -1536,7 +1536,7 @@ void CXSLItemManager::AddWeddingAnniversaryDayRewardTitle_LUA( int iDays, int iI
 	std::map<int,int>::iterator mit = m_mapWeddingAnniversaryDayRewardTitle.find( iDays );
 	if( mit != m_mapWeddingAnniversaryDayRewardTitle.end() )
 	{
-		START_LOG( cerr, L"동일한 날짜가 존재합니다." )
+		START_LOG( cerr, L"Duplicate date." )
 			<< BUILD_LOG( iDays )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;

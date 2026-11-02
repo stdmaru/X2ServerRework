@@ -93,7 +93,7 @@ void KProxyManager::AddRemoteAddress( int iProxyType_, int iID_, const WCHAR* wI
 {
 	if( iProxyType_ < 0 || iProxyType_ >= PT_NUM )
 	{
-		START_LOG( cerr, L"프록시 타입이 이상함." )
+		START_LOG( cerr, L"Invalid proxy type." )
 			<< BUILD_LOG( iProxyType_ )
 			<< END_LOG;
 
@@ -102,7 +102,7 @@ void KProxyManager::AddRemoteAddress( int iProxyType_, int iID_, const WCHAR* wI
 
     if( iID_ < 0 || iID_ > ( int )m_vecAddress[iProxyType_].size() )
     {
-        START_LOG( cerr, L"프록시 아이디가 잘못되었음." )
+        START_LOG( cerr, L"Invalid proxy ID." )
 			<< BUILD_LOG( iProxyType_ )
             << BUILD_LOG( iID_ )
             << BUILD_LOG( ( int )m_vecAddress[iProxyType_].size() )
@@ -121,7 +121,7 @@ void KProxyManager::AddRemoteAddress( int iProxyType_, int iID_, const WCHAR* wI
     }
     else
     {
-        START_LOG( cerr, L"프록시 주소를 덮어씀." )
+        START_LOG( cerr, L"Overwriting proxy address." )
 			<< BUILD_LOG( iProxyType_ )
             << BUILD_LOG( iID_ )
             << BUILD_LOG( m_vecAddress[iProxyType_][iID_].m_wstrIP )
@@ -138,7 +138,7 @@ int KProxyManager::GetRemoteAddrNum( int iProxyType )
 {
 	if( iProxyType < 0 || iProxyType >= PT_NUM )
 	{
-		START_LOG( cerr, L"프록시 타입이 이상함." )
+		START_LOG( cerr, L"Invalid proxy type." )
 			<< BUILD_LOG( iProxyType )
 			<< END_LOG;
 
@@ -168,11 +168,11 @@ void KProxyManager::ConnectAll()
 	{
         m_spThreadKeepConnect->Begin();
 
-		START_LOG( cout, L"ProxyManager 재접속 Thread 시작!" );
+		START_LOG( cout, L"ProxyManager reconnection thread started." );
 	}
 	else
 	{
-		START_LOG( cerr, L"ProxyManager 재접속 Thread 생성 실패!" );
+		START_LOG( cerr, L"Failed to create the ProxyManager reconnection thread." );
 	}
 	//}}
 }
@@ -210,7 +210,7 @@ void KProxyManager::Tick()
 			mit = m_mapProxy[i].find( *vit );
 			if( mit == m_mapProxy[i].end() )
 			{
-				START_LOG( cerr, L"삭제하고자 하는 proxy를 찾을 수 없음" )
+				START_LOG( cerr, L"Proxy to delete was not found." )
 					<< BUILD_LOG( *vit )
 					<< BUILD_LOG( m_mapProxy[i].size() )
 					<< END_LOG;
@@ -306,14 +306,14 @@ bool KProxyManager::Shutdown( float fWaitTime )
 
 void KProxyManager::DestroyProxy( int iProxyType, int iProxyID )
 {
-	START_LOG( cerr, L"나 지워진다." )
+	START_LOG( cerr, L"Removing this proxy." )
 		<< BUILD_LOG( iProxyType )
 		<< BUILD_LOG( iProxyID )
 		<< END_LOG;
 
 	if( iProxyType < 0 || iProxyType >= PT_NUM )
 	{
-		START_LOG( cerr, L"프록시 타입이 이상함." )
+		START_LOG( cerr, L"Invalid proxy type." )
 			<< BUILD_LOG( iProxyType )
 			<< END_LOG;
 
@@ -376,7 +376,7 @@ bool KProxyManager::SendPacket( UidType nFrom, KEvent& kEvent_ )
 			break;
 			//}} 2011. 04. 13  김민성  글로벌 서버 추가
 		default:
-			START_LOG( cerr, L"패킷의 목표 지점이 이상함." )
+			START_LOG( cerr, L"Invalid packet destination." )
 				<< BUILD_LOG( KEvent::GetIDStr( kEvent_.m_usEventID ) )
 				<< BUILD_LOG( kEvent_.m_kDestPerformer.m_dwPerformerID )
 				<< BUILD_LOG( kEvent_.m_kDestPerformer.GetUIDListSize() )
@@ -396,7 +396,7 @@ bool KProxyManager::SendPacket( UidType nFrom, KEvent& kEvent_ )
 			spProxy = GetLoginProxy();
 			break;
 		default:
-			START_LOG( cerr, L"패킷의 목표 지점이 이상함." )
+			START_LOG( cerr, L"Invalid packet destination." )
 				<< BUILD_LOG( KEvent::GetIDStr( kEvent_.m_usEventID ) )
 				<< BUILD_LOG( kEvent_.m_kDestPerformer.m_dwPerformerID )
 				<< BUILD_LOG( kEvent_.m_kDestPerformer.GetUIDListSize() )
@@ -413,7 +413,7 @@ bool KProxyManager::SendPacket( UidType nFrom, KEvent& kEvent_ )
 		//}}
 
 	default:
-		START_LOG( cerr, L"패킷의 목표 지점이 이상함." )
+		START_LOG( cerr, L"Invalid packet destination." )
 			<< BUILD_LOG( KEvent::GetIDStr( kEvent_.m_usEventID ) )
 			<< BUILD_LOG( kEvent_.m_kDestPerformer.m_dwPerformerID )
 			<< BUILD_LOG( kEvent_.m_kDestPerformer.GetUIDListSize() )
@@ -423,7 +423,7 @@ bool KProxyManager::SendPacket( UidType nFrom, KEvent& kEvent_ )
 
 	if( !spProxy )
 	{
-		START_LOG( cerr, L"Proxy 포인터를 찾을 수 없음" )
+		START_LOG( cerr, L"Proxy pointer not found." )
 			<< BUILD_LOG( kEvent_.m_kDestPerformer.m_dwPerformerID )
 			<< BUILD_LOG( kEvent_.m_kDestPerformer.GetUIDListSize() )
 			<< BUILD_LOG( kEvent_.m_usEventID )
@@ -583,7 +583,7 @@ bool KProxyManager::Connect( int iProxyType, int iID )
 
 	if( iProxyType < 0 || iProxyType >= PT_NUM )
 	{
-		START_LOG( cerr, L"프록시 타입이 이상함." )
+		START_LOG( cerr, L"Invalid proxy type." )
 			<< BUILD_LOG( iProxyType )
 			<< END_LOG;
 
@@ -592,7 +592,7 @@ bool KProxyManager::Connect( int iProxyType, int iID )
 
     if( iID < 0 || iID >= ( int )m_vecAddress[iProxyType].size() )
     {
-        START_LOG( cerr, L"프록시 아이디가 잘못되었음." )
+        START_LOG( cerr, L"Invalid proxy ID." )
             << BUILD_LOG( iID )
             << BUILD_LOG( m_vecAddress[iProxyType].size() )
             << END_LOG;
@@ -635,7 +635,7 @@ bool KProxyManager::Connect( int iProxyType, int iID )
 		break;
 		//}} 2011. 04. 13  김민성  글로벌 서버 추가
 	default:
-		START_LOG( cerr, L"프록시 타입이 이상함." )
+		START_LOG( cerr, L"Invalid proxy type." )
 			<< BUILD_LOG( iProxyType )
 			<< END_LOG;
 		return false;
@@ -683,7 +683,7 @@ KActorProxyPtr KProxyManager::Get( int iProxyType, int iProxyID )
 
 	if( iProxyType < 0 || iProxyType >= PT_NUM )
 	{
-		START_LOG( cerr, L"프록시 타입이 이상함." )
+		START_LOG( cerr, L"Invalid proxy type." )
 			<< BUILD_LOG( iProxyType )
 			<< END_LOG;
 
@@ -692,7 +692,7 @@ KActorProxyPtr KProxyManager::Get( int iProxyType, int iProxyID )
 
 	if( iProxyID < 0 || iProxyID >= ( int )m_vecAddress[iProxyType].size() )
 	{
-		START_LOG( cerr, L"프록시 아이디가 잘못되었음." )
+		START_LOG( cerr, L"Invalid proxy ID." )
 			<< BUILD_LOG( iProxyID )
 			<< BUILD_LOG( m_vecAddress[iProxyType].size() )
 			<< END_LOG;
@@ -761,7 +761,7 @@ KActorProxyPtr KProxyManager::GetCnProxy( UidType nUserUID_ )
 	//{{ 2010. 05. 17  최육사	대전 던전 서버군 통합
 	if( mit->second == NULL )
 	{
-		START_LOG( cerr, L"CnProxy포인터값이 NULL이다! 센터서버와 통신이 끊어졌는지 확인이 필요함!" )
+		START_LOG( cerr, L"CnProxy pointer is null. Check whether communication with the CenterServer was lost." )
 			<< BUILD_LOG( nUserUID_ )
 			<< BUILD_LOG( iCnProxyID )
 			<< END_LOG;
@@ -771,7 +771,7 @@ KActorProxyPtr KProxyManager::GetCnProxy( UidType nUserUID_ )
 
 	if( mit->second->IsSameServerGroup() == false )
 	{
-		START_LOG( cerr, L"같은 서버군의 센터로만 패킷을 전송할 수 있다!" )
+		START_LOG( cerr, L"Packets can only be sent to a center in the same server group." )
 			<< BUILD_LOG( nUserUID_ )
 			<< BUILD_LOG( iCnProxyID )
 			<< END_LOG;
@@ -826,7 +826,7 @@ int KProxyManager::GetTypeByEventID( u_short usEventID )
 		//}
 	}
 
-	START_LOG( cerr, L"등록 되지 않은 방생성 패킷입니다." )
+	START_LOG( cerr, L"Unregistered room-creation packet." )
 		<< BUILD_LOG( KEvent::GetIDStr( usEventID ) )
 		<< END_LOG;
 

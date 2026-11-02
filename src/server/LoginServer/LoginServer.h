@@ -166,7 +166,7 @@ void KLoginServer::SendToGSUser( UidType nToGSUID, UidType nToGSUser, unsigned s
 	}
 	else
 	{
-		START_LOG( cerr, L"타 게임서버로 패킷 보내기 실패.? 왜왜" )
+		START_LOG( cerr, L"Failed to send a packet to another game server. Why?" )
 			<< BUILD_LOG( nToGSUID )
 			<< BUILD_LOG( nToGSUser )
 			<< BUILD_LOG( KEvent::GetIDStr( usEventID ) )
@@ -181,7 +181,7 @@ void KLoginServer::SendToGameServer( unsigned short usEventID, const T& data ) c
 	UidType iGameServerUID = KBaseServer::GetKObj()->GetFirstActorKey();
 	if( iGameServerUID <= 0 )
 	{
-		START_LOG( cwarn, L"접속된 게임서버가 없습니다." )
+		START_LOG( cwarn, L"No connected game server." )
 			<< BUILD_LOG( iGameServerUID )
 			<< END_LOG;
 		return;

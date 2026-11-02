@@ -18,9 +18,9 @@
 #define OPEN_SCRIPT_FILE( classname ) \
 	{ \
 		if( Si##classname()->OpenScriptFile( g_pLua ) == false ) \
-			START_LOG( cerr, L ## #classname L" 정보 로드 실패.!" ); \
+			START_LOG( cerr, L ## #classname L" failed to load information." ); \
 		else \
-			START_LOG( cout, L ## #classname L" 정보 로드 성공.!" ); \
+			START_LOG( cout, L ## #classname L" information loaded successfully." ); \
 		if( Si##classname()->IsLuaPasingSuccess() == false ) \
 		{ \
 			KBaseServer::GetKObj()->AddFailScriptFileName( Si##classname()->GetParsingLuaFileName().c_str() ); \
@@ -210,7 +210,7 @@ struct LoadingTimer
 	LoadingTimer( std::wstring wstrMSG ){ m_wstrMSG = wstrMSG; m_dwTime = GetTickCount(); }
 	~LoadingTimer()
 	{
-		m_wstrMSG += L" 로딩시간 : ";
+		m_wstrMSG += L" load time: ";
 		START_LOG( cout2, m_wstrMSG )
 			<< BUILD_LOG( GetTickCount() - m_dwTime );
 	}

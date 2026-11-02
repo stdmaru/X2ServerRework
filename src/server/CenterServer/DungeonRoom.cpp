@@ -182,7 +182,7 @@ void KDungeonRoom::Tick()
 				// 어둠의 문 던전 입장!
 				EnterDefenceDungeon( vecLeaveUnitUID );
 
-				START_LOG( clog, L"5초가 지난 상태에서 어둠의 문 던전을 시작합니다!" );
+				START_LOG( clog, L"Starting the Gate of Darkness dungeon after 5 seconds!" );
 				//}}
 			}
 			else
@@ -214,7 +214,7 @@ void KDungeonRoom::SetRoomInfo( const KRoomInfo& kInfo )
 
 	if( kInfo.m_cGetItemType <= CXSLRoom::DGIT_NONE || kInfo.m_cGetItemType >= CXSLRoom::DGIT_END )
 	{
-		START_LOG( cwarn, L"던전게임 아이템 습득타입이 잘못되었음.!" )
+		START_LOG( cwarn, L"Invalid dungeon item-acquisition type!" )
 			<< BUILD_LOGc( m_cGetItemType )
 			<< BUILD_LOGc( kInfo.m_cGetItemType )
 			<< BUILD_LOGc( kInfo.m_iDungeonID )
@@ -281,7 +281,7 @@ void KDungeonRoom::LogToDB_DungeonLog( IN KRoomUserPtr spRoomUser, IN const int 
 	// 운영자는 통계를 남기지 않습니다.
 	if( spRoomUser->GetAuthLevel() >= SEnum::UAL_GM )
 	{
-		START_LOG( cout, L"운영자는 통계데이터를 남기지 않습니다." )
+		START_LOG( cout, L"Administrators do not generate statistics." )
 			<< BUILD_LOGc( spRoomUser->GetAuthLevel() )
 			<< BUILD_LOG( spRoomUser->GetNickName() );
 		return;
@@ -380,7 +380,7 @@ void KDungeonRoom::LogToDB_DungeonLog( IN KRoomUserPtr spRoomUser, IN const int 
 		KBadAttitudeManager::KBadAttitudeInfo kUnitData( spRoomUser->GetCID() );
 		if( m_kBadAttitudeManager.GetUnitData( spRoomUser->GetCID(), kUnitData ) == false )
 		{
-			START_LOG( cerr, L"존재하지 않는 유저를 지우려고 한다." )
+			START_LOG( cerr, L"Attempted to remove a nonexistent user." )
 				<< BUILD_LOG( spRoomUser->GetCID() )
 				<< END_LOG;
 
@@ -512,7 +512,7 @@ void KDungeonRoom::ProcessNativeEvent( const KEventPtr& spEvent_ )
 	_CASE( ERM_SECRET_STAGE_LOAD_REQ, KEGS_SECRET_STAGE_LOAD_REQ );
 
     default:
-        START_LOG( cerr, L"이벤트 핸들러가 정의되지 않았음 - " << spEvent_->GetIDStr() )
+        START_LOG( cerr, L"Event handler is not defined - " << spEvent_->GetIDStr() )
             << BUILD_LOG( spEvent_->m_usEventID );
     }
 }
@@ -570,7 +570,7 @@ void KDungeonRoom::StartGame()
     const int iPlayerCount = m_spRoomUserManager->GetNumPlaying();
     if( iPlayerCount < 1 || iPlayerCount > 4 )
     {
-        START_LOG( cerr, L"플레이 중인 유저 수가 이상함." )
+        START_LOG( cerr, L"Invalid number of users in play." )
             << BUILD_LOG( iPlayerCount )
             << END_LOG;
     }
@@ -616,7 +616,7 @@ void KDungeonRoom::StartGame()
 
 	if( GetHighestUserLevelAtDungeonStart() <= 0 )
 	{
-		START_LOG( cerr, L"던전 시작시에 유저 최고레벨 수치가 이상합니다." )
+		START_LOG( cerr, L"Invalid maximum user level at dungeon start." )
 			<< BUILD_LOG( iPlayerCount )
 			<< BUILD_LOG( GetHighestUserLevelAtDungeonStart() )
 			<< BUILD_LOG( GetDungeonID() )
@@ -629,7 +629,7 @@ void KDungeonRoom::StartGame()
 	//{{ 2012. 05. 10	최육사	던전 몬스터 레벨 지정
 	if( GetAverageUserLevelAtDungeonStart() <= 0 )
 	{
-		START_LOG( cerr, L"던전 시작시에 유저 평균레벨 수치가 이상합니다." )
+		START_LOG( cerr, L"Invalid average user level at dungeon start." )
 			<< BUILD_LOG( iPlayerCount )
 			<< BUILD_LOG( GetAverageUserLevelAtDungeonStart() )
 			<< BUILD_LOG( GetDungeonID() )
@@ -689,7 +689,7 @@ void KDungeonRoom::StartGame()
 
 	default:
 		{
-            START_LOG( cerr, L"잘못된 던전 타입입니다." )
+            START_LOG( cerr, L"Invalid dungeon type." )
 				<< BUILD_LOG( m_eDungeonType )
 				<< END_LOG;
 		}
@@ -756,7 +756,7 @@ void KDungeonRoom::StartPlay()
 	{
 		if( m_spRoomUserManager->GetNumMember() == 1 )
 		{
-			START_LOG( cout, L"이미 KRoomFSM::S_PLAY상태인데 또 StartPlay를 하려고 하네!? 해킹인가?" )
+			START_LOG( cout, L"StartPlay called while already in KRoomFSM::S_PLAY; possible hack attempt." )
 				<< BUILD_LOG( GetStateIDString() )
 				<< BUILD_LOG( GetTotalPlayTime() )
 				<< BUILD_LOG( m_kTimer[TM_PLAY].elapsed() )
@@ -768,7 +768,7 @@ void KDungeonRoom::StartPlay()
 			KRoomUserPtr spUser = m_spRoomUserManager->GetHostUser();
 			if( spUser != NULL )
 			{
-				START_LOG( cout, L"어떤 유저가 이렇게 이상한 동작을 하는지 확인해보자!" )
+				START_LOG( cout, L"Identify which user is behaving this way!" )
 					<< BUILD_LOG( spUser->GetCID() )
 					<< BUILD_LOG( spUser->GetNickName() );
 
@@ -894,7 +894,7 @@ void KDungeonRoom::HandleTimeOutUser( std::map< UidType, UidType >& mapUserCIDNG
     {
 		if( !m_spRoomUserManager->LeaveRoom( mit->first ) )
 		{
-			START_LOG( cerr, L"방 나가기 실패." )
+			START_LOG( cerr, L"Failed to leave room." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 		}
@@ -1135,7 +1135,7 @@ void KDungeonRoom::CheckLoadingSuccess()
 					//{{ 2010. 8. 16	최육사	서버 코드 정리
 					if( DungeonSubStageStartProcess( GetSubStageID() ) == false )
 					{
-						START_LOG( cerr, L"던전 서브 스테이지 시작 에러!" )
+						START_LOG( cerr, L"Failed to start dungeon substage!" )
 							<< BUILD_LOG( GetSubStageID() )
 							<< END_LOG;
 					}
@@ -1187,7 +1187,7 @@ void KDungeonRoom::CheckDungeonUnitInfoSuccess()
 															vecUpdateUnitInfo,
 															iProtectedCrystalCount ) == false )
 			{
-				START_LOG( cerr, L"던전결과 처리 실패.!" )
+				START_LOG( cerr, L"Failed to process dungeon results!" )
 					<< END_LOG;
 				return;
 			}
@@ -1218,7 +1218,7 @@ void KDungeonRoom::CheckDungeonUnitInfoSuccess()
 													vecUpdateUnitInfo
 													) == false )
 			{
-				START_LOG( cerr, L"던전결과 처리 실패.!" )
+				START_LOG( cerr, L"Failed to process dungeon results!" )
 					<< END_LOG;
 				return;
 			}
@@ -1230,7 +1230,7 @@ void KDungeonRoom::CheckDungeonUnitInfoSuccess()
                 KHenirHackUserData kHackUser;
                 if( spRoomUser == NULL )
                 {
-                    START_LOG( cerr, L"룸 유저의 포인터가 이상함." )
+                    START_LOG( cerr, L"Invalid room user pointer." )
                         << END_LOG;
                     continue;
                 }
@@ -1370,7 +1370,7 @@ void KDungeonRoom::CheckDungeonUnitInfoSuccess()
 			{
 				if( spRoomUser == NULL )
 				{
-					START_LOG( cerr, L"룸 유저의 포인터가 이상함." )
+					START_LOG( cerr, L"Invalid room user pointer." )
 						<< END_LOG;
 					continue;
 				}
@@ -1401,7 +1401,7 @@ void KDungeonRoom::CheckDungeonUnitInfoSuccess()
 			KRoomUserPtr spRoomUser = vecKRoomUserPtr[iR];
 			if( spRoomUser == NULL )
 			{
-				START_LOG( cerr, L"룸 유저의 포인터가 이상함." )
+				START_LOG( cerr, L"Invalid room user pointer." )
 					<< END_LOG;
 				continue;
 			}
@@ -1454,7 +1454,7 @@ void KDungeonRoom::CheckDungeonUnitInfoSuccess()
 
 					SendToGSCharacter( spRoomUser->GetGSUID(), spRoomUser->GetCID(), ERM_SERVER_CHECK_HACK_USER_NOT, kNot );
 
-					START_LOG( clog, L"Dungeon Result 해킹유저로 판단되어 체크 결과를 클라이언트 전송하였음!" )
+					START_LOG( clog, L"Dungeon result: flagged as a suspected hack and sent the check result to the client!" )
 						<< BUILD_LOG( spRoomUser->GetGSUID() )
 						<< BUILD_LOG( spRoomUser->GetCID() )
 						<< BUILD_LOG( spRoomUser->GetNickName() )
@@ -1502,7 +1502,7 @@ void KDungeonRoom::CheckDungeonUnitInfoSuccess()
 					kNotReg.m_wstrRegDate = (std::wstring)kCurTime.Format( _T( "%Y-%m-%d %H:%M:%S" ) );
 					SendToLogDB( DBE_REG_DUNGEON_CLEAR_TIME_HACK_USER_NOT, kNotReg );
 
-					START_LOG( clog, L"Dungeon Clear Time 해킹유저로 판단되어 체크 결과를 클라이언트 전송하였음!" )
+					START_LOG( clog, L"Dungeon clear time: flagged as a suspected hack and sent the check result to the client!" )
 						<< BUILD_LOG( spRoomUser->GetGSUID() )
 						<< BUILD_LOG( spRoomUser->GetUserUID() )
 						<< BUILD_LOG( spRoomUser->GetCID() )
@@ -1617,7 +1617,7 @@ bool KDungeonRoom::DungeonSubStageStartProcess( IN int iSubStageID )
 	// 혹시나 로딩 타임이 플레이 타임보다 더 크게 나오는지 검사해본다!
 	if( m_kTimer[TM_PLAY].elapsed() < GetLoadingTime() )
 	{
-		START_LOG( cout, L"로딩 타임이 던전 플레이 타임보다 더 크게 나오는 이상한 현상이 발생했다!" )
+		START_LOG( cout, L"Loading time exceeds dungeon play time; unexpected condition!" )
 			<< BUILD_LOG( GetStateIDString() )
 			<< BUILD_LOG( m_kTimer[TM_PLAY].elapsed() )
 			<< BUILD_LOG( GetLoadingTime() )
@@ -1731,7 +1731,7 @@ void KDungeonRoom::NormalDungeonAttribMonsterDrop( IN OUT KEGS_DUNGEON_STAGE_LOA
 		}break;
 	default:
 		{
-			START_LOG( cerr, L"잘못된 던전 타입입니다." )
+			START_LOG( cerr, L"Invalid dungeon type." )
 				<< BUILD_LOG( m_eDungeonType )
 				<< END_LOG;
 		}
@@ -1755,7 +1755,7 @@ void KDungeonRoom::NormalDungeonAttribMonsterDrop( IN OUT KEGS_DUNGEON_STAGE_LOA
 			const CXSLUnitManager::NPCUnitTemplet* pNpcTemplet = SiCXSLUnitManager()->GetNPCUnitTemplet( static_cast<CXSLUnitManager::NPC_UNIT_ID>(kNPCList.m_NPCList[ui].m_NPCID) );
 			if( pNpcTemplet == NULL )
 			{
-				START_LOG( cerr, L"npc templet을 찾을수 없습니다." )
+				START_LOG( cerr, L"NPC template not found." )
 					<< BUILD_LOG( GetDungeonID() )
 					<< BUILD_LOGc( GetDifficultyLevel() )
 					<< BUILD_LOG( kNPCList.m_NPCList[ui].m_NPCID )
@@ -1834,7 +1834,7 @@ void KDungeonRoom::NormalDungeonAttribMonsterDrop( IN OUT KEGS_DUNGEON_STAGE_LOA
 			{
 				if( SiKAttribNpcTable()->GetAttribNpcInfo( m_eDungeonType, m_cDifficultyLevel, kNpcInfo.m_Level, kNpcInfo.m_NPCID, kAttribNpcInfo ) == false )
 				{
-					START_LOG( cerr, L"속성 NPC정보 얻기 실패!" )
+					START_LOG( cerr, L"Failed to retrieve attribute NPC information!" )
 						<< BUILD_LOG( GetDungeonID() )
 						<< BUILD_LOG( m_eDungeonType )
 						<< BUILD_LOGc( m_cDifficultyLevel )
@@ -1848,7 +1848,7 @@ void KDungeonRoom::NormalDungeonAttribMonsterDrop( IN OUT KEGS_DUNGEON_STAGE_LOA
 			{
 				if( SiKAttribNpcTable()->GetAttribNpcInfo( m_eDungeonType, m_cDungeonMode, kNpcInfo.m_Level, kNpcInfo.m_NPCID, kAttribNpcInfo ) == false )
 				{
-					START_LOG( cerr, L"속성 NPC정보 얻기 실패!" )
+					START_LOG( cerr, L"Failed to retrieve attribute NPC information!" )
 						<< BUILD_LOG( GetDungeonID() )
 						<< BUILD_LOG( m_eDungeonType )
 						<< BUILD_LOGc( m_cDungeonMode )
@@ -1895,7 +1895,7 @@ void KDungeonRoom::SecretDungeonExtraStageAttribMonsterDrop( IN OUT KEGS_DUNGEON
 			const CXSLUnitManager::NPCUnitTemplet* pNpcTemplet = SiCXSLUnitManager()->GetNPCUnitTemplet( static_cast<CXSLUnitManager::NPC_UNIT_ID>(kNPCList.m_NPCList[ui].m_NPCID) );
 			if( pNpcTemplet == NULL )
 			{
-				START_LOG( cerr, L"npc templet을 찾을수 없습니다." )
+				START_LOG( cerr, L"NPC template not found." )
 					<< BUILD_LOG( GetDungeonID() )
 					<< BUILD_LOGc( GetDifficultyLevel() )
 					<< BUILD_LOG( kNPCList.m_NPCList[ui].m_NPCID )
@@ -1957,7 +1957,7 @@ void KDungeonRoom::SecretDungeonExtraStageAttribMonsterDrop( IN OUT KEGS_DUNGEON
 			KAttribEnchantNpcInfo kAttribNpcInfo;
 			if( SiKAttribNpcTable()->GetAttribNpcInfoExtraStage( kNpcInfo.m_NPCID, kAttribNpcInfo ) == false )
 			{
-				START_LOG( cerr, L"속성 NPC정보 얻기 실패!" )
+				START_LOG( cerr, L"Failed to retrieve attribute NPC information!" )
 					<< BUILD_LOG( kNpcInfo.m_NPCID )
 					<< END_LOG;
 				continue;
@@ -1998,7 +1998,7 @@ bool KDungeonRoom::IsDropDieState( char cState )
 		return false;
 	}
 
-	START_LOG( cerr, L"npc유닛이 죽은 상태가 이상합니다." )
+	START_LOG( cerr, L"Invalid dead state for NPC unit." )
 		<< BUILD_LOGc( cState )
 		<< END_LOG;
 
@@ -2046,7 +2046,7 @@ void KDungeonRoom::ComputeTotalPlayTime( void )
 	// 플레이 타임이 정상적으로 계산되어 나오는지 확인해보자!
 	if( GetTotalPlayTime() < 0.0 )
 	{
-		START_LOG( cout, L"로딩시간을 뺀 실제 던전 플레이 시간이 마이너스값이다! 있을 수 없는 에러!" )
+		START_LOG( cout, L"Actual dungeon play time is negative after subtracting loading time; this should never happen!" )
 			<< BUILD_LOG( GetStateIDString() )
 			<< BUILD_LOG( GetTotalPlayTime() )
 			<< BUILD_LOG( m_kTimer[TM_PLAY].elapsed() )
@@ -2082,7 +2082,7 @@ void KDungeonRoom::IncreasePartyFever()
 		}
 		else
 		{
-			START_LOG( cerr, L"유저가 한명도 없는방인감?" )
+			START_LOG( cerr, L"The room has no users." )
 				<< BUILD_LOG( GetStateIDString() )
 				<< END_LOG;
 		}
@@ -2105,7 +2105,7 @@ void KDungeonRoom::MaxPartyFever()
 		}
 		else
 		{
-			START_LOG( cerr, L"유저가 한명도 없는방인감?" )
+			START_LOG( cerr, L"The room has no users." )
 				<< BUILD_LOG( GetStateIDString() )
 				<< END_LOG;
 		}
@@ -2134,7 +2134,7 @@ void KDungeonRoom::ReservedRegroupOldParty()
 		}
 		else
 		{
-			START_LOG( cerr, L"유저가 한명도 없는방인감?" )
+			START_LOG( cerr, L"The room has no users." )
 				<< BUILD_LOG( GetStateIDString() )
 				<< END_LOG;
 		}
@@ -2217,7 +2217,7 @@ void KDungeonRoom::TimeCountFinishProcess( IN const u_short usEventID )
 
 	default:
 		{
-			START_LOG( cerr, L"여기로 오면 안된다! 일어나서는 안되는 에러!" )
+			START_LOG( cerr, L"Unexpected execution path; this should never happen!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( KEvent::GetIDStr( usEventID ) )
 				<< END_LOG;
@@ -2263,7 +2263,7 @@ void KDungeonRoom::EnterDefenceDungeon( IN const std::vector< UidType >& vecLeav
 		KRoomUserPtr spRoomUser = m_spRoomUserManager->GetUser( iUnitUID );
 		if( IS_NULL( spRoomUser ) )
 		{
-			START_LOG( cerr, L"유저가 존재하지 않습니다." )
+			START_LOG( cerr, L"User does not exist." )
 				<< BUILD_LOG( iUnitUID )
 				<< END_LOG;
 			continue;
@@ -2272,7 +2272,7 @@ void KDungeonRoom::EnterDefenceDungeon( IN const std::vector< UidType >& vecLeav
 		// 해당 멤버는 강제이탈!
 		if( m_spRoomUserManager->LeaveRoom( iUnitUID ) == false )
 		{
-			START_LOG( cerr, L"방 나가기 실패." )
+			START_LOG( cerr, L"Failed to leave room." )
 				<< BUILD_LOG( iUnitUID )
 				<< END_LOG;
 		}
@@ -2327,7 +2327,7 @@ _IMPL_ON_FUNC( ERM_OPEN_DUNGEON_ROOM_REQ, KERM_OPEN_ROOM_REQ )
 	//{{ 2013. 04. 16	박세훈	어둠의 문 개편
 	if( CXSLDungeon::IsDefenceDungeon( kPacket_.m_kRoomInfo.m_iDungeonID ) == true )
 	{
-		START_LOG( cerr, L"패킷 변조 의심 유저! ( 어둠의 문 던전을 직접적으로 생성하려 하였다 )" )
+		START_LOG( cerr, L"Suspected packet tampering: user attempted to create a Gate of Darkness dungeon directly!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( GetUID() )
 			<< END_LOG;
@@ -2352,7 +2352,7 @@ _IMPL_ON_FUNC( ERM_OPEN_DUNGEON_ROOM_REQ, KERM_OPEN_ROOM_REQ )
     // 슬롯에 생성 요청자를 넣는다.
     if( m_spRoomUserManager->EnterRoom( kPacket_.m_kRoomUserInfo, false ) == false )
     {
-        START_LOG( cerr, L"방 입장 실패." )
+        START_LOG( cerr, L"Failed to enter room." )
             << BUILD_LOG( FIRST_SENDER_UID )
             << BUILD_LOG( GetUID() )
             << END_LOG;
@@ -2396,7 +2396,7 @@ IMPL_ON_FUNC( ERM_PARTY_OPEN_DUNGEON_ROOM_REQ )
 	//{{ 2013. 04. 16	박세훈	어둠의 문 개편
 	if( CXSLDungeon::IsDefenceDungeon( kPacket_.m_kRoomInfo.m_iDungeonID ) == true )
 	{
-		START_LOG( cerr, L"패킷 변조 의심 유저! ( 어둠의 문 던전을 직접적으로 생성하려 하였다 )" )
+		START_LOG( cerr, L"Suspected packet tampering: user attempted to create a Gate of Darkness dungeon directly!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( GetUID() )
 			<< END_LOG;
@@ -2423,7 +2423,7 @@ IMPL_ON_FUNC( ERM_PARTY_OPEN_DUNGEON_ROOM_REQ )
 		// 슬롯에 유저 넣는다.
 		if( m_spRoomUserManager->EnterRoom( kInfo.m_kRoomUserInfo, false ) == false )
 		{
-			START_LOG( cerr, L"파티 던장방 입장 실패." )
+			START_LOG( cerr, L"Failed to enter party dungeon room." )
 				<< BUILD_LOG( FIRST_SENDER_UID )
 				<< BUILD_LOG( GetUID() )
 				<< END_LOG;
@@ -2484,7 +2484,7 @@ _IMPL_ON_FUNC( ERM_SINGLE_OPEN_DUNGEON_ROOM_REQ, KERM_OPEN_ROOM_REQ )
 	//{{ 2013. 04. 16	박세훈	어둠의 문 개편
 	if( CXSLDungeon::IsDefenceDungeon( kPacket_.m_kRoomInfo.m_iDungeonID ) == true )
 	{
-		START_LOG( cerr, L"패킷 변조 의심 유저! ( 어둠의 문 던전을 직접적으로 생성하려 하였다 )" )
+		START_LOG( cerr, L"Suspected packet tampering: user attempted to create a Gate of Darkness dungeon directly!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( GetUID() )
 			<< END_LOG;
@@ -2509,7 +2509,7 @@ _IMPL_ON_FUNC( ERM_SINGLE_OPEN_DUNGEON_ROOM_REQ, KERM_OPEN_ROOM_REQ )
 	// 슬롯에 생성 요청자를 넣는다.
 	if( m_spRoomUserManager->EnterRoom( kPacket_.m_kRoomUserInfo, false ) == false )
 	{
-		START_LOG( cerr, L"방 입장 실패." )
+		START_LOG( cerr, L"Failed to enter room." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( GetUID() )
 			<< END_LOG;
@@ -2681,7 +2681,7 @@ _IMPL_ON_FUNC( ERM_DUNGEON_STAGE_LOAD_REQ, KEGS_DUNGEON_STAGE_LOAD_REQ )
 				m_kNextStageData.m_eClearType != CXSLDungeonSubStage::CT_STAGE_SECRET )
 			{
 				// 서버가 골라준 클리어 타입이 아님. 클라이언트 해킹이다. by 박진웅
-				START_LOG( cerr, L"클리어타입은 아래와 같은데 이 패킷이 왜 왔지? 해커!" )
+				START_LOG( cerr, L"This packet should not arrive for the clear type below. Possible hacker!" )
 					<< BUILD_LOG( m_bFirstStage )
 					<< BUILD_LOG( m_kNextStageData.m_eClearType )
 					<< BUILD_LOG( m_kNextStageData.m_iStageIndex )
@@ -2720,7 +2720,7 @@ _IMPL_ON_FUNC( ERM_DUNGEON_STAGE_LOAD_REQ, KEGS_DUNGEON_STAGE_LOAD_REQ )
 		std::map< int, int >::iterator mitSLC = m_mapStageLoadingCheck.find( kPacket_.m_iStageID );
 		if( mitSLC != m_mapStageLoadingCheck.end() )
 		{
-			START_LOG( cout, L"똑같은 스테이지 또 로딩했네? 이거 괜찮은거임?" )
+			START_LOG( cout, L"The same stage is loading again; is this expected?" )
 				<< BUILD_LOG( LAST_SENDER_UID )
 				<< BUILD_LOG( FIRST_SENDER_UID )
 				<< BUILD_LOG( GetDungeonIDAndDif() )
@@ -2733,7 +2733,7 @@ _IMPL_ON_FUNC( ERM_DUNGEON_STAGE_LOAD_REQ, KEGS_DUNGEON_STAGE_LOAD_REQ )
 
 			if( m_iLastLoadingUnitUID != FIRST_SENDER_UID )
 			{
-				START_LOG( cout, L"방장이 바뀌었나? 이 전 스테이지 로딩한 유저와 다른 유저군.." )
+				START_LOG( cout, L"Did the host change? The user group differs from the previous stage’s loader." )
 					<< BUILD_LOG( FIRST_SENDER_UID )
 					<< BUILD_LOG( m_iLastLoadingUnitUID );
 			}
@@ -2744,7 +2744,7 @@ _IMPL_ON_FUNC( ERM_DUNGEON_STAGE_LOAD_REQ, KEGS_DUNGEON_STAGE_LOAD_REQ )
 			// 5번 이상 똑같은 스테이지 로딩하는 경우라면 해킹유저로 판별!
 			if( mitSLC->second >= 5 )
 			{
-				START_LOG( cout, L"Stage Loading 해킹유저로 판단되어 체크 결과를 클라이언트 전송하였음!" )
+				START_LOG( cout, L"Stage loading: flagged as a suspected hack and sent the check result to the client!" )
 					<< BUILD_LOG( LAST_SENDER_UID )
 					<< BUILD_LOG( FIRST_SENDER_UID )
 					<< BUILD_LOG( GetDungeonIDAndDif() )
@@ -3088,7 +3088,7 @@ _IMPL_ON_FUNC( ERM_DUNGEON_STAGE_LOAD_REQ, KEGS_DUNGEON_STAGE_LOAD_REQ )
 			{
 				if( m_iDefenseMainCrystalNpcUID != 0 )
 				{
-					START_LOG( cerr, L"큰 수정이 1 보다 많다? 절대로 일어나서는 안되는 에러!" )
+					START_LOG( cerr, L"There is more than one large crystal; this should never happen!" )
 						<< BUILD_LOG( m_iDefenseMainCrystalNpcUID )
 						<< BUILD_LOG( kNPCList.m_NPCList[i].m_NPCID )
 						<< END_LOG;
@@ -3102,7 +3102,7 @@ _IMPL_ON_FUNC( ERM_DUNGEON_STAGE_LOAD_REQ, KEGS_DUNGEON_STAGE_LOAD_REQ )
 			{
 				if( m_setDefenseSmallCrystalNpcUID.size() > MAX_SMALL_CRYSTAL )
 				{
-					START_LOG( cerr, L"작 수정이 4 보다 많다? 절대로 일어나서는 안되는 에러!" )
+					START_LOG( cerr, L"More than four small crystals? This should never happen!" )
 						<< BUILD_LOG( m_setDefenseSmallCrystalNpcUID.size() )
 						<< END_LOG;
 				}
@@ -3204,7 +3204,7 @@ bool KDungeonRoom::EventDropMonster( IN int iNpcID, IN bool bAllyNpc, IN int iSt
 	// 등장하는 몬스터가 한마리도 없으면 이벤트 몬스터도 출현시키지 않는다.
 	if( kNot.m_mapNPCData.size() <= 0 )
 	{
-		START_LOG( cerr, L"이벤트 몬스터 출현 결정중 몬스터 정보가 없다?" )
+		START_LOG( cerr, L"Monster information is missing while determining event monster spawns." )
 			<< BUILD_LOG( iNpcID )
 			<< BUILD_LOG( iStageID )
 			<< BUILD_LOG( kNot.m_mapNPCData.size() )
@@ -3308,7 +3308,7 @@ void KDungeonRoom::SecretDungeonExtraStageMonster( IN const int iStageID, IN con
 
 	if( kNot.m_mapNPCData.size() <= 0 )
 	{
-		START_LOG( cerr, L"이벤트 몬스터 출현 결정중 몬스터 정보가 없다?" )
+		START_LOG( cerr, L"Monster information is missing while determining event monster spawns." )
 			<< BUILD_LOG( iStageID )
 			<< BUILD_LOG( kNot.m_mapNPCData.size() )
 			<< END_LOG;
@@ -3383,7 +3383,7 @@ void KDungeonRoom::SecretDungeonExtraStageMonster( IN const int iStageID, IN con
 		//{{ 2008. 9. 12  최육사	npc없는 스테이지면?
 		if( kNPCData.m_nStartPos == -1 )
 		{
-			START_LOG( cwarn, L"Npc가 없는 스테이지다?" )
+			START_LOG( cwarn, L"This stage has no NPCs." )
 				<< BUILD_LOG( iStageID )
 				<< BUILD_LOG( iRandomSubStage )
 				<< END_LOG;
@@ -3507,7 +3507,7 @@ _IMPL_ON_FUNC( ERM_DUNGEON_SUB_STAGE_CLEAR_REQ, KEGS_DUNGEON_SUB_STAGE_CLEAR_REQ
 	if( SiCXSLDungeonManager()->GetNextStage( m_kNextStageData, GetDungeonIDAndDif(), GetStageID(), GetSubStageID(), kPacket_.m_iClearConditionIndex ) == false )
 	{
 		// 다음 스테이지를 찾는데 실패. 해킹이다 by 박진웅
-		START_LOG( cerr, L"다음 스테이지를 찾는데 실패. 해킹이다." )
+		START_LOG( cerr, L"Failed to find the next stage; possible hack attempt." )
 			<< BUILD_LOG( GetDungeonIDAndDif() )
 			<< BUILD_LOG( GetStageID() )
 			<< BUILD_LOG( GetSubStageID() )
@@ -3540,7 +3540,7 @@ _IMPL_ON_FUNC( ERM_SECRET_STAGE_LOAD_REQ, KEGS_SECRET_STAGE_LOAD_REQ )
 	if( m_kNextStageData.m_eClearType != CXSLDungeonSubStage::CT_STAGE_SECRET )
 	{
 		// 서버가 골라준 클리어 타입이 아님. 클라이언트 해킹이다. by 박진웅
-		START_LOG( cerr, L"클리어타입은 아래와 같은데 이 패킷이 왜 왔지? 해커!" )
+		START_LOG( cerr, L"This packet should not arrive for the clear type below. Possible hacker!" )
 			<< BUILD_LOG( m_kNextStageData.m_eClearType )
 			<< BUILD_LOG( m_iClearConditionIndex )
 			<< END_LOG;
@@ -3553,7 +3553,7 @@ _IMPL_ON_FUNC( ERM_SECRET_STAGE_LOAD_REQ, KEGS_SECRET_STAGE_LOAD_REQ )
 	if( SiCXSLDungeonManager()->GetNextStage( m_kNextStageData, GetDungeonIDAndDif(), GetStageID(), GetSubStageID(), m_iClearConditionIndex, kPacket_.m_iPadID ) == false )
 	{
 		// 다음 스테이지를 찾는데 실패. 해킹이다 by 박진웅
-		START_LOG( cerr, L"다음 스테이지를 찾는데 실패. 해킹이다." )
+		START_LOG( cerr, L"Failed to find the next stage; possible hack attempt." )
 			<< BUILD_LOG( GetDungeonIDAndDif() )
 			<< BUILD_LOG( GetStageID() )
 			<< BUILD_LOG( GetSubStageID() )
@@ -3584,7 +3584,7 @@ _IMPL_ON_FUNC( ERM_DUNGEON_SUB_STAGE_OPEN_REQ, KEGS_DUNGEON_SUB_STAGE_OPEN_REQ )
 			if( m_kNextStageData.m_eClearType != CXSLDungeonSubStage::CT_SUB_STAGE )
 			{
 				// 서버가 골라준 클리어 타입이 아님. 클라이언트 해킹이다. by 박진웅
-				START_LOG( cerr, L"클리어타입은 아래와 같은데 이 패킷이 왜 왔지? 해커!" )
+				START_LOG( cerr, L"This packet should not arrive for the clear type below. Possible hacker!" )
 					<< BUILD_LOG( m_bFirstStage )
 					<< BUILD_LOG( m_kNextStageData.m_eClearType )
 					<< BUILD_LOG( m_kNextStageData.m_iStageIndex )
@@ -3629,7 +3629,7 @@ _IMPL_ON_FUNC( ERM_DUNGEON_SUB_STAGE_GO_NEXT_REQ, KEGS_DUNGEON_SUB_STAGE_GO_NEXT
 
 	if( m_spRoomUserManager->SetStageID( FIRST_SENDER_UID, kPacket_.m_iNextStageID ) == false )
 	{
-		START_LOG( cerr, L"스테이지 이동 데이터 저장 실패.!" )
+		START_LOG( cerr, L"Failed to save stage-transition data!" )
 			<< BUILD_LOGc( kPacket_.m_iNextStageID )
 			<< BUILD_LOGc( kPacket_.m_iBeforeStageID )
 			<< END_LOG;
@@ -3662,7 +3662,7 @@ _IMPL_ON_FUNC( ERM_DUNGEON_SUB_STAGE_LOAD_COMPLETE_REQ, KEGS_DUNGEON_SUB_STAGE_L
 	//{{ 2012. 04. 17	최육사	던전 로그 컬럼 추가
 	if( m_spRoomUserManager->SetSubStageID( FIRST_SENDER_UID, kPacket_.m_iSubStageID ) == false )
 	{
-		START_LOG( cerr, L"SubStageID값 저장할 유저가 없다! 위에서 검사했는데?" )
+		START_LOG( cerr, L"No user available to store the SubStageID; was this not checked above?" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_iSubStageID )
 			<< END_LOG;
@@ -3679,7 +3679,7 @@ _IMPL_ON_FUNC( ERM_DUNGEON_SUB_STAGE_LOAD_COMPLETE_REQ, KEGS_DUNGEON_SUB_STAGE_L
 		//{{ 2010. 8. 16	최육사	서버 코드 정리
 		if( DungeonSubStageStartProcess( kPacket_.m_iSubStageID ) == false )
 		{
-			START_LOG( cerr, L"던전 서브 스테이지 시작 에러!" )
+			START_LOG( cerr, L"Failed to start dungeon substage!" )
 				<< BUILD_LOG( kPacket_.m_iSubStageID )
 				<< END_LOG;
 		}
@@ -3719,9 +3719,9 @@ IMPL_ON_FUNC_NOPARAM( ERM_DUNGEON_SECRET_STAGE_ENTER_CHECK_REQ )
 
 	if( GetStateID() != KRoomFSM::S_PLAY )
 	{
-		START_LOG( cerr, L"상태 오류. Name : " << m_strName )
-			<< L"    현재 상태 : " << GetStateIDString() << dbg::endl
-			<< L"    허용 상태 : KRoomFSM::S_PLAY" << END_LOG;
+		START_LOG( cerr, L"State error. Name: " << m_strName )
+			<< L"    Current state: " << GetStateIDString() << dbg::endl
+			<< L"    Allowed state: KRoomFSM::S_PLAY" << END_LOG;
 
 		kPacket.m_bCanEnterSecretStage = false;
 		SendToGSCharacter( LAST_SENDER_UID, FIRST_SENDER_UID, ERM_DUNGEON_SECRET_STAGE_ENTER_CHECK_ACK, kPacket );
@@ -3731,7 +3731,7 @@ IMPL_ON_FUNC_NOPARAM( ERM_DUNGEON_SECRET_STAGE_ENTER_CHECK_REQ )
 	// 헤니르 시공이 맞나?
 	if( m_eDungeonType != CXSLDungeon::DT_HENIR )
 	{
-		START_LOG( cerr, L"헤니르 시공이 아닌데 이 이벤트가 왜왔지? 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"Received this event outside Henir; this should never happen!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( m_eDungeonType )
 			<< END_LOG;
@@ -3768,7 +3768,7 @@ _IMPL_ON_FUNC( ERM_DUNGEON_SECRET_STAGE_ENTER_SELECT_NOT, KEGS_DUNGEON_SECRET_ST
 	// 헤니르 시공이 맞나?
 	if( m_eDungeonType != CXSLDungeon::DT_HENIR )
 	{
-		START_LOG( cerr, L"헤니르 시공이 아닌데 이 이벤트가 왜왔지? 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"Received this event outside Henir; this should never happen!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( m_eDungeonType )
 			<< END_LOG;
@@ -3886,7 +3886,7 @@ _IMPL_ON_FUNC( ERM_NPC_UNIT_CREATE_REQ, KEGS_NPC_UNIT_CREATE_REQ )
 
 			if( SiKAttribNpcTable()->GetAttribNpcInfo( m_eDungeonType, GetDifficultyLevel(), kCreateNpcInfo.m_Level, kCreateNpcInfo.m_NPCID, kAttribNpcInfo.m_sAttribEnchantNpcInfo ) == false )
 			{
-				START_LOG( cerr, L"속성 NPC정보 얻기 실패!" )
+				START_LOG( cerr, L"Failed to retrieve attribute NPC information!" )
 					<< BUILD_LOG( GetDungeonID() )
 					<< BUILD_LOG( m_eDungeonType )
 					<< BUILD_LOGc( GetDifficultyLevel() )
@@ -3959,7 +3959,7 @@ _IMPL_ON_FUNC( ERM_NPC_UNIT_DIE_REQ, KEGS_NPC_UNIT_DIE_REQ )
 		// std::set 에서 삭제
 		m_setDefenseSmallCrystalNpcUID.erase( sit );
 
-		START_LOG( clog, L"디펜스 던전 작은 수정이 깨졌음!!" )
+		START_LOG( clog, L"The small crystal in the defense dungeon was destroyed!!" )
 			<< END_LOG;
 		return;
 	}
@@ -4034,7 +4034,7 @@ _IMPL_ON_FUNC( ERM_NPC_UNIT_DIE_REQ, KEGS_NPC_UNIT_DIE_REQ )
 	const CXSLUnitManager::NPCUnitTemplet* pNPCTemplet = SiCXSLUnitManager()->GetNPCUnitTemplet( (CXSLUnitManager::NPC_UNIT_ID)kDieNpcInfo.m_iNPCID );
 	if( pNPCTemplet == NULL )
 	{
-		START_LOG( cwarn, L"NPC Unit Templet 읽기 오류.!" )
+		START_LOG( cwarn, L"Failed to read NPC unit template!" )
 			<< BUILD_LOG( kDieNpcInfo.m_iNPCID )
 			<< END_LOG;
 		return;
@@ -4108,7 +4108,7 @@ _IMPL_ON_FUNC( ERM_NPC_UNIT_DIE_REQ, KEGS_NPC_UNIT_DIE_REQ )
 						kNot.m_cHackingCheckType = KEGS_SERVER_CHECK_HACK_USER_REQ::HCT_CHECK_NPC_DIE_TIME;
 						SendToGSCharacter( LAST_SENDER_UID, FIRST_SENDER_UID, ERM_SERVER_CHECK_HACK_USER_NOT, kNot );
 
-						START_LOG( cout, L"Sub Stage의 모든 Npc를 죽인 시간이 1초밖에 걸리지 않는다." )
+						START_LOG( cout, L"All NPCs in the substage were killed in only one second." )
 							<< BUILD_LOG( LAST_SENDER_UID )
 							<< BUILD_LOG( FIRST_SENDER_UID )
 							<< BUILD_LOG( m_tSubStageFirstKillTime.GetMinute() )
@@ -4145,7 +4145,7 @@ _IMPL_ON_FUNC( ERM_NPC_UNIT_DIE_REQ, KEGS_NPC_UNIT_DIE_REQ )
 		{
 			if( m_kDungeonMonsterManager.IsExistMonster( static_cast<int>(kPacket_.m_uiAttUnit) ) == true )
 			{
-				START_LOG( clog, L"몹끼리 죽였네!!" )
+				START_LOG( clog, L"A monster killed another monster!!" )
 					<< BUILD_LOG( kDieNpcInfo.m_iNPCID )
 					<< BUILD_LOG( kPacket_.m_uiAttUnit );
 
@@ -4156,7 +4156,7 @@ _IMPL_ON_FUNC( ERM_NPC_UNIT_DIE_REQ, KEGS_NPC_UNIT_DIE_REQ )
 				// 던전 게임 시작할 당시에 유저 수와 현재 유저 수가 모두 1명일 경우만 체크!
 				if( m_iStartedNumMember == 1  &&  m_spRoomUserManager->GetNumMember() == 1 )
 				{
-					START_LOG( cerr, L"몹끼리 죽인게 아니네? 해킹유저로 의심된다!" )
+					START_LOG( cerr, L"The monsters did not kill each other; user suspected of hacking!" )
 						<< BUILD_LOG( LAST_SENDER_UID )
 						<< BUILD_LOG( FIRST_SENDER_UID )
 						<< BUILD_LOG( kPacket_.m_nDieNPCUID )
@@ -4181,7 +4181,7 @@ _IMPL_ON_FUNC( ERM_NPC_UNIT_DIE_REQ, KEGS_NPC_UNIT_DIE_REQ )
 						kNot.m_cHackingCheckType = KEGS_SERVER_CHECK_HACK_USER_REQ::HCT_DUNGEON_NPC_UNIT_DIE;
 						SendToGSCharacter( LAST_SENDER_UID, FIRST_SENDER_UID, ERM_SERVER_CHECK_HACK_USER_NOT, kNot );
 
-						START_LOG( cout, L"NpcDie 해킹유저로 판단되어 체크 결과를 클라이언트 전송하였음!" )
+						START_LOG( cout, L"NpcDie: flagged as a suspected hack and sent the check result to the client!" )
 							<< BUILD_LOG( LAST_SENDER_UID )
 							<< BUILD_LOG( FIRST_SENDER_UID )
 							<< BUILD_LOG( m_iNpcDieHackCount );
@@ -4257,7 +4257,7 @@ _IMPL_ON_FUNC( ERM_NPC_UNIT_DIE_REQ, KEGS_NPC_UNIT_DIE_REQ )
 			KRoomUserPtr spRoomUser = m_spRoomUserManager->GetUser( iPartyUserUID );
 			if( IS_NULL( spRoomUser ) )
 			{
-				START_LOG( cerr, L"유저 포인터값이 이상합니다" )
+				START_LOG( cerr, L"Invalid user pointer value." )
 					<< BUILD_LOG( iPartyUserUID )
 					<< END_LOG;
 				continue;
@@ -4289,7 +4289,7 @@ _IMPL_ON_FUNC( ERM_NPC_UNIT_DIE_REQ, KEGS_NPC_UNIT_DIE_REQ )
 						kDieNpcInfo.m_bIsBoss ) == false )
 					//}}
 					{
-						START_LOG( cerr, L"Henir Drop Item Data 얻어오기 실패 ===" )
+						START_LOG( cerr, L"Failed to retrieve Henir drop item data ===" )
 							<< BUILD_LOG( kPacket_.m_nDieNPCUID )
 							<< BUILD_LOG( kDieNpcInfo.m_iNPCID )
 							<< BUILD_LOGc( m_cDungeonMode )
@@ -4323,7 +4323,7 @@ _IMPL_ON_FUNC( ERM_NPC_UNIT_DIE_REQ, KEGS_NPC_UNIT_DIE_REQ )
 							sDropDataNpc,
 							kDieNpcInfo.m_bIsBoss ) == false )
 						{
-							START_LOG( cerr, L"Henir Drop Item Data 얻어오기 실패 ===" )
+							START_LOG( cerr, L"Failed to retrieve Henir drop item data ===" )
 								<< BUILD_LOG( kPacket_.m_nDieNPCUID )
 								<< BUILD_LOG( kDieNpcInfo.m_iNPCID )
 								<< END_LOG;
@@ -4346,7 +4346,7 @@ _IMPL_ON_FUNC( ERM_NPC_UNIT_DIE_REQ, KEGS_NPC_UNIT_DIE_REQ )
 							sDropDataNpc,
 							kDieNpcInfo.m_bIsBoss ) == false )
 						{
-							START_LOG( cerr, L"Drop Item Data 얻어오기 실패 ===" )
+							START_LOG( cerr, L"Failed to retrieve drop item data ===" )
 								<< BUILD_LOG( kPacket_.m_nDieNPCUID )
 								<< BUILD_LOG( kDieNpcInfo.m_iNPCID )
 								<< BUILD_LOGc( GetDifficultyLevel() )
@@ -4373,7 +4373,7 @@ _IMPL_ON_FUNC( ERM_NPC_UNIT_DIE_REQ, KEGS_NPC_UNIT_DIE_REQ )
 						sDropDataNpc,
 						kDieNpcInfo.m_bIsBoss ) == false )
 					{
-						START_LOG( cerr, L"Drop Item Data 얻어오기 실패 ===" )
+						START_LOG( cerr, L"Failed to retrieve drop item data ===" )
 							<< BUILD_LOG( kPacket_.m_nDieNPCUID )
 							<< BUILD_LOG( kDieNpcInfo.m_iNPCID )
 							<< BUILD_LOGc( GetDifficultyLevel() )
@@ -4433,7 +4433,7 @@ _IMPL_ON_FUNC( ERM_NPC_UNIT_DIE_REQ, KEGS_NPC_UNIT_DIE_REQ )
 
 			if( SiKDropTable()->StaticDropItem( GetDungeonIDAndDif(), sDropDataStatic, fTotalDropRate ) == false )
 			{
-				START_LOG( cerr, L"Drop Item Data 얻어오기 실패 ===" )
+				START_LOG( cerr, L"Failed to retrieve drop item data ===" )
 					<< BUILD_LOG( kPacket_.m_nDieNPCUID )
 					<< BUILD_LOG( kDieNpcInfo.m_iNPCID )
 					<< BUILD_LOG( GetDungeonID() )
@@ -4454,7 +4454,7 @@ _IMPL_ON_FUNC( ERM_NPC_UNIT_DIE_REQ, KEGS_NPC_UNIT_DIE_REQ )
 				{
 					if( SiKDropTable()->EventDropItem( fTotalDropRate, sDropDataEvent ) == false )
 					{
-						START_LOG( cerr, L"Event Drop Item Data 얻어오기 실패 ===" )
+						START_LOG( cerr, L"Failed to retrieve event drop item data ===" )
 							<< BUILD_LOG( kPacket_.m_nDieNPCUID )
 							<< BUILD_LOG( kDieNpcInfo.m_iNPCID )
 							<< BUILD_LOGc( GetDifficultyLevel() )
@@ -4496,7 +4496,7 @@ _IMPL_ON_FUNC( ERM_NPC_UNIT_DIE_REQ, KEGS_NPC_UNIT_DIE_REQ )
 				if( SiKAttribNpcTable()->AttribNpcDropItem( static_cast<int>(cDifficultyLevel), iNpcLv, fTotalDropRate, m_fItemDropEventProbRate, sDropDataAttribNpc.m_vecItemID ) == false )
 				//}}
 				{
-					START_LOG( cerr, L"속성 몬스터 아이템 드롭 실패!" )
+					START_LOG( cerr, L"Failed to drop an attribute monster item!" )
 						<< BUILD_LOGc( cDifficultyLevel )
 						<< BUILD_LOG( iNpcLv )
 						<< END_LOG;
@@ -4518,7 +4518,7 @@ _IMPL_ON_FUNC( ERM_NPC_UNIT_DIE_REQ, KEGS_NPC_UNIT_DIE_REQ )
 					break;
 
 				default:
-					START_LOG( cerr, L"던전 난이도가 이상합니다." )
+					START_LOG( cerr, L"Invalid dungeon difficulty." )
 						<< BUILD_LOGc( cDifficultyLevel )
 						<< END_LOG;
 					break;
@@ -4526,7 +4526,7 @@ _IMPL_ON_FUNC( ERM_NPC_UNIT_DIE_REQ, KEGS_NPC_UNIT_DIE_REQ )
 
 				if( SiKDropTable()->AttribNpcSpecialDrop( cDifficultyLevel, fTotalDropRate, sDropDataAttribNpc.m_vecItemID ) == false )
 				{
-					START_LOG( cerr, L"속성 몬스터 스페셜 아이템 드롭 실패!" )
+					START_LOG( cerr, L"Failed to drop an attribute monster special item!" )
 						<< BUILD_LOGc( cDifficultyLevel )
 						<< END_LOG;
 				}
@@ -4560,7 +4560,7 @@ _IMPL_ON_FUNC( ERM_NPC_UNIT_DIE_REQ, KEGS_NPC_UNIT_DIE_REQ )
 			{
 				if( NetError::GetLastError() != NetError::NET_OK )
 				{
-					START_LOG( cerr, L"퀘스트 드롭 아이템 받아오기 실패.!" )
+					START_LOG( cerr, L"Failed to retrieve quest drop items!" )
 						<< BUILD_LOG( kPacket_.m_uiAttUnit )
 						<< BUILD_LOG( m_iDungeonID )
 						<< BUILD_LOG( NetError::GetLastErrMsg() )
@@ -4732,7 +4732,7 @@ _IMPL_ON_FUNC( ERM_NPC_UNIT_DIE_REQ, KEGS_NPC_UNIT_DIE_REQ )
 							}
 							else
 							{
-								START_LOG( cerr, L"존재하지 않는 itemid이다. 세팅오류인가?" )
+								START_LOG( cerr, L"ItemID does not exist; is the configuration wrong?" )
 									<< BUILD_LOG( iTimeDropItemID )
 									<< END_LOG;
 							}
@@ -4740,7 +4740,7 @@ _IMPL_ON_FUNC( ERM_NPC_UNIT_DIE_REQ, KEGS_NPC_UNIT_DIE_REQ )
 					}
 					else
 					{
-						START_LOG( cwarn, L"이벤트 아이템 획득 처리 하려는데 유저정보가 없다!" )
+						START_LOG( cwarn, L"Cannot process event item acquisition: user information is missing!" )
 							<< BUILD_LOG( kPacket_.m_uiAttUnit )
 							<< END_LOG;
 					}
@@ -4872,7 +4872,7 @@ _IMPL_ON_FUNC( ERM_GET_ITEM_REQ, KEGS_GET_ITEM_REQ )
 	// 1. 습득할려는 item이 없는경우
 	if( mit == m_mapDropItem.end() )
 	{
-		START_LOG( cerr, L"습득할려는 아이템이 없음" )
+		START_LOG( cerr, L"The item to acquire does not exist." )
 			<< BUILD_LOG( kPacket_.m_iDropItemUID )
 			<< BUILD_LOG( kPacket_.m_kItemInfo.m_iItemID )
 			<< END_LOG;
@@ -4889,7 +4889,7 @@ _IMPL_ON_FUNC( ERM_GET_ITEM_REQ, KEGS_GET_ITEM_REQ )
 				kNot.m_cHackingCheckType = KEGS_SERVER_CHECK_HACK_USER_REQ::HCT_DUNGEON_GET_ITEM;
 				SendToGSCharacter( LAST_SENDER_UID, FIRST_SENDER_UID, ERM_SERVER_CHECK_HACK_USER_NOT, kNot );
 
-				START_LOG( cout, L"GetItem 해킹유저로 판단되어 체크 결과를 클라이언트 전송하였음!" )
+				START_LOG( cout, L"GetItem: flagged as a suspected hacker and sent the check result to the client!" )
 					<< BUILD_LOG( LAST_SENDER_UID )
 					<< BUILD_LOG( FIRST_SENDER_UID )
 					<< BUILD_LOG( m_iGetItemHackCount );
@@ -4906,7 +4906,7 @@ _IMPL_ON_FUNC( ERM_GET_ITEM_REQ, KEGS_GET_ITEM_REQ )
 	// 2. 아이템 종류 검사
 	if( kPacket_.m_kItemInfo.m_iItemID != pItemData->m_iItemID )
 	{
-		START_LOG( cerr, L"습득할려는 아이템의 종류가 잘못되었음." )
+		START_LOG( cerr, L"Invalid type for the item being acquired." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_iDropItemUID )
 			<< BUILD_LOG( kPacket_.m_kItemInfo.m_iItemID )
@@ -4926,7 +4926,7 @@ _IMPL_ON_FUNC( ERM_GET_ITEM_REQ, KEGS_GET_ITEM_REQ )
 
 				SendToGSCharacter( LAST_SENDER_UID, FIRST_SENDER_UID, ERM_SERVER_CHECK_HACK_USER_NOT, kNot );
 
-				START_LOG( cout, L"GetItem 해킹유저로 판단되어 체크 결과를 클라이언트 전송하였음!" )
+				START_LOG( cout, L"GetItem: flagged as a suspected hacker and sent the check result to the client!" )
 					<< BUILD_LOG( LAST_SENDER_UID )
 					<< BUILD_LOG( FIRST_SENDER_UID )
 					<< BUILD_LOG( m_iGetItemHackCount );
@@ -4969,7 +4969,7 @@ _IMPL_ON_FUNC( ERM_GET_ITEM_REQ, KEGS_GET_ITEM_REQ )
 			if( !m_spRoomUserManager->AddDungeonRewardED( pItemData->m_iED, FIRST_SENDER_UID, fPartyBonusRate, GetDungeonID(), GetDifficultyLevel(), kNot ) )
 
 			{
-				START_LOG( cerr, L"ED보상처리가 이상합니다!" )
+				START_LOG( cerr, L"Invalid ED reward processing!" )
 					<< BUILD_LOG( pItemData->m_iED )
 					<< END_LOG;
 
@@ -4984,7 +4984,7 @@ _IMPL_ON_FUNC( ERM_GET_ITEM_REQ, KEGS_GET_ITEM_REQ )
 			const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( pItemData->m_iItemID );
 			if( pItemTemplet == NULL )
 			{
-				START_LOG( cerr, L"Item Templet 정보가 없음. 이상한 아이템 먹었네." )
+				START_LOG( cerr, L"Item template information is missing; an unexpected item was acquired." )
 					<< BUILD_LOG( FIRST_SENDER_UID )
 					<< BUILD_LOG( pItemData->m_iItemID )
 					<< END_LOG;
@@ -5093,7 +5093,7 @@ _IMPL_ON_FUNC( ERM_GET_ITEM_REQ, KEGS_GET_ITEM_REQ )
 					}
 					else
 					{
-						START_LOG( cerr, L"드롭 획득 아이템 공지를 날리려는데 존재하지 않는 아이템입니다" )
+						START_LOG( cerr, L"Cannot announce the acquired drop: item does not exist." )
 							<< BUILD_LOG( kNot.m_GetUnitUID )
 							<< BUILD_LOG( pItemData->m_iItemID )
 							<< END_LOG;
@@ -5101,7 +5101,7 @@ _IMPL_ON_FUNC( ERM_GET_ITEM_REQ, KEGS_GET_ITEM_REQ )
 				}
 				else
 				{
-					START_LOG( cerr, L"드롭 획득 아이템 공지를 날리려는데 방에 유저가 없습니다" )
+					START_LOG( cerr, L"Cannot announce the acquired drop: the room has no users." )
 						<< BUILD_LOG( kNot.m_GetUnitUID )
 						<< END_LOG;
 				}
@@ -5143,7 +5143,7 @@ IMPL_ON_FUNC( ERM_GET_ITEM_COMPLETE_NOT )
 	{
 		if( !m_spRoomUserManager->AddItem( kPacket_.m_iUnitUID, mit->first ) )
 		{
-			START_LOG( cerr, L"아이템 획득 정보 업데이트 실패!" )
+			START_LOG( cerr, L"Failed to update item acquisition information!" )
 				<< BUILD_LOG( kPacket_.m_iUnitUID )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
@@ -5187,7 +5187,7 @@ _IMPL_ON_FUNC( ERM_DUNGEON_PLAY_INFO_TO_SERVER_NOT, KEGS_DUNGEON_PLAY_INFO_TO_SE
 {
 	if( GetStateID() != KRoomFSM::S_PLAY )
 	{
-		START_LOG( cwarn, L"패킷이 허용되는 방 상태가 아님." )
+		START_LOG( cwarn, L"Packet is not allowed in the current room state." )
 			<< BUILD_LOG( GetStateIDString() )
 			<< END_LOG;
 
@@ -5196,7 +5196,7 @@ _IMPL_ON_FUNC( ERM_DUNGEON_PLAY_INFO_TO_SERVER_NOT, KEGS_DUNGEON_PLAY_INFO_TO_SE
 
 	if( !m_spRoomUserManager->SetDungeonPlayInfo( FIRST_SENDER_UID, kPacket_ ) )
 	{
-		START_LOG( cwarn, L"업데이트 실패했네?" )
+		START_LOG( cwarn, L"Update failed." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
 	}
@@ -5228,7 +5228,7 @@ _IMPL_ON_FUNC( ERM_END_GAME_REQ, KEGS_END_GAME_REQ )
 				KRoomUserPtr spRoomUser = m_spRoomUserManager->GetUser( iU );
 				if( spRoomUser == NULL )
 				{
-					START_LOG( cerr, L"RoomUser가 존재하지 않음." )
+					START_LOG( cerr, L"RoomUser does not exist." )
 						<< END_LOG;
 					continue;
 				}
@@ -5300,7 +5300,7 @@ _IMPL_ON_FUNC( ERM_USE_QUICK_SLOT_NOT, KEGS_USE_QUICK_SLOT_NOT )
 			{
 				//spRoomUser->SetUseItemForPayment( true );
 				kPacket_.m_bUseItemNeedPayment = true;
-				START_LOG(clog, L"지헌로그-테스트 : 아이템 사용 체크 완료!")
+				START_LOG(clog, L"Jiheon log test: item-use check completed!")
 					<< BUILD_LOG(kPacket_.m_bUseItemNeedPayment)
 					<< END_LOG;
 				break;
@@ -5444,7 +5444,7 @@ _IMPL_ON_FUNC( ERM_RESURRECT_TO_CONTINUE_DUNGEON_REQ, KEGS_RESURRECT_TO_CONTINUE
 	KRoomUserPtr roomSlotPtr = m_spRoomUserManager->GetUser( kPacketNot.m_iUnitUID );
 	if( roomSlotPtr == NULL )
 	{
-		START_LOG( cerr, L"방에 룸유저 객체가 존재하지 않음." )
+		START_LOG( cerr, L"No room-user object exists in the room." )
 			<< BUILD_LOG( m_cRoomType )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
@@ -5474,7 +5474,7 @@ IMPL_ON_FUNC_NOPARAM( ERM_SKIP_CONTINUE_DUNGEON_NOT )
 {
 	if( GetStateID() != KRoomFSM::S_PLAY )
 	{
-		START_LOG( cwarn, L"패킷이 허용되는 방 상태가 아님." )
+		START_LOG( cwarn, L"Packet is not allowed in the current room state." )
 			<< BUILD_LOG( GetStateIDString() )
 			<< END_LOG;
 
@@ -5491,7 +5491,7 @@ IMPL_ON_FUNC( ERM_TUTORIAL_DUNGEON_ROOM_UPDATE_NOT )
 {
 	if( GetStateID() != KRoomFSM::S_WAIT )
 	{
-		START_LOG( cwarn, L"패킷이 허용되는 방 상태가 아님." )
+		START_LOG( cwarn, L"Packet is not allowed in the current room state." )
 			<< BUILD_LOG( GetStateIDString() )
 			<< END_LOG;
 		//return;
@@ -5519,7 +5519,7 @@ _IMPL_ON_FUNC( ERM_FIELD_UNIT_SYNC_DATA_NOT, KEGS_FIELD_UNIT_SYNC_DATA_NOT )
 {
 	if( GetStateID() != KRoomFSM::S_WAIT )
 	{
-		START_LOG( cwarn, L"패킷이 허용되는 방 상태가 아님." )
+		START_LOG( cwarn, L"Packet is not allowed in the current room state." )
 			<< BUILD_LOG( GetStateIDString() )
 			<< END_LOG;
 		return;
@@ -5543,7 +5543,7 @@ IMPL_ON_FUNC_NOPARAM( ERM_PARTY_BAN_USER_REQ )
 	KRoomUserPtr pkRoomUser = m_spRoomUserManager->GetUser( FIRST_SENDER_UID );
 	if( pkRoomUser == NULL )
 	{
-		START_LOG( cerr, L"강퇴시킬 룸유져 찾기실패" )
+		START_LOG( cerr, L"Failed to find the room user to eject." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
 
@@ -5555,7 +5555,7 @@ IMPL_ON_FUNC_NOPARAM( ERM_PARTY_BAN_USER_REQ )
 	// 방 슬롯 정보 변경.
 	if( !m_spRoomUserManager->LeaveRoom( FIRST_SENDER_UID ) )
 	{
-		START_LOG( cerr, L"방 이탈 실패!" )
+		START_LOG( cerr, L"Failed to leave room!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
 
@@ -5607,7 +5607,7 @@ IMPL_ON_FUNC_NOPARAM( ERM_DUNGEON_KILLALLNPC_CHECK_REQ )
 
 	if( GetStateID() != KRoomFSM::S_PLAY )
 	{
-		START_LOG( cerr, L"패킷이 허용되는 방 상태가 아님." )
+		START_LOG( cerr, L"Packet is not allowed in the current room state." )
 			<< BUILD_LOG( GetStateIDString() )
 			<< END_LOG;
 		return;
@@ -5624,7 +5624,7 @@ IMPL_ON_FUNC_NOPARAM( ERM_DUNGEON_KILLALLNPC_CHECK_REQ )
 	// 해당 서브 스테이지에 모든 몬스터가 죽었는지 체크하자!
 	if( m_kDungeonMonsterManager.IsAllSubStageNpcDie( GetStageID(), GetSubStageID() ) == false )
 	{
-		START_LOG( cerr, L"Npc가 없는 스테이지인데 모든NPC 죽여달라고 요청패킷이 왔네? 해킹인가?" )
+		START_LOG( cerr, L"Received a request to kill all NPCs on a stage with no NPCs; possible hack attempt." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( GetStageID() )
 			<< BUILD_LOG( GetSubStageID() )
@@ -5752,7 +5752,7 @@ void KDungeonRoom::CheckDeleteHenirDropItem( IN OUT KDropTable::DROP_DATA& sDrop
 		const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( *vit );
 		if( pItemTemplet == NULL )
 		{
-			START_LOG( cerr, L"sDropDataNpc 검사 아이템 정보가 없다." )
+			START_LOG( cerr, L"Item information is missing from sDropDataNpc validation." )
 				<< BUILD_LOG( *vit );
 			continue;
 		}
@@ -5772,7 +5772,7 @@ void KDungeonRoom::CheckDeleteHenirDropItem( IN OUT KDropTable::DROP_DATA& sDrop
 		const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( *vit );
 		if( pItemTemplet == NULL )
 		{
-			START_LOG( cerr, L"sDropDataStatic 검사 아이템 정보가 없다." )
+			START_LOG( cerr, L"Item information is missing from sDropDataStatic validation." )
 				<< BUILD_LOG( *vit );
 			continue;
 		}
@@ -5792,7 +5792,7 @@ void KDungeonRoom::CheckDeleteHenirDropItem( IN OUT KDropTable::DROP_DATA& sDrop
 		const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( *vit );
 		if( pItemTemplet == NULL )
 		{
-			START_LOG( cerr, L"sDropDataEvent 검사 아이템 정보가 없다." )
+			START_LOG( cerr, L"Item information is missing from sDropDataEvent validation." )
 				<< BUILD_LOG( *vit );
 			continue;
 		}
@@ -5812,7 +5812,7 @@ void KDungeonRoom::CheckDeleteHenirDropItem( IN OUT KDropTable::DROP_DATA& sDrop
 		const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( *vit );
 		if( pItemTemplet == NULL )
 		{
-			START_LOG( cerr, L"sDropDataAttribNpc 검사 아이템 정보가 없다." )
+			START_LOG( cerr, L"Item information is missing from sDropDataAttribNpc validation." )
 				<< BUILD_LOG( *vit );
 			continue;
 		}
@@ -5832,7 +5832,7 @@ void KDungeonRoom::CheckDeleteHenirDropItem( IN OUT KDropTable::DROP_DATA& sDrop
 		const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( *vit );
 		if( pItemTemplet == NULL )
 		{
-			START_LOG( cerr, L"sDropDataAttribNpc 검사 아이템 정보가 없다." )
+			START_LOG( cerr, L"Item information is missing from sDropDataAttribNpc validation." )
 				<< BUILD_LOG( *vit );
 			continue;
 		}
@@ -5868,7 +5868,7 @@ void KDungeonRoom::OnLeaveRoom( IN const UidType iLAST_SENDER_UID, IN const UidT
 	{
 
 		//=== 게임중 이탈 결과처리 ===
-		START_LOG( clog, L"=== DUNGEON GAME : 게임중 이탈시 결과처리 ===" )
+		START_LOG( clog, L"=== DUNGEON GAME: Process results when leaving during a game ===" )
 			<< BUILD_LOG( iFIRST_SENDER_UID )
 			<< END_LOG;
 
@@ -5881,7 +5881,7 @@ void KDungeonRoom::OnLeaveRoom( IN const UidType iLAST_SENDER_UID, IN const UidT
 
 		if( !spRoomUser )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상" )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( iFIRST_SENDER_UID )
 				<< END_LOG;
 		}
@@ -6118,7 +6118,7 @@ void KDungeonRoom::OnLeaveRoom( IN const UidType iLAST_SENDER_UID, IN const UidT
 			// 어둠의 문 던전 입장!
 			EnterDefenceDungeon( vecLeaveUnitUID );
 
-			START_LOG( clog, L"방 이탈자에 의해 어둠의 문 던전을 시작합니다!" );
+			START_LOG( clog, L"Starting the Gate of Darkness dungeon because a user left the room!" );
 		}
 	}
 	//}}
@@ -6166,7 +6166,7 @@ bool KDungeonRoom::AutoPartyBuff( IN OUT std::map< UidType, std::vector< KBuffIn
 		KRoomUserPtr spRoomUser = m_spRoomUserManager->GetUser( iIndex );
 		if( spRoomUser == NULL )
 		{
-			START_LOG( cerr, L"존재하지 않는 유저입니다!" )
+			START_LOG( cerr, L"User does not exist!" )
 				<< BUILD_LOG( iIndex )
 				<< END_LOG;
 			continue;
@@ -6330,7 +6330,7 @@ IMPL_ON_FUNC_NOPARAM( ERM_UPDATE_HENIR_REWARD_USER_NOT )
 	KRoomUserPtr spRoomUser = m_spRoomUserManager->GetUser( FIRST_SENDER_UID );
 	if( IS_NULL( spRoomUser ) )
 	{
-		START_LOG( cerr, L"존재하지 않는 유저에게 헤니르 보상 여부 정보를 업데이트 하려고 했습니다!" )
+		START_LOG( cerr, L"Attempted to update Henir reward status for a nonexistent user!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
 		return;
@@ -6446,7 +6446,7 @@ _IMPL_ON_FUNC( ERM_FORCED_EXIT_VOTE_REQ, KEGS_FORCED_EXIT_VOTE_REQ )
 	// 강퇴 투표를 한다!
 	if( kPacket_.m_bWantForceExit == false )
 	{
-		START_LOG( cerr, L"투표 한다면서 이 값이 false?" )
+		START_LOG( cerr, L"Vote was requested, but this value is false." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_iUserUID )
 			<< BUILD_LOG( kPacket_.m_bWantForceExit )
@@ -6457,7 +6457,7 @@ _IMPL_ON_FUNC( ERM_FORCED_EXIT_VOTE_REQ, KEGS_FORCED_EXIT_VOTE_REQ )
 	KRoomUserPtr pVoteUser = m_spRoomUserManager->GetUser( FIRST_SENDER_UID );
 	if( pVoteUser == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 유저가 투표하려 한다." )
+		START_LOG( cerr, L"A nonexistent user is attempting to vote." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_iUserUID )
 			<< END_LOG;
@@ -6471,7 +6471,7 @@ _IMPL_ON_FUNC( ERM_FORCED_EXIT_VOTE_REQ, KEGS_FORCED_EXIT_VOTE_REQ )
 	KRoomUserPtr pBadUser = m_spRoomUserManager->GetUser( kPacket_.m_iUserUID );
 	if( pBadUser == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 유저가 투표하려 한다." )
+		START_LOG( cerr, L"A nonexistent user is attempting to vote." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_iUserUID )
 			<< END_LOG;
@@ -6503,7 +6503,7 @@ IMPL_ON_FUNC( ERM_PREPARE_FOR_DEFENCE_DUNGEON_ACK )
 	// 어둠의 문 던전을 시작하기 위한 RoomUserInfo정보 받음 체크
 	if( m_spRoomUserManager->SetPrepareForDefenceDungeon( FIRST_SENDER_UID, true ) == false )
 	{
-		START_LOG( cerr, L"존재하지 않는 유저 입니다!" )
+		START_LOG( cerr, L"User does not exist!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
 		return;
@@ -6520,14 +6520,14 @@ _IMPL_ON_FUNC( ERM_ENTER_DEFENCE_DUNGEON_POPUP_REPLY_NOT, KEGS_ENTER_DEFENCE_DUN
 	// 어둠의 문 입장 팝업
 	if( m_spRoomUserManager->SetEnterDefenceDungeon( FIRST_SENDER_UID, kPacket_.m_bAgree ) == false )
 	{
-		START_LOG( cerr, L"존재하지 않는 유저 입니다!" )
+		START_LOG( cerr, L"User does not exist!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_bAgree )
 			<< END_LOG;
 		return;
 	}
 
-	START_LOG( clog, L"어둠의 문 입장에 대한 응답을 받았습니다." )
+	START_LOG( clog, L"Received response for Gate of Darkness entry." )
 		<< BUILD_LOG( FIRST_SENDER_UID )
 		<< BUILD_LOG( kPacket_.m_bAgree );
 

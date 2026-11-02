@@ -35,7 +35,7 @@ void KLoginBillingDBThread::ProcessEvent( const KEventPtr& spEvent_ )
 
 
 	default:
-		START_LOG( cerr, L"이벤트 핸들러가 정의되지 않았음. " << spEvent_->GetIDStr() );
+		START_LOG( cerr, L"Event handler is not defined." << spEvent_->GetIDStr() );
 	}
 }
 
@@ -75,7 +75,7 @@ IMPL_ON_FUNC( EBILL_EXCHANGE_CASH_RESERVE_REQ )
 			break;
 		}
 
-		START_LOG( cerr, L"빌링 트랜잭션 번호 생성 실패" )
+		START_LOG( cerr, L"Failed to generate billing transaction number." )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< END_LOG;
 
@@ -99,7 +99,7 @@ IMPL_ON_FUNC( EBILL_EXCHANGE_CASH_RESERVE_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"자이언트 캐시 전환 주문 등록 실패." )
+		START_LOG( cerr, L"Failed to register giant cash conversion order." )
 			<< BUILD_LOG( kPacket.m_wstrTransaction )
 			<< BUILD_LOG( kPacket_.m_PurchaserInfo.m_iUserUID )
 			<< BUILD_LOG( kPacket_.m_PurchaserInfo.m_wstrUserName )
@@ -134,7 +134,7 @@ IMPL_ON_FUNC( EBILL_EXCHANGE_CASH_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"자이언트 캐시 전환 DB 기록 실패." )
+		START_LOG( cerr, L"Failed to record giant cash conversion in the database." )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( NetError::GetErrStr( kPacket.m_iOK ) )
 			<< END_LOG;
@@ -152,7 +152,7 @@ IMPL_ON_FUNC( EBILL_EXCHANGE_CASH_REQ )
 	/*
 	if( kPacket_.m_iPoint != kPacket.m_iChargeCash )
 	{
-		START_LOG( cerr, L"충전 예정 금액과 실제 충전 금액이 다름." )
+		START_LOG( cerr, L"The expected charge amount does not match the actual amount." )
 			<< BUILD_LOG( kPacket_.m_iPoint )
 			<< BUILD_LOG( kPacket.m_iChargeCash )
 			<< END_LOG;
@@ -163,7 +163,7 @@ IMPL_ON_FUNC( EBILL_EXCHANGE_CASH_REQ )
 
 	if( kPacket_.m_iPoint < 0 )
 	{
-		START_LOG( cerr, L"충전 금액이 마이너스." )
+		START_LOG( cerr, L"Charge amount is negative." )
 			<< BUILD_LOG( kPacket_.m_iPoint )
 			<< BUILD_LOG( kPacket.m_iChargeCash )
 			<< END_LOG;
@@ -195,7 +195,7 @@ _IMPL_ON_FUNC( EBILL_USE_COUPON_RESERVE_REQ, KEBILL_USE_COUPON_REQ )
 			break;
 		}
 
-		START_LOG( cerr, L"빌링 트랜잭션 번호 생성 실패" )
+		START_LOG( cerr, L"Failed to generate billing transaction number." )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< END_LOG;
 
@@ -218,7 +218,7 @@ _IMPL_ON_FUNC( EBILL_USE_COUPON_RESERVE_REQ, KEBILL_USE_COUPON_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"자이언트 쿠폰 주문 등록 실패." )
+		START_LOG( cerr, L"Failed to register giant coupon order." )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_wstrSerialCode )
 			<< BUILD_LOG( kPacket.m_kPacketReq.m_wstrTransaction )
@@ -250,7 +250,7 @@ IMPL_ON_FUNC( EBILL_USE_COUPON_RESULT_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"자이언트 쿠폰 사용 DB 기록 실패." )
+		START_LOG( cerr, L"Failed to record coupon use in the database." )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( NetError::GetErrStr( kPacket.m_iOK ) )
 			<< END_LOG;
@@ -287,7 +287,7 @@ IMPL_ON_FUNC( EBILL_USE_COUPON_RESULT_REQ )
 		break;
 	}
 
-	START_LOG( clog, L"쿠폰 사용 결과" )
+	START_LOG( clog, L"Coupon use result" )
 		<< BUILD_LOG( kPacket_.m_wstrTransaction )
 		<< BUILD_LOG( kPacket_.m_iRet )
 		<< BUILD_LOG( kPacket_.m_iChargeItem )

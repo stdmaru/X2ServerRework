@@ -121,7 +121,7 @@ IMPL_ON_FUNC( EGS_SEND_LETTER_REQ )
 		//{{ 2012. 03. 29	최육사	Inventory Lock 기능
 		if( m_kInventory.IsLocked() == true )
 		{
-			START_LOG( cout, L"인벤토리 락이 걸려있는 상태입니다!" )
+			START_LOG( cout, L"The inventory is locked!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharName() )
@@ -215,7 +215,7 @@ IMPL_ON_FUNC( EGS_SEND_LETTER_REQ )
 	{
 		if( GetAuthLevel() < SEnum::UAL_GM )
 		{
-			START_LOG( cerr, L"운영자도 아닌데 감히" )
+			START_LOG( cerr, L"Unauthorized attempt to use an operator-only feature." )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOGc( GetAuthLevel() )
@@ -273,7 +273,7 @@ IMPL_ON_FUNC( EGS_SEND_LETTER_REQ )
 			const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( kInvenItemInfo.m_kItemInfo.m_iItemID );
 			if( pItemTemplet == NULL )
 			{
-				START_LOG( cerr, L"해당 아이템의 템플릿 정보를 얻지 못하였습니다." )
+				START_LOG( cerr, L"Failed to retrieve the item template information." )
 					<< BUILD_LOG( kPacket_.m_iItemUID )
 					<< BUILD_LOG( kInvenItemInfo.m_kItemInfo.m_iItemID )
 					<< END_LOG;
@@ -300,7 +300,7 @@ IMPL_ON_FUNC( EGS_SEND_LETTER_REQ )
 
 			if( m_kInventory.IsDBUpdateItem( kPacket_.m_iItemUID ) == false )
 			{
-				START_LOG( cerr, L"PC방 프리미엄 아이템을 우편에 첨부하려고 했습니다." )
+				START_LOG( cerr, L"Attempted to attach a PC Bang premium item to mail." )
 					<< BUILD_LOG( kPacket_.m_iItemUID )
 					<< END_LOG;
 
@@ -342,7 +342,7 @@ IMPL_ON_FUNC( EGS_SEND_LETTER_REQ )
 
 			if( m_kInventory.IsShareItem(kInvenItemInfo.m_iItemUID) == true )
 			{
-				START_LOG(cerr, L"은행 공유 : 은행 공유 아이템을 전송 하려 했음.")
+				START_LOG(cerr, L"Shared bank: attempted to send a shared bank item.")
 					<< BUILD_LOG(kInvenItemInfo.m_iItemUID)
 					<< BUILD_LOG(GetName())
 					<< END_LOG;
@@ -543,7 +543,7 @@ IMPL_ON_FUNC( DBE_PREPARE_INSERT_LETTER_TO_POST_ACK )
 		KInventoryItemInfo kInvenItemInfo;
 		if( !m_kInventory.GetInventoryItemInfo( kPacket_.m_iItemUID, kInvenItemInfo ) )
 		{
-			START_LOG( cerr, L"send letter에서 검사를 했는데.. 아이템이 존재 하지 않는다? 시간차인가.." )
+			START_LOG( cerr, L"The item was checked when sending the letter, but no longer exists. Did it change in the meantime?" )
 				<< BUILD_LOG( kPacket_.m_iItemUID )
 				<< END_LOG;
 
@@ -554,7 +554,7 @@ IMPL_ON_FUNC( DBE_PREPARE_INSERT_LETTER_TO_POST_ACK )
 		const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( kInvenItemInfo.m_kItemInfo.m_iItemID );
 		if( pItemTemplet == NULL )
 		{
-			START_LOG( cerr, L"해당 아이템의 템플릿 정보를 얻지 못하였습니다." )
+			START_LOG( cerr, L"Failed to retrieve the item template information." )
 				<< BUILD_LOG( kPacket_.m_iItemUID )
 				<< BUILD_LOG( kInvenItemInfo.m_kItemInfo.m_iItemID )
 				<< END_LOG;
@@ -570,7 +570,7 @@ IMPL_ON_FUNC( DBE_PREPARE_INSERT_LETTER_TO_POST_ACK )
 			m_kInventory.DecreaseQuantity( kPacket_.m_iItemUID, kPacket_.m_kSendLetter.m_iQuantity, iDecreased, KDeletedItemInfo::DR_LETTER );
 			if( kPacket_.m_kSendLetter.m_iQuantity != iDecreased )
 			{
-				START_LOG( cerr, L"수량 변화 이상." )
+				START_LOG( cerr, L"Invalid quantity change." )
 					<< BUILD_LOG( kPacket_.m_iItemUID )
 					<< BUILD_LOG( kPacket_.m_kSendLetter.m_iQuantity )
 					<< BUILD_LOG( iDecreased )
@@ -585,7 +585,7 @@ IMPL_ON_FUNC( DBE_PREPARE_INSERT_LETTER_TO_POST_ACK )
 			KInventoryItemInfo kDelInvenItem;
 			if( !m_kInventory.DeleteItem( kPacket_.m_iItemUID, kDelInvenItem, KDeletedItemInfo::DR_LETTER ) )
 			{
-				START_LOG( cerr, L"아이템 삭제 실패." )
+				START_LOG( cerr, L"Failed to delete the item." )
 					<< BUILD_LOG( kPacket_.m_iItemUID )
 					<< END_LOG;
 
@@ -663,7 +663,7 @@ end_proc:
 	//{{ 2012. 09. 26	최육사		우편 복사 버그 수정
 	if( kPacket_.m_iOK == NetError::ERR_POST_LETTER_20 )
 	{
-		START_LOG( cout, L"이미 게임서버에서 동일닉네임 체크 했는데 DB체크까지 갔다온 시도가 있다!" )
+		START_LOG( cout, L"Duplicate nickname was already checked by the game server, but an attempt still reached the database check!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetUserID() )
 			<< BUILD_LOG( GetCharUID() )
@@ -701,7 +701,7 @@ IMPL_ON_FUNC( EGS_GET_ITEM_FROM_LETTER_REQ )
 		//{{ 2012. 03. 29	최육사	Inventory Lock 기능
 		if( m_kInventory.IsLocked() == true )
 		{
-			START_LOG( cout, L"인벤토리 락이 걸려있는 상태입니다!" )
+			START_LOG( cout, L"The inventory is locked!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharName() )
@@ -730,7 +730,7 @@ IMPL_ON_FUNC( EGS_GET_ITEM_FROM_LETTER_REQ )
 
 	if( kPostItemInfo.m_iScriptIndex <= 0 )
 	{
-		START_LOG( cerr, L"클라이언트에서 첨부물이 비어있는걸 검사했을텐데.." )
+		START_LOG( cerr, L"The client should have checked that the attachment was not empty." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iPostNo )
 			<< BUILD_LOG( kPostItemInfo.m_iScriptIndex )
@@ -760,7 +760,7 @@ IMPL_ON_FUNC( EGS_GET_ITEM_FROM_LETTER_REQ )
 		// 수량 검사
 		if( kPostItemInfo.m_iQuantity <= 0 )
 		{
-			START_LOG( cerr, L"클라이언트에서 첨부물이 비어있는걸 검사했을텐데.." )
+			START_LOG( cerr, L"The client should have checked that the attachment was not empty." )
 				<< BUILD_LOG( kPacket_.m_iPostNo )
 				<< BUILD_LOG( kPostItemInfo.m_iScriptIndex )
 				<< BUILD_LOG( kPostItemInfo.m_iQuantity )
@@ -777,7 +777,7 @@ IMPL_ON_FUNC( EGS_GET_ITEM_FROM_LETTER_REQ )
 			//{{ 2009. 4. 28  최육사	최대 ED체크
 			if( CheckMaxED( kPostItemInfo.m_iQuantity ) == false )
 			{
-				START_LOG( cwarn, L"최대ED를 초과함! 클라에서 체크했을텐데.." )
+				START_LOG( cwarn, L"Exceeds maximum ED; the client should have checked this." )
 					<< BUILD_LOG( GetCharUID() )
 					<< BUILD_LOG( GetED() )
 					<< BUILD_LOG( kPostItemInfo.m_iQuantity )
@@ -1242,7 +1242,7 @@ IMPL_ON_FUNC( DBE_WRITE_LETTER_AND_TRADE_MOINTORING_ACK )
 		{
 			m_kUserHackingManager.ClearLetterMonitoringList();
 
-			START_LOG( cerr, L"우편 감시 로그가 중복 되는 것이 있다. :")
+			START_LOG( cerr, L"Duplicate mail monitoring log entry: ")
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
 			return;
@@ -1251,7 +1251,7 @@ IMPL_ON_FUNC( DBE_WRITE_LETTER_AND_TRADE_MOINTORING_ACK )
 		{
 			m_kUserHackingManager.ClearTradeMonitoringList();
 
-			START_LOG( cerr, L"거래 감시 로그가 중복 되는 것이 있다. :")
+			START_LOG( cerr, L"Duplicate trade monitoring log entry: ")
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
 			return;
@@ -1260,7 +1260,7 @@ IMPL_ON_FUNC( DBE_WRITE_LETTER_AND_TRADE_MOINTORING_ACK )
 		{
 			m_kUserHackingManager.ClearLetterMonitoringList();
 
-			START_LOG( cerr, L"우편 감시 로그가 추가 실패! :")
+			START_LOG( cerr, L"Failed to add mail monitoring log entry: ")
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
 			return;
@@ -1269,7 +1269,7 @@ IMPL_ON_FUNC( DBE_WRITE_LETTER_AND_TRADE_MOINTORING_ACK )
 		{
 			m_kUserHackingManager.ClearTradeMonitoringList();
 
-			START_LOG( cerr, L"거래 감시 로그가 추가 실패! :")
+			START_LOG( cerr, L"Failed to add trade monitoring log entry: ")
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
 			return;
@@ -1284,7 +1284,7 @@ IMPL_ON_FUNC( DBE_WRITE_LETTER_AND_TRADE_MOINTORING_ACK )
 		}break;
 	default:
 		{
-			START_LOG( cerr, L"리턴 값이 이상합니다. 예외처리")
+			START_LOG( cerr, L"Invalid return value; handling exception.")
 				<< BUILD_LOG( kPacket_.m_iOK )
 				<< END_LOG;
 			return;
@@ -1295,7 +1295,7 @@ IMPL_ON_FUNC( DBE_WRITE_LETTER_AND_TRADE_MOINTORING_ACK )
 	//}} 2011. 04. 13 우편 및 거래 감시 실시간 SMS 전송
 
 
-	START_LOG( cout, L"거래 감시 로그가 추가 성공! :")
+	START_LOG( cout, L"Trade monitoring log entry added: ")
 		<< BUILD_LOG( GetCharUID() )
 		<< END_LOG;
 }

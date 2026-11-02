@@ -56,7 +56,7 @@ bool CXSLSynthesisManager::AddAvatarSocketOptionForEquipPosition_LUA( int iEquip
 		}
 		else
 		{
-			START_LOG( cerr, L"엥? 왜 같은 부위 옵션을 두번 지정했지???" )
+			START_LOG( cerr, L"Duplicate option configured for the same equipment slot." )
 				<< BUILD_LOG( iEquipPosition )
 				<< BUILD_LOG( iSocketGroupID )
 				<< END_LOG;
@@ -65,7 +65,7 @@ bool CXSLSynthesisManager::AddAvatarSocketOptionForEquipPosition_LUA( int iEquip
 	}
 	else
 	{
-		START_LOG( cerr, L"지원하지 않는 EquipPosition입니다!" )
+		START_LOG( cerr, L"Unsupported EquipPosition." )
 			<< BUILD_LOG( iEquipPosition )
 			<< BUILD_LOG( iSocketGroupID )
 			<< END_LOG;
@@ -79,7 +79,7 @@ bool CXSLSynthesisManager::AddSynthesisGroup_LUA( int iGroupID, int iItemID , fl
 {
 	if( iGroupID <= 0 || iItemID <= 0  )
 	{
-		START_LOG( cerr, L"랜덤 아이템 그룹데이터 파싱 실패.!" )
+		START_LOG( cerr, L"Failed to parse random item group data." )
 			<< BUILD_LOG( iGroupID )
 			<< BUILD_LOG( iItemID )
 //			<< BUILD_LOG( fRate )
@@ -100,7 +100,7 @@ bool CXSLSynthesisManager::AddSynthesisGroup_LUA( int iGroupID, int iItemID , fl
 		mit->second.m_vecItemData.push_back( itemData );
 		if( mit->second.m_kLottery.AddCaseIntegerCast( iItemID, fRate ) == false )
 		{
-			START_LOG( cerr, L"랜덤 아이템 확률 설정 실패!" )
+			START_LOG( cerr, L"Failed to configure random item probabilities." )
 				<< BUILD_LOG( iGroupID )
 				<< BUILD_LOG( iItemID )
 				<< BUILD_LOG( fRate )
@@ -114,7 +114,7 @@ bool CXSLSynthesisManager::AddSynthesisGroup_LUA( int iGroupID, int iItemID , fl
 		itemGDList.m_vecItemData.push_back( itemData );
 		if( itemGDList.m_kLottery.AddCaseIntegerCast( iItemID, fRate ) == false )
 		{
-			START_LOG( cerr, L"랜덤 아이템 확률 설정 실패!" )
+			START_LOG( cerr, L"Failed to configure random item probabilities." )
 				<< BUILD_LOG( iGroupID )
 				<< BUILD_LOG( iItemID )
 				<< BUILD_LOG( fRate )
@@ -208,7 +208,7 @@ bool CXSLSynthesisManager::GetSynthesisResultItem( IN int iUnitType, IN int iEqi
 		pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iItemID );
 		if( pItemTemplet == NULL )
 		{
-			START_LOG( cerr, L"아이템 템플릿 정보를 찾을 수 없습니다." )
+			START_LOG( cerr, L"Item template information not found." )
 				<< BUILD_LOG( iItemID )
 				<< END_LOG;
 		}
@@ -253,7 +253,7 @@ bool CXSLSynthesisManager::GetSynthesisResultItem( IN int iUnitType, IN int iEqi
 end_proc:
 	SET_ERROR( ERR_RANDOM_ITEM_02 );
 
-	START_LOG( cwarn, L"랜덤 아이템 구룹찾기 실패.!" )
+	START_LOG( cwarn, L"Failed to find the random item group." )
 		<< END_LOG;
 
 	return false;

@@ -108,7 +108,7 @@ bool CXSLEnchantItemManager::GetEnchantRate( IN int iEnchantLevel, OUT float& fP
 	mit = m_mapEnchantRate.find( iEnchantLevel );
 	if( mit == m_mapEnchantRate.end() )
 	{
-		START_LOG( cerr, L"아이템 능력치 강화 비율 정보찾기 실패.!" )
+		START_LOG( cerr, L"Failed to find item stat enhancement rate information." )
 			<< BUILD_LOG( iEnchantLevel )
 			<< END_LOG;
 
@@ -129,7 +129,7 @@ bool CXSLEnchantItemManager::GetEnchantResult( IN bool bIsRare, IN int iEnchantL
 		mit = m_mapEnchantRareProb.find( iEnchantLevel );
 		if( mit == m_mapEnchantRareProb.end() )
 		{
-			START_LOG( cerr, L"레어 강화 단계 정보 찾기 실패.!" )
+			START_LOG( cerr, L"Failed to find rare enhancement level information." )
 				<< BUILD_LOG( iEnchantLevel )
 				<< END_LOG;
 
@@ -143,7 +143,7 @@ bool CXSLEnchantItemManager::GetEnchantResult( IN bool bIsRare, IN int iEnchantL
 		mit = m_mapEnchantProb.find( iEnchantLevel );
 		if( mit == m_mapEnchantProb.end() )
 		{
-			START_LOG( cerr, L"강화 단계 정보 찾기 실패.!" )
+			START_LOG( cerr, L"Failed to find enhancement level information." )
 				<< BUILD_LOG( iEnchantLevel )
 				<< END_LOG;
 
@@ -154,7 +154,7 @@ bool CXSLEnchantItemManager::GetEnchantResult( IN bool bIsRare, IN int iEnchantL
 	iResult = mit->second.Decision();
     if( iResult < NetError::ERR_ENCHANT_RESULT_00 || iResult > NetError::ERR_ENCHANT_RESULT_04 )
     {
-        START_LOG( cerr, L"강화 결과 이상." )
+        START_LOG( cerr, L"Invalid enhancement result." )
             << BUILD_LOG( iResult )
             << BUILD_LOG( NetError::GetErrStr( iResult ) )
             << END_LOG;
@@ -182,7 +182,7 @@ bool CXSLEnchantItemManager::AddEnchantStoneInfo_LUA( int iItemID, int iItemType
     return true;
 
 err_proc:
-	START_LOG( cerr, L"강화석 정보 로드 실패!" )
+	START_LOG( cerr, L"Failed to load enhancement stone information." )
 		<< BUILD_LOG( iItemID )
 		<< BUILD_LOG( iEquipLvMin )
 		<< BUILD_LOG( iEquipLvMax )
@@ -204,7 +204,7 @@ bool CXSLEnchantItemManager::AddSupportMaterialInfo_LUA( int iItemID, int iEquip
 	return true;
 
 err_proc:
-	START_LOG( cerr, L"강화 보조제 정보 로드 실패!" )
+	START_LOG( cerr, L"Failed to load enhancement aid information." )
 		<< BUILD_LOG( iItemID )
 		<< BUILD_LOG( iEquipLvMin )
 		<< BUILD_LOG( iEquipLvMax )
@@ -230,7 +230,7 @@ bool CXSLEnchantItemManager::AddRestoreItemInfo_LUA( int iItemID, int iItemType,
 	return true;
 
 err_proc:
-	START_LOG( cerr, L"사용불가 복구석 정보 로드 실패!" )
+	START_LOG( cerr, L"Failed to load unavailable recovery stone information." )
 		<< BUILD_LOG( iItemID )
 		<< BUILD_LOG( iItemType )
 		<< BUILD_LOG( iEquipLvMin )
@@ -265,7 +265,7 @@ bool CXSLEnchantItemManager::AddAttachItemInfo_LUA( int iItemID )
 	return true;
 
 err_proc:
-	START_LOG( cerr, L"강화 부여 아이템 정보 로드 실패!" )
+	START_LOG( cerr, L"Failed to load enhancement grant item information." )
 		<< BUILD_LOG( iItemID )
 		<< BUILD_LOG( kInfo.m_iItemType )
 		<< BUILD_LOG( kInfo.m_iEnchantLv )
@@ -286,7 +286,7 @@ bool CXSLEnchantItemManager::SetEnchantRate_LUA( int iEnchantLevel, float fPerce
     mit = m_mapEnchantRate.find( iEnchantLevel );
     if( mit != m_mapEnchantRate.end() )
     {
-        START_LOG( cerr, L"아이템 능력치 강화 비율 정보 중복." )
+        START_LOG( cerr, L"Duplicate item stat enhancement rate information." )
             << BUILD_LOG( iEnchantLevel )
             << BUILD_LOG( fPercent )
             << END_LOG;
@@ -297,7 +297,7 @@ bool CXSLEnchantItemManager::SetEnchantRate_LUA( int iEnchantLevel, float fPerce
 	return true;
 
 err_proc:
-	START_LOG( cerr, L"아이템 능력치 강화 비율 정보 로드 실패!" )
+	START_LOG( cerr, L"Failed to load item stat enhancement rate information." )
 		<< BUILD_LOG( iEnchantLevel )
 		<< BUILD_LOG( fPercent )
 		<< END_LOG;
@@ -339,7 +339,7 @@ bool CXSLEnchantItemManager::SetEnchantProbability_LUA( int iEnchantLevel )
     mit = m_mapEnchantProb.find( iEnchantLevel );
     if( mit != m_mapEnchantProb.end() )
     {
-        START_LOG( cerr, L"해당 강화 단계에 대한 강화 확률이 이미 설정되어 있음." )
+        START_LOG( cerr, L"Enhancement probability is already configured for this level." )
             << BUILD_LOG( iEnchantLevel )
             << END_LOG;
     }
@@ -360,7 +360,7 @@ bool CXSLEnchantItemManager::SetEnchantProbability_LUA( int iEnchantLevel )
 	return true;
 
 err_proc:
-	START_LOG( cerr, L"강화 확률 정보 등록 실패!" )
+	START_LOG( cerr, L"Failed to register enhancement probability information." )
 		<< BUILD_LOG( iEnchantLevel )
 		<< BUILD_LOG( fProb )
 		<< END_LOG;
@@ -402,7 +402,7 @@ bool CXSLEnchantItemManager::SetEnchantRareProbability_LUA( int iEnchantLevel )
 	mit = m_mapEnchantRareProb.find( iEnchantLevel );
 	if( mit != m_mapEnchantRareProb.end() )
 	{
-		START_LOG( cerr, L"해당 레어 강화 단계에 대한 강화 확률이 이미 설정되어 있음." )
+		START_LOG( cerr, L"Enhancement probability is already configured for this rare level." )
 			<< BUILD_LOG( iEnchantLevel )
 			<< END_LOG;
 	}
@@ -423,7 +423,7 @@ bool CXSLEnchantItemManager::SetEnchantRareProbability_LUA( int iEnchantLevel )
 	return true;
 
 err_proc:
-	START_LOG( cerr, L"레어 강화 확률 정보 등록 실패!" )
+	START_LOG( cerr, L"Failed to register rare enhancement probability information." )
 		<< BUILD_LOG( iEnchantLevel )
 		<< BUILD_LOG( fProb )
 		<< END_LOG;
@@ -436,7 +436,7 @@ void CXSLEnchantItemManager::SetSupportMaterialEnchantLimitLevel_LUA( IN int iEn
 {
 	m_iEnchantLimitLevel = iEnchantLimitLevel;
 
-	START_LOG( cout, L"플루오르 강화 레벨 제한 설정 : " << m_iEnchantLimitLevel );
+	START_LOG( cout, L"Fluorite enhancement level limit: " << m_iEnchantLimitLevel );
 }
 //}}
 
@@ -451,7 +451,7 @@ int CXSLEnchantItemManager::GetEnchantStoneItemID( int iEquipLv, int iItemType )
 	mit = m_mapEnchantStoneInfo.find( kKey );
 	if( mit == m_mapEnchantStoneInfo.end() )
 	{
-		START_LOG( cerr, L"강화 아이템ID를 찾을 수 없다? 일어날 수 없는 에러!" )
+		START_LOG( cerr, L"Enhancement item ID not found. This should never happen." )
 			<< BUILD_LOG( iEquipLv )
 			<< BUILD_LOG( iItemType )
 			<< END_LOG;
@@ -469,7 +469,7 @@ int CXSLEnchantItemManager::GetEnchantSupportMaterialItemID( int iEquipLv )
 	mit = m_mapSupportMaterialInfo.find( iEquipLv );
 	if( mit == m_mapSupportMaterialInfo.end() )
 	{
-		START_LOG( cerr, L"강화 보조제 아이템ID를 찾을 수 없다? 일어날 수 없는 에러!" )
+		START_LOG( cerr, L"Enhancement aid item ID not found. This should never happen." )
 			<< BUILD_LOG( iEquipLv )
 			<< END_LOG;
 		return 0;
@@ -490,7 +490,7 @@ int	CXSLEnchantItemManager::GetRestoreItemID( int iEquipLv, int iItemType )
 	mit = m_mapRestoreItemInfo.find( kKey );
 	if( mit == m_mapRestoreItemInfo.end() )
 	{
-		START_LOG( cerr, L"복구석 아이템ID를 찾을 수 없다? 일어날 수 없는 에러!" )
+		START_LOG( cerr, L"Recovery stone item ID not found. This should never happen." )
 			<< BUILD_LOG( iEquipLv )
 			<< BUILD_LOG( iItemType )
 			<< END_LOG;
@@ -528,7 +528,7 @@ bool CXSLEnchantItemManager::AddEventSupportMaterialInfo_LUA( int iItemID, int i
 	return true;
 
 err_proc:
-	START_LOG( cerr, L"이벤트 강화 보조제 정보 로드 실패!" )
+	START_LOG( cerr, L"Failed to load event enhancement aid information." )
 		<< BUILD_LOG( iItemID )
 		<< BUILD_LOG( iEquipLvMin )
 		<< BUILD_LOG( iEquipLvMax )
@@ -569,7 +569,7 @@ bool CXSLEnchantItemManager::AddEventRestoreItemInfo_LUA( int iItemID, int iItem
 	return true;
 
 err_proc:
-	START_LOG( cerr, L"사용불가 복구석 정보 로드 실패!" )
+	START_LOG( cerr, L"Failed to load unavailable recovery stone information." )
 		<< BUILD_LOG( iItemID )
 		<< BUILD_LOG( iItemType )
 		<< BUILD_LOG( iEquipLvMin )
@@ -611,7 +611,7 @@ bool CXSLEnchantItemManager::AddEventEnchantStoneInfo_LUA( int iItemID, int iIte
 	return true;
 
 err_proc:
-	START_LOG( cerr, L"이벤트 강화석 정보 로드 실패!" )
+	START_LOG( cerr, L"Failed to load event enhancement stone information." )
 		<< BUILD_LOG( iItemID )
 		<< BUILD_LOG( iEquipLvMin )
 		<< BUILD_LOG( iEquipLvMax )
@@ -647,7 +647,7 @@ void CXSLEnchantItemManager::SetEventSupportMaterialEnchantLimitLevel_LUA( IN in
 {
 	m_iEventEnchantLimitLevel = iEnchantLimitLevel;
 
-	START_LOG( cout, L"이벤트 플루오르 강화 레벨 제한 설정 : " << m_iEventEnchantLimitLevel );
+	START_LOG( cout, L"Event Fluorite enhancement level limit: " << m_iEventEnchantLimitLevel );
 }
 
 bool CXSLEnchantItemManager::SetEnchantProbability_Event_LUA( int iEnchantLevel )
@@ -683,7 +683,7 @@ bool CXSLEnchantItemManager::SetEnchantProbability_Event_LUA( int iEnchantLevel 
 	mit = m_mapEventEnchantProb.find( iEnchantLevel );
 	if( mit != m_mapEventEnchantProb.end() )
 	{
-		START_LOG( cerr, L"해당 이벤트 강화 단계에 대한 강화 확률이 이미 설정되어 있음." )
+		START_LOG( cerr, L"Enhancement probability is already configured for this event level." )
 			<< BUILD_LOG( iEnchantLevel )
 			<< END_LOG;
 	}
@@ -702,7 +702,7 @@ bool CXSLEnchantItemManager::SetEnchantProbability_Event_LUA( int iEnchantLevel 
 	return true;
 
 err_proc:
-	START_LOG( cerr, L"이벤트 강화 확률 정보 등록 실패!" )
+	START_LOG( cerr, L"Failed to register event enhancement probability information." )
 		<< BUILD_LOG( iEnchantLevel )
 		<< BUILD_LOG( fProb )
 		<< END_LOG;
@@ -718,7 +718,7 @@ bool CXSLEnchantItemManager::GetEventEnchantResult( IN bool bIsRare, IN int iEnc
 		mit = m_mapEnchantRareProb.find( iEnchantLevel );
 		if( mit == m_mapEnchantRareProb.end() )
 		{
-			START_LOG( cerr, L"레어 강화 단계 정보 찾기 실패.!" )
+			START_LOG( cerr, L"Failed to find rare enhancement level information." )
 				<< BUILD_LOG( iEnchantLevel )
 				<< END_LOG;
 
@@ -730,7 +730,7 @@ bool CXSLEnchantItemManager::GetEventEnchantResult( IN bool bIsRare, IN int iEnc
 		mit = m_mapEventEnchantProb.find( iEnchantLevel );
 		if( mit == m_mapEventEnchantProb.end() )
 		{
-			START_LOG( cerr, L"강화 단계 정보 찾기 실패.!" )
+			START_LOG( cerr, L"Failed to find enhancement level information." )
 				<< BUILD_LOG( iEnchantLevel )
 				<< END_LOG;
 
@@ -741,7 +741,7 @@ bool CXSLEnchantItemManager::GetEventEnchantResult( IN bool bIsRare, IN int iEnc
 	iResult = mit->second.Decision();
 	if( iResult < NetError::ERR_ENCHANT_RESULT_00 || iResult > NetError::ERR_ENCHANT_RESULT_04 )
 	{
-		START_LOG( cerr, L"강화 결과 이상." )
+		START_LOG( cerr, L"Invalid enhancement result." )
 			<< BUILD_LOG( iResult )
 			<< BUILD_LOG( NetError::GetErrStr( iResult ) )
 			<< END_LOG;
@@ -765,7 +765,7 @@ bool CXSLEnchantItemManager::AddDropRandomEnchantInfo_LUA( int iEnchantLevel, fl
 	return true;
 
 err_proc:
-	START_LOG( cerr, L"잘못된 랜덤 강화 정보입니다" )
+	START_LOG( cerr, L"Invalid random enhancement information." )
 		<< BUILD_LOG( iEnchantLevel )
 		<< BUILD_LOG( fRate )
 		<< END_LOG;
@@ -782,7 +782,7 @@ bool CXSLEnchantItemManager::AddCubeRandomEnchantInfo_LUA( int iEnchantLevel, fl
 	return true;
 
 err_proc:
-	START_LOG( cerr, L"잘못된 랜덤 강화 정보입니다" )
+	START_LOG( cerr, L"Invalid random enhancement information." )
 		<< BUILD_LOG( iEnchantLevel )
 		<< BUILD_LOG( fRate )
 		<< END_LOG;
@@ -822,7 +822,7 @@ bool CXSLEnchantItemManager::CheckRandomEnchant( IN const int iItemID, IN const 
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iItemID );
 	if( IS_NULL( pItemTemplet ) )
 	{
-		START_LOG( cerr, L"존재 하지 않는 아이템 id입니다." )
+		START_LOG( cerr, L"Item ID does not exist." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 		return false;
@@ -830,7 +830,7 @@ bool CXSLEnchantItemManager::CheckRandomEnchant( IN const int iItemID, IN const 
 
 	if( eType >= RET_MAX  ||  eType < 0 )
 	{
-		START_LOG( cerr, L"잘못된 랜덤 강화 타입입니다." )
+		START_LOG( cerr, L"Invalid random enhancement type." )
 			<< BUILD_LOG( eType )
 			<< END_LOG;
 		return false;

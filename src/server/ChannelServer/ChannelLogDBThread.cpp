@@ -92,7 +92,7 @@ void KChannelLogDBThread::ProcessEvent( const KEventPtr& spEvent_ )
 		//}}
 
     default:
-        START_LOG( cerr, L"이벤트 핸들러가 정의되지 않았음. " << spEvent_->GetIDStr() );
+        START_LOG( cerr, L"Event handler is not defined. " << spEvent_->GetIDStr() );
     }
 
 	//////////////////////////////////////////////////////////////////////////
@@ -121,7 +121,7 @@ _IMPL_ON_FUNC( DBE_SERVER_ON_REQ, KNetAddress )
 
     if( !m_kODBC.BeginFetch() )
     {
-        START_LOG( cerr, L"채널 서버 인증 실패." )
+        START_LOG( cerr, L"Channel server authentication failed." )
             << BUILD_LOG( kPacket_.m_wstrIP )
 			<< END_LOG;
 
@@ -156,7 +156,7 @@ _IMPL_ON_FUNC( DBE_SERVER_ON_REQ, KNetAddress )
 
         if( kPacket.m_iOK != NetError::NET_OK )
         {
-            START_LOG( cerr, L"서버 켜짐 표시 실패." )
+            START_LOG( cerr, L"Failed to mark server as started." )
                 << BUILD_LOG( kPacket.m_kServerInfo.m_iUID )
                 << END_LOG;
 
@@ -183,7 +183,7 @@ IMPL_ON_FUNC_NOPARAM( DBE_SERVER_OFF_NOT )
 
         if( iOK != NetError::NET_OK )
         {
-            START_LOG( cerr, L"서버 종료 표시 실패." )
+            START_LOG( cerr, L"Failed to mark server as stopped." )
                 << BUILD_LOG( GetKChannelServer()->GetUID() )
                 << END_LOG;
 
@@ -245,7 +245,7 @@ IMPL_ON_FUNC( DBE_CHANNEL_LIST_REQ )
 
 				if( iChannelID != mit->first )
 				{
-					START_LOG( cerr, L"채널 보너스 정보가 이상합니다" )
+					START_LOG( cerr, L"Invalid channel bonus data." )
 						<< BUILD_LOG( iChannelID )
 						<< BUILD_LOG( mit->first )
 						<< END_LOG;
@@ -309,7 +309,7 @@ IMPL_ON_FUNC( DBE_GET_CONCURRENT_USER_INFO_REQ )
 
 	default:
 		{
-            START_LOG( cerr, L"CCUType이 이상합니다." )
+            START_LOG( cerr, L"Invalid CCU type." )
 				<< BUILD_LOGc( kPacket_.m_cCCUType )
 				<< END_LOG;
 
@@ -500,7 +500,7 @@ IMPL_ON_FUNC( DBE_TICK_PERFORMANCE_LOG_NOT )
 end_proc:
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"SimLayer Tick 퍼포먼스 로그 기록 실패!" )
+		START_LOG( cerr, L"Failed to record SimLayer tick performance log!" )
 			<< BUILD_LOG( kPacket_.m_iServerUID )
 			<< BUILD_LOG( kPacket_.m_iServerType )
 			<< BUILD_LOG( kPacket_.m_dwMaxTickCount )
@@ -540,7 +540,7 @@ IMPL_ON_FUNC( DBE_LOG_STATISTICS_INFO_NOT )
 end_proc:
 		if( iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"Log Statistics 정보 기록 실패!" )
+			START_LOG( cerr, L"Failed to record log statistics!" )
 				<< BUILD_LOG( iServerUID )
 				<< BUILD_LOG( kInfo.m_wstrFunctionName )
 				<< BUILD_LOG( kInfo.m_wstrFileName )
@@ -604,7 +604,7 @@ IMPL_ON_FUNC( DBE_INSERT_LOGIN_RESULT_INFO_REQ )
 end_proc:
 	if( iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"로그인 결과 정보 등록 실패" )
+		START_LOG( cerr, L"Failed to register login result information." )
 			<< BUILD_LOG( kPacket_.m_iServerGroupID )
 			<< BUILD_LOG( kPacket_.m_uiServerUID )
 			<< BUILD_LOG( index )

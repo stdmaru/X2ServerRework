@@ -139,13 +139,13 @@
 			const int iRet = LUA_DOFILE( GetLuaState(), strFilePath.c_str() ); \
 			if( iRet == 0 ) { \
 				std::wstring wstrMSG = GetParsingLuaFileName(); \
-				wstrMSG += L" 로딩시간 : "; \
+				wstrMSG += L" load time: "; \
 				START_LOG( cout2, wstrMSG ) \
 					<< BUILD_LOG( GetTickCount() - m_dwTime ); \
 			} \
 			else { \
 				std::wstring wstrMSG = GetParsingLuaFileName(); \
-				wstrMSG += L" 스크립트 파싱 실패!"; \
+				wstrMSG += L" script parsing failed!"; \
 				std::wstring wstrErrPath = KncUtil::toWideString( strFilePath ); \
 				std::wstring wstrErr = KncUtil::toWideString( lua_tostring( GetLuaState(), -1 ) ); \
 				START_LOG( cerr, wstrMSG ) \

@@ -34,7 +34,7 @@ KGSWeddingHallPtr KWeddingHallListManager::GetWeddingHallInfo( IN const int iWed
 	mit = m_mapWeddingHallList.find( iWeddingUid );
 	if( mit == m_mapWeddingHallList.end() )
 	{
-		START_LOG( cerr, L"해당 결혼식장 정보가 존재하지 않습니다!" )
+		START_LOG( cerr, L"The specified wedding hall information does not exist!" )
 			<< BUILD_LOG( iWeddingUid )
 			<< END_LOG;
 
@@ -49,7 +49,7 @@ void KWeddingHallListManager::AddWeddingHallInfo( IN const KGSWeddingHall& kHall
 	if( IsExist( kHallInfo.GetWeddingHallUID() ) == true )
 	{
 		// 존재하는 결혼식장 입니다.
-		START_LOG( cerr, L"이미 존재하는 결혼식장입니다." )
+		START_LOG( cerr, L"Wedding hall already exists." )
 			<< BUILD_LOG( kHallInfo.GetWeddingHallUID() )
 			<< BUILD_LOG( kHallInfo.GetRoomUID() )
 			<< END_LOG;
@@ -67,7 +67,7 @@ void KWeddingHallListManager::UpdateWeddingHallInfo( IN const KGSWeddingHall& kH
 	mit = m_mapWeddingHallList.find( kHallInfo.GetWeddingHallUID() );
 	if( mit == m_mapWeddingHallList.end() )
 	{
-		START_LOG( cerr, L"해당 결혼식장 정보가 존재하지 않습니다!" )
+		START_LOG( cerr, L"The specified wedding hall information does not exist!" )
 			<< BUILD_LOG( kHallInfo.GetWeddingHallUID() )
 			<< END_LOG;
 
@@ -83,7 +83,7 @@ void KWeddingHallListManager::UpdateWeddingHallInfo( IN const KWeddingHallInfo& 
 	mit = m_mapWeddingHallList.find( kInfo.m_iWeddingUID );
 	if( mit == m_mapWeddingHallList.end() )
 	{
-		START_LOG( cerr, L"해당 결혼식장 정보가 존재하지 않습니다!" )
+		START_LOG( cerr, L"The specified wedding hall information does not exist!" )
 			<< BUILD_LOG( kInfo.m_iWeddingUID )
 			<< END_LOG;
 
@@ -105,7 +105,7 @@ void KWeddingHallListManager::DeleteWeddingHallInfo( IN const KGSWeddingHall& kH
 	mit = m_mapWeddingHallList.find( kHallInfo.GetWeddingHallUID() );
 	if( mit == m_mapWeddingHallList.end() )
 	{
-		START_LOG( cerr, L"해당 결혼식장 정보가 존재하지 않습니다!" )
+		START_LOG( cerr, L"The specified wedding hall information does not exist!" )
 			<< BUILD_LOG( kHallInfo.GetWeddingHallUID() )
 			<< END_LOG;
 
@@ -121,7 +121,7 @@ void KWeddingHallListManager::DeleteWeddingHallInfo( IN const int iWeddingUID )
 	mit = m_mapWeddingHallList.find( iWeddingUID );
 	if( mit == m_mapWeddingHallList.end() )
 	{
-		START_LOG( cerr, L"해당 결혼식장 정보가 존재하지 않습니다!" )
+		START_LOG( cerr, L"The specified wedding hall information does not exist!" )
 			<< BUILD_LOG( iWeddingUID )
 			<< END_LOG;
 
@@ -141,7 +141,7 @@ void KWeddingHallListManager::DelRoomInfoByCnServerUID( IN const UidType iCnServ
 		KGSWeddingHallPtr spHallInfo = mit->second;
 		if( IS_NULL( spHallInfo ) )
 		{
-			START_LOG( cerr, L"포인터값이 유효하지 않습니다!" )
+			START_LOG( cerr, L"The pointer is invalid!" )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;

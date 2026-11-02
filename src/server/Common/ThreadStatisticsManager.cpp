@@ -76,7 +76,7 @@ void KThreadStatisticsManager::Init()
 	// locallogkey초기화
 	InitLocalLogKeys();
 
-	START_LOG( cout, L"Thread Statistics Manager 초기화 완료! thread시작!" );
+	START_LOG( cout, L"Thread Statistics Manager initialized; thread started." );
 
 	// thread시작
 	Begin();
@@ -146,7 +146,7 @@ void KThreadStatisticsManager::SetStatisticsFlushTime_LUA( int iStatisticsID, in
 	mit = m_mapStatistics.find( iStatisticsID );
 	if( mit == m_mapStatistics.end() )
 	{
-		START_LOG( cerr, L"통계 객체가 존재하지 않습니다!" )
+		START_LOG( cerr, L"Statistics object does not exist." )
 			<< BUILD_LOG( iStatisticsID )
 			<< BUILD_LOG( iHour )
 			<< END_LOG;
@@ -156,7 +156,7 @@ void KThreadStatisticsManager::SetStatisticsFlushTime_LUA( int iStatisticsID, in
 	KStatisticsPtr spStatistics = mit->second;
 	if( spStatistics == NULL )
 	{
-		START_LOG( cerr, L"통계 객체 포인터 값이 이상합니다!" )
+		START_LOG( cerr, L"Invalid statistics object pointer." )
 			<< BUILD_LOG( iStatisticsID )
 			<< BUILD_LOG( iHour )
 			<< END_LOG;
@@ -275,7 +275,7 @@ void KThreadStatisticsManager::DumpStatistics( int iStatisticsID ) const
     std::map< int, KStatisticsPtr >::const_iterator mit = m_mapStatistics.find( iStatisticsID );
     if( mit == m_mapStatistics.end() )
     {
-        START_LOG( cerr, L"해당 통계가 없거나 등록되어 있지 않음." )
+        START_LOG( cerr, L"Statistics entry does not exist or is not registered." )
             << BUILD_LOG( iStatisticsID )
             << BUILD_LOG( KStatistics::GetIDStr( iStatisticsID ) )
             << END_LOG;
@@ -303,7 +303,7 @@ bool KThreadStatisticsManager::UpdateStatistics( int iStatisticsID, const KStati
 	mit = m_mapStatistics.find( iStatisticsID );
 	if( mit == m_mapStatistics.end() )
 	{
-		START_LOG( cerr, L"요런 통계 없음." )
+		START_LOG( cerr, L"No such statistics entry." )
 			<< BUILD_LOG( iStatisticsID )
 			<< BUILD_LOG( iIndex )
 			<< BUILD_LOG( iCount )
@@ -334,7 +334,7 @@ void KThreadStatisticsManager::WriteLocalLogData( std::wfstream& fout, int iStat
 	mit = m_mapStatistics.find( iStatisticsID );
 	if( mit == m_mapStatistics.end() )
 	{
-		START_LOG( cerr, L"요런 통계 없음." )
+		START_LOG( cerr, L"No such statistics entry." )
 			<< BUILD_LOG( iStatisticsID )
 			<< END_LOG;
 
@@ -401,7 +401,7 @@ struct KSendLocalLog
 
 void KThreadStatisticsManager::BackUpAndSendFTPLocalLog( bool bSendFileFtp )
 {
-	START_LOG( cout, L"텍스트 통계 파일 백업 시작!" );
+	START_LOG( cout, L"Starting text statistics file backup." );
 
 	KLogReporter kLogReporter;
 	kLogReporter.SetConnectInfo( m_wstrFTPServerIP, m_iFTPPort );
@@ -473,22 +473,22 @@ void KThreadStatisticsManager::BackUpAndSendFTPLocalLog( bool bSendFileFtp )
 	// FTP전송 파일 백업
 	BackUpSendFTPFiles( kLogReporter.m_vecFileList );
 
-	START_LOG( cout, L"텍스트 통계 파일 백업 완료!" );
+	START_LOG( cout, L"Text statistics file backup complete." );
 
 	// FTP전송
 	if( bSendFileFtp )
 	{
-		START_LOG( cout, L"텍스트 통계 파일 FTP 전송 시작!" );
+		START_LOG( cout, L"Starting FTP transfer of text statistics files." );
 
 		kLogReporter.Send();
 
-		START_LOG( cout, L"텍스트 통계 파일 FTP 전송 완료!" );
+		START_LOG( cout, L"FTP transfer of text statistics files complete." );
 	}
 }
 
 void KThreadStatisticsManager::SendHenirRankingLog( int iRankingType )
 {
-	START_LOG( cout, L"헤니르 랭킹 로그 파일 백업 시작!" )
+	START_LOG( cout, L"Starting Henir ranking log backup." )
 		<< BUILD_LOG( iRankingType );
 
 	KLogReporter kLogReporter;
@@ -502,7 +502,7 @@ void KThreadStatisticsManager::SendHenirRankingLog( int iRankingType )
 	// FTP전송 파일 백업
 	BackUpSendFTPFiles( kLogReporter.m_vecFileList );
 
-	START_LOG( cout, L"헤니르 랭킹 로그 파일 백업 완료!" )
+	START_LOG( cout, L"Henir ranking log backup complete." )
 		<< BUILD_LOG( iRankingType );
 
 	//kLogReporter.Send(); - 문제가 좀 있다, 좀더 테스트 필요, 일단 파일백업만이라도 해두자!

@@ -169,7 +169,7 @@ bool KCnRoomManager::Init()
 	//{{ 2011. 05. 11	최육사	대리 상인
 	if( GetKCnServer()->GetProxyID() >= SEnum::PSHOP_AGENCY_PROXY_ID )
 	{
-        START_LOG( cerr, L"대리 상인을 위한 ProxyID값을 침범하였습니다! 문제가 있습니다! 꼭 해결하세요!!!!!" )
+        START_LOG( cerr, L"ProxyID range for proxy merchants was exceeded! This must be fixed!" )
 			<< BUILD_LOG( GetKCnServer()->GetProxyID() )
 			<< BUILD_LOG( SEnum::PSHOP_AGENCY_PROXY_ID )
 			<< END_LOG;
@@ -246,7 +246,7 @@ void KCnRoomManager::Tick()
 			}
 			else
 			{
-				START_LOG( cerr, L"룸 포인터 이상." )
+				START_LOG( cerr, L"Invalid room pointer." )
 					<< END_LOG;
 			}
 		}
@@ -339,7 +339,7 @@ void KCnRoomManager::SetNumRoom( int iRoomType, DWORD dwNumRoom )
 {
 	if( iRoomType < 0 || iRoomType >= CXSLRoom::RT_TOTAL_NUM )
 	{
-		START_LOG( cerr, L"룸 타입이 이상함." )
+		START_LOG( cerr, L"Invalid room type." )
 			<< BUILD_LOG( iRoomType )
 			<< BUILD_LOG( ( int )CXSLRoom::RT_TOTAL_NUM )
 			<< END_LOG;
@@ -403,7 +403,7 @@ DWORD KCnRoomManager::GetNumEmptyRoom( int iRoomType ) const
 {
 	if( iRoomType < 0 || iRoomType >= CXSLRoom::RT_TOTAL_NUM )
 	{
-		START_LOG( cerr, L"룸 타입이 이상함." )
+		START_LOG( cerr, L"Invalid room type." )
 			<< BUILD_LOG( iRoomType )
 			<< BUILD_LOG( ( int )CXSLRoom::RT_TOTAL_NUM )
 			<< END_LOG;
@@ -422,7 +422,7 @@ UidType KCnRoomManager::OpenRoom( CXSLRoom::ROOM_TYPE eRoomType )
 
 	if( m_mapEmptyRoomList[eRoomType].empty() )
 	{
-		START_LOG( cerr, L"빈 방이 없음." )
+		START_LOG( cerr, L"No empty room available." )
 			<< BUILD_LOG( eRoomType )
 			<< END_LOG;
 
@@ -435,7 +435,7 @@ UidType KCnRoomManager::OpenRoom( CXSLRoom::ROOM_TYPE eRoomType )
 		KCnBaseRoomPtr spRoom = Get( mit->first );
 		if( spRoom == NULL )
 		{
-			START_LOG( cerr, L"빈 방 인덱스가 이상함." )
+			START_LOG( cerr, L"Invalid empty-room index." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 		}
@@ -448,7 +448,7 @@ UidType KCnRoomManager::OpenRoom( CXSLRoom::ROOM_TYPE eRoomType )
 			}
 			else
 			{
-				START_LOG( cerr, L"빈 방 리스트에 있지만 방 상태가 이상함." )
+				START_LOG( cerr, L"Room is in the empty-room list but has an invalid state." )
 					<< BUILD_LOG( spRoom->GetStateID() )
 					<< BUILD_LOG( spRoom->GetStateIDString() )
 					<< END_LOG;
@@ -458,7 +458,7 @@ UidType KCnRoomManager::OpenRoom( CXSLRoom::ROOM_TYPE eRoomType )
 
 	if( mit == m_mapEmptyRoomList[eRoomType].end() )
 	{
-		START_LOG( cerr, L"빈 방을 찾을 수 없음." )
+		START_LOG( cerr, L"No empty room found." )
 			<< END_LOG;
 
 		return 0;
@@ -475,7 +475,7 @@ bool KCnRoomManager::CloseRoom( UidType iRoomUID )
 	const CXSLRoom::ROOM_TYPE eRoomType = ( CXSLRoom::ROOM_TYPE )KncUid::ExtractReservedID( iRoomUID );
 	if( eRoomType < 0 || eRoomType >= CXSLRoom::RT_TOTAL_NUM )
 	{
-		START_LOG( cerr, L"룸 타입이 이상함." )
+		START_LOG( cerr, L"Invalid room type." )
 			<< BUILD_LOG( eRoomType )
 			<< BUILD_LOG( ( int )CXSLRoom::RT_TOTAL_NUM )
 			<< END_LOG;
@@ -489,7 +489,7 @@ bool KCnRoomManager::CloseRoom( UidType iRoomUID )
 	mit = m_mapEmptyRoomList[eRoomType].find( iRoomUID );
 	if( mit != m_mapEmptyRoomList[eRoomType].end() )
 	{
-		START_LOG( cerr, L"빈 방리스트에 넣으려는 ID의 방이 이미 있음." )
+		START_LOG( cerr, L"A room with this ID already exists in the empty-room list." )
 			<< BUILD_LOG( iRoomUID )
 			<< END_LOG;
 
@@ -499,7 +499,7 @@ bool KCnRoomManager::CloseRoom( UidType iRoomUID )
 	KCnBaseRoomPtr spRoom = Get( iRoomUID );
 	if( !spRoom )
 	{
-		START_LOG( cerr, L"해당 UID의 방이 없음." )
+		START_LOG( cerr, L"No room exists for the specified UID." )
 			<< BUILD_LOG( iRoomUID )
 			<< END_LOG;
 
@@ -509,7 +509,7 @@ bool KCnRoomManager::CloseRoom( UidType iRoomUID )
 	// 모든 방 FSM 들은 INIT, CLOSE, WAIT 를 가지며 이들의 값도 같다.
 	if( spRoom->GetStateID() != KBaseRoomFSM::S_CLOSE )
 	{
-		START_LOG( cerr, L"방 상태 이상." )
+		START_LOG( cerr, L"Invalid room state." )
 			<< BUILD_LOG( spRoom->GetStateID() )
 			<< BUILD_LOG( iRoomUID )
 			<< END_LOG;
@@ -621,7 +621,7 @@ void KCnRoomManager::QueueingEventToRoom( const KEventPtr& spEvent_ )
 
 		case ERM_OPEN_SQUARE_NOT:
 			{
-				START_LOG( cerr, L"광장 생성 실패." )
+				START_LOG( cerr, L"Failed to create square." )
 					<< BUILD_LOG( iRoomUID )
 					<< END_LOG;
 				return;
@@ -661,7 +661,7 @@ void KCnRoomManager::QueueingEventToRoom( const KEventPtr& spEvent_ )
 				}
 			//}
 		default:
-			START_LOG( cerr, L"이벤트의 목표 방 UID가 이상함." )
+			START_LOG( cerr, L"Invalid target room UID for event." )
 				<< BUILD_LOG( iRoomUID )
 				<< BUILD_LOG( KEvent::GetIDStr( spEvent_->m_usEventID ) )
 				<< END_LOG;
@@ -672,7 +672,7 @@ void KCnRoomManager::QueueingEventToRoom( const KEventPtr& spEvent_ )
 	KCnBaseRoomPtr spRoom = Get( iRoomUID );
 	if( !spRoom )
 	{
-		START_LOG( cwarn, L"방 검색 실패." )
+		START_LOG( cwarn, L"Failed to find room." )
 			<< BUILD_LOG( iRoomUID )
 			<< END_LOG;
 
@@ -713,7 +713,7 @@ void KCnRoomManager::OpenSquare_Lua( int iSquareType, char* szSquareName )
 {
 	if( iSquareType <= CXSLSquareGame::ST_NONE || iSquareType >= CXSLSquareGame::ST_END )
 	{
-		START_LOG( cout2, L"광장 타입이 잘못되었음.!" )
+		START_LOG( cout2, L"Invalid square type!" )
 			<< BUILD_LOG( iSquareType )
 			<< END_LOG;
 
@@ -722,7 +722,7 @@ void KCnRoomManager::OpenSquare_Lua( int iSquareType, char* szSquareName )
 
 	if( strlen(szSquareName) <= 1 )
 	{
-		START_LOG( cout2, L"광장이름이 짧습니다." )
+		START_LOG( cout2, L"Square name is too short." )
 			<< BUILD_LOG( szSquareName )
 			<< END_LOG;
 
@@ -739,7 +739,7 @@ void KCnRoomManager::OpenSquare_Lua( int iSquareType, char* szSquareName )
 	spEvent->m_kDestPerformer.AddUID( 0 );
 	QueueingEventToRoom( spEvent );
 
-	START_LOG( cout2, L"::: 운영자 광장 생성.!! :::" )
+	START_LOG( cout2, L"::: Creating an administrator square!! :::" )
 		<< BUILD_LOG( iSquareType )
 		<< BUILD_LOG( szSquareName )
 		;
@@ -749,7 +749,7 @@ void KCnRoomManager::SetZUTickTime( double dfTickTime )
 {
 	m_dfZUTickTime = dfTickTime;
 
-	START_LOG( cout2, L"Zombie User 체크 시간설정.!" )
+	START_LOG( cout2, L"Zombie-user check interval set!" )
 		<< BUILD_LOG( m_dfZUTickTime );
 }
 
@@ -768,7 +768,7 @@ void KCnRoomManager::SetBattleFieldZUTickTime( double dfTickTime )
 {
 	if( dfTickTime <= 0.0 || dfTickTime >= 60.0 )
 	{
-		START_LOG( cerr, L"배틀필드 좀비 유저 체크 타임이 값 범위가 너무 크다! 보정한다!" )
+		START_LOG( cerr, L"Battlefield zombie-user check interval is out of range; correcting it!" )
 			<< BUILD_LOG( dfTickTime )
 			<< END_LOG;
 
@@ -778,7 +778,7 @@ void KCnRoomManager::SetBattleFieldZUTickTime( double dfTickTime )
 	m_dfBattleFieldZUTickTime = dfTickTime;
 	m_dfBattleFIeldZUEchoTime = dfTickTime / 2;
 
-	START_LOG( cout2, L"BattleField Zombie User 체크 시간설정.!" )
+	START_LOG( cout2, L"Battlefield zombie-user check interval set!" )
 		<< BUILD_LOG( m_dfBattleFieldZUTickTime )
 		<< BUILD_LOG( m_dfBattleFIeldZUEchoTime );
 }
@@ -792,7 +792,7 @@ void KCnRoomManager::SetBattleFieldZombieAlertTickTime( double dfTickTime )
 {
 	if( dfTickTime <= 20.0 || dfTickTime >= 60.0 )
 	{
-		START_LOG( cerr, L"배틀필드 좀비 유저 체크 타임이 값 범위가 너무 크다! 보정한다!" )
+		START_LOG( cerr, L"Battlefield zombie-user check interval is out of range; correcting it!" )
 			<< BUILD_LOG( dfTickTime )
 			<< END_LOG;
 
@@ -801,14 +801,14 @@ void KCnRoomManager::SetBattleFieldZombieAlertTickTime( double dfTickTime )
 
 	m_dfBattleFieldZombieAlertTickTime = dfTickTime;
 
-	START_LOG( cout2, L"BattleField Zombie Alert 체크 시간설정.!" )
+	START_LOG( cout2, L"Battlefield zombie alert check interval set!" )
 		<< BUILD_LOG( m_dfBattleFieldZombieAlertTickTime );
 }
 
 //{{ 2011. 12. 12	최육사	배틀필드 시스템
 void KCnRoomManager::DumpRoomMonster_LUA( const char* pUserNickName, int iNpcUID )
 {
-	START_LOG( cout, L"룸 몬스터 찾기 기능!" )
+	START_LOG( cout, L"Room monster lookup!" )
 		<< BUILD_LOG( pUserNickName )
 		<< BUILD_LOG( iNpcUID );
 
@@ -823,7 +823,7 @@ void KCnRoomManager::DumpRoomMonster_LUA( const char* pUserNickName, int iNpcUID
 
 void KCnRoomManager::DumpBattleField_LUA( const char* pUserNickName )
 {
-	START_LOG( cout, L"배틀필드 덤프!" )
+	START_LOG( cout, L"Battlefield dump!" )
 		<< BUILD_LOG( pUserNickName );
 
 	KERM_DUMP_BATTLE_FIELD_NOT kNot;
@@ -838,7 +838,7 @@ void KCnRoomManager::DumpBattleField_LUA( const char* pUserNickName )
 //{{ 2012. 11. 20	최육사		좀비 배틀필드 체크 및 삭제
 void KCnRoomManager::KillZombieUser_LUA( const char* pUserNickName )
 {
-	START_LOG( cout, L"좀비 유저 킬!" )
+	START_LOG( cout, L"Killing zombie user!" )
 		<< BUILD_LOG( pUserNickName );
 
 	KERM_KILL_ZOMBIE_USER_IN_BATTLE_FIELD_NOT kNot;
@@ -874,7 +874,7 @@ FSMclassPtr KCnRoomManager::CreateRoomFSM( int iRoomType )
 		//}
 
 	default:
-		START_LOG( cerr, L"룸 타입이 이상함." )
+		START_LOG( cerr, L"Invalid room type." )
 			<< BUILD_LOG( iRoomType )
 			<< END_LOG;
 	}
@@ -902,7 +902,7 @@ KCnBaseRoomPtr KCnRoomManager::CreateRoom( int iRoomType )
 		//}
 
 	default:
-		START_LOG( cerr, L"룸 타입이 이상함." ) << BUILD_LOG( iRoomType ) << END_LOG;
+		START_LOG( cerr, L"Invalid room type." ) << BUILD_LOG( iRoomType ) << END_LOG;
 	}
 
 	return KCnBaseRoomPtr();
@@ -913,7 +913,7 @@ KCnBaseRoomPtr KCnRoomManager::Get( UidType iRoomUID )
 	int iRoomType = ( int )KncUid::ExtractReservedID( iRoomUID );
 	if( iRoomType < 0 || iRoomType >= CXSLRoom::RT_TOTAL_NUM )
 	{
-		START_LOG( cerr, L"룸 타입이 이상함." )
+		START_LOG( cerr, L"Invalid room type." )
 			<< BUILD_LOG( iRoomUID )
 			<< BUILD_LOG( iRoomType )
 			<< END_LOG;

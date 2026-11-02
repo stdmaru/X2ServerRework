@@ -26,7 +26,7 @@ KTradeUserPtr KTradeUserManager::GetUser( UidType nCID )
 
 	if( mit == m_mapTradeUser.end() )
 	{
-		START_LOG( cwarn, L"존재하지 않는 유저." )
+		START_LOG( cwarn, L"User does not exist." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -40,7 +40,7 @@ bool KTradeUserManager::AddUser( KTradeUserPtr spTradeUser )
 {
 	if( !spTradeUser )
 	{
-		START_LOG( cerr, L"유저 포인터 이상." )
+		START_LOG( cerr, L"Invalid user pointer." )
 			<< END_LOG;
 
 		return false;
@@ -51,7 +51,7 @@ bool KTradeUserManager::AddUser( KTradeUserPtr spTradeUser )
 
 	if( mit != m_mapTradeUser.end() )
 	{
-		START_LOG( cerr, L"이미 존재하는 개인 거래 유저임." )
+		START_LOG( cerr, L"Personal-trade user already exists." )
 			<< BUILD_LOG( spTradeUser->GetCID() )
 			<< END_LOG;
 
@@ -70,7 +70,7 @@ bool KTradeUserManager::DeleteUser( UidType nCID )
 
 	if( mit == m_mapTradeUser.end() )
 	{
-		START_LOG( cerr, L"존재하지 않는 개인 거래 유저임." )
+		START_LOG( cerr, L"Personal-trade user does not exist." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -90,7 +90,7 @@ int KTradeUserManager::DeleteUserByGsUID( IN UidType nGsUID, OUT std::vector< Ui
 	{
 		if( !mit->second )
 		{
-			START_LOG( cerr, L"개인 거래 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid personal-trade user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 
@@ -113,7 +113,7 @@ bool KTradeUserManager::EnterTrade( const KTradeUserInfo& kInfo )
 	KTradeUserPtr spTradeUser = MakeUser( kInfo );
 	if( !spTradeUser )
 	{
-		START_LOG( cerr, L"개인 거래 유저 생성 실패." )
+		START_LOG( cerr, L"Failed to create personal-trade user." )
 			<< BUILD_LOG( ( int )m_mapTradeUser.size() )
 			<< END_LOG;
 
@@ -122,7 +122,7 @@ bool KTradeUserManager::EnterTrade( const KTradeUserInfo& kInfo )
 
 	if( !AddUser( spTradeUser ) )
 	{
-		START_LOG( cerr, L"파티 유저 추가 실패." )
+		START_LOG( cerr, L"Failed to add party user." )
 			<< BUILD_LOG( spTradeUser->GetCID() )
 			<< END_LOG;
 
@@ -137,7 +137,7 @@ bool KTradeUserManager::LeaveTrade( UidType nCID )
 	KTradeUserPtr spTradeUser = GetUser( nCID );
 	if( !spTradeUser )
 	{
-		START_LOG( cwarn, L"유저가 없음." )
+		START_LOG( cwarn, L"User is missing." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -163,7 +163,7 @@ bool KTradeUserManager::GetTradeUserGS( UidType nCID, UidType& nGSUID )
 		}
 		else
 		{
-			START_LOG( cerr, L"개인 거래 유저 포인터 이상.!" )
+			START_LOG( cerr, L"Invalid personal-trade user pointer!" )
 				<< BUILD_LOG( nCID )
 				<< END_LOG;
 		}
@@ -171,7 +171,7 @@ bool KTradeUserManager::GetTradeUserGS( UidType nCID, UidType& nGSUID )
 	}
 	else
 	{
-		START_LOG( cwarn, L"찾는 개인 거래 유저가 없음.!" )
+		START_LOG( cwarn, L"Personal-trade user not found!" )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 	}
@@ -188,7 +188,7 @@ void KTradeUserManager::GetUserList( OUT std::map< UidType, std::set< UidType > 
 	{
 		if( !mit->second )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 
@@ -216,7 +216,7 @@ void KTradeUserManager::GetUserInfoList( OUT std::vector< KTradeUserInfo >& vecT
 		}
 		else
 		{
-			START_LOG( cerr, L"개인 거래 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid personal-trade user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 
@@ -229,7 +229,7 @@ bool KTradeUserManager::GetOtherCID( UidType nCID, UidType& nOtherCID )
 {
 	if( GetNumMember() != 2 )
 	{
-		START_LOG( cerr, L"인원 수 이상." )
+		START_LOG( cerr, L"Invalid player count." )
 			<< BUILD_LOG( GetNumMember() )
 			<< END_LOG;
 
@@ -251,7 +251,7 @@ bool KTradeUserManager::GetOtherCID( UidType nCID, UidType& nOtherCID )
 		}
 	}
 
-	START_LOG( cerr, L"절대 이 곳에는 오지 말아야 한다." )
+	START_LOG( cerr, L"Execution should never reach this point." )
 		<< END_LOG;
 
 	return false;
@@ -261,7 +261,7 @@ bool KTradeUserManager::GetOtherTradeUserInfo( UidType nCID, KTradeUserInfo& kOt
 {
 	if( GetNumMember() != 2 )
 	{
-		START_LOG( cerr, L"인원 수 이상." )
+		START_LOG( cerr, L"Invalid player count." )
 			<< BUILD_LOG( GetNumMember() )
 			<< END_LOG;
 
@@ -280,7 +280,7 @@ bool KTradeUserManager::GetOtherTradeUserInfo( UidType nCID, KTradeUserInfo& kOt
 		{
 			if( !mit->second )
 			{
-				START_LOG( cerr, L"포인터 이상." )
+				START_LOG( cerr, L"Invalid pointer." )
 					<< BUILD_LOG( mit->first )
 					<< END_LOG;
 
@@ -299,7 +299,7 @@ KTradeUserPtr KTradeUserManager::GetOtherUser( IN UidType nCID )
 {
     if( GetNumMember() != 2 )
     {
-        START_LOG( cerr, L"인원 수 이상." )
+        START_LOG( cerr, L"Invalid player count." )
             << BUILD_LOG( GetNumMember() )
             << END_LOG;
 
@@ -318,7 +318,7 @@ KTradeUserPtr KTradeUserManager::GetOtherUser( IN UidType nCID )
         {
             if( !mit->second )
             {
-                START_LOG( cerr, L"포인터 이상." )
+                START_LOG( cerr, L"Invalid pointer." )
                     << BUILD_LOG( mit->first )
                     << END_LOG;
 
@@ -339,7 +339,7 @@ bool KTradeUserManager::GetTradeItem( IN UidType nCID, IN UidType iItemUID, OUT 
 	KTradeUserPtr spUser = GetUser( nCID );
 	if( !spUser )
 	{
-		START_LOG( cerr, L"유저가 존재하지 않음." )
+		START_LOG( cerr, L"User does not exist." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -356,7 +356,7 @@ bool KTradeUserManager::GetTradeItem( IN UidType nCID, OUT std::vector< KInvento
 	KTradeUserPtr spUser = GetUser( nCID );
 	if( !spUser )
 	{
-		START_LOG( cerr, L"유저가 존재하지 않음." )
+		START_LOG( cerr, L"User does not exist." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -374,7 +374,7 @@ bool KTradeUserManager::GetTradeED( UidType nCID, int& iED )
 	KTradeUserPtr spUser = GetUser( nCID );
 	if( !spUser )
 	{
-		START_LOG( cerr, L"유저가 존재하지 않음." )
+		START_LOG( cerr, L"User does not exist." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -391,7 +391,7 @@ bool KTradeUserManager::UpdateTradeItem( UidType nCID, KInventoryItemInfo& kInfo
 
 	if( !spUser )
 	{
-		START_LOG( cerr, L"유저가 존재하지 않음." )
+		START_LOG( cerr, L"User does not exist." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -401,7 +401,7 @@ bool KTradeUserManager::UpdateTradeItem( UidType nCID, KInventoryItemInfo& kInfo
     KTradeUserPtr spOtherUser = GetOtherUser( nCID );
     if( !spOtherUser )
     {
-        START_LOG( cerr, L"상대방 유저를 찾을 수 없음." )
+        START_LOG( cerr, L"Could not find the other user." )
             << BUILD_LOG( nCID )
             << END_LOG;
 
@@ -425,7 +425,7 @@ bool KTradeUserManager::UpdateTradeED( UidType nCID, int iED )
 
 	if( !spUser )
 	{
-		START_LOG( cerr, L"유저가 존재하지 않음." )
+		START_LOG( cerr, L"User does not exist." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -435,7 +435,7 @@ bool KTradeUserManager::UpdateTradeED( UidType nCID, int iED )
     KTradeUserPtr spOtherUser = GetOtherUser( nCID );
     if( !spOtherUser )
     {
-        START_LOG( cerr, L"상대방 유저를 찾을 수 없음." )
+        START_LOG( cerr, L"Could not find the other user." )
             << BUILD_LOG( nCID )
             << END_LOG;
 
@@ -458,7 +458,7 @@ bool KTradeUserManager::RemoveTradeItem( IN UidType nCID, IN UidType iItemUID )
 	KTradeUserPtr spUser = GetUser( nCID );
 	if( !spUser )
 	{
-		START_LOG( cerr, L"유저가 존재하지 않음." )
+		START_LOG( cerr, L"User does not exist." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -469,7 +469,7 @@ bool KTradeUserManager::RemoveTradeItem( IN UidType nCID, IN UidType iItemUID )
 	KTradeUserPtr spOtherUser = GetOtherUser( nCID );
 	if( !spOtherUser )
 	{
-		START_LOG( cerr, L"상대방 유저를 찾을 수 없음." )
+		START_LOG( cerr, L"Could not find the other user." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -494,7 +494,7 @@ bool KTradeUserManager::Offer( UidType nCID )
 
 	if( !spUser )
 	{
-		START_LOG( cerr, L"유저가 존재하지 않음." )
+		START_LOG( cerr, L"User does not exist." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -511,7 +511,7 @@ bool KTradeUserManager::Approve( UidType nCID )
 
 	if( !spUser )
 	{
-		START_LOG( cerr, L"유저가 존재하지 않음." )
+		START_LOG( cerr, L"User does not exist." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -528,7 +528,7 @@ bool KTradeUserManager::Confirm( IN UidType nCID, IN const KERM_CONFIRM_TRADE_AC
 
 	if( !spUser )
 	{
-		START_LOG( cerr, L"유저가 존재하지 않음." )
+		START_LOG( cerr, L"User does not exist." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -547,7 +547,7 @@ bool KTradeUserManager::IsOffered()
 	{
 		if( mit->second == NULL )
 		{
-			START_LOG( cerr, L"개인 거래 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid personal-trade user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 
@@ -573,7 +573,7 @@ bool KTradeUserManager::IsApproved()
 	{
 		if( mit->second == NULL )
 		{
-			START_LOG( cerr, L"개인 거래 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid personal-trade user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 
@@ -599,7 +599,7 @@ bool KTradeUserManager::IsConfirmed()
 	{
 		if( mit->second == NULL )
 		{
-			START_LOG( cerr, L"개인 거래 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid personal-trade user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 
@@ -627,7 +627,7 @@ void KTradeUserManager::GetOfferState( OUT std::map< UidType, bool >& mapOfferSt
     {
         if( mit->second == NULL )
         {
-            START_LOG( cerr, L"개인 거래 유저 포인터 이상." )
+            START_LOG( cerr, L"Invalid personal-trade user pointer." )
                 << BUILD_LOG( mit->first )
                 << END_LOG;
 
@@ -649,7 +649,7 @@ bool KTradeUserManager::IsThereNothingToTrade()
     {
         if( !mit->second )
         {
-            START_LOG( cerr, L"거래 유저 포인터 이상." )
+            START_LOG( cerr, L"Invalid trade-user pointer." )
                 << BUILD_LOG( mit->first )
                 << END_LOG;
 
@@ -677,7 +677,7 @@ bool KTradeUserManager::GetUpdateTemp( IN UidType nCID, OUT KERM_CONFIRM_TRADE_N
 
 	if( !spUser )
 	{
-		START_LOG( cerr, L"유저가 존재하지 않음." )
+		START_LOG( cerr, L"User does not exist." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -693,7 +693,7 @@ KTradeUserPtr KTradeUserManager::MakeUser( const KTradeUserInfo& kInfo )
 {
 	if( m_mapTradeUser.size() >= m_dwMaxUser )
 	{
-		START_LOG( cwarn, L"개인 거래 룸이 가득 찼음." )
+		START_LOG( cwarn, L"Personal-trade room is full." )
 			<< BUILD_LOG( kInfo.m_iGSUID )
 			<< BUILD_LOG( kInfo.m_iUnitUID )
 			<< BUILD_LOG( kInfo.m_wstrNickName )
@@ -719,7 +719,7 @@ bool KTradeUserManager::IsCanInsertTradeItem( IN UidType nCID )
 
 	if( !spUser )
 	{
-		START_LOG( cerr, L"유저가 존재하지 않음." )
+		START_LOG( cerr, L"User does not exist." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -735,7 +735,7 @@ bool KTradeUserManager::CheckStateUpdateTradeItem( IN UidType nCID )
 	KTradeUserPtr spUser = GetUser( nCID );
 	if( !spUser )
 	{
-		START_LOG( cerr, L"유저가 존재하지 않음." )
+		START_LOG( cerr, L"User does not exist." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -744,7 +744,7 @@ bool KTradeUserManager::CheckStateUpdateTradeItem( IN UidType nCID )
 
 	if( spUser->IsOffered() )
 	{
-		START_LOG( cerr, L"offered 상태인데 아이템 등록 하려한다?" )
+		START_LOG( cerr, L"Attempted to register an item while in offered state." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -753,7 +753,7 @@ bool KTradeUserManager::CheckStateUpdateTradeItem( IN UidType nCID )
 
 	if( spUser->IsApproved() )
 	{
-		START_LOG( cerr, L"approved 상태인데 아이템 등록 하려한다?" )
+		START_LOG( cerr, L"Attempted to register an item while in approved state." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -775,7 +775,7 @@ bool KTradeUserManager::IsAllTradeUsersSameServerGroup( IN UidType iUnitUID )
 	{
 		if( mit->second == NULL )
 		{
-			START_LOG( cerr, L"거래 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid trade-user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -801,7 +801,7 @@ bool KTradeUserManager::IsDBUpdateReady() const
 	{
 		if( mit->second == NULL )
 		{
-			START_LOG( cerr, L"개인 거래 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid personal-trade user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 
@@ -824,7 +824,7 @@ bool KTradeUserManager::SetDBUpdateInfo( IN const UidType iUnitUID, IN const KER
 	KTradeUserPtr spUser = GetUser( iUnitUID );
 	if( !spUser )
 	{
-		START_LOG( cerr, L"유저가 존재하지 않음." )
+		START_LOG( cerr, L"User does not exist." )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 		return false;
@@ -839,7 +839,7 @@ bool KTradeUserManager::GetDBUpdateInfo( IN const UidType iUnitUID, IN OUT std::
 	KTradeUserPtr spUser = GetUser( iUnitUID );
 	if( !spUser )
 	{
-		START_LOG( cerr, L"유저가 존재하지 않음." )
+		START_LOG( cerr, L"User does not exist." )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 		return false;

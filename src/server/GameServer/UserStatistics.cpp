@@ -92,7 +92,7 @@ void KUserStatistics::IncreaseCount( int iTableID, int iSubTableID , int iColumn
 		IncreaseCount( m_mapEDStatistics, key, vecCount );
 		break;
 	default:
-		START_LOG( cerr, L"유저 통계 : 존재하지않는 테이블ID입니다." )
+		START_LOG( cerr, L"User statistics: table ID does not exist." )
 			<< BUILD_LOG( iTableID )
 			<< END_LOG;
 
@@ -158,7 +158,7 @@ void KUserStatistics::AddPlayTime( PLAY_TIME ePT, int iTotalPlayTime )
 {
 	if( iTotalPlayTime < 0  ||  iTotalPlayTime > 86400 ) // 24시간
 	{
-		START_LOG( cwarn, L"비 정상적인 대전 플레이 타임!" )
+		START_LOG( cwarn, L"Invalid PvP play time!" )
 			<< BUILD_LOG( ePT )
 			<< BUILD_LOG( iTotalPlayTime )
 			<< END_LOG;
@@ -189,7 +189,7 @@ void KUserStatistics::InitAccountCountInfo( IN const std::wstring& wstrAccountRe
 	CTime tAccountRegDate;
 	if( KncUtil::ConvertStringToCTime( wstrAccountRegDate, tAccountRegDate ) == false )
 	{
-		START_LOG( cerr, L"계정 생성 날짜 정보가 이상합니다. 변환 실패!" )
+		START_LOG( cerr, L"Invalid account creation date; conversion failed!" )
 			<< BUILD_LOG( wstrAccountRegDate )
 			<< END_LOG;
 
@@ -207,7 +207,7 @@ void KUserStatistics::IncreaseAccountCount( IN const ACCOUNT_GAME_COUNT_TYPE eCo
 
 	if( eCountType < 0  ||  eCountType > AGCT_MAX )
 	{
-		START_LOG( cerr, L"정의 되지 않은 값입니다!" )
+		START_LOG( cerr, L"Undefined value!" )
 			<< BUILD_LOG( eCountType )
 			<< END_LOG;
 		return;
@@ -220,7 +220,7 @@ int KUserStatistics:: GetAccountCount( IN const ACCOUNT_GAME_COUNT_TYPE eCountTy
 {
 	if( eCountType < 0  ||  eCountType > AGCT_MAX )
 	{
-		START_LOG( cerr, L"정의 되지 않은 값입니다!" )
+		START_LOG( cerr, L"Undefined value!" )
 			<< BUILD_LOG( eCountType )
 			<< END_LOG;
 		return 0;
@@ -268,7 +268,7 @@ void KUserStatistics::InitCharacterCountInfo( IN const std::map< int, int >& map
 	CTime tUnitCreateDate;
 	if( KncUtil::ConvertStringToCTime( wstrUnitCreateDate, tUnitCreateDate ) == false )
 	{
-        START_LOG( cerr, L"캐릭터 생성 날짜 정보가 이상합니다. 변환 실패!" )
+        START_LOG( cerr, L"Invalid character creation date; conversion failed!" )
 			<< BUILD_LOG( wstrUnitCreateDate )
 			<< END_LOG;
 
@@ -286,7 +286,7 @@ void KUserStatistics::IncreaseCharacterCount( IN const CHAR_GAME_COUNT_TYPE eCou
 
     if( eCountType < 0  ||  eCountType > CGCT_MAX )
 	{
-		START_LOG( cerr, L"정의 되지 않은 값입니다!" )
+		START_LOG( cerr, L"Undefined value!" )
 			<< BUILD_LOG( eCountType )
 			<< END_LOG;
 		return;
@@ -299,7 +299,7 @@ int	KUserStatistics::GetCharacterCount( IN const CHAR_GAME_COUNT_TYPE eCountType
 {
 	if( eCountType < 0  ||  eCountType > CGCT_MAX )
 	{
-		START_LOG( cerr, L"정의 되지 않은 값입니다!" )
+		START_LOG( cerr, L"Undefined value!" )
 			<< BUILD_LOG( eCountType )
 			<< END_LOG;
 		return 0;
@@ -352,7 +352,7 @@ bool KUserStatistics::IsFirstCharSelectToday( IN const std::wstring& wstrUnitLas
 	CTime tLastLoginTime;
 	if( KncUtil::ConvertStringToCTime( wstrModifiedLastLoginDate, tLastLoginTime ) == false )
 	{
-		START_LOG( cerr, L"마지막 캐릭터 선택시간 변환 실패!" )
+		START_LOG( cerr, L"Failed to convert last character selection time!" )
 			<< BUILD_LOG( wstrModifiedLastLoginDate )
 			<< BUILD_LOG( wstrUnitLastLoginDate )
 			<< END_LOG;
@@ -374,7 +374,7 @@ bool KUserStatistics::IsFirstUserLoginToday( IN const UidType& UserUID, IN const
 	CTime tLastLoginTime;
 	if( KncUtil::ConvertStringToCTime( wstrUserLastLoginDate, tLastLoginTime ) == false )
 	{
-		START_LOG( clog, L"이전 로그인 시간 변환 실패_없을 수도 있다!" )
+		START_LOG( clog, L"Failed to convert previous login time; it may be missing." )
 			<< BUILD_LOG( UserUID )
 			<< BUILD_LOG( wstrUserLastLoginDate )
 			<< END_LOG;

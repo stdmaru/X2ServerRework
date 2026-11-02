@@ -186,7 +186,7 @@ void KRoom::Tick()
 		{
 			DeleteZombie( vecZombieUnit );
 
-			START_LOG( cout2, L"좀비유저 삭제.!" )
+			START_LOG( cout2, L"Removing zombie user!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetStateIDString() )
 				<< BUILD_LOG( vecZombieUnit.size() )
@@ -210,12 +210,12 @@ void KRoom::Tick()
             }
             else
             {
-                START_LOG( cerr, L"거래 상태 확인 실패." )
+                START_LOG( cerr, L"Failed to check trade state." )
                     << BUILD_LOG( iUnitUID )
                     << END_LOG;
             }
 
-            START_LOG( cout2, L"거래 신청 삭제." )
+            START_LOG( cout2, L"Removing trade request." )
                 << BUILD_LOG( iUnitUID )
                 << END_LOG;
         }
@@ -256,7 +256,7 @@ void KRoom::TimeCountForStartGame( IN const u_short usEventID )
 {
 	if( GetStateID() != KRoomFSM::S_WAIT )
 	{
-		START_LOG( cerr, L"S_WAIT상태가 아닌데 이 함수가 호출되었다! 이건 잘못된거야!" )
+		START_LOG( cerr, L"This function was called outside S_WAIT; this is invalid!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetStateIDString() )
 			<< END_LOG;
@@ -458,7 +458,7 @@ void KRoom::CheckRemainingPlayTime()
         SetRemainingPlayTime( m_fRemainingPlayTime - ( float )m_kTimer[TM_PLAY_TIME_NOT].elapsed() );
         if( GetRemainingPlayTime() <= 0.f )
         {
-            START_LOG( clog2, L"플레이 타임 아웃." )
+            START_LOG( clog2, L"Play-time timeout." )
                 << BUILD_LOG( GetStateID() )
                 << BUILD_LOG( GetStateIDString() );
             BroadCastID( ERM_PLAY_TIME_OUT_NOT );
@@ -644,7 +644,7 @@ bool KRoom::IsAbleToIntrude()
 
 void KRoom::DeleteZombie( std::vector<UidType>& vecZombieUnit )
 {
-	START_LOG( cout2, L"삭제될 좀비 유저개수.!" )
+	START_LOG( cout2, L"Number of zombie users to remove!" )
 		<< BUILD_LOG( vecZombieUnit.size() )
 		<< END_LOG;
 
@@ -666,14 +666,14 @@ void KRoom::DeleteZombie( std::vector<UidType>& vecZombieUnit )
 		}
 		else
 		{
-			START_LOG( cerr, L"룸유저 포인터 이상.!" )
+			START_LOG( cerr, L"Invalid room user pointer!" )
 				<< BUILD_LOG( *vit )
 				<< END_LOG;
 		}
 
 		if( !m_spRoomUserManager->LeaveRoom( *vit ) )
 		{
-			START_LOG( cerr, L"방 나가기 실패." );
+			START_LOG( cerr, L"Failed to leave room." );
 
 			continue;
 		}
@@ -815,7 +815,7 @@ void KRoom::CheckPingScore()
 
 		m_kHostCheckTimer.restart();
 
-		START_LOG( clog, L"Host 변경 알림 패킷 브로드 발송!" )
+		START_LOG( clog, L"Broadcasting host-change notification packet!" )
 			<< BUILD_LOG( kNot.m_iOldHostUID )
 			<< BUILD_LOG( kNot.m_iNewHostUID )
 			<< END_LOG;
@@ -975,7 +975,7 @@ IMPL_ON_FUNC( ERM_JOIN_ROOM_REQ )
 	case CXSLRoom::RT_PVP:
 		if( !m_spRoomUserManager->EnterRoom( kPacket_.m_kRoomUserInfo, true ) )
         {
-            START_LOG( cerr, L"방 입장 실패." )
+            START_LOG( cerr, L"Failed to enter room." )
                 << BUILD_LOG( FIRST_SENDER_UID )
                 << BUILD_LOG( GetUID() )
                 << END_LOG;
@@ -989,7 +989,7 @@ IMPL_ON_FUNC( ERM_JOIN_ROOM_REQ )
 	case CXSLRoom::RT_DUNGEON:
 		if( !m_spRoomUserManager->EnterRoom( kPacket_.m_kRoomUserInfo, false ) )
         {
-            START_LOG( cerr, L"방 입장 실패." )
+            START_LOG( cerr, L"Failed to enter room." )
                 << BUILD_LOG( FIRST_SENDER_UID )
                 << BUILD_LOG( GetUID() )
                 << END_LOG;
@@ -1054,7 +1054,7 @@ _IMPL_ON_FUNC( ERM_BAN_USER_REQ, KEGS_BAN_USER_REQ )
 
 	if( pkSenderRoomUser == NULL )
 	{
-		START_LOG( cerr, L"유저가 존재하지 않습니다." )
+		START_LOG( cerr, L"User does not exist." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
 
@@ -1079,7 +1079,7 @@ _IMPL_ON_FUNC( ERM_BAN_USER_REQ, KEGS_BAN_USER_REQ )
 	KRoomUserPtr pkRoomUser = m_spRoomUserManager->GetUser( kPacket_.m_iUnitUID );
 	if( pkRoomUser == NULL )
 	{
-		START_LOG( cerr, L"강퇴시킬 룸유져 찾기실패" )
+		START_LOG( cerr, L"Failed to find the room user to eject." )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
 	}
@@ -1101,7 +1101,7 @@ _IMPL_ON_FUNC( ERM_BAN_USER_REQ, KEGS_BAN_USER_REQ )
 	{
 		if( cSenderAuthLevel >= SEnum::UAL_GM && bSenderIsHost == false )
 		{
-			START_LOG( cout, L"운영자가 유저를 강퇴시켰습니다." )
+			START_LOG( cout, L"An administrator ejected the user." )
 				<< BUILD_LOG( FIRST_SENDER_UID )
 				<< BUILD_LOGc( cSenderAuthLevel )
 				<< BUILD_LOG( kPacket_.m_iUnitUID )
@@ -1396,7 +1396,7 @@ _IMPL_ON_FUNC( ERM_CHAT_REQ, KEGS_CHAT_REQ )
 
 	if( kPacket_.m_cChatPacketType != KEGS_CHAT_REQ::CPT_TOTAL )
 	{
-		START_LOG( cerr, L"일반채팅 패킷타입이 아닌데 여기왔네?" )
+		START_LOG( cerr, L"A non-normal-chat packet type reached this handler." )
 			<< BUILD_LOGc( kPacket_.m_cChatPacketType )
 			<< END_LOG;
 		return;
@@ -1509,7 +1509,7 @@ _IMPL_ON_FUNC( ERM_CHANGE_PLAY_TIME_LIMIT_REQ, KEGS_CHANGE_PLAY_TIME_LIMIT_REQ )
 	{
 		if( CXSLRoom::IsValidPvpPlayTime( m_cGameType, static_cast<int>(kPacket_.m_fPlayTime) ) == false )
 		{
-			START_LOG( cerr, L"대전방 플레이 타임 세팅값이 이상하다." )
+			START_LOG( cerr, L"Invalid PvP room play-time setting." )
 				<< BUILD_LOG( FIRST_SENDER_UID )
 				<< BUILD_LOGc( m_cGameType )
 				<< BUILD_LOG( kPacket_.m_fPlayTime )
@@ -1539,7 +1539,7 @@ _IMPL_ON_FUNC( ERM_SET_UNIT_INFO_NOT, KRoomUserInfo )
 	if( !( GetStateID() == KRoomFSM::S_WAIT || GetStateID() == KRoomFSM::S_LOAD || GetStateID() == KRoomFSM::S_PLAY || GetStateID() == KRoomFSM::S_RESULT || GetStateID() == KRoomFSM::S_WAIT_FOR_DEFENCE ) )
 	//}}
     {
-        START_LOG( cerr, L"상태 오류." )
+        START_LOG( cerr, L"State error." )
             << BUILD_LOG( GetStateID() )
             << BUILD_LOG( GetStateIDString() )
             << END_LOG;
@@ -1705,7 +1705,7 @@ _IMPL_ON_FUNC( ERM_ADD_ON_STAT_REQ, KEGS_ADD_ON_STAT_REQ )
 
 		SendToGSCharacter( LAST_SENDER_UID, FIRST_SENDER_UID, ERM_ADD_ON_STAT_ACK, kAck );
 
-		START_LOG( cerr, L"잘못된 게임타입[게임스탯]" )
+		START_LOG( cerr, L"Invalid game type [GameStats]." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( NetError::GetErrStr( kAck.m_iOK ) )
 			<< BUILD_LOG( (int)KncUid::ExtractReservedID( GetUID() ) )
@@ -1738,7 +1738,7 @@ IMPL_ON_FUNC( ERM_REQUEST_TRADE_NOT )
 
     if( !m_spRoomUserManager->RequestTradeTo( FIRST_SENDER_UID, kPacket_.m_iReceiverUID ) )
     {
-        START_LOG( clog, L"거래 요청 실패." )
+        START_LOG( clog, L"Trade request failed." )
             << BUILD_LOG( FIRST_SENDER_UID )
             << END_LOG;
 
@@ -1757,7 +1757,7 @@ IMPL_ON_FUNC( ERM_REQUEST_TRADE_NOT )
     kNot.m_iUnitUID = FIRST_SENDER_UID;
     if( !m_spRoomUserManager->IsInTrade( FIRST_SENDER_UID, kNot.m_bTrade ) )
     {
-        START_LOG( cerr, L"거래 상태 확인 실패." )
+        START_LOG( cerr, L"Failed to check trade state." )
             << BUILD_LOG( FIRST_SENDER_UID )
             << END_LOG;
         return;
@@ -1768,7 +1768,7 @@ IMPL_ON_FUNC( ERM_REQUEST_TRADE_NOT )
     kReadyNot.m_UnitUID = FIRST_SENDER_UID;
     if( !m_spRoomUserManager->IsReady( FIRST_SENDER_UID, kReadyNot.m_bReady ) )
     {
-        START_LOG( cerr, L"준비 상태 확인 실패." )
+        START_LOG( cerr, L"Failed to check ready state." )
             << BUILD_LOG( FIRST_SENDER_UID )
             << END_LOG;
         return;
@@ -1815,7 +1815,7 @@ IMPL_ON_FUNC( ERM_REQUEST_TRADE_REPLY_NOT )
         }
         else
         {
-            START_LOG( cerr, L"거래 상태 확인 실패." )
+            START_LOG( cerr, L"Failed to check trade state." )
                 << BUILD_LOG( kPacket_.m_iReceiverUID )
                 << END_LOG;
         }
@@ -1828,7 +1828,7 @@ IMPL_ON_FUNC( ERM_REQUEST_TRADE_REPLY_NOT )
         }
         else
         {
-            START_LOG( cerr, L"준비 상태 확인 실패." )
+            START_LOG( cerr, L"Failed to check ready state." )
                 << BUILD_LOG( kPacket_.m_iReceiverUID )
                 << END_LOG;
         }
@@ -1843,7 +1843,7 @@ IMPL_ON_FUNC_NOPARAM( ERM_TRADE_START_NOT )
 
     if( !m_spRoomUserManager->SetTrade( FIRST_SENDER_UID, true ) )
     {
-        START_LOG( clog, L"거래 상황 업데이트 실패." )
+        START_LOG( clog, L"Failed to update trade status." )
             << BUILD_LOG( FIRST_SENDER_UID )
             << END_LOG;
 
@@ -1858,7 +1858,7 @@ IMPL_ON_FUNC_NOPARAM( ERM_TRADE_START_NOT )
     kNot.m_iUnitUID = FIRST_SENDER_UID;
     if( !m_spRoomUserManager->IsInTrade( FIRST_SENDER_UID, kNot.m_bTrade ) )
     {
-        START_LOG( cerr, L"거래 상태 확인 실패." )
+        START_LOG( cerr, L"Failed to check trade state." )
             << BUILD_LOG( FIRST_SENDER_UID )
             << END_LOG;
         return;
@@ -1869,7 +1869,7 @@ IMPL_ON_FUNC_NOPARAM( ERM_TRADE_START_NOT )
     kReadyNot.m_UnitUID = FIRST_SENDER_UID;
     if( !m_spRoomUserManager->IsReady( FIRST_SENDER_UID, kReadyNot.m_bReady ) )
     {
-        START_LOG( cerr, L"준비 상태 확인 실패." )
+        START_LOG( cerr, L"Failed to check ready state." )
             << BUILD_LOG( FIRST_SENDER_UID )
             << END_LOG;
         return;
@@ -1883,7 +1883,7 @@ IMPL_ON_FUNC_NOPARAM( ERM_TRADE_FINISH_NOT )
 
     if( !m_spRoomUserManager->SetTrade( FIRST_SENDER_UID, false ) )
     {
-        START_LOG( clog, L"거래 상황 업데이트." )
+        START_LOG( clog, L"Updating trade status." )
             << BUILD_LOG( FIRST_SENDER_UID )
             << END_LOG;
         return;
@@ -1901,7 +1901,7 @@ IMPL_ON_FUNC_NOPARAM( ERM_TRADE_FINISH_NOT )
     }
     else
     {
-        START_LOG( cerr, L"거래 상태 확인 실패." )
+        START_LOG( cerr, L"Failed to check trade state." )
             << BUILD_LOG( FIRST_SENDER_UID )
             << END_LOG;
     }
@@ -1917,7 +1917,7 @@ IMPL_ON_FUNC( ERM_SET_QUEST_ITEM_INFO_NOT )
 
 	if( m_spRoomUserManager->SetUnitQuestInvenInfo( FIRST_SENDER_UID, kPacket_.m_mapDropQuestItembyIngQuest ) == false )
 	{
-		START_LOG( cerr, L"퀘스트 아이템 인벤토리 정보 셋팅 실패.!" )
+		START_LOG( cerr, L"Failed to set quest-item inventory information!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
 	}
@@ -1925,7 +1925,7 @@ IMPL_ON_FUNC( ERM_SET_QUEST_ITEM_INFO_NOT )
 	//{{ 2011. 05. 04  김민성	던전 클리어시 아이템 지급 조건 추가
 	if( m_spRoomUserManager->SetUnitAllQuestInfo( FIRST_SENDER_UID, kPacket_.m_setQuestInfo ) == false )
 	{
-		START_LOG( cerr, L"모든 퀘스트 정보 실패.!" )
+		START_LOG( cerr, L"Failed to retrieve all quest information!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
 	}
@@ -1933,7 +1933,7 @@ IMPL_ON_FUNC( ERM_SET_QUEST_ITEM_INFO_NOT )
 
 	if( m_spRoomUserManager->SetUnitGoingQuestInfo( FIRST_SENDER_UID, kPacket_.m_setGoingQuestInfo ) == false )
 	{
-		START_LOG( cerr, L"진행중 퀘스트 정보 실패.!" )
+		START_LOG( cerr, L"Failed to retrieve in-progress quest information!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
 	}
@@ -2052,7 +2052,7 @@ _IMPL_ON_FUNC( ERM_SEARCH_UNIT_REQ, KELG_SEARCH_UNIT_REQ )
 
 	default:
 		{
-			START_LOG( cerr, L"이상한 eventid가 담겨져 왔습니다." )
+			START_LOG( cerr, L"Unexpected event ID received." )
 				<< BUILD_LOG( KEvent::GetIDStr( kPacket_.m_usEventID ) )
 				<< END_LOG;
 		}
@@ -2091,7 +2091,7 @@ IMPL_ON_FUNC( ERM_SUMMON_PET_NOT )
     // RoomUserInfo에 업데이트 한다!
 	if( m_spRoomUserManager->UpdatePetInfo( kPacket_.m_iUnitUID, kPacket_.m_vecPetInfo ) == false )
 	{
-		START_LOG( cerr, L"펫 정보 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update pet information!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
 		return;
@@ -2116,7 +2116,7 @@ _IMPL_ON_FUNC( ERM_CHANGED_PET_SATIETY_NOT, KEGS_CHANGED_PET_SATIETY_NOT )
 	// 펫 포만도 정보 업데이트
 	if( m_spRoomUserManager->UpdatePetSatiety( kPacket_.m_iUnitUID, kPacket_.m_iPetUID, kPacket_.m_sCurrentSatiety ) == false )
 	{
-		START_LOG( cerr, L"펫 정보 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update pet information!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iPetUID )
 			<< BUILD_LOG( kPacket_.m_sCurrentSatiety )
@@ -2134,7 +2134,7 @@ _IMPL_ON_FUNC( ERM_CHANGED_PET_INTIMACY_NOT, KEGS_CHANGED_PET_INTIMACY_NOT )
 	// 펫 친밀도 정보 업데이트
 	if( m_spRoomUserManager->UpdatePetIntimacy( kPacket_.m_iUnitUID, kPacket_.m_iPetUID, kPacket_.m_iCurrentIntimacy ) == false )
 	{
-		START_LOG( cerr, L"펫 정보 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update pet information!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iPetUID )
 			<< BUILD_LOG( kPacket_.m_iCurrentIntimacy )
@@ -2150,7 +2150,7 @@ _IMPL_ON_FUNC( ERM_CHANGED_PET_SATIETY_INTIMACY_NOT, KEGS_CHANGED_PET_SATIETY_IN
 	// 펫 포만도 정보 업데이트
 	if( m_spRoomUserManager->UpdatePetSatiety( kPacket_.m_iUnitUID, kPacket_.m_iPetUID, kPacket_.m_sCurrentSatiety ) == false )
 	{
-		START_LOG( cerr, L"펫 정보 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update pet information!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iPetUID )
 			<< BUILD_LOG( kPacket_.m_sCurrentSatiety )
@@ -2161,7 +2161,7 @@ _IMPL_ON_FUNC( ERM_CHANGED_PET_SATIETY_INTIMACY_NOT, KEGS_CHANGED_PET_SATIETY_IN
 	// 펫 친밀도 정보 업데이트
 	if( m_spRoomUserManager->UpdatePetIntimacy( kPacket_.m_iUnitUID, kPacket_.m_iPetUID, kPacket_.m_iCurrentIntimacy ) == false )
 	{
-		START_LOG( cerr, L"펫 정보 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update pet information!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iPetUID )
 			<< BUILD_LOG( kPacket_.m_iCurrentIntimacy )
@@ -2179,7 +2179,7 @@ IMPL_ON_FUNC( ERM_PET_EVOLUTION_NOT )
 	// RoomUserInfo에 업데이트 한다!
 	if( m_spRoomUserManager->UpdatePetInfo( kPacket_.m_iUnitUID, kPacket_.m_kEvolutionPetInfo ) == false )
 	{
-		START_LOG( cerr, L"펫 정보 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update pet information!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
 		return;
@@ -2203,7 +2203,7 @@ _IMPL_ON_FUNC( ERM_BUFF_SKILL_INFO_CONVEY_REQ, KEGS_BUFF_SKILL_INFO_CONVEY_REQ )
 	{
 		SendToGSCharacter( LAST_SENDER_UID, FIRST_SENDER_UID, ERM_BUFF_SKILL_INFO_CONVEY_ACK, KAck );
 
-		START_LOG( cerr, L"버프 스킬 처리 실패!" )
+		START_LOG( cerr, L"Failed to process buff skill!" )
 			<< BUILD_LOG( kPacket_.m_iCastingUnitUID )
 			<< BUILD_LOG( kPacket_.m_iBuffEnum )
 			<< BUILD_LOG( kPacket_.m_fBuffTime )
@@ -2232,7 +2232,7 @@ _IMPL_ON_FUNC( ERM_UPDATE_BUFF_INFO_IN_ROOM_NOT, KEGS_UPDATE_BUFF_INFO_IN_ROOM_N
 		spRoomUser = m_spRoomUserManager->GetUser( FIRST_SENDER_UID, KRoomUserManager::UT_OBSERVER );
 		if( spRoomUser == NULL )
 		{
-			START_LOG( cerr, L"유저를 찾을 수 없습니다!" )
+			START_LOG( cerr, L"User not found!" )
 				<< BUILD_LOG( FIRST_SENDER_UID )
 				<< END_LOG;
 			return;
@@ -2258,7 +2258,7 @@ _IMPL_ON_FUNC( ERM_USE_SKILL_BUFF_IN_PLAY_NOT, KEGS_USE_SKILL_BUFF_IN_PLAY_NOT )
 	KRoomUserPtr spRoomUser = m_spRoomUserManager->GetUser( FIRST_SENDER_UID );
 	if( spRoomUser == NULL )
 	{
-		START_LOG( cerr, L"유저를 찾을 수 없습니다!" )
+		START_LOG( cerr, L"User not found!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
 		return;
@@ -2324,7 +2324,7 @@ _IMPL_ON_FUNC( ERM_UPDATE_USER_UNIT_BUFF_INFO_NOT, KEGS_UPDATE_USER_UNIT_BUFF_IN
 
 	if( m_spRoomUserManager->IsExist( FIRST_SENDER_UID ) == false )
 	{
-		START_LOG( cerr, L"버프 정보를 보내려는 캐릭터는 현재 이방안에 없습니다!" )
+		START_LOG( cerr, L"The character receiving buff information is not in this room!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kPacket_.m_vecBuffFactor.size() )
 			<< END_LOG;
@@ -2345,7 +2345,7 @@ _IMPL_ON_FUNC( ERM_UPDATE_USER_UNIT_BUFF_INFO_NOT, KEGS_UPDATE_USER_UNIT_BUFF_IN
 		KRoomUserPtr spRoomUser = m_spRoomUserManager->GetUser( kPacket_.m_iToUnitUID );
 		if( IS_NULL( spRoomUser ) )
 		{
-			START_LOG( cerr, L"존재하지 않는 유저에게 버프정보를 보내려고 했다!" )
+			START_LOG( cerr, L"Attempted to send buff information to a nonexistent user!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( FIRST_SENDER_UID )
 				<< BUILD_LOG( kPacket_.m_iToUnitUID )
@@ -2363,7 +2363,7 @@ _IMPL_ON_FUNC( ERM_UPDATE_NPC_UNIT_BUFF_INFO_NOT, KEGS_UPDATE_NPC_UNIT_BUFF_INFO
 
 	if( m_spRoomUserManager->IsExist( FIRST_SENDER_UID ) == false )
 	{
-		START_LOG( cerr, L"버프 정보를 보내려는 캐릭터는 현재 이방안에 없습니다!" )
+		START_LOG( cerr, L"The character receiving buff information is not in this room!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kPacket_.m_vecNpcUnitBuff.size() )
 			<< END_LOG;
@@ -2387,7 +2387,7 @@ _IMPL_ON_FUNC( ERM_UPDATE_NPC_UNIT_BUFF_INFO_NOT, KEGS_UPDATE_NPC_UNIT_BUFF_INFO
 		    KRoomUserPtr spRoomUser = m_spRoomUserManager->GetUser( uidUnitUID );
 		    if( IS_NULL( spRoomUser ) )
 		    {
-			    START_LOG( cerr, L"존재하지 않는 유저에게 버프정보를 보내려고 했다!" )
+			    START_LOG( cerr, L"Attempted to send buff information to a nonexistent user!" )
 				    << BUILD_LOG( GetUID() )
 				    << BUILD_LOG( FIRST_SENDER_UID )
 				    << BUILD_LOG( uidUnitUID )
@@ -2452,7 +2452,7 @@ _IMPL_ON_FUNC( ERM_VISIT_CASH_SHOP_NOT, KEGS_VISIT_CASH_SHOP_NOT )
 	KRoomUserPtr spRoomUser = m_spRoomUserManager->GetUser( FIRST_SENDER_UID );
 	if( spRoomUser == NULL )
 	{
-		START_LOG( cerr, L"유저를 찾을 수 없습니다!" )
+		START_LOG( cerr, L"User not found!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
 		return;
@@ -2484,7 +2484,7 @@ _IMPL_ON_FUNC( ERM_FIELD_USER_FRAME_INFO_NOT, int )
 	KRoomUserPtr spRoomUser = m_spRoomUserManager->GetUser( FIRST_SENDER_UID );
 	if( spRoomUser == NULL )
 	{
-		START_LOG( cerr, L"유저를 찾을 수 없습니다!" )
+		START_LOG( cerr, L"User not found!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
 		return;
@@ -2517,7 +2517,7 @@ _IMPL_ON_FUNC( ERM_SUMMON_RIDING_PET_NOT, KEGS_SUMMON_RIDING_PET_NOT )
 	// RoomUserInfo에 업데이트 한다!
 	if( m_spRoomUserManager->SetRidingPetInfo( kPacket_.m_iUnitUID, kPacket_.m_iRidingPetUID, kPacket_.m_usRidingPetID ) == false )
 	{
-		START_LOG( cerr, L"라이딩 펫 정보 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update riding-pet information!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
 		return;
@@ -2534,7 +2534,7 @@ _IMPL_ON_FUNC( ERM_UNSUMMON_RIDING_PET_NOT, KEGS_UNSUMMON_RIDING_PET_NOT )
 	// RoomUserInfo에 업데이트 한다!
 	if( m_spRoomUserManager->SetRidingPetInfo( kPacket_.m_iUnitUID, 0, 0 ) == false )
 	{
-		START_LOG( cerr, L"라이딩 펫 정보 업데이트 실패!" )
+		START_LOG( cerr, L"Failed to update riding-pet information!" )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
 		return;

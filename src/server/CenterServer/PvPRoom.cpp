@@ -87,7 +87,7 @@ void KPvPRoom::Tick()
 
 					if( false == SiKDropTable()->DecisionbyGroupItem( m_vecDropItem[i].m_iGroup, m_vecDropItem[i].m_iItemID ) )
 					{
-						START_LOG( cerr, L"대전 드롭아이템 얻어오기 실패.!" )
+						START_LOG( cerr, L"Failed to retrieve PvP drop items!" )
 							<< END_LOG;
 						continue;
 					}
@@ -124,7 +124,7 @@ void KPvPRoom::Tick()
 			{
 				if( m_spRoomUserManager->LeaveRoom( iPvpNpcUnitUID ) == false )
 				{
-					START_LOG( cerr, L"대전 NPC 방 이탈 실패! 절대 일어나서는 안되는 에러!" )
+					START_LOG( cerr, L"Failed to remove PvP NPC from room; this should never happen!" )
 						<< BUILD_LOG( iPvpNpcUnitUID )
 						<< END_LOG;
 				}
@@ -199,7 +199,7 @@ void KPvPRoom::StartGame()
 		KRoomUserPtr spRoomUser = m_spRoomUserManager->GetUser( iU );
 		if( spRoomUser == NULL )
 		{
-			START_LOG( cerr, L"RoomUser가 존재하지 않음." )
+			START_LOG( cerr, L"RoomUser does not exist." )
 				<< END_LOG;
 			continue;
 		}
@@ -230,7 +230,7 @@ void KPvPRoom::StartGame()
 		break;
 
 	default:
-		START_LOG( cerr, L"이상한 대전게임타입입니다." )
+		START_LOG( cerr, L"Unexpected PvP game type." )
 			<< BUILD_LOG( static_cast<int>( GetPlayMode() ) )
 			<< END_LOG;
 		break;
@@ -240,7 +240,7 @@ void KPvPRoom::StartGame()
     int iNumPlaying = m_spRoomUserManager->GetNumPlaying();
     if( iNumPlaying < 1 || iNumPlaying > 8 )
     {
-        START_LOG( cerr, L"플레이 중인 유저 수가 이상함." )
+        START_LOG( cerr, L"Invalid number of users in play." )
             << BUILD_LOG( iNumPlaying )
             << END_LOG;
     }
@@ -258,7 +258,7 @@ void KPvPRoom::StartPlay()
 
 void KPvPRoom::EndPlay()
 {
-    START_LOG( clog2, L"게임 끝 처리." )
+    START_LOG( clog2, L"Processing game end." )
         << BUILD_LOG( GetStateID() )
         << BUILD_LOG( GetStateIDString() );
 
@@ -356,7 +356,7 @@ void KPvPRoom::EndPlay()
 
 	default:
 		{
-			START_LOG( cerr, L"PVP 에는 이런 게임타입이 없음.!" )
+			START_LOG( cerr, L"This game type is not used in PvP!" )
 				<< BUILD_LOGc( m_cGameType )
 				<< END_LOG;
 			return;
@@ -420,7 +420,7 @@ void KPvPRoom::EndPlay()
 		KRoomUserPtr spRoomUser = m_spRoomUserManager->GetUser( kPvpUnitResultInfo.m_UnitUID );
 		if( spRoomUser == NULL )
 		{
-			START_LOG( cerr, L"룸 유저 포인터값이 NULL임" )
+			START_LOG( cerr, L"Room-user pointer is NULL." )
 				<< BUILD_LOG( kPvpUnitResultInfo.m_UnitUID )
 				<< END_LOG;
 			continue;
@@ -751,7 +751,7 @@ bool KPvPRoom::CheckIfPlayEnd()
     }
     else
     {
-        START_LOG( clog, L"게임 종료 검사" )
+        START_LOG( clog, L"Checking game termination." )
             << BUILD_LOG( m_spRoomUserManager->GetNumMember() )
             << BUILD_LOG( m_spRoomUserManager->GetNumPlaying() )
 			<< BUILD_LOG( GetRemainingPlayTime() )
@@ -852,7 +852,7 @@ bool KPvPRoom::IsAbleToIntrude()
 		}
         return true;
     default:
-        START_LOG( cerr, L"알 수 없는 대전 게임 모드." )
+        START_LOG( cerr, L"Unknown PvP game mode." )
             << BUILD_LOGc( m_cGameType )
             << END_LOG;
         return false;
@@ -909,7 +909,7 @@ void KPvPRoom::HandleTimeOutUser( std::map< UidType, UidType >& mapUserCIDNGS )
 
 		if( !m_spRoomUserManager->LeaveRoom( mit->first ) )
 		{
-			START_LOG( cerr, L"방 나가기 실패." )
+			START_LOG( cerr, L"Failed to leave room." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 		}
@@ -995,7 +995,7 @@ void KPvPRoom::CheckRebirth()
 		if( ( float )vit->kTimer.elapsed() >= vit->fDelay && vit->bReady == true )
 			//}
         {
-            START_LOG( clog, L"부활 조건 만족" )
+            START_LOG( clog, L"Revival conditions met." )
                 << BUILD_LOG( vit->nCID )
                 << BUILD_LOG( vit->iPosition );
 
@@ -1062,7 +1062,7 @@ void KPvPRoom::CheckEndPlay()
 
     if( m_kTimer[TM_DELAY_PACKET].elapsed() >= 3.0 )
     {
-        START_LOG( clog2, L"딜레이된 게임 끝." )
+        START_LOG( clog2, L"Delayed game end." )
             << BUILD_LOG( GetStateID() )
             << BUILD_LOG( GetStateIDString() );
         EndPlay();
@@ -1138,7 +1138,7 @@ bool KPvPRoom::PvpDropItem( KERM_UPDATE_PVP_UNIT_INFO_NOT& kInfo )
 	bRet = SiKDropTable()->PvpDropItem( 1, sDropDataEvent );
 	if( bRet == false )
 	{
-		START_LOG( cerr, L"Pvp Drop Item Data 얻어오기 실패 ===" )
+		START_LOG( cerr, L"Failed to retrieve PvP drop item data ===" )
 			<< BUILD_LOGc( m_cGameType )
 			<< END_LOG;
 
@@ -1152,7 +1152,7 @@ bool KPvPRoom::PvpDropItem( KERM_UPDATE_PVP_UNIT_INFO_NOT& kInfo )
             const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( sDropDataEvent.m_vecItemID[i] );
             if( pItemTemplet == NULL )
             {
-                START_LOG( cerr, L"아이템 템플릿을 얻지 못함." )
+                START_LOG( cerr, L"Failed to retrieve item template." )
                     << BUILD_LOG( sDropDataEvent.m_vecItemID[i] )
                     << END_LOG;
 
@@ -1261,7 +1261,7 @@ void KPvPRoom::SendAllPVPUserInfo()
 				KRoomUserPtr spRoomUser = m_spRoomUserManager->GetUser( iU );
 				if( spRoomUser == NULL )
 				{
-					START_LOG( cerr, L"RoomUser가 존재하지 않음." )
+					START_LOG( cerr, L"RoomUser does not exist." )
 						<< END_LOG;
 					continue;
 				}
@@ -1286,7 +1286,7 @@ void KPvPRoom::SendAllPVPUserInfo()
 				KRoomUserPtr spRoomUser = m_spRoomUserManager->GetUser( iU );
 				if( spRoomUser == NULL )
 				{
-					START_LOG( cerr, L"RoomUser가 존재하지 않음." )
+					START_LOG( cerr, L"RoomUser does not exist." )
 						<< END_LOG;
 					continue;
 				}
@@ -1311,7 +1311,7 @@ void KPvPRoom::SendAllPVPUserInfo()
 				KRoomUserPtr spRoomUser = m_spRoomUserManager->GetUser( iU );
 				if( spRoomUser == NULL )
 				{
-					START_LOG( cerr, L"RoomUser가 존재하지 않음." )
+					START_LOG( cerr, L"RoomUser does not exist." )
 						<< END_LOG;
 					continue;
 				}
@@ -1358,7 +1358,7 @@ void KPvPRoom::OnLeaveRoom( IN const UidType iLAST_SENDER_UID, IN const UidType 
 
 		if( !spRoomUser )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상" )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( iFIRST_SENDER_UID )
 				<< END_LOG;
 		}
@@ -1518,7 +1518,7 @@ void KPvPRoom::OnLeaveRoom( IN const UidType iLAST_SENDER_UID, IN const UidType 
 
 	if( !m_spRoomUserManager->LeaveRoom( iFIRST_SENDER_UID ) )
 	{
-		START_LOG( cerr, L"방 나가기 실패." );
+		START_LOG( cerr, L"Failed to leave room." );
 		kPacket.m_iOK = NetError::ERR_SLOT_04;
 		SendToGSCharacter( iLAST_SENDER_UID, iFIRST_SENDER_UID, usEventIDAck, kPacket );
 		return;
@@ -1638,7 +1638,7 @@ void KPvPRoom::TimeCountFinishProcess( IN const u_short usEventID )
 
 	default:
 		{
-			START_LOG( cerr, L"여기로 오면 안된다! 일어나서는 안되는 에러!" )
+			START_LOG( cerr, L"Unexpected execution path; this should never happen!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( KEvent::GetIDStr( usEventID ) )
 				<< END_LOG;
@@ -1753,7 +1753,7 @@ void KPvPRoom::ProcessNativeEvent( const KEventPtr& spEvent_ )
     CASE_NOPARAM( ERM_BATTLE_FIELD_ZOMBIE_ALERT_NOT );
 
     default:
-        START_LOG( cerr, L"이벤트 핸들러가 정의되지 않았음 - " << spEvent_->GetIDStr() )
+        START_LOG( cerr, L"Event handler is not defined - " << spEvent_->GetIDStr() )
             << BUILD_LOG( spEvent_->m_usEventID );
     }
 }
@@ -1798,7 +1798,7 @@ _IMPL_ON_FUNC( ERM_OPEN_PVP_ROOM_REQ, KERM_OPEN_ROOM_REQ )
     // 슬롯에 생성 요청자를 넣는다.
     if( !m_spRoomUserManager->EnterRoom( kPacket_.m_kRoomUserInfo, true ) )
     {
-        START_LOG( cerr, L"방 입장 실패." )
+        START_LOG( cerr, L"Failed to enter room." )
             << BUILD_LOG( FIRST_SENDER_UID )
             << BUILD_LOG( GetUID() )
             << END_LOG;
@@ -1827,7 +1827,7 @@ _IMPL_ON_FUNC( ERM_OPEN_PVP_ROOM_REQ, KERM_OPEN_ROOM_REQ )
 
     SendToGSCharacter( LAST_SENDER_UID, FIRST_SENDER_UID, ERM_OPEN_ROOM_ACK, kPacket );
 
-    START_LOG( clog2, L"만든 캐릭터, 게임 서버" )
+    START_LOG( clog2, L"Created character, GameServer" )
         << BUILD_LOG( FIRST_SENDER_UID )
         << BUILD_LOG( LAST_SENDER_UID );
 
@@ -1873,7 +1873,7 @@ _IMPL_ON_FUNC( ERM_OPEN_PVP_ROOM_FOR_MATCH_REQ, KEGB_OPEN_PVP_ROOM_FOR_MATCH_REQ
 	// 슬롯에 생성 요청자를 넣는다.
 	if( m_spRoomUserManager->EnterRoom( kPacket_.m_vecRedTeam, kPacket_.m_vecBlueTeam, kPacket_.m_mapPvpNpcInfo, kPacket_.m_mapMatchWaitTime ) == false )
 	{
-		START_LOG( cerr, L"방 입장 실패." )
+		START_LOG( cerr, L"Failed to enter room." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( GetUID() )
 			<< END_LOG;
@@ -1903,7 +1903,7 @@ _IMPL_ON_FUNC( ERM_OPEN_PVP_ROOM_FOR_MATCH_REQ, KEGB_OPEN_PVP_ROOM_FOR_MATCH_REQ
 	kPacket.m_iOK = NetError::NET_OK;
 	SendToGSCharacter( LAST_SENDER_UID, FIRST_SENDER_UID, ERM_OPEN_PVP_ROOM_FOR_MATCH_ACK, kPacket );
 
-	START_LOG( clog2, L"만든 캐릭터, 게임 서버" )
+	START_LOG( clog2, L"Created character, GameServer" )
 		<< BUILD_LOG( FIRST_SENDER_UID )
 		<< BUILD_LOG( LAST_SENDER_UID );
 
@@ -1935,7 +1935,7 @@ IMPL_ON_FUNC( ERM_GAME_START_REQ )
 	{
 		if( CXSLRoom::IsValidWinKillNum( m_cGameType, m_cWinningNumKill ) == false )
 		{
-			START_LOG( cerr, L"대전 게임 시작시 킬수세팅이 이상함." )
+			START_LOG( cerr, L"Invalid kill-count setting at PvP game start." )
 				<< BUILD_LOG( FIRST_SENDER_UID )
 				<< BUILD_LOGc( m_cWinningNumKill )
 				<< END_LOG;
@@ -1948,7 +1948,7 @@ IMPL_ON_FUNC( ERM_GAME_START_REQ )
 		// 플레이 타임 검사
 		if( CXSLRoom::IsValidPvpPlayTime( m_cGameType, static_cast<int>(GetPlayTimeLimit()) ) == false )
 		{
-			START_LOG( cerr, L"대전방 플레이 타임 세팅값이 이상하다." )
+			START_LOG( cerr, L"Invalid PvP room play-time setting." )
 				<< BUILD_LOG( FIRST_SENDER_UID )
 				<< BUILD_LOGc( m_cGameType )
 				<< BUILD_LOG( GetPlayTimeLimit() )
@@ -1974,7 +1974,7 @@ IMPL_ON_FUNC( ERM_GAME_START_REQ )
 		{
 			if( m_spRoomUserManager->CheckAuthLevel( FIRST_SENDER_UID ) == true /*&& KSimLayer::GetKObj()->GetAuthFlag() == KSimLayer::AF_INTERNAL*/ )
 			{
-				START_LOG( clog, L"개발자 강제게임시작" )
+				START_LOG( clog, L"Developer-forced game start" )
 					<< BUILD_LOG( FIRST_SENDER_UID );
 
 				//{{ 2012. 11. 26	박세훈	옵저버 모드 수정
@@ -2015,7 +2015,7 @@ IMPL_ON_FUNC( ERM_GAME_START_REQ )
 		{
 			if( m_spRoomUserManager->CheckAuthLevel( FIRST_SENDER_UID ) == true /*&& KSimLayer::GetKObj()->GetAuthFlag() == KSimLayer::AF_INTERNAL*/ )
 			{
-				START_LOG( clog, L"개발자 강제게임시작" )
+				START_LOG( clog, L"Developer-forced game start" )
 					<< BUILD_LOG( FIRST_SENDER_UID );
 
 				//강제 올레디
@@ -2028,7 +2028,7 @@ IMPL_ON_FUNC( ERM_GAME_START_REQ )
 				int nRed, nBlue;
 				if( m_spRoomUserManager->GetTeamNum( nRed, nBlue ) == false )
 				{
-					START_LOG( cerr, L"Team 인원 얻어오기 실패.!" )
+					START_LOG( cerr, L"Failed to retrieve team member count!" )
 						<< END_LOG;
 					return;
 				}
@@ -2054,7 +2054,7 @@ IMPL_ON_FUNC( ERM_GAME_START_REQ )
 		{
 			if( m_spRoomUserManager->CheckAuthLevel( FIRST_SENDER_UID ) == true /*&& KSimLayer::GetKObj()->GetAuthFlag() == KSimLayer::AF_INTERNAL*/ )
 			{
-				START_LOG( clog, L"개발자 강제게임시작" )
+				START_LOG( clog, L"Developer-forced game start" )
 					<< BUILD_LOG( FIRST_SENDER_UID );
 			}
 			else
@@ -2086,7 +2086,7 @@ IMPL_ON_FUNC( ERM_GAME_START_REQ )
 	//{{ 2008. 5. 27  최육사  랜덤맵
 	if( kPacket_.m_sWorldID == 0 )
 	{
-		START_LOG( cerr, L"이상한 대전맵 정보가 왔다." )
+		START_LOG( cerr, L"Unexpected PvP map information received." )
 			<< BUILD_LOG( kPacket_.m_sWorldID )
 			<< END_LOG;
 
@@ -2187,7 +2187,7 @@ _IMPL_ON_FUNC( ERM_NPC_UNIT_CREATE_REQ, KEGS_NPC_UNIT_CREATE_REQ )
 			{
 				if( m_kPvpMonsterManager.CreatePvpMonster( kNpcUnitInfo, kNPCInfo.m_kNPCUnitReq.m_UID ) == false )
 				{
-					START_LOG( cerr, L"대전 NPC생성 실패!" )
+					START_LOG( cerr, L"Failed to create PvP NPC!" )
 						<< BUILD_LOG( kNPCInfo.m_kNPCUnitReq.m_UID )
 						<< END_LOG;
 					continue;
@@ -3082,7 +3082,7 @@ IMPL_ON_FUNC( ERM_MY_USER_UNIT_INFO_TO_SERVER_REQ )
 
     if( m_spRoomUserManager->IsAllPlayerHPReported() )
     {
-        START_LOG( clog2, L"모든 유저 HP 리포트." )
+        START_LOG( clog2, L"HP report for all users." )
             << BUILD_LOG( GetStateID() )
             << BUILD_LOG( GetStateIDString() );
 
@@ -3108,7 +3108,7 @@ IMPL_ON_FUNC_NOPARAM( ERM_LEAVE_GAME_REQ )
 	float fPlayTime = 0.0f;
 	m_spRoomUserManager->GetPlayTime( FIRST_SENDER_UID, fPlayTime );
 
-	START_LOG( clog2, L"이탈 플레이 타임[센터서버]" )
+	START_LOG( clog2, L"Exit play time [CenterServer]" )
 		<< BUILD_LOG( static_cast<int>(fPlayTime) );
 
     if( !m_spRoomUserManager->LeaveGame( FIRST_SENDER_UID ) )
@@ -3131,7 +3131,7 @@ IMPL_ON_FUNC_NOPARAM( ERM_LEAVE_GAME_REQ )
 
 		if( !spRoomUser )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상" )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( FIRST_SENDER_UID )
 				<< END_LOG;
 		}
@@ -3449,7 +3449,7 @@ _IMPL_ON_FUNC( ERM_CHANGE_TEAM_REQ, KEGS_CHANGE_TEAM_REQ )
     KRoomUserPtr spRoomUser = m_spRoomUserManager->GetUser( FIRST_SENDER_UID );
     if( !spRoomUser )
     {
-        START_LOG( cerr, L"룸 유저 검색 실패. 일어나지 않는 상황." )
+        START_LOG( cerr, L"Failed to find room user; this should not happen." )
             << BUILD_LOG( FIRST_SENDER_UID )
             << END_LOG;
         kPacket.m_iOK = NetError::ERR_ROOM_17;
@@ -3510,7 +3510,7 @@ _IMPL_ON_FUNC( ERM_CHANGE_WINNING_NUM_KILL_REQ, KEGS_CHANGE_WINNING_NUM_KILL_REQ
 	//{{ 2009. 10. 22  최육사	대전방 버그수정
 	if( CXSLRoom::IsValidWinKillNum( m_cGameType, static_cast<char>(kPacket_.m_iWinKillNum) ) == false )
 	{
-		START_LOG( cerr, L"대전방 킬수 세팅값이 이상하다." )
+		START_LOG( cerr, L"Invalid PvP room kill-count setting." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOGc( m_cGameType )
 			<< BUILD_LOG( kPacket_.m_iWinKillNum )
@@ -3669,7 +3669,7 @@ _IMPL_ON_FUNC( ERM_CREATE_PVP_ITEM_REQ, KEGS_CREATE_PVP_ITEM_REQ )
 	int iItemID = 0;
 	if( false == SiKDropTable()->DecisionbyAllItem(iGroup, iItemID) )
 	{
-		START_LOG( cerr, L"대전 드롭아이템 얻어오기 실패.!" )
+		START_LOG( cerr, L"Failed to retrieve PvP drop items!" )
 			<< END_LOG;
 
 		kPacket.m_iOK = NetError::ERR_DUNGEON_ITEM_02;
@@ -3744,9 +3744,9 @@ IMPL_ON_FUNC( ERM_UPDATE_PVP_PLAY_UNIT_INFO_NOT )
 {
 	if( GetStateID() != KRoomFSM::S_LOAD )
 	{
-		START_LOG( cerr, L"상태 오류. Name : " << m_strName )
-			<< L"    현재 상태 : " << GetStateIDString() << dbg::endl
-			<< L"    허용 상태 : KRoomFSM::S_LOAD"
+		START_LOG( cerr, L"State error. Name: " << m_strName )
+			<< L"    Current state: " << GetStateIDString() << dbg::endl
+			<< L"    Allowed state: KRoomFSM::S_LOAD"
 			<< END_LOG;
 		return;
 	}
@@ -3754,7 +3754,7 @@ IMPL_ON_FUNC( ERM_UPDATE_PVP_PLAY_UNIT_INFO_NOT )
 	//{{ 2011. 08. 03	최육사	대전 개편
 	if( m_spRoomUserManager->SetPvpPlayResultInfo( FIRST_SENDER_UID, kPacket_.m_kPvpUnitInfo ) == false )
 	{
-		START_LOG( cerr, L"존재 하지 않는 유저 정보를 업데이트 하려고 하였습니다!" )
+		START_LOG( cerr, L"Attempted to update information for a nonexistent user!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
 		return;
@@ -3769,7 +3769,7 @@ _IMPL_ON_FUNC( ERM_PVP_NPC_UNIT_RE_BIRTH_POS_REQ, KEGS_PVP_NPC_UNIT_RE_BIRTH_POS
 	// 대전 NPC인지 검사!
 	if( m_spRoomUserManager->IsPvpNpc( kPacket_.m_iPvpNpcUnitUID ) == false )
 	{
-        START_LOG( cerr, L"대전 NPC가 아닌데 부활을 하려고 하네!? 완전버그!" )
+        START_LOG( cerr, L"Attempted to revive an entity that is not a PvP NPC; unexpected!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_iPvpNpcUnitUID )
 			<< END_LOG;
@@ -3810,7 +3810,7 @@ _IMPL_ON_FUNC( ERM_PVP_NPC_UNIT_INFO_TO_SERVER_REQ, KEGS_PVP_NPC_UNIT_INFO_TO_SE
 
 	if( m_spRoomUserManager->IsAllPlayerHPReported() )
 	{
-		START_LOG( clog2, L"모든 유저 HP 리포트." )
+		START_LOG( clog2, L"HP report for all users." )
 			<< BUILD_LOG( GetStateID() )
 			<< BUILD_LOG( GetStateIDString() );
 
@@ -3862,7 +3862,7 @@ void KPvPRoom::AbuserLogToDB( KRoomUserPtr spRoomUser, int iVSPoint, int iEXP )
 {
 	if( spRoomUser == NULL )
 	{
-		START_LOG( cerr, L"룸 유저 포인터 이상" )
+		START_LOG( cerr, L"Invalid room user pointer." )
 			<< END_LOG;
 		return;
 	}
@@ -3893,7 +3893,7 @@ void KPvPRoom::AbuserLogToDB( KRoomUserPtr spRoomUser, int iVSPoint, int iEXP )
 	kPacketLog.m_iDeathCount	 = spRoomUser->GetNumDie();
 	SendToLogDB( ELOG_INSERT_ABUSER_LOG_NOT, kPacketLog );
 
-	START_LOG( clog2, L"어뷰저 딱걸렸어!" )
+	START_LOG( clog2, L"Abuser detected!" )
 		<< BUILD_LOG( kPacketLog.m_iUserUID )
 		<< BUILD_LOG( kPacketLog.m_iUnitUID )
 		<< BUILD_LOG( kPacketLog.m_wstrIP )
@@ -3916,7 +3916,7 @@ void KPvPRoom::PvPLogToFile( KRoomUserPtr spRoomUser, int iVSPoint, int iEXP, in
 {
 	if( spRoomUser == NULL )
 	{
-		START_LOG( cerr, L"룸 유저 포인터 이상, 대전 로그를 기록할 수 없습니다." )
+		START_LOG( cerr, L"Invalid room-user pointer; cannot record PvP log." )
 			<< END_LOG;
 		return;
 	}
@@ -4159,7 +4159,7 @@ void KPvPRoom::Rematch()
 
 	if( SiKPvpMatchManager()->DecisionPvpMap( false, m_mapAllPlayersSelectedMap, m_sWorldID ) == false )
 	{
-		START_LOG( cerr, L"대전 맵 결정 실패!" )
+		START_LOG( cerr, L"Failed to select PvP map!" )
 			<< BUILD_LOG( m_mapAllPlayersSelectedMap.size() )
 			<< END_LOG;
 	}

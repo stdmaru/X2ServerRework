@@ -89,7 +89,7 @@ IMPL_ON_FUNC_NOPARAM( EGS_CREATE_PERSONAL_SHOP_REQ )
 
 	kPacket.m_iOK = NetError::ERR_PERSONAL_SHOP_01;
 
-	START_LOG( cerr, L"개인상점 생성위치가 잘못되었음.!" )
+	START_LOG( cerr, L"Invalid personal shop creation location!" )
 		<< BUILD_LOG( GetCharName() )
 		<< BUILD_LOG( GetCharUID() )
 		<< BUILD_LOG( NetError::GetErrStr( kPacket.m_iOK ) )
@@ -161,7 +161,7 @@ IMPL_ON_FUNC( ERM_OPEN_PERSONAL_SHOP_ACK )
 	//{{ 2010. 03. 17  최육사	상태 오류 수정
 	if( GetRoomUID() == 0 )
 	{
-		START_LOG( cerr, L"개인상점을 개설했는데 현재 위치가 거래광장이 아니다? 있을수 없는에러!" )
+		START_LOG( cerr, L"Personal shop opened outside the trading plaza; this should never happen!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< END_LOG;
 	}
@@ -169,7 +169,7 @@ IMPL_ON_FUNC( ERM_OPEN_PERSONAL_SHOP_ACK )
 	{
 		if( CXSLRoom::GetRoomType( GetRoomUID() ) != CXSLRoom::RT_SQUARE )
 		{
-			START_LOG( cerr, L"개인상점을 개설했는데 현재 위치가 거래광장이 아니다?" )
+			START_LOG( cerr, L"Personal shop opened, but current location is not the trading plaza?" )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( GetRoomUID() )
 				<< BUILD_LOG( CXSLRoom::GetRoomType( GetRoomUID() ) )
@@ -199,7 +199,7 @@ IMPL_ON_FUNC( EGS_REG_PERSONAL_SHOP_ITEM_REQ )
 		//{{ 2012. 03. 29	최육사	Inventory Lock 기능
 		if( m_kInventory.IsLocked() == true )
 		{
-			START_LOG( cout, L"인벤토리 락이 걸려있는 상태입니다!" )
+			START_LOG( cout, L"The inventory is locked!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharName() )
@@ -227,7 +227,7 @@ IMPL_ON_FUNC( EGS_REG_PERSONAL_SHOP_ITEM_REQ )
 
 		if( iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"등록하려는 아이템 이상" )
+			START_LOG( cerr, L"Invalid item to register." )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( GetName() )
@@ -245,7 +245,7 @@ IMPL_ON_FUNC( EGS_REG_PERSONAL_SHOP_ITEM_REQ )
 		//{{ 2011. 04. 11	최육사	거래 제한
 		if( kRegPShopItemInfo.m_iPricePerOne > SEnum::UI_MAX_PSHOP_ED )
 		{
-			START_LOG( cerr, L"등록 가능한 판매ED량을 초과하였습니다. 해킹인가?" )
+			START_LOG( cerr, L"The amount of ED listed for sale exceeds the allowed limit; possible hacking." )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( GetName() )
@@ -306,7 +306,7 @@ IMPL_ON_FUNC( EGS_REG_PERSONAL_SHOP_ITEM_REQ )
 
 	if( kReq.m_vecSellItemInfo.size() == 0 )
 	{
-		START_LOG( cerr, L"판매할려는 아이템 종류 & 수량이 잘못되었음.!" )
+		START_LOG( cerr, L"Invalid item type or quantity for sale!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetName() )
@@ -322,7 +322,7 @@ IMPL_ON_FUNC( EGS_REG_PERSONAL_SHOP_ITEM_REQ )
 	{
 		//08.02.13 hoons : 이런상황이 발생한다면 임시방편으로 개인상점 중지 패킷을 보내야 할것 같음.
 
-		START_LOG( cerr, L"물품을 등록할려는 상점 UID가 잘못되었음.!" )
+		START_LOG( cerr, L"Invalid shop UID for listing the item!" )
 			<< BUILD_LOG( GetPersonalShopUID() )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetCharUID() )
@@ -344,7 +344,7 @@ IMPL_ON_FUNC( EGS_REG_PERSONAL_SHOP_ITEM_REQ )
 
 	if( iTotalSellPrice > static_cast<__int64>(SEnum::UI_MAX_ED_CHAR_HAVE) )
 	{
-		START_LOG( cerr, L"최대 판매가능한 금액을 넘어서는 상품등록임." )
+		START_LOG( cerr, L"The listing exceeds the maximum sale price." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( iTotalSellPrice )
 			<< END_LOG;
@@ -355,7 +355,7 @@ IMPL_ON_FUNC( EGS_REG_PERSONAL_SHOP_ITEM_REQ )
 
 	if( CheckMaxED( iTotalSellPrice	) == false )
 	{
-		START_LOG( cerr, L"최대 ED를 초과하는 판매금액임. 클라에서 검사했을텐데.." )
+		START_LOG( cerr, L"The sale price exceeds the maximum ED; the client should have checked this." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( iTotalSellPrice )
 			<< END_LOG;
@@ -368,7 +368,7 @@ IMPL_ON_FUNC( EGS_REG_PERSONAL_SHOP_ITEM_REQ )
 	//예외 조건이 없다면 상점방으로 등록패킷을 보냄..
 	_SendToCnRoom( GetPersonalShopUID(), ERM_REG_PERSONAL_SHOP_ITEM_REQ, kReq );
 
-	START_LOG( clog, L"개인상점 물품등록 패킷 보냄.!" );
+	START_LOG( clog, L"Sent personal shop item registration packet!" );
 	return;
 
 end_proc:
@@ -427,7 +427,7 @@ IMPL_ON_FUNC( ERM_REG_PERSONAL_SHOP_ITEM_ACK )
 			//{{ 2010. 03. 17  최육사	상태오류수정
 			if( GetRoomUID() == 0 )
 			{
-				START_LOG( cerr, L"개인상점에 아이템등록 성공했는데 현재 위치가 방이 아니다?" )
+				START_LOG( cerr, L"Item listing succeeded, but the user is not currently in a room." )
 					<< BUILD_LOG( GetCharUID() )
 					<< END_LOG;
 			}
@@ -435,7 +435,7 @@ IMPL_ON_FUNC( ERM_REG_PERSONAL_SHOP_ITEM_ACK )
 			{
 				if( CXSLRoom::GetRoomType( GetRoomUID() ) != CXSLRoom::RT_SQUARE )
 				{
-					START_LOG( cerr, L"개인상점에 아이템등록 성공했는데 현재 위치가 거래광장이 아니다?" )
+					START_LOG( cerr, L"Item registered in personal shop, but current location is not the trading plaza?" )
 						<< BUILD_LOG( GetCharUID() )
 						<< BUILD_LOG( GetRoomUID() )
 						<< BUILD_LOG( CXSLRoom::GetRoomType( GetRoomUID() ) )
@@ -546,7 +546,7 @@ IMPL_ON_FUNC( EGS_JOIN_PERSONAL_SHOP_REQ )
 		{
 			if( GetPShopAgencyUID() == 0 )
 			{
-				START_LOG( cerr, L"대리 상인 개설자가 아닌데 Agency타입으로 참여할려고 시도를함.!" )
+				START_LOG( cerr, L"Attempted to join as an agency even though the user did not open the agency shop!" )
 					<< BUILD_LOG( GetUID() )
 					<< BUILD_LOG( GetCharUID() )
 					<< BUILD_LOG( GetName() )
@@ -579,7 +579,7 @@ IMPL_ON_FUNC( EGS_JOIN_PERSONAL_SHOP_REQ )
 
 	default:
 		{
-			START_LOG( cerr, L"스테이지 키값이상." )
+			START_LOG( cerr, L"Invalid stage key." )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( kPacket_.m_cStageKey )
 				<< END_LOG;
@@ -587,7 +587,7 @@ IMPL_ON_FUNC( EGS_JOIN_PERSONAL_SHOP_REQ )
 		}
 	}
 
-	START_LOG( cerr, L"광장이 아닌데 개인상점에 참여할려고 시도를함.!" )
+	START_LOG( cerr, L"Attempted to join a personal shop outside the plaza!" )
 		<< BUILD_LOG( GetUID() )
 		<< BUILD_LOG( GetCharUID() )
 		<< BUILD_LOG( GetName() )
@@ -655,7 +655,7 @@ IMPL_ON_FUNC( EGS_BREAK_PERSONAL_SHOP_REQ )
 		GetStateID() == KGSFSM::S_LOGINED ||
 		GetStateID() == KGSFSM::S_SERVER_SELECT )
 	{
-		START_LOG( cerr, L"잘못된 상태!" )
+		START_LOG( cerr, L"Invalid state!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
@@ -663,7 +663,7 @@ IMPL_ON_FUNC( EGS_BREAK_PERSONAL_SHOP_REQ )
 
 	if( GetPersonalShopUID() == 0 )
 	{
-		START_LOG( cerr, L"개인상점 UID 이상.!" )
+		START_LOG( cerr, L"Invalid personal shop UID!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
@@ -678,7 +678,7 @@ IMPL_ON_FUNC( EGS_BREAK_PERSONAL_SHOP_REQ )
 	// 대리상점 개설자인지 판단
 	if( GetPShopAgencyUID() != 0 )
 	{
-		START_LOG( cerr, L"대리상점이 개설자인데 왜 이 패킷으로 방을 이탈하려고 하지? 절대 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"Agency shop owner attempted to leave the room with this packet; this should never happen!" )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( GetPShopAgencyUID() )
 			<< END_LOG;
@@ -702,7 +702,7 @@ _IMPL_ON_FUNC( ERM_BREAK_PERSONAL_SHOP_ACK, KEGS_BREAK_PERSONAL_SHOP_ACK )
 		GetStateID() == KGSFSM::S_LOGINED ||
 		GetStateID() == KGSFSM::S_SERVER_SELECT )
 	{
-		START_LOG( cerr, L"잘못된 상태!" )
+		START_LOG( cerr, L"Invalid state!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
@@ -737,7 +737,7 @@ IMPL_ON_FUNC( ERM_BREAK_PERSONAL_SHOP_NOT )
 		GetStateID() == KGSFSM::S_LOGINED ||
 		GetStateID() == KGSFSM::S_SERVER_SELECT )
 	{
-		START_LOG( cerr, L"잘못된 상태!" )
+		START_LOG( cerr, L"Invalid state!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
@@ -779,7 +779,7 @@ IMPL_ON_FUNC_NOPARAM( EGS_LEAVE_PERSONAL_SHOP_REQ )
 		GetStateID() == KGSFSM::S_LOGINED ||
 		GetStateID() == KGSFSM::S_SERVER_SELECT )
 	{
-		START_LOG( cerr, L"잘못된 상태!" )
+		START_LOG( cerr, L"Invalid state!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
@@ -787,7 +787,7 @@ IMPL_ON_FUNC_NOPARAM( EGS_LEAVE_PERSONAL_SHOP_REQ )
 
 	if( GetPersonalShopUID() == 0 )
 	{
-		START_LOG( cerr, L"개인상점 UID 이상.!" )
+		START_LOG( cerr, L"Invalid personal shop UID!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetRoomUID() )
 			<< BUILD_LOG( CXSLRoom::GetRoomType( GetRoomUID() ) )
@@ -815,7 +815,7 @@ _IMPL_ON_FUNC( ERM_LEAVE_PERSONAL_SHOP_ACK, KEGS_LEAVE_PERSONAL_SHOP_ACK )
 		GetStateID() == KGSFSM::S_LOGINED ||
 		GetStateID() == KGSFSM::S_SERVER_SELECT )
 	{
-		START_LOG( cerr, L"잘못된 상태!" )
+		START_LOG( cerr, L"Invalid state!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
@@ -842,7 +842,7 @@ IMPL_ON_FUNC( EGS_BUY_PERSONAL_SHOP_ITEM_REQ )
 		//{{ 2012. 03. 29	최육사	Inventory Lock 기능
 		if( m_kInventory.IsLocked() == true )
 		{
-			START_LOG( cout, L"인벤토리 락이 걸려있는 상태입니다!" )
+			START_LOG( cout, L"The inventory is locked!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharName() )
@@ -872,7 +872,7 @@ IMPL_ON_FUNC( EGS_BUY_PERSONAL_SHOP_ITEM_REQ )
 
 		if( GetPersonalShopUID() == 0 )
 		{
-			START_LOG( cerr, L"개인상점 UID 이상.!" )
+			START_LOG( cerr, L"Invalid personal shop UID!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( GetCharName() )
 				<< END_LOG;
@@ -884,7 +884,7 @@ IMPL_ON_FUNC( EGS_BUY_PERSONAL_SHOP_ITEM_REQ )
 
 		if( kPacket_.m_iItemUID <= 0 )
 		{
-			START_LOG( cerr, L"개인상점 ItemUID 이상.!" )
+			START_LOG( cerr, L"Invalid personal shop ItemUID!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( GetCharName() )
 				<< BUILD_LOG( kPacket_.m_iItemUID )
@@ -896,7 +896,7 @@ IMPL_ON_FUNC( EGS_BUY_PERSONAL_SHOP_ITEM_REQ )
 		}
 		if( kPacket_.m_iItemID <= 0 )
 		{
-			START_LOG( cerr, L"개인상점 ItemID 이상.!" )
+			START_LOG( cerr, L"Invalid personal shop ItemID!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( GetCharName() )
 				<< BUILD_LOG( kPacket_.m_iItemID )
@@ -908,7 +908,7 @@ IMPL_ON_FUNC( EGS_BUY_PERSONAL_SHOP_ITEM_REQ )
 		}
 		if( kPacket_.m_iQuantity <= 0 )
 		{
-			START_LOG( cerr, L"개인상점 Quantity 이상.!" )
+			START_LOG( cerr, L"Invalid personal shop quantity!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( GetCharName() )
 				<< BUILD_LOG( kPacket_.m_iQuantity )
@@ -934,7 +934,7 @@ IMPL_ON_FUNC( EGS_BUY_PERSONAL_SHOP_ITEM_REQ )
 	// 살려는 아이템을 넣을 인벤토리가 있는지 검사.
 	if( m_kInventory.CheckTradeItemIn( vecItemIn, kPacket.m_kItemQuantityUpdateTemp, kPacket.m_vecItemInfoTemp, CXSLRoom::RT_PERSONAL_SHOP ) == false )
 	{
-		START_LOG( clog, L"개인상점 아이템 구매 실패!" )
+		START_LOG( clog, L"Failed to purchase personal shop item!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< END_LOG;
 
@@ -951,7 +951,7 @@ IMPL_ON_FUNC( EGS_BUY_PERSONAL_SHOP_ITEM_REQ )
 
 	SetPersonalShopBuyItemInfo( kPacket );
 
-	START_LOG( clog, L"개인상점 구매 처리 정보 확인" )
+	START_LOG( clog, L"Checking personal shop purchase processing information" )
 		<< BUILD_LOG( GetPersonalShopUID() )
 		<< BUILD_LOG( kPacket.m_iBuyItemUID )
 		<< BUILD_LOG( kPacket.m_iBuyItemID )
@@ -984,7 +984,7 @@ _IMPL_ON_FUNC( ERM_UPDATE_SQUARE_PERSONAL_SHOP_INFO_NOT, KEGS_UPDATE_SQUARE_PERS
 		return;
 	}
 
-	START_LOG( cerr, L"광장이 아닌데 광장 개인상점 업데이트 정보가 옴.!" )
+	START_LOG( cerr, L"Received a plaza personal shop update outside the plaza!" )
 		<< BUILD_LOG( GetCharUID() )
 		<< BUILD_LOG( GetCharName() )
 		<< BUILD_LOG( GetRoomUID() )
@@ -1008,7 +1008,7 @@ IMPL_ON_FUNC( ERM_CONFIRM_BUY_PERSONAL_SHOP_ITEM_REQ )
 
 	if( !m_kInventory.CheckTradeItemOut( vecItemOut, kPacketAck.m_kItemQuantityUpdateTemp, CXSLRoom::RT_PERSONAL_SHOP ) )
 	{
-		START_LOG( cerr, L"개인상점 confirm 체크 실패!" )
+		START_LOG( cerr, L"Personal shop confirmation check failed!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_kSellItemInfo.m_iItemUID )
 			<< END_LOG;
@@ -1032,7 +1032,7 @@ _IMPL_ON_FUNC( ERM_UPDATE_PERSONAL_SHOP_ITEM_INFO_NOT, KEGS_UPDATE_PERSONAL_SHOP
 
 	if( GetPersonalShopUID() == 0 )
 	{
-		START_LOG( cerr, L"개인상점 UID 이상.!" )
+		START_LOG( cerr, L"Invalid personal shop UID!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
@@ -1040,7 +1040,7 @@ _IMPL_ON_FUNC( ERM_UPDATE_PERSONAL_SHOP_ITEM_INFO_NOT, KEGS_UPDATE_PERSONAL_SHOP
 		return;
 	}
 
-	START_LOG( clog, L"개인상점 아이템 정보 업데이트.!" )
+	START_LOG( clog, L"Updating personal shop item information!" )
 		<< BUILD_LOG( GetCharUID() )
 		<< BUILD_LOG( GetCharName() )
 		<< BUILD_LOG( kPacket_.m_iItemUID )
@@ -1057,7 +1057,7 @@ _IMPL_ON_FUNC( ERM_BUY_PERSONAL_SHOP_ITEM_COMPLETE_NOT, KDBE_BUY_PERSONAL_SHOP_I
 
 	if( GetPersonalShopUID() == 0 )
 	{
-		START_LOG( cerr, L"개인상점 UID 이상.!" )
+		START_LOG( cerr, L"Invalid personal shop UID!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
@@ -1272,7 +1272,7 @@ _IMPL_ON_FUNC( ERM_BUY_PERSONAL_SHOP_ITEM_COMPLETE_NOT, KDBE_BUY_PERSONAL_SHOP_I
 			{
 				for( const KInventoryItemInfo& kInsertItemInfo : vecInsertInventoryTemp )
 				{
-					START_LOG( cerr, L"추가가 실패했다고?!" )
+					START_LOG( cerr, L"Adding the item failed?!" )
 						<< BUILD_LOG( GetCharUID() )
 						<< BUILD_LOG( kInsertItemInfo.m_iItemUID )
 						<< BUILD_LOG( kInsertItemInfo.m_sSlotID )
@@ -1324,7 +1324,7 @@ _IMPL_ON_FUNC( ERM_BUY_PERSONAL_SHOP_ITEM_COMPLETE_NOT, KDBE_BUY_PERSONAL_SHOP_I
 		return;
 	}
 
-	START_LOG( cerr, L"개인상점 거래를 했는데 판매자도 구매자도 아니다.?" )
+	START_LOG( cerr, L"A personal shop transaction occurred, but this user is neither the seller nor the buyer." )
 		<< BUILD_LOG( GetCharUID() )
 		<< BUILD_LOG( kPacket_.m_iBuyUnitUID )
 		<< BUILD_LOG( kPacket_.m_iSellUnitUID )
@@ -1562,7 +1562,7 @@ IMPL_ON_FUNC_NOPARAM( EGS_CREATE_PSHOP_AGENCY_REQ )
 
 	kPacket.m_iOK = NetError::ERR_PERSONAL_SHOP_01;
 
-	START_LOG( cerr, L"개인상점 생성위치가 잘못되었음.!" )
+	START_LOG( cerr, L"Invalid personal shop creation location!" )
 		<< BUILD_LOG( GetCharName() )
 		<< BUILD_LOG( GetCharUID() )
 		<< BUILD_LOG( NetError::GetErrStr( kPacket.m_iOK ) )
@@ -1622,7 +1622,7 @@ IMPL_ON_FUNC( EGS_REG_PSHOP_AGENCY_ITEM_REQ )
 		//{{ 2012. 03. 29	최육사	Inventory Lock 기능
 		if( m_kInventory.IsLocked() == true )
 		{
-			START_LOG( cout, L"인벤토리 락이 걸려있는 상태입니다!" )
+			START_LOG( cout, L"The inventory is locked!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharName() )
@@ -1677,7 +1677,7 @@ IMPL_ON_FUNC( EGS_REG_PSHOP_AGENCY_ITEM_REQ )
     if( static_cast<int>(kPacket_.m_vecRegItem.size()) > iSellItemNum )
     {
         kAck.m_iOK = NetError::ERR_PERSONAL_SHOP_09;
-        START_LOG( cerr, L"대리상인 샵 타입에 따른 아이템 수 허용 초과, User : " << GetUID() )
+        START_LOG( cerr, L"Item count exceeds the limit for this proxy shop type. User: " << GetUID() )
             << BUILD_LOG( kPacket_.m_vecRegItem.size() )
             << BUILD_LOG( iSellItemNum )
             << BUILD_LOGc( m_kUserPersonalShopManager.GetPShopType() )
@@ -1695,7 +1695,7 @@ IMPL_ON_FUNC( EGS_REG_PSHOP_AGENCY_ITEM_REQ )
 
 		if( iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"등록하려는 아이템 이상" )
+			START_LOG( cerr, L"Invalid item to register." )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( GetName() )
@@ -1713,7 +1713,7 @@ IMPL_ON_FUNC( EGS_REG_PSHOP_AGENCY_ITEM_REQ )
 		//{{ 2011. 04. 11	최육사	거래 제한
 		if( kRegPShopItemInfo.m_iPricePerOne > SEnum::UI_MAX_PSHOP_ED )
 		{
-			START_LOG( cerr, L"등록 가능한 판매ED량을 초과하였습니다. 해킹인가?" )
+			START_LOG( cerr, L"The amount of ED listed for sale exceeds the allowed limit; possible hacking." )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( GetName() )
@@ -1750,7 +1750,7 @@ IMPL_ON_FUNC( EGS_REG_PSHOP_AGENCY_ITEM_REQ )
 
 	if( kPacketToDB.m_vecSellItemInfo.size() == 0 )
 	{
-		START_LOG( cerr, L"판매할려는 아이템 종류 & 수량이 잘못되었음.!" )
+		START_LOG( cerr, L"Invalid item type or quantity for sale!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetName() )
@@ -1766,7 +1766,7 @@ IMPL_ON_FUNC( EGS_REG_PSHOP_AGENCY_ITEM_REQ )
 	{
 		//08.02.13 hoons : 이런상황이 발생한다면 임시방편으로 개인상점 중지 패킷을 보내야 할것 같음.
 
-		START_LOG( cerr, L"물품을 등록할려는 상점 UID가 잘못되었음.!" )
+		START_LOG( cerr, L"Invalid shop UID for listing the item!" )
 			<< BUILD_LOG( GetPersonalShopUID() )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetCharUID() )
@@ -1780,7 +1780,7 @@ IMPL_ON_FUNC( EGS_REG_PSHOP_AGENCY_ITEM_REQ )
 
 	if( iTotalSellPrice > static_cast<__int64>(SEnum::UI_MAX_ED_CHAR_HAVE) )
 	{
-		START_LOG( clog, L"최대 판매가능한 금액을 넘어서는 상품등록임." )
+		START_LOG( clog, L"The listing exceeds the maximum sale price." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( iTotalSellPrice )
 			<< END_LOG;
@@ -1791,7 +1791,7 @@ IMPL_ON_FUNC( EGS_REG_PSHOP_AGENCY_ITEM_REQ )
 
 	if( CheckMaxED( iTotalSellPrice	) == false )
 	{
-		START_LOG( clog, L"최대 ED를 초과하는 판매금액임. 클라에서 검사했을텐데.." )
+		START_LOG( clog, L"The sale price exceeds the maximum ED; the client should have checked this." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( iTotalSellPrice )
 			<< END_LOG;
@@ -1802,7 +1802,7 @@ IMPL_ON_FUNC( EGS_REG_PSHOP_AGENCY_ITEM_REQ )
 
 	if( GetPShopAgencyUID() == 0 )
 	{
-		START_LOG( cerr, L"대리 상인 개설도 안되어있는데 아이템 등록하려고 하네? 일어나면 안되는 에러!" )
+		START_LOG( cerr, L"Attempted to list an item without opening a proxy shop; this should never happen!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetPShopAgencyUID() )
 			<< END_LOG;
@@ -1850,7 +1850,7 @@ _IMPL_ON_FUNC( ERM_CHECK_FOR_REG_PSHOP_AGENCY_ITEM_ACK, KEGS_REG_PSHOP_AGENCY_IT
 
 		if( iOK != NetError::NET_OK )
 		{
-			START_LOG( cerr, L"등록하려는 아이템 이상" )
+			START_LOG( cerr, L"Invalid item to register." )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharUID() )
@@ -1868,7 +1868,7 @@ _IMPL_ON_FUNC( ERM_CHECK_FOR_REG_PSHOP_AGENCY_ITEM_ACK, KEGS_REG_PSHOP_AGENCY_IT
 		//{{ 2011. 04. 11	최육사	거래 제한
 		if( kSellPShopItemInfo.m_iPricePerOne > SEnum::UI_MAX_PSHOP_ED )
 		{
-			START_LOG( cerr, L"등록 가능한 판매ED량을 초과하였습니다. 해킹인가?" )
+			START_LOG( cerr, L"The amount of ED listed for sale exceeds the allowed limit; possible hacking." )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharUID() )
@@ -1892,7 +1892,7 @@ _IMPL_ON_FUNC( ERM_CHECK_FOR_REG_PSHOP_AGENCY_ITEM_ACK, KEGS_REG_PSHOP_AGENCY_IT
 
 	if( kReq.m_vecSellItemInfo.size() == 0 )
 	{
-		START_LOG( cerr, L"판매할려는 아이템 종류 & 수량이 잘못되었음.!" )
+		START_LOG( cerr, L"Invalid item type or quantity for sale!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( GetCharUID() )
@@ -1908,7 +1908,7 @@ _IMPL_ON_FUNC( ERM_CHECK_FOR_REG_PSHOP_AGENCY_ITEM_ACK, KEGS_REG_PSHOP_AGENCY_IT
 	{
 		//08.02.13 hoons : 이런상황이 발생한다면 임시방편으로 개인상점 중지 패킷을 보내야 할것 같음.
 
-		START_LOG( cerr, L"물품을 등록할려는 상점 UID가 잘못되었음.!" )
+		START_LOG( cerr, L"Invalid shop UID for listing the item!" )
 			<< BUILD_LOG( GetPersonalShopUID() )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetName() )
@@ -1922,7 +1922,7 @@ _IMPL_ON_FUNC( ERM_CHECK_FOR_REG_PSHOP_AGENCY_ITEM_ACK, KEGS_REG_PSHOP_AGENCY_IT
 
 	if( iTotalSellPrice > static_cast<__int64>(SEnum::UI_MAX_ED_CHAR_HAVE) )
 	{
-		START_LOG( clog, L"최대 판매가능한 금액을 넘어서는 상품등록임." )
+		START_LOG( clog, L"The listing exceeds the maximum sale price." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( iTotalSellPrice )
 			<< END_LOG;
@@ -1933,7 +1933,7 @@ _IMPL_ON_FUNC( ERM_CHECK_FOR_REG_PSHOP_AGENCY_ITEM_ACK, KEGS_REG_PSHOP_AGENCY_IT
 
 	if( CheckMaxED( iTotalSellPrice	) == false )
 	{
-		START_LOG( clog, L"최대 ED를 초과하는 판매금액임. 클라에서 검사했을텐데.." )
+		START_LOG( clog, L"The sale price exceeds the maximum ED; the client should have checked this." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( iTotalSellPrice )
 			<< END_LOG;
@@ -1944,7 +1944,7 @@ _IMPL_ON_FUNC( ERM_CHECK_FOR_REG_PSHOP_AGENCY_ITEM_ACK, KEGS_REG_PSHOP_AGENCY_IT
 
 	if( GetPShopAgencyUID() == 0 )
 	{
-		START_LOG( cerr, L"대리 상인 개설도 안되어있는데 아이템 등록하려고 하네? 일어나면 안되는 에러!" )
+		START_LOG( cerr, L"Attempted to list an item without opening a proxy shop; this should never happen!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetPShopAgencyUID() )
 			<< END_LOG;
@@ -1955,7 +1955,7 @@ _IMPL_ON_FUNC( ERM_CHECK_FOR_REG_PSHOP_AGENCY_ITEM_ACK, KEGS_REG_PSHOP_AGENCY_IT
 
 	if( m_kInventory.DeleteItemForPersonalShopAgency( kPacket_.m_vecSellItemInfo, kReq.m_vecInventorySlotInfo ) == false )
 	{
-		START_LOG( cerr, L"대리상인 개설 준비 실패! 위에서 이미 검사했을텐데 왜 실패했지?" )
+		START_LOG( cerr, L"Failed to prepare the agency shop despite the earlier check!" )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( kPacket_.m_wstrPersonalShopName )
@@ -1985,7 +1985,7 @@ IMPL_ON_FUNC( DBE_PREPARE_REG_PSHOP_AGENCY_ITEM_ACK )
 
 	if( kPacket_.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"대리 상인 개설 준비 DB쿼리 실패!" )
+		START_LOG( cerr, L"Failed database query while preparing to open an agency shop!" )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
@@ -1996,7 +1996,7 @@ IMPL_ON_FUNC( DBE_PREPARE_REG_PSHOP_AGENCY_ITEM_ACK )
 
 	if( GetPShopAgencyUID() == 0 )
 	{
-		START_LOG( cerr, L"대리 상인이 열려있지 않은데 어떻게 이쪽으로 왔지? 버그다!" )
+		START_LOG( cerr, L"Reached this code when no agency shop is open; this is a bug!" )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( m_kUserPersonalShopManager.IsOpenPossiblePShopAgency() )
@@ -2103,7 +2103,7 @@ IMPL_ON_FUNC( EGS_JOIN_MY_PSHOP_AGENCY_REQ )
 	{
 		if( kPacket_.m_cJoinType == KEGS_JOIN_MY_PSHOP_AGENCY_REQ::JT_FOR_PICK_UP )
 		{
-			START_LOG( cerr, L"대리상인이 개설되어있지 않은데 물품받기를 눌렀다!" )
+			START_LOG( cerr, L"Attempted to collect items when no agency shop is open!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
@@ -2115,7 +2115,7 @@ IMPL_ON_FUNC( EGS_JOIN_MY_PSHOP_AGENCY_REQ )
 		}
 		else
 		{
-			START_LOG( cerr, L"대리상인 개설자가 아닌데 join pshop을 하려고 하네?" )
+			START_LOG( cerr, L"Attempted to join a personal shop as an agency without being the agency shop owner?" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
@@ -2152,7 +2152,7 @@ _IMPL_ON_FUNC( ERM_JOIN_MY_PSHOP_AGENCY_ACK, KEGS_JOIN_MY_PSHOP_AGENCY_ACK )
 //{{ 2011. 05. 13	최육사	대리 상인 좀비 유저 버그 해결
 		if( GetPShopAgencyUID() == 0 )
 		{
-			START_LOG( cerr, L"대리상인 개설자가 아니다?" )
+			START_LOG( cerr, L"The user is not the agency shop owner?" )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( GetPersonalShopUID() )
 				<< END_LOG;
@@ -2188,7 +2188,7 @@ IMPL_ON_FUNC_NOPARAM( EGS_LEAVE_PSHOP_AGENCY_REQ )
 		GetStateID() == KGSFSM::S_LOGINED ||
 		GetStateID() == KGSFSM::S_SERVER_SELECT )
 	{
-		START_LOG( cerr, L"잘못된 상태!" )
+		START_LOG( cerr, L"Invalid state!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
@@ -2196,7 +2196,7 @@ IMPL_ON_FUNC_NOPARAM( EGS_LEAVE_PSHOP_AGENCY_REQ )
 
 	if( GetPersonalShopUID() == 0  ||  GetPShopAgencyUID() == 0 )
 	{
-		START_LOG( cerr, L"대리상점 UID 이상.!" )
+		START_LOG( cerr, L"Invalid agency shop UID!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetRoomUID() )
 			<< BUILD_LOG( CXSLRoom::GetRoomType( GetRoomUID() ) )
@@ -2223,7 +2223,7 @@ _IMPL_ON_FUNC( ERM_LEAVE_PSHOP_AGENCY_ACK, KEGS_LEAVE_PSHOP_AGENCY_ACK )
 		GetStateID() == KGSFSM::S_LOGINED ||
 		GetStateID() == KGSFSM::S_SERVER_SELECT )
 	{
-		START_LOG( cerr, L"잘못된 상태!" )
+		START_LOG( cerr, L"Invalid state!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
@@ -2252,7 +2252,7 @@ IMPL_ON_FUNC( ERM_BREAK_PSHOP_AGENCY_NOT )
 		GetStateID() == KGSFSM::S_LOGINED ||
 		GetStateID() == KGSFSM::S_SERVER_SELECT )
 	{
-		START_LOG( cerr, L"잘못된 상태!" )
+		START_LOG( cerr, L"Invalid state!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
@@ -2296,7 +2296,7 @@ _IMPL_ON_FUNC( ERM_BUY_PSHOP_AGENCY_ITEM_COMPLETE_NOT, KERM_BUY_PERSONAL_SHOP_IT
 
 	if( GetPersonalShopUID() == 0 )
 	{
-		START_LOG( cerr, L"개인상점 UID 이상.!" )
+		START_LOG( cerr, L"Invalid personal shop UID!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
@@ -2389,7 +2389,7 @@ _IMPL_ON_FUNC( ERM_BUY_PSHOP_AGENCY_ITEM_COMPLETE_NOT, KERM_BUY_PERSONAL_SHOP_IT
 			{
 				for( const KInventoryItemInfo& kInsertItemInfo : vecInsertInventoryTemp )
 				{
-					START_LOG( cerr, L"추가가 실패했다고?!" )
+					START_LOG( cerr, L"Adding the item failed?!" )
 						<< BUILD_LOG( GetCharUID() )
 						<< BUILD_LOG( kInsertItemInfo.m_iItemUID )
 						<< BUILD_LOG( kInsertItemInfo.m_sSlotID )
@@ -2440,7 +2440,7 @@ _IMPL_ON_FUNC( ERM_BUY_PSHOP_AGENCY_ITEM_COMPLETE_NOT, KERM_BUY_PERSONAL_SHOP_IT
 		return;
 	}
 
-	START_LOG( cerr, L"개인상점 거래를 했는데 판매자도 구매자도 아니다.?" )
+	START_LOG( cerr, L"A personal shop transaction occurred, but this user is neither the seller nor the buyer." )
 		<< BUILD_LOG( GetCharUID() )
 		<< BUILD_LOG( kPacket_.m_iPriceUnitUID )
 		<< BUILD_LOG( kPacket_.m_iSellUnitUID )
@@ -2454,7 +2454,7 @@ IMPL_ON_FUNC_NOPARAM( EGS_STOP_SALE_PSHOP_AGENCY_REQ )
 
 	if( GetPShopAgencyUID() == 0 )
 	{
-		START_LOG( cerr, L"대리 상인이 개설되어있지 않은데 판매 중지 요청이 들어왔다!" )
+		START_LOG( cerr, L"Received a stop-selling request when no agency shop is open!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetCharUID() )
 			<< END_LOG;
@@ -2487,7 +2487,7 @@ IMPL_ON_FUNC( EGS_PICK_UP_FROM_PSHOP_AGENCY_REQ )
 		//{{ 2012. 03. 29	최육사	Inventory Lock 기능
 		if( m_kInventory.IsLocked() == true )
 		{
-			START_LOG( cout, L"인벤토리 락이 걸려있는 상태입니다!" )
+			START_LOG( cout, L"The inventory is locked!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharName() )
@@ -2501,7 +2501,7 @@ IMPL_ON_FUNC( EGS_PICK_UP_FROM_PSHOP_AGENCY_REQ )
 
 		if( GetPShopAgencyUID() == 0 )
 		{
-			START_LOG( cerr, L"대리 상인이 개설되어있지 않은데 물품 가져오기 요청이 들어왔다!" )
+			START_LOG( cerr, L"Received a request to retrieve goods when no proxy shop is open!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( kPacket_.m_vecPickUpItemList.size() )
@@ -2534,7 +2534,7 @@ IMPL_ON_FUNC( ERM_PREPARE_PICK_UP_FROM_PSHOP_AGENCY_REQ )
 
 	if( iCheckTotalED < 0  ||  iCheckTotalED > SEnum::UI_MAX_ED_CHAR_HAVE )
 	{
-		START_LOG( cwarn, L"보유 가능한 ED를 넘어섭니다. 가져오기 실패!" )
+		START_LOG( cwarn, L"Exceeds the maximum ED that can be held; failed to collect!" )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( GetED() )
@@ -2551,7 +2551,7 @@ IMPL_ON_FUNC( ERM_PREPARE_PICK_UP_FROM_PSHOP_AGENCY_REQ )
 	// 현재 인벤토리에 추가 가능한지 검사
 	if( m_kInventory.IsEnoughSpaceExist( kPacket_.m_mapPickUpItemInfo ) == false )
 	{
-		START_LOG( cwarn, L"빈 슬롯이 부족하여 가져오기 실패!" )
+		START_LOG( cwarn, L"Not enough empty slots; failed to collect!" )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( kPacket_.m_mapPickUpItemInfo.size() )
@@ -2655,7 +2655,7 @@ IMPL_ON_FUNC( ERM_PICK_UP_FROM_PSHOP_AGENCY_ACK )
 	{
 		for( const KInventoryItemInfo& kInsertItemInfo : vecInsertInventoryTemp )
 		{
-			START_LOG( cerr, L"추가가 실패했다고?!" )
+			START_LOG( cerr, L"Adding the item failed?!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( kInsertItemInfo.m_iItemUID )
 				<< BUILD_LOG( kInsertItemInfo.m_sSlotID )
@@ -2721,7 +2721,7 @@ IMPL_ON_FUNC( DBE_INSERT_TO_INVENTORY_PICK_UP_FROM_PSHOP_AGENCY_ACK )
 
 	if( kPacket_.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"대리상인에서 가져온 아이템 인벤에 넣기 실패! 절대로 발생하면 안되는 에러!" )
+		START_LOG( cerr, L"Failed to put an item retrieved from the agency shop into inventory; this should never happen!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( NetError::GetErrStr( kPacket_.m_iOK ) )
 			<< END_LOG;
@@ -2772,7 +2772,7 @@ IMPL_ON_FUNC( ERM_CHECK_ZOMBIE_USER_REQ )
 
 	default:
 		{
-            START_LOG( cerr, L"이런 방 타입의 좀비 체크 패킷은 보낸적이 없을텐데?" )
+            START_LOG( cerr, L"A zombie-check packet should not have been sent for this room type." )
 				<< BUILD_LOG( kPacket_.m_iRoomUID )
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;

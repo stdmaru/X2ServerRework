@@ -24,7 +24,7 @@ bool KAutoPartyUser::Accept()
 {
 	if( IsAccepted() == true )
 	{
-		START_LOG( cerr, L"이미 동의한 상태이다!" )
+		START_LOG( cerr, L"The user has already accepted." )
 			<< BUILD_LOG( GetCharUID() )
 			<< END_LOG;
 		return false;
@@ -43,7 +43,7 @@ void KAutoPartyUser::UpdatePartyUserInfo( IN const KPartyUserInfo& kPartyUserInf
 {
 	if( IsEmptyPartyUserInfo() == false )
 	{
-		START_LOG( cerr, L"이미 PartyUserInfo가 있는데 또 업데이트 하러 들어왔네? 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"PartyUserInfo already exists and is being updated again; this should never happen." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( m_vecPartyUserInfo.size() )
 			<< END_LOG;
@@ -60,7 +60,7 @@ bool KAutoPartyUser::GetPartyUserInfo( OUT KPartyUserInfo& kPartyUserInfo )
 {
 	if( IsEmptyPartyUserInfo() == true )
 	{
-		START_LOG( cerr, L"PartyUserInfo가 비어있다! 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"PartyUserInfo is empty; this should never happen." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( m_vecPartyUserInfo.size() )
 			<< END_LOG;
@@ -80,7 +80,7 @@ void KAutoPartyUser::UpdatePartyRoomUserInfo( IN const KPartyRoomUserInfo& kPart
 {
 	if( IsEmptyPartyRoomUserInfo() == false )
 	{
-		START_LOG( cerr, L"이미 PartyRoomUserInfo가 있는데 또 업데이트 하러 들어왔네? 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"PartyRoomUserInfo already exists and is being updated again; this should never happen." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( m_vecPartyRoomUserInfo.size() )
 			<< END_LOG;
@@ -97,7 +97,7 @@ bool KAutoPartyUser::GetPartyRoomUserInfo( OUT KPartyRoomUserInfo& kPartyRoomUse
 {
 	if( IsEmptyPartyRoomUserInfo() == true )
 	{
-		START_LOG( cerr, L"PartyRoomUserInfo가 비어있다! 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"PartyRoomUserInfo is empty; this should never happen." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( m_vecPartyRoomUserInfo.size() )
 			<< END_LOG;

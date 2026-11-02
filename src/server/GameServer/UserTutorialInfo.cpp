@@ -85,7 +85,7 @@ bool KUserTutorialInfo::OnSelectUnitAck( KGSUserPtr spUser, std::vector<KTutoria
 
 		if( KncUtil::ConvertStringToCTime( vit->m_wstrLastDate, LastTime ) == false )
 		{
-			START_LOG( cerr, L"문자열 시간조립 실패.!(;ㅁ; 크리티컬한데..)" )
+			START_LOG( cerr, L"Failed to assemble time string; critical error." )
 				<< BUILD_LOG( vit->m_wstrLastDate )
 				<< BUILD_LOG( spUser->GetCharName() )
 				<< BUILD_LOG( spUser->GetUID() )
@@ -168,7 +168,7 @@ bool KUserTutorialInfo::OnDelTutorialReq( KGSUserPtr spUser, KEGS_DEL_TUTORIAL_R
 
 			default:
 				{
-					START_LOG( cerr, L"사제 타입이 이상함.!" )
+					START_LOG( cerr, L"Invalid mentor/apprentice type!" )
 						<< BUILD_LOG( spUser->GetCharUID() )
 						<< BUILD_LOG( spUser->GetCharName() )
 						<< BUILD_LOG( kInfo.m_iUnitUID )
@@ -226,7 +226,7 @@ bool KUserTutorialInfo::OnDelTutorialAck( KGSUserPtr spUser, KDBE_DEL_TUTORIAL_A
 
 	default:
 		{
-			START_LOG( cerr, L"사제 타입이 이상함.!" )
+			START_LOG( cerr, L"Invalid mentor/apprentice type!" )
 				<< BUILD_LOG( kInfo.m_iTeacherUID )
 				<< BUILD_LOG( kInfo.m_iStudentUID )
 				<< END_LOG;
@@ -435,7 +435,7 @@ void KUserTutorialInfo::ProcCharLevelUP( u_char ucBeforeCharLv, KGSUserPtr spUse
 	{
 		if( GetTutorialUnitNum() > KTutorialManager::TEACHER_NUM )
 		{
-			START_LOG( cerr, L"스승이 너무 많다.?" )
+			START_LOG( cerr, L"Too many mentors?" )
 				<< BUILD_LOG( spUser->GetCharUID() )
 				<< BUILD_LOG( spUser->GetCharName() )
 				<< BUILD_LOG( GetTutorialUnitNum() )
@@ -473,7 +473,7 @@ void KUserTutorialInfo::ProcCharLevelUP( u_char ucBeforeCharLv, KGSUserPtr spUse
 					break;
 
 				default:
-					START_LOG( cerr, L"레벨이 이상하다?" )
+					START_LOG( cerr, L"Invalid level?" )
 						<< BUILD_LOG( spUser->GetCharUID() )
 						<< BUILD_LOG( static_cast<int>(ucLv) )
 						<< END_LOG;
@@ -540,7 +540,7 @@ void KUserTutorialInfo::ProcCharLevelUP( u_char ucBeforeCharLv, KGSUserPtr spUse
 					kPacket.m_iTeacherUID = spUser->GetCharUID();
 					kPacket.m_iStudentUID = vit->m_iUnitUID;
 
-					START_LOG( cerr, L"+ㅁ+ 난 제자란 말이지..!" )
+					START_LOG( cerr, L"+ I'm an apprentice!" )
 						<< BUILD_LOG( spUser->GetCharUID() )
 						<< BUILD_LOG( spUser->GetCharName() )
 						<< BUILD_LOG( vit->m_iUnitUID )

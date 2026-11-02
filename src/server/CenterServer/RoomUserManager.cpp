@@ -61,7 +61,7 @@ void KRoomUserManager::Reset( USERLIST_TYPE eType /* = UT_GAME  */)
         KRoomSlotPtr spRoomSlot = GetSlot( i, eType );
         if( !spRoomSlot )
         {
-            START_LOG( cerr, L"슬롯 포인터 이상. 절대 일어날 수 없는 에러." )
+            START_LOG( cerr, L"Invalid slot pointer; this should never happen." )
                 << END_LOG;
 
             continue;
@@ -103,7 +103,7 @@ KRoomSlotPtr KRoomUserManager::GetSlot( int iSlotID, USERLIST_TYPE eType /* = UT
 {
     if( iSlotID < 0 || iSlotID >= m_nRoomSlot[eType] )
     {
-        START_LOG( cerr, L"슬롯 ID 이상." )
+        START_LOG( cerr, L"Invalid slot ID." )
             << BUILD_LOG( iSlotID )
             << BUILD_LOG( m_nRoomSlot[eType] )
             << END_LOG;
@@ -113,7 +113,7 @@ KRoomSlotPtr KRoomUserManager::GetSlot( int iSlotID, USERLIST_TYPE eType /* = UT
 
     if( !m_vecRoomSlot[eType][iSlotID] )
     {
-        START_LOG( cerr, L"슬롯 포인터 이상." )
+        START_LOG( cerr, L"Invalid slot pointer." )
             << END_LOG;
 
         HandleInvalidSlotPointer( iSlotID, eType );
@@ -129,7 +129,7 @@ KRoomUserPtr KRoomUserManager::GetUser( UidType nCID, USERLIST_TYPE eType /* = U
 
     if( mit == m_mapRoomUser[eType].end() )
     {
-        START_LOG( cwarn, L"존재하지 않는 유저." )
+        START_LOG( cwarn, L"User does not exist." )
             << BUILD_LOG( nCID )
             << END_LOG;
 
@@ -143,7 +143,7 @@ KRoomUserPtr KRoomUserManager::GetUser( int nIndex, USERLIST_TYPE eType /* = UT_
 {
 	if( (int)m_mapRoomUser[eType].size() <= nIndex )
 	{
-		START_LOG( cerr, L"존재하지 않는 유저." )
+		START_LOG( cerr, L"User does not exist." )
 			<< BUILD_LOG( nIndex )
 			<< END_LOG;
 
@@ -158,7 +158,7 @@ KRoomUserPtr KRoomUserManager::GetUser( int nIndex, USERLIST_TYPE eType /* = UT_
 		{
 			if( !mit->second )
 			{
-				START_LOG( cerr, L"룸 유저 포인터 이상." )
+				START_LOG( cerr, L"Invalid room user pointer." )
 					<< BUILD_LOG( mit->first )
 					<< END_LOG;
 
@@ -178,7 +178,7 @@ bool KRoomUserManager::AddUser( KRoomUserPtr spRoomUser, USERLIST_TYPE eType /* 
 {
     if( !spRoomUser )
     {
-        START_LOG( cerr, L"유저 포인터 이상." )
+        START_LOG( cerr, L"Invalid user pointer." )
             << END_LOG;
 
         return false;
@@ -189,7 +189,7 @@ bool KRoomUserManager::AddUser( KRoomUserPtr spRoomUser, USERLIST_TYPE eType /* 
 
 	if( mit != m_mapRoomUser[eType].end() )
 	{
-		START_LOG( cerr, L"이미 존재하는 룸유저임." )
+		START_LOG( cerr, L"Room user already exists." )
 			<< BUILD_LOG( spRoomUser->GetCID() )
 			<< END_LOG;
 
@@ -209,7 +209,7 @@ bool KRoomUserManager::DeleteUser( UidType nCID, USERLIST_TYPE eType /* = UT_GAM
 
     if( mit == m_mapRoomUser[eType].end() )
     {
-        START_LOG( cerr, L"존재하지 않는 룸유저임." )
+        START_LOG( cerr, L"Room user does not exist." )
             << BUILD_LOG( nCID )
             << END_LOG;
 
@@ -225,7 +225,7 @@ bool KRoomUserManager::GetGSUID( IN UidType nCID, OUT UidType& nGSUID, USERLIST_
 	KRoomUserPtr spRoomUser = GetUser( nCID );
 	if( !spRoomUser )
 	{
-		START_LOG( cwarn, L"유저가 없음." )
+		START_LOG( cwarn, L"User is missing." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -325,7 +325,7 @@ int KRoomUserManager::GetNumMember( USERLIST_TYPE eType /* = UT_GAME  */)
     {
         if( !mit->second )
         {
-            START_LOG( cerr, L"룸 유저 포인터 이상." )
+            START_LOG( cerr, L"Invalid room user pointer." )
                 << BUILD_LOG( mit->first )
                 << END_LOG;
         }
@@ -335,7 +335,7 @@ int KRoomUserManager::GetNumMember( USERLIST_TYPE eType /* = UT_GAME  */)
 
     if( iCount != GetNumOccupiedSlot(eType) )
     {
-        START_LOG( cerr, L"유저 맵의 유저 수와 유저가 있는 슬롯의 개수가 다름." )
+        START_LOG( cerr, L"User count in the user map does not match the number of occupied slots." )
             << BUILD_LOG( iCount )
             << BUILD_LOG( GetNumOccupiedSlot(eType) )
             << END_LOG;
@@ -356,7 +356,7 @@ int KRoomUserManager::GetNumPlaying( USERLIST_TYPE eType /* = UT_GAME  */)
     {
         if( !mit->second )
         {
-            START_LOG( cerr, L"룸 유저 포인터 이상." )
+            START_LOG( cerr, L"Invalid room user pointer." )
                 << BUILD_LOG( mit->first )
                 << END_LOG;
             continue;
@@ -383,7 +383,7 @@ int KRoomUserManager::GetTeamNumPlaying(CXSLRoom::TEAM_NUM eTeamNum, USERLIST_TY
 	{
 		if( !mit->second )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -410,7 +410,7 @@ int KRoomUserManager::GetNumResultPlayer( USERLIST_TYPE eType /* = UT_GAME  */)
     {
         if( !mit->second )
         {
-            START_LOG( cerr, L"룸 유저 포인터 이상." )
+            START_LOG( cerr, L"Invalid room user pointer." )
                 << BUILD_LOG( mit->first )
                 << END_LOG;
             continue;
@@ -437,7 +437,7 @@ int KRoomUserManager::GetNumReadyPlayer( USERLIST_TYPE eType /* = UT_GAME  */)
     {
         if( !mit->second )
         {
-            START_LOG( cerr, L"룸 유저 포인터 이상." )
+            START_LOG( cerr, L"Invalid room user pointer." )
                 << BUILD_LOG( mit->first )
                 << END_LOG;
             continue;
@@ -464,7 +464,7 @@ int KRoomUserManager::GetLiveMember( USERLIST_TYPE eType /* = UT_GAME  */)
 	{
 		if( !mit->second )
 		{
-			START_LOG( cwarn, L"룸 유저 포인터 이상." )
+			START_LOG( cwarn, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -495,7 +495,7 @@ int KRoomUserManager::GetNumMemberOverLevel( IN const char cLevel, IN USERLIST_T
 	{
 		if( IS_NULL( mit->second ) )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -509,7 +509,7 @@ int KRoomUserManager::GetNumMemberOverLevel( IN const char cLevel, IN USERLIST_T
 
 	if( iCount != GetNumOccupiedSlot(eType) )
 	{
-		START_LOG( cerr, L"유저 맵의 유저 수와 유저가 있는 슬롯의 개수가 다름." )
+		START_LOG( cerr, L"User count in the user map does not match the number of occupied slots." )
 			<< BUILD_LOG( iCount )
 			<< BUILD_LOG( GetNumOccupiedSlot(eType) )
 			<< END_LOG;
@@ -527,7 +527,7 @@ void KRoomUserManager::GetUnitLevelList( OUT std::map< UidType, int >& mapUnitLe
 	{
 		if( IS_NULL( mit->second ) )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -549,7 +549,7 @@ void KRoomUserManager::GetUnitUIDByPartyUIDList( OUT std::map< UidType, UidType 
 	{
 		if( IS_NULL( mit->second ) )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -570,7 +570,7 @@ int	KRoomUserManager::GetHostCount() const
 		{
 			if( IS_NULL( mit->second ) )
 			{
-				START_LOG( cwarn, L"룸 유저 포인터 이상." )
+				START_LOG( cwarn, L"Invalid room user pointer." )
 					<< BUILD_LOG( mit->first )
 					<< END_LOG;
 				continue;
@@ -589,7 +589,7 @@ int	KRoomUserManager::GetHostCount() const
 		{
 			if( IS_NULL( mit->second ) )
 			{
-				START_LOG( cwarn, L"룸 유저 포인터 이상." )
+				START_LOG( cwarn, L"Invalid room user pointer." )
 					<< BUILD_LOG( mit->first )
 					<< END_LOG;
 				continue;
@@ -609,7 +609,7 @@ bool KRoomUserManager::ReselectOnlyOneHost( IN const UidType iOldHostUID )
 {
 	if( m_mapRoomUser[UT_GAME].size() < 2 )
 	{
-		START_LOG( cerr, L"host를 새로 설정할만큼 현재 인원이 충분하지 않습니다!" )
+		START_LOG( cerr, L"Not enough users remain to assign a new host!" )
 			<< BUILD_LOG( m_mapRoomUser[UT_GAME].size() )
 			<< END_LOG;
 		return false;
@@ -623,7 +623,7 @@ bool KRoomUserManager::ReselectOnlyOneHost( IN const UidType iOldHostUID )
 		{
 			if( IS_NULL( mit->second ) )
 			{
-				START_LOG( cwarn, L"룸 유저 포인터 이상." )
+				START_LOG( cwarn, L"Invalid room user pointer." )
 					<< BUILD_LOG( mit->first )
 					<< END_LOG;
 				continue;
@@ -653,7 +653,7 @@ bool KRoomUserManager::ReselectOnlyOneHost( IN const UidType iOldHostUID )
 		{
 			if( IS_NULL( mit->second ) )
 			{
-				START_LOG( cwarn, L"룸 유저 포인터 이상." )
+				START_LOG( cwarn, L"Invalid room user pointer." )
 					<< BUILD_LOG( mit->first )
 					<< END_LOG;
 				continue;
@@ -671,7 +671,7 @@ bool KRoomUserManager::EnterRoom( IN const KRoomUserInfo& kInfo, IN const bool b
 {
 	if( kInfo.m_kGameStat.m_iBaseHP <= 0 )
 	{
-		START_LOG( cerr, L"방에 유닛 추가중 HP정보 오류" )
+		START_LOG( cerr, L"HP information error while adding unit to room." )
 			<< BUILD_LOG( kInfo.m_iGSUID )
 			<< BUILD_LOGc( kInfo.m_cUnitClass )
 			<< BUILD_LOG( kInfo.m_ucLevel )
@@ -687,7 +687,7 @@ bool KRoomUserManager::EnterRoom( IN const KRoomUserInfo& kInfo, IN const bool b
     KRoomUserPtr spRoomUser = MakeUser( kInfo );
     if( !spRoomUser )
     {
-        START_LOG( cerr, L"룸 유저 생성 실패." )
+        START_LOG( cerr, L"Failed to create room user." )
             << BUILD_LOG( ( int )m_mapRoomUser[eType].size() )
             << END_LOG;
 
@@ -704,7 +704,7 @@ bool KRoomUserManager::EnterRoom( IN const KRoomUserInfo& kInfo, IN const bool b
 
     if( !spRoomSlot )
     {
-		START_LOG( cerr, L"빈 슬롯이 없음." )
+		START_LOG( cerr, L"No empty slot available." )
 			<< BUILD_LOG( GetNumTotalSlot(eType) )
 			<< BUILD_LOG( GetNumOpenedSlot(eType) )
 			<< BUILD_LOG( GetNumOccupiedSlot(eType) )
@@ -715,7 +715,7 @@ bool KRoomUserManager::EnterRoom( IN const KRoomUserInfo& kInfo, IN const bool b
 
     if( !AddUser( spRoomUser, eType ) )
     {
-        START_LOG( cerr, L"룸 유저 추가 실패." )
+        START_LOG( cerr, L"Failed to add room user." )
             << BUILD_LOG( spRoomUser->GetCID() )
             << END_LOG;
 
@@ -724,13 +724,13 @@ bool KRoomUserManager::EnterRoom( IN const KRoomUserInfo& kInfo, IN const bool b
 
     if( !spRoomSlot->Enter( spRoomUser ) )
     {
-        START_LOG( cerr, L"슬롯에 들어가기 실패." )
+        START_LOG( cerr, L"Failed to enter slot." )
             << BUILD_LOG( spRoomSlot->GetSlotID() )
             << END_LOG;
 
         if( DeleteUser( spRoomUser->GetCID(), eType ) == false )
 		{
-			START_LOG( cerr, L"유저삭제 실패.!" )
+			START_LOG( cerr, L"Failed to remove user!" )
 				<< BUILD_LOG( spRoomUser->GetCID() )
 				<< BUILD_LOG( (int)eType )
 				<< END_LOG;
@@ -743,7 +743,7 @@ bool KRoomUserManager::EnterRoom( IN const KRoomUserInfo& kInfo, IN const bool b
 	// 방장 카운트 체크!
 	if( GetHostCount() != 1 )
 	{
-		START_LOG( cerr, L"방에 입장했는데 방장이 한명이 아닙니다!" )
+		START_LOG( cerr, L"Room was entered, but it does not have exactly one host!" )
 			<< BUILD_LOG( spRoomUser->IsHost() )
 			<< BUILD_LOG( spRoomUser->GetNickName() )
 			<< BUILD_LOG( kInfo.m_bIsObserver )
@@ -759,7 +759,7 @@ bool KRoomUserManager::EnterRoom( IN const std::vector< KRoomUserInfo >& vecRedT
 {
 	if( vecRedTeam.size() != vecBlueTeam.size()  ||  vecRedTeam.empty()  ||  vecBlueTeam.empty() )
 	{
-		START_LOG( cerr, L"공식 대전에 유저 입장시킬때 인원수가 다르네? 절대 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"User count mismatch while entering official PvP; this should never happen!" )
 			<< BUILD_LOG( vecRedTeam.size() )
 			<< BUILD_LOG( vecBlueTeam.size() )
 			<< END_LOG;
@@ -775,7 +775,7 @@ bool KRoomUserManager::EnterRoom( IN const std::vector< KRoomUserInfo >& vecRedT
 		// Red팀 입장!
 		if( EnterRoom( vecRedTeam[ui], true ) == false )
 		{
-			START_LOG( cerr, L"대전방 입장에 실패하였습니다!" )
+			START_LOG( cerr, L"Failed to enter PvP room!" )
 				<< BUILD_LOG( vecRedTeam[ui].m_nUnitUID )
 				<< END_LOG;
 			return false;
@@ -783,7 +783,7 @@ bool KRoomUserManager::EnterRoom( IN const std::vector< KRoomUserInfo >& vecRedT
 
 		if( SetReady( vecRedTeam[ui].m_nUnitUID, true ) == false )
 		{
-			START_LOG( cerr, L"레디 설정 실패!" )
+			START_LOG( cerr, L"Failed to set ready state!" )
 				<< BUILD_LOG( vecRedTeam[ui].m_nUnitUID )
 				<< END_LOG;
 			return false;
@@ -796,7 +796,7 @@ bool KRoomUserManager::EnterRoom( IN const std::vector< KRoomUserInfo >& vecRedT
 			{
 				if( SetMatchWaitTime( vecRedTeam[ui].m_nUnitUID, mit->second ) == false )
 				{
-					START_LOG( cerr, L"매치 대기 시간 정보 저장 실패!" )
+					START_LOG( cerr, L"Failed to save match wait-time information!" )
 						<< BUILD_LOG( vecRedTeam[ui].m_nUnitUID )
 						<< BUILD_LOG( mit->second )
 						<< END_LOG;
@@ -811,7 +811,7 @@ bool KRoomUserManager::EnterRoom( IN const std::vector< KRoomUserInfo >& vecRedT
 			mit = mapPvpNpcInfo.find( vecRedTeam[ui].m_nUnitUID );
 			if( mit == mapPvpNpcInfo.end() )
 			{
-				START_LOG( cerr, L"Pvp Npc정보가 없다!" )
+				START_LOG( cerr, L"PvP NPC information is missing!" )
 					<< BUILD_LOG( vecRedTeam[ui].m_nUnitUID )
 					<< END_LOG;
 				return false;
@@ -820,7 +820,7 @@ bool KRoomUserManager::EnterRoom( IN const std::vector< KRoomUserInfo >& vecRedT
 			// NPC정보 저장
 			if( SetPvpNpcInfo( vecRedTeam[ui].m_nUnitUID, mit->second.m_iNpcID ) == false )
 			{
-				START_LOG( cerr, L"Pvp Npc 정보 업데이트 실패!" )
+				START_LOG( cerr, L"Failed to update PvP NPC information!" )
 					<< BUILD_LOG( vecRedTeam[ui].m_nUnitUID )
 					<< BUILD_LOG( mit->second.m_iNpcID )
 					<< END_LOG;
@@ -832,7 +832,7 @@ bool KRoomUserManager::EnterRoom( IN const std::vector< KRoomUserInfo >& vecRedT
 		// Blue팀 입장!
 		if( EnterRoom( vecBlueTeam[ui], true ) == false )
 		{
-			START_LOG( cerr, L"대전방 입장에 실패하였습니다!" )
+			START_LOG( cerr, L"Failed to enter PvP room!" )
 				<< BUILD_LOG( vecBlueTeam[ui].m_nUnitUID )
 				<< END_LOG;
 			return false;
@@ -840,7 +840,7 @@ bool KRoomUserManager::EnterRoom( IN const std::vector< KRoomUserInfo >& vecRedT
 
 		if( SetReady( vecBlueTeam[ui].m_nUnitUID, true ) == false )
 		{
-			START_LOG( cerr, L"레디 설정 실패!" )
+			START_LOG( cerr, L"Failed to set ready state!" )
 				<< BUILD_LOG( vecBlueTeam[ui].m_nUnitUID )
 				<< END_LOG;
 			return false;
@@ -853,7 +853,7 @@ bool KRoomUserManager::EnterRoom( IN const std::vector< KRoomUserInfo >& vecRedT
 			{
 				if( SetMatchWaitTime( vecBlueTeam[ui].m_nUnitUID, mit->second ) == false )
 				{
-					START_LOG( cerr, L"매치 대기 시간 정보 저장 실패!" )
+					START_LOG( cerr, L"Failed to save match wait-time information!" )
 						<< BUILD_LOG( vecBlueTeam[ui].m_nUnitUID )
 						<< BUILD_LOG( mit->second )
 						<< END_LOG;
@@ -868,7 +868,7 @@ bool KRoomUserManager::EnterRoom( IN const std::vector< KRoomUserInfo >& vecRedT
 			mit = mapPvpNpcInfo.find( vecBlueTeam[ui].m_nUnitUID );
 			if( mit == mapPvpNpcInfo.end() )
 			{
-				START_LOG( cerr, L"Pvp Npc정보가 없다!" )
+				START_LOG( cerr, L"PvP NPC information is missing!" )
 					<< BUILD_LOG( vecBlueTeam[ui].m_nUnitUID )
 					<< END_LOG;
 				return false;
@@ -877,7 +877,7 @@ bool KRoomUserManager::EnterRoom( IN const std::vector< KRoomUserInfo >& vecRedT
 			// NPC정보 저장
 			if( SetPvpNpcInfo( vecBlueTeam[ui].m_nUnitUID, mit->second.m_iNpcID ) == false )
 			{
-				START_LOG( cerr, L"Pvp Npc 정보 업데이트 실패!" )
+				START_LOG( cerr, L"Failed to update PvP NPC information!" )
 					<< BUILD_LOG( vecBlueTeam[ui].m_nUnitUID )
 					<< BUILD_LOG( mit->second.m_iNpcID )
 					<< END_LOG;
@@ -890,7 +890,7 @@ bool KRoomUserManager::EnterRoom( IN const std::vector< KRoomUserInfo >& vecRedT
 	m_iRedTeamRating = GetRatingByTeam( CXSLRoom::TN_RED );
 	if( m_iRedTeamRating < 0 )
 	{
-		START_LOG( cerr, L"팀 레이팅을 구하지 못했습니다! 실패 처리!" )
+		START_LOG( cerr, L"Failed to calculate team rating; marking as failed!" )
 			<< BUILD_LOG( m_iRedTeamRating )
 			<< END_LOG;
 		return false;
@@ -899,7 +899,7 @@ bool KRoomUserManager::EnterRoom( IN const std::vector< KRoomUserInfo >& vecRedT
 	m_iBlueTeamRating = GetRatingByTeam( CXSLRoom::TN_BLUE );
 	if( m_iBlueTeamRating < 0 )
 	{
-		START_LOG( cerr, L"팀 레이팅을 구하지 못했습니다! 실패 처리!" )
+		START_LOG( cerr, L"Failed to calculate team rating; marking as failed!" )
 			<< BUILD_LOG( m_iBlueTeamRating )
 			<< END_LOG;
 		return false;
@@ -920,7 +920,7 @@ bool KRoomUserManager::LeaveRoom( IN const UidType iUnitUID )
 
 		if( IS_NULL( spRoomUser ) )
 		{
-			START_LOG( cwarn, L"유저가 없음." )
+			START_LOG( cwarn, L"User is missing." )
 				<< BUILD_LOG( iUnitUID )
 				<< END_LOG;
 
@@ -933,7 +933,7 @@ bool KRoomUserManager::LeaveRoom( IN const UidType iUnitUID )
 
 				if( (*vit)->GetCID() == iUnitUID )
 				{
-					START_LOG( cerr, L"mapRoomUser에는 없는데 vecRoomSlot에는 존재하는 유저가 있다!" )
+					START_LOG( cerr, L"A user exists in vecRoomSlot but not in mapRoomUser!" )
 						<< BUILD_LOG( iUnitUID )
 						<< END_LOG;
 				}
@@ -947,7 +947,7 @@ bool KRoomUserManager::LeaveRoom( IN const UidType iUnitUID )
     KRoomSlotPtr spRoomSlot = GetSlot( spRoomUser->GetSlotID(), eType );
     if( IS_NULL( spRoomSlot ) )
     {
-        START_LOG( cerr, L"슬롯 포인터 이상." )
+        START_LOG( cerr, L"Invalid slot pointer." )
             << BUILD_LOG( spRoomUser->GetSlotID() )
             << END_LOG;
 
@@ -962,7 +962,7 @@ bool KRoomUserManager::LeaveRoom( IN const UidType iUnitUID )
 			// 혹시 여기서도 방장이 두명이상인지 체크하자!
 			if( GetHostCount() != 1 )
 			{
-				START_LOG( cerr, L"호스트가 한명이 아니네? 절대 일어나서는 안되는 에러!" )
+				START_LOG( cerr, L"There is not exactly one host; this should never happen!" )
 					<< BUILD_LOG( GetHostCount() )
 					<< BUILD_LOG( GetNumMember() )
 					<< END_LOG;
@@ -971,7 +971,7 @@ bool KRoomUserManager::LeaveRoom( IN const UidType iUnitUID )
 			// 새로운 방장 임명
 			if( AppointNewHost() == 0 )
 			{
-				START_LOG( cerr, L"새 방장 임명 실패. 절대 일어나서는 안되는 에러!" )
+				START_LOG( cerr, L"Failed to appoint new room host; this should never happen!" )
 					<< BUILD_LOG( GetHostCount() )
 					<< BUILD_LOG( GetNumMember() )
 					<< END_LOG;
@@ -979,7 +979,7 @@ bool KRoomUserManager::LeaveRoom( IN const UidType iUnitUID )
 				// host를 완전히 새로 설정하자!
 				if( ReselectOnlyOneHost( spRoomUser->GetCID() ) == false )
 				{
-					START_LOG( cerr, L"호스트 새로 설정이 실패했다! 절대 일어나서는 안되는 에러!" )
+					START_LOG( cerr, L"Failed to assign a new host; this should never happen!" )
 						<< BUILD_LOG( spRoomUser->GetCID() )
 						<< END_LOG;
 				}
@@ -987,7 +987,7 @@ bool KRoomUserManager::LeaveRoom( IN const UidType iUnitUID )
 				// 호스트 카운트 다시 한번 체크!
 				if( GetHostCount() != 1 )
 				{
-					START_LOG( cerr, L"호스트가 한명이 아니네? 절대 일어나서는 안되는 에러!" )
+					START_LOG( cerr, L"There is not exactly one host; this should never happen!" )
 						<< BUILD_LOG( GetHostCount() )
 						<< BUILD_LOG( GetNumMember() )
 						<< END_LOG;
@@ -1004,7 +1004,7 @@ bool KRoomUserManager::LeaveRoom( IN const UidType iUnitUID )
 
     if( !spRoomSlot->Leave() )
     {
-        START_LOG( cerr, L"슬롯에서 나가기 실패." )
+        START_LOG( cerr, L"Failed to leave slot." )
             << BUILD_LOG( spRoomSlot->GetSlotID() )
             << END_LOG;
 
@@ -1025,7 +1025,7 @@ bool KRoomUserManager::LeaveGame( UidType nCID )
 
 		if( !spRoomUser )
 		{
-			START_LOG( cerr, L"유저가 없음." )
+			START_LOG( cerr, L"User is missing." )
 				<< BUILD_LOG( nCID )
 				<< END_LOG;
 
@@ -1041,7 +1041,7 @@ bool KRoomUserManager::LeaveGame( UidType nCID )
 		{
 			if( AppointNewHost() == 0 )
 			{
-				START_LOG( cerr, L"새 방장 임명 실패." )
+				START_LOG( cerr, L"Failed to appoint new room host." )
 					<< END_LOG;
 
 				return false;
@@ -1084,7 +1084,7 @@ bool KRoomUserManager::SetRoomUserInfo( UidType nCID, const KRoomUserInfo& kInfo
 
 		if( !spRoomUser )
 		{
-			START_LOG( cwarn, L"유저가 없음." )
+			START_LOG( cwarn, L"User is missing." )
 				<< BUILD_LOG( nCID )
 				<< END_LOG;
 
@@ -1103,7 +1103,7 @@ bool KRoomUserManager::ChangeTeam( UidType nCID, int iDestTeam )
     KRoomUserPtr spRoomUser = GetUser( nCID, eType );
     if( !spRoomUser )
     {
-        START_LOG( cwarn, L"유저가 없음.-ChangeTeam()" )
+        START_LOG( cwarn, L"User is missing in ChangeTeam()." )
             << BUILD_LOG( nCID )
             << END_LOG;
 
@@ -1113,7 +1113,7 @@ bool KRoomUserManager::ChangeTeam( UidType nCID, int iDestTeam )
     KRoomSlotPtr spRoomSlotFrom = GetSlot( spRoomUser->GetSlotID() );
     if( !spRoomSlotFrom )
     {
-        START_LOG( cerr, L"슬롯 포인터 이상.-ChangeTeam()" )
+        START_LOG( cerr, L"Invalid slot pointer in ChangeTeam()." )
             << BUILD_LOG( spRoomUser->GetSlotID() )
             << END_LOG;
 
@@ -1122,7 +1122,7 @@ bool KRoomUserManager::ChangeTeam( UidType nCID, int iDestTeam )
 
     if( spRoomSlotFrom->GetTeam() == iDestTeam )
     {
-        START_LOG( cwarn, L"이미 해당 팀에 속해 있음.-ChangeTeam()" )
+        START_LOG( cwarn, L"Already on the specified team in ChangeTeam()." )
             << BUILD_LOG( iDestTeam )
             << END_LOG;
 
@@ -1140,7 +1140,7 @@ bool KRoomUserManager::ChangeTeam( UidType nCID, int iDestTeam )
         }
     }
 
-    START_LOG( cwarn, L"팀 변경 실패." )
+    START_LOG( cwarn, L"Failed to change team." )
         << END_LOG;
 
     return false;
@@ -1152,7 +1152,7 @@ bool KRoomUserManager::CheckTeamChange( UidType nCID )
 	KRoomUserPtr spRoomUser = GetUser( nCID, eType );
 	if( !spRoomUser )
 	{
-		START_LOG( cerr, L"유저가 없음." )
+		START_LOG( cerr, L"User is missing." )
 			<< BUILD_LOG( nCID )
 			<< BUILD_LOG( (int)eType )
 			<< END_LOG;
@@ -1175,7 +1175,7 @@ bool KRoomUserManager::CheckTeamChange( UidType nCID )
 
 		if( !spRoomUserMIT )
 		{
-			START_LOG( cerr, L"유저가 없음." )
+			START_LOG( cerr, L"User is missing." )
 				<< BUILD_LOG( nCID )
 				<< END_LOG;
 
@@ -1186,7 +1186,7 @@ bool KRoomUserManager::CheckTeamChange( UidType nCID )
 
 		if( !spRoomSlot )
 		{
-			START_LOG( cerr, L"슬롯 포인터 이상." )
+			START_LOG( cerr, L"Invalid slot pointer." )
 				<< BUILD_LOG( spRoomUserMIT->GetSlotID() )
 				<< END_LOG;
 
@@ -1219,7 +1219,7 @@ bool KRoomUserManager::CheckTeamChange( UidType nCID )
 
 	if( !spRoomSlot )
 	{
-		START_LOG( cerr, L"슬롯 포인터 이상." )
+		START_LOG( cerr, L"Invalid slot pointer." )
 			<< BUILD_LOG( spRoomUserMIT->GetCID() )
 			<< BUILD_LOG( spRoomUserMIT->GetSlotID() )
 			<< END_LOG;
@@ -1271,7 +1271,7 @@ bool KRoomUserManager::DeathTeamBalance( std::vector<KRoomUserPtr>& vecChangeUni
 
 		if( !spRoomUser )
 		{
-			START_LOG( cwarn, L"유저가 포인터가 잘못되었음.-DeathTeamBalance()" )
+			START_LOG( cwarn, L"Invalid user pointer in DeathTeamBalance()." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 
@@ -1282,7 +1282,7 @@ bool KRoomUserManager::DeathTeamBalance( std::vector<KRoomUserPtr>& vecChangeUni
 
 		if( !spRoomSlot )
 		{
-			START_LOG( cerr, L"슬롯 포인터 이상." )
+			START_LOG( cerr, L"Invalid slot pointer." )
 				<< BUILD_LOG( spRoomUser->GetSlotID() )
 				<< END_LOG;
 
@@ -1340,7 +1340,7 @@ bool KRoomUserManager::DeathTeamBalance( std::vector<KRoomUserPtr>& vecChangeUni
 						rvit = vecRedTeam.rbegin();
 						if( !(*rvit) )
 						{
-							START_LOG( cerr, L"Death Team Match 벨런스 유저포인터 오류" )
+							START_LOG( cerr, L"Invalid user pointer while balancing Death Team Match." )
 								<< BUILD_LOG( vecRedTeam.size() )
 								<< END_LOG;
 
@@ -1368,7 +1368,7 @@ bool KRoomUserManager::DeathTeamBalance( std::vector<KRoomUserPtr>& vecChangeUni
 
 							if( !(*rvit) )
 							{
-								START_LOG( cerr, L"Death Team Match 벨런스 유저포인터 오류" )
+								START_LOG( cerr, L"Invalid user pointer while balancing Death Team Match." )
 									<< BUILD_LOG( vecRedTeam.size() )
 									<< END_LOG;
 
@@ -1399,7 +1399,7 @@ bool KRoomUserManager::DeathTeamBalance( std::vector<KRoomUserPtr>& vecChangeUni
 						rvit = vecBlueTeam.rbegin();
 						if( !(*rvit) )
 						{
-							START_LOG( cerr, L"Death Team Match 벨런스 유저포인터 오류" )
+							START_LOG( cerr, L"Invalid user pointer while balancing Death Team Match." )
 								<< BUILD_LOG( vecRedTeam.size() )
 								<< END_LOG;
 
@@ -1427,7 +1427,7 @@ bool KRoomUserManager::DeathTeamBalance( std::vector<KRoomUserPtr>& vecChangeUni
 
 							if( !(*rvit) )
 							{
-								START_LOG( cerr, L"Death Team Match 벨런스 유저포인터 오류" )
+								START_LOG( cerr, L"Invalid user pointer while balancing Death Team Match." )
 									<< BUILD_LOG( vecRedTeam.size() )
 									<< END_LOG;
 
@@ -1469,7 +1469,7 @@ bool KRoomUserManager::GetTeamNum( int& nRedNum, int& nBlueNum )
 
 		if( !spRoomUser )
 		{
-			START_LOG( cerr, L"유저가 포인터가 잘못되었음." )
+			START_LOG( cerr, L"Invalid user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 
@@ -1480,7 +1480,7 @@ bool KRoomUserManager::GetTeamNum( int& nRedNum, int& nBlueNum )
 
 		if( !spRoomSlot )
 		{
-			START_LOG( cerr, L"슬롯 포인터 이상." )
+			START_LOG( cerr, L"Invalid slot pointer." )
 				<< BUILD_LOG( spRoomUser->GetSlotID() )
 				<< END_LOG;
 
@@ -1517,7 +1517,7 @@ int KRoomUserManager::GetTeamReadyNum(CXSLRoom::TEAM_NUM eTeamNum)
 
 		if( !spRoomUser )
 		{
-			START_LOG( cerr, L"유저가 포인터가 잘못되었음." )
+			START_LOG( cerr, L"Invalid user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 
@@ -1537,7 +1537,7 @@ bool KRoomUserManager::IsReady( UidType nCID, bool& bReady )
     KRoomUserPtr spRoomUser = GetUser( nCID, eType );
     if( !spRoomUser )
     {
-        START_LOG( cerr, L"유저가 없음." )
+        START_LOG( cerr, L"User is missing." )
             << BUILD_LOG( nCID )
             << END_LOG;
 
@@ -1547,7 +1547,7 @@ bool KRoomUserManager::IsReady( UidType nCID, bool& bReady )
     KRoomSlotPtr spRoomSlot = GetSlot( spRoomUser->GetSlotID(), eType );
     if( !spRoomSlot )
     {
-        START_LOG( cerr, L"슬롯 포인터 이상." )
+        START_LOG( cerr, L"Invalid slot pointer." )
             << BUILD_LOG( spRoomUser->GetSlotID() )
             << END_LOG;
 
@@ -1566,7 +1566,7 @@ bool KRoomUserManager::SetReady( IN const UidType nCID, IN const bool bReady, IN
 	KRoomUserPtr spRoomUser = GetUser( nCID, eType );
 	if( !spRoomUser )
 	{
-		START_LOG( cerr, L"룸 유저 검색 실패." )
+		START_LOG( cerr, L"Failed to find room user." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -1576,7 +1576,7 @@ bool KRoomUserManager::SetReady( IN const UidType nCID, IN const bool bReady, IN
 	KRoomSlotPtr spRoomSlot = GetSlot( spRoomUser->GetSlotID() );
 	if( !spRoomSlot )
 	{
-		START_LOG( cerr, L"슬롯 검색 실패." )
+		START_LOG( cerr, L"Failed to find slot." )
 			<< BUILD_LOG( nCID )
 			<< BUILD_LOG( spRoomUser->GetSlotID() )
 			<< END_LOG;
@@ -1596,7 +1596,7 @@ void KRoomUserManager::SetAllReady( bool bReady )
     {
         if( !mit->second )
         {
-            START_LOG( cerr, L"룸 유저 포인터 이상." )
+            START_LOG( cerr, L"Invalid room user pointer." )
                 << BUILD_LOG( mit->first )
                 << END_LOG;
             continue;
@@ -1611,7 +1611,7 @@ bool KRoomUserManager::SetPitIn( UidType nCID, bool bPitIn )
 	KRoomUserPtr spRoomUser = GetUser( nCID, eType );
 	if( !spRoomUser )
 	{
-		START_LOG( cerr, L"룸 유저 검색 실패." )
+		START_LOG( cerr, L"Failed to find room user." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -1621,7 +1621,7 @@ bool KRoomUserManager::SetPitIn( UidType nCID, bool bPitIn )
 	KRoomSlotPtr spRoomSlot = GetSlot( spRoomUser->GetSlotID(), eType );
 	if( !spRoomSlot )
 	{
-		START_LOG( cerr, L"슬롯 검색 실패." )
+		START_LOG( cerr, L"Failed to find slot." )
 			<< BUILD_LOG( nCID )
 			<< BUILD_LOG( spRoomUser->GetSlotID() )
 			<< END_LOG;
@@ -1640,7 +1640,7 @@ bool KRoomUserManager::IsInTrade( UidType nCID, bool& bTrade )
     KRoomUserPtr spRoomUser = GetUser( nCID, eType );
     if( !spRoomUser )
     {
-        START_LOG( cerr, L"룸 유저 검색 실패." )
+        START_LOG( cerr, L"Failed to find room user." )
             << BUILD_LOG( nCID )
             << END_LOG;
 
@@ -1650,7 +1650,7 @@ bool KRoomUserManager::IsInTrade( UidType nCID, bool& bTrade )
     KRoomSlotPtr spRoomSlot = GetSlot( spRoomUser->GetSlotID(), eType );
     if( !spRoomSlot )
     {
-        START_LOG( cerr, L"슬롯 검색 실패." )
+        START_LOG( cerr, L"Failed to find slot." )
             << BUILD_LOG( nCID )
             << BUILD_LOG( spRoomUser->GetSlotID() )
             << END_LOG;
@@ -1669,7 +1669,7 @@ bool KRoomUserManager::SetTrade( UidType nCID, bool bTrade )
     KRoomUserPtr spRoomUser = GetUser( nCID, eType );
     if( !spRoomUser )
     {
-        START_LOG( cerr, L"룸 유저 검색 실패." )
+        START_LOG( cerr, L"Failed to find room user." )
             << BUILD_LOG( nCID )
             << END_LOG;
 
@@ -1679,7 +1679,7 @@ bool KRoomUserManager::SetTrade( UidType nCID, bool bTrade )
     KRoomSlotPtr spRoomSlot = GetSlot( spRoomUser->GetSlotID(), eType );
     if( !spRoomSlot )
     {
-        START_LOG( cerr, L"슬롯 검색 실패." )
+        START_LOG( cerr, L"Failed to find slot." )
             << BUILD_LOG( nCID )
             << BUILD_LOG( spRoomUser->GetSlotID() )
             << END_LOG;
@@ -1698,7 +1698,7 @@ bool KRoomUserManager::SetLoadingProgress( UidType nCID, int iLoadingProgress )
     KRoomUserPtr spRoomUser = GetUser( nCID, eType );
     if( !spRoomUser )
     {
-        START_LOG( cerr, L"룸 유저 검색 실패." )
+        START_LOG( cerr, L"Failed to find room user." )
             << BUILD_LOG( nCID )
             << END_LOG;
 
@@ -1715,7 +1715,7 @@ bool KRoomUserManager::SetStageLoaded( UidType nCID, bool bStageLoaded )
     KRoomUserPtr spRoomUser = GetUser( nCID, eType );
     if( !spRoomUser )
     {
-        START_LOG( cerr, L"룸 유저 검색 실패." )
+        START_LOG( cerr, L"Failed to find room user." )
             << BUILD_LOG( nCID )
             << END_LOG;
 
@@ -1734,7 +1734,7 @@ void KRoomUserManager::ResetStageLoaded()
     {
         if( !mit->second )
         {
-            START_LOG( cerr, L"룸 유저 포인터 이상." )
+            START_LOG( cerr, L"Invalid room user pointer." )
                 << BUILD_LOG( mit->first )
                 << END_LOG;
             continue;
@@ -1750,7 +1750,7 @@ bool KRoomUserManager::GetTeam( UidType nCID, int& iTeam )
     KRoomUserPtr spRoomUser = GetUser( nCID, eType );
     if( !spRoomUser )
     {
-        START_LOG( cerr, L"유저가 없음." )
+        START_LOG( cerr, L"User is missing." )
             << BUILD_LOG( nCID )
             << END_LOG;
 
@@ -1767,7 +1767,7 @@ bool KRoomUserManager::IncreaseTeamNumKill( UidType nCID )
     KRoomUserPtr spRoomUser = GetUser( nCID, eType );
     if( !spRoomUser )
     {
-        START_LOG( cerr, L"유저가 없음." )
+        START_LOG( cerr, L"User is missing." )
             << BUILD_LOG( nCID )
             << END_LOG;
 
@@ -1823,7 +1823,7 @@ void KRoomUserManager::ResetStageID()
     {
         if( !mit->second )
         {
-            START_LOG( cerr, L"룸 유저 포인터 이상." )
+            START_LOG( cerr, L"Invalid room user pointer." )
                 << BUILD_LOG( mit->first )
                 << END_LOG;
             continue;
@@ -1853,7 +1853,7 @@ void KRoomUserManager::ResetSubStageID()
 	{
 		if( IS_NULL( mit->second ) )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -1869,7 +1869,7 @@ bool KRoomUserManager::GetNumKill( UidType nCID, int& nKill )
     KRoomUserPtr spRoomUser = GetUser( nCID );
     if( !spRoomUser )
     {
-        START_LOG( cerr, L"룸 유저 검색 실패." )
+        START_LOG( cerr, L"Failed to find room user." )
             << BUILD_LOG( nCID )
             << END_LOG;
 
@@ -1887,7 +1887,7 @@ bool KRoomUserManager::IncreaseNumKill( UidType nCID )
     KRoomUserPtr spRoomUser = GetUser( nCID );
     if( !spRoomUser )
     {
-        START_LOG( cwarn, L"룸 유저 검색 실패." )
+        START_LOG( cwarn, L"Failed to find room user." )
             << BUILD_LOG( nCID )
             << END_LOG;
 
@@ -1905,7 +1905,7 @@ bool KRoomUserManager::IncreaseNumMDKill( UidType nCID )
 	KRoomUserPtr spRoomUser = GetUser( nCID );
 	if( !spRoomUser )
 	{
-		START_LOG( cwarn, L"룸 유저 검색 실패." )
+		START_LOG( cwarn, L"Failed to find room user." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -1921,7 +1921,7 @@ bool KRoomUserManager::GetNumDie( UidType nCID, int& nDie )
     KRoomUserPtr spRoomUser = GetUser( nCID );
     if( !spRoomUser )
     {
-        START_LOG( cerr, L"룸 유저 검색 실패." )
+        START_LOG( cerr, L"Failed to find room user." )
             << BUILD_LOG( nCID )
             << END_LOG;
 
@@ -1937,7 +1937,7 @@ bool KRoomUserManager::IncreaseNumDie( UidType nCID )
     KRoomUserPtr spRoomUser = GetUser( nCID );
     if( !spRoomUser )
     {
-        START_LOG( cerr, L"룸 유저 검색 실패." )
+        START_LOG( cerr, L"Failed to find room user." )
             << BUILD_LOG( nCID )
             << END_LOG;
 
@@ -1953,7 +1953,7 @@ bool KRoomUserManager::IsDie( UidType nCID, bool& bDie )
 	KRoomUserPtr spRoomUser = GetUser( nCID );
 	if( !spRoomUser )
 	{
-		START_LOG( cerr, L"룸 유저 검색 실패." )
+		START_LOG( cerr, L"Failed to find room user." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -1969,7 +1969,7 @@ bool KRoomUserManager::SetDie( UidType nCID, bool bDie )
     KRoomUserPtr spRoomUser = GetUser( nCID );
     if( !spRoomUser )
     {
-        START_LOG( cerr, L"룸 유저 검색 실패." )
+        START_LOG( cerr, L"Failed to find room user." )
             << BUILD_LOG( nCID )
             << END_LOG;
 
@@ -1985,7 +1985,7 @@ bool KRoomUserManager::SetHP( UidType nCID, float fHP )
     KRoomUserPtr spRoomUser = GetUser( nCID );
     if( !spRoomUser )
     {
-        START_LOG( cerr, L"룸 유저 검색 실패." )
+        START_LOG( cerr, L"Failed to find room user." )
             << BUILD_LOG( nCID )
             << END_LOG;
 
@@ -2001,7 +2001,7 @@ bool KRoomUserManager::IsObserver( UidType nCID )
 	KRoomUserPtr spRoomUser = GetUser( nCID, UT_OBSERVER );
 	if( !spRoomUser )
 	{
-		START_LOG( clog, L"룸 유저 검색 실패.Observer가 아님.!" )
+		START_LOG( clog, L"Failed to find room user: user is not an observer!" )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -2016,7 +2016,7 @@ bool KRoomUserManager::GetRebirthPos( UidType nCID, int& iRebirthPos )
     KRoomUserPtr spRoomUser = GetUser( nCID );
     if( !spRoomUser )
     {
-        START_LOG( cerr, L"룸 유저 검색 실패." )
+        START_LOG( cerr, L"Failed to find room user." )
             << BUILD_LOG( nCID )
             << END_LOG;
 
@@ -2032,7 +2032,7 @@ bool KRoomUserManager::SetRebirthPos( UidType nCID, int iRebirthPos )
     KRoomUserPtr spRoomUser = GetUser( nCID );
     if( !spRoomUser )
     {
-        START_LOG( cerr, L"룸 유저 검색 실패." )
+        START_LOG( cerr, L"Failed to find room user." )
             << BUILD_LOG( nCID )
             << END_LOG;
 
@@ -2052,7 +2052,7 @@ void KRoomUserManager::GetCurrentKillScore( std::map< UidType, std::pair< int, i
     {
         if( !mit->second )
         {
-            START_LOG( cerr, L"룸 유저 포인터 이상." )
+            START_LOG( cerr, L"Invalid room user pointer." )
                 << BUILD_LOG( mit->first )
                 << END_LOG;
             continue;
@@ -2076,7 +2076,7 @@ void KRoomUserManager::GetLoadingTimeOutUser( OUT std::map< UidType, UidType >& 
     {
         if( !mit->second )
         {
-            START_LOG( cwarn, L"룸 유저 포인터 이상.-GetLoadingTimeOutUser()" )
+            START_LOG( cwarn, L"Invalid room-user pointer in GetLoadingTimeOutUser()." )
                 << BUILD_LOG( mit->first )
                 << END_LOG;
             continue;
@@ -2096,7 +2096,7 @@ bool KRoomUserManager::GetPlayTime( UidType nCID, float& fPlayTime )
     KRoomUserPtr spRoomUser = GetUser( nCID );
     if( !spRoomUser )
     {
-        START_LOG( cwarn, L"룸 유저 검색 실패." )
+        START_LOG( cwarn, L"Failed to find room user." )
             << BUILD_LOG( nCID )
             << BUILD_LOG( m_mapRoomUser[eType].size() )
             << END_LOG;
@@ -2121,7 +2121,7 @@ void KRoomUserManager::GetPlayTime( OUT std::map< UidType , float >& mapPlayTime
     {
         if( !mit->second )
         {
-            START_LOG( cerr, L"룸 유저 포인터 이상." )
+            START_LOG( cerr, L"Invalid room user pointer." )
                 << BUILD_LOG( mit->first )
                 << END_LOG;
             mapPlayTime[mit->first] = 0;
@@ -2228,7 +2228,7 @@ bool KRoomUserManager::GetItemWithRandom( IN const int iItemID, IN const int iDu
 	const CXSLItem::ItemTemplet* pItemTemplet = SiCXSLItemManager()->GetItemTemplet( iItemID );
 	if( pItemTemplet == NULL )
 	{
-		START_LOG( cerr, L"Item Templet 정보가 없음. 일어날 수 없는 에러" )
+		START_LOG( cerr, L"Item template information is missing; this should never happen." )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
 		return false;
@@ -2240,7 +2240,7 @@ bool KRoomUserManager::GetItemWithRandom( IN const int iItemID, IN const int iDu
 	const std::vector< UidType > vecRoomUserShuffle = KncUtil::NumberShuffle( vecUserList );
 	if( vecRoomUserShuffle.size() != m_mapRoomUser[eType].size() )
 	{
-		START_LOG( cerr, L"방에 입장한 인원 수와 셔플된 유저 리스트 크기가 다르다? 절대 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"Room user count does not match the shuffled user-list size; this should never happen!" )
 			<< BUILD_LOG( m_mapRoomUser[eType].size() )
 			<< BUILD_LOG( vecUserList.size() )
 			<< BUILD_LOG( vecRoomUserShuffle.size() )
@@ -2254,7 +2254,7 @@ bool KRoomUserManager::GetItemWithRandom( IN const int iItemID, IN const int iDu
 			KRoomUserPtr spRoomUser = GetUser( iUnitUID );
 			if( spRoomUser == NULL )
 			{
-				START_LOG( cerr, L"룸 유저 포인터 이상. CUID : " << iUnitUID );
+				START_LOG( cerr, L"Invalid room user pointer. CUID: " << iUnitUID );
 				continue;
 			}
 
@@ -2263,7 +2263,7 @@ bool KRoomUserManager::GetItemWithRandom( IN const int iItemID, IN const int iDu
 			{
 				if( spRoomUser->IsHenirRewardUser() == false )
 				{
-					START_LOG( clog, L"헤니르에서 보상받을 권한이 없습니다. 무시한다." )
+					START_LOG( clog, L"Not eligible for a Henir reward; ignoring." )
 						<< BUILD_LOG( spRoomUser->GetCID() )
 						<< BUILD_LOG( spRoomUser->IsHenirRewardUser() )
 						<< END_LOG;
@@ -2299,7 +2299,7 @@ bool KRoomUserManager::GetItemWithRandom( IN const int iItemID, IN const int iDu
 				KRoomUserPtr spRoomUser = GetUser( iUnitUID );
 				if( spRoomUser == NULL )
 				{
-					START_LOG( cerr, L"룸 유저 포인터 이상. CUID : " << iUnitUID );
+					START_LOG( cerr, L"Invalid room user pointer. CUID: " << iUnitUID );
 					continue;
 				}
 
@@ -2309,7 +2309,7 @@ bool KRoomUserManager::GetItemWithRandom( IN const int iItemID, IN const int iDu
 				{
 					if( spRoomUser->IsHenirRewardUser() == false )
 					{
-						START_LOG( clog, L"헤니르에서 보상받을 권한이 없습니다. 무시한다." )
+						START_LOG( clog, L"Not eligible for a Henir reward; ignoring." )
 							<< BUILD_LOG( spRoomUser->GetCID() )
 							<< BUILD_LOG( spRoomUser->IsHenirRewardUser() )
 							<< END_LOG;
@@ -2343,7 +2343,7 @@ bool KRoomUserManager::GetItemWithRandom( IN const int iItemID, IN const int iDu
 				KRoomUserPtr spRoomUser = GetUser( iUnitUID );
 				if( spRoomUser == NULL )
 				{
-					START_LOG( cerr, L"룸 유저 포인터 이상. CUID : " << iUnitUID );
+					START_LOG( cerr, L"Invalid room user pointer. CUID: " << iUnitUID );
 					continue;
 				}
 
@@ -2353,7 +2353,7 @@ bool KRoomUserManager::GetItemWithRandom( IN const int iItemID, IN const int iDu
 				{
 					if( spRoomUser->IsHenirRewardUser() == false )
 					{
-						START_LOG( clog, L"헤니르에서 보상받을 권한이 없습니다. 무시한다." )
+						START_LOG( clog, L"Not eligible for a Henir reward; ignoring." )
 							<< BUILD_LOG( spRoomUser->GetCID() )
 							<< BUILD_LOG( spRoomUser->IsHenirRewardUser() )
 							<< END_LOG;
@@ -2400,7 +2400,7 @@ bool KRoomUserManager::AddItem( UidType nCID, IN int iItemID )
 
 	if( spRoomUser == NULL )
 	{
-		START_LOG( cerr, L"룸 유저 검색 실패." )
+		START_LOG( cerr, L"Failed to find room user." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -2417,7 +2417,7 @@ bool KRoomUserManager::GetItemList( UidType nCID, std::map< int, int >& mapItemL
 
 	if( !spRoomUser )
 	{
-		START_LOG( cerr, L"룸 유저 검색 실패." )
+		START_LOG( cerr, L"Failed to find room user." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -2433,7 +2433,7 @@ bool KRoomUserManager::AddKillNPC( UidType nCID )
 	KRoomUserPtr spRoomUser = GetUser( nCID );
 	if( !spRoomUser )
 	{
-		START_LOG( cwarn, L"룸 유저 검색 실패." )
+		START_LOG( cwarn, L"Failed to find room user." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -2451,7 +2451,7 @@ bool KRoomUserManager::SetDungeonUnitInfo( IN UidType nCID, IN const KDungeonPla
 	KRoomUserPtr spRoomUser = GetUser( nCID );
 	if( !spRoomUser )
 	{
-		START_LOG( cerr, L"룸 유저 검색 실패." )
+		START_LOG( cerr, L"Failed to find room user." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -2471,7 +2471,7 @@ void KRoomUserManager::ResetDungeonUnitInfo()
 	{
 		if( !mit->second )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -2487,7 +2487,7 @@ bool KRoomUserManager::SetPvpPlayResultInfo( IN const UidType iUnitUID, IN const
 	KRoomUserPtr spRoomUser = GetUser( iUnitUID );
 	if( !spRoomUser )
 	{
-		START_LOG( cerr, L"룸 유저 검색 실패." )
+		START_LOG( cerr, L"Failed to find room user." )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 
@@ -2505,7 +2505,7 @@ bool KRoomUserManager::SetDungeonPlayInfo( UidType nCID, KEGS_DUNGEON_PLAY_INFO_
 	KRoomUserPtr spRoomUser = GetUser( nCID );
 	if( !spRoomUser )
 	{
-		START_LOG( cerr, L"룸 유저 검색 실패." )
+		START_LOG( cerr, L"Failed to find room user." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -2526,7 +2526,7 @@ bool KRoomUserManager::SetSuccessResult( UidType nCID, bool bResult )
 		spRoomUser = GetUser( nCID, UT_OBSERVER );
 		if( !spRoomUser )
 		{
-			START_LOG( cerr, L"룸 유저 검색 실패." )
+			START_LOG( cerr, L"Failed to find room user." )
 				<< BUILD_LOG( nCID )
 				<< END_LOG;
 
@@ -2548,7 +2548,7 @@ void KRoomUserManager::StartGame()
     {
         if( !mit->second )
         {
-            START_LOG( cerr, L"룸 유저 포인터 이상." )
+            START_LOG( cerr, L"Invalid room user pointer." )
                 << BUILD_LOG( mit->first )
                 << END_LOG;
             continue;
@@ -2579,7 +2579,7 @@ void KRoomUserManager::StartPlay()
     {
         if( !mit->second )
         {
-            START_LOG( cerr, L"룸 유저 포인터 이상." )
+            START_LOG( cerr, L"Invalid room user pointer." )
                 << BUILD_LOG( mit->first )
                 << END_LOG;
             continue;
@@ -2605,7 +2605,7 @@ void KRoomUserManager::EndPlay()
     {
         if( !mit->second )
         {
-            START_LOG( cerr, L"룸 유저 포인터 이상." )
+            START_LOG( cerr, L"Invalid room user pointer." )
                 << BUILD_LOG( mit->first )
                 << END_LOG;
             continue;
@@ -2628,7 +2628,7 @@ void KRoomUserManager::EndGame()
     {
         if( !mit->second )
         {
-            START_LOG( cerr, L"룸 유저 포인터 이상." )
+            START_LOG( cerr, L"Invalid room user pointer." )
                 << BUILD_LOG( mit->first )
                 << END_LOG;
             continue;
@@ -2651,7 +2651,7 @@ bool KRoomUserManager::StartGame( IN const UidType nCID, IN const bool bObserver
 	KRoomUserPtr spRoomUser = GetUser( nCID, eType );
 	if( !spRoomUser )
 	{
-		START_LOG( cerr, L"룸 유저 검색 실패." )
+		START_LOG( cerr, L"Failed to find room user." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -2669,7 +2669,7 @@ bool KRoomUserManager::StartPlay( IN const UidType nCID, IN const bool bObserver
 	KRoomUserPtr spRoomUser = GetUser( nCID, eType );
 	if( !spRoomUser )
 	{
-		START_LOG( cerr, L"룸 유저 검색 실패." )
+		START_LOG( cerr, L"Failed to find room user." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -2687,7 +2687,7 @@ bool KRoomUserManager::EndPlay( UidType nCID )
 
     if( !spRoomUser )
     {
-        START_LOG( cerr, L"룸 유저 검색 실패." )
+        START_LOG( cerr, L"Failed to find room user." )
             << BUILD_LOG( nCID )
             << END_LOG;
 
@@ -2704,7 +2704,7 @@ bool KRoomUserManager::EndGame( UidType nCID )
 
     if( !spRoomUser )
     {
-        START_LOG( cerr, L"룸 유저 검색 실패." )
+        START_LOG( cerr, L"Failed to find room user." )
             << BUILD_LOG( nCID )
             << END_LOG;
 
@@ -2720,7 +2720,7 @@ bool KRoomUserManager::IsHost( UidType nCID )
     KRoomUserPtr spRoomUser = GetUser( nCID );
     if( !spRoomUser )
     {
-        START_LOG( cerr, L"룸 유저 검색 실패." )
+        START_LOG( cerr, L"Failed to find room user." )
             << BUILD_LOG( nCID )
             << END_LOG;
 
@@ -2735,7 +2735,7 @@ bool KRoomUserManager::IsPlaying( UidType nCID )
     KRoomUserPtr spRoomUser = GetUser( nCID );
     if( !spRoomUser )
     {
-        START_LOG( cerr, L"룸 유저 검색 실패." )
+        START_LOG( cerr, L"Failed to find room user." )
             << BUILD_LOG( nCID )
             << END_LOG;
 
@@ -2753,7 +2753,7 @@ bool KRoomUserManager::IsAllPlayerReady()
     {
         if( !mit->second )
         {
-            START_LOG( cerr, L"룸 유저 포인터 이상." )
+            START_LOG( cerr, L"Invalid room user pointer." )
                 << BUILD_LOG( mit->first )
                 << END_LOG;
             return false;
@@ -2776,7 +2776,7 @@ bool KRoomUserManager::IsAllPlayerFinishLoading()
     {
         if( !mit->second )
         {
-            START_LOG( cerr, L"룸 유저 포인터 이상." )
+            START_LOG( cerr, L"Invalid room user pointer." )
                 << BUILD_LOG( mit->first )
                 << END_LOG;
             return false;
@@ -2799,7 +2799,7 @@ bool KRoomUserManager::IsAllPlayerStageLoaded()
     {
         if( !mit->second )
         {
-            START_LOG( cerr, L"룸 유저 포인터 이상." )
+            START_LOG( cerr, L"Invalid room user pointer." )
                 << BUILD_LOG( mit->first )
                 << END_LOG;
             return false;
@@ -2823,7 +2823,7 @@ bool KRoomUserManager::IsAllPlayerAlive()
 	{
 		if( !mit->second )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			return false;
@@ -2847,7 +2847,7 @@ bool KRoomUserManager::IsAllPlayerDie()
     {
         if( !mit->second )
         {
-            START_LOG( cerr, L"룸 유저 포인터 이상." )
+            START_LOG( cerr, L"Invalid room user pointer." )
                 << BUILD_LOG( mit->first )
                 << END_LOG;
             return false;
@@ -2870,13 +2870,13 @@ bool KRoomUserManager::IsAllPlayerHPReported()
     {
         if( !mit->second )
         {
-            START_LOG( cerr, L"룸 유저 포인터 이상." )
+            START_LOG( cerr, L"Invalid room user pointer." )
                 << BUILD_LOG( mit->first )
                 << END_LOG;
             return false;
         }
 
-        START_LOG( clog2, L"HP 리포트 검사." )
+        START_LOG( clog2, L"Checking HP report." )
             << BUILD_LOG( mit->second->GetStateIDString() )
             << BUILD_LOG( mit->second->GetHP() );
 
@@ -2898,7 +2898,7 @@ bool KRoomUserManager::IsAllPlayerStageID()
 		KRoomUserPtr pKRoomUserPtr = mit->second;
 		if( pKRoomUserPtr == NULL )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( pKRoomUserPtr )
 				<< END_LOG;
 
@@ -2926,7 +2926,7 @@ bool KRoomUserManager::IsAllPlayerDungeonUnitInfoSet()
 	{
 		if( !mit->second )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			return false;
@@ -2960,7 +2960,7 @@ bool KRoomUserManager::CheckAuthLevel( UidType nCID )
 
 		if( mit == m_mapRoomUser[eType].end() )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			return false;
@@ -2983,7 +2983,7 @@ bool KRoomUserManager::IsAllPlayerSuccessResult()
     {
         if( !mit->second )
         {
-            START_LOG( cerr, L"룸 유저 포인터 이상." )
+            START_LOG( cerr, L"Invalid room user pointer." )
                 << BUILD_LOG( mit->first )
                 << END_LOG;
             return false;
@@ -3017,7 +3017,7 @@ bool KRoomUserManager::IsAllPlayerSameGuildMember()
 	{
 		if( !mit->second )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			return false;
@@ -3049,7 +3049,7 @@ void KRoomUserManager::AssignTeam( int iGameMode )
         KRoomSlotPtr spRoomSlot = GetSlot( i );
         if( !spRoomSlot )
         {
-            START_LOG( cerr, L"슬롯 포인터 이상." )
+            START_LOG( cerr, L"Invalid slot pointer." )
                 << BUILD_LOG( i )
                 << END_LOG;
 
@@ -3066,7 +3066,7 @@ bool KRoomUserManager::OpenSlot( int iSlotID )
     KRoomSlotPtr spRoomSlot = GetSlot( iSlotID );
     if( !spRoomSlot )
     {
-        START_LOG( cerr, L"슬롯 포인터 이상." )
+        START_LOG( cerr, L"Invalid slot pointer." )
             << BUILD_LOG( iSlotID )
             << END_LOG;
 
@@ -3081,7 +3081,7 @@ bool KRoomUserManager::CloseSlot( int iSlotID )
     KRoomSlotPtr spRoomSlot = GetSlot( iSlotID );
     if( !spRoomSlot )
     {
-        START_LOG( cerr, L"슬롯 포인터 이상." )
+        START_LOG( cerr, L"Invalid slot pointer." )
             << BUILD_LOG( iSlotID )
             << END_LOG;
 
@@ -3100,7 +3100,7 @@ bool KRoomUserManager::OpenSlotTeam( int iSlotID, OUT int& iTeamBalanceSlotID )
 
 	if( spRoomSlot_01 == NULL )
 	{
-		START_LOG( cerr, L"슬롯 포인터 이상." )
+		START_LOG( cerr, L"Invalid slot pointer." )
 			<< BUILD_LOG( iSlotID )
 			<< END_LOG;
 
@@ -3132,7 +3132,7 @@ bool KRoomUserManager::OpenSlotTeam( int iSlotID, OUT int& iTeamBalanceSlotID )
 
 		if( spRoomSlot_02 == NULL )
 		{
-			START_LOG( cerr, L"슬롯 포인터 이상." )
+			START_LOG( cerr, L"Invalid slot pointer." )
 				<< BUILD_LOG( iSlotID )
 				<< BUILD_LOG( nHalfSlot )
 				<< BUILD_LOG( nStart )
@@ -3174,7 +3174,7 @@ bool KRoomUserManager::CloseSlotTeam( int iSlotID, OUT int& iTeamBalanceSlotID )
 
 	if( spRoomSlot_01 == NULL )
 	{
-		START_LOG( cerr, L"슬롯 포인터 이상." )
+		START_LOG( cerr, L"Invalid slot pointer." )
 			<< BUILD_LOG( iSlotID )
 			<< END_LOG;
 
@@ -3206,7 +3206,7 @@ bool KRoomUserManager::CloseSlotTeam( int iSlotID, OUT int& iTeamBalanceSlotID )
 
 		if( spRoomSlot_02 == NULL )
 		{
-			START_LOG( cerr, L"슬롯 포인터 이상." )
+			START_LOG( cerr, L"Invalid slot pointer." )
 				<< BUILD_LOG( iSlotID )
 				<< BUILD_LOG( nHalfSlot )
 				<< BUILD_LOG( nStart )
@@ -3243,7 +3243,7 @@ bool KRoomUserManager::ToggleOpenClose( int iSlotID )
     KRoomSlotPtr spRoomSlot = GetSlot( iSlotID );
     if( !spRoomSlot )
     {
-        START_LOG( cerr, L"슬롯 포인터 이상." )
+        START_LOG( cerr, L"Invalid slot pointer." )
             << BUILD_LOG( iSlotID )
             << END_LOG;
 
@@ -3258,7 +3258,7 @@ bool KRoomUserManager::GetRoomSlotInfo( int iSlotID, KRoomSlotInfo& kInfo, USERL
     KRoomSlotPtr spRoomSlot = GetSlot( iSlotID, eType );
     if( !spRoomSlot )
     {
-        START_LOG( cerr, L"슬롯 포인터 이상." )
+        START_LOG( cerr, L"Invalid slot pointer." )
             << BUILD_LOG( iSlotID )
             << END_LOG;
 
@@ -3273,7 +3273,7 @@ bool KRoomUserManager::GetRoomSlotInfo( UidType nCID, KRoomSlotInfo& kInfo, USER
 {
 	if( CheckUserlistType( eType ) == false )
 	{
-		START_LOG( cerr, L"유저리스트 타입 이상.!" )
+		START_LOG( cerr, L"Invalid user list type!" )
 			<< BUILD_LOG( nCID )
 			<< BUILD_LOG( (int)eType )
 			<< END_LOG;
@@ -3283,7 +3283,7 @@ bool KRoomUserManager::GetRoomSlotInfo( UidType nCID, KRoomSlotInfo& kInfo, USER
     KRoomUserPtr spRoomUser = GetUser( nCID, eType );
     if( !spRoomUser )
     {
-        START_LOG( cerr, L"룸 유저 검색 실패." )
+        START_LOG( cerr, L"Failed to find room user." )
             << BUILD_LOG( nCID )
             << END_LOG;
 
@@ -3297,7 +3297,7 @@ void KRoomUserManager::GetRoomSlotInfo( std::vector< KRoomSlotInfo >& vecRoomSlo
 {
 	if( CheckUserlistType( eType ) == false )
 	{
-		START_LOG( cerr, L"유저리스트 타입 이상.!" )
+		START_LOG( cerr, L"Invalid user list type!" )
 			<< BUILD_LOG( (int)eType )
 			<< END_LOG;
 		return;
@@ -3319,7 +3319,7 @@ bool KRoomUserManager::GetRoomUserGS( UidType nCID, UidType& nGS )
     KRoomUserPtr spRoomUser = GetUser( nCID );
     if( !spRoomUser )
     {
-        START_LOG( cerr, L"유저가 없음." )
+        START_LOG( cerr, L"User is missing." )
             << BUILD_LOG( nCID )
             << END_LOG;
 
@@ -3340,7 +3340,7 @@ bool KRoomUserManager::GetRoomUserGS( IN const std::wstring& wstrNickName, OUT U
 	{
 		if( mit->second == NULL )
 		{
-			START_LOG( cwarn, L"룸유저 포인터 이상." )
+			START_LOG( cwarn, L"Invalid room-user pointer." )
 				<< END_LOG;
 			continue;
 		}
@@ -3363,7 +3363,7 @@ void KRoomUserManager::GetUserList( IN const int iFlag_, OUT std::map< UidType, 
 {
 	if( CheckUserlistType( eType ) == false )
 	{
-		START_LOG( cerr, L"유저리스트 타입 이상.!" )
+		START_LOG( cerr, L"Invalid user list type!" )
 			<< BUILD_LOG( (int)eType )
 			<< END_LOG;
 		return;
@@ -3376,7 +3376,7 @@ void KRoomUserManager::GetUserList( IN const int iFlag_, OUT std::map< UidType, 
     {
         if( !mit->second )
         {
-            START_LOG( cerr, L"룸 유저 포인터 이상." )
+            START_LOG( cerr, L"Invalid room user pointer." )
                 << BUILD_LOG( mit->first )
                 << END_LOG;
             continue;
@@ -3448,7 +3448,7 @@ void KRoomUserManager::GetUnitUIDList( OUT std::vector< UidType >& vecUidList )
 	{
 		if( !mit->second )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -3480,7 +3480,7 @@ void KRoomUserManager::DecideWinTeam( unsigned char ucGameType, std::vector< int
         {
             if( !mit->second )
             {
-                START_LOG( cerr, L"룸 유저 포인터 이상." )
+                START_LOG( cerr, L"Invalid room user pointer." )
                     << BUILD_LOG( mit->first )
                     << END_LOG;
                 continue;
@@ -3532,7 +3532,7 @@ void KRoomUserManager::DecideWinTeam( unsigned char ucGameType, std::vector< int
         {
             if( !mit->second )
             {
-                START_LOG( cerr, L"룸 유저 포인터 이상." )
+                START_LOG( cerr, L"Invalid room user pointer." )
                     << BUILD_LOG( mit->first )
                     << END_LOG;
                 continue;
@@ -3573,7 +3573,7 @@ void KRoomUserManager::DecideWinTeam( unsigned char ucGameType, std::vector< int
         {
             if( !mit->second )
             {
-                START_LOG( cerr, L"룸 유저 포인터 이상." )
+                START_LOG( cerr, L"Invalid room user pointer." )
                     << BUILD_LOG( mit->first )
                     << END_LOG;
                 continue;
@@ -3593,7 +3593,7 @@ void KRoomUserManager::DecideWinTeam( unsigned char ucGameType, std::vector< int
         }
         break;
     default:
-        START_LOG( cerr, L"이상한 게임모드." )
+        START_LOG( cerr, L"Unexpected game mode." )
             << BUILD_LOGc( ucGameType )
             << END_LOG;
     }
@@ -3610,7 +3610,7 @@ bool KRoomUserManager::IsAnyTeamEliminated()
     {
         if( !mit->second )
         {
-            START_LOG( cerr, L"룸 유저 포인터 이상." )
+            START_LOG( cerr, L"Invalid room user pointer." )
                 << BUILD_LOG( mit->first )
                 << END_LOG;
             continue;
@@ -3634,12 +3634,12 @@ bool KRoomUserManager::IsAnyTeamEliminated()
     {
         if( mitIsDie->second )
         {
-            START_LOG( clog, L"팀원이 모두 죽은 팀이 있음." );
+            START_LOG( clog, L"A team has all members dead." );
             return true;
         }
     }
 
-    START_LOG( clog, L"팀원이 모두 죽은 팀이 없음." );
+    START_LOG( clog, L"No team has all members dead." );
     return false;
 }
 
@@ -3656,7 +3656,7 @@ bool KRoomUserManager::IsOneTeamExist()
     {
         if( !mit->second )
         {
-            START_LOG( cerr, L"룸 유저 포인터 이상." )
+            START_LOG( cerr, L"Invalid room user pointer." )
                 << BUILD_LOG( mit->first )
                 << END_LOG;
 
@@ -3670,7 +3670,7 @@ bool KRoomUserManager::IsOneTeamExist()
 
     if( mit == m_mapRoomUser[eType].end() )
     {
-        START_LOG( cwarn, L"룸 유저가 없거나 포인터 이상." )
+        START_LOG( cwarn, L"Room user is missing or has an invalid pointer." )
             << BUILD_LOG( GetNumMember() )
             << BUILD_LOG( ( int )m_mapRoomUser[eType].size() )
             << END_LOG;
@@ -3683,7 +3683,7 @@ bool KRoomUserManager::IsOneTeamExist()
     {
         if( !mit->second )
         {
-            START_LOG( cerr, L"룸 유저 포인터 이상." )
+            START_LOG( cerr, L"Invalid room user pointer." )
                 << BUILD_LOG( mit->first )
                 << END_LOG;
             continue;
@@ -3691,12 +3691,12 @@ bool KRoomUserManager::IsOneTeamExist()
 
         if( mit->second->GetTeam() != iTeam )
         {
-            START_LOG( clog, L"두 팀 이상 존재함." );
+            START_LOG( clog, L"More than two teams exist." );
             return false;
         }
     }
 
-    START_LOG( clog, L"한 팀만 존재함." );
+    START_LOG( clog, L"Only one team exists." );
     return true;
 }
 
@@ -3708,7 +3708,7 @@ bool KRoomUserManager::IsAnyoneReachObjectiveNumKill( int nKill )
     {
         if( !mit->second )
         {
-            START_LOG( cerr, L"룸 유저 포인터 이상." )
+            START_LOG( cerr, L"Invalid room user pointer." )
                 << BUILD_LOG( mit->first )
                 << END_LOG;
             continue;
@@ -3928,7 +3928,7 @@ void KRoomUserManager::GetEnterCashShopUserList( OUT std::vector< UidType >& vec
 	{
 		if( IS_NULL( mit->second ) )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -3954,7 +3954,7 @@ int KRoomUserManager::GetMaxKillUnit()
 	{
 		if( !mit->second )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -4013,7 +4013,7 @@ bool KRoomUserManager::AddRewardEXP( IN UidType nCID, OUT int iEXP )
 
 	if( mit == m_mapRoomUser[eType].end() )
 	{
-		START_LOG( cerr, L"룸유저 POINTER 이상." )
+		START_LOG( cerr, L"Invalid room user pointer." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -4057,7 +4057,7 @@ bool KRoomUserManager::AddDungeonRewardEXP( IN const UidType iUnitUID,
 	std::map< UidType, KRoomUserPtr >::iterator mit = m_mapRoomUser[eType].find( iUnitUID );
 	if( mit == m_mapRoomUser[eType].end() )
 	{
-		START_LOG( cerr, L"해당 유저를 찾을 수 없습니다." )
+		START_LOG( cerr, L"Could not find the specified user." )
 			<< BUILD_LOG( iUnitUID )
 			<< BUILD_LOG( iEXP )
 			<< BUILD_LOG( iDungeonID )
@@ -4068,7 +4068,7 @@ bool KRoomUserManager::AddDungeonRewardEXP( IN const UidType iUnitUID,
 
 	if( mit->second->IsDie() == true )
 	{
-		START_LOG( clog, L"해당 유저가 죽었습니다." )
+		START_LOG( clog, L"Specified user is dead." )
 			<< BUILD_LOG( iUnitUID )
 			<< BUILD_LOG( iEXP )
 			<< BUILD_LOG( iDungeonID )
@@ -4164,7 +4164,7 @@ bool KRoomUserManager::AddDungeonRewardEXP( IN const UidType iUnitUID,
 			mitTemp->second.m_iSocketOptEXP += kEXPData.m_iSocketOptEXP;
 		}
 
-		START_LOG( clog, L"::: 내가 받은 EXP :::" )
+		START_LOG( clog, L"::: EXP received :::" )
 			<< BUILD_LOG( mit->second->GetCID() )
 			<< BUILD_LOG( kEXPData.m_iEXP )
 			<< BUILD_LOG( kEXPData.m_iPartyEXP )
@@ -4188,7 +4188,7 @@ bool KRoomUserManager::GetRewardEXP( IN UidType nCID, OUT int& iEXP )
 
 	if( mit == m_mapRoomUser[eType].end() )
 	{
-		START_LOG( cerr, L"룸유저 POINTER 이상." )
+		START_LOG( cerr, L"Invalid room user pointer." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -4209,7 +4209,7 @@ bool KRoomUserManager::GetRewardPartyEXP( IN UidType nCID, OUT int& iEXP )
 
 	if( mit == m_mapRoomUser[eType].end() )
 	{
-		START_LOG( cerr, L"룸유저 POINTER 이상." )
+		START_LOG( cerr, L"Invalid room user pointer." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -4228,7 +4228,7 @@ bool KRoomUserManager::AddDungeonRewardED( IN int iED, IN UidType iUserUID, IN f
 
 	if( iED <= 0 )
 	{
-		START_LOG( cwarn, L"ED가 0인경우도 있나?" )
+		START_LOG( cwarn, L"Can ED really be zero?" )
 			<< BUILD_LOG( iED )
 			<< END_LOG;
 
@@ -4240,7 +4240,7 @@ bool KRoomUserManager::AddDungeonRewardED( IN int iED, IN UidType iUserUID, IN f
 	if( mit == m_mapRoomUser[UT_GAME].end() )
 	{
 
-		START_LOG( cerr, L"존재하지 않는 유저랍니다." )
+		START_LOG( cerr, L"User does not exist." )
 			<< BUILD_LOG( iUserUID )
 			<< END_LOG;
 		return false;
@@ -4249,7 +4249,7 @@ bool KRoomUserManager::AddDungeonRewardED( IN int iED, IN UidType iUserUID, IN f
 	KRoomUserPtr spEDRewardRoomUser = mit->second;
 	if( spEDRewardRoomUser == NULL )
 	{
-		START_LOG( cerr, L"KRoomUserPtr이 NULL인 상태로 들어가 있다?" )
+		START_LOG( cerr, L"KRoomUserPtr is unexpectedly NULL." )
 			<< BUILD_LOG( mit->first )
 			<< END_LOG;
 
@@ -4259,7 +4259,7 @@ bool KRoomUserManager::AddDungeonRewardED( IN int iED, IN UidType iUserUID, IN f
 	// 죽지 않은 유저에게만 보상
 	if( spEDRewardRoomUser->IsDie() == true )
 	{
-		START_LOG( cwarn, L"죽은 유저가 아이템을 획득을 시도함." )
+		START_LOG( cwarn, L"A dead user attempted to acquire an item." )
 			<< BUILD_LOG( mit->first )
 			<< END_LOG;
 
@@ -4270,7 +4270,7 @@ bool KRoomUserManager::AddDungeonRewardED( IN int iED, IN UidType iUserUID, IN f
 	{
 		if( spEDRewardRoomUser->IsHenirRewardUser() == false )
 		{
-			START_LOG( cwarn, L"헤니르 시공 보상 기회가 없는 유저가 아이템을 획득을 시도함." )
+			START_LOG( cwarn, L"A user with no Henir reward attempts remaining tried to acquire an item." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 
@@ -4319,7 +4319,7 @@ void KRoomUserManager::SetUserEquipItem( IN UidType nCID, IN std::vector< KInven
     KRoomUserPtr spRoomUser = GetUser( nCID );
     if( !spRoomUser )
     {
-        START_LOG( cerr, L"유저가 없음." )
+        START_LOG( cerr, L"User is missing." )
             << BUILD_LOG( nCID )
             << END_LOG;
 
@@ -4338,7 +4338,7 @@ void KRoomUserManager::MakeSlot( int iSlotID, USERLIST_TYPE eType /* = UT_GAME  
 {
     if( iSlotID < 0 )
     {
-        START_LOG( cerr, L"슬롯 ID 이상." )
+        START_LOG( cerr, L"Invalid slot ID." )
             << BUILD_LOG( iSlotID )
             << END_LOG;
 
@@ -4347,7 +4347,7 @@ void KRoomUserManager::MakeSlot( int iSlotID, USERLIST_TYPE eType /* = UT_GAME  
 
 	if( CheckUserlistType( eType ) == false )
 	{
-		START_LOG( cerr, L"USER LIST TYPE 이상.!" )
+		START_LOG( cerr, L"Invalid USER LIST TYPE!" )
 			<< BUILD_LOG( (int)eType )
 			<< END_LOG;
 	}
@@ -4361,7 +4361,7 @@ void KRoomUserManager::MakeSlot( int iSlotID, USERLIST_TYPE eType /* = UT_GAME  
     }
     else if( ( int )m_vecRoomSlot[eType].size() > iSlotID )
     {
-        START_LOG( cwarn, L"이미 있는 슬롯을 다시 생성." )
+        START_LOG( cwarn, L"Attempted to recreate an existing slot." )
             << BUILD_LOG( iSlotID )
             << END_LOG;
 
@@ -4370,7 +4370,7 @@ void KRoomUserManager::MakeSlot( int iSlotID, USERLIST_TYPE eType /* = UT_GAME  
     }
     else
     {
-        START_LOG( cerr, L"슬롯 ID 이상." )
+        START_LOG( cerr, L"Invalid slot ID." )
             << BUILD_LOG( iSlotID )
             << END_LOG;
     }
@@ -4391,7 +4391,7 @@ KRoomUserPtr KRoomUserManager::MakeUser( const KRoomUserInfo& kInfo )
 
 void KRoomUserManager::HandleInvalidSlotPointer( int iSlotID, USERLIST_TYPE eType )
 {
-    START_LOG( cerr, L"포인터가 유효하지 않음." )
+    START_LOG( cerr, L"Pointer is invalid." )
         << BUILD_LOG( iSlotID )
         << END_LOG;
 
@@ -4402,7 +4402,7 @@ KRoomSlotPtr KRoomUserManager::FindEmptySlot( bool bConsiderTeam, USERLIST_TYPE 
 {
 	if( CheckUserlistType( eType ) == false )
 	{
-		START_LOG( cerr, L"유저리스트 타입 이상.!" )
+		START_LOG( cerr, L"Invalid user list type!" )
 			<< BUILD_LOG( (int)eType )
 			<< END_LOG;
 		return KRoomSlotPtr();
@@ -4419,7 +4419,7 @@ KRoomSlotPtr KRoomUserManager::FindEmptySlot( bool bConsiderTeam, USERLIST_TYPE 
             KRoomSlotPtr spRoomSlot = GetSlot( i, eType );
             if( !spRoomSlot )
             {
-                START_LOG( cerr, L"이상한 포인터." )
+                START_LOG( cerr, L"Unexpected pointer." )
                     << BUILD_LOG( i )
                     << END_LOG;
 
@@ -4460,7 +4460,7 @@ KRoomSlotPtr KRoomUserManager::FindEmptySlot( bool bConsiderTeam, USERLIST_TYPE 
             mit2 = mapTeamAndSlotPtr.find( iCandidateTeam );
             if( mit2 == mapTeamAndSlotPtr.end() )
             {
-                START_LOG( cerr, L"발생하면 안되는 상황임." )
+                START_LOG( cerr, L"Unexpected condition." )
                     << BUILD_LOG( iCandidateTeam )
                     << BUILD_LOG( iMaxEmptySlot )
                     << END_LOG;
@@ -4480,7 +4480,7 @@ KRoomSlotPtr KRoomUserManager::FindEmptySlot( bool bConsiderTeam, USERLIST_TYPE 
             KRoomSlotPtr spRoomSlot = GetSlot( i, eType );
             if( !spRoomSlot )
             {
-                START_LOG( cerr, L"이상한 포인터." )
+                START_LOG( cerr, L"Unexpected pointer." )
                     << BUILD_LOG( i )
                     << END_LOG;
 
@@ -4508,7 +4508,7 @@ UidType KRoomUserManager::AppointNewHost()
 	{
 		if( IS_NULL( mit->second ) )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -4562,7 +4562,7 @@ UidType KRoomUserManager::AppointNewHost()
 	else
 	{
 		// 일단 에러로그 찍지 말고 cwarn으로 찍는다.
-		START_LOG( cwarn, L"호스트 변경 실패." )
+		START_LOG( cwarn, L"Failed to change host." )
 			<< BUILD_LOG( GetNumMember() )
 			<< END_LOG;
 
@@ -4613,7 +4613,7 @@ int KRoomUserManager::GetKillNumber( UidType nCID )
 	KRoomUserPtr spRoomUser = GetUser( nCID );
 	if( spRoomUser == NULL )
 	{
-		START_LOG( cerr, L"킬수를 얻으려는데 유저가 없네" )
+		START_LOG( cerr, L"User missing while retrieving kill count." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -4632,7 +4632,7 @@ void KRoomUserManager::SetIsIntrude( IN const UidType nCID, IN const bool bIsInt
 	KRoomUserPtr spRoomUser = GetUser( nCID, eType );
 	if( spRoomUser == NULL )
 	{
-		START_LOG( cerr, L"난입 상태를 설정하려는데 유저가 없네" )
+		START_LOG( cerr, L"Cannot set join-in-progress state: user is missing." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -4648,7 +4648,7 @@ bool KRoomUserManager::GetIsIntrude( UidType nCID )
 	KRoomUserPtr spRoomUser = GetUser( nCID );
 	if( spRoomUser == NULL )
 	{
-		START_LOG( cerr, L"난입 상태를 얻으려는데 유저가 없네" )
+		START_LOG( cerr, L"Cannot get join-in-progress state: user is missing." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -4664,7 +4664,7 @@ int KRoomUserManager::GetUsedRessurectionStoneCount( UidType nCID )
 	KRoomUserPtr spRoomUser = GetUser( nCID );
 	if( spRoomUser == NULL )
 	{
-		START_LOG( cerr, L"부활석 사용량을 얻으려는데 유저가 없네" )
+		START_LOG( cerr, L"User missing while retrieving resurrection-stone usage." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -4685,7 +4685,7 @@ int KRoomUserManager::GetUsedRessurectionStonePlayerCount()
 	{
 		if( !mit->second )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -4705,7 +4705,7 @@ bool KRoomUserManager::IsGameBang( UidType nCID )
 	KRoomUserPtr spRoomUser = GetUser( nCID );
 	if( spRoomUser == NULL )
 	{
-		START_LOG( cerr, L"GAME BANG 정보를 찾는데 유저가 없음." )
+		START_LOG( cerr, L"No user found while looking up GAME BANG information." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -4720,7 +4720,7 @@ bool KRoomUserManager::IsRingofpvprebirth( UidType nCID )
 	KRoomUserPtr spRoomUser = GetUser( nCID );
 	if( spRoomUser == NULL )
 	{
-		START_LOG( cerr, L"리스폰반지를 소지한 정보를 찾는데 유저가 없음." )
+		START_LOG( cerr, L"User missing while checking respawn-ring ownership." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -4733,7 +4733,7 @@ bool KRoomUserManager::IsRingofpvprebirth( UidType nCID )
 void KRoomUserManager::ZU_CheckStart()
 {
 
-	START_LOG( clog, L"유령유저 체크시작.!" );
+	START_LOG( clog, L"Started ghost-user check!" );
 
 	//유령유저 체크 시작하기전 시간 초기화
 	for( int i = UT_GAME; i < UT_TOTAL_NUM; ++i )
@@ -4745,7 +4745,7 @@ void KRoomUserManager::ZU_CheckStart()
 		{
 			if( !mit->second )
 			{
-				START_LOG( cerr, L"룸 유저 포인터 이상." )
+				START_LOG( cerr, L"Invalid room user pointer." )
 					<< BUILD_LOG( mit->first )
 					<< END_LOG;
 				continue;
@@ -4766,7 +4766,7 @@ void KRoomUserManager::ZU_CheckStart()
 
 void KRoomUserManager::ZU_CheckEnd()
 {
-	START_LOG( clog, L"유령유저 체크종료.!" );
+	START_LOG( clog, L"Finished ghost-user check!" );
 
 	//유령유저 체크 중지.
 	m_bIsCheckZU = false;
@@ -4809,7 +4809,7 @@ bool KRoomUserManager::ZU_Tick( IN const CXSLRoom::ROOM_TYPE eRoomType, OUT std:
 		{
 			if( !mit->second )
 			{
-				START_LOG( cerr, L"룸 유저 포인터 이상." )
+				START_LOG( cerr, L"Invalid room user pointer." )
 					<< BUILD_LOG( mit->first )
 					<< END_LOG;
 
@@ -4872,14 +4872,14 @@ void KRoomUserManager::ZU_Refresh( UidType nCID, u_short usEventID )
 		{
 			if( !mit->second )
 			{
-				START_LOG( cerr, L"룸 유저 포인터 이상." )
+				START_LOG( cerr, L"Invalid room user pointer." )
 					<< BUILD_LOG( mit->first )
 					<< END_LOG;
 
 				return;
 			}
 
-			START_LOG( clog, L"유령유저 check refresh.!" )
+			START_LOG( clog, L"Refreshing ghost-user checks!" )
 				<< BUILD_LOG( nCID );
 
 			//이상없으면 체크 시간을 갱신한다.
@@ -4891,7 +4891,7 @@ void KRoomUserManager::ZU_Refresh( UidType nCID, u_short usEventID )
 			//옵저버 유닛일 경우 게임유닛 리스트에는 없기때문..
 			if( eType != UT_GAME )
 			{
-				START_LOG( cwarn, L"시간을 갱신할 유저가 없음.!" )
+				START_LOG( cwarn, L"No user found to update the time!" )
 					<< BUILD_LOG( nCID )
 					<< BUILD_LOG( KEvent::GetIDStr( usEventID ) )
 					<< END_LOG;
@@ -4906,7 +4906,7 @@ bool KRoomUserManager::RequestTradeTo( UidType nCID, UidType nCIDTo )
     KRoomUserPtr spRoomUser = GetUser( nCID );
     if( !spRoomUser )
     {
-        START_LOG( cwarn, L"유저가 없음." )
+        START_LOG( cwarn, L"User is missing." )
             << BUILD_LOG( nCID )
             << END_LOG;
 
@@ -4916,7 +4916,7 @@ bool KRoomUserManager::RequestTradeTo( UidType nCID, UidType nCIDTo )
     KRoomUserPtr spRoomUserTo = GetUser( nCIDTo );
     if( !spRoomUserTo )
     {
-        START_LOG( cwarn, L"유저가 없음." )
+        START_LOG( cwarn, L"User is missing." )
             << BUILD_LOG( nCIDTo )
             << END_LOG;
 
@@ -4925,7 +4925,7 @@ bool KRoomUserManager::RequestTradeTo( UidType nCID, UidType nCIDTo )
 
     if( spRoomUser->GetStateID() != KRoomUserFSM::S_INIT )
     {
-        START_LOG( cwarn, L"신청하는 유저의 상태가 이상함." )
+        START_LOG( cwarn, L"Invalid state for the requesting user." )
             << BUILD_LOG( nCID )
             << BUILD_LOG( spRoomUser->GetStateID() )
             << BUILD_LOG( spRoomUser->GetStateIDString() )
@@ -4936,7 +4936,7 @@ bool KRoomUserManager::RequestTradeTo( UidType nCID, UidType nCIDTo )
 
     if( spRoomUserTo->GetStateID() != KRoomUserFSM::S_INIT )
     {
-        START_LOG( cwarn, L"신청받는 유저의 상태가 이상함." )
+        START_LOG( cwarn, L"Invalid state for the user receiving the request." )
             << BUILD_LOG( nCIDTo )
             << BUILD_LOG( spRoomUserTo->GetStateID() )
             << BUILD_LOG( spRoomUserTo->GetStateIDString() )
@@ -4953,7 +4953,7 @@ bool KRoomUserManager::TradeAcceptedBy( UidType nCID, UidType nCIDAcceptor )
     KRoomUserPtr spRoomUser = GetUser( nCID );
     if( !spRoomUser )
     {
-        START_LOG( cwarn, L"유저가 없음." )
+        START_LOG( cwarn, L"User is missing." )
             << BUILD_LOG( nCID )
             << END_LOG;
 
@@ -4963,7 +4963,7 @@ bool KRoomUserManager::TradeAcceptedBy( UidType nCID, UidType nCIDAcceptor )
     KRoomUserPtr spRoomUserAcceptor = GetUser( nCIDAcceptor );
     if( !spRoomUserAcceptor )
     {
-        START_LOG( cwarn, L"유저가 없음." )
+        START_LOG( cwarn, L"User is missing." )
             << BUILD_LOG( nCIDAcceptor )
             << END_LOG;
 
@@ -4972,7 +4972,7 @@ bool KRoomUserManager::TradeAcceptedBy( UidType nCID, UidType nCIDAcceptor )
 
     if( spRoomUserAcceptor->GetStateID() != KRoomUserFSM::S_INIT )
     {
-        START_LOG( cwarn, L"신청받는 유저의 상태가 이상함." )
+        START_LOG( cwarn, L"Invalid state for the user receiving the request." )
             << BUILD_LOG( nCIDAcceptor )
             << BUILD_LOG( spRoomUserAcceptor->GetStateID() )
             << BUILD_LOG( spRoomUserAcceptor->GetStateIDString() )
@@ -4989,7 +4989,7 @@ bool KRoomUserManager::TradeRejectedBy( UidType nCID, UidType nCIDRejector )
     KRoomUserPtr spRoomUser = GetUser( nCID );
     if( !spRoomUser )
     {
-        START_LOG( cwarn, L"유저가 없음." )
+        START_LOG( cwarn, L"User is missing." )
             << BUILD_LOG( nCID )
             << END_LOG;
 
@@ -5008,7 +5008,7 @@ void KRoomUserManager::ExpireTradeRequest( std::vector< UidType >& vecTradeExpir
     {
         if( !mit->second )
         {
-            START_LOG( cerr, L"룸 유저 포인터 이상." )
+            START_LOG( cerr, L"Invalid room user pointer." )
                 << BUILD_LOG( mit->first )
                 << END_LOG;
 
@@ -5037,7 +5037,7 @@ bool KRoomUserManager::GetQuestDropItem( IN const UidType iUnitUID, IN const int
 	KRoomUserPtr spRoomUser = GetUser( iUnitUID );
 	if( IS_NULL( spRoomUser ) )
 	{
-		START_LOG( cerr, L"유저가 존재하지 않는다." )
+		START_LOG( cerr, L"User does not exist." )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 		return false;
@@ -5099,7 +5099,7 @@ bool KRoomUserManager::GetQuestDropItem( IN const int iDungeonID,
 	{
 		if( !mit->second )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 
@@ -5131,7 +5131,7 @@ bool KRoomUserManager::SetUnitQuestInvenInfo( UidType nCID, std::map<int, KSubQu
 	KRoomUserPtr spRoomUser = GetUser( nCID );
 	if( !spRoomUser )
 	{
-		START_LOG( cwarn, L"유저가 없음." )
+		START_LOG( cwarn, L"User is missing." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -5146,7 +5146,7 @@ bool KRoomUserManager::SetTutorialUIDList(UidType nCID, const std::vector<UidTyp
 	KRoomUserPtr spRoomUser = GetUser( nCID );
 	if( !spRoomUser )
 	{
-		START_LOG( cwarn, L"유저가 없음." )
+		START_LOG( cwarn, L"User is missing." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -5164,7 +5164,7 @@ bool KRoomUserManager::UpdateetOldExpED( UidType nCID, int iOldEXP, int iOldED )
 	KRoomUserPtr spRoomUser = GetUser( nCID );
 	if( !spRoomUser )
 	{
-		START_LOG( cwarn, L"유저가 없음." )
+		START_LOG( cwarn, L"User is missing." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -5182,7 +5182,7 @@ bool KRoomUserManager::SetGameChannelIP( IN const UidType iUnitUID, IN const std
 	KRoomUserPtr spRoomUser = GetUser( iUnitUID );
 	if( IS_NULL( spRoomUser ) )
 	{
-		START_LOG( cwarn, L"유저가 없음." )
+		START_LOG( cwarn, L"User is missing." )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 		return false;
@@ -5198,7 +5198,7 @@ bool KRoomUserManager::SetActivatedAutoPartyBonus( IN const UidType iUnitUID, IN
 	KRoomUserPtr spRoomUser = GetUser( iUnitUID );
 	if( IS_NULL( spRoomUser ) )
 	{
-		START_LOG( cwarn, L"유저가 없음." )
+		START_LOG( cwarn, L"User is missing." )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 		return false;
@@ -5225,7 +5225,7 @@ void KRoomUserManager::SetEndPlay( UidType nCID, bool bEndPlay )
 	KRoomUserPtr spRoomUser = GetUser( nCID );
 	if( !spRoomUser )
 	{
-		START_LOG( cwarn, L"유저가 없음." )
+		START_LOG( cwarn, L"User is missing." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -5241,7 +5241,7 @@ void KRoomUserManager::SetCashContinueReady( UidType nCID, bool bCashContinueRea
 	KRoomUserPtr spRoomUser = GetUser( nCID );
 	if( !spRoomUser )
 	{
-		START_LOG( cwarn, L"유저가 없음." )
+		START_LOG( cwarn, L"User is missing." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -5257,7 +5257,7 @@ void KRoomUserManager::ReserveEndPlay( UidType nCID )
 	KRoomUserPtr spRoomUser = GetUser( nCID );
 	if( !spRoomUser )
 	{
-		START_LOG( cwarn, L"유저가 없음." )
+		START_LOG( cwarn, L"User is missing." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -5277,7 +5277,7 @@ bool KRoomUserManager::CheckEndPlay()
 	{
 		if( !mit->second )
 		{
-			START_LOG( cwarn, L"룸 유저 포인터 이상." )
+			START_LOG( cwarn, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -5301,7 +5301,7 @@ bool KRoomUserManager::CheckEndPlayAnotherMember( UidType nCID )
 	{
 		if( !mit->second )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -5324,7 +5324,7 @@ void KRoomUserManager::StopDungeonContinueTime( UidType nCID, bool bIsStop )
 	KRoomUserPtr spRoomUser = GetUser( nCID );
 	if( !spRoomUser )
 	{
-		START_LOG( cwarn, L"유저가 없음." )
+		START_LOG( cwarn, L"User is missing." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -5346,7 +5346,7 @@ bool KRoomUserManager::IsRankFail( IN int iDungeonID )
 	{
 		if( !mit->second )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -5374,7 +5374,7 @@ int KRoomUserManager::GetHighestUserLevel() const
 	{
 		if( !mit->second )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -5414,7 +5414,7 @@ int	KRoomUserManager::GetAverageUserLevel( IN const int iIncludeLevelGap /*= 0*/
 		KRoomUserPtr kRoomUserPtr = mit->second;
 		if( IS_NULL( kRoomUserPtr ) )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -5445,7 +5445,7 @@ void KRoomUserManager::ResetAgreeEnterSecretStage()
 	{
 		if( !mit->second )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -5461,7 +5461,7 @@ bool KRoomUserManager::AgreeEnterSecretStage( UidType nCID, CXSLRoom::ENTER_SECR
 	KRoomUserPtr spRoomUser = GetUser( nCID );
 	if( !spRoomUser )
 	{
-		START_LOG( cerr, L"유저가 없음." )
+		START_LOG( cerr, L"User is missing." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -5485,7 +5485,7 @@ bool KRoomUserManager::IsAllPlayerAgreed()
 	{
 		if( !mit->second )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -5510,7 +5510,7 @@ bool KRoomUserManager::IsEnterSecretStage()
 	{
 		if( !mit->second )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -5537,7 +5537,7 @@ bool KRoomUserManager::IsExistPcBangPlayer()
 	{
 		if( !mit->second )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -5563,7 +5563,7 @@ bool KRoomUserManager::HavePet( IN UidType nCID )
 	KRoomUserPtr spRoomUser = GetUser( nCID );
 	if( spRoomUser == NULL )
 	{
-		START_LOG( cerr, L"유저가 없음." )
+		START_LOG( cerr, L"User is missing." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -5582,7 +5582,7 @@ void KRoomUserManager::GetTeamMemberList( IN CXSLRoom::TEAM_NUM eTeamNum, IN boo
 	{
 		if( !mit->second )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -5606,7 +5606,7 @@ bool KRoomUserManager::UpdatePetInfo( IN UidType nCID, IN const std::vector< KPe
 	KRoomUserPtr spRoomUser = GetUser( nCID );
 	if( spRoomUser == NULL )
 	{
-		START_LOG( cerr, L"유저가 없음." )
+		START_LOG( cerr, L"User is missing." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -5629,7 +5629,7 @@ bool KRoomUserManager::UpdatePetSatiety( IN UidType nCID, IN UidType iPetUID, IN
 	KRoomUserPtr spRoomUser = GetUser( nCID );
 	if( spRoomUser == NULL )
 	{
-		START_LOG( cerr, L"유저가 없음." )
+		START_LOG( cerr, L"User is missing." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -5644,7 +5644,7 @@ bool KRoomUserManager::UpdatePetIntimacy( IN UidType nCID, IN UidType iPetUID, I
 	KRoomUserPtr spRoomUser = GetUser( nCID );
 	if( spRoomUser == NULL )
 	{
-		START_LOG( cerr, L"유저가 없음." )
+		START_LOG( cerr, L"User is missing." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -5662,7 +5662,7 @@ bool KRoomUserManager::UpdateGameStat( IN const UidType iUnitUID, IN const KStat
 	KRoomUserPtr spRoomUser = GetUser( iUnitUID );
 	if( spRoomUser == NULL )
 	{
-		START_LOG( cerr, L"유저가 없음." )
+		START_LOG( cerr, L"User is missing." )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 		return false;
@@ -5683,7 +5683,7 @@ void KRoomUserManager::CheckItemEquipQuestCondition( IN bool bIsGameStart )
 		KRoomUserPtr spRoomUser = mit->second;
 		if( spRoomUser == NULL )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -5705,7 +5705,7 @@ KRoomUserPtr KRoomUserManager::GetHostUser()
 	{
 		if( !mit->second )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -5731,7 +5731,7 @@ void KRoomUserManager::AddHaveExpInDungeon( UidType UnitUid, bool bState )
 {
 	if( UnitUid <= 0 )
 	{
-		START_LOG( cerr, L"비정상적인 UnitUID값입니다!" )
+		START_LOG( cerr, L"Invalid UnitUID value!" )
 			<< BUILD_LOG( UnitUid )
 			<< END_LOG;
 		return;
@@ -5757,7 +5757,7 @@ bool KRoomUserManager::ProcessBuffSkill( IN KEGS_BUFF_SKILL_INFO_CONVEY_REQ& kPa
 			mit = m_mapRoomUser[UT_GAME].find( iCaughtUnitUID );
 			if( mit == m_mapRoomUser[UT_GAME].end() )
 			{
-				START_LOG( clog, L"캐릭터 정보가 없다!" )
+				START_LOG( clog, L"Character information is missing!" )
 					<< BUILD_LOG( iCaughtUnitUID )
 					<< END_LOG;
 				continue;
@@ -5766,7 +5766,7 @@ bool KRoomUserManager::ProcessBuffSkill( IN KEGS_BUFF_SKILL_INFO_CONVEY_REQ& kPa
 			KRoomUserPtr spRoomUser = mit->second;
 			if( spRoomUser == NULL )
 			{
-				START_LOG( cerr, L"룸 유저 포인터 이상." )
+				START_LOG( cerr, L"Invalid room user pointer." )
 					<< BUILD_LOG( iCaughtUnitUID )
 					<< END_LOG;
 				continue;
@@ -5808,7 +5808,7 @@ bool KRoomUserManager::ProcessBuffSkill( IN KEGS_BUFF_SKILL_INFO_CONVEY_REQ& kPa
 			mit = m_mapRoomUser[UT_GAME].find( iCaughtUnitUID );
 			if( mit == m_mapRoomUser[UT_GAME].end() )
 			{
-				START_LOG( clog, L"캐릭터 정보가 없다!" )
+				START_LOG( clog, L"Character information is missing!" )
 					<< BUILD_LOG( iCaughtUnitUID )
 					<< END_LOG;
 				continue;
@@ -5817,7 +5817,7 @@ bool KRoomUserManager::ProcessBuffSkill( IN KEGS_BUFF_SKILL_INFO_CONVEY_REQ& kPa
 			KRoomUserPtr spRoomUser = mit->second;
 			if( spRoomUser == NULL )
 			{
-				START_LOG( cerr, L"룸 유저 포인터 이상." )
+				START_LOG( cerr, L"Invalid room user pointer." )
 					<< BUILD_LOG( iCaughtUnitUID )
 					<< END_LOG;
 				continue;
@@ -5825,7 +5825,7 @@ bool KRoomUserManager::ProcessBuffSkill( IN KEGS_BUFF_SKILL_INFO_CONVEY_REQ& kPa
 
 			if( spRoomUser->DeleteCaughtBuffSkill( kPacket.m_iBuffEnum ) == false )
 			{
-				START_LOG( clog, L"룸 유저가 걸려 있지 않는 버프를 해지하려 한다." )
+				START_LOG( clog, L"Attempted to remove a buff that is not active on the room user." )
 					<< BUILD_LOG( spRoomUser->GetCID() )
 					<< BUILD_LOG( kPacket.m_iBuffEnum )
 					<< END_LOG;
@@ -5872,7 +5872,7 @@ bool KRoomUserManager::CheckCaughtBuffSkill( OUT KEGS_BUFF_SKILL_INFO_CONVEY_NOT
 		KRoomUserPtr spRoomUser = mit->second;
 		if( spRoomUser == NULL )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -5910,7 +5910,7 @@ bool KRoomUserManager::IsRoomUserGetExp( IN UidType iUnitUID )
 	std::map< UidType, bool >::iterator mit = m_mapHaveExpInDungeon.find( iUnitUID );
 	if( mit == m_mapHaveExpInDungeon.end() )
 	{
-		START_LOG( clog, L"경험치를 획든한 적이 없다!" )
+		START_LOG( clog, L"No experience has been acquired!" )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 
@@ -5934,7 +5934,7 @@ bool KRoomUserManager::IsAraEvent()
 		KRoomUserPtr spRoomUser = mit->second;
 		if( spRoomUser == NULL )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -5945,7 +5945,7 @@ bool KRoomUserManager::IsAraEvent()
 			std::map< UidType, bool >::iterator mit = m_mapHaveExpInDungeon.find( spRoomUser->GetCID() );
 			if( mit == m_mapHaveExpInDungeon.end() )
 			{
-				START_LOG( clog, L"경험치를 획든한 적이 없다!" )
+				START_LOG( clog, L"No experience has been acquired!" )
 					<< BUILD_LOG( spRoomUser->GetCID() )
 					<< END_LOG;
 			}
@@ -5965,7 +5965,7 @@ bool KRoomUserManager::SetUnitAllQuestInfo( UidType nCID, std::set< int >& setQu
 	KRoomUserPtr spRoomUser = GetUser( nCID );
 	if( !spRoomUser )
 	{
-		START_LOG( cwarn, L"유저가 없음." )
+		START_LOG( cwarn, L"User is missing." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -5987,7 +5987,7 @@ bool KRoomUserManager::IsComeBackUserInRoom()
 		KRoomUserPtr spRoomUser = mit->second;
 		if( spRoomUser == NULL )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -6008,7 +6008,7 @@ int	KRoomUserManager::GetRatingByTeam( IN const CXSLRoom::TEAM_NUM eTeamNum )
 {
 	if( GetNumMember() > SEnum::PE_MAX_TOTAL_PLAYER_COUNT )
 	{
-        START_LOG( cerr, L"팀 레이팅을 계산하려는데 인원수가 이상하다!" )
+        START_LOG( cerr, L"Invalid player count while calculating team rating!" )
 			<< BUILD_LOG( GetNumMember() )
 			<< END_LOG;
 		return -1;
@@ -6022,7 +6022,7 @@ int	KRoomUserManager::GetRatingByTeam( IN const CXSLRoom::TEAM_NUM eTeamNum )
 		KRoomUserPtr spRoomUser = mit->second;
 		if( spRoomUser == NULL )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			return -1;
@@ -6042,7 +6042,7 @@ bool KRoomUserManager::SetPvpNpcInfo( IN const UidType iUnitUID, IN const int iN
 	KRoomUserPtr spRoomUser = GetUser( iUnitUID );
 	if( spRoomUser == NULL )
 	{
-		START_LOG( cerr, L"유저가 없음." )
+		START_LOG( cerr, L"User is missing." )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 
@@ -6052,7 +6052,7 @@ bool KRoomUserManager::SetPvpNpcInfo( IN const UidType iUnitUID, IN const int iN
 	const CXSLUnitManager::NPCUnitStat* pNpcStat = SiCXSLUnitManager()->GetNPCUnitStat( static_cast<CXSLUnitManager::NPC_UNIT_ID>(iNpcID) );
 	if( pNpcStat == NULL )
 	{
-		START_LOG( cerr, L"Npc Stat이 존재하지 않는 NpcID입니다!" )
+		START_LOG( cerr, L"No NPC Stat exists for this NpcID!" )
 			<< BUILD_LOG( iNpcID )
 			<< END_LOG;
         return false;
@@ -6077,7 +6077,7 @@ bool KRoomUserManager::IsPvpNpc( IN const UidType iUnitUID )
 	KRoomUserPtr spRoomUser = GetUser( iUnitUID );
 	if( spRoomUser == NULL )
 	{
-		START_LOG( clog, L"대전 NPC가 아닙니다." )
+		START_LOG( clog, L"This is not a PvP NPC." )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 		return false;
@@ -6096,7 +6096,7 @@ bool KRoomUserManager::IsOnlyPvpNpcInRoom( OUT std::vector< UidType >& vecPvpNpc
 		KRoomUserPtr spRoomUser = mit->second;
 		if( spRoomUser == NULL )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -6116,7 +6116,7 @@ bool KRoomUserManager::SetMatchWaitTime( IN const UidType iUnitUID, IN const int
 	KRoomUserPtr spRoomUser = GetUser( iUnitUID );
 	if( spRoomUser == NULL )
 	{
-		START_LOG( clog, L"유저 정보가 없습니다." )
+		START_LOG( clog, L"User information is missing." )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 		return false;
@@ -6136,7 +6136,7 @@ int KRoomUserManager::GetHenirRewardUserNum()
 	std::map< UidType, KRoomUserPtr >::const_iterator mit = m_mapRoomUser[UT_GAME].begin();
 	if( mit == m_mapRoomUser[UT_GAME].end() )
 	{
-		START_LOG( cerr, L"룸 유저가 하나도 없다는 것은 말이 되지않는다." )
+		START_LOG( cerr, L"The room cannot have zero users." )
 			<< BUILD_LOG( m_eRoomType )
 			<< END_LOG;
 
@@ -6150,7 +6150,7 @@ int KRoomUserManager::GetHenirRewardUserNum()
 		spRoomUser = mit->second;
 		if( spRoomUser == NULL )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상. 헤니르 보상 상태 셋팅 실패!" )
+			START_LOG( cerr, L"Invalid room user pointer; failed to set Henir reward state!" )
 				<< BUILD_LOG( m_eRoomType )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
@@ -6175,7 +6175,7 @@ void KRoomUserManager::GetHenirRewardUserList( OUT std::map< UidType, UidType >&
 	std::map< UidType, KRoomUserPtr >::const_iterator mit = m_mapRoomUser[UT_GAME].begin();
 	if( mit == m_mapRoomUser[UT_GAME].end() )
 	{
-		START_LOG( cerr, L"룸 유저가 하나도 없다는 것은 말이 되지않는다." )
+		START_LOG( cerr, L"The room cannot have zero users." )
 			<< BUILD_LOG( m_eRoomType )
 			<< END_LOG;
 		return;
@@ -6188,7 +6188,7 @@ void KRoomUserManager::GetHenirRewardUserList( OUT std::map< UidType, UidType >&
 		spRoomUser = mit->second;
 		if( spRoomUser == NULL )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상. 헤니르 보상 상태 셋팅 실패!" )
+			START_LOG( cerr, L"Invalid room user pointer; failed to set Henir reward state!" )
 				<< BUILD_LOG( m_eRoomType )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
@@ -6209,7 +6209,7 @@ bool KRoomUserManager::SetBattleFieldNpcLoad( IN const UidType iUnitUID, IN cons
 	KRoomUserPtr spRoomUser = GetUser( iUnitUID );
 	if( spRoomUser == NULL )
 	{
-		START_LOG( cerr, L"해당 캐릭터 정보를 찾지 못하였습니다." )
+		START_LOG( cerr, L"Character information not found." )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 		return false;
@@ -6224,7 +6224,7 @@ bool KRoomUserManager::IsBattleFieldNpcLoad( IN const UidType iUnitUID )
 	KRoomUserPtr spRoomUser = GetUser( iUnitUID );
 	if( spRoomUser == NULL )
 	{
-		START_LOG( cerr, L"해당 캐릭터 정보를 찾지 못하였습니다." )
+		START_LOG( cerr, L"Character information not found." )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 		return false;
@@ -6238,7 +6238,7 @@ bool KRoomUserManager::SetBattleFieldNpcSyncSubjects( IN const UidType iUnitUID,
 	KRoomUserPtr spRoomUser = GetUser( iUnitUID );
 	if( spRoomUser == NULL )
 	{
-		START_LOG( cerr, L"해당 캐릭터 정보를 찾지 못하였습니다." )
+		START_LOG( cerr, L"Character information not found." )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 		return false;
@@ -6253,7 +6253,7 @@ bool KRoomUserManager::IsBattleFieldNpcSyncSubjects( IN const UidType iUnitUID )
 	KRoomUserPtr spRoomUser = GetUser( iUnitUID );
 	if( spRoomUser == NULL )
 	{
-		START_LOG( cerr, L"해당 캐릭터 정보를 찾지 못하였습니다." )
+		START_LOG( cerr, L"Character information not found." )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 		return false;
@@ -6272,7 +6272,7 @@ void KRoomUserManager::GetBattleFieldNpcSyncSubjectsList( OUT std::vector< UidTy
 		KRoomUserPtr spRoomUser = mit->second;
 		if( spRoomUser == NULL )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -6299,7 +6299,7 @@ void KRoomUserManager::GetUnitUIDList( OUT std::vector< UidType >& vecUnitUIDLis
 		KRoomUserPtr spRoomUser = mit->second;
 		if( spRoomUser == NULL )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -6317,7 +6317,7 @@ bool KRoomUserManager::SetOldPartyInfo( IN const UidType iUnitUID, IN const KOld
 	KRoomUserPtr spRoomUser = GetUser( iUnitUID );
 	if( spRoomUser == NULL )
 	{
-		START_LOG( cerr, L"해당 캐릭터 정보를 찾지 못하였습니다." )
+		START_LOG( cerr, L"Character information not found." )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 		return false;
@@ -6343,7 +6343,7 @@ void KRoomUserManager::PrepareForReturnToFieldProcess( IN const UidType iRoomUID
 		KRoomUserPtr spRoomUser = mit->second;
 		if( spRoomUser == NULL )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -6359,7 +6359,7 @@ void KRoomUserManager::PrepareForReturnToFieldProcess( IN const UidType iRoomUID
 		KRoomUserPtr spRoomUser = mit->second;
 		if( spRoomUser == NULL )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -6426,7 +6426,7 @@ bool KRoomUserManager::EnemyIsPlacementTeam( IN const int& iMyTeam )
 	{
 		if( mit->second == NULL )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -6452,7 +6452,7 @@ int KRoomUserManager::GetMyTeamKillNum( IN const UidType& iMyUnitUID )
 
 	if( pMyUnit == NULL )
 	{
-		START_LOG( cerr, L"룸 유저 포인터 이상." )
+		START_LOG( cerr, L"Invalid room user pointer." )
 			<< BUILD_LOG( pMyUnit )
 			<< END_LOG;
 		return -1;
@@ -6472,7 +6472,7 @@ int KRoomUserManager::GetEnemyTeamKillNum( IN const UidType& iMyUnitUID )
 
 	if( pMyUnit == NULL )
 	{
-		START_LOG( cerr, L"룸 유저 포인터 이상." )
+		START_LOG( cerr, L"Invalid room user pointer." )
 			<< BUILD_LOG( pMyUnit )
 			<< END_LOG;
 		return -1;
@@ -6486,7 +6486,7 @@ int KRoomUserManager::GetEnemyTeamKillNum( IN const UidType& iMyUnitUID )
 	{
 		if( mit->second == NULL )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -6501,7 +6501,7 @@ int KRoomUserManager::GetEnemyTeamKillNum( IN const UidType& iMyUnitUID )
 
 	if( iEnemyTeam < 0 )
 	{
-		START_LOG( cerr, L"올바르지 않은 TeamIndex입니다." )
+		START_LOG( cerr, L"Invalid TeamIndex." )
 		<< BUILD_LOG( iEnemyTeam )
 		<< END_LOG;
 		return -1;
@@ -6524,7 +6524,7 @@ int KRoomUserManager::GetUserLevel( IN const UidType& iMyUnitUID )
 
 	if( pMyUnit == NULL )
 	{
-		START_LOG( cerr, L"룸 유저 포인터 이상." )
+		START_LOG( cerr, L"Invalid room user pointer." )
 			<< BUILD_LOG( pMyUnit )
 			<< END_LOG;
 		return 1;
@@ -6564,7 +6564,7 @@ void KRoomUserManager::GetLiveMemberList( OUT std::vector< UidType >& vecLiveMem
 	{
 		if( !mit->second )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -6588,7 +6588,7 @@ bool KRoomUserManager::SetPingScore( UidType nCID, DWORD dwPingScore )
 		spRoomUser = GetUser( nCID, UT_OBSERVER );
 		if( !spRoomUser )
 		{
-			START_LOG( cerr, L"룸 유저 검색 실패." )
+			START_LOG( cerr, L"Failed to find room user." )
 				<< BUILD_LOG( nCID )
 				<< END_LOG;
 
@@ -6597,7 +6597,7 @@ bool KRoomUserManager::SetPingScore( UidType nCID, DWORD dwPingScore )
 		//}}
 	}
 
-	START_LOG( clog, L"룸 유저의 ping 속도를 저장함." )
+	START_LOG( clog, L"Saving room-user ping speed." )
 		<< BUILD_LOG( nCID )
 		<< BUILD_LOG( dwPingScore )
 		<< END_LOG;
@@ -6621,7 +6621,7 @@ KRoomUserPtr KRoomUserManager::ChooseBetterHost( UidType iHostUID )
 	{
 		if( !mit->second )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -6702,7 +6702,7 @@ void KRoomUserManager::ClearPingScore()
 	{
 		if( !mit->second )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -6719,7 +6719,7 @@ bool KRoomUserManager::SetAutoPartyWaitTime( IN const UidType iUnitUID, IN const
 	KRoomUserPtr spRoomUser = GetUser( iUnitUID );
 	if( spRoomUser == NULL )
 	{
-		START_LOG( cerr, L"해당 캐릭터 정보를 찾지 못하였습니다." )
+		START_LOG( cerr, L"Character information not found." )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 		return false;
@@ -6745,7 +6745,7 @@ int KRoomUserManager::GetPcBangType( UidType nCID )
 	KRoomUserPtr spRoomUser = GetUser( nCID );
 	if( spRoomUser == NULL )
 	{
-		START_LOG( cerr, L"GAME BANG 정보를 찾는데 유저가 없음." )
+		START_LOG( cerr, L"No user found while looking up GAME BANG information." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -6760,7 +6760,7 @@ bool KRoomUserManager::SetRematch( UidType nCID, bool bAcceptRematch )
 	KRoomUserPtr spRoomUser = GetUser( nCID );
 	if( !spRoomUser )
 	{
-		START_LOG( cerr, L"룸 유저 검색 실패." )
+		START_LOG( cerr, L"Failed to find room user." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -6780,7 +6780,7 @@ bool KRoomUserManager::SetAllRematch( bool bAcceptRematch )
 	{
 		if( !mit->second )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -6802,7 +6802,7 @@ bool KRoomUserManager::IsAllPlayerWantRematch()
 	{
 		if( !mit->second )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			return false;
@@ -6842,7 +6842,7 @@ bool KRoomUserManager::CheckCouplePVP()
 	{
 		if( !mit->second )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -6862,7 +6862,7 @@ bool KRoomUserManager::CheckCouplePVP()
 	{
 		if( !mit2->second )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit2->first )
 				<< END_LOG;
 			continue;
@@ -6888,7 +6888,7 @@ bool KRoomUserManager::SetUnitGoingQuestInfo( UidType nCID, std::set< int >& set
 	KRoomUserPtr spRoomUser = GetUser( nCID );
 	if( !spRoomUser )
 	{
-		START_LOG( cwarn, L"유저가 없음." )
+		START_LOG( cwarn, L"User is missing." )
 			<< BUILD_LOG( nCID )
 			<< END_LOG;
 
@@ -6905,7 +6905,7 @@ bool KRoomUserManager::AddAllyNPC( IN const UidType iUnitUID, IN const KNPCUnitR
 	KRoomUserPtr spRoomUser = GetUser( iUnitUID );
 	if( spRoomUser == NULL )
 	{
-		START_LOG( cwarn, L"이 유저가 소환을 요청한건데 없다?" )
+		START_LOG( cwarn, L"This user requested a summon, but cannot be found." )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 		return false;
@@ -6921,7 +6921,7 @@ void KRoomUserManager::DeleteAllyNPC( IN const UidType iNPCUID )
 	{
 		if( IS_NULL( mit->second ) )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -6940,7 +6940,7 @@ void KRoomUserManager::SetAllPrepareForDefenceDungeon( IN const bool bVal )
 	{
 		if( !mit->second )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -6955,7 +6955,7 @@ bool KRoomUserManager::SetPrepareForDefenceDungeon( IN const UidType iUnitUID, I
 	KRoomUserPtr spRoomUser = GetUser( iUnitUID );
 	if( IS_NULL( spRoomUser ) )
 	{
-		START_LOG( cerr, L"룸 유저 검색 실패." )
+		START_LOG( cerr, L"Failed to find room user." )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 		return false;
@@ -6964,7 +6964,7 @@ bool KRoomUserManager::SetPrepareForDefenceDungeon( IN const UidType iUnitUID, I
 	KRoomSlotPtr spRoomSlot = GetSlot( spRoomUser->GetSlotID() );
 	if( IS_NULL( spRoomSlot ) )
 	{
-		START_LOG( cerr, L"슬롯 검색 실패." )
+		START_LOG( cerr, L"Failed to find slot." )
 			<< BUILD_LOG( iUnitUID )
 			<< BUILD_LOG( spRoomUser->GetSlotID() )
 			<< END_LOG;
@@ -6986,7 +6986,7 @@ bool KRoomUserManager::IsAllPlayerPrepareForDefenceDungeon()
 	{
 		if( !mit->second )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			return false;
@@ -7011,7 +7011,7 @@ void KRoomUserManager::GetUnitUIDListNotPrepareForDefenceDungeon( OUT std::map< 
 	{
 		if( !mit->second )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -7034,7 +7034,7 @@ void KRoomUserManager::SetAllEnterDefenceDungeon()
 	{
 		if( !mit->second )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -7055,7 +7055,7 @@ bool KRoomUserManager::SetEnterDefenceDungeon( IN const UidType iUnitUID, IN con
 	KRoomUserPtr spRoomUser = GetUser( iUnitUID );
 	if( IS_NULL( spRoomUser ) )
 	{
-		START_LOG( cerr, L"룸 유저 검색 실패." )
+		START_LOG( cerr, L"Failed to find room user." )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 		return false;
@@ -7064,7 +7064,7 @@ bool KRoomUserManager::SetEnterDefenceDungeon( IN const UidType iUnitUID, IN con
 	KRoomSlotPtr spRoomSlot = GetSlot( spRoomUser->GetSlotID() );
 	if( IS_NULL( spRoomSlot ) )
 	{
-		START_LOG( cerr, L"슬롯 검색 실패." )
+		START_LOG( cerr, L"Failed to find slot." )
 			<< BUILD_LOG( iUnitUID )
 			<< BUILD_LOG( spRoomUser->GetSlotID() )
 			<< END_LOG;
@@ -7089,7 +7089,7 @@ bool KRoomUserManager::IsAllPlayerPrepareForDefenceDungeon( OUT std::vector< Uid
 	{
 		if( !mit->second )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			return false;
@@ -7127,7 +7127,7 @@ void KRoomUserManager::GetUnitUIDListDisagreeEnterDefenceDungeon( OUT std::vecto
 	{
 		if( !mit->second )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -7155,7 +7155,7 @@ bool KRoomUserManager::SetRidingPetInfo( IN const UidType iUnitUID, IN const Uid
 	KRoomUserPtr spRoomUser = GetUser( iUnitUID );
 	if( spRoomUser == NULL )
 	{
-		START_LOG( cerr, L"현재 라이딩 펫 정보를 업데이트 하려고 하는데 룸 유저가 없다?" )
+		START_LOG( cerr, L"Cannot update current riding-pet information: room user is missing." )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 		return false;

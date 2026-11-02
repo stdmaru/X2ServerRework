@@ -41,7 +41,7 @@ void KAccountBlockManager::Tick()
 
 void KAccountBlockManager::Init()
 {
-	START_LOG( cout, L"계정 블럭 리스트 요청!" );
+	START_LOG( cout, L"Account block list requested!" );
 
 	KDBE_CHECK_ACCOUNT_BLOCK_LIST_REQ kPacket;
 	GetReleaseTick( kPacket.m_mapReleaseTick );
@@ -129,7 +129,7 @@ void KAccountBlockManager::UpdateAccountBlockList( IN const KDBE_CHECK_ACCOUNT_B
 			m_setAccountBlockList[iBlockType].clear();
 			m_setAccountBlockList[iBlockType] = setNewBlockList;
 
-			START_LOG( cout, L"계정 블럭 리스트 업데이트!" )
+			START_LOG( cout, L"Account block list updated!" )
 				<< BUILD_LOG( iBlockType )
 				<< BUILD_LOG( uiOldCount )
 				<< BUILD_LOG( m_setAccountBlockList[iBlockType].size() )
@@ -155,7 +155,7 @@ void KAccountBlockManager::UpdateAccountBlockList( IN const KDBE_CHECK_ACCOUNT_B
 			m_setMachineIDBlockList.insert( strNewMachineID );
 		}
 
-		START_LOG( cout, L"머신 ID 블럭 리스트 업데이트!" )
+		START_LOG( cout, L"Machine ID block list updated!" )
 			<< BUILD_LOG( uiOldCount )
 			<< BUILD_LOG( m_setMachineIDBlockList.size() )
 			<< BUILD_LOG( vecBlockMachineIDList.size() );
@@ -177,7 +177,7 @@ void KAccountBlockManager::AddBlockedAccount( IN const UidType iUserUID, IN cons
 {
 	if( eBlockType < 0  ||  eBlockType >= BT_MAX )
 	{
-		START_LOG( cerr, L"잘못된 블럭 타입 입니다!" )
+		START_LOG( cerr, L"Invalid block type." )
 			<< BUILD_LOG( iUserUID )
 			<< BUILD_LOG( eBlockType )
 			<< END_LOG;
@@ -191,7 +191,7 @@ bool KAccountBlockManager::IsBlockedAccount( IN const UidType iUserUID, IN const
 {
 	if( eBlockType < 0  ||  eBlockType >= BT_MAX )
 	{
-		START_LOG( cerr, L"잘못된 블럭 타입 입니다!" )
+		START_LOG( cerr, L"Invalid block type." )
 			<< BUILD_LOG( iUserUID )
 			<< BUILD_LOG( eBlockType )
 			<< END_LOG;

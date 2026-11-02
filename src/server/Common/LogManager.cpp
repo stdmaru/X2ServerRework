@@ -46,35 +46,35 @@ void KLogManager::SetNewLogByFileSize_LUA( bool bValue )
 {
 	m_bNewLogByFileSize = bValue;
 
-	START_LOG( cout, L"파일 크기 초과시 로그 파일 생성 여부 : " << m_bNewLogByFileSize );
+	START_LOG( cout, L"Create a new log file when the size limit is exceeded: " << m_bNewLogByFileSize );
 }
 
 void KLogManager::SetNewLogDaily_LUA( bool bValue )
 {
 	m_bNewLogDaily = bValue;
 
-	START_LOG( cout, L"매일 새로운 로그 파일 생성 여부 : " << m_bNewLogDaily );
+	START_LOG( cout, L"Create a new log file daily: " << m_bNewLogDaily );
 }
 
 void KLogManager::SetErrorLogStat_LUA( bool bValue )
 {
 	m_bErrorLogStat = bValue;
 
-	START_LOG( cout, L"에러 로그 통계 남기기 여부 : " << m_bErrorLogStat );
+	START_LOG( cout, L"Record error log statistics: " << m_bErrorLogStat );
 }
 
 void KLogManager::SetCheckTimeGap_LUA( double fTimeGap )
 {
 	m_fCheckTimeGap = fTimeGap;
 
-	START_LOG( cout, L"로그 파일 체크 타임 주기 : " << m_fCheckTimeGap );
+	START_LOG( cout, L"Log file check interval: " << m_fCheckTimeGap );
 }
 
 void KLogManager::SetErrorLogStatTimeGap_LUA( double fTimeGap )
 {
 	m_fErrorLogStatTimeGap = fTimeGap;
 
-	START_LOG( cout, L"에러 로그 통계 DB업데이트 타임 주기 : " << m_fErrorLogStatTimeGap );
+	START_LOG( cout, L"Error log statistics database update interval: " << m_fErrorLogStatTimeGap );
 }
 
 void KLogManager::SetLogFileMaxSize_LUA( int iMByte, int iKByte )
@@ -83,7 +83,7 @@ void KLogManager::SetLogFileMaxSize_LUA( int iMByte, int iKByte )
 	m_iLogFileMaxSize += 1024 * iKByte;
 	m_iLogFileMaxSize += 1024 * 1024 * iMByte;
 
-	START_LOG( cout, L"로그 파일 최대 크기" )
+	START_LOG( cout, L"Maximum log file size: " )
 		<< BUILD_LOG( m_iLogFileMaxSize )
 		<< BUILD_LOG( m_iLogFileMaxSize / 1024 )
 		<< BUILD_LOG( m_iLogFileMaxSize / 1024 / 1024 );
@@ -139,7 +139,7 @@ void KLogManager::Tick()
 		if( tBeforeCheckTime.GetDay() != m_tLastCheckTime.GetDay() )
 		{
 			// 로그 새로 찍어서 파일 계속 하기!
-			START_LOG( cout, L"--------------------------- 매일 0시 기준으로 새로운 로그 파일을 생성합니다! ---------------------------" )
+			START_LOG( cout, L"--------------------------- Creating a new log file at midnight each day. ---------------------------" )
 				<< BUILD_LOG( tBeforeCheckTime.GetDay() )
 				<< BUILD_LOG( m_tLastCheckTime.GetDay() );
 
@@ -147,7 +147,7 @@ void KLogManager::Tick()
 			dbg::logfile::CloseFile();
 
 			// 로그 새로 찍어서 파일 계속 하기!
-			START_LOG( cout, L"--------------------------- 매일 0시 기준으로 새로운 로그 파일을 생성합니다! ---------------------------" )
+			START_LOG( cout, L"--------------------------- Creating a new log file at midnight each day. ---------------------------" )
 				<< BUILD_LOG( tBeforeCheckTime.GetDay() )
 				<< BUILD_LOG( m_tLastCheckTime.GetDay() );
 			return;
@@ -188,7 +188,7 @@ void KLogManager::Tick()
 			{
 				SendToLogDB( DBE_LOG_STATISTICS_INFO_NOT, kPacketToLog );
 
-				START_LOG( cout, L"--------------------------- 에러 로그 통계를 남깁니다! ---------------------------" )
+				START_LOG( cout, L"--------------------------- Recording error log statistics. ---------------------------" )
 					<< BUILD_LOG( kPacketToLog.m_vecLogStat.size() );
 			}
 		}

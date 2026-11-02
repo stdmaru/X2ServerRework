@@ -26,7 +26,7 @@ void KComeBackUserManager::SetComeBackBuffEndTime( IN std::wstring& wstrComeBack
 	if( KncUtil::ConvertStringToCTime( wstrComeBackBuffEndDate, m_tComeBackBuffEnd ) == false )
 	{
 		m_tComeBackBuffEnd = CTime( 0 );
-		START_LOG( cerr, L"시간 변환 실패!!" )
+		START_LOG( cerr, L"Failed to convert time!" )
 			<< BUILD_LOG( wstrComeBackBuffEndDate )
 			<< END_LOG;
 	}
@@ -66,7 +66,7 @@ bool KComeBackUserManager::GiveComeBackUserRewardCube( OUT int& iRewardItem, OUT
 		}break;
 	default:
 		{
-			START_LOG( cerr, L"복귀유저 보상 등급이 이상합니다." )
+			START_LOG( cerr, L"Invalid returning-user reward tier." )
 				<< BUILD_LOG( iRewardItem )
 				<< BUILD_LOG( GetComeBackRewardLevel() )
 				<< END_LOG;

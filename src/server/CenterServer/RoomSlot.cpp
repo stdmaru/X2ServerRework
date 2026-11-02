@@ -112,7 +112,7 @@ bool KRoomSlot::IsOccupied()
     {
         if( !m_spRoomUser )
         {
-            START_LOG( cerr, L"슬롯에 들어있는 유저의 포인터 이상." )
+            START_LOG( cerr, L"Invalid pointer for user in slot." )
                 << BUILD_LOG( GetSlotID() )
                 << BUILD_LOG( GetStateID() )
                 << BUILD_LOG( GetStateIDString() )
@@ -134,7 +134,7 @@ bool KRoomSlot::Enter( KRoomUserPtr spRoomUser )
 {
     if( !IsOpened() || IsOccupied() )
     {
-        START_LOG( cerr, L"슬롯에 들어가기 실패." )
+        START_LOG( cerr, L"Failed to enter slot." )
             << BUILD_LOG( GetStateID() )
             << BUILD_LOG( GetStateIDString() )
             << BUILD_LOG( GetSlotID() )
@@ -145,7 +145,7 @@ bool KRoomSlot::Enter( KRoomUserPtr spRoomUser )
 
     if( !spRoomUser )
     {
-        START_LOG( cerr, L"룸 유저 포인터 이상." )
+        START_LOG( cerr, L"Invalid room user pointer." )
             << END_LOG;
 
         return false;
@@ -163,7 +163,7 @@ bool KRoomSlot::Leave()
 {
     if( !IsOccupied() )
     {
-        START_LOG( cerr, L"이 슬롯에 캐릭터 없다." )
+        START_LOG( cerr, L"No character is assigned to this slot." )
             << BUILD_LOG( GetStateIDString() )
             << BUILD_LOG( GetSlotID() )
             << END_LOG;
@@ -181,7 +181,7 @@ bool KRoomSlot::Open()
 {
     if( IsOpened() )
     {
-        START_LOG( cerr, L"이미 열려 있다." )
+        START_LOG( cerr, L"Already open." )
             << BUILD_LOG( GetStateIDString() )
             << BUILD_LOG( GetSlotID() )
             << END_LOG;
@@ -191,7 +191,7 @@ bool KRoomSlot::Open()
 
     if( IsOccupied() )
     {
-        START_LOG( cerr, L"사람마저 들어있다." )
+        START_LOG( cerr, L"A user is still present." )
             << BUILD_LOG( GetStateIDString() )
             << BUILD_LOG( GetSlotID() )
             << END_LOG;
@@ -208,7 +208,7 @@ bool KRoomSlot::Close()
 {
     if( !IsOpened() )
     {
-        START_LOG( cerr, L"이미 닫혀있는데?" )
+        START_LOG( cerr, L"It is already closed." )
             << BUILD_LOG( GetStateIDString() )
             << BUILD_LOG( GetSlotID() )
             << END_LOG;
@@ -218,7 +218,7 @@ bool KRoomSlot::Close()
 
     if( IsOccupied() )
     {
-        START_LOG( cerr, L"사람이 있다구." )
+        START_LOG( cerr, L"There is a user present." )
             << BUILD_LOG( GetStateIDString() )
             << BUILD_LOG( GetSlotID() )
             << END_LOG;
@@ -236,15 +236,15 @@ bool KRoomSlot::ToggleOpenClose()
     switch( GetStateID() )
     {
     case KRoomSlotFSM::S_INIT:
-        START_LOG( clog, L"슬롯 닫음." );
+        START_LOG( clog, L"Slot closed." );
         StateTransition( KRoomSlotFSM::I_TO_CLOSED );
         break;
     case KRoomSlotFSM::S_CLOSED:
-        START_LOG( clog, L"슬롯 열음." );
+        START_LOG( clog, L"Slot opened." );
         StateTransition( KRoomSlotFSM::I_TO_INIT );
         break;
     case KRoomSlotFSM::S_ASSIGNED:
-        START_LOG( cerr, L"슬롯에 캐릭터가 있는데 열고 닫으려 함." )
+        START_LOG( cerr, L"Attempted to open and close a slot that contains a character." )
             << BUILD_LOG( GetStateID() )
             << BUILD_LOG( GetStateIDString() )
             << BUILD_LOG( GetSlotID() )
@@ -252,7 +252,7 @@ bool KRoomSlot::ToggleOpenClose()
             << END_LOG;
         return false;
     default:
-        START_LOG( cerr, L"상태가 이상함." )
+        START_LOG( cerr, L"Invalid state." )
             << BUILD_LOG( GetStateID() )
             << BUILD_LOG( GetStateIDString() )
             << BUILD_LOG( GetSlotID() )
@@ -273,7 +273,7 @@ void KRoomSlot::ResetSlot()
         StateTransition( KRoomSlotFSM::I_TO_INIT );
         break;
     case KRoomSlotFSM::S_ASSIGNED:
-        START_LOG( cerr, L"슬롯에 캐릭터가 할당되어 있음." )
+        START_LOG( cerr, L"A character is already assigned to the slot." )
             << BUILD_LOG( GetStateID() )
             << BUILD_LOG( GetSlotID() )
             << BUILD_LOG( GetCID() )
@@ -282,7 +282,7 @@ void KRoomSlot::ResetSlot()
         StateTransition( KRoomSlotFSM::I_TO_INIT );
         break;
     default:
-        START_LOG( cerr, L"상태가 이상함." )
+        START_LOG( cerr, L"Invalid state." )
             << BUILD_LOG( GetStateID() )
             << BUILD_LOG( GetStateIDString() )
             << BUILD_LOG( GetSlotID() )

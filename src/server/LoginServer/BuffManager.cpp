@@ -30,7 +30,7 @@ bool KBuffManager::AddUnitBuffInfo( IN const UidType& iUnitUID, IN const std::ve
 		{
 			if( kTestBuff.m_kFactorInfo.m_vecBuffBehaviorFactors.size() > 10 )
 			{
-				START_LOG( cerr, "m_vecBuffBehaviorFactors의 원소 갯수가 10개를 넘었다!" )
+				START_LOG( cerr, "The number of elements in m_vecBuffBehaviorFactors exceeds 10!" )
 					<< BUILD_LOG( iUnitUID )
 					<< BUILD_LOG( kTestBuff.m_kFactorInfo.m_vecBuffBehaviorFactors.size() )
 					<< END_LOG;
@@ -38,7 +38,7 @@ bool KBuffManager::AddUnitBuffInfo( IN const UidType& iUnitUID, IN const std::ve
 
 			if( kTestBuff.m_kFactorInfo.m_vecBuffFinalizerFactors.size() > 10 )
 			{
-				START_LOG( cerr, "m_vecBuffFinalizerFactors의 원소 갯수가 10개를 넘었다!" )
+				START_LOG( cerr, "The number of elements in m_vecBuffFinalizerFactors exceeds 10!" )
 					<< BUILD_LOG( iUnitUID )
 					<< BUILD_LOG( kTestBuff.m_kFactorInfo.m_vecBuffFinalizerFactors.size() )
 					<< END_LOG;
@@ -48,7 +48,7 @@ bool KBuffManager::AddUnitBuffInfo( IN const UidType& iUnitUID, IN const std::ve
 			{
 				if( kBuffBFactor.m_vecValues.size() > 10 )
 				{
-					START_LOG( cerr, "KBuffBehaviorFactor의 m_vecValues원소 갯수가 10개를 넘었다!" )
+					START_LOG( cerr, "The number of elements in KBuffBehaviorFactor::m_vecValues exceeds 10!" )
 						<< BUILD_LOG( iUnitUID )
 						<< BUILD_LOG( kBuffBFactor.m_vecValues.size() )
 						<< END_LOG;
@@ -59,7 +59,7 @@ bool KBuffManager::AddUnitBuffInfo( IN const UidType& iUnitUID, IN const std::ve
 			{
 				if( kBuffFFactor.m_vecValues.size() > 10 )
 				{
-					START_LOG( cerr, "KBuffFinalizerFactor의 m_vecValues원소 갯수가 10개를 넘었다!" )
+					START_LOG( cerr, "The number of elements in KBuffFinalizerFactor::m_vecValues exceeds 10!" )
 						<< BUILD_LOG( iUnitUID )
 						<< BUILD_LOG( kBuffFFactor.m_vecValues.size() )
 						<< END_LOG;
@@ -136,7 +136,7 @@ bool KBuffManager::DeleteUnitBuffInfo( IN UidType& iUnitUID, IN std::vector<int>
 	std::map< UidType, KUnitBuffInfo >::iterator mit = m_mapUnitBuffList.find( iUnitUID );
 	if( mit == m_mapUnitBuffList.end() )
 	{
-		START_LOG( clog, L"존재하지 않는 Unit 정보를 지우려고 합니다." )
+		START_LOG( clog, L"Attempted to remove a nonexistent Unit." )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 
@@ -167,7 +167,7 @@ bool KBuffManager::DeleteUnitAllBuffInfo( IN UidType iUnitUID )
 	std::map< UidType, KUnitBuffInfo >::iterator mit = m_mapUnitBuffList.find( iUnitUID );
 	if( mit != m_mapUnitBuffList.end() )
 	{
-		START_LOG( clog, L"존재하지 않는 Unit 정보를 지우려고 합니다." )
+		START_LOG( clog, L"Attempted to remove a nonexistent Unit." )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 
@@ -208,7 +208,7 @@ bool KBuffManager::AddRenewBuffTime( IN const UidType& iUnitUID, IN const __int6
 		}
 		else
 		{
-			START_LOG( clog, L"있다고 했는데 없다...?" )
+			START_LOG( clog, L"It was expected to exist, but it does not." )
 				<< BUILD_LOG( iUnitUID )
 				<< BUILD_LOG( iNewTime )
 				<< BUILD_LOG( iOleTime )
@@ -225,7 +225,7 @@ bool KBuffManager::AddRenewBuffTime( IN const UidType& iUnitUID, IN const __int6
 		{
 			if( iUID == iUnitUID )
 			{
-				START_LOG( cerr, L"입력된 데이터가 있는데?" )
+				START_LOG( cerr, L"Data was supplied, but it should not have been." )
 					<< BUILD_LOG( iUnitUID )
 					<< END_LOG;
 
@@ -267,7 +267,7 @@ void KBuffManager::DeleteBuffTime( IN __int64& iTime, IN UidType iUnitUID )
 	}
 	else
 	{
-		START_LOG( clog, L"있다고 했는데 없다...?" )
+		START_LOG( clog, L"It was expected to exist, but it does not." )
 			<< BUILD_LOG( iUnitUID )
 			<< BUILD_LOG( iTime )
 			<< END_LOG;
@@ -298,7 +298,7 @@ bool KBuffManager::GetUnitAllBuffInfo( IN UidType& iUnitUID, OUT KUnitBuffInfo& 
 	}
 	else
 	{
-		START_LOG( clog, L"데이터가 없다." )
+		START_LOG( clog, L"No data was found." )
 			<< BUILD_LOG( iUnitUID )
 			<<END_LOG;
 		return false;
@@ -325,7 +325,7 @@ void KBuffManager::CheckEndBuff()
 	{
 		if( mit->first > tDeleteCurr.GetTime() )
 		{
-			START_LOG( clog, L"삭제 되어야 할 시간보다 크므로 다음에 지운다." )
+			START_LOG( clog, L"The expiration time has not been reached; deletion will be retried later." )
 				<< BUILD_LOG( mit->first )
 				<< BUILD_LOG( tDeleteCurr.GetTime() )
 				<< END_LOG;

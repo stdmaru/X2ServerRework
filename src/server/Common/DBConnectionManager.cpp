@@ -220,7 +220,7 @@ bool KDBConnectionManager::GetDBConnectionInfoFromManagerDB( IN const int iServe
 
 	if( m_kODBC.DriverConnect( szConnStr, bDBConnStr ) == false )
 	{
-		START_LOG( cerr, L"DB접속 실패!" )
+		START_LOG( cerr, L"Database connection failed." )
 			<< BUILD_LOG( bDBConnStr )
 			<< END_LOG;
 		return false;
@@ -249,7 +249,7 @@ bool KDBConnectionManager::GetDBConnectionInfoFromManagerDB( IN const int iServe
 		// 복호화
 		if( DecryptDBString( wstrDBString, kInfo.m_wstrConnectionString ) == false )
 		{
-			START_LOG( cerr, L"문자열 해석 실패!" )
+			START_LOG( cerr, L"Failed to parse the string." )
 				<< BUILD_LOG( wstrDBString )
 				<< END_LOG;
 			continue;
@@ -260,7 +260,7 @@ bool KDBConnectionManager::GetDBConnectionInfoFromManagerDB( IN const int iServe
 
 	if( vecDBConnectionInfo.empty() )
 	{
-		START_LOG( cerr, L"매니저 DB로부터 정보를 가져오지 못하였습니다!" )
+		START_LOG( cerr, L"Failed to retrieve information from the manager database." )
 			<< BUILD_LOG( iServerType )
 			<< END_LOG;
 		return false;
@@ -269,7 +269,7 @@ bool KDBConnectionManager::GetDBConnectionInfoFromManagerDB( IN const int iServe
 	return true;
 
 end_proc:
-	START_LOG( cerr, L"쿼리 호출 실패!" )
+	START_LOG( cerr, L"Query call failed." )
 		<< END_LOG;
 	return false;
 }
@@ -280,7 +280,7 @@ bool KDBConnectionManager::DecryptDBString( IN const std::wstring& wstrDBString,
 	std::string strDecryptString;
 	if( DecryptStringUseDes( strStringBuffer, strDecryptString ) == false )
 	{
-		START_LOG( cerr, L"복호화 실패!" )
+		START_LOG( cerr, L"Decryption failed." )
 			<< BUILD_LOG( wstrDBString )
 			<< END_LOG;
 		return false;

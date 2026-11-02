@@ -48,14 +48,14 @@ void KTRWorkerThread::ProcessEvent( const KEventPtr& spEvent_ )
 		CASE( ETR_UNSUMMON_RIDING_PET_NOT );
 
 	default:
-		START_LOG( cerr, L"이벤트 핸들러가 정의되지 않았음 - " << spEvent_->GetIDStr() )
+		START_LOG( cerr, L"Event handler is not defined - " << spEvent_->GetIDStr() )
 			<< BUILD_LOG( spEvent_->m_usEventID );
 	}
 
 	dwElapTime = ::GetTickCount() - dwElapTime;
 	if( dwElapTime > 1000 )
 	{
-		START_LOG( cwarn, L"TCP RELAY 패킷 처리 시간지연.!" )
+		START_LOG( cwarn, L"TCP relay packet processing delay!" )
 			<< BUILD_LOG( spEvent_->GetIDStr() )
 			<< BUILD_LOG( spEvent_->m_usEventID )
 			<< BUILD_LOG( dwElapTime );

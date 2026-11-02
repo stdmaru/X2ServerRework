@@ -136,7 +136,7 @@ void KMatch::OnDestroy()
 {
 	if( GetStateID() != KMatchFSM::S_CLOSE )
 	{
-		START_LOG( cerr, L"이상한 상태에서 종료처리가 되고 있습니다!" )
+		START_LOG( cerr, L"Attempting to close from an unexpected state." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetStateID() )
 			<< END_LOG;
@@ -165,7 +165,7 @@ void KMatch::CloseMatchByCancel( IN const UidType iCancelUnitUID )
 		KMatchUserPtr spCancelUser = m_kMatchUserManager.GetUser( iCancelUnitUID );
 		if( spCancelUser == NULL )
 		{
-			START_LOG( cerr, L"유저 포인터값이 이상합니다." )
+			START_LOG( cerr, L"Invalid user pointer." )
 				<< BUILD_LOG( GetMatchUID() )
 				<< BUILD_LOG( iCancelUnitUID )
 				<< END_LOG;
@@ -189,7 +189,7 @@ void KMatch::CloseMatchByCancel( IN const UidType iCancelUnitUID )
 			KMatchUserPtr spMatchUser = m_kMatchUserManager.GetUser( iUnitUID );
 			if( spMatchUser == NULL )
 			{
-				START_LOG( cerr, L"유저 포인터값이 이상합니다." )
+				START_LOG( cerr, L"Invalid user pointer." )
 					<< BUILD_LOG( GetMatchUID() )
 					<< BUILD_LOG( iUnitUID )
 					<< END_LOG;
@@ -247,7 +247,7 @@ void KMatch::CloseMatchByCancel( IN const UidType iCancelUnitUID )
 			KMatchUserPtr spMatchUser = m_kMatchUserManager.GetUser( iUnitUID );
 			if( spMatchUser == NULL )
 			{
-				START_LOG( cerr, L"유저 포인터값이 이상합니다." )
+				START_LOG( cerr, L"Invalid user pointer." )
 					<< BUILD_LOG( GetMatchUID() )
 					<< BUILD_LOG( iUnitUID )
 					<< END_LOG;
@@ -285,7 +285,7 @@ void KMatch::CloseMatchByCancel( IN const std::vector<UidType>& vecCancelUnitUID
 		KMatchUserPtr spMatchUser = m_kMatchUserManager.GetUser( iUnitUID );
 		if( spMatchUser == NULL )
 		{
-			START_LOG( cerr, L"유저 포인터값이 이상합니다." )
+			START_LOG( cerr, L"Invalid user pointer." )
 				<< BUILD_LOG( GetMatchUID() )
 				<< BUILD_LOG( iUnitUID )
 				<< END_LOG;
@@ -300,7 +300,7 @@ void KMatch::CloseMatchByCancel( IN const std::vector<UidType>& vecCancelUnitUID
 			KMatchUserPtr spCancelUser = m_kMatchUserManager.GetUser( iCancelUnitUID );
 			if( spCancelUser == NULL )
 			{
-				START_LOG( cerr, L"유저 포인터값이 이상합니다." )
+				START_LOG( cerr, L"Invalid user pointer." )
 					<< BUILD_LOG( GetMatchUID() )
 					<< BUILD_LOG( iCancelUnitUID )
 					<< END_LOG;
@@ -371,7 +371,7 @@ void KMatch::CloseMatchByCancel( IN const std::vector<UidType>& vecCancelUnitUID
 		KMatchUserPtr spMatchUser = m_kMatchUserManager.GetUser( iUnitUID );
 		if( spMatchUser == NULL )
 		{
-			START_LOG( cerr, L"유저 포인터값이 이상합니다." )
+			START_LOG( cerr, L"Invalid user pointer." )
 				<< BUILD_LOG( GetMatchUID() )
 				<< BUILD_LOG( iUnitUID )
 				<< END_LOG;
@@ -410,7 +410,7 @@ bool KMatch::CheckMatchMakingSuccess()
 
 	default:
 		{
-			START_LOG( cerr, L"현재 상태가 이상합니다!" )
+			START_LOG( cerr, L"Unexpected current state." )
 				<< BUILD_LOG( GetMatchUID() )
 				<< BUILD_LOG( GetMatchType() )
 				<< BUILD_LOG( GetStateIDString() )
@@ -422,7 +422,7 @@ bool KMatch::CheckMatchMakingSuccess()
 	// 인원수 최종 확인!
 	if( KMatch::GetMatchTotalPlayerCount( GetMatchType() ) != GetNumMember() )
 	{
-		START_LOG( clog, L"대전 매칭에 필요한 인원수가 충족되지 않았습니다." )
+		START_LOG( clog, L"Not enough players for matchmaking." )
 			<< BUILD_LOG( GetMatchUID() )
 			<< BUILD_LOG( GetMatchType() )
 			<< BUILD_LOG( KMatch::GetMatchTotalPlayerCount( GetMatchType() ) )
@@ -513,7 +513,7 @@ bool KMatch::GetRoomInfoForPvpGame( IN const bool bIsNpcPvpMode, OUT KRoomInfo& 
 	// 대전 정보 얻기
 	if( SiKPvpMatchManager()->GetPvpMatchInfo( static_cast<int>(GetMatchType()), kInfo.m_WinKillNum, kInfo.m_fPlayTime ) == false )
 	{
-		START_LOG( cerr, L"대전 정보 얻기 실패!" )
+		START_LOG( cerr, L"Failed to retrieve match information." )
 			<< BUILD_LOG( GetMatchType() )
 			<< BUILD_LOG( GetMatchUID() )
 			<< END_LOG;
@@ -527,7 +527,7 @@ bool KMatch::GetRoomInfoForPvpGame( IN const bool bIsNpcPvpMode, OUT KRoomInfo& 
 	// 대전 맵을 결정하자!
 	if( SiKPvpMatchManager()->DecisionPvpMap( bIsNpcPvpMode, mapAllPlayersSelectedMap, kInfo.m_WorldID ) == false )
 	{
-		START_LOG( cerr, L"대전 맵 결정 실패!" )
+		START_LOG( cerr, L"Failed to select a match map." )
 			<< BUILD_LOG( GetMatchType() )
 			<< BUILD_LOG( GetMatchUID() )
 			<< BUILD_LOG( bIsNpcPvpMode )
@@ -573,7 +573,7 @@ bool KMatch::GetMatchTypeByMatchInfo( IN const char cPvpGameType, IN const char 
 		break;
 	}
 
-	START_LOG( cerr, L"잘못된 대전 게임 타입 정보입니다!" )
+	START_LOG( cerr, L"Invalid match game type." )
 		<< BUILD_LOGc( cPvpGameType )
 		<< BUILD_LOGc( cPvpPlayerCount )
 		<< END_LOG;
@@ -590,7 +590,7 @@ void KMatch::ProcessEvent( const KEventPtr& spEvent_ )
 		CASE( EGB_OPEN_PVP_ROOM_FOR_MATCH_ACK );
 
 	default:
-		START_LOG( cerr, L"이벤트 핸들러가 정의되지 않았음. " << spEvent_->GetIDStr() );
+		START_LOG( cerr, L"Event handler is not defined: " << spEvent_->GetIDStr() );
 	}
 }
 
@@ -606,7 +606,7 @@ IMPL_ON_FUNC( EGB_CANCEL_MATCH_MAKING_REQ )
 
 	default:
 		{
-            START_LOG( cerr, L"이상한 상태에서 패킷이 도착하였습니다." )
+            START_LOG( cerr, L"Packet received in an unexpected state." )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( LAST_SENDER_UID )
 				<< BUILD_LOG( FIRST_SENDER_UID )
@@ -619,7 +619,7 @@ IMPL_ON_FUNC( EGB_CANCEL_MATCH_MAKING_REQ )
 	// 해당 유저가 존재하는지 검사!
 	if( m_kMatchUserManager.IsExist( FIRST_SENDER_UID ) == false )
 	{
-		START_LOG( cerr, L"매치에 포함된 유저도 아닌데 매치 취소요청이 왔네? 먼가 문제가 있군.." )
+		START_LOG( cerr, L"Received a match-cancel request from a user who is not in the match; something is wrong." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( LAST_SENDER_UID )
 			<< BUILD_LOG( FIRST_SENDER_UID )
@@ -650,7 +650,7 @@ _IMPL_ON_FUNC( EGB_MATCH_MAKING_SUCCESS_REPLY_NOT, KEGS_MATCH_MAKING_SUCCESS_REP
 	{
 		if( m_kMatchUserManager.Accept( FIRST_SENDER_UID ) == false )
 		{
-			START_LOG( cerr, L"수락을 실패하였습니다!" )
+			START_LOG( cerr, L"Failed to accept the request." )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( FIRST_SENDER_UID )
 				<< END_LOG;
@@ -659,7 +659,7 @@ _IMPL_ON_FUNC( EGB_MATCH_MAKING_SUCCESS_REPLY_NOT, KEGS_MATCH_MAKING_SUCCESS_REP
 
 		if( m_kMatchUserManager.UpdateSelectedPvpMap( FIRST_SENDER_UID, kPacket_.m_setSelectedPvpMap ) == false )
 		{
-			START_LOG( cerr, L"매치 유저 정보에 대전 맵 선택 업데이트 실패!" )
+			START_LOG( cerr, L"Failed to update the selected match map for the match user." )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( FIRST_SENDER_UID )
 				<< BUILD_LOG( kPacket_.m_setSelectedPvpMap.size() )
@@ -669,7 +669,7 @@ _IMPL_ON_FUNC( EGB_MATCH_MAKING_SUCCESS_REPLY_NOT, KEGS_MATCH_MAKING_SUCCESS_REP
 
 		if( m_kMatchUserManager.UpdatePvpGameMode( FIRST_SENDER_UID, kPacket_.m_bPvpPowerMode, kPacket_.m_bPvpItemMode ) == false )
 		{
-			START_LOG( cerr, L"매치 유저 정보에 대전 모드 선택 업데이트 실패!" )
+			START_LOG( cerr, L"Failed to update the selected match mode for the match user." )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( FIRST_SENDER_UID )
 				<< BUILD_LOG( kPacket_.m_bPvpPowerMode )
@@ -709,7 +709,7 @@ IMPL_ON_FUNC( EGB_GET_ROOM_USER_INFO_FOR_MATCH_ACK )
 	// roomuserinfo를 업데이트 하자!
 	if( m_kMatchUserManager.UpdateRoomUserInfo( kPacket_.m_kRoomUserInfo ) == false )
 	{
-		START_LOG( cerr, L"해당 매치 유저의 RoomUserInfo 업데이트가 실패하였다." )
+		START_LOG( cerr, L"Failed to update RoomUserInfo for the match user." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( LAST_SENDER_UID )
 			<< BUILD_LOG( FIRST_SENDER_UID )
@@ -730,7 +730,7 @@ IMPL_ON_FUNC( EGB_GET_ROOM_USER_INFO_FOR_MATCH_ACK )
 		std::vector< KRoomUserInfo > vecBlueTeam;
 		if( m_kMatchUserManager.TeamMemberSelection( vecRedTeam, vecBlueTeam ) == false )
 		{
-            START_LOG( cerr, L"팀 선정에 실패하였다. 절대로 일어나서는 안되는 에러! 매치를 종료 시키자!" )
+            START_LOG( cerr, L"Failed to select teams; this should never happen. Closing the match." )
 				<< BUILD_LOG( GetUID() )
 				<< END_LOG;
 
@@ -777,7 +777,7 @@ IMPL_ON_FUNC( EGB_GET_ROOM_USER_INFO_FOR_MATCH_ACK )
 			// 대전 방 정보 얻기
 			if( GetRoomInfoForPvpGame( false, kPacketReq.m_kRoomInfo ) == false )
 			{
-				START_LOG( cerr, L"대전방 정보를 얻는데 실패하였다. 절대로 일어나서는 안되는 에러! 매치를 종료 시키자!" )
+				START_LOG( cerr, L"Failed to retrieve match-room data; this should never happen. Closing the match." )
 					<< BUILD_LOG( GetUID() )
 					<< END_LOG;
 
@@ -803,7 +803,7 @@ IMPL_ON_FUNC( EGB_GET_ROOM_USER_INFO_FOR_MATCH_ACK )
 				// 대전방 정보 얻기
 				if( GetRoomInfoForPvpGame( true, kPacketReq.m_kRoomInfo ) == false )
 				{
-					START_LOG( cerr, L"대전방 정보를 얻는데 실패하였다. 절대로 일어나서는 안되는 에러! 매치를 종료 시키자!" )
+					START_LOG( cerr, L"Failed to retrieve match-room data; this should never happen. Closing the match." )
 						<< BUILD_LOG( GetUID() )
 						<< END_LOG;
 
@@ -816,7 +816,7 @@ IMPL_ON_FUNC( EGB_GET_ROOM_USER_INFO_FOR_MATCH_ACK )
 				if( SiKPvpMatchManager()->GetPvpNpcInfo( bIsAllPlayersBeginner, iRedTeamRatingWeightAverage, vecRedTeam.size(), kPacketReq.m_vecBlueTeam, kPacketReq.m_mapPvpNpcInfo ) == false )
 					//}}
 				{
-					START_LOG( cerr, L"대전 NPC 정보를 얻는데 실패하였다. 절대로 일어나서는 안되는 에러! 매치를 종료 시키자!" )
+					START_LOG( cerr, L"Failed to retrieve match NPC data; this should never happen. Closing the match." )
 						<< BUILD_LOG( GetUID() )
 						<< BUILD_LOG( bIsAllPlayersBeginner )
 						<< BUILD_LOG( vecRedTeam.size() )
@@ -865,7 +865,7 @@ IMPL_ON_FUNC( EGB_GET_ROOM_USER_INFO_FOR_MATCH_ACK )
 				// 대전 방 정보 얻기
 				if( GetRoomInfoForPvpGame( true, kPacketReq.m_kRoomInfo ) == false )
 				{
-					START_LOG( cerr, L"대전방 정보를 얻는데 실패하였다. 절대로 일어나서는 안되는 에러! 매치를 종료 시키자!" )
+					START_LOG( cerr, L"Failed to retrieve match-room data; this should never happen. Closing the match." )
 						<< BUILD_LOG( GetUID() )
 						<< END_LOG;
 
@@ -878,7 +878,7 @@ IMPL_ON_FUNC( EGB_GET_ROOM_USER_INFO_FOR_MATCH_ACK )
 				if( SiKPvpMatchManager()->GetPvpNpcInfo( bIsAllPlayersBeginner, iBlueTeamRatingWeightAverage, vecBlueTeam.size(), kPacketReq.m_vecBlueTeam, kPacketReq.m_mapPvpNpcInfo ) == false )
 					//}}
 				{
-					START_LOG( cerr, L"대전 NPC 정보를 얻는데 실패하였다. 절대로 일어나서는 안되는 에러! 매치를 종료 시키자!" )
+					START_LOG( cerr, L"Failed to retrieve match NPC data; this should never happen. Closing the match." )
 						<< BUILD_LOG( GetUID() )
 						<< BUILD_LOG( bIsAllPlayersBeginner )
 						<< BUILD_LOG( vecRedTeam.size() )
@@ -939,7 +939,7 @@ IMPL_ON_FUNC( EGB_OPEN_PVP_ROOM_FOR_MATCH_ACK )
     // 매치 대전방 생성 실패!
 	if( kPacket_.m_iOK != NetError::NET_OK )
 	{
-        START_LOG( cerr, L"매치 대전방 생성 실패!" )
+        START_LOG( cerr, L"Failed to create the match room." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( LAST_SENDER_UID )
 			<< BUILD_LOG( FIRST_SENDER_UID )

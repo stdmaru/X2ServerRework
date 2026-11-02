@@ -79,7 +79,7 @@ void KUserRankingManager::GetRankingInfo( IN KGSUserPtr spUser, IN const KEGS_GE
 
 	default:
 		{
-			START_LOG( cerr, L"존재하지 않는 RankingType입니다" )
+			START_LOG( cerr, L"RankingType does not exist." )
 				<< BUILD_LOG( kReq.m_iRankingType )
 				<< END_LOG;
 		}

@@ -39,7 +39,7 @@ bool KMatchUserManager::Enter( IN const KMatchUserInfo& kInfo )
 {
     if( IsExist( kInfo.m_iUnitUID ) == true )
 	{
-		START_LOG( cerr, L"이미 입장해 있는 유저입니다!" )
+		START_LOG( cerr, L"The user has already joined." )
 			<< BUILD_LOG( kInfo.m_iUnitUID )
 			<< END_LOG;
 		return false;
@@ -47,7 +47,7 @@ bool KMatchUserManager::Enter( IN const KMatchUserInfo& kInfo )
 
 	if( ( m_mapMember.size() + 1 )  > m_uiTotalPlayerCount )
 	{
-		START_LOG( cerr, L"최대 입장 인원 제한에 걸렸습니다." )
+		START_LOG( cerr, L"The maximum number of members has been reached." )
 			<< BUILD_LOG( kInfo.m_iUnitUID )
 			<< END_LOG;
 		return false;
@@ -63,7 +63,7 @@ bool KMatchUserManager::Enter( IN const std::vector< KMatchUserInfo >& vecMatchU
 {
 	if( ( m_mapMember.size() + vecMatchUserList.size() )  > m_uiTotalPlayerCount )
 	{
-		START_LOG( cerr, L"최대 입장 인원 제한에 걸렸습니다." )
+		START_LOG( cerr, L"The maximum number of members has been reached." )
 			<< BUILD_LOG( m_uiTotalPlayerCount )
 			<< BUILD_LOG( m_mapMember.size() )
 			<< BUILD_LOG( vecMatchUserList.size() )
@@ -75,7 +75,7 @@ bool KMatchUserManager::Enter( IN const std::vector< KMatchUserInfo >& vecMatchU
 	{
 		if( Enter( kInfo ) == false )
 		{
-			START_LOG( cerr, L"매치 입장 처리 실패!" )
+			START_LOG( cerr, L"Failed to process the match join." )
 				<< END_LOG;
 		}
 	}
@@ -93,7 +93,7 @@ KMatchUserPtr KMatchUserManager::GetUser( IN const UidType iUnitUID )
     mit = m_mapMember.find( iUnitUID );
     if( mit == m_mapMember.end() )
     {
-        START_LOG( cerr, L"존재하지 않는 유저." )
+        START_LOG( cerr, L"User does not exist." )
             << BUILD_LOG( iUnitUID )
             << END_LOG;
 
@@ -120,7 +120,7 @@ bool KMatchUserManager::DeleteUser( IN const UidType iUnitUID )
     mit = m_mapMember.find( iUnitUID );
     if( mit == m_mapMember.end() )
     {
-        START_LOG( cerr, L"존재하지 않는 룸유저임." )
+        START_LOG( cerr, L"Room user does not exist." )
             << BUILD_LOG( iUnitUID )
             << END_LOG;
         return true;
@@ -145,7 +145,7 @@ int	KMatchUserManager::GetRatingAverage() const
 		KMatchUserPtr spMatchUser = mit->second;
 		if( spMatchUser == NULL )
 		{
-			START_LOG( cerr, L"매치 유저 포인터값이 이상합니다." )
+			START_LOG( cerr, L"Invalid match-user pointer." )
 				<< END_LOG;
 			continue;
 		}
@@ -156,7 +156,7 @@ int	KMatchUserManager::GetRatingAverage() const
 	const int iNumMember = GetNumMember();
 	if( iNumMember == 0 )
 	{
-		START_LOG( cerr, L"멤버가 존재 하지 않는 매치다! 절대 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"Match has no members; this should never happen." )
 			<< END_LOG;
 		return 0;
 	}
@@ -174,7 +174,7 @@ void KMatchUserManager::GetMatchWaitTimeList( OUT std::map< UidType, int >& mapM
 		KMatchUserPtr spMatchUser = mit->second;
 		if( spMatchUser == NULL )
 		{
-			START_LOG( cerr, L"매치 유저 포인터값이 이상합니다." )
+			START_LOG( cerr, L"Invalid match-user pointer." )
 				<< END_LOG;
 			continue;
 		}
@@ -190,7 +190,7 @@ bool KMatchUserManager::IsAllPlayersSameRank( IN const CXSLUnit::PVP_RANK eRank 
 	{
 		if( !mit->second )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room-user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			return false;
@@ -213,7 +213,7 @@ bool KMatchUserManager::IsAllPlayersBeginner( void )
 	{
 		if( !mit->second )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room-user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			return false;
@@ -235,7 +235,7 @@ bool KMatchUserManager::ExistArrangeRankPlayer( void )
 	{
 		if( !mit->second )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room-user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			return false;
@@ -266,7 +266,7 @@ int	KMatchUserManager::GetRatingWeightAverage( void ) const
 		KMatchUserPtr spMatchUser = mit->second;
 		if( spMatchUser == NULL )
 		{
-			START_LOG( cerr, L"매치 유저 포인터값이 이상합니다." )
+			START_LOG( cerr, L"Invalid match-user pointer." )
 				<< END_LOG;
 			continue;
 		}
@@ -320,7 +320,7 @@ bool KMatchUserManager::Accept( IN const UidType iUnitUID )
 	KMatchUserPtr spMatchUser = GetUser( iUnitUID );
 	if( spMatchUser == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 유저입니다!" )
+		START_LOG( cerr, L"User does not exist." )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 		return false;
@@ -336,7 +336,7 @@ bool KMatchUserManager::IsAllPlayersAccept()
 	{
 		if( !mit->second )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room-user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			return false;
@@ -356,7 +356,7 @@ bool KMatchUserManager::UpdateSelectedPvpMap( IN const UidType iUnitUID, IN cons
 	KMatchUserPtr spMatchUser = GetUser( iUnitUID );
 	if( spMatchUser == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 유저입니다!" )
+		START_LOG( cerr, L"User does not exist." )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 		return false;
@@ -378,7 +378,7 @@ void KMatchUserManager::GetAllPlayersSelectedPvpMap( OUT std::map< short, int >&
 		KMatchUserPtr spMatchUser = mit->second;
 		if( spMatchUser == NULL )
 		{
-			START_LOG( cerr, L"매치 유저 포인터값이 이상합니다." )
+			START_LOG( cerr, L"Invalid match-user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -407,7 +407,7 @@ void KMatchUserManager::ClearAllPlayerRoomUserInfo()
 		KMatchUserPtr spMatchUser = mit->second;
 		if( spMatchUser == NULL )
 		{
-			START_LOG( cerr, L"매치 유저 포인터값이 이상합니다." )
+			START_LOG( cerr, L"Invalid match-user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -422,7 +422,7 @@ bool KMatchUserManager::UpdateRoomUserInfo( IN const KRoomUserInfo& kRoomUserInf
 	KMatchUserPtr spMatchUser = GetUser( kRoomUserInfo.m_nUnitUID );
 	if( spMatchUser == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 유저입니다!" )
+		START_LOG( cerr, L"User does not exist." )
 			<< BUILD_LOG( kRoomUserInfo.m_nUnitUID )
 			<< END_LOG;
 		return false;
@@ -439,7 +439,7 @@ bool KMatchUserManager::IsAllPlayersUpdatedRoomUserInfo()
 	{
 		if( !mit->second )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room-user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			return false;
@@ -459,7 +459,7 @@ bool KMatchUserManager::UpdatePvpGameMode( IN const UidType iUnitUID, IN const b
 	KMatchUserPtr spMatchUser = GetUser( iUnitUID );
 	if( spMatchUser == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 유저입니다!" )
+		START_LOG( cerr, L"User does not exist." )
 			<< BUILD_LOG( iUnitUID )
 			<< END_LOG;
 		return false;
@@ -481,7 +481,7 @@ void KMatchUserManager::DecisionGameMode( OUT bool& bIsItemMode ) const
 		KMatchUserPtr spMatchUser = mit->second;
 		if( spMatchUser == NULL )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room-user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -537,7 +537,7 @@ bool KMatchUserManager::TeamMemberSelection( OUT std::vector< KRoomUserInfo >& v
 	// 1. 팀 구성하기전에 인원수 맞는지부터 확인!
 	if( m_uiTotalPlayerCount != m_mapMember.size() )
 	{
-		START_LOG( cerr, L"이제 팀 구성하려는데 인원수가 안맞네? 절대 일어나서는 안되는에러!" )
+		START_LOG( cerr, L"Player count is incorrect while forming teams; this should never happen." )
 			<< BUILD_LOG( m_uiTotalPlayerCount )
 			<< BUILD_LOG( m_mapMember.size() )
 			<< END_LOG;
@@ -557,7 +557,7 @@ bool KMatchUserManager::TeamMemberSelection( OUT std::vector< KRoomUserInfo >& v
 			KMatchUserPtr spMatchUser = mit->second;
 			if( spMatchUser == NULL )
 			{
-				START_LOG( cerr, L"룸 유저 포인터 이상." )
+				START_LOG( cerr, L"Invalid room-user pointer." )
 					<< BUILD_LOG( mit->first )
 					<< END_LOG;
 				return false;
@@ -646,7 +646,7 @@ bool KMatchUserManager::TeamMemberSelection( OUT std::vector< KRoomUserInfo >& v
 	// 6. 여기까지 왔는데 팀 구성이 완료되지 않았다면 문제가 있는거다!
 	if( vecRedTeamUnitUIDList.size() != m_uiPlayerCount  ||  vecBlueTeamUnitUIDList.size() != m_uiPlayerCount )
 	{
-		START_LOG( cerr, L"매칭 팀 구성을 실패하였습니다!" )
+		START_LOG( cerr, L"Failed to form the matchmaking teams." )
 			<< BUILD_LOG( vecRedTeamUnitUIDList.size() )
 			<< BUILD_LOG( vecBlueTeamUnitUIDList.size() )
 			<< END_LOG;
@@ -659,7 +659,7 @@ bool KMatchUserManager::TeamMemberSelection( OUT std::vector< KRoomUserInfo >& v
 	{
 		if( GetRoomUserInfo( vecRedTeamUnitUIDList, vecRedTeam ) == false )
 		{
-			START_LOG( cerr, L"RoomUserInfo 얻기가 실패하였습니다." )
+			START_LOG( cerr, L"Failed to retrieve RoomUserInfo." )
 				<< BUILD_LOG( vecRedTeamUnitUIDList.size() )
 				<< END_LOG;
 			return false;
@@ -667,7 +667,7 @@ bool KMatchUserManager::TeamMemberSelection( OUT std::vector< KRoomUserInfo >& v
 
 		if( GetRoomUserInfo( vecBlueTeamUnitUIDList, vecBlueTeam ) == false )
 		{
-			START_LOG( cerr, L"RoomUserInfo 얻기가 실패하였습니다." )
+			START_LOG( cerr, L"Failed to retrieve RoomUserInfo." )
 				<< BUILD_LOG( vecBlueTeamUnitUIDList.size() )
 				<< END_LOG;
 			return false;
@@ -686,7 +686,7 @@ bool KMatchUserManager::GetRoomUserInfo( IN const std::vector< UidType >& vecUni
 		KMatchUserPtr spMatchUser = GetUser( iUnitUID );
 		if( spMatchUser == NULL )
 		{
-			START_LOG( cerr, L"매치 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid match-user pointer." )
 				<< BUILD_LOG( iUnitUID )
 				<< END_LOG;
 			return false;
@@ -695,7 +695,7 @@ bool KMatchUserManager::GetRoomUserInfo( IN const std::vector< UidType >& vecUni
 		KRoomUserInfo kInfo;
 		if( spMatchUser->GetRoomUserInfo( kInfo ) == false )
 		{
-			START_LOG( cerr, L"룸 유저 정보가 없다!" )
+			START_LOG( cerr, L"Room-user data is missing." )
 				<< BUILD_LOG( iUnitUID )
 				<< END_LOG;
 			return false;
@@ -725,7 +725,7 @@ bool KMatchUserManager::MakeTeamOptimalMatch( OUT std::vector< UidType >& vecRed
 			KMatchUserPtr spMatchUser = mit->second;
 			if( spMatchUser == NULL )
 			{
-				START_LOG( cerr, L"룸 유저 포인터 이상." )
+				START_LOG( cerr, L"Invalid room-user pointer." )
 					<< BUILD_LOG( mit->first )
 					<< END_LOG;
 				return false;
@@ -750,7 +750,7 @@ bool KMatchUserManager::MakeTeamOptimalMatch( OUT std::vector< UidType >& vecRed
 			const int iIndex = ( ui / 2 );
 			if( iIndex < 0  ||  iIndex >= RE_MAX )
 			{
-				START_LOG( cerr, L"이상한 인덱스 값이 나왔다! 일어나면 안되는 에러!" )
+				START_LOG( cerr, L"Unexpected index value; this should never happen." )
 					<< BUILD_LOG( vecSortedUserList.size() )
 					<< BUILD_LOG( ui )
 					<< BUILD_LOG( iIndex )
@@ -783,7 +783,7 @@ bool KMatchUserManager::MakeTeamOptimalMatch( OUT std::vector< UidType >& vecRed
 			int iGapTeamRating = 0;
 			if( GetTeamRatingGapByRatingLevel( vecSortedUserList, vecIndex[RE_HIGH], vecIndex[RE_MIDDLE], vecIndex[RE_LOW], iGapTeamRating, vecRedTeamTemp, vecBlueTeamTemp ) == false )
 			{
-				START_LOG( cerr, L"팀 레이팅 차이값 구하기 실패!" )
+				START_LOG( cerr, L"Failed to calculate the team rating difference." )
 					<< BUILD_LOG( vecSortedUserList.size() )
 					<< BUILD_LOG( vecIndex[RE_HIGH].size() )
 					<< BUILD_LOG( vecIndex[RE_MIDDLE].size() )
@@ -808,7 +808,7 @@ bool KMatchUserManager::MakeTeamOptimalMatch( OUT std::vector< UidType >& vecRed
 			std::vector< int > vecIndexResult;
 			if( GetTeamRatingGapByRatingLevel( vecSortedUserList, vecIndex[RE_HIGH], vecIndex[RE_MIDDLE], vecIndex[RE_LOW], iGapTeamRating, vecRedTeamTemp, vecBlueTeamTemp ) == false )
 			{
-				START_LOG( cerr, L"팀 레이팅 차이값 구하기 실패!" )
+				START_LOG( cerr, L"Failed to calculate the team rating difference." )
 					<< BUILD_LOG( vecSortedUserList.size() )
 					<< BUILD_LOG( vecIndex[RE_HIGH].size() )
 					<< BUILD_LOG( vecIndex[RE_MIDDLE].size() )
@@ -833,7 +833,7 @@ bool KMatchUserManager::MakeTeamOptimalMatch( OUT std::vector< UidType >& vecRed
 			std::vector< int > vecIndexResult;
 			if( GetTeamRatingGapByRatingLevel( vecSortedUserList, vecIndex[RE_HIGH], vecIndex[RE_MIDDLE], vecIndex[RE_LOW], iGapTeamRating, vecRedTeamTemp, vecBlueTeamTemp ) == false )
 			{
-				START_LOG( cerr, L"팀 레이팅 차이값 구하기 실패!" )
+				START_LOG( cerr, L"Failed to calculate the team rating difference." )
 					<< BUILD_LOG( vecSortedUserList.size() )
 					<< BUILD_LOG( vecIndex[RE_HIGH].size() )
 					<< BUILD_LOG( vecIndex[RE_MIDDLE].size() )
@@ -857,7 +857,7 @@ bool KMatchUserManager::MakeTeamOptimalMatch( OUT std::vector< UidType >& vecRed
 				std::vector< int > vecIndexResult;
 				if( GetTeamRatingGapByRatingLevel( vecSortedUserList, vecIndex[RE_HIGH], vecIndex[RE_MIDDLE], vecIndex[RE_LOW], iGapTeamRating, vecRedTeamTemp, vecBlueTeamTemp ) == false )
 				{
-					START_LOG( cerr, L"팀 레이팅 차이값 구하기 실패!" )
+					START_LOG( cerr, L"Failed to calculate the team rating difference." )
 						<< BUILD_LOG( vecSortedUserList.size() )
 						<< BUILD_LOG( vecIndex[RE_HIGH].size() )
 						<< BUILD_LOG( vecIndex[RE_MIDDLE].size() )
@@ -902,7 +902,7 @@ bool KMatchUserManager::GetTeamRatingGapByRatingLevel( IN const std::vector< Uid
 		const u_int iUserIndex = vecHighRating[ui];
 		if( iUserIndex >= vecSortedUserList.size() )
 		{
-			START_LOG( cerr, L"정리된 유저 리스트에 존재하지 않는 index값이다! 이건 있을수 없는 일이야!" )
+			START_LOG( cerr, L"Index is missing from the compacted user list; this should never happen." )
 				<< BUILD_LOG( vecSortedUserList.size() )
 				<< BUILD_LOG( iUserIndex )
 				<< END_LOG;
@@ -913,7 +913,7 @@ bool KMatchUserManager::GetTeamRatingGapByRatingLevel( IN const std::vector< Uid
 		KMatchUserPtr spMatchUser = GetUser( iUnitUID );
 		if( spMatchUser == NULL )
 		{
-			START_LOG( cerr, L"매치 유저 포인터값이 이상합니다." )
+			START_LOG( cerr, L"Invalid match-user pointer." )
 				<< BUILD_LOG( iUnitUID )
 				<< END_LOG;
 			continue;
@@ -940,7 +940,7 @@ bool KMatchUserManager::GetTeamRatingGapByRatingLevel( IN const std::vector< Uid
 		const u_int iUserIndex = vecMiddleRating[ui];
 		if( iUserIndex >= vecSortedUserList.size() )
 		{
-			START_LOG( cerr, L"정리된 유저 리스트에 존재하지 않는 index값이다! 이건 있을수 없는 일이야!" )
+			START_LOG( cerr, L"Index is missing from the compacted user list; this should never happen." )
 				<< BUILD_LOG( vecSortedUserList.size() )
 				<< BUILD_LOG( iUserIndex )
 				<< END_LOG;
@@ -951,7 +951,7 @@ bool KMatchUserManager::GetTeamRatingGapByRatingLevel( IN const std::vector< Uid
 		KMatchUserPtr spMatchUser = GetUser( iUnitUID );
 		if( spMatchUser == NULL )
 		{
-			START_LOG( cerr, L"매치 유저 포인터값이 이상합니다." )
+			START_LOG( cerr, L"Invalid match-user pointer." )
 				<< BUILD_LOG( iUnitUID )
 				<< END_LOG;
 			continue;
@@ -978,7 +978,7 @@ bool KMatchUserManager::GetTeamRatingGapByRatingLevel( IN const std::vector< Uid
 		const u_int iUserIndex = vecLowRating[ui];
 		if( iUserIndex >= vecSortedUserList.size() )
 		{
-			START_LOG( cerr, L"정리된 유저 리스트에 존재하지 않는 index값이다! 이건 있을수 없는 일이야!" )
+			START_LOG( cerr, L"Index is missing from the compacted user list; this should never happen." )
 				<< BUILD_LOG( vecSortedUserList.size() )
 				<< BUILD_LOG( iUserIndex )
 				<< END_LOG;
@@ -989,7 +989,7 @@ bool KMatchUserManager::GetTeamRatingGapByRatingLevel( IN const std::vector< Uid
 		KMatchUserPtr spMatchUser = GetUser( iUnitUID );
 		if( spMatchUser == NULL )
 		{
-			START_LOG( cerr, L"매치 유저 포인터값이 이상합니다." )
+			START_LOG( cerr, L"Invalid match-user pointer." )
 				<< BUILD_LOG( iUnitUID )
 				<< END_LOG;
 			continue;
@@ -1028,7 +1028,7 @@ void KMatchUserManager::GetCancelUserList( OUT std::vector< UidType >& vecCancel
 	{
 		if( !mit->second )
 		{
-			START_LOG( cerr, L"룸 유저 포인터 이상." )
+			START_LOG( cerr, L"Invalid room-user pointer." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;;

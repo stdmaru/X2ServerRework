@@ -36,7 +36,7 @@ void KGSGameDBThread2nd::ProcessEvent( const KEventPtr& spEvent_ )
         _CASE( DBE_CHANGE_NICK_NAME_REQ, KEGS_CHANGE_NICK_NAME_REQ );
 
     default:
-        START_LOG( cerr, L"이벤트 핸들러가 정의되지 않았음. " << spEvent_->GetIDStr() );
+        START_LOG( cerr, L"No event handler is defined. " << spEvent_->GetIDStr() );
 
     }
 }
@@ -77,7 +77,7 @@ _IMPL_ON_FUNC( DBE_CHARACTER_LIST_2ND_REQ, KEGS_CHARACTER_LIST_1ST_ACK )
     }
     else
     {
-        START_LOG( cerr, L"캐릭터 리스트 요청시 UserUID 이상, 2nd DBThread " )
+        START_LOG( cerr, L"Invalid UserUID in character list request (second DB thread): " )
             << BUILD_LOG( nUserUID )
             << END_LOG;
     }
@@ -156,7 +156,7 @@ IMPL_ON_FUNC( DBE_GAME_CREATE_UNIT_REQ )
     KEGS_CREATE_UNIT_ACK kPacket;
     kPacket.m_iOK = NetError::ERR_ODBC_01;
 
-    START_LOG( clog, L"유닛 생성" )
+    START_LOG( clog, L"Creating unit" )
         << BUILD_LOG( kPacket_.m_wstrNickName )
         << BUILD_LOG( kPacket_.m_iClass );
 
@@ -166,7 +166,7 @@ IMPL_ON_FUNC( DBE_GAME_CREATE_UNIT_REQ )
 
 		if ( !((tempChar >= 'a' && tempChar <= 'z') || (tempChar >= 'A' && tempChar <= 'Z') || (tempChar >= '0' && tempChar <= '9')))
 		{
-			START_LOG( cerr, L"[ERROR] 닉네임에 잘못된 문자 포함!" )
+			START_LOG( cerr, L"[ERROR] Nickname contains invalid characters!" )
 				<< BUILD_LOG( kPacket_.m_wstrNickName )
 				<< END_LOG;
 
@@ -204,7 +204,7 @@ IMPL_ON_FUNC( DBE_GAME_CREATE_UNIT_REQ )
         case -222:  kPacket.m_iOK = NetError::ERR_CREATE_UNIT_06;	break;
         case -23:   kPacket.m_iOK = NetError::ERR_CREATE_UNIT_09;	break;
         default:
-            START_LOG( cerr, L"gup_create_unit: 정의되지 않은 결과값입니다." )
+            START_LOG( cerr, L"gup_create_unit: undefined result value." )
                 << BUILD_LOG( kPacket.m_iOK )
                 << END_LOG;
             break;
@@ -274,7 +274,7 @@ IMPL_ON_FUNC( DBE_GAME_CREATE_UNIT_REQ )
     }
     else
     {
-        START_LOG( cerr, L"P_GUnitPVP_Season2_SEL 호출 실패!" )
+        START_LOG( cerr, L"Failed to call P_GUnitPVP_Season2_SEL!" )
             << BUILD_LOG( kPacket.m_kUnitInfo.m_nUnitUID )
             << END_LOG;
 
@@ -293,7 +293,7 @@ IMPL_ON_FUNC( DBE_GAME_CREATE_UNIT_REQ )
     }
     else
     {
-        START_LOG( cerr, L"캐릭터 생성시 옷입히기 쿼리 실패!" )
+        START_LOG( cerr, L"Failed to run the character appearance query during character creation!" )
             << BUILD_LOG( kPacket.m_kUnitInfo.m_nUnitUID )
             << END_LOG;
 
@@ -303,7 +303,7 @@ IMPL_ON_FUNC( DBE_GAME_CREATE_UNIT_REQ )
 
     if( iOK != NetError::NET_OK )
     {
-        START_LOG( cerr, L"캐릭터 생성시 옷입히기 쿼리 실패!" )
+        START_LOG( cerr, L"Failed to run the character appearance query during character creation!" )
             << BUILD_LOG( kPacket.m_kUnitInfo.m_nUnitUID )
             << BUILD_LOG( iOK )
             << END_LOG;
@@ -374,7 +374,7 @@ _IMPL_ON_FUNC( DBE_GAME_DELETE_UNIT_REQ, KEGS_DELETE_UNIT_REQ )
 	}
 	else
 	{
-		START_LOG( cerr, L"캐릭터 삭제 조건 사전 체크 결과 값이 왜 없지??" )
+		START_LOG( cerr, L"Character deletion pre-check returned no result." )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iUserUID )
 			<< END_LOG;
@@ -386,7 +386,7 @@ _IMPL_ON_FUNC( DBE_GAME_DELETE_UNIT_REQ, KEGS_DELETE_UNIT_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"캐릭터 삭제 조건 사전 체크 에러!" )
+		START_LOG( cerr, L"Character deletion pre-check failed!" )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iUserUID )
@@ -484,7 +484,7 @@ _IMPL_ON_FUNC( DBE_GAME_DELETE_UNIT_REQ, KEGS_DELETE_UNIT_REQ )
 
         if( m_kSP.Query_GetGuildMemberGrade( kPacket_.m_iUnitUID, ucGuildMemberShipGrade ) == false )
         {
-            START_LOG( cerr, L"길드원 등급 정보 얻기 실패. GuildUID는 유효한데 DB에는 등급정보가 없다? 있을수 없는에러!" )
+            START_LOG( cerr, L"Failed to retrieve guild member rank; the GuildUID is valid, but the rank is missing from the database. This should never happen!" )
                 << BUILD_LOG( kPacket.m_iOK )
                 << BUILD_LOG( kPacket_.m_iUnitUID )
                 << END_LOG;
@@ -515,7 +515,7 @@ _IMPL_ON_FUNC( DBE_GAME_DELETE_UNIT_REQ, KEGS_DELETE_UNIT_REQ )
 
         if( kPacket.m_iOK != NetError::NET_OK )
         {
-            START_LOG( cerr, L"길드 탈퇴 실패." )
+            START_LOG( cerr, L"Failed to leave the guild." )
                 << BUILD_LOG( kPacket.m_iOK )
                 << BUILD_LOG( kPacket_.m_iUnitUID )
                 << BUILD_LOG( kPacket.m_iGuildUID )
@@ -548,7 +548,7 @@ _IMPL_ON_FUNC( DBE_GAME_DELETE_UNIT_REQ, KEGS_DELETE_UNIT_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"캐릭터 삭제 대기 처리 실패!" )
+		START_LOG( cerr, L"Failed to queue character deletion!" )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
@@ -656,7 +656,7 @@ _IMPL_ON_FUNC( DBE_GAME_FINAL_DELETE_UNIT_REQ, KEGS_FINAL_DELETE_UNIT_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"캐릭터 최종 삭제 처리 실패!" )
+		START_LOG( cerr, L"Failed to permanently delete the character!" )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
@@ -705,7 +705,7 @@ _IMPL_ON_FUNC( DBE_GAME_RESTORE_UNIT_REQ, KEGS_RESTORE_UNIT_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"캐릭터 복구 처리 실패!" )
+		START_LOG( cerr, L"Failed to restore the character!" )
 			<< BUILD_LOG( kPacket.m_iOK )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_iUserUID )
@@ -779,7 +779,7 @@ _IMPL_ON_FUNC( DBE_CHANGE_NICK_NAME_REQ, KEGS_CHANGE_NICK_NAME_REQ )
 
             default:
                 {
-                    START_LOG( cerr, L"정의되지 않은 에러! sp가 바꼈나?" )
+                    START_LOG( cerr, L"Undefined error! Did the SP change?" )
                         << BUILD_LOG( kPacket.m_iOK )
                         << BUILD_LOG( kPacket_.m_iUnitUID )
                         << BUILD_LOG( kPacket_.m_wstrNickName )
@@ -830,7 +830,7 @@ _IMPL_ON_FUNC( DBE_CHANGE_NICK_NAME_REQ, KEGS_CHANGE_NICK_NAME_REQ )
 
             default:
                 {
-                    START_LOG( cerr, L"정의되지 않은 에러! sp가 바꼈나?" )
+                    START_LOG( cerr, L"Undefined error! Did the SP change?" )
                         << BUILD_LOG( kPacket.m_iOK )
                         << BUILD_LOG( kPacket_.m_iUnitUID )
                         << BUILD_LOG( kPacket_.m_wstrNickName )

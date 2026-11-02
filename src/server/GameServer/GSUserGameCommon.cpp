@@ -178,13 +178,13 @@ _IMPL_ON_FUNC( DBE_MY_UNIT_AND_INVENTORY_INFO_LIST_ACK, KEGS_MY_UNIT_AND_INVENTO
 			GetPvpRankForClient( kPacket_.m_vecUnitInfo[i].m_iOfficialMatchCnt, kPacket_.m_vecUnitInfo[i].m_cRank );
         }
 
-        START_LOG( clog, L"my unit list에 담겨지는 p2p data" )
+        START_LOG( clog, L"P2P data included in my unit list" )
             << BUILD_LOG( GetP2PIP() )
             << BUILD_LOG( GetP2PPort() );
 
         if( ( int )kPacket_.m_vecUnitInfo.size() > m_nUnitSlot )
         {
-            START_LOG( cerr, L"캐릭터 슬롯 개수를 초과하는 수의 캐릭터를 보유하고 있음." )
+            START_LOG( cerr, L"The number of characters exceeds the available character slots." )
                 << BUILD_LOG( ( int )kPacket_.m_vecUnitInfo.size() )
                 << BUILD_LOG( m_nUnitSlot )
                 << BUILD_LOG( GetUID() )
@@ -419,7 +419,7 @@ IMPL_ON_FUNC( EGS_DELETE_UNIT_REQ )
 	{
 		if( GetSuccessSecondSecurity() == false )	// 2차 보안을 사용 중인데 인증이 되지 않았다면 실패
 		{
-			START_LOG( cerr, L"2차 보안을 사용 중인데 인증도 되기 전에 유닉 삭제를 하려 한다." )
+			START_LOG( cerr, L"Attempted to delete a unit while secondary security is enabled but before authentication." )
 				<< BUILD_LOG( GetUID() )
 				<< END_LOG;
 
@@ -561,7 +561,7 @@ IMPL_ON_FUNC( EGS_SELECT_UNIT_REQ )
 	{
 		if( GetSuccessSecondSecurity() == false )	// 2차 보안을 사용 중인데 인증이 되지 않았다면 실패
 		{
-			START_LOG( cerr, L"2차 보안을 사용 중인데 인증도 되기 전에 유닉 선택을 하려 한다." )
+			START_LOG( cerr, L"Attempted to select a unit while secondary security is enabled but before authentication." )
 				<< BUILD_LOG( GetUID() )
 				<< END_LOG;
 
@@ -607,7 +607,7 @@ _IMPL_ON_FUNC( DBE_GAME_SELECT_UNIT_ACK, KDBE_SELECT_UNIT_ACK )
 		//{{ 2012. 09. 26	최육사		우편 복사 버그 수정
 		if( kPacket_.m_iOK == NetError::ERR_SELECT_UNIT_07 )
 		{
-			START_LOG( cout, L"UserUID소속이 아닌 UnitUID로 캐릭터를 선택한 유저가 나타났다!" )
+			START_LOG( cout, L"A user attempted to select a character using a UnitUID that does not belong to their UserUID!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetUserID() )
 				<< BUILD_LOG( GetCharUID() )
@@ -684,7 +684,7 @@ _IMPL_ON_FUNC( DBE_ACCOUNT_SELECT_UNIT_ACK, KDBE_SELECT_UNIT_ACK )
 		//{{ 2009. 5. 13  최육사	P2P포트 체크
 		if( GetP2PIP().empty() )
 		{
-			START_LOG( cerr, L"P2P포트 체크 실패!" )
+			START_LOG( cerr, L"P2P port check failed!" )
 				<< BUILD_LOG( GetUID() )
 				<< END_LOG;
 		}
@@ -766,7 +766,7 @@ IMPL_ON_FUNC_NOPARAM( EGS_GET_MY_INVENTORY_REQ )
 		SendPacket( EGS_SELECT_UNIT_INVENTORY_INFO_NOT, vecInventoryInfo[ui] );
 	}
 
-	START_LOG( clog, L"인벤토리 정보 분할 전송" )
+	START_LOG( clog, L"Sending inventory information in segments" )
 		<< BUILD_LOG( GetCharUID() )
 		<< BUILD_LOG( vecInventoryInfo.size() );
 
@@ -835,7 +835,7 @@ IMPL_ON_FUNC( EGS_CHAT_REQ )
 				}
 				else
 				{
-					START_LOG( cwarn, L"필드 상태인데 fieldUID가 0인경우?" )
+					START_LOG( cwarn, L"Field state has a fieldUID of 0." )
 						<< BUILD_LOG( GetCharUID() )
 						<< END_LOG;
 
@@ -855,7 +855,7 @@ IMPL_ON_FUNC( EGS_CHAT_REQ )
 
 			if( GetPartyUID() == 0 )
 			{
-				START_LOG( cerr, L"파티 UID 이상.!" )
+				START_LOG( cerr, L"Invalid party UID!" )
 					<< BUILD_LOG( GetCharUID() )
 					<< BUILD_LOG( GetCharName() )
 					<< END_LOG;
@@ -869,7 +869,7 @@ IMPL_ON_FUNC( EGS_CHAT_REQ )
 			if( SiKPartyListManager()->E_Chat( GetThisPtr<KGSUser>(), kPacket_ ) == false )
 			//}}
 			{
-				START_LOG( cwarn, L"파티채팅실패." )
+				START_LOG( cwarn, L"Party chat failed." )
 					<< BUILD_LOG( GetCharName() )
 					<< BUILD_LOG( GetCharUID() )
 					<< BUILD_LOG( GetPartyUID() )
@@ -916,7 +916,7 @@ IMPL_ON_FUNC( EGS_CHAT_REQ )
 
 			if( GetGuildUID() <= 0 )
 			{
-				START_LOG( cerr, L"길드멤버가 아닌데 길드채팅을 날린다." )
+				START_LOG( cerr, L"Attempted to send guild chat without being a guild member." )
 					<< BUILD_LOG( GetCharUID() )
 					<< BUILD_LOG( GetGuildUID() )
 					<< END_LOG;
@@ -957,7 +957,7 @@ IMPL_ON_FUNC( EGS_CHAT_REQ )
 		//}
 	default:
 		{
-			START_LOG( cerr, L"이상한 채팅 패킷 타입." )
+			START_LOG( cerr, L"Invalid chat packet type." )
 				<< BUILD_LOGc( kPacket_.m_cChatPacketType )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( GetStateID() )
@@ -983,7 +983,7 @@ IMPL_ON_FUNC( ERM_CHAT_ACK )
 		break;
 	default:
 		{
-			START_LOG( cerr, L"이상한 채팅 패킷 타입." )
+			START_LOG( cerr, L"Invalid chat packet type." )
 				<< BUILD_LOGc( kPacket_.m_cChatPacketType )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( GetStateID() )
@@ -1009,7 +1009,7 @@ _IMPL_ON_FUNC( ERM_CHAT_NOT, KEGS_CHAT_NOT )
 		break;
 	default:
 		{
-			START_LOG( cerr, L"이상한 채팅 패킷 타입." )
+			START_LOG( cerr, L"Invalid chat packet type." )
 				<< BUILD_LOGc( kPacket_.m_cChatPacketType )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( GetStateID() )
@@ -1085,7 +1085,7 @@ IMPL_ON_FUNC( EGS_NEW_QUEST_REQ )
 		KEGS_NEW_QUEST_ACK kAck;
 		if( m_kInventory.IsLocked() == true )
 		{
-			START_LOG( cout, L"인벤토리 락이 걸려있는 상태입니다!" )
+			START_LOG( cout, L"The inventory is locked!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharName() )
@@ -1128,7 +1128,7 @@ IMPL_ON_FUNC( DBE_NEW_QUEST_ACK )
 		const CXSLQuestManager::QuestTemplet* QuestTem = SiCXSLQuestManager()->GetQuestTemplet( kPacket_.m_iQuestID );
 		if( QuestTem == NULL )
 		{
-			START_LOG( cerr, L"QUEST TEMPLET 얻어오기 실패.!" )
+			START_LOG( cerr, L"Failed to retrieve the quest template!" )
 				<< BUILD_LOG( kPacket_.m_iQuestID )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( GetCharName() )
@@ -1147,7 +1147,7 @@ IMPL_ON_FUNC( DBE_NEW_QUEST_ACK )
 			const CXSLQuestManager::SubQuestTemplet* pSubQuestTemplet = SiCXSLQuestManager()->GetSubQuestTemplet( iSubQuestID );
 			if( pSubQuestTemplet == NULL )
 			{
-				START_LOG( cerr, L"SUB QUEST TEMPLET 얻어오기 실패.!" )
+				START_LOG( cerr, L"Failed to retrieve the sub-quest template!" )
 					<< BUILD_LOG( iSubQuestID )
 					<< BUILD_LOG( GetCharUID() )
 					<< BUILD_LOG( GetCharName() )
@@ -1188,7 +1188,7 @@ IMPL_ON_FUNC( DBE_NEW_QUEST_ACK )
 			const CXSLQuestManager::SubQuestTemplet* pSubQuestTemplet = SiCXSLQuestManager()->GetSubQuestTemplet( iSubQuestID );
 			if( IS_NULL( pSubQuestTemplet ) )
 			{
-				START_LOG( cerr, L"존재 하지 않는 서브 퀘스트 입니다!" )
+				START_LOG( cerr, L"The sub-quest does not exist!" )
 					<< BUILD_LOG( iSubQuestID )
 					<< END_LOG;
 				continue;
@@ -1239,7 +1239,7 @@ IMPL_ON_FUNC( EGS_TALK_WITH_NPC_REQ )
 	//{{ 2009. 10. 15  최육사	거래 예외처리
 	if( GetTradeUID() > 0  ||  GetPersonalShopUID() > 0 )
 	{
-		START_LOG( cwarn, L"거래중에는 사용할 수 없는 기능!" )
+		START_LOG( cwarn, L"This feature is unavailable during a trade!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< END_LOG;
 
@@ -1301,7 +1301,7 @@ IMPL_ON_FUNC( DBE_GIVE_UP_QUEST_ACK )
 		const CXSLQuestManager::QuestTemplet* pQuestTemplet = SiCXSLQuestManager()->GetQuestTemplet( kPacket_.m_iQuestID );
 		if( pQuestTemplet == NULL )
 		{
-			START_LOG( cerr, L"퀘스트 정보가 없습니다!" )
+			START_LOG( cerr, L"Quest information is missing!" )
 				<< BUILD_LOG( kPacket_.m_iQuestID )
 				<< END_LOG;
 		}
@@ -1332,7 +1332,7 @@ IMPL_ON_FUNC( EGS_ALL_COMPLETED_QUEST_COMPLETE_REQ )
 		//{{ 2012. 03. 29	최육사	Inventory Lock 기능
 		if( m_kInventory.IsLocked() == true )
 		{
-			START_LOG( cout, L"인벤토리 락이 걸려있는 상태입니다!" )
+			START_LOG( cout, L"The inventory is locked!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharName() )
@@ -1354,7 +1354,7 @@ IMPL_ON_FUNC( EGS_ALL_COMPLETED_QUEST_COMPLETE_REQ )
 	KEGS_QUEST_COMPLETE_REQ kReq;
 	if( m_kUserQuestManager.GetAndDeleteAutoCompleteQuest( kReq ) == false )
 	{
-		START_LOG( cerr, L"완료할 퀘스트가 없는데 여긴 왜 왔나?" )
+		START_LOG( cerr, L"There is no quest to complete; why did this request arrive?" )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
 
@@ -1381,7 +1381,7 @@ IMPL_ON_FUNC( EGS_QUEST_COMPLETE_REQ )
 		//{{ 2012. 03. 29	최육사	Inventory Lock 기능
 		if( m_kInventory.IsLocked() == true )
 		{
-			START_LOG( cout, L"인벤토리 락이 걸려있는 상태입니다!" )
+			START_LOG( cout, L"The inventory is locked!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharName() )
@@ -1597,7 +1597,7 @@ IMPL_ON_FUNC( DBE_QUEST_COMPLETE_ACK )
 
 			default:
 				{
-					START_LOG( cerr, L"이상한 방 타입." )
+					START_LOG( cerr, L"Invalid room type." )
 						<< BUILD_LOG( CXSLRoom::GetRoomType( GetRoomUID() ) )
 						<< BUILD_LOG( GetCharUID() )
 						<< END_LOG;
@@ -1863,7 +1863,7 @@ IMPL_ON_FUNC( ELG_SEARCH_UNIT_ACK )
 		return;
 	}
 
-	START_LOG( cerr, L"event id가 이상합니다!" )
+	START_LOG( cerr, L"Invalid event ID!" )
 		<< BUILD_LOG( KEvent::GetIDStr( kPacket_.m_usEventID ) )
 		<< END_LOG;
 }
@@ -1959,7 +1959,7 @@ _IMPL_ON_FUNC( ERM_SEARCH_UNIT_ACK, KELG_SEARCH_UNIT_ACK )
 		return;
 	}
 
-	START_LOG( cerr, L"event id가 이상합니다!" )
+	START_LOG( cerr, L"Invalid event ID!" )
 		<< BUILD_LOG( KEvent::GetIDStr( kPacket_.m_usEventID ) )
 		<< END_LOG;
 }
@@ -2038,7 +2038,7 @@ IMPL_ON_FUNC( EGS_CHANGE_SKILL_SLOT_REQ )
 	//{{ 2013. 01. 01	최육사	던전에서 필드로 돌아오지 못하는 오류 수정
 	if( m_kTimer[TM_SKILL_CHANGE_COOL_TIME_AT_START_COUNT].elapsed() < 3.0 )
 	{
-		START_LOG( cerr, L"스킬 슬롯 쿨타임으로 인해 현재 스킬슬롯을 변경할수 없습니다!" )
+		START_LOG( cerr, L"Cannot change the current skill slot because it is on cooldown!" )
 			<< BUILD_LOG( GetName() )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
@@ -2280,7 +2280,7 @@ IMPL_ON_FUNC( EGS_FRAME_AVERAGE_REQ )
 
 	if( kPacket_.m_iFrameAverage < 0 )
 	{
-		START_LOG( cerr, L"잘못된 프레임 평균값입니다." )
+		START_LOG( cerr, L"Invalid average frame value." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kPacket_.m_iFrameAverage )
 			<< END_LOG;
@@ -2310,7 +2310,7 @@ IMPL_ON_FUNC( EGS_FRAME_AVERAGE_REQ )
 		goto end_proc;
 
 	default:
-		START_LOG( cerr, L"클라이언트에서 이상한 게임타입을 보냈다." )
+		START_LOG( cerr, L"Client sent an invalid game type." )
 			<< BUILD_LOGc( kPacket_.m_cGameType )
 			<< END_LOG;
 		goto end_proc;
@@ -2361,7 +2361,7 @@ IMPL_ON_FUNC( EGS_FRAME_AVERAGE_REQ )
 
 		KSIManager.IncreaseCount( KStatistics::SI_FPS, kKey, iIndex, 1 );
 
-		START_LOG( clog2, L"프레임 평균 통계" )
+		START_LOG( clog2, L"Frame average statistics" )
 			<< BUILD_LOG( GetUserName() )
 			<< BUILD_LOG( iIndex )
 			<< BUILD_LOG( kPacket_.m_iFrameAverage );
@@ -2483,14 +2483,14 @@ IMPL_ON_FUNC( DBE_CHANGE_UNIT_CLASS_ACK )
 		{
 			if( GetAuthLevel() < SEnum::UAL_GM )
 			{
-				START_LOG( cerr, L"1차 전직도 2차 전직도 아닌데 로그를 기록하려고 하네?" )
+				START_LOG( cerr, L"Attempted to write a log for a class that is neither first nor second advancement." )
 					<< BUILD_LOG( GetCharUID() )
 					<< BUILD_LOGc( GetUnitClass() )
 					<< END_LOG;
 			}
 			else
 			{
-				START_LOG( cout, L"운영자가 기본직업으로 치트썼군.. 로그 기록 하지 말자." )
+				START_LOG( cout, L"Operator used a cheat with the base class; do not log it." )
 					<< BUILD_LOG( GetCharUID() )
 					<< BUILD_LOG( GetCharName() )
 					<< BUILD_LOGc( GetUnitClass() );
@@ -2542,7 +2542,7 @@ IMPL_ON_FUNC( DBE_CHANGE_UNIT_CLASS_ACK )
 
 			default:
 				{
-					START_LOG( cerr, L"이상한 방 타입." )
+					START_LOG( cerr, L"Invalid room type." )
 						<< BUILD_LOG( CXSLRoom::GetRoomType( GetRoomUID() ) )
 						<< BUILD_LOG( GetCharUID() )
 						<< END_LOG;
@@ -2651,7 +2651,7 @@ IMPL_ON_FUNC( DBE_CHANGE_UNIT_CLASS_ACK )
 
 	default:
 		{
-			START_LOG( cerr, L"잘못된 이벤트입니다." )
+			START_LOG( cerr, L"Invalid event." )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( kPacket_.m_usEventID )
 				<< BUILD_LOG( KEvent::GetIDStr( kPacket_.m_usEventID ) )
@@ -2788,7 +2788,7 @@ IMPL_ON_FUNC( EGS_DEL_TUTORIAL_REQ )
 	//상태는 생각해보고 추후에 막자..
 	if( m_kUserTutorialInfo.OnDelTutorialReq( GetThisPtr<KGSUser>(), kPacket_ ) == false )
 	{
-		START_LOG( cerr, L"사제관계 종료 실패.!" )
+		START_LOG( cerr, L"Failed to end mentor relationship!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
@@ -2803,7 +2803,7 @@ IMPL_ON_FUNC( DBE_DEL_TUTORIAL_ACK )
 	{
 		if( m_kUserTutorialInfo.OnDelTutorialAck( GetThisPtr<KGSUser>(), kPacket_ ) == false )
 		{
-			START_LOG( cerr, L"사제리스트 삭제실패.!" )
+			START_LOG( cerr, L"Failed to delete mentor list!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( SiKTutorialManager()->GetDelReason( static_cast<KTutorialManager::TUTORIAL_DEL_REASON>(kPacket_.m_cReason) ) )
 				<< BUILD_LOG( kPacket_.m_iTeacherUID )
@@ -2814,7 +2814,7 @@ IMPL_ON_FUNC( DBE_DEL_TUTORIAL_ACK )
 	}
 	else
 	{
-		START_LOG( cerr, L"사제관계 디비 지우기 실패!" )
+		START_LOG( cerr, L"Failed to delete mentor relationship from the database!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( NetError::GetErrStr( kPacket_.m_iOK ) )
@@ -2830,7 +2830,7 @@ _IMPL_ON_FUNC( ELG_TUTORIAL_UPDATE_UNIT_INFO_NOT, KEGS_TUTORIAL_UPDATE_UNIT_INFO
 		//스승이 생기는 절차이므로 리스트에서 빼준다.
 		if( SiKTutorialManager()->DeleteUnit( GetCharUID() ) == false )
 		{
-			START_LOG( cerr, L"투토리얼 제자리스트 유닛삭제 실패.!" )
+			START_LOG( cerr, L"Failed to delete unit from tutorial apprentice list!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( GetCharName() )
 				<< END_LOG;
@@ -2839,7 +2839,7 @@ _IMPL_ON_FUNC( ELG_TUTORIAL_UPDATE_UNIT_INFO_NOT, KEGS_TUTORIAL_UPDATE_UNIT_INFO
 
     if( m_kUserTutorialInfo.OnTutorialUpdateUnitInfoNot( GetThisPtr<KGSUser>(), kPacket_ ) == false )
 	{
-		START_LOG( cerr, L"사제정보 업데이트 실패.!" )
+		START_LOG( cerr, L"Failed to update mentor information!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( kPacket_.m_kTutorialUnitInfo.m_iUnitUID )
@@ -2854,7 +2854,7 @@ _IMPL_ON_FUNC( ELG_DEL_TUTORIAL_NOT, KEGS_DEL_TUTORIAL_NOT )
 
 	if( m_kUserTutorialInfo.OnDelTutorialNot( GetThisPtr<KGSUser>(), kPacket_ ) == false )
 	{
-		START_LOG( cerr, L"사제리스트 지우기 실패.!" )
+		START_LOG( cerr, L"Failed to clear mentor list!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
@@ -2870,7 +2870,7 @@ IMPL_ON_FUNC( EGS_TUTORIAL_STUDENT_LIST_REQ )
 	{
 	case KGSFSM::S_SERVER_SELECT:
 		{
-			START_LOG( cerr, L"상태 스테이트가 잘못되었습니다." )
+			START_LOG( cerr, L"Invalid state." )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( GetCharName() )
 				<< END_LOG;
@@ -2963,7 +2963,7 @@ IMPL_ON_FUNC( EGS_REQUEST_TUTORIAL_REQ )
 
 	if( kPacket.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( clog, L"사제 맺기 실패.!" )
+		START_LOG( clog, L"Failed to establish mentor relationship!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( (int)GetLevel() )
@@ -3019,7 +3019,7 @@ IMPL_ON_FUNC( ELG_REQUEST_TUTORIAL_NOT )
 		}
 		else
 		{
-			START_LOG( clog, L"이미 스승이 있음.!" )
+			START_LOG( clog, L"The user already has a mentor!" )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( GetCharName() )
 				<< BUILD_LOG( (int)GetLevel() )
@@ -3033,7 +3033,7 @@ IMPL_ON_FUNC( ELG_REQUEST_TUTORIAL_NOT )
 	}
 	else
 	{
-		START_LOG( cerr, L"사제관계에서 제자여야 하는데..?ㅁ?" )
+		START_LOG( cerr, L"Expected an apprentice in the mentor relationship?" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( (int)GetLevel() )
@@ -3095,7 +3095,7 @@ IMPL_ON_FUNC( EGS_REQUEST_TUTORIAL_REPLY_NOT )
 		}
 	}
 
-	START_LOG( cwarn, L"사제관계를 수락하는 입장이 틀리거나 스승이 먼저 생겼거나.!" )
+	START_LOG( cwarn, L"Invalid role accepting mentor relationship, or mentor already exists!" )
 		<< BUILD_LOG( GetCharUID() )
 		<< BUILD_LOG( GetCharName() )
 		<< BUILD_LOG( (int)GetLevel() )
@@ -3128,7 +3128,7 @@ _IMPL_ON_FUNC( ELG_REQUEST_TUTORIAL_REPLY_NOT, KEGS_REQUEST_TUTORIAL_REPLY_NOT )
 		}
 	}
 
-	START_LOG( cerr, L"최종 사제관계를 결정할려고 하는 시점에 스승설정이 이상함." )
+	START_LOG( cerr, L"Invalid mentor setup while finalizing mentor relationship." )
 		<< BUILD_LOG( GetCharUID() )
 		<< BUILD_LOG( GetCharName() )
 		<< BUILD_LOG( (int)m_kUserTutorialInfo.GetTutorUnitType() )
@@ -3175,7 +3175,7 @@ IMPL_ON_FUNC( DBE_INSERT_TUTORIAL_ACK )
 		return;
 	}
 
-	START_LOG( cerr, L"사제처리 실패.!" )
+	START_LOG( cerr, L"Failed to process mentor relationship!" )
 		<< BUILD_LOG( GetCharUID() )
 		<< BUILD_LOG( GetCharName() )
 		<< BUILD_LOG( kPacket_.m_kStudentUnitInfo.m_iUnitUID )
@@ -3199,7 +3199,7 @@ IMPL_ON_FUNC( EGS_GET_SKILL_REQ )
 
 	if ( kPacket_.m_iActiveSkillPageNumber != m_kSkillTree.GetActiveSkillPageNumber() )
 	{
-		START_LOG( cerr, L"활성된 스킬 페이지 번호가 이상합니다 (EGS_GET_SKILL_REQ)" )
+		START_LOG( cerr, L"Invalid active skill page number (EGS_GET_SKILL_REQ)." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iActiveSkillPageNumber )
 			<< BUILD_LOG( m_kSkillTree.GetActiveSkillPageNumber() )
@@ -3443,7 +3443,7 @@ IMPL_ON_FUNC( EGS_RESET_SKILL_REQ )
 
 		if( m_kInventory.IsLocked() == true )
 		{
-			START_LOG( cout, L"인벤토리 락이 걸려있는 상태입니다!" )
+			START_LOG( cout, L"The inventory is locked!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharUID() )
@@ -3461,7 +3461,7 @@ IMPL_ON_FUNC( EGS_RESET_SKILL_REQ )
 
 	if ( kPacket_.m_iActiveSkillPageNumber != m_kSkillTree.GetActiveSkillPageNumber() )
 	{
-		START_LOG( cerr, L"활성된 스킬 페이지 번호가 이상합니다 (EGS_RESET_SKILL_REQ)" )
+		START_LOG( cerr, L"Invalid active skill page number (EGS_RESET_SKILL_REQ)." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iActiveSkillPageNumber )
 			<< BUILD_LOG( m_kSkillTree.GetActiveSkillPageNumber() )
@@ -3477,7 +3477,7 @@ IMPL_ON_FUNC( EGS_RESET_SKILL_REQ )
 	const CXSLSkillTree::SkillTemplet* pDelSkillTemplet = SiCXSLSkillTree()->GetSkillTemplet( kPacket_.m_iSkillID );
 	if( pDelSkillTemplet == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 스킬ID를 초기화 하려 했습니다." )
+		START_LOG( cerr, L"Attempted to reset a nonexistent skill ID." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iSkillID )
 			<< END_LOG;
@@ -3490,7 +3490,7 @@ IMPL_ON_FUNC( EGS_RESET_SKILL_REQ )
 	const CXSLSkillTree::SkillTreeTemplet* pDelSkillTreeTemplet = SiCXSLSkillTree()->GetSkillTreeTemplet( GetUnitClass(), kPacket_.m_iSkillID );
 	if( pDelSkillTreeTemplet == NULL )
 	{
-		START_LOG( cerr, L"트리에 존재하지 않는 스킬ID를 초기화 하려 했습니다." )
+		START_LOG( cerr, L"Attempted to reset a skill ID that is not in the tree." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetUnitClass() )
 			<< BUILD_LOG( kPacket_.m_iSkillID )
@@ -3516,7 +3516,7 @@ IMPL_ON_FUNC( EGS_RESET_SKILL_REQ )
 	if ( false == m_kSkillTree.GetSkillLevelAndCSP( OUT iDelSkillLevel, OUT iDelSkillCSPoint,
 		IN kPacket_.m_iSkillID, IN m_kSkillTree.AccessLearnedSkillTree() ) )
 	{
-		START_LOG( cerr, L"클라이언트에서 스킬 검사를 했을텐데.." )
+		START_LOG( cerr, L"The client should have checked the skill." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iSkillID )
 			<< END_LOG;
@@ -3539,7 +3539,7 @@ IMPL_ON_FUNC( EGS_RESET_SKILL_REQ )
 		{
 			if( iAfterDelSkillLevel <= 0 && iDelSkillLevel > 0 )
 			{
-				START_LOG( cwarn, L"장착중인 스킬을 초기화 할 것이므로 장착 해지해야 초기화 할 수 있다." )
+				START_LOG( cwarn, L"Cannot reset an equipped skill; unequip it first." )
 					<< BUILD_LOG( GetCharUID() )
 					<< BUILD_LOG( kPacket_.m_iSkillID )
 					<< BUILD_LOG( iDelSkillLevel )
@@ -3601,7 +3601,7 @@ IMPL_ON_FUNC( EGS_RESET_SKILL_REQ )
 	KInventoryItemInfo kInventoryItemInfo;
 	if( m_kInventory.ResetSkillItem( kInventoryItemInfo ) == false )
 	{
-		START_LOG( cerr, L"스킬 초기화 아이템이 인벤토리에 없음." )
+		START_LOG( cerr, L"Skill reset item is not in the inventory." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iSkillID )
 			<< END_LOG;
@@ -3697,7 +3697,7 @@ end_proc:
 	const CXSLSkillTree::SkillTemplet* pCheckSkillTemplet = SiCXSLSkillTree()->GetSkillTemplet( kPacket_.m_iDelSkillID );
 	if( pCheckSkillTemplet == NULL )
 	{
-		START_LOG( cerr, L"존재하지 않는 스킬템플릿 입니다." )
+		START_LOG( cerr, L"Skill template does not exist." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iDelSkillID )
 			<< END_LOG;
@@ -3745,7 +3745,7 @@ IMPL_ON_FUNC( EGS_INIT_SKILL_TREE_REQ )
 		//{{ 2012. 03. 29	최육사	Inventory Lock 기능
 		if( m_kInventory.IsLocked() == true )
 		{
-			START_LOG( cout, L"인벤토리 락이 걸려있는 상태입니다!" )
+			START_LOG( cout, L"The inventory is locked!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharName() )
@@ -3763,7 +3763,7 @@ IMPL_ON_FUNC( EGS_INIT_SKILL_TREE_REQ )
 
 	if ( kPacket_.m_iActiveSkillPageNumber != m_kSkillTree.GetActiveSkillPageNumber() )
 	{
-		START_LOG( cerr, L"활성된 스킬 페이지 번호가 이상합니다 (EGS_INIT_SKILL_TREE_REQ)" )
+		START_LOG( cerr, L"Invalid active skill page number (EGS_INIT_SKILL_TREE_REQ)." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iActiveSkillPageNumber )
 			<< BUILD_LOG( m_kSkillTree.GetActiveSkillPageNumber() )
@@ -3776,7 +3776,7 @@ IMPL_ON_FUNC( EGS_INIT_SKILL_TREE_REQ )
 
 	if( !m_kInventory.IsExist( kPacket_.m_iItemUID ) )
 	{
-		START_LOG( cerr, L"스킬초기화 아이템이 없는데 패킷 날아옴.!" )
+		START_LOG( cerr, L"Received a skill-reset packet, but the item is missing!" )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iItemUID )
@@ -3794,7 +3794,7 @@ IMPL_ON_FUNC( EGS_INIT_SKILL_TREE_REQ )
 
 	default:
 		{
-			START_LOG( cerr, L"스킬초기화 아이템ID가 이상함." )
+			START_LOG( cerr, L"Invalid skill-reset item ID." )
 				<< BUILD_LOG( GetCharName() )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( kPacket_.m_iItemUID )
@@ -3821,7 +3821,7 @@ IMPL_ON_FUNC( EGS_INIT_SKILL_TREE_REQ )
 	int iDefaultSkillID[6] = {0,};
 	if( !SiCXSLSkillTree()->GetUnitClassDefaultSkill( GetUnitClass(), iDefaultSkillID[0], iDefaultSkillID[1], iDefaultSkillID[2], iDefaultSkillID[3], iDefaultSkillID[4], iDefaultSkillID[5] ) )
 	{
-		START_LOG( cerr, L"유닛타입이 이상함." )
+		START_LOG( cerr, L"Invalid unit type." )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetUnitType() )
@@ -3838,7 +3838,7 @@ IMPL_ON_FUNC( EGS_INIT_SKILL_TREE_REQ )
 
 	if( SiCXSLSkillTree()->GetCalcInitSkillPoint( GetLevel(), iRetrievedSPoint ) == false )
 	{
-		START_LOG( cerr, L"레벨로 환산된 sp 정보가 이상합니다." )
+		START_LOG( cerr, L"Invalid SP information converted from the level." )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( static_cast<int>(GetLevel()) )
 			<< BUILD_LOG( iRetrievedSPoint )
@@ -3863,7 +3863,7 @@ IMPL_ON_FUNC( EGS_INIT_SKILL_TREE_REQ )
 		/// 체크는 이상하다고 생각 되서...
 		if( m_kSkillTree.GetCSPointAnyPage() )
 		{
-			START_LOG( cerr, L"cash skill point기한이 다되었는데 스킬트리에 csp가 남아있다." )
+			START_LOG( cerr, L"The cash skill point has expired, but CSP remains in the skill tree." )
 				<< BUILD_LOG( GetCharName() )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( iRetrievedSPoint )
@@ -3911,7 +3911,7 @@ IMPL_ON_FUNC( DBE_INIT_SKILL_TREE_ACK )
 
 	if( kPacket_.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"스킬초기화 실패.!" )
+		START_LOG( cerr, L"Failed to reset skills!" )
 			<< BUILD_LOG( NetError::GetErrStr( kPacket_.m_iOK ) )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
@@ -3928,7 +3928,7 @@ IMPL_ON_FUNC( DBE_INIT_SKILL_TREE_ACK )
 		int iUsageType = 0;
 		if( m_kInventory.GetUsageType( kPacket_.m_iItemUID, iUsageType ) == false )
 		{
-			START_LOG( cerr, L"USAGE TYPE 읽어오기 실패.!" )
+			START_LOG( cerr, L"Failed to retrieve the USAGE TYPE!" )
 				<< BUILD_LOG( kPacket_.m_iItemUID )
 				<< BUILD_LOG( GetCharName() );
 		}
@@ -4102,7 +4102,7 @@ IMPL_ON_FUNC( DBE_EXPAND_INVENTORY_SLOT_ACK )
 
 	default:
 		{
-			START_LOG( cerr, L"이상한 이벤트가 왔다?" )
+			START_LOG( cerr, L"Received an unexpected event." )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( KEvent::GetIDStr( kPacket_.m_usEventID ) )
 				<< END_LOG;
@@ -4166,7 +4166,7 @@ IMPL_ON_FUNC( DBE_UPDATE_EVENT_TIME_ACK )
 			if( SiKGameEventManager()->GetConnectTimeEventReward( GetLevel(), iEventUID, iRewardID ) == false )
 			//}}
 			{
-				START_LOG( cerr, L"이벤트 보상 정보를 얻지 못했습니다!" )
+				START_LOG( cerr, L"Failed to retrieve the event reward information!" )
 					<< BUILD_LOG( GetCharName() )
 					<< BUILD_LOG( iEventUID )
 					<< END_LOG;
@@ -4198,7 +4198,7 @@ IMPL_ON_FUNC( DBE_UPDATE_EVENT_TIME_ACK )
 			int iRewardID = 0;
 			if( !SiKGameEventManager()->GetCumulativeTimeEventReward( iEventUID, iRewardID ) )
 			{
-				START_LOG( cerr, L"이벤트 보상 정보를 얻지 못했습니다!" )
+				START_LOG( cerr, L"Failed to retrieve the event reward information!" )
 					<< BUILD_LOG( GetCharName() )
 					<< BUILD_LOG( iEventUID )
 					<< END_LOG;
@@ -4209,7 +4209,7 @@ IMPL_ON_FUNC( DBE_UPDATE_EVENT_TIME_ACK )
 
 			if( iRewardID <= 0 )
 			{
-				START_LOG( cerr, L"이벤트 보상정보가 이상합니다. 이벤트테이블 확인 필요!" )
+				START_LOG( cerr, L"Invalid event reward information; check the event table!" )
 					<< BUILD_LOG( iEventUID )
 					<< BUILD_LOG( iRewardID )
 					<< END_LOG;
@@ -4288,7 +4288,7 @@ IMPL_ON_FUNC( EGS_EQUIP_TITLE_REQ )
 		{
 			if( GetRoomUID() <= 0 )
 			{
-				START_LOG( cerr, L"룸 UID 이상." )
+				START_LOG( cerr, L"Invalid room UID." )
 					<< BUILD_LOG( GetRoomUID() )
 					<< BUILD_LOG( GetCharUID() )
 					<< END_LOG;
@@ -4328,7 +4328,7 @@ IMPL_ON_FUNC( EGS_EQUIP_TITLE_REQ )
 
 			default:
 				{
-					START_LOG( cerr, L"이상한 방 타입." )
+					START_LOG( cerr, L"Invalid room type." )
 						<< BUILD_LOG( CXSLRoom::GetRoomType( GetRoomUID() ) )
 						<< BUILD_LOG( GetCharUID() )
 						<< END_LOG;
@@ -4400,7 +4400,7 @@ _IMPL_ON_FUNC( ELG_INSERT_TITLE_NOT, KDBE_INSERT_TITLE_ACK )
 	{
 		if( kPacket_.m_iUnitUID != GetCharUID() )
 		{
-			START_LOG( cerr, L"로그인 서버에서 해당 유닛으로 보냈는데 UnitUID가 다르다?" )
+			START_LOG( cerr, L"Login server sent this unit, but the UnitUID does not match?" )
 				<< BUILD_LOG( kPacket_.m_iUnitUID )
 				<< BUILD_LOG( GetCharUID() )
 				<< END_LOG;
@@ -4433,7 +4433,7 @@ IMPL_ON_FUNC( DBE_DELETE_NICK_NAME_ACK )
 
 	if( kPacket_.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"닉네임 삭제 실패? 있을수 없는 에러!" )
+		START_LOG( cerr, L"Failed to delete nickname; this should never happen!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< END_LOG;
@@ -4471,7 +4471,7 @@ IMPL_ON_FUNC( DBE_UNSEAL_SKILL_ACK )
 	}
 	else
 	{
-		START_LOG( cerr, L"스킬 봉인해제 실패!" )
+		START_LOG( cerr, L"Failed to unseal skill!" )
 			<< BUILD_LOG( NetError::GetErrStr( kPacket_.m_iOK ) )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iSkillID )
@@ -4503,7 +4503,7 @@ IMPL_ON_FUNC( EGS_USE_MEGAPHONE_REQ )
 		//{{ 2012. 03. 29	최육사	Inventory Lock 기능
 		if( m_kInventory.IsLocked() == true )
 		{
-			START_LOG( cout, L"인벤토리 락이 걸려있는 상태입니다!" )
+			START_LOG( cout, L"The inventory is locked!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharName() )
@@ -4524,7 +4524,7 @@ IMPL_ON_FUNC( EGS_USE_MEGAPHONE_REQ )
 	if( iItemID != CXSLItem::CI_NASOD_MEGAPHONE  &&  iItemID != CXSLItem::CI_HIGH_NASOD_MEGAPHONE
 		)
 	{
-		START_LOG( cerr, L"확성기 아이템이 아닙니다." )
+		START_LOG( cerr, L"This is not a megaphone item." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( iItemID )
 			<< END_LOG;
@@ -4539,7 +4539,7 @@ IMPL_ON_FUNC( EGS_USE_MEGAPHONE_REQ )
 
 	if( strMessage.size() > 90 )
 	{
-		START_LOG( cerr, L"메시지 길이 제한. 90바이트 제한을 클라이언트에서 검사했을텐데?" )
+		START_LOG( cerr, L"Message exceeds the 90-byte limit; shouldn't the client have checked this?" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_wstrMessage.size() )
 			<< END_LOG;
@@ -4552,7 +4552,7 @@ IMPL_ON_FUNC( EGS_USE_MEGAPHONE_REQ )
 	// 아이템 사용
 	if( m_kInventory.UseItemInInventory( kPacket_.m_iItemUID, kPacket.m_vecInventorySlotInfo ) == false )
 	{
-		START_LOG( cerr, L"확성기 아이템 사용 실패!" )
+		START_LOG( cerr, L"Failed to use megaphone item!" )
 			<< BUILD_LOG( kPacket_.m_iItemUID )
 			<< END_LOG;
 
@@ -4619,7 +4619,7 @@ IMPL_ON_FUNC_NOPARAM( EGS_CHECK_TIME_EVENT_COMPLETE_REQ )
 		//{{ 2012. 03. 29	최육사	Inventory Lock 기능
 		if( m_kInventory.IsLocked() == true )
 		{
-			START_LOG( cout, L"인벤토리 락이 걸려있는 상태입니다!" )
+			START_LOG( cout, L"The inventory is locked!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharName() )
@@ -4700,7 +4700,7 @@ IMPL_ON_FUNC( DBE_CHECK_TIME_EVENT_COMPLETE_ACK )
 
 	if( kPacket_.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"이벤트 완료 정보 DB업데이트 실패! 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"Failed to update event completion information in the database; this should never happen!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iOK )
 			<< END_LOG;
@@ -4758,7 +4758,7 @@ IMPL_ON_FUNC( DBE_GET_RECOMMEND_USER_LIST_ACK )
 
 	if( kPacket_.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"추천인 리스트 받아오기 실패!" )
+		START_LOG( cerr, L"Failed to retrieve recommender list!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( NetError::GetErrStr( kPacket_.m_iOK ) )
 			<< END_LOG;
@@ -4831,7 +4831,7 @@ IMPL_ON_FUNC( DBE_EXPAND_SKILL_NOTE_PAGE_ACK )
     // 기술의 노트 슬롯 확장 결과
 	if( kPacket_.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"기술의 노트 슬롯 확장 실패! 절대 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"Failed to expand skill note slots; this should never happen!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOGc( kPacket_.m_cExpandedMaxPageNum )
 			<< BUILD_LOG( NetError::GetErrStr( kPacket_.m_iOK ) )
@@ -4863,7 +4863,7 @@ IMPL_ON_FUNC( EGS_REG_SKILL_NOTE_MEMO_REQ )
 		//{{ 2012. 03. 29	최육사	Inventory Lock 기능
 		if( m_kInventory.IsLocked() == true )
 		{
-			START_LOG( cout, L"인벤토리 락이 걸려있는 상태입니다!" )
+			START_LOG( cout, L"The inventory is locked!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( GetName() )
 				<< BUILD_LOG( GetCharName() )
@@ -4882,7 +4882,7 @@ IMPL_ON_FUNC( EGS_REG_SKILL_NOTE_MEMO_REQ )
 	// 존재하는 아이템인지 확인
 	if( m_kInventory.IsExist( kPacket_.m_iItemUID ) == false )
 	{
-		START_LOG( cerr, L"존재하지 않는 아이템을 기술의 노트에 사용하려 했다." )
+		START_LOG( cerr, L"Attempted to use a nonexistent item on a skill note." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iItemUID )
 			<< END_LOG;
@@ -4898,7 +4898,7 @@ IMPL_ON_FUNC( EGS_REG_SKILL_NOTE_MEMO_REQ )
 	// 기술의 노트를 보유하고 있는지 확인한다.
 	if( m_kSkillTree.IsHaveSkillNote() == false )
 	{
-		START_LOG( cerr, L"기술의 노트를 보유하고 있지 않은데 메모를 등록하려 했음." )
+		START_LOG( cerr, L"Attempted to register a memo without owning a skill note." )
 			<< BUILD_LOG( GetCharUID() )
 			<< END_LOG;
 
@@ -4910,7 +4910,7 @@ IMPL_ON_FUNC( EGS_REG_SKILL_NOTE_MEMO_REQ )
 	// 등록하려는 페이지가 존재하는 페이지 인지 확인한다.
 	if( m_kSkillTree.IsExistSkillNotePage( kPacket_.m_cSkillNotePageNum ) == false )
 	{
-		START_LOG( cerr, L"존재하지 않는 페이지에 사용하려 했다." )
+		START_LOG( cerr, L"Attempted to use a nonexistent page." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOGc( kPacket_.m_cSkillNotePageNum )
 			<< END_LOG;
@@ -4923,7 +4923,7 @@ IMPL_ON_FUNC( EGS_REG_SKILL_NOTE_MEMO_REQ )
 	// 이미 등록된 메모인지 찾아본다.
 	if( m_kSkillTree.IsExistSkillNoteMemoID( iMemoID ) == true )
 	{
-		START_LOG( cerr, L"이미 등록된 메모를 다시 등록하려 했다." )
+		START_LOG( cerr, L"Attempted to register a memo that is already registered." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( iMemoID )
 			<< END_LOG;
@@ -4950,7 +4950,7 @@ IMPL_ON_FUNC( EGS_REG_SKILL_NOTE_MEMO_REQ )
 
 	if( m_kInventory.UseItemInInventory( kPacket_.m_iItemUID, kPacketToDB.m_vecInventorySlotInfo ) == false )
 	{
-		START_LOG( cerr, L"기술의 노트 아이템 사용 실패!" )
+		START_LOG( cerr, L"Failed to use skill note item!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iItemUID )
 			<< END_LOG;
@@ -4975,7 +4975,7 @@ _IMPL_ON_FUNC( DBE_REG_SKILL_NOTE_MEMO_ACK, KEGS_REG_SKILL_NOTE_MEMO_ACK )
 
 	if( kPacket_.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"기술의 노트 메모 업데이트 실패! 절대 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"Failed to update skill note memo; this should never happen!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOGc( kPacket_.m_cSkillNotePageNum )
 			<< BUILD_LOG( kPacket_.m_iMemoID )
@@ -5029,7 +5029,7 @@ IMPL_ON_FUNC( EGS_RESTORE_UNIT_REQ )
 	{
 		if( GetSuccessSecondSecurity() == false )	// 2차 보안을 사용 중인데 인증이 되지 않았다면 실패
 		{
-			START_LOG( cerr, L"2차 보안을 사용 중인데 인증도 되기 전에 유닉 선택을 하려 한다." )
+			START_LOG( cerr, L"Attempted to select a unit while secondary security is enabled but before authentication." )
 				<< BUILD_LOG( GetUID() )
 				<< END_LOG;
 
@@ -5068,7 +5068,7 @@ IMPL_ON_FUNC( EGS_FINAL_DELETE_UNIT_REQ )
 	{
 		if( GetSuccessSecondSecurity() == false )	// 2차 보안을 사용 중인데 인증이 되지 않았다면 실패
 		{
-			START_LOG( cerr, L"2차 보안을 사용 중인데 인증도 되기 전에 유닉 최종 삭제를 하려 한다." )
+			START_LOG( cerr, L"Attempted to permanently delete a unit while secondary security is enabled but before authentication." )
 				<< BUILD_LOG( GetUID() )
 				<< END_LOG;
 
@@ -5263,7 +5263,7 @@ IMPL_ON_FUNC( EGS_UPDATE_USER_UNIT_BUFF_INFO_NOT )
 
 	if( GetRoomUID() == 0 )
 	{
-		START_LOG( cerr, L"현재 방에 입장해있는 상태가 아닌데 버프정보를 보내려고 한다!" )
+		START_LOG( cerr, L"Attempted to send buff information while the user is not in a room!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
@@ -5288,7 +5288,7 @@ IMPL_ON_FUNC( EGS_UPDATE_NPC_UNIT_BUFF_INFO_NOT )
 
 	if( GetRoomUID() == 0 )
 	{
-		START_LOG( cerr, L"현재 방에 입장해있는 상태가 아닌데 버프정보를 보내려고 한다!" )
+		START_LOG( cerr, L"Attempted to send buff information while the user is not in a room!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetCharName() )
@@ -5313,7 +5313,7 @@ IMPL_ON_FUNC( ELG_UPDATE_USER_UNIT_BUFF_INFO_ACK )
 
 	m_kUserBuffManager.Init( kPacket_.m_kUnitBuffInfo );
 
-	START_LOG( clog, L"버프 정보가 새로 갱신 되었습니다." )
+	START_LOG( clog, L"Buff information has been updated." )
 		<< BUILD_LOG( GetCharName() )
 		<< END_LOG;
 
@@ -5382,7 +5382,7 @@ _IMPL_ON_FUNC( DBE_NEW_ACCOUNT_QUEST_GAME_DB_ACK, KDBE_NEW_QUEST_ACK )
 		const CXSLQuestManager::QuestTemplet* QuestTem = SiCXSLQuestManager()->GetAccountQuestTemplet( kPacket_.m_iQuestID );
 		if( QuestTem == NULL )
 		{
-			START_LOG( cerr, L"Account QUEST TEMPLET 얻어오기 실패.!" )
+			START_LOG( cerr, L"Failed to retrieve the account quest template!" )
 				<< BUILD_LOG( kPacket_.m_iQuestID )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( GetCharName() )
@@ -5398,7 +5398,7 @@ _IMPL_ON_FUNC( DBE_NEW_ACCOUNT_QUEST_GAME_DB_ACK, KDBE_NEW_QUEST_ACK )
 			const CXSLQuestManager::SubQuestTemplet* pSubQuestTemplet = SiCXSLQuestManager()->GetSubQuestTemplet( iSubQuestID );
 			if( pSubQuestTemplet == NULL )
 			{
-				START_LOG( cerr, L"SUB QUEST TEMPLET 얻어오기 실패.!" )
+				START_LOG( cerr, L"Failed to retrieve the sub-quest template!" )
 					<< BUILD_LOG( iSubQuestID )
 					<< BUILD_LOG( GetCharUID() )
 					<< BUILD_LOG( GetCharName() )
@@ -5427,7 +5427,7 @@ _IMPL_ON_FUNC( DBE_NEW_ACCOUNT_QUEST_GAME_DB_ACK, KDBE_NEW_QUEST_ACK )
 			const CXSLQuestManager::SubQuestTemplet* pSubQuestTemplet = SiCXSLQuestManager()->GetSubQuestTemplet( iSubQuestID );
 			if( IS_NULL( pSubQuestTemplet ) )
 			{
-				START_LOG( cerr, L"존재 하지 않는 서브 퀘스트 입니다!" )
+				START_LOG( cerr, L"The sub-quest does not exist!" )
 					<< BUILD_LOG( iSubQuestID )
 					<< END_LOG;
 				continue;
@@ -5586,7 +5586,7 @@ IMPL_ON_FUNC( EGS_WARP_BY_BUTTON_REQ )
 		CTime ctVipTime = kUnitInfo.m_trWarpVipEndData;
 		if( ctVipTime < CTime::GetCurrentTime() )
 		{
-			START_LOG(cerr, L"코보 VIP 기간 완료. 패킷 속도가 느리면 발생 할 수도 있다.")
+			START_LOG(cerr, L"Kobo VIP duration completed; may occur if packet processing is slow.")
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( ctVipTime.Format(_T( "%Y-%m-%d %H:%M:%S" )).GetString())
 				<< BUILD_LOG( ctVipTime.Format(_T( "%Y-%m-%d %H:%M:%S" )).GetString())
@@ -5710,7 +5710,7 @@ IMPL_ON_FUNC( DBE_CHANGE_PET_ID_ACK )
 	{
 		kPacket.m_iOK = NetError::ERR_PET_25;
 
-		START_LOG( cerr, L"할로윈 요정 펫 변신 물약 DB 변경 실패!" )
+		START_LOG( cerr, L"Failed to update Halloween fairy pet transformation potion in database!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iPetUID )
 			<< BUILD_LOG( kPacket_.m_iBeforePetID )
@@ -5734,7 +5734,7 @@ IMPL_ON_FUNC( EGS_2013_EVENT_MISSION_COMPLETE_REQ )
 	}
 	ELSE
 	{
-		START_LOG( cwarn, L"이벤트가 끝났는데 완료 요청? 해커! 또는 약간 늦게 요청한 애들" )
+		START_LOG( cwarn, L"Completion requested after the event ended; hacker or late request." )
 			<< END_LOG;
 
 		KEGS_2013_EVENT_MISSION_COMPLETE_ACK kPacket;
@@ -5806,7 +5806,7 @@ IMPL_ON_FUNC( EGS_2013_EVENT_MISSION_COMPLETE_REQ )
 			}
 		}
 
-		START_LOG( cwarn, L"완료 조건에 해당이 안 되는데 완료 요청? 해커!" )
+		START_LOG( cwarn, L"Completion requested before the requirements were met; possible hacker!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( GetLevel() )
 			<< BUILD_LOG( (int)m_ucOldYearMissionRewardedLevel )
@@ -5966,7 +5966,7 @@ IMPL_ON_FUNC_NOPARAM( EGS_2014_EVENT_MISSION_COMPLETE_REQ )
 	}
 	else
 	{
-		START_LOG( cwarn, L"완료 조건에 해당이 안 되는데 완료 요청? 해커!" )
+		START_LOG( cwarn, L"Completion requested before the requirements were met; possible hacker!" )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( (int)GetUnitClass() )
 			<< BUILD_LOG( GetLevel() )
@@ -6060,7 +6060,7 @@ IMPL_ON_FUNC( EGS_UNLIMITED_SECOND_CHANGE_JOB_NOT )
 	}
 	else
 	{
-		START_LOG( cerr, L"2차 무제한 전직이 실패 했다." )
+		START_LOG( cerr, L"Unlimited second class advancement failed." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iUnlimitedSecondChangeJob )
 			<< END_LOG;
@@ -6145,7 +6145,7 @@ IMPL_ON_FUNC_NOPARAM( EGS_EXPAND_SKILL_PAGE_REQ )
 		kPacket.m_iDefaultSkill[2], kPacket.m_iDefaultSkill[3],
 		kPacket.m_iDefaultSkill[4], kPacket.m_iDefaultSkill[5] ) )
 	{
-		START_LOG( cerr, L"유닛타입이 이상함." )
+		START_LOG( cerr, L"Invalid unit type." )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( GetCharUID() )
@@ -6180,7 +6180,7 @@ end_proc:
 		kAck.m_iOK = NetError::GetLastError();
 		SendPacket( EGS_EXPAND_SKILL_PAGE_ACK, kAck );
 
-		START_LOG( cerr, L"스킬 페이지 확장 실패 , User ID :" << GetUserID() )
+		START_LOG( cerr, L"Failed to expand skill page, User ID: " << GetUserID() )
 			// 현재 이용 가능한 스킬 페이지 수
 			// 현재 보유 ED 양
 			<< BUILD_LOG( NetError::GetLastErrMsg() )
@@ -6199,7 +6199,7 @@ IMPL_ON_FUNC( DBE_EXPAND_SKILL_PAGE_ACK )
 
 	 if ( kPacket_.m_iOK != NetError::NET_OK )
 	 {
-		 START_LOG( cerr, L"스킬 페이지 확장 실패(DBE_EXPAND_SKILL_PAGE_ACK) , User ID :" << GetUserID() )
+		 START_LOG( cerr, L"Failed to expand skill page (DBE_EXPAND_SKILL_PAGE_ACK), User ID: " << GetUserID() )
 			 << BUILD_LOG( GetUID() )
 			 << BUILD_LOG( GetCharName() )
 			 << BUILD_LOG( GetCharUID() )
@@ -6212,7 +6212,7 @@ IMPL_ON_FUNC( DBE_EXPAND_SKILL_PAGE_ACK )
 	 if ( m_kSkillTree.GetTheNumberOfSkillPagesAvailable() >= kPacket_.m_iSkillPageNumberToBeAdded )
 	 {
 		 /// kimhc // 김현철 // 이미 DB 처리등은 되어 있을 것이므로 로그만 출력하자.
-		START_LOG( cerr, L"이미 확장이 되어 있다는데?(DBE_EXPAND_SKILL_PAGE_ACK) , User ID :" << GetUserID() )
+		START_LOG( cerr, L"Reported as already expanded (DBE_EXPAND_SKILL_PAGE_ACK), User ID: " << GetUserID() )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetCharName() )
 			<< BUILD_LOG( GetCharUID() )
@@ -6444,13 +6444,13 @@ IMPL_ON_FUNC( EGS_CHARACTER_LIST_ACK )
                 GetPvpRankForClient( vit->m_iOfficialMatchCnt, vit->m_cRank );
             }
 
-            START_LOG( clog, L"EGS_CHARACTER_LIST_ACK 에 담겨지는 p2p data" )
+            START_LOG( clog, L"P2P data included in EGS_CHARACTER_LIST_ACK" )
                 << BUILD_LOG( GetP2PIP() )
                 << BUILD_LOG( GetP2PPort() );
 
             if( ( int )mit->second.size() > kPacket_.m_mapServerGroupUnitSlot[mit->first] )
             {
-                START_LOG( cerr, L"캐릭터 슬롯 개수를 초과하는 수의 캐릭터를 보유하고 있음." )
+                START_LOG( cerr, L"The number of characters exceeds the available character slots." )
                     << BUILD_LOG( ( int )mit->second.size() )
                     << BUILD_LOG( kPacket_.m_mapServerGroupUnitSlot[mit->first] )
                     << BUILD_LOG( GetUID() )
@@ -6462,7 +6462,7 @@ IMPL_ON_FUNC( EGS_CHARACTER_LIST_ACK )
     }
 end_proc:
 
-    START_LOG( clog, L"캐릭터 리스트 결과(슬롯) : " )
+    START_LOG( clog, L"Character list result (slots): " )
         << BUILD_LOG( kPacket_.m_mapServerGroupUnitSlot[0] )
         << BUILD_LOG( kPacket_.m_mapServerGroupUnitSlot[1] )
         << END_LOG;
@@ -6589,7 +6589,7 @@ IMPL_ON_FUNC( EGS_ENTRY_POINT_DELETE_UNIT_REQ )
     {
         if( GetSuccessSecondSecurity() == false )	// 2차 보안을 사용 중인데 인증이 되지 않았다면 실패
         {
-            START_LOG( cerr, L"2차 보안을 사용 중인데 인증도 되기 전에 유닉 삭제를 하려 한다." )
+            START_LOG( cerr, L"Attempted to delete a unit while secondary security is enabled but before authentication." )
                 << BUILD_LOG( GetUID() )
                 << END_LOG;
 
@@ -6610,7 +6610,7 @@ IMPL_ON_FUNC( EGS_ENTRY_POINT_DELETE_UNIT_REQ )
         kPacket.m_iOK = NetError::ERR_DELETE_UNIT_06;
         SendPacket( EGS_DELETE_UNIT_ACK, kPacket );
 
-        START_LOG( cerr, L"진입구조개편 캐릭터 삭제 실패, UID : " << GetUID() )
+        START_LOG( cerr, L"Failed to delete character during entry-structure rework, UID: " << GetUID() )
             << BUILD_LOG( kPacket.m_iOK )
             //<< BUILD_LOG( NetError::GetLastErrMsg() )
             << END_LOG;
@@ -6718,7 +6718,7 @@ IMPL_ON_FUNC( EGS_ENTRY_POINT_CHECK_NICK_NAME_REQ )
     default:
         if( KSimLayer::GetKObj()->GetAuthFlag() == KSimLayer::AF_INTERNAL )
 		{
-			START_LOG( cerr, L"사내서버 서버군 이상" )
+			START_LOG( cerr, L"Invalid internal server group." )
 				<< BUILD_LOG( KBaseServer::GetKObj()->GetServerGroupID() )
 				<< BUILD_LOG( kPacket_.m_iServerGroup)
 				<< END_LOG;

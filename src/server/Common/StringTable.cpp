@@ -66,7 +66,7 @@ bool KStringTable::LoadIni( IN const wchar_t* szFileName_ )
 {
     if(  szFileName_ == NULL )
     {
-        START_LOG( cerr, L"파일명이 NULL입니다." );
+        START_LOG( cerr, L"File name is null." );
         return false;
     }
 
@@ -74,7 +74,7 @@ bool KStringTable::LoadIni( IN const wchar_t* szFileName_ )
     std::wstring strText;
     if( !ReadIniText( strFullFileName, strText ) )
     {
-        START_LOG( cerr, L"파일이 존재하지 않음")
+        START_LOG( cerr, L"File does not exist.")
             << BUILD_LOG( strFullFileName )
             << END_LOG;
         return false;
@@ -114,7 +114,7 @@ std::wstring KStringTable::GetValue( IN const wchar_t* szSectionName_, IN const 
 {
     if( szSectionName_ == NULL || szKey_ == NULL )
     {
-        START_LOG( cerr, L"입력 파라미터중 NULL이 있음" );
+        START_LOG( cerr, L"An input parameter is null." );
         std::wstring strEmpty(L"");
         return strEmpty;
     }
@@ -122,7 +122,7 @@ std::wstring KStringTable::GetValue( IN const wchar_t* szSectionName_, IN const 
     MITSECTION tmpMITSECTIONTABLE;
     if( !FindSection( szSectionName_, tmpMITSECTIONTABLE ) )
     {
-        START_LOG( cerr, L"섹션이 존재하지 않음" )
+        START_LOG( cerr, L"Section does not exist." )
             << BUILD_LOG( szSectionName_ )
             << END_LOG;
         std::wstring strEmpty(L"");
@@ -132,7 +132,7 @@ std::wstring KStringTable::GetValue( IN const wchar_t* szSectionName_, IN const 
     MITKEYVALUE tmpMITSECTION;
     if( !FindKey_value( tmpMITSECTIONTABLE, szKey_, tmpMITSECTION ) )
     {
-        START_LOG( cerr, L"키가 존재하지 않음" )
+        START_LOG( cerr, L"Key does not exist." )
             << BUILD_LOG( szKey_ )
             << END_LOG;
         std::wstring strEmpty(L"");
@@ -146,14 +146,14 @@ bool KStringTable::SetCurrentSection( IN const wchar_t* szSectionName_ )
 {
     if( szSectionName_ == NULL )
     {
-        START_LOG( cerr, L"입력 파라미터가 NULL이다." );
+        START_LOG( cerr, L"Input parameter is null." );
         return false;
     }
 
     MITSECTION tmpMIT;
     if(!FindSection( szSectionName_, tmpMIT ) )
     {
-        START_LOG( cerr, L"섹션이 존재하지 않음" )
+        START_LOG( cerr, L"Section does not exist." )
             << BUILD_LOG( szSectionName_ )
             << END_LOG;
         return false;
@@ -167,14 +167,14 @@ std::wstring KStringTable::GetValue( IN const wchar_t* szKey_ )
 {
     if( szKey_ == NULL )
     {
-        START_LOG( cerr, L"입력 파라미터가 NULL이다." );
+        START_LOG( cerr, L"Input parameter is null." );
         std::wstring strEmpty(L"");
         return strEmpty;
     }
 
     if( m_strCurrentSection.empty() )
     {
-        START_LOG( cerr, L"현재 섹션이 설정되지 않았음" );
+        START_LOG( cerr, L"Current section has not been set." );
         return m_strCurrentSection; // return Empty String
     }
 
@@ -187,7 +187,7 @@ bool KStringTable::AddAndBuildSection( IN const wchar_t* szSectionName_, IN cons
 {
     if( szSectionName_ == NULL )
     {
-        START_LOG( cerr, L"입력 파라미터중 NULL이 있음" );
+        START_LOG( cerr, L"An input parameter is null." );
         return false;
     }
 
@@ -208,7 +208,7 @@ bool KStringTable::AddAndBuildKeyvalue( IN const wchar_t* szKey_value_, Section&
 {
     if( szKey_value_ == NULL )
     {
-        START_LOG( cerr, L"입력 파라미터가 NULL이다." );
+        START_LOG( cerr, L"Input parameter is null." );
         return false;
     }
 
@@ -243,7 +243,7 @@ bool KStringTable::AddAndBuildKeyvalue( IN const wchar_t* szKey_value_, Section&
     return true;
 
 _fail_:
-    START_LOG( cerr, L"토큰을 얻을수 없음." );
+    START_LOG( cerr, L"Failed to get the token." );
     return false;
 
 }
@@ -252,14 +252,14 @@ bool KStringTable::FindSection( IN const wchar_t* szSectionName_, OUT MITSECTION
 {
     if( szSectionName_ == NULL )
     {
-        START_LOG( cerr, L"입력 파라미터가 NULL이다." );
+        START_LOG( cerr, L"Input parameter is null." );
         return false;
     }
 
     itsection_ = m_mapSectionTable.find( szSectionName_ );
     if( itsection_ == m_mapSectionTable.end() )
     {
-        START_LOG( cerr, L"섹션이 존재하지 않음" )
+        START_LOG( cerr, L"Section does not exist." )
             << BUILD_LOG( szSectionName_ )
             << END_LOG;
         return false;
@@ -273,7 +273,7 @@ bool KStringTable::FindKey_value( IN MITSECTION& itSection_, IN const wchar_t* s
 {
     if( szKeyName_ == NULL )
     {
-        START_LOG( cerr, L"입력 파라미터가 NULL이다." );
+        START_LOG( cerr, L"Input parameter is null." );
         return false;
     }
 
@@ -282,7 +282,7 @@ bool KStringTable::FindKey_value( IN MITSECTION& itSection_, IN const wchar_t* s
     itKeyValue_ = itSection_->second.m_mapKeyValue.find( szKeyName_ );
     if( itKeyValue_ == itSection_->second.m_mapKeyValue.end() )
     {
-        START_LOG( cerr, L"키가 존재하지 않음" )
+        START_LOG( cerr, L"Key does not exist." )
             << BUILD_LOG( szKeyName_ )
             << END_LOG;
         return false;

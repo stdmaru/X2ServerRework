@@ -137,7 +137,7 @@ void KActorProxy::SetLoad_NEW( int iType, bool bIsOpen )
 		}
 		else
 		{
-			START_LOG( cerr, L"방이 생성된적이 없는데 방이 닫혔다고 오네?" )
+			START_LOG( cerr, L"Received a room-closed notification for a room that was never created." )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( iType )
 				<< END_LOG;

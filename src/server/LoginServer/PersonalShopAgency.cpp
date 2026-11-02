@@ -171,7 +171,7 @@ bool KPersonalShopAgency::IsEmpty()
 {
 	if( m_kPersonalShopUserManager.GetNumMember() < 0 )
 	{
-		START_LOG( cerr, L"개인 상점 인원 수가 이상함." )
+		START_LOG( cerr, L"Invalid personal shop user count." )
 			<< BUILD_LOG( m_kPersonalShopUserManager.GetNumMember() )
 			<< END_LOG;
 	}
@@ -183,7 +183,7 @@ bool KPersonalShopAgency::IsFull()
 {
 	if( m_kPersonalShopUserManager.GetNumMember() > m_kPersonalShopUserManager.GetMaxMember() )
 	{
-		START_LOG( cerr, L"개인상점 인원 수가 이상함." )
+		START_LOG( cerr, L"Invalid personal shop user count." )
 			<< BUILD_LOG( m_kPersonalShopUserManager.GetNumMember() )
 			<< BUILD_LOG( m_kPersonalShopUserManager.GetMaxMember() )
 			<< END_LOG;
@@ -217,7 +217,7 @@ bool KPersonalShopAgency::BreakPersonalShop( IN const int iReason, IN const UidT
 	// 1. 판매중인 아이템이 있는지 확인
 	if( m_kPersonalShopItemManager.IsEmptySellItemList() == false )
 	{
-		START_LOG( cerr, L"판매중인 아이템이 있는데 왜 닫으려고 하지? 버그다!!" )
+		START_LOG( cerr, L"Why close the shop while items are still for sale? Bug!!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( m_kPersonalShopItemManager.GetSellItemCount() )
 			<< END_LOG;
@@ -228,7 +228,7 @@ bool KPersonalShopAgency::BreakPersonalShop( IN const int iReason, IN const UidT
 	const UidType iCheckHostUID = m_kPersonalShopUserManager.GetPShopAgencyHostUnitUID();
 	if( iCheckHostUID != iHostUID )
 	{
-		START_LOG( cerr, L"개설자 UnitUID가 다른데 요청이 들어왔다! 절대 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"A request arrived for a different owner's UnitUID! This should never happen!" )
 			<< BUILD_LOG( iCheckHostUID )
 			<< BUILD_LOG( iHostUID )
 			<< END_LOG;
@@ -335,7 +335,7 @@ void KPersonalShopAgency::SendPShopListInfo( IN const int _iCode, IN const std::
 		SendToGSServer( iGSUID, ERM_PERSONAL_SHOP_INFO_NOT, kNot );
 	}
 
-	START_LOG( clog, L"상점개설 아이템 전송.!" )
+	START_LOG( clog, L"Sending shop-opening item data!" )
 		<< BUILD_LOG( kNot.m_vecItemInfo.size() )
 		<< BUILD_LOG( NetError::GetErrStr(_iCode) )
 		;
@@ -396,7 +396,7 @@ void KPersonalShopAgency::ProcessEvent( const KEventPtr& spEvent_ )
     CASE( ERM_CHECK_MY_PSHOP_AGENCY_INFO_REQ );
 
 	default:
-		START_LOG( cerr, L"핸들러가 정의되지 않았음." )
+		START_LOG( cerr, L"Handler is not defined." )
 			<< BUILD_LOG( KEvent::GetIDStr( spEvent_->m_usEventID ) )
 			<< END_LOG;
 	}
@@ -445,7 +445,7 @@ IMPL_ON_FUNC( ERM_LOAD_PSHOP_BOARD_INFO_NOT )
 	// 판매중인 아이템이 있는지 확인!
 	if( m_kPersonalShopItemManager.IsEmptySellItemList() == true )
 	{
-		START_LOG( cerr, L"판매중인 아이템이 없는데 방 상태가 이상하군?" )
+		START_LOG( cerr, L"Room state is invalid even though no items are for sale." )
 			<< BUILD_LOG( GetStateIDString() )
 			<< END_LOG;
 		return;
@@ -488,7 +488,7 @@ IMPL_ON_FUNC( ERM_OPEN_PSHOP_AGENCY_REQ )
 	// 대리상인 생성!
 	if( m_kPersonalShopUserManager.CreatePersonalShopAgency( kInfo ) == false )
 	{
-		START_LOG( cerr, L"대리 상인 고용 실패." )
+		START_LOG( cerr, L"Failed to hire merchant." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( LAST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_iUserUID )
@@ -504,7 +504,7 @@ IMPL_ON_FUNC( ERM_OPEN_PSHOP_AGENCY_REQ )
 	if( m_kPersonalShopUserManager.EnterPShopAgencyOwner( kInfo ) == false )
 //}}
 	{
-		START_LOG( cerr, L"대리상인 개설자 유저 추가 실패." )
+		START_LOG( cerr, L"Failed to add hired-shop owner user." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( LAST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_iUserUID )
@@ -535,7 +535,7 @@ IMPL_ON_FUNC( ERM_OPEN_PSHOP_AGENCY_REQ )
 	m_wstrAgencyExpirationDate = kPacket_.m_wstrAgencyExpirationDate;
 	if( KncUtil::ConvertStringToCTime( m_wstrAgencyExpirationDate, m_tAgencyExpirationDate ) == false )
 	{
-		START_LOG( cerr, L"대리 상점 만료일 저장 실패." )
+		START_LOG( cerr, L"Failed to save hired shop expiration date." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( LAST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_iUserUID )
@@ -572,7 +572,7 @@ _IMPL_ON_FUNC( DBE_OPEN_PSHOP_AGENCY_ACK, KERM_OPEN_PERSONAL_SHOP_ACK )
 	// 다시 이탈!
 	if( m_kPersonalShopUserManager.LeavePersonalShop( kPacket_.m_iUnitUID ) == false )
 	{
-		START_LOG( cerr, L"대리상인 나가기 실패." )
+		START_LOG( cerr, L"Failed to leave hired shop." )
 			<< END_LOG;
 	}
 
@@ -588,7 +588,7 @@ IMPL_ON_FUNC( ERM_OPEN_PSHOP_AGENCY_BY_SERVER_NOT )
 {
 	if( GetStateID() != KPersonalShopFSM::S_INIT )
 	{
-		START_LOG( cerr, L"방 상태가 이상합니다! 대리상인을 개설할 수 없습니다!" )
+		START_LOG( cerr, L"Invalid room state; cannot open hired shop!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( GetStateID() )
 			<< BUILD_LOG( GetStateIDString() )
@@ -599,7 +599,7 @@ IMPL_ON_FUNC( ERM_OPEN_PSHOP_AGENCY_BY_SERVER_NOT )
 	// 등록하려는 상품이 있는지 체크한다!
 	if( kPacket_.m_vecSellItemInfo.empty() == true )
 	{
-		START_LOG( cerr, L"서버가 직접 상점을 개설하려는데 등록된 상품이 없다! 절대 일어나서는 안되는에러!" )
+		START_LOG( cerr, L"The server is opening the shop directly, but no products are registered. This should never happen!" )
 			<< BUILD_LOG( kPacket_.m_iUserUID )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( kPacket_.m_wstrNickName )
@@ -645,7 +645,7 @@ IMPL_ON_FUNC( ERM_OPEN_PSHOP_AGENCY_BY_SERVER_NOT )
 	// 대리상인 유저 추가!
 	if( m_kPersonalShopUserManager.CreatePersonalShopAgency( kInfo ) == false )
 	{
-		START_LOG( cerr, L"대리 상인 유저 추가 실패." )
+		START_LOG( cerr, L"Failed to add hired merchant user." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( LAST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_iUserUID )
@@ -661,7 +661,7 @@ IMPL_ON_FUNC( ERM_OPEN_PSHOP_AGENCY_BY_SERVER_NOT )
 	// 상점 개설 시각 저장
 	if( KncUtil::ConvertStringToCTime( kPacket_.m_wstrAgencyOpenDate, m_tAgencyOpenDate ) == false )
 	{
-		START_LOG( cerr, L"대리 상점 개설시각 저장 실패." )
+		START_LOG( cerr, L"Failed to save hired shop opening time." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( LAST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_iUserUID )
@@ -679,7 +679,7 @@ IMPL_ON_FUNC( ERM_OPEN_PSHOP_AGENCY_BY_SERVER_NOT )
 	m_wstrAgencyExpirationDate = kPacket_.m_wstrAgencyExpirationDate;
 	if( KncUtil::ConvertStringToCTime( m_wstrAgencyExpirationDate, m_tAgencyExpirationDate ) == false )
 	{
-		START_LOG( cerr, L"대리 상점 만료일 저장 실패." )
+		START_LOG( cerr, L"Failed to save hired shop expiration date." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( LAST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_iUserUID )
@@ -718,7 +718,7 @@ IMPL_ON_FUNC( ERM_OPEN_PSHOP_AGENCY_BY_SERVER_NOT )
 	return;
 
 end_proc:
-	START_LOG( cerr, L"서버에서 자동으로 대리 상인 개설 실패!" )
+	START_LOG( cerr, L"The server failed to open hired shop automatically!" )
 		<< BUILD_LOG( GetUID() )
 		<< BUILD_LOG( kPacket_.m_iUserUID )
 		<< BUILD_LOG( kPacket_.m_iUnitUID )
@@ -751,7 +751,7 @@ _IMPL_ON_FUNC( ERM_CHECK_FOR_REG_PSHOP_AGENCY_ITEM_REQ, KDBE_PREPARE_REG_PSHOP_A
 	//개설자가 아닐경우..
 	if( m_kPersonalShopUserManager.IsPShopAgencyHost( FIRST_SENDER_UID ) == false )
 	{
-		START_LOG( cerr, L"개인상점 개설자가 아닌데 판매물품을 등록 하려고함.!" )
+		START_LOG( cerr, L"An attempt was made to register an item by someone who does not own the personal shop!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( m_kPersonalShopUserManager.GetPShopAgencyHostUnitUID() )
 			<< END_LOG;
@@ -769,7 +769,7 @@ _IMPL_ON_FUNC( ERM_CHECK_FOR_REG_PSHOP_AGENCY_ITEM_REQ, KDBE_PREPARE_REG_PSHOP_A
 
 		if( iCheckTotalPrice < 0  ||  iCheckTotalPrice > SEnum::UI_MAX_ED_CHAR_HAVE )
 		{
-			START_LOG( cout, L"판매 액수 총 합이 캐릭터가 보유 가능한 ED한계치를 넘어섰다. 버그유저로 의심됨.." )
+			START_LOG( cout, L"Total sale amount exceeds the maximum ED the character can hold. User may be exploiting a bug..." )
 				<< BUILD_LOG( FIRST_SENDER_UID )
 				<< BUILD_LOG( iPricePerOne )
 				<< BUILD_LOG( iItemQuantity )
@@ -784,7 +784,7 @@ _IMPL_ON_FUNC( ERM_CHECK_FOR_REG_PSHOP_AGENCY_ITEM_REQ, KDBE_PREPARE_REG_PSHOP_A
 	//물품이 등록되어 있는데 아직 wait이고 등록패킷이 다시오면 오류메세지를 보내고 shop 상태로 바꾸어준다.
 	if( m_kPersonalShopItemManager.IsEmptySellItemList() == false )
 	{
-		START_LOG( cerr, L"개인상점 물품이 등록되어있는데 다시 등록패킷이 날아옴.!" )
+		START_LOG( cerr, L"Personal shop item is already registered; received another registration packet!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( m_kPersonalShopItemManager.GetSellItemCount() )
 			<< BUILD_LOG( kPacket_.m_vecSellItemInfo.size() )
@@ -820,7 +820,7 @@ _IMPL_ON_FUNC( ERM_REG_PSHOP_AGENCY_ITEM_REQ, KERM_REG_PERSONAL_SHOP_ITEM_REQ )
 	//개설자가 아닐경우..
 	if( m_kPersonalShopUserManager.IsPShopAgencyHost( FIRST_SENDER_UID ) == false )
 	{
-		START_LOG( cerr, L"개인상점 개설자가 아닌데 판매물품을 등록 하려고함.!" )
+		START_LOG( cerr, L"An attempt was made to register an item by someone who does not own the personal shop!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( m_kPersonalShopUserManager.GetPShopAgencyHostUnitUID() )
 			<< END_LOG;
@@ -843,7 +843,7 @@ _IMPL_ON_FUNC( ERM_REG_PSHOP_AGENCY_ITEM_REQ, KERM_REG_PERSONAL_SHOP_ITEM_REQ )
 
 		if( iCheckTotalPrice < 0  ||  iCheckTotalPrice > SEnum::UI_MAX_ED_CHAR_HAVE )
 		{
-			START_LOG( cout, L"판매 액수 총 합이 캐릭터가 보유 가능한 ED한계치를 넘어섰다. 버그유저로 의심됨.." )
+			START_LOG( cout, L"Total sale amount exceeds the maximum ED the character can hold. User may be exploiting a bug..." )
 				<< BUILD_LOG( FIRST_SENDER_UID )
 				<< BUILD_LOG( iPricePerOne )
 				<< BUILD_LOG( iItemQuantity )
@@ -858,7 +858,7 @@ _IMPL_ON_FUNC( ERM_REG_PSHOP_AGENCY_ITEM_REQ, KERM_REG_PERSONAL_SHOP_ITEM_REQ )
 	//물품이 등록되어 있는데 아직 wait이고 등록패킷이 다시오면 오류메세지를 보내고 shop 상태로 바꾸어준다.
 	if( m_kPersonalShopItemManager.IsEmptySellItemList() == false )
 	{
-		START_LOG( cerr, L"개인상점 물품이 등록되어있는데 다시 등록패킷이 날아옴! 이미 첫번째에 검사를 마쳤다! 절대 호출되어선 안되는 오류!" )
+		START_LOG( cerr, L"Personal shop item is already registered; received another registration packet! It was checked the first time, so this must never be called!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( m_kPersonalShopItemManager.GetSellItemCount() )
 			<< BUILD_LOG( kPacket_.m_vecSellItemInfo.size() )
@@ -874,7 +874,7 @@ _IMPL_ON_FUNC( ERM_REG_PSHOP_AGENCY_ITEM_REQ, KERM_REG_PERSONAL_SHOP_ITEM_REQ )
 	if( static_cast<int>(kPacket_.m_vecSellItemInfo.size()) > SEnum::PAE_SELL_ITEM_LIMIT_NUM )
 	//}}
 	{
-		START_LOG( cerr, L"대리상점 물품 등록 가능 갯수를 초과했다! 먼저번에 검사를 했으므로 절대 호출되어선 안되는 오류!" )
+		START_LOG( cerr, L"Exceeded the number of items allowed in the hired shop. This was already checked, so this must never be called!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( m_kPersonalShopItemManager.GetSellItemCount() )
 			<< BUILD_LOG( kPacket_.m_vecSellItemInfo.size() )
@@ -910,7 +910,7 @@ _IMPL_ON_FUNC( DBE_REG_PSHOP_AGENCY_ITEM_ACK, KERM_REG_PERSONAL_SHOP_ITEM_ACK )
 	{
         kPacket_.m_iOK = NetError::ERR_PERSONAL_SHOP_45;
 
-		START_LOG( cerr, L"대리 상인 물품 DB등록이 실패하였습니다!" )
+		START_LOG( cerr, L"Failed to register hired merchant item in the database!" )
 			<< BUILD_LOG( kPacket_.m_iOK )
 			<< BUILD_LOG( NetError::GetErrStr( kPacket_.m_iOK ) )
 			<< END_LOG;
@@ -924,7 +924,7 @@ _IMPL_ON_FUNC( DBE_REG_PSHOP_AGENCY_ITEM_ACK, KERM_REG_PERSONAL_SHOP_ITEM_ACK )
 	// 아이템 등록에 성공했다면 대리 상점을 나가자!
 	if( m_kPersonalShopUserManager.LeavePersonalShop( kPacket_.m_iUnitUID ) == false )
 	{
-		START_LOG( cerr, L"유저가 없는데 개인상점 나가기 요청이 들어왔다!" )
+		START_LOG( cerr, L"Received a personal shop leave request for a nonexistent user!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
@@ -961,7 +961,7 @@ IMPL_ON_FUNC( ERM_UPDATE_PERIOD_PSHOP_AGENCY_NOT )
 	case KPersonalShopFSM::S_CLOSE:
 	case KPersonalShopFSM::S_STOP_SALE:
 		{
-			START_LOG( cerr, L"이미 방이 닫혀있는데 대리상점 기간을 연장하려고 하네?" )
+			START_LOG( cerr, L"Attempted to extend a hired shop after it was already closed." )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( FIRST_SENDER_UID )
 				<< BUILD_LOG( GetStateIDString() )
@@ -973,7 +973,7 @@ IMPL_ON_FUNC( ERM_UPDATE_PERIOD_PSHOP_AGENCY_NOT )
     // 기간 정보 업데이트!
 	if( KncUtil::ConvertStringToCTime( kPacket_.m_wstrAgencyExpirationDate, m_tAgencyExpirationDate ) == false )
 	{
-		START_LOG( cerr, L"대리 상점 만료일 저장 실패." )
+		START_LOG( cerr, L"Failed to save hired shop expiration date." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( LAST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_wstrAgencyExpirationDate )
@@ -1011,7 +1011,7 @@ _IMPL_ON_FUNC( ERM_JOIN_MY_PSHOP_AGENCY_REQ, KERM_JOIN_PERSONAL_SHOP_REQ )
 
 	default:
 		{
-			START_LOG( cerr, L"이상한 타입으로 입장요청이 들어왔습니다!" )
+			START_LOG( cerr, L"Received an entry request with an invalid type!" )
 				<< BUILD_LOG( GetUID() )
 				<< BUILD_LOG( kPacket_.m_wstrNickName )
 				<< END_LOG;
@@ -1022,7 +1022,7 @@ _IMPL_ON_FUNC( ERM_JOIN_MY_PSHOP_AGENCY_REQ, KERM_JOIN_PERSONAL_SHOP_REQ )
 	//{{ 2010. 05. 18  최육사	대전 던전 서버군 통합
 	if( m_kPersonalShopUserManager.IsPShopAgencyHostUserSameServerGroup( FIRST_SENDER_UID ) == false )
 	{
-		START_LOG( cerr, L"개인상점방은 해당 서버군의 유저만 들어올 수 있습니다." )
+		START_LOG( cerr, L"Only users in this server group may enter a personal shop room." )
 			<< BUILD_LOG( GetKLoginServer()->GetServerGroupID() )
 			<< BUILD_LOG( KncUid::ExtractServerGroupID( FIRST_SENDER_UID ) )
 			<< BUILD_LOG( FIRST_SENDER_UID )
@@ -1037,7 +1037,7 @@ _IMPL_ON_FUNC( ERM_JOIN_MY_PSHOP_AGENCY_REQ, KERM_JOIN_PERSONAL_SHOP_REQ )
 	// 만약 아이템 리스트 요청을 유저가 개설자가 아니라면 실패 시킨다!
 	if( m_kPersonalShopUserManager.IsPShopAgencyHost( FIRST_SENDER_UID ) == false )
 	{
-		START_LOG( cerr, L"대리 상점 개설자만 이용 가능 합니다!" )
+		START_LOG( cerr, L"Only the hired shop owner may use this feature!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( m_kPersonalShopUserManager.GetPShopAgencyHostGSUID() )
 			<< BUILD_LOG( FIRST_SENDER_UID )
@@ -1061,7 +1061,7 @@ _IMPL_ON_FUNC( ERM_JOIN_MY_PSHOP_AGENCY_REQ, KERM_JOIN_PERSONAL_SHOP_REQ )
 	if( m_kPersonalShopUserManager.EnterPShopAgencyOwner( kInfo ) == false )
 	//}}
 	{
-		START_LOG( cerr, L"대리상점 개설자 입장 실패." )
+		START_LOG( cerr, L"Failed to enter hired shop as its owner." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( LAST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_iUserUID )
@@ -1079,7 +1079,7 @@ _IMPL_ON_FUNC( ERM_JOIN_MY_PSHOP_AGENCY_REQ, KERM_JOIN_PERSONAL_SHOP_REQ )
 	// 개설자 닉네임 얻기
 	if( m_kPersonalShopUserManager.GetPShopAgencyHostNickName( kPacket.m_wstrNickName ) == false )
 	{
-		START_LOG( cerr, L"호스트 닉네임 얻기 실패.!" )
+		START_LOG( cerr, L"Failed to get host nickname!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
 	}
@@ -1110,7 +1110,7 @@ _IMPL_ON_FUNC( ERM_JOIN_MY_PSHOP_AGENCY_REQ, KERM_JOIN_PERSONAL_SHOP_REQ )
 	{
 		if( m_kPersonalShopUserManager.LeavePersonalShop( FIRST_SENDER_UID ) == false )
 		{
-			START_LOG( cerr, L"대리상인 나가기 실패." )
+			START_LOG( cerr, L"Failed to leave hired shop." )
 				<< BUILD_LOG( FIRST_SENDER_UID )
 				<< END_LOG;
 		}
@@ -1142,7 +1142,7 @@ IMPL_ON_FUNC( ERM_JOIN_PERSONAL_SHOP_REQ )
 	//{{ 2010. 05. 18  최육사	대전 던전 서버군 통합
 	if( m_kPersonalShopUserManager.IsPShopAgencyHostUserSameServerGroup( kPacket_.m_iUnitUID ) == false )
 	{
-		START_LOG( cerr, L"개인상점방은 해당 서버군의 유저만 들어올 수 있습니다." )
+		START_LOG( cerr, L"Only users in this server group may enter a personal shop room." )
 			<< BUILD_LOG( GetKLoginServer()->GetServerGroupID() )
 			<< BUILD_LOG( KncUid::ExtractServerGroupID( kPacket_.m_iUnitUID ) )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
@@ -1169,7 +1169,7 @@ IMPL_ON_FUNC( ERM_JOIN_PERSONAL_SHOP_REQ )
 	if( m_kPersonalShopUserManager.EnterPShopAgencyCustomer( kInfo ) == false )
 	//}}
 	{
-		START_LOG( cwarn, L"개인상점 유저 추가 실패." )
+		START_LOG( cwarn, L"Failed to add personal shop user." )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( LAST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_iUserUID )
@@ -1190,7 +1190,7 @@ IMPL_ON_FUNC( ERM_JOIN_PERSONAL_SHOP_REQ )
 
 	if( m_kPersonalShopUserManager.GetPShopAgencyHostNickName( kPacket.m_wstrNickName ) == false )
 	{
-		START_LOG( cerr, L"호스트 닉네임 얻기 실패.!" )
+		START_LOG( cerr, L"Failed to get host nickname!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
 	}
@@ -1208,7 +1208,7 @@ _IMPL_ON_FUNC( ERM_LEAVE_PSHOP_AGENCY_REQ, KERM_LEAVE_PERSONAL_SHOP_REQ )
 	// 입장한 유저 이탈 처리
 	if( m_kPersonalShopUserManager.LeavePersonalShop( FIRST_SENDER_UID ) == false )
 	{
-		START_LOG( cerr, L"유저가 없는데 개인상점 나가기 요청이 들어왔다!" )
+		START_LOG( cerr, L"Received a personal shop leave request for a nonexistent user!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
@@ -1247,7 +1247,7 @@ IMPL_ON_FUNC( ERM_LEAVE_PERSONAL_SHOP_REQ )
 	// 입장한 유저 이탈 처리
 	if( m_kPersonalShopUserManager.LeavePersonalShop( FIRST_SENDER_UID ) == false )
 	{
-		START_LOG( cerr, L"유저가 없는데 개인상점 나가기 요청이 들어왔다!" )
+		START_LOG( cerr, L"Received a personal shop leave request for a nonexistent user!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
@@ -1270,7 +1270,7 @@ IMPL_ON_FUNC( ERM_LEAVE_PERSONAL_SHOP_REQ )
 	if( m_kPersonalShopUserManager.IsPShopAgencyHost( FIRST_SENDER_UID ) == true )
 	{
 		// 호스트가 나갈려고 하는 경우
-		START_LOG( cerr, L"개설자가 이 패킷을 왜 쏘나! 버그다! 어쨌든 체크는 하자!" )
+		START_LOG( cerr, L"Why is the owner sending this packet? Possible bug; validate it anyway!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
@@ -1294,7 +1294,7 @@ IMPL_ON_FUNC( ERM_BUY_PERSONAL_SHOP_ITEM_REQ )
 	const UidType iHostUnitUID = m_kPersonalShopUserManager.GetPShopAgencyHostUnitUID();
 	if( iHostUnitUID == 0 )
 	{
-		START_LOG( cerr, L"호스트 정보가 없습니다. 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"Host information is missing. This should never happen!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_iBuyQuantity )
 			<< BUILD_LOG( kPacket_.m_iBuyItemUID )
@@ -1308,7 +1308,7 @@ IMPL_ON_FUNC( ERM_BUY_PERSONAL_SHOP_ITEM_REQ )
 
 	if( iHostUnitUID == 0 )
 	{
-		START_LOG( cerr, L"호스트 정보가 없습니다. 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"Host information is missing. This should never happen!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_iBuyQuantity )
 			<< BUILD_LOG( kPacket_.m_iBuyItemUID )
@@ -1325,7 +1325,7 @@ IMPL_ON_FUNC( ERM_BUY_PERSONAL_SHOP_ITEM_REQ )
 
 	if( m_kPersonalShopItemManager.PrepareForBuyItem( iHostUnitUID, m_PersonalShopType, kPacket_, kPacketToDB ) == false )
 	{
-		START_LOG( cwarn, L"구매 실패!" )
+		START_LOG( cwarn, L"Purchase failed!" )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_iBuyQuantity )
 			<< BUILD_LOG( kPacket_.m_iBuyItemUID )
@@ -1362,7 +1362,7 @@ _IMPL_ON_FUNC( DBE_BUY_PSHOP_AGENCY_ITEM_ACK, KDBE_BUY_PSHOP_AGENCY_ITEM_REQ )
 	// 실패한 경우에 대한 예외처리
 	if( kPacket_.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"DB로의 구매 요청 처리가 실패하였습니다!" )
+		START_LOG( cerr, L"Failed to process purchase request in the database!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kPacket_.m_iOK )
 			<< BUILD_LOG( NetError::GetErrStr( kPacket_.m_iOK ) )
@@ -1383,7 +1383,7 @@ _IMPL_ON_FUNC( DBE_BUY_PSHOP_AGENCY_ITEM_ACK, KDBE_BUY_PSHOP_AGENCY_ITEM_REQ )
 	//{{ 2012. 05. 31	김민성       대리 상점 거래 로직 변경
 	if( m_kPersonalShopItemManager.Confirm( kPacket_.m_kSellItemDBUpdate.m_iItemUID, true ) == false )
 	{
-		START_LOG( cerr, L"컨펌이 실패했다! 절대 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"Confirmation failed! This should never happen!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kPacket_.m_kSellItemDBUpdate.m_iItemUID )
 			<< END_LOG;
@@ -1435,7 +1435,7 @@ _IMPL_ON_FUNC( DBE_BUY_PSHOP_AGENCY_ITEM_ACK, KDBE_BUY_PSHOP_AGENCY_ITEM_REQ )
 		if( m_kPersonalShopItemManager.GetSellPersonalShopItemInfo( kPacket_.m_kSellItemDBUpdate.m_iItemUID, kSellItemInfo ) == false )
 		//}}
 		{
-			START_LOG( cerr, L"아이템 정보가 존재하지 않습니다! 일어나서는 안되는 에러!" )
+			START_LOG( cerr, L"Item information does not exist! This should never happen!" )
 				<< BUILD_LOG( kPacket_.m_kPriceIntemInfoIN.m_iItemUID )
 				<< END_LOG;
 		}
@@ -1519,7 +1519,7 @@ IMPL_ON_FUNC_NOPARAM( ERM_STOP_SALE_PSHOP_AGENCY_REQ )
 	const bool bIsHost = m_kPersonalShopUserManager.IsPShopAgencyHost( FIRST_SENDER_UID );
 	if( bIsHost == false )
 	{
-		START_LOG( cerr, L"개설자도 아니면서 판매 중지를 하네?" )
+		START_LOG( cerr, L"Why is someone other than the owner stopping sales?" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
@@ -1546,7 +1546,7 @@ IMPL_ON_FUNC( DBE_STOP_SALE_PSHOP_AGENCY_ACK )
 
 	if( kPacket_.m_iOK != NetError::NET_OK )
 	{
-		START_LOG( cerr, L"대리상점 판매 중지 쿼리 호출 실패! 절대 일어나서는 안되는 에러!" )
+		START_LOG( cerr, L"Failed to call the hired-shop sales-stop query! This should never happen!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOG( NetError::GetErrStr( kPacket_.m_iOK ) )
@@ -1600,7 +1600,7 @@ _IMPL_ON_FUNC( ERM_PICK_UP_FROM_PSHOP_AGENCY_REQ, KEGS_PICK_UP_FROM_PSHOP_AGENCY
 	const bool bIsHost = m_kPersonalShopUserManager.IsPShopAgencyHost( FIRST_SENDER_UID );
 	if( bIsHost == false )
 	{
-		START_LOG( cerr, L"개설자도 아니면서 물품 가져오기를 하네?" )
+		START_LOG( cerr, L"Why is someone other than the owner retrieving items?" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< END_LOG;
@@ -1615,7 +1615,7 @@ _IMPL_ON_FUNC( ERM_PICK_UP_FROM_PSHOP_AGENCY_REQ, KEGS_PICK_UP_FROM_PSHOP_AGENCY
 
 	if( m_kPersonalShopItemManager.PrepareForPickUp( kPacket_.m_vecPickUpItemList, kPacketToGS ) == false )
 	{
-		START_LOG( cerr, L"대리상인 물품 가져오기 준비 실패!" )
+		START_LOG( cerr, L"Failed to prepare hired merchant item retrieval!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_vecPickUpItemList.size() )
@@ -1643,7 +1643,7 @@ IMPL_ON_FUNC( ERM_PREPARE_PICK_UP_FROM_PSHOP_AGENCY_ACK )
 	// pick up
 	if( m_kPersonalShopItemManager.PickUp( kPacket_.m_vecPickUpItemList, kPacketToDB ) == false )
 	{
-		START_LOG( cerr, L"대리상인 물품 가져오기 실패!" )
+		START_LOG( cerr, L"Failed to retrieve hired merchant items!" )
 			<< BUILD_LOG( GetUID() )
 			<< BUILD_LOG( FIRST_SENDER_UID )
 			<< BUILD_LOG( kPacket_.m_vecPickUpItemList.size() )
@@ -1751,7 +1751,7 @@ IMPL_ON_FUNC( DBE_PICK_UP_FROM_PSHOP_AGENCY_ACK )
 			// 더 안남았으면 UI가 자동으로 닫히므로 방에서도 이탈처리 하자!
 			if( m_kPersonalShopUserManager.LeavePersonalShop( kPacket_.m_iUnitUID ) == false )
 			{
-				START_LOG( cerr, L"대리상인 나가기 실패." )
+				START_LOG( cerr, L"Failed to leave hired shop." )
 					<< BUILD_LOG( FIRST_SENDER_UID )
 					<< END_LOG;
 			}
@@ -1778,7 +1778,7 @@ IMPL_ON_FUNC( ERM_CHECK_ZOMBIE_USER_ACK )
 			{
 				m_kPersonalShopUserManager.LeavePersonalShop( FIRST_SENDER_UID );
 
-				START_LOG( cout2, L"유령 유저를 삭제 합니다!" )
+				START_LOG( cout2, L"Removing ghost user!" )
 					<< BUILD_LOGc( kPacket_.m_cZombieCheckType )
 					<< BUILD_LOG( GetUID() )
 					<< BUILD_LOG( GetStateIDString() )
@@ -1809,7 +1809,7 @@ IMPL_ON_FUNC( ERM_CHECK_MY_PSHOP_AGENCY_INFO_REQ )
     }
     if ( !vecMissingSellItemInfo.empty() )
     {
-        START_LOG( cout, L"대리상점에 등록된 아이템이 DB 아이템과 다른 경우 발생하여 추가" )
+        START_LOG( cout, L"Adding item because the item registered in the hired shop differs from the database item." )
             << BUILD_LOG( FIRST_SENDER_UID )
             << BUILD_LOG( LAST_SENDER_UID )
             << BUILD_LOG( vecMissingSellItemInfo.size() )

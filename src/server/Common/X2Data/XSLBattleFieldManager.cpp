@@ -71,7 +71,7 @@ bool CXSLBattleFieldManager::OpenScriptFile_AllBattleFieldScriptLoad( IN lua_Sta
 	{
 		std::wstring wstrErr = KncUtil::toWideString( lua_tostring( pLuaState, -1 ) );
 
-		START_LOG( cerr, L"배틀필드 스크립트 파싱 실패!" )
+		START_LOG( cerr, L"Failed to parse the battlefield script." )
 			<< BUILD_LOG( wstrErr )
 			<< END_LOG;
 		return false;
@@ -79,7 +79,7 @@ bool CXSLBattleFieldManager::OpenScriptFile_AllBattleFieldScriptLoad( IN lua_Sta
 
 	if( m_mapBattleField.empty() )
 	{
-		START_LOG( cerr, L"배틀필드 스크립트 파싱 실패!" )
+		START_LOG( cerr, L"Failed to parse the battlefield script." )
 			<< BUILD_LOG( m_mapBattleField.size() )
 			<< END_LOG;
 		return false;
@@ -92,7 +92,7 @@ bool CXSLBattleFieldManager::OpenScriptFile_AllBattleFieldScriptLoad( IN lua_Sta
 	{
 		if( mit->second.OpenScriptFile() == false )
 		{
-			START_LOG( cerr, L"배틀필드 스크립트 파싱 실패!" )
+			START_LOG( cerr, L"Failed to parse the battlefield script." )
 				<< BUILD_LOG( mit->first )
 				<< END_LOG;
 			continue;
@@ -102,7 +102,7 @@ bool CXSLBattleFieldManager::OpenScriptFile_AllBattleFieldScriptLoad( IN lua_Sta
 		mit->second.SetMonsterRespawnFactorByUserCount( GetMonsterRespawnFactorByUserCount() );
 	}
 
-	START_LOG( cout2, L"배틀필드 스크립트 로딩 시간 : " )
+	START_LOG( cout2, L"Battlefield script load time: " )
 		<< BUILD_LOG( GetTickCount() - dwTime );
 	return true;
 }
@@ -111,7 +111,7 @@ void CXSLBattleFieldManager::SetMonsterRespawnFactorByUserCount_LUA( int iFactor
 {
 	m_iMonsterRespawnFactorByUserCount = iFactor;
 
-	START_LOG( cout, L"몬스터 리스폰시 유저 카운트에 곱해지는 상수값 : " << m_iMonsterRespawnFactorByUserCount );
+	START_LOG( cout, L"Monster respawn multiplier per player: " << m_iMonsterRespawnFactorByUserCount );
 }
 
 void CXSLBattleFieldManager::SetMonsterRespawnTimeMinMax_LUA( int iMin, int iMax )
@@ -119,7 +119,7 @@ void CXSLBattleFieldManager::SetMonsterRespawnTimeMinMax_LUA( int iMin, int iMax
 	m_iMonsterRespawnTimeMin = iMin;
 	m_iMonsterRespawnTimeMax = iMax;
 
-	START_LOG( cout, L"몬스터 리스폰 타임 MinMax" )
+	START_LOG( cout, L"Monster respawn time min/max: " )
 		<< BUILD_LOG( m_iMonsterRespawnTimeMin )
 		<< BUILD_LOG( m_iMonsterRespawnTimeMax );
 }
@@ -129,13 +129,13 @@ void CXSLBattleFieldManager::SetBattleFieldEDFactor_LUA( float fFactor )
 {
 	m_fBattleFieldEDFactor = fFactor;
 
-	START_LOG( cout, L"배틀필드 ED 상수 : " << m_fBattleFieldEDFactor );
+	START_LOG( cout, L"Battlefield ED multiplier: " << m_fBattleFieldEDFactor );
 }
 void CXSLBattleFieldManager::SetBattleFieldEXPFactor_LUA( float fFactor )
 {
 	m_fBattleFieldEXPFactor = fFactor;
 
-	START_LOG( cout, L"배틀필드 EXP상수 : " << m_fBattleFieldEXPFactor );
+	START_LOG( cout, L"Battlefield EXP multiplier: " << m_fBattleFieldEXPFactor );
 }
 //}
 
@@ -143,7 +143,7 @@ void CXSLBattleFieldManager::AddEliteMonsterDropInfo_LUA( int iBeginUserCount, i
 {
 	if( iBeginUserCount < 0  ||  iEndUserCount < 0  ||  cDifficultyLevel < 0  ||  iMaxMonsterCount <= 0  ||  iBeginUserCount > iEndUserCount )
 	{
-		START_LOG( cerr, L"잘못된 엘리트 몬스터 출현 정보 입니다!" )
+		START_LOG( cerr, L"Invalid elite monster spawn information." )
 			<< BUILD_LOG( iBeginUserCount )
 			<< BUILD_LOG( iEndUserCount )
 			<< BUILD_LOGc( cDifficultyLevel )
@@ -165,28 +165,28 @@ void CXSLBattleFieldManager::SetDangerousValueMax_LUA( int iValue )
 {
 	m_iDangerousValueMax = iValue;
 
-    START_LOG( cout, L"위험도 최대값 : " << m_iDangerousValueMax );
+    START_LOG( cout, L"Maximum danger level: " << m_iDangerousValueMax );
 }
 
 void CXSLBattleFieldManager::SetDangerousValueWarning_LUA( int iValue )
 {
 	m_iDangerousValueWarning = iValue;
 
-	START_LOG( cout, L"위험도 경고값 : " << m_iDangerousValueWarning );
+	START_LOG( cout, L"Danger level warning threshold: " << m_iDangerousValueWarning );
 }
 
 void CXSLBattleFieldManager::SetBossCheckUserCount_LUA( int iValue )
 {
 	m_iBossCheckUserCount = iValue;
 
-	START_LOG( cout, L"보스 출현 최소 유저 카운트 : " << m_iBossCheckUserCount );
+	START_LOG( cout, L"Minimum player count for boss spawn: " << m_iBossCheckUserCount );
 }
 
 void CXSLBattleFieldManager::SetEliteMonsterDropValue_LUA( int iValue )
 {
     m_iEliteMonsterDropValue = iValue;
 
-	START_LOG( cout, L"엘리트 몬스터 출현 상수 값 : " << m_iEliteMonsterDropValue );
+	START_LOG( cout, L"Elite monster spawn constant: " << m_iEliteMonsterDropValue );
 }
 
 bool CXSLBattleFieldManager::AddBattleFieldData_LUA()
@@ -208,7 +208,7 @@ bool CXSLBattleFieldManager::AddBattleFieldData_LUA()
 	pairRet = m_mapBattleField.insert( std::make_pair( eBattleFieldID, CXSLBattleField() ) );
 	if( pairRet.second == false )
 	{
-		START_LOG( cerr, L"배틀필드 리소스 객체 생성 실패!" )
+		START_LOG( cerr, L"Failed to create battlefield resource object." )
 			<< BUILD_LOG( eBattleFieldID )
 			<< END_LOG;
 		return false;
@@ -217,7 +217,7 @@ bool CXSLBattleFieldManager::AddBattleFieldData_LUA()
 	CXSLBattleField& kBattleFieldData = pairRet.first->second;
     if( kBattleFieldData.LoadBattleFieldData( eBattleFieldID, luaManager ) == false )
 	{
-		START_LOG( cerr, L"배틀필드 스크립트 파싱 실패!" )
+		START_LOG( cerr, L"Failed to parse the battlefield script." )
 			<< BUILD_LOG( eBattleFieldID )
 			<< END_LOG;
 		return false;
@@ -234,7 +234,7 @@ bool CXSLBattleFieldManager::GetCreateMonsterList( IN const SEnum::BATTLE_FIELD_
 	mit = m_mapBattleField.find( eBattleFieldID );
 	if( mit == m_mapBattleField.end() )
 	{
-		START_LOG( cerr, L"존재하지 않는 배틀필드ID입니다!" )
+		START_LOG( cerr, L"Battlefield ID does not exist." )
 			<< BUILD_LOG( eBattleFieldID )
 			<< END_LOG;
 		return false;
@@ -248,7 +248,7 @@ bool CXSLBattleFieldManager::GetCreateBossMonsterList( IN const SEnum::BATTLE_FI
 	std::map< SEnum::BATTLE_FIELD_ID, CXSLBattleField >::iterator it = m_mapBattleField.find( eBattleFieldID );
 	if( it == m_mapBattleField.end() )
 	{
-		START_LOG( cerr, L"존재하지 않는 배틀필드ID입니다!" )
+		START_LOG( cerr, L"Battlefield ID does not exist." )
 			<< BUILD_LOG( eBattleFieldID )
 			<< END_LOG;
 		return false;
@@ -266,7 +266,7 @@ bool CXSLBattleFieldManager::GetRespawnMonsterList( IN const SEnum::BATTLE_FIELD
 	mit = m_mapBattleField.find( eBattleFieldID );
 	if( mit == m_mapBattleField.end() )
 	{
-		START_LOG( cerr, L"존재하지 않는 배틀필드ID입니다!" )
+		START_LOG( cerr, L"Battlefield ID does not exist." )
 			<< BUILD_LOG( eBattleFieldID )
 			<< END_LOG;
 		return false;
@@ -283,7 +283,7 @@ bool CXSLBattleFieldManager::GetBattieFieldBossMonsterInfo( IN const SEnum::BATT
 	mit = m_mapBattleField.find( eBattleFieldID );
 	if( mit == m_mapBattleField.end() )
 	{
-		START_LOG( cerr, L"존재하지 않는 배틀필드ID입니다!" )
+		START_LOG( cerr, L"Battlefield ID does not exist." )
 			<< BUILD_LOG( eBattleFieldID )
 			<< END_LOG;
 		return false;
@@ -300,7 +300,7 @@ bool CXSLBattleFieldManager::CheckPossibleEliteMonsterDrop( IN const int iPlayer
 	mit = m_mapEliteMonsterDropInfo.find( iPlayerCount );
 	if( mit == m_mapEliteMonsterDropInfo.end() )
 	{
-		START_LOG( cerr, L"엘리트 몬스터 출현 정보에 등록되어있지 않은 플레이어 카운트값입니다!" )
+		START_LOG( cerr, L"Player count is not registered in the elite monster spawn information." )
 			<< BUILD_LOG( iPlayerCount )
 			<< END_LOG;
 		return false;
@@ -320,7 +320,7 @@ int	CXSLBattleFieldManager::GetMaxMonsterCountInBattleField( IN const SEnum::BAT
 	mit = m_mapBattleField.find( eBattleFieldID );
 	if( mit == m_mapBattleField.end() )
 	{
-		START_LOG( cerr, L"존재하지 않는 배틀필드ID입니다!" )
+		START_LOG( cerr, L"Battlefield ID does not exist." )
 			<< BUILD_LOG( eBattleFieldID )
 			<< END_LOG;
 		return 0;
@@ -335,7 +335,7 @@ int	CXSLBattleFieldManager::GetMaxJoinUserCountInBattleField( IN const SEnum::BA
 	mit = m_mapBattleField.find( eBattleFieldID );
 	if( mit == m_mapBattleField.end() )
 	{
-		START_LOG( cerr, L"존재하지 않는 배틀필드ID입니다!" )
+		START_LOG( cerr, L"Battlefield ID does not exist." )
 			<< BUILD_LOG( eBattleFieldID )
 			<< END_LOG;
 
@@ -350,7 +350,7 @@ double CXSLBattleFieldManager::GetMonsterRespawnTimeByRandom() const
 	const int RANDOM_FACTOR = m_iMonsterRespawnTimeMax - m_iMonsterRespawnTimeMin;
 	if( RANDOM_FACTOR == 0 )
 	{
-		START_LOG( cerr, L"이값이 0이 나오면 안되는데! 헐" )
+		START_LOG( cerr, L"This value should not be zero." )
 			<< BUILD_LOG( RANDOM_FACTOR )
 			<< BUILD_LOG( m_iMonsterRespawnTimeMin )
 			<< BUILD_LOG( m_iMonsterRespawnTimeMax )
@@ -379,7 +379,7 @@ bool CXSLBattleFieldManager::GetBattieFieldMiddleBossMonsterInfo( IN const SEnum
 	mit = m_mapBattleField.find( eBattleFieldID );
 	if( mit == m_mapBattleField.end() )
 	{
-		START_LOG( cerr, L"존재하지 않는 배틀필드ID입니다!" )
+		START_LOG( cerr, L"Battlefield ID does not exist." )
 			<< BUILD_LOG( eBattleFieldID )
 			<< END_LOG;
 		return false;
@@ -411,7 +411,7 @@ void CXSLBattleFieldManager::SetBattleFieldMiddleBossDropInfo_LUA()
 	std::map< KFieldMiddleBossDropKey, KFieldMiddleBossDropInfo >::iterator mit = m_mapBattleFieldMiddleBossDropInfo.find( kKey );
 	if( mit != m_mapBattleFieldMiddleBossDropInfo.end() )
 	{
-		START_LOG( cerr, L"중복 존재하는 보스 드롭 셋팅 입니다." )
+		START_LOG( cerr, L"Duplicate boss drop configuration." )
 			<< BUILD_LOG( iBattleFieldID )
 			<< BUILD_LOG( iNpcID )
 			<< BUILD_LOG( kInfo.m_iMiddleBossCommonBonusItemID )
@@ -435,7 +435,7 @@ bool CXSLBattleFieldManager::GetBattleFieldMiddleBossDropInfo( IN int iFieldID, 
 	std::map< KFieldMiddleBossDropKey, KFieldMiddleBossDropInfo >::iterator mit = m_mapBattleFieldMiddleBossDropInfo.find( kKey );
 	if( mit == m_mapBattleFieldMiddleBossDropInfo.end() )
 	{
-		START_LOG( cerr, L"존재하지 않는 보스 드롭 셋팅 입니다!" )
+		START_LOG( cerr, L"Boss drop configuration does not exist." )
 			<< BUILD_LOG( iFieldID )
 			<< BUILD_LOG( iNpcID )
 			<< END_LOG;
@@ -455,7 +455,7 @@ void CXSLBattleFieldManager::SetDangerousValueEventRate_LUA( int iValue )
 {
 	m_iDangerousValueEventRate = iValue;
 
-	START_LOG( cout, L"배틀 필드 위험도 배율 : " << m_iDangerousValueEventRate );
+	START_LOG( cout, L"Battlefield danger-level multiplier: " << m_iDangerousValueEventRate );
 }
 //}
 
@@ -471,7 +471,7 @@ bool CXSLBattleFieldManager::IsCanEnterBattleField( IN const SEnum::BATTLE_FIELD
 	mit = m_mapBattleField.find( eBattleFieldID );
 	if( mit == m_mapBattleField.end() )
 	{
-		START_LOG( cerr, L"존재하지 않는 배틀필드ID입니다!" )
+		START_LOG( cerr, L"Battlefield ID does not exist." )
 			<< BUILD_LOG( eBattleFieldID )
 			<< END_LOG;
 
@@ -487,7 +487,7 @@ int CXSLBattleFieldManager::GetStandardMonsterLevel( IN const SEnum::BATTLE_FIEL
 	mit = m_mapBattleField.find( eBattleFieldID );
 	if( mit == m_mapBattleField.end() )
 	{
-		START_LOG( cerr, L"존재하지 않는 배틀필드ID입니다!" )
+		START_LOG( cerr, L"Battlefield ID does not exist." )
 			<< BUILD_LOG( eBattleFieldID )
 			<< END_LOG;
 
@@ -504,7 +504,7 @@ int	CXSLBattleFieldManager::GetEnterVillageMapID( IN const SEnum::BATTLE_FIELD_I
 	mit = m_mapBattleField.find( eBattleFieldID );
 	if( mit == m_mapBattleField.end() )
 	{
-		START_LOG( cerr, L"존재하지 않는 배틀필드ID입니다!" )
+		START_LOG( cerr, L"Battlefield ID does not exist." )
 			<< BUILD_LOG( eBattleFieldID )
 			<< END_LOG;
 
@@ -521,7 +521,7 @@ bool CXSLBattleFieldManager::GetEventMonsterCreateInfo( IN const SEnum::BATTLE_F
 	std::map< SEnum::BATTLE_FIELD_ID, CXSLBattleField >::iterator mit = m_mapBattleField.find( eBattleFieldID );
 	if( mit == m_mapBattleField.end() )
 	{
-		START_LOG( cerr, L"존재하지 않는 배틀필드ID입니다!" )
+		START_LOG( cerr, L"Battlefield ID does not exist." )
 			<< BUILD_LOG( eBattleFieldID )
 			<< END_LOG;
 		return false;

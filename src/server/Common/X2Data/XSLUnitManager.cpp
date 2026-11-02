@@ -249,7 +249,7 @@ CXSLUnitManager::MONSTER_TYPE_FACTOR CXSLUnitManager::GetMonsterTypeFactor( IN b
 			return MTF_HIGH_ELITE_NPC;
 
 		default:
-			START_LOG( cerr, L"던전 난이도가 이상합니다." )
+			START_LOG( cerr, L"Invalid dungeon difficulty." )
 				<< BUILD_LOGc( cDifficultyLevel )
 				<< END_LOG;
 

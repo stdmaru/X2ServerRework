@@ -95,7 +95,7 @@ bool KTRUserManager::Insert( KTRUserPtr pkTRUser_ )
 {
     if( !pkTRUser_ )
     {
-        START_LOG( cerr, L"TRUser 포인터 이상" )
+        START_LOG( cerr, L"Invalid TRUser pointer." )
             << END_LOG;
 
         return false;

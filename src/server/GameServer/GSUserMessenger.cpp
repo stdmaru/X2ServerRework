@@ -134,7 +134,7 @@ err_proc:
 	kPacket.m_iOK	= NetError::GetLastError();
 
 	//단지 같이 하지 못하는 상황이므로 에러가 아님.
-	START_LOG( cwarn, L"메신저를 통한 같이하기 실패.!" )
+	START_LOG( cwarn, L"Failed to join through the messenger!" )
 		<< BUILD_LOG( NetError::GetErrStr(kPacket.m_iOK) )
 		<< END_LOG;
 
@@ -251,7 +251,7 @@ end_proc:
 	kPacket.m_iOK	= NetError::GetLastError();
 	SendToLoginServer( ELG_KNM_TOGETHER_BY_UNIT_INFO_ACK, kPacket );
 
-	START_LOG( clog, L"KNM 같이할 유닛정보 찾기" )
+	START_LOG( clog, L"KNM: finding unit information for playing together" )
 		<< BUILD_LOG( NetError::GetErrStr(kPacket.m_iOK) )
 		<< BUILD_LOG( kPacket.m_iDemandGSUID )
 		<< BUILD_LOG( kPacket.m_iDemandUserUID )
@@ -305,7 +305,7 @@ IMPL_ON_FUNC( EGS_REQUEST_FRIEND_REQ )
 	{
 		if( kPacket_.m_wstrNickName.compare( mit->second.m_wstrNickName ) == 0 )
 		{
-			START_LOG( cerr, L"친구 요청한 캐릭터가 이미 친구 목록에 있음." )
+			START_LOG( cerr, L"The character who sent the friend request is already in the friend list." )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( kPacket_.m_wstrNickName )
 				<< END_LOG;
@@ -350,7 +350,7 @@ IMPL_ON_FUNC( DBE_REQUEST_FRIEND_ACK )
 		pairResult = m_kMessengerInfo.m_mapFriendInfo.insert( std::make_pair( kFriendInfo.m_iUnitUID, kFriendInfo ) );
 		if( !pairResult.second )
 		{
-			START_LOG( cerr, L"친구 요청한 캐릭터가 이미 친구 목록에 있음." )
+			START_LOG( cerr, L"The character who sent the friend request is already in the friend list." )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( kFriendInfo.m_iUnitUID )
 				<< END_LOG;
@@ -385,7 +385,7 @@ IMPL_ON_FUNC( EGS_REQUEST_FRIEND_NOT )
 	pairResult = m_kMessengerInfo.m_mapFriendInfo.insert( std::make_pair( kFriendInfo.m_iUnitUID, kFriendInfo ) );
 	if( !pairResult.second )
 	{
-		START_LOG( cerr, L"친구 요청 대기 캐릭터가 이미 친구 목록에 있음." )
+		START_LOG( cerr, L"Character awaiting a friend request is already in the friend list." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kFriendInfo.m_iUnitUID )
 			<< END_LOG;
@@ -402,7 +402,7 @@ IMPL_ON_FUNC( EGS_ACCEPT_FRIEND_REQ )
 	std::map< UidType, KFriendInfo >::iterator mit = m_kMessengerInfo.m_mapFriendInfo.find( kPacket_ );
 	if( mit == m_kMessengerInfo.m_mapFriendInfo.end() )
 	{
-		START_LOG( cerr, L"친구 수락한 캐릭터가 친구 목록에 없음." )
+		START_LOG( cerr, L"The character accepting the request is not in the friend list." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_ )
 			<< END_LOG;
@@ -415,7 +415,7 @@ IMPL_ON_FUNC( EGS_ACCEPT_FRIEND_REQ )
 
 	if( mit->second.m_cStatus != KFriendInfo::FS_WAITING )
 	{
-		START_LOG( cerr, L"친구 수락한 캐릭터가 상태 이상." )
+		START_LOG( cerr, L"Invalid state for the character accepting the friend request." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_ )
 			<< BUILD_LOGc( mit->second.m_cStatus )
@@ -442,7 +442,7 @@ IMPL_ON_FUNC( DBE_ACCEPT_FRIEND_ACK )
 		std::map< UidType, KFriendInfo >::iterator mit = m_kMessengerInfo.m_mapFriendInfo.find( kPacket_.m_iUnitUID );
 		if( mit == m_kMessengerInfo.m_mapFriendInfo.end() )
 		{
-			START_LOG( cerr, L"친구 수락한 캐릭터가 친구 목록에 없었음." )
+			START_LOG( cerr, L"The character accepting the request was not in the friend list." )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( kPacket_.m_iUnitUID )
 				<< END_LOG;
@@ -453,7 +453,7 @@ IMPL_ON_FUNC( DBE_ACCEPT_FRIEND_ACK )
 		{
 			if( mit->second.m_cStatus != KFriendInfo::FS_WAITING )
 			{
-				START_LOG( cerr, L"친구 수락한 캐릭터가 대기 상태가 아니었음." )
+				START_LOG( cerr, L"The character accepting the request was not in a pending state." )
 					<< BUILD_LOG( GetCharUID() )
 					<< BUILD_LOG( kPacket_.m_iUnitUID )
 					<< BUILD_LOGc( mit->second.m_cStatus )
@@ -487,7 +487,7 @@ IMPL_ON_FUNC( EGS_ACCEPT_FRIEND_NOT )
 	std::map< UidType, KFriendInfo >::iterator mit = m_kMessengerInfo.m_mapFriendInfo.find( kPacket_.m_iUnitUID );
 	if( mit == m_kMessengerInfo.m_mapFriendInfo.end() )
 	{
-		START_LOG( cerr, L"친구 수락해 준 캐릭터가 친구 목록에 없었음." )
+		START_LOG( cerr, L"The character who accepted the friend request was not in the friend list." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
@@ -497,7 +497,7 @@ IMPL_ON_FUNC( EGS_ACCEPT_FRIEND_NOT )
 
 	if( mit->second.m_cStatus != KFriendInfo::FS_REQUESTED )
 	{
-		START_LOG( cerr, L"친구 수락해 준 캐릭터가 상태 이상" )
+		START_LOG( cerr, L"Invalid state for the character who accepted the friend request." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOGc( mit->second.m_cStatus )
@@ -523,7 +523,7 @@ IMPL_ON_FUNC( EGS_DENY_FRIEND_REQ )
 	std::map< UidType, KFriendInfo >::iterator mit = m_kMessengerInfo.m_mapFriendInfo.find( kPacket_ );
 	if( mit == m_kMessengerInfo.m_mapFriendInfo.end() )
 	{
-		START_LOG( cerr, L"친구 거부한 캐릭터가 친구 목록에 없음." )
+		START_LOG( cerr, L"The character who rejected the friend request is not in the friend list." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_ )
 			<< END_LOG;
@@ -536,7 +536,7 @@ IMPL_ON_FUNC( EGS_DENY_FRIEND_REQ )
 
 	if( mit->second.m_cStatus != KFriendInfo::FS_WAITING )
 	{
-		START_LOG( cerr, L"친구 거부한 캐릭터가 상태 이상." )
+		START_LOG( cerr, L"Invalid state for the character who rejected the friend request." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_ )
 			<< BUILD_LOGc( mit->second.m_cStatus )
@@ -563,7 +563,7 @@ IMPL_ON_FUNC( DBE_DENY_FRIEND_ACK )
 		std::map< UidType, KFriendInfo >::iterator mit = m_kMessengerInfo.m_mapFriendInfo.find( kPacket_.m_iUnitUID );
 		if( mit == m_kMessengerInfo.m_mapFriendInfo.end() )
 		{
-			START_LOG( cerr, L"친구 거부한 캐릭터가 친구 목록에 없었음." )
+			START_LOG( cerr, L"The character who rejected the friend request was not in the friend list." )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( kPacket_.m_iUnitUID )
 				<< END_LOG;
@@ -574,7 +574,7 @@ IMPL_ON_FUNC( DBE_DENY_FRIEND_ACK )
 		{
 			if( mit->second.m_cStatus != KFriendInfo::FS_WAITING )
 			{
-				START_LOG( cerr, L"친구 거부한 캐릭터가 상태 이상." )
+				START_LOG( cerr, L"Invalid state for the character who rejected the friend request." )
 					<< BUILD_LOG( GetCharUID() )
 					<< BUILD_LOG( kPacket_.m_iUnitUID )
 					<< BUILD_LOGc( mit->second.m_cStatus )
@@ -602,7 +602,7 @@ IMPL_ON_FUNC( EGS_DENY_FRIEND_NOT )
 	std::map< UidType, KFriendInfo >::iterator mit = m_kMessengerInfo.m_mapFriendInfo.find( kPacket_.m_iUnitUID );
 	if( mit == m_kMessengerInfo.m_mapFriendInfo.end() )
 	{
-		START_LOG( cerr, L"나를 친구 거부한 캐릭터가 친구 목록에 없었음." )
+		START_LOG( cerr, L"The character who rejected my friend request was not in the friend list." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
@@ -612,7 +612,7 @@ IMPL_ON_FUNC( EGS_DENY_FRIEND_NOT )
 
 	if( mit->second.m_cStatus != KFriendInfo::FS_REQUESTED )
 	{
-		START_LOG( cerr, L"나를 친구 거부한 캐릭터가 상태 이상" )
+		START_LOG( cerr, L"Invalid state for the character who rejected my friend request." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOGc( mit->second.m_cStatus )
@@ -632,7 +632,7 @@ IMPL_ON_FUNC( EGS_BLOCK_FRIEND_REQ )
 	std::map< UidType, KFriendInfo >::iterator mit = m_kMessengerInfo.m_mapFriendInfo.find( kPacket_ );
 	if( mit == m_kMessengerInfo.m_mapFriendInfo.end() )
 	{
-		START_LOG( cerr, L"친구 차단한 캐릭터가 친구 목록에 없음." )
+		START_LOG( cerr, L"The blocked character is not in the friend list." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_ )
 			<< END_LOG;
@@ -645,7 +645,7 @@ IMPL_ON_FUNC( EGS_BLOCK_FRIEND_REQ )
 
 	if( mit->second.m_cStatus != KFriendInfo::FS_NORMAL )
 	{
-		START_LOG( cerr, L"친구 차단한 캐릭터가 상태 이상." )
+		START_LOG( cerr, L"Invalid state for the character who blocked the friend request." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_ )
 			<< BUILD_LOGc( mit->second.m_cStatus )
@@ -672,7 +672,7 @@ IMPL_ON_FUNC( DBE_BLOCK_FRIEND_ACK )
 		std::map< UidType, KFriendInfo >::iterator mit = m_kMessengerInfo.m_mapFriendInfo.find( kPacket_.m_iUnitUID );
 		if( mit == m_kMessengerInfo.m_mapFriendInfo.end() )
 		{
-			START_LOG( cerr, L"차단한 캐릭터가 친구 목록에 없었음." )
+			START_LOG( cerr, L"The blocked character was not in the friend list." )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( kPacket_.m_iUnitUID )
 				<< END_LOG;
@@ -683,7 +683,7 @@ IMPL_ON_FUNC( DBE_BLOCK_FRIEND_ACK )
 		{
 			if( mit->second.m_cStatus != KFriendInfo::FS_NORMAL )
 			{
-				START_LOG( cerr, L"친구 차단한 캐릭터가 상태 이상." )
+				START_LOG( cerr, L"Invalid state for the character who blocked the friend request." )
 					<< BUILD_LOG( GetCharUID() )
 					<< BUILD_LOG( kPacket_.m_iUnitUID )
 					<< BUILD_LOGc( mit->second.m_cStatus )
@@ -711,7 +711,7 @@ IMPL_ON_FUNC( EGS_BLOCK_FRIEND_NOT )
 	std::map< UidType, KFriendInfo >::iterator mit = m_kMessengerInfo.m_mapFriendInfo.find( kPacket_.m_iUnitUID );
 	if( mit == m_kMessengerInfo.m_mapFriendInfo.end() )
 	{
-		START_LOG( cerr, L"나를 차단한 캐릭터가 친구 목록에 없었음." )
+		START_LOG( cerr, L"The character who blocked me was not in the friend list." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
@@ -721,7 +721,7 @@ IMPL_ON_FUNC( EGS_BLOCK_FRIEND_NOT )
 
 	if( mit->second.m_cStatus != KFriendInfo::FS_NORMAL )
 	{
-		START_LOG( cerr, L"나를 친구 차단한 캐릭터가 상태 이상" )
+		START_LOG( cerr, L"Invalid state for the character who blocked me." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOGc( mit->second.m_cStatus )
@@ -739,7 +739,7 @@ IMPL_ON_FUNC( EGS_UNBLOCK_FRIEND_REQ )
 	std::map< UidType, KFriendInfo >::iterator mit = m_kMessengerInfo.m_mapFriendInfo.find( kPacket_ );
 	if( mit == m_kMessengerInfo.m_mapFriendInfo.end() )
 	{
-		START_LOG( cerr, L"친구 차단 해제한 캐릭터가 친구 목록에 없음." )
+		START_LOG( cerr, L"The unblocked character is not in the friend list." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_ )
 			<< END_LOG;
@@ -752,7 +752,7 @@ IMPL_ON_FUNC( EGS_UNBLOCK_FRIEND_REQ )
 
 	if( mit->second.m_cStatus != KFriendInfo::FS_BLOCKED )
 	{
-		START_LOG( cerr, L"친구 차단 해제한 캐릭터가 상태 이상." )
+		START_LOG( cerr, L"Invalid state for the character whose friend block was removed." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_ )
 			<< BUILD_LOGc( mit->second.m_cStatus )
@@ -779,7 +779,7 @@ IMPL_ON_FUNC( DBE_UNBLOCK_FRIEND_ACK )
 		std::map< UidType, KFriendInfo >::iterator mit = m_kMessengerInfo.m_mapFriendInfo.find( kPacket_.m_iUnitUID );
 		if( mit == m_kMessengerInfo.m_mapFriendInfo.end() )
 		{
-			START_LOG( cerr, L"차단 해제한 캐릭터가 친구 목록에 없었음." )
+			START_LOG( cerr, L"The unblocked character was not in the friend list." )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( kPacket_.m_iUnitUID )
 				<< END_LOG;
@@ -790,7 +790,7 @@ IMPL_ON_FUNC( DBE_UNBLOCK_FRIEND_ACK )
 		{
 			if( mit->second.m_cStatus != KFriendInfo::FS_BLOCKED )
 			{
-				START_LOG( cerr, L"친구 차단 해제한 캐릭터가 상태 이상." )
+				START_LOG( cerr, L"Invalid state for the character whose friend block was removed." )
 					<< BUILD_LOG( GetCharUID() )
 					<< BUILD_LOG( kPacket_.m_iUnitUID )
 					<< BUILD_LOGc( mit->second.m_cStatus )
@@ -824,7 +824,7 @@ IMPL_ON_FUNC( EGS_UNBLOCK_FRIEND_NOT )
 	std::map< UidType, KFriendInfo >::iterator mit = m_kMessengerInfo.m_mapFriendInfo.find( kPacket_.m_iUnitUID );
 	if( mit == m_kMessengerInfo.m_mapFriendInfo.end() )
 	{
-		START_LOG( cerr, L"나를 차단 해제한 캐릭터가 친구 목록에 없었음." )
+		START_LOG( cerr, L"The character who unblocked me was not in the friend list." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
@@ -834,7 +834,7 @@ IMPL_ON_FUNC( EGS_UNBLOCK_FRIEND_NOT )
 
 	if( mit->second.m_cStatus != KFriendInfo::FS_NORMAL )
 	{
-		START_LOG( cerr, L"나를 차단 해제한 캐릭터가 상태 이상" )
+		START_LOG( cerr, L"Invalid state for the character who unblocked me." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOGc( mit->second.m_cStatus )
@@ -858,7 +858,7 @@ IMPL_ON_FUNC( EGS_DELETE_FRIEND_REQ )
 	std::map< UidType, KFriendInfo >::iterator mit = m_kMessengerInfo.m_mapFriendInfo.find( kPacket_ );
 	if( mit == m_kMessengerInfo.m_mapFriendInfo.end() )
 	{
-		START_LOG( cerr, L"친구 삭제한 캐릭터가 친구 목록에 없음." )
+		START_LOG( cerr, L"The character who deleted the friend is not in the friend list." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_ )
 			<< END_LOG;
@@ -884,7 +884,7 @@ IMPL_ON_FUNC( DBE_DELETE_FRIEND_ACK )
 		std::map< UidType, KFriendInfo >::iterator mit = m_kMessengerInfo.m_mapFriendInfo.find( kPacket_.m_iUnitUID );
 		if( mit == m_kMessengerInfo.m_mapFriendInfo.end() )
 		{
-			START_LOG( cerr, L"삭제한 캐릭터가 친구 목록에 없었음." )
+			START_LOG( cerr, L"The deleted character was not in the friend list." )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( kPacket_.m_iUnitUID )
 				<< END_LOG;
@@ -913,7 +913,7 @@ IMPL_ON_FUNC( EGS_DELETE_FRIEND_NOT )
 	std::map< UidType, KFriendInfo >::iterator mit = m_kMessengerInfo.m_mapFriendInfo.find( kPacket_.m_iUnitUID );
 	if( mit == m_kMessengerInfo.m_mapFriendInfo.end() )
 	{
-		START_LOG( cerr, L"나를 삭제한 캐릭터가 친구 목록에 없었음." )
+		START_LOG( cerr, L"The character who removed me was not in the friend list." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
@@ -934,7 +934,7 @@ IMPL_ON_FUNC( EGS_MOVE_FRIEND_REQ )
 	std::map< UidType, KFriendInfo >::iterator mit = m_kMessengerInfo.m_mapFriendInfo.find( kPacket_.m_iUnitUID );
 	if( mit == m_kMessengerInfo.m_mapFriendInfo.end() )
 	{
-		START_LOG( cerr, L"그룹 이동하려는 캐릭터가 친구 목록에 없음." )
+		START_LOG( cerr, L"The character being moved to a group is not in the friend list." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< END_LOG;
@@ -948,7 +948,7 @@ IMPL_ON_FUNC( EGS_MOVE_FRIEND_REQ )
 	std::map< char, std::wstring >::iterator mitGroup = m_kMessengerInfo.m_mapGroup.find( kPacket_.m_cTargetGroupID );
 	if( mitGroup == m_kMessengerInfo.m_mapGroup.end() )
 	{
-		START_LOG( cerr, L"그룹이 존재하지 않음." )
+		START_LOG( cerr, L"The group does not exist." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOGc( mit->second.m_cGroupID )
@@ -963,7 +963,7 @@ IMPL_ON_FUNC( EGS_MOVE_FRIEND_REQ )
 
 	if( mit->second.m_cGroupID == kPacket_.m_cTargetGroupID )
 	{
-		START_LOG( cerr, L"그룹이 같음." )
+		START_LOG( cerr, L"Group is unchanged." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_iUnitUID )
 			<< BUILD_LOGc( mit->second.m_cGroupID )
@@ -992,7 +992,7 @@ IMPL_ON_FUNC( DBE_MOVE_FRIEND_ACK )
 		std::map< UidType, KFriendInfo >::iterator mit = m_kMessengerInfo.m_mapFriendInfo.find( kPacket_.m_iUnitUID );
 		if( mit == m_kMessengerInfo.m_mapFriendInfo.end() )
 		{
-			START_LOG( cerr, L"그룹 이동한 캐릭터가 친구 목록에 없었음." )
+			START_LOG( cerr, L"The character moved to a group was not in the friend list." )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( kPacket_.m_iUnitUID )
 				<< END_LOG;
@@ -1004,7 +1004,7 @@ IMPL_ON_FUNC( DBE_MOVE_FRIEND_ACK )
 			std::map< char, std::wstring >::iterator mitGroup = m_kMessengerInfo.m_mapGroup.find( kPacket_.m_cTargetGroupID );
 			if( mitGroup == m_kMessengerInfo.m_mapGroup.end() )
 			{
-				START_LOG( cerr, L"그룹이 존재하지 않음." )
+				START_LOG( cerr, L"The group does not exist." )
 					<< BUILD_LOG( GetCharUID() )
 					<< BUILD_LOG( kPacket_.m_iUnitUID )
 					<< BUILD_LOG( kPacket_.m_cTargetGroupID )
@@ -1027,7 +1027,7 @@ IMPL_ON_FUNC( EGS_MAKE_FRIEND_GROUP_REQ )
 	int iMaxNumGroup = 100;
 	if( ( int )m_kMessengerInfo.m_mapGroup.size() >= iMaxNumGroup )
 	{
-		START_LOG( cerr, L"그룹 수가 너무 많음." )
+		START_LOG( cerr, L"Too many groups." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( m_kMessengerInfo.m_mapGroup.size() )
 			<< END_LOG;
@@ -1051,7 +1051,7 @@ IMPL_ON_FUNC( EGS_MAKE_FRIEND_GROUP_REQ )
 
 	if( ( int )cCandidate > iMaxNumGroup )
 	{
-		START_LOG( cerr, L"새 그룹 ID를 찾지 못함." )
+		START_LOG( cerr, L"Could not find a new group ID." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( m_kMessengerInfo.m_mapGroup.size() )
 			<< END_LOG;
@@ -1095,7 +1095,7 @@ IMPL_ON_FUNC( DBE_MAKE_FRIEND_GROUP_ACK )
 		std::map< char, std::wstring >::iterator mitGroup = m_kMessengerInfo.m_mapGroup.find( kPacket_.m_cGroupID );
 		if( mitGroup != m_kMessengerInfo.m_mapGroup.end() )
 		{
-			START_LOG( cerr, L"그룹 ID 중복" )
+			START_LOG( cerr, L"Duplicate group ID" )
 				<< BUILD_LOG( kPacket_.m_cGroupID )
 				<< BUILD_LOG( mitGroup->first )
 				<< BUILD_LOG( mitGroup->second )
@@ -1118,7 +1118,7 @@ IMPL_ON_FUNC( EGS_RENAME_FRIEND_GROUP_REQ )
 	mitGroup = m_kMessengerInfo.m_mapGroup.find( kPacket_.m_cGroupID );
 	if( mitGroup == m_kMessengerInfo.m_mapGroup.end() )
 	{
-		START_LOG( cerr, L"그룹이 존재하지 않음" )
+		START_LOG( cerr, L"The group does not exist." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_cGroupID )
 			<< END_LOG;
@@ -1148,7 +1148,7 @@ IMPL_ON_FUNC( EGS_RENAME_FRIEND_GROUP_REQ )
 
 	if( kPacket_.m_wstrGroupName.compare( mitGroup->second ) == 0 )
 	{
-		START_LOG( cerr, L"그룹 이름이 같음" )
+		START_LOG( cerr, L"Group name is unchanged." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_cGroupID )
 			<< END_LOG;
@@ -1175,7 +1175,7 @@ IMPL_ON_FUNC( DBE_RENAME_FRIEND_GROUP_ACK )
 		std::map< char, std::wstring >::iterator mitGroup = m_kMessengerInfo.m_mapGroup.find( kPacket_.m_cGroupID );
 		if( mitGroup == m_kMessengerInfo.m_mapGroup.end() )
 		{
-			START_LOG( cerr, L"그룹이 존재하지 않음" )
+			START_LOG( cerr, L"The group does not exist." )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( kPacket_.m_cGroupID )
 				<< END_LOG;
@@ -1197,7 +1197,7 @@ IMPL_ON_FUNC( EGS_DELETE_FRIEND_GROUP_REQ )
 	mitGroup = m_kMessengerInfo.m_mapGroup.find( kPacket_.m_cGroupID );
 	if( mitGroup == m_kMessengerInfo.m_mapGroup.end() )
 	{
-		START_LOG( cerr, L"그룹이 존재하지 않음" )
+		START_LOG( cerr, L"The group does not exist." )
 			<< BUILD_LOG( GetCharUID() )
 			<< BUILD_LOG( kPacket_.m_cGroupID )
 			<< END_LOG;
@@ -1223,7 +1223,7 @@ IMPL_ON_FUNC( DBE_DELETE_FRIEND_GROUP_ACK )
 		std::map< char, std::wstring >::iterator mitGroup = m_kMessengerInfo.m_mapGroup.find( kPacket_.m_cGroupID );
 		if( mitGroup == m_kMessengerInfo.m_mapGroup.end() )
 		{
-			START_LOG( cerr, L"그룹이 존재하지 않음" )
+			START_LOG( cerr, L"The group does not exist." )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( kPacket_.m_cGroupID )
 				<< END_LOG;
@@ -1255,7 +1255,7 @@ IMPL_ON_FUNC( EGS_FRIEND_POSITION_UPDATE_NOT )
 		mitFriend = m_kMessengerInfo.m_mapFriendInfo.find( mitPosition->first );
 		if( mitFriend == m_kMessengerInfo.m_mapFriendInfo.end() )
 		{
-			START_LOG( cerr, L"친구 리스트에 없는 유닛임." )
+			START_LOG( cerr, L"Unit is not in the friend list." )
 				<< BUILD_LOG( GetCharUID() )
 				<< BUILD_LOG( mitPosition->first )
 				<< END_LOG;

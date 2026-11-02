@@ -26,7 +26,7 @@ void KUserUnitSelectRewardManager::AddRewardItemInfo( IN const int iAddRewardID 
 	{
 		if( iRewardID == iAddRewardID )
 		{
-			START_LOG( clog, L"중복 되는 아이템을 지급하려 합니다." )
+			START_LOG( clog, L"Attempted to grant a duplicate item." )
 				<< BUILD_LOG( iAddRewardID )
 				<< BUILD_LOG( iRewardID )
 				<< END_LOG;
