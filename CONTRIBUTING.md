@@ -6,10 +6,13 @@ Keep each pull request focused on one coherent change and target `main`. Write t
 
 Open a draft pull request as soon as the work branch is created, rather than waiting for implementation to finish. This is
 strongly encouraged, especially for agents: it makes the work visible early and gives reviewers a place to follow progress.
-Update the description and checklist as the work evolves, then mark the pull request ready for review when the change and its
-validation are complete.
+Update the description as the work evolves. When the change is complete and ready for review and merge, mark the pull request
+ready for review (remove draft status).
 
-Use this format for the pull request description:
+The following is a template, not a required format. Authors decide whether a checklist is useful and which checklist items
+belong in a particular pull request. Remove irrelevant sections and adapt the description to the change.
+
+Example format:
 
 ```markdown
 ## Summary
