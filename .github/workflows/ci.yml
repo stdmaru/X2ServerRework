@@ -86,7 +86,7 @@ jobs:
             -v "$GITHUB_WORKSPACE:/workspace" \
             -w /workspace \
             "$BUILD_IMAGE" \
-            cmake --preset "${{ matrix.preset }}" -DX2_RUN_FOLDERS=OFF
+            cmake --preset "${{ matrix.preset }}" -DX2_DIST_FOLDERS=OFF
 
       - name: Build
         run: |
@@ -153,7 +153,7 @@ jobs:
           cmake --version
 
       - name: Configure
-        run: cmake --preset ${{ matrix.preset }} -DX2_RUN_FOLDERS=OFF
+        run: cmake --preset ${{ matrix.preset }} -DX2_DIST_FOLDERS=OFF
 
       - name: Build
         run: |

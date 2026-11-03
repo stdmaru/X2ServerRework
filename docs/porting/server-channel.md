@@ -20,7 +20,7 @@ headers as `"../Common/x.h"`.
 
 ## Status (2026-10-30, branch `server/channel-run`)
 
-Runs on Linux from the directory assembled by `x2_run_channel` ([Run directories](../tools/runtime.md)): connects to the Docker SQL Server
+Runs on Linux from the directory assembled by `x2_run_channel` ([Server package](../tools/runtime.md)): connects to the Docker SQL Server
 (FreeTDS), loads scripts (`Enum.lua`, `DungeonEnum.lua`, `GameSysValTable.lua`, `WaitQueueData.lua`, `LogConfig.lua`...),
 authenticates to DB (UID 59, "Channel"), reads channel list, and reaches ready state (`OnServerReadyComplete`), with Lua prompt responding.
 Exits with code 0 (see [Run the servers](../running.md)).

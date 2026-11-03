@@ -1,13 +1,13 @@
-# Ready-to-run server folders (decision T22, docs/tools/runtime.md).
+# Assembled server package (decision T22, docs/tools/runtime.md).
 #
-#   build/<preset>/run/ServerResource/   runtime/ServerResource (server scripts, versioned)
-#   build/<preset>/run/ClientScript/     generated from the client data (tools/runtime/gen_clientscript.py)
-#   build/<preset>/run/<Server>/         the executable, runtime/<Server>/* and the filled *.in templates
+#   dist/ServerResource/   runtime/ServerResource (server scripts, versioned)
+#   dist/ClientScript/     generated from the client data (tools/runtime/gen_clientscript.py)
+#   dist/<Server>/         the executable, runtime/<Server>/* and the filled *.in templates
 #
-# x2_run_<name> builds the server and assembles its folder; with X2_RUN_FOLDERS (default) every folder is part of ALL.
-# These folders are a development setup (local database, this machine's ODBC driver and client), not a release package.
+# x2_run_<name> assembles its server folder under dist/; X2_DIST_FOLDERS (default ON) adds every folder to ALL.
+# dist/ is shared by all presets and contains development configuration (database, this machine's ODBC driver and client).
 
-option(X2_RUN_FOLDERS "Assemble the ready-to-run server folders in every build (x2_run_* in ALL)" ON)
+option(X2_DIST_FOLDERS "Assemble the ready-to-run server folders in every build (x2_run_* in ALL)" ON)
 
 # x2_env_cache(<var> <type> <default> <doc> [<env>]): cache variable that the environment variable <env> (default:
 # the same name; from the shell or docker/.env, see docker/.env.example) overrides at every configure when not empty.
@@ -30,7 +30,7 @@ function(x2_env_cache var type default doc)
     endif()
 endfunction()
 
-x2_env_cache(X2_RUN_DIR PATH "${CMAKE_BINARY_DIR}/run" "Folder where the x2_run_* targets assemble the servers")
+x2_env_cache(X2_DIST_DIR PATH "${CMAKE_SOURCE_DIR}/dist" "Destination where x2_run_* targets assemble the package")
 x2_env_cache(X2_CLIENT_DATA PATH "${CMAKE_SOURCE_DIR}/_client/data"
     "Client data folder (data*.kom) the ClientScript folder is generated from")
 
@@ -45,20 +45,21 @@ else()
     set(_x2_odbc_driver "ODBC Driver 18 for SQL Server")
     set(_x2_odbc_options "Encrypt=yes;TrustServerCertificate=yes")
 endif()
-if(DEFINED ENV{X2_DB_PORT} AND NOT DEFINED ENV{X2_RUN_DB_SERVER})
-    set(ENV{X2_RUN_DB_SERVER} "127.0.0.1,$ENV{X2_DB_PORT}")
+if(DEFINED ENV{X2_DB_PORT} AND NOT DEFINED ENV{X2_DB_SERVER})
+    set(ENV{X2_DB_SERVER} "127.0.0.1,$ENV{X2_DB_PORT}")
 endif()
-x2_env_cache(X2_RUN_DB_SERVER STRING "127.0.0.1,1433" "SQL Server (host,port) of the .dsn templates")
-x2_env_cache(X2_RUN_DB_USER STRING "sa" "SQL Server user of the .dsn templates")
-x2_env_cache(X2_RUN_DB_PASSWORD STRING "X2dev!Passw0rd" "SQL Server password of the .dsn templates (not versioned)" X2_DB_PASSWORD)
-x2_env_cache(X2_RUN_DB_NAME_PREFIX STRING "" "Prefix of the database names in the .dsn templates (a server with Elsword-Account...: Elsword-)")
-x2_env_cache(X2_RUN_ODBC_DRIVER STRING "${_x2_odbc_driver}" "ODBC driver (DBLayer:SetODBCDriver)")
-x2_env_cache(X2_RUN_ODBC_OPTIONS STRING "${_x2_odbc_options}" "ODBC connection options (DBLayer:SetODBCOptions)")
-x2_env_cache(X2_RUN_SERVER_IP STRING "127.0.0.1"
+x2_env_cache(X2_DB_SERVER STRING "127.0.0.1,1433" "SQL Server (host,port) of the .dsn templates")
+x2_env_cache(X2_DB_USER STRING "sa" "SQL Server user of the .dsn templates")
+x2_env_cache(X2_DB_PASSWORD STRING "X2dev!Passw0rd" "SQL Server password of the .dsn templates (not versioned)" X2_DB_PASSWORD)
+x2_env_cache(X2_ODBC_DRIVER STRING "${_x2_odbc_driver}" "ODBC driver (DBLayer:SetODBCDriver)")
+x2_env_cache(X2_ODBC_OPTIONS STRING "${_x2_odbc_options}" "ODBC connection options (DBLayer:SetODBCOptions)")
+x2_env_cache(X2_SERVER_IP STRING "127.0.0.1"
     "Address the servers announce (SetLocalIP); docker/mssql/restore.sh writes it to LServerList" X2_SERVER_IP)
-x2_env_cache(X2_RUN_EPUBLISHER_PORT STRING "8000" "Port of the EPublisherServer")
-x2_env_cache(X2_RUN_EPUBLISHER_URL STRING "http://127.0.0.1:${X2_RUN_EPUBLISHER_PORT}/"
+x2_env_cache(X2_EPUBLISHER_PORT STRING "8000" "Port of the EPublisherServer")
+x2_env_cache(X2_EPUBLISHER_URL STRING "http://127.0.0.1:${X2_EPUBLISHER_PORT}/"
     "EPublisher service the servers call (DEBAuthManager:AddAuthServiceAddress)")
+x2_env_cache(X2_SERVERRESOURCE_DIR STRING "../ServerResource" "Default path of ServerResource Folder")
+x2_env_cache(X2_CLIENTSCRIPT_DIR STRING "../ClientScript" "Default path of ClientScript Folder")
 
 find_package(Python3 COMPONENTS Interpreter)
 find_program(X2_LUAJIT_EXECUTABLE luajit DOC "LuaJIT, used to generate the ClientScript folder")
@@ -82,23 +83,23 @@ set(_x2_runtime_src "${CMAKE_SOURCE_DIR}/runtime")
 # Shared folders, built once for every server
 if(NOT TARGET x2_run_resources)
     set(_x2_commands
-        COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different "${_x2_runtime_src}/ServerResource" "${X2_RUN_DIR}/ServerResource")
+        COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different "${_x2_runtime_src}/ServerResource" "${X2_DIST_DIR}/ServerResource")
     if(Python3_Interpreter_FOUND AND X2_LUAJIT_EXECUTABLE AND IS_DIRECTORY "${X2_CLIENT_DATA}")
         list(APPEND _x2_commands
             COMMAND Python3::Interpreter -I "${CMAKE_SOURCE_DIR}/tools/runtime/gen_clientscript.py"
-                "${X2_CLIENT_DATA}" "${X2_RUN_DIR}/ClientScript" --luajit "${X2_LUAJIT_EXECUTABLE}")
+                "${X2_CLIENT_DATA}" "${X2_DIST_DIR}/ClientScript" --luajit "${X2_LUAJIT_EXECUTABLE}")
     else()
         message(STATUS "x2_run_*: ClientScript is not generated (needs Python 3, luajit and X2_CLIENT_DATA=${X2_CLIENT_DATA})")
     endif()
     add_custom_target(x2_run_resources ${_x2_commands}
         DEPENDS ${_x2_luajit_depends}
-        COMMENT "Assembling ${X2_RUN_DIR} (ServerResource, ClientScript)" VERBATIM)
+        COMMENT "Assembling ${X2_DIST_DIR} (ServerResource, ClientScript)" VERBATIM)
 endif()
 
 # x2_runtime_server(<name> <executable target> <runtime/ subfolder>)
 function(x2_runtime_server name target folder)
     set(src "${_x2_runtime_src}/${folder}")
-    set(dst "${X2_RUN_DIR}/${folder}")
+    set(dst "${X2_DIST_DIR}/${folder}")
     file(GLOB templates CONFIGURE_DEPENDS "${src}/*.in")
     file(GLOB plain CONFIGURE_DEPENDS "${src}/*")
     list(FILTER plain EXCLUDE REGEX "\\.in$")
@@ -109,7 +110,7 @@ function(x2_runtime_server name target folder)
         list(APPEND plain "${CMAKE_CURRENT_BINARY_DIR}/runtime/${n}")
     endforeach()
     set(all)
-    if(X2_RUN_FOLDERS)
+    if(X2_DIST_FOLDERS)
         set(all ALL)
     endif()
     add_custom_target(x2_run_${name} ${all}

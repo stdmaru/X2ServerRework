@@ -34,7 +34,7 @@ does not connect to any other server. Source: `KncWX2Server/LoginServer`, import
 
 ## Status (2026-10-31, branch `server/login-run`)
 
-**Runs on Linux** from the directory assembled by `x2_run_login` ([Run directories](../tools/runtime.md)): connects to four databases,
+**Runs on Linux** from the directory assembled by `x2_run_login` ([Server package](../tools/runtime.md)): connects to four databases,
 loads scripts, authenticates to DB (UID 58, "Login"), and reaches ready state; GameServer connects to it
 (`ELG_VERIFY_SERVER_CONNECT`). Exits with code 0 at end of stdin.
 

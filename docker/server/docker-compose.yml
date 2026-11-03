@@ -1,0 +1,141 @@
+# Core runtime template
+# This presumes you already have a mssql server up and running.
+
+x-server-template: &server-template
+  env_file: ../.env
+  build:
+    context: .
+  environment:
+    XDG_RUNTIME_DIR: /run
+  restart: unless-stopped
+
+# Shared volumes
+x-volume-time: &volume-time
+  /etc/localtime:/etc/localtime:ro
+x-volume-sockets: &volume-sockets
+  "./control:/run"
+x-volume-resources: &volume-resources
+  ./ServerResource:/opt/x2/ServerResource:ro
+x-volume-clientscripts: &volume-clientscripts
+  ./ClientScript:/opt/x2/ClientScript:ro
+
+services:
+  epublisher:
+    <<: *server-template
+    volumes:
+      - *volume-time
+      - *volume-sockets
+      - "./EPublisherServer/log:/opt/x2/EPublisherServer/log"
+    networks:
+      x2-net:
+        ipv4_address: 172.30.10.10
+    working_dir: /opt/x2/EPublisherServer
+    command: ["./EPublisherServer", "DEV", "--no-stdin"]
+
+  login:
+    <<: *server-template
+    volumes:
+      - *volume-time
+      - *volume-sockets
+      - *volume-resources
+      - *volume-clientscripts
+      - "./LoginServer/log:/opt/x2/LoginServer/log"
+    networks:
+      x2-net:
+        ipv4_address: 172.30.10.20
+    working_dir: /opt/x2/LoginServer
+    command: ["./LoginServer", "DEV", "0", "--no-stdin"]
+
+  global:
+    <<: *server-template
+    volumes:
+      - *volume-time
+      - *volume-sockets
+      - *volume-resources
+      - *volume-clientscripts
+      - "./GlobalServer/log:/opt/x2/GlobalServer/log"
+    networks:
+      x2-net:
+        ipv4_address: 172.30.10.30
+    working_dir: /opt/x2/GlobalServer
+    command: ["./GlobalServer", "DEV", "0", "--no-stdin"]
+
+  center:
+    <<: *server-template
+    volumes:
+      - *volume-time
+      - *volume-sockets
+      - *volume-resources
+      - *volume-clientscripts
+      - "./CenterServer/log:/opt/x2/CenterServer/log"
+    networks:
+      x2-net:
+        ipv4_address: 172.30.10.40
+    ports:
+      - "9101:9101/udp"
+    working_dir: /opt/x2/CenterServer
+    command: ["./CenterServer", "DEV", "0", "--no-stdin"]
+
+  channel:
+    <<: *server-template
+    volumes:
+      - *volume-time
+      - *volume-sockets
+      - *volume-resources
+      - *volume-clientscripts
+      - "./ChannelServer/log:/opt/x2/ChannelServer/log"
+    networks:
+      x2-net:
+        ipv4_address: 172.30.10.50
+    ports:
+      - 9400:9400/tcp
+    working_dir: /opt/x2/ChannelServer
+    command: ["./ChannelServer", "DEV", "0", "--no-stdin"]
+
+  game_01: # Channel 1
+    <<: *server-template
+    volumes:
+      - *volume-time
+      - *volume-sockets
+      - *volume-resources
+      - *volume-clientscripts
+      - "./GameServer/log/game_01:/opt/x2/GameServer/log"
+    networks:
+      x2-net:
+        ipv4_address: 172.30.10.60
+    environment:
+      X2_GAMESERVER_PORT: 9300
+    ports:
+      - 9300:9300/tcp
+      - 9301:9301/tcp
+      - 9301:9301/udp
+    working_dir: /opt/x2/GameServer
+    command: ["./GameServer", "DEV", "0", "--no-stdin"]
+
+  # game_02: # Channel 2
+  #   <<: *server-template
+  #   volumes:
+  #     - *volume-time
+  #     - *volume-sockets
+  #     - *volume-resources
+  #     - *volume-clientscripts
+  #     - "./GameServer/log/game_02:/opt/x2/GameServer/log"
+  #   networks:
+  #     x2-net:
+  #       ipv4_address: 172.30.10.61
+  #   environment:
+  #     X2_GAMESERVER_PORT: 9310
+  #   ports:
+  #     - 9310:9310/tcp
+  #     - 9311:9311/tcp
+  #     - 9311:9311/udp
+  #   working_dir: /opt/x2/GameServer
+  #   command: ["./GameServer", "DEV", "0", "--no-stdin"]
+
+networks:
+  x2-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.30.10.0/24
+          gateway: 172.30.10.1

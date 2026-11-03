@@ -4,7 +4,7 @@
 -- x2_run_center target (docs/tools/runtime.md).
 
 -- address this server announces; the DB (Statistics.LServerList.PublicIP) identifies the servers by it --
-SetLocalIP( "@X2_RUN_SERVER_IP@" )
+SetLocalIP( "@X2_SERVER_IP@" )
 
 ----------     Center Server     ----------
 
@@ -33,16 +33,16 @@ AF_GLOBAL_SERVICE : global service (DEB)
 --]]
 SimLayer:SetAuthFlag( AF_GLOBAL_SERVICE )
 
--- Script File Path (relative to this folder: build/<preset>/run/CenterServer) --
-SimLayer:AddPath( "../ServerResource" ) -- server common
-SimLayer:AddPath( "../ClientScript" ) -- client script, generated from the client data
+-- Script File Path (relative to this folder: dist/CenterServer) --
+SimLayer:AddPath( os.getnev("X2_SERVERRESOURCE_DIR") or "@X2_SERVERRESOURCE_DIR@" ) -- server common
+SimLayer:AddPath( os.getnev("X2_CLIENTSCRIPT_DIR") or "@X2_CLIENTSCRIPT_DIR@" ) -- client script, generated from the client data
 
 
 ----------     DB Layer     ----------
 
 -- ODBC driver (docs/porting/server-common-db.md); must come before AddDB --
-DBLayer:SetODBCDriver( "@X2_RUN_ODBC_DRIVER@" )
-DBLayer:SetODBCOptions( "@X2_RUN_ODBC_OPTIONS@" )
+DBLayer:SetODBCDriver( "@X2_ODBC_DRIVER@" )
+DBLayer:SetODBCOptions( "@X2_ODBC_OPTIONS@" )
 
 -- databases --
 --[[

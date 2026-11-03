@@ -38,7 +38,7 @@ The port preserves the original directory layout (`src/server/GlobalServer` besi
 
 ## Status (2026-10-31, branch `server/global-run`)
 
-**Runs on Linux** from the directory assembled by the build (`x2_run_global`, [Run directories](../tools/runtime.md)): connects to two
+**Runs on Linux** from the directory assembled by the build (`x2_run_global`, [Server package](../tools/runtime.md)): connects to two
 databases (`Account` and `Statistics`), loads scripts (`Enum`, `DungeonEnum`, `WorldMissionConfig`, `PvpMatchData`...; load errors
 are the already-listed dungeon and line-map errors), authenticates to DB, reaches `OnServerReadyComplete`, and accepts GameServer
 connection (port 9500). Exits with code 0 (see [Run the servers](../running.md)). Three groups of procedures it calls do not exist

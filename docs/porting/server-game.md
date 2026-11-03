@@ -34,7 +34,7 @@ The port preserves the original directory layout (`src/server/GameServer` beside
 
 ## Status (2026-10-31, branch `server/game-run`)
 
-**Runs on Linux** from the directory assembled by `x2_run_game` ([Run directories](../tools/runtime.md)): connects to four Docker
+**Runs on Linux** from the directory assembled by `x2_run_game` ([Server package](../tools/runtime.md)): connects to four Docker
 SQL Server databases (FreeTDS), loads scripts from `ServerResource` and `ClientScript` generated from the client (production-data load
 errors are in [Original bugs](../original/bugs.md#data-serverresource-clientscript)), authenticates to DB (UID 2, "Game"), receives
 Center (9100), Login (9200), and Global (9500) lists, attempts to connect, and reaches ready state (`OnServerReadyComplete`), with Lua

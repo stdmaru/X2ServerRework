@@ -81,7 +81,7 @@ python3 tools/import/check_equivalence.py server                      # verify r
 python3 tools/docs/check_links.py                                     # wiki links
 docker compose -f docker/docker-compose.yml up -d --wait              # development SQL Server
 docker/mssql/restore.sh                                               # restore _database/*.bak to it
-docker/build.sh cmake --build --preset linux-debug --target x2_run_channel  # create build/linux-debug/run/ChannelServer
+docker/build.sh cmake --build --preset linux-debug --target x2_run_channel  # create dist/ChannelServer
 docker/build.sh cmake --build --preset linux-debug --target x2_run_epublisher  # likewise, EPublisherServer (DEB login/cash, T23)
 ```
 

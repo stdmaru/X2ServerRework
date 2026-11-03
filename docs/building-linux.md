@@ -88,8 +88,8 @@ in only one environment, and Ninja does not rebuild just because the compiler ha
 ## 3. Output
 
 - Executables in `build/<preset>/src/server/<Server>/`.
-- **Ready-to-run folders** in `build/<preset>/run/<Server>/`: executable, filled configs, and scripts.
-  Normal build assembles these (`X2_RUN_FOLDERS`). See [Run the servers](running.md).
+- **Server package** in `dist/`: executables, filled configs, and scripts.
+  Normal build assembles it (`X2_DIST_FOLDERS`). See [Run the servers](running.md).
 - A no-op build takes less than a second; subsequent builds rebuild only what has changed.
 
 ## Common issues

@@ -25,9 +25,10 @@ docker/build.sh cmake --preset linux-gcc && docker/build.sh cmake --build --pres
 
 - The repository is mounted **at the same path** as on the host, so `build/` and `compile_commands.json` are available to the host editor.
 - Runs as host user (files under `build/` are not root-owned). Container `HOME`, with ccache, is `~/.cache/x2-build` (`X2_BUILD_HOME` changes it).
-- Passes host and `docker/.env` `X2_*` variables into container (shell variable wins; template at `docker/.env.example`),
-  e.g. DB password for CMake ([Run directories](runtime.md#template-values-cmake-cache)). `winbuild.sh` also reads `docker/.env`
-  (`X2_WIN_HOST`, `X2_WIN_DIR`).
+- Loads `docker/.env` and passes its `X2_*` variables into the build container (shell variable wins; template at
+  `docker/.env.example`). CMake uses them while configuring and assembling `dist/`; generated configs and `.dsn` files retain those
+  values until the next configure. See [Server package](runtime.md#template-values-cmake-cache). `winbuild.sh` also reads
+  `docker/.env` (`X2_WIN_HOST`, `X2_WIN_DIR`).
 - Host networking (`--network host`): `db` test suite and servers reach [development DB](development-database.md) at `127.0.0.1`;
   original client reaches servers as before.
 - stdin is always connected (`-i`, and `-it` in a terminal): without terminal, server Lua prompt exits at EOF, so a server started here

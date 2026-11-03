@@ -40,27 +40,32 @@ server address, ODBC driver, or client directory), copy the template and edit th
 cp docker/.env.example docker/.env
 ```
 
-`docker/.env` is not versioned. It is read by `docker compose`, `docker/build.sh`, `restore.sh`, and CMake.
-Shell variable takes precedence over file. Changes apply on next configure (`cmake --preset <preset>`).
-[`docker/.env.example`](../docker/.env.example) describes each variable.
+`docker/.env` is not versioned. `docker/build.sh` loads it for CMake configuration and package assembly; the server Compose file
+(`docker/server/docker-compose.yml`) loads it into server containers when they start. Database Compose and `restore.sh` use its DB
+settings too. Values used to generate configs and `.dsn` files are baked into `dist/` at configure/build time; process environment
+values are read at runtime only where a server explicitly checks them. When starting servers directly on the host, load the file into
+the shell first (`set -a; source docker/.env; set +a`). Shell variables override file values, and Compose service-level environment
+settings override `env_file`. [`docker/.env.example`](../docker/.env.example) describes the variables and when they apply.
 
-## 3. Server directories
+## 3. Server package
 
-Build assembles ready-to-run directory for each server under `build/<preset>/run/`:
+Build assembles the server package under repository-root `dist/`:
 
 ```text
-build/linux-debug/run/
+dist/
 ├── ServerResource/      server scripts (from repository)
 ├── ClientScript/        scripts generated from the client
 ├── EPublisherServer/    executable + config_*_DEV.lua + .dsn (already pointed at DB)
 ├── ChannelServer/
 ├── LoginServer/
 ├── CenterServer/
-└── GameServer/
+├── GameServer/
+├── GlobalServer/
+└── x2ctl
 ```
 
 To assemble only one: `docker/build.sh cmake --build --preset linux-debug --target x2_run_game`.
-These run directories are for development, not deployment to another machine. See [Run directories](tools/runtime.md) for details.
+The package contains the configured server folders and shared scripts. See [Server package](tools/runtime.md) for details.
 
 ## 4. Start servers
 
@@ -68,12 +73,12 @@ Start each server in its own directory, using a separate terminal for each. The 
 (`DEV` reads `config_*_DEV.lua`); the second is the server group:
 
 ```bash
-cd build/linux-debug/run/EPublisherServer && ./EPublisherServer DEV
-cd build/linux-debug/run/ChannelServer    && ./ChannelServer DEV 0
-cd build/linux-debug/run/LoginServer      && ./LoginServer DEV 0
-cd build/linux-debug/run/CenterServer     && ./CenterServer DEV 0
-cd build/linux-debug/run/GameServer       && ./GameServer DEV 0
-cd build/linux-debug/run/GlobalServer     && ./GlobalServer DEV 0
+cd dist/EPublisherServer && ./EPublisherServer DEV
+cd dist/ChannelServer    && ./ChannelServer DEV 0
+cd dist/LoginServer      && ./LoginServer DEV 0
+cd dist/CenterServer     && ./CenterServer DEV 0
+cd dist/GameServer       && ./GameServer DEV 0
+cd dist/GlobalServer     && ./GlobalServer DEV 0
 ```
 
 ### Network ports
@@ -99,8 +104,8 @@ reachable by service name over the private `x2-net` network and have no publishe
 
 Game-server TCP/UDP ports come from `Statistics.dbo.LServerList` (and the addresses sent by ChannelServer come from
 `Statistics.dbo.LChannelList`); the Compose mappings must match those database values. EPublisherServer's port comes from
-`X2_RUN_EPUBLISHER_PORT`, and its URL is used by the other servers. For clients outside the host, configure the advertised server
-address as a reachable public IP (`X2_SERVER_IP`/`X2_RUN_SERVER_IP`), then regenerate the server configuration and restore/update the
+`X2_EPUBLISHER_PORT`, and its URL is used by the other servers. For clients outside the host, configure the advertised server
+address as a reachable public IP (`X2_SERVER_IP`/`X2_SERVER_IP`), then regenerate the server configuration and restore/update the
 database addresses. The default `127.0.0.1` is for local development and will not work for remote clients.
 
 - Startup order is flexible: GameServer retries LoginServer, CenterServer, and GlobalServer every 10 seconds. Login works only while
@@ -112,11 +117,11 @@ database addresses. The default `127.0.0.1` is for local development and will no
 - **Without a terminal** (stdin is a pipe or file), each line is treated as a command, and EOF causes the server to exit.
   To run as service/background, use `--no-stdin` (`./GameServer DEV 0 --no-stdin`): server waits for SIGTERM, SIGINT, or SIGHUP
   (on Windows, Ctrl+C or console close).
-- **Connect to an already-running server** (service or another terminal) through `run/x2ctl`: `x2ctl list`,
+- **Connect to an already-running server** (service or another terminal) through `dist/x2ctl`: `x2ctl list`,
   `x2ctl run GameServer 'print(1)'`, `x2ctl stop GameServer`, or `x2ctl attach GameServer` for log and JSON commands (also over `ssh`).
   Details, options (`--machine`, `--control=<name>`), and protocol in [Server console](porting/console.md).
 - Executables built in container also run directly on host distribution with unixODBC and FreeTDS. Only driver path changes:
-  `X2_RUN_ODBC_DRIVER` in `docker/.env`, e.g. `/usr/lib/libtdsodbc.so` on Arch.
+  `X2_ODBC_DRIVER` in `docker/.env`, e.g. `/usr/lib/libtdsodbc.so` on Arch.
 
 ## 5. Client
 

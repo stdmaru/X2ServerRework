@@ -35,7 +35,7 @@ Windows runner (T26). Linux CI includes native x86_64 and ARM64 runners.
 - **Dependencies**: image packages; LuaJIT via pinned-commit CMake recipe (T21); Asio, zlib, and doctest through pinned `FetchContent` (T13).
   `ccache` persisted between runs (`actions/cache`).
 - **Outside CI**: `KODBC` `db` suite (requires SQL Server: `X2_TEST_ODBC`, see [Development database](development-database.md)),
-  `ClientScript` generation (requires client, see [Run directories](runtime.md)). Repository has no
+  `ClientScript` generation (requires client, see [Server package](runtime.md)). Repository has no
   `_reference/`, `_client/`, or `_database/`, and CI depends on none of them.
 
 View results: `gh run list`, `gh run view --log-failed`.

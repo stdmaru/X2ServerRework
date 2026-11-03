@@ -13,7 +13,7 @@ custom Lua 5.1). It is considered part of original code: remains until Phase 5, 
 ## Status (2026-10-30)
 
 Builds without warnings (GCC, Clang, MinGW); tests pass on Linux and under Wine. Runs against Docker database: login `test`/`test`
-returns account 20004. Starts alongside ChannelServer (`run/` directory, see [Run directories](../tools/runtime.md)).
+returns account 20004. Starts alongside ChannelServer (`dist/` directory, see [Server package](../tools/runtime.md)).
 
 ## Protocol
 

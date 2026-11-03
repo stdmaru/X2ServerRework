@@ -54,7 +54,7 @@ both platforms instead of using *named pipes* on Windows:
 
 ## `x2ctl`
 
-Built with the servers and copied to `run/x2ctl`. Tested on Linux and Windows (2026-10-31); on Windows, arguments are read as UTF-16
+Built with the servers and copied to `dist/x2ctl`. Tested on Linux and Windows (2026-10-31); on Windows, arguments are read as UTF-16
 (`x2::platform::Utf8Arguments`), otherwise Korean text passed to `x2ctl run` arrived as `?`.
 
 | Command | Action |

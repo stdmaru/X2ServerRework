@@ -1,6 +1,6 @@
-[Home](../README.md) › [Tools](README.md) › Run directories (`runtime/`)
+[Home](../README.md) › [Tools](README.md) › Server package (`dist/`)
 
-# Run directories (`runtime/`, `x2_run_*`)
+# Server package (`dist/`, `x2_run_*`)
 
 Decision T22 in [Decisions](../project/decisions.md). Created on 2026-10-30 for `server/channel-run`. Nothing here depends on
 `_reference`, which will be deleted: everything the servers read is either versioned under `runtime/` or generated from the client
@@ -10,41 +10,41 @@ Decision T22 in [Decisions](../project/decisions.md). Created on 2026-10-30 for 
 
 ```bash
 docker compose -f docker/docker-compose.yml up -d --wait && docker/mssql/restore.sh   # database (see Development database)
-cmake --build --preset linux-debug                                                   # build and assemble all run directories
+cmake --build --preset linux-debug                                                   # build and assemble dist/
 cmake --build --preset linux-debug --target x2_run_channel                           # or only one
-cd build/linux-debug/run/ChannelServer && ./ChannelServer DEV 0                      # tag DEV, server group 0
+cd dist/ChannelServer && ./ChannelServer DEV 0                      # tag DEV, server group 0
 cmake --build --preset linux-debug --target x2_run_game                              # GameServer (port 9300)
-cd build/linux-debug/run/GameServer && ./GameServer DEV 0
+cd dist/GameServer && ./GameServer DEV 0
 cmake --build --preset linux-debug --target x2_run_login                             # LoginServer (port 9200)
-cd build/linux-debug/run/LoginServer && ./LoginServer DEV 0
+cd dist/LoginServer && ./LoginServer DEV 0
 cmake --build --preset linux-debug --target x2_run_center                            # CenterServer (port 9100)
-cd build/linux-debug/run/CenterServer && ./CenterServer DEV 0
+cd dist/CenterServer && ./CenterServer DEV 0
 cmake --build --preset linux-debug --target x2_run_global                            # GlobalServer (port 9500)
-cd build/linux-debug/run/GlobalServer && ./GlobalServer DEV 0
+cd dist/GlobalServer && ./GlobalServer DEV 0
 ```
 
 Login goes through EPublisherServer ([Server: EPublisherServer](../porting/server-epublisher.md)), which must be running:
 
 ```bash
 cmake --build --preset linux-debug --target x2_run_epublisher
-cd build/linux-debug/run/EPublisherServer && ./EPublisherServer DEV     # port 8000 (X2_RUN_EPUBLISHER_PORT)
+cd dist/EPublisherServer && ./EPublisherServer DEV     # port 8000 (X2_EPUBLISHER_PORT)
 ```
 
-Since 2026-10-31, normal builds assemble all server directories (`X2_RUN_FOLDERS`, ON by default, adds `x2_run_*` to `ALL`) in all
-presets. Incremental builds use a stamp to regenerate `ClientScript` only when the client changes, and copy files only when needed;
-a no-op build takes less than a second. Without the client (`X2_CLIENT_DATA`), `ClientScript` is skipped with a warning. CI configures
-with `-DX2_RUN_FOLDERS=OFF` (no client or database).
+Normal builds assemble all server directories under repository-root `dist/` (`X2_DIST_FOLDERS`, ON by default, adds `x2_run_*` to
+`ALL`) for every preset. The destination is shared by presets. Incremental builds use a stamp to regenerate `ClientScript` only when
+the client changes, and copy files only when needed. Without the client (`X2_CLIENT_DATA`), `ClientScript` is skipped with a warning.
+CI configures with `-DX2_DIST_FOLDERS=OFF` (no client or database).
 
-These are **development environments** (with a local database, an ODBC driver, and the client from the build machine), not deployment
-packages. Creating a release package with configuration templates is a separate step (`cmake --install`, not implemented yet).
+`dist/` is the assembled package for running and testing the servers. CMake writes the selected database settings, local ODBC driver,
+and client paths into its configs and `.dsn` files during configuration/build.
 
 ## Assembled layout
 
 | Directory | Source |
 |---|---|
-| `build/<preset>/run/ServerResource/` | copy of `runtime/ServerResource/` |
-| `build/<preset>/run/ClientScript/` | generated from `X2_CLIENT_DATA` `.kom` by `tools/runtime/gen_clientscript.py` |
-| `build/<preset>/run/<Server>/` | executable, files from `runtime/<Server>/`, filled `*.in` templates; empty `Statistics/` |
+| `dist/ServerResource/` | copy of `runtime/ServerResource/` |
+| `dist/ClientScript/` | generated from `X2_CLIENT_DATA` `.kom` by `tools/runtime/gen_clientscript.py` |
+| `dist/<Server>/` | executable, files from `runtime/<Server>/`, filled `*.in` templates; empty `Statistics/` |
 
 Configs point to `../ServerResource` and `../ClientScript` (`SimLayer:AddPath`), as original pointed to `C:\Elsword\...`.
 
@@ -62,31 +62,34 @@ Configs point to `../ServerResource` and `../ClientScript` (`SimLayer:AddPath`),
 
 | Variable | Default | Used in |
 |---|---|---|
-| `X2_RUN_DIR` | `build/<preset>/run` | destination |
+| `X2_DIST_DIR` | `<repository>/dist` | package destination, shared by presets |
 | `X2_CLIENT_DATA` | `_client/data` | `ClientScript` source |
-| `X2_RUN_DB_SERVER`, `X2_RUN_DB_USER`, `X2_RUN_DB_PASSWORD` | `127.0.0.1,<X2_DB_PORT or 1433>`, `sa`, development password from `docker-compose.yml` | `.dsn` |
-| `X2_RUN_DB_NAME_PREFIX` | empty | Prefix for database names in `.dsn` files. Set to `Elsword-` if the restored databases are named `Elsword-Account`, `Elsword-Statistics`, etc. (2026-10-31) |
-| `X2_RUN_ODBC_DRIVER`, `X2_RUN_ODBC_OPTIONS` | FreeTDS (`libtdsodbc.so`, found by `find_library` in `/usr/lib` on Arch or `/usr/lib/<triplet>/odbc` on Ubuntu; `TDS_Version=7.4;ClientCharset=UTF-8`) if available, else ODBC Driver 18 (`Encrypt=yes;TrustServerCertificate=yes`) | `DBLayer:SetODBCDriver/SetODBCOptions` |
-| `X2_RUN_SERVER_IP` | `127.0.0.1` | `SetLocalIP` (the address the server registers in the database) |
-| `X2_RUN_EPUBLISHER_PORT`, `X2_RUN_EPUBLISHER_URL` | `8000`, `http://127.0.0.1:8000/` | EPublisherServer port; server `DEBAuthManager:AddAuthServiceAddress` |
+| `X2_DB_SERVER`, `X2_DB_USER`, `X2_DB_PASSWORD` | `127.0.0.1,<X2_DB_PORT or 1433>`, `sa`, development password from `docker-compose.yml` | `.dsn` |
+| `X2_ODBC_DRIVER`, `X2_ODBC_OPTIONS` | FreeTDS (`libtdsodbc.so`, found by `find_library` in `/usr/lib` on Arch or `/usr/lib/<triplet>/odbc` on Ubuntu; `TDS_Version=7.4;ClientCharset=UTF-8`) if available, else ODBC Driver 18 (`Encrypt=yes;TrustServerCertificate=yes`) | `DBLayer:SetODBCDriver/SetODBCOptions` |
+| `X2_SERVER_IP` | `127.0.0.1` | `SetLocalIP` (the address the server registers in the database) |
+| `X2_EPUBLISHER_PORT`, `X2_EPUBLISHER_URL` | `8000`, `http://127.0.0.1:8000/` | EPublisherServer port; server `DEBAuthManager:AddAuthServiceAddress` |
+| `X2_SERVERRESOURCE_DIR`, `X2_CLIENTSCRIPT_DIR` | `../ServerResource`, `../ClientScript` | Resource search paths baked into config templates; server processes can override them from their environment at runtime |
+| `X2_GAMESERVER_PORT` | `9300` | GameServer client-facing port read from process environment at runtime; Docker Compose sets it per GameServer instance |
 
-Password exists only in cache and generated files under `build/`, never in git.
+The database password is written to the CMake cache and generated `.dsn` files under `dist/`; both locations are ignored by git.
 
-**Files under `run/<Server>/` are regenerated on every build** (`copy_if_different`): hand edits to `.dsn` files or configs there are
+**Files under `dist/<Server>/` are regenerated on every build** (`copy_if_different`): hand edits to `.dsn` files or configs there are
 replaced by the template on the next build (as happened on the Windows VM on 2026-10-31). To use another database or address, change
 the variables above and reconfigure.
-On Windows, `ClientScript` is not generated (requires `luajit` and client): copy it from a Linux build to `run/ClientScript`.
+On Windows, `ClientScript` is not generated (requires `luajit` and client): copy it from a Linux build to `dist/ClientScript`.
 
-**Environment variables and `docker/.env`** (2026-10-31): each variable in the table can also be set through an environment variable
-with the same name, which **overrides the cache on every configure** (`x2_env_cache` in `cmake/X2Runtime.cmake`); otherwise, the
-cache value (`-D` or default) is used.
-Three names are also read by `docker compose` and `restore.sh`: password from `X2_DB_PASSWORD`, address from `X2_SERVER_IP`, and
-`X2_RUN_DB_SERVER` port from `X2_DB_PORT`. Empty values are ignored; relative paths are resolved from repository root.
-`docker/build.sh` passes all `X2_*` variables from the environment and `docker/.env` (not versioned; template with all variables in
-`docker/.env.example`) into the container. Changes take effect on the next configure (`cmake --preset <preset>`) and are then cached.
+**One `docker/.env` for build and runtime:** `docker/build.sh` loads this file and passes its `X2_*` variables to CMake, where
+non-empty environment values override the preset cache at configure time (`x2_env_cache` in `cmake/X2Runtime.cmake`). The generated
+configs and `.dsn` files then keep those values in `dist/`. The development server Compose file
+(`docker/server/docker-compose.yml`) also loads `docker/.env` into each server container at startup. Runtime environment lookups,
+including resource path overrides, can use those values. `X2_GAMESERVER_PORT` is assigned per instance in the Compose file, whose
+service-level `environment` entries override values from `env_file`. A direct host launch does not load `.env` automatically; export
+its values in the shell first.
+Docker Compose and `restore.sh` also use `X2_DB_PASSWORD`, `X2_DB_PORT`, and `X2_SERVER_IP` for the development database.
+Empty values are ignored by CMake; relative paths are resolved from repository root. See [`.env.example`](../../docker/.env.example).
 
 **Run on the host** (for testing, without Docker): the binary built in the image runs directly on a distribution with the same
-libraries (unixODBC, FreeTDS); only the driver path changes. Configure with `-DX2_RUN_ODBC_DRIVER=/usr/lib/libtdsodbc.so`
+libraries (unixODBC, FreeTDS); only the driver path changes. Configure with `-DX2_ODBC_DRIVER=/usr/lib/libtdsodbc.so`
 (Arch, 2026-10-31) and assemble the directories again (`x2_run_*`). The host's `gdb` provides a crash backtrace:
 `gdb -batch -ex run -ex bt --args ./GameServer DEV 0`.
 
