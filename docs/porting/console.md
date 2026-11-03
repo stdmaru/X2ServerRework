@@ -24,6 +24,8 @@ to the server as arguments: `--no-stdin`, `--machine`, `--control=<name>` (socke
 
 - Lua-like `lua.c` command behavior: an expression prints its value (`1+1` → `2`), otherwise it runs as a statement; errors appear in red in terminal mode.
   The original called `luaL_dostring` and discarded errors.
+- In interactive terminal mode, `print()` output is captured by the console and written directly above the prompt, matching the control-socket
+  command path. It does not depend on the process-wide stdout pipe used for unrelated output.
 - Keys typed during loading wait for the prompt; Ctrl+C during that time asks for confirmation as soon as the prompt appears.
 - SIGTERM and console close exit without asking. On Windows, console close allows ~5 seconds for `ShutDown` (system limit).
 - In a terminal, a fatal failure (SIGSEGV, SIGABRT...) restores terminal mode before exit, so the shell is not left in raw mode.

@@ -27,6 +27,30 @@ int Load( lua_State* L, const std::string& line )
     return luaL_loadbuffer( L, line.data(), line.size(), "=stdin" );
 }
 
+// print() of a protocol command (or the terminal prompt): like Lua's, into output.
+int CapturePrint( lua_State* L )
+{
+    std::string& out = *static_cast<std::string*>( lua_touserdata( L, lua_upvalueindex( 1 ) ) );
+    const int n = lua_gettop( L );
+    lua_getglobal( L, "tostring" );
+    for( int i = 1; i <= n; ++i )
+    {
+        lua_pushvalue( L, -1 );
+        lua_pushvalue( L, i );
+        lua_call( L, 1, 1 );
+        size_t len = 0;
+        const char* s = lua_tolstring( L, -1, &len );
+        if( !s )
+            return luaL_error( L, "'tostring' must return a string to 'print'" );
+        if( i > 1 )
+            out += '\t';
+        out.append( s, len );
+        lua_pop( L, 1 );
+    }
+    out += '\n';
+    return 0;
+}
+
 // Runs one command; returns the error message, empty on success. Results go through Lua's print.
 std::string Execute( lua_State* L, const std::string& line )
 {
@@ -55,28 +79,19 @@ std::string Execute( lua_State* L, const std::string& line )
     return error;
 }
 
-// print() of a protocol command: like Lua's, into the string of the upvalue.
-int CapturePrint( lua_State* L )
+// Captures print() instead of relying on the process-wide stdout redirection.
+std::string ExecuteCapturingPrint( lua_State* L, const std::string& line, std::string& output )
 {
-    std::string& out = *static_cast<std::string*>( lua_touserdata( L, lua_upvalueindex( 1 ) ) );
-    const int n = lua_gettop( L );
-    lua_getglobal( L, "tostring" );
-    for( int i = 1; i <= n; ++i )
-    {
-        lua_pushvalue( L, -1 );
-        lua_pushvalue( L, i );
-        lua_call( L, 1, 1 );
-        size_t len = 0;
-        const char* s = lua_tolstring( L, -1, &len );
-        if( !s )
-            return luaL_error( L, "'tostring' must return a string to 'print'" );
-        if( i > 1 )
-            out += '\t';
-        out.append( s, len );
-        lua_pop( L, 1 );
-    }
-    out += '\n';
-    return 0;
+    lua_getglobal( L, "print" );
+    const int savedPrint = luaL_ref( L, LUA_REGISTRYINDEX );
+    lua_pushlightuserdata( L, &output );
+    lua_pushcclosure( L, CapturePrint, 1 );
+    lua_setglobal( L, "print" );
+    const std::string error = Execute( L, line );
+    lua_rawgeti( L, LUA_REGISTRYINDEX, savedPrint );
+    lua_setglobal( L, "print" );
+    luaL_unref( L, LUA_REGISTRYINDEX, savedPrint );
+    return error;
 }
 
 struct Command
@@ -183,15 +198,7 @@ struct KServerConsole::Impl
         }
         // print goes to the reply instead of stdout while the command runs
         std::string output;
-        lua_getglobal( L, "print" );
-        const int savedPrint = luaL_ref( L, LUA_REGISTRYINDEX );
-        lua_pushlightuserdata( L, &output );
-        lua_pushcclosure( L, CapturePrint, 1 );
-        lua_setglobal( L, "print" );
-        const std::string error = Execute( L, command.lua );
-        lua_rawgeti( L, LUA_REGISTRYINDEX, savedPrint );
-        lua_setglobal( L, "print" );
-        luaL_unref( L, LUA_REGISTRYINDEX, savedPrint );
+        const std::string error = ExecuteCapturingPrint( L, command.lua, output );
 
         Reply( command.client, "{\"type\":\"result\",\"id\":" + command.id + ",\"ok\":" + ( error.empty() ? "true" : "false" )
                                + ",\"output\":" + JsonString( output ) + ",\"error\":" + JsonString( error ) + "}" );
@@ -327,7 +334,12 @@ void KServerConsole::Run( lua_State* L, std::function<bool()> ready )
                     d.Reply( -1, "{\"type\":\"result\",\"id\":null,\"ok\":false,\"output\":\"\",\"error\":\"not a command\"}" );
                 continue;
             }
-            const std::string error = Execute( L, *line );
+            std::string output;
+            const std::string error = d.interactive
+                ? ExecuteCapturingPrint( L, *line, output )
+                : Execute( L, *line );
+            if( !output.empty() && d.interactive )
+                d.terminal->Write( output );
             if( error.empty() )
                 continue;
             if( d.interactive )
