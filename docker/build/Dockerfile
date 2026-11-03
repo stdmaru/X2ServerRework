@@ -8,7 +8,7 @@ FROM ubuntu:26.04
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
-        build-essential clang clangd clang-format cmake ninja-build pkg-config ccache git ca-certificates python3 gdb shellcheck \
+        build-essential nano clang clangd clang-format cmake ninja-build pkg-config ccache git ca-certificates python3 gdb shellcheck \
         unixodbc-dev tdsodbc \
  && rm -rf /var/lib/apt/lists/* \
  && mkdir -p /home/ubuntu/.cache/x2-build/ccache \

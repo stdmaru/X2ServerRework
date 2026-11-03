@@ -4,6 +4,7 @@
     "dockerfile": "../docker/build/Dockerfile",
     "context": ".."
   },
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
   "workspaceFolder": "/workspace",
   "runArgs": [
     "--network=host",
@@ -22,8 +23,7 @@
         "ms-python.vscode-pylance",
         "ms-vscode.cmake-tools",
         "ms-vscode.cpptools",
-        "timonwong.shellcheck",
-        "opendaemon.opendaemon"
+        "timonwong.shellcheck"
       ],
       "settings": {
         "cmake.useCMakePresets": "always",
