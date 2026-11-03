@@ -14,6 +14,7 @@ Phase 2  Server  → Linux/Windows, tested with original client
 Phase 3  Client  → platform layer (SDL) + graphics abstraction
 Phase 4  Client  → new graphics backend (Vulkan / SDL_GPU)
 Phase 5  Deep cleanup / reorganization
+Phase 6  Server  → compile-time compatibility with selected historical clients
 ```
 
 ## Phase 0 — New repo + importer
@@ -138,3 +139,19 @@ Real refactoring (remove dead systems, reorganize folders and names), guided by 
 from the previous phases. Only after everything runs.
 
 - [ ] Fix the [original bugs](../original/bugs.md) retained in the port, each with a decision about the new behavior.
+
+## Phase 6 — Server: historical client compatibility
+
+Goal: keep one codebase that can be built for one selected client/protocol revision at a time, starting with the current
+2014 baseline and adding the selected 2015 revision. This does not require one running server binary to support both
+protocols simultaneously. See [Client compatibility](client-compatibility.md) for the preliminary comparison and open
+investigation.
+
+- [ ] Identify and normalize the exact 2014 and 2015 US / `_SERVICE_` source configurations; separate version changes
+  from region, publisher, debug, and unrelated feature-flag differences.
+- [ ] Inventory protocol differences, including handshake, packet IDs, layouts, serialization, and client version
+  validation.
+- [ ] Trace the new character and related features across shared code, servers, scripts/assets, and database schema.
+- [ ] Define a CMake-selected protocol revision and version-specific runtime data layout.
+- [ ] Port selected 2015 changes into the current codebase while preserving the 2014 build.
+- [ ] Build both configurations and validate each against its matching client.
