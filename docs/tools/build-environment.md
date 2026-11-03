@@ -16,9 +16,10 @@ compiler and system dependencies. Windows (clang-cl, T26) is not built here: onl
 ### Dev Container
 
 Open the repository in VS Code with the Dev Containers extension and choose **Reopen in Container**. Docker Compose 2.24 or newer builds
-the same `docker/build/Dockerfile` used by `docker/build.sh`; source files remain in the workspace, and a host cache directory preserves
-ccache between container sessions. On Linux, the container user is adjusted to match the host UID so generated files stay
-writable. The container uses host networking, allowing builds and tests to reach the development database at `127.0.0.1`.
+the same `docker/build/Dockerfile`, repository-root build context, and default `x2-build` image tag as `docker/build.sh`. Source
+files remain in the workspace, and a host cache directory preserves ccache between container sessions. On Linux, the container
+user is adjusted to match the host UID so generated files stay writable. The container uses host networking, allowing builds and
+tests to reach the development database at `127.0.0.1`.
 
 If `docker/.env` exists, Compose passes its values into the container for CMake configuration and runtime use. To create it, copy
 `docker/.env.example` to `docker/.env` and edit the settings. The file is optional; shell environment variables can also be set in
