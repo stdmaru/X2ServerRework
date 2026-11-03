@@ -1,0 +1,17 @@
+{
+  "name": "X2ServerRework (Ubuntu)",
+  "dockerComposeFile": "compose.yaml",
+  "service": "dev",
+  "workspaceFolder": "/workspaces/X2ServerRework",
+  "updateRemoteUserUID": true,
+  "remoteUser": "vscode",
+  "shutdownAction": "stopCompose",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode.cmake-tools",
+        "ms-vscode.cpptools"
+      ]
+    }
+  }
+}

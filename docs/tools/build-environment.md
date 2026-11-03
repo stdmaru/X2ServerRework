@@ -3,8 +3,8 @@
 # Build environment (Ubuntu in Docker)
 
 Since 2026-10-30, Linux builds and tests have run in a custom **Ubuntu** image (decision T24), shared by development and
-[CI](ci.md). The host (any distribution with Docker) only mounts the repository. Windows (clang-cl, T26) is not built here:
-only in the Windows CI job.
+[CI](ci.md). The image is also the base for the **Dev Container** in `.devcontainer/`, so editor-based development uses the same
+compiler and system dependencies. Windows (clang-cl, T26) is not built here: only in the Windows CI job.
 
 - Image: `docker/build/Dockerfile`, based on `ubuntu:26.04` (26.04.1 LTS). As of 2026-10-30: Clang 21.1 (`linux-*` presets), GCC 15.2
   (`linux-gcc` preset, verification), CMake 4.2, Ninja 1.13, unixODBC 2.3 + FreeTDS (`tdsodbc`), Python 3, ccache.
@@ -12,6 +12,27 @@ only in the Windows CI job.
 - Every preset goes through `ccache` (`CMAKE_<LANG>_COMPILER_LAUNCHER` in image).
 
 ## Usage
+
+### Dev Container
+
+Open the repository in VS Code with the Dev Containers extension and choose **Reopen in Container**. Docker Compose 2.24 or newer builds
+the same `docker/build/Dockerfile` used by `docker/build.sh`; source files remain in the workspace, and a host cache directory preserves
+ccache between container sessions. On Linux, the container user is adjusted to match the host UID so generated files stay
+writable. The container uses host networking, allowing builds and tests to reach the development database at `127.0.0.1`.
+
+If `docker/.env` exists, Compose passes its values into the container for CMake configuration and runtime use. To create it, copy
+`docker/.env.example` to `docker/.env` and edit the settings. The file is optional; shell environment variables can also be set in
+the integrated terminal before configuring. Reconfigure a preset after changing CMake input values.
+
+Inside the container, use the same CMake commands as below, without the `docker/build.sh` prefix:
+
+```bash
+cmake --preset linux-debug
+cmake --build --preset linux-debug
+ctest --preset linux-debug
+```
+
+### `docker/build.sh`
 
 `docker/build.sh` runs a command inside a container; without arguments, it opens a shell. It builds the image on the first run
 (and whenever `Dockerfile` changes; otherwise, Docker's build cache makes startup nearly instant).
@@ -34,6 +55,9 @@ docker/build.sh cmake --preset linux-gcc && docker/build.sh cmake --build --pres
 - stdin is always connected (`-i`, and `-it` in a terminal): without terminal, server Lua prompt exits at EOF, so a server started here
   stays up while stdin remains open (e.g. `(sleep 600) | docker/build.sh ...`) or with `--no-stdin`.
 - A `build/` directory configured outside container (another compiler) should be deleted before use: Ninja does not rebuild objects only because compiler version changed.
+
+The Dev Container is an editor-integrated way to work in the same Ubuntu build environment. `docker/build.sh` remains available for
+terminal-only workflows and CI continues to use the image directly.
 
 ## Windows (clang-cl) over SSH
 
