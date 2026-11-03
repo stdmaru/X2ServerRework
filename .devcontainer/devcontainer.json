@@ -4,7 +4,7 @@
     "dockerfile": "../docker/build/Dockerfile",
     "context": ".."
   },
-  "workspaceFolder": "/workspaces/X2ServerRework",
+  "workspaceFolder": "/workspace",
   "runArgs": [
     "--network=host",
     "--env-file=${localWorkspaceFolder}/docker/.env"
@@ -22,7 +22,8 @@
         "ms-python.vscode-pylance",
         "ms-vscode.cmake-tools",
         "ms-vscode.cpptools",
-        "timonwong.shellcheck"
+        "timonwong.shellcheck",
+        "opendaemon.opendaemon"
       ],
       "settings": {
         "cmake.useCMakePresets": "always",

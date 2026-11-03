@@ -1,0 +1,35 @@
+{
+  "version": "1.0",
+  "services": {
+    "epublisher": {
+      "command": "/bin/bash -c 'cd dist/EPublisherServer && exec ./EPublisherServer DEV'",
+      "depends_on": [],
+      "ready_when": null
+    },
+    "global": {
+      "command": "/bin/bash -c 'cd dist/GlobalServer && exec ./GlobalServer DEV 0'",
+      "depends_on": [],
+      "ready_when": null
+    },
+    "login": {
+      "command": "/bin/bash -c 'cd dist/LoginServer && exec ./LoginServer DEV 0'",
+      "depends_on": [],
+      "ready_when": null
+    },
+    "center": {
+      "command": "/bin/bash -c 'cd dist/CenterServer && exec ./CenterServer DEV 0'",
+      "depends_on": [],
+      "ready_when": null
+    },
+    "channel": {
+      "command": "/bin/bash -c 'cd dist/ChannelServer && exec ./ChannelServer DEV 0'",
+      "depends_on": [],
+      "ready_when": null
+    },
+    "game_01": {
+      "command": "/bin/bash -c 'cd dist/GameServer && exec ./GameServer DEV 0'",
+      "depends_on": [],
+      "ready_when": null
+    }
+  }
+}
