@@ -20,16 +20,17 @@ Collation `Latin1_General_CI_AS`, compatibility level 100 (SQL Server 2008). Ori
 ## Usage
 
 ```bash
-docker compose -f docker/docker-compose.yml up -d --wait     # start (creates volume first time)
+docker compose -f docker/mssql/docker-compose.yml up -d --wait     # start (creates volume first time)
 docker/mssql/restore.sh                                       # restore all _database/*.bak (replaces databases)
-docker compose -f docker/docker-compose.yml stop              # stop; data remains in x2-mssql-data volume
-docker compose -f docker/docker-compose.yml down -v           # remove container and volume
+docker compose -f docker/mssql/docker-compose.yml stop              # stop; data remains in x2-mssql-data volume
+docker compose -f docker/mssql/docker-compose.yml down -v           # remove container and volume
 ```
 
 - Listens only on `127.0.0.1:1433` (`X2_DB_PORT` changes port). User `sa`; default development password is in
-  `docker/docker-compose.yml` and can be changed with `X2_DB_PASSWORD` (before first `up`, and also in `restore.sh`). Variables may
+  `docker/mssql/docker-compose.yml` and can be changed with `X2_DB_PASSWORD` (before first `up`, and also in `restore.sh`). Variables may
   be in `docker/.env` (not versioned; template `docker/.env.example`), read by `docker compose`, `restore.sh`, `docker/build.sh`,
-  and CMake; shell value takes precedence over file (2026-10-31).
+  and CMake; shell value takes precedence over file. The server Compose file also loads this same file into server containers at
+  startup, while settings baked into generated configs and `.dsn` files require a new configure/build to change.
 - The server containers also publish their client-facing ports on all host interfaces; the inter-server listeners are not published.
   This Compose file is for development, not a production deployment. See [Run the servers › Network ports](../running.md#network-ports)
   for the port list and public firewall guidance.

@@ -76,7 +76,7 @@ Also under `_reference/` (read-only, outside git):
 
 | Folder | Contents |
 |---|---|
-| `_original-server/` | Compiled server as it runs today: `.exe`, `config_*.ini` (CP949), `.dsn`, and `.lua` scripts (UTF-8 with BOM) it loads. Its `ServerResource` is versioned under `runtime/`; its `ClientScript` comes from another client version ([Run directories](../tools/runtime.md)) |
+| `_original-server/` | Compiled server as it runs today: `.exe`, `config_*.ini` (CP949), `.dsn`, and `.lua` scripts (UTF-8 with BOM) it loads. Its `ServerResource` is versioned under `runtime/`; its `ClientScript` comes from another client version ([Server package](../tools/runtime.md)) |
 | `AuthServer/` | Source of the DEB SOAP authentication/billing server (`_DEB_AUTH`), written by the project owner. Used for now; should be removed in a future phase |
 
 At the root, `_database/` (outside git): SQL Server backups of the game databases (`Account`, `Game01`, `ES_BILLING`, `Statistics`),

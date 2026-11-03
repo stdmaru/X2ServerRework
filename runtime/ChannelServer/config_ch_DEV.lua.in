@@ -4,10 +4,10 @@
 -- x2_run_channel target (docs/tools/runtime.md).
 
 -- address this server announces; the DB (Statistics.LServerList.PublicIP) identifies the servers by it --
-SetLocalIP( "@X2_RUN_SERVER_IP@" )
+SetLocalIP( "@X2_SERVER_IP@" )
 
 ----------     Authentication (DEB, served by the EPublisherServer)     ----------
-DEBAuthManager:AddAuthServiceAddress("@X2_RUN_EPUBLISHER_URL@")
+DEBAuthManager:AddAuthServiceAddress("@X2_EPUBLISHER_URL@")
 DEBAuthManager:Init(1)
 
 ----------     Channel SimLayer     ----------
@@ -51,16 +51,16 @@ SimLayer:SetCheckIPMode( CIM_SERVICE_MODE )		-- service mode
 -- whether IPs are checked
 SimLayer:SetCheckIPType( CIT_ALL_IP_ALLOW )
 
--- Script File Path (relative to this folder: build/<preset>/run/ChannelServer) --
-SimLayer:AddPath( "../ServerResource" ) -- server common
-SimLayer:AddPath( "../ClientScript" ) -- client script, generated from the client data
+-- Script File Path (relative to this folder: dist/ChannelServer) --
+SimLayer:AddPath( os.getnev("X2_SERVERRESOURCE_DIR") or "@X2_SERVERRESOURCE_DIR@" ) -- server common
+SimLayer:AddPath( os.getnev("X2_CLIENTSCRIPT_DIR") or "@X2_CLIENTSCRIPT_DIR@" ) -- client script, generated from the client data
 
 
 ----------     DB Layer     ----------
 
 -- ODBC driver (docs/porting/server-common-db.md); must come before AddDB --
-DBLayer:SetODBCDriver( "@X2_RUN_ODBC_DRIVER@" )
-DBLayer:SetODBCOptions( "@X2_RUN_ODBC_OPTIONS@" )
+DBLayer:SetODBCDriver( "@X2_ODBC_DRIVER@" )
+DBLayer:SetODBCOptions( "@X2_ODBC_OPTIONS@" )
 
 -- databases --
 --[[

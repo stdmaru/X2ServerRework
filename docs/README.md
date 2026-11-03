@@ -16,7 +16,7 @@ For those who just want to build and run the project (also linked from the root 
 
 - [Build on Linux](building-linux.md): using Docker or building natively, with packages for each distribution.
 - [Build on Windows](building-windows.md): Visual Studio 2026 with clang-cl.
-- [Run the servers](running.md): database, local settings, run directories, servers, and client.
+- [Run the servers](running.md): database, local settings, the server package, servers, and client.
 
 ## Areas
 

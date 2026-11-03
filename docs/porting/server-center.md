@@ -35,7 +35,7 @@ The port preserves the original directory layout (`src/server/CenterServer` besi
 
 ## Status (2026-10-31, branch `server/center-run`)
 
-**Runs on Linux** from the directory assembled by `x2_run_center` ([Run directories](../tools/runtime.md)): connects to three databases
+**Runs on Linux** from the directory assembled by `x2_run_center` ([Server package](../tools/runtime.md)): connects to three databases
 (`Account`, `Game01`, `Statistics`), loads scripts (dungeon and line-map load errors already listed under
 [Original bugs](../original/bugs.md#data-serverresource-clientscript)), authenticates to DB, and reaches ready state; GameServer
 connects to it (port 9100). Exits with code 0 (see [Run the servers](../running.md)).
