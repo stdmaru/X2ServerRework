@@ -1,17 +1,38 @@
 {
   "name": "X2ServerRework (Ubuntu)",
-  "dockerComposeFile": "compose.yaml",
-  "service": "dev",
+  "build": {
+    "dockerfile": "../docker/build/Dockerfile",
+    "context": ".."
+  },
   "workspaceFolder": "/workspaces/X2ServerRework",
+  "runArgs": [
+    "--network=host",
+    "--env-file=${localWorkspaceFolder}/docker/.env"
+  ],
+  "mounts": [
+    "source=x2-build-cache,target=/home/ubuntu/.cache/x2-build,type=volume"
+  ],
   "updateRemoteUserUID": true,
-  "remoteUser": "vscode",
-  "shutdownAction": "stopCompose",
+  "remoteUser": "ubuntu",
   "customizations": {
     "vscode": {
       "extensions": [
+        "llvm-vs-code-extensions.vscode-clangd",
+        "ms-python.python",
+        "ms-python.vscode-pylance",
         "ms-vscode.cmake-tools",
-        "ms-vscode.cpptools"
-      ]
+        "ms-vscode.cpptools",
+        "timonwong.shellcheck"
+      ],
+      "settings": {
+        "cmake.useCMakePresets": "always",
+        "cmake.configureOnOpen": true,
+        "cmake.exportCompileCommandsFile": true,
+        "cmake.copyCompileCommands": "${workspaceFolder}/compile_commands.json",
+        "python.defaultInterpreterPath": "/usr/bin/python3",
+        "C_Cpp.intelliSenseEngine": "disabled",
+        "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"
+      }
     }
   }
 }

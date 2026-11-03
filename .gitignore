@@ -4,6 +4,7 @@ _*
 /build/
 /out/
 /dist/
+/compile_commands.json
 CMakeUserPresets.json
 
 # local values of docker compose, docker/build.sh and restore.sh (X2_DB_PASSWORD...)

@@ -34,14 +34,16 @@ skipped `ClientScript`.
 
 ## 2a. Dev Container
 
-Install Docker with Compose plugin 2.24 or newer, VS Code, and the Dev Containers extension. Open the repository and choose **Reopen in
-Container**. See [Build environment](tools/build-environment.md#dev-container) for details about shared settings and networking.
+Install Docker with Buildx, VS Code, and the Dev Containers extension. Open the repository and choose **Reopen in Container**.
+Before the first open, copy `docker/.env.example` to `docker/.env`; the Dev Container passes that file to CMake and the server
+processes. Docker Compose is needed separately to run the development database. See
+[Build environment](tools/build-environment.md#dev-container) for tool and networking details.
 
-The container uses the same presets and CMake commands listed below. The repository's `docker/.env` is loaded when present.
+The container uses the same presets and CMake commands listed below.
 
 ## 2b. Docker command wrapper
 
-Host requirements: Docker with the Compose plugin, and Git.
+Host requirements: Docker with Buildx, and Git. Docker Compose is used separately for the development database.
 
 | Distribution | Command |
 |---|---|

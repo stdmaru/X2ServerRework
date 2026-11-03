@@ -15,15 +15,21 @@ compiler and system dependencies. Windows (clang-cl, T26) is not built here: onl
 
 ### Dev Container
 
-Open the repository in VS Code with the Dev Containers extension and choose **Reopen in Container**. Docker Compose 2.24 or newer builds
-the same `docker/build/Dockerfile`, repository-root build context, and default `x2-build` image tag as `docker/build.sh`. Source
-files remain in the workspace, and a host cache directory preserves ccache between container sessions. On Linux, the container
-user is adjusted to match the host UID so generated files stay writable. The container uses host networking, allowing builds and
-tests to reach the development database at `127.0.0.1`.
+Open the repository in VS Code with the Dev Containers extension and choose **Reopen in Container**. The Dev Container builds
+`docker/build/Dockerfile` directly with the repository root as context, matching `docker/build.sh`. Source files remain in the
+workspace, and a named volume preserves ccache between container sessions. On Linux, the container user is adjusted to match the
+host UID so generated files stay writable. The container uses host networking, allowing builds and tests to reach the development
+database at `127.0.0.1`.
 
-If `docker/.env` exists, Compose passes its values into the container for CMake configuration and runtime use. To create it, copy
-`docker/.env.example` to `docker/.env` and edit the settings. The file is optional; shell environment variables can also be set in
-the integrated terminal before configuring. Reconfigure a preset after changing CMake input values.
+The image includes Clang, clangd, clang-format, CMake, Ninja, GDB, ShellCheck, Git, Python, and the ODBC/FreeTDS development
+packages. The container installs the VS Code extensions for CMake Tools, C/C++ debugging, clangd, Python with Pylance, and
+ShellCheck. CMake Tools uses the repository's CMake presets and CTest integration; clangd reads the generated
+`compile_commands.json`, which is copied to the repository root and ignored by Git. Select a Linux configure preset (usually
+`linux-debug`) if CMake Tools asks on first open.
+
+Before opening the container, create `docker/.env` by copying `docker/.env.example` and edit the settings. Docker passes these
+values into the container for CMake configuration and runtime use. Shell environment variables can also be set in the integrated
+terminal before configuring. Reconfigure a preset after changing CMake input values.
 
 Inside the container, use the same CMake commands as below, without the `docker/build.sh` prefix:
 
