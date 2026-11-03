@@ -9,3 +9,4 @@ Project overview. **All of these pages are essential.**
 | [Mission and scope](mission-and-scope.md) | What is in scope and what is not; definition of done |
 | [Roadmap](roadmap.md) | Project phases, in order, and their deliverables |
 | [Decisions](decisions.md) | Decisions made (T*) and pending (D*) |
+| [Client compatibility](client-compatibility.md) | Preliminary analysis for compiling the server against selected historical client/protocol revisions |
