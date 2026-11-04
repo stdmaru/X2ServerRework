@@ -577,7 +577,7 @@ void KGameServer::Tick()
 
 void KGameServer::ServerVersion()
 {
-	std::wcout << L"Server Ver : " << GetMainVersion() << std::endl;
+	KWriteStdout( L"Server Ver : " + GetMainVersion() + L"\n" );
 }
 
 //{{ 2010. 10. 19	최육사	SMS테스트

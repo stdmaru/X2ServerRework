@@ -5,7 +5,16 @@
 #include <doctest/doctest.h>
 
 #include <algorithm>
+#include <cstdio>
+#include <cwchar>
+#include <fstream>
+#include <iterator>
 #include <sstream>
+#include <string>
+
+#if !defined(_WIN32)
+#include <unistd.h>
+#endif
 
 TEST_CASE("GetMD5")
 {
@@ -119,3 +128,39 @@ TEST_CASE("NumberShuffle makes the same picks as the original erase loop")
         CHECK( KncUtil::NumberShuffle( source ) == expected );
     }
 }
+
+#if !defined(_WIN32)
+namespace
+{
+struct KDumpProbe
+{
+    std::wostream& ToString( std::wostream& stm ) const { return stm << L"probe \uD55C\n"; }
+    DeclDump
+};
+}
+
+// glibc only: with std::wcout, the first write fixes stdout as wide-oriented and narrow writes (Lua print) then fail silently.
+// freopen gives stdout a fresh orientation, as in a server that has not written to it yet.
+TEST_CASE("Dump writes UTF-8 and leaves stdout narrow")
+{
+    const char* path = "dump_probe.txt";
+    std::fflush(stdout);
+    const int saved = ::dup(STDOUT_FILENO);
+    REQUIRE(saved >= 0);
+    REQUIRE(std::freopen(path, "w", stdout) != nullptr);
+    KDumpProbe().Dump();
+    const int orientation = std::fwide(stdout, 0);
+    std::fputs("narrow\n", stdout);
+    std::fflush(stdout);
+    ::dup2(saved, STDOUT_FILENO);
+    ::close(saved);
+    std::clearerr(stdout);
+
+    std::ifstream file(path, std::ios::binary);
+    const std::string text((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+    file.close();
+    std::remove(path);
+    CHECK(orientation <= 0);
+    CHECK(text == "probe \xED\x95\x9C\nnarrow\n");
+}
+#endif
