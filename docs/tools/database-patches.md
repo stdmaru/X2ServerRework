@@ -9,7 +9,8 @@ manual application; this project does not run them automatically when restoring 
 
 [`20261104_globalserver_event_features.sql`](../../tools/database/patches/Statistics/20261104_globalserver_event_features.sql) adds
 the tables and procedures used by GlobalServer's timed enchant and limited exchange flows. It implements the server's result-set
-contracts, single-use timed-enchant claims, exchange quota tracking, and rollback records.
+contracts, single-use timed-enchant claims, exchange quota tracking, and rollback records. Its syntax targets SQL Server 2008 or
+newer (compatibility level 100); run it with a script executor that treats standalone `GO` lines as batch separators.
 
 The code establishes the single-use event claim, shared `LimitUID` quota, and rollback behavior. The SQL source does not provide
 the original table definitions, so the new table and column layout is an additive model documented in the script. Configuration
