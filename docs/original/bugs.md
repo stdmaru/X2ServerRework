@@ -39,10 +39,12 @@ in production. The server starts while ignoring invalid entries:
   (`ElTutorial_*` tutorials, `Training_*` training, `Besma_MINE2_*`, `Elder_NewYear`); `Dungeon_Event_KidDay.lua` exists only in the original `ClientScript`.
 - 2 field line maps (`Field_Velder_Stage2/3_LineMap.lua`) that do not exist.
 - Procedure `dbo.P_GItem_Def_GET` (GM tool) is absent from the development database.
-- GlobalServer calls three groups of `Statistics` procedures absent from all backups (2026-10-31, `server/global-run`):
+- GlobalServer calls three groups of `Statistics` procedures that are missing or nonfunctional in the available backups (2026-10-31, `server/global-run`):
   `P_LEvent_GlobalMission_SEL/UPD` (global missions), `P_LEvent_RandomEnchant_SEL/UPD` (timed enchantment event), and
   `P_LExchangeLimitInfo_GET`/`P_LExchangeLimitItem_GET`/`P_LExchangeLimitLog_*` (limited exchange). These features start without data.
-  Crystal-defense time is also missing ("디펜스 던전 시간 셋팅 값이 존재 하지 않습니다", `SetTodayMissionTime`).
+  The 2026-09-08 schema snapshot contains empty-result or no-op definitions for parts of these groups, but lacks the backing tables and
+  configuration data for timed enchant and limited exchange. A proposed additive patch for those two feature groups is documented in
+  [Database patches](../tools/database-patches.md); it has not been applied. Crystal-defense time is also missing ("디펜스 던전 시간 셋팅 값이 존재 하지 않습니다", `SetTodayMissionTime`).
 - `MapData.lua` does not register local maps Ruben (10000) and Elder (10001) through `AddLocalMapInfo` (entries start at Altera):
   when the client requests the automatic-party bonus in these towns (`EGS_REQUEST_GET_AUTO_PARTY_BONUS_INFO_NOT`), GameServer reports
   "등록되지 않은 맵ID입니다!" and sends an empty list (2026-10-31, `server/global-run`).

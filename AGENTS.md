@@ -43,6 +43,7 @@ finally, the client.
 - Modules marked `frozen = true` in `tools/import/modules/` have already been ported by hand; the importer refuses to write
   to them.
 - Builds must be warning-free (GCC, Clang, and clang-cl). Fix new warnings; do not suppress them.
+- **Database may be adjusted do match server protocol.** As the backups we have are slightly (months) outdated comparing to the source code and may already be modded by third party, there is a chance that we'll be needing to fine-tune some of it to match our code demands and work properly.
 
 ## Layout
 
