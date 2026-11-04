@@ -8,11 +8,14 @@ FROM ubuntu:26.04
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
-        build-essential nano clang clangd clang-format cmake ninja-build pkg-config ccache git ca-certificates python3 gdb shellcheck \
-        unixodbc-dev tdsodbc \
+       build-essential nano sudo \
+       clang clangd clang-format cmake ninja-build pkg-config ccache git ca-certificates python3 gdb shellcheck \
+       unixodbc-dev tdsodbc \
  && rm -rf /var/lib/apt/lists/* \
  && mkdir -p /home/ubuntu/.cache/x2-build/ccache \
- && chown -R ubuntu:ubuntu /home/ubuntu/.cache
+ && chown -R ubuntu:ubuntu /home/ubuntu/.cache \
+ && echo 'ubuntu ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/ubuntu \
+ && chmod 0440 /etc/sudoers.d/ubuntu
 
 # CMake reads these when a build directory is configured: every preset goes through ccache.
 ENV CMAKE_C_COMPILER_LAUNCHER=ccache \
