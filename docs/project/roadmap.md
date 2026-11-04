@@ -116,7 +116,8 @@ See [Server — Windows dependencies](../original/server.md).
       2026-11-04, before the client, so it builds the SDL3 foundation the client reuses (T32). Startup order: EPublisherServer →
       LoginServer, CenterServer, GlobalServer → GameServer → ChannelServer, each after the previous reports `ready` (the original
       `KX2ServerLauncher` waited for the `CenterServer_Ready` window before starting GameServer); stop in reverse. One branch per step:
-  - [ ] `tools/sdl3-imgui-base`: SDL3 and ImGui dependencies, `x2::app` (window, events, SDL_GPU) and `x2::app_imgui`, demo, headless smoke test.
+  - [x] `tools/sdl3-imgui-base`: SDL3 and ImGui dependencies, `x2::app` (window, events, SDL_GPU) and `x2::app_imgui`, demo, headless
+        tests; Clang, GCC, and clang-cl without warnings (2026-11-04). See [App foundation](../porting/app.md).
   - [ ] `tools/servermanager-protocol`: full JSON parser (`x2::platform`), protocol v1 client (`hello`/`log`/`output`/`status`/`result`,
         `id` correlation), server state, log store with filter and search; tests with recorded lines and the real control socket.
   - [ ] `tools/servermanager-local`: `x2::platform::Process` (child with pipes, Linux and Windows), `--machine` transport, attach to a
