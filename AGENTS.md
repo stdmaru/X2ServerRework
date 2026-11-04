@@ -118,12 +118,17 @@ The wiki under `docs/` is the project's memory. It is organized as a **navigable
 
 ## Git
 
-- Remote: `origin` (private GitHub repository). Commit and push work branches without asking (pushing a branch does not trigger
-  CI). Integrate changes into `main` through a well english-described pull request; do not merge locally or push directly to `main`. Never force-push to
-  `main`.
-- Commit message format: `type: summary` (`feat`, `fix`, `docs`, `refactor`, `chore`), with a body explaining why.
-- Follow [CONTRIBUTING.md](CONTRIBUTING.md) for pull request descriptions. Agents are strongly encouraged to open a draft PR
-  when creating a work branch, before implementation starts, and to keep its summary and checklist current throughout the work.
+### Task workflow
+
+1. **Plan:** Understand the objective, scope, constraints, and relevant project documentation. Identify the implementation approach before making changes.
+2. **Branch and PR:** Before implementation, create a short-lived branch for the task, push it to `origin`, and open a draft PR targeting `main`. The PR is the task's living record.
+3. **Work:** Implement the task in small, meaningful commits. Push each commit and keep the PR description, checklist, and progress updated.
+4. **Handoff:** The PR must always reflect the current state of the work, including completed items, remaining work, relevant findings, blockers, and next steps. It must be sufficient for another agent or session to resume without repeating the investigation.
+5. **Review:** When the task is complete, all relevant documentation is updated, and validation passes, update the PR and mark it ready for review. Do not merge it.
+
+If interrupted, commit and push current progress, then update the PR with completed work, remaining tasks, blockers, and next steps. Never leave uncommitted work as the only record of progress.
+
+- Commit message format: `type: summary` (`feat`, `fix`, `docs`, `refactor`, `test`, `build`, `ci`, `chore`), with a body explaining why.
 
 ### Branches
 
@@ -131,9 +136,7 @@ The wiki under `docs/` is the project's memory. It is organized as a **navigable
   `tools/docs/check_links.py` reports no issues. Never work directly on it.
 - **Use one short-lived branch per roadmap step**, named `area/topic`. Areas: `platform`, `kncsdk`, `server`, `client`, `tools`,
   `docs`, `build`. Examples: `tools/server-flags`, `server/common-import`, `build/windows-clang-cl`.
-- **Open a draft pull request from each work branch to `main` as early as possible**, ideally when creating the branch. Update it
-  as work progresses and mark it ready for review when its roadmap step is complete. If `main` has moved, rebase the branch onto
-  `main` and push the updated work branch before updating the PR.
+- If `main` has moved, rebase the branch onto `main` and push the updated work branch before continuing.
 - Before requesting integration, run a clean build, tests, the link checker, and Windows validation
   (`tools/win/winbuild.sh` or a CI run). Integrate through the PR after its checks pass and it is approved; preserve linear history
   by using GitHub's rebase-and-merge option. Do not merge the PR locally or push its changes directly to `main`.
