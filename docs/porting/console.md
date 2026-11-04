@@ -24,6 +24,11 @@ to the server as arguments: `--no-stdin`, `--machine`, `--control=<name>` (socke
 
 - Lua-like `lua.c` command behavior: an expression prints its value (`1+1` → `2`), otherwise it runs as a statement; errors appear in red in terminal mode.
   The original called `luaL_dostring` and discarded errors.
+- Server code must not write to `std::wcout`/`std::wcerr`. With stdio synchronization (the default), the first write fixes `stdout` as
+  wide-oriented on glibc, and every narrow write after it (Lua `print`/`io.write`, `printf`, `std::cout`) fails silently. The original
+  used `std::wcout` for `Dump()` (`DeclDump`), `Server:SetUseVersion` (called by `config_gs*.lua`), and `KGameServer::ServerVersion`, so
+  the GameServer console printed nothing (fixed on 2026-11-04). Wide text goes through `KWriteStdout`/`KDumpToStdout`
+  (`src/kncsdk/ToString.h`) as UTF-8; the regression test is in `test_util.cpp`.
 - Keys typed during loading wait for the prompt; Ctrl+C during that time asks for confirmation as soon as the prompt appears.
 - SIGTERM and console close exit without asking. On Windows, console close allows ~5 seconds for `ShutDown` (system limit).
 - In a terminal, a fatal failure (SIGSEGV, SIGABRT...) restores terminal mode before exit, so the shell is not left in raw mode.

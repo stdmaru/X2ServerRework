@@ -86,7 +86,7 @@ public:
     HWND GetHwnd()                                  { return m_hWnd; }
 
 	//{{ 2012. 12. 24	최육사	게임 서버 버전 세분화
-	void SetUseVersion( int iVersionEnum )			{ m_eUseVersion = static_cast<VERSION_ENUM>(iVersionEnum); ToString( std::wcout ); }
+	void SetUseVersion( int iVersionEnum )			{ m_eUseVersion = static_cast<VERSION_ENUM>(iVersionEnum); KDumpToStdout( *this ); }
 	VERSION_ENUM	GetVersion( void ) const		{ return m_eUseVersion;	}
 	//}}
     void SetShutDownWait( DWORD dwWait )            { m_dwShutDownWait = dwWait; }
