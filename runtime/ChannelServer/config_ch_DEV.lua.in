@@ -52,8 +52,8 @@ SimLayer:SetCheckIPMode( CIM_SERVICE_MODE )		-- service mode
 SimLayer:SetCheckIPType( CIT_ALL_IP_ALLOW )
 
 -- Script File Path (relative to this folder: dist/ChannelServer) --
-SimLayer:AddPath( os.getnev("X2_SERVERRESOURCE_DIR") or "@X2_SERVERRESOURCE_DIR@" ) -- server common
-SimLayer:AddPath( os.getnev("X2_CLIENTSCRIPT_DIR") or "@X2_CLIENTSCRIPT_DIR@" ) -- client script, generated from the client data
+SimLayer:AddPath( os.getenv("X2_SERVERRESOURCE_DIR") or "@X2_SERVERRESOURCE_DIR@" ) -- server common
+SimLayer:AddPath( os.getenv("X2_CLIENTSCRIPT_DIR") or "@X2_CLIENTSCRIPT_DIR@" ) -- client script, generated from the client data
 
 
 ----------     DB Layer     ----------

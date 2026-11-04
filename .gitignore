@@ -1,13 +1,16 @@
+.env
 _*
+.dmn
+.vscode
 
 # build
 /build/
 /out/
 /dist/
+/compile_commands.json
 CMakeUserPresets.json
 
 # local values of docker compose, docker/build.sh and restore.sh (X2_DB_PASSWORD...)
-/docker/.env
 __pycache__/
 
 # runtime logs (dbg::logfile writes to the working directory)

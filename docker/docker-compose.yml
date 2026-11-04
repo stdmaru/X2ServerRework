@@ -13,9 +13,6 @@ services:
       ACCEPT_EULA: "Y"
       MSSQL_PID: Developer
       MSSQL_SA_PASSWORD: ${X2_DB_PASSWORD:-X2dev!Passw0rd}
-    networks:
-      x2-net:
-        ipv4_address: 172.30.10.10
     ports:
       - "127.0.0.1:${X2_DB_PORT:-1433}:1433"
     volumes:

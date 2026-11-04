@@ -2,8 +2,9 @@
 
 # Build on Linux
 
-There are two options. The **recommended option is the container** (`docker/build.sh`): it uses the same Ubuntu image as CI
-(decision T24), and the host only needs Docker. Native builds also work, but are not continuously verified.
+There are three options. The **Dev Container** is convenient for editor-based work; `docker/build.sh` is available for terminal-only
+workflows. Both use the same Ubuntu image as CI (decision T24), and the host only needs Docker. Native builds also work, but are not
+continuously verified.
 
 Linux builds support both x86_64 and arm64 with the same CMake presets. Both architectures are built and tested in
 [GitHub Actions](tools/ci.md).
@@ -31,9 +32,18 @@ The **original client** (`_client/`) and **database backups** (`_database/`) are
 to build, but you do need them to run the servers ([Run the servers](running.md)). Without `_client/`, the build warns that it
 skipped `ClientScript`.
 
-## 2a. Docker (recommended)
+## 2a. Dev Container
 
-Host requirements: Docker with the Compose plugin, and Git.
+Install Docker with Buildx, VS Code, and the Dev Containers extension. Open the repository and choose **Reopen in Container**.
+Before the first open, copy `docker/.env.example` to `docker/.env`; the Dev Container passes that file to CMake and the server
+processes. Docker Compose is needed separately to run the development database. See
+[Build environment](tools/build-environment.md#dev-container) for tool and networking details.
+
+The container uses the same presets and CMake commands listed below.
+
+## 2b. Docker command wrapper
+
+Host requirements: Docker with Buildx, and Git. Docker Compose is used separately for the development database.
 
 | Distribution | Command |
 |---|---|
@@ -62,7 +72,7 @@ docker/build.sh ctest --preset linux-debug
 - The container runs as your user. ccache is stored in `~/.cache/x2-build`.
 - `X2_*` variables from your shell and `docker/.env` are passed into the container ([Run the servers](running.md#2-local-settings)).
 
-## 2b. Native (without Docker)
+## 2c. Native (without Docker)
 
 Packages:
 

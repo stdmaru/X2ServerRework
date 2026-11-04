@@ -24,7 +24,7 @@ for name in $(compgen -e); do
 done
 
 # Docker's layer cache makes this a no-op when the Dockerfile has not changed.
-docker build -q -t "$image" "$repo/docker/build" >/dev/null
+docker build -q -t "$image" -f "$repo/docker/build/Dockerfile" "$repo" >/dev/null
 
 # stdin always attached: the servers' Lua prompt ends at end of input (a pipe keeps them running)
 tty=(-i)

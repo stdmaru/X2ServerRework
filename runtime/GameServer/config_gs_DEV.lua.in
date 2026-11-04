@@ -69,8 +69,8 @@ SimLayer:SetBillingFlag( BF_GLOBAL_SERVICE )
 --SimLayer:AddIP( "127.0.0.1" )
 
 -- Script File Path (relative to this folder: dist/GameServer) --
-SimLayer:AddPath( os.getnev("X2_SERVERRESOURCE_DIR") or "@X2_SERVERRESOURCE_DIR@" ) -- server common
-SimLayer:AddPath( os.getnev("X2_CLIENTSCRIPT_DIR") or "@X2_CLIENTSCRIPT_DIR@" ) -- client script, generated from the client data
+SimLayer:AddPath( os.getenv("X2_SERVERRESOURCE_DIR") or "@X2_SERVERRESOURCE_DIR@" ) -- server common
+SimLayer:AddPath( os.getenv("X2_CLIENTSCRIPT_DIR") or "@X2_CLIENTSCRIPT_DIR@" ) -- client script, generated from the client data
 
 
 ----------     DB Layer     ----------
