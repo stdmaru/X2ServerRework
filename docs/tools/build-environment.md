@@ -7,9 +7,12 @@ Since 2026-10-30, Linux builds and tests have run in a custom **Ubuntu** image (
 compiler and system dependencies. Windows (clang-cl, T26) is not built here: only in the Windows CI job.
 
 - Image: `docker/build/Dockerfile`, based on `ubuntu:26.04` (26.04.1 LTS). As of 2026-10-30: Clang 21.1 (`linux-*` presets), GCC 15.2
-  (`linux-gcc` preset, verification), CMake 4.2, Ninja 1.13, unixODBC 2.3 + FreeTDS (`tdsodbc`), Python 3, ccache.
+  (`linux-gcc` preset, verification), CMake 4.2, Ninja 1.13, unixODBC 2.3 + FreeTDS (`tdsodbc`), Python 3, ccache. SDL3 3.4.2 (`libsdl3-dev`, for the tools: T32, added 2026-11-04).
 - No LuaJIT package: Ubuntu's is the OpenResty fork, so CMake also builds a pinned upstream commit (T21) on Linux.
 - Every preset goes through `ccache` (`CMAKE_<LANG>_COMPILER_LAUNCHER` in image).
+- The image has no display: GUI programs (`x2_app_demo`, ServerManager) are only tested headless here (SDL `dummy` driver). Built
+  binaries carry `libSDL3.so.0` next to them (`$ORIGIN` RPATH), so they run on the host desktop. An existing Dev Container predates
+  `libsdl3-dev` until it is rebuilt; `sudo apt-get install libsdl3-dev` inside it is equivalent.
 
 ## Usage
 

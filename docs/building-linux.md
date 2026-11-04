@@ -78,12 +78,13 @@ Packages:
 
 | Distribution | Command |
 |---|---|
-| Ubuntu 26.04 | `sudo apt install build-essential clang cmake ninja-build pkg-config git python3 unixodbc-dev tdsodbc` |
-| Arch | `sudo pacman -S base-devel clang cmake ninja pkgconf git python unixodbc freetds` |
+| Ubuntu 26.04 | `sudo apt install build-essential clang cmake ninja-build pkg-config git python3 unixodbc-dev tdsodbc libsdl3-dev` |
+| Arch | `sudo pacman -S base-devel clang cmake ninja pkgconf git python unixodbc freetds sdl3` |
 
 These packages are installed in the image. Native builds require CMake 3.28 or later and a Clang compiler with C++20 support.
 ccache is optional. CMake uses installed packages when available; otherwise, it downloads pinned versions of zlib, LuaJIT, Asio,
-and doctest. Only upstream LuaJIT 2.1 is supported. Ubuntu's LuaJIT package is an OpenResty fork and is ignored; in that case,
+SDL3, and doctest (ImGui is always downloaded). SDL3 is needed only by the tools (`X2_BUILD_TOOLS`, on by default; `-DX2_BUILD_TOOLS=OFF`
+builds only the servers); building it from source needs the X11/Wayland development headers, so prefer the package. Only upstream LuaJIT 2.1 is supported. Ubuntu's LuaJIT package is an OpenResty fork and is ignored; in that case,
 CMake builds LuaJIT from the pinned commit.
 
 ```bash

@@ -11,6 +11,7 @@ Linux builds and tests are verified on x86_64 and arm64. ARM64 runtime validatio
 |---|---|---|
 | `src/platform` | Linux (Clang, GCC) and Windows (clang-cl) build and tests pass | [Platform](platform.md) |
 | `src/kncsdk` | Linux (Clang, GCC) and Windows (clang-cl) build and tests pass; custom crypto (T27); protocol validation pending | [KNCSDK](kncsdk.md) |
+| `src/app` | SDL3 + ImGui foundation for the client and tools (T32): Linux (Clang, GCC) and Windows (clang-cl), headless tests (2026-11-04) | [App foundation](app.md) |
 | `src/kncsdk/ServerConsole`, `src/server/x2ctl` | Server terminal (T15) and control protocol (T30), Linux and Windows (2026-10-31) | [Server console](console.md) |
 | `src/server/Common` | Linux (Clang, GCC) and Windows (clang-cl) build without warnings, with `Socket/` (TCP and UDP) and `ODBC/`; packet, session, UDP, and database tests (real SQL Server, FreeTDS; Linux only) | [Server: Common](server-common.md); [ODBC database](server-common-db.md) |
 | `src/server/EPublisherServer` | DEB AuthServer reimplementation: builds without warnings, tests on Linux and Windows, runs against the database | [Server: EPublisherServer](server-epublisher.md) |
