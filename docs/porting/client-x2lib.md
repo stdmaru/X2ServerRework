@@ -32,3 +32,11 @@ The module is edited by hand and frozen. Steam, nProtect, Nexon, SMTP mail and B
 ## Status
 
 Not compiled yet ([roadmap](../project/roadmap.md#phase-3--client-platform)).
+
+To do when it is compiled (found on 2026-11-05, `client/serverprotocol`):
+
+- `X2ServerEvent.h` declares the `EventID_Client.h` enumerators in its own `SERVER_EVENT_ID` enum (after `EVENT_X2_STARTUP =
+  E_SYSTEM_EVENT_ID_END`), and the shared `Event.h` it now gets through `X2ServerProtocolLib.h` declares them too (same values,
+  `E_CLIENT_EVENT_ID_BEGIN = E_SYSTEM_EVENT_ID_END`): a redefinition. Use the shared enum and keep `EVENT_X2_STARTUP` as a name
+  for `E_CLIENT_EVENT_ID_BEGIN`. `CX2ServerEvent::SERVER_EVENT_ID_STR` is no longer needed by `CX2ServerProtocol`
+  ([Client: X2ServerProtocol](client-serverprotocol.md)).
