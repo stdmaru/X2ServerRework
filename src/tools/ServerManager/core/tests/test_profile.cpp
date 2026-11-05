@@ -2,6 +2,7 @@
 
 #include <doctest/doctest.h>
 
+#include <algorithm>
 #include <filesystem>
 
 using namespace x2::servermanager;
@@ -64,6 +65,12 @@ TEST_CASE("profile: invalid profiles")
              R"({"servers": [{"name": "A", "program": "a", "after": "B"}]})",
              R"({"servers": [{"name": "A", "program": "a", "after": ["B"]}, {"name": "B", "program": "b", "after": ["C"]},
                              {"name": "C", "program": "c", "after": ["A"]}]})",
+             R"({"servers": [{"name": "A", "host": "nowhere", "control": "A"}]})",                  // unknown host
+             R"({"hosts": [{"name": "h"}], "servers": []})",                                       // no destination
+             R"({"hosts": [{"name": "h", "destination": "-oProxyCommand=x"}], "servers": []})",
+             R"({"hosts": [{"name": "h", "destination": "a"}, {"name": "h", "destination": "b"}], "servers": []})",
+             R"({"hosts": [{"name": "h", "destination": "a", "ssh": "ssh"}], "servers": []})",
+             R"({"hosts": [{"name": "h", "destination": "a"}], "servers": [{"name": "A", "host": "h"}]})",  // no socket name
          }) {
         error.clear();
         CHECK_MESSAGE(!ParseProfile(bad, "", error), bad);
@@ -91,4 +98,38 @@ TEST_CASE("profile: start order and the default package")
         {"name": "A", "program": "a"}, {"name": "B", "program": "b", "after": ["A"]}]})", "", error);
     REQUIRE(shuffled);
     CHECK(shuffled->StartOrder() == std::vector<int>{1, 2, 0});
+}
+
+TEST_CASE("profile: hosts and the x2ctl command")
+{
+    std::string error;
+    const auto profile = ParseProfile(R"({
+        "x2ctl": "x2ctl",
+        "hosts": [{"name": "prod", "destination": "x2@10.0.0.5", "x2ctl": "/opt/x2 dist/x2ctl"},
+                  {"name": "lab", "destination": "lab", "ssh": ["ssh", "-p", "2222"]}],
+        "servers": [{"name": "Login", "program": "./LoginServer"},
+                    {"name": "Game", "host": "prod", "control": "GameServer", "after": ["Login"]},
+                    {"name": "Channel", "host": "lab", "program": "./ChannelServer", "directory": "/srv/x2"}]})",
+                                      "/base", error);
+    REQUIRE_MESSAGE(profile, error);
+    REQUIRE(profile->hosts.size() == 2);
+    CHECK(profile->hosts[1].x2ctl == "x2ctl");
+    CHECK(profile->servers[1].host == "prod");
+    CHECK(profile->servers[2].directory == "/srv/x2");    // not resolved: it is the other machine's
+    CHECK(profile->servers[2].ControlName() == "ChannelServer");
+
+    const auto local = profile->X2ctl("", {"attach", "LoginServer"});
+    CHECK(local.program == "x2ctl");
+    CHECK(local.args == std::vector<std::string>{"attach", "LoginServer"});
+
+    const auto prod = profile->X2ctl("prod", {"attach", "GameServer"});
+    CHECK(prod.program == "ssh");
+    REQUIRE(prod.args.size() >= 3);
+    CHECK(std::find(prod.args.begin(), prod.args.end(), "BatchMode=yes") != prod.args.end());
+    CHECK(prod.args[prod.args.size() - 2] == "x2@10.0.0.5");
+    CHECK(prod.args.back() == "'/opt/x2 dist/x2ctl' attach GameServer");   // one line for the remote shell
+
+    const auto lab = profile->X2ctl("lab", {"list"});
+    CHECK(lab.program == "ssh");
+    CHECK(lab.args == std::vector<std::string>{"-p", "2222", "lab", "x2ctl list"});
 }

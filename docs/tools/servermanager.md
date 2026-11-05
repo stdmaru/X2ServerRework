@@ -50,7 +50,7 @@ Every server is reached through a **child process** speaking protocol lines on i
 |---|---|
 | A server ServerManager starts | `<program> <args> --machine [--control=<name>]` in the server's folder |
 | A server already running on this machine (service, another terminal) | `x2ctl attach <name>` |
-| A remote server (step `tools/servermanager-ssh`) | `ssh host x2ctl attach <name>` |
+| A server on another machine ([remote servers](#remote-servers-over-ssh)) | `ssh <options> <destination> '<x2ctl> attach <name>'` |
 
 A socket client was not used for local servers: `ControlClient::ReadLine` blocks, and on Windows closing a socket from another thread
 does not wake it ([Server console](../porting/console.md#control-socket)). Ending a child always ends its readers, and the three cases
@@ -78,7 +78,8 @@ A JSON file (`LoadProfile`) or the built-in default for the package under `dist/
   may be left out). `args` come before the console options ServerManager adds.
 - `after`: servers that must be **ready** first. `control`: the control socket name, by default the program's file name (the
   server's own default); a second GameServer needs another one, and ServerManager passes it as `--control=`.
-- Checked when loaded: unique names, a program for each, known dependencies, no cycles.
+- `hosts` and a server's `host`: see [remote servers](#remote-servers-over-ssh).
+- Checked when loaded: unique names, a program for each local server, known dependencies and hosts, no cycles.
 - Default order (2026-11-05), from the original and the servers' connections: EPublisherServer → LoginServer, CenterServer,
   GlobalServer → GameServer → ChannelServer. The original `KX2ServerLauncher` waited for the `CenterServer_Ready` window before
   starting GameServer; GameServer retries the servers it connects to, but players must not reach a GameServer before its
@@ -96,12 +97,45 @@ phase: `offline`, `waiting` (for dependencies), `starting` (connected, not ready
   depends on it. A server ServerManager started that is still running after `stopGrace` (60 s) is terminated (POSIX SIGTERM; Windows
   closes its stdin), then killed after `killGrace` (10 s). A server stopped from elsewhere (`x2ctl stop`, its own prompt) is followed.
 - `Attach`/`Detach` (attached servers stay running), `Kill` (servers ServerManager started).
+- **Discovery** (`Discover`, then `Listed(i)`): this machine's control sockets at once, each host's in the background
+  (`x2ctl list` over ssh, collected by `Update`; `HostAt(h)` has the names or the error). `Stop(i)` on a server that is not
+  connected but is listed attaches to it and stops it through the protocol, so its shutdown is logged; `StopAll` therefore stops
+  every listed server, not only the connected ones.
 - A child that exits, or a connection that closes, without a stop request is **failed** with the reason (`exited with code 5`); no
   automatic restart.
 
 Tested on 2026-11-05 in the container with the six real servers (`x2_servermanager_probe dist`): attached to servers already running
 in terminals and stopped them in reverse order (12.6 s); then started all six as children, all ready in 19.4 s, and stopped them in
 17 s, every exit code 0.
+
+## Remote servers over SSH (2026-11-05, `tools/servermanager-ssh`)
+
+A server with a `host` runs on that machine as its service (systemd, a terminal there): ServerManager **attaches and never starts
+it**, so it does not depend on the SSH connection staying up. Starting it means attaching once its dependencies are ready, like a
+local server that is already running; if it is not running, `x2ctl attach` fails and the server is **failed** with
+`could not attach on <host>` (the ssh or `x2ctl` message is in its log). Stopping is the protocol's stop over the attached session,
+followed until the connection closes; a remote server that does not stop is not terminated or killed.
+
+```json
+{"hosts": [{"name": "prod", "destination": "x2@10.0.0.5", "x2ctl": "/opt/x2/dist/x2ctl"},
+           {"name": "lab", "destination": "lab", "ssh": ["ssh", "-p", "2222", "-o", "BatchMode=yes"]}],
+ "servers": [{"name": "GameServer", "host": "prod", "control": "GameServer", "after": ["CenterServer"]}]}
+```
+
+- `destination`: what ssh connects to (`host`, `user@host`, or a `Host` of `~/.ssh/config`; not starting with `-`). `x2ctl`: its
+  path on that machine, by default `x2ctl` in its `PATH`. A remote server needs `control` (or `program`, whose file name is the
+  socket name); its `directory` is not resolved.
+- `ssh`: the program and options before the destination. Without it, `DefaultSshCommand()`:
+  `ssh -T -o BatchMode=yes -o ConnectTimeout=10`, plus on Linux `-o ControlMaster=auto -o ControlPath=<control dir>/ssh-%C
+  -o ControlPersist=60`, so the attaches and queries to one host share a connection (Windows' OpenSSH has no ControlMaster).
+  `BatchMode` makes a missing key fail instead of asking for a password, since there is no terminal: use keys or an agent.
+- The remote command is one line for the remote shell, each word quoted once (`QuoteShellArgument`): a POSIX shell on the host.
+- Authentication and encryption are SSH's (T30); the control socket on the host accepts only its own user, so `destination` must
+  log in as the user the servers run as.
+
+Tested on 2026-11-05 with the real ssh to `localhost` on the user's desktop (key authentication, the default command with
+ControlMaster) and two `x2_terminal_demo` services: discovery listed both, the second attached after the first was ready, a third
+server that was not running failed with the message above, and both were stopped in reverse order with exit code 0.
 
 ## Tests
 
@@ -111,7 +145,9 @@ Lua results, a second client attaching late that gets the earlier lines in order
 until disconnection; the stop request is process-wide, so a second console cannot run in the same test process). Profile parsing, validation and order. Orchestrator with real children: three
 `x2_terminal_demo` instances started in dependency order and stopped in reverse, a crash (`--exit-after`) that fails the server and
 cancels its dependent, a missing program, a child that ignores stop (`x2_process_helper sleep`: terminated, then killed), and a
-service already running that is attached through `x2ctl`, detached, attached again and stopped. Socket directory:
+service already running that is attached through `x2ctl`, detached, attached again and stopped. Remote servers through
+`x2_fake_ssh` (plays ssh: runs the remote command here, relaying the pipes): discovery, attach, detach, a stop of a listed server
+that was not attached; an unreachable host and a server that is not running. The probe prints each host's discovery first. Socket directory:
 `$XDG_RUNTIME_DIR/x2`. A failure prints each server's phase and last log entries.
 
 `x2_servermanager_probe <dist | profile.json> [--attach-only]`: starts (or attaches to) every server, waits until all are ready,

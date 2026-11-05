@@ -30,6 +30,8 @@ Orchestrator::Orchestrator(Profile profile, OrchestratorOptions options)
     m_order = m_profile.StartOrder();
     for (const ServerSpec& spec : m_profile.servers)
         m_servers.push_back(std::make_unique<Server>(spec));
+    for (const HostSpec& spec : m_profile.hosts)
+        m_hosts.push_back(std::make_unique<Host>(spec));
 }
 
 Orchestrator::~Orchestrator()
@@ -43,6 +45,69 @@ Orchestrator::~Orchestrator()
             while (s->transport->Running() && Clock::now() < deadline)
                 std::this_thread::sleep_for(20ms);
     m_servers.clear();      // the transports kill what still runs
+    m_hosts.clear();
+}
+
+void Orchestrator::Discover()
+{
+    m_localRunning = m_options.runningServers();
+    for (std::size_t h = 0; h < m_hosts.size(); ++h) {
+        Host& host = *m_hosts[h];
+        if (host.listing)
+            continue;
+        host.lines.clear();
+        host.errors.clear();
+        host.transport = std::make_unique<ProcessTransport>(m_profile.X2ctl(host.spec.name, {"list"}), std::string());
+        std::string error;
+        if (host.transport->Open(m_inbox, -1 - static_cast<int>(h), ++host.generation, error)) {
+            host.listing = true;
+        } else {
+            host.transport.reset();
+            host.running.reset();
+            host.error = error;
+        }
+    }
+}
+
+std::optional<bool> Orchestrator::Listed(int i) const
+{
+    const Server& s = At(static_cast<std::size_t>(i));
+    const std::vector<std::string>* names = nullptr;
+    if (!s.Remote()) {
+        if (m_localRunning)
+            names = &*m_localRunning;
+    } else {
+        for (const auto& host : m_hosts)
+            if (host->spec.name == s.spec.host && host->running && !host->listing)
+                names = &*host->running;
+    }
+    if (!names)
+        return std::nullopt;
+    return std::find(names->begin(), names->end(), s.spec.ControlName()) != names->end();
+}
+
+void Orchestrator::HostEvent(std::size_t h, TransportEvent& event)
+{
+    Host& host = *m_hosts[h];
+    if (event.generation != host.generation || !host.transport)
+        return;
+    if (event.kind == TransportEvent::Line) {
+        (event.error ? host.errors : host.lines).push_back(std::move(event.text));
+        return;
+    }
+    host.transport.reset();
+    host.listing = false;
+    if (event.exitCode == 0) {
+        host.running = std::move(host.lines);
+        host.error.clear();
+    } else {
+        host.running.reset();
+        host.error = event.text;
+        for (const std::string& line : host.errors)
+            host.error += "\n" + line;
+    }
+    host.lines.clear();
+    host.errors.clear();
 }
 
 void Orchestrator::StartAll()
@@ -80,6 +145,8 @@ void Orchestrator::Stop(int i)
         s.session.NoteEvent(LogLevel::Note, "start cancelled");
         return;
     }
+    if (!s.transport && Listed(i) == true)
+        Connect(i, false);      // to stop it through the protocol, and see it go
     if (s.transport && !s.stopRequested)
         s.wantStop = true;
 }
@@ -122,8 +189,7 @@ bool Orchestrator::Connect(int i, bool owned)
             options.args.push_back("--control=" + s.spec.control);
         options.workingDirectory = s.spec.directory;
     } else {
-        options.program = m_profile.x2ctl;
-        options.args = {"attach", s.spec.ControlName()};
+        options = m_profile.X2ctl(s.spec.host, {"attach", s.spec.ControlName()});
     }
 
     s.owned = owned;
@@ -162,7 +228,13 @@ void Orchestrator::Closed(int i, const TransportEvent& event)
         s.phase = Phase::Offline;
     } else {
         s.phase = Phase::Failed;
-        s.error = s.owned ? event.text : "connection closed (" + event.text + ")";
+        if (s.owned)
+            s.error = event.text;
+        else if (!s.session.GotHello())
+            s.error = (s.Remote() ? "could not attach on " + s.spec.host : std::string("could not attach")) + " (" +
+                      event.text + "): see the log";
+        else
+            s.error = "connection closed (" + event.text + ")";
     }
     s.wantRun = s.wantStop = s.stopRequested = s.detaching = s.killed = false;
 }
@@ -185,7 +257,15 @@ bool Orchestrator::Update(Clock::time_point now)
     bool changed = false;
 
     for (TransportEvent& event : m_inbox.Drain()) {
-        if (event.server < 0 || static_cast<std::size_t>(event.server) >= m_servers.size())
+        if (event.server < 0) {
+            const auto h = static_cast<std::size_t>(-1 - event.server);
+            if (h < m_hosts.size()) {
+                HostEvent(h, event);
+                changed = true;
+            }
+            continue;
+        }
+        if (static_cast<std::size_t>(event.server) >= m_servers.size())
             continue;
         Server& s = At(static_cast<std::size_t>(event.server));
         if (event.generation != s.generation || !s.transport)
@@ -229,6 +309,9 @@ bool Orchestrator::Update(Clock::time_point now)
             s.wantRun = false;
             s.phase = Phase::Offline;
             s.session.NoteEvent(LogLevel::Warn, "not started: " + blocked + " is not running");
+        } else if (depsReady && s.Remote()) {
+            s.wantRun = false;
+            Connect(i, false);      // a remote server is that machine's service: attach, never start
         } else if (depsReady) {
             const std::vector<std::string> running = m_options.runningServers();
             const bool exists = std::find(running.begin(), running.end(), s.spec.ControlName()) != running.end();

@@ -77,23 +77,24 @@ bool ProcessTransport::Open(Inbox& inbox, int server, std::uint64_t generation, 
     m_generation = generation;
     m_readers = 2;
 
-    auto line = [this](std::string text) {
+    auto line = [this](std::string text, bool fromStderr) {
         TransportEvent event;
         event.server = m_server;
         event.generation = m_generation;
         event.text = std::move(text);
+        event.error = fromStderr;
         m_inbox->Push(std::move(event));
     };
     m_out = std::thread([this, line] {
         std::string text;
         while (m_process->ReadLine(text))
-            line(std::move(text));
+            line(std::move(text), false);
         Finished();
     });
     m_err = std::thread([this, line] {
         std::string text;
         while (m_process->ReadErrorLine(text))
-            line(std::move(text));
+            line(std::move(text), true);
         Finished();
     });
     return true;

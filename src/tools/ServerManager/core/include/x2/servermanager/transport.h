@@ -3,7 +3,7 @@
 // How ServerManager reaches a server: always a child process speaking protocol lines on stdin/stdout.
 // - a server it starts: `<server> <args> --machine` (the server exits at the end of its stdin);
 // - a server already running here: `x2ctl attach <name>` (its control socket);
-// - a remote server (later step): `ssh host x2ctl attach <name>`.
+// - a remote server: `ssh host x2ctl attach <name>`.
 // Ending the child always unblocks its readers, which a socket closed from another thread does not on Windows
 // (docs/porting/console.md). Reader threads hand lines to an Inbox that the UI thread drains.
 
@@ -29,6 +29,7 @@ struct TransportEvent {
     std::uint64_t generation = 0;   // tells an old connection's events from the current one's
     Kind kind = Line;
     std::string text;               // Line: the line; Closed: why
+    bool error = false;             // Line: from stderr
     std::optional<int> exitCode;    // Closed: the child's exit code, when it exited
 };
 

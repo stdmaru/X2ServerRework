@@ -2,8 +2,9 @@
 
 // Starts, stops and follows the servers of a Profile (decision T30): a server starts once everything it depends on
 // is ready, and stops once nothing being stopped still depends on it. A server whose control socket already exists
-// here is attached to (x2ctl attach) instead of started a second time. Owned by the UI thread: call Update() after
-// Events() wakes it, and regularly for the stop timeouts.
+// here is attached to (x2ctl attach) instead of started a second time. A server on a host is only ever attached to
+// (ssh host x2ctl attach): it runs as that machine's service. Owned by the UI thread: call Update() after Events()
+// wakes it, and regularly for the stop timeouts.
 
 #include "x2/servermanager/profile.h"
 #include "x2/servermanager/session.h"
@@ -41,6 +42,7 @@ public:
 
     struct Server {
         explicit Server(ServerSpec s) : spec(std::move(s)), session(spec.name) {}
+        bool Remote() const { return !spec.host.empty(); }
 
         ServerSpec spec;
         ServerSession session;
@@ -62,6 +64,23 @@ public:
         std::unique_ptr<ProcessTransport> transport;
     };
 
+    // What `x2ctl list` reported on a host (Discover).
+    struct Host {
+        explicit Host(HostSpec s) : spec(std::move(s)) {}
+
+        HostSpec spec;
+        bool listing = false;                               // a query is on its way
+        std::optional<std::vector<std::string>> running;    // control socket names, after a query that worked
+        std::string error;                                  // of the last query (ssh or x2ctl failed)
+
+    private:
+        friend class Orchestrator;
+        std::uint64_t generation = 0;
+        std::vector<std::string> lines;
+        std::vector<std::string> errors;
+        std::unique_ptr<ProcessTransport> transport;
+    };
+
     explicit Orchestrator(Profile profile, OrchestratorOptions options = {});
     // Servers it started get the end of stdin (they shut down) and up to 5 s before being killed; attached ones
     // are detached.
@@ -74,12 +93,20 @@ public:
     Server& At(std::size_t i) { return *m_servers[i]; }
     const Server& At(std::size_t i) const { return *m_servers[i]; }
     Inbox& Events() { return m_inbox; }
+    std::size_t Hosts() const { return m_hosts.size(); }
+    const Host& HostAt(std::size_t i) const { return *m_hosts[i]; }
+
+    // Which servers are running: this machine's sockets now, each host's in the background (`x2ctl list` over ssh;
+    // Update collects the answers).
+    void Discover();
+    // From the last Discover: nullopt when not known (never asked, or the host query failed or is on its way).
+    std::optional<bool> Listed(int i) const;
 
     void StartAll();
     void Start(int i);      // and what it depends on
     void StopAll();
-    void Stop(int i);       // only this one
-    void Attach(int i);     // connect to it if it is already running here; never starts it
+    void Stop(int i);       // only this one; one not connected but Listed is attached to, then stopped
+    void Attach(int i);     // connect to it if it is already running (here or on its host); never starts it
     void Detach(int i);     // attached servers: disconnect and leave it running
     void Kill(int i);       // servers ServerManager started
 
@@ -91,11 +118,14 @@ private:
     bool Connect(int i, bool owned);
     void Closed(int i, const TransportEvent& event);
     bool DependentsRunning(int i) const;
+    void HostEvent(std::size_t h, TransportEvent& event);
 
     Profile m_profile;
     OrchestratorOptions m_options;
     std::vector<int> m_order;
     std::vector<std::unique_ptr<Server>> m_servers;
+    std::vector<std::unique_ptr<Host>> m_hosts;      // their events come with server index -1 - host index
+    std::optional<std::vector<std::string>> m_localRunning;
     Inbox m_inbox;
 };
 

@@ -4,8 +4,12 @@
 // (docs/tools/servermanager.md#profile):
 //   {"x2ctl": "x2ctl",
 //    "servers": [{"name": "LoginServer", "directory": "LoginServer", "program": "./LoginServer",
-//                 "args": ["DEV", "0"], "after": ["EPublisherServer"], "control": "LoginServer"}, ...]}
-// Relative directories are relative to the profile's folder.
+//                 "args": ["DEV", "0"], "after": ["EPublisherServer"], "control": "LoginServer"}, ...],
+//    "hosts": [{"name": "prod", "destination": "x2@10.0.0.5", "x2ctl": "/opt/x2/dist/x2ctl"}]}
+// Relative directories are relative to the profile's folder. A server with a "host" runs on that machine: ServerManager
+// attaches to it over SSH and never starts it.
+
+#include "x2/platform/process.h"
 
 #include <optional>
 #include <string>
@@ -14,8 +18,21 @@
 
 namespace x2::servermanager {
 
+// A machine reached over SSH (decision T30): `<ssh...> <destination> '<x2ctl> attach <name>'`.
+struct HostSpec {
+    std::string name;                   // unique within the profile; what servers refer to
+    std::string destination;            // what ssh connects to: host, user@host, or a Host of ~/.ssh/config
+    std::string x2ctl = "x2ctl";        // on that machine (a path, or a name in its PATH)
+    std::vector<std::string> ssh;       // program and options before the destination; empty: DefaultSshCommand()
+};
+
+// ssh -T -o BatchMode=yes -o ConnectTimeout=10, and on Linux a shared connection per host (ControlMaster=auto,
+// ControlPersist=60, the socket in the private ControlSocketDir()). Windows' OpenSSH has no ControlMaster.
+std::vector<std::string> DefaultSshCommand();
+
 struct ServerSpec {
     std::string name;                   // unique within the profile
+    std::string host;                   // a HostSpec name; empty: this machine
     std::string directory;              // working directory (absolute once loaded)
     std::string program;                // ./LoginServer (relative to directory), or a path
     std::vector<std::string> args;      // before the console options ServerManager adds (--machine, --control=)
@@ -29,9 +46,14 @@ struct ServerSpec {
 struct Profile {
     std::string x2ctl = "x2ctl";        // for attaching to servers already running (path, or a name in PATH)
     std::vector<ServerSpec> servers;
+    std::vector<HostSpec> hosts;
 
     int Find(std::string_view name) const;   // index, or -1
-    // Duplicate or empty names, unknown or self dependencies, cycles. Empty when valid.
+    const HostSpec* FindHost(std::string_view name) const;
+    // `x2ctl <args>` here (empty host) or on a host through ssh, as a child process.
+    x2::platform::ProcessOptions X2ctl(std::string_view host, const std::vector<std::string>& args) const;
+    // Duplicate or empty names, unknown or self dependencies, cycles, unknown hosts, local servers without a program.
+    // Empty when valid.
     std::string Validate() const;
     // Indices in an order where every server comes after what it depends on (profile order among independent ones).
     // Only for a valid profile.

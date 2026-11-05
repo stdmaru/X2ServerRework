@@ -76,13 +76,38 @@ int main(int argc, char* argv[])
     };
     auto settled = [&] { return !o.Busy(); };
 
+    // what runs here and on each host (x2ctl list, over ssh for the hosts)
+    o.Discover();
+    runUntil(
+        [&o] {
+            for (std::size_t h = 0; h < o.Hosts(); ++h)
+                if (o.HostAt(h).listing)
+                    return false;
+            return true;
+        },
+        30s);
+    for (std::size_t h = 0; h < o.Hosts(); ++h) {
+        const auto& host = o.HostAt(h);
+        std::string names;
+        if (host.running)
+            for (const std::string& name : *host.running)
+                names += " " + name;
+        std::printf("host %s (%s):%s%s\n", host.spec.name.c_str(), host.spec.destination.c_str(),
+                    host.running ? names.c_str() : " FAILED ", host.error.c_str());
+    }
+    for (std::size_t i = 0; i < o.Size(); ++i) {
+        const auto listed = o.Listed(static_cast<int>(i));
+        std::printf("  %-17s %s\n", o.At(i).spec.name.c_str(), !listed ? "unknown" : *listed ? "running" : "not running");
+    }
+    std::fflush(stdout);
+
     if (attachOnly) {
         for (std::size_t i = 0; i < o.Size(); ++i)
             o.Attach(static_cast<int>(i));
     } else {
         o.StartAll();
     }
-    const bool ready = runUntil(all(Phase::Ready), 300s);
+    const bool ready = runUntil([&] { return all(Phase::Ready)() || !o.Busy(); }, 300s) && all(Phase::Ready)();
     runUntil(settled, 1s);
     std::printf("%s\n", ready ? "all ready" : "NOT all ready");
 
@@ -92,7 +117,13 @@ int main(int argc, char* argv[])
     } else {
         o.StopAll();
     }
-    const bool offline = runUntil(all(Phase::Offline), 300s);
+    auto down = [&o] {
+        for (std::size_t i = 0; i < o.Size(); ++i)
+            if (o.At(i).phase != Phase::Offline && o.At(i).phase != Phase::Failed)
+                return false;
+        return true;
+    };
+    const bool offline = runUntil(down, 300s);
     std::printf("%s\n", offline ? "all offline" : "NOT all offline");
     for (std::size_t i = 0; i < o.Size(); ++i) {
         const auto& s = o.At(i);
