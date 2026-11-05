@@ -74,6 +74,8 @@ TEST_CASE("profile: invalid profiles")
              R"({"hosts": [{"name": "h", "destination": "a", "port": 70000}], "servers": []})",
              R"({"hosts": [{"name": "h", "destination": "a", "port": "22"}], "servers": []})",
              R"({"hosts": [{"name": "h", "destination": "a"}], "servers": [{"name": "A", "host": "h"}]})",  // no socket name
+             R"({"servers": [{"name": "A", "program": "a", "start": "x"}]})",              // commands are for remote servers
+             R"({"servers": [{"name": "A", "program": "a", "service": "a"}]})",
          }) {
         error.clear();
         CHECK_MESSAGE(!ParseProfile(bad, "", error), bad);
@@ -174,4 +176,30 @@ TEST_CASE("profile: an ssh port")
     CHECK(vps.args[vps.args.size() - 3] == "2222");
     CHECK(vps.args[vps.args.size() - 2] == "x2@vps");
     CHECK(profile->X2ctl("lab", {"list"}).args == std::vector<std::string>{"-p", "22022", "lab", "x2ctl list"});
+}
+
+TEST_CASE("profile: a host's start and stop commands")
+{
+    std::string error;
+    const auto profile = ParseProfile(R"({
+        "hosts": [{"name": "vps", "destination": "x2@vps", "ssh": ["ssh"],
+                   "start": "docker compose -f /opt/x2/compose.yml up -d {service}",
+                   "stop": "docker compose -f /opt/x2/compose.yml stop {service}"},
+                  {"name": "bare", "destination": "bare", "ssh": ["ssh"]}],
+        "servers": [{"name": "LoginServer", "host": "vps", "service": "login", "control": "LoginServer"},
+                    {"name": "GameServer", "host": "vps", "program": "./GameServer",
+                     "start": "systemctl --user start x2@{name} # {control}"},
+                    {"name": "Other", "host": "bare", "control": "Other"}]})",
+                                      "", error);
+    REQUIRE_MESSAGE(profile, error);
+    const auto& servers = profile->servers;
+    CHECK(profile->StartCommand(servers[0]) == "docker compose -f /opt/x2/compose.yml up -d login");
+    CHECK(profile->StopCommand(servers[0]) == "docker compose -f /opt/x2/compose.yml stop login");
+    // a server's own command replaces the host's; {service} is its name when not given
+    CHECK(profile->StartCommand(servers[1]) == "systemctl --user start x2@GameServer # GameServer");
+    CHECK(profile->StopCommand(servers[1]) == "docker compose -f /opt/x2/compose.yml stop GameServer");
+    CHECK(profile->StartCommand(servers[2]).empty());
+    CHECK(profile->StopCommand(servers[2]).empty());
+    // the line goes to the remote shell as it is
+    CHECK(profile->Shell("vps", "a 'b c'").args == std::vector<std::string>{"x2@vps", "a 'b c'"});
 }

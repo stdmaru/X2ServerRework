@@ -132,6 +132,16 @@ void Orchestrator::Start(int i)
         Start(m_profile.Find(dep));
 }
 
+bool Orchestrator::HasStartCommand(int i) const
+{
+    return !m_profile.StartCommand(At(static_cast<std::size_t>(i)).spec).empty();
+}
+
+bool Orchestrator::HasStopCommand(int i) const
+{
+    return !m_profile.StopCommand(At(static_cast<std::size_t>(i)).spec).empty();
+}
+
 void Orchestrator::StopAll()
 {
     for (std::size_t i = 0; i < m_servers.size(); ++i)
@@ -147,9 +157,17 @@ void Orchestrator::Stop(int i)
         s.session.NoteEvent(LogLevel::Note, "start cancelled");
         return;
     }
+    if (s.task && s.taskKind == Server::Task::Start) {
+        s.task.reset();         // ssh is killed; what the command did there so far stays done
+        s.taskKind = Server::Task::None;
+        s.session.NoteEvent(LogLevel::Warn, "start command cancelled");
+        if (!s.transport)
+            s.phase = Phase::Offline;
+    }
+    const bool command = HasStopCommand(i);
     if (!s.transport && Listed(i) == true)
         Connect(i, false);      // to stop it through the protocol, and see it go
-    if (s.transport && !s.stopRequested)
+    if ((s.transport || command) && !s.stopRequested && !s.task)
         s.wantStop = true;
 }
 
@@ -179,7 +197,66 @@ void Orchestrator::Kill(int i)
     }
 }
 
-bool Orchestrator::Connect(int i, bool owned)
+bool Orchestrator::RunTask(int i, Server::Task kind, const std::string& command)
+{
+    Server& s = At(static_cast<std::size_t>(i));
+    s.task = std::make_unique<ProcessTransport>(m_profile.Shell(s.spec.host, command), std::string());
+    s.taskKind = kind;
+    s.session.NoteEvent(LogLevel::Note, (kind == Server::Task::Start ? "start on " : "stop on ") + s.spec.host + ": " +
+                                            command);
+    std::string error;
+    if (!s.task->Open(m_inbox, static_cast<int>(m_servers.size()) + i, ++s.taskGeneration, error)) {
+        s.task.reset();
+        s.taskKind = Server::Task::None;
+        s.session.NoteEvent(LogLevel::Error, error);
+        s.error = error;
+        if (!s.transport)
+            s.phase = Phase::Failed;
+        return false;
+    }
+    s.task->CloseInput();
+    return true;
+}
+
+void Orchestrator::TaskEvent(int i, TransportEvent& event)
+{
+    Server& s = At(static_cast<std::size_t>(i));
+    if (event.generation != s.taskGeneration || !s.task)
+        return;
+    if (event.kind == TransportEvent::Line) {
+        s.session.NoteEvent(LogLevel::Note, std::move(event.text));    // docker and systemctl report on stderr
+        return;
+    }
+    const Server::Task kind = s.taskKind;
+    s.task.reset();
+    s.taskKind = Server::Task::None;
+    const bool ok = event.exitCode == 0;
+    if (kind == Server::Task::Start) {
+        if (ok) {
+            Connect(i, false, m_options.attachWait);
+        } else {
+            s.phase = Phase::Failed;
+            s.error = "the start command failed (" + event.text + "): see the log";
+            s.session.NoteEvent(LogLevel::Error, s.error);
+        }
+        return;
+    }
+    if (!ok) {
+        s.session.NoteEvent(LogLevel::Error, "the stop command failed (" + event.text + ")");
+        s.stopRequested = false;
+        if (s.transport)
+            s.phase = s.session.State() == ServerState::Ready ? Phase::Ready : Phase::Starting;
+        else
+            s.phase = Phase::Offline;
+    } else if (!s.transport) {
+        s.phase = Phase::Offline;
+        s.stopRequested = false;
+        s.session.NoteEvent(LogLevel::Note, "stopped");
+    }
+    // stopped and still attached: the connection closes as the server goes
+}
+
+bool Orchestrator::Connect(int i, bool owned, std::chrono::seconds wait)
 {
     Server& s = At(static_cast<std::size_t>(i));
     x2::platform::ProcessOptions options;
@@ -191,7 +268,9 @@ bool Orchestrator::Connect(int i, bool owned)
             options.args.push_back("--control=" + s.spec.control);
         options.workingDirectory = s.spec.directory;
     } else {
-        options = m_profile.X2ctl(s.spec.host, {"attach", s.spec.ControlName()});
+        options = wait.count() > 0
+                      ? m_profile.X2ctl(s.spec.host, {"attach", "--wait=" + std::to_string(wait.count()), s.spec.ControlName()})
+                      : m_profile.X2ctl(s.spec.host, {"attach", s.spec.ControlName()});
     }
 
     s.owned = owned;
@@ -227,7 +306,7 @@ void Orchestrator::Closed(int i, const TransportEvent& event)
     s.exitCode = event.exitCode;
 
     if (expected) {
-        s.phase = Phase::Offline;
+        s.phase = s.task ? Phase::Stopping : Phase::Offline;    // its stop command still finishing
     } else {
         s.phase = Phase::Failed;
         if (s.owned)
@@ -238,7 +317,9 @@ void Orchestrator::Closed(int i, const TransportEvent& event)
         else
             s.error = "connection closed (" + event.text + ")";
     }
-    s.wantRun = s.wantStop = s.stopRequested = s.detaching = s.killed = false;
+    s.wantRun = s.wantStop = s.detaching = s.killed = false;
+    if (!s.task)
+        s.stopRequested = false;
 }
 
 bool Orchestrator::DependentsRunning(int i) const
@@ -248,7 +329,7 @@ bool Orchestrator::DependentsRunning(int i) const
         if (!other->wantStop && !other->stopRequested)
             continue;   // only servers being stopped too hold this one back
         if (std::find(other->spec.after.begin(), other->spec.after.end(), name) != other->spec.after.end() &&
-            other->transport)
+            (other->transport || other->task))
             return true;
     }
     return false;
@@ -267,8 +348,14 @@ bool Orchestrator::Update(Clock::time_point now)
             }
             continue;
         }
-        if (static_cast<std::size_t>(event.server) >= m_servers.size())
+        if (static_cast<std::size_t>(event.server) >= m_servers.size()) {
+            const auto i = static_cast<std::size_t>(event.server) - m_servers.size();
+            if (i < m_servers.size()) {
+                TaskEvent(static_cast<int>(i), event);
+                changed = true;
+            }
             continue;
+        }
         Server& s = At(static_cast<std::size_t>(event.server));
         if (event.generation != s.generation || !s.transport)
             continue;   // from an earlier connection
@@ -312,8 +399,12 @@ bool Orchestrator::Update(Clock::time_point now)
             s.phase = Phase::Offline;
             s.session.NoteEvent(LogLevel::Warn, "not started: " + blocked + " is not running");
         } else if (depsReady && s.Remote()) {
-            s.wantRun = false;
-            Connect(i, false);      // a remote server is that machine's service: attach, never start
+            s.wantRun = false;      // a remote server is that machine's service: start it there, then attach
+            const std::string command = m_profile.StartCommand(s.spec);
+            if (command.empty())
+                Connect(i, false);
+            else if (RunTask(i, Server::Task::Start, command))
+                s.phase = Phase::Starting;
         } else if (depsReady) {
             const std::vector<std::string> running = m_options.runningServers();
             const bool exists = std::find(running.begin(), running.end(), s.spec.ControlName()) != running.end();
@@ -338,10 +429,16 @@ bool Orchestrator::Update(Clock::time_point now)
             s.stopRequested = true;
             s.stopSince = now;
             s.stopStage = 0;
-            if (!s.session.Stop() && s.owned)
-                s.transport->CloseInput();
-            s.phase = Phase::Stopping;
             changed = true;
+            if (const std::string command = m_profile.StopCommand(s.spec); !command.empty()) {
+                if (!RunTask(i, Server::Task::Stop, command)) {
+                    s.stopRequested = false;
+                    continue;
+                }
+            } else if (!s.session.Stop() && s.owned) {
+                s.transport->CloseInput();
+            }
+            s.phase = Phase::Stopping;
         }
         if (s.stopRequested && s.owned && s.transport) {
             if (s.stopStage == 0 && now - s.stopSince >= m_options.stopGrace) {
@@ -364,7 +461,7 @@ bool Orchestrator::Busy() const
 {
     for (const auto& s : m_servers)
         if (s->phase == Phase::Waiting || s->phase == Phase::Starting || s->phase == Phase::Stopping || s->wantRun ||
-            s->wantStop)
+            s->wantStop || s->task)
             return true;
     return false;
 }

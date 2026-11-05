@@ -381,3 +381,71 @@ TEST_CASE("orchestrator: servers with their sockets in another folder (a contain
     std::filesystem::remove_all(dir, ec);
 }
 #endif
+
+#if defined(X2_X2CTL) && defined(X2_FAKE_SSH)
+namespace {
+
+bool Logged(const Orchestrator& o, std::size_t i, const std::string& text)
+{
+    const LogStore& logs = o.At(i).session.Logs();
+    for (std::uint64_t q = logs.FirstSeq(); q <= logs.LastSeq(); ++q)
+        if (const auto* entry = logs.Find(q); entry && entry->log.message.find(text) != std::string::npos)
+            return true;
+    return false;
+}
+
+}  // namespace
+
+// The test plays the host's service manager: the start command only succeeds, and the service is started here once
+// the attach is waiting for it; the stop command is x2ctl stop.
+TEST_CASE("orchestrator: a remote server started and stopped through its host's commands")
+{
+    const std::string name = Unique("SmCommands");
+    Profile profile = RemoteProfile(name, "fake-host");
+    profile.hosts[0].start = x2::platform::QuoteShellArgument(X2_PROCESS_HELPER) + " exit 0";
+    profile.hosts[0].stop = x2::platform::QuoteShellArgument(X2_X2CTL) + " stop {control}";
+    Orchestrator o(profile);
+    CHECK(o.HasStartCommand(0));
+    CHECK(o.HasStopCommand(0));
+
+    o.Start(0);
+    REQUIRE_MESSAGE(RunUntil(o, [&] { return Logged(o, 0, "attach --wait="); }), Dump(o));
+    CHECK(Logged(o, 0, "start on remote: "));
+    CHECK(o.At(0).phase == Phase::Starting);
+    std::this_thread::sleep_for(300ms);     // the attach waits for the socket
+    x2::platform::ProcessOptions service;
+    service.program = X2_TERMINAL_DEMO;
+    service.args = {"--no-stdin", "--control=" + name, "--ready-after=100"};
+    std::string error;
+    auto running = x2::platform::Process::Start(service, error);
+    REQUIRE_MESSAGE(running, error);
+    REQUIRE_MESSAGE(RunUntil(o, [&] { return o.At(0).phase == Phase::Ready; }), Dump(o));
+    CHECK(o.At(0).session.Pid() == running->Pid());
+
+    o.Stop(0);
+    CHECK(o.At(0).phase == Phase::Ready);       // the stop command runs on the next Update
+    REQUIRE_MESSAGE(RunUntil(o, [&] { return o.At(0).phase == Phase::Offline; }), Dump(o));
+    CHECK(Logged(o, 0, "stop on remote: "));
+    CHECK(running->WaitFor(10s) == 0);
+    CHECK(o.At(0).error.empty());
+}
+
+TEST_CASE("orchestrator: a remote start command that fails, and a stop command for a server not attached")
+{
+    Profile profile = RemoteProfile(Unique("SmBadStart"), "fake-host");
+    profile.hosts[0].start = x2::platform::QuoteShellArgument(X2_PROCESS_HELPER) + " exit 3";
+    profile.hosts[0].stop = x2::platform::QuoteShellArgument(X2_PROCESS_HELPER) + " exit 0";
+    Orchestrator o(profile);
+    o.Start(0);
+    REQUIRE_MESSAGE(RunUntil(o, [&] { return o.At(0).phase == Phase::Failed; }), Dump(o));
+    CHECK(o.At(0).error.find("the start command failed") != std::string::npos);
+    CHECK_FALSE(Logged(o, 0, "attach"));
+
+    // not listed, not attached: the stop command still runs (a service whose socket is gone)
+    o.Stop(0);
+    o.Update();
+    CHECK(o.At(0).phase == Phase::Stopping);
+    REQUIRE_MESSAGE(RunUntil(o, [&] { return o.At(0).phase == Phase::Offline; }), Dump(o));
+    CHECK(Logged(o, 0, "stopped"));
+}
+#endif

@@ -6,10 +6,11 @@
 //    "servers": [{"name": "LoginServer", "directory": "LoginServer", "program": "./LoginServer",
 //                 "args": ["DEV", "0"], "after": ["EPublisherServer"], "control": "LoginServer"}, ...],
 //    "hosts": [{"name": "prod", "destination": "x2@10.0.0.5", "x2ctl": "/opt/x2/dist/x2ctl",
-//               "controlDir": "/opt/x2/docker/control/x2"}],
+//               "controlDir": "/opt/x2/docker/control/x2",
+//               "start": "docker compose -f /opt/x2/docker-compose.yml up -d {service}", "stop": "..."}],
 //    "controlDir": "..."}
-// Relative directories are relative to the profile's folder. A server with a "host" runs on that machine: ServerManager
-// attaches to it over SSH and never starts it.
+// Relative directories are relative to the profile's folder. A server with a "host" runs on that machine as its service:
+// ServerManager attaches to it over SSH, and starts and stops it through that machine's commands when the profile has them.
 
 #include "x2/platform/process.h"
 
@@ -28,6 +29,10 @@ struct HostSpec {
     std::string x2ctl = "x2ctl";        // on that machine (a path, or a name in its PATH)
     std::string controlDir;             // its control sockets (x2ctl --dir); empty: x2ctl's default there
     std::vector<std::string> ssh;       // program and options before the destination; empty: DefaultSshCommand()
+    // Shell command lines run there to start and stop one of its servers, as its service manager does (docker compose,
+    // systemctl); {service}, {name} and {control} become the server's. Empty: attach only, and stop through the protocol.
+    std::string start;
+    std::string stop;
 };
 
 // ssh -T -o BatchMode=yes -o ConnectTimeout=10, and on Linux a shared connection per host (ControlMaster=auto,
@@ -42,6 +47,11 @@ struct ServerSpec {
     std::vector<std::string> args;      // before the console options ServerManager adds (--machine, --control=)
     std::vector<std::string> after;     // servers that must be ready before this one starts
     std::string control;                // control socket name; empty: the program's file name (the server's default)
+    // Remote servers: their name in the host's service manager ({service}; empty: name), and start and stop commands
+    // that replace the host's.
+    std::string service;
+    std::string start;
+    std::string stop;
 
     // The control socket name the server listens on.
     std::string ControlName() const;
@@ -59,7 +69,13 @@ struct Profile {
     const HostSpec* FindHost(std::string_view name) const;
     // `x2ctl <args>` here (empty host) or on a host through ssh, as a child process.
     x2::platform::ProcessOptions X2ctl(std::string_view host, const std::vector<std::string>& args) const;
-    // Duplicate or empty names, unknown or self dependencies, cycles, unknown hosts, local servers without a program.
+    // A remote server's start or stop command line with its placeholders filled in; empty when it has none.
+    std::string StartCommand(const ServerSpec& server) const;
+    std::string StopCommand(const ServerSpec& server) const;
+    // `ssh <destination> <command line>` (the line goes to the remote shell as it is).
+    x2::platform::ProcessOptions Shell(std::string_view host, const std::string& commandLine) const;
+    // Duplicate or empty names, unknown or self dependencies, cycles, unknown hosts, local servers without a program or
+    // with start/stop commands.
     // Empty when valid.
     std::string Validate() const;
     // Indices in an order where every server comes after what it depends on (profile order among independent ones).
