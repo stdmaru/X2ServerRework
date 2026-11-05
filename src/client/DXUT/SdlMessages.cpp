@@ -167,6 +167,12 @@ void SdlMessageTranslator::Translate(const SDL_Event& event, const TranslateCont
         }
         break;
 
+    case SDL_EVENT_TEXT_EDITING_CANDIDATES:
+        if (ForWindow(event.edit_candidates.windowID, context)) {
+            Candidates(event.edit_candidates, out);
+        }
+        break;
+
     case SDL_EVENT_MOUSE_MOTION:
         if (ForWindow(event.motion.windowID, context)) {
             out.push_back({WM_MOUSEMOVE, m_buttons | ModifierKeys(context.mod),
@@ -290,13 +296,13 @@ void SdlMessageTranslator::Text(const SDL_TextInputEvent& text, std::vector<WinM
     if (chars.empty()) {
         return;
     }
-    const bool fromIme = m_composing;
+    const bool fromIme = m_ime.Composing();
     if (fromIme) {
-        // Committed IME text: the result string, the end of the composition, then (through DefWindowProc) the characters.
-        m_result = chars;
-        m_composing = false;
-        m_composition.clear();
-        m_compositionCursor = 0;
+        // Committed IME text: the candidate window closes, then the result string, the end of the composition, and
+        // (through DefWindowProc) the characters.
+        CloseCandidates(out);
+        m_ime.SetResult(chars);
+        m_ime.ClearComposition();
         out.push_back({WM_IME_COMPOSITION, static_cast<WPARAM>(chars.front()), GCS_RESULTSTR});
         out.push_back({WM_IME_ENDCOMPOSITION, 0, 0});
     }
@@ -310,24 +316,38 @@ void SdlMessageTranslator::Editing(const SDL_TextEditingEvent& editing, std::vec
 {
     const std::wstring text = editing.text ? x2::platform::Utf8ToWide(editing.text) : std::wstring();
     if (text.empty()) {
-        if (m_composing) {  // composition cancelled (or emptied with backspace)
-            m_composing = false;
-            m_composition.clear();
-            m_compositionCursor = 0;
+        if (m_ime.Composing()) {  // composition cancelled (or emptied with backspace)
+            CloseCandidates(out);
+            m_ime.ClearComposition();
             out.push_back({WM_IME_COMPOSITION, 0, GCS_COMPSTR | GCS_CURSORPOS});
             out.push_back({WM_IME_ENDCOMPOSITION, 0, 0});
         }
         return;
     }
-    if (!m_composing) {
-        m_composing = true;
+    if (!m_ime.Composing()) {
+        m_ime.SetResult({});
         out.push_back({WM_IME_STARTCOMPOSITION, 0, 0});
     }
-    m_composition = text;
     // SDL counts the cursor in UTF-8 code points; std::wstring is code points on Linux, UTF-16 on Windows (Korean
     // syllables are in the BMP, so the two agree for the client's IME).
-    m_compositionCursor = editing.start < 0 ? static_cast<int>(text.size()) : static_cast<int>(editing.start);
+    const int cursor = editing.start < 0 ? static_cast<int>(text.size()) : static_cast<int>(editing.start);
+    m_ime.SetComposition(text, cursor, editing.start, editing.length);
     out.push_back({WM_IME_COMPOSITION, static_cast<WPARAM>(text.back()), GCS_COMPSTR | GCS_COMPATTR | GCS_CURSORPOS});
+}
+
+void SdlMessageTranslator::Candidates(const SDL_TextEditingCandidatesEvent& candidates, std::vector<WinMessage>& out)
+{
+    // lParam: the candidate lists that changed, as bits; the IMEs SDL reads have one list (index 0).
+    if (const UINT notification = m_ime.SetCandidates(candidates)) {
+        out.push_back({WM_IME_NOTIFY, notification, 1});
+    }
+}
+
+void SdlMessageTranslator::CloseCandidates(std::vector<WinMessage>& out)
+{
+    if (const UINT notification = m_ime.CloseCandidates()) {
+        out.push_back({WM_IME_NOTIFY, notification, 1});
+    }
 }
 
 void SdlMessageTranslator::Button(const SDL_MouseButtonEvent& button, const TranslateContext& context, std::vector<WinMessage>& out)

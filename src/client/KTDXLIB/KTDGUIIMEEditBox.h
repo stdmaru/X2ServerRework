@@ -1,5 +1,7 @@
 #pragma once
 
+#include "x2/platform/ime.h"
+
 class CKTDGUIIMEEditBox : public CKTDGUIControl
 {
 	public:
@@ -149,7 +151,7 @@ protected:
 
 
 	protected:
-		// Empty implementation of the IMM32 API
+		// Empty implementation of the IMM32 API (before Initialize and after Uninitialize)
 		static	INPUTCONTEXT*	WINAPI	Dummy_ImmLockIMC( HIMC )					{ return NULL; }
 		static	BOOL			WINAPI	Dummy_ImmUnlockIMC( HIMC )					{ return FALSE; }
 		static	LPVOID			WINAPI	Dummy_ImmLockIMCC( HIMCC )					{ return NULL; }
@@ -254,7 +256,7 @@ protected:
 		bool		m_bIsForceSendCustomMsgChange;		/// 한글 문자 하나만 입력해도 Change 메시지 전송할지 여부
 
 		// Application-wide data
-		static	HINSTANCE	s_hDllImm32;	// IMM32 DLL handle
+		static	bool		s_bImmBound;	// _Imm* point to the IMM32 emulation (Initialize)
 		static	HINSTANCE	s_hDllVer;		// Version DLL handle
 		static	HIMC		s_hImcDef;		// Default input context
 

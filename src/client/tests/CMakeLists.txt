@@ -1,5 +1,5 @@
 # Client tests, headless (SDL's dummy video driver; no window, no GPU). docs/porting/client-dxut.md#tests
-set(X2_CLIENT_TEST_SOURCES main.cpp test_messages.cpp test_dxut.cpp test_input.cpp test_ktdi.cpp ktdxstage_stub.cpp
+set(X2_CLIENT_TEST_SOURCES main.cpp test_messages.cpp test_ime.cpp test_dxut.cpp test_input.cpp test_ktdi.cpp ktdxstage_stub.cpp
     test_serverprotocol.cpp)
 if(TARGET x2::client_luacommon)
     list(APPEND X2_CLIENT_TEST_SOURCES test_luacommon.cpp)

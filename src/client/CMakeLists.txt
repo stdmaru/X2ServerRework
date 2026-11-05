@@ -30,7 +30,7 @@ endif()
 
 # DXUT replacement: window, message pump and frame loop on x2::app, SDL3 events as Win32 messages
 # (docs/porting/client-dxut.md).
-add_library(x2_client_dxut STATIC DXUT/DXUT.cpp DXUT/SdlInput.cpp DXUT/SdlMessages.cpp)
+add_library(x2_client_dxut STATIC DXUT/DXUT.cpp DXUT/Ime.cpp DXUT/SdlInput.cpp DXUT/SdlMessages.cpp)
 add_library(x2::client_dxut ALIAS x2_client_dxut)
 target_include_directories(x2_client_dxut PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/DXUT)
 target_link_libraries(x2_client_dxut PUBLIC x2::platform x2::app)

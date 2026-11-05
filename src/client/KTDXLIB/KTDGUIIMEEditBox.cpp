@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "./KTDGUIIMEEditBox.h"
 
+#include "Ime.h"
+
 // IME constants
 #define CHT_IMEFILENAME1    "TINTLGNT.IME" // New Phonetic
 #define CHT_IMEFILENAME2    "CINTLGNT.IME" // New Chang Jie
@@ -56,7 +58,7 @@ BOOL (APIENTRY * CKTDGUIIMEEditBox::_VerQueryValueA)( const LPVOID, LPSTR, LPVOI
 BOOL (APIENTRY * CKTDGUIIMEEditBox::_GetFileVersionInfoA)( LPSTR, DWORD, DWORD, LPVOID )= CKTDGUIIMEEditBox::Dummy_GetFileVersionInfoA;
 DWORD (APIENTRY * CKTDGUIIMEEditBox::_GetFileVersionInfoSizeA)( LPSTR, LPDWORD ) = CKTDGUIIMEEditBox::Dummy_GetFileVersionInfoSizeA;
 
-HINSTANCE	CKTDGUIIMEEditBox::s_hDllImm32;				// IMM32 DLL handle
+bool		CKTDGUIIMEEditBox::s_bImmBound = false;		// _Imm* point to the IMM32 emulation
 HINSTANCE	CKTDGUIIMEEditBox::s_hDllVer;				// Version DLL handle
 HKL			CKTDGUIIMEEditBox::s_hklCurrent;			// Current keyboard layout of the process
 bool		CKTDGUIIMEEditBox::s_bVerticalCand;			// Indicates that the candidates are listed vertically
@@ -3256,63 +3258,42 @@ void CKTDGUIIMEEditBox::ResetCaretBlink()
 //--------------------------------------------------------------------------------------
 void CKTDGUIIMEEditBox::Initialize()
 {
-	if( s_hDllImm32 ) // Only need to do once
+	if( s_bImmBound ) // Only need to do once
 		return;
-
-	FARPROC Temp;
 
 	s_CompString.SetBufferSize( MAX_COMPSTRING_SIZE );
 
-	WCHAR wszPath[MAX_PATH+1];
-	if( !::GetSystemDirectory( wszPath, MAX_PATH+1 ) )
-		return;
-
-	StringCchCat( wszPath, MAX_PATH, IMM32_DLLNAME );
-	s_hDllImm32 = LoadLibrary( wszPath );
-
-	if( s_hDllImm32 )
-	{
-		GETPROCADDRESS( s_hDllImm32, ImmLockIMC, Temp );
-		GETPROCADDRESS( s_hDllImm32, ImmUnlockIMC, Temp );
-		GETPROCADDRESS( s_hDllImm32, ImmLockIMCC, Temp );
-		GETPROCADDRESS( s_hDllImm32, ImmUnlockIMCC, Temp );
-		GETPROCADDRESS( s_hDllImm32, ImmDisableTextFrameService, Temp );
-		GETPROCADDRESS( s_hDllImm32, ImmGetCompositionStringW, Temp );		//조합중인 유니코드 얻어오기함수 Ex."ㅎ 하 한 ㄱ 그 글" => "한글"
-		GETPROCADDRESS( s_hDllImm32, ImmGetCandidateListW, Temp );			//특수문자표 얻어오기(arg 2: N_OPENCANDIDATE <= 리스트 열기 플레그)
-		GETPROCADDRESS( s_hDllImm32, ImmGetContext, Temp );					//현재 모드(한/영..) 상태 검사
-		GETPROCADDRESS( s_hDllImm32, ImmReleaseContext, Temp );				//입력 해제
-		GETPROCADDRESS( s_hDllImm32, ImmAssociateContext, Temp );			//IME On/Off Function
-		GETPROCADDRESS( s_hDllImm32, ImmGetOpenStatus, Temp );				//determines whether the IME is open or closed.
-		GETPROCADDRESS( s_hDllImm32, ImmSetOpenStatus, Temp );				//opens or closes the IME.
-		GETPROCADDRESS( s_hDllImm32, ImmGetConversionStatus, Temp );		//현제 설정도니 모드 얻어오기 Ex. IME_CMODE_HANGEUL등..
-		GETPROCADDRESS( s_hDllImm32, ImmGetDefaultIMEWnd, Temp );
-		GETPROCADDRESS( s_hDllImm32, ImmGetIMEFileNameA, Temp );
-		GETPROCADDRESS( s_hDllImm32, ImmGetVirtualKey, Temp );
-		GETPROCADDRESS( s_hDllImm32, ImmNotifyIME, Temp );
-		GETPROCADDRESS( s_hDllImm32, ImmSetConversionStatus, Temp );		//언어모드 셋팅하기
-		GETPROCADDRESS( s_hDllImm32, ImmSimulateHotKey, Temp );
-		GETPROCADDRESS( s_hDllImm32, ImmIsIME, Temp );						//IME 입력모드가 열렸는지 체크
-	}
-
-	if( !::GetSystemDirectory( wszPath, MAX_PATH+1 ) )
-		return;
-
-	StringCchCat( wszPath, MAX_PATH, VER_DLLNAME );
-	s_hDllVer = LoadLibrary( wszPath );
-
-	if( s_hDllVer )
-	{
-		GETPROCADDRESS( s_hDllVer, VerQueryValueA, Temp );
-		GETPROCADDRESS( s_hDllVer, GetFileVersionInfoA, Temp );
-		GETPROCADDRESS( s_hDllVer, GetFileVersionInfoSizeA, Temp );
-	}
+	// The original loaded these from imm32.dll. SDL3 owns the IME on every platform, so they answer from the state SDL
+	// reports (DXUT/Ime.h, docs/porting/client-ime.md). version.dll is not loaded: it was only read for the version of
+	// old Chinese IME files, and there is no IME file (ImmGetIMEFileNameA).
+	EMULATEDPROC( ImmLockIMC );
+	EMULATEDPROC( ImmUnlockIMC );
+	EMULATEDPROC( ImmLockIMCC );
+	EMULATEDPROC( ImmUnlockIMCC );
+	EMULATEDPROC( ImmDisableTextFrameService );
+	EMULATEDPROC( ImmGetCompositionStringW );	// the composition string being typed, e.g. "ㅎ 하 한 ㄱ 그 글" => "한글"
+	EMULATEDPROC( ImmGetCandidateListW );		// the candidate list (opened with IMN_OPENCANDIDATE)
+	EMULATEDPROC( ImmGetContext );
+	EMULATEDPROC( ImmReleaseContext );
+	EMULATEDPROC( ImmAssociateContext );		// IME on/off
+	EMULATEDPROC( ImmGetOpenStatus );
+	EMULATEDPROC( ImmSetOpenStatus );
+	EMULATEDPROC( ImmGetConversionStatus );		// conversion mode, e.g. IME_CMODE_HANGEUL
+	EMULATEDPROC( ImmGetDefaultIMEWnd );
+	EMULATEDPROC( ImmGetIMEFileNameA );
+	EMULATEDPROC( ImmGetVirtualKey );
+	EMULATEDPROC( ImmNotifyIME );
+	EMULATEDPROC( ImmSetConversionStatus );
+	EMULATEDPROC( ImmSimulateHotKey );
+	EMULATEDPROC( ImmIsIME );
+	s_bImmBound = true;
 }
 
 
 //--------------------------------------------------------------------------------------
 void CKTDGUIIMEEditBox::Uninitialize()
 {
-	if( s_hDllImm32 )
+	if( s_bImmBound )
 	{
 		PLACEHOLDERPROC( ImmLockIMC );
 		PLACEHOLDERPROC( ImmUnlockIMC );
@@ -3335,8 +3316,7 @@ void CKTDGUIIMEEditBox::Uninitialize()
 		PLACEHOLDERPROC( ImmSimulateHotKey );
 		PLACEHOLDERPROC( ImmIsIME );
 
-		FreeLibrary( s_hDllImm32 );
-		s_hDllImm32 = NULL;
+		s_bImmBound = false;
 	}
 	if( s_hDllIme )
 	{
