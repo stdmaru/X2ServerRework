@@ -45,8 +45,6 @@ typedef const RECT* LPCRECT;
 #define MAKEWPARAM(l, h)    (static_cast<WPARAM>(static_cast<DWORD>(MAKELONG(l, h))))
 #define MAKELPARAM(l, h)    (static_cast<LPARAM>(static_cast<DWORD>(MAKELONG(l, h))))
 #define MAKELRESULT(l, h)   (static_cast<LRESULT>(static_cast<DWORD>(MAKELONG(l, h))))
-#define GET_X_LPARAM(lp)    (static_cast<int>(static_cast<short>(LOWORD(lp))))
-#define GET_Y_LPARAM(lp)    (static_cast<int>(static_cast<short>(HIWORD(lp))))
 #define GET_WHEEL_DELTA_WPARAM(wp) (static_cast<short>(HIWORD(wp)))
 #define GET_KEYSTATE_WPARAM(wp)    (LOWORD(wp))
 #define GET_XBUTTON_WPARAM(wp)     (HIWORD(wp))
@@ -271,3 +269,9 @@ typedef const RECT* LPCRECT;
 #define VK_PROCESSKEY 0xE5
 
 #endif // !_WIN32
+
+// <windowsx.h> has these on Windows; it is not included, since it also defines macros with common names.
+#ifndef GET_X_LPARAM
+#define GET_X_LPARAM(lp)    (static_cast<int>(static_cast<short>(LOWORD(lp))))
+#define GET_Y_LPARAM(lp)    (static_cast<int>(static_cast<short>(HIWORD(lp))))
+#endif
