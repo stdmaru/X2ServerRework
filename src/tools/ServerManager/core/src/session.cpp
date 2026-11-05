@@ -114,11 +114,11 @@ void ServerSession::OnLine(std::string_view line)
         message);
 }
 
-void ServerSession::OnDisconnected(std::string_view reason)
+void ServerSession::OnDisconnected(std::string_view reason, bool expected)
 {
     m_sender = {};
     m_link = LinkState::Disconnected;
-    Note(EntryKind::Event, m_state == ServerState::Stopped ? LogLevel::Note : LogLevel::Warn,
+    Note(EntryKind::Event, expected || m_state == ServerState::Stopped ? LogLevel::Note : LogLevel::Warn,
          "disconnected" + (reason.empty() ? std::string() : ": " + std::string(reason)));
 
     std::map<std::int64_t, ResultHandler> pending;

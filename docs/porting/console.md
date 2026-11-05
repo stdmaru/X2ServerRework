@@ -29,6 +29,9 @@ to the server as arguments: `--no-stdin`, `--machine`, `--control=<name>` (socke
   used `std::wcout` for `Dump()` (`DeclDump`), `Server:SetUseVersion` (called by `config_gs*.lua`), and `KGameServer::ServerVersion`, so
   the GameServer console printed nothing (fixed on 2026-11-04). Wide text goes through `KWriteStdout`/`KDumpToStdout`
   (`src/kncsdk/ToString.h`) as UTF-8; the regression test is in `test_util.cpp`.
+- Lines (lines and machine modes) are read from the stdin handle (`read`/`ReadFile`), not through `std::cin`: a thread blocked in
+  `std::getline` holds the stdin `FILE` lock, which `exit()` waits for when it flushes the streams, so a `--machine` server stopped
+  with `{"stop":true}` finished `ShutDown` but only exited once its stdin was closed (found by ServerManager on 2026-11-05).
 - Keys typed during loading wait for the prompt; Ctrl+C during that time asks for confirmation as soon as the prompt appears.
 - SIGTERM and console close exit without asking. On Windows, console close allows ~5 seconds for `ShutDown` (system limit).
 - In a terminal, a fatal failure (SIGSEGV, SIGABRT...) restores terminal mode before exit, so the shell is not left in raw mode.
@@ -38,6 +41,8 @@ to the server as arguments: `--no-stdin`, `--machine`, `--control=<name>` (socke
   the editor is small and tested (`test_terminal.cpp`).
 - `x2_terminal_demo` (`src/kncsdk/tests/terminal_demo.cpp`, built with the tests): same console without server or database (socket
   `TerminalDemo`), one log line every 2 seconds, and ready state after 3 seconds, for manual testing. Tested on Linux and Windows.
+  For the tests: `--control=<name>` (socket and name), `--ready-after=<ms>`, `--exit-after=<ms>` (abrupt exit with code 5), and
+  `--interpreter` (runs `lua_interpreter`).
 
 ## Control socket
 

@@ -11,7 +11,8 @@ progress and the remaining steps are in the [roadmap](../project/roadmap.md#phas
 
 | Part | Target | Contents |
 |---|---|---|
-| `core/` | `x2_servermanager_core` | No GUI, tested headless: protocol messages (`protocol.h`), a session per server (`session.h`), and logs (`log_store.h`) |
+| `core/` | `x2_servermanager_core` | No GUI, tested headless: protocol messages (`protocol.h`), a session per server (`session.h`), logs (`log_store.h`), transports (`transport.h`), profile (`profile.h`), and orchestrator (`orchestrator.h`) |
+| `core/tests/probe.cpp` | `x2_servermanager_probe` | Manual test of the orchestrator against real servers, without GUI |
 | (UI, later step) | `x2_servermanager` | The ImGui window on [`x2::app_imgui`](../porting/app.md) |
 
 The JSON parser (`x2::platform::ParseJson`, full documents) lives in [`x2::platform`](../porting/platform.md); the servers keep
@@ -34,8 +35,79 @@ reading commands with the flat `ParseJsonObject`.
   starts with what comes after `hello`. A child started by ServerManager is complete from its first line. Replaying a backlog is the
   `server/control-history` step.
 
+## Local processes and orchestration (2026-11-05, `tools/servermanager-local`)
+
+### Transport
+
+Every server is reached through a **child process** speaking protocol lines on its stdin/stdout
+([`x2::platform::Process`](../porting/platform.md)):
+
+| Case | Child |
+|---|---|
+| A server ServerManager starts | `<program> <args> --machine [--control=<name>]` in the server's folder |
+| A server already running on this machine (service, another terminal) | `x2ctl attach <name>` |
+| A remote server (step `tools/servermanager-ssh`) | `ssh host x2ctl attach <name>` |
+
+A socket client was not used for local servers: `ControlClient::ReadLine` blocks, and on Windows closing a socket from another thread
+does not wake it ([Server console](../porting/console.md#control-socket)). Ending a child always ends its readers, and the three cases
+behave the same. `ProcessTransport` reads stdout and stderr on two threads into an `Inbox` (each event tagged with the server and a
+connection generation, so a late event from an earlier connection is ignored) and reports one `Closed` with the exit code. Lines on
+stderr (a loader error, a crash message, an `x2ctl` error) become output entries.
+
+- Closing the stdin of a `--machine` child shuts the server down (end of input); closing the stdin of `x2ctl attach` only disconnects.
+- When ServerManager exits, the servers it started get the end of stdin and up to 5 seconds before being killed; attached servers
+  keep running.
+
+### Profile
+
+A JSON file (`LoadProfile`) or the built-in default for the package under `dist/` (`DefaultProfile`):
+
+```json
+{"x2ctl": "./x2ctl",
+ "servers": [
+   {"name": "EPublisherServer", "directory": "EPublisherServer", "program": "./EPublisherServer", "args": ["DEV"]},
+   {"name": "GameServer", "directory": "GameServer", "program": "./GameServer", "args": ["DEV", "0"],
+    "after": ["LoginServer", "CenterServer", "GlobalServer"], "control": "GameServer"}]}
+```
+
+- Relative `directory` and `x2ctl` paths are relative to the profile's folder; `program` is relative to `directory` (on Windows `.exe`
+  may be left out). `args` come before the console options ServerManager adds.
+- `after`: servers that must be **ready** first. `control`: the control socket name, by default the program's file name (the
+  server's own default); a second GameServer needs another one, and ServerManager passes it as `--control=`.
+- Checked when loaded: unique names, a program for each, known dependencies, no cycles.
+- Default order (2026-11-05), from the original and the servers' connections: EPublisherServer → LoginServer, CenterServer,
+  GlobalServer → GameServer → ChannelServer. The original `KX2ServerLauncher` waited for the `CenterServer_Ready` window before
+  starting GameServer; GameServer retries the servers it connects to, but players must not reach a GameServer before its
+  dependencies, so ChannelServer (the client's entry) comes last.
+
+### Orchestrator
+
+`Orchestrator` (UI thread: `Update()` after `Events()` wakes it) keeps one `Server` per profile entry with its `ServerSession` and a
+phase: `offline`, `waiting` (for dependencies), `starting` (connected, not ready), `ready`, `stopping`, `failed`.
+
+- **Start** (`StartAll`, `Start(i)` with its dependencies): a server connects once every dependency is `ready`. If its control socket
+  already exists here it is **attached** instead of started a second time. A dependency that failed or will not start cancels the
+  servers waiting for it.
+- **Stop** (`StopAll`, `Stop(i)`): `{"stop":true}`, in reverse dependency order: a server is stopped once no server being stopped still
+  depends on it. A server ServerManager started that is still running after `stopGrace` (60 s) is terminated (POSIX SIGTERM; Windows
+  closes its stdin), then killed after `killGrace` (10 s). A server stopped from elsewhere (`x2ctl stop`, its own prompt) is followed.
+- `Attach`/`Detach` (attached servers stay running), `Kill` (servers ServerManager started).
+- A child that exits, or a connection that closes, without a stop request is **failed** with the reason (`exited with code 5`); no
+  automatic restart.
+
+Tested on 2026-11-05 in the container with the six real servers (`x2_servermanager_probe dist`): attached to servers already running
+in terminals and stopped them in reverse order (12.6 s); then started all six as children, all ready in 19.4 s, and stopped them in
+17 s, every exit code 0.
+
 ## Tests
 
 `x2_servermanager_tests` (`ctest -R servermanager`): recorded protocol lines, log store/filter/view, session with a fake transport,
 and a session following a real `KServerConsole` in service mode over its control socket (hello, `ready`, a `START_LOG` with a field,
-Lua results, stop until disconnection). Socket directory: `$XDG_RUNTIME_DIR/x2`.
+Lua results, stop until disconnection). Profile parsing, validation and order. Orchestrator with real children: three
+`x2_terminal_demo` instances started in dependency order and stopped in reverse, a crash (`--exit-after`) that fails the server and
+cancels its dependent, a missing program, a child that ignores stop (`x2_process_helper sleep`: terminated, then killed), and a
+service already running that is attached through `x2ctl`, detached, attached again and stopped. Socket directory:
+`$XDG_RUNTIME_DIR/x2`. A failure prints each server's phase and last log entries.
+
+`x2_servermanager_probe <dist | profile.json> [--attach-only]`: starts (or attaches to) every server, waits until all are ready,
+stops them, and prints each phase change with its time.

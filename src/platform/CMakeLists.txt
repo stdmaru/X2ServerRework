@@ -9,6 +9,7 @@ add_library(x2_platform STATIC
     src/ini.cpp
     src/json.cpp
     src/net_io.cpp
+    src/process.cpp
     src/string.cpp
     src/terminal.cpp
     src/sync_posix.cpp

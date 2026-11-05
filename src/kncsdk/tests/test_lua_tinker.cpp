@@ -4,10 +4,12 @@
 
 #include <doctest/doctest.h>
 
+#include "x2/platform/process.h"
+
+#include <algorithm>
 #include <fstream>
-#include <iostream>
-#include <sstream>
 #include <string>
+#include <vector>
 
 namespace {
 
@@ -90,19 +92,29 @@ TEST_CASE_FIXTURE( LuaFixture, "64-bit integers keep their value" )
     CHECK( lua_tinker::get<long long>( L, "big" ) == 9000000000LL );
 }
 
+// The console reads the process's real stdin (not std::cin), so the interpreter runs in a child with a pipe.
 TEST_CASE( "lua_interpreter runs statements read from stdin" )
 {
-    lua_State* L = luaL_newstate();
-    luaL_openlibs( L );
+    x2::platform::ProcessOptions options;
+    options.program = X2_TERMINAL_DEMO;
+    options.args = { "--interpreter" };
+    std::string error;
+    auto child = x2::platform::Process::Start( options, error );
+    REQUIRE_MESSAGE( child, error );
+    CHECK( child->Write( "x = 41 + 1\nthis is not lua\nprint( x * 2 )" ) );    // the last line has no newline
+    child->CloseStdin();
 
-    std::istringstream input( "x = 41 + 1\nthis is not lua\ny = x * 2\n" );
-    std::streambuf* old = std::cin.rdbuf( input.rdbuf() );
-    lua_interpreter( L );
-    std::cin.rdbuf( old );
-
-    CHECK( lua_tinker::get<int>( L, "x" ) == 42 );
-    CHECK( lua_tinker::get<int>( L, "y" ) == 84 ); // a bad line does not stop the prompt
-    lua_close( L );
+    std::vector<std::string> out;
+    std::string line;
+    while( child->ReadLine( line ) )
+        out.push_back( line );
+    std::string errors;
+    while( child->ReadErrorLine( line ) )
+        errors += line + "\n";
+    CHECK( child->Wait() == 0 );
+    CHECK( std::find( out.begin(), out.end(), "84" ) != out.end() );   // a bad line does not stop the prompt
+    CHECK( errors.find( "this is not lua" ) == std::string::npos );    // the Lua error, not the line, is reported
+    CHECK_FALSE( errors.empty() );
 }
 
 namespace {

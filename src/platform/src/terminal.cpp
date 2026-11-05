@@ -23,9 +23,9 @@
 #include <cstdio>
 #include <cstdlib>
 #include <deque>
-#include <iostream>
 #include <mutex>
 #include <thread>
+#include <vector>
 
 namespace x2::platform {
 
@@ -517,6 +517,9 @@ namespace {
 
 // Input of the process, read by one thread for its whole life: a blocked read cannot be cancelled portably,
 // so the thread is never joined, and it must not belong to a Terminal. Raw bytes (interactive) or lines.
+// Lines are read from the OS handle, never through std::cin / stdio: a thread blocked in getline holds the stdin
+// FILE lock, and exit() waits for that lock when it flushes the streams, so a server in --machine mode that was
+// stopped through the protocol only exited once its stdin was closed (found on 2026-11-05).
 struct InputQueue
 {
     std::mutex mutex;
@@ -531,6 +534,7 @@ InputQueue& Input(bool raw)
     static std::once_flag started;
     std::call_once(started, [raw] {
         std::thread([raw] {
+            std::string pending;    // line mode: bytes after the last newline
             for (;;) {
                 std::string chunk;
 #if defined(_WIN32)
@@ -553,16 +557,45 @@ InputQueue& Input(bool raw)
                 } else
 #endif
                 {
-                    if (!std::getline(std::cin, chunk))
+                    char buffer[4096];
+#if defined(_WIN32)
+                    DWORD n = 0;
+                    const bool ok = ::ReadFile(::GetStdHandle(STD_INPUT_HANDLE), buffer, sizeof(buffer), &n, nullptr);
+                    if (!ok || n == 0)
                         break;
-                    if (!chunk.empty() && chunk.back() == '\r')
-                        chunk.pop_back();
+#else
+                    const ssize_t n = ::read(STDIN_FILENO, buffer, sizeof(buffer));
+                    if (n < 0 && errno == EINTR)
+                        continue;
+                    if (n <= 0)
+                        break;
+#endif
+                    pending.append(buffer, static_cast<std::size_t>(n));
+                    std::vector<std::string> lines;
+                    for (std::size_t end; (end = pending.find('\n')) != std::string::npos;) {
+                        std::string line = pending.substr(0, end);
+                        if (!line.empty() && line.back() == '\r')
+                            line.pop_back();
+                        lines.push_back(std::move(line));
+                        pending.erase(0, end + 1);
+                    }
+                    std::lock_guard lock(queue.mutex);
+                    for (std::string& line : lines)
+                        queue.chunks.push_back(std::move(line));
+                    if (!lines.empty())
+                        queue.ready.notify_one();
+                    continue;
                 }
                 std::lock_guard lock(queue.mutex);
                 queue.chunks.push_back(std::move(chunk));
                 queue.ready.notify_one();
             }
             std::lock_guard lock(queue.mutex);
+            if (!raw && !pending.empty()) {     // a last line without newline
+                if (pending.back() == '\r')
+                    pending.pop_back();
+                queue.chunks.push_back(std::move(pending));
+            }
             queue.ended = true;
             queue.ready.notify_one();
         }).detach();
