@@ -1,0 +1,52 @@
+# Input of gen_flags.py for the client (variant US, US_INTERNAL|Win32 of X2, X2Lib and KTDXLIB: the solution's
+# Release_US maps to it). Output: flags/client.generated.toml (do not edit) + reports/flags-client/REPORT.md.
+#
+# Unlike the servers, the client build defines _SERVICE_. US_INTERNAL is a service build despite its name;
+# the other countries' *_INTERNAL builds replace _SERVICE_ with _IN_HOUSE_, which is the development build here.
+
+[profile]
+root = "."
+# X2Lib/X2 read ServerDefine.h first (X2Main.h -> X2ServerProtocolLib.h -> SystemPacket.h -> CommonPacket.h),
+# then KTDX.h -> Always.h -> OnlyGlobal/Always_Global.h + Always_US.h. KTDXLIB reads only KTDX.h (layer below).
+entries = ["KncWX2Server/Common/ServerDefine.h", "KTDXLIB/KTDX.h"]
+include_dirs = ["KTDXLIB", "KTDXLIB/DXUT", "KncWX2Server/Common"]
+
+defines = ["WIN32", "NDEBUG", "_WINDOWS", "SERV_COUNTRY_US", "CLIENT_COUNTRY_US", "_SERVICE_"]
+dev_defines = ["_IN_HOUSE_"]
+dev_undefines = ["_SERVICE_"]
+
+config_globs = [
+    "KTDXLIB/KTDX.h", "KTDXLIB/Always.h", "KTDXLIB/AlwaysButConditionally.h", "KTDXLIB/OnlyGlobal/Always_*.h",
+    "KTDXLIB/InHouse*.h",
+    "KncWX2Server/Common/ServerDefine.h", "KncWX2Server/Common/OnlyGlobal/ServerDefine/*.h",
+]
+# client projects, plus the server Common headers the client includes (packets, event IDs, enums, net errors)
+code_globs = [
+    "KTDXLIB/**/*.h", "KTDXLIB/**/*.hpp", "KTDXLIB/**/*.cpp", "KTDXLIB/**/*.c", "KTDXLIB/**/*.inl",
+    "X2Lib/**/*.h", "X2Lib/**/*.hpp", "X2Lib/**/*.cpp", "X2Lib/**/*.c", "X2Lib/**/*.inl",
+    "X2/**/*.h", "X2/**/*.cpp",
+    "X2ServerProtocol/**/*.h", "X2ServerProtocol/**/*.cpp",
+    "KncWX2Server/Common/*Packet*.h", "KncWX2Server/Common/*Packet*.cpp", "KncWX2Server/Common/OnlyGlobal/Packet/*.h",
+    "KncWX2Server/Common/EventID_*.h", "KncWX2Server/Common/OnlyGlobal/EventID_*.h",
+    "KncWX2Server/Common/KncUidType.h", "KncWX2Server/Common/ScriptID_Code.h",
+    "KncWX2Server/Common/Enum/**/*.h", "KncWX2Server/Common/Neterror/**/*.h", "KncWX2Server/Common/NetError*.h",
+]
+# vendored third-party code inside the client projects tests its own macros
+code_exclude_globs = [
+    "KTDXLIB/DXUT/**", "KTDXLIB/CxImage/**", "KTDXLIB/FMOD/**", "KTDXLIB/tinyxml/**", "X2Lib/OnlyGlobal/**",
+]
+# names that KTDX.h #defines but that are platform/SDK or utility macros, not features
+not_flags = [
+    "STRICT", "WINVER", "_WIN32_WINDOWS", "_WIN32_WINNT", "DIRECTINPUT_VERSION", "D3D_DEBUG_INFO",
+    "XOR_KEY0", "XOR_KEY1", "XOR_KEY2", "_KTDX_H_", "BOOST_CONST_CSTRING", "ASSERT", "TRACE", "TRACEA", "TRACEW",
+    "UNICODE", "_UNICODE",
+]
+flag_prefixes = ["SERV_", "SERVER_", "X2OPTIMIZE_"]
+
+output = "client.generated.toml"
+report = "flags-client"
+
+[[profile.layers]]
+name = "engine (KTDXLIB)"
+entries = ["KTDXLIB/KTDX.h"]
+code_globs = ["KTDXLIB/**/*.h", "KTDXLIB/**/*.hpp", "KTDXLIB/**/*.cpp", "KTDXLIB/**/*.c", "KTDXLIB/**/*.inl"]

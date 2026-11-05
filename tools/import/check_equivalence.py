@@ -36,9 +36,17 @@ def strip(lines: list[str], flags: condres.Flags) -> list[str]:
 
 
 def configs(pr: profile.Profile, flags: condres.Flags, entries=None):
+    """Service and dev macro tables. For a layer (`entries`), names whose value in the layer's own chain
+    differs from the profile's keep the layer's original value, so the check shows what the single
+    generated set changes there."""
     read = lambda p: p.read_bytes()  # noqa: E731
     svc = pr.simulate(dev=False, read=read, entries=entries).defined
     dev = pr.simulate(dev=True, read=read, entries=entries).defined
+    keep: dict[str, dict[str, str]] = {"svc": {}, "dev": {}}
+    if entries:
+        for key, sim, full in (("svc", svc, pr.simulate(dev=False, read=read).defined),
+                               ("dev", dev, pr.simulate(dev=True, read=read).defined)):
+            keep[key] = {n: sim.get(n) for n in set(sim) ^ set(full) if flags.state(n) is not None}
 
     def table(sim: dict[str, str], dev_on: bool) -> dict[str, str]:
         t = dict(sim)
@@ -57,6 +65,11 @@ def configs(pr: profile.Profile, flags: condres.Flags, entries=None):
                 t.pop(n, None)
             else:
                 t.setdefault(n, "")
+        for n, v in keep["dev" if dev_on else "svc"].items():
+            if v is None:
+                t.pop(n, None)
+            else:
+                t[n] = v
         t[DEV] = "1" if dev_on else "0"
         return t
 
