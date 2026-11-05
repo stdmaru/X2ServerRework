@@ -158,9 +158,17 @@ TEST_CASE("askpass: the real ssh asks through it (when an sshd answers on 127.0.
         return;
     }
     bool hostKey = false, password = false;
+    // an sshd that accepts the connection and then says nothing must not hang the tests (seen on the Windows test VM
+    // on 2026-11-05, for connections from itself)
+    const auto deadline = std::chrono::steady_clock::now() + 20s;
     for (;;) {
         if (auto code = ssh->WaitFor(0ms)) {
             CHECK(*code != 0);      // nobody's password is "wrong"
+            break;
+        }
+        if (std::chrono::steady_clock::now() > deadline) {
+            MESSAGE("ssh did not finish in 20 s: killed");
+            ssh->Kill();
             break;
         }
         const auto pending = broker.Pending();
@@ -179,7 +187,7 @@ TEST_CASE("askpass: the real ssh asks through it (when an sshd answers on 127.0.
         }
     }
     if (!hostKey)
-        MESSAGE("no sshd on 127.0.0.1: skipped");
+        MESSAGE("no sshd answering on 127.0.0.1: skipped");
     else
         CHECK(std::filesystem::exists(knownHosts));    // "yes" was taken
     (void)password;
