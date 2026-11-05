@@ -165,6 +165,10 @@ OpenSSH server:
 - A server that the Windows ServerManager started is its child: quitting that ServerManager stops it, and the attached Linux
   ServerManager sees it stop. Servers started from their own terminal or as a scheduled task keep running.
 
+Tested on 2026-11-05 from the Linux container to the Windows test VM: an `x2_terminal_demo` started in the RDP session (a
+scheduled task with `/it`, socket name `E2E Demo`) was listed by `x2ctl list` and attached with `x2ctl attach ^"E2E Demo^"`
+over ssh; a Lua `print` with `%PATH%` and `^&` came back unchanged.
+
 ### Start and stop commands (2026-11-05, `tools/servermanager-remote-start`)
 
 A host's `start` and `stop` are shell command lines run there (`ssh <destination> '<line>'`, the line as it is) to start and stop

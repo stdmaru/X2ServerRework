@@ -141,9 +141,11 @@ See [Server — Windows dependencies](../original/server.md).
   - [x] `tools/servermanager-remote-start`: start and stop remote servers through the host's commands run over ssh
         (`docker compose up -d`/`stop`, `systemctl`), then attach (`x2ctl attach --wait`); asked for by the user on 2026-11-05.
         See [ServerManager](../tools/servermanager.md#start-and-stop-commands).
-  - [ ] `tools/servermanager-windows-host`: a ServerManager on Linux attaches over ssh to servers a ServerManager on Windows
-        started: control sockets in a per-user folder independent of the logon session, `cmd.exe` quoting for Windows hosts
-        (`"shell": "cmd"`), and the `\` shown as `₩` in the window fixed (Latin font first, Hangul merged); started 2026-11-05.
+  - [x] `tools/servermanager-windows-host`: a ServerManager on Linux attaches over ssh to servers started on Windows: control
+        sockets in `%LOCALAPPDATA%\x2` (the same for RDP and ssh sessions), `cmd.exe` quoting for Windows hosts
+        (`"shell": "cmd"`), and the `\` drawn as `₩` in the window fixed (Segoe UI first, Malgun Gothic merged); attach from Linux to
+        a server in the VM's RDP session tested (2026-11-05). See
+        [ServerManager](../tools/servermanager.md#windows-hosts-2026-11-05-toolsservermanager-windows-host).
   - [ ] `tools/servermanager-askpass`: ssh password and host key prompts in the window through `SSH_ASKPASS`, when the key is
         refused (asked for by the user on 2026-11-05; after `tools/servermanager-ui`).
 - [x] Remove SOAP/gSOAP, publisher billing/auth, Mail (MIME/SMTP), CrashRpt; stub where game logic depends on them (2026-10-31). The DEB gSOAP client became custom SOAP/HTTP, with DEB login and billing unchanged (T31, `server/cleanup-gsoap`, see [Common › DEB client](../porting/server-common.md#deb-client-t31)). `KMailManager` was removed, and script error reports go to the log (`server/cleanup-mail`). CrashRpt, other-country publishers, and `Common/SOAP` were never imported into `src/`: the importer excludes them. Only their `NetError`s/event IDs remain as protocol, along with comments.
