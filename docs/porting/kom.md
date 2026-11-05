@@ -28,7 +28,8 @@ strict parser (`src/header.cpp`).
   decompressing (the launcher's verification).
 - `ReadStored`/`Read` use positional reads (`pread`, `ReadFile` with an offset), so any number of threads read one archive at
   once; the original kept one Win32 handle per registered thread (`MASS_FILE_MANAGER_MAX_NUM_THREADS` = 2). Every read checks the
-  blob's adler32 against the header.
+  blob's adler32 against the header. `ReadInto` decodes into the caller's buffer with a reusable scratch for the stored blob
+  (`DecodeInPlace`, which decrypts it in place): the client's `KGCMassFileManager` reads into its pooled buffers so.
 - Algorithms: 0 zlib, 2 XORCRC (the 2014 client's Lua), 3 XORCRC3 (the August 2014 and later files: raw deflate from byte 6);
   1 (zlib + Blowfish, unused) is kept opaque: listed, copied, not decoded.
 - <a id="xml-header"></a>**XML header layouts** found in the client's files (2026-11-05, all 173 read and round-tripped):
@@ -82,7 +83,8 @@ A file written by `x2::kom` from the same inputs is byte-identical to `kom.py`'s
 
 ## The original (`KTDXLIB/KGCMassFileManager.*`), surveyed 2026-11-05
 
-What the client step will replace (roadmap Phase 3), with the Win32 it uses:
+What the client step replaced (roadmap Phase 3), with the Win32 it used. The port and its behavior changes are on
+[Client: KTDXLIB › Mass files](client-ktdxlib.md#mass-files).
 
 - **Registration**: `CX2Main` builds a fixed list of 173 names (`data%03d.kom` 1–150, `datai%03d.kom` 1–23), calls
   `AddMassFile("./<name>")` for each and then `LockMassFileMap()`. The release client crashes on purpose (`*x = 1`) when one is
@@ -117,7 +119,7 @@ What the client step will replace (roadmap Phase 3), with the Win32 it uses:
 
 - codec: XORCRC/XORCRC3 against vectors from `kom.py` (including a non-ASCII name), round trips, every algorithm with sizes 0 to
   300 KB, wrong sizes and corrupted blobs rejected, algorithm 1 refused;
-- archives: listing from the header, every algorithm and an opaque entry, byte-identical rewrite of both header layouts, rewrite
+- archives: listing from the header, every algorithm and an opaque entry (`Read` and `ReadInto`), byte-identical rewrite of both header layouts, rewrite
   with changes in place, corrupted or foreign files (magic, version, header checksum, count, truncation, XML errors, entry
   checksum), entity references, name validation, 8 threads reading one archive; on Windows, replacing an archive held open
   fails and leaves it untouched;
@@ -137,5 +139,4 @@ Packing `client_data` for distribution (only the changed archives) is x2 studio'
 
 1. Import the client into `client_data` + a manifest that repacks to the original archives byte for byte: done,
    [client_data](../tools/client-data.md).
-2. The client's `KGCMassFileManager` on `x2::kom`: mount `/data` in load order; with `X2_DEV_TOOLS`, index `/data/data` by name
-   recursively and prefer it. Decide then what replaces `DeleteOtherFile` and the crash on a missing archive.
+2. The client's `KGCMassFileManager` on `x2::kom`: done (2026-11-05), [Client: KTDXLIB › Mass files](client-ktdxlib.md#mass-files).
