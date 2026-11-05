@@ -11,7 +11,20 @@
 
 namespace x2::app {
 
+// Korean fonts draw U+005C as the won sign (the KS X 1003 heritage of Malgun Gothic and Gulim), so on Windows a Latin
+// font comes first and the Hangul one fills in the glyphs it lacks. Noto Sans CJK and Nanum Gothic draw a backslash.
 std::vector<std::string> DefaultFontFiles()
+{
+#if defined(_WIN32)
+    const char* windir = std::getenv("WINDIR");
+    const std::string fonts = std::string(windir ? windir : "C:\\Windows") + "\\Fonts\\";
+    return {fonts + "segoeui.ttf", fonts + "arial.ttf"};
+#else
+    return DefaultHangulFontFiles();
+#endif
+}
+
+std::vector<std::string> DefaultHangulFontFiles()
 {
 #if defined(_WIN32)
     const char* windir = std::getenv("WINDIR");
@@ -28,6 +41,21 @@ std::vector<std::string> DefaultFontFiles()
 #endif
 }
 
+namespace {
+
+std::string FirstExisting(const std::vector<std::string>& candidates)
+{
+    for (const std::string& file : candidates) {
+        std::error_code ec;
+        if (std::filesystem::is_regular_file(
+                std::filesystem::path(std::u8string_view(reinterpret_cast<const char8_t*>(file.data()), file.size())), ec))
+            return file;
+    }
+    return {};
+}
+
+}  // namespace
+
 std::string ConfigureImGui(const ImGuiOptions& options, float contentScale)
 {
     ImGuiIO& io = ImGui::GetIO();
@@ -41,15 +69,18 @@ std::string ConfigureImGui(const ImGuiOptions& options, float contentScale)
     style.FontScaleDpi = contentScale;
 
     // Glyphs are rasterized on demand (dynamic font atlas), so a CJK font costs nothing until a glyph is used.
-    const std::vector<std::string> candidates = options.fontFiles.empty() ? DefaultFontFiles() : options.fontFiles;
-    for (const std::string& file : candidates) {
-        std::error_code ec;
-        if (!std::filesystem::is_regular_file(std::filesystem::path(std::u8string_view(reinterpret_cast<const char8_t*>(file.data()), file.size())), ec)) {
-            continue;
+    const std::string hangul = FirstExisting(options.hangulFontFiles.empty() ? DefaultHangulFontFiles()
+                                                                             : options.hangulFontFiles);
+    std::string primary = FirstExisting(options.fontFiles.empty() ? DefaultFontFiles() : options.fontFiles);
+    if (primary.empty())
+        primary = hangul;
+    if (!primary.empty() && io.Fonts->AddFontFromFileTTF(primary.c_str(), options.fontSize)) {
+        if (!hangul.empty() && hangul != primary) {
+            ImFontConfig merge;
+            merge.MergeMode = true;     // only for the glyphs the main font lacks: it keeps its own backslash
+            io.Fonts->AddFontFromFileTTF(hangul.c_str(), options.fontSize, &merge);
         }
-        if (io.Fonts->AddFontFromFileTTF(file.c_str(), options.fontSize)) {
-            return file;
-        }
+        return primary;
     }
     ImFontConfig config;
     config.SizePixels = options.fontSize;

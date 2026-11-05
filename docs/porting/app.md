@@ -9,14 +9,18 @@ lives and how its dependencies enter the build is decision T32.
 | Target | For | Contents |
 |---|---|---|
 | `x2::app` (`x2/app/app.h`) | client and tools | `Sdl` (process-wide `SDL_Init`/`SDL_Quit`), `Window` (SDL3 window with its own SDL_GPU device; `BeginFrame`/`EndFrame` acquire the command buffer and swapchain texture), `PollEvents` (quit on `SDL_EVENT_QUIT` or the main window's close request), `WaitForEvents`/`WakeEventLoop` (tools that redraw only on change) |
-| `x2::app_imgui` (`x2/app/imgui_layer.h`) | tools only | `ImGuiLayer` (ImGui context with the `sdl3` platform and `sdlgpu3` renderer backends), `ConfigureImGui` (style, DPI scale, fonts), `DefaultFontFiles` |
+| `x2::app_imgui` (`x2/app/imgui_layer.h`) | tools only | `ImGuiLayer` (ImGui context with the `sdl3` platform and `sdlgpu3` renderer backends), `ConfigureImGui` (style, DPI scale, fonts), `DefaultFontFiles`, `DefaultHangulFontFiles` |
 
 - **Rendering is SDL_GPU only** (T19), never SDL_Renderer or OpenGL, so the client inherits the same device. The device accepts
   SPIR-V, DXIL, and MSL shaders (Vulkan, D3D12, Metal); `X2_DEV_TOOLS` builds request validation layers.
 - **High DPI**: the window size is multiplied by the display content scale, and ImGui scales its style and fonts by it.
-- **Fonts**: server logs contain Korean, and ImGui's built-in font is ASCII only. `DefaultFontFiles` tries Malgun Gothic (Windows) or
-  Noto Sans CJK / Nanum Gothic (Linux); glyphs are rasterized on demand, so a CJK font costs nothing until used. Without any of them,
-  the built-in font is used and Hangul shows as `?`. No font is shipped with the repository.
+- **Fonts**: server logs contain Korean, and ImGui's built-in font is ASCII only. On Windows the main font is Segoe UI (or Arial)
+  with Malgun Gothic (or Gulim) merged for the glyphs it lacks: Korean fonts draw U+005C as the won sign `₩`, so with Malgun
+  Gothic alone every path showed `C:₩x2₩dist` (fixed 2026-11-05, `tools/servermanager-windows-host`). On Linux, Noto Sans CJK or
+  Nanum Gothic is the only font (both draw a backslash). `ImGuiOptions::fontFiles` and `hangulFontFiles` replace
+  `DefaultFontFiles` and `DefaultHangulFontFiles`; without a main font the Hangul font is the main one, and without any the
+  built-in font is used and Hangul shows as `?`. Glyphs are rasterized on demand, so a CJK font costs nothing until used. No
+  font is shipped with the repository.
 - SDL headers may appear in `x2/app` headers: this is the SDL layer, and SDL does not include `windows.h`. Process spawning and other
   OS APIs the tools need still belong to [`x2::platform`](platform.md).
 

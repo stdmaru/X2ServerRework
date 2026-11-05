@@ -38,6 +38,7 @@ TEST_CASE("imgui: missing fonts fall back to the built-in font")
     NullImGui gui;
     x2::app::ImGuiOptions options;
     options.fontFiles = {"/nonexistent/font.ttf"};
+    options.hangulFontFiles = {"/nonexistent/hangul.ttf"};
     CHECK(x2::app::ConfigureImGui(options, 1.0f).empty());
     CHECK(ImGui::GetIO().Fonts->Fonts.Size == 1);
 }
@@ -59,6 +60,36 @@ TEST_CASE("imgui: the first existing font file is loaded")
     x2::app::ImGuiOptions options;
     options.fontFiles = {"/nonexistent/font.ttf", found};
     CHECK(x2::app::ConfigureImGui(options, 1.0f) == found);
+}
+
+TEST_CASE("imgui: the Hangul font is merged into a Latin main font, or is the main font without one")
+{
+    std::string latin, hangul;
+    for (const std::string& file : x2::app::DefaultFontFiles())
+        if (latin.empty() && std::filesystem::is_regular_file(file))
+            latin = file;
+    for (const std::string& file : x2::app::DefaultHangulFontFiles())
+        if (hangul.empty() && std::filesystem::is_regular_file(file))
+            hangul = file;
+    if (hangul.empty()) {
+        MESSAGE("no system CJK font installed; skipped");
+        return;
+    }
+    {
+        NullImGui gui;
+        x2::app::ImGuiOptions options;
+        options.fontFiles = {"/nonexistent/font.ttf"};
+        options.hangulFontFiles = {hangul};
+        CHECK(x2::app::ConfigureImGui(options, 1.0f) == hangul);
+        REQUIRE(ImGui::GetIO().Fonts->Fonts.Size == 1);
+        CHECK(ImGui::GetIO().Fonts->Fonts[0]->Sources.Size == 1);
+    }
+    if (latin.empty() || latin == hangul)
+        return;     // Linux: the CJK font is the main font
+    NullImGui gui;
+    CHECK(x2::app::ConfigureImGui({}, 1.0f) == latin);
+    REQUIRE(ImGui::GetIO().Fonts->Fonts.Size == 1);
+    CHECK(ImGui::GetIO().Fonts->Fonts[0]->Sources.Size == 2);   // Latin first: its own backslash
 }
 
 TEST_CASE("imgui: a frame with Korean text renders with the null backends")
