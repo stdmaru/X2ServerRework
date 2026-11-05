@@ -9,3 +9,4 @@
 #include "x2/platform/sync.h"
 #include "x2/platform/time.h"
 #include "x2/platform/unicode.h"
+#include "x2/platform/window_messages.h"
