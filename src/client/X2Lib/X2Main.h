@@ -6,8 +6,8 @@
 
 #include "KTDX.h"
 #pragma warning(disable:4996)
-#include "../../KncWX2Server/Common/Enum/DungeonEnum.h"
-#include "../../KncWX2Server/Common/Enum/Enum.h"
+#include "Enum/DungeonEnum.h"
+#include "Enum/Enum.h"
 
 #include "./X2Define.h"
 
@@ -20,13 +20,10 @@
 
 //-- 2010. 12. 13.  지헌 : XTRAP 클라이언트 - 해더
 
-#include "./X2Steam.h"
 
 // korea nProtect
 
 
-#include "./NPGameLib.h"
-#include "./X2KNPGame.h"
 
 #include "./X2ServerEvent.h"
 #include "./X2ServerPacket.h"
@@ -423,7 +420,6 @@
 //#include "./X2StateArcadeLobby.h"
 #include "./X2StateAutoChanger.h"
 
-#include "./X2NexonMsgHandler.h"
 
 #include "./X2SystemInfo.h"
 
@@ -444,7 +440,6 @@ using boost::mt19937;
 
 #include "./X2EmblemManager.h"
 
-#include "./X2MailLog.h"
 
 #include "./X2BossRaidManager.h"
 BOOL CALLBACK EnumChildProc_Thread(HWND , LPARAM);
@@ -1279,7 +1274,6 @@ class CX2Main : public CKTDXStage
 
 		void			SetPublicIp(wstring wstrPublicIp) { m_wstrPublicIp = wstrPublicIp; }
 
-		void			SendCheckMail( const char* pRecipient_, const char* pSubject_, const char* pMessageBody_ );
 
 		bool			GetPresentArrival( CX2StateMenu::PresentArrival& presentArrival );
 		void			PushPresentArrival( KEGS_PRESENT_MESSAGE_TO_RECEIVER_NOT& kEvent );
@@ -1779,7 +1773,6 @@ class CX2Main : public CKTDXStage
 
 
 
-		string		m_strMailAddress;		/// 클라이언트 메일 발송 주소 스트링
 
 		CX2KeyPad*		m_pKeyPad;
 		bool		m_bSurveyUser;			/// 설문조사 대상 유저

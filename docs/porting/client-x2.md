@@ -17,6 +17,18 @@ the DXUT samples (`Common/dxstdafx.*`), `resource.h`, and `KOGGamePerformanceChe
   (icon, cursor, manifest) is not a source file for the importer; the skeleton step re-creates the icon like the servers'
   (`x2_windows_icon`, [Porting](README.md)).
 
+## Skeleton (2026-11-05, `client/skeleton`)
+
+`X2.cpp` needs `CKTDXApp` and `CX2Main`, which do not compile yet, so the `x2_client` executable (`x2` / `x2.exe`) is built from
+`X2Skeleton.cpp`: the start of `VirtualWinMain` on the [DXUT replacement](client-dxut.md), with the callbacks `X2.cpp` installs
+(`MsgProc`, `KeyboardProc`, `OnFrameMove`, `OnFrameRender`) as stubs. It opens the 1024×768 window, runs the loop and delivers
+the translated messages; `--trace-messages` logs every message `MsgProc` receives (except `WM_MOUSEMOVE`). `X2.cpp` replaces it
+once the engine builds.
+
+- **Icon**: `Elsword.ico`, copied from the original through git, attached with `x2_windows_icon` like the servers'
+  ([Porting](README.md)). On Windows SDL3 uses the executable's first icon resource for the window too.
+- `X2.cpp` hand edits: SMTP mail, Steam and nProtect calls removed ([Client](client.md#integrations-removed-by-hand-2026-11-05)).
+
 ## Status
 
-Imported, not compiled yet. The skeleton replaces DXUT's window and loop with `x2::app` (T32).
+Skeleton builds and runs on Linux (Clang, GCC) and Windows (clang-cl); `X2.cpp` not compiled yet.

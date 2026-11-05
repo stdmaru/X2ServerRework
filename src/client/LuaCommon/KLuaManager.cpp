@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <vector>
 
 //#include "KSuperAssert.h"
 //#include "KTDXErrorDefine.h"
@@ -16,7 +17,6 @@
 
 
 
-const static char* cvsid = "$Id: KLuaManager.cpp,v 1.5 2003/02/17 03:50:55 cvs Exp $";
 //static const char s_szKLuaManagerTemplate[] = "_KLuaManager_";
 
 
@@ -48,8 +48,8 @@ inline void KLuaManager::_GenerateLuaGeneralRef()
 //{{ robobeg : 2012-11-17
 
 KLuaManager::KLuaManager()
-	: m_iTableDepth( 0 )
-	, m_pkLuaState( NULL )
+	: m_pkLuaState( NULL )
+	, m_iTableDepth( 0 )
 	, m_pkLuaStateOriginal( NULL )
 	, m_iLuaStateRef( LUA_REFNIL )
 	, m_iLuaTableRef( LUA_REFNIL )
@@ -62,8 +62,8 @@ KLuaManager::KLuaManager()
 //{{ robobeg : 2008-10-28
 
 KLuaManager::KLuaManager( lua_State* pLuaState, int iTableDepth, bool bInNewEnv_ )
-	: m_iTableDepth( 0 )
-	, m_pkLuaState( NULL )
+	: m_pkLuaState( NULL )
+	, m_iTableDepth( 0 )
 	, m_pkLuaStateOriginal( NULL )
 	, m_iLuaStateRef( LUA_REFNIL )
 	, m_iLuaTableRef( LUA_REFNIL )
@@ -324,7 +324,7 @@ default임.
 default임.
 @return true for success, false for failure.
 */
-bool KLuaManager::DoFile(const char* pszFileName, bool bLogOutput)
+bool KLuaManager::DoFile(const char* pszFileName, bool /*bLogOutput*/)
 {
 	//CHECK_LUA_THREAD_ID;
 
@@ -377,7 +377,7 @@ bool KLuaManager::Get(int iIndex)
 default임.
 @return true for success, false for failure (해당 table이 없는 경우).
 */
-bool KLuaManager::BeginTable(const char* pszName, bool bLogOutput)
+bool KLuaManager::BeginTable(const char* pszName, bool /*bLogOutput*/)
 {
 	//CHECK_LUA_THREAD_ID;
 
@@ -404,7 +404,7 @@ default임.
 @return true for success, false for failure (현재 table 안에 들어와 있지 않은
 경우, 해당 table이 없는 경우).
 */
-bool KLuaManager::BeginTable(int iIndex, bool bLogOutput)
+bool KLuaManager::BeginTable(int iIndex, bool /*bLogOutput*/)
 {
 	//CHECK_LUA_THREAD_ID;
 
@@ -429,7 +429,7 @@ bool KLuaManager::BeginTable(int iIndex, bool bLogOutput)
 default임.
 @return true for success, false for failure (table의 사용이 없던 경우).
 */
-bool KLuaManager::EndTable(bool bLogOutput)
+bool KLuaManager::EndTable(bool /*bLogOutput*/)
 {
 	//CHECK_LUA_THREAD_ID;
 
@@ -448,7 +448,7 @@ bool KLuaManager::EndTable(bool bLogOutput)
 }
 
 //{{ robobeg : 2008-10-28
-bool KLuaManager::MakeTableReference( const char* pszName, int iInRef_, bool bLogOutput)
+bool KLuaManager::MakeTableReference( const char* pszName, int iInRef_, bool /*bLogOutput*/)
 {
 	//CHECK_LUA_THREAD_ID;
 
@@ -471,7 +471,6 @@ bool KLuaManager::MakeTableReference( const char* pszName, int iInRef_, bool bLo
 			}
 			else
 			{
-				int	iLuaType = lua_type( m_pkLuaState, -1 );
 				lua_pop( m_pkLuaState, 2 );
 				return false;
 			}
@@ -487,12 +486,12 @@ bool KLuaManager::MakeTableReference( const char* pszName, int iInRef_, bool bLo
 }//KLuaManager::ObtainTableReference()
 
 
-bool KLuaManager::BeginTableByReference( int iInRef_, bool bLogOutput )
+bool KLuaManager::BeginTableByReference( int iInRef_, bool /*bLogOutput*/ )
 {
 	//CHECK_LUA_THREAD_ID;
 
-    if ( iInRef_ < 0 )
-        return false;
+	if ( iInRef_ < 0 )
+		return false;
 
 	if ( m_iLuaTableRef == LUA_REFNIL )
 		return false;
@@ -560,7 +559,6 @@ int	KLuaManager::MakeGeneralReference( const char* pszName, int type, bool bRawG
 			}
 			else
 			{
-				int	iLuaType = lua_type( m_pkLuaState, -1 );
 				lua_pop( m_pkLuaState, 2 );
 				return LUA_REFNIL;
 			}
@@ -632,7 +630,7 @@ int     KLuaManager::GetNumIndexedTables()
 
 int     KLuaManager::GetNumIndexedTables( const char* pszTableName )
 {
-    if ( pszTableName == NULL || pszTableName[0] == NULL )
+    if ( pszTableName == NULL || pszTableName[0] == '\0' )
         return 0;
 
     int index = 0;
@@ -656,7 +654,7 @@ default임.
 @return true for success, false for failure (해당 변수가 없거나, 숫자 변수가
 아닌 경우).
 */
-bool KLuaManager::GetValue(const char* pszName, bool& bValue, bool bLogOutput)
+bool KLuaManager::GetValue(const char* pszName, bool& bValue, bool /*bLogOutput*/)
 {
 	//CHECK_LUA_THREAD_ID;
 
@@ -685,7 +683,7 @@ default임.
 @return true for success, false for failure (해당 변수가 없거나, 숫자 변수가
 아닌 경우).
 */
-bool KLuaManager::GetValue(int iIndex, bool& bValue, bool bLogOutput)
+bool KLuaManager::GetValue(int iIndex, bool& bValue, bool /*bLogOutput*/)
 {
 	//CHECK_LUA_THREAD_ID;
 
@@ -729,7 +727,7 @@ default임.
 @return true for success, false for failure (해당 변수가 없거나, 숫자 변수가
 아닌 경우).
 */
-bool KLuaManager::GetValue(const char* pszName, short& sValue, bool bLogOutput)
+bool KLuaManager::GetValue(const char* pszName, short& sValue, bool /*bLogOutput*/)
 {
 	//CHECK_LUA_THREAD_ID;
 
@@ -744,7 +742,7 @@ default임.
 @return true for success, false for failure (해당 변수가 없거나, 숫자 변수가
 아닌 경우).
 */
-bool KLuaManager::GetValue(const char* pszName, int& iValue, bool bLogOutput)
+bool KLuaManager::GetValue(const char* pszName, int& iValue, bool /*bLogOutput*/)
 {
 	//CHECK_LUA_THREAD_ID;
 
@@ -759,7 +757,7 @@ default임.
 @return true for success, false for failure (해당 변수가 없거나, 숫자 변수가
 아닌 경우).
 */
-bool KLuaManager::GetValue(const char* pszName, long& lValue, bool bLogOutput)
+bool KLuaManager::GetValue(const char* pszName, long& lValue, bool /*bLogOutput*/)
 {
 	//CHECK_LUA_THREAD_ID;
 
@@ -774,7 +772,7 @@ default임.
 @return true for success, false for failure (해당 변수가 없거나, 숫자 변수가
 아닌 경우).
 */
-bool KLuaManager::GetValue(const char* pszName, unsigned short& usValue, bool bLogOutput)
+bool KLuaManager::GetValue(const char* pszName, unsigned short& usValue, bool /*bLogOutput*/)
 {
 	//CHECK_LUA_THREAD_ID;
 
@@ -789,7 +787,7 @@ default임.
 @return true for success, false for failure (해당 변수가 없거나, 숫자 변수가
 아닌 경우).
 */
-bool KLuaManager::GetValue(const char* pszName, unsigned int& uiValue, bool bLogOutput)
+bool KLuaManager::GetValue(const char* pszName, unsigned int& uiValue, bool /*bLogOutput*/)
 {
 	//CHECK_LUA_THREAD_ID;
 
@@ -804,7 +802,7 @@ default임.
 @return true for success, false for failure (해당 변수가 없거나, 숫자 변수가
 아닌 경우).
 */
-bool KLuaManager::GetValue(const char* pszName, unsigned long& ulValue, bool bLogOutput)
+bool KLuaManager::GetValue(const char* pszName, unsigned long& ulValue, bool /*bLogOutput*/)
 {
 	//CHECK_LUA_THREAD_ID;
 
@@ -819,7 +817,7 @@ default임.
 @return true for success, false for failure (해당 변수가 없거나, 숫자 변수가
 아닌 경우).
 */
-bool KLuaManager::GetValue(const char* pszName, float& fValue, bool bLogOutput)
+bool KLuaManager::GetValue(const char* pszName, float& fValue, bool /*bLogOutput*/)
 {
 	//CHECK_LUA_THREAD_ID;
 
@@ -834,7 +832,7 @@ default임.
 @return true for success, false for failure (해당 변수가 없거나, 숫자 변수가
 아닌 경우).
 */
-bool KLuaManager::GetValue(const char* pszName, double& dValue, bool bLogOutput)
+bool KLuaManager::GetValue(const char* pszName, double& dValue, bool /*bLogOutput*/)
 {
 	//CHECK_LUA_THREAD_ID;
 
@@ -865,7 +863,7 @@ default임.
 @return true for success, false for failure (해당 변수가 없거나, 숫자 변수가
 아닌 경우).
 */
-bool KLuaManager::GetValue(int iIndex, short& sValue, bool bLogOutput)
+bool KLuaManager::GetValue(int iIndex, short& sValue, bool /*bLogOutput*/)
 {
 	//CHECK_LUA_THREAD_ID;
 
@@ -880,7 +878,7 @@ default임.
 @return true for success, false for failure (해당 변수가 없거나, 숫자 변수가
 아닌 경우).
 */
-bool KLuaManager::GetValue(int iIndex, int& iValue, bool bLogOutput)
+bool KLuaManager::GetValue(int iIndex, int& iValue, bool /*bLogOutput*/)
 {
 	//CHECK_LUA_THREAD_ID;
 
@@ -895,7 +893,7 @@ default임.
 @return true for success, false for failure (해당 변수가 없거나, 숫자 변수가
 아닌 경우).
 */
-bool KLuaManager::GetValue(int iIndex, long& lValue, bool bLogOutput)
+bool KLuaManager::GetValue(int iIndex, long& lValue, bool /*bLogOutput*/)
 {
 	//CHECK_LUA_THREAD_ID;
 
@@ -910,7 +908,7 @@ default임.
 @return true for success, false for failure (해당 변수가 없거나, 숫자 변수가
 아닌 경우).
 */
-bool KLuaManager::GetValue(int iIndex, unsigned short& usValue, bool bLogOutput)
+bool KLuaManager::GetValue(int iIndex, unsigned short& usValue, bool /*bLogOutput*/)
 {
 	//CHECK_LUA_THREAD_ID;
 
@@ -925,7 +923,7 @@ default임.
 @return true for success, false for failure (해당 변수가 없거나, 숫자 변수가
 아닌 경우).
 */
-bool KLuaManager::GetValue(int iIndex, unsigned int& uiValue, bool bLogOutput)
+bool KLuaManager::GetValue(int iIndex, unsigned int& uiValue, bool /*bLogOutput*/)
 {
 	//CHECK_LUA_THREAD_ID;
 
@@ -940,7 +938,7 @@ default임.
 @return true for success, false for failure (해당 변수가 없거나, 숫자 변수가
 아닌 경우).
 */
-bool KLuaManager::GetValue(int iIndex, unsigned long& ulValue, bool bLogOutput)
+bool KLuaManager::GetValue(int iIndex, unsigned long& ulValue, bool /*bLogOutput*/)
 {
 	//CHECK_LUA_THREAD_ID;
 
@@ -955,7 +953,7 @@ default임.
 @return true for success, false for failure (해당 변수가 없거나, 숫자 변수가
 아닌 경우).
 */
-bool KLuaManager::GetValue(int iIndex, float& fValue, bool bLogOutput)
+bool KLuaManager::GetValue(int iIndex, float& fValue, bool /*bLogOutput*/)
 {
 	//CHECK_LUA_THREAD_ID;
 
@@ -970,14 +968,14 @@ default임.
 @return true for success, false for failure (해당 변수가 없거나, 숫자 변수가
 아닌 경우).
 */
-bool KLuaManager::GetValue(int iIndex, double& dValue, bool bLogOutput)
+bool KLuaManager::GetValue(int iIndex, double& dValue, bool /*bLogOutput*/)
 {
 	//CHECK_LUA_THREAD_ID;
 
     GET_BY_NUM(dValue, double);
 }
 
-bool KLuaManager::GetValue(const char* pszName, std::wstring& wstrValue, bool bLogOutput )
+bool KLuaManager::GetValue(const char* pszName, std::wstring& wstrValue, bool /*bLogOutput*/ )
 {
 	//CHECK_LUA_THREAD_ID;
 
@@ -994,12 +992,10 @@ bool KLuaManager::GetValue(const char* pszName, std::wstring& wstrValue, bool bL
 	        int iDestSize = ::MultiByteToWideChar( CP_UTF8, 0, pszString, size, NULL, 0 );
 	        if ( iDestSize > 0 )
             {
-	            wchar_t* wcharBuf = (wchar_t*) _malloca( iDestSize * sizeof( wchar_t ) );
-	            ASSERT( wcharBuf != NULL );
-	            int iNewSize = ::MultiByteToWideChar( CP_UTF8, 0, pszString, size, wcharBuf, iDestSize );
+	            std::vector<wchar_t> wcharBuf( iDestSize );
+	            int iNewSize = ::MultiByteToWideChar( CP_UTF8, 0, pszString, size, wcharBuf.data(), iDestSize );
 	            ASSERT( iNewSize == iDestSize );
-	            wstrValue.assign( wcharBuf, iNewSize );
-                _freea( wcharBuf );
+	            wstrValue.assign( wcharBuf.data(), iNewSize );
             }
             bReturn = true;
         }
@@ -1008,7 +1004,7 @@ bool KLuaManager::GetValue(const char* pszName, std::wstring& wstrValue, bool bL
     return bReturn;
 }
 
-bool KLuaManager::GetValue(int iIndex, std::wstring& wstrValue, bool bLogOutput )
+bool KLuaManager::GetValue(int iIndex, std::wstring& wstrValue, bool /*bLogOutput*/ )
 {
 	//CHECK_LUA_THREAD_ID;
 
@@ -1025,12 +1021,10 @@ bool KLuaManager::GetValue(int iIndex, std::wstring& wstrValue, bool bLogOutput 
 	        int iDestSize = ::MultiByteToWideChar( CP_UTF8, 0, pszString, size, NULL, 0 );
 	        if ( iDestSize > 0 )
             {
-	            wchar_t* wcharBuf = (wchar_t*) _malloca( iDestSize * sizeof( wchar_t ) );
-	            ASSERT( wcharBuf != NULL );
-	            int iNewSize = ::MultiByteToWideChar( CP_UTF8, 0, pszString, size, wcharBuf, iDestSize );
+	            std::vector<wchar_t> wcharBuf( iDestSize );
+	            int iNewSize = ::MultiByteToWideChar( CP_UTF8, 0, pszString, size, wcharBuf.data(), iDestSize );
 	            ASSERT( iNewSize == iDestSize );
-	            wstrValue.assign( wcharBuf, iNewSize );
-                _freea( wcharBuf );
+	            wstrValue.assign( wcharBuf.data(), iNewSize );
             }
             bReturn = true;
         }
@@ -1039,7 +1033,7 @@ bool KLuaManager::GetValue(int iIndex, std::wstring& wstrValue, bool bLogOutput 
     return bReturn;
 }
 
-bool KLuaManager::GetValue( const char* pszName, wchar_t* wszValue, int bufferSize, bool bLogOutput )
+bool KLuaManager::GetValue( const char* pszName, wchar_t* wszValue, int bufferSize, bool /*bLogOutput*/ )
 {
 	//CHECK_LUA_THREAD_ID;
 
@@ -1072,7 +1066,7 @@ bool KLuaManager::GetValue( const char* pszName, wchar_t* wszValue, int bufferSi
 }
 
 
-bool KLuaManager::GetValue( int iIndex, wchar_t* wszValue, int bufferSize, bool bLogOutput )
+bool KLuaManager::GetValue( int iIndex, wchar_t* wszValue, int bufferSize, bool /*bLogOutput*/ )
 {
 
 	//KTDXPROFILE();
@@ -1111,7 +1105,7 @@ default임.
 @return true for success, false for failure (해당 변수가 없거나, 문자열 변수가
 아닌 경우).
 */
-bool KLuaManager::GetValueUtf8(const char* pszName, std::string& strValue, bool bLogOutput)
+bool KLuaManager::GetValueUtf8(const char* pszName, std::string& strValue, bool /*bLogOutput*/)
 {
 	//CHECK_LUA_THREAD_ID;
 
@@ -1139,7 +1133,7 @@ default임.
 @return true for success, false for failure (해당 변수가 없거나, 문자열 변수가
 아닌 경우).
 */
-bool KLuaManager::GetValueUtf8(int iIndex, std::string& strValue, bool bLogOutput)
+bool KLuaManager::GetValueUtf8(int iIndex, std::string& strValue, bool /*bLogOutput*/)
 {
 	//CHECK_LUA_THREAD_ID;
 
@@ -1168,7 +1162,7 @@ default임.
 @return true for success, false for failure (해당 변수가 없거나, 문자열 변수가
 아닌 경우).
 */
-bool KLuaManager::GetValueUtf8(const char* pszName, char* pszValue, int iMaxLen, bool bLogOutput)
+bool KLuaManager::GetValueUtf8(const char* pszName, char* pszValue, int iMaxLen, bool /*bLogOutput*/)
 {
 	//CHECK_LUA_THREAD_ID;
 
@@ -1197,7 +1191,7 @@ default임.
 @return true for success, false for failure (해당 변수가 없거나, 문자열 변수가
 아닌 경우).
 */
-bool KLuaManager::GetValueUtf8(int iIndex, char* pszValue, int iMaxLen, bool bLogOutput)
+bool KLuaManager::GetValueUtf8(int iIndex, char* pszValue, int iMaxLen, bool /*bLogOutput*/)
 {
 	//CHECK_LUA_THREAD_ID;
 

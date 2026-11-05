@@ -18,7 +18,7 @@ size_t Len(const C* s)
 }
 
 template <typename C>
-errno_t Copy(C* dst, size_t size, const C* src, size_t count)
+errno_t Copy(C* dst, size_t size, const C* src, size_t count, bool truncate = false)
 {
     if (!dst || size == 0)
         return EINVAL;
@@ -29,6 +29,11 @@ errno_t Copy(C* dst, size_t size, const C* src, size_t count)
     size_t n = 0;
     while (n < count && src[n]) ++n;
     if (n >= size) {
+        if (truncate) {  // _TRUNCATE: as much as fits
+            for (size_t i = 0; i + 1 < size; ++i) dst[i] = src[i];
+            dst[size - 1] = 0;
+            return STRUNCATE;
+        }
         dst[0] = 0;
         return ERANGE;
     }
@@ -75,10 +80,10 @@ errno_t ToString(long long value, C* dst, size_t size, int radix)
 } // namespace
 
 errno_t wcscpy_s(wchar_t* d, size_t s, const wchar_t* src) { return Copy(d, s, src, static_cast<size_t>(-1)); }
-errno_t wcsncpy_s(wchar_t* d, size_t s, const wchar_t* src, size_t c) { return Copy(d, s, src, c); }
+errno_t wcsncpy_s(wchar_t* d, size_t s, const wchar_t* src, size_t c) { return Copy(d, s, src, c, c == _TRUNCATE); }
 errno_t wcscat_s(wchar_t* d, size_t s, const wchar_t* src) { return Cat(d, s, src); }
 errno_t strcpy_s(char* d, size_t s, const char* src) { return Copy(d, s, src, static_cast<size_t>(-1)); }
-errno_t strncpy_s(char* d, size_t s, const char* src, size_t c) { return Copy(d, s, src, c); }
+errno_t strncpy_s(char* d, size_t s, const char* src, size_t c) { return Copy(d, s, src, c, c == _TRUNCATE); }
 errno_t strcat_s(char* d, size_t s, const char* src) { return Cat(d, s, src); }
 
 int vswprintf_ms(wchar_t* dst, size_t size, const wchar_t* fmt, va_list args)

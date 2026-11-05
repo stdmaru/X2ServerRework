@@ -3,6 +3,8 @@
 # lua_tinker differs from the server's (src/kncsdk, frozen) and is kept apart until the client compiles.
 
 name = "client-luacommon"
+# Edited by hand since 2026-11-05 (client/skeleton): never write to this module again.
+frozen = true
 source_root = "."
 include_dirs = ["LuaCommon", "luajitLib"]
 flags = ["base", "client.generated"]

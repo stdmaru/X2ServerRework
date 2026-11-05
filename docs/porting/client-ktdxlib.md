@@ -16,7 +16,7 @@ fonts, post effects), the UI widgets (`KTDGUI*`), input (`KTDI*`), sound (`KTDS*
 - **Excluded** (references counted in the report): vendored libraries, which come from upstream or are replaced (T3): `DXUT/`
   (18 references; see [DXUT](client.md#for-the-skeleton-step)), `CxImage/` (24), `FMOD/` (12), `tinyxml/` (5), `zlib.h`/`zconf.h`,
   `vld*.h`, `usewinhoard.cpp`; the Bandi video player (`BandiVideo*`, `bandivid.h`, 16); the embedded browser (`KBrowserWrapper`,
-  `KPCHWebBrowser`, `Browser.c`); `CrashRpt.h`, `KncFirewall.h`, `AntiHackingString.h`, XTRAP; the Thai font
+  `KPCHWebBrowser`, `Browser.c`); `CrashRpt.h`, `KncFirewall.h`, XTRAP; the Thai font
   (`KTDGDeviceFontTH`) and the `OnlyGlobal/Always_BR/JP/PH/TWHK.h` headers of other countries.
 - `KTDX.h` includes `../LuaCommon/*` ([LuaCommon](client-luacommon.md)) and `../X2/KOGGamePerformanceCheckDefine.h`
   (imported by [X2](client-x2.md)); `KTDXApp.cpp` and `KTDGUIUniBuffer.cpp` include `../X2Lib/X2Define.h`.
@@ -24,6 +24,15 @@ fonts, post effects), the UI widgets (`KTDGUI*`), input (`KTDI*`), sound (`KTDS*
   `ddraw`, `dplayx`, `imm32`, `winmm`, `ws2_32`, `psapi`, `comctl32`, FreeType, libxml, libpng, libjpeg, zlib, LuaJIT, CxImage,
   CrashRpt, Mail MIME/SMTP and the KOG profiler.
 
+- `AntiHackingString.h` was excluded at first but is only string `#define`s used by the game, not anti-cheat code: imported on
+  2026-11-05 before the first hand edit.
+
+## Hand edits (2026-11-05, `client/skeleton`)
+
+The module is edited by hand and frozen. `KTDX.h` includes the [DXUT replacement](client-dxut.md) and no longer includes
+CrashRpt, KncFirewall or the SMTP mail; `KTDXApp.cpp` lost the firewall exception
+([Client](client.md#integrations-removed-by-hand-2026-11-05)). `SAFE_*` macros are `KTDX.h`'s own.
+
 ## Status
 
-Imported, not compiled yet (next step: `client/skeleton`, [roadmap](../project/roadmap.md#phase-3--client-platform)).
+Not compiled yet ([roadmap](../project/roadmap.md#phase-3--client-platform)).

@@ -382,14 +382,7 @@
 
 
 #include "KSuperAssert.h"
-#include "CrashRpt.h"
 
-#ifndef DLL_BUILD		// 10.03.11 태완 : DLL Build시 다른 DLL에 대한 Dependancy 제거
-#include "KncFirewall.h"
-
-// nProtect 오류 메일 보내기
-#include "../X2Lib/X2SMTPMail.h"
-#endif
 
 	#define KTDXPROFILE()
 	#define KTDXPROFILE2(name)
@@ -453,12 +446,7 @@
 
 #include "zlib.h"
 
-#include "DXUT.h"
-#include "DXUTmisc.h"
-#include "DXUTenum.h"
-#include "DXUTMesh.h"
-#include "DXUTgui.h"
-#include "DXUTSettingsDlg.h"
+#include "DXUT.h"  // the DXUT replacement (src/client/DXUT): window, loop, timer
 
 
 
@@ -901,9 +889,6 @@ extern double g_NowTime;
 #include "KTDXLog.h"
 #include "debug.h"
 
-#ifndef DLL_BUILD
-#include "KncFirewall.h"
-#endif
 
 #include "KTDXErrorDefine.h"
 #include "KGCMassFileBufferManager.h"

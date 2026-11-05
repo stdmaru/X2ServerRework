@@ -1,6 +1,6 @@
 #pragma once
 
-#include <windows.h>
+#include "x2/platform/win32.h"
 #include "lua_tinker.h"
 #include <assert.h>
 
@@ -25,33 +25,30 @@ public:
 
         bool bOK = false;
 
-        if( lua_getencoding( GetLuaState() ) != LUA_ENCODING_LEGACY )
-        {
-            if( pBuffer[0] == ( char )033 )
-            {
-                bOK = lua_tinker::dobuffer( m_pkLuaState, pBuffer, nSize );
-            }
-            else
-            {
-                assert( nSize >= 3 );
-                if( nSize < 3 )
-                {
-                    return false;
-                }
-
-                assert( ( pBuffer[0] == ( char )0xef ) && ( pBuffer[1] == ( char )0xbb ) && ( pBuffer[2] == ( char )0xbf ) );
-                if( ( pBuffer[0] != ( char )0xef ) || ( pBuffer[1] != ( char )0xbb ) || ( pBuffer[2] != ( char )0xbf ) )
-                {
-                    return false;
-                }
-
-                bOK = lua_tinker::dobuffer( m_pkLuaState, pBuffer + 3, nSize - 3 );
-            }
-        }
-        else
+        // KOG's LuaJIT had a per-state encoding; the client always set LUA_ENCODING_UTF8 (KLuabinder::Initialize), so
+        // only that branch is kept with upstream LuaJIT (decision T21): bytecode, or UTF-8 source behind a BOM.
+        if( pBuffer[0] == ( char )033 )
         {
             bOK = lua_tinker::dobuffer( m_pkLuaState, pBuffer, nSize );
         }
+        else
+        {
+            assert( nSize >= 3 );
+            if( nSize < 3 )
+            {
+                return false;
+            }
+
+            assert( ( pBuffer[0] == ( char )0xef ) && ( pBuffer[1] == ( char )0xbb ) && ( pBuffer[2] == ( char )0xbf ) );
+            if( ( pBuffer[0] != ( char )0xef ) || ( pBuffer[1] != ( char )0xbb ) || ( pBuffer[2] != ( char )0xbf ) )
+            {
+                return false;
+            }
+
+            bOK = lua_tinker::dobuffer( m_pkLuaState, pBuffer + 3, nSize - 3 );
+        }
+    
+
         //{{
 
         return  bOK;

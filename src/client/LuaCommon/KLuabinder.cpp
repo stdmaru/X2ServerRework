@@ -20,12 +20,7 @@ KLuabinder::~KLuabinder()
 //---------------------------------------------------------------------------
 void KLuabinder::Initialize()
 {
-    static unsigned int s_int = 0;
-    errno_t  err = _controlfp_s( &s_int, 0, 0 );
-
-
     m_pkLuaState = lua_open();
-    lua_setencoding( m_pkLuaState, LUA_ENCODING_UTF8 );
     luaJIT_setmode( m_pkLuaState, 0, LUAJIT_MODE_ENGINE|LUAJIT_MODE_OFF );
 
     // init Lua
