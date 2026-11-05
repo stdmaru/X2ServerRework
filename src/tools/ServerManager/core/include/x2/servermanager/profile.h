@@ -39,7 +39,7 @@ struct HostSpec {
     std::string stop;
 };
 
-// ssh -T -o BatchMode=yes -o ConnectTimeout=10, and on Linux a shared connection per host (ControlMaster=auto,
+// ssh -T -o BatchMode=yes -o ConnectTimeout=10 (BatchMode only without the window's askpass, AskpassBroker), and on Linux a shared connection per host (ControlMaster=auto,
 // ControlPersist=60, the socket in the private ControlSocketDir()). Windows' OpenSSH has no ControlMaster.
 std::vector<std::string> DefaultSshCommand();
 

@@ -1,8 +1,11 @@
 #include "x2/servermanager/profile.h"
 
+#include "x2/servermanager/askpass.h"
+
 #include "x2/platform/control.h"
 #include "x2/platform/json.h"
 
+#include <cstdlib>
 #include <filesystem>
 #include <fstream>
 #include <functional>
@@ -58,7 +61,12 @@ std::string ServerSpec::ControlName() const
 
 std::vector<std::string> DefaultSshCommand()
 {
-    std::vector<std::string> command = {"ssh", "-T", "-o", "BatchMode=yes", "-o", "ConnectTimeout=10"};
+    std::vector<std::string> command = {"ssh", "-T"};
+    // BatchMode makes ssh fail instead of asking; with the window's askpass (AskpassBroker) it asks there
+    const char* askpass = std::getenv(kAskpassSocketVar);
+    if (!askpass || !*askpass)
+        command.insert(command.end(), {"-o", "BatchMode=yes"});
+    command.insert(command.end(), {"-o", "ConnectTimeout=10"});
 #if !defined(_WIN32)
     const std::string controlPath = x2::platform::ControlSocketDir() + "/ssh-%C";
     command.insert(command.end(), {"-o", "ControlMaster=auto", "-o", "ControlPath=" + controlPath, "-o", "ControlPersist=60"});

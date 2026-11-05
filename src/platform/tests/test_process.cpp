@@ -3,6 +3,7 @@
 #include <doctest/doctest.h>
 
 #include <algorithm>
+#include <cstdlib>
 #include <filesystem>
 #include <thread>
 
@@ -57,6 +58,15 @@ TEST_CASE("process: quoting")
     CHECK(QuoteShellArgument("a b") == "'a b'");
     CHECK(QuoteShellArgument("it's") == "'it'\\''s'");
     CHECK(QuoteShellArgument("$HOME;rm") == "'$HOME;rm'");
+}
+
+TEST_CASE("process: environment set here reaches the children")
+{
+    SetEnvironment("X2_TEST_ENV", "value with space");
+    CHECK(std::string(std::getenv("X2_TEST_ENV")) == "value with space");
+    SetEnvironment("X2_TEST_ENV", "");
+    const char* gone = std::getenv("X2_TEST_ENV");
+    CHECK((gone == nullptr || *gone == '\0'));
 }
 
 TEST_CASE("process: arguments arrive unchanged")
