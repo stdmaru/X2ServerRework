@@ -14,8 +14,8 @@ from backups in `_database/` (outside git).
 | `ES_BILLING.bak` | `ES_BILLING` | shop/billing (`EB_Product`: 8,193 products), 40 tables, 62 procedures |
 | `Statistics.bak` | `Statistics` | logs and statistics, 168 tables, 333 procedures |
 
-Collation `Latin1_General_CI_AS`, compatibility level 100 (SQL Server 2008). Original server `.dsn` files use other database names
-(`DATABASE=Elsword-Account`...): when running a server against this database, adjust `.dsn` `DATABASE` values.
+Collation `Latin1_General_CI_AS`, compatibility level 100 (SQL Server 2008). Original server `.dsn` files use different account
+database names: when running a server against this database, adjust `.dsn` `DATABASE` values.
 
 ## Usage
 

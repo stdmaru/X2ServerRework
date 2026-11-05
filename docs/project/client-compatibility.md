@@ -3,7 +3,7 @@
 # Client compatibility across source versions
 
 Preliminary analysis of the 2014 server source in `_reference/X2Server-github` and the 2015 source in
-`/media/games/Elsword-V5.0318.6_3/JP_TW_EU_CN_US/Trunk`, performed on 2026-11-03. This page records findings and a
+`/media/games/X2-V5.0318.6_3/JP_TW_EU_CN_US/Trunk`, performed on 2026-11-03. This page records findings and a
 proposed direction; it does not add 2015 code to `src/` or decide the final build interface.
 
 ## Goal

@@ -128,7 +128,7 @@ database addresses. The default `127.0.0.1` is for local development and will no
 
 ## 5. Client
 
-When servers are ready, open original client (`_client/`; on Linux, `wine elsword.exe`) and log in with a DB account.
+When servers are ready, open original client (`_client/`; on Linux, `wine x2.exe`) and log in with a DB account.
 Development database has account `test`, password `test`.
 
 As of 2026-10-31, login, character selection, the town, a field, and a dungeon work with all six servers. Some GlobalServer features

@@ -76,5 +76,5 @@ Observed in DEB client (`Common`, unchanged here): `KDEBAuth` copies response `s
 
 ## Pending
 
-- Full login with `elsword.exe` (`server/channel-run` step).
+- Full login with `x2.exe` (`server/channel-run` step).
 - Cash and purchase with GameServer (`KDEBBilling` is not yet compiled).

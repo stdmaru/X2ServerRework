@@ -1,6 +1,6 @@
 # X2ServerRework — Wiki
 
-Port of the Elsword server and client (`_reference/X2Server`), which currently targets only Windows/DirectX 9/MSVC,
+Port of the X2 server and client (`_reference/X2Server`), which currently targets only Windows/DirectX 9/MSVC,
 to a cross-platform codebase (Windows + Linux), with cleanup and reorganization along the way.
 Client assets (`.kom`, `.dds`, `.x`, `.fx`, ...) are **not** modified: this is a code-only port.
 

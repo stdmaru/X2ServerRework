@@ -1,10 +1,10 @@
 # X2ServerRework
 
-Port of the **Elsword** servers (and, later, the client) to **64-bit Windows and Linux**.
+Port of the **X2** servers (and, later, the client) to **64-bit Windows and Linux**.
 
 The original code only runs on Windows: MFC, DirectX 9, and 32-bit MSVC. Here, it is being moved to C++20 and CMake,
 built with Clang on both platforms, and cleaned up along the way. The **protocol remains compatible with the original client**:
-the ported servers work with the original `elsword.exe`, without changing the client or its assets.
+the ported servers work with the original `x2.exe`, without changing the client or its assets.
 
 ## Status (2026-10-31)
 

@@ -4,7 +4,7 @@ Instructions for agents and people working in this repository.
 
 ## The project
 
-Port the Elsword server and client (`_reference/X2Server-github`), which currently targets only Windows/DX9/MSVC, to Windows
+Port the X2 server and client (`_reference/X2Server-github`), which currently targets only Windows/DX9/MSVC, to Windows
 and Linux with CMake and x64, cleaning up the code along the way. Start with the libraries, then move on to the server and,
 finally, the client.
 

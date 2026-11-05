@@ -134,7 +134,7 @@ Intentional behavior changes:
 | `server_hooks.cpp` | Not a test: defines what each server supplies to `Common` (`g_szConfigFile`, `CreateDBThread`) so tests can link without a server. In executables these come from server (e.g. `ChannelServer.cpp`) |
 | `packets_generated` (ctest) | Fails if generated tests are out of date with packet `.cpp` files |
 
-**Limit:** tests prove the port is self-consistent and matches the format read from code, not that it matches `elsword.exe` byte for byte.
+**Limit:** tests prove the port is self-consistent and matches the format read from code, not that it matches `x2.exe` byte for byte.
 That remains pending ([KNCSDK › Pending](kncsdk.md#pending)). They also cannot detect a field present on server but not client
 (client flags have not been generated yet; see [Roadmap](../project/roadmap.md)).
 

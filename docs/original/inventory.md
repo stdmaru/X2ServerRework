@@ -58,7 +58,7 @@ Notes:
 
 ## Copy integrity
 
-On 2026-10-29, the original HDD copy (`/media/1tb-hdd/Storage/ElswordServer/source/X2Server`, now `_reference/X2Server-hdd`)
+On 2026-10-29, the original HDD copy (now `_reference/X2Server-hdd`)
 had **90 corrupted tracked files**: same size but content overwritten with random bytes. `git status` did not detect them because of the *stat* cache.
 Git objects were intact.
 
@@ -88,11 +88,11 @@ Formats it reads and writes (2026-10-30):
 | File | Entries | Lua bytecode | Status |
 |---|---|---|---|
 | Our client's `data036.kom` (2014) | Algorithm 2 (XORCRC) | `\x1bKL\x81` | works |
-| August 2014 `data036.kom` (repository `Elsword-V5.0318.6_3`) | Algorithm 3 (XORCRC with another key, zlib without final adler32) | `\x1bKL\x82`: LuaJIT 2.0 with reordered opcodes | works |
+| August 2014 `data036.kom` (repository `2014 client repository`) | Algorithm 3 (XORCRC with another key, zlib without final adler32) | `\x1bKL\x82`: LuaJIT 2.0 with reordered opcodes | works |
 | `data036_br.kom` (2016) | Algorithm 3 in XML, but with another key or variation | ? | cannot open: entries decrypt to garbage |
 
 Algorithm 3 and the `0x82` opcode table are not in `_reference` (only 0, 1, and 2): they come from reverse engineering published in
-repository `Elsword-V5.0318.6_3` (`KTDXCommonFunc.h`, `tools/kpcrack/`), performed in 2026 on a 2014 client, not KOG code. LuaJIT
+repository `2014 client repository` (`KTDXCommonFunc.h`, `tools/kpcrack/`), performed in 2026 on a 2014 client, not KOG code. LuaJIT
 version does not change in any format: all are LuaJIT 2.0.
 
 `_reference/X2Server` (the link used by the importer) did not exist on 2026-10-29; the clone is at `_reference/X2Server-github`,

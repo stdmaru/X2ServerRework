@@ -9,7 +9,7 @@ reference code.
 
 `X2Tool`, `X2DungeonTool`, `X2EffectTool`, `X2EventSceneTool`, `X2ItemTool`, `X2LineMapTool`, `X2WorldTool`, `X2ScenarioTool`,
 `X2Viewer`, `X2KomFileViewer`, `X2MassFileTool`, `X2ScriptPreprocessingTool`, `X2TETXETPreprocessingTool` (in the `.sln`),
-`XFileCompare`, `XFileExp`, `KOGExport`, `ElswordExport`, `KOGSkinMesh`, `KOGGamePerformanceCheck`,
+`XFileCompare`, `XFileExp`, `KOGExport`, `the game exporter`, `KOGSkinMesh`, `KOGGamePerformanceCheck`,
 `LuaCompileTool`, `AnsiToUTF8`, `ContentSelector`, `CreateCheckInfo`, `DungeonStatistics`, `KncTools`, `ReleaseTool`, `TestEmpty`.
 
 Potentially useful as **reference** later:

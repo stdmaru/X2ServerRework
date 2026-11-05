@@ -46,7 +46,7 @@ and client paths into its configs and `.dsn` files during configuration/build.
 | `dist/ClientScript/` | generated from `X2_CLIENT_DATA` `.kom` by `tools/runtime/gen_clientscript.py` |
 | `dist/<Server>/` | executable, files from `runtime/<Server>/`, filled `*.in` templates; empty `Statistics/` |
 
-Configs point to `../ServerResource` and `../ClientScript` (`SimLayer:AddPath`), as original pointed to `C:\Elsword\...`.
+Configs point to `../ServerResource` and `../ClientScript` (`SimLayer:AddPath`), as original pointed to `C:\X2\...`.
 
 ## Versioned under `runtime/`
 
@@ -138,7 +138,7 @@ The production folder's `GlobalMissionConfig.lua` and `MissEliosConfig.lua` are 
 ## Scripts from each server folder (2026-10-31, T28)
 
 `KAutoPath` (`Common/KAutoPath.cpp`) searches for a script **first in current directory** and its subfolders, then in `AddPath`s.
-In production each service ran with its own folder as current directory (`nssm set ... AppDirectory C:\Elsword\<Server>\`,
+In production each service ran with its own folder as current directory (`nssm set ... AppDirectory C:\X2\<Server>\`,
 `_original-server/Install-Services.ps1`), so loose `.lua` files there **took precedence over** those in `ServerResource`. Port retains
 search order; all scripts are stored in `ServerResource`, using the server-folder version, to reproduce production behavior.
 
