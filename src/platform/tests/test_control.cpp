@@ -123,8 +123,11 @@ TEST_CASE("control socket: a folder of its own (x2ctl --dir, X2_CONTROL_DIR)")
 }
 
 #if defined(_WIN32)
-TEST_CASE("control socket: a %TEMP% folder that is gone (an old RDP session's) is created")
+TEST_CASE("control socket: the default folder is %LOCALAPPDATA%\\x2, whatever %TEMP% is")
 {
+    const char* local = std::getenv("LOCALAPPDATA");
+    REQUIRE(local);
+    // an RDP session's %TEMP% (Temp\<n>) is gone with the session; an ssh session's is another folder
     const std::filesystem::path gone = std::filesystem::temp_directory_path() /
         ("x2-gone-" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count() % 100000));
     const auto saved = [](const char* name) {
@@ -138,9 +141,7 @@ TEST_CASE("control socket: a %TEMP% folder that is gone (an old RDP session's) i
     CHECK_NOTHROW(dir = ControlSocketDir());
     _putenv_s("TMP", tmp.c_str());
     _putenv_s("TEMP", temp.c_str());
-    CHECK(std::filesystem::path(dir) == gone / "x2");
-    CHECK(std::filesystem::is_directory(gone / "x2"));
-    std::error_code ec;
-    std::filesystem::remove_all(gone, ec);
+    CHECK(std::filesystem::equivalent(dir, std::filesystem::path(local) / "x2"));
+    CHECK_FALSE(std::filesystem::exists(gone));
 }
 #endif

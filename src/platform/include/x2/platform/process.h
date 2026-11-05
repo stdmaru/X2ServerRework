@@ -65,6 +65,9 @@ private:
 // Quoting for a command line read by the Microsoft C runtime (CommandLineToArgvW rules): used to build the child's
 // command line on Windows.
 std::string QuoteWindowsArgument(std::string_view arg);
+// Quoting for one argument of a cmd.exe command line (`cmd /c`, the default shell of Windows' OpenSSH): the program
+// receives it unchanged. Not for the program itself, which cmd reads before the carets: QuoteWindowsArgument.
+std::string QuoteCmdArgument(std::string_view arg);
 // Quoting for a POSIX shell (single quotes): the remote command of `ssh host <command>` is run by the remote shell.
 std::string QuoteShellArgument(std::string_view arg);
 

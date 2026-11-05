@@ -44,6 +44,14 @@ TEST_CASE("process: quoting")
     CHECK(QuoteWindowsArgument("C:\\my dir\\") == "\"C:\\my dir\\\\\"");  // trailing backslash doubled before the quote
     CHECK(QuoteWindowsArgument("a\\\"b") == "\"a\\\\\\\"b\"");
 
+    CHECK(QuoteCmdArgument("GameServer") == "GameServer");
+    CHECK(QuoteCmdArgument("") == "^\"^\"");
+    CHECK(QuoteCmdArgument("a b") == "^\"a b^\"");
+    CHECK(QuoteCmdArgument("%PATH%") == "^%PATH^%");
+    CHECK(QuoteCmdArgument("x&y|z<a>b(c)!d^e") == "x^&y^|z^<a^>b^(c^)^!d^^e");
+    CHECK(QuoteCmdArgument("q\"uote") == "^\"q\\^\"uote^\"");
+    CHECK(QuoteCmdArgument("--dir=C:\\my dir\\") == "^\"--dir=C:\\my dir\\\\^\"");
+
     CHECK(QuoteShellArgument("GameServer") == "GameServer");
     CHECK(QuoteShellArgument("") == "''");
     CHECK(QuoteShellArgument("a b") == "'a b'");

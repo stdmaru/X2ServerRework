@@ -46,6 +46,19 @@ std::string QuoteWindowsArgument(std::string_view arg)
     return out;
 }
 
+std::string QuoteCmdArgument(std::string_view arg)
+{
+    // cmd.exe reads the line first: a caret makes the next character literal, quotes included, so no quote state hides
+    // a metacharacter from it, and ^% breaks %VAR% expansion. The program then sees QuoteWindowsArgument's quoting.
+    std::string out;
+    for (const char c : QuoteWindowsArgument(arg)) {
+        if (std::string_view("\"^&|<>()%!").find(c) != std::string_view::npos)
+            out += '^';
+        out += c;
+    }
+    return out;
+}
+
 std::string QuoteShellArgument(std::string_view arg)
 {
     if (!arg.empty() && arg.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-./=:,+@%")

@@ -48,13 +48,16 @@ to the server as arguments: `--no-stdin`, `--machine`, `--control=<name>` (socke
 
 A Unix socket (`AF_UNIX`, available on Windows since version 1803) in a user-only directory, so the same implementation works on
 both platforms instead of using *named pipes* on Windows:
-`$XDG_RUNTIME_DIR/x2/<name>.sock` (or `/tmp/x2-<uid>/`, mode 0700) on Linux, `%TEMP%\x2\<name>.sock` on Windows. It speaks the same
+`$XDG_RUNTIME_DIR/x2/<name>.sock` (or `/tmp/x2-<uid>/`, mode 0700) on Linux, `%LOCALAPPDATA%\x2\<name>.sock` on Windows. It speaks the same
 [protocol](#protocol) to any number of clients; all receive logs and status, while a command result goes only to its requester.
 So a `print` typed at the server's own prompt reaches every client (it writes to stdout: `output` lines), while a `print` in a
 client's command is captured into that client's `result` and shows neither on the server's terminal nor on other clients.
 
-On Windows, `%TEMP%` may name a folder that no longer exists (an RDP session's own `Temp\<n>` is deleted with the session that
-made it); `std::filesystem::temp_directory_path()` then throws, so the folder is taken from `GetTempPathW` as it is and created.
+On Windows the folder is the user's `LocalAppData` (`SHGetKnownFolderPath`), the same for every logon session (2026-11-05,
+`tools/servermanager-windows-host`). It was `%TEMP%\x2`, but `%TEMP%` depends on the session: an RDP session's is its own
+`Temp\<n>` (deleted with the session), an ssh session's is `Temp`, so `ssh host x2ctl list` did not see the servers started on
+the desktop. Only if the known folder cannot be read is `%TEMP%\x2` (or the current folder) used. The socket path stays well
+under `AF_UNIX`'s 108 bytes (`C:\Users\<user>\AppData\Local\x2\GameServer.sock`).
 
 - **Another folder** (2026-11-05, `tools/control-dir`): `X2_CONTROL_DIR` sets the folder as it is, for the servers and `x2ctl`;
   `x2ctl --dir=<folder>` overrides both. For servers in containers: bind-mount a host folder and point `X2_CONTROL_DIR` at it in

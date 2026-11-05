@@ -158,6 +158,29 @@ TEST_CASE("profile: control socket folders")
     CHECK(remote.args == std::vector<std::string>{"vps", "x2ctl '--dir=/srv/x2 docker/control/x2' attach GameServer"});
 }
 
+TEST_CASE("profile: a Windows host's cmd.exe")
+{
+    std::string error;
+    const auto profile = ParseProfile(R"({
+        "hosts": [{"name": "win", "destination": "Administrator@win", "ssh": ["ssh"], "shell": "cmd",
+                   "x2ctl": "C:\\x2 dist\\x2ctl.exe", "controlDir": "C:\\x2\\control 100%",
+                   "start": "schtasks /run /tn \"x2 {service}\""}],
+        "servers": [{"name": "Game", "host": "win", "control": "GameServer"}]})",
+                                      "", error);
+    REQUIRE_MESSAGE(profile, error);
+    CHECK(profile->hosts[0].shell == HostSpec::Shell::Cmd);
+    // the program in plain quotes; the arguments with carets before cmd's metacharacters, quotes included
+    CHECK(profile->X2ctl("win", {"attach", "GameServer"}).args
+          == std::vector<std::string>{"Administrator@win",
+                                      R"("C:\x2 dist\x2ctl.exe" ^"--dir=C:\x2\control 100^%^" attach GameServer)"});
+    // the start line is passed as written
+    CHECK(profile->StartCommand(profile->servers[0]) == R"(schtasks /run /tn "x2 Game")");
+
+    CHECK_FALSE(ParseProfile(R"({"hosts": [{"name": "h", "destination": "h", "shell": "bash"}], "servers": []})", "",
+                             error));
+    CHECK(error.find("shell") != std::string::npos);
+}
+
 TEST_CASE("profile: an ssh port")
 {
     std::string error;

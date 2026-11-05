@@ -3,6 +3,8 @@
 #if defined(_WIN32)
 #include "x2/platform/net.h" // <winsock2.h>
 #include <afunix.h>
+#include <knownfolders.h>
+#include <shlobj.h>
 #else
 #include <cerrno>
 #include <fcntl.h>
@@ -213,16 +215,17 @@ std::string ControlSocketDir()
     }
     fs::path dir;
 #if defined(_WIN32)
-    // %TEMP% may name a folder that is gone: an RDP session's own Temp\<n> is deleted with the session that made it,
-    // and temp_directory_path() then throws. Use the path anyway and create it.
+    // Per user and the same for every logon session: an RDP session's %TEMP% is its own Temp\<n> (deleted with it) and
+    // an ssh session's is Temp, so `ssh host x2ctl` would not see the servers started on the desktop.
     std::error_code ec;
-    fs::path temp = fs::temp_directory_path(ec);
-    if (ec) {
-        wchar_t buffer[MAX_PATH + 1];
-        const DWORD length = ::GetTempPathW(MAX_PATH + 1, buffer);
-        temp = length > 0 && length <= MAX_PATH ? fs::path(buffer, buffer + length) : fs::current_path(ec);
+    PWSTR local = nullptr;
+    if (::SHGetKnownFolderPath(FOLDERID_LocalAppData, KF_FLAG_DEFAULT, nullptr, &local) == S_OK) {
+        dir = fs::path(local) / "x2";
+    } else {
+        const fs::path temp = fs::temp_directory_path(ec);
+        dir = (ec ? fs::current_path(ec) : temp) / "x2";
     }
-    dir = temp / "x2";
+    ::CoTaskMemFree(local);
     fs::create_directories(dir, ec);
 #else
     const char* runtime = std::getenv("XDG_RUNTIME_DIR");

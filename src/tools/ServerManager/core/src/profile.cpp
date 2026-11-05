@@ -149,10 +149,12 @@ x2::platform::ProcessOptions Profile::X2ctl(std::string_view host, const std::ve
         options.args = std::move(x2ctlArgs);
         return options;
     }
-    // ssh joins its arguments into one line for the remote shell: quote each word once, here
-    std::string remote = x2::platform::QuoteShellArgument(h->x2ctl);
+    // ssh joins its arguments into one line for the remote shell: quote each word once, here. cmd reads the program
+    // name before the carets, so it only gets the C runtime's quotes.
+    const bool cmd = h->shell == HostSpec::Shell::Cmd;
+    std::string remote = cmd ? x2::platform::QuoteWindowsArgument(h->x2ctl) : x2::platform::QuoteShellArgument(h->x2ctl);
     for (const std::string& arg : x2ctlArgs)
-        remote += ' ' + x2::platform::QuoteShellArgument(arg);
+        remote += ' ' + (cmd ? x2::platform::QuoteCmdArgument(arg) : x2::platform::QuoteShellArgument(arg));
     return Shell(host, remote);
 }
 
@@ -280,6 +282,12 @@ std::optional<Profile> ParseProfile(std::string_view json, const std::string& ba
             h.controlDir = node.GetString("controlDir");   // the other machine's path: not resolved here
             h.start = node.GetString("start");
             h.stop = node.GetString("stop");
+            if (const std::string shell = node.GetString("shell", "sh"); shell == "cmd") {
+                h.shell = HostSpec::Shell::Cmd;
+            } else if (shell != "sh") {
+                error = "host " + h.name + ": \"shell\" is \"sh\" or \"cmd\"";
+                return std::nullopt;
+            }
             if (const x2::platform::Json* port = node.Find("port")) {
                 const auto value = port->AsInteger();
                 if (!value || *value <= 0 || *value > 65535) {

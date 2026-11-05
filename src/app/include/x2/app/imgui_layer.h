@@ -19,12 +19,16 @@ struct ImGuiOptions {
     // Fonts to try, in order: the first one that exists is the main font. Empty uses DefaultFontFiles().
     // Falls back to ImGui's built-in font (ASCII only) when none exists.
     std::vector<std::string> fontFiles;
+    // Fonts for the Hangul glyphs the main font lacks, merged into it: the first one that exists, unless it is the main
+    // font. Empty uses DefaultHangulFontFiles(). It becomes the main font when no main font exists.
+    std::vector<std::string> hangulFontFiles;
     float fontSize = 16.0f;     // logical pixels; multiplied by the content scale
 };
 
-// System fonts with Latin and Hangul glyphs (server logs contain Korean): Malgun Gothic on Windows; Noto Sans CJK or
-// Nanum Gothic on Linux.
+// System fonts (server logs contain Korean). Windows: Segoe UI with Malgun Gothic merged, as Korean fonts draw the
+// backslash as the won sign. Linux: Noto Sans CJK or Nanum Gothic alone, which draw both.
 std::vector<std::string> DefaultFontFiles();
+std::vector<std::string> DefaultHangulFontFiles();
 
 // Context setup shared by ImGuiLayer and the headless tests: style, scale and fonts. Returns the font file it loaded,
 // or an empty string for the built-in font.
