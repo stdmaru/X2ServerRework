@@ -43,6 +43,7 @@ Ported code includes `x2/platform/win32.h` instead of `<windows.h>`, `<atltime.h
 | `terminal.h` | `Terminal` (server terminal, T15: raw input, prompt redrawn after output, stdout/stderr piped, title, stop signals), `WaitForStop` (service mode), `KeyDecoder` (UTF-8 + VT sequences → keys), `LineEditor` (editing, history, East Asian character widths, horizontal scrolling). See [Server console](console.md); `machine` and `SetOutputHandler` for machine mode | `termios`, `poll`, pipe with `dup2` | `ReadConsoleW` with VT input, `_pipe` + `_dup2` + `SetStdHandle`, `WriteConsoleW`, `SetConsoleCtrlHandler` |
 | `control.h` | Server control socket (T30): `ControlServer` (listen, queue and writer thread per client, greeting, broadcast), `ControlClient` (`x2ctl`), `ControlSocketDir`/`Path`, `ListControlSockets`. See [Server console](console.md) | `AF_UNIX` | `AF_UNIX` (`afunix.h`, Windows 10 1803+) |
 | `json.h` | `AppendJsonString`/`JsonString` (escaping; invalid UTF-8 becomes U+FFFD), `ParseJsonObject` (object without nested objects or arrays: control protocol commands), `ParseJson`/`Json` (full RFC 8259 document, at most 64 levels: [ServerManager](../tools/servermanager.md) reads log lines) | — | — |
+| `process.h` | `Process` (child with stdin/stdout/stderr pipes, working directory, `Terminate`/`Kill`/`WaitFor`, exit code; POSIX: own process group, SIGPIPE ignored in the parent), `QuoteWindowsArgument`, `QuoteShellArgument` (ServerManager, T32) | `posix_spawnp` with `addchdir_np`, `pipe2(O_CLOEXEC)`, `waitpid`; 128 + signal when killed by a signal | `CreateProcessW` with only the pipe handles inherited (`PROC_THREAD_ATTRIBUTE_HANDLE_LIST`), `CREATE_NO_WINDOW`; `Terminate` closes stdin |
 | `console.h` | `InitConsole` (at start of each server `main`), `IsColorTerminal` (used by logging), `Utf8Arguments` (`main` arguments as UTF-8; on Windows, from UTF-16 command line) | no-op; `isatty` | UTF-8 console input/output (`SetConsoleCP`/`SetConsoleOutputCP`, restored on exit) and ANSI escapes enabled (`ENABLE_VIRTUAL_TERMINAL_PROCESSING`); color only if console supports it |
 | `d3dx_math.h` | D3DX 9 math: `D3DXVECTOR2/3/4`, `D3DXMATRIX`, `D3DXCOLOR`, `D3DX_PI`, `D3DXToDegree`, `D3DXVec3*` (normalize, cross, dot, transform...), `D3DXMatrix*` (identity, multiply, inverse, rotations, translation, scale, `LookAtLH`) | custom implementation | same (without DXSDK) |
 
@@ -87,6 +88,6 @@ Ported code includes `x2/platform/win32.h` instead of `<windows.h>`, `<atltime.h
 
 ## Tests
 
-`src/platform/tests` (doctest): Unicode, terminal (key decoder, line editor), JSON (flat and full), control socket, MSVC formats, `CString`,
+`src/platform/tests` (doctest): Unicode, terminal (key decoder, line editor), JSON (flat and full), processes (with `x2_process_helper` as the child), control socket, MSVC formats, `CString`,
 `CTime`/`CTimeSpan`, events, threads, CRT, and D3DX math
 (expected values derived manually from D3DX conventions).

@@ -121,8 +121,10 @@ See [Server — Windows dependencies](../original/server.md).
   - [x] `tools/servermanager-protocol`: full JSON parser (`x2::platform`), protocol v1 client (`hello`/`log`/`output`/`status`/`result`,
         `id` correlation), server state, log store with filter and search; tests with recorded lines and the real control socket
         (2026-11-04). See [ServerManager](../tools/servermanager.md).
-  - [ ] `tools/servermanager-local`: `x2::platform::Process` (child with pipes, Linux and Windows), `--machine` transport, attach to a
-        local control socket, orchestrator (profile with dependencies, ordered start waiting for `ready`, reverse stop, crash detection).
+  - [x] `tools/servermanager-local`: `x2::platform::Process` (child with pipes, Linux and Windows), `--machine` transport, attach to a
+        local control socket (through `x2ctl attach`), orchestrator (profile with dependencies, ordered start waiting for `ready`,
+        reverse stop, crash detection); tested with the six real servers (2026-11-05). Fixed on the way: a `--machine` server stopped
+        through the protocol waited for the end of its stdin to exit.
   - [ ] `server/control-history`: the protocol has no log history, so a manager attaching to a server that has been running for a while
         does not see what just happened. The control server keeps a bounded backlog and replays it to clients that ask for it
         (additive to protocol v1; no new port).
