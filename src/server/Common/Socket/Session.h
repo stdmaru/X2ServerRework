@@ -6,6 +6,7 @@
 #include "SocketObject.h"
 #include "KncSecurity/KncSecurity.h"
 #include "KncSend.h"
+#include <memory>
 //#include "ServerDefine.h"
 
 SmartPointer( KSession );
@@ -47,7 +48,10 @@ public:
 	};
 	//}}
 
-    KSession( bool bIsProxy );
+    // bClientSide: the game client's end of a connection (the original client's X2ServerProtocol copy of this
+    // class, decision T34): the session keeps its own security association database and authenticates packets
+    // as that copy did (see OnAuthenticFailed). Servers, including their proxies to other servers, pass false.
+    KSession( bool bIsProxy, bool bClientSide = false );
 	virtual ~KSession( void );
 
     virtual bool Init( bool bUseIocp );
@@ -81,6 +85,8 @@ public:
 	//{{ 2009. 10. 18  최육사	SequenceNum
 	static void DumpPacketAuthInfo( std::wostream& stm );
 	//}}
+
+    bool IsClientSide() const { return m_spSADatabase != nullptr; }
 
     // use proxy-child only.
     virtual bool Connect( const char* szIP, unsigned short usPort );
@@ -139,6 +145,12 @@ protected:
     // derive to child.
     virtual void OnSocketError();   ///< 050129. WSASend, IOCP등에서 소켓 오류를 발견한 경우 호출.
     virtual void OnDestroy();       ///< 050129. multi thread safe하도록 수정함
+    // Client side only: called on every 10th packet that fails authentication (the client copy's hook, overridden
+    // by its KUserProxy). The session itself does nothing.
+    virtual void OnAuthenticFailed() {}
+
+    // the client side's own database, or the process-wide one (KncSecurity::GetSADB)
+    KncSecurity::KSADatabase& GetSADatabase();
 
 protected:
     KSkSessionPtr       m_spSockObj;
@@ -210,6 +222,10 @@ protected:
 	DWORD				m_dwHBTickDump;
 	DWORD				m_dwCurrentTickDump;
 	//}}
+
+	// client side only (decision T34)
+	std::unique_ptr< KncSecurity::KSADatabase >	m_spSADatabase;
+	int					m_iAuthFailedCount;
 
 	typedef std::pair< unsigned short, CTime >		TYPE_PAIR_USHORT_CTIME;
 	typedef	std::queue< TYPE_PAIR_USHORT_CTIME >	TYPE_SEND_BUFFER_FULL_LOG;

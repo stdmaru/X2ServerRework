@@ -3,8 +3,8 @@
 #include "UserProxy.h"
 
 NiImplementRTTI( KUserProxy, KActorProxy );
-
-#define CLASS_TYPE KUserProxy
+// Port: the shared KPerformer needs a performer ID (the client copy had none); the client's proxy is PI_GS_PROXY
+ImplPfID( KUserProxy, PI_GS_PROXY );
 
 KUserProxy::KUserProxy( USER_PROXY_TYPE eType ) :
 m_eProxyType( eType ),
@@ -26,8 +26,7 @@ void KUserProxy::OnSocketError()
 {
 	KSession::OnSocketError();
 
-
-	//{{ dmlee 2009.3.11 의도적인 접속 종료가 아니라면 에러 event를 발생한다.
+	// dmlee 2009-03-11: unless the disconnection was intended, raise an error event
 	switch( m_eProxyType )
 	{
 	default:
@@ -38,31 +37,26 @@ void KUserProxy::OnSocketError()
 
 	case UPT_GAME_SERVER:
 	case UPT_CHANNEL_SERVER:
-#ifdef ADD_COLLECT_CLIENT_INFO_PROTOCOL
 	case UPT_COLLECT_SERVER:
-#endif
 		{
 			if( false == m_bIntendedDisconnect )
 			{
-				// 게임 클라이언트에게 연결이 끊어졌음을 알려야 한다.
+				// tell the game the connection was lost
 				KEvent kEvent;
 				kEvent.m_usEventID = E_CONNECTION_LOST_NOT;
 
-				// windows msg sendmessage
 				PostEvent( &kEvent );
 			}
 		} break;
 
 	}
-	//}} dmlee 2009.3.11 의도적인 접속 종료가 아니라면 에러처리 event를 발생한다.
-
 }
 
 void KUserProxy::OnAuthenticFailed()
 {
-	KSession::OnAuthenticFailed(); // 아무런 동작을 하지 않지만 일단 호출
+	KSession::OnAuthenticFailed(); // does nothing, called anyway
 
-	// proxy type이 gameserver일때만 동작하도록 처리
+	// only toward the game server
 	if( m_eProxyType == UPT_GAME_SERVER )
 	{
 		char cDummy = 0;
@@ -70,21 +64,8 @@ void KUserProxy::OnAuthenticFailed()
 	}
 }
 
-void KUserProxy::ProcessEvent( IN KEvent* pkEvent_ )
+void KUserProxy::ProcessEvent( const KEventPtr& spEvent_ )
 {
-	PostEvent( pkEvent_ );
-
-	KSerializer     ks;
-	ks.BeginReading( &pkEvent_->m_kbuff );
+	// Port: the original also opened an unused KSerializer reading the event's buffer
+	PostEvent( spEvent_.get() );
 }
-
-//template < typename T >
-//bool KUserProxy::SendPacket( unsigned short usEventID, T& data, bool bLogging, bool bCompress )
-//{
-//    return KSession::SendPacket( PI_GS_USER, GetUID(), std::vector< UidType >(), usEventID, data, bLogging, bCompress );
-//}
-//
-//bool KUserProxy::SendID( unsigned short usEvenID )
-//{
-//    return KSession::SendID( PI_GS_USER, GetUID(), std::vector< UidType >(), usEvenID );
-//}

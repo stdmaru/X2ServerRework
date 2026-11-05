@@ -3,9 +3,9 @@
 #include "x2/platform/net_io.h"
 #include "x2/platform/types.h"
 
-//#define MAX_PACKET_SIZE 16384	// 1024 * 16 (16Kbyte)
-#define MAX_PACKET_SIZE 32768	// 1024 * 32 (32Kbyte)
-//#define MAX_PACKET_SIZE 65536	// 1024 * 64 (64Kbyte)
+// Port (decision T34): 64 KB, the client's size, shared by the servers and the client (the original servers
+// used 32 KB). A packet's length is a USHORT, so every packet fits in the receive buffer.
+#define MAX_PACKET_SIZE 65536	// 1024 * 64 (64Kbyte)
 
 // Buffer and state of one direction (recv or send) of a socket object.
 // Port: the original derived from OVERLAPPED and carried a WSABUF for WSARecv()/WSASend(); the I/O now goes

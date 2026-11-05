@@ -1,141 +1,97 @@
 #include "StdAfx.h"
 
 bool	g_bIsSERVICE = false;
-CX2ServerProtocol::CX2ServerProtocol( SEND_MSG_FUNC pSendGameMessage, HWND hWnd, UINT serverMsgID, const WCHAR** ppEventIDStrList, int eventIDEnd, bool bIsSERVICE )
+
+CX2ServerProtocol::CX2ServerProtocol( SEND_MSG_FUNC pSendGameMessage, HWND hWnd, UINT serverMsgID, const WCHAR** /*ppEventIDStrList*/, int /*eventIDEnd*/, bool bIsSERVICE )
 {
 	g_bIsSERVICE = bIsSERVICE;
-
-	//m_pkUserProxy			= NULL;
-	//m_pkTRUserProxy			= NULL;
 
 	m_pSendGameMessage		= pSendGameMessage;
 	m_hWnd					= hWnd;
 	m_ServerMsgID			= serverMsgID;
 
-#ifdef ADD_COLLECT_CLIENT_INFO_PROTOCOL
-	if( serverMsgID != 1141 ) // XGM_RECEIVE_FROM_COLLECTSERVER = 1141
-		KEvent::SetEventID( ppEventIDStrList, eventIDEnd );
-#else
-	KEvent::SetEventID( ppEventIDStrList, eventIDEnd );
-#endif
-
 	NetCommon::InitWinSock();
 	KncSecurity::InitSecurity();
+
+	// Port (decision T20): the proxies wait on their own events (Init( false )), as in the original, but the
+	// asynchronous I/O behind them now completes on an I/O thread (the original needed none: Windows signaled the
+	// OVERLAPPED events). One thread is enough for a client.
+	SiKIocp()->GetIoService().Restart();
+	SiKIocp()->Init( 1 );
+	SiKIocp()->BeginThread();
 }
 
 CX2ServerProtocol::~CX2ServerProtocol(void)
 {
-	//SAFE_DELETE( m_pkUserProxy );
-	//SAFE_DELETE( m_pkTRUserProxy );
+	// the proxies first (their threads and sockets), then the I/O thread they use
+	DisconnectFromGameServer();
+	DisconnectFromTRServer();
+	DisconnectFromChannelServer();
+	DisconnectFromCollectServer();
+
+	SiKIocp()->EndThread();
+	KIocp::ReleaseInstance();
 
 	KncSecurity::ReleaseSecurity();
 }
 
-//const char*	CX2ServerProtocol::GetMyIP()
-//{
-//	char strTemp[256];
-//	::gethostname( strTemp, 256 );
-//
-//	HOSTENT* hostent;
-//	char* ip;
-//
-//	hostent = ::gethostbyname( strTemp );
-//
-//	ip = ::inet_ntoa( *( struct in_addr* )*hostent->h_addr_list );
-//	return ip;
-//}
-
-bool CX2ServerProtocol::ConnectedToGameServer( const WCHAR* pIP, const int port )
+void CX2ServerProtocol::AlreadyConnected( const wchar_t* szWhat_, const KUserProxyPtr& spProxy_, const WCHAR* pIP_, int port_ )
 {
+	if( !spProxy_ )
+		return;
 
+	START_LOG( cerr, L"called again while already connected to the " << szWhat_ )
+		<< BUILD_LOG( spProxy_->GetIPStr() )
+		<< BUILD_LOG( spProxy_->GetPort() )
+		<< BUILD_LOG( pIP_ )
+		<< BUILD_LOG( port_ );
+}
 
-	if( IsConnected() )
-	{
-#ifdef  X2OPTIMIZE_X2SERVERPROTOCOL_MULTITHREAD_CRASH_BUG_FIX
-        if ( KUserProxyPtr spUserProxy = boost::atomic_load( &m_pkUserProxy ) )
-        {
-		    START_LOG( cerr, "이미 접속된 상태에서 재호출됨." )
-			    << BUILD_LOG( spUserProxy->GetIPStr() )
-			    << BUILD_LOG( spUserProxy->GetPort() )
-			    << BUILD_LOG( pIP )
-			    << BUILD_LOG( port );
-        }
-#else
-		START_LOG( cerr, "이미 접속된 상태에서 재호출됨." )
-			<< BUILD_LOG( m_pkUserProxy->GetIPStr() )
-			<< BUILD_LOG( m_pkUserProxy->GetPort() )
-			<< BUILD_LOG( pIP )
-			<< BUILD_LOG( port );
-#endif // X2OPTIMIZE_X2SERVERPROTOCOL_MULTITHREAD_CRASH_BUG_FIX
-
-		return false;
-	}
-
-	//if( m_pkUserProxy != NULL )
-	//{
-	//	delete m_pkUserProxy;
-	//}
-
-	KUserProxyPtr spProxy( new KUserProxy( KUserProxy::UPT_GAME_SERVER ) );
-	//KUserProxy* spProxy = new KUserProxy();
+KUserProxyPtr CX2ServerProtocol::Connect( KUserProxy::USER_PROXY_TYPE eType_, int iClassID_, const WCHAR* pIP_, int port_ )
+{
+	KUserProxyPtr spProxy( new KUserProxy( eType_ ) );
 	spProxy->SetServerMsgID( m_ServerMsgID );
-
-	spProxy->SetClassID( GSPROXY_ID );
+	spProxy->SetClassID( iClassID_ );
 	spProxy->Init( false );
 	spProxy->SetHwnd( m_hWnd );
 	spProxy->SetSendMsgCallBack( m_pSendGameMessage );
 
-	std::wstring wIP = pIP;
+	std::wstring wIP = pIP_;
 	std::string IP = KncUtil::toNarrowString( wIP );
 
-	if( !spProxy->Connect( IP.c_str(), static_cast<u_short>(port) ) )
+	if( !spProxy->Connect( IP.c_str(), static_cast<u_short>(port_) ) )
+		return KUserProxyPtr();
+
+	return spProxy;
+}
+
+bool CX2ServerProtocol::ConnectedToGameServer( const WCHAR* pIP, const int port )
+{
+	if( IsConnected() )
 	{
-#ifdef  X2OPTIMIZE_X2SERVERPROTOCOL_MULTITHREAD_CRASH_BUG_FIX
-        DisconnectFromGameServer();
-#else
-        m_pkUserProxy.reset();
-#endif // X2OPTIMIZE_X2SERVERPROTOCOL_MULTITHREAD_CRASH_BUG_FIX
-		//SAFE_DELETE( spProxy );
+		AlreadyConnected( L"game server", m_pkUserProxy.load(), pIP, port );
 		return false;
 	}
 
-#ifdef  X2OPTIMIZE_X2SERVERPROTOCOL_MULTITHREAD_CRASH_BUG_FIX
-    boost::atomic_store( &m_pkUserProxy, spProxy );
-#else
-	m_pkUserProxy = spProxy;
-#endif // X2OPTIMIZE_X2SERVERPROTOCOL_MULTITHREAD_CRASH_BUG_FIX
-
-	return true;
+	KUserProxyPtr spProxy = Connect( KUserProxy::UPT_GAME_SERVER, GSPROXY_ID, pIP, port );
+	m_pkUserProxy.store( spProxy );    // null when the connection failed
+	return spProxy != nullptr;
 }
 
 bool CX2ServerProtocol::ConnectedToTCPRelay( const WCHAR* pIP, const UidType& iUnitUID, const int port /* = 9301  */)
 {
 	if( IsTRConnected() )
 	{
-#ifdef  X2OPTIMIZE_X2SERVERPROTOCOL_MULTITHREAD_CRASH_BUG_FIX
-        if ( KTRUserPtr spTRUserProxy = boost::atomic_load( &m_pkTRUserProxy ) )
-        {
-		    START_LOG( cerr, "이미 접속된 상태에서 재호출됨." )
-			    << BUILD_LOG( spTRUserProxy->GetIPStr() )
-			    << BUILD_LOG( spTRUserProxy->GetPort() )
-			    << BUILD_LOG( pIP )
-			    << BUILD_LOG( port );
-        }
-#else
-		START_LOG( cerr, "이미 접속된 상태에서 재호출됨." )
-			<< BUILD_LOG( m_pkTRUserProxy->GetIPStr() )
-			<< BUILD_LOG( m_pkTRUserProxy->GetPort() )
-			<< BUILD_LOG( pIP )
-			<< BUILD_LOG( port );
-#endif // X2OPTIMIZE_X2SERVERPROTOCOL_MULTITHREAD_CRASH_BUG_FIX
-
+		if( KTRUserPtr spTRUserProxy = m_pkTRUserProxy.load() )
+		{
+			START_LOG( cerr, L"called again while already connected to the TCP relay" )
+				<< BUILD_LOG( spTRUserProxy->GetIPStr() )
+				<< BUILD_LOG( spTRUserProxy->GetPort() )
+				<< BUILD_LOG( pIP )
+				<< BUILD_LOG( port );
+		}
 		return false;
 	}
-
-	//if( m_pkTRUserProxy != NULL )
-	//{
-	//	delete m_pkTRUserProxy;
-	//}
 
 	KTRUserPtr spTRUser( new KTRUser );
 	spTRUser->SetServerMsgID( m_ServerMsgID );
@@ -147,79 +103,28 @@ bool CX2ServerProtocol::ConnectedToTCPRelay( const WCHAR* pIP, const UidType& iU
 	std::string IP = KncUtil::toNarrowString( wIP );
 
 	if( !spTRUser->Connect( IP.c_str(), static_cast<u_short>(port), iUnitUID ) )
-	{
-		//SAFE_DELETE( pkTRUser );
-        spTRUser.reset();
         return false;
-	}
-#ifdef  X2OPTIMIZE_X2SERVERPROTOCOL_MULTITHREAD_CRASH_BUG_FIX
-    boost::atomic_store( &m_pkTRUserProxy, spTRUser );
-#else
-	m_pkTRUserProxy = spTRUser;
-#endif // X2OPTIMIZE_X2SERVERPROTOCOL_MULTITHREAD_CRASH_BUG_FIX
 
+	m_pkTRUserProxy.store( spTRUser );
 	return true;
 }
-
 
 bool CX2ServerProtocol::ConnectedToChannelServer( const WCHAR* pIP, const int port )
 {
 	if( IsChConnected() )
 	{
-#ifdef  X2OPTIMIZE_X2SERVERPROTOCOL_MULTITHREAD_CRASH_BUG_FIX
-        if ( KUserProxyPtr spChUserProxy = boost::atomic_load( &m_pkChUserProxy ) )
-        {
-		START_LOG( cerr, "이미 채널 서버에 접속된 상태에서 재접속 시도." )
-			<< BUILD_LOG( spChUserProxy->GetIPStr() )
-			<< BUILD_LOG(   spChUserProxy->GetPort() )
-			<< BUILD_LOG( pIP )
-			<< BUILD_LOG( port );
-        }
-#else
-		START_LOG( cerr, "이미 채널 서버에 접속된 상태에서 재접속 시도." )
-			<< BUILD_LOG( m_pkChUserProxy->GetIPStr() )
-			<< BUILD_LOG( m_pkChUserProxy->GetPort() )
-			<< BUILD_LOG( pIP )
-			<< BUILD_LOG( port );
-#endif // X2OPTIMIZE_X2SERVERPROTOCOL_MULTITHREAD_CRASH_BUG_FIX
-
+		AlreadyConnected( L"channel server", m_pkChUserProxy.load(), pIP, port );
 		return false;
 	}
 
-
-
-	KUserProxyPtr spProxy( new KUserProxy( KUserProxy::UPT_CHANNEL_SERVER ) );
-	spProxy->SetServerMsgID( m_ServerMsgID );
-	spProxy->SetClassID( CHPROXY_ID );
-	spProxy->Init( false );
-	spProxy->SetHwnd( m_hWnd );
-	spProxy->SetSendMsgCallBack( m_pSendGameMessage );
-
-	std::wstring wIP = pIP;
-	std::string IP = KncUtil::toNarrowString( wIP );
-
-	if( !spProxy->Connect( IP.c_str(), static_cast<u_short>(port) ) )
-	{
-#ifdef  X2OPTIMIZE_X2SERVERPROTOCOL_MULTITHREAD_CRASH_BUG_FIX
-        boost::atomic_store( &m_pkChUserProxy, KUserProxyPtr() );
-#else
-		m_pkChUserProxy.reset();
-#endif // X2OPTIMIZE_X2SERVERPROTOCOL_MULTITHREAD_CRASH_BUG_FIX
-		return false;
-	}
-#ifdef  X2OPTIMIZE_X2SERVERPROTOCOL_MULTITHREAD_CRASH_BUG_FIX
-    boost::atomic_store( &m_pkChUserProxy, spProxy );
-#else
-	m_pkChUserProxy = spProxy;
-#endif // X2OPTIMIZE_X2SERVERPROTOCOL_MULTITHREAD_CRASH_BUG_FIX
-
-	return true;
+	KUserProxyPtr spProxy = Connect( KUserProxy::UPT_CHANNEL_SERVER, CHPROXY_ID, pIP, port );
+	m_pkChUserProxy.store( spProxy );
+	return spProxy != nullptr;
 }
-
-
 
 void CX2ServerProtocol::ConnectedToGameServerForWorldTool()
 {
+	// a proxy that never connects, for the world tool (no message callback, as in the original)
 	KUserProxyPtr spProxy( new KUserProxy( KUserProxy::UPT_GAME_SERVER ) );
 	spProxy->SetServerMsgID( m_ServerMsgID );
 
@@ -227,70 +132,20 @@ void CX2ServerProtocol::ConnectedToGameServerForWorldTool()
 	spProxy->Init( false );
 	spProxy->SetHwnd( m_hWnd );
 
-#ifdef  X2OPTIMIZE_X2SERVERPROTOCOL_MULTITHREAD_CRASH_BUG_FIX
-    boost::atomic_store( &m_pkUserProxy, spProxy );
-#else
-	m_pkUserProxy = spProxy;
-#endif // X2OPTIMIZE_X2SERVERPROTOCOL_MULTITHREAD_CRASH_BUG_FIX
+	m_pkUserProxy.store( spProxy );
 }
 
-#ifdef ADD_COLLECT_CLIENT_INFO_PROTOCOL
 bool CX2ServerProtocol::ConnectedToCollectServer( const WCHAR* pIP, const int port)
 {
 	if( IsCSConnected() )
 	{
 #if X2_DEV_TOOLS
-#ifdef  X2OPTIMIZE_X2SERVERPROTOCOL_MULTITHREAD_CRASH_BUG_FIX
-        if ( KUserProxyPtr spCSUserProxy = boost::atomic_load( &m_pkCSUserProxy ) )
-        {
-		    START_LOG( cerr, "이미 수집 서버에 접속된 상태에서 재접속 시도." )
-			    << BUILD_LOG( spCSUserProxy->GetIPStr() )
-			    << BUILD_LOG( spCSUserProxy->GetPort() )
-			    << BUILD_LOG( pIP )
-			    << BUILD_LOG( port );
-        }
-#else
-
-		START_LOG( cerr, "이미 수집 서버에 접속된 상태에서 재접속 시도." )
-			<< BUILD_LOG( m_pkCSUserProxy->GetIPStr() )
-			<< BUILD_LOG( m_pkCSUserProxy->GetPort() )
-			<< BUILD_LOG( pIP )
-			<< BUILD_LOG( port );
-#endif // X2OPTIMIZE_X2SERVERPROTOCOL_MULTITHREAD_CRASH_BUG_FIX
+		AlreadyConnected( L"collect server", m_pkCSUserProxy.load(), pIP, port );
 #endif
 		return false;
 	}
 
-
-
-	KUserProxyPtr spProxy( new KUserProxy( KUserProxy::UPT_COLLECT_SERVER ) );
-	spProxy->SetServerMsgID( m_ServerMsgID );
-	spProxy->SetClassID( CSPROXY_ID );
-	spProxy->Init( false );
-	spProxy->SetHwnd( m_hWnd );
-	spProxy->SetSendMsgCallBack( m_pSendGameMessage );
-
-	std::wstring wIP = pIP;
-	std::string IP = KncUtil::toNarrowString( wIP );
-
-	if( !spProxy->Connect( IP.c_str(), static_cast<u_short>(port) ) )
-	{
-#ifdef  X2OPTIMIZE_X2SERVERPROTOCOL_MULTITHREAD_CRASH_BUG_FIX
-        boost::atomic_store( &m_pkCSUserProxy, KUserProxyPtr() );
-#else
-		m_pkCSUserProxy.reset();
-#endif // X2OPTIMIZE_X2SERVERPROTOCOL_MULTITHREAD_CRASH_BUG_FIX
-		return false;
-	}
-#ifdef  X2OPTIMIZE_X2SERVERPROTOCOL_MULTITHREAD_CRASH_BUG_FIX
-	// connection 열자마자 바로 끊기게 만드는 버그!!! - robobeg, 2014.1.31
-    //boost::atomic_store( &m_pkCSUserProxy, KUserProxyPtr() );
-    boost::atomic_store( &m_pkCSUserProxy, spProxy );
-#else
-	m_pkCSUserProxy = spProxy;
-#endif // X2OPTIMIZE_X2SERVERPROTOCOL_MULTITHREAD_CRASH_BUG_FIX
-
-
-	return true;
+	KUserProxyPtr spProxy = Connect( KUserProxy::UPT_COLLECT_SERVER, CSPROXY_ID, pIP, port );
+	m_pkCSUserProxy.store( spProxy );
+	return spProxy != nullptr;
 }
-#endif

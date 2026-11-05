@@ -143,7 +143,7 @@ void Exchange( bool bClientUsesIocp )
         CHECK( kGot.m_wstrVersion == kReq.m_wstrVersion );
     }
 
-    // server -> client, larger than one read (MAX_PACKET_SIZE is 32 KB) and not compressed
+    // server -> client, larger than one socket read and not compressed
     KEGS_CONNECT_REQ kBig;
     kBig.m_wstrVersion.assign( 12000, L'x' );   // 24 KB of UTF-16
     REQUIRE( spServer->SendPacket( PI_NULL, 0, NULL, EGS_CONNECT_ACK, kBig, true, false ) );

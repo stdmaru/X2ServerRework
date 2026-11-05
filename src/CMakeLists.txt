@@ -1,6 +1,9 @@
 # Modules are added here as they are ported (docs/project/roadmap.md).
 add_subdirectory(platform)
 add_subdirectory(kncsdk)
+if(X2_BUILD_SERVER OR X2_BUILD_CLIENT)
+    include(server/Common/CommonNet.cmake)  # x2::common_net, shared by the servers and the client (decision T34)
+endif()
 if(X2_BUILD_SERVER)
     add_subdirectory(server)
 endif()
