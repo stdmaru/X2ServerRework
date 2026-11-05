@@ -13,6 +13,7 @@
 #include <chrono>
 #include <filesystem>
 #include <fstream>
+#include <iterator>
 #include <thread>
 
 using namespace x2::servermanager;
@@ -92,6 +93,95 @@ TEST_CASE("ui: without a profile, and with a profile that does not load")
     CHECK_FALSE(error.empty());
     gui.Frame(ui);
     CHECK(ManagerUi::FindProfile({"ServerManager", "x.json"}) == "x.json");
+}
+
+TEST_CASE("ui: a profile made in the Profile tab, saved next to the program and applied")
+{
+    namespace fs = std::filesystem;
+    const fs::path dir = fs::temp_directory_path() / "x2_ui_profile_tab";
+    std::error_code ec;
+    fs::remove_all(dir, ec);
+    fs::create_directories(dir / "dist" / "LoginServer");
+    const std::string file = (dir / "profile.json").string();
+    CHECK(ManagerUi::FindProfile({"ServerManager"}, file).empty() == !fs::is_directory("dist"));
+
+    NullImGui gui;
+    ManagerUi ui;
+    ui.SetDefaultProfileFile(file);         // no profile yet: an empty one in the Profile tab
+    gui.Frame(ui);
+    CHECK(ui.Editor().File() == file);
+    CHECK_FALSE(ui.Editor().Dirty());
+
+    Profile& draft = ui.Editor().Draft();
+    HostSpec win;
+    win.name = "win";
+    win.destination = "Administrator@win.invalid";
+    win.shell = HostSpec::Shell::Cmd;
+    win.identityFile = (dir / "key").string();
+    win.ssh = {"x2-no-such-ssh"};
+    draft.hosts.push_back(win);
+    ServerSpec login;
+    login.name = "Login";
+    login.directory = (dir / "dist" / "LoginServer").string();
+    login.program = "./x2-no-such-server";
+    login.args = {"DEV", "0"};
+    draft.servers.push_back(login);
+    ServerSpec game;
+    game.name = "Game";
+    game.host = "win";
+    game.control = "GameServer";
+    game.after = {"Login"};
+    draft.servers.push_back(game);
+    CHECK(ui.Editor().Dirty());
+    ui.ShowTab(ManagerUi::Tab::Profile);
+    gui.Frame(ui);      // general, the selected host and server, with a remote one and dependencies
+    gui.Frame(ui);
+
+    std::string error;
+    REQUIRE_MESSAGE(ui.ApplyProfile(error), error);
+    CHECK_FALSE(ui.Editor().Dirty());
+    REQUIRE(ui.GetOrchestrator());
+    CHECK(ui.GetOrchestrator()->Size() == 2);
+    CHECK(ui.ProfilePath() == file);
+    CHECK(ManagerUi::FindProfile({"ServerManager"}, file) == file);   // next start: this file
+    std::ifstream in(file);
+    const std::string text((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
+    CHECK(text.find(R"("directory": "dist)") != std::string::npos);    // relative to the file's folder
+    CHECK(text.find(R"("shell": "cmd")") != std::string::npos);
+    gui.Frame(ui);
+
+    // an invalid draft is not saved
+    ui.Editor().Draft().servers[1].after = {"Nobody"};
+    gui.Frame(ui);
+    CHECK_FALSE(ui.SaveProfile(error));
+    CHECK(error.find("Nobody") != std::string::npos);
+    ui.ShowTab(ManagerUi::Tab::Servers);
+    gui.Frame(ui);
+    fs::remove_all(dir, ec);
+}
+
+TEST_CASE("ui: a dist folder is saved to the default profile file")
+{
+    namespace fs = std::filesystem;
+    const fs::path dir = fs::temp_directory_path() / "x2_ui_profile_dist";
+    std::error_code ec;
+    fs::remove_all(dir, ec);
+    fs::create_directories(dir / "dist");
+    NullImGui gui;
+    ManagerUi ui;
+    ui.SetDefaultProfileFile((dir / "profile.json").string());
+    std::string error;
+    REQUIRE_MESSAGE(ui.Load((dir / "dist").string(), error), error);
+    CHECK(ui.Editor().File() == (dir / "profile.json").string());
+    CHECK(ui.Editor().Draft().servers.size() == 6);
+    CHECK_FALSE(ui.Editor().Dirty());
+    ui.ShowTab(ManagerUi::Tab::Profile);
+    gui.Frame(ui);
+    REQUIRE_MESSAGE(ui.SaveProfile(error), error);
+    const auto loaded = LoadProfile((dir / "profile.json").string(), error);
+    REQUIRE_MESSAGE(loaded, error);
+    CHECK(loaded->servers.size() == 6);
+    fs::remove_all(dir, ec);
 }
 
 TEST_CASE("ui: a failed server and a remote host that cannot be reached")

@@ -6,7 +6,7 @@
 //    "servers": [{"name": "LoginServer", "directory": "LoginServer", "program": "./LoginServer",
 //                 "args": ["DEV", "0"], "after": ["EPublisherServer"], "control": "LoginServer"}, ...],
 //    "hosts": [{"name": "prod", "destination": "x2@10.0.0.5", "x2ctl": "/opt/x2/dist/x2ctl", "shell": "sh",
-//               "controlDir": "/opt/x2/docker/control/x2",
+//               "controlDir": "/opt/x2/docker/control/x2", "identityFile": "~/.ssh/x2_prod", "port": 22,
 //               "start": "docker compose -f /opt/x2/docker-compose.yml up -d {service}", "stop": "..."}],
 //    "controlDir": "..."}
 // Relative directories are relative to the profile's folder. A server with a "host" runs on that machine as its service:
@@ -32,6 +32,7 @@ struct HostSpec {
     enum class Shell { Sh, Cmd } shell = Shell::Sh;
     std::string controlDir;             // its control sockets (x2ctl --dir); empty: x2ctl's default there
     std::vector<std::string> ssh;       // program and options before the destination; empty: DefaultSshCommand()
+    std::string identityFile;           // a private key on this machine (ssh -i, IdentitiesOnly); empty: ssh's own keys
     // Shell command lines run there to start and stop one of its servers, as its service manager does (docker compose,
     // systemctl); {service}, {name} and {control} become the server's. Empty: attach only, and stop through the protocol.
     std::string start;
@@ -89,6 +90,11 @@ struct Profile {
 // `baseDir` resolves relative directories and the relative x2ctl path. nullopt and `error` when invalid.
 std::optional<Profile> ParseProfile(std::string_view json, const std::string& baseDir, std::string& error);
 std::optional<Profile> LoadProfile(const std::string& path, std::string& error);
+// The profile as JSON that ParseProfile reads back the same: paths under `baseDir` relative to it, values that are
+// the defaults left out.
+std::string ProfileToJson(const Profile& profile, const std::string& baseDir);
+// ProfileToJson, relative to the file's folder, written through a temporary file. False and `error` when it fails.
+bool SaveProfile(const Profile& profile, const std::string& path, std::string& error);
 
 // The six servers of the package under dist/ (docs/running.md) with the startup order of the original: the account
 // service first, then the servers GameServer connects to, then GameServer, and ChannelServer (the client's entry) last.
