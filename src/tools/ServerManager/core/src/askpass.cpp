@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <cstdio>
+#include <cstdlib>
 #include <filesystem>
 #include <random>
 
@@ -60,6 +61,54 @@ std::optional<AskpassKind> ParseAskpassKind(std::string_view text)
         if (text == ToString(kind))
             return kind;
     return std::nullopt;
+}
+
+bool IsAskpassInvocation()
+{
+    const char* socket = std::getenv(kAskpassSocketVar);
+    const char* askpass = std::getenv("SSH_ASKPASS");
+    return socket && *socket && askpass && *askpass;
+}
+
+int RunAskpass(int argc, char* argv[])
+{
+    const char* socket = std::getenv(kAskpassSocketVar);
+    const char* token = std::getenv(kAskpassTokenVar);
+    const char* sshPrompt = std::getenv("SSH_ASKPASS_PROMPT");
+    if (!socket || !*socket || !token) {
+        std::fprintf(stderr, "askpass: run by ssh from ServerManager only (%s is not set)\n", kAskpassSocketVar);
+        return 1;
+    }
+    const std::string prompt = argc > 1 ? argv[1] : "";
+
+    x2::platform::ControlClient client;
+    std::string error;
+    std::string greeting;
+    if (!client.Connect(socket, error) || !client.ReadLine(greeting)) {
+        std::fprintf(stderr, "askpass: ServerManager is not reachable: %s\n", error.c_str());
+        return 1;
+    }
+    std::string request = "{\"token\":";
+    x2::platform::AppendJsonString(request, token);
+    request += ",\"prompt\":";
+    x2::platform::AppendJsonString(request, prompt);
+    request += ",\"kind\":";
+    x2::platform::AppendJsonString(request, ToString(ClassifyPrompt(prompt, sshPrompt ? sshPrompt : "")));
+    request += '}';
+    std::string reply;
+    if (!client.WriteLine(request) || !client.ReadLine(reply))
+        return 1;
+    const auto answer = x2::platform::ParseJsonObject(reply);
+    if (!answer)
+        return 1;
+    const auto ok = answer->find("ok");
+    if (ok == answer->end() || ok->second.text != "true")
+        return 1;
+    if (const auto text = answer->find("answer"); text != answer->end()) {
+        std::fwrite(text->second.text.data(), 1, text->second.text.size(), stdout);
+        std::fputc('\n', stdout);
+    }
+    return std::fflush(stdout) == 0 ? 0 : 1;
 }
 
 AskpassBroker::~AskpassBroker()

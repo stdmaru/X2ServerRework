@@ -45,8 +45,8 @@ public:
     bool ApplyProfile(std::string& error);
     // A server started here is running: the profile cannot be replaced, nor the window closed without asking.
     bool StartedRunning() const;
-    // ssh's password, passphrase and host key questions in a dialog (x2askpass next to the program). Without it, ssh
-    // runs with BatchMode and such a host fails.
+    // ssh's password, passphrase and host key questions in a dialog; `helper` is the program ssh runs for them
+    // (ServerManager itself). Without it, ssh runs with BatchMode and such a host fails.
     bool EnableAskpass(const std::string& helper, std::string& error);
     AskpassBroker& Askpass() { return m_askpass; }
     enum class Tab { Servers, Profile };

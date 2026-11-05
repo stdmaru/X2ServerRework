@@ -7,10 +7,6 @@ target_link_libraries(x2_servermanager_ui PUBLIC x2::servermanager_core x2::imgu
 
 add_executable(ServerManager src/main.cpp)
 target_link_libraries(ServerManager PRIVATE x2_servermanager_ui x2::app_imgui)
-# x2askpass next to it, where it looks for it
-add_dependencies(ServerManager x2askpass)
-add_custom_command(TARGET ServerManager POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:x2askpass> $<TARGET_FILE_DIR:ServerManager>)
 # no console window on Windows (SDL_main.h provides WinMain)
 set_target_properties(ServerManager PROPERTIES WIN32_EXECUTABLE TRUE)
 
@@ -36,7 +32,7 @@ if(X2_BUILD_TESTS)
         target_compile_definitions(x2_servermanager_ui_tests PRIVATE X2_TERMINAL_DEMO="$<TARGET_FILE:x2_terminal_demo>")
         add_dependencies(x2_servermanager_ui_tests x2_terminal_demo)
     endif()
-    target_compile_definitions(x2_servermanager_ui_tests PRIVATE X2_ASKPASS_HELPER="$<TARGET_FILE:x2askpass>")
-    add_dependencies(x2_servermanager_ui_tests x2askpass)
+    target_compile_definitions(x2_servermanager_ui_tests PRIVATE X2_ASKPASS_HELPER="$<TARGET_FILE:x2_askpass_helper>")
+    add_dependencies(x2_servermanager_ui_tests x2_askpass_helper)
     add_test(NAME servermanager_ui COMMAND x2_servermanager_ui_tests)
 endif()

@@ -1,4 +1,4 @@
-// AskpassBroker with the real x2askpass (docs/tools/servermanager.md#ssh-prompts), and with the real ssh when a local
+// AskpassBroker with the real helper side (RunAskpass, docs/tools/servermanager.md#ssh-prompts), and with the real ssh when a local
 // sshd answers on 127.0.0.1.
 
 #include "x2/servermanager/askpass.h"
@@ -67,15 +67,16 @@ bool HasBatchMode()
 
 }  // namespace
 
-TEST_CASE("askpass: x2askpass asks the broker and prints its answer")
+TEST_CASE("askpass: the helper asks the broker and prints its answer")
 {
     AskpassBroker broker;
     std::string error;
-    CHECK_FALSE(broker.Start("/nonexistent/x2askpass", error));
+    CHECK_FALSE(broker.Start("/nonexistent/ServerManager", error));
     REQUIRE_MESSAGE(broker.Start(X2_ASKPASS_HELPER, error), error);
     CHECK(std::string(std::getenv("SSH_ASKPASS")) == X2_ASKPASS_HELPER);
     CHECK(std::string(std::getenv("SSH_ASKPASS_REQUIRE")) == "force");
     CHECK_FALSE(HasBatchMode());     // ssh may ask now
+    CHECK(IsAskpassInvocation());    // what a program started from here sees
 
     // a secret, remembered
     auto first = Helper("x2@vps's password: ");
@@ -133,6 +134,7 @@ TEST_CASE("askpass: x2askpass asks the broker and prints its answer")
 
     broker.Stop();
     CHECK(HasBatchMode());
+    CHECK_FALSE(IsAskpassInvocation());
     const char* gone = std::getenv("SSH_ASKPASS");
     CHECK((gone == nullptr || *gone == '\0'));
     auto alone = Helper("x2@vps's password: ");     // nothing to ask

@@ -151,7 +151,7 @@ See [Server — Windows dependencies](../original/server.md).
         `profile.json` next to the executable; drawn headless in tests, Clang, GCC and clang-cl without warnings (2026-11-05).
         See [ServerManager](../tools/servermanager.md#profile-tab-2026-11-05-toolsservermanager-profile-editor).
   - [x] `tools/servermanager-askpass`: ssh's password, passphrase and host key questions in a dialog of the window through
-        `SSH_ASKPASS` (`x2askpass` and `AskpassBroker`; `BatchMode` only without it), with secrets remembered until it closes
+        `SSH_ASKPASS` (ServerManager itself in askpass mode, and `AskpassBroker`; `BatchMode` only without it), with secrets remembered until it closes
         and cancelled prompts not asked again until Refresh; Windows' OpenSSH 9.5 checked on the test VM; Clang, GCC and
         clang-cl without warnings (2026-11-05). See [ServerManager](../tools/servermanager.md#ssh-prompts-2026-11-05-toolsservermanager-askpass).
 - [x] Remove SOAP/gSOAP, publisher billing/auth, Mail (MIME/SMTP), CrashRpt; stub where game logic depends on them (2026-10-31). The DEB gSOAP client became custom SOAP/HTTP, with DEB login and billing unchanged (T31, `server/cleanup-gsoap`, see [Common › DEB client](../porting/server-common.md#deb-client-t31)). `KMailManager` was removed, and script error reports go to the log (`server/cleanup-mail`). CrashRpt, other-country publishers, and `Common/SOAP` were never imported into `src/`: the importer excludes them. Only their `NetError`s/event IDs remain as protocol, along with comments.
