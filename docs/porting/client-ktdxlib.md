@@ -40,6 +40,12 @@ CrashRpt, KncFirewall or the SMTP mail; `KTDXApp.cpp` lost the firewall exceptio
 `KTDIDeviceWinKey.*` were deleted (252 files left). `KTDX.h` includes `DXUT/DirectInputKeys.h` instead of `<dinput.h>`,
 and `KTDXStage.h`/`KTDXDeviceHolder.h` include what they use (`std::wstring`, `std::list`, `x2/platform/win32.h`).
 
+## IME edit box (2026-11-05, `client/ime-candidates`)
+
+`CKTDGUIIMEEditBox::Initialize()` points its `_Imm*` pointers at the IMM32 emulation on SDL3 (`DXUT/Ime.h`,
+`EMULATEDPROC` in `KTDGUIUniBuffer.h`) instead of loading `imm32.dll` and `version.dll`; `s_hDllImm32` became
+`s_bImmBound`. See [Client: IME](client-ime.md).
+
 ## Status
 
 Only the input files compile ([roadmap](../project/roadmap.md#phase-3--client-platform)).

@@ -10,8 +10,9 @@
 #define PLACEHOLDERPROC( APIName ) \
 	_##APIName = Dummy_##APIName
 
-#define IMM32_DLLNAME L"\\imm32.dll"
-#define VER_DLLNAME L"\\version.dll"
+// IMM32 is emulated on the SDL3 IME state (DXUT/Ime.h) instead of loaded from imm32.dll.
+#define EMULATEDPROC( APIName ) \
+	_##APIName = x2::dxut::imm::APIName
 
 class CKTDGUIUniBuffer
 {

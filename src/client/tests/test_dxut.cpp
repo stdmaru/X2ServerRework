@@ -6,6 +6,7 @@
 
 #include <doctest/doctest.h>
 
+#include <string>
 #include <vector>
 
 namespace {
@@ -122,6 +123,10 @@ TEST_CASE("without a GPU the window fails cleanly")
 {
     SDL_SetHint(SDL_HINT_VIDEO_DRIVER, "dummy");
     CHECK(DXUTInit(false, false, true) == S_OK);
+    // The IME edit box draws the composition and the candidates itself (docs/porting/client-ime.md).
+    const char* imeUi = SDL_GetHint(SDL_HINT_IME_IMPLEMENTED_UI);
+    REQUIRE(imeUi != nullptr);
+    CHECK(std::string(imeUi) == "composition,candidates");
     CHECK(DXUTGetHWND() == nullptr);
     // The dummy video driver has no GPU device: creation fails with a message instead of crashing.
     CHECK(FAILED(DXUTCreateWindow(L"X2")));

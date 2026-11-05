@@ -150,6 +150,9 @@ void ReleaseWindow(DxutState& state)
         state.window->WaitIdle();
         SDL_StopTextInput(state.window->Handle());
     }
+    if (x2::dxut::BoundIme() == &state.translator.Ime()) {
+        x2::dxut::BindIme(nullptr);
+    }
     state.window.reset();
     state.hwnd = nullptr;
 }
@@ -185,6 +188,9 @@ HRESULT DXUTInit(bool /*bParseCommandLine*/, bool /*bHandleDefaultHotkeys*/, boo
     DxutState& state = State();
     state.handleAltEnter = bHandleAltEnter;
     if (!state.sdl) {
+        // KTDGUIIMEEditBox draws the composition string and the candidate list itself (it hid the IME windows on
+        // WM_IME_SETCONTEXT): SDL sends them as events instead of showing the system's windows where it can.
+        SDL_SetHint(SDL_HINT_IME_IMPLEMENTED_UI, "composition,candidates");
         std::string error;
         state.sdl = x2::app::Sdl::Init(error, SDL_INIT_VIDEO);
         if (!state.sdl) {
@@ -233,6 +239,20 @@ HRESULT DXUTCreateWindow(const WCHAR* strWindowTitle, HINSTANCE /*hInstance*/, H
 #endif
     // Windows delivers WM_CHAR and IME messages to any focused window; SDL only while text input is on.
     SDL_StartTextInput(window);
+    // The window's input context for the IME edit box's IMM32 calls (Ime.h): what the IME does on request goes back to
+    // SDL and, as the IME's messages, to the window procedure.
+    x2::dxut::ImeContext& ime = state.translator.Ime();
+    ime.clearComposition = [] {
+        if (State().window) {
+            SDL_ClearComposition(State().window->Handle());
+        }
+    };
+    ime.send = [](const x2::dxut::WinMessage& message) {
+        if (State().hwnd) {
+            DXUTStaticWndProc(State().hwnd, message.message, message.wParam, message.lParam);
+        }
+    };
+    x2::dxut::BindIme(&ime);
     state.active = (SDL_GetWindowFlags(window) & SDL_WINDOW_INPUT_FOCUS) != 0;
     state.input.SetFocused(state.active);
     state.quit = false;

@@ -180,8 +180,10 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
       original API, as `x2::client_ktdi`; `DIK_*` ↔ SDL scancode table checked against the 102 `DIK_*` names the client
       uses; joysticks through SDL's gamepad API in DirectInput's XInput layout, with hot plug; headless tests with SDL
       virtual joysticks (2026-11-05). See [Client: input](../porting/client-input.md).
-- [ ] IME candidate list (composition already reaches `MsgProc`). The `MsgProc(HWND, UINT, WPARAM, LPARAM)` model stays
-      (`X2Lib` uses `HWND` in ~272 files — mostly through the `MsgProc` signature).
+- [x] `client/ime-candidates`: the IME edit box's IMM32 (`ImmGetCompositionStringW`, `ImmGetCandidateListW`,
+      `ImmNotifyIME`...) emulated on SDL3's IME state, the same on Windows and Linux; `TEXT_EDITING_CANDIDATES` →
+      `WM_IME_NOTIFY`, with SDL's Windows page/selection quirks normalized; IMM types in `x2/platform/ime.h`; the
+      `MsgProc(HWND, UINT, WPARAM, LPARAM)` model stays; headless tests (2026-11-05). See [Client: IME](../porting/client-ime.md).
 - [x] `client/d3dx-math`: the custom D3DX math of `x2::platform` (`d3dx_math.h`, D3DX layouts and formulas checked against
       Wine) extended to the client's subset: `D3DXQUATERNION`, `D3DXPLANE`, animation keys, plane/quaternion functions,
       `Vec3Project`, `Vec3CatmullRom`, `PerspectiveFovLH`, `OrthoLH`, `Transformation2D`, `ComputeBoundingSphere`, with tests

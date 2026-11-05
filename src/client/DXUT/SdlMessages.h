@@ -4,6 +4,8 @@
 // LPARAM) model: each SDL event becomes the message(s) Windows would have sent to the DXUT window, with the same wParam
 // and lParam encoding, so CKTDXApp::MsgProc and the stages switch on them unchanged. See docs/porting/client-dxut.md.
 
+#include "Ime.h"
+
 #include "x2/platform/win32.h"
 
 #include <SDL3/SDL_events.h>
@@ -49,11 +51,14 @@ public:
     // Appends the messages for `event` to `out` (none for events Windows has no message for).
     void Translate(const SDL_Event& event, const TranslateContext& context, std::vector<WinMessage>& out);
 
-    // The IME state the WM_IME_COMPOSITION messages refer to (what ImmGetCompositionString returns on Windows).
-    bool Composing() const { return m_composing; }
-    const std::wstring& CompositionString() const { return m_composition; }
-    int CompositionCursor() const { return m_compositionCursor; }
-    const std::wstring& ResultString() const { return m_result; }
+    // The IME state the WM_IME_COMPOSITION and WM_IME_NOTIFY messages refer to (what ImmGetCompositionString and
+    // ImmGetCandidateList return on Windows).
+    ImeContext& Ime() { return m_ime; }
+    const ImeContext& Ime() const { return m_ime; }
+    bool Composing() const { return m_ime.Composing(); }
+    const std::wstring& CompositionString() const { return m_ime.CompositionString(); }
+    int CompositionCursor() const { return m_ime.CompositionCursor(); }
+    const std::wstring& ResultString() const { return m_ime.ResultString(); }
 
     // MK_* bits of the mouse buttons held now.
     WPARAM MouseButtons() const { return m_buttons; }
@@ -65,14 +70,13 @@ private:
     void Key(const SDL_KeyboardEvent& key, std::vector<WinMessage>& out);
     void Text(const SDL_TextInputEvent& text, std::vector<WinMessage>& out);
     void Editing(const SDL_TextEditingEvent& editing, std::vector<WinMessage>& out);
+    void Candidates(const SDL_TextEditingCandidatesEvent& candidates, std::vector<WinMessage>& out);
+    void CloseCandidates(std::vector<WinMessage>& out);
     void Button(const SDL_MouseButtonEvent& button, const TranslateContext& context, std::vector<WinMessage>& out);
 
     WPARAM m_buttons = 0;  // MK_LBUTTON | MK_RBUTTON | ...
     bool m_maximized = false;
-    bool m_composing = false;
-    std::wstring m_composition;
-    int m_compositionCursor = 0;
-    std::wstring m_result;
+    ImeContext m_ime;
 };
 
 }  // namespace x2::dxut

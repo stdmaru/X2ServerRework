@@ -42,7 +42,7 @@ The ~22 X2Lib files that call `GetDevice()` need individual review.
 |---|---|---|
 | Window / loop | `KTDXApp`, `DXUT/` | SDL3 |
 | Input | `KTDIDevice*` (DirectInput8 in 6 files), `KTDIDeviceWinKey` | SDL3 |
-| IME (Korean/CJK) | `KTDGUIIMEEditBox`, `KHangulPPWSelector` (`ImmGetContext` in 5 files, `WM_IME_*`) | SDL3 text input/IME — review whether the US variant needs this |
+| IME (Korean/CJK) | `KTDGUIIMEEditBox`, `KHangulPPWSelector` (`ImmGetContext` in 5 files, `WM_IME_*`) | SDL3 text input/IME; IMM32 emulated on SDL ([Client: IME](../porting/client-ime.md)) |
 | Audio | `KTDSManager`, `KTDXDeviceSound`, `KTDSMP3Play`, `FMOD/` (FMOD Ex), DirectSound | miniaudio / SDL3 audio, or current FMOD Core |
 | Video | `BandiVideo*` (15 files), `bdvid32.dll` | remove or replace (ffmpeg/pl_mpeg) depending on `data/movie` format |
 | Networking | `KTDNManager`, `KTDNUDP`, `KTDNTransfer`, `X2ServerProtocol/Socket` (IOCP in the client too!) | same networking library as the server (Asio) |

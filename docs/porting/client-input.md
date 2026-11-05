@@ -104,6 +104,4 @@ Tests (`x2_client_tests`, ctest `client`), headless, joysticks through SDL virtu
 
 ## Open
 
-- The IME candidate list (the other half of the roadmap's input item) is not done: composition reaches `MsgProc`
-  ([DXUT](client-dxut.md#sdl-events--win32-messages)), the candidate window does not.
 - Exclusive full screen (`CreateMouse(FALSE)`, relative mouse) is not used by the client and was not tried.
