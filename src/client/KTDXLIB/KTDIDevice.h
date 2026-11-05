@@ -1,5 +1,20 @@
 #pragma once
 
+// One input device (keyboard, mouse or joystick) with the original CKTDIDevice API. The original read DirectInput 8
+// devices in immediate mode (foreground, non-exclusive); the port reads the same state from SDL3 through the DXUT
+// replacement (DXUT/SdlInput.h). See docs/porting/client-input.md.
+
+#include "x2/platform/win32.h"
+
+#include "KTDIGameAction.h"
+
+#include <map>
+#include <memory>
+
+namespace x2::dxut {
+class JoystickReader;
+}
+
 ///////////////////////////////////////////////////////////////////////
 // Mouse and Joystick definitions
 ///////////////////////////////////////////////////////////////////////
@@ -64,10 +79,10 @@ class CKTDIDevice
 		};
 
 	public:
-		CKTDIDevice( HWND hWnd, IDirectInput8* pDI );
+		CKTDIDevice();
 		virtual ~CKTDIDevice();
-
-		IDirectInputDevice8 *DeviceCOM();
+		CKTDIDevice( const CKTDIDevice& ) = delete;
+		CKTDIDevice& operator=( const CKTDIDevice& ) = delete;
 
 		// Generic functions - all devices
 		BOOL Create( short Type, BOOL Windowed = TRUE );
@@ -98,7 +113,6 @@ class CKTDIDevice
 		BOOL  GetDoubleKeyPureState( unsigned char Num );
 		BOOL  GetDoubleKeyState( unsigned char Num );
 		void  SetDoubleKeyReset( unsigned char Num );
-		short GetKeypress( long TimeOut = 0 );
 		long  GetNumKeyPresses();
 		long  GetNumPureKeyPresses();
 
@@ -113,11 +127,7 @@ class CKTDIDevice
 		POINT	GetMouseDeltaPosition();
 
 		bool GetActionState( int Action, long* lpData = NULL);
-#ifdef KEY_MAPPING_UPGRADE
-		void SetAction( int Action, unsigned char Key, bool isDefault = false );
-#else
 		void SetAction( int Action, unsigned char Key );
-#endif // KEY_MAPPING_UPGRADE
 		unsigned char GetActionKey( int Action );
 		bool ListenDeviceInput( unsigned char& ucoutUserInput );
 		void GetActionKeys( OUT std::map<short, short>& mapMappingInfo );
@@ -128,13 +138,14 @@ class CKTDIDevice
 
 	public:
 		short                 m_Type;
-		IDirectInputDevice8  *m_pDIDevice;
 
 		BOOL                  m_Windowed;
 
+		// GetDeviceState buffers: keyboard (DIK_* index, 0x80 when down), mouse and joystick. The original aliased the
+		// three on m_State; the joystick action map still indexes the bytes of DIJOYSTATE (JoystickByte).
 		char                  m_State[256];
-		DIMOUSESTATE         *m_MouseState;
-		DIJOYSTATE           *m_JoystickState;
+		DIMOUSESTATE          m_MouseState;
+		DIJOYSTATE            m_JoystickState;
 
 		BOOL                  m_Locks[256];
 
@@ -143,20 +154,16 @@ class CKTDIDevice
 		POINT				  m_kMousePrevPos;
 		POINT				  m_kMouseDeltaPos;
 
-		// Z좌표는 마우스 좌표를 읽어 온다.
-		// 밀거나 당기는 한칸의 단위는 120
-		// 밀기 : +120
-		// 당김 : -120
+		// Z is the mouse wheel: one notch is 120, +120 pushed away and -120 pulled back.
 		long                  m_XPos, m_YPos, m_ZPos;
 
-		// ime enter lock으로 인해 채팅창으로 enter가 가지 않기 때문에 채팅창 전용의 별도의 변수를 배정
+		// The IME's Enter lock keeps Enter from reaching the chat box, so the chat box has its own flag.
 		BOOL m_bExtraEnter;
 
-		static BOOL FAR PASCAL EnumJoysticks( LPCDIDEVICEINSTANCE pdInst, LPVOID pvRef );
-
 	private:
-		HWND			m_hWnd;
-		IDirectInput8*	m_pDI;
+		char			JoystickByte( unsigned char Offset ) const;
+
+		std::unique_ptr<x2::dxut::JoystickReader>	m_pJoystick;
 		DoubleKey		m_DoubleKeyCheck[256];
 
 };

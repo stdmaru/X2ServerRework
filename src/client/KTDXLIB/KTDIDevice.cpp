@@ -1,25 +1,21 @@
-#include "stdafx.h"
-#include "./KTDIDevice.h"
+#include "KTDIDevice.h"
+
+#include "DXUT.h"
+#include "SdlInput.h"
+
+#include <algorithm>
+#include <cstring>
+#include <iterator>
 
 #define DOUBLE_INPUT_GAP 0.4f
 
-CKTDIDevice::CKTDIDevice( HWND hWnd, IDirectInput8* pDI )
+CKTDIDevice::CKTDIDevice()
 {
-	m_hWnd = hWnd;
-	m_pDI = pDI;
-
 	// Setup device to none
 	m_Type = NONE;
 
 	// Set windowed usage to TRUE
 	m_Windowed = TRUE;
-
-	// Clear the DirectInput interface pointer
-	m_pDIDevice = NULL;
-
-	// Point the mouse and joystick structures to the state buffer
-	m_MouseState    = (DIMOUSESTATE*)&m_State;
-	m_JoystickState = (DIJOYSTATE*)&m_State;
 
 	m_kMousePrevPos.x = 0;
 	m_kMousePrevPos.y = 0;
@@ -40,164 +36,30 @@ CKTDIDevice::~CKTDIDevice()
 	Free();
 }
 
-IDirectInputDevice8* CKTDIDevice::DeviceCOM()
-{
-	// return the pointer to the IDirectDevice8 object
-	return m_pDIDevice;
-}
-
 // Generic functions - all devices
 BOOL CKTDIDevice::Create( short Type, BOOL Windowed )
 {
-#ifdef DLL_BUILD
-	// 디바이스 만들기 생략
-	Free();
-	m_Windowed = Windowed;
-	m_Type = Type;
-	Clear();
-	return TRUE;
-#endif
-
-	DIDATAFORMAT *DataFormat;
-	DIPROPRANGE   DIprg;
-	DIPROPDWORD   DIpdw;
-	HRESULT	hr;
-
 	// Free a prior device
 	Free();
 
-	// Create the device and remember device data format
 	switch(Type)
 	{
 	case KEYBOARD:
-		if(FAILED(m_pDI->CreateDevice(GUID_SysKeyboard, &m_pDIDevice, NULL)))
-		{
-			ErrorLog(KEM_ERROR51);
-			return FALSE;
-		}
-
-		DataFormat = (DIDATAFORMAT*)&c_dfDIKeyboard;
-		break;
-
 	case MOUSE:
-		if(FAILED(m_pDI->CreateDevice(GUID_SysMouse, &m_pDIDevice, NULL)))
-		{
-			ErrorLog(KEM_ERROR52);
-			return FALSE;
-		}
-
-		DataFormat = (DIDATAFORMAT*)&c_dfDIMouse;
 		break;
 
 	case JOYSTICK:
-		if(FAILED(m_pDI->EnumDevices(DI8DEVCLASS_GAMECTRL, EnumJoysticks, this, DIEDFL_ATTACHEDONLY)))
-		{
-			ErrorLog(KEM_ERROR53);
-			return FALSE;
-		}
-
-		if(m_pDIDevice == NULL)
-		{
-			ErrorLog(KEM_ERROR54);
-			return FALSE;
-		}
-
-		DataFormat = (DIDATAFORMAT*)&c_dfDIJoystick;
+		// The original failed here without an attached joystick (KEM_ERROR54) and never looked again; the reader opens
+		// the first joystick on each Read until one is there.
+		m_pJoystick = std::make_unique<x2::dxut::JoystickReader>();
 		break;
 
 	default:
-		{
-			ErrorLog(KEM_ERROR55);
-			return FALSE;
-		}
+		return FALSE;
 	}
 
 	// Set the windowed usage
 	m_Windowed = Windowed;
-
-	// Set the data format of keyboard
-	if(FAILED(m_pDIDevice->SetDataFormat(DataFormat)))
-	{
-		ErrorLog(KEM_ERROR56);
-		return FALSE;
-	}
-
-	// Set the cooperative level - Foreground & Nonexclusive
-	// 윈도우키 막을려면 DISCL_NOWINKEY 요 옵션 추가해부러
-	if(FAILED(m_pDIDevice->SetCooperativeLevel(m_hWnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY )))
-	{
-		ErrorLog(KEM_ERROR57);
-		return FALSE;
-	}
-
-	// Set the special properties if it's a joystick
-	if(Type == JOYSTICK)
-	{
-		// Set the special properties of the joystick - range
-		DIprg.diph.dwSize       = sizeof(DIPROPRANGE);
-		DIprg.diph.dwHeaderSize = sizeof(DIPROPHEADER);
-		DIprg.diph.dwHow        = DIPH_BYOFFSET;
-		DIprg.lMin              = -1024;
-		DIprg.lMax              = +1024;
-
-		// Set X range
-		DIprg.diph.dwObj = DIJOFS_X;
-		if(FAILED(m_pDIDevice->SetProperty(DIPROP_RANGE, &DIprg.diph)))
-		{
-			ErrorLog(KEM_ERROR58);
-			return FALSE;
-		}
-
-		// Set Y rangine
-		DIprg.diph.dwObj = DIJOFS_Y;
-		if(FAILED(m_pDIDevice->SetProperty(DIPROP_RANGE, &DIprg.diph)))
-		{
-			ErrorLog(KEM_ERROR59);
-			return FALSE;
-		}
-
-		// Set the special properties of the joystick - deadzone 12%
-		DIpdw.diph.dwSize       = sizeof(DIPROPDWORD);
-		DIpdw.diph.dwHeaderSize = sizeof(DIPROPHEADER);
-		DIpdw.diph.dwHow        = DIPH_BYOFFSET;
-		DIpdw.dwData            = 128;
-
-		// Set X deadzone
-		DIpdw.diph.dwObj = DIJOFS_X;
-		if(FAILED(m_pDIDevice->SetProperty(DIPROP_DEADZONE, &DIpdw.diph)))
-		{
-			ErrorLog(KEM_ERROR60);
-			return FALSE;
-		}
-
-		// Set Y deadzone
-		DIpdw.diph.dwObj = DIJOFS_Y;
-		if(FAILED(m_pDIDevice->SetProperty(DIPROP_DEADZONE, &DIpdw.diph)))
-		{
-			ErrorLog(KEM_ERROR61);
-			return FALSE;
-		}
-	}
-
-	// Acquire the device for use
-	if(FAILED( hr = m_pDIDevice->Acquire()))
-	{
-		switch( hr )
-		{
-		case DIERR_INVALIDPARAM:
-			//return FALSE;
-			break;
-
-		case DIERR_NOTINITIALIZED:
-			//return FALSE;
-			break;
-
-		case DIERR_OTHERAPPHASPRIO:
-			//return FALSE;
-			break;
-		}
-	}
-
 
 	// Set the device type
 	m_Type = Type;
@@ -210,18 +72,7 @@ BOOL CKTDIDevice::Create( short Type, BOOL Windowed )
 }
 BOOL CKTDIDevice::Free()
 {
-#ifdef DLL_BUILD
-	m_Type = NONE;
-	Clear();
-	return TRUE;
-#endif
-
-	// Unacquire and release the object
-	if(m_pDIDevice != NULL)
-	{
-		m_pDIDevice->Unacquire();
-		SAFE_RELEASE(m_pDIDevice);
-	}
+	m_pJoystick.reset();
 
 	// Set to no device installed
 	m_Type = NONE;
@@ -236,8 +87,10 @@ BOOL CKTDIDevice::Clear()
 {
 	short i;
 
-	ZeroMemory( &m_State, 256 );
-	ZeroMemory( &m_ActionMap, GAMEACTION_END*sizeof(unsigned char) );
+	std::memset( m_State, 0, sizeof( m_State ) );
+	m_MouseState = DIMOUSESTATE{};
+	m_JoystickState = x2::dxut::JoystickReader::Neutral();
+	std::memset( m_ActionMap, 0, sizeof( m_ActionMap ) );
 
 	for( i = 0; i < 256; i++ )
 		m_Locks[i]  = FALSE;
@@ -253,34 +106,21 @@ BOOL CKTDIDevice::Clear()
 
 BOOL CKTDIDevice::ReleaseAllButtonsAndKeys()
 {
-	ZeroMemory( &m_State, 256 );
+	std::memset( m_State, 0, sizeof( m_State ) );
+	m_MouseState = DIMOUSESTATE{};
+	m_JoystickState = x2::dxut::JoystickReader::Neutral();	// centered POV, as the original set rgdwPOV[0]
 
 	for( short i = 0; i < 256; i++ )
 		m_Locks[i]  = FALSE;
 
 	m_bExtraEnter = false;
 
-	if( m_Type == JOYSTICK )
-		m_JoystickState->rgdwPOV[0] = static_cast< DWORD >( -1 );
-
 	return TRUE;
 }
 
 BOOL CKTDIDevice::Read( float fElapsedTime )
 {
-#ifdef DLL_BUILD
-	return TRUE;
-#endif // DLL_BUILD
-
-	HRESULT hr;
-	long BufferSizes[3] = { 256, sizeof(DIMOUSESTATE), sizeof(DIJOYSTATE) };
 	short i;
-
-	// Make sure to have a valid IDirectInputDevice8 object
-	if(m_pDIDevice == NULL)
-	{
-		return FALSE;
-	}
 
 	// Make sure device type if in range
 	if(m_Type < 1 || m_Type > 3)
@@ -288,26 +128,29 @@ BOOL CKTDIDevice::Read( float fElapsedTime )
 		return FALSE;
 	}
 
-	// Loop polling and reading until succeeded or unknown error
-	// Also take care of lost-focus problems
-	while(1)
+	// Foreground devices: without focus DirectInput could not acquire them and the read failed, keeping the last state.
+	x2::dxut::InputState& input = DXUTGetInputState();
+	if( !input.Focused() )
 	{
-		// Poll
-		m_pDIDevice->Poll();
+		return FALSE;
+	}
 
-		// Read in state
-		if(SUCCEEDED(hr = m_pDIDevice->GetDeviceState(BufferSizes[m_Type-1], (LPVOID)&m_State)))
-			break;
+	switch(m_Type)
+	{
+	case KEYBOARD:
+		std::memcpy( m_State, input.Keys(), sizeof( m_State ) );
+		break;
 
-		// Return on an unknown error
-		if(hr != DIERR_INPUTLOST && hr != DIERR_NOTACQUIRED)
-			return FALSE;
+	case MOUSE:
+		m_MouseState = input.ReadMouse();
+		break;
 
-		// Reacquire and try again
-		if(FAILED(m_pDIDevice->Acquire()))
+	case JOYSTICK:
+		if( !m_pJoystick->Read( m_JoystickState ) )
 		{
 			return FALSE;
 		}
+		break;
 	}
 
 	// Since only the mouse coordinates are relative, you'll
@@ -317,18 +160,16 @@ BOOL CKTDIDevice::Read( float fElapsedTime )
 		// If windowed usage, ask windows for coordinates
 		if( m_Windowed == TRUE )
 		{
-			POINT pt;
-			GetCursorPos( &pt );
-			ScreenToClient( m_hWnd, &pt );
+			POINT pt = input.Cursor();
 			m_XPos = pt.x;
 			m_YPos = pt.y;
-			m_ZPos = m_MouseState->lZ;	// mouse wheel
+			m_ZPos = m_MouseState.lZ;	// mouse wheel
 		}
 		else
 		{
-			m_XPos += m_MouseState->lX;
-			m_YPos += m_MouseState->lY;
-			m_ZPos  = m_MouseState->lZ;	// mouse wheel
+			m_XPos += m_MouseState.lX;
+			m_YPos += m_MouseState.lY;
+			m_ZPos  = m_MouseState.lZ;	// mouse wheel
 		}
 	}
 
@@ -356,7 +197,7 @@ BOOL CKTDIDevice::Read( float fElapsedTime )
 		case MOUSE:
 			for( i = 0; i < 4; i++ )
 			{
-				if(!(m_MouseState->rgbButtons[i]))
+				if(!(m_MouseState.rgbButtons[i]))
 					m_Locks[i] = FALSE;
 			}
 			break;
@@ -364,7 +205,7 @@ BOOL CKTDIDevice::Read( float fElapsedTime )
 		case JOYSTICK:
 			for( i = 0; i < 32; i++ )
 			{
-				if(!(m_JoystickState->rgbButtons[i]))
+				if(!(m_JoystickState.rgbButtons[i]))
 					m_Locks[i] = FALSE;
 			}
 			break;
@@ -373,20 +214,10 @@ BOOL CKTDIDevice::Read( float fElapsedTime )
 	// return a success
 	return TRUE;
 }
-BOOL CKTDIDevice::Acquire( BOOL Active )
+BOOL CKTDIDevice::Acquire( BOOL /*Active*/ )
 {
-#ifdef DLL_BUILD
-	return TRUE;
-#endif // DLL_BUILD
-	if(m_pDIDevice == NULL)
-		return FALSE;
-
-	if(Active == TRUE)
-		m_pDIDevice->Acquire();
-	else
-		m_pDIDevice->Unacquire();
-
-	return TRUE;
+	// SDL's state needs no acquisition; Read follows the window focus instead.
+	return m_Type != NONE ? TRUE : FALSE;
 }
 
 BOOL CKTDIDevice::GetLock( unsigned char Num )
@@ -403,7 +234,7 @@ long CKTDIDevice::GetXPos()
 {
 	// Update coordinates if a joystick
 	if(m_Type == JOYSTICK)
-		m_XPos = m_JoystickState->lX;
+		m_XPos = m_JoystickState.lX;
 
 	return m_XPos;
 }
@@ -416,7 +247,7 @@ long CKTDIDevice::GetYPos()
 {
 	// Update coordinates if a joystick
 	if(m_Type == JOYSTICK)
-		m_YPos = m_JoystickState->lY;
+		m_YPos = m_JoystickState.lY;
 
 	return m_YPos;
 }
@@ -429,7 +260,7 @@ long CKTDIDevice::GetZPos()
 {
 	// Update coordinates if a joystick
 	if(m_Type == JOYSTICK)
-		m_ZPos = m_JoystickState->lZ;
+		m_ZPos = m_JoystickState.lZ;
 
 	return m_ZPos;
 }
@@ -438,11 +269,11 @@ long CKTDIDevice::GetXDelta()
 	switch(m_Type)
 	{
 	case MOUSE:
-		return m_MouseState->lX;
+		return m_MouseState.lX;
 		//return GetMouseDeltaPosition().x;
 
 	case JOYSTICK:
-		return m_JoystickState->lX - m_XPos;
+		return m_JoystickState.lX - m_XPos;
 
 	default:
 		return 0;
@@ -453,11 +284,11 @@ long CKTDIDevice::GetYDelta()
 	switch(m_Type)
 	{
 	case MOUSE:
-		return m_MouseState->lY;
+		return m_MouseState.lY;
 		//return GetMouseDeltaPosition().y;
 
 	case JOYSTICK:
-		return m_JoystickState->lY - m_YPos;
+		return m_JoystickState.lY - m_YPos;
 
 	default:
 		return 0;
@@ -469,7 +300,7 @@ DWORD CKTDIDevice::GetPOV()
 	if(m_Type != JOYSTICK)
 		return static_cast<DWORD>( -1 );
 
-	return m_JoystickState->rgdwPOV[0];
+	return m_JoystickState.rgdwPOV[0];
 }
 
 
@@ -594,59 +425,6 @@ void  CKTDIDevice::SetDoubleKeyReset( unsigned char Num )
 	m_DoubleKeyCheck[Num].fTimeOut			= 0.0f;
 }
 
-short CKTDIDevice::GetKeypress( long TimeOut )
-{
-#ifdef DLL_BUILD
-	return 0;
-#endif // DLL_BUILD
-
-	static HKL KeyboardLayout = GetKeyboardLayout(0);
-	unsigned char WinKeyStates[256], DIKeyStates[256];
-	unsigned short i, ScanCode, VirtualKey, Keys, Num;
-	unsigned long EndTime;
-
-	// Make sure it's a keyboard and its initialized
-	if((m_Type != KEYBOARD) || (m_pDIDevice == NULL))
-		return 0;
-
-	// Calculate end time for TimeOut
-	EndTime = GetTickCount() + TimeOut;
-
-	// Loop until timeout or key pressed
-	while(1)
-	{
-		// Get Windows keyboard state
-		GetKeyboardState( WinKeyStates );
-
-		// Get DirectInput keyboard state
-		m_pDIDevice->GetDeviceState(256, DIKeyStates);
-
-		// Scan through looking for key presses
-		for( i = 0; i < 256; i++)
-		{
-			// If one found, try to convert it
-			if(DIKeyStates[i] & 0x80)
-			{
-				// Get virtual key code
-				if((VirtualKey = MapVirtualKeyEx((ScanCode = i), 1, KeyboardLayout)))
-				{
-					// Get ASCII code of key and return it
-					Num = ToAsciiEx(VirtualKey, ScanCode, WinKeyStates, &Keys, 0, KeyboardLayout);
-					if(Num)
-						return Keys;
-				}
-			}
-		}
-
-		// Check for TimeOut
-		if(TimeOut)
-		{
-			if(GetTickCount() > EndTime)
-				return 0;
-		}
-	}
-	return 0;
-}
 long  CKTDIDevice::GetNumKeyPresses()
 {
 	long i, Num = 0;
@@ -678,10 +456,10 @@ BOOL  CKTDIDevice::GetButtonState( unsigned char Num )
 	char State = 0;
 
 	if(m_Type == MOUSE)
-		State = m_MouseState->rgbButtons[Num];
+		State = m_MouseState.rgbButtons[Num];
 
 	if(m_Type == JOYSTICK)
-		State = m_JoystickState->rgbButtons[Num];
+		State = m_JoystickState.rgbButtons[Num];
 
 	// Check if key/button is pressed
 	if(State & 0x80 && m_Locks[Num] == FALSE)
@@ -696,13 +474,13 @@ BOOL  CKTDIDevice::SetButtonState( unsigned char Num, BOOL State )
 {
 	if(m_Type == MOUSE)
 	{
-		m_MouseState->rgbButtons[Num] = State;
+		m_MouseState.rgbButtons[Num] = State;
 		return TRUE;
 	}
 
 	if(m_Type == JOYSTICK)
 	{
-		m_JoystickState->rgbButtons[Num] = State;
+		m_JoystickState.rgbButtons[Num] = State;
 		return TRUE;
 	}
 
@@ -713,10 +491,10 @@ BOOL  CKTDIDevice::GetPureButtonState( unsigned char Num )
 	char State = 0;
 
 	if(m_Type == MOUSE)
-		State = m_MouseState->rgbButtons[Num];
+		State = m_MouseState.rgbButtons[Num];
 
 	if(m_Type == JOYSTICK)
-		State = m_JoystickState->rgbButtons[Num];
+		State = m_JoystickState.rgbButtons[Num];
 
 	if(State & 0x80)
 	{
@@ -733,7 +511,7 @@ long  CKTDIDevice::GetNumButtonPresses()
 	{
 		for(i=0;i<4;i++)
 		{
-			if(m_MouseState->rgbButtons[i] & 0x80 && m_Locks[i] == FALSE)
+			if(m_MouseState.rgbButtons[i] & 0x80 && m_Locks[i] == FALSE)
 				Num++;
 		}
 	}
@@ -743,7 +521,7 @@ long  CKTDIDevice::GetNumButtonPresses()
 		{
 			for(i=0;i<32;i++)
 			{
-				if(m_JoystickState->rgbButtons[i] & 0x80 && m_Locks[i] == FALSE)
+				if(m_JoystickState.rgbButtons[i] & 0x80 && m_Locks[i] == FALSE)
 					Num++;
 			}
 		}
@@ -759,7 +537,7 @@ long  CKTDIDevice::GetNumPureButtonPresses()
 	{
 		for(i=0;i<4;i++)
 		{
-			if(m_MouseState->rgbButtons[i] & 0x80)
+			if(m_MouseState.rgbButtons[i] & 0x80)
 				Num++;
 		}
 	}
@@ -769,7 +547,7 @@ long  CKTDIDevice::GetNumPureButtonPresses()
 		{
 			for(i=0;i<32;i++)
 			{
-				if(m_JoystickState->rgbButtons[i] & 0x80)
+				if(m_JoystickState.rgbButtons[i] & 0x80)
 					Num++;
 			}
 		}
@@ -778,27 +556,9 @@ long  CKTDIDevice::GetNumPureButtonPresses()
 	return Num;
 }
 
-BOOL FAR PASCAL CKTDIDevice::EnumJoysticks( LPCDIDEVICEINSTANCE pdInst, LPVOID pvRef )
-{
-	CKTDIDevice *Input;
-
-	// Stop enumeration if no parent cInputDevice pointer
-	if((Input = (CKTDIDevice*)pvRef) == NULL)
-		return DIENUM_STOP;
-
-	// Try to create a joystick interface
-	if(FAILED(Input->m_pDI->CreateDevice(pdInst->guidInstance, &Input->m_pDIDevice, NULL)))
-		return DIENUM_CONTINUE;
-
-	// All done - stop enumeration
-	return DIENUM_STOP;
-}
-
 void CKTDIDevice::UpdateMouseDeltaPosition()
 {
-	POINT pt;
-	GetCursorPos( &pt );
-	ScreenToClient( g_pKTDXApp->GetHWND(), &pt );
+	POINT pt = DXUTGetInputState().Cursor();
 
 	m_kMouseDeltaPos.x = pt.x - m_kMousePrevPos.x;
 	m_kMouseDeltaPos.y = pt.y - m_kMousePrevPos.y;
@@ -811,7 +571,7 @@ POINT CKTDIDevice::GetMouseDeltaPosition()
 	return m_kMouseDeltaPos;
 }
 
-bool CKTDIDevice::GetActionState( int Action, long* lpData )
+bool CKTDIDevice::GetActionState( int Action, long* /*lpData*/ )
 {
 	if( m_Type == JOYSTICK )
 	{
@@ -860,36 +620,24 @@ bool CKTDIDevice::GetActionState( int Action, long* lpData )
 		}
 	}
 
+	if( m_Type == JOYSTICK )
+		return JoystickByte( m_ActionMap[Action] ) ? true : false;
+
 	return (m_State[m_ActionMap[Action]] ? true : false);
 }
 
-#ifdef KEY_MAPPING_UPGRADE
-void CKTDIDevice::SetAction( int Action, unsigned char Key, bool isDefault )
+// A byte of the joystick state at a DIJOFS_* offset, which is how the joystick action map refers to buttons (0 past
+// the end of DIJOYSTATE). The original read these bytes from m_State, which held the DIJOYSTATE.
+char CKTDIDevice::JoystickByte( unsigned char Offset ) const
 {
-	if(!isDefault)
-	{
-		for(int i = 0; i < GAMEACTION_END; i++)
-		{
-			if(i == Action)
-				continue;
-			if(m_ActionMap[i] == Key)
-			{
-				switch(m_Type)
-				{
-				case JOYSTICK:
-					m_ActionMap[i] = DIK_UP;
-					break;
-				case KEYBOARD :
-					m_ActionMap[i] = 0;
-					break;
-				}
-			}
-		}
-	}
-	m_ActionMap[Action] = Key;
-	return;
+	if( Offset >= sizeof( DIJOYSTATE ) )
+		return 0;
+
+	char Byte;
+	std::memcpy( &Byte, reinterpret_cast<const unsigned char*>( &m_JoystickState ) + Offset, 1 );
+	return Byte;
 }
-#else
+
 void CKTDIDevice::SetAction( int Action, unsigned char Key )
 {
 	for(int i = 0; i < GAMEACTION_END; ++i)
@@ -912,7 +660,6 @@ void CKTDIDevice::SetAction( int Action, unsigned char Key )
 	m_ActionMap[Action] = Key;
 	return;
 }
-#endif // KEY_MAPPING_UPGRADE
 
 unsigned char CKTDIDevice::GetActionKey( int Action )
 {
@@ -936,7 +683,7 @@ bool CKTDIDevice::ListenDeviceInput( unsigned char& ucoutUserInput )
 		} return false;
 	case JOYSTICK:
 		{
-			for( int iButtonIndex = 0; iButtonIndex < 32; ++iButtonIndex )		// 32:DIJOYSTATE의 버튼 수
+			for( int iButtonIndex = 0; iButtonIndex < 32; ++iButtonIndex )		// 32: buttons of DIJOYSTATE
 			{
 				if( GetButtonState( iButtonIndex ) == TRUE )
 				{
@@ -990,8 +737,8 @@ void CKTDIDevice::GetActionKeys( OUT std::map<short, short>& mapMappingInfo )
 }
 void CKTDIDevice::SetActionKeys( IN const std::map<short, short>& mapMappingInfo )
 {
-	for each( const std::pair< short, short >& pAction in mapMappingInfo )
+	for( const std::pair< const short, short >& pAction : mapMappingInfo )
 	{
-		m_ActionMap[ pAction.first ] = pAction.second;
+		m_ActionMap[ pAction.first ] = static_cast<unsigned char>( pAction.second );
 	}
 }

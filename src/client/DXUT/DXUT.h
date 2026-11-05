@@ -57,8 +57,13 @@ int       DXUTGetExitCode();
 bool      DXUTIsKeyDown(BYTE vKey);         // a virtual-key code, as last seen in WM_KEYDOWN/WM_KEYUP
 bool      DXUTIsMouseButtonDown(BYTE vButton);  // VK_LBUTTON, VK_RBUTTON, VK_MBUTTON, VK_XBUTTON1, VK_XBUTTON2
 
-// Port additions: the SDL window behind DXUTGetHWND (null before DXUTCreateWindow).
+// Port additions: the SDL window behind DXUTGetHWND (null before DXUTCreateWindow), and the keyboard and mouse state
+// the main loop keeps for KTDXLIB's DirectInput layer (SdlInput.h, docs/porting/client-input.md).
 SDL_Window* DXUTGetSDLWindow();
+namespace x2::dxut {
+class InputState;
+}
+x2::dxut::InputState& DXUTGetInputState();
 
 // Timer (DXUTmisc.h). Seconds, from a monotonic clock.
 class CDXUTTimer {

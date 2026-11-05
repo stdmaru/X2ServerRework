@@ -1,6 +1,8 @@
 #pragma once
 
+#include "x2/platform/win32.h"
 
+#include <list>
 
 class	CKTDXDevice;
 struct	CKTDXDeviceData;
@@ -17,7 +19,7 @@ public:
 	bool	XMeshReady( const WCHAR* pFileName );
 	bool	SoundReady( const WCHAR* pFileName );
 
-	// 2 는 CKTDXDeviceManager::PRIORITY_LOW를 나타냄
+	// 2 is CKTDXDeviceManager::PRIORITY_LOW
 	bool	TextureReadyInBackground( const WCHAR* pFileName, int iPriority = 2 );
 	bool	XSkinMeshReadyInBackground( const WCHAR* pFileName, int iPriority = 2 );
 	bool	XMeshReadyInBackground( const WCHAR* pFileName, int iPriority = 2 );
