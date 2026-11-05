@@ -38,7 +38,9 @@ typedef const RECT* LPCRECT;
 #define HIBYTE(w)           (static_cast<BYTE>((static_cast<DWORD_PTR>(w) >> 8) & 0xff))
 #define LOWORD(l)           (static_cast<WORD>(static_cast<DWORD_PTR>(l) & 0xffff))
 #define HIWORD(l)           (static_cast<WORD>((static_cast<DWORD_PTR>(l) >> 16) & 0xffff))
+#ifndef MAKEWORD  // net.h has it too (Winsock versions)
 #define MAKEWORD(a, b)      (static_cast<WORD>((static_cast<DWORD_PTR>(a) & 0xff) | ((static_cast<DWORD_PTR>(b) & 0xff) << 8)))
+#endif
 #define MAKELONG(a, b)      (static_cast<LONG>(static_cast<DWORD>((static_cast<DWORD_PTR>(a) & 0xffff) | ((static_cast<DWORD_PTR>(b) & 0xffff) << 16))))
 #define MAKEWPARAM(l, h)    (static_cast<WPARAM>(static_cast<DWORD>(MAKELONG(l, h))))
 #define MAKELPARAM(l, h)    (static_cast<LPARAM>(static_cast<DWORD>(MAKELONG(l, h))))
