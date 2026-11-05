@@ -13,7 +13,7 @@ unchanged client_data packs back into every original `.kom` **byte for byte**. T
 | `x2_assets` | its command line |
 
 ```bash
-x2_assets import _client/data <client_data> --layout=tools/assets/layout.txt   # -j<N>: threads (default: all)
+x2_assets import _client/data <client_data> --layout=tools/assets/layout.txt   # -j<N>: threads (default: all); --no-lua
 x2_assets status <client_data>                       # changed, missing and new files
 x2_assets pack <client_data> <output folder>         # every .kom of the manifest
 x2_assets layout _client/data --layout=tools/assets/layout.txt   # folder counts only, nothing written
@@ -29,22 +29,44 @@ client_data/
   .kom/manifest.tsv          what packs the folder back (below)
   .kom/headers/<x>.kom.hdr   each archive's original fixed + XML header (~13 MB in all)
   .kom/blobs/<name>          original stored blobs that re-encoding does not reproduce (11.5%, 763 MB)
+  .kom/originals/<name>      the bytecode of decompiled scripts and the original Item.kim (below)
   ui/ characters/ items/ ... the files, decoded, named as in the archives
 ```
 
 - **Files are found by name, never by path**: pack indexes client_data recursively (skipping `.kom/`) by file name,
   ASCII case-insensitive, so files and whole folders can be moved or renamed freely. A name in two folders is an error.
-- Files are the entries **decoded** (algorithms 0, 2 and 3). Lua stays **KOG LuaJIT bytecode** for now (user,
-  2026-11-05): readable Lua (decompile/compile) and `.kim` belong to the layer that manages that data, a later step;
-  until then `tools/kom/kom.py` / `kim.py` decompile ([Server package](runtime.md#toolskom)). Entries of algorithms
-  `x2::kom` does not decode (1; none in the client) are written as their stored blob.
+- Files are the entries **decoded** (algorithms 0, 2 and 3), with the Lua made readable ([below](#lua)). Entries of
+  algorithms `x2::kom` does not decode (1; none in the client) are written as their stored blob.
 - The manifest (`x2/assets/manifest.h` has the exact format) is a tab-separated text file: one `archive` record per
   `.kom` in load order (name, entry count) and one `file` record per entry: name, archive, position, algorithm, decoded
-  and stored sizes, original checksum, `FileTime`, **encoding** and the SHA-256 of the file's content. Encodings:
+  and stored sizes, original checksum, `FileTime`, **encoding**, **form** and the SHA-256 of the file's content
+  (manifest version 2; a client_data of version 1 must be imported again). Encodings:
   - `zlib`: encoding the content with the entry's algorithm at **zlib level 6** gives the original blob;
   - `blob`: it does not (another compressor, [Writing](../porting/kom.md#writing)); the original is kept in
     `.kom/blobs/` and used while the content's SHA-256 still matches;
   - `stored`: the file is the stored blob itself.
+
+  Forms: `raw` (the file is the entry), `lua` (the file is the decompiled source of a bytecode entry), `kim` (the entry
+  is `Item.kim`, held as `Item.lua` + `SetItem.lua`; its SHA-256 is that of the two scripts' hex hashes concatenated).
+
+## Lua
+
+<a id="lua"></a>Import makes the client's Lua readable with [`x2::lua`](../porting/lua.md) (`--no-lua` keeps it as it is):
+
+- Every `.lua` entry that is KOG bytecode is **decompiled** to UTF-8 source with BOM, form `lua`, if LuaJIT reads the
+  output back; the bytecode goes to `.kom/originals/`. A script that does not decompile stays bytecode (form `raw`) and
+  import names it with the reason. All 4,553 of the client's do (2026-11-05); 9 `.lua` entries were source already.
+- `Item.kim` becomes **`Item.lua` + `SetItem.lua`** in its folder (form `kim`), with the enum names of `Enum.lua` when
+  that one is source; the original goes to `.kom/originals/`. If an archive already has an entry of either name, it
+  stays `Item.kim`.
+- Pack writes an **unchanged** file's original from `.kom/originals/`, so an unchanged client_data still packs back byte
+  for byte. An **edited script** is packed as **UTF-8 Lua source with BOM** (user, 2026-11-05; a BOM is added if
+  missing), after LuaJIT checks its syntax: a script that does not load stops the pack. Bytecode put back into
+  client_data is packed as it is. Edited `Item.lua`/`SetItem.lua` are **compiled into a new `Item.kim`**, with the
+  warnings of KOG's tool printed; a missing one makes `Item.kim` missing.
+- Source in the archives is what the **ported client** loads (T21: upstream LuaJIT 2.1). The original `x2.exe`'s LuaJIT
+  has no parser, so it cannot load edited scripts; for it, `tools/kom/kom.py pack` recompiles with KOG's LuaJIT
+  ([Server package](runtime.md#toolskom)).
 
 ## Packing
 
@@ -94,9 +116,12 @@ blobs, client_data 5.9 GB in all); pack 52 s, all 173 archives identical to the 
 `x2_assets_tests`, headless, on archives the tests build: glob and rule parsing, manifest round trip and malformed
 manifests, import of both header layouts with every encoding (`zlib`, a blob compressed at another level, an opaque
 entry, a non-ASCII name), byte-identical pack, moved files, edited/missing/new files, and the refusals (non-empty
-destination, a name in two archives or two folders, an edited opaque entry).
+destination, a name in two archives or two folders, an edited opaque entry). Lua: a bytecode script decompiled, a
+truncated one kept, an Item.kim converted with Enum.lua's names, an unchanged pack byte for byte, edited scripts packed
+as source and Item.kim compiled again, scripts that do not load refused, and `--no-lua`.
 
 **Opt-in**: `X2_ASSETS_CLIENT_DATA=<client data folder> x2_assets_tests -tc="*client*"` imports with
-`tools/assets/layout.txt`, checks the status is clean, packs and compares every archive byte for byte. It needs about
-6 GB free for `_client/data` in `X2_ASSETS_WORK_DIR` or the system temporary folder. 2026-11-05, `linux-debug`: 173 of 173
-archives identical, 6 min 22 s.
+`tools/assets/layout.txt`, checks that every script decompiled and Item.kim was converted, that the status is clean, packs and compares every archive byte for byte. It needs about
+6 GB free for `_client/data` in `X2_ASSETS_WORK_DIR` or the system temporary folder. 2026-11-05, `linux-debug`, with
+readable Lua: 4,553 scripts decompiled, none kept as bytecode, Item.kim converted, 173 of 173 archives identical,
+7 min 14 s (6 min 22 s without Lua).

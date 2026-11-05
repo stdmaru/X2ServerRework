@@ -1,5 +1,5 @@
 // x2_assets: the client's assets as an organized folder (decision T35, docs/tools/client-data.md).
-//   x2_assets import <client data folder> <client_data> [--layout=<rules>] [-j<N>]
+//   x2_assets import <client data folder> <client_data> [--layout=<rules>] [--no-lua] [-j<N>]
 //   x2_assets pack <client_data> <output folder> [-j<N>]
 //   x2_assets status <client_data> [-j<N>]
 //   x2_assets layout <client data folder> --layout=<rules> [--unsorted=<count>]
@@ -19,13 +19,14 @@ namespace {
 
 int Usage()
 {
-    std::fputs("usage: x2_assets import <client data folder> <client_data> [--layout=<rules>] [-j<N>]\n"
+    std::fputs("usage: x2_assets import <client data folder> <client_data> [--layout=<rules>] [--no-lua] [-j<N>]\n"
                "       x2_assets pack <client_data> <output folder> [-j<N>]\n"
                "       x2_assets status <client_data> [-j<N>]\n"
                "       x2_assets layout <client data folder> --layout=<rules> [--unsorted=<count>]\n"
                "import extracts the .kom of a client's data folder into client_data, organized by the layout rules\n"
                "(tools/assets/layout.txt), with a manifest; pack writes them back, byte for byte when nothing\n"
-               "changed; status lists what changed; layout shows where import would put the files.\n",
+               "changed; status lists what changed; layout shows where import would put the files. Import\n"
+               "decompiles Lua bytecode and turns Item.kim into Item.lua + SetItem.lua unless --no-lua.\n",
                stderr);
     return 2;
 }
@@ -48,6 +49,7 @@ struct Args
     std::string layout;
     unsigned jobs = 0;
     std::size_t unsorted = 20;
+    bool noLua = false;
     bool ok = true;
 };
 
@@ -63,6 +65,8 @@ Args Parse(const std::vector<std::string>& argv)
                 args.layout = a.substr(9);
             else if (a.rfind("--unsorted=", 0) == 0)
                 args.unsorted = std::stoul(a.substr(11));
+            else if (a == "--no-lua")
+                args.noLua = true;
             else if (a.rfind("-j", 0) == 0 && a.size() > 2)
                 args.jobs = static_cast<unsigned>(std::stoul(a.substr(2)));
             else if (!a.empty() && a.front() == '-')
@@ -91,6 +95,7 @@ int RunImport(const Args& args)
     options.source = PathFromUtf8(args.positional[0]);
     options.destination = PathFromUtf8(args.positional[1]);
     options.jobs = args.jobs;
+    options.readableLua = !args.noLua;
     options.log = Print;
     std::string error;
     if (!args.layout.empty() && !options.layout.Load(PathFromUtf8(args.layout), error))
@@ -99,9 +104,10 @@ int RunImport(const Args& args)
     ImportStats stats;
     if (!Import(options, stats, error))
         return Fail(error);
-    std::printf("imported %zu archives, %zu files (%.1f MB), %zu original blobs kept, %zu stored as is, in %.0f s\n",
+    std::printf("imported %zu archives, %zu files (%.1f MB), %zu original blobs kept, %zu stored as is; Lua: %zu "
+                "decompiled, %zu kept as bytecode, %zu .kim converted; in %.0f s\n",
                 stats.archives, stats.files, static_cast<double>(stats.bytes) / 1e6, stats.keptBlobs, stats.stored,
-                Seconds(start));
+                stats.luaSource, stats.luaKept, stats.kim, Seconds(start));
     return 0;
 }
 
@@ -119,10 +125,10 @@ int RunPack(const Args& args)
     std::string error;
     if (!Pack(options, stats, error))
         return Fail(error);
-    std::printf("packed %zu archives (%zu with their original header), %zu files: %zu changed, %zu missing, "
-                "%zu new not packed, %zu not reproduced, in %.0f s\n",
-                stats.archives, stats.identicalHeaders, stats.files, stats.changed, stats.missing, stats.added,
-                stats.notReproduced, Seconds(start));
+    std::printf("packed %zu archives (%zu with their original header), %zu files: %zu changed (%zu Lua as source, "
+                "%zu .kim compiled), %zu missing, %zu new not packed, %zu not reproduced, in %.0f s\n",
+                stats.archives, stats.identicalHeaders, stats.files, stats.changed, stats.luaSource, stats.kimCompiled,
+                stats.missing, stats.added, stats.notReproduced, Seconds(start));
     return 0;
 }
 

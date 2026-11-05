@@ -7,7 +7,7 @@ add_library(x2_assets_core STATIC
     src/manifest.cpp)
 add_library(x2::assets ALIAS x2_assets_core)
 target_include_directories(x2_assets_core PUBLIC include)
-target_link_libraries(x2_assets_core PUBLIC x2::kom_write PRIVATE x2::kncsdk)
+target_link_libraries(x2_assets_core PUBLIC x2::kom_write PRIVATE x2::kncsdk x2::lua)
 
 add_executable(x2_assets src/main.cpp)
 target_link_libraries(x2_assets PRIVATE x2::assets x2::platform)

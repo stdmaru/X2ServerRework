@@ -12,6 +12,7 @@ Linux builds and tests are verified on x86_64 and arm64. ARM64 runtime validatio
 | `src/platform` | Linux (Clang, GCC) and Windows (clang-cl) build and tests pass | [Platform](platform.md) |
 | `src/kncsdk` | Linux (Clang, GCC) and Windows (clang-cl) build and tests pass; custom crypto (T27); protocol validation pending | [KNCSDK](kncsdk.md) |
 | `src/kom` | `.kom` archive library (T35): read, write, mount; Linux (Clang, GCC) and Windows (clang-cl), headless tests, all 173 client archives round-tripped (2026-11-05) | [`.kom` archives](kom.md) |
+| `src/lua` | Client Lua data: KOG bytecode decompiler and `Item.kim` ↔ item scripts, ported from `kom.py`/`kim.py` (identical output on the client's 4,553 scripts and `Item.kim`); Linux and Windows, headless tests (2026-11-05) | [Client Lua data](lua.md) |
 | `src/app` | SDL3 + ImGui foundation for the client and tools (T32): Linux (Clang, GCC) and Windows (clang-cl), headless tests (2026-11-04) | [App foundation](app.md) |
 | `src/kncsdk/ServerConsole`, `src/server/x2ctl` | Server terminal (T15) and control protocol (T30), Linux and Windows (2026-10-31) | [Server console](console.md) |
 | `src/server/Common` | Linux (Clang, GCC) and Windows (clang-cl) build without warnings, with `Socket/` (TCP and UDP) and `ODBC/`; packet, session, UDP, and database tests (real SQL Server, FreeTDS; Linux only) | [Server: Common](server-common.md); [ODBC database](server-common-db.md) |
