@@ -32,6 +32,12 @@ inline int _wcsnicmp(const wchar_t* a, const wchar_t* b, size_t n) { return ::wc
 
 typedef int errno_t;
 
+// count argument of strncpy_s/wcsncpy_s: copy what fits, return STRUNCATE
+#define _TRUNCATE (static_cast<size_t>(-1))
+#ifndef STRUNCATE
+#define STRUNCATE 80
+#endif
+
 #define ZeroMemory(dst, size) std::memset((dst), 0, (size))
 #define CopyMemory(dst, src, size) std::memcpy((dst), (src), (size))
 

@@ -41,6 +41,17 @@ TEST_CASE("MSVC CRT: array overloads, dates and fopen_s")
     CHECK(wcsncpy_s(buf, L"abcdef", 3) == 0);
     CHECK(std::wstring(buf) == L"abc");
 
+    // _TRUNCATE copies what fits; any other count that does not fit fails and empties the buffer
+    char small[4];
+    CHECK(strncpy_s(small, sizeof(small), "abcdef", _TRUNCATE) == STRUNCATE);
+    CHECK(std::string(small) == "abc");
+    CHECK(strncpy_s(small, sizeof(small), "ab", _TRUNCATE) == 0);
+    CHECK(std::string(small) == "ab");
+    CHECK(strncpy_s(small, sizeof(small), "abcdef", 5) != 0);
+    CHECK(small[0] == '\0');
+    CHECK(wcsncpy_s(buf, 3, L"abcdef", _TRUNCATE) == STRUNCATE);
+    CHECK(std::wstring(buf) == L"ab");
+
     wchar_t date[9], time[9];
     CHECK(_wstrdate_s(date) == 0);
     CHECK(_wstrtime_s(time) == 0);
