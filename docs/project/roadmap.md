@@ -190,7 +190,12 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
       (2026-11-05). See [Platform: D3DX math](../porting/platform.md#d3dx-math).
 - [ ] Audio: FMOD Ex / DirectSound → miniaudio/SDL3 audio (or current cross-platform FMOD Core).
 - [ ] Video (Bandi), embedded browser, CxImage → remove/replace (Steam and anti-cheat removed on 2026-11-05).
-- [ ] `.kom` (zlib + header "KOG GC TEAM MASSFILE V.0.3") — portable loader.
+- [ ] `.kom` archives (T35), one branch per step; see [`.kom` archives](../porting/kom.md):
+  - [ ] `build/kom-library`: `src/kom` (`x2::kom`): read, write, mount a folder, headless tests; survey of how the client
+        reads `.kom` and loose files.
+  - [ ] Import the client into `client_data` + manifest (organized by domain, byte-identical repack).
+  - [ ] Pack `client_data` for distribution (only changed archives are rebuilt).
+  - [ ] The client's `KGCMassFileManager` on `x2::kom`, with the dev-tools loose-file priority (`/data/data`).
 
 ## Phase 4 — Client: graphics
 
