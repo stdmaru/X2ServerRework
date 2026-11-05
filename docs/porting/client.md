@@ -10,7 +10,7 @@ Direct3D 9 dependencies: [Client — Windows / Direct3D 9 dependencies](../origi
 | Executable (`WinMain`) | `X2` | `src/client/X2` | 5 | [Client: X2](client-x2.md) |
 | Game | `X2Lib` | `src/client/X2Lib` | 552 | [Client: X2Lib](client-x2lib.md) |
 | Engine | `KTDXLIB` | `src/client/KTDXLIB` | 253 | [Client: KTDXLIB](client-ktdxlib.md) |
-| Network library | `X2ServerProtocol` | `src/client/X2ServerProtocol` | 10 (37 imported) | [Client: X2ServerProtocol](client-serverprotocol.md) |
+| Network library | `X2ServerProtocol` | `src/client/X2ServerProtocol` | 11 (10 of 37 imported, plus `EventNames.cpp`; 2026-11-05) | [Client: X2ServerProtocol](client-serverprotocol.md) |
 | Lua binding | `LuaCommon` (built by `luajitLib`) | `src/client/LuaCommon` | 7 | [Client: LuaCommon](client-luacommon.md) |
 | Application framework | DXUT (Microsoft, not imported) | `src/client/DXUT` | 4 (new) | [Client: DXUT](client-dxut.md) |
 

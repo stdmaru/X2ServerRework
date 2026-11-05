@@ -133,6 +133,9 @@ Since 2026-11-05 (`client/serverprotocol`) the event/actor model and the TCP lay
 [X2ServerProtocol](client-serverprotocol.md) links it instead of its own copy. Nothing in it may include a server-only
 header.
 
+- **Event names are per side.** `KEvent::ms_szEventID`, `GetIDStr()` and `IsValidEventID()` are not in the core's
+  `Event.cpp`: the servers define them in `Common/EventNames.cpp` (every event), the client in its own `EventNames.cpp`
+  (system and client events only), so the server-to-server event names (`EventID_Server.h`) do not ship with the game.
 - `KSession( bIsProxy, bClientSide = false )`: the client side keeps its own `KSADatabase` and uses the `*_Local` crypto
   calls, as the client's copy did (details on the client page). Servers, including their proxies to other servers, are
   unchanged.

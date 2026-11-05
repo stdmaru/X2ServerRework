@@ -215,6 +215,15 @@ TEST_CASE( "CX2ServerProtocol: channel server connection over loopback" )
     CHECK( !kProtocol.IsChUserProxyValid() );
 }
 
+TEST_CASE( "KEvent names on the client side: system and client events only" )
+{
+    CHECK( std::wstring( KEvent::GetIDStr( E_CONNECTION_LOST_NOT ) ) == L"E_CONNECTION_LOST_NOT" );
+    CHECK( std::wstring( KEvent::GetIDStr( ECH_VERIFY_ACCOUNT_REQ ) ) == L"ECH_VERIFY_ACCOUNT_REQ" );
+    // a server-to-server event is not named (src/client/X2ServerProtocol/EventNames.cpp)
+    CHECK( std::wstring( KEvent::GetIDStr( E_SERVER_EVENT_ID_BEGIN + 1 ) ) == L"EGS_CLIENT_EVENT_ID_END" );
+    CHECK( std::wstring( KEvent::GetIDStr( 0xFFFF ) ) == L"EGS_CLIENT_EVENT_ID_END" );
+}
+
 TEST_CASE( "CX2ServerProtocol: game server connection refused" )
 {
     CX2ServerProtocol kProtocol( SendGameMessage, GameWindow(), kServerMsgID, nullptr, 0 );

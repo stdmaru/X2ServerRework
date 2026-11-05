@@ -2,13 +2,9 @@
 #include <Serializer/SerSet.h>
 #include <Serializer/Serializer.h>
 
-#undef _ENUM
-#define _ENUM( id ) L ## #id,
-const wchar_t*  KEvent::ms_szEventID[] = {
-#   include "EventID_System.h"
-#   include "EventID_Client.h"
-#   include "EventID_Server.h"
-};
+// KEvent::ms_szEventID, GetIDStr() and IsValidEventID() are defined by each side (decision T34): the servers' in
+// EventNames.cpp (every event), the client's in its X2ServerProtocol/EventNames.cpp (system and client events
+// only, so the server-to-server event names do not ship with the game).
 
 KPerformerInfo::KPerformerInfo( void ) : m_dwPerformerID( 0 )
 {
@@ -124,15 +120,6 @@ SERIALIZE_DEFINE_GET( KEvent, obj, ks )
             ks.Get( obj.m_kbuff );
 }
 
-const wchar_t* KEvent::GetIDStr( const unsigned short usEventID )
-{
-    if( usEventID >= EVENT_EVENTID_SENTINEL )
-    {
-        return ms_szEventID[ EVENT_EVENTID_SENTINEL ];
-    }
-    return ms_szEventID[ usEventID ];
-}
-
 void KEvent::PushTrace( UidType nUid )
 {
     if( m_anTrace[0] == -1 )
@@ -148,22 +135,3 @@ void KEvent::PopTrace()
     else
         m_anTrace[0] = -1;
 }
-
-//{{ 2011. 06. 08	최육사	KEvent 출처 등록 기능
-bool KEvent::IsValidEventID() const
-{
-#undef _ENUM
-#define _ENUM( id ) case id:
-
-	if( m_usFromType == EFT_CLIENT )
-	{
-		switch( m_usEventID )
-		{
-#	include "EventID_Server.h"
-			return false;
-		}
-	}
-
-	return true;
-}
-//}}

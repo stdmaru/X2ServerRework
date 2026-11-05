@@ -40,6 +40,7 @@ target_link_libraries(x2_client_dxut PUBLIC x2::platform x2::app)
 # CX2ServerProtocol facade are here.
 add_library(x2_client_serverprotocol STATIC
     X2ServerProtocol/ActorProxy.cpp
+    X2ServerProtocol/EventNames.cpp
     X2ServerProtocol/TRUser.cpp
     X2ServerProtocol/UserProxy.cpp
     X2ServerProtocol/X2ServerProtocol.cpp)

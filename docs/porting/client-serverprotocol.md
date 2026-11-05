@@ -19,7 +19,7 @@ the original (2026-11-05):
 | `Socket/Overlapped.h` | `MAX_PACKET_SIZE` 64 KB (servers: 32 KB) | 64 KB for both (T34) |
 | `Socket/IOCP.*`, `SocketObject.*`, `IOThread.*` | No `PfID`, no statistics; `rand()` completion keys; the IOCP close reason not kept | the servers' |
 | `Performer.*`, `ThreadManager.*` | `ProcessEvent( KEvent* )` and no `GetPfID()`; no queue-size dump | the servers' API: `ProcessEvent( const KEventPtr& )`; `KUserProxy` is `PI_GS_PROXY` |
-| `Event.*` | Only `EventID_System.h` in the enum; names set by the game (`KEvent::SetEventID`); `MAX_UID_NUM` 100 | the servers' (all event IDs and names; 2,000). **Same bytes on the wire** (`KPerformerInfo`, two trace UIDs, event ID, buffer) |
+| `Event.*` | Only `EventID_System.h` in the enum; names set by the game (`KEvent::SetEventID`); `MAX_UID_NUM` 100 | the servers' (all event IDs). **Same bytes on the wire**. Names: `EventNames.cpp` here, system and client events only (the server-to-server names stay out of the game; `GetIDStr()` gives them all the last client name) (`KPerformerInfo`, two trace UIDs, event ID, buffer) |
 | `KncSend.h`, `SimObject.*`, `KncException.h`, `KncSmartPtr.h`, `CircularQueue.*`, `NetCommon.*` | Older or smaller copies | the servers' |
 | `Odbc.*` | Compiled by the original, used by nothing | deleted |
 
@@ -30,6 +30,7 @@ the original (2026-11-05):
 | `ActorProxy.*` | `KActorProxy`: a client-side proxy `KSession` that hands each received event to the game through `SEND_MSG_FUNC` (message = server message ID, `wParam` = event ID, `lParam` = a new `KSerBuffer*`) or queues it. Not the servers' `KActorProxy` of the same name |
 | `UserProxy.*` | `KUserProxy`: game, channel and collect servers; `E_CONNECTION_LOST_NOT` to the game unless the disconnection was intended; `E_CHECK_SEQUENCE_COUNT_NOT` to the game server from `OnAuthenticFailed` |
 | `TRUser.*` | `KTRUser`: TCP relay. `USHORT` length + serialized `KEvent`, **no encryption**; 30 s heartbeat (one byte, `E_HEART_BEAT`) |
+| `EventNames.cpp` (new) | The client's `KEvent` name table and `GetIDStr()`: system and client events only (T34) |
 | `X2ServerProtocol.*` | `CX2ServerProtocol`: connects (`ConnectedTo*`), sends (`Send*Packet`, `Send*ID`) and disconnects each proxy |
 | `X2ServerProtocolLib.h`, `StdAfx.h` | The header `X2Lib` includes: platform, KNCSDK, the shared core and the files above |
 
@@ -43,7 +44,7 @@ Inside `X2ServerProtocol` they were resolved by hand (all three on).
 |---|---|---|
 | `CX2ServerProtocol` | Starts one `KIOThread` (`SiKIocp()->Init( 1 )`) and stops it in the destructor, after the proxies | The proxies still wait on their own events (`Init( false )`), but the asynchronous I/O completes on an I/O thread (T20); Windows signaled the `OVERLAPPED` events itself |
 | `CX2ServerProtocol` | Proxies held in `std::atomic< std::shared_ptr >` (was `boost::atomic_load/store`); the accessors of the `#else` branch (`GetUserProxy`...) are gone | The flag was on; the free `std::atomic_load` functions are deprecated in C++20 |
-| `CX2ServerProtocol` | `ppEventIDStrList`/`eventIDEnd` are ignored | The shared `KEvent` knows every event name |
+| `CX2ServerProtocol` | `ppEventIDStrList`/`eventIDEnd` are ignored | `EventNames.cpp` names the system and client events |
 | `KActorProxy::SetHwnd` | `m_hWnd != NULL` instead of `::IsWindow()` | The handle is only a marker (the SDL window outside Windows, [Client: DXUT](client-dxut.md)); events go through the callback |
 | `KSession` (client side) | The failed-packet counter is per session | The original used one `static` counter for every session, without a lock |
 | Logging | The shared `KSession` logs as the servers' (`ⓢ` lines, max packet size, send-buffer-full history) | One class; filtered by the log level |
@@ -65,6 +66,7 @@ has the client's name):
   a 40 KB packet back (more than the original servers' buffer), `E_CONNECTION_LOST_NOT` when the server closes.
 - Refused game-server connection: the proxy is dropped and sends fail.
 - TCP relay: the frame the client sends (`USHORT` length + `KEvent`) and one received, read by hand.
+- Event names: system and client events are named, server events are not.
 
 Byte-exact packet contents are covered by the servers' tests ([Server: Common › Tests](server-common.md#tests-srcservercommontests-target-x2_server_common_tests)).
 Not tested yet: against the running ported servers (needs `X2Lib`).
