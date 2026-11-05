@@ -51,6 +51,9 @@ both platforms instead of using *named pipes* on Windows:
 `$XDG_RUNTIME_DIR/x2/<name>.sock` (or `/tmp/x2-<uid>/`, mode 0700) on Linux, `%TEMP%\x2\<name>.sock` on Windows. It speaks the same
 [protocol](#protocol) to any number of clients; all receive logs and status, while a command result goes only to its requester.
 
+On Windows, `%TEMP%` may name a folder that no longer exists (an RDP session's own `Temp\<n>` is deleted with the session that
+made it); `std::filesystem::temp_directory_path()` then throws, so the folder is taken from `GetTempPathW` as it is and created.
+
 - **Another folder** (2026-11-05, `tools/control-dir`): `X2_CONTROL_DIR` sets the folder as it is, for the servers and `x2ctl`;
   `x2ctl --dir=<folder>` overrides both. For servers in containers: bind-mount a host folder and point `X2_CONTROL_DIR` at it in
   the container (or set `XDG_RUNTIME_DIR` to its parent, as `docker/server/docker-compose.yml` does: the sockets are then in

@@ -177,6 +177,8 @@ terminal; copy it to `~/.local/share/applications/`. On Windows it is a GUI-subs
 - The event loop sleeps until input or a transport event (`Inbox::SetWake` → `WakeEventLoop`), at most 500 ms (100 ms while
   servers start or stop, for the stop timeouts), and draws a few frames after each event. ImGui's window state is saved in the
   user's preference folder (`SDL_GetPrefPath`).
+- An unhandled exception is written to `crash.txt` in that folder and shown in a message box before the process aborts
+  (`std::set_terminate`), instead of the C runtime's bare "abort() has been called".
 
 ## Tests
 

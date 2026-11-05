@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <atomic>
 #include <chrono>
+#include <cstdlib>
 #include <filesystem>
 #include <mutex>
 #include <string>
@@ -120,3 +121,26 @@ TEST_CASE("control socket: a folder of its own (x2ctl --dir, X2_CONTROL_DIR)")
     std::error_code ec;
     std::filesystem::remove_all(dir.parent_path(), ec);
 }
+
+#if defined(_WIN32)
+TEST_CASE("control socket: a %TEMP% folder that is gone (an old RDP session's) is created")
+{
+    const std::filesystem::path gone = std::filesystem::temp_directory_path() /
+        ("x2-gone-" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count() % 100000));
+    const auto saved = [](const char* name) {
+        const char* value = std::getenv(name);
+        return std::string(value ? value : "");
+    };
+    const std::string tmp = saved("TMP"), temp = saved("TEMP");
+    _putenv_s("TMP", gone.string().c_str());
+    _putenv_s("TEMP", gone.string().c_str());
+    std::string dir;
+    CHECK_NOTHROW(dir = ControlSocketDir());
+    _putenv_s("TMP", tmp.c_str());
+    _putenv_s("TEMP", temp.c_str());
+    CHECK(std::filesystem::path(dir) == gone / "x2");
+    CHECK(std::filesystem::is_directory(gone / "x2"));
+    std::error_code ec;
+    std::filesystem::remove_all(gone, ec);
+}
+#endif
