@@ -638,7 +638,6 @@ bool    KDYNAMIC_UNIT_USER_SYNC::Deserialize( const BYTE*& pbyBuffer, const BYTE
 
 void    KDYNAMIC_UNIT_NPC_SYNC::Serialize( BYTE*& pbyBuffer ) const
 {
-#ifdef  X2OPTIMIZE_NPC_NONHOST_SIMULATION
     CopyMemory( pbyBuffer, this, sizeof(KDYNAMIC_UNIT_NPC_SYNC) - sizeof(char) * 3 );
     pbyBuffer += sizeof(KDYNAMIC_UNIT_NPC_SYNC) - sizeof(char) * 3;
     if ( ExtractReactionState() == true )
@@ -651,16 +650,11 @@ void    KDYNAMIC_UNIT_NPC_SYNC::Serialize( BYTE*& pbyBuffer ) const
         *pbyBuffer = (BYTE) m_cTargetUnitIndex;
         pbyBuffer++;
     }
-#else
-    CopyMemory( pbyBuffer, this, sizeof(KDYNAMIC_UNIT_NPC_SYNC) );
-    pbyBuffer += sizeof(KDYNAMIC_UNIT_NPC_SYNC);
-#endif // X2OPTIMIZE_NPC_NONHOST_SIMULATION
 //#endif  X2OPTIMIZE_UDP_PACKET_NPC_INCREMENTAL
 }
 
 bool    KDYNAMIC_UNIT_NPC_SYNC::Deserialize( const BYTE*& pbyBuffer, const BYTE* pbyEnd )
 {
-#ifdef  X2OPTIMIZE_NPC_NONHOST_SIMULATION
 
     if ( pbyBuffer + sizeof(KDYNAMIC_UNIT_NPC_SYNC) - sizeof(char) * 3 > pbyEnd )
         return false;
@@ -686,19 +680,9 @@ bool    KDYNAMIC_UNIT_NPC_SYNC::Deserialize( const BYTE*& pbyBuffer, const BYTE*
         pbyBuffer++;
     }
     return true;
-#else
-
-    if ( pbyBuffer + sizeof(KDYNAMIC_UNIT_NPC_SYNC) > pbyEnd )
-        return false;
-    CopyMemory( this, pbyBuffer, sizeof(KDYNAMIC_UNIT_NPC_SYNC) );
-    pbyBuffer += sizeof(KDYNAMIC_UNIT_NPC_SYNC);
-    return true;
-
-#endif // X2OPTIMIZE_NPC_NONHOST_SIMULATION
 }
 
 
-#ifdef  X2OPTIMIZE_NPC_NONHOST_SIMULATION
 
 void    KDYNAMIC_UNIT_NPC_MINISYNC::Serialize( BYTE*& pbyBuffer ) const
 {
@@ -715,7 +699,6 @@ bool    KDYNAMIC_UNIT_NPC_MINISYNC::Deserialize( const BYTE*& pbyBuffer, const B
     return true;
 }
 
-#endif // X2OPTIMIZE_NPC_NONHOST_SIMULATION
 
 
 //#else   SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
