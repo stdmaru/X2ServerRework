@@ -195,7 +195,10 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
         mounting with a warning, `ReadOnlyFile` in `x2::platform`; headless tests, byte-for-byte cross-check with `kom.py`,
         and all 173 client archives decoded and round-tripped (2026-11-05); survey of how the original client reads `.kom`
         and loose files.
-  - [ ] Import the client into `client_data` + manifest (organized by domain, byte-identical repack).
+  - [x] `tools/kom-import`: `x2_assets` (`src/tools/AssetTool`) imports the client into `client_data` (layout rules in
+        `tools/assets/layout.txt`, 98.5% classified) + a name-keyed manifest, and packs it back byte for byte; KOG's packer
+        used zlib level 6; Lua stays bytecode for now (2026-11-05). See [client_data](../tools/client-data.md).
+  - [ ] Readable Lua in `client_data` (decompile/compile KOG bytecode, `Item.kim`), the layer that manages that data.
   - [ ] Pack `client_data` for distribution (only changed archives are rebuilt).
   - [ ] The client's `KGCMassFileManager` on `x2::kom`, with the dev-tools loose-file priority (`/data/data`).
 

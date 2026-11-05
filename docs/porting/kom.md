@@ -45,13 +45,19 @@ strict parser (`src/header.cpp`).
 ## Writing
 
 `ArchiveBuilder` (in `x2::kom_write`, so the client does not link it) collects entries copied verbatim from open archives
-(`From`, `AddCopy`) and new data (`Add` encodes with zlib level 9 as KOG's packer and `kom.py`; `AddStored` takes a blob already
-encoded), in order; a name added again replaces its entry in place. `Write`:
+(`From`, `AddCopy`) and new data (`Add` encodes with zlib level 9 as `kom.py`, or the level given to `SetLevel`; `AddStored`
+takes a blob already encoded), in order; a name added again replaces its entry in place. **KOG's packer used zlib level 6**
+(`kKogLevel`): with stock zlib 1.3.1, 90,103 of the client's 101,826 entries (88.5%) re-encode byte for byte at level 6. The
+other 11,723 (763 MB stored, mostly `.tga` in the equipment archives `data015`–`020`, `107`, `131`, `143`) have a standard
+zlib header but a stream that no zlib level, memLevel, window size or strategy reproduces, in zlib 1.3.1, 1.2.11 or 1.2.3,
+nor zlib-ng: another compressor wrote them (2026-11-05). `Write`:
 
 - writes `<destination>.tmp` and renames it over the destination, so a failure leaves the original untouched; blobs copied from
   archives are checked against their checksums while copying;
 - **byte-identical** output when nothing changed (every entry of one archive, in its order): the original fixed and XML headers
-  are copied as they were, whatever the packer that wrote them;
+  are copied as they were, whatever the packer that wrote them; so is a header given to `SetHeader` that still describes the
+  entries exactly (`Describes`: count, order, names, sizes, checksums, times, algorithms), which is how
+  [client_data](../tools/client-data.md) reproduces archives from re-encoded files;
 - otherwise generates KOG's layout (first row above), deterministically: new entries get `FileTime` = checksum unless given;
 - closes source archives whose file is the destination right before the rename (rewriting in place; reopen afterwards);
 - fails clearly ("is it open in another program, such as a running client?") when the destination cannot be replaced: on Windows
@@ -124,7 +130,8 @@ What the client step will replace (roadmap Phase 3), with the Win32 it uses:
 
 ## Next steps (roadmap Phase 3, one branch each)
 
-1. Import the client into `client_data` + a manifest that repacks to the original archives byte for byte.
+1. Import the client into `client_data` + a manifest that repacks to the original archives byte for byte: done,
+   [client_data](../tools/client-data.md).
 2. Pack `client_data` for distribution, rebuilding only the archives that changed.
 3. The client's `KGCMassFileManager` on `x2::kom`: mount `/data` in load order; with `X2_DEV_TOOLS`, index `/data/data` by name
    recursively and prefer it. Decide then what replaces `DeleteOtherFile` and the crash on a missing archive.
