@@ -213,8 +213,16 @@ std::string ControlSocketDir()
     }
     fs::path dir;
 #if defined(_WIN32)
-    dir = fs::temp_directory_path() / "x2";
+    // %TEMP% may name a folder that is gone: an RDP session's own Temp\<n> is deleted with the session that made it,
+    // and temp_directory_path() then throws. Use the path anyway and create it.
     std::error_code ec;
+    fs::path temp = fs::temp_directory_path(ec);
+    if (ec) {
+        wchar_t buffer[MAX_PATH + 1];
+        const DWORD length = ::GetTempPathW(MAX_PATH + 1, buffer);
+        temp = length > 0 && length <= MAX_PATH ? fs::path(buffer, buffer + length) : fs::current_path(ec);
+    }
+    dir = temp / "x2";
     fs::create_directories(dir, ec);
 #else
     const char* runtime = std::getenv("XDG_RUNTIME_DIR");

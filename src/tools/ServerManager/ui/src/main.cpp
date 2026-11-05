@@ -9,8 +9,12 @@
 #include <SDL3/SDL_main.h>   // WinMain on Windows, where the program has no console (GUI subsystem)
 #include <imgui.h>
 
+#include <cstdio>
+#include <cstdlib>
+#include <exception>
 #include <memory>
 #include <string>
+#include <typeinfo>
 #include <vector>
 
 namespace {
@@ -21,21 +25,45 @@ void Fatal(const std::string& message)
     SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "ServerManager", message.c_str(), nullptr);
 }
 
-// Window positions and the log splitter, per user.
-std::string IniFile()
+// The user's folder for ServerManager's own files (ImGui's window state, crash.txt).
+std::string PrefFile(const char* name)
 {
     char* dir = SDL_GetPrefPath("x2", "ServerManager");
     if (!dir)
         return {};
-    std::string path = std::string(dir) + "imgui.ini";
+    std::string path = std::string(dir) + name;
     SDL_free(dir);
     return path;
+}
+
+// Without a console (Windows GUI subsystem, a desktop launcher) an exception that escapes, on any thread, would only
+// show "abort() has been called": say which one, in a message box and in crash.txt.
+[[noreturn]] void OnTerminate()
+{
+    std::string text = "terminate called without an exception";
+    if (const std::exception_ptr current = std::current_exception()) {
+        try {
+            std::rethrow_exception(current);
+        } catch (const std::exception& e) {
+            text = std::string("unhandled exception ") + typeid(e).name() + ": " + e.what();
+        } catch (...) {
+            text = "unhandled exception of an unknown type";
+        }
+    }
+    const std::string file = PrefFile("crash.txt");
+    if (std::FILE* out = file.empty() ? nullptr : std::fopen(file.c_str(), "w")) {
+        std::fprintf(out, "%s\n", text.c_str());
+        std::fclose(out);
+    }
+    Fatal(text + (file.empty() ? std::string() : "\n\n(also in " + file + ")"));
+    std::abort();
 }
 
 }  // namespace
 
 int main(int argc, char* argv[])
 {
+    std::set_terminate(OnTerminate);
     std::string error;
     auto sdl = x2::app::Sdl::Init(error);
     if (!sdl) {
@@ -52,7 +80,7 @@ int main(int argc, char* argv[])
         return 1;
     }
     x2::app::ImGuiOptions guiOptions;
-    guiOptions.iniFile = IniFile();
+    guiOptions.iniFile = PrefFile("imgui.ini");
     auto gui = x2::app::ImGuiLayer::Create(*window, guiOptions, error);
     if (!gui) {
         Fatal(error);
