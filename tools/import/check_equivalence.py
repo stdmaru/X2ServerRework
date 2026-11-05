@@ -5,17 +5,16 @@ For every file, the original and the resolved text are fully preprocessed under 
 configuration (from the profile simulation) and must keep exactly the same code lines. Run for the service
 and the development configuration, each with two assignments of the macros the resolver does not know.
 
-Usage: tools/import/check_equivalence.py server [--limit N]
+Usage: tools/import/check_equivalence.py server|client [--limit N]
 """
 
 import argparse
 import sys
-import tomllib
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from x2import import condres, flagsim, pipeline, textio  # noqa: E402
+from x2import import condres, flagsim, pipeline, profile, textio  # noqa: E402
 
 # Macros that are flag-like for the comparison but managed by the resolver itself
 DEV = condres.DEV_SWITCH
@@ -36,14 +35,10 @@ def strip(lines: list[str], flags: condres.Flags) -> list[str]:
     return out
 
 
-def configs(prof: dict, flags: condres.Flags):
-    root = (pipeline.REFERENCE / prof["root"]).resolve()
-    entry = root / prof["entry"]
-    inc = [root / d for d in prof["include_dirs"]]
-    base = {d: "" for d in prof["defines"]}
+def configs(pr: profile.Profile, flags: condres.Flags, entries=None):
     read = lambda p: p.read_bytes()  # noqa: E731
-    svc = flagsim.simulate(entry, base, inc, read).defined
-    dev = flagsim.simulate(entry, {**base, **{d: "" for d in prof["dev_defines"]}}, inc, read).defined
+    svc = pr.simulate(dev=False, read=read, entries=entries).defined
+    dev = pr.simulate(dev=True, read=read, entries=entries).defined
 
     def table(sim: dict[str, str], dev_on: bool) -> dict[str, str]:
         t = dict(sim)
@@ -75,15 +70,22 @@ def main() -> int:
     ap.add_argument("--show", help="print the diff of this file (path relative to the profile root)")
     args = ap.parse_args()
 
-    prof = tomllib.loads((pipeline.TOOL / "flags" / f"{args.profile}.profile.toml").read_text())["profile"]
+    pr = profile.load(args.profile)
     flag_names = ["base", f"{args.profile}.generated", args.profile]
     flags = pipeline.load_flags([n for n in flag_names if (pipeline.TOOL / "flags" / f"{n}.toml").exists()])
-    root = (pipeline.REFERENCE / prof["root"]).resolve()
-    files = sorted({p for g in prof["code_globs"] for p in root.glob(g) if p.is_file()})
+    root = pr.root
+    files = pr.files()
     if args.limit:
         files = files[: args.limit]
 
-    tables = configs(prof, flags)
+    # each file is checked against the configuration chain its original project really read
+    tables_of = {}
+    default = configs(pr, flags)
+    for layer in pr.layers:
+        t = configs(pr, flags, layer.entries)
+        for p in pr.files(layer.code_globs):
+            tables_of[p] = (layer.name, t)
+    per_layer: dict[str, list[int]] = {}
     unknown_sets = {"unknown-undefined": {}, "unknown-defined": None}
 
     checked = differ = skipped = unbalanced = 0
@@ -97,6 +99,7 @@ def main() -> int:
             problems.append(f"unbalanced #if: {rel}")
             continue
         resolved = textio.normalize(res.text)
+        lname, tables = tables_of.get(p, ("default", default))
         ok = True
         for cfg, table in tables.items():
             for uname, extra in unknown_sets.items():
@@ -123,6 +126,11 @@ def main() -> int:
             if not ok:
                 break
         checked += ok
+        c = per_layer.setdefault(lname, [0, 0])
+        c[0] += 1
+        c[1] += ok
+    if pr.layers:
+        print("per layer: " + ", ".join(f"{n} {ok}/{tot}" for n, (tot, ok) in sorted(per_layer.items())))
     print(f"files: {len(files)}, equivalent: {checked}, different: {differ}, not evaluable: {skipped}, "
           f"unbalanced: {unbalanced}")
     for line in problems[:60]:
