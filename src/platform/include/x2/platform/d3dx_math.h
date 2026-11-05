@@ -1,7 +1,8 @@
 // Portable replacement for the D3DX 9 math library (d3dx9math.h), which the servers and the client use as
 // their vector/matrix library. Same names, same memory layout and same formulas as D3DX (row vectors, v * M,
-// left-handed helpers), so the original code compiles unchanged. Only the subset used so far: grow it as
-// modules are ported (the client will need much more).
+// left-handed helpers), so the original code compiles unchanged. Only the subset the servers and the client
+// call; the types carry D3DX's full set of members. The few d3d9types.h definitions D3DX math depends on
+// (D3DCOLORVALUE, D3DVIEWPORT9, D3DCOLOR_* macros, D3D_OK / D3DERR_INVALIDCALL) live here as well.
 #pragma once
 
 #include "x2/platform/types.h"
@@ -25,6 +26,34 @@ typedef DWORD D3DCOLOR;
 typedef DWORD D3DCOLOR;
 #define D3DCOLOR_DEFINED
 #endif
+
+#ifndef D3DCOLOR_ARGB
+#define D3DCOLOR_ARGB(a, r, g, b) \
+    ((D3DCOLOR)((((a) & 0xff) << 24) | (((r) & 0xff) << 16) | (((g) & 0xff) << 8) | ((b) & 0xff)))
+#define D3DCOLOR_RGBA(r, g, b, a) D3DCOLOR_ARGB(a, r, g, b)
+#define D3DCOLOR_XRGB(r, g, b)    D3DCOLOR_ARGB(0xff, r, g, b)
+#define D3DCOLOR_COLORVALUE(r, g, b, a) \
+    D3DCOLOR_RGBA((DWORD)((r) * 255.f), (DWORD)((g) * 255.f), (DWORD)((b) * 255.f), (DWORD)((a) * 255.f))
+#endif
+
+#ifndef D3D_OK
+#define D3D_OK              S_OK
+#define D3DERR_INVALIDCALL  static_cast<HRESULT>(0x8876086CL) // MAKE_D3DHRESULT(2156)
+#endif
+
+// __declspec(align(16)) in D3DX
+#define D3DX_ALIGN16 alignas(16)
+
+struct D3DCOLORVALUE
+{
+    float r, g, b, a;
+};
+
+struct D3DVIEWPORT9
+{
+    DWORD X, Y, Width, Height;
+    float MinZ, MaxZ;
+};
 
 // MSVC accepts `&D3DXVECTOR3(...)` (address of a temporary) as an extension, and the original passes such
 // temporaries to D3DX functions. The rvalue-only operator& below gives the same result (the temporary lives
@@ -197,8 +226,15 @@ struct D3DXCOLOR
     D3DXCOLOR() = default;
     D3DXCOLOR(float fr, float fg, float fb, float fa) : r(fr), g(fg), b(fb), a(fa) {}
     D3DXCOLOR(DWORD argb)
-        : r(((argb >> 16) & 0xFF) / 255.0f), g(((argb >> 8) & 0xFF) / 255.0f),
-          b((argb & 0xFF) / 255.0f), a(((argb >> 24) & 0xFF) / 255.0f) {}
+    {
+        const float f = 1.0f / 255.0f; // D3DX multiplies by 1/255 (not the same rounding as dividing)
+        r = f * static_cast<float>(static_cast<unsigned char>(argb >> 16));
+        g = f * static_cast<float>(static_cast<unsigned char>(argb >> 8));
+        b = f * static_cast<float>(static_cast<unsigned char>(argb));
+        a = f * static_cast<float>(static_cast<unsigned char>(argb >> 24));
+    }
+    explicit D3DXCOLOR(const float* p) : r(p[0]), g(p[1]), b(p[2]), a(p[3]) {}
+    D3DXCOLOR(const D3DCOLORVALUE& c) : r(c.r), g(c.g), b(c.b), a(c.a) {}
 
     // same clamping and rounding as D3DX
     operator DWORD() const
@@ -208,13 +244,23 @@ struct D3DXCOLOR
     }
     operator float*() { return &r; }
     operator const float*() const { return &r; }
+    // D3DXCOLOR and D3DCOLORVALUE share their layout; D3DX converts by reinterpreting
+    operator D3DCOLORVALUE*() { return reinterpret_cast<D3DCOLORVALUE*>(&r); }
+    operator const D3DCOLORVALUE*() const { return reinterpret_cast<const D3DCOLORVALUE*>(&r); }
+    operator D3DCOLORVALUE&() { return *reinterpret_cast<D3DCOLORVALUE*>(&r); }
+    operator const D3DCOLORVALUE&() const { return *reinterpret_cast<const D3DCOLORVALUE*>(&r); }
 
     D3DXCOLOR& operator+=(const D3DXCOLOR& c) { r += c.r; g += c.g; b += c.b; a += c.a; return *this; }
     D3DXCOLOR& operator-=(const D3DXCOLOR& c) { r -= c.r; g -= c.g; b -= c.b; a -= c.a; return *this; }
     D3DXCOLOR& operator*=(float f) { r *= f; g *= f; b *= f; a *= f; return *this; }
+    D3DXCOLOR& operator/=(float f) { const float inv = 1.0f / f; return *this *= inv; }
+
+    D3DXCOLOR operator+() const { return *this; }
+    D3DXCOLOR operator-() const { return D3DXCOLOR(-r, -g, -b, -a); }
     D3DXCOLOR operator+(const D3DXCOLOR& c) const { return D3DXCOLOR(r + c.r, g + c.g, b + c.b, a + c.a); }
     D3DXCOLOR operator-(const D3DXCOLOR& c) const { return D3DXCOLOR(r - c.r, g - c.g, b - c.b, a - c.a); }
     D3DXCOLOR operator*(float f) const { return D3DXCOLOR(r * f, g * f, b * f, a * f); }
+    D3DXCOLOR operator/(float f) const { const float inv = 1.0f / f; return *this * inv; }
     friend D3DXCOLOR operator*(float f, const D3DXCOLOR& c) { return c * f; }
     bool operator==(const D3DXCOLOR& c) const { return r == c.r && g == c.g && b == c.b && a == c.a; }
     bool operator!=(const D3DXCOLOR& c) const { return !(*this == c); }
@@ -222,8 +268,83 @@ struct D3DXCOLOR
     X2_D3DX_TEMP_ADDRESS(D3DXCOLOR)
 };
 
+struct D3DXQUATERNION
+{
+    float x, y, z, w;
+
+    D3DXQUATERNION() = default;
+    D3DXQUATERNION(float fx, float fy, float fz, float fw) : x(fx), y(fy), z(fz), w(fw) {}
+    explicit D3DXQUATERNION(const float* p) : x(p[0]), y(p[1]), z(p[2]), w(p[3]) {}
+
+    operator float*() { return &x; }
+    operator const float*() const { return &x; }
+
+    D3DXQUATERNION& operator+=(const D3DXQUATERNION& q) { x += q.x; y += q.y; z += q.z; w += q.w; return *this; }
+    D3DXQUATERNION& operator-=(const D3DXQUATERNION& q) { x -= q.x; y -= q.y; z -= q.z; w -= q.w; return *this; }
+    D3DXQUATERNION& operator*=(const D3DXQUATERNION& q); // D3DXQuaternionMultiply(this, this, &q)
+    D3DXQUATERNION& operator*=(float f) { x *= f; y *= f; z *= f; w *= f; return *this; }
+    D3DXQUATERNION& operator/=(float f) { const float inv = 1.0f / f; return *this *= inv; }
+
+    D3DXQUATERNION operator+() const { return *this; }
+    D3DXQUATERNION operator-() const { return D3DXQUATERNION(-x, -y, -z, -w); }
+    D3DXQUATERNION operator+(const D3DXQUATERNION& q) const { return D3DXQUATERNION(x + q.x, y + q.y, z + q.z, w + q.w); }
+    D3DXQUATERNION operator-(const D3DXQUATERNION& q) const { return D3DXQUATERNION(x - q.x, y - q.y, z - q.z, w - q.w); }
+    D3DXQUATERNION operator*(const D3DXQUATERNION& q) const { D3DXQUATERNION r(*this); return r *= q; }
+    D3DXQUATERNION operator*(float f) const { return D3DXQUATERNION(x * f, y * f, z * f, w * f); }
+    D3DXQUATERNION operator/(float f) const { const float inv = 1.0f / f; return *this * inv; }
+    friend D3DXQUATERNION operator*(float f, const D3DXQUATERNION& q) { return q * f; }
+
+    bool operator==(const D3DXQUATERNION& q) const { return x == q.x && y == q.y && z == q.z && w == q.w; }
+    bool operator!=(const D3DXQUATERNION& q) const { return !(*this == q); }
+
+    X2_D3DX_TEMP_ADDRESS(D3DXQUATERNION)
+};
+
+// ax + by + cz + d = 0
+struct D3DXPLANE
+{
+    float a, b, c, d;
+
+    D3DXPLANE() = default;
+    D3DXPLANE(float fa, float fb, float fc, float fd) : a(fa), b(fb), c(fc), d(fd) {}
+    explicit D3DXPLANE(const float* p) : a(p[0]), b(p[1]), c(p[2]), d(p[3]) {}
+
+    operator float*() { return &a; }
+    operator const float*() const { return &a; }
+
+    D3DXPLANE& operator*=(float f) { a *= f; b *= f; c *= f; d *= f; return *this; }
+    D3DXPLANE& operator/=(float f) { const float inv = 1.0f / f; return *this *= inv; }
+
+    D3DXPLANE operator+() const { return *this; }
+    D3DXPLANE operator-() const { return D3DXPLANE(-a, -b, -c, -d); }
+    D3DXPLANE operator*(float f) const { return D3DXPLANE(a * f, b * f, c * f, d * f); }
+    D3DXPLANE operator/(float f) const { const float inv = 1.0f / f; return *this * inv; }
+    friend D3DXPLANE operator*(float f, const D3DXPLANE& p) { return p * f; }
+
+    bool operator==(const D3DXPLANE& p) const { return a == p.a && b == p.b && c == p.c && d == p.d; }
+    bool operator!=(const D3DXPLANE& p) const { return !(*this == p); }
+
+    X2_D3DX_TEMP_ADDRESS(D3DXPLANE)
+};
+
+// animation keys (d3dx9anim.h): plain data the client's animation code sorts and compresses
+struct D3DXKEY_VECTOR3
+{
+    float Time;
+    D3DXVECTOR3 Value;
+};
+
+struct D3DXKEY_QUATERNION
+{
+    float Time;
+    D3DXQUATERNION Value;
+};
+
 static_assert(sizeof(D3DXVECTOR2) == 8 && sizeof(D3DXVECTOR3) == 12 && sizeof(D3DXVECTOR4) == 16, "D3DX layout");
 static_assert(sizeof(D3DXMATRIX) == 64 && sizeof(D3DXCOLOR) == 16, "D3DX layout");
+static_assert(sizeof(D3DXQUATERNION) == 16 && sizeof(D3DXPLANE) == 16 && sizeof(D3DCOLORVALUE) == 16, "D3DX layout");
+static_assert(sizeof(D3DVIEWPORT9) == 24, "D3D layout");
+static_assert(sizeof(D3DXKEY_VECTOR3) == 16 && sizeof(D3DXKEY_QUATERNION) == 20, "D3DX layout");
 
 // --- vector functions (inline in d3dx9math.inl) --------------------------------------------------
 
@@ -261,9 +382,23 @@ inline D3DXVECTOR3* D3DXVec3Maximize(D3DXVECTOR3* out, const D3DXVECTOR3* a, con
     return out;
 }
 
+inline float D3DXVec4Length(const D3DXVECTOR4* v) { return std::sqrt(v->x * v->x + v->y * v->y + v->z * v->z + v->w * v->w); }
+inline float D3DXVec4LengthSq(const D3DXVECTOR4* v) { return v->x * v->x + v->y * v->y + v->z * v->z + v->w * v->w; }
+inline float D3DXVec4Dot(const D3DXVECTOR4* a, const D3DXVECTOR4* b) { return a->x * b->x + a->y * b->y + a->z * b->z + a->w * b->w; }
+
 // a zero vector normalizes to zero (D3DX behaviour)
 D3DXVECTOR2* D3DXVec2Normalize(D3DXVECTOR2* out, const D3DXVECTOR2* v);
 D3DXVECTOR3* D3DXVec3Normalize(D3DXVECTOR3* out, const D3DXVECTOR3* v);
+// unlike Vec2/Vec3, D3DX divides by the length unchecked: a zero vector gives NaN
+D3DXVECTOR4* D3DXVec4Normalize(D3DXVECTOR4* out, const D3DXVECTOR4* v);
+
+D3DXVECTOR4* D3DXVec2Transform(D3DXVECTOR4* out, const D3DXVECTOR2* v, const D3DXMATRIX* m);
+// Catmull-Rom spline through v1 (s = 0) and v2 (s = 1)
+D3DXVECTOR3* D3DXVec3CatmullRom(D3DXVECTOR3* out, const D3DXVECTOR3* v0, const D3DXVECTOR3* v1,
+                                const D3DXVECTOR3* v2, const D3DXVECTOR3* v3, float s);
+// object space -> screen space (world * view * projection, then the viewport); null matrices are skipped
+D3DXVECTOR3* D3DXVec3Project(D3DXVECTOR3* out, const D3DXVECTOR3* v, const D3DVIEWPORT9* viewport,
+                             const D3DXMATRIX* projection, const D3DXMATRIX* view, const D3DXMATRIX* world);
 
 D3DXVECTOR4* D3DXVec3Transform(D3DXVECTOR4* out, const D3DXVECTOR3* v, const D3DXMATRIX* m);
 D3DXVECTOR3* D3DXVec3TransformCoord(D3DXVECTOR3* out, const D3DXVECTOR3* v, const D3DXMATRIX* m);
@@ -286,3 +421,53 @@ D3DXMATRIX* D3DXMatrixRotationZ(D3DXMATRIX* out, float angle);
 D3DXMATRIX* D3DXMatrixRotationAxis(D3DXMATRIX* out, const D3DXVECTOR3* axis, float angle);
 D3DXMATRIX* D3DXMatrixRotationYawPitchRoll(D3DXMATRIX* out, float yaw, float pitch, float roll);
 D3DXMATRIX* D3DXMatrixLookAtLH(D3DXMATRIX* out, const D3DXVECTOR3* eye, const D3DXVECTOR3* at, const D3DXVECTOR3* up);
+D3DXMATRIX* D3DXMatrixPerspectiveFovLH(D3DXMATRIX* out, float fovy, float aspect, float zn, float zf);
+D3DXMATRIX* D3DXMatrixOrthoLH(D3DXMATRIX* out, float w, float h, float zn, float zf);
+D3DXMATRIX* D3DXMatrixRotationQuaternion(D3DXMATRIX* out, const D3DXQUATERNION* q);
+// Msc^-1 * Msr^-1 * Ms * Msr * Msc * Mrc^-1 * Mr * Mrc * Mt; every argument after `out` may be null
+D3DXMATRIX* D3DXMatrixTransformation(D3DXMATRIX* out, const D3DXVECTOR3* scalingCenter,
+                                     const D3DXQUATERNION* scalingRotation, const D3DXVECTOR3* scaling,
+                                     const D3DXVECTOR3* rotationCenter, const D3DXQUATERNION* rotation,
+                                     const D3DXVECTOR3* translation);
+// the same in the XY plane, rotations in radians about Z
+D3DXMATRIX* D3DXMatrixTransformation2D(D3DXMATRIX* out, const D3DXVECTOR2* scalingCenter, float scalingRotation,
+                                       const D3DXVECTOR2* scaling, const D3DXVECTOR2* rotationCenter, float rotation,
+                                       const D3DXVECTOR2* translation);
+
+// --- quaternion functions --------------------------------------------------------------------------
+
+inline float D3DXQuaternionLength(const D3DXQUATERNION* q) { return std::sqrt(q->x * q->x + q->y * q->y + q->z * q->z + q->w * q->w); }
+inline float D3DXQuaternionLengthSq(const D3DXQUATERNION* q) { return q->x * q->x + q->y * q->y + q->z * q->z + q->w * q->w; }
+inline float D3DXQuaternionDot(const D3DXQUATERNION* a, const D3DXQUATERNION* b) { return a->x * b->x + a->y * b->y + a->z * b->z + a->w * b->w; }
+inline D3DXQUATERNION* D3DXQuaternionIdentity(D3DXQUATERNION* out) { *out = D3DXQUATERNION(0.0f, 0.0f, 0.0f, 1.0f); return out; }
+inline D3DXQUATERNION* D3DXQuaternionConjugate(D3DXQUATERNION* out, const D3DXQUATERNION* q)
+{
+    *out = D3DXQUATERNION(-q->x, -q->y, -q->z, q->w);
+    return out;
+}
+
+// divides by the length unchecked, like D3DX: a zero quaternion gives NaN
+D3DXQUATERNION* D3DXQuaternionNormalize(D3DXQUATERNION* out, const D3DXQUATERNION* q);
+// returns q1 * q2 in D3DX's order: the rotation q1 followed by q2 (Hamilton product q2 q1)
+D3DXQUATERNION* D3DXQuaternionMultiply(D3DXQUATERNION* out, const D3DXQUATERNION* q1, const D3DXQUATERNION* q2);
+// shortest path; falls back to linear interpolation when the quaternions are within 0.001 of each other
+D3DXQUATERNION* D3DXQuaternionSlerp(D3DXQUATERNION* out, const D3DXQUATERNION* q1, const D3DXQUATERNION* q2, float t);
+
+// --- plane functions -------------------------------------------------------------------------------
+
+inline float D3DXPlaneDot(const D3DXPLANE* p, const D3DXVECTOR4* v) { return p->a * v->x + p->b * v->y + p->c * v->z + p->d * v->w; }
+inline float D3DXPlaneDotCoord(const D3DXPLANE* p, const D3DXVECTOR3* v) { return p->a * v->x + p->b * v->y + p->c * v->z + p->d; }
+inline float D3DXPlaneDotNormal(const D3DXPLANE* p, const D3DXVECTOR3* v) { return p->a * v->x + p->b * v->y + p->c * v->z; }
+
+// a plane with a zero normal normalizes to zero
+D3DXPLANE*   D3DXPlaneNormalize(D3DXPLANE* out, const D3DXPLANE* p);
+D3DXPLANE*   D3DXPlaneFromPointNormal(D3DXPLANE* out, const D3DXVECTOR3* point, const D3DXVECTOR3* normal);
+// intersection with the infinite line through v1 and v2 (not limited to the segment); NULL when parallel
+D3DXVECTOR3* D3DXPlaneIntersectLine(D3DXVECTOR3* out, const D3DXPLANE* p, const D3DXVECTOR3* v1, const D3DXVECTOR3* v2);
+
+// --- mesh math (d3dx9mesh.h) -----------------------------------------------------------------------
+
+// centroid of the positions and the largest distance to it; `stride` is in bytes.
+// D3DERR_INVALIDCALL on null pointers.
+HRESULT D3DXComputeBoundingSphere(const D3DXVECTOR3* firstPosition, DWORD numVertices, DWORD stride,
+                                  D3DXVECTOR3* center, float* radius);
