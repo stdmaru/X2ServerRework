@@ -335,11 +335,51 @@ bool Orchestrator::DependentsRunning(int i) const
     return false;
 }
 
+bool Orchestrator::Watch(long long pid)
+{
+    if (pid <= 0)
+        return false;
+    bool ours = false;
+    for (const auto& s : m_servers)
+        ours = ours || (s->transport && s->transport->Pid() == pid) || (s->task && s->task->Pid() == pid);
+    for (const auto& host : m_hosts)
+        ours = ours || (host->transport && host->transport->Pid() == pid);
+    if (ours)
+        m_watched.insert_or_assign(pid, ProcessStatus{});
+    return ours;
+}
+
+void Orchestrator::Unwatch(long long pid)
+{
+    m_watched.erase(pid);
+}
+
+std::optional<Orchestrator::ProcessStatus> Orchestrator::Watched(long long pid) const
+{
+    const auto it = m_watched.find(pid);
+    if (it == m_watched.end())
+        return std::nullopt;
+    return it->second;
+}
+
 bool Orchestrator::Update(Clock::time_point now)
 {
     bool changed = false;
 
     for (TransportEvent& event : m_inbox.Drain()) {
+        if (const auto watched = m_watched.find(event.pid); watched != m_watched.end()) {
+            ProcessStatus& status = watched->second;
+            if (event.kind == TransportEvent::Closed) {
+                status.closed = true;
+                status.exitCode = event.exitCode;
+            } else if (event.error) {
+                if (!event.text.empty())
+                    status.lastError = event.text;
+            } else {
+                status.output = true;
+            }
+            changed = true;
+        }
         if (event.server < 0) {
             const auto h = static_cast<std::size_t>(-1 - event.server);
             if (h < m_hosts.size()) {

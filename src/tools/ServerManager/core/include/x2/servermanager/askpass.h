@@ -6,7 +6,7 @@
 // The variables are set in this process's environment, so every ssh started from then on inherits them.
 //
 // Helper protocol, one JSON line each way after the server's greeting:
-//   {"token":"<X2_ASKPASS_TOKEN>","prompt":"...","kind":"secret|confirm|info"}   helper -> broker
+//   {"token":"<X2_ASKPASS_TOKEN>","prompt":"...","kind":"secret|confirm|info","ppid":<ssh's pid>}  helper -> broker
 //   {"ok":true,"answer":"..."} | {"ok":false}                                    broker -> helper (exit 0 / 1)
 
 #include "x2/platform/control.h"
@@ -48,6 +48,7 @@ struct AskpassRequest {
     int id = 0;
     std::string prompt;
     AskpassKind kind = AskpassKind::Secret;
+    long long pid = 0;      // of the ssh that asks (the helper's parent); 0 when unknown
 };
 
 class AskpassBroker {

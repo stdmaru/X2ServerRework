@@ -13,6 +13,7 @@
 
 #include <chrono>
 #include <functional>
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -120,6 +121,19 @@ public:
     void Detach(int i);     // attached servers: disconnect and leave it running
     void Kill(int i);       // servers ServerManager started
 
+    // What became of one of its children (an ssh that asked a question through the askpass, by its pid), from the
+    // moment it is watched: its first stdout line (an ssh that got in), its last stderr line (ssh's complaint), its
+    // end. Unwatch when done. Watch is false (and does nothing) when no child of the orchestrator has that pid.
+    struct ProcessStatus {
+        bool output = false;
+        bool closed = false;
+        std::optional<int> exitCode;
+        std::string lastError;
+    };
+    bool Watch(long long pid);
+    void Unwatch(long long pid);
+    std::optional<ProcessStatus> Watched(long long pid) const;
+
     // Handles the transports' events and moves the starts and stops along. True when anything changed.
     bool Update(Clock::time_point now = Clock::now());
     bool Busy() const;      // anything waiting, starting or stopping
@@ -136,6 +150,7 @@ private:
     OrchestratorOptions m_options;
     std::vector<int> m_order;
     std::vector<std::unique_ptr<Server>> m_servers;
+    std::map<long long, ProcessStatus> m_watched;
     std::vector<std::unique_ptr<Host>> m_hosts;      // their events come with server index -1 - host index
     // a server's start/stop command events come with server index Size() + i
     std::optional<std::vector<std::string>> m_localRunning;

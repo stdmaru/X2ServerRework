@@ -81,6 +81,7 @@ bool ProcessTransport::Open(Inbox& inbox, int server, std::uint64_t generation, 
         TransportEvent event;
         event.server = m_server;
         event.generation = m_generation;
+        event.pid = m_process->Pid();
         event.text = std::move(text);
         event.error = fromStderr;
         m_inbox->Push(std::move(event));
@@ -109,6 +110,7 @@ void ProcessTransport::Finished()
     event.server = m_server;
     event.generation = m_generation;
     event.kind = TransportEvent::Closed;
+    event.pid = m_process->Pid();
     event.exitCode = m_process->WaitFor(5s);
     event.text = event.exitCode ? "exited with code " + std::to_string(*event.exitCode) : "its output was closed";
     m_inbox->Push(std::move(event));

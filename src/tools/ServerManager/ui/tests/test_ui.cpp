@@ -228,6 +228,57 @@ TEST_CASE("ui: ssh's questions in a dialog")
     }
     ui.Askpass().Stop();
 }
+
+#if defined(X2_FAKE_SSH)
+// The host's "x2ctl list" is the askpass helper under x2_fake_ssh: it asks (its parent is the transport's ssh), and the
+// answer comes back as ssh's output, the way a real ssh that got in prints x2ctl's.
+TEST_CASE("ui: the ssh dialog says what became of the answer")
+{
+    NullImGui gui;
+    ManagerUi ui;
+    std::string error;
+    REQUIRE_MESSAGE(ui.EnableAskpass(X2_ASKPASS_HELPER, error), error);
+    const std::string path = WriteProfile("x2_ui_askpass", R"({
+        "hosts": [{"name": "far", "destination": "fake-host", "ssh": [")" + JsonPath(X2_FAKE_SSH) + R"("],
+                   "x2ctl": ")" + JsonPath(X2_ASKPASS_HELPER) + R"("}],
+        "servers": [{"name": "Remote", "host": "far", "control": "SmAskpassRemote"}]
+    })");
+    REQUIRE_MESSAGE(ui.Load(path, error), error);
+    using State = ManagerUi::AskpassState;
+    const auto asking = [&] { return ui.GetAskpassState() == State::Asking; };
+
+    // declined: nothing to follow, the dialog goes
+    REQUIRE(gui.FramesUntil(ui, asking));
+    CHECK(ui.AskpassError().empty());
+    ui.AnswerAskpass(std::nullopt);
+    CHECK(ui.GetAskpassState() == State::None);
+    ui.Askpass().ForgetDeclined();
+
+    // refused: Waiting ("Connecting...") until "ssh" gives up, then Failed with its complaint, inputs enabled
+    x2::platform::SetEnvironment("X2_ASKPASS_TEST_DENY", "1");
+    REQUIRE(gui.FramesUntil(ui, asking));
+    ui.AnswerAskpass(std::string("wrong"));
+    CHECK(ui.GetAskpassState() == State::Waiting);
+    REQUIRE(gui.FramesUntil(ui, [&] { return ui.GetAskpassState() != State::Waiting; }));
+    CHECK(ui.GetAskpassState() == State::Failed);
+    CHECK(ui.AskpassError().find("Permission denied") != std::string::npos);
+
+    // answered again after the failure: kept for the next same question (asked at once), then in, and gone
+    x2::platform::SetEnvironment("X2_ASKPASS_TEST_DENY", "");
+    ui.AnswerAskpass(std::string("right"));
+    CHECK(ui.GetAskpassState() == State::Waiting);
+    for (int round = 0; round < 3 && ui.GetAskpassState() != State::None; ++round) {
+        // a discovery started before the variable was cleared may refuse once more
+        REQUIRE(gui.FramesUntil(ui, [&] { return ui.GetAskpassState() != State::Waiting; }));
+        if (ui.GetAskpassState() != State::None)
+            ui.AnswerAskpass(std::string("right"));
+    }
+    CHECK(ui.GetAskpassState() == State::None);
+    ui.Askpass().Stop();
+    std::error_code ec;
+    std::filesystem::remove(path, ec);
+}
+#endif
 #endif
 
 TEST_CASE("ui: a failed server and a remote host that cannot be reached")

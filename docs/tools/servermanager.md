@@ -188,6 +188,17 @@ window and prints the answer, or exits 1 when declined, and ssh then gives up. S
 those variables are not set and the window opens. On Windows ServerManager is a GUI-subsystem program: no console window
 shows, and its stdout is the pipe ssh gave it; SDL's `main` passes the prompt as UTF-8.
 
+- **What became of the answer.** The helper also sends its parent's pid (`ParentProcessId`: the ssh that asks), and the
+  orchestrator follows that child (`Orchestrator::Watch`: its first stdout line, its last stderr line, its end). After OK the
+  dialog stays, inputs and OK disabled, with **Connecting...**; then:
+  - ssh prints (x2ctl got the connection) or exits 0: the dialog closes, which says it worked;
+  - the same ssh asks the same question again (a wrong password): the inputs come back, emptied, with ssh's complaint
+    (`Permission denied, please try again.`, or "Not accepted, try again." until that line arrives);
+  - ssh asks something else (the password after the host key): that question, without an error;
+  - ssh exits otherwise (after its last attempt): the dialog stays with ssh's last stderr line (or its exit code), inputs
+    enabled; an answer typed then waits for the next same question, asked at once (as Refresh does), and is sent to it.
+  Close (Esc) while connecting only closes the dialog. An ssh that is not one of the orchestrator's children, or that says
+  nothing for 30 s, is not followed: the dialog closes after the answer, as a cancel does.
 - **Password, passphrase, PIN** (any other prompt): a hidden field, OK or Cancel (Esc). "Remember until ServerManager closes"
   answers the same prompt (for example `x2@vps's password:`) without asking again; it is kept only in memory.
 - **Unknown host key** (`(yes/no/[fingerprint])`, and ssh's `Please type 'yes', 'no' or the fingerprint:`), and
@@ -311,7 +322,7 @@ that was not attached; an unreachable host and a server that is not running. The
 
 `x2_servermanager_ui_tests` (`ctest -R servermanager_ui`) draws the window with ImGui's null backends, so ImGui's checks run over
 its code: no profile and a profile that does not load; a failed local server and an unreachable host; a real `x2_terminal_demo`
-started from it, a Lua command printing 300 lines (rows and clipper), and quitting (asks, then stops it, exit code 0); ssh's questions in a dialog through `x2_askpass_helper` (a secret, a host key, a declined passphrase); the Profile tab with a profile made from nothing (a local and a remote server, a
+started from it, a Lua command printing 300 lines (rows and clipper), and quitting (asks, then stops it, exit code 0); ssh's questions in a dialog through `x2_askpass_helper` (a secret, a host key, a declined passphrase); the dialog's feedback, with a host whose `x2ctl` is `x2_askpass_helper` under `x2_fake_ssh` (its parent is the transport's ssh): a refusal (`X2_ASKPASS_TEST_DENY`: no output, a complaint on stderr, exit 255) goes from Connecting to the error, and an answer typed then is sent to the next discovery's question and closes the dialog; the Profile tab with a profile made from nothing (a local and a remote server, a
 cmd host with a key), applied and saved next to the program, an invalid draft that is not saved, and a `dist/` folder saved to the
 default file. The window
 itself (input, fonts, GPU) is tested by hand on a desktop. Socket directory:
