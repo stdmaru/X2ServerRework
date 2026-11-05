@@ -1,0 +1,20 @@
+# LuaCommon: the client's Lua binding (KLuaManager, KLuabinder and its own lua_tinker, 2013 version by robobeg),
+# compiled by the luajitLib project together with LuaJIT 2.0.2. LuaJIT itself comes from upstream (T21); this
+# lua_tinker differs from the server's (src/kncsdk, frozen) and is kept apart until the client compiles.
+
+name = "client-luacommon"
+source_root = "."
+include_dirs = ["LuaCommon", "luajitLib"]
+flags = ["base", "client.generated"]
+extern_dirs = ["src/kncsdk", "src/platform/include"]
+
+seed_filter = ["LuaCommon/*"]
+include_scope = ["LuaCommon/*"]
+
+[[projects]]
+path = "luajitLib/luajitLib.vcxproj"
+config = "Release|Win32"
+
+[[map]]
+from = "LuaCommon"
+to = "src/client/LuaCommon"

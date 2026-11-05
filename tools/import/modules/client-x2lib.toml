@@ -1,0 +1,52 @@
+# X2Lib: the game layer of the client (states, units, UI, items, quests, the network glue).
+# Seeds: the X2Lib/ files its US_INTERNAL|Win32 project compiles (the solution's Release_US).
+# X2Lib/X2UDPPacket.* is already in src/server/X2Lib (server-x2lib) and the shared server Common files in
+# src/server/Common: both are compiled by the client from there (decision T33), not imported again.
+
+name = "client-x2lib"
+source_root = "."
+# same search path as the vcxproj: .\;.\Common;..\KNCSDK_Client\Include;..\KTDXLIB;..\KTDXLIB\DXUT;..\X2ServerProtocol;
+# ..\X2ServerProtocol\Socket\;..\KncWX2Server\Common\;..\X2;..\X2\dat;..\X2\dat\script (Nexon, Steam, luaLib dropped)
+include_dirs = ["X2Lib", "X2Lib/Common", "KTDXLIB", "KTDXLIB/DXUT", "X2ServerProtocol", "X2ServerProtocol/Socket",
+                "KncWX2Server/Common", "X2", "X2/dat", "X2/dat/script"]
+flags = ["base", "client.generated"]
+extern_dirs = ["src/kncsdk", "src/platform/include", "src/server/Common", "src/server/X2Lib"]
+
+seed_filter = ["X2Lib/*"]
+include_scope = ["X2Lib/*"]
+
+exclude = [
+    # shared with the servers, already in src/server/X2Lib (T33)
+    "X2Lib/X2UDPPacket.*",
+    # other countries (Indonesia, Japan)
+    "X2Lib/OnlyGlobal/*",
+    # the project owner's item/quest data export (_DUMP_ITEM_DATA_ is false)
+    "X2Lib/Debelzak/*",
+    # anti-cheat and code protection (decision T10)
+    "X2Lib/HShield.h",
+    "X2Lib/ThemidaSDK.h",
+    "X2Lib/VirtualizerSDK.h",
+    "X2Lib/X2CollectHackInfo.*",
+    "XTRAP/*",
+    # publishers and ads: Nexon, Steam, IGA
+    "X2Lib/X2NexonMsgHandler.*",
+    "X2Lib/X2Steam.*",
+    "X2Lib/X2IGA.*",
+    "Steamworks/*",
+    # SMTP mail of crash/hack logs and Bandi screen capture (closed-source libraries)
+    "X2Lib/MailMIMEHeader.h",
+    "X2Lib/MailSMTPHeader.h",
+    "X2Lib/X2SMTPMail.*",
+    "X2Lib/X2MailLog.*",
+    "X2Lib/bandicap.h",
+    # BugTrap crash reporter, excluded by client-x2 too
+    "X2/BugTrap.h",
+]
+
+[[projects]]
+path = "X2Lib/X2Lib.vcxproj"
+config = "US_INTERNAL|Win32"
+
+[[map]]
+from = "X2Lib"
+to = "src/client/X2Lib"

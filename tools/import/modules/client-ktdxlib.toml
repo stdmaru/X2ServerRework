@@ -1,0 +1,59 @@
+# KTDXLIB: the client engine (D3D9 device, graphics, UI widgets, input, sound, networking, .kom files).
+# Seeds: the KTDXLIB/ files its US_INTERNAL|Win32 project compiles (the solution's Release_US).
+# Shared server Common files are compiled from src/server/Common (decision T33) and are not imported again.
+
+name = "client-ktdxlib"
+source_root = "."
+# same search path as the vcxproj: .\;..\KNCSDK_Client\Include;.\DXUT;..\X2ServerProtocol;..\X2ServerProtocol\Socket;.\CxImage
+# (KNCSDK_Client is already merged into src/kncsdk: found through extern_dirs)
+include_dirs = ["KTDXLIB", "KTDXLIB/DXUT", "X2ServerProtocol", "X2ServerProtocol/Socket", "KTDXLIB/CxImage",
+                "KncWX2Server/Common"]
+flags = ["base", "client.generated"]
+extern_dirs = ["src/kncsdk", "src/platform/include", "src/server/Common", "src/server/X2Lib"]
+
+seed_filter = ["KTDXLIB/*"]
+include_scope = ["KTDXLIB/*"]
+
+exclude = [
+    # vendored third-party code: upstream libraries or replacements instead (decision T3)
+    "KTDXLIB/DXUT/*",
+    "KTDXLIB/CxImage/*",
+    "KTDXLIB/FMOD/*",
+    "KTDXLIB/tinyxml/*",
+    "KTDXLIB/zlib.h",
+    "KTDXLIB/zconf.h",
+    "KTDXLIB/vld.h",
+    "KTDXLIB/vldapi.h",
+    "KTDXLIB/usewinhoard.cpp",
+    # Bandi video player (closed-source bdvid32.dll)
+    "KTDXLIB/BandiVideo*",
+    "KTDXLIB/bandivid.h",
+    # embedded web browser
+    "KTDXLIB/KBrowserWrapper.*",
+    "KTDXLIB/KPCHWebBrowser.*",
+    "KTDXLIB/Browser.c",
+    # crash reporter, firewall registration and anti-cheat (decision T10)
+    "KTDXLIB/CrashRpt.h",
+    "KTDXLIB/KncFirewall.h",
+    "KTDXLIB/AntiHackingString.h",
+    "XTRAP/*",
+    # X2Lib headers of the same kind, excluded by client-x2lib too
+    "X2Lib/ThemidaSDK.h",
+    "X2Lib/VirtualizerSDK.h",
+    "X2Lib/X2SMTPMail.h",
+    # other countries
+    "KTDXLIB/OnlyGlobal/Always_BR.h",
+    "KTDXLIB/OnlyGlobal/Always_JP.h",
+    "KTDXLIB/OnlyGlobal/Always_PH.h",
+    "KTDXLIB/OnlyGlobal/Always_TWHK.h",
+    "KTDXLIB/KTDGDeviceFontTH.*",
+]
+
+[[projects]]
+path = "KTDXLIB/KTDXLIB.vcxproj"
+config = "US_INTERNAL|Win32"
+
+# T14: mirror the original layout under src/client
+[[map]]
+from = "KTDXLIB"
+to = "src/client/KTDXLIB"
