@@ -113,3 +113,50 @@ TEST_CASE( "KLBSUdpEcho answers XPT_PORT_CHECK_REQ with the address it saw" )
     CHECK( std::chrono::steady_clock::now() - tStart < std::chrono::seconds( 1 ) );
     KActorManager::ReleaseKObj();
 }
+
+TEST_CASE( "KDYNAMIC_UNIT_NPC_SYNC: optional tail bytes of the client layout (X2OPTIMIZE_NPC_NONHOST_SIMULATION)" )
+{
+    KDYNAMIC_UNIT_NPC_SYNC kSync{};
+    kSync.m_iUnitUID = 0x01020304;
+    kSync.m_dwRelativePos = 0xA0B0C0D0;
+    BYTE abyBuffer[64] = {};
+
+    SUBCASE( "no reaction state and no target: 32 bytes" )
+    {
+        kSync.SetReactionState( false, -1, false );
+        kSync.SetTargetUnit( -1 );
+        BYTE* pbyOut = abyBuffer;
+        kSync.Serialize( pbyOut );
+        CHECK( pbyOut - abyBuffer == 32 );
+
+        KDYNAMIC_UNIT_NPC_SYNC kRead{};
+        const BYTE* pbyIn = abyBuffer;
+        REQUIRE( kRead.Deserialize( pbyIn, abyBuffer + 32 ) );
+        CHECK( pbyIn - abyBuffer == 32 );
+        CHECK( kRead.m_iUnitUID == kSync.m_iUnitUID );
+        CHECK( kRead.m_dwRelativePos == kSync.m_dwRelativePos );
+        CHECK( kRead.m_cReactionStateUnitIndex == -1 );
+        CHECK( kRead.m_cTargetUnitIndex == -1 );
+    }
+
+    SUBCASE( "reaction state (relaxed) and target: one byte each" )
+    {
+        kSync.SetReactionState( true, 5, true );
+        kSync.SetTargetUnit( 3 );
+        BYTE* pbyOut = abyBuffer;
+        kSync.Serialize( pbyOut );
+        REQUIRE( pbyOut - abyBuffer == 34 );
+        CHECK( abyBuffer[32] == ( 5 | 0x80 ) );
+        CHECK( abyBuffer[33] == 3 );
+
+        KDYNAMIC_UNIT_NPC_SYNC kRead{};
+        const BYTE* pbyIn = abyBuffer;
+        REQUIRE( kRead.Deserialize( pbyIn, abyBuffer + 34 ) );
+        CHECK( kRead.m_cReactionStateUnitIndex == 5 );
+        CHECK( kRead.ExtractRelaxReactionStateCheck() );
+        CHECK( kRead.m_cTargetUnitIndex == 3 );
+
+        pbyIn = abyBuffer;     // the optional bytes are missing
+        CHECK_FALSE( kRead.Deserialize( pbyIn, abyBuffer + 33 ) );
+    }
+}

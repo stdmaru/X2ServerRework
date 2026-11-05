@@ -1021,14 +1021,12 @@ struct KDYNAMIC_UNIT_NPC_SYNC
 	char				m_cMindFlag; // bool bIsRight; bool bStateChange;
 
 	USHORT				m_usRandomTableIndex;
-#ifdef  X2OPTIMIZE_NPC_NONHOST_SIMULATION
     USHORT				m_usDefenceRandomTableIndex;
     DWORD               m_dwRelativePos;
     // 자료구조의 맨 마지막이어야 함. optional
     char                m_cReactionStateUnitIndex;
     char                m_cReactionFlag;
     char                m_cTargetUnitIndex;
-#endif // X2OPTIMIZE_NPC_NONHOST_SIMULATION
 
     void SetIsRight( bool bSet )
     {
@@ -1041,7 +1039,6 @@ struct KDYNAMIC_UNIT_NPC_SYNC
 	{
         return  ( m_cMindFlag & 0x80 ) != 0;
 	}
-#ifdef  X2OPTIMIZE_NPC_NONHOST_SIMULATION
     void SetReactionState( bool bSet, char cReactionStateUnitIndex, bool bRelaxCheck )
     {
         if ( bSet )
@@ -1093,7 +1090,6 @@ struct KDYNAMIC_UNIT_NPC_SYNC
     {
         return ( m_cMindFlag & 0x8 ) != 0;
     }
-#endif // X2OPTIMIZE_NPC_NONHOST_SIMULATION
     void SetIsComeBackState( bool bSet )
     {
         if ( bSet )
@@ -1117,7 +1113,6 @@ struct KDYNAMIC_UNIT_NPC_SYNC
     bool    Deserialize( const BYTE*& pbyBuffer, const BYTE* pbyEnd );
 };
 
-#ifdef  X2OPTIMIZE_NPC_NONHOST_SIMULATION
 
 struct  KDYNAMIC_UNIT_NPC_MINISYNC
 {
@@ -1129,7 +1124,6 @@ struct  KDYNAMIC_UNIT_NPC_MINISYNC
     bool    Deserialize( const BYTE*& pbyBuffer, const BYTE* pbyEnd );
 };//struct  KDYNAMIC_UNIT_NPC_MINISYNC
 
-#endif // X2OPTIMIZE_NPC_NONHOST_SIMULATION
 
 
 //#else   SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
@@ -1431,3 +1425,8 @@ struct  KDYNAMIC_UNIT_NPC_MINISYNC
 // Port: these structs are copied to and from the datagrams byte for byte; sizes of the original MSVC x86 build
 static_assert( sizeof( KXPT_PORT_CHECK_REQ ) == 8 + 4 + 2, "wire layout" );
 static_assert( sizeof( KXPT_PORT_CHECK_ACK ) == 4 + 4, "wire layout" );
+// X2OPTIMIZE_NPC_NONHOST_SIMULATION resolved true by hand, the client's layout (decision T33); the original servers
+// left it undefined, harmless because they never read these structs
+static_assert( sizeof( KTWO_PARTS ) == 1, "wire layout" );
+static_assert( sizeof( KDYNAMIC_UNIT_NPC_SYNC ) == 35, "wire layout" );
+static_assert( sizeof( KDYNAMIC_UNIT_NPC_MINISYNC ) == 4 + 4 + 1, "wire layout" );

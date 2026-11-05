@@ -1,0 +1,32 @@
+# X2: the client executable (WinMain, resources). Seeds: the X2/ files its US_INTERNAL|Win32 project compiles.
+
+name = "client-x2"
+source_root = "."
+# same search path as the vcxproj: ..\KNCSDK_Client\Include;../KTDXLIB;./Common;../X2Lib;../KTDXLIB/DXUT;
+# ../X2ServerProtocol;../X2ServerProtocol/socket;../KncWX2Server/Common (Nexon and libxml dropped)
+include_dirs = ["X2", "KTDXLIB", "X2/Common", "X2Lib", "KTDXLIB/DXUT", "X2ServerProtocol", "X2ServerProtocol/Socket",
+                "KncWX2Server/Common"]
+flags = ["base", "client.generated"]
+extern_dirs = ["src/kncsdk", "src/platform/include", "src/server/Common", "src/server/X2Lib"]
+
+seed_filter = ["X2/*"]
+include_scope = ["X2/*"]
+
+# included by KTDXLIB/KTDX.h and X2Lib/X2Main.h, but by no X2 source
+extra = ["X2/KOGGamePerformanceCheckDefine.h"]
+
+exclude = [
+    # BugTrap crash reporter (closed-source BugTrap.lib)
+    "X2/BugTrap.h",
+    "X2/BTTrace.h",
+    # Taiwan/Hong Kong build files
+    "X2/TW_SERVICE/*",
+]
+
+[[projects]]
+path = "X2/X2.vcxproj"
+config = "US_INTERNAL|Win32"
+
+[[map]]
+from = "X2"
+to = "src/client/X2"

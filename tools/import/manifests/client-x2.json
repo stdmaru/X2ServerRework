@@ -1,0 +1,7 @@
+{
+  "src/client/X2/Common/dxstdafx.cpp": "ab9ea768b2ba5d0bca7b3498b0b7a7c77a313790131596c8926a242fd720eb4b",
+  "src/client/X2/Common/dxstdafx.h": "b7b42ab332f5026b4a65064aecf0c7bd05c03473d01f377851f0b90011b9f116",
+  "src/client/X2/KOGGamePerformanceCheckDefine.h": "44d6e7d5f9cb3bb99c122a179d604a2406f61a10b11d7b80c870f747dff2a297",
+  "src/client/X2/X2.cpp": "fa65127dc434d3a4183a09b4718d5f3f75cbf4f11b92407f06b2a89cd0e4990d",
+  "src/client/X2/resource.h": "5cfd937b0c0996b1ac6607550589f9b39e0bf1047e2f543e74576e14d8fd9048"
+}

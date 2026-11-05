@@ -55,6 +55,25 @@ Our flag, **`X2_DEV_TOOLS`**: enabled in `Development`, disabled in `Release`.
 5. Requirement: with `X2_DEV_TOOLS` enabled, the client **remains compatible** with the server and protocol. Debug must not change packet format.
    If a feature requires that, keep it out of the whitelist and redesign it later.
 
+## Client dev-only names outside the whitelist (2026-11-05)
+
+The client flag set ([Flags](../tools/flags.md#client-results-2026-11-05)) finds 74 names defined only in the development build;
+28 are whitelisted, and the other **46 resolve as in the service build (false)**. Almost all come from the per-developer
+`KTDXLIB/InHouse*.h` / `InHouseEtc.h` headers, which `KTDX.h` includes under `_IN_HOUSE_`; four come from `Always.h`,
+`Always_Global.h` and `KTDX.h` (under `_IN_HOUSE_`, `_OPEN_TEST_` or `#ifndef _SERVICE_`). Counted by `#if` lines that test them
+in `KTDXLIB`, `X2Lib` and `X2`:
+
+| Kind | Names (uses) | Whitelist? |
+|---|---|---|
+| Not used by any code | `ADD_XET_CRASH_LOG`, `CODE_ANALYSIS_FIX`, `DISCONNECT_DISENABLE_DLGUI`, `FIX_CHANGE_NOT_DOWN_STATE_BY_STUN`, `FIX_FIELDMAPUI_PARTYICON`, `FIX_TOOLTIP_SIZE`, `OPTION_UI_RENEWAL`, `PROCESS_DLL_ERROR_LOG`, `RATE_MODIFIER_INHOUSE_TEST`, `REGULATE_STATE_CHANGE_LOGIC`, `UPGRADE_TRADE_SYSTEM`, `USE_PARTICLE_TRACE` (0 each) | no: nothing to decide |
+| Developer/QA tools | `ALWAYS_SCREEN_SHOT_TEST` (64: screenshot test mode in PvP/NPC code), `NEXON_QA_CHEAT_REQ` (27: QA cheat commands requested by the publisher), `FIELD_CHARACTER_SCREEN_SHOT` (10: character/NPC screenshots in fields, PNG/TGA capture), `VILLAGE_MAP_FAST_RELOADING` (3: reload village map UI, gated by `XUAL_DEV`), `NOT_RENDER_NPC_GAME_EDIT` (9: hide NPCs from the game-edit console), `CHECK_PROCESS_MEMORY_USAGE` (2: HOME key shows memory use), `MODIFY_FIND_SHOP_IMAGE_FILE_NAME` (3: writes a shop image list file), `NEW_CHECK_OPENED_DEVICE` (4: dumps opened devices to a file), `FIRST_SCREEN_TEST` (7: an alternative start-up screen render), `DROP_FILE_TEST` (1) | candidates |
+| Extra logs and error checks | `LEAVE_LAST_ERROR_LOG_TEST` (22), `NO_MORE_ERROR_TEST` (15: `InHouseLog` on bad line maps, nameless particles), `ADD_RAID_FIELD_LOG` (10: test logs and message boxes), `DELETE_ERROR_LOG` (3), `PREVENT_SUBSTR_ERROR` (1), `CHECK_INVALIDE_CASH_SHOP_ITEM` (1) | candidates (logs only) |
+| Unreleased gameplay, UI or fixes | `RESET_INVALID_UNIT_POSITION_TEST` (15), `FIX_ENCHANT_FROZEN_TRACE_BUG_BY_MAGICAL_MAKEUP` (9), `FIX_TEMP_MESH_BILLBOARD` (9: a new mesh token), `CLIFF_CLIMBING_TEST` (8), `MARIO_LIKE_BLOCK_TEST` (6), `ADJUST_RIDINGPET_SKILLSLOT` (5), `PLAY_EMOTION_BY_DAMAGE_EFFECT` (4: a new `LAUGHTER_DAMAGE` script field), `PRE_EQUIP_PERSONAL_SHOP_BOARD` (4: try on items from shop search), `EVE_CLOAKING_ADJUST` (3), `SKILL_FOR_CANCEL` (3), `NEW_VILLAGE_AUTO_SD_UNIT` (3), `CORRECTION_DAMAGE_FREE_CHANNEL` (1), `FIX_MEMORY_LEAK` (1), `FIX_MEMORY_VIOLATE` (2), `HIDE_SYSTEM_MESSAGE` (1), `WINDOW_SYSTEM_BUTTON_FUNC` (1), `NOT_USE_UDP_CHECK_INHOUSE` (1) | no: they change the game (T4/T5); evident bug fixes among them belong in Phase 5 |
+| Build experiment | `REDUCED_PRECOMPILED_HEADER_TEST` (11: alternative includes in `X2Main.h` and `X2NPCAI.h`) | no |
+
+Leaving them false keeps the client identical to the shipped `elsword.exe`. Whitelisting a candidate later means rewriting its
+`#ifdef` to `#if X2_DEV_TOOLS` by hand in `src/client` (the modules are not reimported once edited).
+
 ## After the port (redesign, Phase 5+)
 
 - Bring scattered cheats into a single client **dev console/panel** (commands + windows: items, monsters, position, buffs).

@@ -122,7 +122,9 @@ ends; if the level goes to no destination, nothing is formatted. Console output 
 - **Validate protocol against real bytes**: capture packets from original `x2.exe` and server and compare with ported `Serializer`/`KSecureBuffer`.
   Expected bytes in current tests are derived from reading the code.
 - `KSecureBuffer` IV is `'A' + rand() % 40` repeated (weak). Changing it affects the protocol; decide later.
-- Client `lua_tinker` (`LuaCommon`) is another variant; unify when porting the client.
+- Client `lua_tinker` (`LuaCommon`) is another variant, imported apart in `src/client/LuaCommon` (2026-11-05); unifying them is
+  left for later ([Client: LuaCommon](client-luacommon.md#two-lua_tinker)). The client needs nothing else from `KNCSDK_Client`
+  ([Client](client.md#kncsdk_client)).
 - In the original client, logging is disabled in production builds (`KNCSDK_Client/dbg/logfile.hpp`); reproduce through log level during client port.
 - `KByteStream` inherits from `std::basic_string<unsigned char>`, which libc++ (Clang on macOS) no longer supports. Does not affect Linux/Windows.
 - LuaJIT on MSVC: CMake recipe (T21) calls LuaJIT's `msvcbuild.bat` (T25).

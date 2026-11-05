@@ -3,6 +3,10 @@
 # Client — Windows / Direct3D 9 dependencies
 
 Three layers: `X2` (exe, 2 sources) → `X2Lib` (game, 285 sources in vcxproj, 609 files) → `KTDXLIB` (engine, 120 sources, 338 files).
+Two libraries below them: `X2ServerProtocol` (client network library, built as `X2TOOL|Win32` by the solution's `Release_US`) and
+`LuaCommon` (the client's `KLuaManager`/`KLuabinder`/`lua_tinker`, compiled by the `luajitLib` project with LuaJIT 2.0.2).
+`KTDXLIB` uses `DXUT/` as its application framework (window, device, loop, timer), not for its widgets; usage counts are on
+[Client](../porting/client.md#for-the-skeleton-step).
 Original build: Win32 x86, Unicode, MFC in some configurations (`_AFXDLL`), `_USE_32BIT_TIME_T`.
 
 ## Good news: D3D9 is concentrated in KTDXLIB

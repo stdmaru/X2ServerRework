@@ -1,0 +1,28 @@
+# X2ServerProtocol: the client's network library (sessions over its own IOCP Socket/, the event/actor model).
+# The solution's Release_US builds it as X2TOOL|Win32 (no _SERVICE_ and no country); the port resolves it with the
+# client set like the rest of the client (docs/tools/flags.md). The server Common files it compiles
+# (KncWX2Server/Common/*) are already in src/server/Common (decision T33).
+
+name = "client-serverprotocol"
+source_root = "."
+# same search path as the vcxproj: .\;.\FSM;.\Socket;..\KncWX2Server\Common;..\KNCSDK_Client\Include
+include_dirs = ["X2ServerProtocol", "X2ServerProtocol/FSM", "X2ServerProtocol/Socket", "KncWX2Server/Common"]
+flags = ["base", "client.generated"]
+extern_dirs = ["src/kncsdk", "src/platform/include", "src/server/Common", "src/server/X2Lib"]
+
+seed_filter = ["X2ServerProtocol/*"]
+include_scope = ["X2ServerProtocol/*"]
+
+exclude = [
+    # older copy of KncWX2Server/Common/KncUidType.h (the same declarations minus four; comments): the client
+    # uses the shared one in src/server/Common (decision T33)
+    "X2ServerProtocol/KncUidType.h",
+]
+
+[[projects]]
+path = "X2ServerProtocol/X2ServerProtocol.vcxproj"
+config = "X2TOOL|Win32"
+
+[[map]]
+from = "X2ServerProtocol"
+to = "src/client/X2ServerProtocol"
