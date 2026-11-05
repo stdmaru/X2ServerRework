@@ -448,7 +448,8 @@ bool lua_tinker::read_(lua_State *L, int index, char*& ret )
 	if( lua_isstring(L, index ) )
 	{
 		char* pszText = (char*)lua_tostring(L, index);
-		strncpy( ret, pszText, strlen( pszText ) );
+		// As the original: the text without its terminator, into a buffer the caller sized and cleared.
+		memcpy( ret, pszText, strlen( pszText ) );
 		return true;
 	}
 	else

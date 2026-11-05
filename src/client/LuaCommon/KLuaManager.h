@@ -122,16 +122,16 @@ LUA언어로 작성된 configuration file을 읽어 오고, 그 내용을 C++
 		(dest) = (initValue); \
 }
 
-//#define LUA_GET_CHARARRAY( luaManager, key, dest, size, initValue ) \
-//{ \
-//	if( dest != NULL && (luaManager).GetValue( (key), (dest), (size) ) == false ) \
-//		StringCchCopyA( (dest), (size), (initValue) ); \
+//#define LUA_GET_CHARARRAY( luaManager, key, dest, size, initValue )
+//{
+//	if( dest != NULL && (luaManager).GetValue( (key), (dest), (size) ) == false )
+//		StringCchCopyA( (dest), (size), (initValue) );
 //}
 //
-//#define LUA_GET_CHARARRAY_UTF8( luaManager, key, dest, size, initValue ) \
-//{ \
-//	if( dest != NULL && (luaManager).GetValueUtf8( (key), (dest), (size) ) == false ) \
-//		StringCchCopyA( (dest), (size), (initValue) ); \
+//#define LUA_GET_CHARARRAY_UTF8( luaManager, key, dest, size, initValue )
+//{
+//	if( dest != NULL && (luaManager).GetValueUtf8( (key), (dest), (size) ) == false )
+//		StringCchCopyA( (dest), (size), (initValue) );
 //}
 
 
@@ -261,37 +261,37 @@ LUA언어로 작성된 configuration file을 읽어 오고, 그 내용을 C++
 
 //{{ dmlee 2008.06.01
 //
-//#define LUA_GET_NODEFAULT_( from, key, ret ) \
+//#define LUA_GET_NODEFAULT_( from, key, ret )
 //	KNewLuaManager::Get_( (from), (key), (ret) )
 //
-//#define LUA_GET_( from, key, ret, def ) \
-//{ \
-//	if( false == KNewLuaManager::Get_( (from), (key), (ret) ) ) \
-//	{ (ret) = (def); } \
+//#define LUA_GET_( from, key, ret, def )
+//{
+//	if( false == KNewLuaManager::Get_( (from), (key), (ret) ) )
+//	{ (ret) = (def); }
 //}
 //
-//#define LUA_GET_RETURN_( from, key, ret, def, returnCode ) \
-//{ \
-//	if( false == KNewLuaManager::Get_( (from), (key), (ret) ) )	\
-//	{ (ret) = (def); returnCode; } \
+//#define LUA_GET_RETURN_( from, key, ret, def, returnCode )
+//{
+//	if( false == KNewLuaManager::Get_( (from), (key), (ret) ) )
+//	{ (ret) = (def); returnCode; }
 //}
 //
 //
 //
 //
-//#define LUA_GET_SUFFIX_NODEFAULT_( from, key, suffix, ret ) \
+//#define LUA_GET_SUFFIX_NODEFAULT_( from, key, suffix, ret )
 //	KNewLuaManager::Get_( (from), (key), (suffix), (ret) )
 //
-//#define LUA_GET_SUFFIX_( from, key, suffix, ret, def ) \
-//{ \
-//	if( false == KNewLuaManager::Get_( (from), (key), (suffix), (ret) ) ) \
-//	{ (ret) = (def); } \
+//#define LUA_GET_SUFFIX_( from, key, suffix, ret, def )
+//{
+//	if( false == KNewLuaManager::Get_( (from), (key), (suffix), (ret) ) )
+//	{ (ret) = (def); }
 //}
 //
-//#define LUA_GET_SUFFIX_RETURN_( from, key, suffix, ret, def, returnCode ) \
-//{ \
-//	if( false == KNewLuaManager::Get_( (from), (key), (suffix), (ret) ) ) \
-//	{ (ret) = (def); returnCode; } \
+//#define LUA_GET_SUFFIX_RETURN_( from, key, suffix, ret, def, returnCode )
+//{
+//	if( false == KNewLuaManager::Get_( (from), (key), (suffix), (ret) ) )
+//	{ (ret) = (def); returnCode; }
 //}
 //
 //
