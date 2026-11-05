@@ -8,20 +8,14 @@
 
 #include <string>
 #include <sstream>
-#include <malloc.h>
+#include <cstdio>
 
 
 #include "lua_tinker.h"
 
 
-#include <windows.h>
+#include "x2/platform/win32.h"
 #include <assert.h>
-#include <WTypes.h>
-
-#ifndef STRSAFE_NO_DEPRECATE
-#	define STRSAFE_NO_DEPRECATE
-#endif
-#include <strsafe.h>
 
 /** LUA manager class.
 LUA언어로 작성된 configuration file을 읽어 오고, 그 내용을 C++
@@ -48,6 +42,7 @@ LUA언어로 작성된 configuration file을 읽어 오고, 그 내용을 C++
 
 #ifndef LUA_RESULT
 #	define LUA_RESULT bool
+#	undef LUA_OK  // LuaJIT 2.1's lua.h defines it as 0 (status code); the client means the bool, as with LuaJIT 2.0
 #	define LUA_OK true
 #	define LUA_FAIL false
 #endif // LUA_RESULT
@@ -78,7 +73,7 @@ LUA언어로 작성된 configuration file을 읽어 오고, 그 내용을 C++
 // ASSERT
 //
 #if !defined(ASSERT)
-#define ASSERT(exp)
+#define ASSERT(exp) ((void)sizeof(!(exp)))  // not evaluated; keeps the variables it checks in use
 #endif // #if !defined(ASSERT)
 
 #endif // defined(_DEBUG)
@@ -552,33 +547,30 @@ public:
 
         bool bOK = false;
 
-        if( lua_getencoding( GetLuaState() ) != LUA_ENCODING_LEGACY )
-        {
-            if( pRealFile[0] == ( char )033 )
-            {
-                bOK = lua_tinker::dobuffer( m_pkLuaState, pRealFile, nSize );
-            }
-            else
-            {
-                ASSERT( nSize >= 3 );
-                if( nSize < 3 )
-                {
-                    return false;
-                }
-
-                ASSERT( ( pRealFile[0] == ( char )0xef ) && ( pRealFile[1] == ( char )0xbb ) && ( pRealFile[2] == ( char )0xbf ) );
-                if( ( pRealFile[0] != ( char )0xef ) || ( pRealFile[1] != ( char )0xbb ) || ( pRealFile[2] != ( char )0xbf ) )
-                {
-                    return false;
-                }
-
-                bOK = lua_tinker::dobuffer( m_pkLuaState, pRealFile + 3, nSize - 3 );
-            }
-        }
-        else
+        // KOG's LuaJIT had a per-state encoding; the client always set LUA_ENCODING_UTF8 (KLuabinder::Initialize), so
+        // only that branch is kept with upstream LuaJIT (decision T21): bytecode, or UTF-8 source behind a BOM.
+        if( pRealFile[0] == ( char )033 )
         {
             bOK = lua_tinker::dobuffer( m_pkLuaState, pRealFile, nSize );
         }
+        else
+        {
+            ASSERT( nSize >= 3 );
+            if( nSize < 3 )
+            {
+                return false;
+            }
+
+            ASSERT( ( pRealFile[0] == ( char )0xef ) && ( pRealFile[1] == ( char )0xbb ) && ( pRealFile[2] == ( char )0xbf ) );
+            if( ( pRealFile[0] != ( char )0xef ) || ( pRealFile[1] != ( char )0xbb ) || ( pRealFile[2] != ( char )0xbf ) )
+            {
+                return false;
+            }
+
+            bOK = lua_tinker::dobuffer( m_pkLuaState, pRealFile + 3, nSize - 3 );
+        }
+    
+
         //{{
 
         return bOK;
@@ -596,7 +588,7 @@ public:
 
 		//KTDXPROFILE();
 		char charBuf[255] = {0,};
-		StringCchPrintfA( charBuf, ARRAY_SIZE(charBuf), "%s%d", pszName, index );
+		snprintf( charBuf, sizeof(charBuf), "%s%d", pszName, index );
 		return BeginTable( charBuf, bLogOutput );
 	}
 
@@ -1072,7 +1064,7 @@ private:
 
 
 template<typename TYPE>
-bool KLuaManager::GetUserDefinedTypeValue( const char* pszName, TYPE& value, bool bLogOutput )
+bool KLuaManager::GetUserDefinedTypeValue( const char* pszName, TYPE& value, bool /*bLogOutput*/ )
 {
     if ( Get(pszName) == true )
     {

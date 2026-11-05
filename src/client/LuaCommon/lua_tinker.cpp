@@ -25,7 +25,7 @@ void lua_tinker::init(lua_State *L)
 static int tostring_s64(lua_State *L)
 {
 	char temp[64];
-	sprintf(temp, "%I64d", *(__int64*)lua_topointer(L, 1));
+	snprintf(temp, sizeof(temp), "%lld", *(const long long*)lua_topointer(L, 1));
 	lua_pushstring(L, temp);
 	return 1;
 }
@@ -87,7 +87,7 @@ void lua_tinker::init_s64(lua_State *L)
 static int tostring_u64(lua_State *L)
 {
 	char temp[64];
-	sprintf(temp, "%I64u", *(unsigned __int64*)lua_topointer(L, 1));
+	snprintf(temp, sizeof(temp), "%llu", *(const unsigned long long*)lua_topointer(L, 1));
 	lua_pushstring(L, temp);
 	return 1;
 }
@@ -193,7 +193,6 @@ bool lua_tinker::dobuffer(lua_State *L, const char* buff, size_t len)
 	else
 	{
         const char* pError = lua_tostring(L, -1);
-        static const char* s_pError = pError;
 		print_error(L, "%s", ( pError != NULL ) ? pError : "" );
 		lua_pop(L, 1);
 		bOK = false;
@@ -392,7 +391,7 @@ bool lua_tinker::read(lua_State *L, int index)
 }
 
 template<>
-void lua_tinker::read(lua_State *L, int index)
+void lua_tinker::read(lua_State * /*L*/, int /*index*/)
 {
 	return;
 }
