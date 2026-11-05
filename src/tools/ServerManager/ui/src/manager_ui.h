@@ -6,6 +6,7 @@
 
 #include "profile_editor.h"
 
+#include "x2/servermanager/askpass.h"
 #include "x2/servermanager/orchestrator.h"
 
 #include <chrono>
@@ -44,6 +45,10 @@ public:
     bool ApplyProfile(std::string& error);
     // A server started here is running: the profile cannot be replaced, nor the window closed without asking.
     bool StartedRunning() const;
+    // ssh's password, passphrase and host key questions in a dialog (x2askpass next to the program). Without it, ssh
+    // runs with BatchMode and such a host fails.
+    bool EnableAskpass(const std::string& helper, std::string& error);
+    AskpassBroker& Askpass() { return m_askpass; }
     enum class Tab { Servers, Profile };
     void ShowTab(Tab tab) { m_showTab = tab; }
     const std::string& ProfilePath() const { return m_profilePath; }
@@ -82,12 +87,17 @@ private:
     void DrawLog(int i, ServerView& view);
     void DrawPrompt(int i, ServerView& view);
     void DrawQuitDialog();
+    void DrawAskpassDialog();
     void UpdateRows(const LogStore& logs, ServerView& view);
 
     std::function<void()> m_wake;
     ProfileEditor m_editor;
     std::string m_defaultFile;
     std::optional<Tab> m_showTab;   // selected on the next frame
+    AskpassBroker m_askpass;
+    int m_askpassShown = -1;        // the request the dialog shows
+    std::string m_askpassInput;
+    bool m_askpassRemember = false;
     std::unique_ptr<Orchestrator> m_orchestrator;
     std::vector<ServerView> m_views;
     std::string m_profilePath;

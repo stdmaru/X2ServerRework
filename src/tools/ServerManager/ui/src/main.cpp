@@ -123,6 +123,16 @@ int main(int argc, char* argv[])
     ui.SetPicker([handle = window->Handle()](auto kind, const std::string& start, auto done) {
         Pick(handle, kind, start, std::move(done));
     });
+    // ssh's questions in a dialog; without x2askpass ssh keeps BatchMode and such hosts fail
+    if (const char* base = SDL_GetBasePath()) {
+#if defined(_WIN32)
+        const std::string helper = std::string(base) + "x2askpass.exe";
+#else
+        const std::string helper = std::string(base) + "x2askpass";
+#endif
+        if (!ui.EnableAskpass(helper, error))
+            SDL_Log("ssh prompts disabled: %s", error.c_str());
+    }
     const std::string profile = x2::servermanager::ManagerUi::FindProfile(args, defaultFile);
     if (!profile.empty() && !ui.Load(profile, error))
         Fatal(error);

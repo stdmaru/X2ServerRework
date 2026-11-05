@@ -6,8 +6,10 @@
 #include <imgui_stdlib.h>
 
 #include <algorithm>
+#include <cfloat>
 #include <cstdio>
 #include <filesystem>
+#include <optional>
 #include <string_view>
 
 namespace x2::servermanager {
@@ -162,6 +164,15 @@ bool ManagerUi::Load(const std::string& path, std::string& error)
     return true;
 }
 
+bool ManagerUi::EnableAskpass(const std::string& helper, std::string& error)
+{
+    if (!m_askpass.Start(helper, error))
+        return false;
+    if (m_wake)
+        m_askpass.SetWake(m_wake);
+    return true;
+}
+
 bool ManagerUi::SaveProfile(std::string& error)
 {
     if (const std::string problem = m_editor.Draft().Validate(); !problem.empty()) {
@@ -293,6 +304,7 @@ void ManagerUi::Draw()
         ImGui::EndTabBar();
     }
     DrawQuitDialog();
+    DrawAskpassDialog();
     ImGui::End();
 }
 
@@ -322,9 +334,12 @@ void ManagerUi::DrawToolbar()
         m_orchestrator->StopAll();
     ImGui::EndDisabled();
     ImGui::SameLine();
-    if (ImGui::Button("Refresh"))
+    if (ImGui::Button("Refresh")) {
         m_nextDiscover = {};
-    ImGui::SetItemTooltip("Look for running servers again (here, and x2ctl list on each host)");
+        m_askpass.ForgetDeclined();
+    }
+    ImGui::SetItemTooltip("Look for running servers again (here, and x2ctl list on each host); ssh asks again what was "
+                          "cancelled");
 
     for (std::size_t h = 0; h < m_orchestrator->Hosts(); ++h) {
         const auto& host = m_orchestrator->HostAt(h);
@@ -580,6 +595,77 @@ void ManagerUi::DrawPrompt(int i, ServerView& view)
         view.follow = true;
         view.focusInput = true;
     }
+}
+
+void ManagerUi::DrawAskpassDialog()
+{
+    const char* title = "ssh asks###askpass";
+    const auto pending = m_askpass.Pending();
+    if (pending.empty()) {
+        // answered without the dialog (the same question from another ssh), or the broker stopped
+        if (m_askpassShown != -1 && ImGui::BeginPopupModal(title)) {
+            ImGui::CloseCurrentPopup();
+            ImGui::EndPopup();
+        }
+        m_askpassShown = -1;
+        return;
+    }
+    const AskpassRequest& request = pending.front();
+    if (request.id != m_askpassShown) {
+        m_askpassShown = request.id;
+        std::fill(m_askpassInput.begin(), m_askpassInput.end(), '\0');
+        m_askpassInput.clear();
+        m_askpassRemember = false;
+        ImGui::OpenPopup(title);
+    }
+    const ImGuiViewport* viewport = ImGui::GetMainViewport();
+    ImGui::SetNextWindowPos(viewport->GetCenter(), ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+    ImGui::SetNextWindowSizeConstraints(ImVec2(ImGui::GetFontSize() * 28.0f, 0), ImVec2(ImGui::GetFontSize() * 48.0f, FLT_MAX));
+    if (!ImGui::BeginPopupModal(title, nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+        return;
+    ImGui::PushTextWrapPos(ImGui::GetFontSize() * 46.0f);
+    ImGui::TextUnformatted(request.prompt.c_str());
+    ImGui::PopTextWrapPos();
+    if (pending.size() > 1)
+        ImGui::TextDisabled("%zu more after this one", pending.size() - 1);
+    ImGui::Spacing();
+
+    std::optional<std::optional<std::string>> answer;    // set once answered: a text, or declined
+    switch (request.kind) {
+    case AskpassKind::Secret: {
+        if (ImGui::IsWindowAppearing())
+            ImGui::SetKeyboardFocusHere();
+        ImGui::SetNextItemWidth(-FLT_MIN);
+        const bool enter = ImGui::InputText("##secret", &m_askpassInput,
+                                            ImGuiInputTextFlags_Password | ImGuiInputTextFlags_EnterReturnsTrue);
+        ImGui::Checkbox("Remember until ServerManager closes", &m_askpassRemember);
+        if (ImGui::Button("OK") || enter)
+            answer = std::optional<std::string>(m_askpassInput);
+        ImGui::SameLine();
+        if (ImGui::Button("Cancel") || ImGui::IsKeyPressed(ImGuiKey_Escape))
+            answer = std::optional<std::string>();
+        break;
+    }
+    case AskpassKind::Confirm:
+        if (ImGui::Button("Yes"))
+            answer = std::optional<std::string>("yes");
+        ImGui::SameLine();
+        if (ImGui::Button("No") || ImGui::IsKeyPressed(ImGuiKey_Escape))
+            answer = std::optional<std::string>();
+        break;
+    case AskpassKind::Info:
+        if (ImGui::Button("OK"))
+            answer = std::optional<std::string>(std::string());
+        break;
+    }
+    if (answer) {
+        m_askpass.Answer(request.id, *answer, m_askpassRemember);
+        std::fill(m_askpassInput.begin(), m_askpassInput.end(), '\0');
+        m_askpassInput.clear();
+        m_askpassShown = -1;
+        ImGui::CloseCurrentPopup();
+    }
+    ImGui::EndPopup();
 }
 
 void ManagerUi::DrawQuitDialog()

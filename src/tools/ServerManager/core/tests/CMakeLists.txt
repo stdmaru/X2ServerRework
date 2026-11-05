@@ -1,4 +1,4 @@
-add_executable(x2_servermanager_tests main.cpp test_log_store.cpp test_profile.cpp test_protocol.cpp test_session.cpp)
+add_executable(x2_servermanager_tests main.cpp test_askpass.cpp test_log_store.cpp test_profile.cpp test_protocol.cpp test_session.cpp)
 target_link_libraries(x2_servermanager_tests PRIVATE x2::servermanager_core doctest::doctest)
 # against real server consoles: KServerConsole in this process, and x2_terminal_demo / x2ctl as children
 if(TARGET x2::kncsdk_lua)
@@ -18,6 +18,8 @@ if(TARGET x2::kncsdk_lua)
         add_dependencies(x2_servermanager_tests x2ctl x2_fake_ssh)
     endif()
 endif()
+target_compile_definitions(x2_servermanager_tests PRIVATE X2_ASKPASS_HELPER="$<TARGET_FILE:x2askpass>")
+add_dependencies(x2_servermanager_tests x2askpass)
 add_test(NAME servermanager COMMAND x2_servermanager_tests WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
 # Manual test against real servers (docs/tools/servermanager.md)
