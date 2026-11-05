@@ -476,7 +476,7 @@ extern bool KTDXSendGameMessage( UINT uMsg, WPARAM wParam, LPARAM lParam, bool b
 
 
 template<typename LUADOMEMORYNOTENCRYPT>
-__forceinline HRESULT CKTDXApp::LoadAndDoMemory_ErrorCode( LUADOMEMORYNOTENCRYPT* pLuaManager, const WCHAR* pFileName, bool bEncryption )
+__forceinline HRESULT CKTDXApp::LoadAndDoMemory_ErrorCode( LUADOMEMORYNOTENCRYPT* pLuaManager, const WCHAR* pFileName, bool /*bEncryption*/ )
 {
 	//루아 매니져 로딩
     if ( pLuaManager == NULL || pFileName == NULL || pFileName[0] == NULL )
@@ -492,89 +492,22 @@ __forceinline HRESULT CKTDXApp::LoadAndDoMemory_ErrorCode( LUADOMEMORYNOTENCRYPT
         return E_INVALIDARG;
     }
 
-	KGCMassFileManager::CMassFile::MASSFILE_MEMBERFILEINFO_POINTER Info;
-//#ifdef X2OPTIMIZE_MASS_FILE_FIRST_BUGFIX
-	Info = GetDeviceManager()->GetMassFileManager()->LoadDataFile( pFileName, true
-        , bEncryption
-        );
-//#else//X2OPTIMIZE_MASS_FILE_FIRST_BUGFIX
-//	Info = m_MassFileManager.LoadDataFile( pFileName );
-//#endif//X2OPTIMIZE_MASS_FILE_FIRST_BUGFIX
-
-	wstring wstrFileNameExtension = pFileName;
-	int ifirstIndex = 0;
-	wstring wstrFileExtension= L"";
-
-	wstrFileExtension = wstrFileNameExtension.substr(wstrFileNameExtension.find_last_of(L".")+1);
-
-	if ( wstrFileExtension == L"lua")
-	{
-		wstrFileNameExtension = Info->strFileName;
-	}
-
-
-
+	// The mass file manager decodes every entry by its archive Algorithm (XORCRC included, docs/porting/kom.md), so
+	// bEncryption no longer decrypts here.
+	KGCMassFileManager::CMassFile::MASSFILE_MEMBERFILEINFO_POINTER Info =
+		GetDeviceManager()->GetMassFileManager()->LoadDataFile( std::wstring( pFileName ) );
 
 	if( Info == NULL || Info->pRealData == NULL || Info->size <= 0 )
 	{
-		ErrorLogMsg( KEM_ERROR72, wstrFileNameExtension.c_str() );
-
+		ErrorLogMsg( KEM_ERROR72, pFileName );
 		return HRESULT_FROM_WIN32( ERROR_FILE_NOT_FOUND );
 	}
 
-	if( true == bEncryption
-#if X2_DEV_TOOLS
-#if X2_DEV_TOOLS
-        && ( Info->dwFlag & MFI_LOCALFILE ) == 0
-#endif // X2OPTIMIZE_INDICATE_LOCAL_MASSFILE
-#endif
-        )
+	if( pLuaManager->DoMemoryNotEncrypt( Info->pRealData, Info->size ) == false )
 	{
-        int iEncryptSize = Info->size;
-        if ( Info->dwFlag & MFI_COMPRESSEDDATA )
-            iEncryptSize = Info->compressedSize;
-
-        char* pDecryptedBuffer = (char*) Info->pRealData;
-		XORCRCDecrypt( pDecryptedBuffer, Info->pRealData, iEncryptSize, wstrFileNameExtension.c_str() );
-
-
-	    bool bRetVal = false;
-        if ( Info->dwFlag & MFI_COMPRESSEDDATA )
-        {
-            KGCMassFileBufferPtr spRealBuffer = KGCMassFileManager::GetMassFileBufMan().GetBuffer( Info->size );
-            char* pRealBuffer = (char*) spRealBuffer->GetBuffer();
-		    unsigned long size = Info->size;
-		    if ( Z_OK == uncompress((BYTE*)pRealBuffer,&size,(BYTE*)pDecryptedBuffer,Info->compressedSize) )
-            {
-                ASSERT( size == Info->size );
-				bRetVal = pLuaManager->DoMemoryNotEncrypt(pRealBuffer, Info->size);
-            }
-            else
-            {
-                bRetVal = false;
-            }
-        }
-        else
-        {
-            bRetVal = pLuaManager->DoMemoryNotEncrypt( pDecryptedBuffer, Info->size );
-        }
-
-		if( bRetVal == false )
-		{
-			ErrorLogMsg( KEM_ERROR73, wstrFileNameExtension.c_str() );
-
-		    return HRESULT_FROM_WIN32( ERROR_INVALID_DATA );
-		}
+		ErrorLogMsg( KEM_ERROR73, Info->strFileName.c_str() );
+		return HRESULT_FROM_WIN32( ERROR_INVALID_DATA );
 	}
-	else
-	{
-		if( pLuaManager->DoMemoryNotEncrypt( Info->pRealData, Info->size ) == false )
-		{
-			ErrorLogMsg( KEM_ERROR73, wstrFileNameExtension.c_str() );
-
-		    return HRESULT_FROM_WIN32( ERROR_INVALID_DATA );
-		}
-    }
 
 	return S_OK;
 }
