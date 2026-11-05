@@ -32,8 +32,10 @@ bool HasIndexPrefixes(const std::vector<std::wstring>& candidates)
         if (candidate.size() < 3 || candidate[1] != L' ' || candidate[0] < L'0' || candidate[0] > L'9') {
             return false;
         }
-        const int first = candidates[0][0] - L'0';
-        if (candidate[0] - L'0' != static_cast<int>((first + i) % 10)) {
+        // wchar_t is unsigned on some targets (arm64 Linux): compare the digits as ints
+        const int first = static_cast<int>(candidates[0][0]) - '0';
+        const int digit = static_cast<int>(candidate[0]) - '0';
+        if (digit != static_cast<int>((static_cast<std::size_t>(first) + i) % 10)) {
             return false;
         }
     }
