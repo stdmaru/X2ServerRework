@@ -13,7 +13,6 @@ target_link_libraries(x2_app_imgui PUBLIC x2::app x2::imgui)
 # Manual test: a window with the ImGui demo (docs/porting/app.md).
 add_executable(x2_app_demo demo/main.cpp)
 target_link_libraries(x2_app_demo PRIVATE x2::app_imgui)
-x2_bundle_sdl(x2_app_demo)
 
 if(X2_BUILD_TESTS)
     add_subdirectory(tests)

@@ -1,7 +1,8 @@
 # Build environment of the project (decision T24, docs/tools/build-environment.md): the same image runs the
 # local builds (docker/build.sh) and the CI (.github/workflows/ci.yml). Linux only: Windows is built with
 # clang-cl on a Windows CI runner (T26).
-# Ubuntu LTS: Clang (shipped) and GCC (check), CMake, Ninja, unixODBC/FreeTDS, SDL3 (tools, T32), Python.
+# Ubuntu LTS: Clang (shipped) and GCC (check), CMake, Ninja, unixODBC/FreeTDS, the headers SDL3 is built
+# against (it is linked statically: tools, T32), Python.
 # No LuaJIT package: Ubuntu ships the OpenResty fork, so CMake builds the pinned upstream commit (T21).
 FROM ubuntu:26.04
 
@@ -11,7 +12,9 @@ RUN apt-get update \
        build-essential nano sudo \
        clang clangd clang-format cmake ninja-build pkg-config ccache git ca-certificates python3 gdb shellcheck \
        unixodbc-dev tdsodbc \
-       libsdl3-dev \
+       libx11-dev libxext-dev libxrandr-dev libxcursor-dev libxfixes-dev libxi-dev libxss-dev libxtst-dev \
+       libxkbcommon-dev libwayland-dev libdecor-0-dev libdrm-dev libgbm-dev libegl-dev \
+       libdbus-1-dev libibus-1.0-dev libudev-dev libasound2-dev libpulse-dev libpipewire-0.3-dev \
  && rm -rf /var/lib/apt/lists/* \
  && mkdir -p /home/ubuntu/.cache/x2-build/ccache \
  && chown -R ubuntu:ubuntu /home/ubuntu/.cache \

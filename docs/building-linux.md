@@ -78,13 +78,19 @@ Packages:
 
 | Distribution | Command |
 |---|---|
-| Ubuntu 26.04 | `sudo apt install build-essential clang cmake ninja-build pkg-config git python3 unixodbc-dev tdsodbc libsdl3-dev` |
-| Arch | `sudo pacman -S base-devel clang cmake ninja pkgconf git python unixodbc freetds sdl3` |
+| Ubuntu 26.04 | `sudo apt install build-essential clang cmake ninja-build pkg-config git python3 unixodbc-dev tdsodbc` + the SDL3 headers below |
+| Arch | `sudo pacman -S base-devel clang cmake ninja pkgconf git python unixodbc freetds` + the SDL3 headers below |
 
 These packages are installed in the image. Native builds require CMake 3.28 or later and a Clang compiler with C++20 support.
 ccache is optional. CMake uses installed packages when available; otherwise, it downloads pinned versions of zlib, LuaJIT, Asio,
-SDL3, and doctest (ImGui is always downloaded). SDL3 is needed only by the tools (`X2_BUILD_TOOLS`, on by default; `-DX2_BUILD_TOOLS=OFF`
-builds only the servers); building it from source needs the X11/Wayland development headers, so prefer the package. Only upstream LuaJIT 2.1 is supported. Ubuntu's LuaJIT package is an OpenResty fork and is ignored; in that case,
+and doctest. SDL3 and ImGui are always downloaded and SDL3 is linked statically (T32). They are needed only by the tools
+(`X2_BUILD_TOOLS`, on by default; `-DX2_BUILD_TOOLS=OFF` builds only the servers). SDL3 is built against the X11, Wayland, input, and
+audio headers:
+
+| Distribution | SDL3 build headers |
+|---|---|
+| Ubuntu 26.04 | `sudo apt install libx11-dev libxext-dev libxrandr-dev libxcursor-dev libxfixes-dev libxi-dev libxss-dev libxtst-dev libxkbcommon-dev libwayland-dev libdecor-0-dev libdrm-dev libgbm-dev libegl-dev libdbus-1-dev libibus-1.0-dev libudev-dev libasound2-dev libpulse-dev libpipewire-0.3-dev` |
+| Arch | `sudo pacman -S libx11 libxext libxrandr libxcursor libxfixes libxi libxss libxtst libxkbcommon wayland wayland-protocols libdecor libdrm mesa dbus ibus systemd-libs alsa-lib libpulse pipewire` | Only upstream LuaJIT 2.1 is supported. Ubuntu's LuaJIT package is an OpenResty fork and is ignored; in that case,
 CMake builds LuaJIT from the pinned commit.
 
 ```bash

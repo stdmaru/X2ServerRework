@@ -24,11 +24,13 @@ lives and how its dependencies enter the build is decision T32.
 
 | Library | Version (2026-11-04) | Source |
 |---|---|---|
-| SDL3 | system package (Ubuntu 26.04: 3.4.2), else 3.4.18 | `find_package(SDL3 CONFIG COMPONENTS SDL3-shared)`, else pinned `FetchContent` built **static** (Windows) |
+| SDL3 | 3.4.18 | pinned `FetchContent`, built from source and linked **static** on Linux and Windows (no `find_package`) |
 | Dear ImGui | 1.93.0 | pinned `FetchContent`, compiled into `x2::imgui` with the `null`, `sdl3`, and `sdlgpu3` backends |
 
-- `x2_bundle_sdl(<target>)` (`cmake/X2Dependencies.cmake`): with the shared system SDL3, copies `libSDL3.so.0` (Windows: `SDL3.dll`)
-  next to the executable and sets the `$ORIGIN` RPATH, so a folder built in the container runs on the desktop. Static SDL3 needs nothing.
+- Static everywhere (user's choice, 2026-11-04): executables need no SDL library next to them, and one built in the container runs on
+  the desktop (it depends only on libc/libstdc++). SDL loads X11, Wayland, KMSDRM, ALSA, PulseAudio, and PipeWire at run time; it is
+  built against their headers (`docker/build/Dockerfile`). Configured with video drivers x11, wayland, kmsdrm, offscreen, dummy and
+  GPU driver vulkan (Linux, 2026-11-04). On 2026-11-04 it briefly used Ubuntu's shared `libsdl3-dev`, copied next to the executable.
 - `X2_BUILD_TOOLS` (on by default) builds `src/app` and the tools; the servers never link SDL.
 - ImGui and SDL are third-party: compiled without the project's warning flags, and their headers are `SYSTEM`.
 
@@ -38,7 +40,8 @@ lives and how its dependencies enter the build is decision T32.
   close request for the main window only, `WakeEventLoop`; window creation without a GPU fails with a message instead of crashing) and
   ImGui with its `null` backends (font fallback, first existing font file, a frame with Korean text and DPI scale).
 - `x2_app_demo`: manual test on a desktop (window, SDL_GPU driver, input, DPI, Hangul font) with the ImGui demo. Built in the container,
-  it runs on the host from `build/<preset>/src/app/`.
+  it runs on the host from `build/<preset>/src/app/`. Tested on Arch and Windows on 2026-11-04 (works; Linux opens a terminal only when
+  started from a file manager, since it is a console program).
 
 ## Pending
 

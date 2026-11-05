@@ -112,8 +112,9 @@ endif()
 
 # --- SDL3 and Dear ImGui (decision T32): the client and the tools only, never the servers ---------------
 if(X2_BUILD_TOOLS OR X2_BUILD_CLIENT)
-    # System package first (Ubuntu libsdl3-dev): shared, copied next to the executables (x2_bundle_sdl).
-    # Otherwise the pinned release, linked statically.
+    # Always the pinned release, linked statically on every platform (T32): one self-contained executable, the same
+    # SDL everywhere. On Linux it needs the X11/Wayland/input/audio development headers (docs/building-linux.md); SDL
+    # loads those libraries at run time, so the executable still runs on a machine with only one of them.
     set(SDL_SHARED OFF CACHE BOOL "" FORCE)
     set(SDL_STATIC ON CACHE BOOL "" FORCE)
     set(SDL_TEST_LIBRARY OFF CACHE BOOL "" FORCE)
@@ -122,8 +123,7 @@ if(X2_BUILD_TOOLS OR X2_BUILD_CLIENT)
     set(SDL_INSTALL OFF CACHE BOOL "" FORCE)
     FetchContent_Declare(SDL3
         URL https://github.com/libsdl-org/SDL/releases/download/release-3.4.18/SDL3-3.4.18.tar.gz
-        URL_HASH SHA256=9c75cf16330322c217dedd2e0609f1124f1b54b8633e763467b4684d0f4334a3
-        FIND_PACKAGE_ARGS 3.2 CONFIG COMPONENTS SDL3-shared)
+        URL_HASH SHA256=9c75cf16330322c217dedd2e0609f1124f1b54b8633e763467b4684d0f4334a3)
     FetchContent_MakeAvailable(SDL3)
 
     # Compiled into our own target from the sources (ImGui ships no CMake), with the SDL3 platform and SDL_GPU renderer
@@ -148,26 +148,6 @@ if(X2_BUILD_TOOLS OR X2_BUILD_CLIENT)
     set_target_properties(x2_imgui PROPERTIES POSITION_INDEPENDENT_CODE ON)
     add_library(x2::imgui ALIAS x2_imgui)
 endif()
-
-# x2_bundle_sdl(<executable target>): with a shared SDL3 (system package), copy it next to the executable and let the
-# executable find it there ($ORIGIN on Linux; Windows searches the executable's folder), so the folder runs on any machine.
-function(x2_bundle_sdl target)
-    if(NOT TARGET SDL3::SDL3-shared)
-        return()   # static (built from source)
-    endif()
-    if(WIN32)
-        add_custom_command(TARGET ${target} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:SDL3::SDL3-shared> $<TARGET_FILE_DIR:${target}>
-            VERBATIM)
-    else()
-        set_target_properties(${target} PROPERTIES BUILD_RPATH "$ORIGIN" INSTALL_RPATH "$ORIGIN")
-        # the SONAME (libSDL3.so.0) is what the dynamic loader looks for
-        add_custom_command(TARGET ${target} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_SONAME_FILE:SDL3::SDL3-shared>
-                $<TARGET_FILE_DIR:${target}>/$<TARGET_SONAME_FILE_NAME:SDL3::SDL3-shared>
-            VERBATIM)
-    endif()
-endfunction()
 
 # ODBC (decision T17): unixODBC outside Windows, odbc32 on Windows. Only code that includes
 # x2/platform/odbc.h links it, so x2_platform itself does not depend on ODBC.
