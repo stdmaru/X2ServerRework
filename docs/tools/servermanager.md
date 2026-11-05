@@ -121,7 +121,7 @@ local server that is already running; if it is not running, `x2ctl attach` fails
 followed until the connection closes; a remote server that does not stop is not terminated or killed.
 
 ```json
-{"hosts": [{"name": "prod", "destination": "x2@10.0.0.5", "x2ctl": "/opt/x2/dist/x2ctl"},
+{"hosts": [{"name": "prod", "destination": "x2@10.0.0.5", "port": 2222, "x2ctl": "/opt/x2/dist/x2ctl"},
            {"name": "lab", "destination": "lab", "ssh": ["ssh", "-p", "2222", "-o", "BatchMode=yes"]}],
  "servers": [{"name": "GameServer", "host": "prod", "control": "GameServer", "after": ["CenterServer"]}]}
 ```
@@ -130,6 +130,8 @@ followed until the connection closes; a remote server that does not stop is not 
   (`"controlDir": "/opt/x2/docker/server/control/x2"` with `docker/server/docker-compose.yml`); the remote command becomes
   `x2ctl --dir=<folder> attach <name>`. Not resolved on this machine. The ssh user must be able to open it (see
   [another folder](../porting/console.md#control-socket)).
+- `port`: the ssh port (`-p`, after the ssh options and before the destination); without it, ssh's own (22, or the `Port` of
+  `~/.ssh/config`).
 - `destination`: what ssh connects to (`host`, `user@host`, or a `Host` of `~/.ssh/config`; not starting with `-`). `x2ctl`: its
   path on that machine, by default `x2ctl` in its `PATH`. A remote server needs `control` (or `program`, whose file name is the
   socket name); its `directory` is not resolved.

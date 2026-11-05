@@ -24,6 +24,7 @@ namespace x2::servermanager {
 struct HostSpec {
     std::string name;                   // unique within the profile; what servers refer to
     std::string destination;            // what ssh connects to: host, user@host, or a Host of ~/.ssh/config
+    int port = 0;                       // ssh -p; 0: ssh's own (22, or the Port of ~/.ssh/config)
     std::string x2ctl = "x2ctl";        // on that machine (a path, or a name in its PATH)
     std::string controlDir;             // its control sockets (x2ctl --dir); empty: x2ctl's default there
     std::vector<std::string> ssh;       // program and options before the destination; empty: DefaultSshCommand()

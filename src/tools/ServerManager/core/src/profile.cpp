@@ -91,6 +91,10 @@ x2::platform::ProcessOptions Profile::X2ctl(std::string_view host, const std::ve
     std::vector<std::string> command = h->ssh.empty() ? DefaultSshCommand() : h->ssh;
     options.program = command.front();
     options.args.assign(command.begin() + 1, command.end());
+    if (h->port != 0) {
+        options.args.push_back("-p");
+        options.args.push_back(std::to_string(h->port));
+    }
     options.args.push_back(h->destination);
     // ssh joins its arguments into one line for the remote shell: quote each word once, here
     std::string remote = x2::platform::QuoteShellArgument(h->x2ctl);
@@ -120,6 +124,8 @@ std::string Profile::Validate() const
             return "host " + h.name + ": no destination";
         if (h.x2ctl.empty())
             return "host " + h.name + ": no x2ctl";
+        if (h.port < 0 || h.port > 65535)
+            return "host " + h.name + ": port " + std::to_string(h.port) + " is not a TCP port";
     }
     std::set<std::string> names;
     for (const ServerSpec& s : servers) {
@@ -218,6 +224,14 @@ std::optional<Profile> ParseProfile(std::string_view json, const std::string& ba
             h.destination = node.GetString("destination");
             h.x2ctl = node.GetString("x2ctl", "x2ctl");
             h.controlDir = node.GetString("controlDir");   // the other machine's path: not resolved here
+            if (const x2::platform::Json* port = node.Find("port")) {
+                const auto value = port->AsInteger();
+                if (!value || *value <= 0 || *value > 65535) {
+                    error = "host " + h.name + ": \"port\" is a number from 1 to 65535";
+                    return std::nullopt;
+                }
+                h.port = static_cast<int>(*value);
+            }
             if (!StringList(node.Find("ssh"), h.ssh)) {
                 error = "host " + h.name + ": \"ssh\" is a list of strings";
                 return std::nullopt;

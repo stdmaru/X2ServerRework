@@ -136,7 +136,7 @@ See [Server — Windows dependencies](../original/server.md).
         results, start/stop all, quit that stops what it started; Windows GUI subsystem and a Linux `.desktop`; drawn headless in
         tests; tested by the user on Arch (2026-11-05). See [ServerManager](../tools/servermanager.md#window).
   - [x] `tools/control-dir`: control sockets in another folder (servers in containers with a bind mount): `X2_CONTROL_DIR`,
-        `x2ctl --dir=`, and `controlDir` in the profile and per host (2026-11-05). See
+        `x2ctl --dir=`, and `controlDir` in the profile and per host; plus the ssh `port` of a host (2026-11-05). See
         [Server console](../porting/console.md#control-socket).
   - [ ] `tools/servermanager-askpass`: ssh password and host key prompts in the window through `SSH_ASKPASS`, when the key is
         refused (asked for by the user on 2026-11-05; after `tools/servermanager-ui`).
