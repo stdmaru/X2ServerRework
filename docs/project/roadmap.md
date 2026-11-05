@@ -191,8 +191,10 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
 - [ ] Audio: FMOD Ex / DirectSound → miniaudio/SDL3 audio (or current cross-platform FMOD Core).
 - [ ] Video (Bandi), embedded browser, CxImage → remove/replace (Steam and anti-cheat removed on 2026-11-05).
 - [ ] `.kom` archives (T35), one branch per step; see [`.kom` archives](../porting/kom.md):
-  - [ ] `build/kom-library`: `src/kom` (`x2::kom`): read, write, mount a folder, headless tests; survey of how the client
-        reads `.kom` and loose files.
+  - [x] `build/kom-library`: `src/kom` (`x2::kom` read and mount, `x2::kom_write`): byte-identical rewrites, first-wins
+        mounting with a warning, `ReadOnlyFile` in `x2::platform`; headless tests, byte-for-byte cross-check with `kom.py`,
+        and all 173 client archives decoded and round-tripped (2026-11-05); survey of how the original client reads `.kom`
+        and loose files.
   - [ ] Import the client into `client_data` + manifest (organized by domain, byte-identical repack).
   - [ ] Pack `client_data` for distribution (only changed archives are rebuilt).
   - [ ] The client's `KGCMassFileManager` on `x2::kom`, with the dev-tools loose-file priority (`/data/data`).

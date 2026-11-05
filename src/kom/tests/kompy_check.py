@@ -19,7 +19,7 @@ def test_entries():
 def main():
     cmd = sys.argv[2]
     if cmd == "read":
-        with open(sys.argv[4], "w") as fp:
+        with open(sys.argv[4], "w", newline="\n") as fp:
             for e in kom.read_kom(sys.argv[3]):
                 data = kom.decode_entry(e)
                 fp.write("%s\t%d\t%d\t%s\n" % (e.name, e.algorithm, e.size, data.hex()))

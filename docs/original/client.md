@@ -46,7 +46,7 @@ The ~22 X2Lib files that call `GetDevice()` need individual review.
 | Audio | `KTDSManager`, `KTDXDeviceSound`, `KTDSMP3Play`, `FMOD/` (FMOD Ex), DirectSound | miniaudio / SDL3 audio, or current FMOD Core |
 | Video | `BandiVideo*` (15 files), `bdvid32.dll` | remove or replace (ffmpeg/pl_mpeg) depending on `data/movie` format |
 | Networking | `KTDNManager`, `KTDNUDP`, `KTDNTransfer`, `X2ServerProtocol/Socket` (IOCP in the client too!) | same networking library as the server (Asio) |
-| `.kom` files | `KGCMassFileManager`, `KGCMassFileBufferManager` (zlib `uncompress`) | port; format is an asset |
+| `.kom` files | `KGCMassFileManager`, `KGCMassFileBufferManager` (zlib `uncompress`, libxml2 for the header) | `x2::kom` (T35); survey in [`.kom` archives](../porting/kom.md#the-original-ktdxlibkgcmassfilemanager-surveyed-2026-11-05) |
 | Embedded browser | `KBrowserWrapper`, `KPCHWebBrowser`, `Browser.c` | remove |
 | Crash/anti-hack | `CrashRpt`, `KncFirewall`, `KProtectedType`, `AntiHackingString.h`, XTRAP, HackShield | remove |
 | Publisher | `NexonModule`, `Steamworks`, `IGA` (ads), `X2Lib/OnlyGlobal/<country>` | remove/stub |
