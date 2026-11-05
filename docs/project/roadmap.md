@@ -51,7 +51,7 @@ Tasks:
 - [x] **Server** flags generated from `ServerDefine.h` (736 true / 423 false): [Flags and verification](../tools/flags.md).
 - [x] Resolver validated at scale by differential check: 1,415/1,423 server files equivalent (the remaining 8 are configuration headers).
 - [x] Importer checks each file's integrity against git (the HDD copy had 90 corrupted files; see [Inventory](../original/inventory.md#copy-integrity)).
-- [ ] **Client** flags (`KTDX.h`/`Always.h`) and conflicts between server and client in shared code (`Common`): handle these during the client import.
+- [x] **Client** flags generated from `ServerDefine.h` + `KTDX.h` (1,719 true / 890 false; 973/978 files equivalent), and server/client conflicts in shared code listed (two, neither on the wire, 2026-11-05): [Flags and verification](../tools/flags.md#client-results-2026-11-05). Client and server share one `Common` (T33).
 - [x] `server-common` imported: 414 files ([Server: Common](../porting/server-common.md)).
 - [x] `server-x2lib` imported: `X2Lib/X2UDPPacket.*` (client UDP structs compiled by the server) into `src/server/X2Lib` (2026-10-29).
 - [x] `server-channel` imported: 36 files ([Server: ChannelServer](../porting/server-channel.md), 2026-10-30).
@@ -164,6 +164,9 @@ See [Server — Windows dependencies](../original/server.md).
 
 See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
 
+- [ ] `client/import`: importer modules for `KTDXLIB`, `X2Lib`, `X2` and the missing `KNCSDK_Client` parts, with
+      `client.generated.toml`; shared `Common` files are not imported again (T33). No need to compile yet.
+- [ ] Client skeleton: CMake target, window on `x2::app` (T32), SDL events translated to the `MsgProc` model (next item).
 - [ ] Window/input/IME: Win32 + DirectInput → SDL3. For now, retain the `MsgProc(HWND, UINT, WPARAM, LPARAM)` model
       by translating SDL events into Win32-style messages (`X2Lib` uses `HWND` in ~272 files — mostly through the `MsgProc` signature).
 - [ ] D3DX math (`D3DXVECTOR3` ~8,000 uses) → header-compatible shim over GLM or custom implementation.

@@ -109,7 +109,9 @@ UDP (`server/common-udp`):
 
 - `X2Lib/X2UDPPacket.*` (client datagram structs) came through importer module `server-x2lib`, under `src/server/X2Lib`
   (the same relative path as in the original). The two `u_long` fields in `KXPT_PORT_CHECK_REQ/ACK` became `std::uint32_t`: on Linux they
-  would be 8 bytes and change the datagram. `static_assert` checks sizes.
+  would be 8 bytes and change the datagram. `static_assert` checks sizes. `X2OPTIMIZE_NPC_NONHOST_SIMULATION` is still an
+  `#ifdef` there (undefined for the servers, true for the client): the client import resolves it as true
+  ([Flags](../tools/flags.md#server-and-client-in-shared-code-2026-11-05)).
 - Declarations with `__forceinline` whose bodies are in `.cpp` lost `__forceinline` (GCC rejects it).
 - `UdpRelayChecker/`: files become empty after US flags; nothing to port.
 

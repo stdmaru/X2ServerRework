@@ -24,7 +24,7 @@ The client has ~40 configurations in `X2Lib.vcxproj` (`US_INTERNAL`, `EU_SERVICE
 
 ## Status (2026-10-29)
 
-Server resolved: [Flags and verification](../tools/flags.md) (736 true, 423 false, differential verification across the entire tree). Client: pending.
+Server resolved: [Flags and verification](../tools/flags.md) (736 true, 423 false, differential verification across the entire tree). Client resolved on 2026-11-05 (1,719 true, 890 false, two configuration chains); see the same page.
 
 ## Strategy: freeze with a tool, not by hand
 
