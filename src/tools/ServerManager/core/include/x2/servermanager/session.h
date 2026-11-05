@@ -34,12 +34,17 @@ public:
     void OnConnecting(std::string_view how);                // e.g. "ssh host x2ctl attach GameServer"
     void OnConnected(Sender sender);
     void OnLine(std::string_view line);
-    void OnDisconnected(std::string_view reason);           // pending requests fail with "disconnected"
+    // Pending requests fail with "disconnected". Logged as a warning unless `expected` (a detach, a stop that was
+    // asked for) or the server had reported that it stopped.
+    void OnDisconnected(std::string_view reason, bool expected = false);
 
     // Requests. The command is echoed to the log, and its result is logged when it arrives (then `done` is called).
     // nullopt when not connected or the line could not be written.
     std::optional<std::int64_t> RunLua(std::string_view lua, ResultHandler done = {});
     std::optional<std::int64_t> Stop(ResultHandler done = {});
+
+    // An event noted by ServerManager itself (orchestration), in the log as EntryKind::Event.
+    void NoteEvent(LogLevel level, std::string text) { Note(EntryKind::Event, level, std::move(text)); }
 
     const std::string& Name() const { return m_name; }                 // as configured in ServerManager
     const std::string& ReportedName() const { return m_hello.server; } // from hello

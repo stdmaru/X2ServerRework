@@ -3,8 +3,11 @@
 
 add_library(x2_servermanager_core STATIC
     src/log_store.cpp
+    src/orchestrator.cpp
+    src/profile.cpp
     src/protocol.cpp
-    src/session.cpp)
+    src/session.cpp
+    src/transport.cpp)
 add_library(x2::servermanager_core ALIAS x2_servermanager_core)
 target_include_directories(x2_servermanager_core PUBLIC include)
 target_link_libraries(x2_servermanager_core PUBLIC x2::platform)
