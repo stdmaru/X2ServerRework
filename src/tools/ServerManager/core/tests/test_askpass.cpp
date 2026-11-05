@@ -179,7 +179,7 @@ TEST_CASE("askpass: the real ssh asks through it (when an sshd answers on 127.0.
             continue;
         }
         const AskpassRequest& r = pending.front();
-        MESSAGE("ssh asked (" << ToString(r.kind) << "): " << r.prompt);
+        MESSAGE("ssh asked (" << std::string(ToString(r.kind)) << "): " << r.prompt);
         if (r.kind == AskpassKind::Confirm) {
             hostKey = true;
             broker.Answer(r.id, std::string("yes"));

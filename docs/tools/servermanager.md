@@ -201,9 +201,10 @@ shows, and its stdout is the pipe ssh gave it; SDL's `main` passes the prompt as
   key prompt, then the password. Any answer other than yes, no or a fingerprint makes it ask again forever, so a host key prompt
   is never answered with a secret.
 - A question whose ssh is killed (a stop, a timeout) stays in the dialog until answered; the answer goes nowhere.
-- On the Windows test VM (2026-11-05) the real-ssh test showed Windows' ssh asking the host key through the helper and
-  writing `known_hosts` after Yes; then that VM's sshd stopped answering connections from the VM itself (the TCP connection
-  opens, no banner, nothing in its event log; connections from outside kept working), so the test has a 20 s limit and skips.
+- On the Windows test VM (2026-11-05) the real-ssh test showed Windows' ssh asking the host key through the helper (a
+  GUI-subsystem program, the whole multi-line prompt) and writing `known_hosts` after Yes; the password stage was not reached,
+  as that VM's sshd answers connections from the VM itself only now and then (the TCP connection opens, then often no banner
+  and nothing in its event log; connections from outside always work), so the test has a 20 s limit.
 
 ### Start and stop commands (2026-11-05, `tools/servermanager-remote-start`)
 
