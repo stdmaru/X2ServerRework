@@ -5,7 +5,7 @@
 //   {"x2ctl": "x2ctl",
 //    "servers": [{"name": "LoginServer", "directory": "LoginServer", "program": "./LoginServer",
 //                 "args": ["DEV", "0"], "after": ["EPublisherServer"], "control": "LoginServer"}, ...],
-//    "hosts": [{"name": "prod", "destination": "x2@10.0.0.5", "x2ctl": "/opt/x2/dist/x2ctl",
+//    "hosts": [{"name": "prod", "destination": "x2@10.0.0.5", "x2ctl": "/opt/x2/dist/x2ctl", "shell": "sh",
 //               "controlDir": "/opt/x2/docker/control/x2",
 //               "start": "docker compose -f /opt/x2/docker-compose.yml up -d {service}", "stop": "..."}],
 //    "controlDir": "..."}
@@ -27,6 +27,9 @@ struct HostSpec {
     std::string destination;            // what ssh connects to: host, user@host, or a Host of ~/.ssh/config
     int port = 0;                       // ssh -p; 0: ssh's own (22, or the Port of ~/.ssh/config)
     std::string x2ctl = "x2ctl";        // on that machine (a path, or a name in its PATH)
+    // What runs the remote command line there, and so how the x2ctl line is quoted: a POSIX shell, or cmd.exe (the
+    // default shell of Windows' OpenSSH). The start and stop lines are passed as written, in that shell's syntax.
+    enum class Shell { Sh, Cmd } shell = Shell::Sh;
     std::string controlDir;             // its control sockets (x2ctl --dir); empty: x2ctl's default there
     std::vector<std::string> ssh;       // program and options before the destination; empty: DefaultSshCommand()
     // Shell command lines run there to start and stop one of its servers, as its service manager does (docker compose,

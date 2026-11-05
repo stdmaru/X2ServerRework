@@ -140,9 +140,30 @@ is not terminated or killed.
   `ssh -T -o BatchMode=yes -o ConnectTimeout=10`, plus on Linux `-o ControlMaster=auto -o ControlPath=<control dir>/ssh-%C
   -o ControlPersist=60`, so the attaches and queries to one host share a connection (Windows' OpenSSH has no ControlMaster).
   `BatchMode` makes a missing key fail instead of asking for a password, since there is no terminal: use keys or an agent.
-- The remote command is one line for the remote shell, each word quoted once (`QuoteShellArgument`): a POSIX shell on the host.
+- The remote command is one line for the remote shell, each word quoted once: `"shell": "sh"` (default) is a POSIX shell
+  (`QuoteShellArgument`), `"shell": "cmd"` is `cmd.exe`, the default shell of Windows' OpenSSH (`x2ctl` in the C runtime's double
+  quotes, each argument with `QuoteCmdArgument`: those quotes plus `^` before `"`, `%`, `!`, `^`, `&`, `|`, `<`, `>`, `(`, `)`).
 - Authentication and encryption are SSH's (T30); the control socket on the host accepts only its own user, so `destination` must
   log in as the user the servers run as.
+
+### Windows hosts (2026-11-05, `tools/servermanager-windows-host`)
+
+A ServerManager on Linux attaches to the servers that a ServerManager (or a terminal) on Windows started, through Windows'
+OpenSSH server:
+
+```json
+{"hosts": [{"name": "win", "destination": "Administrator@10.226.30.240", "shell": "cmd",
+            "x2ctl": "C:\\x2\\dist\\x2ctl.exe"}],
+ "servers": [{"name": "GameServer", "host": "win", "control": "GameServer"}]}
+```
+
+- `"shell": "cmd"`: the remote command is run by `cmd.exe /c` (see above). `start` and `stop` are passed as written, so they
+  are `cmd` lines there (for example `schtasks /run /tn "x2 {service}"`).
+- `x2ctl`: a full path such as `C:\x2\dist\x2ctl.exe`, or `x2ctl` in the `PATH` of the ssh user.
+- The ssh user must be the user that runs the servers: the control sockets are in that user's `%LOCALAPPDATA%\x2`, the same
+  for the desktop (RDP) session and the ssh session ([control socket](../porting/console.md#control-socket)).
+- A server that the Windows ServerManager started is its child: quitting that ServerManager stops it, and the attached Linux
+  ServerManager sees it stop. Servers started from their own terminal or as a scheduled task keep running.
 
 ### Start and stop commands (2026-11-05, `tools/servermanager-remote-start`)
 
@@ -166,6 +187,13 @@ server's `service` (its name there; by default its `name`), `{name}` its name, `
   is logged as an error and the server stays as it was. Stopping a server whose start command is running cancels it (ssh is
   killed; what the command already did there stays done).
 - Without `stop`, the protocol's stop, as above; without `start`, the window's button is "Attach when ready".
+- Without a service manager, a POSIX host can start a server in the background:
+  `"start": "cd /opt/x2/dist/{service} && nohup ./{service} DEV 0 --no-stdin >/dev/null 2>&1 </dev/null &"` (no `stop`).
+  `--no-stdin` is needed: with stdin from `/dev/null` the server is in lines mode, and the end of stdin exits it
+  ([modes](../porting/console.md#modes)). The redirections let ssh return at once; a server that fails to start is only seen by
+  the attach that follows. The log file and the [history](../porting/console.md#history) keep what the console would show. With
+  `KillUserProcesses=yes` in `logind.conf`, add `setsid` or `loginctl enable-linger`. On a Windows host, OpenSSH ends the
+  session's processes with it: use a scheduled task (`schtasks /run`).
 - Quitting the window leaves them running, like any attached server.
 
 Tested on 2026-11-05 with the real ssh to `localhost` on the user's desktop (key authentication, the default command with
