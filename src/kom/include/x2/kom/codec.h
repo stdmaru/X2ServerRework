@@ -36,4 +36,8 @@ void XorCrcEncrypt(std::span<std::uint8_t> blob, std::string_view name, std::uin
 bool Decode(std::string_view name, std::uint32_t algorithm, std::span<const std::uint8_t> blob, std::uint32_t size,
             std::vector<std::uint8_t>& out, std::string& error);
 
+// The same into `out`, whose size is the entry's decoded size; `blob` is decrypted in place (algorithms 2 and 3).
+bool DecodeInPlace(std::string_view name, std::uint32_t algorithm, std::span<std::uint8_t> blob,
+                   std::span<std::uint8_t> out, std::string& error);
+
 } // namespace x2::kom

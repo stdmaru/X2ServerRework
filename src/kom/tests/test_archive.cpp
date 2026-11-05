@@ -85,6 +85,21 @@ TEST_CASE("kom: write, list from the header and read every algorithm")
     REQUIRE(a->ReadStored(entries[4], out, error));
     CHECK(out == Pattern(77, 4));
 
+    // ReadInto: the same data into the caller's buffer, with a reusable scratch for the stored blob.
+    Bytes scratch;
+    for (int i = 0; i < 3; ++i)
+    {
+        const Entry& e = entries[static_cast<std::size_t>(i)];
+        Bytes into(e.size);
+        REQUIRE_MESSAGE(a->ReadInto(e, into, scratch, error), error);
+        CHECK(into == Pattern(e.size, seeds[i]));
+    }
+    Bytes wrongSize(entries[0].size + 1);
+    CHECK_FALSE(a->ReadInto(entries[0], wrongSize, scratch, error));
+    CHECK(error.find("output buffer") != std::string::npos);
+    Bytes opaque(entries[4].size);
+    CHECK_FALSE(a->ReadInto(entries[4], opaque, scratch, error));
+
     // Lookups are case-insensitive (ASCII), as the client's.
     REQUIRE(a->Find("dlg_sample.LUA"));
     CHECK(a->Find("dlg_sample.LUA") == &entries[0]);
