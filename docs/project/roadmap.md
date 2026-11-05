@@ -118,8 +118,9 @@ See [Server — Windows dependencies](../original/server.md).
       `KX2ServerLauncher` waited for the `CenterServer_Ready` window before starting GameServer); stop in reverse. One branch per step:
   - [x] `tools/sdl3-imgui-base`: SDL3 and ImGui dependencies, `x2::app` (window, events, SDL_GPU) and `x2::app_imgui`, demo, headless
         tests; Clang, GCC, and clang-cl without warnings (2026-11-04). See [App foundation](../porting/app.md).
-  - [ ] `tools/servermanager-protocol`: full JSON parser (`x2::platform`), protocol v1 client (`hello`/`log`/`output`/`status`/`result`,
-        `id` correlation), server state, log store with filter and search; tests with recorded lines and the real control socket.
+  - [x] `tools/servermanager-protocol`: full JSON parser (`x2::platform`), protocol v1 client (`hello`/`log`/`output`/`status`/`result`,
+        `id` correlation), server state, log store with filter and search; tests with recorded lines and the real control socket
+        (2026-11-04). See [ServerManager](../tools/servermanager.md).
   - [ ] `tools/servermanager-local`: `x2::platform::Process` (child with pipes, Linux and Windows), `--machine` transport, attach to a
         local control socket, orchestrator (profile with dependencies, ordered start waiting for `ready`, reverse stop, crash detection).
   - [ ] `server/control-history`: the protocol has no log history, so a manager attaching to a server that has been running for a while

@@ -1,8 +1,21 @@
 #include "x2/platform/json.h"
 
+#include <charconv>
 #include <cstdio>
+#include <cstdlib>
 
 namespace x2::platform {
+
+// Fills the private members of Json for the parser.
+class JsonBuilder
+{
+public:
+    static Json& SetType(Json& node, Json::Type type) { node.m_type = type; return node; }
+    static bool& BoolOf(Json& node) { return node.m_bool; }
+    static std::string& TextOf(Json& node) { return node.m_text; }
+    static std::vector<Json>& ItemsOf(Json& node) { return node.m_items; }
+    static std::vector<std::pair<std::string, Json>>& MembersOf(Json& node) { return node.m_members; }
+};
 
 namespace {
 
@@ -73,7 +86,13 @@ public:
         }
     }
 
+    // Full document (ParseJson).
+    std::optional<Json> Document();
+
 private:
+    bool Tree(Json& node, int depth);
+    bool NumberText(std::string& out);
+
     std::optional<std::map<std::string, JsonValue>> End(std::map<std::string, JsonValue>& result)
     {
         Space();
@@ -202,11 +221,176 @@ private:
         return true;
     }
 
+
     std::string_view m_s;
     std::size_t m_pos = 0;
 };
 
+std::optional<Json> Parser::Document()
+{
+    Json root;
+    Space();
+    if (!Tree(root, 0))
+        return std::nullopt;
+    Space();
+    if (m_pos != m_s.size())
+        return std::nullopt;
+    return root;
+}
+
+// RFC 8259 number: -?(0|[1-9][0-9]*)(\.[0-9]+)?([eE][+-]?[0-9]+)?
+bool Parser::NumberText(std::string& out)
+{
+    const std::size_t start = m_pos;
+    auto digits = [this] {
+        const std::size_t from = m_pos;
+        while (m_pos < m_s.size() && m_s[m_pos] >= '0' && m_s[m_pos] <= '9')
+            ++m_pos;
+        return m_pos > from;
+    };
+    Eat('-');
+    if (Eat('0')) {
+        // no leading zeros
+    } else if (!digits()) {
+        return false;
+    }
+    if (Eat('.') && !digits())
+        return false;
+    if (Eat('e') || Eat('E')) {
+        if (!Eat('+'))
+            Eat('-');
+        if (!digits())
+            return false;
+    }
+    out.assign(m_s.substr(start, m_pos - start));
+    return true;
+}
+
+bool Parser::Tree(Json& node, int depth)
+{
+    if (depth >= 64 || m_pos >= m_s.size())     // 64 levels at most
+        return false;
+    const char c = m_s[m_pos];
+    if (c == '"') {
+        JsonBuilder::SetType(node, Json::String);
+        return String(JsonBuilder::TextOf(node));
+    }
+    if (Literal("true")) {
+        JsonBuilder::SetType(node, Json::Bool);
+        JsonBuilder::BoolOf(node) = true;
+        return true;
+    }
+    if (Literal("false")) {
+        JsonBuilder::SetType(node, Json::Bool);
+        return true;
+    }
+    if (Literal("null")) {
+        JsonBuilder::SetType(node, Json::Null);
+        return true;
+    }
+    if (Eat('[')) {
+        JsonBuilder::SetType(node, Json::Array);
+        auto& items = JsonBuilder::ItemsOf(node);
+        Space();
+        if (Eat(']'))
+            return true;
+        for (;;) {
+            Space();
+            items.emplace_back();
+            if (!Tree(items.back(), depth + 1))
+                return false;
+            Space();
+            if (Eat(']'))
+                return true;
+            if (!Eat(','))
+                return false;
+        }
+    }
+    if (Eat('{')) {
+        JsonBuilder::SetType(node, Json::Object);
+        auto& members = JsonBuilder::MembersOf(node);
+        Space();
+        if (Eat('}'))
+            return true;
+        for (;;) {
+            Space();
+            std::string key;
+            if (!String(key))
+                return false;
+            Space();
+            if (!Eat(':'))
+                return false;
+            Space();
+            members.emplace_back(std::move(key), Json());
+            if (!Tree(members.back().second, depth + 1))
+                return false;
+            Space();
+            if (Eat('}'))
+                return true;
+            if (!Eat(','))
+                return false;
+        }
+    }
+    JsonBuilder::SetType(node, Json::Number);
+    return NumberText(JsonBuilder::TextOf(node));
+}
+
 } // namespace
+
+bool Json::AsBool(bool fallback) const
+{
+    return m_type == Bool ? m_bool : fallback;
+}
+
+double Json::AsNumber(double fallback) const
+{
+    if (m_type != Number)
+        return fallback;
+    return std::strtod(m_text.c_str(), nullptr);
+}
+
+std::optional<long long> Json::AsInteger() const
+{
+    if (m_type != Number || m_text.find_first_of(".eE") != std::string::npos)
+        return std::nullopt;
+    long long value = 0;
+    const auto [end, ec] = std::from_chars(m_text.data(), m_text.data() + m_text.size(), value);
+    if (ec != std::errc() || end != m_text.data() + m_text.size())
+        return std::nullopt;
+    return value;
+}
+
+const Json* Json::Find(std::string_view key) const
+{
+    for (auto it = m_members.rbegin(); it != m_members.rend(); ++it)
+        if (it->first == key)
+            return &it->second;
+    return nullptr;
+}
+
+std::string Json::GetString(std::string_view key, std::string_view fallback) const
+{
+    const Json* value = Find(key);
+    return std::string(value && value->m_type == String ? std::string_view(value->m_text) : fallback);
+}
+
+long long Json::GetInteger(std::string_view key, long long fallback) const
+{
+    const Json* value = Find(key);
+    const auto integer = value ? value->AsInteger() : std::nullopt;
+    return integer ? *integer : fallback;
+}
+
+bool Json::GetBool(std::string_view key, bool fallback) const
+{
+    const Json* value = Find(key);
+    return value ? value->AsBool(fallback) : fallback;
+}
+
+std::optional<Json> ParseJson(std::string_view text)
+{
+    return Parser(text).Document();
+}
 
 void AppendJsonString(std::string& out, std::string_view utf8)
 {
