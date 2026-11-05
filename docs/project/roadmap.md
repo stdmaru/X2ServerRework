@@ -188,7 +188,7 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
       Wine) extended to the client's subset: `D3DXQUATERNION`, `D3DXPLANE`, animation keys, plane/quaternion functions,
       `Vec3Project`, `Vec3CatmullRom`, `PerspectiveFovLH`, `OrthoLH`, `Transformation2D`, `ComputeBoundingSphere`, with tests
       (2026-11-05). See [Platform: D3DX math](../porting/platform.md#d3dx-math).
-- [ ] Audio: FMOD Ex / DirectSound → miniaudio/SDL3 audio (or current cross-platform FMOD Core).
+- Audio moved to the end of the client work ([Phase 4](#phase-4--client-graphics); user, 2026-11-05).
 - [ ] Video (Bandi), embedded browser, CxImage → remove/replace (Steam and anti-cheat removed on 2026-11-05).
 - [ ] `.kom` archives (T35), one branch per step; see [`.kom` archives](../porting/kom.md):
   - [x] `build/kom-library`: `src/kom` (`x2::kom` read and mount, `x2::kom_write`): byte-identical rewrites, first-wins
@@ -208,6 +208,12 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
 - [ ] Introduce graphics abstraction within `KTDXLIB` (D3D9 is concentrated there: ~56 files use the device; X2Lib mostly uses math).
 - [ ] Reimplement what currently comes from D3DX: `.x` loader (mesh + skin + animation), `.fx` effects (`x2.fx`), `.dds` textures, fonts, sprites.
 - [ ] New backend: SDL_GPU ([decisions.md](decisions.md), T19).
+- [ ] Silent sound backend, with the first step that compiles `KTDXLIB`: `CKTDXDeviceSound`, `KTDSManager` and
+      `CKTDXDeviceManager::OpenSound` keep their interface and play nothing, so the 149 files that use sound compile
+      unchanged. The audio APIs (FMOD, DirectSound, MP3) are confined to 9 `KTDXLIB` files (`KTDXDeviceSound.*`,
+      `KTDSManager.*`, `KTDSMP3Play.*`, `Always.h`, `KTDXErrorDefine.h`) and 3 in `X2Lib` (2026-11-05).
+- [ ] **Audio, last** (user, 2026-11-05): replace the silent backend with a real one, FMOD Ex / DirectSound →
+      miniaudio/SDL3 audio (or current cross-platform FMOD Core); only those files change.
 
 ## Phase 5 — Deep cleanup
 
