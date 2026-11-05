@@ -2,24 +2,43 @@
 
 #include <doctest/doctest.h>
 
+#include <filesystem>
+
 using namespace x2::servermanager;
+
+namespace {
+
+// Same path once normalized: on Windows the profile's paths come back with backslashes.
+bool SamePath(const std::string& a, const std::string& b)
+{
+    return std::filesystem::path(a).lexically_normal() == std::filesystem::path(b).lexically_normal();
+}
+
+#if defined(_WIN32)
+constexpr const char* kAbsolute = "C:/abs/B";
+#else
+constexpr const char* kAbsolute = "/abs/B";
+#endif
+
+}  // namespace
 
 TEST_CASE("profile: parsing and paths")
 {
     std::string error;
-    const auto profile = ParseProfile(R"({
+    const std::string json = std::string(R"({
         "x2ctl": "./x2ctl",
         "servers": [
             {"name": "A", "directory": "A", "program": "./A", "args": ["DEV"]},
-            {"name": "B", "directory": "/abs/B", "program": "./B.exe", "args": ["DEV", "0"], "after": ["A"],
-             "control": "Bee"}
-        ]})", "/dist", error);
+            {"name": "B", "directory": ")") + kAbsolute + R"(", "program": "./B.exe", "args": ["DEV", "0"],
+             "after": ["A"], "control": "Bee"}
+        ]})";
+    const auto profile = ParseProfile(json, "/dist", error);
     REQUIRE_MESSAGE(profile, error);
-    CHECK(profile->x2ctl == "/dist/x2ctl");
+    CHECK(SamePath(profile->x2ctl, "/dist/x2ctl"));
     REQUIRE(profile->servers.size() == 2);
-    CHECK(profile->servers[0].directory == "/dist/A");
+    CHECK(SamePath(profile->servers[0].directory, "/dist/A"));
     CHECK(profile->servers[0].ControlName() == "A");
-    CHECK(profile->servers[1].directory == "/abs/B");
+    CHECK(SamePath(profile->servers[1].directory, kAbsolute));
     CHECK(profile->servers[1].args == std::vector<std::string>{"DEV", "0"});
     CHECK(profile->servers[1].after == std::vector<std::string>{"A"});
     CHECK(profile->servers[1].ControlName() == "Bee");
@@ -63,8 +82,8 @@ TEST_CASE("profile: start order and the default package")
                                             "ChannelServer"});
     CHECK(profile.servers[0].args == std::vector<std::string>{"DEV"});
     CHECK(profile.servers[4].args == std::vector<std::string>{"DEV", "0"});
-    CHECK(profile.servers[4].directory == "/dist/GameServer");
-    CHECK(profile.x2ctl == "/dist/x2ctl");
+    CHECK(SamePath(profile.servers[4].directory, "/dist/GameServer"));
+    CHECK(SamePath(profile.x2ctl, "/dist/x2ctl"));
 
     // listed out of order: dependencies still come first
     std::string error;
