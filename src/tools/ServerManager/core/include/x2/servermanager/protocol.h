@@ -1,7 +1,7 @@
 #pragma once
 
 // Control protocol v1 of the servers, client side (decisions T30, docs/porting/console.md): JSON lines from the server
-// (hello, log, output, status, result) and the requests ServerManager sends (lua, stop).
+// (hello, log, output, status, result) and the requests ServerManager sends (lua, stop, history).
 
 #include <cstdint>
 #include <optional>
@@ -33,9 +33,11 @@ struct HelloMessage {
     std::string server;
     std::int64_t pid = 0;
     ServerState state = ServerState::Unknown;
+    std::optional<std::int64_t> seq;   // last numbered line sent before the greeting (absent: no history support)
 };
 
 struct LogMessage {
+    std::optional<std::int64_t> seq;   // line number, shared with output, for merging the history
     std::string time;       // YYYY-MM-DD hh:mm:ss
     LogLevel level = LogLevel::Info;
     std::string stream;     // cerr, cout2...
@@ -49,6 +51,7 @@ struct LogMessage {
 
 struct OutputMessage {
     std::string text;
+    std::optional<std::int64_t> seq;
 };
 
 struct StatusMessage {
@@ -74,5 +77,7 @@ ServerMessage ParseServerMessage(std::string_view line);
 // Requests (one line each, without the newline).
 std::string LuaRequest(std::int64_t id, std::string_view lua);
 std::string StopRequest(std::int64_t id);
+// The server's backlog of log and output lines numbered up to `upto`, then a result.
+std::string HistoryRequest(std::int64_t id, std::int64_t upto);
 
 }  // namespace x2::servermanager

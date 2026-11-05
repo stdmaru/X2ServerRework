@@ -7,15 +7,24 @@
 #include "x2/platform/terminal.h"
 
 #include <atomic>
+#include <charconv>
+#include <cstdint>
 #include <cstdio>
 #include <deque>
+#include <limits>
 #include <mutex>
 #include <optional>
 #include <string>
+#include <utility>
 
 using x2::platform::JsonString;
 
 namespace {
+
+// Log lines kept for {"history":true} (docs/porting/console.md#history): bounded by count and by size, below the
+// 8 MB a control client may have queued before it is disconnected.
+constexpr std::size_t kBacklogLines = 10000;
+constexpr std::size_t kBacklogBytes = 4u << 20;
 
 // Like lua.c: an expression line prints its values ("1+1" -> 2), anything else runs as a statement.
 int Load( lua_State* L, const std::string& line )
@@ -85,9 +94,11 @@ struct Command
     std::string id = "null";        // JSON value, echoed in the result
     std::string lua;
     bool        stop = false;
+    bool        history = false;   // replay the backlog up to `upto`
+    std::int64_t upto = std::numeric_limits<std::int64_t>::max();
 };
 
-// {"id":1,"lua":"..."}, {"id":1,"stop":true}, or a bare line of Lua
+// {"id":1,"lua":"..."}, {"id":1,"stop":true}, {"id":1,"history":true,"upto":n}, or a bare line of Lua
 std::optional<Command> ParseCommand( int client, const std::string& line )
 {
     Command command;
@@ -105,6 +116,17 @@ std::optional<Command> ParseCommand( int client, const std::string& line )
         command.id = id->second.kind == x2::platform::JsonValue::String ? JsonString( id->second.text ) : id->second.text;
     const auto stop = object->find( "stop" );
     command.stop = stop != object->end() && stop->second.text == "true";
+    const auto history = object->find( "history" );
+    command.history = history != object->end() && history->second.text == "true";
+    const auto upto = object->find( "upto" );
+    if( upto != object->end() )
+    {
+        const std::string& text = upto->second.text;
+        std::int64_t value = 0;
+        const auto [end, ec] = std::from_chars( text.data(), text.data() + text.size(), value );
+        if( ec == std::errc() && end == text.data() + text.size() )
+            command.upto = value;
+    }
     const auto lua = object->find( "lua" );
     if( lua != object->end() )
         command.lua = lua->second.text;
@@ -125,12 +147,22 @@ struct KServerConsole::Impl
     std::deque<Command>                     commands;   // from the control clients
     std::atomic<bool>                       ready{ false };
 
+    // Numbered log and output lines, oldest first. Lock order: backlogMutex, then the control server's.
+    std::mutex                              backlogMutex;
+    std::deque<std::pair<std::int64_t, std::string>> backlog;
+    std::size_t                             backlogBytes = 0;
+    std::atomic<std::int64_t>               lastSeq{ 0 };
+
     const char* State() const { return ready ? "ready" : "loading"; }
 
+    // `seq`: the last numbered line sent before this greeting. The control server makes the greeting and registers the
+    // client in one step, so every later line reaches the client and every earlier one is in the backlog (or was
+    // dropped from it as too old).
     std::string Hello() const
     {
         return std::string( "{\"type\":\"hello\",\"protocol\":1,\"server\":" ) + JsonString( options.name )
-            + ",\"pid\":" + std::to_string( ::GetCurrentProcessId() ) + ",\"state\":\"" + State() + "\"}";
+            + ",\"pid\":" + std::to_string( ::GetCurrentProcessId() ) + ",\"state\":\"" + State()
+            + "\",\"seq\":" + std::to_string( lastSeq.load() ) + "}";
     }
 
     // To the machine stdout and every control client
@@ -139,6 +171,36 @@ struct KServerConsole::Impl
         if( options.machine && terminal )
             terminal->Write( json + "\n" );
         control.Broadcast( json );
+    }
+
+    // A log or output line: numbered and kept in the backlog. Sent under the lock, so seq order is wire order.
+    void Record( const std::string& json )
+    {
+        std::lock_guard lock( backlogMutex );
+        const std::int64_t seq = lastSeq.load() + 1;
+        std::string line = "{\"seq\":" + std::to_string( seq ) + "," + json.substr( 1 );
+        backlogBytes += line.size();
+        backlog.emplace_back( seq, line );
+        while( backlog.size() > kBacklogLines || ( backlogBytes > kBacklogBytes && backlog.size() > 1 ) )
+        {
+            backlogBytes -= backlog.front().second.size();
+            backlog.pop_front();
+        }
+        lastSeq.store( seq );
+        Emit( line );
+    }
+
+    // The backlog lines up to `upto` (in order), then the result. Live lines may interleave: the client merges by seq.
+    void ReplayHistory( const Command& command )
+    {
+        std::lock_guard lock( backlogMutex );
+        for( const auto& [seq, line] : backlog )
+        {
+            if( seq > command.upto )
+                break;
+            Reply( command.client, line );
+        }
+        Reply( command.client, "{\"type\":\"result\",\"id\":" + command.id + ",\"ok\":true,\"output\":\"\",\"error\":\"\"}" );
     }
 
     void Reply( int client, const std::string& json )
@@ -166,7 +228,7 @@ struct KServerConsole::Impl
             if( !line.empty() && line.back() == '\r' )
                 line.remove_suffix( 1 );
             if( !line.empty() )
-                Emit( "{\"type\":\"output\",\"text\":" + JsonString( line ) + "}" );
+                Record( "{\"type\":\"output\",\"text\":" + JsonString( line ) + "}" );
             if( end == std::string_view::npos )
                 break;
             text.remove_prefix( end + 1 );
@@ -260,6 +322,11 @@ KServerConsole::KServerConsole( Options options )
                     d.control.Send( client, "{\"type\":\"result\",\"id\":null,\"ok\":false,\"output\":\"\",\"error\":\"not a command\"}" );
                     return;
                 }
+                if( command->history )
+                {
+                    d.ReplayHistory( *command );   // here: no need to wait for the Lua thread
+                    return;
+                }
                 std::lock_guard lock( d.mutex );
                 d.commands.push_back( std::move( *command ) );
             },
@@ -280,7 +347,7 @@ KServerConsole::KServerConsole( Options options )
 
     if( d.options.machine || d.control.Running() )
     {
-        dbg::logfile::SetRecordSink( [&d]( const dbg::entry& e ) { d.Emit( dbg::logfile::RenderJson( e ) ); } );
+        dbg::logfile::SetRecordSink( [&d]( const dbg::entry& e ) { d.Record( dbg::logfile::RenderJson( e ) ); } );
         d.sinkSet = true;
         if( d.terminal )
             d.terminal->SetOutputHandler( [&d]( std::string_view text ) { d.OnOutput( text ); } );
@@ -322,7 +389,12 @@ void KServerConsole::Run( lua_State* L, std::function<bool()> ready )
             if( d.options.machine )
             {
                 if( std::optional<Command> command = ParseCommand( -1, *line ) )
-                    d.RunCommand( L, *command );
+                {
+                    if( command->history )
+                        d.ReplayHistory( *command );
+                    else
+                        d.RunCommand( L, *command );
+                }
                 else
                     d.Reply( -1, "{\"type\":\"result\",\"id\":null,\"ok\":false,\"output\":\"\",\"error\":\"not a command\"}" );
                 continue;

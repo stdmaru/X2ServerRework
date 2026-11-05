@@ -55,6 +55,18 @@ std::optional<LogLevel> ParseLogLevel(std::string_view text)
     return std::nullopt;
 }
 
+namespace {
+
+std::optional<std::int64_t> Seq(const Json& doc)
+{
+    if (const Json* seq = doc.Find("seq"))
+        if (const auto value = seq->AsInteger(); value && *value >= 0)
+            return *value;
+    return std::nullopt;
+}
+
+}  // namespace
+
 ServerMessage ParseServerMessage(std::string_view line)
 {
     const auto doc = x2::platform::ParseJson(line);
@@ -68,10 +80,12 @@ ServerMessage ParseServerMessage(std::string_view line)
         m.server = doc->GetString("server");
         m.pid = doc->GetInteger("pid");
         m.state = ParseServerState(doc->GetString("state"));
+        m.seq = Seq(*doc);
         return m;
     }
     if (type == "log") {
         LogMessage m;
+        m.seq = Seq(*doc);
         m.time = doc->GetString("time");
         m.level = ParseLogLevel(doc->GetString("level")).value_or(LogLevel::Info);
         m.stream = doc->GetString("stream");
@@ -89,7 +103,7 @@ ServerMessage ParseServerMessage(std::string_view line)
         return m;
     }
     if (type == "output")
-        return OutputMessage{doc->GetString("text")};
+        return OutputMessage{doc->GetString("text"), Seq(*doc)};
     if (type == "status")
         return StatusMessage{ParseServerState(doc->GetString("state"))};
     if (type == "result") {
@@ -116,6 +130,11 @@ std::string LuaRequest(std::int64_t id, std::string_view lua)
 std::string StopRequest(std::int64_t id)
 {
     return "{\"id\":" + std::to_string(id) + ",\"stop\":true}";
+}
+
+std::string HistoryRequest(std::int64_t id, std::int64_t upto)
+{
+    return "{\"id\":" + std::to_string(id) + ",\"history\":true,\"upto\":" + std::to_string(upto) + "}";
 }
 
 }  // namespace x2::servermanager
