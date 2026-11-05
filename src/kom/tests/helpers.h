@@ -86,11 +86,12 @@ inline Bytes RawArchive(const std::string& xml, const std::vector<Bytes>& blobs,
     return out;
 }
 
-inline Bytes Encoded(std::string_view name, std::uint32_t algorithm, const Bytes& data)
+inline Bytes Encoded(std::string_view name, std::uint32_t algorithm, const Bytes& data,
+                     int level = x2::kom::kKomPyLevel)
 {
     Bytes blob;
     std::string error;
-    REQUIRE_MESSAGE(x2::kom::Encode(name, algorithm, data, blob, error), error);
+    REQUIRE_MESSAGE(x2::kom::Encode(name, algorithm, data, blob, error, level), error);
     return blob;
 }
 

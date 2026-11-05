@@ -1,0 +1,170 @@
+# Where `x2_assets import` puts each client file inside client_data (docs/tools/client-data.md#layout).
+#
+#   <folder>  <name pattern>  [<archive pattern>]
+#
+# First match wins; patterns are case-insensitive globs (`*`, `?`, `[0-9]`); `{archive}` in a folder is the source
+# archive without `.kom`. Anything no rule matches goes to _unsorted/{archive}. A living layout: refine it as needs
+# show up.
+# The layout never changes what pack writes (the manifest is keyed by name), so moving rules or files is always safe.
+
+# --- shaders, fonts, strings and data tables ------------------------------------------------------------------
+shaders                  *.fx
+ui/fonts                 *.ttf
+ui/fonts                 *.ttc
+strings                  StringTable*.lua
+strings                  *String*.lua            data036.kom
+items                    Item.kim
+items                    *Item*.lua              data036.kom
+items                    *Item*.lua              datai015.kom
+items                    *Cube*.lua              datai015.kom
+effects/particles        *Particle*.txt
+effects/particles        *XMeshPlayer*.txt
+effects/particles        *EffectSet*.lua
+data                     *                       data036.kom
+data                     *                       datai015.kom
+
+# --- user interface --------------------------------------------------------------------------------------------
+ui/scripts               DLG_*.lua
+ui/scripts/npc           UI_*.lua                data039.kom
+ui/minimap               Minimap*
+ui/minimap               DLG_UI_MINIMAP*
+ui/titles                Title*
+ui/titles                UnitTitle*
+ui/class-change          DLG_CC_*
+ui/loading               DLG_*Loading*
+ui/loading               HQ_Loading*
+ui/login                 DLG_Login*
+ui/field-maps            DLG_UI_FIELD_MAP*
+ui/textures              DLG_*
+ui/textures              *.tet
+ui/textures              *                       data042.kom
+ui/textures              *                       data068.kom
+items/icons              HQ_Shop*
+items/icons              *                       data067.kom
+items/icons              *                       data130.kom
+items/icons              *                       datai023.kom
+
+# --- characters (playable): motions, equipment (items/), skill effects by archive ------------------------------
+characters/elsword/motions       Motion_Elsword*
+characters/aisha/motions         Motion_Arme*
+characters/aisha/motions         Motion_Aisha*
+characters/rena/motions          Motion_Lire*
+characters/rena/motions          Motion_Rena*
+characters/raven/motions         Motion_Raven*
+characters/eve/motions           Motion_Eve*
+characters/chung/motions         Motion_Chung*
+characters/ara/motions           Motion_Ara*
+characters/elesis/motions        Motion_Elesis*
+characters/add/motions           Motion_Add*
+items/equipment/elsword          *Mesh_Elsword*
+items/equipment/aisha            *Mesh_Arme*
+items/equipment/aisha            *Mesh_Aisha*
+items/equipment/rena             *Mesh_Lire*
+items/equipment/rena             *Mesh_Rena*
+items/equipment/raven            *Mesh_Raven*
+items/equipment/eve              *Mesh_Eve*
+items/equipment/chung            *Mesh_Chung*
+items/equipment/ara              *Mesh_Ara*
+items/equipment/elesis           *Mesh_Elesis*
+items/equipment/elesis           *Mesh_EL_*
+items/equipment/add              *Mesh_Add*
+items/equipment/common           *Mesh_Common*
+characters/elsword/skills        *                       data118.kom
+characters/aisha/skills          *                       data115.kom
+characters/aisha/skills          *                       data116.kom
+characters/aisha/skills          *                       data122.kom
+characters/rena/skills           *                       data121.kom
+characters/raven/skills          *                       data120.kom
+characters/eve/skills            *                       data119.kom
+characters/chung/skills          *                       data117.kom
+characters/ara/skills            *                       data125.kom
+characters/ara/skills            *                       data132.kom
+characters/elesis/skills         *                       data142.kom
+characters/add/skills            *                       data147.kom
+items/equipment/elsword          Elsword_*.tga           data0[12]?.kom
+items/equipment/aisha            Arme_*.tga              data0[12]?.kom
+items/equipment/aisha            Aisha_*.tga             data0[12]?.kom
+items/equipment/rena             Lire_*.tga              data0[12]?.kom
+items/equipment/rena             Rena_*.tga              data0[12]?.kom
+items/equipment/raven            Raven_*.tga             data0[12]?.kom
+items/equipment/eve              Eve_*.tga               data0[12]?.kom
+items/equipment/chung            Chung_*.tga             data0[12]?.kom
+items/equipment/ara              Ara_*.tga               data0[12]?.kom
+items/equipment/elesis           Elesis_*.tga            data0[12]?.kom
+items/equipment/add              Add_*.tga               data0[12]?.kom
+characters/scripts               *.lua                   data037.kom
+
+# --- monsters, pets and NPCs -----------------------------------------------------------------------------------
+pets                             PET_*
+pets                             *                       data106.kom
+pets                             *                       datai003.kom
+pets/scripts                     *.lua                   datai016.kom
+ui/npc                           HQ_UI_*
+ui/npc                           UI_NPC_*
+ui/npc                           *                       data014.kom
+ui/cut-in                        HQ_CutIn*
+ui/cut-in                        *                       datai019.kom
+ui/dungeon-clear                 HQ_Dungeon_Clear*
+npcs                             NPC_*
+npcs                             *                       data013.kom
+npcs/scripts                     *.lua                   data038.kom
+monsters/{archive}               NUI_*
+monsters/{archive}               GOD_*
+monsters/{archive}               *                       data00[5-9].kom
+monsters/{archive}               *                       data01[0-2].kom
+monsters/{archive}               *                       data10[0].kom
+monsters/{archive}               *                       data111.kom
+monsters/{archive}               *                       data12[34].kom
+monsters/{archive}               *                       data136.kom
+monsters/{archive}               *                       data140.kom
+items/drops                      DropItem_*
+items/drops                      Item_*
+
+# --- sound -----------------------------------------------------------------------------------------------------
+sound/bgm                *BGM*
+sound/bgm                *Music*.ogg
+sound/ambient            Amb_*
+sound/voice              *Voice*.ogg
+sound/sfx                *.ogg
+sound/sfx                *.wav
+
+# --- world: dungeon, stage and town scripts, then region meshes and textures --------------------------------------
+world/dungeons           Dungeon_*.lua
+world/stages             *.lua                   data040.kom
+world/stages             *.lua                   datai014.kom
+world/el-forest          El_Forest*
+world/el-forest          Ruben*
+world/el-forest          Arcade_Ruben*
+world/elder              Elder*
+world/elder              New_Elder*
+world/besma              Besma*
+world/altera             Altera*
+world/peita              Peita*
+world/velder             Velder*
+world/velder             Belder*
+world/velder             SecretVelder*
+world/hamel              Hamel*
+world/hamel              Field_Hamel*
+world/hamel              Village_Hamel*
+world/hamel              ANCIENT_WATERWAY*
+world/hamel              Hamal*
+world/hamel              WaterTemple*
+world/hamel              Trigger_Hamel*
+world/sander             Sander*
+world/sander             Sand_*
+world/sander             Send_*
+world/square             Square*
+world/pvp                PVP_*
+world/{archive}          *.y
+world/{archive}          *                       data10[1].kom
+world/{archive}          *                       data110.kom
+world/{archive}          *                       data135.kom
+world/{archive}          *.dds                   data02?.kom
+world/{archive}          *.dds                   data03?.kom
+
+# --- what is left by archive: effects and monsters share archives with no naming convention ----------------------
+characters/motions       Motion_*.x              data033.kom
+effects/{archive}        *.xet
+effects/textures         *                       data048.kom
+effects/textures         *                       data049.kom
+effects/textures         *                       data050.kom
