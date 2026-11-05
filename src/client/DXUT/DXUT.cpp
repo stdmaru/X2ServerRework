@@ -1,5 +1,6 @@
 #include "DXUT.h"
 
+#include "SdlInput.h"
 #include "SdlMessages.h"
 
 #include "x2/app/app.h"
@@ -36,6 +37,7 @@ struct DxutState {
     HWND hwnd = nullptr;
     HINSTANCE hinstance = nullptr;
     x2::dxut::SdlMessageTranslator translator;
+    x2::dxut::InputState input;  // DirectInput's view of the keyboard and mouse (CKTDIDevice)
 
     bool keys[256] = {};
     bool mouseButtons[5] = {};  // left, middle, right, X1, X2 (DXUT's order)
@@ -189,6 +191,10 @@ HRESULT DXUTInit(bool /*bParseCommandLine*/, bool /*bHandleDefaultHotkeys*/, boo
             SDL_Log("DXUT: %s", error.c_str());
             return E_FAIL;
         }
+        // Joysticks for CKTDIManager; the client runs without them, as it did without a DirectInput joystick.
+        if (!SDL_InitSubSystem(SDL_INIT_GAMEPAD)) {
+            SDL_Log("DXUT: no joystick support: %s", SDL_GetError());
+        }
     }
     DXUTGetGlobalTimer()->Reset();
     return S_OK;
@@ -228,6 +234,7 @@ HRESULT DXUTCreateWindow(const WCHAR* strWindowTitle, HINSTANCE /*hInstance*/, H
     // Windows delivers WM_CHAR and IME messages to any focused window; SDL only while text input is on.
     SDL_StartTextInput(window);
     state.active = (SDL_GetWindowFlags(window) & SDL_WINDOW_INPUT_FOCUS) != 0;
+    state.input.SetFocused(state.active);
     state.quit = false;
     return S_OK;
 }
@@ -303,7 +310,9 @@ HRESULT DXUTMainLoop()
         SDL_Event event;
         while (!state.quit && SDL_PollEvent(&event)) {
             messages.clear();
-            state.translator.Translate(event, ContextOf(state.window->Handle()), messages);
+            const x2::dxut::TranslateContext context = ContextOf(state.window->Handle());
+            state.input.Handle(event, context);
+            state.translator.Translate(event, context, messages);
             bool imeResultHandled = false;
             for (const x2::dxut::WinMessage& message : messages) {
                 if (state.quit) {
@@ -394,6 +403,11 @@ bool DXUTIsMouseButtonDown(BYTE vButton)
 SDL_Window* DXUTGetSDLWindow()
 {
     return State().window ? State().window->Handle() : nullptr;
+}
+
+x2::dxut::InputState& DXUTGetInputState()
+{
+    return State().input;
 }
 
 void DXUTOutputDebugString(const WCHAR* strMsg, ...)

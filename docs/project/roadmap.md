@@ -176,8 +176,12 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
       `x2::common_net` (T34: one `Socket/` and event model for both ends, `KSession` client side, 64 KB buffers), with
       loopback tests (handshake, encryption accepted with the sequence check on, 40 KB packet, connection lost, TCP relay)
       (2026-11-05). See [Client: X2ServerProtocol](../porting/client-serverprotocol.md).
-- [ ] Input: DirectInput (`CKTDIManager`) → SDL3 keyboard/mouse state; IME candidate list. The `MsgProc(HWND, UINT, WPARAM,
-      LPARAM)` model stays (`X2Lib` uses `HWND` in ~272 files — mostly through the `MsgProc` signature).
+- [x] `client/input`: DirectInput (`CKTDIManager`, `CKTDIDevice`) → SDL3 keyboard, mouse and joystick state with the
+      original API, as `x2::client_ktdi`; `DIK_*` ↔ SDL scancode table checked against the 102 `DIK_*` names the client
+      uses; joysticks through SDL's gamepad API in DirectInput's XInput layout, with hot plug; headless tests with SDL
+      virtual joysticks (2026-11-05). See [Client: input](../porting/client-input.md).
+- [ ] IME candidate list (composition already reaches `MsgProc`). The `MsgProc(HWND, UINT, WPARAM, LPARAM)` model stays
+      (`X2Lib` uses `HWND` in ~272 files — mostly through the `MsgProc` signature).
 - [ ] D3DX math (`D3DXVECTOR3` ~8,000 uses) → header-compatible shim over GLM or custom implementation.
 - [ ] Audio: FMOD Ex / DirectSound → miniaudio/SDL3 audio (or current cross-platform FMOD Core).
 - [ ] Video (Bandi), embedded browser, CxImage → remove/replace (Steam and anti-cheat removed on 2026-11-05).

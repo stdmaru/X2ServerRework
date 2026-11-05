@@ -14,8 +14,9 @@ Added on 2026-11-05 (`client/skeleton`).
 
 | File | Contents |
 |---|---|
-| `DXUT.h` / `DXUT.cpp` | The DXUT API the client uses: callback typedefs and setters (`FrameMove`, `FrameRender`, `Keyboard`, `MsgProc`), `DXUTInit`, `DXUTCreateWindow`, `DXUTMainLoop`, `DXUTStaticWndProc`, `DXUTShutdown`, `DXUTToggleFullScreen`, `DXUTSetCursorSettings`, `DXUTSetMultimonSettings`, getters (`DXUTGetHWND`, `DXUTGetHINSTANCE`, `DXUTGetTime`, `DXUTGetElapsedTime`, `DXUTGetFPS`, `DXUTIsWindowed`, `DXUTIsActive`, `DXUTGetExitCode`, `DXUTIsKeyDown`, `DXUTIsMouseButtonDown`), `CDXUTTimer` + `DXUTGetGlobalTimer`, `DXUTTRACE`/`DXUTOutputDebugString`, no-op `DXUT_BeginPerfEvent`/`EndPerfEvent`. Port addition: `DXUTGetSDLWindow` |
+| `DXUT.h` / `DXUT.cpp` | The DXUT API the client uses: callback typedefs and setters (`FrameMove`, `FrameRender`, `Keyboard`, `MsgProc`), `DXUTInit`, `DXUTCreateWindow`, `DXUTMainLoop`, `DXUTStaticWndProc`, `DXUTShutdown`, `DXUTToggleFullScreen`, `DXUTSetCursorSettings`, `DXUTSetMultimonSettings`, getters (`DXUTGetHWND`, `DXUTGetHINSTANCE`, `DXUTGetTime`, `DXUTGetElapsedTime`, `DXUTGetFPS`, `DXUTIsWindowed`, `DXUTIsActive`, `DXUTGetExitCode`, `DXUTIsKeyDown`, `DXUTIsMouseButtonDown`), `CDXUTTimer` + `DXUTGetGlobalTimer`, `DXUTTRACE`/`DXUTOutputDebugString`, no-op `DXUT_BeginPerfEvent`/`EndPerfEvent`. Port additions: `DXUTGetSDLWindow`, `DXUTGetInputState`; `DXUTInit` also starts SDL's gamepad subsystem (best effort) |
 | `SdlMessages.h` / `SdlMessages.cpp` | `x2::dxut::SdlMessageTranslator`: SDL3 events → Win32 messages (`WM_*` with Windows `wParam`/`lParam`), and `ToVirtualKey` (SDL scancode/keycode → `VK_*`) |
+| `DirectInputKeys.h`, `SdlInput.h` / `SdlInput.cpp` | DirectInput's view for KTDXLIB's input layer: `DIK_*` and the device state structs, the `DIK_*` ↔ SDL scancode table, `InputState` (fed by the main loop, `DXUTGetInputState()`) and `JoystickReader` (2026-11-05, [Client: input](client-input.md)) |
 
 The `WM_*`/`VK_*` constants and `WPARAM`/`LPARAM` come from `x2/platform/window_messages.h` ([Platform](platform.md)).
 `SAFE_DELETE`/`SAFE_RELEASE`/`SAFE_DELETE_ARRAY` are **not** here: `KTDX.h` defines them (behind `#ifndef`), so DXUT's
@@ -47,9 +48,9 @@ The `WM_*`/`VK_*` constants and `WPARAM`/`LPARAM` come from `x2/platform/window_
 | `WINDOW_MINIMIZED`/`MAXIMIZED`/`RESTORED`/`PIXEL_SIZE_CHANGED` | `WM_SIZE` (`SIZE_MINIMIZED`/`SIZE_MAXIMIZED`/`SIZE_RESTORED`, pixel size) |
 | `WINDOW_CLOSE_REQUESTED`, `QUIT` | `WM_CLOSE` |
 
-Events of other windows are ignored. DirectInput (`CKTDIManager`) is not covered here; it is the next step
-([roadmap](../project/roadmap.md#phase-3--client-platform)). With `RELEASE_ALL_BUTTONS_AND_KEYS_WHEN_FOCUS_LOSING` true, it will
-release its state on `WM_ACTIVATEAPP`.
+Events of other windows are ignored. The same events also update the DirectInput view that `CKTDIManager` reads
+([Client: input](client-input.md)); with `RELEASE_ALL_BUTTONS_AND_KEYS_WHEN_FOCUS_LOSING` true, the client releases its
+state on `WM_ACTIVATEAPP`.
 
 ## Tests
 

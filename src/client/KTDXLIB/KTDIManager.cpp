@@ -1,15 +1,12 @@
-#include "stdafx.h"
-#include "./KTDIManager.h"
+#include "KTDIManager.h"
+
+#include <algorithm>
+#include <iterator>
 
 #define DOUBLE_INPUT_GAP 0.4f
-//#define INPUT_DATA_BUFFER 20
-#define AXIS_THRESHOLD  500
 
-CKTDIManager::CKTDIManager( HWND hWnd, HINSTANCE hInst )
+CKTDIManager::CKTDIManager( HWND /*hWnd*/, HINSTANCE /*hInst*/ )
 {
-	m_hWnd = hWnd;
-	m_hInst = hInst;
-
 	m_KTDIKeyboard	= NULL;
 	m_KTDIMouse		= NULL;
 	m_KTDIJoystic	= NULL;
@@ -18,22 +15,20 @@ CKTDIManager::CKTDIManager( HWND hWnd, HINSTANCE hInst )
 
 	m_bJoyEnable	= false;
 	m_bKeyChanging = false;
-	ZeroMemory( m_State, sizeof(bool)*GAMEACTION_END);
-
-	Init();
+	std::fill( std::begin( m_State ), std::end( m_State ), false );
+	std::fill( std::begin( m_Locks ), std::end( m_Locks ), false );	// left uninitialized by the original
 
 	m_bActivated = false;
 }
 
 CKTDIManager::~CKTDIManager()
 {
-	SAFE_DELETE(m_KTDIKeyboard);
-	SAFE_DELETE(m_KTDIMouse);
-	SAFE_DELETE(m_KTDIJoystic);
-	SAFE_RELEASE(m_pDI);
+	DestroyKeyboard();
+	DestroyMouse();
+	DestroyJoystic();
 }
 
-HRESULT CKTDIManager::OnFrameMove( double fTime, float fElapsedTime )
+HRESULT CKTDIManager::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	UpdateData( fElapsedTime );
 
@@ -42,35 +37,41 @@ HRESULT CKTDIManager::OnFrameMove( double fTime, float fElapsedTime )
 
 void CKTDIManager::CreateKeyboard()
 {
-	m_KTDIKeyboard = new CKTDIDevice( m_hWnd, m_pDI );
+	DestroyKeyboard();
+	m_KTDIKeyboard = new CKTDIDevice();
 	m_KTDIKeyboard->Create( KEYBOARD );
 }
 
 void CKTDIManager::CreateMouse( BOOL windowed )
 {
-	m_KTDIMouse = new CKTDIDevice( m_hWnd, m_pDI );
+	DestroyMouse();
+	m_KTDIMouse = new CKTDIDevice();
 	m_KTDIMouse->Create( MOUSE, windowed );
 }
 
 void CKTDIManager::CreateJoystic()
 {
-	m_KTDIJoystic = new CKTDIDevice( m_hWnd, m_pDI );
+	DestroyJoystic();
+	m_KTDIJoystic = new CKTDIDevice();
 	m_KTDIJoystic->Create( JOYSTICK );
 }
 
 void CKTDIManager::DestroyKeyboard()
 {
-	SAFE_DELETE(m_KTDIKeyboard);
+	delete m_KTDIKeyboard;
+	m_KTDIKeyboard = NULL;
 }
 
 void CKTDIManager::DestroyMouse()
 {
-	SAFE_DELETE(m_KTDIMouse);
+	delete m_KTDIMouse;
+	m_KTDIMouse = NULL;
 }
 
 void CKTDIManager::DestroyJoystic()
 {
-	SAFE_DELETE(m_KTDIJoystic);
+	delete m_KTDIJoystic;
+	m_KTDIJoystic = NULL;
 }
 
 void CKTDIManager::UpdateData( float fElapsedTime )
@@ -78,12 +79,12 @@ void CKTDIManager::UpdateData( float fElapsedTime )
 
 	if( m_bEnabled )
 	{
-		ZeroMemory( &m_State, GAMEACTION_END*sizeof(bool) );
+		std::fill( std::begin( m_State ), std::end( m_State ), false );
 
 		if( m_KTDIKeyboard != NULL )
 		{
 			m_KTDIKeyboard->Read( fElapsedTime );
-		}//ikf
+		}
 
 		if( m_KTDIMouse != NULL )
 		{
@@ -101,7 +102,7 @@ void CKTDIManager::UpdateData( float fElapsedTime )
 			if( i == GAMEACTION_END )
 				continue;
 
-			// 조이스틱
+			// joystick
 			if( m_bJoyEnable && m_KTDIJoystic != NULL )
 			{
 				bool bKeyChanging = false;
@@ -119,7 +120,7 @@ void CKTDIManager::UpdateData( float fElapsedTime )
 				}
 			}
 
-			// 키보드
+			// keyboard
 			if (m_KTDIKeyboard != NULL )
 			{
 				HandleAction(i, m_KTDIKeyboard->GetActionState(i) );
@@ -132,17 +133,6 @@ void CKTDIManager::UpdateData( float fElapsedTime )
 		}
 
 	}
-}
-
-bool CKTDIManager::Init()
-{
-	if(FAILED(DirectInput8Create(m_hInst, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&m_pDI, NULL)))
-	{
-		ErrorLog(KEM_ERROR62);
-		return false;
-	}
-
-	return true;
 }
 
 BOOL  CKTDIManager::GetActionState( GAME_ACTION Action )
@@ -161,7 +151,7 @@ BOOL  CKTDIManager::SetActionState( GAME_ACTION Action, BOOL State )
 	if( State == TRUE )
 		m_State[Action] = true;
 	else
-		m_State[Action] = false | m_State[Action];		// true였으면 유지시킨다 (매 프레임 false로 리셋해주므로.. 같은 액션에 여러번 처리될때에 대비)
+		m_State[Action] = false | m_State[Action];		// keep true: the state is reset every frame and one action may be set several times
 
 	return TRUE;
 }
@@ -288,10 +278,8 @@ BOOL CKTDIManager::SetLock( GAME_ACTION Action, BOOL State )
 	return TRUE;
 }
 
-void CKTDIManager::HandleAction(UINT nAction, bool bState, long lData )
+void CKTDIManager::HandleAction(UINT nAction, bool bState, long /*lData*/ )
 {
-	int nAxisPos = lData;
-
 	SetActionState((GAME_ACTION)nAction, bState);
 }
 
@@ -333,6 +321,8 @@ bool CKTDIManager::ListenDeviceInput( unsigned char& ucoutUserInput, InputDevice
 				return m_KTDIJoystic->ListenDeviceInput( ucoutUserInput );
 			}
 		}
+		break;
+	case NONE:
 		break;
 	}
 	return false;
@@ -432,55 +422,6 @@ void CKTDIManager::SetDefaultMap()
 
 }
 
-#ifdef KEY_MAPPING_UPGRADE
-bool CKTDIManager::GetNotCompleteBaseKey()
-{
-	for(int i = GAMEACTION_UP; i <= GAMEACTION_CHANGE_SKILLSLOT; i++)
-	{
-		if(m_KTDIKeyboard->GetActionKey(i) == 0)
-		{
-			return false;
-		}
-	}
-	return true;
-}
-
-bool CKTDIManager::GetNotCompleteQuickKey()
-{
-	for(int i = GAMEACTION_SPECIALA; i <= GAMEACTION_QUICKSLOT6; i++)
-	{
-		if(m_KTDIKeyboard->GetActionKey(i) == 0)
-		{
-			return false;
-		}
-	}
-	return true;
-}
-
-bool CKTDIManager::GetNotCompleteSysKey()
-{
-	for(int i = GAMEACTION_HELP; i <= GAMEACTION_PARTYREADY; i++)
-	{
-		if(m_KTDIKeyboard->GetActionKey(i) == 0)
-		{
-			return false;
-		}
-	}
-	return true;
-}
-
-bool CKTDIManager::GetNotCompleteOtherKey()
-{
-	for(int i = GAMEACTION_QUEST_WINDOW; i <= GAMEACTION_GUILD_WINDOW; i++)
-	{
-		if(m_KTDIKeyboard->GetActionKey(i) == 0)
-		{
-			return false;
-		}
-	}
-	return true;
-}
-#endif // KEY_MAPPING_UPGRADE
 
 
 
@@ -505,4 +446,4 @@ void CKTDIManager::DeactivateApp()
 	if ( m_KTDIJoystic != NULL )
 		m_KTDIJoystic->ReleaseAllButtonsAndKeys();
 
-}//CKTDIManager::ReleaseAllButtonsAndKeys()
+}

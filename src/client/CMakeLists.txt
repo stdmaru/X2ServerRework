@@ -1,5 +1,5 @@
 # Client (docs/porting/client.md). Layers mirror the original projects (decision T14) and are added here as they
-# compile: so far LuaCommon, the DXUT replacement, X2ServerProtocol and the executable's skeleton. KTDXLIB and X2Lib come
+# compile: so far LuaCommon, the DXUT replacement, KTDXLIB's input layer, X2ServerProtocol and the executable's skeleton. KTDXLIB and X2Lib come
 # next (roadmap Phase 3) and link x2_client_includes.
 
 # Include directories of the original projects (KTDXLIB, X2Lib, X2 and X2ServerProtocol .vcxproj), for every layer:
@@ -30,10 +30,17 @@ endif()
 
 # DXUT replacement: window, message pump and frame loop on x2::app, SDL3 events as Win32 messages
 # (docs/porting/client-dxut.md).
-add_library(x2_client_dxut STATIC DXUT/DXUT.cpp DXUT/SdlMessages.cpp)
+add_library(x2_client_dxut STATIC DXUT/DXUT.cpp DXUT/SdlInput.cpp DXUT/SdlMessages.cpp)
 add_library(x2::client_dxut ALIAS x2_client_dxut)
 target_include_directories(x2_client_dxut PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/DXUT)
 target_link_libraries(x2_client_dxut PUBLIC x2::platform x2::app)
+
+# KTDXLIB's input layer (CKTDIManager, CKTDIDevice) on the DXUT replacement's SDL3 state instead of DirectInput
+# (docs/porting/client-input.md). Its files join the KTDXLIB target once the engine builds; CKTDXStage's base classes
+# come from there too (the tests supply them).
+add_library(x2_client_ktdi STATIC KTDXLIB/KTDIDevice.cpp KTDXLIB/KTDIManager.cpp)
+add_library(x2::client_ktdi ALIAS x2_client_ktdi)
+target_link_libraries(x2_client_ktdi PUBLIC x2_client_includes x2::client_dxut)
 
 # X2ServerProtocol: the client's connections to the servers (docs/porting/client-serverprotocol.md). The event/actor
 # model and the TCP layer are the servers' x2::common_net (decision T34); only the client's proxies and the

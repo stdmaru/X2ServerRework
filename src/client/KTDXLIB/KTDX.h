@@ -346,10 +346,6 @@
 #define _WIN32_WINNT   0x0500
 #endif
 
-#ifndef DIRECTINPUT_VERSION
-#define DIRECTINPUT_VERSION 0x0800
-#endif
-
 #pragma warning (disable: 4702)
 #pragma warning (disable: 4995)
 #pragma warning( disable : 4100 ) // disable unreference formal parameter warnings for /W4 builds
@@ -418,7 +414,7 @@
 #else
 #	include <dxerr9.h>
 #endif // CONVERSION_VS
-#include <dinput.h>
+#include "DirectInputKeys.h"	// DirectInput is replaced by SDL3 (docs/porting/client-input.md)
 #include <mmsystem.h>
 #include <mmreg.h>
 #ifdef CONVERSION_VS

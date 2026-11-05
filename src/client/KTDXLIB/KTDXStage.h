@@ -1,7 +1,11 @@
 #pragma once
 
+#include "x2/platform/win32.h"
 
-class CKTDXDeviceHolder;
+#include "KTDXDeviceHolder.h"
+
+#include <string>
+
 class CKTDXStage : public CKTDXDeviceHolder
 {
 	public:
@@ -17,10 +21,10 @@ class CKTDXStage : public CKTDXDeviceHolder
 		CKTDXStage(){ m_eStageState = SS_ACTIVE; }
 		virtual ~CKTDXStage(void);
 
-		virtual HRESULT OnFrameMove( double fTime, float fElapsedTime ){ return S_OK; }
+		virtual HRESULT OnFrameMove( double /*fTime*/, float /*fElapsedTime*/ ){ return S_OK; }
 		virtual HRESULT OnFrameRender(){ return S_OK; }
 
-		virtual bool	MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam ){ return false; }
+		virtual bool	MsgProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ ){ return false; }
 
 		virtual HRESULT OnResetDevice(){ return S_OK; }
 		virtual HRESULT OnLostDevice(){ return S_OK; }
@@ -29,12 +33,12 @@ class CKTDXStage : public CKTDXDeviceHolder
 		void			SetStageState( STAGE_STATE eStageState ){ m_eStageState = eStageState; }
 
 
-		virtual void	SetLuaFrameMoveFunc_LUA( const char* pFuncName ) {}
+		virtual void	SetLuaFrameMoveFunc_LUA( const char* /*pFuncName*/ ) {}
 
 		void			SetStageName( const WCHAR* wszStageName ) { m_StageName = wszStageName; }
-		wstring			GetStageName() { return m_StageName; }
+		std::wstring	GetStageName() { return m_StageName; }
 
 	protected:
 		STAGE_STATE				m_eStageState;
-		wstring					m_StageName;	// FieldFix: 윈도우 모드에서 X버튼 누르는 부분에 대한 처리 외에 딱히 사용하는 곳이 없어서 bool로 해도 될듯
+		std::wstring			m_StageName;	// FieldFix: only used for the window close button in windowed mode; could be a bool
 };
