@@ -1,5 +1,7 @@
 #include "x2/servermanager/profile.h"
 
+#include "x2/platform/json.h"
+
 #include <doctest/doctest.h>
 
 #include <algorithm>
@@ -225,4 +227,90 @@ TEST_CASE("profile: a host's start and stop commands")
     CHECK(profile->StopCommand(servers[2]).empty());
     // the line goes to the remote shell as it is
     CHECK(profile->Shell("vps", "a 'b c'").args == std::vector<std::string>{"x2@vps", "a 'b c'"});
+}
+
+TEST_CASE("profile: a host's ssh key")
+{
+    std::string error;
+    const auto profile = ParseProfile(R"({
+        "hosts": [{"name": "vps", "destination": "x2@vps", "ssh": ["ssh"], "port": 2222, "identityFile": "~/.ssh/x2 key"}],
+        "servers": [{"name": "Game", "host": "vps", "control": "GameServer"}]})",
+                                      "", error);
+    REQUIRE_MESSAGE(profile, error);
+    CHECK(profile->hosts[0].identityFile == "~/.ssh/x2 key");    // as written: ssh expands ~
+    CHECK(profile->X2ctl("vps", {"list"}).args ==
+          std::vector<std::string>{"-p", "2222", "-i", "~/.ssh/x2 key", "-o", "IdentitiesOnly=yes", "x2@vps", "x2ctl list"});
+}
+
+TEST_CASE("profile: saved and read back the same")
+{
+    namespace fs = std::filesystem;
+    const fs::path dir = fs::temp_directory_path() / "x2-profile-save";
+    std::error_code ec;
+    fs::remove_all(dir, ec);
+    fs::create_directories(dir / "dist");
+    const std::string base = dir.string();
+    const std::string outside = (dir.parent_path() / "x2-elsewhere" / "Game").lexically_normal().string();
+
+    std::string error;
+    const auto original = ParseProfile(std::string(R"({
+        "x2ctl": "dist/x2ctl", "controlDir": "control",
+        "hosts": [{"name": "win", "destination": "Administrator@win", "port": 2222, "shell": "cmd",
+                   "x2ctl": "C:\\x2\\x2ctl.exe", "controlDir": "C:\\x2\\control", "identityFile": "~/.ssh/win",
+                   "ssh": ["ssh", "-v"], "start": "schtasks /run /tn \"x2 {service}\"", "stop": "x"}],
+        "servers": [{"name": "Login", "directory": "dist/LoginServer", "program": "./LoginServer", "args": ["DEV", "0"]},
+                    {"name": "Here", "program": "./Here"},
+                    {"name": "Far", "directory": )") + x2::platform::JsonString(outside) + R"(, "program": "./Far",
+                     "after": ["Login"], "control": "FarServer"},
+                    {"name": "Game", "host": "win", "control": "GameServer", "service": "game", "after": ["Login", "Far"],
+                     "start": "a \"b\"", "stop": "c"}]})",
+                                       base, error);
+    REQUIRE_MESSAGE(original, error);
+    const std::string file = (dir / "profile.json").string();
+    REQUIRE_MESSAGE(SaveProfile(*original, file, error), error);
+    CHECK_FALSE(fs::exists(file + ".tmp"));
+
+    const auto loaded = LoadProfile(file, error);
+    REQUIRE_MESSAGE(loaded, error);
+    CHECK(SamePath(loaded->x2ctl, original->x2ctl));
+    CHECK(SamePath(loaded->controlDir, original->controlDir));
+    REQUIRE(loaded->hosts.size() == 1);
+    const HostSpec& a = original->hosts[0];
+    const HostSpec& b = loaded->hosts[0];
+    CHECK(b.name == a.name);
+    CHECK(b.destination == a.destination);
+    CHECK(b.port == 2222);
+    CHECK(b.shell == HostSpec::Shell::Cmd);
+    CHECK(b.x2ctl == a.x2ctl);
+    CHECK(b.controlDir == a.controlDir);
+    CHECK(b.identityFile == a.identityFile);
+    CHECK(b.ssh == a.ssh);
+    CHECK(b.start == a.start);
+    CHECK(b.stop == a.stop);
+    REQUIRE(loaded->servers.size() == original->servers.size());
+    for (std::size_t i = 0; i < loaded->servers.size(); ++i) {
+        const ServerSpec& x = original->servers[i];
+        const ServerSpec& y = loaded->servers[i];
+        CAPTURE(x.name);
+        CHECK(y.name == x.name);
+        CHECK(y.host == x.host);
+        CHECK(SamePath(y.directory, x.directory));
+        CHECK(y.program == x.program);
+        CHECK(y.args == x.args);
+        CHECK(y.after == x.after);
+        CHECK(y.control == x.control);
+        CHECK(y.service == x.service);
+        CHECK(y.start == x.start);
+        CHECK(y.stop == x.stop);
+    }
+
+    // paths under the profile's folder stay relative to it, defaults are left out, and saving again changes nothing
+    const std::string text = ProfileToJson(*loaded, base);
+    CHECK(text.find(R"("x2ctl": "dist)") != std::string::npos);
+    CHECK(text.find(R"("directory": "dist)") != std::string::npos);
+    CHECK(text.find(x2::platform::JsonString(outside)) != std::string::npos);
+    CHECK(text.find(R"("name": "Here",)") != std::string::npos);
+    CHECK(text.find(R"("shell": "sh")") == std::string::npos);
+    CHECK(text == ProfileToJson(*original, base));
+    fs::remove_all(dir, ec);
 }

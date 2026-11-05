@@ -130,6 +130,9 @@ x2::platform::ProcessOptions Profile::Shell(std::string_view host, const std::st
         options.args.push_back("-p");
         options.args.push_back(std::to_string(h->port));
     }
+    if (!h->identityFile.empty()) {
+        options.args.insert(options.args.end(), {"-i", h->identityFile, "-o", "IdentitiesOnly=yes"});
+    }
     options.args.push_back(h->destination);
     options.args.push_back(commandLine);
     return options;
@@ -282,6 +285,7 @@ std::optional<Profile> ParseProfile(std::string_view json, const std::string& ba
             h.controlDir = node.GetString("controlDir");   // the other machine's path: not resolved here
             h.start = node.GetString("start");
             h.stop = node.GetString("stop");
+            h.identityFile = node.GetString("identityFile");   // this machine's file, as written (ssh expands ~)
             if (const std::string shell = node.GetString("shell", "sh"); shell == "cmd") {
                 h.shell = HostSpec::Shell::Cmd;
             } else if (shell != "sh") {
@@ -350,6 +354,164 @@ std::optional<Profile> LoadProfile(const std::string& path, std::string& error)
     if (!profile)
         error = path + ": " + error;
     return profile;
+}
+
+namespace {
+
+// A path under `baseDir` as relative to it (./x is written x); others as they are.
+std::string Relative(const std::string& baseDir, const std::string& path)
+{
+    if (baseDir.empty() || path.empty())
+        return path;
+    const std::filesystem::path p = Utf8Path(path);
+    if (!p.is_absolute())
+        return path;
+    const std::filesystem::path relative = p.lexically_normal().lexically_relative(Utf8Path(baseDir).lexically_normal());
+    if (relative.empty() || *relative.begin() == "..")
+        return path;
+    return PathUtf8(relative);
+}
+
+class JsonWriter {
+public:
+    std::string Text() && { return std::move(m_out) + "\n"; }
+
+    void Open(char bracket) { m_out += bracket; m_first.push_back(true); }
+    void Close(char bracket)
+    {
+        const bool empty = m_first.back();
+        m_first.pop_back();
+        if (!empty)
+            NewLine();
+        m_out += bracket;
+    }
+    void Key(std::string_view key)
+    {
+        Item();
+        x2::platform::AppendJsonString(m_out, key);
+        m_out += ": ";
+    }
+    void Item()
+    {
+        if (!m_first.back())
+            m_out += ',';
+        m_first.back() = false;
+        NewLine();
+    }
+    void String(std::string_view key, const std::string& value, std::string_view fallback = {})
+    {
+        if (value == fallback)
+            return;
+        Key(key);
+        x2::platform::AppendJsonString(m_out, value);
+    }
+    // a list on one line
+    void List(std::string_view key, const std::vector<std::string>& values)
+    {
+        if (values.empty())
+            return;
+        Key(key);
+        m_out += '[';
+        for (std::size_t i = 0; i < values.size(); ++i) {
+            if (i)
+                m_out += ", ";
+            x2::platform::AppendJsonString(m_out, values[i]);
+        }
+        m_out += ']';
+    }
+    void Integer(std::string_view key, long long value)
+    {
+        Key(key);
+        m_out += std::to_string(value);
+    }
+
+private:
+    void NewLine()
+    {
+        m_out += '\n';
+        m_out.append(m_first.size() * 2, ' ');
+    }
+
+    std::string m_out;
+    std::vector<bool> m_first;
+};
+
+}  // namespace
+
+std::string ProfileToJson(const Profile& profile, const std::string& baseDir)
+{
+    JsonWriter w;
+    w.Open('{');
+    w.String("x2ctl", Utf8Path(profile.x2ctl).has_parent_path() ? Relative(baseDir, profile.x2ctl) : profile.x2ctl, "x2ctl");
+    w.String("controlDir", Relative(baseDir, profile.controlDir));
+    if (!profile.hosts.empty()) {
+        w.Key("hosts");
+        w.Open('[');
+        for (const HostSpec& h : profile.hosts) {
+            w.Item();
+            w.Open('{');
+            w.String("name", h.name);
+            w.String("destination", h.destination);
+            if (h.port != 0)
+                w.Integer("port", h.port);
+            w.String("shell", h.shell == HostSpec::Shell::Cmd ? "cmd" : "sh", "sh");
+            w.String("x2ctl", h.x2ctl, "x2ctl");
+            w.String("controlDir", h.controlDir);
+            w.String("identityFile", h.identityFile);
+            w.List("ssh", h.ssh);
+            w.String("start", h.start);
+            w.String("stop", h.stop);
+            w.Close('}');
+        }
+        w.Close(']');
+    }
+    w.Key("servers");
+    w.Open('[');
+    for (const ServerSpec& s : profile.servers) {
+        w.Item();
+        w.Open('{');
+        w.String("name", s.name);
+        w.String("host", s.host);
+        // a local server's directory was resolved when read; "." is the default
+        const std::string directory = s.host.empty() ? Relative(baseDir, s.directory) : s.directory;
+        w.String("directory", directory == "." && s.host.empty() ? std::string() : directory);
+        w.String("program", s.program);
+        w.List("args", s.args);
+        w.List("after", s.after);
+        w.String("control", s.control);
+        w.String("service", s.service);
+        w.String("start", s.start);
+        w.String("stop", s.stop);
+        w.Close('}');
+    }
+    w.Close(']');
+    w.Close('}');
+    return std::move(w).Text();
+}
+
+bool SaveProfile(const Profile& profile, const std::string& path, std::string& error)
+{
+    namespace fs = std::filesystem;
+    std::error_code ec;
+    const fs::path file = fs::absolute(Utf8Path(path), ec);
+    const fs::path temp = fs::path(file).concat(".tmp");
+    {
+        std::ofstream out(temp, std::ios::binary | std::ios::trunc);
+        out << ProfileToJson(profile, PathUtf8(file.parent_path()));
+        out.close();
+        if (!out) {
+            error = path + ": cannot be written";
+            fs::remove(temp, ec);
+            return false;
+        }
+    }
+    fs::rename(temp, file, ec);     // replaces the old file, also on Windows
+    if (ec) {
+        error = path + ": " + ec.message();
+        fs::remove(temp, ec);
+        return false;
+    }
+    return true;
 }
 
 Profile DefaultProfile(const std::string& distDir, const std::string& config, const std::string& group)
