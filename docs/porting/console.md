@@ -51,6 +51,14 @@ both platforms instead of using *named pipes* on Windows:
 `$XDG_RUNTIME_DIR/x2/<name>.sock` (or `/tmp/x2-<uid>/`, mode 0700) on Linux, `%TEMP%\x2\<name>.sock` on Windows. It speaks the same
 [protocol](#protocol) to any number of clients; all receive logs and status, while a command result goes only to its requester.
 
+- **Another folder** (2026-11-05, `tools/control-dir`): `X2_CONTROL_DIR` sets the folder as it is, for the servers and `x2ctl`;
+  `x2ctl --dir=<folder>` overrides both. For servers in containers: bind-mount a host folder and point `X2_CONTROL_DIR` at it in
+  the container (or set `XDG_RUNTIME_DIR` to its parent, as `docker/server/docker-compose.yml` does: the sockets are then in
+  `<host folder>/x2`), and use `x2ctl --dir=<host folder>` on the host. A folder that does not exist is created with mode 0700; an
+  existing one keeps its permissions. Access control is that folder's permissions (the socket does not check who connects), and the
+  files belong to the container's user: with containers running as root, only root on the host can connect, so run them as the
+  host user (`user: "1000:1000"`) or connect as root. Do not open the folder to other users: the socket runs Lua in the server.
+
 - A second server with the same name cannot open the socket (warning logged) and continues without it; use `--control=<other>`. A
   socket file with no process behind it (a crashed process) is replaced.
 - Each client has a queue and writer thread; a client with more than 8 MB waiting in its queue is disconnected, so it can never block logging.
@@ -71,6 +79,7 @@ Built with the servers and copied to `dist/x2ctl`. Tested on Linux and Windows (
 |---|---|
 | `x2ctl list` | list names of listening servers |
 | `x2ctl attach <name>` | connect stdin/stdout to the socket (protocol lines): `ssh host x2ctl attach GameServer` is how ServerManager will talk to a remote server |
+| `x2ctl --dir=<folder> ...` | any command, with the sockets in `<folder>` ([another folder](#control-socket)) |
 | `x2ctl run <name> <lua...>` | run one command; print its output and errors to stderr; exit code 1 if Lua failed |
 | `x2ctl stop <name>` | stop the server and wait for it to exit |
 

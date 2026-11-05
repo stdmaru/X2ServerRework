@@ -32,7 +32,7 @@ const char* ToString(Phase phase);
 struct OrchestratorOptions {
     std::chrono::milliseconds stopGrace{60000};     // after the stop request, a server ServerManager started is terminated
     std::chrono::milliseconds killGrace{10000};     // and then killed
-    // Control socket names listening on this machine (x2::platform::ListControlSockets).
+    // Control socket names listening on this machine (x2::platform::ListControlSockets, in Profile::controlDir if set).
     std::function<std::vector<std::string>()> runningServers;
 };
 

@@ -70,6 +70,9 @@ TEST_CASE("profile: invalid profiles")
              R"({"hosts": [{"name": "h", "destination": "-oProxyCommand=x"}], "servers": []})",
              R"({"hosts": [{"name": "h", "destination": "a"}, {"name": "h", "destination": "b"}], "servers": []})",
              R"({"hosts": [{"name": "h", "destination": "a", "ssh": "ssh"}], "servers": []})",
+             R"({"hosts": [{"name": "h", "destination": "a", "port": 0}], "servers": []})",
+             R"({"hosts": [{"name": "h", "destination": "a", "port": 70000}], "servers": []})",
+             R"({"hosts": [{"name": "h", "destination": "a", "port": "22"}], "servers": []})",
              R"({"hosts": [{"name": "h", "destination": "a"}], "servers": [{"name": "A", "host": "h"}]})",  // no socket name
          }) {
         error.clear();
@@ -132,4 +135,43 @@ TEST_CASE("profile: hosts and the x2ctl command")
     const auto lab = profile->X2ctl("lab", {"list"});
     CHECK(lab.program == "ssh");
     CHECK(lab.args == std::vector<std::string>{"-p", "2222", "lab", "x2ctl list"});
+}
+
+TEST_CASE("profile: control socket folders")
+{
+    std::string error;
+    const auto profile = ParseProfile(R"({
+        "controlDir": "control/x2",
+        "hosts": [{"name": "vps", "destination": "vps", "ssh": ["ssh"], "controlDir": "/srv/x2 docker/control/x2"}],
+        "servers": [{"name": "Game", "host": "vps", "control": "GameServer"}]})",
+                                      kAbsolute, error);
+    REQUIRE_MESSAGE(profile, error);
+    CHECK(SamePath(profile->controlDir, std::string(kAbsolute) + "/control/x2"));
+    const auto local = profile->X2ctl("", {"list"});
+    REQUIRE(local.args.size() == 2);
+    CHECK(SamePath(local.args[0].substr(6), profile->controlDir));
+    CHECK(local.args[0].rfind("--dir=", 0) == 0);
+    CHECK(local.args[1] == "list");
+    const auto remote = profile->X2ctl("vps", {"attach", "GameServer"});
+    CHECK(remote.args == std::vector<std::string>{"vps", "x2ctl '--dir=/srv/x2 docker/control/x2' attach GameServer"});
+}
+
+TEST_CASE("profile: an ssh port")
+{
+    std::string error;
+    const auto profile = ParseProfile(R"({
+        "hosts": [{"name": "vps", "destination": "x2@vps", "port": 2222},
+                  {"name": "lab", "destination": "lab", "ssh": ["ssh"], "port": 22022}],
+        "servers": [{"name": "Game", "host": "vps", "control": "GameServer"}]})",
+                                      "", error);
+    REQUIRE_MESSAGE(profile, error);
+    CHECK(profile->hosts[0].port == 2222);
+    const auto vps = profile->X2ctl("vps", {"list"});
+    REQUIRE(vps.args.size() >= 4);
+    // after the default options (BatchMode, ControlMaster...), before the destination
+    CHECK(std::find(vps.args.begin(), vps.args.end(), "BatchMode=yes") != vps.args.end());
+    CHECK(vps.args[vps.args.size() - 4] == "-p");
+    CHECK(vps.args[vps.args.size() - 3] == "2222");
+    CHECK(vps.args[vps.args.size() - 2] == "x2@vps");
+    CHECK(profile->X2ctl("lab", {"list"}).args == std::vector<std::string>{"-p", "22022", "lab", "x2ctl list"});
 }

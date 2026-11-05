@@ -185,9 +185,32 @@ bool ReceiveLine(Socket s, std::string& pending, std::string& line, const std::a
 
 } // namespace
 
+namespace {
+
+std::string g_controlDir;     // SetControlSocketDir
+
+} // namespace
+
+void SetControlSocketDir(std::string dir)
+{
+    g_controlDir = std::move(dir);
+}
+
 std::string ControlSocketDir()
 {
     namespace fs = std::filesystem;
+    const char* configured = std::getenv("X2_CONTROL_DIR");
+    if (!g_controlDir.empty() || (configured && *configured)) {
+        const fs::path dir = !g_controlDir.empty() ? fs::path(g_controlDir) : fs::path(configured);
+        std::error_code ec;
+        if (!fs::exists(dir, ec)) {
+            fs::create_directories(dir, ec);
+#if !defined(_WIN32)
+            ::chmod(dir.c_str(), 0700);
+#endif
+        }
+        return dir.string();
+    }
     fs::path dir;
 #if defined(_WIN32)
     dir = fs::temp_directory_path() / "x2";
@@ -212,11 +235,16 @@ std::string ControlSocketPath(const std::string& name)
 
 std::vector<std::string> ListControlSockets()
 {
+    return ListControlSockets(ControlSocketDir());
+}
+
+std::vector<std::string> ListControlSockets(const std::string& dir)
+{
     InitSockets();
     std::vector<std::string> names;
     std::error_code ec;
     // increment(ec): nothing here may throw on a socket file (see Start)
-    for (std::filesystem::directory_iterator it(ControlSocketDir(), ec), end; !ec && it != end; it.increment(ec)) {
+    for (std::filesystem::directory_iterator it(dir, ec), end; !ec && it != end; it.increment(ec)) {
         const std::filesystem::path& path = it->path();
         if (path.extension() != ".sock")
             continue;

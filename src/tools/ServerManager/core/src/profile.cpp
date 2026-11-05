@@ -78,18 +78,27 @@ x2::platform::ProcessOptions Profile::X2ctl(std::string_view host, const std::ve
 {
     x2::platform::ProcessOptions options;
     const HostSpec* h = host.empty() ? nullptr : FindHost(host);
+    const std::string& dir = h ? h->controlDir : controlDir;
+    std::vector<std::string> x2ctlArgs;
+    if (!dir.empty())
+        x2ctlArgs.push_back("--dir=" + dir);
+    x2ctlArgs.insert(x2ctlArgs.end(), args.begin(), args.end());
     if (!h) {
         options.program = x2ctl;
-        options.args = args;
+        options.args = std::move(x2ctlArgs);
         return options;
     }
     std::vector<std::string> command = h->ssh.empty() ? DefaultSshCommand() : h->ssh;
     options.program = command.front();
     options.args.assign(command.begin() + 1, command.end());
+    if (h->port != 0) {
+        options.args.push_back("-p");
+        options.args.push_back(std::to_string(h->port));
+    }
     options.args.push_back(h->destination);
     // ssh joins its arguments into one line for the remote shell: quote each word once, here
     std::string remote = x2::platform::QuoteShellArgument(h->x2ctl);
-    for (const std::string& arg : args)
+    for (const std::string& arg : x2ctlArgs)
         remote += ' ' + x2::platform::QuoteShellArgument(arg);
     options.args.push_back(std::move(remote));
     return options;
@@ -115,6 +124,8 @@ std::string Profile::Validate() const
             return "host " + h.name + ": no destination";
         if (h.x2ctl.empty())
             return "host " + h.name + ": no x2ctl";
+        if (h.port < 0 || h.port > 65535)
+            return "host " + h.name + ": port " + std::to_string(h.port) + " is not a TCP port";
     }
     std::set<std::string> names;
     for (const ServerSpec& s : servers) {
@@ -195,6 +206,8 @@ std::optional<Profile> ParseProfile(std::string_view json, const std::string& ba
     Profile profile;
     const std::string x2ctl = doc->GetString("x2ctl", "x2ctl");
     profile.x2ctl = Utf8Path(x2ctl).has_parent_path() ? Resolve(baseDir, x2ctl) : x2ctl;
+    if (const std::string dir = doc->GetString("controlDir"); !dir.empty())
+        profile.controlDir = Resolve(baseDir, dir);
 
     if (const Json* hosts = doc->Find("hosts")) {
         if (hosts->GetType() != Json::Array) {
@@ -210,6 +223,15 @@ std::optional<Profile> ParseProfile(std::string_view json, const std::string& ba
             h.name = node.GetString("name");
             h.destination = node.GetString("destination");
             h.x2ctl = node.GetString("x2ctl", "x2ctl");
+            h.controlDir = node.GetString("controlDir");   // the other machine's path: not resolved here
+            if (const x2::platform::Json* port = node.Find("port")) {
+                const auto value = port->AsInteger();
+                if (!value || *value <= 0 || *value > 65535) {
+                    error = "host " + h.name + ": \"port\" is a number from 1 to 65535";
+                    return std::nullopt;
+                }
+                h.port = static_cast<int>(*value);
+            }
             if (!StringList(node.Find("ssh"), h.ssh)) {
                 error = "host " + h.name + ": \"ssh\" is a list of strings";
                 return std::nullopt;

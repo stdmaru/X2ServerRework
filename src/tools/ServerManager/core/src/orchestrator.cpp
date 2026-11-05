@@ -26,7 +26,9 @@ Orchestrator::Orchestrator(Profile profile, OrchestratorOptions options)
     : m_profile(std::move(profile)), m_options(std::move(options))
 {
     if (!m_options.runningServers)
-        m_options.runningServers = [] { return x2::platform::ListControlSockets(); };
+        m_options.runningServers = [dir = m_profile.controlDir] {
+            return dir.empty() ? x2::platform::ListControlSockets() : x2::platform::ListControlSockets(dir);
+        };
     m_order = m_profile.StartOrder();
     for (const ServerSpec& spec : m_profile.servers)
         m_servers.push_back(std::make_unique<Server>(spec));

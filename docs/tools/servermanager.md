@@ -75,7 +75,10 @@ A JSON file (`LoadProfile`) or the built-in default for the package under `dist/
     "after": ["LoginServer", "CenterServer", "GlobalServer"], "control": "GameServer"}]}
 ```
 
-- Relative `directory` and `x2ctl` paths are relative to the profile's folder; `program` is relative to `directory` (on Windows `.exe`
+- `controlDir`: where this machine's servers have their control sockets when not the default (servers in containers, see
+  [another folder](../porting/console.md#control-socket)); passed to `x2ctl` as `--dir=` and used by the discovery. The servers
+  ServerManager starts itself keep their own default unless `X2_CONTROL_DIR` is set in its environment (they inherit it).
+- Relative `directory`, `x2ctl` and `controlDir` paths are relative to the profile's folder; `program` is relative to `directory` (on Windows `.exe`
   may be left out). `args` come before the console options ServerManager adds.
 - `after`: servers that must be **ready** first. `control`: the control socket name, by default the program's file name (the
   server's own default); a second GameServer needs another one, and ServerManager passes it as `--control=`.
@@ -118,11 +121,17 @@ local server that is already running; if it is not running, `x2ctl attach` fails
 followed until the connection closes; a remote server that does not stop is not terminated or killed.
 
 ```json
-{"hosts": [{"name": "prod", "destination": "x2@10.0.0.5", "x2ctl": "/opt/x2/dist/x2ctl"},
+{"hosts": [{"name": "prod", "destination": "x2@10.0.0.5", "port": 2222, "x2ctl": "/opt/x2/dist/x2ctl"},
            {"name": "lab", "destination": "lab", "ssh": ["ssh", "-p", "2222", "-o", "BatchMode=yes"]}],
  "servers": [{"name": "GameServer", "host": "prod", "control": "GameServer", "after": ["CenterServer"]}]}
 ```
 
+- `controlDir` (per host): the control socket folder on that machine, for servers in containers there
+  (`"controlDir": "/opt/x2/docker/server/control/x2"` with `docker/server/docker-compose.yml`); the remote command becomes
+  `x2ctl --dir=<folder> attach <name>`. Not resolved on this machine. The ssh user must be able to open it (see
+  [another folder](../porting/console.md#control-socket)).
+- `port`: the ssh port (`-p`, after the ssh options and before the destination); without it, ssh's own (22, or the `Port` of
+  `~/.ssh/config`).
 - `destination`: what ssh connects to (`host`, `user@host`, or a `Host` of `~/.ssh/config`; not starting with `-`). `x2ctl`: its
   path on that machine, by default `x2ctl` in its `PATH`. A remote server needs `control` (or `program`, whose file name is the
   socket name); its `directory` is not resolved.

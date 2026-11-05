@@ -11,12 +11,19 @@
 
 namespace x2::platform {
 
-// $XDG_RUNTIME_DIR/x2, else /tmp/x2-<uid> (Linux); %TEMP%\x2 (Windows). Created on demand, private to the user.
+// Where the control sockets live, the first that is set:
+// - SetControlSocketDir (x2ctl --dir);
+// - $X2_CONTROL_DIR, as it is (a folder bind-mounted from a container, for instance);
+// - $XDG_RUNTIME_DIR/x2, else /tmp/x2-<uid> (Linux); %TEMP%\x2 (Windows).
+// Created on demand, private to the user (a folder that already exists keeps its permissions, except the default one).
 std::string ControlSocketDir();
+// Overrides it for this process; call before starting threads that use it. Empty: back to the environment.
+void SetControlSocketDir(std::string dir);
 // <dir>/<name>.sock
 std::string ControlSocketPath(const std::string& name);
-// Names of the sockets in ControlSocketDir() that a server is listening on.
+// Names of the sockets in ControlSocketDir(), or in `dir`, that a server is listening on.
 std::vector<std::string> ListControlSockets();
+std::vector<std::string> ListControlSockets(const std::string& dir);
 
 class ControlServer
 {
