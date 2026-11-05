@@ -3,7 +3,7 @@
 #include "dbg/dbg.hpp"
 #include "IOThread.h"
 #include "KncSend.h"    // PI_NULL
-#include "Statistics.h"
+#include "DisconnectReason.h"
 
 ImplementSingleton( KIocp );
 NiImplementRTTI( KIocp, KThreadManager );
@@ -20,7 +20,13 @@ m_dwSockObjNum(0L)
 KIocp::~KIocp()
 {
     m_kIoService.Stop();
-    KThreadManager::EndThread( 3000 );  // the I/O threads use m_kIoService: join them before it goes away
+    // The I/O threads use m_kIoService: join them before it goes away. Port: not through
+    // KThreadManager::EndThread(), which waits for m_nTerminateCount; only event-queue threads count it, so it
+    // always waited its full timeout (3 s) here. A stopped service makes every KIOThread leave within 100 ms.
+    {
+        KLocker lock( m_csVecThread );
+        m_vecThread.clear();    // ~KIOThread ends and joins its thread
+    }
 
     // close what is still registered, then run the resulting completions before the members go away
     std::map< DWORD, KSocketObjectPtr > mapSockObj;
@@ -144,7 +150,7 @@ void KIocp::OnClosedByLocal( IN DWORD dwKey_, IN int iError_ )
 		//}}
 		//////////////////////////////////////////////////////////////////////////
 
-        spSockObj->SetDisconnectReason( KStatistics::eSIColDR_IOCP_GetStatus );
+        spSockObj->SetDisconnectReason( KDisconnectReason::eSIColDR_IOCP_GetStatus );
         spSockObj->OnSocketError();
     }
     else

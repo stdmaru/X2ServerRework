@@ -1,5 +1,5 @@
 # Client (docs/porting/client.md). Layers mirror the original projects (decision T14) and are added here as they
-# compile: so far LuaCommon, the DXUT replacement and the executable's skeleton. KTDXLIB, X2Lib and X2ServerProtocol come
+# compile: so far LuaCommon, the DXUT replacement, X2ServerProtocol and the executable's skeleton. KTDXLIB and X2Lib come
 # next (roadmap Phase 3) and link x2_client_includes.
 
 # Include directories of the original projects (KTDXLIB, X2Lib, X2 and X2ServerProtocol .vcxproj), for every layer:
@@ -13,7 +13,6 @@ target_include_directories(x2_client_includes INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/X2Lib/Common
     ${CMAKE_CURRENT_SOURCE_DIR}/X2
     ${CMAKE_CURRENT_SOURCE_DIR}/X2ServerProtocol
-    ${CMAKE_CURRENT_SOURCE_DIR}/X2ServerProtocol/Socket
     ${PROJECT_SOURCE_DIR}/src/server/Common)
 
 # LuaCommon: the client's Lua binding and its own lua_tinker (docs/porting/client-luacommon.md), on upstream LuaJIT (T21).
@@ -35,6 +34,19 @@ add_library(x2_client_dxut STATIC DXUT/DXUT.cpp DXUT/SdlMessages.cpp)
 add_library(x2::client_dxut ALIAS x2_client_dxut)
 target_include_directories(x2_client_dxut PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/DXUT)
 target_link_libraries(x2_client_dxut PUBLIC x2::platform x2::app)
+
+# X2ServerProtocol: the client's connections to the servers (docs/porting/client-serverprotocol.md). The event/actor
+# model and the TCP layer are the servers' x2::common_net (decision T34); only the client's proxies and the
+# CX2ServerProtocol facade are here.
+add_library(x2_client_serverprotocol STATIC
+    X2ServerProtocol/ActorProxy.cpp
+    X2ServerProtocol/EventNames.cpp
+    X2ServerProtocol/TRUser.cpp
+    X2ServerProtocol/UserProxy.cpp
+    X2ServerProtocol/X2ServerProtocol.cpp)
+add_library(x2::client_serverprotocol ALIAS x2_client_serverprotocol)
+target_include_directories(x2_client_serverprotocol PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/X2ServerProtocol)
+target_link_libraries(x2_client_serverprotocol PUBLIC x2::common_net)
 
 # The executable (x2.exe in the original). X2/X2Skeleton.cpp stands in for X2.cpp until KTDXLIB and X2Lib build
 # (docs/porting/client-x2.md).

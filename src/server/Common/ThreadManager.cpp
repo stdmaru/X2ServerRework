@@ -1,6 +1,5 @@
 #include "dbg/dbg.hpp"
 #include "ThreadManager.h"
-#include "ODBC/Odbc.h"
 
 #include <functional>
 using namespace std::placeholders;

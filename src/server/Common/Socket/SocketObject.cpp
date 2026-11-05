@@ -7,7 +7,7 @@
 #include <dbg/dbg.hpp>
 #include <Thread/Locker.h>
 
-#include "Statistics.h"
+#include "DisconnectReason.h"
 
 KSocketObject::KMaxSizeInfo KSocketObject::ms_kMaxSizeInfo = {
     KncCriticalSection(), 0, 0, CTime::GetCurrentTime()
@@ -49,7 +49,7 @@ KSocketObject::KSocketObject() : m_dwKey( 0 )
     m_ovlRecv.m_eIOMode     = KOVERLAPPED::IO_RECV;
     m_ovlSend.m_eIOMode     = KOVERLAPPED::IO_SEND;
 
-	m_iDisconnectReason		= KStatistics::eSIColDR_No_Reason;
+	m_iDisconnectReason		= KDisconnectReason::eSIColDR_No_Reason;
 	//{{ 2009-08-31 IOCP disconnection reason
 	m_dwLastIocpFailedError = 0;
 	//}}
@@ -354,7 +354,7 @@ bool KSocketObject::SendData( const char* szData_, int iSize_ )
         m_ovlSend.m_dwLeft = 0;
         m_ovlSend.m_bSending = false;
 
-		SetDisconnectReason( KStatistics::eSIColDR_SendBufferFull );
+		SetDisconnectReason( KDisconnectReason::eSIColDR_SendBufferFull );
         OnSocketError();
 
         return false;
@@ -369,7 +369,7 @@ bool KSocketObject::SendData( const char* szData_, int iSize_ )
 
 void KSocketObject::SetDisconnectReason( int iDisconnectReason )
 {
-	if( m_iDisconnectReason == KStatistics::eSIColDR_No_Reason )
+	if( m_iDisconnectReason == KDisconnectReason::eSIColDR_No_Reason )
 	{
 		m_iDisconnectReason = iDisconnectReason;
 	}

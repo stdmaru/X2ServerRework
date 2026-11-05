@@ -1,5 +1,11 @@
 #pragma once
 
+#include "Socket/SocketObject.h"
+#include <Thread/Thread.h>
+#include <memory>
+
+// The client's connection to the TCP relay (TRServer): plain framed KEvents, without KncSecurity, on its own thread
+// (KSocketObject in the event mode, no IOCP).
 
 #define KTRUserPtr KTRUser*
 #undef KTRUserPtr
@@ -19,26 +25,25 @@ public:
     };
     void OnRecvCompleted( DWORD dwTransfered );
     void OnSocketError();
-    //void OnAcceptConnection() { m_pkTRUser->OnAcceptConnection(); }
     KTRUserPtr GetTRUserPtr();
-    boost::weak_ptr< KTRUser > m_pkTRUser;
+    std::weak_ptr< KTRUser > m_pkTRUser;
 };
 
-class KTRUser : public KThread, public boost::enable_shared_from_this<KTRUser>
+class KTRUser : public KThread, public std::enable_shared_from_this<KTRUser>
 {
-	NiDeclareRootRTTI( KTRUser );   // Accepter에서 처리될 객체들은 Ni-RTTI가 선언되어 있어야 한다.
+	NiDeclareRootRTTI( KTRUser );   // objects handled by the Accepter must declare Ni-RTTI
 
 public:
-	enum ENUM_TICKS // Tick 관련
+	enum ENUM_TICKS
 	{
 		CONNECT_TICK = 0,
-		HB_TICK,            // heart_bit
+		HB_TICK,            // heartbeat
 		TICKS_NUM,
 	};
 
-	KTRUser(void);                              // do not use.
-	KTRUser(const KTRUser& right);              // do not use.
-	KTRUser& operator=(const KTRUser& right);   // do not use.
+	KTRUser(void);
+	KTRUser(const KTRUser& right) = delete;
+	KTRUser& operator=(const KTRUser& right) = delete;
 	virtual ~KTRUser(void);
 
 	virtual bool Begin();   //derived From KThread
@@ -49,7 +54,6 @@ public:
 
 	UidType			GetUID()const       { return m_iUnitUID; }
 
-	//bool	Send( IN const std::vector<UidType> vecUID, IN const void* pvData, IN const size_t dwDataSize );
 	template< typename T >
 	bool			SendPacket( unsigned short usEventID, T& data, bool bCompress = true );
 	bool			SendID( unsigned short usEventID, bool bCompress = true );
@@ -60,7 +64,7 @@ public:
 	const char*		GetIPStr() const	{ _JIF( m_spSockObj, return NULL ); return m_spSockObj->GetIPStr(); }
 	unsigned short	GetPort() const		{ _JIF( m_spSockObj, return 0 ); return m_spSockObj->GetPort(); }
 
-	void			SetClassID( int iClassID )	{ m_iClassID = iClassID; }  // 윈도우 메세지를 구성할때 사용할 id 할당.
+	void			SetClassID( int iClassID )	{ m_iClassID = iClassID; }  // the ID used to build the window message
 	int				GetClassID()				{ return m_iClassID; }
 	void			SetServerMsgID( UINT serverMsgID ){ m_ServerMsgID = serverMsgID; }
 	void			SetSendMsgCallBack( SEND_MSG_FUNC pSendGameMessage ){ m_pSendGameMessage = pSendGameMessage; }
@@ -70,25 +74,21 @@ public:
 protected:
 	virtual	void	Run();
 
-
 	void	SetTick( IN ENUM_TICKS eIndex )	{ m_adwTickCount[ eIndex ] = ::GetTickCount(); }
 	DWORD	GetTick( IN ENUM_TICKS eIndex)	{ return m_adwTickCount[ eIndex ]; }
 
-	//void	OnRecvCompleted( IN const char cRecvCnt, IN KSerBuffer& buff );
 	void	OnRecvCompleted( IN KSerBuffer& buffer );
 	void	OnDestroy();
 
 protected:
     KSkTRUserPtr        m_spSockObj;
-	bool                m_bUseIocp;
 	bool				m_bDestroyReserved;
 	UidType             m_iUnitUID;
 	DWORD               m_adwTickCount[KTRUser::TICKS_NUM];
 	SEND_MSG_FUNC		m_pSendGameMessage;
 	UINT				m_ServerMsgID;
-	int					m_iClassID;         // 이벤트를 윈도우 메세지로 던질 때, 구분자 역할을 한다.
+	int					m_iClassID;         // tells the proxies apart when events go to the game
 
-	// proxy-chile only.
 	enum ENUM_EVENT_TYPE
 	{
 		EVENT_DISCONNECTED,
@@ -104,9 +104,9 @@ protected:
 template<typename T>
 bool KTRUser::SendPacket( unsigned short usEventID, T& data_, bool bCompress_ /* = true  */)
 {
-	if( m_bDestroyReserved ) return true;///< 종료가 예약되었을때 send 시도. 이런 경우가 다분하므로, true 인정.
+	if( m_bDestroyReserved ) return true;   ///< sending while destruction is reserved happens often: accepted as success
 	_JIF( m_spSockObj, return false );
-    _JIF( m_spSockObj->IsConnected(), return false );    ///< 소켓이 유효하지 않음.
+    _JIF( m_spSockObj->IsConnected(), return false );    ///< invalid socket
 
 	KEvent kEvent;
 	kEvent.SetData( 0, NULL, usEventID, data_ );
@@ -123,7 +123,7 @@ bool KTRUser::SendPacket( unsigned short usEventID, T& data_, bool bCompress_ /*
 	KncSecurity::KByteStream    bsbuff;
 	bsbuff.reserve( kbuff.GetLength() + sizeof(USHORT) );
 	bsbuff.Assign( kbuff.GetLength() + sizeof(USHORT), sizeof(USHORT) );
-	bsbuff.append( (byte*)kbuff.GetData(), kbuff.GetLength() );   // 실제 전송할 데이터 넣기.
+	bsbuff.append( (byte*)kbuff.GetData(), kbuff.GetLength() );   // the data to send
 
 	if( kEvent.m_usEventID != E_HEART_BEAT )
 		dbg::clog << L"ⓢⓢ " << kEvent.GetIDStr() << L" - TR SEND" << END_LOG;

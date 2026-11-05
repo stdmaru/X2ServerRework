@@ -172,7 +172,10 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
       events translated to Win32 messages for `MsgProc` (keyboard, mouse, focus, size, text/IME), `x2` skeleton executable with
       the original icon, `LuaCommon` on upstream LuaJIT (T21), excluded integrations removed by hand and the client modules frozen;
       headless tests (2026-11-05). See [Client: DXUT](../porting/client-dxut.md).
-- [ ] `client/serverprotocol`: compile `X2ServerProtocol` (next item).
+- [x] `client/serverprotocol`: `X2ServerProtocol` builds as `x2::client_serverprotocol` on the servers' network core
+      `x2::common_net` (T34: one `Socket/` and event model for both ends, `KSession` client side, 64 KB buffers), with
+      loopback tests (handshake, encryption accepted with the sequence check on, 40 KB packet, connection lost, TCP relay)
+      (2026-11-05). See [Client: X2ServerProtocol](../porting/client-serverprotocol.md).
 - [ ] Input: DirectInput (`CKTDIManager`) → SDL3 keyboard/mouse state; IME candidate list. The `MsgProc(HWND, UINT, WPARAM,
       LPARAM)` model stays (`X2Lib` uses `HWND` in ~272 files — mostly through the `MsgProc` signature).
 - [ ] D3DX math (`D3DXVECTOR3` ~8,000 uses) → header-compatible shim over GLM or custom implementation.

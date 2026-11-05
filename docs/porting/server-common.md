@@ -124,6 +124,26 @@ Intentional behavior changes:
 - `KSimObject`: name (`SOB_<date>_<time>_<n>`) was `SOB_(null)_(null)_...` because original passed `_wstrdate_s` return code as a string.
 - `OnSendCompleted` used `OVERLAPPED::InternalHigh` for sent-byte count; now uses completion byte count (same value).
 
+## Network core shared with the client (T34)
+
+Since 2026-11-05 (`client/serverprotocol`) the event/actor model and the TCP layer are their own library,
+**`x2::common_net`** (`CommonNet.cmake`, included from `src/CMakeLists.txt` when the servers or the client are built):
+`Event`, `Performer`, `SimObject`, `ThreadManager` and `Socket/` `CircularQueue`, `IOCP`, `IOThread`, `NetCommon`,
+`Session`, `SocketObject`. `x2_server_common` leaves these files out and links it; the client's
+[X2ServerProtocol](client-serverprotocol.md) links it instead of its own copy. Nothing in it may include a server-only
+header.
+
+- **Event names are per side.** `KEvent::ms_szEventID`, `GetIDStr()` and `IsValidEventID()` are not in the core's
+  `Event.cpp`: the servers define them in `Common/EventNames.cpp` (every event), the client in its own `EventNames.cpp`
+  (system and client events only), so the server-to-server event names (`EventID_Server.h`) do not ship with the game.
+- `KSession( bIsProxy, bClientSide = false )`: the client side keeps its own `KSADatabase` and uses the `*_Local` crypto
+  calls, as the client's copy did (details on the client page). Servers, including their proxies to other servers, are
+  unchanged.
+- The disconnection reasons moved from `Statistics.h` to `DisconnectReason.h` (`KDisconnectReason`, which `KStatistics`
+  derives from: `KStatistics::eSIColDR_*` still works). `Socket/` used to include `Statistics.h`, and through it every
+  packet header.
+- `ThreadManager.cpp` no longer includes `ODBC/Odbc.h` (unused).
+
 ## Tests (`src/server/Common/tests`, target `x2_server_common_tests`)
 
 | Test | Coverage |
@@ -163,6 +183,8 @@ That remains pending ([KNCSDK › Pending](kncsdk.md#pending)). They also cannot
 | `DBConnectionManager` (DES connection strings) | `x2::crypto::DesCbc*` instead of Crypto++ `CBC_Mode<DES>` (T27); same bytes. Removed unused XOR `EncryptString`/`DecryptString` | Crypto++ does not compile with clang-cl |
 | `Socket/` (`SocketObject`, `NetCommon`, `UdpEcho`, `KTDNUDP`), `NetLayer`, `ThreadStatisticsManager` (and EPublisherServer) | `inet_addr`/`inet_ntoa`/`gethostbyname` → `x2::platform::IpFromString`/`IpToString`/`ResolveIPv4` (`inet_pton`/`inet_ntop`/`getaddrinfo`). Accepts only dotted-quad IPv4 (`inet_addr` accepted `127.1` and hex) | Obsolete Winsock APIs (clang-cl warnings). `ThreadStatisticsManager` no longer crashes if machine name does not resolve (original dereferenced `NULL` from `gethostbyname`) |
 | `LineMap` | Removed `LPDIRECT3DVERTEXBUFFER9` member | Client leftover, never used in server |
+| `Socket/Overlapped.h` (2026-11-05, T34) | `MAX_PACKET_SIZE` 64 KB instead of 32 KB, and `KSkSession::OnRecvCompleted` no longer disconnects with `eSIColDR_RecvBufferFull` when a length exceeds it (a `USHORT` length always fits now) | One network core with the client, which used 64 KB. Each connection has 64 KB more buffers; packets of 32–64 KB from a client are now read instead of dropping the connection |
+| `~KIocp` (2026-11-05) | Joins the I/O threads directly instead of calling `KThreadManager::EndThread( 3000 )` | `EndThread` waits for `m_nTerminateCount`, which only event-queue threads increment: it always waited the full 3 s at shutdown |
 
 ### Original bugs fixed
 

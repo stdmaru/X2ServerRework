@@ -1,75 +1,56 @@
 #pragma once
 
-#ifndef UNICODE
-#define UNICODE
-#endif
+// The client's network library (docs/porting/client-serverprotocol.md): everything X2Lib needs to talk to the servers,
+// in one header, as in the original. The event/actor model and the TCP layer are the servers' (src/server/Common,
+// x2::common_net, decision T34); this folder keeps only the client's proxies and the CX2ServerProtocol facade.
 
-//#define X2OPTIMIZE_TCP_RELAY_TEST
-
+// Defined by the original here, and still tested by X2Lib and KTDXLIB, which reach them through this header.
+// Inside X2ServerProtocol they are resolved by hand (all three were on).
 #define ADD_COLLECT_CLIENT_INFO_PROTOCOL
 #define X2OPTIMIZE_X2SERVERPROTOCOL_MULTITHREAD_CRASH_BUG_FIX
 #define X2OPTIMIZE_SESSION_THREAD_SAFETY
 
-#pragma warning ( disable : 4702 )
-#pragma warning ( disable : 4995 )
-#pragma warning ( disable : 4996 )
-#pragma warning ( disable : 4100 ) // disable unreference formal parameter warnings for /W4 builds
+#include "x2/platform/win32.h"
+#include "x2/platform/window_messages.h"    // WPARAM, LPARAM
+#include "x2/platform/net.h"
 
-#include <Winsock2.h>
-#include <windows.h>
-#include <vector>
-#include <stack>
+#include <atomic>
+#include <cassert>
+#include <memory>
 #include <queue>
-#include <map>
-#include <atltime.h>    // CString
-
-#include <boost/shared_ptr.hpp>
-#include <boost/enable_shared_from_this.hpp>
-#include <boost/noncopyable.hpp>
+#include <string>
+#include <vector>
 
 #include <KncSecurity/KncSecurity.h>
 #include <Serializer/SerBuffer.h>
-#include <Serializer/SerPair.h>
-#include <Serializer/SerList.h>
-#include <Serializer/SerVector.h>
-#include <Serializer/SerDeque.h>
-#include <Serializer/SerMap.h>
-#include <Serializer/SerSet.h>
-#include <Serializer/SerializeMacro.h>
-#include <ToString.h>
+#include <Serializer/Serializer.h>
 #include <RTTI.h>
+#include <ToString.h>
 #include <Thread/Thread.h>
 #include <Thread/Locker.h>
-#include <ObjectPool/BlockAllocator.h>
 #include <KNCSingleton.h>
 #include <dbg/dbg.hpp>
 #include <KncUtil.h>    // toWideString
 
 extern bool g_bIsSERVICE;
 
+// Delivers a received packet to the game: uMsg = the server message ID, wParam = the event ID, lParam = a new
+// KSerBuffer* with the packet's data, which the receiver deletes.
 typedef bool (*SEND_MSG_FUNC)( UINT uMsg, WPARAM wParam, LPARAM lParam, bool bDirectProcess );
 
-#include "KncException.h"
-#include "KncUidType.h"
+// shared with the servers (src/server/Common)
 #include "KncSmartPtr.h"
+#include "KncUidType.h"
 #include "Event.h"
-#include "SimObject.h"
 #include "Performer.h"
-#include "ThreadManager.h"
-#include "Overlapped.h"
-#include "CircularQueue.h"
-#include "SocketObject.h"
-#include "Session.h"
-#include "IOCP.h"
-#include "IOThread.h"
-#include "ActorProxy.h"
-#include "KNCSingleton.h"
-#include "SystemPacket.h"
-#include "UserProxy.h"
 #include "KncSend.h"
-#include "TRUser.h"
+#include "Socket/NetCommon.h"
+#include "Socket/Session.h"
+#include "Socket/IOCP.h"
+#include "SystemPacket.h"
 
+// the client's own
+#include "ActorProxy.h"
+#include "UserProxy.h"
+#include "TRUser.h"
 #include "X2ServerProtocol.h"
-//#ifndef X2OPTIMIZE_TCP_RELAY_TEST
-#include "Odbc.h"
-//#endif//X2OPTIMIZE_TCP_RELAY_TEST

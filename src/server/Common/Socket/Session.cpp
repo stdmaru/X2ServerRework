@@ -3,7 +3,7 @@
 #include "Thread/Locker.h"
 #include "dbg/dbg.hpp"
 #include "NetCommon.h"
-#include "Statistics.h"
+#include "DisconnectReason.h"
 #include <time.h>   // localtime
 
 //#ifndef KNC_DONT_USE_IOCP
@@ -16,7 +16,7 @@ void KSkSession::OnRecvCompleted( DWORD dwTransfered_ )
     {
         START_LOG( clog, L"closed by remote machine" );
 
-        SetDisconnectReason( KStatistics::eSIColDR_Session_Close );
+        SetDisconnectReason( KDisconnectReason::eSIColDR_Session_Close );
         OnSocketError();
         return;
     }
@@ -41,8 +41,29 @@ void KSkSession::OnRecvCompleted( DWORD dwTransfered_ )
                     usPacketLen - sizeof( usPacketLen ) );
                 //std::cout << "RECV " << kSecBuff << std::endl;
 
-				// 육사 : dos공격이 들어온다면 결국 에러로그를 공격량 만큼 찍어낼것이기 때문에 서버가 위험해지는건 마찬가지다.
-                if( !kSecBuff.IsAuthentic_notRWM( spSession->IsCheckSequenceNum() ) )
+                if( spSession->IsClientSide() )
+                {
+                    // the client copy: its own SA database (the *_Local functions), and no disconnection on
+                    // failures, only OnAuthenticFailed() on every 10th one
+                    KncSecurity::KSADatabase* pSADatabase = spSession->m_spSADatabase.get();
+                    if( !kSecBuff.IsAuthentic_Local( pSADatabase ) )
+                    {
+                        if( ++spSession->m_iAuthFailedCount >= 10 )
+                        {
+                            spSession->OnAuthenticFailed();
+                            spSession->m_iAuthFailedCount = 0;
+                        }
+                    }
+                    else
+                    {
+                        KncSecurity::KByteStream payload;
+                        JIF( kSecBuff.GetPayload_Local( payload, pSADatabase ) );
+
+                        spSession->OnRecvCompleted( payload );
+                    }
+                }
+				// Yuksa: a DoS attack would make the server log as many errors as the attack sends, so it is at risk either way.
+                else if( !kSecBuff.IsAuthentic_notRWM( spSession->IsCheckSequenceNum() ) )
                 {
                     START_LOG( cwarn, L"packet authentication failed." )
                         << BUILD_LOG( kSecBuff.GetSize() )
@@ -56,7 +77,7 @@ void KSkSession::OnRecvCompleted( DWORD dwTransfered_ )
 					{
 						START_LOG( clog, L"Find Traffic Attacker!" );
 
-						SetDisconnectReason( KStatistics::eSIColDR_Traffic_Attack );
+						SetDisconnectReason( KDisconnectReason::eSIColDR_Traffic_Attack );
 						OnSocketError();
 
 						// 여기서 return해야만 InitRecv()를 호출하지 않으므로 IOCP완료 이벤트가 더이상 오지 않는다.
@@ -82,18 +103,8 @@ void KSkSession::OnRecvCompleted( DWORD dwTransfered_ )
             m_ovlRecv.m_dwLeft -= usPacketLen;
             memmove(&m_ovlRecv.m_pBuffer[0], &m_ovlRecv.m_pBuffer[usPacketLen], m_ovlRecv.m_dwLeft );
         }
-		//{{ 2012. 02. 01	최육사	recv buffer full
-		// 수신된 패킷의 길이가 Max Packet Size를 넘으면 종료시키자!
-		else if( usPacketLen > MAX_PACKET_SIZE )
-		{
-			START_LOG( cout, L"[Disconnect] Recv Buffer Full!" )
-				<< BUILD_LOG( usPacketLen );
-
-			SetDisconnectReason( KStatistics::eSIColDR_RecvBufferFull );
-			OnSocketError();
-			return;
-		}
-		//}}
+		// Port (decision T34): the original disconnected here when usPacketLen > MAX_PACKET_SIZE (2012-02-01,
+		// eSIColDR_RecvBufferFull). With the 64 KB buffer every USHORT length fits, so that branch is gone.
         else
         {
             break;     // 온전한 패킷을 구성하기에 충분한 데이터가 없음. loop를 빠져나간다.
@@ -161,7 +172,7 @@ KSession::KPacketAuthInfo KSession::ms_kPacketAuthInfo = {
 };
 //}}
 
-KSession::KSession( bool bIsProxy )
+KSession::KSession( bool bIsProxy, bool bClientSide )
 :
     m_spSockObj         ( new KSkSession ),
     m_bUseIocp          ( true ),
@@ -183,8 +194,10 @@ KSession::KSession( bool bIsProxy )
 	m_dwHBTickDump		( 0 ),
 	//}}
 	//{{ 2009. 8. 10  최육사	send buffer full 원인 찾기
-	m_dwCurrentTickDump	( 0 )
+	m_dwCurrentTickDump	( 0 ),
 	//}}
+	m_spSADatabase		( bClientSide ? std::make_unique< KncSecurity::KSADatabase >() : nullptr ),
+	m_iAuthFailedCount	( 0 )
 {
     m_dwHBTick = GetTickCount();
 
@@ -215,7 +228,7 @@ KSession::~KSession(void)
     if( m_nSPIndex != 0 )
     {
         START_LOG( clog, L"SA deleted. Name: " << m_strName << L", SPI: " << m_nSPIndex );
-        KncSecurity::GetSADB().Delete( m_nSPIndex );
+        GetSADatabase().Delete( m_nSPIndex );
         m_nSPIndex = 0;
     }
 }
@@ -329,7 +342,7 @@ void KSession::Tick()
 				<< dwCurrentTick - dwOldHBTick
 				<< L" )" );
 
-			SetDisconnectReason( KStatistics::eSIColDR_Heart_Beat );
+			SetDisconnectReason( KDisconnectReason::eSIColDR_Heart_Beat );
 			ReserveDestroy();
 			//OnDestroy();
 		}
@@ -373,7 +386,15 @@ bool KSession::SendPacket( IN const KEvent& kEvent )
     KncSecurity::KSecureBuffer kSecBuff( m_nSPIndex );
 
     bsbuff.assign( (byte*)kbuff.GetData(), kbuff.GetLength() );		// 실제 전송할 데이터 넣기.
-    _JIF( kSecBuff.Create_notRWM( bsbuff ), return false );			// 암호화 및 인증 절차 처리.
+    // encrypt and add the authentication data (the client side as the client copy did, decision T34)
+    if( m_spSADatabase )
+    {
+        _JIF( kSecBuff.Create_Local( bsbuff, m_spSADatabase.get() ), return false );
+    }
+    else
+    {
+        _JIF( kSecBuff.Create_notRWM( bsbuff ), return false );
+    }
 
     // bsbuff를 재활용해, 암호화된 데이터 앞에 총 길이를 덧붙인 byte stream을 만든다.
     bsbuff.clear();
@@ -427,7 +448,7 @@ bool KSession::SendPacket( IN const KEvent& kEvent )
 		}
 		m_queEventID.push( TYPE_SEND_BUFFER_FULL_LOG::value_type( kEvent.m_usEventID, CTime::GetCurrentTime() ) );
 
-		if( ( bResult == false ) && ( GetDisconnectReason() == KStatistics::eSIColDR_SendBufferFull ) )
+		if( ( bResult == false ) && ( GetDisconnectReason() == KDisconnectReason::eSIColDR_SendBufferFull ) )
 		{
 			while( m_queEventID.empty() == false )
 			{
@@ -544,7 +565,7 @@ void KSession::OnAcceptConnection()
 
     const KncSecurity::KSecurityAssociation* pkSA = NULL;
     SpiType nSpiNew = 0;
-    pkSA = KncSecurity::GetSADB().CreateNewSA( nSpiNew );
+    pkSA = GetSADatabase().CreateNewSA( nSpiNew );
 
     KSerializer ks;
 	KEvent kEvent;
@@ -603,7 +624,7 @@ void KSession::OnRecvCompleted( IN const KncSecurity::KByteStream& payload_ )
             ks.Get( kSA );
             ks.EndReading();
 
-            KncSecurity::GetSADB().Insert( m_nSPIndex, kSA );
+            GetSADatabase().Insert( m_nSPIndex, kSA );
             START_LOG( clog, m_strName << L", security key configured. SPI: " << m_nSPIndex  );
 
             m_bAuthKeyRecved = true;
@@ -724,3 +745,8 @@ void KSession::SetP2PIP( const std::wstring& wstrIP )
 	void			KSession::SetP2PInternalIP( const std::wstring& wstrIP )
     { m_wstrInternalIP = wstrIP; }
 //#endif SERV_KTDX_RETRY_USING_INTERNAL_IP
+
+KncSecurity::KSADatabase& KSession::GetSADatabase()
+{
+    return m_spSADatabase ? *m_spSADatabase : KncSecurity::GetSADB();
+}
