@@ -3,6 +3,7 @@ add_executable(x2_platform_tests
     test_control.cpp
     test_crt.cpp
     test_d3dx_math.cpp
+    test_file.cpp
     test_net_io.cpp
     test_odbc.cpp
     test_format.cpp
