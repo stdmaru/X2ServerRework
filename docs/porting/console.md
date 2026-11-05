@@ -50,6 +50,8 @@ A Unix socket (`AF_UNIX`, available on Windows since version 1803) in a user-onl
 both platforms instead of using *named pipes* on Windows:
 `$XDG_RUNTIME_DIR/x2/<name>.sock` (or `/tmp/x2-<uid>/`, mode 0700) on Linux, `%TEMP%\x2\<name>.sock` on Windows. It speaks the same
 [protocol](#protocol) to any number of clients; all receive logs and status, while a command result goes only to its requester.
+So a `print` typed at the server's own prompt reaches every client (it writes to stdout: `output` lines), while a `print` in a
+client's command is captured into that client's `result` and shows neither on the server's terminal nor on other clients.
 
 On Windows, `%TEMP%` may name a folder that no longer exists (an RDP session's own `Temp\<n>` is deleted with the session that
 made it); `std::filesystem::temp_directory_path()` then throws, so the folder is taken from `GetTempPathW` as it is and created.
@@ -82,6 +84,7 @@ Built with the servers and copied to `dist/x2ctl`. Tested on Linux and Windows (
 |---|---|
 | `x2ctl list` | list names of listening servers |
 | `x2ctl attach <name>` | connect stdin/stdout to the socket (protocol lines): `ssh host x2ctl attach GameServer` is how ServerManager will talk to a remote server |
+| `x2ctl attach --wait=<s> <name>` | the same, retrying for up to `<s>` seconds until the server listens (one being started: ServerManager after a [start command](../tools/servermanager.md#start-and-stop-commands)) |
 | `x2ctl --dir=<folder> ...` | any command, with the sockets in `<folder>` ([another folder](#control-socket)) |
 | `x2ctl run <name> <lua...>` | run one command; print its output and errors to stderr; exit code 1 if Lua failed |
 | `x2ctl stop <name>` | stop the server and wait for it to exit |

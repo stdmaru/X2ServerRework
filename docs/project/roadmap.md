@@ -138,8 +138,9 @@ See [Server — Windows dependencies](../original/server.md).
   - [x] `tools/control-dir`: control sockets in another folder (servers in containers with a bind mount): `X2_CONTROL_DIR`,
         `x2ctl --dir=`, and `controlDir` in the profile and per host; plus the ssh `port` of a host (2026-11-05). See
         [Server console](../porting/console.md#control-socket).
-  - [ ] `tools/servermanager-remote-start`: start and stop remote servers through commands of the profile run over ssh
-        (`docker compose up -d`, `systemctl start`), then attach (`x2ctl attach --wait`); asked for by the user on 2026-11-05.
+  - [x] `tools/servermanager-remote-start`: start and stop remote servers through the host's commands run over ssh
+        (`docker compose up -d`/`stop`, `systemctl`), then attach (`x2ctl attach --wait`); asked for by the user on 2026-11-05.
+        See [ServerManager](../tools/servermanager.md#start-and-stop-commands).
   - [ ] `tools/servermanager-askpass`: ssh password and host key prompts in the window through `SSH_ASKPASS`, when the key is
         refused (asked for by the user on 2026-11-05; after `tools/servermanager-ui`).
 - [x] Remove SOAP/gSOAP, publisher billing/auth, Mail (MIME/SMTP), CrashRpt; stub where game logic depends on them (2026-10-31). The DEB gSOAP client became custom SOAP/HTTP, with DEB login and billing unchanged (T31, `server/cleanup-gsoap`, see [Common › DEB client](../porting/server-common.md#deb-client-t31)). `KMailManager` was removed, and script error reports go to the log (`server/cleanup-mail`). CrashRpt, other-country publishers, and `Common/SOAP` were never imported into `src/`: the importer excludes them. Only their `NetError`s/event IDs remain as protocol, along with comments.
