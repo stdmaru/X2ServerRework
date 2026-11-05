@@ -198,7 +198,10 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
   - [x] `tools/kom-import`: `x2_assets` (`src/tools/AssetTool`) imports the client into `client_data` (layout rules in
         `tools/assets/layout.txt`, 98.5% classified) + a name-keyed manifest, and packs it back byte for byte; KOG's packer
         used zlib level 6; Lua stays bytecode for now (2026-11-05). See [client_data](../tools/client-data.md).
-  - [ ] Readable Lua in `client_data` (decompile/compile KOG bytecode, `Item.kim`), the layer that manages that data.
+  - [x] `tools/kom-lua`: readable Lua in `client_data`: `src/lua` (`x2::lua`, C++ port of `kom.py`'s decompiler and
+        `kim.py`) decompiles all 4,553 bytecode scripts and turns `Item.kim` into `Item.lua` + `SetItem.lua`; unchanged
+        files pack back from the originals (173/173 identical), edited ones as UTF-8 source with BOM, `Item.kim` compiled
+        again (2026-11-05). See [Client Lua data](../porting/lua.md).
   - Packing `client_data` for distribution (rebuild only the changed archives, a rule for new files) moved to
     x2 studio's export to `.kom` (user, 2026-11-05; [Later](#later--x2-studio)).
   - [ ] The client's `KGCMassFileManager` on `x2::kom`, with the dev-tools loose-file priority (`/data/data`).

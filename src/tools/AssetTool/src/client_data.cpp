@@ -3,6 +3,9 @@
 #include "Crypto/Crypto.h"
 #include "x2/kom/mount.h"
 #include "x2/kom/writer.h"
+#include "x2/lua/bytecode.h"
+#include "x2/lua/decompile.h"
+#include "x2/lua/kim.h"
 
 #include <algorithm>
 #include <atomic>
@@ -135,6 +138,34 @@ bool SameFile(const std::filesystem::path& a, const std::filesystem::path& b)
     return std::filesystem::equivalent(a, b, ec);
 }
 
+bool EndsWithNoCase(std::string_view name, std::string_view suffix)
+{
+    return name.size() >= suffix.size() && kom::AsciiLower(name.substr(name.size() - suffix.size())) == suffix;
+}
+
+bool IsLuaName(std::string_view name) { return EndsWithNoCase(name, ".lua"); }
+bool IsKimName(std::string_view name) { return EndsWithNoCase(name, ".kim"); }
+
+Bytes ToBytes(std::string_view s) { return Bytes(s.begin(), s.end()); }
+std::string ToText(const Bytes& b) { return std::string(b.begin(), b.end()); }
+
+// The content hash of a kim record: of its two scripts' hashes.
+std::string KimContentHash(const std::string& itemsSha, const std::string& setsSha)
+{
+    const std::string both = itemsSha + setsSha;
+    return Sha256Hex(std::span(reinterpret_cast<const std::uint8_t*>(both.data()), both.size()));
+}
+
+constexpr std::string_view kEnumScript = "enum.lua";
+
+// A decoded entry whose file waits for the Lua pass of import.
+struct Deferred
+{
+    std::size_t archive = 0, record = 0;
+    std::filesystem::path target;
+    Bytes data;
+};
+
 } // namespace
 
 bool Import(const ImportOptions& options, ImportStats& stats, std::string& error)
@@ -188,7 +219,7 @@ bool Import(const ImportOptions& options, ImportStats& stats, std::string& error
         log("no layout rules: every file goes to " + std::string(Layout::kFallback));
 
     const auto meta = options.destination / kMetaFolder;
-    for (const auto& folder : {meta / "headers", meta / "blobs"})
+    for (const auto& folder : {meta / "headers", meta / "blobs", meta / "originals"})
         if (!std::filesystem::create_directories(folder, ec) && ec)
         {
             error = "cannot create " + PathToUtf8(folder) + ": " + ec.message();
@@ -219,7 +250,8 @@ bool Import(const ImportOptions& options, ImportStats& stats, std::string& error
     }
 
     std::vector<std::vector<FileRecord>> records(archives.size());
-    std::atomic<std::size_t> done{0}, keptBlobs{0}, stored{0};
+    std::vector<std::vector<Deferred>> lua(archives.size()), kim(archives.size());
+    std::atomic<std::size_t> done{0}, keptBlobs{0}, stored{0}, luaSource{0}, luaKept{0}, kimCount{0};
     std::atomic<std::uint64_t> bytes{0};
     const bool ok = ParallelFor(archives.size(), options.jobs, [&](std::size_t a, std::string& e) {
         const kom::Archive& archive = *archives[a];
@@ -270,6 +302,25 @@ bool Import(const ImportOptions& options, ImportStats& stats, std::string& error
                 r.encoding = Encoding::Stored;
                 ++stored;
             }
+            if (options.readableLua && content == &data && IsLuaName(entry.name) && lua::IsBytecode(data))
+            {
+                lua[a].push_back({a, records[a].size(), targets[a][i], data});
+                records[a].push_back(std::move(r));
+                continue;
+            }
+            bool kimScriptsFree = true;
+            for (const std::string& script : KimScriptNames(entry.name))
+                kimScriptsFree = kimScriptsFree && !owner.count(kom::AsciiLower(script));
+            if (options.readableLua && content == &data && IsKimName(entry.name))
+            {
+                if (kimScriptsFree)
+                {
+                    kim[a].push_back({a, records[a].size(), targets[a][i], data});
+                    records[a].push_back(std::move(r));
+                    continue;
+                }
+                log(archiveName + ": " + entry.name + ": kept as is (its script names are taken by other entries)");
+            }
             r.sha256 = Sha256Hex(*content);
             if (!WriteWholeFile(targets[a][i], *content, e))
                 return false;
@@ -282,6 +333,97 @@ bool Import(const ImportOptions& options, ImportStats& stats, std::string& error
     }, error);
     if (!ok)
         return false;
+
+    // Lua: bytecode -> source, kept as bytecode when the decompiler or LuaJIT (reading its output back) fails.
+    std::vector<Deferred*> scripts;
+    for (auto& list : lua)
+        for (Deferred& d : list)
+            scripts.push_back(&d);
+    if (!scripts.empty())
+        log("decompiling " + std::to_string(scripts.size()) + " Lua scripts");
+    if (!ParallelFor(scripts.size(), options.jobs, [&](std::size_t k, std::string& e) {
+            Deferred& d = *scripts[k];
+            FileRecord& r = records[d.archive][d.record];
+            std::string source, why;
+            Bytes content;
+            if (lua::Decompile(d.data, source, why))
+            {
+                source.insert(0, lua::kBom);
+                if (lua::CheckSyntax(source, r.name, why))
+                    content = ToBytes(source);
+                else
+                    why = "LuaJIT cannot read the decompiled source: " + why;
+            }
+            if (!content.empty())
+            {
+                if (!WriteWholeFile(OriginalPath(options.destination, r.name), d.data, e))
+                    return false;
+                r.form = Form::Lua;
+                ++luaSource;
+            }
+            else
+            {
+                log(r.archive + ": " + r.name + ": kept as bytecode (" + why + ")");
+                content = std::move(d.data);
+                ++luaKept;
+            }
+            r.sha256 = Sha256Hex(content);
+            if (!WriteWholeFile(d.target, content, e))
+                return false;
+            bytes += content.size();
+            Bytes().swap(d.data);
+            return true;
+        }, error))
+        return false;
+
+    // Item.kim -> Item.lua + SetItem.lua, with the enum names of the (decompiled) Enum.lua.
+    for (auto& list : kim)
+        for (Deferred& d : list)
+        {
+            FileRecord& r = records[d.archive][d.record];
+            lua::Enums enums;
+            std::string why;
+            for (std::size_t a = 0; a < records.size() && enums.Empty(); ++a)
+                for (std::size_t i = 0; i < records[a].size(); ++i)
+                    if (kom::AsciiLower(records[a][i].name) == kEnumScript)
+                    {
+                        Bytes source;
+                        if (!ReadWholeFile(targets[a][i], source, error))
+                            return false;
+                        if (lua::IsBytecode(source))
+                            log(records[a][i].name + ": enum names not available (it is still bytecode)");
+                        else if (!lua::LoadEnums({ToText(source)}, enums, why))
+                            log(records[a][i].name + ": enum names not available (" + why + ")");
+                        break;
+                    }
+            lua::ItemScripts itemScripts;
+            if (lua::DecompileKim(d.data, enums, itemScripts, why))
+            {
+                if (!WriteWholeFile(OriginalPath(options.destination, r.name), d.data, error))
+                    return false;
+                const auto names = KimScriptNames(r.name);
+                const auto folder = d.target.parent_path();
+                const Bytes items = ToBytes(itemScripts.items), sets = ToBytes(itemScripts.setItems);
+                if (!WriteWholeFile(folder / PathFromUtf8(names[0]), items, error) ||
+                    !WriteWholeFile(folder / PathFromUtf8(names[1]), sets, error))
+                    return false;
+                r.form = Form::Kim;
+                r.sha256 = KimContentHash(Sha256Hex(items), Sha256Hex(sets));
+                bytes += items.size() + sets.size();
+                ++kimCount;
+                log(r.name + ": " + std::to_string(itemScripts.itemCount) + " items, " +
+                    std::to_string(itemScripts.setCount) + " sets -> " + names[0] + ", " + names[1] +
+                    (enums.Empty() ? " (without enum names)" : ""));
+            }
+            else
+            {
+                log(r.archive + ": " + r.name + ": kept as is (" + why + ")");
+                r.sha256 = Sha256Hex(d.data);
+                if (!WriteWholeFile(d.target, d.data, error))
+                    return false;
+                bytes += d.data.size();
+            }
+        }
 
     Manifest manifest;
     for (std::size_t a = 0; a < archives.size(); ++a)
@@ -298,6 +440,9 @@ bool Import(const ImportOptions& options, ImportStats& stats, std::string& error
     stats.files = total;
     stats.keptBlobs = keptBlobs;
     stats.stored = stored;
+    stats.luaSource = luaSource;
+    stats.luaKept = luaKept;
+    stats.kim = kimCount;
     stats.bytes = bytes;
     return true;
 }
@@ -359,8 +504,9 @@ struct Workspace
             byName.emplace(kom::AsciiLower(PathToUtf8(files[i].filename())), i);
         known.assign(files.size(), false);
         for (const FileRecord& r : manifest.files)
-            if (const auto it = byName.find(kom::AsciiLower(r.name)); it != byName.end())
-                known[it->second] = true;
+            for (const std::string& name : ContentFiles(r))
+                if (const auto it = byName.find(kom::AsciiLower(name)); it != byName.end())
+                    known[it->second] = true;
         return true;
     }
 
@@ -368,6 +514,30 @@ struct Workspace
     {
         const auto it = byName.find(kom::AsciiLower(name));
         return it == byName.end() ? nullptr : &files[it->second];
+    }
+
+    // The record's files in client_data and its content hash; false if one is missing.
+    bool Content(const FileRecord& r, std::vector<Bytes>& contents, std::string& hash, bool& missing,
+                 std::string& error) const
+    {
+        missing = false;
+        contents.clear();
+        std::vector<std::string> hashes;
+        for (const std::string& name : ContentFiles(r))
+        {
+            const auto* path = Find(name);
+            if (!path)
+            {
+                missing = true;
+                return true;
+            }
+            contents.emplace_back();
+            if (!ReadWholeFile(*path, contents.back(), error))
+                return false;
+            hashes.push_back(Sha256Hex(contents.back()));
+        }
+        hash = r.form == Form::Kim ? KimContentHash(hashes[0], hashes[1]) : hashes[0];
+        return true;
     }
 };
 
@@ -383,16 +553,12 @@ bool GetStatus(const std::filesystem::path& clientData, unsigned jobs, Status& s
     const auto& records = ws.manifest.files;
     std::vector<char> state(records.size(), 0);  // 0 same, 1 changed, 2 missing
     if (!ParallelFor(records.size(), jobs, [&](std::size_t i, std::string& e) {
-            const auto* path = ws.Find(records[i].name);
-            if (!path)
-            {
-                state[i] = 2;
-                return true;
-            }
-            Bytes data;
-            if (!ReadWholeFile(*path, data, e))
+            std::vector<Bytes> contents;
+            std::string hash;
+            bool missing = false;
+            if (!ws.Content(records[i], contents, hash, missing, e))
                 return false;
-            state[i] = Sha256Hex(data) == records[i].sha256 ? 0 : 1;
+            state[i] = missing ? 2 : hash == records[i].sha256 ? 0 : 1;
             return true;
         }, error))
         return false;
@@ -436,7 +602,8 @@ bool Pack(const PackOptions& options, PackStats& stats, std::string& error)
         std::stable_sort(list.begin(), list.end(),
                          [](const FileRecord* a, const FileRecord* b) { return a->index < b->index; });
 
-    std::atomic<std::size_t> done{0}, identical{0}, files{0}, changed{0}, missing{0}, notReproduced{0};
+    std::atomic<std::size_t> done{0}, identical{0}, files{0}, changed{0}, missing{0}, notReproduced{0}, luaSource{0},
+        kimCompiled{0};
     const auto& archives = ws.manifest.archives;
     const bool ok = ParallelFor(archives.size(), options.jobs, [&](std::size_t a, std::string& e) {
         const std::string& archiveName = archives[a].name;
@@ -448,18 +615,70 @@ bool Pack(const PackOptions& options, PackStats& stats, std::string& error)
         if (list != byArchive.end())
             for (const FileRecord* r : list->second)
             {
-                const auto* path = ws.Find(r->name);
-                if (!path)
+                std::vector<Bytes> contents;
+                std::string hash;
+                bool isMissing = false;
+                if (!ws.Content(*r, contents, hash, isMissing, e))
+                    return false;
+                if (isMissing)
                 {
                     ++missing;
                     archiveChanged = true;
                     log(archiveName + ": " + r->name + " is missing from client_data: dropped");
                     continue;
                 }
-                if (!ReadWholeFile(*path, data, e))
-                    return false;
-                const bool same = Sha256Hex(data) == r->sha256;
+                const bool same = hash == r->sha256;
                 const auto where = [&] { return archiveName + ": " + r->name + ": "; };
+                if (same && r->form != Form::Raw)
+                {
+                    // the decompiled or converted file is unchanged: pack the original
+                    if (!ReadWholeFile(OriginalPath(options.clientData, r->name), data, e))
+                        return false;
+                }
+                else if (r->form == Form::Lua)
+                {
+                    // an edited script: Lua source with BOM, what the ported client loads (T21)
+                    std::string source = ToText(contents[0]);
+                    if (!lua::IsBytecode(contents[0]))
+                    {
+                        if (!source.starts_with(lua::kBom))
+                            source.insert(0, lua::kBom);
+                        std::string why;
+                        if (!lua::CheckSyntax(source, r->name, why))
+                        {
+                            e = where() + "LuaJIT cannot load the edited script: " + why;
+                            return false;
+                        }
+                    }
+                    data = ToBytes(source);
+                    ++luaSource;
+                }
+                else if (r->form == Form::Kim)
+                {
+                    std::vector<std::string> enumSources;
+                    if (const auto* enumPath = ws.Find(kEnumScript))
+                    {
+                        Bytes enumBytes;
+                        if (!ReadWholeFile(*enumPath, enumBytes, e))
+                            return false;
+                        if (!lua::IsBytecode(enumBytes))
+                            enumSources.push_back(ToText(enumBytes));
+                    }
+                    std::vector<std::string> warnings;
+                    std::string why;
+                    if (!lua::CompileKim({ToText(contents[0]), ToText(contents[1])}, enumSources, data, warnings, why))
+                    {
+                        e = where() + "cannot compile the item scripts: " + why;
+                        return false;
+                    }
+                    for (const std::string& w : warnings)
+                        log(where() + w);
+                    ++kimCompiled;
+                }
+                else
+                {
+                    data = std::move(contents[0]);
+                }
                 if (same && r->encoding == Encoding::Blob)
                 {
                     if (!ReadWholeFile(BlobPath(options.clientData, r->name), blob, e))
@@ -544,6 +763,8 @@ bool Pack(const PackOptions& options, PackStats& stats, std::string& error)
     stats.identicalHeaders = identical;
     stats.files = files;
     stats.changed = changed;
+    stats.luaSource = luaSource;
+    stats.kimCompiled = kimCompiled;
     stats.missing = missing;
     stats.notReproduced = notReproduced;
     return true;

@@ -6,7 +6,8 @@ The client's assets live in 173 `.kom` archives (2026-11-05: 2.2 GB, 101,826 ent
 `src/kom` the one implementation of the format, shared by the client, the launcher and the tools; `tools/kom/kom.py` stays as
 its test oracle (and for the server package's `ClientScript`, [Server package](../tools/runtime.md)) until a C++ CLI replaces
 it. The format itself is described in `x2/kom/archive.h` and at the top of `tools/kom/kom.py`; the format variants of other
-client versions are in [Inventory](../original/inventory.md).
+client versions are in [Inventory](../original/inventory.md). What is inside the entries is not this library's business:
+Lua bytecode and `Item.kim` are read and written by [`x2::lua`](lua.md), used by [client_data](../tools/client-data.md#lua).
 
 | Target | Header | For | Contents |
 |---|---|---|---|

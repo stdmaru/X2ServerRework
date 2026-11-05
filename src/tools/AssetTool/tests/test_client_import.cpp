@@ -1,5 +1,6 @@
-// Opt-in: X2_ASSETS_CLIENT_DATA=<the client's data folder> imports every .kom there with tools/assets/layout.txt and
-// packs the result back, comparing every archive byte for byte. Needs the client's decoded size plus the kept blobs in
+// Opt-in: X2_ASSETS_CLIENT_DATA=<the client's data folder> imports every .kom there with tools/assets/layout.txt (and
+// readable Lua: every script decompiled, Item.kim converted) and packs the result back, comparing every archive byte
+// for byte. Needs the client's decoded size plus the kept blobs in
 // free space (~6 GB for _client/data) in X2_ASSETS_WORK_DIR, or the system temporary folder. The client's assets are
 // not in the repository.
 #include "helpers.h"
@@ -31,10 +32,22 @@ TEST_CASE("assets: the client's .kom files import and pack back unchanged (X2_AS
 #ifdef X2_ASSETS_LAYOUT
     REQUIRE_MESSAGE(options.layout.Load(X2_ASSETS_LAYOUT, error), error);
 #endif
+    std::vector<std::string> notes;
+    options.log = [&](const std::string& line) {
+        if (line.find("kept") != std::string::npos || line.find("not available") != std::string::npos)
+            notes.push_back(line);
+    };
     ImportStats imported;
     REQUIRE_MESSAGE(Import(options, imported, error), error);
     MESSAGE(imported.archives << " archives, " << imported.files << " files, " << imported.bytes << " bytes, "
-                              << imported.keptBlobs << " original blobs kept, " << imported.stored << " stored");
+                              << imported.keptBlobs << " original blobs kept, " << imported.stored << " stored; Lua: "
+                              << imported.luaSource << " decompiled, " << imported.luaKept << " kept, "
+                              << imported.kim << " .kim converted");
+    for (const std::string& note : notes)
+        MESSAGE(note);
+    CHECK(imported.luaSource > 0);
+    CHECK(imported.luaKept == 0);  // every script of the client decompiles (2026-11-05: 4,553)
+    CHECK(imported.kim == 1);
 
     Status status;
     REQUIRE_MESSAGE(GetStatus(options.destination, 0, status, error), error);

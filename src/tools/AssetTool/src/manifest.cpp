@@ -50,6 +50,17 @@ bool ParseEncoding(std::string_view text, Encoding& encoding)
     return false;
 }
 
+bool ParseForm(std::string_view text, Form& form)
+{
+    for (const Form f : {Form::Raw, Form::Lua, Form::Kim})
+        if (text == ToString(f))
+        {
+            form = f;
+            return true;
+        }
+    return false;
+}
+
 bool IsSha256Hex(std::string_view s)
 {
     if (s.size() != 64)
@@ -69,6 +80,17 @@ std::string_view ToString(Encoding encoding)
     case Encoding::Zlib: return "zlib";
     case Encoding::Blob: return "blob";
     case Encoding::Stored: return "stored";
+    }
+    return "?";
+}
+
+std::string_view ToString(Form form)
+{
+    switch (form)
+    {
+    case Form::Raw: return "raw";
+    case Form::Lua: return "lua";
+    case Form::Kim: return "kim";
     }
     return "?";
 }
@@ -97,6 +119,24 @@ std::filesystem::path HeaderPath(const std::filesystem::path& clientData, std::s
 std::filesystem::path BlobPath(const std::filesystem::path& clientData, std::string_view name)
 {
     return clientData / kMetaFolder / "blobs" / PathFromUtf8(name);
+}
+
+std::filesystem::path OriginalPath(const std::filesystem::path& clientData, std::string_view name)
+{
+    return clientData / kMetaFolder / "originals" / PathFromUtf8(name);
+}
+
+std::vector<std::string> KimScriptNames(std::string_view kimName)
+{
+    std::string stem(kimName.substr(0, kimName.rfind('.')));
+    return {stem + ".lua", "Set" + stem + ".lua"};
+}
+
+std::vector<std::string> ContentFiles(const FileRecord& record)
+{
+    if (record.form == Form::Kim)
+        return KimScriptNames(record.name);
+    return {record.name};
 }
 
 bool Manifest::Read(const std::filesystem::path& path, std::string& error)
@@ -130,7 +170,7 @@ bool Manifest::Read(const std::filesystem::path& path, std::string& error)
                 return bad("bad version line");
             if (version != kVersion)
                 return bad("manifest version " + std::to_string(version) + " is not supported (expected " +
-                           std::to_string(kVersion) + ")");
+                           std::to_string(kVersion) + "; import the client again)");
             sawVersion = true;
             continue;
         }
@@ -147,15 +187,15 @@ bool Manifest::Read(const std::filesystem::path& path, std::string& error)
         else if (f[0] == "file")
         {
             FileRecord r;
-            if (f.size() != 11 || f[1].empty() || f[2].empty() || !ParseNumber(f[3], 10, r.index) ||
+            if (f.size() != 12 || f[1].empty() || f[2].empty() || !ParseNumber(f[3], 10, r.index) ||
                 !ParseNumber(f[4], 10, r.algorithm) || !ParseNumber(f[5], 10, r.size) ||
                 !ParseNumber(f[6], 10, r.storedSize) || f[7].size() != 8 || !ParseNumber(f[7], 16, r.checksum) ||
                 f[8].size() != 8 || !ParseNumber(f[8], 16, r.fileTime) || !ParseEncoding(f[9], r.encoding) ||
-                !IsSha256Hex(f[10]))
+                !ParseForm(f[10], r.form) || !IsSha256Hex(f[11]))
                 return bad("bad file record");
             r.name = std::string(f[1]);
             r.archive = std::string(f[2]);
-            r.sha256 = std::string(f[10]);
+            r.sha256 = std::string(f[11]);
             files.push_back(std::move(r));
         }
         else
@@ -181,7 +221,7 @@ bool Manifest::Write(const std::filesystem::path& path, std::string& error) cons
     for (const FileRecord& r : files)
         out << "file\t" << r.name << '\t' << r.archive << '\t' << r.index << '\t' << r.algorithm << '\t' << r.size
             << '\t' << r.storedSize << '\t' << Hex8(r.checksum) << '\t' << Hex8(r.fileTime) << '\t'
-            << ToString(r.encoding) << '\t' << r.sha256 << '\n';
+            << ToString(r.encoding) << '\t' << ToString(r.form) << '\t' << r.sha256 << '\n';
     const std::string text = out.str();
 
     std::filesystem::path temporary = path;
