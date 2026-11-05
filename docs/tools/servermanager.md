@@ -114,11 +114,12 @@ in terminals and stopped them in reverse order (12.6 s); then started all six as
 
 ## Remote servers over SSH (2026-11-05, `tools/servermanager-ssh`)
 
-A server with a `host` runs on that machine as its service (systemd, a terminal there): ServerManager **attaches and never starts
-it**, so it does not depend on the SSH connection staying up. Starting it means attaching once its dependencies are ready, like a
-local server that is already running; if it is not running, `x2ctl attach` fails and the server is **failed** with
-`could not attach on <host>` (the ssh or `x2ctl` message is in its log). Stopping is the protocol's stop over the attached session,
-followed until the connection closes; a remote server that does not stop is not terminated or killed.
+A server with a `host` runs on that machine as its service (systemd, docker, a terminal there), so it does not depend on the SSH
+connection staying up: ServerManager never runs the server itself over ssh. Without [start and stop commands](#start-and-stop-commands),
+starting it means attaching once its dependencies are ready, like a local server that is already running; if it is not running,
+`x2ctl attach` fails and the server is **failed** with `could not attach on <host>` (the ssh or `x2ctl` message is in its log).
+Stopping is the protocol's stop over the attached session, followed until the connection closes; a remote server that does not stop
+is not terminated or killed.
 
 ```json
 {"hosts": [{"name": "prod", "destination": "x2@10.0.0.5", "port": 2222, "x2ctl": "/opt/x2/dist/x2ctl"},
@@ -142,6 +143,30 @@ followed until the connection closes; a remote server that does not stop is not 
 - The remote command is one line for the remote shell, each word quoted once (`QuoteShellArgument`): a POSIX shell on the host.
 - Authentication and encryption are SSH's (T30); the control socket on the host accepts only its own user, so `destination` must
   log in as the user the servers run as.
+
+### Start and stop commands (2026-11-05, `tools/servermanager-remote-start`)
+
+A host's `start` and `stop` are shell command lines run there (`ssh <destination> '<line>'`, the line as it is) to start and stop
+one of its servers through its service manager; a server's own `start`/`stop` replace the host's. `{service}` becomes the
+server's `service` (its name there; by default its `name`), `{name}` its name, `{control}` its socket name.
+
+```json
+{"hosts": [{"name": "prod", "destination": "x2@10.0.0.5", "controlDir": "/opt/x2/docker/server/control/x2",
+            "start": "docker compose -f /opt/x2/docker/server/docker-compose.yml up -d {service}",
+            "stop": "docker compose -f /opt/x2/docker/server/docker-compose.yml stop {service}"}],
+ "servers": [{"name": "LoginServer", "host": "prod", "service": "login", "control": "LoginServer"}]}
+```
+
+- **Start** (once its dependencies are ready): the start command, whose output goes to the server's log, then
+  `x2ctl attach --wait=60 <name>`, which waits for the server to listen. A command that fails (exit code not 0, ssh unreachable)
+  fails the server without attaching. The command must return once the service is started (`up -d`, `systemctl start`).
+- **Stop**: the stop command **instead of** the protocol's stop, attached or not (a listed server that is not attached is attached
+  first, to follow its shutdown in the log). With `restart: unless-stopped` (as in `docker/server/docker-compose.yml`), a server
+  stopped through the protocol exits and docker starts it again; only the service manager can stop it for good. A stop that fails
+  is logged as an error and the server stays as it was. Stopping a server whose start command is running cancels it (ssh is
+  killed; what the command already did there stays done).
+- Without `stop`, the protocol's stop, as above; without `start`, the window's button is "Attach when ready".
+- Quitting the window leaves them running, like any attached server.
 
 Tested on 2026-11-05 with the real ssh to `localhost` on the user's desktop (key authentication, the default command with
 ControlMaster) and two `x2_terminal_demo` services: discovery listed both, the second attached after the first was ready, a third

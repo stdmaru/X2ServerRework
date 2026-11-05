@@ -2,9 +2,10 @@
 
 // Starts, stops and follows the servers of a Profile (decision T30): a server starts once everything it depends on
 // is ready, and stops once nothing being stopped still depends on it. A server whose control socket already exists
-// here is attached to (x2ctl attach) instead of started a second time. A server on a host is only ever attached to
-// (ssh host x2ctl attach): it runs as that machine's service. Owned by the UI thread: call Update() after Events()
-// wakes it, and regularly for the stop timeouts.
+// here is attached to (x2ctl attach) instead of started a second time. A server on a host runs as that machine's
+// service: it is attached to (ssh host x2ctl attach), after the host's start command when the profile has one, and
+// stopped through the host's stop command, or the protocol without one. Owned by the UI thread: call Update() after
+// Events() wakes it, and regularly for the stop timeouts.
 
 #include "x2/servermanager/profile.h"
 #include "x2/servermanager/session.h"
@@ -32,6 +33,7 @@ const char* ToString(Phase phase);
 struct OrchestratorOptions {
     std::chrono::milliseconds stopGrace{60000};     // after the stop request, a server ServerManager started is terminated
     std::chrono::milliseconds killGrace{10000};     // and then killed
+    std::chrono::seconds attachWait{60};            // after a remote start command, for the server to listen
     // Control socket names listening on this machine (x2::platform::ListControlSockets, in Profile::controlDir if set).
     std::function<std::vector<std::string>()> runningServers;
 };
@@ -62,6 +64,10 @@ public:
         Clock::time_point stopSince;
         std::uint64_t generation = 0;
         std::unique_ptr<ProcessTransport> transport;
+        // a remote start or stop command on its way (ssh host '<command>')
+        enum class Task { None, Start, Stop } taskKind = Task::None;
+        std::uint64_t taskGeneration = 0;
+        std::unique_ptr<ProcessTransport> task;
     };
 
     // What `x2ctl list` reported on a host (Discover).
@@ -105,7 +111,11 @@ public:
     void StartAll();
     void Start(int i);      // and what it depends on
     void StopAll();
-    void Stop(int i);       // only this one; one not connected but Listed is attached to, then stopped
+    // Only this one; one not connected but Listed is attached to, then stopped (a remote one with a stop command is
+    // stopped through it, attached or not).
+    void Stop(int i);
+    bool HasStartCommand(int i) const;
+    bool HasStopCommand(int i) const;
     void Attach(int i);     // connect to it if it is already running (here or on its host); never starts it
     void Detach(int i);     // attached servers: disconnect and leave it running
     void Kill(int i);       // servers ServerManager started
@@ -115,7 +125,9 @@ public:
     bool Busy() const;      // anything waiting, starting or stopping
 
 private:
-    bool Connect(int i, bool owned);
+    bool Connect(int i, bool owned, std::chrono::seconds wait = {});
+    bool RunTask(int i, Server::Task kind, const std::string& command);
+    void TaskEvent(int i, TransportEvent& event);
     void Closed(int i, const TransportEvent& event);
     bool DependentsRunning(int i) const;
     void HostEvent(std::size_t h, TransportEvent& event);
@@ -125,6 +137,7 @@ private:
     std::vector<int> m_order;
     std::vector<std::unique_ptr<Server>> m_servers;
     std::vector<std::unique_ptr<Host>> m_hosts;      // their events come with server index -1 - host index
+    // a server's start/stop command events come with server index Size() + i
     std::optional<std::vector<std::string>> m_localRunning;
     Inbox m_inbox;
 };

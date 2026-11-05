@@ -74,6 +74,67 @@ const HostSpec* Profile::FindHost(std::string_view name) const
     return nullptr;
 }
 
+namespace {
+
+std::string Expand(const std::string& command, const ServerSpec& server)
+{
+    const std::pair<std::string_view, std::string> values[] = {
+        {"{service}", server.service.empty() ? server.name : server.service},
+        {"{name}", server.name},
+        {"{control}", server.ControlName()},
+    };
+    std::string out;
+    for (std::size_t i = 0; i < command.size();) {
+        bool replaced = false;
+        for (const auto& [key, value] : values)
+            if (command.compare(i, key.size(), key) == 0) {
+                out += value;
+                i += key.size();
+                replaced = true;
+                break;
+            }
+        if (!replaced)
+            out += command[i++];
+    }
+    return out;
+}
+
+}  // namespace
+
+std::string Profile::StartCommand(const ServerSpec& server) const
+{
+    const HostSpec* h = server.host.empty() ? nullptr : FindHost(server.host);
+    if (!h)
+        return {};
+    return Expand(!server.start.empty() ? server.start : h->start, server);
+}
+
+std::string Profile::StopCommand(const ServerSpec& server) const
+{
+    const HostSpec* h = server.host.empty() ? nullptr : FindHost(server.host);
+    if (!h)
+        return {};
+    return Expand(!server.stop.empty() ? server.stop : h->stop, server);
+}
+
+x2::platform::ProcessOptions Profile::Shell(std::string_view host, const std::string& commandLine) const
+{
+    x2::platform::ProcessOptions options;
+    const HostSpec* h = FindHost(host);
+    if (!h)
+        return options;
+    std::vector<std::string> command = h->ssh.empty() ? DefaultSshCommand() : h->ssh;
+    options.program = command.front();
+    options.args.assign(command.begin() + 1, command.end());
+    if (h->port != 0) {
+        options.args.push_back("-p");
+        options.args.push_back(std::to_string(h->port));
+    }
+    options.args.push_back(h->destination);
+    options.args.push_back(commandLine);
+    return options;
+}
+
 x2::platform::ProcessOptions Profile::X2ctl(std::string_view host, const std::vector<std::string>& args) const
 {
     x2::platform::ProcessOptions options;
@@ -88,20 +149,11 @@ x2::platform::ProcessOptions Profile::X2ctl(std::string_view host, const std::ve
         options.args = std::move(x2ctlArgs);
         return options;
     }
-    std::vector<std::string> command = h->ssh.empty() ? DefaultSshCommand() : h->ssh;
-    options.program = command.front();
-    options.args.assign(command.begin() + 1, command.end());
-    if (h->port != 0) {
-        options.args.push_back("-p");
-        options.args.push_back(std::to_string(h->port));
-    }
-    options.args.push_back(h->destination);
     // ssh joins its arguments into one line for the remote shell: quote each word once, here
     std::string remote = x2::platform::QuoteShellArgument(h->x2ctl);
     for (const std::string& arg : x2ctlArgs)
         remote += ' ' + x2::platform::QuoteShellArgument(arg);
-    options.args.push_back(std::move(remote));
-    return options;
+    return Shell(host, remote);
 }
 
 int Profile::Find(std::string_view name) const
@@ -135,6 +187,8 @@ std::string Profile::Validate() const
             return s.name + ": unknown host " + s.host;
         if (s.host.empty() && s.program.empty())
             return s.name + ": no program";
+        if (s.host.empty() && (!s.start.empty() || !s.stop.empty() || !s.service.empty()))
+            return s.name + ": \"start\", \"stop\" and \"service\" are for remote servers";
         if (!s.host.empty() && s.program.empty() && s.control.empty())
             return s.name + ": a remote server needs \"control\" or \"program\" for its socket name";
         if (!names.insert(s.name).second)
@@ -224,6 +278,8 @@ std::optional<Profile> ParseProfile(std::string_view json, const std::string& ba
             h.destination = node.GetString("destination");
             h.x2ctl = node.GetString("x2ctl", "x2ctl");
             h.controlDir = node.GetString("controlDir");   // the other machine's path: not resolved here
+            h.start = node.GetString("start");
+            h.stop = node.GetString("stop");
             if (const x2::platform::Json* port = node.Find("port")) {
                 const auto value = port->AsInteger();
                 if (!value || *value <= 0 || *value > 65535) {
@@ -257,6 +313,9 @@ std::optional<Profile> ParseProfile(std::string_view json, const std::string& ba
         s.directory = s.host.empty() ? Resolve(baseDir, node.GetString("directory", ".")) : node.GetString("directory");
         s.program = node.GetString("program");
         s.control = node.GetString("control");
+        s.service = node.GetString("service");
+        s.start = node.GetString("start");
+        s.stop = node.GetString("stop");
         if (!StringList(node.Find("args"), s.args) || !StringList(node.Find("after"), s.after)) {
             error = s.name + ": \"args\" and \"after\" are lists of strings";
             return std::nullopt;

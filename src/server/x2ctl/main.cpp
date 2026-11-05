@@ -2,12 +2,14 @@
 //   x2ctl [--dir=<folder>] <command>   sockets in <folder> instead of the default (X2_CONTROL_DIR, XDG_RUNTIME_DIR/x2)
 //   x2ctl list                    servers listening (their control socket names)
 //   x2ctl attach <name>           stdin -> server, server -> stdout, in protocol lines (ssh host x2ctl attach GameServer)
+//   x2ctl attach --wait=<s> <name>  the same, waiting up to <s> seconds for the server to listen (one starting)
 //   x2ctl run <name> <lua...>     runs one Lua command, prints what it printed; exit code 1 on a Lua error
 //   x2ctl stop <name>             shuts the server down and waits for it to finish
 #include "x2/platform/console.h"
 #include "x2/platform/control.h"
 #include "x2/platform/json.h"
 
+#include <chrono>
 #include <cstdio>
 #include <iostream>
 #include <string>
@@ -21,7 +23,7 @@ namespace {
 int Usage()
 {
     std::fputs("usage: x2ctl [--dir=<folder>] list\n"
-               "       x2ctl [--dir=<folder>] attach <name>\n"
+               "       x2ctl [--dir=<folder>] attach [--wait=<seconds>] <name>\n"
                "       x2ctl [--dir=<folder>] run <name> <lua...>\n"
                "       x2ctl [--dir=<folder>] stop <name>\n"
                "Control sockets live in ", stderr);
@@ -39,11 +41,18 @@ bool Open(ControlClient& client, const std::string& name)
     return false;
 }
 
-int Attach(const std::string& name)
+int Attach(const std::string& name, int waitSeconds)
 {
     ControlClient client;
-    if (!Open(client, name))
-        return 1;
+    const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(waitSeconds);
+    std::string error;
+    while (!client.Connect(name, error)) {
+        if (std::chrono::steady_clock::now() >= deadline) {
+            std::fprintf(stderr, "x2ctl: %s\n", error.c_str());
+            return 1;
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(250));
+    }
     // stdin's end closes our side; the server then ends the connection, which ends the loop below
     std::thread([&client] {
         std::string line;
@@ -119,9 +128,15 @@ int main(int argc, char* argv[])
     }
     if (args.size() < 3)
         return Usage();
+    if (verb == "attach" && args.size() == 4 && args[2].rfind("--wait=", 0) == 0) {
+        const std::string seconds = args[2].substr(7);
+        if (seconds.empty() || seconds.size() > 5 || seconds.find_first_not_of("0123456789") != std::string::npos)
+            return Usage();
+        return Attach(args[3], std::stoi(seconds));
+    }
     const std::string& name = args[2];
     if (verb == "attach" && args.size() == 3)
-        return Attach(name);
+        return Attach(name, 0);
     if (verb == "stop" && args.size() == 3)
         return Request(name, "{\"id\":1,\"stop\":true}", true);
     if (verb == "run" && args.size() >= 4) {

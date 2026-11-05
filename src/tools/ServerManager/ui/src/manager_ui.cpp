@@ -337,13 +337,15 @@ void ManagerUi::DrawServers()
     const bool idle = s.phase == Phase::Offline || s.phase == Phase::Failed;
 
     ImGui::BeginDisabled(!idle || m_quitting);
-    if (ImGui::Button(s.Remote() ? "Attach when ready" : "Start"))
+    const bool attachOnly = s.Remote() && !o.HasStartCommand(i);
+    if (ImGui::Button(attachOnly ? "Attach when ready" : "Start"))
         o.Start(i);
-    ImGui::SetItemTooltip(s.Remote() ? "A remote server runs as its host's service: once its dependencies are ready, attach"
-                                     : "Start it (and what it depends on), or attach if it is already running");
+    ImGui::SetItemTooltip(attachOnly ? "A remote server runs as its host's service: once its dependencies are ready, attach"
+                          : s.Remote() ? "Once its dependencies are ready, run its host's start command, then attach"
+                                       : "Start it (and what it depends on), or attach if it is already running");
     ImGui::EndDisabled();
     ImGui::SameLine();
-    ImGui::BeginDisabled(s.phase == Phase::Stopping || (idle && o.Listed(i) != true));
+    ImGui::BeginDisabled(s.phase == Phase::Stopping || (idle && o.Listed(i) != true && !o.HasStopCommand(i)));
     if (ImGui::Button("Stop"))
         o.Stop(i);
     ImGui::EndDisabled();
