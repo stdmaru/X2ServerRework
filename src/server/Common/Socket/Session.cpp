@@ -221,6 +221,9 @@ KSession::~KSession(void)
     {
         End();  // thread use
 
+        // Port: the socket's aborted operations complete on an I/O thread after this; they must not signal the events
+        if( m_spSockObj )
+            m_spSockObj->DetachIOEvents();
         ::CloseHandle( m_hEvents[EVENT_RECV_COMPLETED] );
         ::CloseHandle( m_hEvents[EVENT_SEND_COMPLETED] );
     }

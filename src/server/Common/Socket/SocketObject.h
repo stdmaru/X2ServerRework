@@ -51,6 +51,9 @@ public:
     void    SetKey( DWORD dwKey )   { m_dwKey = dwKey; }
     DWORD   GetKey() const          { return m_dwKey; }
     void    SetIOEvent( KOVERLAPPED::ENUM_IO_MODE eMode, HANDLE hEvent );   // event created by the caller
+    // Port: the owner calls this before closing its events. Operations still pending (the aborted ones of a closed
+    // socket complete later, on an I/O thread) are then dropped instead of signaling a closed event.
+    void    DetachIOEvents();
     void    SetSendQueueSize( int nSize )   { m_kSendQueue.Resize( nSize ); }
 
     unsigned int GetIP() const			{ return m_sockaddr.sin_addr.s_addr; }
@@ -84,6 +87,7 @@ protected:
     KOVERLAPPED			m_ovlSend;
     std::shared_ptr< x2::platform::net::TcpStream > m_spStream; // replaces the SOCKET; null when closed
     CRITICAL_SECTION    m_csSock;
+    bool                m_bIOEvents = false;    // event mode (SetIOEvent): completions never go to KIocp
 
     KCircularQueue      m_kSendQueue;
     CRITICAL_SECTION    m_csSendQueue;

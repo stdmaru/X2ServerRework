@@ -64,6 +64,10 @@ void KSocketObject::SetIOEvent( KOVERLAPPED::ENUM_IO_MODE eMode_, HANDLE hEvent_
     // WaitFor... happens outside the socket object, so deleting the event at shutdown while the thread still
     // runs caused trouble. The thread's code now creates and destroys the event; this only receives it.
 
+    KLocker lock( m_csSock );
+    if( hEvent_ != NULL )
+        m_bIOEvents = true;
+
     switch( eMode_ )
     {
     case KOVERLAPPED::IO_SEND: m_ovlSend.hEvent = hEvent_;  break;
@@ -73,6 +77,13 @@ void KSocketObject::SetIOEvent( KOVERLAPPED::ENUM_IO_MODE eMode_, HANDLE hEvent_
     }
 }
 
+
+void KSocketObject::DetachIOEvents()
+{
+    KLocker lock( m_csSock );
+    m_ovlSend.hEvent = NULL;
+    m_ovlRecv.hEvent = NULL;
+}
 
 KSocketObject::~KSocketObject(void)
 {
@@ -200,12 +211,18 @@ void KSocketObject::OnAsyncCompleted( KOVERLAPPED& kOvl_, const x2::platform::ne
 {
     using x2::platform::net::IoStatus;
 
-    if( kOvl_.hEvent != NULL )
-    {
-        kOvl_.m_kResult = kResult_;
-        ::SetEvent( kOvl_.hEvent );
-        return;
-    }
+    { // locking scope: the owner may be detaching and closing its events on another thread
+        KLocker lock( m_csSock );
+        if( m_bIOEvents )
+        {
+            if( kOvl_.hEvent != NULL )
+            {
+                kOvl_.m_kResult = kResult_;
+                ::SetEvent( kOvl_.hEvent );
+            }
+            return;     // detached: the owner is gone or going, nobody waits for this one
+        }
+    } // locking scope
 
     if( kResult_.status == IoStatus::Ok || kResult_.status == IoStatus::Eof )
     {

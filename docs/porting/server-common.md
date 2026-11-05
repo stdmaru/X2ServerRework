@@ -95,7 +95,7 @@ IOCP engine replaced with `x2::platform::net` (decision T20, see [Platform](plat
 | `KIocp`: completion port + `GetQueuedCompletionStatus` | `KIocp`: an `IoService`; completion keys and `OnIOCompleted`/`OnClosedByLocal` dispatch remain |
 | `KIOThread::Loop`: waits for a completion packet | runs ready handlers for up to 100 ms (`IoService::RunFor`) |
 | `KSocketObject`: `SOCKET` + overlapped `WSARecv`/`WSASend` | `TcpStream` + async read/write; handler keeps object alive until operation completes |
-| No-IOCP mode (`KSession::Init( false )`): events in `OVERLAPPED` | handler stores result in `KOVERLAPPED` and signals same event; session thread calls `OnIOCompleted` |
+| No-IOCP mode (`KSession::Init( false )`): events in `OVERLAPPED` | handler stores result in `KOVERLAPPED` and signals same event (under `m_csSock`); session thread calls `OnIOCompleted`. Owners call `DetachIOEvents()` before `CloseHandle`: the aborted operations of the closed socket complete later on an I/O thread and are dropped. Without it they signaled a freed event, a crash on Linux, where `HANDLE` is a pointer (found by CI on 2026-11-05, ~23% of `TCP relay framing` runs on one core) |
 | `KAccepter`: `WSASocket` + blocking `accept` | `socket` + blocking `accept`; accepted socket is passed to `TcpStream` |
 
 UDP (`server/common-udp`):

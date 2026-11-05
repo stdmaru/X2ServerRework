@@ -105,6 +105,9 @@ KTRUser::~KTRUser(void)
 	End( INFINITE );
 	OnDestroy();
 
+	// Port: the socket's aborted operations complete on the I/O thread after this; they must not signal the events
+	if( m_spSockObj )
+		m_spSockObj->DetachIOEvents();
 	if( m_hEvents[EVENT_RECV_COMPLETED] != NULL )
 		::CloseHandle( m_hEvents[EVENT_RECV_COMPLETED] );
 	if( m_hEvents[EVENT_SEND_COMPLETED] != NULL )
