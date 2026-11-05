@@ -1,17 +1,21 @@
 // ServerManager: the window over the servers (decisions T29, T30; docs/tools/servermanager.md#window).
 //   ServerManager [profile.json | dist folder]
-// Without an argument: servermanager.json, else dist/, in the current folder; or one loaded from the window.
+// Without an argument: profile.json next to the program, else dist/ in the current folder; or one loaded or made in
+// the window (saved to profile.json next to the program).
 
 #include "manager_ui.h"
 
 #include "x2/app/imgui_layer.h"
 
+#include <SDL3/SDL_dialog.h>
+#include <SDL3/SDL_filesystem.h>
 #include <SDL3/SDL_main.h>   // WinMain on Windows, where the program has no console (GUI subsystem)
 #include <imgui.h>
 
 #include <cstdio>
 #include <cstdlib>
 #include <exception>
+#include <functional>
 #include <memory>
 #include <string>
 #include <typeinfo>
@@ -59,6 +63,30 @@ std::string PrefFile(const char* name)
     std::abort();
 }
 
+// profile.json in the program's folder
+std::string DefaultProfileFile()
+{
+    const char* base = SDL_GetBasePath();     // owned by SDL; ends with the separator
+    return base ? std::string(base) + "profile.json" : std::string("profile.json");
+}
+
+// SDL's file and folder dialogs (the desktop portal or zenity on Linux): the answer comes on another thread.
+void Pick(SDL_Window* window, x2::servermanager::ProfileEditor::PickKind kind, const std::string& start,
+          std::function<void(std::string)> done)
+{
+    auto* callback = new std::function<void(std::string)>(std::move(done));
+    const auto answer = [](void* user, const char* const* files, int) {
+        std::unique_ptr<std::function<void(std::string)>> callback(static_cast<std::function<void(std::string)>*>(user));
+        (*callback)(files && files[0] ? std::string(files[0]) : std::string());
+        x2::app::WakeEventLoop();
+    };
+    const char* location = start.empty() ? nullptr : start.c_str();
+    if (kind == x2::servermanager::ProfileEditor::PickKind::Folder)
+        SDL_ShowOpenFolderDialog(answer, callback, window, location, false);
+    else
+        SDL_ShowOpenFileDialog(answer, callback, window, nullptr, 0, location, false);
+}
+
 }  // namespace
 
 int main(int argc, char* argv[])
@@ -90,7 +118,12 @@ int main(int argc, char* argv[])
     x2::servermanager::ManagerUi ui([] { x2::app::WakeEventLoop(); });
     // SDL passes the arguments as UTF-8 on every platform
     std::vector<std::string> args(argv, argv + argc);
-    const std::string profile = x2::servermanager::ManagerUi::FindProfile(args);
+    const std::string defaultFile = DefaultProfileFile();
+    ui.SetDefaultProfileFile(defaultFile);
+    ui.SetPicker([handle = window->Handle()](auto kind, const std::string& start, auto done) {
+        Pick(handle, kind, start, std::move(done));
+    });
+    const std::string profile = x2::servermanager::ManagerUi::FindProfile(args, defaultFile);
     if (!profile.empty() && !ui.Load(profile, error))
         Fatal(error);
 

@@ -4,6 +4,8 @@
 // whole viewport: the servers with their phase and actions, the selected server's log with filters and search, and
 // its Lua prompt. Owns the orchestrator. UI thread only.
 
+#include "profile_editor.h"
+
 #include "x2/servermanager/orchestrator.h"
 
 #include <chrono>
@@ -11,6 +13,7 @@
 #include <deque>
 #include <functional>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -25,11 +28,24 @@ public:
     explicit ManagerUi(std::function<void()> wake = {});
     ~ManagerUi();
 
-    // A profile file, or a dist folder (DefaultProfile). The servers of a previous profile are left as the
-    // orchestrator's destructor leaves them. False and `error` when it cannot be read.
+    // A profile file, or a dist folder (DefaultProfile, saved to the default profile file). The servers of a previous
+    // profile are left as the orchestrator's destructor leaves them. False and `error` when it cannot be read.
     bool Load(const std::string& path, std::string& error);
-    // The path or folder given on the command line, else servermanager.json or dist/ in the current folder.
-    static std::string FindProfile(const std::vector<std::string>& args);
+    // The path or folder given on the command line, else `defaultFile` (profile.json next to the program) when it
+    // exists, else dist/ in the current folder.
+    static std::string FindProfile(const std::vector<std::string>& args, const std::string& defaultFile = {});
+    // Where a profile made here (from a dist folder, or from nothing) is saved: profile.json next to the program.
+    void SetDefaultProfileFile(std::string file);
+    // The file and folder dialogs of the Profile tab.
+    void SetPicker(ProfileEditor::Picker picker) { m_editor.SetPicker(std::move(picker)); }
+    ProfileEditor& Editor() { return m_editor; }
+    // The Profile tab's Save and "Save and apply".
+    bool SaveProfile(std::string& error);
+    bool ApplyProfile(std::string& error);
+    // A server started here is running: the profile cannot be replaced, nor the window closed without asking.
+    bool StartedRunning() const;
+    enum class Tab { Servers, Profile };
+    void ShowTab(Tab tab) { m_showTab = tab; }
     const std::string& ProfilePath() const { return m_profilePath; }
     Orchestrator* GetOrchestrator() { return m_orchestrator.get(); }
 
@@ -69,6 +85,9 @@ private:
     void UpdateRows(const LogStore& logs, ServerView& view);
 
     std::function<void()> m_wake;
+    ProfileEditor m_editor;
+    std::string m_defaultFile;
+    std::optional<Tab> m_showTab;   // selected on the next frame
     std::unique_ptr<Orchestrator> m_orchestrator;
     std::vector<ServerView> m_views;
     std::string m_profilePath;

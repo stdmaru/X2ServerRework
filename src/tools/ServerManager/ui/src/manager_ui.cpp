@@ -114,30 +114,42 @@ ManagerUi::ManagerUi(std::function<void()> wake) : m_wake(std::move(wake)), m_pa
 
 ManagerUi::~ManagerUi() = default;
 
-std::string ManagerUi::FindProfile(const std::vector<std::string>& args)
+std::string ManagerUi::FindProfile(const std::vector<std::string>& args, const std::string& defaultFile)
 {
     if (args.size() > 1)
         return args[1];
     std::error_code ec;
-    if (std::filesystem::is_regular_file("servermanager.json", ec))
-        return "servermanager.json";
+    if (!defaultFile.empty() && std::filesystem::is_regular_file(defaultFile, ec))
+        return defaultFile;
     if (std::filesystem::is_directory("dist", ec))
         return "dist";
     return {};
 }
 
+void ManagerUi::SetDefaultProfileFile(std::string file)
+{
+    m_defaultFile = std::move(file);
+    if (!m_orchestrator && m_editor.File().empty()) {
+        m_editor.Open(Profile{}, m_defaultFile);
+        m_showTab = Tab::Profile;       // nothing to show yet: start by making one
+    }
+}
+
 bool ManagerUi::Load(const std::string& path, std::string& error)
 {
     Profile profile;
+    std::string file = path;
     std::error_code ec;
     if (std::filesystem::is_directory(path, ec)) {
         profile = DefaultProfile(std::filesystem::absolute(path, ec).lexically_normal().string());
+        file = m_defaultFile;
     } else {
         auto loaded = LoadProfile(path, error);
         if (!loaded)
             return false;
         profile = std::move(*loaded);
     }
+    m_editor.Open(profile, file);
     m_orchestrator.reset();
     m_orchestrator = std::make_unique<Orchestrator>(std::move(profile));
     if (m_wake)
@@ -150,11 +162,44 @@ bool ManagerUi::Load(const std::string& path, std::string& error)
     return true;
 }
 
+bool ManagerUi::SaveProfile(std::string& error)
+{
+    if (const std::string problem = m_editor.Draft().Validate(); !problem.empty()) {
+        error = problem;
+        return false;
+    }
+    if (!x2::servermanager::SaveProfile(m_editor.Draft(), m_editor.File(), error))
+        return false;
+    m_editor.MarkSaved();
+    return true;
+}
+
+bool ManagerUi::ApplyProfile(std::string& error)
+{
+    if (StartedRunning()) {
+        error = "stop the servers started here first";
+        return false;
+    }
+    const std::string file = m_editor.File();
+    return SaveProfile(error) && Load(file, error);
+}
+
+bool ManagerUi::StartedRunning() const
+{
+    if (m_orchestrator)
+        for (std::size_t i = 0; i < m_orchestrator->Size(); ++i) {
+            const auto& s = m_orchestrator->At(i);
+            if (s.owned && s.phase != Phase::Offline && s.phase != Phase::Failed)
+                return true;
+        }
+    return false;
+}
+
 bool ManagerUi::Update(Clock::time_point now)
 {
+    bool changed = m_editor.Poll();
     if (!m_orchestrator)
-        return false;
-    bool changed = false;
+        return changed;
     if (now >= m_nextDiscover) {
         m_orchestrator->Discover();
         m_nextDiscover = now + kDiscoverEvery;
@@ -162,15 +207,8 @@ bool ManagerUi::Update(Clock::time_point now)
     }
     changed = m_orchestrator->Update(now) || changed;
 
-    if (m_quitting) {
-        bool started = false;
-        for (std::size_t i = 0; i < m_orchestrator->Size(); ++i) {
-            const auto& s = m_orchestrator->At(i);
-            started = started || (s.owned && s.phase != Phase::Offline && s.phase != Phase::Failed);
-        }
-        if (!started)
-            m_quit = true;
-    }
+    if (m_quitting && !StartedRunning())
+        m_quit = true;
     return changed;
 }
 
@@ -181,13 +219,7 @@ int ManagerUi::IdleTimeoutMs() const
 
 void ManagerUi::RequestQuit()
 {
-    bool started = false;
-    if (m_orchestrator)
-        for (std::size_t i = 0; i < m_orchestrator->Size(); ++i) {
-            const auto& s = m_orchestrator->At(i);
-            started = started || (s.owned && s.phase != Phase::Offline && s.phase != Phase::Failed);
-        }
-    if (!started)
+    if (!StartedRunning())
         m_quit = true;      // attached servers keep running: the orchestrator detaches them
     else
         m_quitAsked = true;
@@ -225,17 +257,40 @@ void ManagerUi::Draw()
     ImGui::Begin("ServerManager", nullptr, flags);
 
     DrawToolbar();
-    if (m_orchestrator && m_orchestrator->Size() > 0) {
-        const float listWidth = ImGui::GetFontSize() * 26.0f;
-        ImGui::BeginChild("servers", ImVec2(listWidth, 0), ImGuiChildFlags_Borders | ImGuiChildFlags_ResizeX);
-        DrawServers();
-        ImGui::EndChild();
-        ImGui::SameLine();
-        ImGui::BeginChild("selected", ImVec2(0, 0));
-        DrawSelected();
-        ImGui::EndChild();
-    } else if (m_orchestrator) {
-        ImGui::TextDisabled("The profile has no servers.");
+    if (ImGui::BeginTabBar("tabs")) {
+        const auto flags = [&](Tab tab) {
+            return m_showTab == tab ? ImGuiTabItemFlags_SetSelected : ImGuiTabItemFlags_None;
+        };
+        if (ImGui::BeginTabItem("Servers", nullptr, flags(Tab::Servers))) {
+            if (m_orchestrator && m_orchestrator->Size() > 0) {
+                const float listWidth = ImGui::GetFontSize() * 26.0f;
+                ImGui::BeginChild("servers", ImVec2(listWidth, 0), ImGuiChildFlags_Borders | ImGuiChildFlags_ResizeX);
+                DrawServers();
+                ImGui::EndChild();
+                ImGui::SameLine();
+                ImGui::BeginChild("selected", ImVec2(0, 0));
+                DrawSelected();
+                ImGui::EndChild();
+            } else if (m_orchestrator) {
+                ImGui::TextDisabled("The profile has no servers: add them in the Profile tab.");
+            } else {
+                ImGui::TextDisabled("No profile: load one above, or make one in the Profile tab.");
+            }
+            ImGui::EndTabItem();
+        }
+        const std::string profileTab = std::string(m_editor.Dirty() ? "Profile *" : "Profile") + "###profile";
+        if (ImGui::BeginTabItem(profileTab.c_str(), nullptr, flags(Tab::Profile))) {
+            const bool running = StartedRunning();
+            const auto action = m_editor.Draw(!running, "Stop the servers started here first");
+            std::string error;
+            if (action == ProfileEditor::Action::Save)
+                m_editor.SetMessage(SaveProfile(error) ? "saved" : error, !error.empty());
+            else if (action == ProfileEditor::Action::Apply)
+                m_editor.SetMessage(ApplyProfile(error) ? "saved and applied" : error, !error.empty());
+            ImGui::EndTabItem();
+        }
+        m_showTab.reset();
+        ImGui::EndTabBar();
     }
     DrawQuitDialog();
     ImGui::End();
@@ -255,10 +310,8 @@ void ManagerUi::DrawToolbar()
         ImGui::SameLine();
         ImGui::TextColored(LevelColor(LogLevel::Error), "%s", m_loadError.c_str());
     }
-    if (!m_orchestrator) {
-        ImGui::TextDisabled("Load a profile (JSON) or the dist folder of the server package.");
+    if (!m_orchestrator)
         return;
-    }
 
     ImGui::SameLine();
     ImGui::BeginDisabled(m_quitting);
