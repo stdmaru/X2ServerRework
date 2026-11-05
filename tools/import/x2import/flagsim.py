@@ -23,6 +23,7 @@ class SimResult:
     mentioned: set[str] = field(default_factory=set)        # names in any #define/#undef, active or not
     function_like: set[str] = field(default_factory=set)
     unresolved_includes: list[tuple[Path, str]] = field(default_factory=list)
+    skipped_includes: list[tuple[Path, Path]] = field(default_factory=list)  # not followed (see `follow`)
     unsupported: list[tuple[Path, int, str]] = field(default_factory=list)
 
 
@@ -42,12 +43,17 @@ def evaluate_closed(expr: str, table: dict[str, str]) -> int | None:
     return val if isinstance(val, int) else None
 
 
-def simulate(entry: Path, initial: dict[str, str], include_dirs: list[Path], read=None) -> SimResult:
-    """`read(path) -> bytes` lets callers verify integrity of what is read (defaults to Path.read_bytes)."""
+def simulate(entry: Path | list[Path], initial: dict[str, str], include_dirs: list[Path], read=None,
+             follow=None) -> SimResult:
+    """Runs `entry` (or several entries in order, sharing one macro table, as when a translation unit includes
+    them one after another). `read(path) -> bytes` lets callers verify integrity of what is read (defaults to
+    Path.read_bytes). `follow(path) -> bool` limits which included files are entered (default: all)."""
     read = read or (lambda p: p.read_bytes())
+    follow = follow or (lambda p: True)
     res = SimResult(defined=dict(initial))
     index = includes.CaseIndex()
-    _run_file(entry, res, include_dirs, index, read, depth=0)
+    for e in entry if isinstance(entry, list) else [entry]:
+        _run_file(e, res, include_dirs, index, read, follow, depth=0)
     return res
 
 
@@ -131,7 +137,7 @@ def live_lines(text: str, table: dict[str, str]) -> list[str] | None:
     return out
 
 
-def _run_file(path: Path, res: SimResult, include_dirs, index, read, depth: int):
+def _run_file(path: Path, res: SimResult, include_dirs, index, read, follow, depth: int):
     if depth > 32:
         raise RuntimeError(f"include depth exceeded at {path}")
     res.files.append(path)
@@ -203,5 +209,7 @@ def _run_file(path: Path, res: SimResult, include_dirs, index, read, depth: int)
             hit = includes.resolve_include(index, path, '"', mm.group(1), include_dirs)
             if hit is None:
                 res.unresolved_includes.append((path, mm.group(1)))
+            elif not follow(hit):
+                res.skipped_includes.append((path, hit))
             else:
-                _run_file(hit, res, include_dirs, index, read, depth + 1)
+                _run_file(hit, res, include_dirs, index, read, follow, depth + 1)

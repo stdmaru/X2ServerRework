@@ -15,6 +15,20 @@ server binary to negotiate or serve both protocols simultaneously.
 The current 2014 port remains the working baseline. Later work should bring in selected 2015 changes while retaining
 the ability to build and validate the 2014 configuration.
 
+### Feature configuration (user direction, 2026-11-05)
+
+The user wants game content and features to be switchable at compile time, in the spirit of rAthena's
+`PACKETVER`: a client revision (for example `CLIENT_VER 4` for 2014, `CLIENT_VER 5` for 2015) plus individual switches
+such as `CLIENT_ENABLE_8TH_CHARACTER`, so that a character or a feature can be added or removed, and content added
+after the 2015 source can be gated the same way. The switches live in **one configuration file**, split into what
+affects the server, the client, or both; new project-specific defines are allowed. This is Phase 6 work and is not
+designed yet.
+
+It does not reopen T9/T10: the original ~2,600 KOG flags stay frozen at import (2014 baseline, US / `_SERVICE_`). The
+new switches are a small, curated set added when the 2015 changes are ported, each one guarding code that differs
+between revisions or that the user wants optional. Shared code (`Common`, T33) is compiled by both programs, so a switch
+that changes a packet must be set the same way for the server and the client of one build.
+
 ## Preliminary findings
 
 ### The server code is substantially related, but the changes span modules
