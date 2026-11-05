@@ -70,9 +70,8 @@ void ServerSession::FlushHistory()
     m_historyId.reset();
     // Live lines and backlog lines in seq order; a line may have come both ways. Unnumbered lines keep their place
     // at the end.
-    static constexpr std::int64_t kLast = std::numeric_limits<std::int64_t>::max();
-    std::stable_sort(m_held.begin(), m_held.end(),
-                     [](const auto& a, const auto& b) { return a.first.value_or(kLast) < b.first.value_or(kLast); });
+    const auto key = [](const auto& held) { return held.first.value_or(std::numeric_limits<std::int64_t>::max()); };
+    std::stable_sort(m_held.begin(), m_held.end(), [&key](const auto& a, const auto& b) { return key(a) < key(b); });
     m_held.erase(std::unique(m_held.begin(), m_held.end(),
                              [](const auto& a, const auto& b) { return a.first && b.first && *a.first == *b.first; }),
                  m_held.end());
