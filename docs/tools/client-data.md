@@ -53,8 +53,8 @@ blob is used) with its original `FileTime`; an edited file is re-encoded with it
 `FileTime` = checksum, as KOG's packer); a missing file is dropped. When the entries still match the archive's original
 header, that header is written (`ArchiveBuilder::SetHeader`), so both header layouts of the client
 ([XML header](../porting/kom.md#xml-header)) come back unchanged; otherwise KOG's layout is generated. Files not in the
-manifest are reported and **not packed**: choosing an archive for new files is the next step, as is rebuilding only the
-archives that changed. Every archive is rewritten.
+manifest are reported and **not packed**. Every archive is rewritten. Rebuilding only the changed archives and choosing
+an archive for new files belong to x2 studio's export to `.kom` ([roadmap](../project/roadmap.md#later--x2-studio)).
 
 **Byte identity needs stock zlib 1.3.1**: the project's pinned FetchContent version (Windows) and the Ubuntu image's
 system zlib. Other deflate implementations write other, equally valid streams: Arch's zlib-ng gives different bytes for

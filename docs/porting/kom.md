@@ -130,8 +130,11 @@ What the client step will replace (roadmap Phase 3), with the Win32 it uses:
 
 ## Next steps (roadmap Phase 3, one branch each)
 
+Packing `client_data` for distribution (only the changed archives) is x2 studio's export to `.kom`
+([roadmap](../project/roadmap.md#later--x2-studio)).
+
+
 1. Import the client into `client_data` + a manifest that repacks to the original archives byte for byte: done,
    [client_data](../tools/client-data.md).
-2. Pack `client_data` for distribution, rebuilding only the archives that changed.
-3. The client's `KGCMassFileManager` on `x2::kom`: mount `/data` in load order; with `X2_DEV_TOOLS`, index `/data/data` by name
+2. The client's `KGCMassFileManager` on `x2::kom`: mount `/data` in load order; with `X2_DEV_TOOLS`, index `/data/data` by name
    recursively and prefer it. Decide then what replaces `DeleteOtherFile` and the crash on a missing archive.

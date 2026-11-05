@@ -199,7 +199,8 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
         `tools/assets/layout.txt`, 98.5% classified) + a name-keyed manifest, and packs it back byte for byte; KOG's packer
         used zlib level 6; Lua stays bytecode for now (2026-11-05). See [client_data](../tools/client-data.md).
   - [ ] Readable Lua in `client_data` (decompile/compile KOG bytecode, `Item.kim`), the layer that manages that data.
-  - [ ] Pack `client_data` for distribution (only changed archives are rebuilt).
+  - Packing `client_data` for distribution (rebuild only the changed archives, a rule for new files) moved to
+    x2 studio's export to `.kom` (user, 2026-11-05; [Later](#later--x2-studio)).
   - [ ] The client's `KGCMassFileManager` on `x2::kom`, with the dev-tools loose-file priority (`/data/data`).
 
 ## Phase 4 — Client: graphics
@@ -214,6 +215,15 @@ Real refactoring (remove dead systems, reorganize folders and names), guided by 
 from the previous phases. Only after everything runs.
 
 - [ ] Fix the [original bugs](../original/bugs.md) retained in the port, each with a decision about the new behavior.
+
+## Later — x2 studio
+
+The definitive game editing tool (user, 2026-11-05): edit the game, maps and everything else on `client_data`
+([client_data](../tools/client-data.md)), on `x2::kom` and the SDL3 + ImGui foundation (T32). Not planned in detail yet.
+
+- [ ] **Export to `.kom`**: pack `client_data` for distribution, rebuilding only the archives that changed; new files
+      go to archives chosen by a rule (2 GB limit; today the client loads a fixed list of 173 names). Builds on
+      `x2_assets pack`, which already rewrites every archive byte for byte when nothing changed.
 
 ## Phase 6 — Server: historical client compatibility
 
