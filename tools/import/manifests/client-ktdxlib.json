@@ -1,6 +1,7 @@
 {
   "src/client/KTDXLIB/Always.h": "263d99f2de3818102c9cf33d49c13d44aa383ceda15903a262ad430cc33fb43f",
   "src/client/KTDXLIB/AlwaysButConditionally.h": "49eb680f62b6009b139d829ab36728aa8e85dbf7f32c10e00ec28436ad9e0398",
+  "src/client/KTDXLIB/AntiHackingString.h": "fd1a3294b7002d55e2fe4e6a241be6609d4036ef581f1043bba10d7149622ad7",
   "src/client/KTDXLIB/AssertTrace.h": "2756fb2ca5ab8807fa7a3525b2dedda41ba1d239d8ea251bb3f4f8fa4c479a69",
   "src/client/KTDXLIB/CRC_32.cpp": "ef38b1bbacf23bab2dc3dfa3ee2ebc2f070699e1f09838fc5105edb99d69b46f",
   "src/client/KTDXLIB/CRC_32.h": "00649363cbbbc90c484a70e5c8b975a21c7859ada1332ffd3df3e38ac68f7f13",

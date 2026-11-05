@@ -32,10 +32,10 @@ exclude = [
     "KTDXLIB/KBrowserWrapper.*",
     "KTDXLIB/KPCHWebBrowser.*",
     "KTDXLIB/Browser.c",
-    # crash reporter, firewall registration and anti-cheat (decision T10)
+    # crash reporter, firewall registration and anti-cheat (decision T10). AntiHackingString.h is imported: only string
+    # constants (hack report reasons) that game code passes to the log and to the server.
     "KTDXLIB/CrashRpt.h",
     "KTDXLIB/KncFirewall.h",
-    "KTDXLIB/AntiHackingString.h",
     "XTRAP/*",
     # X2Lib headers of the same kind, excluded by client-x2lib too
     "X2Lib/ThemidaSDK.h",
