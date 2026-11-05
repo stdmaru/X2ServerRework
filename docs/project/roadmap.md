@@ -112,7 +112,7 @@ See [Server — Windows dependencies](../original/server.md).
 - [x] Logging (T16): structured metadata in `START_LOG`; file retains full original content, console is compact and colored with its own level (2026-10-31, `kncsdk/log-structured`, see [KNCSDK › Logging](../porting/kncsdk.md#logging-t16)).
 - [x] Localize Korean server console log messages to English; leave code comments and non-log strings unchanged (2026-11-02).
 - [x] Machine-readable output mode and local socket with `x2ctl attach` (T30), after terminal and logging (2026-10-31, `server/control`, see [Server console](../porting/console.md)).
-- [ ] ServerManager (T29, T30, T32): SDL3 + ImGui tool to orchestrate and monitor servers locally and over SSH. Started on
+- [x] ServerManager (T29, T30, T32): SDL3 + ImGui tool to orchestrate and monitor servers locally and over SSH. Started on
       2026-11-04, before the client, so it builds the SDL3 foundation the client reuses (T32). Startup order: EPublisherServer →
       LoginServer, CenterServer, GlobalServer → GameServer → ChannelServer, each after the previous reports `ready` (the original
       `KX2ServerLauncher` waited for the `CenterServer_Ready` window before starting GameServer); stop in reverse. One branch per step:
@@ -154,6 +154,9 @@ See [Server — Windows dependencies](../original/server.md).
         `SSH_ASKPASS` (ServerManager itself in askpass mode, and `AskpassBroker`; `BatchMode` only without it), with secrets remembered until it closes
         and cancelled prompts not asked again until Refresh; Windows' OpenSSH 9.5 checked on the test VM; Clang, GCC and
         clang-cl without warnings (2026-11-05). See [ServerManager](../tools/servermanager.md#ssh-prompts-2026-11-05-toolsservermanager-askpass).
+  - [x] `tools/servermanager-askpass-feedback`: the dialog follows the ssh that asked (its pid): "Connecting..." with inputs
+        disabled, closes when ssh gets in, shows ssh's complaint after a wrong answer or when it gives up; tested by hand by the
+        user (2026-11-05).
 - [x] Remove SOAP/gSOAP, publisher billing/auth, Mail (MIME/SMTP), CrashRpt; stub where game logic depends on them (2026-10-31). The DEB gSOAP client became custom SOAP/HTTP, with DEB login and billing unchanged (T31, `server/cleanup-gsoap`, see [Common › DEB client](../porting/server-common.md#deb-client-t31)). `KMailManager` was removed, and script error reports go to the log (`server/cleanup-mail`). CrashRpt, other-country publishers, and `Common/SOAP` were never imported into `src/`: the importer excludes them. Only their `NetError`s/event IDs remain as protocol, along with comments.
 - [x] Milestone: login + town + dungeon with original `elsword.exe` against servers running on Linux (2026-10-31).
 
