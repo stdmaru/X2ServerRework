@@ -136,6 +136,8 @@ public:
 	//}}
 
 protected:
+    virtual void OnBeforeThreadStart();  // derived from KThread
+
     // util function
 	//void OnSendCompleted( DWORD dwTransfered );
     //void OnRecvCompleted( DWORD dwTransfered );
