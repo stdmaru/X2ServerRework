@@ -2,8 +2,7 @@
 
 # Client (`src/client`)
 
-Overview of the client port: layers, how they were imported, the code shared with the servers, and what the next step
-(`client/skeleton`) has to deal with first. Module details are on each layer's page. Analysis of the original's Windows and
+Overview of the client port: layers, how they were imported, the code shared with the servers, and the build. Module details are on each layer's page. Analysis of the original's Windows and
 Direct3D 9 dependencies: [Client — Windows / Direct3D 9 dependencies](../original/client.md).
 
 | Layer | Original | `src/` | Files | Page |
@@ -13,9 +12,28 @@ Direct3D 9 dependencies: [Client — Windows / Direct3D 9 dependencies](../origi
 | Engine | `KTDXLIB` | `src/client/KTDXLIB` | 253 | [Client: KTDXLIB](client-ktdxlib.md) |
 | Network library | `X2ServerProtocol` | `src/client/X2ServerProtocol` | 37 | [Client: X2ServerProtocol](client-serverprotocol.md) |
 | Lua binding | `LuaCommon` (built by `luajitLib`) | `src/client/LuaCommon` | 7 | [Client: LuaCommon](client-luacommon.md) |
+| Application framework | DXUT (Microsoft, not imported) | `src/client/DXUT` | 4 (new) | [Client: DXUT](client-dxut.md) |
 
 Counts from the import on 2026-11-05: **854 files, 885k lines written** (215k removed by the flags), 612 blocks rewritten to
-`X2_DEV_TOOLS`. Nothing is compiled yet.
+`X2_DEV_TOOLS`. On 2026-11-05 (`client/skeleton`) the HackShield/nProtect wrappers were deleted (547 `X2Lib` files left), and
+all imported client modules are edited by hand and **frozen** in the importer.
+
+## Build (2026-11-05, `client/skeleton`)
+
+`src/client/CMakeLists.txt`, enabled by `X2_BUILD_CLIENT` (default `ON`). A build directory configured before 2026-11-05
+keeps `OFF` in its cache: reconfigure with `-DX2_BUILD_CLIENT=ON`. What compiles so far:
+
+| Target | Contents |
+|---|---|
+| `x2::client_luacommon` | `LuaCommon` on upstream LuaJIT (T21) |
+| `x2::client_dxut` | the DXUT replacement on `x2::app` ([Client: DXUT](client-dxut.md)) |
+| `x2_client` (`x2`/`x2.exe`) | the skeleton entry point `X2/X2Skeleton.cpp`, with the original icon ([Client: X2](client-x2.md)) |
+| `x2_client_tests` | headless tests (ctest `client`) |
+
+`x2_client_includes` carries the original projects' include directories: `KTDXLIB`, `DXUT`, `X2Lib`, `X2Lib/Common`, `X2`,
+`X2ServerProtocol`, `X2ServerProtocol/Socket` and `src/server/Common`. `KTDXLIB`, `X2Lib`, `X2ServerProtocol` and `X2.cpp`
+are not compiled yet: each gets its target when its dependencies are ported
+([roadmap](../project/roadmap.md#phase-3--client-platform)).
 
 ## Import (2026-11-05, `client/import`)
 
@@ -52,20 +70,25 @@ internals of the same functions, Crypto++ (replaced, T27), `dbg/profiler.*` (not
 thread test `Main.cpp`. **Nothing had to be brought in.** The client-specific behavior left is logging being off in service builds
 (`KNCSDK_Client/dbg/logfile.hpp`), to reproduce through the log level.
 
-## For the skeleton step
+## Integrations removed by hand (2026-11-05)
 
-- **Includes of excluded files remain** where they were unconditional in the original (`CrashRpt.h`, `KncFirewall.h`,
-  `../X2Lib/X2SMTPMail.h` in `KTDX.h`; DXUT headers; Bandi, FMOD, CxImage, browser, Nexon/Steam/IGA headers in `X2Lib`). Each
-  report lists them under "References to excluded files"; remove them by hand with the code that uses them.
-- `X2Lib/X2Main.h` includes `../../KncWX2Server/Common/Enum/*.h`, which does not exist in the `src/` layout: rewrite to
-  `Enum/Enum.h` (found through the `src/server/Common` include directory).
-- Include directories (from the original projects): `KTDXLIB`, `KTDXLIB/DXUT`, `X2Lib`, `X2Lib/Common`, `X2`, `X2ServerProtocol`,
-  `X2ServerProtocol/Socket`, `src/server/Common`, `src/kncsdk`. `lua_tinker.h`: see [LuaCommon](client-luacommon.md#two-lua_tinker).
-- **DXUT** (2026-11-05): used as the application framework, not as a library of widgets. 46 files use 49 distinct `DXUT*` names (44 of them
-  functions, mostly `DXUTGetHWND` (56 calls), `DXUTTRACE` (21), `DXUTGetGlobalTimer` (18), `DXUTGetBackBufferSurfaceDesc` (11),
-  device settings and lost/reset state; `X2.cpp` installs the callbacks (`DXUTSetCallback*`, `DXUTInit`, `DXUTMainLoop`).
-  The GUI (`DXUTgui`), `CDXUTMesh`, the settings dialog and `DXUTsound` appear only in includes or one declaration each; the
-  `SAFE_DELETE`/`SAFE_RELEASE`/`SAFE_DELETE_ARRAY` macros (1,338 uses) come from `DXUTmisc.h`. Plan: no DXUT; the skeleton
-  provides the window and loop through `x2::app` (T32) and a small header with the `DXUT*` functions the code calls and the
-  `SAFE_*` macros.
+The importer excluded these files, but code still included or called them unconditionally. Removed with the code using them,
+keeping the paths that run without the integration:
+
+- `KTDX.h`: `CrashRpt.h`, `KncFirewall.h`, `X2SMTPMail.h`; the six DXUT headers became `DXUT.h` ([Client: DXUT](client-dxut.md)).
+  `KTDXApp.cpp`: the Windows Firewall exception at start-up.
+- SMTP mail of logs (`g_pX2SMTPMail` in `X2.cpp`, `CX2Main::SendCheckMail`, never called) and BugTrap (`X2Main.cpp`).
+- Steam: no Steam client in the port. `X2Main.cpp` keeps only the command-line login, `X2CashShop.cpp` the non-Steam charge
+  pages and browser, `X2StateLogin.cpp` drops the Steam-only error box, and `m_bSteamClient` is sent as `false` (the field stays
+  in the packet). The Steam login password (`J2380DE81621XZ`) typed by hand still quits the client, as
+  `CX2Steam::IsValidSteamUser` did.
+- nProtect GameGuard and HackShield (T10): `X2HSGame.*`, `X2KNPGame.*` and `NPGameLib.h` deleted and excluded; the game-monitor
+  check in `X2Main.cpp` removed; `EGS_KNPROTECT_AUTH_CHECK_NOT` is still read, then dropped.
+- `X2Main.h`: `X2Steam.h`, `NPGameLib.h`, `X2KNPGame.h`, `X2NexonMsgHandler.h`, `X2MailLog.h` removed;
+  `../../KncWX2Server/Common/Enum/*.h` became `Enum/*.h` (from `src/server/Common`, T33).
+- **Left for their own items** (replaced, not removed): FMOD, Bandi video, CxImage, the embedded browser, tinyxml and zlib
+  ([roadmap](../project/roadmap.md#phase-3--client-platform)). Each import report lists them under "References to excluded files".
+
+## Notes
+
 - `X2Lib/X2StateServerSelect.cpp` was decoded as `cp949-lossy` (invalid bytes in the original, replaced): review its strings.

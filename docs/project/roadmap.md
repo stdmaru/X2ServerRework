@@ -168,12 +168,16 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
       `client-luacommon` with `client.generated.toml`: 854 files in `src/client`, not compiled yet; shared `Common` files and
       `X2UDPPacket.*` are not imported again (T33), and `X2UDPPacket.*` got the client's NPC sync layout; nothing was missing from
       `KNCSDK_Client` (2026-11-05). See [Client](../porting/client.md).
-- [ ] Client skeleton: CMake target, window on `x2::app` (T32), SDL events translated to the `MsgProc` model (next item).
-- [ ] Window/input/IME: Win32 + DirectInput → SDL3. For now, retain the `MsgProc(HWND, UINT, WPARAM, LPARAM)` model
-      by translating SDL events into Win32-style messages (`X2Lib` uses `HWND` in ~272 files — mostly through the `MsgProc` signature).
+- [x] `client/skeleton`: client CMake targets (`X2_BUILD_CLIENT`), DXUT replaced by `src/client/DXUT` on `x2::app` (T32), SDL3
+      events translated to Win32 messages for `MsgProc` (keyboard, mouse, focus, size, text/IME), `x2` skeleton executable with
+      the original icon, `LuaCommon` on upstream LuaJIT (T21), excluded integrations removed by hand and the client modules frozen;
+      headless tests (2026-11-05). See [Client: DXUT](../porting/client-dxut.md).
+- [ ] `client/serverprotocol`: compile `X2ServerProtocol` (next item).
+- [ ] Input: DirectInput (`CKTDIManager`) → SDL3 keyboard/mouse state; IME candidate list. The `MsgProc(HWND, UINT, WPARAM,
+      LPARAM)` model stays (`X2Lib` uses `HWND` in ~272 files — mostly through the `MsgProc` signature).
 - [ ] D3DX math (`D3DXVECTOR3` ~8,000 uses) → header-compatible shim over GLM or custom implementation.
 - [ ] Audio: FMOD Ex / DirectSound → miniaudio/SDL3 audio (or current cross-platform FMOD Core).
-- [ ] Video (Bandi), embedded browser, CxImage, Steam, anti-cheat → remove/replace.
+- [ ] Video (Bandi), embedded browser, CxImage → remove/replace (Steam and anti-cheat removed on 2026-11-05).
 - [ ] `.kom` (zlib + header "KOG GC TEAM MASSFILE V.0.3") — portable loader.
 
 ## Phase 4 — Client: graphics
