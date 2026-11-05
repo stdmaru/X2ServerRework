@@ -27,6 +27,7 @@ struct TransportEvent {
     enum Kind { Line, Closed };
     int server = -1;                // index given to Open
     std::uint64_t generation = 0;   // tells an old connection's events from the current one's
+    long long pid = 0;              // the child's
     Kind kind = Line;
     std::string text;               // Line: the line; Closed: why
     bool error = false;             // Line: from stderr

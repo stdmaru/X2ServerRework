@@ -94,7 +94,7 @@ int RunAskpass(int argc, char* argv[])
     x2::platform::AppendJsonString(request, prompt);
     request += ",\"kind\":";
     x2::platform::AppendJsonString(request, ToString(ClassifyPrompt(prompt, sshPrompt ? sshPrompt : "")));
-    request += '}';
+    request += ",\"ppid\":" + std::to_string(x2::platform::ParentProcessId()) + '}';
     std::string reply;
     if (!client.WriteLine(request) || !client.ReadLine(reply))
         return 1;
@@ -183,6 +183,8 @@ void AskpassBroker::OnLine(int client, std::string line)
     request.id = client;
     request.prompt = field("prompt");
     request.kind = ParseAskpassKind(field("kind")).value_or(AskpassKind::Secret);
+    if (const auto ppid = message->find("ppid"); ppid != message->end() && ppid->second.kind == x2::platform::JsonValue::Number)
+        request.pid = std::strtoll(ppid->second.text.c_str(), nullptr, 10);
 
     std::function<void()> wake;
     {

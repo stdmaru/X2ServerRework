@@ -49,6 +49,13 @@ public:
     // (ServerManager itself). Without it, ssh runs with BatchMode and such a host fails.
     bool EnableAskpass(const std::string& helper, std::string& error);
     AskpassBroker& Askpass() { return m_askpass; }
+    // The ssh question dialog: Asking (inputs enabled, maybe with the last error), Waiting (answered: "Connecting...",
+    // inputs disabled, until ssh gets in, asks again or ends), Failed (ssh gave up: the error, inputs enabled again).
+    enum class AskpassState { None, Asking, Waiting, Failed };
+    AskpassState GetAskpassState() const { return m_askpassState; }
+    const std::string& AskpassError() const { return m_askpassError; }
+    // What the dialog's buttons do: a text (OK, Yes) or nullopt (Cancel, No). Uses the dialog's input when Secret.
+    void AnswerAskpass(std::optional<std::string> answer);
     enum class Tab { Servers, Profile };
     void ShowTab(Tab tab) { m_showTab = tab; }
     const std::string& ProfilePath() const { return m_profilePath; }
@@ -95,7 +102,17 @@ private:
     std::string m_defaultFile;
     std::optional<Tab> m_showTab;   // selected on the next frame
     AskpassBroker m_askpass;
-    int m_askpassShown = -1;        // the request the dialog shows
+    void AskpassUpdate();
+    void AskpassShow(const AskpassRequest& request);
+    void AskpassFail(std::string error);
+    AskpassState m_askpassState = AskpassState::None;
+    AskpassRequest m_askpassRequest;    // the question shown (Asking), or answered last
+    std::string m_askpassError;
+    bool m_askpassRetry = false;        // Asking again after a wrong answer: ssh's complaint may still be on its way
+    std::optional<std::string> m_askpassQueued;     // typed after a failure: answers ssh's next same question
+    Clock::time_point m_askpassSince{};             // Waiting since
+    bool m_askpassOpen = false;         // the popup is open
+    bool m_askpassFocus = false;        // put the cursor in the input on the next frame
     std::string m_askpassInput;
     bool m_askpassRemember = false;
     std::unique_ptr<Orchestrator> m_orchestrator;

@@ -597,24 +597,158 @@ void ManagerUi::DrawPrompt(int i, ServerView& view)
     }
 }
 
+namespace {
+
+// An ssh that does not get in, ask again or end within this, after an answer, is left alone (the dialog closes).
+constexpr auto kAskpassPatience = std::chrono::seconds(30);
+
+void ClearSecret(std::string& text)
+{
+    std::fill(text.begin(), text.end(), '\0');
+    text.clear();
+}
+
+}  // namespace
+
+void ManagerUi::AskpassShow(const AskpassRequest& request)
+{
+    // the same question from the same ssh again: the last answer was wrong
+    const bool again = m_askpassState == AskpassState::Waiting && request.prompt == m_askpassRequest.prompt &&
+                       (request.pid == m_askpassRequest.pid || request.pid == 0);
+    if (m_askpassState != AskpassState::Failed && !again)
+        m_askpassError.clear();
+    m_askpassRetry = again;
+    if (again && m_askpassError.empty())
+        m_askpassError = "Not accepted, try again.";
+    if (m_askpassRequest.pid != request.pid && m_orchestrator)
+        m_orchestrator->Unwatch(m_askpassRequest.pid);
+    m_askpassRequest = request;
+    m_askpassState = AskpassState::Asking;
+    m_askpassFocus = true;
+    ClearSecret(m_askpassInput);
+}
+
+void ManagerUi::AskpassFail(std::string error)
+{
+    if (m_orchestrator)
+        m_orchestrator->Unwatch(m_askpassRequest.pid);
+    m_askpassState = AskpassState::Failed;
+    m_askpassError = std::move(error);
+    m_askpassRetry = false;
+}
+
+void ManagerUi::AnswerAskpass(std::optional<std::string> answer)
+{
+    if (m_askpassState == AskpassState::Failed) {
+        // ssh gave up: the next ssh that asks the same (Refresh, now) gets this answer
+        if (!answer) {
+            m_askpassState = AskpassState::None;
+            m_askpassError.clear();
+            ClearSecret(m_askpassInput);
+            return;
+        }
+        m_askpassQueued = std::move(answer);
+        m_askpassState = AskpassState::Waiting;
+        m_askpassRequest.pid = 0;
+        m_askpassSince = Clock::now();
+        m_nextDiscover = {};
+        m_askpass.ForgetDeclined();
+        ClearSecret(m_askpassInput);
+        return;
+    }
+    if (m_askpassState != AskpassState::Asking)
+        return;
+    const AskpassRequest request = m_askpassRequest;
+    m_askpass.Answer(request.id, answer, m_askpassRemember);
+    ClearSecret(m_askpassInput);
+    // follow the ssh that asked, when it is one of ours: it gets in, asks again or ends
+    if (answer && m_orchestrator && m_orchestrator->Watch(request.pid)) {
+        m_askpassState = AskpassState::Waiting;
+        m_askpassSince = Clock::now();
+    } else {
+        m_askpassState = AskpassState::None;
+        m_askpassError.clear();
+    }
+}
+
+void ManagerUi::AskpassUpdate()
+{
+    const auto pending = m_askpass.Pending();
+    const auto same = [&](const AskpassRequest& r) { return r.prompt == m_askpassRequest.prompt && r.kind == m_askpassRequest.kind; };
+    const auto status = m_orchestrator && m_askpassRequest.pid ? m_orchestrator->Watched(m_askpassRequest.pid)
+                                                               : std::optional<Orchestrator::ProcessStatus>();
+    switch (m_askpassState) {
+    case AskpassState::Asking:
+        if (std::none_of(pending.begin(), pending.end(), [&](const AskpassRequest& r) { return r.id == m_askpassRequest.id; })) {
+            // answered elsewhere (the same question from another ssh), or the broker stopped
+            m_askpassState = AskpassState::None;
+            m_askpassError.clear();
+        } else if (m_askpassRetry && status && !status->lastError.empty()) {
+            m_askpassError = status->lastError;     // "Permission denied, please try again."
+        }
+        break;
+    case AskpassState::Waiting:
+        if (m_askpassQueued) {
+            const auto it = std::find_if(pending.begin(), pending.end(), same);
+            if (it != pending.end()) {
+                AskpassShow(*it);
+                m_askpassState = AskpassState::Asking;
+                m_askpassInput = std::move(*m_askpassQueued);
+                m_askpassQueued.reset();
+                AnswerAskpass(m_askpassInput);
+            } else if (Clock::now() - m_askpassSince > kAskpassPatience) {
+                m_askpassQueued.reset();
+                AskpassFail("ssh did not ask again: Refresh, or start the server again");
+            }
+            break;
+        }
+        if (const auto it = std::find_if(pending.begin(), pending.end(),
+                                         [&](const AskpassRequest& r) { return r.pid == m_askpassRequest.pid; });
+            it != pending.end()) {
+            AskpassShow(*it);   // the same question (a wrong answer), or the next one (the password after the host key)
+        } else if (!status) {
+            m_askpassState = AskpassState::None;    // the profile was reloaded
+        } else if (status->output || (status->closed && status->exitCode == 0)) {
+            m_orchestrator->Unwatch(m_askpassRequest.pid);
+            m_askpassState = AskpassState::None;    // in
+            m_askpassError.clear();
+        } else if (status->closed) {
+            std::string error = status->lastError;
+            if (error.empty())
+                error = status->exitCode ? "ssh exited with code " + std::to_string(*status->exitCode) : "ssh ended";
+            AskpassFail(std::move(error));
+        } else if (Clock::now() - m_askpassSince > kAskpassPatience) {
+            m_orchestrator->Unwatch(m_askpassRequest.pid);
+            m_askpassState = AskpassState::None;
+        }
+        break;
+    case AskpassState::Failed:
+        if (const auto it = std::find_if(pending.begin(), pending.end(), same); it != pending.end())
+            AskpassShow(*it);   // asked again (Refresh): keep the error until answered
+        else if (!pending.empty() && m_askpassInput.empty())
+            AskpassShow(pending.front());
+        break;
+    case AskpassState::None:
+        if (!pending.empty())
+            AskpassShow(pending.front());
+        break;
+    }
+}
+
 void ManagerUi::DrawAskpassDialog()
 {
     const char* title = "ssh asks###askpass";
-    const auto pending = m_askpass.Pending();
-    if (pending.empty()) {
-        // answered without the dialog (the same question from another ssh), or the broker stopped
-        if (m_askpassShown != -1 && ImGui::BeginPopupModal(title)) {
+    AskpassUpdate();
+    if (m_askpassState == AskpassState::None) {
+        if (m_askpassOpen && ImGui::BeginPopupModal(title)) {
             ImGui::CloseCurrentPopup();
             ImGui::EndPopup();
         }
-        m_askpassShown = -1;
+        m_askpassOpen = false;
         return;
     }
-    const AskpassRequest& request = pending.front();
-    if (request.id != m_askpassShown) {
-        m_askpassShown = request.id;
-        std::fill(m_askpassInput.begin(), m_askpassInput.end(), '\0');
-        m_askpassInput.clear();
+    if (!m_askpassOpen) {
+        m_askpassOpen = true;
         m_askpassRemember = false;
         ImGui::OpenPopup(title);
     }
@@ -623,48 +757,66 @@ void ManagerUi::DrawAskpassDialog()
     ImGui::SetNextWindowSizeConstraints(ImVec2(ImGui::GetFontSize() * 28.0f, 0), ImVec2(ImGui::GetFontSize() * 48.0f, FLT_MAX));
     if (!ImGui::BeginPopupModal(title, nullptr, ImGuiWindowFlags_AlwaysAutoResize))
         return;
+    const AskpassRequest& request = m_askpassRequest;
+    const bool waiting = m_askpassState == AskpassState::Waiting;
     ImGui::PushTextWrapPos(ImGui::GetFontSize() * 46.0f);
     ImGui::TextUnformatted(request.prompt.c_str());
     ImGui::PopTextWrapPos();
-    if (pending.size() > 1)
-        ImGui::TextDisabled("%zu more after this one", pending.size() - 1);
     ImGui::Spacing();
 
     std::optional<std::optional<std::string>> answer;    // set once answered: a text, or declined
+    ImGui::BeginDisabled(waiting);
     switch (request.kind) {
     case AskpassKind::Secret: {
-        if (ImGui::IsWindowAppearing())
+        if (ImGui::IsWindowAppearing() || (m_askpassFocus && !waiting))
             ImGui::SetKeyboardFocusHere();
+        m_askpassFocus = false;
         ImGui::SetNextItemWidth(-FLT_MIN);
         const bool enter = ImGui::InputText("##secret", &m_askpassInput,
                                             ImGuiInputTextFlags_Password | ImGuiInputTextFlags_EnterReturnsTrue);
         ImGui::Checkbox("Remember until ServerManager closes", &m_askpassRemember);
         if (ImGui::Button("OK") || enter)
             answer = std::optional<std::string>(m_askpassInput);
-        ImGui::SameLine();
-        if (ImGui::Button("Cancel") || ImGui::IsKeyPressed(ImGuiKey_Escape))
-            answer = std::optional<std::string>();
         break;
     }
     case AskpassKind::Confirm:
         if (ImGui::Button("Yes"))
             answer = std::optional<std::string>("yes");
-        ImGui::SameLine();
-        if (ImGui::Button("No") || ImGui::IsKeyPressed(ImGuiKey_Escape))
-            answer = std::optional<std::string>();
         break;
     case AskpassKind::Info:
         if (ImGui::Button("OK"))
             answer = std::optional<std::string>(std::string());
         break;
     }
-    if (answer) {
-        m_askpass.Answer(request.id, *answer, m_askpassRemember);
-        std::fill(m_askpassInput.begin(), m_askpassInput.end(), '\0');
-        m_askpassInput.clear();
-        m_askpassShown = -1;
-        ImGui::CloseCurrentPopup();
+    ImGui::EndDisabled();
+    if (request.kind != AskpassKind::Info) {
+        ImGui::SameLine();
+        // while connecting, this only closes the dialog
+        if (ImGui::Button(request.kind == AskpassKind::Confirm ? "No" : waiting ? "Close" : "Cancel") ||
+            ImGui::IsKeyPressed(ImGuiKey_Escape)) {
+            if (waiting) {
+                if (m_orchestrator)
+                    m_orchestrator->Unwatch(request.pid);
+                m_askpassQueued.reset();
+                m_askpassState = AskpassState::None;
+                m_askpassError.clear();
+            } else {
+                answer = std::optional<std::string>();
+            }
+        }
     }
+    if (waiting) {
+        ImGui::SameLine();
+        ImGui::TextDisabled("Connecting...");
+    } else if (!m_askpassError.empty()) {
+        ImGui::PushTextWrapPos(ImGui::GetFontSize() * 46.0f);
+        ImGui::TextColored(LevelColor(LogLevel::Error), "%s", m_askpassError.c_str());
+        ImGui::PopTextWrapPos();
+    }
+    if (const std::size_t more = m_askpass.Pending().size(); more > (m_askpassState == AskpassState::Asking ? 1u : 0u))
+        ImGui::TextDisabled("%zu more after this one", more - (m_askpassState == AskpassState::Asking ? 1u : 0u));
+    if (answer)
+        AnswerAskpass(*answer);
     ImGui::EndPopup();
 }
 

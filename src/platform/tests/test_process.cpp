@@ -60,6 +60,15 @@ TEST_CASE("process: quoting")
     CHECK(QuoteShellArgument("$HOME;rm") == "'$HOME;rm'");
 }
 
+TEST_CASE("process: a child knows its parent")
+{
+    auto p = Helper({"ppid"});
+    std::string line;
+    REQUIRE(p->ReadLine(line));
+    CHECK(line == std::to_string(CurrentProcessId()));
+    CHECK(p->Wait() == 0);
+}
+
 TEST_CASE("process: environment set here reaches the children")
 {
     SetEnvironment("X2_TEST_ENV", "value with space");
