@@ -7,6 +7,7 @@
 #include "lua_state.h"
 
 #include <algorithm>
+#include <array>
 #include <bit>
 #include <cfloat>
 #include <charconv>
@@ -18,7 +19,9 @@
 #include <optional>
 #include <set>
 #include <stdexcept>
+#include <tuple>
 #include <unordered_map>
+#include <utility>
 #include <variant>
 
 namespace x2::lua {
