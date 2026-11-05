@@ -133,7 +133,8 @@ See [Server — Windows dependencies](../original/server.md).
         server through attach + protocol stop; tested with a fake ssh and with the real ssh to localhost (2026-11-05). See
         [ServerManager](../tools/servermanager.md#remote-servers-over-ssh).
   - [ ] `tools/servermanager-ui`: server list and status, log view (level/function filter, search), Lua prompt with history and
-        results, start/stop all; GUI tested on the user's desktop.
+        results, start/stop all, quit that stops what it started; Windows GUI subsystem and a Linux `.desktop`; drawn headless in
+        tests (code done 2026-11-05). Pending: the user's test on a desktop. See [ServerManager](../tools/servermanager.md#window).
 - [x] Remove SOAP/gSOAP, publisher billing/auth, Mail (MIME/SMTP), CrashRpt; stub where game logic depends on them (2026-10-31). The DEB gSOAP client became custom SOAP/HTTP, with DEB login and billing unchanged (T31, `server/cleanup-gsoap`, see [Common › DEB client](../porting/server-common.md#deb-client-t31)). `KMailManager` was removed, and script error reports go to the log (`server/cleanup-mail`). CrashRpt, other-country publishers, and `Common/SOAP` were never imported into `src/`: the importer excludes them. Only their `NetError`s/event IDs remain as protocol, along with comments.
 - [x] Milestone: login + town + dungeon with original `elsword.exe` against servers running on Linux (2026-10-31).
 

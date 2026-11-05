@@ -72,6 +72,9 @@ The package contains the configured server folders and shared scripts. See [Serv
 Start each server in its own directory, using a separate terminal for each. The first argument selects the configuration
 (`DEV` reads `config_*_DEV.lua`); the second is the server group:
 
+Or start them all, in order, from [ServerManager](tools/servermanager.md#window) (`ServerManager dist`), which also shows their logs
+and a Lua prompt for each.
+
 ```bash
 cd dist/EPublisherServer && ./EPublisherServer DEV
 cd dist/ChannelServer    && ./ChannelServer DEV 0

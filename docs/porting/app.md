@@ -46,4 +46,3 @@ lives and how its dependencies enter the build is decision T32.
 ## Pending
 
 - Shader handling for the client (SDL_shadercross, T19) and the Win32-style `MsgProc` event translation (Phase 3) build on `x2::app`.
-- Windows GUI subsystem (`WinMain`, no console) for the tools, once ServerManager has a UI.

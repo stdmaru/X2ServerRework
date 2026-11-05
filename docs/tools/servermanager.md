@@ -4,7 +4,8 @@
 
 SDL3 + ImGui tool that starts, monitors and controls the servers, locally and over SSH (decisions T29, T30, T32). The servers have no
 GUI or admin port: ServerManager speaks their [control protocol](../porting/console.md#protocol) (JSON lines) through a child
-process started with `--machine`, through a local control socket, or through `ssh host x2ctl attach <name>`. Started on 2026-11-04;
+process started with `--machine`, through a local control socket, or through `ssh host x2ctl attach <name>`, and shows them in
+one [window](#window). Started on 2026-11-04;
 progress and the remaining steps are in the [roadmap](../project/roadmap.md#phase-2--server).
 
 ## Layout
@@ -13,7 +14,7 @@ progress and the remaining steps are in the [roadmap](../project/roadmap.md#phas
 |---|---|---|
 | `core/` | `x2_servermanager_core` | No GUI, tested headless: protocol messages (`protocol.h`), a session per server (`session.h`), logs (`log_store.h`), transports (`transport.h`), profile (`profile.h`), and orchestrator (`orchestrator.h`) |
 | `core/tests/probe.cpp` | `x2_servermanager_probe` | Manual test of the orchestrator against real servers, without GUI |
-| (UI, later step) | `x2_servermanager` | The ImGui window on [`x2::app_imgui`](../porting/app.md) |
+| `ui/` | `x2_servermanager_ui`, `ServerManager` | The [window](#window) on [`x2::app_imgui`](../porting/app.md): `ManagerUi` (a library, drawn headless in tests) and the program |
 
 The JSON parser (`x2::platform::ParseJson`, full documents) lives in [`x2::platform`](../porting/platform.md); the servers keep
 reading commands with the flat `ParseJsonObject`.
@@ -137,6 +138,37 @@ Tested on 2026-11-05 with the real ssh to `localhost` on the user's desktop (key
 ControlMaster) and two `x2_terminal_demo` services: discovery listed both, the second attached after the first was ready, a third
 server that was not running failed with the message above, and both were stopped in reverse order with exit code 0.
 
+## Window (2026-11-05, `tools/servermanager-ui`)
+
+```bash
+build/linux-debug/src/tools/ServerManager/ui/ServerManager dist          # or a profile.json
+```
+
+Without an argument it opens `servermanager.json`, else `dist/`, in the current folder; another profile can be loaded from the
+toolbar. Built in the container, it runs on the desktop like `x2_app_demo`. On Linux the build also writes
+`ServerManager.desktop` next to the program (`Terminal=false`, opening `X2_DIST_DIR`), so it starts from a launcher without a
+terminal; copy it to `~/.local/share/applications/`. On Windows it is a GUI-subsystem program (`WIN32_EXECUTABLE`, `WinMain` from
+`SDL_main.h`): no console, and errors before the window go to a message box.
+
+- **Toolbar:** profile path and Load, Start all, Stop all, Refresh (discovery, otherwise every 10 s), and each host's discovery
+  state (green: listed; red: failed, with the error in its tooltip).
+- **Servers** (left, resizable): name (`@host` for remote ones), phase (`running` when not connected but its socket is listed),
+  and the error or warning count. For the selected server: Start (`Attach when ready` for a remote one), Stop, Attach, Detach,
+  Kill, the server state, PID, how it is connected, the last exit code, the error, and its dependencies.
+- **Log** (right): level and kind checkboxes (`Prompt` covers commands and results), search, function filter, Follow, Clear, and a
+  count. One row per line (fields and text lines indented below their entry), drawn with `ImGuiListClipper`, so 100,000 entries
+  stay cheap; rows are built incrementally and only rebuilt when the filter changes or the log is cleared. Hovering a log shows its
+  function, stream, file and line; its context menu copies it or filters on its function. Scrolling up stops following; scrolling
+  back to the bottom resumes.
+- **Prompt:** Lua for the selected server, Enter or Run, Up/Down for its history (per server, in memory). Commands and results go
+  to the log.
+- **Quitting:** with no server started here running, the window closes (attached servers are detached and keep running).
+  Otherwise it asks; "Stop them and quit" stops the servers it started, as Stop does, and quits once they are down ("Quit now"
+  kills them).
+- The event loop sleeps until input or a transport event (`Inbox::SetWake` → `WakeEventLoop`), at most 500 ms (100 ms while
+  servers start or stop, for the stop timeouts), and draws a few frames after each event. ImGui's window state is saved in the
+  user's preference folder (`SDL_GetPrefPath`).
+
 ## Tests
 
 `x2_servermanager_tests` (`ctest -R servermanager`): recorded protocol lines, log store/filter/view, session with a fake transport,
@@ -147,7 +179,12 @@ until disconnection; the stop request is process-wide, so a second console canno
 cancels its dependent, a missing program, a child that ignores stop (`x2_process_helper sleep`: terminated, then killed), and a
 service already running that is attached through `x2ctl`, detached, attached again and stopped. Remote servers through
 `x2_fake_ssh` (plays ssh: runs the remote command here, relaying the pipes): discovery, attach, detach, a stop of a listed server
-that was not attached; an unreachable host and a server that is not running. The probe prints each host's discovery first. Socket directory:
+that was not attached; an unreachable host and a server that is not running. The probe prints each host's discovery first.
+
+`x2_servermanager_ui_tests` (`ctest -R servermanager_ui`) draws the window with ImGui's null backends, so ImGui's checks run over
+its code: no profile and a profile that does not load; a failed local server and an unreachable host; a real `x2_terminal_demo`
+started from it, a Lua command printing 300 lines (rows and clipper), and quitting (asks, then stops it, exit code 0). The window
+itself (input, fonts, GPU) is tested by hand on a desktop. Socket directory:
 `$XDG_RUNTIME_DIR/x2`. A failure prints each server's phase and last log entries.
 
 `x2_servermanager_probe <dist | profile.json> [--attach-only]`: starts (or attaches to) every server, waits until all are ready,
