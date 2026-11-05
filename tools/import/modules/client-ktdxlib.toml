@@ -3,6 +3,8 @@
 # Shared server Common files are compiled from src/server/Common (decision T33) and are not imported again.
 
 name = "client-ktdxlib"
+# Edited by hand since 2026-11-05 (client/skeleton): never write to this module again.
+frozen = true
 source_root = "."
 # same search path as the vcxproj: .\;..\KNCSDK_Client\Include;.\DXUT;..\X2ServerProtocol;..\X2ServerProtocol\Socket;.\CxImage
 # (KNCSDK_Client is already merged into src/kncsdk: found through extern_dirs)

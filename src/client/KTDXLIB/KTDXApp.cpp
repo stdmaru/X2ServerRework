@@ -159,47 +159,8 @@ CKTDXApp::CKTDXApp( HWND hWnd, HINSTANCE hInstance, IDirect3DDevice9* pd3dDevice
 	ms_pLuaBinder = new KLuabinder();
 	ASSERT( ms_pLuaBinder != NULL );
 
-	// 070518. florist. WinXP sp2 ????? ??????? ???
-	// COM ???? ???��? ??????? ????, CreateDevice ??????? ????? ???? ?????? ???? ?????? ???.
 
-	WCHAR pathbuff[MAX_PATH]  = {0};
-	::GetModuleFileNameW( NULL, pathbuff, MAX_PATH );            // get file name (full path)
 
-#if !defined(DLL_BUILD)
-	// on execute...
-	int nReturn = KncFirewall::GuarantedFireWallException( pathbuff, L"Elsword" );
-
-	switch( nReturn )
-	{
-		case KncFirewall::__INIT_COM_FAILED:
-			{
-				MessageBox( NULL, GET_STRING( STR_ID_956 ), NULL, NULL );
-				ErrorLog( KEM_ERROR118 );
-
-				PostQuitMessage(0);
-
-			}
-			break;
-
-		case KncFirewall::NO_EXCEPTION_ALLOWED:
-			{
-				MessageBox( NULL, GET_STRING( STR_ID_957 ), NULL, NULL );
-				ErrorLog( KEM_ERROR119 );
-
-				PostQuitMessage(0);
-			}
-			break;
-
-		case KncFirewall::NOT_SYSADMIN:
-			{
-				MessageBox( NULL, GET_STRING( STR_ID_958 ), NULL, NULL );
-				ErrorLog( KEM_ERROR120 );
-
-				PostQuitMessage(0);
-			}
-			break;
-	}
-#endif
 
 	m_pd3dDevice		= pd3dDevice;
 #ifdef CONVERSION_VS

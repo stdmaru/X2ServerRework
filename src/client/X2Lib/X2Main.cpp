@@ -22,13 +22,6 @@ using boost::bind;
 #endif // DEBUG
 
 
-#ifdef BUG_TRAP
-    #include "BugTrap.h"
-
-    // Link with one of BugTrap libraries.
-    #ifdef _UNICODE
-    #else
-    #endif
 #endif
 
 //{{ kimhc // 2010.3.3 // ???? ???? ????
@@ -68,7 +61,6 @@ FILE*				g_fpStreamError = NULL;
 HINTERNET			g_hInternet		= NULL;
 
 
-extern		CX2SMTPMail*			g_pX2SMTPMail;
 
 
 
@@ -531,10 +523,6 @@ m_pMemoryHolder( NULL )
 
 
 
-	m_strMailAddress = "";
-	ConvertWCHARToChar( m_strMailAddress, GET_STRING( STR_ID_18009 ) );
-	if ( NULL != g_pX2SMTPMail )
-		g_pX2SMTPMail->SetSMTPAddress( m_strMailAddress.c_str() );
 
 
 #ifdef BUG_TRAP
@@ -832,9 +820,7 @@ m_pMemoryHolder( NULL )
 		case XP_K3RCOMBO_US:
 			{
 
-				if( CX2Steam::GetSteamUserIDAndPass(m_wstrID, m_wstrPass) )
-					m_bManualLogin = false;
-				else if( __argc == 3 )
+				if( __argc == 3 )
 				{
 					m_bManualLogin = false;
 					// ????ID -> ????ID?? ????
@@ -1590,16 +1576,6 @@ HRESULT CX2Main::OnFrameMove( double fTime, float fElapsedTime )
 
 
 
-#ifndef _DEBUG
-	//nProtect ?? ?????? ???? ???? ????????
-	if( g_pData != NULL && g_pData->GetMyUser() != NULL &&
-		KNP_GetFindGameMon() == false )
-	{
-		SetQuitType( NetError::ERR_CLIENT_QUIT_01 );
-		g_pKTDXApp->NoticeQuitType( CKTDXApp::KQT_FIND_HACKING );
-		PostQuitMessage(0);
-	}
-#endif // _DEBUG
 
 
 	if( NULL != GetPartyUI() )
@@ -11055,48 +11031,6 @@ void CX2Main::DeleteShutDownInformation()						//???? ?????��? ????
 void CX2Main::ChangeCashSkillPointDate( const int iYear_, const int iMonth_, const int iDay_, const int iHour_, const int iMinute_ )
 {
 	g_pData->GetSkillTree()->Hander_EGS_ADMIN_CASH_SKILL_POINT_DATE_CHANGE_REQ( iYear_, iMonth_, iDay_, iHour_, iMinute_ );
-}
-/** @function : SendCheckMail
-	@brief : ????? ??? ?��??? ??????????? ????? ???? ?��?? ???? ???? ???
-	@param : ??? ??? ???????, ????, ????
-*/
-void CX2Main::SendCheckMail( const char* pRecipient_, const char* pSubject_, const char* pMessageBody_ )
-{
-	if ( NULL == g_pX2SMTPMail )
-		g_pX2SMTPMail = new CX2SMTPMail;
-
-	if(g_pX2SMTPMail->SMTPGetLastError() != CX2SMTPMail::CSMTP_NO_ERROR)
-	{
-		// Unable to initialize winsock2
-		return;
-	}
-
-	g_pX2SMTPMail->SMTPSetServer( m_strMailAddress.c_str(), 25 );
-	g_pX2SMTPMail->SMTPSetLogin("escrash");            // ???? ????
-	g_pX2SMTPMail->SMTPSetPassword("@Els.123");
-	g_pX2SMTPMail->SMTPSetSenderName( "Check Mail" );
-	g_pX2SMTPMail->SMTPSetSenderMail("itexpertkim@kog.co.kr");
-	g_pX2SMTPMail->SMTPSetReplyTo("itexpertkim@kog.co.kr"); // ??? ???
-
-	string strSubject = "[ES_KR_CLIENT_CHECK_MAIL]";
-	strSubject += pSubject_;
-	g_pX2SMTPMail->SMTPSetSubject( strSubject.c_str() );
-	g_pX2SMTPMail->SMTPAddRecipient( pRecipient_ );
-	g_pX2SMTPMail->SMTPSetXPriority(CX2SMTPMail::XPRIORITY_NORMAL);
-	g_pX2SMTPMail->SMTPSetXMailer("The Bat! (v3.02) Professional");
-	g_pX2SMTPMail->SMTPSetMessageBody( pMessageBody_ );
-
-	if( g_pX2SMTPMail->SMTPSend() )
-	{
-		//The mail was send successfully
-	}
-	else
-	{
-
-		//Unable to send the mail
-	}
-
-	g_pX2SMTPMail->SMTPClearRecipient();
 }
 
 

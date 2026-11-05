@@ -5098,7 +5098,7 @@ bool CX2StateServerSelect::Handler_EGS_VERIFY_ACCOUNT_REQ()
 
 	m_bEGS_VERIFY_ACCOUNT_REQ = true;
 
-	kPacket.m_bSteamClient = CX2Steam::IsSteamUser();
+	kPacket.m_bSteamClient = false;  // no Steam client in the port; the field stays in the protocol
 
 	kPacket.m_bAeriaClient = g_pInstanceData->IsAeriaChanneling();
 

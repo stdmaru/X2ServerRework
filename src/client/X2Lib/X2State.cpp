@@ -2230,13 +2230,8 @@ bool CX2State::Handler_EGS_KNPROTECT_AUTH_CHECK_NOT( HWND hWnd, UINT uMsg, WPARA
 	KEGS_KNPROTECT_AUTH_CHECK_NOT kEvent;
 	DeSerialize( pBuff, &kEvent );
 
-	GG_AUTH_DATA sAuthData;
-	sAuthData.dwIndex		= kEvent.dwIndex;
-	sAuthData.dwValue1		= kEvent.dwValue1;
-	sAuthData.dwValue2		= kEvent.dwValue2;
-	sAuthData.dwValue3		= kEvent.dwValue3;
-
-	KNP_AUTH2( &sAuthData );
+	// nProtect GameGuard answered this server challenge (KNP_AUTH2); the port has no anti-cheat (decision T10), so the
+	// packet is read and dropped.
 
 
 

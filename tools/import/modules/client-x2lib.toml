@@ -4,6 +4,8 @@
 # src/server/Common: both are compiled by the client from there (decision T33), not imported again.
 
 name = "client-x2lib"
+# Edited by hand since 2026-11-05 (client/skeleton): never write to this module again.
+frozen = true
 source_root = "."
 # same search path as the vcxproj: .\;.\Common;..\KNCSDK_Client\Include;..\KTDXLIB;..\KTDXLIB\DXUT;..\X2ServerProtocol;
 # ..\X2ServerProtocol\Socket\;..\KncWX2Server\Common\;..\X2;..\X2\dat;..\X2\dat\script (Nexon, Steam, luaLib dropped)
@@ -28,6 +30,10 @@ exclude = [
     "X2Lib/VirtualizerSDK.h",
     "X2Lib/X2CollectHackInfo.*",
     "XTRAP/*",
+    # HackShield and nProtect GameGuard wrappers (T10)
+    "X2Lib/X2HSGame.*",
+    "X2Lib/X2KNPGame.*",
+    "X2Lib/NPGameLib.h",
     # publishers and ads: Nexon, Steam, IGA
     "X2Lib/X2NexonMsgHandler.*",
     "X2Lib/X2Steam.*",

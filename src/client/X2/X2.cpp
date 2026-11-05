@@ -38,7 +38,6 @@ bool                    g_bShowHelp = true;     // If true, it renders the UI co
 
 LPDIRECT3DDEVICE9		g_pd3dDevice;
 LPDIRECT3D9				g_pD3D;
-CX2SMTPMail*			g_pX2SMTPMail = NULL;
 HANDLE					g_hMutex = NULL;		// Mutex of game client program.
 //{{ robobeg : 2008-10-10
 CKTDGEffectStateManager* g_pEffectStateManager = NULL;
@@ -190,12 +189,10 @@ INT WINAPI VirtualWinMain( HINSTANCE hInst, HINSTANCE, LPSTR, INT )
 #endif // _SERVICE_
 
 
-	g_pX2SMTPMail = new CX2SMTPMail;
 
 
 
 
-	CX2Steam::InitSteam();
 
 	CKTDXApp::StartUp();
 
@@ -267,7 +264,6 @@ INT WINAPI VirtualWinMain( HINSTANCE hInst, HINSTANCE, LPSTR, INT )
 	}
 
 
-	CX2Steam::EndSteam();
 
 
 	return DXUTGetExitCode();
@@ -1205,9 +1201,7 @@ void CALLBACK OnDestroyDevice( void* pUserContext )
 
 	SAFE_DELETE( g_pKTDXApp );
 
-	KNP_Close();
 
-	SAFE_DELETE( g_pX2SMTPMail );
 
 
 

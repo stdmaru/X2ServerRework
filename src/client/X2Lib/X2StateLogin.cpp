@@ -490,8 +490,9 @@ bool CX2StateLogin::Handler_ECH_VERIFY_ACCOUNT_REQ()
 
 	kPacket.m_iChannelingCode = g_pInstanceData->GetChannelingCode();
 
-	// 스팀 전용 pw를 직접 입력했는지 체크 하고, 그렇다면 클라 꺼버린다.
-	if( CX2Steam::IsValidSteamUser( kPacket.m_wstrPassword ) == false )
+	// The password Steam logins send: typed by hand without Steam, the client quits (CX2Steam::IsValidSteamUser of the
+	// original; there is no Steam client in the port).
+	if( kPacket.m_wstrPassword == L"J2380DE81621XZ" )
 		g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, NULL, NULL, false );
 
 	g_pData->GetServerProtocol()->SendChPacket( ECH_VERIFY_ACCOUNT_REQ, kPacket );
@@ -559,18 +560,6 @@ bool CX2StateLogin::Handler_ECH_VERIFY_ACCOUNT_ACK( HWND hWnd, UINT uMsg, WPARAM
 		}
 		else
 		{
-			if( CX2Steam::IsSteamUser() == true )
-			{
-// 				std::wstring packetExplain;
-// 				packetExplain = NetError::GetErrStrF(kEvent.m_iOK);
-// 				packetExplain += L"\n";
-// 				packetExplain += GET_STRING( STR_ID_26353 );
-				g_pKTDXApp->GetDGManager()->GetDialogManager()->DeleteDlg( m_pMsgOkFailToConnectServer );
-				m_pMsgOkFailToConnectServer = g_pMain->KTDGUIOKMsgBox( D3DXVECTOR2(250,300),GET_STRING( STR_ID_26353 ), this );
-				m_bFailToConnectServer = true;
-				return false;
-			}
-
 			if( kEvent.m_iOK == NetError::ERR_K3RCOMBO_AUTH_02 )
 			{
 				ShellExecuteA(NULL, "open", kEvent.m_strAgreementURL.c_str(), NULL, NULL, SW_SHOW);

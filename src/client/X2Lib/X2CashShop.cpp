@@ -268,13 +268,6 @@ bool CX2CashShop::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
 				//userID�� PurchaseToken ���� ������ ���⼭ ����
 				std::wstring wstrURL = GetWstrConnectChargePage();
 
-				if( CX2Steam::IsSteamUser() == true )
-				{
-					CX2Steam::OpenSteamOverlayWebPage( wstrURL );
-					//std::string strURL = KncUtil::toNarrowString(wstrURL);
-					//SteamFriends()->ActivateGameOverlayToWebPage( strURL.c_str() );
-				}
-				else
 				{
 					if( false == g_pMain->GetBrowserWrapper()->IsClosed() )
 					{
@@ -7358,12 +7351,6 @@ std::wstring CX2CashShop::GetWstrConnectChargePage()
 	// �̱�
 	case CX2Main::NF_US:
 		{
-			if( CX2Steam::IsSteamUser() == true )
-			{
-				wstrURL = L"https://billing.elswordonline.com/Fillup/Steam/InitTxn.aspx?userno=";
-				wstrURL += g_pInstanceData->GetUserID();
-			}
-			else
 			if( true == g_pInstanceData->IsAeriaChanneling() )
 			{
 				wstrURL = L"https://api.elswordonline.com/aeria/auth/billing?SID=";
@@ -7423,12 +7410,6 @@ std::wstring CX2CashShop::GetWstrConnectChargePage()
 	// �̱�
 	case CX2Main::NF_US:
 		{
-			if( CX2Steam::IsSteamUser() == true )
-			{
-				wstrURL = L"http://billingtest.elswordonline.com:84/Fillup/Steam/InitTxn.aspx?userno=";
-				wstrURL += g_pInstanceData->GetUserID();
-			}
-			else
 			if( true == g_pInstanceData->IsAeriaChanneling() )
 			{
 				wstrURL = L"http://apitest.elswordonline.com/aeria/auth/billing?SID=";
