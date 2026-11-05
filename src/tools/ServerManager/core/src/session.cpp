@@ -1,0 +1,160 @@
+#include "x2/servermanager/session.h"
+
+#include <chrono>
+#include <ctime>
+#include <type_traits>
+
+namespace x2::servermanager {
+
+const char* ToString(LinkState state)
+{
+    switch (state) {
+    case LinkState::Connecting: return "connecting";
+    case LinkState::Connected: return "connected";
+    case LinkState::Disconnected: break;
+    }
+    return "disconnected";
+}
+
+std::string LocalTimeNow()
+{
+    const std::time_t now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    std::tm tm{};
+#if defined(_WIN32)
+    localtime_s(&tm, &now);
+#else
+    localtime_r(&now, &tm);
+#endif
+    char buffer[32];
+    std::strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", &tm);
+    return buffer;
+}
+
+ServerSession::ServerSession(std::string name, std::size_t logCapacity)
+    : m_name(std::move(name)), m_logs(logCapacity), m_clock(LocalTimeNow)
+{
+}
+
+void ServerSession::Note(EntryKind kind, LogLevel level, std::string text)
+{
+    LogEntry entry;
+    entry.kind = kind;
+    entry.log.time = m_clock();
+    entry.log.level = level;
+    entry.log.message = std::move(text);
+    m_logs.Add(std::move(entry));
+}
+
+void ServerSession::SetState(ServerState state)
+{
+    if (state == m_state)
+        return;
+    m_state = state;
+    Note(EntryKind::Event, LogLevel::Note, std::string("state: ") + ToString(state));
+}
+
+void ServerSession::OnConnecting(std::string_view how)
+{
+    m_link = LinkState::Connecting;
+    Note(EntryKind::Event, LogLevel::Note, "connecting: " + std::string(how));
+}
+
+void ServerSession::OnConnected(Sender sender)
+{
+    m_sender = std::move(sender);
+    m_link = LinkState::Connected;
+    m_gotHello = false;
+    Note(EntryKind::Event, LogLevel::Note, "connected");
+}
+
+void ServerSession::OnLine(std::string_view line)
+{
+    ServerMessage message = ParseServerMessage(line);
+    std::visit(
+        [this](auto& m) {
+            using T = std::decay_t<decltype(m)>;
+            if constexpr (std::is_same_v<T, HelloMessage>) {
+                m_hello = m;
+                m_gotHello = true;
+                if (m.protocol != kProtocolVersion)
+                    Note(EntryKind::Event, LogLevel::Warn,
+                         "server speaks protocol " + std::to_string(m.protocol) + ", ServerManager " +
+                             std::to_string(kProtocolVersion));
+                SetState(m.state);
+            } else if constexpr (std::is_same_v<T, LogMessage>) {
+                LogEntry entry;
+                entry.kind = EntryKind::Log;
+                entry.log = std::move(m);
+                m_logs.Add(std::move(entry));
+            } else if constexpr (std::is_same_v<T, OutputMessage>) {
+                Note(EntryKind::Output, LogLevel::Info, std::move(m.text));
+            } else if constexpr (std::is_same_v<T, StatusMessage>) {
+                SetState(m.state);
+            } else if constexpr (std::is_same_v<T, ResultMessage>) {
+                std::string text = m.output;
+                if (!m.error.empty())
+                    text += (text.empty() || text.back() == '\n' ? "" : "\n") + m.error;
+                while (!text.empty() && text.back() == '\n')
+                    text.pop_back();
+                if (!text.empty() || !m.ok)
+                    Note(EntryKind::Result, m.ok ? LogLevel::Info : LogLevel::Error, text.empty() ? "failed" : text);
+                if (m.id) {
+                    const auto it = m_pending.find(*m.id);
+                    if (it != m_pending.end()) {
+                        ResultHandler done = std::move(it->second);
+                        m_pending.erase(it);
+                        if (done)
+                            done(m);
+                    }
+                }
+            } else {
+                Note(EntryKind::Output, LogLevel::Info, std::move(m.text));
+            }
+        },
+        message);
+}
+
+void ServerSession::OnDisconnected(std::string_view reason)
+{
+    m_sender = {};
+    m_link = LinkState::Disconnected;
+    Note(EntryKind::Event, m_state == ServerState::Stopped ? LogLevel::Note : LogLevel::Warn,
+         "disconnected" + (reason.empty() ? std::string() : ": " + std::string(reason)));
+
+    std::map<std::int64_t, ResultHandler> pending;
+    pending.swap(m_pending);
+    for (auto& [id, done] : pending) {
+        if (done) {
+            ResultMessage failed;
+            failed.id = id;
+            failed.error = "disconnected";
+            done(failed);
+        }
+    }
+}
+
+std::optional<std::int64_t> ServerSession::Send(std::string line, std::string_view echo, ResultHandler done)
+{
+    if (m_link != LinkState::Connected || !m_sender)
+        return std::nullopt;
+    const std::int64_t id = m_nextId++;
+    Note(EntryKind::Command, LogLevel::Note, std::string(echo));
+    if (!m_sender(line)) {
+        Note(EntryKind::Event, LogLevel::Error, "could not send the command");
+        return std::nullopt;
+    }
+    m_pending.emplace(id, std::move(done));
+    return id;
+}
+
+std::optional<std::int64_t> ServerSession::RunLua(std::string_view lua, ResultHandler done)
+{
+    return Send(LuaRequest(m_nextId, lua), lua, std::move(done));
+}
+
+std::optional<std::int64_t> ServerSession::Stop(ResultHandler done)
+{
+    return Send(StopRequest(m_nextId), "(stop)", std::move(done));
+}
+
+}  // namespace x2::servermanager

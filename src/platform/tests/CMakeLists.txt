@@ -6,6 +6,7 @@ add_executable(x2_platform_tests
     test_net_io.cpp
     test_odbc.cpp
     test_format.cpp
+    test_json.cpp
     test_string.cpp
     test_sync.cpp
     test_terminal.cpp
