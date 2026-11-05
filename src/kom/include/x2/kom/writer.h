@@ -16,8 +16,8 @@
 
 namespace x2::kom {
 
-// zlib levels: kom.py compresses with 9; KOG's packer used 6, zlib's default (with zlib 1.3.1, 99.9% of the
-// client's entries re-encode byte for byte at level 6, none at 9; docs/porting/kom.md#writing).
+// zlib levels: kom.py compresses with 9; KOG's packer used 6, zlib's default (with zlib 1.3.1, 88.5% of the
+// client's entries re-encode byte for byte at level 6; docs/porting/kom.md#writing).
 inline constexpr int kKomPyLevel = 9;
 inline constexpr int kKogLevel = 6;
 

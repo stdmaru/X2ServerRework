@@ -225,6 +225,7 @@ TEST_CASE("assets: edited, missing and new files")
     REQUIRE_MESSAGE(b, error);
     REQUIRE(b->Entries().size() == 1);
     CHECK(b->Entries()[0].name == "Miss.ogg");
+    b.reset();  // Windows refuses to replace an archive that is open
 
     // Opaque entries cannot be re-encoded.
     WriteFile(f.clientData / "_unsorted" / "a" / "opaque.bin", Pattern(5, 45));
@@ -233,7 +234,7 @@ TEST_CASE("assets: edited, missing and new files")
     options.destination = f.out;
     PackStats ignored;
     CHECK_FALSE(Pack(options, ignored, error));
-    CHECK(error.find("opaque.bin") != std::string::npos);
+    CHECK_MESSAGE(error.find("opaque.bin") != std::string::npos, error);
 }
 
 TEST_CASE("assets: import and pack refuse what a name-keyed manifest cannot hold")

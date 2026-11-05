@@ -1,7 +1,7 @@
 // Opt-in: X2_ASSETS_CLIENT_DATA=<the client's data folder> imports every .kom there with tools/assets/layout.txt and
-// packs the result back, comparing every archive byte for byte. Needs about the client's decoded size in free space
-// (~5.2 GB for _client/data) in X2_ASSETS_WORK_DIR, or the system temporary folder. The client's assets are not in the
-// repository.
+// packs the result back, comparing every archive byte for byte. Needs the client's decoded size plus the kept blobs in
+// free space (~6 GB for _client/data) in X2_ASSETS_WORK_DIR, or the system temporary folder. The client's assets are
+// not in the repository.
 #include "helpers.h"
 
 #include "x2/assets/client_data.h"
