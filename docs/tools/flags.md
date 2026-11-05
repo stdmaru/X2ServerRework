@@ -129,7 +129,7 @@ compile (`server-x2lib`, in `src/server/X2Lib`).
 | Flag | Server | Client | Where | Effect | Handling |
 |---|---|---|---|---|---|
 | `ADD_RENA_SYSTEM` | unknown (never defined; the server import kept the `#ifdef`) | false (commented out in `Always.h`) | `CommonPacket.h`: an enum value and an accessor of `KGamePlayStatus` | none: undefined in both builds | nothing; the dead `#ifdef` can go in Phase 5 |
-| `X2OPTIMIZE_NPC_NONHOST_SIMULATION` | unknown (left as `#ifdef`, so undefined) | true (`KTDX.h`) | `X2UDPPacket.*`: extra fields and the serialization of `KDYNAMIC_UNIT_NPC_SYNC`, and `KDYNAMIC_UNIT_NPC_MINISYNC` | the original servers and client had different layouts, harmless because the servers never use these structs (they relay P2P datagrams; `X2Packet.cpp` uses the port-check structs) | at the client import, resolve it as **true** by hand in `src/server/X2Lib` (that module is hand-edited, so it is not reimported), which is the layout on the wire |
+| `X2OPTIMIZE_NPC_NONHOST_SIMULATION` | unknown (left as `#ifdef`, so undefined) | true (`KTDX.h`) | `X2UDPPacket.*`: extra fields and the serialization of `KDYNAMIC_UNIT_NPC_SYNC`, and `KDYNAMIC_UNIT_NPC_MINISYNC` | the original servers and client had different layouts, harmless because the servers never use these structs (they relay P2P datagrams; `X2Packet.cpp` uses the port-check structs) resolved as **true** by hand in `src/server/X2Lib` at the client import (2026-11-05), the layout on the wire ([Client](../porting/client.md#code-shared-with-the-servers-t33)) |
 
 Across the two generated sets, the 1,188 names they share have the same value; the only environment difference is
 `_SERVICE_`, which no shared file tests. The shared files are therefore kept once and compiled by both (decision

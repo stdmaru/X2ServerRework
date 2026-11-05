@@ -164,8 +164,10 @@ See [Server — Windows dependencies](../original/server.md).
 
 See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
 
-- [ ] `client/import`: importer modules for `KTDXLIB`, `X2Lib`, `X2` and the missing `KNCSDK_Client` parts, with
-      `client.generated.toml`; shared `Common` files are not imported again (T33). No need to compile yet.
+- [x] `client/import`: importer modules `client-ktdxlib`, `client-x2lib`, `client-x2`, `client-serverprotocol` and
+      `client-luacommon` with `client.generated.toml`: 854 files in `src/client`, not compiled yet; shared `Common` files and
+      `X2UDPPacket.*` are not imported again (T33), and `X2UDPPacket.*` got the client's NPC sync layout; nothing was missing from
+      `KNCSDK_Client` (2026-11-05). See [Client](../porting/client.md).
 - [ ] Client skeleton: CMake target, window on `x2::app` (T32), SDL events translated to the `MsgProc` model (next item).
 - [ ] Window/input/IME: Win32 + DirectInput → SDL3. For now, retain the `MsgProc(HWND, UINT, WPARAM, LPARAM)` model
       by translating SDL events into Win32-style messages (`X2Lib` uses `HWND` in ~272 files — mostly through the `MsgProc` signature).
