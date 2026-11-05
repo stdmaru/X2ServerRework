@@ -33,6 +33,13 @@ The module is edited by hand and frozen. `KTDX.h` includes the [DXUT replacement
 CrashRpt, KncFirewall or the SMTP mail; `KTDXApp.cpp` lost the firewall exception
 ([Client](client.md#integrations-removed-by-hand-2026-11-05)). `SAFE_*` macros are `KTDX.h`'s own.
 
+## Input layer (2026-11-05, `client/input`)
+
+`KTDIManager.*` and `KTDIDevice.*` read SDL3 state instead of DirectInput and build as `x2::client_ktdi`
+([Client: input](client-input.md)). `GAME_ACTION`/`JOYSTICK_BUTTON` moved to the new `KTDIGameAction.h`; the empty
+`KTDIDeviceWinKey.*` were deleted (252 files left). `KTDX.h` includes `DXUT/DirectInputKeys.h` instead of `<dinput.h>`,
+and `KTDXStage.h`/`KTDXDeviceHolder.h` include what they use (`std::wstring`, `std::list`, `x2/platform/win32.h`).
+
 ## Status
 
-Not compiled yet ([roadmap](../project/roadmap.md#phase-3--client-platform)).
+Only the input files compile ([roadmap](../project/roadmap.md#phase-3--client-platform)).
