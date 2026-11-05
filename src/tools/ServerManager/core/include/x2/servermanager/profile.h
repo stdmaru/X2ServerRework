@@ -5,7 +5,9 @@
 //   {"x2ctl": "x2ctl",
 //    "servers": [{"name": "LoginServer", "directory": "LoginServer", "program": "./LoginServer",
 //                 "args": ["DEV", "0"], "after": ["EPublisherServer"], "control": "LoginServer"}, ...],
-//    "hosts": [{"name": "prod", "destination": "x2@10.0.0.5", "x2ctl": "/opt/x2/dist/x2ctl"}]}
+//    "hosts": [{"name": "prod", "destination": "x2@10.0.0.5", "x2ctl": "/opt/x2/dist/x2ctl",
+//               "controlDir": "/opt/x2/docker/control/x2"}],
+//    "controlDir": "..."}
 // Relative directories are relative to the profile's folder. A server with a "host" runs on that machine: ServerManager
 // attaches to it over SSH and never starts it.
 
@@ -23,6 +25,7 @@ struct HostSpec {
     std::string name;                   // unique within the profile; what servers refer to
     std::string destination;            // what ssh connects to: host, user@host, or a Host of ~/.ssh/config
     std::string x2ctl = "x2ctl";        // on that machine (a path, or a name in its PATH)
+    std::string controlDir;             // its control sockets (x2ctl --dir); empty: x2ctl's default there
     std::vector<std::string> ssh;       // program and options before the destination; empty: DefaultSshCommand()
 };
 
@@ -45,6 +48,9 @@ struct ServerSpec {
 
 struct Profile {
     std::string x2ctl = "x2ctl";        // for attaching to servers already running (path, or a name in PATH)
+    // Where this machine's servers have their control sockets, when not the default (servers in containers with a
+    // bind-mounted socket folder). Only where ServerManager looks: the servers it starts use their own default.
+    std::string controlDir;
     std::vector<ServerSpec> servers;
     std::vector<HostSpec> hosts;
 

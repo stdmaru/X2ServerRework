@@ -9,7 +9,9 @@
 #include <doctest/doctest.h>
 
 #include <algorithm>
+#include <cstdlib>
 #include <chrono>
+#include <filesystem>
 #include <thread>
 
 using namespace x2::servermanager;
@@ -312,5 +314,70 @@ TEST_CASE("orchestrator: an unreachable host, and a remote server that is not ru
         o.Start(0);
         REQUIRE_MESSAGE(RunUntil(o, [&] { return o.At(0).phase == Phase::Failed; }), Dump(o));
     }
+}
+#endif
+
+#if defined(X2_X2CTL) && defined(X2_FAKE_SSH)
+namespace {
+
+void SetEnv(const char* name, const std::string& value)
+{
+#if defined(_WIN32)
+    _putenv_s(name, value.c_str());
+#else
+    if (value.empty())
+        ::unsetenv(name);
+    else
+        ::setenv(name, value.c_str(), 1);
+#endif
+}
+
+}  // namespace
+
+TEST_CASE("orchestrator: servers with their sockets in another folder (a container's bind mount)")
+{
+    const std::string name = Unique("SmDir");
+    const auto dir = std::filesystem::temp_directory_path() / ("x2-sm-" + name);
+    // the service gets the folder through the environment, as a container would
+    SetEnv("X2_CONTROL_DIR", dir.string());
+    x2::platform::ProcessOptions service;
+    service.program = X2_TERMINAL_DEMO;
+    service.args = {"--no-stdin", "--control=" + name, "--ready-after=100"};
+    std::string error;
+    auto running = x2::platform::Process::Start(service, error);
+    SetEnv("X2_CONTROL_DIR", "");
+    REQUIRE_MESSAGE(running, error);
+
+    // here: the profile's controlDir
+    Profile local;
+    local.x2ctl = X2_X2CTL;
+    local.controlDir = dir.string();
+    local.servers = {Demo(name)};
+    Orchestrator o(local);
+    const auto deadline = std::chrono::steady_clock::now() + 10s;
+    while (o.Listed(0) != true && std::chrono::steady_clock::now() < deadline) {
+        o.Discover();
+        std::this_thread::sleep_for(20ms);
+    }
+    REQUIRE(o.Listed(0) == true);
+    o.Start(0);     // listed there: attached, not started
+    REQUIRE_MESSAGE(RunUntil(o, [&] { return o.At(0).phase == Phase::Ready; }), Dump(o));
+    CHECK_FALSE(o.At(0).owned);
+    CHECK(o.At(0).session.Pid() == running->Pid());
+    o.Detach(0);
+    REQUIRE_MESSAGE(RunUntil(o, [&] { return o.At(0).phase == Phase::Offline; }), Dump(o));
+
+    // on a host: the host's controlDir, passed to the remote x2ctl
+    Profile remote = RemoteProfile(name, "fake-host");
+    remote.hosts[0].controlDir = dir.string();
+    Orchestrator r(remote);
+    r.Discover();
+    REQUIRE(RunUntil(r, [&] { return !r.HostAt(0).listing; }));
+    CHECK_MESSAGE(r.Listed(0) == true, r.HostAt(0).error);
+    r.Stop(0);      // listed: attach, then stop
+    REQUIRE_MESSAGE(RunUntil(r, [&] { return r.At(0).phase == Phase::Offline; }), Dump(r));
+    CHECK(running->WaitFor(10s) == 0);
+    std::error_code ec;
+    std::filesystem::remove_all(dir, ec);
 }
 #endif

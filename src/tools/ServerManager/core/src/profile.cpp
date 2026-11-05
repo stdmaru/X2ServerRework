@@ -78,9 +78,14 @@ x2::platform::ProcessOptions Profile::X2ctl(std::string_view host, const std::ve
 {
     x2::platform::ProcessOptions options;
     const HostSpec* h = host.empty() ? nullptr : FindHost(host);
+    const std::string& dir = h ? h->controlDir : controlDir;
+    std::vector<std::string> x2ctlArgs;
+    if (!dir.empty())
+        x2ctlArgs.push_back("--dir=" + dir);
+    x2ctlArgs.insert(x2ctlArgs.end(), args.begin(), args.end());
     if (!h) {
         options.program = x2ctl;
-        options.args = args;
+        options.args = std::move(x2ctlArgs);
         return options;
     }
     std::vector<std::string> command = h->ssh.empty() ? DefaultSshCommand() : h->ssh;
@@ -89,7 +94,7 @@ x2::platform::ProcessOptions Profile::X2ctl(std::string_view host, const std::ve
     options.args.push_back(h->destination);
     // ssh joins its arguments into one line for the remote shell: quote each word once, here
     std::string remote = x2::platform::QuoteShellArgument(h->x2ctl);
-    for (const std::string& arg : args)
+    for (const std::string& arg : x2ctlArgs)
         remote += ' ' + x2::platform::QuoteShellArgument(arg);
     options.args.push_back(std::move(remote));
     return options;
@@ -195,6 +200,8 @@ std::optional<Profile> ParseProfile(std::string_view json, const std::string& ba
     Profile profile;
     const std::string x2ctl = doc->GetString("x2ctl", "x2ctl");
     profile.x2ctl = Utf8Path(x2ctl).has_parent_path() ? Resolve(baseDir, x2ctl) : x2ctl;
+    if (const std::string dir = doc->GetString("controlDir"); !dir.empty())
+        profile.controlDir = Resolve(baseDir, dir);
 
     if (const Json* hosts = doc->Find("hosts")) {
         if (hosts->GetType() != Json::Array) {
@@ -210,6 +217,7 @@ std::optional<Profile> ParseProfile(std::string_view json, const std::string& ba
             h.name = node.GetString("name");
             h.destination = node.GetString("destination");
             h.x2ctl = node.GetString("x2ctl", "x2ctl");
+            h.controlDir = node.GetString("controlDir");   // the other machine's path: not resolved here
             if (!StringList(node.Find("ssh"), h.ssh)) {
                 error = "host " + h.name + ": \"ssh\" is a list of strings";
                 return std::nullopt;

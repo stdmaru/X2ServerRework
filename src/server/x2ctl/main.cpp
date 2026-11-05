@@ -1,4 +1,5 @@
-// x2ctl: talks to the control socket of a running server (decision T30, protocol in docs/porting/kncsdk.md).
+// x2ctl: talks to the control socket of a running server (decision T30, protocol in docs/porting/console.md).
+//   x2ctl [--dir=<folder>] <command>   sockets in <folder> instead of the default (X2_CONTROL_DIR, XDG_RUNTIME_DIR/x2)
 //   x2ctl list                    servers listening (their control socket names)
 //   x2ctl attach <name>           stdin -> server, server -> stdout, in protocol lines (ssh host x2ctl attach GameServer)
 //   x2ctl run <name> <lua...>     runs one Lua command, prints what it printed; exit code 1 on a Lua error
@@ -19,10 +20,10 @@ namespace {
 
 int Usage()
 {
-    std::fputs("usage: x2ctl list\n"
-               "       x2ctl attach <name>\n"
-               "       x2ctl run <name> <lua...>\n"
-               "       x2ctl stop <name>\n"
+    std::fputs("usage: x2ctl [--dir=<folder>] list\n"
+               "       x2ctl [--dir=<folder>] attach <name>\n"
+               "       x2ctl [--dir=<folder>] run <name> <lua...>\n"
+               "       x2ctl [--dir=<folder>] stop <name>\n"
                "Control sockets live in ", stderr);
     std::fputs(ControlSocketDir().c_str(), stderr);
     std::fputs("\n", stderr);
@@ -96,7 +97,18 @@ int Request(const std::string& name, const std::string& command, bool waitForClo
 int main(int argc, char* argv[])
 {
     InitConsole();
-    const std::vector<std::string> args = Utf8Arguments(argc, argv);
+    std::vector<std::string> args = Utf8Arguments(argc, argv);
+    while (args.size() > 1 && args[1].rfind("--dir", 0) == 0) {
+        if (args[1].rfind("--dir=", 0) == 0) {
+            SetControlSocketDir(args[1].substr(6));
+            args.erase(args.begin() + 1);
+        } else if (args[1] == "--dir" && args.size() > 2) {
+            SetControlSocketDir(args[2]);
+            args.erase(args.begin() + 1, args.begin() + 3);
+        } else {
+            return Usage();
+        }
+    }
     if (args.size() < 2)
         return Usage();
     const std::string& verb = args[1];
