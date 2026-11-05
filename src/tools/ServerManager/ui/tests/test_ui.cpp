@@ -3,6 +3,8 @@
 
 #include "manager_ui.h"
 
+#include "x2/platform/process.h"
+
 #include "x2/app/imgui_layer.h"
 
 #include <imgui.h>
@@ -14,6 +16,7 @@
 #include <filesystem>
 #include <fstream>
 #include <iterator>
+#include <optional>
 #include <thread>
 
 using namespace x2::servermanager;
@@ -183,6 +186,49 @@ TEST_CASE("ui: a dist folder is saved to the default profile file")
     CHECK(loaded->servers.size() == 6);
     fs::remove_all(dir, ec);
 }
+
+#if defined(X2_ASKPASS_HELPER)
+TEST_CASE("ui: ssh's questions in a dialog")
+{
+    NullImGui gui;
+    ManagerUi ui;
+    std::string error;
+    REQUIRE_MESSAGE(ui.EnableAskpass(X2_ASKPASS_HELPER, error), error);
+    const auto ask = [](const std::string& prompt) {
+        x2::platform::ProcessOptions options;
+        options.program = X2_ASKPASS_HELPER;
+        options.args = {prompt};
+        std::string startError;
+        auto p = x2::platform::Process::Start(options, startError);
+        REQUIRE_MESSAGE(p, startError);
+        return p;
+    };
+    // each kind is drawn, then answered as its buttons would
+    const std::pair<std::string, std::optional<std::string>> cases[] = {
+        {"x2@vps's password: ", std::string("pw")},
+        {"Are you sure you want to continue connecting (yes/no/[fingerprint])? ", std::string("yes")},
+        {"Enter passphrase for key '/home/x2/.ssh/id_ed25519': ", std::nullopt},
+    };
+    for (const auto& [prompt, answer] : cases) {
+        auto helper = ask(prompt);
+        const auto deadline = std::chrono::steady_clock::now() + 15s;
+        while (ui.Askpass().Pending().empty() && std::chrono::steady_clock::now() < deadline)
+            std::this_thread::sleep_for(10ms);
+        REQUIRE(ui.Askpass().Pending().size() == 1);
+        gui.Frame(ui);      // opens the dialog
+        gui.Frame(ui);
+        ui.Askpass().Answer(ui.Askpass().Pending().front().id, answer);
+        gui.Frame(ui);      // closes it
+        std::string line;
+        if (answer) {
+            REQUIRE(helper->ReadLine(line));
+            CHECK(line == *answer);
+        }
+        CHECK(helper->Wait() == (answer ? 0 : 1));
+    }
+    ui.Askpass().Stop();
+}
+#endif
 
 TEST_CASE("ui: a failed server and a remote host that cannot be reached")
 {

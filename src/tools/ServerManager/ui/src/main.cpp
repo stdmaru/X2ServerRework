@@ -2,8 +2,11 @@
 //   ServerManager [profile.json | dist folder]
 // Without an argument: profile.json next to the program, else dist/ in the current folder; or one loaded or made in
 // the window (saved to profile.json next to the program).
+//   ServerManager <prompt>   (run by ssh as its SSH_ASKPASS: docs/tools/servermanager.md#ssh-prompts)
 
 #include "manager_ui.h"
+
+#include "x2/servermanager/askpass.h"
 
 #include "x2/app/imgui_layer.h"
 
@@ -91,6 +94,9 @@ void Pick(SDL_Window* window, x2::servermanager::ProfileEditor::PickKind kind, c
 
 int main(int argc, char* argv[])
 {
+    // started by ssh as its SSH_ASKPASS: ask the window that started that ssh, print the answer, and exit
+    if (x2::servermanager::IsAskpassInvocation())
+        return x2::servermanager::RunAskpass(argc, argv);
     std::set_terminate(OnTerminate);
     std::string error;
     auto sdl = x2::app::Sdl::Init(error);
@@ -123,6 +129,16 @@ int main(int argc, char* argv[])
     ui.SetPicker([handle = window->Handle()](auto kind, const std::string& start, auto done) {
         Pick(handle, kind, start, std::move(done));
     });
+    // ssh's questions in a dialog: ssh runs this program again as its askpass (the start of main)
+    if (const char* base = SDL_GetBasePath()) {
+#if defined(_WIN32)
+        const std::string self = std::string(base) + "ServerManager.exe";
+#else
+        const std::string self = std::string(base) + "ServerManager";
+#endif
+        if (!ui.EnableAskpass(self, error))
+            SDL_Log("ssh prompts disabled: %s", error.c_str());
+    }
     const std::string profile = x2::servermanager::ManagerUi::FindProfile(args, defaultFile);
     if (!profile.empty() && !ui.Load(profile, error))
         Fatal(error);

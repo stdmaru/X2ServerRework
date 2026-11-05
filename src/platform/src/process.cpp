@@ -13,6 +13,7 @@
 #include <unistd.h>
 #endif
 
+#include <cstdlib>
 #include <filesystem>
 #include <mutex>
 #include <thread>
@@ -22,6 +23,19 @@ extern char** environ;
 #endif
 
 namespace x2::platform {
+
+void SetEnvironment(const std::string& name, const std::string& value)
+{
+#if defined(_WIN32)
+    // the C runtime's copy and the process's (which CreateProcess passes on)
+    ::_wputenv_s(Utf8ToWide(name).c_str(), Utf8ToWide(value).c_str());
+#else
+    if (value.empty())
+        ::unsetenv(name.c_str());
+    else
+        ::setenv(name.c_str(), value.c_str(), 1);
+#endif
+}
 
 std::string QuoteWindowsArgument(std::string_view arg)
 {

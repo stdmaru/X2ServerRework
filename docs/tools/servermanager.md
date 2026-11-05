@@ -144,7 +144,9 @@ is not terminated or killed.
 - `ssh`: the program and options before the destination. Without it, `DefaultSshCommand()`:
   `ssh -T -o BatchMode=yes -o ConnectTimeout=10`, plus on Linux `-o ControlMaster=auto -o ControlPath=<control dir>/ssh-%C
   -o ControlPersist=60`, so the attaches and queries to one host share a connection (Windows' OpenSSH has no ControlMaster).
-  `BatchMode` makes a missing key fail instead of asking for a password, since there is no terminal: use keys or an agent.
+  `BatchMode=yes` is there only without the window's [ssh prompts](#ssh-prompts) (the probe, the tests):
+  then a missing key fails instead of asking, since there is no terminal. In the window ssh asks there instead. A host's own
+  `ssh` command keeps whatever options it lists.
 - The remote command is one line for the remote shell, each word quoted once: `"shell": "sh"` (default) is a POSIX shell
   (`QuoteShellArgument`), `"shell": "cmd"` is `cmd.exe`, the default shell of Windows' OpenSSH (`x2ctl` in the C runtime's double
   quotes, each argument with `QuoteCmdArgument`: those quotes plus `^` before `"`, `%`, `!`, `^`, `&`, `|`, `<`, `>`, `(`, `)`).
@@ -173,6 +175,36 @@ OpenSSH server:
 Tested on 2026-11-05 from the Linux container to the Windows test VM: an `x2_terminal_demo` started in the RDP session (a
 scheduled task with `/it`, socket name `E2E Demo`) was listed by `x2ctl list` and attached with `x2ctl attach ^"E2E Demo^"`
 over ssh; a Lua `print` with `%PATH%` and `^&` came back unchanged.
+
+### ssh prompts (2026-11-05, `tools/servermanager-askpass`)
+
+When a host's key is refused, or its host key is unknown, ssh asks; ServerManager shows the question in a dialog instead of
+failing. At launch the window starts an `AskpassBroker`: a control socket in `<control dir>/askpass/` (a folder of its own, so
+`x2ctl list` does not list it), and in its own environment, inherited by every ssh it starts,
+`SSH_ASKPASS=<program folder>/ServerManager`, `SSH_ASKPASS_REQUIRE=force`, `X2_ASKPASS` (the socket) and `X2_ASKPASS_TOKEN`
+(random, checked on every question). ssh then runs `ServerManager "<prompt>"`: one program, no separate helper. With
+`SSH_ASKPASS` and `X2_ASKPASS` both set, `main` only calls `RunAskpass` (before SDL or a window): it sends the prompt to the
+window and prints the answer, or exits 1 when declined, and ssh then gives up. Started any other way (a launcher, a terminal)
+those variables are not set and the window opens. On Windows ServerManager is a GUI-subsystem program: no console window
+shows, and its stdout is the pipe ssh gave it; SDL's `main` passes the prompt as UTF-8.
+
+- **Password, passphrase, PIN** (any other prompt): a hidden field, OK or Cancel (Esc). "Remember until ServerManager closes"
+  answers the same prompt (for example `x2@vps's password:`) without asking again; it is kept only in memory.
+- **Unknown host key** (`(yes/no/[fingerprint])`, and ssh's `Please type 'yes', 'no' or the fingerprint:`), and
+  `SSH_ASKPASS_PROMPT=confirm`: Yes or No. Yes answers `yes`, and ssh adds the key to `known_hosts`.
+- **`SSH_ASKPASS_PROMPT=none`** (a message, such as touching a security key): OK.
+- A cancelled prompt is cancelled again at once, since discovery asks every 10 s; **Refresh** lets ssh ask again. The same
+  question from two ssh at once (a discovery and an attach) gets one dialog and one answer.
+- On Linux the shared connection (ControlMaster) means one question per host for a while; Windows' OpenSSH has none, so a
+  password is asked on every connection unless it is remembered: prefer a key (`identityFile`).
+- Windows' `OpenSSH_for_Windows_9.5p2` honours `SSH_ASKPASS_REQUIRE=force` (checked on the test VM on 2026-11-05): first the host
+  key prompt, then the password. Any answer other than yes, no or a fingerprint makes it ask again forever, so a host key prompt
+  is never answered with a secret.
+- A question whose ssh is killed (a stop, a timeout) stays in the dialog until answered; the answer goes nowhere.
+- On the Windows test VM (2026-11-05) the real-ssh test showed Windows' ssh asking the host key through the helper (a
+  GUI-subsystem program, the whole multi-line prompt) and writing `known_hosts` after Yes; the password stage was not reached,
+  as that VM's sshd answers connections from the VM itself only now and then (the TCP connection opens, then often no banner
+  and nothing in its event log; connections from outside always work), so the test has a 20 s limit.
 
 ### Start and stop commands (2026-11-05, `tools/servermanager-remote-start`)
 
@@ -270,7 +302,7 @@ The profile edited in the window (`ProfileEditor`), on a copy, before connecting
 `x2_servermanager_tests` (`ctest -R servermanager`): recorded protocol lines, log store/filter/view, session with a fake transport,
 and a session following a real `KServerConsole` in service mode over its control socket (hello, `ready`, a `START_LOG` with a field,
 Lua results, a second client attaching late that gets the earlier lines in order and once each while a live one arrives, stop
-until disconnection; the stop request is process-wide, so a second console cannot run in the same test process). Profile parsing, validation and order; a profile saved and read back the same (every field, relative paths); a host's ssh key. Orchestrator with real children: three
+until disconnection; the stop request is process-wide, so a second console cannot run in the same test process). `AskpassBroker` with `x2_askpass_helper` (`RunAskpass` alone, a GUI-subsystem program on Windows like ServerManager; prompt kinds, an answer with quotes, a remembered secret, a declined host key declined again until `ForgetDeclined`, one answer for two helpers, a wrong token, `BatchMode` back after `Stop`) and with the real ssh against a local sshd when there is one (skipped otherwise: answers the host key and a wrong password). Profile parsing, validation and order; a profile saved and read back the same (every field, relative paths); a host's ssh key. Orchestrator with real children: three
 `x2_terminal_demo` instances started in dependency order and stopped in reverse, a crash (`--exit-after`) that fails the server and
 cancels its dependent, a missing program, a child that ignores stop (`x2_process_helper sleep`: terminated, then killed), and a
 service already running that is attached through `x2ctl`, detached, attached again and stopped. Remote servers through
@@ -279,7 +311,7 @@ that was not attached; an unreachable host and a server that is not running. The
 
 `x2_servermanager_ui_tests` (`ctest -R servermanager_ui`) draws the window with ImGui's null backends, so ImGui's checks run over
 its code: no profile and a profile that does not load; a failed local server and an unreachable host; a real `x2_terminal_demo`
-started from it, a Lua command printing 300 lines (rows and clipper), and quitting (asks, then stops it, exit code 0); the Profile tab with a profile made from nothing (a local and a remote server, a
+started from it, a Lua command printing 300 lines (rows and clipper), and quitting (asks, then stops it, exit code 0); ssh's questions in a dialog through `x2_askpass_helper` (a secret, a host key, a declined passphrase); the Profile tab with a profile made from nothing (a local and a remote server, a
 cmd host with a key), applied and saved next to the program, an invalid draft that is not saved, and a `dist/` folder saved to the
 default file. The window
 itself (input, fonts, GPU) is tested by hand on a desktop. Socket directory:

@@ -2,6 +2,7 @@
 # logs. No GUI, so it is tested without a display.
 
 add_library(x2_servermanager_core STATIC
+    src/askpass.cpp
     src/log_store.cpp
     src/orchestrator.cpp
     src/profile.cpp
