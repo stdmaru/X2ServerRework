@@ -46,11 +46,11 @@ const char* LevelTag(LogLevel level)
 {
     switch (level) {
     case LogLevel::Error: return "ERROR";
-    case LogLevel::Warn: return "WARN ";
-    case LogLevel::Note: return "NOTE ";
+    case LogLevel::Warn: return "WARN";
+    case LogLevel::Note: return "NOTE";
     case LogLevel::Info: break;
     }
-    return "INFO ";
+    return "INFO";
 }
 
 // Everything an entry shows, possibly several lines: message, BUILD_LOG fields, extra text lines.
@@ -438,7 +438,10 @@ void ManagerUi::DrawLog(int i, ServerView& view)
         view.follow = false;
     ImGuiListClipper clipper;
     clipper.Begin(static_cast<int>(view.rows.size()));
-    const float timeWidth = ImGui::CalcTextSize("00:00:00 ERROR ").x;
+    // fixed columns: time, level, then the text (SameLine's spacing is not in CalcTextSize, so place each one)
+    const float gap = ImGui::GetStyle().ItemSpacing.x * 2.0f;
+    const float levelX = ImGui::GetCursorPosX() + ImGui::CalcTextSize("00:00:00").x + gap;
+    const float textX = levelX + ImGui::CalcTextSize("ERROR").x + gap;
     while (clipper.Step()) {
         for (int r = clipper.DisplayStart; r < clipper.DisplayEnd; ++r) {
             const auto [seq, line] = view.rows[static_cast<std::size_t>(r)];
@@ -453,12 +456,12 @@ void ManagerUi::DrawLog(int i, ServerView& view)
             if (line == 0) {
                 const std::string& time = entry->log.time;
                 ImGui::TextDisabled("%s", time.size() >= 19 ? time.substr(11, 8).c_str() : time.c_str());
-                ImGui::SameLine();
+                ImGui::SameLine(levelX);
                 ImGui::TextColored(LevelColor(entry->log.level), "%s", LevelTag(entry->log.level));
-                ImGui::SameLine(timeWidth);
+                ImGui::SameLine(textX);
             } else {
                 ImGui::Dummy(ImVec2(0, 0));
-                ImGui::SameLine(timeWidth);
+                ImGui::SameLine(textX);
             }
             const bool dim = entry->kind == EntryKind::Event;
             const bool command = entry->kind == EntryKind::Command;
