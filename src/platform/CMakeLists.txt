@@ -6,6 +6,7 @@ add_library(x2_platform STATIC
     src/crt_posix.cpp
     src/d3dx_math.cpp
     src/debug.cpp
+    src/file.cpp
     src/ini.cpp
     src/json.cpp
     src/net_io.cpp
