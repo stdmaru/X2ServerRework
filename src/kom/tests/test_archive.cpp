@@ -143,6 +143,66 @@ TEST_CASE("kom: the other packer's header layout is read, kept when unchanged an
     CHECK(out == data1);
 }
 
+TEST_CASE("kom: a kept header is written when it still describes re-encoded entries")
+{
+    // What a tool that extracts and re-encodes does (docs/tools/client-data.md): rebuild an archive of the other
+    // packer's layout from decoded data at KOG's zlib level, then hand the original header back.
+    const Bytes data1 = Pattern(5000, 11), data2 = Pattern(300, 12);
+    const Bytes blob1 = Encoded("A.dds", kZlib, data1, kKogLevel), blob2 = Encoded("B.lua", kXorCrc, data2, kKogLevel);
+    char xml[512];
+    std::snprintf(xml, sizeof xml,
+                  "<?xml version=\"1.0\" ?><Files>"
+                  "<File Algorithm=\"0\" Checksum=\"%08x\" CompressedSize=\"%zu\" FileTime=\"00000000\" "
+                  "Name=\"A.dds\" Size=\"5000\"/>"
+                  "<File Algorithm=\"2\" Checksum=\"%08x\" CompressedSize=\"%zu\" FileTime=\"00000000\" "
+                  "Name=\"B.lua\" Size=\"300\"/></Files>",
+                  Adler32(blob1), blob1.size(), Adler32(blob2), blob2.size());
+    const Bytes raw = RawArchive(xml, {blob1, blob2});
+    const Bytes header(raw.begin(), raw.begin() + static_cast<std::ptrdiff_t>(kFixedHeaderSize + std::strlen(xml)));
+
+    TempDir dir;
+    std::string error;
+    ArchiveBuilder b;
+    b.SetLevel(kKogLevel);
+    REQUIRE(b.Add("A.dds", kZlib, data1, error, 0));
+    REQUIRE(b.Add("B.lua", kXorCrc, data2, error, 0));
+    CHECK(b.Describes(header));
+    b.SetHeader(header);
+    REQUIRE(b.Write(dir / "same.kom", error));
+    CHECK(ReadFile(dir / "same.kom") == raw);
+
+    // Any difference in the entries and the header is generated instead.
+    ArchiveBuilder level9;  // kom.py's level: other blobs, other checksums
+    REQUIRE(level9.Add("A.dds", kZlib, data1, error, 0));
+    REQUIRE(level9.Add("B.lua", kXorCrc, data2, error, 0));
+    CHECK_FALSE(level9.Describes(header));
+    ArchiveBuilder times = b;
+    REQUIRE(times.Add("B.lua", kXorCrc, data2, error));  // FileTime = checksum
+    CHECK_FALSE(times.Describes(header));
+    ArchiveBuilder fewer;
+    fewer.SetLevel(kKogLevel);
+    REQUIRE(fewer.Add("A.dds", kZlib, data1, error, 0));
+    CHECK_FALSE(fewer.Describes(header));
+    fewer.SetHeader(header);
+    REQUIRE(fewer.Write(dir / "fewer.kom", error));
+    const auto f = OpenOrFail(dir / "fewer.kom");
+    REQUIRE(f->Entries().size() == 1);
+    const std::string fxml(f->RawHeader().begin() + kFixedHeaderSize, f->RawHeader().end());
+    CHECK(fxml.starts_with("<?xml version=\"1.0\"?>"));
+
+    Bytes corrupt = header;
+    corrupt[60] ^= 1;  // file time
+    CHECK_FALSE(b.Describes(corrupt));
+    corrupt = header;
+    corrupt.back() ^= 1;  // XML no longer matches its adler32
+    CHECK_FALSE(b.Describes(corrupt));
+    CHECK_FALSE(b.Describes(Bytes(header.begin(), header.end() - 1)));
+
+    // The level is checked.
+    Bytes blob;
+    CHECK_FALSE(Encode("A.dds", kZlib, data1, blob, error, 10));
+}
+
 TEST_CASE("kom: rewrite with changes, in place")
 {
     TempDir dir;

@@ -41,7 +41,7 @@ bool ValidName(std::string_view name, std::string& error)
     return true;
 }
 
-bool Deflate(std::span<const std::uint8_t> data, std::vector<std::uint8_t>& out, std::string& error)
+bool Deflate(std::span<const std::uint8_t> data, int level, std::vector<std::uint8_t>& out, std::string& error)
 {
     if (data.size() > std::numeric_limits<uLong>::max() / 2)
     {
@@ -50,7 +50,7 @@ bool Deflate(std::span<const std::uint8_t> data, std::vector<std::uint8_t>& out,
     }
     uLongf size = compressBound(static_cast<uLong>(data.size()));
     out.resize(size);
-    if (compress2(out.data(), &size, data.data(), static_cast<uLong>(data.size()), 9) != Z_OK)
+    if (compress2(out.data(), &size, data.data(), static_cast<uLong>(data.size()), level) != Z_OK)
     {
         error = "zlib compression failed";
         return false;
@@ -65,7 +65,7 @@ constexpr std::uint64_t kMaxArchiveSize = 0x7FFFFFFF;
 } // namespace
 
 bool Encode(std::string_view name, std::uint32_t algorithm, std::span<const std::uint8_t> data,
-            std::vector<std::uint8_t>& blob, std::string& error)
+            std::vector<std::uint8_t>& blob, std::string& error, int level)
 {
     if (!IsDecodable(algorithm))
     {
@@ -73,7 +73,12 @@ bool Encode(std::string_view name, std::uint32_t algorithm, std::span<const std:
         return false;
     }
     std::vector<std::uint8_t> z;
-    if (!Deflate(data, z, error))
+    if (level < 0 || level > 9)
+    {
+        error = "zlib level " + std::to_string(level) + " out of range";
+        return false;
+    }
+    if (!Deflate(data, level, z, error))
         return false;
     if (algorithm == kXorCrc3)
     {
@@ -127,7 +132,7 @@ bool ArchiveBuilder::Add(std::string name, std::uint32_t algorithm, std::span<co
         return false;
     }
     std::vector<std::uint8_t> blob;
-    if (!ValidName(name, error) || !Encode(name, algorithm, data, blob, error))
+    if (!ValidName(name, error) || !Encode(name, algorithm, data, blob, error, level_))
         return false;
     return AddStored(std::move(name), algorithm, static_cast<std::uint32_t>(data.size()), std::move(blob), error,
                      fileTime);
@@ -168,6 +173,39 @@ bool ArchiveBuilder::Remove(std::string_view name)
     return true;
 }
 
+bool ArchiveBuilder::Describes(std::span<const std::uint8_t> header) const
+{
+    if (header.size() < kFixedHeaderSize || std::memcmp(header.data(), kMagic, sizeof kMagic - 1) != 0)
+        return false;
+    for (std::size_t k = sizeof kMagic - 1; k < kMagicSize; ++k)
+        if (header[k] != 0)
+            return false;
+    const std::uint32_t xmlSize = GetU32(header.data() + 68);
+    if (GetU32(header.data() + 52) != items_.size() || GetU32(header.data() + 56) != 1 ||
+        header.size() != kFixedHeaderSize + xmlSize)
+        return false;
+    const auto xml = header.subspan(kFixedHeaderSize);
+    if (GetU32(header.data() + 64) != Adler32(xml))
+        return false;
+
+    std::vector<Entry> entries;
+    std::string error;
+    if (!ParseXmlHeader(std::string_view(reinterpret_cast<const char*>(xml.data()), xml.size()), entries, error) ||
+        entries.size() != items_.size())
+        return false;
+    std::uint32_t fileTime = 0;
+    for (std::size_t i = 0; i < entries.size(); ++i)
+    {
+        const Entry& a = entries[i];
+        const Entry& b = items_[i].entry;
+        if (a.name != b.name || a.size != b.size || a.storedSize != b.storedSize || a.checksum != b.checksum ||
+            a.fileTime != b.fileTime || a.algorithm != b.algorithm)
+            return false;
+        fileTime += a.fileTime;
+    }
+    return GetU32(header.data() + 60) == fileTime;
+}
+
 bool ArchiveBuilder::Write(const std::filesystem::path& destination, std::string& error) const
 {
     const std::string where = PathString(destination) + ": ";
@@ -190,6 +228,10 @@ bool ArchiveBuilder::Write(const std::filesystem::path& destination, std::string
     {
         const auto raw = unchanged->RawHeader();
         header.assign(raw.begin(), raw.end());
+    }
+    else if (!header_.empty() && Describes(header_))
+    {
+        header = header_;
     }
     else
     {

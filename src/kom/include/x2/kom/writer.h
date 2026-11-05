@@ -16,16 +16,22 @@
 
 namespace x2::kom {
 
-// Encodes data as an entry blob with algorithm 0, 2 or 3 (zlib level 9, as kom.py and KOG's packer).
+// zlib levels: kom.py compresses with 9; KOG's packer used 6, zlib's default (with zlib 1.3.1, 88.5% of the
+// client's entries re-encode byte for byte at level 6; docs/porting/kom.md#writing).
+inline constexpr int kKomPyLevel = 9;
+inline constexpr int kKogLevel = 6;
+
+// Encodes data as an entry blob with algorithm 0, 2 or 3.
 bool Encode(std::string_view name, std::uint32_t algorithm, std::span<const std::uint8_t> data,
-            std::vector<std::uint8_t>& blob, std::string& error);
+            std::vector<std::uint8_t>& blob, std::string& error, int level = kKomPyLevel);
 
 // Builds an archive from entries copied verbatim from open archives and new data.
 //
 // Entries keep the order they were added in; adding a name that is already present (case-insensitively) replaces
 // that entry in place. An archive rewritten with no changes (every entry of one archive, in its order, copied
-// verbatim) is written byte for byte as it was, header included; otherwise the XML header is generated in the
-// layout of KOG's packer (GenerateXmlHeader), deterministically.
+// verbatim) is written byte for byte as it was, header included; so is a header given to SetHeader that still
+// describes the entries exactly. Otherwise the XML header is generated in the layout of KOG's packer
+// (GenerateXmlHeader), deterministically.
 class ArchiveBuilder
 {
 public:
@@ -36,6 +42,17 @@ public:
 
     // Copies one entry's stored blob verbatim (any algorithm, including the opaque 1).
     void AddCopy(std::shared_ptr<Archive> source, const Entry& entry);
+
+    // zlib level used by Add (kKomPyLevel unless set).
+    void SetLevel(int level) { level_ = level; }
+
+    // A header (fixed + XML, as Archive::RawHeader) to write instead of a generated one when it describes this
+    // builder's entries exactly: same count and order, names, sizes, checksums, times and algorithms, and a valid
+    // fixed header. Lets a tool that keeps an archive's original header reproduce it from re-encoded entries.
+    void SetHeader(std::vector<std::uint8_t> header) { header_ = std::move(header); }
+
+    // Whether `header` describes the entries added so far exactly (the test SetHeader applies).
+    bool Describes(std::span<const std::uint8_t> header) const;
 
     // Encodes `data`. fileTime defaults to the blob's checksum, as KOG's packer does.
     bool Add(std::string name, std::uint32_t algorithm, std::span<const std::uint8_t> data, std::string& error,
@@ -68,6 +85,8 @@ private:
 
     std::vector<Item> items_;
     std::unordered_map<std::string, std::size_t> index_;  // AsciiLower(name) -> items_
+    std::vector<std::uint8_t> header_;                    // SetHeader
+    int level_ = kKomPyLevel;
 };
 
 } // namespace x2::kom
