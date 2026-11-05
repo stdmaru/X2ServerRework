@@ -5,6 +5,7 @@
 //   exit <n>      exit with n
 //   sleep         print "sleeping" and wait to be killed
 #include "x2/platform/console.h"
+#include "x2/platform/process.h"
 
 #include <chrono>
 #include <cstdio>
@@ -24,6 +25,10 @@ int main(int argc, char* argv[])
     if (mode == "args") {
         for (std::size_t i = 2; i < args.size(); ++i)
             std::printf("[%s]\n", args[i].c_str());
+        return 0;
+    }
+    if (mode == "ppid") {
+        std::printf("%lld\n", x2::platform::ParentProcessId());
         return 0;
     }
     if (mode == "cwd") {

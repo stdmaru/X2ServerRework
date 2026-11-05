@@ -62,6 +62,10 @@ private:
     std::unique_ptr<Impl> m_impl;
 };
 
+long long CurrentProcessId();
+// The process that started this one (ssh, for ServerManager's askpass); 0 when unknown.
+long long ParentProcessId();
+
 // Sets (or, with an empty value, removes) a variable of this process's environment, which the children started from
 // then on inherit. Not thread-safe with other environment reads (getenv): call it before starting threads.
 void SetEnvironment(const std::string& name, const std::string& value);

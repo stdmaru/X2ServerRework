@@ -3,6 +3,7 @@
 #if defined(_WIN32)
 #include "x2/platform/types.h" // <windows.h>
 #include "x2/platform/unicode.h"
+#include <tlhelp32.h>
 #else
 #include <cerrno>
 #include <csignal>
@@ -23,6 +24,37 @@ extern char** environ;
 #endif
 
 namespace x2::platform {
+
+long long CurrentProcessId()
+{
+#if defined(_WIN32)
+    return ::GetCurrentProcessId();
+#else
+    return ::getpid();
+#endif
+}
+
+long long ParentProcessId()
+{
+#if defined(_WIN32)
+    const DWORD self = ::GetCurrentProcessId();
+    const HANDLE snapshot = ::CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    if (snapshot == INVALID_HANDLE_VALUE)
+        return 0;
+    long long parent = 0;
+    PROCESSENTRY32W entry{};
+    entry.dwSize = sizeof(entry);
+    for (BOOL more = ::Process32FirstW(snapshot, &entry); more; more = ::Process32NextW(snapshot, &entry))
+        if (entry.th32ProcessID == self) {
+            parent = entry.th32ParentProcessID;
+            break;
+        }
+    ::CloseHandle(snapshot);
+    return parent;
+#else
+    return ::getppid();
+#endif
+}
 
 void SetEnvironment(const std::string& name, const std::string& value)
 {
