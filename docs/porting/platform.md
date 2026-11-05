@@ -46,7 +46,7 @@ Ported code includes `x2/platform/win32.h` instead of `<windows.h>`, `<atltime.h
 | `process.h` | `Process` (child with stdin/stdout/stderr pipes, working directory, `Terminate`/`Kill`/`WaitFor`, exit code; POSIX: own process group, SIGPIPE ignored in the parent), `QuoteWindowsArgument`, `QuoteCmdArgument`, `QuoteShellArgument`, `SetEnvironment` (inherited by later children), `CurrentProcessId`/`ParentProcessId` (ServerManager, T32) | `posix_spawnp` with `addchdir_np`, `pipe2(O_CLOEXEC)`, `waitpid`; 128 + signal when killed by a signal; `setenv`/`unsetenv`; `getpid`/`getppid` | `CreateProcessW` with only the pipe handles inherited (`PROC_THREAD_ATTRIBUTE_HANDLE_LIST`), `CREATE_NO_WINDOW`; `Terminate` closes stdin; `_wputenv_s`; the parent from a Toolhelp32 snapshot |
 | `console.h` | `InitConsole` (at start of each server `main`), `IsColorTerminal` (used by logging), `Utf8Arguments` (`main` arguments as UTF-8; on Windows, from UTF-16 command line) | no-op; `isatty` | UTF-8 console input/output (`SetConsoleCP`/`SetConsoleOutputCP`, restored on exit) and ANSI escapes enabled (`ENABLE_VIRTUAL_TERMINAL_PROCESSING`); color only if console supports it |
 | `window_messages.h` (from `win32.h`) | `WM_*` (including IME), `VK_*`, `WA_*`/`SIZE_*`/`SC_*`/`MK_*`/`XBUTTON*`/`GCS_*` with their Windows values; `WPARAM`/`LPARAM`/`LRESULT`, `POINT`/`RECT`, `LOWORD`/`HIWORD`/`MAKELPARAM`/`GET_X_LPARAM`/`GET_WHEEL_DELTA_WPARAM`... (2026-11-05, for the client's `MsgProc`; see [Client: DXUT](client-dxut.md)) | definitions | `windows.h` |
-| `d3dx_math.h` | D3DX 9 math: `D3DXVECTOR2/3/4`, `D3DXMATRIX`, `D3DXCOLOR`, `D3DX_PI`, `D3DXToDegree`, `D3DXVec3*` (normalize, cross, dot, transform...), `D3DXMatrix*` (identity, multiply, inverse, rotations, translation, scale, `LookAtLH`) | custom implementation | same (without DXSDK) |
+| `d3dx_math.h` | D3DX 9 math for the servers and the client: `D3DXVECTOR2/3/4`, `D3DXMATRIX`, `D3DXCOLOR`, `D3DXQUATERNION`, `D3DXPLANE` (D3DX's full member sets), `D3DXKEY_VECTOR3/QUATERNION`, `D3DX_PI`, `D3DXToRadian/Degree`, `D3DX_ALIGN16`; `D3DXVec2/3/4*`, `D3DXMatrix*`, `D3DXQuaternion*`, `D3DXPlane*`, `D3DXComputeBoundingSphere` (list in [D3DX math](#d3dx-math)); and the `d3d9types.h` pieces it needs: `D3DCOLORVALUE`, `D3DVIEWPORT9`, `D3DCOLOR_ARGB/RGBA/XRGB/COLORVALUE`, `D3D_OK`/`D3DERR_INVALIDCALL` | custom implementation | same (without DXSDK) |
 
 ## Pitfalls handled by the layer
 
@@ -59,8 +59,8 @@ Ported code includes `x2/platform/win32.h` instead of `<windows.h>`, `<atltime.h
 - `GetTickCount` wraps every ~49.7 days, as on Windows (subtraction-based unsigned comparisons still work).
 - **`&D3DXVECTOR3(0, 0, 0)`**: the original passes addresses of temporaries to D3DX functions, an MSVC extension. D3DX types have an
   `operator&` for temporaries only (qualified with `&&`), returning the same result; `&` on variables remains native.
-- D3DX math: same conventions and formulas (row vector `v·M`, left-handed, zero vector normalizes to zero, `D3DXMatrixInverse` returns `NULL` for singular matrices),
-  checked against Wine's implementation. Only the server-used subset is present; the client will need more (quaternions, planes, `D3DXVec3Project`...).
+- D3DX math: same conventions and formulas (row vector `v·M`, left-handed, `D3DXMatrixInverse` returns `NULL` for singular matrices),
+  checked against Wine's implementation. See [D3DX math](#d3dx-math).
 - **Original text files**: production `config_*.ini` files are **CP949**, and `.lua` scripts are UTF-8 with BOM (5,829 of 5,832, as of 2026-10-29).
   `DecodeTextFile` detects UTF-16/UTF-8 and falls back to CP949. INI is read with `ReadIniString` on Windows too, because the native API uses
   the system code page (under Wine, or on non-Korean Windows, version strings would be corrupted; Wine tests showed this).
@@ -87,8 +87,43 @@ Ported code includes `x2/platform/win32.h` instead of `<windows.h>`, `<atltime.h
   From 2026-10-29 through 2026-10-30 it was checked with MinGW-w64 + Wine (T18). Microsoft's STL debug mode found undefined behavior in
   `x2::format` (`assign` with a reference to its own vector); fixed.
 
+## D3DX math
+
+A custom header, not a shim over GLM: same names, layouts (`static_assert`ed) and formulas as D3DX 9, taken from Wine's
+`d3dx9_36/math.c` and `d3dx9math.inl` (read on 2026-11-05). No x86 intrinsics. Only what the code calls is implemented; the
+types have all of D3DX's constructors and operators, so client code that compiled against D3DX compiles here.
+
+Survey of the client (`X2Lib`, `KTDXLIB`, `X2`; 2026-11-05), calls per name:
+
+| Group | Used by the client |
+|---|---|
+| Types | `D3DXVECTOR3` (6,798), `D3DXVECTOR2` (5,173), `D3DXCOLOR` (2,208), `D3DXMATRIX` (273), `D3DXVECTOR4` (48), `D3DXKEY_VECTOR3` (48), `D3DXKEY_QUATERNION` (30), `D3DXQUATERNION` (22), `D3DXPLANE` (6); `D3DCOLOR_ARGB` (40), `D3DCOLOR_RGBA` (16), `D3DCOLOR_COLORVALUE` (11) |
+| Vectors | `Vec3Normalize` (186), `Vec3Dot` (110), `Vec3Length` (76), `Vec3Transform` (40), `Vec3LengthSq` (34), `Vec3TransformCoord` (22), `Vec3Cross` (20), `Vec3Project` (15), `Vec3CatmullRom` (9), `Vec2Length` (7), `Vec3TransformNormal` (4), `Vec4Normalize` (3), `Vec2Normalize`, `Vec2Dot`, `Vec3Add/Subtract/Scale/Minimize/Maximize`, `Vec2Transform` |
+| Matrices | `MatrixIdentity` (54), `Multiply` (24), `Translation` (19), `RotationYawPitchRoll` (19), `RotationAxis` (18), `Scaling` (14), `LookAtLH` (14), `Inverse` (12), `RotationY` (4), `PerspectiveFovLH` (3), `OrthoLH`, `Transformation2D` |
+| Quaternions, planes | `PlaneDotCoord` (32), `PlaneIntersectLine` (8), `PlaneNormalize` (6), `PlaneFromPointNormal` (4), `QuaternionNormalize` (4), `QuaternionSlerp`, `QuaternionMultiply`, `QuaternionConjugate` (2 each) |
+| Mesh math | `D3DXComputeBoundingSphere` (3) |
+
+Added for the client on 2026-11-05 (`client/d3dx-math`): `D3DXQUATERNION`, `D3DXPLANE`, the animation keys, the
+`D3DXCOLOR` members the servers did not need (`D3DCOLORVALUE` conversions, `/`, unary `-`), and the functions of the last four
+rows that were missing; plus helpers they are built on (`D3DXMatrixRotationQuaternion`, `D3DXMatrixTransformation`,
+`D3DXQuaternionLength/Dot/Identity`, `D3DXVec4Length/Dot`, `D3DXPlaneDot/DotNormal`). The rest of the client's `D3DX*` names
+are not math and belong to [Phase 4](../project/roadmap.md#phase-4--client-graphics): `D3DXFrame*`, `D3DXCreate*`,
+`D3DXLoadMesh*`, `D3DXIntersect`, `D3DXWeldVertices`, `D3DXComputeNormals`, `D3DXGetFVFVertexSize`, `D3DXSaveSurfaceToFile`,
+effects, animation controllers and their constants.
+
+Behavior worth knowing (all as in D3DX):
+
+- `D3DXVec2/3Normalize` and `D3DXPlaneNormalize` return zero for a zero input; `D3DXVec4Normalize` and
+  `D3DXQuaternionNormalize` divide unchecked (NaN).
+- `D3DXQuaternionMultiply(out, q1, q2)` is the rotation `q1` followed by `q2` (Hamilton product `q2·q1`), so it matches
+  `M(q1) * M(q2)`. `D3DXQuaternionSlerp` takes the shortest path and interpolates linearly within 0.001.
+- `D3DXPlaneIntersectLine` intersects the infinite line, not the segment, and returns `NULL` only when parallel.
+- `D3DXMatrixTransformation2D` treats a zero angle as "no rotation" and uses z scaling 1.
+- `D3DXCOLOR(DWORD)` multiplies by `1/255` (until 2026-11-05 it divided by 255, which can differ in the last bit);
+  `D3DCOLOR_COLORVALUE` truncates (`0.5` → `0x7F`) while `D3DXCOLOR`'s `DWORD` conversion rounds.
+
 ## Tests
 
 `src/platform/tests` (doctest): Unicode, terminal (key decoder, line editor), JSON (flat and full), processes (with `x2_process_helper` as the child), control socket, MSVC formats, `CString`,
 `CTime`/`CTimeSpan`, events, threads, CRT, and D3DX math
-(expected values derived manually from D3DX conventions).
+(expected values derived manually from D3DX conventions; every function added for the client has a case, 2026-11-05).

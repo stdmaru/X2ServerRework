@@ -182,7 +182,10 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
       virtual joysticks (2026-11-05). See [Client: input](../porting/client-input.md).
 - [ ] IME candidate list (composition already reaches `MsgProc`). The `MsgProc(HWND, UINT, WPARAM, LPARAM)` model stays
       (`X2Lib` uses `HWND` in ~272 files — mostly through the `MsgProc` signature).
-- [ ] D3DX math (`D3DXVECTOR3` ~8,000 uses) → header-compatible shim over GLM or custom implementation.
+- [x] `client/d3dx-math`: the custom D3DX math of `x2::platform` (`d3dx_math.h`, D3DX layouts and formulas checked against
+      Wine) extended to the client's subset: `D3DXQUATERNION`, `D3DXPLANE`, animation keys, plane/quaternion functions,
+      `Vec3Project`, `Vec3CatmullRom`, `PerspectiveFovLH`, `OrthoLH`, `Transformation2D`, `ComputeBoundingSphere`, with tests
+      (2026-11-05). See [Platform: D3DX math](../porting/platform.md#d3dx-math).
 - [ ] Audio: FMOD Ex / DirectSound → miniaudio/SDL3 audio (or current cross-platform FMOD Core).
 - [ ] Video (Bandi), embedded browser, CxImage → remove/replace (Steam and anti-cheat removed on 2026-11-05).
 - [ ] `.kom` (zlib + header "KOG GC TEAM MASSFILE V.0.3") — portable loader.
