@@ -112,7 +112,23 @@ See [Server — Windows dependencies](../original/server.md).
 - [x] Logging (T16): structured metadata in `START_LOG`; file retains full original content, console is compact and colored with its own level (2026-10-31, `kncsdk/log-structured`, see [KNCSDK › Logging](../porting/kncsdk.md#logging-t16)).
 - [x] Localize Korean server console log messages to English; leave code comments and non-log strings unchanged (2026-11-02).
 - [x] Machine-readable output mode and local socket with `x2ctl attach` (T30), after terminal and logging (2026-10-31, `server/control`, see [Server console](../porting/console.md)).
-- [ ] ServerManager (T29, T30): SDL3 + ImGui tool to orchestrate and monitor servers locally and over SSH. Follows the client's SDL3 foundation (Phase 3).
+- [ ] ServerManager (T29, T30, T32): SDL3 + ImGui tool to orchestrate and monitor servers locally and over SSH. Started on
+      2026-11-04, before the client, so it builds the SDL3 foundation the client reuses (T32). Startup order: EPublisherServer →
+      LoginServer, CenterServer, GlobalServer → GameServer → ChannelServer, each after the previous reports `ready` (the original
+      `KX2ServerLauncher` waited for the `CenterServer_Ready` window before starting GameServer); stop in reverse. One branch per step:
+  - [x] `tools/sdl3-imgui-base`: SDL3 and ImGui dependencies, `x2::app` (window, events, SDL_GPU) and `x2::app_imgui`, demo, headless
+        tests; Clang, GCC, and clang-cl without warnings (2026-11-04). See [App foundation](../porting/app.md).
+  - [ ] `tools/servermanager-protocol`: full JSON parser (`x2::platform`), protocol v1 client (`hello`/`log`/`output`/`status`/`result`,
+        `id` correlation), server state, log store with filter and search; tests with recorded lines and the real control socket.
+  - [ ] `tools/servermanager-local`: `x2::platform::Process` (child with pipes, Linux and Windows), `--machine` transport, attach to a
+        local control socket, orchestrator (profile with dependencies, ordered start waiting for `ready`, reverse stop, crash detection).
+  - [ ] `server/control-history`: the protocol has no log history, so a manager attaching to a server that has been running for a while
+        does not see what just happened. The control server keeps a bounded backlog and replays it to clients that ask for it
+        (additive to protocol v1; no new port).
+  - [ ] `tools/servermanager-ssh`: `ssh host x2ctl attach <name>` transport (configurable command, BatchMode, ControlMaster), remote
+        `x2ctl list` discovery and `x2ctl stop`.
+  - [ ] `tools/servermanager-ui`: server list and status, log view (level/function filter, search), Lua prompt with history and
+        results, start/stop all; GUI tested on the user's desktop.
 - [x] Remove SOAP/gSOAP, publisher billing/auth, Mail (MIME/SMTP), CrashRpt; stub where game logic depends on them (2026-10-31). The DEB gSOAP client became custom SOAP/HTTP, with DEB login and billing unchanged (T31, `server/cleanup-gsoap`, see [Common › DEB client](../porting/server-common.md#deb-client-t31)). `KMailManager` was removed, and script error reports go to the log (`server/cleanup-mail`). CrashRpt, other-country publishers, and `Common/SOAP` were never imported into `src/`: the importer excludes them. Only their `NetError`s/event IDs remain as protocol, along with comments.
 - [x] Milestone: login + town + dungeon with original `elsword.exe` against servers running on Linux (2026-10-31).
 
