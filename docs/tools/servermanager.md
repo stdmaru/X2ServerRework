@@ -84,6 +84,9 @@ A JSON file (`LoadProfile`) or the built-in default for the package under `dist/
   server's own default); a second GameServer needs another one, and ServerManager passes it as `--control=`.
 - `hosts` and a server's `host`: see [remote servers](#remote-servers-over-ssh).
 - Checked when loaded: unique names, a program for each local server, known dependencies and hosts, no cycles.
+- Saved by `SaveProfile` (the [Profile tab](#profile-tab)): `ProfileToJson` writes what `ParseProfile` reads back the same,
+  with paths under the file's folder relative to it and default values left out, through a temporary file renamed over the
+  old one. Unknown keys and the layout of a hand-written file are not kept.
 - Default order (2026-11-05), from the original and the servers' connections: EPublisherServer → LoginServer, CenterServer,
   GlobalServer → GameServer → ChannelServer. The original `KX2ServerLauncher` waited for the `CenterServer_Ready` window before
   starting GameServer; GameServer retries the servers it connects to, but players must not reach a GameServer before its
@@ -131,6 +134,8 @@ is not terminated or killed.
   (`"controlDir": "/opt/x2/docker/server/control/x2"` with `docker/server/docker-compose.yml`); the remote command becomes
   `x2ctl --dir=<folder> attach <name>`. Not resolved on this machine. The ssh user must be able to open it (see
   [another folder](../porting/console.md#control-socket)).
+- `identityFile`: a private key on this machine for that host, as written (ssh expands `~`): `-i <file> -o IdentitiesOnly=yes`
+  after the port, so ssh offers only that key. Without it, ssh's own keys and agent.
 - `port`: the ssh port (`-p`, after the ssh options and before the destination); without it, ssh's own (22, or the `Port` of
   `~/.ssh/config`).
 - `destination`: what ssh connects to (`host`, `user@host`, or a `Host` of `~/.ssh/config`; not starting with `-`). `x2ctl`: its
@@ -210,9 +215,11 @@ server that was not running failed with the message above, and both were stopped
 build/linux-debug/src/tools/ServerManager/ui/ServerManager dist          # or a profile.json
 ```
 
-Without an argument it opens `servermanager.json`, else `dist/`, in the current folder; another profile can be loaded from the
-toolbar. Built in the container, it runs on the desktop like `x2_app_demo`. On Linux the build also writes
-`ServerManager.desktop` next to the program (`Terminal=false`, opening `X2_DIST_DIR`), so it starts from a launcher without a
+Without an argument it opens `profile.json` next to the program (`SDL_GetBasePath`), else `dist/` in the current folder;
+another profile can be loaded from the toolbar, or one made in the [Profile tab](#profile-tab). A `dist/` folder (the six
+servers of `DefaultProfile`) and a profile made from nothing are saved to `profile.json` next to the program, so the next start
+opens it. Until 2026-11-05 the file was `servermanager.json` in the current folder. Built in the container, it runs on the desktop like `x2_app_demo`. On Linux the build also writes
+`ServerManager.desktop` next to the program (`Terminal=false`, no argument, in `X2_DIST_DIR`'s parent so `dist/` is found), so it starts from a launcher without a
 terminal; copy it to `~/.local/share/applications/`. On Windows it is a GUI-subsystem program (`WIN32_EXECUTABLE`, `WinMain` from
 `SDL_main.h`): no console, and errors before the window go to a message box.
 
@@ -228,6 +235,7 @@ terminal; copy it to `~/.local/share/applications/`. On Windows it is a GUI-subs
   back to the bottom resumes.
 - **Prompt:** Lua for the selected server, Enter or Run, Up/Down for its history (per server, in memory). Commands and results go
   to the log.
+- **Tabs:** Servers (the list, log and prompt below) and [Profile](#profile-tab); without a profile the window opens on Profile.
 - **Quitting:** with no server started here running, the window closes (attached servers are detached and keep running).
   Otherwise it asks; "Stop them and quit" stops the servers it started, as Stop does, and quits once they are down ("Quit now"
   kills them).
@@ -237,12 +245,32 @@ terminal; copy it to `~/.local/share/applications/`. On Windows it is a GUI-subs
 - An unhandled exception is written to `crash.txt` in that folder and shown in a message box before the process aborts
   (`std::set_terminate`), instead of the C runtime's bare "abort() has been called".
 
+### Profile tab (2026-11-05, `tools/servermanager-profile-editor`)
+
+The profile edited in the window (`ProfileEditor`), on a copy, before connecting:
+
+- **File:** where Save writes (the loaded file, or `profile.json` next to the program). **Save** (only for a valid profile),
+  **Save and apply** (save, then load it as the window's profile; disabled while a server started here runs, as replacing the
+  profile would leave it behind), **Revert** (read the file again). The tab shows `Profile *` and "not saved" while the copy
+  differs from the file, and the first `Validate` problem in red.
+- **General:** `x2ctl` and the control folder of this machine.
+- **Hosts:** a list (Add, Remove, ↑/↓) and the selected host's fields: name, destination, port, shell (sh or cmd), ssh key
+  (`identityFile`), `x2ctl` and control folder there, start and stop lines, and the ssh command (one word per line). Renaming a
+  host renames it in its servers.
+- **Servers:** a list in profile order (the start order among independent servers) and the selected server's fields: name, host
+  (this machine or a host), directory, program and arguments (one per line) for a local server, control name, the servers it
+  waits for (checkboxes; one no longer in the profile is shown in red with Remove), and service, start and stop for a remote one.
+  Renaming a server renames it in the others' dependencies. Choosing "this machine" clears the remote-only fields.
+- **Pickers:** the `...` buttons open SDL's file or folder dialog (on Linux through the desktop portal or `zenity`); a program in
+  the server's directory is written `./<name>`. The answer arrives on another thread and is applied on the next frame.
+- Loading another profile from the toolbar drops unsaved changes.
+
 ## Tests
 
 `x2_servermanager_tests` (`ctest -R servermanager`): recorded protocol lines, log store/filter/view, session with a fake transport,
 and a session following a real `KServerConsole` in service mode over its control socket (hello, `ready`, a `START_LOG` with a field,
 Lua results, a second client attaching late that gets the earlier lines in order and once each while a live one arrives, stop
-until disconnection; the stop request is process-wide, so a second console cannot run in the same test process). Profile parsing, validation and order. Orchestrator with real children: three
+until disconnection; the stop request is process-wide, so a second console cannot run in the same test process). Profile parsing, validation and order; a profile saved and read back the same (every field, relative paths); a host's ssh key. Orchestrator with real children: three
 `x2_terminal_demo` instances started in dependency order and stopped in reverse, a crash (`--exit-after`) that fails the server and
 cancels its dependent, a missing program, a child that ignores stop (`x2_process_helper sleep`: terminated, then killed), and a
 service already running that is attached through `x2ctl`, detached, attached again and stopped. Remote servers through
@@ -251,7 +279,9 @@ that was not attached; an unreachable host and a server that is not running. The
 
 `x2_servermanager_ui_tests` (`ctest -R servermanager_ui`) draws the window with ImGui's null backends, so ImGui's checks run over
 its code: no profile and a profile that does not load; a failed local server and an unreachable host; a real `x2_terminal_demo`
-started from it, a Lua command printing 300 lines (rows and clipper), and quitting (asks, then stops it, exit code 0). The window
+started from it, a Lua command printing 300 lines (rows and clipper), and quitting (asks, then stops it, exit code 0); the Profile tab with a profile made from nothing (a local and a remote server, a
+cmd host with a key), applied and saved next to the program, an invalid draft that is not saved, and a `dist/` folder saved to the
+default file. The window
 itself (input, fonts, GPU) is tested by hand on a desktop. Socket directory:
 `$XDG_RUNTIME_DIR/x2`. A failure prints each server's phase and last log entries.
 
