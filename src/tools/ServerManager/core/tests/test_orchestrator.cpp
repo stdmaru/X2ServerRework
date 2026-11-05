@@ -225,3 +225,92 @@ TEST_CASE("orchestrator: a server already running is attached, and stopped throu
     CHECK(code == 0);
 }
 #endif
+
+#if defined(X2_X2CTL) && defined(X2_FAKE_SSH)
+namespace {
+
+Profile RemoteProfile(const std::string& name, const std::string& destination)
+{
+    Profile profile;
+    profile.x2ctl = X2_X2CTL;
+    HostSpec host;
+    host.name = "remote";
+    host.destination = destination;
+    host.x2ctl = X2_X2CTL;
+    host.ssh = {X2_FAKE_SSH, "-T", "-o", "BatchMode=yes"};
+    profile.hosts = {host};
+    ServerSpec s;
+    s.name = name;
+    s.host = "remote";
+    s.control = name;
+    profile.servers = {s};
+    return profile;
+}
+
+}  // namespace
+
+TEST_CASE("orchestrator: a remote server is discovered, attached over ssh and stopped")
+{
+    const std::string name = Unique("SmRemote");
+    x2::platform::ProcessOptions service;
+    service.program = X2_TERMINAL_DEMO;
+    service.args = {"--no-stdin", "--control=" + name, "--ready-after=100"};
+    std::string error;
+    auto running = x2::platform::Process::Start(service, error);
+    REQUIRE_MESSAGE(running, error);
+
+    Orchestrator o(RemoteProfile(name, "fake-host"));
+    CHECK_FALSE(o.Listed(0));
+
+    // discovery until the service's socket shows up on the "host"
+    const auto deadline = std::chrono::steady_clock::now() + 10s;
+    while (o.Listed(0) != true && std::chrono::steady_clock::now() < deadline) {
+        o.Discover();
+        CHECK(o.HostAt(0).listing);
+        REQUIRE_MESSAGE(RunUntil(o, [&] { return !o.HostAt(0).listing; }), o.HostAt(0).error);
+        CHECK(o.HostAt(0).error.empty());
+    }
+    REQUIRE(o.Listed(0) == true);
+
+    // starting a remote server attaches to it
+    o.Start(0);
+    REQUIRE_MESSAGE(RunUntil(o, [&] { return o.At(0).phase == Phase::Ready; }), Dump(o));
+    CHECK_FALSE(o.At(0).owned);
+    CHECK(o.At(0).session.Pid() == running->Pid());
+
+    o.Detach(0);
+    REQUIRE_MESSAGE(RunUntil(o, [&] { return o.At(0).phase == Phase::Offline; }), Dump(o));
+    CHECK(running->Running());
+
+    // stopping one that is listed but not attached: attach, then stop through the protocol
+    o.Stop(0);
+    REQUIRE_MESSAGE(RunUntil(o, [&] { return o.At(0).phase == Phase::Offline; }), Dump(o));
+    CHECK(running->WaitFor(10s) == 0);
+}
+
+TEST_CASE("orchestrator: an unreachable host, and a remote server that is not running")
+{
+    SUBCASE("unreachable")
+    {
+        Orchestrator o(RemoteProfile(Unique("SmNowhere"), "nowhere"));
+        o.Discover();
+        REQUIRE(RunUntil(o, [&] { return !o.HostAt(0).listing; }));
+        CHECK(o.HostAt(0).error.find("Could not resolve hostname") != std::string::npos);
+        CHECK_FALSE(o.Listed(0));
+        o.Start(0);
+        REQUIRE_MESSAGE(RunUntil(o, [&] { return o.At(0).phase == Phase::Failed; }), Dump(o));
+        CHECK(o.At(0).error.find("could not attach on remote") != std::string::npos);
+    }
+    SUBCASE("not running")
+    {
+        Orchestrator o(RemoteProfile(Unique("SmAbsent"), "fake-host"));
+        o.Discover();
+        REQUIRE(RunUntil(o, [&] { return !o.HostAt(0).listing; }));
+        CHECK(o.Listed(0) == false);
+        o.Stop(0);      // nothing to stop
+        CHECK(o.At(0).phase == Phase::Offline);
+        o.Start(0);
+        REQUIRE_MESSAGE(RunUntil(o, [&] { return o.At(0).phase == Phase::Failed; }), Dump(o));
+    }
+}
+#endif

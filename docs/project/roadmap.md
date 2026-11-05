@@ -128,8 +128,10 @@ See [Server — Windows dependencies](../original/server.md).
   - [x] `server/control-history`: numbered `log`/`output` lines (`seq`), a bounded backlog in the console (10,000 lines / 4 MB)
         replayed on `{"history":true,"upto":n}` (additive to protocol v1; no new port); the session asks for it on attach and merges
         it with the live lines by `seq`; tested with a real EPublisherServer (2026-11-05). See [Server console](../porting/console.md#history).
-  - [ ] `tools/servermanager-ssh`: `ssh host x2ctl attach <name>` transport (configurable command, BatchMode, ControlMaster), remote
-        `x2ctl list` discovery and `x2ctl stop`.
+  - [x] `tools/servermanager-ssh`: profile `hosts` (destination, remote `x2ctl`, ssh command; default with BatchMode and
+        ControlMaster), remote servers attached and never started, `x2ctl list` discovery in the background, stop of a listed
+        server through attach + protocol stop; tested with a fake ssh and with the real ssh to localhost (2026-11-05). See
+        [ServerManager](../tools/servermanager.md#remote-servers-over-ssh).
   - [ ] `tools/servermanager-ui`: server list and status, log view (level/function filter, search), Lua prompt with history and
         results, start/stop all; GUI tested on the user's desktop.
 - [x] Remove SOAP/gSOAP, publisher billing/auth, Mail (MIME/SMTP), CrashRpt; stub where game logic depends on them (2026-10-31). The DEB gSOAP client became custom SOAP/HTTP, with DEB login and billing unchanged (T31, `server/cleanup-gsoap`, see [Common › DEB client](../porting/server-common.md#deb-client-t31)). `KMailManager` was removed, and script error reports go to the log (`server/cleanup-mail`). CrashRpt, other-country publishers, and `Common/SOAP` were never imported into `src/`: the importer excludes them. Only their `NetError`s/event IDs remain as protocol, along with comments.

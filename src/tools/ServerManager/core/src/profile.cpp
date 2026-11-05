@@ -1,5 +1,6 @@
 #include "x2/servermanager/profile.h"
 
+#include "x2/platform/control.h"
 #include "x2/platform/json.h"
 
 #include <filesystem>
@@ -55,6 +56,45 @@ std::string ServerSpec::ControlName() const
     return std::string(stem.begin(), stem.end());
 }
 
+std::vector<std::string> DefaultSshCommand()
+{
+    std::vector<std::string> command = {"ssh", "-T", "-o", "BatchMode=yes", "-o", "ConnectTimeout=10"};
+#if !defined(_WIN32)
+    const std::string controlPath = x2::platform::ControlSocketDir() + "/ssh-%C";
+    command.insert(command.end(), {"-o", "ControlMaster=auto", "-o", "ControlPath=" + controlPath, "-o", "ControlPersist=60"});
+#endif
+    return command;
+}
+
+const HostSpec* Profile::FindHost(std::string_view name) const
+{
+    for (const HostSpec& h : hosts)
+        if (h.name == name)
+            return &h;
+    return nullptr;
+}
+
+x2::platform::ProcessOptions Profile::X2ctl(std::string_view host, const std::vector<std::string>& args) const
+{
+    x2::platform::ProcessOptions options;
+    const HostSpec* h = host.empty() ? nullptr : FindHost(host);
+    if (!h) {
+        options.program = x2ctl;
+        options.args = args;
+        return options;
+    }
+    std::vector<std::string> command = h->ssh.empty() ? DefaultSshCommand() : h->ssh;
+    options.program = command.front();
+    options.args.assign(command.begin() + 1, command.end());
+    options.args.push_back(h->destination);
+    // ssh joins its arguments into one line for the remote shell: quote each word once, here
+    std::string remote = x2::platform::QuoteShellArgument(h->x2ctl);
+    for (const std::string& arg : args)
+        remote += ' ' + x2::platform::QuoteShellArgument(arg);
+    options.args.push_back(std::move(remote));
+    return options;
+}
+
 int Profile::Find(std::string_view name) const
 {
     for (std::size_t i = 0; i < servers.size(); ++i)
@@ -65,12 +105,27 @@ int Profile::Find(std::string_view name) const
 
 std::string Profile::Validate() const
 {
+    std::set<std::string> hostNames;
+    for (const HostSpec& h : hosts) {
+        if (h.name.empty())
+            return "a host has no name";
+        if (!hostNames.insert(h.name).second)
+            return "two hosts are called " + h.name;
+        if (h.destination.empty() || h.destination.front() == '-')
+            return "host " + h.name + ": no destination";
+        if (h.x2ctl.empty())
+            return "host " + h.name + ": no x2ctl";
+    }
     std::set<std::string> names;
     for (const ServerSpec& s : servers) {
         if (s.name.empty())
             return "a server has no name";
-        if (s.program.empty())
+        if (!s.host.empty() && !FindHost(s.host))
+            return s.name + ": unknown host " + s.host;
+        if (s.host.empty() && s.program.empty())
             return s.name + ": no program";
+        if (!s.host.empty() && s.program.empty() && s.control.empty())
+            return s.name + ": a remote server needs \"control\" or \"program\" for its socket name";
         if (!names.insert(s.name).second)
             return "two servers are called " + s.name;
     }
@@ -141,6 +196,28 @@ std::optional<Profile> ParseProfile(std::string_view json, const std::string& ba
     const std::string x2ctl = doc->GetString("x2ctl", "x2ctl");
     profile.x2ctl = Utf8Path(x2ctl).has_parent_path() ? Resolve(baseDir, x2ctl) : x2ctl;
 
+    if (const Json* hosts = doc->Find("hosts")) {
+        if (hosts->GetType() != Json::Array) {
+            error = "\"hosts\" is not an array";
+            return std::nullopt;
+        }
+        for (const Json& node : hosts->Items()) {
+            if (node.GetType() != Json::Object) {
+                error = "a host is not an object";
+                return std::nullopt;
+            }
+            HostSpec h;
+            h.name = node.GetString("name");
+            h.destination = node.GetString("destination");
+            h.x2ctl = node.GetString("x2ctl", "x2ctl");
+            if (!StringList(node.Find("ssh"), h.ssh)) {
+                error = "host " + h.name + ": \"ssh\" is a list of strings";
+                return std::nullopt;
+            }
+            profile.hosts.push_back(std::move(h));
+        }
+    }
+
     const Json* servers = doc->Find("servers");
     if (!servers || servers->GetType() != Json::Array) {
         error = "no \"servers\" array";
@@ -153,7 +230,9 @@ std::optional<Profile> ParseProfile(std::string_view json, const std::string& ba
         }
         ServerSpec s;
         s.name = node.GetString("name");
-        s.directory = Resolve(baseDir, node.GetString("directory", "."));
+        s.host = node.GetString("host");
+        // a remote server's directory is not used, and is not this machine's
+        s.directory = s.host.empty() ? Resolve(baseDir, node.GetString("directory", ".")) : node.GetString("directory");
         s.program = node.GetString("program");
         s.control = node.GetString("control");
         if (!StringList(node.Find("args"), s.args) || !StringList(node.Find("after"), s.after)) {
