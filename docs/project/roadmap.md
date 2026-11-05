@@ -125,9 +125,9 @@ See [Server — Windows dependencies](../original/server.md).
         local control socket (through `x2ctl attach`), orchestrator (profile with dependencies, ordered start waiting for `ready`,
         reverse stop, crash detection); tested with the six real servers (2026-11-05). Fixed on the way: a `--machine` server stopped
         through the protocol waited for the end of its stdin to exit.
-  - [ ] `server/control-history`: the protocol has no log history, so a manager attaching to a server that has been running for a while
-        does not see what just happened. The control server keeps a bounded backlog and replays it to clients that ask for it
-        (additive to protocol v1; no new port).
+  - [x] `server/control-history`: numbered `log`/`output` lines (`seq`), a bounded backlog in the console (10,000 lines / 4 MB)
+        replayed on `{"history":true,"upto":n}` (additive to protocol v1; no new port); the session asks for it on attach and merges
+        it with the live lines by `seq`; tested with a real EPublisherServer (2026-11-05). See [Server console](../porting/console.md#history).
   - [ ] `tools/servermanager-ssh`: `ssh host x2ctl attach <name>` transport (configurable command, BatchMode, ControlMaster), remote
         `x2ctl list` discovery and `x2ctl stop`.
   - [ ] `tools/servermanager-ui`: server list and status, log view (level/function filter, search), Lua prompt with history and

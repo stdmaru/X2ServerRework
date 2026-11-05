@@ -14,6 +14,8 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
+#include <vector>
 
 namespace x2::servermanager {
 
@@ -29,6 +31,9 @@ public:
     explicit ServerSession(std::string name, std::size_t logCapacity = 100000);
 
     void SetClock(Clock clock) { m_clock = std::move(clock); }
+    // On by default: when a hello says the server already sent lines (an attach to a running server), ask for its
+    // backlog. Until it arrives, log and output lines are held and then added in seq order with the backlog.
+    void SetReplayHistory(bool replay) { m_replayHistory = replay; }
 
     // Transport events.
     void OnConnecting(std::string_view how);                // e.g. "ssh host x2ctl attach GameServer"
@@ -54,6 +59,7 @@ public:
     LinkState Link() const { return m_link; }
     ServerState State() const { return m_state; }
     std::size_t PendingRequests() const { return m_pending.size(); }
+    bool ReplayingHistory() const { return m_historyId.has_value(); }
 
     LogStore& Logs() { return m_logs; }
     const LogStore& Logs() const { return m_logs; }
@@ -62,6 +68,8 @@ private:
     std::optional<std::int64_t> Send(std::string line, std::string_view echo, ResultHandler done);
     void Note(EntryKind kind, LogLevel level, std::string text);
     void SetState(ServerState state);
+    void AddLine(std::optional<std::int64_t> seq, LogEntry entry);
+    void FlushHistory();
 
     std::string m_name;
     LogStore m_logs;
@@ -73,6 +81,9 @@ private:
     bool m_gotHello = false;
     std::int64_t m_nextId = 1;
     std::map<std::int64_t, ResultHandler> m_pending;
+    bool m_replayHistory = true;
+    std::optional<std::int64_t> m_historyId;
+    std::vector<std::pair<std::optional<std::int64_t>, LogEntry>> m_held;   // while the history is on its way
 };
 
 // Local time as the protocol writes it.

@@ -26,6 +26,20 @@ TEST_CASE("protocol: hello, status, output")
     m = ParseServerMessage(R"({"type":"output","text":"hello 한글"})");
     REQUIRE(std::holds_alternative<OutputMessage>(m));
     CHECK(std::get<OutputMessage>(m).text == "hello 한글");
+    CHECK_FALSE(std::get<OutputMessage>(m).seq);
+    CHECK_FALSE(hello.seq);
+}
+
+TEST_CASE("protocol: line numbers for the history")
+{
+    auto m = ParseServerMessage(R"({"type":"hello","protocol":1,"server":"A","pid":1,"state":"ready","seq":42})");
+    CHECK(std::get<HelloMessage>(m).seq == 42);
+    m = ParseServerMessage(R"({"seq":7,"type":"log","level":"warn","message":"m"})");
+    CHECK(std::get<LogMessage>(m).seq == 7);
+    m = ParseServerMessage(R"({"seq":8,"type":"output","text":"t"})");
+    CHECK(std::get<OutputMessage>(m).seq == 8);
+    m = ParseServerMessage(R"({"seq":-1,"type":"output","text":"t"})");
+    CHECK_FALSE(std::get<OutputMessage>(m).seq);
 }
 
 TEST_CASE("protocol: log with fields and text")
@@ -76,6 +90,11 @@ TEST_CASE("protocol: requests the servers parse")
 {
     CHECK(LuaRequest(7, "print(\"a\")\n") == R"({"id":7,"lua":"print(\"a\")\n"})");
     CHECK(StopRequest(8) == R"({"id":8,"stop":true})");
+    CHECK(HistoryRequest(3, 120) == R"({"id":3,"history":true,"upto":120})");
+    const auto history = x2::platform::ParseJsonObject(HistoryRequest(3, 120));
+    REQUIRE(history);
+    CHECK(history->at("history").text == "true");
+    CHECK(history->at("upto").text == "120");
     // the servers read commands with ParseJsonObject (flat objects)
     const auto object = x2::platform::ParseJsonObject(LuaRequest(9, "x = '한글'"));
     REQUIRE(object);

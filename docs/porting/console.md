@@ -82,21 +82,37 @@ From server:
 
 | `type` | Fields | When |
 |---|---|---|
-| `hello` | `protocol`, `server` (name), `pid`, `state` | first line (on socket, before anything else) |
+| `hello` | `protocol`, `server` (name), `pid`, `state`, `seq` (last line number sent before it, 0 if none) | first line (on socket, before anything else) |
 | `log` | `time` (`YYYY-MM-DD hh:mm:ss`), `level` (`error`, `warn`, `info`, `note`), `stream` (`cerr`, `cout2`...), `func`, `file`, `line`, `message`, `fields` (`[{"name","value"}]`, from `BUILD_LOG`), `text` (other lines) | each [log](kncsdk.md#logging-t16) at console level (`consolelog( n )` changes it) |
 | `output` | `text` | a line written to stdout/stderr outside logging (`std::cout`, `printf`) |
+
+`log` and `output` lines also carry `seq`, a line number shared by both (from 1), for the [history](#history).
 | `status` | `state`: `ready`, `stopping` (`ShutDown` begins), `stopped` (console closes) | state changes |
 | `result` | `id` (request ID or `null`), `ok`, `output` (what the command printed with `print`), `error` | command response |
 
 From client: `{"id":1,"lua":"print(1)"}` (`id` may be any number or string and is returned in `result`), `{"id":2,"stop":true}` (stop),
-or a raw Lua line (response has `id` `null`). Only `print` is captured in the response; other command output (`io.write`, `os.execute`)
+`{"id":3,"history":true,"upto":120}` ([history](#history)), or a raw Lua line (response has `id` `null`). Only `print` is captured in the response; other command output (`io.write`, `os.execute`)
 is emitted as `output`. Socket commands run on the prompt thread (owner of Lua state), between key events.
+
+### History
+
+Added on 2026-11-05 (`server/control-history`), compatible with version 1 (new fields and one new request; no new port). The
+console keeps its latest `log` and `output` lines (at most 10,000 lines and 4 MB, below the 8 MB a client may have queued) with their
+`seq`. `{"id":n,"history":true,"upto":S}` sends the kept lines with `seq` <= S (all of them without `upto`), as they were sent, then
+`{"type":"result","id":n,"ok":true,...}`. It is answered at once on the client's reader thread (or the machine stdin), without
+waiting for the Lua thread, so it works while the server loads.
+
+A client asks with `upto` = the `seq` of its `hello`. Lines are numbered and sent under one lock, and the control server makes the
+greeting and registers the client in one step, so every line after the greeting's `seq` reaches the client live and every line
+up to it is in the backlog (unless dropped as too old). Live lines may arrive between the replayed ones, and a line numbered just
+as the client connected may come both ways: the client merges by `seq` ([ServerManager](../tools/servermanager.md)). A raw
+`x2ctl attach` sees the same lines.
 
 Example (`x2ctl attach ChannelServer`, shortened):
 
 ```json
-{"type":"hello","protocol":1,"server":"ChannelServer","pid":577544,"state":"loading"}
-{"type":"log","time":"2026-10-31 20:21:31","level":"note","stream":"cout","func":"SetPacketAuthFailLimit_LUA","file":".../NetLayer.cpp","line":181,"message":"Packet Auth Fail Limit : 100","fields":[],"text":[]}
+{"type":"hello","protocol":1,"server":"ChannelServer","pid":577544,"state":"loading","seq":0}
+{"seq":1,"type":"log","time":"2026-10-31 20:21:31","level":"note","stream":"cout","func":"SetPacketAuthFailLimit_LUA","file":".../NetLayer.cpp","line":181,"message":"Packet Auth Fail Limit : 100","fields":[],"text":[]}
 {"type":"status","state":"ready"}
 {"id":1,"lua":"GetLocalIP()"}
 {"type":"result","id":1,"ok":true,"output":"127.0.0.1\n","error":""}

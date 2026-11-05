@@ -15,7 +15,9 @@
 #include <condition_variable>
 #include <deque>
 #include <mutex>
+#include <string>
 #include <thread>
+#include <vector>
 
 using namespace x2::servermanager;
 using namespace std::chrono_literals;
@@ -139,6 +141,46 @@ TEST_CASE("console: a session follows a real server console")
         CHECK(sum->output == "2\n");
         CHECK_FALSE(failure->ok);
         CHECK(failure->error.find("boom") != std::string::npos);
+    }
+
+    // A second client attaching now gets the lines it did not see, in order and once each. (The stop request is
+    // process-wide, so this test cannot run another console after this one.)
+    for (int i = 1; i <= 3; ++i)
+        START_LOG(cout, L"history marker " << i) << END_LOG;
+    {
+        x2::platform::ControlClient late;
+        REQUIRE_MESSAGE(late.Connect(name, error), error);
+        LineQueue lateQueue;
+        std::thread lateReader([&] {
+            std::string line;
+            while (late.ReadLine(line))
+                lateQueue.Push(line);
+            lateQueue.Push(std::nullopt);
+        });
+        ServerSession attached(name);
+        attached.OnConnected([&](const std::string& line) { return late.WriteLine(line); });
+        CHECK(PumpUntil(attached, lateQueue, [&] { return attached.ReplayingHistory(); }));
+        START_LOG(cout, L"history marker 4") << END_LOG;   // live, while the backlog is on its way
+        CHECK(PumpUntil(attached, lateQueue, [&] { return !attached.ReplayingHistory(); }));
+
+        LogFilter markers;
+        markers.search = "history marker";
+        LogView markerView;
+        CHECK(PumpUntil(attached, lateQueue,
+                        [&] { return markerView.Refresh(attached.Logs(), markers), markerView.Seqs().size() >= 4; }));
+        std::vector<std::string> messages;
+        for (const std::uint64_t seq : markerView.Seqs())
+            messages.push_back(attached.Logs().Find(seq)->log.message);
+        CHECK(messages == std::vector<std::string>{"history marker 1", "history marker 2", "history marker 3",
+                                                   "history marker 4"});
+        // and what came before, the earlier test error included
+        LogView errors;
+        errors.Refresh(attached.Logs(), mine);
+        CHECK(errors.Seqs().size() == 1);
+
+        late.CloseWrite();
+        late.Close();
+        lateReader.join();
     }
 
     REQUIRE(session.Stop());

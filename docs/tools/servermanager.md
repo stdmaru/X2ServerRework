@@ -31,9 +31,13 @@ reading commands with the flat `ParseJsonObject`.
   ServerManager with their results (results with no output are not logged), and events noted by ServerManager (connection, state).
   It is bounded (100,000 entries by default; the oldest are dropped). **`LogView`** is a filtered list of sequence numbers (levels,
   kinds, ASCII case-insensitive search over message, function, file, fields and text, and a function filter), updated incrementally.
-- **Log history:** the protocol does not replay past logs, so a session attached to a server that has been running for a while
-  starts with what comes after `hello`. A child started by ServerManager is complete from its first line. Replaying a backlog is the
-  `server/control-history` step.
+- **Log history** (2026-11-05, `server/control-history`): when a `hello` carries `seq` > 0 (an attach to a server that already
+  logged), the session sends `{"id":n,"history":true,"upto":seq}` without echoing it as a command
+  ([protocol](../porting/console.md#history)). Until its result arrives, log and output lines are held; then the backlog and the
+  held live lines are added together in `seq` order, a line that came both ways only once, after an event
+  `history: N earlier lines`. Events noted meanwhile (connection, state) stay before them. A disconnection adds what was held.
+  `SetReplayHistory(false)` turns it off. A child started by ServerManager reports `seq` 0 and asks for nothing. The backlog is
+  bounded on the server, so a server that has run for a long time only replays its latest lines.
 
 ## Local processes and orchestration (2026-11-05, `tools/servermanager-local`)
 
@@ -103,7 +107,8 @@ in terminals and stopped them in reverse order (12.6 s); then started all six as
 
 `x2_servermanager_tests` (`ctest -R servermanager`): recorded protocol lines, log store/filter/view, session with a fake transport,
 and a session following a real `KServerConsole` in service mode over its control socket (hello, `ready`, a `START_LOG` with a field,
-Lua results, stop until disconnection). Profile parsing, validation and order. Orchestrator with real children: three
+Lua results, a second client attaching late that gets the earlier lines in order and once each while a live one arrives, stop
+until disconnection; the stop request is process-wide, so a second console cannot run in the same test process). Profile parsing, validation and order. Orchestrator with real children: three
 `x2_terminal_demo` instances started in dependency order and stopped in reverse, a crash (`--exit-after`) that fails the server and
 cancels its dependent, a missing program, a child that ignores stop (`x2_process_helper sleep`: terminated, then killed), and a
 service already running that is attached through `x2ctl`, detached, attached again and stopped. Socket directory:
