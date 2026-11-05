@@ -17,6 +17,9 @@ total is higher due to the additional Linux ARM64 job. Therefore:
   `gh workflow run ci.yml --ref <branch>` (or `-f jobs=linux` / `-f jobs=all`). Then `gh run list --branch <branch>`.
 - **Before integration,** full local Linux matrix must pass and Windows must pass on test machine (`tools/win/winbuild.sh`,
   [Build environment](build-environment.md#windows-clang-cl-over-ssh)); trigger Windows CI only when machine unavailable.
+  That local validation is enough to mark a PR ready: **do not wait for CI on PRs** (decided by the user on 2026-11-05). The
+  only thing it covers beyond the local matrix is Linux ARM64, so a full run (`-f jobs=all`) is left in the background at the
+  end of the session (or runs on `main` after the merge), and any ARM64 failure is handled the next day.
 - **Linux matrix has 3 entries:** Clang Debug on x86_64 and ARM64, plus GCC Release on x86_64 (dev tools OFF; verification only).
   Clang Release, the distributed build, stays in the local matrix.
 - **`timeout-minutes`** on all jobs; a new push to same branch cancels previous run.
