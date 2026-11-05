@@ -12,7 +12,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 option(X2_DEV_TOOLS    "Enable in-game/server debug, development and admin tools" OFF)
 option(X2_BUILD_SERVER "Build the servers" ON)
-option(X2_BUILD_CLIENT "Build the client" OFF)
+option(X2_BUILD_CLIENT "Build the client (so far LuaCommon and the window skeleton)" ON)
 option(X2_BUILD_TOOLS  "Build the SDL3 + ImGui tools (ServerManager, decision T32)" ON)
 option(X2_BUILD_TESTS  "Build unit tests" ON)
 
