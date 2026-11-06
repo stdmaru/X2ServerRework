@@ -216,8 +216,10 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
 
 ## Phase 4 — Client: graphics
 
-- [ ] `x2::render` (`src/render`, T36) with the SDL_GPU backend and a null/recording backend for headless tests; the SDL_GPU
-      device moves from `x2::app` to it; source scan: `SDL_gpu.h` only in `src/render/backends/sdlgpu`.
+- [x] `client/render-boundary`: `x2::render` (`src/render`, T36) with the SDL_GPU backend and a null/recording backend for
+      headless tests; the SDL_GPU device moved from `x2::app` to it (ImGui through the `sdlgpu::Native` escape hatch), the DXUT
+      replacement clears through it (`X2_RENDER_BACKEND`), and a source scan keeps the SDL_GPU API in
+      `src/render/backends/sdlgpu` (2026-11-06). See [Render](../porting/render.md).
 - [ ] D3D9 translation in `KTDXLIB`, above the boundary (T36): state cache → pipeline cache, fixed-function → shaders,
       half-pixel offset. Decide first: an `IDirect3DDevice9` subset as a facade, or callers rewritten to `KTDXLIB`'s interface
       (D3D9 is concentrated there: 54 `KTDXLIB` files use the device, 17 in `X2Lib`, 2 in `X2`; 2026-11-06).
