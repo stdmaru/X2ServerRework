@@ -21,6 +21,7 @@ typedef int x2_socklen_t; // address length type of accept/getsockname (socklen_
 #include <netdb.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
+#include <poll.h>
 #include <sys/ioctl.h>
 #include <sys/select.h>
 #include <sys/socket.h>
@@ -102,6 +103,23 @@ inline unsigned long IpFromString(const char* text)
 {
     in_addr addr{};
     return text && inet_pton(AF_INET, text, &addr) == 1 ? addr.s_addr : INADDR_NONE;
+}
+
+// True when a receive on the socket would not block (data, or an error to report): poll with no wait, in place of
+// WSAEventSelect + WSAEnumNetworkEvents(FD_READ).
+inline bool SocketReadable(SOCKET s)
+{
+#if defined(_WIN32)
+    WSAPOLLFD fd{};
+    fd.fd = s;
+    fd.events = POLLRDNORM;
+    return ::WSAPoll(&fd, 1, 0) > 0 && (fd.revents & (POLLRDNORM | POLLERR | POLLHUP)) != 0;
+#else
+    pollfd fd{};
+    fd.fd = s;
+    fd.events = POLLIN;
+    return ::poll(&fd, 1, 0) > 0 && (fd.revents & (POLLIN | POLLERR | POLLHUP)) != 0;
+#endif
 }
 
 // First IPv4 address of a host name, or "" (getaddrinfo, in place of gethostbyname).

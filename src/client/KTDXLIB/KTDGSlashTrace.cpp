@@ -431,7 +431,7 @@ void    CKTDGSlashTrace::OnFrameRender_Draw()
 			}
 
 //#ifdef DYNAMIC_VERTEX_BUFFER_OPT
-			BOOST_STATIC_ASSERT( D3DFVF_SLASH_TRACE_TEXTURED == D3DFVF_XYZ_DIFFUSE_TEX1 );
+			static_assert( D3DFVF_SLASH_TRACE_TEXTURED == D3DFVF_XYZ_DIFFUSE_TEX1 , "");
             m_iSlashVertexTexturedList_StartIndex %= m_VertexNum;
 			g_pKTDXApp->GetDVBManager()->DrawPrimitive_SplitData( CKTDGDynamicVBManager::DVB_TYPE_XYZ_DIFFUSE_TEX1
 				, D3DPT_TRIANGLESTRIP, m_VertexNum - 2
@@ -465,7 +465,7 @@ void    CKTDGSlashTrace::OnFrameRender_Draw()
 	{
 		CKTDGStateManager::SetTexture( 0, NULL );
 //#ifdef DYNAMIC_VERTEX_BUFFER_OPT
-		BOOST_STATIC_ASSERT( D3DFVF_XYZ_DIFFUSE == D3DFVF_SLASH_TRACE );
+		static_assert( D3DFVF_XYZ_DIFFUSE == D3DFVF_SLASH_TRACE , "");
         m_iSlashVertexList_StartIndex %= m_VertexNum;
 		g_pKTDXApp->GetDVBManager()->DrawPrimitive_SplitData( CKTDGDynamicVBManager::DVB_TYPE_XYZ_DIFFUSE
 			, D3DPT_TRIANGLESTRIP, m_VertexNum - 2

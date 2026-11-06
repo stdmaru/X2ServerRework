@@ -473,3 +473,37 @@ struct D3DSURFACE_DESC {
     UINT Width;
     UINT Height;
 };
+
+enum D3DRESOURCETYPE {
+    D3DRTYPE_SURFACE = 1, D3DRTYPE_VOLUME = 2, D3DRTYPE_TEXTURE = 3, D3DRTYPE_VOLUMETEXTURE = 4,
+    D3DRTYPE_CUBETEXTURE = 5, D3DRTYPE_VERTEXBUFFER = 6, D3DRTYPE_INDEXBUFFER = 7,
+    D3DRTYPE_FORCE_DWORD = 0x7fffffff
+};
+
+// Fixed-function lighting (not emulated yet: lit geometry goes through the effects, T37). The engine still fills
+// these, and D3DX's materials embed D3DMATERIAL9.
+struct D3DMATERIAL9 {
+    D3DCOLORVALUE Diffuse;
+    D3DCOLORVALUE Ambient;
+    D3DCOLORVALUE Specular;
+    D3DCOLORVALUE Emissive;
+    float Power;
+};
+
+enum D3DLIGHTTYPE { D3DLIGHT_POINT = 1, D3DLIGHT_SPOT = 2, D3DLIGHT_DIRECTIONAL = 3, D3DLIGHT_FORCE_DWORD = 0x7fffffff };
+
+struct D3DLIGHT9 {
+    D3DLIGHTTYPE Type;
+    D3DCOLORVALUE Diffuse;
+    D3DCOLORVALUE Specular;
+    D3DCOLORVALUE Ambient;
+    D3DVECTOR Position;
+    D3DVECTOR Direction;
+    float Range;
+    float Falloff;
+    float Attenuation0;
+    float Attenuation1;
+    float Attenuation2;
+    float Theta;
+    float Phi;
+};

@@ -1,8 +1,8 @@
 #pragma once
 
 #include <unordered_map>
-#include <boost/intrusive_ptr.hpp>
-#include <boost/lexical_cast.hpp>
+#include "x2/platform/intrusive_ptr.h"
+#include "KLexicalCast.h"
 
 
 enum KLuaManagerProxyLuaValueType
@@ -16,13 +16,11 @@ enum KLuaManagerProxyLuaValueType
 
 struct KLuaManagerProxyLuaTable;
 
-namespace boost
-{
-    void intrusive_ptr_add_ref(KLuaManagerProxyLuaTable * p);
-    void intrusive_ptr_release(KLuaManagerProxyLuaTable * p);
-}
+// Found by x2::intrusive_ptr through argument-dependent lookup (namespace boost in the original)
+void intrusive_ptr_add_ref(KLuaManagerProxyLuaTable * p);
+void intrusive_ptr_release(KLuaManagerProxyLuaTable * p);
 
-typedef boost::intrusive_ptr<KLuaManagerProxyLuaTable> KLuaManagerProxyLuaTablePtr;
+typedef x2::intrusive_ptr<KLuaManagerProxyLuaTable> KLuaManagerProxyLuaTablePtr;
 struct KLuaManagerProxyLuaValue
 {
 	KLuaManagerProxyLuaValueType m_eType;
@@ -178,8 +176,8 @@ struct KLuaManagerProxyLuaTable
     //bool    LuaPush( lua_State* L );
 
 private:
-	friend void ::boost::intrusive_ptr_add_ref(KLuaManagerProxyLuaTable * p);
-	friend void ::boost::intrusive_ptr_release(KLuaManagerProxyLuaTable * p);
+	friend void ::intrusive_ptr_add_ref(KLuaManagerProxyLuaTable * p);
+	friend void ::intrusive_ptr_release(KLuaManagerProxyLuaTable * p);
 
     ULONG    AddRef()
     {
@@ -202,19 +200,16 @@ private:
     LONG                m_nRefCount;
 };
 
-namespace boost
+inline void intrusive_ptr_add_ref(KLuaManagerProxyLuaTable * p)
 {
-    inline void intrusive_ptr_add_ref(KLuaManagerProxyLuaTable * p)
-    {
-        if ( p != NULL )
-            p->AddRef();
-    }
+    if ( p != NULL )
+        p->AddRef();
+}
 
-    inline void intrusive_ptr_release(KLuaManagerProxyLuaTable * p)
-    {
-        if ( p != NULL )
-            p->Release();
-    }
+inline void intrusive_ptr_release(KLuaManagerProxyLuaTable * p)
+{
+    if ( p != NULL )
+        p->Release();
 }
 
 
@@ -273,7 +268,7 @@ public:
     unsigned    GetNumIndexedValues()  { return m_dequeLuaTable.back()->m_vec.size(); }
     unsigned    GetNumIndexedValues( const char* pszName, int iBaseIndex = 0 );
 
-#pragma message( "아래의 3개의 함수는 사용되는 곳이 있는지 확인하고 만들자" )
+// TODO(original): check whether the three functions below are used anywhere before implementing them.
 	KLuaManagerProxyLuaTable*	GetStackFront() { return m_dequeLuaTable.front().get(); }
 
 	KLuaManagerProxyLuaTable* StackGetTable( const char* tableName );
@@ -305,7 +300,7 @@ protected:
 
 
 template< typename T>
-bool KLuaManagerProxy::GetValue( const char* pszName, T& sValue, bool bLogOutput /*= true*/ )
+bool KLuaManagerProxy::GetValue( const char* pszName, T& sValue, bool /*bLogOutput*/ /*= true*/ )
 {
 	KLuaManagerProxyLuaValue* pLuaValue = StackGetValue( pszName );
 	return GetNumberFromLuaValue( sValue, pLuaValue );
@@ -313,7 +308,7 @@ bool KLuaManagerProxy::GetValue( const char* pszName, T& sValue, bool bLogOutput
 
 
 template< typename T>
-bool KLuaManagerProxy::GetValue( int iIndex, T& sValue, bool bLogOutput /*= true*/ )
+bool KLuaManagerProxy::GetValue( int iIndex, T& sValue, bool /*bLogOutput*/ /*= true*/ )
 {
 	KLuaManagerProxyLuaValue* pLuaValue = StackGetValue( iIndex );
 	return GetNumberFromLuaValue( sValue, pLuaValue );
@@ -335,15 +330,9 @@ bool KLuaManagerProxy::GetNumberFromLuaValue( T& val, KLuaManagerProxyLuaValue* 
 			val = static_cast<T>( pLuaValue->m_dNumber );
 			return true;
 		case LUA_VALUE_STRING:
-            try
-            {
-			    val = boost::lexical_cast<T>( pLuaValue->m_strStringUTF8 );
-            }
-            catch( const boost::bad_lexical_cast & )
-            {
-                return false;
-            }
-			return true;
+			return KLexicalCast( pLuaValue->m_strStringUTF8, val );
+		default:
+			break;
 		}//switch
 		return false;
 	}//if

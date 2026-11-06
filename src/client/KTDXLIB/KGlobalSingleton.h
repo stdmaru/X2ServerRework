@@ -85,7 +85,7 @@ private:
 
         inline void _DoNothing() {}
 
-        __declspec(noinline) static Type& _NoInlineAccess()
+        X2_NOINLINE static Type& _NoInlineAccess()
         {
             static Type obj;
             /** WinMain()실행 전에 Singleton()을 호출하지 않더라도 객체를

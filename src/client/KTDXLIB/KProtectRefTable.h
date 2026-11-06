@@ -1,6 +1,6 @@
 #pragma once
 
-#include <WTypes.h>
+#include "x2/platform/win32.h"
 #include <string>
 
 namespace ProtectTable

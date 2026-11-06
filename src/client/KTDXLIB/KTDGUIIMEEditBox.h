@@ -2,6 +2,10 @@
 
 #include "x2/platform/ime.h"
 
+// DXUTgui.h in the original
+#define MAX_CANDLIST 10
+#define MAX_COMPSTRING_SIZE 256
+
 class CKTDGUIIMEEditBox : public CKTDGUIControl
 {
 	public:

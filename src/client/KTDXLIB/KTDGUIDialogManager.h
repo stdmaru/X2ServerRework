@@ -56,7 +56,10 @@ class CKTDGUIDialogManager : public CKTDXStage
 
 
 		virtual	HRESULT OnFrameMove( double fTime, float fElapsedTime );
-		virtual	HRESULT OnFrameRender( bool bFront = false );
+		// The layer is always given (KTDGManager); without the original's default, CKTDXStage's OnFrameRender() is
+		// no longer hidden.
+		using CKTDXStage::OnFrameRender;
+		virtual	HRESULT OnFrameRender( bool bFront );
 
 		virtual HRESULT OnFrameRenderTopModal();
 

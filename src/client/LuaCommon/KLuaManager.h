@@ -58,7 +58,7 @@ LUA언어로 작성된 configuration file을 읽어 오고, 그 내용을 C++
 //
 #if defined(_DEBUG)
 
-#ifndef _INC_CRTDBG
+#if !defined(_INC_CRTDBG) && !defined(_ASSERTE)
 #define _ASSERTE    assert
 #endif // _INC_CRTDBG
 

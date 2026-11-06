@@ -186,7 +186,7 @@ void CKTDGXSkinAfterImage::UpdateEquipView( CKTDGXSkinAnim* pOriginAnim )
 	if( NULL == pOriginAnim )
 		return;
 
-	BOOST_FOREACH( AfterImageData& sAfterIamgeData, m_AfterImageList )
+	for( AfterImageData& sAfterIamgeData : m_AfterImageList )
 	{
 		// 기존 복장 모두 초기화
 		sAfterIamgeData.pAnim->ClearModelXSkinMeshList();
@@ -194,7 +194,7 @@ void CKTDGXSkinAfterImage::UpdateEquipView( CKTDGXSkinAnim* pOriginAnim )
 		// 복장 추가
 		vector<CKTDXDeviceXSkinMesh*> vecModelXSkinMeshLIst;
 		m_pOriginalAnim->GetModelXSkinMeshList(vecModelXSkinMeshLIst);
-		BOOST_FOREACH(CKTDXDeviceXSkinMesh* pDeviceXSkinMesh,  vecModelXSkinMeshLIst )
+		for( CKTDXDeviceXSkinMesh* pDeviceXSkinMesh : vecModelXSkinMeshLIst )
 		{
 			sAfterIamgeData.pAnim->AddModelXSkinMesh(pDeviceXSkinMesh, NULL, NULL, NULL, false, false );
 		}

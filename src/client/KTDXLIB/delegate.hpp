@@ -7,7 +7,7 @@
 #ifndef SRUTIL_DELEGATE_INCLUDED
 #define SRUTIL_DELEGATE_INCLUDED
 
-#define SRUTIL_DELEGATE_CALLTYPE __fastcall
+#define SRUTIL_DELEGATE_CALLTYPE  // __fastcall in the original: x64 has one calling convention
 #include "delegate_list.hpp"
 #undef SRUTIL_DELEGATE_CALLTYPE
 

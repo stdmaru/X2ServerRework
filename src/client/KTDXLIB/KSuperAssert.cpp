@@ -1,33 +1,14 @@
-// original code from seokhyun, SF
-// 변경사항:
-//			#undef USE_REMOTELOGGER // 일단 remotelogger랑 console 사용안함
-//			#undef USE_CONSOLE
-//
-//			_fileout( bool bFlush = true ) // bool 변수 추가, 코드 변경
-//			fileout_()			// 코드 변경
-
+// The engine's assertion and log stream (original code from seokhyun, SF). Changes in the original: no remote logger
+// or console; _fileout takes whether to write the buffer out; fileout_ keeps the buffer.
 
 #include "stdafx.h"
 #include "KSuperAssert.h"
 
 
-#undef USE_REMOTELOGGER	// 일단 remotelogger랑 console 사용안함
-#undef USE_CONSOLE		//
-
-
-
-#ifdef USE_CONSOLE
-	#include "KConsole.h"
-#endif // USE_CONSOLE
-
-#ifdef USE_REMOTELOGGER
-	#include "KRemoteLogger.h"
-#endif // USE_REMOTELOGGER
-
-
-#include <windows.h>
-#include <assert.h>
-#include <time.h>
+#include "x2/platform/win32.h"
+#include <cstdio>
+#include <cstdlib>
+#include <ctime>
 #include <fstream>
 
 KSuperAssert g_kSuperAssert;
@@ -38,7 +19,7 @@ KSuperAssert::KSuperAssert()
 }
 //---------------------------------------------------------------------------
 KSuperAssert& KSuperAssert::SetAssertInfo(const char* expr,
-										  unsigned int line, const char* func, const char* file)
+										  unsigned int line, const char* /*func*/, const char* file)
 {
 	m_strExpression = expr;
 	m_strFilename = file;
@@ -67,10 +48,6 @@ void KSuperAssert::_fatal()
 	m_strBuf += m_strInfo;
 	m_strInfo = "";
 
-#ifdef USE_CONSOLE
-	KCon << rcol << m_strBuf.c_str();
-#endif // USE_CONSOLE
-
 	while (true)
 	{
 		int iRes = MessageBoxA(NULL, m_strBuf.c_str(),
@@ -80,13 +57,16 @@ void KSuperAssert::_fatal()
 		case IDIGNORE:
 			return;
 		case IDRETRY:
-			__asm int 3;
+			// into the debugger (int 3 in the original)
+#if defined(__clang__)
+			__builtin_debugtrap();
+#else
+			__builtin_trap();
+#endif
 			return;
 		case IDABORT:
-#ifdef _D3D9_H_
-			D3DXDebugMute(true);
-#endif // _D3D9_H_
-			_exit(3);
+			std::_Exit(3);
+		default:
 			break;
 		}
 	}
@@ -96,16 +76,13 @@ void KSuperAssert::_trace()
 {
 	m_strBuf += m_strInfo + "\n";
 	m_strInfo = "";
-	::OutputDebugStringA(m_strBuf.c_str());
-
-#ifdef USE_CONSOLE
-	KCon << rcol << m_strBuf.c_str();
-#endif // USE_CONSOLE
+	// the debugger's output in the original (OutputDebugStringA)
+	std::fputs(m_strBuf.c_str(), stderr);
 }
 
 
 //---------------------------------------------------------------------------
-void KSuperAssert::_fileout( bool bFlush = true )
+void KSuperAssert::_fileout( bool bFlush )
 {
 	m_strBuf += m_strInfo + "\n";
 	m_strInfo = "";
@@ -116,19 +93,13 @@ void KSuperAssert::_fileout( bool bFlush = true )
 		{
 			time_t t0 = time(0);
 
-#ifdef	CONVERSION_VS
-			struct tm newTime;
-			bool bOK = localtime_s( &newTime, &t0) == 0;
-			tm* t = &newTime;
-#else
 			tm* t = localtime(&t0);
             bool bOK = ( t != NULL );
-#endif // CONVERSION_VS
 
 			std::fstream fout(m_strLogFilename.c_str(), std::ios::out | std::ios::app);
 			//fout << "//---------------------------------------------------------------------------" << std::endl;
             if ( bOK == true )
-				// 미국 요청으로 형식을 조금 바꿨습니다.
+				// the format the US service asked for
 				fout << 1900+t->tm_year << "/" << 1+t->tm_mon << "/" << t->tm_mday << " " << t->tm_hour << ":" << t->tm_min << ":" << t->tm_sec << "\t";
 			//fout << __DATE__ << ", " << __TIME__ << " > ";
 			//fout << "// file: " << __FILE__ << std::endl;
@@ -144,12 +115,6 @@ void KSuperAssert::_fileout( bool bFlush = true )
 //---------------------------------------------------------------------------
 void KSuperAssert::_remotelog()
 {
-#ifdef USE_REMOTELOGGER
-	if (!m_strRemoteLoggerPagename.empty())
-	{
-		_KRemoteLogger()->AddLogValue(m_strRemoteLoggerPagename.c_str(), m_strBuf.c_str());
-	}
-#endif // USE_REMOTELOGGER
 }
 //---------------------------------------------------------------------------
 void KSuperAssert::SetLogFilename(std::string strFilename)
@@ -209,7 +174,7 @@ KSuperAssert& trace(KSuperAssert& kAssert)
 //---------------------------------------------------------------------------
 KSuperAssert& fileout(KSuperAssert& kAssert)
 {
-	kAssert._fileout();
+	kAssert._fileout( true );
 	kAssert._initBuf();
 
 	return kAssert;

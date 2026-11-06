@@ -30,7 +30,7 @@ public:
 
 	T* GetObjectByHandle( const Handle hHandle )
 	{
-		std::map< Handle, T* >::iterator it = m_mapHandleToObject.find( hHandle );
+		typename std::map< Handle, T* >::iterator it = m_mapHandleToObject.find( hHandle );
 		if( it != m_mapHandleToObject.end() )
 		{
 			return it->second;

@@ -8,7 +8,9 @@
 
 
 
+#ifndef ASSERT  // KTDX.h has it
 #define ASSERT(exp)         _ASSERTE(exp)
+#endif
 
 #ifndef SAFE_DELETE
 #define SAFE_DELETE(p)			{ if(p) { delete (p);     (p)=NULL; } }
@@ -50,7 +52,7 @@ private:
 
 
 
-class KObserverHandle : private boost::noncopyable
+class KObserverHandle : private x2::NonCopyable
 {
 public:
 
@@ -147,7 +149,7 @@ inline void    KObservableBase::_CustomFinalize()
 
 
 template<typename T>
-class KObservable : public KObservableBase, private boost::noncopyable
+class KObservable : public KObservableBase, private x2::NonCopyable
 {
 public:
 
@@ -160,8 +162,8 @@ public:
         static KObserverHandle*
                         GetSmartHandle( U* pkInObservable_ )
                         {
-                            BOOST_STATIC_ASSERT( ( boost::is_base_of< T, U >::value == true ) );
-                            BOOST_STATIC_ASSERT( ( boost::is_base_of< KObservableBase, U >::value == true ) );
+                            static_assert( ( std::is_base_of< T, U >::value == true ) , "");
+                            static_assert( ( std::is_base_of< KObservableBase, U >::value == true ) , "");
                             if ( pkInObservable_ != NULL )
                             {
                                 ASSERT( pkInObservable_->_GetObserverHandle() != NULL );

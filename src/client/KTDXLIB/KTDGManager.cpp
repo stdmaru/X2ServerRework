@@ -460,7 +460,7 @@ void    CKTDGManager::_RenderObjectRenderHintVector( const CKTDGManager::KObject
         iIndex = 0;
         iCount = 0;
 
-        BOOST_TEST_FOREACH( const KObjectRenderHint&, kObjectRenderHint, vecIn_ )
+        for( const KObjectRenderHint& kObjectRenderHint : vecIn_ )
         {
             ASSERT( kObjectRenderHint.m_pObject != NULL );
 			if( kObjectRenderHint.m_pObject == NULL )
@@ -695,7 +695,7 @@ HRESULT CKTDGManager::OnResetDevice()
 	//	if ( m_RenderObjectChain[i] != NULL )
 	//		m_RenderObjectChain[i]->OnResetDevice();
 	//}
-    BOOST_TEST_FOREACH( CKTDGObject*, pObject, m_RenderObjectChain )
+    for( CKTDGObject* pObject : m_RenderObjectChain )
     {
         if ( pObject != NULL )
             pObject->OnResetDevice();
@@ -733,7 +733,7 @@ HRESULT CKTDGManager::OnLostDevice()
 	//	if ( m_RenderObjectChain[i] != NULL )
 	//		m_RenderObjectChain[i]->OnLostDevice();
 	//}
-    BOOST_TEST_FOREACH( CKTDGObject*, pObject, m_RenderObjectChain )
+    for( CKTDGObject* pObject : m_RenderObjectChain )
     {
         if ( pObject != NULL )
             pObject->OnLostDevice();
@@ -965,7 +965,7 @@ void CKTDGManager::ObjectChainSort()
     m_uAlphaObjectNum = 0;
 
     KObjectRenderHint   kObjectRenderHint;
-    BOOST_TEST_FOREACH( CKTDGObject*, object, m_RenderObjectChain )
+    for( CKTDGObject* object : m_RenderObjectChain )
     {
         if(object == NULL)
             continue;

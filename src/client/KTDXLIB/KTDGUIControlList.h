@@ -31,8 +31,12 @@ public:
 	CKTDGUIContolList();
 	virtual	~CKTDGUIContolList(void);
 
-	void SetShow(bool bShow, Row row = -1, Col col = -1 );
-	void SetEnable(bool bEnable, Row row = -1, Col col = -1 );
+	// The cells' controls, all with row -1 (and col -1). The original's row also defaulted to -1, hiding the control's
+	// own SetShow/SetEnable(bool), which nothing called through a CKTDGUIContolList; one argument now reaches them.
+	using CKTDGUIControl::SetShow;
+	using CKTDGUIControl::SetEnable;
+	void SetShow(bool bShow, Row row, Col col = -1 );
+	void SetEnable(bool bEnable, Row row, Col col = -1 );
 
 	void SetViewSize(int X, int Y, bool bUpdateControl = true );
 	int GetViewSizeX(){ return m_iViewSizeX; }
@@ -60,6 +64,7 @@ public:
 
 	virtual bool    HandleKeyboard( UINT uMsg, WPARAM wParam, LPARAM lParam );
 	virtual bool    HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lParam );
+	using CKTDGUIControl::MsgProc;
 	virtual bool    MsgProc( UINT uMsg, WPARAM wParam, LPARAM lParam );
 
 	virtual	bool	ContainsPoint( POINT pt );

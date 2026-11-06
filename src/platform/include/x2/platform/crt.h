@@ -32,6 +32,10 @@ inline int _wcsnicmp(const wchar_t* a, const wchar_t* b, size_t n) { return ::wc
 
 typedef int errno_t;
 
+// <stdlib.h>'s min/max macros
+#define __max(a, b) (((a) > (b)) ? (a) : (b))
+#define __min(a, b) (((a) < (b)) ? (a) : (b))
+
 // count argument of strncpy_s/wcsncpy_s: copy what fits, return STRUNCATE
 #define _TRUNCATE (static_cast<size_t>(-1))
 #ifndef STRUNCATE

@@ -3,8 +3,8 @@
 
 CKTDXLog g_CKTDXLog;
 
-__declspec(thread) /*static*/
-CKTDXLog::KTLSData* CKTDXLog::ms_pTLSData = NULL;
+/*static*/
+thread_local CKTDXLog::KTLSData* CKTDXLog::ms_pTLSData = NULL;
 
 
 CKTDXLog::CKTDXLog(void)
@@ -22,17 +22,17 @@ bool    CKTDXLog::RegisterCurrentThread()
     if ( ms_pTLSData != NULL )
         return true;
 
-	DWORD	dwCurrentThreadId = ::GetCurrentThreadId();
-	for( int i = 0; i < KTDXLOG_MAX_THREAD_NUM; i++ )
-	{
-		DWORD	dwOldValue = ::InterlockedCompareExchange( &m_aTLSData[i].m_dwThreadId, dwCurrentThreadId, 0 );
-		if ( dwOldValue == 0 )
+    DWORD   dwCurrentThreadId = ::GetCurrentThreadId();
+    for( int i = 0; i < KTDXLOG_MAX_THREAD_NUM; i++ )
+    {
+        DWORD   dwOldValue = 0;
+        if ( m_aTLSData[i].m_dwThreadId.compare_exchange_strong( dwOldValue, dwCurrentThreadId ) )
         {
             ms_pTLSData = &m_aTLSData[i];
-			return true;
+            return true;
         }
-	}
-	return false;
+    }
+    return false;
 }
 
 const char* CKTDXLog::GetLastErrorLog()
@@ -63,21 +63,15 @@ void CKTDXLog::PushStateLog( const char* statLog )
 {
 	time_t t0 = time(0);
 	stringstream strstm;
-#ifdef	CONVERSION_VS
-	struct tm t;
-	localtime_s( &t, &t0);
-	strstm << 1900+t.tm_year << "/" << 1+t.tm_mon << "/" << t.tm_mday << ", " << t.tm_hour << ":" << t.tm_min << ":" << t.tm_sec << " > " << statLog;
-#else
 	tm* t = localtime(&t0);
     if ( t != NULL )
     {
 	    strstm << 1900+t->tm_year << "/" << 1+t->tm_mon << "/" << t->tm_mday << ", " << t->tm_hour << ":" << t->tm_min << ":" << t->tm_sec << " > " << statLog;
     }
-#endif // CONVERSION_VS
 
     if ( ms_pTLSData != NULL )
     {
-        DWORD   dwTimestamp = ::InterlockedIncrement( &m_dwTimestamp );
+        DWORD   dwTimestamp = ++m_dwTimestamp;
         ms_pTLSData->m_StateLog.push_back( std::pair<DWORD,std::string>(dwTimestamp,strstm.str()) );
     }
 }
@@ -86,21 +80,15 @@ void CKTDXLog::PushErrorLog( int errNum )
 {
 	time_t t0 = time(0);
 	stringstream strstm;
-#ifdef	CONVERSION_VS
-	struct tm t;
-	localtime_s( &t, &t0);
-	strstm << 1900+t.tm_year << "/" << 1+t.tm_mon << "/" << t.tm_mday << ", " << t.tm_hour << ":" << t.tm_min << ":" << t.tm_sec << " > " << "ErrorEnum(" << errNum << ")";
-#else
 	tm* t = localtime(&t0);
     if ( t != NULL )
     {
 	    strstm << 1900+t->tm_year << "/" << 1+t->tm_mon << "/" << t->tm_mday << ", " << t->tm_hour << ":" << t->tm_min << ":" << t->tm_sec << " > " << "ErrorEnum(" << errNum << ")";
     }
-#endif // CONVERSION_VS
 
     if ( ms_pTLSData != NULL )
     {
-        DWORD   dwTimestamp = ::InterlockedIncrement( &m_dwTimestamp );
+        DWORD   dwTimestamp = ++m_dwTimestamp;
         ms_pTLSData->m_ErrorLog.push_back( std::pair<DWORD,std::string>( dwTimestamp, strstm.str() ) );
     }
 }
@@ -109,21 +97,15 @@ void CKTDXLog::PushErrorLog( int errNum, const char* errorLog )
 {
 	time_t t0 = time(0);
 	stringstream strstm;
-#ifdef	CONVERSION_VS
-	struct tm t;
-	localtime_s( &t, &t0);
-	strstm << 1900+t.tm_year << "/" << 1+t.tm_mon << "/" << t.tm_mday << ", " << t.tm_hour << ":" << t.tm_min << ":" << t.tm_sec << " > " << "ErrorEnum(" << errNum << "),\t" << "ErrorMsg(\"" << errorLog << "\")";
-#else
 	tm* t = localtime(&t0);
     if ( t != NULL )
     {
 	    strstm << 1900+t->tm_year << "/" << 1+t->tm_mon << "/" << t->tm_mday << ", " << t->tm_hour << ":" << t->tm_min << ":" << t->tm_sec << " > " << "ErrorEnum(" << errNum << "),\t" << "ErrorMsg(\"" << errorLog << "\")";
     }
-#endif // CONVERSION_VS
 
     if ( ms_pTLSData != NULL )
     {
-        DWORD   dwTimestamp = ::InterlockedIncrement( &m_dwTimestamp );
+        DWORD   dwTimestamp = ++m_dwTimestamp;
         ms_pTLSData->m_ErrorLog.push_back( std::pair<DWORD,std::string>( dwTimestamp, strstm.str() ) );
     }
 }
@@ -147,7 +129,7 @@ void CKTDXLog::SetLastErrorLog( const WCHAR* statLog )
 void CKTDXLog::StateLogToFile( const char* fileName )
 {
 
-    if ( fileName == NULL || fileName[0] == NULL )
+    if ( fileName == NULL || fileName[0] == '\0' )
         return;
 
     int aIndex[KTDXLOG_MAX_THREAD_NUM];
@@ -188,7 +170,7 @@ void CKTDXLog::StateLogToFile( const char* fileName )
 void CKTDXLog::ErrorLogToFile( const char* fileName, const char* systemInfo )
 {
 
-    if ( fileName == NULL || fileName[0] == NULL )
+    if ( fileName == NULL || fileName[0] == '\0' )
         return;
 
     int aIndex[KTDXLOG_MAX_THREAD_NUM];

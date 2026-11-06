@@ -13,10 +13,10 @@ typedef std::map<std::wstring, CKTDGUIDialogType>    CKTDGUIDialogMap; // moved 
 
 
 
-//class   CKTDGUIDialog : private boost::noncopyable
+//class   CKTDGUIDialog : private x2::NonCopyable
 //{{ seojt // 2009-8-18, 17:53, qff
 class CKTDGUIDialog
-    : private boost::noncopyable
+    : private x2::NonCopyable
     , public KJohnObjMan<CKTDGUIDialog>
 //}} seojt // 2009-8-18, 17:53
 {
@@ -36,7 +36,7 @@ class CKTDGUIDialog
 				bIsAutoDelete = false;
 			}
 
-			DialogMoveItem& DialogMoveItem::operator=(const DialogMoveItem& rhs)
+			DialogMoveItem& operator=(const DialogMoveItem& rhs)
 			{
 				if ( this == &rhs )
 				{

@@ -199,7 +199,7 @@ HRESULT CKTDXDeviceXET::_Load( bool bSkipStateCheck
 
     if ( vecTexture.empty() == false )
     {
-        BOOST_FOREACH( CKTDXDeviceTexture* pTexture, vecTexture )
+        for( CKTDXDeviceTexture* pTexture : vecTexture )
         {
             SAFE_CLOSE( pTexture )
         }
@@ -213,7 +213,7 @@ HRESULT CKTDXDeviceXET::_UnLoad()
     m_preprocessed.Release();
     if ( g_pKTDXApp != NULL && g_pKTDXApp->GetAppDestroy() == false )
     {
-        BOOST_FOREACH( CKTDXDeviceTexture* pTexture, m_vecTexture )
+        for( CKTDXDeviceTexture* pTexture : m_vecTexture )
         {
             SAFE_CLOSE( pTexture )
         }

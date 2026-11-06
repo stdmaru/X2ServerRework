@@ -1,7 +1,11 @@
 #pragma once
 
-#include < KncUtil.h >
-#include "psapi.h"
+#include "KncUtil.h"
+#include "x2/platform/format.h"
+#include "x2/platform/process.h"
+
+#include <bit>
+#include <vector>
 
 #define XOR_KEY0 0xc6f8aa02
 #define XOR_KEY1 0x2647abdc
@@ -94,7 +98,7 @@ inline void MakeUpperCase(WCHAR* dest, size_t size, const WCHAR* str)
 		return;
     if ( str == NULL )
     {
-        *dest = NULL;
+        *dest = L'\0';
         return;
     }
 	//KTDXPROFILE();
@@ -124,12 +128,12 @@ inline std::wstring& ConvertCharToWCHAR( std::wstring& dest, const std::string& 
 	if ( iDestSize <= 0 )
 		return dest;
 
-	wchar_t* wcharBuf = (wchar_t*) _malloca( iDestSize * sizeof( wchar_t ) );
+	std::vector<wchar_t> vec_wcharBuf( iDestSize );
+	wchar_t* wcharBuf = vec_wcharBuf.data();
 	ASSERT( wcharBuf != NULL );
 	int iNewSize = ::MultiByteToWideChar( CP_ACP, 0, src.c_str(), iSrcLength, wcharBuf, iDestSize );
 	ASSERT( iNewSize == iDestSize );
 	dest.assign( wcharBuf, iNewSize );
-    _freea( wcharBuf );
     return  dest;
 }
 
@@ -149,12 +153,12 @@ inline std::string& ConvertWCHARToChar( std::string& dest, const std::wstring& s
 	if ( iDestSize <= 0 )
 		return dest;
 
-	char* pszConv = (char*) _malloca( iDestSize * sizeof(char) );
+	std::vector<char> vec_pszConv( iDestSize );
+	char* pszConv = vec_pszConv.data();
 	ASSERT( pszConv != NULL );
 	int iNewSize = ::WideCharToMultiByte( CP_ACP, 0, src.c_str(), iSrcLength, pszConv, iDestSize, NULL, NULL );
 	ASSERT( iNewSize == iDestSize );
 	dest.assign( pszConv, iNewSize );
-    _freea( pszConv );
     return  dest;
 }
 
@@ -177,9 +181,9 @@ inline std::wstring& ConvertCharToWCHAR( std::wstring& dest, const char* pSrc, c
 	//MultiByteToWideChar( CP_ACP, 0, pSrc, -1, wcharBuf, iSize );
 	//dest = wcharBuf;
 
-    dest.resize( 0 );
-    if ( pSrc == NULL )
-        return dest;
+	dest.resize( 0 );
+	if ( pSrc == NULL )
+		return dest;
 
 	int iSrcLength = iLength;
 	if( iSrcLength < 0 )
@@ -193,12 +197,12 @@ inline std::wstring& ConvertCharToWCHAR( std::wstring& dest, const char* pSrc, c
     if ( iDestSize <= 0 )
 	    return dest;
 
-	wchar_t* wcharBuf = (wchar_t*) _malloca( iDestSize * sizeof( wchar_t ) );
+	std::vector<wchar_t> vec_wcharBuf( iDestSize );
+	wchar_t* wcharBuf = vec_wcharBuf.data();
     ASSERT( wcharBuf != NULL );
     int iNewSize = ::MultiByteToWideChar( CP_ACP, 0, pSrc, iSrcLength, wcharBuf, iDestSize );
     ASSERT( iNewSize == iDestSize );
     dest.assign( wcharBuf, iNewSize );
-    _freea( wcharBuf );
     return  dest;
 //}} robobeg : 2008-01-08
 }
@@ -220,9 +224,9 @@ inline std::string& ConvertWCHARToChar( std::string& dest, const wchar_t* pSrc, 
 	//WideCharToMultiByte( CP_ACP, 0, pSrc, -1, charBuf, iSize, NULL, NULL );
 	//dest = charBuf;
 
-    dest.resize( 0 );
-    if ( pSrc == NULL )
-        return dest;
+	dest.resize( 0 );
+	if ( pSrc == NULL )
+		return dest;
 
 	int iSrcLength = iLength;
 	if( iSrcLength < 0 )
@@ -236,12 +240,12 @@ inline std::string& ConvertWCHARToChar( std::string& dest, const wchar_t* pSrc, 
     if ( iDestSize <= 0 )
         return dest;
 
-    char* pszConv = (char*) _malloca( iDestSize * sizeof(char) );
+    std::vector<char> vec_pszConv( iDestSize );
+	char* pszConv = vec_pszConv.data();
     ASSERT( pszConv != NULL );
     int iNewSize = ::WideCharToMultiByte( CP_ACP, 0, pSrc, iSrcLength, pszConv, iDestSize, NULL, NULL );
     ASSERT( iNewSize == iDestSize );
     dest.assign( pszConv, iNewSize );
-    _freea( pszConv );
     return dest;
 //}} robobeg : 2008-01-08
 }
@@ -264,12 +268,12 @@ inline std::wstring& ConvertUtf8ToWCHAR( std::wstring& dest, const char* pSrc, c
     if ( iDestSize <= 0 )
         return dest;
 
-    wchar_t* wcharBuf = (wchar_t*) _malloca( iDestSize * sizeof( wchar_t ) );
+    std::vector<wchar_t> vec_wcharBuf( iDestSize );
+	wchar_t* wcharBuf = vec_wcharBuf.data();
     ASSERT( wcharBuf != NULL );
     int iNewSize = ::MultiByteToWideChar( CP_UTF8, 0, pSrc, iSrcLength, wcharBuf, iDestSize );
     ASSERT( iNewSize == iDestSize );
     dest.assign( wcharBuf, iNewSize );
-    _freea( wcharBuf );
     return  dest;
 }
 
@@ -288,12 +292,12 @@ inline std::wstring& ConvertUtf8ToWCHAR( std::wstring& dest, const std::string& 
 	if ( iDestSize <= 0 )
 		return dest;
 
-	wchar_t* wcharBuf = (wchar_t*) _malloca( iDestSize * sizeof( wchar_t ) );
+	std::vector<wchar_t> vec_wcharBuf( iDestSize );
+	wchar_t* wcharBuf = vec_wcharBuf.data();
 	ASSERT( wcharBuf != NULL );
 	int iNewSize = ::MultiByteToWideChar( CP_UTF8, 0, src.c_str(), iSrcLength, wcharBuf, iDestSize );
 	ASSERT( iNewSize == iDestSize );
 	dest.assign( wcharBuf, iNewSize );
-    _freea( wcharBuf );
     return  dest;
 }
 
@@ -327,13 +331,13 @@ inline float GetDistance2( const float& x1, const float& y1, const float& x2, co
 
 inline float GetDistance2( const D3DXVECTOR3& pos1, const D3DXVECTOR3& pos2 )
 {
-	D3DXVECTOR2 temp = pos2 - pos1;
+	D3DXVECTOR2 temp( pos2.x - pos1.x, pos2.y - pos1.y );
 	return D3DXVec2Length( &temp );
 }
 
 inline float GetDistance2_LUA( const D3DXVECTOR3& pos1, const D3DXVECTOR3& pos2 )
 {
-	D3DXVECTOR2 temp = pos2 - pos1;
+	D3DXVECTOR2 temp( pos2.x - pos1.x, pos2.y - pos1.y );
 	return D3DXVec2Length( &temp );
 }
 
@@ -364,7 +368,7 @@ inline CHAR* StrHeapCopy( CHAR *sName )
 	DWORD dwLen = (DWORD) strlen( sName ) + 1;
 	CHAR * sNewName = new CHAR[ dwLen ];
     ASSERT( sNewName != NULL );
-    StringCchCopyA( sNewName, dwLen, sName );
+    memcpy( sNewName, sName, dwLen );
 	return sNewName;
 //}} robobeg : 2008-01-05
 }
@@ -634,9 +638,9 @@ inline bool Pick2DRect( const POINT& ptMouse,
 
 static inline USHORT floatToHalfI(UINT i)
 {
-	register int s =  (i >> 16) & 0x00008000;
-	register int e = ((i >> 23) & 0x000000ff) - (127 - 15);
-	register int m =   i        & 0x007fffff;
+	int s =  (i >> 16) & 0x00008000;
+	int e = ((i >> 23) & 0x000000ff) - (127 - 15);
+	int m =   i        & 0x007fffff;
 
 	if (e <= 0)
 	{
@@ -672,14 +676,14 @@ static inline USHORT floatToHalfI(UINT i)
 }
 static inline USHORT floatToHalf(float i)
 {
-	return floatToHalfI(*reinterpret_cast<UINT*>(&i));
+	return floatToHalfI(std::bit_cast<UINT>(i));
 }
 
 static inline UINT halfToFloatI(USHORT y)
 {
-	register int s = (y >> 15) & 0x00000001;
-	register int e = (y >> 10) & 0x0000001f;
-	register int m =  y        & 0x000003ff;
+	int s = (y >> 15) & 0x00000001;
+	int e = (y >> 10) & 0x0000001f;
+	int m =  y        & 0x000003ff;
 
 	if (e == 0)
 	{
@@ -717,7 +721,7 @@ static inline UINT halfToFloatI(USHORT y)
 static inline float halfToFloat(USHORT y)
 {
 	UINT r = halfToFloatI(y);
-	return *reinterpret_cast<float*>(&r);
+	return std::bit_cast<float>(r);
 }
 
 
@@ -741,7 +745,7 @@ inline int RandomInt( int iMinBound = 0, int iMaxBound = 100 )
 
 inline char* XORDecrypt( const char* pEncryptedBuffer, int iBufferSize )
 {
-	int	aDecryptionKey[5] = { XOR_KEY30, XOR_KEY42, XOR_KEY14, XOR_KEY22, XOR_KEY40  };
+	int	aDecryptionKey[5] = { int( XOR_KEY30 ), int( XOR_KEY42 ), int( XOR_KEY14 ), int( XOR_KEY22 ), int( XOR_KEY40 ) };
 
 	char pBuf[5];
 
@@ -804,117 +808,16 @@ inline char* XORDecrypt( const char* pEncryptedBuffer, int iBufferSize )
 	return pDecryptedBuffer;
 }
 
-inline char* XOREncrypt( const char* pEncryptedBuffer, int iBufferSize )
-{
-	return XORDecrypt( pEncryptedBuffer, iBufferSize );
-}
-
-inline bool FileEncrypt( std::string strFileName )
-{
-	std::vector<int> vecEncryptionKey;
-	vecEncryptionKey.push_back( XOR_KEY30 );
-	vecEncryptionKey.push_back( XOR_KEY42 );
-	vecEncryptionKey.push_back( XOR_KEY14 );
-	vecEncryptionKey.push_back( XOR_KEY22 );
-	vecEncryptionKey.push_back( XOR_KEY40 );
-
-	char pBuf[5];
-	std::string strEncryptedFileName;
-	strEncryptedFileName = strFileName;
-	strEncryptedFileName += ".encrypt.lua";
-
-	std::ofstream ofs;
-	std::ifstream ifs;
-	std::string strCryptBuffer;
-	ifs.open( strFileName.c_str(), std::ios::binary );
-	ofs.open( strEncryptedFileName.c_str(), std::ios::binary );
-
-	if( ifs.is_open() == false || ofs.is_open() == false )
-		return false;
-
-	// 파일 크기 구하기
-	struct stat fileSize;
-	stat( strFileName.c_str(), &fileSize );
-
-	int iKeyIndex = 0;
-	int iKeySize = vecEncryptionKey.size();
-	int iRemainSize = fileSize.st_size;
-
-	while( !ifs.eof() )
-	{
-		memset( pBuf, 0, 5 );
-
-		// 파일버퍼 읽기
-		ifs.read( pBuf, 4 );
-
-		int iBufTemp;
-		memcpy( &iBufTemp, pBuf, 4 );
-
-		// 암호화
-		int iEncryptData = iBufTemp ^ ( vecEncryptionKey[iKeyIndex] ^ XOR_KEY49 );
-
-		memcpy( pBuf, &iEncryptData, 4 );
-
-		if( iRemainSize < 4 )
-		{
-			strCryptBuffer.append( pBuf, iRemainSize );
-			break;
-		}
-		else
-		{
-			strCryptBuffer.append( pBuf, 4 );
-		}
-
-		// 남은 파일 크기 감소
-		iRemainSize -= 4;
-
-		// 4바이트씩 번갈아 가면서 암호화키 적용
-		++iKeyIndex;
-
-		if( iKeyIndex >= iKeySize )
-			iKeyIndex = 0;
-	}
-
-	ofs.write( strCryptBuffer.c_str(), strCryptBuffer.size() );
-
-	ifs.close();
-	ofs.close();
-
-	_chmod( strFileName.c_str(), _S_IREAD | _S_IWRITE ); // 파일 삭제를 위해서
-
-	if( CopyFileA( strEncryptedFileName.c_str(), strFileName.c_str(), false ) == 0 )
-		return false;
-
-	if( DeleteFileA( strEncryptedFileName.c_str() ) == 0 )
-		return false;
-
-	return true;
-
-}
 
 
 
 
 
+
+// Windows Vista or later. Always true: the port runs on 64-bit Windows 10+ and on Linux.
 inline bool CheckIsVistaComputer()
 {
-	OSVERSIONINFO sInfo;
-	sInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-	if ( ::GetVersionEx(&sInfo) )
-	{
-		if ( sInfo.dwPlatformId == VER_PLATFORM_WIN32_NT && sInfo.dwMajorVersion >= 6 && sInfo.dwMinorVersion >= 0 )
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-	else
-	{
-		return false;
-	}
+	return true;
 }
 
 
@@ -957,47 +860,15 @@ inline int TokenizeInt( WCHAR** ppStart, WCHAR* pEnd )
 
 
 
-// 어떤 프로세스의 메모리 사용량을 얻어오는 함수
-inline DWORD GetUsingMemorySize(std::wstring strProcessName, SIZE_T& currMemSize, SIZE_T& peakMemSize )
+// Memory used by the process. The original searched every process for one whose path contained strProcessName;
+// its only caller asks for the client itself ("X2.exe"), so this reads the current process.
+inline DWORD GetUsingMemorySize(std::wstring /*strProcessName*/, std::size_t& currMemSize, std::size_t& peakMemSize )
 {
-	DWORD pid[1024];
-	DWORD cb;
-	EnumProcesses(pid,sizeof(DWORD)*1024,&cb);
-	HMODULE hMo;
-	for(int i = 0 ; i < 1024 ; ++i)
-	{
-		WCHAR szFileName[1024];
-		HANDLE hProcess=OpenProcess(PROCESS_QUERY_INFORMATION |PROCESS_VM_READ,FALSE,pid[i]);
-		if(!hProcess)
-			continue;
-		BOOL bb=EnumProcessModules(hProcess,&hMo,sizeof(hMo),&cb);
-		if(!bb)
-		{
-			DWORD error=GetLastError();
-			LPVOID lpMsgBuf;
-			FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER
-				|FORMAT_MESSAGE_FROM_SYSTEM
-				|FORMAT_MESSAGE_IGNORE_INSERTS
-				, NULL,error,0,(LPWSTR)&lpMsgBuf,0,NULL);
-			std::wstring strLastErrMsg=static_cast<LPCWSTR>(lpMsgBuf);
-			LocalFree(lpMsgBuf);
-			CloseHandle(hProcess);
-			continue;
-		}
-		GetModuleFileNameEx(hProcess,hMo,szFileName,1024);
-		std::wstring strProcName(szFileName);
-		if(strProcName.find(strProcessName) != -1 )
-		{
-			PROCESS_MEMORY_COUNTERS mem;
-			GetProcessMemoryInfo(hProcess,&mem,sizeof(PROCESS_MEMORY_COUNTERS));
-			CloseHandle(hProcess);
-			currMemSize = mem.WorkingSetSize;
-			peakMemSize = mem.PeakWorkingSetSize;
-			return (DWORD)mem.WorkingSetSize;
-		}
-		CloseHandle(hProcess);
-	}
-	return NULL;
+	std::size_t current = 0, peak = 0;
+	x2::platform::CurrentProcessMemory( current, peak );
+	currMemSize = current;
+	peakMemSize = peak;
+	return static_cast<DWORD>( current );
 }
 
 // kimhc // CX2UISkillTree에 있던것을 옮겨와 수정함 // 2009-06-16
@@ -1119,6 +990,7 @@ inline bool ConvertFileAnsiToUTF8( const string& srcFileName, const string& dest
 
 		sizeWrote = fwrite( szBuf, sizeof(char), sizeRead, destFile );
 		ASSERT( sizeRead == sizeWrote );
+		(void)sizeWrote;
 	}
 
 	fclose( srcFile );
@@ -1134,199 +1006,14 @@ inline bool ConvertFileAnsiToUTF8( const string& srcFileName, const string& dest
 	return true;
 }
 
-// 실행파일과 다른위치에 있는 파일을 컨버팅할경우.
-inline bool ConvertFullPathFileAnsiToUTF8( const string& srcFullPath, const string& destFullPath )
-{
-	FILE* srcFile = NULL;
-	FILE* destFile = NULL;
-
-	UCHAR szBuf[1024] = "";
-	size_t sizeRead = 0;
-	size_t sizeWrote = 0;
-
-	bool bIsidentical = false;
-	if( 0 == srcFullPath.compare(destFullPath) )
-		bIsidentical = true;
-
-	// file path와 name을 분리
-	char drive[_MAX_DRIVE];
-	char dir[_MAX_DIR];
-	char fname[_MAX_FNAME];
-	char ext[_MAX_EXT];
-
-#ifdef	CONVERSION_VS
-	_splitpath_s( destFullPath.c_str(), drive, _MAX_DRIVE, dir, _MAX_DIR, fname, _MAX_FNAME, ext, _MAX_EXT );
-#else
-	_splitpath( destFullPath.c_str(), drive, dir, fname, ext);
-#endif // CONVERSION_VS
-
-	string tmpDestFileName;
-	tmpDestFileName = drive;
-	tmpDestFileName += dir;
-
-	if( true == bIsidentical )
-		tmpDestFileName += "temp_";
-
-	tmpDestFileName += fname;
-	tmpDestFileName += ext;
-
-#ifdef	CONVERSION_VS
-	fopen_s( &srcFile, srcFullPath.c_str(), "r" );
-#else
-	srcFile = fopen( srcFullPath.c_str(), "r" );
-#endif // CONVERSION_VS
-
-	if( NULL == srcFile )
-		return false;
-
-	sizeRead = fread( szBuf, sizeof(char), 3, srcFile );
-	if( sizeRead >= 3 )
-	{
-		if( szBuf[0] == 0xEF && szBuf[1] == 0xBB && szBuf[2] == 0xBF )
-		{
-			fclose( srcFile );
-			return true;
-		}
-	}
-
-	fseek( srcFile, 0, SEEK_SET );
-
-#ifdef	CONVERSION_VS
-	fopen_s( &destFile, tmpDestFileName.c_str(), "w" );
-#else
-	destFile = fopen( tmpDestFileName.c_str(), "w" );
-#endif // CONVERSION_VS
-
-	if( NULL == destFile )
-	{
-		fclose( srcFile );
-		return false;
-	}
-
-
-	fputc( 0xEF, destFile );
-	fputc( 0xBB, destFile );
-	fputc( 0xBF, destFile );
-
-	//WCHAR wszHeader[MAX_PATH] = L"-- lua header. UTF-8 인코딩 인식을 위해 이 줄은 지우지 마세요.\r\n\r\n";
-	//::MultiByteToWideChar(CP_UTF8,0,szHeader,-1,wszHeader,MAX_PATH);
-	//fwrite( wszHeader, sizeof(WCHAR), wcslen(wszHeader), destFile );
-
-	while( false == feof( srcFile ) )
-	{
-		sizeRead = fread( szBuf, sizeof(char), ARRAY_SIZE(szBuf), srcFile );
-		if( sizeRead <= 0 )
-			break;
-
-		sizeWrote = fwrite( szBuf, sizeof(char), sizeRead, destFile );
-		ASSERT( sizeRead == sizeWrote );
-	}
-
-	fclose( srcFile );
-	fclose( destFile );
-
-
-	if( true == bIsidentical )
-	{
-		remove( srcFullPath.c_str() );
-		//DeleteFileA( srcFullPath.c_str() );
-		rename( tmpDestFileName.c_str(), destFullPath.c_str() );
-	}
-
-	return true;
-}
 
 
 
 
 
 
-inline bool DecomposePathAndFileName( WCHAR* wszPath, WCHAR* wszFileName, const WCHAR* wszFullPath )
-{
-	if( NULL == wszFullPath )
-		return false;
 
-	WCHAR drive[_MAX_DRIVE] = L"";
-	WCHAR dir[_MAX_DIR] = L"";
-	WCHAR fname[_MAX_FNAME] = L"";
-	WCHAR ext[_MAX_EXT] = L"";
 
-#ifdef	CONVERSION_VS
-	_wsplitpath_s( wszFullPath, drive, _MAX_DRIVE, dir, _MAX_DIR, fname, _MAX_FNAME, ext, _MAX_EXT );
-
-	if( NULL != wszFileName )
-	{
-		wcscat_s( wszFileName, _MAX_FNAME, fname );
-		wcscat_s( wszFileName, _MAX_FNAME, ext );
-	}
-	if( NULL != wszPath )
-	{
-		wcscat_s( wszPath, _MAX_DIR, drive );
-		wcscat_s( wszPath, _MAX_DIR, dir );
-	}
-#else
-	_wsplitpath( wszFullPath, drive, dir, fname, ext );
-
-	if( NULL != wszFileName )
-	{
-		wcscat( wszFileName, fname );
-		wcscat( wszFileName, ext );
-	}
-	if( NULL != wszPath )
-	{
-		wcscat( wszPath, drive );
-		wcscat( wszPath, dir );
-	}
-#endif // CONVERSION_VS
-
-	return true;
-}
-
-inline void CompulsorybyConvertFileAnsiToUTF8A( string strFullPath )
-{
-	FILE* srcFile = NULL;
-
-#ifdef	CONVERSION_VS
-	fopen_s( &srcFile, strFullPath.c_str(), "r" );
-#else
-	srcFile = fopen( strFullPath.c_str(), "r" );
-#endif // CONVERSION_VS
-
-	if( NULL == srcFile )
-		return;
-
-	UCHAR szBuf[1024] = "";
-	size_t sizeRead = 0;
-
-	sizeRead = fread( szBuf, sizeof(char), 3, srcFile );
-
-	fclose( srcFile );
-
-	if( sizeRead >= 3 )
-	{
-		if( szBuf[0] == 0xEF && szBuf[1] == 0xBB && szBuf[2] == 0xBF )
-		{
-			return;
-		}
-		else
-		{
-			::MessageBoxA( DXUTGetHWND(), "ANSI 파일이라 UTF 로 변환 됩니다.", strFullPath.c_str(), MB_ICONWARNING | MB_OK );
-
-			if( false == ConvertFullPathFileAnsiToUTF8( strFullPath, strFullPath ) )
-			{
-				::MessageBoxA( DXUTGetHWND(), "UTF 변환 실패.!", strFullPath.c_str(), MB_ICONWARNING | MB_OK );
-			}
-		}
-	}
-}
-
-inline void CompulsorybyConvertFileAnsiToUTF8W( wstring wstrFullPath )
-{
-	string strFileName;
-	ConvertWCHARToChar( strFileName, wstrFullPath );
-
-	CompulsorybyConvertFileAnsiToUTF8A( strFileName );
-}
 
 // kimhc // 1.05 (5%), 0.95 (-5%) 등의 증가율을 0.5, -0.5 등으로 반환 해주는 함수
 inline float CalculateIncreasingRate( float fRate )
@@ -1389,7 +1076,7 @@ inline bool IsSamef( float a, float b = 0.f )
 	return true;
 }
 
-inline bool DisplayErrorMessage( const WCHAR* wszError_ )
+inline bool DisplayErrorMessage( [[maybe_unused]] const WCHAR* wszError_ )
 {
 
 #if X2_DEV_TOOLS
@@ -1408,7 +1095,7 @@ inline bool DisplayErrorMessage( const WCHAR* wszError_ )
 }
 
 
-inline bool DisplayErrorMessage( const char* szError_ )
+inline bool DisplayErrorMessage( [[maybe_unused]] const char* szError_ )
 {
 
 #if X2_DEV_TOOLS

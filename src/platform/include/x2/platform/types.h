@@ -93,6 +93,12 @@ typedef LONG HRESULT;
 #define E_NOTIMPL     static_cast<HRESULT>(0x80004001L)
 #define SUCCEEDED(hr) (static_cast<HRESULT>(hr) >= 0)
 #define FAILED(hr)    (static_cast<HRESULT>(hr) < 0)
+// Win32 error codes, and as HRESULTs (FACILITY_WIN32)
+#define ERROR_FILE_NOT_FOUND 2L
+#define ERROR_INVALID_DATA   13L
+#define HRESULT_FROM_WIN32(x) \
+    (static_cast<HRESULT>(x) <= 0 ? static_cast<HRESULT>(x) \
+                                  : static_cast<HRESULT>((static_cast<unsigned long>(x) & 0x0000FFFF) | 0x80070000))
 
 // window handles appear in signatures of server code (no windows exist here)
 struct HWND__;
@@ -103,6 +109,8 @@ typedef HINSTANCE__* HINSTANCE, *HMODULE;
 inline BOOL IsWindow(HWND) { return 0; } // no windows exist here
 
 #define __forceinline inline __attribute__((always_inline))
+#define __noop(...) ((void)0)     // MSVC's intrinsic: the arguments are not evaluated
+#define CONST const
 
 #ifndef TRUE
 #define TRUE  1
@@ -138,6 +146,13 @@ typedef const wchar_t* LPCTSTR;
 #endif
 #ifndef OUT
 #define OUT
+#endif
+
+// __declspec(noinline) of MSVC
+#if defined(_MSC_VER)
+#define X2_NOINLINE __declspec(noinline)
+#else
+#define X2_NOINLINE __attribute__((noinline))
 #endif
 
 static_assert(sizeof(DWORD) == 4 && sizeof(WORD) == 2 && sizeof(BYTE) == 1, "Win32 type sizes");

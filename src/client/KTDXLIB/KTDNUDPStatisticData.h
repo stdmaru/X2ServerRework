@@ -42,7 +42,7 @@ private:
     float       m_fMaxRoundtripTime;
     float       m_fMinRoundtripTime;
 
-    boost::circular_buffer<DWORD>           m_cbufPingSentInfo;
+    KCircularBuffer<DWORD>           m_cbufPingSentInfo;
 
     struct KPingRecvInfo
     {
@@ -58,6 +58,6 @@ private:
         }
     };//struct KPingRecvInfo
 
-    boost::circular_buffer<KPingRecvInfo>   m_cbufPingRecvInfo;
+    KCircularBuffer<KPingRecvInfo>   m_cbufPingRecvInfo;
 
 };//class CKTDNUDPStatisticData

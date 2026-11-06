@@ -587,12 +587,12 @@ void CKTDGFreeTypeFont::Flush(bool bOutLine, int iPage )
 
 		if( m_bRHW == true )
 		{
-			BOOST_STATIC_ASSERT( S2DUIVertex::FVF == D3DFVF_XYZRHW_DIFFUSE_TEX1 );
+			static_assert( S2DUIVertex::FVF == D3DFVF_XYZRHW_DIFFUSE_TEX1 , "");
 			g_pKTDXApp->GetDVBManager()->DrawPrimitive( CKTDGDynamicVBManager::DVB_TYPE_XYZRHW_DIFFUSE_TEX1, D3DPT_TRIANGLELIST, m_iCandidate[i]*2, m_apPageVertex[i] );
 	    }
 	    else
 	    {
-            BOOST_STATIC_ASSERT( SLVERTEX::FVF == D3DFVF_XYZ_DIFFUSE_TEX1 );
+            static_assert( SLVERTEX::FVF == D3DFVF_XYZ_DIFFUSE_TEX1 , "");
             g_pKTDXApp->GetDVBManager()->DrawPrimitive( CKTDGDynamicVBManager::DVB_TYPE_XYZ_DIFFUSE_TEX1, D3DPT_TRIANGLELIST, m_iCandidate[i]*2, m_apPageVertex[i] );
 	    }
 

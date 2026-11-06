@@ -21,6 +21,7 @@ public:
 
 	virtual bool    HandleKeyboard( UINT uMsg, WPARAM wParam, LPARAM lParam );
 	virtual bool    HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lParam );
+	using CKTDGUIControl::MsgProc;
 	virtual bool    MsgProc( UINT uMsg, WPARAM wParam, LPARAM lParam );
 
 	virtual	bool	ContainsPoint( POINT pt );

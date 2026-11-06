@@ -38,11 +38,14 @@ class CKTDXDeviceRenderTargetTexture
 		void Clear( D3DCOLOR color = 0x00000000 );
 
 		void SetDeviceTexture( int stage = 0 );
-		HRESULT CopySurface( LPDIRECT3DSURFACE9 pDestSurface );
+		// StretchRect copies between this target, another one and the back buffer: not on the device yet, they fail
+		// (docs/porting/client-ktdxlib.md#render-targets).
+		HRESULT CopySurface( LPDIRECT3DTEXTURE9 pDestSurface );
 		HRESULT CopySurfaceToBackBuffer();
 		HRESULT CopyBackBufferToSurface();
 
-		LPDIRECT3DSURFACE9 GetSurface(){ return m_pRenderTargetSurface; }
+		// The device has no surfaces (T38): a render target is its texture.
+		LPDIRECT3DTEXTURE9 GetSurface(){ return m_pRenderTargetTexture; }
 		LPDIRECT3DTEXTURE9 GetTexture(){ return m_pRenderTargetTexture; }
 		int GetWidth(){ return m_Width; }
 		int GetHeight(){ return m_Height; }
@@ -50,7 +53,7 @@ class CKTDXDeviceRenderTargetTexture
 
 		bool IsOk()
 		{
-			if( m_pRenderTargetTexture == NULL || m_pRenderTargetSurface == NULL )
+			if( m_pRenderTargetTexture == NULL )
 			{
 				return false;
 			}
@@ -71,20 +74,8 @@ class CKTDXDeviceRenderTargetTexture
 		int						m_Width;
 		int						m_Height;
 
-		LPDIRECT3DTEXTURE9		m_pRenderTargetTexture;
-
-		LPDIRECT3DSURFACE9		m_pRenderTargetSurface;
-		LPDIRECT3DSURFACE9		m_pRenderTargetZSurface;
-
-		LPDIRECT3DSURFACE9		m_pBackupBuffer;
-		LPDIRECT3DSURFACE9		m_pBackupZBuffer;
-
-		LPDIRECT3DVERTEXBUFFER9	m_pDisplayVertexBuffer;
+		LPDIRECT3DTEXTURE9		m_pRenderTargetTexture;	// its depth buffer is the device's, sized to the target
+		LPDIRECT3DTEXTURE9		m_pBackupTarget;		// the target BeginRender replaced (null: the back buffer)
 		D3DFORMAT				m_D3DFormat;
 
-//#ifndef DYNAMIC_VERTEX_BUFFER_OPT
-//		LPDIRECT3DVERTEXBUFFER9	m_pVB_RHW_VERTEX;
-//		LPDIRECT3DVERTEXBUFFER9	m_pVB_RENDERTARGET_RHW_VERTEX;
-//		LPDIRECT3DVERTEXBUFFER9	m_pVB_RENDERTARGET_VERTEX;
-//#endif
 };

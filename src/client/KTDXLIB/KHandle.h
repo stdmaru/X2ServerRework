@@ -43,6 +43,8 @@ public:
         m_uiMagic = uiMagic_;
     }//KHandle()
 
+    KHandle& operator=( const KHandle& rhs_ ) = default;
+
     /// copy constructor.
     KHandle( const KHandle& rhs_ )
     {
@@ -225,7 +227,7 @@ namespace   lua_tinker
     }
 
     template<typename TYPE, typename TAG>
-	void push(lua_State *L, KHandleType_Invalid<TYPE,TAG> ret)
+	void push(lua_State *L, KHandleType_Invalid<TYPE,TAG> /*ret*/)
     {
         lua_pushnil(L);
     }

@@ -174,6 +174,30 @@ if(X2_BUILD_CLIENT)
     add_library(x2::pl_mpeg ALIAS x2_pl_mpeg)
 endif()
 
+# --- FreeType: the client's fonts (KTDXLIB, KTDGFreeTypeFont) ---------------------------------------------------
+# Upstream, pinned and linked statically (the original linked freetype2411.lib, docs/original/libraries.md). Only the
+# core: no zlib/bzip2/PNG/Brotli/HarfBuzz (the client's fonts are plain TrueType).
+if(X2_BUILD_CLIENT)
+    set(FT_DISABLE_ZLIB ON CACHE BOOL "" FORCE)
+    set(FT_DISABLE_BZIP2 ON CACHE BOOL "" FORCE)
+    set(FT_DISABLE_PNG ON CACHE BOOL "" FORCE)
+    set(FT_DISABLE_HARFBUZZ ON CACHE BOOL "" FORCE)
+    set(FT_DISABLE_BROTLI ON CACHE BOOL "" FORCE)
+    set(SKIP_INSTALL_ALL ON CACHE BOOL "" FORCE)
+    FetchContent_Declare(freetype
+        URL https://github.com/freetype/freetype/archive/refs/tags/VER-2-13-3.tar.gz
+        URL_HASH SHA256=bc5c898e4756d373e0d991bab053036c5eb2aa7c0d5c67e8662ddc6da40c4103
+        EXCLUDE_FROM_ALL)
+    set(X2_SAVED_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS})
+    set(BUILD_SHARED_LIBS OFF)
+    FetchContent_MakeAvailable(freetype)
+    set(BUILD_SHARED_LIBS ${X2_SAVED_BUILD_SHARED_LIBS})
+    set_target_properties(freetype PROPERTIES POSITION_INDEPENDENT_CODE ON)
+    if(NOT TARGET Freetype::Freetype)
+        add_library(Freetype::Freetype ALIAS freetype)
+    endif()
+endif()
+
 # ODBC (decision T17): unixODBC outside Windows, odbc32 on Windows. Only code that includes
 # x2/platform/odbc.h links it, so x2_platform itself does not depend on ODBC.
 add_library(x2_odbc INTERFACE)

@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "./KTDNUDP.h"
-#include <ws2tcpip.h> //newer functions and structs used to retrieve IP addresses
+#include "x2/platform/net.h" //newer functions and structs used to retrieve IP addresses
 
 
 

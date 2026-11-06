@@ -96,6 +96,7 @@ class CKTDGUIScrollBar : public CKTDGUIControl
 
 		virtual bool    HandleKeyboard( UINT uMsg, WPARAM wParam, LPARAM lParam );
 		virtual bool    HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lParam );
+		using CKTDGUIControl::MsgProc;
 		virtual bool    MsgProc( UINT uMsg, WPARAM wParam, LPARAM lParam );
 
 		//virtual void    Render( IDirect3DDevice9* pd3dDevice, float fElapsedTime );
@@ -114,6 +115,7 @@ class CKTDGUIScrollBar : public CKTDGUIControl
 		void SetPageSize( int nPageSize ) { m_nPageSize = nPageSize; Cap(); UpdateThumbRect(); }
 
 		void SetLocation( int x, int y ) { m_x = x; m_y = y; UpdateRects(); }
+		using CKTDGUIControl::SetSize;
 		void SetSize( int width, int height ) { m_width = width; m_height = height; UpdateRects(); }
 
 		int GetWidth() { return m_width; }

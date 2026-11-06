@@ -40,6 +40,7 @@ namespace x2::d3d9 {
 class Device;
 
 inline constexpr DWORD kTextureStages = 2;      // stages the fixed-function shader runs (D3D9 has 8)
+inline constexpr UINT kVertexShaderConstants = 256;  // float registers of vs_2_0 and later
 
 // IDirect3DTexture9 without COM. Lockable textures (managed, system memory, dynamic) keep a CPU copy of every level
 // in their D3D9 format; UnlockRect uploads the level. Render targets have no CPU copy.
@@ -162,6 +163,10 @@ public:
     void SetFVF(DWORD fvf);
     DWORD GetFVF() const { return m_fvf; }
     void SetStreamSource(UINT stream, VertexBuffer* buffer, UINT offset, UINT stride);
+    // Vertex shader float constants (kVertexShaderConstants registers of four floats): kept for the effects (T37),
+    // which will read them; the fixed-function shaders do not. False for registers out of range.
+    bool SetVertexShaderConstantF(UINT startRegister, const float* data, UINT registerCount);
+    bool GetVertexShaderConstantF(UINT startRegister, float* data, UINT registerCount) const;
 
     // Null: the back buffer. Resets the viewport to the whole target, as D3D9 does.
     bool SetRenderTarget(DWORD index, Texture* target);
@@ -177,6 +182,8 @@ public:
     std::unique_ptr<Texture> CreateTexture(UINT width, UINT height, UINT levels, DWORD usage, D3DFORMAT format,
                                            D3DPOOL pool);
     std::unique_ptr<VertexBuffer> CreateVertexBuffer(UINT length, DWORD usage, DWORD fvf, D3DPOOL pool);
+    // Whether CreateTexture takes this format with this usage (D3DUSAGE_RENDERTARGET, D3DUSAGE_AUTOGENMIPMAP).
+    bool SupportsTextureFormat(D3DFORMAT format, DWORD usage) const;
 
     // The back buffer's size this frame (0 x 0 while minimized or before the first scene).
     UINT BackBufferWidth() const { return m_backBuffer.width; }
@@ -253,6 +260,7 @@ private:
     DWORD m_fvf = 0;
     VertexBuffer* m_stream = nullptr;
     UINT m_streamOffset = 0, m_streamStride = 0;
+    std::vector<float> m_vsConstants = std::vector<float>(kVertexShaderConstants * 4, 0.0f);
     Texture* m_target = nullptr;
 
     // Frame
@@ -291,5 +299,7 @@ using IDirect3DDevice9 = x2::d3d9::Device;
 using LPDIRECT3DDEVICE9 = x2::d3d9::Device*;
 using IDirect3DTexture9 = x2::d3d9::Texture;
 using LPDIRECT3DTEXTURE9 = x2::d3d9::Texture*;
+using IDirect3DBaseTexture9 = x2::d3d9::Texture;    // there are only 2D textures (no cube or volume textures)
+using LPDIRECT3DBASETEXTURE9 = x2::d3d9::Texture*;
 using IDirect3DVertexBuffer9 = x2::d3d9::VertexBuffer;
 using LPDIRECT3DVERTEXBUFFER9 = x2::d3d9::VertexBuffer*;

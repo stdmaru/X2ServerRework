@@ -1,6 +1,6 @@
 #pragma once
 
-#include <d3d9.h>
+#include "Device.h"
 
 #define SETVECTOR4(vector,_x,_y,_z,_w) {vector.x = _x; vector.y = _y; vector.z = _z; vector.w = _w;}
 #define SETVECTOR3(vector,_x,_y,_z) {vector.x = _x; vector.y = _y; vector.z = _z;}

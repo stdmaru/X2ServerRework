@@ -7,12 +7,10 @@
 #ifndef _ASSERTTRACE_H
 #define _ASSERTTRACE_H
 
-#include <windows.h>
+#include "x2/platform/win32.h"
 #include <stdio.h>
 #include <assert.h>
 
-#pragma warning(push)
-#pragma warning(disable: 4995) // 'vsprintf': name was marked as #pragma deprectaed
 
 #ifdef _DEBUG // 2008-1-5
     #ifndef ASSERT
@@ -72,6 +70,5 @@
     #define CASSERT(expn_)       typedef char __C_ASSERT__[(expn_)?1:-1]
 #endif // #ifndef CASSERT
 
-#pragma warning(pop)
 
 #endif // _ASSERTTRACE_H

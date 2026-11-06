@@ -136,13 +136,13 @@ bool CKTDGUIDialogManager::_RemoveFromDialogList( CKTDGUIDialogType pkInDialog_ 
         ASSERT( *iter != NULL );
         if ( *iter == pkInDialog_ )
         {
-            BOOST_TEST_FOREACH( CKTDGUIDialogList::iterator&, iterForward, m_vecIterator )
+            for( CKTDGUIDialogList::iterator& iterForward : m_vecIterator )
             {
                 if ( iterForward != m_listDialog.end() && *iterForward == pkInDialog_ )
                     iterForward++;
             }//BOOST_TEST_FOREACH()
 
-            BOOST_TEST_FOREACH( CKTDGUIDialogList::iterator&, iterReverse, m_vecReverseIterator )
+            for( CKTDGUIDialogList::iterator& iterReverse : m_vecReverseIterator )
             {
                 if ( iterReverse != m_listDialog.end() && *iterReverse == pkInDialog_ )
                 {
@@ -340,7 +340,7 @@ bool CKTDGUIDialogManager::CheckDlg( CKTDGUIDialogType pDialogToCheck )
 		return false;
 
 
-    //BOOST_TEST_FOREACH( CKTDGUIDialogType, pDialog, m_listDialog )
+    //for( CKTDGUIDialogType pDialog : m_listDialog )
     //{
     //    if ( pDialog == pDialogToCheck )
     //    {
@@ -446,7 +446,7 @@ void CKTDGUIDialogManager::CountModalDialog( CKTDGUIDialog* pDialog /*= NULL*/ )
 	{
 		m_iModalDialogCount = 0;
 
-		BOOST_TEST_FOREACH( CKTDGUIDialogType, pDialog, m_listDialog )
+		for( CKTDGUIDialogType pDialog : m_listDialog )
 		{
 			ASSERT( pDialog != NULL );
 			CKTDGUIDialog* pDialogRawPointer = pDialog->Get();
@@ -656,7 +656,7 @@ CKTDGUIDialog* CKTDGUIDialogManager::GetDialog_LUA( const char* pName )
 
 
 
-//    BOOST_TEST_FOREACH( CKTDGUIDialogType, pDialog, m_listDialog )
+//    for( CKTDGUIDialogType pDialog : m_listDialog )
 //    {
 //        ASSERT( pDialog != NULL );
 //
@@ -701,7 +701,7 @@ CKTDGUIDialogType CKTDGUIDialogManager::GetDialog( const WCHAR* pName )
 
 
 
-    BOOST_TEST_FOREACH( CKTDGUIDialogType, pDialog, m_listDialog )
+    for( CKTDGUIDialogType pDialog : m_listDialog )
     {
         ASSERT( pDialog != NULL );
 		if ( wcscmp( pName, pDialog->GetName() ) == 0 )
@@ -1105,7 +1105,7 @@ bool CKTDGUIDialogManager::IsDraggingDialog()
 
 	KTDXPROFILE();
 
-    BOOST_TEST_FOREACH( CKTDGUIDialogType, pDialog, m_listDialog )
+    for( CKTDGUIDialogType pDialog : m_listDialog )
     {
         ASSERT( pDialog != NULL );
         if ( pDialog->GetShow() == true && pDialog->GetEnable() == true
@@ -1156,7 +1156,7 @@ void CKTDGUIDialogManager::SetStage( CKTDXStage* pStage )
 // 여기서 호출하는 CKTDGUIDialog 함수들은 모두 안전
 // 본 함수는 외부 iteration 중에 호출되어도 안전하다. 내부적으로도 숨겨진 iteration을 유발하지 않는다.
 
-    BOOST_TEST_FOREACH( CKTDGUIDialogType, pDialog, m_listDialog )
+    for( CKTDGUIDialogType pDialog : m_listDialog )
     {
         ASSERT( pDialog != NULL );
         pDialog->SetStage( pStage );

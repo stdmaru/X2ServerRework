@@ -135,7 +135,7 @@ protected:
     ///         generally pointer to the game object
     /// @note   there must be defined operator=() for data type 'T'
     ///
-    template<typename T,typename NKEY>
+    template<typename T_,typename NKEY_>
     struct HANDLE_NODE
     {
     public:
@@ -241,7 +241,7 @@ public:
         client 프로그램의 모든 handle 참조를 무효화시키기 위해서 제작했다.
         - jintaeks on 2008-05-16, 12:05 */
     typedef void (CALLBACK *INT_CALLBACK)(const KHandle& iReturnedHandle_);
-    typedef typename HANDLE_NODE<T,NKEY>                                NODE_TYPE;
+    typedef HANDLE_NODE<T,NKEY>                                         NODE_TYPE;
     typedef typename std::vector<NODE_TYPE, ALLOCATOR<NODE_TYPE > >     VEC_NODES;
 
 public:

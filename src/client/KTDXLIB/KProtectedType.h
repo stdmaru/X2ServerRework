@@ -41,7 +41,7 @@
                                                                 B : P4-3.2 1G WinXp-sp2
                                                                 * 모든 측정은 Release 모드를 기준으로 하였음.
 
-/************************************************************************/
+ ************************************************************************/
 
 // Ver1.3
 // @comment 2007/4/6 iridology
@@ -62,7 +62,7 @@
                                                                 B : P4-3.2 1G WinXp-sp2
                                                                 * 모든 측정은 Release 모드를 기준으로 하였음.
 
-/************************************************************************/
+ ************************************************************************/
 
 // Ver1.4
 // @comment 2007/5/10. daeuk = iridology ^^;
@@ -77,8 +77,6 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#pragma warning(push)
-#pragma warning(disable:4786)
 
 #include <sstream>
 #include <vector>
@@ -580,6 +578,7 @@ struct PROTECT_VECTOR3
 	PROTECT_VECTOR3( const PROTECT_VECTOR3& protectVec3_ )
 		: x( protectVec3_.x ), y( protectVec3_.y ), z( protectVec3_.z )
 	{}
+	PROTECT_VECTOR3& operator=( const PROTECT_VECTOR3& ) = default;
 
 	PROTECT_VECTOR3( const D3DXVECTOR3& vec3_ )
 		: x( vec3_.x ), y( vec3_.y ), z( vec3_.z )
@@ -600,22 +599,22 @@ struct PROTECT_VECTOR3
 		z += rhs_.z;
 	}
 
-	friend static PROTECT_VECTOR3 operator-( const PROTECT_VECTOR3& lhs_, const D3DXVECTOR3& rhs_ )
+	friend PROTECT_VECTOR3 operator-( const PROTECT_VECTOR3& lhs_, const D3DXVECTOR3& rhs_ )
 	{
 		return PROTECT_VECTOR3( lhs_.x - rhs_.x, lhs_.y - rhs_.y, lhs_.z - rhs_.z );
 	}
 
-	friend static PROTECT_VECTOR3 operator-( const PROTECT_VECTOR3& lhs_, const PROTECT_VECTOR3& rhs_ )
+	friend PROTECT_VECTOR3 operator-( const PROTECT_VECTOR3& lhs_, const PROTECT_VECTOR3& rhs_ )
 	{
 		return PROTECT_VECTOR3( lhs_.x - rhs_.x, lhs_.y - rhs_.y, lhs_.z - rhs_.z );
 	}
 
-	friend static PROTECT_VECTOR3 operator*( const PROTECT_VECTOR3& lhs_, const float rhs_ )
+	friend PROTECT_VECTOR3 operator*( const PROTECT_VECTOR3& lhs_, const float rhs_ )
 	{
 		return PROTECT_VECTOR3( lhs_.x * rhs_, lhs_.y * rhs_, lhs_.z * rhs_ );
 	}
 
-	friend static PROTECT_VECTOR3 operator/( const PROTECT_VECTOR3& lhs_, const float rhs_ )
+	friend PROTECT_VECTOR3 operator/( const PROTECT_VECTOR3& lhs_, const float rhs_ )
 	{
 		return PROTECT_VECTOR3( lhs_.x / rhs_, lhs_.y / rhs_, lhs_.z / rhs_ );
 	}
@@ -636,7 +635,6 @@ struct PROTECT_VECTOR3
 };
 
 
-#pragma warning(pop)
 #endif //end of _PROTECTEDTYPE_H_
 
 // Performance
@@ -655,7 +653,7 @@ A : P3-600, 128Ram, Win98
 B : P4-3.2 1G WinXp-sp2
 * 모든 측정은 Release 모드를 기준으로 하였음.
 
-/************************************************************************/
+ ************************************************************************/
 
 // Ver1.3
 /************************************************************************/
@@ -671,4 +669,4 @@ A : P3-600, 128Ram, Win98
 B : P4-3.2 1G WinXp-sp2
 * 모든 측정은 Release 모드를 기준으로 하였음.
 
-/************************************************************************/
+ ************************************************************************/

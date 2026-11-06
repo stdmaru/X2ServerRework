@@ -53,7 +53,7 @@
 #ifdef _USE_BOOST_CONST_STRING_
 
 #define BOOST_CONST_CSTRING             boost::const_cstring
-#define BOOST_CONST_STRING_CREF( x )    boost::cref( x )
+#define BOOST_CONST_STRING_CREF( x )    std::cref( x )
 
 #else
 
@@ -65,7 +65,6 @@
 // 패키지 암호화는 무조건 !! - robobeg, 2014-01-21
 
 #if !X2_DEV_TOOLS
-	#pragma NOTE( "ktdx.h 의 _SERVICE_ 실행!" )
 		//#define _ENCRIPT_SCRIPT_
 
 //	#define NO_GAMEGUARD	// 해외팀 제거
@@ -88,7 +87,6 @@
 
 
 #elif X2_DEV_TOOLS
-    #pragma NOTE( "ktdx.h 의 _IN_HOUSE_ 실행!" )
     //#define CHECK_NP_HACKUSER // 사내에서는 전사용자 대상으로 게임가드 실행
 	//#define _USE_NEXON_MSG_INHOUSE // 사내에서 본섭 넥슨메신져 열결 (왠만해선 사용하지 말자.)
 
@@ -98,7 +96,6 @@
 
 
 #else
-	#pragma NOTE( "ktdx.h 의 define 확인하기.!" )
 	NOT GOOD.
 
 #endif // _SERVICE_
@@ -330,52 +327,17 @@
 #define XOR_KEY2 0x9800bbef
 
 
-#ifndef STRICT
-#define STRICT
-#endif
-
-// If app hasn't chosen, set to work with Windows 98, Windows Me, Windows 2000, Windows XP and beyond
-#ifndef WINVER
-#define WINVER         0x0410
-#endif
-#ifndef _WIN32_WINDOWS
-#define _WIN32_WINDOWS 0x0410
-#endif
-
-#ifndef _WIN32_WINNT
-#define _WIN32_WINNT   0x0500
-#endif
-
-#pragma warning (disable: 4702)
-#pragma warning (disable: 4995)
-#pragma warning( disable : 4100 ) // disable unreference formal parameter warnings for /W4 builds
-
-#include <Winsock2.h>
-#include <wininet.h>
-#include <windows.h>
-
+// System headers: Win32 through x2::platform, D3D9 through KTDXLIB's own device (decision T38,
+// docs/porting/client-d3d9.md), DirectInput through SDL3. DirectSound, DirectShow, DirectDraw and DirectPlay are gone.
+#include "x2/platform/net.h"
+#include "x2/platform/win32.h"
 
 #include <assert.h>
 #include <wchar.h>
-#include <commctrl.h> // for InitCommonControls()
-#include <shellapi.h> // for ExtractIcon()
 #include <math.h>
 #include <limits.h>
 #include <stdio.h>
 #include <time.h>
-#include <process.h>
-#include <io.h>
-#include <shldisp.h>
-#include <malloc.h>
-//{{ robobeg : 2009-8-19
-#include <atlbase.h> // for CComPtr and CComQIPtr
-//}} robobeg : 2009-8-19
-
-//////////////////////////////////////////////////////////////////////////
-//현재 실행중인 프로세스를 찾아내기위한 함수를 쓰기위해
-#include <TlHelp32.h>
-//////////////////////////////////////////////////////////////////////////
-
 
 #include "KSuperAssert.h"
 
@@ -387,62 +349,18 @@
 
 #include "../X2/KOGGamePerformanceCheckDefine.h"
 
-// CRT's memory leak detection
-#if defined(DEBUG) || defined(_DEBUG)
-	#include <crtdbg.h>
-#endif
-
-
-//{{ seojt // 2008-10-15, 10:47
-// Enable extra D3D debugging in debug builds if using the debug DirectX runtime.
-// This makes D3D objects work well in the debugger watch window, but slows down
-// performance slightly.
-// "d3d9.h"를 include하기 전에 이 매크로를 활성화시켜 주어야 한다.
-// "d3d9.h" 인클루드 후에 있던 정의를 "d3d9.h"를 인클루드하기 전으로
-// 옮기다. - jintaeks on 2008-10-15, 10:49
-#if defined(DEBUG) || defined(_DEBUG)
-	#ifndef D3D_DEBUG_INFO
-		#define D3D_DEBUG_INFO
-	#endif
-#endif
-//}} seojt // 2008-10-15, 10:47
-// Direct3D includes
-#include <d3d9.h>
-#include <d3dx9.h>
-#ifdef CONVERSION_VS
-#	include <dxerr.h>
-#else
-#	include <dxerr9.h>
-#endif // CONVERSION_VS
+// Direct3D: KTDXLIB's device and the D3D9 vocabulary, the D3DX math, and the D3DX interfaces the engine still names
+#include "D3D9Types.h"
+#include "Device.h"
+#include "x2/platform/d3dx_math.h"
+#include "D3DXTypes.h"
 #include "DirectInputKeys.h"	// DirectInput is replaced by SDL3 (docs/porting/client-input.md)
-#include <mmsystem.h>
-#include <mmreg.h>
-#ifdef CONVERSION_VS
-//#	include <dplay8.h>
-#else
-#include <dplay8.h>
-#include <ddraw.h>
-#include <dsound.h>
-#include <dshow.h>
-#endif // CONVERSION_VS
 
-
-#ifndef STRSAFE_NO_DEPRECATE
-#pragma deprecated("strncpy")
-#pragma deprecated("wcsncpy")
-#pragma deprecated("_tcsncpy")
-#pragma deprecated("wcsncat")
-#pragma deprecated("strncat")
-#pragma deprecated("_tcsncat")
-#endif
-
-#pragma warning( disable : 4996 ) // disable deprecated warning
-#include <strsafe.h>
-#pragma warning( default : 4996 )
-
-#include "zlib.h"
+#include <zlib.h>
 
 #include "DXUT.h"  // the DXUT replacement (src/client/DXUT): window, loop, timer
+#include "SdlInput.h"  // DXUTGetInputState(): the cursor
+#include "x2/platform/process.h"
 
 
 
@@ -473,31 +391,26 @@ using std::set;
 //{{ robobeg : 2008-10-10
 #include <bitset>
 #include    <deque>
-#include	<boost/test/utils/foreach.hpp>
-#include    <boost/foreach.hpp>
-#include    <boost/static_assert.hpp>
-#include    <boost/type_traits/is_base_of.hpp>
+#include <algorithm>
+#include <type_traits>
 //}} robobeg : 2008-10-10
 
 #include <sys/stat.h>
-#include <boost/noncopyable.hpp>
-#include <boost/pool/object_pool.hpp>
-#include <boost/array.hpp>
-
-	#include <boost/pool/singleton_pool.hpp>
-
-
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
-#include <boost/enable_shared_from_this.hpp>
-#include <boost/scope_exit.hpp>
-#include <boost/circular_buffer.hpp>
-#include <boost/intrusive_ptr.hpp>
+#include <array>
+#include <memory>
+#include "x2/platform/noncopyable.h"
+#include "x2/platform/intrusive_ptr.h"
+#include "KCircularBuffer.h"
 
 #include <ft2build.h>
 #include <freetype/freetype.h>
 #include <freetype/ftbitmap.h>
 
+
+// The CRT's debug assertion (crtdbg.h)
+#ifndef _ASSERTE
+#define _ASSERTE(expr) assert(expr)
+#endif
 
 #if defined(DEBUG) || defined(_DEBUG)
 
@@ -508,45 +421,37 @@ using std::set;
 	#endif // #if !defined(ASSERT)
 
 	#ifndef V
-		#define V(x)           { hr = x; if( FAILED(hr) ) { DXUTTrace( __FILE__, (DWORD)__LINE__, hr, L#x, true ); } }
+		#define V(x)           { hr = x; if( FAILED(hr) ) { DXUTTrace( __FILE__, (DWORD)__LINE__, hr, L ## #x, true ); } }
 	#endif
 	#ifndef V_RETURN
-		#define V_RETURN(x)    { hr = x; if( FAILED(hr) ) { return DXUTTrace( __FILE__, (DWORD)__LINE__, hr, L#x, true ); } }
+		#define V_RETURN(x)    { hr = x; if( FAILED(hr) ) { return DXUTTrace( __FILE__, (DWORD)__LINE__, hr, L ## #x, true ); } }
 	#endif
 
 
     #if !defined(TRACE)
+        // To stderr (OutputDebugString in the original). Wide formats follow Windows (%s is wide).
         inline void _tracew(const WCHAR* fmt_, ...)
         {
             WCHAR   out[4096];
             va_list argList;
 
             va_start( argList, fmt_ );
-            //StringCchVPrintfW( out, ARRAY_SIZE( out ), fmt_, argList );
-#ifdef	CONVERSION_VS
-			::vswprintf_s( out, _countof(out), fmt_, argList );
-#else
-			::vswprintf( out, fmt_, argList );
-#endif // CONVERSION_VS
+            const std::wstring format = x2::platform::TranslateWideFormat( fmt_ );
+            std::vswprintf( out, std::size( out ), format.c_str(), argList );
             va_end( argList );
-            ::OutputDebugStringW( out );
+            out[std::size( out ) - 1] = L'\0';
+            std::fputs( x2::platform::WideToUtf8( out ).c_str(), stderr );
         }//_tracew()
 
         inline void _tracea(const char* pszFormat_, ...)
         {
             char    out[4096];
-			ZeroMemory( out, 4096 );
             va_list argList;
 
             va_start( argList, pszFormat_ );
-            //StringCchVPrintfA( out, ARRAY_SIZE( out ), pszFormat_, argList );
-#ifdef	CONVERSION_VS
-			::vsprintf_s( out, _countof(out), pszFormat_, argList );
-#else
-			::vsprintf( out, pszFormat_, argList );
-#endif // CONVERSION_VS
+            std::vsnprintf( out, sizeof( out ), pszFormat_, argList );
             va_end( argList );
-            ::OutputDebugStringA( out );
+            std::fputs( out, stderr );
         }//_tracea()
         #if !defined(TRACEA)
         #define TRACEA              _tracea
@@ -591,11 +496,10 @@ using std::set;
 #endif
 
 
+// Reference counting for x2::intrusive_ptr<CLASS>, found by argument-dependent lookup (namespace boost in the original)
 #define IMPLEMENT_INTRUSIVE_PTR(CLASS) \
-namespace boost { \
     inline void    intrusive_ptr_add_ref( CLASS* p ) { if ( p )    p->AddRef(); } \
-    inline void    intrusive_ptr_release( CLASS* p ) { if ( p )    p->Release(); } \
-}
+    inline void    intrusive_ptr_release( CLASS* p ) { if ( p )    p->Release(); }
 
 
 
@@ -609,7 +513,7 @@ inline typename Container::iterator EraseUnorderlyUsingSwap( Container& containe
 		return	container.erase( iter );
 	}//if
 	swap( *iter, *iterLast );
-	Container::size_type dist = iter - container.begin();
+	typename Container::size_type dist = iter - container.begin();
 	container.erase( iterLast );
 	return	container.begin() + dist;
 }
@@ -796,7 +700,7 @@ else {  (p) = (type*) ::realloc((p), (s) * sizeof(type)); ASSERT(p); } }
 
 //{{ seojt // 2009-1-13, 15:44
 #ifndef SHARED_POINTER_CAST
-#define SHARED_POINTER_CAST(TARGET_TYPE,sharedPointer)     boost::static_pointer_cast<TARGET_TYPE>( sharedPointer )
+#define SHARED_POINTER_CAST(TARGET_TYPE,sharedPointer)     std::static_pointer_cast<TARGET_TYPE>( sharedPointer )
 #endif // SHARED_POINTER_CAST()
 //}} seojt // 2009-1-13, 15:44
 
@@ -840,7 +744,7 @@ struct TimeLimited
 
 	virtual void OnTimeOutCallBack() {};
 
-	virtual void OnFrameMove( double fTime, float fElapsedTime )
+	virtual void OnFrameMove( double /*fTime*/, float fElapsedTime )
 	{
 		if( m_fTimeLeft > 0.f )
 		{
@@ -944,8 +848,6 @@ extern double g_NowTime;
 
 #include "KHangulPPWSelector.h"
 #include "MinMax.h"
-#include <boost/shared_ptr.hpp>
-#include <boost/scope_exit.hpp>
 
 #ifdef CONVERSION_VS
 #if defined(DEBUG) || defined(_DEBUG)

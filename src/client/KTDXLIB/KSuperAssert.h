@@ -4,6 +4,8 @@
 #include <sstream>
 #include <string>
 
+#include "x2/platform/unicode.h"
+
 class KSuperAssert
 {
 
@@ -20,49 +22,28 @@ public:
 	void _remotelog();
 
 	template<typename T>
-	KSuperAssert& operator << (T val)
+	KSuperAssert& operator << (const T& val)
 	{
 		std::ostringstream os;
 		os << val;
-		m_strInfo += os.str().c_str();
+		m_strInfo += os.str();
 
 		return *this;
 	}
 
-	template<>
-		KSuperAssert& operator << (const WCHAR* val)
+	// Wide text goes in as UTF-8 and is echoed to the console (the original converted it to the ANSI code page).
+	KSuperAssert& operator << (const wchar_t* val)
 	{
-		char charBuf[255] = {0,};
-		WideCharToMultiByte( CP_ACP, 0, val, -1, charBuf, 255, NULL, NULL );
-
-
-		std::ostringstream os;
-		os << charBuf;
-		m_strInfo += os.str().c_str();
-
-		std::cout << charBuf << std::endl;
+		const std::string text = x2::platform::WideToUtf8( val != nullptr ? val : L"" );
+		m_strInfo += text;
+		std::cout << text << std::endl;
 
 		return *this;
 	}
+	KSuperAssert& operator << (wchar_t* val)              { return *this << static_cast<const wchar_t*>( val ); }
+	KSuperAssert& operator << (const std::wstring& val)   { return *this << val.c_str(); }
 
-	template<>
-		KSuperAssert& operator << (WCHAR* val)
-	{
-		char charBuf[255] = {0,};
-		WideCharToMultiByte( CP_ACP, 0, val, -1, charBuf, 255, NULL, NULL );
-
-
-		std::ostringstream os;
-		os << charBuf;
-		m_strInfo += os.str().c_str();
-
-		std::cout << charBuf << std::endl;
-
-		return *this;
-	}
-
-	// manipication
-	template<>
+	// manipulators
 	KSuperAssert& operator << (KSuperAssert& (*_manip) (KSuperAssert&))
 	{
 		return _manip( *this );
@@ -100,6 +81,18 @@ protected:
 	std::string m_strBuf;
 
 };
+
+// The manipulators, at namespace scope: `KLOG(...) << msg << fileout` names them without a call, which a friend
+// declared only inside the class does not make visible (MSVC accepted it).
+KSuperAssert& flush(KSuperAssert& kAssert);
+KSuperAssert& fatal(KSuperAssert& kAssert);
+KSuperAssert& trace(KSuperAssert& kAssert);
+KSuperAssert& fileout(KSuperAssert& kAssert);
+KSuperAssert& remotelog(KSuperAssert& kAssert);
+KSuperAssert& fatal_(KSuperAssert& kAssert);
+KSuperAssert& trace_(KSuperAssert& kAssert);
+KSuperAssert& fileout_(KSuperAssert& kAssert);
+KSuperAssert& remotelog_(KSuperAssert& kAssert);
 
 extern KSuperAssert g_kSuperAssert;
 
@@ -146,7 +139,6 @@ extern KSuperAssert g_kSuperAssert;
 	#define ErrorLogMsg( errorEnum, errorMsg )		\
 	{	\
 				KLOG("ErrorLog.txt") << "ErrorEnum(" << errorEnum << "),\t" << "ErrorMsg(\"" << errorMsg << "\")," << "\t( " <<__FILE__ << ", " << __FUNCTION__  << ", " << __LINE__ << " )" << fileout;  \
-				std::cout << "ErrorEnum(" << errorEnum << "),\t" << "ErrorMsg(\"" << errorMsg << "\")," << "\t( " <<__FILE__ << ", " << __FUNCTION__  << ", " << __LINE__ << " )" << std::endl; \
 				fprintf( stderr, "\nㅁ ErrorEnum( %d ), %s, %s, %d\n", errorEnum, __FILE__, __FUNCTION__, __LINE__ );	\
 	}
 

@@ -33,6 +33,7 @@ class CKTDGUISlider : public CKTDGUIControl
 		void	SetButtonTex_LUA( const char* pFileName, const char* key );
 
 		void	SetPos(int x, int y) { m_x = x; m_y = y; UpdateRects(); }
+		using CKTDGUIControl::SetSize;
 		void	SetSize(int width, int height) { m_width = width; m_height = height; UpdateRects(); }
 		void	SetButtonSize( int width, int height ) { m_iButtonWidth = width, m_iButtonHeight = height; UpdateRects(); }
 		void	SetMin(int _min) { m_nMin = _min; }

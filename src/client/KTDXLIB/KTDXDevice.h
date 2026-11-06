@@ -110,8 +110,8 @@ protected:
     bool    UnrefDeviceIfReferedOnce();
 	void SetWithoutFile(bool val) { m_bWithoutFile = val; }
 
-	virtual HRESULT     _Load( bool bSkipStateCheck = false
-				, bool bBackgroundQueueing = false
+	virtual HRESULT     _Load( bool /*bSkipStateCheck*/ = false
+				, bool /*bBackgroundQueueing*/ = false
 		)         { return S_OK; }
 
 

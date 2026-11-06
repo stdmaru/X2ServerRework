@@ -14,6 +14,8 @@
 #include <cstdint>
 
 #include "Device.h"   // KTDXLIB/D3D9: IDirect3DDevice9 is x2::d3d9::Device
+#include "MessageBox.h"   // Win32 MessageBox outside Windows
+#include "GrowableArray.h"   // DXUT's CGrowableArray
 
 // Callbacks (DXUT.h)
 typedef void    (CALLBACK *LPDXUTCALLBACKFRAMEMOVE)(IDirect3DDevice9* pd3dDevice, double fTime, float fElapsedTime, void* pUserContext);

@@ -89,7 +89,7 @@ void    CKTDNUDPStatisticData::ProcessPingReceive( DWORD dwMySendTimestamp_, DWO
         return;
 
     bool        bFound = false;
-    for( boost::circular_buffer<DWORD>::iterator iter = m_cbufPingSentInfo.begin();
+    for( KCircularBuffer<DWORD>::iterator iter = m_cbufPingSentInfo.begin();
         iter != m_cbufPingSentInfo.end(); ++iter )
     {
         if ( *iter == dwMySendTimestamp_ )

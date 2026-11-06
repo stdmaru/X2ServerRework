@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include <stdarg.h>
-#include <windows.h>
+#include "x2/platform/win32.h"
 #include <stdio.h>
 
 int debugPrintf( char *fmt, ... ) {

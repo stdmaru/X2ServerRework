@@ -15,7 +15,7 @@ typedef CKTDGObjectList::iterator           CKTDGObjectHandle;
 //class CThreadSafeNewDelete
 //{
 //private:
-//	boost::shared_ptr<CThreadSafeNewDelete>   this_;
+//	std::shared_ptr<CThreadSafeNewDelete>   this_;
 //
 //protected:
 //	explicit CThreadSafeNewDelete() : this_(this)
@@ -29,7 +29,7 @@ typedef CKTDGObjectList::iterator           CKTDGObjectHandle;
 //		//std::cout << "~KTDGObject()" << std::endl;
 //	}
 //
-//	boost::weak_ptr<CThreadSafeNewDelete> get_weak_ptr() const
+//	std::weak_ptr<CThreadSafeNewDelete> get_weak_ptr() const
 //	{
 //		return this_;
 //	}
@@ -67,7 +67,7 @@ typedef CKTDGObjectList::iterator           CKTDGObjectHandle;
 */
 //{{ seojt // 2009-1-14, 21:25
 class CKTDGObject
-    : private boost::noncopyable
+    : private x2::NonCopyable
 //}} seojt // 2009-1-14, 21:25
 {
     //{{ seojt // 2009-1-9, 10:39
@@ -102,7 +102,7 @@ class CKTDGObject
         static void DeleteKTDGObject( CKTDGObject* pObject_ );
         //}} seojt // 2009-1-14, 22:00
 
-		virtual HRESULT OnFrameMove( double fTime, float fElapsedTime ){ return S_OK; }
+		virtual HRESULT OnFrameMove( double /*fTime*/, float /*fElapsedTime*/ ){ return S_OK; }
 //{{ robobeg : 2008-10-28
 		//virtual HRESULT OnFrameRender(){ return S_OK; }
         virtual RENDER_HINT OnFrameRender_Prepare() { return RENDER_HINT_DEFAULT; }
@@ -339,7 +339,7 @@ class CKTDGObject
 		}
 #endif // CONVERSION_VS
 
-        virtual void    NotifyDGManagerChanged( CKTDGManager& refInManager_ ) {}
+        virtual void    NotifyDGManagerChanged( CKTDGManager& /*refInManager_*/ ) {}
 
 		CKTDGObject::OBJECT_TYPE GetObjectType() const { return m_eObjectType; }
 		void SetObjectType( const OBJECT_TYPE eObjectType_ ) { m_eObjectType = eObjectType_; }
@@ -408,7 +408,6 @@ class CKTDGObject
 				return false;
 
 			D3DXVECTOR3 center;
-			float fScale = 0.f;
 
 
 			GetTransformCenter( &center );

@@ -3,6 +3,7 @@
 #pragma once
 
 #include <chrono>
+#include <cstddef>
 #include <memory>
 #include <optional>
 #include <string>
@@ -65,6 +66,11 @@ private:
 long long CurrentProcessId();
 // The process that started this one (ssh, for ServerManager's askpass); 0 when unknown.
 long long ParentProcessId();
+
+// This process's memory in bytes: resident (working set) now and its peak. False when the system does not say.
+bool CurrentProcessMemory(std::size_t& current, std::size_t& peak);
+// The machine's physical memory in bytes: installed (as the system sees it) and available now. False when unknown.
+bool PhysicalMemory(std::size_t& total, std::size_t& available);
 
 // Sets (or, with an empty value, removes) a variable of this process's environment, which the children started from
 // then on inherit. Not thread-safe with other environment reads (getenv): call it before starting threads.

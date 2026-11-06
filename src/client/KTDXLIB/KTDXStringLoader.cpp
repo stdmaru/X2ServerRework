@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "KTDXStringLoader.h"
-#include <atlstr.h>
+#include "x2/platform/win32.h"
 #include <locale>
 
 CKTDXStringLoader::CKTDXStringLoader( void )

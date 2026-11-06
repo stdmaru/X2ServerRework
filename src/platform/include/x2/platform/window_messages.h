@@ -1,5 +1,6 @@
 // Win32 window-message names for the client's MsgProc(HWND, UINT, WPARAM, LPARAM) model (roadmap Phase 3): message
-// parameter types, POINT/RECT, the WM_*, VK_*, MK_*, SIZE_*, GCS_* and SC_* constants, and the LOWORD/MAKELPARAM family.
+// parameter types, POINT/RECT/SIZE, the WM_*, VK_*, MK_*, SIZE_*, GCS_* and SC_* constants, the LOWORD/MAKELPARAM
+// family, and the GDI text names the engine's fonts take as arguments (DT_* formats, FW_* weights).
 //
 // On Windows they come from <windows.h> (through types.h). Elsewhere they are defined here with the values and sizes they
 // have on Windows x64, so the client code that switches on them compiles unchanged and the SDL3 translation
@@ -36,8 +37,9 @@ typedef const RECT* LPCRECT;
 // minwindef.h / windowsx.h
 #define LOBYTE(w)           (static_cast<BYTE>(static_cast<DWORD_PTR>(w) & 0xff))
 #define HIBYTE(w)           (static_cast<BYTE>((static_cast<DWORD_PTR>(w) >> 8) & 0xff))
-#define LOWORD(l)           (static_cast<WORD>(static_cast<DWORD_PTR>(l) & 0xffff))
-#define HIWORD(l)           (static_cast<WORD>((static_cast<DWORD_PTR>(l) >> 16) & 0xffff))
+// a C-style cast, as in minwindef.h: LOWORD(hkl) takes a handle too
+#define LOWORD(l)           (static_cast<WORD>(((DWORD_PTR)(l)) & 0xffff))
+#define HIWORD(l)           (static_cast<WORD>((((DWORD_PTR)(l)) >> 16) & 0xffff))
 #ifndef MAKEWORD  // net.h has it too (Winsock versions)
 #define MAKEWORD(a, b)      (static_cast<WORD>((static_cast<DWORD_PTR>(a) & 0xff) | ((static_cast<DWORD_PTR>(b) & 0xff) << 8)))
 #endif
@@ -267,6 +269,38 @@ typedef const RECT* LPCRECT;
 #define VK_OEM_7      0xDE  // '"
 #define VK_OEM_102    0xE2  // the extra key of ISO keyboards
 #define VK_PROCESSKEY 0xE5
+
+// wingdi.h / winuser.h: the engine's fonts (FreeType) keep GDI's text format flags and weights in their signatures
+typedef struct tagSIZE {
+    LONG cx;
+    LONG cy;
+} SIZE, *PSIZE, *LPSIZE;
+
+#define DT_TOP              0x00000000
+#define DT_LEFT             0x00000000
+#define DT_CENTER           0x00000001
+#define DT_RIGHT            0x00000002
+#define DT_VCENTER          0x00000004
+#define DT_BOTTOM           0x00000008
+#define DT_WORDBREAK        0x00000010
+#define DT_SINGLELINE       0x00000020
+#define DT_EXPANDTABS       0x00000040
+#define DT_TABSTOP          0x00000080
+#define DT_NOCLIP           0x00000100
+#define DT_EXTERNALLEADING  0x00000200
+#define DT_CALCRECT         0x00000400
+#define DT_NOPREFIX         0x00000800
+
+#define FW_DONTCARE         0
+#define FW_THIN             100
+#define FW_EXTRALIGHT       200
+#define FW_LIGHT            300
+#define FW_NORMAL           400
+#define FW_MEDIUM           500
+#define FW_SEMIBOLD         600
+#define FW_BOLD             700
+#define FW_EXTRABOLD        800
+#define FW_HEAVY            900
 
 #endif // !_WIN32
 

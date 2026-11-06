@@ -1,7 +1,7 @@
 #pragma once
 
-#include <d3dx9.h>
-#include <d3d9.h>
+#include "x2/platform/d3dx_math.h"
+#include "Device.h"
 
 class CKTDGDynamicTexture
 {

@@ -4,6 +4,7 @@
 #include "x2/platform/types.h" // <windows.h>
 #include "x2/platform/unicode.h"
 #include <tlhelp32.h>
+#include <psapi.h>
 #else
 #include <cerrno>
 #include <csignal>
@@ -14,6 +15,7 @@
 #include <unistd.h>
 #endif
 
+#include <cstdio>
 #include <cstdlib>
 #include <filesystem>
 #include <mutex>
@@ -53,6 +55,71 @@ long long ParentProcessId()
     return parent;
 #else
     return ::getppid();
+#endif
+}
+
+bool CurrentProcessMemory(std::size_t& current, std::size_t& peak)
+{
+    current = peak = 0;
+#if defined(_WIN32)
+    PROCESS_MEMORY_COUNTERS counters{};
+    if (!::GetProcessMemoryInfo(::GetCurrentProcess(), &counters, sizeof(counters)))
+        return false;
+    current = counters.WorkingSetSize;
+    peak = counters.PeakWorkingSetSize;
+    return true;
+#else
+    // VmRSS and VmHWM (the resident set's high-water mark) of /proc/self/status, in kB
+    std::FILE* status = std::fopen("/proc/self/status", "r");
+    if (!status)
+        return false;
+    char line[256];
+    int found = 0;
+    while (std::fgets(line, sizeof(line), status)) {
+        unsigned long long kb = 0;
+        if (std::sscanf(line, "VmRSS: %llu kB", &kb) == 1) {
+            current = static_cast<std::size_t>(kb) * 1024;
+            ++found;
+        } else if (std::sscanf(line, "VmHWM: %llu kB", &kb) == 1) {
+            peak = static_cast<std::size_t>(kb) * 1024;
+            ++found;
+        }
+    }
+    std::fclose(status);
+    return found == 2;
+#endif
+}
+
+bool PhysicalMemory(std::size_t& total, std::size_t& available)
+{
+    total = available = 0;
+#if defined(_WIN32)
+    MEMORYSTATUSEX status{};
+    status.dwLength = sizeof(status);
+    if (!::GlobalMemoryStatusEx(&status))
+        return false;
+    total = static_cast<std::size_t>(status.ullTotalPhys);
+    available = static_cast<std::size_t>(status.ullAvailPhys);
+    return true;
+#else
+    // MemTotal and MemAvailable of /proc/meminfo, in kB
+    std::FILE* info = std::fopen("/proc/meminfo", "r");
+    if (!info)
+        return false;
+    char line[256];
+    int found = 0;
+    while (std::fgets(line, sizeof(line), info)) {
+        unsigned long long kb = 0;
+        if (std::sscanf(line, "MemTotal: %llu kB", &kb) == 1) {
+            total = static_cast<std::size_t>(kb) * 1024;
+            ++found;
+        } else if (std::sscanf(line, "MemAvailable: %llu kB", &kb) == 1) {
+            available = static_cast<std::size_t>(kb) * 1024;
+            ++found;
+        }
+    }
+    std::fclose(info);
+    return found == 2;
 #endif
 }
 

@@ -1,8 +1,7 @@
 #pragma once
 
 
-#include "FMOD/inc/fmod.h"
-#include "FMOD/inc/fmod_errors.h"
+#include "KTDSSoundSystem.h"
 
 
 
@@ -12,7 +11,7 @@ class CKTDSMP3Play
 {
 public:
 	~CKTDSMP3Play(void);
-	CKTDSMP3Play( FMOD_SYSTEM* pSystem );
+	CKTDSMP3Play( KTDSSoundSystem* pSystem );
 
 	void Play( const WCHAR* pFileName, bool loop = true );
 	void Stop();
@@ -29,7 +28,5 @@ private:
 	int				m_Volume;
 	bool			m_bPaused;
 
-	FMOD_SYSTEM*	m_pSystem;
-	FMOD_SOUND*		m_pSound;
-	FMOD_CHANNEL*	m_pChannel;
+	KTDSSoundSystem*	m_pSystem;
 };

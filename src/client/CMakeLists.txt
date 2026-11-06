@@ -31,14 +31,14 @@ endif()
 
 # KTDXLIB's D3D9 device: the engine's D3D9 calls translated onto x2::render (decisions T36 (5), T38), with
 # fixed-function shaders compiled offline (T39, D3D9/shaders). docs/porting/client-d3d9.md
-add_library(x2_client_d3d9 STATIC KTDXLIB/D3D9/Device.cpp KTDXLIB/D3D9/Resources.cpp)
+add_library(x2_client_d3d9 STATIC KTDXLIB/D3D9/Device.cpp KTDXLIB/D3D9/D3DXTexture.cpp KTDXLIB/D3D9/Resources.cpp)
 add_library(x2::client_d3d9 ALIAS x2_client_d3d9)
 target_include_directories(x2_client_d3d9 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/KTDXLIB/D3D9)
 target_link_libraries(x2_client_d3d9 PUBLIC x2::platform x2::render PRIVATE SDL3::SDL3)
 
 # DXUT replacement: window, message pump and frame loop on x2::app and x2::render, SDL3 events as Win32 messages
 # (docs/porting/client-dxut.md).
-add_library(x2_client_dxut STATIC DXUT/DXUT.cpp DXUT/Ime.cpp DXUT/SdlInput.cpp DXUT/SdlMessages.cpp)
+add_library(x2_client_dxut STATIC DXUT/DXUT.cpp DXUT/Ime.cpp DXUT/MessageBox.cpp DXUT/SdlInput.cpp DXUT/SdlMessages.cpp)
 add_library(x2::client_dxut ALIAS x2_client_dxut)
 target_include_directories(x2_client_dxut PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/DXUT)
 target_link_libraries(x2_client_dxut PUBLIC x2::platform x2::app x2::render x2::client_d3d9)
@@ -64,6 +64,19 @@ add_library(x2_client_browser STATIC KTDXLIB/KBrowserWrapper.cpp)
 add_library(x2::client_browser ALIAS x2_client_browser)
 target_include_directories(x2_client_browser PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/KTDXLIB)
 target_link_libraries(x2_client_browser PUBLIC x2::platform PRIVATE SDL3::SDL3)
+
+# KTDXLIB, the engine (docs/porting/client-ktdxlib.md): its files join as they compile on the D3D9 device (T38). Every
+# file includes stdafx.h -> KTDX.h, which includes all of the engine's headers.
+add_library(x2_client_ktdxlib STATIC
+    KTDXLIB/stdafx.cpp KTDXLIB/KSuperAssert.cpp KTDXLIB/KTDXLog.cpp
+    KTDXLIB/KTDGDynamicVBManager.cpp KTDXLIB/KTDGStateManager.cpp
+    KTDXLIB/KTDSManager.cpp KTDXLIB/KTDSMP3Play.cpp
+    KTDXLIB/KTDXDevice.cpp KTDXLIB/KTDXDeviceBaseTexture.cpp KTDXLIB/KTDXDeviceRenderTargetTexture.cpp
+    KTDXLIB/KTDXDeviceSound.cpp KTDXLIB/KTDXDeviceTexture.cpp)
+add_library(x2::client_ktdxlib ALIAS x2_client_ktdxlib)
+target_link_libraries(x2_client_ktdxlib PUBLIC
+    x2_client_includes x2::platform x2::kncsdk x2::client_d3d9 x2::client_dxut x2::client_luacommon
+    x2::client_massfile x2::client_browser x2::client_movie Freetype::Freetype ZLIB::ZLIB)
 
 # The client's MPEG-1 movies on pl_mpeg, replacing BandiVideo (docs/porting/client-movie.md). KTDXLIB's CMovieData plays
 # them; new code with no equivalent file in the original.
