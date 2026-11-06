@@ -2067,10 +2067,6 @@ bool CKTDXApp::FindProcess( wstring wstrExeFile )
 }
 
 
-void CKTDXApp::OnWebBrowserKeyEvents( LPMSG pMsg )
-{
-	SendGameMessage( KM_WEB_BROWSER_KEY_EVENT, pMsg->wParam, (LPARAM) pMsg, true );
-}
 
 
 

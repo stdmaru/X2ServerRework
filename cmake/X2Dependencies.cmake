@@ -151,6 +151,29 @@ if(X2_BUILD_TOOLS OR X2_BUILD_CLIENT)
     add_library(x2::imgui ALIAS x2_imgui)
 endif()
 
+# --- pl_mpeg: the client's MPEG-1 movies (docs/porting/client-movie.md), replacing BandiVideo ---------------
+# Single-header C library with no releases: pinned to a commit. Compiled once into its own target without the project's
+# warning options, like the other third-party code.
+if(X2_BUILD_CLIENT)
+    FetchContent_Declare(pl_mpeg
+        URL https://github.com/phoboslab/pl_mpeg/archive/c871f2be022ece7ef4f64230b4fb8e1fb9eb6023.tar.gz
+        URL_HASH SHA256=7caee5a96118afde256146556f3f207b41d85b8c4f55fa5fb6b4759b06470fd1
+        SOURCE_SUBDIR do-not-add)
+    FetchContent_MakeAvailable(pl_mpeg)
+    set(X2_PL_MPEG_IMPL ${CMAKE_BINARY_DIR}/generated/pl_mpeg_impl.c)
+    file(GENERATE OUTPUT ${X2_PL_MPEG_IMPL}
+        CONTENT "#include <stddef.h>\n#define PL_MPEG_IMPLEMENTATION\n#include \"pl_mpeg.h\"\n")
+    add_library(x2_pl_mpeg STATIC ${X2_PL_MPEG_IMPL})
+    target_include_directories(x2_pl_mpeg SYSTEM PUBLIC ${pl_mpeg_SOURCE_DIR})
+    # Only the video decoder is used and the movies are read from memory. With PLM_NO_STDIO the header no longer gets
+    # size_t from <stdio.h>: includers include <stddef.h> first.
+    target_compile_definitions(x2_pl_mpeg PUBLIC PLM_NO_STDIO)
+    if(NOT MSVC)
+        target_link_libraries(x2_pl_mpeg PRIVATE m)
+    endif()
+    add_library(x2::pl_mpeg ALIAS x2_pl_mpeg)
+endif()
+
 # ODBC (decision T17): unixODBC outside Windows, odbc32 on Windows. Only code that includes
 # x2/platform/odbc.h links it, so x2_platform itself does not depend on ODBC.
 add_library(x2_odbc INTERFACE)

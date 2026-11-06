@@ -52,7 +52,6 @@ m_pMouseClickUI(NULL)
 //}} 허상형 : [2011/3/24/] //	월드 미션
 , m_hParticleLogo( INVALID_PARTICLE_SEQUENCE_HANDLE )
 , m_pDlgGameStartCount( NULL )
-, m_hParticleRec( INVALID_PARTICLE_SEQUENCE_HANDLE )
 , m_pDLGStateChangePopup(NULL)
 , m_pDLGPCBangBenefitGuide ( NULL )
 , m_bWaitGameStart(false)
@@ -341,8 +340,6 @@ CX2State::~CX2State(void)
 
 	if( m_hParticleLogo != INVALID_PARTICLE_SEQUENCE_HANDLE )
 		g_pData->GetUIMajorParticle()->DestroyInstanceHandle( m_hParticleLogo );
-	if( m_hParticleRec != INVALID_PARTICLE_SEQUENCE_HANDLE )
-		g_pData->GetUIMajorParticle()->DestroyInstanceHandle( m_hParticleRec );
 
 
 	if(NULL != g_pInstanceData && NULL != g_pInstanceData->GetMiniMapUI())
@@ -630,22 +627,6 @@ HRESULT CX2State::OnFrameMove( double fTime, float fElapsedTime )
 				g_pData->GetUIMajorParticle()->DestroyInstanceHandle( m_hParticleLogo );
 				m_hParticleLogo = INVALID_PARTICLE_SEQUENCE_HANDLE;
 			}
-		}
-	}
-
-	if( g_pMain->IsCapturing() == true )
-	{
-		if( m_hParticleRec == INVALID_PARTICLE_SEQUENCE_HANDLE && g_pData->GetUIMajorParticle() != NULL )
-		{
-			m_hParticleRec = g_pData->GetUIMajorParticle()->CreateSequenceHandle( NULL,  L"Game_Rec",  450.f+32.f, -14.f+32.f, 0.f );
-		}
-	}
-	else
-	{
-		if( m_hParticleRec != INVALID_PARTICLE_SEQUENCE_HANDLE && g_pData->GetUIMajorParticle() != NULL )
-		{
-			g_pData->GetUIMajorParticle()->DestroyInstanceHandle( m_hParticleRec );
-			m_hParticleRec = INVALID_PARTICLE_SEQUENCE_HANDLE;
 		}
 	}
 
@@ -8991,25 +8972,6 @@ bool CX2State::Handler_EGS_TOGGLE_INVISIBLE_REQ()
 
 	g_pData->GetServerProtocol()->SendID( EGS_TOGGLE_INVISIBLE_REQ );
 	return true;
-}
-
-void CX2State::ShowBandicamRecParticle( bool bShow )
-{
-	if( g_pData->GetUIMajorParticle() == NULL )
-		return;
-
-	CKTDGParticleSystem::CParticleEventSequence* pSeq = g_pData->GetUIMajorParticle()->GetInstanceSequence( m_hParticleRec );
-	if( pSeq == NULL )
-		return;
-
-	pSeq->SetShowObject( bShow );
-	if( bShow == true )
-	{
-		int     iStackTop = CKTDGStateManager::GetStackTop();
-		CKTDGStateManager::PushStates( pSeq->GetRenderStateID() );
-		pSeq->OnFrameRender_Draw();
-		CKTDGStateManager::PopStates( iStackTop );
-	}
 }
 
 //{{ 지헌 - 은행 개편 퀘스트, 캐쉬 작업

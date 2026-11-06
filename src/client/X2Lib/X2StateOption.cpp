@@ -62,7 +62,6 @@ m_bResetOriginalResolution(true)
 	UpdateBlackListWindow();
 	CloseBlackListWindow();
 	CloseBlackListAddWindow();
-	m_pCamUserWindow=NULL;
 }
 
 CX2StateOption::~CX2StateOption(void)
@@ -80,7 +79,6 @@ CX2StateOption::~CX2StateOption(void)
 
 
 	SAFE_DELETE( m_pResolutionChangeConfirmDialog );
-	SAFE_DELETE_DIALOG(m_pCamUserWindow);
 }
 
 
@@ -170,7 +168,7 @@ bool CX2StateOption::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 				ShowOtherOption( false );
 				ShowCommunityOption( false );
 				ShowSecurityOption( false );
-				ShowBandiCamOption(false);
+				HideBandiCamOption();
 			}
 			return true;
 		} break;
@@ -185,7 +183,7 @@ bool CX2StateOption::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 				ShowOtherOption( false );
 				ShowCommunityOption( false );
 				ShowSecurityOption( false );
-				ShowBandiCamOption(false);
+				HideBandiCamOption();
 			}
 			return true;
 		} break;
@@ -200,7 +198,7 @@ bool CX2StateOption::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 				ShowOtherOption( false );
 				ShowCommunityOption( false );
 				ShowSecurityOption( false );
-				ShowBandiCamOption(false);
+				HideBandiCamOption();
 			}
 			return true;
 		} break;
@@ -215,7 +213,7 @@ bool CX2StateOption::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 				ShowOtherOption( true );
 				ShowCommunityOption( false );
 				ShowSecurityOption( false );
-				ShowBandiCamOption(false);
+				HideBandiCamOption();
 			}
 			return true;
 		} break;
@@ -230,7 +228,7 @@ bool CX2StateOption::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 				ShowOtherOption( false );
 				ShowCommunityOption( true );
 				ShowSecurityOption( false );
-				ShowBandiCamOption(false);
+				HideBandiCamOption();
 			}
 			return true;
 		} break;
@@ -245,7 +243,7 @@ bool CX2StateOption::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 				ShowOtherOption( false );
 				ShowCommunityOption( false );
 				ShowSecurityOption( true );
-				ShowBandiCamOption(false);
+				HideBandiCamOption();
 			}
 			return true;
 		} break;
@@ -330,213 +328,6 @@ bool CX2StateOption::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 			pGameOption->SetEffectDetail( CX2GameOption::OL_LOW );
 			return true;
 		} break;
-		//{{2011.09.20 이준호 이벤트 처리
-	case SOUCM_OPTION_CAM:
-		{
-			if( NULL != m_pDLGOptionWindow )
-			{
-				ShowGraphicOption( false );
-				ShowSoundOption( false );
-				ShowInputOption( false );
-				ShowOtherOption( false );
-				ShowCommunityOption( false );
-				ShowBandiCamOption(true);
-				ShowSecurityOption( false );
-				//g_pKTDXApp->GetDGManager()->GetDialogManager()->ChangeLayer( m_pCamUserWindow, XDL_NORMAL_1);
-				//g_pKTDXApp->GetDGManager()->GetDialogManager()->ChangeSequence( m_pCamUserWindow, false );
-			}
-			return true;
-		} break;
-	case SOUCM_OPTION_VIDEO_GENERAL_LIST:
-		{
-			CKTDGUIComboBox* pCombo				= (CKTDGUIComboBox*) m_pDLGOptionWindow->GetControl( L"Cam_Option_General_Video_List" );
-			if(pCombo==NULL)return false;
-			g_pMain->GetGameOption().SetGeneralVideoType(pCombo->GetSelectedItemIndex());
-
-			// 동영상 포맷 설정 변경 시 라디오 버튼 즉시 바뀌도록 수정
-			CKTDGUIRadioButton* pRadio	= (CKTDGUIRadioButton*) m_pDLGOptionWindow->GetControl( L"Cam_Option_Video_User_Rbtn" );
-			if(pRadio!=NULL)
-				pRadio->SetChecked(false);
-
-			pRadio	= (CKTDGUIRadioButton*) m_pDLGOptionWindow->GetControl( L"Cam_Option_Video_General_Rbtn" );
-			if(pRadio!=NULL)
-				pRadio->SetChecked(true);
-
-			g_pMain->GetGameOption().SetUserSetting(false);
-			return true;
-		}break;
-	case SOUCM_OPTION_VIDEO_GENERAL_RBTN:
-		{
-			g_pMain->GetGameOption().SetUserSetting(false);
-			return true;
-		}break;
-	case SOUCM_OPTION_VIDEO_USER_RBTN:
-		{
-			g_pMain->GetGameOption().SetUserSetting(true);
-			return true;
-		}break;
-	case SOUCM_OPTION_VIDEO_USER_BTN:
-		{
-			if ( g_pMain->IsCapturing() == true )
-			{	//동영상 촬영중일 때는 설정 할 수 없도록 수정
-				g_pMain->KTDGUIOKMsgBox( D3DXVECTOR2(250,300), GET_STRING( STR_ID_17539 ), g_pMain->GetNowState() );
-				return true;
-			}
-			else
-			{
-				g_pMain->GetGameOption().SetUserSetting(true);
-				ShowBandiCamOptionUser(true);
-			}
-			return true;
-		}break;
-	case SOUCM_OPTION_CAM_USER_ACCEPT_BTN:
-		{
-			int iVal=30;
-			CKTDGUIRadioButton * pRbtn =(CKTDGUIRadioButton *)m_pCamUserWindow->GetControl( L"Cam_User_Quality_Radio_2");
-			if(pRbtn==NULL)return false;
-			if(pRbtn->GetChecked())
-				iVal=70;
-			pRbtn =(CKTDGUIRadioButton *)m_pCamUserWindow->GetControl( L"Cam_User_Quality_Radio_3");
-			if(pRbtn==NULL)return false;
-			if(pRbtn->GetChecked())
-				iVal=100;
-			g_pMain->GetGameOption().SetVideoQuality(iVal);
-
-
-			//해상도
-			CKTDGUIComboBox* pCombo	= (CKTDGUIComboBox*)m_pCamUserWindow->GetControl( L"Cam_User_Resolution_List");
-			if( NULL != pCombo )
-			{
-				int iVideoSizeW, iVideoSizeH;
-				switch(pCombo->GetSelectedItemIndex())
-				{
-				case 0:		iVideoSizeW=320;	iVideoSizeH=240;	break;
-				case 1:		iVideoSizeW=640;	iVideoSizeH=320;	break;
-				case 2:		iVideoSizeW=640;	iVideoSizeH=480;	break;
-				case 3:		iVideoSizeW=720;	iVideoSizeH=480;	break;
-				case 4:		iVideoSizeW=720;	iVideoSizeH=486;	break;
-				case 5:		iVideoSizeW=720;	iVideoSizeH=576;	break;
-				case 6:		iVideoSizeW=800;	iVideoSizeH=600;	break;
-				case 7:		iVideoSizeW=1024;	iVideoSizeH=768;	break;
-				case 8:		iVideoSizeW=1152;	iVideoSizeH=864;	break;
-				case 9:		iVideoSizeW=1280;	iVideoSizeH=720;	break;
-				case 10:	iVideoSizeW=1280;	iVideoSizeH=768;	break;
-				case 11:	iVideoSizeW=1280;	iVideoSizeH=800;	break;
-				case 12:	iVideoSizeW=1280;	iVideoSizeH=960;	break;
-				case 13:	iVideoSizeW=1280;	iVideoSizeH=1024;	break;
-				case 14:	iVideoSizeW=1360;	iVideoSizeH=768;	break;
-				case 15:	iVideoSizeW=1366;	iVideoSizeH=768;	break;
-				case 16:	iVideoSizeW=1440;	iVideoSizeH=900;	break;
-				case 17:	iVideoSizeW=1600;	iVideoSizeH=900;	break;
-				case 18:	iVideoSizeW=1600;	iVideoSizeH=1024;	break;
-				case 19:	iVideoSizeW=1680;	iVideoSizeH=1050;	break;
-				default:	iVideoSizeW=1024;	iVideoSizeH=768;	break;
-				}
-				g_pMain->GetGameOption().SetVideoSizeW( iVideoSizeW );
-				g_pMain->GetGameOption().SetVideoSizeH( iVideoSizeH );
-				g_pMain->GetGameOption().SetVideoSizeIndex( pCombo->GetSelectedItemIndex() );
-			}
-
-			//프레임
-			pCombo	= (CKTDGUIComboBox*)m_pCamUserWindow->GetControl( L"Cam_User_Frame_List");
-			if( NULL != pCombo )
-			{
-				switch(pCombo->GetSelectedItemIndex())
-				{
-				case 0:	g_pMain->GetGameOption().SetVideoFPS(24.0f);	break;
-				case 1:	g_pMain->GetGameOption().SetVideoFPS(30.0f);	break;
-				case 2:	g_pMain->GetGameOption().SetVideoFPS(50.0f);	break;
-				case 3:	g_pMain->GetGameOption().SetVideoFPS(60.0f);	break;
-				default:	g_pMain->GetGameOption().SetVideoFPS(60.0f);	break;
-				}
-				g_pMain->GetGameOption().SetVideoFPSIndex( pCombo->GetSelectedItemIndex() );//콤보박스 인덱스 기록
-			}
-
-			//오디오 음질
-			pCombo	= (CKTDGUIComboBox*)m_pCamUserWindow->GetControl( L"Cam_User_AudioQuality_List");
-			if( NULL != pCombo )
-			{
-				switch(pCombo->GetSelectedItemIndex())
-				{
-				case 0:
-					g_pMain->GetGameOption().SetAudioSampleRate(16000);
-					break;
-				case 1:
-					g_pMain->GetGameOption().SetAudioSampleRate(24000);
-					break;
-				case 2:
-					g_pMain->GetGameOption().SetAudioSampleRate(48000);
-					break;
-				default:
-					g_pMain->GetGameOption().SetAudioSampleRate(0);
-					break;
-				}
-				g_pMain->GetGameOption().SetAudioSampleRateIndex( pCombo->GetSelectedItemIndex() );//콤보박스 인덱스 기록
-			}
-
-			//비디오 포맷
-			pCombo	= (CKTDGUIComboBox*)m_pCamUserWindow->GetControl( L"Cam_User_VideoFormat_List");
-			if( NULL != pCombo )
-			{
-				switch(pCombo->GetSelectedItemIndex())
-				{
-				case 0:
-					g_pMain->GetGameOption().SetVideoFormat(FOURCC_MPEG);
-					break;
-				case 1:
-					g_pMain->GetGameOption().SetVideoFormat(FOURCC_MJPG);
-					break;
-				case 2:
-					g_pMain->GetGameOption().SetVideoFormat(FOURCC_MP4V);
-					break;
-				case 3:
-					g_pMain->GetGameOption().SetVideoFormat(FOURCC_ARGB);
-					break;
-				case 4:
-					g_pMain->GetGameOption().SetVideoFormat(FOURCC_RGB24);
-					break;
-				case 5:
-					g_pMain->GetGameOption().SetVideoFormat(FOURCC_YV12);
-					break;
-				default:
-					g_pMain->GetGameOption().SetVideoFormat(FOURCC_MPEG);
-					break;
-				}
-				g_pMain->GetGameOption().SetVideoFormatIndex( pCombo->GetSelectedItemIndex() ); //콤보박스 인덱스 기록
-			}
-
-			//오디오 채널
-			iVal=2;//기본타입은 스테레오이다
-			pRbtn =(CKTDGUIRadioButton *)m_pCamUserWindow->GetControl( L"Cam_User_AudioChannel_Radio_1");
-			if( NULL != pRbtn )
-			{
-				if(pRbtn->GetChecked())
-					iVal=1;
-				g_pMain->GetGameOption().SetAudioChannels(iVal);
-			}
-
-			CKTDGUIRadioButton* pRadio			= (CKTDGUIRadioButton*) m_pDLGOptionWindow->GetControl( L"Cam_Option_Video_User_Rbtn" );
-			if( NULL != pRadio )
-			{
-				pRadio->SetChecked(true);
-			}
-
-			pRadio		= (CKTDGUIRadioButton*) m_pDLGOptionWindow->GetControl( L"Cam_Option_Video_General_Rbtn" );
-			if( NULL != pRadio )
-			{
-				pRadio->SetChecked(false);
-			}
-
-			ShowBandiCamOptionUser(false);
-
-			return true;
-		}break;
-	case SOUCM_OPTION_CAM_USER_WINDOW_CLOSE:
-		{
-			ShowBandiCamOptionUser(false);
-			return true;
-		}break;
-			//}}
 	case SOUCM_OPTION_GRAPHIC_FIELD_HIGH:
 		{
 			pGameOption->SetFieldDetail( CX2GameOption::FL_HIGH );
@@ -1179,7 +970,6 @@ bool CX2StateOption::CloseOptionWindow()
 	g_pMain->GetGameOption().SaveScriptFile();
 
 	//m_OldOptionList = *pGameOptionList;
-	ShowBandiCamOptionUser(false);
 
 	return true;
 }
@@ -1217,8 +1007,7 @@ bool CX2StateOption::OpenOptionWindow()
 	ShowOtherOption(	pCheckBox_OptionOther->GetChecked() );
 	//ShowCommunityOption( pCheckBox_OptionCommunity->GetChecked() );
 
-	CKTDGUICheckBox* pCheckBox	= (CKTDGUICheckBox*) m_pDLGOptionWindow->GetControl( L"Option_Cam_Menu" );
-	ShowBandiCamOption(pCheckBox->GetChecked());
+	HideBandiCamOption();
 
 	m_bIsOptionWindowOpen = true;
 	return true;
@@ -1258,7 +1047,7 @@ bool CX2StateOption::OpenSecurityOptionWindow()
 		pCheckBox_OptionCam->SetChecked(false);
 	}
 
-	ShowBandiCamOption( false );
+	HideBandiCamOption();
 
 	ShowGraphicOption( false );
 	ShowSoundOption( false );
@@ -1820,223 +1609,19 @@ void CX2StateOption::ShowStaticOther( bool bShow )
 	pStatic_Other->SetShowEnable(bShow, bShow);
 }
 //{{2011.09.21 이준호 반디캠 옵션 설정 메소드 추가 X_x88
-void CX2StateOption::ShowBandiCamOption( bool bShow )
+// The Bandicam tab (video recording options) is gone with Bandicam (docs/porting/client-x2lib.md): its controls in
+// DLG_UI_Option*.lua, the tab's check box included, stay hidden.
+void CX2StateOption::HideBandiCamOption()
 {
-
-	CKTDGUIStatic* pStatic_Graphic = NULL;
-	pStatic_Graphic = (CKTDGUIStatic*) m_pDLGOptionWindow->GetControl( L"Cam_Option_Window" );
-	if(pStatic_Graphic==NULL)
+	if( NULL == m_pDLGOptionWindow )
 		return;
-	if(pStatic_Graphic!=NULL)
-		pStatic_Graphic->SetShowEnable(bShow, bShow);
-	pStatic_Graphic = (CKTDGUIStatic*) m_pDLGOptionWindow->GetControl( L"Cam_Option_Title1" );
-	if(pStatic_Graphic!=NULL)
-		pStatic_Graphic->SetShowEnable(bShow, bShow);
-	pStatic_Graphic = (CKTDGUIStatic*) m_pDLGOptionWindow->GetControl( L"Cam_Option_Title2" );
-	if(pStatic_Graphic!=NULL)
-		pStatic_Graphic->SetShowEnable(bShow, bShow);
-
-
-	CKTDGUIComboBox* pCombo				= (CKTDGUIComboBox*) m_pDLGOptionWindow->GetControl( L"Cam_Option_General_Video_List" );
-	if(pCombo!=NULL)
+	for( const WCHAR* name : { L"Option_Cam_Menu", L"Cam_Option_Window", L"Cam_Option_Title1", L"Cam_Option_Title2",
+		L"Cam_Option_General_Video_List", L"Cam_Option_Video_General_Rbtn", L"Cam_Option_Video_User_Rbtn",
+		L"Cam_Option_Video_User_Btn" } )
 	{
-		pCombo->SetShowEnable(bShow,bShow);
-
-		if(pCombo->GetNumItems()==0)
-		{
-			pCombo->AddItem(GET_STRING( STR_ID_14405 ),(LPVOID) NULL, false);
-			pCombo->AddItem(GET_STRING( STR_ID_14406 ),(LPVOID) NULL, false);
-			pCombo->AddItem(GET_STRING( STR_ID_14407 ),(LPVOID) NULL, false);
-			pCombo->AddItem(GET_STRING( STR_ID_14408 ),(LPVOID) NULL, false);
-			pCombo->AddItem(GET_STRING( STR_ID_14409 ),(LPVOID) NULL, false);
-			pCombo->AddItem(GET_STRING( STR_ID_14410 ),(LPVOID) NULL, false);
-			pCombo->AddItem(GET_STRING( STR_ID_14411 ),(LPVOID) NULL, false);
-			pCombo->AddItem(GET_STRING( STR_ID_14412 ),(LPVOID) NULL, false);
-		}
-	}
-
-	CKTDGUIRadioButton* pRadio = (CKTDGUIRadioButton*) m_pDLGOptionWindow->GetControl( L"Cam_Option_Video_General_Rbtn" );
-	if(pRadio!=NULL)
-	{
-		pRadio->SetChecked(!g_pMain->GetGameOption().GetUserSetting());
-		pRadio->SetShowEnable(bShow,bShow);
-	}
-	pRadio			= (CKTDGUIRadioButton*) m_pDLGOptionWindow->GetControl( L"Cam_Option_Video_User_Rbtn" );
-	if(pRadio!=NULL)
-	{
-		pRadio->SetChecked(g_pMain->GetGameOption().GetUserSetting());
-		pRadio->SetShowEnable(bShow,bShow);
-	}
-
-	CKTDGUIButton * pBTN=(CKTDGUIButton *)m_pDLGOptionWindow->GetControl(L"Cam_Option_Video_User_Btn");
-	if(pBTN!=NULL)
-		pBTN->SetShowEnable(bShow,bShow);
-}
-void CX2StateOption::ShowBandiCamOptionUser( bool bShow )
-{
-
-	CKTDGUIStatic* pStatic_Graphic = NULL;
-
-	if(m_pCamUserWindow==NULL && bShow == true)
-	{
-		m_pCamUserWindow = new CKTDGUIDialog( this, L"DLG_UI_Option_Cam_Ex.lua", 0.07f, XDL_POP_UP );
-		assert(m_pCamUserWindow);
-
-		if( m_pCamUserWindow == NULL )
-			return;
-
-		m_pCamUserWindow->SetPos(D3DXVECTOR2(358,228));//여기에 옵션에 위치를 조정하면 베이스 옵션창 위치도 수정해야 한다
-		//그래야지 창 꼬이는 문제를 해결할수있음
-		m_pCamUserWindow->SetSize(430,320);
-		g_pKTDXApp->GetDGManager()->GetDialogManager()->AddDlg( m_pCamUserWindow );
-
-		//여기서 사이즈를 추가하면 위에서 이벤트가 일어나는 부분에서 직접 스트링을 추가해 주어야 합니다(이벤트 처리부분 윗부분을 참고하세요
-		//만약 설정하지 않으면 디폴트 값이 들어갑니다
-
-		//해상도
-		CKTDGUIComboBox* pCombo	= (CKTDGUIComboBox*)m_pCamUserWindow->GetControl( L"Cam_User_Resolution_List");
-		if(pCombo!=NULL)
-		{
-			pCombo->AddItem(L"320 X 240",(LPVOID) NULL, false);
-			pCombo->AddItem(L"640 X 320",(LPVOID) NULL, false);
-			pCombo->AddItem(L"640 X 480",(LPVOID) NULL, false);
-			pCombo->AddItem(L"720 X 480",(LPVOID) NULL, false);
-			pCombo->AddItem(L"720 X 486",(LPVOID) NULL, false);
-			pCombo->AddItem(L"720 X 576",(LPVOID) NULL, false);
-			pCombo->AddItem(L"800 X 600",(LPVOID) NULL, false);
-			pCombo->AddItem(L"1024 X 768",(LPVOID) NULL, false);
-			pCombo->AddItem(L"1152 X 864",(LPVOID) NULL, false);
-			pCombo->AddItem(L"1280 X 720",(LPVOID) NULL, false);
-			pCombo->AddItem(L"1280 X 768",(LPVOID) NULL, false);
-			pCombo->AddItem(L"1280 X 800",(LPVOID) NULL, false);
-			pCombo->AddItem(L"1280 X 960",(LPVOID) NULL, false);
-			pCombo->AddItem(L"1280 X 1024",(LPVOID) NULL, false);
-			pCombo->AddItem(L"1360 X 768",(LPVOID) NULL, false);
-			pCombo->AddItem(L"1366 X 768",(LPVOID) NULL, false);
-			pCombo->AddItem(L"1440 X 900",(LPVOID) NULL, false);
-			pCombo->AddItem(L"1600 X 900",(LPVOID) NULL, false);
-			pCombo->AddItem(L"1600 X 1024",(LPVOID) NULL, false);
-			pCombo->AddItem(L"1680 X 1050",(LPVOID) NULL, false);
-
-			if( NULL != g_pMain )
-			{	//새로 생성 되어도 기존 값 유지 할 수 있도록 수정.
-				pCombo->SetSelectedByIndex( g_pMain->GetGameOption().GetVideoSizeIndex() ) ;
-			}
-		}
-
-		//프레임
-		pCombo	= (CKTDGUIComboBox*)m_pCamUserWindow->GetControl( L"Cam_User_Frame_List");
-		if(pCombo!=NULL)
-		{
-			pCombo->AddItem(L"24.0fps",(LPVOID) NULL, false);
-			pCombo->AddItem(L"30.0fps",(LPVOID) NULL, false);
-			pCombo->AddItem(L"50.0fps",(LPVOID) NULL, false);
-			pCombo->AddItem(L"60.0fps",(LPVOID) NULL, false);
-			if( NULL != g_pMain )
-			{	//새로 생성 되어도 기존 값 유지 할 수 있도록 수정.
-				pCombo->SetSelectedByIndex( g_pMain->GetGameOption().GetVideoFPSIndex() ) ;
-			}
-		}
-
-		//음질
-		pCombo	= (CKTDGUIComboBox*)m_pCamUserWindow->GetControl( L"Cam_User_AudioQuality_List");
-		if(pCombo!=NULL)
-		{
-			pCombo->AddItem(L"16000k",(LPVOID) NULL, false);
-			pCombo->AddItem(L"24000K",(LPVOID) NULL, false);
-			pCombo->AddItem(L"48000k",(LPVOID) NULL, false);
-			if( NULL != g_pMain )
-			{	//새로 생성 되어도 기존 값 유지 할 수 있도록 수정.
-				pCombo->SetSelectedByIndex( g_pMain->GetGameOption().GetAudioSampleRateIndex() ) ;
-			}
-		}
-
-		//오디오 채널
-		switch( g_pMain->GetGameOption().GetAudioChannels() )
-		{
-		case 1: //모노
-			{
-				CKTDGUIRadioButton* pRadio = (CKTDGUIRadioButton*) m_pCamUserWindow->GetControl( L"Cam_User_AudioChannel_Radio_1" ); //모노
-				if( NULL != pRadio )
-				{
-					pRadio->SetChecked(true);
-				}
-			} break;
-		case 2: //스테레오
-		default:
-			{
-				CKTDGUIRadioButton* pRadio = (CKTDGUIRadioButton*) m_pCamUserWindow->GetControl( L"Cam_User_AudioChannel_Radio_2" ); //스테레오
-				if( NULL != pRadio )
-				{
-					pRadio->SetChecked(true);
-				}
-			}
-			break;
-		}
-
-		//화질
-		switch( g_pMain->GetGameOption().GetVideoQuality() )
-		{ // SetVideoQuality 할때 값을 30, 70, 100으로 고정하고 있습니다.
-		case 30:
-			{
-				CKTDGUIRadioButton* pRadio = (CKTDGUIRadioButton*) m_pCamUserWindow->GetControl( L"Cam_User_Quality_Radio_1" ); //저화질
-				if( NULL != pRadio )
-				{
-					pRadio->SetChecked(true);
-				}
-			}
-			break;
-		case 70:
-			{
-				CKTDGUIRadioButton* pRadio = (CKTDGUIRadioButton*) m_pCamUserWindow->GetControl( L"Cam_User_Quality_Radio_2" ); //일반화질
-				if( NULL != pRadio )
-				{
-					pRadio->SetChecked(true);
-				}
-			}
-			break;
-		case 100:
-			{
-				CKTDGUIRadioButton* pRadio = (CKTDGUIRadioButton*) m_pCamUserWindow->GetControl( L"Cam_User_Quality_Radio_3" ); //고화질
-				if( NULL != pRadio )
-				{
-					pRadio->SetChecked(true);
-				}
-			}
-			break;
-		default:
-			{
-				CKTDGUIRadioButton* pRadio = (CKTDGUIRadioButton*) m_pCamUserWindow->GetControl( L"Cam_User_Quality_Radio_2" ); //일반화질
-				if( NULL != pRadio )
-				{
-					pRadio->SetChecked(true);
-				}
-			}
-			break;
-		}
-
-		//비디오 포맷
-		pCombo	= (CKTDGUIComboBox*)m_pCamUserWindow->GetControl( L"Cam_User_VideoFormat_List");
-		if(pCombo!=NULL)
-		{
-			pCombo->AddItem(L"MPEG",(LPVOID) NULL, false);
-			pCombo->AddItem(L"MJPG",(LPVOID) NULL, false);
-			pCombo->AddItem(L"MP4V",(LPVOID) NULL, false);
-			pCombo->AddItem(L"ARGB",(LPVOID) NULL, false);
-			pCombo->AddItem(L"RGB24",(LPVOID) NULL, false);
-			pCombo->AddItem(L"YV12",(LPVOID) NULL, false);
-			if( NULL != g_pMain )
-			{	//새로 생성 되어도 기존 값 유지 할 수 있도록 수정.
-				pCombo->SetSelectedByIndex( g_pMain->GetGameOption().GetVideoFormatIndex() ) ;
-			}
-		}
-	}
-
-	if( m_pCamUserWindow != NULL )
-	{
-		g_pKTDXApp->GetDGManager()->GetDialogManager()->ChangeLayer( m_pCamUserWindow, XDL_POP_UP);
-		g_pKTDXApp->GetDGManager()->GetDialogManager()->ChangeSequence( m_pCamUserWindow, true );
-		m_pCamUserWindow->SetShowEnable(bShow, bShow);
+		CKTDGUIControl* pControl = m_pDLGOptionWindow->GetControl( name );
+		if( NULL != pControl )
+			pControl->SetShowEnable( false, false );
 	}
 }
 //void CX2StateOption::IMEDataGetUserVideoOptionSetting()

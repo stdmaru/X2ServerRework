@@ -1,6 +1,7 @@
 # Client (docs/porting/client.md). Layers mirror the original projects (decision T14) and are added here as they
-# compile: so far LuaCommon, the DXUT replacement, KTDXLIB's input layer and mass file manager, X2ServerProtocol and
-# the executable's skeleton. KTDXLIB and X2Lib come next (roadmap Phase 3) and link x2_client_includes.
+# compile: so far LuaCommon, the DXUT replacement, KTDXLIB's input layer, mass file manager and web pages, the movie
+# player, X2ServerProtocol and the executable's skeleton. KTDXLIB and X2Lib come next (roadmap Phase 3) and link
+# x2_client_includes.
 
 # Include directories of the original projects (KTDXLIB, X2Lib, X2 and X2ServerProtocol .vcxproj), for every layer:
 # the layers include each other's headers by bare name. KTDXLIB/DXUT is replaced by DXUT/. The servers' Common (packets,
@@ -49,6 +50,20 @@ add_library(x2_client_massfile STATIC KTDXLIB/KGCMassFileBufferManager.cpp KTDXL
 add_library(x2::client_massfile ALIAS x2_client_massfile)
 target_include_directories(x2_client_massfile PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/KTDXLIB)
 target_link_libraries(x2_client_massfile PUBLIC x2::platform PRIVATE x2::kom x2::kncsdk)
+
+# KTDXLIB's web pages in the system browser (KBrowserWrapper on SDL_OpenURL, in place of the embedded Internet Explorer;
+# docs/porting/client-ktdxlib.md#web-pages). Its files join the KTDXLIB target once the engine builds.
+add_library(x2_client_browser STATIC KTDXLIB/KBrowserWrapper.cpp)
+add_library(x2::client_browser ALIAS x2_client_browser)
+target_include_directories(x2_client_browser PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/KTDXLIB)
+target_link_libraries(x2_client_browser PUBLIC x2::platform PRIVATE SDL3::SDL3)
+
+# The client's MPEG-1 movies on pl_mpeg, replacing BandiVideo (docs/porting/client-movie.md). KTDXLIB's CMovieData plays
+# them; new code with no equivalent file in the original.
+add_library(x2_client_movie STATIC Movie/MoviePlayer.cpp)
+add_library(x2::client_movie ALIAS x2_client_movie)
+target_include_directories(x2_client_movie PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Movie)
+target_link_libraries(x2_client_movie PUBLIC x2::options PRIVATE x2::pl_mpeg)
 
 # X2ServerProtocol: the client's connections to the servers (docs/porting/client-serverprotocol.md). The event/actor
 # model and the TCP layer are the servers' x2::common_net (decision T34); only the client's proxies and the

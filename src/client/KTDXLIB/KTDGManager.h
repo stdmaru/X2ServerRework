@@ -221,11 +221,6 @@ class CKTDGManager : public CKTDXStage
         UINT                        GetAlphaObjectChainSize() { return m_uAlphaObjectNum; }
 		UINT						GetNonAlphaObjectChainSize() { return m_uNonAlphaObjectNum; }
 
-		//{{ kimhc // 2010.9.8 // 홈페이지 개편에서 아바타 이미지 표현으로 사용될 캐릭터 이미지 캡쳐 기능 테스트
-		//}} kimhc // 2010.9.8 // 홈페이지 개편에서 아바타 이미지 표현으로 사용될 캐릭터 이미지 캡쳐 기능 테스트
-		bool						ScreenCaptureOld();
-		bool						ScreenCapture();
-		void						ScreenCapture( const WCHAR* pFileName );
 
 		bool						IsInFrustum( CKTDGObject* object );
 		bool						IsInFrustum( CKTDGObject* object, float& fNeedDistance );
@@ -294,7 +289,6 @@ class CKTDGManager : public CKTDXStage
 		float						m_fMaxTimeFadeIn;		// fadein 되는 시간
 		float						m_fMaxTimeFadeOut;		// fadeout 되는 시간
 
-		float						m_fCaptureDelay;
 
 		float						m_fOrthoScale;
 

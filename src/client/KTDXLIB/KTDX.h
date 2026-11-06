@@ -907,8 +907,7 @@ extern double g_NowTime;
 
 #include "KProtectRefTable.h"
 #include "KProtectedType.h"
-#include "KPCHWebBrowser.h"
-#include "KBrowserWrapper.h"
+#include "KBrowserWrapper.h"	// the system browser, in place of the embedded KPCHWebBrowser
 #include "KTDXTimer.h"
 #include "KTDXThread.h"
 
@@ -969,10 +968,7 @@ class CKTDGObject;
 
 // #ifdef MOVIE_TEST	 	// 13-11-11, 진입 구조 개편, kimjh, MOVIE_TEST 중 사용에 필요한 Define 을 MOVIE_TEST_BASE 로 변경
 
-#include "BandiVideoLibrary.h"
-#include "BandiVideoTexture_DX9.h"
-#include "BandiVideoFileReader.h"
-#include "BandiVideoSound_DS.h"
+#include "MoviePlayer.h"	// x2::client_movie, in place of BandiVideo (docs/porting/client-movie.md)
 
 // #endif //  MOVIE_TEST	// 13-11-11, 진입 구조 개편, kimjh, MOVIE_TEST 중 사용에 필요한 Define 을 MOVIE_TEST_BASE 로 변경
 
@@ -1010,12 +1006,6 @@ class CKTDGObject;
 
 #include "KExceptionSafeUtil.h"
 
-//{{ 09-03-04.hoons. 기존 스샷대용 라이브러리
-	#if defined(DEBUG) || defined(_DEBUG)
-	#else
-	#endif
-	#include "CxImage/ximage.h"
-//}} hoons.
 
 
 #include "KTDXApp.h"

@@ -44,10 +44,11 @@ The ~22 X2Lib files that call `GetDevice()` need individual review.
 | Input | `KTDIDevice*` (DirectInput8 in 6 files), `KTDIDeviceWinKey` | SDL3 |
 | IME (Korean/CJK) | `KTDGUIIMEEditBox`, `KHangulPPWSelector` (`ImmGetContext` in 5 files, `WM_IME_*`) | SDL3 text input/IME; IMM32 emulated on SDL ([Client: IME](../porting/client-ime.md)) |
 | Audio | `KTDSManager`, `KTDXDeviceSound`, `KTDSMP3Play`, `FMOD/` (FMOD Ex), DirectSound | miniaudio / SDL3 audio, or current FMOD Core |
-| Video | `BandiVideo*` (15 files), `bdvid32.dll` | remove or replace (ffmpeg/pl_mpeg) depending on `data/movie` format |
+| Video | `BandiVideo*` (15 files), `bdvid32.dll`: the 30 character creation movies in `data/movie` (MPEG-1 video in AVI, 400×220, 24 fps, I/P frames, no audio; 2026-11-06) | pl_mpeg ([Client: movies](../porting/client-movie.md)) |
+| Recording | Bandicam (`bandicap.h`, `bdcap32.dll`): Scroll Lock video recording, Print Screen JPEG screenshots into `ScreenCapture/` | removed (2026-11-06, [Client](../porting/client.md#bandi-embedded-browser-and-cximage-2026-11-06-clientvideo-browser-cximage)) |
 | Networking | `KTDNManager`, `KTDNUDP`, `KTDNTransfer`, `X2ServerProtocol/Socket` (IOCP in the client too!) | same networking library as the server (Asio) |
 | `.kom` files | `KGCMassFileManager`, `KGCMassFileBufferManager` (zlib `uncompress`, libxml2 for the header) | `x2::kom` (T35); survey in [`.kom` archives](../porting/kom.md#the-original-ktdxlibkgcmassfilemanager-surveyed-2026-11-05) |
-| Embedded browser | `KBrowserWrapper`, `KPCHWebBrowser`, `Browser.c` | remove |
+| Embedded browser | `KBrowserWrapper`, `KPCHWebBrowser`, `Browser.c`: Internet Explorer for the cash charge page and the server's advertisement pages | the system browser (2026-11-06, [KTDXLIB](../porting/client-ktdxlib.md#web-pages)) |
 | Crash/anti-hack | `CrashRpt`, `KncFirewall`, `KProtectedType`, `AntiHackingString.h`, XTRAP, HackShield | remove |
 | Publisher | `NexonModule`, `Steamworks`, `IGA` (ads), `X2Lib/OnlyGlobal/<country>` | remove/stub |
 

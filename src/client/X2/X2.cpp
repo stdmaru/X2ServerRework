@@ -518,15 +518,6 @@ void CALLBACK OnFrameRender( IDirect3DDevice9* pd3dDevice, double fTime, float f
 	// Render the scene
 	if( SUCCEEDED( pd3dDevice->BeginScene() ) )
 	{
-		//2012.09.17 박진웅. 녹화 표시 파티클을 출력하지 않게 한다.
-		CX2State* pCurrentState = NULL;
-		if( g_pMain != NULL && g_pMain->m_BandiCaptureLibrary.IsCapturing())
-		{
-			pCurrentState = (CX2State*)g_pMain->GetNowState();
-			if( pCurrentState != NULL )
-				pCurrentState->ShowBandicamRecParticle( false );
-		}//if
-
 		KTDXPROFILE_BEGIN("KTDXRender");
 		g_pKTDXApp->OnFrameRender();
 		KTDXPROFILE_END();
@@ -630,31 +621,6 @@ void CALLBACK OnFrameRender( IDirect3DDevice9* pd3dDevice, double fTime, float f
 		}
 #endif
 
-		if( g_pMain != NULL && g_pChatBox != NULL &&
-			g_pMain->IsCapturing() == true )
-		{
-			switch( g_pMain->m_BandiCaptureLibrary.Work((LONG_PTR)pd3dDevice) )
-			{
-			case BC_OK_IS_NOT_CAPTURING:	//캡쳐중이 아닙니다.
-			case BC_OK_COMPLETED_BY_TIME:	//녹화 자동 완료 설정(시간)에 의해 녹화 완료되었습니다.
-			case BC_OK_COMPLETED_BY_SIZE:	//녹화 자동 완료 설정(파일크기)에 의해 녹화 완료 되었습니다.
-			case BCERR_VIDEO_CAPTURE:		//캡쳐중 에러가 발생하였습니다.
-			case BCERR_FILE_CREATE:			//파일 생성을 실패하였습니다.
-				{
-					g_pMain->Bandi_EndVidioCapture();
-				}break;
-			case BCERR_FILE_WRITE:			// 파일 쓰기를 실패하였습니다.
-			case BCERR_NOT_ENOUGH_DISKSPACE:// 하드디스크 여유 공간 부족이 부족합니다.
-				{
-					g_pMain->Bandi_EndVidioCapture();
-					g_pChatBox->AddChatLog( GET_STRING(STR_ID_17540), KEGS_CHAT_REQ::CPT_SYSTEM, D3DXCOLOR(1,1,0,1), L"#CFFFF00" );
-				}break;
-			default:
-				break;
-			}
-			if( pCurrentState != NULL )
-				pCurrentState->ShowBandicamRecParticle( true );
-		}
 
 
 		V( pd3dDevice->EndScene() );
