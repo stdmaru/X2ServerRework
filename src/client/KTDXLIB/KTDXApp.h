@@ -21,7 +21,7 @@ class CKTDXApp
 			KM_TCP_RELAY,
 
 			KM_RECEIVE_FROM_P2P,
-			KM_WEB_BROWSER_KEY_EVENT,				// 넥슨캐시 충전페이지에서 KeyUp event 처리하기 위해서
+			KM_WEB_BROWSER_KEY_EVENT,				// key-ups for the embedded cash charge page; no longer sent (system browser), kept for the numbering
 
 			KM_GAME_BASE,
 		};
@@ -309,7 +309,6 @@ class CKTDXApp
 			return D3DXVECTOR3(resultPos);
 		}
 
-		void OnWebBrowserKeyEvents( LPMSG pMsg );
 
 
 

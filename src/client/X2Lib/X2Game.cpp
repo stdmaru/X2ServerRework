@@ -4589,21 +4589,6 @@ void CX2Game::KeyProcess()
 			InputData( GA_AWAKE, m_InputData.pureDoubleLCtr, m_InputData.oneDoubleLCtr, m_InputData.pureLCtr, m_InputData.oneLCtr ); //DIK_LCONTROL
 		}
 	}
-	if( g_pMain != NULL && g_pData != NULL )
-	{
-		if( g_pKTDXApp->GetDIManager()->Getkeyboard()->GetKeyState( DIK_SCROLL ) == TRUE )
-		{
-			if( g_pMain->IsCapturing() == false )
-			{
-				g_pMain->Bandi_StartVideoCapture();
-			}
-			else
-			{
-				g_pMain->Bandi_EndVidioCapture();
-			}
-		}
-	}
-
 	KTDXPROFILE_BEGIN( "KEYPRESS_CHECK" );
 	if( true == g_pMain->GetIsPlayingTutorial() )
 	{

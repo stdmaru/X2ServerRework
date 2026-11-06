@@ -250,104 +250,6 @@ int CheckDebugger()
 
 
 
-#ifdef BUG_TRAP
-void MakeScreenShot(std::string strfilename)
-{
-	try
-	{
-
-		HBITMAP hBitmap;
-		RECT rect;
-		HDC hMemDC;
-		HDC hScrDC;
-		HBITMAP hOldBitmap;
-
-		//DC?? ??��?.
-
-		HWND pDesktop = GetDesktopWindow();
-
-		// ??��???? ???? ???????? ????? ???????.
-		GetClientRect( pDesktop, &rect );
-
-
-		// ?????? ??? DC?? ??? DC?? ????? ??? ??????? ???????.
-		hScrDC = GetDC( pDesktop ); CreateDC( L"DISPLAY", NULL, NULL, NULL );
-		hMemDC = CreateCompatibleDC( hScrDC );
-		hBitmap = CreateCompatibleBitmap( hScrDC, rect.right - rect.left, rect.bottom - rect.top );
-		hOldBitmap = (HBITMAP)SelectObject( hMemDC, hBitmap );
-
-		// ????? ??? ????????? ???????.
-		BitBlt( hMemDC, 0, 0, rect.right - rect.left, rect.bottom - rect.top,
-			hScrDC, rect.left, rect.top, SRCCOPY );
-		SelectObject( hMemDC, hOldBitmap );
-
-		CxImage cimage( CXIMAGE_FORMAT_JPG );
-
-		if( cimage.CreateFromHBITMAP( hBitmap ) )
-		{
-			cimage.SetJpegQuality( 75 );
-			cimage.Save( strfilename.c_str(), CXIMAGE_FORMAT_JPG );
-		}
-
-		DeleteDC( hMemDC );
-		DeleteDC( hScrDC );
-		DeleteObject( hBitmap );
-		DeleteObject( hOldBitmap );
-	}
-	catch (...)
-	{
-	}
-}
-
-void CALLBACK CrashPreCallBack(INT_PTR nErrHandlerParam)
-{
-    BT_SetTerminate();
-
-	try
-	{
-		MakeScreenShot("Crash_ScreenShot.jpg");
-		stringstream wstrstm;
-		if( g_pMain != NULL )
-		{
-			g_pMain->AddMemoryInfo( wstrstm );
-			g_pMain->AddSystemInfo( wstrstm );
-			// DLL ????
-			g_pMain->AddDLLInfo( wstrstm );
-			// ???��??? ????
-			g_pMain->AddProcessInfo(wstrstm, false);
-		}
-		g_CKTDXLog.StateLogToFile( "ErrorLog.txt" );
-		g_CKTDXLog.ErrorLogToFile( "ErrorLog.txt", wstrstm.str().c_str() );
-
-		//FileEncrypt( "ErrorLog.txt" );
-		//FileEncrypt( "State.log" );
-
-		if ( g_pMain != NULL )
-		{
-			g_pMain->SetQuitType( NetError::ERR_CLIENT_QUIT_02 );
-			g_pMain->SendQuitMsgToServer();
-		}
-
-		ShowWindow(g_pKTDXApp->GetHWND(), SW_HIDE);
-
-		SiCX2DLLManager()->ReportEvent();
-	}
-	catch( ... )
-	//catch(std::exception *e)
-	{
-	}
-
-}
-
-void CALLBACK CrashPostCallBack(INT_PTR nErrHandlerParam)
-{
-	DeleteFileA( "ErrorLog.txt");
-	DeleteFileA( "State.txt");
-	DeleteFileA( "Crash_ScreenShot.jpg");
-    //HWND hDlg;
-
-}
-#endif
 
 // crashreport???? ????? ??????
 inline BOOL WINAPI CrashReportCallback(LPVOID lpvState)
@@ -492,8 +394,6 @@ m_pMemoryHolder( NULL )
 , m_pKeyPad( NULL )
 #endif
 , m_dwNationFlag( NF_NONE )
-, m_iOldCaptureFileSize(-1)
-, m_fFileSizeCheckTime(2.f)
 , m_iGameHour( 0 )							//??????? ???? ?? ???? ?��? ???
 , m_pDlgPlayTimeInformation( NULL )			//?��??? ?��? ????? Dialog
 , m_pDlgShutDownInformation( NULL )			//?��??? ?��? ????? Dialog
@@ -525,52 +425,6 @@ m_pMemoryHolder( NULL )
 
 
 
-#ifdef BUG_TRAP
-	wstring clientVersion;
-	wstring szAppName;
-
-#if defined(JOB_NAME)
-	szAppName = JOB_NAME;
-#endif
-
-
-#if defined(BUILD_ID)
-	clientVersion = BUILD_ID;
-#endif
-
-	BT_InstallSehFilter();
-
-	BT_SetAppName((LPCTSTR)szAppName.c_str());
-	BT_SetAppVersion((LPCTSTR)clientVersion.c_str());
-
- 	BT_SetFlags( BTF_DETAILEDMODE | BTF_ATTACHREPORT ); // BTF_DETAILEDMODE || BTF_SCREENCAPTURE
-
-	BT_SetDumpType( MiniDumpNormal ); //( MiniDumpWithDataSegs | MiniDumpWithIndirectlyReferencedMemory );
-	BT_SetReportFormat(BTRF_XML);
-
-	wchar_t szFilePath[1024] = _T("");
-	wchar_t strStateLogBuffer[1024], strErrorLogBuffer[1024];
-	GetCurrentDirectory( _MAX_PATH, szFilePath );
-
-	BT_SetSupportServer( L"Crash-getter.kog.co.kr", 9999 );
-	//BT_SetSupportServer( L"116.120.238.16", 9999 );
-	BT_SetActivityType( BTA_SENDREPORT );
-
-	StringCchPrintf(strStateLogBuffer, 1024,  _T("%s\\State.log"), szFilePath);
-	//wsprintf(strStateLogBuffer, _T("%s\\State.log"), szFilePath);
-	BT_AddLogFile((LPCTSTR)strStateLogBuffer);
-
-	StringCchPrintf(strErrorLogBuffer, 1024,  _T("%s\\ErrorLog.txt"), szFilePath);
-	//wsprintf(strErrorLogBuffer, _T("%s\\ErrorLog.txt"), szFilePath);
-	BT_AddLogFile((LPCTSTR)strErrorLogBuffer);
-
-	StringCchPrintf(strErrorLogBuffer, 1024, _T("%s\\Crash_ScreenShot.jpg"), szFilePath);
-	//wsprintf(strErrorLogBuffer, _T("%s\\Crash_ScreenShot.jpg"), szFilePath);
-	BT_AddLogFile((LPCTSTR)strErrorLogBuffer);
-
-	BT_SetPreErrHandler(CrashPreCallBack, -1);
-	BT_SetPostErrHandler(CrashPostCallBack, -1);
-#endif
 
 
 	RegisterHotKey( NULL, NULL, MOD_ALT, VK_F4 );
@@ -1004,7 +858,6 @@ CX2Main::~CX2Main(void)
 
 // #endif //  MOVIE_TEST	// 13-11-11, ???? ???? ????, kimjh, MOVIE_TEST ?? ??�� ????? Define ?? MOVIE_TEST_BASE ?? ????
 
-	m_BandiCaptureLibrary.Destroy();
 	//}}
 
 	DeletePlayTimeInformation();		//?��??? ?��? ???? ????
@@ -1294,44 +1147,6 @@ HRESULT CX2Main::OnFrameMove( double fTime, float fElapsedTime )
 
 
 
-	if( g_pKTDXApp->GetDIManager()->Getkeyboard()->GetKeyState(DIK_SYSRQ) == TRUE )
-	{
-		if( CX2Main::XS_PVP_GAME == GetNowStateID() &&
-			KPVPChannelInfo::PCC_TOURNAMENT == GetPVPChannelClass( GetConnectedChannelID() ) )
-		{
-			if ( g_pChatBox != NULL )
-				g_pChatBox->AddChatLog( GET_STRING( STR_ID_346 ), KEGS_CHAT_REQ::CPT_SYSTEM, D3DXCOLOR(1,1,0,1), L"#CFFFF00" );
-		}
-		else
-		{
-#ifdef ACTIVE_KOG_GAME_PERFORMANCE_CHECK
-			KOGGamePerformanceCheck::GetInstance()->Pause();
-#endif //ACTIVE_KOG_GAME_PERFORMANCE_CHECK
-
-			bool bSuccessCapture = false;
-			//{{ 2011.9.16	?????  ???? ??????? ��?? ????
-			bSuccessCapture = Bandi_ScreenCapture();
-			//}}
-
-			if ( bSuccessCapture )
-			{
-				if ( g_pChatBox != NULL )
-					g_pChatBox->AddChatLog( GET_STRING( STR_ID_347 ), KEGS_CHAT_REQ::CPT_SYSTEM, D3DXCOLOR(1,1,0,1), L"#CFFFF00" );
-			}
-			else
-			{
-				if ( g_pChatBox != NULL )
-					g_pChatBox->AddChatLog( GET_STRING( STR_ID_348 ), KEGS_CHAT_REQ::CPT_SYSTEM, D3DXCOLOR(1,1,0,1), L"#CFFFF00" );
-			}
-
-#ifdef ACTIVE_KOG_GAME_PERFORMANCE_CHECK
-			KOGGamePerformanceCheck::GetInstance()->Resume();
-#endif //ACTIVE_KOG_GAME_PERFORMANCE_CHECK
-
-            if ( g_pData->GetGameUDP() != NULL )
-                g_pData->GetGameUDP()->RemoveAllPendingPingSends();
-		}
-	}
 
 
 
@@ -1456,12 +1271,6 @@ HRESULT CX2Main::OnFrameMove( double fTime, float fElapsedTime )
 			m_fInfoBoxLifeTime = -1.f;
 	}
 
-	m_fCaptureDelay -= fElapsedTime;
-	if( m_fCaptureDelay < 0.0f )
-		m_fCaptureDelay = 0.0f;
-
-	Bandi_EnoughDiskSpace(fElapsedTime);
-
 	return S_OK;
 }
 
@@ -1534,13 +1343,11 @@ bool CX2Main::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 			}
 			break;
 
-		case CKTDXApp::KM_WEB_BROWSER_KEY_EVENT:
+		case WM_SETFOCUS:
+			// Back from a page opened in the system browser: what closing the embedded browser's dialog did.
+			if( GetBrowserWrapper()->OnFocusGained() )
 			{
-				if( NULL != GetBrowserWrapper() && false == GetBrowserWrapper()->IsClosed() )
-				{
-					GetBrowserWrapper()->OnKeyboardEvents( (LPMSG) lParam );
-				}
-				return true;
+				g_pKTDXApp->GetDevice()->SetDialogBoxMode( FALSE );
 			}
 			break;
 	}
@@ -6118,7 +5925,6 @@ void CX2Main::SendHackMail()
 //		strUserId = strUserId + ".jpg";
 //		wstrUserId = wstrUserId + L".jpg";
 //
-//		MakeHackScreenShot( strUserId.c_str() );
 //		// ???? ��?? ???? ????
 //		//g_pX2SMTPMail->SMTPAddAttachment("c:\\mailtest2.exe");
 //		//g_pX2SMTPMail->SMTPAddAttachment("c:\\test2.jpg");
@@ -6299,7 +6105,6 @@ void CX2Main::SendHackMail_DamageHistory(const char *strComm)
 //	strUserId = strUserId + ".jpg";
 //	wstrUserId = wstrUserId + L".jpg";
 //
-//	MakeHackScreenShot( strUserId.c_str() );
 //	// ???? ��?? ???? ????
 //	//g_pX2SMTPMail->SMTPAddAttachment("c:\\mailtest2.exe");
 //	//g_pX2SMTPMail->SMTPAddAttachment("c:\\test2.jpg");
@@ -6437,7 +6242,6 @@ void CX2Main::SendHackMail_HackUserNot(const char *strComm)
 //	strUserId = strUserId + ".jpg";
 //	wstrUserId = wstrUserId + L".jpg";
 //
-//	MakeHackScreenShot( strUserId.c_str() );
 //	// ???? ��?? ???? ????
 //	//g_pX2SMTPMail->SMTPAddAttachment("c:\\mailtest2.exe");
 //	//g_pX2SMTPMail->SMTPAddAttachment("c:\\test2.jpg");
@@ -6584,7 +6388,6 @@ void CX2Main::SendHackMail_AttachFile(const char *strComm, const string& userId)
 //	strUserId = strUserId + ".jpg";
 //	wstrUserId = wstrUserId + L".jpg";
 //
-//	MakeHackScreenShot( strUserId.c_str() );
 //	// ???? ��?? ???? ????
 //	//g_pX2SMTPMail->SMTPAddAttachment("c:\\mailtest2.exe");
 //	//g_pX2SMTPMail->SMTPAddAttachment("c:\\test2.jpg");
@@ -6829,7 +6632,6 @@ void CX2Main::SendHackMail_VERIFYVALUE(const char *strComm)
 //	strUserId = strUserId + ".jpg";
 //	wstrUserId = wstrUserId + L".jpg";
 //
-//	MakeHackScreenShot( strUserId.c_str() );
 //	// ???? ��?? ???? ????
 //	//g_pX2SMTPMail->SMTPAddAttachment("c:\\mailtest2.exe");
 //	//g_pX2SMTPMail->SMTPAddAttachment("c:\\test2.jpg");
@@ -6994,7 +6796,6 @@ void CX2Main::SendHackMailGameStart(int iVal, bool bVal)
 //	strUserId = strUserId + ".jpg";
 //	wstrUserId = wstrUserId + L".jpg";
 //
-//	MakeHackScreenShot( strUserId.c_str() );
 //	// ???? ��?? ???? ????
 //	//g_pX2SMTPMail->SMTPAddAttachment("c:\\mailtest2.exe");
 //	//g_pX2SMTPMail->SMTPAddAttachment("c:\\test2.jpg");
@@ -7393,7 +7194,6 @@ void CX2Main::SendHackMail_DLLInjection(const char *strComm)
 //	strUserId = strUserId + ".jpg";
 //	wstrUserId = wstrUserId + L".jpg";
 //
-//	MakeHackScreenShot( strUserId.c_str() );
 //	// ???? ��?? ???? ????
 //	wchar_t szFilePath[1024] = _T("");
 //	wchar_t strHackImageBuffer[1024];
@@ -7542,7 +7342,6 @@ void CX2Main::SendUserMonitoringMail(const char *strComm)
 //	strUserId = strUserId + ".jpg";
 //	wstrUserId = wstrUserId + L".jpg";
 //
-//	MakeHackScreenShot( strUserId.c_str() );
 //	// ???? ��?? ???? ????
 //	//g_pX2SMTPMail->SMTPAddAttachment("c:\\mailtest2.exe");
 //	//g_pX2SMTPMail->SMTPAddAttachment("c:\\test2.jpg");
@@ -7675,7 +7474,6 @@ void CX2Main::SendMail_MoneyMonitoring(const char *strComm)
 //	strUserId = strUserId + ".jpg";
 //	wstrUserId = wstrUserId + L".jpg";
 //
-//	MakeHackScreenShot( strUserId.c_str() );
 //	// ???? ��?? ???? ????
 //	//g_pX2SMTPMail->SMTPAddAttachment("c:\\mailtest2.exe");
 //	//g_pX2SMTPMail->SMTPAddAttachment("c:\\test2.jpg");
@@ -8177,35 +7975,6 @@ bool CX2Main::KeyProcess()
 
 
 
-	//{{ 2011.9.16	?????  ???? ?????? ��?? ????
-	if( g_pData != NULL )
-	{
-		if( g_pKTDXApp->GetDIManager()->Getkeyboard()->GetKeyState( DIK_SCROLL ) == TRUE )
-		{
-			if( IsCapturing() == false )
-			{
-#ifdef ACTIVE_KOG_GAME_PERFORMANCE_CHECK
-				KOGGamePerformanceCheck::GetInstance()->Pause();
-#endif //ACTIVE_KOG_GAME_PERFORMANCE_CHECK
-
-				Bandi_StartVideoCapture();
-			}
-			else
-			{
-				Bandi_EndVidioCapture();
-
-#ifdef ACTIVE_KOG_GAME_PERFORMANCE_CHECK
-				KOGGamePerformanceCheck::GetInstance()->Resume();
-#endif //ACTIVE_KOG_GAME_PERFORMANCE_CHECK
-
-                if ( g_pData->GetGameUDP() != NULL )
-                    g_pData->GetGameUDP()->RemoveAllPendingPingSends();
-			}
-
-			return true;
-		}
-	}
-	//}}
 
 	bool bHideDialog = false;
 	if( g_pKTDXApp->GetDGManager()->GetDialogManager()->GetHideDialog() == true )
@@ -9007,104 +8776,6 @@ void CX2Main::FieldWarpByCommand( int iPosition )
 	return;
 }
 
-void CX2Main::MakeHackScreenShotTemp( const char *pFileName )
-{
-	try
-	{
-		HBITMAP hBitmap;
-		RECT rect;
-		HDC hMemDC;
-		HDC hScrDC;
-		HBITMAP hOldBitmap;
-
-		//DC?? ??��?.
-
-		HWND pDesktop = GetDesktopWindow();
-
-		// ??��???? ???? ???????? ????? ???????.
-		GetClientRect( pDesktop, &rect );
-
-
-		// ?????? ??? DC?? ??? DC?? ????? ??? ??????? ???????.
-		hScrDC = GetDC( pDesktop ); CreateDC( L"DISPLAY", NULL, NULL, NULL );
-		hMemDC = CreateCompatibleDC( hScrDC );
-		hBitmap = CreateCompatibleBitmap( hScrDC, rect.right - rect.left, rect.bottom - rect.top );
-		hOldBitmap = (HBITMAP)SelectObject( hMemDC, hBitmap );
-
-		// ????? ??? ????????? ???????.
-		BitBlt( hMemDC, 0, 0, rect.right - rect.left, rect.bottom - rect.top,
-			hScrDC, rect.left, rect.top, SRCCOPY );
-		SelectObject( hMemDC, hOldBitmap );
-
-		CxImage cimage( CXIMAGE_FORMAT_JPG );
-
-		if( cimage.CreateFromHBITMAP( hBitmap ) )
-		{
-			cimage.SetJpegQuality( 75 );
-			cimage.Save( pFileName, CXIMAGE_FORMAT_JPG );
-		}
-
-		DeleteDC( hMemDC );
-		DeleteDC( hScrDC );
-		DeleteObject( hBitmap );
-		DeleteObject( hOldBitmap );
-	}
-	catch (...)
-	{
-
-
-	}
-}
-void CX2Main::MakeHackScreenShot(const char *pFileName)
-{
-	try
-	{
-		// ?? ???? ???? ???? ?????? default ???? //
-		HRESULT hr = BCERR_FILE_CREATE;
-
-		// ��??? ????????.
-		if(m_BandiCaptureLibrary.IsCapturing()==FALSE)
-		{
-			// ???? ????? DLL ?? ?��???? ???? ?��?????? ????????.
-			if(m_BandiCaptureLibrary.IsCreated()==FALSE)
-			{
-				// ???��? DLL?? .H?????? ?????? ???????? ???��??? ????? ????? ??????.
-				if(FAILED(m_BandiCaptureLibrary.Create(BANDICAP_RELEASE_DLL_FILE_NAME)))
-				{
-					MakeHackScreenShotTemp(pFileName);
-					return;
-				}
-
-				// ?????? ???? ?????? ??????? ?????? ???? ????? ??????.
-				// ???��????? ?????? ??? ???????, ??????????? ????????? ?????? ??? ?????? ?????? ??????.
-				if(FAILED(m_BandiCaptureLibrary.Verify("KOG_ELSWORD_20110825", "675a5521")))
-				{
-					MakeHackScreenShotTemp(pFileName);
-					return;
-				}
-			}
-
-			if(m_BandiCaptureLibrary.IsCreated())
-			{
-				//TCHAR pathName[MAX_PATH];
-				//m_BandiCaptureLibrary.MakePathnameByDate(_T("ScreenCapture\\"), _T("SC_"), _T("jpg"), pathName, MAX_PATH);
-				HWND pDesktop = GetDesktopWindow();
-				hr = m_BandiCaptureLibrary.CaptureImage(pFileName, BCAP_IMAGE_JPG , 50, BCAP_MODE_GDI, true,(LONG_PTR)pDesktop);
-
-				if(FAILED(hr))
-				{
-					MakeHackScreenShotTemp(pFileName);
-					return;
-				}
-			}
-		}
-	}
-	catch (...)
-	{
-
-
-	}
-}
 
 CKTDGUIDialogType CX2Main::KTDGUIInfoBox( D3DXVECTOR2 vPos, const WCHAR* pText, CKTDXStage* pNowState, float fLifeTime )
 {
@@ -10400,230 +10071,6 @@ void CX2Main::TimedMessagePopUp::OnFrameMove( double fTime, float fElapsedTime )
 }
 
 
-//{{ 2011.9.16	?????  ???? ?????? ��?? ????
-bool CX2Main::Bandi_StartVideoCapture()
-{
-	if( m_fCaptureDelay > 0.0f )
-	{
-		if( g_pChatBox != NULL )
-		{
-			g_pChatBox->AddChatLog( GET_STRING( STR_ID_17538 ), KEGS_CHAT_REQ::CPT_SYSTEM, D3DXCOLOR(1,1,0,1), L"#CFFFF00" );
-		}
-		return false;
-	}
-
-	m_fCaptureDelay = 3.0f;
-
-	IDirect3DDevice9* pd3d9Device = DXUTGetD3DDevice();
-
-	// ��??? ????????.
-	if(FALSE == m_BandiCaptureLibrary.IsCapturing())
-	{
-		// ???? ????? DLL ?? ?��???? ???? ?��?????? ????????.
-		if(FALSE ==m_BandiCaptureLibrary.IsCreated())
-		{
-			// ???��? DLL?? .H?????? ?????? ???????? ???��??? ????? ????? ??????.
-			if(FAILED(m_BandiCaptureLibrary.Create(BANDICAP_RELEASE_DLL_FILE_NAME)))
-				return false;
-
-			// ?????? ???? ?????? ??????? ?????? ???? ????? ??????.
-			// ???��????? ?????? ??? ???????, ??????????? ????????? ?????? ??? ?????? ?????? ??????.
-			if(FAILED(m_BandiCaptureLibrary.Verify("KOG_ELSWORD_20110825", "675a5521")))
-				return false;
-		}
-
-		if(m_BandiCaptureLibrary.IsCreated())//3.?????? ?????
-		{
-			BCAP_CONFIG cfg;
-
-			if(GetGameOption().GetUserSetting()==false)
-			{
-				int iVal=GetGameOption().GetGeneralVideoType();
-				if(iVal>14)
-					iVal+=4;//??? ??? 4?????? ????? zoom?? ??????
-
-				if(BCAP_PRESET_VIDEO_EDITING!=21)
-				{
-					ASSERT(false);//?????????? ???? ??? ????? ????�� ?????? ?????
-				}
-				BCapConfigPreset(&cfg, (BCAP_PRESET)iVal);
-			}
-			else
-			{
-				//BCAP_PRESET bp;
-				BCapConfigPreset(&cfg, (BCAP_PRESET)0);
-				cfg.VideoSizeH=GetGameOption().GetVideoSizeH();
-				cfg.VideoSizeW=GetGameOption().GetVideoSizeW();
-				cfg.VideoFPS=GetGameOption().GetVideoFPS();
-				cfg.VideoQuality=GetGameOption().GetVideoQuality();
-				cfg.AudioChannels=GetGameOption().GetAudioChannels();
-				cfg.AudioSampleRate=GetGameOption().GetAudioSampleRate();
-				cfg.VideoCodec=GetGameOption().GetVideoFormat();
-			}
-			m_BandiCaptureLibrary.CheckConfig(&cfg);       // ????? ???? ??? ???
-			m_BandiCaptureLibrary.SetConfig(&cfg);         // ???? ????
-
-			m_BandiCaptureLibrary.SetMinMaxFPS(30, 60);    // ???, ??? ?????? ????
-
-			// ????��??? ?????? ??????? ??????.
-			TCHAR pathName[MAX_PATH];
-			m_BandiCaptureLibrary.MakePathnameByDate(_T("ScreenCapture\\"), _T("SC_"), _T("avi"), pathName, MAX_PATH);
-
-			// ��??? ????????.
-			HRESULT hr = m_BandiCaptureLibrary.Start(pathName, NULL, BCAP_MODE_D3D9_SCALE, (LONG_PTR)pd3d9Device);
-			if(FAILED(hr))
-			{
-				switch( hr )
-				{
-				case BCERR_VIDEO_CAPTURE:
-					break;
-				case BCERR_AUDIO_CAPTURE:
-					{
-						m_BandiCaptureLibrary.GetConfig(&cfg);		   // ???? ?????? ???????
-						cfg.AudioCodec = WAVETAG_NULL;				   // ???? ????
-						m_BandiCaptureLibrary.CheckConfig(&cfg);       // ????? ???? ??? ???
-						m_BandiCaptureLibrary.SetConfig(&cfg);         // ???? ????
-
-						//???? ???? ?? ?????? ??? ????
-						HRESULT hr = m_BandiCaptureLibrary.Start(pathName, NULL, BCAP_MODE_D3D9_SCALE, (LONG_PTR)pd3d9Device);
-						if( FAILED(hr) )
-						{
-							break;
-						}
-						if( g_pChatBox != NULL )
-						{
-							g_pChatBox->AddChatLog( GET_STRING( STR_ID_17528 ), KEGS_CHAT_REQ::CPT_SYSTEM, D3DXCOLOR(1,1,0,1), L"#CFFFF00" );
-							g_pChatBox->AddChatLog( GET_STRING( STR_ID_17529 ), KEGS_CHAT_REQ::CPT_SYSTEM, D3DXCOLOR(1,1,0,1), L"#CFFFF00" );
-						}
-						return true;
-					}
-					break;
-				}
-				return false;
-			}
-			else
-			{
-				if ( g_pChatBox != NULL )
-				{
-					g_pChatBox->AddChatLog( GET_STRING( STR_ID_14371 ), KEGS_CHAT_REQ::CPT_SYSTEM, D3DXCOLOR(1,1,0,1), L"#CFFFF00" );
-				}
-			}
-
-		}
-	}
-
-	return true;
-}
-
-void CX2Main::Bandi_Pause_Restart_VidieCapture(bool bPause)
-{
-	// ??? ????, ???? ?????? ?????? ???? ?��? ???? (IsCapturing = true ????)
-	if( TRUE == m_BandiCaptureLibrary.IsCapturing() )
-	{
-		if( true == bPause && NULL != g_pChatBox )
-			g_pChatBox->AddChatLog( GET_STRING( STR_ID_14372 ), KEGS_CHAT_REQ::CPT_SYSTEM, D3DXCOLOR(1,1,0,1), L"#CFFFF00" );
-		else
-			g_pChatBox->AddChatLog( GET_STRING( STR_ID_14373 ), KEGS_CHAT_REQ::CPT_SYSTEM, D3DXCOLOR(1,1,0,1), L"#CFFFF00" );
-
-		m_BandiCaptureLibrary.Pause(bPause);
-	}
-}
-
-void CX2Main::Bandi_EndVidioCapture()
-{
-	if( TRUE == m_BandiCaptureLibrary.IsCapturing() )
-	{
-		m_BandiCaptureLibrary.Stop();
-		if( NULL != g_pChatBox )
-			g_pChatBox->AddChatLog( GET_STRING( STR_ID_14374 ), KEGS_CHAT_REQ::CPT_SYSTEM, D3DXCOLOR(1,1,0,1), L"#CFFFF00" );
-		m_iOldCaptureFileSize = -1;
-	}
-}
-
-void CX2Main::Bandi_EnoughDiskSpace(float fElapsedTime)
-{
-	//?????? ��?? ???? ???��? ??? ??? ???�� ????��???? work????? ?????
-	//????? ?�X ?????? ??? ?? ?? ???? ??????, ??��? ????? ?�X ?? ???.
-
-	//???? ??? ???????? ????? ?????? ????.
-	if( IsCapturing() == false )
-		return;
-
-	//?? ?????? ???
-	m_fFileSizeCheckTime -= fElapsedTime;
-	if( m_fFileSizeCheckTime < 0 )
-	{
-		m_fFileSizeCheckTime = 2.f;
-		if( m_iOldCaptureFileSize != m_BandiCaptureLibrary.GetCaptureFileSize())
-		{
-			m_iOldCaptureFileSize = m_BandiCaptureLibrary.GetCaptureFileSize();
-		}
-		else
-		{	//2?????? ???????????? ????, ???? ???????????? ??? ?????,
-			//????�X ???????? ??????? ????? ???.
-			g_pMain->Bandi_EndVidioCapture();
-			g_pChatBox->AddChatLog( GET_STRING(STR_ID_17540), KEGS_CHAT_REQ::CPT_SYSTEM, D3DXCOLOR(1,1,0,1), L"#CFFFF00" );
-
-#ifdef ACTIVE_KOG_GAME_PERFORMANCE_CHECK
-			KOGGamePerformanceCheck::GetInstance()->Resume();
-#endif //ACTIVE_KOG_GAME_PERFORMANCE_CHECK
-
-            if ( g_pData->GetGameUDP() != NULL )
-                g_pData->GetGameUDP()->RemoveAllPendingPingSends();
-
-		}
-	}
-	return;
-}
-
-//}}
-
-//{{ 2011.9.16	?????  ???? ??????? ��?? ????
-bool CX2Main::Bandi_ScreenCapture()
-{
-	if( m_fCaptureDelay > 0.0f )
-		return false;
-
-	m_fCaptureDelay = 3.0f;
-
-	// ?? ???? ???? ???? ?????? default ???? //
-	HRESULT hr = BCERR_FILE_CREATE;
-
-	IDirect3DDevice9* pd3d9Device = DXUTGetD3DDevice();
-
-	if( NULL == pd3d9Device )
-		return false;
-
-	// ��??? ????????.
-	// ???? ????? DLL ?? ?��???? ???? ?��?????? ????????.
-	if(m_BandiCaptureLibrary.IsCreated()==FALSE)
-	{
-		// ???��? DLL?? .H?????? ?????? ???????? ???��??? ????? ????? ??????.
-		if(FAILED(m_BandiCaptureLibrary.Create(BANDICAP_RELEASE_DLL_FILE_NAME)))
-			return false;
-
-		// ?????? ???? ?????? ??????? ?????? ???? ????? ??????.
-		// ???��????? ?????? ??? ???????, ??????????? ????????? ?????? ??? ?????? ?????? ??????.
-		if(FAILED(m_BandiCaptureLibrary.Verify("KOG_ELSWORD_20110825", "675a5521")))
-			return false;
-
-	}
-
-	if(m_BandiCaptureLibrary.IsCreated())
-	{
-		TCHAR pathName[MAX_PATH];
-		m_BandiCaptureLibrary.MakePathnameByDate(_T("ScreenCapture\\"), _T("SC_"), _T("jpg"), pathName, MAX_PATH);
-
-		hr = m_BandiCaptureLibrary.CaptureImage(pathName, BCAP_IMAGE_JPG , 80, BCAP_MODE_D3D9, true,(LONG_PTR)pd3d9Device);
-
-		if(FAILED(hr))
-			return false;
-	}
-
-
-	return true;
-}
-//}}
 KServerGroupInfo CX2Main::GetPickedChannelServer() const
 {
 	map<int, KServerGroupInfo>::iterator iter = g_pInstanceData->m_mapServerGroupInfo.find(m_iPickedChannelServerIPIndex);

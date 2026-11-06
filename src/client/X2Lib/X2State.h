@@ -152,7 +152,6 @@ class CX2State : public CKTDXStage
 		virtual HRESULT OnFrameMove( double fTime, float fElapsedTime );
 		virtual HRESULT OnFrameRender();
 
-		void ShowBandicamRecParticle( bool bShow );
 
 		virtual bool	MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
 
@@ -729,7 +728,6 @@ class CX2State : public CKTDXStage
 
 		CKTDGUIDialogType	m_pDlgGameStartCount;
 
-		CKTDGParticleSystem::CParticleEventSequenceHandle m_hParticleRec;
 
 		CKTDGUIDialogType	m_pDLGStateChangePopup;
 

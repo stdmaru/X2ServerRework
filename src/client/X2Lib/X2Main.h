@@ -256,9 +256,6 @@
 #include	"./X2UIRankingInfo.h"
 //}} kimhc // 2009-07-09 // 헤니르의 시공에 추가되는 Ranking UI 작업
 
-//{{ 2011.9.16 이준호 반디캠 작업
-#include "bandicap.h"
-//}}
 
 
 
@@ -1416,8 +1413,6 @@ class CX2Main : public CKTDXStage
 		//}} 오현빈 // 2012-08-22 // 필드 이동 워프 치트
 
 
-		void MakeHackScreenShotTemp( const char *pFileName );
-		void MakeHackScreenShot( const char *pFileName );
 
 
 		CheckWindowInfo *GetCheckWindowInfo() { return m_threadCheckWindowInfo; }
@@ -1448,25 +1443,6 @@ class CX2Main : public CKTDXStage
 
 
 
-		//{{ 2011.9.16	이준호  반디캠 동영상 캡쳐 지원
-		bool					Bandi_StartVideoCapture();
-		void					Bandi_Pause_Restart_VidieCapture(bool bPause);	// bPause : true이면 일시 정지, false 일시 정지 해제
-		void					Bandi_EndVidioCapture();
-		void					Bandi_EnoughDiskSpace(float fElapsedTime);
-		bool					IsCapturing()
-		{
-			if( m_BandiCaptureLibrary.IsCapturing() == TRUE )
-				return true;
-			return false;
-		};
-
-		//}}
-
-		//{{ 2011.9.16	이준호  반디캠 스크린샷 캡쳐 지원
-		bool					Bandi_ScreenCapture();
-		float					m_fCaptureDelay;
-		CBandiCaptureLibrary	m_BandiCaptureLibrary;
-		//}}
 
 		void			SetHackToolTime(float fVal) { m_fCheckHackToolTime = fVal; }
 
@@ -1749,8 +1725,6 @@ class CX2Main : public CKTDXStage
 		DWORD		m_dwNationFlag;
 
 		float m_fCheckHackToolTime;
-		float m_fFileSizeCheckTime;
-		__int64 m_iOldCaptureFileSize;
 
 		int				  m_iGameHour;						//클라이언트 시작 후 지난 시간 반환
 

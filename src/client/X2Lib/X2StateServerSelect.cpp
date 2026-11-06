@@ -392,11 +392,6 @@ m_bRemoveUnitAfterReceiveNMSerialNum( false )
 //#endif
 
 
-	if( g_pMain->IsCapturing() == true )
-	{
-		g_pMain->Bandi_EndVidioCapture();
-	}
-
 	g_pKTDXApp->SkipFrame();
 
 	if( NULL != g_pData && NULL != g_pData->GetPlayGuide() )

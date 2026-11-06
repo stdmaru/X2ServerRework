@@ -252,10 +252,7 @@ protected:
 	void ShowStaticInput( bool bShow );
 	void ShowStaticOther( bool bShow );
 	void ShowStaticSecurity( bool bShow );
-	void ShowBandiCamOption( bool bShow );
-	void ShowBandiCamOptionUser( bool bShow );
-	//void IMEDataGetUserVideoOptionSetting();
-	CKTDGUIDialog * m_pCamUserWindow;
+	void HideBandiCamOption();
 	void InitGraphicOption();
 
 	void InitCommunityOption();

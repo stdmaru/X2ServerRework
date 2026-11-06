@@ -1690,29 +1690,18 @@ void CKTDGUIControl::SetGuideDescByString_LUA( const char* pGuideDesc )
 
 
 CKTDGUIControl::CMovieData::CMovieData()
-	: m_pBvt( NULL ), /*m_pInfo( NULL ),*/ /*m_pPointData( NULL ),*/
+	: m_pFrameTexture( NULL ),
 	m_pRenderTargetTexture( NULL ),
-	/*m_pReader( NULL ),*/
 	m_wstrMovieFileName( L"" ),
 	m_vSize(0.0f, 0.0f), m_vOriginPos(0.0f, 0.0f), m_vPos(0.0f, 0.0f), m_bShow( false )
 	, m_bLoop( false )
 {
-// 	if ( !m_Bvl.IsCreated() )
-// 		m_Bvl.Create( BANDIVIDEO_RELEASE_DLL_FILE_NAME, NULL, NULL );
 }
 
 CKTDGUIControl::CMovieData::~CMovieData()
 {
 	SAFE_CLOSE( m_pRenderTargetTexture );
-
-	if ( m_Bvl.IsCreated() )
-		m_Bvl.Destroy();
-
-	if ( m_pBvt )
-		m_pBvt->Close();
-
-	//SAFE_DELETE( m_pReader );
-	SAFE_DELETE( m_pBvt );
+	SAFE_RELEASE( m_pFrameTexture );
 }
 
 void CKTDGUIControl::CMovieData::SetMovieFileName_LUA( const char* strMoiveFileName_ )
@@ -1724,41 +1713,28 @@ void CKTDGUIControl::CMovieData::SetMovieFileName_LUA( const char* strMoiveFileN
 }
 
 
+// The movies are files next to the game (movie/ under the working directory), not .kom entries. A movie that cannot be
+// opened shows nothing, as with BandiVideo.
 void CKTDGUIControl::CMovieData::SetMovieFileName( const WCHAR* wstrMovieFileName_ )
 {
-	if ( !m_Bvl.IsCreated() )
+	m_wstrMovieFileName = wstrMovieFileName_;
+
+	m_Player.Close();
+	SAFE_RELEASE( m_pFrameTexture );
+
+	const std::filesystem::path path = std::filesystem::current_path() / L"movie" / std::filesystem::path( m_wstrMovieFileName );
+	if ( m_Player.Open( path ) )
 	{
-// 		if ( NULL == m_pReader )
-// 			m_pReader = new CBandiVideoFileReader();
-		m_Bvl.Create( BANDIVIDEO_RELEASE_DLL_FILE_NAME, NULL, NULL );
-	}
-	m_Bvl.Verify("KOG_ELSWORD_20131203", "1b9b533c");
-
-	WCHAR buff[MAX_PATH] = {0, };
-	GetCurrentDirectory( MAX_PATH, buff );
-	m_wstrMovieFileName = buff;
-	m_wstrMovieFileName += L"\\movie\\";
-	m_wstrMovieFileName += wstrMovieFileName_;
-
-// 	KGCMassFileManager::CMassFile::MASSFILE_MEMBERFILEINFO_POINTER Info
-// 		= g_pKTDXApp->GetDeviceManager()->GetMassFileManager()->LoadDataFile( wstrMovieFileName_ );
-
-	m_Bvl.Close();
-	if(SUCCEEDED(m_Bvl.Open( m_wstrMovieFileName.c_str(), FALSE)))
-	//if ( SUCCEEDED( m_pReader->Read( reinterpret_cast<BYTE*>( Info->pRealData ), Info->size ) ) )
-	{
-
-		m_Bvl.GetVideoInfo(m_Info);
-
-		if ( NULL == m_pBvt )
-        {
-            m_pBvt = new CBandiVideoTexture_DX9();
-        }
-		else
-			m_pBvt->Close();
-
-		m_pBvt->Open(m_Info.width, m_Info.height);
-		m_Bvl.Play();
+		// A8R8G8B8 is B, G, R, A in memory, what MoviePlayer::GetFrameBgra writes. Managed: lockable, and kept over
+		// device resets.
+		if ( FAILED( g_pKTDXApp->GetDevice()->CreateTexture( m_Player.Width(), m_Player.Height(), 1, 0, D3DFMT_A8R8G8B8,
+			D3DPOOL_MANAGED, &m_pFrameTexture, NULL ) ) )
+		{
+			m_pFrameTexture = NULL;
+			m_Player.Close();
+			return;
+		}
+		m_Player.Play();
 	}
 }
 
@@ -1787,42 +1763,62 @@ void CKTDGUIControl::CMovieData::SetRect_LUA( const float fX_, const float fY_, 
 
 void CKTDGUIControl::CMovieData::OnFrameMove()
 {
-	BVL_STATUS status;
-	m_Bvl.GetStatus(status);
+	if ( !m_Player.IsOpen() )
+		return;
 
-	if ( status == BVL_STATUS_PLAYEND )
+	// BandiVideo kept its own clock; the player advances with the frame time.
+	m_Player.Advance( g_pKTDXApp->GetElapsedTime() );
+
+	if ( m_Player.GetStatus() == x2::movie::MoviePlayer::Status::Ended )
 	{
-		m_Bvl.Seek(0, BVL_SEEK_TIME);
+		m_Player.SeekToStart();
 
 		if ( m_bLoop )
-			m_Bvl.Play();
-		else
-			m_Bvl.Stop();
+			m_Player.Play();
 	}
 
-	if(m_Bvl.IsNextFrame())
+	if ( m_Player.IsNextFrame() && NULL != m_pFrameTexture )
 	{
-		if ( NULL != m_pBvt )
+		D3DLOCKED_RECT locked;
+		if ( SUCCEEDED( m_pFrameTexture->LockRect( 0, &locked, NULL, 0 ) ) )
 		{
-			INT pitch;
-			BYTE* buf = m_pBvt->Lock(pitch);
-			if(buf)
-			{
-				// Get frame
-				BVL_FRAME frame;
-				frame.frame_buf = buf;
-				frame.frame_buf_size = m_Info.height*pitch;
-				frame.pitch = pitch;
-				frame.width = m_Info.width;
-				frame.height = m_Info.height;
-				frame.pixel_format = m_pBvt->GetFormat();
-
-				m_Bvl.GetFrame(frame, TRUE);
-
-				m_pBvt->Unlock();
-			}
+			const std::size_t pitch = static_cast<std::size_t>( locked.Pitch );
+			std::span<std::uint8_t> frame( static_cast<std::uint8_t*>( locked.pBits ), pitch * m_Player.Height() );
+			m_Player.GetFrameBgra( frame, pitch );
+			m_pFrameTexture->UnlockRect( 0 );
 		}
 	}
+}
+
+// The frame texture stretched over (0, 0, width, height) of the render target, as CBandiVideoTexture_DX9::Draw did:
+// a screen-space quad, no resolution scaling.
+void CKTDGUIControl::CMovieData::DrawFrameTexture( int iWidth_, int iHeight_ )
+{
+	KD3DPUSH( g_pKTDXApp->GetDGManager()->GetRSICKTDXDeviceTexture() )
+
+	const float X1 = -0.5f;
+	const float Y1 = -0.5f;
+	const float X2 = static_cast<float>( iWidth_ ) - 0.5f;
+	const float Y2 = static_cast<float>( iHeight_ ) - 0.5f;
+
+	CKTDXDeviceTexture::TEXTURE_RHW_VERTEX vertex[4];
+	ZeroMemory( vertex, sizeof(CKTDXDeviceTexture::TEXTURE_RHW_VERTEX) * 4 );
+	vertex[0].x = X1;	vertex[0].y = Y1;	vertex[0].u = 0.0f;	vertex[0].v = 0.0f;
+	vertex[1].x = X1;	vertex[1].y = Y2;	vertex[1].u = 0.0f;	vertex[1].v = 1.0f;
+	vertex[2].x = X2;	vertex[2].y = Y1;	vertex[2].u = 1.0f;	vertex[2].v = 0.0f;
+	vertex[3].x = X2;	vertex[3].y = Y2;	vertex[3].u = 1.0f;	vertex[3].v = 1.0f;
+	for ( int i = 0; i < 4; ++i )
+	{
+		vertex[i].z = 1.0f;
+		vertex[i].rhw = 1.0f;
+		vertex[i].color = 0xffffffff;
+	}
+
+	g_pKTDXApp->GetDevice()->SetTexture( 0, m_pFrameTexture );
+	g_pKTDXApp->GetDVBManager()->DrawPrimitive( CKTDGDynamicVBManager::DVB_TYPE_XYZRHW_DIFFUSE_TEX1
+		, D3DPT_TRIANGLESTRIP, 2, vertex );
+
+	KD3DEND()
 }
 
 void CKTDGUIControl::CMovieData::OnFrameRender()
@@ -1831,20 +1827,16 @@ void CKTDGUIControl::CMovieData::OnFrameRender()
 	m_pRenderTargetTexture->Clear( D3DCOLOR_RGBA( 0, 0, 0, 0 ) );
 
 	// Draw frame
-	if ( NULL != m_pBvt )
+	if ( NULL != m_pFrameTexture )
 	{
-
-		// 해상도 변경 시 ( 기준 1024 by 768 )
-		// 원본이 되는 사이즈는 변경되지 않아야 하기 때문에
-		// 해당 부분 수정
-		m_pBvt->Draw(0, 0, static_cast<int>(m_vSize.x), static_cast<int>( m_vSize.y ) );
+		// The source size must not change with the resolution (base 1024 by 768).
+		DrawFrameTexture( static_cast<int>( m_vSize.x ), static_cast<int>( m_vSize.y ) );
 	}
 
 	m_pRenderTargetTexture->EndRender();
 
-	// 해당도 변경 시 ( 기준 1024 by 768 )
-	// 시작점은 현재 스크린의 실 좌표에 영향을 받고 크기는 기준 값에 영향을 받기 때문에
-	// 해당 부분 수정
+	// When the resolution changes (base 1024 by 768) the position follows the real screen coordinates and the size the
+	// base values.
 	m_pRenderTargetTexture->Draw( static_cast<int> (m_vPos.x / g_pKTDXApp->GetResolutionScaleX() ),
 		static_cast<int>(m_vPos.y / g_pKTDXApp->GetResolutionScaleY() ),
 		static_cast<DWORD>( m_vSize.x ),

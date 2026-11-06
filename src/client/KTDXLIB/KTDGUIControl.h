@@ -555,15 +555,12 @@ class CKTDGUIControl : private boost::noncopyable
 			const D3DXVECTOR2& GetPos() const { return m_vPos; }
 			void SetPos(const D3DXVECTOR2& val) { m_vPos = val; }
 
-		public:
-			CBandiVideoLibrary	m_Bvl;
-
 		private:
+			void DrawFrameTexture( int iWidth_, int iHeight_ );
 
-			BVL_VIDEO_INFO		m_Info;
-			CBandiVideoTexture*	m_pBvt;
+			x2::movie::MoviePlayer	m_Player;			// BandiVideo's CBandiVideoLibrary in the original
+			LPDIRECT3DTEXTURE9		m_pFrameTexture;	// the decoded frame (CBandiVideoTexture_DX9 in the original)
 			CKTDXDeviceRenderTargetTexture* 	m_pRenderTargetTexture;
-			//CBandiVideoFileReader*			m_pReader;
 			wstring							m_wstrMovieFileName;
 			D3DXVECTOR2			m_vSize;
 			D3DXVECTOR2			m_vOriginPos;
