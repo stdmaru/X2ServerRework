@@ -8,7 +8,9 @@
 
 
 
+#ifndef ASSERT  // KTDX.h has it
 #define ASSERT(exp)         _ASSERTE(exp)
+#endif
 
 #ifndef SAFE_DELETE
 #define SAFE_DELETE(p)			{ if(p) { delete (p);     (p)=NULL; } }

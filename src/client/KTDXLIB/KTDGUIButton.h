@@ -25,19 +25,19 @@ class CKTDGUIButton : public CKTDGUIControl
 		CKTDGUIButton();
 		virtual	~CKTDGUIButton(void);
 
-		virtual	HRESULT	OnFrameMove( double fTime, float fElapsedTime );
-		virtual	HRESULT	OnFrameRender();
+		HRESULT	OnFrameMove( double fTime, float fElapsedTime ) override;
+		HRESULT	OnFrameRender() override;
 
-		virtual void	SetShow( bool bShow );
-		virtual void	SetEnable( bool bEnable );
+		void	SetShow( bool bShow ) override;
+		void	SetEnable( bool bEnable ) override;
 
-		virtual bool	HandleKeyboard( UINT uMsg, WPARAM wParam, LPARAM lParam );
-		virtual	bool	HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lParam );
+		bool	HandleKeyboard( UINT uMsg, WPARAM wParam, LPARAM lParam ) override;
+		bool	HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lParam ) override;
 		virtual void	ChangeState( BUTTON_CONTROL_STATE state, bool bForce = false );
 
-		virtual bool	SetName( const WCHAR* pName );
+		bool	SetName( const WCHAR* pName ) override;
 
-		virtual	bool	ContainsPoint( POINT pt );
+		bool	ContainsPoint( POINT pt ) override;
 
 		virtual void	MoveControl( float fx, float fy ) override;
 		virtual void	ScaleControl( float fx, float fy ) override;
@@ -119,7 +119,7 @@ class CKTDGUIButton : public CKTDGUIControl
 		int GetWidth();
 		int GetHeight();
 
-		void SetOffsetPos( D3DXVECTOR2 pos );
+		void SetOffsetPos( D3DXVECTOR2 pos ) override;
 
 		BUTTON_CONTROL_STATE GetButtonControlState() { return m_ButtonState; }
 
@@ -138,9 +138,9 @@ class CKTDGUIButton : public CKTDGUIControl
 		void SetEnableClick( bool bEnable ) { m_bEnableClick = bEnable; }
 
 		// Maximize / Minimize
-		virtual void SetMaximize( bool val );
+		void SetMaximize( bool val ) override;
 
-		D3DXVECTOR2		GetGuideDescPos();
+		D3DXVECTOR2		GetGuideDescPos() override;
 		void SetEdge( bool bDrawOut, int _width, D3DXCOLOR _color );
 		void SetEdge2( bool bDrawOut, int _width, D3DXCOLOR _color, int enlargeValue );
 
@@ -152,8 +152,8 @@ class CKTDGUIButton : public CKTDGUIControl
 
 		void ChangeMouseOverSound( const WCHAR* wszFileName );
 		void ChangeMouseOverSound_LUA( const char* szFileName );
-		virtual	void	SetCustomMouseOverSound ( wstring wstrSoundFileName );
-		virtual	void	SetCustomMouseUpSound  ( wstring wstrSoundFileName );
+		void	SetCustomMouseOverSound ( wstring wstrSoundFileName ) override;
+		void	SetCustomMouseUpSound  ( wstring wstrSoundFileName ) override;
 
 	protected:
 

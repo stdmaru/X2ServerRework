@@ -2456,7 +2456,7 @@ _ENUM( STR_ID_24948 )		// O
 _ENUM( STR_ID_24949 )		// P
 _ENUM( STR_ID_24950 )		// [
 _ENUM( STR_ID_24951 )		// ]
-_ENUM( STR_ID_24952 )		// \
+_ENUM( STR_ID_24952 )		// (backslash)
 _ENUM( STR_ID_24953 )		// Caps
 _ENUM( STR_ID_24954 )		// A
 _ENUM( STR_ID_24955 )		// S

@@ -32,9 +32,6 @@
 
 //------------------------------------------------------------------------------
 //
-#pragma warning(push)
-#pragma warning(disable: 4786) // identifier was truncated to
-#pragma warning(disable: 4995) // 'function': name was marked as #pragma deprecated
 //#include "KJohnGen.h"
 #include <vector>
 #include "KHandleArray.h"
@@ -63,7 +60,7 @@
     { \
     private: \
         static  _KSafeStaticMember##Name    ms_staticMember; \
-        __declspec(noinline) static Type& _NonlinearAccess()   { static Type s_member; ms_staticMember._DoNothing();  return s_member; } \
+        X2_NOINLINE static Type& _NonlinearAccess()   { static Type s_member; ms_staticMember._DoNothing();  return s_member; } \
         inline void           _DoNothing()       {} \
     public: \
         inline _KSafeStaticMember##Name()   { Access(); } \
@@ -82,7 +79,6 @@
 //#define KJOM_DUMPLIST_WHEN_DELETE_ALL   // enable list dump when delete all
 #endif // _DEBUG
 
-#pragma warning(disable: 4100) // unreferenced formal parameter
 
 
 
@@ -404,7 +400,7 @@ public:
                     : jintaeks on 2009-02-27, 21:50 */
     }//operator new()
 
-    static void* operator new[](size_t size)
+    static void* operator new[](size_t /*size*/)
     {
         ASSERT( false );
     }//operator new[]()
@@ -439,7 +435,7 @@ private:
     /// delete object by UID.
     /// @param  iUID_: object handle(UID)
     ///         must range from 0 to n(positive integer greater than 0)
-    static bool _DeleteObject( IN const KHandle& iUID_, POBJECT_TYPE pOriginObject = NULL )
+    static bool _DeleteObject( IN const KHandle& iUID_, [[maybe_unused]] POBJECT_TYPE pOriginObject = NULL )
     {
         ASSERT( AccessHandleArray().IsValidHandleRange(iUID_) );
         if( AccessHandleArray().GetData(iUID_) )
@@ -602,7 +598,6 @@ template<typename OBJECT_TYPE,typename CUSTOM_DATA,int t_iNumCursor>
         KJohnObjMan<OBJECT_TYPE,CUSTOM_DATA,t_iNumCursor>::_KSafeStaticMemberHandleArray::ms_staticMember;
 
 
-#pragma warning(pop)
 
 #endif // _KJOHNOBJMAN_H
 

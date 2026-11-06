@@ -65,7 +65,6 @@
 // 패키지 암호화는 무조건 !! - robobeg, 2014-01-21
 
 #if !X2_DEV_TOOLS
-	#pragma NOTE( "ktdx.h 의 _SERVICE_ 실행!" )
 		//#define _ENCRIPT_SCRIPT_
 
 //	#define NO_GAMEGUARD	// 해외팀 제거
@@ -88,7 +87,6 @@
 
 
 #elif X2_DEV_TOOLS
-    #pragma NOTE( "ktdx.h 의 _IN_HOUSE_ 실행!" )
     //#define CHECK_NP_HACKUSER // 사내에서는 전사용자 대상으로 게임가드 실행
 	//#define _USE_NEXON_MSG_INHOUSE // 사내에서 본섭 넥슨메신져 열결 (왠만해선 사용하지 말자.)
 
@@ -98,7 +96,6 @@
 
 
 #else
-	#pragma NOTE( "ktdx.h 의 define 확인하기.!" )
 	NOT GOOD.
 
 #endif // _SERVICE_
@@ -362,6 +359,8 @@
 #include <zlib.h>
 
 #include "DXUT.h"  // the DXUT replacement (src/client/DXUT): window, loop, timer
+#include "SdlInput.h"  // DXUTGetInputState(): the cursor
+#include "x2/platform/process.h"
 
 
 
@@ -392,6 +391,7 @@ using std::set;
 //{{ robobeg : 2008-10-10
 #include <bitset>
 #include    <deque>
+#include <algorithm>
 #include <type_traits>
 //}} robobeg : 2008-10-10
 
@@ -429,37 +429,29 @@ using std::set;
 
 
     #if !defined(TRACE)
+        // To stderr (OutputDebugString in the original). Wide formats follow Windows (%s is wide).
         inline void _tracew(const WCHAR* fmt_, ...)
         {
             WCHAR   out[4096];
             va_list argList;
 
             va_start( argList, fmt_ );
-            //StringCchVPrintfW( out, ARRAY_SIZE( out ), fmt_, argList );
-#ifdef	CONVERSION_VS
-			::vswprintf_s( out, _countof(out), fmt_, argList );
-#else
-			::vswprintf( out, fmt_, argList );
-#endif // CONVERSION_VS
+            const std::wstring format = x2::platform::TranslateWideFormat( fmt_ );
+            std::vswprintf( out, std::size( out ), format.c_str(), argList );
             va_end( argList );
-            ::OutputDebugStringW( out );
+            out[std::size( out ) - 1] = L'\0';
+            std::fputs( x2::platform::WideToUtf8( out ).c_str(), stderr );
         }//_tracew()
 
         inline void _tracea(const char* pszFormat_, ...)
         {
             char    out[4096];
-			ZeroMemory( out, 4096 );
             va_list argList;
 
             va_start( argList, pszFormat_ );
-            //StringCchVPrintfA( out, ARRAY_SIZE( out ), pszFormat_, argList );
-#ifdef	CONVERSION_VS
-			::vsprintf_s( out, _countof(out), pszFormat_, argList );
-#else
-			::vsprintf( out, pszFormat_, argList );
-#endif // CONVERSION_VS
+            std::vsnprintf( out, sizeof( out ), pszFormat_, argList );
             va_end( argList );
-            ::OutputDebugStringA( out );
+            std::fputs( out, stderr );
         }//_tracea()
         #if !defined(TRACEA)
         #define TRACEA              _tracea
@@ -752,7 +744,7 @@ struct TimeLimited
 
 	virtual void OnTimeOutCallBack() {};
 
-	virtual void OnFrameMove( double fTime, float fElapsedTime )
+	virtual void OnFrameMove( double /*fTime*/, float fElapsedTime )
 	{
 		if( m_fTimeLeft > 0.f )
 		{

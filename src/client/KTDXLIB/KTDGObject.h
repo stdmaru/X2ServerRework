@@ -102,7 +102,7 @@ class CKTDGObject
         static void DeleteKTDGObject( CKTDGObject* pObject_ );
         //}} seojt // 2009-1-14, 22:00
 
-		virtual HRESULT OnFrameMove( double fTime, float fElapsedTime ){ return S_OK; }
+		virtual HRESULT OnFrameMove( double /*fTime*/, float /*fElapsedTime*/ ){ return S_OK; }
 //{{ robobeg : 2008-10-28
 		//virtual HRESULT OnFrameRender(){ return S_OK; }
         virtual RENDER_HINT OnFrameRender_Prepare() { return RENDER_HINT_DEFAULT; }
@@ -339,7 +339,7 @@ class CKTDGObject
 		}
 #endif // CONVERSION_VS
 
-        virtual void    NotifyDGManagerChanged( CKTDGManager& refInManager_ ) {}
+        virtual void    NotifyDGManagerChanged( CKTDGManager& /*refInManager_*/ ) {}
 
 		CKTDGObject::OBJECT_TYPE GetObjectType() const { return m_eObjectType; }
 		void SetObjectType( const OBJECT_TYPE eObjectType_ ) { m_eObjectType = eObjectType_; }
@@ -408,7 +408,6 @@ class CKTDGObject
 				return false;
 
 			D3DXVECTOR3 center;
-			float fScale = 0.f;
 
 
 			GetTransformCenter( &center );

@@ -118,8 +118,8 @@ class CKTDGXSkinAnim : public CKTDGObject
 		void Reset( float fAnimTime = 0.0f );
 		void Wait();
 		void Stop();
-		const float GetNowAnimationTime() const { return m_fAnimCurrTime; }
-		const float GetBeforeAnimationTime() const { return m_fAnimBeforeTime; }
+		float GetNowAnimationTime() const { return m_fAnimCurrTime; }
+		float GetBeforeAnimationTime() const { return m_fAnimBeforeTime; }
 		float GetMaxAnimationTime(){ return m_fAnimMaxTime - m_fTransitionTime;	}
 		XSKIN_ANIM_STATE GetState(){ return m_AnimState; }
 		void			 SetState( XSKIN_ANIM_STATE animState ){ m_AnimState = animState; }
@@ -244,7 +244,7 @@ class CKTDGXSkinAnim : public CKTDGObject
 		CKTDGMatrix::BILLBOARD_TYPE GetBillBoardType() { return m_BillBoardType; }
 
 		__forceinline CKTDXDeviceXSkinMesh::MultiAnimFrame* GetCloneFrameRoot(){ return m_pCloneFrameRoot; }
-		__forceinline CKTDXDeviceXSkinMesh::MultiAnimFrame* GetCloneFrame( const WCHAR* name );
+		CKTDXDeviceXSkinMesh::MultiAnimFrame* GetCloneFrame( const WCHAR* name );
 		__forceinline D3DXVECTOR3 GetCloneFramePosition( const WCHAR* pName )
 		{
 			KTDXPROFILE();
@@ -463,7 +463,7 @@ class CKTDGXSkinAnim : public CKTDGObject
 			}
 		}
 
-		__forceinline void CKTDGXSkinAnim::UpdateAnimationFrame( CKTDXDeviceXSkinMesh::MultiAnimFrame* pFrame, D3DXMATRIX* pmxBase, CKTDXDeviceXSkinMesh::MultiAnimFrame* pCloneFrame,  bool bGravity)
+		__forceinline void UpdateAnimationFrame( CKTDXDeviceXSkinMesh::MultiAnimFrame* pFrame, D3DXMATRIX* pmxBase, CKTDXDeviceXSkinMesh::MultiAnimFrame* pCloneFrame,  bool bGravity)
 		{
 			KTDXPROFILE();
 
@@ -624,7 +624,7 @@ class CKTDGXSkinAnim : public CKTDGObject
 				DrawFrameStructure( (CKTDXDeviceXSkinMesh::MultiAnimFrame *) pModelFrame->pFrameFirstChild, modelIndex );
 			}
 		}
-		__forceinline void DrawFrame( CKTDXDeviceXSkinMesh::MultiAnimFrame* pModelFrame, int modelIndex );
+		void DrawFrame( CKTDXDeviceXSkinMesh::MultiAnimFrame* pModelFrame, int modelIndex );
 
 		void ResetAnimSet();
 		bool LinkCollisionDataFrame( CKTDXCollision::CollisionData* pCollisionData );

@@ -261,8 +261,8 @@ public:
 		class CXMeshEvent_AniName : public CXMeshEvent
 		{
 			public:
-				CXMeshEvent_AniName( bool final = false ) : m_fPlaySpeed( 0.f ),
-					CXMeshEvent(final){ m_EventType = ET_ANINAME; m_PlayType = CKTDGXSkinAnim::XAP_LOOP; }
+				CXMeshEvent_AniName( bool final = false ) : CXMeshEvent(final),
+					m_fPlaySpeed( 0.f ){ m_EventType = ET_ANINAME; m_PlayType = CKTDGXSkinAnim::XAP_LOOP; }
 
                 virtual void	OnFrameMove( CXMeshInstance* pInstance, float fElapsedTime, float fOldTime, float fNowTime, bool bAniTime );
 				virtual bool FadeAllowed() { return false; }
@@ -285,7 +285,7 @@ public:
 		class CXMeshEvent_SlashTrace : public CXMeshEvent
 		{
 		public:
-			CXMeshEvent_SlashTrace( bool final = false ) : m_bSlashTrace( false ), CXMeshEvent(final){ m_EventType = ET_SLASHTRACE; }
+			CXMeshEvent_SlashTrace( bool final = false ) : CXMeshEvent(final), m_bSlashTrace( false ){ m_EventType = ET_SLASHTRACE; }
 
                 virtual void	OnFrameMove( CXMeshInstance* pInstance, float fElapsedTime, float fOldTime, float fNowTime, bool bAniTime );
 			virtual bool FadeAllowed() { return false; }
@@ -626,12 +626,12 @@ public:
 		class CXMeshEvent_RenderType : public CXMeshEvent
 		{
 		public:
-			CXMeshEvent_RenderType( bool final = false ) : m_RenderType( CKTDGXRenderer::RT_REAL_COLOR ), CXMeshEvent(final){ m_EventType = ET_RENDERTYPE; }
+			CXMeshEvent_RenderType( bool final = false ) : CXMeshEvent(final), m_RenderType( CKTDGXRenderer::RT_REAL_COLOR ){ m_EventType = ET_RENDERTYPE; }
 
             virtual void	OnFrameMove( CXMeshInstance* pInstance, float fElapsedTime, float fOldTime, float fNowTime, bool bAniTime );
 			virtual bool FadeAllowed() { return false; }
 
-			const CKTDGXRenderer::RENDER_TYPE	GetRenderType()					{ return m_RenderType; }
+			CKTDGXRenderer::RENDER_TYPE	GetRenderType()					{ return m_RenderType; }
 			void			SetRenderType(const CKTDGXRenderer::RENDER_TYPE data)	{ m_RenderType = data; }
 
 			virtual bool ProcessTokenStream(std::vector<CXMeshPlayerToken>::iterator &TokenIter,
@@ -1461,7 +1461,7 @@ public:
 			wstring wstrTempletName;
 			ConvertUtf8ToWCHAR( wstrTempletName, pTempletName );
 
-#pragma DMLEE_NOTE( "일단은 스크립트에서 사용하는 부분에서는 NULL 로 입력, 나중에 몬스터 스크립트 전체 수정하면서 코드 수정해야함" )
+// TODO(original): scripts pass NULL here for now; fix the code when all monster scripts are revised.
 			return  CreateInstance( NULL, wstrTempletName.c_str(), pos, angleDegree, moveAxisDegree, layer );
 		}
 
@@ -1651,7 +1651,7 @@ void    CKTDGXMeshPlayer::ApplyFunctionToLiveInstances( FUNCTION fn )
     {
         CXMeshInstance* pInstance = iter->m_pInstance;
         if ( pInstance == NULL || pInstance->GetState() == IS_DIE )
-            contniue;
+            continue;
         fn(*pInstance );
     }
 

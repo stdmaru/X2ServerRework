@@ -308,7 +308,7 @@ class CKTDGUIControl : private x2::NonCopyable
 			void SetMsg_LUA( const char* pMsg ) { ConvertUtf8ToWCHAR( msg, pMsg ); }
 			void SetSpreadCount(int val) { iSpreadCount = val; }
 
-			void OnFrameMove( double fTime, float fElapsedTime )
+			void OnFrameMove( double /*fTime*/, float fElapsedTime )
 			{
 				KTDXPROFILE();
 
@@ -454,7 +454,7 @@ class CKTDGUIControl : private x2::NonCopyable
 					m_bFlickerLoop = bLoop;
 				}
 
-				const bool GetIsNowFlicker(){ return m_bFlicker; }
+				bool GetIsNowFlicker(){ return m_bFlicker; }
 
 				void SetEdge( bool bDrawOut, int edgeWidth, D3DXCOLOR edgeColor )
 				{
@@ -694,16 +694,16 @@ class CKTDGUIControl : private x2::NonCopyable
 		virtual	HRESULT	OnLostDevice()		{ return S_OK; }
 
 		// Windows message handler
-		virtual	bool	MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )		{ return false; }
-		virtual	bool	HandleKeyboard( UINT uMsg, WPARAM wParam, LPARAM lParam )			{ return false; }
-		virtual	bool	HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lParam )	{ return false; }
+		virtual	bool	MsgProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )		{ return false; }
+		virtual	bool	HandleKeyboard( UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )			{ return false; }
+		virtual	bool	HandleMouse( UINT /*uMsg*/, POINT /*pt*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )	{ return false; }
 
 		virtual void	OnFocusIn()		{ m_bHasFocus = true; }
 		virtual void	OnFocusOut()	{ m_bHasFocus = false; }
 
 		virtual void	RequestFocus();
 
-		const bool		IsOnMouseOver() const { return m_bMouseOver; }
+		bool		IsOnMouseOver() const { return m_bMouseOver; }
 		void			OnMouseEnter()	{ m_bMouseOver = true; }
 		void			OnMouseLeave()	{ m_bMouseOver = false; }
 		virtual	bool	ContainsPoint( POINT pt );
@@ -749,8 +749,8 @@ class CKTDGUIControl : private x2::NonCopyable
 
 
 
-		virtual void	ScaleControl( float fx, float fy ) {}
-		virtual void	MoveControl( float fx, float fy ) {}
+		virtual void	ScaleControl( float /*fx*/, float /*fy*/ ) {}
+		virtual void	MoveControl( float /*fx*/, float /*fy*/ ) {}
 
 		D3DXVECTOR2		GetOffsetPos()						{ return m_OffsetPos; }
 
@@ -864,10 +864,10 @@ class CKTDGUIControl : private x2::NonCopyable
 
         void            SetGuideDescLT(bool val) { m_bGuideDescPosLT = val; }
         bool            GetGuideDescLT() { return m_bGuideDescPosLT; }
-		virtual	void	SetCustomMouseOverSound ( wstring wstrSoundFileName ) { }
-		virtual	void	SetCustomMouseUpSound  ( wstring wstrSoundFileName ) { }
-		virtual	void	SetCustomRadioButtonMouseOverSound ( wstring wstrSoundFileName ) { }
-		virtual	void	SetCustomRadioButtonMouseUpSound  ( wstring wstrSoundFileName ) { }
+		virtual	void	SetCustomMouseOverSound ( wstring /*wstrSoundFileName*/ ) { }
+		virtual	void	SetCustomMouseUpSound  ( wstring /*wstrSoundFileName*/ ) { }
+		virtual	void	SetCustomRadioButtonMouseOverSound ( wstring /*wstrSoundFileName*/ ) { }
+		virtual	void	SetCustomRadioButtonMouseUpSound  ( wstring /*wstrSoundFileName*/ ) { }
 
 
 

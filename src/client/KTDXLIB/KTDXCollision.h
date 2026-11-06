@@ -1570,7 +1570,7 @@ class CKTDXCollision
 			parameter = (Lx * ABx + Ly * ABy + Lz * ABz) / D;
 
 			if (false == infinite_line)
-				parameter = max(0.0f, min(1.0f, parameter));
+				parameter = std::max(0.0f, std::min(1.0f, parameter));
 
 			NearestPointX = A1x + parameter * Lx;
 			NearestPointY = A1y + parameter * Ly;
@@ -1641,7 +1641,7 @@ class CKTDXCollision
 				}
 				else
 				{
-					temp = 0.5f*(max(0.0f, min(1.0f, s[0])) + max(0.0f, min(1.0f, s[1])));
+					temp = 0.5f*(std::max(0.0f, std::min(1.0f, s[0])) + std::max(0.0f, std::min(1.0f, s[1])));
 					PointOnSegAx = (A1x + temp * Lax);
 					PointOnSegAy = (A1y + temp * Lay);
 					PointOnSegAz = (A1z + temp * Laz);
@@ -1664,7 +1664,7 @@ class CKTDXCollision
 			// handle the case where both parameter s and t are out of range
 			if (OUTOF_RANGE(s,0,1) && OUTOF_RANGE(t,0,1))
 			{
-				s = max(0.0f, min(1.0f, s));
+				s = std::max(0.0f, std::min(1.0f, s));
 				PointOnSegAx = (A1x + s * Lax);
 				PointOnSegAy = (A1y + s * Lay);
 				PointOnSegAz = (A1z + s * Laz);
@@ -1673,7 +1673,7 @@ class CKTDXCollision
 					PointOnSegBx, PointOnSegBy, PointOnSegBz, t);
 				if (OUTOF_RANGE(t,0,1))
 				{
-					t = max(0.0f, min(1.0f, t));
+					t = std::max(0.0f, std::min(1.0f, t));
 					PointOnSegBx = (B1x + t * Lbx);
 					PointOnSegBy = (B1y + t * Lby);
 					PointOnSegBz = (B1z + t * Lbz);
@@ -1689,7 +1689,7 @@ class CKTDXCollision
 			// out of range
 			else if (OUTOF_RANGE(s,0,1))
 			{
-				s = max(0.0f, min(1.0f, s));
+				s = std::max(0.0f, std::min(1.0f, s));
 				PointOnSegAx = (A1x + s * Lax);
 				PointOnSegAy = (A1y + s * Lay);
 				PointOnSegAz = (A1z + s * Laz);
@@ -1699,7 +1699,7 @@ class CKTDXCollision
 			}
 			else if (OUTOF_RANGE(t,0,1))
 			{
-				t = max(0.0f, min(1.0f, t));
+				t = std::max(0.0f, std::min(1.0f, t));
 				PointOnSegBx = (B1x + t * Lbx);
 				PointOnSegBy = (B1y + t * Lby);
 				PointOnSegBz = (B1z + t * Lbz);
@@ -1713,7 +1713,7 @@ class CKTDXCollision
 			}
 		}
 
-        bool CheckCollisionGuard(D3DXVECTOR3 vCenter, bool bGuard, D3DXVECTOR3 vGuard, bool bColl, D3DXVECTOR3 vColl, D3DXVECTOR3* impactPoint = NULL)
+        bool CheckCollisionGuard(D3DXVECTOR3 /*vCenter*/, bool bGuard, D3DXVECTOR3 vGuard, bool /*bColl*/, D3DXVECTOR3 vColl, D3DXVECTOR3* impactPoint = NULL)
         {
             // 가드박스와 일반박스와 충돌시 무조건 가드박스에 충돌했다고 판정한다.
             if(bGuard == true)

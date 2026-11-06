@@ -300,11 +300,11 @@ class CKTDXDeviceXSkinMesh	: public CKTDXDevice
 		DWORD   GetDrawFrameNum() const { return m_dwDrawFrameNum; }
 
 		const   D3DXVECTOR3& GetCenter() const { return m_vCenter; }
-		const	float   GetBoundingRadius() const { return m_fMaxBoundingRadius; }
+		float   GetBoundingRadius() const { return m_fMaxBoundingRadius; }
 
 // #ifndef _KSMTOOL
 //
-// 		CKTDXDeviceXET* SetXET( CKTDXDeviceXET* pXET ){ m_pXET = pXET; }
+// 		CKTDXDeviceXET* SetXET( CKTDXDeviceXET* pXET ){ m_pXET = pXET; return m_pXET; }
 // 		CKTDXDeviceXET* GetXET() const { return m_pXET; }
 //
 //         virtual HRESULT Load_LuaData( DWORD dwParam_ );
@@ -364,7 +364,7 @@ class CKTDXDeviceXSkinMesh	: public CKTDXDevice
 //		bool GetSurfaceVertices( std::vector<D3DXVECTOR3>& vecVertices );
 //#endif MONSTER_DIE_PARTICLE_TEST
 
-		CKTDXDeviceXET* SetXET( CKTDXDeviceXET* pXET ){ m_pXET = pXET; }
+		CKTDXDeviceXET* SetXET( CKTDXDeviceXET* pXET ){ m_pXET = pXET; return m_pXET; }
 		CKTDXDeviceXET* GetXET() const { return m_pXET; }
 
 protected:

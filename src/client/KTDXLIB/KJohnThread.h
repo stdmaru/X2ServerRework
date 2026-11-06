@@ -94,7 +94,7 @@ private:
 private:
     void _Init()
     {
-        m_dwThreadID    = NULL;
+        m_dwThreadID    = 0;
         m_hThread       = NULL;
     }//_Init()
 
@@ -146,7 +146,7 @@ public:
             ::WaitForSingleObject( m_hThread, dwTimeoutMilliseconds_ );
             ::CloseHandle( m_hThread );
             m_hThread       = NULL;
-            m_dwThreadID    = NULL;
+            m_dwThreadID    = 0;
         }//if
     }//EndThread()
 

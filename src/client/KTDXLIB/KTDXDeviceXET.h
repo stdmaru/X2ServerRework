@@ -29,10 +29,10 @@ public:
         friend class CKTDXDeviceXET;
 
         AniData()
-            : m_pDeviceXET( NULL )
-            , m_pAniData( NULL )
-            , fTransitionTime( 0.f )
+            : fTransitionTime( 0.f )
             , fAniMaxTime( 0.f )
+            , m_pDeviceXET( NULL )
+            , m_pAniData( NULL )
         {
         }
 

@@ -4,6 +4,9 @@
 */
 #pragma once
 
+#include <memory>
+#include <optional>
+
 namespace   kog
 {
     struct KSmartNull
@@ -329,57 +332,33 @@ namespace   kog
 
 
 
-// for standard template library
+// for the standard library and x2::intrusive_ptr (Boost's smart pointers in the original)
 
 namespace   std
 {
-    _KSMARTNULL_COMPARISON_ONE_PARAM( auto_ptr, class, In_.get() == NULL )
+    _KSMARTNULL_COMPARISON_TWO_PARAMS( unique_ptr, class, class, !In_ == true )
+    _KSMARTNULL_COMPARISON_ONE_PARAM( shared_ptr, class, !In_ == true )
+    _KSMARTNULL_COMPARISON_ONE_PARAM( weak_ptr, class, In_.expired() == true )
+    _KSMARTNULL_COMPARISON_ONE_PARAM( optional, class, !In_ == true )
 
 }//namespace   std
 
-
-// for boost library
-
-namespace   boost
+namespace   x2
 {
-    _KSMARTNULL_COMPARISON_ONE_PARAM( scoped_ptr, class, !In_ == true )
-    _KSMARTNULL_COMPARISON_ONE_PARAM( scoped_array, class, !In_ == true )
-    _KSMARTNULL_COMPARISON_ONE_PARAM( shared_ptr, class, !In_ == true )
-    _KSMARTNULL_COMPARISON_ONE_PARAM( shared_array, class, !In_ == true )
-    _KSMARTNULL_COMPARISON_ONE_PARAM( weak_ptr, class, In_.expired() == true )
     _KSMARTNULL_COMPARISON_ONE_PARAM( intrusive_ptr, class, !In_ == true )
 
-    _KSMARTNULL_COMPARISON_ONE_PARAM( optional, class, !In_ == true );
-
-}//namespace   boost
-
-
-// for ATL CComPtr CComQIPtr
-
-namespace ATL
-{
-
-    _KSMARTNULL_COMPARISON_ONE_PARAM( CComPtr, class, !In_ == true )
-    _KSMARTNULL_COMPARISON_TWO_PARAMS( CComQIPtr, class, const IID*, !In_ == true )
-
-}
+}//namespace   x2
 
 
 namespace   kog
 {
-    _KSMARTNULL_NULLIFY_ONE_PARAM( std::auto_ptr, class, Out_.reset() )
-
     _KSMARTNULL_NULLIFY_ONE_PARAM( std::unique_ptr, class, Out_.reset() )
-    _KSMARTNULL_NULLIFY_ONE_PARAM( boost::scoped_array, class, Out_.reset() )
     _KSMARTNULL_NULLIFY_ONE_PARAM( std::shared_ptr, class, Out_.reset() )
-    _KSMARTNULL_NULLIFY_ONE_PARAM( boost::shared_array, class, Out_.reset() )
     _KSMARTNULL_NULLIFY_ONE_PARAM( std::weak_ptr, class, Out_.reset() )
     _KSMARTNULL_NULLIFY_ONE_PARAM( x2::intrusive_ptr, class, Out_.reset() )
 
-    _KSMARTNULL_NULLIFY_ONE_PARAM( boost::optional, class, Out_ = boost::none );
+    _KSMARTNULL_NULLIFY_ONE_PARAM( std::optional, class, Out_ = std::nullopt );
 
-    _KSMARTNULL_NULLIFY_ONE_PARAM( ATL::CComPtr, class, Out_.Release() )
-    _KSMARTNULL_NULLIFY_TWO_PARAMS( ATL::CComQIPtr, class, const IID*, Out_.Release() )
 }
 
 using   namespace kog;

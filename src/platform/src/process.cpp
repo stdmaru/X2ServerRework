@@ -90,6 +90,39 @@ bool CurrentProcessMemory(std::size_t& current, std::size_t& peak)
 #endif
 }
 
+bool PhysicalMemory(std::size_t& total, std::size_t& available)
+{
+    total = available = 0;
+#if defined(_WIN32)
+    MEMORYSTATUSEX status{};
+    status.dwLength = sizeof(status);
+    if (!::GlobalMemoryStatusEx(&status))
+        return false;
+    total = static_cast<std::size_t>(status.ullTotalPhys);
+    available = static_cast<std::size_t>(status.ullAvailPhys);
+    return true;
+#else
+    // MemTotal and MemAvailable of /proc/meminfo, in kB
+    std::FILE* info = std::fopen("/proc/meminfo", "r");
+    if (!info)
+        return false;
+    char line[256];
+    int found = 0;
+    while (std::fgets(line, sizeof(line), info)) {
+        unsigned long long kb = 0;
+        if (std::sscanf(line, "MemTotal: %llu kB", &kb) == 1) {
+            total = static_cast<std::size_t>(kb) * 1024;
+            ++found;
+        } else if (std::sscanf(line, "MemAvailable: %llu kB", &kb) == 1) {
+            available = static_cast<std::size_t>(kb) * 1024;
+            ++found;
+        }
+    }
+    std::fclose(info);
+    return found == 2;
+#endif
+}
+
 void SetEnvironment(const std::string& name, const std::string& value)
 {
 #if defined(_WIN32)

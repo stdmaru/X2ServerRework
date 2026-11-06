@@ -7,7 +7,7 @@ class   KFileSerializer
 {
 public:
 
-    KFileSerializer() : m_iLockCounter(0), m_bSaveStringEndNull( false ) {}
+    KFileSerializer() : m_bSaveStringEndNull( false ), m_iLockCounter(0) {}
     ~KFileSerializer() { ASSERT( m_iLockCounter == 0 ); }
     void            Clear()         { m_vecbBuffer.clear(); m_mapStringOffset.clear(); m_iLockCounter = 0;  }
     void            Reserve( DWORD dwInSize_ );
@@ -56,7 +56,7 @@ class   KMemoryDeserializer
 {
 public:
 
-    KMemoryDeserializer( DWORD dwInSize_, const void* pInData_ ) : m_dwSize( dwInSize_ ), m_pData( pInData_ ) { ASSERT( dwInSize_ == 0 || pInData_ != NULL ); }
+    KMemoryDeserializer( DWORD dwInSize_, const void* pInData_ ) : m_pData( pInData_ ), m_dwSize( dwInSize_ ) { ASSERT( dwInSize_ == 0 || pInData_ != NULL ); }
     const void*     GetData() const { return m_pData; }
     DWORD           GetSize() const { return m_dwSize; }
     bool            CheckRange( DWORD dwInOffset_, DWORD dwInSize_ ) const { return dwInOffset_ + dwInSize_ <= m_dwSize; }

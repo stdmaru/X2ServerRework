@@ -77,6 +77,14 @@ TEST_CASE("process: this process's memory")
     CHECK(peak >= current);
 }
 
+TEST_CASE("process: the machine's physical memory")
+{
+    std::size_t total = 0, available = 0;
+    REQUIRE(x2::platform::PhysicalMemory(total, available));
+    CHECK(total > 0);
+    CHECK(available <= total);
+}
+
 TEST_CASE("process: environment set here reaches the children")
 {
     SetEnvironment("X2_TEST_ENV", "value with space");

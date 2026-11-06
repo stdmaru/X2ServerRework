@@ -66,29 +66,29 @@ public:
 	CKTDGUISlot();
 	virtual	~CKTDGUISlot(void);
 
-	virtual	HRESULT	OnFrameMove( double fTime, float fElapsedTime );
-	virtual HRESULT OnFrameRender();
-	virtual	HRESULT	OnFrameRenderEnd();
+	HRESULT	OnFrameMove( double fTime, float fElapsedTime ) override;
+	HRESULT OnFrameRender() override;
+	HRESULT	OnFrameRenderEnd() override;
 
-	HRESULT	CKTDGUISlot::RenderDragSlot();
+	HRESULT	RenderDragSlot();
 
-	virtual bool    HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lParam );
+	bool    HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lParam ) override;
 	//virtual bool    MsgProc( UINT uMsg, WPARAM wParam, LPARAM lParam );
 
 	void LButtonMouseUp();
 
-	virtual void	SetEnable( bool bEnable );
-	virtual void	SetShow( bool bShow );
+	void	SetEnable( bool bEnable ) override;
+	void	SetShow( bool bShow ) override;
 	void SetDragable( bool bDragable ){ m_bDragable = bDragable; }
 	bool GetDragable(){ return m_bDragable; }
 	D3DXVECTOR2 GetSize();
 	virtual D3DXVECTOR2 GetPos() override;
 
-	virtual D3DXVECTOR2 GetGuideDescPos();
+	D3DXVECTOR2 GetGuideDescPos() override;
 
-	virtual	bool	ContainsPoint( POINT pt );
+	bool	ContainsPoint( POINT pt ) override;
 
-	virtual void	OnFocusOut();
+	void	OnFocusOut() override;
 	virtual void	ChangeState( SLOT_CONTROL_STATE state, bool bForce = false );
 	SLOT_CONTROL_STATE GetState(){ return m_eControlState; }
 

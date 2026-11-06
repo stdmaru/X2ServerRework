@@ -152,6 +152,23 @@ std::span<const std::byte> Convert(D3DFORMAT from, render::TextureFormat to, std
 
 // --- Texture --------------------------------------------------------------------------------------------------------
 
+bool Device::SupportsTextureFormat(D3DFORMAT format, DWORD usage) const
+{
+    const bool target = (usage & D3DUSAGE_RENDERTARGET) != 0;
+    const bool autoMips = (usage & D3DUSAGE_AUTOGENMIPMAP) != 0;
+    if (target && format != D3DFMT_A8R8G8B8 && format != D3DFMT_X8R8G8B8) {
+        return false;
+    }
+    if (autoMips && Info(format).compressed) {
+        return false;
+    }
+    render::TextureUsage renderUsage = render::TextureUsage::Sampler;
+    if (target || autoMips) {
+        renderUsage = renderUsage | render::TextureUsage::ColorTarget;
+    }
+    return RenderFormat(m_render, format, renderUsage) != render::TextureFormat::Invalid;
+}
+
 std::unique_ptr<Texture> Device::CreateTexture(UINT width, UINT height, UINT levels, DWORD usage, D3DFORMAT format,
                                                D3DPOOL pool)
 {

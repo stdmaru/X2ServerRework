@@ -1,7 +1,5 @@
 #pragma once
 
-#pragma warning( push )
-#pragma warning( disable : 4200 )
 
 //#ifdef X2OPTIMIZE_TCP_RELAY_TEST
 //#include "../X2ServerProtocol/X2ServerProtocolLib.h"
@@ -381,20 +379,9 @@ class CKTDNUDP
 		{
 			KTDXPROFILE();
 
-			WSANETWORKEVENTS	netEvent;
-
-			//패킷 리시브
-			while( true )
-			{
-				//Event select
-				::ZeroMemory( &netEvent, sizeof(netEvent) );
-				::WSAEnumNetworkEvents( m_Socket, m_RecvEvent, &netEvent );
-
-				if( (netEvent.lNetworkEvents & FD_READ) == FD_READ )
-					Recv();
-				else
-					break;
-			}
+			// receive everything waiting (WSAEnumNetworkEvents on an FD_READ event in the original)
+			while( x2::platform::SocketReadable( m_Socket ) )
+				Recv();
 
 			for( int i = 0; i < (int)m_RecvDataList.size(); i++ )
 			{
@@ -479,8 +466,8 @@ class CKTDNUDP
 //#else   SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
 //		__forceinline const WCHAR*	GetMyIP(){ return m_MyIP.c_str(); }
 //#endif  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
-		__forceinline const int		GetMyPort(){ return m_MyPort; }
-		__forceinline const int		GetMyExtPort(){ return m_MyExtPort; }
+		__forceinline int		GetMyPort(){ return m_MyPort; }
+		__forceinline int		GetMyExtPort(){ return m_MyExtPort; }
 		__forceinline void			SetMyExtPort( int extPort ){ m_MyExtPort = extPort; }
 
 
@@ -595,7 +582,7 @@ class CKTDNUDP
 //		__forceinline bool			SendPure( const WCHAR* pIP, int port, const char ID, const char* pBuffer, int size );
 //#endif//UDP_PACKET_ANALYSIS_LOG
 //#endif  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
-		__forceinline bool			Recv();
+		bool			Recv();
 //#ifndef SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
 //		__forceinline void			Relay( int recvSize );
 //#endif  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
@@ -708,7 +695,6 @@ class CKTDNUDP
 
 		SOCKET						m_Socket;
 		SOCKADDR_IN					m_LocalAddr;
-		WSAEVENT					m_RecvEvent;
 
 		char						m_pRecvBuffer[RECV_BUFFER_SIZE];
 		vector<RecvData*>			m_RecvDataList;
@@ -803,4 +789,3 @@ class CKTDNUDP
 
 };
 
-#pragma warning( pop )

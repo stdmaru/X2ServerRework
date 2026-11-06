@@ -406,6 +406,23 @@ TEST_CASE("d3d9: a clear of part of the target is drawn")
     CHECK(after.Width == 16);
 }
 
+TEST_CASE("d3d9: vertex shader constants are kept per register")
+{
+    auto render = NullRender();
+    x2::d3d9::Device device(*render, nullptr);
+    REQUIRE(device.Ok());
+    const float set[8] = {1, 2, 3, 4, 5, 6, 7, 8};
+    CHECK(device.SetVertexShaderConstantF(10, set, 2));
+    float got[12] = {};
+    CHECK(device.GetVertexShaderConstantF(9, got, 3));
+    CHECK(got[0] == 0.0f);
+    CHECK(got[4] == 1.0f);
+    CHECK(got[11] == 8.0f);
+    CHECK(device.SetVertexShaderConstantF(x2::d3d9::kVertexShaderConstants - 1, set, 1));
+    CHECK_FALSE(device.SetVertexShaderConstantF(x2::d3d9::kVertexShaderConstants - 1, set, 2));
+    CHECK_FALSE(device.GetVertexShaderConstantF(x2::d3d9::kVertexShaderConstants + 1, got, 0));
+}
+
 TEST_CASE("d3d9: resources released before or after the device")
 {
     auto render = NullRender();

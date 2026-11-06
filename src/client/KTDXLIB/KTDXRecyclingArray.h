@@ -1,6 +1,5 @@
 #pragma once
 
-#pragma warning( disable : 4311 )
 //이 어레이는 순서의 보장을 하지 않는다.
 //어레이 엘레먼트는 기본 생성자, 복사 생성자가 있어야만 한다
 template <class TArrayElement,int INITIAL_SIZE = 100>

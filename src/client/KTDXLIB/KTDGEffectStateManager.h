@@ -8,12 +8,8 @@ public:
 
     CKTDGEffectStateManager();
 
-    // The user must correctly implement QueryInterface, AddRef, and Release.
-
-    // IUnknown
-    STDMETHOD(QueryInterface)(THIS_ REFIID iid, LPVOID *ppv);
-    STDMETHOD_(ULONG, AddRef)(THIS);
-    STDMETHOD_(ULONG, Release)(THIS);
+    // The original was a COM object (QueryInterface, AddRef, Release); the D3DX interfaces are plain classes (T38).
+    void    Release();
 
     // The following methods are called by the Effect when it wants to make
     // the corresponding device call.  Note that:
@@ -181,11 +177,12 @@ __forceinline void CKTDGEffectStateManager::PostCommitChanges()
 
 	if (m_uiFirstDirtyFloatVSReg < m_uiFirstCleanFloatVSReg)
 	{
-		HRESULT hr = g_pd3dDevice->SetVertexShaderConstantF(
+		bool bOk = g_pd3dDevice->SetVertexShaderConstantF(
 			m_uiFirstDirtyFloatVSReg,
 			m_pfFloatVSConstantData + m_uiFirstDirtyFloatVSReg * 4,
 			m_uiFirstCleanFloatVSReg - m_uiFirstDirtyFloatVSReg);
-		ASSERT(SUCCEEDED(hr));
+		ASSERT(bOk);
+		(void)bOk;
 	}
 
 	m_uiFirstDirtyFloatVSReg = m_uiNumFloatVSConstants;

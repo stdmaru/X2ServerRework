@@ -2,7 +2,7 @@
 #include "./KTDXDeviceTexture.h"
 #include "./KTDXDeviceManager.h"
 
-CKTDXDeviceTexture::CKTDXDeviceTexture( LPDIRECT3DDEVICE9 pd3dDevice, wstring fileName, DETAIL_LEVEL detailLevel, D3DFORMAT texFormat, bool bAlwaysHigh )
+CKTDXDeviceTexture::CKTDXDeviceTexture( LPDIRECT3DDEVICE9 /*pd3dDevice*/, wstring fileName, DETAIL_LEVEL detailLevel, D3DFORMAT texFormat, bool bAlwaysHigh )
 	: CKTDXDeviceBaseTexture( fileName, DT_TEXTURE )
 {
 	m_DeviceType	= DT_TEXTURE;
@@ -196,7 +196,7 @@ CKTDXDeviceTexture::~CKTDXDeviceTexture()
             }//if.. else..
         }
 
-    	SAFE_RELEASE( pTexture );
+    	SAFE_DELETE( pTexture );
 //#ifdef  REMOVE_DRAW_PRIMITIVE_UP
 //		SAFE_RELEASE( pVB );
 //#endif	REMOVE_DRAW_PRIMITIVE_UP
@@ -207,7 +207,7 @@ CKTDXDeviceTexture::~CKTDXDeviceTexture()
 
 fail:
 
-	SAFE_RELEASE( pTexture );
+	SAFE_DELETE( pTexture );
 //#ifdef  REMOVE_DRAW_PRIMITIVE_UP
 //	SAFE_RELEASE( pVB );
 //#endif  REMOVE_DRAW_PRIMITIVE_UP
@@ -252,7 +252,7 @@ HRESULT CKTDXDeviceTexture::_UnLoad()
 //#ifdef  REMOVE_DRAW_PRIMITIVE_UP
 //	SAFE_RELEASE( m_pVB );
 //#endif  REMOVE_DRAW_PRIMITIVE_UP
-	SAFE_RELEASE( m_pTexture );
+	SAFE_DELETE( m_pTexture );
 	//m_bLoading = false;
 
     m_tet.Release();
@@ -265,8 +265,7 @@ HRESULT CKTDXDeviceTexture::_UnLoad()
 //{{ seojt // 2008-10-15, 15:03
 void CKTDXDeviceTexture::PreLoad()
 {
-    if ( m_pTexture )
-        m_pTexture->PreLoad();
+    // IDirect3DResource9::PreLoad: the device's textures are always resident
 //#ifdef  REMOVE_DRAW_PRIMITIVE_UP
 //    if ( m_pVB )
 //        m_pVB->PreLoad();
@@ -416,8 +415,8 @@ void CKTDXDeviceTexture::Draw( int nX, int nY, int nWidth, int nHeight, D3DCOLOR
 {
     KD3DPUSH( g_pKTDXApp->GetDGManager()->GetRSICKTDXDeviceTexture() )
 
-	D3DXVECTOR3 pos		= g_pKTDXApp->ConvertByResolution( (float)nX, (float)nY );
-	D3DXVECTOR3 size	= g_pKTDXApp->ConvertByResolution( (float)nWidth, (float)nHeight );
+	D3DXVECTOR2 pos		= g_pKTDXApp->ConvertByResolution( (float)nX, (float)nY );
+	D3DXVECTOR2 size	= g_pKTDXApp->ConvertByResolution( (float)nWidth, (float)nHeight );
 
 
 
@@ -514,8 +513,8 @@ void CKTDXDeviceTexture::Draw( int nX, int nY, int nWidth, int nHeight, const TE
 {
     KD3DPUSH( g_pKTDXApp->GetDGManager()->GetRSICKTDXDeviceTexture() )
 
-	D3DXVECTOR3 pos		= g_pKTDXApp->ConvertByResolution( (float)nX, (float)nY );
-	D3DXVECTOR3 size	= g_pKTDXApp->ConvertByResolution( (float)nWidth, (float)nHeight );
+	D3DXVECTOR2 pos		= g_pKTDXApp->ConvertByResolution( (float)nX, (float)nY );
+	D3DXVECTOR2 size	= g_pKTDXApp->ConvertByResolution( (float)nWidth, (float)nHeight );
 
 
 
@@ -524,8 +523,6 @@ void CKTDXDeviceTexture::Draw( int nX, int nY, int nWidth, int nHeight, const TE
 	float X2 = (float)(pos.x + size.x);
 	float Y2 = (float)(pos.y + size.y);
 
-	float UMax = 1.0f;
-	float VMax = 1.0f;
 
 	TEXTURE_RHW_VERTEX vertex[4];
 	ZeroMemory( vertex, sizeof(TEXTURE_RHW_VERTEX) * 4 );

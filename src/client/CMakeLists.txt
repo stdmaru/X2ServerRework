@@ -31,14 +31,14 @@ endif()
 
 # KTDXLIB's D3D9 device: the engine's D3D9 calls translated onto x2::render (decisions T36 (5), T38), with
 # fixed-function shaders compiled offline (T39, D3D9/shaders). docs/porting/client-d3d9.md
-add_library(x2_client_d3d9 STATIC KTDXLIB/D3D9/Device.cpp KTDXLIB/D3D9/Resources.cpp)
+add_library(x2_client_d3d9 STATIC KTDXLIB/D3D9/Device.cpp KTDXLIB/D3D9/D3DXTexture.cpp KTDXLIB/D3D9/Resources.cpp)
 add_library(x2::client_d3d9 ALIAS x2_client_d3d9)
 target_include_directories(x2_client_d3d9 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/KTDXLIB/D3D9)
 target_link_libraries(x2_client_d3d9 PUBLIC x2::platform x2::render PRIVATE SDL3::SDL3)
 
 # DXUT replacement: window, message pump and frame loop on x2::app and x2::render, SDL3 events as Win32 messages
 # (docs/porting/client-dxut.md).
-add_library(x2_client_dxut STATIC DXUT/DXUT.cpp DXUT/Ime.cpp DXUT/SdlInput.cpp DXUT/SdlMessages.cpp)
+add_library(x2_client_dxut STATIC DXUT/DXUT.cpp DXUT/Ime.cpp DXUT/MessageBox.cpp DXUT/SdlInput.cpp DXUT/SdlMessages.cpp)
 add_library(x2::client_dxut ALIAS x2_client_dxut)
 target_include_directories(x2_client_dxut PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/DXUT)
 target_link_libraries(x2_client_dxut PUBLIC x2::platform x2::app x2::render x2::client_d3d9)

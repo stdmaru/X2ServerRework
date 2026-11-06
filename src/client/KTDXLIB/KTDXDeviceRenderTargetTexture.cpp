@@ -2,7 +2,7 @@
 #include "./KTDXDeviceRenderTargetTexture.h"
 
 
-CKTDXDeviceRenderTargetTexture::CKTDXDeviceRenderTargetTexture( LPDIRECT3DDEVICE9 pd3dDevice, wstring deviceID, int width, int height, D3DFORMAT fmt /*= D3DFMT_UNKNOWN*/ )
+CKTDXDeviceRenderTargetTexture::CKTDXDeviceRenderTargetTexture( LPDIRECT3DDEVICE9 /*pd3dDevice*/, wstring deviceID, int width, int height, D3DFORMAT fmt /*= D3DFMT_UNKNOWN*/ )
 	: CKTDXDeviceBaseTexture( deviceID, DT_RENDER_TARGET_TEXTURE )
 {
 	m_DeviceType				= DT_RENDER_TARGET_TEXTURE;
@@ -12,26 +12,14 @@ CKTDXDeviceRenderTargetTexture::CKTDXDeviceRenderTargetTexture( LPDIRECT3DDEVICE
 	m_Height					= height;
 
 	m_pRenderTargetTexture		= NULL;
-	m_pRenderTargetSurface		= NULL;
-	m_pRenderTargetZSurface		= NULL;
-
-	m_pBackupBuffer				= NULL;
-	m_pBackupZBuffer			= NULL;
-
-	m_pDisplayVertexBuffer		= NULL;
-
-
-//#ifndef DYNAMIC_VERTEX_BUFFER_OPT
-//	m_pVB_RHW_VERTEX				= NULL;
-//	m_pVB_RENDERTARGET_RHW_VERTEX	= NULL;
-//	m_pVB_RENDERTARGET_VERTEX		= NULL;
-//#endif
+	m_pBackupTarget				= NULL;
 
 //{{ robobeg : 2011-03-18
     m_bWithoutFile = true;
 //}} robobeg : 2011-03-18
 
-     if ( DXUTGetDeviceObjectsReset() == true )
+    // the device is never lost or reset (T38): the target is created at once when there is one
+    if ( g_pKTDXApp != NULL && g_pKTDXApp->GetDevice() != NULL )
     {
 	    OnResetDevice();
     }//if
@@ -45,72 +33,19 @@ CKTDXDeviceRenderTargetTexture::~CKTDXDeviceRenderTargetTexture(void)
 
 HRESULT CKTDXDeviceRenderTargetTexture::OnResetDevice()
 {
-	HRESULT hr;
-
 	OnLostDevice();
 
-
-//#ifndef DYNAMIC_VERTEX_BUFFER_OPT
-//
-//	if(FAILED(hr = g_pKTDXApp->GetDevice()->CreateVertexBuffer( 4 * sizeof(CKTDXDeviceTexture::TEXTURE_RHW_VERTEX),
-//		D3DUSAGE_WRITEONLY|D3DUSAGE_DYNAMIC, D3DFVF_TEXTURE_RHW_VERTEX,
-//		D3DPOOL_DEFAULT, &m_pVB_RHW_VERTEX, NULL) ))
-//	{
-//		ErrorLogMsg( KEM_ERROR88, L"oops 이게 뭥미" );
-//		return false;
-//	}
-//
-//	if(FAILED(hr = g_pKTDXApp->GetDevice()->CreateVertexBuffer( 4 * sizeof(RENDERTARGET_RHW_VERTEX),
-//		D3DUSAGE_WRITEONLY|D3DUSAGE_DYNAMIC, D3DFVF_RENDERTARGET_RHW_VERTEX,
-//		D3DPOOL_DEFAULT, &m_pVB_RENDERTARGET_RHW_VERTEX, NULL) ))
-//	{
-//		ErrorLogMsg( KEM_ERROR88, L"oops 이게 뭥미2" );
-//		return false;
-//	}
-//
-//	if(FAILED(hr = g_pKTDXApp->GetDevice()->CreateVertexBuffer( 4 * sizeof(RENDERTARGET_VERTEX),
-//		D3DUSAGE_WRITEONLY|D3DUSAGE_DYNAMIC, D3DFVF_RENDERTARGET_VERTEX,
-//		D3DPOOL_DEFAULT, &m_pVB_RENDERTARGET_VERTEX, NULL) ))
-//	{
-//		ErrorLogMsg( KEM_ERROR88, L"oops 이게 뭥미3" );
-//		return false;
-//	}
-//#endif
-
-	//Keep a handle to the back buffer for easy swapping
-	if(FAILED( hr = g_pKTDXApp->GetDevice()->GetRenderTarget( 0, &m_pBackupBuffer )))
-	{
-		string strName;
-		ConvertWCHARToChar( strName, m_DeviceID.c_str() );
-		ErrorLogMsg( KEM_ERROR76, strName.c_str());
-
-		return E_FAIL;
-	}
-
-	//Same for the depth buffer
-	if(FAILED( hr = g_pKTDXApp->GetDevice()->GetDepthStencilSurface( &m_pBackupZBuffer )))
-	{
-		string strName;
-		ConvertWCHARToChar( strName, m_DeviceID.c_str() );
-		ErrorLogMsg( KEM_ERROR77, strName.c_str());
-
-		return E_FAIL;
-	}
-
-	D3DSURFACE_DESC desc;
-	m_pBackupBuffer->GetDesc( &desc );
-
+	// The original took the back buffer's format and the depth buffer's description from the device's surfaces and
+	// created a depth surface of its own; the device keeps one depth buffer, sized to the target in use.
 	if( D3DFMT_UNKNOWN == m_D3DFormat )
 	{
-		m_D3DFormat = desc.Format;
+		m_D3DFormat = D3DFMT_A8R8G8B8;
 	}
 
-	if(FAILED( hr = D3DXCreateTexture(g_pKTDXApp->GetDevice(), m_Width, m_Height, 1,
-										D3DUSAGE_RENDERTARGET, m_D3DFormat,
-										D3DPOOL_DEFAULT, &m_pRenderTargetTexture)))
+	m_pRenderTargetTexture = g_pKTDXApp->GetDevice()->CreateTexture( m_Width, m_Height, 1, D3DUSAGE_RENDERTARGET,
+		m_D3DFormat, D3DPOOL_DEFAULT ).release();
+	if( m_pRenderTargetTexture == NULL )
 	{
-		m_pRenderTargetTexture = NULL;
-
 		string strName;
 		ConvertWCHARToChar( strName, m_DeviceID.c_str() );
 		ErrorLogMsg( KEM_ERROR78, strName.c_str());
@@ -118,50 +53,17 @@ HRESULT CKTDXDeviceRenderTargetTexture::OnResetDevice()
 		return E_FAIL;
 	}
 
-	//Get the top level surface of the target texture.
-	if(FAILED( hr = m_pRenderTargetTexture->GetSurfaceLevel( 0, &m_pRenderTargetSurface )))
-	{
-		string strName;
-		ConvertWCHARToChar( strName, m_DeviceID.c_str() );
-		ErrorLogMsg( KEM_ERROR79, strName.c_str());
-
-		return E_FAIL;
-	}
-
-	m_pBackupZBuffer->GetDesc( &desc );
-
-	if(FAILED( hr = g_pKTDXApp->GetDevice()->CreateDepthStencilSurface(m_Width,
-															m_Height,
-															desc.Format,
-															desc.MultiSampleType,
-															desc.MultiSampleQuality,
-															TRUE,
-															&m_pRenderTargetZSurface,
-															NULL)))
-	{
-		string strName;
-		ConvertWCHARToChar( strName, m_DeviceID.c_str() );
-		ErrorLogMsg( KEM_ERROR80, strName.c_str());
-
-		return E_FAIL;
-	}
 	return S_OK;
 }
 
 HRESULT CKTDXDeviceRenderTargetTexture::OnLostDevice()
 {
-//#ifndef DYNAMIC_VERTEX_BUFFER_OPT
-//	SAFE_RELEASE( m_pVB_RHW_VERTEX );
-//	SAFE_RELEASE( m_pVB_RENDERTARGET_RHW_VERTEX );
-//	SAFE_RELEASE( m_pVB_RENDERTARGET_VERTEX );
-//#endif
-
-	SAFE_RELEASE( m_pRenderTargetTexture );
-	SAFE_RELEASE( m_pRenderTargetSurface );
-	SAFE_RELEASE( m_pRenderTargetZSurface );
-	SAFE_RELEASE( m_pBackupBuffer );
-	SAFE_RELEASE( m_pBackupZBuffer );
-	SAFE_RELEASE( m_pDisplayVertexBuffer );
+	if( m_pRenderTargetTexture != NULL && g_pKTDXApp->GetDevice()->GetRenderTarget() == m_pRenderTargetTexture )
+	{
+		CKTDGStateManager::SetRenderTarget( m_pBackupTarget );
+	}
+	SAFE_DELETE( m_pRenderTargetTexture );
+	m_pBackupTarget = NULL;
 
 	return S_OK;
 }
@@ -169,10 +71,13 @@ HRESULT CKTDXDeviceRenderTargetTexture::OnLostDevice()
 void CKTDXDeviceRenderTargetTexture::BeginRender( bool bClear )
 {
 	KTDXPROFILE();
-	//Set up the renderTarget
-	HRESULT hr;
-	hr = g_pKTDXApp->GetDevice()->SetRenderTarget( 0, m_pRenderTargetSurface );
-	hr = g_pKTDXApp->GetDevice()->SetDepthStencilSurface( m_pRenderTargetZSurface );
+	if( m_pRenderTargetTexture == NULL )
+	{
+		return;
+	}
+
+	m_pBackupTarget = g_pKTDXApp->GetDevice()->GetRenderTarget();
+	CKTDGStateManager::SetRenderTarget( m_pRenderTargetTexture );
 
 	if( bClear == true )
 	{
@@ -183,10 +88,9 @@ void CKTDXDeviceRenderTargetTexture::BeginRender( bool bClear )
 void CKTDXDeviceRenderTargetTexture::EndRender()
 {
 	KTDXPROFILE();
-	//Set the renderTarget back to the normal back buffer
-	HRESULT hr;
-	hr = g_pKTDXApp->GetDevice()->SetRenderTarget( 0, m_pBackupBuffer );
-	hr = g_pKTDXApp->GetDevice()->SetDepthStencilSurface( m_pBackupZBuffer );
+	// back to the target in use before BeginRender (the back buffer in the original, which saved it at creation)
+	CKTDGStateManager::SetRenderTarget( m_pBackupTarget );
+	m_pBackupTarget = NULL;
 }
 
 void CKTDXDeviceRenderTargetTexture::Clear( D3DCOLOR color )
@@ -202,8 +106,8 @@ void CKTDXDeviceRenderTargetTexture::Draw( int nX, int nY, int nWidth, int nHeig
 
     KD3DPUSH( g_pKTDXApp->GetDGManager()->GetRSICKTDXDeviceTexture() )
 
-	D3DXVECTOR3 pos		= g_pKTDXApp->ConvertByResolution( (float)nX, (float)nY );
-	D3DXVECTOR3 size	= g_pKTDXApp->ConvertByResolution( (float)nWidth, (float)nHeight );
+	D3DXVECTOR2 pos		= g_pKTDXApp->ConvertByResolution( (float)nX, (float)nY );
+	D3DXVECTOR2 size	= g_pKTDXApp->ConvertByResolution( (float)nWidth, (float)nHeight );
 
 
 
@@ -322,7 +226,7 @@ void CKTDXDeviceRenderTargetTexture::RenderQuadRHW( D3DCOLOR color, float fX, fl
 	KD3DEND()
 }
 
-void CKTDXDeviceRenderTargetTexture::RenderQuad( D3DCOLOR color )
+void CKTDXDeviceRenderTargetTexture::RenderQuad( D3DCOLOR /*color*/ )
 {
 	KTDXPROFILE();
     KD3DPUSH( g_pKTDXApp->GetDGManager()->GetRSICKTDXDeviceTexture() )
@@ -362,7 +266,8 @@ void CKTDXDeviceRenderTargetTexture::RenderQuad( D3DCOLOR color )
 
 //#ifdef  DYNAMIC_VERTEX_BUFFER_OPT
 	static_assert( D3DFVF_RENDERTARGET_VERTEX == D3DFVF_XYZ_TEX1 , "");
-	g_pKTDXApp->GetDVBManager()->DrawPrimitive( CKTDGDynamicVBManager::DVB_TYPE_XYZRHW_DIFFUSE_TEX1
+	// DVB_TYPE_XYZRHW_DIFFUSE_TEX1 in the original, which read these XYZ_TEX1 vertices with the wrong layout
+	g_pKTDXApp->GetDVBManager()->DrawPrimitive( CKTDGDynamicVBManager::DVB_TYPE_XYZ_TEX1
 		, D3DPT_TRIANGLELIST, 2, vertex );
 //#else   DYNAMIC_VERTEX_BUFFER_OPT
 //	g_pKTDXApp->GetDevice()->SetFVF( D3DFVF_RENDERTARGET_VERTEX );
@@ -395,73 +300,19 @@ void CKTDXDeviceRenderTargetTexture::SetDeviceTexture( int stage )
 //}} robobeg : 2008-10-22
 }
 
-HRESULT CKTDXDeviceRenderTargetTexture::CopySurface( LPDIRECT3DSURFACE9 pDestSurface )
+// StretchRect: x2::render has no blit yet and the back buffer is a swapchain image that cannot be read, so these
+// fail quietly (they run every frame), as on the devices where the original set m_bCannotStretchRect.
+HRESULT CKTDXDeviceRenderTargetTexture::CopySurface( LPDIRECT3DTEXTURE9 /*pDestSurface*/ )
 {
-	KTDXPROFILE();
-
-	HRESULT hr;
-
-	hr = g_pKTDXApp->GetDevice()->StretchRect( m_pRenderTargetSurface, NULL, pDestSurface, NULL, D3DTEXF_LINEAR );
-	if ( hr != S_OK )
-	{
-		string strName;
-		ConvertWCHARToChar( strName, m_DeviceID.c_str() );
-		ErrorLogMsg( KEM_ERROR82, strName.c_str() );
-	}
-	return hr;
+	return E_NOTIMPL;
 }
 
 HRESULT CKTDXDeviceRenderTargetTexture::CopySurfaceToBackBuffer()
 {
-	KTDXPROFILE();
-
-	HRESULT hr;
-
-	hr = g_pKTDXApp->GetDevice()->StretchRect( m_pRenderTargetSurface, NULL, m_pBackupBuffer, NULL, D3DTEXF_LINEAR );
-
-	if ( hr != S_OK )
-	{
-		switch( hr )
-		{
-		case D3DERR_INVALIDCALL:
-			{
-				wstring errorMSG;
-				errorMSG = L"D3DERR_INVALIDCALL ";
-				errorMSG += m_DeviceID;
-				ErrorLogMsg( KEM_ERROR83, errorMSG.c_str() );
-			}
-			break;
-		}
-	}
-	return hr;
+	return E_NOTIMPL;
 }
 
 HRESULT CKTDXDeviceRenderTargetTexture::CopyBackBufferToSurface()
 {
-	KTDXPROFILE();
-
-	HRESULT hr;
-
-	if( g_pKTDXApp->GetCannotStretchRect() == true )
-	{
-		return E_FAIL;
-	}
-
-	hr = g_pKTDXApp->GetDevice()->StretchRect( m_pBackupBuffer, NULL, m_pRenderTargetSurface, NULL, D3DTEXF_LINEAR );
-
-	if ( hr != S_OK )
-	{
-		switch( hr )
-		{
-		case D3DERR_INVALIDCALL:
-			{
-				wstring errorMSG;
-				errorMSG = L"D3DERR_INVALIDCALL ";
-				errorMSG += m_DeviceID;
-				ErrorLogMsg( KEM_ERROR84, errorMSG.c_str() );
-			}
-			break;
-		}
-	}
-	return hr;
+	return E_NOTIMPL;
 }

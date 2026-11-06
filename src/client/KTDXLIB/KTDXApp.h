@@ -162,7 +162,7 @@ class CKTDXApp
 			D3DXMatrixMultiply( &m_ViewProjectionMatrix, &m_ViewMatrix, & m_ProjectionMatrix );
 		}
 
-		const int GetViewMatChangeCount(){ return m_ViewMatChangeCount; }
+		int GetViewMatChangeCount(){ return m_ViewMatChangeCount; }
 
 		const D3DVIEWPORT9& GetViewport()
 		{
@@ -252,26 +252,24 @@ class CKTDXApp
 
 		void			GetPhysicRam( DWORD& dwTotal, DWORD& dwFree )
 		{
-			MEMORYSTATUS memStatus;
-			memStatus.dwLength = sizeof( MEMORYSTATUS );
-			GlobalMemoryStatus( &memStatus );
-			dwTotal = (DWORD)memStatus.dwTotalPhys;
-			dwFree = (DWORD)memStatus.dwAvailPhys;
+			// GlobalMemoryStatus in the original, which also capped at 4 GB
+			std::size_t total = 0, available = 0;
+			x2::platform::PhysicalMemory( total, available );
+			dwTotal = (DWORD)std::min<std::size_t>( total, 0xFFFFFFFF );
+			dwFree = (DWORD)std::min<std::size_t>( available, 0xFFFFFFFF );
 		}
 		void			GetVideoRam( DWORD& dwTotal, DWORD& dwFree );
 
-		bool			GetIsFullScreen() { DXUTDeviceSettings deviceSettings = DXUTGetDeviceSettings();
-											return !deviceSettings.pp.Windowed; }
+		bool			GetIsFullScreen() { return !DXUTIsWindowed(); }
 
-		void			Make2DPosToRay( int posx, int posy, float fDepth, D3DXVECTOR3& startPos, D3DXVECTOR3& endPos )
+		void			Make2DPosToRay( int /*posx*/, int /*posy*/, float fDepth, D3DXVECTOR3& startPos, D3DXVECTOR3& endPos )
 		{
 			D3DVIEWPORT9 vp;
 			D3DXMATRIX matProj, matView, m;
 			POINT ptCursor;
 			m_pd3dDevice->GetViewport(&vp);
 			m_pd3dDevice->GetTransform( D3DTS_PROJECTION, &matProj );
-			GetCursorPos( &ptCursor );
-			ScreenToClient( m_hWnd, &ptCursor );
+			ptCursor = DXUTGetInputState().Cursor();
 
 			D3DXVECTOR3 v;
 			v.x = ((  (((ptCursor.x-vp.X)*2.0f/vp.Width ) - 1.0f)) - matProj._31 ) / matProj._11;
@@ -478,7 +476,7 @@ template<typename LUADOMEMORYNOTENCRYPT>
 __forceinline HRESULT CKTDXApp::LoadAndDoMemory_ErrorCode( LUADOMEMORYNOTENCRYPT* pLuaManager, const WCHAR* pFileName, bool /*bEncryption*/ )
 {
 	//루아 매니져 로딩
-    if ( pLuaManager == NULL || pFileName == NULL || pFileName[0] == NULL )
+    if ( pLuaManager == NULL || pFileName == NULL || pFileName[0] == L'\0' )
     {
 		ErrorLogMsg( KEM_ERROR72, "" );
         return E_INVALIDARG;
@@ -522,7 +520,7 @@ template<typename LUADOMEMORYNOTENCRYPT>
 __forceinline HRESULT CKTDXApp::LoadAndDoMemory_LocalFile_ErrorCode( LUADOMEMORYNOTENCRYPT* pLuaManager, const WCHAR* pFileName )
 {
 	//루아 매니져 로딩
-    if ( pLuaManager == NULL || pFileName == NULL || pFileName[0] == NULL )
+    if ( pLuaManager == NULL || pFileName == NULL || pFileName[0] == L'\0' )
     {
 		ErrorLogMsg( KEM_ERROR72, "" );
         return E_INVALIDARG;

@@ -820,7 +820,7 @@ class CKTDGLineMap : public CKTDGObject
             return true;
 		}
 
-		__forceinline bool IsDownLine( D3DXVECTOR3 pos, float fRadius = 1.0f, D3DXVECTOR3* pOutPos = NULL, int* pLineIndex = NULL, bool bIsMonster = false )
+		__forceinline bool IsDownLine( D3DXVECTOR3 pos, float fRadius = 1.0f, D3DXVECTOR3* pOutPos = NULL, int* pLineIndex = NULL, bool /*bIsMonster*/ = false )
 		{
 			KTDXPROFILE();
 			D3DXVECTOR3	temp;
@@ -860,7 +860,7 @@ class CKTDGLineMap : public CKTDGObject
 				return GetLandPosition( pos, fRadius, pTemp );
 			}
 		}
-		__forceinline D3DXVECTOR3 GetLandPosition( D3DXVECTOR3 pos, float fRadius = 1.0f, int* pLineIndex = NULL ) const;
+		D3DXVECTOR3 GetLandPosition( D3DXVECTOR3 pos, float fRadius = 1.0f, int* pLineIndex = NULL ) const;
 
 		bool CanPassUp( const D3DXVECTOR3& pos );
 
@@ -910,9 +910,9 @@ class CKTDGLineMap : public CKTDGObject
         }
 
 
-		__forceinline const int GetNumLineData() { return (int)m_LineList.size(); }
-		__forceinline const float GetLandHeight() { return m_fLandHeight; }
-		__forceinline const int GetNumCameraData() { return static_cast<int>(m_vecCameraData.size()); }
+		__forceinline int GetNumLineData() { return (int)m_LineList.size(); }
+		__forceinline float GetLandHeight() { return m_fLandHeight; }
+		__forceinline int GetNumCameraData() { return static_cast<int>(m_vecCameraData.size()); }
 		__forceinline const CameraData * GetCameraDataList( int index )
 		{
 			KTDXPROFILE();
@@ -989,7 +989,7 @@ class CKTDGLineMap : public CKTDGObject
 
 		int GetRandomStartPosIndex();
 
-		D3DXVECTOR3 CKTDGLineMap::GetRandomPosition_LUA()
+		D3DXVECTOR3 GetRandomPosition_LUA()
 		{
 			return GetRandomPosition( NULL, 0.f, false );
 		}
@@ -1109,8 +1109,6 @@ class CKTDGLineMap : public CKTDGObject
             //디딜 곳이 없다면 모든 선을 검색한다
             for( int i = 0; i < (int)m_LineList.size(); i++ )
             {
-                const LineData* pLineData = m_LineList[i];
-
                 //정상적인 발판만 확인한다
                 if( VerifyLine( i, bIsMonster ) == false )
                     continue;
@@ -1229,7 +1227,6 @@ class CKTDGLineMap : public CKTDGObject
 
 			//점과 선사이의 최단 거리를 구한다.
 			float fLineLength				= GetDistance( pLineData->startPos, pLineData->endPos );
-			float fLineStartToPointLength	= GetDistance( pLineData->startPos, pos );
 
 			D3DXVECTOR3 lineDir = pLineData->endPos - pLineData->startPos;
 			D3DXVec3Normalize( &lineDir, &lineDir );
@@ -1488,39 +1485,15 @@ class CKTDGLineMap : public CKTDGObject
 
 
 
-		void CheckNearLines( const D3DXVECTOR3& vPos_, bool bRight_ = true, float fDist_ = 1800.f )
+		// The original measured each line's distance for a near flag that it no longer sets (commented out); a no-op.
+		void CheckNearLines( const D3DXVECTOR3& /*vPos_*/, bool /*bRight_*/ = true, float /*fDist_*/ = 1800.f )
 		{
-			D3DXVECTOR3 target;
-			float		tempLength;
-
-			for( int i = 0; i < (int)m_LineList.size(); i++ )
-			{
-				const LineData* pLineData = m_LineList[i];
-				if( false == pLineData->bEnable )
-					continue;
-
-				if( LT_MONSTER_ROAD == pLineData->lineType )
-					continue;
-
-				if ( LT_WALL == pLineData->lineType )
-					continue;
-
-				if ( true == bRight_ )
-					tempLength	= GetDistance( pLineData->startPos, vPos_ );
-				else
-					tempLength	= GetDistance( pLineData->endPos, vPos_ );
-
-// 				if( tempLength <= fDist_ )
-// 					pLineData->m_bNear = true;
-// 				else
-// 					pLineData->m_bNear = false;
-			}
 		}
 
 
 	private:
 
-        __forceinline LineData* CKTDGLineMap::_AccessLineData( int index )
+        __forceinline LineData* _AccessLineData( int index )
         {
 	        KTDXPROFILE();
 	        if ( index < 0 || index >= (int)m_LineList.size() )

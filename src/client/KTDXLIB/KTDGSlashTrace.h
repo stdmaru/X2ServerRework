@@ -56,6 +56,7 @@ class CKTDGSlashTrace : public CKTDGObject
 		}
 
 
+		using CKTDGObject::OnFrameMove;
 		virtual HRESULT OnFrameMove( float fElapsedTime );
 //{{ robobeg : 2008-10-24
 		//virtual HRESULT OnFrameRender();

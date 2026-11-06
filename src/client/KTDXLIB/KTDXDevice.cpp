@@ -113,6 +113,7 @@ bool CKTDXDevice::UnrefDevice()
             case DEVICE_STATE_LOADED:
                 break;
             case DEVICE_STATE_FAILED:
+            default:
                 break;
             }//switch
 

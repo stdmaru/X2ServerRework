@@ -44,10 +44,10 @@ class CKTDGSkyDome : public CKTDGObject
 //}} robobeg : 2008-10-24
 
 		const CKTDXDeviceXMesh* GetXMesh() const { return m_pDomeMesh; };
-		const float GetRotationSpeed() { return m_fRotationSpeed; }
-		const bool GetViewTrace() { return m_bViewTrace; }
-		const bool GetViewTraceXZ() { return m_bViewTraceXZ; }
-		const bool GetViewRotation() { return m_bViewRotation; }
+		float GetRotationSpeed() { return m_fRotationSpeed; }
+		bool GetViewTrace() { return m_bViewTrace; }
+		bool GetViewTraceXZ() { return m_bViewTraceXZ; }
+		bool GetViewRotation() { return m_bViewRotation; }
 
 		//LUA
 		CKTDGXRenderer::RenderParam* GetRenderParam(){ return &m_RenderParam; }

@@ -9,6 +9,7 @@
 // virtual methods, so the engine's declarations keep compiling unchanged.
 
 #include "D3D9Types.h"
+#include "Fvf.h"
 
 #include "x2/platform/d3dx_math.h"
 #include "x2/platform/types.h"
@@ -17,13 +18,14 @@
 #define STDMETHOD(method)        virtual HRESULT method
 #define STDMETHOD_(type, method) virtual type method
 #define STDMETHODIMP             HRESULT
+#define STDMETHODCALLTYPE
 #define STDMETHODIMP_(type)      type
 #define THIS_
 #define THIS                     void
 #define PURE                     = 0
 #endif
 
-namespace x2::d3d9 { class Texture; }
+namespace x2::d3d9 { class Device; class Texture; }
 
 typedef const char* D3DXHANDLE;
 
@@ -52,6 +54,8 @@ typedef ID3DXCompressedAnimationSet* LPD3DXCOMPRESSEDANIMATIONSET;
 typedef ID3DXEffect* LPD3DXEFFECT;
 typedef ID3DXLine* LPD3DXLINE;
 typedef IDirect3DVertexShader9* LPDIRECT3DVERTEXSHADER9;
+class IDirect3DVertexDeclaration9;
+typedef IDirect3DVertexDeclaration9* LPDIRECT3DVERTEXDECLARATION9;
 typedef IDirect3DPixelShader9* LPDIRECT3DPIXELSHADER9;
 
 // --- Meshes (d3dx9mesh.h) --------------------------------------------------------------------------------------------
@@ -227,3 +231,40 @@ struct D3DXIMAGE_INFO {
     D3DRESOURCETYPE ResourceType;
     D3DXIMAGE_FILEFORMAT ImageFileFormat;
 };
+
+// --- Textures from files -------------------------------------------------------------------------------------------
+
+#define D3DERR_NOTAVAILABLE     static_cast<HRESULT>(0x8876086AL)  // MAKE_D3DHRESULT(2154)
+#define D3DERR_OUTOFVIDEOMEMORY static_cast<HRESULT>(0x8876017CL)  // MAKE_D3DHRESULT(380)
+#define D3DXERR_INVALIDDATA     static_cast<HRESULT>(0x88760B59L)  // MAKE_DDHRESULT(2905)
+
+#define D3DX_DEFAULT            (static_cast<UINT>(-1))
+#define D3DX_FILTER_NONE        (1 << 0)
+#define D3DX_FILTER_POINT       (2 << 0)
+#define D3DX_FILTER_LINEAR      (3 << 0)
+#define D3DX_FILTER_TRIANGLE    (4 << 0)
+#define D3DX_FILTER_BOX         (5 << 0)
+
+// The image loaders (.dds, .tga) are the next step: until then these two fail with D3DXERR_INVALIDDATA
+// (docs/porting/client-d3d9.md).
+HRESULT D3DXGetImageInfoFromFileInMemory(const void* pSrcData, UINT srcDataSize, D3DXIMAGE_INFO* pSrcInfo);
+HRESULT D3DXCreateTextureFromFileInMemoryEx(x2::d3d9::Device* pDevice, const void* pSrcData, UINT srcDataSize,
+                                            UINT width, UINT height, UINT mipLevels, DWORD usage, D3DFORMAT format,
+                                            D3DPOOL pool, DWORD filter, DWORD mipFilter, D3DCOLOR colorKey,
+                                            D3DXIMAGE_INFO* pSrcInfo, void* pPalette, x2::d3d9::Texture** ppTexture);
+// What the device can create: any size; D3DX_DEFAULT and 0 become 256 and a full mip chain, an unknown format
+// D3DFMT_A8R8G8B8. Fails for a format the device does not have.
+HRESULT D3DXCheckTextureRequirements(x2::d3d9::Device* pDevice, UINT* pWidth, UINT* pHeight, UINT* pNumMipLevels,
+                                     DWORD usage, D3DFORMAT* pFormat, D3DPOOL pool);
+
+// --- Mesh functions (declared for the inline callers in KTDXCollision.h; the `.x` step implements them) --------------
+
+HRESULT D3DXIntersect(LPD3DXBASEMESH pMesh, const D3DXVECTOR3* pRayPos, const D3DXVECTOR3* pRayDir, BOOL* pHit,
+                      DWORD* pFaceIndex, FLOAT* pU, FLOAT* pV, FLOAT* pDist, LPD3DXBUFFER* ppAllHits,
+                      DWORD* pCountOfHits);
+
+// Bytes per vertex of an FVF (0 for one without a position).
+inline UINT D3DXGetFVFVertexSize(DWORD fvf)
+{
+    return x2::d3d9::DescribeFvf(fvf).size;
+}

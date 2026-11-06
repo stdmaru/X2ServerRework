@@ -268,7 +268,7 @@ public:
     unsigned    GetNumIndexedValues()  { return m_dequeLuaTable.back()->m_vec.size(); }
     unsigned    GetNumIndexedValues( const char* pszName, int iBaseIndex = 0 );
 
-#pragma message( "아래의 3개의 함수는 사용되는 곳이 있는지 확인하고 만들자" )
+// TODO(original): check whether the three functions below are used anywhere before implementing them.
 	KLuaManagerProxyLuaTable*	GetStackFront() { return m_dequeLuaTable.front().get(); }
 
 	KLuaManagerProxyLuaTable* StackGetTable( const char* tableName );
@@ -300,7 +300,7 @@ protected:
 
 
 template< typename T>
-bool KLuaManagerProxy::GetValue( const char* pszName, T& sValue, bool bLogOutput /*= true*/ )
+bool KLuaManagerProxy::GetValue( const char* pszName, T& sValue, bool /*bLogOutput*/ /*= true*/ )
 {
 	KLuaManagerProxyLuaValue* pLuaValue = StackGetValue( pszName );
 	return GetNumberFromLuaValue( sValue, pLuaValue );
@@ -308,7 +308,7 @@ bool KLuaManagerProxy::GetValue( const char* pszName, T& sValue, bool bLogOutput
 
 
 template< typename T>
-bool KLuaManagerProxy::GetValue( int iIndex, T& sValue, bool bLogOutput /*= true*/ )
+bool KLuaManagerProxy::GetValue( int iIndex, T& sValue, bool /*bLogOutput*/ /*= true*/ )
 {
 	KLuaManagerProxyLuaValue* pLuaValue = StackGetValue( iIndex );
 	return GetNumberFromLuaValue( sValue, pLuaValue );
@@ -331,6 +331,8 @@ bool KLuaManagerProxy::GetNumberFromLuaValue( T& val, KLuaManagerProxyLuaValue* 
 			return true;
 		case LUA_VALUE_STRING:
 			return KLexicalCast( pLuaValue->m_strStringUTF8, val );
+		default:
+			break;
 		}//switch
 		return false;
 	}//if

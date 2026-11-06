@@ -54,7 +54,7 @@ public:
         _EstimateFontSize( wLetter, &size );
 		return (int)( size.cy / m_EnlargeNum );
 	}
-	__forceinline int GetWidth( const WCHAR* wszText, int nCount = -1 );
+	int GetWidth( const WCHAR* wszText, int nCount = -1 );
 	__forceinline int GetHeight( const WCHAR* wszText, int nCount = -1 )
 	{
 		KTDXPROFILE();
@@ -85,7 +85,7 @@ public:
 	SGCFontCache* GetFontCache(WCHAR _Char);
 
 private:
-	__forceinline int GetRightPos( const int& iLeft, const WCHAR* wszText, RECT* pRt, DWORD dwFlag, int nCount = -1, float fScaleX = 1.f )
+	__forceinline int GetRightPos( const int& /*iLeft*/, const WCHAR* /*wszText*/, RECT* pRt, DWORD /*dwFlag*/, int /*nCount*/ = -1, float /*fScaleX*/ = 1.f )
 	{
 		KTDXPROFILE();
 

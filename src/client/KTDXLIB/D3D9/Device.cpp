@@ -461,6 +461,22 @@ void Device::SetFVF(DWORD fvf)
     m_fvf = fvf;
 }
 
+bool Device::SetVertexShaderConstantF(UINT startRegister, const float* data, UINT registerCount)
+{
+    if (data == nullptr || startRegister > kVertexShaderConstants || registerCount > kVertexShaderConstants - startRegister)
+        return false;
+    std::copy_n(data, registerCount * 4, m_vsConstants.begin() + startRegister * 4);
+    return true;
+}
+
+bool Device::GetVertexShaderConstantF(UINT startRegister, float* data, UINT registerCount) const
+{
+    if (data == nullptr || startRegister > kVertexShaderConstants || registerCount > kVertexShaderConstants - startRegister)
+        return false;
+    std::copy_n(m_vsConstants.begin() + startRegister * 4, registerCount * 4, data);
+    return true;
+}
+
 void Device::SetStreamSource(UINT stream, VertexBuffer* buffer, UINT offset, UINT stride)
 {
     if (stream == 0) {

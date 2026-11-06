@@ -1031,7 +1031,7 @@ class CKTDGParticleSystem
 
 
 				void SetParticleType( PARTICLE_TYPE plarticleType ){ m_ParticleType = plarticleType; }
-				const PARTICLE_TYPE GetParticleType() const { return m_ParticleType; }
+				PARTICLE_TYPE GetParticleType() const { return m_ParticleType; }
 
 				void SetName( wstring strName ){ m_strName = strName; }
 				const WCHAR* GetName() const { return m_strName.c_str(); }
@@ -1553,7 +1553,7 @@ class CKTDGParticleSystem
 			wstring wSequenceName;
 			ConvertUtf8ToWCHAR( wSequenceName, pSequenceName );
 
-#pragma DMLEE_NOTE( "일단은 스크립트에서 사용하는 부분에서는 NULL 로 입력, 나중에 몬스터 스크립트 전체 수정하면서 코드 수정해야함" )
+// TODO(original): scripts pass NULL here for now; fix the code when all monster scripts are revised.
 			return CreateSequence( NULL, wSequenceName.c_str(),
 				pos.x, pos.y, pos.z, emitRate.x, emitRate.y,
 				-1, (int)trigger.x, trigger.y );
@@ -1564,7 +1564,7 @@ class CKTDGParticleSystem
 			wstring wSequenceName;
 			ConvertUtf8ToWCHAR( wSequenceName, pSequenceName );
 
-#pragma DMLEE_NOTE( "일단은 스크립트에서 사용하는 부분에서는 NULL 로 입력, 나중에 몬스터 스크립트 전체 수정하면서 코드 수정해야함" )
+// TODO(original): scripts pass NULL here for now; fix the code when all monster scripts are revised.
 			return CreateSequence( pKTDGObject_, wSequenceName.c_str(),
 				pos.x, pos.y, pos.z, emitRate.x, emitRate.y,
 				-1, (int)trigger.x, trigger.y );
@@ -1649,7 +1649,7 @@ class CKTDGParticleSystem
 //
 //#endif  X2OPTIMIZE_PARTICLE_SEQUENCE_DVB
 
-		static CParticleEvent* CKTDGParticleSystem::EventFactory( std::string EventName );
+		static CParticleEvent* EventFactory( std::string EventName );
 
 		void SetEnable( bool bEnable ){ m_bEnable = bEnable; }
 

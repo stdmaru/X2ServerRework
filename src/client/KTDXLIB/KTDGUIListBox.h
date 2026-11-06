@@ -93,7 +93,7 @@ class CKTDGUIListBox : public CKTDGUIControl
 			wstring *GetSenderName()				{ return &m_wstrData; }
 			//}} 허상형 : [2009/7/20] //	메가폰 함수들
 
-			void OnFrameMove( double fTime, float fElapsedTime )
+			void OnFrameMove( double /*fTime*/, float fElapsedTime )
 			{
 				if( m_fTimeLeftShow > 0.f )
 				{
@@ -137,6 +137,7 @@ class CKTDGUIListBox : public CKTDGUIControl
 
 		virtual bool    HandleKeyboard( UINT uMsg, WPARAM wParam, LPARAM lParam );
 		virtual bool    HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lParam );
+		using CKTDGUIControl::MsgProc;
 		virtual bool    MsgProc( UINT uMsg, WPARAM wParam, LPARAM lParam );
 
 		virtual void    UpdateRects();
@@ -252,8 +253,8 @@ class CKTDGUIListBox : public CKTDGUIControl
 		HRESULT AddControl(  CKTDGUIItem* pItem );
 
 		virtual D3DXVECTOR2 GetPos() { return D3DXVECTOR2( (float)m_x, (float)m_y ); }
-		const int GetWidth() const { return m_width; }
-		const int GetHeight() const { return m_height; }
+		int GetWidth() const { return m_width; }
+		int GetHeight() const { return m_height; }
 		const CKTDGUIControl::UITextureData* GetBoundingBoxTexData() const				{ return m_pBoudingBoxTex; }
 		const CKTDGUIControl::UITextureData* GetTextTexData() const						{ return m_pTextTex; }
 		const CKTDGUIControl::UITextureData* GetScrollBarUpButtonTexData() const		{ return m_pScollBarUpButtonTex; }

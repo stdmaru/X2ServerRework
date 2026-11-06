@@ -194,7 +194,7 @@ public:
         SetRenderState( Type, Value );
     }//PushRenderState()
 
-    static __forceinline void     PopRenderState(D3DRENDERSTATETYPE Type)
+    static __forceinline void     PopRenderState([[maybe_unused]] D3DRENDERSTATETYPE Type)
     {
         ASSERT( ms_iStackPointer > 0 );
         ms_iStackPointer--;
@@ -263,7 +263,7 @@ public:
     //    PushTextureStageState( Stage, Type, (DWORD)( (bInValue_) ? TRUE : FALSE ) );
     //}//
 
-    static __forceinline void     PopTextureStageState(DWORD Stage, D3DTEXTURESTAGESTATETYPE Type)
+    static __forceinline void     PopTextureStageState([[maybe_unused]] DWORD Stage, [[maybe_unused]] D3DTEXTURESTAGESTATETYPE Type)
     {
         ASSERT( Stage < TEXTURE_STAGE_NUM );
         ASSERT( Type >= D3DTEXTURESTAGESTATETYPE(0) && Type < D3DTSS_MAX );
@@ -328,7 +328,7 @@ public:
     //    PushSamplerState( Stage, Type, (DWORD)( (bInValue_) ? TRUE : FALSE ) );
     //}//
 
-    static __forceinline void     PopSamplerState(DWORD Stage, D3DSAMPLERSTATETYPE Type)
+    static __forceinline void     PopSamplerState([[maybe_unused]] DWORD Stage, [[maybe_unused]] D3DSAMPLERSTATETYPE Type)
     {
         ASSERT( Stage < SAMPLER_STAGE_NUM );
         ASSERT( Type >= D3DSAMPLERSTATETYPE(0) && Type < D3DTSS_MAX );

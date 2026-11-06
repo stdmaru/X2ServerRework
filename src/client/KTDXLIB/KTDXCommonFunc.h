@@ -1,7 +1,10 @@
 #pragma once
 
 #include "KncUtil.h"
+#include "x2/platform/format.h"
 #include "x2/platform/process.h"
+
+#include <vector>
 
 #define XOR_KEY0 0xc6f8aa02
 #define XOR_KEY1 0x2647abdc
@@ -94,7 +97,7 @@ inline void MakeUpperCase(WCHAR* dest, size_t size, const WCHAR* str)
 		return;
     if ( str == NULL )
     {
-        *dest = NULL;
+        *dest = L'\0';
         return;
     }
 	//KTDXPROFILE();
@@ -124,12 +127,12 @@ inline std::wstring& ConvertCharToWCHAR( std::wstring& dest, const std::string& 
 	if ( iDestSize <= 0 )
 		return dest;
 
-	wchar_t* wcharBuf = (wchar_t*) _malloca( iDestSize * sizeof( wchar_t ) );
+	std::vector<wchar_t> vec_wcharBuf( iDestSize );
+	wchar_t* wcharBuf = vec_wcharBuf.data();
 	ASSERT( wcharBuf != NULL );
 	int iNewSize = ::MultiByteToWideChar( CP_ACP, 0, src.c_str(), iSrcLength, wcharBuf, iDestSize );
 	ASSERT( iNewSize == iDestSize );
 	dest.assign( wcharBuf, iNewSize );
-    _freea( wcharBuf );
     return  dest;
 }
 
@@ -149,12 +152,12 @@ inline std::string& ConvertWCHARToChar( std::string& dest, const std::wstring& s
 	if ( iDestSize <= 0 )
 		return dest;
 
-	char* pszConv = (char*) _malloca( iDestSize * sizeof(char) );
+	std::vector<char> vec_pszConv( iDestSize );
+	char* pszConv = vec_pszConv.data();
 	ASSERT( pszConv != NULL );
 	int iNewSize = ::WideCharToMultiByte( CP_ACP, 0, src.c_str(), iSrcLength, pszConv, iDestSize, NULL, NULL );
 	ASSERT( iNewSize == iDestSize );
 	dest.assign( pszConv, iNewSize );
-    _freea( pszConv );
     return  dest;
 }
 
@@ -177,9 +180,9 @@ inline std::wstring& ConvertCharToWCHAR( std::wstring& dest, const char* pSrc, c
 	//MultiByteToWideChar( CP_ACP, 0, pSrc, -1, wcharBuf, iSize );
 	//dest = wcharBuf;
 
-    dest.resize( 0 );
-    if ( pSrc == NULL )
-        return dest;
+	dest.resize( 0 );
+	if ( pSrc == NULL )
+		return dest;
 
 	int iSrcLength = iLength;
 	if( iSrcLength < 0 )
@@ -193,12 +196,12 @@ inline std::wstring& ConvertCharToWCHAR( std::wstring& dest, const char* pSrc, c
     if ( iDestSize <= 0 )
 	    return dest;
 
-	wchar_t* wcharBuf = (wchar_t*) _malloca( iDestSize * sizeof( wchar_t ) );
+	std::vector<wchar_t> vec_wcharBuf( iDestSize );
+	wchar_t* wcharBuf = vec_wcharBuf.data();
     ASSERT( wcharBuf != NULL );
     int iNewSize = ::MultiByteToWideChar( CP_ACP, 0, pSrc, iSrcLength, wcharBuf, iDestSize );
     ASSERT( iNewSize == iDestSize );
     dest.assign( wcharBuf, iNewSize );
-    _freea( wcharBuf );
     return  dest;
 //}} robobeg : 2008-01-08
 }
@@ -220,9 +223,9 @@ inline std::string& ConvertWCHARToChar( std::string& dest, const wchar_t* pSrc, 
 	//WideCharToMultiByte( CP_ACP, 0, pSrc, -1, charBuf, iSize, NULL, NULL );
 	//dest = charBuf;
 
-    dest.resize( 0 );
-    if ( pSrc == NULL )
-        return dest;
+	dest.resize( 0 );
+	if ( pSrc == NULL )
+		return dest;
 
 	int iSrcLength = iLength;
 	if( iSrcLength < 0 )
@@ -236,12 +239,12 @@ inline std::string& ConvertWCHARToChar( std::string& dest, const wchar_t* pSrc, 
     if ( iDestSize <= 0 )
         return dest;
 
-    char* pszConv = (char*) _malloca( iDestSize * sizeof(char) );
+    std::vector<char> vec_pszConv( iDestSize );
+	char* pszConv = vec_pszConv.data();
     ASSERT( pszConv != NULL );
     int iNewSize = ::WideCharToMultiByte( CP_ACP, 0, pSrc, iSrcLength, pszConv, iDestSize, NULL, NULL );
     ASSERT( iNewSize == iDestSize );
     dest.assign( pszConv, iNewSize );
-    _freea( pszConv );
     return dest;
 //}} robobeg : 2008-01-08
 }
@@ -264,12 +267,12 @@ inline std::wstring& ConvertUtf8ToWCHAR( std::wstring& dest, const char* pSrc, c
     if ( iDestSize <= 0 )
         return dest;
 
-    wchar_t* wcharBuf = (wchar_t*) _malloca( iDestSize * sizeof( wchar_t ) );
+    std::vector<wchar_t> vec_wcharBuf( iDestSize );
+	wchar_t* wcharBuf = vec_wcharBuf.data();
     ASSERT( wcharBuf != NULL );
     int iNewSize = ::MultiByteToWideChar( CP_UTF8, 0, pSrc, iSrcLength, wcharBuf, iDestSize );
     ASSERT( iNewSize == iDestSize );
     dest.assign( wcharBuf, iNewSize );
-    _freea( wcharBuf );
     return  dest;
 }
 
@@ -288,12 +291,12 @@ inline std::wstring& ConvertUtf8ToWCHAR( std::wstring& dest, const std::string& 
 	if ( iDestSize <= 0 )
 		return dest;
 
-	wchar_t* wcharBuf = (wchar_t*) _malloca( iDestSize * sizeof( wchar_t ) );
+	std::vector<wchar_t> vec_wcharBuf( iDestSize );
+	wchar_t* wcharBuf = vec_wcharBuf.data();
 	ASSERT( wcharBuf != NULL );
 	int iNewSize = ::MultiByteToWideChar( CP_UTF8, 0, src.c_str(), iSrcLength, wcharBuf, iDestSize );
 	ASSERT( iNewSize == iDestSize );
 	dest.assign( wcharBuf, iNewSize );
-    _freea( wcharBuf );
     return  dest;
 }
 
@@ -327,13 +330,13 @@ inline float GetDistance2( const float& x1, const float& y1, const float& x2, co
 
 inline float GetDistance2( const D3DXVECTOR3& pos1, const D3DXVECTOR3& pos2 )
 {
-	D3DXVECTOR2 temp = pos2 - pos1;
+	D3DXVECTOR2 temp( pos2.x - pos1.x, pos2.y - pos1.y );
 	return D3DXVec2Length( &temp );
 }
 
 inline float GetDistance2_LUA( const D3DXVECTOR3& pos1, const D3DXVECTOR3& pos2 )
 {
-	D3DXVECTOR2 temp = pos2 - pos1;
+	D3DXVECTOR2 temp( pos2.x - pos1.x, pos2.y - pos1.y );
 	return D3DXVec2Length( &temp );
 }
 
@@ -364,7 +367,7 @@ inline CHAR* StrHeapCopy( CHAR *sName )
 	DWORD dwLen = (DWORD) strlen( sName ) + 1;
 	CHAR * sNewName = new CHAR[ dwLen ];
     ASSERT( sNewName != NULL );
-    StringCchCopyA( sNewName, dwLen, sName );
+    memcpy( sNewName, sName, dwLen );
 	return sNewName;
 //}} robobeg : 2008-01-05
 }
@@ -634,9 +637,9 @@ inline bool Pick2DRect( const POINT& ptMouse,
 
 static inline USHORT floatToHalfI(UINT i)
 {
-	register int s =  (i >> 16) & 0x00008000;
-	register int e = ((i >> 23) & 0x000000ff) - (127 - 15);
-	register int m =   i        & 0x007fffff;
+	int s =  (i >> 16) & 0x00008000;
+	int e = ((i >> 23) & 0x000000ff) - (127 - 15);
+	int m =   i        & 0x007fffff;
 
 	if (e <= 0)
 	{
@@ -677,9 +680,9 @@ static inline USHORT floatToHalf(float i)
 
 static inline UINT halfToFloatI(USHORT y)
 {
-	register int s = (y >> 15) & 0x00000001;
-	register int e = (y >> 10) & 0x0000001f;
-	register int m =  y        & 0x000003ff;
+	int s = (y >> 15) & 0x00000001;
+	int e = (y >> 10) & 0x0000001f;
+	int m =  y        & 0x000003ff;
 
 	if (e == 0)
 	{
@@ -741,7 +744,7 @@ inline int RandomInt( int iMinBound = 0, int iMaxBound = 100 )
 
 inline char* XORDecrypt( const char* pEncryptedBuffer, int iBufferSize )
 {
-	int	aDecryptionKey[5] = { XOR_KEY30, XOR_KEY42, XOR_KEY14, XOR_KEY22, XOR_KEY40  };
+	int	aDecryptionKey[5] = { int( XOR_KEY30 ), int( XOR_KEY42 ), int( XOR_KEY14 ), int( XOR_KEY22 ), int( XOR_KEY40 ) };
 
 	char pBuf[5];
 
@@ -858,7 +861,7 @@ inline int TokenizeInt( WCHAR** ppStart, WCHAR* pEnd )
 
 // Memory used by the process. The original searched every process for one whose path contained strProcessName;
 // its only caller asks for the client itself ("X2.exe"), so this reads the current process.
-inline DWORD GetUsingMemorySize(std::wstring /*strProcessName*/, SIZE_T& currMemSize, SIZE_T& peakMemSize )
+inline DWORD GetUsingMemorySize(std::wstring /*strProcessName*/, std::size_t& currMemSize, std::size_t& peakMemSize )
 {
 	std::size_t current = 0, peak = 0;
 	x2::platform::CurrentProcessMemory( current, peak );
@@ -986,6 +989,7 @@ inline bool ConvertFileAnsiToUTF8( const string& srcFileName, const string& dest
 
 		sizeWrote = fwrite( szBuf, sizeof(char), sizeRead, destFile );
 		ASSERT( sizeRead == sizeWrote );
+		(void)sizeWrote;
 	}
 
 	fclose( srcFile );
@@ -1071,7 +1075,7 @@ inline bool IsSamef( float a, float b = 0.f )
 	return true;
 }
 
-inline bool DisplayErrorMessage( const WCHAR* wszError_ )
+inline bool DisplayErrorMessage( [[maybe_unused]] const WCHAR* wszError_ )
 {
 
 #if X2_DEV_TOOLS
@@ -1090,7 +1094,7 @@ inline bool DisplayErrorMessage( const WCHAR* wszError_ )
 }
 
 
-inline bool DisplayErrorMessage( const char* szError_ )
+inline bool DisplayErrorMessage( [[maybe_unused]] const char* szError_ )
 {
 
 #if X2_DEV_TOOLS
