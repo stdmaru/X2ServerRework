@@ -132,11 +132,11 @@ enum class StoreOp : std::uint8_t { Store, DontCare };
 enum class PresentMode : std::uint8_t { Vsync, Immediate, Mailbox };
 
 template <typename E>
-constexpr bool IsFlagEnum = false;
-template <> constexpr bool IsFlagEnum<ShaderFormat> = true;
-template <> constexpr bool IsFlagEnum<TextureUsage> = true;
-template <> constexpr bool IsFlagEnum<BufferUsage> = true;
-template <> constexpr bool IsFlagEnum<ColorComponent> = true;
+inline constexpr bool IsFlagEnum = false;
+template <> inline constexpr bool IsFlagEnum<ShaderFormat> = true;
+template <> inline constexpr bool IsFlagEnum<TextureUsage> = true;
+template <> inline constexpr bool IsFlagEnum<BufferUsage> = true;
+template <> inline constexpr bool IsFlagEnum<ColorComponent> = true;
 
 template <typename E> requires IsFlagEnum<E>
 constexpr E operator|(E a, E b)
@@ -170,7 +170,7 @@ struct Viewport {
 struct BufferDesc {
     BufferUsage usage = BufferUsage::None;
     std::uint32_t size = 0;
-    std::string_view name;      // debug name; may be empty
+    std::string_view name = {};      // debug name; may be empty
 };
 
 struct TransferBufferDesc {
@@ -187,7 +187,7 @@ struct TextureDesc {
     std::uint32_t layerCountOrDepth = 1;
     std::uint32_t levelCount = 1;
     SampleCount sampleCount = SampleCount::X1;
-    std::string_view name;
+    std::string_view name = {};
 };
 
 struct SamplerDesc {
@@ -251,8 +251,8 @@ struct DepthStencilState {
     bool enableDepthWrite = false;
     CompareOp compareOp = CompareOp::LessOrEqual;
     bool enableStencilTest = false;
-    StencilOpState backStencil;
-    StencilOpState frontStencil;
+    StencilOpState backStencil = {};
+    StencilOpState frontStencil = {};
     std::uint8_t compareMask = 0xFF;
     std::uint8_t writeMask = 0xFF;
 };
@@ -270,37 +270,37 @@ struct BlendState {
 
 struct ColorTargetDesc {
     TextureFormat format = TextureFormat::Invalid;
-    BlendState blend;
+    BlendState blend = {};
 };
 
 struct GraphicsPipelineDesc {
-    Shader vertexShader;
-    Shader fragmentShader;
-    std::span<const VertexBufferDesc> vertexBuffers;
-    std::span<const VertexAttribute> vertexAttributes;
+    Shader vertexShader = {};
+    Shader fragmentShader = {};
+    std::span<const VertexBufferDesc> vertexBuffers = {};
+    std::span<const VertexAttribute> vertexAttributes = {};
     PrimitiveType primitiveType = PrimitiveType::TriangleList;
-    RasterizerState rasterizer;
+    RasterizerState rasterizer = {};
     SampleCount sampleCount = SampleCount::X1;
-    DepthStencilState depthStencil;
-    std::span<const ColorTargetDesc> colorTargets;
+    DepthStencilState depthStencil = {};
+    std::span<const ColorTargetDesc> colorTargets = {};
     TextureFormat depthStencilFormat = TextureFormat::Invalid;     // Invalid: no depth-stencil target
-    std::string_view name;
+    std::string_view name = {};
 };
 
 // --- Pass and transfer arguments --------------------------------------------------------------------------------------
 
 struct ColorTargetInfo {
-    Texture texture;
+    Texture texture = {};
     std::uint32_t mipLevel = 0;
     std::uint32_t layerOrDepthPlane = 0;
-    Color clearColor;
+    Color clearColor = {};
     LoadOp loadOp = LoadOp::Load;
     StoreOp storeOp = StoreOp::Store;
     bool cycle = false;         // SDL_GPU cycling: write to a fresh copy if the texture is still in use
 };
 
 struct DepthStencilTargetInfo {
-    Texture texture;
+    Texture texture = {};
     float clearDepth = 1.0f;
     LoadOp loadOp = LoadOp::Load;
     StoreOp storeOp = StoreOp::Store;
@@ -311,25 +311,25 @@ struct DepthStencilTargetInfo {
 };
 
 struct BufferBinding {
-    Buffer buffer;
+    Buffer buffer = {};
     std::uint32_t offset = 0;
 };
 
 struct TextureSamplerBinding {
-    Texture texture;
-    Sampler sampler;
+    Texture texture = {};
+    Sampler sampler = {};
 };
 
 // Texel data in a transfer buffer. 0 for pixelsPerRow / rowsPerLayer means tightly packed (the region's width/height).
 struct TextureTransferInfo {
-    TransferBuffer transferBuffer;
+    TransferBuffer transferBuffer = {};
     std::uint32_t offset = 0;
     std::uint32_t pixelsPerRow = 0;
     std::uint32_t rowsPerLayer = 0;
 };
 
 struct TextureRegion {
-    Texture texture;
+    Texture texture = {};
     std::uint32_t mipLevel = 0;
     std::uint32_t layer = 0;
     std::uint32_t x = 0, y = 0, z = 0;
@@ -337,32 +337,32 @@ struct TextureRegion {
 };
 
 struct TextureLocation {
-    Texture texture;
+    Texture texture = {};
     std::uint32_t mipLevel = 0;
     std::uint32_t layer = 0;
     std::uint32_t x = 0, y = 0, z = 0;
 };
 
 struct TransferBufferLocation {
-    TransferBuffer transferBuffer;
+    TransferBuffer transferBuffer = {};
     std::uint32_t offset = 0;
 };
 
 struct BufferRegion {
-    Buffer buffer;
+    Buffer buffer = {};
     std::uint32_t offset = 0;
     std::uint32_t size = 0;
 };
 
 struct BufferLocation {
-    Buffer buffer;
+    Buffer buffer = {};
     std::uint32_t offset = 0;
 };
 
 // The window's back buffer for this frame. `texture` is none when there is nothing to draw into (minimized window,
 // swapchain not ready): record nothing into it, but still submit the command buffer.
 struct SwapchainTexture {
-    Texture texture;
+    Texture texture = {};
     std::uint32_t width = 0;
     std::uint32_t height = 0;
 };
