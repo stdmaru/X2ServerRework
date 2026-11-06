@@ -2,6 +2,7 @@
 
 
 #include "x2/platform/format.h"
+#include "x2/platform/unicode.h"
 
 const static KXETFormatHeader   s_kDummyHeader;
 
@@ -189,8 +190,8 @@ const wchar_t*  CKTDXDeviceXET_Preprocessing::GetString( DWORD dwOffset ) const
 
 void    CKTDXDeviceXET_Preprocessing::XETProxy::AddChangeTexture_LUA( const char* pOrgTexName, const char* pChangeTexName )
 {
-	if ( pOrgTexName == NULL || pOrgTexName[0] == NULL
-        || pChangeTexName == NULL || pChangeTexName[0] == NULL )
+	if ( pOrgTexName == NULL || pOrgTexName[0] == '\0'
+        || pChangeTexName == NULL || pChangeTexName[0] == '\0' )
     {
         ASSERT( 0 );
         return;
@@ -230,11 +231,11 @@ void    CKTDXDeviceXET_Preprocessing::XETProxy::SetMultiTexStage2_LUA( const cha
 const CKTDXDeviceXET_Preprocessing::XETProxy::AniData* CKTDXDeviceXET_Preprocessing::XETProxy::AddAniData_LUA( const char* pAniName, float fTransitionTime, float fAniMaxTime )
 {
 	//{{ kimhc // 2011-03-16 // 메모리 릭 수정 코드
-	if ( pAniName == NULL || pAniName[0] == NULL )
+	if ( pAniName == NULL || pAniName[0] == '\0' )
 	{
 		ASSERT( false );
 		x2::format fmt("유효하지 않은 애니메이션 이름을 사용하였습니다: %1%, %2%");
-		ErrorLogMsg( KEM_ERROR96, x2::str(fmt % m_DeviceID.c_str() % pAniName).c_str() );
+		ErrorLogMsg( KEM_ERROR96, x2::str(fmt % x2::platform::WideToUtf8( m_DeviceID ) % pAniName).c_str() );
 		return NULL;
 	}
 
@@ -246,7 +247,7 @@ const CKTDXDeviceXET_Preprocessing::XETProxy::AniData* CKTDXDeviceXET_Preprocess
     {
 		ASSERT( false );
 		x2::format fmt("이미 등록된 애니메이션 이름을 사용하였습니다: %1%, %2%");
-		ErrorLogMsg( KEM_ERROR96, x2::str(fmt % m_DeviceID.c_str() % pAniName).c_str() );
+		ErrorLogMsg( KEM_ERROR96, x2::str(fmt % x2::platform::WideToUtf8( m_DeviceID ) % pAniName).c_str() );
 
 		return &ib.first->second;
 		//return NULL;
@@ -267,8 +268,8 @@ const CKTDXDeviceXET_Preprocessing::XETProxy::AniData* CKTDXDeviceXET_Preprocess
 
 void    CKTDXDeviceXET_Preprocessing::XETProxy::AniData::SetTexChangeEvent_LUA( const D3DXVECTOR2& eventTime, const char* pOrgTexName, const char* pChangeTexName )
 {
-	if ( pOrgTexName == NULL || pOrgTexName[0] == NULL
-        || pChangeTexName == NULL || pChangeTexName[0] == NULL )
+	if ( pOrgTexName == NULL || pOrgTexName[0] == '\0'
+        || pChangeTexName == NULL || pChangeTexName[0] == '\0' )
         return;
 
 	wstring wOrgTexName;

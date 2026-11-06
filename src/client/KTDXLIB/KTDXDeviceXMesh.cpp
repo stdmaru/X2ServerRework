@@ -264,7 +264,7 @@ HRESULT	CKTDXDeviceXMesh::Render( CKTDXDeviceXET* pTexChangeXET, CKTDXDeviceXET*
 
 	D3DMATERIAL9 temp;
 	HRESULT hr;
-	hr = GET_D3DDEVICE()->GetMaterial( &temp );
+	GET_D3DDEVICE()->GetMaterial( &temp );
 	// Set and draw each of the materials in the mesh
 
     DWORD   dwNumSubsets = ( m_dwNumAttrGroups == 0 ) ? m_dwNumMaterials : m_dwNumAttrGroups;
@@ -296,7 +296,7 @@ HRESULT	CKTDXDeviceXMesh::Render( CKTDXDeviceXET* pTexChangeXET, CKTDXDeviceXET*
 		if( pvecDrawSubset && (*pvecDrawSubset)[i] == false )
 			continue;
 
-        hr = GET_D3DDEVICE()->SetMaterial( &m_pdxMaterials[ dwAttribId ].MatD3D );
+        GET_D3DDEVICE()->SetMaterial( &m_pdxMaterials[ dwAttribId ].MatD3D );
 		CKTDXDeviceBaseTexture* pResultTexture0 = NULL;
 		CKTDXDeviceBaseTexture* pResultTexture1 = NULL;
 		CKTDXDeviceBaseTexture* pResultTexture2 = NULL;
@@ -340,7 +340,7 @@ HRESULT	CKTDXDeviceXMesh::Render( CKTDXDeviceXET* pTexChangeXET, CKTDXDeviceXET*
 			}
 		}
 	}
-	hr = GET_D3DDEVICE()->SetMaterial( &temp );
+	GET_D3DDEVICE()->SetMaterial( &temp );
 
 	return S_OK;
 }
@@ -897,7 +897,9 @@ HRESULT         CKTDXDeviceXMesh::XMeshProxy::LoadD3DXMesh( const void* pInData_
 #endif // #ifdef KME_ATTRIBUTE_SORT
 
 	//subset 단위로 bounding sphere 저장
-	void* pVertex = NULL;
+	// Declared without an initializer: the error gotos above jump past it.
+	void* pVertex;
+	pVertex = NULL;
 	hr = m_pMesh->LockVertexBuffer( D3DLOCK_READONLY, &pVertex );
 	if ( SUCCEEDED( hr ) )
 	{
@@ -1287,7 +1289,9 @@ HRESULT         CKTDXDeviceXMesh::XMeshProxy::LoadKMEMesh( const void* pInData_,
 #endif // #if defined(KME_ATTRIBUTE_SORT) || !defined(_KSMTOOL)
 
 	//subset 단위로 bounding sphere 저장
-	void* pVertex = NULL;
+	// Declared without an initializer: the error gotos above jump past it.
+	void* pVertex;
+	pVertex = NULL;
 	hr = m_pMesh->LockVertexBuffer( D3DLOCK_READONLY, &pVertex );
 	if ( SUCCEEDED( hr ) )
 	{

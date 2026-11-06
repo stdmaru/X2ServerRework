@@ -305,7 +305,7 @@ void            CKTDGLensFlare::OnFrameRender_Draw()
 //}
 //#endif
 
-void CKTDGLensFlare::AddSpot( CLensFlareSpot &spot )
+void CKTDGLensFlare::AddSpot( const CLensFlareSpot &spot )
 {
 	m_Spots.push_back(spot);
 //#ifdef DYNAMIC_VERTEX_BUFFER_OPT

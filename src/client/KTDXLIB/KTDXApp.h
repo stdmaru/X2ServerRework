@@ -294,7 +294,6 @@ class CKTDXApp
 		void			PlaySound_LUA( char* pFileName );
 		void			StopSound_LUA( char* pFileName );
 		bool			GetCannotStretchRect(){ return m_bCannotStretchRect; }
-		bool			FindProcess( wstring wstrExeFile );
 
 		D3DXVECTOR3		GetVectorByRotate( const D3DXVECTOR3& pos, const D3DXVECTOR3& vRotateDegree )
 		{

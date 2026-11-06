@@ -557,7 +557,7 @@ HRESULT	CKTDGUIDialog::OnFrameRender( bool bForceDraw /* = false */ )
 			{
 				KLOG("MouseOverScript.txt")  << m_pControlMouseOverStatic->GetName() << fileout;
 			}
-			ShellExecute(NULL, NULL, L"notepad++.exe", L"MouseOverScript.txt", L"", SW_SHOWNORMAL );
+			// Port: the log is no longer opened in notepad++ (a Windows-only editor).
 		}
 	}
 #endif //LOG_LOAD_DLG_SCRIPT
@@ -702,7 +702,7 @@ bool CKTDGUIDialog::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam 
 				//POINT mousePoint = { short(LOWORD(lParam)), short(HIWORD(lParam)) };
 
 				//{{ 허상형 : [2009/7/27] //	마우스 포인터 위치를 절대 좌표에서 클라이언트 좌표로 수정
-				POINT mousePoint = { g_pKTDXApp->GetDIManager()->GetMouse()->GetXPos(), g_pKTDXApp->GetDIManager()->GetMouse()->GetYPos() };
+				POINT mousePoint = { static_cast<LONG>( g_pKTDXApp->GetDIManager()->GetMouse()->GetXPos() ), static_cast<LONG>( g_pKTDXApp->GetDIManager()->GetMouse()->GetYPos() ) };
 				//}} 허상형 : [2009/7/27] //	마우스 포인터 위치를 절대 좌표에서 클라이언트 좌표로 수정
 
 				D3DXVECTOR2 resolPos;
@@ -1937,7 +1937,7 @@ void CKTDGUIDialog::SetShow( bool bShow )
 		//////////////////////////////////
 		if( bShow == true)
 		{
-			POINT mousePoint = { g_pKTDXApp->GetDIManager()->GetMouse()->GetXPos(), g_pKTDXApp->GetDIManager()->GetMouse()->GetYPos() };
+			POINT mousePoint = { static_cast<LONG>( g_pKTDXApp->GetDIManager()->GetMouse()->GetXPos() ), static_cast<LONG>( g_pKTDXApp->GetDIManager()->GetMouse()->GetYPos() ) };
 			D3DXVECTOR2 resolPos;
 			resolPos = g_pKTDXApp->ConvertByResolution( m_Pos );
 			mousePoint.x -= (LONG)resolPos.x;

@@ -684,7 +684,7 @@ HRESULT CKTDGManager::OnResetDevice()
 {
 	////CKTDXThread::CLocker locker( m_csRenderObjectChainLock );
 
-	CKTDGStateManager::RestoreDeviceObjects( 0, D3DDEVTYPE_HAL );
+	CKTDGStateManager::RestoreDeviceObjects();
 //{{ robobeg : 2008-10-13
     CKTDGStateManager::SetStates( akStates );
 //}} robobeg : 2008-10-13

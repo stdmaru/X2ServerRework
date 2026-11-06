@@ -1,6 +1,6 @@
 // KTDXLIB's first engine files on the D3D9 device (docs/porting/client-ktdxlib.md): the state manager, the dynamic
 // vertex data, render target textures and the silent sound backend, headless on the null backend. g_pKTDXApp is the
-// stub in ktdxapp_stub.cpp.
+// real CKTDXApp; the globals X2.cpp defines are in x2_globals.cpp.
 
 #include "stdafx.h"
 
@@ -35,7 +35,7 @@ std::vector<std::string> Lines(x2::render::Device& device, const std::string& pr
     return lines;
 }
 
-// The device, the application stub on it, and a 64 x 32 target bound so draws have somewhere to go.
+// The device, the application on it (set up as X2.cpp's device callbacks do), and a 64 x 32 target bound so draws have somewhere to go.
 struct Engine {
     std::unique_ptr<x2::render::Device> render = NullRender();
     x2::d3d9::Device device{*render, nullptr};
@@ -45,7 +45,9 @@ struct Engine {
     Engine()
     {
         REQUIRE_MESSAGE(device.Ok(), device.LastError());
+        g_pd3dDevice = &device;
         app = std::make_unique<CKTDXApp>(nullptr, nullptr, &device);
+        CKTDGStateManager::RestoreDeviceObjects();
         target = device.CreateTexture(64, 32, 1, D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT);
         REQUIRE(target);
         CKTDGStateManager::SetRenderTarget(target.get());
@@ -54,7 +56,9 @@ struct Engine {
     {
         CKTDGStateManager::SetRenderTarget(NULL);
         target.reset();
+        CKTDGStateManager::InvalidateDeviceObjects();
         app.reset();
+        g_pd3dDevice = NULL;
     }
 };
 

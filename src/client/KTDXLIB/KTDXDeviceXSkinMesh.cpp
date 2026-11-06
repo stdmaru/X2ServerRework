@@ -2646,7 +2646,7 @@ HRESULT CKTDXDeviceXSkinMesh::CMultiAnimAllocateHierarchy::CreateMeshContainer( 
 	pMC->pEffects = NULL;
 
 	// alloc and copy materials
-	pMC->NumMaterials	= std::max( 1, NumMaterials );
+	pMC->NumMaterials	= std::max<DWORD>( 1, NumMaterials );
 	pMC->pMaterials		= new D3DXMATERIAL			[ pMC->NumMaterials ];
     if(pMC->pMaterials == NULL)
         ErrorLog(KEM_ERROR335);

@@ -2,6 +2,7 @@
 #include "KLuaManagerProxy.h"
 
 #include <cmath>
+#include "x2/platform/unicode.h"
 #include <cwchar>
 #include <limits>
 
@@ -520,18 +521,7 @@ bool	KLuaManagerProxy::GetStringFromLuaValue( std::wstring& wstrValue, KLuaManag
                     wstrValue.resize(0);
                     return true;
                 }
-                int iDestSize = ::MultiByteToWideChar( CP_UTF8, 0, pLuaValue->m_strStringUTF8.c_str(), pLuaValue->m_strStringUTF8.size(), NULL, 0 );
-                if ( iDestSize <= 0 )
-                {
-                    wstrValue.resize(0);
-                    return true;
-                }//if
-                wchar_t* wcharBuf = (wchar_t*) _malloca( iDestSize * sizeof( wchar_t ) );
-                ASSERT( wcharBuf != NULL );
-                int iNewSize = ::MultiByteToWideChar( CP_UTF8, 0, pLuaValue->m_strStringUTF8.c_str(), pLuaValue->m_strStringUTF8.size(), wcharBuf, iDestSize );
-                ASSERT( iNewSize == iDestSize );
-                wstrValue.assign( wcharBuf, iNewSize );
-                _freea( wcharBuf );
+                wstrValue = x2::platform::Utf8ToWide( pLuaValue->m_strStringUTF8 );
             }
 			return true;
 		}//switch

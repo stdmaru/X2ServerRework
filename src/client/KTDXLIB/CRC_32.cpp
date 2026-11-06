@@ -1,6 +1,9 @@
 #include <stdafx.h>
+#include <fstream>
 #include <iomanip>
+#include <iterator>
 #include <sstream>
+#include <vector>
 
 CRC_32& CRC_32::GetInstance( void )
 {
@@ -27,46 +30,20 @@ std::string CRC_32::GetCRCFromBuffer( const void* pvBuf, UINT uiSize )
 
 std::string CRC_32::GetCRCFromFile( const char* szFilePath )
 {
-    HANDLE  hFile       = INVALID_HANDLE_VALUE;
-    HANDLE  hFileMap    = NULL;
-    void*   pvFile      = NULL;
-
-    if ( INVALID_HANDLE_VALUE == ( hFile = ::CreateFileA( szFilePath,
-                                                         GENERIC_READ,
-                                                         FILE_SHARE_READ, // seojt // 2008-1-5, 18:34
-                                                         NULL,
-                                                         OPEN_EXISTING,
-                                                         FILE_ATTRIBUTE_NORMAL,
-                                                         NULL ) ) )
-    {
+    // Port: read with a file stream (the original mapped the file into memory). An empty file still fails, as
+    // mapping one did.
+    std::ifstream file( szFilePath, std::ios::binary );
+    if ( !file )
         return std::string(); // failed
-    }
-
-    if ( NULL == ( hFileMap = ::CreateFileMapping( hFile, NULL, PAGE_READONLY, 0, 0, NULL ) ) )
-    {
-        ::CloseHandle( hFile );
-
+    const std::vector<char> vecData( ( std::istreambuf_iterator<char>( file ) ), std::istreambuf_iterator<char>() );
+    if ( vecData.empty() )
         return std::string(); // failed
-    }
 
-    if ( NULL == ( pvFile = ::MapViewOfFile( hFileMap, FILE_MAP_READ, 0, 0, 0 ) ) )
-    {
-        ::CloseHandle( hFileMap );
-        ::CloseHandle( hFile );
-
-        return std::string(); // failed
-    }
-
-    DWORD dwFileSize = ::GetFileSize( hFile, NULL );
-    DWORD dwCRCCode = CRC.CalcCRC( pvFile, dwFileSize );
+    DWORD dwCRCCode = CRC.CalcCRC( vecData.data(), static_cast<DWORD>( vecData.size() ) );
     std::ostringstream ostrStream;
     ostrStream << std::resetiosflags( std::ios::uppercase )
                << std::hex << std::setw( 8 ) << std::setfill( '0' )
                << dwCRCCode;
-
-    ::UnmapViewOfFile( pvFile );
-    ::CloseHandle( hFileMap );
-    ::CloseHandle( hFile );
 
     return ostrStream.str(); // succeeded
 }

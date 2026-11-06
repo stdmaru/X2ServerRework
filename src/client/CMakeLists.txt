@@ -1,6 +1,6 @@
 # Client (docs/porting/client.md). Layers mirror the original projects (decision T14) and are added here as they
-# compile: so far LuaCommon, the DXUT replacement, KTDXLIB's input layer, mass file manager and web pages, the movie
-# player, X2ServerProtocol and the executable's skeleton. KTDXLIB and X2Lib come next (roadmap Phase 3) and link
+# compile: so far LuaCommon, the DXUT replacement, KTDXLIB (with its mass file manager and web pages), the movie
+# player, X2ServerProtocol and the executable's skeleton. X2Lib comes next (roadmap Phase 3) and links
 # x2_client_includes.
 
 # Include directories of the original projects (KTDXLIB, X2Lib, X2 and X2ServerProtocol .vcxproj), for every layer:
@@ -44,36 +44,51 @@ add_library(x2::client_dxut ALIAS x2_client_dxut)
 target_include_directories(x2_client_dxut PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/DXUT)
 target_link_libraries(x2_client_dxut PUBLIC x2::platform x2::app x2::render x2::client_d3d9)
 
-# KTDXLIB's input layer (CKTDIManager, CKTDIDevice) on the DXUT replacement's SDL3 state instead of DirectInput
-# (docs/porting/client-input.md). Its files join the KTDXLIB target once the engine builds; CKTDXStage's base classes
-# come from there too (the tests supply them).
-add_library(x2_client_ktdi STATIC KTDXLIB/KTDIDevice.cpp KTDXLIB/KTDIManager.cpp)
-add_library(x2::client_ktdi ALIAS x2_client_ktdi)
-target_link_libraries(x2_client_ktdi PUBLIC x2_client_includes x2::client_dxut)
-
 # KTDXLIB's mass file manager (KGCMassFileManager, KGCMassFileBufferManager): the client's files by name from the .kom
 # archives on x2::kom and, with X2_DEV_TOOLS, loose files (decision T35, docs/porting/client-ktdxlib.md#mass-files).
-# Its files join the KTDXLIB target once the engine builds.
+# KTDXLIB links it.
 add_library(x2_client_massfile STATIC KTDXLIB/KGCMassFileBufferManager.cpp KTDXLIB/KGCMassFileManager.cpp)
 add_library(x2::client_massfile ALIAS x2_client_massfile)
 target_include_directories(x2_client_massfile PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/KTDXLIB)
 target_link_libraries(x2_client_massfile PUBLIC x2::platform PRIVATE x2::kom x2::kncsdk)
 
 # KTDXLIB's web pages in the system browser (KBrowserWrapper on SDL_OpenURL, in place of the embedded Internet Explorer;
-# docs/porting/client-ktdxlib.md#web-pages). Its files join the KTDXLIB target once the engine builds.
+# docs/porting/client-ktdxlib.md#web-pages). KTDXLIB links it.
 add_library(x2_client_browser STATIC KTDXLIB/KBrowserWrapper.cpp)
 add_library(x2::client_browser ALIAS x2_client_browser)
 target_include_directories(x2_client_browser PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/KTDXLIB)
 target_link_libraries(x2_client_browser PUBLIC x2::platform PRIVATE SDL3::SDL3)
 
-# KTDXLIB, the engine (docs/porting/client-ktdxlib.md): its files join as they compile on the D3D9 device (T38). Every
-# file includes stdafx.h -> KTDX.h, which includes all of the engine's headers.
+# KTDXLIB, the engine (docs/porting/client-ktdxlib.md), on the D3D9 device (T38), with its input layer on the DXUT
+# replacement's SDL3 state (docs/porting/client-input.md). Every file includes stdafx.h -> KTDX.h, which includes all of
+# the engine's headers. The mass file manager and the web pages are libraries of their own (tested alone).
 add_library(x2_client_ktdxlib STATIC
-    KTDXLIB/stdafx.cpp KTDXLIB/KSuperAssert.cpp KTDXLIB/KTDXLog.cpp
-    KTDXLIB/KTDGDynamicVBManager.cpp KTDXLIB/KTDGStateManager.cpp
-    KTDXLIB/KTDSManager.cpp KTDXLIB/KTDSMP3Play.cpp
-    KTDXLIB/KTDXDevice.cpp KTDXLIB/KTDXDeviceBaseTexture.cpp KTDXLIB/KTDXDeviceRenderTargetTexture.cpp
-    KTDXLIB/KTDXDeviceSound.cpp KTDXLIB/KTDXDeviceTexture.cpp)
+    KTDXLIB/CRC_32.cpp KTDXLIB/KExceptionSafeUtil.cpp KTDXLIB/KFileSerializer.cpp KTDXLIB/KHangulPPWSelector.cpp
+    KTDXLIB/KHelpSystem.cpp KTDXLIB/KLuaManagerProxy.cpp KTDXLIB/KProtectRefTable.cpp KTDXLIB/KSmartNull.cpp
+    KTDXLIB/KSuperAssert.cpp KTDXLIB/KSystemTimer.cpp KTDXLIB/KTDGCamera.cpp KTDXLIB/KTDGDynamicTexture.cpp
+    KTDXLIB/KTDGDynamicVBManager.cpp KTDXLIB/KTDGEffectStateManager.cpp KTDXLIB/KTDGFontManager.cpp
+    KTDXLIB/KTDGFontUtil.cpp KTDXLIB/KTDGFreeTypeFont.cpp KTDXLIB/KTDGFrustum.cpp KTDXLIB/KTDGGlow.cpp
+    KTDXLIB/KTDGGrayScale.cpp KTDXLIB/KTDGLensFlare.cpp KTDXLIB/KTDGLineMap.cpp KTDXLIB/KTDGManager.cpp
+    KTDXLIB/KTDGMatrix.cpp KTDXLIB/KTDGMotionBlur.cpp KTDXLIB/KTDGObject.cpp KTDXLIB/KTDGParticleSystem.cpp
+    KTDXLIB/KTDGPicChar.cpp KTDXLIB/KTDGPlanShadow.cpp KTDXLIB/KTDGPostEffect.cpp KTDXLIB/KTDGSkyDome.cpp
+    KTDXLIB/KTDGSlashTrace.cpp KTDXLIB/KTDGStateManager.cpp KTDXLIB/KTDGTargetArrow.cpp KTDXLIB/KTDGUIButton.cpp
+    KTDXLIB/KTDGUICheckBox.cpp KTDXLIB/KTDGUIComboBox.cpp KTDXLIB/KTDGUIControl.cpp KTDXLIB/KTDGUIControlList.cpp
+    KTDXLIB/KTDGUIDialog.cpp KTDXLIB/KTDGUIDialogHandle.cpp KTDXLIB/KTDGUIDialogManager.cpp
+    KTDXLIB/KTDGUIEditBox.cpp KTDXLIB/KTDGUIIMEEditBox.cpp KTDXLIB/KTDGUIItem.cpp KTDXLIB/KTDGUIListBox.cpp
+    KTDXLIB/KTDGUIListControl.cpp KTDXLIB/KTDGUINavigation.cpp KTDXLIB/KTDGUIRadioButton.cpp
+    KTDXLIB/KTDGUIScrollBar.cpp KTDXLIB/KTDGUISlider.cpp KTDXLIB/KTDGUISlot.cpp KTDXLIB/KTDGUIStatic.cpp
+    KTDXLIB/KTDGUIUniBuffer.cpp KTDXLIB/KTDGXMeshPlayer.cpp KTDXLIB/KTDGXRenderer.cpp
+    KTDXLIB/KTDGXSkinAfterImage.cpp KTDXLIB/KTDGXSkinAnim.cpp KTDXLIB/KTDIDevice.cpp KTDXLIB/KTDIManager.cpp
+    KTDXLIB/KTDNDP.cpp KTDXLIB/KTDNManager.cpp KTDXLIB/KTDNPacket.cpp KTDXLIB/KTDNTransfer.cpp KTDXLIB/KTDNUDP.cpp
+    KTDXLIB/KTDNUDPStatisticData.cpp KTDXLIB/KTDSMP3Play.cpp KTDXLIB/KTDSManager.cpp
+    KTDXLIB/KTDXAnimationController.cpp KTDXLIB/KTDXApp.cpp KTDXLIB/KTDXCollision.cpp KTDXLIB/KTDXDevice.cpp
+    KTDXLIB/KTDXDeviceBaseTexture.cpp KTDXLIB/KTDXDeviceHolder.cpp KTDXLIB/KTDXDeviceManager.cpp
+    KTDXLIB/KTDXDeviceRenderTargetTexture.cpp KTDXLIB/KTDXDeviceSound.cpp KTDXLIB/KTDXDeviceTET_Preprocessing.cpp
+    KTDXLIB/KTDXDeviceTexture.cpp KTDXLIB/KTDXDeviceXET.cpp KTDXLIB/KTDXDeviceXET_Preprocessing.cpp
+    KTDXLIB/KTDXDeviceXMesh.cpp KTDXLIB/KTDXDeviceXSkinMesh.cpp KTDXLIB/KTDXEnumToLua.cpp KTDXLIB/KTDXLog.cpp
+    KTDXLIB/KTDXRandomNumbers.cpp KTDXLIB/KTDXRecyclingArray.cpp KTDXLIB/KTDXSimpleHandleInterface.cpp
+    KTDXLIB/KTDXStage.cpp KTDXLIB/KTDXStringLoader.cpp KTDXLIB/KTDXStringTable.cpp KTDXLIB/KTDXThread.cpp
+    KTDXLIB/KTDXTimer.cpp KTDXLIB/KVersionControl.cpp KTDXLIB/MinMax.cpp KTDXLIB/debug.cpp KTDXLIB/stdafx.cpp)
 add_library(x2::client_ktdxlib ALIAS x2_client_ktdxlib)
 target_link_libraries(x2_client_ktdxlib PUBLIC
     x2_client_includes x2::platform x2::kncsdk x2::client_d3d9 x2::client_dxut x2::client_luacommon

@@ -30,36 +30,6 @@ CKTDXApp*	g_pKTDXApp = NULL;
 
 KLuabinder* CKTDXApp::ms_pLuaBinder = NULL;
 
-HMODULE hUnicowsModule;
-HMODULE hMsvcp71Module;
-HMODULE hMsvcr71Module;
-HMODULE hUsp10Module;
-
-HMODULE LoadSystemDLL(void)
-{
-	hUnicowsModule = LoadLibraryA("unicows.dll");
-	hUsp10Module = LoadLibraryA("usp10.dll");
-	//hMsvcp71Module = LoadLibraryA("msvcp71.dll");
-	//hMsvcr71Module = LoadLibraryA("msvcr71.dll");
-	return hUnicowsModule;
-}
-
-void FreeSystemDLL(void)
-{
-	FreeLibrary( hUnicowsModule );
-	FreeLibrary( hUsp10Module );
-	//FreeLibrary( hMsvcp71Module );
-	//FreeLibrary( hMsvcr71Module );
-}
-
-#ifdef _cplusplus
-extern "C" {
-#endif
-	extern FARPROC _PfnLoadSystemDLL = (FARPROC) &LoadSystemDLL;
-#ifdef _cplusplus
-}
-#endif
-
 CRITICAL_SECTION g_csGameMessage;
 
 bool KTDXSendGameMessage( UINT uMsg, WPARAM wParam, LPARAM lParam, bool bDirectProcess )
@@ -69,14 +39,14 @@ bool KTDXSendGameMessage( UINT uMsg, WPARAM wParam, LPARAM lParam, bool bDirectP
 
 
 
+// Port: the original loaded unicows.dll and usp10.dll here (Win9x Unicode layer and Uniscribe), which the port
+// does not use.
 void CKTDXApp::StartUp()
 {
-	_PfnLoadSystemDLL();
 }
 
-void CKTDXApp::Exit( EXIT_CODE code )
+void CKTDXApp::Exit( EXIT_CODE /*code*/ )
 {
-	FreeSystemDLL();
 }
 
 bool IncludeLua_( const char* pFileName )
@@ -107,49 +77,10 @@ CKTDXApp::CKTDXApp( HWND hWnd, HINSTANCE hInstance, IDirect3DDevice9* pd3dDevice
     SiCKTDXStringTable()->InitializeStringTable( wstrGeneralStringFileName , wstrScriptStringFileName);
 	//std::wstring wstrScriptStringFileName( L"Script.ess" );
 	//SiCKTDXStringTable()->InitializeStringTable( wstrScriptStringFileName, true );
-#if defined(DLL_BUILD)
-	HRESULT hr;
-#else
-	HRESULT hr = CoInitializeEx( NULL, COINIT_APARTMENTTHREADED );
-	if ( hr == S_FALSE )
-	{
-		ErrorLog( KEM_ERROR349 );
-	}
-	else if ( hr == RPC_E_CHANGED_MODE )
-	{
-		ErrorLog( KEM_ERROR350 );
-	}
-#endif // DLL_BUILD
+	// Port: COM is not initialized (the original did it for the shell call below and DirectShow), and the start-up
+	// "minimize every other window" of the release build is gone (Windows shell only).
 
 	srand((unsigned int)time(NULL));
-
-#ifndef INACTIVATION_MINIMIZE_ALL_WINDOW_AT_START		/// X2.exe ????? ??? ??? ???? ??? ??? ????
-#if !X2_DEV_TOOLS
-
-	{
-		// ???? ?????? ???? ?? ?? ?????? ????? ????, ?????? ??? ???? ????? ????.
-		// ??? ???? ??? ???????? ?????? ???? ?????? Mimize.txt?? ?????? ?????? ???? ????? ????? ???????.
-		const string strFileName = "Inactivation_Mimize.txt";
-		FILE* file = NULL;
-		file = fopen( strFileName.c_str(), "r" );
-		if( NULL == file )
-		{
-			IShellDispatch *pDisp;
-			hr = CoCreateInstance(CLSID_Shell,NULL,CLSCTX_INPROC_SERVER ,IID_IShellDispatch,(void**)&pDisp);
-			if( SUCCEEDED(hr) )
-			{
-				pDisp->MinimizeAll();
-				pDisp->Release();
-			}
-		}
-		else
-		{
-			fclose(file);
-		}
-	}
-
-#endif // _SERVICE_
-#endif // INACTIVATION_MINIMIZE_ALL_WINDOW_AT_START
 
 	InitializeCriticalSection( &g_csGameMessage );
 
@@ -544,7 +475,6 @@ void CKTDXApp::FrameProcess()
 	g_NowTime = m_dTime;
 
 
-	THEMIDA_ENCODE_START
 
 		m_bNowVeryfy = false;
 	m_fVeryfyTime -= m_fConstElapsedTime;
@@ -555,7 +485,6 @@ void CKTDXApp::FrameProcess()
 		m_bNowVeryfy = true;
 	}
 
-	THEMIDA_ENCODE_END
 
 
 		while( true )
@@ -1573,7 +1502,7 @@ void CKTDXApp::RegisterLuabind( KLuabinder* pKLuabinder )
 	lua_tinker::class_def<CKTDGUISlider>( L, "SetButtonTex",						&CKTDGUISlider::SetButtonTex_LUA );
 	lua_tinker::class_def<CKTDGUISlider>( L, "SetBGTex",							&CKTDGUISlider::SetBGTex_LUA );
 	lua_tinker::class_def<CKTDGUISlider>( L, "SetPos",								&CKTDGUISlider::SetPos );
-	lua_tinker::class_def<CKTDGUISlider>( L, "SetSize",								&CKTDGUISlider::SetSize );
+	lua_tinker::class_def<CKTDGUISlider>( L, "SetSize",								static_cast<void (CKTDGUISlider::*)( int, int )>( &CKTDGUISlider::SetSize ) );
 	lua_tinker::class_def<CKTDGUISlider>( L, "SetButtonSize",						&CKTDGUISlider::SetButtonSize );
 	lua_tinker::class_def<CKTDGUISlider>( L, "SetRange",							&CKTDGUISlider::SetRange );
 	lua_tinker::class_def<CKTDGUISlider>( L, "SetValue",							&CKTDGUISlider::SetValue );
@@ -2031,46 +1960,6 @@ void CKTDXApp::StopSound_LUA( char* pFileName )
 }
 
 
-bool CKTDXApp::FindProcess( wstring wstrExeFile )
-{
-	//NOTE : ???????? ???��??? ????? ?��??? ???? ??????? ????? ???��????? ????? ??????.
-
-	MakeUpperCase( wstrExeFile );
-
-	HANDLE hSnapShot;
-	PROCESSENTRY32W pEntry;
-
-	hSnapShot = CreateToolhelp32Snapshot(TH32CS_SNAPALL,NULL);
-
-	pEntry.dwSize =sizeof(pEntry);
-
-	// ???????? ???��??????? ????? ?????? ?????��?.
-	Process32First( hSnapShot, &pEntry );
-
-	while(true)
-	{
-		//?????? ???��????? ?????? ?????��?.
-		BOOL hRes = Process32Next( hSnapShot, &pEntry );
-
-		if( hRes == FALSE )
-			break;
-
-		wstring wstrTemp = pEntry.szExeFile;
-		MakeUpperCase( wstrTemp );
-
-		if( wstrTemp.find( wstrExeFile ) != -1 )
-			return true;
-	}
-
-	return false;
-}
-
-
-
-
-
-
-
 void CKTDXApp::GetVideoRam( DWORD& dwTotal, DWORD& dwFree )
 {
 #ifdef CONVERSION_VS
@@ -2116,16 +2005,13 @@ void CKTDXApp::SetFindHacking( bool bCheck, const wstring& findHackingDetailMsg 
 {
 
 
-	THEMIDA_VM_START
 
 	m_bFindHacking = bCheck;
 
 
-	THEMIDA_CHECK_PROTECTION( hackingCheckVariable, 0x226560ba )
 
 	m_FindHackingDetailMsg = findHackingDetailMsg;
 
 
 
-	THEMIDA_VM_END
 }
