@@ -137,6 +137,67 @@ Decided with the user; overview in [Client › Bandi, embedded browser and CxIma
 `D3D9/` holds KTDXLIB's own D3D9 device on `x2::render` (T38) and the D3D9 vocabulary the engine keeps (`D3D9Types.h`),
 building as `x2::client_d3d9`; the engine's files move onto it next. See [Client: D3D9 device](client-d3d9.md).
 
+## Engine (2026-11-06, `client/ktdxlib-engine`)
+
+`KTDX.h` (the precompiled header, through `stdafx.h`) and every header it includes compile on the
+[D3D9 device](client-d3d9.md) and `x2::platform`: no DirectX, DirectSound, DirectShow or MFC headers; D3DX's types are
+declared in `D3D9/D3DXTypes.h` (interfaces as plain classes with no COM counts, T38) until the `.x` and effect steps;
+Boost is replaced (`x2::intrusive_ptr`, `KCircularBuffer.h`, `KLexicalCast.h`); the Code Virtualizer markers are empty;
+FreeType comes from upstream. `KTDGDeviceFont.cpp` (`ID3DXFont`) is gone; the fonts are `CKTDGFreeTypeFont`'s.
+
+`x2::client_ktdxlib` builds the first engine files: `KTDGStateManager`, `KTDGDynamicVBManager`, `KTDXDevice`,
+`KTDXDeviceBaseTexture`, `KTDXDeviceTexture`, `KTDXDeviceRenderTargetTexture`, `KTDXDeviceSound`, `KTDSManager`,
+`KTDSMP3Play` and `KSuperAssert`. `KTDXApp.cpp` comes with `KTDGManager`; until then only `KTDXApp.h` is used, and the tests
+supply `CKTDXApp`'s constructor ([stub](../../src/client/tests/ktdxapp_stub.cpp)).
+
+- **State manager:** caches render, texture stage and sampler states with its push/pop stack, on the device (the Xbox and
+  Direct3D 8 branches are gone). Its render-state cache starts from the device's defaults; the texture stage and sampler
+  defaults are D3D9's. Render targets are textures: `SetRenderTarget(texture)` binds one and sets the viewport to its
+  size, `NULL` the back buffer.
+- **Dynamic vertex data:** every mode (managed buffer, ring of dynamic buffers, `DrawPrimitiveUP`) is the device's
+  `DrawPrimitiveUP`, itself a per-frame ring buffer. Draws longer than a type's size are cut in parts as the original did
+  (strips by an even count, fans cut to one part).
+- **Textures:** files load through D3DX's functions on the device (`D3D9/D3DXTexture.cpp`); `D3DXCheckTextureRequirements`
+  follows the device's formats, and the `.dds`/`.tga` loaders are the next step, so loading a texture fails cleanly for
+  now.
+- **Assertions and logs** (`KSuperAssert`): the trace goes to stderr (`OutputDebugStringA` in the original), Retry in the
+  assertion box traps into the debugger, Abort ends with `std::_Exit(3)`.
+
+### Render targets
+
+A render target texture is a device texture with `D3DUSAGE_RENDERTARGET` (A8R8G8B8 when no format is given), created at
+once since the device is never lost or reset (T38). Its depth buffer is the device's, sized to the target in use (the
+original created a depth surface per target). `BeginRender` binds it and `EndRender` binds back the target that was in use
+(the original went back to the back buffer it saved at creation). The `StretchRect` copies (`CopySurface`,
+`CopySurfaceToBackBuffer`, `CopyBackBufferToSurface`) fail quietly: `x2::render` has no blit yet and the swapchain image
+cannot be read, as on the devices where the original set `m_bCannotStretchRect`.
+
+### Sound
+
+A silent backend (`KTDSSoundSystem.h`) in place of FMOD Ex until the [audio step](../project/roadmap.md#phase-4--client-graphics):
+`CKTDSManager` is always initialized, with no system object and no 3D sound; its music player (`CKTDSMP3Play`) always
+exists and keeps the file it was asked to play, loop, volume and pause, so the options and the states that read them
+behave; sound devices (`CKTDXDeviceSound`) load without reading their file and never play (`IsPlaying` is false). Only
+these files and `KTDSSoundSystem.h` change when the real backend comes.
+
+### Behavior changes
+
+| Where | Original | Port | Why |
+|---|---|---|---|
+| `CKTDSManager` | Not initialized when FMOD failed; no music player then | Always initialized, the music player always there | Silent backend |
+| `CKTDSMP3Play::Play` | Recorded the file only when its path resolved | Records it whenever it is given | Nothing to resolve without playback |
+| `CKTDXDeviceRenderTargetTexture::EndRender` | Back to the back buffer | Back to the target in use before `BeginRender` | Nested targets keep working |
+| `CKTDXDeviceRenderTargetTexture::RenderQuad` | Drew its XYZ_TEX1 vertices as `DVB_TYPE_XYZRHW_DIFFUSE_TEX1` (wrong layout) | `DVB_TYPE_XYZ_TEX1` | Evident bug |
+| Render target copies | `StretchRect` | Fail quietly | No blit in `x2::render` yet |
+
+### Tests (`x2_client_tests -tc="ktdxlib*"`)
+
+On the null backend ([source](../../src/client/tests/test_ktdxlib.cpp)): the state manager's cache and stack and the
+viewport of a bound target; dynamic vertex data drawn in parts (lists, strips sharing their last vertices, multipass,
+split data); render target textures created, bound and released while bound; the silent sound backend.
+
 ## Status
 
-Only the input files, the mass file manager, `KBrowserWrapper` and the D3D9 device compile ([roadmap](../project/roadmap.md#phase-3--client-platform)).
+The input files, the mass file manager, `KBrowserWrapper`, the D3D9 device and the engine files above compile
+([roadmap](../project/roadmap.md#phase-4--client-graphics)). The rest of `KTDXLIB` joins `x2::client_ktdxlib` as it moves
+onto the device.

@@ -4,6 +4,7 @@
 #include "x2/platform/format.h"
 #include "x2/platform/process.h"
 
+#include <bit>
 #include <vector>
 
 #define XOR_KEY0 0xc6f8aa02
@@ -675,7 +676,7 @@ static inline USHORT floatToHalfI(UINT i)
 }
 static inline USHORT floatToHalf(float i)
 {
-	return floatToHalfI(*reinterpret_cast<UINT*>(&i));
+	return floatToHalfI(std::bit_cast<UINT>(i));
 }
 
 static inline UINT halfToFloatI(USHORT y)
@@ -720,7 +721,7 @@ static inline UINT halfToFloatI(USHORT y)
 static inline float halfToFloat(USHORT y)
 {
 	UINT r = halfToFloatI(y);
-	return *reinterpret_cast<float*>(&r);
+	return std::bit_cast<float>(r);
 }
 
 

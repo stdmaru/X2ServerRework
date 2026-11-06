@@ -1,9 +1,11 @@
 #pragma once
 
+#include <atomic>
 
 
 
-// thread safe 한 버전에서는 게임 내에 CKTDXLog 개체가 1개만 존재해야 한다.
+
+// The game has exactly one CKTDXLog (g_CKTDXLog): its threads share it.
 #define KTDXLOG_MAX_THREAD_NUM 10
 
 
@@ -13,10 +15,10 @@ class CKTDXLog
 		CKTDXLog(void);
 		~CKTDXLog(void);
 
-        // 특정 thread 에서 로그를 남기려면 먼저 이 함수를 호출해야 한다, robobeg, 2014-01-14
+        // A thread calls this before it logs (robobeg, 2014-01-14).
         bool    RegisterCurrentThread();
 
-        // 이 함수들은 thread safe 하게 구현되었다, robobeg, 2014-01-14
+        // Thread safe (robobeg, 2014-01-14).
 		void PushStateLog( const WCHAR* statLog );
 		void PushErrorLog( int errNum, const WCHAR* errorLog );
 
@@ -29,7 +31,7 @@ class CKTDXLog
         const char *GetLastErrorLog();
 
 
-        // 이 두 함수는 thread safe 하지 않다. 프로그램 종료시 모든 thread 가 작동을 멈추었다고 가정한다.
+        // Not thread safe: called at exit, when every thread has stopped.
 		void StateLogToFile( const char* fileName );
 		void ErrorLogToFile( const char* fileName, const char* systemInfo = NULL );
 
@@ -45,7 +47,7 @@ class CKTDXLog
 
         struct  KTLSData
         {
-            volatile DWORD      m_dwThreadId;
+            std::atomic<DWORD>  m_dwThreadId;
 		    std::deque<std::pair<DWORD,string> >	m_StateLog;
 		    std::deque<std::pair<DWORD,string> >	m_ErrorLog;
 		    string				m_LastErrorLog;
@@ -56,7 +58,7 @@ class CKTDXLog
         KTLSData            m_aTLSData[KTDXLOG_MAX_THREAD_NUM];
 		static thread_local KTLSData*
                             ms_pTLSData;
-        volatile DWORD      m_dwTimestamp;
+        std::atomic<DWORD>  m_dwTimestamp;
 
 };
 

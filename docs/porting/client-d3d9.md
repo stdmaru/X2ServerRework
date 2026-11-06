@@ -21,6 +21,7 @@ everything runs through this layer ([Phase 5](../project/roadmap.md#phase-5--dee
 | `D3D9Types.h` | The vocabulary: `D3DRS_*`, `D3DTSS_*`, `D3DSAMP_*`, `D3DTOP_*`, `D3DTA_*`, `D3DBLEND*`, `D3DCMP_*`, `D3DCULL_*`, `D3DSTENCILOP_*`, `D3DFVF_*`, `D3DPT_*`, `D3DFMT_*`, `D3DPOOL_*`, `D3DUSAGE_*`, `D3DLOCK_*`, `D3DCLEAR_*`, `D3DTS_*`, `D3DLOCKED_RECT`, `D3DRECT`, `D3DSURFACE_DESC`, with d3d9types.h's names and values (enumerations as C enums, flags as macros). The math types come from [`x2/platform/d3dx_math.h`](platform.md) |
 | `Device.h` / `Device.cpp` | `x2::d3d9::Device`: states, frame, clears, draws, pipeline and sampler caches, uploads |
 | `Resources.cpp` | `Texture` (levels, `LockRect`/`UnlockRect`, format conversion) and `VertexBuffer` (`Lock`/`Unlock`) |
+| `D3DXTypes.h`, `D3DXTexture.cpp` | D3DX's types for the engine's headers (interfaces as plain classes, T38) and its texture functions on the device: `D3DXCheckTextureRequirements` follows `Device::SupportsTextureFormat`; loading from memory fails until the `.dds`/`.tga` loaders |
 | `Fvf.h` | FVF → element offsets and the vertex shader variant |
 | `GeneratedShader.h`, `shaders/` | The fixed-function HLSL, its manifest and the generated blobs (`generated/FixedFunctionShaders.inc`, [Shaders](../tools/shaders.md), T39) |
 
@@ -83,6 +84,8 @@ everything runs through this layer ([Phase 5](../project/roadmap.md#phase-5--dee
 Levels 0 means the whole chain; `D3DUSAGE_AUTOGENMIPMAP` shows one level and generates the rest after level 0 is uploaded.
 Lockable textures keep a CPU copy of every level in their D3D9 format (`LockRect` with a rectangle points into it,
 by 4×4 blocks for DXT); render targets have none and cannot be locked.
+`SupportsTextureFormat(format, usage)` says whether `CreateTexture` takes a format: render targets are A8R8G8B8 or
+X8R8G8B8, and DXT cannot generate mips.
 
 ## DXUT and the skeleton
 
@@ -110,6 +113,7 @@ lockable), state blocks. Each comes with the engine file that needs it.
   lists), the pipeline cache (uniform and dynamic state do not create pipelines; blending and culling do), texture formats
   and locked rectangles (A8R8G8B8 with mips, X8R8G8B8, A4R4G4B4, A8L8, DXT1), vertex buffer lock flags and the bytes they
   leave, partial clears drawn with the states restored, resources destroyed before and after the device.
+- `D3DXCheckTextureRequirements`: defaults, mip chains, formats a render target cannot take; loading from memory fails cleanly.
 - **On a GPU** (skipped without video or GPU, as in the container and CI): renders into a 16×16 target and reads it back —
   texels mapped 1:1 to pixels with the half-pixel rule, the vertex color with no texture, 50% blending, the alpha test, a
   fan. Passed on the user's Linux desktop (Vulkan, 2026-11-06).

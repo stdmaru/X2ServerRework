@@ -33,6 +33,7 @@
 //------------------------------------------------------------------------------
 //
 //#include "KJohnGen.h"
+#include <new>
 #include <vector>
 #include "KHandleArray.h"
 #include <stdlib.h>
@@ -403,6 +404,7 @@ public:
     static void* operator new[](size_t /*size*/)
     {
         ASSERT( false );
+        throw std::bad_alloc();
     }//operator new[]()
 
 //{{ seojt // 2009-8-20, 12:03

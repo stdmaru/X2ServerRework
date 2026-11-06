@@ -226,15 +226,18 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
         half-pixel offset, fans as indexed lists, uploads on transfer buffers with D3D9's lock semantics, partial clears,
         render targets); DXUT passes it to the callbacks and presents, the skeleton draws a textured quad and a fan;
         headless tests and a GPU pixel test (2026-11-06). See [D3D9 device](../porting/client-d3d9.md).
-  - [ ] The first `KTDXLIB` files compiling on it (state manager, dynamic VB manager, textures, render targets,
-        `CKTDXApp`'s device calls), with the silent sound backend below; what the device still lacks comes with the file
-        that needs it ([list](../porting/client-d3d9.md#not-emulated-yet-2026-11-06)).
+  - [x] `client/ktdxlib-engine`: `KTDX.h` and all its headers on the device and `x2::platform`; `x2::client_ktdxlib` builds
+        the state manager, the dynamic VB manager, textures, render targets and the silent sound backend, with
+        null-backend tests (2026-11-06). See [KTDXLIB › Engine](../porting/client-ktdxlib.md#engine-2026-11-06-clientktdxlib-engine).
+  - [ ] `KTDXApp.cpp` and `KTDGManager` on the device: X2Lib's 32 loading-screen `BeginScene`/`EndScene`/`Present`
+        triplets become one engine call (T38); what the device still lacks comes with the file that needs it
+        ([list](../porting/client-d3d9.md#not-emulated-yet-2026-11-06)).
 - [ ] Effects: the 4 `.fx` (31 techniques) rewritten by hand as HLSL in `src/`, compiled by shadercross, behind `KTDXLIB`'s effect
       API (T37).
 - [ ] Reimplement the rest of D3DX on the original assets (T1, T37): `.x` loader (mesh + skin + animation), `.dds` (BC1–3 native,
       legacy formats to RGBA8), fonts, sprites.
 - [ ] ImGui renderer on `x2::render`, replacing the tools' `sdlgpu3` escape hatch (T36).
-- [ ] Silent sound backend, with the first step that compiles `KTDXLIB`: `CKTDXDeviceSound`, `KTDSManager` and
+- [x] Silent sound backend (2026-11-06, `client/ktdxlib-engine`, [Sound](../porting/client-ktdxlib.md#sound)): `CKTDXDeviceSound`, `KTDSManager` and
       `CKTDXDeviceManager::OpenSound` keep their interface and play nothing, so the 149 files that use sound compile
       unchanged. The audio APIs (FMOD, DirectSound, MP3) are confined to 9 `KTDXLIB` files (`KTDXDeviceSound.*`,
       `KTDSManager.*`, `KTDSMP3Play.*`, `Always.h`, `KTDXErrorDefine.h`) and 3 in `X2Lib` (2026-11-05).
