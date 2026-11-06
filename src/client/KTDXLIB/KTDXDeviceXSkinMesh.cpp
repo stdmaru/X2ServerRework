@@ -13,7 +13,6 @@
 #define KSM_ATTRIBUTE_SORT
 
 
-#pragma warning (disable: 4200)
 
 
 // m_vCenter, m_fMaxBoundingRadius는 KSMFrame에 두는 것이 더 일관될 것이다.
@@ -86,8 +85,8 @@ struct  KSMBone
 
 
 CKTDXDeviceXSkinMesh::XSkinMeshProxy::XSkinMeshProxy( const std::wstring& wstrDeviceID, CKTDXDevice* pThis, const std::string& strMoveBoneMB )
-: m_DeviceID( wstrDeviceID )
-, m_pThis( pThis )
+: m_pThis( pThis )
+, m_DeviceID( wstrDeviceID )
 , m_pFrameRoot( NULL )
 , m_dwFrameNum( 0L )
 //, m_apFrameList()
@@ -152,7 +151,7 @@ CKTDXDeviceXSkinMesh::XSkinMeshProxy::~XSkinMeshProxy()
 
 
 }//CKTDXDeviceXSkinMesh::XSkinMeshProxy::~XSkinMeshProxy()
-CKTDXDeviceXSkinMesh::CKTDXDeviceXSkinMesh( LPDIRECT3DDEVICE9 pd3dDevice,
+CKTDXDeviceXSkinMesh::CKTDXDeviceXSkinMesh( LPDIRECT3DDEVICE9 /*pd3dDevice*/,
 											std::wstring fileName, std::wstring moveBoneName )
 											:CKTDXDevice( fileName, DT_XSKIN_MESH )
 											, m_bUseRenderParam( false )
@@ -529,8 +528,8 @@ void    CKTDXDeviceXSkinMesh::XSkinMeshProxy::EstimateDrawFrameWorkingPaletteSiz
 void    CKTDXDeviceXSkinMesh::XSkinMeshProxy::SetupDrawFrameList( MultiAnimFrame* pFrame )
 {
     int iNameLen = 0;
-    if ( pFrame->Name != NULL )
-        iNameLen = strlen( pFrame->Name );
+	if ( pFrame->Name != NULL )
+		iNameLen = strlen( pFrame->Name );
 
 
 	if( pFrame->pMeshContainer )
@@ -583,8 +582,8 @@ void CKTDXDeviceXSkinMesh::XSkinMeshProxy::ComputeCollisionData( bool bInValidRa
 
 void CKTDXDeviceXSkinMesh::XSkinMeshProxy::AddCollisionData( MultiAnimFrame* pFrame, bool bInValidRadius_ )
 {
-    if ( pFrame->Name == NULL || pFrame->Name[0] == NULL )
-        return ;
+	if ( pFrame->Name == NULL || pFrame->Name[0] == 0 )
+		return ;
 
 	//COLLISION_LINE_START0_NAME
 	//COLLISION_LINE_END0
@@ -679,7 +678,7 @@ void CKTDXDeviceXSkinMesh::XSkinMeshProxy::AddCollisionData( MultiAnimFrame* pFr
 		}
         ASSERT( i-16 < ARRAY_SIZE( charBuffer ) );
         charBuffer[i-16] = 0;
-		int collisionNum = _wtoi( charBuffer );
+		_wtoi( charBuffer );
 
         if ( bInValidRadius_ )
         {
@@ -726,7 +725,7 @@ void CKTDXDeviceXSkinMesh::XSkinMeshProxy::AddCollisionData( MultiAnimFrame* pFr
         }
         ASSERT( i-16 < ARRAY_SIZE( charBuffer ) );
         charBuffer[i-16] = 0;
-        int collisionNum = _wtoi( charBuffer );
+        _wtoi( charBuffer );
 
         if ( bInValidRadius_ )
         {
@@ -840,7 +839,7 @@ void CKTDXDeviceXSkinMesh::XSkinMeshProxy::AddCollisionData( MultiAnimFrame* pFr
 		}
         ASSERT( i-13 < ARRAY_SIZE( charBuffer ) );
     	charBuffer[i-13] = 0;
-		int collisionNum = _wtoi( charBuffer );
+		_wtoi( charBuffer );
 
         if ( bInValidRadius_ )
         {
@@ -1044,7 +1043,7 @@ HRESULT CKTDXDeviceXSkinMesh::XSkinMeshProxy::LoadKSkinnedMesh( const void* pInD
     {
         const KSMFrame& ksmFrame = pKSMFrame[ dwFrame ];
         const char* pszName = NULL;
-        if ( ksmFrame.m_dwOffset_Name != NULL )
+        if ( ksmFrame.m_dwOffset_Name != 0 )
         {
             pszName = kMemory.RetrieveDupString( ksmFrame.m_dwOffset_Name );
             if(pszName == NULL)
@@ -1128,7 +1127,7 @@ HRESULT CKTDXDeviceXSkinMesh::XSkinMeshProxy::LoadKSkinnedMesh( const void* pInD
     for( DWORD dwFrame = 0; dwFrame < m_dwFrameNum; dwFrame++ )
     {
         const KSMFrame& ksmFrame = pKSMFrame[ dwFrame ];
-        if ( ksmFrame.m_dwOffset_MeshContainer != NULL )
+        if ( ksmFrame.m_dwOffset_MeshContainer != 0 )
         {
             MultiAnimMC* pMC = new MultiAnimMC;
             if(pMC == NULL)
@@ -1151,7 +1150,7 @@ HRESULT CKTDXDeviceXSkinMesh::XSkinMeshProxy::LoadKSkinnedMesh( const void* pInD
     if(m_pAC != NULL)
         ErrorLogMsg(KEM_ERROR243, m_DeviceID.c_str());
     ASSERT( m_pAC == NULL );
-    if ( ksmHeader.m_dwOffset_AnimationController != NULL )
+    if ( ksmHeader.m_dwOffset_AnimationController != 0 )
     {
         DWORD   dwSize = kMemory.GetSize() - ksmHeader.m_dwOffset_AnimationController;
         const void* pACData = kMemory.AccessData( ksmHeader.m_dwOffset_AnimationController, dwSize );
@@ -1356,7 +1355,7 @@ e_Exit:
 #ifndef _KSMTOOL
 
 //#ifdef UNIT_BACKGROUND_LOADING_TEST // 2008-12-12
-HRESULT CKTDXDeviceXSkinMesh::XSkinMeshProxy::Load_LuaData(DWORD dwParam_)
+HRESULT CKTDXDeviceXSkinMesh::XSkinMeshProxy::Load_LuaData(DWORD /*dwParam_*/)
 {
 	WCHAR XETFileName[255] = {0,};
 
@@ -1539,7 +1538,7 @@ HRESULT CKTDXDeviceXSkinMesh::MultiAnimMC::ReadKSM( CKTDXDeviceXSkinMesh::XSkinM
 
     // set this->Name
 
-    if ( pksmContainer->m_dwOffset_Name == NULL )
+    if ( pksmContainer->m_dwOffset_Name == 0 )
     {
         this->Name = NULL;
     }
@@ -1556,7 +1555,7 @@ HRESULT CKTDXDeviceXSkinMesh::MultiAnimMC::ReadKSM( CKTDXDeviceXSkinMesh::XSkinM
 
     this->NumMaterials = 0;
     // set materials
-    if ( pksmContainer->m_dwNumMaterials == 0 || pksmContainer->m_dwOffset_Materials == NULL )
+    if ( pksmContainer->m_dwNumMaterials == 0 || pksmContainer->m_dwOffset_Materials == 0 )
     {
         ErrorLog(KEM_ERROR258);
         ASSERT( !"KSMMeshContainer::m_dwNumMaterials should be greater than 0" );
@@ -1592,7 +1591,7 @@ HRESULT CKTDXDeviceXSkinMesh::MultiAnimMC::ReadKSM( CKTDXDeviceXSkinMesh::XSkinM
         {
             this->pMaterials[ dwMat ].MatD3D = pksmMaterial[ dwMat ].m_d3dMat;
             this->pMaterials[ dwMat ].pTextureFilename = NULL;
-            if ( pksmMaterial[ dwMat ].m_dwOffset_TextureFilename != NULL )
+            if ( pksmMaterial[ dwMat ].m_dwOffset_TextureFilename != 0 )
             {
                 this->pMaterials[ dwMat ].pTextureFilename = kInMem_.RetrieveDupString(
                     pksmMaterial[ dwMat ].m_dwOffset_TextureFilename );
@@ -1627,7 +1626,7 @@ HRESULT CKTDXDeviceXSkinMesh::MultiAnimMC::ReadKSM( CKTDXDeviceXSkinMesh::XSkinM
     }//if
 
     // fill vertex buffer
-    if ( pksmContainer->m_dwNumVertices == 0 || pksmContainer->m_dwOffset_Vertices == NULL )
+    if ( pksmContainer->m_dwNumVertices == 0 || pksmContainer->m_dwOffset_Vertices == 0 )
     {
         ErrorLog(KEM_ERROR263);
         ASSERT( !"KSMMeshContainer::m_dwNumVertices should be greater than 0" );
@@ -1667,7 +1666,7 @@ HRESULT CKTDXDeviceXSkinMesh::MultiAnimMC::ReadKSM( CKTDXDeviceXSkinMesh::XSkinM
     }//if.. else..
 
     // fill index buffer
-    if ( pksmContainer->m_dwNumFaces == 0 || pksmContainer->m_dwOffset_Indices == NULL )
+    if ( pksmContainer->m_dwNumFaces == 0 || pksmContainer->m_dwOffset_Indices == 0 )
     {
         ErrorLog(KEM_ERROR268);
         ASSERT( !"KSMMeshContainer::m_dwNumFaces should be greater than 0" );
@@ -1700,7 +1699,7 @@ HRESULT CKTDXDeviceXSkinMesh::MultiAnimMC::ReadKSM( CKTDXDeviceXSkinMesh::XSkinM
     }//if.. else..
 
     // fill attribute buffer
-    if ( pksmContainer->m_dwOffset_Attributes == NULL )
+    if ( pksmContainer->m_dwOffset_Attributes == 0 )
     {
         ErrorLog(KEM_ERROR272);
         ASSERT( !"Invalid KSMMeshContainer::m_dwOffset_Attributes" );
@@ -1745,7 +1744,7 @@ HRESULT CKTDXDeviceXSkinMesh::MultiAnimMC::ReadKSM( CKTDXDeviceXSkinMesh::XSkinM
     {
         // 스킨 메쉬의 경우
 
-        if ( pksmContainer->m_dwOffset_Bones == NULL )
+        if ( pksmContainer->m_dwOffset_Bones == 0 )
         {
             ErrorLog(KEM_ERROR277);
             ASSERT( !"invalid KSMMeshContainer::m_dwOffset_Bones" );
@@ -1811,7 +1810,7 @@ HRESULT CKTDXDeviceXSkinMesh::MultiAnimMC::ReadKSM( CKTDXDeviceXSkinMesh::XSkinM
             ASSERT( SUCCEEDED( hr ) );
             if ( pKSMBone[ dwBone ].m_dwNumInfluences > 0 )
             {
-                if ( pKSMBone[ dwBone ].m_dwOffset_Influences == NULL )
+                if ( pKSMBone[ dwBone ].m_dwOffset_Influences == 0 )
                 {
                     ErrorLog(KEM_ERROR286);
                     ASSERT( !"invalid KSMBone::m_dwOffset_Influences" );
@@ -2180,7 +2179,6 @@ HRESULT CKTDXDeviceXSkinMesh::MultiAnimMC::ConvertToSkinnedMesh()
 
     if ( this->pSkinInfo == NULL )
     {
-	    DWORD dwOldFVF = this->MeshData.pMesh->GetFVF();
         DWORD dwNewFVF = D3DFVF_XYZB4 |  D3DFVF_NORMAL | D3DFVF_TEX1 | D3DFVF_LASTBETA_UBYTE4;
 
 		LPD3DXMESH pMesh = NULL;
@@ -2511,7 +2509,7 @@ void    CKTDXDeviceXSkinMesh::MultiAnimMC::LoadTextures()
     for( DWORD dwMat = 0; dwMat < this->NumMaterials; dwMat++ )
     {
 		if( this->pMaterials[ dwMat ].pTextureFilename != NULL
-            && this->pMaterials[ dwMat ].pTextureFilename[0] != NULL )
+            && this->pMaterials[ dwMat ].pTextureFilename[0] != 0 )
 		{
 			if( MultiByteToWideChar( CP_ACP, 0, this->pMaterials[ dwMat ].pTextureFilename, -1, wszTexName, MAX_PATH ) != 0 )
 			{
@@ -2553,7 +2551,7 @@ HRESULT CKTDXDeviceXSkinMesh::CMultiAnimAllocateHierarchy::CreateFrame( THIS_ LP
 	//ZeroMemory( pFrame, sizeof( MultiAnimFrame ) );
 	D3DXMatrixIdentity( &pFrame->combineMatrix );
 
-    if( Name != NULL && Name[0] != NULL )
+    if( Name != NULL && Name[0] != 0 )
 	{
 		pFrame->Name = (CHAR *) StrHeapCopy( (CHAR *) Name );
 	}
@@ -2592,7 +2590,7 @@ HRESULT CKTDXDeviceXSkinMesh::CMultiAnimAllocateHierarchy::CreateMeshContainer( 
 																LPCSTR Name,
 																CONST D3DXMESHDATA *pMeshData,
 																CONST D3DXMATERIAL *pMaterials,
-																CONST D3DXEFFECTINSTANCE *pEffectInstances,
+																CONST D3DXEFFECTINSTANCE */*pEffectInstances*/,
 																DWORD NumMaterials,
 																CONST DWORD *pAdjacency,
 																LPD3DXSKININFO pSkinInfo,
@@ -2604,7 +2602,7 @@ HRESULT CKTDXDeviceXSkinMesh::CMultiAnimAllocateHierarchy::CreateMeshContainer( 
 
 	MultiAnimMC * pMC = new MultiAnimMC;
     ASSERT( pMC != NULL );
-	ZeroMemory( pMC, sizeof( MultiAnimMC ) );
+	ZeroMemory( (void*)pMC, sizeof( MultiAnimMC ) );
 
 	//스킨 메쉬 데이터만 취급한다
 	/*

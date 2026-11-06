@@ -6,8 +6,6 @@
 //#define _TOSTR(x)     _TOSTR1(x)
 //#include _TOSTR(PROJECT_PCH)
 #include "stdafx.h"
-#pragma warning(push)
-#pragma warning(disable: 4995)
 #include "KHelpSystem.h"
 
 
@@ -152,4 +150,3 @@ void KHelpSystem::Debug_Dump()
     }//while
 }//KHelpSystem::Debug_Dump()
 
-#pragma warning(pop)

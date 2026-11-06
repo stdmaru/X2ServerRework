@@ -31,16 +31,16 @@ static std::filesystem::path KFileSerializerPath( const char* pszInFilename_ )
 
 HRESULT KFileSerializer::LoadFile( const char* pszInFilename_, DWORD dwInSize_ )
 {
-    ASSERT( pszInFilename_ != NULL && pszInFilename_[0] != NULL );
-    if ( !( pszInFilename_ != NULL && pszInFilename_[0] != NULL ) )
+    ASSERT( pszInFilename_ != NULL && pszInFilename_[0] != 0 );
+    if ( !( pszInFilename_ != NULL && pszInFilename_[0] != 0 ) )
         return E_FAIL;
     return _LoadFile( KFileSerializerPath( pszInFilename_ ), dwInSize_ );
 }//KFileSerializer::LoadFile()
 
 HRESULT         KFileSerializer::LoadFile( const wchar_t* pszInFilename_, DWORD dwInSize_ )
 {
-    ASSERT( pszInFilename_ != NULL && pszInFilename_[0] != NULL );
-    if ( !( pszInFilename_ != NULL && pszInFilename_[0] != NULL ) )
+    ASSERT( pszInFilename_ != NULL && pszInFilename_[0] != 0 );
+    if ( !( pszInFilename_ != NULL && pszInFilename_[0] != 0 ) )
         return E_FAIL;
     return _LoadFile( std::filesystem::path( pszInFilename_ ), dwInSize_ );
 }
@@ -78,8 +78,8 @@ HRESULT         KFileSerializer::_LoadFile( const std::filesystem::path& path_, 
 
 HRESULT         KFileSerializer::SaveFile( const wchar_t* pszInFilename_ ) const
 {
-    ASSERT( pszInFilename_ != NULL && pszInFilename_[0] != NULL );
-    if ( !( pszInFilename_ != NULL && pszInFilename_[0] != NULL ) )
+    ASSERT( pszInFilename_ != NULL && pszInFilename_[0] != 0 );
+    if ( !( pszInFilename_ != NULL && pszInFilename_[0] != 0 ) )
         return E_FAIL;
     return _SaveFile( std::filesystem::path( pszInFilename_ ) );
 }
@@ -87,8 +87,8 @@ HRESULT         KFileSerializer::SaveFile( const wchar_t* pszInFilename_ ) const
 
 HRESULT  KFileSerializer::SaveFile( const char* pszInFilename_ ) const
 {
-    ASSERT( pszInFilename_ != NULL && pszInFilename_[0] != NULL );
-    if ( !( pszInFilename_ != NULL && pszInFilename_[0] != NULL ) )
+    ASSERT( pszInFilename_ != NULL && pszInFilename_[0] != 0 );
+    if ( !( pszInFilename_ != NULL && pszInFilename_[0] != 0 ) )
         return E_FAIL;
     return _SaveFile( KFileSerializerPath( pszInFilename_ ) );
 }//KFileSerializer::SaveFile()
@@ -114,7 +114,7 @@ DWORD   KFileSerializer::AppendSpace( DWORD dwInSize_ )
     ASSERT( m_iLockCounter <= 0 );
     DWORD   dwSize = GetSize();
     if ( dwInSize_ == 0 )
-        return NULL;
+        return 0;
     m_vecbBuffer.resize( dwSize + dwInSize_ );
     return  dwSize;
 }//KFileSerializer::AppendSpace()
@@ -139,7 +139,7 @@ DWORD   KFileSerializer::AppendData( DWORD dwInSize_, const void* pInData_ )
     ASSERT( m_iLockCounter <= 0 );
     DWORD   dwSize = GetSize();
     if ( dwInSize_ == 0 )
-        return NULL;
+        return 0;
     ASSERT( pInData_ != NULL );
     m_vecbBuffer.resize( dwSize + dwInSize_ );
     CopyMemory( &m_vecbBuffer[dwSize], pInData_, dwInSize_ );
@@ -330,8 +330,8 @@ DWORD   KFileSerializer::AppendWideString( bool bShort, bool bNoMap, const wchar
     if ( pwszInChar_ == NULL )
         return 0;
     DWORD   dwLength = (DWORD) wcslen( pwszInChar_ );
-    if( dwLength == 0 )
-        return 0;
+	if( dwLength == 0 )
+		return 0;
 
 	AlignSpace( sizeof(wchar_t) );
 
@@ -389,8 +389,8 @@ DWORD   KFileSerializer::AppendWideString( bool bShort, bool bNoMap, const wchar
 {
     ASSERT( m_iLockCounter <= 0 );
 
-    if ( pwszInChar_ == NULL || dwLength == 0 )
-        return 0;
+	if ( pwszInChar_ == NULL || dwLength == 0 )
+		return 0;
 
 	AlignSpace( sizeof(wchar_t) );
 
@@ -451,8 +451,8 @@ DWORD   KFileSerializer::AppendWideString( bool bShort, bool bNoMap, const std::
 
 
     DWORD   dwLength = wstrIn_.size();
-    if( dwLength == 0 )
-        return 0;
+	if( dwLength == 0 )
+		return 0;
 	AlignSpace( sizeof(wchar_t) );
 
     DWORD   dwOffset = GetSize();

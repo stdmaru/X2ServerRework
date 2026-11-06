@@ -99,10 +99,7 @@ CKTDGUIRadioButton::~CKTDGUIRadioButton()
 		CKTDGUIRadioButton::RadioButtonGroupInfo* pRadioButtonGroupInfo = m_pDialog->GetRadioButtonGroupInfo( m_GroupID );
 		if ( pRadioButtonGroupInfo != NULL )
 		{
-			if( pRadioButtonGroupInfo->DeleteRadioButton( this ) == true )
-			{
-				int i = 0;
-			}
+			pRadioButtonGroupInfo->DeleteRadioButton( this );
 		}
 	}
 }
@@ -269,7 +266,7 @@ HRESULT CKTDGUIRadioButton::OnFrameRender()
 }
 
 //--------------------------------------------------------------------------------------
-bool CKTDGUIRadioButton::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lParam )
+bool CKTDGUIRadioButton::HandleMouse( UINT uMsg, POINT pt, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	if( m_bEnable == false || m_bShow == false )
 		return false;

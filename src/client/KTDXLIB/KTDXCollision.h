@@ -1589,7 +1589,7 @@ class CKTDXCollision
 														float &PointOnSegBx, float &PointOnSegBy, float &PointOnSegBz )
 		{
 			KTDXPROFILE();
-			float s[2], temp;
+			float s[2] = { 0.f, 0.f }, temp;
 			FindNearestPointOnLineSegment(A1x, A1y, A1z, Lax, Lay, Laz, B1x, B1y, B1z,
 				true, epsilon_squared, PointOnSegAx, PointOnSegAy, PointOnSegAz, s[0]);
 			if (true == infinite_lines)

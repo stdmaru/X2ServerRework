@@ -147,11 +147,10 @@ CKTDNUDP::~CKTDNUDP(void)
 	m_RecvDataList.clear();
 }
 
-void CKTDNUDP::OnFrameMove( double fTime, float fElapsedTime )
+void CKTDNUDP::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	KTDXPROFILE();
 
-	bool				bRetVal = false;
 
 
 
@@ -198,7 +197,7 @@ void CKTDNUDP::OnFrameMove( double fTime, float fElapsedTime )
 		case SP_CONNECT_TEST_REQ:
 			{
                 int iPacketSize = pRecvData->m_Size;
-                if ( iPacketSize < sizeof(SSP_CONNECT_TEST_REQ) )
+                if ( iPacketSize < (int)sizeof(SSP_CONNECT_TEST_REQ) )
                     break;
                 //StateLog( L"피어 요청" );
 				const SSP_CONNECT_TEST_REQ* pSSP_CONNECT_TEST_REQ = (const SSP_CONNECT_TEST_REQ*)pRecvData->m_pRecvBuffer;
@@ -240,7 +239,7 @@ void CKTDNUDP::OnFrameMove( double fTime, float fElapsedTime )
 		case SP_CONNECT_TEST_ACK:
 			{
                 int iPacketSize = pRecvData->m_Size;
-                if ( iPacketSize < sizeof(SSP_CONNECT_TEST_ACK) )
+                if ( iPacketSize < (int)sizeof(SSP_CONNECT_TEST_ACK) )
                     break;
 				const SSP_CONNECT_TEST_ACK* pSSP_CONNECT_TEST_ACK = (const SSP_CONNECT_TEST_ACK*)pRecvData->m_pRecvBuffer;
 				Peer* pPeer = _GetPeer( pSSP_CONNECT_TEST_ACK->m_UID );
@@ -350,7 +349,7 @@ void CKTDNUDP::OnFrameMove( double fTime, float fElapsedTime )
 		case SP_CONNECT_RELAY_ACK:
 			{
                 int iPacketSize = pRecvData->m_Size;
-                if ( iPacketSize < sizeof(SSP_CONNECT_RELAY_ACK) )
+                if ( iPacketSize < (int)sizeof(SSP_CONNECT_RELAY_ACK) )
                     break;
                 CONST SSP_CONNECT_RELAY_ACK* pSSP_CONNECT_RELAY_ACK = (const SSP_CONNECT_RELAY_ACK*)pRecvData->m_pRecvBuffer;
                 switch( m_eRelayState )
@@ -369,6 +368,8 @@ void CKTDNUDP::OnFrameMove( double fTime, float fElapsedTime )
                         m_dwRelayUIDStampFromServer = 0;
                     m_kRelayStatistic.ProcessPingReceive( pSSP_CONNECT_RELAY_ACK->m_dwTimestamp, pRecvData->m_dwReceiveTimestamp );
                     break;
+                default:
+                	break;
                 }
 			}
 			break;
@@ -379,7 +380,7 @@ void CKTDNUDP::OnFrameMove( double fTime, float fElapsedTime )
         case SP_RELAY_SET_UID_LIST_ACK:
             {
                 int iPacketSize = pRecvData->m_Size;
-                if ( iPacketSize < sizeof(SSP_RELAY_SET_UID_LIST_ACK) )
+                if ( iPacketSize < (int)sizeof(SSP_RELAY_SET_UID_LIST_ACK) )
                     break;
                 SSP_RELAY_SET_UID_LIST_ACK* pSSP_RELAY_SET_UID_LIST_ACK = (SSP_RELAY_SET_UID_LIST_ACK*)pRecvData->m_pRecvBuffer;
                 if ( m_eRelayState == RELAY_STATE_CONNECTED )
@@ -404,7 +405,7 @@ void CKTDNUDP::OnFrameMove( double fTime, float fElapsedTime )
             if ( ConnectRelayTestResult() == true )
             {
                 int iPacketSize = pRecvData->m_Size;
-                if ( iPacketSize < sizeof(SSP_CONNECT_CHECK_REQ) )
+                if ( iPacketSize < (int)sizeof(SSP_CONNECT_CHECK_REQ) )
                     break;
 				const SSP_CONNECT_CHECK_REQ* pSSP_CONNECT_CHECK_REQ = (const SSP_CONNECT_CHECK_REQ*) pRecvData->m_pRecvBuffer;
 				const Peer* pPeer = GetMyPeer();
@@ -431,7 +432,7 @@ void CKTDNUDP::OnFrameMove( double fTime, float fElapsedTime )
             if ( ConnectRelayTestResult() == true )
             {
                 int iPacketSize = pRecvData->m_Size;
-                if ( iPacketSize < sizeof(SSP_HEART_BEAT_REQ) )
+                if ( iPacketSize < (int)sizeof(SSP_HEART_BEAT_REQ) )
                     break;
 				const SSP_HEART_BEAT_REQ* pSSP_HEART_BEAT_REQ = (const SSP_HEART_BEAT_REQ*) pRecvData->m_pRecvBuffer;
 				const Peer* pPeer = GetMyPeer();
@@ -543,6 +544,8 @@ void CKTDNUDP::OnFrameMove( double fTime, float fElapsedTime )
             m_fRelayTimer += fElapsedTime;
         }
         break;
+    default:
+    	break;
     }//switch
 
 //#else   SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
@@ -823,7 +826,7 @@ bool CKTDNUDP::SendToIP( u_long  ulIP, int port, const char ID, const void* pBuf
     }
 
 //#ifdef  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
-    if( size < 0 || size > 0 && pBuffer == NULL )
+    if( size < 0 || ( size > 0 && pBuffer == NULL ) )
 //#else 	SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
 //    if( !pBuffer )
 //#endif	SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
@@ -1075,7 +1078,7 @@ bool CKTDNUDP::SendToPeer( __int64 UID, const char ID, const void* pBuffer, int 
 	KTDXPROFILE();
 
 //#ifdef  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
-    if( size < 0 || size > 0 && pBuffer == NULL )
+    if( size < 0 || ( size > 0 && pBuffer == NULL ) )
 //#else 	SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
 //    if( !pBuffer )
 //#endif	SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
@@ -1342,7 +1345,7 @@ void CKTDNUDP::DefencePort()
 	const Peer* pPeer = GetMyPeer();
 	if( pPeer != NULL )
 	{
-		SSP_DEFENCE_PORT sSP_DEFENCE_PORT;
+		SSP_DEFENCE_PORT sSP_DEFENCE_PORT = {};
 //#ifdef  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
 		SendToIP( pPeer->m_IPAddress, GetMyExtPort(), SP_DEFENCE_PORT, (const char*)&sSP_DEFENCE_PORT, sizeof(SSP_DEFENCE_PORT) );
 //#else  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
@@ -1427,7 +1430,7 @@ bool CKTDNUDP::_RobustConnectTestResult()
 
         if ( pPeer->m_bUseRelay == false
             && ( m_eForceConnectMode == FORCE_CONNECT_MODE_RELAY
-                 || m_eForceConnectMode != FORCE_CONNECT_MODE_P2P && pPeer->m_eP2PConnectType == P2PCONNECT_NONE ) )
+                 || ( m_eForceConnectMode != FORCE_CONNECT_MODE_P2P && pPeer->m_eP2PConnectType == P2PCONNECT_NONE ) ) )
         {
             _SetUseRelay( pPeer, true );
         }
@@ -1476,8 +1479,8 @@ bool CKTDNUDP::_RobustConnectTestResult()
         }//switch
 	}
 
-    if ( bRequireRelayConnection == true && m_eRelayState != RELAY_STATE_CONNECTED )
-        return false;
+	if ( bRequireRelayConnection == true && m_eRelayState != RELAY_STATE_CONNECTED )
+		return false;
 
 	return true;
 }
@@ -1494,7 +1497,7 @@ bool CKTDNUDP::ConnectTestResult()
 		Peer* pPeer = &iter->second;
         if ( pPeer->m_bUseRelay == false
             && ( m_eForceConnectMode == FORCE_CONNECT_MODE_RELAY
-                 || m_eForceConnectMode != FORCE_CONNECT_MODE_P2P && pPeer->m_eP2PConnectType == P2PCONNECT_NONE ) )
+                 || ( m_eForceConnectMode != FORCE_CONNECT_MODE_P2P && pPeer->m_eP2PConnectType == P2PCONNECT_NONE ) ) )
         {
             _SetUseRelay( pPeer, true );
         }
@@ -1523,8 +1526,8 @@ bool CKTDNUDP::ConnectTestResult()
         }
 	}
 
-    if ( bRequireRelayConnection == true && m_eRelayState != RELAY_STATE_CONNECTED )
-        return false;
+	if ( bRequireRelayConnection == true && m_eRelayState != RELAY_STATE_CONNECTED )
+		return false;
 
 	return true;
 }
@@ -1562,10 +1565,10 @@ void CKTDNUDP::ConnectTestToPeer()
 
         if ( pPeer->m_eP2PConnectType == P2PCONNECT_INTERNAL
             ||
-            pPeer->m_eP2PConnectType == P2PCONNECT_EXTERNAL
+            ( pPeer->m_eP2PConnectType == P2PCONNECT_EXTERNAL
             && ( pPeer->m_InternalIPAddress == INADDR_ANY
-            || pPeer->m_InternalIPAddress == pPeer->m_IPAddress && pPeer->m_InternalPort == pPeer->m_Port
-            || pPeer->m_ConnectTestCount >= KTDX_MAX_P2P_INTERNAL_CONNECT_TEST_COUNT ) )
+            || ( pPeer->m_InternalIPAddress == pPeer->m_IPAddress && pPeer->m_InternalPort == pPeer->m_Port )
+            || pPeer->m_ConnectTestCount >= KTDX_MAX_P2P_INTERNAL_CONNECT_TEST_COUNT ) ) )
             continue;
 
         //if ( pMyPeer != NULL )
@@ -1590,9 +1593,9 @@ void CKTDNUDP::ConnectTestToPeer()
             pPeer->m_ConnectTestCount++;
             if ( pPeer->m_eP2PConnectType == P2PCONNECT_EXTERNAL
                 ||
-                pPeer->m_InternalIPAddress != INADDR_ANY
+                ( pPeer->m_InternalIPAddress != INADDR_ANY
                 && false == ( pPeer->m_InternalIPAddress == pPeer->m_IPAddress && pPeer->m_InternalPort == pPeer->m_Port )
-                && ( pPeer->m_ConnectTestCount & 1 ) == 0 )
+                && ( pPeer->m_ConnectTestCount & 1 ) == 0 ) )
             {
                 sSP_CONNECT_TEST_REQ.m_bInternalIP = true;
 				SendToIP( pPeer->m_InternalIPAddress, pPeer->m_InternalPort, SP_CONNECT_TEST_REQ, (const char*)&sSP_CONNECT_TEST_REQ, sizeof(SSP_CONNECT_TEST_REQ) );
@@ -1753,7 +1756,7 @@ void CKTDNUDP::ConnectTestToRelay()
     m_iRelayTimerCounter = 0;
 //#else   SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
 //	m_fConnectRelayTime = 0.5f;
-//#endif  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK\
+//#endif  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
 
     m_kRelayStatistic.Init();
     SendPure_Relay( SP_CONNECT_RELAY_REQ, std::vector<__int64>(), 0, NULL, 0 );
@@ -1934,12 +1937,12 @@ void CKTDNUDP::RemoveOtherPeer( std::vector<__int64> UIDList )
 //#ifdef ACTIVE_KOG_GAME_PERFORMANCE_CHECK
 void CKTDNUDP::SetForceConnectMode( EForceConnectMode eFCMode )
 {
-    if ( eFCMode < EForceConnectMode(0)
-        || eFCMode >= FORCE_CONNECT_MODE_NUMS )
-        return;
+	if ( eFCMode < EForceConnectMode(0)
+		|| eFCMode >= FORCE_CONNECT_MODE_NUMS )
+		return;
 
-    if ( eFCMode == m_eForceConnectMode )
-        return;
+	if ( eFCMode == m_eForceConnectMode )
+		return;
 
 
 	//강제로 연결을 전환할 경우에는 다음과 같이 초기화...
@@ -2008,8 +2011,8 @@ void CKTDNUDP::SetForceConnectMode( EForceConnectMode eFCMode )
 /*static*/
 u_long  CKTDNUDP::ConvertIPToAddress( const WCHAR* pIP )
 {
-    if ( pIP == NULL )
-        return INADDR_ANY;
+	if ( pIP == NULL )
+		return INADDR_ANY;
 
 	string mbIP;
 	ConvertWCHARToChar( mbIP, pIP );
@@ -2311,7 +2314,7 @@ bool CKTDNUDP::BroadCast( std::vector<__int64>& toUIDList, const char ID, const 
 {
 	KTDXPROFILE();
 
-	if( toUIDList.empty() == true || size < 0 || size > 0 && pBuffer == NULL )
+	if( toUIDList.empty() == true || size < 0 || ( size > 0 && pBuffer == NULL ) )
 	{
 		return false;
 	}

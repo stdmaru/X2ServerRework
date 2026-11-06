@@ -63,6 +63,8 @@ KVersionControl::KVersionControl(void)
 			SetEnabled( CN_SERVICE_READY, false );
 			SetEnabled( CN_IN_HOUSE_TEST_ONLY, false );
 		} break;
+	default:
+		break;
 	}
 }
 

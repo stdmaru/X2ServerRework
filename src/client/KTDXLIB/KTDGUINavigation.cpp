@@ -6,9 +6,9 @@
 
 
 CKTDGUINavigation::CKTDGUINavigation(void)
-: m_ptLastMouse( POINT() )
-, m_rcBG( RECT() )
+: m_rcBG( RECT() )
 , m_rcWindow( RECT() )
+, m_ptLastMouse( POINT() )
 {
 	m_ControlType = UCT_NAVIGATION;
 
@@ -102,7 +102,7 @@ HRESULT CKTDGUINavigation::OnFrameRender()
 }
 
 
-bool CKTDGUINavigation::HandleKeyboard( UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CKTDGUINavigation::HandleKeyboard( UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	if( false == m_bEnable )
 		return false;
@@ -111,7 +111,7 @@ bool CKTDGUINavigation::HandleKeyboard( UINT uMsg, WPARAM wParam, LPARAM lParam 
 }
 
 
-bool CKTDGUINavigation::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lParam )
+bool CKTDGUINavigation::HandleMouse( UINT uMsg, POINT pt, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	if( false == m_bEnable )
 		return false;
@@ -234,7 +234,7 @@ bool CKTDGUINavigation::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM 
 }
 
 
-bool CKTDGUINavigation::MsgProc( UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CKTDGUINavigation::MsgProc( UINT uMsg, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	if( WM_CAPTURECHANGED == uMsg )
 	{

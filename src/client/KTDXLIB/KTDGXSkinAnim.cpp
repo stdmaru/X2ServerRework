@@ -426,7 +426,7 @@ void CKTDGXSkinAnim::ReplaceAniXET( CKTDXDeviceXET* pModelAniXETFrom, CKTDXDevic
 
 
 // index번째에 XET가 있으면 교체하고, 없으면 만들어서 넣는다. return 값은 기존에 있던 xet이다.
-CKTDXDeviceXET* CKTDGXSkinAnim::ReplaceMultiTexXET( int iIndex, CKTDXDeviceXET* pModelMultiTexXETTo )
+CKTDXDeviceXET* CKTDGXSkinAnim::ReplaceMultiTexXET( int /*iIndex*/, CKTDXDeviceXET* pModelMultiTexXETTo )
 {
 	if( m_pModelMultiTexXETList.empty() )
 	{
@@ -1011,8 +1011,8 @@ void CKTDGXSkinAnim::Stop()
 
 void CKTDGXSkinAnim::Reset( float fAnimTime )
 {
-    if ( m_pAC == NULL )
-        return;
+	if ( m_pAC == NULL )
+		return;
 	m_pAC->ResetTime();
 	m_pAC->AdvanceTime( fAnimTime, NULL );
     m_fAnimBeforeTime = 0.f;
@@ -1270,7 +1270,7 @@ void CKTDGXSkinAnim::SetModelDetailPercent( int detailPercent )
 
 
 
-	void* CKTDGXSkinAnim::operator new(size_t s)
+	void* CKTDGXSkinAnim::operator new(size_t /*s*/)
 	{
 		return CKTDGXSkinAnimPool::malloc();
 	}
@@ -1360,7 +1360,7 @@ void CKTDGXSkinAnim::SetLightFlow(wstring szName, CKTDGXRenderer::RENDER_TYPE fl
     }
 }
 
-HRESULT CKTDGXSkinAnim::LightFlowFrameMove(double fTime, float fElapsedTime)
+HRESULT CKTDGXSkinAnim::LightFlowFrameMove(double /*fTime*/, float fElapsedTime)
 {
     HRESULT hr = S_OK;
 

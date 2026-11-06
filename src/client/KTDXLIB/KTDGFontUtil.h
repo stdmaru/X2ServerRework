@@ -1,6 +1,6 @@
 #pragma once
-//#include <windows.h>
-//#include <string>
+
+#include <bit>
 
 
 namespace KTDGUTIL_MATH
@@ -49,7 +49,7 @@ namespace KTDGUTIL_MATH
 	}
 	static inline USHORT floatToHalf(float i)
 	{
-		return floatToHalfI(*reinterpret_cast<UINT*>(&i));
+		return floatToHalfI(std::bit_cast<UINT>(i));
 	}
 
 	static inline UINT halfToFloatI(USHORT y)
@@ -94,7 +94,7 @@ namespace KTDGUTIL_MATH
 	static inline float halfToFloat(USHORT y)
 	{
 		UINT r = halfToFloatI(y);
-		return *reinterpret_cast<float*>(&r);
+		return std::bit_cast<float>(r);
 	}
 }
 

@@ -29,9 +29,7 @@
 #ifdef CONVERSION_VS
 #define IMPLEMENT_KGLOBALSINGLETON(T) \
     private: \
-        friend class KGlobalSingleton<T>::KSingletonCreator;// \
-        //T(const T&); \
-        //T& operator = ( const T& );
+        friend class KGlobalSingleton<T>::KSingletonCreator;
 #else
 #define IMPLEMENT_KGLOBALSINGLETON(T) \
 	private: \

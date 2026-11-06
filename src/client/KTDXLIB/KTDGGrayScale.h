@@ -71,7 +71,7 @@ public:
 
 		ID3DXEffect* GetEffect() { return m_pEffect; }
 
-		bool SetTechnique( char* strTechnique );
+		bool SetTechnique( const char* strTechnique );
 		void BeginPass( UINT iIndex );
 		void EndPass();
 

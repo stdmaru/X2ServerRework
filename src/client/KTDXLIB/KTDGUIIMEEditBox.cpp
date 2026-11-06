@@ -93,9 +93,9 @@ bool      CKTDGUIIMEEditBox::m_bIMEStaticMsgProcCalled = false;
 //--------------------------------------------------------------------------------------
 CKTDGUIIMEEditBox::CKTDGUIIMEEditBox()
 : m_pFont( NULL )
-, m_rcText( RECT() )
-, m_rcIndicator( RECT() )
 , m_bIsForceSendCustomMsgChange( false )
+, m_rcIndicator( RECT() )
+, m_rcText( RECT() )
 {
 	m_bBGCheck		= false;
 
@@ -410,7 +410,7 @@ void CKTDGUIIMEEditBox::ParseFloatArray( float *pNumbers, int nCount )
 			++pEnd;
 
 		// Copy the token to our buffer
-		int nTokenLen = __min( sizeof(wszToken) / sizeof(wszToken[0]) - 1, int(pEnd - pToken) );
+		int nTokenLen = __min( int( sizeof(wszToken) / sizeof(wszToken[0]) ) - 1, int(pEnd - pToken) );
 		StringCchCopy( wszToken, nTokenLen, pToken );
 		*pNumbers = (float)wcstod( wszToken, NULL );
 		++nWritten;
@@ -877,7 +877,7 @@ bool CKTDGUIIMEEditBox::IsKorean()
 
 
 //--------------------------------------------------------------------------------------
-bool CKTDGUIIMEEditBox::StaticMsgProc( UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CKTDGUIIMEEditBox::StaticMsgProc( UINT uMsg, WPARAM wParam, LPARAM /*lParam*/ )
 {
 	HIMC hImc;
 
@@ -914,12 +914,14 @@ bool CKTDGUIIMEEditBox::StaticMsgProc( UINT uMsg, WPARAM wParam, LPARAM lParam )
 					// If this language is already in the list, don't add it again.
 					bool bBreak = false;
 					for( int e = 0; e < s_Locale.GetSize(); ++e )
+					{
 						if( LOWORD( s_Locale.GetAt( e ).m_hKL ) ==
 							LOWORD( phKL[i] ) )
 						{
 							bBreak = true;
 							break;
 						}
+					}
 						if( bBreak )
 							break;
 
@@ -999,10 +1001,7 @@ bool CKTDGUIIMEEditBox::StaticMsgProc( UINT uMsg, WPARAM wParam, LPARAM lParam )
 
 	case WM_IME_SETCONTEXT:
 		DXUTTRACE( L"WM_IME_SETCONTEXT\n" );
-		//
-		// We don't want anything to display, so we have to clear this
-		//
-		lParam = 0;
+		// We don't want anything to display (the original cleared lParam here, which only changed its own copy).
 		return false;
 
 		// Handle WM_IME_STARTCOMPOSITION here since
@@ -1026,7 +1025,7 @@ bool CKTDGUIIMEEditBox::StaticMsgProc( UINT uMsg, WPARAM wParam, LPARAM lParam )
 }
 
 //--------------------------------------------------------------------------------------
-bool CKTDGUIIMEEditBox::HandleKeyboard( UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CKTDGUIIMEEditBox::HandleKeyboard( UINT uMsg, WPARAM wParam, LPARAM /*lParam*/ )
 {
 	if( m_bEnable == false || m_bShow == false )
 		return false;
@@ -1070,6 +1069,7 @@ bool CKTDGUIIMEEditBox::HandleKeyboard( UINT uMsg, WPARAM wParam, LPARAM lParam 
 					// Control Insert. Copy to clipboard
 					CopyToClipboard();
 				} else
+				{
 					if( GetKeyState( VK_SHIFT ) < 0 )
 					{
 						// Shift Insert. Paste from clipboard
@@ -1079,7 +1079,8 @@ bool CKTDGUIIMEEditBox::HandleKeyboard( UINT uMsg, WPARAM wParam, LPARAM lParam 
 						// Toggle caret insert mode
 						m_bInsertMode = !m_bInsertMode;
 					}
-					break;
+				}
+				break;
 
 			case VK_DELETE:
 				// Check if there is a text selection.
@@ -1187,7 +1188,7 @@ bool CKTDGUIIMEEditBox::HandleKeyboard( UINT uMsg, WPARAM wParam, LPARAM lParam 
 }
 
 //--------------------------------------------------------------------------------------
-bool CKTDGUIIMEEditBox::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lParam )
+bool CKTDGUIIMEEditBox::HandleMouse( UINT uMsg, POINT pt, WPARAM /*wParam*/, LPARAM lParam )
 {
 	if( m_bEnable == false || m_bShow == false )
 		return false;
@@ -1268,6 +1269,7 @@ bool CKTDGUIIMEEditBox::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM 
 					}
 
 					// Not converted case. Fall thru to Chinese case.
+					[[fallthrough]];
 
 				case LANG_CHINESE:
 					{
@@ -1449,7 +1451,7 @@ bool CKTDGUIIMEEditBox::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM 
 }
 
 //--------------------------------------------------------------------------------------
-bool CKTDGUIIMEEditBox::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CKTDGUIIMEEditBox::MsgProc( HWND /*hWnd*/, UINT uMsg, WPARAM wParam, LPARAM lParam )
 {
 	if( m_bEnable == false || m_bShow == false )
 		return false;
@@ -1470,7 +1472,6 @@ bool CKTDGUIIMEEditBox::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 	bool *trapped = &trappedData;
 
 	HIMC hImc;
-	static LPARAM lAlt = 0x80000000, lCtrl = 0x80000000, lShift = 0x80000000;
 
 	*trapped = false;
 	if( !s_bEnableImeSystem )
@@ -1739,7 +1740,7 @@ bool CKTDGUIIMEEditBox::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 					// User must use the number hotkey or Enter to select
 					// a candidate.
 					if( GetPrimaryLanguage() == LANG_KOREAN ||
-						GetLanguage() == LANG_CHT && !GetImeId() )
+						( GetLanguage() == LANG_CHT && !GetImeId() ) )
 					{
 						s_CandList.dwSelection = (DWORD)-1;
 					}
@@ -1830,24 +1831,11 @@ bool CKTDGUIIMEEditBox::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 
 		// Port: the original posted a WM_KEYUP for Alt, Ctrl or Shift when Windows 2000's Text Services Framework had
 		// lost it; SDL reports every key release.
-		// fall through WM_KEYDOWN / WM_SYSKEYDOWN
 	case WM_KEYDOWN:
 	case WM_SYSKEYDOWN:
-		switch ( wParam )
-		{
-		case VK_MENU:
-			lAlt = lParam;
-			break;
-		case VK_SHIFT:
-			lShift = lParam;
-			break;
-		case VK_CONTROL:
-			lCtrl = lParam;
-			break;
-		}
-		//break;
-		// Fall through to default case
-		// so we invoke the parent.
+		// Fall through to default case so we invoke the parent (the original also kept the last Alt, Ctrl and Shift
+		// key data for the workaround above).
+		[[fallthrough]];
 
 	default:
 		// Let the parent handle the message that we
@@ -1884,6 +1872,7 @@ bool CKTDGUIIMEEditBox::EBProc( UINT uMsg, WPARAM wParam, LPARAM lParam )
 							SendInternelEvent( g_pKTDXApp->GetHWND(), CKTDXApp::KM_UI_CONTROL_EVENT, IEEM_CHANGE, (LPARAM)this );
 					}
 					else
+					{
 						if( m_nCaret > 0 )
 						{
 							// Move the caret, then delete the char.
@@ -1906,7 +1895,8 @@ bool CKTDGUIIMEEditBox::EBProc( UINT uMsg, WPARAM wParam, LPARAM lParam )
 								return false;
 							}
 						}
-						ResetCaretBlink();
+					}
+					ResetCaretBlink();
 						break;
 				}
 
@@ -1974,7 +1964,7 @@ bool CKTDGUIIMEEditBox::EBProc( UINT uMsg, WPARAM wParam, LPARAM lParam )
 			case 16:  // Ctrl P
 			case 27:  // Ctrl [
 			case 29:  // Ctrl ]
-			case 28:  // Ctrl \
+			case 28:  // Ctrl backslash
 				break;
 
 			case VK_RETURN:
@@ -1995,6 +1985,7 @@ bool CKTDGUIIMEEditBox::EBProc( UINT uMsg, WPARAM wParam, LPARAM lParam )
 						SendInternelEvent( g_pKTDXApp->GetHWND(), CKTDXApp::KM_UI_CONTROL_EVENT, IEEM_ENTER, (LPARAM)this );
 					break;
 				}
+				[[fallthrough]];
 			default:
 				{
 					if( GetKeyState( VK_SHIFT ) < 0 && GetKeyState( VK_CONTROL ) < 0)
@@ -2056,7 +2047,6 @@ bool CKTDGUIIMEEditBox::EBProc( UINT uMsg, WPARAM wParam, LPARAM lParam )
 									{
 										lRet /= sizeof(WCHAR);
 										wszCompStr[lRet] = 0;  // Force terminate
-										WCHAR compWCHAR = wszCompStr[lRet - 1];
 										s_CompString.SetText( wszCompStr );
 									}
 								}
@@ -2082,7 +2072,7 @@ bool CKTDGUIIMEEditBox::EBProc( UINT uMsg, WPARAM wParam, LPARAM lParam )
 
 
 //--------------------------------------------------------------------------------------
-void CKTDGUIIMEEditBox::RenderCandidateReadingWindow( IDirect3DDevice9* pd3dDevice, float fElapsedTime, bool bReading )
+void CKTDGUIIMEEditBox::RenderCandidateReadingWindow( IDirect3DDevice9* /*pd3dDevice*/, float /*fElapsedTime*/, bool bReading )
 {
 	RECT rc;
 	//09. 05. 13 김정협 Reading출력 범위 조정
@@ -2278,7 +2268,7 @@ void CKTDGUIIMEEditBox::RenderCandidateReadingWindow( IDirect3DDevice9* pd3dDevi
 
 
 //--------------------------------------------------------------------------------------
-void CKTDGUIIMEEditBox::RenderComposition( IDirect3DDevice9* pd3dDevice, float fElapsedTime )
+void CKTDGUIIMEEditBox::RenderComposition( IDirect3DDevice9* /*pd3dDevice*/, float /*fElapsedTime*/ )
 {
 	RECT rcCaret = { 0, 0, 0, 0 };
 	int nX = 0, nXFirst = 0;
@@ -2458,6 +2448,7 @@ void CKTDGUIIMEEditBox::RenderComposition( IDirect3DDevice9* pd3dDevice, float f
 			bkColor			= m_CompTargetBkColor;
 		}
 		else
+		{
 			if( *pAttr == ATTR_TARGET_NOTCONVERTED )
 			{
 				m_NowFontColor	= m_CompTargetNonColor;
@@ -2468,7 +2459,8 @@ void CKTDGUIIMEEditBox::RenderComposition( IDirect3DDevice9* pd3dDevice, float f
 				continue;
 			}
 
-			RECT rcTarget = { rc.left + nXLeft - nXFirst, rc.top, rc.left + nXRight - nXFirst, rc.bottom };
+		}
+		RECT rcTarget = { rc.left + nXLeft - nXFirst, rc.top, rc.left + nXRight - nXFirst, rc.bottom };
 			DrawRect( &rcTarget, bkColor );
 
 			RECT rcTempText	= rcTarget;
@@ -2587,7 +2579,6 @@ HRESULT CKTDGUIIMEEditBox::OnFrameRender()
 	// Let the parent render first (edit control)
 	// EditBox Render
 	{
-		HRESULT hr;
 		int nSelStartX = 0, nCaretX = 0;  // Left and right X cordinates of the selection region
 		int nCaretY = 0;
 
@@ -2617,15 +2608,15 @@ HRESULT CKTDGUIIMEEditBox::OnFrameRender()
 		//
 		// Compute the X coordinates of the selection rectangle
 		//
-		hr = m_Buffer.CPtoX( m_nCaret, FALSE, &nCaretX );
+		m_Buffer.CPtoX( m_nCaret, FALSE, &nCaretX );
 		if(GetGroupID() >= 0)
 		{
-			hr = m_Buffer.CPtoY( m_nCaret, FALSE, &nCaretY );
+			m_Buffer.CPtoY( m_nCaret, FALSE, &nCaretY );
 			m_Buffer.CPtoY( m_nFirstVisible, FALSE, &nYFirst );
 		}
 
 		if( m_nCaret != m_nSelStart )
-			hr = m_Buffer.CPtoX( m_nSelStart, FALSE, &nSelStartX );
+			m_Buffer.CPtoX( m_nSelStart, FALSE, &nSelStartX );
 		else
 			nSelStartX = nCaretX;
 
@@ -2934,7 +2925,7 @@ void CKTDGUIIMEEditBox::Uninitialize()
 //--------------------------------------------------------------------------------------
 HRESULT CKTDGUIIMEEditBox::DrawText( LPCWSTR strText, RECT* prcDest, int nCount /* = -1 */, DWORD format /* = DT_LEFT | DT_VCENTER  */)
 {
-	if ( m_DefTextAlign != -1 && CheckTextOversize() == false )
+	if ( m_DefTextAlign != (DWORD)-1 && CheckTextOversize() == false )
 		format = m_DefTextAlign;
 
 	RECT rcScreen = *prcDest;
@@ -2957,7 +2948,7 @@ HRESULT CKTDGUIIMEEditBox::DrawText( LPCWSTR strText, RECT* prcDest, int nCount 
 
 HRESULT CKTDGUIIMEEditBox::CalcTextRect( LPCWSTR strText, RECT* prcDest, int nCount /* = -1 */, DWORD format /* = (DT_VCENTER | DT_CALCRECT */)
 {
-	if ( m_DefTextAlign != -1 && CheckTextOversize() == false )
+	if ( m_DefTextAlign != (DWORD)-1 && CheckTextOversize() == false )
 		format = m_DefTextAlign;
 
 	m_pFont->CalcTextRect( strText, prcDest, nCount, format );
@@ -3092,7 +3083,7 @@ CKTDGUIIMEEditBox* CKTDGUIIMEEditBox::GetPrevIMEEditBox()
 void CKTDGUIIMEEditBox::UpdateTextAlignOffset()
 {
 	// 중앙 정렬일 경우 처리
-	if ( m_DefTextAlign != -1 && m_DefTextAlign & DT_CENTER && CheckTextOversize() == false )
+	if ( m_DefTextAlign != (DWORD)-1 && m_DefTextAlign & DT_CENTER && CheckTextOversize() == false )
 	{
 		int iBegin, iEnd;
 		m_Buffer.CPtoX(m_Buffer.GetTextSize(), FALSE, &iEnd);

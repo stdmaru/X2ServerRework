@@ -27,12 +27,12 @@ void CKTDGUIScrollBar::FromRectToPoint( RECT& rect, CKTDGUIControl::UIPointData&
 
 
 CKTDGUIScrollBar::CKTDGUIScrollBar()
-: m_LastMouse( POINT() )
-, m_rcBoundingBox( RECT() )
+: m_rcUpButton( RECT() )
 , m_rcDownButton( RECT() )
-, m_rcUpButton( RECT() )
-, m_rcThumb( RECT() )
 , m_rcTrack( RECT() )
+, m_rcThumb( RECT() )
+, m_LastMouse( POINT() )
+, m_rcBoundingBox( RECT() )
 {
 	m_ControlType = UCT_SCROLLBAR;
 
@@ -188,14 +188,14 @@ void CKTDGUIScrollBar::ShowItem( int nIndex )
 
 
 //--------------------------------------------------------------------------------------
-bool CKTDGUIScrollBar::HandleKeyboard( UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CKTDGUIScrollBar::HandleKeyboard( UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	return false;
 }
 
 
 //--------------------------------------------------------------------------------------
-bool CKTDGUIScrollBar::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lParam )
+bool CKTDGUIScrollBar::HandleMouse( UINT uMsg, POINT pt, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	static int ThumbOffsetY;
 
@@ -357,7 +357,7 @@ bool CKTDGUIScrollBar::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM l
 
 
 //--------------------------------------------------------------------------------------
-bool CKTDGUIScrollBar::MsgProc( UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CKTDGUIScrollBar::MsgProc( UINT uMsg, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	if( WM_CAPTURECHANGED == uMsg )
 	{
@@ -430,6 +430,8 @@ HRESULT CKTDGUIScrollBar::OnFrameRender()
 					m_dArrowTS = dCurrTime;
 				}
 				break;
+			default:
+				break;
 			}
 		} else
 			if( PtInRect( &m_rcDownButton, m_LastMouse ) )
@@ -450,6 +452,8 @@ HRESULT CKTDGUIScrollBar::OnFrameRender()
 						Scroll( 1 );
 						m_dArrowTS = dCurrTime;
 					}
+					break;
+				default:
 					break;
 				}
 			}

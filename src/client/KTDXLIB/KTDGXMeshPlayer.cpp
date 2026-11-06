@@ -110,7 +110,7 @@ bool CKTDGXMeshPlayer::Compile( const char *pScript, const int iLength/* = -1*/ 
 		MultiByteToWideChar( CP_ACP, 0, m_strLastError.c_str(), -1, wFileName, 255 );
 
 		OutputDebugString(wFileName);
-		MessageBox( NULL, wFileName, NULL, NULL );
+		MessageBox( NULL, wFileName, NULL, 0 );
 		return(false);
 	}
 	catch(const char *e)
@@ -120,7 +120,7 @@ bool CKTDGXMeshPlayer::Compile( const char *pScript, const int iLength/* = -1*/ 
 		MultiByteToWideChar( CP_ACP, 0, m_strLastError.c_str(), -1, wFileName, 255 );
 
 		OutputDebugString(wFileName);
-		MessageBox( NULL, wFileName, NULL, NULL );
+		MessageBox( NULL, wFileName, NULL, 0 );
 		return(false);
 	}
 	catch (...)
@@ -130,7 +130,7 @@ bool CKTDGXMeshPlayer::Compile( const char *pScript, const int iLength/* = -1*/ 
 		MultiByteToWideChar( CP_ACP, 0, m_strLastError.c_str(), -1, wFileName, 255);
 
 		OutputDebugString(wFileName);
-		MessageBox( NULL, wFileName, NULL, NULL );
+		MessageBox( NULL, wFileName, NULL, 0 );
 		return(false);
 	}
 
@@ -288,6 +288,8 @@ CKTDGXMeshPlayer::CXMeshInstance* CKTDGXMeshPlayer::CreateInstance( CKTDGObject*
 				if( pInstance->GetApplyUnitScale() == true )
 					pInstance->SetScaleByUnit( pKTDGObject->GetScaleByUnit() );
 			} break;
+		default:
+			break;
 		}
 	}
     pInstance->SetPerFrameSimulation( true );
@@ -503,7 +505,6 @@ CKTDGXMeshPlayer::CXMeshInstance* CKTDGXMeshPlayer::GetMeshInstance( CXMeshInsta
 bool CKTDGXMeshPlayer::ProcessXMeshPlayerBlock( std::vector<CXMeshPlayerToken>::iterator &TokenIter,
 												std::vector<CXMeshPlayerToken>::iterator &EndIter )
 {
-	bool StartedProcessingTemplet = false;
 	// move past the opening brace...
 	CXMeshPlayerTokenizer::NextToken(TokenIter, EndIter);
 
@@ -516,7 +517,6 @@ bool CKTDGXMeshPlayer::ProcessXMeshPlayerBlock( std::vector<CXMeshPlayerToken>::
 		{
 			case KeywordTemplet:
 				{
-					StartedProcessingTemplet = true;
 					XMeshTemplet *newTemplet = new XMeshTemplet();
 
 					if( !ProcessTempletBlock( *newTemplet, TokenIter, EndIter ) )
@@ -993,10 +993,10 @@ const CKTDGXMeshPlayer::XMeshTemplet* CKTDGXMeshPlayer::GetTempletByName( const 
 // CXMeshInstance
 ////////////////////////////////////////////
 CKTDGXMeshPlayer::CXMeshInstance::CXMeshInstance( CKTDGXMeshPlayer* pMeshPlayer, XMeshTemplet* pTemplet, D3DXVECTOR3 pos, D3DXVECTOR3 angleDegree, D3DXVECTOR3 moveAxisAngleDegree )
-: m_bParabolicCurve( false )
+: m_vScale( 1, 1, 1 )
 , m_pFrame_TRACE_START0( NULL )
 , m_pFrame_TRACE_END0( NULL )
-, m_vScale( 1, 1, 1 )
+, m_bParabolicCurve( false )
 , m_bToggleRotate(false)
 #if X2_DEV_TOOLS
 , m_pXMeshSphere ( NULL )
@@ -1357,6 +1357,8 @@ HRESULT CKTDGXMeshPlayer::CXMeshInstance::OnFrameMove( double fTime, float fElap
 
 		case IS_DIE:
 			break;
+	default:
+		break;
 	}
 
 	//이벤트 적용
@@ -1934,7 +1936,6 @@ void    CKTDGXMeshPlayer::CXMeshInstance::OnFrameRender_Draw()
 					if( NULL != m_pMatrixSphere )
 					{
 						m_pMatrixSphere->Move( vPos );
-						float fScale = pCollisionData->GetScaleRadius();
 						m_pMatrixSphere->Scale( 1, 1, 1 );
 						m_pMatrixSphere->UpdateWorldMatrix();
 					}
@@ -1969,7 +1970,6 @@ void CKTDGXMeshPlayer::CXMeshInstance::OpenResource()
 {
 	// process any initial events
 	CXMeshEvent*		pEvent		= NULL;
-	CKTDXDeviceTexture* pTexture	= NULL;
 	CKTDXDeviceSound*	pSound		= NULL;
 	for( int i = 0; i < (int)m_pOrgTemplet->animTimeEventList.size(); i++ )
 	{
@@ -1983,6 +1983,8 @@ void CKTDGXMeshPlayer::CXMeshInstance::OpenResource()
 					m_SoundMap.insert( std::make_pair(pSound->GetDeviceID(),pSound) );
 				}
 				break;
+		default:
+			break;
 		}
 	}
 	for( int i = 0; i < (int)m_pOrgTemplet->globalTimeEventList.size(); i++ )
@@ -1997,6 +1999,8 @@ void CKTDGXMeshPlayer::CXMeshInstance::OpenResource()
 					m_SoundMap.insert( std::make_pair(pSound->GetDeviceID(),pSound) );
 				}
 				break;
+		default:
+			break;
 		}
 	}
 	for( int i = 0; i < (int)m_pOrgTemplet->dieEventList.size(); i++ )
@@ -2011,6 +2015,8 @@ void CKTDGXMeshPlayer::CXMeshInstance::OpenResource()
 					m_SoundMap.insert( std::make_pair(pSound->GetDeviceID(),pSound) );
 				}
 				break;
+		default:
+			break;
 		}
 	}
 }
@@ -2019,8 +2025,8 @@ void CKTDGXMeshPlayer::CXMeshInstance::RunEvent()
 {
 
 
-    if( m_pXSkinAnim == NULL )
-        return;
+	if( m_pXSkinAnim == NULL )
+		return;
 
 	if( m_State == IS_PLAY )
 	{
@@ -2253,7 +2259,7 @@ void CKTDGXMeshPlayer::CXMeshInstance::ChangeAnim( const WCHAR* wcAnimName, CKTD
 
 	typedef KSingletonPool<sizeof(CKTDGXMeshPlayer::CXMeshInstance)> CXMeshInstancePool;
 
-	void* CKTDGXMeshPlayer::CXMeshInstance::operator new(size_t s)
+	void* CKTDGXMeshPlayer::CXMeshInstance::operator new(size_t /*s*/)
 	{
 		return CXMeshInstancePool::malloc();
 	}
@@ -2355,7 +2361,7 @@ void CKTDGXMeshPlayer::CXMeshEvent::ProcessPropEqualsValue(CKTDGXRenderer::RENDE
 
 
 void CKTDGXMeshPlayer::CXMeshEvent_AniName::
-    OnFrameMove( CXMeshInstance* pInstance, float fElapsedTime, float fOldTime, float fNowTime, bool bAniTime )
+    OnFrameMove( CXMeshInstance* pInstance, float /*fElapsedTime*/, float /*fOldTime*/, float /*fNowTime*/, bool /*bAniTime*/ )
 {
     //{{ seojt // 2009-1-12, 14:23
     ASSERT( pInstance != NULL );
@@ -2408,7 +2414,7 @@ bool CKTDGXMeshPlayer::CXMeshEvent_AniName::ProcessTokenStream(std::vector<CXMes
 
 
 void CKTDGXMeshPlayer::CXMeshEvent_SlashTrace::
-    OnFrameMove( CXMeshInstance* pInstance, float fElapsedTime, float fOldTime, float fNowTime, bool bAniTime )
+    OnFrameMove( CXMeshInstance* pInstance, float /*fElapsedTime*/, float /*fOldTime*/, float /*fNowTime*/, bool /*bAniTime*/ )
 {
 	pInstance->m_bSlashTrace = m_bSlashTrace;
 }
@@ -2424,7 +2430,7 @@ bool CKTDGXMeshPlayer::CXMeshEvent_SlashTrace::ProcessTokenStream(std::vector<CX
 
 
 void CKTDGXMeshPlayer::CXMeshEvent_AniSpeed::
-    OnFrameMove( CXMeshInstance* pInstance, float fElapsedTime, float fOldTime, float fNowTime, bool bAniTime )
+    OnFrameMove( CXMeshInstance* pInstance, float /*fElapsedTime*/, float /*fOldTime*/, float /*fNowTime*/, bool /*bAniTime*/ )
 {
 	pInstance->m_fAniPlaySpeed = m_AniSpeed.GetRandomNumInRange();
 }
@@ -2438,7 +2444,7 @@ bool CKTDGXMeshPlayer::CXMeshEvent_AniSpeed::ProcessTokenStream(std::vector<CXMe
 }
 
 void CKTDGXMeshPlayer::CXMeshEvent_Color::
-    OnFrameMove( CXMeshInstance* pInstance, float fElapsedTime, float fOldTime, float fNowTime, bool bAniTime )
+    OnFrameMove( CXMeshInstance* pInstance, float /*fElapsedTime*/, float fOldTime, float fNowTime, bool /*bAniTime*/ )
 {
 
 	if( !IsFade() )
@@ -2474,7 +2480,7 @@ bool CKTDGXMeshPlayer::CXMeshEvent_Color::ProcessTokenStream(std::vector<CXMeshP
 }
 
 void CKTDGXMeshPlayer::CXMeshEvent_OutLineColor::
-    OnFrameMove( CXMeshInstance* pInstance, float fElapsedTime, float fOldTime, float fNowTime, bool bAniTime )
+    OnFrameMove( CXMeshInstance* pInstance, float /*fElapsedTime*/, float fOldTime, float fNowTime, bool /*bAniTime*/ )
 {
 
 	if( !IsFade() )
@@ -2518,7 +2524,7 @@ bool CKTDGXMeshPlayer::CXMeshEvent_Position::ProcessTokenStream(std::vector<CXMe
 }
 
 void CKTDGXMeshPlayer::CXMeshEvent_Position::
-    OnFrameMove( CXMeshInstance* pInstance, float fElapsedTime, float fOldTime, float fNowTime, bool bAniTime )
+    OnFrameMove( CXMeshInstance* pInstance, float /*fElapsedTime*/, float fOldTime, float fNowTime, bool /*bAniTime*/ )
 {
 
 	if( !IsFade() )
@@ -2554,7 +2560,7 @@ void CKTDGXMeshPlayer::CXMeshEvent_Position::
 }
 
 void CKTDGXMeshPlayer::CXMeshEvent_Size::
-    OnFrameMove( CXMeshInstance* pInstance, float fElapsedTime, float fOldTime, float fNowTime, bool bAniTime )
+    OnFrameMove( CXMeshInstance* pInstance, float /*fElapsedTime*/, float fOldTime, float fNowTime, bool /*bAniTime*/ )
 {
 
 	if( !IsFade() )
@@ -2590,7 +2596,7 @@ bool CKTDGXMeshPlayer::CXMeshEvent_Size::ProcessTokenStream(std::vector<CXMeshPl
 }
 
 void CKTDGXMeshPlayer::CXMeshEvent_Velocity::
-    OnFrameMove( CXMeshInstance* pInstance, float fElapsedTime, float fOldTime, float fNowTime, bool bAniTime )
+    OnFrameMove( CXMeshInstance* pInstance, float /*fElapsedTime*/, float fOldTime, float fNowTime, bool bAniTime )
 {
 
 
@@ -2644,7 +2650,7 @@ bool CKTDGXMeshPlayer::CXMeshEvent_Velocity::ProcessTokenStream(std::vector<CXMe
 }
 
 void CKTDGXMeshPlayer::CXMeshEvent_Tex0UV::
-    OnFrameMove( CXMeshInstance* pInstance, float fElapsedTime, float fOldTime, float fNowTime, bool bAniTime )
+    OnFrameMove( CXMeshInstance* pInstance, float /*fElapsedTime*/, float fOldTime, float fNowTime, bool /*bAniTime*/ )
 {
 
 	if( !IsFade() )
@@ -2680,7 +2686,7 @@ bool CKTDGXMeshPlayer::CXMeshEvent_Tex0UV::ProcessTokenStream(std::vector<CXMesh
 }
 
 void CKTDGXMeshPlayer::CXMeshEvent_Tex1UV::
-    OnFrameMove( CXMeshInstance* pInstance, float fElapsedTime, float fOldTime, float fNowTime, bool bAniTime )
+    OnFrameMove( CXMeshInstance* pInstance, float /*fElapsedTime*/, float fOldTime, float fNowTime, bool /*bAniTime*/ )
 {
 
 	if( !IsFade() )
@@ -2716,7 +2722,7 @@ bool CKTDGXMeshPlayer::CXMeshEvent_Tex1UV::ProcessTokenStream(std::vector<CXMesh
 }
 
 void CKTDGXMeshPlayer::CXMeshEvent_Tex2UV::
-    OnFrameMove( CXMeshInstance* pInstance, float fElapsedTime, float fOldTime, float fNowTime, bool bAniTime )
+    OnFrameMove( CXMeshInstance* pInstance, float /*fElapsedTime*/, float fOldTime, float fNowTime, bool /*bAniTime*/ )
 {
 
 	if( !IsFade() )
@@ -2752,7 +2758,7 @@ bool CKTDGXMeshPlayer::CXMeshEvent_Tex2UV::ProcessTokenStream(std::vector<CXMesh
 }
 
 void CKTDGXMeshPlayer::CXMeshEvent_Rotate::
-    OnFrameMove( CXMeshInstance* pInstance, float fElapsedTime, float fOldTime, float fNowTime, bool bAniTime )
+    OnFrameMove( CXMeshInstance* pInstance, float /*fElapsedTime*/, float fOldTime, float fNowTime, bool /*bAniTime*/ )
 {
 
 	if( !IsFade() )
@@ -2794,7 +2800,7 @@ bool CKTDGXMeshPlayer::CXMeshEvent_Rotate::ProcessTokenStream(std::vector<CXMesh
 
 
 void CKTDGXMeshPlayer::CXMeshEvent_DirSpeed::
-    OnFrameMove( CXMeshInstance* pInstance, float fElapsedTime, float fOldTime, float fNowTime, bool bAniTime )
+    OnFrameMove( CXMeshInstance* pInstance, float /*fElapsedTime*/, float fOldTime, float fNowTime, bool /*bAniTime*/ )
 {
 
 	if( !IsFade() )
@@ -2831,7 +2837,7 @@ bool CKTDGXMeshPlayer::CXMeshEvent_DirSpeed::ProcessTokenStream(std::vector<CXMe
 }
 
 void CKTDGXMeshPlayer::CXMeshEvent_BlackHoleTime::
-    OnFrameMove( CXMeshInstance* pInstance, float fElapsedTime, float fOldTime, float fNowTime, bool bAniTime )
+    OnFrameMove( CXMeshInstance* pInstance, float /*fElapsedTime*/, float /*fOldTime*/, float /*fNowTime*/, bool /*bAniTime*/ )
 {
 	pInstance->m_BlackHoleTime = m_BlackHoleTime.GetRandomNumInRange();
 }
@@ -2845,7 +2851,7 @@ bool CKTDGXMeshPlayer::CXMeshEvent_BlackHoleTime::ProcessTokenStream(std::vector
 }
 
 void CKTDGXMeshPlayer::CXMeshEvent_Crash::
-    OnFrameMove( CXMeshInstance* pInstance, float fElapsedTime, float fOldTime, float fNowTime, bool bAniTime )
+    OnFrameMove( CXMeshInstance* pInstance, float /*fElapsedTime*/, float /*fOldTime*/, float fNowTime, bool /*bAniTime*/ )
 {
 	if( pInstance->m_fNowResetCrash < pInstance->m_fResetCrash )
 	{
@@ -2871,7 +2877,7 @@ bool CKTDGXMeshPlayer::CXMeshEvent_Crash::ProcessTokenStream(std::vector<CXMeshP
 
 
 void CKTDGXMeshPlayer::CXMeshEvent_ResetCrash::
-    OnFrameMove( CXMeshInstance* pInstance, float fElapsedTime, float fOldTime, float fNowTime, bool bAniTime )
+    OnFrameMove( CXMeshInstance* pInstance, float /*fElapsedTime*/, float /*fOldTime*/, float /*fNowTime*/, bool /*bAniTime*/ )
 {
 	pInstance->m_fResetCrash = m_ResetCrash.GetRandomNumInRange();
 }
@@ -2885,7 +2891,7 @@ bool CKTDGXMeshPlayer::CXMeshEvent_ResetCrash::ProcessTokenStream(std::vector<CX
 }
 
 void CKTDGXMeshPlayer::CXMeshEvent_LightFlowImpact::
-    OnFrameMove( CXMeshInstance* pInstance, float fElapsedTime, float fOldTime, float fNowTime, bool bAniTime )
+    OnFrameMove( CXMeshInstance* pInstance, float /*fElapsedTime*/, float fOldTime, float fNowTime, bool /*bAniTime*/ )
 {
 
 	if( !IsFade() )
@@ -2922,7 +2928,7 @@ bool CKTDGXMeshPlayer::CXMeshEvent_LightFlowImpact::ProcessTokenStream(std::vect
 
 
 void CKTDGXMeshPlayer::CXMeshEvent_LightFlowPoint::
-    OnFrameMove( CXMeshInstance* pInstance, float fElapsedTime, float fOldTime, float fNowTime, bool bAniTime )
+    OnFrameMove( CXMeshInstance* pInstance, float /*fElapsedTime*/, float fOldTime, float fNowTime, bool /*bAniTime*/ )
 {
 
 	if( !IsFade() )
@@ -2958,7 +2964,7 @@ bool CKTDGXMeshPlayer::CXMeshEvent_LightFlowPoint::ProcessTokenStream(std::vecto
 }
 
 void CKTDGXMeshPlayer::CXMeshEvent_Sound::
-    OnFrameMove( CXMeshInstance* pInstance, float fElapsedTime, float fOldTime, float fNowTime, bool bAniTime )
+    OnFrameMove( CXMeshInstance* pInstance, float /*fElapsedTime*/, float /*fOldTime*/, float /*fNowTime*/, bool /*bAniTime*/ )
 {
 	map<wstring,CKTDXDeviceSound*>::iterator iter;
 	iter = pInstance->m_SoundMap.find( m_SoundName );
@@ -2979,7 +2985,7 @@ bool CKTDGXMeshPlayer::CXMeshEvent_Sound::ProcessTokenStream(std::vector<CXMeshP
 }
 
 void CKTDGXMeshPlayer::CXMeshEvent_RenderType::
-    OnFrameMove( CXMeshInstance* pInstance, float fElapsedTime, float fOldTime, float fNowTime, bool bAniTime )
+    OnFrameMove( CXMeshInstance* pInstance, float /*fElapsedTime*/, float /*fOldTime*/, float /*fNowTime*/, bool /*bAniTime*/ )
 {
 	//float fRemainTime = m_ActualTime.m_Max - fNowTime;
 
@@ -3810,7 +3816,7 @@ void CKTDGXMeshPlayer::PlayEnd( CXMeshInstanceHandle hMeshInstanceHandle )
 //#ifdef	X2OPTIMIZE_REFACTORING_RESOURCE_BACKGROUND_LOAD
 bool	CKTDGXMeshPlayer::AppendToDeviceList( CKTDXDeviceDataList& listInOut_, const WCHAR* pTempletName, CKTDXDeviceManager::EPriority ePriority )
 {
-	if ( pTempletName == NULL || pTempletName[0] == NULL )
+	if ( pTempletName == NULL || pTempletName[0] == 0 )
 		return false;
 	return AppendToDeviceList( listInOut_, std::wstring(pTempletName), ePriority );
 }

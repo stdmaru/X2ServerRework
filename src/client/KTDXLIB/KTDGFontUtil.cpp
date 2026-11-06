@@ -402,7 +402,7 @@ namespace KTDGUTIL_STR_THAI
 
 	bool IsIntonation(const WCHAR wchar)
 	{
-		for( int i = 0; i < ARRAY_SIZE(INTONATION_TABLE); i++ )
+		for( int i = 0; i < (int)ARRAY_SIZE(INTONATION_TABLE); i++ )
 		{
 			if( INTONATION_TABLE[i] == wchar )
 				return true;

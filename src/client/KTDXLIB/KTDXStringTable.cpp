@@ -16,7 +16,7 @@ CKTDXStringTable::~CKTDXStringTable()
 {
 }
 
-bool CKTDXStringTable::InitializeStringTable( std::wstring& wstrGeneralStringFileName, std::wstring& wstrScriptStringFileName )
+bool CKTDXStringTable::InitializeStringTable( std::wstring& wstrGeneralStringFileName, std::wstring& /*wstrScriptStringFileName*/ )
 {
     return LoadStringTable( wstrGeneralStringFileName, m_vecGeneralStringTable );
 }

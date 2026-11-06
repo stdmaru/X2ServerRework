@@ -475,6 +475,7 @@ class CKTDGLineMap : public CKTDGObject
 
 		public:
 			LineAnimData( LINE_ANIM_TYPE eAnimType );
+			virtual ~LineAnimData() = default;
 			virtual void OnFrameMove( double fTime, float fElapsedTime );
 		};
 

@@ -9,7 +9,7 @@ CKTDXEnumToLua::~CKTDXEnumToLua(void)
 {
 }
 
-bool CKTDXEnumToLua::LoadEnumToLua( KLuaManager* pLuaManager, const WCHAR* pEnumFileName )
+bool CKTDXEnumToLua::LoadEnumToLua( KLuaManager* /*pLuaManager*/, const WCHAR* pEnumFileName )
 {
     if ( g_pKTDXApp->LoadLuaTinker( pEnumFileName ) == false )
     {

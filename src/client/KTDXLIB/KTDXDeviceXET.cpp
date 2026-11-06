@@ -15,9 +15,9 @@ CKTDXDeviceXET::~CKTDXDeviceXET(void)
 
 
 
-void CKTDXDeviceXET::SetMultiTexStage1( const char* pOrgTexName, const char* pBlendTexName, int colorOP )
+void CKTDXDeviceXET::SetMultiTexStage1( const char* /*pOrgTexName*/, const char* pBlendTexName, int colorOP )
 {
-	if ( pBlendTexName == NULL || pBlendTexName[0] == NULL )
+	if ( pBlendTexName == NULL || pBlendTexName[0] == 0 )
 		return;
 
 	wstring wBlendTexName = L"";
@@ -35,9 +35,9 @@ void CKTDXDeviceXET::SetMultiTexStage1( const char* pOrgTexName, const char* pBl
 	m_MultiTexStage1.colorOP = (D3DTEXTUREOP)colorOP;
 }
 
-void CKTDXDeviceXET::SetMultiTexStage2( const char* pOrgTexName, const char* pBlendTexName, int colorOP )
+void CKTDXDeviceXET::SetMultiTexStage2( const char* /*pOrgTexName*/, const char* pBlendTexName, int colorOP )
 {
-	if ( pBlendTexName == NULL || pBlendTexName[0] == NULL )
+	if ( pBlendTexName == NULL || pBlendTexName[0] == 0 )
 		return;
 
 	wstring wBlendTexName = L"";
@@ -115,7 +115,7 @@ HRESULT CKTDXDeviceXET::_Load( bool bSkipStateCheck
             const KXETFormatChangeTexture& kChangeTexture = *( const KXETFormatChangeTexture* )
                 ( pData + dwOffset );
             const wchar_t* pwszString = preprocessing.GetString( kChangeTexture.m_dwOffset_ChangeTexName );
-            if ( pwszString != NULL && pwszString[0] != NULL )
+            if ( pwszString != NULL && pwszString[0] != 0 )
                 vecTexture[ dwIndex ] = g_pKTDXApp->GetDeviceManager()->OpenTexture( pwszString );
             else
                 vecTexture[ dwIndex ] = NULL;
@@ -125,7 +125,7 @@ HRESULT CKTDXDeviceXET::_Load( bool bSkipStateCheck
         {
             const KXETFormatAniTexChangeEvent& kEvent = *( const KXETFormatAniTexChangeEvent* ) ( pData + dwOffset );
             const wchar_t* pwszString = preprocessing.GetString( kEvent.m_dwOffset_ChangeTexName );
-            if ( pwszString != NULL && pwszString[0] != NULL )
+            if ( pwszString != NULL && pwszString[0] != 0 )
                 vecTexture[ dwIndex + kHeader.m_dwNumChangeTexture ] = g_pKTDXApp->GetDeviceManager()->OpenTexture( pwszString );
             else
                 vecTexture[ dwIndex + kHeader.m_dwNumChangeTexture ] = NULL;
@@ -133,7 +133,7 @@ HRESULT CKTDXDeviceXET::_Load( bool bSkipStateCheck
         if ( kHeader.m_kMultiStage1.m_dwOffset_BlendTexName != 0 )
         {
             const wchar_t* pwszString = preprocessing.GetString( kHeader.m_kMultiStage1.m_dwOffset_BlendTexName );
-            if ( pwszString != NULL && pwszString[0] != NULL )
+            if ( pwszString != NULL && pwszString[0] != 0 )
                 multiTexStage1.pTexture = g_pKTDXApp->GetDeviceManager()->OpenTexture( pwszString );
             multiTexStage1.colorOP = D3DTEXTUREOP( kHeader.m_kMultiStage1.m_dwColorOP );
 
@@ -141,7 +141,7 @@ HRESULT CKTDXDeviceXET::_Load( bool bSkipStateCheck
         if ( kHeader.m_kMultiStage2.m_dwOffset_BlendTexName != 0 )
         {
             const wchar_t* pwszString = preprocessing.GetString( kHeader.m_kMultiStage2.m_dwOffset_BlendTexName );
-            if ( pwszString != NULL && pwszString[0] != NULL )
+            if ( pwszString != NULL && pwszString[0] != 0 )
                 multiTexStage2.pTexture = g_pKTDXApp->GetDeviceManager()->OpenTexture( pwszString );
             multiTexStage2.colorOP = D3DTEXTUREOP( kHeader.m_kMultiStage2.m_dwColorOP );
         }

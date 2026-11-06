@@ -247,7 +247,7 @@ HRESULT CKTDGGrayScale::DeviceShader::OnLostDevice()
 	return S_OK;
 }
 
-bool CKTDGGrayScale::DeviceShader::SetTechnique( char* strTechnique )
+bool CKTDGGrayScale::DeviceShader::SetTechnique( const char* strTechnique )
 {
 	if( m_pEffect == NULL )
 		return false;

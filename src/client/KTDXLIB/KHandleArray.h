@@ -167,14 +167,15 @@ protected:
         ///-----------------------------------------------------------------------------
         /// constructor.
         HANDLE_NODE()
-            //: tData(NULL), iHandle(-1), uiFlag(0), iPrev(-1), iNext(-1)
+            : tData(), nkey()   // value-initialized: copies of a cleared node read them
         {
             Clear();
         }//HANDLE_NODE()
 
         HANDLE_NODE(const HANDLE_NODE& right_)
+            : tData(right_.tData), nkey(right_.nkey), uiFlag(right_.uiFlag), uiMagic(right_.uiMagic),
+              iPrev(right_.iPrev), iNext(right_.iNext)
         {
-            operator=(right_);
         }//HANDLE_NODE()
 
         HANDLE_NODE& operator=(const HANDLE_NODE& right_)

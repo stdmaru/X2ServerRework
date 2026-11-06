@@ -9,7 +9,7 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CKTDGMatrix::CKTDGMatrix( LPDIRECT3DDEVICE9 pd3dDevice ) :
+CKTDGMatrix::CKTDGMatrix( LPDIRECT3DDEVICE9 /*pd3dDevice*/ ) :
 
 m_bChange( true ),
 m_LastBillboardType( BT_NONE ),
@@ -192,8 +192,8 @@ const D3DXMATRIX& CKTDGMatrix::GetMatrix( BILLBOARD_TYPE billboardType /*= BT_NO
 
 			case BT_X:
 				{
-					D3DXMATRIX matView, matTranspose;
-					D3DXMATRIX matbill, matFinal;
+					D3DXMATRIX matView;
+					D3DXMATRIX matbill;
 
 					g_pKTDXApp->GetViewTransform( &matView );
 					D3DXMatrixIdentity(&matbill);
@@ -211,8 +211,8 @@ const D3DXMATRIX& CKTDGMatrix::GetMatrix( BILLBOARD_TYPE billboardType /*= BT_NO
 
 			case BT_Y:
 				{
-					D3DXMATRIX matView, matTranspose;
-					D3DXMATRIX matbill, matFinal;
+					D3DXMATRIX matView;
+					D3DXMATRIX matbill;
 
 					g_pKTDXApp->GetViewTransform( &matView );
 					D3DXMatrixIdentity(&matbill);
@@ -230,8 +230,8 @@ const D3DXMATRIX& CKTDGMatrix::GetMatrix( BILLBOARD_TYPE billboardType /*= BT_NO
 
 			case BT_Z:
 				{
-					D3DXMATRIX matView, matTranspose;
-					D3DXMATRIX matbill, matFinal;
+					D3DXMATRIX matView;
+					D3DXMATRIX matbill;
 
 					g_pKTDXApp->GetViewTransform( &matView );
 					D3DXMatrixIdentity(&matbill);
@@ -258,7 +258,7 @@ const D3DXMATRIX& CKTDGMatrix::GetMatrix( BILLBOARD_TYPE billboardType /*= BT_NO
 
 	typedef KSingletonPool<sizeof(CKTDGMatrix)> CKTDGMatrixPool;
 
-	void* CKTDGMatrix::operator new(size_t s)
+	void* CKTDGMatrix::operator new(size_t /*s*/)
 	{
 		return CKTDGMatrixPool::malloc();
 	}

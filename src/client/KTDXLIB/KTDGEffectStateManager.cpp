@@ -38,8 +38,8 @@ CKTDGEffectStateManager::CKTDGEffectStateManager()
 CKTDGEffectStateManager::~CKTDGEffectStateManager()
 {
     ASSERT( !m_bInEffect );
-    if ( m_bInEffect )
-        RestoreEffectState();
+	if ( m_bInEffect )
+		RestoreEffectState();
 
 	SAFE_DELETE_ARRAY( m_pfFloatVSConstantData );
 }//CKTDGEffectStateManager::~CKTDGEffectStateManager()
@@ -94,15 +94,15 @@ HRESULT     CKTDGEffectStateManager::RestoreEffectState()
             const CKTDGStateManager::KState& kTop = _GetStackTop();
             switch( kTop.m_eType )
             {
-            case STATE_TYPE_RENDER:
+            case CKTDGStateManager::STATE_TYPE_RENDER:
                 m_bitsetRenderState.reset( kTop.m_dwType );
                 CKTDGStateManager::SetRenderState( (D3DRENDERSTATETYPE) kTop.m_dwType, kTop.m_dwValue );
                 break;
-            case STATE_TYPE_TEXTURE_STAGE:
+            case CKTDGStateManager::STATE_TYPE_TEXTURE_STAGE:
                 m_bitsetTextureStageState.reset( kTop.m_dwStage * D3DTSS_MAX + kTop.m_dwType );
                 CKTDGStateManager::SetTextureStageState( kTop.m_dwStage, (D3DTEXTURESTAGESTATETYPE) kTop.m_dwType, kTop.m_dwValue );
                 break;
-            case STATE_TYPE_SAMPLER:
+            case CKTDGStateManager::STATE_TYPE_SAMPLER:
                 m_bitsetSamplerState.reset( kTop.m_dwStage * D3DSSS_MAX + kTop.m_dwType );
                 CKTDGStateManager::SetSamplerState( kTop.m_dwStage, (D3DSAMPLERSTATETYPE) kTop.m_dwType, kTop.m_dwValue );
                 break;
@@ -242,8 +242,8 @@ HRESULT STDMETHODCALLTYPE CKTDGEffectStateManager::SetTexture(THIS_ DWORD Stage,
 HRESULT STDMETHODCALLTYPE CKTDGEffectStateManager::SetTextureStageState(THIS_ DWORD Stage, D3DTEXTURESTAGESTATETYPE Type, DWORD Value)
 {
     ASSERT( m_bInEffect );
-    ASSERT( Stage >= 0 && Stage < TEXTURE_STAGE_NUM && Type >= D3DTEXTURESTAGESTATETYPE(0) && Type < D3DTSS_MAX );
-    if ( !( Stage >= 0 && Stage < TEXTURE_STAGE_NUM && Type >= D3DTEXTURESTAGESTATETYPE(0) && Type < D3DTSS_MAX ) )
+    ASSERT( Stage < TEXTURE_STAGE_NUM && Type >= D3DTEXTURESTAGESTATETYPE(0) && Type < D3DTSS_MAX );
+    if ( !( Stage < TEXTURE_STAGE_NUM && Type >= D3DTEXTURESTAGESTATETYPE(0) && Type < D3DTSS_MAX ) )
         return E_FAIL;
     size_t  bit = Stage * D3DTSS_MAX + Type;
     if ( !m_bitsetTextureStageState.test( bit ) )
@@ -259,8 +259,8 @@ HRESULT STDMETHODCALLTYPE CKTDGEffectStateManager::SetTextureStageState(THIS_ DW
 HRESULT STDMETHODCALLTYPE CKTDGEffectStateManager::SetSamplerState(THIS_ DWORD Sampler, D3DSAMPLERSTATETYPE Type, DWORD Value)
 {
     ASSERT( m_bInEffect );
-    ASSERT( Sampler >= 0 && Sampler < SAMPLER_STAGE_NUM && Type >= D3DSAMPLERSTATETYPE( 0 ) && Type < D3DSSS_MAX );
-    if ( !( Sampler >= 0 && Sampler < SAMPLER_STAGE_NUM && Type >= D3DSAMPLERSTATETYPE( 0 ) && Type < D3DSSS_MAX ) )
+    ASSERT( Sampler < SAMPLER_STAGE_NUM && Type >= D3DSAMPLERSTATETYPE( 0 ) && Type < D3DSSS_MAX );
+    if ( !( Sampler < SAMPLER_STAGE_NUM && Type >= D3DSAMPLERSTATETYPE( 0 ) && Type < D3DSSS_MAX ) )
         return E_FAIL;
     size_t  bit = Sampler * D3DSSS_MAX + Type;
     if ( !m_bitsetSamplerState.test( bit ) )
@@ -273,7 +273,7 @@ HRESULT STDMETHODCALLTYPE CKTDGEffectStateManager::SetSamplerState(THIS_ DWORD S
 }//CKTDGEffectStateManager::SetSamplerState()
 
 
-HRESULT STDMETHODCALLTYPE CKTDGEffectStateManager::SetNPatchMode(THIS_ FLOAT NumSegments)
+HRESULT STDMETHODCALLTYPE CKTDGEffectStateManager::SetNPatchMode(THIS_ FLOAT /*NumSegments*/)
 {
     ASSERT( m_bInEffect );
     return  D3D_OK;   // ignored: no shaders read it until the effects are rewritten (T37)
@@ -310,14 +310,14 @@ HRESULT STDMETHODCALLTYPE CKTDGEffectStateManager::SetVertexShader(THIS_ LPDIREC
 }//CKTDGEffectStateManager::SetVertexShader()
 
 
-HRESULT STDMETHODCALLTYPE CKTDGEffectStateManager::SetVertexShaderConstantI(THIS_ UINT RegisterIndex, CONST INT *pConstantData, UINT RegisterCount)
+HRESULT STDMETHODCALLTYPE CKTDGEffectStateManager::SetVertexShaderConstantI(THIS_ UINT /*RegisterIndex*/, CONST INT */*pConstantData*/, UINT /*RegisterCount*/)
 {
     ASSERT( m_bInEffect );
     return  D3D_OK;   // ignored: no shaders read it until the effects are rewritten (T37)
 }//CKTDGEffectStateManager::SetVertexShaderConstantI()
 
 
-HRESULT STDMETHODCALLTYPE CKTDGEffectStateManager::SetVertexShaderConstantB(THIS_ UINT RegisterIndex, CONST BOOL *pConstantData, UINT RegisterCount)
+HRESULT STDMETHODCALLTYPE CKTDGEffectStateManager::SetVertexShaderConstantB(THIS_ UINT /*RegisterIndex*/, CONST BOOL */*pConstantData*/, UINT /*RegisterCount*/)
 {
     ASSERT( m_bInEffect );
     return  D3D_OK;   // ignored: no shaders read it until the effects are rewritten (T37)
@@ -339,21 +339,21 @@ HRESULT STDMETHODCALLTYPE CKTDGEffectStateManager::SetPixelShader(THIS_ LPDIRECT
 }//CKTDGEffectStateManager::SetPixelShader()
 
 
-HRESULT STDMETHODCALLTYPE CKTDGEffectStateManager::SetPixelShaderConstantF(THIS_ UINT RegisterIndex, CONST FLOAT *pConstantData, UINT RegisterCount)
+HRESULT STDMETHODCALLTYPE CKTDGEffectStateManager::SetPixelShaderConstantF(THIS_ UINT /*RegisterIndex*/, CONST FLOAT */*pConstantData*/, UINT /*RegisterCount*/)
 {
     ASSERT( m_bInEffect );
     return  D3D_OK;   // ignored: no shaders read it until the effects are rewritten (T37)
 }//CKTDGEffectStateManager::SetPixelShaderConstantF()
 
 
-HRESULT STDMETHODCALLTYPE CKTDGEffectStateManager::SetPixelShaderConstantI(THIS_ UINT RegisterIndex, CONST INT *pConstantData, UINT RegisterCount)
+HRESULT STDMETHODCALLTYPE CKTDGEffectStateManager::SetPixelShaderConstantI(THIS_ UINT /*RegisterIndex*/, CONST INT */*pConstantData*/, UINT /*RegisterCount*/)
 {
     ASSERT( m_bInEffect );
     return  D3D_OK;   // ignored: no shaders read it until the effects are rewritten (T37)
 }//CKTDGEffectStateManager::SetPixelShaderConstantI()
 
 
-HRESULT STDMETHODCALLTYPE CKTDGEffectStateManager::SetPixelShaderConstantB(THIS_ UINT RegisterIndex, CONST BOOL *pConstantData, UINT RegisterCount)
+HRESULT STDMETHODCALLTYPE CKTDGEffectStateManager::SetPixelShaderConstantB(THIS_ UINT /*RegisterIndex*/, CONST BOOL */*pConstantData*/, UINT /*RegisterCount*/)
 {
     ASSERT( m_bInEffect );
     return  D3D_OK;   // ignored: no shaders read it until the effects are rewritten (T37)

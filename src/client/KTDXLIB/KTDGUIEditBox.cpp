@@ -134,7 +134,6 @@ HRESULT CKTDGUIEditBox::OnFrameRender()
 	DrawEditEdge();
 #endif
 
-	HRESULT hr;
 	int nSelStartX = 0, nCaretX = 0;  // Left and right X cordinates of the selection region
 
 	m_Buffer.SetFontNode( m_pFont );
@@ -161,10 +160,10 @@ HRESULT CKTDGUIEditBox::OnFrameRender()
 	//
 	// Compute the X coordinates of the selection rectangle
 	//
-	hr = m_Buffer.CPtoX( m_nCaret, FALSE, &nCaretX );
+	m_Buffer.CPtoX( m_nCaret, FALSE, &nCaretX );
 
 	if( m_nCaret != m_nSelStart )
-		hr = m_Buffer.CPtoX( m_nSelStart, FALSE, &nSelStartX );
+		m_Buffer.CPtoX( m_nSelStart, FALSE, &nSelStartX );
 	else
 		nSelStartX = nCaretX;
 
@@ -266,7 +265,7 @@ HRESULT CKTDGUIEditBox::OnFrameRender()
 	return S_OK;
 }
 
-bool CKTDGUIEditBox::HandleKeyboard( UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CKTDGUIEditBox::HandleKeyboard( UINT uMsg, WPARAM wParam, LPARAM /*lParam*/ )
 {
 	if( m_bEnable == false )
 		return false;
@@ -313,6 +312,7 @@ bool CKTDGUIEditBox::HandleKeyboard( UINT uMsg, WPARAM wParam, LPARAM lParam )
 					// Control Insert. Copy to clipboard
 					CopyToClipboard();
 				} else
+				{
 					if( GetKeyState( VK_SHIFT ) < 0 )
 					{
 						// Shift Insert. Paste from clipboard
@@ -322,7 +322,8 @@ bool CKTDGUIEditBox::HandleKeyboard( UINT uMsg, WPARAM wParam, LPARAM lParam )
 						// Toggle caret insert mode
 						m_bInsertMode = !m_bInsertMode;
 					}
-					break;
+				}
+				break;
 
 			case VK_DELETE:
 				// Check if there is a text selection.
@@ -402,7 +403,7 @@ bool CKTDGUIEditBox::HandleKeyboard( UINT uMsg, WPARAM wParam, LPARAM lParam )
 	return bHandled;
 }
 
-bool CKTDGUIEditBox::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lParam )
+bool CKTDGUIEditBox::HandleMouse( UINT uMsg, POINT pt, WPARAM /*wParam*/, LPARAM lParam )
 {
 	if( m_bEnable == false )
 		return false;
@@ -473,7 +474,7 @@ bool CKTDGUIEditBox::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lPa
 	return false;
 }
 
-bool CKTDGUIEditBox::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CKTDGUIEditBox::MsgProc( HWND /*hWnd*/, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/ )
 {
 	if( m_bEnable == false || m_bShow == false )
 		return false;
@@ -507,6 +508,7 @@ bool CKTDGUIEditBox::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 							SendInternelEvent( g_pKTDXApp->GetHWND(), CKTDXApp::KM_UI_CONTROL_EVENT, EEM_CHANGE, (LPARAM)this );
 					}
 					else
+					{
 						if( m_nCaret > 0 )
 						{
 							// Move the caret, then delete the char.
@@ -519,7 +521,8 @@ bool CKTDGUIEditBox::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 							else
 								SendInternelEvent( g_pKTDXApp->GetHWND(), CKTDXApp::KM_UI_CONTROL_EVENT, EEM_CHANGE, (LPARAM)this );
 						}
-						ResetCaretBlink();
+					}
+					ResetCaretBlink();
 						break;
 				}
 
@@ -594,7 +597,7 @@ bool CKTDGUIEditBox::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 			case 16:  // Ctrl P
 			case 27:  // Ctrl [
 			case 29:  // Ctrl ]
-			case 28:  // Ctrl \
+			case 28:  // Ctrl backslash
 				break;
 
 			default:

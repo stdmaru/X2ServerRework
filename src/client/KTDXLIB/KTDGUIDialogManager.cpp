@@ -333,8 +333,8 @@ bool CKTDGUIDialogManager::CheckDlg( CKTDGUIDialogType pDialogToCheck )
 // 본 함수는 외부 iteration 중에 호출되어도 안전하다. 내부적으로도 숨겨진 iteration을 유발하지 않는다.
 	KTDXPROFILE();
 
-    if ( pDialogToCheck == NULL )
-        return false;
+	if ( pDialogToCheck == NULL )
+		return false;
 
 	if( m_setDialog.find( pDialogToCheck ) == m_setDialog.end() )
 		return false;
@@ -391,8 +391,8 @@ bool CKTDGUIDialogManager::CheckFrontModalDlg( CKTDGUIDialogType pPivotDialog )
 
 	KTDXPROFILE();
 
-    if ( !CheckDlg( pPivotDialog ) )
-        return false;
+	if ( !CheckDlg( pPivotDialog ) )
+		return false;
 
 	for( CKTDGUIDialogList::reverse_iterator iter = m_listDialog.rbegin();
 		iter != m_listDialog.rend(); iter++ )
@@ -542,8 +542,8 @@ bool CKTDGUIDialogManager::ChangeSequence( CKTDGUIDialogType pDialog, bool bTop 
 	KTDXPROFILE();
 
 
-    if ( !CheckDlg( pDialog ) )
-        return false;
+	if ( !CheckDlg( pDialog ) )
+		return false;
 
 
 
@@ -568,8 +568,8 @@ bool CKTDGUIDialogManager::ChangeSequence( CKTDGUIDialogType pDialog, bool bTop 
     ASSERT( bRet );
     if ( bTop )
         _InsertIntoDialogListTop( pDialog );
-    else
-        _InsertIntoDialogListBottom( pDialog );
+	else
+		_InsertIntoDialogListBottom( pDialog );
 
 	return true;
 }
@@ -638,7 +638,7 @@ CKTDGUIDialog* CKTDGUIDialogManager::GetDialog_LUA( const char* pName )
 // 여기서 호출하는 CKTDGUIDialog 함수들은 모두 안전
 // 본 함수는 외부 iteration 중에 호출되어도 안전하다. 내부적으로도 숨겨진 iteration을 유발하지 않는다.
 
-	if( NULL == pName || pName[0] == NULL )
+	if( NULL == pName || pName[0] == 0 )
 		return NULL;
 
 

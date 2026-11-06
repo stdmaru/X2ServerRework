@@ -32,6 +32,7 @@ class CKTDGPicChar
 				m_fMaxRemainTime	= 0.0f;
 			}
 
+			StrData( const StrData& ) = default;
 			StrData& operator=( const StrData& data )
 			{
 				m_wStr				= data.m_wStr;

@@ -137,10 +137,10 @@ KLuaManagerProxy::~KLuaManagerProxy(void)
 }
 
 //////////////////////////////////////////////////////////////////////////
-bool KLuaManagerProxy::BeginTable( const char* pszName, int index, bool bLogOutput /*= true */ )
+bool KLuaManagerProxy::BeginTable( const char* pszName, int index, bool /*bLogOutput*/ /*= true */ )
 {
-    if ( pszName == NULL || pszName[0] == NULL )
-        return false;
+	if ( pszName == NULL || pszName[0] == 0 )
+		return false;
 
 	char szText[255] = {0,};
 	StringCchPrintfA( szText, 255, "%s%d", pszName, index );
@@ -149,7 +149,7 @@ bool KLuaManagerProxy::BeginTable( const char* pszName, int index, bool bLogOutp
 }
 
 
-bool KLuaManagerProxy::BeginTable( const char* pszName, bool bLogOutput /*= true*/ )
+bool KLuaManagerProxy::BeginTable( const char* pszName, bool /*bLogOutput*/ /*= true*/ )
 {
 	KLuaManagerProxyLuaTable* spLuaTable = StackGetTable( pszName );
 	if( spLuaTable != NULL )
@@ -161,7 +161,7 @@ bool KLuaManagerProxy::BeginTable( const char* pszName, bool bLogOutput /*= true
 	return false;
 }
 
-bool KLuaManagerProxy::BeginTable( int iIndex, bool bLogOutput /*= true*/ )
+bool KLuaManagerProxy::BeginTable( int iIndex, bool /*bLogOutput*/ /*= true*/ )
 {
 	KLuaManagerProxyLuaTable* spLuaTable = StackGetTable( iIndex );
 	if( spLuaTable != NULL )
@@ -184,7 +184,7 @@ bool KLuaManagerProxy::BeginTable( KLuaManagerProxyLuaTable* table )
     return false;
 }//KLuaManagerProxy::BeginTable()
 
-bool KLuaManagerProxy::EndTable( bool bLogOutput /*= true*/ )
+bool KLuaManagerProxy::EndTable( bool /*bLogOutput*/ /*= true*/ )
 {
 	if ( m_dequeLuaTable.size() <= 1 )
 		return false;
@@ -192,7 +192,7 @@ bool KLuaManagerProxy::EndTable( bool bLogOutput /*= true*/ )
 }
 
 
-bool KLuaManagerProxy::GetValue( const char* pszName, bool& bValue, bool bLogOutput /*= true*/ )
+bool KLuaManagerProxy::GetValue( const char* pszName, bool& bValue, bool /*bLogOutput*/ /*= true*/ )
 {
 	if( NULL == pszName )
 		return false;
@@ -201,7 +201,7 @@ bool KLuaManagerProxy::GetValue( const char* pszName, bool& bValue, bool bLogOut
 	return GetBooleanFromLuaValue( bValue, pLuaValue );
 }
 
-bool KLuaManagerProxy::GetValue( int iIndex, bool& bValue, bool bLogOutput /*= true*/ )
+bool KLuaManagerProxy::GetValue( int iIndex, bool& bValue, bool /*bLogOutput*/ /*= true*/ )
 {
 	KLuaManagerProxyLuaValue* pLuaValue = StackGetValue( iIndex );
 	return GetBooleanFromLuaValue( bValue, pLuaValue );
@@ -237,25 +237,25 @@ bool KLuaManagerProxy::GetValue( int iIndex, bool& bValue, bool bLogOutput /*= t
 
 
 
-bool KLuaManagerProxy::GetValue( const char* pszName, wchar_t* wszValue, int bufferSize, bool bLogOutput /*= true*/ )
+bool KLuaManagerProxy::GetValue( const char* pszName, wchar_t* wszValue, int bufferSize, bool /*bLogOutput*/ /*= true*/ )
 {
 	KLuaManagerProxyLuaValue* pLuaValue = StackGetValue( pszName );
 	return	GetStringFromLuaValue( wszValue, bufferSize, pLuaValue );
 }
 
-bool KLuaManagerProxy::GetValue( const char* pszName, std::wstring& wstrValue, bool bLogOutput /*= true*/ )
+bool KLuaManagerProxy::GetValue( const char* pszName, std::wstring& wstrValue, bool /*bLogOutput*/ /*= true*/ )
 {
 	KLuaManagerProxyLuaValue* pLuaValue = StackGetValue( pszName );
 	return	GetStringFromLuaValue( wstrValue, pLuaValue );
 }
 
-bool KLuaManagerProxy::GetValue( int iIndex, wchar_t* wszValue, int bufferSize, bool bLogOutput /*= true*/ )
+bool KLuaManagerProxy::GetValue( int iIndex, wchar_t* wszValue, int bufferSize, bool /*bLogOutput*/ /*= true*/ )
 {
 	KLuaManagerProxyLuaValue* pLuaValue = StackGetValue( iIndex );
 	return	GetStringFromLuaValue( wszValue, bufferSize, pLuaValue );
 }
 
-bool KLuaManagerProxy::GetValue( int iIndex, std::wstring& wstrValue, bool bLogOutput /*= true*/ )
+bool KLuaManagerProxy::GetValue( int iIndex, std::wstring& wstrValue, bool /*bLogOutput*/ /*= true*/ )
 {
 	KLuaManagerProxyLuaValue* pLuaValue = StackGetValue( iIndex );
 	return	GetStringFromLuaValue( wstrValue, pLuaValue );
@@ -285,7 +285,7 @@ bool KLuaManagerProxy::StackPop()
 
 KLuaManagerProxyLuaValue* KLuaManagerProxy::StackGetValue( const char* valueName )
 {
-    if ( valueName == NULL || valueName[0] == NULL )
+    if ( valueName == NULL || valueName[0] == 0 )
         return NULL;
 
     LuaName2ValueMap::iterator it = m_dequeLuaTable.back()->m_map.find( ( valueName ) );
@@ -349,8 +349,8 @@ unsigned    KLuaManagerProxy::GetNumIndexedTables()
 
 unsigned    KLuaManagerProxy::GetNumIndexedTables( const char* pszName )
 {
-    if ( pszName == NULL || pszName[0] == NULL )
-        return 0;
+	if ( pszName == NULL || pszName[0] == 0 )
+		return 0;
 
 	char szText[MAX_PATH] = {0,};
 
@@ -371,8 +371,8 @@ unsigned    KLuaManagerProxy::GetNumIndexedTables( const char* pszName )
 
 unsigned    KLuaManagerProxy::GetNumIndexedValues( const char* pszName, int iBaseIndex )
 {
-    if ( pszName == NULL || pszName[0] == NULL || iBaseIndex < 0 )
-        return 0;
+	if ( pszName == NULL || pszName[0] == 0 || iBaseIndex < 0 )
+		return 0;
 
 	char szText[MAX_PATH] = {0,};
 
@@ -393,7 +393,7 @@ unsigned    KLuaManagerProxy::GetNumIndexedValues( const char* pszName, int iBas
 
 KLuaManagerProxyLuaTable* KLuaManagerProxy::StackGetTable( const char* tableName )
 {
-	if ( tableName == NULL || tableName[0] == NULL )
+	if ( tableName == NULL || tableName[0] == 0 )
 		return NULL;
 
 	KLuaManagerProxyLuaValue* pLuaValue = StackGetValue( tableName );
@@ -442,6 +442,8 @@ bool KLuaManagerProxy::GetBooleanFromLuaValue( bool& val, KLuaManagerProxyLuaVal
 		case LUA_VALUE_NUMBER:
 			val = ( static_cast<int>( pLuaValue->m_dNumber ) != 0 );
 			return true;
+		default:
+			break;
 		}//switch
 		//val = true;
 		//return true;
@@ -524,6 +526,8 @@ bool	KLuaManagerProxy::GetStringFromLuaValue( std::wstring& wstrValue, KLuaManag
                 wstrValue = x2::platform::Utf8ToWide( pLuaValue->m_strStringUTF8 );
             }
 			return true;
+		default:
+			break;
 		}//switch
 		return false;
 	}
@@ -534,8 +538,8 @@ bool	KLuaManagerProxy::GetStringFromLuaValue( std::wstring& wstrValue, KLuaManag
 
 bool	KLuaManagerProxy::GetStringFromLuaValue( wchar_t* wszValue, int bufferSize, KLuaManagerProxyLuaValue* pLuaValue )
 {
-    if ( wszValue == NULL || bufferSize <= 0 )
-        return false;
+	if ( wszValue == NULL || bufferSize <= 0 )
+		return false;
 
 	if ( NULL != pLuaValue )
 	{
@@ -553,6 +557,7 @@ bool	KLuaManagerProxy::GetStringFromLuaValue( wchar_t* wszValue, int bufferSize,
             }
 			return true;
 		case LUA_VALUE_STRING:
+            {
             if ( pLuaValue->m_strStringUTF8.empty() == true )
             {
                 wszValue[0] = 0;
@@ -564,8 +569,11 @@ bool	KLuaManagerProxy::GetStringFromLuaValue( wchar_t* wszValue, int bufferSize,
                 wszValue[0] = 0;
                 return true;
             }
-            wszValue[ iNewSize ] = NULL;
+            wszValue[ iNewSize ] = 0;
+            }
 			return true;
+		default:
+			break;
 		}//switch
 		return false;
 	}
@@ -583,7 +591,7 @@ bool    KLuaManagerProxy::DoMemoryNotEncrypt( const char* pRealFile, long nSize 
         nSize -= 3;
         pRealFile += 3;
     }
-    if ( nSize <= 0 || pRealFile[0] == NULL )
+    if ( nSize <= 0 || pRealFile[0] == 0 )
         return false;
 
     ASSERT( m_dequeLuaTable.size() == 1 );
@@ -689,6 +697,7 @@ bool    KLuaManagerProxy::DoMemoryNotEncrypt( const char* pRealFile, long nSize 
                                     return false;
                                 }
                                 bCloseTable = true;
+                                [[fallthrough]];
                             case ',':
                                 switch( deqState.back() )
                                 {
@@ -1048,7 +1057,7 @@ bool    KLuaManagerProxy::DoMemoryNotEncrypt( const char* pRealFile, long nSize 
 
 bool    KLuaManagerProxy::LuaCall( const char* pszFunction, const std::vector<KLuaManagerProxyLuaValue>& vecArgs )
 {
-    if ( m_pLuaState == NULL || pszFunction == NULL || pszFunction[0] == NULL )
+    if ( m_pLuaState == NULL || pszFunction == NULL || pszFunction[0] == 0 )
         return false;
     lua_pushstring( m_pLuaState, pszFunction );
     lua_getglobal( m_pLuaState, pszFunction );

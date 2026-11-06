@@ -356,7 +356,7 @@ inline bool OUTOF_RANGE( const float& x, const float& rangeMin, const float& ran
 		return false;
 }
 
-inline CHAR* StrHeapCopy( CHAR *sName )
+inline CHAR* StrHeapCopy( const CHAR *sName )
 {
 //{{ robobeg : 2008-01-05
 	//DWORD dwLen = (DWORD) strlen( sName ) + 1;

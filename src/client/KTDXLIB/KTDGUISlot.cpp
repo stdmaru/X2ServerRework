@@ -108,7 +108,7 @@ m_pEdgeTexture(NULL)
 	SAFE_DELETE(m_pSlotData);
 }
 
-bool CKTDGUISlot::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lParam )
+bool CKTDGUISlot::HandleMouse( UINT uMsg, POINT pt, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	if( m_bEnable == false || m_bShow == false )
 		return false;
@@ -254,6 +254,7 @@ void CKTDGUISlot::LButtonMouseUp()
  			SendInternelEvent( g_pKTDXApp->GetHWND(), CKTDXApp::KM_UI_CONTROL_CUSTOM_EVENT, m_CustomMsgMouseUp, (LPARAM)this );
 			ChangeState(SCS_NORMAL);
  		}
+		[[fallthrough]];
 	case SCS_DISABLE:
 	case SCS_END:
 	default:
@@ -361,6 +362,8 @@ void CKTDGUISlot::LButtonMouseUp()
 			if( m_bEnable == true )
 				ChangeState( SCS_NORMAL );
 		}
+		break;
+	default:
 		break;
 	}
 
@@ -687,6 +690,8 @@ HRESULT	CKTDGUISlot::RenderDragSlot()
 				}
 				m_Color = m_cNormalSlotColor;
 			}
+			break;
+		default:
 			break;
 		}
 	}

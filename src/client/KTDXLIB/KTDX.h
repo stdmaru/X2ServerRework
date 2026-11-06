@@ -469,7 +469,7 @@ using std::set;
 #else
 
 	#if !defined(ASSERT)
-		#define ASSERT(exp)
+		#define ASSERT(exp)         ((void)sizeof(!(exp)))  // not evaluated; keeps the variables it checks in use
 	#endif // #if !defined(ASSERT)
 
 	#ifndef V

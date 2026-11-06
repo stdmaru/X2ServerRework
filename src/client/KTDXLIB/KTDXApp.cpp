@@ -349,7 +349,7 @@ void    CKTDXApp::ExitLuaThread()
 //
 // #endif // BACKGROUND_LOADING_TEST // 2008-10-17
 
-HRESULT CKTDXApp::OnFrameMove( double dTime, float fElapsedTime )
+HRESULT CKTDXApp::OnFrameMove( double /*dTime*/, float fElapsedTime )
 {
 	KLagCheck( eUnKnown_LagCheckType_Simulation );
 	KTDXPROFILE();
@@ -519,7 +519,7 @@ void CKTDXApp::FrameProcess()
 					}
 				}
 			}
-			if( gameMessage.uMsg == KM_RECEIVE_FROM_P2P && bMsgHandle == false && gameMessage.lParam != NULL )
+			if( gameMessage.uMsg == KM_RECEIVE_FROM_P2P && bMsgHandle == false && gameMessage.lParam != 0 )
 			{
 				CKTDNPacket::PacketData* pPacketData = (CKTDNPacket::PacketData*)gameMessage.lParam;
 				SAFE_DELETE( pPacketData );
@@ -728,7 +728,7 @@ bool CKTDXApp::SendGameMessage( UINT uMsg, WPARAM wParam, LPARAM lParam, bool bD
 				}
 			}
 		}
-		if( uMsg == KM_RECEIVE_FROM_P2P && lParam != NULL && bHandle == false )
+		if( uMsg == KM_RECEIVE_FROM_P2P && lParam != 0 && bHandle == false )
 		{
 			CKTDNPacket::PacketData* pPacketData = (CKTDNPacket::PacketData*)lParam;
 			if( pPacketData->senderID < 0 || pPacketData->packetType < 0 )
@@ -753,7 +753,7 @@ bool CKTDXApp::SendGameMessage( UINT uMsg, WPARAM wParam, LPARAM lParam, bool bD
 
 
 //{{ seojt // 2009-8-19, 16:46
-bool CKTDXApp::SendGameDlgMessage(UINT uMsg, CKTDGUIDialogType wParam, LPARAM lParam, bool bDirectProcess /*=true*/)
+bool CKTDXApp::SendGameDlgMessage(UINT uMsg, CKTDGUIDialogType wParam, LPARAM /*lParam*/, bool bDirectProcess /*=true*/)
 {
 	//return SendGameMessage( uMsg, (WPARAM)wParam.GetHandle().GetHandlePart(), lParam, bDirectProcess );
 
@@ -878,6 +878,18 @@ HRESULT CKTDXApp::OnLostDevice()
 	SkipFrame();
 
 	return S_OK;
+}
+
+void CKTDXApp::RenderStageNow( CKTDXStage* stage_ )
+{
+	if ( m_pd3dDevice == NULL )
+		return;
+	if ( stage_ != NULL && m_pd3dDevice->BeginScene() )
+	{
+		stage_->OnFrameRender();
+		m_pd3dDevice->EndScene();
+	}
+	m_pd3dDevice->Present();
 }
 
 void CKTDXApp::InsertStage( CKTDXStage* stage )
@@ -1882,7 +1894,7 @@ D3DXVECTOR2 CKTDXApp::GetProj3DPos( const D3DXVECTOR3& pos )
 }
 
 
-void CKTDXApp::NoticeQuitType( KTDX_QUIT_TYPE quitType )
+void CKTDXApp::NoticeQuitType( [[maybe_unused]] KTDX_QUIT_TYPE quitType )
 {
 #if X2_DEV_TOOLS
 

@@ -16,7 +16,7 @@ static const CKTDGStateManager::KState s_akStates[] =
 //}} robobeg : 2008-10-13
 
 
-CKTDGMotionBlur::CKTDGMotionBlur( LPDIRECT3DDEVICE9 pd3dDevice )
+CKTDGMotionBlur::CKTDGMotionBlur( LPDIRECT3DDEVICE9 /*pd3dDevice*/ )
 {
 	//m_pd3dDevice		= pd3dDevice;
 	m_bEnable			= false;

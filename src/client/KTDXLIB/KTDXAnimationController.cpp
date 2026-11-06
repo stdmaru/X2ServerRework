@@ -2,7 +2,6 @@
 
 #include "KTDXAnimationController.h"
 
-#pragma warning (disable: 4200)
 
 
 #define KAC_DEFAULT_MAX_NUM_TRACKS  2
@@ -705,7 +704,8 @@ inline	static unsigned	_SignCode( float fValue )
 
 inline  static bool		_IsEqualSign( unsigned uiFlags1, unsigned uiFlags2 )
 {
-	unsigned uiFlags = uiFlags1 | uiFlags;
+	// Port: the original or-ed uiFlags1 with the uninitialized uiFlags itself, not with uiFlags2.
+	unsigned uiFlags = uiFlags1 | uiFlags2;
 	return	false == ( ( ( uiFlags & 0x3 ) == 0x3 ) || ( ( uiFlags & 0xc ) == 0xc ) || ( ( uiFlags & 0x30 ) == 0x30 ) );
 }
 
@@ -1367,7 +1367,7 @@ HRESULT KTDXAnimationController::WriteToFileSerializer( KFileSerializer& kInOutF
                 hr = _WriteToFileSerializer( kInOutFile_, pInSkinMesh_, pAnimSet );
                 ASSERT( SUCCEEDED( hr ) );
                 if ( FAILED( hr ) )
-                    pkacHeader->m_adwOffset_AnimationSets[ dwAnimSet ] = NULL;
+                    pkacHeader->m_adwOffset_AnimationSets[ dwAnimSet ] = 0;
             }//if
         }//for
     }//for
@@ -1583,7 +1583,7 @@ static HRESULT _ReadFromMemoryDeserializer( const KMemoryDeserializer& kInMemory
             return E_FAIL;
         }//if
         const char*   pszName = NULL;
-        if ( pkacKeyframed->m_dwOffset_Name != NULL )
+        if ( pkacKeyframed->m_dwOffset_Name != 0 )
         {
             pszName = kInMemory_.RetrieveDupString( pkacKeyframed->m_dwOffset_Name );
             if ( pszName == NULL )
@@ -1733,7 +1733,7 @@ static HRESULT _ReadFromMemoryDeserializer( const KMemoryDeserializer& kInMemory
         }//if
 
         const char*   pszName = NULL;
-        if ( pkacCompressed->m_dwOffset_Name != NULL )
+        if ( pkacCompressed->m_dwOffset_Name != 0 )
         {
             pszName = kInMemory_.RetrieveDupString( pkacCompressed->m_dwOffset_Name );
             if ( pszName == NULL )
@@ -1806,7 +1806,7 @@ static HRESULT _WriteToFileSerializer( KFileSerializer& kInOutFile_, const CKTDX
         ASSERT( pkacKeyframe != NULL );
         DWORD   dwOffset_Keyframed = kInOutFile_.AppendSpace( dwStructSize );
 
-        pkacKeyframe->m_dwOffset_Name = NULL;
+        pkacKeyframe->m_dwOffset_Name = 0;
         pkacKeyframe->m_dwType = EAC_KEYFRAMED;
         pkacKeyframe->m_dTicksPerSecond = pKeyframed->GetSourceTicksPerSecond();
         pkacKeyframe->m_dwPlaybackType = pKeyframed->GetPlaybackType();
@@ -1816,7 +1816,6 @@ static HRESULT _WriteToFileSerializer( KFileSerializer& kInOutFile_, const CKTDX
         std::vector<D3DXKEY_VECTOR3>    vecTranslations;
         std::vector<D3DXKEY_QUATERNION> vecRotations;
         std::vector<BYTE>               vecAnimation;
-        float   fMinTime = 0;
 
         for( DWORD dwAnim = 0; dwAnim < dwNumAnimations; dwAnim++ )
         {
@@ -1870,7 +1869,7 @@ static HRESULT _WriteToFileSerializer( KFileSerializer& kInOutFile_, const CKTDX
             pkacKeyframe->m_adwSize_Animations[ dwAnim ] = sizeof(KACKeyframedAnimation) + dwPackSize;
 
             DWORD dwOffset = kInOutFile_.AppendData( sizeof(KACKeyframedAnimation) + dwPackSize, pkacAnim );
-            ASSERT( dwOffset != NULL );
+            ASSERT( dwOffset != 0 );
         }//for
 
 //#ifdef	X2OPTIMIZE_KFILESERIALIZER_MODIFIED

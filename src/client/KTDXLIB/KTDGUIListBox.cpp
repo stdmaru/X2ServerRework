@@ -5,9 +5,9 @@ inline int RectWidth( RECT &rc ) { return ( (rc).right - (rc).left ); }
 inline int RectHeight( RECT &rc ) { return ( (rc).bottom - (rc).top ); }
 
 CKTDGUIListBox::CKTDGUIListBox()
-: m_rcBoundingBox( RECT() )
+: m_rcText( RECT() )
 , m_rcSelection( RECT() )
-, m_rcText( RECT() )
+, m_rcBoundingBox( RECT() )
 , m_bIsSelectItemAtMouseMove( false )
 {
 	m_ControlType = UCT_LISTBOX;
@@ -328,7 +328,7 @@ HRESULT CKTDGUIListBox::OnFrameRender()
 
 					FromRectToPoint(rcSel, m_TempPoint);
 
-					D3DXVECTOR2 vTemp = g_pKTDXApp->ConvertByResolution( 380, 380 );
+					g_pKTDXApp->ConvertByResolution( 380, 380 );
 
 					m_TempPoint.rightTopPoint.x = GetPos().x + GetWidth();
 					m_TempPoint.rightBottomPoint.x = GetPos().x + GetWidth();
@@ -483,7 +483,7 @@ HRESULT CKTDGUIListBox::OnFrameRender()
 							tempPos.y = (float)rc.top;
 
 							D3DXVECTOR2 pos;
-							D3DXCOLOR	tempColor;
+							D3DXCOLOR	tempColor( 0.f, 0.f, 0.f, 0.f );
 							D3DXCOLOR	tempOutLineColor;
 
 
@@ -602,7 +602,7 @@ HRESULT CKTDGUIListBox::OnFrameRender()
 							tempPos.y = (float)rc.top;
 
 							D3DXVECTOR2 pos;
-							D3DXCOLOR	tempColor;
+							D3DXCOLOR	tempColor( 0.f, 0.f, 0.f, 0.f );
 							D3DXCOLOR	tempOutLineColor;
 
 
@@ -795,7 +795,7 @@ void CKTDGUIListBox::SetDialog( CKTDGUIDialogType pDialog )
 }
 
 //--------------------------------------------------------------------------------------
-bool CKTDGUIListBox::HandleKeyboard( UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CKTDGUIListBox::HandleKeyboard( UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	return false;
 
@@ -1391,7 +1391,7 @@ bool CKTDGUIListBox::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lPa
 
 
 //--------------------------------------------------------------------------------------
-bool CKTDGUIListBox::MsgProc( UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CKTDGUIListBox::MsgProc( UINT uMsg, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	if( WM_CAPTURECHANGED == uMsg )
 	{
@@ -1677,7 +1677,7 @@ int CKTDGUIListBox::RemoveItemByText( WCHAR *wszText )
 
 
 //--------------------------------------------------------------------------------------
-void CKTDGUIListBox::RemoveItemByData( void *pData )
+void CKTDGUIListBox::RemoveItemByData( void */*pData*/ )
 {
 }
 

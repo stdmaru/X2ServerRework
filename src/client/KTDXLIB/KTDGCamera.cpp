@@ -9,7 +9,7 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CKTDGCamera::CKTDGCamera( LPDIRECT3DDEVICE9 pd3dDevice )
+CKTDGCamera::CKTDGCamera( LPDIRECT3DDEVICE9 /*pd3dDevice*/ )
 : m_fLeftCrashGap( 0.f )
 , m_fLeftCrashSpeed( 0.f )
 , m_fLeftCrashAccel( 0.f )
@@ -141,7 +141,6 @@ void CKTDGCamera::RotateX( float radian )
 void CKTDGCamera::RotateY( float radian )
 {
 	float x = m_Camera.m_LookAt.x - m_Camera.m_Eye.x;
-	float y = m_Camera.m_LookAt.y - m_Camera.m_Eye.y;
 	float z = m_Camera.m_LookAt.z - m_Camera.m_Eye.z;
 
 	m_Camera.m_LookAt.x = (x * cos( -radian ) - z * sin( -radian )) + m_Camera.m_Eye.x;
@@ -153,7 +152,6 @@ void CKTDGCamera::RotateZ( float radian )
 
 	float x = m_Camera.m_LookAt.x - m_Camera.m_Eye.x;
 	float y = m_Camera.m_LookAt.y - m_Camera.m_Eye.y;
-	float z = m_Camera.m_LookAt.z - m_Camera.m_Eye.z;
 
 	m_Camera.m_LookAt.x = (x * cos( radian ) - y * sin( radian )) + m_Camera.m_Eye.x;
 	m_Camera.m_LookAt.y = (x * sin( radian ) + y * cos( radian )) + m_Camera.m_Eye.y;
@@ -536,7 +534,6 @@ void CKTDGCamera::UpdateCameraShake( float fElapsedTime )
 				D3DXVECTOR3 vUpVec( 0, 1, 0 );
 				D3DXVECTOR3 vRightVec = GetRightVec();
 
-				D3DXVECTOR3 vEye = GetEye();
 				D3DXVECTOR3 vTargetDirFromEye = vUpVec * RandomFloat( -1.f, 1.f ) + vRightVec * RandomFloat( -1.f, 1.f );
 				D3DXVec3Normalize( &vTargetDirFromEye, &vTargetDirFromEye );
 
@@ -573,7 +570,6 @@ void CKTDGCamera::UpdateCameraShake( float fElapsedTime )
 				D3DXVECTOR3 vUpVec( 0, 1, 0 );
 				D3DXVECTOR3 vRightVec = GetRightVec();
 
-				D3DXVECTOR3 vLookAt = GetLookAt();
 				D3DXVECTOR3 vTargetDirFromLookAt = vUpVec * RandomFloat( -1.f, 1.f ) + vRightVec * RandomFloat( -1.f, 1.f );
 				D3DXVec3Normalize( &vTargetDirFromLookAt, &vTargetDirFromLookAt );
 

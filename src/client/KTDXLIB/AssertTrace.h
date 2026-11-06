@@ -37,7 +37,7 @@
     #endif
 #else
     #ifndef ASSERT
-        #define ASSERT(pred_)
+        #define ASSERT(pred_)    ((void)sizeof(!(pred_)))  // not evaluated; keeps the variables it checks in use
     #endif // ASSERT
     #if !defined(TRACEA)
         #define TRACEA              1 ? (void)0 :

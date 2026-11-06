@@ -3,13 +3,13 @@
 
 
 CKTDGLineMap::CKTDGLineMap()
-: m_RootLineAnimData( LAT_NONE )
-, m_fLandHeight( 0.f )
-, m_fStopTime( 0.f )
-, m_fXMax( 0.f )
+: m_fLandHeight( 0.f )
 , m_fXMin( 0.f )
-, m_fYMax( 0.f )
+, m_fXMax( 0.f )
 , m_fYMin( 0.f )
+, m_fYMax( 0.f )
+, m_fStopTime( 0.f )
+, m_RootLineAnimData( LAT_NONE )
 {
 	m_pLineMapVB	= NULL;
 	m_pKLuabinder	= NULL;
@@ -227,7 +227,7 @@ bool CKTDGLineMap::AddLine_LUA()
 	LUA_GET_VALUE( luaManager,		"PORTAL_WHEN_ACTIVE_RAID",					pLineData->m_bIsPortalWhenActiveRaid,		false			);
 
 
-#pragma DMLEE_NOTE( "본섭에 테스트 라인맵이 적용되지 않게 하기 위해서 line_depth 가 0이 아닌 라인은 로딩안되게 임시로 막음" )
+// dmlee: "본섭에 테스트 라인맵이 적용되지 않게 하기 위해서 line_depth 가 0이 아닌 라인은 로딩안되게 임시로 막음"
 
 	int iLineDepth = 0;
 	LUA_GET_VALUE( luaManager,		"LINE_DEPTH",				iLineDepth,		0			);
@@ -376,6 +376,8 @@ bool CKTDGLineMap::AssignLineAnimDataToLine( CKTDGLineMap::LineData* pLineData, 
 			}
 		} break;
 
+	default:
+		break;
 	}
 
 	return true;
@@ -404,7 +406,7 @@ CKTDGLineMap::LineAnimData* CKTDGLineMap::GetLineAnimData( int iLineAnimDataInde
 
 
 
-/*virtual*/ HRESULT CKTDGLineMap::OnFrameMove( double fTime, float fElapsedTime )
+/*virtual*/ HRESULT CKTDGLineMap::OnFrameMove( double /*fTime*/, float /*fElapsedTime*/ )
 {
 	KTDXPROFILE();
 
@@ -1144,8 +1146,8 @@ CKTDGLineMap::LineGroupID   CKTDGLineMap::GetLineGroupIncludesLineData( int iLin
 		return LineGroupID();
 
     const LineData* pLineData = m_LineList[ iLineIndex ];
-    ASSERT( pLineData->bEnable == true && pLineData->m_lineGroupID.IsValid() == true
-        || pLineData->bEnable == false && pLineData->m_lineGroupID.IsValid() == false );
+    ASSERT( ( pLineData->bEnable == true && pLineData->m_lineGroupID.IsValid() == true )
+        || ( pLineData->bEnable == false && pLineData->m_lineGroupID.IsValid() == false ) );
     return  pLineData->m_lineGroupID;
 }
 
@@ -1254,7 +1256,6 @@ void CKTDGLineMap::ReBuildLineGroup()
     int iNumMembers;
     LineGroupID id;
 
-    const LineData* pLineData = NULL;
 
 	// line group 생성
 	for( i = 0; i <nNodes; i++ )
@@ -1348,7 +1349,7 @@ D3DXVECTOR3 CKTDGLineMap::GetFixedDistancePosition( D3DXVECTOR3* pvPos, float fD
 
 	const float MAGIC_LINE_RADIUS = 30.f;
 
-	D3DXVECTOR3 vPos = GetLandPosition( *pvPos, MAGIC_LINE_RADIUS, &iLineIndex );
+	GetLandPosition( *pvPos, MAGIC_LINE_RADIUS, &iLineIndex );
 	if( -1 == iLineIndex )
 		return *pvPos;	// 아마 error
 
@@ -1410,7 +1411,7 @@ bool CKTDGLineMap::GetFixedDistancePositionForWeaponTaker( const D3DXVECTOR3* pv
 
 	const float MAGIC_LINE_RADIUS = 30.f;
 
-	D3DXVECTOR3 vPos = GetLandPosition( *pvPos, MAGIC_LINE_RADIUS, &iLineIndex );
+	GetLandPosition( *pvPos, MAGIC_LINE_RADIUS, &iLineIndex );
 	if( -1 == iLineIndex )
 		return false;	// 아마 error
 
@@ -2113,14 +2114,14 @@ bool CKTDGLineMap::AddTrigger_LUA()
 
 //////////////////////////////////////////////////////////////////////////
 CKTDGLineMap::LineAnimData::LineAnimData( LINE_ANIM_TYPE eAnimType )
-: m_eAnimType( eAnimType )
+: m_iLineAnimIndex( -1 )
 , m_bEnabled( true )
+, m_eAnimType( eAnimType )
 , m_bMoveIfSteppedOn( false )
 , m_vPivotPosition( 0, 0, 0 )
 , m_vChildPivotPosition( 0, 0, 0 )
 , m_vChildPivotPositionDisplace( 0, 0, 0 )
 , m_pLineData( NULL )
-, m_iLineAnimIndex( -1 )
 , m_iParentAnimDataIndex( -1 )
 {
 }
@@ -2147,9 +2148,9 @@ void CKTDGLineMap::LineAnimData::OnFrameMove( double fTime, float fElapsedTime )
 //////////////////////////////////////////////////////////////////////////
 CKTDGLineMap::LineAnimBackAndForth::LineAnimBackAndForth()
 : LineAnimData( LAT_BACK_AND_FORTH )
-, m_fCurrentPositionValue( 0.f )
 , m_fMovingSpeed( 0.f )
 , m_fRange( 0.f )
+, m_fCurrentPositionValue( 0.f )
 {
 }
 
@@ -2185,14 +2186,14 @@ void CKTDGLineMap::LineAnimBackAndForth::OnFrameMove( double fTime, float fElaps
 //////////////////////////////////////////////////////////////////////////
 CKTDGLineMap::LineAnimMoveIfSteppedOn::LineAnimMoveIfSteppedOn()
 : LineAnimData( LAT_MOVE_IF_STEPPED_ON )
+, m_fAccelerationWhenSteppedOn( 0.f )
+, m_fMaxMovingRange( 0.f )
+, m_fMaxMovingSpeed( 0.f )
+, m_fBackwardSpeed( 0.f )
 , m_bSteppedOnForward( false )
 , m_bSteppedOnBackward( false )
 , m_fCurrentMovingSpeed( 0.f )
 , m_fCurrentPostionValue( 0.f )
-, m_fAccelerationWhenSteppedOn( 0.f )
-, m_fBackwardSpeed( 0.f )
-, m_fMaxMovingRange( 0.f )
-, m_fMaxMovingSpeed( 0.f )
 {
 }
 
@@ -2260,9 +2261,9 @@ void CKTDGLineMap::LineAnimMoveIfSteppedOn::OnFrameMove( double fTime, float fEl
 //////////////////////////////////////////////////////////////////////////
 CKTDGLineMap::LineAnimViking::LineAnimViking()
 : LineAnimData( LAT_VIKING )
-, m_fCurrentTime( 0.f )
-, m_fMaxRotationRadian( 0.f )
 , m_fPeriod( 0.f )
+, m_fMaxRotationRadian( 0.f )
+, m_fCurrentTime( 0.f )
 {
 }
 
@@ -2310,8 +2311,8 @@ void CKTDGLineMap::LineAnimViking::CalcLinePosition( float fCurrentTime )
 //////////////////////////////////////////////////////////////////////////
 CKTDGLineMap::LineAnimCircle::LineAnimCircle()
 : LineAnimData( LAT_CIRCLE )
-, m_fCurrentRotationRadian( 0.f )
 , m_fRotationSpeed( 0.f )
+, m_fCurrentRotationRadian( 0.f )
 {
 }
 
@@ -2462,7 +2463,6 @@ bool CKTDGLineMap::GetFixedDistancePositionInAllLine( const D3DXVECTOR3& vDirVec
 {
 	D3DXVECTOR3 vTempTargetPos( 0.f, -1.f, 0.f );
 	int iTempTargetLineIndex = -1;
-	float fMinDistance = 999999.f;
 
 	// 모든 선을 검색한다
 	for( int i = 0; i < (int)m_LineList.size(); i++ )
@@ -2591,12 +2591,11 @@ bool CKTDGLineMap::GetFixedDistancePositionInAllLine( const D3DXVECTOR3& vDirVec
 		else if( fLineEndToPointLength >= fDist && fLineStartToPointLength < fDist )
 		{
 			float fLineStartToPointLength	= GetDistance( pLineData->endPos, vPos );
-			float fLineEndToPointLength		= GetDistance( pLineData->startPos, vPos );
+			GetDistance( pLineData->startPos, vPos );
 			D3DXVECTOR3 pointDir = vPos - pLineData->endPos;
 			D3DXVECTOR3 lineDir = pLineData->startPos - pLineData->endPos;
 			D3DXVec3Normalize( &lineDir, &lineDir );
 
-			D3DXVECTOR3 projectionPoint;
 			float		fProjectionLength	= D3DXVec3Dot( &lineDir, &pointDir );
 
 			if( fProjectionLength <= 0.0f )

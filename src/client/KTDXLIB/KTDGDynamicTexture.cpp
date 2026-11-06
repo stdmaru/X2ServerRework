@@ -32,7 +32,7 @@ bool CKTDGDynamicTexture::CreateTexture(DWORD dwWidth, DWORD dwHeight, D3DFORMAT
 
 	HRESULT hr = S_OK;
 
-	if( FAILED(hr = D3DXCreateTexture( g_pKTDXApp->GetDevice(), m_dwWidth, m_dwHeight, 1, NULL, d3dFormat, D3DPOOL_SYSTEMMEM, &m_pTextureSys ) ) )
+	if( FAILED(hr = D3DXCreateTexture( g_pKTDXApp->GetDevice(), m_dwWidth, m_dwHeight, 1, 0, d3dFormat, D3DPOOL_SYSTEMMEM, &m_pTextureSys ) ) )
 	{
 		switch( hr )
 		{
@@ -68,7 +68,7 @@ bool CKTDGDynamicTexture::CreateTexture(DWORD dwWidth, DWORD dwHeight, D3DFORMAT
 
 	if ( DXUTGetDeviceObjectsReset() == true )
 	{
-		if( FAILED( hr = D3DXCreateTexture( g_pKTDXApp->GetDevice(), m_dwWidth, m_dwHeight, 1, NULL, d3dFormat, D3DPOOL_DEFAULT, &m_pTextureVid ) ) )
+		if( FAILED( hr = D3DXCreateTexture( g_pKTDXApp->GetDevice(), m_dwWidth, m_dwHeight, 1, 0, d3dFormat, D3DPOOL_DEFAULT, &m_pTextureVid ) ) )
 		{
 			switch( hr )
 			{
@@ -116,7 +116,7 @@ void CKTDGDynamicTexture::ResetDevice()
 {
 	HRESULT hr;
 	SAFE_DELETE( m_pTextureVid );
-	if( FAILED( hr = D3DXCreateTexture( g_pKTDXApp->GetDevice(), m_dwWidth, m_dwHeight, 1, NULL, m_d3dFormat, D3DPOOL_DEFAULT, &m_pTextureVid ) ) )
+	if( FAILED( hr = D3DXCreateTexture( g_pKTDXApp->GetDevice(), m_dwWidth, m_dwHeight, 1, 0, m_d3dFormat, D3DPOOL_DEFAULT, &m_pTextureVid ) ) )
 	{
 		switch( hr )
 		{

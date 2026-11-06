@@ -25,9 +25,9 @@ m_iScrollOffsetX(1),
 m_iScrollOffsetY(1),
 m_CustomMsgScroll(-1),
 m_Pos(0, 0),
-m_pScrollBarX(NULL),
-m_pScrollBarY(NULL)
-, m_rcBoundingBox( RECT() )
+m_rcBoundingBox( RECT() ),
+m_pScrollBarX(NULL)
+, m_pScrollBarY(NULL)
 {
 	m_ControlType = UCT_CONTROLLIST;
 
@@ -342,7 +342,7 @@ void CKTDGUIContolList::UpdateRenderControlList()
 
 }
 
-/*virtual*/ bool CKTDGUIContolList::HandleKeyboard( UINT uMsg, WPARAM wParam, LPARAM lParam )
+/*virtual*/ bool CKTDGUIContolList::HandleKeyboard( UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	return false;
 }
@@ -385,7 +385,7 @@ void CKTDGUIContolList::UpdateRenderControlList()
 
 }
 
-/*virtual*/ bool CKTDGUIContolList::MsgProc( UINT uMsg, WPARAM wParam, LPARAM lParam )
+/*virtual*/ bool CKTDGUIContolList::MsgProc( UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	return false;
 }

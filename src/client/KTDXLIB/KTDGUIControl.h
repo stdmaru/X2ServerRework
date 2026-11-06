@@ -671,6 +671,7 @@ class CKTDGUIControl : private x2::NonCopyable
 				fChangeTime = 0.0f;
 				bIsAutoDelete = false;
 			}
+			ControlMoveItem( const ControlMoveItem& ) = default;
 			ControlMoveItem& operator=( const ControlMoveItem& data )
 			{
 				pos				= data.pos;

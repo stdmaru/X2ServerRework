@@ -65,7 +65,7 @@ CKTDGUIControl::~CKTDGUIControl(void)
 //#endif
 }
 
-HRESULT	CKTDGUIControl::OnFrameMove( double fTime, float fElapsedTime )
+HRESULT	CKTDGUIControl::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	KTDXPROFILE();
 
@@ -506,8 +506,6 @@ void CKTDGUIControl::UpdateAnimVertex( VERTEX_UI* pVertex, CKTDGUIControl::TexCh
 
 	D3DXMatrixTransformation2D( &matOutPut, &scaleAxisPos, D3DXToRadian( pTexChangeData->m_fScaleRotationDegree ), &pTexChangeData->m_Scale, &rotationAxisPos, D3DXToRadian( pTexChangeData->m_fRotateDegree ), &tempTrans );
 
-	D3DXVECTOR4 resultPos;
-	D3DXVECTOR2 tempPos;
 
 	for ( int i = 0; i < 4; i++ )
 	{
@@ -575,6 +573,8 @@ D3DXVECTOR2 CKTDGUIControl::GetAxisPos( VERTEX_UI* pVertex, CKTDGUIControl::TEX_
 		{
 			axisPos = D3DXVECTOR2( pVertex[3].x, pVertex[3].y );
 		}
+		break;
+	default:
 		break;
 	}
 
@@ -1142,7 +1142,7 @@ CKTDGUIControl::CPictureData::~CPictureData()
 	SAFE_DELETE( pPoint );
 }
 
-void CKTDGUIControl::CPictureData::OnFrameMove( double fTime, float fElapsedTime )
+void CKTDGUIControl::CPictureData::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	KTDXPROFILE();
 

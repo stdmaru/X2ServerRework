@@ -235,14 +235,12 @@ static const CKTDGStateManager::KState akRSICKTDXDeviceLayer5[] =
 
 
 
-CKTDGManager::CKTDGManager( HWND hWnd, LPDIRECT3DDEVICE9 pd3dDevice )
-: m_Far( 0.f )
-, m_Near( 0.f )
-, m_fMaxTimeFadeIn( 0.f )
-, m_fMaxTimeFadeOut( 0.f )
-, m_uNonAlphaObjectNum( 0 )
+CKTDGManager::CKTDGManager( HWND hWnd, LPDIRECT3DDEVICE9 /*pd3dDevice*/ )
+: m_Near( 0.f )
+, m_Far( 0.f )
 , m_kCamera( g_pKTDXApp->GetDevice() )
 , m_kFrustum( g_pKTDXApp->GetDevice() )
+, m_uNonAlphaObjectNum( 0 )
 {
 	m_hWnd				= hWnd;
 
@@ -471,7 +469,7 @@ void    CKTDGManager::_RenderObjectRenderHintVector( const CKTDGManager::KObject
 
 
                 if ( iCount > 0
-                    && ( !kRenderHint.IsSameCategory( kObjectRenderHint.m_kRenderHint ) || bInLayerExclusive_ && iRenderHintLayer != kObjectRenderHint.m_pObject->GetLayer() ) )
+                    && ( !kRenderHint.IsSameCategory( kObjectRenderHint.m_kRenderHint ) || ( bInLayerExclusive_ && iRenderHintLayer != kObjectRenderHint.m_pObject->GetLayer() ) ) )
                 {
                     ASSERT( kRenderHint.m_eHint == RENDER_HINT::XMESH
                         || kRenderHint.m_eHint == RENDER_HINT::XSKINMESH );
@@ -904,37 +902,37 @@ void CKTDGManager::SetProjectionFov( float Near, float Far, float fFov )
 	g_pKTDXApp->SetProjectionTransform( &m_matProjection );
 }
 
-struct CKTDGObjectUISort : public std::binary_function< CKTDGManager::KObjectRenderHint, CKTDGManager::KObjectRenderHint, bool >
+struct CKTDGObjectUISort
 {
    bool operator()( const CKTDGManager::KObjectRenderHint& _Left, const CKTDGManager::KObjectRenderHint& _Right ) const
    {
        return ( _Left.m_kRenderHint < _Right.m_kRenderHint
-                || !(_Right.m_kRenderHint < _Left.m_kRenderHint)
-                && _Left.m_pObject->GetDistanceToCamera() < _Right.m_pObject->GetDistanceToCamera() );
+                || ( !(_Right.m_kRenderHint < _Left.m_kRenderHint)
+                     && _Left.m_pObject->GetDistanceToCamera() < _Right.m_pObject->GetDistanceToCamera() ) );
    };
 };//struct CKTDGObjectUISort
 
 
-struct CKTDGObjectNonAlphaSort : public std::binary_function< CKTDGManager::KObjectRenderHint, CKTDGManager::KObjectRenderHint, bool >
+struct CKTDGObjectNonAlphaSort
 {
    bool operator()( const CKTDGManager::KObjectRenderHint& _Left, const CKTDGManager::KObjectRenderHint& _Right ) const
    {
        return _Left.m_pObject->GetLayer() < _Right.m_pObject->GetLayer()
-           || _Left.m_pObject->GetLayer() == _Right.m_pObject->GetLayer()
-             && ( _Left.m_kRenderHint < _Right.m_kRenderHint
-                || !(_Right.m_kRenderHint < _Left.m_kRenderHint)
-                && _Left.m_pObject->GetDistanceToCamera() < _Right.m_pObject->GetDistanceToCamera() );
+           || ( _Left.m_pObject->GetLayer() == _Right.m_pObject->GetLayer()
+                && ( _Left.m_kRenderHint < _Right.m_kRenderHint
+                     || ( !(_Right.m_kRenderHint < _Left.m_kRenderHint)
+                          && _Left.m_pObject->GetDistanceToCamera() < _Right.m_pObject->GetDistanceToCamera() ) ) );
    };
 };//struct CKTDGObjectNonAlphaSort
 
 
-struct CKTDGObjectAlphaSort : public std::binary_function< CKTDGManager::KObjectRenderHint, CKTDGManager::KObjectRenderHint, bool >
+struct CKTDGObjectAlphaSort
 {
    bool operator()( const CKTDGManager::KObjectRenderHint& _Left, const CKTDGManager::KObjectRenderHint& _Right ) const
    {
        return   _Left.m_pObject->GetLayer() < _Right.m_pObject->GetLayer()
-           || _Left.m_pObject->GetLayer() == _Right.m_pObject->GetLayer()
-              && _Left.m_pObject->GetDistanceToCamera() > _Right.m_pObject->GetDistanceToCamera();
+           || ( _Left.m_pObject->GetLayer() == _Right.m_pObject->GetLayer()
+                && _Left.m_pObject->GetDistanceToCamera() > _Right.m_pObject->GetDistanceToCamera() );
    };
 };//struct CKTDGObjectAlphaSort
 

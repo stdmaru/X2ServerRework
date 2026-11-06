@@ -104,7 +104,7 @@ const char*      CKTDGXRenderer::GetEffectParameterName( CKTDGXRenderer::EFFECT_
 }//CKTDGXRenderer::GetEffectParameterName()
 //}} robobeg : 2008-10-08
 
-CKTDGXRenderer::CKTDGXRenderer( LPDIRECT3DDEVICE9 pd3dDevice )
+CKTDGXRenderer::CKTDGXRenderer( LPDIRECT3DDEVICE9 /*pd3dDevice*/ )
 {
 	m_pEffect		= NULL;
 
@@ -326,7 +326,6 @@ HRESULT CKTDGXRenderer::BeginRender(  const CKTDGXRenderer::RenderParam& InRende
             m_bFog = true;
 
         // Fog
-        D3DXMATRIX m;
         D3DXVECTOR4 v;
         float m_xNear					= InRenderParam_.fogNearX; //4000.0f;
         float m_xFar					= InRenderParam_.fogFarX; //20000.0f;
@@ -578,6 +577,8 @@ HRESULT CKTDGXRenderer::BeginRender(  const CKTDGXRenderer::RenderParam& InRende
 				m_pEffect->SetFloat( EPHANDLE( g_fLightFlowWide ),	InRenderParam_.fLightFlowWide );
 			}
 			break;
+	default:
+		break;
 	}
 
     // setup matrices
@@ -779,17 +780,15 @@ HRESULT CKTDGXRenderer::OnFrameRender( const RenderParam& InRenderParam_, const 
 
 void CKTDGXRenderer::DrawFrame( CKTDXDeviceXSkinMesh& kInXSkinMesh_, CKTDXDeviceXSkinMesh::MultiAnimFrame& kInFrame_
             , CKTDXDeviceXET* pTexChangeXET, CKTDXDeviceXET* pMultiTexXET
-            , const CKTDXDeviceXET::AniData* pAniData, float fAniTime, int iInDetailPercent_, bool abInUseTex_[3]
+            , const CKTDXDeviceXET::AniData* pAniData, float fAniTime, int /*iInDetailPercent_*/, bool abInUseTex_[3]
             , CKTDXDeviceXET* pAnimAniExt, const wchar_t* pwszInNowAnimName_ )
 {
     ASSERT( m_bInBeginPass );
 
 	KTDXPROFILE();
 
-	HRESULT hr = S_OK;
 	CKTDXDeviceXSkinMesh::MultiAnimMC * pMC = (CKTDXDeviceXSkinMesh::MultiAnimMC *) kInFrame_.pMeshContainer;
     ASSERT( pMC != NULL );
-	D3DXMATRIX mx;
 
     if ( pMC->m_dwMaxSkinningVertices > 0 )
 	{
@@ -818,7 +817,7 @@ void CKTDGXRenderer::DrawFrame( CKTDXDeviceXSkinMesh& kInXSkinMesh_, CKTDXDevice
 			}
 
 			// set the matrix palette into the effect
-			hr = m_pEffect->SetMatrixArray( EPHANDLE( g_amWorldPalette ),
+			m_pEffect->SetMatrixArray( EPHANDLE( g_amWorldPalette ),
 											kInXSkinMesh_.GetWorkingPalette(),
 											pMC->m_dwNumPaletteEntries );
 			KTDXPROFILE_END();
@@ -873,7 +872,7 @@ void CKTDGXRenderer::DrawFrame( CKTDXDeviceXSkinMesh& kInXSkinMesh_, CKTDXDevice
 // 				//hr = pMC->m_pWorkingPMesh->DrawSubset( dwAttribId );
 // 			}
 // 			else
-				hr = pMC->MeshData.pMesh->DrawSubset( dwAttrib );
+				pMC->MeshData.pMesh->DrawSubset( dwAttrib );
 
 
 			KTDXPROFILE_END();
@@ -897,7 +896,6 @@ void CKTDGXRenderer::DrawFrame( CKTDXDeviceXSkinMesh& kInXSkinMesh_, CKTDXDevice
         DWORD   dwNumSubsets = ( pMC->m_dwNumAttrGroups == 0 ) ? pMC->NumMaterials : pMC->m_dwNumAttrGroups;
         DWORD   dwAttribId;
 
-		CKTDXDeviceBaseTexture* orgTex = NULL;
 		CKTDXDeviceBaseTexture* pResultTexture0 = NULL;
 		CKTDXDeviceBaseTexture* pResultTexture1 = NULL;
 		CKTDXDeviceBaseTexture* pResultTexture2 = NULL;
@@ -952,7 +950,7 @@ void CKTDGXRenderer::DrawFrame( CKTDXDeviceXSkinMesh& kInXSkinMesh_, CKTDXDevice
 // 			}
 // 			else
 //             {
-				hr = pMC->MeshData.pMesh->DrawSubset( dwAttribId );
+				pMC->MeshData.pMesh->DrawSubset( dwAttribId );
 //            }//if
 
 			KTDXPROFILE_END();

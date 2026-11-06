@@ -61,7 +61,7 @@ CKTDXDeviceData::~CKTDXDeviceData()
 ///-----------------------------------------------------------------------------
 //
 // constructor.
-CKTDXDeviceManager::CKTDXDeviceManager( IDirect3DDevice9* pd3dDevice )
+CKTDXDeviceManager::CKTDXDeviceManager( IDirect3DDevice9* /*pd3dDevice*/ )
 {
 	// The game folder's subfolders for user files, music and movies; with X2_DEV_TOOLS also its data/ loose assets.
 	m_MassFileManager.SetSubDirectory();
@@ -118,7 +118,7 @@ CKTDXDeviceManager::~CKTDXDeviceManager(void)
 
 
 /*virtual*/
-HRESULT CKTDXDeviceManager::OnFrameMove( double fTime, float fElapsedTime )
+HRESULT CKTDXDeviceManager::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	if ( g_pKTDXApp->IsFirstFrameOfSimulationLoop() == true )
 	{
@@ -127,7 +127,7 @@ HRESULT CKTDXDeviceManager::OnFrameMove( double fTime, float fElapsedTime )
 	return S_OK;
 }
 
-void    CKTDXDeviceManager::ProcessForegroundQueue( float fElapsedTime )
+void    CKTDXDeviceManager::ProcessForegroundQueue( float /*fElapsedTime*/ )
 {
     CKTDXDevice* pDevice = NULL;
     m_iForegroundLoadCounter++;
@@ -246,7 +246,7 @@ void CKTDXDeviceManager::SetTextureDetailLevel( CKTDXDeviceTexture::DETAIL_LEVEL
 
 void CKTDXDeviceManager::CloseDevice( const WCHAR* deviceID )
 {
-    if ( deviceID == NULL || deviceID[0] == NULL )
+    if ( deviceID == NULL || deviceID[0] == 0 )
         return;
 
     WCHAR    deviceIDUpper[MAX_PATH];
@@ -444,7 +444,7 @@ CKTDXDevice*    CKTDXDeviceManager::CreateAndOpenDevice( CKTDXDevice* pDevice )
 
 CKTDXDevice*     CKTDXDeviceManager::PendDevice( const WCHAR* deviceID, CKTDXDevice::DEVICETYPE eType, EPriority ePriority_ )
 {
-    if ( deviceID == NULL || deviceID[0] == NULL )
+    if ( deviceID == NULL || deviceID[0] == 0 )
         return NULL;
 
     if ( false == ( (int) eType >= 0 && (int) eType < (int) CKTDXDevice::DT_NUM ) )
@@ -494,6 +494,8 @@ CKTDXDevice*     CKTDXDeviceManager::PendDevice( const WCHAR* deviceID, CKTDXDev
         break;
     case CKTDXDevice::DEVICE_STATE_FAILED:
         return NULL;
+    default:
+    	break;
     }
     return  pDevice;
 }
@@ -563,6 +565,8 @@ CKTDXDevice*    CKTDXDeviceManager::CreateAndPendDevice( CKTDXDevice* pDevice, E
         break;
     case CKTDXDevice::DEVICE_STATE_FAILED:
         return NULL;
+    default:
+    	break;
     }
     return  pActualDevice;
 }
@@ -590,7 +594,7 @@ CKTDXDeviceTexture*	CKTDXDeviceManager::OpenTexture( wstring deviceID, D3DFORMAT
 		for( int i = 0; i < (int)m_HighTexName.size(); i++ )
 		{
 			const wstring& texName = m_HighTexName[i];
-			if( texName.size() != 0 && deviceID.find( texName.c_str() ) != -1 )
+			if( texName.size() != 0 && deviceID.find( texName.c_str() ) != std::wstring::npos )
 			{
 				bAlwaysHigh = true;
 				break;
@@ -722,7 +726,7 @@ CKTDXDeviceRenderTargetTexture*	CKTDXDeviceManager::OpenRenderTargetTexture( wst
 	return pRenderTargetTexture;
 }
 
-CKTDXDeviceSound* CKTDXDeviceManager::OpenSound( wstring deviceID, int bufCount, bool bUse3D, float fMax3DDistance /*= -1.f*/ )
+CKTDXDeviceSound* CKTDXDeviceManager::OpenSound( wstring deviceID, int /*bufCount*/, bool bUse3D, float fMax3DDistance /*= -1.f*/ )
 {
 	if( true == deviceID.empty() )
 	{
@@ -801,8 +805,8 @@ CKTDXDeviceTexture*	CKTDXDeviceManager::OpenTextureInBackground( wstring  device
 {
 	if( deviceID_.empty() )
 		return NULL;
-    if ( false == ( (int) ePriority >= 0 && (int) ePriority < (int) PRIORITY_NUM ) )
-        return NULL;
+	if ( false == ( (int) ePriority >= 0 && (int) ePriority < (int) PRIORITY_NUM ) )
+		return NULL;
 	if ( ePriority == PRIORITY_BLOCKING )
 		return	OpenTexture( deviceID_, texFormat, bAlwaysHigh );
 
@@ -830,10 +834,10 @@ CKTDXDeviceTexture*	CKTDXDeviceManager::OpenTextureInBackground( wstring  device
 }
 CKTDXDeviceXSkinMesh* CKTDXDeviceManager::OpenXSkinMeshInBackground(wstring deviceID, EPriority ePriority, const WCHAR* moveBoneName_ )
 {
-    if ( deviceID.empty() )
-        return NULL;
-    if ( false == ( (int) ePriority >= 0 && (int) ePriority < (int) PRIORITY_NUM ) )
-        return NULL;
+	if ( deviceID.empty() )
+		return NULL;
+	if ( false == ( (int) ePriority >= 0 && (int) ePriority < (int) PRIORITY_NUM ) )
+		return NULL;
 	if ( ePriority == PRIORITY_BLOCKING )
 		return	OpenXSkinMesh( deviceID,moveBoneName_ );
 
@@ -859,10 +863,10 @@ CKTDXDeviceXMesh* CKTDXDeviceManager::OpenXMeshInBackground( wstring deviceID, E
 {
 	KTDXPROFILE();
 
-    if ( deviceID.empty() )
-        return NULL;
-    if ( false == ( (int) ePriority >= 0 && (int) ePriority < (int) PRIORITY_NUM ) )
-        return NULL;
+	if ( deviceID.empty() )
+		return NULL;
+	if ( false == ( (int) ePriority >= 0 && (int) ePriority < (int) PRIORITY_NUM ) )
+		return NULL;
 	if ( ePriority == PRIORITY_BLOCKING )
 		return	OpenXMesh( deviceID );
 
@@ -891,10 +895,10 @@ CKTDXDeviceSound* CKTDXDeviceManager::OpenSoundInBackground( wstring deviceID,
 	EPriority ePriority,
 	int bufCount, bool bUse3D )
 {
-    if ( deviceID.empty() )
-        return NULL;
-    if ( false == ( (int) ePriority >= 0 && (int) ePriority < (int) PRIORITY_NUM ) )
-        return NULL;
+	if ( deviceID.empty() )
+		return NULL;
+	if ( false == ( (int) ePriority >= 0 && (int) ePriority < (int) PRIORITY_NUM ) )
+		return NULL;
 	if ( ePriority == PRIORITY_BLOCKING )
 		return	OpenSound( deviceID, bufCount, bUse3D );
 
@@ -921,10 +925,10 @@ CKTDXDeviceSound* CKTDXDeviceManager::OpenSoundInBackground( wstring deviceID,
 
 CKTDXDeviceXET*	CKTDXDeviceManager::OpenXETInBackground( wstring deviceID, EPriority ePriority, bool bWithoutFile /* = false */ )
 {
-    if ( deviceID.empty() )
-        return NULL;
-    if ( false == ( (int) ePriority >= 0 && (int) ePriority < (int) PRIORITY_NUM ) )
-        return NULL;
+	if ( deviceID.empty() )
+		return NULL;
+	if ( false == ( (int) ePriority >= 0 && (int) ePriority < (int) PRIORITY_NUM ) )
+		return NULL;
 	if ( ePriority == PRIORITY_BLOCKING )
 		return	OpenXET( deviceID, bWithoutFile );
 
@@ -951,7 +955,7 @@ CKTDXDeviceXET*	CKTDXDeviceManager::OpenXETInBackground( wstring deviceID, EPrio
 
 bool CKTDXDeviceManager::IsPlaying( const WCHAR* pFileName )
 {
-	if ( pFileName == NULL || pFileName[0] == NULL )
+	if ( pFileName == NULL || pFileName[0] == 0 )
 		return false;
 
 	WCHAR    deviceIDUpper[MAX_PATH];
@@ -982,7 +986,7 @@ bool CKTDXDeviceManager::IsPlaying( const WCHAR* pFileName )
 
 CKTDXDeviceSound* CKTDXDeviceManager::PlaySound( const WCHAR* pFileName, bool bLoop /* = false */, bool b3DSound /*= true*/  )
 {
-    if ( pFileName == NULL || pFileName[0] == NULL )
+    if ( pFileName == NULL || pFileName[0] == 0 )
         return NULL;
 
     WCHAR    deviceIDUpper[MAX_PATH];
@@ -1031,7 +1035,7 @@ out:
 
 void CKTDXDeviceManager::StopSound( const WCHAR* pFileName )
 {
-    if ( pFileName == NULL || pFileName[0] == NULL )
+    if ( pFileName == NULL || pFileName[0] == 0 )
         return;
 
     WCHAR    deviceID[MAX_PATH];
@@ -1079,8 +1083,8 @@ static std::vector<wstring> ListDeviceDirectory( const wstring& wstrPath_ )
 
 void CKTDXDeviceManager::CloseDeviceDirectory( wstring wstrPath )
 {
-    if ( wstrPath.empty() )
-        return;
+	if ( wstrPath.empty() )
+		return;
 
 	CSLock locker( m_DeviceLock );
 
@@ -1100,8 +1104,8 @@ void CKTDXDeviceManager::CloseDeviceDirectory( wstring wstrPath )
 
 void CKTDXDeviceManager::OpenDeviceDirectory( wstring wstrPath )
 {
-    if ( wstrPath.empty() )
-        return;
+	if ( wstrPath.empty() )
+		return;
 
 	CSLock locker( m_DeviceLock );
 
@@ -1180,9 +1184,6 @@ void        CKTDXDeviceManager::_CheckFullSyncInDeviceThread()
     std::list<CKTDXDevice*> aListTemp[PRIORITY_NUM];
 
 
-	DWORD   dwCurrentTimestamp = KSystemTimer::GetSystemTimeInMilisecond();
-	DWORD   dwNextTimestamp = dwCurrentTimestamp + KTDXDEVICEMANAGER_GC_INTERVAL_IN_MILISECS;
-	LONG    lDiff = 0;
 
     while ( true )
     {
@@ -1298,8 +1299,6 @@ void CKTDXDeviceManager::Debug_RenderHelp(int ix_, int iy_)
     int     ix = ix_ + 16;
     int     iy = iy_ + 16;
     WCHAR   wbuffer[1024];
-    UINT    uiNumPendingResources = 0;
-    UINT    uiNumPendingLuaData = 0;
 
     if ( g_pKTDXApp == NULL )
         return;
@@ -1410,8 +1409,8 @@ void CKTDXDeviceManager::Debug_RenderHelp(int ix_, int iy_)
 
 void	CKTDXDeviceManager::AppendXSkinMesh( CKTDXDeviceDataList& listOut_, const std::wstring& wstrName_, CKTDXDeviceManager::EPriority ePriority )
 {
-    if ( wstrName_.empty() == true )
-        return;
+	if ( wstrName_.empty() == true )
+		return;
 
 	CKTDXDevice* pDevice = ( ePriority == PRIORITY_BLOCKING )
 		? OpenXSkinMesh( wstrName_ ) : OpenXSkinMeshInBackground( wstrName_, ePriority );
@@ -1424,8 +1423,8 @@ void	CKTDXDeviceManager::AppendXSkinMesh( CKTDXDeviceDataList& listOut_, const s
 
 void	CKTDXDeviceManager::AppendXMesh( CKTDXDeviceDataList& listOut_, const std::wstring& wstrName_, CKTDXDeviceManager::EPriority ePriority )
 {
-    if ( wstrName_.empty() == true )
-        return;
+	if ( wstrName_.empty() == true )
+		return;
 
 	CKTDXDevice* pDevice = ( ePriority == PRIORITY_BLOCKING )
 		? OpenXMesh( wstrName_ ) : OpenXMeshInBackground( wstrName_, ePriority );
@@ -1438,8 +1437,8 @@ void	CKTDXDeviceManager::AppendXMesh( CKTDXDeviceDataList& listOut_, const std::
 
 void	CKTDXDeviceManager::AppendTexture( CKTDXDeviceDataList& listOut_, const std::wstring& wstrName_, CKTDXDeviceManager::EPriority ePriority )
 {
-    if ( wstrName_.empty() == true )
-        return;
+	if ( wstrName_.empty() == true )
+		return;
 	CKTDXDevice* pDevice = ( ePriority == PRIORITY_BLOCKING )
 		? OpenTexture( wstrName_ ) : OpenTextureInBackground( wstrName_, ePriority );
     if ( pDevice != NULL )
@@ -1450,8 +1449,8 @@ void	CKTDXDeviceManager::AppendTexture( CKTDXDeviceDataList& listOut_, const std
 }
 void	CKTDXDeviceManager::AppendXET( CKTDXDeviceDataList& listOut_, const std::wstring& wstrName_, CKTDXDeviceManager::EPriority ePriority )
 {
-    if ( wstrName_.empty() == true )
-        return;
+	if ( wstrName_.empty() == true )
+		return;
 	CKTDXDevice* pDevice = ( ePriority == PRIORITY_BLOCKING )
 		? OpenXET( wstrName_ ) : OpenXETInBackground( wstrName_, ePriority );
     if ( pDevice != NULL )
@@ -1462,8 +1461,8 @@ void	CKTDXDeviceManager::AppendXET( CKTDXDeviceDataList& listOut_, const std::ws
 }
 void	CKTDXDeviceManager::AppendSound( CKTDXDeviceDataList& listOut_, const std::wstring& wstrName_ )
 {
-    if ( wstrName_.empty() == true )
-        return;
+	if ( wstrName_.empty() == true )
+		return;
 	CKTDXDevice* pDevice = OpenSoundInBackground( wstrName_ );
     if ( pDevice != NULL )
     {
@@ -1474,8 +1473,8 @@ void	CKTDXDeviceManager::AppendSound( CKTDXDeviceDataList& listOut_, const std::
 
 void	CKTDXDeviceManager::AppendXSkinMesh( CKTDXDeviceDataList& listOut_, const WCHAR* pName_, CKTDXDeviceManager::EPriority ePriority )
 {
-    if ( pName_ == NULL || pName_[0] == NULL )
-        return;
+	if ( pName_ == NULL || pName_[0] == 0 )
+		return;
 
 	CKTDXDevice* pDevice = ( ePriority == PRIORITY_BLOCKING )
 		? OpenXSkinMesh( pName_ ) : OpenXSkinMeshInBackground( pName_, ePriority );
@@ -1488,8 +1487,8 @@ void	CKTDXDeviceManager::AppendXSkinMesh( CKTDXDeviceDataList& listOut_, const W
 
 void	CKTDXDeviceManager::AppendXMesh( CKTDXDeviceDataList& listOut_, const WCHAR* pName_, CKTDXDeviceManager::EPriority ePriority )
 {
-    if ( pName_ == NULL || pName_[0] == NULL )
-        return;
+	if ( pName_ == NULL || pName_[0] == 0 )
+		return;
 
 	CKTDXDevice* pDevice = ( ePriority == PRIORITY_BLOCKING )
 		? OpenXMesh( pName_ ) : OpenXMeshInBackground( pName_, ePriority );
@@ -1502,8 +1501,8 @@ void	CKTDXDeviceManager::AppendXMesh( CKTDXDeviceDataList& listOut_, const WCHAR
 
 void	CKTDXDeviceManager::AppendTexture( CKTDXDeviceDataList& listOut_, const WCHAR* pName_, CKTDXDeviceManager::EPriority ePriority )
 {
-    if ( pName_ == NULL || pName_[0] == NULL )
-        return;
+	if ( pName_ == NULL || pName_[0] == 0 )
+		return;
 	CKTDXDevice* pDevice = ( ePriority == PRIORITY_BLOCKING )
 		? OpenTexture( pName_ ) : OpenTextureInBackground( pName_, ePriority );
     if ( pDevice != NULL )
@@ -1515,8 +1514,8 @@ void	CKTDXDeviceManager::AppendTexture( CKTDXDeviceDataList& listOut_, const WCH
 
 void	CKTDXDeviceManager::AppendXET( CKTDXDeviceDataList& listOut_, const WCHAR* pName_, CKTDXDeviceManager::EPriority ePriority )
 {
-    if ( pName_ == NULL || pName_[0] == NULL )
-        return;
+	if ( pName_ == NULL || pName_[0] == 0 )
+		return;
 	CKTDXDevice* pDevice = ( ePriority == PRIORITY_BLOCKING )
 		? OpenXET( pName_ ) : OpenXETInBackground( pName_, ePriority );
     if ( pDevice != NULL )
@@ -1528,8 +1527,8 @@ void	CKTDXDeviceManager::AppendXET( CKTDXDeviceDataList& listOut_, const WCHAR* 
 
 void	CKTDXDeviceManager::AppendSound( CKTDXDeviceDataList& listOut_, const WCHAR* pName_ )
 {
-    if ( pName_ == NULL || pName_[0] == NULL )
-        return;
+	if ( pName_ == NULL || pName_[0] == 0 )
+		return;
 	CKTDXDevice* pDevice = OpenSoundInBackground( pName_ );
     if ( pDevice != NULL )
     {

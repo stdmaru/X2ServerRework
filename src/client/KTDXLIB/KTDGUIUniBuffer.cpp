@@ -36,8 +36,8 @@ bool CKTDGUIUniBuffer::SetBufferSize( int nNewSize )
 
 	if( pTempBuffer == NULL || pTempBufferHC == NULL )
 	{
-		SAFE_DELETE( pTempBuffer );
-		SAFE_DELETE( pTempBufferHC );
+		SAFE_DELETE_ARRAY( pTempBuffer );
+		SAFE_DELETE_ARRAY( pTempBufferHC );
 
 		ErrorLog( KEM_ERROR40 );
 		return false;
@@ -226,8 +226,8 @@ bool CKTDGUIUniBuffer::InsertChar( int nIndex, WCHAR wChar )
 
     // Limit Height
     int nLine = GetLineCount(GetTextSize());
-    if( nLine > m_LineLimit || (wChar == L'\n' && nLine >= m_LineLimit) )
-        return false;
+	if( nLine > m_LineLimit || (wChar == L'\n' && nLine >= m_LineLimit) )
+		return false;
 
 	if( lstrlenW( m_pwszBuffer ) + 1 >= m_nBufferSize )
 	{
@@ -300,8 +300,8 @@ bool CKTDGUIUniBuffer::InsertString( int nIndex, const WCHAR *pStr, int nCount )
 
     // Limit Height
     int nLine = GetLineCount(GetTextSize());
-    if( nLine > m_LineLimit )
-        return false;
+	if( nLine > m_LineLimit )
+		return false;
 
 	if ( m_bByteLimit == true )
 	{
@@ -483,7 +483,6 @@ int CKTDGUIUniBuffer::GetLineWidth( int nCP )
         }
 
         SIZE size;
-		int iLen = (int)wcslen(textMsg.c_str());
 		size.cx = m_pFontNode->GetWidth( textMsg.c_str() );
 
 		return static_cast<int>( static_cast<float>( size.cx ) / g_pKTDXApp->GetResolutionScaleX() );
@@ -522,7 +521,7 @@ int CKTDGUIUniBuffer::GetLineCP(int nLine)
     return 0;
 }
 
-HRESULT CKTDGUIUniBuffer::CPtoY( int nCP, BOOL bTrail, int *pY )
+HRESULT CKTDGUIUniBuffer::CPtoY( int nCP, BOOL /*bTrail*/, int *pY )
 {
     assert( pY );
     *pY = 0;  // Default
@@ -557,7 +556,6 @@ HRESULT CKTDGUIUniBuffer::CPtoY( int nCP, BOOL bTrail, int *pY )
         }
 
         SIZE size;
-		int iLen = (int)wcslen(textMsg.c_str());
 		// GetTextExtentPoint32W 함수의 경우 마지막에 있는 LF를 빼고 세로 사이즈를 재므로 똑같이 처리해 주기 위해 잘라줍니다. by 박진웅
 		if( textMsg.back() == L'\n' )
 			textMsg = textMsg.substr( 0, textMsg.size() - 1 );
@@ -570,7 +568,7 @@ HRESULT CKTDGUIUniBuffer::CPtoY( int nCP, BOOL bTrail, int *pY )
     return hr;
 }
 
-HRESULT CKTDGUIUniBuffer::CPtoX( int nCP, BOOL bTrail, int *pX )
+HRESULT CKTDGUIUniBuffer::CPtoX( int nCP, BOOL /*bTrail*/, int *pX )
 {
 	assert( pX );
 	*pX = 0;  // Default
@@ -596,7 +594,6 @@ HRESULT CKTDGUIUniBuffer::CPtoX( int nCP, BOOL bTrail, int *pX )
 
 		SIZE size;
 		ZeroMemory( &size, sizeof( size ) );
-		int iLen = (int)wcslen(textMsg.c_str());
 		size.cx = m_pFontNode->GetWidth( textMsg.c_str() );
 
 		*pX = static_cast<int>( static_cast<float>( size.cx ) / g_pKTDXApp->GetResolutionScaleX() );
@@ -654,7 +651,6 @@ HRESULT CKTDGUIUniBuffer::XYtoCP( int nX, int nY, int *pCP, int *pnTrail )
     assert( pCP && pnTrail );
     *pCP = 0; *pnTrail = FALSE;
 
-    HRESULT hr = S_OK;
 
     if ( m_pFontNode != NULL )
     {
@@ -737,7 +733,7 @@ void CKTDGUIUniBuffer::GetPriorItemPos( int nCP, int *pPrior )
 
 	wstring wstrBuffer = m_pwszBuffer;
 
-	int nInitial = nInitial = nCP - 1;
+	int nInitial = nCP - 1;
 	for( int iCurrentCharIndex = nInitial; iCurrentCharIndex > 0; --iCurrentCharIndex )
 	{
 		if( wstrBuffer[iCurrentCharIndex] != L' ' &&
@@ -756,7 +752,7 @@ void CKTDGUIUniBuffer::GetNextItemPos( int nCP, int *pPrior )
 
 	wstring wstrBuffer = m_pwszBuffer;
 
-	int nInitial = nInitial = nCP + 1;
+	int nInitial = nCP + 1;
 	for( int iCurrentCharIndex = nInitial; iCurrentCharIndex < static_cast<int>(wstrBuffer.length()) - 1; ++iCurrentCharIndex )
 	{
 		if( wstrBuffer[iCurrentCharIndex] == L' ' &&

@@ -4,9 +4,9 @@
 CKTDGUIControl* CKTDGUIDialog::s_pControlFocus = NULL;	// The control which has focus
 
 CKTDGUIDialog::CKTDGUIDialog( CKTDXStage* pStage, const WCHAR* wstrScriptFileName /*= NULL*/, float fMoveTime /* = 0.07 */, int iLayer /*= 0 */)
-: m_iDialogListChangeCount( 0 )
+: m_ID( 0 )
+, m_iDialogListChangeCount( 0 )
 , m_fTimeForSelfDelete( 0.f )
-, m_ID( 0 )
 {
 #ifdef ACTIVE_KOG_GAME_PERFORMANCE_CHECK
 	KOGGamePerformanceCheck::GetInstance()->GetLagCheckMgr()->Pause();
@@ -146,8 +146,8 @@ CKTDGUIDialog::~CKTDGUIDialog(void)
 	SAFE_DELETE_DIALOG( m_pDialogGuideDesc );
 
 //{{ robobeg : 2009-01-07
-    if ( GetUIDialogManager() != NULL )
-        GetUIDialogManager()->UnmanageDlg( this );
+	if ( GetUIDialogManager() != NULL )
+		GetUIDialogManager()->UnmanageDlg( this );
 //}} robobeg : 2009-01-07
 
 	if( s_pControlFocus != NULL
@@ -1150,7 +1150,6 @@ bool CKTDGUIDialog::CheckControl( const WCHAR* wszControlName )
 
     //}} seojt // 2009-1-7, 17:23
 
-	CKTDGUIControl* pControl = NULL;
 	map<std::wstring, CKTDGUIControl*>::iterator iter;
 
 	if ( m_ControlsMap.empty() == true )
@@ -1481,7 +1480,7 @@ bool CKTDGUIDialog::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lPar
 
 
 	if( m_ControlsList.size() == 0 )
-		return NULL;
+		return false;
 
 	// 나머지 우선순위대로 업데이트
 	for ( int i = (int)m_ControlsList.size()-1; i >= 0 ; i-- )
@@ -2416,6 +2415,8 @@ void CKTDGUIDialog::UpdateRects()
 					pControlList->UpdateRects();
 
 				} break;
+			default:
+				break;
 			}
 		}
 	}
@@ -2531,7 +2532,6 @@ CKTDGUIControl* CKTDGUIDialog::GetControlMouseOver() const
 	if( GetShow() == false )
 		return NULL;
 
-	float fAlpha = GetColor().a;
 
 	if( GetColor().a < 0.01f )
 		return NULL;
