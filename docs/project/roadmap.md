@@ -204,7 +204,12 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
         again (2026-11-05). See [Client Lua data](../porting/lua.md).
   - Packing `client_data` for distribution (rebuild only the changed archives, a rule for new files) moved to
     x2 studio's export to `.kom` (user, 2026-11-05; [Later](#later--x2-studio)).
-  - [ ] The client's `KGCMassFileManager` on `x2::kom`, with the dev-tools loose-file priority (`/data/data`).
+  - [x] `client/kom-mass-file`: the client's `KGCMassFileManager` on `x2::kom` (`x2::client_massfile`): `CX2Main`'s fixed
+        list in load order, first-wins, entries decoded by algorithm, full names; with `X2_DEV_TOOLS` the loose files of
+        `/data/data` (a client_data works) preferred; nothing deleted at start, a missing or rejected archive named before
+        exiting; date-range renames kept; headless tests and all 101,826 entries of `_client/data` decoded through it
+        (2026-11-05). Fixed on the way: `KSession`'s session thread could wait on an uninitialized handle (a crash on Linux).
+        See [Client: KTDXLIB › Mass files](../porting/client-ktdxlib.md#mass-files).
 
 ## Phase 4 — Client: graphics
 

@@ -1,752 +1,220 @@
-/* KGCMassFileManager.h: interface for the KGCMassFileManager class.
-
-
-
-
-
-
-by KOG GC TEAM 류상욱
-===========================================================================================
-									GCMassFileManager
-===========================================================================================
-목적 :
-		- MassFile을 등록하여, Kom파일 내부에 있던 혹은 Data폴더 안에 있는지 여부에 관계없이
-		  데이터를 관리할 수 있도록함
-		- 차후 압축을 관리 할수 있을것임.
-
-
-===========================================================================================
-										사용예제
-===========================================================================================
-KGCMassFileManager Manager;
-Manager.SetDataDirectory("./Data");
-if(!Manager.AddMassFile("./Data/Abta.kom")) return 0;
-if(!Manager.AddMassFile("./Data/Texture.kom")) return 0;
-if(!Manager.AddMassFile("./Data/Motion.kom")) return 0;
-
-CMassFile::MASSFILE_MEMBERFILEINFO Info;
-for(int i = 0; i < Hits; i++)
-{
-	if( !Manager.LoadDataFile("ui_game.dds",&Info) )
-		return 0;
-
-	//Info를 사용하시오
-	//Info.pRealData 삭제하지 말것...Manager가 직접 관리함
-}
-
-===========================================================================================
-									속도 측정 결과 리포트
-===========================================================================================
-환경
-OS - WindowXP
-CPU - P4 3.0GHz
-Mem - 512MB
-HDD - 7200 RPM(Samsung)
-
-3개의 kom파일에서 검색, 총 4457개의 파일이 포함되어 있었음 (10000Hits) - In Debug Mode
-
-
-Mon_x07.frm : 206 ms
-Abta000.dds : 217 ms
-ui_game.dds : 253 ms
-
-Average : 10000Hit Time - 225 ms
-
-============================================================================================
-						FILE*에서 fseek에 걸리는 시간 측정(Debug Mode)
-============================================================================================
-
-100000회 반복시 76ms : 거의 없다고 보면될듯...
-
-    ◆ 엘소드 백그라운드 로딩 관련 작업일지 - Ods306팀 서진택, jintaeks on 2008-10-18, 11:38
-
-    @date   jintaeks on 2008-10-16, 16:42
-            - 엘소드의 로딩을 백그라운드로 구현하기 위해 작업을 시작하다.
-            - 중복되는 함수들을 통합하여 읽기 좋고, 수정이 용이하게 바꾸다.
-            - thread handle에 dependent하도록 버퍼를 사용하는 기능의 구현을 시작하다.
-    @date   jintaeks on 2008-10-18, 11:36
-            - thread safe한 버퍼 매니저 구현 완료
-                -- KGCMassFileBufferManager를 별도의 클래스 파일로 구현
-                -- 한 쓰레드에서 최대 5개의 버퍼가 사용되고 있음을 확인
-            - CMassFile::MASSFILE_MEMBERFILEINFO m_Info를 사용하지 않도록 수정
-                -- multi thread환경에서 각자의 thread가 안전한 MASSFILE_MEMBERFILEINFO를 얻도록
-                    수정. MASSFILE_MEMBERFILEINFO를 리턴하는 것으로 충분하나 기존의
-                    인터페이스를 수정하는 것을 방지하기 위해 MASSFILE_MEMBERFILEINFO_POINTER를
-                    사용하도록 하다 -> 작업이 완료되면 MASSFILE_MEMBERFILEINFO만을 사용하도록
-                    바꿀 것.
-*/
-
+// KGCMassFileManager: the client's files by name, from the .kom archives and from folders on disk
+// (KOG GC team; ported onto x2::kom, decision T35). docs/porting/client-ktdxlib.md#mass-files
+//
+//   KGCMassFileManager manager;
+//   manager.SetSubDirectory( gameFolder );             // folders for user files, music, movies (every build); with
+//                                                      // X2_DEV_TOOLS also indexes gameFolder/data (loose assets)
+//   manager.AddMassFiles( gameFolder, komNames, error ); // CX2Main's fixed list, in load order
+//   manager.LockMassFileMap();
+//
+//   KGCMassFileManager::CMassFile::MASSFILE_MEMBERFILEINFO_POINTER info = manager.LoadDataFile( L"ui_game.dds" );
+//   if ( info != NULL ) use( info->pRealData, info->size );  // decoded data; info keeps its buffer alive
+//
+// Names are entry names (no folders), compared case-insensitively (ASCII), never truncated. Lookups:
+// - LoadDataFile / IsValidFile / LoadTwoDataFiles: with X2_DEV_TOOLS a loose file of that name under the loose-file
+//   folder first (flagged MFI_LOCALFILE), then the archives; release builds read the archives only.
+// - *_LocalFile and GetPullPath: the data directories (SetSubDirectory, AddDataDirectory) in order, then with
+//   X2_DEV_TOOLS the loose-file folder; never the archives. Every build.
+// Thread-safe: any number of threads load at once (positional reads); mounting happens before LockMassFileMap.
 #pragma once
 
 #include "KGCMassFileBufferManager.h"
-#include "AssertTrace.h"
 
-#define MASSFILE_VERSION		(1)
-#define MASSFILE_NAMESIZE		(60)
-#define MFI_REALDATA			(1)
-#define MFI_COMPRESSEDDATA      (2)
-#if X2_DEV_TOOLS
-#define MFI_LOCALFILE           (4)
-#endif // X2OPTIMIZE_INDICATE_LOCAL_MASSFILE
+#include "x2/platform/time.h"
+#include "x2/platform/types.h"
 
-#define  MASS_FILE_MANAGER_MAX_NUM_THREADS	2
+#include <cstdint>
+#include <filesystem>
+#include <functional>
+#include <map>
+#include <memory>
+#include <shared_mutex>
+#include <string>
+#include <string_view>
+#include <unordered_map>
+#include <vector>
+
+namespace x2::kom {
+class Mount;
+}
+
+#define MFI_REALDATA            (1)     // load the data, not only the size
+#define MFI_LOCALFILE           (4)     // the data came from a file on disk, not from an archive
 
 class KGCMassFileManager
 {
-	public:
-		enum
-		{
-			FILESEEK_CUR = 0,
-			FILESEEK_SET,
-			FILESEEK_END,
-		};
-
-		struct MASSFILE_MAPPING_TIME
-		{
-			CTime tStartTime;
-			CTime tEndTime;
-		};
-
-		bool MassFileMapping();
-		bool ExternFileMapping( wstring& strExternFileName );
-
-		bool AddMappingList_LUA(int nIndex, const char* strDestMappingFileName, const char* strSrcMappingFileName);
-		bool AddMappingTime_LUA(int nIndex, const char* szStartDate, const char* szEndDate);
-		bool SetWebAddress_LUA(const char* szAddress);
-
-		int GetUsableMappingIndex();
-
-		std::map<int, std::map<string, string>> m_mapMassFileMappingList;
-		std::map<int, MASSFILE_MAPPING_TIME> m_mapMassFileMappingTime;
-		//class KGCMemoryFile
-		//{
-		//	public:
-		//		KGCMemoryFile();
-		//		~KGCMemoryFile();
-
-		//		void SetFile( char* pData,int size );
-		//		int ReadFile(void* pDest, int ReadBytes);
-		//		char* GetDataPointer() { return m_pCursor; }
-		//		int FileSeek(int iPos, int Pivot);
-
-		//	private:
-		//		char* m_pData;
-		//		char* m_pCursor;
-		//		int  m_iSize;
-		//		int  m_iCursorPos;
-		//};
-
-//#ifndef BACKGROUND_LOADING_TEST // 2008-10-17
-////{{AFX:
-//		class KGCBufferManager
-//		{
-//		public:
-//			struct Buffer
-//			{
-//				bool	m_bInUse;
-//				int		m_iMemorySize;
-//				char*	m_pData;
-//
-//				Buffer()
-//				{
-//					m_bInUse = false;
-//					m_iMemorySize = 1024;
-//					m_pData = new char[m_iMemorySize];
-//				}
-//
-//				~Buffer()
-//				{
-//					flush();
-//				}
-//
-//				void flush()
-//				{
-//					if( m_pData != NULL )
-//					{
-//						delete[] m_pData;
-//						m_pData = NULL;
-//					}
-//				}
-//
-//				char* GetMemory( int iSize, bool bClear = false )
-//				{
-//					if( m_iMemorySize < iSize )
-//					{
-//						if( m_pData != NULL )
-//						{
-//							delete []m_pData;
-//							m_pData = NULL;
-//						}
-//
-//						while( (m_iMemorySize *= 2) < iSize )
-//						{
-//						}
-//
-//						m_pData = new char[m_iMemorySize];
-//					}
-//
-//					if( true == bClear )
-//					{
-//						ZeroMemory( m_pData, sizeof(char) * m_iMemorySize );
-//					}
-//
-//					return m_pData;
-//				}
-//			};
-//
-//		public:
-//			KGCBufferManager();
-//			~KGCBufferManager();
-//
-//			Buffer* GetCurrBuffer()
-//			{
-//				CSLock locker( m_csBufferManager );
-//				if( m_iCurrBufferIndex < 0 || m_iCurrBufferIndex > m_iBufferCount-1 )
-//					return NULL;
-//
-//				return &m_aBuffer[m_iCurrBufferIndex];
-//			}
-//			char* GetBuffer(int iSize, bool bForceCurrent = false );
-//			int GetBufferSize()		// 현재 버퍼 사이즈를 return
-//			{
-//				CSLock locker( m_csBufferManager );
-//				if( m_iCurrBufferIndex < 0 || m_iCurrBufferIndex > m_iBufferCount-1 )
-//					return 0;
-//
-//				return m_aBuffer[m_iCurrBufferIndex].m_iMemorySize;
-//			}
-//
-//			void  Flush();
-//
-//		private:
-//			int m_iCurrBufferIndex;
-//			int m_iBufferCount;			// m_aBuffer의 크기
-//
-//			Buffer m_aBuffer[5];
-//
-//			CRITICAL_SECTION m_csBufferManager;
-//		};//class KGCBufferManager
-////}}AFX
-//#endif // BACKGROUND_LOADING_TEST // 2008-10-17
-
-		class CMassFile
-		{
-			private:
-				struct MASSFILE_HEADER
-				{
-					char strVersionInfo[50];
-					UINT iTotalFileNo;
-					bool bCompressed;
-				};
-				struct MASSFILE_MEMBERFILEHEADER
-				{
-					WCHAR strFileName[MASSFILE_NAMESIZE];
-					long RealSize;
-					long CompressSize;
-					long offSet;		//RealData부분에서의 OffSet입니다
-
-					MASSFILE_MEMBERFILEHEADER()
-					{
-						ZeroMemory( strFileName, sizeof(char) * MASSFILE_NAMESIZE );
-						RealSize = 0;
-						CompressSize = 0;
-						offSet = 0;
-					}
-				};
-
-			public:
-
-				struct MASSFILE_MEMBERFILEINFO
-				{
-//#ifdef BACKGROUND_LOADING_TEST // 2008-10-16
-                    KGCMassFileBufferPtr    pBuffer;
-//#else // BACKGROUND_LOADING_TEST // 2008-10-16
-//                    //{{AFX
-//					KGCBufferManager::Buffer* pBuffer;
-//                    //}}AFX
-//#endif // BACKGROUND_LOADING_TEST // 2008-10-16
-
-					WCHAR strFileName[MASSFILE_NAMESIZE];
-
-					long size;
-					char *pRealData;
-					DWORD dwFlag;
-                    long compressedSize;
-
-					MASSFILE_MEMBERFILEINFO()
-					{
-
-						ZeroMemory( strFileName, sizeof(char) * MASSFILE_NAMESIZE );
-
-						size			= 0;
-						pRealData		= NULL;
-						dwFlag			= MFI_REALDATA;
-                        compressedSize = 0;
-
-//#ifndef BACKGROUND_LOADING_TEST // 2008-10-16
-//                        //{{AFX
-//						pBuffer			= NULL;
-//                        //}}AFX
-//#endif // BACKGROUND_LOADING_TEST // 2008-10-16
-					}//MASSFILE_MEMBERFILEINFO()
-					~MASSFILE_MEMBERFILEINFO()
-                    {
-                        //TRACEA( "%s\r\n", __FUNCTION__ );
-                    }//~MASSFILE_MEMBERFILEINFO()
-				};
-
-
-
-//#ifdef BACKGROUND_LOADING_TEST // 2008-10-17
-
-                struct MASSFILE_MEMBERFILEINFO_POINTER : public MASSFILE_MEMBERFILEINFO
-				{
-                    /// constructor.
-                    MASSFILE_MEMBERFILEINFO_POINTER(){}
-
-                    /// copy constructor.
-                    MASSFILE_MEMBERFILEINFO_POINTER(const MASSFILE_MEMBERFILEINFO_POINTER& rhs_)
-                    {
-                        operator=( rhs_ );
-                    }//MASSFILE_MEMBERFILEINFO_POINTER()
-
-                    MASSFILE_MEMBERFILEINFO_POINTER& operator=(const MASSFILE_MEMBERFILEINFO_POINTER& rhs_)
-                    {
-                        pBuffer     = rhs_.pBuffer;
-						StringCchCopyW( strFileName, ARRAY_SIZE(strFileName), rhs_.strFileName );
-					    size        = rhs_.size;
-					    pRealData   = rhs_.pRealData;
-					    dwFlag      = rhs_.dwFlag;
-                        compressedSize = rhs_.compressedSize;
-                        return *this;
-                    }//operator=()
-
-					//MASSFILE_MEMBERFILEINFO_POINTER& operator=(MASSFILE_MEMBERFILEINFO* ptr_)
-					//{
-     //                   if ( ptr_ )
-     //                   {
-     //                       pBuffer     = ptr_->pBuffer;
-					//        StringCchCopyA( strFileName, ARRAY_SIZE(strFileName), ptr_->strFileName );
-					//        size        = ptr_->size;
-					//        pRealData   = ptr_->pRealData;
-					//        dwFlag      = ptr_->dwFlag;
-     //                   }
-     //                   else
-     //                   {
-     //                       //pBuffer.reset();
-					//        strFileName[0]  = NULL;
-					//        size            = 0;
-					//        pRealData       = NULL;
-					//        dwFlag          = 0L;
-     //                   }//if
-					//	return *this;
-					//}
-
-					MASSFILE_MEMBERFILEINFO* operator->()
-					{
-						return this;
-					}//operator->()
-
-					operator const MASSFILE_MEMBERFILEINFO*() const
-					{
-						return this;
-					}//operator const MASSFILE_MEMBERFILEINFO*()
-
-					bool operator!()
-					{
-						return pRealData == NULL;
-					}//operator!()
-
-					bool operator==(const MASSFILE_MEMBERFILEINFO* ptr)
-					{
-                        if ( ptr )
-						    return pRealData == ptr->pRealData;
-                        else
-                            return pRealData == NULL;
-					}//operator==()
-
-					bool operator!=(const MASSFILE_MEMBERFILEINFO* ptr)
-					{
-                        if ( ptr )
-						    return pRealData != ptr->pRealData;
-                        else
-                            return pRealData != NULL;
-					}//operator!=()
-				};//struct MASSFILE_MEMBERFILEINFO_POINTER
-
-				typedef MASSFILE_MEMBERFILEINFO_POINTER     MASSFILE_MEMBERFILEINFO_PTR;
-
-//#else // BACKGROUND_LOADING_TEST // 2008-10-17
-//
-//                typedef MASSFILE_MEMBERFILEINFO*    MASSFILE_MEMBERFILEINFO_PTR;
-//
-//                //{{AFX
-//				struct MASSFILE_MEMBERFILEINFO_POINTER
-//				{
-//					KGCBufferManager::Buffer* pBuffer;
-//					MASSFILE_MEMBERFILEINFO* m_pInfo;
-//
-//					CRITICAL_SECTION m_csMASSFILE_MEMBERFILEINFO_POINTER;
-//
-//					MASSFILE_MEMBERFILEINFO_POINTER()
-//					{
-//						::InitializeCriticalSection( &m_csMASSFILE_MEMBERFILEINFO_POINTER );
-//
-//						pBuffer = NULL;
-//						m_pInfo = NULL;
-//					}
-//
-//					~MASSFILE_MEMBERFILEINFO_POINTER()
-//					{
-//						UnRef();
-//
-//						::DeleteCriticalSection( &m_csMASSFILE_MEMBERFILEINFO_POINTER );
-//					}
-//
-//					MASSFILE_MEMBERFILEINFO_POINTER& operator= (MASSFILE_MEMBERFILEINFO* ptr)
-//					{
-//						CSLock locker( m_csMASSFILE_MEMBERFILEINFO_POINTER );
-//
-//						UnRef();
-//						m_pInfo = ptr;
-//						if( NULL != ptr )
-//							pBuffer = ptr->pBuffer;
-//						return *this;
-//					}
-//
-//					void UnRef()
-//					{
-//						CSLock locker( m_csMASSFILE_MEMBERFILEINFO_POINTER );
-//
-//						if( NULL != pBuffer )
-//						{
-//							pBuffer->m_bInUse = false;
-//						}
-//					}
-//
-//					MASSFILE_MEMBERFILEINFO* operator ->()
-//					{
-//						CSLock locker( m_csMASSFILE_MEMBERFILEINFO_POINTER );
-//
-//						return m_pInfo;
-//					}
-//
-//					operator MASSFILE_MEMBERFILEINFO* () const
-//					{
-//
-//
-//						return m_pInfo;
-//					}
-//
-//					bool operator !()
-//					{
-//						CSLock locker( m_csMASSFILE_MEMBERFILEINFO_POINTER );
-//
-//						return m_pInfo == NULL;
-//					}
-//					bool operator ==(const MASSFILE_MEMBERFILEINFO* ptr)
-//					{
-//						CSLock locker( m_csMASSFILE_MEMBERFILEINFO_POINTER );
-//
-//						return m_pInfo == ptr;
-//					}
-//					bool operator !=(const MASSFILE_MEMBERFILEINFO* ptr)
-//					{
-//						CSLock locker( m_csMASSFILE_MEMBERFILEINFO_POINTER );
-//
-//						return m_pInfo != ptr;
-//					}
-//				};
-//                //}}AFX
-//
-//#endif // BACKGROUND_LOADING_TEST // 2008-10-17
-
-			public:
-				CMassFile();
-				~CMassFile();
-				UINT GetFileCount();		//MassFile에 몇개의 File이 포함되어있는지 알아봅니다.
-
-				bool LoadMassFile( const WCHAR* strMassFile );
-
-//#ifdef BACKGROUND_LOADING_TEST // 2008-10-16
-                //{{ seojt // 2008-10-16, 15:15
-                // GetMemberFile()이 내부적으로 호출하는 함수이다.
-                // 내부적으로 호출하는 함수의 관례를 따라 함수 이름앞에 underscore(_)를 붙인다.
-                // - jintaeks on 2008-10-16, 15:16
-                bool _GetMemberFile( KGCMassFileManager& kManager, const MASSFILE_MEMBERFILEHEADER& MEMBERFILEHEADER_, MASSFILE_MEMBERFILEINFO* pOut_);
-                //}} seojt // 2008-10-16, 15:15
-//#endif // BACKGROUND_LOADING_TEST // 2008-10-16
-
-				bool GetMemberFile( KGCMassFileManager& kManager, const WCHAR* strRealFile, MASSFILE_MEMBERFILEINFO* pOut);
-				bool GetMemberFile( KGCMassFileManager& kManager, int iFileIndex, MASSFILE_MEMBERFILEINFO* pOut);
-
-//#ifndef BACKGROUND_LOADING_TEST // 2008-10-17
-//                //{{AFX
-//				static KGCBufferManager m_BufferManager1;
-//				static KGCBufferManager m_BufferManager2;
-//                //}}AFX
-//#endif // BACKGROUND_LOADING_TEST // 2008-10-17
-
-/*
-#ifdef BACKGROUND_LOADING_TEST // 2008-10-16
-                //{{ seojt // 2008-10-16, 15:39
-                // GetMemberFile()이 내부적으로 호출하는 함수이다.
-                bool _GetMemberFileFromKom(HANDLE hFile_, MASSFILE_HEADER& Header, MASSFILE_MEMBERFILEHEADER& MEMBERFILEHEADER_, MASSFILE_MEMBERFILEINFO* pOut_);
-                //}} seojt // 2008-10-16, 15:39
-#endif // BACKGROUND_LOADING_TEST // 2008-10-16
-
-				//아래 두 함수는 MassFile을 Load시켜두지 않고 하나만 읽어 들이고자 할때..
-				//여러번 사용할시 속도 저하의 원인이 됨
-				bool GetMemberFile(const char* strMassFile, const char* strRealFile, MASSFILE_MEMBERFILEINFO* pOut);
-				bool GetMemberFile(const char* strMassFile, int iFileIndex, MASSFILE_MEMBERFILEINFO* pOut);
-*/
-
-				bool SaveMassFile(WCHAR* strFileName, std::vector<WCHAR*> *pVecFile, bool bZip = false);
-				bool ModifyMassFile( KGCMassFileManager& kManager, CMassFile* pMassFile,WCHAR* strFileName, std::vector<WCHAR*> *pVecFile, bool bZip = true);
-
-				//FILE관련...Help
-				long GetFileSize(WCHAR* strFileName);
-				void GetFileName(WCHAR* Buffer, const WCHAR* strFilePath);
-
-				bool IsCompressed(){ return m_MassFileHeader.bCompressed; }
-				void SetCompressed( bool bCompressed ){ m_MassFileHeader.bCompressed = bCompressed; }
-
-				__forceinline const WCHAR* GetMemberFileName( const UINT uiIndex_ ) const
-				{
-					return m_vecMemberFileHeader[uiIndex_].strFileName;
-				}
-
-			private:
-				std::vector<MASSFILE_MEMBERFILEHEADER> m_vecMemberFileHeader;
-				MASSFILE_HEADER						   m_MassFileHeader;
-				WCHAR								   m_strMassFileName[MAX_PATH];
-
-//{{ robobeg : 2011-08-16
-//              HANDLE                                 m_hFile;
-//#ifdef	X2OPTIMIZE_MASS_FILE_MANAGER_PER_THREAD_SYNC_IO
-				HANDLE									m_ahFilePerThread[MASS_FILE_MANAGER_MAX_NUM_THREADS];
-//#else	X2OPTIMIZE_MASS_FILE_MANAGER_PER_THREAD_SYNC_IO
-//				HANDLE								   m_hFileForegroundSync;
-//				HANDLE                                 m_hFileBackgroundAsync;
-//#endif	X2OPTIMIZE_MASS_FILE_MANAGER_PER_THREAD_SYNC_IO
-//}} robobeg : 2011-08-16
-				int									   m_iFileVersion;
-				//CRITICAL_SECTION					   m_csMassFile;
-		};//class CMassFile
-
-	private:
-		struct SMassFileIndex		// file이름으로 MassFile의 포인터와 Index를 역참조 하기위함
-		{
-			CMassFile* pMassFile;
-			unsigned int Index;
-		};
-
-	public:
-		KGCMassFileManager();
-		~KGCMassFileManager();
-
-		void AddDataDirectory(const std::wstring& wstrDirectory, bool bInsertFront = false );
-		void AddDataDirectory(const std::string& strDirectory, bool bInsertFront = false );
-
-//#ifdef	X2OPTIMIZE_REMOVE_MASS_FILE_MANAGER_LOCK
-		void		LockMassFileMap();
-//#endif	X2OPTIMIZE_REMOVE_MASS_FILE_MANAGER_LOCK
-
-		CMassFile* AddMassFile(IN const std::wstring& strKomFileName, OUT bool& bIsDuplicationError_  );
-
-
-        // 이 아래의 세 버전은 패키지에서 파일을 확인하거나 읽는 API 이다.
-        // 개발 버전에서는 개발 목적으로 패키지에 없을 때 로컬 디렉토리에서 확인하거나 읽지만,
-        // 서비스 버전에서는 패키지만 처리하고, 로컬 파일은 확인하지 않는다. robobeg - 2014.01.21
-		bool KGCMassFileManager::IsValidFile( std::wstring wstrFileName );
-		CMassFile::MASSFILE_MEMBERFILEINFO_PTR LoadDataFile( std::string strFileName, bool bRealData = true
-            , bool bKeepCompressedData = false
-            );
-		CMassFile::MASSFILE_MEMBERFILEINFO_PTR LoadDataFile( std::wstring wstrFileName, bool bRealData = true
-            , bool bKeepCompressedData = false
-            );
-
-        // 이 아래의 세 버전은 오로지 로컬 디렉토리에서 파일을 확인하거나 읽는다. 서비스버전, 개발버전 공통이다. robobeg - 2014.01.21
-		bool KGCMassFileManager::IsValidFile_LocalFile( std::wstring wstrFileName );
-		CMassFile::MASSFILE_MEMBERFILEINFO_PTR LoadDataFile_LocalFile( std::string strFileName, bool bRealData = true );
-		CMassFile::MASSFILE_MEMBERFILEINFO_PTR LoadDataFile_LocalFile( std::wstring wstrFileName, bool bRealData = true );
-
-
-        // 두 개의 map 상 혹은 물리 위치상 adjacent 한 파일 데이타 로딩을 위한 인터페이스
-        // 텍스쳐파일과 .TET 파일 로딩을 위해 사용한다.
-        CMassFile::MASSFILE_MEMBERFILEINFO_PTR
-            LoadTwoDataFiles( std::string strFileName, std::string strFileName2, OUT CMassFile::MASSFILE_MEMBERFILEINFO_PTR& info2,
-            bool bRealData = true );
-
-        CMassFile::MASSFILE_MEMBERFILEINFO_PTR
-            LoadTwoDataFiles( const std::wstring& wstrFileName, const std::wstring& wstrFileName2, OUT CMassFile::MASSFILE_MEMBERFILEINFO_PTR& info2,
-            bool bRealData = true );
-
-
-
-
-		int  GetTotalFileCount();
-
-		//note : 현재 실행되는 폴더의 하위폴더경로를 셋팅해줌
-		bool SetSubDirectory();
-		//note : 파일이 있으면 해당파일의 경로명을 리턴
-		WCHAR* GetPullPath( WCHAR* wcFileName );
-		char*  GetPullPath( char* cFileName );
-
-		static void LeaveLastErrorLog( KTDX_ERROR_MSG eErrorID, const char* szDesc1, const char* szDesc2 );
-		static void LeaveLastErrorLog( KTDX_ERROR_MSG eErrorID, const WCHAR* szDesc1, const WCHAR* szDesc2 );
-		static void LeaveLastErrorLog( KTDX_ERROR_MSG eErrorID, const WCHAR* szDesc1, const char* szDesc2 );
-
-		//{{ robobeg : 2011-08-16
-//#ifdef	X2OPTIMIZE_MASS_FILE_MANAGER_PER_THREAD_SYNC_IO
-		bool	RegisterCurrentThread();
-//#else	X2OPTIMIZE_MASS_FILE_MANAGER_PER_THREAD_SYNC_IO
-//		void    SetForegroundThreadId( DWORD dwThreadId )   { m_dwForegroundThreadId = dwThreadId; }
-//		DWORD   GetForegroundThreadId() { return m_dwForegroundThreadId; }
-//#endif	X2OPTIMIZE_MASS_FILE_MANAGER_PER_THREAD_SYNC_IO
-		//}} robobeg : 2011-08-16
-
-#ifdef	CHECK_FILE_DUPLICATION
-		bool ExtractFileDuplicatedToTextFile();
-		void ClearFileDuplicatedList() { m_vecFileNameDuplicated.clear(); }
-#endif // CHECK_FILE_DUPLICATION
-
-//#ifdef	X2OPTIMIZE_MASS_FILE_BUFFER_MANAGER
-		void	ReleaseAllMemoryBuffers();
-//#ifdef	BACKGROUND_LOADING_TEST
-		static KGCMassFileBufferManager&	GetMassFileBufMan() { return m_massFileBufMan; }
-//#endif	BACKGROUND_LOADING_TEST
-//#endif	X2OPTIMIZE_MASS_FILE_BUFFER_MANAGER
-
-		void InitServerCurrentTime();
-		__time64_t	GetServerCurrentTime();
-		void SetServerCurrentTime( wstring wstrTime );
-	private:
-
-//#ifdef	X2OPTIMIZE_MASS_FILE_MANAGER_PER_THREAD_SYNC_IO
-		int		GetCurrentThreadIndex();
-//#endif	X2OPTIMIZE_MASS_FILE_MANAGER_PER_THREAD_SYNC_IO
-
-		//KOM파일이 아닌 Data폴더에서 실제 파일을 읽어 들이는경우..
-		bool LoadRealFile( const std::wstring& strFileName, CMassFile::MASSFILE_MEMBERFILEINFO* pOut );
-		//note : 현제 폴더 경로를 받아 하위폴더경로를 얻어옴
-		bool GetSubDirectory( WCHAR* szSearchDir );
-
-		bool    LoadTwoRealFiles(const std::wstring& strFileName, OUT CMassFile::MASSFILE_MEMBERFILEINFO& info,
-			const std::wstring& strFileName2, OUT CMassFile::MASSFILE_MEMBERFILEINFO& info2 );
-
-		static HANDLE OpenReadFileHandle( const WCHAR* pszFilename, unsigned uRetryCount = 0, bool bAsync = false );
-		static BOOL ReadFile( HANDLE hFile, const WCHAR* pLogInfo, LPVOID lpBuffer, DWORD nNumberOfBytesToRead, LPDWORD lpNumberOfBytesRead,
-			DWORD dwOffset
-//#ifndef	X2OPTIMIZE_MASS_FILE_MANAGER_PER_THREAD_SYNC_IO
-//			, bool bAsync = false
-//#endif	X2OPTIMIZE_MASS_FILE_MANAGER_PER_THREAD_SYNC_IO
-			);
-
-//#ifndef	X2OPTIMIZE_MASS_FILE_MANAGER_PER_THREAD_SYNC_IO
-//		static void WINAPI _CompletionRoutine( DWORD dwErrorCode, DWORD dwNumTrans, LPOVERLAPPED lpOverlapped );
-//#endif	X2OPTIMIZE_MASS_FILE_MANAGER_PER_THREAD_SYNC_IO
-
-//#ifdef	X2OPTIMIZE_REMOVE_MASS_FILE_MANAGER_LOCK
-		struct	KTLSData;
-		const KTLSData&		GetUpdatedTLSData();
-//#endif	X2OPTIMIZE_REMOVE_MASS_FILE_MANAGER_LOCK
-
-
-
-    private:
-
-//#ifndef	X2OPTIMIZE_MASS_FILE_MANAGER_PER_THREAD_SYNC_IO
-//		struct  KGCMASSFILEMANAGER_OVERLAPPED
-//		{
-//			enum    EFinishCode
-//			{
-//				NOT_FINISHED = 0,
-//				FINISHED = 1,
-//				FINISHED_WITH_ERROR = 2,
-//			};
-//			OVERLAPPED  m_overlapped;
-//			DWORD       m_dwNumBytesTransferred;
-//			EFinishCode m_eFinishCode;  // 0:not finished, 1:finish,
-//		};//struct  KGCMASSFILEMANAGER_OVERLAPPED : OVERLAPPED
-//
-//		__declspec(thread)  static  KGCMASSFILEMANAGER_OVERLAPPED   m_overlapped;
-//#endif	X2OPTIMIZE_MASS_FILE_MANAGER_PER_THREAD_SYNC_IO
-
-//#ifndef	X2OPTIMIZE_REMOVE_MASS_FILE_MANAGER_LOCK
-//		CRITICAL_SECTION						m_csFileManager;
-//#endif	X2OPTIMIZE_REMOVE_MASS_FILE_MANAGER_LOCK
-
-		typedef std::unordered_map< std::wstring, SMassFileIndex>   MassFileMap;
-		std::map< std::wstring, SMassFileIndex >	m_mapMassFileBackup;
-
-		MassFileMap					m_mapMassFile;
-		std::vector<CMassFile*>		m_vecMassFile;
-		std::vector<std::wstring>	m_vecstrDataDirectory;
-
-
-//#ifdef	X2OPTIMIZE_REMOVE_MASS_FILE_MANAGER_LOCK
-
-		// mass file manager 초기화 후에는 m_mapMassFile 이 수정되지 않는 것을 게런티 하기 위해 아래 플래그를 추가합니다.
-		bool						m_bLockMassFileMap;
-
-		// 개발버전에서밖에 사용안되지만 일단 lock 제거를 위해 다음 기능을 추가합니다.
-		// m_vecstrDataDirectory 이 변경될 때마다 stamp 값을 변하게 하고
-		// 각 thread 에서는 stamp 값이 변화할 때마다 m_vecstrDataDirectory 의 내용을 카피합니다.
-		// thread 별 데이타는 해제할 방법이 딱히 없어서 dangling 시킵니다. --;
-
-		DWORD                       m_dwDataDirectoryStamp;
-		MemberCriticalSection       m_csStrDataDirectory;
-
-		struct KTLSData
-		{
-			std::vector<std::wstring> m_vecstrDataDirectory;
-			DWORD                   m_dwDataDirectoryStamp;
-
-			KTLSData()
-				: m_dwDataDirectoryStamp(0) {}
-		};
-		__declspec(thread)  static KTLSData*  ms_pkTLSData;
-
-
-//#endif  X2OPTIMIZE_REMOVE_MASS_FILE_MANAGER_LOCK
-
-
-
-//#ifndef BACKGROUND_LOADING_TEST // 2008-10-17
-//        //{{AFX
-//		static KGCBufferManager					m_BufferManager;
-//        //}}AFX
-//#endif // BACKGROUND_LOADING_TEST // 2008-10-17
-
-//#ifndef BACKGROUND_LOADING_TEST // 2008-10-17
-//        //{{AFX
-//		CMassFile::MASSFILE_MEMBERFILEINFO		m_Info;
-//        //}}AFX
-//#endif // BACKGROUND_LOADING_TEST // 2008-10-17
-
-
-		//KGCMemoryFile							m_MemoryFile;
-
-//#ifdef BACKGROUND_LOADING_TEST // 2008-10-16
-        static KGCMassFileBufferManager         m_massFileBufMan;
-//#endif // BACKGROUND_LOADING_TEST // 2008-10-16
-
-
-//#ifdef	X2OPTIMIZE_MASS_FILE_MANAGER_PER_THREAD_SYNC_IO
-		volatile DWORD							m_adwThreadId[ MASS_FILE_MANAGER_MAX_NUM_THREADS ];
-//#else	X2OPTIMIZE_MASS_FILE_MANAGER_PER_THREAD_SYNC_IO
-//		//{{ robobeg : 2011-08-16
-//		DWORD                                   m_dwForegroundThreadId;
-//		//}} robobeg : 2011-08-16
-//#endif	X2OPTIMIZE_MASS_FILE_MANAGER_PER_THREAD_SYNC_IO
-		std::string								m_strWebAddress;
-		std::map< std::string, std::vector< char > > m_mapWebBuffer;
-		std::map< std::string, std::string > m_mapWebMapper;
-		CTime					m_ServerCurrentTime;
-		DWORD					m_TickCountAtGetTime;
-
-#ifdef	CHECK_FILE_DUPLICATION
-		vector<string>							m_vecFileNameDuplicated;
-#endif // CHECK_FILE_DUPLICATION
-};//class KGCMassFileManager
+public:
+    // Kept as the scope of the info types the engine names (KGCMassFileManager::CMassFile::MASSFILE_MEMBERFILEINFO_*);
+    // the archives themselves are x2::kom's.
+    struct CMassFile
+    {
+        struct MASSFILE_MEMBERFILEINFO
+        {
+            KGCMassFileBufferPtr pBuffer;   // owns pRealData
+            std::wstring strFileName;       // the name as stored (archive entry or file on disk)
+            long size = 0;                  // decoded size
+            char* pRealData = nullptr;      // with MFI_REALDATA; nullptr if not found or not loaded
+            DWORD dwFlag = MFI_REALDATA;
+        };
+
+        // What LoadDataFile returns: tests like the pointer it used to be (`info == NULL`, `!info`, `info->size`).
+        struct MASSFILE_MEMBERFILEINFO_POINTER : public MASSFILE_MEMBERFILEINFO
+        {
+            MASSFILE_MEMBERFILEINFO* operator->() { return this; }
+            const MASSFILE_MEMBERFILEINFO* operator->() const { return this; }
+            operator const MASSFILE_MEMBERFILEINFO*() const { return this; }
+            bool operator!() const { return pRealData == nullptr; }
+            bool operator==(const MASSFILE_MEMBERFILEINFO* ptr) const
+            {
+                return ptr ? pRealData == ptr->pRealData : pRealData == nullptr;
+            }
+            bool operator!=(const MASSFILE_MEMBERFILEINFO* ptr) const { return !(*this == ptr); }
+        };
+
+        typedef MASSFILE_MEMBERFILEINFO_POINTER MASSFILE_MEMBERFILEINFO_PTR;
+    };
+
+    // Errors and warnings (missing files, duplicate names, unreadable entries). Default: stderr.
+    using LogSink = std::function<void(const std::string&)>;
+
+    explicit KGCMassFileManager(LogSink log = {});
+    ~KGCMassFileManager();
+    KGCMassFileManager(const KGCMassFileManager&) = delete;
+    KGCMassFileManager& operator=(const KGCMassFileManager&) = delete;
+
+    // ---- Archives (before LockMassFileMap) -------------------------------------------------------------------------
+
+    // Mounts one archive after those already mounted. A name already mounted keeps its first entry (first wins, with
+    // a warning). False and `error` naming the archive if it cannot be opened or the map is locked.
+    bool AddMassFile(const std::filesystem::path& komFile, std::string& error);
+
+    // Mounts folder/<name> for each name, in that order (the client's load order), stopping at the first archive that
+    // cannot be opened. Other .kom files in the folder are reported as ignored.
+    bool AddMassFiles(const std::filesystem::path& folder, const std::vector<std::wstring>& names, std::string& error);
+
+    // The client's archives in load order: data001.kom .. data150.kom, then datai001.kom .. datai023.kom (CX2Main's
+    // fixed list).
+    static std::vector<std::wstring> GetClientArchiveNames();
+
+    // After this the archives cannot change, which lets loading threads read the map without a lock.
+    void LockMassFileMap();
+
+    int GetTotalFileCount() const;     // names in the archives
+    std::size_t GetMassFileCount() const;
+
+    // ---- Folders --------------------------------------------------------------------------------------------------
+
+    // Data directories (searched by *_LocalFile and GetPullPath, in order). Paths are folders; a trailing separator
+    // is optional.
+    void AddDataDirectory(const std::wstring& wstrDirectory, bool bInsertFront = false);
+    void AddDataDirectory(const std::string& strDirectory, bool bInsertFront = false);
+
+    // Registers root and its subfolders, recursively, as data directories (skipping folders whose name starts with
+    // '.' and root/data). With X2_DEV_TOOLS, also SetLooseFileFolder(root/data) when that folder exists. The overload
+    // without arguments uses the current folder, as the original.
+    bool SetSubDirectory();
+    bool SetSubDirectory(const std::filesystem::path& root);
+
+    // Indexes every file under `folder`, recursively, by name (skipping folders whose name starts with '.', such as a
+    // client_data's .kom). A name in two folders: the first in sorted path order wins, with a warning. Read only in
+    // builds with X2_DEV_TOOLS. Can be called again to pick up new files.
+    bool SetLooseFileFolder(const std::filesystem::path& folder);
+    std::size_t GetLooseFileCount() const;
+
+    // ---- Loading --------------------------------------------------------------------------------------------------
+
+    bool IsValidFile(const std::wstring& wstrFileName);
+    CMassFile::MASSFILE_MEMBERFILEINFO_PTR LoadDataFile(const std::string& strFileName, bool bRealData = true);
+    CMassFile::MASSFILE_MEMBERFILEINFO_PTR LoadDataFile(const std::wstring& wstrFileName, bool bRealData = true);
+
+    // Two files at once (a texture and its .tet). info2 stays empty if the second one is missing or empty.
+    CMassFile::MASSFILE_MEMBERFILEINFO_PTR LoadTwoDataFiles(const std::string& strFileName,
+                                                            const std::string& strFileName2,
+                                                            CMassFile::MASSFILE_MEMBERFILEINFO_PTR& info2,
+                                                            bool bRealData = true);
+    CMassFile::MASSFILE_MEMBERFILEINFO_PTR LoadTwoDataFiles(const std::wstring& wstrFileName,
+                                                            const std::wstring& wstrFileName2,
+                                                            CMassFile::MASSFILE_MEMBERFILEINFO_PTR& info2,
+                                                            bool bRealData = true);
+
+    // Files on disk only (user settings such as GameOptions.lua), in every build.
+    bool IsValidFile_LocalFile(const std::wstring& wstrFileName);
+    CMassFile::MASSFILE_MEMBERFILEINFO_PTR LoadDataFile_LocalFile(const std::string& strFileName,
+                                                                  bool bRealData = true);
+    CMassFile::MASSFILE_MEMBERFILEINFO_PTR LoadDataFile_LocalFile(const std::wstring& wstrFileName,
+                                                                  bool bRealData = true);
+
+    // Replaces the file name in the buffer (MAX_PATH characters) with the full path of the file on disk; nullptr if
+    // there is none. The char version uses UTF-8.
+    WCHAR* GetPullPath(WCHAR* wcFileName);
+    char* GetPullPath(char* cFileName);
+    std::filesystem::path FindLocalFile(std::wstring_view wstrFileName) const;
+
+    // ---- Date-range renames (MassFileMappingList.lua) -------------------------------------------------------------
+
+    // Mapping nIndex: while the server time is within its range, loading the first name loads the second.
+    bool AddMappingList_LUA(int nIndex, const char* strDestMappingFileName, const char* strSrcMappingFileName);
+    bool AddMappingTime_LUA(int nIndex, const char* szStartDate, const char* szEndDate);
+
+    // Applies the mappings in range at the current server time (the names must both exist), replacing the previous
+    // ones. Called when the server time arrives. Safe while loading threads run.
+    bool MassFileMapping();
+    // The name strExternFileName is mapped to now (upper-cased, as the original), if any.
+    bool ExternFileMapping(std::wstring& strExternFileName);
+
+    void InitServerCurrentTime();
+    __time64_t GetServerCurrentTime();
+    void SetServerCurrentTime(const std::wstring& wstrTime);
+
+    // ---- Buffers --------------------------------------------------------------------------------------------------
+
+    void ReleaseAllMemoryBuffers();
+    static KGCMassFileBufferManager& GetMassFileBufMan() { return m_massFileBufMan; }
+
+private:
+    struct LooseFile
+    {
+        std::filesystem::path path;
+    };
+
+    struct MappingTime
+    {
+        CTime tStartTime;
+        CTime tEndTime;
+    };
+
+    using MassFileInfo = CMassFile::MASSFILE_MEMBERFILEINFO;
+
+    // Lower-cased (ASCII) UTF-8 key of a name.
+    static std::string Key(std::wstring_view name);
+    std::string Resolve(const std::string& key) const;
+
+    bool LoadFromArchives(const std::string& key, MassFileInfo& out) const;
+    bool LoadFromDisk(const std::filesystem::path& path, MassFileInfo& out) const;
+    bool LoadEntry(const std::wstring& wstrFileName, bool bRealData, MassFileInfo& out);
+    bool LoadLocal(const std::wstring& wstrFileName, bool bRealData, MassFileInfo& out);
+    std::filesystem::path FindLooseFile(const std::string& key) const;
+    bool ExistsInArchivesOrLoose(const std::string& key) const;
+    void AddSubDirectories(const std::filesystem::path& dir, const std::filesystem::path& skip);
+
+    void Log(const std::string& message) const;
+
+    LogSink m_log;
+
+    std::unique_ptr<x2::kom::Mount> m_pMount;
+    bool m_bLockMassFileMap = false;
+
+    mutable std::shared_mutex m_mutexDirectories;      // data directories and loose index
+    std::vector<std::filesystem::path> m_vecDataDirectory;
+    std::unordered_map<std::string, LooseFile> m_mapLooseFile;
+
+    std::map<int, std::map<std::string, std::string>> m_mapMassFileMappingList;
+    std::map<int, MappingTime> m_mapMassFileMappingTime;
+    mutable std::shared_mutex m_mutexMapping;
+    std::unordered_map<std::string, std::string> m_mapActiveMapping;   // key -> key
+
+    CTime m_ServerCurrentTime;
+    DWORD m_TickCountAtGetTime = 0;
+
+    static KGCMassFileBufferManager m_massFileBufMan;
+};

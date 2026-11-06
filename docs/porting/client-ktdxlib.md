@@ -46,6 +46,64 @@ and `KTDXStage.h`/`KTDXDeviceHolder.h` include what they use (`std::wstring`, `s
 `EMULATEDPROC` in `KTDGUIUniBuffer.h`) instead of loading `imm32.dll` and `version.dll`; `s_hDllImm32` became
 `s_bImmBound`. See [Client: IME](client-ime.md).
 
+## Mass files (2026-11-05, `client/kom-mass-file`)
+
+<a id="mass-files"></a>`KGCMassFileManager` and `KGCMassFileBufferManager` were rewritten on [`x2::kom`](kom.md) (T35) and
+build as `x2::client_massfile`; the original is surveyed on [`.kom` archives › The original](kom.md#the-original-ktdxlibkgcmassfilemanager-surveyed-2026-11-05).
+The interface the engine calls stays: `LoadDataFile`, `IsValidFile`, `LoadTwoDataFiles`, the `*_LocalFile` variants,
+`GetPullPath`, `MASSFILE_MEMBERFILEINFO_POINTER` (tested as a pointer: `Info == NULL`, `!Info`, `Info->size`),
+`KGCMassFileBufferPtr`, the mapping and server-time functions bound to Lua. Gone: `CMassFile` as an archive (only the scope
+of the info types is left), libxml2, Win32 handles, `RegisterCurrentThread` and the two-thread limit, `SaveMassFile`,
+`ModifyMassFile` (an unused V.0.1 writer), `KFileVerifier` (never imported: nothing created it), the undefined
+`SetWebAddress_LUA`/`GetUsableMappingIndex`, `CHECK_FILE_DUPLICATION`.
+
+- **Archives**: `AddMassFiles(folder, names)` mounts `CX2Main`'s fixed list (`GetClientArchiveNames()`: `data001`–`150`,
+  `datai001`–`023`) in that order; a name in two archives keeps the first, with a warning (`x2::kom::Mount`). Entries are
+  decoded by their `Algorithm` (0, 2 and 3) into pooled buffers (`Archive::ReadInto`), checksums checked; names are full,
+  case-insensitive (ASCII). `LockMassFileMap` ends mounting; loading threads then need no lock.
+- **Data directories** (every build): `SetSubDirectory(root)` registers the game folder and its subfolders, recursively,
+  except `root/data` and folders starting with `.`; `*_LocalFile` and `GetPullPath` search them in order (user settings
+  such as `GameOptions.lua`, `music/`, `movie/`), case-insensitively on Linux. Never the archives.
+- **Loose assets** (`X2_DEV_TOOLS` only, T35 (3)): `SetSubDirectory` also indexes `root/data` recursively by file name
+  (`SetLooseFileFolder`; again to pick up new files), skipping folders starting with `.` — a
+  [client_data](../tools/client-data.md) folder works as `/data/data`, its `.kom/` skipped. `LoadDataFile`, `IsValidFile`
+  and `LoadTwoDataFiles` **prefer** a loose file (flagged `MFI_LOCALFILE`), then the archives; `*_LocalFile` and
+  `GetPullPath` look there after the data directories. Release builds never read it.
+- **Date-range renames** (`MassFileMappingList.lua` in `datai015`, kept by the user's choice): `MassFileMapping()` builds
+  the renames in range at the server time and swaps them in under a lock, for archives and loose files alike.
+- **Errors** go to a log sink given to the constructor (stderr by default); the engine's `ErrorLogMsg` once KTDXLIB builds.
+
+### Behavior changes
+
+| Where | Original | Port | Why |
+|---|---|---|---|
+| Duplicate names | The whole later archive rejected (message box); in release that was the deliberate crash | First wins, warning | T35 |
+| Missing or rejected archive | Release: `*x = 1` crash; dev: continue | `CX2Main` shows a message naming the archive and the reason, logs it and exits, in every build | User, 2026-11-05 |
+| `DeleteOtherFile`, `DeleteFile` at start | Deleted every `.kom`, `.kom_` and `.dll` not in its lists anywhere under the game folder, plus `item.kim` and a few stray files | Nothing deleted; a `.kom` of the folder outside the list is reported and ignored. `m_DLLList` removed | User, 2026-11-05 |
+| Loose files in dev builds | Only for names in no archive; any folder under the current one | Preferred over the archives; only under `data/` | T35 (3) |
+| Names | Upper-cased, truncated to 59 characters (`data110.kom`'s 61-character name was unreachable); `strFileName` upper-cased | Full, case-insensitive; `strFileName` is the stored spelling, a `std::wstring` | T35 |
+| Decoding | zlib only; `LoadAndDoMemory(..., bEncryption)` asked for the stored blob (`MFI_COMPRESSEDDATA`) and decrypted XORCRC itself | The manager decodes by `Algorithm`; `MFI_COMPRESSEDDATA`, `compressedSize` and the client's `XORCRCDecrypt` copy removed, `bEncryption` ignored | One implementation of the format (T35) |
+| Checksums | Never checked | Every blob checked against its adler32 | `x2::kom` |
+| Renames | Kom names: the map rewritten in place at `MassFileMapping()` (a race with the loading thread); loose files: `ExternFileMapping` at every read | One rename table, replaced under a lock at `MassFileMapping()`, used for both | Thread safety |
+| Missing-file logs | `LoadDataFile` logged; `LoadTwoDataFiles` logged the first name | Same; a missing second file (`.tet`) or `*_LocalFile` is not logged | |
+| `LoadTwoRealFiles` (dev) | Opened the second file into the first file's handle (leaking it), so the second file was never read | Both read | Bug |
+| `CX2Main::DeleteFile` (`DeleteFile_LUA`) | Tested the array instead of `GetPullPath`'s result: deleted the bare name when nothing was found | Deletes only a file that was found | Bug |
+| Buffers | `boost::intrusive_ptr`, offsets alternating between the two ends of a block | `std::shared_ptr` returning blocks to their bucket, no offset trick; blocks over 4 MB not pooled (23 buckets, as before) | C++20 standard library |
+
+### Tests (`ctest -R client`, `x2_client_tests -tc="massfile*"`)
+
+Headless, on archives the tests build: the archive list, list order and first-wins with its warning, an archive outside
+the list, algorithms 0/2/3, a 61-character name, size-only loads, missing and rejected archives named, the locked map;
+loose files preferred (dev) or ignored (release), `.kom/` and dot folders skipped, a name in two loose folders, user
+files and `GetPullPath` found case-insensitively, re-indexing; two files at once; date-range renames; 8 threads loading
+64 entries; the buffer pool. **Opt-in**: `X2_MASSFILE_CLIENT_DATA=_client/data` mounts the 173 archives (101,826 names,
+under 1 s, no repeated name, no extra archive) and decodes every entry through the manager with 8 threads (4.9 GB in 7 s,
+`linux-debug`, 2026-11-05); with `X2_MASSFILE_LOOSE=<client_data>` it also indexes a client_data (101,827 files,
+`Item.kim` being `Item.lua` + `SetItem.lua`) and loads its readable `Enum.lua`.
+
+Open: with a client_data as loose folder, an edited `Item.lua`/`SetItem.lua` is not seen, since the client loads
+`Item.kim` (from the archive); compiling it at start or in the tools is for when the engine runs.
+
 ## Status
 
-Only the input files compile ([roadmap](../project/roadmap.md#phase-3--client-platform)).
+Only the input files and the mass file manager compile ([roadmap](../project/roadmap.md#phase-3--client-platform)).

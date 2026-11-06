@@ -65,6 +65,11 @@ public:
     // The decoded data. Fails for algorithm 1, which is kept opaque.
     bool Read(const Entry& entry, std::vector<std::uint8_t>& out, std::string& error) const;
 
+    // The decoded data into `out` (exactly entry.size bytes), with `scratch` holding the stored blob: no copy beyond
+    // the read and the decode, for callers with their own buffers (the client's KGCMassFileManager).
+    bool ReadInto(const Entry& entry, std::span<std::uint8_t> out, std::vector<std::uint8_t>& scratch,
+                  std::string& error) const;
+
     // The fixed header and the XML header exactly as stored, for rewriting an unchanged archive byte for byte.
     std::span<const std::uint8_t> RawHeader() const { return rawHeader_; }
 

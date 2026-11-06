@@ -159,11 +159,10 @@ void XorCrcEncrypt(std::span<std::uint8_t> blob, std::string_view name, std::uin
 
 namespace {
 
-// Inflates `in` (zlib stream when windowBits is 15, raw deflate when -15) into exactly `size` bytes.
-bool Inflate(std::span<const std::uint8_t> in, int windowBits, std::uint32_t size, std::vector<std::uint8_t>& out,
-             std::string& error)
+// Inflates `in` (zlib stream when windowBits is 15, raw deflate when -15) into exactly `out.size()` bytes.
+bool Inflate(std::span<const std::uint8_t> in, int windowBits, std::span<std::uint8_t> out, std::string& error)
 {
-    out.assign(size, 0);
+    const auto size = static_cast<std::uint32_t>(out.size());
     z_stream zs{};
     if (inflateInit2(&zs, windowBits) != Z_OK)
     {
@@ -200,35 +199,39 @@ bool Inflate(std::span<const std::uint8_t> in, int windowBits, std::uint32_t siz
 
 } // namespace
 
-bool Decode(std::string_view name, std::uint32_t algorithm, std::span<const std::uint8_t> blob, std::uint32_t size,
-            std::vector<std::uint8_t>& out, std::string& error)
+bool DecodeInPlace(std::string_view name, std::uint32_t algorithm, std::span<std::uint8_t> blob,
+                   std::span<std::uint8_t> out, std::string& error)
 {
     switch (algorithm)
     {
     case kZlib:
-        return Inflate(blob, 15, size, out, error);
+        return Inflate(blob, 15, out, error);
     case kXorCrc:
-    {
-        std::vector<std::uint8_t> plain(blob.begin(), blob.end());
-        XorCrcDecrypt(plain, name, algorithm);
-        return Inflate(plain, 15, size, out, error);
-    }
+        XorCrcDecrypt(blob, name, algorithm);
+        return Inflate(blob, 15, out, error);
     case kXorCrc3:
-    {
         // The client inflates from byte 6: 4 prefix bytes of unknown meaning, then the 2-byte zlib header.
         if (blob.size() < 6)
         {
             error = "encrypted blob too short";
             return false;
         }
-        std::vector<std::uint8_t> plain(blob.begin(), blob.end());
-        XorCrcDecrypt(plain, name, algorithm);
-        return Inflate(std::span<const std::uint8_t>(plain).subspan(6), -15, size, out, error);
-    }
+        XorCrcDecrypt(blob, name, algorithm);
+        return Inflate(blob.subspan(6), -15, out, error);
     default:
         error = "algorithm " + std::to_string(algorithm) + " is not supported";
         return false;
     }
+}
+
+bool Decode(std::string_view name, std::uint32_t algorithm, std::span<const std::uint8_t> blob, std::uint32_t size,
+            std::vector<std::uint8_t>& out, std::string& error)
+{
+    out.assign(size, 0);
+    if (algorithm == kZlib)
+        return Inflate(blob, 15, out, error);
+    std::vector<std::uint8_t> copy(blob.begin(), blob.end());
+    return DecodeInPlace(name, algorithm, copy, out, error);
 }
 
 } // namespace x2::kom

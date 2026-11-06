@@ -201,6 +201,7 @@ KSession::KSession( bool bIsProxy, bool bClientSide )
 {
     m_dwHBTick = GetTickCount();
 
+    m_hEvents[EVENT_DISCONNECTED] = NULL;
     m_hEvents[EVENT_RECV_COMPLETED] = NULL;
     m_hEvents[EVENT_SEND_COMPLETED] = NULL;
 }
@@ -273,15 +274,16 @@ bool KSession::Init( bool bUseIocp_ )
     }
 }
 
-bool KSession::Begin()  // KThread의 이벤트 객체를 배열에 보관해, WaitMultipleObject를 사용한다.
+bool KSession::Begin()
 {
-    if( KThread::Begin() )
-    {
-        m_hEvents[EVENT_DISCONNECTED] = m_hKillEvent;
-        return true;
-    }
+    return KThread::Begin();
+}
 
-    return false;
+// KThread's kill event joins the array Run() waits on. The original set it after KThread::Begin() had started the
+// thread, so Run() could wait on an uninitialized handle (a crash with x2::platform's handles).
+void KSession::OnBeforeThreadStart()
+{
+    m_hEvents[EVENT_DISCONNECTED] = m_hKillEvent;
 }
 
 void KSession::Tick()

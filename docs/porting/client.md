@@ -29,13 +29,14 @@ keeps `OFF` in its cache: reconfigure with `-DX2_BUILD_CLIENT=ON`. What compiles
 | `x2::client_luacommon` | `LuaCommon` on upstream LuaJIT (T21) |
 | `x2::client_dxut` | the DXUT replacement on `x2::app` ([Client: DXUT](client-dxut.md)), including the SDL3 state behind the input layer and the IME edit box's IMM32 ([Client: IME](client-ime.md)) |
 | `x2::client_ktdi` | `KTDXLIB`'s input layer (`KTDIManager`, `KTDIDevice`) on SDL3 instead of DirectInput (2026-11-05, [Client: input](client-input.md)) |
+| `x2::client_massfile` | `KTDXLIB`'s `KGCMassFileManager` and buffer pool on `x2::kom` (T35, 2026-11-05, [Client: KTDXLIB › Mass files](client-ktdxlib.md#mass-files)) |
 | `x2::client_serverprotocol` | `X2ServerProtocol` on the servers' `x2::common_net` (T34, 2026-11-05, [Client: X2ServerProtocol](client-serverprotocol.md)) |
 | `x2_client` (`x2`/`x2.exe`) | the skeleton entry point `X2/X2Skeleton.cpp`, with the original icon ([Client: X2](client-x2.md)) |
 | `x2_client_tests` | headless tests (ctest `client`) |
 
 `x2_client_includes` carries the original projects' include directories: `KTDXLIB`, `DXUT`, `X2Lib`, `X2Lib/Common`, `X2`,
 `X2ServerProtocol` and `src/server/Common` (`X2ServerProtocol/Socket` is gone since 2026-11-05: the shared `Socket/` is
-`src/server/Common/Socket`). `KTDXLIB` (apart from its input files), `X2Lib` and `X2.cpp` are not compiled yet: each gets its target when its
+`src/server/Common/Socket`). `KTDXLIB` (apart from its input files and mass file manager), `X2Lib` and `X2.cpp` are not compiled yet: each gets its target when its
 dependencies are ported
 ([roadmap](../project/roadmap.md#phase-3--client-platform)).
 

@@ -48,6 +48,8 @@ public:
         if( NULL == m_hKillEvent )
             return false;
 
+        OnBeforeThreadStart();
+
         DWORD dwThreadId;
         m_hThread = _BEGINTHREADEX( NULL,
             0,
@@ -88,6 +90,9 @@ protected:
     }
 
 protected:
+    // Called by Begin() once m_hKillEvent exists and before the thread starts, so what it sets is visible to Run().
+    virtual void OnBeforeThreadStart() {}
+
     HANDLE          m_hKillEvent;
     HANDLE          m_hThread;
     KThreadManager* m_pkThreadMgr;

@@ -157,6 +157,26 @@ bool Archive::Read(const Entry& entry, std::vector<std::uint8_t>& out, std::stri
     return true;
 }
 
+bool Archive::ReadInto(const Entry& entry, std::span<std::uint8_t> out, std::vector<std::uint8_t>& scratch,
+                       std::string& error) const
+{
+    if (out.size() != entry.size)
+    {
+        error = PathString(path_) + ": " + entry.name + ": output buffer of " + std::to_string(out.size()) +
+                " bytes for " + std::to_string(entry.size);
+        return false;
+    }
+    if (!ReadStored(entry, scratch, error))
+        return false;
+    std::string decodeError;
+    if (!DecodeInPlace(entry.name, entry.algorithm, scratch, out, decodeError))
+    {
+        error = PathString(path_) + ": " + entry.name + ": " + decodeError;
+        return false;
+    }
+    return true;
+}
+
 void Archive::Close()
 {
     file_.reset();

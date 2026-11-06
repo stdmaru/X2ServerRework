@@ -200,6 +200,7 @@ That remains pending ([KNCSDK › Pending](kncsdk.md#pending)). They also cannot
 | `SimObject`, `SerBuffer`, etc. | Minor: `%d` with `__int64`, uninitialized values | See diffs |
 | `KDEBAuth` (`EPUBLISHER_AUTHENTICATION_REQ`) | `if( response.strPurchaseToken.empty() )`: purchase token copied only when empty | `!empty()` (2026-10-31). `wstrPurchTok` now arrives populated at ChannelServer |
 | DEB gSOAP client | Non-ASCII UTF-8 text was encoded twice: gSOAP 2.7 without `SOAP_C_UTFSTRING` treated each byte as Latin-1. Account `é가` reached service as `Ã©ê°\u0080` | T31 client sends UTF-8 unchanged (2026-10-31, verified against gSOAP before removal) |
+| `KSession::Begin` (`Socket/Session.cpp`) | Put `KThread`'s kill event into `m_hEvents[EVENT_DISCONNECTED]` only after `KThread::Begin()` had started the thread, and the slot was never initialized: the no-IOCP session thread could `WaitForMultipleObjects` on a garbage handle. Harmless on Windows (`WAIT_FAILED`), a crash on Linux, where `HANDLE` is a pointer (half of the GCC client test runs on 2026-11-05) | The slot is set in `KThread::OnBeforeThreadStart()`, before the thread starts, and initialized to `NULL` (2026-11-05, `client/kom-mass-file`) |
 
 ### Portability (no behavior change)
 

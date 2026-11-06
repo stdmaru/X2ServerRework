@@ -1,6 +1,6 @@
 # Client (docs/porting/client.md). Layers mirror the original projects (decision T14) and are added here as they
-# compile: so far LuaCommon, the DXUT replacement, KTDXLIB's input layer, X2ServerProtocol and the executable's skeleton. KTDXLIB and X2Lib come
-# next (roadmap Phase 3) and link x2_client_includes.
+# compile: so far LuaCommon, the DXUT replacement, KTDXLIB's input layer and mass file manager, X2ServerProtocol and
+# the executable's skeleton. KTDXLIB and X2Lib come next (roadmap Phase 3) and link x2_client_includes.
 
 # Include directories of the original projects (KTDXLIB, X2Lib, X2 and X2ServerProtocol .vcxproj), for every layer:
 # the layers include each other's headers by bare name. KTDXLIB/DXUT is replaced by DXUT/. The servers' Common (packets,
@@ -41,6 +41,14 @@ target_link_libraries(x2_client_dxut PUBLIC x2::platform x2::app)
 add_library(x2_client_ktdi STATIC KTDXLIB/KTDIDevice.cpp KTDXLIB/KTDIManager.cpp)
 add_library(x2::client_ktdi ALIAS x2_client_ktdi)
 target_link_libraries(x2_client_ktdi PUBLIC x2_client_includes x2::client_dxut)
+
+# KTDXLIB's mass file manager (KGCMassFileManager, KGCMassFileBufferManager): the client's files by name from the .kom
+# archives on x2::kom and, with X2_DEV_TOOLS, loose files (decision T35, docs/porting/client-ktdxlib.md#mass-files).
+# Its files join the KTDXLIB target once the engine builds.
+add_library(x2_client_massfile STATIC KTDXLIB/KGCMassFileBufferManager.cpp KTDXLIB/KGCMassFileManager.cpp)
+add_library(x2::client_massfile ALIAS x2_client_massfile)
+target_include_directories(x2_client_massfile PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/KTDXLIB)
+target_link_libraries(x2_client_massfile PUBLIC x2::platform PRIVATE x2::kom x2::kncsdk)
 
 # X2ServerProtocol: the client's connections to the servers (docs/porting/client-serverprotocol.md). The event/actor
 # model and the TCP layer are the servers' x2::common_net (decision T34); only the client's proxies and the

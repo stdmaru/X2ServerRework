@@ -60,10 +60,7 @@ CKTDXDeviceData::~CKTDXDeviceData()
 // constructor.
 CKTDXDeviceManager::CKTDXDeviceManager( IDirect3DDevice9* pd3dDevice )
 {
-//#ifndef	X2OPTIMIZE_MASS_FILE_MANAGER_PER_THREAD_SYNC_IO
-//	m_MassFileManager.SetForegroundThreadId( ::GetCurrentThreadId() );
-//#endif	X2OPTIMIZE_MASS_FILE_MANAGER_PER_THREAD_SYNC_IO
-
+	// The game folder's subfolders for user files, music and movies; with X2_DEV_TOOLS also its data/ loose assets.
 	m_MassFileManager.SetSubDirectory();
 	m_TexDetailLevel = CKTDXDeviceTexture::DL_HIGH;
 	m_HighTexName.clear();
@@ -1291,10 +1288,6 @@ void        CKTDXDeviceManager::_CheckFullSyncInDeviceThread()
 //
 /*virtual*/ DWORD CKTDXDeviceManager::RunThread()
 {
-//#ifdef	X2OPTIMIZE_MASS_FILE_MANAGER_PER_THREAD_SYNC_IO
-	m_MassFileManager.RegisterCurrentThread();
-//#endif	X2OPTIMIZE_MASS_FILE_MANAGER_PER_THREAD_SYNC_IO
-
     g_CKTDXLog.RegisterCurrentThread();
 
     std::list<CKTDXDevice*> aListTemp[PRIORITY_NUM];

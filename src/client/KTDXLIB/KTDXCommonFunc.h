@@ -737,63 +737,6 @@ inline int RandomInt( int iMinBound = 0, int iMaxBound = 100 )
 	return rand()%(iMaxBound-iMinBound) + iMinBound;
 }
 
-// 미리 decrypt 될 버퍼까지 사용자가 제공하는 버전이다. 동적 메모리 할당을 줄이기 위해 사용
-__forceinline void  XORCRCDecrypt( char* pDecryptedBuffer, const char* pEncryptedBuffer, int iBufferSize, const wchar_t* pwszFilename )
-{
-    if ( pDecryptedBuffer == NULL || pEncryptedBuffer == NULL || iBufferSize <= 0 || pwszFilename == NULL || pwszFilename[0] == NULL )
-        return;
-	const static int	s_aiXorKeys[5] = { XOR_KEY30, XOR_KEY42, XOR_KEY14, XOR_KEY22, XOR_KEY40  };
-	const int iKeySize = 5 * sizeof(int);
-    BYTE    abyXORKey1[iKeySize];
-    memcpy( abyXORKey1, s_aiXorKeys, iKeySize );
-    for( int i = 0; i < 5; ++i )
-        ((int*) &abyXORKey1[0])[i] ^= XOR_KEY49;
-
-	int iKeyIndex = 0;
-
-    DWORD   dwCRC = 0xFFFFFFFFU;
-    int iByteIndex = 0;
-    {
-        int iFileNameLength = wcslen( pwszFilename );
-        iFileNameLength = __min( MAX_PATH, iFileNameLength );
-        int iPrefixSize = iFileNameLength * 2 + 4;
-        BYTE    abyByte[ MAX_PATH*2 + 4 ];
-        std::locale loc;
-        for( int i = 0; i < iFileNameLength; i++ )
-        {
-            USHORT usValue = (USHORT) std::tolower( pwszFilename[ i ], loc );
-            abyByte[iByteIndex++] = (BYTE)( usValue & 0xFF );
-            usValue >>= 8;
-            if ( usValue != 0 )
-            {
-                abyByte[iByteIndex++] = (BYTE)( usValue & 0xFF );
-            }
-        }
-        DWORD   dwFileSize = (DWORD) iBufferSize;
-        for( int i = 0; i < 4 && dwFileSize != 0; ++i )
-        {
-            abyByte[iByteIndex++] = (BYTE)( dwFileSize & 0xFF );
-            dwFileSize >>= 8;
-        }
-        ASSERT( iPrefixSize >= iByteIndex );
-        CRC.CalculateWithoutEncrypt( abyByte, (UINT) iByteIndex, abyXORKey1, iKeySize, dwCRC );
-    }
-    iByteIndex %= iKeySize;
-    BYTE abyXORKey[iKeySize];
-    if ( iByteIndex == 0 )
-    {
-        memcpy( abyXORKey, abyXORKey1, iKeySize );
-    }
-    else
-    {
-        memcpy( &abyXORKey[0], abyXORKey1 + iByteIndex, iKeySize - iByteIndex );
-        memcpy( &abyXORKey[iKeySize - iByteIndex], abyXORKey1, iByteIndex );
-    }
-    if ( pDecryptedBuffer != pEncryptedBuffer )
-        memcpy( pDecryptedBuffer, pEncryptedBuffer, iBufferSize );
-    CRC.CalculateAndDecrypt( (BYTE*) pDecryptedBuffer, (UINT) iBufferSize, abyXORKey, iKeySize, dwCRC );
-}
-
 
 
 inline char* XORDecrypt( const char* pEncryptedBuffer, int iBufferSize )

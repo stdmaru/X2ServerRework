@@ -591,171 +591,11 @@ m_pMemoryHolder( NULL )
 
 
 
-	WCHAR wszKomFileName[256] = L"";
+	// CX2Main's fixed archive list, in load order (docs/porting/client-ktdxlib.md#mass-files).
+	m_KOMList = KGCMassFileManager::GetClientArchiveNames();
 
-
-	const int KOM_FILE_COUNT = 150;
-	for( int i=1; i<=KOM_FILE_COUNT; i++ )
-	{
-		if( i < 10 )
-		{
-			StringCchPrintfW( wszKomFileName, ARRAY_SIZE(wszKomFileName), L"data00%d.kom", i );
-		}
-		else if( i < 100 )
-		{
-			StringCchPrintfW( wszKomFileName, ARRAY_SIZE(wszKomFileName), L"data0%d.kom", i );
-		}
-		else
-		{
-			StringCchPrintfW( wszKomFileName, ARRAY_SIZE(wszKomFileName), L"data%d.kom", i );
-		}
-
-		m_KOMList.push_back( wszKomFileName );
-	}
-
-	const int DATAI_KOM_FILE_COUNT = 23;
-	for (int i = 1; i <= DATAI_KOM_FILE_COUNT; i++)
-	{
-		if (i < 10)
-		{
-			StringCchPrintfW(wszKomFileName, ARRAY_SIZE(wszKomFileName), L"datai00%d.kom", i);
-		}
-		else if (i < 100)
-		{
-			StringCchPrintfW(wszKomFileName, ARRAY_SIZE(wszKomFileName), L"datai0%d.kom", i);
-		}
-		else
-		{
-			StringCchPrintfW(wszKomFileName, ARRAY_SIZE(wszKomFileName), L"datai%d.kom", i);
-		}
-
-		m_KOMList.push_back(wszKomFileName);
-	}
-
-
-
-
-#ifdef	CONVERSION_VS
-	m_DLLList.push_back( L"d3d9.dll" );
-	m_DLLList.push_back( L"d3dx9_43.dll" );
- 	m_DLLList.push_back( L"d3dcsx_43.dll" );
-	m_DLLList.push_back( L"D3DCompiler_43.dll" );
-	m_DLLList.push_back( L"xactengine3_7.dll" );
-	m_DLLList.push_back( L"XAPOFX1_5.dll" );
-	m_DLLList.push_back( L"XAudio2_7.dll" );
-	#ifdef _DEBUG
-		m_DLLList.push_back( L"d3dx9d_43.dll");
-	#endif // _DEBUG
-#else
-	m_DLLList.push_back( L"d3dx9_30.dll" );
-#endif // CONVERSION_VS
-	m_DLLList.push_back( L"dbghelp.dll" );
-	m_DLLList.push_back( L"FindH.dll" );
-	m_DLLList.push_back( L"KncCrashRpt.dll" );
-	m_DLLList.push_back( L"KncFirewall.dll" );
-	//m_DLLList.push_back( L"libhoard.dll" );
-	m_DLLList.push_back( L"MailMIME.dll" );
-	m_DLLList.push_back( L"MailSMTP.dll" );
-#ifdef	CONVERSION_VS
-	m_DLLList.push_back( L"msvcp100.dll" );
-	m_DLLList.push_back( L"msvcr100.dll" );
-#ifdef _DEBUG
-	m_DLLList.push_back( L"msvcp100d.dll" );
-	m_DLLList.push_back( L"msvcr100d.dll" );
-#endif // _DEBUG
-#else
- 	m_DLLList.push_back( L"msvcp71.dll" );
- 	m_DLLList.push_back( L"msvcr71.dll" );
-#endif // CONVERSION_VS
-	//m_DLLList.push_back( L"nmcogame.dll" );		// ????? ????? dll ????
-	m_DLLList.push_back( L"usp10.dll" );
-	//m_DLLList.push_back( L"EndingFlash.DLL" );	// ????? ????? dll ????
-	//m_DLLList.push_back( L"winhoard.dll" );
-
-	//{{ 081001.hoons.???????? ????? ?????? ��?��?? ?????? ?????.
-	m_DLLList.push_back( L"bdcap32.dll" );
-	m_DLLList.push_back( L"bdcore32.dll" );
-	m_DLLList.push_back( L"vcomp90.dll" );
-	//}}
-
-    m_DLLList.push_back( L"BugTrapU.dll" );
-	m_DLLList.push_back( L"BugTrap.dll" );
-	m_DLLList.push_back( L"fmodex.dll" );
-
-	//{{ ????? : [2009/9/14] //	????? dll ???
-	m_DLLList.push_back( L"asc_com.dll" );
-	m_DLLList.push_back( L"asc_dh.dll" );
-	m_DLLList.push_back( L"asc_fse.dll" );
-	m_DLLList.push_back( L"asc_intg.dll" );
-	m_DLLList.push_back( L"asc_mmgr.dll" );
-	m_DLLList.push_back( L"asc_unp.dll" );
-	m_DLLList.push_back( L"fse_base.dll" );
-	m_DLLList.push_back( L"fse_fact.dll" );
-	m_DLLList.push_back( L"fse_pe.dll" );
-	m_DLLList.push_back( L"gfs_base.dll" );
-	m_DLLList.push_back( L"gfs_fact.dll" );
-	m_DLLList.push_back( L"gfs_file.dll" );
-	m_DLLList.push_back( L"gfs_mem.dll" );
-	m_DLLList.push_back( L"gfs_os.dll" );
-	m_DLLList.push_back( L"gfs_proc.dll" );
-	m_DLLList.push_back( L"gfs_util.dll" );
-	m_DLLList.push_back( L"ehsvc.dll" );
-	m_DLLList.push_back( L"psapi.dll" );
-	m_DLLList.push_back( L"v3pro32s.dll" );
-
-	m_DLLList.push_back( L"AhnUpCtl.dll" );
-	m_DLLList.push_back( L"AhnUpGS.dll" );
-	m_DLLList.push_back( L"HSInst.dll" );
-	m_DLLList.push_back( L"V3Hunt.dll" );
-	m_DLLList.push_back( L"V3InetGS.dll" );
-
-		//}} ????? : [2009/9/14] //	????? dll ???
-
-// #ifdef MOVIE_TEST	 	// 13-11-11, ???? ???? ????, kimjh, MOVIE_TEST ?? ??�� ????? Define ?? MOVIE_TEST_BASE ?? ????
-
-
-	m_DLLList.push_back( L"bdvid32.dll");
-
-// #endif //  MOVIE_TEST	// 13-11-11, ???? ???? ????, kimjh, MOVIE_TEST ?? ??�� ????? Define ?? MOVIE_TEST_BASE ?? ????
-
-
-	// ???? ??? ??? 09.11.26 ???? ???? dll ???? ????
-
-
-	//{{ ???? : XTRAP - DLL ???
-
-	m_DLLList.push_back( L"mfc100u.dll" );
-#ifdef _DEBUG
-	m_DLLList.push_back( L"mfc100ud.dll" );
-#endif // _DEBUG
-
-
-	m_DLLList.push_back( L"steam.dll" );
-	m_DLLList.push_back( L"steam_api.dll" );
-	m_DLLList.push_back( L"steamclient.dll" );
-	m_DLLList.push_back( L"sdkencryptedappticket.dll" );
-
-	//{{ ????? : [2009/10/12] //	???? ???? ????? ???????
-#if !X2_DEV_TOOLS
-	DeleteFile( L"1.docx" );
-	DeleteFile( L"unomap01.tga" );
-	DeleteFile( L"unomap02.tga" );
-	DeleteFile( L"unomap03.tga" );
-	DeleteFile( L"nui_kenage_hair.tga" );
-	DeleteFile( L"nui_kenage_cloth.tga" );
-	DeleteFile( L"nui_kenage_body.tga" );
-	DeleteFile( L"motion_unohound.x" );
-	DeleteFile( L"motion_elemental_kenaz.x" );
-#endif
-	//}} ????? : [2009/10/12] //	???? ???? ????? ???????
-
-	DeleteFile( L"bdcap64.dll" );
-
-	DeleteFile( L"item.kim" );
-
-	DeleteOtherFile( L"KOM", m_KOMList );
-	DeleteOtherFile( L"KOM_", m_KOMList );
-	DeleteOtherFile( L"DLL", m_DLLList );
+	// The original deleted every .kom, .kom_ and .dll not in its lists, and a few stray files, at start: the port
+	// deletes nothing (an archive outside the list is reported and ignored by AddMassFiles).
 
 	m_QuitType				= NetError::ERR_CLIENT_QUIT_00;
 
@@ -879,39 +719,19 @@ m_pMemoryHolder( NULL )
 	g_pKTDXApp->GetDeviceManager()->AddHighTexName( L"HQ_" );
 
 
-	for( int i = 0; i < (int)m_KOMList.size(); i++ )
+	// A missing or rejected archive stops the client with a message naming it (the original release client crashed on
+	// purpose).
 	{
-		wstring komFileName = L"./";
-		komFileName += m_KOMList[i];
-#if !X2_DEV_TOOLS
-		bool bIsDuplictaionError = false;
-		if( NULL == g_pKTDXApp->GetDeviceManager()->GetMassFileManager()->AddMassFile( komFileName.c_str(), bIsDuplictaionError ) )
+		std::string strError;
+		if ( false == g_pKTDXApp->GetDeviceManager()->GetMassFileManager()->AddMassFiles( std::filesystem::current_path(), m_KOMList, strError ) )
 		{
-			// kom ?????? ?��????? ???????. ??????? ????????.
-			int *x = NULL;
-			*x = 1;
-
-			if( true == bIsDuplictaionError )
-			{
-				// ????? ????
-				//CX2MailLogManager::GetInstance()->AddLog(CX2MailLogManager::MLI_MASS_FILE_DUPLICATION, komFileName.c_str() );
-			}
+			const std::string strMessage = "Cannot load the game data: " + strError;
+			ErrorLogMsg( KEM_ERROR132, strMessage.c_str() );
+			SDL_ShowSimpleMessageBox( SDL_MESSAGEBOX_ERROR, "Elsword", strMessage.c_str(), nullptr );
+			std::exit( EXIT_FAILURE );
 		}
-#else
-
-		bool bIsDuplictaionError = false;
-		if( NULL == g_pKTDXApp->GetDeviceManager()->GetMassFileManager()->AddMassFile( komFileName.c_str(), bIsDuplictaionError) &&
-			true == bIsDuplictaionError )
-		{
-			// ????? ????
-			//CX2MailLogManager::GetInstance()->AddLog(CX2MailLogManager::MLI_MASS_FILE_DUPLICATION, komFileName.c_str() );
-		}
-
-#endif // _SERVICE_
 	}
-
-//#ifdef	X2OPTIMIZE_REMOVE_MASS_FILE_MANAGER_LOCK
-	// ?? ???��??? AddMassFile ???!
+	// Loading threads read the map without a lock from here on.
 	g_pKTDXApp->GetDeviceManager()->GetMassFileManager()->LockMassFileMap();
 //#endif	X2OPTIMIZE_REMOVE_MASS_FILE_MANAGER_LOCK
 
@@ -3777,8 +3597,8 @@ bool CX2Main::DeleteFile( const WCHAR* pFileName )
 
 	wcscpy( wszFileName, pFileName );
 
-	g_pKTDXApp->GetDeviceManager()->GetMassFileManager()->GetPullPath( wszFileName );
-	if ( wszFileName != NULL )
+	// The original tested the array instead of GetPullPath's result and deleted the bare name when nothing was found.
+	if ( g_pKTDXApp->GetDeviceManager()->GetMassFileManager()->GetPullPath( wszFileName ) != NULL )
 	{
 		::DeleteFile( wszFileName );
 		return true;
@@ -5891,112 +5711,6 @@ void CX2Main::DeleteStateChangeDLG()
 }
 
 
-
-void CX2Main::DeleteOtherFile( WCHAR* pExtention, vector<wstring>& fileList )
-{
-//#ifdef _SERVICE_
-
-	WCHAR buff[MAX_PATH] = {0};
-	GetCurrentDirectory( MAX_PATH, buff );
-	DeleteOtherFile( pExtention, fileList, buff );
-
-//#endif
-}
-
-
-void CX2Main::DeleteOtherFile( WCHAR* pExtention, vector<wstring>& fileList, WCHAR* wstrFolder )
-{
-//#ifdef _SERVICE_
-
-	HANDLE				hSearch;
-	WIN32_FIND_DATA		fd;
-	WCHAR				wstrSearchPath[256];
-
-
-	wcscpy( wstrSearchPath, wstrFolder);
-	wcscat( wstrSearchPath, L"\\*.*");
-
-	hSearch = FindFirstFile( wstrSearchPath, &fd );
-
-	if(hSearch == INVALID_HANDLE_VALUE)
-		return;
-
-	do
-	{
-		if( wcscmp(fd.cFileName, L".") && wcscmp(fd.cFileName, L"..") )
-		{
-			if( fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY )
-			{
-				WCHAR	wstrNewSearchDir[256];
-
-				wcscpy( wstrNewSearchDir, wstrFolder );
-				wcscat( wstrNewSearchDir, L"\\");
-				wcscat( wstrNewSearchDir, fd.cFileName );
-
-				DeleteOtherFile( pExtention, fileList, wstrNewSearchDir );
-			}
-			else
-			{
-				WCHAR			wstrNewSearchFile[256];
-				std::wstring	wstrFile;
-				std::wstring	wstrFileName;
-
-				wcscpy( wstrNewSearchFile, wstrFolder );
-				wcscat( wstrNewSearchFile, L"\\");
-				wcscat( wstrNewSearchFile, fd.cFileName );
-
-				wstrFile = wstrNewSearchFile;
-				wstrFileName = fd.cFileName;
-
-				bool bCheck = false;
-
-				wstring nowFileName = wstrFileName;
-				MakeUpperCase( nowFileName );
-
-				for ( int i = 0; i < (int)fileList.size(); i++ )	//?????????? ???????? ???
-				{
-					wstring tempFileName = fileList[i];
-					MakeUpperCase( tempFileName );
-
-					if ( tempFileName == nowFileName )
-					{
-						bCheck = true;
-						break;
-					}
-				}
-
-				if ( bCheck == false )	//???????? ??????
-				{
-					//????? kom???? ????��?(?????? ??? ???��?) ???? ?��???
-					int strIndex = wstrFileName.rfind( L"." );
-
-					if ( strIndex != -1 )
-					{
-						wstring extName = wstrFileName.substr( strIndex + 1 );
-
-
-						for( std::wstring::iterator i = extName.begin(); i != extName.end(); i++ )
-							*i = (WCHAR)towupper(*i);
-
-						wstring tempExtName = pExtention;
-						MakeUpperCase( tempExtName );
-
-						if ( extName == tempExtName )
-						{
-							//wstring tempNewFile = wstrNewSearchFile;
-							::DeleteFile( wstrNewSearchFile );
-						}
-					}
-				}
-			}
-		}
-
-	}while( FindNextFile( hSearch, &fd ) );
-
-	FindClose(hSearch);
-
-//#endif
-}
 
 wstring CX2Main::GetStrByLienBreak( const WCHAR* pOrgStr, int width, int fontIndex )
 {

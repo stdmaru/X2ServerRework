@@ -1218,7 +1218,6 @@ class CX2Main : public CKTDXStage
 		void			CreateStateChangeDLG( const WCHAR* szExplanation, wstring wstrCustomLuaFileName = L"", wstring wstrPlaySoundFileName = L"" );
 		void			DeleteStateChangeDLG();
 
-		void			DeleteOtherFile( WCHAR* pExtention, vector<wstring>& fileList );
 
 		void			SetShowUnitViewerUI( bool bShow ) { CX2UnitViewerUI::SetShowUnitViewerUI( bShow ); }
 
@@ -1546,7 +1545,6 @@ class CX2Main : public CKTDXStage
 		void			StateInLog();
 
 
-		void			DeleteOtherFile( WCHAR* pExtention, vector<wstring>& fileList, WCHAR* wstrFolder );
 
 		void			DeleteNMCachData();
 		void			LoadLuaEnum();
@@ -1672,7 +1670,6 @@ class CX2Main : public CKTDXStage
 
 		CKTDGUIDialogType				m_pDLGStateChange;
 		vector<wstring>				m_KOMList;
-		vector<wstring>				m_DLLList;
 		vector<wstring>				m_MP3List;
 
 		vector<wstring>				m_UseFontNameList;
