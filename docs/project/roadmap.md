@@ -229,9 +229,12 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
   - [x] `client/ktdxlib-engine`: `KTDX.h` and all its headers on the device and `x2::platform`; `x2::client_ktdxlib` builds
         the state manager, the dynamic VB manager, textures, render targets and the silent sound backend, with
         null-backend tests (2026-11-06). See [KTDXLIB › Engine](../porting/client-ktdxlib.md#engine-2026-11-06-clientktdxlib-engine).
-  - [ ] `KTDXApp.cpp` and `KTDGManager` on the device: X2Lib's 32 loading-screen `BeginScene`/`EndScene`/`Present`
-        triplets become one engine call (T38); what the device still lacks comes with the file that needs it
-        ([list](../porting/client-d3d9.md#not-emulated-yet-2026-11-06)).
+  - [x] `client/ktdxlib-build`: all of `KTDXLIB` (100 files) compiles and links, warning-free on GCC, Clang and clang-cl;
+        the device callers rewritten onto the device, D3DX's mesh/animation/effect interfaces declared (creators fail
+        until their steps), the material/light state and `UpdateTexture`; the tests run on the real `CKTDXApp`; X2Lib's
+        32 loading-screen triplets became `CKTDXApp::RenderStageNow` (T38) (2026-11-06). See
+        [KTDXLIB › Whole engine](../porting/client-ktdxlib.md#whole-engine-2026-11-06-clientktdxlib-build). What the device
+        still lacks comes with the file that needs it ([list](../porting/client-d3d9.md#not-emulated-yet-2026-11-06)).
 - [ ] Effects: the 4 `.fx` (31 techniques) rewritten by hand as HLSL in `src/`, compiled by shadercross, behind `KTDXLIB`'s effect
       API (T37).
 - [ ] Reimplement the rest of D3DX on the original assets (T1, T37): `.x` loader (mesh + skin + animation), `.dds` (BC1–3 native,

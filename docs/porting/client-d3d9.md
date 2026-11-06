@@ -21,7 +21,7 @@ everything runs through this layer ([Phase 5](../project/roadmap.md#phase-5--dee
 | `D3D9Types.h` | The vocabulary: `D3DRS_*`, `D3DTSS_*`, `D3DSAMP_*`, `D3DTOP_*`, `D3DTA_*`, `D3DBLEND*`, `D3DCMP_*`, `D3DCULL_*`, `D3DSTENCILOP_*`, `D3DFVF_*`, `D3DPT_*`, `D3DFMT_*`, `D3DPOOL_*`, `D3DUSAGE_*`, `D3DLOCK_*`, `D3DCLEAR_*`, `D3DTS_*`, `D3DLOCKED_RECT`, `D3DRECT`, `D3DSURFACE_DESC`, with d3d9types.h's names and values (enumerations as C enums, flags as macros). The math types come from [`x2/platform/d3dx_math.h`](platform.md) |
 | `Device.h` / `Device.cpp` | `x2::d3d9::Device`: states, frame, clears, draws, pipeline and sampler caches, uploads |
 | `Resources.cpp` | `Texture` (levels, `LockRect`/`UnlockRect`, format conversion) and `VertexBuffer` (`Lock`/`Unlock`) |
-| `D3DXTypes.h`, `D3DXTexture.cpp` | D3DX's types for the engine's headers (interfaces as plain classes, T38) and its texture functions on the device: `D3DXCheckTextureRequirements` follows `Device::SupportsTextureFormat`; loading from memory fails until the `.dds`/`.tga` loaders |
+| `D3DXTypes.h`, `D3DXTexture.cpp`, `D3DX.cpp` | D3DX's types for the engine (interfaces as plain classes, T38; the D3DX objects keep `AddRef`/`Release`, held by a minimal `CComPtr`) and its functions on the device: `D3DXCheckTextureRequirements` follows `Device::SupportsTextureFormat`, `D3DXCreateTexture` creates on the device, loading from memory fails until the `.dds`/`.tga` loaders. `D3DX.cpp`: reference-counted `D3DXCreateBuffer`, `D3DXFrameDestroy`/`Find`/`NumNamedMatrices`; the mesh, skin, animation controller and effect creators fail with `E_NOTIMPL` until the `.x` and effect steps (2026-11-06). `ID3DXMesh`, `ID3DXSkinInfo`, `ID3DXAnimationSet`/`Keyframed`/`Compressed` and `ID3DXEffect` are declared with the methods the engine calls; `ID3DXLine` is gone (no user) |
 | `Fvf.h` | FVF → element offsets and the vertex shader variant |
 | `GeneratedShader.h`, `shaders/` | The fixed-function HLSL, its manifest and the generated blobs (`generated/FixedFunctionShaders.inc`, [Shaders](../tools/shaders.md), T39) |
 
@@ -87,6 +87,19 @@ by 4×4 blocks for DXT); render targets have none and cannot be locked.
 `SupportsTextureFormat(format, usage)` says whether `CreateTexture` takes a format: render targets are A8R8G8B8 or
 X8R8G8B8, and DXT cannot generate mips.
 
+## State kept, not drawn with (2026-11-06)
+
+What the engine sets and reads back but the fixed-function shaders do not use yet (T39):
+
+- **Material and lights**: `SetMaterial`/`GetMaterial` (zeroed at first), `SetLight`/`GetLight`/`LightEnable`/
+  `GetLightEnable` for up to 1,024 lights; enabling a light never set gives D3D9's default (white, directional, +z).
+- **Shaders and vertex declarations**: no such objects exist (the effects become KTDXLIB's own shaders, T37); setting one
+  is ignored, getting one gives null. `IDirect3DVertexDeclaration9`/`VertexShader9`/`PixelShader9` are declared only as
+  interfaces.
+- `GetAvailableTextureMem` reports a fixed 512 MB (the backend does not say); `EvictManagedResources` does nothing.
+- `UpdateTexture(source, destination)` copies the levels both textures have from the source's CPU copy and uploads them
+  (same size and format); `Texture::AddDirtyRect` is accepted (whole levels are copied).
+
 ## DXUT and the skeleton
 
 The [DXUT replacement](client-dxut.md) creates the device with the window, passes it to the `FrameMove`/`FrameRender`
@@ -95,10 +108,10 @@ callbacks and calls `Present` after `FrameRender`, as DXUT did; `DXUTGetD3DDevic
 
 ## Not emulated yet (2026-11-06)
 
-Lighting and materials (`D3DRS_LIGHTING` is on by default, but lit geometry goes through the effects, T37), fog, specular,
+Lighting with materials (stored, see above; `D3DRS_LIGHTING` is on by default, but lit geometry goes through the effects, T37), fog, specular,
 point sprites and point sizes, texture transforms, stages 2–7, `D3DTA_TEMP`/`RESULTARG`, bump mapping, border and
 mirror-once addressing (mapped to clamp and mirror), the scissor test, index buffers and `DrawIndexedPrimitive*`,
-vertex declarations and programmable shaders (`SetVertexShader`/`SetPixelShader`), `StretchRect`, `UpdateTexture`,
+vertex declarations and programmable shaders (`SetVertexShader`/`SetPixelShader`), `StretchRect`,
 `GetRenderTargetData`, surfaces, `SetDepthStencilSurface`, `D3DPOOL_DEFAULT` semantics (every non-target texture is
 lockable), state blocks. Each comes with the engine file that needs it.
 
@@ -114,6 +127,9 @@ lockable), state blocks. Each comes with the engine file that needs it.
   and locked rectangles (A8R8G8B8 with mips, X8R8G8B8, A4R4G4B4, A8L8, DXT1), vertex buffer lock flags and the bytes they
   leave, partial clears drawn with the states restored, resources destroyed before and after the device.
 - `D3DXCheckTextureRequirements`: defaults, mip chains, formats a render target cannot take; loading from memory fails cleanly.
+- `test_d3dx.cpp` (`-tc="d3dx*"`, and the two `d3d9:` cases below): the material and lights with D3D9's default light,
+  `UpdateTexture`'s copy and refusals, buffers and `CComPtr` reference counts, frame search/count/destroy through the
+  allocator, `D3DXCreateTexture`'s mip chain, the mesh and effect creators failing with null outputs.
 - **On a GPU** (skipped without video or GPU, as in the container and CI): renders into a 16×16 target and reads it back —
   texels mapped 1:1 to pixels with the half-pixel rule, the vertex color with no texture, 50% blending, the alpha test, a
   fan. Passed on the user's Linux desktop (Vulkan, 2026-11-06).

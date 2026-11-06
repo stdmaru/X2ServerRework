@@ -89,7 +89,13 @@ What the functions answer:
   `dwPageStart` branch both land on it.
 - `ImmAssociateContext(NULL)` (no IME edit box focused) only stops the edit box from seeing a context; SDL keeps
   composing, so text typed outside an IME edit box arrives as the IME's committed characters rather than raw keys.
-- Old Chinese IMEs' reading window (`IMN_PRIVATE`, `GetReadingString`) is not available.
+- Old Chinese IMEs' reading window (`IMN_PRIVATE`, `GetReadingString`) is not available: the edit box no longer loads
+  the IME's DLL or `version.dll` for it (`GetImeId` is 0, the reading window horizontal and hidden; 2026-11-06).
+- `SendKey` (moving through Japanese clauses) calls `DXUTStaticWndProc` with `WM_KEYDOWN`/`WM_KEYUP` instead of
+  `keybd_event`, and the edit box's `SendMessage(DXUTGetHWND(), ...)` calls go to `DXUTStaticWndProc` too.
+- Windows 2000's stuck-modifier workaround (a posted `WM_KEYUP` for Alt, Ctrl or Shift) is gone: SDL reports every
+  release.
+- Outside Windows the keyboard layout is en-US (`DXUT/WindowFunctions.h`); `WM_INPUTLANGCHANGE` never comes.
 
 ## Tests
 
@@ -101,9 +107,9 @@ that every `x2::dxut::imm` function has the type of the edit box's pointer. `tes
 
 ## Open
 
-- The edit box is not compiled yet (with the rest of KTDXLIB's GUI): `Initialize()` is unverified until then.
-- Keyboard-layout language for the edit box (`GetKeyboardLayout`, `GetKeyboardLayoutList`, `GetLocaleInfoW`,
-  `WM_INPUTLANGCHANGE`) on Linux, where SDL reports none.
+- The edit box compiles with the rest of KTDXLIB (2026-11-06) but is not exercised yet: `Initialize()` is unverified
+  until the GUI runs.
+- The real keyboard-layout language on Linux (fixed to en-US for now, see above), where SDL reports none.
 - `CX2Main`'s Korean/English toggle calls IMM32 directly; it has to use `x2::dxut::imm` when X2Lib compiles. SDL cannot
   set the IME's conversion mode, so the toggle only changes the emulated status.
 - On Linux, place the IME's own candidate window at the composition (`SDL_SetTextInputArea` from the edit box's
