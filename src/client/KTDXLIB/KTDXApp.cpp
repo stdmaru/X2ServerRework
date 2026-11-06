@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include <ddraw.h>
 #include "./KTDXApp.h"
 #include "../X2Lib/X2Define.h"
 //#include "KFileVerifier.h" // seojt // 2008-1-5, 14:44
