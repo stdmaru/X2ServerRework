@@ -132,6 +132,11 @@ Decided with the user; overview in [Client › Bandi, embedded browser and CxIma
 | Web pages | Inside the game, over its window | The system browser; the balance is asked for when the game window gets the focus back | User, 2026-11-06 |
 | `ScreenCapture/` | Created at start | Not created (no screenshots) | Bandicam removed |
 
+## D3D9 device (2026-11-06, `client/ktdxlib-device`)
+
+`D3D9/` holds KTDXLIB's own D3D9 device on `x2::render` (T38) and the D3D9 vocabulary the engine keeps (`D3D9Types.h`),
+building as `x2::client_d3d9`; the engine's files move onto it next. See [Client: D3D9 device](client-d3d9.md).
+
 ## Status
 
-Only the input files, the mass file manager and `KBrowserWrapper` compile ([roadmap](../project/roadmap.md#phase-3--client-platform)).
+Only the input files, the mass file manager, `KBrowserWrapper` and the D3D9 device compile ([roadmap](../project/roadmap.md#phase-3--client-platform)).

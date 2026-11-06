@@ -25,7 +25,8 @@ host UID so generated files stay writable. The container uses host networking, a
 database at `127.0.0.1`.
 
 The image includes Clang, clangd, clang-format, CMake, Ninja, GDB, ShellCheck, Git, Python, and the ODBC/FreeTDS development
-packages. The container installs the VS Code extensions for CMake Tools, C/C++ debugging, clangd, Python with Pylance, and
+packages, plus SDL_shadercross with Microsoft's DXC in `/opt/shadercross` on x86_64, built in a separate stage of the
+Dockerfile, for the offline shader compiler ([Shaders](shaders.md), T39; 2026-11-06). The container installs the VS Code extensions for CMake Tools, C/C++ debugging, clangd, Python with Pylance, and
 ShellCheck. CMake Tools uses the repository's CMake presets and CTest integration; clangd reads the generated
 `compile_commands.json`, which is copied to the repository root and ignored by Git. Select a Linux configure preset (usually
 `linux-debug`) if CMake Tools asks on first open.

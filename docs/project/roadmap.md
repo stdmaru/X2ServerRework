@@ -220,9 +220,15 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
       headless tests; the SDL_GPU device moved from `x2::app` to it (ImGui through the `sdlgpu::Native` escape hatch), the DXUT
       replacement clears through it (`X2_RENDER_BACKEND`), and a source scan keeps the SDL_GPU API in
       `src/render/backends/sdlgpu` (2026-11-06). See [Render](../porting/render.md).
-- [ ] D3D9 translation in `KTDXLIB`, above the boundary (T36): state cache → pipeline cache, fixed-function → shaders,
-      half-pixel offset. Decide first: an `IDirect3DDevice9` subset as a facade, or callers rewritten to `KTDXLIB`'s interface
-      (D3D9 is concentrated there: 54 `KTDXLIB` files use the device, 17 in `X2Lib`, 2 in `X2`; 2026-11-06).
+- [ ] D3D9 translation in `KTDXLIB`, above the boundary (T36), one branch per step:
+  - [x] `client/ktdxlib-device`: KTDXLIB's own device interface, no facade (T38), and offline shaders (T39):
+        `x2::d3d9::Device` (state cache → pipeline key → pipeline cache, fixed-function shaders through shadercross,
+        half-pixel offset, fans as indexed lists, uploads on transfer buffers with D3D9's lock semantics, partial clears,
+        render targets); DXUT passes it to the callbacks and presents, the skeleton draws a textured quad and a fan;
+        headless tests and a GPU pixel test (2026-11-06). See [D3D9 device](../porting/client-d3d9.md).
+  - [ ] The first `KTDXLIB` files compiling on it (state manager, dynamic VB manager, textures, render targets,
+        `CKTDXApp`'s device calls), with the silent sound backend below; what the device still lacks comes with the file
+        that needs it ([list](../porting/client-d3d9.md#not-emulated-yet-2026-11-06)).
 - [ ] Effects: the 4 `.fx` (31 techniques) rewritten by hand as HLSL in `src/`, compiled by shadercross, behind `KTDXLIB`'s effect
       API (T37).
 - [ ] Reimplement the rest of D3DX on the original assets (T1, T37): `.x` loader (mesh + skin + animation), `.dds` (BC1–3 native,
@@ -241,6 +247,8 @@ Real refactoring (remove dead systems, reorganize folders and names), guided by 
 from the previous phases. Only after everything runs.
 
 - [ ] Fix the [original bugs](../original/bugs.md) retained in the port, each with a decision about the new behavior.
+- [ ] Optional: rewrite the engine's D3D9-style calls onto `x2::render`'s own concepts and drop the D3D9 vocabulary
+      (`D3D9Types.h`, T38), file by file, once everything renders through the [D3D9 device](../porting/client-d3d9.md).
 
 ## Later — x2 studio
 
