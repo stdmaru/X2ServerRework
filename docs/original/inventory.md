@@ -54,7 +54,7 @@ Notes:
 - `KncWX2Server/ServerResource/*.lua` — tables read by the server.
 - `DataBase/` — 1,475 `.sql` files (SSMS/DBProj project) — MSSQL schema + stored procedures.
 - `ScriptData/` — `.xls/.xlsm/.mdb` source spreadsheets for tables (tool input; out of scope).
-- `_client/data/` — ready-to-run client: `x2.exe`, `*.kom` (header `KOG GC TEAM MASSFILE V.0.3`, zlib contents), DLLs (d3dx9_43, fmodex, bugtrap, steam...), `x2.fx`.
+- `_client/data/` — ready-to-run client: `x2.exe`, `*.kom` (header `KOG GC TEAM MASSFILE V.0.3`, zlib contents), DLLs (d3dx9_43, fmodex, bugtrap, steam...); the effects are 4 `.fx` inside `data041.kom` ([Client](client.md#d3dx-features-that-need-replacements)).
 
 ## Copy integrity
 

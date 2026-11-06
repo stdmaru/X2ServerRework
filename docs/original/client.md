@@ -31,7 +31,7 @@ The ~22 X2Lib files that call `GetDevice()` need individual review.
 | Feature | Use | Replacement |
 |---|---|---|
 | `D3DXLoadMeshFromX` / `...HierarchyFromX`, `ID3DXAnimationController` | `KTDXDeviceXMesh`, `KTDXDeviceXSkinMesh`, `KTDXAnimationController` | custom `.x` parser (text/binary) + skinning; `.x` remains an asset format |
-| `D3DXCreateEffect` | 4 files; `x2.fx` in `_client/data` | translate `x2.fx` (HLSL SM2/3 + techniques/passes) to shaders for the new backend; this is **code**, not an asset |
+| `D3DXCreateEffect` | 4 files; 4 `.fx` in `data041.kom`: `XRenderer` (20 techniques), `RenderState` (4), `XPostEffect` (5), `GCSkin` (2), ~68 KB in all; almost all `vs_1_1` with fixed-function pixel stages (`ColorOp`/`AlphaOp`/`FogEnable`), `ps_2_0`/`vs_2_0` only in `XPostEffect`, `ps_1_1` twice in `RenderState` (2026-11-06) | rewrite by hand as modern HLSL (T37); this is **code**, not an asset |
 | `D3DXCreateTextureFromFile`, cube textures | `KTDXDeviceTexture` | DDS loader (DXT1/3/5) + stb_image |
 | `D3DXCreateFont`, `D3DXCreateSprite` | fonts/UI | FreeType (already used in `KTDGFreeTypeFont`) + 2D batcher |
 | Fixed-function (`SetRenderState`, `DrawPrimitiveUP`, FVF) | 16 / 21 files | emulate fixed-function pipeline with shaders + dynamic buffers |
@@ -56,4 +56,4 @@ The ~22 X2Lib files that call `GetDevice()` need individual review.
 - **x64**: ~600 pointer→`DWORD/int/long` casts (regex estimate, client+server) and 12 files with `__asm`.
 - `_USE_32BIT_TIME_T`: 32-bit `time_t` may occur in written/serialized structs.
 - Initialization order of global singletons (`KJohnSingleton`, `KGlobalSingleton`, `KDynamicSingleton`).
-- `x2.fx` mixes fixed-function state and shaders — manual translation; visually validate against the original.
+- The `.fx` mix fixed-function state and shaders — manual translation (T37); visually validate against the original.

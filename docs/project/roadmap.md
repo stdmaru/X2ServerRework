@@ -12,7 +12,7 @@ Phase 0  New repo + automatic importer           (clean copy from _reference; no
 Phase 1  Libraries: replace third party, port KNCSDK
 Phase 2  Server  → Linux/Windows, tested with original client
 Phase 3  Client  → platform layer (SDL) + graphics abstraction
-Phase 4  Client  → new graphics backend (Vulkan / SDL_GPU)
+Phase 4  Client  → graphics boundary x2::render + SDL_GPU backend (T36)
 Phase 5  Deep cleanup / reorganization
 Phase 6  Server  → compile-time compatibility with selected historical clients
 ```
@@ -213,9 +213,16 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
 
 ## Phase 4 — Client: graphics
 
-- [ ] Introduce graphics abstraction within `KTDXLIB` (D3D9 is concentrated there: ~56 files use the device; X2Lib mostly uses math).
-- [ ] Reimplement what currently comes from D3DX: `.x` loader (mesh + skin + animation), `.fx` effects (`x2.fx`), `.dds` textures, fonts, sprites.
-- [ ] New backend: SDL_GPU ([decisions.md](decisions.md), T19).
+- [ ] `x2::render` (`src/render`, T36) with the SDL_GPU backend and a null/recording backend for headless tests; the SDL_GPU
+      device moves from `x2::app` to it; source scan: `SDL_gpu.h` only in `src/render/backends/sdlgpu`.
+- [ ] D3D9 translation in `KTDXLIB`, above the boundary (T36): state cache → pipeline cache, fixed-function → shaders,
+      half-pixel offset. Decide first: an `IDirect3DDevice9` subset as a facade, or callers rewritten to `KTDXLIB`'s interface
+      (D3D9 is concentrated there: 54 `KTDXLIB` files use the device, 17 in `X2Lib`, 2 in `X2`; 2026-11-06).
+- [ ] Effects: the 4 `.fx` (31 techniques) rewritten by hand as HLSL in `src/`, compiled by shadercross, behind `KTDXLIB`'s effect
+      API (T37).
+- [ ] Reimplement the rest of D3DX on the original assets (T1, T37): `.x` loader (mesh + skin + animation), `.dds` (BC1–3 native,
+      legacy formats to RGBA8), fonts, sprites.
+- [ ] ImGui renderer on `x2::render`, replacing the tools' `sdlgpu3` escape hatch (T36).
 - [ ] Silent sound backend, with the first step that compiles `KTDXLIB`: `CKTDXDeviceSound`, `KTDSManager` and
       `CKTDXDeviceManager::OpenSound` keep their interface and play nothing, so the 149 files that use sound compile
       unchanged. The audio APIs (FMOD, DirectSound, MP3) are confined to 9 `KTDXLIB` files (`KTDXDeviceSound.*`,
