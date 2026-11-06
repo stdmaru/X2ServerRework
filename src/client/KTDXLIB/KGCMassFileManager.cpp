@@ -30,6 +30,13 @@ std::string PathUtf8(const fs::path& path)
     return std::string(s.begin(), s.end());
 }
 
+// For messages: '/' separators on every system.
+std::string GenericUtf8(const fs::path& path)
+{
+    const std::u8string s = path.generic_u8string();
+    return std::string(s.begin(), s.end());
+}
+
 std::wstring PathWide(const fs::path& path)
 {
 #if defined(_WIN32)
@@ -302,9 +309,9 @@ bool KGCMassFileManager::SetLooseFileFolder(const fs::path& folder)
         const auto [found, inserted] = index.try_emplace(FileNameKey(path), LooseFile{path});
         if (!inserted)
             Log("warning: " + PathUtf8(path.filename()) + " is in both " +
-                PathUtf8(found->second.path.lexically_relative(folder)) + " and " +
-                PathUtf8(path.lexically_relative(folder)) + "; using " +
-                PathUtf8(found->second.path.lexically_relative(folder)));
+                GenericUtf8(found->second.path.lexically_relative(folder)) + " and " +
+                GenericUtf8(path.lexically_relative(folder)) + "; using " +
+                GenericUtf8(found->second.path.lexically_relative(folder)));
     }
 
     std::unique_lock lock(m_mutexDirectories);
