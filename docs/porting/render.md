@@ -25,6 +25,8 @@ Only what SDL_GPU does, nothing added in advance for a future backend (T36 (1)):
   the D3D9 translation's job in `KTDXLIB` (T36 (5)), not the backends'.
 - Failures return a none handle, null or false, with the message in `Device::LastError()`; `Device::Create` reports through its
   `error` argument.
+- **Destroy the device before `main` returns**, never from a static destructor: by then the GPU driver and its layers may have
+  run their own teardown (the Vulkan validation layer aborts in `SDL_WaitForGPUIdle`, seen on 2026-11-06).
 - Command buffers may be acquired and recorded on any thread, each on one; a pass belongs to its command buffer until `End()`.
 
 ## Backends

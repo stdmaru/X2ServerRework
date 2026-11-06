@@ -142,11 +142,15 @@ TEST_CASE("without a GPU the sdlgpu window fails cleanly")
 namespace {
 
 int g_frames = 0;
+std::vector<std::string> g_commands;  // what the null device recorded, before DXUTShutdown destroys it
+size_t g_liveResources = 0;
 
 void CALLBACK CountFrames(IDirect3DDevice9*, double, float, void*)
 {
-    if (++g_frames == 3) {
-        DXUTShutdown(0);  // after two presented frames
+    if (++g_frames == 3) {  // after two presented frames
+        g_commands = x2::render::null::Commands(*DXUTGetRenderDevice());
+        g_liveResources = x2::render::null::LiveResourceCount(*DXUTGetRenderDevice());
+        DXUTShutdown(0);
     }
 }
 
@@ -174,14 +178,14 @@ TEST_CASE("the null renderer clears every frame to black")
     DXUTSetCallbackFrameMove(nullptr);
     CHECK(DXUTGetExitCode() == 0);
     CHECK(DXUTGetSDLWindow() == nullptr);
+    CHECK(DXUTGetRenderDevice() == nullptr);  // destroyed with the window, not at exit
 
-    const std::vector<std::string>& commands = x2::render::null::Commands(*device);
     int clears = 0, submits = 0;
-    for (const std::string& line : commands) {
+    for (const std::string& line : g_commands) {
         clears += line.find("BeginRenderPass color[0]=") == 0 && line.find("load=clear(0,0,0,1)") != std::string::npos;
         submits += line == "Submit";
     }
     CHECK(clears == 2);
     CHECK(submits == 2);
-    CHECK(x2::render::null::LiveResourceCount(*device) == 0);
+    CHECK(g_liveResources == 0);
 }

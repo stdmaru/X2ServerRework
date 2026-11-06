@@ -35,10 +35,12 @@ The `WM_*`/`VK_*` constants and `WPARAM`/`LPARAM` come from `x2/platform/window_
 - Main loop: events → messages → frame (`CDXUTTimer` → `FrameMove` → `FrameRender`); while minimized it waits for events (100 ms).
   For now the frame only clears the swapchain texture to black through [`x2::render`](render.md) (one render pass per frame,
   2026-11-06); the callbacks receive a null `IDirect3DDevice9*`.
-- **Renderer**: `DXUTCreateWindow` creates the `x2::render` device with the first window and keeps it across windows
-  (`DXUTGetRenderDevice`), claims the window and asks for vsync (`D3DPRESENT_INTERVAL_DEFAULT`). The backend comes from
+- **Renderer**: `DXUTCreateWindow` creates the `x2::render` device with the window (`DXUTGetRenderDevice`), claims the window
+  and asks for vsync (`D3DPRESENT_INTERVAL_DEFAULT`); the device is destroyed with the window (`WM_CLOSE`, `DXUTShutdown`), never
+  by DXUT's static state at `exit()`: there the Vulkan validation layer had already torn itself down and aborted in
+  `SDL_WaitForGPUIdle` (a crash on closing the skeleton, fixed 2026-11-06). The backend comes from
   `X2_RENDER_BACKEND`: `sdlgpu` (default) or `null`, which runs the loop headless with no GPU. If the window cannot be claimed,
-  creation fails and the device is dropped.
+  creation fails.
 - `CDXUTTimer` on `steady_clock` with DXUT's semantics (`Stop`/`Start`/`Advance` by 0.1 s, `GetTime`, `GetElapsedTime`).
 - `DXUTGetHWND` returns the real `HWND` on Windows (`SDL_PROP_WINDOW_WIN32_HWND_POINTER`, for IME and `MessageBox` calls that stay
   Win32) and the `SDL_Window*` as an opaque handle elsewhere.

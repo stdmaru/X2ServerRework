@@ -34,7 +34,8 @@ struct DxutState {
     bool autoChangeAdapter = true;
 
     std::unique_ptr<x2::app::Sdl> sdl;
-    // Declared after `sdl`: destroyed before SDL_Quit. Created with the first window and kept across windows.
+    // Lives with the window: created by DXUTCreateWindow, destroyed by ReleaseWindow. Never left to the static
+    // destructor, which runs in exit() after the GPU driver and its layers have torn themselves down.
     std::unique_ptr<x2::render::Device> device;
     std::unique_ptr<x2::app::Window> window;
     bool windowClaimed = false;
@@ -175,6 +176,7 @@ void ReleaseWindow(DxutState& state)
         }
         SDL_StopTextInput(state.window->Handle());
     }
+    state.device.reset();
     if (x2::dxut::BoundIme() == &state.translator.Ime()) {
         x2::dxut::BindIme(nullptr);
     }
@@ -254,23 +256,21 @@ HRESULT DXUTCreateWindow(const WCHAR* strWindowTitle, HINSTANCE /*hInstance*/, H
         return E_FAIL;
     }
     SDL_Window* window = state.window->Handle();
+    x2::render::DeviceOptions renderOptions;
+    renderOptions.backend = RenderBackend();
+    state.device = x2::render::Device::Create(renderOptions, error);
     if (!state.device) {
-        x2::render::DeviceOptions renderOptions;
-        renderOptions.backend = RenderBackend();
-        state.device = x2::render::Device::Create(renderOptions, error);
-        if (!state.device) {
-            SDL_Log("DXUT: %s", error.c_str());
-            state.window.reset();
-            state.exitCode = 1;
-            return E_FAIL;
-        }
+        SDL_Log("DXUT: %s", error.c_str());
+        state.window.reset();
+        state.exitCode = 1;
+        return E_FAIL;
     }
     // D3DPRESENT_INTERVAL_DEFAULT: one present per vertical blank.
     if (!state.device->ClaimWindow(window) ||
         !state.device->SetSwapchainParameters(window, x2::render::PresentMode::Vsync)) {
         SDL_Log("DXUT: %s", state.device->LastError().c_str());
         state.device->ReleaseWindow(window);
-        state.device.reset();  // a device that cannot present to this window is no use for the next one
+        state.device.reset();
         state.window.reset();
         state.exitCode = 1;
         return E_FAIL;
