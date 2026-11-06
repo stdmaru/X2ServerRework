@@ -189,7 +189,10 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
       `Vec3Project`, `Vec3CatmullRom`, `PerspectiveFovLH`, `OrthoLH`, `Transformation2D`, `ComputeBoundingSphere`, with tests
       (2026-11-05). See [Platform: D3DX math](../porting/platform.md#d3dx-math).
 - Audio moved to the end of the client work ([Phase 4](#phase-4--client-graphics); user, 2026-11-05).
-- [ ] Video (Bandi), embedded browser, CxImage → remove/replace (Steam and anti-cheat removed on 2026-11-05).
+- [x] `client/video-browser-cximage`: Bandi, the embedded browser and CxImage (Steam and anti-cheat removed on 2026-11-05).
+      The character creation movies on pl_mpeg (`x2::client_movie`, all 30 decode every frame), Bandicam's recording and
+      screenshots removed, web pages in the system browser (`x2::client_browser`), CxImage's dead users deleted; a source
+      scan keeps them out (2026-11-06). See [Client](../porting/client.md#bandi-embedded-browser-and-cximage-2026-11-06-clientvideo-browser-cximage).
 - [ ] `.kom` archives (T35), one branch per step; see [`.kom` archives](../porting/kom.md):
   - [x] `build/kom-library`: `src/kom` (`x2::kom` read and mount, `x2::kom_write`): byte-identical rewrites, first-wins
         mounting with a warning, `ReadOnlyFile` in `x2::platform`; headless tests, byte-for-byte cross-check with `kom.py`,

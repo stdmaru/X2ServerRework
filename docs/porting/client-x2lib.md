@@ -29,6 +29,24 @@ The module is edited by hand and frozen. Steam, nProtect, Nexon, SMTP mail and B
 `X2CashShop.cpp`, `X2StateLogin.cpp`, `X2StateServerSelect.cpp` and `X2State.cpp`; `X2Main.h` includes `Enum/*.h` from
 `src/server/Common` ([Client](client.md#integrations-removed-by-hand-2026-11-05)).
 
+## Bandicam removed (2026-11-06, `client/video-browser-cximage`)
+
+Decided with the user ([Client](client.md#bandi-embedded-browser-and-cximage-2026-11-06-clientvideo-browser-cximage)):
+video recording and the Print Screen screenshot are gone.
+
+- `X2Main.*`: `m_BandiCaptureLibrary`, `Bandi_*`, `IsCapturing`, `m_fCaptureDelay`, the disk space check
+  (`m_iOldCaptureFileSize`, `m_fFileSizeCheckTime`), the Print Screen block in `OnFrameMove` and the Scroll Lock block in
+  `KeyProcess`; the anti-cheat `MakeHackScreenShot*` (callers already commented out, now deleted with them); the dead
+  `#ifdef BUG_TRAP` code (setup, crash callbacks, `MakeScreenShot` with CxImage).
+- `X2Game.cpp`: Scroll Lock. `X2StateServerSelect.cpp`: the stop of a recording. `X2State.*`: the REC particle
+  (`m_hParticleRec`, `ShowBandicamRecParticle`).
+- `X2StateOption.*`: the Bandicam tab's handlers (`SOUCM_OPTION_CAM*`, `SOUCM_OPTION_VIDEO_*`) and the custom-settings
+  dialog (`DLG_UI_Option_Cam_Ex.lua`, `m_pCamUserWindow`) are gone. The tab's controls are defined by the client's Lua
+  dialogs, which do not change (T1): `HideBandiCamOption` hides them, the tab's check box `Option_Cam_Menu` included,
+  wherever the original showed or hid them. The message IDs stay in the enum (the dialogs send them).
+- Left for [Phase 5](../project/roadmap.md#phase-5--deep-cleanup): the recording settings in `CX2GameOption`
+  (`m_UserSetting`, `m_VideoQuality`, FPS, sizes...), still read from and written to the option file, now unused.
+
 ## Status
 
 Not compiled yet ([roadmap](../project/roadmap.md#phase-3--client-platform)).

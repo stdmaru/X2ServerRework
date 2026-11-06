@@ -9,10 +9,11 @@ Direct3D 9 dependencies: [Client — Windows / Direct3D 9 dependencies](../origi
 |---|---|---|---:|---|
 | Executable (`WinMain`) | `X2` | `src/client/X2` | 5 | [Client: X2](client-x2.md) |
 | Game | `X2Lib` | `src/client/X2Lib` | 552 | [Client: X2Lib](client-x2lib.md) |
-| Engine | `KTDXLIB` | `src/client/KTDXLIB` | 252 (2026-11-05) | [Client: KTDXLIB](client-ktdxlib.md) |
+| Engine | `KTDXLIB` | `src/client/KTDXLIB` | 255 (2026-11-06) | [Client: KTDXLIB](client-ktdxlib.md) |
 | Network library | `X2ServerProtocol` | `src/client/X2ServerProtocol` | 11 (10 of 37 imported, plus `EventNames.cpp`; 2026-11-05) | [Client: X2ServerProtocol](client-serverprotocol.md) |
 | Lua binding | `LuaCommon` (built by `luajitLib`) | `src/client/LuaCommon` | 7 | [Client: LuaCommon](client-luacommon.md) |
 | Application framework | DXUT (Microsoft, not imported) | `src/client/DXUT` | 9 (new; 2026-11-05) | [Client: DXUT](client-dxut.md), [input](client-input.md), [IME](client-ime.md) |
+| Movie player | BandiVideo (vendored, not imported) | `src/client/Movie` | 2 (new; 2026-11-06) | [Client: movies](client-movie.md) |
 
 Counts from the import on 2026-11-05: **854 files, 885k lines written** (215k removed by the flags), 612 blocks rewritten to
 `X2_DEV_TOOLS`. On 2026-11-05 (`client/skeleton`) the HackShield/nProtect wrappers were deleted (547 `X2Lib` files left), and
@@ -30,13 +31,15 @@ keeps `OFF` in its cache: reconfigure with `-DX2_BUILD_CLIENT=ON`. What compiles
 | `x2::client_dxut` | the DXUT replacement on `x2::app` ([Client: DXUT](client-dxut.md)), including the SDL3 state behind the input layer and the IME edit box's IMM32 ([Client: IME](client-ime.md)) |
 | `x2::client_ktdi` | `KTDXLIB`'s input layer (`KTDIManager`, `KTDIDevice`) on SDL3 instead of DirectInput (2026-11-05, [Client: input](client-input.md)) |
 | `x2::client_massfile` | `KTDXLIB`'s `KGCMassFileManager` and buffer pool on `x2::kom` (T35, 2026-11-05, [Client: KTDXLIB › Mass files](client-ktdxlib.md#mass-files)) |
+| `x2::client_browser` | `KTDXLIB`'s `KBrowserWrapper`: web pages in the system browser (2026-11-06, [Client: KTDXLIB › Web pages](client-ktdxlib.md#web-pages)) |
+| `x2::client_movie` | the MPEG-1 movie player on pl_mpeg that `CMovieData` uses, in place of BandiVideo (2026-11-06, [Client: movies](client-movie.md)) |
 | `x2::client_serverprotocol` | `X2ServerProtocol` on the servers' `x2::common_net` (T34, 2026-11-05, [Client: X2ServerProtocol](client-serverprotocol.md)) |
 | `x2_client` (`x2`/`x2.exe`) | the skeleton entry point `X2/X2Skeleton.cpp`, with the original icon ([Client: X2](client-x2.md)) |
 | `x2_client_tests` | headless tests (ctest `client`) |
 
 `x2_client_includes` carries the original projects' include directories: `KTDXLIB`, `DXUT`, `X2Lib`, `X2Lib/Common`, `X2`,
 `X2ServerProtocol` and `src/server/Common` (`X2ServerProtocol/Socket` is gone since 2026-11-05: the shared `Socket/` is
-`src/server/Common/Socket`). `KTDXLIB` (apart from its input files and mass file manager), `X2Lib` and `X2.cpp` are not compiled yet: each gets its target when its
+`src/server/Common/Socket`). `KTDXLIB` (apart from its input files, mass file manager and `KBrowserWrapper`), `X2Lib` and `X2.cpp` are not compiled yet: each gets its target when its
 dependencies are ported
 ([roadmap](../project/roadmap.md#phase-3--client-platform)).
 
@@ -91,8 +94,21 @@ keeping the paths that run without the integration:
   check in `X2Main.cpp` removed; `EGS_KNPROTECT_AUTH_CHECK_NOT` is still read, then dropped.
 - `X2Main.h`: `X2Steam.h`, `NPGameLib.h`, `X2KNPGame.h`, `X2NexonMsgHandler.h`, `X2MailLog.h` removed;
   `../../KncWX2Server/Common/Enum/*.h` became `Enum/*.h` (from `src/server/Common`, T33).
-- **Left for their own items** (replaced, not removed): FMOD, Bandi video, CxImage, the embedded browser, tinyxml and zlib
+- **Left for their own items** (replaced, not removed): FMOD, tinyxml and zlib; Bandi, the embedded browser and CxImage
+  were handled on 2026-11-06 (below),
   ([roadmap](../project/roadmap.md#phase-3--client-platform)). Each import report lists them under "References to excluded files".
+
+## Bandi, embedded browser and CxImage (2026-11-06, `client/video-browser-cximage`)
+
+Decided with the user on 2026-11-06. A source scan (`test_removed_integrations.cpp`) keeps the excluded headers and classes
+out of `X2`, `X2Lib` and `KTDXLIB`, comments aside.
+
+| Integration | What the original did | Port |
+|---|---|---|
+| BandiVideo | Played the character creation movies (`CMovieData`) | Replaced: [Client: movies](client-movie.md) (pl_mpeg) |
+| Bandicam | Scroll Lock started/stopped video recording to `ScreenCapture/SC_<date>.avi` (options tab with presets and a custom dialog, a REC particle on screen, a stop on low disk space); Print Screen saved `ScreenCapture/SC_<date>.jpg` (refused in tournament PvP) | **Removed**, both: [X2Lib](client-x2lib.md#bandicam-removed-2026-11-06-clientvideo-browser-cximage), [X2](client-x2.md) |
+| Embedded browser | `KBrowserWrapper`/`KPCHWebBrowser`: Internet Explorer in a dialog over the game for the cash charge page and the server's advertisement pages; closing it asked for the cash balance | Replaced: the system browser ([KTDXLIB › Web pages](client-ktdxlib.md#web-pages)) |
+| CxImage | JPEG screenshots from GDI | **Deleted**: only dead code used it (`CKTDGManager::ScreenCapture*`, no callers; BugTrap's crash screenshot, `BUG_TRAP` never defined; `CX2Main::MakeHackScreenShot*`, anti-cheat, callers commented out) |
 
 ## Notes
 

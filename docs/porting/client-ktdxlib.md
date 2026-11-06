@@ -104,6 +104,34 @@ under 1 s, no repeated name, no extra archive) and decodes every entry through t
 Open: with a client_data as loose folder, an edited `Item.lua`/`SetItem.lua` is not seen, since the client loads
 `Item.kim` (from the archive); compiling it at start or in the tools is for when the engine runs.
 
+## Movies and web pages (2026-11-06, `client/video-browser-cximage`)
+
+Decided with the user; overview in [Client › Bandi, embedded browser and CxImage](client.md#bandi-embedded-browser-and-cximage-2026-11-06-clientvideo-browser-cximage).
+
+- **Movies**: `CKTDGUIControl::CMovieData` plays on [`x2::movie::MoviePlayer`](client-movie.md) instead of BandiVideo; its
+  Lua interface and its loop/stop at the end are unchanged. The frame goes into a managed `A8R8G8B8` texture
+  (`CBandiVideoTexture_DX9` is gone), drawn over the render target with the engine's screen-space quad
+  (`DrawFrameTexture`); the player advances by `GetElapsedTime()`. `KTDX.h` includes `MoviePlayer.h` instead of the four
+  `BandiVideo*` headers.
+- <a id="web-pages"></a>**Web pages**: `KBrowserWrapper` is new code with the interface its callers use (`Init`/`UnInit`,
+  `Create`, `Navigate(url, NULL)`, `CloseBrowser`, `IsClosed`, `GetCheckClosed`/`SetCheckClosed`), building as
+  `x2::client_browser`. `Navigate` opens the page in the system browser (`SDL_OpenURL`) and the wrapper counts as closed at
+  once, so the shop can open it again; `OnFocusGained`, called by `CX2Main::MsgProc` on `WM_SETFOCUS`, clears
+  `GetCheckClosed` after a page was opened, which makes `CX2State` ask for the cash balance as the original did when its
+  dialog closed (and turns `SetDialogBoxMode` off, as the dialog's close did). A failed open counts as closed at once.
+  POST data is refused (no caller sends any). `KPCHWebBrowser` and its keyboard forwarding (`CKTDXApp::OnWebBrowserKeyEvents`,
+  `KM_WEB_BROWSER_KEY_EVENT` in `CX2Main`) are gone; the `KM_WEB_BROWSER_KEY_EVENT` enumerator stays for the numbering.
+  Tests: `test_browser.cpp`.
+- **CxImage**: `CKTDGManager::ScreenCaptureOld`/`ScreenCapture` (GDI + CxImage JPEG; no callers), the `ScreenCapture`
+  folder created at start and `m_fCaptureDelay` deleted; `KTDX.h` no longer includes `CxImage/ximage.h`.
+
+### Behavior changes
+
+| Where | Original | Port | Why |
+|---|---|---|---|
+| Web pages | Inside the game, over its window | The system browser; the balance is asked for when the game window gets the focus back | User, 2026-11-06 |
+| `ScreenCapture/` | Created at start | Not created (no screenshots) | Bandicam removed |
+
 ## Status
 
-Only the input files and the mass file manager compile ([roadmap](../project/roadmap.md#phase-3--client-platform)).
+Only the input files, the mass file manager and `KBrowserWrapper` compile ([roadmap](../project/roadmap.md#phase-3--client-platform)).

@@ -27,7 +27,9 @@ once the engine builds.
 
 - **Icon**: `Elsword.ico`, copied from the original through git, attached with `x2_windows_icon` like the servers'
   ([Porting](README.md)). On Windows SDL3 uses the executable's first icon resource for the window too.
-- `X2.cpp` hand edits: SMTP mail, Steam and nProtect calls removed ([Client](client.md#integrations-removed-by-hand-2026-11-05)).
+- `X2.cpp` hand edits: SMTP mail, Steam and nProtect calls removed ([Client](client.md#integrations-removed-by-hand-2026-11-05)); on
+  2026-11-06 the Bandicam frame capture in `OnFrameRender` (`Work`, the REC particle hidden during the capture) went with
+  Bandicam ([Client](client.md#bandi-embedded-browser-and-cximage-2026-11-06-clientvideo-browser-cximage)).
 
 ## Status
 
