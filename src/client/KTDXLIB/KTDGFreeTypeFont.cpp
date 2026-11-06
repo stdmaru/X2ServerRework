@@ -408,14 +408,14 @@ void CKTDGFreeTypeFont::CharToSystemTexture( SGCFontCache* cache )
 	FT_Glyph_Metrics* pMetrics = &ftCurrentFace->glyph->metrics;
 	FT_Size_Metrics* pSizeMetrics = &ftCurrentFace->size->metrics;
 
-	int iPaddingX = max( pMetrics->horiBearingX >> 6, 0 );
-	int iPaddingY = ( pSizeMetrics->ascender - pMetrics->horiBearingY ) >> 6;
+	int iPaddingX = static_cast<int>( std::max<FT_Pos>( pMetrics->horiBearingX >> 6, 0 ) );
+	int iPaddingY = static_cast<int>( ( pSizeMetrics->ascender - pMetrics->horiBearingY ) >> 6 );
 
 	// 폰트 캐쉬에 맞게 사이즈를 추가하여 표시
 	// GetTextExtentPoint32W 의 역할을 여기서 함
-	int iAdvanceX = max( ( pMetrics->horiAdvance >> 6 ) + m_iOutLineSize * 2, iOutLineGlyphWidth );
-	iAdvanceX = min( iAdvanceX, m_iFontCacheSize );
-	int iAdvenceY = min( iOutLineGlyphRows + iPaddingY + 1, m_iFontCacheSize );
+	int iAdvanceX = std::max( static_cast<int>( pMetrics->horiAdvance >> 6 ) + m_iOutLineSize * 2, iOutLineGlyphWidth );
+	iAdvanceX = std::min( iAdvanceX, m_iFontCacheSize );
+	int iAdvenceY = std::min( iOutLineGlyphRows + iPaddingY + 1, m_iFontCacheSize );
 	cache->_SetRect( iAdvanceX, iAdvenceY );
 
 	// 폰트 캐쉬에 그림
@@ -640,7 +640,7 @@ void CKTDGFreeTypeFont::Buffering( bool bOutLine, const int& iLeft, const int& i
 					int iCol;
 					WCHAR strColor[7] = { 0, };
 					wcsncpy_s(strColor, _countof(strColor), &str[i+2],6);
-					swscanf_s(strColor,L"%x",&iCol);
+					swscanf(strColor,L"%x",&iCol);
 					bufferingColor = ( bufferingColor & 0xFF000000 ) | iCol;
 				}
 			}

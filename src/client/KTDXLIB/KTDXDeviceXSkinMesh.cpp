@@ -2438,7 +2438,7 @@ HRESULT CKTDXDeviceXSkinMesh::MultiAnimMC::ConvertToSkinnedMesh()
 //
 //		DWORD cVerticesPerMesh = ( cVerticesMax - cVerticesMin + 10 ) / 10;
 //
-//		m_cPMeshes = max( 1, (DWORD)ceil( (cVerticesMax - cVerticesMin + 1) / (float)cVerticesPerMesh ) );
+//		m_cPMeshes = std::max( 1, (DWORD)ceil( (cVerticesMax - cVerticesMin + 1) / (float)cVerticesPerMesh ) );
 //		m_ppPMeshes = new LPD3DXPMESH[m_cPMeshes];
 //		if( m_ppPMeshes == NULL )
 //		{
@@ -2646,7 +2646,7 @@ HRESULT CKTDXDeviceXSkinMesh::CMultiAnimAllocateHierarchy::CreateMeshContainer( 
 	pMC->pEffects = NULL;
 
 	// alloc and copy materials
-	pMC->NumMaterials	= max( 1, NumMaterials );
+	pMC->NumMaterials	= std::max( 1, NumMaterials );
 	pMC->pMaterials		= new D3DXMATERIAL			[ pMC->NumMaterials ];
     if(pMC->pMaterials == NULL)
         ErrorLog(KEM_ERROR335);
@@ -2828,32 +2828,15 @@ HRESULT CKTDXDeviceXSkinMesh::MultiAnimMC::SetupBonePtrs( D3DXFRAME * pFrameRoot
 
 
 //{{ seojt // 2008-10-15, 14:54
-// mesh가 사용하는 vertex buffer와 texture를 local memory로 preload하는
-// 함수의 구현 - jintaeks on 2008-10-15, 15:00
+// Preloads the textures the mesh uses into local memory - jintaeks on 2008-10-15, 15:00
 void CKTDXDeviceXSkinMesh::MultiAnimMC::PreLoad()
 {
-    HRESULT                 hr;
-
-    if ( this->MeshData.pMesh != NULL )
-    {
-        LPDIRECT3DVERTEXBUFFER9 pVertices = NULL;
-        hr = this->MeshData.pMesh->GetVertexBuffer( &pVertices );
-        if ( SUCCEEDED(hr) && pVertices )
-        {
-            pVertices->PreLoad();
-            SAFE_RELEASE( pVertices );
-        }//if
-    }//if
-
-    // 아래의 두 변수에 대해서는 정확한 사용법을 확인하지 않아서, preload처리하지 않다.
-    // TODO:
-	//m_ppPMeshes;
-	//m_pPMeshFull;
+    // Port: the mesh's vertex buffer needs no preload (D3D9's managed-pool hint): it is on the GPU once unlocked.
 
 #ifndef _KSMTOOL
     if ( m_apTextures )
     {
-        for ( DWORD dw = 0; dw < __super::NumMaterials; ++dw )
+        for ( DWORD dw = 0; dw < NumMaterials; ++dw )
         {
             if ( m_apTextures[dw] )
                 m_apTextures[dw]->PreLoad();

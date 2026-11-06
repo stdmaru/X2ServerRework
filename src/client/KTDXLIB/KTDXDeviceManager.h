@@ -210,7 +210,7 @@ class CKTDXDeviceManager :
 
         PendQueue                   m_aPendQueue[PRIORITY_NUM];
 
-        volatile LONG               m_lFullSyncStatus;
+        std::atomic<LONG>           m_lFullSyncStatus;
         HANDLE                      m_hFullSyncEventForMainThread;
         HANDLE                      m_hFullSyncEventForDeviceThread;
 

@@ -1177,7 +1177,7 @@ bool CKTDGXSkinAnim::ChangeAnim( LPD3DXANIMATIONSET pAS, bool transition, float 
 	// 0.3초 이하의 지속시간을 가진 모션을 ONE_WAIT로 설정 했을 때, 첫 프레임에서 멈추는 문제 수정
 	// 오차범위로 체크하는 값이 한프레임인 0.03보다 낮아서 체크 무시 되는 경우가 발생.
 	// m_fTransitionTime의 최저값을 0.03으로 수정
-	m_fTransitionTime = max( m_fTransitionTime, 0.03f );
+	m_fTransitionTime = std::max( m_fTransitionTime, 0.03f );
 
 	m_NowTrack = m_NewTrack;
 

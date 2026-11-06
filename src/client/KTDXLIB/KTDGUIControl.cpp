@@ -1701,7 +1701,7 @@ CKTDGUIControl::CMovieData::CMovieData()
 CKTDGUIControl::CMovieData::~CMovieData()
 {
 	SAFE_CLOSE( m_pRenderTargetTexture );
-	SAFE_RELEASE( m_pFrameTexture );
+	SAFE_DELETE( m_pFrameTexture );
 }
 
 void CKTDGUIControl::CMovieData::SetMovieFileName_LUA( const char* strMoiveFileName_ )
@@ -1720,17 +1720,17 @@ void CKTDGUIControl::CMovieData::SetMovieFileName( const WCHAR* wstrMovieFileNam
 	m_wstrMovieFileName = wstrMovieFileName_;
 
 	m_Player.Close();
-	SAFE_RELEASE( m_pFrameTexture );
+	SAFE_DELETE( m_pFrameTexture );
 
 	const std::filesystem::path path = std::filesystem::current_path() / L"movie" / std::filesystem::path( m_wstrMovieFileName );
 	if ( m_Player.Open( path ) )
 	{
 		// A8R8G8B8 is B, G, R, A in memory, what MoviePlayer::GetFrameBgra writes. Managed: lockable, and kept over
 		// device resets.
-		if ( FAILED( g_pKTDXApp->GetDevice()->CreateTexture( m_Player.Width(), m_Player.Height(), 1, 0, D3DFMT_A8R8G8B8,
-			D3DPOOL_MANAGED, &m_pFrameTexture, NULL ) ) )
+		m_pFrameTexture = g_pKTDXApp->GetDevice()->CreateTexture( m_Player.Width(), m_Player.Height(), 1, 0, D3DFMT_A8R8G8B8,
+			D3DPOOL_MANAGED ).release();
+		if ( m_pFrameTexture == NULL )
 		{
-			m_pFrameTexture = NULL;
 			m_Player.Close();
 			return;
 		}

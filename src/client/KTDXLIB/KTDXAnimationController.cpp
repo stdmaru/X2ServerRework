@@ -206,7 +206,7 @@ static DWORD   _EstimateNumKeys( KACKey* pkacInKeys_
                 bKey = true;
             }
             else
-                fKey = min( fKey, aInTranslations_[dwTrans].Time );
+                fKey = std::min( fKey, aInTranslations_[dwTrans].Time );
         }//if
         if ( dwRot < dwInNumRots_ )
         {
@@ -216,7 +216,7 @@ static DWORD   _EstimateNumKeys( KACKey* pkacInKeys_
                 bKey = true;
             }
             else
-                fKey = min( fKey, aInRotations_[dwRot].Time );
+                fKey = std::min( fKey, aInRotations_[dwRot].Time );
         }//if
         ASSERT( bKey );
         pkacInKeys_[dwNumKeys].m_fTime = fKey;

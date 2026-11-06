@@ -5,7 +5,6 @@
 
 CKTDGEffectStateManager::CKTDGEffectStateManager()
 {
-    m_nRefCount = 1;
     m_iStackPointer = 0;
     m_bInEffect = false;
 
@@ -22,8 +21,7 @@ CKTDGEffectStateManager::CKTDGEffectStateManager()
 
     //ZeroMemory( m_apd3dTextures, sizeof( m_apd3dTextures ) );
 
-	const D3DCAPS9* pd3dCaps = DXUTGetDeviceCaps();
-	m_uiNumFloatVSConstants = pd3dCaps->MaxVertexShaderConst;
+	m_uiNumFloatVSConstants = x2::d3d9::kVertexShaderConstants;
 
 	m_uiFirstDirtyFloatVSReg = m_uiNumFloatVSConstants;
 	m_uiFirstCleanFloatVSReg = 0;
@@ -167,34 +165,9 @@ HRESULT     CKTDGEffectStateManager::RestoreEffectState()
 }//CKTDGEffectStateManager::RestoreEffectState()
 
 
-// IUnknown
-HRESULT STDMETHODCALLTYPE CKTDGEffectStateManager::QueryInterface(THIS_ REFIID iid, LPVOID *ppv)
+void CKTDGEffectStateManager::Release()
 {
-	if(iid == IID_ID3DXEffectStateManager )
-	{
-		AddRef();
-		*(ID3DXEffectStateManager**)ppv = this;
-		return S_OK;
-	}
-
-	return E_FAIL;
-}//CKTDGEffectStateManager::QueryInterface()
-
-
-ULONG STDMETHODCALLTYPE CKTDGEffectStateManager::AddRef(THIS)
-{
-	return ++m_nRefCount;
-}//CKTDGEffectStateManager::AddRef()
-
-
-ULONG STDMETHODCALLTYPE CKTDGEffectStateManager::Release(THIS)
-{
-	if(--m_nRefCount == 0)
-	{
-		delete this;
-		return 0;
-	}
-	return m_nRefCount;
+	delete this;
 }//CKTDGEffectStateManager::Release()
 
 
@@ -208,7 +181,8 @@ ULONG STDMETHODCALLTYPE CKTDGEffectStateManager::Release(THIS)
 HRESULT STDMETHODCALLTYPE CKTDGEffectStateManager::SetTransform(THIS_ D3DTRANSFORMSTATETYPE State, CONST D3DMATRIX *pMatrix)
 {
     ASSERT( m_bInEffect );
-    return  g_pd3dDevice->SetTransform( State, pMatrix );
+    g_pd3dDevice->SetTransform( State, pMatrix );
+    return  D3D_OK;
 }//CKTDGEffectStateManager::SetTransform()
 
 
@@ -222,21 +196,22 @@ HRESULT STDMETHODCALLTYPE CKTDGEffectStateManager::SetMaterial(THIS_ CONST D3DMA
         m_bd3dMaterial = true;
     }//if
 
-    return  g_pd3dDevice->SetMaterial( pMaterial );
+    g_pd3dDevice->SetMaterial( pMaterial );
+    return  D3D_OK;
 }//CKTDGEffectStateManager::SetMaterial()
 
 
 HRESULT STDMETHODCALLTYPE CKTDGEffectStateManager::SetLight(THIS_ DWORD Index, CONST D3DLIGHT9 *pLight)
 {
     ASSERT( m_bInEffect );
-    return  g_pd3dDevice->SetLight( Index, pLight );
+    return  g_pd3dDevice->SetLight( Index, pLight ) ? D3D_OK : D3DERR_INVALIDCALL;
 }//CKTDGEffectStateManager::SetLight()
 
 
 HRESULT STDMETHODCALLTYPE CKTDGEffectStateManager::LightEnable(THIS_ DWORD Index, BOOL Enable)
 {
     ASSERT( m_bInEffect );
-    return  g_pd3dDevice->LightEnable( Index, Enable );
+    return  g_pd3dDevice->LightEnable( Index, Enable ) ? D3D_OK : D3DERR_INVALIDCALL;
 }//CKTDGEffectStateManager::LightEnable()
 
 
@@ -301,7 +276,7 @@ HRESULT STDMETHODCALLTYPE CKTDGEffectStateManager::SetSamplerState(THIS_ DWORD S
 HRESULT STDMETHODCALLTYPE CKTDGEffectStateManager::SetNPatchMode(THIS_ FLOAT NumSegments)
 {
     ASSERT( m_bInEffect );
-    return  g_pd3dDevice->SetNPatchMode( NumSegments );
+    return  D3D_OK;   // ignored: no shaders read it until the effects are rewritten (T37)
 }//CKTDGEffectStateManager::SetNPatchMode()
 
 
@@ -315,7 +290,8 @@ HRESULT STDMETHODCALLTYPE CKTDGEffectStateManager::SetFVF(THIS_ DWORD FVF)
         m_bFVF = true;
     }//if
 
-    return  g_pd3dDevice->SetFVF( FVF );
+    g_pd3dDevice->SetFVF( FVF );
+    return  D3D_OK;
 }//CKTDGEffectStateManager::SetFVF()
 
 
@@ -329,21 +305,22 @@ HRESULT STDMETHODCALLTYPE CKTDGEffectStateManager::SetVertexShader(THIS_ LPDIREC
         m_bd3dVertexShader = true;
     }//if
 
-    return  g_pd3dDevice->SetVertexShader( pShader );
+    g_pd3dDevice->SetVertexShader( pShader );
+    return  D3D_OK;
 }//CKTDGEffectStateManager::SetVertexShader()
 
 
 HRESULT STDMETHODCALLTYPE CKTDGEffectStateManager::SetVertexShaderConstantI(THIS_ UINT RegisterIndex, CONST INT *pConstantData, UINT RegisterCount)
 {
     ASSERT( m_bInEffect );
-    return  g_pd3dDevice->SetVertexShaderConstantI( RegisterIndex, pConstantData, RegisterCount );
+    return  D3D_OK;   // ignored: no shaders read it until the effects are rewritten (T37)
 }//CKTDGEffectStateManager::SetVertexShaderConstantI()
 
 
 HRESULT STDMETHODCALLTYPE CKTDGEffectStateManager::SetVertexShaderConstantB(THIS_ UINT RegisterIndex, CONST BOOL *pConstantData, UINT RegisterCount)
 {
     ASSERT( m_bInEffect );
-    return  g_pd3dDevice->SetVertexShaderConstantB( RegisterIndex, pConstantData, RegisterCount );
+    return  D3D_OK;   // ignored: no shaders read it until the effects are rewritten (T37)
 }//CKTDGEffectStateManager::SetVertexShaderConstantB()
 
 
@@ -357,26 +334,27 @@ HRESULT STDMETHODCALLTYPE CKTDGEffectStateManager::SetPixelShader(THIS_ LPDIRECT
         m_bd3dPixelShader = true;
     }//if
 
-    return  g_pd3dDevice->SetPixelShader( pShader );
+    g_pd3dDevice->SetPixelShader( pShader );
+    return  D3D_OK;
 }//CKTDGEffectStateManager::SetPixelShader()
 
 
 HRESULT STDMETHODCALLTYPE CKTDGEffectStateManager::SetPixelShaderConstantF(THIS_ UINT RegisterIndex, CONST FLOAT *pConstantData, UINT RegisterCount)
 {
     ASSERT( m_bInEffect );
-    return  g_pd3dDevice->SetPixelShaderConstantF( RegisterIndex, pConstantData, RegisterCount );
+    return  D3D_OK;   // ignored: no shaders read it until the effects are rewritten (T37)
 }//CKTDGEffectStateManager::SetPixelShaderConstantF()
 
 
 HRESULT STDMETHODCALLTYPE CKTDGEffectStateManager::SetPixelShaderConstantI(THIS_ UINT RegisterIndex, CONST INT *pConstantData, UINT RegisterCount)
 {
     ASSERT( m_bInEffect );
-    return  g_pd3dDevice->SetPixelShaderConstantI( RegisterIndex, pConstantData, RegisterCount );
+    return  D3D_OK;   // ignored: no shaders read it until the effects are rewritten (T37)
 }//CKTDGEffectStateManager::SetPixelShaderConstantI()
 
 
 HRESULT STDMETHODCALLTYPE CKTDGEffectStateManager::SetPixelShaderConstantB(THIS_ UINT RegisterIndex, CONST BOOL *pConstantData, UINT RegisterCount)
 {
     ASSERT( m_bInEffect );
-    return  g_pd3dDevice->SetPixelShaderConstantB( RegisterIndex, pConstantData, RegisterCount );
+    return  D3D_OK;   // ignored: no shaders read it until the effects are rewritten (T37)
 }//CKTDGEffectStateManager::SetPixelShaderConstantB()

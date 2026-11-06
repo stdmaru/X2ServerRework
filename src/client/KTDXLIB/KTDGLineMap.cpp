@@ -28,15 +28,11 @@ CKTDGLineMap::CKTDGLineMap()
 
 
 
-	D3DXCreateLine( g_pKTDXApp->GetDevice(), &m_pLine );
-	m_pLine->SetWidth( 3.f );
-	m_pLine->SetAntialias( true );
 }
 
 CKTDGLineMap::~CKTDGLineMap(void)
 {
-	SAFE_RELEASE( m_pLine );
-	SAFE_RELEASE( m_pLineMapVB );
+	SAFE_DELETE( m_pLineMapVB );
 
 	for( int i = 0; i < (int)m_LineList.size(); i++ )
 	{
@@ -269,15 +265,15 @@ bool CKTDGLineMap::AddLine_LUA()
 			m_fYMax = pLineData->endPos.y;
 		}
 
-		m_fXMin = min( pLineData->startPos.x, m_fXMin );
-		m_fXMin = min( pLineData->endPos.x, m_fXMin );
-		m_fYMin = min( pLineData->startPos.y, m_fYMin );
-		m_fYMin = min( pLineData->endPos.y, m_fYMin );
+		m_fXMin = std::min( pLineData->startPos.x, m_fXMin );
+		m_fXMin = std::min( pLineData->endPos.x, m_fXMin );
+		m_fYMin = std::min( pLineData->startPos.y, m_fYMin );
+		m_fYMin = std::min( pLineData->endPos.y, m_fYMin );
 
-		m_fXMax = max( pLineData->startPos.x, m_fXMax );
-		m_fXMax = max( pLineData->endPos.x, m_fXMax );
-		m_fYMax = max( pLineData->startPos.y, m_fYMax );
-		m_fYMax = max( pLineData->endPos.y, m_fYMax );
+		m_fXMax = std::max( pLineData->startPos.x, m_fXMax );
+		m_fXMax = std::max( pLineData->endPos.x, m_fXMax );
+		m_fYMax = std::max( pLineData->startPos.y, m_fYMax );
+		m_fYMax = std::max( pLineData->endPos.y, m_fYMax );
 	}
 
 
@@ -451,25 +447,12 @@ void    CKTDGLineMap::OnFrameRender_Draw()
 //}} robobeg : 2008-10-24
     KD3DPUSH( g_pKTDXApp->GetDGManager()->GetRSICKTDGLineMap() )
 
-	HRESULT hr;
-
-	if(FAILED(hr = g_pKTDXApp->GetDevice()->SetFVF( D3DFVF_LINE_MAP_VERTEX )))
-	{
-		ErrorLog( KEM_ERROR21 );
-//		return hr;
-        return;
-	}
-
-	if(FAILED(hr = g_pKTDXApp->GetDevice()->SetStreamSource( 0, m_pLineMapVB, 0, sizeof(LINE_MAP_VERTEX) )))
-	{
-		ErrorLog( KEM_ERROR22 );
-//		return hr;
-        return;
-	}
+	g_pKTDXApp->GetDevice()->SetFVF( D3DFVF_LINE_MAP_VERTEX );
+	g_pKTDXApp->GetDevice()->SetStreamSource( 0, m_pLineMapVB, 0, sizeof(LINE_MAP_VERTEX) );
 
 	//{{ kimhc // 2010.7.22 // 몬스터가 생성한 라인맵
 	// 몬스터 라인맵은 m_LineMapVB 사이즈에 포함되지 않음으로 DrawPrimitive시에 빼줌
-	if(FAILED(hr = g_pKTDXApp->GetDevice()->DrawPrimitive( D3DPT_LINELIST, 0, (UINT)m_LineList.size() - GetNumofLineMapCreatedByMonster() )))
+	if( !g_pKTDXApp->GetDevice()->DrawPrimitive( D3DPT_LINELIST, 0, (UINT)m_LineList.size() - GetNumofLineMapCreatedByMonster() ) )
 	//}} kimhc // 2010.7.22 // 몬스터가 생성한 라인맵
 	{
 		ErrorLog( KEM_ERROR23 );
@@ -538,13 +521,12 @@ void    CKTDGLineMap::OnFrameRender_Draw()
 
 bool CKTDGLineMap::MakeLineVB()
 {
-	HRESULT				hr;
 	int					vbNum = (int)m_LineList.size() * 2 + (int)m_WallList.size() * 2;
 
-
-	if(FAILED(hr = g_pKTDXApp->GetDevice()->CreateVertexBuffer( vbNum * sizeof(LINE_MAP_VERTEX),
-						D3DUSAGE_WRITEONLY, D3DFVF_LINE_MAP_VERTEX,
-						D3DPOOL_MANAGED, &m_pLineMapVB, NULL) ))
+	SAFE_DELETE( m_pLineMapVB );
+	m_pLineMapVB = g_pKTDXApp->GetDevice()->CreateVertexBuffer( vbNum * sizeof(LINE_MAP_VERTEX),
+						D3DUSAGE_WRITEONLY, D3DFVF_LINE_MAP_VERTEX, D3DPOOL_MANAGED ).release();
+	if( m_pLineMapVB == NULL )
 	{
 		ErrorLog( KEM_ERROR24 );
 		return false;
@@ -1257,8 +1239,10 @@ void CKTDGLineMap::ReBuildLineGroup()
 	if( nNodes <= 0 )
 		return;
 
-    int*  piLineMembers = (int*) _alloca( nNodes * sizeof(int) );
-	bool* bDoneLineData = (bool*) _alloca( nNodes * sizeof(bool) );
+    std::vector<int>  vecLineMembers( nNodes );
+	std::unique_ptr<bool[]> abDoneLineData( new bool[ nNodes ] );
+    int*  piLineMembers = vecLineMembers.data();
+	bool* bDoneLineData = abDoneLineData.get();
     ASSERT( bDoneLineData != NULL );
     int i;
 	for( i=0; i<nNodes; i++ )
@@ -2707,25 +2691,14 @@ bool CKTDGLineMap::GetFixedDistancePositionInAllLine( const D3DXVECTOR3& vDirVec
 	return true;
 }
 
-/*
-	LPD3DXLINE은 내부적으로 D3DPOOL_DEFAULT를 사용하는 것 같다.
-	해상도 변경 또는 D3DDevice 리셋이 발생할 때 Device->Reset()이
-	실패해서 게임이 무한 루프에 빠지는 경우가 발생한다.
-	ResetDevice 및 LostDevice를 정의해야된다.
-*/
+// The line map held an ID3DXLine it never drew with (port: removed); nothing is lost or reset (T38).
 HRESULT CKTDGLineMap::OnResetDevice()
 {
-	D3DXCreateLine( g_pKTDXApp->GetDevice(), &m_pLine );
-	m_pLine->SetWidth( 3.f );
-	m_pLine->SetAntialias( true );
-
 	return S_OK;
 }
 
 HRESULT CKTDGLineMap::OnLostDevice()
 {
-	SAFE_RELEASE( m_pLine );
-
 	return S_OK;
 }
 

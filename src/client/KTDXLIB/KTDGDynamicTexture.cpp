@@ -20,8 +20,8 @@ CKTDGDynamicTexture::~CKTDGDynamicTexture(void)
 {
 	if ( m_pTextureSys != NULL )
 		m_pTextureSys->UnlockRect( 0 );
-	SAFE_RELEASE(m_pTextureSys);
-	SAFE_RELEASE(m_pTextureVid);
+	SAFE_DELETE( m_pTextureSys );
+	SAFE_DELETE( m_pTextureVid );
 }
 
 bool CKTDGDynamicTexture::CreateTexture(DWORD dwWidth, DWORD dwHeight, D3DFORMAT d3dFormat)
@@ -115,7 +115,7 @@ bool CKTDGDynamicTexture::CreateTexture(DWORD dwWidth, DWORD dwHeight, D3DFORMAT
 void CKTDGDynamicTexture::ResetDevice()
 {
 	HRESULT hr;
-	SAFE_RELEASE(m_pTextureVid);
+	SAFE_DELETE( m_pTextureVid );
 	if( FAILED( hr = D3DXCreateTexture( g_pKTDXApp->GetDevice(), m_dwWidth, m_dwHeight, 1, NULL, m_d3dFormat, D3DPOOL_DEFAULT, &m_pTextureVid ) ) )
 	{
 		switch( hr )
@@ -174,7 +174,7 @@ void CKTDGDynamicTexture::ResetDevice()
 
 void CKTDGDynamicTexture::LostDevice()
 {
-	SAFE_RELEASE(m_pTextureVid);
+	SAFE_DELETE( m_pTextureVid );
 }
 
 void CKTDGDynamicTexture::SetTexture( int iStage )

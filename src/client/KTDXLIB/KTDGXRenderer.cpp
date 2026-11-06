@@ -166,13 +166,13 @@ void CKTDGXRenderer::SetColor( const D3DXCOLOR& dxcInColor_ )
 void    CKTDGXRenderer::SetRenderPassFogAndMaxSkinningVertices( bool bInFog_, unsigned uInSkinningVertices_ )
 {
     m_bFog = bInFog_;
-    m_uMaxSkinningVertices = min( uInSkinningVertices_, 4 );
+    m_uMaxSkinningVertices = std::min( uInSkinningVertices_, 4 );
 }//CKTDGXRenderer::SetRenderPassFogAndMaxSkinningVertices()
 
 
 void    CKTDGXRenderer::_CommitChanges()
 {
-    m_uMaxSkinningVertices = min( m_uMaxSkinningVertices, 4 );
+    m_uMaxSkinningVertices = std::min( m_uMaxSkinningVertices, 4 );
 
     int iMaxBones = 0;
     if ( m_eCurrentRenderType >= RT_LIGHT_FLOW_BEGIN && m_eCurrentRenderType <= RT_LIGHT_FLOW_END )
@@ -854,7 +854,7 @@ void CKTDGXRenderer::DrawFrame( CKTDXDeviceXSkinMesh& kInXSkinMesh_, CKTDXDevice
 				pResultTexture2->SetDeviceTexture( 2 );
 			}
 
-            m_uMaxSkinningVertices = max( max( m_uMaxSkinningVertices, pMC->m_dwMaxSkinningVertices ), 1 );
+            m_uMaxSkinningVertices = std::max( std::max( m_uMaxSkinningVertices, pMC->m_dwMaxSkinningVertices ), 1 );
 
 			KTDXPROFILE_END();
 

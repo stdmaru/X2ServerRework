@@ -490,7 +490,7 @@ CKTDGXMeshPlayer::CXMeshInstance* CKTDGXMeshPlayer::GetMeshInstance( CXMeshInsta
     if ( pInstance== NULL || info.m_wStamp != wStamp )
         return NULL;
     if ( bLiveOnly == true && info.m_pInstance->GetState() == IS_DIE )
-        return false;
+        return NULL;
     return  pInstance;
 
 }
@@ -564,7 +564,7 @@ bool CKTDGXMeshPlayer::ProcessTempletBlock(	XMeshTemplet &templet,
 	ASSERT( it == m_TempletMap.end() );
 	if( it != m_TempletMap.end() )
 	{
-		SAFE_DELETE( (XMeshTemplet*)it->second );
+		SAFE_DELETE( it->second );
 	}
 	m_TempletMap[templet.templetName] = &templet;
 
@@ -1278,7 +1278,7 @@ CKTDGXMeshPlayer::CXMeshInstance::CXMeshInstance( CKTDGXMeshPlayer* pMeshPlayer,
 		m_bShowAttackBox	= true;
 		m_pXMeshSphere		= g_pKTDXApp->GetDeviceManager()->OpenXMesh( L"Bounding_Sphere.X" );
 		m_pMatrixSphere		= new CKTDGMatrix( g_pKTDXApp->GetDevice() );
-		m_DrawCount = max( 1, m_DrawCount );
+		m_DrawCount = std::max( 1, m_DrawCount );
 	}
 #endif // SHOW_ATTACK_BOX_DUMMY
 }

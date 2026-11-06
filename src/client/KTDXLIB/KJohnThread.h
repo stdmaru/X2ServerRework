@@ -3,49 +3,21 @@
     @author seojt@kogstudios.com
     @since  2006-1-11, 10:26:49
 
-    @date   jintaeks on 2008-06-13, 10:01
-            - 설명문 추가
+    Port: on std::thread on every platform (the original created a Win32 thread with _beginthreadex). A thread begun
+    suspended waits for ResumeThread() before it runs, as CREATE_SUSPENDED did. EndThread() always waits for the thread
+    to finish: a thread object cannot be dropped while it runs (the original closed the handle after the timeout).
 */
 
 #ifndef _KJOHNTHREAD_H
 #define _KJOHNTHREAD_H
 
-//#include "KJohnGen.h"
 #include "x2/platform/win32.h"
 
-
-/** _beginthreadex() vs. CreateThread()
-
-    There is a hot discussion on one Russian developers forum about correct threads creation.
-    _beginthreadex is more correct way because it initializes CRT for the newly created thread.
-
-    But there is one great "BUT"!!!
-
-    For example we have any callback function which uses CRT (like an exported function from dll).
-    This function could be invoked from any thread including threads, that was created via
-    CreateThread (i.e. CRT was not initialized for this thread). So this call can cause an undefined
-    behaviour! But there is not way to determine CRT initialization status and initialize CRT
-    manually.
-
-    It looks like a potential source of great troubles.
-
-    @see    http://social.msdn.microsoft.com/Forums/en-US/vclanguage/thread/c727ae29-5a7a-42b6-ad0b-f6b21c1180b2/
-    - jintaeks on 2008-11-06, 14:44 */
-#ifndef _BEGINTHREADEX
-typedef unsigned (__stdcall* PTHREAD_START)(void*);
-#   define _BEGINTHREADEX( psa, \
-                           cbStack, \
-                           pfnStartAddr, \
-                           pvParam, \
-                           fdwCreate, \
-                           pdwThreadId) \
-          ((HANDLE)_beginthreadex( (void*) (psa), \
-                                   (unsigned) (cbStack), \
-                                   (PTHREAD_START) (pfnStartAddr), \
-                                   (void*) (pvParam), \
-                                   (unsigned) (fdwCreate), \
-                                   (unsigned*) (pdwThreadId)))
-#endif // _BEGINTHREADEX
+#include <atomic>
+#include <condition_variable>
+#include <future>
+#include <mutex>
+#include <thread>
 
 
 ///-----------------------------------------------------------------------------
@@ -62,91 +34,72 @@ typedef unsigned (__stdcall* PTHREAD_START)(void*);
 class KJohnThread
 {
 public:
-    /** virtual RunThread()를 override해서 사용하지 않는 경우, 사용자가
-        지정해 주는 thread callback함수의 type 정의 */
+    /** The type of the thread callback the user gives when RunThread() is not overridden. */
     typedef DWORD (WINAPI *THREAD_CALLBACK)(LPVOID);
 
-protected:
-    DWORD   m_dwThreadID;   ///< thread ID
-    HANDLE  m_hThread;      ///< thread handle
-
 public:
-    /// constructor.
-    KJohnThread(void)
-    {
-        _Init();
-    }//KJohnThread
+    KJohnThread() = default;
 
-    /// destructor.
-    virtual ~KJohnThread(void)
+    /// Ends the thread safely, so it may be called even when BeginThread() never was.
+    virtual ~KJohnThread()
     {
-        // 안전하게 thread를 종료하므로, BeginThread()가 호출되지 않은 상태에서
-        // 호출되어도 된다.
         EndThread();
     }//~KJohnThread
 
-private:
-    /** KJohnThread를 상속받은 객체가 복사되는 것을 방지한다.
-        - jintaeks on 2008-06-13, 10:00 */
-    KJohnThread(const KJohnThread& rhs_);
-    KJohnThread& operator=(const KJohnThread& rhs_);
-
-private:
-    void _Init()
-    {
-        m_dwThreadID    = 0;
-        m_hThread       = NULL;
-    }//_Init()
-
-public:
-    static DWORD WINAPI ThreadFunc(LPVOID lpParam_)
-    {
-        KJohnThread*    pThread = reinterpret_cast<KJohnThread*>(lpParam_);
-        ASSERT( pThread );
-        return pThread->RunThread();
-    }//ThreadFunc()
+    /** Objects derived from KJohnThread must not be copied. - jintaeks on 2008-06-13, 10:00 */
+    KJohnThread(const KJohnThread&) = delete;
+    KJohnThread& operator=(const KJohnThread&) = delete;
 
 public:
     /// begin thread.
     virtual bool BeginThread(THREAD_CALLBACK pThreadCallback_=NULL, LPVOID pParam_=NULL, bool bStartSuspended = false )
     {
-        ASSERT( m_hThread == NULL );
+        ASSERT( !m_thread.joinable() );
+        if ( m_thread.joinable() )
+            return false;
 
-        if ( pThreadCallback_ )
+        m_bResumed = !bStartSuspended;
+        m_bFinished = false;
+        std::promise<void> started;
+        std::future<void> startedFuture = started.get_future();
+        m_thread = std::thread( [this, pThreadCallback_, pParam_, &started]()
         {
-            m_hThread = _BEGINTHREADEX(
-                NULL,                   // default security attributes
-                0,                      // use default stack size
-                pThreadCallback_,        // thread function
-                pParam_,                   // argument to thread function
-                ( bStartSuspended == true ) ? CREATE_SUSPENDED : 0,                      // use default creation flags
-                &m_dwThreadID );        // returns the thread identifier
-        }
-        else
-        {
-            m_hThread = _BEGINTHREADEX(
-                NULL,                       // default security attributes
-                0,                          // use default stack size
-                KJohnThread::ThreadFunc,    // thread function
-                this,                       // argument to thread function
-                ( bStartSuspended == true ) ? CREATE_SUSPENDED : 0,                          // use default creation flags
-                &m_dwThreadID );            // returns the thread identifier
-        }//if.. else..
-
-        return m_hThread == NULL ? false : true;
+            m_dwThreadID = ::GetCurrentThreadId();
+            started.set_value();
+            {
+                std::unique_lock<std::mutex> lock( m_mutex );
+                m_resume.wait( lock, [this]() { return m_bResumed; } );
+            }
+            if ( pThreadCallback_ != NULL )
+                pThreadCallback_( pParam_ );
+            else
+                RunThread();
+            m_bFinished = true;
+        } );
+        // GetThreadID() is right as soon as BeginThread() returns, as with _beginthreadex.
+        startedFuture.wait();
+        return true;
     }//BeginThread()
 
-    /// wait thread ending.
-    /// thread를 종료시키고, thread handle을 clear한다.
-    /// @param  dwTimeoutMilliseconds_: 종료 대기 시간 millisecond 단위로 지정한다.
-    virtual void EndThread(DWORD dwTimeoutMilliseconds_ = INFINITE)
+    /// Lets a thread begun suspended run (no effect otherwise).
+    void ResumeThread()
     {
-        if ( m_hThread != NULL )
         {
-            ::WaitForSingleObject( m_hThread, dwTimeoutMilliseconds_ );
-            ::CloseHandle( m_hThread );
-            m_hThread       = NULL;
-            m_dwThreadID    = 0;
+            std::lock_guard<std::mutex> lock( m_mutex );
+            m_bResumed = true;
+        }
+        m_resume.notify_all();
+    }//ResumeThread()
+
+    /// Waits for the thread to end and clears it. A thread still suspended is resumed first, so it can end.
+    /// @param  dwTimeoutMilliseconds_: not supported (see the file comment); the wait has no limit.
+    virtual void EndThread(DWORD /*dwTimeoutMilliseconds_*/ = INFINITE)
+    {
+        if ( m_thread.joinable() )
+        {
+            ResumeThread();
+            m_thread.join();
+            m_dwThreadID = 0;
         }//if
     }//EndThread()
 
@@ -154,59 +107,22 @@ public:
     virtual DWORD RunThread() = 0;
 
 public:
-    /// get thread ID.
+    /// get thread ID (0 without a thread).
     DWORD GetThreadID() const { return m_dwThreadID; }
 
-    /// get thread handle.
-    HANDLE GetThreadHandle() const { return m_hThread; }
+    /// Whether a thread was begun and not ended yet (the original compared the thread handle with NULL).
+    bool HasThread() const { return m_thread.joinable(); }
+
+    /// Whether the thread's function has returned.
+    bool IsThreadFinished() const { return m_bFinished; }
+
+private:
+    std::thread             m_thread;
+    std::mutex              m_mutex;
+    std::condition_variable m_resume;
+    bool                    m_bResumed = false;
+    std::atomic<DWORD>      m_dwThreadID{ 0 };
+    std::atomic<bool>       m_bFinished{ false };
 };//class KJohnThread
 
 #endif // _KJOHNTHREAD_H
-
-
-/** @example    KJohnThread
-    @code
-
-    #include "KJohnGen.h"
-    #include <iostream>
-    #include <conio.h>
-    #include "KJohnThread.h"
-
-    using namespace std;
-
-    class TThread : public KJohnThread
-    {
-    public:
-        virtual bool BeginThread()
-        {
-            return KJohnThread::BeginThread();
-        }//BeginThread()
-
-        virtual void EndThread(DWORD dwTimeoutMilliseconds_ = INFINITE)
-        {
-            KJohnThread::EndThread();
-        }//EndThread()
-
-        virtual DWORD RunThread()
-        {
-            char szMsg[80];
-
-            StringCchPrintfA( szMsg, ARRAY_SIZE( szMsg ), "thread ID = %d", m_dwThreadID );
-            MessageBox( NULL, szMsg, "ThreadFunc", MB_OK );
-
-            return 0;
-        }//RunThread()
-    };//class TThread : public KJohnThread
-
-    void main()
-    {
-        INIT_CRTDEBUG();
-
-        TThread     thread;
-
-        thread.BeginThread();
-        thread.EndThread();
-    }//main()
-
-    @endcode
-*/

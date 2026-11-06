@@ -6,10 +6,10 @@ inline int RectHeight( RECT &rc ) { return ( (rc).bottom - (rc).top ); }
 inline RECT AddRect( RECT &rc1, RECT &rc2 )
 {
 	RECT rc;
-	rc.left = min(rc1.left, rc2.left);
-	rc.right = max(rc1.right, rc2.right);
-	rc.top = min(rc1.top, rc2.top);
-	rc.bottom = max(rc1.bottom, rc2.bottom);
+	rc.left = std::min(rc1.left, rc2.left);
+	rc.right = std::max(rc1.right, rc2.right);
+	rc.top = std::min(rc1.top, rc2.top);
+	rc.bottom = std::max(rc1.bottom, rc2.bottom);
 
 	return rc;
 }

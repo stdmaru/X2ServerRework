@@ -55,7 +55,7 @@ public:
 	private:
 		LPDIRECT3DDEVICE9	m_pd3dDevice;
 		LPDIRECT3DTEXTURE9	m_pTexture;
-		LPDIRECT3DSURFACE9	m_pSurface, m_pOldSurface;
+		LPDIRECT3DTEXTURE9	m_pOldTarget;	// the target before BeginRenderTarget (not owned; null: the back buffer)
 
 		DWORD				m_dwWidth, m_dwHeight;
 	};

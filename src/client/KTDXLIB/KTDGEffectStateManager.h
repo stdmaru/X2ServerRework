@@ -111,7 +111,6 @@ private:
 
     int                                         m_iStateManagerStackTop;
 
-    ULONG   m_nRefCount;
 
 public:
 	__forceinline void PostCommitChanges();

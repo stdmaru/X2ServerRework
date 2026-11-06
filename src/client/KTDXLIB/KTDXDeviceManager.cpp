@@ -1,5 +1,8 @@
 #include "stdafx.h"
 #include "./KTDXDeviceManager.h"
+#include <filesystem>
+#include <system_error>
+#include <vector>
 
 
 #define	KTDXDEVICEMANAGER_GC_INTERVAL_IN_MILISECS	1000
@@ -73,7 +76,7 @@ CKTDXDeviceManager::CKTDXDeviceManager( IDirect3DDevice9* pd3dDevice )
     _InitializeThreadRelatedObject();
 //#ifdef BACKGROUND_LOADING_TEST // 2008-10-15
     // 리소스 로딩 쓰레드를 시작한다.
-    __super::BeginThread( NULL, NULL, true );
+    KJohnThread::BeginThread( NULL, NULL, true );
     //SuspendThread();
     //SuspendThread();
 //#endif // BACKGROUND_LOADING_TEST // 2008-10-15
@@ -90,13 +93,10 @@ CKTDXDeviceManager::~CKTDXDeviceManager(void)
 
 	//{{ seojt // 2008-10-14, 16:20
     // 리소스 로딩 쓰레드를 종료시킨다.
-    if ( __super::GetThreadHandle() != NULL )
-    {
-        ::ResumeThread( __super::GetThreadHandle() );
-    }//if
+    KJohnThread::ResumeThread();
     if ( m_ahThreadEvents[ TET_KILL_THREAD ] != NULL )
         ::SetEvent( m_ahThreadEvents[ TET_KILL_THREAD ] );
-    __super::EndThread();
+    KJohnThread::EndThread();
     _FinalizeThreadRelatedObject(); // thread 내부에서 사용하는 object가 있으므로, thread 종료후에 호출해야 한다.
 	//}} seojt // 2008-10-14, 16:20
 
@@ -189,8 +189,8 @@ HRESULT CKTDXDeviceManager::OnLostDevice()
 
 bool    CKTDXDeviceManager::BeginFullSync()
 {
-    LONG    lFullSync = ::InterlockedCompareExchange( &m_lFullSyncStatus, 1, 0 );
-    if ( lFullSync != 0 )
+    LONG    lFullSync = 0;
+    if ( !m_lFullSyncStatus.compare_exchange_strong( lFullSync, 1 ) )
         return false;
     if ( m_ahThreadEvents[ TET_PEND_DEVICE ] != NULL )
     {
@@ -207,8 +207,8 @@ bool    CKTDXDeviceManager::BeginFullSync()
 
 bool    CKTDXDeviceManager::EndFullSync()
 {
-    LONG    lFullSync = ::InterlockedCompareExchange( &m_lFullSyncStatus, 0, 2 );
-    if ( lFullSync != 2 )
+    LONG    lFullSync = 2;
+    if ( !m_lFullSyncStatus.compare_exchange_strong( lFullSync, 0 ) )
         return false;
     if ( m_hFullSyncEventForDeviceThread != NULL )
     {
@@ -1058,6 +1058,25 @@ void CKTDXDeviceManager::StopSound( const WCHAR* pFileName )
 
 
 
+// The names of the files (not folders) in the folder of wstrPath_, in upper case. Empty when it cannot be read.
+static std::vector<wstring> ListDeviceDirectory( const wstring& wstrPath_ )
+{
+	std::vector<wstring> names;
+	std::error_code error;
+	const std::filesystem::path folder = std::filesystem::path( wstrPath_ ).parent_path();
+	for ( std::filesystem::directory_iterator it( folder.empty() ? std::filesystem::path( L"." ) : folder, error ), end;
+		!error && it != end; it.increment( error ) )
+	{
+		if ( it->is_directory( error ) )
+			continue;
+		wstring name = it->path().filename().wstring();
+		MakeUpperCase( name );
+		names.push_back( name );
+	}
+	return names;
+}
+
+
 void CKTDXDeviceManager::CloseDeviceDirectory( wstring wstrPath )
 {
     if ( wstrPath.empty() )
@@ -1065,85 +1084,17 @@ void CKTDXDeviceManager::CloseDeviceDirectory( wstring wstrPath )
 
 	CSLock locker( m_DeviceLock );
 
-	// file path와 name을 분리
-	WCHAR drive[_MAX_DRIVE];
-	WCHAR dir[_MAX_DIR];
-	WCHAR fname[_MAX_FNAME];
-	WCHAR ext[_MAX_EXT];
-
-#ifdef	CONVERSION_VS
-	_wsplitpath_s( wstrPath.c_str(), drive, _MAX_DRIVE, dir, _MAX_DIR, fname, _MAX_FNAME, ext, _MAX_EXT );
-#else
-	_wsplitpath( wstrPath.c_str(), drive, dir, fname, ext );
-#endif // CONVERSION_VS
-
-	WCHAR wszCurrDir[256] = L"";
-	string strCurrDir;
-
-#ifdef	CONVERSION_VS
-	wcscat_s( wszCurrDir, _countof(wszCurrDir), drive );
-	wcscat_s( wszCurrDir, _countof(wszCurrDir), dir );
-#else
-	wcscat( wszCurrDir, drive );
-	wcscat( wszCurrDir, dir );
-#endif // CONVERSION_VS
-
-	ConvertWCHARToChar( strCurrDir, wszCurrDir );
-	//g_pKTDXApp->GetDeviceManager()->GetMassFileManager()->AddDataDirectory( strCurrDir );
-
-#ifdef	CONVERSION_VS
-	wcscat_s( wszCurrDir, _countof(wszCurrDir), L"*.*" );
-#else
-	wcscat( wszCurrDir, L"*.*" );
-#endif // CONVERSION_VS
-
-	ConvertWCHARToChar( strCurrDir, wszCurrDir );
-
-	HANDLE				hSearch;
-	WIN32_FIND_DATAA	fd;
-
-	hSearch = FindFirstFileA( strCurrDir.c_str(), &fd);
-
-	if(hSearch == INVALID_HANDLE_VALUE)
-		return;
-
-	wstring deviceID;
-	do
+	// The devices named after the files in wstrPath's folder (port: std::filesystem instead of FindFirstFile).
+	for ( const wstring& deviceID : ListDeviceDirectory( wstrPath ) )
 	{
-		if( 0 != strcmp(fd.cFileName, ".") && 0 != strcmp(fd.cFileName, "..") )
-		{
-			if( fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY )
-			{
-				;
-			}
-			else
-			{
-				ConvertCharToWCHAR( deviceID, fd.cFileName );
-				MakeUpperCase( deviceID );
-
-				int iResult;
-				if( (iResult = deviceID.find( L".X" )) > 0 )
-				{
-					CloseDevice(deviceID);
-					//m_OpenedDeviceMap.erase(deviceID);
-				}
-				else if( (iResult = deviceID.find( L".TGA" )) > 0 || (iResult = deviceID.find( L".DDS" )) > 0 )
-				{
-					CloseDevice(deviceID);
-					//m_OpenedDeviceMap.erase(deviceID);
-				}
-				else if( (iResult = deviceID.find( L".WAV" )) > 0 )
-				{
-					CloseDevice(deviceID);
-					//m_OpenedDeviceMap.erase(deviceID);
-				}
-			}
-		}
-	} while( FindNextFileA(hSearch, &fd) );
-
-	FindClose(hSearch);
-
-
+		if( deviceID.find( L".X" ) != wstring::npos && deviceID.find( L".X" ) > 0 )
+			CloseDevice(deviceID);
+		else if( ( deviceID.find( L".TGA" ) != wstring::npos && deviceID.find( L".TGA" ) > 0 )
+			|| ( deviceID.find( L".DDS" ) != wstring::npos && deviceID.find( L".DDS" ) > 0 ) )
+			CloseDevice(deviceID);
+		else if( deviceID.find( L".WAV" ) != wstring::npos && deviceID.find( L".WAV" ) > 0 )
+			CloseDevice(deviceID);
+	}
 }
 
 
@@ -1154,93 +1105,29 @@ void CKTDXDeviceManager::OpenDeviceDirectory( wstring wstrPath )
 
 	CSLock locker( m_DeviceLock );
 
-	// file path와 name을 분리
-	WCHAR drive[_MAX_DRIVE];
-	WCHAR dir[_MAX_DIR];
-	WCHAR fname[_MAX_FNAME];
-	WCHAR ext[_MAX_EXT];
-
-#ifdef	CONVERSION_VS
-	_wsplitpath_s( wstrPath.c_str(), drive, _MAX_DRIVE, dir, _MAX_DIR, fname, _MAX_FNAME, ext, _MAX_EXT );
-#else
-	_wsplitpath( wstrPath.c_str(), drive, dir, fname, ext );
-#endif // CONVERSION_VS
-
-	WCHAR wszCurrDir[256] = L"";
-	string strCurrDir;
-#ifdef	CONVERSION_VS
-	wcscat_s( wszCurrDir, _countof(wszCurrDir), drive );
-	wcscat_s( wszCurrDir, _countof(wszCurrDir), dir );
-#else
-	wcscat( wszCurrDir, drive );
-	wcscat( wszCurrDir, dir );
-#endif // CONVERSION_VS
-
-	ConvertWCHARToChar( strCurrDir, wszCurrDir );
-	//g_pKTDXApp->GetDeviceManager()->GetMassFileManager()->AddDataDirectory( strCurrDir );
-#ifdef	CONVERSION_VS
-	wcscat_s( wszCurrDir, _countof(wszCurrDir), L"*.*" );
-#else
-	wcscat( wszCurrDir, L"*.*" );
-#endif // CONVERSION_VS
-
-	ConvertWCHARToChar( strCurrDir, wszCurrDir );
-
-	HANDLE				hSearch;
-	WIN32_FIND_DATAA	fd;
-
-	hSearch = FindFirstFileA( strCurrDir.c_str(), &fd);
-
-	if(hSearch == INVALID_HANDLE_VALUE)
-		return;
-
-	wstring deviceID;
-	do
+	// The files in wstrPath's folder, opened as devices (port: std::filesystem instead of FindFirstFile).
+	for ( const wstring& deviceID : ListDeviceDirectory( wstrPath ) )
 	{
-		if( 0 != strcmp(fd.cFileName, ".") && 0 != strcmp(fd.cFileName, "..") )
+		if( deviceID.find( L".X" ) != wstring::npos && deviceID.find( L".X" ) > 0 )
 		{
-			if( fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY )
+            // qfff - jintaeks on 2008-10-08, 14:28
+			CKTDXDeviceXSkinMesh* pXSkinMesh = OpenXSkinMesh( deviceID );
+			if( pXSkinMesh != NULL && true == pXSkinMesh->GetIsOnlyModelData() )
 			{
-				;
-			}
-			else
-			{
-				ConvertCharToWCHAR( deviceID, fd.cFileName );
-				MakeUpperCase( deviceID );
-
-				int iResult;
-				if( (iResult = deviceID.find( L".X" )) > 0 )
-				{
-                    // qfff - jintaeks on 2008-10-08, 14:28
-					CKTDXDeviceXSkinMesh* pXSkinMesh = OpenXSkinMesh( deviceID );
-					if( true == pXSkinMesh->GetIsOnlyModelData() )
-					{
-						SAFE_CLOSE( pXSkinMesh );
-						CKTDXDeviceXMesh* pXMesh = OpenXMesh( deviceID );
-						//m_OpenedDeviceMap.insert( std::make_pair(deviceID, pXMesh) );
-					}
-					else
-					{
-						//m_OpenedDeviceMap.insert( std::make_pair(deviceID, pXSkinMesh) );
-					}
-				}
-				else if( (iResult = deviceID.find(L".TGA")) > 0 || (iResult = deviceID.find(L".DDS")) > 0 )
-				{
-					CKTDXDeviceTexture* pTexture = OpenTexture( deviceID );
-					//m_OpenedDeviceMap.insert( std::make_pair(deviceID, pTexture) );
-				}
-				else if( (iResult = deviceID.find( L".WAV" )) > 0 )
-				{
-					CKTDXDeviceSound* pSound = OpenSound( deviceID );
-					//m_OpenedDeviceMap.insert( std::make_pair(deviceID, pSound) );
-				}
+				SAFE_CLOSE( pXSkinMesh );
+				OpenXMesh( deviceID );
 			}
 		}
-	} while( FindNextFileA(hSearch, &fd) );
-
-	FindClose(hSearch);
-
-
+		else if( ( deviceID.find( L".TGA" ) != wstring::npos && deviceID.find( L".TGA" ) > 0 )
+			|| ( deviceID.find( L".DDS" ) != wstring::npos && deviceID.find( L".DDS" ) > 0 ) )
+		{
+			OpenTexture( deviceID );
+		}
+		else if( deviceID.find( L".WAV" ) != wstring::npos && deviceID.find( L".WAV" ) > 0 )
+		{
+			OpenSound( deviceID );
+		}
+	}
 }
 
 
@@ -1269,8 +1156,8 @@ void CKTDXDeviceManager::GetDeviceNameAndRefCount( std::vector< std::pair< wstri
 
 void        CKTDXDeviceManager::_CheckFullSyncInDeviceThread()
 {
-	LONG lFullSync = ::InterlockedCompareExchange( &m_lFullSyncStatus, 2L, 1L );
-	if ( lFullSync == 1L )
+	LONG lFullSync = 1L;
+	if ( m_lFullSyncStatus.compare_exchange_strong( lFullSync, 2L ) )
 	{
 		if ( m_hFullSyncEventForMainThread != NULL )
 		{
@@ -1312,7 +1199,6 @@ void        CKTDXDeviceManager::_CheckFullSyncInDeviceThread()
         switch( dwRet )
         {
         case WAIT_FAILED:
-        case WAIT_IO_COMPLETION:
             break;
         case WAIT_TIMEOUT:
             break;
@@ -1399,12 +1285,7 @@ void CKTDXDeviceManager::_FinalizeThreadRelatedObject()
 
 void CKTDXDeviceManager::ResumeThread()
 {
-    if ( __super::GetThreadHandle() )
-    {
-        //::SetEvent( m_hThreadEvent );
-        //m_bThreadSuspended = false;
-        ::ResumeThread( __super::GetThreadHandle() );
-    }//if
+    KJohnThread::ResumeThread();
 }//CKTDXDeviceManager::ResumeThread()
 
 
