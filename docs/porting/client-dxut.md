@@ -33,8 +33,8 @@ The `WM_*`/`VK_*` constants and `WPARAM`/`LPARAM` come from `x2/platform/window_
   SDL text input; it binds the translator's IME context for the IME edit box's IMM32 calls, and `DXUTInit` sets
   `SDL_HINT_IME_IMPLEMENTED_UI` so the client draws the composition and the candidates. Full screen is borderless desktop full screen.
 - Main loop: events → messages → frame (`CDXUTTimer` → `FrameMove` → `FrameRender`); while minimized it waits for events (100 ms).
-  For now the frame only clears the swapchain texture to black through [`x2::render`](render.md) (one render pass per frame,
-  2026-11-06); the callbacks receive a null `IDirect3DDevice9*`.
+  The frame is drawn by the callbacks through the D3D9 device; a frame they do not draw is presented cleared to black
+  (2026-11-06); after `FrameRender` it presents through KTDXLIB's [D3D9 device](client-d3d9.md), which the callbacks receive (`DXUTGetD3DDevice()`; 2026-11-06, T38).
 - **Renderer**: `DXUTCreateWindow` creates the `x2::render` device with the window (`DXUTGetRenderDevice`), claims the window
   and asks for vsync (`D3DPRESENT_INTERVAL_DEFAULT`); the device is destroyed with the window (`WM_CLOSE`, `DXUTShutdown`), never
   by DXUT's static state at `exit()`: there the Vulkan validation layer had already torn itself down and aborted in

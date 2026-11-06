@@ -65,6 +65,7 @@ Only what SDL_GPU does, nothing added in advance for a future backend (T36 (1)):
 
 ## Pending
 
-- The D3D9 translation in `KTDXLIB` above the boundary, the effects (T37), D3DX replacements and the ImGui renderer on
-  `x2::render`: see the [Roadmap](../project/roadmap.md#phase-4--client-graphics).
-- Shaders: compiled by SDL_shadercross (T19, T37) when the first ones exist; `ShaderDesc` already takes the reflection data.
+- The effects (T37), D3DX replacements and the ImGui renderer on `x2::render`: see the
+  [Roadmap](../project/roadmap.md#phase-4--client-graphics). The D3D9 translation above the boundary is the
+  [D3D9 device](client-d3d9.md) (2026-11-06).
+- Shaders are compiled offline by SDL_shadercross and committed ([Shaders](../tools/shaders.md), T39).

@@ -3,6 +3,8 @@
 #include "SdlInput.h"
 #include "SdlMessages.h"
 
+#include "Device.h"
+
 #include "x2/app/app.h"
 #include "x2/render/render.h"
 #include "x2/platform/unicode.h"
@@ -37,6 +39,7 @@ struct DxutState {
     // Lives with the window: created by DXUTCreateWindow, destroyed by ReleaseWindow. Never left to the static
     // destructor, which runs in exit() after the GPU driver and its layers have torn themselves down.
     std::unique_ptr<x2::render::Device> device;
+    std::unique_ptr<x2::d3d9::Device> d3dDevice;    // KTDXLIB's D3D9 device on `device` (T38)
     std::unique_ptr<x2::app::Window> window;
     bool windowClaimed = false;
     HWND hwnd = nullptr;
@@ -118,39 +121,22 @@ void Render3DEnvironment(DxutState& state)
     UpdateFrameStats(state);
 
     if (state.frameMove) {
-        state.frameMove(nullptr, state.time, state.elapsedTime, state.frameMoveContext);
+        state.frameMove(state.d3dDevice.get(), state.time, state.elapsedTime, state.frameMoveContext);
     }
     if (state.quit || !state.window) {  // DXUTShutdown from inside the callback
         return;
     }
     if (state.frameRender) {
-        state.frameRender(nullptr, state.time, state.elapsedTime, state.frameRenderContext);
+        state.frameRender(state.d3dDevice.get(), state.time, state.elapsedTime, state.frameRenderContext);
     }
     if (state.quit || !state.window) {
         return;
     }
-
-    x2::render::CommandBuffer* commands = state.device->AcquireCommandBuffer();
-    x2::render::SwapchainTexture swapchain;
-    if (!commands || !commands->WaitAndAcquireSwapchainTexture(state.window->Handle(), swapchain)) {
-        if (commands) {
-            commands->Cancel();
-        }
-        SDL_Log("DXUT: the GPU device failed: %s", state.device->LastError().c_str());
+    // DXUT presents after the frame callback (its BeginScene/EndScene are the callback's own).
+    if (!state.d3dDevice->Present()) {
+        SDL_Log("DXUT: Present failed: %s", state.d3dDevice->LastError().c_str());
         state.exitCode = 1;
         state.quit = true;
-        return;
-    }
-    if (swapchain.texture) {
-        const x2::render::ColorTargetInfo target{.texture = swapchain.texture,
-                                                 .clearColor = {0.0f, 0.0f, 0.0f, 1.0f},
-                                                 .loadOp = x2::render::LoadOp::Clear};
-        if (x2::render::RenderPass* pass = commands->BeginRenderPass({&target, 1}, nullptr)) {
-            pass->End();
-        }
-    }
-    if (!commands->Submit()) {
-        SDL_Log("DXUT: submit failed: %s", state.device->LastError().c_str());
     }
 }
 
@@ -170,12 +156,14 @@ void ReleaseWindow(DxutState& state)
 {
     if (state.window) {
         if (state.windowClaimed) {
+            state.d3dDevice.reset();
             state.device->WaitIdle();
             state.device->ReleaseWindow(state.window->Handle());
             state.windowClaimed = false;
         }
         SDL_StopTextInput(state.window->Handle());
     }
+    state.d3dDevice.reset();
     state.device.reset();
     if (x2::dxut::BoundIme() == &state.translator.Ime()) {
         x2::dxut::BindIme(nullptr);
@@ -276,6 +264,13 @@ HRESULT DXUTCreateWindow(const WCHAR* strWindowTitle, HINSTANCE /*hInstance*/, H
         return E_FAIL;
     }
     state.windowClaimed = true;
+    state.d3dDevice = std::make_unique<x2::d3d9::Device>(*state.device, window);
+    if (!state.d3dDevice->Ok()) {
+        SDL_Log("DXUT: %s", state.d3dDevice->LastError().c_str());
+        ReleaseWindow(state);
+        state.exitCode = 1;
+        return E_FAIL;
+    }
     if (x != CW_USEDEFAULT && y != CW_USEDEFAULT) {
         SDL_SetWindowPosition(window, x, y);
     }
@@ -470,6 +465,11 @@ bool DXUTIsMouseButtonDown(BYTE vButton)
 x2::render::Device* DXUTGetRenderDevice()
 {
     return State().device.get();
+}
+
+IDirect3DDevice9* DXUTGetD3DDevice()
+{
+    return State().d3dDevice.get();
 }
 
 SDL_Window* DXUTGetSDLWindow()

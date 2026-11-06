@@ -144,10 +144,16 @@ namespace {
 int g_frames = 0;
 std::vector<std::string> g_commands;  // what the null device recorded, before DXUTShutdown destroys it
 size_t g_liveResources = 0;
+size_t g_liveAfterFirstFrame = 0;
+bool g_gotDevice = true;
 
-void CALLBACK CountFrames(IDirect3DDevice9*, double, float, void*)
+void CALLBACK CountFrames(IDirect3DDevice9* device, double, float, void*)
 {
-    if (++g_frames == 3) {  // after two presented frames
+    g_gotDevice = g_gotDevice && device == DXUTGetD3DDevice() && device != nullptr;
+    if (++g_frames == 2) {  // the D3D9 device's own resources and the depth buffer exist
+        g_liveAfterFirstFrame = x2::render::null::LiveResourceCount(*DXUTGetRenderDevice());
+    }
+    if (g_frames == 3) {  // after two presented frames
         g_commands = x2::render::null::Commands(*DXUTGetRenderDevice());
         g_liveResources = x2::render::null::LiveResourceCount(*DXUTGetRenderDevice());
         DXUTShutdown(0);
@@ -187,5 +193,6 @@ TEST_CASE("the null renderer clears every frame to black")
     }
     CHECK(clears == 2);
     CHECK(submits == 2);
-    CHECK(g_liveResources == 0);
+    CHECK(g_gotDevice);
+    CHECK(g_liveResources == g_liveAfterFirstFrame);  // nothing created per frame
 }

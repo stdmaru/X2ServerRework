@@ -3,8 +3,8 @@
 // Replacement for the DXUT framework the original client was built on (KTDXLIB/DXUT, not imported): the window, the
 // message pump and the frame loop, now on SDL3 through x2::app (decision T32). Same names and callback signatures as
 // DXUT's, so X2.cpp and KTDXLIB call it unchanged; only the subset the client uses, grown as layers are compiled.
-// Device functions (DXUTCreateDevice, DXUTGetD3DDevice, DXUTGetBackBufferSurfaceDesc, device settings, lost/reset)
-// arrive with the graphics port (Phase 4); until then the callbacks receive a null device.
+// The device is KTDXLIB's D3D9 device on x2::render (decision T38), created with the window; the callbacks receive it.
+// DXUTCreateDevice, DXUTGetBackBufferSurfaceDesc, device settings and lost/reset arrive when the engine needs them.
 // See docs/porting/client-dxut.md.
 
 #include "x2/platform/win32.h"
@@ -13,7 +13,7 @@
 
 #include <cstdint>
 
-struct IDirect3DDevice9;  // d3d9.h on Windows; never defined elsewhere (the device pointer is null for now)
+#include "Device.h"   // KTDXLIB/D3D9: IDirect3DDevice9 is x2::d3d9::Device
 
 // Callbacks (DXUT.h)
 typedef void    (CALLBACK *LPDXUTCALLBACKFRAMEMOVE)(IDirect3DDevice9* pd3dDevice, double fTime, float fElapsedTime, void* pUserContext);
@@ -65,6 +65,8 @@ namespace x2::render {
 class Device;
 }
 x2::render::Device* DXUTGetRenderDevice();
+// KTDXLIB's D3D9 device (null without a window).
+IDirect3DDevice9* DXUTGetD3DDevice();
 namespace x2::dxut {
 class InputState;
 }
