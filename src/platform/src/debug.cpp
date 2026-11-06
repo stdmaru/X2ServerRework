@@ -1,6 +1,7 @@
 #include "x2/platform/debug.h"
 #include "x2/platform/unicode.h"
 
+#include <cstdio>
 #include <mutex>
 #include <string>
 #include <unordered_map>
@@ -19,3 +20,19 @@ const wchar_t* WidenStatic(const char* name)
 }
 
 } // namespace x2::platform
+
+#if !defined(_WIN32)
+void OutputDebugStringW(const wchar_t* text)
+{
+    if (text != nullptr) {
+        std::fputs(x2::platform::WideToUtf8(text).c_str(), stderr);
+    }
+}
+
+void OutputDebugStringA(const char* text)
+{
+    if (text != nullptr) {
+        std::fputs(text, stderr);
+    }
+}
+#endif

@@ -90,6 +90,7 @@ int _wmkdir(const wchar_t* path);
 // Code pages: narrow strings are UTF-8 on every platform, so CP_ACP behaves as CP_UTF8 (see KncUtil.h).
 #define CP_ACP  0
 #define CP_UTF8 65001
+#define MB_PRECOMPOSED 0x00000001   // accepted and ignored
 // Win32 semantics: cchSrc/cbSrc == -1 means NUL-terminated (the NUL is converted and counted);
 // a zero destination size returns the required size.
 int WideCharToMultiByte(UINT codePage, DWORD flags, const wchar_t* src, int cchSrc, char* dst, int cbDst,
