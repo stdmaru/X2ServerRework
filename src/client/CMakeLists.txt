@@ -50,6 +50,13 @@ add_library(x2::client_massfile ALIAS x2_client_massfile)
 target_include_directories(x2_client_massfile PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/KTDXLIB)
 target_link_libraries(x2_client_massfile PUBLIC x2::platform PRIVATE x2::kom x2::kncsdk)
 
+# The client's MPEG-1 movies on pl_mpeg, replacing BandiVideo (docs/porting/client-movie.md). KTDXLIB's CMovieData plays
+# them; new code with no equivalent file in the original.
+add_library(x2_client_movie STATIC Movie/MoviePlayer.cpp)
+add_library(x2::client_movie ALIAS x2_client_movie)
+target_include_directories(x2_client_movie PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Movie)
+target_link_libraries(x2_client_movie PUBLIC x2::options PRIVATE x2::pl_mpeg)
+
 # X2ServerProtocol: the client's connections to the servers (docs/porting/client-serverprotocol.md). The event/actor
 # model and the TCP layer are the servers' x2::common_net (decision T34); only the client's proxies and the
 # CX2ServerProtocol facade are here.
