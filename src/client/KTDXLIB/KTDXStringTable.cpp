@@ -34,7 +34,7 @@ std::wstring CKTDXStringTable::GetReplacedString( int iID, char* szParamTypeList
 
     std::wstring wstrReplacedString;
 	if(m_bEnableDebugInfo)
-		wstrReplacedString = boost::str( boost::wformat( L"[S%1%]%2%" ) % iID % m_vecGeneralStringTable[iID] );
+		wstrReplacedString = x2::str( x2::wformat( L"[S%1%]%2%" ) % iID % m_vecGeneralStringTable[iID] );
 	else
 		wstrReplacedString = m_vecGeneralStringTable[iID];
 

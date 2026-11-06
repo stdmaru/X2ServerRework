@@ -128,13 +128,13 @@ CKTDXDeviceXSkinMesh::XSkinMeshProxy::~XSkinMeshProxy()
 
 #ifndef _KSMTOOL
 
-	BOOST_TEST_FOREACH( CKTDXCollision::CollisionData*, pCollision, m_CollisionDataList )
+	for( CKTDXCollision::CollisionData* pCollision : m_CollisionDataList )
     {
 		SAFE_DELETE( pCollision );
     }//
 	m_CollisionDataList.clear();
 
-    BOOST_TEST_FOREACH( CKTDXCollision::CollisionData*, pAttack, m_AttackDataList )
+    for( CKTDXCollision::CollisionData* pAttack : m_AttackDataList )
     {
         SAFE_DELETE( pAttack );
     }//
@@ -362,13 +362,13 @@ HRESULT CKTDXDeviceXSkinMesh::_UnLoad()
 
 #ifndef _KSMTOOL
 
-    BOOST_TEST_FOREACH( CKTDXCollision::CollisionData*, pCollision, m_CollisionDataList )
+    for( CKTDXCollision::CollisionData* pCollision : m_CollisionDataList )
     {
 		SAFE_DELETE( pCollision );
     }//
 	m_CollisionDataList.clear();
 
-    BOOST_TEST_FOREACH( CKTDXCollision::CollisionData*, pAttack, m_AttackDataList )
+    for( CKTDXCollision::CollisionData* pAttack : m_AttackDataList )
     {
         SAFE_DELETE( pAttack );
     }//

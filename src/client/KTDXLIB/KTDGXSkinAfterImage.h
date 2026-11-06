@@ -60,7 +60,7 @@ class CKTDGXSkinAfterImage : public CKTDGObject
 
 		void SetRenderParam( CKTDGXRenderer::RenderParam& renderParam )
 		{
-			BOOST_TEST_FOREACH( AfterImageData&, afterImageData, m_AfterImageList )
+			for( AfterImageData& afterImageData : m_AfterImageList )
 			{
 				CKTDGXRenderer::RenderParam* pRenderParam = afterImageData.pAnim->GetRenderParam();
 				*pRenderParam = renderParam;

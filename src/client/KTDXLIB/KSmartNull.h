@@ -369,11 +369,11 @@ namespace   kog
 {
     _KSMARTNULL_NULLIFY_ONE_PARAM( std::auto_ptr, class, Out_.reset() )
 
-    _KSMARTNULL_NULLIFY_ONE_PARAM( boost::scoped_ptr, class, Out_.reset() )
+    _KSMARTNULL_NULLIFY_ONE_PARAM( std::unique_ptr, class, Out_.reset() )
     _KSMARTNULL_NULLIFY_ONE_PARAM( boost::scoped_array, class, Out_.reset() )
-    _KSMARTNULL_NULLIFY_ONE_PARAM( boost::shared_ptr, class, Out_.reset() )
+    _KSMARTNULL_NULLIFY_ONE_PARAM( std::shared_ptr, class, Out_.reset() )
     _KSMARTNULL_NULLIFY_ONE_PARAM( boost::shared_array, class, Out_.reset() )
-    _KSMARTNULL_NULLIFY_ONE_PARAM( boost::weak_ptr, class, Out_.reset() )
+    _KSMARTNULL_NULLIFY_ONE_PARAM( std::weak_ptr, class, Out_.reset() )
     _KSMARTNULL_NULLIFY_ONE_PARAM( boost::intrusive_ptr, class, Out_.reset() )
 
     _KSMARTNULL_NULLIFY_ONE_PARAM( boost::optional, class, Out_ = boost::none );

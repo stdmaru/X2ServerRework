@@ -106,7 +106,7 @@ CKTDGXSkinAnim::~CKTDGXSkinAnim(void)
 {
 	CleanAnimStructure();
 
-	BOOST_TEST_FOREACH( CKTDXDeviceXSkinMesh*, pSkinMesh, m_vecAddedSkinMesh )
+	for( CKTDXDeviceXSkinMesh* pSkinMesh : m_vecAddedSkinMesh )
 	{
 		SAFE_CLOSE( pSkinMesh );
 	}
@@ -152,13 +152,13 @@ void CKTDGXSkinAnim::CleanAnimStructure()
 		m_pCloneFrameRoot = NULL;
 	}
 
-    BOOST_TEST_FOREACH( CKTDXCollision::CollisionData*, pCollision, m_CollisionDataList )
+    for( CKTDXCollision::CollisionData* pCollision : m_CollisionDataList )
     {
         SAFE_DELETE( pCollision );
     }//BOOST_TEST_FOREACH()
 	m_CollisionDataList.clear();
 
-    BOOST_TEST_FOREACH( CKTDXCollision::CollisionData*, pAttack, m_AttackDataList )
+    for( CKTDXCollision::CollisionData* pAttack : m_AttackDataList )
     {
         SAFE_DELETE( pAttack );
     }//BOOST_TEST_FOREACH(
@@ -506,7 +506,7 @@ void CKTDGXSkinAnim::AddModelXSkinMesh( CKTDXDeviceXSkinMesh* pModelXSkinMesh, C
 	CKTDXCollision::CollisionData* pCollisionData = NULL;
 	CKTDXCollision::CollisionData* pAttackData = NULL;
 
-    BOOST_TEST_FOREACH( CKTDXCollision::CollisionData*, pModelCollision, pModelXSkinMesh->GetCollisionDataList() )
+    for( CKTDXCollision::CollisionData* pModelCollision : pModelXSkinMesh->GetCollisionDataList() )
     {
         ASSERT( pModelCollision != NULL );
 		pCollisionData = new CKTDXCollision::CollisionData();
@@ -524,7 +524,7 @@ void CKTDGXSkinAnim::AddModelXSkinMesh( CKTDXDeviceXSkinMesh* pModelXSkinMesh, C
 		m_CollisionDataList.push_back( pCollisionData );
     }//BOOST_TEST_FOREACH()
 
-    BOOST_TEST_FOREACH( CKTDXCollision::CollisionData*, pModelAttack, pModelXSkinMesh->GetAttackDataList() )
+    for( CKTDXCollision::CollisionData* pModelAttack : pModelXSkinMesh->GetAttackDataList() )
     {
         ASSERT( pModelAttack != NULL );
 		pAttackData = new CKTDXCollision::CollisionData();
@@ -543,7 +543,7 @@ void CKTDGXSkinAnim::AddModelXSkinMesh( CKTDXDeviceXSkinMesh* pModelXSkinMesh, C
 //
 // 	if( pXET != NULL )
 // 	{
-//         BOOST_TEST_FOREACH( CKTDXCollision::CollisionData*, pXETCollision, pXET->GetCollisionList() )
+//         for( CKTDXCollision::CollisionData* pXETCollision : pXET->GetCollisionList() )
 // 		{
 //             ASSERT( pXETCollision != NULL );
 // 			pCollisionData = new CKTDXCollision::CollisionData();
@@ -556,7 +556,7 @@ void CKTDGXSkinAnim::AddModelXSkinMesh( CKTDXDeviceXSkinMesh* pModelXSkinMesh, C
 // 			}
 // 			m_CollisionDataList.push_back( pCollisionData );
 // 		}
-//         BOOST_TEST_FOREACH( CKTDXCollision::CollisionData*, pXETAttack, pXET->GetAttackList() )
+//         for( CKTDXCollision::CollisionData* pXETAttack : pXET->GetAttackList() )
 // 		{
 //             ASSERT( pXETAttack != NULL );
 // 			pAttackData = new CKTDXCollision::CollisionData();
@@ -583,7 +583,7 @@ void CKTDGXSkinAnim::AddAnimXSkinMesh( CKTDXDeviceXSkinMesh* pModelXSkinMesh )
 	CKTDXCollision::CollisionData* pCollisionData	= NULL;
 	CKTDXCollision::CollisionData* pAttackData		= NULL;
 
-    BOOST_TEST_FOREACH( CKTDXCollision::CollisionData*, pModelCollision, pModelXSkinMesh->GetCollisionDataList() )
+    for( CKTDXCollision::CollisionData* pModelCollision : pModelXSkinMesh->GetCollisionDataList() )
     {
         ASSERT( pModelCollision != NULL );
 		pCollisionData = new CKTDXCollision::CollisionData();
@@ -602,7 +602,7 @@ void CKTDGXSkinAnim::AddAnimXSkinMesh( CKTDXDeviceXSkinMesh* pModelXSkinMesh )
     }//BOOST_TEST_FOREACH()
 
 
-    BOOST_TEST_FOREACH( CKTDXCollision::CollisionData*, pModelAttack, pModelXSkinMesh->GetAttackDataList() )
+    for( CKTDXCollision::CollisionData* pModelAttack : pModelXSkinMesh->GetAttackDataList() )
     {
         ASSERT( pModelAttack != NULL );
 		pAttackData = new CKTDXCollision::CollisionData();

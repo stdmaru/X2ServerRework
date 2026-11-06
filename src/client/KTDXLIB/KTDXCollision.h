@@ -204,7 +204,7 @@ class CKTDXCollision
 
             bCollObj1 = bCollObj2 = false;
 
-            BOOST_TEST_FOREACH( CollisionData*, pColA, dataListA )
+            for( CollisionData* pColA : dataListA )
 			{
                 ASSERT( pColA != NULL );
 				if( pColA->m_bEnable == false )
@@ -229,7 +229,7 @@ class CKTDXCollision
 					fScaleRadiusColA = pColA->GetScaleRadius();
 				}
 
-                BOOST_TEST_FOREACH( CollisionData*, pColB, dataListB )
+                for( CollisionData* pColB : dataListB )
 				{
                     ASSERT( pColB != NULL );
 					if( pColB->m_bEnable == false )
@@ -403,10 +403,10 @@ class CKTDXCollision
 
             bCollObj1 = bCollObj2 = false;
 
-            BOOST_TEST_FOREACH( const CollisionDataList*, pDataListA, dataListSetA )
+            for( const CollisionDataList* pDataListA : dataListSetA )
             {
                 ASSERT( pDataListA != NULL );
-                BOOST_TEST_FOREACH( CollisionData*, pColA, *pDataListA )
+                for( CollisionData* pColA : *pDataListA )
 			    {
                     ASSERT( pColA != NULL );
 				    if( pColA->m_bEnable == false )
@@ -431,7 +431,7 @@ class CKTDXCollision
 						fScaleRadiusColA = pColA->GetScaleRadius();
 					}
 
-                    BOOST_TEST_FOREACH( CollisionData*, pColB, dataListB )
+                    for( CollisionData* pColB : dataListB )
 				    {
                         ASSERT( pColB != NULL );
 					    if( pColB->m_bEnable == false )
@@ -606,7 +606,7 @@ class CKTDXCollision
 
             bCollObj1 = bCollObj2 = false;
 
-            BOOST_TEST_FOREACH( CollisionData*, pColA, dataListA )
+            for( CollisionData* pColA : dataListA )
 			{
                 ASSERT( pColA != NULL );
 				if( pColA->m_bEnable == false )
@@ -631,10 +631,10 @@ class CKTDXCollision
 					fScaleRadiusColA = pColA->GetScaleRadius();
 				}
 
-                BOOST_TEST_FOREACH( const CollisionDataList*, pDataListB, dataListSetB )
+                for( const CollisionDataList* pDataListB : dataListSetB )
                 {
                     ASSERT( pDataListB != NULL );
-                    BOOST_TEST_FOREACH( CollisionData*, pColB, *pDataListB )
+                    for( CollisionData* pColB : *pDataListB )
 				    {
                         ASSERT( pColB != NULL );
 					    if( pColB->m_bEnable == false )
@@ -809,10 +809,10 @@ class CKTDXCollision
 
             bCollObj1 = bCollObj2 = false;
 
-            BOOST_TEST_FOREACH( const CollisionDataList*, pDataListA, dataListSetA )
+            for( const CollisionDataList* pDataListA : dataListSetA )
             {
                 ASSERT( pDataListA != NULL );
-                BOOST_TEST_FOREACH( CollisionData*, pColA, *pDataListA )
+                for( CollisionData* pColA : *pDataListA )
 			    {
                     ASSERT( pColA != NULL );
 				    if( pColA->m_bEnable == false )
@@ -837,10 +837,10 @@ class CKTDXCollision
 						fScaleRadiusColA = pColA->GetScaleRadius();
 					}
 
-                    BOOST_TEST_FOREACH( const CollisionDataList*, pDataListB, dataListSetB )
+                    for( const CollisionDataList* pDataListB : dataListSetB )
                     {
                         ASSERT( pDataListB != NULL );
-                        BOOST_TEST_FOREACH( CollisionData*, pColB, *pDataListB )
+                        for( CollisionData* pColB : *pDataListB )
 				        {
                             ASSERT( pColB != NULL );
 					        if( pColB->m_bEnable == false )
@@ -1017,7 +1017,7 @@ class CKTDXCollision
             if ( pColB->m_bEnable == false )
                 return false;
 
-            BOOST_TEST_FOREACH( CollisionData*, pColA, dataListA )
+            for( CollisionData* pColA : dataListA )
 			{
                 ASSERT( pColA != NULL );
                 if( pColA->m_bEnable == false )
@@ -1122,10 +1122,10 @@ class CKTDXCollision
             if ( pColB->m_bEnable == false )
                 return false;
 
-            BOOST_TEST_FOREACH( const CollisionDataList*, pDataListA, dataListSetA )
+            for( const CollisionDataList* pDataListA : dataListSetA )
             {
                 ASSERT( pDataListA != NULL );
-                BOOST_TEST_FOREACH( CollisionData*, pColA, *pDataListA )
+                for( CollisionData* pColA : *pDataListA )
 			    {
                     ASSERT( pColA != NULL );
                     if( pColA->m_bEnable == false )

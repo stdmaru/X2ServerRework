@@ -9,8 +9,7 @@
 
 #pragma once
 
-#include <windows.h>
-#include <mmsystem.h>
+#include "x2/platform/win32.h"
 
 
 #define KSYSTEMTIMER_TARGET_RESOLUTION      1

@@ -19,7 +19,7 @@ class CKTDGUIDialog;
 
 #define D3DFVF_VERTEX_UI   ( D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1 )
 
-class CKTDGUIControl : private boost::noncopyable
+class CKTDGUIControl : private x2::NonCopyable
 {
 	public:
 		struct VERTEX_UI

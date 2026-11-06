@@ -10,7 +10,7 @@
 ///-----------------------------------------------------------------------------
 #define STRINGIZE(arg)  STRINGIZE1(arg)
 #define STRINGIZE1(arg) STRINGIZE2(arg)
-#define STRINGIZE2(arg) L#arg
+#define STRINGIZE2(arg) L ## #arg
 ///-----------------------------------------------------------------------------
 #define STRINGIZEA(arg)  STRINGIZEA1(arg)
 #define STRINGIZEA1(arg) STRINGIZEA2(arg)

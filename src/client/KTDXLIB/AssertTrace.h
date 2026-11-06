@@ -7,7 +7,7 @@
 #ifndef _ASSERTTRACE_H
 #define _ASSERTTRACE_H
 
-#include <windows.h>
+#include "x2/platform/win32.h"
 #include <stdio.h>
 #include <assert.h>
 

@@ -1898,7 +1898,7 @@ void    CKTDGXMeshPlayer::CXMeshInstance::OnFrameRender_Draw()
 	if( true == m_bShowAttackBox )
 	{
 		CKTDGStateManager::SetRenderState( D3DRS_FILLMODE, D3DFILL_WIREFRAME );
-		BOOST_TEST_FOREACH( CKTDXCollision::CollisionData*, pCollisionData, m_pXSkinAnim->GetAttackDataList() )
+		for( CKTDXCollision::CollisionData* pCollisionData : m_pXSkinAnim->GetAttackDataList() )
 		{
 			//pCollisionData = m_pXSkinAnim->m_AttackDataList[i];
 			if( pCollisionData->m_CollisionType == CKTDXCollision::CT_SPHERE )

@@ -153,7 +153,7 @@ class CKTDGParticleSystem
 
 
 		class CParticle
-            : private boost::noncopyable
+            : private x2::NonCopyable
 		{
             private:
 

@@ -9,8 +9,7 @@
 #define _BOOST_KOG_EXTENSION_H
 
 #include <boost/assert.hpp>
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <memory>
 //#include <boost/pointer_cast.hpp>
 
 namespace boost

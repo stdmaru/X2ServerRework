@@ -28,7 +28,7 @@ CKTDGUIStatic::~CKTDGUIStatic(void)
 	m_StringDataList.clear();
 
 // #ifdef MOVIE_TEST	 	// 13-11-11, 진입 구조 개편, kimjh, MOVIE_TEST 중 사용에 필요한 Define 을 MOVIE_TEST_BASE 로 변경
-	BOOST_FOREACH( CMovieData* pMovieData, m_MovieDataList )
+	for( CMovieData* pMovieData : m_MovieDataList )
 	{
 		SAFE_DELETE( pMovieData );
 	}
@@ -90,7 +90,7 @@ HRESULT CKTDGUIStatic::OnFrameMove( double fTime, float fElapsedTime )
 // #ifdef MOVIE_TEST	 	// 13-11-11, 진입 구조 개편, kimjh, MOVIE_TEST 중 사용에 필요한 Define 을 MOVIE_TEST_BASE 로 변경
 
 	KTDXPROFILE_BEGIN("movie_framemove");
-	BOOST_FOREACH( CMovieData* pMovieData, m_MovieDataList )
+	for( CMovieData* pMovieData : m_MovieDataList )
 	{
 		if ( NULL != pMovieData )
 			pMovieData->OnFrameMove();
@@ -216,7 +216,7 @@ HRESULT CKTDGUIStatic::OnFrameRender()
 	}
 
 // #ifdef MOVIE_TEST	 	// 13-11-11, 진입 구조 개편, kimjh, MOVIE_TEST 중 사용에 필요한 Define 을 MOVIE_TEST_BASE 로 변경
-	BOOST_FOREACH( CMovieData* pMovieData, m_MovieDataList )
+	for( CMovieData* pMovieData : m_MovieDataList )
 	{
 		if ( NULL != pMovieData &&
 			 pMovieData->GetShow() )

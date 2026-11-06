@@ -817,7 +817,7 @@ template<typename OBJECT_TYPE,typename CUSTOM_DATA,int t_iNumCursor>
   ////------------------------------------------------------------------------------
   2) developer usage:
 
-    #include <windows.h>
+    #include "x2/platform/win32.h"
     #include <stdio.h>
     #include <vector>
     #include <conio.h>

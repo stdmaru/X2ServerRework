@@ -1,7 +1,6 @@
 #include "stdafx.h" // 엘소드는 PCH(precompiled header)로 고정된 이름 stdafx.h를 사용한다.
 #include "KLuaManagerProxy.h"
 
-#include <boost/foreach.hpp>
 #include <boost/tokenizer.hpp>
 #include <boost/algorithm/string/trim.hpp>
 
@@ -1016,7 +1015,7 @@ bool    KLuaManagerProxy::LuaCall( const char* pszFunction, const std::vector<KL
         lua_pop( m_pLuaState, 1 );
         return false;
     }
-    BOOST_FOREACH( const KLuaManagerProxyLuaValue& luaValue, vecArgs )
+    for( const KLuaManagerProxyLuaValue& luaValue : vecArgs )
     {
         luaValue.LuaPush( m_pLuaState );
     }

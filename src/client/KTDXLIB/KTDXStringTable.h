@@ -112,7 +112,7 @@ do \
 } while( false )
 
 #define	GET_STRING( str_id )	( (SiCKTDXStringTable()->GetEnableDebugInfo()) ?	\
-								boost::str( boost::wformat( L"[S%1%]%2%" ) % str_id % SiCKTDXStringTable()->GetGeneralString( str_id ) ).c_str()	:	\
+								x2::str( x2::wformat( L"[S%1%]%2%" ) % str_id % SiCKTDXStringTable()->GetGeneralString( str_id ) ).c_str()	:	\
 								SiCKTDXStringTable()->GetGeneralString( str_id ).c_str() )
 
 #define GET_REPLACED_STRING( varg ) SiCKTDXStringTable()->GetReplacedString##varg##.c_str()

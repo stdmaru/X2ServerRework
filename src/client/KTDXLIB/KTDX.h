@@ -53,7 +53,7 @@
 #ifdef _USE_BOOST_CONST_STRING_
 
 #define BOOST_CONST_CSTRING             boost::const_cstring
-#define BOOST_CONST_STRING_CREF( x )    boost::cref( x )
+#define BOOST_CONST_STRING_CREF( x )    std::cref( x )
 
 #else
 
@@ -350,9 +350,9 @@
 #pragma warning (disable: 4995)
 #pragma warning( disable : 4100 ) // disable unreference formal parameter warnings for /W4 builds
 
-#include <Winsock2.h>
+#include "x2/platform/net.h"
 #include <wininet.h>
-#include <windows.h>
+#include "x2/platform/win32.h"
 
 
 #include <assert.h>
@@ -363,7 +363,6 @@
 #include <limits.h>
 #include <stdio.h>
 #include <time.h>
-#include <process.h>
 #include <io.h>
 #include <shldisp.h>
 #include <malloc.h>
@@ -408,14 +407,13 @@
 //}} seojt // 2008-10-15, 10:47
 // Direct3D includes
 #include <d3d9.h>
-#include <d3dx9.h>
+#include "x2/platform/d3dx_math.h"
 #ifdef CONVERSION_VS
 #	include <dxerr.h>
 #else
 #	include <dxerr9.h>
 #endif // CONVERSION_VS
 #include "DirectInputKeys.h"	// DirectInput is replaced by SDL3 (docs/porting/client-input.md)
-#include <mmsystem.h>
 #include <mmreg.h>
 #ifdef CONVERSION_VS
 //#	include <dplay8.h>
@@ -473,23 +471,18 @@ using std::set;
 //{{ robobeg : 2008-10-10
 #include <bitset>
 #include    <deque>
-#include	<boost/test/utils/foreach.hpp>
-#include    <boost/foreach.hpp>
-#include    <boost/static_assert.hpp>
 #include    <boost/type_traits/is_base_of.hpp>
 //}} robobeg : 2008-10-10
 
 #include <sys/stat.h>
-#include <boost/noncopyable.hpp>
+#include "x2/platform/noncopyable.h"
 #include <boost/pool/object_pool.hpp>
 #include <boost/array.hpp>
 
 	#include <boost/pool/singleton_pool.hpp>
 
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
-#include <boost/enable_shared_from_this.hpp>
+#include <memory>
 #include <boost/scope_exit.hpp>
 #include <boost/circular_buffer.hpp>
 #include <boost/intrusive_ptr.hpp>
@@ -508,10 +501,10 @@ using std::set;
 	#endif // #if !defined(ASSERT)
 
 	#ifndef V
-		#define V(x)           { hr = x; if( FAILED(hr) ) { DXUTTrace( __FILE__, (DWORD)__LINE__, hr, L#x, true ); } }
+		#define V(x)           { hr = x; if( FAILED(hr) ) { DXUTTrace( __FILE__, (DWORD)__LINE__, hr, L ## #x, true ); } }
 	#endif
 	#ifndef V_RETURN
-		#define V_RETURN(x)    { hr = x; if( FAILED(hr) ) { return DXUTTrace( __FILE__, (DWORD)__LINE__, hr, L#x, true ); } }
+		#define V_RETURN(x)    { hr = x; if( FAILED(hr) ) { return DXUTTrace( __FILE__, (DWORD)__LINE__, hr, L ## #x, true ); } }
 	#endif
 
 
@@ -796,7 +789,7 @@ else {  (p) = (type*) ::realloc((p), (s) * sizeof(type)); ASSERT(p); } }
 
 //{{ seojt // 2009-1-13, 15:44
 #ifndef SHARED_POINTER_CAST
-#define SHARED_POINTER_CAST(TARGET_TYPE,sharedPointer)     boost::static_pointer_cast<TARGET_TYPE>( sharedPointer )
+#define SHARED_POINTER_CAST(TARGET_TYPE,sharedPointer)     std::static_pointer_cast<TARGET_TYPE>( sharedPointer )
 #endif // SHARED_POINTER_CAST()
 //}} seojt // 2009-1-13, 15:44
 
@@ -944,7 +937,6 @@ extern double g_NowTime;
 
 #include "KHangulPPWSelector.h"
 #include "MinMax.h"
-#include <boost/shared_ptr.hpp>
 #include <boost/scope_exit.hpp>
 
 #ifdef CONVERSION_VS

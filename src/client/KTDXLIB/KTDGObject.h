@@ -15,7 +15,7 @@ typedef CKTDGObjectList::iterator           CKTDGObjectHandle;
 //class CThreadSafeNewDelete
 //{
 //private:
-//	boost::shared_ptr<CThreadSafeNewDelete>   this_;
+//	std::shared_ptr<CThreadSafeNewDelete>   this_;
 //
 //protected:
 //	explicit CThreadSafeNewDelete() : this_(this)
@@ -29,7 +29,7 @@ typedef CKTDGObjectList::iterator           CKTDGObjectHandle;
 //		//std::cout << "~KTDGObject()" << std::endl;
 //	}
 //
-//	boost::weak_ptr<CThreadSafeNewDelete> get_weak_ptr() const
+//	std::weak_ptr<CThreadSafeNewDelete> get_weak_ptr() const
 //	{
 //		return this_;
 //	}
@@ -67,7 +67,7 @@ typedef CKTDGObjectList::iterator           CKTDGObjectHandle;
 */
 //{{ seojt // 2009-1-14, 21:25
 class CKTDGObject
-    : private boost::noncopyable
+    : private x2::NonCopyable
 //}} seojt // 2009-1-14, 21:25
 {
     //{{ seojt // 2009-1-9, 10:39

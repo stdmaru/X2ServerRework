@@ -25,7 +25,7 @@
 #endif // USE_REMOTELOGGER
 
 
-#include <windows.h>
+#include "x2/platform/win32.h"
 #include <assert.h>
 #include <time.h>
 #include <fstream>

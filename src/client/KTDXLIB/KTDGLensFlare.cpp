@@ -222,7 +222,7 @@ void            CKTDGLensFlare::OnFrameRender_Draw()
     KD3DPUSH( GetRenderStateID() )
 
 //#ifdef DYNAMIC_VERTEX_BUFFER_OPT
-		BOOST_STATIC_ASSERT( D3DFVF_LENSFLARE == D3DFVF_XYZRHW_DIFFUSE_TEX1 );
+		static_assert( D3DFVF_LENSFLARE == D3DFVF_XYZRHW_DIFFUSE_TEX1 , "");
 		for( int q = 0; q < (int) m_Spots.size(); q++ )
 		{
 			m_Spots[q].GetTexture()->SetDeviceTexture();

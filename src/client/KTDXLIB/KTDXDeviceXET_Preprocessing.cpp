@@ -1,7 +1,7 @@
 #include <stdafx.h>
 
 
-#include <boost/format.hpp>
+#include "x2/platform/format.h"
 
 const static KXETFormatHeader   s_kDummyHeader;
 
@@ -233,8 +233,8 @@ const CKTDXDeviceXET_Preprocessing::XETProxy::AniData* CKTDXDeviceXET_Preprocess
 	if ( pAniName == NULL || pAniName[0] == NULL )
 	{
 		ASSERT( false );
-		boost::format fmt("유효하지 않은 애니메이션 이름을 사용하였습니다: %1%, %2%");
-		ErrorLogMsg( KEM_ERROR96, boost::str(fmt % m_DeviceID.c_str() % pAniName).c_str() );
+		x2::format fmt("유효하지 않은 애니메이션 이름을 사용하였습니다: %1%, %2%");
+		ErrorLogMsg( KEM_ERROR96, x2::str(fmt % m_DeviceID.c_str() % pAniName).c_str() );
 		return NULL;
 	}
 
@@ -245,8 +245,8 @@ const CKTDXDeviceXET_Preprocessing::XETProxy::AniData* CKTDXDeviceXET_Preprocess
     if ( ib.second == false )
     {
 		ASSERT( false );
-		boost::format fmt("이미 등록된 애니메이션 이름을 사용하였습니다: %1%, %2%");
-		ErrorLogMsg( KEM_ERROR96, boost::str(fmt % m_DeviceID.c_str() % pAniName).c_str() );
+		x2::format fmt("이미 등록된 애니메이션 이름을 사용하였습니다: %1%, %2%");
+		ErrorLogMsg( KEM_ERROR96, x2::str(fmt % m_DeviceID.c_str() % pAniName).c_str() );
 
 		return &ib.first->second;
 		//return NULL;
@@ -296,7 +296,7 @@ void    CKTDXDeviceXET_Preprocessing::XETProxy::PostProcess( std::vector<BYTE>& 
     kHeader.m_dwNumChangeTexture = m_ChangeTextureMap.size();
     kHeader.m_dwNumAniData = m_AniDataMap.size();
     kHeader.m_dwNumAniEventTexChange = 0;
-    BOOST_FOREACH( const NameAniDataMap::value_type& value, m_AniDataMap )
+    for( const NameAniDataMap::value_type& value : m_AniDataMap )
     {
         kHeader.m_dwNumAniEventTexChange += value.second.m_TexChangeEventMap.size();
     }
@@ -305,7 +305,7 @@ void    CKTDXDeviceXET_Preprocessing::XETProxy::PostProcess( std::vector<BYTE>& 
     kFileSerializer.Reserve( kHeader.GetFixedPartSize() );
     kFileSerializer.AppendSpace( kHeader.GetFixedPartSize() );
     dwOffset = kHeader.GetChangeTextureOffset();
-    BOOST_FOREACH( const ChangeTextureMap::value_type& pair, m_ChangeTextureMap )
+    for( const ChangeTextureMap::value_type& pair : m_ChangeTextureMap )
     {
         KXETFormatChangeTexture kChangeTexture;
         kChangeTexture.m_dwOffset_OrgTexName = kFileSerializer.AppendWideString( true, false, pair.first.c_str() );
@@ -317,7 +317,7 @@ void    CKTDXDeviceXET_Preprocessing::XETProxy::PostProcess( std::vector<BYTE>& 
     dwOffset = kHeader.GetAniDataOffset();
     DWORD   dwOffset_AniEventTexChange = kHeader.GetAniEventTexChangeOffset();
     WORD    wIndex = 0;
-    BOOST_FOREACH( const NameAniDataMap::value_type& value, m_AniDataMap )
+    for( const NameAniDataMap::value_type& value : m_AniDataMap )
     {
         KXETFormatAniData   kAniData;
         kAniData.m_dwOffset_AniName = kFileSerializer.AppendWideString( true, false, value.first.c_str() );
@@ -328,7 +328,7 @@ void    CKTDXDeviceXET_Preprocessing::XETProxy::PostProcess( std::vector<BYTE>& 
 
         kFileSerializer.CopyData( dwOffset, sizeof(KXETFormatAniData), &kAniData );
         dwOffset += sizeof(KXETFormatAniData);
-        BOOST_FOREACH( const AniData::AniTexChangeEventDataMultimap::value_type& value_event, value.second.m_TexChangeEventMap )
+        for( const AniData::AniTexChangeEventDataMultimap::value_type& value_event : value.second.m_TexChangeEventMap )
         {
             KXETFormatAniTexChangeEvent kEvent;
             kEvent.m_dwOffset_OrgTexName = kFileSerializer.AppendWideString( true, false, value_event.first.c_str() );

@@ -43,7 +43,7 @@ const char*      CKTDGXRenderer::GetRenderTypeTechniqueName( CKTDGXRenderer::REN
 		{ RT_CARTOON_FADE_NONTEX,	"CARTOON_FADE_NONTEX" },
     };//s_akTechniqueNames[]
 
-    BOOST_STATIC_ASSERT( ARRAY_SIZE( s_akTechniqueNames ) == RT_END );
+    static_assert( ARRAY_SIZE( s_akTechniqueNames ) == RT_END , "");
     ASSERT( eInType_ >= RENDER_TYPE( 0 ) && eInType_ < RT_END );
     if ( !( eInType_ >= RENDER_TYPE( 0 ) && eInType_ < RT_END ) )
         return "";
@@ -95,7 +95,7 @@ const char*      CKTDGXRenderer::GetEffectParameterName( CKTDGXRenderer::EFFECT_
 
     };//s_akEffectParameterName[]
 
-    BOOST_STATIC_ASSERT( ARRAY_SIZE( s_akEffectParameterName ) == EP_END );
+    static_assert( ARRAY_SIZE( s_akEffectParameterName ) == EP_END , "");
     ASSERT( eInParam_ >= EFFECT_PARAMETER( 0 ) && eInParam_ < EP_END );
     if ( !( eInParam_ >= EFFECT_PARAMETER( 0 ) && eInParam_ < EP_END ) )
         return "";

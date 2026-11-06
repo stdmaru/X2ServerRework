@@ -503,7 +503,7 @@ CKTDGParticleSystem::CParticleEventSequenceHandle CKTDGParticleSystem::CreateIns
 	CParticleEvent* pEvent = NULL;
 	CKTDXDeviceTexture* pTexture = NULL;
 	int i = 0;
-	BOOST_TEST_FOREACH( CParticleEvent*, pEvent, pSeq->m_EventList )
+	for( CParticleEvent* pEvent : pSeq->m_EventList )
 	{
 		switch( pEvent->GetEventType() )
 		{
@@ -2146,7 +2146,7 @@ CKTDGParticleSystem::CParticleEventSequence::~CParticleEventSequence()
 {
 	ClearAllParticle();
 
-	BOOST_TEST_FOREACH( CParticleEvent*, pEvent, m_EventList )
+	for( CParticleEvent* pEvent : m_EventList )
 	{
 		SAFE_DELETE( pEvent );
 	}
@@ -2721,7 +2721,7 @@ void CKTDGParticleSystem::CParticleEventSequence::OnFrameRender_VERTEX_PARTICLE(
 //
 //
 //			// Render each particle
-//			BOOST_TEST_FOREACH( CParticle*, pPart, m_ParticleList )
+//			for( CParticle* pPart : m_ParticleList )
 //			{
 //				if ( pPart == NULL )
 //					continue;
@@ -3239,7 +3239,7 @@ void CKTDGParticleSystem::CParticleEventSequence::OnFrameRender_VERTEX_PARTICLE(
 
 //#ifdef  X2OPTIMIZE_PARTICLE_SEQUENCE_DVB
 
-            //BOOST_STATIC_ASSERT( D3DFVF_PARTICLE == CKTDGDynamicVBManager::D3DFVF_XYZ_DIFFUSE_TEX1 );
+            //static_assert( D3DFVF_PARTICLE == CKTDGDynamicVBManager::D3DFVF_XYZ_DIFFUSE_TEX1 , "");
             if ( renderParticle > 0 )
             {
                 if ( ms_bParticleCullingEnabled == true
@@ -3363,7 +3363,7 @@ void CKTDGParticleSystem::CParticleEventSequence::OnFrameRender_VERTEX_PARTICLE_
 //			DWORD numParticlesInBatch = 0;
 //
 //			// Render each particle
-//			BOOST_TEST_FOREACH( CParticle*, pPart, m_ParticleList )
+//			for( CParticle* pPart : m_ParticleList )
 //			{
 //				if ( pPart == NULL )
 //					continue;
@@ -3821,7 +3821,7 @@ void CKTDGParticleSystem::CParticleEventSequence::OnFrameRender_VERTEX_PARTICLE_
 
 //#ifdef  X2OPTIMIZE_PARTICLE_SEQUENCE_DVB
 
-            //BOOST_STATIC_ASSERT( D3DFVF_PARTICLE_RHW == CKTDGDynamicVBManager::D3DFVF_XYZRHW_DIFFUSE_TEX1 );
+            //static_assert( D3DFVF_PARTICLE_RHW == CKTDGDynamicVBManager::D3DFVF_XYZRHW_DIFFUSE_TEX1 , "");
             if ( renderParticle > 0 )
             {
                 g_pKTDXApp->GetDVBManager()->DrawPrimitive( CKTDGDynamicVBManager::DVB_TYPE_XYZRHW_DIFFUSE_TEX1
@@ -4247,7 +4247,7 @@ CKTDGParticleSystem::CParticle* CKTDGParticleSystem::CParticleEventSequence::Cre
 	// process any initial events
 	if ( m_pTempletSequence != NULL )
 	{
-		BOOST_TEST_FOREACH( CParticleEvent*, event, m_pTempletSequence->m_EventList )
+		for( CParticleEvent* event : m_pTempletSequence->m_EventList )
 		{
 			if( NULL != event && event->GetActualTime().m_Min == 0.0f )
 			{
@@ -4338,7 +4338,7 @@ void CKTDGParticleSystem::CParticleEventSequence::OpenTexture()
 	int i = 0;
 	if ( m_pTempletSequence != NULL )
 	{
-		BOOST_TEST_FOREACH( CParticleEvent*, pEvent, m_pTempletSequence->m_EventList )
+		for( CParticleEvent* pEvent : m_pTempletSequence->m_EventList )
 		{
 			switch( pEvent->GetEventType() )
 			{
@@ -4420,7 +4420,7 @@ void CKTDGParticleSystem::CParticleEventSequence::RunEvent( CParticle &part )
 
 	if ( m_pTempletSequence != NULL )
 	{
-		BOOST_TEST_FOREACH( CParticleEvent*, pEvt, m_pTempletSequence->m_EventList )
+		for( CParticleEvent* pEvt : m_pTempletSequence->m_EventList )
 		{
             float   fOld = part.GetEventTimerOld();
             float   fNew = part.GetEventTimer();
@@ -4448,7 +4448,7 @@ void CKTDGParticleSystem::CParticleEventSequence::RunEvent( CParticle &part )
 
 
 
-	BOOST_TEST_FOREACH( CParticleEvent*, pEvt, m_EventList )
+	for( CParticleEvent* pEvt : m_EventList )
 	{
         float   fOld = part.GetEventTimerOld();
         float   fNew = part.GetEventTimer();
@@ -5383,7 +5383,7 @@ bool	CKTDGParticleSystem::AppendToDeviceList( CKTDXDeviceDataList& listInOut_, c
 
 	default:
 
-		BOOST_TEST_FOREACH( CKTDGParticleSystem::CParticleEvent*, pEvent, pTemplateSequence->m_EventList )
+		for( CKTDGParticleSystem::CParticleEvent* pEvent : pTemplateSequence->m_EventList )
 		{
 			switch( pEvent->GetEventType() )
 			{

@@ -68,7 +68,7 @@ void        CKTDGDynamicVBManager::CustomInitialize( bool bInConstructor_ )
     m_pDrawPrimitiveFn = NULL;
     m_uNumExceptionsOccurred = 0;
 
-    BOOST_FOREACH( DynamicVBInfo& dvbInfo, m_aDynamicVBInfo )
+    for( DynamicVBInfo& dvbInfo : m_aDynamicVBInfo )
     {
         dvbInfo.Reset();
     }//BOOST_FOREACH()
@@ -120,7 +120,7 @@ void        CKTDGDynamicVBManager::CustomInitialize( bool bInConstructor_ )
 /*virtual*/
 void        CKTDGDynamicVBManager::CustomFinalize( bool bInDestructor_ )
 {
-    BOOST_FOREACH( DynamicVBInfo& dvbInfo, m_aDynamicVBInfo )
+    for( DynamicVBInfo& dvbInfo : m_aDynamicVBInfo )
     {
         dvbInfo.Reset();
     }//BOOST_FOREACH()
@@ -183,7 +183,7 @@ HRESULT     CKTDGDynamicVBManager::OnResetDevice()
         }//if
     }//if
 
-    BOOST_FOREACH( DynamicVBInfo& dvbInfo, m_aDynamicVBInfo )
+    for( DynamicVBInfo& dvbInfo : m_aDynamicVBInfo )
     {
         dvbInfo.OnResetDevice( m_eDynamicVBMode );
     }//BOOST_FOREACH()
@@ -219,7 +219,7 @@ HRESULT     CKTDGDynamicVBManager::OnLostDevice()
     m_pDrawPrimitiveFn = NULL;
 
 
-    BOOST_FOREACH( DynamicVBInfo& dvbInfo, m_aDynamicVBInfo )
+    for( DynamicVBInfo& dvbInfo : m_aDynamicVBInfo )
     {
         dvbInfo.OnLostDevice( m_eDynamicVBMode );
     }//BOOST_FOREACH()

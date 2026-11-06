@@ -11,7 +11,7 @@
 #define _KJOHNTHREAD_H
 
 //#include "KJohnGen.h"
-#include <process.h>
+#include "x2/platform/win32.h"
 
 
 /** _beginthreadex() vs. CreateThread()
@@ -169,7 +169,6 @@ public:
 
     #include "KJohnGen.h"
     #include <iostream>
-    #include <mmsystem.h>
     #include <conio.h>
     #include "KJohnThread.h"
 

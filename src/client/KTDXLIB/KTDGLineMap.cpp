@@ -49,7 +49,7 @@ CKTDGLineMap::~CKTDGLineMap(void)
 	m_WallList.clear();
 	//}} kimhc // 2010-08-03 // WALL 타입의 라인맵 처리 변경
 
-	BOOST_TEST_FOREACH( LineAnimDataMap::value_type&, value, m_mapLineAnimData )
+	for( LineAnimDataMap::value_type& value : m_mapLineAnimData )
 	{
 		SAFE_DELETE( value.second );
 	}
@@ -308,7 +308,7 @@ bool CKTDGLineMap::AddLineAnim_LUA()
 
 void CKTDGLineMap::BuildLineAnimDataTree()
 {
-	BOOST_TEST_FOREACH( LineAnimDataMap::value_type&, value, m_mapLineAnimData )
+	for( LineAnimDataMap::value_type& value : m_mapLineAnimData )
 	{
 		LineAnimData* pLineAnimData = value.second;
 		if( pLineAnimData->m_iParentAnimDataIndex >= 0 )
@@ -1177,7 +1177,7 @@ void CKTDGLineMap::DisableLines( const std::vector<int>& vecLineIndices )
 
     bool    bModified = false;
    	int	iNumLineData = (int) m_LineList.size();
-    BOOST_FOREACH( int i,  vecLineIndices )
+    for( int i : vecLineIndices )
 	{
 		if ( i >= 0 && i < iNumLineData )
         {
@@ -2149,7 +2149,7 @@ void CKTDGLineMap::LineAnimData::OnFrameMove( double fTime, float fElapsedTime )
 	if( false == m_bEnabled )
 		return;
 
-	BOOST_TEST_FOREACH( LineAnimData*, pChlidAnimData, m_vecpChildAnimData )
+	for( LineAnimData* pChlidAnimData : m_vecpChildAnimData )
 	{
 		if( pChlidAnimData->m_iParentAnimDataIndex >= 0 )
 		{

@@ -611,7 +611,7 @@ HRESULT CKTDGUIControl::RenderVertex( VERTEX_UI* pVertex, bool bRestoreVertexDec
 	}//if
 
 //#ifdef DYNAMIC_VERTEX_BUFFER_OPT
-	BOOST_STATIC_ASSERT( D3DFVF_VERTEX_UI == D3DFVF_XYZRHW_DIFFUSE_TEX1 );
+	static_assert( D3DFVF_VERTEX_UI == D3DFVF_XYZRHW_DIFFUSE_TEX1 , "");
 	g_pKTDXApp->GetDVBManager()->DrawPrimitive( CKTDGDynamicVBManager::DVB_TYPE_XYZRHW_DIFFUSE_TEX1
 		, D3DPT_TRIANGLESTRIP, 2, pVertex );
 //#else
@@ -666,7 +666,7 @@ HRESULT CKTDGUIControl::RenderVertex( VERTEX_UI* pVertex, const UIPointData& poi
 	pointData.pUITextureData->pTexture->SetDeviceTexture();
 
 //#ifdef DYNAMIC_VERTEX_BUFFER_OPT
-	BOOST_STATIC_ASSERT( D3DFVF_VERTEX_UI == D3DFVF_XYZRHW_DIFFUSE_TEX1 );
+	static_assert( D3DFVF_VERTEX_UI == D3DFVF_XYZRHW_DIFFUSE_TEX1 , "");
 	g_pKTDXApp->GetDVBManager()->DrawPrimitive( CKTDGDynamicVBManager::DVB_TYPE_XYZRHW_DIFFUSE_TEX1
 		, D3DPT_TRIANGLESTRIP, 2, pVertex, renderCount );
 
