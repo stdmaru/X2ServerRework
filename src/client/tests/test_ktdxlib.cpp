@@ -2,7 +2,7 @@
 // vertex data, render target textures and the silent sound backend, headless on the null backend. g_pKTDXApp is the
 // real CKTDXApp; the globals X2.cpp defines are in x2_globals.cpp.
 
-#include "stdafx.h"
+#include "KTDX.h"   // not stdafx.h: Windows would find X2ServerProtocol/StdAfx.h first
 
 #include "x2/render/null.h"
 

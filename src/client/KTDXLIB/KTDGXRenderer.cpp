@@ -853,7 +853,7 @@ void CKTDGXRenderer::DrawFrame( CKTDXDeviceXSkinMesh& kInXSkinMesh_, CKTDXDevice
 				pResultTexture2->SetDeviceTexture( 2 );
 			}
 
-            m_uMaxSkinningVertices = std::max( std::max( m_uMaxSkinningVertices, pMC->m_dwMaxSkinningVertices ), 1u );
+            m_uMaxSkinningVertices = std::max( std::max<unsigned>( m_uMaxSkinningVertices, pMC->m_dwMaxSkinningVertices ), 1u );
 
 			KTDXPROFILE_END();
 

@@ -39,21 +39,17 @@ CKTDNUDP::CKTDNUDP( int port )
 	char strTemp[256];
 	::gethostname( strTemp, 256 );
 
-	HOSTENT* hostent;
-	hostent		= ::gethostbyname( strTemp );
-	for ( int i = 0; hostent->h_addr_list[ i ] != 0 && i < 10; ++i )
+	// port: getaddrinfo in place of gethostbyname (deprecated in Winsock); the host's first 10 IPv4 addresses, as before
+	addrinfo hints{};
+	hints.ai_family = AF_INET;
+	hints.ai_socktype = SOCK_DGRAM;   // one entry per address, not one per socket type
+	addrinfo* pAddrList = NULL;
+	if ( ::getaddrinfo( strTemp, NULL, &hints, &pAddrList ) == 0 )
 	{
-//#ifdef  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
-        u_long IPAddress = ( ( struct in_addr* )hostent->h_addr_list[ i ] )->s_addr;   // port: the i-th address (the original took the first each time)
-        m_MyIPList.push_back( IPAddress );
-//#else   SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
-//		struct in_addr addr;
-//
-//		memcpy( &addr, hostent->h_addr_list[ i ], sizeof( struct in_addr ) );
-//		string IP = inet_ntoa( addr );
-//		ConvertCharToWCHAR( m_MyIP, IP.c_str() );
-//		m_MyIPList.push_back( m_MyIP );
-//#endif  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
+		int i = 0;
+		for ( const addrinfo* pAddr = pAddrList; pAddr != NULL && i < 10; pAddr = pAddr->ai_next, ++i )
+			m_MyIPList.push_back( reinterpret_cast<const sockaddr_in*>( pAddr->ai_addr )->sin_addr.s_addr );
+		::freeaddrinfo( pAddrList );
 	}
 
 	m_MyIPIndex = -1;
@@ -2016,7 +2012,7 @@ u_long  CKTDNUDP::ConvertIPToAddress( const WCHAR* pIP )
 
 	string mbIP;
 	ConvertWCHARToChar( mbIP, pIP );
-	return inet_addr( mbIP.c_str() );
+	return x2::platform::IpFromString( mbIP.c_str() );
 }
 
 /*static*/
@@ -2027,7 +2023,7 @@ std::wstring    CKTDNUDP::ConvertAddressToIP( u_long ulIP )
         return wstrIP;
     in_addr IP;
     IP.s_addr = ulIP;
-    ConvertCharToWCHAR( wstrIP, inet_ntoa( IP ) );
+    ConvertCharToWCHAR( wstrIP, x2::platform::IpToString( IP ) );
     return  wstrIP;
 }
 

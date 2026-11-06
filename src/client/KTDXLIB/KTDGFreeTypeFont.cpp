@@ -139,7 +139,7 @@ void CKTDGFreeTypeFont::_EstimateFontSize( WCHAR wChar, SIZE* pSize )
 	if( pSize == NULL )
 		return;
 
-	if( wChar >= HASH_BUCKET_SIZE ||
+	if( static_cast<std::uint32_t>( wChar ) >= HASH_BUCKET_SIZE ||   // WCHAR is 16 bits on Windows
 		wChar == '\r')
 	{
 		pSize->cx = pSize->cy = 0;

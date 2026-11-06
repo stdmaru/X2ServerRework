@@ -610,10 +610,10 @@ void CKTDXDeviceXSkinMesh::XSkinMeshProxy::AddCollisionData( MultiAnimFrame* pFr
 				wstrName = frameName.c_str() + (i+1); // 이름 넣기
 				break;
 			}
-            ASSERT( i-20 < ARRAY_SIZE( charBuffer ) );
+            ASSERT( i-20 < static_cast<int>( ARRAY_SIZE( charBuffer ) ) );
 			charBuffer[i-20] = chr;
 		}
-        ASSERT( i-20 < ARRAY_SIZE( charBuffer ) );
+        ASSERT( i-20 < static_cast<int>( ARRAY_SIZE( charBuffer ) ) );
         charBuffer[i-20] = 0;
 		int collisionNum = _wtoi( charBuffer );
 
@@ -673,10 +673,10 @@ void CKTDXDeviceXSkinMesh::XSkinMeshProxy::AddCollisionData( MultiAnimFrame* pFr
 				wstrName = frameName.c_str() + (i+1); // 이름 넣기
 				break;
 			}
-            ASSERT( i-16 < ARRAY_SIZE( charBuffer ) );
+            ASSERT( i-16 < static_cast<int>( ARRAY_SIZE( charBuffer ) ) );
 			charBuffer[i-16] = chr;
 		}
-        ASSERT( i-16 < ARRAY_SIZE( charBuffer ) );
+        ASSERT( i-16 < static_cast<int>( ARRAY_SIZE( charBuffer ) ) );
         charBuffer[i-16] = 0;
 		_wtoi( charBuffer );
 
@@ -720,10 +720,10 @@ void CKTDXDeviceXSkinMesh::XSkinMeshProxy::AddCollisionData( MultiAnimFrame* pFr
                 wstrName = frameName.c_str() + (i+1); // 이름 넣기
                 break;
             }
-            ASSERT( i-16 < ARRAY_SIZE( charBuffer ) );
+            ASSERT( i-16 < static_cast<int>( ARRAY_SIZE( charBuffer ) ) );
             charBuffer[i-16] = chr;
         }
-        ASSERT( i-16 < ARRAY_SIZE( charBuffer ) );
+        ASSERT( i-16 < static_cast<int>( ARRAY_SIZE( charBuffer ) ) );
         charBuffer[i-16] = 0;
         _wtoi( charBuffer );
 
@@ -773,10 +773,10 @@ void CKTDXDeviceXSkinMesh::XSkinMeshProxy::AddCollisionData( MultiAnimFrame* pFr
 				wstrName = frameName.c_str() + (i+1); // 이름 넣기
 				break;
 			}
-            ASSERT( i-17 < ARRAY_SIZE( charBuffer ) );
+            ASSERT( i-17 < static_cast<int>( ARRAY_SIZE( charBuffer ) ) );
 			charBuffer[i-17] = chr;
 		}
-        ASSERT( i-17 < ARRAY_SIZE( charBuffer ) );
+        ASSERT( i-17 < static_cast<int>( ARRAY_SIZE( charBuffer ) ) );
         charBuffer[i-17] = 0;
 		int collisionNum = _wtoi( charBuffer );
 		WCHAR endLineFrameName[100] = {0,};
@@ -834,10 +834,10 @@ void CKTDXDeviceXSkinMesh::XSkinMeshProxy::AddCollisionData( MultiAnimFrame* pFr
 				wstrName = frameName.c_str() + (i+1); // 이름 넣기
 				break;
 			}
-            ASSERT( i-13 < ARRAY_SIZE( charBuffer ) );
+            ASSERT( i-13 < static_cast<int>( ARRAY_SIZE( charBuffer ) ) );
 			charBuffer[i-13] = chr;
 		}
-        ASSERT( i-13 < ARRAY_SIZE( charBuffer ) );
+        ASSERT( i-13 < static_cast<int>( ARRAY_SIZE( charBuffer ) ) );
     	charBuffer[i-13] = 0;
 		_wtoi( charBuffer );
 

@@ -232,6 +232,7 @@ two globals (`g_pd3dDevice`, `g_pEffectStateManager`) are defined for them in `t
 |---|---|---|---|
 | `KJohnThread::EndThread(timeout)` | Waited up to the timeout, then closed the handle of a thread still running | Always waits for the thread to end | A `std::thread` cannot be dropped while it runs |
 | `CKTDNUDP` local addresses | `h_addr_list[0]` read for every entry of the host's address list | Each entry read | Evident bug |
+| `CKTDNUDP` address lookup | `gethostbyname` (crashed if the host name did not resolve), `inet_addr`/`inet_ntoa` | `getaddrinfo` (IPv4, first 10, empty list if unresolved), `x2::platform::IpFromString`/`IpToString` (dotted quads only) | Deprecated in Winsock |
 | `CKTDNUDP` socket | `UDP_CHECKSUM_COVERAGE` set (Winsock UDP-Lite option) | Not set | UDP over IPv4 has checksums anyway |
 | `_IsEqualSign` (`KTDXAnimationController`, key compression) | Or-ed `uiFlags1` with the uninitialized result itself | `uiFlags1 | uiFlags2` | Evident bug |
 | Ctrl+\ in `CKTDGUIEditBox`/`CKTDGUIIMEEditBox` | The comment `// Ctrl \` spliced the next `break;` into it, so Ctrl+[, ], \ fell into Enter | Ignored, as the other control characters | Evident bug |
