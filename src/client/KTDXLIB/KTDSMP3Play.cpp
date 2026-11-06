@@ -1,15 +1,16 @@
 #include "stdafx.h"
 #include "./KTDSMP3Play.h"
 
-CKTDSMP3Play::CKTDSMP3Play( FMOD_SYSTEM* pSystem )
+// Silent backend (KTDSSoundSystem.h): the original streamed the file through FMOD; the player keeps its state (the file
+// it was asked to play, loop, volume, pause) and plays nothing.
+
+CKTDSMP3Play::CKTDSMP3Play( KTDSSoundSystem* pSystem )
 {
 	m_bLoop			= true;
 	m_Volume		= 0;
 	m_bPaused		= false;
 
 	m_pSystem = pSystem;
-	m_pSound = NULL;
-	m_pChannel = NULL;
 }
 
 
@@ -26,161 +27,24 @@ void CKTDSMP3Play::Play( const WCHAR* pFileName, bool loop /*= true*/ )
 	if( NULL == pFileName )
 		return;
 
-	WCHAR wcsFileName[MAX_PATH] = L"";
-
-#ifdef	CONVERSION_VS
-	wcscpy_s( wcsFileName, _countof(wcsFileName), pFileName );
-#else
-	wcscpy( wcsFileName, pFileName );
-#endif // CONVERSION_VS
-
-	if( g_pKTDXApp->GetDeviceManager()->GetPullPath( wcsFileName ) == NULL )
-		return;
-
 	m_FileName	= pFileName;
 	m_bLoop		= loop;
-
-
-
-	if( NULL == m_pSystem )
-		return;
-
-	Clear();
-
-	std::string strFileName;
-	ConvertWCHARToChar( strFileName, wcsFileName );
-
-	FMOD_RESULT result;
-	FMOD_MODE mode = FMOD_HARDWARE | FMOD_2D;
-	if( true == m_bLoop )
-	{
-		mode |= FMOD_LOOP_NORMAL;
-	}
-	else
-	{
-		mode |= FMOD_LOOP_OFF;
-	}
-
-	result = FMOD_System_CreateStream( m_pSystem, strFileName.c_str(), mode, NULL, &m_pSound );
-	if( FMOD_OK != result )
-	{
-		ErrorLog( KEM_ERROR383 );
-		return;
-	}
-
-
-	result = FMOD_System_PlaySound( m_pSystem, FMOD_CHANNEL_FREE, m_pSound, m_bPaused, &m_pChannel );
-	if( FMOD_OK != result )
-	{
-		ErrorLog( KEM_ERROR384 );
-		return;
-	}
-
-	// [-3000,0] 사이의 값을 옵션에서 입력으로 받는다
-	const float MAGIC_BOUND = 3000.f;
-	float fVolume = MAGIC_BOUND + m_Volume;
-	fVolume = (float) ( ( (int)fVolume ) % (int)MAGIC_BOUND );
-	fVolume /= MAGIC_BOUND;
-
-	result = FMOD_Channel_SetVolume( m_pChannel, fVolume );
-	if( FMOD_OK != result )
-	{
-		ErrorLog( KEM_ERROR385 );
-	}
-
-	FMOD_Channel_SetPriority( m_pChannel, 0 );
-	//SetMute( m_bMute );
-
 }
 
 void CKTDSMP3Play::Stop()
 {
-	Clear();
+}
+
+void CKTDSMP3Play::Clear()
+{
 }
 
 void CKTDSMP3Play::SetVolume( int volume )
 {
-	if( g_pKTDXApp->GetDSManager()->GetInit() == false )
-		return;
-
 	m_Volume = volume;
-
-	FMOD_RESULT result;
-	if( NULL == m_pChannel )
-		return;
-
-	// [-3000,0] 사이의 값을 옵션에서 입력으로 받는다
-	const float MAGIC_BOUND = 3000.f;
-	float fVolume = MAGIC_BOUND + m_Volume;
-	fVolume = (float) ( ( (int)fVolume ) % (int)MAGIC_BOUND );
-	fVolume /= MAGIC_BOUND;
-
-	result = FMOD_Channel_SetVolume( m_pChannel, fVolume );
-	if( FMOD_OK != result )
-	{
-		ErrorLog( KEM_ERROR386 );
-	}
 }
-
 
 void CKTDSMP3Play::SetPaused( bool bPause )
 {
-	if( g_pKTDXApp->GetDSManager()->GetInit() == false )
-		return;
-
-	if( m_bPaused == bPause )
-		return;
-
 	m_bPaused = bPause;
-
-
-	if( NULL == m_pChannel )
-	{
-		if( false == bPause )
-		{
-			Play( m_FileName.c_str(), m_bLoop );
-		}
-		return;
-	}
-
-	FMOD_RESULT result;
-	if( true == bPause )
-	{
-		result = FMOD_Channel_SetPaused( m_pChannel, TRUE );
-	}
-	else
-	{
-		result = FMOD_Channel_SetPaused( m_pChannel, FALSE );
-	}
-
-	if( FMOD_OK != result )
-	{
-		ErrorLogMsg( KEM_ERROR387, L"SetPaused" );
-	}
-
-
-}
-
-
-
-void CKTDSMP3Play::Clear()
-{
-	if( g_pKTDXApp->GetDSManager()->GetInit() == false )
-		return;
-
-	FMOD_RESULT       result;
-
-
-	if( NULL != m_pSound )
-	{
-		result = FMOD_Sound_Release( m_pSound );
-		if( FMOD_OK == result )
-		{
-			m_pSound = NULL;
-		}
-		else
-		{
-			ErrorLog( KEM_ERROR389 );
-		}
-	}
 }

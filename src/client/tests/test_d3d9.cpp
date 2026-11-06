@@ -1,6 +1,7 @@
 // KTDXLIB's D3D9 device (decision T38, docs/porting/client-d3d9.md): headless on the null backend (recorded commands,
 // uploaded bytes), plus pixels read back on a real GPU where there is one (skipped otherwise: container, CI).
 
+#include "D3DXTypes.h"
 #include "Device.h"
 #include "Fvf.h"
 #include "GeneratedShader.h"
@@ -421,6 +422,40 @@ TEST_CASE("d3d9: vertex shader constants are kept per register")
     CHECK(device.SetVertexShaderConstantF(x2::d3d9::kVertexShaderConstants - 1, set, 1));
     CHECK_FALSE(device.SetVertexShaderConstantF(x2::d3d9::kVertexShaderConstants - 1, set, 2));
     CHECK_FALSE(device.GetVertexShaderConstantF(x2::d3d9::kVertexShaderConstants + 1, got, 0));
+}
+
+TEST_CASE("d3d9: D3DX texture requirements follow the device's formats")
+{
+    auto render = NullRender();
+    x2::d3d9::Device device(*render, nullptr);
+    REQUIRE(device.Ok());
+    CHECK(device.SupportsTextureFormat(D3DFMT_A8R8G8B8, D3DUSAGE_RENDERTARGET));
+    CHECK_FALSE(device.SupportsTextureFormat(D3DFMT_R5G6B5, D3DUSAGE_RENDERTARGET));
+    CHECK_FALSE(device.SupportsTextureFormat(D3DFMT_DXT1, D3DUSAGE_AUTOGENMIPMAP));
+
+    UINT width = 0, height = 100, levels = 0;
+    D3DFORMAT format = D3DFMT_UNKNOWN;
+    CHECK(D3DXCheckTextureRequirements(&device, &width, &height, &levels, 0, &format, D3DPOOL_MANAGED) == D3D_OK);
+    CHECK(width == 256);        // D3DX's default size
+    CHECK(height == 100);
+    CHECK(format == D3DFMT_A8R8G8B8);
+    CHECK(levels == 9);         // the full chain of 256
+    levels = 20;
+    CHECK(D3DXCheckTextureRequirements(&device, &width, &height, &levels, 0, &format, D3DPOOL_MANAGED) == D3D_OK);
+    CHECK(levels == 9);
+    format = D3DFMT_R5G6B5;
+    CHECK(D3DXCheckTextureRequirements(&device, &width, &height, nullptr, D3DUSAGE_RENDERTARGET, &format,
+                                       D3DPOOL_DEFAULT) == D3DERR_NOTAVAILABLE);
+    CHECK(D3DXCheckTextureRequirements(nullptr, &width, &height, nullptr, 0, &format, D3DPOOL_MANAGED)
+          == D3DERR_INVALIDCALL);
+
+    // The image loaders are the next step: loading from memory fails cleanly.
+    x2::d3d9::Texture* texture = reinterpret_cast<x2::d3d9::Texture*>(&device);
+    D3DXIMAGE_INFO info{};
+    CHECK(FAILED(D3DXGetImageInfoFromFileInMemory("DDS ", 4, &info)));
+    CHECK(FAILED(D3DXCreateTextureFromFileInMemoryEx(&device, "DDS ", 4, 0, 0, 0, 0, D3DFMT_UNKNOWN, D3DPOOL_MANAGED,
+                                                     0, 0, 0, &info, nullptr, &texture)));
+    CHECK(texture == nullptr);
 }
 
 TEST_CASE("d3d9: resources released before or after the device")

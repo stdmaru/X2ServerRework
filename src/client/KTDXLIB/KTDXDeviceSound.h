@@ -1,9 +1,9 @@
 #pragma once
 
 #include "KTDSSoundSystem.h"
-#include "KGCMassFileBufferManager.h"
 
 
+// A sound effect. Silent backend (KTDSSoundSystem.h): loading reads nothing and playing plays nothing.
 class CKTDXDeviceSound : public CKTDXDevice
 {
 public:
@@ -33,7 +33,6 @@ protected:
 
 
 	virtual HRESULT _UnLoad();
-	void			_CheckLoadFMODSound();
 
 
 protected:
@@ -44,7 +43,5 @@ protected:
 
 	bool				m_b3DSound;
     float               m_fMaxDistance;
-
-	KGCMassFileBufferPtr m_spMemoryBuffer;
 
 };

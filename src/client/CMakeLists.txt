@@ -68,7 +68,11 @@ target_link_libraries(x2_client_browser PUBLIC x2::platform PRIVATE SDL3::SDL3)
 # KTDXLIB, the engine (docs/porting/client-ktdxlib.md): its files join as they compile on the D3D9 device (T38). Every
 # file includes stdafx.h -> KTDX.h, which includes all of the engine's headers.
 add_library(x2_client_ktdxlib STATIC
-    KTDXLIB/stdafx.cpp)
+    KTDXLIB/stdafx.cpp KTDXLIB/KSuperAssert.cpp
+    KTDXLIB/KTDGDynamicVBManager.cpp KTDXLIB/KTDGStateManager.cpp
+    KTDXLIB/KTDSManager.cpp KTDXLIB/KTDSMP3Play.cpp
+    KTDXLIB/KTDXDevice.cpp KTDXLIB/KTDXDeviceBaseTexture.cpp KTDXLIB/KTDXDeviceRenderTargetTexture.cpp
+    KTDXLIB/KTDXDeviceSound.cpp KTDXLIB/KTDXDeviceTexture.cpp)
 add_library(x2::client_ktdxlib ALIAS x2_client_ktdxlib)
 target_link_libraries(x2_client_ktdxlib PUBLIC
     x2_client_includes x2::platform x2::kncsdk x2::client_d3d9 x2::client_dxut x2::client_luacommon
