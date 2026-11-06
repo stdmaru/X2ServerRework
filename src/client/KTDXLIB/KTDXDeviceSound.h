@@ -1,14 +1,13 @@
 #pragma once
 
-#include "FMOD/inc/fmod.h"
-#include "FMOD/inc/fmod_errors.h"
+#include "KTDSSoundSystem.h"
 #include "KGCMassFileBufferManager.h"
 
 
 class CKTDXDeviceSound : public CKTDXDevice
 {
 public:
-	CKTDXDeviceSound( FMOD_SYSTEM* pSystem, wstring fileName, bool bUse3D = true );
+	CKTDXDeviceSound( KTDSSoundSystem* pSystem, wstring fileName, bool bUse3D = true );
 
 
 
@@ -40,11 +39,8 @@ protected:
 protected:
 
 
-	FMOD_VECTOR 		m_vFmodPos;
 
-	FMOD_SYSTEM*		m_pSystem;
-	FMOD_SOUND*			m_pSound;
-	FMOD_CHANNEL*		m_pChannel;
+	KTDSSoundSystem*		m_pSystem;
 
 	bool				m_b3DSound;
     float               m_fMaxDistance;

@@ -25,25 +25,7 @@ public:
     static bool     ms_bInitialized;
     static UINT     ms_uiTimerRes;
 
-    static void     OnetimeFirstCall()
-    {
-        TIMECAPS tc;
-
-		if ( ::timeGetDevCaps(&tc, sizeof(TIMECAPS)) == TIMERR_NOERROR )
-        {
-            ms_uiTimerRes = __min(__max(tc.wPeriodMin, KSYSTEMTIMER_TARGET_RESOLUTION), tc.wPeriodMax);
-			::timeBeginPeriod( ms_uiTimerRes );
-
-            //timeBeginPeriod( 1 );
-            ms_bInitialized = true;
-        }
-    }//OnetimeFirstCall()
-
-    static void     OnetimeLastCall()
-    {
-		::timeEndPeriod( ms_uiTimerRes );
-        ms_bInitialized = false;
-    }//OnetimeLastCall()
+    // OnetimeFirstCall/OnetimeLastCall (timeBeginPeriod/timeEndPeriod) had no callers and were removed.
 
     static DWORD    GetSystemTimeInMilisecond()
     {

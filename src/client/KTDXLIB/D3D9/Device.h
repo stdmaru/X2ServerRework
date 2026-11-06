@@ -291,5 +291,7 @@ using IDirect3DDevice9 = x2::d3d9::Device;
 using LPDIRECT3DDEVICE9 = x2::d3d9::Device*;
 using IDirect3DTexture9 = x2::d3d9::Texture;
 using LPDIRECT3DTEXTURE9 = x2::d3d9::Texture*;
+using IDirect3DBaseTexture9 = x2::d3d9::Texture;    // there are only 2D textures (no cube or volume textures)
+using LPDIRECT3DBASETEXTURE9 = x2::d3d9::Texture*;
 using IDirect3DVertexBuffer9 = x2::d3d9::VertexBuffer;
 using LPDIRECT3DVERTEXBUFFER9 = x2::d3d9::VertexBuffer*;

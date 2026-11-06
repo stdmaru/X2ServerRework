@@ -69,6 +69,14 @@ TEST_CASE("process: a child knows its parent")
     CHECK(p->Wait() == 0);
 }
 
+TEST_CASE("process: this process's memory")
+{
+    std::size_t current = 0, peak = 0;
+    REQUIRE(x2::platform::CurrentProcessMemory(current, peak));
+    CHECK(current > 0);
+    CHECK(peak >= current);
+}
+
 TEST_CASE("process: environment set here reaches the children")
 {
     SetEnvironment("X2_TEST_ENV", "value with space");

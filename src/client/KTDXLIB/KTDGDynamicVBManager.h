@@ -154,7 +154,7 @@ private:
 
     };//struct  DynamicVBInfo
 
-    boost::array<DynamicVBInfo, DVB_END>
+    std::array<DynamicVBInfo, DVB_END>
                         m_aDynamicVBInfo;
 
     unsigned            m_uNumMaxPrimitiveCount;

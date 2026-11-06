@@ -330,51 +330,17 @@
 #define XOR_KEY2 0x9800bbef
 
 
-#ifndef STRICT
-#define STRICT
-#endif
-
-// If app hasn't chosen, set to work with Windows 98, Windows Me, Windows 2000, Windows XP and beyond
-#ifndef WINVER
-#define WINVER         0x0410
-#endif
-#ifndef _WIN32_WINDOWS
-#define _WIN32_WINDOWS 0x0410
-#endif
-
-#ifndef _WIN32_WINNT
-#define _WIN32_WINNT   0x0500
-#endif
-
-#pragma warning (disable: 4702)
-#pragma warning (disable: 4995)
-#pragma warning( disable : 4100 ) // disable unreference formal parameter warnings for /W4 builds
-
+// System headers: Win32 through x2::platform, D3D9 through KTDXLIB's own device (decision T38,
+// docs/porting/client-d3d9.md), DirectInput through SDL3. DirectSound, DirectShow, DirectDraw and DirectPlay are gone.
 #include "x2/platform/net.h"
-#include <wininet.h>
 #include "x2/platform/win32.h"
-
 
 #include <assert.h>
 #include <wchar.h>
-#include <commctrl.h> // for InitCommonControls()
-#include <shellapi.h> // for ExtractIcon()
 #include <math.h>
 #include <limits.h>
 #include <stdio.h>
 #include <time.h>
-#include <io.h>
-#include <shldisp.h>
-#include <malloc.h>
-//{{ robobeg : 2009-8-19
-#include <atlbase.h> // for CComPtr and CComQIPtr
-//}} robobeg : 2009-8-19
-
-//////////////////////////////////////////////////////////////////////////
-//현재 실행중인 프로세스를 찾아내기위한 함수를 쓰기위해
-#include <TlHelp32.h>
-//////////////////////////////////////////////////////////////////////////
-
 
 #include "KSuperAssert.h"
 
@@ -386,59 +352,14 @@
 
 #include "../X2/KOGGamePerformanceCheckDefine.h"
 
-// CRT's memory leak detection
-#if defined(DEBUG) || defined(_DEBUG)
-	#include <crtdbg.h>
-#endif
-
-
-//{{ seojt // 2008-10-15, 10:47
-// Enable extra D3D debugging in debug builds if using the debug DirectX runtime.
-// This makes D3D objects work well in the debugger watch window, but slows down
-// performance slightly.
-// "d3d9.h"를 include하기 전에 이 매크로를 활성화시켜 주어야 한다.
-// "d3d9.h" 인클루드 후에 있던 정의를 "d3d9.h"를 인클루드하기 전으로
-// 옮기다. - jintaeks on 2008-10-15, 10:49
-#if defined(DEBUG) || defined(_DEBUG)
-	#ifndef D3D_DEBUG_INFO
-		#define D3D_DEBUG_INFO
-	#endif
-#endif
-//}} seojt // 2008-10-15, 10:47
-// Direct3D includes
-#include <d3d9.h>
+// Direct3D: KTDXLIB's device and the D3D9 vocabulary, the D3DX math, and the D3DX interfaces the engine still names
+#include "D3D9Types.h"
+#include "Device.h"
 #include "x2/platform/d3dx_math.h"
-#ifdef CONVERSION_VS
-#	include <dxerr.h>
-#else
-#	include <dxerr9.h>
-#endif // CONVERSION_VS
+#include "D3DXTypes.h"
 #include "DirectInputKeys.h"	// DirectInput is replaced by SDL3 (docs/porting/client-input.md)
-#include <mmreg.h>
-#ifdef CONVERSION_VS
-//#	include <dplay8.h>
-#else
-#include <dplay8.h>
-#include <ddraw.h>
-#include <dsound.h>
-#include <dshow.h>
-#endif // CONVERSION_VS
 
-
-#ifndef STRSAFE_NO_DEPRECATE
-#pragma deprecated("strncpy")
-#pragma deprecated("wcsncpy")
-#pragma deprecated("_tcsncpy")
-#pragma deprecated("wcsncat")
-#pragma deprecated("strncat")
-#pragma deprecated("_tcsncat")
-#endif
-
-#pragma warning( disable : 4996 ) // disable deprecated warning
-#include <strsafe.h>
-#pragma warning( default : 4996 )
-
-#include "zlib.h"
+#include <zlib.h>
 
 #include "DXUT.h"  // the DXUT replacement (src/client/DXUT): window, loop, timer
 
@@ -471,26 +392,25 @@ using std::set;
 //{{ robobeg : 2008-10-10
 #include <bitset>
 #include    <deque>
-#include    <boost/type_traits/is_base_of.hpp>
+#include <type_traits>
 //}} robobeg : 2008-10-10
 
 #include <sys/stat.h>
-#include "x2/platform/noncopyable.h"
-#include <boost/pool/object_pool.hpp>
-#include <boost/array.hpp>
-
-	#include <boost/pool/singleton_pool.hpp>
-
-
+#include <array>
 #include <memory>
-#include <boost/scope_exit.hpp>
-#include <boost/circular_buffer.hpp>
-#include <boost/intrusive_ptr.hpp>
+#include "x2/platform/noncopyable.h"
+#include "x2/platform/intrusive_ptr.h"
+#include "KCircularBuffer.h"
 
 #include <ft2build.h>
 #include <freetype/freetype.h>
 #include <freetype/ftbitmap.h>
 
+
+// The CRT's debug assertion (crtdbg.h)
+#ifndef _ASSERTE
+#define _ASSERTE(expr) assert(expr)
+#endif
 
 #if defined(DEBUG) || defined(_DEBUG)
 
@@ -584,11 +504,10 @@ using std::set;
 #endif
 
 
+// Reference counting for x2::intrusive_ptr<CLASS>, found by argument-dependent lookup (namespace boost in the original)
 #define IMPLEMENT_INTRUSIVE_PTR(CLASS) \
-namespace boost { \
     inline void    intrusive_ptr_add_ref( CLASS* p ) { if ( p )    p->AddRef(); } \
-    inline void    intrusive_ptr_release( CLASS* p ) { if ( p )    p->Release(); } \
-}
+    inline void    intrusive_ptr_release( CLASS* p ) { if ( p )    p->Release(); }
 
 
 
@@ -602,7 +521,7 @@ inline typename Container::iterator EraseUnorderlyUsingSwap( Container& containe
 		return	container.erase( iter );
 	}//if
 	swap( *iter, *iterLast );
-	Container::size_type dist = iter - container.begin();
+	typename Container::size_type dist = iter - container.begin();
 	container.erase( iterLast );
 	return	container.begin() + dist;
 }
@@ -937,7 +856,6 @@ extern double g_NowTime;
 
 #include "KHangulPPWSelector.h"
 #include "MinMax.h"
-#include <boost/scope_exit.hpp>
 
 #ifdef CONVERSION_VS
 #if defined(DEBUG) || defined(_DEBUG)

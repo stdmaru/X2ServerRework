@@ -2,7 +2,7 @@
 
 //{{ seojt // 2009-1-9, 15:01
 class CKTDGXSkinAnim;
-typedef boost::intrusive_ptr<CKTDGXSkinAnim>    CKTDGXSkinAnimPtr;
+typedef x2::intrusive_ptr<CKTDGXSkinAnim>    CKTDGXSkinAnimPtr;
 //}} seojt // 2009-1-9, 15:01
 
 class CKTDGXSkinAnim : public CKTDGObject

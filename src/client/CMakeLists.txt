@@ -65,6 +65,15 @@ add_library(x2::client_browser ALIAS x2_client_browser)
 target_include_directories(x2_client_browser PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/KTDXLIB)
 target_link_libraries(x2_client_browser PUBLIC x2::platform PRIVATE SDL3::SDL3)
 
+# KTDXLIB, the engine (docs/porting/client-ktdxlib.md): its files join as they compile on the D3D9 device (T38). Every
+# file includes stdafx.h -> KTDX.h, which includes all of the engine's headers.
+add_library(x2_client_ktdxlib STATIC
+    KTDXLIB/stdafx.cpp)
+add_library(x2::client_ktdxlib ALIAS x2_client_ktdxlib)
+target_link_libraries(x2_client_ktdxlib PUBLIC
+    x2_client_includes x2::platform x2::kncsdk x2::client_d3d9 x2::client_dxut x2::client_luacommon
+    x2::client_massfile x2::client_browser x2::client_movie Freetype::Freetype ZLIB::ZLIB)
+
 # The client's MPEG-1 movies on pl_mpeg, replacing BandiVideo (docs/porting/client-movie.md). KTDXLIB's CMovieData plays
 # them; new code with no equivalent file in the original.
 add_library(x2_client_movie STATIC Movie/MoviePlayer.cpp)

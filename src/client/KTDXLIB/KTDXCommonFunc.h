@@ -1,7 +1,7 @@
 #pragma once
 
-#include < KncUtil.h >
-#include "psapi.h"
+#include "KncUtil.h"
+#include "x2/platform/process.h"
 
 #define XOR_KEY0 0xc6f8aa02
 #define XOR_KEY1 0x2647abdc
@@ -804,117 +804,16 @@ inline char* XORDecrypt( const char* pEncryptedBuffer, int iBufferSize )
 	return pDecryptedBuffer;
 }
 
-inline char* XOREncrypt( const char* pEncryptedBuffer, int iBufferSize )
-{
-	return XORDecrypt( pEncryptedBuffer, iBufferSize );
-}
-
-inline bool FileEncrypt( std::string strFileName )
-{
-	std::vector<int> vecEncryptionKey;
-	vecEncryptionKey.push_back( XOR_KEY30 );
-	vecEncryptionKey.push_back( XOR_KEY42 );
-	vecEncryptionKey.push_back( XOR_KEY14 );
-	vecEncryptionKey.push_back( XOR_KEY22 );
-	vecEncryptionKey.push_back( XOR_KEY40 );
-
-	char pBuf[5];
-	std::string strEncryptedFileName;
-	strEncryptedFileName = strFileName;
-	strEncryptedFileName += ".encrypt.lua";
-
-	std::ofstream ofs;
-	std::ifstream ifs;
-	std::string strCryptBuffer;
-	ifs.open( strFileName.c_str(), std::ios::binary );
-	ofs.open( strEncryptedFileName.c_str(), std::ios::binary );
-
-	if( ifs.is_open() == false || ofs.is_open() == false )
-		return false;
-
-	// 파일 크기 구하기
-	struct stat fileSize;
-	stat( strFileName.c_str(), &fileSize );
-
-	int iKeyIndex = 0;
-	int iKeySize = vecEncryptionKey.size();
-	int iRemainSize = fileSize.st_size;
-
-	while( !ifs.eof() )
-	{
-		memset( pBuf, 0, 5 );
-
-		// 파일버퍼 읽기
-		ifs.read( pBuf, 4 );
-
-		int iBufTemp;
-		memcpy( &iBufTemp, pBuf, 4 );
-
-		// 암호화
-		int iEncryptData = iBufTemp ^ ( vecEncryptionKey[iKeyIndex] ^ XOR_KEY49 );
-
-		memcpy( pBuf, &iEncryptData, 4 );
-
-		if( iRemainSize < 4 )
-		{
-			strCryptBuffer.append( pBuf, iRemainSize );
-			break;
-		}
-		else
-		{
-			strCryptBuffer.append( pBuf, 4 );
-		}
-
-		// 남은 파일 크기 감소
-		iRemainSize -= 4;
-
-		// 4바이트씩 번갈아 가면서 암호화키 적용
-		++iKeyIndex;
-
-		if( iKeyIndex >= iKeySize )
-			iKeyIndex = 0;
-	}
-
-	ofs.write( strCryptBuffer.c_str(), strCryptBuffer.size() );
-
-	ifs.close();
-	ofs.close();
-
-	_chmod( strFileName.c_str(), _S_IREAD | _S_IWRITE ); // 파일 삭제를 위해서
-
-	if( CopyFileA( strEncryptedFileName.c_str(), strFileName.c_str(), false ) == 0 )
-		return false;
-
-	if( DeleteFileA( strEncryptedFileName.c_str() ) == 0 )
-		return false;
-
-	return true;
-
-}
 
 
 
 
 
+
+// Windows Vista or later. Always true: the port runs on 64-bit Windows 10+ and on Linux.
 inline bool CheckIsVistaComputer()
 {
-	OSVERSIONINFO sInfo;
-	sInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-	if ( ::GetVersionEx(&sInfo) )
-	{
-		if ( sInfo.dwPlatformId == VER_PLATFORM_WIN32_NT && sInfo.dwMajorVersion >= 6 && sInfo.dwMinorVersion >= 0 )
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-	else
-	{
-		return false;
-	}
+	return true;
 }
 
 
@@ -957,47 +856,15 @@ inline int TokenizeInt( WCHAR** ppStart, WCHAR* pEnd )
 
 
 
-// 어떤 프로세스의 메모리 사용량을 얻어오는 함수
-inline DWORD GetUsingMemorySize(std::wstring strProcessName, SIZE_T& currMemSize, SIZE_T& peakMemSize )
+// Memory used by the process. The original searched every process for one whose path contained strProcessName;
+// its only caller asks for the client itself ("X2.exe"), so this reads the current process.
+inline DWORD GetUsingMemorySize(std::wstring /*strProcessName*/, SIZE_T& currMemSize, SIZE_T& peakMemSize )
 {
-	DWORD pid[1024];
-	DWORD cb;
-	EnumProcesses(pid,sizeof(DWORD)*1024,&cb);
-	HMODULE hMo;
-	for(int i = 0 ; i < 1024 ; ++i)
-	{
-		WCHAR szFileName[1024];
-		HANDLE hProcess=OpenProcess(PROCESS_QUERY_INFORMATION |PROCESS_VM_READ,FALSE,pid[i]);
-		if(!hProcess)
-			continue;
-		BOOL bb=EnumProcessModules(hProcess,&hMo,sizeof(hMo),&cb);
-		if(!bb)
-		{
-			DWORD error=GetLastError();
-			LPVOID lpMsgBuf;
-			FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER
-				|FORMAT_MESSAGE_FROM_SYSTEM
-				|FORMAT_MESSAGE_IGNORE_INSERTS
-				, NULL,error,0,(LPWSTR)&lpMsgBuf,0,NULL);
-			std::wstring strLastErrMsg=static_cast<LPCWSTR>(lpMsgBuf);
-			LocalFree(lpMsgBuf);
-			CloseHandle(hProcess);
-			continue;
-		}
-		GetModuleFileNameEx(hProcess,hMo,szFileName,1024);
-		std::wstring strProcName(szFileName);
-		if(strProcName.find(strProcessName) != -1 )
-		{
-			PROCESS_MEMORY_COUNTERS mem;
-			GetProcessMemoryInfo(hProcess,&mem,sizeof(PROCESS_MEMORY_COUNTERS));
-			CloseHandle(hProcess);
-			currMemSize = mem.WorkingSetSize;
-			peakMemSize = mem.PeakWorkingSetSize;
-			return (DWORD)mem.WorkingSetSize;
-		}
-		CloseHandle(hProcess);
-	}
-	return NULL;
+	std::size_t current = 0, peak = 0;
+	x2::platform::CurrentProcessMemory( current, peak );
+	currMemSize = current;
+	peakMemSize = peak;
+	return static_cast<DWORD>( current );
 }
 
 // kimhc // CX2UISkillTree에 있던것을 옮겨와 수정함 // 2009-06-16
@@ -1134,199 +1001,14 @@ inline bool ConvertFileAnsiToUTF8( const string& srcFileName, const string& dest
 	return true;
 }
 
-// 실행파일과 다른위치에 있는 파일을 컨버팅할경우.
-inline bool ConvertFullPathFileAnsiToUTF8( const string& srcFullPath, const string& destFullPath )
-{
-	FILE* srcFile = NULL;
-	FILE* destFile = NULL;
-
-	UCHAR szBuf[1024] = "";
-	size_t sizeRead = 0;
-	size_t sizeWrote = 0;
-
-	bool bIsidentical = false;
-	if( 0 == srcFullPath.compare(destFullPath) )
-		bIsidentical = true;
-
-	// file path와 name을 분리
-	char drive[_MAX_DRIVE];
-	char dir[_MAX_DIR];
-	char fname[_MAX_FNAME];
-	char ext[_MAX_EXT];
-
-#ifdef	CONVERSION_VS
-	_splitpath_s( destFullPath.c_str(), drive, _MAX_DRIVE, dir, _MAX_DIR, fname, _MAX_FNAME, ext, _MAX_EXT );
-#else
-	_splitpath( destFullPath.c_str(), drive, dir, fname, ext);
-#endif // CONVERSION_VS
-
-	string tmpDestFileName;
-	tmpDestFileName = drive;
-	tmpDestFileName += dir;
-
-	if( true == bIsidentical )
-		tmpDestFileName += "temp_";
-
-	tmpDestFileName += fname;
-	tmpDestFileName += ext;
-
-#ifdef	CONVERSION_VS
-	fopen_s( &srcFile, srcFullPath.c_str(), "r" );
-#else
-	srcFile = fopen( srcFullPath.c_str(), "r" );
-#endif // CONVERSION_VS
-
-	if( NULL == srcFile )
-		return false;
-
-	sizeRead = fread( szBuf, sizeof(char), 3, srcFile );
-	if( sizeRead >= 3 )
-	{
-		if( szBuf[0] == 0xEF && szBuf[1] == 0xBB && szBuf[2] == 0xBF )
-		{
-			fclose( srcFile );
-			return true;
-		}
-	}
-
-	fseek( srcFile, 0, SEEK_SET );
-
-#ifdef	CONVERSION_VS
-	fopen_s( &destFile, tmpDestFileName.c_str(), "w" );
-#else
-	destFile = fopen( tmpDestFileName.c_str(), "w" );
-#endif // CONVERSION_VS
-
-	if( NULL == destFile )
-	{
-		fclose( srcFile );
-		return false;
-	}
-
-
-	fputc( 0xEF, destFile );
-	fputc( 0xBB, destFile );
-	fputc( 0xBF, destFile );
-
-	//WCHAR wszHeader[MAX_PATH] = L"-- lua header. UTF-8 인코딩 인식을 위해 이 줄은 지우지 마세요.\r\n\r\n";
-	//::MultiByteToWideChar(CP_UTF8,0,szHeader,-1,wszHeader,MAX_PATH);
-	//fwrite( wszHeader, sizeof(WCHAR), wcslen(wszHeader), destFile );
-
-	while( false == feof( srcFile ) )
-	{
-		sizeRead = fread( szBuf, sizeof(char), ARRAY_SIZE(szBuf), srcFile );
-		if( sizeRead <= 0 )
-			break;
-
-		sizeWrote = fwrite( szBuf, sizeof(char), sizeRead, destFile );
-		ASSERT( sizeRead == sizeWrote );
-	}
-
-	fclose( srcFile );
-	fclose( destFile );
-
-
-	if( true == bIsidentical )
-	{
-		remove( srcFullPath.c_str() );
-		//DeleteFileA( srcFullPath.c_str() );
-		rename( tmpDestFileName.c_str(), destFullPath.c_str() );
-	}
-
-	return true;
-}
 
 
 
 
 
 
-inline bool DecomposePathAndFileName( WCHAR* wszPath, WCHAR* wszFileName, const WCHAR* wszFullPath )
-{
-	if( NULL == wszFullPath )
-		return false;
 
-	WCHAR drive[_MAX_DRIVE] = L"";
-	WCHAR dir[_MAX_DIR] = L"";
-	WCHAR fname[_MAX_FNAME] = L"";
-	WCHAR ext[_MAX_EXT] = L"";
 
-#ifdef	CONVERSION_VS
-	_wsplitpath_s( wszFullPath, drive, _MAX_DRIVE, dir, _MAX_DIR, fname, _MAX_FNAME, ext, _MAX_EXT );
-
-	if( NULL != wszFileName )
-	{
-		wcscat_s( wszFileName, _MAX_FNAME, fname );
-		wcscat_s( wszFileName, _MAX_FNAME, ext );
-	}
-	if( NULL != wszPath )
-	{
-		wcscat_s( wszPath, _MAX_DIR, drive );
-		wcscat_s( wszPath, _MAX_DIR, dir );
-	}
-#else
-	_wsplitpath( wszFullPath, drive, dir, fname, ext );
-
-	if( NULL != wszFileName )
-	{
-		wcscat( wszFileName, fname );
-		wcscat( wszFileName, ext );
-	}
-	if( NULL != wszPath )
-	{
-		wcscat( wszPath, drive );
-		wcscat( wszPath, dir );
-	}
-#endif // CONVERSION_VS
-
-	return true;
-}
-
-inline void CompulsorybyConvertFileAnsiToUTF8A( string strFullPath )
-{
-	FILE* srcFile = NULL;
-
-#ifdef	CONVERSION_VS
-	fopen_s( &srcFile, strFullPath.c_str(), "r" );
-#else
-	srcFile = fopen( strFullPath.c_str(), "r" );
-#endif // CONVERSION_VS
-
-	if( NULL == srcFile )
-		return;
-
-	UCHAR szBuf[1024] = "";
-	size_t sizeRead = 0;
-
-	sizeRead = fread( szBuf, sizeof(char), 3, srcFile );
-
-	fclose( srcFile );
-
-	if( sizeRead >= 3 )
-	{
-		if( szBuf[0] == 0xEF && szBuf[1] == 0xBB && szBuf[2] == 0xBF )
-		{
-			return;
-		}
-		else
-		{
-			::MessageBoxA( DXUTGetHWND(), "ANSI 파일이라 UTF 로 변환 됩니다.", strFullPath.c_str(), MB_ICONWARNING | MB_OK );
-
-			if( false == ConvertFullPathFileAnsiToUTF8( strFullPath, strFullPath ) )
-			{
-				::MessageBoxA( DXUTGetHWND(), "UTF 변환 실패.!", strFullPath.c_str(), MB_ICONWARNING | MB_OK );
-			}
-		}
-	}
-}
-
-inline void CompulsorybyConvertFileAnsiToUTF8W( wstring wstrFullPath )
-{
-	string strFileName;
-	ConvertWCHARToChar( strFileName, wstrFullPath );
-
-	CompulsorybyConvertFileAnsiToUTF8A( strFileName );
-}
 
 // kimhc // 1.05 (5%), 0.95 (-5%) 등의 증가율을 0.5, -0.5 등으로 반환 해주는 함수
 inline float CalculateIncreasingRate( float fRate )

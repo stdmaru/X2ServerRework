@@ -3,8 +3,7 @@
 
 #include "KTDSMP3Play.h"
 
-#include "FMOD/inc/fmod.h"
-#include "FMOD/inc/fmod_errors.h"
+#include "KTDSSoundSystem.h"
 
 
 
@@ -36,7 +35,7 @@ class CKTDSManager : public CKTDXStage
 		//	}
 		//}
 
-		FMOD_SYSTEM* GetSystem() const { return m_pSystem; }
+		KTDSSoundSystem* GetSystem() const { return m_pSystem; }
 
 		bool GetEnable3DSound() const { return m_bEnable3DSound; }
 		void SetEnable3DSound(bool val) { m_bEnable3DSound = val; }
@@ -59,7 +58,7 @@ class CKTDSManager : public CKTDXStage
 		CKTDSMP3Play*			m_pMP3Play;
 
 
-		FMOD_SYSTEM*			m_pSystem;
+		KTDSSoundSystem*			m_pSystem;
 		bool					m_bEnable3DSound;		// 옵션 설정등에서 실제로 3D sound를 사용할지
 		bool					m_bCapable3DSound;		// 시스템에서 3D sound를 지원하는지
 

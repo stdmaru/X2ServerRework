@@ -374,7 +374,7 @@ namespace   kog
     _KSMARTNULL_NULLIFY_ONE_PARAM( std::shared_ptr, class, Out_.reset() )
     _KSMARTNULL_NULLIFY_ONE_PARAM( boost::shared_array, class, Out_.reset() )
     _KSMARTNULL_NULLIFY_ONE_PARAM( std::weak_ptr, class, Out_.reset() )
-    _KSMARTNULL_NULLIFY_ONE_PARAM( boost::intrusive_ptr, class, Out_.reset() )
+    _KSMARTNULL_NULLIFY_ONE_PARAM( x2::intrusive_ptr, class, Out_.reset() )
 
     _KSMARTNULL_NULLIFY_ONE_PARAM( boost::optional, class, Out_ = boost::none );
 

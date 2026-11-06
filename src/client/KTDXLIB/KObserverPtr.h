@@ -160,8 +160,8 @@ public:
         static KObserverHandle*
                         GetSmartHandle( U* pkInObservable_ )
                         {
-                            static_assert( ( boost::is_base_of< T, U >::value == true ) , "");
-                            static_assert( ( boost::is_base_of< KObservableBase, U >::value == true ) , "");
+                            static_assert( ( std::is_base_of< T, U >::value == true ) , "");
+                            static_assert( ( std::is_base_of< KObservableBase, U >::value == true ) , "");
                             if ( pkInObservable_ != NULL )
                             {
                                 ASSERT( pkInObservable_->_GetObserverHandle() != NULL );

@@ -54,7 +54,7 @@ class CKTDXLog
         };
 
         KTLSData            m_aTLSData[KTDXLOG_MAX_THREAD_NUM];
-		__declspec(thread) static KTLSData*
+		static thread_local KTLSData*
                             ms_pTLSData;
         volatile DWORD      m_dwTimestamp;
 
