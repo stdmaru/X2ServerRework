@@ -498,6 +498,25 @@ protected:
     Device() = default;
 };
 
+// Claims a window for the device for its lifetime and sets its present mode; releases it (after WaitIdle) on
+// destruction. Destroy it before the window and after the last frame.
+class WindowClaim {
+public:
+    WindowClaim(Device& device, SDL_Window* window, PresentMode mode = PresentMode::Vsync);
+    ~WindowClaim();
+
+    WindowClaim(const WindowClaim&) = delete;
+    WindowClaim& operator=(const WindowClaim&) = delete;
+
+    // False when the claim failed: see Device::LastError().
+    bool Ok() const { return m_claimed; }
+
+private:
+    Device& m_device;
+    SDL_Window* m_window;
+    bool m_claimed = false;
+};
+
 // "null" / "sdlgpu" (the names configuration and tests use).
 std::string_view BackendName(Backend backend);
 bool ParseBackend(std::string_view name, Backend& backend);

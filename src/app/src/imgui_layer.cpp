@@ -1,5 +1,7 @@
 #include "x2/app/imgui_layer.h"
 
+#include "x2/render/sdlgpu.h"
+
 #include <imgui.h>
 #include <imgui_impl_sdl3.h>
 #include <imgui_impl_sdlgpu3.h>
@@ -88,10 +90,16 @@ std::string ConfigureImGui(const ImGuiOptions& options, float contentScale)
     return {};
 }
 
-std::unique_ptr<ImGuiLayer> ImGuiLayer::Create(Window& window, const ImGuiOptions& options, std::string& error)
+std::unique_ptr<ImGuiLayer> ImGuiLayer::Create(Window& window, render::Device& device, const ImGuiOptions& options,
+                                               std::string& error)
 {
     IMGUI_CHECKVERSION();
-    std::unique_ptr<ImGuiLayer> self(new ImGuiLayer(window));
+    SDL_GPUDevice* native = render::sdlgpu::Native::Device(device);
+    if (!native) {
+        error = "ImGuiLayer: needs an SDL_GPU device (x2::render backend sdlgpu)";
+        return nullptr;
+    }
+    std::unique_ptr<ImGuiLayer> self(new ImGuiLayer(device));
     self->m_context = ImGui::CreateContext();
     ImGui::SetCurrentContext(self->m_context);
 
@@ -106,8 +114,8 @@ std::unique_ptr<ImGuiLayer> ImGuiLayer::Create(Window& window, const ImGuiOption
     self->m_platformInit = true;
 
     ImGui_ImplSDLGPU3_InitInfo info{};
-    info.Device = window.Device();
-    info.ColorTargetFormat = window.SwapchainFormat();
+    info.Device = native;
+    info.ColorTargetFormat = SDL_GetGPUSwapchainTextureFormat(native, window.Handle());
     info.MSAASamples = SDL_GPU_SAMPLECOUNT_1;
     if (!ImGui_ImplSDLGPU3_Init(&info)) {
         error = "ImGui_ImplSDLGPU3_Init failed";
@@ -124,7 +132,7 @@ ImGuiLayer::~ImGuiLayer()
     }
     ImGui::SetCurrentContext(m_context);
     if (m_rendererInit) {
-        m_window.WaitIdle();
+        m_device.WaitIdle();
         ImGui_ImplSDLGPU3_Shutdown();
     }
     if (m_platformInit) {
@@ -145,26 +153,26 @@ void ImGuiLayer::NewFrame()
     ImGui::NewFrame();
 }
 
-void ImGuiLayer::Render(Frame& frame, SDL_FColor clear)
+void ImGuiLayer::Render(render::CommandBuffer& commands, render::Texture target, const render::Color& clear)
 {
     ImGui::Render();
     ImDrawData* drawData = ImGui::GetDrawData();
     const bool empty = drawData->DisplaySize.x <= 0.0f || drawData->DisplaySize.y <= 0.0f;
-    if (!frame.commands || !frame.target || empty) {
+    SDL_GPUCommandBuffer* native = render::sdlgpu::Native::CommandBuffer(commands);
+    if (!native || !target || empty) {
         return;
     }
 
     // The backend uploads vertices in a copy pass, which must come before the render pass.
-    ImGui_ImplSDLGPU3_PrepareDrawData(drawData, frame.commands);
+    ImGui_ImplSDLGPU3_PrepareDrawData(drawData, native);
 
-    SDL_GPUColorTargetInfo target{};
-    target.texture = frame.target;
-    target.clear_color = clear;
-    target.load_op = SDL_GPU_LOADOP_CLEAR;
-    target.store_op = SDL_GPU_STOREOP_STORE;
-    SDL_GPURenderPass* pass = SDL_BeginGPURenderPass(frame.commands, &target, 1, nullptr);
-    ImGui_ImplSDLGPU3_RenderDrawData(drawData, frame.commands, pass);
-    SDL_EndGPURenderPass(pass);
+    const render::ColorTargetInfo info{.texture = target, .clearColor = clear, .loadOp = render::LoadOp::Clear};
+    render::RenderPass* pass = commands.BeginRenderPass({&info, 1}, nullptr);
+    if (!pass) {
+        return;
+    }
+    ImGui_ImplSDLGPU3_RenderDrawData(drawData, native, render::sdlgpu::Native::RenderPass(*pass));
+    pass->End();
 }
 
 }  // namespace x2::app

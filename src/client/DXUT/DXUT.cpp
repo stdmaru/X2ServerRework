@@ -4,6 +4,7 @@
 #include "SdlMessages.h"
 
 #include "x2/app/app.h"
+#include "x2/render/render.h"
 #include "x2/platform/unicode.h"
 
 #include <SDL3/SDL.h>
@@ -33,7 +34,10 @@ struct DxutState {
     bool autoChangeAdapter = true;
 
     std::unique_ptr<x2::app::Sdl> sdl;
+    // Declared after `sdl`: destroyed before SDL_Quit. Created with the first window and kept across windows.
+    std::unique_ptr<x2::render::Device> device;
     std::unique_ptr<x2::app::Window> window;
+    bool windowClaimed = false;
     HWND hwnd = nullptr;
     HINSTANCE hinstance = nullptr;
     x2::dxut::SdlMessageTranslator translator;
@@ -125,29 +129,50 @@ void Render3DEnvironment(DxutState& state)
         return;
     }
 
-    x2::app::Frame frame;
-    if (!state.window->BeginFrame(frame)) {
-        SDL_Log("DXUT: the GPU device failed: %s", SDL_GetError());
+    x2::render::CommandBuffer* commands = state.device->AcquireCommandBuffer();
+    x2::render::SwapchainTexture swapchain;
+    if (!commands || !commands->WaitAndAcquireSwapchainTexture(state.window->Handle(), swapchain)) {
+        if (commands) {
+            commands->Cancel();
+        }
+        SDL_Log("DXUT: the GPU device failed: %s", state.device->LastError().c_str());
         state.exitCode = 1;
         state.quit = true;
         return;
     }
-    if (frame.target) {
-        SDL_GPUColorTargetInfo target = {};
-        target.texture = frame.target;
-        target.load_op = SDL_GPU_LOADOP_CLEAR;
-        target.store_op = SDL_GPU_STOREOP_STORE;
-        target.clear_color = SDL_FColor{0.0f, 0.0f, 0.0f, 1.0f};
-        SDL_GPURenderPass* pass = SDL_BeginGPURenderPass(frame.commands, &target, 1, nullptr);
-        SDL_EndGPURenderPass(pass);
+    if (swapchain.texture) {
+        const x2::render::ColorTargetInfo target{.texture = swapchain.texture,
+                                                 .clearColor = {0.0f, 0.0f, 0.0f, 1.0f},
+                                                 .loadOp = x2::render::LoadOp::Clear};
+        if (x2::render::RenderPass* pass = commands->BeginRenderPass({&target, 1}, nullptr)) {
+            pass->End();
+        }
     }
-    state.window->EndFrame(frame);
+    if (!commands->Submit()) {
+        SDL_Log("DXUT: submit failed: %s", state.device->LastError().c_str());
+    }
+}
+
+// X2_RENDER_BACKEND chooses the renderer ("sdlgpu", the default, or "null" for headless runs and tests; T36).
+x2::render::Backend RenderBackend()
+{
+    x2::render::Backend backend = x2::render::Backend::SdlGpu;
+    if (const char* name = SDL_getenv("X2_RENDER_BACKEND"); name && *name) {
+        if (!x2::render::ParseBackend(name, backend)) {
+            SDL_Log("DXUT: unknown X2_RENDER_BACKEND \"%s\", using sdlgpu", name);
+        }
+    }
+    return backend;
 }
 
 void ReleaseWindow(DxutState& state)
 {
     if (state.window) {
-        state.window->WaitIdle();
+        if (state.windowClaimed) {
+            state.device->WaitIdle();
+            state.device->ReleaseWindow(state.window->Handle());
+            state.windowClaimed = false;
+        }
         SDL_StopTextInput(state.window->Handle());
     }
     if (x2::dxut::BoundIme() == &state.translator.Ime()) {
@@ -229,6 +254,28 @@ HRESULT DXUTCreateWindow(const WCHAR* strWindowTitle, HINSTANCE /*hInstance*/, H
         return E_FAIL;
     }
     SDL_Window* window = state.window->Handle();
+    if (!state.device) {
+        x2::render::DeviceOptions renderOptions;
+        renderOptions.backend = RenderBackend();
+        state.device = x2::render::Device::Create(renderOptions, error);
+        if (!state.device) {
+            SDL_Log("DXUT: %s", error.c_str());
+            state.window.reset();
+            state.exitCode = 1;
+            return E_FAIL;
+        }
+    }
+    // D3DPRESENT_INTERVAL_DEFAULT: one present per vertical blank.
+    if (!state.device->ClaimWindow(window) ||
+        !state.device->SetSwapchainParameters(window, x2::render::PresentMode::Vsync)) {
+        SDL_Log("DXUT: %s", state.device->LastError().c_str());
+        state.device->ReleaseWindow(window);
+        state.device.reset();  // a device that cannot present to this window is no use for the next one
+        state.window.reset();
+        state.exitCode = 1;
+        return E_FAIL;
+    }
+    state.windowClaimed = true;
     if (x != CW_USEDEFAULT && y != CW_USEDEFAULT) {
         SDL_SetWindowPosition(window, x, y);
     }
@@ -418,6 +465,11 @@ bool DXUTIsMouseButtonDown(BYTE vButton)
     case VK_XBUTTON2: return buttons[4];
     default: return false;
     }
+}
+
+x2::render::Device* DXUTGetRenderDevice()
+{
+    return State().device.get();
 }
 
 SDL_Window* DXUTGetSDLWindow()

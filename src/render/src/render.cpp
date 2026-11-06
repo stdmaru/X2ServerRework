@@ -16,6 +16,23 @@ std::unique_ptr<Device> Device::Create(const DeviceOptions& options, std::string
     return nullptr;
 }
 
+WindowClaim::WindowClaim(Device& device, SDL_Window* window, PresentMode mode) : m_device(device), m_window(window)
+{
+    m_claimed = device.ClaimWindow(window);
+    if (m_claimed && !device.SetSwapchainParameters(window, mode)) {
+        device.ReleaseWindow(window);
+        m_claimed = false;
+    }
+}
+
+WindowClaim::~WindowClaim()
+{
+    if (m_claimed) {
+        m_device.WaitIdle();
+        m_device.ReleaseWindow(m_window);
+    }
+}
+
 std::string_view BackendName(Backend backend)
 {
     switch (backend) {

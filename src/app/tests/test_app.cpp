@@ -1,6 +1,7 @@
 // x2::app without a display: SDL's dummy video driver (no GPU), so these run in the container and in CI.
 
 #include "x2/app/app.h"
+#include "x2/render/render.h"
 
 #include <doctest/doctest.h>
 
@@ -25,16 +26,27 @@ TEST_CASE("app: SDL initializes with the dummy video driver")
     CHECK(std::string(SDL_GetCurrentVideoDriver()) == "dummy");
 }
 
-TEST_CASE("app: a window without a GPU fails cleanly")
+TEST_CASE("app: a window opens without a GPU and the null renderer claims it")
 {
     DummySdl s;
     REQUIRE(s.sdl);
     std::string error;
     auto window = x2::app::Window::Create({}, error);
-    // The dummy driver has no surface for a GPU swapchain: either step fails with a message, never a crash.
-    if (!window) {
-        CHECK_FALSE(error.empty());
+    REQUIRE_MESSAGE(window, error);     // the window no longer owns a GPU device (T36)
+    CHECK(window->Id() != 0);
+
+    x2::render::DeviceOptions options;
+    options.backend = x2::render::Backend::Null;
+    auto device = x2::render::Device::Create(options, error);
+    REQUIRE(device);
+    {
+        x2::render::WindowClaim claim(*device, window->Handle());
+        CHECK(claim.Ok());
+        x2::render::WindowClaim twice(*device, window->Handle());
+        CHECK_FALSE(twice.Ok());
     }
+    x2::render::WindowClaim again(*device, window->Handle());     // released by the first claim
+    CHECK(again.Ok());
 }
 
 TEST_CASE("app: PollEvents stops on quit and passes every event")

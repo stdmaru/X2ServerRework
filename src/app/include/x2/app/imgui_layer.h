@@ -1,9 +1,11 @@
 #pragma once
 
-// Dear ImGui on top of x2::app (decision T32): SDL3 platform backend + SDL_GPU renderer backend. Tools only; the client
-// does not use ImGui. See docs/porting/app.md.
+// Dear ImGui on top of x2::app (decision T32): SDL3 platform backend + SDL_GPU renderer backend, which reaches the
+// SDL_GPU device through x2::render's escape hatch (T36) until an ImGui renderer on x2::render exists. Tools only; the
+// client does not use ImGui. See docs/porting/app.md.
 
 #include "x2/app/app.h"
+#include "x2/render/render.h"
 
 #include <memory>
 #include <string>
@@ -36,7 +38,9 @@ std::string ConfigureImGui(const ImGuiOptions& options, float contentScale);
 
 class ImGuiLayer {
 public:
-    static std::unique_ptr<ImGuiLayer> Create(Window& window, const ImGuiOptions& options, std::string& error);
+    // `device` must be an SdlGpu device that has claimed `window`.
+    static std::unique_ptr<ImGuiLayer> Create(Window& window, render::Device& device, const ImGuiOptions& options,
+                                              std::string& error);
     ~ImGuiLayer();
 
     ImGuiLayer(const ImGuiLayer&) = delete;
@@ -46,13 +50,13 @@ public:
 
     void ProcessEvent(const SDL_Event& event);
     void NewFrame();
-    // Ends the ImGui frame and draws it into `frame`, cleared to `clear` first.
-    void Render(Frame& frame, SDL_FColor clear);
+    // Ends the ImGui frame and draws it into `target` (the swapchain texture; none draws nothing), cleared to `clear`.
+    void Render(render::CommandBuffer& commands, render::Texture target, const render::Color& clear);
 
 private:
-    explicit ImGuiLayer(Window& window) : m_window(window) {}
+    explicit ImGuiLayer(render::Device& device) : m_device(device) {}
 
-    Window& m_window;
+    render::Device& m_device;
     ImGuiContext* m_context = nullptr;
     std::string m_iniFile;      // ImGui keeps the pointer
     std::string m_fontFile;

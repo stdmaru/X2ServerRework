@@ -62,7 +62,7 @@ std::string FirstGpuUse(const std::string& text)
 
 }  // namespace
 
-TEST_CASE("render boundary: SDL_GPU only in src/render/backends/sdlgpu")
+TEST_CASE("render boundary: the SDL GPU API only in src/render/backends/sdlgpu")
 {
     const std::filesystem::path root = X2_SOURCE_ROOT;
     const std::vector<std::filesystem::path> allowed = {

@@ -113,9 +113,19 @@ int main(int argc, char* argv[])
         Fatal(error);
         return 1;
     }
+    auto device = x2::render::Device::Create({}, error);
+    if (!device) {
+        Fatal(error);
+        return 1;
+    }
+    x2::render::WindowClaim claim(*device, window->Handle());
+    if (!claim.Ok()) {
+        Fatal(device->LastError());
+        return 1;
+    }
     x2::app::ImGuiOptions guiOptions;
     guiOptions.iniFile = PrefFile("imgui.ini");
-    auto gui = x2::app::ImGuiLayer::Create(*window, guiOptions, error);
+    auto gui = x2::app::ImGuiLayer::Create(*window, *device, guiOptions, error);
     if (!gui) {
         Fatal(error);
         return 1;
@@ -165,13 +175,16 @@ int main(int argc, char* argv[])
         }
         gui->NewFrame();
         ui.Draw();
-        x2::app::Frame frame;
-        if (!window->BeginFrame(frame)) {
-            Fatal(std::string("GPU: ") + SDL_GetError());
+        x2::render::CommandBuffer* commands = device->AcquireCommandBuffer();
+        x2::render::SwapchainTexture swapchain;
+        if (!commands || !commands->WaitAndAcquireSwapchainTexture(window->Handle(), swapchain)) {
+            if (commands)
+                commands->Cancel();
+            Fatal("GPU: " + device->LastError());
             break;
         }
-        gui->Render(frame, SDL_FColor{0.08f, 0.09f, 0.10f, 1.0f});
-        window->EndFrame(frame);
+        gui->Render(*commands, swapchain.texture, {0.08f, 0.09f, 0.10f, 1.0f});
+        commands->Submit();
     }
     return 0;
 }

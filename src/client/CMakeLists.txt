@@ -29,12 +29,12 @@ else()
     message(WARNING "LuaJIT not found: the client's LuaCommon is skipped (docs/project/decisions.md, T21)")
 endif()
 
-# DXUT replacement: window, message pump and frame loop on x2::app, SDL3 events as Win32 messages
+# DXUT replacement: window, message pump and frame loop on x2::app and x2::render, SDL3 events as Win32 messages
 # (docs/porting/client-dxut.md).
 add_library(x2_client_dxut STATIC DXUT/DXUT.cpp DXUT/Ime.cpp DXUT/SdlInput.cpp DXUT/SdlMessages.cpp)
 add_library(x2::client_dxut ALIAS x2_client_dxut)
 target_include_directories(x2_client_dxut PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/DXUT)
-target_link_libraries(x2_client_dxut PUBLIC x2::platform x2::app)
+target_link_libraries(x2_client_dxut PUBLIC x2::platform x2::app x2::render)
 
 # KTDXLIB's input layer (CKTDIManager, CKTDIDevice) on the DXUT replacement's SDL3 state instead of DirectInput
 # (docs/porting/client-input.md). Its files join the KTDXLIB target once the engine builds; CKTDXStage's base classes
