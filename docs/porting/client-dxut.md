@@ -6,7 +6,7 @@ The original client runs on DXUT, the Direct3D 9 sample framework: `X2.cpp` inst
 `DXUTInit`/`DXUTCreateWindow`/`DXUTCreateDevice` and `DXUTMainLoop`, and the engine asks DXUT for the window, the timer and the
 device state. DXUT is not imported (it is a vendored Microsoft library, excluded in `client-ktdxlib`). In its place,
 `src/client/DXUT` keeps the **names and signatures** the client calls, so `X2.cpp` and `KTDXLIB` compile against it unchanged,
-and implements them on `x2::app` (SDL3, T32). Overview of the client port: [Client](client.md).
+and implements them on `x2::app` (SDL3, T32) and [`x2::render`](render.md) (T36). Overview of the client port: [Client](client.md).
 
 Added on 2026-11-05 (`client/skeleton`).
 
@@ -14,7 +14,7 @@ Added on 2026-11-05 (`client/skeleton`).
 
 | File | Contents |
 |---|---|
-| `DXUT.h` / `DXUT.cpp` | The DXUT API the client uses: callback typedefs and setters (`FrameMove`, `FrameRender`, `Keyboard`, `MsgProc`), `DXUTInit`, `DXUTCreateWindow`, `DXUTMainLoop`, `DXUTStaticWndProc`, `DXUTShutdown`, `DXUTToggleFullScreen`, `DXUTSetCursorSettings`, `DXUTSetMultimonSettings`, getters (`DXUTGetHWND`, `DXUTGetHINSTANCE`, `DXUTGetTime`, `DXUTGetElapsedTime`, `DXUTGetFPS`, `DXUTIsWindowed`, `DXUTIsActive`, `DXUTGetExitCode`, `DXUTIsKeyDown`, `DXUTIsMouseButtonDown`), `CDXUTTimer` + `DXUTGetGlobalTimer`, `DXUTTRACE`/`DXUTOutputDebugString`, no-op `DXUT_BeginPerfEvent`/`EndPerfEvent`. Port additions: `DXUTGetSDLWindow`, `DXUTGetInputState`; `DXUTInit` also starts SDL's gamepad subsystem (best effort) |
+| `DXUT.h` / `DXUT.cpp` | The DXUT API the client uses: callback typedefs and setters (`FrameMove`, `FrameRender`, `Keyboard`, `MsgProc`), `DXUTInit`, `DXUTCreateWindow`, `DXUTMainLoop`, `DXUTStaticWndProc`, `DXUTShutdown`, `DXUTToggleFullScreen`, `DXUTSetCursorSettings`, `DXUTSetMultimonSettings`, getters (`DXUTGetHWND`, `DXUTGetHINSTANCE`, `DXUTGetTime`, `DXUTGetElapsedTime`, `DXUTGetFPS`, `DXUTIsWindowed`, `DXUTIsActive`, `DXUTGetExitCode`, `DXUTIsKeyDown`, `DXUTIsMouseButtonDown`), `CDXUTTimer` + `DXUTGetGlobalTimer`, `DXUTTRACE`/`DXUTOutputDebugString`, no-op `DXUT_BeginPerfEvent`/`EndPerfEvent`. Port additions: `DXUTGetSDLWindow`, `DXUTGetRenderDevice` (2026-11-06), `DXUTGetInputState`; `DXUTInit` also starts SDL's gamepad subsystem (best effort) |
 | `SdlMessages.h` / `SdlMessages.cpp` | `x2::dxut::SdlMessageTranslator`: SDL3 events → Win32 messages (`WM_*` with Windows `wParam`/`lParam`), and `ToVirtualKey` (SDL scancode/keycode → `VK_*`) |
 | `Ime.h` / `Ime.cpp` | `x2::dxut::ImeContext` (the IME state the translator fills) and `x2::dxut::imm`, IMM32 for the IME edit box on it (2026-11-05, [Client: IME](client-ime.md)) |
 | `DirectInputKeys.h`, `SdlInput.h` / `SdlInput.cpp` | DirectInput's view for KTDXLIB's input layer: `DIK_*` and the device state structs, the `DIK_*` ↔ SDL scancode table, `InputState` (fed by the main loop, `DXUTGetInputState()`) and `JoystickReader` (2026-11-05, [Client: input](client-input.md)) |
@@ -33,7 +33,14 @@ The `WM_*`/`VK_*` constants and `WPARAM`/`LPARAM` come from `x2/platform/window_
   SDL text input; it binds the translator's IME context for the IME edit box's IMM32 calls, and `DXUTInit` sets
   `SDL_HINT_IME_IMPLEMENTED_UI` so the client draws the composition and the candidates. Full screen is borderless desktop full screen.
 - Main loop: events → messages → frame (`CDXUTTimer` → `FrameMove` → `FrameRender`); while minimized it waits for events (100 ms).
-  For now the frame only clears to black through `x2::app` (SDL_GPU, T19); the callbacks receive a null `IDirect3DDevice9*`.
+  For now the frame only clears the swapchain texture to black through [`x2::render`](render.md) (one render pass per frame,
+  2026-11-06); the callbacks receive a null `IDirect3DDevice9*`.
+- **Renderer**: `DXUTCreateWindow` creates the `x2::render` device with the window (`DXUTGetRenderDevice`), claims the window
+  and asks for vsync (`D3DPRESENT_INTERVAL_DEFAULT`); the device is destroyed with the window (`WM_CLOSE`, `DXUTShutdown`), never
+  by DXUT's static state at `exit()`: there the Vulkan validation layer had already torn itself down and aborted in
+  `SDL_WaitForGPUIdle` (a crash on closing the skeleton, fixed 2026-11-06). The backend comes from
+  `X2_RENDER_BACKEND`: `sdlgpu` (default) or `null`, which runs the loop headless with no GPU. If the window cannot be claimed,
+  creation fails.
 - `CDXUTTimer` on `steady_clock` with DXUT's semantics (`Stop`/`Start`/`Advance` by 0.1 s, `GetTime`, `GetElapsedTime`).
 - `DXUTGetHWND` returns the real `HWND` on Windows (`SDL_PROP_WINDOW_WIN32_HWND_POINTER`, for IME and `MessageBox` calls that stay
   Win32) and the `SDL_Window*` as an opaque handle elsewhere.
@@ -62,7 +69,8 @@ state on `WM_ACTIVATEAPP`.
 - `test_messages.cpp`: key messages and `lParam` bits, SYS keys, virtual keys and layouts, text and IME composition, mouse
   buttons, double clicks, wheel, coordinates with pixel density, focus, size and close.
 - `test_dxut.cpp`: callback order (keyboard, then `MsgProc`), key and mouse state, `WM_ACTIVATEAPP` with and without
-  `pbNoFurtherProcessing`, the timer, and window creation failing cleanly without a GPU.
+  `pbNoFurtherProcessing`, the timer, window creation failing cleanly with `sdlgpu` and no GPU, and the main loop on the `null`
+  renderer (two frames, each cleared to black and submitted, nothing leaked).
 - `test_luacommon.cpp`: [LuaCommon](client-luacommon.md) loads a UTF-8 script and reads its values.
 
 To see real events, run the skeleton with `--trace-messages` ([Client: X2](client-x2.md)).

@@ -28,7 +28,7 @@ keeps `OFF` in its cache: reconfigure with `-DX2_BUILD_CLIENT=ON`. What compiles
 | Target | Contents |
 |---|---|
 | `x2::client_luacommon` | `LuaCommon` on upstream LuaJIT (T21) |
-| `x2::client_dxut` | the DXUT replacement on `x2::app` ([Client: DXUT](client-dxut.md)), including the SDL3 state behind the input layer and the IME edit box's IMM32 ([Client: IME](client-ime.md)) |
+| `x2::client_dxut` | the DXUT replacement on `x2::app` and [`x2::render`](render.md) ([Client: DXUT](client-dxut.md)), including the SDL3 state behind the input layer and the IME edit box's IMM32 ([Client: IME](client-ime.md)) |
 | `x2::client_ktdi` | `KTDXLIB`'s input layer (`KTDIManager`, `KTDIDevice`) on SDL3 instead of DirectInput (2026-11-05, [Client: input](client-input.md)) |
 | `x2::client_massfile` | `KTDXLIB`'s `KGCMassFileManager` and buffer pool on `x2::kom` (T35, 2026-11-05, [Client: KTDXLIB › Mass files](client-ktdxlib.md#mass-files)) |
 | `x2::client_browser` | `KTDXLIB`'s `KBrowserWrapper`: web pages in the system browser (2026-11-06, [Client: KTDXLIB › Web pages](client-ktdxlib.md#web-pages)) |

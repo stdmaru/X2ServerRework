@@ -2,6 +2,8 @@
 
 #include "DXUT.h"
 
+#include "x2/render/null.h"
+
 #include <SDL3/SDL.h>
 
 #include <doctest/doctest.h>
@@ -119,7 +121,7 @@ TEST_CASE("the timer measures elapsed time and stops")
     CHECK(timer.GetTime() >= stopped);
 }
 
-TEST_CASE("without a GPU the window fails cleanly")
+TEST_CASE("without a GPU the sdlgpu window fails cleanly")
 {
     SDL_SetHint(SDL_HINT_VIDEO_DRIVER, "dummy");
     CHECK(DXUTInit(false, false, true) == S_OK);
@@ -128,9 +130,62 @@ TEST_CASE("without a GPU the window fails cleanly")
     REQUIRE(imeUi != nullptr);
     CHECK(std::string(imeUi) == "composition,candidates");
     CHECK(DXUTGetHWND() == nullptr);
-    // The dummy video driver has no GPU device: creation fails with a message instead of crashing.
+    // The dummy video driver has no GPU swapchain: creation fails with a message instead of crashing.
+    SDL_SetEnvironmentVariable(SDL_GetEnvironment(), "X2_RENDER_BACKEND", "sdlgpu", true);
     CHECK(FAILED(DXUTCreateWindow(L"X2")));
+    CHECK(DXUTGetRenderDevice() == nullptr);
     CHECK(DXUTGetHWND() == nullptr);
     CHECK(DXUTGetSDLWindow() == nullptr);
     CHECK(FAILED(DXUTMainLoop()));
+}
+
+namespace {
+
+int g_frames = 0;
+std::vector<std::string> g_commands;  // what the null device recorded, before DXUTShutdown destroys it
+size_t g_liveResources = 0;
+
+void CALLBACK CountFrames(IDirect3DDevice9*, double, float, void*)
+{
+    if (++g_frames == 3) {  // after two presented frames
+        g_commands = x2::render::null::Commands(*DXUTGetRenderDevice());
+        g_liveResources = x2::render::null::LiveResourceCount(*DXUTGetRenderDevice());
+        DXUTShutdown(0);
+    }
+}
+
+}  // namespace
+
+TEST_CASE("the null renderer clears every frame to black")
+{
+    SDL_SetHint(SDL_HINT_VIDEO_DRIVER, "dummy");
+    SDL_SetEnvironmentVariable(SDL_GetEnvironment(), "X2_RENDER_BACKEND", "null", true);
+    REQUIRE(DXUTInit(false, false, true) == S_OK);
+    REQUIRE(SUCCEEDED(DXUTCreateWindow(L"X2")));
+    x2::render::Device* device = DXUTGetRenderDevice();
+    REQUIRE(device != nullptr);
+    CHECK(device->GetBackend() == x2::render::Backend::Null);
+    CHECK(DXUTGetSDLWindow() != nullptr);
+
+    g_frames = 0;
+    DXUTSetCallbackFrameMove(CountFrames);
+    DXUTSetCallbackFrameRender(nullptr);
+    DXUTSetCallbackKeyboard(nullptr);
+    DXUTSetCallbackMsgProc(nullptr);
+    DXUTStaticWndProc(DXUTGetHWND(), WM_SIZE, SIZE_RESTORED, 0);  // earlier tests may have left it minimized
+    x2::render::null::ClearCommands(*device);
+    CHECK(SUCCEEDED(DXUTMainLoop()));
+    DXUTSetCallbackFrameMove(nullptr);
+    CHECK(DXUTGetExitCode() == 0);
+    CHECK(DXUTGetSDLWindow() == nullptr);
+    CHECK(DXUTGetRenderDevice() == nullptr);  // destroyed with the window, not at exit
+
+    int clears = 0, submits = 0;
+    for (const std::string& line : g_commands) {
+        clears += line.find("BeginRenderPass color[0]=") == 0 && line.find("load=clear(0,0,0,1)") != std::string::npos;
+        submits += line == "Submit";
+    }
+    CHECK(clears == 2);
+    CHECK(submits == 2);
+    CHECK(g_liveResources == 0);
 }
