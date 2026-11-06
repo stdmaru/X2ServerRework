@@ -44,7 +44,7 @@ CKTDNUDP::CKTDNUDP( int port )
 	for ( int i = 0; hostent->h_addr_list[ i ] != 0 && i < 10; ++i )
 	{
 //#ifdef  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
-        u_long IPAddress = ( ( struct in_addr* )*hostent->h_addr_list )->S_un.S_addr;
+        u_long IPAddress = ( ( struct in_addr* )hostent->h_addr_list[ i ] )->s_addr;   // port: the i-th address (the original took the first each time)
         m_MyIPList.push_back( IPAddress );
 //#else   SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
 //		struct in_addr addr;
@@ -72,10 +72,7 @@ CKTDNUDP::CKTDNUDP( int port )
 	setsockopt( m_Socket, SOL_SOCKET, SO_SNDBUF, (char*)&sndBuf, sizeof(sndBuf) );
 	setsockopt( m_Socket, SOL_SOCKET, SO_RCVBUF, (char*)&rcvBuf, sizeof(rcvBuf) );
 
-    {
-        DWORD   dwUDPChecksum = 1;
-        setsockopt( m_Socket, IPPROTO_UDP, UDP_CHECKSUM_COVERAGE, (char*)&dwUDPChecksum, sizeof(dwUDPChecksum) );
-    }//if
+    // Port: UDP_CHECKSUM_COVERAGE (a UDP-Lite option of Winsock) is not set; UDP over IPv4 carries checksums anyway.
 
 	m_LocalAddr.sin_family		= AF_INET;
 	m_LocalAddr.sin_port		= htons( m_MyPort );
@@ -93,87 +90,10 @@ CKTDNUDP::CKTDNUDP( int port )
 		//m_LocalAddr.sin_addr.s_addr	= inet_addr( IP.c_str() );
 		ret							= bind( m_Socket, (SOCKADDR*)&m_LocalAddr, sizeof(m_LocalAddr) );
 	}
-	m_RecvEvent = WSACreateEvent();
-	if( m_RecvEvent == WSA_INVALID_EVENT )
-	{
-		int retVal = WSAGetLastError();
-		switch( retVal )
-		{
-			case WSANOTINITIALISED:
-				{
-					ErrorLogMsg( KEM_ERROR116, L"WSANOTINITIALISED" );
-				}
-				break;
-
-			case WSAENETDOWN:
-				{
-					ErrorLogMsg( KEM_ERROR116, L"WSAENETDOWN" );
-				}
-				break;
-
-			case WSAEINPROGRESS:
-				{
-					ErrorLogMsg( KEM_ERROR116, L"WSAEINPROGRESS" );
-				}
-				break;
-
-			case WSA_NOT_ENOUGH_MEMORY:
-				{
-					ErrorLogMsg( KEM_ERROR116, L"WSA_NOT_ENOUGH_MEMORY" );
-				}
-				break;
-
-			default:
-				{
-					ErrorLogMsg( KEM_ERROR116, L"UNKNOWN" );
-				}
-				break;
-		}
-	}
-
-	int retval = ::WSAEventSelect( m_Socket, m_RecvEvent, FD_READ | FD_CLOSE );
-	if( retval != 0 )
-	{
-		int retVal = WSAGetLastError();
-		switch( retVal )
-		{
-			case WSANOTINITIALISED:
-				{
-					ErrorLogMsg( KEM_ERROR117, L"WSANOTINITIALISED" );
-				}
-				break;
-
-			case WSAENETDOWN:
-				{
-					ErrorLogMsg( KEM_ERROR117, L"WSAENETDOWN" );
-				}
-				break;
-
-			case WSAEINVAL:
-				{
-					ErrorLogMsg( KEM_ERROR117, L"WSAEINVAL" );
-				}
-				break;
-
-			case WSAEINPROGRESS:
-				{
-					ErrorLogMsg( KEM_ERROR117, L"WSAEINPROGRESS" );
-				}
-				break;
-
-			case WSAENOTSOCK:
-				{
-					ErrorLogMsg( KEM_ERROR117, L"WSAENOTSOCK" );
-				}
-				break;
-
-			default:
-				{
-					ErrorLogMsg( KEM_ERROR117, L"UNKNOWN" );
-				}
-				break;
-		}
-	}
+	// Port: receives are polled (x2::platform::SocketReadable) instead of signalled by a WSAEventSelect event;
+	// the socket stays non-blocking, as WSAEventSelect made it.
+	u_long ulNonBlocking = 1;
+	ioctlsocket( m_Socket, FIONBIO, &ulNonBlocking );
 
 	ZeroMemory( m_pRecvBuffer, RECV_BUFFER_SIZE );
 	m_RecvDataList.reserve( 1000 );
@@ -212,7 +132,6 @@ CKTDNUDP::~CKTDNUDP(void)
 		m_Socket = INVALID_SOCKET;
 	}
 
-	WSACloseEvent( m_RecvEvent );
 
 	for( int i = 0; i < (int)m_RecvDataList.size(); i++ )
 	{
@@ -232,7 +151,6 @@ void CKTDNUDP::OnFrameMove( double fTime, float fElapsedTime )
 {
 	KTDXPROFILE();
 
-	WSANETWORKEVENTS	netEvent;
 	bool				bRetVal = false;
 
 
@@ -265,20 +183,9 @@ void CKTDNUDP::OnFrameMove( double fTime, float fElapsedTime )
 
 	//패킷 리시브
 	KTDXPROFILE_BEGIN( "RECEIVE" );
-	while( true )
-	{
-		KTDXPROFILE_BEGIN( "RECEIVE_EVENT" );
-		//Event select
-		::ZeroMemory( &netEvent, sizeof(netEvent) );
-
-		::WSAEnumNetworkEvents( m_Socket, m_RecvEvent, &netEvent );
-		KTDXPROFILE_END();
-
-		if( (netEvent.lNetworkEvents & FD_READ) == FD_READ )
-			Recv();
-		else
-			break;
-	}
+	// receive everything waiting (WSAEnumNetworkEvents on an FD_READ event in the original)
+	while( x2::platform::SocketReadable( m_Socket ) )
+		Recv();
 	KTDXPROFILE_END();
 
 	KTDXPROFILE_BEGIN( "SWITCH" );
@@ -311,7 +218,7 @@ void CKTDNUDP::OnFrameMove( double fTime, float fElapsedTime )
                         pPeer->m_IPAddress		= pRecvData->m_SenderIPAddress;
 						pPeer->m_Port	= pRecvData->m_SenderPort;
                         if ( pPeer->m_eP2PConnectType == P2PCONNECT_EXTERNAL
-                            && pPeer->m_InternalIPAddress != ADDR_ANY
+                            && pPeer->m_InternalIPAddress != INADDR_ANY
                             && pPeer->m_InternalIPAddress == pPeer->m_IPAddress
                             && pPeer->m_InternalPort == pPeer->m_Port )
                         {
@@ -348,14 +255,14 @@ void CKTDNUDP::OnFrameMove( double fTime, float fElapsedTime )
                         pPeer->m_IPAddress			= pRecvData->m_SenderIPAddress;
 						pPeer->m_Port		= pRecvData->m_SenderPort;
                         if ( pSSP_CONNECT_TEST_ACK->m_bInternalIP == true
-                            || ( pPeer->m_InternalIPAddress != ADDR_ANY
+                            || ( pPeer->m_InternalIPAddress != INADDR_ANY
                             && pPeer->m_InternalIPAddress == pPeer->m_IPAddress
                             && pPeer->m_InternalPort == pPeer->m_Port ) )
                             pPeer->m_eP2PConnectType = P2PCONNECT_INTERNAL;
                         else
                         {
                             pPeer->m_eP2PConnectType = P2PCONNECT_EXTERNAL;
-                            if ( pPeer->m_IPAddress != ADDR_ANY
+                            if ( pPeer->m_IPAddress != INADDR_ANY
                                 && false == ( pPeer->m_InternalIPAddress == pPeer->m_IPAddress
                                 && pPeer->m_InternalPort == pPeer->m_Port ) )
                             {
@@ -709,7 +616,7 @@ bool CKTDNUDP::Recv()
 
     SOCKADDR_IN SenderAddr;
 
-	int SenderAddrSize	= sizeof(SenderAddr);
+	x2_socklen_t SenderAddrSize	= sizeof(SenderAddr);
 	int recvSize		= recvfrom( m_Socket, m_pRecvBuffer, RECV_BUFFER_SIZE, 0, (SOCKADDR *)&SenderAddr, &SenderAddrSize );
 
 	if( recvSize == SOCKET_ERROR )
@@ -818,7 +725,7 @@ bool CKTDNUDP::Recv()
                 dwReceiveTimeStamp = timeGetTime();
             }//switch
 			RecvData* pRecvData		= new RecvData;
-            pRecvData->m_SenderIPAddress = SenderAddr.sin_addr.S_un.S_addr;
+            pRecvData->m_SenderIPAddress = SenderAddr.sin_addr.s_addr;
 			pRecvData->m_SenderPort	= ntohs( SenderAddr.sin_port );
 			pRecvData->m_ID			= m_pRecvBuffer[0];
 			pRecvData->m_Size		= recvSize - 1;
@@ -966,9 +873,8 @@ bool CKTDNUDP::SendPure_Scattered( u_long ulIP, int port, WSABUF alpBuffers[], D
 	destination.sin_port		= htons( port );  //포트번호
 
     DWORD   dwNumberOfBytesSent = 0;
-	int ret = ::WSASendTo( m_Socket, alpBuffers, dwBuffCount, &dwNumberOfBytesSent, 0
-        , (const struct sockaddr*) &destination, sizeof(SOCKADDR_IN)
-        , NULL, NULL );
+	int ret = x2::platform::SendToScattered( m_Socket, alpBuffers, dwBuffCount
+        , (const struct sockaddr*) &destination, sizeof(SOCKADDR_IN), &dwNumberOfBytesSent );
 
 	if( ret == SOCKET_ERROR )
 	{
@@ -1261,7 +1167,7 @@ void CKTDNUDP::AddPeer( __int64 UID, u_long  ulIP, int port, u_long  ulInternalI
 		//{{ 2013. 1. 8	박세훈	Merge 공인IP 연결 실패시 내부IP로 시도( 박진웅 )
 //#ifdef SERV_KTDX_RETRY_USING_INTERNAL_IP
 //#ifdef  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
-        if ( ulInternalIP != ADDR_ANY )
+        if ( ulInternalIP != INADDR_ANY )
 		{
             pPeer->m_InternalIPAddress = ulInternalIP;
 			pPeer->m_InternalPort = iInternalPort;
@@ -1309,7 +1215,7 @@ void CKTDNUDP::AddPeer( __int64 UID, u_long  ulIP, int port, u_long  ulInternalI
 		//{{ 2013. 1. 8	박세훈	Merge 공인IP 연결 실패시 내부IP로 시도( 박진웅 )
 //#ifdef SERV_KTDX_RETRY_USING_INTERNAL_IP
 //#ifdef  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
-        if ( ulInternalIP != ADDR_ANY )
+        if ( ulInternalIP != INADDR_ANY )
 		{
             peer.m_InternalIPAddress = ulInternalIP;
 			peer.m_InternalPort = iInternalPort;
@@ -1549,7 +1455,7 @@ bool CKTDNUDP::_RobustConnectTestResult()
         {
         case P2PCONNECT_EXTERNAL:
             {
-                if ( pPeer->m_InternalIPAddress != ADDR_ANY
+                if ( pPeer->m_InternalIPAddress != INADDR_ANY
                     && false == ( pPeer->m_InternalIPAddress == pPeer->m_IPAddress && pPeer->m_InternalPort == pPeer->m_Port )
                     && pPeer->m_ConnectTestCount < KTDX_MAX_P2P_INTERNAL_CONNECT_TEST_COUNT )
                     return false;
@@ -1657,7 +1563,7 @@ void CKTDNUDP::ConnectTestToPeer()
         if ( pPeer->m_eP2PConnectType == P2PCONNECT_INTERNAL
             ||
             pPeer->m_eP2PConnectType == P2PCONNECT_EXTERNAL
-            && ( pPeer->m_InternalIPAddress == ADDR_ANY
+            && ( pPeer->m_InternalIPAddress == INADDR_ANY
             || pPeer->m_InternalIPAddress == pPeer->m_IPAddress && pPeer->m_InternalPort == pPeer->m_Port
             || pPeer->m_ConnectTestCount >= KTDX_MAX_P2P_INTERNAL_CONNECT_TEST_COUNT ) )
             continue;
@@ -1952,87 +1858,10 @@ void CKTDNUDP::CreateSocket()
 		//m_LocalAddr.sin_addr.s_addr	= inet_addr( IP.c_str() );
 		ret							= bind( m_Socket, (SOCKADDR*)&m_LocalAddr, sizeof(m_LocalAddr) );
 	}
-	m_RecvEvent = WSACreateEvent();
-	if( m_RecvEvent == WSA_INVALID_EVENT )
-	{
-		int retVal = WSAGetLastError();
-		switch( retVal )
-		{
-		case WSANOTINITIALISED:
-			{
-				ErrorLogMsg( KEM_ERROR116, L"WSANOTINITIALISED" );
-			}
-			break;
-
-		case WSAENETDOWN:
-			{
-				ErrorLogMsg( KEM_ERROR116, L"WSAENETDOWN" );
-			}
-			break;
-
-		case WSAEINPROGRESS:
-			{
-				ErrorLogMsg( KEM_ERROR116, L"WSAEINPROGRESS" );
-			}
-			break;
-
-		case WSA_NOT_ENOUGH_MEMORY:
-			{
-				ErrorLogMsg( KEM_ERROR116, L"WSA_NOT_ENOUGH_MEMORY" );
-			}
-			break;
-
-		default:
-			{
-				ErrorLogMsg( KEM_ERROR116, L"UNKNOWN" );
-			}
-			break;
-		}
-	}
-
-	int retval = ::WSAEventSelect( m_Socket, m_RecvEvent, FD_READ | FD_CLOSE );
-	if( retval != 0 )
-	{
-		int retVal = WSAGetLastError();
-		switch( retVal )
-		{
-		case WSANOTINITIALISED:
-			{
-				ErrorLogMsg( KEM_ERROR117, L"WSANOTINITIALISED" );
-			}
-			break;
-
-		case WSAENETDOWN:
-			{
-				ErrorLogMsg( KEM_ERROR117, L"WSAENETDOWN" );
-			}
-			break;
-
-		case WSAEINVAL:
-			{
-				ErrorLogMsg( KEM_ERROR117, L"WSAEINVAL" );
-			}
-			break;
-
-		case WSAEINPROGRESS:
-			{
-				ErrorLogMsg( KEM_ERROR117, L"WSAEINPROGRESS" );
-			}
-			break;
-
-		case WSAENOTSOCK:
-			{
-				ErrorLogMsg( KEM_ERROR117, L"WSAENOTSOCK" );
-			}
-			break;
-
-		default:
-			{
-				ErrorLogMsg( KEM_ERROR117, L"UNKNOWN" );
-			}
-			break;
-		}
-	}
+	// Port: receives are polled (x2::platform::SocketReadable) instead of signalled by a WSAEventSelect event;
+	// the socket stays non-blocking, as WSAEventSelect made it.
+	u_long ulNonBlocking = 1;
+	ioctlsocket( m_Socket, FIONBIO, &ulNonBlocking );
 }
 
 void CKTDNUDP::DeleteSocket()
@@ -2044,7 +1873,6 @@ void CKTDNUDP::DeleteSocket()
 		m_Socket = INVALID_SOCKET;
 	}
 
-	WSACloseEvent( m_RecvEvent );
 }
 
 void CKTDNUDP::RemoveOtherPeer( std::vector<__int64> UIDList )

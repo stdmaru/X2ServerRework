@@ -56,7 +56,6 @@ class CKTDGUIIMEEditBox : public CKTDGUIControl
 		void	SetForceSendCustomMsgChange( bool bEnable_ ) { m_bIsForceSendCustomMsgChange = bEnable_; }	/// 한글 문자 하나만 입력해도 Change 메시지 전송할지 여부 설정
 
 
-		void	PumpMessage();
 
 		void	RenderCandidateReadingWindow( IDirect3DDevice9* pd3dDevice, float fElapsedTime, bool bReading );
 		void	RenderComposition( IDirect3DDevice9* pd3dDevice, float fElapsedTime );
@@ -181,11 +180,6 @@ protected:
 		static	UINT			WINAPI	Dummy_GetReadingString( HIMC, UINT, LPWSTR, PINT, BOOL*, PUINT ) { return 0; }
 		static	BOOL			WINAPI	Dummy_ShowReadingWindow( HIMC, BOOL ) { return FALSE; }
 
-		// Verion library imports
-		static	BOOL		APIENTRY	Dummy_VerQueryValueA( const LPVOID, LPSTR, LPVOID *, PUINT ) { return 0; }
-		static	BOOL		APIENTRY	Dummy_GetFileVersionInfoA( LPSTR, DWORD, DWORD, LPVOID ) { return 0; }
-		static	DWORD		APIENTRY	Dummy_GetFileVersionInfoSizeA( LPSTR, LPDWORD ) { return 0; }
-
 		// Function pointers: IMM32
 		static	INPUTCONTEXT*	(WINAPI * _ImmLockIMC)( HIMC );
 		static	BOOL			(WINAPI * _ImmUnlockIMC)( HIMC );
@@ -212,10 +206,6 @@ protected:
 		static	UINT			(WINAPI * _GetReadingString)( HIMC, UINT, LPWSTR, PINT, BOOL*, PUINT );
 		static	BOOL			(WINAPI * _ShowReadingWindow)( HIMC, BOOL );
 
-		// Function pointers: Verion library imports
-		static	BOOL			(APIENTRY * _VerQueryValueA)( const LPVOID, LPSTR, LPVOID *, PUINT );
-		static	BOOL			(APIENTRY * _GetFileVersionInfoA)( LPSTR, DWORD, DWORD, LPVOID );
-		static	DWORD			(APIENTRY * _GetFileVersionInfoSizeA)( LPSTR, LPDWORD );
 
 	protected:
 		enum { INDICATOR_NON_IME, INDICATOR_CHS, INDICATOR_CHT, INDICATOR_KOREAN, INDICATOR_JAPANESE };
@@ -261,7 +251,6 @@ protected:
 
 		// Application-wide data
 		static	bool		s_bImmBound;	// _Imm* point to the IMM32 emulation (Initialize)
-		static	HINSTANCE	s_hDllVer;		// Version DLL handle
 		static	HIMC		s_hImcDef;		// Default input context
 
 		static	HKL			s_hklCurrent;			// Current keyboard layout of the process
@@ -269,7 +258,6 @@ protected:
 		static	LPWSTR		s_wszCurrIndicator;		// Points to an indicator string that corresponds to current input locale
 		static	WCHAR		s_aszIndicator[5][3];	// String to draw to indicate current input locale
 		static	bool		s_bInsertOnType;		// Insert the character as soon as a key is pressed (Korean behavior)
-		static	HINSTANCE	s_hDllIme;				// Instance handle of the current IME module
 		static	IMESTATE	s_ImeState;				// IME global state
 		static	bool		s_bEnableImeSystem;		// Whether the IME system is active
 		static	POINT		s_ptCompString;			// Composition string position. Updated every frame.

@@ -3,6 +3,9 @@
 // IMM32 is emulated on the SDL3 IME state (DXUT/Ime.h) instead of loaded from imm32.dll.
 #define EMULATEDPROC( APIName ) \
 	_##APIName = x2::dxut::imm::APIName
+// Back to the edit box's own do-nothing version (Uninitialize).
+#define PLACEHOLDERPROC( APIName ) \
+	_##APIName = Dummy_##APIName
 
 class CKTDGUIUniBuffer
 {

@@ -4,6 +4,9 @@
 
 #include <SDL3/SDL.h>
 
+#include <cstdint>
+#include <cwchar>
+
 #if !defined(_WIN32)
 
 namespace {
@@ -96,6 +99,47 @@ BOOL SystemParametersInfoW(UINT uiAction, UINT /*uiParam*/, void* pvParam, UINT 
         return TRUE;
     }
     return FALSE;
+}
+
+namespace {
+
+constexpr WORD kEnglishUs = 0x0409;
+
+}  // namespace
+
+HKL GetKeyboardLayout(DWORD /*idThread*/)
+{
+    return reinterpret_cast<HKL>(static_cast<std::uintptr_t>(0x04090409));
+}
+
+int GetKeyboardLayoutList(int nBuff, HKL* lpList)
+{
+    if (nBuff > 0 && lpList != nullptr) {
+        lpList[0] = GetKeyboardLayout(0);
+    }
+    return 1;
+}
+
+int GetLocaleInfoW(LCID Locale, LCTYPE LCType, LPWSTR lpLCData, int cchData)
+{
+    if (LOWORD(Locale) != kEnglishUs) {
+        return 0;
+    }
+    const wchar_t* value = LCType == LOCALE_SABBREVLANGNAME ? L"ENU"
+                           : LCType == LOCALE_SLANGUAGE     ? L"English (United States)"
+                                                            : nullptr;
+    if (value == nullptr) {
+        return 0;
+    }
+    const int length = static_cast<int>(std::wcslen(value)) + 1;
+    if (cchData == 0) {
+        return length;
+    }
+    if (lpLCData == nullptr || cchData < length) {
+        return 0;
+    }
+    std::wmemcpy(lpLCData, value, static_cast<std::size_t>(length));
+    return length;
 }
 
 #endif

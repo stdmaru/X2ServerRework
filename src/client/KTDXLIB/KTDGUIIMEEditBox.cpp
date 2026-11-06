@@ -54,12 +54,8 @@ BOOL (WINAPI * CKTDGUIIMEEditBox::_ImmSimulateHotKey)( HWND, DWORD ) = CKTDGUIIM
 BOOL (WINAPI * CKTDGUIIMEEditBox::_ImmIsIME)( HKL ) = CKTDGUIIMEEditBox::Dummy_ImmIsIME;
 UINT (WINAPI * CKTDGUIIMEEditBox::_GetReadingString)( HIMC, UINT, LPWSTR, PINT, BOOL*, PUINT ) = CKTDGUIIMEEditBox::Dummy_GetReadingString; // Traditional Chinese IME
 BOOL (WINAPI * CKTDGUIIMEEditBox::_ShowReadingWindow)( HIMC, BOOL ) = CKTDGUIIMEEditBox::Dummy_ShowReadingWindow; // Traditional Chinese IME
-BOOL (APIENTRY * CKTDGUIIMEEditBox::_VerQueryValueA)( const LPVOID, LPSTR, LPVOID *, PUINT ) = CKTDGUIIMEEditBox::Dummy_VerQueryValueA;
-BOOL (APIENTRY * CKTDGUIIMEEditBox::_GetFileVersionInfoA)( LPSTR, DWORD, DWORD, LPVOID )= CKTDGUIIMEEditBox::Dummy_GetFileVersionInfoA;
-DWORD (APIENTRY * CKTDGUIIMEEditBox::_GetFileVersionInfoSizeA)( LPSTR, LPDWORD ) = CKTDGUIIMEEditBox::Dummy_GetFileVersionInfoSizeA;
 
 bool		CKTDGUIIMEEditBox::s_bImmBound = false;		// _Imm* point to the IMM32 emulation
-HINSTANCE	CKTDGUIIMEEditBox::s_hDllVer;				// Version DLL handle
 HKL			CKTDGUIIMEEditBox::s_hklCurrent;			// Current keyboard layout of the process
 bool		CKTDGUIIMEEditBox::s_bVerticalCand;			// Indicates that the candidates are listed vertically
 bool		CKTDGUIIMEEditBox::s_bHideCaret;			// If true, we don't render the caret.
@@ -73,7 +69,6 @@ WCHAR		CKTDGUIIMEEditBox::s_aszIndicator[5][3] =	// String to draw to indicate c
 };
 LPWSTR    CKTDGUIIMEEditBox::s_wszCurrIndicator = CKTDGUIIMEEditBox::s_aszIndicator[0];  // Points to an indicator string that corresponds to current input locale
 bool      CKTDGUIIMEEditBox::s_bInsertOnType;     // Insert the character as soon as a key is pressed (Korean behavior)
-HINSTANCE CKTDGUIIMEEditBox::s_hDllIme;           // Instance handle of the current IME module
 HIMC      CKTDGUIIMEEditBox::s_hImcDef;           // Default input context
 CKTDGUIIMEEditBox::IMESTATE  CKTDGUIIMEEditBox::s_ImeState = IMEUI_STATE_OFF;
 bool      CKTDGUIIMEEditBox::s_bEnableImeSystem;  // Whether the IME system is active
@@ -336,10 +331,12 @@ void CKTDGUIIMEEditBox::DeleteSelectionText()
 
 
 //--------------------------------------------------------------------------------------
+// Port: the key goes to the window procedure, synchronously, instead of the system input queue (keybd_event): the IME,
+// which SDL owns, does not see it (docs/porting/client-ime.md).
 void CKTDGUIIMEEditBox::SendKey( BYTE nVirtKey )
 {
-	keybd_event( nVirtKey, 0, 0,               0 );
-	keybd_event( nVirtKey, 0, KEYEVENTF_KEYUP, 0 );
+	DXUTStaticWndProc( DXUTGetHWND(), WM_KEYDOWN, nVirtKey, 0 );
+	DXUTStaticWndProc( DXUTGetHWND(), WM_KEYUP, nVirtKey, 0xC0000001 );
 }
 
 
@@ -571,97 +568,11 @@ void CKTDGUIIMEEditBox::DrawEditEdge()
 //  Use IMEID_VER and IMEID_LANG macro to extract version and language information.
 //
 
-// We define the locale-invariant ID ourselves since it doesn't exist prior to WinXP
-// For more information, see the CompareString() reference.
-#define LCID_INVARIANT MAKELCID(MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), SORT_DEFAULT)
-
-DWORD CKTDGUIIMEEditBox::GetImeId( UINT uIndex )
+// Port: always 0. Only older Chinese IMEs had an ID (read from the IME file's version resource), and the emulated
+// IMM32 has no IME file (ImmGetIMEFileNameA fails), so the original returned 0 too.
+DWORD CKTDGUIIMEEditBox::GetImeId( UINT /*uIndex*/ )
 {
-	static HKL hklPrev = 0;
-	static DWORD dwID[2] = { 0, 0 };  // Cache the result
-
-	DWORD   dwVerSize;
-	DWORD   dwVerHandle;
-	LPVOID  lpVerBuffer;
-	LPVOID  lpVerData;
-	UINT    cbVerData;
-	char    szTmp[1024];
-
-	if( uIndex >= sizeof( dwID ) / sizeof( dwID[0] ) )
-		return 0;
-
-	if( hklPrev == s_hklCurrent )
-		return dwID[uIndex];
-
-	hklPrev = s_hklCurrent;  // Save for the next invocation
-
-	// Check if we are using an older Chinese IME
-	if( !( ( s_hklCurrent == _CHT_HKL ) || ( s_hklCurrent == _CHT_HKL2 ) || ( s_hklCurrent == _CHS_HKL ) ) )
-	{
-		dwID[0] = dwID[1] = 0;
-		return dwID[uIndex];
-	}
-
-	// Obtain the IME file name
-	if ( !_ImmGetIMEFileNameA( s_hklCurrent, szTmp, ( sizeof(szTmp) / sizeof(szTmp[0]) ) - 1 ) )
-	{
-		dwID[0] = dwID[1] = 0;
-		return dwID[uIndex];
-	}
-
-	// Check for IME that doesn't implement reading string API
-	if ( !_GetReadingString )
-	{
-		if( ( CompareStringA( LCID_INVARIANT, NORM_IGNORECASE, szTmp, -1, CHT_IMEFILENAME1, -1 ) != CSTR_EQUAL ) &&
-			( CompareStringA( LCID_INVARIANT, NORM_IGNORECASE, szTmp, -1, CHT_IMEFILENAME2, -1 ) != CSTR_EQUAL ) &&
-			( CompareStringA( LCID_INVARIANT, NORM_IGNORECASE, szTmp, -1, CHT_IMEFILENAME3, -1 ) != CSTR_EQUAL ) &&
-			( CompareStringA( LCID_INVARIANT, NORM_IGNORECASE, szTmp, -1, CHS_IMEFILENAME1, -1 ) != CSTR_EQUAL ) &&
-			( CompareStringA( LCID_INVARIANT, NORM_IGNORECASE, szTmp, -1, CHS_IMEFILENAME2, -1 ) != CSTR_EQUAL ) )
-		{
-			dwID[0] = dwID[1] = 0;
-			return dwID[uIndex];
-		}
-	}
-
-	dwVerSize = _GetFileVersionInfoSizeA( szTmp, &dwVerHandle );
-	if( dwVerSize )
-	{
-		lpVerBuffer = HeapAlloc( GetProcessHeap(), 0, dwVerSize );
-		if( lpVerBuffer )
-		{
-			if( _GetFileVersionInfoA( szTmp, dwVerHandle, dwVerSize, lpVerBuffer ) )
-			{
-				if( _VerQueryValueA( lpVerBuffer, "\\", &lpVerData, &cbVerData ) )
-				{
-					DWORD dwVer = ( (VS_FIXEDFILEINFO*)lpVerData )->dwFileVersionMS;
-					dwVer = ( dwVer & 0x00ff0000 ) << 8 | ( dwVer & 0x000000ff ) << 16;
-					if( _GetReadingString
-						||
-						( GetLanguage() == LANG_CHT &&
-						( dwVer == MAKEIMEVERSION(4, 2) ||
-						dwVer == MAKEIMEVERSION(4, 3) ||
-						dwVer == MAKEIMEVERSION(4, 4) ||
-						dwVer == MAKEIMEVERSION(5, 0) ||
-						dwVer == MAKEIMEVERSION(5, 1) ||
-						dwVer == MAKEIMEVERSION(5, 2) ||
-						dwVer == MAKEIMEVERSION(6, 0) ) )
-						||
-						( GetLanguage() == LANG_CHS &&
-						( dwVer == MAKEIMEVERSION(4, 1) ||
-						dwVer == MAKEIMEVERSION(4, 2) ||
-						dwVer == MAKEIMEVERSION(5, 3) ) )
-						)
-					{
-						dwID[0] = dwVer | GetLanguage();
-						dwID[1] = ( (VS_FIXEDFILEINFO*)lpVerData )->dwFileVersionLS;
-					}
-				}
-			}
-			HeapFree( GetProcessHeap(), 0, lpVerBuffer );
-		}
-	}
-
-	return dwID[uIndex];
+	return 0;
 }
 
 
@@ -761,21 +672,9 @@ void CKTDGUIIMEEditBox::EnableImeSystem( bool bEnable )
 // the input locale changes.
 void CKTDGUIIMEEditBox::SetupImeApi()
 {
-	char szImeFile[MAX_PATH + 1];
-
+	// Port: no IME file to load GetReadingString and ShowReadingWindow from (the emulated IMM32 has none).
 	_GetReadingString = NULL;
 	_ShowReadingWindow = NULL;
-	if( _ImmGetIMEFileNameA( s_hklCurrent, szImeFile, sizeof(szImeFile)/sizeof(szImeFile[0]) - 1 ) == 0 )
-		return;
-
-	if( s_hDllIme ) FreeLibrary( s_hDllIme );
-	s_hDllIme = LoadLibraryA( szImeFile );
-	if ( !s_hDllIme )
-		return;
-	_GetReadingString = (UINT (WINAPI*)(HIMC, UINT, LPWSTR, PINT, BOOL*, PUINT))
-		( GetProcAddress( s_hDllIme, "GetReadingString" ) );
-	_ShowReadingWindow =(BOOL (WINAPI*)(HIMC, BOOL))
-		( GetProcAddress( s_hDllIme, "ShowReadingWindow" ) );
 }
 
 
@@ -802,8 +701,8 @@ void CKTDGUIIMEEditBox::TruncateCompString( bool bUseBackSpace, int iNewStrLen )
 	// Send right arrow keystrokes to move the caret
 	//   to the end of the composition string.
 	for (int i = 0; i < cc - s_nCompCaret; ++i )
-		SendMessage( DXUTGetHWND(), WM_KEYDOWN, VK_RIGHT, 0 );
-	SendMessage( DXUTGetHWND(), WM_KEYUP, VK_RIGHT, 0 );
+		DXUTStaticWndProc( DXUTGetHWND(), WM_KEYDOWN, VK_RIGHT, 0 );
+	DXUTStaticWndProc( DXUTGetHWND(), WM_KEYUP, VK_RIGHT, 0 );
 
 	if( bUseBackSpace || m_bInsertMode )
 		iNewStrLen = 0;
@@ -819,18 +718,18 @@ void CKTDGUIIMEEditBox::TruncateCompString( bool bUseBackSpace, int iNewStrLen )
 	{
 		for( int i = 0; i < cc - iNewStrLen; ++i )
 		{
-			SendMessage( DXUTGetHWND(), WM_KEYDOWN, VK_BACK, 0 );  // Backspace character
-			SendMessageW( DXUTGetHWND(), WM_CHAR, VK_BACK, 0 );
+			DXUTStaticWndProc( DXUTGetHWND(), WM_KEYDOWN, VK_BACK, 0 );  // Backspace character
+			DXUTStaticWndProc( DXUTGetHWND(), WM_CHAR, VK_BACK, 0 );
 		}
-		SendMessage( DXUTGetHWND(), WM_KEYUP, VK_BACK, 0 );
+		DXUTStaticWndProc( DXUTGetHWND(), WM_KEYUP, VK_BACK, 0 );
 	}
 	else
 		iNewStrLen = cc;
 
 	// Move the caret to the beginning by sending left keystrokes
 	for (int i = 0; i < iNewStrLen; ++i )
-		SendMessage( DXUTGetHWND(), WM_KEYDOWN, VK_LEFT, 0 );
-	SendMessage( DXUTGetHWND(), WM_KEYUP, VK_LEFT, 0 );
+		DXUTStaticWndProc( DXUTGetHWND(), WM_KEYDOWN, VK_LEFT, 0 );
+	DXUTStaticWndProc( DXUTGetHWND(), WM_KEYUP, VK_LEFT, 0 );
 }
 
 
@@ -887,36 +786,10 @@ void CKTDGUIIMEEditBox::FinalizeString( bool bSend )
 
 //--------------------------------------------------------------------------------------
 // Determine whether the reading window should be vertical or horizontal.
-void CKTDGUIIMEEditBox::GetReadingWindowOrientation( DWORD dwId )
+void CKTDGUIIMEEditBox::GetReadingWindowOrientation( DWORD /*dwId*/ )
 {
-	s_bHorizontalReading = ( s_hklCurrent == _CHS_HKL ) || ( s_hklCurrent == _CHT_HKL2 ) || ( dwId == 0 );
-	if( !s_bHorizontalReading && ( dwId & 0x0000FFFF ) == LANG_CHT )
-	{
-		WCHAR wszRegPath[MAX_PATH];
-		HKEY hKey;
-		DWORD dwVer = dwId & 0xFFFF0000;
-		StringCchCopy( wszRegPath, MAX_PATH, L"software\\microsoft\\windows\\currentversion\\" );
-		StringCchCat( wszRegPath, MAX_PATH, ( dwVer >= MAKEIMEVERSION( 5, 1 ) ) ? L"MSTCIPH" : L"TINTLGNT" );
-		LONG lRc = RegOpenKeyExW( HKEY_CURRENT_USER, wszRegPath, 0, KEY_READ, &hKey );
-		if (lRc == ERROR_SUCCESS)
-		{
-			DWORD dwSize = sizeof(DWORD), dwMapping, dwType;
-			lRc = RegQueryValueExW( hKey, L"Keyboard Mapping", NULL, &dwType, (PBYTE)&dwMapping, &dwSize );
-			if (lRc == ERROR_SUCCESS)
-			{
-				if ( ( dwVer <= MAKEIMEVERSION( 5, 0 ) &&
-					( (BYTE)dwMapping == 0x22 || (BYTE)dwMapping == 0x23 ) )
-					||
-					( ( dwVer == MAKEIMEVERSION( 5, 1 ) || dwVer == MAKEIMEVERSION( 5, 2 ) ) &&
-					(BYTE)dwMapping >= 0x22 && (BYTE)dwMapping <= 0x24 )
-					)
-				{
-					s_bHorizontalReading = true;
-				}
-			}
-			RegCloseKey( hKey );
-		}
-	}
+	// Port: only older Chinese IMEs (GetImeId() != 0, never in the port) had a vertical reading window.
+	s_bHorizontalReading = true;
 }
 
 
@@ -924,231 +797,11 @@ void CKTDGUIIMEEditBox::GetReadingWindowOrientation( DWORD dwId )
 // Obtain the reading string upon WM_IME_NOTIFY/INM_PRIVATE notification.
 void CKTDGUIIMEEditBox::GetPrivateReadingString()
 {
-	DWORD dwId = GetImeId();
-	if( !dwId )
-	{
-		s_bShowReadingWindow = false;
-		return;
-	}
-
-	HIMC hImc;
-	hImc = _ImmGetContext( DXUTGetHWND() );
-	if( !hImc )
-	{
-		s_bShowReadingWindow = false;
-		return;
-	}
-
-	DWORD dwReadingStrLen = 0;
-	DWORD dwErr = 0;
-	WCHAR *pwszReadingStringBuffer = NULL;  // Buffer for when the IME supports GetReadingString()
-	WCHAR *wstr = 0;
-	bool bUnicodeIme = false;  // Whether the IME context component is Unicode.
-	INPUTCONTEXT *lpIC = NULL;
-
-	//대만일경우 Reading출력을 위해 안들어가게 함 09. 05. 12 김정협
-	if( _GetReadingString   && GetLanguage() != LANG_CHT)
-	{
-		UINT uMaxUiLen;
-		BOOL bVertical;
-		// Obtain the reading string size
-		dwReadingStrLen = _GetReadingString( hImc, 0, NULL, (PINT)&dwErr, &bVertical, &uMaxUiLen );
-		if( dwReadingStrLen )
-		{
-			wstr = pwszReadingStringBuffer = (LPWSTR)HeapAlloc( GetProcessHeap(), 0, sizeof(WCHAR) * dwReadingStrLen );
-			if( !pwszReadingStringBuffer )
-			{
-				// Out of memory. Exit.
-				_ImmReleaseContext( DXUTGetHWND(), hImc );
-				return;
-			}
-
-			// Obtain the reading string
-			dwReadingStrLen = _GetReadingString( hImc, dwReadingStrLen, wstr, (PINT)&dwErr, &bVertical, &uMaxUiLen );
-		}
-
-		s_bHorizontalReading = !bVertical;
-		bUnicodeIme = true;
-	}
-	else
-	{
-		// IMEs that doesn't implement Reading String API
-
-		lpIC = _ImmLockIMC( hImc );
-
-		LPBYTE p = 0;
-		switch( dwId )
-		{
-		case IMEID_CHT_VER42: // New(Phonetic/ChanJie)IME98  : 4.2.x.x // Win98
-		case IMEID_CHT_VER43: // New(Phonetic/ChanJie)IME98a : 4.3.x.x // WinMe, Win2k
-		case IMEID_CHT_VER44: // New ChanJie IME98b          : 4.4.x.x // WinXP
-			p = *(LPBYTE *)((LPBYTE)_ImmLockIMCC( lpIC->hPrivate ) + 24 );
-			if( !p ) break;
-			dwReadingStrLen = *(DWORD *)( p + 7 * 4 + 32 * 4 );
-			dwErr = *(DWORD *)( p + 8 * 4 + 32 * 4 );
-			wstr = (WCHAR *)( p + 56 );
-			bUnicodeIme = true;
-			break;
-
-		case IMEID_CHT_VER50: // 5.0.x.x // WinME
-			p = *(LPBYTE *)( (LPBYTE)_ImmLockIMCC( lpIC->hPrivate ) + 3 * 4 );
-			if( !p ) break;
-			p = *(LPBYTE *)( (LPBYTE)p + 1*4 + 5*4 + 4*2 );
-			if( !p ) break;
-			dwReadingStrLen = *(DWORD *)(p + 1*4 + (16*2+2*4) + 5*4 + 16);
-			dwErr = *(DWORD *)(p + 1*4 + (16*2+2*4) + 5*4 + 16 + 1*4);
-			wstr = (WCHAR *)(p + 1*4 + (16*2+2*4) + 5*4);
-			bUnicodeIme = false;
-			break;
-
-		case IMEID_CHT_VER51: // 5.1.x.x // IME2002(w/OfficeXP)
-		case IMEID_CHT_VER52: // 5.2.x.x // (w/whistler)
-		case IMEID_CHS_VER53: // 5.3.x.x // SCIME2k or MSPY3 (w/OfficeXP and Whistler)
-			p = *(LPBYTE *)((LPBYTE)_ImmLockIMCC( lpIC->hPrivate ) + 4);
-			if( !p ) break;
-			p = *(LPBYTE *)((LPBYTE)p + 1*4 + 5*4);
-			if( !p ) break;
-			dwReadingStrLen = *(DWORD *)(p + 1*4 + (16*2+2*4) + 5*4 + 16 * 2);
-			dwErr = *(DWORD *)(p + 1*4 + (16*2+2*4) + 5*4 + 16 * 2 + 1*4);
-			wstr  = (WCHAR *) (p + 1*4 + (16*2+2*4) + 5*4);
-			bUnicodeIme = true;
-			break;
-
-			// the code tested only with Win 98 SE (MSPY 1.5/ ver 4.1.0.21)
-		case IMEID_CHS_VER41:
-			{
-				int nOffset;
-				nOffset = ( GetImeId( 1 ) >= 0x00000002 ) ? 8 : 7;
-
-				p = *(LPBYTE *)((LPBYTE)_ImmLockIMCC( lpIC->hPrivate ) + nOffset * 4);
-				if( !p ) break;
-				dwReadingStrLen = *(DWORD *)(p + 7*4 + 16*2*4);
-				dwErr = *(DWORD *)(p + 8*4 + 16*2*4);
-				dwErr = __min( dwErr, dwReadingStrLen );
-				wstr = (WCHAR *)(p + 6*4 + 16*2*1);
-				bUnicodeIme = true;
-				break;
-			}
-
-		case IMEID_CHS_VER42: // 4.2.x.x // SCIME98 or MSPY2 (w/Office2k, Win2k, WinME, etc)
-			{
-				OSVERSIONINFOW osi;
-				osi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOW);
-				GetVersionExW( &osi );
-
-				int nTcharSize = ( osi.dwPlatformId == VER_PLATFORM_WIN32_NT ) ? sizeof(WCHAR) : sizeof(char);
-				p = *(LPBYTE *)((LPBYTE)_ImmLockIMCC( lpIC->hPrivate ) + 1*4 + 1*4 + 6*4);
-				if( !p ) break;
-				dwReadingStrLen = *(DWORD *)(p + 1*4 + (16*2+2*4) + 5*4 + 16 * nTcharSize);
-				dwErr = *(DWORD *)(p + 1*4 + (16*2+2*4) + 5*4 + 16 * nTcharSize + 1*4);
-				wstr  = (WCHAR *) (p + 1*4 + (16*2+2*4) + 5*4);
-				bUnicodeIme = ( osi.dwPlatformId == VER_PLATFORM_WIN32_NT ) ? true : false;
-			}
-		}   // switch
-	}
-
-	// Copy the reading string to the candidate list first
-	s_CandList.awszCandidate[0][0] = 0;
-	s_CandList.awszCandidate[1][0] = 0;
-	s_CandList.awszCandidate[2][0] = 0;
-	s_CandList.awszCandidate[3][0] = 0;
-	s_CandList.dwCount = dwReadingStrLen;
-	s_CandList.dwSelection = (DWORD)-1; // do not select any char
-	if( bUnicodeIme )
-	{
-		UINT i;
-		for( i = 0; i < dwReadingStrLen; ++i ) // dwlen > 0, if known IME
-		{
-			if( dwErr <= i && s_CandList.dwSelection == (DWORD)-1 )
-			{
-				// select error char
-				s_CandList.dwSelection = i;
-			}
-
-			s_CandList.awszCandidate[i][0] = wstr[i];
-			s_CandList.awszCandidate[i][1] = 0;
-		}
-		s_CandList.awszCandidate[i][0] = 0;
-	}
-	else
-	{
-		char *p = (char *)wstr;
-		DWORD i, j;
-		for( i = 0, j = 0; i < dwReadingStrLen; ++i, ++j ) // dwlen > 0, if known IME
-		{
-			if( dwErr <= i && s_CandList.dwSelection == (DWORD)-1 )
-			{
-				s_CandList.dwSelection = j;
-			}
-			// Obtain the current code page
-			WCHAR wszCodePage[8];
-			UINT uCodePage = CP_ACP;  // Default code page
-			if( GetLocaleInfoW( MAKELCID( GetLanguage(), SORT_DEFAULT ),
-				LOCALE_IDEFAULTANSICODEPAGE,
-				wszCodePage,
-				sizeof(wszCodePage)/sizeof(wszCodePage[0]) ) )
-			{
-				uCodePage = wcstoul( wszCodePage, NULL, 0 );
-			}
-			MultiByteToWideChar( uCodePage, 0, p + i, IsDBCSLeadByteEx( uCodePage, p[i] ) ? 2 : 1,
-				s_CandList.awszCandidate[j], 1 );
-			if( IsDBCSLeadByteEx( uCodePage, p[i] ) )
-				++i;
-		}
-		s_CandList.awszCandidate[j][0] = 0;
-		s_CandList.dwCount = j;
-	}
-	if( !_GetReadingString )
-	{
-		_ImmUnlockIMCC( lpIC->hPrivate );
-		_ImmUnlockIMC( hImc );
-		GetReadingWindowOrientation( dwId );
-	}
-	_ImmReleaseContext( DXUTGetHWND(), hImc );
-
-	if( pwszReadingStringBuffer )
-		HeapFree( GetProcessHeap(), 0, pwszReadingStringBuffer );
-
-	// Copy the string to the reading string buffer
-	if( s_CandList.dwCount > 0 )
-		s_bShowReadingWindow = true;
-	else
-		s_bShowReadingWindow = false;
-	if( s_bHorizontalReading )
-	{
-		s_CandList.nReadingError = -1;
-		s_wszReadingString[0] = 0;
-		for( UINT i = 0; i < s_CandList.dwCount; ++i )
-		{
-			if( s_CandList.dwSelection == i )
-				s_CandList.nReadingError = lstrlen( s_wszReadingString );
-			StringCchCat( s_wszReadingString, 32, s_CandList.awszCandidate[i] );
-		}
-	}
-
-	s_CandList.dwPageSize = MAX_CANDLIST;
+	// Port: the reading string came from older Chinese IMEs' private data (GetImeId() != 0, never in the port).
+	s_bShowReadingWindow = false;
 }
 
 
-//--------------------------------------------------------------------------------------
-// This function is used only briefly in CHT IME handling,
-// so accelerator isn't processed.
-void CKTDGUIIMEEditBox::PumpMessage()
-{
-	MSG msg;
-
-	while( PeekMessageW( &msg, NULL, 0, 0, PM_NOREMOVE ) )
-	{
-		if( !GetMessageW( &msg, NULL, 0, 0 ) )
-		{
-			g_pKTDXApp->NoticeQuitType( CKTDXApp::KQT_IMEEditBOX_ERROR );
-			PostQuitMessage( (int)msg.wParam );
-			return;
-		}
-		TranslateMessage( &msg );
-		DispatchMessageA( &msg );
-	}
-}
 
 
 //--------------------------------------------------------------------------------------
@@ -1957,8 +1610,8 @@ bool CKTDGUIIMEEditBox::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 						int nCount = lstrlen( s_CompString.GetBuffer() + s_nCompCaret );
 						// Send left keystrokes
 						for( int i = 0; i < nCount; ++i )
-							SendMessage( DXUTGetHWND(), WM_KEYDOWN, VK_LEFT, 0 );
-						SendMessage( DXUTGetHWND(), WM_KEYUP, VK_LEFT, 0 );
+							DXUTStaticWndProc( DXUTGetHWND(), WM_KEYDOWN, VK_LEFT, 0 );
+						DXUTStaticWndProc( DXUTGetHWND(), WM_KEYUP, VK_LEFT, 0 );
 					}
 				}
 
@@ -2020,6 +1673,7 @@ bool CKTDGUIIMEEditBox::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 					break;
 
 				LPCANDIDATELIST lpCandList = NULL;
+				std::vector<BYTE> vecCandList;
 				DWORD dwLenRequired;
 
 				s_bShowReadingWindow = false;
@@ -2027,7 +1681,8 @@ bool CKTDGUIIMEEditBox::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 				dwLenRequired = _ImmGetCandidateListW( hImc, 0, NULL, 0 );
 				if( dwLenRequired )
 				{
-					lpCandList = (LPCANDIDATELIST)HeapAlloc( GetProcessHeap(), 0, dwLenRequired );
+					vecCandList.resize( dwLenRequired );
+					lpCandList = reinterpret_cast<LPCANDIDATELIST>( vecCandList.data() );
 					dwLenRequired = _ImmGetCandidateListW( hImc, 0, lpCandList, dwLenRequired );
 				}
 
@@ -2078,7 +1733,6 @@ bool CKTDGUIIMEEditBox::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 					if( s_CandList.dwCount > lpCandList->dwPageSize )
 						s_CandList.dwCount = lpCandList->dwPageSize;
 
-					HeapFree( GetProcessHeap(), 0, lpCandList );
 					_ImmReleaseContext( DXUTGetHWND(), hImc );
 
 					// Korean and old Chinese IME can't have selection.
@@ -2174,23 +1828,8 @@ bool CKTDGUIIMEEditBox::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 		}
 		break;
 
-		// When Text Service Framework is installed in Win2K, Alt+Shift and Ctrl+Shift combination (to switch input
-		// locale / keyboard layout) doesn't send WM_KEYUP message for the key that is released first. We need to check
-		// if these keys are actually up whenever we receive key up message for other keys.
-	case WM_KEYUP:
-	case WM_SYSKEYUP:
-		if ( !( lAlt & 0x80000000 ) && wParam != VK_MENU && ( GetAsyncKeyState( VK_MENU ) & 0x8000 ) == 0 )
-		{
-			PostMessageW( GetFocus(), WM_KEYUP, (WPARAM)VK_MENU, ( lAlt & 0x01ff0000 ) | 0xC0000001 );
-		}
-		else if ( !( lCtrl & 0x80000000 ) && wParam != VK_CONTROL && ( GetAsyncKeyState( VK_CONTROL ) & 0x8000 ) == 0 )
-		{
-			PostMessageW( GetFocus(), WM_KEYUP, (WPARAM)VK_CONTROL, ( lCtrl & 0x01ff0000 ) | 0xC0000001 );
-		}
-		else if ( !( lShift & 0x80000000 ) && wParam != VK_SHIFT && ( GetAsyncKeyState( VK_SHIFT ) & 0x8000 ) == 0 )
-		{
-			PostMessageW( GetFocus(), WM_KEYUP, (WPARAM)VK_SHIFT, ( lShift & 0x01ff0000 ) | 0xC0000001 );
-		}
+		// Port: the original posted a WM_KEYUP for Alt, Ctrl or Shift when Windows 2000's Text Services Framework had
+		// lost it; SDL reports every key release.
 		// fall through WM_KEYDOWN / WM_SYSKEYDOWN
 	case WM_KEYDOWN:
 	case WM_SYSKEYDOWN:
@@ -3288,23 +2927,8 @@ void CKTDGUIIMEEditBox::Uninitialize()
 
 		s_bImmBound = false;
 	}
-	if( s_hDllIme )
-	{
-		PLACEHOLDERPROC( GetReadingString );
-		PLACEHOLDERPROC( ShowReadingWindow );
-
-		FreeLibrary( s_hDllIme );
-		s_hDllIme = NULL;
-	}
-	if( s_hDllVer )
-	{
-		PLACEHOLDERPROC( VerQueryValueA );
-		PLACEHOLDERPROC( GetFileVersionInfoA );
-		PLACEHOLDERPROC( GetFileVersionInfoSizeA );
-
-		FreeLibrary( s_hDllVer );
-		s_hDllVer = NULL;
-	}
+	PLACEHOLDERPROC( GetReadingString );
+	PLACEHOLDERPROC( ShowReadingWindow );
 }
 
 //--------------------------------------------------------------------------------------

@@ -1796,8 +1796,8 @@ static HRESULT _WriteToFileSerializer( KFileSerializer& kInOutFile_, const CKTDX
 
     HRESULT hr;
 
-    CComQIPtr<ID3DXKeyframedAnimationSet, &IID_ID3DXKeyframedAnimationSet>      pKeyframed( pInAnimSet_ );
-    CComQIPtr<ID3DXCompressedAnimationSet, &IID_ID3DXCompressedAnimationSet>    pCompressed( pInAnimSet_ );
+    CComPtr<ID3DXKeyframedAnimationSet>     pKeyframed( dynamic_cast<ID3DXKeyframedAnimationSet*>( pInAnimSet_ ) );
+    CComPtr<ID3DXCompressedAnimationSet>    pCompressed( dynamic_cast<ID3DXCompressedAnimationSet*>( pInAnimSet_ ) );
     if ( pKeyframed != NULL )
     {
         DWORD   dwNumAnimations = pKeyframed->GetNumAnimations();
@@ -1930,7 +1930,7 @@ static HRESULT _Optimize( ID3DXAnimationSet* pAnimSet, ID3DXAnimationSet** ppOpt
 
     HRESULT hr;
 
-    CComQIPtr<ID3DXKeyframedAnimationSet, &IID_ID3DXKeyframedAnimationSet>  pKeyframed( pAnimSet );
+    CComPtr<ID3DXKeyframedAnimationSet> pKeyframed( dynamic_cast<ID3DXKeyframedAnimationSet*>( pAnimSet ) );
     if ( pKeyframed != NULL )
     {
         DWORD   dwNumAnimations = pKeyframed->GetNumAnimations();

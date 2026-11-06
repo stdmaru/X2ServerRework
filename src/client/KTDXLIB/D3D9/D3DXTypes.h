@@ -504,6 +504,48 @@ inline UINT D3DXGetFVFVertexSize(DWORD fvf)
     return x2::d3d9::DescribeFvf(fvf).size;
 }
 
+// --- ATL's CComPtr, for the D3DX objects (they keep AddRef/Release) ------------------------------------------------
+
+// Holds a reference: taking a pointer adds one, letting it go releases it. &p is for out-parameters (p must be empty).
+template <class T>
+class CComPtr {
+public:
+    CComPtr() = default;
+    CComPtr(T* pointer) : p(pointer)
+    {
+        if (p != nullptr) {
+            p->AddRef();
+        }
+    }
+    CComPtr(const CComPtr& other) : CComPtr(other.p) {}
+    ~CComPtr() { Release(); }
+    CComPtr& operator=(T* pointer)
+    {
+        if (pointer != nullptr) {
+            pointer->AddRef();
+        }
+        Release();
+        p = pointer;
+        return *this;
+    }
+    CComPtr& operator=(const CComPtr& other) { return *this = other.p; }
+
+    void Release()
+    {
+        T* pointer = p;
+        p = nullptr;
+        if (pointer != nullptr) {
+            pointer->Release();
+        }
+    }
+    operator T*() const { return p; }
+    T* operator->() const { return p; }
+    T** operator&() { return &p; }
+    bool operator!() const { return p == nullptr; }
+
+    T* p = nullptr;
+};
+
 // --- Creation functions --------------------------------------------------------------------------------------------
 // A texture on the device (the image loaders above are what fail until their step).
 HRESULT D3DXCreateTexture(x2::d3d9::Device* pDevice, UINT width, UINT height, UINT mipLevels, DWORD usage,

@@ -1,6 +1,7 @@
 #pragma once
 #ifndef _KFILESERIALIZER_H
 #define _KFILESERIALIZER_H
+#include <filesystem>
 #include <unordered_map>
 
 class   KFileSerializer
@@ -18,6 +19,10 @@ public:
     HRESULT         SaveFile( const char* pszInFilename_ ) const;
     HRESULT         LoadFile( const wchar_t* pszInFilename_, DWORD dwInSize_ = 0 );
     HRESULT         SaveFile( const wchar_t* pszInFilename_ ) const;
+private:
+    HRESULT         _LoadFile( const std::filesystem::path& path_, DWORD dwInSize_ );
+    HRESULT         _SaveFile( const std::filesystem::path& path_ ) const;
+public:
 
     DWORD           AppendSpace( DWORD dwInSize_ );
     void            AlignSpace( DWORD dwInAlign_ = sizeof(DWORD) );

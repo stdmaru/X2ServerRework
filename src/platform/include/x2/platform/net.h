@@ -26,6 +26,7 @@ typedef int x2_socklen_t; // address length type of accept/getsockname (socklen_
 #include <sys/select.h>
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <sys/uio.h>
 #include <unistd.h>
 
 typedef int SOCKET;
@@ -63,6 +64,18 @@ inline int ioctlsocket(SOCKET s, long cmd, u_long* arg) { return ::ioctl(s, stat
 #define WSAEWOULDBLOCK EWOULDBLOCK
 #define WSAECONNRESET  ECONNRESET
 #define WSAEINTR       EINTR
+#define WSAEFAULT      EFAULT
+#define WSAEINVAL      EINVAL
+#define WSAEINPROGRESS EINPROGRESS
+#define WSAEISCONN     EISCONN
+#define WSAEMSGSIZE    EMSGSIZE
+#define WSAENETDOWN    ENETDOWN
+#define WSAENETRESET   ENETRESET
+#define WSAENOTSOCK    ENOTSOCK
+#define WSAEOPNOTSUPP  EOPNOTSUPP
+#define WSAESHUTDOWN   ESHUTDOWN
+#define WSAETIMEDOUT   ETIMEDOUT
+#define WSANOTINITIALISED 10093 // Winsock's value: no errno has it, sockets need no start-up here
 
 // Overlapped I/O names, so the headers of Common/Socket parse. Only the types: the IOCP sources are not
 // compiled outside Windows, and the network layer is replaced in server/common-net.
@@ -119,6 +132,38 @@ inline bool SocketReadable(SOCKET s)
     fd.fd = s;
     fd.events = POLLIN;
     return ::poll(&fd, 1, 0) > 0 && (fd.revents & (POLLIN | POLLERR | POLLHUP)) != 0;
+#endif
+}
+
+// Sends the buffers as one datagram, in order (WSASendTo without overlapped I/O; sendmsg elsewhere). Returns
+// SOCKET_ERROR or 0, with the bytes sent in *sent.
+inline int SendToScattered(SOCKET s, WSABUF* buffers, DWORD count, const sockaddr* to, int toLength, DWORD* sent)
+{
+#if defined(_WIN32)
+    return ::WSASendTo(s, buffers, count, sent, 0, to, toLength, nullptr, nullptr);
+#else
+    iovec vectors[16];
+    if (count > 16) {
+        errno = EMSGSIZE;
+        return SOCKET_ERROR;
+    }
+    for (DWORD i = 0; i < count; ++i) {
+        vectors[i].iov_base = buffers[i].buf;
+        vectors[i].iov_len = buffers[i].len;
+    }
+    msghdr message{};
+    message.msg_name = const_cast<sockaddr*>(to);
+    message.msg_namelen = static_cast<socklen_t>(toLength);
+    message.msg_iov = vectors;
+    message.msg_iovlen = count;
+    const ssize_t n = ::sendmsg(s, &message, 0);
+    if (n < 0) {
+        return SOCKET_ERROR;
+    }
+    if (sent != nullptr) {
+        *sent = static_cast<DWORD>(n);
+    }
+    return 0;
 #endif
 }
 
