@@ -107,7 +107,7 @@ TEST_CASE("render: null device creates and releases resources")
 {
     auto device = NullDevice();
     CHECK(device->GetBackend() == Backend::Null);
-    CHECK(device->DriverName() == "null");
+    CHECK(std::string(device->DriverName()) == "null");
 
     Buffer vertices = device->CreateBuffer({BufferUsage::Vertex, 256, "vertices"});
     Texture texture = device->CreateTexture({.width = 4, .height = 4});
