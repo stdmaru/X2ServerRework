@@ -11,7 +11,8 @@ lives and how its dependencies enter the build is decision T32.
 | `x2::app` (`x2/app/app.h`) | client and tools | `Sdl` (process-wide `SDL_Init`/`SDL_Quit`), `Window` (SDL3 window with its own SDL_GPU device; `BeginFrame`/`EndFrame` acquire the command buffer and swapchain texture), `PollEvents` (quit on `SDL_EVENT_QUIT` or the main window's close request), `WaitForEvents`/`WakeEventLoop` (tools that redraw only on change) |
 | `x2::app_imgui` (`x2/app/imgui_layer.h`) | tools only | `ImGuiLayer` (ImGui context with the `sdl3` platform and `sdlgpu3` renderer backends), `ConfigureImGui` (style, DPI scale, fonts), `DefaultFontFiles`, `DefaultHangulFontFiles` |
 
-- **Rendering is SDL_GPU only** (T19), never SDL_Renderer or OpenGL, so the client inherits the same device. The device accepts
+- **Rendering is SDL_GPU only** (T19), never SDL_Renderer or OpenGL, so the client inherits the same device. In Phase 4 the device
+  moves to `x2::render` (T36), and `x2::app` keeps the window and events; tools then reach SDL_GPU for ImGui through `x2::render`'s escape hatch. The device accepts
   SPIR-V, DXIL, and MSL shaders (Vulkan, D3D12, Metal); `X2_DEV_TOOLS` builds request validation layers.
 - **High DPI**: the window size is multiplied by the display content scale, and ImGui scales its style and fonts by it.
 - **Fonts**: server logs contain Korean, and ImGui's built-in font is ASCII only. On Windows the main font is Segoe UI (or Arial)
