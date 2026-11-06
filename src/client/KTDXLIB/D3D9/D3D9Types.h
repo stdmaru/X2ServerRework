@@ -507,3 +507,27 @@ struct D3DLIGHT9 {
     float Theta;
     float Phi;
 };
+
+// Shaders and vertex declarations: interfaces only, so the engine's members and calls compile; nothing creates them
+// (the effects become KTDXLIB's own shaders, T37).
+class IDirect3DVertexDeclaration9 {
+public:
+    virtual ~IDirect3DVertexDeclaration9() = default;
+    virtual ULONG AddRef() = 0;
+    virtual ULONG Release() = 0;
+};
+class IDirect3DVertexShader9 {
+public:
+    virtual ~IDirect3DVertexShader9() = default;
+    virtual ULONG AddRef() = 0;
+    virtual ULONG Release() = 0;
+};
+class IDirect3DPixelShader9 {
+public:
+    virtual ~IDirect3DPixelShader9() = default;
+    virtual ULONG AddRef() = 0;
+    virtual ULONG Release() = 0;
+};
+typedef IDirect3DVertexDeclaration9* LPDIRECT3DVERTEXDECLARATION9;
+typedef IDirect3DVertexShader9* LPDIRECT3DVERTEXSHADER9;
+typedef IDirect3DPixelShader9* LPDIRECT3DPIXELSHADER9;

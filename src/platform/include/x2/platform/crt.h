@@ -63,6 +63,7 @@ int vswprintf_ms(wchar_t* dst, size_t size, const wchar_t* fmt, va_list args); /
 int swprintf_s(wchar_t* dst, size_t size, const wchar_t* fmt, ...);
 int _snwprintf_s(wchar_t* dst, size_t size, size_t count, const wchar_t* fmt, ...);
 int sprintf_s(char* dst, size_t size, const char* fmt, ...);
+int _snprintf_s(char* dst, size_t size, size_t count, const char* fmt, ...);  // count: _TRUNCATE or a limit
 template <size_t N, typename... A> int swprintf_s(wchar_t (&dst)[N], const wchar_t* fmt, A... a) { return swprintf_s(dst, N, fmt, a...); }
 template <size_t N, typename... A> int sprintf_s(char (&dst)[N], const char* fmt, A... a) { return sprintf_s(dst, N, fmt, a...); }
 template <size_t N, typename... A> int _snwprintf_s(wchar_t (&dst)[N], size_t count, const wchar_t* fmt, A... a) { return _snwprintf_s(dst, N, count, fmt, a...); }

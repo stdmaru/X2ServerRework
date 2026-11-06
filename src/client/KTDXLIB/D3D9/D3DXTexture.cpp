@@ -51,3 +51,21 @@ HRESULT D3DXCheckTextureRequirements(x2::d3d9::Device* pDevice, UINT* pWidth, UI
     }
     return D3D_OK;
 }
+
+HRESULT D3DXCreateTexture(x2::d3d9::Device* pDevice, UINT width, UINT height, UINT mipLevels, DWORD usage,
+                          D3DFORMAT format, D3DPOOL pool, x2::d3d9::Texture** ppTexture)
+{
+    if (ppTexture == nullptr) {
+        return D3DERR_INVALIDCALL;
+    }
+    *ppTexture = nullptr;
+    if (pDevice == nullptr) {
+        return D3DERR_INVALIDCALL;
+    }
+    UINT levels = mipLevels;
+    if (FAILED(D3DXCheckTextureRequirements(pDevice, &width, &height, &levels, usage, &format, pool))) {
+        return D3DERR_NOTAVAILABLE;
+    }
+    *ppTexture = pDevice->CreateTexture(width, height, levels, usage, format, pool).release();
+    return *ppTexture != nullptr ? D3D_OK : D3DERR_OUTOFVIDEOMEMORY;
+}

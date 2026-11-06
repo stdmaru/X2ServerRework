@@ -302,6 +302,31 @@ bool Texture::UnlockRect(UINT level)
     return true;
 }
 
+bool Device::UpdateTexture(Texture* source, Texture* destination)
+{
+    if (source == nullptr || destination == nullptr || source == destination ||
+        source->m_width != destination->m_width || source->m_height != destination->m_height ||
+        source->m_format != destination->m_format || source->m_levels.empty() || source->m_levels[0].bytes.empty()) {
+        return false;
+    }
+    const std::size_t levels = std::min(source->m_levels.size(), destination->m_levels.size());
+    for (std::size_t level = 0; level < levels; ++level) {
+        const Texture::Level& from = source->m_levels[level];
+        if (!destination->m_levels[level].bytes.empty()) {
+            destination->m_levels[level].bytes = from.bytes;
+        }
+        std::vector<std::byte> scratch;
+        const std::span<const std::byte> bytes =
+            Convert(source->m_format, destination->m_renderFormat, from.bytes, from.width * from.height, scratch);
+        const bool cycle = destination->m_levels.size() == 1;
+        if (!UploadToTexture(destination->m_texture, static_cast<std::uint32_t>(level), from.width, from.height, bytes,
+                             cycle)) {
+            return false;
+        }
+    }
+    return true;
+}
+
 // --- Vertex buffer --------------------------------------------------------------------------------------------------
 
 std::unique_ptr<VertexBuffer> Device::CreateVertexBuffer(UINT length, DWORD usage, DWORD fvf, D3DPOOL /*pool*/)

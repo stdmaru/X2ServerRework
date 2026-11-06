@@ -477,6 +477,110 @@ bool Device::GetVertexShaderConstantF(UINT startRegister, float* data, UINT regi
     return true;
 }
 
+void Device::SetMaterial(const D3DMATERIAL9* material)
+{
+    if (material != nullptr) {
+        m_material = *material;
+    }
+}
+
+void Device::GetMaterial(D3DMATERIAL9* material) const
+{
+    if (material != nullptr) {
+        *material = m_material;
+    }
+}
+
+namespace {
+
+// What D3D9 gives a light enabled before it was set: white, directional, along +z.
+D3DLIGHT9 DefaultLight()
+{
+    D3DLIGHT9 light{};
+    light.Type = D3DLIGHT_DIRECTIONAL;
+    light.Diffuse = D3DCOLORVALUE{1.0f, 1.0f, 1.0f, 0.0f};
+    light.Direction = D3DVECTOR{0.0f, 0.0f, 1.0f};
+    return light;
+}
+
+constexpr DWORD kMaxLights = 1024;  // indices are sparse in D3D9; a bound keeps a bad index from allocating
+
+}  // namespace
+
+bool Device::SetLight(DWORD index, const D3DLIGHT9* light)
+{
+    if (light == nullptr || index >= kMaxLights) {
+        return false;
+    }
+    if (index >= m_lights.size()) {
+        m_lights.resize(index + 1, Light{DefaultLight(), false});
+    }
+    m_lights[index].light = *light;
+    return true;
+}
+
+bool Device::GetLight(DWORD index, D3DLIGHT9* light) const
+{
+    if (light == nullptr || index >= m_lights.size()) {
+        return false;
+    }
+    *light = m_lights[index].light;
+    return true;
+}
+
+bool Device::LightEnable(DWORD index, BOOL enable)
+{
+    if (index >= kMaxLights) {
+        return false;
+    }
+    if (index >= m_lights.size()) {
+        m_lights.resize(index + 1, Light{DefaultLight(), false});
+    }
+    m_lights[index].enabled = enable != FALSE;
+    return true;
+}
+
+bool Device::GetLightEnable(DWORD index, BOOL* enable) const
+{
+    if (enable == nullptr || index >= m_lights.size()) {
+        return false;
+    }
+    *enable = m_lights[index].enabled ? TRUE : FALSE;
+    return true;
+}
+
+void Device::SetVertexDeclaration(IDirect3DVertexDeclaration9* /*declaration*/) {}
+
+void Device::GetVertexDeclaration(IDirect3DVertexDeclaration9** declaration) const
+{
+    if (declaration != nullptr) {
+        *declaration = nullptr;
+    }
+}
+
+void Device::SetVertexShader(IDirect3DVertexShader9* /*shader*/) {}
+
+void Device::GetVertexShader(IDirect3DVertexShader9** shader) const
+{
+    if (shader != nullptr) {
+        *shader = nullptr;
+    }
+}
+
+void Device::SetPixelShader(IDirect3DPixelShader9* /*shader*/) {}
+
+void Device::GetPixelShader(IDirect3DPixelShader9** shader) const
+{
+    if (shader != nullptr) {
+        *shader = nullptr;
+    }
+}
+
+UINT Device::GetAvailableTextureMem() const
+{
+    return 512u * 1024u * 1024u;
+}
+
 void Device::SetStreamSource(UINT stream, VertexBuffer* buffer, UINT offset, UINT stride)
 {
     if (stream == 0) {

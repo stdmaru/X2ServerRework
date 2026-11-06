@@ -38,23 +38,22 @@
 #define PURE                     = 0
 #endif
 
-namespace x2::d3d9 { class Device; class Texture; }
+namespace x2::d3d9 { class Device; class Texture; class VertexBuffer; }
 
 typedef const char* D3DXHANDLE;
+typedef double DOUBLE;
+typedef D3DXMATRIX* LPD3DXMATRIX;
 
-struct ID3DXBuffer;
-struct ID3DXBaseMesh;
-struct ID3DXMesh;
-struct ID3DXPMesh;
-struct ID3DXSkinInfo;
-struct ID3DXAnimationSet;
-struct ID3DXKeyframedAnimationSet;
-struct ID3DXCompressedAnimationSet;
+class ID3DXBuffer;
+class ID3DXBaseMesh;
+class ID3DXMesh;
+class ID3DXPMesh;
+class ID3DXSkinInfo;
+class ID3DXAnimationSet;
+class ID3DXKeyframedAnimationSet;
+class ID3DXCompressedAnimationSet;
 struct ID3DXAnimationCallbackHandler;
-struct ID3DXEffect;
-struct ID3DXLine;
-struct IDirect3DVertexShader9;
-struct IDirect3DPixelShader9;
+class ID3DXEffect;
 
 typedef ID3DXBuffer* LPD3DXBUFFER;
 typedef ID3DXBaseMesh* LPD3DXBASEMESH;
@@ -65,11 +64,6 @@ typedef ID3DXAnimationSet* LPD3DXANIMATIONSET;
 typedef ID3DXKeyframedAnimationSet* LPD3DXKEYFRAMEDANIMATIONSET;
 typedef ID3DXCompressedAnimationSet* LPD3DXCOMPRESSEDANIMATIONSET;
 typedef ID3DXEffect* LPD3DXEFFECT;
-typedef ID3DXLine* LPD3DXLINE;
-typedef IDirect3DVertexShader9* LPDIRECT3DVERTEXSHADER9;
-class IDirect3DVertexDeclaration9;
-typedef IDirect3DVertexDeclaration9* LPDIRECT3DVERTEXDECLARATION9;
-typedef IDirect3DPixelShader9* LPDIRECT3DPIXELSHADER9;
 
 // --- Meshes (d3dx9mesh.h) --------------------------------------------------------------------------------------------
 
@@ -195,6 +189,7 @@ public:
                                      D3DXTRANSITION_TYPE Transition) PURE;
     STDMETHOD_(DWORD, KeyTrackWeight)(THIS_ UINT Track, FLOAT NewWeight, double StartTime, double Duration,
                                       D3DXTRANSITION_TYPE Transition) PURE;
+    STDMETHOD_(DWORD, KeyTrackEnable)(THIS_ UINT Track, BOOL NewEnable, double StartTime) PURE;
     STDMETHOD(UnkeyAllTrackEvents)(THIS_ UINT Track) PURE;
     STDMETHOD(CloneAnimationController)(THIS_ UINT MaxNumAnimationOutputs, UINT MaxNumAnimationSets, UINT MaxNumTracks,
                                         UINT MaxNumEvents, ID3DXAnimationController** ppAnimController) PURE;
@@ -228,6 +223,233 @@ public:
     STDMETHOD(SetPixelShaderConstantB)(THIS_ UINT RegisterIndex, const BOOL* pConstantData, UINT RegisterCount) PURE;
 };
 typedef ID3DXEffectStateManager* LPD3DXEFFECTSTATEMANAGER;
+
+// --- Buffers, meshes and skinning (d3dx9mesh.h) ---------------------------------------------------------------------
+
+class ID3DXBuffer {
+public:
+    virtual ~ID3DXBuffer() = default;
+    STDMETHOD_(ULONG, AddRef)(THIS) PURE;
+    STDMETHOD_(ULONG, Release)(THIS) PURE;
+    STDMETHOD_(LPVOID, GetBufferPointer)(THIS) PURE;
+    STDMETHOD_(DWORD, GetBufferSize)(THIS) PURE;
+};
+
+// Vertex declarations (d3d9types.h): only to read and patch a mesh's declaration.
+struct D3DVERTEXELEMENT9 {
+    WORD Stream;  // 0xFF ends the declaration
+    WORD Offset;
+    BYTE Type;
+    BYTE Method;
+    BYTE Usage;
+    BYTE UsageIndex;
+};
+#define MAXD3DDECLLENGTH  64
+#define MAX_FVF_DECL_SIZE (MAXD3DDECLLENGTH + 1)
+enum D3DDECLTYPE { D3DDECLTYPE_FLOAT1 = 0, D3DDECLTYPE_FLOAT2 = 1, D3DDECLTYPE_FLOAT3 = 2, D3DDECLTYPE_FLOAT4 = 3,
+                   D3DDECLTYPE_D3DCOLOR = 4, D3DDECLTYPE_UBYTE4 = 5, D3DDECLTYPE_UNUSED = 17 };
+enum D3DDECLUSAGE { D3DDECLUSAGE_POSITION = 0, D3DDECLUSAGE_BLENDWEIGHT = 1, D3DDECLUSAGE_BLENDINDICES = 2,
+                    D3DDECLUSAGE_NORMAL = 3, D3DDECLUSAGE_TEXCOORD = 5, D3DDECLUSAGE_COLOR = 10 };
+
+class IDirect3DIndexBuffer9;
+typedef IDirect3DIndexBuffer9* LPDIRECT3DINDEXBUFFER9;
+
+enum _D3DXMESH {
+    D3DXMESH_32BIT = 0x001,
+    D3DXMESH_SYSTEMMEM = 0x110,
+    D3DXMESH_MANAGED = 0x220,
+    D3DXMESH_VB_SHARE = 0x1000,
+};
+enum _D3DXMESHOPT {
+    D3DXMESHOPT_COMPACT = 0x01000000,
+    D3DXMESHOPT_ATTRSORT = 0x02000000,
+    D3DXMESHOPT_VERTEXCACHE = 0x04000000,
+    D3DXMESHOPT_STRIPREORDER = 0x08000000,
+    D3DXMESHOPT_IGNOREVERTS = 0x10000000,
+};
+#define D3DXERR_CANNOTATTRSORT static_cast<HRESULT>(0x88760B54L)  // MAKE_DDHRESULT(2900)
+
+struct D3DXWELDEPSILONS {
+    FLOAT Position;
+    FLOAT BlendWeights;
+    FLOAT Normal;
+    FLOAT PSize;
+    FLOAT Specular;
+    FLOAT Diffuse;
+    FLOAT Texcoord[8];
+    FLOAT Tangent;
+    FLOAT Binormal;
+    FLOAT TessFactor;
+};
+
+struct D3DXBONECOMBINATION {
+    DWORD AttribId;
+    DWORD FaceStart;
+    DWORD FaceCount;
+    DWORD VertexStart;
+    DWORD VertexCount;
+    DWORD* BoneId;
+};
+typedef D3DXBONECOMBINATION* LPD3DXBONECOMBINATION;
+
+// The members of the meshes the engine calls.
+class ID3DXBaseMesh {
+public:
+    virtual ~ID3DXBaseMesh() = default;
+    STDMETHOD_(ULONG, AddRef)(THIS) PURE;
+    STDMETHOD_(ULONG, Release)(THIS) PURE;
+    STDMETHOD(DrawSubset)(THIS_ DWORD AttribId) PURE;
+    STDMETHOD_(DWORD, GetNumFaces)(THIS) PURE;
+    STDMETHOD_(DWORD, GetNumVertices)(THIS) PURE;
+    STDMETHOD_(DWORD, GetFVF)(THIS) PURE;
+    STDMETHOD(GetDeclaration)(THIS_ D3DVERTEXELEMENT9 Declaration[MAX_FVF_DECL_SIZE]) PURE;
+    STDMETHOD_(DWORD, GetNumBytesPerVertex)(THIS) PURE;
+    STDMETHOD_(DWORD, GetOptions)(THIS) PURE;
+    STDMETHOD(CloneMeshFVF)(THIS_ DWORD Options, DWORD FVF, x2::d3d9::Device* pD3DDevice, LPD3DXMESH* ppCloneMesh) PURE;
+    STDMETHOD(GetVertexBuffer)(THIS_ x2::d3d9::VertexBuffer** ppVB) PURE;
+    STDMETHOD(GetIndexBuffer)(THIS_ LPDIRECT3DINDEXBUFFER9* ppIB) PURE;
+    STDMETHOD(LockVertexBuffer)(THIS_ DWORD Flags, LPVOID* ppData) PURE;
+    STDMETHOD(UnlockVertexBuffer)(THIS) PURE;
+    STDMETHOD(LockIndexBuffer)(THIS_ DWORD Flags, LPVOID* ppData) PURE;
+    STDMETHOD(UnlockIndexBuffer)(THIS) PURE;
+    STDMETHOD(GetAttributeTable)(THIS_ D3DXATTRIBUTERANGE* pAttribTable, DWORD* pAttribTableSize) PURE;
+    STDMETHOD(GenerateAdjacency)(THIS_ FLOAT Epsilon, DWORD* pAdjacency) PURE;
+    STDMETHOD(UpdateSemantics)(THIS_ D3DVERTEXELEMENT9 Declaration[MAX_FVF_DECL_SIZE]) PURE;
+};
+
+class ID3DXMesh : public ID3DXBaseMesh {
+public:
+    STDMETHOD(LockAttributeBuffer)(THIS_ DWORD Flags, DWORD** ppData) PURE;
+    STDMETHOD(UnlockAttributeBuffer)(THIS) PURE;
+    STDMETHOD(Optimize)(THIS_ DWORD Flags, const DWORD* pAdjacencyIn, DWORD* pAdjacencyOut, DWORD* pFaceRemap,
+                        LPD3DXBUFFER* ppVertexRemap, LPD3DXMESH* ppOptMesh) PURE;
+};
+
+class ID3DXPMesh : public ID3DXBaseMesh {
+public:
+    STDMETHOD(ClonePMeshFVF)(THIS_ DWORD Options, DWORD FVF, x2::d3d9::Device* pD3DDevice,
+                             LPD3DXPMESH* ppCloneMesh) PURE;
+    STDMETHOD(SetNumFaces)(THIS_ DWORD Faces) PURE;
+    STDMETHOD(SetNumVertices)(THIS_ DWORD Vertices) PURE;
+    STDMETHOD_(DWORD, GetMaxFaces)(THIS) PURE;
+    STDMETHOD_(DWORD, GetMinFaces)(THIS) PURE;
+    STDMETHOD_(DWORD, GetMaxVertices)(THIS) PURE;
+    STDMETHOD_(DWORD, GetMinVertices)(THIS) PURE;
+};
+
+class ID3DXSkinInfo {
+public:
+    virtual ~ID3DXSkinInfo() = default;
+    STDMETHOD_(ULONG, AddRef)(THIS) PURE;
+    STDMETHOD_(ULONG, Release)(THIS) PURE;
+    STDMETHOD(SetBoneInfluence)(THIS_ DWORD Bone, DWORD NumInfluences, const DWORD* Vertices,
+                                const FLOAT* Weights) PURE;
+    STDMETHOD_(DWORD, GetNumBoneInfluences)(THIS_ DWORD Bone) PURE;
+    STDMETHOD(GetBoneInfluence)(THIS_ DWORD Bone, DWORD* Vertices, FLOAT* Weights) PURE;
+    STDMETHOD_(DWORD, GetNumBones)(THIS) PURE;
+    STDMETHOD(SetBoneName)(THIS_ DWORD Bone, LPCSTR pName) PURE;
+    STDMETHOD_(LPCSTR, GetBoneName)(THIS_ DWORD Bone) PURE;
+    STDMETHOD(SetBoneOffsetMatrix)(THIS_ DWORD Bone, const D3DXMATRIX* pBoneTransform) PURE;
+    STDMETHOD_(LPD3DXMATRIX, GetBoneOffsetMatrix)(THIS_ DWORD Bone) PURE;
+    STDMETHOD_(DWORD, GetFVF)(THIS) PURE;
+    STDMETHOD(Remap)(THIS_ DWORD NumVertices, DWORD* pVertexRemap) PURE;
+    STDMETHOD(ConvertToIndexedBlendedMesh)(THIS_ LPD3DXMESH pMesh, DWORD Options, DWORD paletteSize,
+                                           const DWORD* pAdjacencyIn, LPDWORD pAdjacencyOut, DWORD* pFaceRemap,
+                                           LPD3DXBUFFER* ppVertexRemap, DWORD* pMaxVertexInfl,
+                                           DWORD* pNumBoneCombinations, LPD3DXBUFFER* ppBoneCombinationTable,
+                                           LPD3DXMESH* ppMesh) PURE;
+};
+
+// --- Animation sets (d3dx9anim.h) ------------------------------------------------------------------------------------
+
+enum D3DXPLAYBACK_TYPE { D3DXPLAY_LOOP = 0, D3DXPLAY_ONCE = 1, D3DXPLAY_PINGPONG = 2,
+                         D3DXPLAY_FORCE_DWORD = 0x7fffffff };
+
+// D3DXKEY_VECTOR3 and D3DXKEY_QUATERNION are plain data in x2/platform/d3dx_math.h.
+typedef D3DXKEY_VECTOR3* LPD3DXKEY_VECTOR3;
+typedef D3DXKEY_QUATERNION* LPD3DXKEY_QUATERNION;
+
+struct D3DXKEY_CALLBACK {
+    FLOAT Time;
+    LPVOID pCallbackData;
+};
+typedef D3DXKEY_CALLBACK* LPD3DXKEY_CALLBACK;
+
+// Animation sets are told apart with dynamic_cast, where COM code called QueryInterface.
+class ID3DXAnimationSet {
+public:
+    virtual ~ID3DXAnimationSet() = default;
+    STDMETHOD_(ULONG, AddRef)(THIS) PURE;
+    STDMETHOD_(ULONG, Release)(THIS) PURE;
+    STDMETHOD_(LPCSTR, GetName)(THIS) PURE;
+    STDMETHOD_(DOUBLE, GetPeriod)(THIS) PURE;
+    STDMETHOD_(DOUBLE, GetPeriodicPosition)(THIS_ DOUBLE Position) PURE;
+    STDMETHOD_(UINT, GetNumAnimations)(THIS) PURE;
+    STDMETHOD(GetAnimationNameByIndex)(THIS_ UINT Index, LPCSTR* ppName) PURE;
+    STDMETHOD(GetAnimationIndexByName)(THIS_ LPCSTR pName, UINT* pIndex) PURE;
+    STDMETHOD(GetSRT)(THIS_ DOUBLE PeriodicPosition, UINT Animation, D3DXVECTOR3* pScale, D3DXQUATERNION* pRotation,
+                      D3DXVECTOR3* pTranslation) PURE;
+};
+
+class ID3DXKeyframedAnimationSet : public ID3DXAnimationSet {
+public:
+    STDMETHOD_(D3DXPLAYBACK_TYPE, GetPlaybackType)(THIS) PURE;
+    STDMETHOD_(DOUBLE, GetSourceTicksPerSecond)(THIS) PURE;
+    STDMETHOD_(UINT, GetNumScaleKeys)(THIS_ UINT Animation) PURE;
+    STDMETHOD(GetScaleKeys)(THIS_ UINT Animation, LPD3DXKEY_VECTOR3 pScaleKeys) PURE;
+    STDMETHOD_(UINT, GetNumRotationKeys)(THIS_ UINT Animation) PURE;
+    STDMETHOD(GetRotationKeys)(THIS_ UINT Animation, LPD3DXKEY_QUATERNION pRotationKeys) PURE;
+    STDMETHOD_(UINT, GetNumTranslationKeys)(THIS_ UINT Animation) PURE;
+    STDMETHOD(GetTranslationKeys)(THIS_ UINT Animation, LPD3DXKEY_VECTOR3 pTranslationKeys) PURE;
+    STDMETHOD(RegisterAnimationSRTKeys)(THIS_ LPCSTR pName, UINT NumScaleKeys, UINT NumRotationKeys,
+                                        UINT NumTranslationKeys, const D3DXKEY_VECTOR3* pScaleKeys,
+                                        const D3DXKEY_QUATERNION* pRotationKeys,
+                                        const D3DXKEY_VECTOR3* pTranslationKeys, DWORD* pAnimationIndex) PURE;
+    STDMETHOD(Compress)(THIS_ DWORD Flags, FLOAT Lossiness, LPD3DXFRAME pHierarchy,
+                        LPD3DXBUFFER* ppCompressedData) PURE;
+};
+
+class ID3DXCompressedAnimationSet : public ID3DXAnimationSet {
+public:
+    STDMETHOD_(D3DXPLAYBACK_TYPE, GetPlaybackType)(THIS) PURE;
+    STDMETHOD_(DOUBLE, GetSourceTicksPerSecond)(THIS) PURE;
+    STDMETHOD(GetCompressedData)(THIS_ LPD3DXBUFFER* ppCompressedData) PURE;
+};
+
+// --- Effects (d3dx9effect.h) -----------------------------------------------------------------------------------------
+
+#define D3DXFX_DONOTSAVESTATE        (1 << 0)
+#define D3DXFX_DONOTSAVESHADERSTATE  (1 << 1)
+#define D3DXFX_DONOTSAVESAMPLERSTATE (1 << 2)
+#define D3DXFX_NOT_CLONEABLE         (1 << 11)
+#define D3DXSHADER_DEBUG             (1 << 0)
+#define D3DXSHADER_SKIPOPTIMIZATION  (1 << 2)
+
+// The members of ID3DXEffect the engine calls. The `.fx` effects become the engine's own shaders (T37).
+class ID3DXEffect {
+public:
+    virtual ~ID3DXEffect() = default;
+    STDMETHOD_(ULONG, AddRef)(THIS) PURE;
+    STDMETHOD_(ULONG, Release)(THIS) PURE;
+    STDMETHOD_(D3DXHANDLE, GetParameterByName)(THIS_ D3DXHANDLE hParameter, LPCSTR pName) PURE;
+    STDMETHOD_(D3DXHANDLE, GetTechniqueByName)(THIS_ LPCSTR pName) PURE;
+    STDMETHOD(SetBool)(THIS_ D3DXHANDLE hParameter, BOOL b) PURE;
+    STDMETHOD(SetInt)(THIS_ D3DXHANDLE hParameter, INT n) PURE;
+    STDMETHOD(SetFloat)(THIS_ D3DXHANDLE hParameter, FLOAT f) PURE;
+    STDMETHOD(SetVector)(THIS_ D3DXHANDLE hParameter, const D3DXVECTOR4* pVector) PURE;
+    STDMETHOD(SetMatrix)(THIS_ D3DXHANDLE hParameter, const D3DXMATRIX* pMatrix) PURE;
+    STDMETHOD(SetMatrixArray)(THIS_ D3DXHANDLE hParameter, const D3DXMATRIX* pMatrix, UINT Count) PURE;
+    STDMETHOD(SetTexture)(THIS_ D3DXHANDLE hParameter, x2::d3d9::Texture* pTexture) PURE;
+    STDMETHOD(SetTechnique)(THIS_ D3DXHANDLE hTechnique) PURE;
+    STDMETHOD(Begin)(THIS_ UINT* pPasses, DWORD Flags) PURE;
+    STDMETHOD(BeginPass)(THIS_ UINT Pass) PURE;
+    STDMETHOD(CommitChanges)(THIS) PURE;
+    STDMETHOD(EndPass)(THIS) PURE;
+    STDMETHOD(End)(THIS) PURE;
+    STDMETHOD(OnLostDevice)(THIS) PURE;
+    STDMETHOD(OnResetDevice)(THIS) PURE;
+    STDMETHOD(SetStateManager)(THIS_ class ID3DXEffectStateManager* pManager) PURE;
+};
 
 // --- Textures (d3dx9tex.h) -------------------------------------------------------------------------------------------
 
@@ -281,3 +503,51 @@ inline UINT D3DXGetFVFVertexSize(DWORD fvf)
 {
     return x2::d3d9::DescribeFvf(fvf).size;
 }
+
+// --- Creation functions --------------------------------------------------------------------------------------------
+// A texture on the device (the image loaders above are what fail until their step).
+HRESULT D3DXCreateTexture(x2::d3d9::Device* pDevice, UINT width, UINT height, UINT mipLevels, DWORD usage,
+                          D3DFORMAT format, D3DPOOL pool, x2::d3d9::Texture** ppTexture);
+// A buffer of the given size.
+HRESULT D3DXCreateBuffer(DWORD numBytes, LPD3DXBUFFER* ppBuffer);
+
+// Frame hierarchies: walking them needs no mesh.
+HRESULT D3DXFrameDestroy(LPD3DXFRAME pFrameRoot, LPD3DXALLOCATEHIERARCHY pAlloc);
+LPD3DXFRAME D3DXFrameFind(const D3DXFRAME* pFrameRoot, LPCSTR Name);
+UINT D3DXFrameNumNamedMatrices(const D3DXFRAME* pFrameRoot);
+
+// Meshes, skinning, animation sets and controllers, and effects: the `.x` step and T37 implement them; until then they
+// fail with E_NOTIMPL and return null objects (docs/porting/client-d3d9.md).
+class ID3DXLoadUserData;
+HRESULT D3DXLoadMeshFromXInMemory(LPCVOID Memory, DWORD SizeOfMemory, DWORD Options, x2::d3d9::Device* pD3DDevice,
+                                  LPD3DXBUFFER* ppAdjacency, LPD3DXBUFFER* ppMaterials,
+                                  LPD3DXBUFFER* ppEffectInstances, DWORD* pNumMaterials, LPD3DXMESH* ppMesh);
+HRESULT D3DXLoadMeshHierarchyFromXInMemory(LPCVOID Memory, DWORD SizeOfMemory, DWORD MeshOptions,
+                                           x2::d3d9::Device* pDevice, LPD3DXALLOCATEHIERARCHY pAlloc,
+                                           ID3DXLoadUserData* pUserDataLoader, LPD3DXFRAME* ppFrameHierarchy,
+                                           LPD3DXANIMATIONCONTROLLER* ppAnimController);
+HRESULT D3DXCreateMeshFVF(DWORD NumFaces, DWORD NumVertices, DWORD Options, DWORD FVF, x2::d3d9::Device* pD3DDevice,
+                          LPD3DXMESH* ppMesh);
+HRESULT D3DXWeldVertices(LPD3DXMESH pMesh, DWORD Flags, const D3DXWELDEPSILONS* pEpsilons,
+                         const DWORD* pAdjacencyIn, DWORD* pAdjacencyOut, DWORD* pFaceRemap,
+                         LPD3DXBUFFER* ppVertexRemap);
+HRESULT D3DXFrameCalculateBoundingSphere(const D3DXFRAME* pFrameRoot, D3DXVECTOR3* pObjectCenter,
+                                         FLOAT* pObjectRadius);
+HRESULT D3DXCreateSkinInfoFVF(DWORD NumVertices, DWORD FVF, DWORD NumBones, LPD3DXSKININFO* ppSkinInfo);
+HRESULT D3DXCreateAnimationController(UINT MaxNumMatrices, UINT MaxNumAnimationSets, UINT MaxNumTracks,
+                                      UINT MaxNumEvents, LPD3DXANIMATIONCONTROLLER* ppAnimController);
+HRESULT D3DXFrameRegisterNamedMatrices(LPD3DXFRAME pFrameRoot, LPD3DXANIMATIONCONTROLLER pAnimController);
+HRESULT D3DXCreateKeyframedAnimationSet(LPCSTR pName, DOUBLE TicksPerSecond, D3DXPLAYBACK_TYPE Playback,
+                                        UINT NumAnimations, UINT NumCallbackKeys,
+                                        const D3DXKEY_CALLBACK* pCallbackKeys,
+                                        LPD3DXKEYFRAMEDANIMATIONSET* ppAnimationSet);
+HRESULT D3DXCreateCompressedAnimationSet(LPCSTR pName, DOUBLE TicksPerSecond, D3DXPLAYBACK_TYPE Playback,
+                                         LPD3DXBUFFER pCompressedData, UINT NumCallbackKeys,
+                                         const D3DXKEY_CALLBACK* pCallbackKeys,
+                                         LPD3DXCOMPRESSEDANIMATIONSET* ppAnimationSet);
+struct D3DXMACRO;
+class ID3DXInclude;
+class ID3DXEffectPool;
+HRESULT D3DXCreateEffect(x2::d3d9::Device* pDevice, LPCVOID pSrcData, UINT SrcDataLen, const D3DXMACRO* pDefines,
+                         ID3DXInclude* pInclude, DWORD Flags, ID3DXEffectPool* pPool, LPD3DXEFFECT* ppEffect,
+                         LPD3DXBUFFER* ppCompilationErrors);

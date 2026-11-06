@@ -31,7 +31,7 @@ endif()
 
 # KTDXLIB's D3D9 device: the engine's D3D9 calls translated onto x2::render (decisions T36 (5), T38), with
 # fixed-function shaders compiled offline (T39, D3D9/shaders). docs/porting/client-d3d9.md
-add_library(x2_client_d3d9 STATIC KTDXLIB/D3D9/Device.cpp KTDXLIB/D3D9/D3DXTexture.cpp KTDXLIB/D3D9/Resources.cpp)
+add_library(x2_client_d3d9 STATIC KTDXLIB/D3D9/Device.cpp KTDXLIB/D3D9/D3DX.cpp KTDXLIB/D3D9/D3DXTexture.cpp KTDXLIB/D3D9/Resources.cpp)
 add_library(x2::client_d3d9 ALIAS x2_client_d3d9)
 target_include_directories(x2_client_d3d9 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/KTDXLIB/D3D9)
 target_link_libraries(x2_client_d3d9 PUBLIC x2::platform x2::render PRIVATE SDL3::SDL3)
