@@ -14,14 +14,27 @@
 #include "x2/platform/d3dx_math.h"
 #include "x2/platform/types.h"
 
+// Each one only where Windows' headers have not defined it (winnt.h has STDMETHODIMP without STDMETHOD).
 #ifndef STDMETHOD
 #define STDMETHOD(method)        virtual HRESULT method
 #define STDMETHOD_(type, method) virtual type method
+#endif
+#ifndef STDMETHODIMP
 #define STDMETHODIMP             HRESULT
+#endif
+#ifndef STDMETHODCALLTYPE
 #define STDMETHODCALLTYPE
+#endif
+#ifndef STDMETHODIMP_
 #define STDMETHODIMP_(type)      type
+#endif
+#ifndef THIS_
 #define THIS_
+#endif
+#ifndef THIS
 #define THIS                     void
+#endif
+#ifndef PURE
 #define PURE                     = 0
 #endif
 
