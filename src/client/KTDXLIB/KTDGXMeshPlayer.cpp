@@ -2251,7 +2251,7 @@ void CKTDGXMeshPlayer::CXMeshInstance::ChangeAnim( const WCHAR* wcAnimName, CKTD
 //#endif//X2OPTIMIZE_CULLING_PARTICLE
 
 
-	typedef boost::singleton_pool<boost::pool_allocator_tag, sizeof(CKTDGXMeshPlayer::CXMeshInstance)> CXMeshInstancePool;
+	typedef KSingletonPool<sizeof(CKTDGXMeshPlayer::CXMeshInstance)> CXMeshInstancePool;
 
 	void* CKTDGXMeshPlayer::CXMeshInstance::operator new(size_t s)
 	{

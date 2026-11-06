@@ -1,3 +1,3 @@
-int debugPrintf( char *fmt, ... );
+int debugPrintf( const char *fmt, ... );
 
-int debugWPrintf( WCHAR *fmt, ... );
+int debugWPrintf( const WCHAR *fmt, ... );

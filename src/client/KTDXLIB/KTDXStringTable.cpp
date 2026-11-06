@@ -21,7 +21,7 @@ bool CKTDXStringTable::InitializeStringTable( std::wstring& wstrGeneralStringFil
     return LoadStringTable( wstrGeneralStringFileName, m_vecGeneralStringTable );
 }
 
-std::wstring CKTDXStringTable::GetReplacedString( int iID, char* szParamTypeList, ... )
+std::wstring CKTDXStringTable::GetReplacedStringV( int iID, const char* szParamTypeList, ... )
 {
     int iTableSize = ( int )m_vecGeneralStringTable.size();
 
@@ -101,8 +101,8 @@ std::wstring CKTDXStringTable::GetReplacedString( int iID, char* szParamTypeList
             break;
         case 's':       // 문자열로 변환
             {
-                std::string strValue = va_arg( marker, char* );
-                wstmReplaceValue << KncUtil::toWideString( strValue );
+                const char* szValue = va_arg( marker, const char* );
+                wstmReplaceValue << KncUtil::toWideString( std::string( szValue != NULL ? szValue : "" ) );
             }
             break;
         case 'S':
@@ -112,13 +112,14 @@ std::wstring CKTDXStringTable::GetReplacedString( int iID, char* szParamTypeList
             break;
         case 'l':       // std::string 으로 변환
             {
-                std::string strValue = va_arg( marker, std::string );
-                wstmReplaceValue << KncUtil::toWideString( strValue );
+                const char* szValue = va_arg( marker, const char* );   // a std::string (KStringVarArg.h)
+                wstmReplaceValue << KncUtil::toWideString( std::string( szValue != NULL ? szValue : "" ) );
             }
             break;
         case 'L':       // std::wstring 으로 변환
             {
-                wstmReplaceValue << va_arg( marker, std::wstring );
+                const wchar_t* wszValue = va_arg( marker, const wchar_t* );    // a std::wstring (KStringVarArg.h)
+                wstmReplaceValue << ( wszValue != NULL ? wszValue : L"" );
             }
             break;
         case 'M':       // 영어권 국가의 달력 표현

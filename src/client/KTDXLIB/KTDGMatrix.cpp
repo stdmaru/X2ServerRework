@@ -256,7 +256,7 @@ const D3DXMATRIX& CKTDGMatrix::GetMatrix( BILLBOARD_TYPE billboardType /*= BT_NO
 }
 
 
-	typedef boost::singleton_pool<boost::pool_allocator_tag, sizeof(CKTDGMatrix)> CKTDGMatrixPool;
+	typedef KSingletonPool<sizeof(CKTDGMatrix)> CKTDGMatrixPool;
 
 	void* CKTDGMatrix::operator new(size_t s)
 	{

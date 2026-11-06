@@ -4629,7 +4629,7 @@ CKTDGParticleSystem::CParticle* CKTDGParticleSystem::CParticleEventSequence::Get
     return NULL;
 }
 
-	typedef boost::singleton_pool<boost::pool_allocator_tag, sizeof(CKTDGParticleSystem::CParticleEventSequence)> CParticleEventSequencePool;
+	typedef KSingletonPool<sizeof(CKTDGParticleSystem::CParticleEventSequence)> CParticleEventSequencePool;
 
 	void* CKTDGParticleSystem::CParticleEventSequence::operator new(size_t s)
 	{

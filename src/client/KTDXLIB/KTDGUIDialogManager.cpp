@@ -648,7 +648,7 @@ CKTDGUIDialog* CKTDGUIDialogManager::GetDialog_LUA( const char* pName )
 	if( true == wstrName.empty() )
 		return NULL;
 
-	CKTDGUIDialogType& pDialog = GetDialog( wstrName.c_str() );
+	CKTDGUIDialogType pDialog = GetDialog( wstrName.c_str() );
 	if( pDialog != NULL )
 		return pDialog->Get();
 

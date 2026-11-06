@@ -363,29 +363,11 @@ HRESULT CKTDGUIIMEEditBox::StaticOnCreateDevice()
 void CKTDGUIIMEEditBox::CopyToClipboard()
 {
 	// Copy the selection text to the clipboard
-	if( m_nCaret != m_nSelStart && OpenClipboard( NULL ) )
+	if( m_nCaret != m_nSelStart )
 	{
-		EmptyClipboard();
-
-		HGLOBAL hBlock = GlobalAlloc( GMEM_MOVEABLE, sizeof(WCHAR) * ( m_Buffer.GetTextSize() + 1 ) );
-		if( hBlock )
-		{
-			WCHAR *pwszText = (WCHAR*)GlobalLock( hBlock );
-			if( pwszText )
-			{
-				int nFirst = __min( m_nCaret, m_nSelStart );
-				int nLast = __max( m_nCaret, m_nSelStart );
-				if( nLast - nFirst > 0 )
-					CopyMemory( pwszText, m_Buffer.GetBuffer() + nFirst, (nLast - nFirst) * sizeof(WCHAR) );
-				pwszText[nLast - nFirst] = L'\0';  // Terminate it
-				GlobalUnlock( hBlock );
-			}
-			SetClipboardData( CF_UNICODETEXT, hBlock );
-		}
-		CloseClipboard();
-		// We must not free the object until CloseClipboard is called.
-		if( hBlock )
-			GlobalFree( hBlock );
+		int nFirst = __min( m_nCaret, m_nSelStart );
+		int nLast = __max( m_nCaret, m_nSelStart );
+		DXUTSetClipboardText( std::wstring( m_Buffer.GetBuffer() + nFirst, nLast - nFirst ) );
 	}
 }
 
@@ -397,24 +379,12 @@ void CKTDGUIIMEEditBox::PasteFromClipboard()
 	if( m_bEnablePaste == false )
 		return;
 
-	if( OpenClipboard( NULL ) )
+	const std::wstring wstrText = DXUTGetClipboardText();
+	if( !wstrText.empty() )
 	{
-		HANDLE handle = GetClipboardData( CF_UNICODETEXT );
-		if( handle )
-		{
-			// Convert the ANSI string to Unicode, then
-			// insert to our buffer.
-			WCHAR *pwszText = (WCHAR*)GlobalLock( handle );
-			if( pwszText )
-			{
-				// Copy all characters up to null.
-				if( m_Buffer.InsertString( m_nCaret, pwszText ) )
-					PlaceCaret( m_nCaret + lstrlenW( pwszText ) );
-				m_nSelStart = m_nCaret;
-				GlobalUnlock( handle );
-			}
-		}
-		CloseClipboard();
+		if( m_Buffer.InsertString( m_nCaret, wstrText.c_str() ) )
+			PlaceCaret( m_nCaret + static_cast<int>( wstrText.size() ) );
+		m_nSelStart = m_nCaret;
 	}
 }
 

@@ -1,8 +1,64 @@
-#include "stdafx.h" // 엘소드는 PCH(precompiled header)로 고정된 이름 stdafx.h를 사용한다.
+#include "stdafx.h" // Elsword's precompiled header always has this name
 #include "KLuaManagerProxy.h"
 
-#include <boost/tokenizer.hpp>
-#include <boost/algorithm/string/trim.hpp>
+#include <cmath>
+#include <cwchar>
+#include <limits>
+
+namespace
+{
+
+// boost::tokenizer with boost::char_separator<char>( " \t\n\v\f\r", "=,{}[]" ): whitespace separates and is dropped,
+// each of =,{}[] is a token of its own, and empty tokens are skipped.
+std::vector<std::string>    Tokenize( const std::string& strLine )
+{
+    static const char* const s_szDropped = " \t\n\v\f\r";
+    static const char* const s_szKept = "=,{}[]";
+    std::vector<std::string> vecTokens;
+    std::string strToken;
+    for( char c : strLine )
+    {
+        const bool bDropped = c != 0 && std::strchr( s_szDropped, c ) != NULL;
+        const bool bKept = c != 0 && std::strchr( s_szKept, c ) != NULL;
+        if ( bDropped || bKept )
+        {
+            if ( strToken.empty() == false )
+                vecTokens.push_back( strToken );
+            strToken.clear();
+            if ( bKept )
+                vecTokens.push_back( std::string( 1, c ) );
+        }
+        else
+            strToken += c;
+    }
+    if ( strToken.empty() == false )
+        vecTokens.push_back( strToken );
+    return vecTokens;
+}
+
+// boost::trim: the whitespace of the classic locale at both ends.
+void    Trim( std::string& str )
+{
+    const char* const szSpace = " \t\n\v\f\r";
+    const std::string::size_type uFirst = str.find_first_not_of( szSpace );
+    if ( uFirst == std::string::npos )
+    {
+        str.clear();
+        return;
+    }
+    str.erase( str.find_last_not_of( szSpace ) + 1 );
+    str.erase( 0, uFirst );
+}
+
+// boost::lexical_cast<std::wstring>( double ): 17 significant digits, as Boost writes a double.
+std::wstring    NumberToWString( double dNumber )
+{
+    wchar_t wszBuffer[64];
+    std::swprintf( wszBuffer, 64, L"%.*g", std::numeric_limits<double>::max_digits10, dNumber );
+    return wszBuffer;
+}
+
+}//namespace
 
 
 bool    KLuaManagerProxyLuaValue::LuaPush( lua_State* L ) const
@@ -455,7 +511,7 @@ bool	KLuaManagerProxy::GetStringFromLuaValue( std::wstring& wstrValue, KLuaManag
 		switch( pLuaValue->m_eType )
 		{
 		case LUA_VALUE_NUMBER:
-			wstrValue = boost::lexical_cast<std::wstring>( pLuaValue->m_dNumber );
+			wstrValue = NumberToWString( pLuaValue->m_dNumber );
 			return true;
 		case LUA_VALUE_STRING:
             {
@@ -498,7 +554,7 @@ bool	KLuaManagerProxy::GetStringFromLuaValue( wchar_t* wszValue, int bufferSize,
 		case LUA_VALUE_NUMBER:
             {
                 std::wstring wstrValue;
-			    wstrValue = boost::lexical_cast<std::wstring>( pLuaValue->m_dNumber );
+			    wstrValue = NumberToWString( pLuaValue->m_dNumber );
                 if ( bufferSize >= (int) wstrValue.size() + 1 )
                 {
                     wcsncpy( wszValue, wstrValue.c_str(), wstrValue.size() );
@@ -550,8 +606,6 @@ bool    KLuaManagerProxy::DoMemoryNotEncrypt( const char* pRealFile, long nSize 
     bool    bFinish = false;
     bool    bComment = false;
 
-    typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-    boost::char_separator<char> sep(" \t\n\v\f\r", "=,{}[]");
     enum    EState
     {
         EState_NONE = 0,
@@ -617,11 +671,9 @@ bool    KLuaManagerProxy::DoMemoryNotEncrypt( const char* pRealFile, long nSize 
             if ( pLineStart < pLineEnd )
             {
                 strLine.assign( pLineStart, pLineEnd );
-                tokenizer tokens( strLine, sep );
-                for( tokenizer::iterator tok_iter = tokens.begin();
-                    tok_iter != tokens.end(); ++tok_iter )
+                const std::vector<std::string> vecTokens = Tokenize( strLine );
+                for( const std::string& strToken : vecTokens )
                 {
-                    const std::string& strToken = *tok_iter;
 
                     if ( strToken.empty() == false )
                     {
@@ -1028,7 +1080,7 @@ KLuaManagerProxy::ELuaParse
     KLuaManagerProxy::LuaParse( std::string strToken, bool bExpandKeyword, KLuaManagerProxyLuaValue& luaOut )
 {
     luaOut.Reset();
-    boost::trim( strToken );
+    Trim( strToken );
     if ( strToken.empty() == true )
         return LUA_PARSE_ERROR;
     std::locale loc;
@@ -1042,14 +1094,8 @@ KLuaManagerProxy::ELuaParse
     else if ( std::isdigit( strToken.front(), loc ) == true )
     {
         double  dNumber = 0.0;
-        try
-        {
-			dNumber = boost::lexical_cast<double>( strToken );
-        }
-        catch( const boost::bad_lexical_cast & )
-        {
+        if ( KLexicalCast( strToken, dNumber ) == false )
             return LUA_PARSE_ERROR;
-        }
         luaOut.Reset( dNumber );
         return LUA_PARSE_VALUE;
     }
@@ -1058,14 +1104,8 @@ KLuaManagerProxy::ELuaParse
         if ( strToken.size() >= 2 && std::isdigit( strToken[1], loc ) == true )
         {
             double  dNumber = 0.0;
-            try
-            {
-			    dNumber = boost::lexical_cast<double>( strToken );
-            }
-            catch( const boost::bad_lexical_cast & )
-            {
+            if ( KLexicalCast( strToken, dNumber ) == false )
                 return LUA_PARSE_ERROR;
-            }
             luaOut.Reset( dNumber );
             return LUA_PARSE_VALUE;
         }
@@ -1107,7 +1147,7 @@ KLuaManagerProxy::ELuaParse
                 {
                     KLuaManagerProxyLuaValue    luaKey;
                     std::string strKey( iter + 1, strToken.end() - 1 );
-                    boost::trim( strKey );
+                    Trim( strKey );
                     if ( LuaParse( strKey, true, luaKey ) == LUA_PARSE_VALUE )
                     {
                         if ( luaKey.m_eType == LUA_VALUE_NUMBER )

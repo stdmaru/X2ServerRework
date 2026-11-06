@@ -1266,7 +1266,7 @@ void CKTDGXSkinAnim::SetModelDetailPercent( int detailPercent )
 
 
 
-	typedef boost::singleton_pool<boost::pool_allocator_tag, sizeof(CKTDGXSkinAnim)> CKTDGXSkinAnimPool;
+	typedef KSingletonPool<sizeof(CKTDGXSkinAnim)> CKTDGXSkinAnimPool;
 
 
 

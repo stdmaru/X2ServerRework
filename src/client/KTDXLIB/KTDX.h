@@ -401,6 +401,7 @@ using std::set;
 #include "x2/platform/noncopyable.h"
 #include "x2/platform/intrusive_ptr.h"
 #include "KCircularBuffer.h"
+#include "KSingletonPool.h"
 
 #include <ft2build.h>
 #include <freetype/freetype.h>
