@@ -23,7 +23,7 @@ void CKTDXDeviceHolder::CustomInitialize_()
 
 bool CKTDXDeviceHolder::TextureReady( const WCHAR* pFileName )
 {
-	if( NULL == pFileName || pFileName[0] == NULL )
+	if( NULL == pFileName || pFileName[0] == 0 )
 		return false;
 
 
@@ -37,7 +37,7 @@ bool CKTDXDeviceHolder::TextureReady( const WCHAR* pFileName )
 
 bool CKTDXDeviceHolder::XSkinMeshReady( const WCHAR* pFileName )
 {
-	if( NULL == pFileName || pFileName[0] == NULL )
+	if( NULL == pFileName || pFileName[0] == 0 )
 		return false;
 
 	CKTDXDeviceXSkinMesh* pDevice = g_pKTDXApp->GetDeviceManager()->OpenXSkinMesh( pFileName );
@@ -50,7 +50,7 @@ bool CKTDXDeviceHolder::XSkinMeshReady( const WCHAR* pFileName )
 
 bool CKTDXDeviceHolder::XMeshReady( const WCHAR* pFileName )
 {
-	if( NULL == pFileName || pFileName[0] == NULL )
+	if( NULL == pFileName || pFileName[0] == 0 )
 		return false;
 
 	CKTDXDeviceXMesh* pDevice = g_pKTDXApp->GetDeviceManager()->OpenXMesh( pFileName );
@@ -63,7 +63,7 @@ bool CKTDXDeviceHolder::XMeshReady( const WCHAR* pFileName )
 
 bool CKTDXDeviceHolder::SoundReady( const WCHAR* pFileName )
 {
-	if( NULL == pFileName || pFileName[0] == NULL )
+	if( NULL == pFileName || pFileName[0] == 0 )
 		return false;
 
 	CKTDXDeviceSound* pDevice = g_pKTDXApp->GetDeviceManager()->OpenSound( pFileName );
@@ -77,7 +77,7 @@ bool CKTDXDeviceHolder::SoundReady( const WCHAR* pFileName )
 bool CKTDXDeviceHolder::TextureReadyInBackground( const WCHAR* pFileName, int iPriority )
 {
 
-	if( NULL == pFileName || pFileName[0] == NULL )
+	if( NULL == pFileName || pFileName[0] == 0 )
 		return false;
 
 	CKTDXDeviceTexture* pDevice = g_pKTDXApp->GetDeviceManager()->OpenTextureInBackground( pFileName, (CKTDXDeviceManager::EPriority) iPriority );
@@ -91,7 +91,7 @@ bool CKTDXDeviceHolder::TextureReadyInBackground( const WCHAR* pFileName, int iP
 
 bool CKTDXDeviceHolder::XSkinMeshReadyInBackground( const WCHAR* pFileName, int iPriority )
 {
-	if( NULL == pFileName || pFileName[0] == NULL )
+	if( NULL == pFileName || pFileName[0] == 0 )
 		return false;
 
 
@@ -107,7 +107,7 @@ bool CKTDXDeviceHolder::XSkinMeshReadyInBackground( const WCHAR* pFileName, int 
 bool CKTDXDeviceHolder::XMeshReadyInBackground( const WCHAR* pFileName, int iPriority )
 {
 
-	if( NULL == pFileName || pFileName[0] == NULL )
+	if( NULL == pFileName || pFileName[0] == 0 )
 		return false;
 
 	CKTDXDeviceXMesh* pDevice = g_pKTDXApp->GetDeviceManager()->OpenXMeshInBackground( pFileName,  (CKTDXDeviceManager::EPriority) iPriority );
@@ -123,7 +123,7 @@ bool CKTDXDeviceHolder::SoundReadyInBackground( const WCHAR* pFileName
 	)
 {
 
-	if( NULL == pFileName || pFileName[0] == NULL )
+	if( NULL == pFileName || pFileName[0] == 0 )
 		return false;
 
 	CKTDXDeviceSound* pDevice = g_pKTDXApp->GetDeviceManager()->OpenSoundInBackground( pFileName

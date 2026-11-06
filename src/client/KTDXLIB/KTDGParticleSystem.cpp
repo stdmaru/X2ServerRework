@@ -50,7 +50,7 @@ static const CKTDGStateManager::KState s_akSkinMeshRenderStates[] =
 
 
 
-CKTDGParticleSystem::CKTDGParticleSystem( LPDIRECT3DDEVICE9 pd3dDevice
+CKTDGParticleSystem::CKTDGParticleSystem( LPDIRECT3DDEVICE9 /*pd3dDevice*/
             , unsigned char ucSystemID
     )
     : m_coParticleSequence( SEQUENCELIST_NUM, 512 )
@@ -326,7 +326,7 @@ void CKTDGParticleSystem::OpenScriptFile( const WCHAR* pFilename )
 {
 	////CKTDXThread::CLocker locker( m_csParticleLock );
 
-	if( NULL == pFilename || pFilename[0] == NULL )
+	if( NULL == pFilename || pFilename[0] == 0 )
 		return;
 
 	StateLog( pFilename );
@@ -467,7 +467,7 @@ particle_compile_error:
 // 대신 CParticleEventSequence의 내용은 다른 곳에서 수동으로 입력해야합니다.
 
 // not need: pSeq 외의 다른 매개변수는 필요 없을 듯
-CKTDGParticleSystem::CParticleEventSequenceHandle CKTDGParticleSystem::CreateInstanceNonTemplet( CParticleEventSequence* pSeq, D3DXVECTOR3 pos, D3DXVECTOR2 emitRate, D3DXVECTOR2 trigger )
+CKTDGParticleSystem::CParticleEventSequenceHandle CKTDGParticleSystem::CreateInstanceNonTemplet( CParticleEventSequence* pSeq, D3DXVECTOR3 pos, D3DXVECTOR2 /*emitRate*/, D3DXVECTOR2 /*trigger*/ )
 {
 	// 핸들 등록
     if ( pSeq == NULL )
@@ -500,7 +500,6 @@ CKTDGParticleSystem::CParticleEventSequenceHandle CKTDGParticleSystem::CreateIns
     }
 
 	// 텍스쳐 리소스 로드
-	CParticleEvent* pEvent = NULL;
 	CKTDXDeviceTexture* pTexture = NULL;
 	int i = 0;
 	for( CParticleEvent* pEvent : pSeq->m_EventList )
@@ -514,6 +513,8 @@ CKTDGParticleSystem::CParticleEventSequenceHandle CKTDGParticleSystem::CreateIns
 				pSeq->m_TextureMap.insert( std::make_pair(i,pTexture) );
 				pEventTexture->SetTextureID( i );
 			}
+			break;
+		default:
 			break;
 		}
 		i++;
@@ -630,6 +631,8 @@ CKTDGParticleSystem::CParticleEventSequence* CKTDGParticleSystem::CreateSequence
 						retval->SetScaleByUnit( pKTDGObject->GetScaleByUnit() );
 				}
 			} break;
+		default:
+			break;
 		}
 	}
 
@@ -918,10 +921,10 @@ CKTDGParticleSystem::CParticleEventSequence* CKTDGParticleSystem::GetInstanceSeq
         return NULL;
     KSequenceHandleInfo& info = m_coParticleSequence.data( wIndex );
     CParticleEventSequence* pSeq = info.m_pSequence;
-    if ( pSeq == NULL || info.m_wStamp != wStamp || bLiveOnly == true &&
+    if ( pSeq == NULL || info.m_wStamp != wStamp || ( bLiveOnly == true &&
         ( info.m_eType != SEQUENCELIST_LIVE
             || pSeq->GetDelete() == true
-        )
+        ) )
         )
         return NULL;
     return  pSeq;
@@ -948,7 +951,6 @@ const CKTDGParticleSystem::CParticleEventSequence* CKTDGParticleSystem::GetTempl
 bool CKTDGParticleSystem::ProcessParticleSystemBlock(std::vector<CParticleEmitterToken>::iterator &TokenIter,
 													std::vector<CParticleEmitterToken>::iterator &EndIter)
 {
-	bool StartedProcessingSequences = false;
 	// move past the opening brace...
 	CParticleEmitterTokenizer::NextToken(TokenIter, EndIter);
 
@@ -963,7 +965,6 @@ bool CKTDGParticleSystem::ProcessParticleSystemBlock(std::vector<CParticleEmitte
 		{
 			case KeywordEventSequence:
 				{
-					StartedProcessingSequences = true;
 					//CParticleEventSequence *newseq = new CParticleEventSequence( this, NULL );
 					CParticleEventSequence* newSeq = CParticleEventSequence::CreateParticleEventSequence( this, NULL );
 
@@ -1438,7 +1439,7 @@ bool CKTDGParticleSystem::CParticleEvent_Color::ProcessTokenStream(std::vector<C
 	return(true);
 }
 
-void CKTDGParticleSystem::CParticleEvent_Color::OnFrameMove( CParticle &part, float fElapsedTime )
+void CKTDGParticleSystem::CParticleEvent_Color::OnFrameMove( CParticle &part, float /*fElapsedTime*/ )
 {
 
     float   fOld = part.GetEventTimerOld();
@@ -1478,7 +1479,7 @@ bool CKTDGParticleSystem::CParticleEvent_Size::ProcessTokenStream(std::vector<CP
 	return(true);
 }
 
-void CKTDGParticleSystem::CParticleEvent_Size::OnFrameMove( CParticle &part, float fElapsedTime )
+void CKTDGParticleSystem::CParticleEvent_Size::OnFrameMove( CParticle &part, float /*fElapsedTime*/ )
 {
 
     float   fOld = part.GetEventTimerOld();
@@ -1518,7 +1519,7 @@ bool CKTDGParticleSystem::CParticleEvent_Scale::ProcessTokenStream(std::vector<C
 	return(true);
 }
 
-void CKTDGParticleSystem::CParticleEvent_Scale::OnFrameMove( CParticle &part, float fElapsedTime )
+void CKTDGParticleSystem::CParticleEvent_Scale::OnFrameMove( CParticle &part, float /*fElapsedTime*/ )
 {
 
     float   fOld = part.GetEventTimerOld();
@@ -1568,7 +1569,7 @@ bool CKTDGParticleSystem::CParticleEvent_Velocity::ProcessTokenStream(std::vecto
 	return(true);
 }
 
-void CKTDGParticleSystem::CParticleEvent_Velocity::OnFrameMove( CParticle &part, float fElapsedTime )
+void CKTDGParticleSystem::CParticleEvent_Velocity::OnFrameMove( CParticle &part, float /*fElapsedTime*/ )
 {
 
     float   fOld = part.GetEventTimerOld();
@@ -1621,7 +1622,7 @@ bool CKTDGParticleSystem::CParticleEvent_Position::ProcessTokenStream(std::vecto
 	return(true);
 }
 
-void CKTDGParticleSystem::CParticleEvent_Position::OnFrameMove( CParticle &part, float fElapsedTime )
+void CKTDGParticleSystem::CParticleEvent_Position::OnFrameMove( CParticle &part, float /*fElapsedTime*/ )
 {
 
     float   fOld = part.GetEventTimerOld();
@@ -1670,7 +1671,7 @@ bool CKTDGParticleSystem::CParticleEvent_Tex0UV::ProcessTokenStream(std::vector<
 	return(true);
 }
 
-void CKTDGParticleSystem::CParticleEvent_Tex0UV::OnFrameMove( CParticle &part, float fElapsedTime )
+void CKTDGParticleSystem::CParticleEvent_Tex0UV::OnFrameMove( CParticle &part, float /*fElapsedTime*/ )
 {
 
     float   fOld = part.GetEventTimerOld();
@@ -1712,7 +1713,7 @@ bool CKTDGParticleSystem::CParticleEvent_Tex1UV::ProcessTokenStream(std::vector<
 	return(true);
 }
 
-void CKTDGParticleSystem::CParticleEvent_Tex1UV::OnFrameMove( CParticle &part, float fElapsedTime )
+void CKTDGParticleSystem::CParticleEvent_Tex1UV::OnFrameMove( CParticle &part, float /*fElapsedTime*/ )
 {
 
     float   fOld = part.GetEventTimerOld();
@@ -1753,7 +1754,7 @@ bool CKTDGParticleSystem::CParticleEvent_Tex2UV::ProcessTokenStream(std::vector<
 	return(true);
 }
 
-void CKTDGParticleSystem::CParticleEvent_Tex2UV::OnFrameMove( CParticle &part, float fElapsedTime )
+void CKTDGParticleSystem::CParticleEvent_Tex2UV::OnFrameMove( CParticle &part, float /*fElapsedTime*/ )
 {
 
     float   fOld = part.GetEventTimerOld();
@@ -1794,7 +1795,7 @@ bool CKTDGParticleSystem::CParticleEvent_Rotate::ProcessTokenStream(std::vector<
 	return(true);
 }
 
-void CKTDGParticleSystem::CParticleEvent_Rotate::OnFrameMove( CParticle &part, float fElapsedTime )
+void CKTDGParticleSystem::CParticleEvent_Rotate::OnFrameMove( CParticle &part, float /*fElapsedTime*/ )
 {
 
     float   fOld = part.GetEventTimerOld();
@@ -1852,7 +1853,7 @@ bool CKTDGParticleSystem::CParticleEvent_DirSpeed::ProcessTokenStream(std::vecto
 	return(true);
 }
 
-void CKTDGParticleSystem::CParticleEvent_DirSpeed::OnFrameMove( CParticle &part, float fElapsedTime )
+void CKTDGParticleSystem::CParticleEvent_DirSpeed::OnFrameMove( CParticle &part, float /*fElapsedTime*/ )
 {
 
     float   fOld = part.GetEventTimerOld();
@@ -1890,7 +1891,7 @@ bool CKTDGParticleSystem::CParticleEvent_BlackHole::ProcessTokenStream(std::vect
 	return(true);
 }
 
-void CKTDGParticleSystem::CParticleEvent_BlackHole::OnFrameMove( CParticle &part, float fElapsedTime )
+void CKTDGParticleSystem::CParticleEvent_BlackHole::OnFrameMove( CParticle &part, float /*fElapsedTime*/ )
 {
 	part.SetBlackHoleTime( m_BlackHole.GetRandomNumInRange() );
 }
@@ -1904,7 +1905,7 @@ bool CKTDGParticleSystem::CParticleEvent_Crash::ProcessTokenStream(std::vector<C
 	return(true);
 }
 
-void CKTDGParticleSystem::CParticleEvent_Crash::OnFrameMove( CParticle &part, float fElapsedTime )
+void CKTDGParticleSystem::CParticleEvent_Crash::OnFrameMove( CParticle &part, float /*fElapsedTime*/ )
 {
 	if( part.GetNowResetCrash() < part.GetResetCrash() )
 	{
@@ -1931,7 +1932,7 @@ bool CKTDGParticleSystem::CParticleEvent_ResetCrash::ProcessTokenStream(std::vec
 	return(true);
 }
 
-void CKTDGParticleSystem::CParticleEvent_ResetCrash::OnFrameMove( CParticle &part, float fElapsedTime )
+void CKTDGParticleSystem::CParticleEvent_ResetCrash::OnFrameMove( CParticle &part, float /*fElapsedTime*/ )
 {
 	part.SetResetCrash( m_ResetCrash.GetRandomNumInRange() );
 }
@@ -1945,7 +1946,7 @@ bool CKTDGParticleSystem::CParticleEvent_Texture::ProcessTokenStream(std::vector
 	return(true);
 }
 
-void CKTDGParticleSystem::CParticleEvent_Texture::OnFrameMove( CParticle &part, float fElapsedTime )
+void CKTDGParticleSystem::CParticleEvent_Texture::OnFrameMove( CParticle &part, float /*fElapsedTime*/ )
 {
 	part.SetTextureID( m_TextureID );
 }
@@ -1959,7 +1960,7 @@ bool CKTDGParticleSystem::CParticleEvent_EventTimer::ProcessTokenStream(std::vec
 	return(true);
 }
 
-void CKTDGParticleSystem::CParticleEvent_EventTimer::OnFrameMove( CParticle &part, float fElapsedTime )
+void CKTDGParticleSystem::CParticleEvent_EventTimer::OnFrameMove( CParticle &part, float /*fElapsedTime*/ )
 {
     part.UpdateVelocityAccumPosAndEventTimer( m_ActualTime.m_Min );
 	part.SetEventTimer( m_EventTimer.GetRandomNumInRange() );
@@ -1978,7 +1979,7 @@ void CKTDGParticleSystem::CParticleEvent_EventTimer::OnFrameMove( CParticle &par
 		return(true);
 	}
 
-	void CKTDGParticleSystem::CParticleEvent_Stretch::OnFrameMove( CParticle &part, float fElapsedTime )
+	void CKTDGParticleSystem::CParticleEvent_Stretch::OnFrameMove( CParticle &part, float /*fElapsedTime*/ )
 	{
 
     float   fOld = part.GetEventTimerOld();
@@ -2531,6 +2532,8 @@ RENDER_HINT   CKTDGParticleSystem::CParticleEventSequence::OnFrameRender_Prepare
         }
 
 
+    default:
+    	break;
     }//switch
 
     return RENDER_HINT_DEFAULT;
@@ -2544,10 +2547,10 @@ void    CKTDGParticleSystem::CParticleEventSequence::OnFrameRender_Draw()
 
     KParticleHandleList& coParticleList = m_pParticleSystem->_AccessParticleList();
 
-    if ( m_LatencyTime > 0.f ||
-            ( m_iParticleList < 0 || m_iParticleList >= (int) coParticleList.storage_size() || coParticleList.empty( m_iParticleList ) )
-            )
-        return;
+	if ( m_LatencyTime > 0.f ||
+			( m_iParticleList < 0 || m_iParticleList >= (int) coParticleList.storage_size() || coParticleList.empty( m_iParticleList ) )
+			)
+		return;
 
 	switch( m_ParticleType )
 	{
@@ -2940,10 +2943,9 @@ void CKTDGParticleSystem::CParticleEventSequence::OnFrameRender_VERTEX_PARTICLE(
 		// the beginning, using D3DLOCK_DISCARD.
 		D3DXMATRIX finalMat;
 		D3DXVECTOR4 v4temp;
-		int iCurStart = 0;
 		UINT renderParticle = 0;
 
-		CKTDGCamera& kCamera = g_pKTDXApp->GetDGManager()->GetCamera();
+		g_pKTDXApp->GetDGManager()->GetCamera();
 		const CKTDGFrustum& kFrustum = g_pKTDXApp->GetDGManager()->GetFrustum();
 
         KParticleHandleList& coParticleList = m_pParticleSystem->_AccessParticleList();
@@ -3603,7 +3605,6 @@ void CKTDGParticleSystem::CParticleEventSequence::OnFrameRender_VERTEX_PARTICLE_
 		// the beginning, using D3DLOCK_DISCARD.
 		D3DXMATRIX finalMat;
 		D3DXVECTOR4 v4temp;
-		int iCurStart = 0;
 		UINT renderParticle = 0;
 
         KParticleHandleList& coParticleList = m_pParticleSystem->_AccessParticleList();
@@ -3865,7 +3866,7 @@ void CKTDGParticleSystem::CParticleEventSequence::OnFrameRenderMesh_Draw()
     if ( m_pXMesh == NULL )
         return;
 
-    CKTDGCamera& kCamera = g_pKTDXApp->GetDGManager()->GetCamera();
+    g_pKTDXApp->GetDGManager()->GetCamera();
 	const CKTDGFrustum& kFrustum = g_pKTDXApp->GetDGManager()->GetFrustum();
 
 	CKTDGXRenderer::RenderParam renderParam;
@@ -4333,7 +4334,6 @@ CKTDGParticleSystem::CParticle* CKTDGParticleSystem::CParticleEventSequence::Cre
 void CKTDGParticleSystem::CParticleEventSequence::OpenTexture()
 {
 	// process any initial events
-	CParticleEvent* pEvent = NULL;
 	CKTDXDeviceTexture* pTexture = NULL;
 	int i = 0;
 	if ( m_pTempletSequence != NULL )
@@ -4349,6 +4349,8 @@ void CKTDGParticleSystem::CParticleEventSequence::OpenTexture()
 					m_TextureMap.insert( std::make_pair(i,pTexture) );
 					pEventTexture->SetTextureID( i );
 				}
+				break;
+			default:
 				break;
 			}
 			i++;
@@ -4629,9 +4631,9 @@ CKTDGParticleSystem::CParticle* CKTDGParticleSystem::CParticleEventSequence::Get
     return NULL;
 }
 
-	typedef boost::singleton_pool<boost::pool_allocator_tag, sizeof(CKTDGParticleSystem::CParticleEventSequence)> CParticleEventSequencePool;
+	typedef KSingletonPool<sizeof(CKTDGParticleSystem::CParticleEventSequence)> CParticleEventSequencePool;
 
-	void* CKTDGParticleSystem::CParticleEventSequence::operator new(size_t s)
+	void* CKTDGParticleSystem::CParticleEventSequence::operator new(size_t /*s*/)
 	{
 		return CParticleEventSequencePool::malloc();
 	}
@@ -5352,7 +5354,7 @@ bool CKTDGParticleSystem::CParticleEmitterTokenizer::ProcessTime(CMinMax<float> 
 //#ifdef	X2OPTIMIZE_REFACTORING_RESOURCE_BACKGROUND_LOAD
 bool	CKTDGParticleSystem::AppendToDeviceList( CKTDXDeviceDataList& listInOut_, const WCHAR* pSequenceName, CKTDXDeviceManager::EPriority ePriority )
 {
-	if ( pSequenceName == NULL || pSequenceName[0] == NULL )
+	if ( pSequenceName == NULL || pSequenceName[0] == 0 )
 		return false;
 	return	AppendToDeviceList( listInOut_, std::wstring(pSequenceName), ePriority );
 }
@@ -5388,9 +5390,13 @@ bool	CKTDGParticleSystem::AppendToDeviceList( CKTDXDeviceDataList& listInOut_, c
 			switch( pEvent->GetEventType() )
 			{
 			case CKTDGParticleSystem::ET_TEXTURE:
+				{
 				CKTDGParticleSystem::CParticleEvent_Texture* pEventTexture = (CKTDGParticleSystem::CParticleEvent_Texture*)pEvent;
 				if ( pEventTexture->GetTextureName() != NULL )
 					g_pKTDXApp->GetDeviceManager()->AppendTexture( listInOut_, pEventTexture->GetTextureName(), ePriority );
+				}
+				break;
+			default:
 				break;
 			}//switch
 		}//BOOST_FOREACH)

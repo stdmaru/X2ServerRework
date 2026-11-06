@@ -524,7 +524,7 @@ private:
 
   1) OnResetDevice():
 
-    CKTDGStateManager::RestoreDeviceObjects( 0, D3DDEVTYPE_HAL );
+    CKTDGStateManager::RestoreDeviceObjects();
 
     // Setup render state
     CKTDGStateManager::SetRenderState( D3DRS_LIGHTING, TRUE );

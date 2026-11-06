@@ -39,7 +39,7 @@ const std::wstring& CKTDXStringLoader::GetString( int ID )
 //  GetReplacedString( 1641 , "ii" , 1, 1 );   -->  1차직업 1단필살기
 
 //===============================================================================
-std::wstring CKTDXStringLoader::GetReplacedString(int ID, char* szParamList, ...)
+std::wstring CKTDXStringLoader::GetReplacedStringV( int ID, const char* szParamList, ... )
 {
 	//if( (int)m_vecString.size() <= ID || ID < 0 )
 	//	return m_vecString[STR_ID_BLANK];
@@ -84,8 +84,8 @@ std::wstring CKTDXStringLoader::GetReplacedString(int ID, char* szParamList, ...
 		case 'l':			//std::string 문자열로 교체해줌
 		case 'L':
 			{
-				std::wstring str = va_arg( marker, std::wstring);
-				strReplace = str.c_str();
+				const WCHAR* str = va_arg( marker, const WCHAR* );    // a std::wstring (KStringVarArg.h)
+				strReplace = str;
 			}
 			break;
 		}
@@ -94,7 +94,7 @@ std::wstring CKTDXStringLoader::GetReplacedString(int ID, char* szParamList, ...
 	}
 	va_end( marker );
 
-	std::wstring strret = strTemp;
+	std::wstring strret = strTemp.GetString();
 
 	return strret;
 }

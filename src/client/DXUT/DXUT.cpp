@@ -472,6 +472,30 @@ IDirect3DDevice9* DXUTGetD3DDevice()
     return State().d3dDevice.get();
 }
 
+const D3DSURFACE_DESC* DXUTGetBackBufferSurfaceDesc()
+{
+    SDL_Window* window = DXUTGetSDLWindow();
+    if (window == nullptr) {
+        return nullptr;
+    }
+    static D3DSURFACE_DESC desc;
+    int width = 0;
+    int height = 0;
+    SDL_GetWindowSizeInPixels(window, &width, &height);
+    desc = {};
+    desc.Format = D3DFMT_A8R8G8B8;
+    desc.Usage = D3DUSAGE_RENDERTARGET;
+    desc.Pool = D3DPOOL_DEFAULT;
+    desc.Width = static_cast<UINT>(width);
+    desc.Height = static_cast<UINT>(height);
+    return &desc;
+}
+
+bool DXUTGetDeviceObjectsReset()
+{
+    return State().d3dDevice != nullptr;
+}
+
 SDL_Window* DXUTGetSDLWindow()
 {
     return State().window ? State().window->Handle() : nullptr;

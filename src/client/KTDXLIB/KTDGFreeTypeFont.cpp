@@ -67,7 +67,7 @@ CKTDGFreeTypeFont::CKTDGFreeTypeFont( std::string strFontName, int iFontSize, in
 
 	m_iSizeArray = 0;
 	m_FontCacheArray = NULL;
-	ZeroMemory( m_FontCacheHashTable, sizeof( m_FontCacheHashTable ) );
+	ZeroMemory( (void*)m_FontCacheHashTable, sizeof( m_FontCacheHashTable ) );
 
 	m_wstrBuffer.clear();
 	ZeroMemory( m_apPageVertex, sizeof(m_apPageVertex) );
@@ -80,7 +80,7 @@ CKTDGFreeTypeFont::CKTDGFreeTypeFont( std::string strFontName, int iFontSize, in
 
 CKTDGFreeTypeFont::~CKTDGFreeTypeFont(void)
 {
-	for( int i = 0; i < ARRAY_SIZE( m_apPageVertex ); i++ )
+	for( int i = 0; i < (int)ARRAY_SIZE( m_apPageVertex ); i++ )
 	{
 		if ( m_apPageVertex[ i ] != NULL )
 		{
@@ -139,7 +139,7 @@ void CKTDGFreeTypeFont::_EstimateFontSize( WCHAR wChar, SIZE* pSize )
 	if( pSize == NULL )
 		return;
 
-	if( wChar >= HASH_BUCKET_SIZE ||
+	if( static_cast<std::uint32_t>( wChar ) >= HASH_BUCKET_SIZE ||   // WCHAR is 16 bits on Windows
 		wChar == '\r')
 	{
 		pSize->cx = pSize->cy = 0;
@@ -221,13 +221,13 @@ bool CKTDGFreeTypeFont::Load()
         if( vec.empty() == true || FT_New_Memory_Face( m_FreeTypeLibrary, ( const FT_Byte* )&vec.front(), vec.size(), 0, &m_FreeTypeFace ) )
 		{
 			ErrorLogMsg( KEM_ERROR426, "FT_New_Memory_Face" );
-			MessageBoxA( NULL, m_strFontName.c_str(), "Font Load Error!", NULL );
+			MessageBoxA( NULL, m_strFontName.c_str(), "Font Load Error!", 0 );
 			return false;
 		}
 		// freetype은 소수점 사이즈를 지원하므로 적용해도 좋을듯
 		if( FT_Set_Char_Size( m_FreeTypeFace, m_iFontSize << 6, 0, 72, 72 ) )
 		{
-			MessageBoxA( NULL, m_strFontName.c_str(), "Font Size Error!", NULL );
+			MessageBoxA( NULL, m_strFontName.c_str(), "Font Size Error!", 0 );
 			ErrorLogMsg( KEM_ERROR426, "FT_Set_Char_Size" );
 			return false;
 		}
@@ -242,7 +242,7 @@ bool CKTDGFreeTypeFont::Load()
 		if( vec.empty() == true || FT_New_Memory_Face( m_FreeTypeLibrary, ( const FT_Byte* )&vec.front(), vec.size(), 0, &m_KoreanFreeTypeFace ) )
 		{
 			ErrorLogMsg( KEM_ERROR426, "FT_New_Memory_Face" );
-			MessageBoxA( NULL, FT_DEFAULT_FONTNAME, "Font Load Error!", NULL );
+			MessageBoxA( NULL, FT_DEFAULT_FONTNAME, "Font Load Error!", 0 );
 			return false;
 		}
 
@@ -250,7 +250,7 @@ bool CKTDGFreeTypeFont::Load()
 		if( FT_Set_Char_Size( m_KoreanFreeTypeFace, m_iFontSize << 6, 0, 72, 72 ) )
 		{
 			ErrorLogMsg( KEM_ERROR426, "FT_Set_Char_Size" );
-			MessageBoxA( NULL, FT_DEFAULT_FONTNAME, "Font Size Error!", NULL );
+			MessageBoxA( NULL, FT_DEFAULT_FONTNAME, "Font Size Error!", 0 );
 			return false;
 		}
 	}
@@ -282,7 +282,7 @@ bool CKTDGFreeTypeFont::Load()
 
 	int iNumVertices = 6 * m_iNumCandidatesInAPage;
 
-	for( int i = 0; i < ARRAY_SIZE( m_apPageVertex ); i++ )
+	for( int i = 0; i < (int)ARRAY_SIZE( m_apPageVertex ); i++ )
 	{
 		if ( m_apPageVertex[ i ] != NULL )
 			free( m_apPageVertex[ i ] );
@@ -311,7 +311,7 @@ void CKTDGFreeTypeFont::InitCache()
 	}//for
 }
 
-void CKTDGFreeTypeFont::UnLoad( bool bComplete )
+void CKTDGFreeTypeFont::UnLoad( bool /*bComplete*/ )
 {
 	if( m_bLoad == false)
 		return;
@@ -335,7 +335,7 @@ void CKTDGFreeTypeFont::UnLoad( bool bComplete )
 		m_FontCacheHashTable[ i ].Init();
 	}//for
 
-	for( int i = 0; i < ARRAY_SIZE( m_apPageVertex ); i++ )
+	for( int i = 0; i < (int)ARRAY_SIZE( m_apPageVertex ); i++ )
 	{
 		if( m_apPageVertex[ i ] != NULL )
 		{
@@ -408,14 +408,14 @@ void CKTDGFreeTypeFont::CharToSystemTexture( SGCFontCache* cache )
 	FT_Glyph_Metrics* pMetrics = &ftCurrentFace->glyph->metrics;
 	FT_Size_Metrics* pSizeMetrics = &ftCurrentFace->size->metrics;
 
-	int iPaddingX = max( pMetrics->horiBearingX >> 6, 0 );
-	int iPaddingY = ( pSizeMetrics->ascender - pMetrics->horiBearingY ) >> 6;
+	int iPaddingX = static_cast<int>( std::max<FT_Pos>( pMetrics->horiBearingX >> 6, 0 ) );
+	int iPaddingY = static_cast<int>( ( pSizeMetrics->ascender - pMetrics->horiBearingY ) >> 6 );
 
 	// 폰트 캐쉬에 맞게 사이즈를 추가하여 표시
 	// GetTextExtentPoint32W 의 역할을 여기서 함
-	int iAdvanceX = max( ( pMetrics->horiAdvance >> 6 ) + m_iOutLineSize * 2, iOutLineGlyphWidth );
-	iAdvanceX = min( iAdvanceX, m_iFontCacheSize );
-	int iAdvenceY = min( iOutLineGlyphRows + iPaddingY + 1, m_iFontCacheSize );
+	int iAdvanceX = std::max( static_cast<int>( pMetrics->horiAdvance >> 6 ) + m_iOutLineSize * 2, iOutLineGlyphWidth );
+	iAdvanceX = std::min( iAdvanceX, m_iFontCacheSize );
+	int iAdvenceY = std::min( iOutLineGlyphRows + iPaddingY + 1, m_iFontCacheSize );
 	cache->_SetRect( iAdvanceX, iAdvenceY );
 
 	// 폰트 캐쉬에 그림
@@ -640,7 +640,7 @@ void CKTDGFreeTypeFont::Buffering( bool bOutLine, const int& iLeft, const int& i
 					int iCol;
 					WCHAR strColor[7] = { 0, };
 					wcsncpy_s(strColor, _countof(strColor), &str[i+2],6);
-					swscanf_s(strColor,L"%x",&iCol);
+					swscanf(strColor,L"%x",&iCol);
 					bufferingColor = ( bufferingColor & 0xFF000000 ) | iCol;
 				}
 			}
@@ -722,11 +722,10 @@ int CKTDGFreeTypeFont::GetWidth( const WCHAR* wszText, int nCount )
 
 	if( NULL == wszText || nCount == 0 )
 		return 0;
-    if ( wszText[0] == NULL )
+    if ( wszText[0] == 0 )
         return 0;
     int iLen = ( nCount < 0 ) ? (int)wcslen(wszText) : nCount;
 
-	int iCur = 0;
 	int	maxWidth = 0;
 
 	m_wstrBuffer.resize(0);

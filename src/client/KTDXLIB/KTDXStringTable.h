@@ -1,5 +1,7 @@
 #pragma once
 
+#include "KStringVarArg.h"
+
 #   undef _ENUM
 #   define _ENUM( id ) id,
 enum STR_ID_DEF1
@@ -77,7 +79,13 @@ public:
     bool InitializeStringTable( std::wstring& wstrGeneralStringFileName, std::wstring& wstrScriptStringFileName );
     const std::wstring& GetGeneralString( int iID );
 	const std::wstring& GetScriptString( int iID );
-    std::wstring GetReplacedString( int iID, char* szParam, ... );
+    // szParam: one letter per argument (see KTDXStringTable.cpp); strings may be passed as std::wstring/std::string.
+    template <class... Args>
+    std::wstring GetReplacedString( int iID, const char* szParam, const Args&... args )
+    {
+        return GetReplacedStringV( iID, szParam, KStringVarArg::Arg( args )... );
+    }
+    std::wstring GetReplacedStringV( int iID, const char* szParam, ... );
     int GetSize();
 
 	bool GetEnableDebugInfo() { return m_bEnableDebugInfo; }
@@ -115,7 +123,7 @@ do \
 								x2::str( x2::wformat( L"[S%1%]%2%" ) % str_id % SiCKTDXStringTable()->GetGeneralString( str_id ) ).c_str()	:	\
 								SiCKTDXStringTable()->GetGeneralString( str_id ).c_str() )
 
-#define GET_REPLACED_STRING( varg ) SiCKTDXStringTable()->GetReplacedString##varg##.c_str()
+#define GET_REPLACED_STRING( varg ) SiCKTDXStringTable()->GetReplacedString varg .c_str()
 
 #define GET_SCRIPT_STRING( str_id ) SiCKTDXStringTable()->GetScriptString( str_id ).c_str()
 

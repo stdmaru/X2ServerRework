@@ -87,6 +87,9 @@ class CKTDXApp
 		//}} seojt // 2009-8-19, 16:44
 
 		void InsertStage( CKTDXStage* stage );
+		// Draws and presents one frame of stage_ at once, outside the frame loop (the loading screens, between loading
+		// steps). Port: one call in place of BeginScene/OnFrameRender/EndScene/Present at each call site (T38).
+		void RenderStageNow( CKTDXStage* stage_ );
 		bool RemoveStage( CKTDXStage* stage, bool bImmediate );
 		bool CheckStage( CKTDXStage* stage );
 		CKTDXStage* GetStage( const WCHAR* wszStageName );
@@ -294,7 +297,6 @@ class CKTDXApp
 		void			PlaySound_LUA( char* pFileName );
 		void			StopSound_LUA( char* pFileName );
 		bool			GetCannotStretchRect(){ return m_bCannotStretchRect; }
-		bool			FindProcess( wstring wstrExeFile );
 
 		D3DXVECTOR3		GetVectorByRotate( const D3DXVECTOR3& pos, const D3DXVECTOR3& vRotateDegree )
 		{

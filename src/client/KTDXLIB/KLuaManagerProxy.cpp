@@ -1,8 +1,65 @@
-#include "stdafx.h" // 엘소드는 PCH(precompiled header)로 고정된 이름 stdafx.h를 사용한다.
+#include "stdafx.h" // Elsword's precompiled header always has this name
 #include "KLuaManagerProxy.h"
 
-#include <boost/tokenizer.hpp>
-#include <boost/algorithm/string/trim.hpp>
+#include <cmath>
+#include "x2/platform/unicode.h"
+#include <cwchar>
+#include <limits>
+
+namespace
+{
+
+// boost::tokenizer with boost::char_separator<char>( " \t\n\v\f\r", "=,{}[]" ): whitespace separates and is dropped,
+// each of =,{}[] is a token of its own, and empty tokens are skipped.
+std::vector<std::string>    Tokenize( const std::string& strLine )
+{
+    static const char* const s_szDropped = " \t\n\v\f\r";
+    static const char* const s_szKept = "=,{}[]";
+    std::vector<std::string> vecTokens;
+    std::string strToken;
+    for( char c : strLine )
+    {
+        const bool bDropped = c != 0 && std::strchr( s_szDropped, c ) != NULL;
+        const bool bKept = c != 0 && std::strchr( s_szKept, c ) != NULL;
+        if ( bDropped || bKept )
+        {
+            if ( strToken.empty() == false )
+                vecTokens.push_back( strToken );
+            strToken.clear();
+            if ( bKept )
+                vecTokens.push_back( std::string( 1, c ) );
+        }
+        else
+            strToken += c;
+    }
+    if ( strToken.empty() == false )
+        vecTokens.push_back( strToken );
+    return vecTokens;
+}
+
+// boost::trim: the whitespace of the classic locale at both ends.
+void    Trim( std::string& str )
+{
+    const char* const szSpace = " \t\n\v\f\r";
+    const std::string::size_type uFirst = str.find_first_not_of( szSpace );
+    if ( uFirst == std::string::npos )
+    {
+        str.clear();
+        return;
+    }
+    str.erase( str.find_last_not_of( szSpace ) + 1 );
+    str.erase( 0, uFirst );
+}
+
+// boost::lexical_cast<std::wstring>( double ): 17 significant digits, as Boost writes a double.
+std::wstring    NumberToWString( double dNumber )
+{
+    wchar_t wszBuffer[64];
+    std::swprintf( wszBuffer, 64, L"%.*g", std::numeric_limits<double>::max_digits10, dNumber );
+    return wszBuffer;
+}
+
+}//namespace
 
 
 bool    KLuaManagerProxyLuaValue::LuaPush( lua_State* L ) const
@@ -80,10 +137,10 @@ KLuaManagerProxy::~KLuaManagerProxy(void)
 }
 
 //////////////////////////////////////////////////////////////////////////
-bool KLuaManagerProxy::BeginTable( const char* pszName, int index, bool bLogOutput /*= true */ )
+bool KLuaManagerProxy::BeginTable( const char* pszName, int index, bool /*bLogOutput*/ /*= true */ )
 {
-    if ( pszName == NULL || pszName[0] == NULL )
-        return false;
+	if ( pszName == NULL || pszName[0] == 0 )
+		return false;
 
 	char szText[255] = {0,};
 	StringCchPrintfA( szText, 255, "%s%d", pszName, index );
@@ -92,7 +149,7 @@ bool KLuaManagerProxy::BeginTable( const char* pszName, int index, bool bLogOutp
 }
 
 
-bool KLuaManagerProxy::BeginTable( const char* pszName, bool bLogOutput /*= true*/ )
+bool KLuaManagerProxy::BeginTable( const char* pszName, bool /*bLogOutput*/ /*= true*/ )
 {
 	KLuaManagerProxyLuaTable* spLuaTable = StackGetTable( pszName );
 	if( spLuaTable != NULL )
@@ -104,7 +161,7 @@ bool KLuaManagerProxy::BeginTable( const char* pszName, bool bLogOutput /*= true
 	return false;
 }
 
-bool KLuaManagerProxy::BeginTable( int iIndex, bool bLogOutput /*= true*/ )
+bool KLuaManagerProxy::BeginTable( int iIndex, bool /*bLogOutput*/ /*= true*/ )
 {
 	KLuaManagerProxyLuaTable* spLuaTable = StackGetTable( iIndex );
 	if( spLuaTable != NULL )
@@ -127,7 +184,7 @@ bool KLuaManagerProxy::BeginTable( KLuaManagerProxyLuaTable* table )
     return false;
 }//KLuaManagerProxy::BeginTable()
 
-bool KLuaManagerProxy::EndTable( bool bLogOutput /*= true*/ )
+bool KLuaManagerProxy::EndTable( bool /*bLogOutput*/ /*= true*/ )
 {
 	if ( m_dequeLuaTable.size() <= 1 )
 		return false;
@@ -135,7 +192,7 @@ bool KLuaManagerProxy::EndTable( bool bLogOutput /*= true*/ )
 }
 
 
-bool KLuaManagerProxy::GetValue( const char* pszName, bool& bValue, bool bLogOutput /*= true*/ )
+bool KLuaManagerProxy::GetValue( const char* pszName, bool& bValue, bool /*bLogOutput*/ /*= true*/ )
 {
 	if( NULL == pszName )
 		return false;
@@ -144,7 +201,7 @@ bool KLuaManagerProxy::GetValue( const char* pszName, bool& bValue, bool bLogOut
 	return GetBooleanFromLuaValue( bValue, pLuaValue );
 }
 
-bool KLuaManagerProxy::GetValue( int iIndex, bool& bValue, bool bLogOutput /*= true*/ )
+bool KLuaManagerProxy::GetValue( int iIndex, bool& bValue, bool /*bLogOutput*/ /*= true*/ )
 {
 	KLuaManagerProxyLuaValue* pLuaValue = StackGetValue( iIndex );
 	return GetBooleanFromLuaValue( bValue, pLuaValue );
@@ -180,25 +237,25 @@ bool KLuaManagerProxy::GetValue( int iIndex, bool& bValue, bool bLogOutput /*= t
 
 
 
-bool KLuaManagerProxy::GetValue( const char* pszName, wchar_t* wszValue, int bufferSize, bool bLogOutput /*= true*/ )
+bool KLuaManagerProxy::GetValue( const char* pszName, wchar_t* wszValue, int bufferSize, bool /*bLogOutput*/ /*= true*/ )
 {
 	KLuaManagerProxyLuaValue* pLuaValue = StackGetValue( pszName );
 	return	GetStringFromLuaValue( wszValue, bufferSize, pLuaValue );
 }
 
-bool KLuaManagerProxy::GetValue( const char* pszName, std::wstring& wstrValue, bool bLogOutput /*= true*/ )
+bool KLuaManagerProxy::GetValue( const char* pszName, std::wstring& wstrValue, bool /*bLogOutput*/ /*= true*/ )
 {
 	KLuaManagerProxyLuaValue* pLuaValue = StackGetValue( pszName );
 	return	GetStringFromLuaValue( wstrValue, pLuaValue );
 }
 
-bool KLuaManagerProxy::GetValue( int iIndex, wchar_t* wszValue, int bufferSize, bool bLogOutput /*= true*/ )
+bool KLuaManagerProxy::GetValue( int iIndex, wchar_t* wszValue, int bufferSize, bool /*bLogOutput*/ /*= true*/ )
 {
 	KLuaManagerProxyLuaValue* pLuaValue = StackGetValue( iIndex );
 	return	GetStringFromLuaValue( wszValue, bufferSize, pLuaValue );
 }
 
-bool KLuaManagerProxy::GetValue( int iIndex, std::wstring& wstrValue, bool bLogOutput /*= true*/ )
+bool KLuaManagerProxy::GetValue( int iIndex, std::wstring& wstrValue, bool /*bLogOutput*/ /*= true*/ )
 {
 	KLuaManagerProxyLuaValue* pLuaValue = StackGetValue( iIndex );
 	return	GetStringFromLuaValue( wstrValue, pLuaValue );
@@ -228,7 +285,7 @@ bool KLuaManagerProxy::StackPop()
 
 KLuaManagerProxyLuaValue* KLuaManagerProxy::StackGetValue( const char* valueName )
 {
-    if ( valueName == NULL || valueName[0] == NULL )
+    if ( valueName == NULL || valueName[0] == 0 )
         return NULL;
 
     LuaName2ValueMap::iterator it = m_dequeLuaTable.back()->m_map.find( ( valueName ) );
@@ -292,8 +349,8 @@ unsigned    KLuaManagerProxy::GetNumIndexedTables()
 
 unsigned    KLuaManagerProxy::GetNumIndexedTables( const char* pszName )
 {
-    if ( pszName == NULL || pszName[0] == NULL )
-        return 0;
+	if ( pszName == NULL || pszName[0] == 0 )
+		return 0;
 
 	char szText[MAX_PATH] = {0,};
 
@@ -314,8 +371,8 @@ unsigned    KLuaManagerProxy::GetNumIndexedTables( const char* pszName )
 
 unsigned    KLuaManagerProxy::GetNumIndexedValues( const char* pszName, int iBaseIndex )
 {
-    if ( pszName == NULL || pszName[0] == NULL || iBaseIndex < 0 )
-        return 0;
+	if ( pszName == NULL || pszName[0] == 0 || iBaseIndex < 0 )
+		return 0;
 
 	char szText[MAX_PATH] = {0,};
 
@@ -336,7 +393,7 @@ unsigned    KLuaManagerProxy::GetNumIndexedValues( const char* pszName, int iBas
 
 KLuaManagerProxyLuaTable* KLuaManagerProxy::StackGetTable( const char* tableName )
 {
-	if ( tableName == NULL || tableName[0] == NULL )
+	if ( tableName == NULL || tableName[0] == 0 )
 		return NULL;
 
 	KLuaManagerProxyLuaValue* pLuaValue = StackGetValue( tableName );
@@ -385,6 +442,8 @@ bool KLuaManagerProxy::GetBooleanFromLuaValue( bool& val, KLuaManagerProxyLuaVal
 		case LUA_VALUE_NUMBER:
 			val = ( static_cast<int>( pLuaValue->m_dNumber ) != 0 );
 			return true;
+		default:
+			break;
 		}//switch
 		//val = true;
 		//return true;
@@ -455,7 +514,7 @@ bool	KLuaManagerProxy::GetStringFromLuaValue( std::wstring& wstrValue, KLuaManag
 		switch( pLuaValue->m_eType )
 		{
 		case LUA_VALUE_NUMBER:
-			wstrValue = boost::lexical_cast<std::wstring>( pLuaValue->m_dNumber );
+			wstrValue = NumberToWString( pLuaValue->m_dNumber );
 			return true;
 		case LUA_VALUE_STRING:
             {
@@ -464,20 +523,11 @@ bool	KLuaManagerProxy::GetStringFromLuaValue( std::wstring& wstrValue, KLuaManag
                     wstrValue.resize(0);
                     return true;
                 }
-                int iDestSize = ::MultiByteToWideChar( CP_UTF8, 0, pLuaValue->m_strStringUTF8.c_str(), pLuaValue->m_strStringUTF8.size(), NULL, 0 );
-                if ( iDestSize <= 0 )
-                {
-                    wstrValue.resize(0);
-                    return true;
-                }//if
-                wchar_t* wcharBuf = (wchar_t*) _malloca( iDestSize * sizeof( wchar_t ) );
-                ASSERT( wcharBuf != NULL );
-                int iNewSize = ::MultiByteToWideChar( CP_UTF8, 0, pLuaValue->m_strStringUTF8.c_str(), pLuaValue->m_strStringUTF8.size(), wcharBuf, iDestSize );
-                ASSERT( iNewSize == iDestSize );
-                wstrValue.assign( wcharBuf, iNewSize );
-                _freea( wcharBuf );
+                wstrValue = x2::platform::Utf8ToWide( pLuaValue->m_strStringUTF8 );
             }
 			return true;
+		default:
+			break;
 		}//switch
 		return false;
 	}
@@ -488,8 +538,8 @@ bool	KLuaManagerProxy::GetStringFromLuaValue( std::wstring& wstrValue, KLuaManag
 
 bool	KLuaManagerProxy::GetStringFromLuaValue( wchar_t* wszValue, int bufferSize, KLuaManagerProxyLuaValue* pLuaValue )
 {
-    if ( wszValue == NULL || bufferSize <= 0 )
-        return false;
+	if ( wszValue == NULL || bufferSize <= 0 )
+		return false;
 
 	if ( NULL != pLuaValue )
 	{
@@ -498,7 +548,7 @@ bool	KLuaManagerProxy::GetStringFromLuaValue( wchar_t* wszValue, int bufferSize,
 		case LUA_VALUE_NUMBER:
             {
                 std::wstring wstrValue;
-			    wstrValue = boost::lexical_cast<std::wstring>( pLuaValue->m_dNumber );
+			    wstrValue = NumberToWString( pLuaValue->m_dNumber );
                 if ( bufferSize >= (int) wstrValue.size() + 1 )
                 {
                     wcsncpy( wszValue, wstrValue.c_str(), wstrValue.size() );
@@ -507,6 +557,7 @@ bool	KLuaManagerProxy::GetStringFromLuaValue( wchar_t* wszValue, int bufferSize,
             }
 			return true;
 		case LUA_VALUE_STRING:
+            {
             if ( pLuaValue->m_strStringUTF8.empty() == true )
             {
                 wszValue[0] = 0;
@@ -518,8 +569,11 @@ bool	KLuaManagerProxy::GetStringFromLuaValue( wchar_t* wszValue, int bufferSize,
                 wszValue[0] = 0;
                 return true;
             }
-            wszValue[ iNewSize ] = NULL;
+            wszValue[ iNewSize ] = 0;
+            }
 			return true;
+		default:
+			break;
 		}//switch
 		return false;
 	}
@@ -537,7 +591,7 @@ bool    KLuaManagerProxy::DoMemoryNotEncrypt( const char* pRealFile, long nSize 
         nSize -= 3;
         pRealFile += 3;
     }
-    if ( nSize <= 0 || pRealFile[0] == NULL )
+    if ( nSize <= 0 || pRealFile[0] == 0 )
         return false;
 
     ASSERT( m_dequeLuaTable.size() == 1 );
@@ -550,8 +604,6 @@ bool    KLuaManagerProxy::DoMemoryNotEncrypt( const char* pRealFile, long nSize 
     bool    bFinish = false;
     bool    bComment = false;
 
-    typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-    boost::char_separator<char> sep(" \t\n\v\f\r", "=,{}[]");
     enum    EState
     {
         EState_NONE = 0,
@@ -617,11 +669,9 @@ bool    KLuaManagerProxy::DoMemoryNotEncrypt( const char* pRealFile, long nSize 
             if ( pLineStart < pLineEnd )
             {
                 strLine.assign( pLineStart, pLineEnd );
-                tokenizer tokens( strLine, sep );
-                for( tokenizer::iterator tok_iter = tokens.begin();
-                    tok_iter != tokens.end(); ++tok_iter )
+                const std::vector<std::string> vecTokens = Tokenize( strLine );
+                for( const std::string& strToken : vecTokens )
                 {
-                    const std::string& strToken = *tok_iter;
 
                     if ( strToken.empty() == false )
                     {
@@ -647,6 +697,7 @@ bool    KLuaManagerProxy::DoMemoryNotEncrypt( const char* pRealFile, long nSize 
                                     return false;
                                 }
                                 bCloseTable = true;
+                                [[fallthrough]];
                             case ',':
                                 switch( deqState.back() )
                                 {
@@ -1006,7 +1057,7 @@ bool    KLuaManagerProxy::DoMemoryNotEncrypt( const char* pRealFile, long nSize 
 
 bool    KLuaManagerProxy::LuaCall( const char* pszFunction, const std::vector<KLuaManagerProxyLuaValue>& vecArgs )
 {
-    if ( m_pLuaState == NULL || pszFunction == NULL || pszFunction[0] == NULL )
+    if ( m_pLuaState == NULL || pszFunction == NULL || pszFunction[0] == 0 )
         return false;
     lua_pushstring( m_pLuaState, pszFunction );
     lua_getglobal( m_pLuaState, pszFunction );
@@ -1028,7 +1079,7 @@ KLuaManagerProxy::ELuaParse
     KLuaManagerProxy::LuaParse( std::string strToken, bool bExpandKeyword, KLuaManagerProxyLuaValue& luaOut )
 {
     luaOut.Reset();
-    boost::trim( strToken );
+    Trim( strToken );
     if ( strToken.empty() == true )
         return LUA_PARSE_ERROR;
     std::locale loc;
@@ -1042,14 +1093,8 @@ KLuaManagerProxy::ELuaParse
     else if ( std::isdigit( strToken.front(), loc ) == true )
     {
         double  dNumber = 0.0;
-        try
-        {
-			dNumber = boost::lexical_cast<double>( strToken );
-        }
-        catch( const boost::bad_lexical_cast & )
-        {
+        if ( KLexicalCast( strToken, dNumber ) == false )
             return LUA_PARSE_ERROR;
-        }
         luaOut.Reset( dNumber );
         return LUA_PARSE_VALUE;
     }
@@ -1058,14 +1103,8 @@ KLuaManagerProxy::ELuaParse
         if ( strToken.size() >= 2 && std::isdigit( strToken[1], loc ) == true )
         {
             double  dNumber = 0.0;
-            try
-            {
-			    dNumber = boost::lexical_cast<double>( strToken );
-            }
-            catch( const boost::bad_lexical_cast & )
-            {
+            if ( KLexicalCast( strToken, dNumber ) == false )
                 return LUA_PARSE_ERROR;
-            }
             luaOut.Reset( dNumber );
             return LUA_PARSE_VALUE;
         }
@@ -1107,7 +1146,7 @@ KLuaManagerProxy::ELuaParse
                 {
                     KLuaManagerProxyLuaValue    luaKey;
                     std::string strKey( iter + 1, strToken.end() - 1 );
-                    boost::trim( strKey );
+                    Trim( strKey );
                     if ( LuaParse( strKey, true, luaKey ) == LUA_PARSE_VALUE )
                     {
                         if ( luaKey.m_eType == LUA_VALUE_NUMBER )

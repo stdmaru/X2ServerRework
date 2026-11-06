@@ -15,14 +15,14 @@ void    CKTDXDeviceTET_Preprocessing::RegisterLuabind( lua_State* L )
 }
 
 
-bool CKTDXDeviceTET_Preprocessing::OpenFile( const BYTE* pbFileData, int iFileSize,  const std::wstring& wstrDeviceID )
+bool CKTDXDeviceTET_Preprocessing::OpenFile( const BYTE* pbFileData, int iFileSize,  const std::wstring& /*wstrDeviceID*/ )
 {
     m_vecData.resize( 0 );
     if ( pbFileData == NULL || iFileSize <= 0 )
         return false;
 
 
-    if ( iFileSize >= sizeof(KTETFormatHeader) )
+    if ( iFileSize >= (int)sizeof(KTETFormatHeader) )
     {
         KTETFormatHeader kHeader = *( (const KTETFormatHeader*) ( pbFileData ) );
         if ( kHeader.m_dwMagic == KTET_FORMAT_MAGIC && kHeader.m_dwVersion == KTET_FORMAT_VERSION )
@@ -110,7 +110,7 @@ const KTETFormatTextureUV*  CKTDXDeviceTET_Preprocessing::GetTexUVFromIndex( uns
 
 const KTETFormatTextureUV*  CKTDXDeviceTET_Preprocessing::GetTexUV( const wchar_t* pwszKey ) const
 {
-    if ( pwszKey == NULL || pwszKey[0] == NULL )
+    if ( pwszKey == NULL || pwszKey[0] == 0 )
         return NULL;
     if ( m_vecData.size() < sizeof(KTETFormatHeader) )
         return NULL;
@@ -164,7 +164,7 @@ void    CKTDXDeviceTET_Preprocessing::TETProxy::PostProcess( std::vector<BYTE>& 
 
 void    CKTDXDeviceTET_Preprocessing::TETProxy::AddRect_LUA( const char* pKey, const D3DXVECTOR2& leftTop, const D3DXVECTOR2& rightTop, const D3DXVECTOR2& leftBottom, const D3DXVECTOR2& rightBottom )
 {
-	if ( pKey == NULL || pKey[0] == NULL )
+	if ( pKey == NULL || pKey[0] == 0 )
 		return;
 
 	wstring wstrKeyName;
@@ -213,7 +213,7 @@ void    CKTDXDeviceTET_Preprocessing::TETProxy::AddRect_LUA( const char* pKey, c
 void    CKTDXDeviceTET_Preprocessing::TETProxy::RotateRect_LUA( const char* pKey, int roateValue )
 {
 //#ifdef DYNAMIC_VERTEX_BUFFER_OPT
-	if ( pKey == NULL || pKey[0] == NULL )
+	if ( pKey == NULL || pKey[0] == 0 )
 		return;
 //#endif
 

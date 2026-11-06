@@ -4,7 +4,7 @@
 
 #include "KncUtil.h"
 
-#include <boost/algorithm/string/case_conv.hpp>
+#include <locale>
 
 
 
@@ -47,30 +47,31 @@ namespace KTDGUTIL_STR
 		RTrim( str_ );
 	}
 
-	//태국어에서 오동작하여 Boost라이브러리로 수정함..
+	// std::transform with the C toupper misbehaved for Thai, so the original switched to Boost (to_upper with the
+	// global locale); the port applies the global locale's ctype facet, as Boost did.
 
 	void ToUpper( std::string& str_ )
 	{
 		//std::transform( str_.begin(), str_.end(), str_.begin(), std::toupper );
-		boost::to_upper(str_);
+		{ const std::locale loc; std::use_facet<std::ctype<std::remove_reference_t<decltype( str_[0] )>>>( loc ).toupper( str_.data(), str_.data() + str_.size() ); }
 	}
 
 	void ToUpper( std::wstring& str_ )
 	{
 		//std::transform( str_.begin(), str_.end(), str_.begin(), std::toupper );
-		boost::to_upper(str_);
+		{ const std::locale loc; std::use_facet<std::ctype<std::remove_reference_t<decltype( str_[0] )>>>( loc ).toupper( str_.data(), str_.data() + str_.size() ); }
 	}
 
 	void ToLower( std::string & str_ )
 	{
 		//std::transform( str_.begin(), str_.end(), str_.begin(), std::tolower );
-		boost::to_lower(str_);
+		{ const std::locale loc; std::use_facet<std::ctype<std::remove_reference_t<decltype( str_[0] )>>>( loc ).tolower( str_.data(), str_.data() + str_.size() ); }
 	}
 
 	void ToLower( std::wstring & str_ )
 	{
 		//std::transform( str_.begin(), str_.end(), str_.begin(), std::tolower );
-		boost::to_lower(str_);
+		{ const std::locale loc; std::use_facet<std::ctype<std::remove_reference_t<decltype( str_[0] )>>>( loc ).tolower( str_.data(), str_.data() + str_.size() ); }
 	}
 
 	const char*	GCStrWideToChar(const WCHAR* strSrc)
@@ -79,7 +80,7 @@ namespace KTDGUTIL_STR
 		memset( strTemp, 0, sizeof(char)*4096 );
 		std::wstring strWide = strSrc;
 		std::string strNarrow = KncUtil::toNarrowString( strWide );
-		lstrcpyA( strTemp, strNarrow.c_str() );
+		strncpy( strTemp, strNarrow.c_str(), 4096 - 1 );
 
 		return strTemp;
 	}
@@ -90,7 +91,7 @@ namespace KTDGUTIL_STR
 		memset( strTemp, 0, sizeof(WCHAR)*4096 );
 		std::string strNarrow = strSrc;
 		std::wstring strWide = KncUtil::toWideString( strNarrow );
-		lstrcpyW( strTemp, strWide.c_str() );
+		wcsncpy( strTemp, strWide.c_str(), 4096 - 1 );
 
 		return strTemp;
 	}
@@ -132,20 +133,13 @@ namespace KTDGUTIL_STR
 
 	LPCTSTR GCStrToDefined( const wchar_t* strSrc )
 	{
-#if defined( UNICODE )
+		// The client is always built with UNICODE (LPCTSTR is wide on every platform).
 		return strSrc;
-#else
-		return GCStrWideToChar( strSrc );
-#endif
 	}
 
 	LPCTSTR GCStrToDefined( const char* strSrc )
 	{
-#if defined( UNICODE )
 		return GCStrCharToWide( strSrc );
-#else
-		return strSrc;
-#endif
 	}
 }
 
@@ -408,7 +402,7 @@ namespace KTDGUTIL_STR_THAI
 
 	bool IsIntonation(const WCHAR wchar)
 	{
-		for( int i = 0; i < ARRAY_SIZE(INTONATION_TABLE); i++ )
+		for( int i = 0; i < (int)ARRAY_SIZE(INTONATION_TABLE); i++ )
 		{
 			if( INTONATION_TABLE[i] == wchar )
 				return true;

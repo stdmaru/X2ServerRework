@@ -131,8 +131,7 @@ CKTDGGrayScale::TargetTexture::TargetTexture()
 {
 	m_pd3dDevice	= g_pKTDXApp->GetDevice();
 	m_pTexture		= NULL;
-	m_pSurface		= NULL;
-	m_pOldSurface	= NULL;
+	m_pOldTarget	= NULL;
 
 	m_dwWidth		= 0;
 	m_dwHeight		= 0;
@@ -161,16 +160,13 @@ void CKTDGGrayScale::TargetTexture::OnResetDevice()
 		return;
 	}
 
-	m_pTexture->GetSurfaceLevel( 0, &m_pSurface );
-
 	return;
 }
 
 void CKTDGGrayScale::TargetTexture::OnLostDevice()
 {
-	SAFE_RELEASE( m_pTexture );
-	SAFE_RELEASE( m_pSurface );
-	SAFE_RELEASE( m_pOldSurface );
+	SAFE_DELETE( m_pTexture );
+	m_pOldTarget = NULL;
 }
 
 bool CKTDGGrayScale::TargetTexture::CreateTarget( DWORD dwWidth, DWORD dwHeight )
@@ -186,15 +182,15 @@ bool CKTDGGrayScale::TargetTexture::CreateTarget( DWORD dwWidth, DWORD dwHeight 
 
 void CKTDGGrayScale::TargetTexture::BeginRenderTarget()
 {
-	SAFE_RELEASE( m_pOldSurface );
-	m_pd3dDevice->GetRenderTarget( 0, &m_pOldSurface );
-	m_pd3dDevice->SetRenderTarget( 0, m_pSurface );
+	// The device renders into textures, not their surfaces (T38).
+	m_pOldTarget = m_pd3dDevice->GetRenderTarget();
+	m_pd3dDevice->SetRenderTarget( 0, m_pTexture );
 }
 
 void CKTDGGrayScale::TargetTexture::EndRenderTarget()
 {
-	m_pd3dDevice->SetRenderTarget( 0, m_pOldSurface );
-	SAFE_RELEASE( m_pOldSurface );
+	m_pd3dDevice->SetRenderTarget( 0, m_pOldTarget );
+	m_pOldTarget = NULL;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -251,7 +247,7 @@ HRESULT CKTDGGrayScale::DeviceShader::OnLostDevice()
 	return S_OK;
 }
 
-bool CKTDGGrayScale::DeviceShader::SetTechnique( char* strTechnique )
+bool CKTDGGrayScale::DeviceShader::SetTechnique( const char* strTechnique )
 {
 	if( m_pEffect == NULL )
 		return false;

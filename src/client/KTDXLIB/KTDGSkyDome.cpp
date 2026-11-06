@@ -32,7 +32,7 @@ CKTDGSkyDome::~CKTDGSkyDome(void)
 	SAFE_CLOSE( m_pChangeTexXET );
 }
 
-HRESULT CKTDGSkyDome::OnFrameMove( double fTime, float fElapsedTime )
+HRESULT CKTDGSkyDome::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	GetMatrix().RotateRel( 0.0f, D3DXToRadian(m_fRotationSpeed * fElapsedTime), 0.0f );
 	m_RenderParam.texOffsetStage0 += (m_Tex0UVSpeed * fElapsedTime);

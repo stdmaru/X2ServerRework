@@ -2,6 +2,7 @@
 
 
 #include "x2/platform/format.h"
+#include "x2/platform/unicode.h"
 
 const static KXETFormatHeader   s_kDummyHeader;
 
@@ -23,7 +24,7 @@ void CKTDXDeviceXET_Preprocessing::RegisterLuabind( lua_State* L )
 
 int CKTDXDeviceXET_Preprocessing::FindChangeTextureIndex( const wchar_t* pwszTexName ) const
 {
-    if ( pwszTexName == NULL || pwszTexName[0] == NULL )
+    if ( pwszTexName == NULL || pwszTexName[0] == 0 )
         return -1;
     if ( m_vecData.size() < sizeof(KXETFormatHeader) )
         return -1;
@@ -48,7 +49,7 @@ int CKTDXDeviceXET_Preprocessing::FindChangeTextureIndex( const wchar_t* pwszTex
 
 int CKTDXDeviceXET_Preprocessing::FindAniDataIndex( const wchar_t* pwszAniName ) const
 {
-    if ( pwszAniName == NULL || pwszAniName[0] == NULL )
+    if ( pwszAniName == NULL || pwszAniName[0] == 0 )
         return -1;
     if ( m_vecData.size() < sizeof(KXETFormatHeader) )
         return -1;
@@ -73,7 +74,7 @@ int CKTDXDeviceXET_Preprocessing::FindAniDataIndex( const wchar_t* pwszAniName )
 
 int CKTDXDeviceXET_Preprocessing::FindAniTexChangeEventIndex( const KXETFormatAniData& kAniData, float fAniTime, const wchar_t* pwszTexName ) const
 {
-    if ( pwszTexName == NULL || pwszTexName[0] == NULL || kAniData.m_wNumAniEventTexChange == 0 )
+    if ( pwszTexName == NULL || pwszTexName[0] == 0 || kAniData.m_wNumAniEventTexChange == 0 )
         return -1;
     if ( m_vecData.size() < sizeof(KXETFormatHeader) )
         return -1;
@@ -114,7 +115,7 @@ bool    CKTDXDeviceXET_Preprocessing::OpenFile( const wchar_t* pwszFileName, int
 {
     iSize = 0;
     m_vecData.resize( 0 );
-    if ( pwszFileName == NULL || pwszFileName[0] == NULL )
+    if ( pwszFileName == NULL || pwszFileName[0] == 0 )
         return false;
 
     const BYTE* pbFileData = NULL;
@@ -131,7 +132,7 @@ bool    CKTDXDeviceXET_Preprocessing::OpenFile( const wchar_t* pwszFileName, int
     pbFileData = (const BYTE*) info->pRealData;
     iFileSize = info->size;
 
-    if ( iFileSize >= sizeof(KXETFormatHeader) )
+    if ( iFileSize >= (int)sizeof(KXETFormatHeader) )
     {
         const KXETFormatHeader* pkHeader = (const KXETFormatHeader*) ( pbFileData );
         if ( pkHeader->m_dwMagic == KXET_FORMAT_MAGIC && pkHeader->m_dwVersion == KXET_FORMAT_VERSION )
@@ -189,8 +190,8 @@ const wchar_t*  CKTDXDeviceXET_Preprocessing::GetString( DWORD dwOffset ) const
 
 void    CKTDXDeviceXET_Preprocessing::XETProxy::AddChangeTexture_LUA( const char* pOrgTexName, const char* pChangeTexName )
 {
-	if ( pOrgTexName == NULL || pOrgTexName[0] == NULL
-        || pChangeTexName == NULL || pChangeTexName[0] == NULL )
+	if ( pOrgTexName == NULL || pOrgTexName[0] == '\0'
+        || pChangeTexName == NULL || pChangeTexName[0] == '\0' )
     {
         ASSERT( 0 );
         return;
@@ -209,8 +210,8 @@ void    CKTDXDeviceXET_Preprocessing::XETProxy::AddChangeTexture_LUA( const char
 
 void    CKTDXDeviceXET_Preprocessing::XETProxy::SetMultiTexStage1_LUA( const char* , const char* pBlendTexName, int colorOP )
 {
-    if ( pBlendTexName == NULL || pBlendTexName[0] == NULL )
-        return;
+	if ( pBlendTexName == NULL || pBlendTexName[0] == 0 )
+		return;
 
 	ConvertUtf8ToWCHAR( m_MultiTexStage1.m_wstrBlendTexName, pBlendTexName );
 	MakeUpperCase( m_MultiTexStage1.m_wstrBlendTexName );
@@ -219,8 +220,8 @@ void    CKTDXDeviceXET_Preprocessing::XETProxy::SetMultiTexStage1_LUA( const cha
 
 void    CKTDXDeviceXET_Preprocessing::XETProxy::SetMultiTexStage2_LUA( const char*, const char* pBlendTexName, int colorOP )
 {
-    if ( pBlendTexName == NULL || pBlendTexName[0] == NULL )
-        return;
+	if ( pBlendTexName == NULL || pBlendTexName[0] == 0 )
+		return;
 
 	ConvertUtf8ToWCHAR( m_MultiTexStage2.m_wstrBlendTexName, pBlendTexName );
 	MakeUpperCase( m_MultiTexStage2.m_wstrBlendTexName );
@@ -230,11 +231,11 @@ void    CKTDXDeviceXET_Preprocessing::XETProxy::SetMultiTexStage2_LUA( const cha
 const CKTDXDeviceXET_Preprocessing::XETProxy::AniData* CKTDXDeviceXET_Preprocessing::XETProxy::AddAniData_LUA( const char* pAniName, float fTransitionTime, float fAniMaxTime )
 {
 	//{{ kimhc // 2011-03-16 // 메모리 릭 수정 코드
-	if ( pAniName == NULL || pAniName[0] == NULL )
+	if ( pAniName == NULL || pAniName[0] == '\0' )
 	{
 		ASSERT( false );
 		x2::format fmt("유효하지 않은 애니메이션 이름을 사용하였습니다: %1%, %2%");
-		ErrorLogMsg( KEM_ERROR96, x2::str(fmt % m_DeviceID.c_str() % pAniName).c_str() );
+		ErrorLogMsg( KEM_ERROR96, x2::str(fmt % x2::platform::WideToUtf8( m_DeviceID ) % pAniName).c_str() );
 		return NULL;
 	}
 
@@ -246,7 +247,7 @@ const CKTDXDeviceXET_Preprocessing::XETProxy::AniData* CKTDXDeviceXET_Preprocess
     {
 		ASSERT( false );
 		x2::format fmt("이미 등록된 애니메이션 이름을 사용하였습니다: %1%, %2%");
-		ErrorLogMsg( KEM_ERROR96, x2::str(fmt % m_DeviceID.c_str() % pAniName).c_str() );
+		ErrorLogMsg( KEM_ERROR96, x2::str(fmt % x2::platform::WideToUtf8( m_DeviceID ) % pAniName).c_str() );
 
 		return &ib.first->second;
 		//return NULL;
@@ -267,8 +268,8 @@ const CKTDXDeviceXET_Preprocessing::XETProxy::AniData* CKTDXDeviceXET_Preprocess
 
 void    CKTDXDeviceXET_Preprocessing::XETProxy::AniData::SetTexChangeEvent_LUA( const D3DXVECTOR2& eventTime, const char* pOrgTexName, const char* pChangeTexName )
 {
-	if ( pOrgTexName == NULL || pOrgTexName[0] == NULL
-        || pChangeTexName == NULL || pChangeTexName[0] == NULL )
+	if ( pOrgTexName == NULL || pOrgTexName[0] == '\0'
+        || pChangeTexName == NULL || pChangeTexName[0] == '\0' )
         return;
 
 	wstring wOrgTexName;

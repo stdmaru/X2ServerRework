@@ -1,14 +1,14 @@
 #include "stdafx.h"
 #include "./KTDGFontManager.h"
 
-CKTDGFontManager::CKTDGFontManager( LPDIRECT3DDEVICE9 pd3dDevice )
+CKTDGFontManager::CKTDGFontManager( LPDIRECT3DDEVICE9 /*pd3dDevice*/ )
 {
 	int error = FT_Init_FreeType( &m_FreeTypeLibrary );
 	if( error )
 	{
 		wstringstream strstm;
 		strstm << "Font Init Failed : returns " << error;
-		MessageBoxW( NULL, strstm.str().c_str(), L"Error!", NULL );
+		MessageBoxW( NULL, strstm.str().c_str(), L"Error!", 0 );
 		ErrorLogMsg( KEM_ERROR426, strstm.str().c_str() );
 	}
 }
@@ -38,7 +38,7 @@ CKTDGFontManager::~CKTDGFontManager(void)
 
 
 
-void CKTDGFontManager::OnFrameMove( float fTime, float fElapsedTime )
+void CKTDGFontManager::OnFrameMove( float /*fTime*/, float fElapsedTime )
 {
 	KLagCheck( eKnown_LagCheckType_KTDGFontManager_FrameMove );
 
@@ -92,7 +92,7 @@ HRESULT	CKTDGFontManager::OnLostDevice()
 
 
 
-void CKTDGFontManager::CreateNewUIFont_LUA( int fontID, const char* pFontName, int Height, int Weight )
+void CKTDGFontManager::CreateNewUIFont_LUA( int /*fontID*/, const char* /*pFontName*/, int /*Height*/, int /*Weight*/ )
 {
 }
 
@@ -206,7 +206,7 @@ void CKTDGFontManager::CUKFont::UnLoad(bool bComplete /*= true */)
 	m_pUKFont->UnLoad( bComplete );
 }
 
-std::string CKTDGFontManager::CUKFont::MakeFontID( std::string strFontName, int iFontSize, int iOutLineSize, bool bRHW, int fontWeight/* = FW_NORMAL*/ )
+std::string CKTDGFontManager::CUKFont::MakeFontID( std::string /*strFontName*/, int /*iFontSize*/, int /*iOutLineSize*/, bool /*bRHW*/, int /*fontWeight*//* = FW_NORMAL*/ )
 {
 	return "";
 }
@@ -398,7 +398,7 @@ void CKTDGFontManager::CUKFont::DrawTextFont( const WCHAR* strMsg, RECT* pos, in
 	if ( pos == NULL )
 		return;
 
-	if ( strMsg == NULL || strMsg[0] == NULL || nCount == 0 )
+	if ( strMsg == NULL || strMsg[0] == 0 || nCount == 0 )
 		return;
 
 	if ( bOutline == true )
@@ -412,7 +412,7 @@ void CKTDGFontManager::CUKFont::CalcTextRect( const WCHAR* strMsg, RECT* pos, in
 	if ( pos == NULL )
 		return;
 
-	if ( strMsg == NULL || strMsg[0] == NULL || nCount == 0 )
+	if ( strMsg == NULL || strMsg[0] == 0 || nCount == 0 )
 	{
 		pos->left = pos->top = pos->right = pos->bottom = 0;
 		return;
@@ -434,7 +434,7 @@ void CKTDGFontManager::CUKFont::DrawFont( const WCHAR* strMsg, RECT rt, DWORD so
 {
 	KTDXPROFILE();
 
-	if( NULL == strMsg || strMsg[0] == NULL || nCount == 0 )
+	if( NULL == strMsg || strMsg[0] == 0 || nCount == 0 )
 		return;
 
 	switch( sortFlag )
@@ -503,11 +503,11 @@ void CKTDGFontManager::CUKFont::DrawFont( const WCHAR* strMsg, RECT rt, DWORD so
     }//if.. else..
 }
 
-void CKTDGFontManager::CUKFont::DrawFontStyle(const WCHAR* strMsg, RECT rt, DWORD sortFlag, D3DXCOLOR outlineColor, FONT_STYLE fontStyle, int nCount /* = -1  */)
+void CKTDGFontManager::CUKFont::DrawFontStyle(const WCHAR* strMsg, RECT rt, DWORD /*sortFlag*/, D3DXCOLOR outlineColor, FONT_STYLE fontStyle, int nCount /* = -1  */)
 {
 	KTDXPROFILE();
 
-	if( NULL == strMsg || strMsg[0] == NULL || nCount == 0 )
+	if( NULL == strMsg || strMsg[0] == 0 || nCount == 0 )
 		return;
 
 	LONG	gap = 1;
@@ -813,7 +813,6 @@ bool CKTDGFontManager::CUKFont::Delete2DFont( const int ID )
 
 void CKTDGFontManager::CUKFont::Clear2DFont()
 {
-	int i = 0;
 	int nFontNum = 0;
 
 	nFontNum = (int)m_vecFont2D.size();
@@ -872,14 +871,14 @@ void CKTDGFontManager::InstallFont( string strFontName, string strFontPath )
     m_mapFontNameFile[ strFontName ] = strFontPath;
 
     FontFileMemoryMap::const_iterator iter = m_mapFontFileMemory.find( strFontPath );
-    if ( iter != m_mapFontFileMemory.end() )
-        return;
+	if ( iter != m_mapFontFileMemory.end() )
+		return;
 
 	KGCMassFileManager::CMassFile::MASSFILE_MEMBERFILEINFO_POINTER  info = g_pKTDXApp->GetDeviceManager()->GetMassFileManager()->LoadDataFile( strFontPath );
 	if( info->pRealData == NULL || info->size <= 0 )
 	{
 		ErrorLogMsg( KEM_ERROR16, strFontPath.c_str() );
-		MessageBoxA( NULL, strFontPath.c_str(), "Font Error!", NULL );
+		MessageBoxA( NULL, strFontPath.c_str(), "Font Error!", 0 );
 		return;
 	}
     auto ib = m_mapFontFileMemory.insert( FontFileMemoryMap::value_type( strFontPath, std::vector<BYTE>() ) );
@@ -897,8 +896,8 @@ const std::vector<BYTE>& CKTDGFontManager::GetFontMemory( string strFontName ) c
     MakeUpperCase( strFontName );
 
 	FontNameFileMap::const_iterator iter = m_mapFontNameFile.find( strFontName );
-    if ( iter == m_mapFontNameFile.end() )
-        return  s_vecDummy;
+	if ( iter == m_mapFontNameFile.end() )
+		return  s_vecDummy;
 
 	FontFileMemoryMap::const_iterator mitUseFontMemory = m_mapFontFileMemory.find( iter->second );
 	if( mitUseFontMemory == m_mapFontFileMemory.end() )

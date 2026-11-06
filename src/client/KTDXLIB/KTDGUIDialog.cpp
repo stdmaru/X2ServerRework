@@ -4,9 +4,9 @@
 CKTDGUIControl* CKTDGUIDialog::s_pControlFocus = NULL;	// The control which has focus
 
 CKTDGUIDialog::CKTDGUIDialog( CKTDXStage* pStage, const WCHAR* wstrScriptFileName /*= NULL*/, float fMoveTime /* = 0.07 */, int iLayer /*= 0 */)
-: m_iDialogListChangeCount( 0 )
+: m_ID( 0 )
+, m_iDialogListChangeCount( 0 )
 , m_fTimeForSelfDelete( 0.f )
-, m_ID( 0 )
 {
 #ifdef ACTIVE_KOG_GAME_PERFORMANCE_CHECK
 	KOGGamePerformanceCheck::GetInstance()->GetLagCheckMgr()->Pause();
@@ -146,8 +146,8 @@ CKTDGUIDialog::~CKTDGUIDialog(void)
 	SAFE_DELETE_DIALOG( m_pDialogGuideDesc );
 
 //{{ robobeg : 2009-01-07
-    if ( GetUIDialogManager() != NULL )
-        GetUIDialogManager()->UnmanageDlg( this );
+	if ( GetUIDialogManager() != NULL )
+		GetUIDialogManager()->UnmanageDlg( this );
 //}} robobeg : 2009-01-07
 
 	if( s_pControlFocus != NULL
@@ -557,7 +557,7 @@ HRESULT	CKTDGUIDialog::OnFrameRender( bool bForceDraw /* = false */ )
 			{
 				KLOG("MouseOverScript.txt")  << m_pControlMouseOverStatic->GetName() << fileout;
 			}
-			ShellExecute(NULL, NULL, L"notepad++.exe", L"MouseOverScript.txt", L"", SW_SHOWNORMAL );
+			// Port: the log is no longer opened in notepad++ (a Windows-only editor).
 		}
 	}
 #endif //LOG_LOAD_DLG_SCRIPT
@@ -702,7 +702,7 @@ bool CKTDGUIDialog::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam 
 				//POINT mousePoint = { short(LOWORD(lParam)), short(HIWORD(lParam)) };
 
 				//{{ 허상형 : [2009/7/27] //	마우스 포인터 위치를 절대 좌표에서 클라이언트 좌표로 수정
-				POINT mousePoint = { g_pKTDXApp->GetDIManager()->GetMouse()->GetXPos(), g_pKTDXApp->GetDIManager()->GetMouse()->GetYPos() };
+				POINT mousePoint = { static_cast<LONG>( g_pKTDXApp->GetDIManager()->GetMouse()->GetXPos() ), static_cast<LONG>( g_pKTDXApp->GetDIManager()->GetMouse()->GetYPos() ) };
 				//}} 허상형 : [2009/7/27] //	마우스 포인터 위치를 절대 좌표에서 클라이언트 좌표로 수정
 
 				D3DXVECTOR2 resolPos;
@@ -1150,7 +1150,6 @@ bool CKTDGUIDialog::CheckControl( const WCHAR* wszControlName )
 
     //}} seojt // 2009-1-7, 17:23
 
-	CKTDGUIControl* pControl = NULL;
 	map<std::wstring, CKTDGUIControl*>::iterator iter;
 
 	if ( m_ControlsMap.empty() == true )
@@ -1481,7 +1480,7 @@ bool CKTDGUIDialog::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lPar
 
 
 	if( m_ControlsList.size() == 0 )
-		return NULL;
+		return false;
 
 	// 나머지 우선순위대로 업데이트
 	for ( int i = (int)m_ControlsList.size()-1; i >= 0 ; i-- )
@@ -1937,7 +1936,7 @@ void CKTDGUIDialog::SetShow( bool bShow )
 		//////////////////////////////////
 		if( bShow == true)
 		{
-			POINT mousePoint = { g_pKTDXApp->GetDIManager()->GetMouse()->GetXPos(), g_pKTDXApp->GetDIManager()->GetMouse()->GetYPos() };
+			POINT mousePoint = { static_cast<LONG>( g_pKTDXApp->GetDIManager()->GetMouse()->GetXPos() ), static_cast<LONG>( g_pKTDXApp->GetDIManager()->GetMouse()->GetYPos() ) };
 			D3DXVECTOR2 resolPos;
 			resolPos = g_pKTDXApp->ConvertByResolution( m_Pos );
 			mousePoint.x -= (LONG)resolPos.x;
@@ -2416,6 +2415,8 @@ void CKTDGUIDialog::UpdateRects()
 					pControlList->UpdateRects();
 
 				} break;
+			default:
+				break;
 			}
 		}
 	}
@@ -2531,7 +2532,6 @@ CKTDGUIControl* CKTDGUIDialog::GetControlMouseOver() const
 	if( GetShow() == false )
 		return NULL;
 
-	float fAlpha = GetColor().a;
 
 	if( GetColor().a < 0.01f )
 		return NULL;

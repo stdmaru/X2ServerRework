@@ -114,6 +114,19 @@ int _snwprintf_s(wchar_t* dst, size_t size, size_t count, const wchar_t* fmt, ..
     return n;
 }
 
+int _snprintf_s(char* dst, size_t size, size_t count, const char* fmt, ...)
+{
+    std::string f = fmt ? fmt : "";
+    for (size_t pos; (pos = f.find("I64")) != std::string::npos;)
+        f.replace(pos, 3, "ll");
+    va_list args;
+    va_start(args, fmt);
+    const size_t limit = count < size ? count + 1 : size;
+    const int n = std::vsnprintf(dst, limit, f.c_str(), args);
+    va_end(args);
+    return n;
+}
+
 int sprintf_s(char* dst, size_t size, const char* fmt, ...)
 {
     std::string f = fmt ? fmt : "";

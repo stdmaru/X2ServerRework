@@ -5,6 +5,8 @@
 // so they can be streamed or passed as arguments, but not concatenated with other literals.
 #pragma once
 
+#include "x2/platform/types.h"
+
 namespace x2::platform {
 
 // `name` must have static storage duration (__FILE__, __FUNCTION__); results are cached.
@@ -14,3 +16,10 @@ const wchar_t* WidenStatic(const char* name);
 
 #define __WFILE__     (::x2::platform::WidenStatic(__FILE__))
 #define __WFUNCTION__ (::x2::platform::WidenStatic(__FUNCTION__))
+
+#if !defined(_WIN32)
+// The debugger's output on Windows (native there); stderr elsewhere. The wide text goes out as UTF-8.
+void OutputDebugStringW(const wchar_t* text);
+void OutputDebugStringA(const char* text);
+#define OutputDebugString OutputDebugStringW
+#endif

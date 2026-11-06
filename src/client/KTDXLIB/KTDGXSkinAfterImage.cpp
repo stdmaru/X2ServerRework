@@ -75,7 +75,7 @@ void CKTDGXSkinAfterImage::AddMesh( CKTDXDeviceXSkinMesh* pMesh )
 	}
 }
 
-HRESULT CKTDGXSkinAfterImage::OnFrameMove( double fTime, float fElapsedTime )
+HRESULT CKTDGXSkinAfterImage::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	KTDXPROFILE();
 	if( m_bEnable == true )

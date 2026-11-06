@@ -5474,36 +5474,8 @@ void CX2Main::CreateStateChangeDLG( const WCHAR* szExplanation, wstring wstrCust
 		if ( DXUTGetDeviceLost() == false && DXUTGetDeviceObjectsReset() == true )
 		{
 			g_pKTDXApp->GetDevice()->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0x32323232, 1.0f, 0);
-			g_pKTDXApp->GetDevice()->BeginScene();
-			m_pNowState->OnFrameRender();
-			g_pKTDXApp->GetDevice()->EndScene();
-			HRESULT hr = g_pKTDXApp->GetDevice()->Present( NULL, NULL, NULL, NULL );
-
-			if ( FAILED(hr) )
-			{
-				if ( D3DERR_DEVICELOST == hr )
-				{
-					DXUTSetDeviceLost( true );
-				}
-				else if ( D3DERR_DRIVERINTERNALERROR == hr )
-				{
-					// When D3DERR_DRIVERINTERNALERROR is returned from Present(),
-					// the application can do one of the following:
-					//
-					// - End, with the pop-up window saying that the application cannot continue
-					//   because of problems in the display adapter and that the user should
-					//   contact the adapter manufacturer.
-					//
-					// - Attempt to restart by calling IDirect3DDevice9::Reset, which is essentially the same
-					//   path as recovering from a lost device. If IDirect3DDevice9::Reset fails with
-					//   D3DERR_DRIVERINTERNALERROR, the application should end immediately with the message
-					//   that the user should contact the adapter manufacturer.
-					//
-					// The framework attempts the path of resetting the device
-					//
-					DXUTSetDeviceLost( true );
-				}
-			}
+			// Port: the device is never lost (T38), so a failed Present needs no recovery here.
+			g_pKTDXApp->RenderStageNow( m_pNowState );
 		}
 	}
 

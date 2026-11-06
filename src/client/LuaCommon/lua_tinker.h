@@ -30,6 +30,9 @@
 
 namespace lua_tinker
 {
+	// class helper, declared here for the templates below that call it (MSVC found it at instantiation)
+	void meta_push(lua_State *L, const char* name);
+
 	// init LuaTinker
 	void	init(lua_State *L);
 
@@ -136,7 +139,7 @@ namespace lua_tinker
         }
     };
 	template<typename T>
-    struct nil2ref { static const T& invoke(lua_State*){ static const T s; return s; } };
+    struct nil2ref { static const T& invoke(lua_State*){ static const T s{}; return s; } };
 
 	template<typename T>
 	struct nil2type
@@ -904,7 +907,7 @@ namespace lua_tinker
 	void def(lua_State* L, const char* name, F func)
 	{
 		lua_pushstring(L, name);
-		lua_pushlightuserdata(L, func);
+		lua_pushlightuserdata(L, reinterpret_cast<void*>(func));   // a function pointer (MSVC converted it implicitly)
 		push_functor(L, func);
 		lua_settable(L, LUA_GLOBALSINDEX);
 	}

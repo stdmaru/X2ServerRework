@@ -1,13 +1,15 @@
 // KTDXLIB's first engine files on the D3D9 device (docs/porting/client-ktdxlib.md): the state manager, the dynamic
 // vertex data, render target textures and the silent sound backend, headless on the null backend. g_pKTDXApp is the
-// stub in ktdxapp_stub.cpp.
+// real CKTDXApp; the globals X2.cpp defines are in x2_globals.cpp.
 
-#include "stdafx.h"
+#include "KTDX.h"   // not stdafx.h: Windows would find X2ServerProtocol/StdAfx.h first
 
 #include "x2/render/null.h"
 
 #include <doctest/doctest.h>
 
+#include <cstring>
+#include <filesystem>
 #include <memory>
 #include <string>
 #include <vector>
@@ -35,7 +37,7 @@ std::vector<std::string> Lines(x2::render::Device& device, const std::string& pr
     return lines;
 }
 
-// The device, the application stub on it, and a 64 x 32 target bound so draws have somewhere to go.
+// The device, the application on it (set up as X2.cpp's device callbacks do), and a 64 x 32 target bound so draws have somewhere to go.
 struct Engine {
     std::unique_ptr<x2::render::Device> render = NullRender();
     x2::d3d9::Device device{*render, nullptr};
@@ -45,7 +47,9 @@ struct Engine {
     Engine()
     {
         REQUIRE_MESSAGE(device.Ok(), device.LastError());
+        g_pd3dDevice = &device;
         app = std::make_unique<CKTDXApp>(nullptr, nullptr, &device);
+        CKTDGStateManager::RestoreDeviceObjects();
         target = device.CreateTexture(64, 32, 1, D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT);
         REQUIRE(target);
         CKTDGStateManager::SetRenderTarget(target.get());
@@ -54,7 +58,9 @@ struct Engine {
     {
         CKTDGStateManager::SetRenderTarget(NULL);
         target.reset();
+        CKTDGStateManager::InvalidateDeviceObjects();
         app.reset();
+        g_pd3dDevice = NULL;
     }
 };
 
@@ -186,4 +192,66 @@ TEST_CASE("ktdxlib: the silent sound backend keeps its state and plays nothing")
     effect->Set3DPosition(D3DXVECTOR3(0, 0, 0));
     effect->Stop();
     delete effect;
+}
+
+namespace {
+
+// A stage that draws one triangle: what a loading screen's OnFrameRender does between loading steps.
+struct DrawingStage : CKTDXStage {
+    int renders = 0;
+    HRESULT OnFrameRender() override
+    {
+        ++renders;
+        const XyzDiffuse triangle[3] = {{0, 0, 0, 0xFFFFFFFF}, {1, 0, 0, 0xFFFFFFFF}, {0, 1, 0, 0xFFFFFFFF}};
+        g_pd3dDevice->SetFVF(D3DFVF_XYZ | D3DFVF_DIFFUSE);
+        g_pd3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLELIST, 1, triangle, sizeof(XyzDiffuse));
+        return S_OK;
+    }
+};
+
+}  // namespace
+
+TEST_CASE("ktdxlib: RenderStageNow draws and presents one frame of a stage (T38)")
+{
+    Engine engine;
+    x2::render::null::ClearCommands(*engine.render);
+    DrawingStage stage;
+    g_pKTDXApp->RenderStageNow(&stage);
+    CHECK(stage.renders == 1);
+    CHECK(!Lines(*engine.render, "Draw").empty());
+    CHECK(!Lines(*engine.render, "Submit").empty());
+
+    x2::render::null::ClearCommands(*engine.render);
+    g_pKTDXApp->RenderStageNow(NULL);   // no stage: still presents a frame
+    CHECK(!Lines(*engine.render, "Submit").empty());
+}
+
+TEST_CASE("ktdxlib: KFileSerializer and CRC_32 read and write whole files")
+{
+    const std::filesystem::path dir = std::filesystem::temp_directory_path() / "x2_ktdxlib_tests";
+    std::filesystem::create_directories(dir);
+    const std::string file = (dir / "serializer.bin").string();
+
+    KFileSerializer out;
+    CHECK(FAILED(out.SaveFile(file.c_str())));   // nothing to write
+    const char data[] = "elsword";
+    out.AppendData(sizeof(data), data);
+    REQUIRE(SUCCEEDED(out.SaveFile(file.c_str())));
+    CHECK(std::filesystem::file_size(file) == sizeof(data));
+
+    KFileSerializer in;
+    REQUIRE(SUCCEEDED(in.LoadFile(file.c_str())));
+    std::vector<BYTE> bytes;
+    in.Swap(bytes);
+    REQUIRE(bytes.size() == sizeof(data));
+    CHECK(std::memcmp(bytes.data(), data, sizeof(data)) == 0);
+
+    KFileSerializer capped;
+    REQUIRE(SUCCEEDED(capped.LoadFile(std::filesystem::path(file).wstring().c_str(), 3)));   // at most 3 bytes
+    CHECK(capped.GetSize() == 3);
+    CHECK(FAILED(capped.LoadFile((dir / "missing.bin").string().c_str())));
+
+    CHECK(CRC_32::GetCRCFromFile(file.c_str()) == CRC_32::GetCRCFromBuffer(data, sizeof(data)));
+    CHECK(CRC_32::GetCRCFromFile((dir / "missing.bin").string().c_str()).empty());
+    std::filesystem::remove_all(dir);
 }

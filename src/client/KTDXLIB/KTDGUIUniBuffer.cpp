@@ -5,66 +5,14 @@
 
 #define DXUT_MAX_EDITBOXLENGTH 0xFFFF
 
-// Static member initialization
-HINSTANCE CKTDGUIUniBuffer::s_hDll = NULL;
-HRESULT (WINAPI *CKTDGUIUniBuffer::_ScriptApplyDigitSubstitution)( const SCRIPT_DIGITSUBSTITUTE*, SCRIPT_CONTROL*, SCRIPT_STATE* ) = Dummy_ScriptApplyDigitSubstitution;
-HRESULT (WINAPI *CKTDGUIUniBuffer::_ScriptStringAnalyse)( HDC, const void *, int, int, int, DWORD, int, SCRIPT_CONTROL*, SCRIPT_STATE*, const int*, SCRIPT_TABDEF*, const BYTE*, SCRIPT_STRING_ANALYSIS* ) = Dummy_ScriptStringAnalyse;
-HRESULT (WINAPI *CKTDGUIUniBuffer::_ScriptStringCPtoX)( SCRIPT_STRING_ANALYSIS, int, BOOL, int* ) = Dummy_ScriptStringCPtoX;
-HRESULT (WINAPI *CKTDGUIUniBuffer::_ScriptStringXtoCP)( SCRIPT_STRING_ANALYSIS, int, int*, int* ) = Dummy_ScriptStringXtoCP;
-HRESULT (WINAPI *CKTDGUIUniBuffer::_ScriptStringFree)( SCRIPT_STRING_ANALYSIS* ) = Dummy_ScriptStringFree;
-const SCRIPT_LOGATTR* (WINAPI *CKTDGUIUniBuffer::_ScriptString_pLogAttr)( SCRIPT_STRING_ANALYSIS ) = Dummy_ScriptString_pLogAttr;
-const int* (WINAPI *CKTDGUIUniBuffer::_ScriptString_pcOutChars)( SCRIPT_STRING_ANALYSIS ) = Dummy_ScriptString_pcOutChars;
-
+// The original loaded Uniscribe (usp10.dll) here; the text is measured with the engine's fonts, so there is nothing
+// to load or free.
 void CKTDGUIUniBuffer::Initialize()
 {
-	if( s_hDll ) // Only need to do once
-		return;
-
-	WCHAR wszPath[MAX_PATH+1];
-	if( !::GetSystemDirectory( wszPath, MAX_PATH+1 ) )
-		return;
-
-	// Verify whether it is safe to concatenate these strings
-	int len1 = lstrlen(wszPath);
-	int len2 = lstrlen(UNISCRIBE_DLLNAME);
-	if (len1 + len2 > MAX_PATH)
-	{
-		return;
-	}
-
-	// We have verified that the concatenated string will fit into wszPath,
-	// so it is safe to concatenate them.
-	StringCchCat( wszPath, MAX_PATH, UNISCRIBE_DLLNAME );
-
-	s_hDll = LoadLibrary( wszPath );
-	if( s_hDll )
-	{
-		FARPROC Temp;
-		GETPROCADDRESS( s_hDll, ScriptApplyDigitSubstitution, Temp );
-		GETPROCADDRESS( s_hDll, ScriptStringAnalyse, Temp );
-		GETPROCADDRESS( s_hDll, ScriptStringCPtoX, Temp );
-		GETPROCADDRESS( s_hDll, ScriptStringXtoCP, Temp );
-		GETPROCADDRESS( s_hDll, ScriptStringFree, Temp );
-		GETPROCADDRESS( s_hDll, ScriptString_pLogAttr, Temp );
-		GETPROCADDRESS( s_hDll, ScriptString_pcOutChars, Temp );
-	}
 }
 
 void CKTDGUIUniBuffer::Uninitialize()
 {
-	if( s_hDll )
-	{
-		PLACEHOLDERPROC( ScriptApplyDigitSubstitution );
-		PLACEHOLDERPROC( ScriptStringAnalyse );
-		PLACEHOLDERPROC( ScriptStringCPtoX );
-		PLACEHOLDERPROC( ScriptStringXtoCP );
-		PLACEHOLDERPROC( ScriptStringFree );
-		PLACEHOLDERPROC( ScriptString_pLogAttr );
-		PLACEHOLDERPROC( ScriptString_pcOutChars );
-
-		FreeLibrary( s_hDll );
-		s_hDll = NULL;
-	}
 }
 
 bool CKTDGUIUniBuffer::SetBufferSize( int nNewSize )
@@ -88,8 +36,8 @@ bool CKTDGUIUniBuffer::SetBufferSize( int nNewSize )
 
 	if( pTempBuffer == NULL || pTempBufferHC == NULL )
 	{
-		SAFE_DELETE( pTempBuffer );
-		SAFE_DELETE( pTempBufferHC );
+		SAFE_DELETE_ARRAY( pTempBuffer );
+		SAFE_DELETE_ARRAY( pTempBufferHC );
 
 		ErrorLog( KEM_ERROR40 );
 		return false;
@@ -159,7 +107,6 @@ CKTDGUIUniBuffer::CKTDGUIUniBuffer( int nInitialSize )
 	m_pwszBuffer = NULL;
 	m_pwszBufferHC = NULL;
 	m_bAnalyseRequired = true;
-	m_Analysis = NULL;
 	m_pFontNode = NULL;
 	m_bUseHideChar = false;
 	m_bOneCharMode = false;
@@ -187,8 +134,6 @@ CKTDGUIUniBuffer::~CKTDGUIUniBuffer()
 {
 	delete[] m_pwszBuffer;
 	delete[] m_pwszBufferHC;
-	if( m_Analysis )
-		_ScriptStringFree( &m_Analysis );
 }
 
 WCHAR& CKTDGUIUniBuffer::operator[]( int n )  // No param checking
@@ -281,8 +226,8 @@ bool CKTDGUIUniBuffer::InsertChar( int nIndex, WCHAR wChar )
 
     // Limit Height
     int nLine = GetLineCount(GetTextSize());
-    if( nLine > m_LineLimit || (wChar == L'\n' && nLine >= m_LineLimit) )
-        return false;
+	if( nLine > m_LineLimit || (wChar == L'\n' && nLine >= m_LineLimit) )
+		return false;
 
 	if( lstrlenW( m_pwszBuffer ) + 1 >= m_nBufferSize )
 	{
@@ -317,7 +262,7 @@ bool CKTDGUIUniBuffer::RemoveChar( int nIndex )
 	if( !lstrlenW( m_pwszBuffer ) || nIndex < 0 || nIndex >= lstrlenW( m_pwszBuffer ) )
 		return false;  // Invalid index
 
-	MoveMemory( m_pwszBuffer + nIndex, m_pwszBuffer + nIndex + 1, sizeof(WCHAR) * ( lstrlenW( m_pwszBuffer ) - nIndex ) );
+	memmove( m_pwszBuffer + nIndex, m_pwszBuffer + nIndex + 1, sizeof(WCHAR) * ( lstrlenW( m_pwszBuffer ) - nIndex ) );
 	m_bAnalyseRequired = true;
 	return true;
 }
@@ -355,8 +300,8 @@ bool CKTDGUIUniBuffer::InsertString( int nIndex, const WCHAR *pStr, int nCount )
 
     // Limit Height
     int nLine = GetLineCount(GetTextSize());
-    if( nLine > m_LineLimit )
-        return false;
+	if( nLine > m_LineLimit )
+		return false;
 
 	if ( m_bByteLimit == true )
 	{
@@ -379,7 +324,7 @@ bool CKTDGUIUniBuffer::InsertString( int nIndex, const WCHAR *pStr, int nCount )
 			return false;  // out of memory
 	}
 
-	MoveMemory( m_pwszBuffer + nIndex + nCount, m_pwszBuffer + nIndex, sizeof(WCHAR) * ( lstrlenW( m_pwszBuffer ) - nIndex + 1 ) );
+	memmove( m_pwszBuffer + nIndex + nCount, m_pwszBuffer + nIndex, sizeof(WCHAR) * ( lstrlenW( m_pwszBuffer ) - nIndex + 1 ) );
 	CopyMemory( m_pwszBuffer + nIndex, InsertString.c_str(), nCount * sizeof(WCHAR) );
 	m_bAnalyseRequired = true;
 
@@ -538,7 +483,6 @@ int CKTDGUIUniBuffer::GetLineWidth( int nCP )
         }
 
         SIZE size;
-		int iLen = (int)wcslen(textMsg.c_str());
 		size.cx = m_pFontNode->GetWidth( textMsg.c_str() );
 
 		return static_cast<int>( static_cast<float>( size.cx ) / g_pKTDXApp->GetResolutionScaleX() );
@@ -577,7 +521,7 @@ int CKTDGUIUniBuffer::GetLineCP(int nLine)
     return 0;
 }
 
-HRESULT CKTDGUIUniBuffer::CPtoY( int nCP, BOOL bTrail, int *pY )
+HRESULT CKTDGUIUniBuffer::CPtoY( int nCP, BOOL /*bTrail*/, int *pY )
 {
     assert( pY );
     *pY = 0;  // Default
@@ -612,7 +556,6 @@ HRESULT CKTDGUIUniBuffer::CPtoY( int nCP, BOOL bTrail, int *pY )
         }
 
         SIZE size;
-		int iLen = (int)wcslen(textMsg.c_str());
 		// GetTextExtentPoint32W 함수의 경우 마지막에 있는 LF를 빼고 세로 사이즈를 재므로 똑같이 처리해 주기 위해 잘라줍니다. by 박진웅
 		if( textMsg.back() == L'\n' )
 			textMsg = textMsg.substr( 0, textMsg.size() - 1 );
@@ -625,7 +568,7 @@ HRESULT CKTDGUIUniBuffer::CPtoY( int nCP, BOOL bTrail, int *pY )
     return hr;
 }
 
-HRESULT CKTDGUIUniBuffer::CPtoX( int nCP, BOOL bTrail, int *pX )
+HRESULT CKTDGUIUniBuffer::CPtoX( int nCP, BOOL /*bTrail*/, int *pX )
 {
 	assert( pX );
 	*pX = 0;  // Default
@@ -651,7 +594,6 @@ HRESULT CKTDGUIUniBuffer::CPtoX( int nCP, BOOL bTrail, int *pX )
 
 		SIZE size;
 		ZeroMemory( &size, sizeof( size ) );
-		int iLen = (int)wcslen(textMsg.c_str());
 		size.cx = m_pFontNode->GetWidth( textMsg.c_str() );
 
 		*pX = static_cast<int>( static_cast<float>( size.cx ) / g_pKTDXApp->GetResolutionScaleX() );
@@ -709,7 +651,6 @@ HRESULT CKTDGUIUniBuffer::XYtoCP( int nX, int nY, int *pCP, int *pnTrail )
     assert( pCP && pnTrail );
     *pCP = 0; *pnTrail = FALSE;
 
-    HRESULT hr = S_OK;
 
     if ( m_pFontNode != NULL )
     {
@@ -792,7 +733,7 @@ void CKTDGUIUniBuffer::GetPriorItemPos( int nCP, int *pPrior )
 
 	wstring wstrBuffer = m_pwszBuffer;
 
-	int nInitial = nInitial = nCP - 1;
+	int nInitial = nCP - 1;
 	for( int iCurrentCharIndex = nInitial; iCurrentCharIndex > 0; --iCurrentCharIndex )
 	{
 		if( wstrBuffer[iCurrentCharIndex] != L' ' &&
@@ -811,7 +752,7 @@ void CKTDGUIUniBuffer::GetNextItemPos( int nCP, int *pPrior )
 
 	wstring wstrBuffer = m_pwszBuffer;
 
-	int nInitial = nInitial = nCP + 1;
+	int nInitial = nCP + 1;
 	for( int iCurrentCharIndex = nInitial; iCurrentCharIndex < static_cast<int>(wstrBuffer.length()) - 1; ++iCurrentCharIndex )
 	{
 		if( wstrBuffer[iCurrentCharIndex] == L' ' &&

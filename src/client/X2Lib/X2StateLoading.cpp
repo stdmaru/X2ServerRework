@@ -203,30 +203,21 @@ HRESULT CX2StateLoading::OnFrameMove( double fTime, float fElapsedTime )
 
 
 
-			g_pKTDXApp->GetDevice()->BeginScene();
-			OnFrameRender();
-			g_pKTDXApp->GetDevice()->EndScene();
-			g_pKTDXApp->GetDevice()->Present( NULL, NULL, NULL, NULL );
+			g_pKTDXApp->RenderStageNow( this );
 
 			g_pData->LoadUserUnitMotion1();
 
 			SetLoadingString( GET_REPLACED_STRING( ( STR_ID_655, "i", 5 ) ) );
 			SetLoadingGageBar( 5 );
 
-			g_pKTDXApp->GetDevice()->BeginScene();
-			OnFrameRender();
-			g_pKTDXApp->GetDevice()->EndScene();
-			g_pKTDXApp->GetDevice()->Present( NULL, NULL, NULL, NULL );
+			g_pKTDXApp->RenderStageNow( this );
 
 			g_pData->LoadUserUnitMotion2();
 
 			SetLoadingString( GET_REPLACED_STRING( ( STR_ID_655, "i", 10 ) ) );
 			SetLoadingGageBar( 10 );
 
-			g_pKTDXApp->GetDevice()->BeginScene();
-			OnFrameRender();
-			g_pKTDXApp->GetDevice()->EndScene();
-			g_pKTDXApp->GetDevice()->Present( NULL, NULL, NULL, NULL );
+			g_pKTDXApp->RenderStageNow( this );
 
 			g_pData->LoadUserUnitMotion3();
 			g_pData->LoadUserUnitMotion4();
@@ -237,10 +228,7 @@ HRESULT CX2StateLoading::OnFrameMove( double fTime, float fElapsedTime )
 
 
 
-			g_pKTDXApp->GetDevice()->BeginScene();
-			OnFrameRender();
-			g_pKTDXApp->GetDevice()->EndScene();
-			g_pKTDXApp->GetDevice()->Present( NULL, NULL, NULL, NULL );
+			g_pKTDXApp->RenderStageNow( this );
 
 			g_pData->LoadUserUnitMotion5();
 
@@ -248,10 +236,7 @@ HRESULT CX2StateLoading::OnFrameMove( double fTime, float fElapsedTime )
 			SetLoadingString( GET_REPLACED_STRING( ( STR_ID_655, "i", 20 ) ) );
 			SetLoadingGageBar( 20 );
 
-			g_pKTDXApp->GetDevice()->BeginScene();
-			OnFrameRender();
-			g_pKTDXApp->GetDevice()->EndScene();
-			g_pKTDXApp->GetDevice()->Present( NULL, NULL, NULL, NULL );
+			g_pKTDXApp->RenderStageNow( this );
 
 			g_pData->LoadUserUnitMotion6();
 			g_pData->LoadUserUnitMotion7();
@@ -263,119 +248,80 @@ HRESULT CX2StateLoading::OnFrameMove( double fTime, float fElapsedTime )
 			SetLoadingString( GET_REPLACED_STRING( ( STR_ID_655, "i", 30 ) ) );
 			SetLoadingGageBar( 30 );
 
-			g_pKTDXApp->GetDevice()->BeginScene();
-			OnFrameRender();
-			g_pKTDXApp->GetDevice()->EndScene();
-			g_pKTDXApp->GetDevice()->Present( NULL, NULL, NULL, NULL );
+			g_pKTDXApp->RenderStageNow( this );
 
 			//g_pData->LoadAishaDevice();
 			SetLoadingString( GET_REPLACED_STRING( ( STR_ID_655, "i", 40 ) ) );
 			SetLoadingGageBar( 40 );
 
-			g_pKTDXApp->GetDevice()->BeginScene();
-			OnFrameRender();
-			g_pKTDXApp->GetDevice()->EndScene();
-			g_pKTDXApp->GetDevice()->Present( NULL, NULL, NULL, NULL );
+			g_pKTDXApp->RenderStageNow( this );
 
 			//g_pData->LoadLenaDevice();
 			SetLoadingString( GET_REPLACED_STRING( ( STR_ID_655, "i", 50 ) ) );
 			SetLoadingGageBar( 50 );
 
-			g_pKTDXApp->GetDevice()->BeginScene();
-			OnFrameRender();
-			g_pKTDXApp->GetDevice()->EndScene();
-			g_pKTDXApp->GetDevice()->Present( NULL, NULL, NULL, NULL );
+			g_pKTDXApp->RenderStageNow( this );
 
 			g_pData->LoadPicChar1();
 			SetLoadingString( GET_REPLACED_STRING( ( STR_ID_655, "i", 54 ) ) );
 			SetLoadingGageBar( 54 );
 
-			g_pKTDXApp->GetDevice()->BeginScene();
-			OnFrameRender();
-			g_pKTDXApp->GetDevice()->EndScene();
-			g_pKTDXApp->GetDevice()->Present( NULL, NULL, NULL, NULL );
+			g_pKTDXApp->RenderStageNow( this );
 
 			g_pData->LoadPicChar2();
 			SetLoadingString( GET_REPLACED_STRING( ( STR_ID_655, "i", 58 ) ) );
 			SetLoadingGageBar( 58 );
 
-			g_pKTDXApp->GetDevice()->BeginScene();
-			OnFrameRender();
-			g_pKTDXApp->GetDevice()->EndScene();
-			g_pKTDXApp->GetDevice()->Present( NULL, NULL, NULL, NULL );
+			g_pKTDXApp->RenderStageNow( this );
 
 			g_pData->LoadPicChar3();
 			SetLoadingString( GET_REPLACED_STRING( ( STR_ID_655, "i", 62 ) ) );
 			SetLoadingGageBar( 62 );
 
-			g_pKTDXApp->GetDevice()->BeginScene();
-			OnFrameRender();
-			g_pKTDXApp->GetDevice()->EndScene();
-			g_pKTDXApp->GetDevice()->Present( NULL, NULL, NULL, NULL );
+			g_pKTDXApp->RenderStageNow( this );
 
 			g_pData->LoadPicChar4();
 			SetLoadingString( GET_REPLACED_STRING( ( STR_ID_655, "i", 66 ) ) );
 			SetLoadingGageBar( 66 );
 
-			g_pKTDXApp->GetDevice()->BeginScene();
-			OnFrameRender();
-			g_pKTDXApp->GetDevice()->EndScene();
-			g_pKTDXApp->GetDevice()->Present( NULL, NULL, NULL, NULL );
+			g_pKTDXApp->RenderStageNow( this );
 
 			g_pData->LoadPicChar5();
 			SetLoadingString( GET_REPLACED_STRING( ( STR_ID_655, "i", 70 ) ) );
 			SetLoadingGageBar( 70 );
 
-			g_pKTDXApp->GetDevice()->BeginScene();
-			OnFrameRender();
-			g_pKTDXApp->GetDevice()->EndScene();
-			g_pKTDXApp->GetDevice()->Present( NULL, NULL, NULL, NULL );
+			g_pKTDXApp->RenderStageNow( this );
 
 			g_pData->LoadPicChar6();
 			SetLoadingString( GET_REPLACED_STRING( ( STR_ID_655, "i", 74 ) ) );
 			SetLoadingGageBar( 74 );
 
-			g_pKTDXApp->GetDevice()->BeginScene();
-			OnFrameRender();
-			g_pKTDXApp->GetDevice()->EndScene();
-			g_pKTDXApp->GetDevice()->Present( NULL, NULL, NULL, NULL );
+			g_pKTDXApp->RenderStageNow( this );
 
 			g_pData->LoadPicChar7();
 			SetLoadingString( GET_REPLACED_STRING( ( STR_ID_655, "i", 78 ) ) );
 			SetLoadingGageBar( 78 );
 
-			g_pKTDXApp->GetDevice()->BeginScene();
-			OnFrameRender();
-			g_pKTDXApp->GetDevice()->EndScene();
-			g_pKTDXApp->GetDevice()->Present( NULL, NULL, NULL, NULL );
+			g_pKTDXApp->RenderStageNow( this );
 
 			g_pData->LoadPicChar8();
 			SetLoadingString( GET_REPLACED_STRING( ( STR_ID_655, "i", 82 ) ) );
 			SetLoadingGageBar( 82 );
 
-			g_pKTDXApp->GetDevice()->BeginScene();
-			OnFrameRender();
-			g_pKTDXApp->GetDevice()->EndScene();
-			g_pKTDXApp->GetDevice()->Present( NULL, NULL, NULL, NULL );
+			g_pKTDXApp->RenderStageNow( this );
 
 			g_pData->LoadPicChar9();
 			SetLoadingString( GET_REPLACED_STRING( ( STR_ID_655, "i", 86 ) ) );
 			SetLoadingGageBar( 86 );
 
-			g_pKTDXApp->GetDevice()->BeginScene();
-			OnFrameRender();
-			g_pKTDXApp->GetDevice()->EndScene();
-			g_pKTDXApp->GetDevice()->Present( NULL, NULL, NULL, NULL );
+			g_pKTDXApp->RenderStageNow( this );
 
 			g_pData->LoadPicChar10();
 
 			SetLoadingString( GET_REPLACED_STRING( ( STR_ID_655, "i", 90 ) ) );
 			SetLoadingGageBar( 90 );
 
-			g_pKTDXApp->GetDevice()->BeginScene();
-			OnFrameRender();
-			g_pKTDXApp->GetDevice()->EndScene();
-			g_pKTDXApp->GetDevice()->Present( NULL, NULL, NULL, NULL );
+			g_pKTDXApp->RenderStageNow( this );
 
 			// 훈련소 데이터 로드
 			g_pData->ResetTrainingCenterTable( L"TrainingCenterTemplet.lua" );
@@ -416,20 +362,14 @@ HRESULT CX2StateLoading::OnFrameMove( double fTime, float fElapsedTime )
 			SetLoadingString( GET_REPLACED_STRING( ( STR_ID_655, "i", 92 ) ) );
 			SetLoadingGageBar( 92 );
 
-			g_pKTDXApp->GetDevice()->BeginScene();
-			OnFrameRender();
-			g_pKTDXApp->GetDevice()->EndScene();
-			g_pKTDXApp->GetDevice()->Present( NULL, NULL, NULL, NULL );
+			g_pKTDXApp->RenderStageNow( this );
 
 			//월드 데이타 로드
 			g_pData->ResetWorldManager( L"WorldData.lua" );
 			SetLoadingString( GET_REPLACED_STRING( ( STR_ID_655, "i", 93 ) ) );
 			SetLoadingGageBar( 93 );
 
-			g_pKTDXApp->GetDevice()->BeginScene();
-			OnFrameRender();
-			g_pKTDXApp->GetDevice()->EndScene();
-			g_pKTDXApp->GetDevice()->Present( NULL, NULL, NULL, NULL );
+			g_pKTDXApp->RenderStageNow( this );
 
 			//던전 데이타 로드
 			g_pData->ResetDungeonManager( L"DungeonData.lua" );
@@ -451,10 +391,7 @@ HRESULT CX2StateLoading::OnFrameMove( double fTime, float fElapsedTime )
 			//{{ 오현빈 // 2012-05-15 // 플레이 가이드 Class
 			g_pData->ResetPlayGuide();
 			//}}
-			g_pKTDXApp->GetDevice()->BeginScene();
-			OnFrameRender();
-			g_pKTDXApp->GetDevice()->EndScene();
-			g_pKTDXApp->GetDevice()->Present( NULL, NULL, NULL, NULL );
+			g_pKTDXApp->RenderStageNow( this );
 
 
 			//퀘스트 데이타 로드
@@ -467,10 +404,7 @@ HRESULT CX2StateLoading::OnFrameMove( double fTime, float fElapsedTime )
 			SetLoadingString( GET_REPLACED_STRING( ( STR_ID_655, "i", 95 ) ) );
 			SetLoadingGageBar( 95 );
 
-			g_pKTDXApp->GetDevice()->BeginScene();
-			OnFrameRender();
-			g_pKTDXApp->GetDevice()->EndScene();
-			g_pKTDXApp->GetDevice()->Present( NULL, NULL, NULL, NULL );
+			g_pKTDXApp->RenderStageNow( this );
 
 			//스킬트리 데이타 로드
 
@@ -481,20 +415,14 @@ HRESULT CX2StateLoading::OnFrameMove( double fTime, float fElapsedTime )
 			SetLoadingString( GET_REPLACED_STRING( ( STR_ID_655, "i", 96 ) ) );
 			SetLoadingGageBar( 96 );
 
-			g_pKTDXApp->GetDevice()->BeginScene();
-			OnFrameRender();
-			g_pKTDXApp->GetDevice()->EndScene();
-			g_pKTDXApp->GetDevice()->Present( NULL, NULL, NULL, NULL );
+			g_pKTDXApp->RenderStageNow( this );
 
 			//데미지 매니져
 			g_pData->ResetDamageManager();
 			SetLoadingString( GET_REPLACED_STRING( ( STR_ID_655, "i", 97 ) ) );
 			SetLoadingGageBar( 97 );
 
-			g_pKTDXApp->GetDevice()->BeginScene();
-			OnFrameRender();
-			g_pKTDXApp->GetDevice()->EndScene();
-			g_pKTDXApp->GetDevice()->Present( NULL, NULL, NULL, NULL );
+			g_pKTDXApp->RenderStageNow( this );
 
 			g_pData->ResetEventScene(L"EventSceneObject.lua", L"EventScene.lua");
 
@@ -515,10 +443,7 @@ HRESULT CX2StateLoading::OnFrameMove( double fTime, float fElapsedTime )
 			SetLoadingString( GET_REPLACED_STRING( ( STR_ID_655, "i", 100 ) ) );
 			SetLoadingGageBar( 100 );
 
-			g_pKTDXApp->GetDevice()->BeginScene();
-			OnFrameRender();
-			g_pKTDXApp->GetDevice()->EndScene();
-			g_pKTDXApp->GetDevice()->Present( NULL, NULL, NULL, NULL );
+			g_pKTDXApp->RenderStageNow( this );
 
 //{{ kimhc // 2010.3.10 //	광고노출도 초기화
 //}} kimhc // 2010.3.10 //	광고노출도 초기화

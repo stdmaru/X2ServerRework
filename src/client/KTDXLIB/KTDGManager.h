@@ -286,8 +286,6 @@ class CKTDGManager : public CKTDXStage
 		float						m_fFadeAlpha;
 		CKTDXDeviceTexture*			m_pTextureFadeInOut;
 
-		float						m_fMaxTimeFadeIn;		// fadein 되는 시간
-		float						m_fMaxTimeFadeOut;		// fadeout 되는 시간
 
 
 		float						m_fOrthoScale;

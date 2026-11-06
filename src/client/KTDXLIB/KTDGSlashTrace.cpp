@@ -18,11 +18,7 @@
 
 
 CKTDGSlashTrace::CKTDGSlashTrace( int vertexNum, bool bTexturedSlashTrace /*= false*/, const float fTextureStride /*= 0.f*/, const wstring& slashTraceTextureName /*= L""*/ )
-: m_vOldCenter( 0, 0, 0 )
-, m_fOldCircleRadius( 0.f )
-, m_TexturedSlashTraceOpaqueAlphaThreshold( 1.f )
-, m_TexturedSlashTraceInvisibleAlphaThreshold( 0.1f )
-, m_eCurveType( CT_SMOOTH_CURVE )
+: m_DisableTime( 0.f )
 , m_SplineBufUp1(0,0,0)
 , m_SplineBufUp2(0,0,0)
 , m_SplineBufUp3(0,0,0)
@@ -31,7 +27,11 @@ CKTDGSlashTrace::CKTDGSlashTrace( int vertexNum, bool bTexturedSlashTrace /*= fa
 , m_SplineBufDown2(0,0,0)
 , m_SplineBufDown3(0,0,0)
 , m_SplineBufDown4(0,0,0)
-, m_DisableTime( 0.f )
+, m_vOldCenter( 0, 0, 0 )
+, m_fOldCircleRadius( 0.f )
+, m_TexturedSlashTraceOpaqueAlphaThreshold( 1.f )
+, m_TexturedSlashTraceInvisibleAlphaThreshold( 0.1f )
+, m_eCurveType( CT_SMOOTH_CURVE )
 {
     if ( vertexNum < 2 )
         vertexNum = 2;
@@ -526,7 +526,7 @@ void    CKTDGSlashTrace::OnFrameRender_Draw()
 
 
 void CKTDGSlashTrace::AddSlashData( D3DXVECTOR3 posUp, D3DXVECTOR3 posDown, D3DXCOLOR color, bool bColorGradation /*= true*/,
-								   const float fTextureStride /*= 0.f*/, const wstring& wstrTextureName /*= L""*/ )
+								   const float /*fTextureStride*/ /*= 0.f*/, const wstring& wstrTextureName /*= L""*/ )
 {
 	KTDXPROFILE();
 
@@ -783,7 +783,7 @@ void CKTDGSlashTrace::AddSlashData( D3DXVECTOR3 posUp, D3DXVECTOR3 posDown, D3DX
 
 
 
-void CKTDGSlashTrace::PushRenderBuffer( D3DXVECTOR3 posUp, D3DXVECTOR3 posDown, D3DXCOLOR color, bool bColorGradation, bool bTexturedSlashTrace /*= false*/, float fTextureStride /*= 0.f*/ )
+void CKTDGSlashTrace::PushRenderBuffer( D3DXVECTOR3 posUp, D3DXVECTOR3 posDown, D3DXCOLOR color, bool bColorGradation, bool bTexturedSlashTrace /*= false*/, float /*fTextureStride*/ /*= 0.f*/ )
 {
 	KTDXPROFILE();
 

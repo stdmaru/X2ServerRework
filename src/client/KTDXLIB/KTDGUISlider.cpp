@@ -72,40 +72,6 @@ HRESULT CKTDGUISlider::OnFrameRender()
 	DrawEditEdge();
 #endif
 
-	int nOffsetX = 0;
-	int nOffsetY = 0;
-
-	DXUT_CONTROL_STATE iState = DXUT_STATE_NORMAL;
-
-	if( m_bShow == false )
-	{
-		iState = DXUT_STATE_HIDDEN;
-	}
-	else if( m_bEnable == false )
-	{
-		iState = DXUT_STATE_DISABLED;
-	}
-	else if( m_bPressed )
-	{
-		iState = DXUT_STATE_PRESSED;
-
-		nOffsetX = 1;
-		nOffsetY = 2;
-	}
-	else if( m_bMouseOver )
-	{
-		iState = DXUT_STATE_MOUSEOVER;
-
-		nOffsetX = -1;
-		nOffsetY = -2;
-	}
-	else if( m_bHasFocus )
-	{
-		iState = DXUT_STATE_FOCUS;
-	}
-
-
-
 
 
 	FromRectToPoint(m_rcBoundingBox, m_TempPoint);
@@ -160,7 +126,7 @@ HRESULT CKTDGUISlider::OnFrameRender()
 
 
 //--------------------------------------------------------------------------------------
-bool CKTDGUISlider::HandleKeyboard( UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CKTDGUISlider::HandleKeyboard( UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	if( m_bShow == false || m_bEnable == false )
 		return false;
@@ -170,7 +136,7 @@ bool CKTDGUISlider::HandleKeyboard( UINT uMsg, WPARAM wParam, LPARAM lParam )
 
 
 //--------------------------------------------------------------------------------------
-bool CKTDGUISlider::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lParam )
+bool CKTDGUISlider::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM /*lParam*/ )
 {
 	if( m_bShow == false || m_bEnable == false )
 		return false;
@@ -352,7 +318,7 @@ void CKTDGUISlider::SetButtonTex_LUA( const char* pFileName, const char* key )
 
 
 //--------------------------------------------------------------------------------------
-void CKTDGUISlider::SetValueInternal( int nValue, bool bFromInput )
+void CKTDGUISlider::SetValueInternal( int nValue, bool /*bFromInput*/ )
 {
 	// Clamp to range
 	nValue = __max( m_nMin, nValue );

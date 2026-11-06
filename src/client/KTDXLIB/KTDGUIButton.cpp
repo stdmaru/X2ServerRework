@@ -254,6 +254,8 @@ HRESULT CKTDGUIButton::OnFrameMove( double fTime, float fElapsedTime )
 					ChangeState( BCS_NORMAL );
 			}
 			break;
+	default:
+		break;
 	}
 
 	return S_OK;
@@ -387,7 +389,7 @@ void CKTDGUIButton::SetEnable( bool bEnable )
 //--------------------------------------------------------------------------------------
 
 
-bool CKTDGUIButton::HandleKeyboard( UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CKTDGUIButton::HandleKeyboard( UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	if( m_bEnable == false )
 		return false;
@@ -397,7 +399,7 @@ bool CKTDGUIButton::HandleKeyboard( UINT uMsg, WPARAM wParam, LPARAM lParam )
 }
 
 
-bool CKTDGUIButton::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lParam )
+bool CKTDGUIButton::HandleMouse( UINT uMsg, POINT pt, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	if( m_bEnable == false || m_bShow == false )
 		return false;
@@ -593,6 +595,8 @@ void CKTDGUIButton::ChangeState( BUTTON_CONTROL_STATE state, bool bForce )
 				}
 			}
 			break;
+	default:
+		break;
 	}
 
 #ifndef DLL_BUILD

@@ -475,6 +475,7 @@ class CKTDGLineMap : public CKTDGObject
 
 		public:
 			LineAnimData( LINE_ANIM_TYPE eAnimType );
+			virtual ~LineAnimData() = default;
 			virtual void OnFrameMove( double fTime, float fElapsedTime );
 		};
 
@@ -1538,7 +1539,6 @@ class CKTDGLineMap : public CKTDGObject
 		//}} kimhc // 2010.7.22 // 몬스터가 생성한 라인맵
 		CKTDGLineMap::LINEMAP_TRIGGER				m_LineMapTrigger;
 
-		LPD3DXLINE		m_pLine;
 
 
 };

@@ -1,6 +1,6 @@
 [Home](../README.md) › [Porting](README.md) › Client: input
 
-# Client: input (`KTDXLIB/KTDI*`, target `x2::client_ktdi`)
+# Client: input (`KTDXLIB/KTDI*`, in `x2::client_ktdxlib`)
 
 `KTDXLIB`'s input layer, `CKTDIManager` (a stage that reads the devices every frame and turns them into game actions)
 and `CKTDIDevice` (keyboard, mouse or joystick), read DirectInput 8 in the original. In the port they keep their API and
@@ -87,10 +87,8 @@ Ported on 2026-11-05 (`client/input`).
 
 ## Build and tests
 
-`x2::client_ktdi` (`src/client/CMakeLists.txt`) builds `KTDIDevice.cpp` and `KTDIManager.cpp` against
-`x2::client_dxut`, without `stdafx.h`/`KTDX.h`: `KTDXStage.h` and `KTDXDeviceHolder.h` now include what they use. The files
-join the `KTDXLIB` target when the engine builds; until then `CKTDXStage`'s out-of-line members come from
-`tests/ktdxstage_stub.cpp`.
+`KTDIDevice.cpp` and `KTDIManager.cpp` first built alone as `x2::client_ktdi` (2026-11-05), with `CKTDXStage` from a test
+stub; since 2026-11-06 they are part of `x2::client_ktdxlib` ([KTDXLIB › Whole engine](client-ktdxlib.md#whole-engine-2026-11-06-clientktdxlib-build)).
 
 Tests (`x2_client_tests`, ctest `client`), headless, joysticks through SDL virtual devices:
 

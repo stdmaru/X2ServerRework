@@ -87,7 +87,7 @@ namespace   KStringUtil
 }//namespace   KStringUtil
 
 
-struct  KCaseInsensitiveLessA : public std::binary_function<std::string,std::string,bool>
+struct  KCaseInsensitiveLessA
 {
     result_type operator () ( const first_argument_type& strIn1_, const second_argument_type& strIn2_ ) const
     {
@@ -96,7 +96,7 @@ struct  KCaseInsensitiveLessA : public std::binary_function<std::string,std::str
 };//struct  KCaseInsensitiveLessA
 
 
-struct  KCaseInsensitiveLessW : public std::binary_function<std::wstring,std::wstring,bool>
+struct  KCaseInsensitiveLessW
 {
     result_type operator () ( const first_argument_type& wstrIn1_, const second_argument_type& wstrIn2_ ) const
     {
@@ -105,7 +105,7 @@ struct  KCaseInsensitiveLessW : public std::binary_function<std::wstring,std::ws
 };//struct  KCaseInsensitiveLessA
 
 
-struct  KCaseInsensitiveEqualA : public std::binary_function<std::string,std::string,bool>
+struct  KCaseInsensitiveEqualA
 {
     result_type operator () ( const first_argument_type& strIn1_, const second_argument_type& strIn2_ ) const
     {
@@ -114,7 +114,7 @@ struct  KCaseInsensitiveEqualA : public std::binary_function<std::string,std::st
 };//struct  KCaseInsensitiveLessA
 
 
-struct  KCaseInsensitiveEqualW : public std::binary_function<std::wstring,std::wstring,bool>
+struct  KCaseInsensitiveEqualW
 {
     result_type operator () ( const first_argument_type& wstrIn1_, const second_argument_type& wstrIn2_ ) const
     {

@@ -47,12 +47,12 @@ public:
     }//IsRenderStateChanged()
     bool    IsTextureStageStateChanged( DWORD Stage, D3DTEXTURESTAGESTATETYPE Type ) const
     {
-        ASSERT( Stage >= 0 && Stage < TEXTURE_STAGE_NUM && Type >= D3DTEXTURESTAGESTATETYPE( 0 ) && Type < D3DTSS_MAX );
+        ASSERT( Stage < TEXTURE_STAGE_NUM && Type >= D3DTEXTURESTAGESTATETYPE( 0 ) && Type < D3DTSS_MAX );
         return m_bitsetTextureStageState.test( Stage * D3DTSS_MAX + Type );
     }//IsTextureStageStateChanged()
     bool    IsSamplerStateChanged( DWORD Sampler, D3DSAMPLERSTATETYPE Type ) const
     {
-        ASSERT( Sampler >= 0 && Sampler < SAMPLER_STAGE_NUM && Type >= D3DSAMPLERSTATETYPE( 0 ) && Type < D3DSSS_MAX );
+        ASSERT( Sampler < SAMPLER_STAGE_NUM && Type >= D3DSAMPLERSTATETYPE( 0 ) && Type < D3DSSS_MAX );
         return m_bitsetSamplerState.test( Sampler * D3DSSS_MAX + Type );
     }//IsSamplerStateChanged()
 
@@ -111,7 +111,6 @@ private:
 
     int                                         m_iStateManagerStackTop;
 
-    ULONG   m_nRefCount;
 
 public:
 	__forceinline void PostCommitChanges();

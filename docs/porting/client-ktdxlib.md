@@ -35,7 +35,7 @@ CrashRpt, KncFirewall or the SMTP mail; `KTDXApp.cpp` lost the firewall exceptio
 
 ## Input layer (2026-11-05, `client/input`)
 
-`KTDIManager.*` and `KTDIDevice.*` read SDL3 state instead of DirectInput and build as `x2::client_ktdi`
+`KTDIManager.*` and `KTDIDevice.*` read SDL3 state instead of DirectInput and first built as `x2::client_ktdi`
 ([Client: input](client-input.md)). `GAME_ACTION`/`JOYSTICK_BUTTON` moved to the new `KTDIGameAction.h`; the empty
 `KTDIDeviceWinKey.*` were deleted (252 files left). `KTDX.h` includes `DXUT/DirectInputKeys.h` instead of `<dinput.h>`,
 and `KTDXStage.h`/`KTDXDeviceHolder.h` include what they use (`std::wstring`, `std::list`, `x2/platform/win32.h`).
@@ -54,7 +54,7 @@ The interface the engine calls stays: `LoadDataFile`, `IsValidFile`, `LoadTwoDat
 `GetPullPath`, `MASSFILE_MEMBERFILEINFO_POINTER` (tested as a pointer: `Info == NULL`, `!Info`, `Info->size`),
 `KGCMassFileBufferPtr`, the mapping and server-time functions bound to Lua. Gone: `CMassFile` as an archive (only the scope
 of the info types is left), libxml2, Win32 handles, `RegisterCurrentThread` and the two-thread limit, `SaveMassFile`,
-`ModifyMassFile` (an unused V.0.1 writer), `KFileVerifier` (never imported: nothing created it), the undefined
+`ModifyMassFile` (an unused V.0.1 writer), `KFileVerifier` (nothing created it; deleted on 2026-11-06), the undefined
 `SetWebAddress_LUA`/`GetUsableMappingIndex`, `CHECK_FILE_DUPLICATION`.
 
 - **Archives**: `AddMassFiles(folder, names)` mounts `CX2Main`'s fixed list (`GetClientArchiveNames()`: `data001`–`150`,
@@ -145,10 +145,9 @@ declared in `D3D9/D3DXTypes.h` (interfaces as plain classes with no COM counts, 
 Boost is replaced (`x2::intrusive_ptr`, `KCircularBuffer.h`, `KLexicalCast.h`); the Code Virtualizer markers are empty;
 FreeType comes from upstream. `KTDGDeviceFont.cpp` (`ID3DXFont`) is gone; the fonts are `CKTDGFreeTypeFont`'s.
 
-`x2::client_ktdxlib` builds the first engine files: `KTDGStateManager`, `KTDGDynamicVBManager`, `KTDXDevice`,
-`KTDXDeviceBaseTexture`, `KTDXDeviceTexture`, `KTDXDeviceRenderTargetTexture`, `KTDXDeviceSound`, `KTDSManager`,
-`KTDSMP3Play` and `KSuperAssert`. `KTDXApp.cpp` comes with `KTDGManager`; until then only `KTDXApp.h` is used, and the tests
-supply `CKTDXApp`'s constructor ([stub](../../src/client/tests/ktdxapp_stub.cpp)).
+`x2::client_ktdxlib` first built the engine files below (`KTDGStateManager`, `KTDGDynamicVBManager`, `KTDXDevice`,
+the texture, render target and sound devices, `KTDSManager`, `KTDSMP3Play`, `KSuperAssert`); since
+[the whole engine](#whole-engine-2026-11-06-clientktdxlib-build) it builds every file.
 
 - **State manager:** caches render, texture stage and sampler states with its push/pop stack, on the device (the Xbox and
   Direct3D 8 branches are gone). Its render-state cache starts from the device's defaults; the texture stage and sampler
@@ -196,8 +195,59 @@ On the null backend ([source](../../src/client/tests/test_ktdxlib.cpp)): the sta
 viewport of a bound target; dynamic vertex data drawn in parts (lists, strips sharing their last vertices, multipass,
 split data); render target textures created, bound and released while bound; the silent sound backend.
 
+## Whole engine (2026-11-06, `client/ktdxlib-build`)
+
+All 100 `.cpp` files compile and link: `x2::client_ktdxlib` holds 97 of them (the input layer joined it; its `CKTDXStage`
+base lives here), `x2::client_massfile` and `x2::client_browser` the other three. GCC, Clang and clang-cl build them
+without warnings. The tests link the real `CKTDXApp`, `CKTDGManager`, `CKTDXDeviceManager` and `CKTDXStage`; X2.cpp's
+two globals (`g_pd3dDevice`, `g_pEffectStateManager`) are defined for them in `tests/x2_globals.cpp` until X2 builds.
+
+- **Device callers** use the device's own API (T38): `HRESULT` results became `bool`/`void`, textures and vertex buffers
+  are deleted (`SAFE_DELETE`) rather than released, render targets are textures (`CKTDGGrayScale` keeps the previous
+  target as a texture). `CKTDGEffectStateManager` returns `D3D_OK` for what it forwards, ignores the shader constants
+  the effects will not need until T37, and is no longer reference counted (`Release` deletes it).
+- **D3DX interfaces** (`ID3DXMesh`, skin info, animation sets, `ID3DXEffect`) are declared and their creators fail
+  ([D3D9 device](client-d3d9.md#files)), so the `.x` meshes and effects load nothing until their steps; `CComQIPtr`
+  became `dynamic_cast` into `CComPtr`.
+- **Threads**: `KJohnThread` is on `std::thread` (suspended start through a condition variable, `ResumeThread`,
+  `HasThread`, `IsThreadFinished`); the device manager's loader uses it with an atomic sync flag.
+- **Files**: `KFileSerializer` and `CRC_32::GetCRCFromFile` read and write with file streams; narrow names are UTF-8.
+  Device directories are listed with `std::filesystem`.
+- **UI and IME**: the Win32 window/keyboard functions and the clipboard come from
+  [DXUT's `WindowFunctions`](client-dxut.md#files); the IME edit box's changes are on [Client: IME](client-ime.md#behavior-changes);
+  Uniscribe (loaded but never used for layout) is gone from `CKTDGUIUniBuffer`.
+- **UDP** (`CKTDNUDP`): non-blocking and polled every frame (`x2::platform::SocketReadable`) instead of a
+  `WSAEventSelect` event; scattered sends through `x2::platform::SendToScattered`.
+- **Start-up** (`CKTDXApp`): the unicows/usp10 preloader, COM initialization, the release build's "minimize every other
+  window", the unused `FindProcess` (a process scan) and the Themida markers are gone.
+- **Loading screens**: X2Lib's 32 `BeginScene`/`OnFrameRender`/`EndScene`/`Present` sequences call
+  `CKTDXApp::RenderStageNow(stage)` (T38); the state-change one in `CX2Main` lost its lost-device handling (the device is
+  never lost).
+- **Warnings**: mostly mechanical ([Mechanical porting](../tools/mechanical-porting.md)); the release `ASSERT` keeps the
+  variables it checks in use (`sizeof`), as LuaCommon's does. Recursive `__forceinline` frame walks are plain `inline`.
+
+### Behavior changes
+
+| Where | Original | Port | Why |
+|---|---|---|---|
+| `KJohnThread::EndThread(timeout)` | Waited up to the timeout, then closed the handle of a thread still running | Always waits for the thread to end | A `std::thread` cannot be dropped while it runs |
+| `CKTDNUDP` local addresses | `h_addr_list[0]` read for every entry of the host's address list | Each entry read | Evident bug |
+| `CKTDNUDP` address lookup | `gethostbyname` (crashed if the host name did not resolve), `inet_addr`/`inet_ntoa` | `getaddrinfo` (IPv4, first 10, empty list if unresolved), `x2::platform::IpFromString`/`IpToString` (dotted quads only) | Deprecated in Winsock |
+| `CKTDNUDP` socket | `UDP_CHECKSUM_COVERAGE` set (Winsock UDP-Lite option) | Not set | UDP over IPv4 has checksums anyway |
+| `_IsEqualSign` (`KTDXAnimationController`, key compression) | Or-ed `uiFlags1` with the uninitialized result itself | `uiFlags1 | uiFlags2` | Evident bug |
+| Ctrl+\ in `CKTDGUIEditBox`/`CKTDGUIIMEEditBox` | The comment `// Ctrl \` spliced the next `break;` into it, so Ctrl+[, ], \ fell into Enter | Ignored, as the other control characters | Evident bug |
+| `CKTDGPicChar` textures | Indexed by a signed `char` (below the array for bytes 0x80 and up) | Bounded by the byte value | Evident bug |
+| `CKTDGUIDialog` script-name tool (dev) | Opened `MouseOverScript.txt` in notepad++ | Only writes the file | Windows-only editor |
+| `CKTDXApp` start-up (release) | Minimized every other window unless `Inactivation_Mimize.txt` existed | Nothing minimized | Windows shell only; hostile to the desktop |
+| `CKTDGUIIMEEditBox::Initialize` | Loaded `version.dll` and the IME's DLL | Nothing loaded | [Client: IME](client-ime.md#behavior-changes) |
+| D3DX meshes, skins, animation controllers, effects | Loaded by D3DX | Fail (`E_NOTIMPL`) | Until the `.x` and effect steps |
+
+### Tests (`x2_client_tests -tc="ktdxlib*,d3dx*"`)
+
+The [engine tests](#tests-x2_client_tests--tcktdxlib) now run on the real `CKTDXApp`; added: `RenderStageNow` (one frame
+drawn and submitted, a frame with no stage), `KFileSerializer` save/load/cap/missing file and `CRC_32::GetCRCFromFile`.
+
 ## Status
 
-The input files, the mass file manager, `KBrowserWrapper`, the D3D9 device and the engine files above compile
-([roadmap](../project/roadmap.md#phase-4--client-graphics)). The rest of `KTDXLIB` joins `x2::client_ktdxlib` as it moves
-onto the device.
+All of `KTDXLIB` compiles and links ([roadmap](../project/roadmap.md#phase-4--client-graphics)); the `.x` meshes, effects
+and image loaders are the next steps.

@@ -99,7 +99,7 @@ void CKTDGPicChar::OnFrameMove( float fElapsedTime )
 	for( int i = 0; i < (int)m_StrDataList.size(); i++ )
 	{
 		StrData* pStrData = &m_StrDataList[i];
-		if( pStrData->m_wStr.size() == pStrData->m_NowIndex )
+		if( pStrData->m_wStr.size() == (size_t)pStrData->m_NowIndex )
 		{
 			m_StrDataList.erase( m_StrDataList.begin() + i );
 			i--;
@@ -135,7 +135,7 @@ void CKTDGPicChar::DrawText( const WCHAR* pStr, D3DXVECTOR3 pos, D3DXVECTOR3 dir
 			for( int i = 0; i < (int)str.size(); i++ )
 			{
 				const char ch = str.at(i);
-				if( ch < MAX_PIC_CHAR_GROUP_NUM )
+				if( (unsigned char)ch < MAX_PIC_CHAR_GROUP_NUM )
 				{
                     float fWidth = m_fWidth;
 					CKTDGParticleSystem::CParticle* pParticle = pSeq->CreateNewParticle( pos );
@@ -173,7 +173,7 @@ void CKTDGPicChar::DrawText( const WCHAR* pStr, D3DXVECTOR3 pos, D3DXVECTOR3 dir
 	else
 	{
 		const char ch = str.at(0);
-		if( ch < MAX_PIC_CHAR_GROUP_NUM )
+		if( (unsigned char)ch < MAX_PIC_CHAR_GROUP_NUM )
 		{
 			CKTDGParticleSystem::CParticleEventSequence* pSeq = m_pParticleSystem->GetInstanceSequence( m_hSeqPicChar );
 			if( pSeq != NULL )
@@ -219,7 +219,7 @@ void CKTDGPicChar::DrawText( const WCHAR* pStr, D3DXVECTOR3 pos, D3DXVECTOR3 dir
 	}
 }
 
-void CKTDGPicChar::DrawText( const WCHAR* pStr, int index, D3DXVECTOR3 pos, D3DXVECTOR3 dirVec, ALINE_TYPE alineType )
+void CKTDGPicChar::DrawText( const WCHAR* pStr, int index, D3DXVECTOR3 pos, D3DXVECTOR3 dirVec, ALINE_TYPE /*alineType*/ )
 {
 
 	if( NULL == m_pParticleSystem )
@@ -230,7 +230,7 @@ void CKTDGPicChar::DrawText( const WCHAR* pStr, int index, D3DXVECTOR3 pos, D3DX
 
 
 	const char ch = str.at(index);
-	if( ch < MAX_PIC_CHAR_GROUP_NUM )
+	if( (unsigned char)ch < MAX_PIC_CHAR_GROUP_NUM )
 	{
 		CKTDGParticleSystem::CParticleEventSequence* pSeq = m_pParticleSystem->GetInstanceSequence( m_hSeqPicChar );
 		if( pSeq != NULL )
@@ -327,7 +327,10 @@ void CKTDGPicChar::LoadPicCharGroup( const WCHAR* pPicCharGroup, wstring charLis
 					m_hSeqPicChar != INVALID_PARTICLE_SEQUENCE_HANDLE )
 					pSeq->m_TextureMap.insert( std::make_pair(index,pTexture) );
 
-				m_PicCharTexList[index] = pTexture;
+				// Port: bounded by the byte value (the original indexed with the signed char, below the array for bytes of
+				// 0x80 and up).
+				if( (unsigned char)index < MAX_PIC_CHAR_GROUP_NUM )
+					m_PicCharTexList[(unsigned char)index] = pTexture;
 			}
 		}
 

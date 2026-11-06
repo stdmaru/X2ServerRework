@@ -153,7 +153,7 @@ HRESULT CKTDGUICheckBox::OnFrameRender()
 }
 
 //--------------------------------------------------------------------------------------
-bool CKTDGUICheckBox::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lParam )
+bool CKTDGUICheckBox::HandleMouse( UINT uMsg, POINT pt, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	if( m_bEnable == false || m_bShow == false )
 		return false;

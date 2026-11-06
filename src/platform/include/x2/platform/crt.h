@@ -63,6 +63,7 @@ int vswprintf_ms(wchar_t* dst, size_t size, const wchar_t* fmt, va_list args); /
 int swprintf_s(wchar_t* dst, size_t size, const wchar_t* fmt, ...);
 int _snwprintf_s(wchar_t* dst, size_t size, size_t count, const wchar_t* fmt, ...);
 int sprintf_s(char* dst, size_t size, const char* fmt, ...);
+int _snprintf_s(char* dst, size_t size, size_t count, const char* fmt, ...);  // count: _TRUNCATE or a limit
 template <size_t N, typename... A> int swprintf_s(wchar_t (&dst)[N], const wchar_t* fmt, A... a) { return swprintf_s(dst, N, fmt, a...); }
 template <size_t N, typename... A> int sprintf_s(char (&dst)[N], const char* fmt, A... a) { return sprintf_s(dst, N, fmt, a...); }
 template <size_t N, typename... A> int _snwprintf_s(wchar_t (&dst)[N], size_t count, const wchar_t* fmt, A... a) { return _snwprintf_s(dst, N, count, fmt, a...); }
@@ -90,6 +91,7 @@ int _wmkdir(const wchar_t* path);
 // Code pages: narrow strings are UTF-8 on every platform, so CP_ACP behaves as CP_UTF8 (see KncUtil.h).
 #define CP_ACP  0
 #define CP_UTF8 65001
+#define MB_PRECOMPOSED 0x00000001   // accepted and ignored
 // Win32 semantics: cchSrc/cbSrc == -1 means NUL-terminated (the NUL is converted and counted);
 // a zero destination size returns the required size.
 int WideCharToMultiByte(UINT codePage, DWORD flags, const wchar_t* src, int cchSrc, char* dst, int cbDst,

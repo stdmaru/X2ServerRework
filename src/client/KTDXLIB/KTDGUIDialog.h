@@ -36,6 +36,7 @@ class CKTDGUIDialog
 				bIsAutoDelete = false;
 			}
 
+			DialogMoveItem( const DialogMoveItem& ) = default;
 			DialogMoveItem& operator=(const DialogMoveItem& rhs)
 			{
 				if ( this == &rhs )

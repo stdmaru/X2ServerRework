@@ -15,6 +15,7 @@
 
 #include "Device.h"   // KTDXLIB/D3D9: IDirect3DDevice9 is x2::d3d9::Device
 #include "MessageBox.h"   // Win32 MessageBox outside Windows
+#include "WindowFunctions.h"   // the other Win32 window functions the UI calls, outside Windows
 #include "GrowableArray.h"   // DXUT's CGrowableArray
 
 // Callbacks (DXUT.h)
@@ -69,6 +70,11 @@ class Device;
 x2::render::Device* DXUTGetRenderDevice();
 // KTDXLIB's D3D9 device (null without a window).
 IDirect3DDevice9* DXUTGetD3DDevice();
+// The back buffer: the window's client area in pixels, A8R8G8B8 (null without a window). Updated on each call.
+const D3DSURFACE_DESC* DXUTGetBackBufferSurfaceDesc();
+// KTDXLIB's device is never lost or reset (T38): its objects exist while it does.
+bool DXUTGetDeviceObjectsReset();
+inline bool DXUTGetDeviceLost() { return false; }
 namespace x2::dxut {
 class InputState;
 }
@@ -106,6 +112,21 @@ CDXUTTimer* DXUTGetGlobalTimer();
 #define DXUTTRACE(...) ((void)0)
 #endif
 void DXUTOutputDebugString(const WCHAR* strMsg, ...);
+
+// dxerr.h's trace macros: print the failure in debug builds and give back the HRESULT.
+#define DXTRACE_ERR(str, hr)        (DXUTTRACE(L"%s failed (0x%08x)\n", (str), static_cast<unsigned>(hr)), (hr))
+#define DXTRACE_ERR_MSGBOX(str, hr) DXTRACE_ERR(str, hr)
+
+// DXUTgui.h's control states, which KTDXLIB's widgets (DXUT's controls with KOG's changes) still use.
+enum DXUT_CONTROL_STATE {
+    DXUT_STATE_NORMAL = 0,
+    DXUT_STATE_DISABLED,
+    DXUT_STATE_HIDDEN,
+    DXUT_STATE_FOCUS,
+    DXUT_STATE_MOUSEOVER,
+    DXUT_STATE_PRESSED,
+};
+#define MAX_CONTROL_STATES 6
 
 // PIX events (DXUTmisc.h): nothing to mark without D3D9.
 #define DXUT_BeginPerfEvent(color, pstrMessage) ((void)0)

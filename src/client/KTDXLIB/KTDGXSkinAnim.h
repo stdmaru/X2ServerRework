@@ -97,7 +97,7 @@ class CKTDGXSkinAnim : public CKTDGObject
 		void AddAnimXSkinMesh( CKTDXDeviceXSkinMesh* pModelXSkinMesh );	// 툴잡없을 위한 애니메이션 메쉬 삽입함수
 		void RemoveModelXSkinMesh( CKTDXDeviceXSkinMesh* pModelXSkinMesh );
 		bool IsInModelXSkinMesh( CKTDXDeviceXSkinMesh* pModelXSkinMesh );
-		__forceinline void CopyCloneFrameStructure( CKTDXDeviceXSkinMesh::MultiAnimFrame* pSrcCloneFrame )
+		inline void CopyCloneFrameStructure( CKTDXDeviceXSkinMesh::MultiAnimFrame* pSrcCloneFrame )
 		{
 			CopyFrame( m_pCloneFrameRoot, pSrcCloneFrame );
 		}
@@ -382,7 +382,8 @@ class CKTDGXSkinAnim : public CKTDGObject
 			KTDXPROFILE_END();
 		}
 
-		__forceinline void UpdateAnimationFrame( CKTDXDeviceXSkinMesh::MultiAnimFrame* pFrame, D3DXMATRIX* pmxBase, CKTDXDeviceXSkinMesh::MultiAnimFrame* pCloneFrame )
+		// Port: the recursive frame walks are inline, not __forceinline (GCC refuses always_inline on recursion).
+		inline void UpdateAnimationFrame( CKTDXDeviceXSkinMesh::MultiAnimFrame* pFrame, D3DXMATRIX* pmxBase, CKTDXDeviceXSkinMesh::MultiAnimFrame* pCloneFrame )
 		{
 			KTDXPROFILE();
 
@@ -463,7 +464,7 @@ class CKTDGXSkinAnim : public CKTDGObject
 			}
 		}
 
-		__forceinline void UpdateAnimationFrame( CKTDXDeviceXSkinMesh::MultiAnimFrame* pFrame, D3DXMATRIX* pmxBase, CKTDXDeviceXSkinMesh::MultiAnimFrame* pCloneFrame,  bool bGravity)
+		inline void UpdateAnimationFrame( CKTDXDeviceXSkinMesh::MultiAnimFrame* pFrame, D3DXMATRIX* pmxBase, CKTDXDeviceXSkinMesh::MultiAnimFrame* pCloneFrame,  bool bGravity)
 		{
 			KTDXPROFILE();
 
@@ -585,7 +586,7 @@ class CKTDGXSkinAnim : public CKTDGObject
 			}
 		}
 
-		__forceinline void CopyFrame( CKTDXDeviceXSkinMesh::MultiAnimFrame* pDestFrame, CKTDXDeviceXSkinMesh::MultiAnimFrame* pSrcFrame )
+		inline void CopyFrame( CKTDXDeviceXSkinMesh::MultiAnimFrame* pDestFrame, CKTDXDeviceXSkinMesh::MultiAnimFrame* pSrcFrame )
 		{
 			KTDXPROFILE();
             if ( pDestFrame == NULL || pSrcFrame == NULL )
@@ -601,7 +602,7 @@ class CKTDGXSkinAnim : public CKTDGObject
 			if( pSrcFrame->pFrameFirstChild )
 				CopyFrame( (CKTDXDeviceXSkinMesh::MultiAnimFrame *)pDestFrame->pFrameFirstChild, (CKTDXDeviceXSkinMesh::MultiAnimFrame *) pSrcFrame->pFrameFirstChild );
 		}
-		__forceinline void DrawFrameStructure( CKTDXDeviceXSkinMesh::MultiAnimFrame* pModelFrame, int modelIndex )
+		inline void DrawFrameStructure( CKTDXDeviceXSkinMesh::MultiAnimFrame* pModelFrame, int modelIndex )
 		{
 			KTDXPROFILE();
 			if( pModelFrame->pMeshContainer )

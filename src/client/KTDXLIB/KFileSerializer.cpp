@@ -1,5 +1,11 @@
 #include <stdafx.h>
 
+#include "x2/platform/unicode.h"
+
+#include <filesystem>
+#include <fstream>
+#include <system_error>
+
 static const char*	s_pcNullString = "";
 static const wchar_t*	s_pwcNullString = L"";
 
@@ -16,140 +22,91 @@ void    KFileSerializer::Swap( std::vector<BYTE>& vecbInOut_ )
 	m_mapWideStringOffset.clear();
 }//TiXmlFileSerializer::Swap()
 
+// Port: the files are read and written with the standard streams (the original used CreateFile). Narrow names are
+// UTF-8.
+static std::filesystem::path KFileSerializerPath( const char* pszInFilename_ )
+{
+    return std::filesystem::path( x2::platform::Utf8ToWide( pszInFilename_ ) );
+}
+
 HRESULT KFileSerializer::LoadFile( const char* pszInFilename_, DWORD dwInSize_ )
 {
-    ASSERT( m_iLockCounter <= 0 );
-    if ( m_iLockCounter > 0 )
+    ASSERT( pszInFilename_ != NULL && pszInFilename_[0] != 0 );
+    if ( !( pszInFilename_ != NULL && pszInFilename_[0] != 0 ) )
         return E_FAIL;
-
-    Clear();
-
-    ASSERT( pszInFilename_ != NULL && pszInFilename_[0] != NULL );
-    if ( !( pszInFilename_ != NULL && pszInFilename_[0] != NULL ) )
-        return E_FAIL;
-
-	HANDLE	hFile = ::CreateFileA( pszInFilename_, GENERIC_READ, FILE_SHARE_READ
-		, NULL, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, NULL );
-    if ( hFile == INVALID_HANDLE_VALUE )
-        return E_FAIL;
-    DWORD dwSize = ::GetFileSize( hFile, NULL );
-    if ( dwSize == 0 || dwSize == INVALID_FILE_SIZE )
-    {
-        ::CloseHandle( hFile );
-        return E_FAIL;
-    }//if
-    if ( dwInSize_ > 0 && dwSize > dwInSize_ )
-        dwSize = dwInSize_;
-
-    AppendSpace( dwSize );
-    ::SetFilePointer( hFile, 0, NULL, FILE_BEGIN );
-    DWORD   dwReadBytes;
-    BOOL bRead = ::ReadFile( hFile, &m_vecbBuffer[0], dwSize, &dwReadBytes, NULL );
-    ASSERT( bRead && dwReadBytes == dwSize );
-    if ( !bRead || dwReadBytes != dwSize )
-    {
-        ::CloseHandle( hFile );
-        return E_FAIL;
-    }//if
-    ::CloseHandle( hFile );
-    return S_OK;
+    return _LoadFile( KFileSerializerPath( pszInFilename_ ), dwInSize_ );
 }//KFileSerializer::LoadFile()
 
 HRESULT         KFileSerializer::LoadFile( const wchar_t* pszInFilename_, DWORD dwInSize_ )
 {
+    ASSERT( pszInFilename_ != NULL && pszInFilename_[0] != 0 );
+    if ( !( pszInFilename_ != NULL && pszInFilename_[0] != 0 ) )
+        return E_FAIL;
+    return _LoadFile( std::filesystem::path( pszInFilename_ ), dwInSize_ );
+}
+
+HRESULT         KFileSerializer::_LoadFile( const std::filesystem::path& path_, DWORD dwInSize_ )
+{
     ASSERT( m_iLockCounter <= 0 );
     if ( m_iLockCounter > 0 )
         return E_FAIL;
 
     Clear();
 
-    ASSERT( pszInFilename_ != NULL && pszInFilename_[0] != NULL );
-    if ( !( pszInFilename_ != NULL && pszInFilename_[0] != NULL ) )
+    std::error_code error;
+    const std::uintmax_t uSize = std::filesystem::file_size( path_, error );
+    if ( error || uSize == 0 || uSize >= 0xFFFFFFFFu )
         return E_FAIL;
-
-	HANDLE	hFile = ::CreateFileW( pszInFilename_, GENERIC_READ, FILE_SHARE_READ
-		, NULL, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, NULL );
-    if ( hFile == INVALID_HANDLE_VALUE )
-        return E_FAIL;
-    DWORD dwSize = ::GetFileSize( hFile, NULL );
-    if ( dwSize == 0 || dwSize == INVALID_FILE_SIZE )
-    {
-        ::CloseHandle( hFile );
-        return E_FAIL;
-    }//if
+    DWORD dwSize = static_cast<DWORD>( uSize );
     if ( dwInSize_ > 0 && dwSize > dwInSize_ )
         dwSize = dwInSize_;
 
+    std::ifstream file( path_, std::ios::binary );
+    if ( !file )
+        return E_FAIL;
     AppendSpace( dwSize );
-    ::SetFilePointer( hFile, 0, NULL, FILE_BEGIN );
-    DWORD   dwReadBytes;
-    BOOL bRead = ::ReadFile( hFile, &m_vecbBuffer[0], dwSize, &dwReadBytes, NULL );
-    ASSERT( bRead && dwReadBytes == dwSize );
-    if ( !bRead || dwReadBytes != dwSize )
+    const bool bRead = static_cast<bool>( file.read( reinterpret_cast<char*>( &m_vecbBuffer[0] ), dwSize ) );
+    ASSERT( bRead );
+    if ( !bRead )
     {
-        ::CloseHandle( hFile );
+        Clear();
         return E_FAIL;
     }//if
-    ::CloseHandle( hFile );
     return S_OK;
-}
+}//KFileSerializer::_LoadFile()
 
 
 HRESULT         KFileSerializer::SaveFile( const wchar_t* pszInFilename_ ) const
 {
-    ASSERT( pszInFilename_ != NULL && pszInFilename_[0] != NULL );
-    if ( !( pszInFilename_ != NULL && pszInFilename_[0] != NULL ) )
+    ASSERT( pszInFilename_ != NULL && pszInFilename_[0] != 0 );
+    if ( !( pszInFilename_ != NULL && pszInFilename_[0] != 0 ) )
         return E_FAIL;
-
-    DWORD   dwSize = GetSize();
-    if ( dwSize == 0 )
-        return E_FAIL;
-
-    HANDLE hFile = ::CreateFileW( pszInFilename_, GENERIC_WRITE, 0
-        , NULL, CREATE_ALWAYS, 0, NULL );
-    if ( hFile == INVALID_HANDLE_VALUE )
-        return E_FAIL;
-
-    DWORD   dwNumWrites = 0;
-    BOOL bWrite = ::WriteFile( hFile, &m_vecbBuffer[0], dwSize, &dwNumWrites, NULL );
-    ASSERT( bWrite && dwNumWrites == dwSize );
-    if ( !( bWrite && dwNumWrites == dwSize ) )
-    {
-        ::CloseHandle( hFile );
-        return E_FAIL;
-    }//if
-    ::CloseHandle( hFile );
-    return S_OK;
+    return _SaveFile( std::filesystem::path( pszInFilename_ ) );
 }
-
 
 
 HRESULT  KFileSerializer::SaveFile( const char* pszInFilename_ ) const
 {
-    ASSERT( pszInFilename_ != NULL && pszInFilename_[0] != NULL );
-    if ( !( pszInFilename_ != NULL && pszInFilename_[0] != NULL ) )
+    ASSERT( pszInFilename_ != NULL && pszInFilename_[0] != 0 );
+    if ( !( pszInFilename_ != NULL && pszInFilename_[0] != 0 ) )
         return E_FAIL;
+    return _SaveFile( KFileSerializerPath( pszInFilename_ ) );
+}//KFileSerializer::SaveFile()
 
+
+HRESULT  KFileSerializer::_SaveFile( const std::filesystem::path& path_ ) const
+{
     DWORD   dwSize = GetSize();
     if ( dwSize == 0 )
         return E_FAIL;
 
-    HANDLE hFile = ::CreateFileA( pszInFilename_, GENERIC_WRITE, 0
-        , NULL, CREATE_ALWAYS, 0, NULL );
-    if ( hFile == INVALID_HANDLE_VALUE )
+    std::ofstream file( path_, std::ios::binary | std::ios::trunc );
+    if ( !file )
         return E_FAIL;
-
-    DWORD   dwNumWrites = 0;
-    BOOL bWrite = ::WriteFile( hFile, &m_vecbBuffer[0], dwSize, &dwNumWrites, NULL );
-    ASSERT( bWrite && dwNumWrites == dwSize );
-    if ( !( bWrite && dwNumWrites == dwSize ) )
-    {
-        ::CloseHandle( hFile );
-        return E_FAIL;
-    }//if
-    ::CloseHandle( hFile );
-    return S_OK;
-}//KFileSerializer::SaveFile()
+    const bool bWrite = static_cast<bool>( file.write( reinterpret_cast<const char*>( &m_vecbBuffer[0] ), dwSize ) );
+    ASSERT( bWrite );
+    return bWrite ? S_OK : E_FAIL;
+}//KFileSerializer::_SaveFile()
 
 
 DWORD   KFileSerializer::AppendSpace( DWORD dwInSize_ )
@@ -157,7 +114,7 @@ DWORD   KFileSerializer::AppendSpace( DWORD dwInSize_ )
     ASSERT( m_iLockCounter <= 0 );
     DWORD   dwSize = GetSize();
     if ( dwInSize_ == 0 )
-        return NULL;
+        return 0;
     m_vecbBuffer.resize( dwSize + dwInSize_ );
     return  dwSize;
 }//KFileSerializer::AppendSpace()
@@ -182,7 +139,7 @@ DWORD   KFileSerializer::AppendData( DWORD dwInSize_, const void* pInData_ )
     ASSERT( m_iLockCounter <= 0 );
     DWORD   dwSize = GetSize();
     if ( dwInSize_ == 0 )
-        return NULL;
+        return 0;
     ASSERT( pInData_ != NULL );
     m_vecbBuffer.resize( dwSize + dwInSize_ );
     CopyMemory( &m_vecbBuffer[dwSize], pInData_, dwInSize_ );
@@ -373,8 +330,8 @@ DWORD   KFileSerializer::AppendWideString( bool bShort, bool bNoMap, const wchar
     if ( pwszInChar_ == NULL )
         return 0;
     DWORD   dwLength = (DWORD) wcslen( pwszInChar_ );
-    if( dwLength == 0 )
-        return 0;
+	if( dwLength == 0 )
+		return 0;
 
 	AlignSpace( sizeof(wchar_t) );
 
@@ -432,8 +389,8 @@ DWORD   KFileSerializer::AppendWideString( bool bShort, bool bNoMap, const wchar
 {
     ASSERT( m_iLockCounter <= 0 );
 
-    if ( pwszInChar_ == NULL || dwLength == 0 )
-        return 0;
+	if ( pwszInChar_ == NULL || dwLength == 0 )
+		return 0;
 
 	AlignSpace( sizeof(wchar_t) );
 
@@ -494,8 +451,8 @@ DWORD   KFileSerializer::AppendWideString( bool bShort, bool bNoMap, const std::
 
 
     DWORD   dwLength = wstrIn_.size();
-    if( dwLength == 0 )
-        return 0;
+	if( dwLength == 0 )
+		return 0;
 	AlignSpace( sizeof(wchar_t) );
 
     DWORD   dwOffset = GetSize();

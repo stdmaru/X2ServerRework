@@ -9,7 +9,7 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CKTDGFrustum::CKTDGFrustum( LPDIRECT3DDEVICE9 pd3dDevice )
+CKTDGFrustum::CKTDGFrustum( LPDIRECT3DDEVICE9 /*pd3dDevice*/ )
 {
 
 }

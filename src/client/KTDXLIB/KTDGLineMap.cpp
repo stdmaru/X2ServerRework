@@ -3,13 +3,13 @@
 
 
 CKTDGLineMap::CKTDGLineMap()
-: m_RootLineAnimData( LAT_NONE )
-, m_fLandHeight( 0.f )
-, m_fStopTime( 0.f )
-, m_fXMax( 0.f )
+: m_fLandHeight( 0.f )
 , m_fXMin( 0.f )
-, m_fYMax( 0.f )
+, m_fXMax( 0.f )
 , m_fYMin( 0.f )
+, m_fYMax( 0.f )
+, m_fStopTime( 0.f )
+, m_RootLineAnimData( LAT_NONE )
 {
 	m_pLineMapVB	= NULL;
 	m_pKLuabinder	= NULL;
@@ -28,15 +28,11 @@ CKTDGLineMap::CKTDGLineMap()
 
 
 
-	D3DXCreateLine( g_pKTDXApp->GetDevice(), &m_pLine );
-	m_pLine->SetWidth( 3.f );
-	m_pLine->SetAntialias( true );
 }
 
 CKTDGLineMap::~CKTDGLineMap(void)
 {
-	SAFE_RELEASE( m_pLine );
-	SAFE_RELEASE( m_pLineMapVB );
+	SAFE_DELETE( m_pLineMapVB );
 
 	for( int i = 0; i < (int)m_LineList.size(); i++ )
 	{
@@ -231,7 +227,7 @@ bool CKTDGLineMap::AddLine_LUA()
 	LUA_GET_VALUE( luaManager,		"PORTAL_WHEN_ACTIVE_RAID",					pLineData->m_bIsPortalWhenActiveRaid,		false			);
 
 
-#pragma DMLEE_NOTE( "본섭에 테스트 라인맵이 적용되지 않게 하기 위해서 line_depth 가 0이 아닌 라인은 로딩안되게 임시로 막음" )
+// dmlee: "본섭에 테스트 라인맵이 적용되지 않게 하기 위해서 line_depth 가 0이 아닌 라인은 로딩안되게 임시로 막음"
 
 	int iLineDepth = 0;
 	LUA_GET_VALUE( luaManager,		"LINE_DEPTH",				iLineDepth,		0			);
@@ -269,15 +265,15 @@ bool CKTDGLineMap::AddLine_LUA()
 			m_fYMax = pLineData->endPos.y;
 		}
 
-		m_fXMin = min( pLineData->startPos.x, m_fXMin );
-		m_fXMin = min( pLineData->endPos.x, m_fXMin );
-		m_fYMin = min( pLineData->startPos.y, m_fYMin );
-		m_fYMin = min( pLineData->endPos.y, m_fYMin );
+		m_fXMin = std::min( pLineData->startPos.x, m_fXMin );
+		m_fXMin = std::min( pLineData->endPos.x, m_fXMin );
+		m_fYMin = std::min( pLineData->startPos.y, m_fYMin );
+		m_fYMin = std::min( pLineData->endPos.y, m_fYMin );
 
-		m_fXMax = max( pLineData->startPos.x, m_fXMax );
-		m_fXMax = max( pLineData->endPos.x, m_fXMax );
-		m_fYMax = max( pLineData->startPos.y, m_fYMax );
-		m_fYMax = max( pLineData->endPos.y, m_fYMax );
+		m_fXMax = std::max( pLineData->startPos.x, m_fXMax );
+		m_fXMax = std::max( pLineData->endPos.x, m_fXMax );
+		m_fYMax = std::max( pLineData->startPos.y, m_fYMax );
+		m_fYMax = std::max( pLineData->endPos.y, m_fYMax );
 	}
 
 
@@ -380,6 +376,8 @@ bool CKTDGLineMap::AssignLineAnimDataToLine( CKTDGLineMap::LineData* pLineData, 
 			}
 		} break;
 
+	default:
+		break;
 	}
 
 	return true;
@@ -408,7 +406,7 @@ CKTDGLineMap::LineAnimData* CKTDGLineMap::GetLineAnimData( int iLineAnimDataInde
 
 
 
-/*virtual*/ HRESULT CKTDGLineMap::OnFrameMove( double fTime, float fElapsedTime )
+/*virtual*/ HRESULT CKTDGLineMap::OnFrameMove( double /*fTime*/, float /*fElapsedTime*/ )
 {
 	KTDXPROFILE();
 
@@ -451,25 +449,12 @@ void    CKTDGLineMap::OnFrameRender_Draw()
 //}} robobeg : 2008-10-24
     KD3DPUSH( g_pKTDXApp->GetDGManager()->GetRSICKTDGLineMap() )
 
-	HRESULT hr;
-
-	if(FAILED(hr = g_pKTDXApp->GetDevice()->SetFVF( D3DFVF_LINE_MAP_VERTEX )))
-	{
-		ErrorLog( KEM_ERROR21 );
-//		return hr;
-        return;
-	}
-
-	if(FAILED(hr = g_pKTDXApp->GetDevice()->SetStreamSource( 0, m_pLineMapVB, 0, sizeof(LINE_MAP_VERTEX) )))
-	{
-		ErrorLog( KEM_ERROR22 );
-//		return hr;
-        return;
-	}
+	g_pKTDXApp->GetDevice()->SetFVF( D3DFVF_LINE_MAP_VERTEX );
+	g_pKTDXApp->GetDevice()->SetStreamSource( 0, m_pLineMapVB, 0, sizeof(LINE_MAP_VERTEX) );
 
 	//{{ kimhc // 2010.7.22 // 몬스터가 생성한 라인맵
 	// 몬스터 라인맵은 m_LineMapVB 사이즈에 포함되지 않음으로 DrawPrimitive시에 빼줌
-	if(FAILED(hr = g_pKTDXApp->GetDevice()->DrawPrimitive( D3DPT_LINELIST, 0, (UINT)m_LineList.size() - GetNumofLineMapCreatedByMonster() )))
+	if( !g_pKTDXApp->GetDevice()->DrawPrimitive( D3DPT_LINELIST, 0, (UINT)m_LineList.size() - GetNumofLineMapCreatedByMonster() ) )
 	//}} kimhc // 2010.7.22 // 몬스터가 생성한 라인맵
 	{
 		ErrorLog( KEM_ERROR23 );
@@ -538,13 +523,12 @@ void    CKTDGLineMap::OnFrameRender_Draw()
 
 bool CKTDGLineMap::MakeLineVB()
 {
-	HRESULT				hr;
 	int					vbNum = (int)m_LineList.size() * 2 + (int)m_WallList.size() * 2;
 
-
-	if(FAILED(hr = g_pKTDXApp->GetDevice()->CreateVertexBuffer( vbNum * sizeof(LINE_MAP_VERTEX),
-						D3DUSAGE_WRITEONLY, D3DFVF_LINE_MAP_VERTEX,
-						D3DPOOL_MANAGED, &m_pLineMapVB, NULL) ))
+	SAFE_DELETE( m_pLineMapVB );
+	m_pLineMapVB = g_pKTDXApp->GetDevice()->CreateVertexBuffer( vbNum * sizeof(LINE_MAP_VERTEX),
+						D3DUSAGE_WRITEONLY, D3DFVF_LINE_MAP_VERTEX, D3DPOOL_MANAGED ).release();
+	if( m_pLineMapVB == NULL )
 	{
 		ErrorLog( KEM_ERROR24 );
 		return false;
@@ -1162,8 +1146,8 @@ CKTDGLineMap::LineGroupID   CKTDGLineMap::GetLineGroupIncludesLineData( int iLin
 		return LineGroupID();
 
     const LineData* pLineData = m_LineList[ iLineIndex ];
-    ASSERT( pLineData->bEnable == true && pLineData->m_lineGroupID.IsValid() == true
-        || pLineData->bEnable == false && pLineData->m_lineGroupID.IsValid() == false );
+    ASSERT( ( pLineData->bEnable == true && pLineData->m_lineGroupID.IsValid() == true )
+        || ( pLineData->bEnable == false && pLineData->m_lineGroupID.IsValid() == false ) );
     return  pLineData->m_lineGroupID;
 }
 
@@ -1257,8 +1241,10 @@ void CKTDGLineMap::ReBuildLineGroup()
 	if( nNodes <= 0 )
 		return;
 
-    int*  piLineMembers = (int*) _alloca( nNodes * sizeof(int) );
-	bool* bDoneLineData = (bool*) _alloca( nNodes * sizeof(bool) );
+    std::vector<int>  vecLineMembers( nNodes );
+	std::unique_ptr<bool[]> abDoneLineData( new bool[ nNodes ] );
+    int*  piLineMembers = vecLineMembers.data();
+	bool* bDoneLineData = abDoneLineData.get();
     ASSERT( bDoneLineData != NULL );
     int i;
 	for( i=0; i<nNodes; i++ )
@@ -1270,7 +1256,6 @@ void CKTDGLineMap::ReBuildLineGroup()
     int iNumMembers;
     LineGroupID id;
 
-    const LineData* pLineData = NULL;
 
 	// line group 생성
 	for( i = 0; i <nNodes; i++ )
@@ -1364,7 +1349,7 @@ D3DXVECTOR3 CKTDGLineMap::GetFixedDistancePosition( D3DXVECTOR3* pvPos, float fD
 
 	const float MAGIC_LINE_RADIUS = 30.f;
 
-	D3DXVECTOR3 vPos = GetLandPosition( *pvPos, MAGIC_LINE_RADIUS, &iLineIndex );
+	GetLandPosition( *pvPos, MAGIC_LINE_RADIUS, &iLineIndex );
 	if( -1 == iLineIndex )
 		return *pvPos;	// 아마 error
 
@@ -1426,7 +1411,7 @@ bool CKTDGLineMap::GetFixedDistancePositionForWeaponTaker( const D3DXVECTOR3* pv
 
 	const float MAGIC_LINE_RADIUS = 30.f;
 
-	D3DXVECTOR3 vPos = GetLandPosition( *pvPos, MAGIC_LINE_RADIUS, &iLineIndex );
+	GetLandPosition( *pvPos, MAGIC_LINE_RADIUS, &iLineIndex );
 	if( -1 == iLineIndex )
 		return false;	// 아마 error
 
@@ -2129,14 +2114,14 @@ bool CKTDGLineMap::AddTrigger_LUA()
 
 //////////////////////////////////////////////////////////////////////////
 CKTDGLineMap::LineAnimData::LineAnimData( LINE_ANIM_TYPE eAnimType )
-: m_eAnimType( eAnimType )
+: m_iLineAnimIndex( -1 )
 , m_bEnabled( true )
+, m_eAnimType( eAnimType )
 , m_bMoveIfSteppedOn( false )
 , m_vPivotPosition( 0, 0, 0 )
 , m_vChildPivotPosition( 0, 0, 0 )
 , m_vChildPivotPositionDisplace( 0, 0, 0 )
 , m_pLineData( NULL )
-, m_iLineAnimIndex( -1 )
 , m_iParentAnimDataIndex( -1 )
 {
 }
@@ -2163,9 +2148,9 @@ void CKTDGLineMap::LineAnimData::OnFrameMove( double fTime, float fElapsedTime )
 //////////////////////////////////////////////////////////////////////////
 CKTDGLineMap::LineAnimBackAndForth::LineAnimBackAndForth()
 : LineAnimData( LAT_BACK_AND_FORTH )
-, m_fCurrentPositionValue( 0.f )
 , m_fMovingSpeed( 0.f )
 , m_fRange( 0.f )
+, m_fCurrentPositionValue( 0.f )
 {
 }
 
@@ -2201,14 +2186,14 @@ void CKTDGLineMap::LineAnimBackAndForth::OnFrameMove( double fTime, float fElaps
 //////////////////////////////////////////////////////////////////////////
 CKTDGLineMap::LineAnimMoveIfSteppedOn::LineAnimMoveIfSteppedOn()
 : LineAnimData( LAT_MOVE_IF_STEPPED_ON )
+, m_fAccelerationWhenSteppedOn( 0.f )
+, m_fMaxMovingRange( 0.f )
+, m_fMaxMovingSpeed( 0.f )
+, m_fBackwardSpeed( 0.f )
 , m_bSteppedOnForward( false )
 , m_bSteppedOnBackward( false )
 , m_fCurrentMovingSpeed( 0.f )
 , m_fCurrentPostionValue( 0.f )
-, m_fAccelerationWhenSteppedOn( 0.f )
-, m_fBackwardSpeed( 0.f )
-, m_fMaxMovingRange( 0.f )
-, m_fMaxMovingSpeed( 0.f )
 {
 }
 
@@ -2276,9 +2261,9 @@ void CKTDGLineMap::LineAnimMoveIfSteppedOn::OnFrameMove( double fTime, float fEl
 //////////////////////////////////////////////////////////////////////////
 CKTDGLineMap::LineAnimViking::LineAnimViking()
 : LineAnimData( LAT_VIKING )
-, m_fCurrentTime( 0.f )
-, m_fMaxRotationRadian( 0.f )
 , m_fPeriod( 0.f )
+, m_fMaxRotationRadian( 0.f )
+, m_fCurrentTime( 0.f )
 {
 }
 
@@ -2326,8 +2311,8 @@ void CKTDGLineMap::LineAnimViking::CalcLinePosition( float fCurrentTime )
 //////////////////////////////////////////////////////////////////////////
 CKTDGLineMap::LineAnimCircle::LineAnimCircle()
 : LineAnimData( LAT_CIRCLE )
-, m_fCurrentRotationRadian( 0.f )
 , m_fRotationSpeed( 0.f )
+, m_fCurrentRotationRadian( 0.f )
 {
 }
 
@@ -2478,7 +2463,6 @@ bool CKTDGLineMap::GetFixedDistancePositionInAllLine( const D3DXVECTOR3& vDirVec
 {
 	D3DXVECTOR3 vTempTargetPos( 0.f, -1.f, 0.f );
 	int iTempTargetLineIndex = -1;
-	float fMinDistance = 999999.f;
 
 	// 모든 선을 검색한다
 	for( int i = 0; i < (int)m_LineList.size(); i++ )
@@ -2607,12 +2591,11 @@ bool CKTDGLineMap::GetFixedDistancePositionInAllLine( const D3DXVECTOR3& vDirVec
 		else if( fLineEndToPointLength >= fDist && fLineStartToPointLength < fDist )
 		{
 			float fLineStartToPointLength	= GetDistance( pLineData->endPos, vPos );
-			float fLineEndToPointLength		= GetDistance( pLineData->startPos, vPos );
+			GetDistance( pLineData->startPos, vPos );
 			D3DXVECTOR3 pointDir = vPos - pLineData->endPos;
 			D3DXVECTOR3 lineDir = pLineData->startPos - pLineData->endPos;
 			D3DXVec3Normalize( &lineDir, &lineDir );
 
-			D3DXVECTOR3 projectionPoint;
 			float		fProjectionLength	= D3DXVec3Dot( &lineDir, &pointDir );
 
 			if( fProjectionLength <= 0.0f )
@@ -2707,25 +2690,14 @@ bool CKTDGLineMap::GetFixedDistancePositionInAllLine( const D3DXVECTOR3& vDirVec
 	return true;
 }
 
-/*
-	LPD3DXLINE은 내부적으로 D3DPOOL_DEFAULT를 사용하는 것 같다.
-	해상도 변경 또는 D3DDevice 리셋이 발생할 때 Device->Reset()이
-	실패해서 게임이 무한 루프에 빠지는 경우가 발생한다.
-	ResetDevice 및 LostDevice를 정의해야된다.
-*/
+// The line map held an ID3DXLine it never drew with (port: removed); nothing is lost or reset (T38).
 HRESULT CKTDGLineMap::OnResetDevice()
 {
-	D3DXCreateLine( g_pKTDXApp->GetDevice(), &m_pLine );
-	m_pLine->SetWidth( 3.f );
-	m_pLine->SetAntialias( true );
-
 	return S_OK;
 }
 
 HRESULT CKTDGLineMap::OnLostDevice()
 {
-	SAFE_RELEASE( m_pLine );
-
 	return S_OK;
 }
 

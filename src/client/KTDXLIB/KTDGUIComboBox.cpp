@@ -6,20 +6,20 @@ inline int RectHeight( RECT &rc ) { return ( (rc).bottom - (rc).top ); }
 inline RECT AddRect( RECT &rc1, RECT &rc2 )
 {
 	RECT rc;
-	rc.left = min(rc1.left, rc2.left);
-	rc.right = max(rc1.right, rc2.right);
-	rc.top = min(rc1.top, rc2.top);
-	rc.bottom = max(rc1.bottom, rc2.bottom);
+	rc.left = std::min(rc1.left, rc2.left);
+	rc.right = std::max(rc1.right, rc2.right);
+	rc.top = std::min(rc1.top, rc2.top);
+	rc.bottom = std::max(rc1.bottom, rc2.bottom);
 
 	return rc;
 }
 
 CKTDGUIComboBox::CKTDGUIComboBox()
-: m_rcBoundingBox( RECT() )
-, m_rcBoundingBox2( RECT() )
+: m_rcText( RECT() )
 , m_rcButton( RECT() )
 , m_rcDropdownText( RECT() )
-, m_rcText( RECT() )
+, m_rcBoundingBox( RECT() )
+, m_rcBoundingBox2( RECT() )
 {
 	m_ControlType = UCT_COMBOBOX;
 
@@ -280,7 +280,6 @@ HRESULT CKTDGUIComboBox::OnFrameRender()
 
 
 
-	float fBlendRate = ( iState == DXUT_STATE_PRESSED ) ? 0.0f : 0.8f;
 
 	RECT rcWindow = m_rcButton;
 	OffsetRect( &rcWindow, 0, 0 );
@@ -334,8 +333,8 @@ HRESULT CKTDGUIComboBox::OnFrameRender()
 		RenderVertex( m_Vertex, m_TempPoint );
 	}
 
-    if(m_bSelectTextShow == false)
-        return S_OK;
+	if(m_bSelectTextShow == false)
+		return S_OK;
 
 	if( m_iSelected >= 0 && m_iSelected < (int) m_Items.GetSize() )
 	{
@@ -427,12 +426,6 @@ HRESULT CKTDGUIComboBox::OnFrameRenderEnd()
 	{
 		return false;
 	}
-
-
-	DXUT_CONTROL_STATE iState = DXUT_STATE_NORMAL;
-
-	if( !m_bOpened )
-		iState = DXUT_STATE_HIDDEN;
 
 
 
@@ -840,7 +833,7 @@ HRESULT CKTDGUIComboBox::OnFrameRenderEnd()
 
 
 //--------------------------------------------------------------------------------------
-bool CKTDGUIComboBox::HandleKeyboard( UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CKTDGUIComboBox::HandleKeyboard( UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 
 	return false;
@@ -1489,7 +1482,7 @@ HRESULT CKTDGUIComboBox::AddItem( const WCHAR* strText, void* pData, bool bSendC
 		return DXTRACE_ERR_MSGBOX( L"new", E_OUTOFMEMORY );
 	}
 
-	ZeroMemory( pItem, sizeof(ComboBoxItem) );
+	ZeroMemory( (void*)pItem, sizeof(ComboBoxItem) );
 	StringCchCopy( pItem->strText, 256, strText );
 	pItem->pData = pData;
 
@@ -1553,7 +1546,7 @@ HRESULT CKTDGUIComboBox::AddControl( CKTDGUIControl* pControl )
 		return DXTRACE_ERR_MSGBOX( L"new", E_OUTOFMEMORY );
 	}
 
-	ZeroMemory( pItem, sizeof(ComboBoxItem) );
+	ZeroMemory( (void*)pItem, sizeof(ComboBoxItem) );
 	StringCchCopy( pItem->strText, 256, pControl->GetName() );
 	pItem->pData = NULL;
 	pControl->SetDialog(m_pDialog);

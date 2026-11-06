@@ -170,10 +170,7 @@ CX2StateDungeonGame::CX2StateDungeonGame(void)
 
 	LoadUI();
 	OnFrameMove( 0.0f, 0.0f );
-	g_pKTDXApp->GetDevice()->BeginScene();
-	OnFrameRender();
-	g_pKTDXApp->GetDevice()->EndScene();
-	g_pKTDXApp->GetDevice()->Present( NULL, NULL, NULL, NULL );
+	g_pKTDXApp->RenderStageNow( this );
 	m_LoadingPercent				= 10;
 	if( g_pData->GetDungeonRoom()->GetIntrudeGame() == false )
 		GameLoadingReq( m_LoadingPercent );
@@ -181,20 +178,14 @@ CX2StateDungeonGame::CX2StateDungeonGame(void)
 
 	CreateGame();
 	OnFrameMove( 0.0f, 0.0f );
-	g_pKTDXApp->GetDevice()->BeginScene();
-	OnFrameRender();
-	g_pKTDXApp->GetDevice()->EndScene();
-	g_pKTDXApp->GetDevice()->Present( NULL, NULL, NULL, NULL );
+	g_pKTDXApp->RenderStageNow( this );
 	m_LoadingPercent				= 30;
 	if( g_pData->GetDungeonRoom()->GetIntrudeGame() == false )
 		GameLoadingReq( m_LoadingPercent );
 
 	GameLoadingStart();
 	OnFrameMove( 0.0f, 0.0f );
-	g_pKTDXApp->GetDevice()->BeginScene();
-	OnFrameRender();
-	g_pKTDXApp->GetDevice()->EndScene();
-	g_pKTDXApp->GetDevice()->Present( NULL, NULL, NULL, NULL );
+	g_pKTDXApp->RenderStageNow( this );
 	m_LoadingPercent				= 80;
 	if( g_pData->GetDungeonRoom()->GetIntrudeGame() == false )
 	{

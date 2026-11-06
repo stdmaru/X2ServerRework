@@ -10,7 +10,6 @@
 #define GET_D3DDEVICE()     g_pKTDXApp->GetDevice()
 #endif // #ifdef _KSMTOOL
 
-#pragma warning (disable: 4200)
 
 #pragma pack( push, 1 )
 
@@ -40,7 +39,7 @@ struct  KMEMaterial
 #pragma pack( pop )
 
 
-CKTDXDeviceXMesh::CKTDXDeviceXMesh( LPDIRECT3DDEVICE9 pd3dDevice, std::wstring fileName )
+CKTDXDeviceXMesh::CKTDXDeviceXMesh( LPDIRECT3DDEVICE9 /*pd3dDevice*/, std::wstring fileName )
 					:CKTDXDevice( fileName, DT_XMESH )
 {
 	m_vCenter.x			= 0.0f;
@@ -87,7 +86,6 @@ CKTDXDeviceXMesh::~CKTDXDeviceXMesh(void)
 
     DWORD   dwSize = 0;
     const void* pData = NULL;
-	char* pTempBuf = NULL;
 
 #ifdef _KSMTOOL
 
@@ -263,8 +261,7 @@ HRESULT	CKTDXDeviceXMesh::Render( CKTDXDeviceXET* pTexChangeXET, CKTDXDeviceXET*
 		return S_OK;
 
 	D3DMATERIAL9 temp;
-	HRESULT hr;
-	hr = GET_D3DDEVICE()->GetMaterial( &temp );
+	GET_D3DDEVICE()->GetMaterial( &temp );
 	// Set and draw each of the materials in the mesh
 
     DWORD   dwNumSubsets = ( m_dwNumAttrGroups == 0 ) ? m_dwNumMaterials : m_dwNumAttrGroups;
@@ -296,7 +293,7 @@ HRESULT	CKTDXDeviceXMesh::Render( CKTDXDeviceXET* pTexChangeXET, CKTDXDeviceXET*
 		if( pvecDrawSubset && (*pvecDrawSubset)[i] == false )
 			continue;
 
-        hr = GET_D3DDEVICE()->SetMaterial( &m_pdxMaterials[ dwAttribId ].MatD3D );
+        GET_D3DDEVICE()->SetMaterial( &m_pdxMaterials[ dwAttribId ].MatD3D );
 		CKTDXDeviceBaseTexture* pResultTexture0 = NULL;
 		CKTDXDeviceBaseTexture* pResultTexture1 = NULL;
 		CKTDXDeviceBaseTexture* pResultTexture2 = NULL;
@@ -326,7 +323,7 @@ HRESULT	CKTDXDeviceXMesh::Render( CKTDXDeviceXET* pTexChangeXET, CKTDXDeviceXET*
 
 		if ( m_pMesh )
         {
-			hr = m_pMesh->DrawSubset( dwAttribId );
+			m_pMesh->DrawSubset( dwAttribId );
         }
 
 		{
@@ -340,7 +337,7 @@ HRESULT	CKTDXDeviceXMesh::Render( CKTDXDeviceXET* pTexChangeXET, CKTDXDeviceXET*
 			}
 		}
 	}
-	hr = GET_D3DDEVICE()->SetMaterial( &temp );
+	GET_D3DDEVICE()->SetMaterial( &temp );
 
 	return S_OK;
 }
@@ -427,12 +424,12 @@ HRESULT         CKTDXDeviceXMesh::WriteToFileSerializer( KFileSerializer& kInOut
     kmeHeader.m_dwFVF = m_pMesh->GetFVF();
     kmeHeader.m_dwOptions = m_pMesh->GetOptions() & D3DXMESH_32BIT;
     kmeHeader.m_dwNumMaterials = m_dwNumMaterials;
-    kmeHeader.m_dwOffset_Materials = NULL;
+    kmeHeader.m_dwOffset_Materials = 0;
     kmeHeader.m_dwNumVertices = m_pMesh->GetNumVertices();
-    kmeHeader.m_dwOffset_Vertices = NULL;
+    kmeHeader.m_dwOffset_Vertices = 0;
     kmeHeader.m_dwNumFaces = m_pMesh->GetNumFaces();
-    kmeHeader.m_dwOffset_Indices = NULL;
-    kmeHeader.m_dwOffset_Attributes = NULL;
+    kmeHeader.m_dwOffset_Indices = 0;
+    kmeHeader.m_dwOffset_Attributes = 0;
     kmeHeader.m_vCenter = m_vCenter;
     kmeHeader.m_fRadius = m_fRadius;
 
@@ -449,7 +446,7 @@ HRESULT         CKTDXDeviceXMesh::WriteToFileSerializer( KFileSerializer& kInOut
         for( DWORD dwMat = 0; dwMat < m_dwNumMaterials; dwMat++ )
         {
             pKMEMaterials[ dwMat ].m_d3dMat = m_pdxMaterials[ dwMat ].MatD3D;
-            pKMEMaterials[ dwMat ].m_dwOffset_TextureFilename = NULL;
+            pKMEMaterials[ dwMat ].m_dwOffset_TextureFilename = 0;
             if ( m_pdxMaterials[ dwMat ].pTextureFilename != NULL )
             {
 //#ifdef	X2OPTIMIZE_KFILESERIALIZER_MODIFIED
@@ -528,7 +525,7 @@ HRESULT         CKTDXDeviceXMesh::WriteToFileSerializer( KFileSerializer& kInOut
 }//CKTDXDeviceXMesh::WriteToFileSerializer()
 
 
-void CKTDXDeviceXMesh::SetLOD( int lodPercent )
+void CKTDXDeviceXMesh::SetLOD( int /*lodPercent*/ )
 {
 //     ASSERT( m_bLoadProgressiveMesh );
 //
@@ -845,7 +842,7 @@ HRESULT         CKTDXDeviceXMesh::XMeshProxy::LoadD3DXMesh( const void* pInData_
     {
 	    LPD3DXMESH			pTempMesh = NULL;
 
-		d3dHr = m_pMesh->Optimize( D3DXMESH_MANAGED
+		d3dHr = m_pMesh->Optimize( DWORD( D3DXMESH_MANAGED )
 #ifndef _KSMTOOL
                         | D3DXMESHOPT_VERTEXCACHE
 #endif // #ifndef _KSMTOOL
@@ -897,7 +894,9 @@ HRESULT         CKTDXDeviceXMesh::XMeshProxy::LoadD3DXMesh( const void* pInData_
 #endif // #ifdef KME_ATTRIBUTE_SORT
 
 	//subset 단위로 bounding sphere 저장
-	void* pVertex = NULL;
+	// Declared without an initializer: the error gotos above jump past it.
+	void* pVertex;
+	pVertex = NULL;
 	hr = m_pMesh->LockVertexBuffer( D3DLOCK_READONLY, &pVertex );
 	if ( SUCCEEDED( hr ) )
 	{
@@ -1000,28 +999,28 @@ HRESULT         CKTDXDeviceXMesh::XMeshProxy::LoadKMEMesh( const void* pInData_,
         return E_FAIL;
     }//if
 
-    if ( kmeHeader.m_dwNumMaterials == 0 || kmeHeader.m_dwOffset_Materials == NULL )
+    if ( kmeHeader.m_dwNumMaterials == 0 || kmeHeader.m_dwOffset_Materials == 0 )
     {
         ErrorLogMsg(KEM_ERROR179, m_DeviceID.c_str());
         ASSERT( !"KMEHeader::m_dwNumMaterials should be greater than 0" );
         return E_FAIL;
     }
 
-    if ( kmeHeader.m_dwNumVertices == 0 || kmeHeader.m_dwOffset_Vertices == NULL )
+    if ( kmeHeader.m_dwNumVertices == 0 || kmeHeader.m_dwOffset_Vertices == 0 )
     {
         ErrorLogMsg(KEM_ERROR184, m_DeviceID.c_str());
         ASSERT( !"KMEHeader::m_dwNumVertices should be greater than 0" );
         return E_FAIL;
     }
 
-    if ( kmeHeader.m_dwNumFaces == 0 || kmeHeader.m_dwOffset_Indices == NULL )
+    if ( kmeHeader.m_dwNumFaces == 0 || kmeHeader.m_dwOffset_Indices == 0 )
     {
         ErrorLogMsg(KEM_ERROR189, m_DeviceID.c_str());
         ASSERT( !"KMEHeader::m_dwNumFaces should be greater than 0" );
         return E_FAIL;
     }
 
-    if ( kmeHeader.m_dwOffset_Attributes == NULL )
+    if ( kmeHeader.m_dwOffset_Attributes == 0 )
     {
         ErrorLogMsg(KEM_ERROR193, m_DeviceID.c_str());
         ASSERT( !"Invalid KMEHeader::m_dwOffset_Attributes" );
@@ -1067,7 +1066,7 @@ HRESULT         CKTDXDeviceXMesh::XMeshProxy::LoadKMEMesh( const void* pInData_,
         for( DWORD dwMat = 0; dwMat < m_dwNumMaterials; dwMat++ )
         {
             m_pdxMaterials[ dwMat ].MatD3D = pkmeMaterial[ dwMat ].m_d3dMat;
-            if ( pkmeMaterial[ dwMat ].m_dwOffset_TextureFilename != NULL )
+            if ( pkmeMaterial[ dwMat ].m_dwOffset_TextureFilename != 0 )
             {
                 m_pdxMaterials[ dwMat ].pTextureFilename = kMemory.RetrieveDupString(
                     pkmeMaterial[ dwMat ].m_dwOffset_TextureFilename );
@@ -1287,7 +1286,9 @@ HRESULT         CKTDXDeviceXMesh::XMeshProxy::LoadKMEMesh( const void* pInData_,
 #endif // #if defined(KME_ATTRIBUTE_SORT) || !defined(_KSMTOOL)
 
 	//subset 단위로 bounding sphere 저장
-	void* pVertex = NULL;
+	// Declared without an initializer: the error gotos above jump past it.
+	void* pVertex;
+	pVertex = NULL;
 	hr = m_pMesh->LockVertexBuffer( D3DLOCK_READONLY, &pVertex );
 	if ( SUCCEEDED( hr ) )
 	{
@@ -1347,7 +1348,7 @@ void            CKTDXDeviceXMesh::XMeshProxy::LoadTextures()
     for( DWORD dwMat = 0; dwMat < m_dwNumMaterials; dwMat++ )
     {
         if ( m_pdxMaterials[ dwMat ].pTextureFilename != NULL
-            && m_pdxMaterials[ dwMat ].pTextureFilename[0] != NULL )
+            && m_pdxMaterials[ dwMat ].pTextureFilename[0] != 0 )
         {
 			WCHAR wszTexName[ MAX_PATH ];
 			if( MultiByteToWideChar( CP_ACP, 0, m_pdxMaterials[ dwMat ].pTextureFilename, -1, wszTexName, MAX_PATH ) != 0 )

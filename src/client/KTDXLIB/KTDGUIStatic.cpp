@@ -235,7 +235,7 @@ HRESULT CKTDGUIStatic::OnFrameRender()
 }
 
 
-bool CKTDGUIStatic::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lParam )
+bool CKTDGUIStatic::HandleMouse( UINT uMsg, POINT pt, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	KTDXPROFILE();
 
@@ -455,7 +455,6 @@ void CKTDGUIStatic::SetMaximize( bool val )
 	if ( val == false )
 		iSign = -1;
 
-	CKTDGUIControl::CPictureData** acPicData = &m_PictureDataList[0];
 	for ( unsigned int iS = 0; iS < m_PictureDataList.size(); ++iS )
 	{
 		CKTDGUIControl::CPictureData* pcPicData = m_PictureDataList[iS];

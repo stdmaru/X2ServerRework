@@ -87,7 +87,7 @@ class CKTDGLensFlare : public CKTDGObject
 //		virtual HRESULT OnLostDevice();
 //#endif
 
-		void	AddSpot( CLensFlareSpot &spot );
+		void	AddSpot( const CLensFlareSpot &spot );
 
 		void	SetIntensity(const CMinMax<float> &data)	{ m_fIntensity = data; }
 		float	GetIntensityBorder(void) const				{ return(m_fIntensityBorder); }

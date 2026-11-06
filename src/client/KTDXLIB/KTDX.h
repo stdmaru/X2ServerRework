@@ -401,6 +401,7 @@ using std::set;
 #include "x2/platform/noncopyable.h"
 #include "x2/platform/intrusive_ptr.h"
 #include "KCircularBuffer.h"
+#include "KSingletonPool.h"
 
 #include <ft2build.h>
 #include <freetype/freetype.h>
@@ -468,7 +469,7 @@ using std::set;
 #else
 
 	#if !defined(ASSERT)
-		#define ASSERT(exp)
+		#define ASSERT(exp)         ((void)sizeof(!(exp)))  // not evaluated; keeps the variables it checks in use
 	#endif // #if !defined(ASSERT)
 
 	#ifndef V

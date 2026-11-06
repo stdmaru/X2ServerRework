@@ -55,6 +55,8 @@ public:
     // rect: null for the whole level. D3DLOCK_READONLY: no upload at UnlockRect.
     bool LockRect(UINT level, D3DLOCKED_RECT* locked, const RECT* rect, DWORD flags);
     bool UnlockRect(UINT level);
+    // Device::UpdateTexture copies whole levels, so dirty rectangles need no tracking.
+    bool AddDirtyRect(const RECT* /*rect*/) { return true; }
 
     D3DFORMAT Format() const { return m_format; }
     DWORD Usage() const { return m_usage; }
@@ -168,6 +170,31 @@ public:
     bool SetVertexShaderConstantF(UINT startRegister, const float* data, UINT registerCount);
     bool GetVertexShaderConstantF(UINT startRegister, float* data, UINT registerCount) const;
 
+    // Fixed-function lighting: stored, not drawn with yet (the fixed-function shaders are unlit, T39). The material
+    // starts zeroed; a light enabled before it is set is D3D9's default (white, directional, along +z).
+    void SetMaterial(const D3DMATERIAL9* material);
+    void GetMaterial(D3DMATERIAL9* material) const;
+    bool SetLight(DWORD index, const D3DLIGHT9* light);
+    bool GetLight(DWORD index, D3DLIGHT9* light) const;
+    bool LightEnable(DWORD index, BOOL enable);
+    bool GetLightEnable(DWORD index, BOOL* enable) const;
+    // Shaders and vertex declarations: no such objects exist (the effects become KTDXLIB's own shaders, T37), so
+    // setting one is ignored and getting one gives null.
+    void SetVertexDeclaration(IDirect3DVertexDeclaration9* declaration);
+    void GetVertexDeclaration(IDirect3DVertexDeclaration9** declaration) const;
+    void SetVertexShader(IDirect3DVertexShader9* shader);
+    void GetVertexShader(IDirect3DVertexShader9** shader) const;
+    void SetPixelShader(IDirect3DPixelShader9* shader);
+    void GetPixelShader(IDirect3DPixelShader9** shader) const;
+    // Texture memory: the render backend does not report it, so a fixed 512 MB (the engine only reports the figure);
+    // there is no managed pool to evict.
+    UINT GetAvailableTextureMem() const;
+    void EvictManagedResources() {}
+
+    // Copies a system-memory texture's levels (its CPU copy) into a texture of the same size and format, as
+    // IDirect3DDevice9::UpdateTexture: the levels both have, from the top.
+    bool UpdateTexture(Texture* source, Texture* destination);
+
     // Null: the back buffer. Resets the viewport to the whole target, as D3D9 does.
     bool SetRenderTarget(DWORD index, Texture* target);
     Texture* GetRenderTarget() const { return m_target; }
@@ -262,6 +289,12 @@ private:
     UINT m_streamOffset = 0, m_streamStride = 0;
     std::vector<float> m_vsConstants = std::vector<float>(kVertexShaderConstants * 4, 0.0f);
     Texture* m_target = nullptr;
+    D3DMATERIAL9 m_material{};
+    struct Light {
+        D3DLIGHT9 light{};
+        bool enabled = false;
+    };
+    std::vector<Light> m_lights;
 
     // Frame
     render::CommandBuffer* m_frame = nullptr;
