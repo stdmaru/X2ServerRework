@@ -12,6 +12,7 @@
 #include <SDL3/SDL_video.h>
 
 #include <cstdint>
+#include <vector>
 
 #include "Device.h"   // KTDXLIB/D3D9: IDirect3DDevice9 is x2::d3d9::Device
 #include "MessageBox.h"   // Win32 MessageBox outside Windows
@@ -73,6 +74,32 @@ x2::render::Device* DXUTGetRenderDevice();
 IDirect3DDevice9* DXUTGetD3DDevice();
 // The back buffer: the window's client area in pixels, A8R8G8B8 (null without a window). Updated on each call.
 const D3DSURFACE_DESC* DXUTGetBackBufferSurfaceDesc();
+// DXUT's device settings (2026-11-07). The port has one device, so they describe the window: the back buffer is its
+// client area (A8R8G8B8 on an X8R8G8B8 adapter, D24S8 depth, no multisampling) and the interval its present mode.
+struct DXUTDeviceSettings {
+    UINT AdapterOrdinal;
+    D3DDEVTYPE DeviceType;
+    D3DFORMAT AdapterFormat;
+    DWORD BehaviorFlags;
+    D3DPRESENT_PARAMETERS pp;
+};
+DXUTDeviceSettings DXUTGetDeviceSettings();
+// Applies the back buffer size (the windowed client area, or the full-screen window's) and the interval
+// (D3DPRESENT_INTERVAL_IMMEDIATE: no vertical sync). The device is kept: nothing is lost or reset.
+HRESULT DXUTCreateDeviceFromSettings(DXUTDeviceSettings* pNewDeviceSettings, bool bPreserveInput = false,
+                                     bool bClipWindowToSingleAdapter = true);
+// The client areas DXUT restored on a full-screen/windowed switch. Kept for the caller; the window keeps its size.
+void DXUTSetWindowClientRectAtModeChange(int width, int height);
+void DXUTSetFullscreenClientRectAtModeChange(int width, int height);
+// KOG's DXUT additions: the forced interval (D3DPRESENT_INTERVAL_DEFAULT or _IMMEDIATE), and setting it (1: immediate,
+// anything else: the vertical blank).
+int DXUTGetVerticalSync();
+void DXUTSetVerticalSync(int iVal_);
+// Restarts the frame-rate count (KOG's addition, called when a battlefield loads).
+void DXUTResetStatsUpdateFrame();
+// The display's modes, for the resolution list (in place of DXUT's CD3DEnumeration: X2Lib read the adapter's modes
+// through it). Every mode reports the adapter format of DXUTGetDeviceSettings.
+std::vector<D3DDISPLAYMODE> DXUTGetDisplayModes();
 // KTDXLIB's device is never lost or reset (T38): its objects exist while it does.
 bool DXUTGetDeviceObjectsReset();
 inline bool DXUTGetDeviceLost() { return false; }

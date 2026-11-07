@@ -50,7 +50,7 @@ class CX2Cursor
 		void	ChangeCursorState( X2_CURSOR_STATE cursorState ); //특별한 공식이 있음 ㅋㅋ
 		X2_CURSOR_STATE GetCurorState() { return m_CursorState; }
 
-		HCURSOR GetCursorHandle() { return m_hCursor; }
+		DXUTCursor* GetCursorHandle() { return m_hCursor; }
 
 
 
@@ -67,7 +67,7 @@ class CX2Cursor
 
 		void DrawFace( float nX, float nY, float nWidth, float nHeight, D3DCOLOR color = 0xffffffff );
 
-		HCURSOR				m_hCursor;
+		DXUTCursor*			m_hCursor;	// IDC_CURSOR1 (DefaultCursor.cur), on SDL
 
 //{{ robobeg : 2008-10-13
 	    CKTDGStateManager::KStateID m_RenderStateID;

@@ -739,12 +739,12 @@ bool CX2State::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 				{
 					if ( m_pCursor->GetShowHardwareCursor() == true )
 					{
-						SetCursor( m_pCursor->GetCursorHandle() );
+						DXUTSetCursor( m_pCursor->GetCursorHandle() );
 
 					}
 					else
 					{
-						SetCursor( NULL );
+						DXUTSetCursor( NULL );
 					}
 
 					return true;

@@ -83,18 +83,15 @@ CKTDGUIDialogType CX2MemoryHolder::GetOptionDLG( CKTDXStage* pStage )
 
 		DXUTDeviceSettings deviceSettings = DXUTGetDeviceSettings();
 
-		CD3DEnumeration* pD3DEnum = DXUTGetEnumeration();
-		CD3DEnumAdapterInfo* pAdapterInfo = pD3DEnum->GetAdapterInfo( deviceSettings.AdapterOrdinal ); // GetCurrentAdapterInfo
+		const std::vector<D3DDISPLAYMODE> vecDisplayMode = DXUTGetDisplayModes();
 
-		// 해상도 콤보 박스 초기화
-		if( pAdapterInfo != NULL )
+		// Fill the resolution combo box
 		{
 			CKTDGUIComboBox* pCombo_Graphic_Resoultion = (CKTDGUIComboBox*) m_pDLGOptionWindow->GetControl( L"Option_Resolution" );
 			pCombo_Graphic_Resoultion->RemoveAllItems();
 
-			for( int idm = 0; idm < pAdapterInfo->displayModeList.GetSize(); idm++ )
+			for( const D3DDISPLAYMODE& displayMode : vecDisplayMode )
 			{
-				D3DDISPLAYMODE displayMode = pAdapterInfo->displayModeList.GetAt( idm );
 				DWORD dwWidth = displayMode.Width;
 				DWORD dwHeight = displayMode.Height;
 
@@ -106,7 +103,7 @@ CKTDGUIDialogType CX2MemoryHolder::GetOptionDLG( CKTDXStage* pStage )
 					StringCchPrintf( strResolution, 50, L"%d x %d", dwWidth, dwHeight );
 
 					if( false == pCombo_Graphic_Resoultion->ContainsItem( strResolution ) )
-						pCombo_Graphic_Resoultion->AddItem( strResolution, ULongToPtr( dwResolutionData ) );
+						pCombo_Graphic_Resoultion->AddItem( strResolution, reinterpret_cast<void*>( static_cast<uintptr_t>( dwResolutionData ) ) );
 				}
 			}
 

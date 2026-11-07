@@ -123,6 +123,8 @@ add_library(x2_client_x2lib STATIC X2Lib/stdafx.cpp)
 add_library(x2::client_x2lib ALIAS x2_client_x2lib)
 target_include_directories(x2_client_x2lib PUBLIC ${PROJECT_SOURCE_DIR}/src/server/X2Lib)
 target_link_libraries(x2_client_x2lib PUBLIC x2::client_ktdxlib x2::client_serverprotocol)
+# IDC_CURSOR1 of x2.exe's resources (CX2Cursor).
+x2_embed_file(x2_client_x2lib ${CMAKE_CURRENT_SOURCE_DIR}/X2/DefaultCursor.cur X2DefaultCursorFile)
 
 # The executable (x2.exe in the original). X2/X2Skeleton.cpp stands in for X2.cpp until KTDXLIB and X2Lib build
 # (docs/porting/client-x2.md).

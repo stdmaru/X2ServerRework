@@ -404,7 +404,7 @@ bool CX2StateOption::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 
 
 			DXUTDeviceSettings deviceSettings = DXUTGetDeviceSettings();
-			DWORD dwResolution = PtrToUlong( pCombo_Graphic_Resoultion->GetSelectedData() );
+			DWORD dwResolution = static_cast<DWORD>( reinterpret_cast<uintptr_t>( pCombo_Graphic_Resoultion->GetSelectedData() ) );
 
 			DWORD dwWidth = LOWORD( dwResolution );
 			DWORD dwHeight = HIWORD( dwResolution );

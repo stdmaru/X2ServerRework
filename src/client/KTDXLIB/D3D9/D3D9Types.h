@@ -475,6 +475,38 @@ struct D3DSURFACE_DESC {
     UINT Height;
 };
 
+// The presentation parameters and display modes, as DXUT's device settings carry them (DXUTDeviceSettings; X2Lib
+// reads the depth format, the size and the interval, 2026-11-07).
+enum D3DDEVTYPE { D3DDEVTYPE_HAL = 1, D3DDEVTYPE_REF = 2, D3DDEVTYPE_SW = 3, D3DDEVTYPE_NULLREF = 4, D3DDEVTYPE_FORCE_DWORD = 0x7fffffff };
+enum D3DMULTISAMPLE_TYPE { D3DMULTISAMPLE_NONE = 0, D3DMULTISAMPLE_NONMASKABLE = 1, D3DMULTISAMPLE_FORCE_DWORD = 0x7fffffff };
+enum D3DSWAPEFFECT { D3DSWAPEFFECT_DISCARD = 1, D3DSWAPEFFECT_FLIP = 2, D3DSWAPEFFECT_COPY = 3, D3DSWAPEFFECT_FORCE_DWORD = 0x7fffffff };
+#define D3DPRESENT_INTERVAL_DEFAULT         0x00000000L
+#define D3DPRESENT_INTERVAL_ONE             0x00000001L
+#define D3DPRESENT_INTERVAL_IMMEDIATE       0x80000000L
+#define D3DPRESENTFLAG_LOCKABLE_BACKBUFFER  0x00000001
+struct D3DPRESENT_PARAMETERS {
+    UINT BackBufferWidth;
+    UINT BackBufferHeight;
+    D3DFORMAT BackBufferFormat;
+    UINT BackBufferCount;
+    D3DMULTISAMPLE_TYPE MultiSampleType;
+    DWORD MultiSampleQuality;
+    D3DSWAPEFFECT SwapEffect;
+    HWND hDeviceWindow;
+    BOOL Windowed;
+    BOOL EnableAutoDepthStencil;
+    D3DFORMAT AutoDepthStencilFormat;
+    DWORD Flags;
+    UINT FullScreen_RefreshRateInHz;
+    UINT PresentationInterval;
+};
+struct D3DDISPLAYMODE {
+    UINT Width;
+    UINT Height;
+    UINT RefreshRate;
+    D3DFORMAT Format;
+};
+
 enum D3DRESOURCETYPE {
     D3DRTYPE_SURFACE = 1, D3DRTYPE_VOLUME = 2, D3DRTYPE_TEXTURE = 3, D3DRTYPE_VOLUMETEXTURE = 4,
     D3DRTYPE_CUBETEXTURE = 5, D3DRTYPE_VERTEXBUFFER = 6, D3DRTYPE_INDEXBUFFER = 7,
