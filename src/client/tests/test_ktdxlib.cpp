@@ -236,6 +236,89 @@ TEST_CASE("ktdxlib: RenderStageNow draws and presents one frame of a stage (T38)
     CHECK(!Lines(*engine.render, "Submit").empty());
 }
 
+extern CKTDGEffectStateManager* g_pEffectStateManager;     // x2_globals.cpp, as X2.cpp defines it
+
+namespace {
+
+// g_pEffectStateManager as X2.cpp sets it up, for the scope.
+struct EffectStateManager {
+    EffectStateManager() { g_pEffectStateManager = new CKTDGEffectStateManager; }
+    ~EffectStateManager()
+    {
+        g_pEffectStateManager->Release();
+        g_pEffectStateManager = NULL;
+    }
+};
+
+const x2::d3d9::EffectProgram* BoundProgram(x2::d3d9::Device& device)
+{
+    x2::d3d9::VertexShader* shader = nullptr;
+    device.GetVertexShader(&shader);
+    return shader ? &shader->Program() : nullptr;
+}
+
+}  // namespace
+
+// CKTDGXRenderer on its effect (T37) through CKTDGEffectStateManager: passes set their states and shader, the
+// constants reach the device when the manager flushes them, and the end of the render restores the device.
+TEST_CASE("ktdxlib: CKTDGXRenderer runs XRenderer's techniques through the state manager")
+{
+    Engine engine;
+    EffectStateManager manager;
+    CKTDGXRenderer renderer(&engine.device);
+    REQUIRE(SUCCEEDED(renderer.OnResetDevice()));   // no archives: the cartoon textures are missing
+
+    const DWORD cull = engine.device.GetRenderState(D3DRS_CULLMODE);
+    const DWORD factor = engine.device.GetRenderState(D3DRS_TEXTUREFACTOR);
+    CKTDGXRenderer::RenderParam param;
+    param.renderType = CKTDGXRenderer::RT_BLACK_EDGE;
+    param.fOutLineWide = 2.0f;
+    D3DXMATRIX world;
+    D3DXMatrixTranslation(&world, 5, 6, 7);
+    int passes = 0;
+    for (HRESULT hr = renderer.BeginRender(param, &world); SUCCEEDED(hr); hr = renderer.NextRender()) {
+        ++passes;
+        CHECK(engine.device.GetRenderState(D3DRS_CULLMODE) == D3DCULL_CW);
+        CHECK(engine.device.GetRenderState(D3DRS_TEXTUREFACTOR) == 0xFF000000);
+        REQUIRE(BoundProgram(engine.device) != nullptr);
+        CHECK(BoundProgram(engine.device)->kind == x2::d3d9::EffectProgram::BlackEdge);
+        CHECK(BoundProgram(engine.device)->bones == 0);
+        // The manager caches the constants until CKTDGXRenderer's commit flushes them.
+        g_pEffectStateManager->PostCommitChanges();
+        float r[4 * 4];
+        REQUIRE(engine.device.GetVertexShaderConstantF(0, r, 4));
+        CHECK(std::memcmp(r, &world, sizeof(world)) == 0);     // the world matrix is palette slot 0
+        REQUIRE(engine.device.GetVertexShaderConstantF(95, r, 1));
+        CHECK(r[2] == 2.0f);
+    }
+    CHECK(passes == 1);
+    CHECK(BoundProgram(engine.device) == nullptr);
+    CHECK(engine.device.GetRenderState(D3DRS_CULLMODE) == cull);
+    CHECK(engine.device.GetRenderState(D3DRS_TEXTUREFACTOR) == factor);
+
+    // Light flow: blending on for the pass, off after it.
+    param.renderType = CKTDGXRenderer::RT_LIGHT_FLOW_WORLD_X;
+    passes = 0;
+    for (HRESULT hr = renderer.BeginRender(param, &world); SUCCEEDED(hr); hr = renderer.NextRender()) {
+        ++passes;
+        CHECK(engine.device.GetRenderState(D3DRS_ALPHABLENDENABLE) == TRUE);
+        CHECK(engine.device.GetRenderState(D3DRS_DESTBLEND) == D3DBLEND_DESTALPHA);
+        CHECK(BoundProgram(engine.device)->kind == x2::d3d9::EffectProgram::FlowWorld);
+    }
+    CHECK(passes == 1);
+    CHECK(engine.device.GetRenderState(D3DRS_ALPHABLENDENABLE) == FALSE);
+
+    // A render group of a two-pass technique.
+    int groupPasses = 0;
+    for (HRESULT hr = renderer.BeginRenderGroup(CKTDGXRenderer::RT_CARTOON_COLOR_EDGE); SUCCEEDED(hr);
+         hr = renderer.NextRenderGroup()) {
+        ++groupPasses;
+    }
+    CHECK(groupPasses == 2);
+    CHECK(BoundProgram(engine.device) == nullptr);
+    renderer.OnLostDevice();
+}
+
 TEST_CASE("ktdxlib: KFileSerializer and CRC_32 read and write whole files")
 {
     const std::filesystem::path dir = std::filesystem::temp_directory_path() / "x2_ktdxlib_tests";
@@ -368,8 +451,11 @@ TEST_CASE("ktdxlib: the client's skinned meshes load (X2_MASSFILE_CLIENT_DATA)")
     KGCMassFileManager* files = g_pKTDXApp->GetDeviceManager()->GetMassFileManager();
     REQUIRE_MESSAGE(files->AddMassFiles(folder, KGCMassFileManager::GetClientArchiveNames(), error), error);
     files->LockMassFileMap();
-    std::vector<std::string> failed;
-    std::size_t withBones = 0, ksmLoaded = 0, animated = 0, sets = 0;
+    EffectStateManager manager;
+    CKTDGXRenderer renderer(&engine.device);
+    REQUIRE(SUCCEEDED(renderer.OnResetDevice()));
+    std::vector<std::string> failed, notDrawn;
+    std::size_t withBones = 0, ksmLoaded = 0, animated = 0, sets = 0, draws = 0;
     for (const std::string& name : skinned) {
         std::wstring wide(name.begin(), name.end());
         auto* mesh = new SkinMesh(&engine.device, wide);
@@ -400,14 +486,42 @@ TEST_CASE("ktdxlib: the client's skinned meshes load (X2_MASSFILE_CLIENT_DATA)")
         if (loaded && mesh->GetMaxSkinningVertices() > 0) {
             ++withBones;
         }
+        if (loaded && mesh->GetDrawFrameNum() > 0) {
+            // Drawn as a unit is: the cartoon technique with its black outline, every frame through the palette.
+            x2::render::null::ClearCommands(*engine.render);
+            REQUIRE(engine.device.BeginScene());
+            CKTDGXRenderer::RenderParam param;
+            param.renderType = CKTDGXRenderer::RT_CARTOON_BLACK_EDGE;
+            param.fOutLineWide = 0.5f;
+            for (HRESULT hr = renderer.BeginRender(param); SUCCEEDED(hr); hr = renderer.NextRender()) {
+                for (DWORD j = 0; j < mesh->GetDrawFrameNum(); ++j) {
+                    renderer.DrawFrame(*mesh, *mesh->GetDrawFrame(j));
+                }
+            }
+            engine.device.EndScene();
+            REQUIRE(engine.device.Present());
+            const std::size_t drawn = Lines(*engine.render, "DrawIndexedPrimitives").size();
+            if (drawn == 0) {
+                notDrawn.push_back(name);
+            }
+            draws += drawn;
+        }
         delete mesh;
         x2::render::null::ClearCommands(*engine.render);
     }
     MESSAGE(skinned.size() << " skinned meshes (" << ksm.size() << " KSM, " << ksmLoaded << " of them loaded), "
                            << withBones << " loaded with bones, " << animated << " animated (" << sets
-                           << " animation sets), " << failed.size() << " failed");
+                           << " animation sets), " << failed.size() << " failed; " << draws
+                           << " draws through CKTDGXRenderer, " << notDrawn.size() << " meshes drew nothing, "
+                           << engine.device.PipelineCount() << " pipelines");
     for (std::size_t i = 0; i < failed.size() && i < 40; ++i) {
         MESSAGE(failed[i]);
     }
+    for (std::size_t i = 0; i < notDrawn.size() && i < 40; ++i) {
+        MESSAGE("not drawn: " << notDrawn[i]);
+    }
     CHECK(failed.empty());
+    CHECK(notDrawn.empty());
+    CHECK_MESSAGE(engine.device.LastError().empty(), engine.device.LastError());
+    renderer.OnLostDevice();
 }

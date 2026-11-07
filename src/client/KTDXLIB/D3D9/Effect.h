@@ -122,7 +122,7 @@ private:
     int m_shaderIndex = -1, m_fogEnable = -1, m_fogColor = -1;     // parameters, by index
 };
 
-// XRenderer.fx (CKTDGXRenderer): its 20 techniques and 19 parameters, as written in shaders/XRenderer.vert.hlsl.
+// XRenderer.fx (CKTDGXRenderer): its 19 techniques and 19 parameters, as written in shaders/XRenderer.vert.hlsl.
 const EffectDescription& XRendererEffect();
 
 // What replaces D3DXCreateEffect(XRenderer.fx): the effect on the device, with one reference.
