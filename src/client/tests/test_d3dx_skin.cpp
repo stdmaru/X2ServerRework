@@ -39,13 +39,23 @@ struct Ref {
     }
 };
 
+char* Copy(const char* text)
+{
+    if (text == nullptr) {
+        return nullptr;
+    }
+    char* copy = new char[std::strlen(text) + 1];
+    std::memcpy(copy, text, std::strlen(text) + 1);
+    return copy;
+}
+
 // Frames and containers as the engine's allocator makes them: names copied, the mesh and skin info referenced.
 struct Allocator : ID3DXAllocateHierarchy {
     int frames = 0, containers = 0;
     STDMETHOD(CreateFrame)(THIS_ LPCSTR name, LPD3DXFRAME* frame) override
     {
         auto* f = new D3DXFRAME{};
-        f->Name = name ? strdup(name) : nullptr;
+        f->Name = Copy(name);
         *frame = f;
         ++frames;
         return D3D_OK;
@@ -55,7 +65,7 @@ struct Allocator : ID3DXAllocateHierarchy {
                                    LPD3DXSKININFO skin, LPD3DXMESHCONTAINER* container) override
     {
         auto* c = new D3DXMESHCONTAINER{};
-        c->Name = name ? strdup(name) : nullptr;
+        c->Name = Copy(name);
         c->MeshData = *data;
         c->MeshData.pMesh->AddRef();
         c->NumMaterials = materialCount;
@@ -63,7 +73,7 @@ struct Allocator : ID3DXAllocateHierarchy {
         for (DWORD i = 0; i < materialCount; ++i) {
             c->pMaterials[i].MatD3D = materials[i].MatD3D;
             c->pMaterials[i].pTextureFilename =
-                materials[i].pTextureFilename ? strdup(materials[i].pTextureFilename) : nullptr;
+                Copy(materials[i].pTextureFilename);
         }
         const DWORD faces = data->pMesh->GetNumFaces();
         c->pAdjacency = new DWORD[faces * 3];
@@ -78,16 +88,16 @@ struct Allocator : ID3DXAllocateHierarchy {
     }
     STDMETHOD(DestroyFrame)(THIS_ LPD3DXFRAME frame) override
     {
-        std::free(frame->Name);
+        delete[] frame->Name;
         delete frame;
         --frames;
         return D3D_OK;
     }
     STDMETHOD(DestroyMeshContainer)(THIS_ LPD3DXMESHCONTAINER c) override
     {
-        std::free(c->Name);
+        delete[] c->Name;
         for (DWORD i = 0; i < c->NumMaterials; ++i) {
-            std::free(c->pMaterials[i].pTextureFilename);
+            delete[] c->pMaterials[i].pTextureFilename;
         }
         delete[] c->pMaterials;
         delete[] c->pAdjacency;
