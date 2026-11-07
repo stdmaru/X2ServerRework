@@ -338,7 +338,7 @@ TEST_CASE("d3dx: D3DXLoadMeshHierarchyFromXInMemory and D3DXFrameCalculateBoundi
     const std::string text = kHierarchy;
     REQUIRE(D3DXLoadMeshHierarchyFromXInMemory(text.data(), static_cast<DWORD>(text.size()), D3DXMESH_MANAGED, &device,
                                                &alloc, nullptr, &root, &controller) == D3D_OK);
-    CHECK(controller == nullptr);   // the animation step
+    CHECK(controller == nullptr);   // no AnimationSet
     REQUIRE(root != nullptr);
     CHECK(std::string(root->Name) == "Root");
     CHECK(root->TransformationMatrix._42 == 1.0f);

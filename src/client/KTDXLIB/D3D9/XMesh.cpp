@@ -3,10 +3,12 @@
 
 #include "XMesh.h"
 
+#include "Animation.h"
 #include "Mesh.h"
 #include "SkinInfo.h"
 
 #include <algorithm>
+#include <cmath>
 #include <cstring>
 #include <map>
 
@@ -630,8 +632,167 @@ private:
 
 }  // namespace
 
+namespace {
+
+// A matrix key as SRT keys (row-vector matrices: scale, rotation, translation). The rotation is stored as its
+// conjugate, as the file's quaternion keys are.
+void Decompose(const D3DXMATRIX& m, D3DXVECTOR3& scale, D3DXQUATERNION& rotation, D3DXVECTOR3& translation)
+{
+    translation = D3DXVECTOR3(m.m[3][0], m.m[3][1], m.m[3][2]);
+    float r[3][3];
+    float s[3];
+    for (int row = 0; row < 3; ++row) {
+        s[row] = std::sqrt(m.m[row][0] * m.m[row][0] + m.m[row][1] * m.m[row][1] + m.m[row][2] * m.m[row][2]);
+        for (int column = 0; column < 3; ++column) {
+            r[row][column] = s[row] > 0.0f ? m.m[row][column] / s[row] : (row == column ? 1.0f : 0.0f);
+        }
+    }
+    const float determinant = r[0][0] * (r[1][1] * r[2][2] - r[1][2] * r[2][1]) -
+                              r[0][1] * (r[1][0] * r[2][2] - r[1][2] * r[2][0]) +
+                              r[0][2] * (r[1][0] * r[2][1] - r[1][1] * r[2][0]);
+    if (determinant < 0.0f) {
+        s[0] = -s[0];
+        for (float& v : r[0]) {
+            v = -v;
+        }
+    }
+    scale = D3DXVECTOR3(s[0], s[1], s[2]);
+    D3DXQUATERNION q;
+    const float trace = r[0][0] + r[1][1] + r[2][2];
+    if (trace > 0.0f) {
+        const float k = std::sqrt(trace + 1.0f) * 2.0f;
+        q = D3DXQUATERNION((r[1][2] - r[2][1]) / k, (r[2][0] - r[0][2]) / k, (r[0][1] - r[1][0]) / k, k / 4.0f);
+    } else if (r[0][0] >= r[1][1] && r[0][0] >= r[2][2]) {
+        const float k = std::sqrt(1.0f + r[0][0] - r[1][1] - r[2][2]) * 2.0f;
+        q = D3DXQUATERNION(k / 4.0f, (r[0][1] + r[1][0]) / k, (r[2][0] + r[0][2]) / k, (r[1][2] - r[2][1]) / k);
+    } else if (r[1][1] >= r[2][2]) {
+        const float k = std::sqrt(1.0f + r[1][1] - r[0][0] - r[2][2]) * 2.0f;
+        q = D3DXQUATERNION((r[0][1] + r[1][0]) / k, k / 4.0f, (r[1][2] + r[2][1]) / k, (r[2][0] - r[0][2]) / k);
+    } else {
+        const float k = std::sqrt(1.0f + r[2][2] - r[0][0] - r[1][1]) * 2.0f;
+        q = D3DXQUATERNION((r[2][0] + r[0][2]) / k, (r[1][2] + r[2][1]) / k, k / 4.0f, (r[0][1] - r[1][0]) / k);
+    }
+    D3DXQuaternionNormalize(&q, &q);
+    rotation = D3DXQUATERNION(-q.x, -q.y, -q.z, q.w);
+}
+
+// One Animation: the frame it names (none: empty) and its AnimationKeys (0 rotation as w,x,y,z, 1 scale, 2 position, 4 matrix).
+bool ReadAnimation(const Object& object, x2::d3d9::SrtAnimation& out)
+{
+    for (const Object& child : object.children) {
+        if (child.IsReference() || child.type == "Frame") {
+            out.name = child.name;
+        }
+    }
+    for (const Object* key : x2::d3d9::xfile::ChildrenOfType(object, "AnimationKey")) {
+        Cursor in(*key);
+        const std::uint32_t type = in.Dword();
+        const std::uint32_t count = in.Dword();
+        for (std::uint32_t k = 0; k < count && !in.Failed(); ++k) {
+            const float time = static_cast<float>(in.Dword());
+            const std::uint32_t values = in.Dword();
+            float v[16] = {};
+            for (std::uint32_t i = 0; i < values; ++i) {
+                const float value = in.Float();
+                if (i < 16) {
+                    v[i] = value;
+                }
+            }
+            if (type == 0 && values == 4) {
+                out.rotations.push_back({time, D3DXQUATERNION(v[1], v[2], v[3], v[0])});
+            } else if (type == 1 && values == 3) {
+                out.scales.push_back({time, D3DXVECTOR3(v[0], v[1], v[2])});
+            } else if (type == 2 && values == 3) {
+                out.translations.push_back({time, D3DXVECTOR3(v[0], v[1], v[2])});
+            } else if ((type == 3 || type == 4) && values == 16) {
+                D3DXMATRIX m;
+                std::memcpy(&m, v, sizeof(m));
+                D3DXVECTOR3 scale, translation;
+                D3DXQUATERNION rotation;
+                Decompose(m, scale, rotation, translation);
+                out.scales.push_back({time, scale});
+                out.rotations.push_back({time, rotation});
+                out.translations.push_back({time, translation});
+            } else {
+                return false;
+            }
+        }
+        if (in.Failed()) {
+            return false;
+        }
+    }
+    return true;
+}
+
+// The file's AnimationSets as keyframed sets (AnimTicksPerSecond, 4800 without one; looped) on a controller with an
+// output per named frame, 2 tracks and 30 events, the first set on track 0. Nothing for a file without animation.
+HRESULT ReadAnimations(const x2::d3d9::xfile::File& file, LPD3DXFRAME root, LPD3DXANIMATIONCONTROLLER& controller)
+{
+    controller = nullptr;
+    double ticksPerSecond = 4800.0;
+    std::vector<const Object*> sets;
+    for (const Object& object : file.objects) {
+        if (object.type == "AnimTicksPerSecond") {
+            Cursor in(object);
+            ticksPerSecond = in.Dword();
+        } else if (object.type == "AnimationSet") {
+            sets.push_back(&object);
+        }
+    }
+    if (sets.empty()) {
+        return D3D_OK;
+    }
+    HRESULT hr = D3DXCreateAnimationController(D3DXFrameNumNamedMatrices(root), static_cast<UINT>(sets.size()), 2,
+                                               30, &controller);
+    for (std::size_t s = 0; SUCCEEDED(hr) && s < sets.size(); ++s) {
+        std::vector<x2::d3d9::SrtAnimation> animations;
+        for (const Object* object : x2::d3d9::xfile::ChildrenOfType(*sets[s], "Animation")) {
+            x2::d3d9::SrtAnimation animation;
+            if (!ReadAnimation(*object, animation)) {
+                hr = E_FAIL;
+                break;
+            }
+            if (!animation.name.empty()) {  // an animation of no frame moves nothing
+                animations.push_back(std::move(animation));
+            }
+        }
+        LPD3DXKEYFRAMEDANIMATIONSET set = nullptr;
+        if (SUCCEEDED(hr)) {
+            hr = D3DXCreateKeyframedAnimationSet(sets[s]->name.empty() ? nullptr : sets[s]->name.c_str(),
+                                                 ticksPerSecond, D3DXPLAY_LOOP, static_cast<UINT>(animations.size()),
+                                                 0, nullptr, &set);
+        }
+        for (std::size_t a = 0; SUCCEEDED(hr) && a < animations.size(); ++a) {
+            const x2::d3d9::SrtAnimation& animation = animations[a];
+            hr = set->RegisterAnimationSRTKeys(
+                animation.name.c_str(), static_cast<UINT>(animation.scales.size()),
+                static_cast<UINT>(animation.rotations.size()), static_cast<UINT>(animation.translations.size()),
+                animation.scales.data(), animation.rotations.data(), animation.translations.data(), nullptr);
+        }
+        if (SUCCEEDED(hr)) {
+            hr = controller->RegisterAnimationSet(set);
+        }
+        if (SUCCEEDED(hr) && s == 0) {
+            hr = controller->SetTrackAnimationSet(0, set);
+        }
+        if (set) {
+            set->Release();
+        }
+    }
+    if (SUCCEEDED(hr)) {
+        hr = D3DXFrameRegisterNamedMatrices(root, controller);
+    }
+    if (FAILED(hr) && controller) {
+        controller->Release();
+        controller = nullptr;
+    }
+    return hr;
+}
+
+}  // namespace
+
 // The file's frames as the hierarchy (a nameless root around them when there is not exactly one top-level frame, or
-// there are top-level meshes), one mesh container per Mesh. No animation controller yet: the animation step makes it.
+// there are top-level meshes), one mesh container per Mesh, and its animation sets on an animation controller.
 HRESULT D3DXLoadMeshHierarchyFromXInMemory(LPCVOID Memory, DWORD SizeOfMemory, DWORD MeshOptions,
                                            x2::d3d9::Device* pDevice, LPD3DXALLOCATEHIERARCHY pAlloc,
                                            ID3DXLoadUserData* /*pUserDataLoader*/, LPD3DXFRAME* ppFrameHierarchy,
@@ -687,6 +848,13 @@ HRESULT D3DXLoadMeshHierarchyFromXInMemory(LPCVOID Memory, DWORD SizeOfMemory, D
             D3DXFrameDestroy(root, pAlloc);
         }
         return hr;
+    }
+    if (ppAnimController) {
+        hr = ReadAnimations(*file, root, *ppAnimController);
+        if (FAILED(hr)) {
+            D3DXFrameDestroy(root, pAlloc);
+            return hr;
+        }
     }
     *ppFrameHierarchy = root;
     return D3D_OK;
