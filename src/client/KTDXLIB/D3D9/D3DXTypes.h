@@ -38,7 +38,7 @@
 #define PURE                     = 0
 #endif
 
-namespace x2::d3d9 { class Device; class Texture; class VertexBuffer; }
+namespace x2::d3d9 { class Device; class Texture; class VertexBuffer; class IndexBuffer; }
 
 typedef const char* D3DXHANDLE;
 typedef double DOUBLE;
@@ -251,8 +251,8 @@ enum D3DDECLTYPE { D3DDECLTYPE_FLOAT1 = 0, D3DDECLTYPE_FLOAT2 = 1, D3DDECLTYPE_F
 enum D3DDECLUSAGE { D3DDECLUSAGE_POSITION = 0, D3DDECLUSAGE_BLENDWEIGHT = 1, D3DDECLUSAGE_BLENDINDICES = 2,
                     D3DDECLUSAGE_NORMAL = 3, D3DDECLUSAGE_TEXCOORD = 5, D3DDECLUSAGE_COLOR = 10 };
 
-class IDirect3DIndexBuffer9;
-typedef IDirect3DIndexBuffer9* LPDIRECT3DINDEXBUFFER9;
+using IDirect3DIndexBuffer9 = x2::d3d9::IndexBuffer;
+using LPDIRECT3DINDEXBUFFER9 = x2::d3d9::IndexBuffer*;
 
 enum _D3DXMESH {
     D3DXMESH_32BIT = 0x001,
