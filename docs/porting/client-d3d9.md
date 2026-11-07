@@ -21,10 +21,11 @@ everything runs through this layer ([Phase 5](../project/roadmap.md#phase-5--dee
 | `D3D9Types.h` | The vocabulary: `D3DRS_*`, `D3DTSS_*`, `D3DSAMP_*`, `D3DTOP_*`, `D3DTA_*`, `D3DBLEND*`, `D3DCMP_*`, `D3DCULL_*`, `D3DSTENCILOP_*`, `D3DFVF_*`, `D3DPT_*`, `D3DFMT_*`, `D3DPOOL_*`, `D3DUSAGE_*`, `D3DLOCK_*`, `D3DCLEAR_*`, `D3DTS_*`, `D3DLOCKED_RECT`, `D3DRECT`, `D3DSURFACE_DESC`, with d3d9types.h's names and values (enumerations as C enums, flags as macros). The math types come from [`x2/platform/d3dx_math.h`](platform.md) |
 | `Device.h` / `Device.cpp` | `x2::d3d9::Device`: states, frame, clears, draws, pipeline and sampler caches, uploads |
 | `Resources.cpp` | `Texture` (levels, `LockRect`/`UnlockRect`, format conversion), `VertexBuffer` and `IndexBuffer` (`Lock`/`Unlock`, `D3DFMT_INDEX16`/`INDEX32`) |
-| `D3DXTypes.h`, `D3DXTexture.cpp`, `D3DX.cpp` | D3DX's types for the engine (interfaces as plain classes, T38; the D3DX objects keep `AddRef`/`Release`, held by a minimal `CComPtr`) and its functions on the device: `D3DXCheckTextureRequirements` follows `Device::SupportsTextureFormat`, `D3DXCreateTexture` creates on the device, `D3DXGetImageInfoFromFileInMemory`/`D3DXCreateTextureFromFileInMemoryEx` read [image files](#image-files-2026-11-07-clientd3dx-textures). `D3DX.cpp`: reference-counted `D3DXCreateBuffer`, `D3DXFrameDestroy`/`Find`/`NumNamedMatrices`; mesh hierarchies, skin, animation controller and effect creators fail with `E_NOTIMPL` until their steps (2026-11-07). `ID3DXMesh`, `ID3DXSkinInfo`, `ID3DXAnimationSet`/`Keyframed`/`Compressed` and `ID3DXEffect` are declared with the methods the engine calls; `ID3DXLine` is gone (no user) |
+| `D3DXTypes.h`, `D3DXTexture.cpp`, `D3DX.cpp` | D3DX's types for the engine (interfaces as plain classes, T38; the D3DX objects keep `AddRef`/`Release`, held by a minimal `CComPtr`) and its functions on the device: `D3DXCheckTextureRequirements` follows `Device::SupportsTextureFormat`, `D3DXCreateTexture` creates on the device, `D3DXGetImageInfoFromFileInMemory`/`D3DXCreateTextureFromFileInMemoryEx` read [image files](#image-files-2026-11-07-clientd3dx-textures). `D3DX.cpp`: reference-counted `D3DXCreateBuffer`, `D3DXFrameDestroy`/`Find`/`NumNamedMatrices`/`CalculateBoundingSphere`; the animation controller and effect creators fail with `E_NOTIMPL` until their steps (2026-11-07). `ID3DXMesh`, `ID3DXSkinInfo`, `ID3DXAnimationSet`/`Keyframed`/`Compressed` and `ID3DXEffect` are declared with the methods the engine calls; `ID3DXLine` is gone (no user) |
 | `Mesh.h` / `Mesh.cpp` | [`ID3DXMesh`](#meshes-2026-11-07-clientx-loader) on the device (`x2::d3d9::Mesh`), FVF element offsets (`DescribeVertex`), point representatives and adjacency; `D3DXCreateMeshFVF`, `D3DXWeldVertices`, `D3DXIntersect` |
 | `XFile.h` / `XFile.cpp` | The [.x file](#x-files-2026-11-07-clientx-loader) reader (`x2::d3d9::xfile`): text, binary, MSZIP, as a tree of data objects |
-| `XMesh.h` / `XMesh.cpp` | A `Mesh` data object as D3DX lays it out (`ReadXMesh`), the materials buffer, `D3DXLoadMeshFromXInMemory` |
+| `XMesh.h` / `XMesh.cpp` | A `Mesh` data object as D3DX lays it out (`ReadXMesh`), the materials buffer, `D3DXLoadMeshFromXInMemory`, `D3DXLoadMeshHierarchyFromXInMemory` |
+| `SkinInfo.h` / `SkinInfo.cpp` | [`ID3DXSkinInfo`](#skinned-meshes-2026-11-07-clientx-skin) (`x2::d3d9::SkinInfo`), `D3DXCreateSkinInfoFVF`, `ConvertToIndexedBlendedMesh` |
 | `Formats.h` | Texel and block sizes, pitch and rows of the D3D9 formats the device takes (shared by the device and the loaders) |
 | `Image.h`, `Image.cpp`, `ImageConvert.cpp` | The [image files](#image-files-2026-11-07-clientd3dx-textures) (`x2::d3d9::image`) and the texel conversions: BGRA8 to and from every device format, BC1–3 decoding, BC encoding (stb_dxt), D3DX's resize filters. The device's upload conversion uses them too |
 | `Fvf.h` | FVF → element offsets and the vertex shader variant |
@@ -217,6 +218,46 @@ T38). What the engine calls (`CKTDXDeviceXMesh` for `.x` and KOG's `.kme`, `KTDX
 | `D3DXWeldVertices` | Also splits and partially matches (`WELDPARTIALMATCHES`, `DONOTSPLIT`) | Whole-vertex welds only | The engine welds with zero epsilons and no flags |
 | Order of a loaded mesh's vertices | D3DX's own | The file's, split vertices appended | Same mesh; the engine welds and optimizes after loading |
 
+## Skinned meshes (2026-11-07, `client/x-skin`)
+
+`CKTDXDeviceXSkinMesh` loads skinned `.x` files through `D3DXLoadMeshHierarchyFromXInMemory` and its own allocator,
+and KOG's KSM files with `D3DXCreateMeshFVF` + `D3DXCreateSkinInfoFVF`; both then go through `Optimize` (with the
+vertex remap), `ID3DXSkinInfo::Remap` and `ConvertToIndexedBlendedMesh` (a palette of 20), and are cloned to
+`XYZB4 | NORMAL | TEX1 | LASTBETA_UBYTE4`. Drawing them uses the matrix palette in the effects (T37), which is a later
+step; this one gives the engine its data.
+
+- **`D3DXLoadMeshHierarchyFromXInMemory`**: one frame per `Frame` (`CreateFrame`, `FrameTransformMatrix` or identity,
+  children in file order), one mesh container per `Mesh` with faces (`CreateMeshContainer`: the mesh in the file's FVF,
+  materials with their names — D3DX's default one when there are none —, empty effect instances, adjacency, and skin
+  info when the mesh has `SkinWeights`). A single top-level frame is the root; otherwise a nameless root holds the
+  top-level frames and meshes. The allocator takes its own references. No animation controller yet (null; the
+  animation step makes it), and the user data loader is not called.
+- **Skin info**: one bone per `SkinWeights` (name, offset matrix, influences); the file's vertex indices go to every
+  vertex split from that vertex (`XMesh::source`). `XSkinMeshHeader` is not needed. `Remap` takes Optimize's
+  new-to-old remap (a vertex copied twice gets its influences twice; dropped vertices lose theirs).
+- **`ConvertToIndexedBlendedMesh`**: faces sorted by attribute (stable), then grouped in order into bone combinations
+  while their bones fit the palette; each combination's vertices are copied after the previous one's (a vertex shared
+  by two combinations is copied twice). Each vertex keeps its four strongest influences, sorted by weight; the FVF is
+  `XYZB<n> | LASTBETA_UBYTE4` plus the mesh's other elements, n the largest influence count: n − 1 weights are stored
+  (the last one is what they leave of 1) and the last DWORD holds the palette slots. The mesh's attribute of each face
+  is its combination's index, and its attribute table is the combinations; the bone combination buffer holds the
+  entries and their palettes (unused slots `0xFFFFFFFF`). Face and vertex remaps and the adjacency follow. A face
+  whose bones do not fit the palette fails.
+- **Blend weights and indices in vertex layouts**: `LASTBETA_UBYTE4`/`D3DCOLOR` make the position's last DWORD the
+  blend indices, so `CloneMeshFVF` copies weights as weights and indices as indices (from `XYZB2` to `XYZB4`, the
+  indices move to the last DWORD), and `GetDeclaration` describes both.
+- **`D3DXFrameCalculateBoundingSphere`**: the sphere around the centroid of every mesh vertex of the frame, its
+  siblings and children, moved by the frames' matrices, in the given frame's parent space; zero without meshes.
+
+### Behavior changes and assumptions
+
+| Where | D3DX | Port | Why |
+|---|---|---|---|
+| A vertex no bone influences | *Not known* | Follows bone 0 with weight 1 | So its palette slot is a real bone |
+| More than four influences on a vertex | *Assumed* the four strongest | The four strongest; the last weight is implied | The indices are four bytes |
+| Vertex order in a combination | D3DX's own | First use by the faces | Same mesh; the engine only uses the ranges |
+| `D3DXFrameCalculateBoundingSphere` | *Assumed* frames' matrices applied, siblings included (as the other frame functions) | The same | To confirm against the original when collision spheres are used |
+
 ## DXUT and the skeleton
 
 The [DXUT replacement](client-dxut.md) creates the device with the window, passes it to the `FrameMove`/`FrameRender`
@@ -265,6 +306,18 @@ lockable), state blocks. Each comes with the engine file that needs it.
   On 2026-11-07: 26,874 unique `.x`/`.y` names, 25,679 `xof` files (the rest are KOG's `KME`/`KSM`), all read; the
   25,588 with a mesh all load and pass, with every attribute below the material count (a few minutes in the debug
   build, the device calls serialized).
+- `test_d3dx_skin.cpp` (`-tc="d3dx*"`): skin info (names, offsets, influences, `Remap` with copies and drops),
+  `ConvertToIndexedBlendedMesh` on a strip of five bones with a palette of three (combinations split by palette and
+  material, shared vertices copied, weights and slots, adjacency, the clone to the engine's format and its
+  declaration, a palette too small), `D3DXLoadMeshHierarchyFromXInMemory` (frames, skinned and unskinned containers,
+  weights on split vertices, a nameless root, a file with no frame or mesh) and `D3DXFrameCalculateBoundingSphere`.
+- `test_ktdxlib.cpp`, with `X2_MASSFILE_CLIENT_DATA`: every skinned mesh of the client loaded by
+  `CKTDXDeviceXSkinMesh` itself, textures included. On 2026-11-07: 8,687 skinned meshes (7,600 `.x` with
+  `SkinWeights`, 1,087 KSM — named `.x` too); every `.x` loads (hierarchy, optimize, remap, indexed blended mesh).
+  1,083 KSM files fail where the engine reads their animation controller, which comes before their optimize and
+  conversion: those run on KSM from the animation step on (the 4 KSM without one load now). The engine logs
+  `OpenXET` failures for meshes with no `.xet` side file (most of them; it is optional) into `ErrorLog.txt` in the
+  working folder.
 - **On a GPU** (skipped without video or GPU, as in the container and CI): renders into a 16×16 target and reads it back —
   texels mapped 1:1 to pixels with the half-pixel rule, the vertex color with no texture, 50% blending, the alpha test, a
   fan. Passed on the user's Linux desktop (Vulkan, 2026-11-06).

@@ -207,9 +207,9 @@ two globals (`g_pd3dDevice`, `g_pEffectStateManager`) are defined for them in `t
   target as a texture). `CKTDGEffectStateManager` returns `D3D_OK` for what it forwards, ignores the shader constants
   the effects will not need until T37, and is no longer reference counted (`Release` deletes it).
 - **D3DX interfaces** (`ID3DXMesh`, skin info, animation sets, `ID3DXEffect`) are declared
-  ([D3D9 device](client-d3d9.md#files)); static meshes (`.x` and `.kme`) load since 2026-11-07
-  ([Meshes](client-d3d9.md#meshes-2026-11-07-clientx-loader)), while skin info, animation and effect creators fail until
-  their steps; `CComQIPtr` became `dynamic_cast` into `CComPtr`.
+  ([D3D9 device](client-d3d9.md#files)); static meshes (`.x` and `.kme`) and skinned `.x` meshes load since 2026-11-07
+  ([Meshes](client-d3d9.md#meshes-2026-11-07-clientx-loader), [Skinned meshes](client-d3d9.md#skinned-meshes-2026-11-07-clientx-skin)),
+  while the animation and effect creators fail until their steps; `CComQIPtr` became `dynamic_cast` into `CComPtr`.
 - **Threads**: `KJohnThread` is on `std::thread` (suspended start through a condition variable, `ResumeThread`,
   `HasThread`, `IsThreadFinished`); the device manager's loader uses it with an atomic sync flag.
 - **Files**: `KFileSerializer` and `CRC_32::GetCRCFromFile` read and write with file streams; narrow names are UTF-8.
@@ -241,7 +241,7 @@ two globals (`g_pd3dDevice`, `g_pEffectStateManager`) are defined for them in `t
 | `CKTDGUIDialog` script-name tool (dev) | Opened `MouseOverScript.txt` in notepad++ | Only writes the file | Windows-only editor |
 | `CKTDXApp` start-up (release) | Minimized every other window unless `Inactivation_Mimize.txt` existed | Nothing minimized | Windows shell only; hostile to the desktop |
 | `CKTDGUIIMEEditBox::Initialize` | Loaded `version.dll` and the IME's DLL | Nothing loaded | [Client: IME](client-ime.md#behavior-changes) |
-| D3DX mesh hierarchies, skins, animation controllers, effects | Loaded by D3DX | Fail (`E_NOTIMPL`) | Until the skin, animation and effect steps (static meshes load since 2026-11-07) |
+| D3DX animation controllers, effects | Loaded by D3DX | Fail (`E_NOTIMPL`) | Until the animation and effect steps (meshes, hierarchies and skin info load since 2026-11-07) |
 
 ### Tests (`x2_client_tests -tc="ktdxlib*,d3dx*"`)
 
@@ -251,4 +251,4 @@ drawn and submitted, a frame with no stage), `KFileSerializer` save/load/cap/mis
 ## Status
 
 All of `KTDXLIB` compiles and links ([roadmap](../project/roadmap.md#phase-4--client-graphics)); textures (2026-11-07)
-and static meshes (2026-11-07) load; skinned meshes, animation and effects are the next steps.
+and static and skinned meshes (2026-11-07) load; animation (with the KSM files) and effects are the next steps.

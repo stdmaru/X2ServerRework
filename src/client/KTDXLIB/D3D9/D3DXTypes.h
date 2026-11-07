@@ -577,8 +577,9 @@ HRESULT D3DXFrameDestroy(LPD3DXFRAME pFrameRoot, LPD3DXALLOCATEHIERARCHY pAlloc)
 LPD3DXFRAME D3DXFrameFind(const D3DXFRAME* pFrameRoot, LPCSTR Name);
 UINT D3DXFrameNumNamedMatrices(const D3DXFRAME* pFrameRoot);
 
-// Static meshes (Mesh.cpp, XMesh.cpp) work. Mesh hierarchies, skinning, animation sets and controllers, and effects
-// fail with E_NOTIMPL and return null objects until their steps (docs/porting/client-d3d9.md).
+// Meshes, mesh hierarchies (Mesh.cpp, XMesh.cpp) and skin info (SkinInfo.cpp) work; a hierarchy comes with no
+// animation controller yet. Animation sets and controllers and effects fail with E_NOTIMPL and return null objects until
+// their steps (docs/porting/client-d3d9.md).
 class ID3DXLoadUserData;
 HRESULT D3DXLoadMeshFromXInMemory(LPCVOID Memory, DWORD SizeOfMemory, DWORD Options, x2::d3d9::Device* pD3DDevice,
                                   LPD3DXBUFFER* ppAdjacency, LPD3DXBUFFER* ppMaterials,

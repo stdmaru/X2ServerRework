@@ -63,11 +63,19 @@ VertexElements DescribeVertex(DWORD fvf)
     case D3DFVF_XYZB3:
     case D3DFVF_XYZB4:
     case D3DFVF_XYZB5:
+    {
         e.position = 0;
-        e.weights = 12;
-        e.weightCount = ((fvf & D3DFVF_POSITION_MASK) - D3DFVF_XYZB1) / 2 + 1;
-        offset = 12 + 4 * e.weightCount;
+        const UINT betas = ((fvf & D3DFVF_POSITION_MASK) - D3DFVF_XYZB1) / 2 + 1;
+        const bool lastIsIndices = (fvf & (D3DFVF_LASTBETA_UBYTE4 | D3DFVF_LASTBETA_D3DCOLOR)) != 0;
+        e.weightCount = betas - (lastIsIndices ? 1 : 0);
+        e.weights = e.weightCount > 0 ? 12 : -1;
+        if (lastIsIndices) {
+            e.indices = static_cast<int>(12 + 4 * e.weightCount);
+            e.indicesAreColor = (fvf & D3DFVF_LASTBETA_D3DCOLOR) != 0;
+        }
+        offset = 12 + 4 * betas;
         break;
+    }
     default: return {};
     }
     if (fvf & D3DFVF_NORMAL) {
@@ -114,6 +122,7 @@ void ConvertVertex(const std::byte* in, const VertexElements& from, std::byte* o
     };
     copy(from.position, to.position, 4 * std::min(from.positionFloats, to.positionFloats));
     copy(from.weights, to.weights, 4 * std::min(from.weightCount, to.weightCount));
+    copy(from.indices, to.indices, 4);
     copy(from.normal, to.normal, 12);
     copy(from.pointSize, to.pointSize, 4);
     if (to.diffuse >= 0) {
@@ -222,15 +231,10 @@ HRESULT Mesh::GetDeclaration(D3DVERTEXELEMENT9 declaration[MAX_FVF_DECL_SIZE])
     const bool rhw = (m_fvf & D3DFVF_POSITION_MASK) == D3DFVF_XYZRHW;
     add(e.position, static_cast<BYTE>(kDeclFloat1 + e.positionFloats - 1), rhw ? kUsagePositionT : kUsagePosition, 0);
     if (e.weightCount > 0) {
-        const bool lastIsIndices = (m_fvf & (D3DFVF_LASTBETA_UBYTE4 | D3DFVF_LASTBETA_D3DCOLOR)) != 0;
-        const UINT weights = e.weightCount - (lastIsIndices ? 1 : 0);
-        if (weights > 0) {
-            add(e.weights, static_cast<BYTE>(kDeclFloat1 + weights - 1), kUsageBlendWeight, 0);
-        }
-        if (lastIsIndices) {
-            add(e.weights + static_cast<int>(4 * weights),
-                (m_fvf & D3DFVF_LASTBETA_D3DCOLOR) ? kDeclColor : kDeclUbyte4, kUsageBlendIndices, 0);
-        }
+        add(e.weights, static_cast<BYTE>(kDeclFloat1 + e.weightCount - 1), kUsageBlendWeight, 0);
+    }
+    if (e.indices >= 0) {
+        add(e.indices, e.indicesAreColor ? kDeclColor : kDeclUbyte4, kUsageBlendIndices, 0);
     }
     if (e.normal >= 0) {
         add(e.normal, static_cast<BYTE>(kDeclFloat1 + 2), kUsageNormal, 0);
@@ -633,6 +637,9 @@ bool Weldable(const std::byte* a, const std::byte* b, const x2::d3d9::VertexElem
     }
     if (positionOnly) {
         return true;
+    }
+    if (e.indices >= 0 && std::memcmp(a + e.indices, b + e.indices, 4) != 0) {
+        return false;
     }
     if ((e.weights >= 0 && !within(a, b, e.weights, e.weightCount, eps.BlendWeights)) ||
         (e.normal >= 0 && !within(a, b, e.normal, 3, eps.Normal)) ||

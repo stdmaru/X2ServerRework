@@ -4,6 +4,7 @@
 #include "XMesh.h"
 
 #include "Mesh.h"
+#include "SkinInfo.h"
 
 #include <algorithm>
 #include <cstring>
@@ -434,5 +435,259 @@ HRESULT D3DXLoadMeshFromXInMemory(LPCVOID Memory, DWORD SizeOfMemory, DWORD Opti
         *pNumMaterials = static_cast<DWORD>(materials.size());
     }
     *ppMesh = mesh;
+    return D3D_OK;
+}
+
+// --- Mesh hierarchies -----------------------------------------------------------------------------------------------
+
+namespace {
+
+using x2::d3d9::xfile::Cursor;
+using x2::d3d9::xfile::Object;
+
+D3DXMATRIX FrameMatrix(const Object& frame)
+{
+    D3DXMATRIX matrix;
+    D3DXMatrixIdentity(&matrix);
+    if (const Object* object = x2::d3d9::xfile::FirstChildOfType(frame, "FrameTransformMatrix")) {
+        Cursor in(*object);
+        for (int i = 0; i < 16; ++i) {
+            matrix.m[i / 4][i % 4] = in.Float();
+        }
+    }
+    return matrix;
+}
+
+// The skin info of a mesh with SkinWeights (null without), its influences moved onto the split vertices.
+HRESULT ReadSkin(const Object& object, const XMesh& mesh, x2::d3d9::SkinInfo*& skin)
+{
+    skin = nullptr;
+    const auto weights = x2::d3d9::xfile::ChildrenOfType(object, "SkinWeights");
+    if (weights.empty()) {
+        return D3D_OK;
+    }
+    std::vector<std::vector<DWORD>> copies(mesh.source.size());
+    for (DWORD v = 0; v < mesh.VertexCount(); ++v) {
+        if (mesh.source[v] >= copies.size()) {
+            return E_FAIL;
+        }
+        copies[mesh.source[v]].push_back(v);
+    }
+    skin = new x2::d3d9::SkinInfo(mesh.VertexCount(), mesh.fvf, static_cast<DWORD>(weights.size()));
+    for (DWORD bone = 0; bone < weights.size(); ++bone) {
+        Cursor in(*weights[bone]);
+        const std::string name = in.String();
+        const std::uint32_t count = in.Dword();
+        if (in.Failed() || count > in.Remaining() / 2) {
+            skin->Release();
+            skin = nullptr;
+            return E_FAIL;
+        }
+        std::vector<DWORD> fileVertices(count);
+        for (DWORD& v : fileVertices) {
+            v = in.Dword();
+        }
+        std::vector<DWORD> vertices;
+        std::vector<float> values;
+        for (DWORD i = 0; i < count; ++i) {
+            const float weight = in.Float();
+            if (fileVertices[i] < copies.size()) {
+                for (DWORD v : copies[fileVertices[i]]) {
+                    vertices.push_back(v);
+                    values.push_back(weight);
+                }
+            }
+        }
+        D3DXMATRIX offset;
+        for (int i = 0; i < 16; ++i) {
+            offset.m[i / 4][i % 4] = in.Float();
+        }
+        if (in.Failed()) {
+            skin->Release();
+            skin = nullptr;
+            return E_FAIL;
+        }
+        skin->SetBoneName(bone, name.c_str());
+        skin->SetBoneOffsetMatrix(bone, &offset);
+        skin->SetBoneInfluence(bone, static_cast<DWORD>(vertices.size()), vertices.data(), values.data());
+    }
+    return D3D_OK;
+}
+
+class HierarchyLoader {
+public:
+    HierarchyLoader(const x2::d3d9::xfile::File& file, DWORD options, x2::d3d9::Device* device,
+                    LPD3DXALLOCATEHIERARCHY alloc)
+        : m_file(file), m_options(options), m_device(device), m_alloc(alloc)
+    {
+    }
+
+    HRESULT NewFrame(const std::string& name, const D3DXMATRIX& matrix, LPD3DXFRAME& frame)
+    {
+        frame = nullptr;
+        const HRESULT hr = m_alloc->CreateFrame(name.empty() ? nullptr : name.c_str(), &frame);
+        if (FAILED(hr) || frame == nullptr) {
+            return FAILED(hr) ? hr : E_FAIL;
+        }
+        frame->TransformationMatrix = matrix;
+        frame->pMeshContainer = nullptr;
+        frame->pFrameSibling = nullptr;
+        frame->pFrameFirstChild = nullptr;
+        return D3D_OK;
+    }
+
+    // `object`'s meshes and frames, in file order, under `frame`.
+    HRESULT AddChildren(const std::vector<Object>& objects, LPD3DXFRAME frame)
+    {
+        LPD3DXFRAME* nextFrame = &frame->pFrameFirstChild;
+        LPD3DXMESHCONTAINER* nextContainer = &frame->pMeshContainer;
+        for (const Object& object : objects) {
+            if (object.type == "Frame") {
+                LPD3DXFRAME child = nullptr;
+                HRESULT hr = NewFrame(object.name, FrameMatrix(object), child);
+                if (FAILED(hr)) {
+                    return hr;
+                }
+                *nextFrame = child;
+                nextFrame = &child->pFrameSibling;
+                hr = AddChildren(object.children, child);
+                if (FAILED(hr)) {
+                    return hr;
+                }
+            } else if (object.type == "Mesh") {
+                LPD3DXMESHCONTAINER container = nullptr;
+                const HRESULT hr = NewContainer(object, container);
+                if (FAILED(hr)) {
+                    return hr;
+                }
+                if (container != nullptr) {
+                    *nextContainer = container;
+                    nextContainer = &container->pNextMeshContainer;
+                }
+            }
+        }
+        return D3D_OK;
+    }
+
+private:
+    HRESULT NewContainer(const Object& object, LPD3DXMESHCONTAINER& container)
+    {
+        container = nullptr;
+        XMesh data;
+        std::string error;
+        if (!x2::d3d9::ReadXMesh(m_file, object, data, error)) {
+            return E_FAIL;
+        }
+        if (data.FaceCount() == 0) {
+            return D3D_OK;      // nothing to draw
+        }
+        const DWORD options = m_options | (data.VertexCount() > 0xFFFF ? DWORD{D3DXMESH_32BIT} : 0);
+        x2::d3d9::Mesh* mesh = x2::d3d9::Mesh::Create(m_device, data.FaceCount(), data.VertexCount(), options, data.fvf);
+        if (mesh == nullptr || !mesh->SetContents(data.vertices, data.indices, data.attributes)) {
+            if (mesh) {
+                mesh->Release();
+            }
+            return D3DERR_INVALIDCALL;
+        }
+        x2::d3d9::SkinInfo* skin = nullptr;
+        if (const HRESULT hr = ReadSkin(object, data, skin); FAILED(hr)) {
+            mesh->Release();
+            return hr;
+        }
+        std::vector<DWORD> adjacency(std::size_t{data.FaceCount()} * 3);
+        mesh->GenerateAdjacency(0.0f, adjacency.data());
+        LPD3DXBUFFER materials = nullptr;
+        x2::d3d9::CreateMaterialBuffer(data.materials, &materials);
+        std::vector<D3DXEFFECTINSTANCE> effects(data.materials.size(), D3DXEFFECTINSTANCE{nullptr, 0, nullptr});
+        D3DXMESHDATA meshData;
+        meshData.Type = D3DXMESHTYPE_MESH;
+        meshData.pMesh = mesh;
+        const HRESULT hr = m_alloc->CreateMeshContainer(
+            object.name.empty() ? nullptr : object.name.c_str(), &meshData,
+            static_cast<const D3DXMATERIAL*>(materials->GetBufferPointer()), effects.data(),
+            static_cast<DWORD>(data.materials.size()), adjacency.data(), skin, &container);
+        // The allocator keeps its own references.
+        materials->Release();
+        mesh->Release();
+        if (skin) {
+            skin->Release();
+        }
+        if (FAILED(hr)) {
+            container = nullptr;
+            return hr;
+        }
+        if (container) {
+            container->pNextMeshContainer = nullptr;
+        }
+        return D3D_OK;
+    }
+
+    const x2::d3d9::xfile::File& m_file;
+    DWORD m_options;
+    x2::d3d9::Device* m_device;
+    LPD3DXALLOCATEHIERARCHY m_alloc;
+};
+
+}  // namespace
+
+// The file's frames as the hierarchy (a nameless root around them when there is not exactly one top-level frame, or
+// there are top-level meshes), one mesh container per Mesh. No animation controller yet: the animation step makes it.
+HRESULT D3DXLoadMeshHierarchyFromXInMemory(LPCVOID Memory, DWORD SizeOfMemory, DWORD MeshOptions,
+                                           x2::d3d9::Device* pDevice, LPD3DXALLOCATEHIERARCHY pAlloc,
+                                           ID3DXLoadUserData* /*pUserDataLoader*/, LPD3DXFRAME* ppFrameHierarchy,
+                                           LPD3DXANIMATIONCONTROLLER* ppAnimController)
+{
+    if (ppAnimController) {
+        *ppAnimController = nullptr;
+    }
+    if (!ppFrameHierarchy) {
+        return D3DERR_INVALIDCALL;
+    }
+    *ppFrameHierarchy = nullptr;
+    if (!Memory || !pDevice || !pAlloc) {
+        return D3DERR_INVALIDCALL;
+    }
+    std::string error;
+    const auto file =
+        x2::d3d9::xfile::Read(std::span(static_cast<const std::byte*>(Memory), SizeOfMemory), error);
+    if (!file) {
+        return E_FAIL;
+    }
+    std::size_t frames = 0, meshes = 0;
+    const Object* single = nullptr;
+    for (const Object& object : file->objects) {
+        if (object.type == "Frame") {
+            ++frames;
+            single = &object;
+        } else if (object.type == "Mesh") {
+            ++meshes;
+        }
+    }
+    if (frames + meshes == 0) {
+        return E_FAIL;
+    }
+    HierarchyLoader loader(*file, MeshOptions, pDevice, pAlloc);
+    LPD3DXFRAME root = nullptr;
+    HRESULT hr;
+    if (frames == 1 && meshes == 0) {
+        hr = loader.NewFrame(single->name, FrameMatrix(*single), root);
+        if (SUCCEEDED(hr)) {
+            hr = loader.AddChildren(single->children, root);
+        }
+    } else {
+        D3DXMATRIX identity;
+        D3DXMatrixIdentity(&identity);
+        hr = loader.NewFrame({}, identity, root);
+        if (SUCCEEDED(hr)) {
+            hr = loader.AddChildren(file->objects, root);
+        }
+    }
+    if (FAILED(hr)) {
+        if (root) {
+            D3DXFrameDestroy(root, pAlloc);
+        }
+        return hr;
+    }
+    *ppFrameHierarchy = root;
     return D3D_OK;
 }

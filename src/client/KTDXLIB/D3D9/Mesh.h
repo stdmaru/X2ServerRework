@@ -16,8 +16,10 @@ struct VertexElements {
     UINT size = 0;
     int position = -1;              // 3 floats (XYZRHW and XYZW: 4)
     UINT positionFloats = 3;
-    int weights = -1;               // blend weights after the position
-    UINT weightCount = 0;           // floats, the last one possibly UBYTE4/D3DCOLOR indices
+    int weights = -1;               // blend weights after the position (floats)
+    UINT weightCount = 0;
+    int indices = -1;               // LASTBETA_UBYTE4/D3DCOLOR: the blend indices, the position's last DWORD
+    bool indicesAreColor = false;   // LASTBETA_D3DCOLOR
     int normal = -1;
     int pointSize = -1;
     int diffuse = -1;
