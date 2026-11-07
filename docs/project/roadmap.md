@@ -249,10 +249,12 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
         [D3D9 device › Meshes](../porting/client-d3d9.md#meshes-2026-11-07-clientx-loader).
   - [x] `client/x-skin`: frame hierarchies (`D3DXLoadMeshHierarchyFromXInMemory`), `ID3DXSkinInfo`,
         `ConvertToIndexedBlendedMesh`, `D3DXFrameCalculateBoundingSphere`; all 7,600 skinned `.x` of the client load
-        through `CKTDXDeviceXSkinMesh` (2026-11-07); KSM files wait for their animation controller. See
+        through `CKTDXDeviceXSkinMesh` (2026-11-07). See
         [D3D9 device › Skinned meshes](../porting/client-d3d9.md#skinned-meshes-2026-11-07-clientx-skin).
-  - [ ] `client/x-animation`: the animation controller and the keyframed/compressed animation sets (and with them the
-        KSM files).
+  - [x] `client/x-animation`: the animation controller (tracks, events, blending, clones), keyframed and compressed
+        animation sets, `.x` animation sets; all 8,687 skinned meshes of the client load, the 1,087 KSM included, and
+        every animation set of the 5,466 animated `.x` and the KSM files plays (2026-11-07). See
+        [D3D9 device › Animation](../porting/client-d3d9.md#animation-2026-11-07-clientx-animation).
 - [ ] ImGui renderer on `x2::render`, replacing the tools' `sdlgpu3` escape hatch (T36).
 - [x] Silent sound backend (2026-11-06, `client/ktdxlib-engine`, [Sound](../porting/client-ktdxlib.md#sound)): `CKTDXDeviceSound`, `KTDSManager` and
       `CKTDXDeviceManager::OpenSound` keep their interface and play nothing, so the 149 files that use sound compile

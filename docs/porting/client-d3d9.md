@@ -21,11 +21,12 @@ everything runs through this layer ([Phase 5](../project/roadmap.md#phase-5--dee
 | `D3D9Types.h` | The vocabulary: `D3DRS_*`, `D3DTSS_*`, `D3DSAMP_*`, `D3DTOP_*`, `D3DTA_*`, `D3DBLEND*`, `D3DCMP_*`, `D3DCULL_*`, `D3DSTENCILOP_*`, `D3DFVF_*`, `D3DPT_*`, `D3DFMT_*`, `D3DPOOL_*`, `D3DUSAGE_*`, `D3DLOCK_*`, `D3DCLEAR_*`, `D3DTS_*`, `D3DLOCKED_RECT`, `D3DRECT`, `D3DSURFACE_DESC`, with d3d9types.h's names and values (enumerations as C enums, flags as macros). The math types come from [`x2/platform/d3dx_math.h`](platform.md) |
 | `Device.h` / `Device.cpp` | `x2::d3d9::Device`: states, frame, clears, draws, pipeline and sampler caches, uploads |
 | `Resources.cpp` | `Texture` (levels, `LockRect`/`UnlockRect`, format conversion), `VertexBuffer` and `IndexBuffer` (`Lock`/`Unlock`, `D3DFMT_INDEX16`/`INDEX32`) |
-| `D3DXTypes.h`, `D3DXTexture.cpp`, `D3DX.cpp` | D3DX's types for the engine (interfaces as plain classes, T38; the D3DX objects keep `AddRef`/`Release`, held by a minimal `CComPtr`) and its functions on the device: `D3DXCheckTextureRequirements` follows `Device::SupportsTextureFormat`, `D3DXCreateTexture` creates on the device, `D3DXGetImageInfoFromFileInMemory`/`D3DXCreateTextureFromFileInMemoryEx` read [image files](#image-files-2026-11-07-clientd3dx-textures). `D3DX.cpp`: reference-counted `D3DXCreateBuffer`, `D3DXFrameDestroy`/`Find`/`NumNamedMatrices`/`CalculateBoundingSphere`; the animation controller and effect creators fail with `E_NOTIMPL` until their steps (2026-11-07). `ID3DXMesh`, `ID3DXSkinInfo`, `ID3DXAnimationSet`/`Keyframed`/`Compressed` and `ID3DXEffect` are declared with the methods the engine calls; `ID3DXLine` is gone (no user) |
+| `D3DXTypes.h`, `D3DXTexture.cpp`, `D3DX.cpp` | D3DX's types for the engine (interfaces as plain classes, T38; the D3DX objects keep `AddRef`/`Release`, held by a minimal `CComPtr`) and its functions on the device: `D3DXCheckTextureRequirements` follows `Device::SupportsTextureFormat`, `D3DXCreateTexture` creates on the device, `D3DXGetImageInfoFromFileInMemory`/`D3DXCreateTextureFromFileInMemoryEx` read [image files](#image-files-2026-11-07-clientd3dx-textures). `D3DX.cpp`: reference-counted `D3DXCreateBuffer`, `D3DXFrameDestroy`/`Find`/`NumNamedMatrices`/`CalculateBoundingSphere`; the effect creators fail with `E_NOTIMPL` until their step (2026-11-07). `ID3DXMesh`, `ID3DXSkinInfo`, `ID3DXAnimationSet`/`Keyframed`/`Compressed` and `ID3DXEffect` are declared with the methods the engine calls; `ID3DXLine` is gone (no user) |
 | `Mesh.h` / `Mesh.cpp` | [`ID3DXMesh`](#meshes-2026-11-07-clientx-loader) on the device (`x2::d3d9::Mesh`), FVF element offsets (`DescribeVertex`), point representatives and adjacency; `D3DXCreateMeshFVF`, `D3DXWeldVertices`, `D3DXIntersect` |
 | `XFile.h` / `XFile.cpp` | The [.x file](#x-files-2026-11-07-clientx-loader) reader (`x2::d3d9::xfile`): text, binary, MSZIP, as a tree of data objects |
 | `XMesh.h` / `XMesh.cpp` | A `Mesh` data object as D3DX lays it out (`ReadXMesh`), the materials buffer, `D3DXLoadMeshFromXInMemory`, `D3DXLoadMeshHierarchyFromXInMemory` |
 | `SkinInfo.h` / `SkinInfo.cpp` | [`ID3DXSkinInfo`](#skinned-meshes-2026-11-07-clientx-skin) (`x2::d3d9::SkinInfo`), `D3DXCreateSkinInfoFVF`, `ConvertToIndexedBlendedMesh` |
+| `Animation.h` / `Animation.cpp` | [Animation](#animation-2026-11-07-clientx-animation): keyframed and compressed sets, `x2::d3d9::AnimationController`, `D3DXCreateAnimationController`, `D3DXFrameRegisterNamedMatrices`, `D3DXCreateKeyframedAnimationSet`, `D3DXCreateCompressedAnimationSet` |
 | `Formats.h` | Texel and block sizes, pitch and rows of the D3D9 formats the device takes (shared by the device and the loaders) |
 | `Image.h`, `Image.cpp`, `ImageConvert.cpp` | The [image files](#image-files-2026-11-07-clientd3dx-textures) (`x2::d3d9::image`) and the texel conversions: BGRA8 to and from every device format, BC1–3 decoding, BC encoding (stb_dxt), D3DX's resize filters. The device's upload conversion uses them too |
 | `Fvf.h` | FVF → element offsets and the vertex shader variant |
@@ -230,8 +231,9 @@ step; this one gives the engine its data.
   children in file order), one mesh container per `Mesh` with faces (`CreateMeshContainer`: the mesh in the file's FVF,
   materials with their names — D3DX's default one when there are none —, empty effect instances, adjacency, and skin
   info when the mesh has `SkinWeights`). A single top-level frame is the root; otherwise a nameless root holds the
-  top-level frames and meshes. The allocator takes its own references. No animation controller yet (null; the
-  animation step makes it), and the user data loader is not called.
+  top-level frames and meshes. The allocator takes its own references. The file's animation sets come on an
+  [animation controller](#animation-2026-11-07-clientx-animation) (none without them); the user data loader is not
+  called.
 - **Skin info**: one bone per `SkinWeights` (name, offset matrix, influences); the file's vertex indices go to every
   vertex split from that vertex (`XMesh::source`). `XSkinMeshHeader` is not needed. `Remap` takes Optimize's
   new-to-old remap (a vertex copied twice gets its influences twice; dropped vertices lose theirs).
@@ -257,6 +259,62 @@ step; this one gives the engine its data.
 | More than four influences on a vertex | *Assumed* the four strongest | The four strongest; the last weight is implied | The indices are four bytes |
 | Vertex order in a combination | D3DX's own | First use by the faces | Same mesh; the engine only uses the ranges |
 | `D3DXFrameCalculateBoundingSphere` | *Assumed* frames' matrices applied, siblings included (as the other frame functions) | The same | To confirm against the original when collision spheres are used |
+
+## Animation (2026-11-07, `client/x-animation`)
+
+`CKTDXDeviceXSkinMesh` gets its animation controller from `D3DXLoadMeshHierarchyFromXInMemory` (`.x`) or builds it
+from the KSM file's KAC data (`KTDXAnimationController::ReadFromMemory`: `D3DXCreateAnimationController` with an
+output per named frame, 2 tracks and 30 events, a keyframed set per KAC set filled with `RegisterAnimationSRTKeys`,
+then `D3DXFrameRegisterNamedMatrices`). Each `CKTDGXSkinAnim` clones it (`CloneAnimationController`, also to add the
+sets of another mesh) and drives tracks 0 and 1: `ChangeAnim` keys linear speed, weight and enable events from global
+time 0 for a transition, `UpdateAnimationFrameStructure` calls `AdvanceTime(dt, NULL)` and reads the track position
+back with `GetTrackDesc`; the sets give `GetName` and `GetPeriod`. The controller writes the frames of the shared
+hierarchy, which `CKTDGXSkinAnim` then copies to its own frames.
+
+In the client (2026-11-07): the 1,083 KSM controllers hold 17,980 sets, **all keyframed** (looped, 4,800 ticks per
+second; no D3DX compressed data); 5,466 `.x` files have 7,295 animation sets (keys of type 0 rotation, 1 scale,
+2 position and 4 matrix).
+
+- **Keyframed sets**: per animation, the frame name and its scale, rotation and translation keys (copied and sorted by
+  time). `GetSRT` takes seconds (× ticks per second): scale and translation interpolated linearly, rotation by slerp,
+  held at the first and last keys; no keys of a kind give scale 1, no rotation, no translation. The period is the last
+  key time over the ticks per second; `GetPeriodicPosition` wraps (loop), clamps (once) or mirrors (ping-pong) a track
+  position into it. More animations than declared are refused. `Compress` stores the keys as they are.
+- **Rotation keys are the conjugates of the rotations**, as `.x` files store them (`w, x, y, z`): the frame matrix is
+  scale × rotation of the conjugate × translation. The client's own data decides it: at time 0, 31,329 KSM rotation
+  keys match their frame's rest matrix only conjugated (7 only as they are), and in the `.x` files 90,885 animated
+  frames are at rest at time 0 (34,389 elsewhere) against 63,122 (62,152) the other way. Matrix keys (type 4, and 3)
+  are decomposed into scale, rotation and translation keys at the same time (a mirrored matrix gets a negative x
+  scale).
+- **`.x` animation sets**: `AnimTicksPerSecond` (4,800 without it), one keyframed set per top-level `AnimationSet`
+  (looped), one animation per `Animation` naming a frame (by reference or inline `Frame`; one naming none is left out),
+  its `AnimationKey`s. A key of another type fails the load. The controller has an output per named frame, a set per
+  `AnimationSet` (file order), 2 tracks and 30 events, and the first set on track 0.
+- **The controller**: outputs are frame matrices by name (`D3DXFrameRegisterNamedMatrices` registers every named frame;
+  a second frame of a name already registered is not animated); tracks start enabled with weight 1, speed 1,
+  position 0, low priority and no set. `AdvanceTime` adds the time, runs the events due, moves every enabled track by
+  `delta × speed` (the position is not wrapped; the set wraps it), and blends: every enabled track with a set and a
+  positive weight gives each animated output its SRT, and an output several tracks move gets their weighted average
+  (rotations by slerp); outputs no track moves keep their matrix. Events: an enable event applies at its start; a speed
+  or weight event goes from the track's value at its start to its value over its duration (linear, or smoothstep for
+  ease-in-ease-out) and is then removed. `KeyTrack*` return a handle, 0 when the track does not exist or the event
+  limit is reached; `UnkeyAllTrackEvents` drops a track's events. `ResetTime` sets the time to 0 and moves pending
+  events by as much. `CloneAnimationController` copies outputs, sets, tracks, events and time within the new limits
+  (fewer outputs or sets than registered are refused).
+- **Compressed sets**: `D3DXCreateCompressedAnimationSet` takes only data from `Compress` (our lossless format:
+  names and keys); `GetCompressedData` returns it.
+
+### Behavior changes and assumptions
+
+| Where | D3DX | Port | Why |
+|---|---|---|---|
+| Compressed animation data | D3DX's own lossy format | Our lossless format; D3DX's data is refused | No client file has any (2026-11-07); only `KTDXAnimationController`'s writer reads it back |
+| Blending tracks | *Not known* whether weights are normalized; priorities blended by a priority blend | Weighted average of the tracks moving an output; priorities not told apart | The engine keys weights that add up to 1 and uses only low priority |
+| Speed changes inside one `AdvanceTime` | *Assumed* the speed after the events | Events first, then `position += delta × speed` | Differs from integrating the speed by part of a frame during a transition |
+| Callback keys | Reported to the handler | Kept, not reported | The engine passes no handler |
+| Order of `.x` sets, track 0 | *Not known* (possibly reversed) | File order, the first on track 0 | The engine finds sets by name |
+| Tracks and events of the `.x` controller | *Assumed* 2 tracks, 30 events | The same as the KSM path | The engine uses tracks 0 and 1 |
+| A second frame of the same name | *Not known* | The first one is the output | The load would otherwise fail |
 
 ## DXUT and the skeleton
 
@@ -295,7 +353,7 @@ lockable), state blocks. Each comes with the engine file that needs it.
   device at every detail level.
 - `test_d3dx.cpp` (`-tc="d3dx*"`, and the two `d3d9:` cases below): the material and lights with D3D9's default light,
   `UpdateTexture`'s copy and refusals, buffers and `CComPtr` reference counts, frame search/count/destroy through the
-  allocator, `D3DXCreateTexture`'s mip chain, the skin and effect creators failing with null outputs.
+  allocator, `D3DXCreateTexture`'s mip chain, the effect creators failing with null outputs.
 - `test_d3dx_mesh.cpp` (`-tc="d3d9: indexed*,xfile*,d3dx*"`): indexed draws (16/32-bit, base vertex, bounds, a released
   index buffer unset); `.x` files written in the test as text, binary and MSZIP (one block and blocks leaning on the
   previous one's dictionary), broken ones; `D3DXLoadMeshFromXInMemory` on a framed quad (normal split, materials inline
@@ -311,11 +369,17 @@ lockable), state blocks. Each comes with the engine file that needs it.
   material, shared vertices copied, weights and slots, adjacency, the clone to the engine's format and its
   declaration, a palette too small), `D3DXLoadMeshHierarchyFromXInMemory` (frames, skinned and unskinned containers,
   weights on split vertices, a nameless root, a file with no frame or mesh) and `D3DXFrameCalculateBoundingSphere`.
+- `test_d3dx_animation.cpp` (`-tc="d3dx*"`): keyframed sets (sorting, interpolation, held ends, missing keys,
+  playback, the animation limit), compressed sets (round trip, foreign data refused), the controller (outputs, tracks,
+  speed, disabled tracks, a `ChangeAnim` transition with its blend, events waiting for their start and after
+  `ResetTime`, the event limit, clones that register more sets, unregistering), and `.x` animation sets (rotation keys
+  at the rest matrix, interpolation, matrix keys and a mirror, no controller without sets, an unknown key type). With
+  `X2_MASSFILE_CLIENT_DATA`, every `.x` with animation sets loads with its controller and every set plays (about
+  2 minutes in the debug build): 5,466 files, 7,295 sets on 2026-11-07, and the rest-matrix count above.
 - `test_ktdxlib.cpp`, with `X2_MASSFILE_CLIENT_DATA`: every skinned mesh of the client loaded by
-  `CKTDXDeviceXSkinMesh` itself, textures included. On 2026-11-07: 8,687 skinned meshes (7,600 `.x` with
-  `SkinWeights`, 1,087 KSM — named `.x` too); every `.x` loads (hierarchy, optimize, remap, indexed blended mesh).
-  1,083 KSM files fail where the engine reads their animation controller, which comes before their optimize and
-  conversion: those run on KSM from the animation step on (the 4 KSM without one load now). The engine logs
+  `CKTDXDeviceXSkinMesh` itself, textures included, and every set of a clone of its controller played. On
+  2026-11-07: 8,687 skinned meshes (7,600 `.x` with `SkinWeights`, 1,087 KSM — named `.x` too), all loaded (hierarchy
+  or KSM frames and KAC controller, optimize, remap, indexed blended mesh); 1,576 animated, 19,926 sets. The engine logs
   `OpenXET` failures for meshes with no `.xet` side file (most of them; it is optional) into `ErrorLog.txt` in the
   working folder.
 - **On a GPU** (skipped without video or GPU, as in the container and CI): renders into a 16×16 target and reads it back —
