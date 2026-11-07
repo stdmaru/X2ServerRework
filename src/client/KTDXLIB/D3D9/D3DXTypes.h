@@ -157,8 +157,8 @@ struct D3DXTRACK_DESC {
     BOOL Enable;
 };
 
-// The members of ID3DXAnimationController the engine calls (its reference counting included, until the `.x` step
-// gives it an owner).
+// ID3DXAnimationController without RegisterAnimationOutput (x2::d3d9::AnimationController has it), callbacks and
+// priority blend, which the engine does not call.
 class ID3DXAnimationController {
 public:
     virtual ~ID3DXAnimationController() = default;
@@ -483,6 +483,7 @@ struct D3DXIMAGE_INFO {
 
 // --- Textures from files -------------------------------------------------------------------------------------------
 
+#define D3DERR_NOTFOUND         static_cast<HRESULT>(0x88760866L)  // MAKE_D3DHRESULT(2150)
 #define D3DERR_NOTAVAILABLE     static_cast<HRESULT>(0x8876086AL)  // MAKE_D3DHRESULT(2154)
 #define D3DERR_OUTOFVIDEOMEMORY static_cast<HRESULT>(0x8876017CL)  // MAKE_D3DHRESULT(380)
 #define D3DXERR_INVALIDDATA     static_cast<HRESULT>(0x88760B59L)  // MAKE_DDHRESULT(2905)
@@ -577,9 +578,8 @@ HRESULT D3DXFrameDestroy(LPD3DXFRAME pFrameRoot, LPD3DXALLOCATEHIERARCHY pAlloc)
 LPD3DXFRAME D3DXFrameFind(const D3DXFRAME* pFrameRoot, LPCSTR Name);
 UINT D3DXFrameNumNamedMatrices(const D3DXFRAME* pFrameRoot);
 
-// Meshes, mesh hierarchies (Mesh.cpp, XMesh.cpp) and skin info (SkinInfo.cpp) work; a hierarchy comes with no
-// animation controller yet. Animation sets and controllers and effects fail with E_NOTIMPL and return null objects until
-// their steps (docs/porting/client-d3d9.md).
+// Meshes, mesh hierarchies (Mesh.cpp, XMesh.cpp), skin info (SkinInfo.cpp) and animation (Animation.cpp) work; effects
+// fail with E_NOTIMPL and return null objects until their step (docs/porting/client-d3d9.md).
 class ID3DXLoadUserData;
 HRESULT D3DXLoadMeshFromXInMemory(LPCVOID Memory, DWORD SizeOfMemory, DWORD Options, x2::d3d9::Device* pD3DDevice,
                                   LPD3DXBUFFER* ppAdjacency, LPD3DXBUFFER* ppMaterials,

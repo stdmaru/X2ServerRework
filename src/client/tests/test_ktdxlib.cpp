@@ -13,6 +13,7 @@
 
 #include <algorithm>
 #include <atomic>
+#include <cmath>
 #include <cstdlib>
 #include <cstring>
 #include <filesystem>
@@ -283,11 +284,26 @@ bool HasObject(const std::vector<x2::d3d9::xfile::Object>& objects, const char* 
     return false;
 }
 
+bool FiniteFrames(const D3DXFRAME* frame)
+{
+    for (; frame != nullptr; frame = frame->pFrameSibling) {
+        for (int i = 0; i < 16; ++i) {
+            if (!std::isfinite(frame->TransformationMatrix.m[i / 4][i % 4])) {
+                return false;
+            }
+        }
+        if (!FiniteFrames(frame->pFrameFirstChild)) {
+            return false;
+        }
+    }
+    return true;
+}
+
 }  // namespace
 
 // Every skinned mesh of the client (.x with SkinWeights, KOG's KSM) loaded by CKTDXDeviceXSkinMesh as the game does:
-// hierarchy, optimize and remap, indexed blended mesh, then its textures. Every .x must load; a KSM file reads its
-// animation controller before the rest, so only those without one load until the animation step (2026-11-07).
+// hierarchy (KSM: frames, then its KAC animation controller), optimize and remap, indexed blended mesh, then its
+// textures. Every one must load, and every animation set of a clone of its controller plays (finite frame matrices).
 TEST_CASE("ktdxlib: the client's skinned meshes load (X2_MASSFILE_CLIENT_DATA)")
 {
     const char* folder = std::getenv("X2_MASSFILE_CLIENT_DATA");
@@ -353,15 +369,33 @@ TEST_CASE("ktdxlib: the client's skinned meshes load (X2_MASSFILE_CLIENT_DATA)")
     REQUIRE_MESSAGE(files->AddMassFiles(folder, KGCMassFileManager::GetClientArchiveNames(), error), error);
     files->LockMassFileMap();
     std::vector<std::string> failed;
-    std::size_t withBones = 0, ksmLoaded = 0;
+    std::size_t withBones = 0, ksmLoaded = 0, animated = 0, sets = 0;
     for (const std::string& name : skinned) {
         std::wstring wide(name.begin(), name.end());
         auto* mesh = new SkinMesh(&engine.device, wide);
-        const bool loaded = SUCCEEDED(mesh->_Load(true)) && mesh->GetFrameRoot() != nullptr && mesh->GetFrameNum() > 0;
-        if (ksm.contains(name)) {
-            ksmLoaded += loaded ? 1 : 0;    // until the animation step, only those without animation sets
-        } else if (!loaded) {
+        bool loaded = SUCCEEDED(mesh->_Load(true)) && mesh->GetFrameRoot() != nullptr && mesh->GetFrameNum() > 0;
+        if (loaded && !mesh->GetIsOnlyModelData()) {
+            LPD3DXANIMATIONCONTROLLER clone = mesh->GetCloneAC();
+            loaded = clone != nullptr && clone->GetNumAnimationSets() > 0;
+            for (UINT s = 0; loaded && s < clone->GetNumAnimationSets(); ++s) {
+                LPD3DXANIMATIONSET set = nullptr;
+                loaded = SUCCEEDED(clone->GetAnimationSet(s, &set)) && SUCCEEDED(clone->SetTrackAnimationSet(0, set)) &&
+                         SUCCEEDED(clone->SetTrackPosition(0, set->GetPeriod() / 2)) &&
+                         SUCCEEDED(clone->AdvanceTime(0.0, nullptr)) && FiniteFrames(mesh->GetFrameRoot());
+                if (set != nullptr) {
+                    set->Release();
+                }
+                ++sets;
+            }
+            if (clone != nullptr) {
+                clone->Release();
+            }
+            ++animated;
+        }
+        if (!loaded) {
             failed.push_back(name);
+        } else if (ksm.contains(name)) {
+            ++ksmLoaded;
         }
         if (loaded && mesh->GetMaxSkinningVertices() > 0) {
             ++withBones;
@@ -370,7 +404,8 @@ TEST_CASE("ktdxlib: the client's skinned meshes load (X2_MASSFILE_CLIENT_DATA)")
         x2::render::null::ClearCommands(*engine.render);
     }
     MESSAGE(skinned.size() << " skinned meshes (" << ksm.size() << " KSM, " << ksmLoaded << " of them loaded), "
-                           << withBones << " loaded with bones, " << failed.size() << " .x failed");
+                           << withBones << " loaded with bones, " << animated << " animated (" << sets
+                           << " animation sets), " << failed.size() << " failed");
     for (std::size_t i = 0; i < failed.size() && i < 40; ++i) {
         MESSAGE(failed[i]);
     }

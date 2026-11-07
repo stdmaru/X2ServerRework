@@ -2,6 +2,7 @@
 set(X2_CLIENT_TEST_SOURCES main.cpp test_messages.cpp test_ime.cpp test_dxut.cpp test_input.cpp test_ktdi.cpp
     test_serverprotocol.cpp test_massfile.cpp test_d3d9.cpp test_movie.cpp test_browser.cpp
     test_removed_integrations.cpp test_ktdxlib.cpp test_d3dx.cpp test_d3dx_texture.cpp test_d3dx_mesh.cpp test_d3dx_skin.cpp
+    test_d3dx_animation.cpp
     x2_globals.cpp)
 if(TARGET x2::client_luacommon)
     list(APPEND X2_CLIENT_TEST_SOURCES test_luacommon.cpp)

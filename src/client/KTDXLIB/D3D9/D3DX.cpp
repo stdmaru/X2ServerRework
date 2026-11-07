@@ -1,6 +1,6 @@
-// D3DX's buffers, frame hierarchies, animation and effects on KTDXLIB's D3D9 device (decision T38). Buffers and frame
-// hierarchies work; animation data and effects fail until their steps and the effects on KTDXLIB's own shaders (T37).
-// Meshes are in Mesh.cpp and XMesh.cpp, skin info in SkinInfo.cpp. See docs/porting/client-d3d9.md.
+// D3DX's buffers, frame hierarchies and effects on KTDXLIB's D3D9 device (decision T38). Buffers and frame hierarchies
+// work; effects fail until the effects on KTDXLIB's own shaders (T37). Meshes are in Mesh.cpp and XMesh.cpp, skin info
+// in SkinInfo.cpp, animation in Animation.cpp. See docs/porting/client-d3d9.md.
 
 #include "D3DXTypes.h"
 #include "Device.h"
@@ -143,33 +143,6 @@ HRESULT D3DXFrameCalculateBoundingSphere(const D3DXFRAME* pFrameRoot, D3DXVECTOR
     }
     return D3DXComputeBoundingSphere(positions.data(), static_cast<DWORD>(positions.size()), sizeof(D3DXVECTOR3),
                                      pObjectCenter, pObjectRadius);
-}
-
-HRESULT D3DXCreateAnimationController(UINT /*MaxNumMatrices*/, UINT /*MaxNumAnimationSets*/, UINT /*MaxNumTracks*/,
-                                      UINT /*MaxNumEvents*/, LPD3DXANIMATIONCONTROLLER* ppAnimController)
-{
-    return NotImplemented(ppAnimController);
-}
-
-HRESULT D3DXFrameRegisterNamedMatrices(LPD3DXFRAME /*pFrameRoot*/, LPD3DXANIMATIONCONTROLLER /*pAnimController*/)
-{
-    return E_NOTIMPL;
-}
-
-HRESULT D3DXCreateKeyframedAnimationSet(LPCSTR /*pName*/, DOUBLE /*TicksPerSecond*/, D3DXPLAYBACK_TYPE /*Playback*/,
-                                        UINT /*NumAnimations*/, UINT /*NumCallbackKeys*/,
-                                        const D3DXKEY_CALLBACK* /*pCallbackKeys*/,
-                                        LPD3DXKEYFRAMEDANIMATIONSET* ppAnimationSet)
-{
-    return NotImplemented(ppAnimationSet);
-}
-
-HRESULT D3DXCreateCompressedAnimationSet(LPCSTR /*pName*/, DOUBLE /*TicksPerSecond*/, D3DXPLAYBACK_TYPE /*Playback*/,
-                                         LPD3DXBUFFER /*pCompressedData*/, UINT /*NumCallbackKeys*/,
-                                         const D3DXKEY_CALLBACK* /*pCallbackKeys*/,
-                                         LPD3DXCOMPRESSEDANIMATIONSET* ppAnimationSet)
-{
-    return NotImplemented(ppAnimationSet);
 }
 
 HRESULT D3DXCreateEffect(x2::d3d9::Device* /*pDevice*/, LPCVOID /*pSrcData*/, UINT /*SrcDataLen*/,
