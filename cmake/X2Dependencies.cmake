@@ -174,6 +174,27 @@ if(X2_BUILD_CLIENT)
     add_library(x2::pl_mpeg ALIAS x2_pl_mpeg)
 endif()
 
+# --- stb: the client's .tga/.png/.jpg/.bmp textures and the BC encoder (docs/porting/client-d3d9.md, T37) -----------
+# stb_image 2.30 and stb_dxt 1.12, single-header C libraries with no releases: pinned to a commit (2026-08-02) and
+# compiled once into their own target, like pl_mpeg. Only the decoders the assets need, from memory.
+if(X2_BUILD_CLIENT)
+    FetchContent_Declare(stb
+        URL https://github.com/nothings/stb/archive/2c980bb59875b0d32144a71867fbdebb2f77cd20.tar.gz
+        URL_HASH SHA256=9a955b1b49a4410088a2e0ee2a9c057c3c907d0c1d75454144cb980aca0ba515
+        SOURCE_SUBDIR do-not-add)
+    FetchContent_MakeAvailable(stb)
+    set(X2_STB_IMPL ${CMAKE_BINARY_DIR}/generated/stb_impl.c)
+    file(GENERATE OUTPUT ${X2_STB_IMPL}
+        CONTENT "#define STB_IMAGE_IMPLEMENTATION\n#include \"stb_image.h\"\n#define STB_DXT_IMPLEMENTATION\n#include \"stb_dxt.h\"\n")
+    add_library(x2_stb STATIC ${X2_STB_IMPL})
+    target_include_directories(x2_stb SYSTEM PUBLIC ${stb_SOURCE_DIR})
+    target_compile_definitions(x2_stb PUBLIC STBI_NO_STDIO STBI_ONLY_TGA STBI_ONLY_PNG STBI_ONLY_JPEG STBI_ONLY_BMP)
+    if(NOT MSVC)
+        target_link_libraries(x2_stb PRIVATE m)
+    endif()
+    add_library(x2::stb ALIAS x2_stb)
+endif()
+
 # --- FreeType: the client's fonts (KTDXLIB, KTDGFreeTypeFont) ---------------------------------------------------
 # Upstream, pinned and linked statically (the original linked freetype2411.lib, docs/original/libraries.md). Only the
 # core: no zlib/bzip2/PNG/Brotli/HarfBuzz (the client's fonts are plain TrueType).
