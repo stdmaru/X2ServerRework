@@ -1,7 +1,6 @@
-// D3DX's buffers, frame hierarchies, skinning, animation and effects on KTDXLIB's D3D9 device (decision T38). Buffers
-// and walking a frame hierarchy work; mesh hierarchies, skinning, animation data and effects fail until their steps and
-// the effects on KTDXLIB's own shaders (T37). Static meshes are in Mesh.cpp and XMesh.cpp. See
-// docs/porting/client-d3d9.md.
+// D3DX's buffers, frame hierarchies, animation and effects on KTDXLIB's D3D9 device (decision T38). Buffers and frame
+// hierarchies work; animation data and effects fail until their steps and the effects on KTDXLIB's own shaders (T37).
+// Meshes are in Mesh.cpp and XMesh.cpp, skin info in SkinInfo.cpp. See docs/porting/client-d3d9.md.
 
 #include "D3DXTypes.h"
 #include "Device.h"
@@ -96,30 +95,54 @@ UINT D3DXFrameNumNamedMatrices(const D3DXFRAME* pFrameRoot)
     return count;
 }
 
-HRESULT D3DXLoadMeshHierarchyFromXInMemory(LPCVOID /*Memory*/, DWORD /*SizeOfMemory*/, DWORD /*MeshOptions*/,
-                                           x2::d3d9::Device* /*pDevice*/, LPD3DXALLOCATEHIERARCHY /*pAlloc*/,
-                                           ID3DXLoadUserData* /*pUserDataLoader*/, LPD3DXFRAME* ppFrameHierarchy,
-                                           LPD3DXANIMATIONCONTROLLER* ppAnimController)
+namespace {
+
+// The positions of every mesh under `frame` (its siblings included), moved by the frames' matrices.
+void FramePositions(const D3DXFRAME* frame, const D3DXMATRIX& parent, std::vector<D3DXVECTOR3>& out)
 {
-    NotImplemented(ppAnimController);
-    return NotImplemented(ppFrameHierarchy);
+    for (; frame != nullptr; frame = frame->pFrameSibling) {
+        D3DXMATRIX transform;
+        D3DXMatrixMultiply(&transform, &frame->TransformationMatrix, &parent);
+        for (const D3DXMESHCONTAINER* container = frame->pMeshContainer; container != nullptr;
+             container = container->pNextMeshContainer) {
+            LPD3DXMESH mesh = container->MeshData.Type == D3DXMESHTYPE_MESH ? container->MeshData.pMesh : nullptr;
+            void* data = nullptr;
+            if (mesh == nullptr || FAILED(mesh->LockVertexBuffer(D3DLOCK_READONLY, &data))) {
+                continue;
+            }
+            const DWORD stride = mesh->GetNumBytesPerVertex();
+            for (DWORD v = 0; v < mesh->GetNumVertices(); ++v) {
+                D3DXVECTOR3 p;
+                std::memcpy(&p, static_cast<const std::byte*>(data) + std::size_t{v} * stride, sizeof(p));
+                D3DXVec3TransformCoord(&p, &p, &transform);
+                out.push_back(p);
+            }
+            mesh->UnlockVertexBuffer();
+        }
+        FramePositions(frame->pFrameFirstChild, transform, out);
+    }
 }
 
-HRESULT D3DXFrameCalculateBoundingSphere(const D3DXFRAME* /*pFrameRoot*/, D3DXVECTOR3* pObjectCenter,
+}  // namespace
+
+// The sphere around the centroid of every vertex of the hierarchy, in the root's space.
+HRESULT D3DXFrameCalculateBoundingSphere(const D3DXFRAME* pFrameRoot, D3DXVECTOR3* pObjectCenter,
                                          FLOAT* pObjectRadius)
 {
-    if (pObjectCenter != nullptr) {
-        *pObjectCenter = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+    if (pFrameRoot == nullptr || pObjectCenter == nullptr || pObjectRadius == nullptr) {
+        return D3DERR_INVALIDCALL;
     }
-    if (pObjectRadius != nullptr) {
-        *pObjectRadius = 0.0f;
+    D3DXMATRIX identity;
+    D3DXMatrixIdentity(&identity);
+    std::vector<D3DXVECTOR3> positions;
+    FramePositions(pFrameRoot, identity, positions);
+    *pObjectCenter = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+    *pObjectRadius = 0.0f;
+    if (positions.empty()) {
+        return D3D_OK;
     }
-    return E_NOTIMPL;
-}
-
-HRESULT D3DXCreateSkinInfoFVF(DWORD /*NumVertices*/, DWORD /*FVF*/, DWORD /*NumBones*/, LPD3DXSKININFO* ppSkinInfo)
-{
-    return NotImplemented(ppSkinInfo);
+    return D3DXComputeBoundingSphere(positions.data(), static_cast<DWORD>(positions.size()), sizeof(D3DXVECTOR3),
+                                     pObjectCenter, pObjectRadius);
 }
 
 HRESULT D3DXCreateAnimationController(UINT /*MaxNumMatrices*/, UINT /*MaxNumAnimationSets*/, UINT /*MaxNumTracks*/,
