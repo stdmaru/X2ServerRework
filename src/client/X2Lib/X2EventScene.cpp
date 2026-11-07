@@ -1291,7 +1291,7 @@ void CX2EventScene::EndEventScene(bool bIgnoreWaitEventScene )
 		if(pCSceneObject->m_eSceneObjectType == OT_XSKINMESH)
 		{
 			g_pData->GetUIMajorXMeshPlayer()->DestroyInstanceHandle(pCSceneObject->m_hSceneObjectMeshHandle);
-			SAFE_DELETE((CKTDGXMeshPlayer::XMeshTemplet*)pCSceneObject->m_pXMeshTemplet);// XMesh의 경우 임시 템플릿 메모리 해제
+			delete (CKTDGXMeshPlayer::XMeshTemplet*)pCSceneObject->m_pXMeshTemplet; pCSceneObject->m_pXMeshTemplet = NULL;// XMesh의 경우 임시 템플릿 메모리 해제
 		}
 		else if(pCSceneObject->m_eSceneObjectType == OT_TEXTURE)
 		{
@@ -1451,7 +1451,7 @@ bool CX2EventScene::PlayEventSequence()
 				if(pCSceneObject->m_eSceneObjectType == OT_XSKINMESH)
 				{
 					g_pData->GetUIMajorXMeshPlayer()->DestroyInstanceHandle(pCSceneObject->m_hSceneObjectMeshHandle);
-					SAFE_DELETE((CKTDGXMeshPlayer::XMeshTemplet*) pCSceneObject->m_pXMeshTemplet);// XMesh의 경우 임시 템플릿 메모리 해제
+					delete (CKTDGXMeshPlayer::XMeshTemplet*)pCSceneObject->m_pXMeshTemplet; pCSceneObject->m_pXMeshTemplet = NULL;// XMesh의 경우 임시 템플릿 메모리 해제
 
 				}
 				else if(pCSceneObject->m_eSceneObjectType == OT_TEXTURE)
@@ -1559,7 +1559,7 @@ bool CX2EventScene::PlayEventSequence()
 				if(pCSceneObject->m_eSceneObjectType == OT_XSKINMESH)
 				{
 					g_pData->GetUIMajorXMeshPlayer()->DestroyInstanceHandle(pCSceneObject->m_hSceneObjectMeshHandle);
-					SAFE_DELETE((CKTDGXMeshPlayer::XMeshTemplet*)pCSceneObject->m_pXMeshTemplet);// XMesh의 경우 임시 템플릿 메모리 해제
+					delete (CKTDGXMeshPlayer::XMeshTemplet*)pCSceneObject->m_pXMeshTemplet; pCSceneObject->m_pXMeshTemplet = NULL;// XMesh의 경우 임시 템플릿 메모리 해제
 				}
 				else if(pCSceneObject->m_eSceneObjectType == OT_TEXTURE)
 				{

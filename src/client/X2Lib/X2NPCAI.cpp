@@ -40,18 +40,3 @@ CX2NPCAI::~CX2NPCAI(void)
 
 }
 
-
-/*virtual*/ void CX2NPCAI::RenderStateParam( WCHAR** wDest_ )
-{
-	return;
-}
-
-/*virtual*/ void CX2NPCAI::RenderPatrolLineIndex( WCHAR** wDest_ )
-{
-	return;
-}
-
-/*virtual*/ void CX2NPCAI::RenderPlayLineIndex( WCHAR** wDest_ )
-{
-	return;
-}

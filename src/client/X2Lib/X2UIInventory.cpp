@@ -2576,7 +2576,7 @@ bool CX2UIInventory::Handler_EGS_CHANGE_INVENTORY_SLOT_ACK(  HWND hWnd, UINT uMs
 					 return false;
 
 				bool bWeaponChanged = false;
-				BOOST_TEST_FOREACH( KInventoryItemInfo&, kInventoryItemInfo, kEvent.m_vecInventorySlotInfo )	// ����� ����
+				for ( KInventoryItemInfo& kInventoryItemInfo : kEvent.m_vecInventorySlotInfo )	// ����� ����
 				{
 					if ( kInventoryItemInfo.m_cSlotCategory == CX2Inventory::ST_E_EQUIP )
 					{

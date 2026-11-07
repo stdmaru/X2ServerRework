@@ -3692,7 +3692,7 @@ int CX2Unit::GetIncreaseSkillLevelBySocket( CX2SkillTree::SKILL_ID eSkillID )
 	int iIncreaseSkillLevelBySocket = 0;
 	/// ���Ͽ� ���� ���� ���� ȿ���� �ִ��� �˻�
 
-	BOOST_TEST_FOREACH( const UidType&, eqipUID, m_UnitData.m_NowEqipItemUIDList )		/// ������� �������� ��� �˻�
+	for ( const UidType& eqipUID : m_UnitData.m_NowEqipItemUIDList )		/// ������� �������� ��� �˻�
 	{
 		CX2Item* pItem = m_UnitData.m_Inventory.GetItem( eqipUID );		/// ������ UID�� ���� ������ ��ü ��ȯ
 		if( NULL == pItem )

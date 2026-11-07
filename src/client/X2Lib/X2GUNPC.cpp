@@ -19179,33 +19179,6 @@ void CX2GUNPC::RenderName()
 #if X2_DEV_TOOLS
 	if( g_pData->GetMyUser()->GetAuthLevel() >= CX2User::XUAL_DEV )
 	{
-// 		WCHAR* wDest = new WCHAR[1000];
-//
-// 		ZeroMemory( wDest, 1000 );
-// 		m_pAI->RenderStateParam( &wDest );
-// 		vPosName.y -= 20.0f;
-// 		g_pX2Game->GetFontForUnitName()->OutProjectionText( vPosName, wDest,
-// 			0xffffaa77, CKTDGFontManager::FS_SHELL, 0xffff0000, NULL, DT_CENTER  );
-
-		// 		ZeroMemory( wDest, 1000 );
-		// 		swprintf( wDest, L"LastTouchedIndex: %d", GetLastTouchLineIndex() );
-		// 		vPosName.y -= 20.0f;
-		// 		g_pX2Game->GetFontForUnitName()->OutProjectionText( vPosName, wDest,
-		// 			0xffffaa77, CKTDGFontManager::FS_SHELL, 0xffff0000, NULL, DT_CENTER  );
-
-		// 		ZeroMemory( wDest, 1000 );
-		// 		m_pAI->RenderPatrolLineIndex( &wDest );
-		// 		vPosName.y -= 20.0f;
-		// 		g_pX2Game->GetFontForUnitName()->OutProjectionText( vPosName, wDest,
-		// 			0xffffaa77, CKTDGFontManager::FS_SHELL, 0xffff0000, NULL, DT_CENTER  );
-		//
-		// 		ZeroMemory( wDest, 1000 );
-		// 		m_pAI->RenderPlayLineIndex( &wDest );
-		// 		vPosName.y -= 20.0f;
-		// 		g_pX2Game->GetFontForUnitName()->OutProjectionText( vPosName, wDest,
-		// 			0xffffaa77, CKTDGFontManager::FS_SHELL, 0xffff0000, NULL, DT_CENTER  );
-
-		//delete wDest;
 		//vPosName = GetPos() + D3DXVECTOR3( 0, -100, 0 );
 
 		//*
@@ -20666,7 +20639,7 @@ int CX2GUNPC::GetStateIDByKeyword( const std::string& strKeyword )
 	std::map<string,char>::const_iterator iter;
 	for( iter = GetInitStateData().m_mapStateNameID.begin(); iter != GetInitStateData().m_mapStateNameID.end(); ++iter )
 	{
-		if( NULL != StrStrA( iter->first.c_str(), strKeyword.c_str()) )
+		if( NULL != strstr( iter->first.c_str(), strKeyword.c_str()) )
 		{
 			return iter->second;
 		}

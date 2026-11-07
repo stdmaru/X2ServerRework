@@ -17914,7 +17914,7 @@ void CX2GUEve::EveElectraLaserData::OnFrameMove( float fElapsedTime )
 		D3DXVECTOR4 v4DirVectorLaser;
 		D3DXVec3Transform( &v4DirVectorLaser, &m_vDirVector, &matRotation );
 
-		D3DXVECTOR3 vDirVectorLaser = v4DirVectorLaser;
+		D3DXVECTOR3 vDirVectorLaser( v4DirVectorLaser.x, v4DirVectorLaser.y, v4DirVectorLaser.z );
 
 
 		pDamageEffect0->SetPos( m_vLaserStartPos );
@@ -18445,7 +18445,7 @@ void CX2GUEve::EveElectraLaserData::OnFrameMove( float fElapsedTime )
 							D3DXVECTOR4 v4DirVectorLaser;
 							D3DXVec3Transform( &v4DirVectorLaser, &m_vDirVector, &matRotation );
 
-							D3DXVECTOR3 vDirVectorLaser = v4DirVectorLaser;
+							D3DXVECTOR3 vDirVectorLaser( v4DirVectorLaser.x, v4DirVectorLaser.y, v4DirVectorLaser.z );
 
 							D3DXVECTOR3 vLaserStartPos = vPlaneIntersectPoint;
 
@@ -18568,7 +18568,7 @@ void CX2GUEve::EveElectraLaserData::OnFrameMove( float fElapsedTime )
 								D3DXVECTOR4 v4DirVectorLaser;
 								D3DXVec3Transform( &v4DirVectorLaser, &m_vDirVector, &matRotation );
 
-								D3DXVECTOR3 vDirVectorLaser = v4DirVectorLaser;
+								D3DXVECTOR3 vDirVectorLaser( v4DirVectorLaser.x, v4DirVectorLaser.y, v4DirVectorLaser.z );
 
 								D3DXVECTOR3 vLaserStartPos = vPlaneIntersectPoint;
 
@@ -19589,11 +19589,11 @@ void CX2GUEve::EveElectraLockonData::OnFrameMove( float fElapsedTime )
 
 						D3DXVECTOR4 v4DirVectorLockon_2;
 						D3DXVec3Transform( &v4DirVectorLockon_2, &m_pEveElectraSystem->m_vPlaneNormal, &matRotation_2 );
-						D3DXVECTOR3 vDirVectorLockon_2 = v4DirVectorLockon_2;
+						D3DXVECTOR3 vDirVectorLockon_2( v4DirVectorLockon_2.x, v4DirVectorLockon_2.y, v4DirVectorLockon_2.z );
 
 						D3DXVECTOR4 v4DirVectorLockon_3;
 						D3DXVec3Transform( &v4DirVectorLockon_3, &m_pEveElectraSystem->m_vPlaneNormal, &matRotation_3 );
-						D3DXVECTOR3 vDirVectorLockon_3 = v4DirVectorLockon_3;
+						D3DXVECTOR3 vDirVectorLockon_3( v4DirVectorLockon_3.x, v4DirVectorLockon_3.y, v4DirVectorLockon_3.z );
 
 						D3DXVECTOR3 vManualDirDegree1;
 						vManualDirDegree1.x = D3DXToDegree(m_pEveElectraSystem->m_vPlaneNormal.x);
@@ -20487,21 +20487,21 @@ void CX2GUEve::EveElectraSystem::CreatePlane( float _fZAngle/* = 0.f*/, float _L
 	D3DXMatrixRotationAxis( &matRotationCenter, &vRotationAxis, _fZAngle );
 	D3DXVECTOR4 v4PlaneNormalCenter;
 	D3DXVec3Transform( &v4PlaneNormalCenter, &vZeroYDirVector, &matRotationCenter );
-	D3DXVECTOR3 vPlaneNormalCenter = v4PlaneNormalCenter;
+	D3DXVECTOR3 vPlaneNormalCenter( v4PlaneNormalCenter.x, v4PlaneNormalCenter.y, v4PlaneNormalCenter.z );
 	m_vPlaneNormalCenter = vPlaneNormalCenter;
 
 	D3DXMATRIX matRotationUpper;
 	D3DXMatrixRotationAxis( &matRotationUpper, &vRotationAxis, D3DXToRadian( _fZAngle ) );
 	D3DXVECTOR4 v4PlaneNormalUpper;
 	D3DXVec3Transform( &v4PlaneNormalUpper, &vZeroYDirVector, &matRotationUpper );
-	D3DXVECTOR3 vPlaneNormalUpper= v4PlaneNormalUpper;
+	D3DXVECTOR3 vPlaneNormalUpper( v4PlaneNormalUpper.x, v4PlaneNormalUpper.y, v4PlaneNormalUpper.z );
 	m_vPlaneNormalUpper = vPlaneNormalUpper;
 
 	D3DXMATRIX matRotationLower;
 	D3DXMatrixRotationAxis( &matRotationLower, &vRotationAxis,  D3DXToRadian( _fZAngle ) );
 	D3DXVECTOR4 v4PlaneNormalLower;
 	D3DXVec3Transform( &v4PlaneNormalLower, &vZeroYDirVector, &matRotationLower );
-	D3DXVECTOR3 vPlaneNormalLower= v4PlaneNormalLower;
+	D3DXVECTOR3 vPlaneNormalLower( v4PlaneNormalLower.x, v4PlaneNormalLower.y, v4PlaneNormalLower.z );
 	m_vPlaneNormalLower = vPlaneNormalLower;
 
 
@@ -20624,7 +20624,7 @@ void CX2GUEve::EveElectraSystem::CreateGigaPlane( float _fZAngle/* = 0.f*/, floa
 	D3DXVec3Transform( &v4PlaneNormal, &vZeroYDirVector, &matRotation );
 
 
-	D3DXVECTOR3 vPlaneNormal = v4PlaneNormal;
+	D3DXVECTOR3 vPlaneNormal( v4PlaneNormal.x, v4PlaneNormal.y, v4PlaneNormal.z );
 
 	vPlanePos += (_fDistance * vZeroYDirVector);
 
@@ -23853,9 +23853,9 @@ void CX2GUEve::ENSI_A_EBS_TASER_PILUM_FrameMove()
 			const int iSkillTempletLevel = max( 1, userSkillTree.GetSkillLevel( pSkillTemplet->m_eID ) );	/// ��ų ����
 
 			fMPConsumption	= pSkillTemplet->GetSkillMPConsumptionValue( iSkillTempletLevel );
-			fPowerRate		= static_cast<float>( GetPowerRate() * ( min( m_sTaserPilumTinyData.m_timerElapsedTime.elapsed(), 3.f) / 3.f + 1.f ) );
+			fPowerRate		= static_cast<float>( GetPowerRate() * ( min( static_cast<float>( m_sTaserPilumTinyData.m_timerElapsedTime.elapsed() ), 3.f) / 3.f + 1.f ) );
 			iCount			= static_cast<int>( pSkillTemplet->GetSkillAbilityValue( CX2SkillTree::SA_PROJECTILE_PIERCING, iSkillTempletLevel ) *
-				min( m_sTaserPilumTinyData.m_timerElapsedTime.elapsed(), 3.f) / 3.f );
+				min( static_cast<float>( m_sTaserPilumTinyData.m_timerElapsedTime.elapsed() ), 3.f) / 3.f );
 			m_sTaserPilumTinyData.m_iAddDamageTime = iCount;
 		}
 		else

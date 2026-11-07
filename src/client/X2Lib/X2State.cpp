@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "x2/platform/console.h"
+#include "x2/platform/modules.h"
 #include "./X2State.h"
 
 //extern bool g_bIsDXUTDeveloper;
@@ -6579,36 +6580,19 @@ void CX2State::SendLoadedModuleList(bool bForce)
 
 	std::vector<wstring> vecLoadedDll;
 
-	// 현시점에 로드된 dll들을 뽑아낸다.
-	HANDLE hProcess = OpenProcess( PROCESS_QUERY_INFORMATION|PROCESS_VM_READ, FALSE, GetCurrentProcessId() );
-	if ( hProcess != NULL )
+	// Collect the modules loaded right now (upper-case file names), skipping temporary files.
+	for( const x2::platform::LoadedModule& module : x2::platform::ListLoadedModules() )
 	{
-		HMODULE hMods[1024];
-		DWORD cbNeeded;
-		if(EnumProcessModules(hProcess, hMods, sizeof(hMods), &cbNeeded))
-		{
-			int numProcess = cbNeeded / sizeof(HMODULE);
-			for (int i = 0; i < numProcess; i++ )
-			{
-				WCHAR szModName[MAX_PATH];
+		std::wstring wstrFileName = x2::platform::ModuleFileName( module.path );
+		MakeUpperCase( wstrFileName );
 
-				// Get the full path to the module's file.
-				GetModuleFileNameExW( hProcess, hMods[i], szModName, ARRAY_SIZE( szModName ) );
+		const std::wstring::size_type dot = wstrFileName.rfind( L'.' );
+		const std::wstring wstrStem = wstrFileName.substr( 0, dot );
+		const std::wstring wstrFileExt = dot == std::wstring::npos ? std::wstring() : wstrFileName.substr( dot );
+		if( wstrFileExt.find( L"TMP" ) != std::wstring::npos || wstrStem.find( L".TMP" ) != std::wstring::npos )
+			continue;
 
-				WCHAR wstrFileName[MAX_PATH], wstrFileExt[256];
-				_wsplitpath( szModName, NULL, NULL, wstrFileName, wstrFileExt );
-				StringCchCatW( wstrFileName, MAX_PATH, wstrFileExt) ;
-				//StrCatW( wstrFileName, wstrFileExt) ;
-
-				if( wstrFileExt == L".tmp" || wcsstr(wstrFileExt, L"tmp") || wcsstr(wstrFileExt, L"TMP") || wcsstr(wstrFileName, L".tmp") )
-					continue;
-
-				MakeUpperCase( wstrFileName );
-				vecLoadedDll.push_back( wstrFileName );
-			}
-		}
-
-		CloseHandle( hProcess );
+		vecLoadedDll.push_back( wstrFileName );
 	}
 
 	// 로드된 dll들을 서버로 보낸다.

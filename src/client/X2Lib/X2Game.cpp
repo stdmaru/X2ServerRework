@@ -5484,7 +5484,7 @@ bool CX2Game::Handler_EGS_NPC_UNIT_CREATE_NOT( HWND hWnd, UINT uMsg, WPARAM wPar
 			(CX2Room::TEAM_NUM) pKNPCUnitNot->m_kNPCUnitReq.m_cTeamNum,
 			(CX2NPCAI::NPC_AI_TYPE) pKNPCUnitNot->m_kNPCUnitReq.m_cAIType,
 			pKNPCUnitNot->m_kNPCUnitReq.m_iAllyUID
-			, false
+			, NULL
 			, static_cast<CX2Room::TEAM_NUM>(pKNPCUnitNot->m_kNPCUnitReq.m_cAllyTeam)
 
 			, static_cast<CX2GUNPC::NPC_CREATE_TYPE>( pKNPCUnitNot->m_kNPCUnitReq.m_cCreateMonsterType )		//몬스터 카드로 소환되었는지에 대한 여부
@@ -7788,7 +7788,7 @@ void CX2Game::SetGameScore()
 		)
 	{
 		WCHAR texBuf[30] = {0,};
-		StringCchPrintf( texBuf, 30, L"%09d", m_GameScore );
+		StringCchPrintf( texBuf, 30, L"%09d", static_cast<int>( m_GameScore ) );
 		//wsprintf( texBuf, L"%09d", m_GameScore );
 		if( NULL != g_pData->GetPicCharGameScore() )
 		{
@@ -7819,7 +7819,7 @@ void CX2Game::SetGameScore( int gameScore )
 			)
 		{
 			WCHAR texBuf[30] = {0,};
-			StringCchPrintf( texBuf, 30, L"%09d", m_GameScore );
+			StringCchPrintf( texBuf, 30, L"%09d", static_cast<int>( m_GameScore ) );
 			//wsprintf( texBuf, L"%09d", m_GameScore );
 			if( NULL != g_pData->GetPicCharGameScore() )
 			{
@@ -7853,7 +7853,7 @@ void CX2Game::AddGameScore( int gameScore )
 			)
 		{
 			WCHAR texBuf[30] = {0,};
-			StringCchPrintf( texBuf, 30, L"%09d", m_GameScore );
+			StringCchPrintf( texBuf, 30, L"%09d", static_cast<int>( m_GameScore ) );
 			//wsprintf( texBuf, L"%09d", m_GameScore );
 			if( NULL != g_pData->GetPicCharGameScore() )
 			{

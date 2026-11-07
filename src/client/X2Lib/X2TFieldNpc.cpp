@@ -386,15 +386,10 @@ HRESULT	CX2TFieldNpc::OnFrameMove( double fTime, float fElapsedTime )
 	// 이벤트 관리
 	if(m_pHouseTemplet != NULL && m_pHouseTemplet->m_bEventNpc == true)
 	{
-		__time64_t t0 = g_pData->GetServerCurrentTime();
-#ifdef	CONVERSION_VS
+		const time_t t0 = static_cast<time_t>( g_pData->GetServerCurrentTime() );
         struct tm   ktm;
         struct tm* ptm = &ktm;
-        bool bOK = _localtime64_s( ptm, &t0 ) == 0;
-#else
-		struct tm* ptm = _localtime64( &t0 );
-		bool bOK = ( ptm != NULL );
-#endif // CONVERSION_VS
+        bool bOK = localtime_s( ptm, &t0 ) == 0;
 		if ( bOK == true )
 		{
 			unsigned long fNowSecond = (unsigned long)((float)ptm->tm_hour * 3600.f + (float)ptm->tm_min * 60.f + (float)ptm->tm_sec);

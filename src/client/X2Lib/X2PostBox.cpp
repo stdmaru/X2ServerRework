@@ -357,7 +357,7 @@ HRESULT CX2PostBox::OnFrameMove(double fTime, float fElapsedTime)
 		{
 			for (int i=0;i<6;++i)
 			{
-				swprintf( t_ControlName, L"g_pCheckBoxpost_window_Slot%d" , i+1 );
+				swprintf_s( t_ControlName, L"g_pCheckBoxpost_window_Slot%d" , i+1 );
 				pCheckDlg = (CKTDGUICheckBox*)m_pDlgMailListSlot->GetControl( t_ControlName );        // 체크박스
 
 				if ( pCheckDlg->GetEnable() == true )
@@ -373,7 +373,7 @@ HRESULT CX2PostBox::OnFrameMove(double fTime, float fElapsedTime)
 			bool bIsChecked = true;
 			for (int i=0;i<6;++i)
 			{
-				swprintf( t_ControlName, L"g_pCheckBoxpost_window_Slot%d" , i+1 );
+				swprintf_s( t_ControlName, L"g_pCheckBoxpost_window_Slot%d" , i+1 );
 				pCheckDlg = (CKTDGUICheckBox*)m_pDlgMailListSlot->GetControl( t_ControlName );        // 체크박스
 
 				if ( pCheckDlg->GetEnable() == true && pCheckDlg->GetChecked() == false )  // 체크 되지 않은 편지가 있는 경우

@@ -2169,7 +2169,7 @@ bool CX2PartyManager::IsRankableArcadeDungeon( int iDungeonID )
 CX2PartyManager::PartyMemberData* CX2PartyManager::PartyData::GetPartyMemberData( const int index, UidType exceptUnitUID /*= -1 */ )
 {
 	if( index < 0 || index >= (int) m_vecPartyMemberData.size() )
-		return false;
+		return NULL;
 
 	if( -1 != exceptUnitUID )
 	{

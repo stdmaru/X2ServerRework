@@ -128,7 +128,8 @@ void CX2Inventory::SetShareBank( std::map< UidType, KInventoryItemInfo >& mapIte
 			}
 
 			//CX2Item::ItemData* pItemData = new CX2Item::ItemData( kInfo );
-			AddItem( static_cast< CX2Inventory::SORT_TYPE >( kInfo.m_cSlotCategory ), kInfo.m_sSlotID, CX2Item::ItemData( kInfo ) );
+			CX2Item::ItemData kItemData( kInfo );
+			AddItem( static_cast< CX2Inventory::SORT_TYPE >( kInfo.m_cSlotCategory ), kInfo.m_sSlotID, kItemData );
 		}
 	}
 }
@@ -1077,7 +1078,7 @@ void	CX2Inventory::RemovePCBangEquips()		// 현재 장착중인 아이템들 중
 		}
 	}
 
-	BOOST_TEST_FOREACH ( UidType, value, vecPCBangEquips )
+	for ( UidType value : vecPCBangEquips )
 	{
 		RemoveItem( value );
 	}
@@ -1104,7 +1105,7 @@ void	CX2Inventory::RemovePetInventory()
 		}
 	}
 
-	BOOST_TEST_FOREACH ( UidType, value, vecPetInventoryItems )
+	for ( UidType value : vecPetInventoryItems )
 	{
 		RemoveItem( value );
 	}

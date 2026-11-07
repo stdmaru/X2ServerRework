@@ -1569,7 +1569,7 @@ void CX2SquareUnit::RenderName()
 
 	wstring wstrNickName= m_pUnit->GetNickName();
 	WCHAR wcLv[10];
-	StringCchPrintf(wcLv, 10, L"Lv.%d ", m_pUnit->GetUnitData().m_Level);
+	StringCchPrintf(wcLv, 10, L"Lv.%d ", static_cast<int>( m_pUnit->GetUnitData().m_Level ));
 	//wsprintf(wcLv, L"Lv.%d ", m_pUnit->GetUnitData().m_Level);
 
 	wstring wstrName = L"";
@@ -1582,7 +1582,7 @@ void CX2SquareUnit::RenderName()
 	if ( g_pData->GetMyUser()->GetAuthLevel() >= CX2User::XUAL_DEV && g_pData->GetRenderEtc() == true)
 	{
 		WCHAR wszText[256] = L"";
-		swprintf( wszText, L"(%5.2f, %5.2f, %5.2f) Rating: %d", GetPos().x, GetPos().y, GetPos().z, GetUnit()->GetUnitData().m_iRating );
+		swprintf_s( wszText, L"(%5.2f, %5.2f, %5.2f) Rating: %d", GetPos().x, GetPos().y, GetPos().z, GetUnit()->GetUnitData().m_iRating );
 		wstrName += wszText;
 	}
 

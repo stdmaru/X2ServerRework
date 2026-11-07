@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "./X2GameOption.h"
+#include "x2/platform/process.h"
 
 #include "KBenchmark_SUM.h"
 #include "KBenchmark_LINPACK.h"
@@ -1433,10 +1434,9 @@ void CX2GameOption::_DecideProperGraphicOption()
 	iCpuScore = _CalcCpuScore();
 
 	//System Memory Score 계산
-	MEMORYSTATUS memStatus;
-	memStatus.dwLength = sizeof( MEMORYSTATUS );
-	GlobalMemoryStatus( &memStatus );
-	UINT uiTotalSystemMem = (UINT)( (float)memStatus.dwTotalPhys / 1024.0f / 1024.0f );//MB로...
+	std::size_t totalPhys = 0, availablePhys = 0;
+	x2::platform::PhysicalMemory( totalPhys, availablePhys );
+	UINT uiTotalSystemMem = (UINT)( (float)totalPhys / 1024.0f / 1024.0f );//MB로...
 
 	//100점으로 환산...
 	iSystemMemScore = (int)( ( 100.0f / 4096.0f ) * (float)uiTotalSystemMem );

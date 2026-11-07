@@ -264,7 +264,7 @@ HRESULT CX2DungeonGame::OnFrameRender()
 		{
 			// 던전 substage 진행 경고 남은 시간
 			WCHAR timeBuf[200] = {0,};
-			swprintf( timeBuf, L"%d", (int)m_fTimeLeftAfterSubStageOpen );
+			swprintf_s( timeBuf, L"%d", (int)m_fTimeLeftAfterSubStageOpen );
 			m_pFontForTime->OutTextXY( 512, 100, timeBuf, D3DXCOLOR(1,0.6f,0,1),
 									CKTDGFontManager::FS_SHELL, D3DXCOLOR(0,0,0,1), NULL, DT_CENTER );
 		}

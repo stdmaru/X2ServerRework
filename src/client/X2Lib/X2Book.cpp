@@ -11,9 +11,8 @@ m_iCurrentPage(0)
 
 }
 
-CX2Book::CX2Book( const char* bookTableName )
+CX2Book::CX2Book( const char* bookTableName ) : CX2Book()
 {
-	CX2Book::CX2Book();
 	SetBookTable( bookTableName );
 	m_bShow = false;
 }

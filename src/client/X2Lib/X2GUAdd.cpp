@@ -2490,7 +2490,7 @@ bool CX2GUAdd::CanUseSpecialAttack( CX2SkillTree::ACTIVE_SKILL_USE_CONDITION eAc
 
 		const float fCoolTimeMax = GetActualCoolTime( pSkillTemplet, iSkillTempletLevel );
 
-		float fCoolTimeLeft = min( fCoolTimeMax, pSkillSlotData->m_fCoolTimeLeft );
+		float fCoolTimeLeft = min( fCoolTimeMax, static_cast<float>( pSkillSlotData->m_fCoolTimeLeft ) );
 
 		bool bSlotB		= (m_iPressedSkillSlotIndex > 3) ? true : false;
 		int iSlotIndex	= (m_iPressedSkillSlotIndex > 3) ? m_iPressedSkillSlotIndex-4 : m_iPressedSkillSlotIndex;

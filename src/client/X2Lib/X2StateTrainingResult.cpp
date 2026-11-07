@@ -249,7 +249,7 @@ HRESULT CX2StateTrainingResult::OnFrameMove( double fTime, float fElapsedTime )
 						if ( pStaticEXPBG->GetString(0) != NULL )
 						{
 							WCHAR buff[256] = {0};
-							swprintf( buff, L"%d / %d (%.1f%%)", nowExp - nowBaseExp, nextBaseExp - nowBaseExp, (float)(nowExp - nowBaseExp)/(nextBaseExp - nowBaseExp)*100.0f );
+							swprintf_s( buff, L"%d / %d (%.1f%%)", nowExp - nowBaseExp, nextBaseExp - nowBaseExp, (float)(nowExp - nowBaseExp)/(nextBaseExp - nowBaseExp)*100.0f );
 							pStaticEXPBG->GetString(0)->msg = buff;
 						}
 						/*

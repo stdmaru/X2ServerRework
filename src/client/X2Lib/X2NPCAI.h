@@ -101,9 +101,6 @@ public:
 			return false;
 	}
 
-	virtual void RenderStateParam( WCHAR** wDest_ );
-	virtual void RenderPatrolLineIndex( WCHAR** wDest_ );
-	virtual void RenderPlayLineIndex( WCHAR** wDest_ );
 
 	void SetAIFly(bool val)
 	{

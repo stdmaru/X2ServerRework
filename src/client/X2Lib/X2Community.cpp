@@ -6177,7 +6177,7 @@ void CX2Community::UpdateMarketUserList(int iPage)
 	if(m_iNowFieldPage < 1)
 		m_iNowFieldPage = m_iMaxFieldPage;
 
-	vector<CX2SquareUnit*>& vecUnitList = g_pSquareGame->GetUnitList( m_iNowFieldPage, MAGIC_MAX_USER_PER_PAGE );
+	const vector<CX2SquareUnit*> vecUnitList = g_pSquareGame->GetUnitList( m_iNowFieldPage, MAGIC_MAX_USER_PER_PAGE );
 
 	m_vecUserLv.clear();
 	m_vecUserUID.clear();
@@ -7088,7 +7088,7 @@ void CX2Community::SetGuildMemberIcon( int i, bool bShow, int iUnitClass, int iU
 	if(m_pDlgGuild != NULL)
 	{
 		D3DXVECTOR3 tempPos1 = m_pDlgGuild->GetDummyPos(i);
-		D3DXVECTOR3 tempPos2 = m_pDlgBack->GetPos();
+		const D3DXVECTOR2 tempPos2 = m_pDlgBack->GetPos();
 		m_pFieldUserIcon[i]->SetPos_LUA(tempPos1.x + tempPos2.x, tempPos1.y + tempPos2.y);
 	}
 }
@@ -7333,7 +7333,7 @@ void CX2Community::SetFieldUserIcon(int i, bool bShow)
 	if(m_pDlgField != NULL)
 	{
 		D3DXVECTOR3 tempPos1 = m_pDlgField->GetDummyPos(i);
-		D3DXVECTOR3 tempPos2 = m_pDlgBack->GetPos();
+		const D3DXVECTOR2 tempPos2 = m_pDlgBack->GetPos();
 		m_pFieldUserIcon[i]->SetPos_LUA(tempPos1.x + tempPos2.x, tempPos1.y + tempPos2.y);
 	}
 }
@@ -9382,7 +9382,7 @@ void CX2Community::SetRelationshipMemberIcon( int i, bool bShow, int iUnitClass,
 	if(m_pDlgRelation != NULL)
 	{
 		D3DXVECTOR3 tempPos1 = m_pDlgRelation->GetDummyPos(i);
-		D3DXVECTOR3 tempPos2 = m_pDlgBack->GetPos();
+		const D3DXVECTOR2 tempPos2 = m_pDlgBack->GetPos();
 		m_pFieldUserIcon[i]->SetPos_LUA(tempPos1.x + tempPos2.x, tempPos1.y + tempPos2.y);
 	}
 }

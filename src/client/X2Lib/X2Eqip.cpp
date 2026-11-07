@@ -22,9 +22,6 @@ CX2Eqip::CX2Eqip( CX2Item* pItem, CKTDGXSkinAnimPtr pUnitXSkinAnim, int enchantL
         후에, 포인터의 read/write가 atomic하다는 보장이 되지 않으면, 로드된 리소스 객체가 유효valid
         한지를 판단하기 위해 별도의 bool변수를 사용해야 할 것이다.
         - jintaeks on 2008-12-15, 10:59 */
-	static_assert( sizeof(CKTDGXSkinAnim*) == sizeof(int) , "");
-	static_assert( sizeof(CKTDXDeviceXSkinMesh*) == sizeof(int) , "");
-	static_assert( sizeof(CKTDXDeviceXMesh*) == sizeof(int) , "");
 //}} seojt // 2008-12-15, 10:56
 
 

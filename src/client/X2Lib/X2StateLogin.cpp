@@ -323,7 +323,7 @@ void CX2StateLogin::RetrieveUserIDnPassword()
 
 #if X2_DEV_TOOLS
 	wstringstream wstrmWindowTitle;
-	wstrmWindowTitle << L"X2_" << g_pMain->GetClientVersion() << L"; " << __DATE__ << L", " << __TIME__ << L"; " << g_pInstanceData->GetUserID().c_str() << L"; " << _getpid();
+	wstrmWindowTitle << L"X2_" << g_pMain->GetClientVersion() << L"; " << __DATE__ << L", " << __TIME__ << L"; " << g_pInstanceData->GetUserID().c_str() << L"; " << x2::platform::CurrentProcessId();
 	SetWindowText( g_pKTDXApp->GetHWND(), wstrmWindowTitle.str().c_str() );
 #endif // _IN_HOUSE_
 

@@ -17294,7 +17294,7 @@ void CX2GUUser::ReceiveFrameData( DWORD dwFrameMoveCount, const KDYNAMIC_UNIT_US
 			//{{ JHKang /  / 2010/11/25
 /// ???
 //////////////////////////////////////////////////////////////////////////
-			StringCchPrintfW( adBuf, ARRAY_SIZE( adBuf ), L"Given: %d", m_iTotalGivenDamamge );
+			StringCchPrintfW( adBuf, ARRAY_SIZE( adBuf ), L"Given: %d", static_cast<int>( m_iTotalGivenDamamge ) );
 
 			vPos.y -= 20.0f;
 			g_pX2Game->GetFontForUnitName()->OutProjectionText( vPos, adBuf,
@@ -28230,7 +28230,7 @@ void CX2GUUser::ForceDownAndDetonationProcess()
 		{
 			if( 0.f == it->second )
 			{
-				SetBuffFactorToGameUnitByBuffFactorID( it->first, max( m_uiNowStateSkillLevel, 1 ) );
+				SetBuffFactorToGameUnitByBuffFactorID( it->first, max( m_uiNowStateSkillLevel, 1u ) );
 				m_mapStateInsertBuffFactor.erase(it++);
 			}
 			else
@@ -28255,7 +28255,7 @@ void CX2GUUser::CommonFrameMove_InsertBuffFactor()
 		// �ִϸ��̼� �ð��� ������ �ð� ���Ķ��
 		if( m_pXSkinAnim->GetNowAnimationTime() >= it->second )
 		{
-			SetBuffFactorToGameUnitByBuffFactorID( it->first, max( m_uiNowStateSkillLevel, 1 ) );
+			SetBuffFactorToGameUnitByBuffFactorID( it->first, max( m_uiNowStateSkillLevel, 1u ) );
 			m_mapStateInsertBuffFactor.erase(it++);
 		}
 		else

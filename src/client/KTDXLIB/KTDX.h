@@ -513,6 +513,7 @@ inline typename Container::iterator EraseUnorderlyUsingSwap( Container& containe
 	{
 		return	container.erase( iter );
 	}//if
+	using std::swap;
 	swap( *iter, *iterLast );
 	typename Container::size_type dist = iter - container.begin();
 	container.erase( iterLast );

@@ -810,58 +810,6 @@ void CX2BattleFieldNpcAi::CheckArrivedDestination()
 	}
 }
 
-/*virtual*/ void CX2BattleFieldNpcAi::RenderStateParam( WCHAR** wDest_ )
-{
-// 	int iTarget = 0;
-// 	if ( null != m_optrTargetGameUnit )
-// 	{
-// 		StateLog( L"Target in RenderStateParam" );
-// 		iTarget = 1;
-// 	}
-//
-// 	int iAttacker = 0;
-// 	if ( null != m_optrAttackerGameUnit )
-// 	{
-// 		StateLog( L"Attacker in RenderStateParam" );
-// 		iAttacker = 1;
-// 	}
-//
-// 	int iBackState01 = 0;
-// 	if ( true == GetBackState01() )
-// 		iBackState01 = 1;
-//
-// 	int iBackState02 = 0;
-// 	if ( true == GetBackState02() )
-// 		iBackState02 = 1;
-
- 	swprintf( *wDest_, L"DestLineIndex: %d",// Target: %d, Attacker: %d, BackState01: %d, BackState02: %d, CheckNum: %d",
- 		GetFinalDestLineIndex() );//, iTarget, iAttacker, iBackState01, iBackState02,	m_iCheckLineMapAtFirst );
-
-//	swprintf( *wDest_, L"GroupID: %d", m_uiGroupId );
-}
-
-/*virtual*/ void CX2BattleFieldNpcAi::RenderPatrolLineIndex( WCHAR** wDest_ )
-{
-	swprintf( *wDest_, L"Patrol: " );
-	for( int index : m_vecPatrolLineMapIndex )
-	{
-		WCHAR wSource[10] = { 0, };
-		swprintf( wSource, L"%d,", index );
-		wcscat( *wDest_, wSource );
-	}
-}
-
-/*virtual*/ void CX2BattleFieldNpcAi::RenderPlayLineIndex( WCHAR** wDest_ )
-{
-	swprintf( *wDest_, L"Play: " );
-	for( int index : m_vecPlayLineMapIndex )
-	{
-		WCHAR wSource[10] = { 0, };
-		swprintf( wSource, L"%d,", index );
-		wcscat( *wDest_, wSource );
-	}
-}
-
 void CX2BattleFieldNpcAi::UpNowHpBySecondProcess( float fElapsedTime )
 {
 	//m_ElapsedTimeUpNowHp.OnFrameMove();

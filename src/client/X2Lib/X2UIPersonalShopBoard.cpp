@@ -119,7 +119,7 @@ CX2UIPersonalShopBoard::CX2UIPersonalShopBoard(CKTDXStage* pNowStage, const WCHA
 	{
 		m_pItemList[i] = new CKTDGUIDialog( g_pMain->GetNowState(), L"DLG_Personal_Shop_Board_ItemList.lua" );
 		D3DXVECTOR3 tempPos1 = m_pDlgPersonalShopBoard->GetDummyPos(i+2);
-		D3DXVECTOR3 tempPos2 = m_pDlgPersonalShopBoard->GetPos();
+		const D3DXVECTOR2 tempPos2 = m_pDlgPersonalShopBoard->GetPos();
 		m_pItemList[i]->SetPos_LUA(tempPos1.x + tempPos2.x, tempPos1.y + tempPos2.y);
 
 		CKTDGUIButton *pButton = static_cast< CKTDGUIButton* >( m_pItemList[i]->GetControl( L"ButtonBuyItem" ) );

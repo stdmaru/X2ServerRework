@@ -864,17 +864,17 @@ CX2PET::PET_ACTION_COMMAND CX2PetManager::GetPetActionCommand( wstring &wstrMsg 
 		int nowState = pPet->GetNowState();
 
 		std::vector<wstring> vecTokStr;
-		WCHAR *token = NULL;
-
-		token = wcstok((WCHAR*)wstrMsg.c_str(), L" ");
-		if( token == NULL )
-			return CX2PET::PAC_NONE;
-
-		vecTokStr.push_back(token);
-		while( (token = wcstok(NULL, L" ")) != NULL )
 		{
-			vecTokStr.push_back(token);
+			std::wstring::size_type begin = wstrMsg.find_first_not_of( L' ' );
+			while( begin != std::wstring::npos )
+			{
+				const std::wstring::size_type end = wstrMsg.find( L' ', begin );
+				vecTokStr.push_back( wstrMsg.substr( begin, end - begin ) );
+				begin = wstrMsg.find_first_not_of( L' ', end );
+			}
 		}
+		if( vecTokStr.empty() )
+			return CX2PET::PAC_NONE;
 
 		for(UINT i=0; i<vecTokStr.size(); ++i)
 		{

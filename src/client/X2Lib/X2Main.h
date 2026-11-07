@@ -25,7 +25,7 @@
 #include "./X2ServerEvent.h"
 #include "./X2ServerPacket.h"
 #include "./X2Struct.h"
-#include "./X2NetError.h"
+#include "NetError.h" // shared with the servers (decision T33)
 #include "./X2PacketLog.h"
 #include "./X2GameOption.h"
 #include "./X2CheckSumManager.h"

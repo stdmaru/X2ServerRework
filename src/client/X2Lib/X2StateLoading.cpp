@@ -430,8 +430,6 @@ HRESULT CX2StateLoading::OnFrameMove( double fTime, float fElapsedTime )
 
 			CX2EmblemManager::ResetEmblemManager();
 
-			CX2MailLogManager::ResetMailLogManager();
-
 			CX2BossRaidManager::ResetBossRaidManager();
 
 			//드랍아이템 리소스

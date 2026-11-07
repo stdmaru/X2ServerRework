@@ -159,9 +159,6 @@ public:
 	virtual void Targeting( float fElapsedTime );
 	virtual void Moving( float fElapsedTime );
 
-	virtual void RenderStateParam( WCHAR** wDest_ );
-	virtual void RenderPatrolLineIndex( WCHAR** wDest_ );
-	virtual void RenderPlayLineIndex( WCHAR** wDest_ );
 
 	bool GetBackState01() const { return m_bBackState01; }
 	void SetBackState01( bool val ) { m_bBackState01 = val; }
