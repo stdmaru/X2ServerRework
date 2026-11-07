@@ -6204,7 +6204,7 @@ HRESULT CX2GUNPC::OnFrameMove( double fTime, float fElapsedTime )
 
 			WCHAR buf[100] = { 0, };
 
-			wsprintf( buf, L"NowForceDown: %d\n", iForceDown );
+			swprintf_s( buf, L"NowForceDown: %d\n", iForceDown );
 
 			DXUTTRACE( buf );
 		}

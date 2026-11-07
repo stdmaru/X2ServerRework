@@ -198,7 +198,7 @@ void CX2RidingPetSkillSlot::UpdateRideOffSlotGuide()
 		CKTDGUISlot* pSlot = static_cast<CKTDGUISlot*>( m_pDlgSkillSlot->GetControl(L"SlotB3") );
 		if( NULL != pSlot )
 		{
-			bool IsSetKey = (0 == StrCmp(g_pMain->GetKeyPad()->GetKeyString( GA_RIDING ).c_str(), L"" ))? false : true;
+			bool IsSetKey = (0 == wcscmp(g_pMain->GetKeyPad()->GetKeyString( GA_RIDING ).c_str(), L"" ))? false : true;
 
 			if( true == IsSetKey )
 			{

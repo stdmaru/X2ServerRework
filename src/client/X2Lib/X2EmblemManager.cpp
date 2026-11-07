@@ -294,7 +294,7 @@ void CX2EmblemManager::PlayEmblemEffect( const EmblemTemplet& sEmblemTemplet_ )
 			vector<EmblemPopupSound> vecEmblemPopupSoundPickJustOneUnitType;
 			m_vecNowPlayEmblemSound.clear();
 			m_fSoundPlayingCheckTime = 0.f;
-			BOOST_FOREACH ( EmblemPopupSound sEmblemPopupSound, sEmblemTemplet_.m_vecPlayEmblemSoundTemplet )
+			for ( EmblemPopupSound sEmblemPopupSound : sEmblemTemplet_.m_vecPlayEmblemSoundTemplet )
 			{
 				switch ( sEmblemPopupSound.m_eEmblemPopupSoundType )
 				{
@@ -387,7 +387,7 @@ void CX2EmblemManager::OnFrameMove( float fElpaseTime )
 	{
 		m_fSoundPlayingCheckTime += fElpaseTime;
 
-		BOOST_FOREACH ( EmblemPopupSound & sEmblemPopupSound, m_vecNowPlayEmblemSound )
+		for ( EmblemPopupSound & sEmblemPopupSound : m_vecNowPlayEmblemSound )
 		{
 			if ( m_fSoundPlayingCheckTime >= sEmblemPopupSound.m_fStartTime && false == sEmblemPopupSound.m_bIsPlaying)
 			{

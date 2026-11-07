@@ -3427,7 +3427,7 @@ UidType CX2Unit::UnitData::GetBlackListUnitUID( const WCHAR* wszNickName ) const
 
 void CX2Unit::UnitData::SetPremiumBuffInfo( const vector<KBuffInfo>& vecBuffInfo_ )
 {
-	/*BOOST_FOREACH( const KBuffInfo& kBuffInfo, vecBuffInfo_ )		/// �� ���� �ý���
+	/*for ( const KBuffInfo& kBuffInfo : vecBuffInfo_ )		/// �� ���� �ý���
 	{
 		m_vecPremiumBuffList.push_back( kBuffInfo.m_iBuffID );
 	}*/
@@ -3435,7 +3435,7 @@ void CX2Unit::UnitData::SetPremiumBuffInfo( const vector<KBuffInfo>& vecBuffInfo
 
 void CX2Unit::UnitData::ErasePremiumBuffInfo( const vector<int>& vecBuffInfo_ )
 {
-	/*BOOST_FOREACH( const int& iBuffID, vecBuffInfo_ )				/// �� ���� �ý���
+	/*for ( const int& iBuffID : vecBuffInfo_ )				/// �� ���� �ý���
 	{
 		std::vector< int >::iterator vit = m_vecPremiumBuffList.begin();
 

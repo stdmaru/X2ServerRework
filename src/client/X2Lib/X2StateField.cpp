@@ -128,8 +128,6 @@ m_TexDataMovingGage( L"DLG_LOADING_BAR.tga", L"LOADING_BAR" )
 		g_pChatBox->HideChatEditBox();
 	}
 
-	if( g_pMain != NULL )
-		g_pMain->DllManagerReport();
 
 	g_pMain->SetIsPlayingFreeTraining(false);
 

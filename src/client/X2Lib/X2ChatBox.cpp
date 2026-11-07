@@ -3,7 +3,7 @@
 
 
 
-#include <boost/algorithm/string.hpp>
+#include "x2/platform/string.h"
 
 CX2ChatBox::CX2ChatBox( CX2State* pNowState ) :
 m_pStage( NULL ),
@@ -247,14 +247,14 @@ HRESULT CX2ChatBox::OnFrameMove( double fTime, float fElapsedTime )
 				wstrFunction[13] = GET_STRING(STR_ID_30505);
 				wstrFunction[13] += L" ";
 
-				if(boost::iequals(wstrText, wstrFunction[2]) || boost::iequals(wstrText, wstrFunction[8]))
+				if(x2::platform::IEquals(wstrText, wstrFunction[2]) || x2::platform::IEquals(wstrText, wstrFunction[8]))
 				{
 					wstrText = wstrFunction[1];
 					wstrText += m_wstrLastWhiperNickName;
 					wstrText += L" ";
 					pEdit_Chat->SetText(wstrText.c_str());
 				}
-				else if(boost::iequals(wstrText, wstrFunction[3]) || boost::iequals(wstrText, wstrFunction[9]))
+				else if(x2::platform::IEquals(wstrText, wstrFunction[3]) || x2::platform::IEquals(wstrText, wstrFunction[9]))
 				{
 					//{{ kimhc // 2010.3.10 //	채팅창 개편
 					ChangeIMEEditBox( CWM_TOTAL );
@@ -263,7 +263,7 @@ HRESULT CX2ChatBox::OnFrameMove( double fTime, float fElapsedTime )
 
 					pEdit_Chat->ClearText();
 				}
-				else if(boost::iequals(wstrText, wstrFunction[4]) || boost::iequals(wstrText, wstrFunction[10]))
+				else if(x2::platform::IEquals(wstrText, wstrFunction[4]) || x2::platform::IEquals(wstrText, wstrFunction[10]))
 				{
 					//{{ kimhc // 2010.3.10 //	채팅창 개편
 					ChangeIMEEditBox( CWM_PARTY );
@@ -272,7 +272,7 @@ HRESULT CX2ChatBox::OnFrameMove( double fTime, float fElapsedTime )
 
 					pEdit_Chat->ClearText();
 				}
-				else if(boost::iequals(wstrText, wstrFunction[5]) || boost::iequals(wstrText, wstrFunction[11]))
+				else if(x2::platform::IEquals(wstrText, wstrFunction[5]) || x2::platform::IEquals(wstrText, wstrFunction[11]))
 				{
 					//{{ kimhc // 2010.3.10 //	채팅창 개편
 					ChangeIMEEditBox( CWM_GUILD );
@@ -281,7 +281,7 @@ HRESULT CX2ChatBox::OnFrameMove( double fTime, float fElapsedTime )
 
 					pEdit_Chat->ClearText();
 				}
-				else if(boost::iequals(wstrText, wstrFunction[12]) || boost::iequals(wstrText, wstrFunction[13]))
+				else if(x2::platform::IEquals(wstrText, wstrFunction[12]) || x2::platform::IEquals(wstrText, wstrFunction[13]))
 				{
 					//{{ kimhc // 2010.3.10 //	채팅창 개편
 
@@ -306,7 +306,7 @@ HRESULT CX2ChatBox::OnFrameMove( double fTime, float fElapsedTime )
 					}
 					pEdit_Chat->ClearText();
 				}
-				else if(boost::iequals(wstrText, wstrFunction[0]) || boost::iequals(wstrText, wstrFunction[6]))
+				else if(x2::platform::IEquals(wstrText, wstrFunction[0]) || x2::platform::IEquals(wstrText, wstrFunction[6]))
 				{
   					switch( GetChatWindowMode() )
 					{
@@ -950,7 +950,7 @@ bool CX2ChatBox::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 			wstrFunction[13] = GET_STRING(STR_ID_30505);
 			wstrFunction[13] += L" ";
 
-			if(boost::iequals(wstrCmpMsg, wstrFunction[1]) || boost::iequals(wstrCmpMsg, wstrFunction[7]))
+			if(x2::platform::IEquals(wstrCmpMsg, wstrFunction[1]) || x2::platform::IEquals(wstrCmpMsg, wstrFunction[7]))
 			{
 				int iIndexFirstSpace = 1;
 				iIndexFirstSpace = wstrChatMsg.find( L" ", iIndexFirstSpace );
@@ -976,22 +976,22 @@ bool CX2ChatBox::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 					wstrChatMsg = wstrRealChatMsg;
 				}
 			}
-			else if(boost::iequals(wstrCmpMsg, wstrFunction[3])  || boost::iequals(wstrCmpMsg, wstrFunction[9]))
+			else if(x2::platform::IEquals(wstrCmpMsg, wstrFunction[3])  || x2::platform::IEquals(wstrCmpMsg, wstrFunction[9]))
 			{
 				ChangeIMEEditBox( CWM_TOTAL );
 				return true;
 			}
-			else if(boost::iequals(wstrCmpMsg, wstrFunction[4]) || boost::iequals(wstrCmpMsg, wstrFunction[10]))
+			else if(x2::platform::IEquals(wstrCmpMsg, wstrFunction[4]) || x2::platform::IEquals(wstrCmpMsg, wstrFunction[10]))
 			{
 				ChangeIMEEditBox( CWM_PARTY );
 				return true;
 			}
-			else if(boost::iequals(wstrCmpMsg, wstrFunction[5]) || boost::iequals(wstrCmpMsg, wstrFunction[11]))
+			else if(x2::platform::IEquals(wstrCmpMsg, wstrFunction[5]) || x2::platform::IEquals(wstrCmpMsg, wstrFunction[11]))
 			{
 				ChangeIMEEditBox( CWM_GUILD );
 				return true;
 			}
-			else if(boost::iequals(wstrCmpMsg, wstrFunction[12]) || boost::iequals(wstrCmpMsg, wstrFunction[13]))
+			else if(x2::platform::IEquals(wstrCmpMsg, wstrFunction[12]) || x2::platform::IEquals(wstrCmpMsg, wstrFunction[13]))
 			{
 				//{{ kimhc // 2010.3.10 //	채팅창 개편
 
@@ -1013,7 +1013,7 @@ bool CX2ChatBox::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 					}
 				}
 			}
-			else if(boost::iequals(wstrCmpMsg, wstrFunction[0]))
+			else if(x2::platform::IEquals(wstrCmpMsg, wstrFunction[0]))
 			{
 				switch( GetChatWindowMode() )
 				{
@@ -1136,7 +1136,7 @@ bool CX2ChatBox::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 								bIsSystemCommand = true;
 							}
 						}
-						else if(boost::iequals(wstrCommand, GET_STRING(STR_ID_4390)))				// 차단
+						else if(x2::platform::IEquals(wstrCommand, GET_STRING(STR_ID_4390)))				// 차단
 						{
 							wstring wstrTargetNickName = wstrChatMsg.substr( iIndexFirstSpace+1, wstrChatMsg.length() );
 							if( wstrTargetNickName.length() > 0 )
@@ -1149,7 +1149,7 @@ bool CX2ChatBox::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 							}
 
 						}
-						else if(boost::iequals(wstrCommand, GET_STRING(STR_ID_4391)))			// 차단해제
+						else if(x2::platform::IEquals(wstrCommand, GET_STRING(STR_ID_4391)))			// 차단해제
 						{
 							wstring wstrTargetNickName = wstrChatMsg.substr( iIndexFirstSpace+1, wstrChatMsg.length() );
 							if( wstrTargetNickName.length() > 0 )
@@ -1175,7 +1175,7 @@ bool CX2ChatBox::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 								bIsSystemCommand = true;
 							}
 						}
-						else if(boost::iequals(wstrCommand, GET_STRING(STR_ID_4392)))			// 차단리스트
+						else if(x2::platform::IEquals(wstrCommand, GET_STRING(STR_ID_4392)))			// 차단리스트
 						{
 							wstring wstrColor = L"#CFF3F4D";							// 255, 63, 77
 							D3DXCOLOR coTextColor(1.f, 0.24705f, 0.30196f, 1.f);		// 255, 63, 77

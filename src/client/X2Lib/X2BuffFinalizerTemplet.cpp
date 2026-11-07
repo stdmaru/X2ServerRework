@@ -81,9 +81,7 @@ bool CX2BuffFinalizerTemplet::ParsingFinalizerTemplateMethod( KLuaManager& luaMa
 {
 	if ( luaManager_.BeginTable( pszTableName_ ) )
 	{
-		BOOST_SCOPE_EXIT( (&luaManager_) ) {
-			luaManager_.EndTable();
-		} BOOST_SCOPE_EXIT_END
+		x2::scope_exit endTable( [&] { luaManager_.EndTable(); } );
 
 		return ParsingFinalizer( luaManager_ );
 	}

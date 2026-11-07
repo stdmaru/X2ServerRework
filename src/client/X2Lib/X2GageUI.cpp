@@ -666,7 +666,7 @@ void CX2MySmallGageUI::UpdateAirGage()
 		WCHAR keyName[50];
 		ZeroMemory( keyName, sizeof(WCHAR) * ARRAY_SIZE( keyName ) );
 
-		wsprintf(keyName, L"AIR_%02d", iGage);
+		swprintf_s(keyName, L"AIR_%02d", iGage);
 		pStaticAir->GetPicture(0)->SetTex( L"DLG_AIR_GAGE.tga", keyName );
 	}
 }
@@ -1566,7 +1566,7 @@ void CX2MyGageUI::UpdateBuffIcon()
 */
 void CX2MyGageUI::SetBuffIconGuideDesc()
 {
-	BOOST_FOREACH( BuffIcon BuffIconData ,m_vecBuffList )	/// ���� ����
+	for ( BuffIcon BuffIconData : m_vecBuffList )	/// ���� ����
 	{
 		if( -1 != BuffIconData.iBuffName )
 		{
@@ -1602,7 +1602,7 @@ void CX2MyGageUI::SetBuffIconGuideDesc()
 		}
 	}
 
-	BOOST_FOREACH( BuffIcon BuffIconData ,m_vecDebuffList )		/// ����� ����
+	for ( BuffIcon BuffIconData : m_vecDebuffList )		/// ����� ����
 	{
 		if( -1 != BuffIconData.iBuffName )
 		{

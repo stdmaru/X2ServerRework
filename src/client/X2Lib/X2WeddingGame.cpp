@@ -840,7 +840,7 @@ void CX2WeddingGame::PlayEffectSet_WeddingGame( const WCHAR* pEffectSetName_, co
 		} break;
 	case CX2WeddingBehavior::WEPT_BRIDE:
 		{
-			BOOST_FOREACH ( CX2SquareUnitPtr pUnitPtr, m_UserUnitList )
+			for ( CX2SquareUnitPtr pUnitPtr : m_UserUnitList )
 			{
 				if( null != pUnitPtr &&
 					SEnum::WS_BRIDE == pUnitPtr->GetWeddingStatus() )
@@ -852,7 +852,7 @@ void CX2WeddingGame::PlayEffectSet_WeddingGame( const WCHAR* pEffectSetName_, co
 		} break;
 	case CX2WeddingBehavior::WEPT_GROOM:
 		{
-			BOOST_FOREACH ( CX2SquareUnitPtr pUnitPtr, m_UserUnitList )
+			for ( CX2SquareUnitPtr pUnitPtr : m_UserUnitList )
 			{
 				if( null != pUnitPtr &&
 					SEnum::WS_GROOM == pUnitPtr->GetWeddingStatus() )

@@ -17,9 +17,7 @@ bool CX2ComboAndSkillChainSystem::CreateComboAndSkillChain( KLuaManager& luaMana
 	int iChainIndex = 1;	/// 체인의 갯수
 	while ( luaManager_.BeginTable( iChainIndex ) )
 	{
-		BOOST_SCOPE_EXIT( (&luaManager_) ) {
-			luaManager_.EndTable();
-		} BOOST_SCOPE_EXIT_END	/// iChainIndex
+		x2::scope_exit endTable( [&] { luaManager_.EndTable(); } );	/// iChainIndex
 
 			CX2ComboAndSkillChainInfoListPtr ptrComboAndSkillChainInfoList
 			= CX2ComboAndSkillChainInfoList::CreateComboAndSkillChainInfoTemplet();
@@ -32,9 +30,7 @@ bool CX2ComboAndSkillChainSystem::CreateComboAndSkillChain( KLuaManager& luaMana
 			int iComboAndSkillIndex = 1;	/// 한 줄의 체인 내에 콤보 및 스킬 갯수
 			while ( luaManager_.BeginTable( iComboAndSkillIndex ) )
 			{
-				BOOST_SCOPE_EXIT( (&luaManager_) ) {
-					luaManager_.EndTable();
-				} BOOST_SCOPE_EXIT_END	/// iComboAndSkillIndex
+				x2::scope_exit endTable( [&] { luaManager_.EndTable(); } );	/// iComboAndSkillIndex
 
 				int iStateIdChained = 0;
 				LUA_GET_VALUE_RETURN( luaManager_, 1, iStateIdChained, 0, return DISPLAY_ERROR( L"StateID" )  );

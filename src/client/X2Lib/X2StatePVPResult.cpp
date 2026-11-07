@@ -968,7 +968,7 @@ bool CX2StatePVPResult::InitUI()
 				if( bMatchPvp == false )
 				{
 					CKTDGUIStatic* pStaticRank = (CKTDGUIStatic*)pDLGResultInfo->GetControl( L"Static_Result_Rank" );
-					_itow( pPVPResultUnitInfo->m_Rank, buff, 10 );
+					_itow_s( pPVPResultUnitInfo->m_Rank, buff, 10 );
 					pStaticRank->GetString(0)->msg = buff;
 					if ( pSlotData->m_TeamNum == CX2Room::TN_RED )
 						pStaticRank->GetString( 0 )->outlineColor = redTeamColor;
@@ -1002,7 +1002,7 @@ bool CX2StatePVPResult::InitUI()
 					pStaticAssist->GetString( 0 )->color = myColor;
 
 				CKTDGUIStatic* pStaticDEATH = (CKTDGUIStatic*)pDLGResultInfo->GetControl( L"StaticDEATH" );
-				wsprintf( buff, L"%d", pPVPResultUnitInfo->m_DieNum );
+				swprintf_s( buff, L"%d", pPVPResultUnitInfo->m_DieNum );
 				StringCchPrintf( buff, 256, L"%d", pPVPResultUnitInfo->m_DieNum );
 				pStaticDEATH->GetString( 0 )->msg = buff;
 
@@ -1191,7 +1191,7 @@ bool CX2StatePVPResult::InitUI()
 				if( bMatchPvp == false )
 				{
 					CKTDGUIStatic* pStaticRank = (CKTDGUIStatic*)pDLGResultInfo->GetControl( L"Static_Result_Rank" );
-					_itow( pPVPResultUnitInfo->m_Rank, buff, 10 );
+					_itow_s( pPVPResultUnitInfo->m_Rank, buff, 10 );
 					pStaticRank->GetString(0)->msg = buff;
 					if ( pSlotData->m_TeamNum == CX2Room::TN_RED )
 						pStaticRank->GetString( 0 )->outlineColor = redTeamColor;
@@ -1531,7 +1531,7 @@ bool CX2StatePVPResult::InitUI()
 
 			WCHAR buff[256] = {0,};
 			CKTDGUIStatic* pStaticRank = (CKTDGUIStatic*)pDLGResultInfo->GetControl( L"Static_Result_Rank" );
-			_itow( pPVPResultUnitInfo->m_Rank, buff, 10 );
+			_itow_s( pPVPResultUnitInfo->m_Rank, buff, 10 );
 			pStaticRank->GetString(0)->msg = buff;
 
 			if ( pSlotData->m_bMySlot == true )

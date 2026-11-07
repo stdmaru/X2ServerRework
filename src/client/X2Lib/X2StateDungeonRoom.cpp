@@ -2322,7 +2322,7 @@ void CX2StateDungeonRoom::SetUIOXButton()
 		StringCchPrintf( keyX, 100,  L"Dungeon_Room_BlueX_%d", (i+1) );
 
 		/*wsprintf( keyO, L"Dungeon_Room_BlueO_%d", (i+1) );
-		wsprintf( keyX, L"Dungeon_Room_BlueX_%d", (i+1) );*/
+		swprintf_s( keyX, L"Dungeon_Room_BlueX_%d", (i+1) );*/
 
 		pTempOButton = (CKTDGUIButton*)m_pDLGDungeonRoomBack->GetControl( keyO );
 		pTempXButton = (CKTDGUIButton*)m_pDLGDungeonRoomBack->GetControl( keyX );
@@ -2836,12 +2836,12 @@ bool CX2StateDungeonRoom::SetUserBox( CX2Room::SlotData* pSlotData )
 		pDialog->SetPos( D3DXVECTOR2( dummyPos.x, dummyPos.y ) );
 		CKTDGUIStatic* pStaticSlotIndex = (CKTDGUIStatic*)pDialog->GetControl( L"StaticDungeon_Room_SlotIndex" );
 		WCHAR buf[256] = {0};
-		_itow( pSlotData->m_Index, buf, 10 );
+		_itow_s( pSlotData->m_Index, buf, 10 );
 		if ( pStaticSlotIndex != NULL )
 			pStaticSlotIndex->GetString( 0 )->msg = buf;
 
 		CKTDGUIStatic* pStaticUserInfo = (CKTDGUIStatic*)pDialog->GetControl( L"StaticDungeon_Room_UserInfo" );
-		_itow( (int)pSlotData->m_pUnit->GetUnitData().m_Level, buf, 10 );
+		_itow_s( (int)pSlotData->m_pUnit->GetUnitData().m_Level, buf, 10 );
 		if ( pStaticUserInfo != NULL )
 		{
 			pStaticUserInfo->GetString( 1 )->msg = buf;

@@ -9,14 +9,14 @@
 #define CASE_BEHAVIOR_FACTOR( func_, type_ ) \
 case type_: \
 	{ \
-	if ( false == ##func_( luaManager_ , STRINGIZEA2(type_), type_ ) ) \
+	if ( false == func_( luaManager_ , STRINGIZEA2(type_), type_ ) ) \
 	return DISPLAY_ERROR( STRINGIZE2(type_) ); \
 	} break; \
 
 #define CASE_FINALIZER_FACTOR( func_, type_ ) \
 case type_: \
 	{ \
-	if ( false == ##func_( luaManager_ , STRINGIZEA2(type_), type_ ) ) \
+	if ( false == func_( luaManager_ , STRINGIZEA2(type_), type_ ) ) \
 	return DISPLAY_ERROR( STRINGIZE2(type_) ); \
 	} break; \
 
@@ -24,14 +24,14 @@ case type_: \
 #define CASE_BEHAVIOR_FACTOR_SKILL( func_, type_, isSkill_ ) \
 case type_: \
 	{ \
-	if ( false == ##func_( luaManager_ , STRINGIZEA2(type_), type_, isSkill_ ) ) \
+	if ( false == func_( luaManager_ , STRINGIZEA2(type_), type_, isSkill_ ) ) \
 	return DISPLAY_ERROR( STRINGIZE2(type_) ); \
 	} break; \
 
 #define CASE_FINALIZER_FACTOR_SKILL( func_, type_, isSkill_ ) \
 case type_: \
 	{ \
-	if ( false == ##func_( luaManager_ , STRINGIZEA2(type_), type_, isSkill_ ) ) \
+	if ( false == func_( luaManager_ , STRINGIZEA2(type_), type_, isSkill_ ) ) \
 	return DISPLAY_ERROR( STRINGIZE2(type_) ); \
 	} break; \
 
@@ -334,9 +334,7 @@ bool CX2BuffFactor::ParsingBehavior( KLuaManager& luaManager_, bool bIsSkill/* =
 {
 	if ( luaManager_.BeginTable( "BEHAVIOR" ) )
 	{
-		BOOST_SCOPE_EXIT( (&luaManager_) ) {
-			luaManager_.EndTable();
-		} BOOST_SCOPE_EXIT_END
+		x2::scope_exit endTable( [&] { luaManager_.EndTable(); } );
 
 			return ParsingCombinationBehavior( luaManager_, bIsSkill );
 	}
@@ -353,9 +351,7 @@ bool CX2BuffFactor::ParsingFinalizer( KLuaManager& luaManager_, bool bIsSkill/* 
 {
 	if ( luaManager_.BeginTable( "FINALIZER" ) )
 	{
-		BOOST_SCOPE_EXIT( (&luaManager_) ) {
-			luaManager_.EndTable();
-		} BOOST_SCOPE_EXIT_END
+		x2::scope_exit endTable( [&] { luaManager_.EndTable(); } );
 
 			return ParsingCombinationFinalizer( luaManager_, bIsSkill );
 	}
@@ -505,9 +501,7 @@ bool CX2BuffFactor::ParsingChangeNowHpPerSecondBehavior( KLuaManager& luaManager
 {
 	if ( luaManager_.BeginTable( pszTableNameUTF8_ ) )
 	{
-		BOOST_SCOPE_EXIT( (&luaManager_) ) {
-			luaManager_.EndTable();
-		} BOOST_SCOPE_EXIT_END
+		x2::scope_exit endTable( [&] { luaManager_.EndTable(); } );
 
 		KBuffBehaviorFactor BuffBehaviorFactor( eBehaviorType_ );
 
@@ -617,9 +611,7 @@ bool CX2BuffFactor::ParsingTimeFinalizer( KLuaManager& luaManager_, const char* 
 {
 	if ( luaManager_.BeginTable( pszTableName_ ) )
 	{
-		BOOST_SCOPE_EXIT( (&luaManager_) ) {
-			luaManager_.EndTable();
-		} BOOST_SCOPE_EXIT_END
+		x2::scope_exit endTable( [&] { luaManager_.EndTable(); } );
 
 		KBuffFinalizerFactor BuffFinalizerFactor( eFinalizerType_ );
 
@@ -714,9 +706,7 @@ bool CX2BuffFactor::ParsingHitCountFinalizer( KLuaManager& luaManager_, const ch
 {
 	if ( luaManager_.BeginTable( pszTableName_ ) )
 	{
-		BOOST_SCOPE_EXIT( (&luaManager_) ) {
-			luaManager_.EndTable();
-		} BOOST_SCOPE_EXIT_END
+		x2::scope_exit endTable( [&] { luaManager_.EndTable(); } );
 
 		KBuffFinalizerFactor BuffFinalizerFactor( eFinalizerType_ );
 
@@ -789,9 +779,7 @@ bool CX2BuffFactor::ParsingHittedCountFinalizer( KLuaManager& luaManager_, const
 {
 	if ( luaManager_.BeginTable( pszTableName_ ) )
 	{
-		BOOST_SCOPE_EXIT( (&luaManager_) ) {
-			luaManager_.EndTable();
-		} BOOST_SCOPE_EXIT_END
+		x2::scope_exit endTable( [&] { luaManager_.EndTable(); } );
 
 		KBuffFinalizerFactor BuffFinalizerFactor( eFinalizerType_ );
 
@@ -865,9 +853,7 @@ bool CX2BuffFactor::ParsingDamageValueFinalizer( KLuaManager& luaManager_, const
 {
 	if ( luaManager_.BeginTable( pszTableName_ ) )
 	{
-		BOOST_SCOPE_EXIT( (&luaManager_) ) {
-			luaManager_.EndTable();
-		} BOOST_SCOPE_EXIT_END
+		x2::scope_exit endTable( [&] { luaManager_.EndTable(); } );
 
 		KBuffFinalizerFactor BuffFinalizerFactor( eFinalizerType_ );
 
@@ -938,9 +924,7 @@ bool CX2BuffFactor::ParsingPassHpFinalizer( KLuaManager& luaManager_, const char
 {
 	if ( luaManager_.BeginTable( pszTableName_ ) )
 	{
-		BOOST_SCOPE_EXIT( (&luaManager_) ) {
-			luaManager_.EndTable();
-		} BOOST_SCOPE_EXIT_END
+		x2::scope_exit endTable( [&] { luaManager_.EndTable(); } );
 
 		KBuffFinalizerFactor BuffFinalizerFactor( eFinalizerType_ );
 
@@ -975,9 +959,7 @@ bool CX2BuffFactor::ParsingPassMpFinalizer( KLuaManager& luaManager_, const char
 {
 	if ( luaManager_.BeginTable( pszTableName_ ) )
 	{
-		BOOST_SCOPE_EXIT( (&luaManager_) ) {
-			luaManager_.EndTable();
-		} BOOST_SCOPE_EXIT_END
+		x2::scope_exit endTable( [&] { luaManager_.EndTable(); } );
 
 		KBuffFinalizerFactor BuffFinalizerFactor( eFinalizerType_ );
 
@@ -1012,9 +994,7 @@ bool CX2BuffFactor::ParsingEmptyFinalizer( KLuaManager& luaManager_, const char*
 {
 	if ( luaManager_.BeginTable( pszTableName_ ) )
 	{
-		BOOST_SCOPE_EXIT( (&luaManager_) ) {
-			luaManager_.EndTable();
-		} BOOST_SCOPE_EXIT_END
+		x2::scope_exit endTable( [&] { luaManager_.EndTable(); } );
 
 		KBuffFinalizerFactor BuffFinalizerFactor( eFinalizerType_ );
 
@@ -1035,9 +1015,7 @@ bool CX2BuffFactor::ParsingChangeNowMpPerSecondBehavior( KLuaManager& luaManager
 {
 	if ( luaManager_.BeginTable( pszTableNameUTF8_ ) )
 	{
-		BOOST_SCOPE_EXIT( (&luaManager_) ) {
-			luaManager_.EndTable();
-		} BOOST_SCOPE_EXIT_END
+		x2::scope_exit endTable( [&] { luaManager_.EndTable(); } );
 
 		KBuffBehaviorFactor BuffBehaviorFactor( eBehaviorType_ );
 
@@ -1079,9 +1057,7 @@ bool CX2BuffFactor::ParsingChangeStatBehavior( KLuaManager& luaManager_, const c
 {
 	if ( luaManager_.BeginTable( pszTableName_ ) )
 	{
-		BOOST_SCOPE_EXIT( (&luaManager_) ) {
-			luaManager_.EndTable();
-		} BOOST_SCOPE_EXIT_END
+		x2::scope_exit endTable( [&] { luaManager_.EndTable(); } );
 
 		KBuffBehaviorFactor BuffBehaviorFactor( eBehaviorType_ );
 
@@ -1161,9 +1137,7 @@ bool CX2BuffFactor::ParsingCreateBuffFactorBehavior( KLuaManager& luaManager_, c
 {
 	if ( luaManager_.BeginTable( pszTableName_ ) )
 	{
-		BOOST_SCOPE_EXIT( (&luaManager_) ) {
-			luaManager_.EndTable();
-		} BOOST_SCOPE_EXIT_END
+		x2::scope_exit endTable( [&] { luaManager_.EndTable(); } );
 
 		KBuffBehaviorFactor BuffBehaviorFactor( eBehaviorType_ );
 
@@ -1191,9 +1165,7 @@ bool CX2BuffFactor::ParsingAbsorbEffectAttackBehavior( KLuaManager& luaManager_,
 {
 	if ( luaManager_.BeginTable( pszTableName_ ) )
 	{
-		BOOST_SCOPE_EXIT( (&luaManager_) ) {
-			luaManager_.EndTable();
-		} BOOST_SCOPE_EXIT_END
+		x2::scope_exit endTable( [&] { luaManager_.EndTable(); } );
 
 		KBuffBehaviorFactor BuffBehaviorFactor( eBehaviorType_ );
 
@@ -1215,9 +1187,7 @@ bool CX2BuffFactor::ParsingChargeMpHitBehavior( KLuaManager& luaManager_, const 
 {
 	if ( luaManager_.BeginTable( pszTableName_ ) )
 	{
-		BOOST_SCOPE_EXIT( (&luaManager_) ) {
-			luaManager_.EndTable();
-		} BOOST_SCOPE_EXIT_END
+		x2::scope_exit endTable( [&] { luaManager_.EndTable(); } );
 
 		KBuffBehaviorFactor BuffBehaviorFactor( eBehaviorType_ );
 
@@ -1239,9 +1209,7 @@ bool CX2BuffFactor::ParsingChargeMpHittedBehavior( KLuaManager& luaManager_, con
 {
 	if ( luaManager_.BeginTable( pszTableName_ ) )
 	{
-		BOOST_SCOPE_EXIT( (&luaManager_) ) {
-			luaManager_.EndTable();
-		} BOOST_SCOPE_EXIT_END
+		x2::scope_exit endTable( [&] { luaManager_.EndTable(); } );
 
 		KBuffBehaviorFactor BuffBehaviorFactor( eBehaviorType_ );
 
@@ -1263,9 +1231,7 @@ bool CX2BuffFactor::ParsingGameUnitChangeHyperModeBehavior( KLuaManager& luaMana
 {
 	if ( luaManager_.BeginTable( pszTableName_ ) )
 	{
-		BOOST_SCOPE_EXIT( (&luaManager_) ) {
-			luaManager_.EndTable();
-		} BOOST_SCOPE_EXIT_END
+		x2::scope_exit endTable( [&] { luaManager_.EndTable(); } );
 
 		KBuffBehaviorFactor BuffBehaviorFactor( eBehaviorType_ );
 
@@ -1309,9 +1275,7 @@ bool CX2BuffFactor::ParsingEmptyBehavior( KLuaManager& luaManager_, const char* 
 {
 	if ( luaManager_.BeginTable( pszTableName_ ) )
 	{
-		BOOST_SCOPE_EXIT( (&luaManager_) ) {
-			luaManager_.EndTable();
-		} BOOST_SCOPE_EXIT_END
+		x2::scope_exit endTable( [&] { luaManager_.EndTable(); } );
 
 		KBuffBehaviorFactor BuffBehaviorFactor( eBehaviorType_ );
 		m_pDataBuffFactor->m_vecBuffBehaviorFactors.push_back( BuffBehaviorFactor );
@@ -1330,9 +1294,7 @@ bool CX2BuffFactor::ParsingCustomBehavior( KLuaManager& luaManager_, const char*
 {
 	if ( luaManager_.BeginTable( pszTableName_ ) )
 	{
-		BOOST_SCOPE_EXIT( (&luaManager_) ) {
-			luaManager_.EndTable();
-		} BOOST_SCOPE_EXIT_END
+		x2::scope_exit endTable( [&] { luaManager_.EndTable(); } );
 
 		KBuffBehaviorFactor BuffBehaviorFactor( eBehaviorType_ );
 
@@ -1387,9 +1349,7 @@ bool CX2BuffFactor::ParsingChangeAttackByTypeBehavior( KLuaManager& luaManager_,
 {
 	if ( luaManager_.BeginTable( pszTableName_ ) )
 	{
-		BOOST_SCOPE_EXIT( (&luaManager_) ) {
-			luaManager_.EndTable();
-		} BOOST_SCOPE_EXIT_END
+		x2::scope_exit endTable( [&] { luaManager_.EndTable(); } );
 
 		KBuffBehaviorFactor BuffBehaviorFactor( eBehaviorType_ );
 
@@ -1435,9 +1395,7 @@ bool CX2BuffFactor::ParsingChangeEnchantAttackRateBehavior( KLuaManager& luaMana
 {
 	if ( luaManager_.BeginTable( pszTableName_ ) )
 	{
-		BOOST_SCOPE_EXIT( (&luaManager_) ) {
-			luaManager_.EndTable();
-		} BOOST_SCOPE_EXIT_END
+		x2::scope_exit endTable( [&] { luaManager_.EndTable(); } );
 
 		KBuffBehaviorFactor BuffBehaviorFactor( eBehaviorType_ );
 
@@ -1482,9 +1440,7 @@ bool CX2BuffFactor::ParsingDoubleAttackByBuffBehavior( KLuaManager& luaManager_,
 {
 	if ( luaManager_.BeginTable( pszTableName_ ) )
 	{
-		BOOST_SCOPE_EXIT( (&luaManager_) ) {
-			luaManager_.EndTable();
-		} BOOST_SCOPE_EXIT_END
+		x2::scope_exit endTable( [&] { luaManager_.EndTable(); } );
 
 		KBuffBehaviorFactor BuffBehaviorFactor( eBehaviorType_ );
 
@@ -1524,9 +1480,7 @@ bool CX2BuffFactor::ParsingAddSkillLevelByBuffBehavior( KLuaManager& luaManager_
 {
 	if ( luaManager_.BeginTable( pszTableName_ ) )
 	{
-		BOOST_SCOPE_EXIT( (&luaManager_) ) {
-			luaManager_.EndTable();
-		} BOOST_SCOPE_EXIT_END
+		x2::scope_exit endTable( [&] { luaManager_.EndTable(); } );
 
 		KBuffBehaviorFactor BuffBehaviorFactor( eBehaviorType_ );
 
@@ -1546,9 +1500,7 @@ bool CX2BuffFactor::ParsingReflectMagicBehavior( KLuaManager& luaManager_, const
 {
 	if ( luaManager_.BeginTable( pszTableName_ ) )
 	{
-		BOOST_SCOPE_EXIT( (&luaManager_) ) {
-			luaManager_.EndTable();
-		} BOOST_SCOPE_EXIT_END
+		x2::scope_exit endTable( [&] { luaManager_.EndTable(); } );
 
 			KBuffBehaviorFactor BuffBehaviorFactor( eBehaviorType_ );
 
@@ -1590,9 +1542,7 @@ bool CX2BuffFactor::ParsingResetSkillCoolTimeByBuffBehavior( KLuaManager& luaMan
 {
 	if ( luaManager_.BeginTable( pszTableName_ ) )
 	{
-		BOOST_SCOPE_EXIT( (&luaManager_) ) {
-			luaManager_.EndTable();
-		} BOOST_SCOPE_EXIT_END
+		x2::scope_exit endTable( [&] { luaManager_.EndTable(); } );
 
 		KBuffBehaviorFactor BuffBehaviorFactor( eBehaviorType_ );
 
@@ -1646,9 +1596,7 @@ bool CX2BuffFactor::ParsingChangConsumeMpRateBehavior( KLuaManager& luaManager_,
 {
 	if ( luaManager_.BeginTable( pszTableName_ ) )
 	{
-		BOOST_SCOPE_EXIT( (&luaManager_) ) {
-			luaManager_.EndTable();
-		} BOOST_SCOPE_EXIT_END
+		x2::scope_exit endTable( [&] { luaManager_.EndTable(); } );
 
 		KBuffBehaviorFactor BuffBehaviorFactor( eBehaviorType_ );
 
@@ -1688,9 +1636,7 @@ void CX2BuffFactor::ParsingTableForWhile( IN KLuaManager& luaManager_, IN const 
 {
 	if ( true == luaManager_.BeginTable( pszTableName_ ) )
 	{
-		BOOST_SCOPE_EXIT( (&luaManager_) ) {
-			luaManager_.EndTable();
-		} BOOST_SCOPE_EXIT_END
+		x2::scope_exit endTable( [&] { luaManager_.EndTable(); } );
 
 		int iIndex = 1;
 		int iValueSize = 1;
@@ -1719,9 +1665,7 @@ void CX2BuffFactor::ParsingTableMinMaxForWhile( IN KLuaManager& luaManager_, IN 
 {
 	if ( true == luaManager_.BeginTable( pszTableName_ ) )
 	{
-		BOOST_SCOPE_EXIT( (&luaManager_) ) {
-			luaManager_.EndTable();
-		} BOOST_SCOPE_EXIT_END
+		x2::scope_exit endTable( [&] { luaManager_.EndTable(); } );
 
 		int iIndex = 1;
 		int iValueSize = 1;

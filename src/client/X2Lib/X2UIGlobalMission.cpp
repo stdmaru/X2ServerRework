@@ -85,7 +85,7 @@ void CX2UIGlobalMission::UpdateNumOfNowClearCount( int iNumOfNowClearCount )
 		int iRemainCount = ( m_iNumOfNowClearCount > m_iNumOfClearCount ) ? 0 : ( m_iNumOfClearCount - m_iNumOfNowClearCount );
 		wstring wstrRemainCount = L"";
 		WCHAR wszRemainCount[10] = {0, };
-		_itow(iRemainCount, wszRemainCount, 10);
+		_itow_s(iRemainCount, wszRemainCount, 10);
 		wstrRemainCount = wszRemainCount;
 
 		pStaticPiratePercent->GetString(0)->msg = wstrRemainCount;

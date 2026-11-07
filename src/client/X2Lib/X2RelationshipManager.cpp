@@ -1119,7 +1119,7 @@ bool CX2RelationshipManager::Handler_EGS_GET_GUILD_USER_LIST_ACK ( HWND hWnd, UI
 						m_pUIRelationship->ResetInviteWeddingUserList();
 						m_pUIRelationship->SetMaxInviteUserPage ( static_cast< UINT >( kEvent.m_uiTotalPage ) );
 						m_pUIRelationship->SetNowInviteUserPage ( static_cast< UINT >( kEvent.m_uiViewPage ) );
-						BOOST_FOREACH ( KGuildMemberMessageInfo pGuildMemberInfo, kEvent.m_vecMemberMessageList )
+						for ( KGuildMemberMessageInfo pGuildMemberInfo : kEvent.m_vecMemberMessageList )
 						{
 							m_pUIRelationship->AddInviteWeddingUserList
 								( CX2UIRelationship::InviteWeddingUserInfo ( pGuildMemberInfo.m_wstrNickName, pGuildMemberInfo.m_iUnitUID ) );

@@ -1405,7 +1405,6 @@ class CX2Main : public CKTDXStage
 
 		CheckWindowInfo *GetCheckWindowInfo() { return m_threadCheckWindowInfo; }
 
-		void			DllManagerReport();
 
 //{{ megagame / 박교현 / 2010.05.12 / 시스템 정보
 //}} megagame / 박교현 / 2010.05.12 / 시스템 정보
@@ -1801,8 +1800,6 @@ extern CX2TFieldGame*	g_pTFieldGame;
 
 extern CX2ChatBox*		g_pChatBox;
 
-extern FILE*			g_fpStream;
-extern FILE*			g_fpStreamError;
 
 
 

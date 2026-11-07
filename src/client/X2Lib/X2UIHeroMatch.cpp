@@ -535,7 +535,7 @@ bool CX2UIHeroMatch::Handler_EGS_ADMIN_HERO_PVP_USER_REMOVE_ACK( HWND hWnd, UINT
 		{
 			for( vitUser = m_vecUserList.begin(); vitUser != m_vecUserList.end(); )
 			{
-				if( 0 == StrCmp( vitUser->m_wstrNickName.c_str(), kEvent.m_vecUserList[i].second.c_str() ) )
+				if( 0 == wcscmp( vitUser->m_wstrNickName.c_str(), kEvent.m_vecUserList[i].second.c_str() ) )
 					vitUser = m_vecUserList.erase( vitUser );
 				else
 					++vitUser;
@@ -575,7 +575,7 @@ bool CX2UIHeroMatch::Handler_EGS_ADMIN_HERO_PVP_USER_CONNECTION_NOT( HWND hWnd, 
 	{
 		for( UINT i = 0; i < eventSize; i++ )
 		{
-			if( 0 == StrCmp( vitUser->m_wstrNickName.c_str(), kEvent.m_vecUserList[i].second.m_wstrNickName.c_str() ) )
+			if( 0 == wcscmp( vitUser->m_wstrNickName.c_str(), kEvent.m_vecUserList[i].second.m_wstrNickName.c_str() ) )
 			{
 				IsCheck[i] = 2;
 

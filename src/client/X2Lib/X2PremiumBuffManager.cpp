@@ -473,7 +473,7 @@ bool CX2PremiumBuffManager::Handler_EGS_UPDATE_BUFF_INFO_IN_ROOM_NOT( IN HWND hW
 			{
 				vector<BUFF_FACTOR_ID>& vecWorldBuffFactorID = pCX2Unit->GetWorldBuffFactorID();
 
-				BOOST_FOREACH( BUFF_FACTOR_ID eWorldBuffFactorID, vecWorldBuffFactorID )			/// ��� ���� ���� ����
+				for ( BUFF_FACTOR_ID eWorldBuffFactorID : vecWorldBuffFactorID )			/// ��� ���� ���� ����
 				{
 					CX2BuffFactorPtr ptrBuffFactor = CX2BuffTempletManager::GetInstance()->GetBuffFactorPtr( eWorldBuffFactorID );
 
@@ -483,7 +483,7 @@ bool CX2PremiumBuffManager::Handler_EGS_UPDATE_BUFF_INFO_IN_ROOM_NOT( IN HWND hW
 
 				vecWorldBuffFactorID.clear();	/// ���� ���� ���� �����̳� �ʱ�ȭ
 
-				BOOST_FOREACH( KBuffInfo& kBuffInfo, kEvent.m_vecActivateBuffList )			/// �������� �� ���� ����
+				for ( KBuffInfo& kBuffInfo : kEvent.m_vecActivateBuffList )			/// �������� �� ���� ����
 				{
 
 
@@ -532,7 +532,7 @@ bool CX2PremiumBuffManager::Handler_EGS_UPDATE_BUFF_INFO_NOT( IN HWND hWnd, IN U
 		{
 			vector<BUFF_FACTOR_ID>& vecWorldBuffFactorID = pCX2Unit->GetWorldBuffFactorID();
 
-			BOOST_FOREACH( BUFF_FACTOR_ID eWorldBuffFactorID, vecWorldBuffFactorID )				/// ��� ���� ���� ������ ����
+			for ( BUFF_FACTOR_ID eWorldBuffFactorID : vecWorldBuffFactorID )				/// ��� ���� ���� ������ ����
 			{
 				CX2BuffFactorPtr ptrBuffFactor = CX2BuffTempletManager::GetInstance()->GetBuffFactorPtr( eWorldBuffFactorID );
 
@@ -549,7 +549,7 @@ bool CX2PremiumBuffManager::Handler_EGS_UPDATE_BUFF_INFO_NOT( IN HWND hWnd, IN U
 
 			vecWorldBuffFactorID.clear();	/// ���� ���� ���� �����̳� �ʱ�ȭ
 
-			BOOST_FOREACH( KBuffInfo& kBuffInfo, kEvent.m_vecActivateBuffList )				/// �������� �� ���� ������ ����
+			for ( KBuffInfo& kBuffInfo : kEvent.m_vecActivateBuffList )				/// �������� �� ���� ������ ����
 			{
 
 				UINT			 iFactorID	   = kBuffInfo.m_kFactorInfo.m_iFactorID;		/// Factor ID

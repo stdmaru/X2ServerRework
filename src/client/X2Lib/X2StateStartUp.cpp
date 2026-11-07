@@ -42,9 +42,6 @@ CX2StateStartUp::CX2StateStartUp(void)
 //
 //#ifndef _SERVICE_
 //
-//		AllocConsole();
-//		g_fpStream = freopen("CONOUT$", "a", stdout);		// redirect printf to console
-//		g_fpStreamError = freopen("CONOUT$", "a", stderr);	// redirect printf to console
 //		dbg::logfile::SetLogLevel(2);
 //
 //#endif _SERVICE_

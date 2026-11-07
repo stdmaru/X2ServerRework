@@ -9794,7 +9794,7 @@ bool CX2GameUnit::AbsorbEffectAttackProcess( CX2DamageManager::DamageData* pDama
 
 		WCHAR wstr[10];
 		ZeroMemory( wstr, ARRAY_SIZE( wstr ) );
-		wsprintf( wstr, L"MP+ %d", static_cast<int>( fSumOfAbsorbValue ) );
+		swprintf_s( wstr, L"MP+ %d", static_cast<int>( fSumOfAbsorbValue ) );
 
 		D3DXVECTOR3 pos = GetPos();
 		pos.y += 50.0f;
@@ -9841,7 +9841,7 @@ float CX2GameUnit::GetAdditionalAttackByType( CX2DamageManager::ATTACK_TYPE eAtt
 {
 	float fPowerRate = 1.f;
 
-	BOOST_FOREACH( CX2ChangeAttackByTypePtr ChangeAttackByTypePtr, m_AdditionalAttackByType )	/// 찾고자 하는 공격 타입에 해당하는 배율 검사
+	for ( CX2ChangeAttackByTypePtr ChangeAttackByTypePtr : m_AdditionalAttackByType )	/// 찾고자 하는 공격 타입에 해당하는 배율 검사
 	{
 		if( eAttackType_ ==  ChangeAttackByTypePtr->GetAttackType() )
 			fPowerRate *= ChangeAttackByTypePtr->GetValue();
@@ -9893,7 +9893,7 @@ CX2GameUnit::EnchantAttackRate CX2GameUnit::GetChangeEnchantAttackRate( CX2Damag
 
 	float fIncraseAttackRateFixValue = 0.f;			// 버프 체인지 타입이 FixValue 일 때 사용됨
 	EnchantAttackRate sEnchantAttackRate;			// 인챈트 공격 확률 클래스, 반환값에 쓰임
-	BOOST_FOREACH( CX2ChangeEnchantAttackRatePtr ChangeEnchantAttackRatePtr, m_AdditionalChangeEnchantAttackRate )	/// 찾고자 하는 공격 타입에 해당하는 배율 검사
+	for ( CX2ChangeEnchantAttackRatePtr ChangeEnchantAttackRatePtr : m_AdditionalChangeEnchantAttackRate )	/// 찾고자 하는 공격 타입에 해당하는 배율 검사
 	{
 		// 속성 공격 타입이 존재한다면, 해당 속성의 공격만 강화시켜준다.
 		// 디폴트는 BEAT_ALL
@@ -9954,7 +9954,7 @@ void CX2GameUnit::EraseDoubleAttackByBuff( const KBuffIdentity& BuffIdentity_ )
 */
 bool CX2GameUnit::IsDoubleAttackByBuff()
 {
-	BOOST_FOREACH( CX2DoubleAttackPtr ChangeEnchantAttackRatePtr, m_vecDoubleAttack )	/// 찾고자 하는 공격 타입에 해당하는 배율 검사
+	for ( CX2DoubleAttackPtr ChangeEnchantAttackRatePtr : m_vecDoubleAttack )	/// 찾고자 하는 공격 타입에 해당하는 배율 검사
 	{
 		if( GetRandomFloat() < ChangeEnchantAttackRatePtr->GetRate() )
 			return true;
@@ -11860,7 +11860,7 @@ int CX2GameUnit::GetAddSkillLevelByBuff() const
 {
 	int iSumOfAddSkillLevelByBuff = 0;
 
-	BOOST_FOREACH( CX2AddSkillLevelByBuffPtr addSkillLevelByBuffPtr, m_vecAddSkillLevelByBuffPtr )	/// 찾고자 하는 공격 타입에 해당하는 배율 검사
+	for ( CX2AddSkillLevelByBuffPtr addSkillLevelByBuffPtr : m_vecAddSkillLevelByBuffPtr )	/// 찾고자 하는 공격 타입에 해당하는 배율 검사
 	{
 		if ( NULL != addSkillLevelByBuffPtr )
 			iSumOfAddSkillLevelByBuff += addSkillLevelByBuffPtr->GetAddSkillLevel();
@@ -11968,7 +11968,7 @@ bool CX2GameUnit::CanNotShowEnchantedWeaponEffectToRiding()
 
 void CX2GameUnit::AddEffectSetDeleteCondition( CX2EffectSet::Handle hEffectSetHandle_, const vector<DELETE_CONDITION_EFFECT_SET> & vecDeleteCondition )
 {
-	BOOST_FOREACH ( DELETE_CONDITION_EFFECT_SET eDeleteCondition, vecDeleteCondition )
+	for ( DELETE_CONDITION_EFFECT_SET eDeleteCondition : vecDeleteCondition )
 	{
 		switch ( eDeleteCondition )
 		{

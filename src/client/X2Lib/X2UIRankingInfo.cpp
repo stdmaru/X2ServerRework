@@ -3,7 +3,7 @@
 
 
 #include "./X2UIRankingInfo.h"
-#include < iomanip >
+#include <iomanip>
 
 CX2UIRankingInfo::CX2UIRankingInfo( const CKTDXStage* const pNowStage, const WCHAR* const pFileName ) :
 m_bShow( false ),

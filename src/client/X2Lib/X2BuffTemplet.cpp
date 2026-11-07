@@ -50,9 +50,7 @@ bool CX2BuffTemplet::ParsingScript( KLuaManager& luaManager_ )
 	/// 행동 요소 파싱
 	if ( luaManager_.BeginTable( "BEHAVIOR" ) )
 	{
-		BOOST_SCOPE_EXIT( (&luaManager_) ) {
-			luaManager_.EndTable();
-		} BOOST_SCOPE_EXIT_END
+		x2::scope_exit endTable( [&] { luaManager_.EndTable(); } );
 
 		if ( !CX2BuffBehaviorTemplet::ParsingCombinationBehavior( luaManager_, m_vecBehaviorPtr ) )
 			return false;
@@ -64,9 +62,7 @@ bool CX2BuffTemplet::ParsingScript( KLuaManager& luaManager_ )
 	/// 종료 요소 파싱
 	if ( luaManager_.BeginTable( "FINALIZER" ) )
 	{
-		BOOST_SCOPE_EXIT( (&luaManager_) ) {
-			luaManager_.EndTable();
-		} BOOST_SCOPE_EXIT_END
+		x2::scope_exit endTable( [&] { luaManager_.EndTable(); } );
 
 			if ( !CX2BuffFinalizerTemplet::ParsingCombinationFinalizer( luaManager_, m_vecFinalizerPtr ) )
 				return false;
@@ -77,9 +73,7 @@ bool CX2BuffTemplet::ParsingScript( KLuaManager& luaManager_ )
 	/// 종료 요소 파싱
 	if ( luaManager_.BeginTable( "DISPLAYER" ) )
 	{
-		BOOST_SCOPE_EXIT( (&luaManager_) ) {
-			luaManager_.EndTable();
-		} BOOST_SCOPE_EXIT_END
+		x2::scope_exit endTable( [&] { luaManager_.EndTable(); } );
 
 			if ( !CX2BuffDisplayerTemplet::ParsingCombinationDisplayer( luaManager_, m_vecDisplayerPtr ) )
 				return false;

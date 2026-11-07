@@ -1390,7 +1390,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 				if( NULL != pIMEEditBox )
 				{
 					wstring wstrMessage = pIMEEditBox->GetText();
-					if( 0 == StrCmp(wstrMessage.c_str(), GET_STRING(STR_ID_23608)) )
+					if( 0 == wcscmp(wstrMessage.c_str(), GET_STRING(STR_ID_23608)) )
 					{
 
 						//Handler_EGS_DELETE_ITEM_REQ( m_EnrollItemUid, m_iItemEnrollNum );
@@ -4000,7 +4000,7 @@ void CX2UIInventory::UpdateRegisterQuantityDLG( bool bReadIME )
 		m_iItemEnrollNum = pItem->GetItemData().m_Quantity;
 
 	WCHAR buff[256] = {0};
-	_itow( m_iItemEnrollNum, buff, 10 );
+	_itow_s( m_iItemEnrollNum, buff, 10 );
 
 	wstring wstrNum = buff;
 	pQuantity->SetText( wstrNum.c_str() );
@@ -6584,7 +6584,7 @@ void CX2UIInventory::UpdateElChangerDLG( bool bReadIME )
 	}
 
 	WCHAR buff[256] = {0};
-	_itow( m_ElChangerItemCount, buff, 10 );
+	_itow_s( m_ElChangerItemCount, buff, 10 );
 	wstring wstrNum = buff;
 	pQuantity->SetText( wstrNum.c_str() );
 }
@@ -7379,7 +7379,7 @@ void CX2UIInventory::UpdateOpenRandomItemAck()
 			getExplanation += L" ";
 
 			WCHAR buff[256] = {0};
-			_itow( resultNum, buff, 10 );
+			_itow_s( resultNum, buff, 10 );
 			getExplanation += buff;
 
 			getExplanation += GET_STRING( STR_ID_24 );
@@ -10893,7 +10893,7 @@ void CX2UIInventory::UpdateElBreakDLG( IN const bool bReadIME_ )
 	}
 
 	WCHAR buff[256] = {0};
-	_itow( m_ElBreakItemCount, buff, 10 );
+	_itow_s( m_ElBreakItemCount, buff, 10 );
 	wstring wstrNum = buff;
 	pQuantity->SetText( wstrNum.c_str() );
 }

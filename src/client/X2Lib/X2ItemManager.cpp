@@ -834,7 +834,7 @@ bool CX2ItemManager::AddCashItem( vector< KBillProductInfo >& vecKBillProductInf
 						bCheckError = true;
 						//에러 로그 찍어보실까낭
 						WCHAR buffer[32];
-						_itow(kBillProductInfo.m_iProductID, buffer, 10);
+						_itow_s(kBillProductInfo.m_iProductID, buffer, 10);
 						ErrorLogMsg( KEM_ERROR354, buffer );
 						break;
 					}

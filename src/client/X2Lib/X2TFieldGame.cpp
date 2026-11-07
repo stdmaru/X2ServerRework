@@ -2477,7 +2477,7 @@ CX2Unit*    CX2TFieldGame::GetSquareUnitUnitByNickName( const WCHAR* wszNickName
 		CX2SquareUnitPtr pCX2SquareUnit = m_UserUnitList[i];
 		if( pCX2SquareUnit != NULL && pCX2SquareUnit->GetUnit() != NULL )
 		{
-			if( 0 == StrCmp( pCX2SquareUnit->GetUnit()->GetNickName(), wszNickName ) )
+			if( 0 == wcscmp( pCX2SquareUnit->GetUnit()->GetNickName(), wszNickName ) )
 			{
 				return pCX2SquareUnit->GetUnit();
 			}
@@ -2486,7 +2486,7 @@ CX2Unit*    CX2TFieldGame::GetSquareUnitUnitByNickName( const WCHAR* wszNickName
 
     for( const AddUserInUnitLoader& addUser : m_listAddUserInUnitLoader )
     {
-        if ( addUser.m_pUnit != NULL && 0 == StrCmp( addUser.m_pUnit->GetNickName(), wszNickName ) )
+        if ( addUser.m_pUnit != NULL && 0 == wcscmp( addUser.m_pUnit->GetNickName(), wszNickName ) )
         {
             return addUser.m_pUnit;
         }//if

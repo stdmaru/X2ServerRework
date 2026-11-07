@@ -829,7 +829,7 @@ bool CX2RidingPetManager::Handler_EGS_SUMMON_RIDING_PET_ACK( HWND hWnd, UINT uMs
 							if ( NULL != pRidingPetTemplet )
 							{
 								int iSlotNum = 0;
-								BOOST_FOREACH ( const RidingPetSkillInfo& SkilInfo, pRidingPetTemplet->m_vecAttackSkill )
+								for ( const RidingPetSkillInfo& SkilInfo : pRidingPetTemplet->m_vecAttackSkill )
 								{
 									m_pSkillSlot->SetSkillSlotCoolTime( iSlotNum++, SkilInfo.m_fCoolTime );
 								}
@@ -1194,7 +1194,7 @@ void CX2RidingPetManager::Handler_EGS_RELEASE_RIDING_PET_REQ( UidType _uId )
 	bool bCEventQuest2 = true;
 
 	// �̺�Ʈ�� �� ���� Ȯ��
-	if(StrCmpW(kInfo.m_wstrDestroyDate.c_str(), L"") == 0)
+	if(wcscmp(kInfo.m_wstrDestroyDate.c_str(), L"") == 0)
 		bCEventQuest1 = false;
 	else
 		bCEventQuest1 = true;

@@ -1427,7 +1427,7 @@ bool CX2UIPersonalShop::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, 
 
 			CKTDGUIIMEEditBox* pDialogNum = (CKTDGUIIMEEditBox*)m_pDLGItemEnroll->GetControl( L"IME_Enroll_Item_Num" );
 			WCHAR buff[256] = {0};
-			_itow( m_RegShopItemNum, buff, 10 );
+			_itow_s( m_RegShopItemNum, buff, 10 );
 			wstring wstrNum = buff;
 			pDialogNum->SetText( wstrNum.c_str() );
 
@@ -1440,7 +1440,7 @@ bool CX2UIPersonalShop::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, 
 			m_RegShopItemNum++;
 			CKTDGUIIMEEditBox* pDialogNum = (CKTDGUIIMEEditBox*)m_pDLGItemEnroll->GetControl( L"IME_Enroll_Item_Num" );
 			WCHAR buff[256] = {0};
-			_itow( m_RegShopItemNum, buff, 10 );
+			_itow_s( m_RegShopItemNum, buff, 10 );
 			wstring wstrNum = buff;
 			pDialogNum->SetText( wstrNum.c_str() );
 			UpdateDLGItemEnroll();
@@ -2196,7 +2196,7 @@ void CX2UIPersonalShop::ResetSellSlotUIList( int iPageIndex )
 
 			// 수량 써주고
 			WCHAR buff[256] = {0};
-			_itow( pSlotInfo->m_Quantity, buff, 10 );
+			_itow_s( pSlotInfo->m_Quantity, buff, 10 );
 			wstring wstrNum = buff;
 			wstrNum += GET_STRING( STR_ID_24 );
 			pStaticItemNum->GetString(0)->msg = wstrNum.c_str();
@@ -2749,7 +2749,7 @@ void CX2UIPersonalShop::UpdateDLGItemEnroll()
 		}
 
 		WCHAR buff[256] = {0};
-		_itow( m_RegShopItemNum, buff, 10 );
+		_itow_s( m_RegShopItemNum, buff, 10 );
 		wstring wstrNum = buff;
 		pDialogNum->SetText( wstrNum.c_str() );
 
@@ -3017,7 +3017,7 @@ void CX2UIPersonalShop::UpdateBuyQuantityDLG( bool bReadIME )
 			m_ItemNumToBuy = pSlotInfo->m_Quantity;
 
 		WCHAR buff[256] = {0};
-		_itow( m_ItemNumToBuy, buff, 10 );
+		_itow_s( m_ItemNumToBuy, buff, 10 );
 		wstring wstrNum = buff;
 		pIMEQuantity->SetText( wstrNum.c_str() );
 

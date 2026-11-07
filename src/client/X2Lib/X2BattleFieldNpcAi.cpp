@@ -847,7 +847,7 @@ void CX2BattleFieldNpcAi::CheckArrivedDestination()
 	{
 		WCHAR wSource[10] = { 0, };
 		swprintf( wSource, L"%d,", index );
-		StrCatW( *wDest_, wSource );
+		wcscat( *wDest_, wSource );
 	}
 }
 
@@ -858,7 +858,7 @@ void CX2BattleFieldNpcAi::CheckArrivedDestination()
 	{
 		WCHAR wSource[10] = { 0, };
 		swprintf( wSource, L"%d,", index );
-		StrCatW( *wDest_, wSource );
+		wcscat( *wDest_, wSource );
 	}
 }
 

@@ -85,4 +85,8 @@ std::string QuoteCmdArgument(std::string_view arg);
 // Quoting for a POSIX shell (single quotes): the remote command of `ssh host <command>` is run by the remote shell.
 std::string QuoteShellArgument(std::string_view arg);
 
+// Opens a URL in the user's browser without waiting for it (ShellExecute "open" on Windows, xdg-open elsewhere).
+// False when it could not be started.
+bool OpenUrl(const std::wstring& url);
+
 } // namespace x2::platform

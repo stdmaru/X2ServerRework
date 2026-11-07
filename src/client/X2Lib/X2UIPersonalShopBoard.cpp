@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 #include "./X2UIPersonalShopBoard.h"
-#include < iomanip >
+#include <iomanip>
 
 CX2UIPersonalShopBoard::CX2UIPersonalShopBoard(CKTDXStage* pNowStage, const WCHAR* pFileName )
 : CX2ItemSlotManager( pNowStage, NULL )
@@ -202,7 +202,7 @@ void CX2UIPersonalShopBoard::SetIMMEditMinLevel(int iMinLevel)
 	}
 
 	WCHAR buff[256] = {0};
-	_itow( iMinLevel, buff, 10 );
+	_itow_s( iMinLevel, buff, 10 );
 	m_pIMEEditMinLevel->SetText(buff, false);
 
 
@@ -234,7 +234,7 @@ void CX2UIPersonalShopBoard::SetIMMEditMaxLevel(int iMaxLevel)
 	}
 
 	WCHAR buff[256] = {0};
-	_itow( iMaxLevel, buff, 10 );
+	_itow_s( iMaxLevel, buff, 10 );
 	m_pIMEEditMaxLevel->SetText(buff, false);
 
 	if(iMaxLevel == 1)
@@ -2165,7 +2165,7 @@ void CX2UIPersonalShopBoard::UpdateItemList()
 		}
 		else if( uiFirstPage + i == m_uiNowPage ) // 현재 페이지 버튼
 		{
-			_itow( uiFirstPage + i, buff, 10 );
+			_itow_s( uiFirstPage + i, buff, 10 );
 			m_pStaticPageNum->SetString( i, buff );
 			m_pStaticPageNum->GetString( i )->color = D3DXCOLOR(0.6f,0.0f,0.0f,1.0f);
 			m_pButtonPageNum[i]->SetShowEnable(true, false);
@@ -2173,7 +2173,7 @@ void CX2UIPersonalShopBoard::UpdateItemList()
 		}
 		else
 		{
-			_itow( uiFirstPage + i, buff, 10 );
+			_itow_s( uiFirstPage + i, buff, 10 );
 			m_pStaticPageNum->SetString( i, buff );
 			m_pStaticPageNum->GetString( i )->color = D3DXCOLOR(0.4f,0.4f,0.4f,1.0f);
 			m_pButtonPageNum[i]->SetShowEnable(true, true);

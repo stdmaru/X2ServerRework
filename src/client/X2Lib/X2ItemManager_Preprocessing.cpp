@@ -1,7 +1,6 @@
 #include <stdafx.h>
 
 
-#include <boost/scoped_array.hpp>
 
 
 
@@ -406,10 +405,10 @@ bool    CX2ItemManager::KProxy2::AddItemTemplet_LUA()
 
 	/* 오현빈 // X2OPTIMIZE_ITEM_TEMPLET_PREPROCESSING주석 // 제가 이해한 내용을 바탕으로 작성 해서 틀린 내용 일 수 있습니다.
 	꼭 필요한 값이 아닐 경우(각 캐릭별 offset 등) 스크립트에 값이 기록 되어 있을 때만 메모리에 등록 시키기 위해
-	boost::scoped_array<CX2Item::KItemFormatType_OffsetOrValue>을 사용함.
+	std::unique_ptr<CX2Item::KItemFormatType_OffsetOrValue[]> is used.
 
 	여기서 등록시킨 값을 읽어올 때는 각 타입별로 Offset을 모두 더해주는 방식이기 때문에 순서가 변경되면 오동작 할 수 있음*/
-    boost::scoped_array<CX2Item::KItemFormatType_OffsetOrValue>
+    std::unique_ptr<CX2Item::KItemFormatType_OffsetOrValue[]>
         apExtra( new CX2Item::KItemFormatType_OffsetOrValue[ARRAY_SIZE( s_aszSmallName )*5+CX2Item::STT_END] );
     DWORD   dwNumExtra = 0;
     DWORD   dwItemID = 0;

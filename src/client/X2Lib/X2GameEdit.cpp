@@ -2,7 +2,6 @@
 #include "./X2GameEdit.h"
 
 
-#include    <boost/tokenizer.hpp>
 
 CX2GameEdit::CX2GameEdit(void)
 #if X2_DEV_TOOLS

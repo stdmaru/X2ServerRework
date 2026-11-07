@@ -1653,7 +1653,7 @@ const int CX2KeyPad::KEYPAD_STRING_INDEX[CX2KeyPad::KBI_END] =
 
 			if( NULL != g_pData->GetUIManager() && NULL != g_pData->GetUIManager()->GetUIPetList() )
 			{
-				bool IsSetKey = (0 == StrCmp(g_pMain->GetKeyPad()->GetKeyString( GA_RIDING ).c_str(), L"" ))? false : true;
+				bool IsSetKey = (0 == wcscmp(g_pMain->GetKeyPad()->GetKeyString( GA_RIDING ).c_str(), L"" ))? false : true;
 				g_pData->GetUIManager()->GetUIPetList()->UpdateRidingButtonGuideDesc( IsSetKey );
 			}
 		}

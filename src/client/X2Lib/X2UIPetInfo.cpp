@@ -92,7 +92,7 @@ m_bUnitClicked(false)
 	}
 
 	//탑승 버튼 툴팁
-	bool IsSetKey = (0 == StrCmp(g_pMain->GetKeyPad()->GetKeyString( GA_RIDING ).c_str(), L"" ))? false : true;
+	bool IsSetKey = (0 == wcscmp(g_pMain->GetKeyPad()->GetKeyString( GA_RIDING ).c_str(), L"" ))? false : true;
 	UpdateRidingButtonGuideDesc( IsSetKey );
 
 	m_eKindRideButton = BUTTON_RIDE_ON;
@@ -867,7 +867,7 @@ bool CX2UIPetInfo::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 				if( NULL != pIMEEditBox )
 				{
 					wstring wstrMessage = pIMEEditBox->GetText();
-					if( 0 == StrCmp(wstrMessage.c_str(), GET_STRING(STR_ID_24517)) )
+					if( 0 == wcscmp(wstrMessage.c_str(), GET_STRING(STR_ID_24517)) )
 					{
 						m_eTabSelect = RIDING_PET_TAB_SELECT;
 						CX2RidingPetManager::GetInstance()->Handler_EGS_RELEASE_RIDING_PET_REQ( m_ViewRidingPetUid );

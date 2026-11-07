@@ -5498,9 +5498,9 @@ CX2DamageEffect::CEffect* CX2DamageEffect::GetInstanceByIndex( int iIndex )
 	return NULL;
 }
 
-	typedef boost::singleton_pool<boost::pool_allocator_tag, sizeof(CX2DamageEffect::ParticleData)> ParticleDataPool;
-	typedef boost::singleton_pool<boost::pool_allocator_tag, sizeof(CX2DamageEffect::DamageEffectData)> DamageEffectDataPool;
-	typedef boost::singleton_pool<boost::pool_allocator_tag, sizeof(CX2DamageEffect::CEffect)> CEffectPool;
+	typedef KSingletonPool<sizeof(CX2DamageEffect::ParticleData)> ParticleDataPool;
+	typedef KSingletonPool<sizeof(CX2DamageEffect::DamageEffectData)> DamageEffectDataPool;
+	typedef KSingletonPool<sizeof(CX2DamageEffect::CEffect)> CEffectPool;
 
 
 

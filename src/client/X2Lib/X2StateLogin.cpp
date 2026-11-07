@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "x2/platform/process.h"
 
 
 #include "./X2StateLogin.h"
@@ -184,26 +185,26 @@ bool CX2StateLogin::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 			{
 				wstring wstrURL = L"";
 				wstrURL = L"http://www.elswordonline.com";
-				ShellExecuteW( GetDesktopWindow(), L"open", wstrURL.c_str(), L"dwmApi #102", NULL, SW_SHOWNORMAL);
+				x2::platform::OpenUrl( wstrURL );
 			}
 			break;
 		case SLUCM_REGISTER_MOVE :
 			{
 				wstring wstrURL = L"";
 				wstrURL = L"https://myaccount.elswordonline.com/registration";
-				ShellExecuteW( GetDesktopWindow(), L"open", wstrURL.c_str(), L"dwmApi #102", NULL, SW_SHOWNORMAL);
+				x2::platform::OpenUrl( wstrURL );
 			}
 			break;
 		case SLUCM_FACEBOOK_MOVE :
 			{
 				wstring wstrURL = L"http://www.facebook.com/ElswordOnlineNA";
-				ShellExecuteW( GetDesktopWindow(), L"open", wstrURL.c_str(), L"dwmApi #102", NULL, SW_SHOWNORMAL);
+				x2::platform::OpenUrl( wstrURL );
 			}
 			break;
 		case SLUCM_STEAM_COMMUNITY_MOVE :
 			{
 				wstring wstrURL = L"http://steamcommunity.com/sharedfiles/filedetails/?id=93245387";
-				ShellExecuteW( GetDesktopWindow(), L"open", wstrURL.c_str(), L"dwmApi #102", NULL, SW_SHOWNORMAL);
+				x2::platform::OpenUrl( wstrURL );
 			}
 			break;
 		case SLUCM_CHANGE_STATE_MEMBER_JOIN:
@@ -562,7 +563,7 @@ bool CX2StateLogin::Handler_ECH_VERIFY_ACCOUNT_ACK( HWND hWnd, UINT uMsg, WPARAM
 		{
 			if( kEvent.m_iOK == NetError::ERR_K3RCOMBO_AUTH_02 )
 			{
-				ShellExecuteA(NULL, "open", kEvent.m_strAgreementURL.c_str(), NULL, NULL, SW_SHOW);
+				x2::platform::OpenUrl( x2::platform::Utf8ToWide( kEvent.m_strAgreementURL ) );
 			}
 
 			if( g_pMain->GetManualLogin() == false )

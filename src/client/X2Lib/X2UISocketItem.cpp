@@ -799,7 +799,7 @@ void CX2UISocketItem::UpdateUICostED()
 {
 	CKTDGUIStatic* pStatic_ED = static_cast< CKTDGUIStatic* >(m_pDlgSocketItem->GetControl( L"g_pStatic_ED" ));
 	WCHAR buff[256] = {0};
-	_itow( m_iTotalCostED, buff, 10 );
+	_itow_s( m_iTotalCostED, buff, 10 );
 	pStatic_ED->GetString(0)->msg = buff;
 
 	UpdateButtonEquip();

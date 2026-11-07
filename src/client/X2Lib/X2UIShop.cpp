@@ -1455,7 +1455,7 @@ void CX2UIShop::UpdateItemSellNumDLG( bool bReadIME, bool bTextSelected )
 		m_SellItemNum = MaxItemNum;
 
 	WCHAR buff[256] = {0};
-	_itow( m_SellItemNum, buff, 10 );
+	_itow_s( m_SellItemNum, buff, 10 );
 	wstring wstrNum = buff;
 	pQuantity->SetText( wstrNum.c_str(), bTextSelected );
 
@@ -1576,7 +1576,7 @@ void CX2UIShop::RepairItem( UidType RepairItemUID )
 						)
 						StringCchPrintf( buff, 256, GET_REPLACED_STRING( ( STR_ID_903, "i", repairEDCost ) ) );
 					else
-						wsprintf( buff, GET_REPLACED_STRING( ( STR_ID_904, "i", repairEDCost ) ) );
+						swprintf_s( buff, L"%s", GET_REPLACED_STRING( ( STR_ID_904, "i", repairEDCost ) ) );
 				}
 				else
 				{
@@ -2171,7 +2171,7 @@ void CX2UIShop::UpdateItemBuyNumDLG( bool bReadIME, bool bTextSelected )
 		m_BuyItemNum = MaxBuyItem;
 
 	WCHAR buff[256] = {0};
-	_itow( m_BuyItemNum, buff, 10 );
+	_itow_s( m_BuyItemNum, buff, 10 );
 	wstring wstrNum = buff;
 	pQuantity->SetText( wstrNum.c_str(), bTextSelected );
 

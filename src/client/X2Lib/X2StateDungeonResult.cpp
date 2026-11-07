@@ -861,9 +861,9 @@ HRESULT CX2StateDungeonResult::OnFrameMove( double fTime, float fElapsedTime )
 							WCHAR staticResultRank[256] = {0};
 							WCHAR staticResultDesc[256] = {0};
 
-							wsprintf( staticResultUnit, L"Dungeon_Result_Other%d_Unit", otherUserNum );
-							wsprintf( staticResultRank, L"Dungeon_Result_Other%d_Rank", otherUserNum );
-							wsprintf( staticResultDesc, L"Dungeon_Result_Other%d_Desc", otherUserNum );
+							swprintf_s( staticResultUnit, L"Dungeon_Result_Other%d_Unit", otherUserNum );
+							swprintf_s( staticResultRank, L"Dungeon_Result_Other%d_Rank", otherUserNum );
+							swprintf_s( staticResultDesc, L"Dungeon_Result_Other%d_Desc", otherUserNum );
 
 
 
@@ -1293,7 +1293,7 @@ HRESULT CX2StateDungeonResult::OnFrameMove( double fTime, float fElapsedTime )
 
 							/*
 							WCHAR edBuff[256] = {0};
-							wsprintf( edBuff, L"%d", (int)m_fED );
+							swprintf_s( edBuff, L"%d", (int)m_fED );
 							CKTDGUIStatic* pStaticED = (CKTDGUIStatic*)m_pDLGBack->GetControl( L"StaticReward_ED" );
 							pStaticED->GetString(0)->msg = edBuff;
 							*/
@@ -2803,11 +2803,11 @@ void CX2StateDungeonResult::PicCharDrawText()
 			WCHAR buff[256] = {0};
 			if ( m_fBonusEXP == 0 )
 			{
-			wsprintf( buff, L"0" );
+			swprintf_s( buff, L"0" );
 			}
 			else
 			{
-			wsprintf( buff, L"+%d", (int)m_fBonusEXP );
+			swprintf_s( buff, L"+%d", (int)m_fBonusEXP );
 			}
 
 			m_pPicCharScore->DrawText( buff, D3DXVECTOR3(948,582,0), D3DXVECTOR3(1,0,0), CKTDGPicChar::AT_RIGHT, 0.00f );

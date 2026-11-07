@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "x2/platform/process.h"
 #include "./X2StateMenu.h"
 
 
@@ -1688,14 +1689,14 @@ bool CX2StateMenu::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 case SMUCM_FACEBOOK_MOVE:
 		{
 			wstring wstrURL = L"http://www.facebook.com/ElswordOnlineNA";
-			ShellExecuteW( GetDesktopWindow(), L"open", wstrURL.c_str(), L"dwmApi #102", NULL, SW_SHOWNORMAL);
+			x2::platform::OpenUrl( wstrURL );
 			return true;
 		}
 		break;
 	case SMUCM_STEAM_COMMUNITY_MOVE:
 		{
 			wstring wstrURL = L"https://www.facebook.com/Elsword/app_112813808737465";
-			ShellExecuteW( GetDesktopWindow(), L"open", wstrURL.c_str(), L"dwmApi #102", NULL, SW_SHOWNORMAL);
+			x2::platform::OpenUrl( wstrURL );
 			return true;
 		}
 		break;
@@ -1763,7 +1764,7 @@ case SMUCM_FACEBOOK_MOVE:
 			std::wstring wstrURL = L"http://apitest.elswordonline.com/aeria/auth/gamesupport?SID=";
 #endif // defined (_SERVICE_) && !defined (_OPEN_TEST_)
 			wstrURL += g_pInstanceData->GetUserSessionID();
-			ShellExecuteW( GetDesktopWindow(), L"open", wstrURL.c_str(), L"dwmApi #102", NULL, SW_SHOWNORMAL);
+			x2::platform::OpenUrl( wstrURL );
 			return true;
 		} break;
 

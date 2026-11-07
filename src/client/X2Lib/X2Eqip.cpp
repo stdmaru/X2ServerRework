@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "./X2Eqip.h"
-#include "boost_kog_extension.h"
 
 
 // constructor

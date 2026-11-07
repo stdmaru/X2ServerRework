@@ -560,7 +560,7 @@ void CX2World::PlayBGM()
 	if( g_pKTDXApp->GetDSManager()->GetInit() == false || g_pKTDXApp->GetDSManager()->GetMP3Play() == NULL )
 		return;
 
-	if(StrCmpW(m_BGMName.c_str(), g_pKTDXApp->GetDSManager()->GetMP3Play()->GetPlayingFileName().c_str()) == 0 )
+	if(wcscmp(m_BGMName.c_str(), g_pKTDXApp->GetDSManager()->GetMP3Play()->GetPlayingFileName().c_str()) == 0 )
 		return;
 
 	g_pKTDXApp->GetDSManager()->GetMP3Play()->Play( m_BGMName.c_str() );

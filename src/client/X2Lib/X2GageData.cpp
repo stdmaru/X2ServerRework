@@ -122,7 +122,7 @@ bool CX2GageData::FlushForceDown()
 
 	WCHAR buf[100] = { 0, };
 
-	wsprintf( buf, L"NowForceDown: %d, MaxForceDown: %d\n", iNowForceDown, iMaxForceDown );
+	swprintf_s( buf, L"NowForceDown: %d, MaxForceDown: %d\n", iNowForceDown, iMaxForceDown );
 
 	DXUTTRACE( buf );
 

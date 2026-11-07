@@ -584,10 +584,6 @@ CX2Game::~CX2Game()
 	//g_pMain->SendHackMail();
 	//if( g_pData != NULL && g_pData->GetMyUser()->GetUserData().hackingUserType == CX2User::HUT_AGREE_HACK_USER )
 	//	g_pMain->SendHackMail_DamageHistory("Game End");
-	if( g_pMain != NULL )
-	{
-		g_pMain->DllManagerReport();
-	}
 
 	if( g_pData->GetPartyManager() != NULL )
 	{
@@ -13467,7 +13463,7 @@ void CX2Game::WriteBroadCastUser()
 {
 	WCHAR wLog[512];
 	ZeroMemory( wLog, sizeof(WCHAR) * 512 );
-	wsprintf( wLog, L"UIDForSyncPacket: " );
+	swprintf_s( wLog, L"UIDForSyncPacket: " );
 
 //#ifdef SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
 
@@ -13475,14 +13471,14 @@ void CX2Game::WriteBroadCastUser()
 	{
 		WCHAR wBuffer[50];
 		ZeroMemory( wBuffer, sizeof(WCHAR) * 50 );
-		wsprintf( wBuffer, L"%lld ", uid );
+		swprintf_s( wBuffer, L"%lld ", uid );
 		StringCchCat( wLog, sizeof(WCHAR) * 512, wBuffer );
 	}
 	for( UidType uid : g_pData->GetGameUDP()->GetRelayUIDs() )
 	{
 		WCHAR wBuffer[50];
 		ZeroMemory( wBuffer, sizeof(WCHAR) * 50 );
-		wsprintf( wBuffer, L"%lld ", uid );
+		swprintf_s( wBuffer, L"%lld ", uid );
 		StringCchCat( wLog, sizeof(WCHAR) * 512, wBuffer );
 	}
 

@@ -90,9 +90,7 @@ bool CX2BuffDisplayerTemplet::ParsingDisplayerTemplateMethod( KLuaManager& luaMa
 {
 	if ( luaManager_.BeginTable( pszTableNameUTF8_ ) )
 	{
-		BOOST_SCOPE_EXIT( (&luaManager_) ) {
-			luaManager_.EndTable();
-		} BOOST_SCOPE_EXIT_END
+		x2::scope_exit endTable( [&] { luaManager_.EndTable(); } );
 
 		return ParsingDisplayer( luaManager_ );
 	}
@@ -165,9 +163,7 @@ bool CX2BuffDisplayerTemplet::ParsingDisplayerTemplateMethod( KLuaManager& luaMa
 	/// 각 유닛 타입별로 RenderParam 셋팅을 읽어들임
 	while ( luaManager_.BeginTable( iTableIndex ) )
 	{
-		BOOST_SCOPE_EXIT( (&luaManager_) ) {
-			luaManager_.EndTable();
-		} BOOST_SCOPE_EXIT_END
+		x2::scope_exit endTable( [&] { luaManager_.EndTable(); } );
 
 
 		StBuffRenderParamPtr ptrStBuffRenderParam( new StBuffRenderParam );

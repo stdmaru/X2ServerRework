@@ -152,9 +152,7 @@ bool CX2BuffBehaviorTemplet::ParsingBehaviorTemplateMethod( KLuaManager& luaMana
 {
 	if ( luaManager_.BeginTable( pszTableName_ ) )
 	{
-		BOOST_SCOPE_EXIT( (&luaManager_) ) {
-			luaManager_.EndTable();
-		} BOOST_SCOPE_EXIT_END
+		x2::scope_exit endTable( [&] { luaManager_.EndTable(); } );
 
 		return ParsingBehavior( luaManager_ );
 	}

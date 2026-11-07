@@ -1402,17 +1402,17 @@ void CX2Camera::SetViewNowKeyFrame()
 		m_kCamera.LookAt( vLookAtPos.x, vLookAtPos.y, vLookAtPos.z );
 
 		int iCoordX = (int)vLookAtPos.x;
-		_itow( iCoordX, buff, 10 );
+		_itow_s( iCoordX, buff, 10 );
 		m_pIMEEditCoordX->SetText(buff, false);
 		m_iLastCoordX = iCoordX;
 
 		int iCoordY = (int)vLookAtPos.y;
-		_itow( iCoordY, buff, 10 );
+		_itow_s( iCoordY, buff, 10 );
 		m_pIMEEditCoordY->SetText(buff, false);
 		m_iLastCoordY = iCoordY;
 
 		int iCoordZ = (int)vLookAtPos.z;
-		_itow( iCoordZ, buff, 10 );
+		_itow_s( iCoordZ, buff, 10 );
 		m_pIMEEditCoordZ->SetText(buff, false);
 		m_iLastCoordZ = iCoordZ;
 	}
@@ -1441,12 +1441,12 @@ void CX2Camera::SetViewNowKeyFrame()
 
 	WCHAR buff[256] = {0};
 	int iMoveVelocity = (int)m_vecWorldCameraData[0].m_vecKeyFrameCameraData[m_iEditKeyFrameIndex].m_fMoveVelocity;
-	_itow( iMoveVelocity, buff, 10 );
+	_itow_s( iMoveVelocity, buff, 10 );
 	m_pIMEEditMoveVelocity->SetText(buff, false);
 	m_iLastMoveVelocity = iMoveVelocity;
 
 	int iRotateVelocity = (int)m_vecWorldCameraData[0].m_vecKeyFrameCameraData[m_iEditKeyFrameIndex].m_fRotateTime;
-	_itow( iRotateVelocity, buff, 10 );
+	_itow_s( iRotateVelocity, buff, 10 );
 	m_pIMEEditRotateTime->SetText(buff, false);
 	m_iLastRotateTime = iRotateVelocity;
 
@@ -1455,10 +1455,10 @@ void CX2Camera::SetViewNowKeyFrame()
 
 
 	CKTDGUIStatic *pStaticKeyFrameState = static_cast< CKTDGUIStatic* >( m_pDlgWorldCameraEdit->GetControl( L"StaticKeyFrameState" ) );
-	_itow( m_iEditKeyFrameIndex+1, buff, 10 );
+	_itow_s( m_iEditKeyFrameIndex+1, buff, 10 );
 	pStaticKeyFrameState->SetString(0, buff);
 	pStaticKeyFrameState->SetString(1, L"/");
-	_itow( (int)m_vecWorldCameraData[0].m_vecKeyFrameCameraData.size(), buff, 10 );
+	_itow_s( (int)m_vecWorldCameraData[0].m_vecKeyFrameCameraData.size(), buff, 10 );
 	pStaticKeyFrameState->SetString(2, buff);
 
 

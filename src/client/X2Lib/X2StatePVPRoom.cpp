@@ -3484,7 +3484,7 @@ bool CX2StatePVPRoom::SetUserBox( CX2Room::SlotData* pSlotData )
 		pDialog->SetPos( D3DXVECTOR2( dummyPos.x, dummyPos.y ) );
 		CKTDGUIStatic* pStaticSlotIndex = (CKTDGUIStatic*)pDialog->GetControl( L"StaticPVP_Room_SlotIndex" );
 		WCHAR buf[256] = {0};
-		_itow( pSlotData->m_Index, buf, 10 );
+		_itow_s( pSlotData->m_Index, buf, 10 );
 		pStaticSlotIndex->GetString( 0 )->msg = buf;
 
 

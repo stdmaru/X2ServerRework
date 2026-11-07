@@ -2,7 +2,7 @@
 
 
 #include "./X2UIGuildBoard.h"
-#include < iomanip >
+#include <iomanip>
 
 CX2UIGuildBoard::CX2UIGuildBoard( const CKTDXStage* const pNowStage, const WCHAR* const pFileName ) :
 m_bShow( false ),
@@ -538,7 +538,7 @@ bool CX2UIGuildBoard::Handler_EGS_GET_GUILD_AD_LIST_ACK(  HWND hWnd, UINT uMsg, 
 					//SetNumImage( m_columnForAdvertise[i].m_pStaticGuildLevel, kGuildAdInfo.m_ucGuildLevel );
 
 					WCHAR buff[256] = {0};
-					_itow( kGuildAdInfo.m_ucGuildLevel, buff, 10 );
+					_itow_s( kGuildAdInfo.m_ucGuildLevel, buff, 10 );
 					wstring wstrNum = buff;
 
 					m_columnForAdvertise[i].m_pStaticGuildLevel->SetString( 0, wstrNum.c_str() );

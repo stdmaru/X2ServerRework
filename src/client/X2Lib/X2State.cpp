@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "x2/platform/console.h"
 #include "./X2State.h"
 
 //extern bool g_bIsDXUTDeveloper;
@@ -6076,23 +6077,14 @@ void CX2State::OnFrameMove_GameServerConnect( double fTime, float fElapsedTime )
 #if X2_DEV_TOOLS
 			g_pData->GetServerProtocol()->SendID( E_DISABLE_HB_CHECK_REQ );
 
-			if( NULL == g_fpStream && NULL == g_fpStreamError )
-			{
-				AllocConsole();
-				g_fpStream = freopen("CONOUT$", "a", stdout); // redirect printf to console
-				g_fpStreamError = freopen("CONOUT$", "a", stderr); // redirect printf to console
-				dbg::logfile::SetLogLevel(2);
-			}
+			x2::platform::OpenDebugConsole();
+			dbg::logfile::SetLogLevel(2);
 #endif
 		}
 		else
 		{
 #if X2_DEV_TOOLS
-			FreeConsole();
-			if ( g_fpStream != NULL )
-				fclose( g_fpStream );
-			if ( g_fpStreamError != NULL )
-				fclose( g_fpStreamError );
+			x2::platform::CloseDebugConsole();
 #endif
 		}
 
@@ -6629,7 +6621,7 @@ void CX2State::SendLoadedModuleList(bool bForce)
 				StringCchCatW( wstrFileName, MAX_PATH, wstrFileExt) ;
 				//StrCatW( wstrFileName, wstrFileExt) ;
 
-				if( wstrFileExt == L".tmp" || StrStrW(wstrFileExt, L"tmp") || StrStrW(wstrFileExt, L"TMP") || StrStrW(wstrFileName, L".tmp") )
+				if( wstrFileExt == L".tmp" || wcsstr(wstrFileExt, L"tmp") || wcsstr(wstrFileExt, L"TMP") || wcsstr(wstrFileName, L".tmp") )
 					continue;
 
 				MakeUpperCase( wstrFileName );
@@ -8597,9 +8589,9 @@ bool CX2State::Handler_EGS_CHECK_PING_SCORE_CHANGE_HOST_NOT( HWND hWnd, UINT uMs
 				WCHAR pString[255];
 
 				if( pNewHostSlotData->m_pUnit )
-					wsprintf( pString, L"%s님이 Host로 설정됨.", pNewHostSlotData->m_pUnit->GetNickName() );
+					swprintf_s( pString, L"%s님이 Host로 설정됨.", pNewHostSlotData->m_pUnit->GetNickName() );
 				else
-					wsprintf( pString, L"???님이 Host로 설정됨." );
+					swprintf_s( pString, L"???님이 Host로 설정됨." );
 
 				g_pMain->GetGameEdit()->AddString( CX2ChatWindow::CT_KILL, pString );
 			}

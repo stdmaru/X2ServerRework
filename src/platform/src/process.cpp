@@ -5,6 +5,7 @@
 #include "x2/platform/unicode.h"
 #include <tlhelp32.h>
 #include <psapi.h>
+#include <shellapi.h>
 #else
 #include <cerrno>
 #include <csignal>
@@ -13,6 +14,7 @@
 #include <spawn.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include "x2/platform/unicode.h"
 #endif
 
 #include <cstdio>
@@ -665,6 +667,24 @@ bool Process::Running()
 }
 
 #endif
+
+#if defined(_WIN32)
+
+bool OpenUrl(const std::wstring& url)
+{
+    const auto result = reinterpret_cast<INT_PTR>(
+        ::ShellExecuteW(nullptr, L"open", url.c_str(), nullptr, nullptr, SW_SHOWNORMAL));
+    return result > 32;
+}
+
+#else
+
+bool OpenUrl(const std::wstring& url)
+{
+    const std::string command = "xdg-open " + QuoteShellArgument(WideToUtf8(url)) + " >/dev/null 2>&1 &";
+    return std::system(command.c_str()) == 0;
+}
+
 
 bool Process::WriteLine(std::string_view line)
 {

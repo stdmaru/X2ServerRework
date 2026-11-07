@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "x2/platform/console.h"
 #include "./X2Main.h"
 
 #include <ShlObj.h>
@@ -52,8 +53,6 @@ CX2WeddingGame*		g_pWeddingGame	= NULL;
 
 CX2ChatBox*			g_pChatBox		= NULL;
 
-FILE*				g_fpStream		= NULL;
-FILE*				g_fpStreamError = NULL;
 
 
 
@@ -567,9 +566,6 @@ m_pMemoryHolder( NULL )
 
 
 
-	//{{ ????? : [2010/05/05]	//	???????? ????
-	SiCX2DLLManager()->Init();
-	//}}
 
 	m_bAutoStart = false;
 	m_AutoLoginUnitIndex = 0;
@@ -717,11 +713,7 @@ m_pMemoryHolder( NULL )
 
 	g_pKTDXApp->GetDIManager()->SetEnable( true );
 
-	FreeConsole();
-	if ( g_fpStream != NULL )
-		fclose( g_fpStream );
-	if ( g_fpStreamError != NULL )
-		fclose( g_fpStreamError );
+	x2::platform::CloseDebugConsole();
 
 	g_pKTDXApp->InsertStage( m_pData );
     g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, XS_START_UP, NULL, false );
@@ -803,7 +795,6 @@ CX2Main::~CX2Main(void)
 // #endif //  MOVIE_TEST	// 13-11-11, ???? ???? ????, kimjh, MOVIE_TEST ?? ??�� ????? Define ?? MOVIE_TEST_BASE ?? ????
 
 
-	DllManagerReport();
 
 
 
@@ -4620,7 +4611,7 @@ bool CX2Main::InstallFont( const char* pValueName, const char* pFontFileName )
 	StringCchPrintf( FontFileName, MAX_PATH , L"%s", fontFileName.c_str() );
 	StringCchPrintf( tempFontFileName, MAX_PATH , L"%s", fontFileName.c_str() );
 	/*wsprintf( FontFileName, L"%s", fontFileName.c_str() );
-	wsprintf( tempFontFileName, L"%s", fontFileName.c_str() );*/
+	swprintf_s( tempFontFileName, L"%s", fontFileName.c_str() );*/
 
 	if ( g_pKTDXApp->GetDeviceManager()->GetMassFileManager()->GetPullPath( tempFontFileName ) == NULL )
 		return false;
@@ -4686,7 +4677,7 @@ bool CX2Main::InstallFont( const char* pValueName, const char* pFontFileName )
 
 	DWORD dwDisp;
 	WCHAR lpData[256];
-	wsprintf( lpData, L"%s", fontFileName.c_str() );
+	swprintf_s( lpData, L"%s", fontFileName.c_str() );
 
 	wstring valueName;
 	ConvertCharToWCHAR( valueName, pValueName );
@@ -4785,7 +4776,7 @@ void CX2Main::Handler_EGS_CHECK_SUM_REQ( bool bFileCheck /* = false */ )
 wstring CX2Main::GetEDString( int edToChange )
 {
 	WCHAR buff[256] = {0};
-	_itow( edToChange, buff, 10 );
+	_itow_s( edToChange, buff, 10 );
 
 	return GetEDString( buff );
 }
@@ -5992,7 +5983,6 @@ void CX2Main::SendHackMail_DamageHistory(const char *strComm)
 //	// ????? ????
 //
 //	wstrstm << "- Loaded Dll -";
-//	const char *dlllist = SiCX2DLLManager()->GetPreLoadedDllList();
 //	wstrstm << dlllist;
 //
 //	// DLL ????
@@ -6124,11 +6114,9 @@ void CX2Main::SendHackMail_HackUserNot(const char *strComm)
 //	// ????? ????
 //
 //	wstrstm << "- Loaded Dll -";
-//	const char *dlllist = SiCX2DLLManager()->GetPreLoadedDllList();
 //	wstrstm << dlllist;
 //
 //	// DLL ????
-//	wstring wstrDllInfo = SiCX2DLLManager()->GetReportEvent();
 //	string strDllInfo = "";
 //	ConvertWCHARToChar( strDllInfo, wstrDllInfo );
 //	wstrstm << strDllInfo << "\n\n";
@@ -6272,7 +6260,6 @@ void CX2Main::SendHackMail_AttachFile(const char *strComm, const string& userId)
 //	// ????? ????
 //
 //	// DLL ????
-//	wstring wstrDllInfo = SiCX2DLLManager()->GetReportEvent();
 //	string strDllInfo = "";
 //	ConvertWCHARToChar( strDllInfo, wstrDllInfo );
 //	wstrstm << strDllInfo << "\n\n";
@@ -6517,7 +6504,6 @@ void CX2Main::SendHackMail_VERIFYVALUE(const char *strComm)
 //	// ????? ????
 //
 //	wstrstm << "- Loaded Dll -";
-//	const char *dlllist = SiCX2DLLManager()->GetPreLoadedDllList();
 //	wstrstm << dlllist;
 //
 //	// DLL ????
@@ -6680,7 +6666,6 @@ void CX2Main::SendHackMailGameStart(int iVal, bool bVal)
 //	// ????? ????
 //
 //	wstrstm << "- Loaded Dll -";
-//	const char *dlllist = SiCX2DLLManager()->GetPreLoadedDllList();
 //	wstrstm << dlllist;
 //
 //	// DLL ????
@@ -7782,20 +7767,6 @@ std::string CX2Main::GetMachineId()
 //}
 
 
-void CX2Main::DllManagerReport()
-{
-#if !X2_DEV_TOOLS
-#endif
-
-	//THEMIDA_VM_START
-
-	SiCX2DLLManager()->ReportEvent();
-
-	//THEMIDA_VM_END
-
-#if !X2_DEV_TOOLS
-#endif
-}
 
 
 CX2Main::TimedMessagePopUp* CX2Main::GetTimedMessagePopup( CKTDGUIDialogType pDialog )
@@ -9024,7 +8995,7 @@ bool CX2Main::CheckWindowInfo::CheckProcess_Thread()
 							wstring processName = vecProcessInfo[j].ProcessName;
 							MakeUpperCase(processName);
 
-							if( StrStrW(processName.c_str(), hackInfo.m_wstrProcessName.c_str()) )
+							if( wcsstr(processName.c_str(), hackInfo.m_wstrProcessName.c_str()) )
 							{
 
 								if(g_pData != NULL && g_pData->GetServerProtocol() != NULL )
@@ -9058,8 +9029,8 @@ bool CX2Main::CheckWindowInfo::CheckProcess_Thread()
 							KHackingToolInfo windowInfo = m_vecWindowInfo_Thread[j];
 
 							/// kimhc // 20130826 // WINDOWS INTERNET EXPLORER?? ?????? ??? ????? ?????? ????? ??
-							if( StrStrW(windowInfo.m_wstrProcessName.c_str(), hackInfo.m_wstrProcessName.c_str()) &&
-								NULL == StrStrW(windowInfo.m_wstrProcessName.c_str(), L"WINDOWS INTERNET EXPLORER" ) )
+							if( wcsstr(windowInfo.m_wstrProcessName.c_str(), hackInfo.m_wstrProcessName.c_str()) &&
+								NULL == wcsstr(windowInfo.m_wstrProcessName.c_str(), L"WINDOWS INTERNET EXPLORER" ) )
 							{
 
 								if(g_pData != NULL && g_pData->GetServerProtocol() != NULL )
@@ -9091,7 +9062,7 @@ bool CX2Main::CheckWindowInfo::CheckProcess_Thread()
 					for(UINT j=0; j<m_vecWindowInfo_Thread.size(); ++j)
 					{
 						KHackingToolInfo windowInfo = m_vecWindowInfo_Thread[j];
-						if( StrStrW(windowInfo.m_wstrWindowClassName.c_str(), hackInfo.m_wstrWindowClassName.c_str()) )
+						if( wcsstr(windowInfo.m_wstrWindowClassName.c_str(), hackInfo.m_wstrWindowClassName.c_str()) )
 						{
 							if(g_pData != NULL && g_pData->GetServerProtocol() != NULL )
 							{
@@ -9121,8 +9092,8 @@ bool CX2Main::CheckWindowInfo::CheckProcess_Thread()
 						for(UINT j=0; j<m_vecWindowInfo_Thread.size(); ++j)
 						{
 							KHackingToolInfo windowInfo = m_vecWindowInfo_Thread[j];
-							if( StrStrW(windowInfo.m_wstrProcessName.c_str(), hackInfo.m_wstrProcessName.c_str()) &&
-								StrStrW(windowInfo.m_wstrWindowClassName.c_str(), hackInfo.m_wstrWindowClassName.c_str()) )
+							if( wcsstr(windowInfo.m_wstrProcessName.c_str(), hackInfo.m_wstrProcessName.c_str()) &&
+								wcsstr(windowInfo.m_wstrWindowClassName.c_str(), hackInfo.m_wstrWindowClassName.c_str()) )
 							{
 								if(g_pData != NULL && g_pData->GetServerProtocol() != NULL )
 								{
@@ -9302,60 +9273,6 @@ bool CX2Main::CheckWindowInfo::CheckProcess_Thread()
 						}
 					}
 					break;
-				case ANTIHACKING_ID::ANTIHACKING_FILGER_09:	//	DLL Manager & not exit game
-					{
-						if( SiCX2DLLManager()->FindModule( hackInfo.m_wstrProcessName.c_str() ) == true )
-						{
-							if(g_pData != NULL && g_pData->GetServerProtocol() != NULL )
-							{
-								if( g_pData != NULL && g_pData->GetMyUser() != NULL &&
-									g_pData->GetMyUser()->GetUserData().hackingUserType != CX2User::HUT_AGREE_HACK_USER )
-								{
-									g_pData->GetServerProtocol()->SendID( EGS_REPORT_HACK_USER_NOT );
-									g_pData->GetMyUser()->AccessUserData().hackingUserType = CX2User::HUT_AGREE_HACK_USER;
-								}
-							}
-
-							string strDllName;
-							ConvertWCHARToChar( strDllName, hackInfo.m_wstrProcessName.c_str() );
-
-
-							string strMailTitle = ANTI_HACK_STRING_AntiHacking_DLL_Find;
-							strMailTitle = strMailTitle + strDllName;
-
-							g_pMain->SendHackMail_DamageHistory(strMailTitle.c_str());
-						}
-					}
-					break;
-				case ANTIHACKING_ID::ANTIHACKING_FILGER_10:	//	DLL Manager & exit game
-					{
-						if( SiCX2DLLManager()->FindModule( hackInfo.m_wstrProcessName.c_str() ) == true )
-						{
-
-
-							if(g_pData != NULL && g_pData->GetServerProtocol() != NULL )
-							{
-								if( g_pData != NULL && g_pData->GetMyUser() != NULL &&
-									g_pData->GetMyUser()->GetUserData().hackingUserType != CX2User::HUT_AGREE_HACK_USER )
-								{
-									g_pData->GetServerProtocol()->SendID( EGS_REPORT_HACK_USER_NOT );
-									g_pData->GetMyUser()->AccessUserData().hackingUserType = CX2User::HUT_AGREE_HACK_USER;
-								}
-							}
-
-							string strDllName;
-							ConvertWCHARToChar( strDllName, hackInfo.m_wstrProcessName.c_str() );
-
-
-							string strMailTitle = ANTI_HACK_STRING_AntiHacking_DLL_Find_Exit;
-							strMailTitle = strMailTitle + strDllName;
-
-							g_pMain->SendHackMail_DamageHistory(strMailTitle.c_str());
-							m_pKTDXApp->SetFindHacking( true );
-							return true;
-						}
-					}
-					break;
 				case ANTIHACKING_ID::ANTIHACKING_FILGER_11:
 					{
 						for(UINT j=0; j<vecZombieProcessInfo.size(); ++j)
@@ -9363,7 +9280,7 @@ bool CX2Main::CheckWindowInfo::CheckProcess_Thread()
 							wstring processName = vecZombieProcessInfo[j].ProcessName;
 							MakeUpperCase(processName);
 
-							if( StrStrW(processName.c_str(), hackInfo.m_wstrProcessName.c_str()) )
+							if( wcsstr(processName.c_str(), hackInfo.m_wstrProcessName.c_str()) )
 							{
 
 
@@ -9465,7 +9382,7 @@ bool CX2Main::CheckWindowInfo::CheckProcess_Thread()
 							wstring processName = vecProcessInfo[j].ProcessName;
 							MakeUpperCase(processName);
 
-							if( StrStrW(processName.c_str(), hackInfo.m_wstrProcessName.c_str()) )
+							if( wcsstr(processName.c_str(), hackInfo.m_wstrProcessName.c_str()) )
 							{
 // 								if(g_pData != NULL && g_pData->GetServerProtocol() != NULL )
 // 								{
@@ -9541,39 +9458,12 @@ bool CX2Main::CheckWindowInfo::CheckProcess_Thread()
 					}
 					break;
 
-				case ANTIHACKING_ID::ANTIHACKING_FILGER_19:	//	DLL Manager In & not exit game
-					{
-						if( SiCX2DLLManager()->FindModuleIn( hackInfo.m_wstrProcessName.c_str() ) == true )
-						{
-// 							if(g_pData != NULL && g_pData->GetServerProtocol() != NULL )
-// 							{
-// #ifdef FIX_HACKUSER_REG01
-// 								if( g_pData != NULL && g_pData->GetMyUser() != NULL &&
-// 									g_pData->GetMyUser()->GetUserData().hackingUserType != CX2User::HUT_AGREE_HACK_USER )
-// 								{
-// 									g_pData->GetServerProtocol()->SendID( EGS_REPORT_HACK_USER_NOT );
-// 									g_pData->GetMyUser()->AccessUserData().hackingUserType = CX2User::HUT_AGREE_HACK_USER;
-// 								}
-// #endif
-// 							}
-
-							string strDllName;
-							ConvertWCHARToChar( strDllName, hackInfo.m_wstrProcessName.c_str() );
-
-
-							string strMailTitle = ANTI_HACK_STRING_AntiHacking_DLL_Find;
-							strMailTitle = strMailTitle + strDllName;
-
-							g_pMain->SendHackMail_DamageHistory(strMailTitle.c_str());
-						}
-					}
-					break;
 				case ANTIHACKING_ID::ANTIHACKING_FILGER_20: // WindowText & not Exit
 					{
 						for(UINT j=0; j<m_vecWindowInfo_Thread.size(); ++j)
 						{
 							KHackingToolInfo windowInfo = m_vecWindowInfo_Thread[j];
-							if( StrStrW(windowInfo.m_wstrProcessName.c_str(), hackInfo.m_wstrProcessName.c_str()) )
+							if( wcsstr(windowInfo.m_wstrProcessName.c_str(), hackInfo.m_wstrProcessName.c_str()) )
 							{
 								string strProcessName;
 								ConvertWCHARToChar( strProcessName, windowInfo.m_wstrProcessName.c_str() );
@@ -10285,7 +10175,7 @@ bool CX2Main::ResetDeveloperScriptSet ( const WCHAR* pFileName )	// DevScriptTab
 
 	vector<DeveloperScriptSet::DeveloperScript> & pVecDeveloperScript = m_DeveloperScriptSet.GetDeveloperScriptSet();
 
-	BOOST_FOREACH ( DeveloperScriptSet::DeveloperScript devScript, pVecDeveloperScript )
+	for ( DeveloperScriptSet::DeveloperScript devScript : pVecDeveloperScript )
 	{
 		if ( true == devScript.m_wstrDeveloperScriptFileName.empty() )
 		{
@@ -10325,7 +10215,7 @@ bool CX2Main::ResetDeveloperScriptSet_GameEffectSet ( DeveloperScriptSet::Develo
 {
 	/// ???? ?? ??? ??? ?��?, Swap ?? ???, Merge ?? ??? ?��? ??? ?? ??????.
 	vector<CX2EffectSet*> pVecGameEffectSet = g_pData->m_vecGameEFfectSet;
-	BOOST_FOREACH ( CX2EffectSet * pEffectSet, pVecGameEffectSet )
+	for ( CX2EffectSet * pEffectSet : pVecGameEffectSet )
 	{
 		SAFE_DELETE( pEffectSet );
 	}
@@ -10394,7 +10284,7 @@ bool CX2Main::ResetDeveloperScriptSet_GameMajorXMeshPlayer ( DeveloperScriptSet:
 {
 	/// Step 1. ???? ?? ??? ??? ?��?, Swap ?? ???, Merge ?? ??? ?��? ??? ?? ??????.
 	vector<CKTDGXMeshPlayer*> m_vecGameMajorXMeshPlayer = g_pData->m_vecGameMajorXMeshPlayer;
-	BOOST_FOREACH ( CKTDGXMeshPlayer * pMeshPlayer, m_vecGameMajorXMeshPlayer )
+	for ( CKTDGXMeshPlayer * pMeshPlayer : m_vecGameMajorXMeshPlayer )
 	{
 		SAFE_DELETE( pMeshPlayer );
 	}

@@ -83,6 +83,20 @@ std::vector<std::string> Utf8Arguments(int argc, char* argv[])
     return args;
 }
 
+void OpenDebugConsole()
+{
+    if (::GetConsoleWindow() != nullptr || !::AllocConsole())
+        return;
+    std::FILE* stream = nullptr;
+    ::freopen_s(&stream, "CONOUT$", "a", stdout);
+    ::freopen_s(&stream, "CONOUT$", "a", stderr);
+}
+
+void CloseDebugConsole()
+{
+    ::FreeConsole();
+}
+
 #else
 
 void InitConsole()
@@ -98,6 +112,14 @@ bool IsColorTerminal(std::FILE* stream)
 {
     const int fd = ::fileno(stream);
     return fd >= 0 && ::isatty(fd) != 0;
+}
+
+void OpenDebugConsole()
+{
+}
+
+void CloseDebugConsole()
+{
 }
 
 #endif

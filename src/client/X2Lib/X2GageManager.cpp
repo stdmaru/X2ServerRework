@@ -223,7 +223,7 @@ void CX2GageManager::CreateMyGageUI( const CX2Unit::UNIT_CLASS eGameUnitClass_, 
 			{
 				if ( m_vecGageSetPartyMember.size() > 0 )		// m_vecGageSetPartyMember 가 있을 때
 				{
-					BOOST_FOREACH( CX2GageSetPtr ptrGageSet_, m_vecGageSetPartyMember )		// vector 의 각 컨테이너에 대해
+					for ( CX2GageSetPtr ptrGageSet_ : m_vecGageSetPartyMember )		// vector 의 각 컨테이너에 대해
 					{
 						CX2PartyMemberGageUI* pPartyMemberGageUI = static_cast<CX2PartyMemberGageUI*>( ptrGageSet_->GetGageUI() );	// PartyMember 의 UI 를 얻어온다.
 
@@ -276,7 +276,7 @@ void CX2GageManager::SetAllPartyMemberVoteButtonType ( const CX2PartyMemberGageU
 {
 	if ( m_vecGageSetPartyMember.size() > 0 )			// 해당 벡터의 사이즈가 0 이 넘는다면
 	{
-		BOOST_FOREACH( CX2GageSetPtr ptrGageSet_, m_vecGageSetPartyMember )	// 각 벡터의 컨테이너에게
+		for ( CX2GageSetPtr ptrGageSet_ : m_vecGageSetPartyMember )	// 각 벡터의 컨테이너에게
 		{
 			CX2PartyMemberGageUI* pPartyMemberGageUI = static_cast<CX2PartyMemberGageUI*>( ptrGageSet_->GetGageUI() ); // PartyMemberGageUI 를 얻어온다.
 
@@ -542,7 +542,7 @@ void CX2GageManager::VoteAllFaultyPlayer ()							// 불량 유저가 불량 유
 {
 	if ( m_vecGageSetPartyMember.size() > 0 )			// 벡터에 데이터가 있을 때,
 	{
-		BOOST_FOREACH( CX2GageSetPtr ptrGageSet_, m_vecGageSetPartyMember )	// 각 벡터의 컨테이너에게
+		for ( CX2GageSetPtr ptrGageSet_ : m_vecGageSetPartyMember )	// 각 벡터의 컨테이너에게
 		{
 			CX2PartyMemberGageUI* pPartyMemberGageUI = static_cast<CX2PartyMemberGageUI*>( ptrGageSet_->GetGageUI() );	// PartyMemberGageUI 를 얻어온다.
 			if ( pPartyMemberGageUI->GetVoteButtonType() == CX2PartyMemberGageUI::BVBT_NEED_VOTE )		// 해당 유저가 투표 대기 중이라면
@@ -557,7 +557,7 @@ CX2PartyMemberGageUI * CX2GageManager::GetPartyMemberDataByNickName ( const wstr
 {
 	if ( m_vecGageSetPartyMember.size() > 0 )			// 벡터에 데이터가 있을 때,
 	{
-		BOOST_FOREACH( CX2GageSetPtr ptrGageSet_, m_vecGageSetPartyMember )	// 각 벡터의 컨테이너에게
+		for ( CX2GageSetPtr ptrGageSet_ : m_vecGageSetPartyMember )	// 각 벡터의 컨테이너에게
 		{
 			CX2PartyMemberGageUI* pPartyMemberGageUI = static_cast<CX2PartyMemberGageUI*>( ptrGageSet_->GetGageUI() );	// PartyMemberGageUI 를 얻어온다.
 
@@ -574,7 +574,7 @@ CX2PartyMemberGageUI * CX2GageManager::GetPartyMemberDataByUID ( const UidType U
 {
 	if ( m_vecGageSetPartyMember.size() > 0 )	// 벡터에 데이터가 있을 때,
 	{
-		BOOST_FOREACH( CX2GageSetPtr ptrGageSet_, m_vecGageSetPartyMember )		// 각 벡터의 컨테이너에게
+		for ( CX2GageSetPtr ptrGageSet_ : m_vecGageSetPartyMember )		// 각 벡터의 컨테이너에게
 		{
 			CX2PartyMemberGageUI* pPartyMemberGageUI = static_cast<CX2PartyMemberGageUI*>( ptrGageSet_->GetGageUI() );	// PartyMemberGageUI 를 얻어온다.
 
@@ -591,7 +591,7 @@ CX2PartyMemberGageUI * CX2GageManager::GetPartyMemberDataByIndex ( const int ind
 {
 	if ( m_vecGageSetPartyMember.size() > 0 )		// 벡터에 데이터가 있을 때,
 	{
-		BOOST_FOREACH( CX2GageSetPtr ptrGageSet_, m_vecGageSetPartyMember )		// 각 벡터의 컨테이너에게
+		for ( CX2GageSetPtr ptrGageSet_ : m_vecGageSetPartyMember )		// 각 벡터의 컨테이너에게
 		{
 			CX2PartyMemberGageUI* pPartyMemberGageUI = static_cast<CX2PartyMemberGageUI*>( ptrGageSet_->GetGageUI() );		// PartyMemberGageUI 를 얻어온다.
 
@@ -1338,7 +1338,7 @@ void CX2OldGageManager::OnFrameMove( double fTime, float fElapsedTime )
 			if( pStaticAir != NULL )
 			{
 				WCHAR keyName[50];
-				wsprintf(keyName, L"AIR_%02d", iGage);
+				swprintf_s(keyName, L"AIR_%02d", iGage);
 				pStaticAir->GetPicture(0)->SetTex( L"DLG_AIR_GAGE.tga", keyName );
 			}
 		}
@@ -3514,7 +3514,7 @@ const UidType CX2GageManager::GetPartyGageUIPositionIndexByUserList( int iIndex 
 {
 	if ( m_vecGageSetPartyMember.size() > 0 )		// 벡터에 데이터가 있을 때,
 	{
-		BOOST_FOREACH( CX2GageSetPtr ptrGageSet_, m_vecGageSetPartyMember )		// 각 벡터의 컨테이너에게
+		for ( CX2GageSetPtr ptrGageSet_ : m_vecGageSetPartyMember )		// 각 벡터의 컨테이너에게
 		{
 			if ( NULL == ptrGageSet_ )
 				continue;

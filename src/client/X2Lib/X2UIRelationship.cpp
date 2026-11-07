@@ -360,7 +360,7 @@ bool CX2UIRelationship::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, 
 					}
 				}
 
-				BOOST_FOREACH ( const InviteWeddingUserInfo & InviteUserInfo, m_vecInvitedWeddingUserList )
+				for ( const InviteWeddingUserInfo & InviteUserInfo : m_vecInvitedWeddingUserList )
 					kEvent.m_vecInviteUnitList.push_back ( InviteUserInfo.m_uiUserUID );
 
 				replace(kEvent.m_wstrWeddingMsg.begin(), kEvent.m_wstrWeddingMsg.end(), L'\'', L'`');
@@ -877,7 +877,7 @@ void CX2UIRelationship::CheckWeddingInviteUserList ( CKTDGUICheckBox* pCheckBox_
 						else
 						{
 							pCheckBox_->SetChecked ( true );
-							BOOST_FOREACH ( const InviteWeddingUserInfo & InvitedUserInfo , m_vecInvitedWeddingUserList )
+							for ( const InviteWeddingUserInfo & InvitedUserInfo : m_vecInvitedWeddingUserList )
 							{
 								if ( InvitedUserInfo.m_uiUserUID == it->m_uiUserUID )
 								{
@@ -1469,7 +1469,7 @@ void CX2UIRelationship::ResetInvitingUserInfo ( )
 	CKTDGUIComboBox * pComboBox = (CKTDGUIComboBox*)m_pDLGInviteWedding->GetControl( L"g_pComboInviteUserList" );
 	pComboBox->RemoveAllItems();
 
-	BOOST_FOREACH ( const InviteWeddingUserInfo & UserInfo , m_vecInvitedWeddingUserList )
+	for ( const InviteWeddingUserInfo & UserInfo : m_vecInvitedWeddingUserList )
 	{
 		pComboBox->AddItem ( (const WCHAR * ) UserInfo.m_wstrUserName.c_str(), NULL );
 	}

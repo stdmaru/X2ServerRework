@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#include "x2/platform/console.h"
+#include "x2/platform/process.h"
 #include "./X2StateServerSelect.h"
 
 bool CX2StateServerSelect::m_sbSelectedServerSet = false;
@@ -538,11 +540,10 @@ HRESULT CX2StateServerSelect::OnFrameMove( double fTime, float fElapsedTime )
 			{
 				if ( g_pMain->m_bPlayIntroMovie == true )
 				{
-					BVL_STATUS status;
-					pIntroMovieData->m_Bvl.GetStatus( status );
+					const CKTDGUIControl::CMovieData::MOVIE_STATUS status = pIntroMovieData->GetStatus();
 					pIntroMovieData->SetLoop( false );
 
-					if ( status == BVL_STATUS_READY )
+					if ( status == CKTDGUIControl::CMovieData::MOVIE_STATUS_READY )
 					{
 						pIntroMovieData->SetShow( false );
 						pMovieStatic->SetShow( false );
@@ -553,9 +554,9 @@ HRESULT CX2StateServerSelect::OnFrameMove( double fTime, float fElapsedTime )
 						ProcessIntroMovieEnd();		// ????? ???????? ?????? ?? �??????? ?? ??
 
 					}
-					else if( status == BVL_STATUS_ERROR )
+					else if( status == CKTDGUIControl::CMovieData::MOVIE_STATUS_ERROR )
 					{
-						pIntroMovieData->m_Bvl.Stop();
+						pIntroMovieData->Stop();
 						pMovieStatic->SetShow( false );
 						g_pMain->GetGameOption().SetSound( m_bOrgSound );
 						g_pMain->GetGameOption().SetMusic( m_bOrgMusic );
@@ -564,7 +565,7 @@ HRESULT CX2StateServerSelect::OnFrameMove( double fTime, float fElapsedTime )
 				}
 				else
 				{
-					pIntroMovieData->m_Bvl.Stop();
+					pIntroMovieData->Stop();
 					pMovieStatic->SetShow( false );
 					g_pMain->GetGameOption().SetSound( m_bOrgSound );
 					g_pMain->GetGameOption().SetMusic( m_bOrgMusic );
@@ -756,23 +757,14 @@ void CX2StateServerSelect::OnFrameMove_GameServerConnect( double fTime, float fE
 #if X2_DEV_TOOLS
 			g_pData->GetServerProtocol()->SendID( E_DISABLE_HB_CHECK_REQ );
 
-			if( NULL == g_fpStream && NULL == g_fpStreamError )
-			{
-				AllocConsole();
-				g_fpStream = freopen("CONOUT$", "a", stdout); // redirect printf to console
-				g_fpStreamError = freopen("CONOUT$", "a", stderr); // redirect printf to console
-				dbg::logfile::SetLogLevel(2);
-			}
+			x2::platform::OpenDebugConsole();
+			dbg::logfile::SetLogLevel(2);
 #endif
 		}
 		else
 		{
 #if X2_DEV_TOOLS
-			FreeConsole();
-			if ( g_fpStream != NULL )
-				fclose( g_fpStream );
-			if ( g_fpStreamError != NULL )
-				fclose( g_fpStreamError );
+			x2::platform::CloseDebugConsole();
 #endif
 		}
 
@@ -1503,7 +1495,7 @@ bool CX2StateServerSelect::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wPara
 			break;
 		case SSSUCM_ATL_LIMIT_CHECK_OK:
 			{
-				ShellExecute(NULL, L"open", L"https://member.nexon.com/verify/realname.aspx", L"",L"", SW_SHOWNORMAL );
+				x2::platform::OpenUrl( L"https://member.nexon.com/verify/realname.aspx" );
 				if( NULL != m_pDLGATLLimitCheckMsgBox )
 				{
 					g_pKTDXApp->SendGameDlgMessage(XGM_DELETE_DIALOG, m_pDLGATLLimitCheckMsgBox, NULL, false);
@@ -3365,11 +3357,11 @@ bool CX2StateServerSelect::Handler_EGS_DELETE_UNIT_ACK( HWND hWnd, UINT uMsg, WP
 			pUnit->AccessUnitData().m_trDelAbleDate = kEvent.m_tDelAbleDate;
 
 			CTime tDeleAbleDate(kEvent.m_tDelAbleDate);
-			std::wstring wstrYear = (CStringW)( tDeleAbleDate.Format(_T( "%Y" )) );
-			std::wstring wstrMonth = (CStringW)( tDeleAbleDate.Format(_T( "%m" )) );
-			std::wstring wstrDay = (CStringW)( tDeleAbleDate.Format(_T( "%d" )) );
-			std::wstring wstrHour = (CStringW)( tDeleAbleDate.Format(_T( "%H" )) );
-			std::wstring wstrMinute = (CStringW)( tDeleAbleDate.Format(_T( "%M" )) );
+			std::wstring wstrYear = tDeleAbleDate.Format(_T( "%Y" )).GetString();
+			std::wstring wstrMonth = tDeleAbleDate.Format(_T( "%m" )).GetString();
+			std::wstring wstrDay = tDeleAbleDate.Format(_T( "%d" )).GetString();
+			std::wstring wstrHour = tDeleAbleDate.Format(_T( "%H" )).GetString();
+			std::wstring wstrMinute = tDeleAbleDate.Format(_T( "%M" )).GetString();
 			std::wstring wstrMessage = GET_REPLACED_STRING( ( STR_ID_16103, "SSSSS", wstrDay.c_str(), wstrMonth.c_str(), wstrYear.c_str(), wstrHour.c_str(), wstrMinute.c_str()));
 			g_pMain->KTDGUIOKMsgBox( D3DXVECTOR2(250,300), wstrMessage.c_str(), this, -1, -1.f, L"DLG_UI_Selection_MessageBox_Ok_Button_New.lua", D3DXVECTOR2 (0, 0), L"UI_PopUp_Negative_01.ogg" );
 			// ChangeUnitButtonInfo();
@@ -3400,11 +3392,11 @@ bool CX2StateServerSelect::Handler_EGS_DELETE_UNIT_ACK( HWND hWnd, UINT uMsg, WP
 			pUnit->AccessUnitData().m_trDelAbleDate = kEvent.m_tReDelAbleDate;
 
 			CTime tReDeleAbleDate(kEvent.m_tReDelAbleDate);
-			std::wstring wstrYear = (CStringW)( tReDeleAbleDate.Format(_T( "%Y" )) );
-			std::wstring wstrMonth = (CStringW)( tReDeleAbleDate.Format(_T( "%m" )) );
-			std::wstring wstrDay = (CStringW)( tReDeleAbleDate.Format(_T( "%d" )) );
-			std::wstring wstrHour = (CStringW)( tReDeleAbleDate.Format(_T( "%H" )) );
-			std::wstring wstrMinute = (CStringW)( tReDeleAbleDate.Format(_T( "%M" )) );
+			std::wstring wstrYear = tReDeleAbleDate.Format(_T( "%Y" )).GetString();
+			std::wstring wstrMonth = tReDeleAbleDate.Format(_T( "%m" )).GetString();
+			std::wstring wstrDay = tReDeleAbleDate.Format(_T( "%d" )).GetString();
+			std::wstring wstrHour = tReDeleAbleDate.Format(_T( "%H" )).GetString();
+			std::wstring wstrMinute = tReDeleAbleDate.Format(_T( "%M" )).GetString();
 			std::wstring wstrMessage = GET_REPLACED_STRING( ( STR_ID_16109, "SSSSS", wstrDay.c_str(), wstrMonth.c_str(), wstrYear.c_str(), wstrHour.c_str(), wstrMinute.c_str()));
 			g_pMain->KTDGUIOKMsgBox( D3DXVECTOR2(305, 375), wstrMessage.c_str(), this, -1, -1.f, L"DLG_UI_Selection_MessageBox_Ok_Button_New.lua",D3DXVECTOR2 (0, 0),  L"UI_PopUp_Negative_01.ogg" );
 		}
@@ -5659,7 +5651,7 @@ bool CX2StateServerSelect::Handler_EGS_DISCONNECT_FOR_SERVER_SELECT_ACK( HWND hW
 			if ( m_pSelectUnit->GetServerGroupID() == SEnum::SGI_GAIA )
 			{
 				m_iTryConnectChannelID = FindAndConnectMatchingLevelGameServer( 1, m_mapGaiaChannelBonusInfo, m_vecGaiaChannelInfo);
-				BOOST_FOREACH ( const KChannelInfo & kChannelInfo , m_vecGaiaChannelInfo )
+				for ( const KChannelInfo & kChannelInfo : m_vecGaiaChannelInfo )
 				{
 					if ( m_iTryConnectChannelID == kChannelInfo.m_iChannelID )
 					{
@@ -5670,7 +5662,7 @@ bool CX2StateServerSelect::Handler_EGS_DISCONNECT_FOR_SERVER_SELECT_ACK( HWND hW
 			else if ( m_pSelectUnit->GetServerGroupID() == SEnum::SGI_SOLES )
 			{
 				m_iTryConnectChannelID = FindAndConnectMatchingLevelGameServer( 1, m_mapSolesChannelBonusInfo, m_vecSolesChannelInfo);
-				BOOST_FOREACH ( const KChannelInfo & kChannelInfo , m_vecSolesChannelInfo )
+				for ( const KChannelInfo & kChannelInfo : m_vecSolesChannelInfo )
 				{
 					if ( m_iTryConnectChannelID == kChannelInfo.m_iChannelID )
 					{
@@ -6205,11 +6197,11 @@ bool CX2StateServerSelect::Handler_EGS_RESTORE_UNIT_ACK( HWND hWnd, UINT uMsg, W
 			pUnit->AccessUnitData().m_trRestoreAbleDate = kEvent.m_tRestoreAbleDate;
 
 			CTime tRestoreAbleDate(kEvent.m_tRestoreAbleDate);
-			std::wstring wstrYear = (CStringW)( tRestoreAbleDate.Format(_T( "%Y" )) );
-			std::wstring wstrMonth = (CStringW)( tRestoreAbleDate.Format(_T( "%m" )) );
-			std::wstring wstrDay = (CStringW)( tRestoreAbleDate.Format(_T( "%d" )) );
-			std::wstring wstrHour = (CStringW)( tRestoreAbleDate.Format(_T( "%H" )) );
-			std::wstring wstrMinute = (CStringW)( tRestoreAbleDate.Format(_T( "%M" )) );
+			std::wstring wstrYear = tRestoreAbleDate.Format(_T( "%Y" )).GetString();
+			std::wstring wstrMonth = tRestoreAbleDate.Format(_T( "%m" )).GetString();
+			std::wstring wstrDay = tRestoreAbleDate.Format(_T( "%d" )).GetString();
+			std::wstring wstrHour = tRestoreAbleDate.Format(_T( "%H" )).GetString();
+			std::wstring wstrMinute = tRestoreAbleDate.Format(_T( "%M" )).GetString();
 			std::wstring wstrMessage = GET_REPLACED_STRING( ( STR_ID_16113, "SSSSS", wstrDay.c_str(), wstrMonth.c_str(), wstrYear.c_str(), wstrHour.c_str(), wstrMinute.c_str()));
 			g_pMain->KTDGUIOKMsgBox( D3DXVECTOR2(305,375), wstrMessage.c_str(), this, -1, -1.f, L"DLG_UI_Selection_MessageBox_Ok_Button_New.lua", D3DXVECTOR2 (0, 0), L"UI_PopUp_Negative_01.ogg" );
 		}
@@ -7950,7 +7942,7 @@ void CX2StateServerSelect::PlaySoundSelect( CX2Unit::UNIT_TYPE eUnitType_, SOUND
 		break;
 	}
 
-	if( StrCmp( wstrSoundName.c_str(), L"" ) != 0 )
+	if( wcscmp( wstrSoundName.c_str(), L"" ) != 0 )
 	{
 		if( NULL != m_pSound )
 		{
@@ -7982,7 +7974,7 @@ void CX2StateServerSelect::FindAndConnectLowerUserCountGameServer ( const vector
 	if ( false == vecChannelInfo.empty () )
 	{
 		int iIndex = 0;
-		BOOST_FOREACH ( const KChannelInfo & kChannelInfo, vecChannelInfo )
+		for ( const KChannelInfo & kChannelInfo : vecChannelInfo )
 		{
 			if ( iLowerUserChannelCount < kChannelInfo.m_iMaxUser - kChannelInfo.m_iCurrentUser )
 			{
@@ -8041,9 +8033,9 @@ int CX2StateServerSelect::FindAndConnectMatchingLevelGameServer ( int iMatchingU
 		int iLowerUserChannelCount = INT_MIN;
 		int iPickedChannelID = -1;
 
-		BOOST_FOREACH ( const KChannelInfo & kChannelInfo, vecChannelInfo )
+		for ( const KChannelInfo & kChannelInfo : vecChannelInfo )
 		{
-			BOOST_FOREACH ( const int & iRecommandedLevelChannelID, vecRecommandedLevelChannelID )
+			for ( const int & iRecommandedLevelChannelID : vecRecommandedLevelChannelID )
 			{
 				if ( iRecommandedLevelChannelID == kChannelInfo.m_iChannelID )
 				{

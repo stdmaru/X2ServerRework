@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "x2/platform/process.h"
 #include "./X2SecurityPad.h"
 
 
@@ -890,7 +891,7 @@ bool CX2SecurityPad::Handler_ECH_SECURITY_AUTH_ACK( HWND hWnd, UINT uMsg, WPARAM
 		else // 한가지 경우 뿐이므로 일단 코드를 정하지 않습니다.
 		{
 			// 질문 설정용 홈페이지 띄워주기
-			ShellExecuteA( NULL, "open", kEvent.m_strSecondSecurityURL.c_str(), NULL, NULL, SW_SHOW );
+			x2::platform::OpenUrl( x2::platform::Utf8ToWide( kEvent.m_strSecondSecurityURL ) );
 			return true;
 		}
 	}

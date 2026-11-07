@@ -9,6 +9,7 @@ add_library(x2_platform STATIC
     src/file.cpp
     src/ini.cpp
     src/json.cpp
+    src/modules.cpp
     src/net_io.cpp
     src/process.cpp
     src/string.cpp

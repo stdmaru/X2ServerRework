@@ -629,7 +629,7 @@ void CX2BattleFieldGame::CreateBattleFieldNpcByCreatedInfo( const CNpcCreatedInf
 					{
 						WCHAR wLog[512];
 						ZeroMemory( wLog, sizeof(WCHAR) * 512 );
-						wsprintf( wLog, L"NPC_ID: %d, NPC_UID: %d, nStartPos: %d, LineMapIndex: %d\n",
+						swprintf_s( wLog, L"NPC_ID: %d, NPC_UID: %d, nStartPos: %d, LineMapIndex: %d\n",
 							NpcCreatedInfoPtr_->GetNpcId(), NpcCreatedInfoPtr_->GetNpcUid(), NpcCreatedInfoPtr_->GetStartPosNum(), iLastTouchedIndex );
 						StringCchCat( wLog, 256, L"PetrolLineIndex: " );
 
@@ -637,7 +637,7 @@ void CX2BattleFieldGame::CreateBattleFieldNpcByCreatedInfo( const CNpcCreatedInf
 						{
 							WCHAR wBuffer[10];
 							ZeroMemory( wBuffer, sizeof(WCHAR) * 10 );
-							wsprintf( wBuffer, L" %d", iIndex );
+							swprintf_s( wBuffer, L" %d", iIndex );
 							StringCchCat( wLog, 512, wBuffer );
 						}
 

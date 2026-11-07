@@ -399,6 +399,7 @@ using std::set;
 #include <memory>
 #include "x2/platform/noncopyable.h"
 #include "x2/platform/intrusive_ptr.h"
+#include "x2/platform/scope_exit.h"
 #include "KCircularBuffer.h"
 #include "KSingletonPool.h"
 

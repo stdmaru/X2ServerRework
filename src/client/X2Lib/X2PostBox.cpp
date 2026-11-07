@@ -4520,7 +4520,7 @@ void CX2PostBox::UpdateRegisterQuantityDLG( bool bReadIME )
 		m_nQuantity = pItem->GetItemData().m_Quantity;
 
 	WCHAR buff[256] = {0};
-	_itow( m_nQuantity, buff, 10 );
+	_itow_s( m_nQuantity, buff, 10 );
 
 	wstring wstrNum = buff;
 	pQuantity->SetText( wstrNum.c_str() );

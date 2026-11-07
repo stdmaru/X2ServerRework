@@ -121,7 +121,7 @@ CX2Community::~CX2Community(void)
 	//{{ kimhc // 2009-01-06 // 가이아 서버에만 추천인 리스트 보이는 기능
 		//}} kimhc // 2009-01-06 // 가이아 서버에만 추천인 리스트 보이는 기능
 
-	BOOST_FOREACH ( CX2UnitViewerUI * pUnitViewerUI, m_vecUnitViewerUI )
+	for ( CX2UnitViewerUI * pUnitViewerUI : m_vecUnitViewerUI )
 		SAFE_DELETE_KTDGOBJECT ( pUnitViewerUI );
 	SAFE_DELETE_DIALOG ( m_pDlgRelation );
 	SAFE_DELETE_DIALOG ( m_pDlgRelationOnlyPartnerShowing );
@@ -2143,7 +2143,7 @@ void CX2Community::SetOpen( bool bCheck )
 		}
 
 
-		BOOST_FOREACH ( CX2UnitViewerUI * pUnitViewer, m_vecUnitViewerUI )
+		for ( CX2UnitViewerUI * pUnitViewer : m_vecUnitViewerUI )
 		{
 			pUnitViewer->SetShowObject( false );
 		}
@@ -2465,7 +2465,7 @@ void CX2Community::OnFrameMove( double fTime, float fElapsedTime )
 
 	if ( m_MessengerUserTab == XMUT_RELATION )
 	{
-		BOOST_FOREACH ( CX2UnitViewerUI* pUnitViewer, m_vecUnitViewerUI )
+		for ( CX2UnitViewerUI* pUnitViewer : m_vecUnitViewerUI )
 		{
 			if ( NULL != pUnitViewer && true == pUnitViewer->GetShowObject() )
 			{
@@ -3245,7 +3245,7 @@ bool CX2Community::SelectUserListItem( CKTDGUIListBox::LIST_BOX_EVENT_MSG listBo
 					if ( pListBoxItem->itemType == CKTDGUIListBox::LBIT_DEFAULT ||
 						pListBoxItem->itemType == CKTDGUIListBox::LBIT_NOT_ENABLE)
 					{
-						if(StrCmpW(pListBoxItem->strText, GET_STRING( STR_ID_84 )) != 0)
+						if(wcscmp(pListBoxItem->strText, GET_STRING( STR_ID_84 )) != 0)
 							return OpenUserMenu();
 					}
 					else if ( pListBoxItem->itemType == CKTDGUIListBox::LBIT_GROUP_PLUS ||
@@ -7986,7 +7986,7 @@ bool CX2Community::Handler_EGS_INVITE_PVP_ROOM_NOT( HWND hWnd, UINT uMsg, WPARAM
 	DeSerialize( pBuff, &kEvent );
 
 	/// 이미 초대받은 룸 아이디라면, 리턴
-	BOOST_FOREACH ( UidType uidRoomUID, m_vecInviteRoomUID )
+	for ( UidType uidRoomUID : m_vecInviteRoomUID )
 	{
 		if ( uidRoomUID == kEvent.m_kRoomInfo.m_RoomUID )
 			return true;
@@ -8924,7 +8924,7 @@ void CX2Community::UpdateCoupleNameAndChannel ()
 				vector<CX2RelationshipManager::RelationshipCommunityInfo> & vecInfoData = pRelationshipManager->GetRelationshipCommunityInfo();
 
 				int i = 0;
-				BOOST_FOREACH ( CX2RelationshipManager::RelationshipCommunityInfo RelationCommunityInfoData, vecInfoData )
+				for ( CX2RelationshipManager::RelationshipCommunityInfo RelationCommunityInfoData : vecInfoData )
 				{
 					if ( NULL != m_arrRelationUIControls[i].m_pStaticNickName &&
 						NULL != m_arrRelationUIControls[i].m_pStaticLocationOrGradeOrTimeSpan &&
@@ -9110,7 +9110,7 @@ void CX2Community::ResetRelationshipTabUI()
 				// Get Relation Dummy Unit
 				if ( NULL == m_pRelationUnit )
 				{
-					BOOST_FOREACH ( CX2RelationshipManager::RelationshipCommunityInfo RelationMyInfo, vecMyInfo )
+					for ( CX2RelationshipManager::RelationshipCommunityInfo RelationMyInfo : vecMyInfo )
 					{
 						wstring TargetNickname = g_pData->GetRelationshipManager()->GetMyRelationshipInfo()->m_wstrRelationTargetUserNickname;
 						if ( RelationMyInfo.m_wstrNickName == TargetNickname )
@@ -9124,7 +9124,7 @@ void CX2Community::ResetRelationshipTabUI()
 				if ( true == m_vecUnitViewerUI.empty () )
 				{
 					int iPhase = 0;
-					BOOST_FOREACH ( CX2RelationshipManager::RelationshipCommunityInfo RelationMyInfo, vecMyInfo )
+					for ( CX2RelationshipManager::RelationshipCommunityInfo RelationMyInfo : vecMyInfo )
 					{
 						CX2UnitViewerUI * pUnitViewer = CX2UnitViewerUI::CreateUnitViewerUI();
 						if ( iPhase == 0 )
@@ -9288,7 +9288,7 @@ void CX2Community::ResetRelationDummyUnit ()
 {
 	SAFE_DELETE ( m_pRelationUnit );
 
-	BOOST_FOREACH (CX2UnitViewerUI * pUnitViewerUI, m_vecUnitViewerUI )
+	for ( CX2UnitViewerUI * pUnitViewerUI : m_vecUnitViewerUI )
 	{
 		SAFE_DELETE_KTDGOBJECT ( pUnitViewerUI );
 	}
@@ -9388,7 +9388,7 @@ void CX2Community::SetRelationshipMemberIcon( int i, bool bShow, int iUnitClass,
 }
 void CX2Community::ClearUnitViewerUIInRelationshipTab ( void )
 {
-	BOOST_FOREACH ( CX2UnitViewerUI * pUnitViewerUI, m_vecUnitViewerUI )
+	for ( CX2UnitViewerUI * pUnitViewerUI : m_vecUnitViewerUI )
 	{
 		SAFE_DELETE_KTDGOBJECT ( pUnitViewerUI );
 	}
