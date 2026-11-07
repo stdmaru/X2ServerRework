@@ -48,19 +48,19 @@ public:
 		{
 			/// 한국
 			string kor1[10] = { "",	"일", "이", "삼", "사", "오", "육", "칠", "팔", "구" };
-			memcpy(LD_KOR[0], kor1, sizeof(string) * 10);
+			std::copy( std::begin( kor1 ), std::end( kor1 ), LD_KOR[0] );
 			string kor2[10] = { "",	"십", "백", "천", "", "", "", "", "", "" };
-			memcpy(LD_KOR[1], kor2, sizeof(string) * 10);
+			std::copy( std::begin( kor2 ), std::end( kor2 ), LD_KOR[1] );
 			string kor3[10] = { "", "만","억","조", "경", "해", "자", "양", "구", "간" };
-			memcpy(LD_KOR[2], kor3, sizeof(string) * 10);
+			std::copy( std::begin( kor3 ), std::end( kor3 ), LD_KOR[2] );
 
 			/// 한자
 			string chn1[10] = { "",	"一", "二", "三", "四", "五", "六", "七", "八", "九" };
-			memcpy(LD_CHN[0], chn1, sizeof(string) * 10);
+			std::copy( std::begin( chn1 ), std::end( chn1 ), LD_CHN[0] );
 			string chn2[10] = { "",	"十", "百", "千", "", "", "", "", "", "" };
-			memcpy(LD_CHN[1], chn2, sizeof(string) * 10);
+			std::copy( std::begin( chn2 ), std::end( chn2 ), LD_CHN[1] );
 			string chn3[10] = { "", "万","億","兆", "京", "", "", "", "", "" };
-			memcpy(LD_CHN[2], chn3, sizeof(string) * 10);
+			std::copy( std::begin( chn3 ), std::end( chn3 ), LD_CHN[2] );
 
 
 		}

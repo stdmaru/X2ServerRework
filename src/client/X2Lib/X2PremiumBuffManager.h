@@ -7,7 +7,7 @@
 
 
 class CX2PremiumBuffTemplet;
-typedef boost::intrusive_ptr<CX2PremiumBuffTemplet> CX2PremiumBuffTempletPtr;
+typedef x2::intrusive_ptr<CX2PremiumBuffTemplet> CX2PremiumBuffTempletPtr;
 
 class CX2PremiumBuffTemplet
     : private x2::NonCopyable
@@ -83,10 +83,10 @@ public:
 
 private:
 	CX2PremiumBuffTemplet()
-		: m_ePremiumBuffID( BI_NONE ),
-		  m_uiStringID( 0 ),
-		  m_fPremiumBuffPeriodSecond( 0 )
-          , m_uRefCount( 0 )
+		: m_uRefCount( 0 ),
+		  m_ePremiumBuffID( BI_NONE ),
+		  m_uiStringID( 0 )
+          , m_fPremiumBuffPeriodSecond( 0 )
 	{}
 
     unsigned                                        m_uRefCount;
@@ -101,7 +101,7 @@ IMPLEMENT_INTRUSIVE_PTR( CX2PremiumBuffTemplet );
 
 
 class CX2PremiumBuffIcon;
-typedef boost::intrusive_ptr<CX2PremiumBuffIcon> CX2PremiumBuffIconPtr;
+typedef x2::intrusive_ptr<CX2PremiumBuffIcon> CX2PremiumBuffIconPtr;
 
 class CX2PremiumBuffIcon
     : private x2::NonCopyable
@@ -127,8 +127,8 @@ public:
 
 protected:
 	CX2PremiumBuffIcon( const CX2PremiumBuffTemplet::BUFF_ID ePremiumBuffID_, UINT uiIndex_, wstring wstrEndTime, bool bUsingIcon )
-		: m_ePremiumBuffID( ePremiumBuffID_ ), m_pDlgBuffIcon( NULL ), m_uiIndex( uiIndex_ ), m_wstrEndTime( wstrEndTime ), m_bUsingIcon( bUsingIcon )
-        , m_uRefCount(0)
+		: m_uRefCount(0), m_ePremiumBuffID( ePremiumBuffID_ ), m_pDlgBuffIcon( NULL ), m_uiIndex( uiIndex_ ), m_wstrEndTime( wstrEndTime )
+        , m_bUsingIcon( bUsingIcon )
 	{}
 	void CreateBuffIcon( const WCHAR* pFileName_, const WCHAR* pKeyName_ );
 	void UpdateBuffIconPosition( const UINT uiIndexGap_ );

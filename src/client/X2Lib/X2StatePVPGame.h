@@ -99,6 +99,8 @@ public:
 					if( fHPRate2 <= 0.f )
 						fHPRate2 = 1.f;
 				} break;
+			default:
+				break;
 			}
 
 

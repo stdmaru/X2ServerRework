@@ -25,8 +25,8 @@ public:
 	{
 		public:
 			CX2GageSet( CX2GageUI* pGageUI_, CX2GageData* pGageData_, const UidType uidGameUnit_ )
-				: m_pGageUI( pGageUI_ ), m_pGageData( pGageData_ ), m_optrGameUnit(), m_uidGameUnit( uidGameUnit_ ), m_fNowHpPercent( 1.0f ), m_fNowMpPercent ( 1.0f )
-                , m_uRefCount(0)
+				: m_uRefCount(0), m_pGageUI( pGageUI_ ), m_pGageData( pGageData_ ), m_optrGameUnit(), m_uidGameUnit( uidGameUnit_ ), m_fNowHpPercent( 1.0f )
+                , m_fNowMpPercent ( 1.0f )
 
 			{}
 
@@ -140,7 +140,7 @@ public:
 		KProtectedType<float>	m_fNowMpPercent;	// 패시브로 인한 최대 MP 증가량을 마을에서 확인 할 수 없기 때문에 Max값 대비 %도 저장 (0.0~1.0 사이값)
 	};
 
-    typedef boost::intrusive_ptr<CX2GageSet> CX2GageSetPtr;
+    typedef x2::intrusive_ptr<CX2GageSet> CX2GageSetPtr;
 
 	static CX2GageManager* GetInstance();
 	static void DestroyInstance();
@@ -304,7 +304,7 @@ public:
 	void UpdatePvpMemberUIPosition(  bool bForce_ = false );
 	void UpdatePvpMemberGageData( const UidType uidPartyMember_, CX2GameUnit* pGameUnitPartyMember_ );
 
-	const UidType GetPartyGageUIPositionIndexByUserList( int iIndex ) const;
+	UidType GetPartyGageUIPositionIndexByUserList( int iIndex ) const;
 
 	bool GetIsExsitancePartyMemberHPLessThanPer( float fHPRate_ );  //체력 @1 % 이하인 파티원이 존재 여부 체크
 
@@ -687,7 +687,7 @@ class CX2OldGageManager
 		void PlayUIEffectVigor();
 		void InitUIElswordWSP( bool bEnable_ );
 		void UIFrameMoveElswordWSP();
-		void UpdateUIElswordWSP(int iWayOfSwordState ) {};
+		void UpdateUIElswordWSP(int /*iWayOfSwordState*/ ) {};
 
 		void SwapGage()
 		{

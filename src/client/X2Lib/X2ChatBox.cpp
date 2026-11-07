@@ -5711,7 +5711,7 @@ bool CX2ChatBox::Handler_EGS_MEGAPHONE_MESSAGE_NOT( HWND hWnd, UINT uMsg, WPARAM
 //{{ 박교현 : [2010/03/09] //	중국 중독방지 방침미 시스템
 //}} 박교현 : [2010/03/09] //	중국 중독방지 방침미 시스템
 
-bool CX2ChatBox::Handler_EGS_CHAT_OPTION_INFO_WRITE_REQ(byte cIndex, bool bVal)
+bool CX2ChatBox::Handler_EGS_CHAT_OPTION_INFO_WRITE_REQ(BYTE cIndex, bool bVal)
 {
 	KEGS_CHAT_OPTION_INFO_WRITE_REQ kPacket;
 	kPacket.m_cIndex = cIndex;
@@ -6985,7 +6985,7 @@ void CX2ChatBox::SetCheckBox( CX2ChatBox::CHAT_WINDOW_MODE eChatWinMode )
 }
 void CX2ChatBox::SetCheckBoxData( CHAT_OPTION_INFO eChatOptionInfo )
 {
-	std::map<byte, bool>::iterator it = m_mapChatOptionInfo.find( eChatOptionInfo );
+	std::map<BYTE, bool>::iterator it = m_mapChatOptionInfo.find( eChatOptionInfo );
 	if( it != m_mapChatOptionInfo.end() )
 	{
 		it->second = (!it->second);
@@ -7255,7 +7255,7 @@ void CX2ChatBox::ListBoxAddItem(wstring ControlName, wstring chatContent, int ad
 		}
 	}
 }
-void CX2ChatBox::SetOptionData(std::map<byte,bool>mapChatOptionInfo)
+void CX2ChatBox::SetOptionData(std::map<BYTE,bool>mapChatOptionInfo)
 {
 	m_mapChatOptionInfo.clear();
 	for( int i=0; i< COI_END; i++)
@@ -7264,9 +7264,9 @@ void CX2ChatBox::SetOptionData(std::map<byte,bool>mapChatOptionInfo)
 	}
 
 
-	for( std::map<byte, bool>::iterator it = mapChatOptionInfo.begin();	it != mapChatOptionInfo.end(); it++)
+	for( std::map<BYTE, bool>::iterator it = mapChatOptionInfo.begin();	it != mapChatOptionInfo.end(); it++)
 	{
-		std::map<byte, bool>::iterator itData = m_mapChatOptionInfo.find (it->first);
+		std::map<BYTE, bool>::iterator itData = m_mapChatOptionInfo.find (it->first);
 		if( itData != m_mapChatOptionInfo.end() )
 		{
 			itData->second = it->second;

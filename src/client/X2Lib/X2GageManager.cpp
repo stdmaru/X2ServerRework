@@ -1350,7 +1350,6 @@ void CX2OldGageManager::OnFrameMove( double fTime, float fElapsedTime )
 
 
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_START
 #endif
 	if( m_pGameUnit != NULL && m_pGameUnit->GetGameUnitType() == CX2GameUnit::GUT_USER )
 	{
@@ -1368,7 +1367,6 @@ void CX2OldGageManager::OnFrameMove( double fTime, float fElapsedTime )
 		}
 	}
 #if !X2_DEV_TOOLS
-		ELSWORD_VIRTUALIZER_END
 #endif
 
 
@@ -1779,7 +1777,6 @@ void CX2OldGageManager::OnFrameRender()
 float CX2OldGageManager::FlushMP()
 {
 #if defined( _SERVICE_ )
-	ELSWORD_VIRTUALIZER_START
 #endif
 
 
@@ -1810,7 +1807,6 @@ float CX2OldGageManager::FlushMP()
 	}
 
 #if defined( _SERVICE_ )
-	ELSWORD_VIRTUALIZER_END
 #endif
 
 	return m_fMPCharge;
@@ -2965,7 +2961,6 @@ void CX2OldGageManager::GetBerserkModeMyStateImage( OUT wstring& wstrFileName, O
 
 void CX2OldGageManager::Gage::Increase( const float increment, const float minimum /*= 0.f */ )
 {
-	THEMIDA_ENCODE_START
 
 	fNow += increment;
 
@@ -2975,7 +2970,6 @@ void CX2OldGageManager::Gage::Increase( const float increment, const float minim
 	if( fNow < minimum )
 		fNow = minimum;
 
-	THEMIDA_ENCODE_END
 }
 
 /** @function	: SetNumberIcon

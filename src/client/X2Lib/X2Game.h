@@ -205,7 +205,7 @@ class CX2Game : public CKTDXStage
                 float   fElapsedTime,
                 const D3DXVECTOR3& vPos, float& fSpeeYDelta, D3DXVECTOR3& vSpeedRotateDelta, int iTeamNumber );
 
-			void OnFrameMove( double fTime, float fElapsedTime )
+			void OnFrameMove( double /*fTime*/, float fElapsedTime )
 			{
 				if( m_fTimeLeft > 0.f )
 				{
@@ -291,7 +291,7 @@ class CX2Game : public CKTDXStage
 		CX2Game();
 		virtual ~CX2Game(void);
 
-		virtual void Release() = NULL;		/// X2Game의 소멸자에서 실행되야 한는 것들을 이곳으로 옮겨서 실행함
+		virtual void Release() = 0;		/// X2Game의 소멸자에서 실행되야 한는 것들을 이곳으로 옮겨서 실행함
 		//virtual void				P2PSetPeer();
 		//virtual void				P2PSetPeer( CX2Unit* pUnit );
 		//virtual void				P2PDeletePeer( UidType unitUID );
@@ -337,7 +337,7 @@ class CX2Game : public CKTDXStage
 		virtual HRESULT				OnResetDevice();
 		virtual HRESULT				OnLostDevice();
 
-		virtual bool				DetermineLastKill() = NULL;
+		virtual bool				DetermineLastKill() = 0;
 
 		virtual void				StopOtherUnit( CX2GameUnit* pNonStopUnit, float fStopTime, D3DXVECTOR3* pPos = NULL, float fDistance = -1, bool bOtherTeam = false );
 		virtual void				StopAllUnit( float fStopTime, D3DXVECTOR3* pPos = NULL, float fDistance = -1, CX2GameUnit* pMyUnit = NULL, float fMyStopTime = -1.0f );
@@ -602,7 +602,7 @@ class CX2Game : public CKTDXStage
 		void						SetSkipKeyPress(bool bVal){m_bSkipKeyPressed=bVal;}
 		CX2GUUser::InputData*		GetInputData() { return &m_InputData; }
 
-		virtual bool				GameChatInfoNot( KEGS_CHAT_NOT& kKEGS_CHAT_NOT ) { return false; }
+		virtual bool				GameChatInfoNot( KEGS_CHAT_NOT& /*kKEGS_CHAT_NOT*/ ) { return false; }
 
 		virtual bool				Handler_EGS_UPDATE_UNIT_INFO_NOT( KEGS_UPDATE_UNIT_INFO_NOT& kEGS_UPDATE_UNIT_INFO_NOT );
 		//virtual bool				Handler_EGS_NOTIFY_MSG_NOT( KEGS_NOTIFY_MSG_NOT& kEGS_NOTIFY_MSG_NOT );
@@ -995,9 +995,9 @@ class CX2Game : public CKTDXStage
 		UINT GetPositionIndexBlue() const { return m_uiPositionIndexBlue; }
 		void SetPositionIndexBlue( const UINT uiPosIndex_ ) { m_uiPositionIndexBlue	= uiPosIndex_; }
 
-		CX2Game::CinematicUI* CX2Game::GetCinematicUI( );
+		CX2Game::CinematicUI* GetCinematicUI( );
 
-		FORCEINLINE void InitPositionIndexPVPUserGageForObserver()
+		void InitPositionIndexPVPUserGageForObserver()
 		{
 			m_uiPositionIndexRed  = 0;
 			m_uiPositionIndexBlue = 0;
@@ -1008,7 +1008,7 @@ class CX2Game : public CKTDXStage
 		void SetNpcHardLevel( CX2GUNPC* pNpcUnit_, const int iLevel_ );
 
 
-		virtual bool				Send_EGS_DEFENCE_DUNGEON_WAVE_ID_NOT( const int iDungeonWaveID_ ) { return false; };
+		virtual bool				Send_EGS_DEFENCE_DUNGEON_WAVE_ID_NOT( const int /*iDungeonWaveID_*/ ) { return false; };
 
 
 

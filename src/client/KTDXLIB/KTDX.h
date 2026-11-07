@@ -110,7 +110,6 @@
 
 // Always ----------------------------------------------------------------------
 #include "Always.h"
-#include "AlwaysButConditionally.h"
 // -----------------------------------------------------------------------------
 
 
@@ -772,10 +771,6 @@ extern double g_NowTime;
 
 
 
-
-#ifdef APPLY_THEMIDA
-#	include "../X2Lib/ThemidaSDK.h"
-#endif
 
 
 #include "EnumToString.h"

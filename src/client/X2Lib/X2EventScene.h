@@ -173,7 +173,7 @@ public: // 구조체 선언
 
 public: // oasis907 : 김상윤 [2010.6.23] //  기본 골격 함수
 	CX2EventScene(void);
-	~CX2EventScene(void);
+	virtual ~CX2EventScene(void);
 
 	virtual void	OnFrameMove( double fTime, float fElapsedTime );
 	virtual bool	MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
@@ -193,7 +193,7 @@ public: // oasis907 : 김상윤 [2010.6.23] //  외부 인터페이스
 
 	// 기타 외부 인터페이스
 	void	SetNowState(CX2State* val) { m_pNowState = val; }
-	const bool	GetIsPlayingEventScene();
+	bool	GetIsPlayingEventScene();
 
 	// 툴에서 사용될 리소스 클리어 함수.
 	void	Clear();

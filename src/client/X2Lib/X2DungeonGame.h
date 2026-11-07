@@ -228,7 +228,7 @@ class CX2DungeonGame : public CX2Game
 		bool					Send_EGS_BAD_ATTITUDE_USER_CHECK_INFO_NOT ( const int iStageIndex_, const int iSubStageIndex_ );		// 유저의 해당 서브 스테이지 콤보, 테크닉 점수를 서버에 전송한다.
 		bool					Handler_EGS_BAD_ATTITUDE_USER_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );	// 불량 유저의 UID 를 전송한다.
 
-		virtual void AbuserUserCheck( const CX2GUUser* pCheckUser_ ) {}	/// 던전에서는 작동 안함
+		virtual void AbuserUserCheck( const CX2GUUser* /*pCheckUser_*/ ) {}	/// 던전에서는 작동 안함
 
 
 	protected:

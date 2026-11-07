@@ -1346,7 +1346,6 @@ bool CX2StateDungeonGame::UIServerEventProc( HWND hWnd, UINT uMsg, WPARAM wParam
 {
 
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_START
 #endif
 
 	if ( CX2StateMenu::UIServerEventProc( hWnd, uMsg, wParam, lParam ) == true )
@@ -1711,7 +1710,6 @@ bool CX2StateDungeonGame::UIServerEventProc( HWND hWnd, UINT uMsg, WPARAM wParam
 	}
 
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_END
 #endif
 	return false;
 }
@@ -1900,9 +1898,7 @@ bool CX2StateDungeonGame::PlayStartNot()
 {
 	//SAFE_DELETE( m_pDLGLoadingState );
 
-	ELSWORD_VIRTUALIZER_START
 	Handler_EGS_CHECK_MACHINE_ID_REQ();
-	ELSWORD_VIRTUALIZER_END
 
 	SAFE_DELETE_DIALOG( m_pDLGLoadingFront );
 
@@ -2792,7 +2788,6 @@ bool CX2StateDungeonGame::SecretDungeonStageLoadReq(int iVal)
 bool CX2StateDungeonGame::Handler_EGS_DUNGEON_KILLALLNPC_CHECK_REQ()
 {
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_START
 #endif
 
 	if( NULL != g_pX2Game )
@@ -2806,7 +2801,6 @@ bool CX2StateDungeonGame::Handler_EGS_DUNGEON_KILLALLNPC_CHECK_REQ()
 	}
 
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_END
 #endif
 	return false;
 }
@@ -2814,7 +2808,6 @@ bool CX2StateDungeonGame::Handler_EGS_DUNGEON_KILLALLNPC_CHECK_REQ()
 bool CX2StateDungeonGame::Handler_EGS_DUNGEON_KILLALLNPC_CHECK_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 {
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_START
 #endif
 
 	bool bResult = false;
@@ -2880,7 +2873,6 @@ bool CX2StateDungeonGame::Handler_EGS_DUNGEON_KILLALLNPC_CHECK_ACK( HWND hWnd, U
 
 
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_END
 #endif
 
 	return bResult;

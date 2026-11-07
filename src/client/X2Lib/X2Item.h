@@ -272,7 +272,7 @@ public:
             {
                 int iCount = 0;
 
-                for( int i = 0; i<ARRAY_SIZE( m_EnchantedAttribute.m_aEnchantedType ) ; i++ )
+                for( int i = 0; i<std::ssize( m_EnchantedAttribute.m_aEnchantedType ) ; i++ )
                 {
                     if( m_EnchantedAttribute.m_aEnchantedType[i] > 0 )
                     {

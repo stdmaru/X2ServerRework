@@ -2643,7 +2643,6 @@ void CX2DamageEffect::CEffect::DamageReact( CX2DamageManager::DamageData* pDamag
 {
 #if !X2_DEV_TOOLS
 	// checked
-	ELSWORD_VIRTUALIZER_START
 #endif
 
 	CX2GameUnit* pDefenderGameUnit = ( null != pDamageData->optrDefenderGameUnit ? pDamageData->optrDefenderGameUnit.GetObservable() : NULL );
@@ -2720,7 +2719,6 @@ void CX2DamageEffect::CEffect::DamageReact( CX2DamageManager::DamageData* pDamag
 	m_bLive = false;
 
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_END
 #endif
 }
 
@@ -2728,7 +2726,6 @@ void CX2DamageEffect::CEffect::AttackResult()
 {
 #if !X2_DEV_TOOLS
 	// checked
-	ELSWORD_VIRTUALIZER_START
 #endif
 
 	KTDXPROFILE();
@@ -3451,7 +3448,6 @@ void CX2DamageEffect::CEffect::AttackResult()
 	}
 
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_END
 #endif
 }
 

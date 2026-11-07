@@ -2773,7 +2773,7 @@ void CX2UnitViewerUI::ReplaceEmptyToBasic()
 
 void CX2UnitViewerUI::InitEquipVisibility()
 {
-	for( int i=0; i<ARRAY_SIZE( m_bViewEquipVisible ); i++ )
+	for( int i=0; i<std::ssize( m_bViewEquipVisible ); i++ )
 	{
 		m_bViewEquipVisible[i] = true;
 	}
@@ -3204,7 +3204,7 @@ void CX2UnitViewerUI::UpdateEquipSlotVisibility()
 	}
 
 
-	for( int i=0; i<ARRAY_SIZE( m_bViewEquipVisible ); i++ )
+	for( int i=0; i<std::ssize( m_bViewEquipVisible ); i++ )
 	{
 		CX2EqipPtr pEquipFashion;
 		CX2EqipPtr pEquipNormal;
@@ -5992,7 +5992,7 @@ bool CX2UnitViewerUI::IsPlayAvatarEmotionSoundWithouEmotion ( CX2Unit::EMOTION_T
 	switch ( eEmotionId )
 	{
 	case CX2Unit::ET_EMOTION_AVATAR7 :
-		for( int i=0; i<ARRAY_SIZE( ITEM_ID_EMOTION_AVATAR1 ); ++i )
+		for( int i=0; i<std::ssize( ITEM_ID_EMOTION_AVATAR1 ); ++i )
 		{
 			const CX2Item::ItemTemplet* pItemTempet = g_pData->GetItemManager()->GetItemTemplet( ITEM_ID_EMOTION_AVATAR1[i] );
 

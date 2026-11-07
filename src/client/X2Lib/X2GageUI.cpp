@@ -1978,7 +1978,7 @@ void CX2ElswordMyGageUI::InitUI()
 
 	CKTDGParticleSystem* pGameMinorParticle = g_pData->GetGameMinorParticle();
 
-	for ( int i = 0; i < ARRAY_SIZE( m_hSeqVigorEffect ); ++i )
+	for ( int i = 0; i < std::ssize( m_hSeqVigorEffect ); ++i )
 	{
 		if( m_hSeqVigorEffect[i] != INVALID_PARTICLE_SEQUENCE_HANDLE )
 		{
@@ -2374,7 +2374,7 @@ void CX2ElswordMyGageUI::SetShowWspParticle( const bool bShowWspParticle_ )
 
 	CKTDGParticleSystem* pGameMinorParticle = g_pData->GetGameMinorParticle();
 
-	for ( int i = 0; i < ARRAY_SIZE(m_hSeqVigorEffect); ++i)
+	for ( int i = 0; i < std::ssize(m_hSeqVigorEffect); ++i)
 	{
 		if( m_hSeqVigorEffect[i] != INVALID_PARTICLE_SEQUENCE_HANDLE )
 		{
@@ -3449,7 +3449,7 @@ void CX2ElesisMyGageUI::InitUI()
 
 	CKTDGParticleSystem* pGameMinorParticle = g_pData->GetGameMinorParticle();
 
-	for ( int i = 0; i < ARRAY_SIZE( m_hSeqVigorEffect ); ++i )
+	for ( int i = 0; i < std::ssize( m_hSeqVigorEffect ); ++i )
 	{
 		if( m_hSeqVigorEffect[i] != INVALID_PARTICLE_SEQUENCE_HANDLE )
 		{
@@ -3822,7 +3822,7 @@ void CX2ElesisMyGageUI::SetShowWspParticle( const bool bShowWspParticle_ )
 
 	CKTDGParticleSystem* pGameMinorParticle = g_pData->GetGameMinorParticle();
 
-	for ( int i = 0; i < ARRAY_SIZE(m_hSeqVigorEffect); ++i)
+	for ( int i = 0; i < std::ssize(m_hSeqVigorEffect); ++i)
 	{
 		if( m_hSeqVigorEffect[i] != INVALID_PARTICLE_SEQUENCE_HANDLE )
 		{

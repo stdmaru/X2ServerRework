@@ -7617,7 +7617,7 @@ bool CX2CashShop::CheckBuyPossibleRelationItem( int iItemID )
 		SEnum::RELATIONSHIP_TYPE eRelationType = g_pData->GetRelationshipManager()->GetMyRelationshipInfo()->m_eRelationStateType;
 		if( eRelationType == SEnum::RT_SOLO ) // �ַ� �϶��� üũ�Ѵ�.
 		{
-			for( int i = 0 ; i < ARRAY_SIZE(ITEM_ID_WEDDING_CASH_ITEM); ++i )
+			for( int i = 0 ; i < std::ssize(ITEM_ID_WEDDING_CASH_ITEM); ++i )
 			{
 				// �ش� �������� Wedding Cash Item �̶��
 				// false�� ��ȯ�ϰ� MessageBox �� ����.

@@ -803,7 +803,7 @@ CX2CustomFunctionByBuffPhantomSword::CX2CustomFunctionByBuffPhantomSword( const 
 	}
 
 	m_ThirdBladeMatrixQueue.swap( std::queue<ThirdBladeMatrixPtr>() );
-	m_ThirdBladeDamageDataList.swap( std::list<ThirdBladeDamageDataPtr>() );
+	std::list<ThirdBladeDamageDataPtr>().swap( m_ThirdBladeDamageDataList );
 }
 
 /** @function : FunctionInCommonStateStart

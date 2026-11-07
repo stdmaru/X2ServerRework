@@ -332,7 +332,7 @@ void CX2UIComboTree::UpdateComboTree( CX2Unit::UNIT_CLASS eUnitClass, CX2ComboTr
 		}
 		m_iNumMouseOverButton = 0;
 
-		for( int i=0; i<ARRAY_SIZE( staticControlName ); i++ )
+		for( int i=0; i<std::ssize( staticControlName ); i++ )
 		{
 			m_hDLGComboTree->DeleteControl( staticControlName[i].c_str() );
 
@@ -406,7 +406,7 @@ void CX2UIComboTree::UpdateComboTree( CX2Unit::UNIT_CLASS eUnitClass, CX2ComboTr
 
 	m_eComboCategory = eComboCategory;
 
-	for( int i=0; i<ARRAY_SIZE( staticControlName ); i++ )
+	for( int i=0; i<std::ssize( staticControlName ); i++ )
 	{
 		CKTDGUIStatic* pStaticCombo	= (CKTDGUIStatic*) m_hDLGComboTree->GetControl( staticControlName[i].c_str() );
 		pStaticCombo->SetShowEnable( false, false );

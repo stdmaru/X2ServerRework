@@ -257,7 +257,7 @@ class CX2GURaven : public CX2GUUser
 			@date  : 2010/11/16
 		*/
         struct  WildChargeData;
-        typedef boost::intrusive_ptr<WildChargeData> WildChargeDataPtr;	/// WildChargeData ����ü�� ����Ʈ ������ Ÿ��
+        typedef x2::intrusive_ptr<WildChargeData> WildChargeDataPtr;	/// WildChargeData ����ü�� ����Ʈ ������ Ÿ��
 
 		struct WildChargeData : x2::NonCopyable
 		{
@@ -272,10 +272,10 @@ class CX2GURaven : public CX2GUUser
 			bool* m_pChargeKey;							/// ���ϵ� ������ Ű�� �����ִ��� �˾Ƴ��� ���� �뵵 (�޸𸮸� �����ϴ� ���� �ƴϹǷ� �������� �ʴ´�.)
 			CX2EffectSet::Handle m_hHandleWildCharingEffectSet;	/// �������� ǥ���ϴ� ����Ʈ �ڵ�
 
-			WildChargeData() : m_fHpEachWildChargeFrame( 0.f ), m_fTimeAfterFullCharging( 0.f ),
-				m_fPowerRateWildCharging( 0.f ), m_eSlotID_WildCharge( RSI_BASE ), m_bSlotB( false ),
-				m_pChargeKey( NULL ), m_hHandleWildCharingEffectSet( INVALID_EFFECTSET_HANDLE )
-                , m_uRefCount(0)
+			WildChargeData() : m_uRefCount(0), m_fHpEachWildChargeFrame( 0.f ),
+				m_fTimeAfterFullCharging( 0.f ), m_fPowerRateWildCharging( 0.f ), m_eSlotID_WildCharge( RSI_BASE ),
+				m_bSlotB( false ), m_pChargeKey( NULL )
+                , m_hHandleWildCharingEffectSet( INVALID_EFFECTSET_HANDLE )
 			{}
 
 		public:

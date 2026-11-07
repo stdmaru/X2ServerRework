@@ -9186,7 +9186,7 @@ bool CX2GUAdd::GetSummonPylonPos( OUT D3DXVECTOR3& fSummonPos )
 		/// �˻��� ��ȯ ��ġ Offset
 		float fCheckOffsetPosition[3] = { 100.f, 0.f, -100.f };
 
-		for ( int i = 0 ; i < ARRAY_SIZE( fCheckOffsetPosition ) ; ++i )
+		for ( int i = 0 ; i < std::ssize( fCheckOffsetPosition ) ; ++i )
 		{
 			bool bPossibleSummon = true;		/// ��ȯ ���� ����
 

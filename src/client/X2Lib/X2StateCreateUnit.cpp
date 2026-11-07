@@ -915,7 +915,7 @@ void CX2StateCreateUnit::EquipPromotionItem( CX2Unit::UNIT_CLASS eUnitClass )
 	{
 	case CX2Unit::UC_ELSWORD_SWORDMAN:
 		{
-			for( int i=0; i<ARRAY_SIZE(ELSWORD_PROMOTION_ITEM_ID); i++ )
+			for( int i=0; i<std::ssize(ELSWORD_PROMOTION_ITEM_ID); i++ )
 			{
 				m_pUnitViewerUI->AddEquipByTID( ELSWORD_PROMOTION_ITEM_ID[i] );
 			}
@@ -923,7 +923,7 @@ void CX2StateCreateUnit::EquipPromotionItem( CX2Unit::UNIT_CLASS eUnitClass )
 
 	case CX2Unit::UC_ARME_VIOLET_MAGE:
 		{
-			for( int i=0; i<ARRAY_SIZE(AISHA_PROMOTION_ITEM_ID); i++ )
+			for( int i=0; i<std::ssize(AISHA_PROMOTION_ITEM_ID); i++ )
 			{
 				m_pUnitViewerUI->AddEquipByTID( AISHA_PROMOTION_ITEM_ID[i] );
 			}
@@ -931,7 +931,7 @@ void CX2StateCreateUnit::EquipPromotionItem( CX2Unit::UNIT_CLASS eUnitClass )
 
 	case CX2Unit::UC_LIRE_ELVEN_RANGER:
 		{
-			for( int i=0; i<ARRAY_SIZE(RENA_PROMOTION_ITEM_ID); i++ )
+			for( int i=0; i<std::ssize(RENA_PROMOTION_ITEM_ID); i++ )
 			{
 				m_pUnitViewerUI->AddEquipByTID( RENA_PROMOTION_ITEM_ID[i] );
 			}
@@ -939,7 +939,7 @@ void CX2StateCreateUnit::EquipPromotionItem( CX2Unit::UNIT_CLASS eUnitClass )
 
 	case CX2Unit::UC_RAVEN_FIGHTER:
 		{
-			for( int i=0; i<ARRAY_SIZE(RAVEN_PROMOTION_ITEM_ID); i++ )
+			for( int i=0; i<std::ssize(RAVEN_PROMOTION_ITEM_ID); i++ )
 			{
 				m_pUnitViewerUI->AddEquipByTID( RAVEN_PROMOTION_ITEM_ID[i] );
 			}
@@ -947,7 +947,7 @@ void CX2StateCreateUnit::EquipPromotionItem( CX2Unit::UNIT_CLASS eUnitClass )
 
 	case CX2Unit::UC_EVE_NASOD:
 		{
-			for( int i=0; i<ARRAY_SIZE(EVE_PROMOTION_ITEM_ID); i++ )
+			for( int i=0; i<std::ssize(EVE_PROMOTION_ITEM_ID); i++ )
 			{
 				m_pUnitViewerUI->AddEquipByTID( EVE_PROMOTION_ITEM_ID[i] );
 			}
@@ -956,7 +956,7 @@ void CX2StateCreateUnit::EquipPromotionItem( CX2Unit::UNIT_CLASS eUnitClass )
 //{{ kimhc // 2010.11.24 // 2010-12-23 New Character CHUNG
 	case CX2Unit::UC_CHUNG_IRON_CANNON:
 		{
-			for( int i=0; i<ARRAY_SIZE(CHUNG_PROMOTION_ITEM_ID); i++ )
+			for( int i=0; i<std::ssize(CHUNG_PROMOTION_ITEM_ID); i++ )
 			{
 				m_pUnitViewerUI->AddEquipByTID( CHUNG_PROMOTION_ITEM_ID[i] );
 			}
@@ -965,21 +965,21 @@ void CX2StateCreateUnit::EquipPromotionItem( CX2Unit::UNIT_CLASS eUnitClass )
 
 	case CX2Unit::UC_ARA_MARTIAL_ARTIST:
 		{
-			for( int i = 0; i < ARRAY_SIZE( ARA_PROMOTION_ITEM_ID ); ++i )
+			for( int i = 0; i < std::ssize( ARA_PROMOTION_ITEM_ID ); ++i )
 			{
 				m_pUnitViewerUI->AddEquipByTID( ARA_PROMOTION_ITEM_ID[i] );
 			}
 		} break;
 	case CX2Unit::UC_ELESIS_KNIGHT:
 		{
-			for( int i = 0; i < ARRAY_SIZE( EL_PROMOTION_ITEM_ID ); ++i )
+			for( int i = 0; i < std::ssize( EL_PROMOTION_ITEM_ID ); ++i )
 			{
 				m_pUnitViewerUI->AddEquipByTID( EL_PROMOTION_ITEM_ID[i] );
 			}
 		} break;
 	case CX2Unit::UC_ADD_NASOD_RULER:
 		{
-			for( int i = 0; i < ARRAY_SIZE( ADD_PROMOTION_ITEM_ID ); ++i )
+			for( int i = 0; i < std::ssize( ADD_PROMOTION_ITEM_ID ); ++i )
 			{
 				m_pUnitViewerUI->AddEquipByTID( ADD_PROMOTION_ITEM_ID[i] );
 			}
@@ -2012,14 +2012,14 @@ void CX2StateCreateUnit::ReadyPromotionUnitResources()
 {
     const CX2Item::ItemTemplet* pTemplet = NULL;
 
-	for( int i=0; i<ARRAY_SIZE(ELSWORD_PROMOTION_ITEM_ID); i++ )
+	for( int i=0; i<std::ssize(ELSWORD_PROMOTION_ITEM_ID); i++ )
 	{
 		pTemplet = g_pData->GetItemManager()->GetItemTemplet( ELSWORD_PROMOTION_ITEM_ID[i] );
 		if( pTemplet != NULL )
 			XSkinMeshReady( pTemplet->GetModelName(0) );
 	}
 
-	for( int i=0; i<ARRAY_SIZE(AISHA_PROMOTION_ITEM_ID); i++ )
+	for( int i=0; i<std::ssize(AISHA_PROMOTION_ITEM_ID); i++ )
 	{
 		pTemplet = g_pData->GetItemManager()->GetItemTemplet( AISHA_PROMOTION_ITEM_ID[i] );
 		if( pTemplet != NULL )
@@ -2028,14 +2028,14 @@ void CX2StateCreateUnit::ReadyPromotionUnitResources()
 
 
 
-	for( int i=0; i<ARRAY_SIZE(RENA_PROMOTION_ITEM_ID); i++ )
+	for( int i=0; i<std::ssize(RENA_PROMOTION_ITEM_ID); i++ )
 	{
 		pTemplet = g_pData->GetItemManager()->GetItemTemplet( RENA_PROMOTION_ITEM_ID[i] );
 		if( pTemplet != NULL )
 			XSkinMeshReady( pTemplet->GetModelName(0) );
 	}
 
-	for( int i=0; i<ARRAY_SIZE(RAVEN_PROMOTION_ITEM_ID); i++ )
+	for( int i=0; i<std::ssize(RAVEN_PROMOTION_ITEM_ID); i++ )
 	{
 		pTemplet = g_pData->GetItemManager()->GetItemTemplet( RAVEN_PROMOTION_ITEM_ID[i] );
 		if( pTemplet != NULL )
@@ -2043,7 +2043,7 @@ void CX2StateCreateUnit::ReadyPromotionUnitResources()
 	}
 
 
-	for( int i=0; i<ARRAY_SIZE(EVE_PROMOTION_ITEM_ID); i++ )
+	for( int i=0; i<std::ssize(EVE_PROMOTION_ITEM_ID); i++ )
 	{
 		pTemplet = g_pData->GetItemManager()->GetItemTemplet( EVE_PROMOTION_ITEM_ID[i] );
 		if( pTemplet != NULL )
@@ -2052,7 +2052,7 @@ void CX2StateCreateUnit::ReadyPromotionUnitResources()
 
 	//{{ kimhc // 2010.11.24 // 2010-12-23 New Character CHUNG
 
-	for( int i=0; i<ARRAY_SIZE(CHUNG_PROMOTION_ITEM_ID); i++ )
+	for( int i=0; i<std::ssize(CHUNG_PROMOTION_ITEM_ID); i++ )
 	{
 		pTemplet = g_pData->GetItemManager()->GetItemTemplet( CHUNG_PROMOTION_ITEM_ID[i] );
 		if( pTemplet != NULL )
@@ -2061,19 +2061,19 @@ void CX2StateCreateUnit::ReadyPromotionUnitResources()
 
 //}} kimhc // 2010.11.24 //  2010-12-23 New Character CHUNG
 
-	for( int i = 0; i < ARRAY_SIZE( ARA_PROMOTION_ITEM_ID ); ++i )
+	for( int i = 0; i < std::ssize( ARA_PROMOTION_ITEM_ID ); ++i )
 	{
 		pTemplet = g_pData->GetItemManager()->GetItemTemplet( ARA_PROMOTION_ITEM_ID[i] );
 		if( pTemplet != NULL )
 			XSkinMeshReady( pTemplet->GetModelName(0) );
 	}
-	for( int i = 0; i < ARRAY_SIZE( EL_PROMOTION_ITEM_ID ); ++i )
+	for( int i = 0; i < std::ssize( EL_PROMOTION_ITEM_ID ); ++i )
 	{
 		pTemplet = g_pData->GetItemManager()->GetItemTemplet( EL_PROMOTION_ITEM_ID[i] );
 		if( pTemplet != NULL )
 			XSkinMeshReady( pTemplet->GetModelName(0) );
 	}
-	for( int i = 0; i < ARRAY_SIZE( ADD_PROMOTION_ITEM_ID ); ++i )
+	for( int i = 0; i < std::ssize( ADD_PROMOTION_ITEM_ID ); ++i )
 	{
 		pTemplet = g_pData->GetItemManager()->GetItemTemplet( ADD_PROMOTION_ITEM_ID[i] );
 		if( pTemplet != NULL )

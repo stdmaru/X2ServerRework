@@ -292,12 +292,12 @@ m_fNoSkillTime( 0 )
 
 	m_bIgnoreLineSpeed			= false;
 
-	for( int i=0; i<ARRAY_SIZE(m_hMajorMeshPlayerList); ++i )
+	for( int i=0; i<std::ssize(m_hMajorMeshPlayerList); ++i )
 	{
 		m_hMajorMeshPlayerList[i] = INVALID_MESH_INSTANCE_HANDLE;
 	}
 
-	for( int i=0; i<ARRAY_SIZE(m_hMinorMeshPlayerList); ++i )
+	for( int i=0; i<std::ssize(m_hMinorMeshPlayerList); ++i )
 	{
 		m_hMinorMeshPlayerList[i] = INVALID_MESH_INSTANCE_HANDLE;
 	}
@@ -452,7 +452,7 @@ CX2GameUnit::~CX2GameUnit(void)
 
 
 
-	for( int i=0; i<ARRAY_SIZE(m_hMajorMeshPlayerList); ++i )
+	for( int i=0; i<std::ssize(m_hMajorMeshPlayerList); ++i )
 	{
 		if( m_hMajorMeshPlayerList[i] != INVALID_MESH_INSTANCE_HANDLE )
 		{
@@ -461,7 +461,7 @@ CX2GameUnit::~CX2GameUnit(void)
 		m_hMajorMeshPlayerList[i] = INVALID_MESH_INSTANCE_HANDLE;
 	}
 
-	for( int i=0; i<ARRAY_SIZE(m_hMinorMeshPlayerList); ++i )
+	for( int i=0; i<std::ssize(m_hMinorMeshPlayerList); ++i )
 	{
 		if( m_hMinorMeshPlayerList[i] != INVALID_MESH_INSTANCE_HANDLE )
 		{
@@ -1623,7 +1623,6 @@ float CX2GameUnit::GetFinalDamage( CX2DamageManager::DamageData* pAttDamageData 
 #if !X2_DEV_TOOLS
 	// NOTE: 데미지 해킹이 된다면 그 때 여기를 themida로 보호하자
 	// checked
-	ELSWORD_VIRTUALIZER_START
 #endif
 
 	if( NULL == pAttDamageData )
@@ -1641,9 +1640,6 @@ float CX2GameUnit::GetFinalDamage( CX2DamageManager::DamageData* pAttDamageData 
 	if( NULL == g_pX2Game )
 		return 2.f;
 
-#ifdef APPLY_THEMIDA
-	ENCODE_START
-#endif
 
 	CX2GameUnit* pAttacker = pAttDamageData->optrAttackerGameUnit.GetObservable();
 	CX2GameUnit* pDefender = pAttDamageData->optrDefenderGameUnit.GetObservable();
@@ -2292,15 +2288,11 @@ float CX2GameUnit::GetFinalDamage( CX2DamageManager::DamageData* pAttDamageData 
 	if( fFinalDamage <= 0.f )
 		fFinalDamage = 0.f;
 
-#ifdef APPLY_THEMIDA
-	ENCODE_END
-#endif
 
 
 	// 크리티컬인 경우 데미지를 2배 해주는 코드는 이 함수 밖에 있다
 
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_END
 #endif
 
 	return fFinalDamage;
@@ -4632,7 +4624,7 @@ bool CX2GameUnit::GetEnableDash( ENABLE_DASH_STATE eState /*= EDS_END */ )
 {
 	if( EDS_END == eState )
 	{
-		for( int i=0; i<ARRAY_SIZE(m_abEnableDash); ++i )
+		for( int i=0; i<std::ssize(m_abEnableDash); ++i )
 		{
 			if( false == m_abEnableDash[i] )
 				return false;
@@ -4657,7 +4649,7 @@ void CX2GameUnit::InitEnableDash()
 {
 	if( EDS_END == eState )
 	{
-		for( int i=0; i<ARRAY_SIZE(m_abEnableDash); ++i )
+		for( int i=0; i<std::ssize(m_abEnableDash); ++i )
 		{
 			m_abEnableDash[i] = bEnableDash;
 		}
@@ -5907,23 +5899,13 @@ bool CX2GameUnit::IsDamagedReaction( const CX2DamageManager::DamageData* pDamage
 
 void CX2GameUnit::SetNowHp( float fHPNow )
 {
-	THEMIDA_ENCODE_START
 
 
-#ifdef APPLY_THEMIDA
-	ENCODE_START
-	VM_START
-#endif
 
 	*m_fDamageHistory = GetMaxHp() - fHPNow;
 	GetGageData()->SetNowHp( fHPNow );
 
-#ifdef APPLY_THEMIDA
-	VM_END
-	ENCODE_END
-#endif
 
-	THEMIDA_ENCODE_END
 }
 //{{ kimhc // 2010.11.1 // 로드나이트 - 고통 억제
 bool CX2GameUnit::GreaterExtraDamageTime( CX2DamageManager::ExtraDamageData* pFirst, CX2DamageManager::ExtraDamageData *pSecond )
@@ -10243,7 +10225,7 @@ void CX2GameUnit::FinishAndClearAllBuff()
 	}
 
 	m_vecBuffTempletPtr.clear();
-	m_vecBuffTempletPtr.swap( vector<CX2BuffTempletPtr>() );
+	vector<CX2BuffTempletPtr>().swap( m_vecBuffTempletPtr );
 	pGageManager->ClearBuffList(m_UnitUID);
 }
 

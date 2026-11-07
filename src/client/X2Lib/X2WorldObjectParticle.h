@@ -3,7 +3,7 @@
 
 //{{ seojt // 2009-1-14, 23:41
 class CX2WorldObjectParticle;
-typedef boost::intrusive_ptr<CX2WorldObjectParticle>   CX2WorldObjectParticlePtr;
+typedef x2::intrusive_ptr<CX2WorldObjectParticle>   CX2WorldObjectParticlePtr;
 //}} seojt // 2009-1-14, 23:41
 
 

@@ -3,8 +3,7 @@
 
 #include <algorithm>
 
-#include <libxml/parser.h>
-#include <libxml/tree.h>
+#include "x2/platform/xml.h"
 
 class CX2GameOption
 {
@@ -109,25 +108,6 @@ class CX2GameOption
 			bool			m_bFlashEffect;		/// 화면 번쩍임 효과
 			bool			m_bVerticalSync;	/// 수직 동기화
 
-			//{{ 2011.9.16 이준호 반디캠 작업
-			int				m_GeneralVideoType;
-
-			bool			m_UserSetting;
-			int				m_VideoSizeW;
-			int				m_VideoSizeH;
-			float			m_VideoFPS;
-			int				m_VideoQuality;
-			int				m_AudioChannels;
-			int				m_AudioSampleRate;
-			int				m_VideoFormat;
-
-			//콤보박스 인덱스
-			//사용자 설정 DLG 생성 시, 옵션값 읽어 올 수 있도록 추가
-			int				m_VideoSizeIndex;
-			int				m_VideoFPSIndex;
-			int				m_VideoFormatIndex;
-			int				m_AudioSampleRateIndex;
-			//}}
 
 #ifdef PVP_ZOOM_CAMERA
 			bool			m_bAutoCamera;
@@ -210,22 +190,6 @@ class CX2GameOption
 
 				m_bFlashEffect			= false;
 				m_bVerticalSync			= false;
-				//{{ 2011.9.16 이준호 반디캠 작업
-				m_GeneralVideoType			= 0;
-
-				m_UserSetting				= false;
-				m_VideoSizeW				= 0;//기본타입을 임의로 지정
-				m_VideoSizeH				= 0;
-				m_VideoSizeIndex			= 7;//1024*768
-				m_VideoFPSIndex				= 3;//30fps
-				m_VideoFormatIndex			= 0;//mpeg
-				m_AudioSampleRateIndex		= 1;//16000k
-				m_VideoFPS					= 30.0f;
-				m_VideoQuality				= 90;
-				m_AudioChannels				= 2;
-				m_AudioSampleRate			= 44100;
-				m_VideoFormat				=	mmioFOURCC('R','G','B',' ');
-				//}}
 
 #ifdef PVP_ZOOM_CAMERA
 				m_bAutoCamera				= false;
@@ -324,7 +288,7 @@ class CX2GameOption
 			return false;
 		}
 
-		bool RemoveBlackList( UidType iUnitUID, wstring wstrNickName )
+		bool RemoveBlackList( UidType iUnitUID, wstring /*wstrNickName*/ )
 		{
 			if( m_OptionList.m_mapBlackList.erase( iUnitUID ) > 0 )
 			{
@@ -415,52 +379,6 @@ class CX2GameOption
 		void SetVerticalSync( IN bool bVal_ );
 		bool GetVerticalSync() const { return m_OptionList.m_bVerticalSync; }
 
-		//{{ 2011.9.16 이준호 반디캠 작업
-		void SetGeneralVideoType( int iVal ) { m_OptionList.m_GeneralVideoType = iVal; };
-		int GetGeneralVideoType() const { return m_OptionList.m_GeneralVideoType; };
-
-		void SetUserSetting(bool bVal){ m_OptionList.m_UserSetting = bVal; };
-		bool GetUserSetting() const { return m_OptionList.m_UserSetting; };
-
-
-		//해상도 옵션(콤보박스)
-		void SetVideoSizeW( int iVal ) { m_OptionList.m_VideoSizeW = iVal; };
-		void SetVideoSizeH( int iVal ) { m_OptionList.m_VideoSizeH = iVal; };
-		void SetVideoSizeIndex( int iVal) { m_OptionList.m_VideoSizeIndex = iVal; };
-
-		int GetVideoSizeW() const { return m_OptionList.m_VideoSizeW; };
-		int GetVideoSizeH() const { return m_OptionList.m_VideoSizeH; };
-		int GetVideoSizeIndex() const {return m_OptionList.m_VideoSizeIndex; };
-
-		//화질
-		void SetVideoQuality( int iVal ) { m_OptionList.m_VideoQuality = iVal; };
-		int GetVideoQuality() const { return m_OptionList.m_VideoQuality; };
-
-		//프레임(콤보박스)
-		void SetVideoFPS( float fVal ) { m_OptionList.m_VideoFPS = fVal; };
-		void SetVideoFPSIndex( int iVal ) { m_OptionList.m_VideoFPSIndex = iVal; };
-
-		float GetVideoFPS() const { return m_OptionList.m_VideoFPS; };
-		int	GetVideoFPSIndex() const {return m_OptionList.m_VideoFPSIndex; };
-
-		//비디오 포맷(콤보박스)
-		void SetVideoFormat( int iVal ) { m_OptionList.m_VideoFormat = iVal; };
-		void SetVideoFormatIndex(int iVal) { m_OptionList.m_VideoFormatIndex = iVal; };
-
-		int GetVideoFormat() const { return m_OptionList.m_VideoFormat; };
-		int GetVideoFormatIndex() const {return m_OptionList.m_VideoFormatIndex; };
-
-		//오디오 채널
-		void SetAudioChannels( int iVal ) { m_OptionList.m_AudioChannels = iVal; };
-		int GetAudioChannels() const { return m_OptionList.m_AudioChannels; };
-
-		//오디오 음질(콤보박스)
-		void SetAudioSampleRate( int iVal ) { m_OptionList.m_AudioSampleRate = iVal; };
-		void SetAudioSampleRateIndex( int iVal) { m_OptionList.m_AudioSampleRateIndex = iVal; };
-
-		int GetAudioSampleRate() const { return m_OptionList.m_AudioSampleRate; };
-		int GetAudioSampleRateIndex() const {return m_OptionList.m_AudioSampleRateIndex; };
-		//}}
 
 #ifdef PVP_ZOOM_CAMERA
 		void SetAutoCamera(bool bVal) { m_OptionList.m_bAutoCamera = bVal; }
@@ -538,6 +456,6 @@ class CX2GameOption
 		void _DecideProperGraphicOption();
 		int _CalcCpuScore();
 		void _CalcBestGraphicOption( int iCpuTotalScore, int iGpuTotalScore );
-		OptionLevel _CalcHighMiddleLow( const xmlNode* pkElement, int iCpuTotalScore, int iGpuTotalScore );
-		bool _CalcOnOff( const xmlNode* pkElement, int iCpuTotalScore, int iGpuTotalScore );
+		OptionLevel _CalcHighMiddleLow( const x2::platform::XmlElement& kElement, int iCpuTotalScore, int iGpuTotalScore );
+		bool _CalcOnOff( const x2::platform::XmlElement& kElement, int iCpuTotalScore, int iGpuTotalScore );
 };

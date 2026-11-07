@@ -571,9 +571,6 @@ void CX2DungeonGame::StageLoading( int stageNum )
 		SAFE_DELETE( pCreateNPCData );
 	}
 
-#ifdef APPLY_THEMIDA
-	ENCODE_START
-#endif
 
 	m_CreateNPCDataList.resize(0);
 
@@ -582,9 +579,6 @@ void CX2DungeonGame::StageLoading( int stageNum )
 
 	ClearSpirit();
 
-#ifdef APPLY_THEMIDA
-	ENCODE_END
-#endif
 
 	CX2DungeonStage* pCX2DungeonStage = m_pDungeon->CreateStage( stageNum );
 	CX2DungeonStage::StageData* pStageData = pCX2DungeonStage->GetStageData();
@@ -896,7 +890,6 @@ void CX2DungeonGame::SubStageLoading( int subStageNum )
 void CX2DungeonGame::SubStageStart()
 {
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_START
 #endif
 	//장막을 열고 서브 스테이지를 시작한다
 	m_bLastKillCheck		= false;
@@ -1071,7 +1064,6 @@ void CX2DungeonGame::SubStageStart()
 	g_pKTDXApp->SkipFrame();
 
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_END
 #endif
 
 
@@ -1585,7 +1577,6 @@ bool CX2DungeonGame::Handler_EGS_DUNGEON_SUB_STAGE_OPEN_NOT( KEGS_DUNGEON_SUB_ST
 
 bool CX2DungeonGame::Handler_EGS_DUNGEON_SUB_STAGE_GO_NEXT_REQ( int beforeStage, int nextStage )
 {
-	THEMIDA_VM_START
 
 
 	KEGS_DUNGEON_SUB_STAGE_GO_NEXT_REQ kPacket;
@@ -1597,7 +1588,6 @@ bool CX2DungeonGame::Handler_EGS_DUNGEON_SUB_STAGE_GO_NEXT_REQ( int beforeStage,
 
 #	if !X2_DEV_TOOLS
 	// checked
-	ELSWORD_VIRTUALIZER_START
 #	endif
 
 	if( m_bCheckSubStageGoNext == false || m_bCheckSubStageGoNext.Verify() == false )
@@ -1620,10 +1610,8 @@ bool CX2DungeonGame::Handler_EGS_DUNGEON_SUB_STAGE_GO_NEXT_REQ( int beforeStage,
 	m_bCheckSubStageGoNext = false;
 
 #	if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_END
 #	endif
 
-	THEMIDA_VM_END
 
 
 	return true;
@@ -1661,7 +1649,6 @@ bool CX2DungeonGame::Handler_EGS_DUNGEON_SUB_STAGE_GO_NEXT_ALL_NOT( KEGS_DUNGEON
 bool CX2DungeonGame::Handler_EGS_DUNGEON_SUB_STAGE_LOAD_COMPLETE_REQ()
 {
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_START
 #endif
 
 
@@ -1693,7 +1680,6 @@ bool CX2DungeonGame::Handler_EGS_DUNGEON_SUB_STAGE_LOAD_COMPLETE_REQ()
 
 
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_END
 #endif
 
 	return true;

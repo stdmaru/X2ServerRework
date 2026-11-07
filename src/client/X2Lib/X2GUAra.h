@@ -306,7 +306,7 @@ public:
 				- ����-���ϵ� ���� ����
 	*/
     struct sMoonLightSlashData;
-    typedef boost::intrusive_ptr<sMoonLightSlashData> sMoonRightSlashDataPtr;
+    typedef x2::intrusive_ptr<sMoonLightSlashData> sMoonRightSlashDataPtr;
 
 	struct sMoonLightSlashData : x2::NonCopyable
 	{
@@ -321,10 +321,10 @@ public:
 		CX2EffectSet::Handle	m_hChargeEffect;	/// ���� �� �߻��ϴ� ����Ʈ
 		CKTDGXMeshPlayer::CXMeshInstanceHandle	m_hNewAttackBox;		/// ���� Attack���� ����
 
-		sMoonLightSlashData() : m_fChargingTime( 0.f ), m_fPowerRate( 0.f ), m_bSlotB( false ),
-			m_pChargeKey( NULL ), m_iSlotID( 0 ),
-			m_hChargeEffect( INVALID_EFFECTSET_HANDLE ), m_hNewAttackBox( INVALID_MESH_INSTANCE_HANDLE )
-            , m_uRefCount(0)
+		sMoonLightSlashData() : m_uRefCount(0), m_fChargingTime( 0.f ), m_fPowerRate( 0.f ),
+			m_bSlotB( false ), m_pChargeKey( NULL ),
+			m_iSlotID( 0 ), m_hChargeEffect( INVALID_EFFECTSET_HANDLE )
+            , m_hNewAttackBox( INVALID_MESH_INSTANCE_HANDLE )
 		{}
 
 	public:
@@ -363,7 +363,7 @@ public:
 	//#pragma region SLockOnSystem
 
     struct SLockOnSystem;
-    typedef boost::intrusive_ptr<SLockOnSystem> sLockOnSystemPtr;
+    typedef x2::intrusive_ptr<SLockOnSystem> sLockOnSystemPtr;
 	struct SLockOnSystem : x2::NonCopyable
 	{
 	private:
@@ -375,8 +375,8 @@ public:
 		D3DXVECTOR3	m_vSafePos;			/// �ֱ� �̵��� ���� ������ ��ġ
 		UidType		m_BeforeTargetUID;	/// ������ Ÿ�ٵ� ������ UID
 
-		SLockOnSystem() : m_bLockOnUnit( false ), m_fPvpRange( 0.f ), m_fPveRange( 0.f ), m_BeforeTargetUID( -1 )
-        , m_uRefCount(0)
+		SLockOnSystem() : m_uRefCount(0), m_bLockOnUnit( false ), m_fPvpRange( 0.f ), m_fPveRange( 0.f )
+        , m_BeforeTargetUID( -1 )
 		{
 			INIT_VECTOR3( m_vDestPos,	0.f, 0.f, 0.f );
 			INIT_VECTOR3( m_vSafePos,	0.f, 0.f, 0.f );
@@ -625,7 +625,7 @@ public:
 	virtual void		AttackResultByType( CX2DamageManager::DamageData &pDamageData );
 //#endif // FIX_GAIN_FORCE_BUG
 
-	virtual const int GetHypetMpdeStateID();
+	virtual int GetHypetMpdeStateID();
 
 	//#pragma endregion function
 

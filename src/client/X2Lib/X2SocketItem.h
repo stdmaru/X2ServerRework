@@ -362,7 +362,7 @@ class CX2SocketItem
 
 			// 공용화 아이템에 대해, 장착중인 유저의 직업에 따라 다른 스킬을 보여 주기 위해 그룹 추가
 			vector<int> m_vecSkillLevelUpGroupID;		//스킬레벨그룹 ID
-			vector< CX2SocketItem::SkillLevelUpIDAndNum > m_vecSkillLevelUpID;		//스킬레벨
+			vector< SkillLevelUpIDAndNum > m_vecSkillLevelUpID;		//스킬레벨
 
 			float					m_fDamageReduce;
 			float					m_fPercentDamageReduce;
@@ -756,7 +756,7 @@ class CX2SocketItem
 //}} kimhc // 2010.4.9 // 비밀던전 작업(셋트아이템효과)
 
 			// @bExcludeInternalLimit: UI에 표시되는 부분에는 제한이 없으나 내부적으로 제한이 있는 경우에, 제한수치 계산을 하지 않기 위해
-			void LimitMaximum( bool bExcludeInternalLimit = false )
+			void LimitMaximum( bool /*bExcludeInternalLimit*/ = false )
 			{
 				m_Stat.LimitMaximum();
 
@@ -885,21 +885,21 @@ class CX2SocketItem
 
 				if ( true == rhs_.m_bDungeonOnly )
 				{
-					m_fPercentSuperArmorDungeon = max( m_fPercentSuperArmorDungeon, rhs_.m_fPercentSuperArmor );
-					m_fTimeSuperArmorDungeon = max( m_fTimeSuperArmorDungeon, rhs_.m_fTimeSuperArmor );
+					m_fPercentSuperArmorDungeon = std::max( m_fPercentSuperArmorDungeon, rhs_.m_fPercentSuperArmor );
+					m_fTimeSuperArmorDungeon = std::max( m_fTimeSuperArmorDungeon, rhs_.m_fTimeSuperArmor );
 				}
 				else if ( true == rhs_.m_bPVPOnly )
 				{
-					m_fPercentSuperArmorPVP = max( m_fPercentSuperArmorPVP, rhs_.m_fPercentSuperArmor );
-					m_fTimeSuperArmorPVP = max( m_fTimeSuperArmorPVP, rhs_.m_fTimeSuperArmor );
+					m_fPercentSuperArmorPVP = std::max( m_fPercentSuperArmorPVP, rhs_.m_fPercentSuperArmor );
+					m_fTimeSuperArmorPVP = std::max( m_fTimeSuperArmorPVP, rhs_.m_fTimeSuperArmor );
 				}
 				else
 				{
-					m_fPercentSuperArmorDungeon = max( m_fPercentSuperArmorDungeon, rhs_.m_fPercentSuperArmor );
-					m_fTimeSuperArmorDungeon = max( m_fTimeSuperArmorDungeon, rhs_.m_fTimeSuperArmor );
+					m_fPercentSuperArmorDungeon = std::max( m_fPercentSuperArmorDungeon, rhs_.m_fPercentSuperArmor );
+					m_fTimeSuperArmorDungeon = std::max( m_fTimeSuperArmorDungeon, rhs_.m_fTimeSuperArmor );
 
-					m_fPercentSuperArmorPVP = max( m_fPercentSuperArmorPVP, rhs_.m_fPercentSuperArmor );
-	m_fTimeSuperArmorPVP = max( m_fTimeSuperArmorPVP, rhs_.m_fTimeSuperArmor );
+					m_fPercentSuperArmorPVP = std::max( m_fPercentSuperArmorPVP, rhs_.m_fPercentSuperArmor );
+	m_fTimeSuperArmorPVP = std::max( m_fTimeSuperArmorPVP, rhs_.m_fTimeSuperArmor );
 				}
 
 

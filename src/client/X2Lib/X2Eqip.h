@@ -11,7 +11,7 @@
 //{{ seojt // 2009-1-13, 15:47
 class CX2SubEquip;
 class CX2Eqip;
-typedef boost::intrusive_ptr<CX2Eqip>  CX2EqipPtr;
+typedef x2::intrusive_ptr<CX2Eqip>  CX2EqipPtr;
 //}} seojt // 2009-1-13, 15:47
 
 
@@ -146,37 +146,37 @@ class CX2Eqip : public CKTDGObject
 			if ( m_pItemTemplet != NULL )
 			{
                 DWORD   dwItemID = m_pItemTemplet->GetItemID();
-				for( int i=0; i<ARRAY_SIZE( ITEM_ID_ENCHANT_TYPE3_GOLD ); i++ )
+				for( int i=0; i<std::ssize( ITEM_ID_ENCHANT_TYPE3_GOLD ); i++ )
 				{
 					if( ITEM_ID_ENCHANT_TYPE3_GOLD[i] == dwItemID )
 						return 3;
 				}
 
-				for( int i=0; i<ARRAY_SIZE( ITEM_ID_ENCHANT_TYPE3_BLUE ); i++ )
+				for( int i=0; i<std::ssize( ITEM_ID_ENCHANT_TYPE3_BLUE ); i++ )
 				{
 					if( ITEM_ID_ENCHANT_TYPE3_BLUE[i] == dwItemID )
 						return 3;
 				}
 
-				for( int i=0; i<ARRAY_SIZE( ITEM_ID_ENCHANT_TYPE3_GREEN ); i++ )
+				for( int i=0; i<std::ssize( ITEM_ID_ENCHANT_TYPE3_GREEN ); i++ )
 				{
 					if( ITEM_ID_ENCHANT_TYPE3_GREEN[i] == dwItemID )
 						return 3;
 				}
 
-				for( int i=0; i<ARRAY_SIZE( ITEM_ID_ENCHANT_TYPE3_YELLOW ); i++ )
+				for( int i=0; i<std::ssize( ITEM_ID_ENCHANT_TYPE3_YELLOW ); i++ )
 				{
 					if( ITEM_ID_ENCHANT_TYPE3_YELLOW[i] == dwItemID )
 						return 3;
 				}
 
-				for( int i=0; i<ARRAY_SIZE( ITEM_ID_ENCHANT_TYPE3_RED ); i++ )
+				for( int i=0; i<std::ssize( ITEM_ID_ENCHANT_TYPE3_RED ); i++ )
 				{
 					if( ITEM_ID_ENCHANT_TYPE3_RED[i] == dwItemID )
 						return 3;
 				}
 
-				for( int i=0; i<ARRAY_SIZE( ITEM_ID_ENCHANT_TYPE3_PINK ); i++ )
+				for( int i=0; i<std::ssize( ITEM_ID_ENCHANT_TYPE3_PINK ); i++ )
 				{
 					if( ITEM_ID_ENCHANT_TYPE3_PINK[i] == dwItemID )
 						return 3;
@@ -184,7 +184,7 @@ class CX2Eqip : public CKTDGObject
 
 
 
-				for( int i=0; i<ARRAY_SIZE( ITEM_ID_ENCHANT_TYPE2 ); i++ )
+				for( int i=0; i<std::ssize( ITEM_ID_ENCHANT_TYPE2 ); i++ )
 				{
 					if( ITEM_ID_ENCHANT_TYPE2[i] == dwItemID )
 						return 2;
@@ -193,7 +193,7 @@ class CX2Eqip : public CKTDGObject
 				if ( m_EnchantLevel >= ENCHANT_WEAPON_EFFECT_LEVEL_0 )
 					return 1;
 
-				for( int i=0; i<ARRAY_SIZE( ITEM_ID_ENCHANT_TYPE1 ); i++ )
+				for( int i=0; i<std::ssize( ITEM_ID_ENCHANT_TYPE1 ); i++ )
 				{
 					if( ITEM_ID_ENCHANT_TYPE1[i] == dwItemID )
 						return 1;
@@ -209,7 +209,7 @@ class CX2Eqip : public CKTDGObject
 			{
                 DWORD   dwItemID = m_pItemTemplet->GetItemID();
 				// 망토
-				for(int i=0; i<ARRAY_SIZE( ITEM_ID_JIGGLE_TYPE1 ); ++i)
+				for(int i=0; i<std::ssize( ITEM_ID_JIGGLE_TYPE1 ); ++i)
 				{
 					if( ITEM_ID_JIGGLE_TYPE1[i] == dwItemID )
 						return 1.5f;

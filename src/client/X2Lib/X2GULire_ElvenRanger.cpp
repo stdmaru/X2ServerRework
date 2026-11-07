@@ -4433,7 +4433,6 @@ RENDER_HINT CX2GULire_ElvenRanger::CommonRender_Prepare()
 /*virtual*/ bool CX2GULire_ElvenRanger::SpecialAttackEventProcess( CX2SkillTree::ACTIVE_SKILL_USE_CONDITION eActiveSkillUseCondition /*= CX2SkillTree::ASUT_ONLY_ON_LINE*/ )
 {
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_START
 #endif
 
 
@@ -4599,7 +4598,6 @@ RENDER_HINT CX2GULire_ElvenRanger::CommonRender_Prepare()
 
 
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_END
 #endif
 
 	Send_SKILL_USE_REQ( pSkillTemplet->m_eID );
@@ -15397,7 +15395,7 @@ void CX2GULire_ElvenRanger::SetFatalityData()
 			float fSum = 0.f;
 			m_sFatalityData.m_eRating = FRR_FAIL;
 
-			for(int i = 0; i < ARRAY_SIZE(fRate); i++)
+			for(int i = 0; i < std::ssize(fRate); i++)
 			{
 				fSum += fRate[i];
 

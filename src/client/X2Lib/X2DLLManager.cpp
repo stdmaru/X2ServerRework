@@ -50,14 +50,10 @@ DWORD dwUser32Start, dwUser32End;
 //---------------------------------------------------------------------------------------------
 BOOL WINAPI CheckCallerAddress(IN const wstring& wstrFilename, IN PVOID Caller)
 {
-	ELSWORD_VIRTUALIZER_START
 
 	if(SiCX2DLLManager()->IsVerifiedDLL(wstrFilename))
 		return TRUE;
 
-#ifdef APPLY_THEMIDA
-	ENCODE_START
-#endif
 
 	BOOL bVerify = TRUE;
 
@@ -168,14 +164,10 @@ BOOL WINAPI CheckCallerAddress(IN const wstring& wstrFilename, IN PVOID Caller)
 #endif
 
 
-#ifdef APPLY_THEMIDA
-	ENCODE_END
-#endif
 
 	return bVerify;
 
 
-	ELSWORD_VIRTUALIZER_END
 }
 
 BOOL WINAPI CheckCallerAddressA(IN PVOID lpFileName, IN PVOID Caller)
@@ -183,9 +175,6 @@ BOOL WINAPI CheckCallerAddressA(IN PVOID lpFileName, IN PVOID Caller)
 	wstring wstrFileName;
 	ConvertCharToWCHAR(wstrFileName, (LPCSTR)lpFileName);
 
-#ifdef APPLY_THEMIDA
-	ENCODE_START
-#endif
 
 	BOOL bVerify = CheckCallerAddress(wstrFileName, Caller);
 
@@ -199,9 +188,6 @@ BOOL WINAPI CheckCallerAddressA(IN PVOID lpFileName, IN PVOID Caller)
 		SiCX2DLLManager()->ProcessEvent(e);
 	}
 
-#ifdef APPLY_THEMIDA
-	ENCODE_END
-#endif
 
 	return bVerify;
 }
@@ -210,9 +196,6 @@ BOOL WINAPI CheckCallerAddressW(IN PVOID lpFileName, IN PVOID Caller)
 {
 	wstring wstrFileName((LPCWSTR)lpFileName);
 
-#ifdef APPLY_THEMIDA
-	ENCODE_START
-#endif
 
 	BOOL bVerify = CheckCallerAddress(wstrFileName, Caller);
 
@@ -226,9 +209,6 @@ BOOL WINAPI CheckCallerAddressW(IN PVOID lpFileName, IN PVOID Caller)
 		SiCX2DLLManager()->ProcessEvent(e);
 	}
 
-#ifdef APPLY_THEMIDA
-	ENCODE_END
-#endif
 
 	return bVerify;
 }
@@ -576,7 +556,6 @@ void CX2DLLManager::Final()
 void CX2DLLManager::ForceFree()
 {
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_START
 #endif
 
 //	THEMIDA_VM_START
@@ -693,7 +672,6 @@ void CX2DLLManager::ForceFree()
 
 //	THEMIDA_VM_END
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_END
 #endif
 }
 #endif
@@ -912,7 +890,6 @@ public:
 void CX2DLLManager::ReportEvent()
 {
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_START
 #endif
 
 
@@ -968,14 +945,12 @@ void CX2DLLManager::ReportEvent()
 //	THEMIDA_VM_END
 
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_END
 #endif
 }
 
 wstring CX2DLLManager::GetReportEvent()
 {
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_START
 #endif
 
 	vector<DLLEvent>::const_iterator iter = find_if(m_vecDLLEvent.begin(), m_vecDLLEvent.end(),
@@ -1020,7 +995,6 @@ wstring CX2DLLManager::GetReportEvent()
 	return  wstrmEvent.str();
 
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_END
 #endif
 }
 
@@ -1069,7 +1043,6 @@ bool CX2DLLManager::FindModuleIn(const wstring &wstrModuleName)
 void CX2DLLManager::ForceFreeModule(wstring wstrFreeModuleName)
 {
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_START
 #endif
 
 		//	THEMIDA_VM_START
@@ -1116,7 +1089,6 @@ void CX2DLLManager::ForceFreeModule(wstring wstrFreeModuleName)
 
 	//	THEMIDA_VM_END
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_END
 #endif
 }
 

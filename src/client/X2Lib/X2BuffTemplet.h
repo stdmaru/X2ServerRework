@@ -3,7 +3,7 @@
 */
 
 class CX2BuffTemplet;
-typedef boost::intrusive_ptr<CX2BuffTemplet> CX2BuffTempletPtr;
+typedef x2::intrusive_ptr<CX2BuffTemplet> CX2BuffTempletPtr;
 
 #pragma once
 
@@ -25,11 +25,11 @@ public:
 	};
 
 	CX2BuffTemplet( const CX2BuffTemplet& rhs_ )
-		: m_BuffIdentity( rhs_.m_BuffIdentity ), m_uiAccumulationLimit( rhs_.m_uiAccumulationLimit )
-		, m_bDeBuff( rhs_.m_bDeBuff ), m_bDidFinish( rhs_.m_bDidFinish ), m_bWorldBuff( rhs_.m_bWorldBuff )
-		, m_wstIconFileName ( rhs_.m_wstIconFileName ), m_wstIconKeyName ( rhs_.m_wstIconKeyName )
-		, m_iBuffName( rhs_.m_iBuffName ), m_iBuffDesc( rhs_.m_iBuffDesc ), m_bUseBuffIcon ( rhs_.m_bUseBuffIcon )
-        , m_uRefCount(0)
+		: m_uRefCount(0), m_BuffIdentity( rhs_.m_BuffIdentity )
+		, m_uiAccumulationLimit( rhs_.m_uiAccumulationLimit ), m_bDeBuff( rhs_.m_bDeBuff ), m_bDidFinish( rhs_.m_bDidFinish )
+		, m_bWorldBuff( rhs_.m_bWorldBuff ), m_wstIconFileName ( rhs_.m_wstIconFileName )
+		, m_wstIconKeyName ( rhs_.m_wstIconKeyName ), m_iBuffName( rhs_.m_iBuffName ), m_iBuffDesc( rhs_.m_iBuffDesc )
+        , m_bUseBuffIcon ( rhs_.m_bUseBuffIcon )
 	{
 		m_vecBehaviorPtr.clear();
 		m_vecBehaviorPtr.reserve( rhs_.m_vecBehaviorPtr.size() );
@@ -106,9 +106,9 @@ public:
 
 	const wstring& GetIconFileName() const { return m_wstIconFileName; }
 	const wstring& GetIconKeyName() const { return m_wstIconKeyName; }
-	const int GetBuffName() const { return m_iBuffName; }
-	const int GetBuffDesc() const { return m_iBuffDesc; }
-	const bool GetUseBuffIcon() const { return m_bUseBuffIcon; }
+	int GetBuffName() const { return m_iBuffName; }
+	int GetBuffDesc() const { return m_iBuffDesc; }
+	bool GetUseBuffIcon() const { return m_bUseBuffIcon; }
 
 	void GetFinalizerTempletPtrList( OUT vector<CX2BuffFinalizerTempletPtr>& vecFinalizerPtr_ );
 	void ChangeFinalizerTempletPtrList( const vector<CX2BuffFinalizerTempletPtr>& vecFinalizerPtr_ );
@@ -120,10 +120,10 @@ public:
     void    Release()   { if ( (--m_uRefCount) == 0 )   delete this; }
 
 protected:
-	CX2BuffTemplet() : m_BuffIdentity(), m_uiAccumulationLimit( 0 ), m_bDeBuff( false )
-						,m_bDidFinish( false ),	m_bWorldBuff( false )
-						,m_iBuffName( -1 ), m_iBuffDesc( -1 ), m_bUseBuffIcon ( false )
-        , m_uRefCount(0)
+	CX2BuffTemplet() : m_uRefCount(0), m_BuffIdentity(), m_uiAccumulationLimit( 0 )
+						,m_bDeBuff( false ),	m_bDidFinish( false )
+						,m_bWorldBuff( false ), m_iBuffName( -1 ), m_iBuffDesc( -1 )
+        , m_bUseBuffIcon ( false )
 
 	{
 		m_mapUnCommonMember.clear();
@@ -170,7 +170,7 @@ IMPLEMENT_INTRUSIVE_PTR( CX2BuffTemplet );
 	@date : 2012/7/22/
 */
 class CX2BuffIdentity;
-typedef boost::intrusive_ptr<CX2BuffIdentity> CX2BuffIdentityPtr;
+typedef x2::intrusive_ptr<CX2BuffIdentity> CX2BuffIdentityPtr;
 
 class CX2BuffIdentity
 {
@@ -231,7 +231,7 @@ ITR FindSameBuffIdentity( IN vector<T>& vector_, const KBuffIdentity& BuffIdenti
 			return ptr_->IsSame( BuffIdentity_ );
 		};
 
-		vector<T>::iterator vItr = std::find_if( vector_.begin(), vector_.end(), FindFunc );
+		typename vector<T>::iterator vItr = std::find_if( vector_.begin(), vector_.end(), FindFunc );
 		return vItr;
 	}
 	else
@@ -243,7 +243,7 @@ ITR FindSameBuffIdentity( IN vector<T>& vector_, const KBuffIdentity& BuffIdenti
 	@date : 2012/7/22/
 */
 class CX2ReverseLefRight;
-typedef boost::intrusive_ptr<CX2ReverseLefRight> CX2ReverseLefRightPtr;
+typedef x2::intrusive_ptr<CX2ReverseLefRight> CX2ReverseLefRightPtr;
 
 class CX2ReverseLefRight : public CX2BuffIdentity
 {
@@ -274,7 +274,7 @@ private:
 	@date : 2012/9/6/
 */
 class CX2NeverMoveByBuff;
-typedef boost::intrusive_ptr<CX2NeverMoveByBuff> CX2NeverMoveByBuffPtr;
+typedef x2::intrusive_ptr<CX2NeverMoveByBuff> CX2NeverMoveByBuffPtr;
 
 class CX2NeverMoveByBuff : public CX2BuffIdentity
 {
@@ -284,7 +284,7 @@ public:
 	{}
 
 	const D3DXVECTOR3& GetPos() const { return m_vPos; }
-	const bool		   GetGravitiApply() const { return m_bIsGravity; }
+	bool		   GetGravitiApply() const { return m_bIsGravity; }
 
 protected:
 	CX2NeverMoveByBuff()
@@ -303,7 +303,7 @@ private:
 */
 
 class CX2RenderParamByBuff;
-typedef boost::intrusive_ptr<CX2RenderParamByBuff> CX2RenderParamByBuffPtr;
+typedef x2::intrusive_ptr<CX2RenderParamByBuff> CX2RenderParamByBuffPtr;
 class CX2RenderParamByBuff : public CX2BuffIdentity
 {
 public:
@@ -322,7 +322,7 @@ private:
 	@date : 2012/8/20/
 */
 class CX2EffectSetImpactPointByBuff;
-typedef boost::intrusive_ptr<CX2EffectSetImpactPointByBuff> CX2EffectSetImpactPointByBuffPtr;
+typedef x2::intrusive_ptr<CX2EffectSetImpactPointByBuff> CX2EffectSetImpactPointByBuffPtr;
 class CX2EffectSetImpactPointByBuff : public CX2BuffIdentity
 {
 public:
@@ -351,7 +351,7 @@ private:
 	@date : 2012/8/20/
 */
 class CX2ChangeUnitScaleByBuff;
-typedef boost::intrusive_ptr<CX2ChangeUnitScaleByBuff> CX2ChangeUnitScaleByBuffPtr;
+typedef x2::intrusive_ptr<CX2ChangeUnitScaleByBuff> CX2ChangeUnitScaleByBuffPtr;
 class CX2ChangeUnitScaleByBuff : public CX2BuffIdentity
 {
 public:
@@ -377,7 +377,7 @@ private:
 	@date : 2012/8/28/
 */
 class CX2AfterImageByBuff;
-typedef boost::intrusive_ptr<CX2AfterImageByBuff> CX2AfterImageByBuffPtr;
+typedef x2::intrusive_ptr<CX2AfterImageByBuff> CX2AfterImageByBuffPtr;
 class CX2AfterImageByBuff : public CX2BuffIdentity
 {
 public:
@@ -396,7 +396,7 @@ private:
 	@date : 2012/8/28/
 */
 class CX2WeaponAfterImageByBuff;
-typedef boost::intrusive_ptr<CX2WeaponAfterImageByBuff> CX2WeaponAfterImageByBuffPtr;
+typedef x2::intrusive_ptr<CX2WeaponAfterImageByBuff> CX2WeaponAfterImageByBuffPtr;
 class CX2WeaponAfterImageByBuff : public CX2BuffIdentity
 {
 public:
@@ -415,7 +415,7 @@ private:
 	@date : 2012/8/21/
 */
 class CX2CustomFunctionByBuff;
-typedef boost::intrusive_ptr<CX2CustomFunctionByBuff> CX2CustomFunctionByBuffPtr;
+typedef x2::intrusive_ptr<CX2CustomFunctionByBuff> CX2CustomFunctionByBuffPtr;
 class CX2CustomFunctionByBuff : public CX2BuffIdentity
 {
 public:
@@ -424,10 +424,10 @@ public:
 	{}
 	virtual ~CX2CustomFunctionByBuff() {}
 
-	virtual void FunctionInCommonStateStart( CX2GameUnit* pGameUnit_, KLuaManager& luaManager_ ) {};
-	virtual void FunctionInCommonFrameMove( CX2GameUnit* pGameUnit_, KLuaManager& luaManager_ ) {};
-	virtual void FunctionInCommonStateEnd( CX2GameUnit* pGameUnit_, KLuaManager& luaManager_ ) {};
-	virtual void FunctionInDamageReact( CX2GameUnit* pGameUnit_, IN CX2DamageManager::DamageData& damageData_ ) {}
+	virtual void FunctionInCommonStateStart( CX2GameUnit* /*pGameUnit_*/, KLuaManager& /*luaManager_*/ ) {};
+	virtual void FunctionInCommonFrameMove( CX2GameUnit* /*pGameUnit_*/, KLuaManager& /*luaManager_*/ ) {};
+	virtual void FunctionInCommonStateEnd( CX2GameUnit* /*pGameUnit_*/, KLuaManager& /*luaManager_*/ ) {};
+	virtual void FunctionInDamageReact( CX2GameUnit* /*pGameUnit_*/, IN CX2DamageManager::DamageData& /*damageData_*/ ) {}
 };
 
 /** @class : CX2CustomFunctionByBuffPhantomSword
@@ -502,14 +502,14 @@ private:
 class CX2CustomFunctionByBuffBigBangStream : public CX2CustomFunctionByBuff
 {
 public:
-	CX2CustomFunctionByBuffBigBangStream( const KBuffIdentity& BuffIdentity_, CX2GameUnit* pGameUnit_ )
+	CX2CustomFunctionByBuffBigBangStream( const KBuffIdentity& BuffIdentity_, CX2GameUnit* /*pGameUnit_*/ )
 		: CX2CustomFunctionByBuff( BuffIdentity_ ), m_vStateStartPos( D3DXVECTOR3( 0.0f, 0.0f, 0.0f ) )
 	{ m_vecAnimationTime.clear(); }
 
 	~CX2CustomFunctionByBuffBigBangStream()
 	{
 		m_vecAnimationTime.clear();
-		m_vecAnimationTime.swap( vector<float>() );
+		vector<float>().swap( m_vecAnimationTime );
 	}
 	virtual void FunctionInCommonStateStart( CX2GameUnit* pGameUnit_, KLuaManager& luaManager_ );
 	virtual void FunctionInCommonFrameMove( CX2GameUnit* pGameUnit_, KLuaManager& luaManager_ );
@@ -541,7 +541,7 @@ public:
 		m_uiDamageEffectCount = 3;
 		m_fAddPowerRate = static_cast<float>( kBuffBehaviorFactor_[1] );
 
-		m_uiDamageEffectCount = min( 5, m_uiDamageEffectCount );
+		m_uiDamageEffectCount = std::min( 5U, m_uiDamageEffectCount );
 		m_fMemoRate = kBuffBehaviorFactor_[0];	/// 없으면 0.0이 대입될 것이다.
 	}
 
@@ -590,7 +590,7 @@ private:
 	@date : 2012/7/23/
 */
 class CX2StatFactorByBuff;
-typedef boost::intrusive_ptr<CX2StatFactorByBuff> CX2StatFactorByBuffPtr;
+typedef x2::intrusive_ptr<CX2StatFactorByBuff> CX2StatFactorByBuffPtr;
 class CX2StatFactorByBuff : public CX2BuffIdentity
 {
 public:
@@ -633,7 +633,7 @@ public:
 		for ( UINT i = 0; i < BCT_END; ++i )
 		{
 			m_vecStatFactorArray[i].clear();
-			m_vecStatFactorArray[i].swap( vector<CX2StatFactorByBuffPtr>() );
+			vector<CX2StatFactorByBuffPtr>().swap( m_vecStatFactorArray[i] );
 		}
 	}
 
@@ -741,7 +741,7 @@ void CX2AdditionalStatByBuff::UpdateResultValueWithOptionData( Func func_ptr, co
 		if ( bShouldMinus )
 			fResultValue -= 1.0f;	/// 다시 1.0을 빼준다.
 
-		fResultValue = max( fResultValue, 0.0f );	/// 혹시 마이너스인 경우에는 최소값을 0으로 설정
+		fResultValue = std::max( fResultValue, 0.0f );	/// 혹시 마이너스인 경우에는 최소값을 0으로 설정
 
 		SetResultValue( fResultValue );
 	}
@@ -770,7 +770,7 @@ void CX2AdditionalStatByBuff::CheckAndUpdateResultValueWithOptionData( Func func
 	@date : 2012/7/22/
 */
 class CX2Stun;
-typedef boost::intrusive_ptr<CX2Stun> CX2StunPtr;
+typedef x2::intrusive_ptr<CX2Stun> CX2StunPtr;
 class CX2Stun : public CX2BuffIdentity
 {
 public:
@@ -789,7 +789,7 @@ private:
 	@date : 2012/7/22/
 */
 class CX2Freeze;
-typedef boost::intrusive_ptr<CX2Freeze> CX2FreezePtr;
+typedef x2::intrusive_ptr<CX2Freeze> CX2FreezePtr;
 class CX2Freeze : public CX2BuffIdentity
 {
 public:
@@ -808,7 +808,7 @@ private:
 	@date : 2012/11/03/
 */
 class CX2ChangeAttackByType;
-typedef boost::intrusive_ptr<CX2ChangeAttackByType> CX2ChangeAttackByTypePtr;
+typedef x2::intrusive_ptr<CX2ChangeAttackByType> CX2ChangeAttackByTypePtr;
 class CX2ChangeAttackByType : public CX2BuffIdentity
 {
 public:
@@ -832,7 +832,7 @@ private:
 	@date : 2012/11/03/
 */
 class CX2ChangeEnchantAttackRate;
-typedef boost::intrusive_ptr<CX2ChangeEnchantAttackRate> CX2ChangeEnchantAttackRatePtr;
+typedef x2::intrusive_ptr<CX2ChangeEnchantAttackRate> CX2ChangeEnchantAttackRatePtr;
 class CX2ChangeEnchantAttackRate : public CX2BuffIdentity
 {
 public:
@@ -864,7 +864,7 @@ private:
 	@date : 2012/11/03/
 */
 class CX2DoubleAttack;
-typedef boost::intrusive_ptr<CX2DoubleAttack> CX2DoubleAttackPtr;
+typedef x2::intrusive_ptr<CX2DoubleAttack> CX2DoubleAttackPtr;
 class CX2DoubleAttack : public CX2BuffIdentity
 {
 public:
@@ -886,7 +886,7 @@ private:
 	@date : 2013/04/16/
 */
 class CX2AddSkillLevelByBuff;
-typedef boost::intrusive_ptr<CX2AddSkillLevelByBuff> CX2AddSkillLevelByBuffPtr;
+typedef x2::intrusive_ptr<CX2AddSkillLevelByBuff> CX2AddSkillLevelByBuffPtr;
 class CX2AddSkillLevelByBuff : public CX2BuffIdentity
 {
 public:
@@ -909,7 +909,7 @@ private:
 	@date : 2013/07/10/
 */
 class CX2ReflectMagicByBuff;
-typedef boost::intrusive_ptr<CX2ReflectMagicByBuff> CX2ReflectMagicByBuffPtr;
+typedef x2::intrusive_ptr<CX2ReflectMagicByBuff> CX2ReflectMagicByBuffPtr;
 class CX2ReflectMagicByBuff : public CX2BuffIdentity
 {
 public:

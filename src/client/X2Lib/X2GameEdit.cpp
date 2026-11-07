@@ -142,9 +142,7 @@ void CX2GameEdit::SetNowStage( CX2State* pStage )
 
 bool CX2GameEdit::ExecCommand( const WCHAR* pCommandString )
 {
-	ELSWORD_VIRTUALIZER_START
 
-	THEMIDA_VM_START
 
 	if( g_pData->GetMyUser()->GetAuthLevel() < CX2User::XUAL_SPECIAL_USER )
 	{
@@ -316,9 +314,7 @@ bool CX2GameEdit::ExecCommand( const WCHAR* pCommandString )
 
 	AddString( CX2ChatWindow::CT_NORMAL, GET_STRING( STR_ID_218 ) );
 
-	THEMIDA_VM_END
 
-	ELSWORD_VIRTUALIZER_END
 
 	return true;
 }

@@ -47,7 +47,7 @@ public:
 	void							SetBattleFieldId( const UINT uiBattleFieldId_ ) { m_uiBattleFieldId = uiBattleFieldId_; }
 
 	virtual void					Set_KRoomInfo( const KRoomInfo& kRoomInfo_ );
-	virtual int						GetClickSlot( int x, int y ) { return 0; }
+	virtual int						GetClickSlot( int /*x*/, int /*y*/ ) { return 0; }
 
 
 	DUNGEON_GET_ITEM_TYPE			GetGetItemType() const { return m_eGetItemType; }

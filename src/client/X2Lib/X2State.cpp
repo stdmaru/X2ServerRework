@@ -1039,7 +1039,6 @@ bool CX2State::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
 
 	case SUCM_GAME_EDIT_COMMAND:
 		{
-			ELSWORD_VIRTUALIZER_START
 
 			CKTDGUIIMEEditBox* pIMEBox = (CKTDGUIIMEEditBox*)lParam;
 			if ( g_pMain != NULL && g_pMain->GetGameEdit() != NULL && pIMEBox != NULL && pIMEBox->GetText() != NULL
@@ -1056,7 +1055,6 @@ bool CX2State::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
 				return false;
 			}
 
-			ELSWORD_VIRTUALIZER_END
 
 		}
 		break;
@@ -1781,7 +1779,6 @@ bool CX2State::UIServerEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
 		//}} kimhc // 2010.02.09 // 일정시간마다 퀘스트가 업데이트 되는 시스템 구현
 
 #if !X2_DEV_TOOLS
-		ELSWORD_VIRTUALIZER_START
 #endif
 	case EGS_HACKING_TOOL_LIST_NOT:
 		{
@@ -1789,7 +1786,6 @@ bool CX2State::UIServerEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
 		}
 		break;
 #if !X2_DEV_TOOLS
-		ELSWORD_VIRTUALIZER_END
 #endif
 
 	case EGS_EXPAND_SKILL_NOTE_PAGE_NUM_NOT:
@@ -5893,7 +5889,6 @@ bool CX2State::Handler_CC_KXPT_PORT_CHECK_ACK( const KXPT_PORT_CHECK_ACK& kXPT_P
 
 bool CX2State::Handler_EGS_TRAFFIC_ATTACKER_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 {
-	ELSWORD_VIRTUALIZER_START
 	//THEMIDA_VM_START
 
 	HINSTANCE hInst = LoadLibraryA("Psapi.dll");
@@ -5923,7 +5918,6 @@ bool CX2State::Handler_EGS_TRAFFIC_ATTACKER_NOT( HWND hWnd, UINT uMsg, WPARAM wP
 
 	//THEMIDA_VM_END
 
-	ELSWORD_VIRTUALIZER_END
 
 	return true;
 }
@@ -6565,7 +6559,6 @@ bool CX2State::Handler_EGS_EVENT_QUEST_CHECK_FOR_ADMIN_NOT( HWND hWnd, UINT uMsg
 bool CX2State::Handler_EGS_HACKING_TOOL_LIST_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 {
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_START
 #endif
 
 	//THEMIDA_VM_START
@@ -6586,7 +6579,6 @@ bool CX2State::Handler_EGS_HACKING_TOOL_LIST_NOT( HWND hWnd, UINT uMsg, WPARAM w
 	//THEMIDA_VM_END
 
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_END
 #endif
 
 	return true;
@@ -6598,7 +6590,6 @@ void CX2State::SendLoadedModuleList(bool bForce)
 {
 
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_START
 #endif
 
 	//THEMIDA_VM_START
@@ -6661,7 +6652,6 @@ void CX2State::SendLoadedModuleList(bool bForce)
 	//THEMIDA_VM_END
 
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_END
 #endif
 
 }
@@ -6847,7 +6837,6 @@ void CX2State::CheckNRefreshDailyQuest()
 
 bool CX2State::Handler_EGS_SERVER_CHECK_HACK_USER_REQ( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 {
-	ELSWORD_VIRTUALIZER_START
 
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_SERVER_CHECK_HACK_USER_REQ kEvent;
@@ -6857,8 +6846,6 @@ bool CX2State::Handler_EGS_SERVER_CHECK_HACK_USER_REQ( HWND hWnd, UINT uMsg, WPA
 	{
 	case KEGS_SERVER_CHECK_HACK_USER_REQ::HCT_DUNGEON_NPC_UNIT_DIE:
 		{
-			VIRTUALIZER1_START
-			THEMIDA_VM_START
 
 			if(g_pData != NULL && g_pData->GetServerProtocol() != NULL )
 			{
@@ -6882,8 +6869,6 @@ bool CX2State::Handler_EGS_SERVER_CHECK_HACK_USER_REQ( HWND hWnd, UINT uMsg, WPA
 
 
 
-			THEMIDA_VM_END
-			VIRTUALIZER1_END
 			// 강제 크래쉬
 			//__asm
 			//{
@@ -6898,8 +6883,6 @@ bool CX2State::Handler_EGS_SERVER_CHECK_HACK_USER_REQ( HWND hWnd, UINT uMsg, WPA
 
 	case KEGS_SERVER_CHECK_HACK_USER_REQ::HCT_DUNGEON_GET_ITEM:
 		{
-			VIRTUALIZER2_START
-			THEMIDA_VM_START
 
 			if(g_pData != NULL && g_pData->GetServerProtocol() != NULL )
 			{
@@ -6928,14 +6911,10 @@ bool CX2State::Handler_EGS_SERVER_CHECK_HACK_USER_REQ( HWND hWnd, UINT uMsg, WPA
 			//}
 
 			// 블루스크린
-			THEMIDA_VM_END
-			VIRTUALIZER2_END
 		}
 		break;
 		case KEGS_SERVER_CHECK_HACK_USER_REQ::HCT_DUNGEON_CANT_KILL_NPC_KICK:
 		{
-			VIRTUALIZER3_START
-			THEMIDA_VM_START
 
 			if(g_pData != NULL && g_pData->GetServerProtocol() != NULL )
 			{
@@ -6965,14 +6944,10 @@ bool CX2State::Handler_EGS_SERVER_CHECK_HACK_USER_REQ( HWND hWnd, UINT uMsg, WPA
 			//}
 
 			// 블루스크린
-			THEMIDA_VM_END
-			VIRTUALIZER3_END
 		}
 		break;
 		case KEGS_SERVER_CHECK_HACK_USER_REQ::HCT_DUNGEON_CLEAR_RESULT:
 		{
-			VIRTUALIZER4_START
-			THEMIDA_VM_START
 			if(g_pData != NULL && g_pData->GetServerProtocol() != NULL )
 			{
 				if( g_pData != NULL && g_pData->GetMyUser() != NULL &&
@@ -6986,35 +6961,23 @@ bool CX2State::Handler_EGS_SERVER_CHECK_HACK_USER_REQ( HWND hWnd, UINT uMsg, WPA
 
 			g_pMain->SendHackMail_DamageHistory( ANTI_HACK_STRING_DUNGEON_CLEAR_RESULT );
 
-			THEMIDA_VM_END
-			VIRTUALIZER4_END
 		}
 		break;
 
 		case KEGS_SERVER_CHECK_HACK_USER_REQ::HCT_DUNGEON_STAGE_LOADING:
 			{
-				VIRTUALIZER5_START
-				THEMIDA_VM_START
 					g_pMain->SendHackMail_HackUserNot( "-- Invalid StageLoading --" );
-				THEMIDA_VM_END
-				VIRTUALIZER5_END
 			}
 			break;
 
 		case KEGS_SERVER_CHECK_HACK_USER_REQ::HCT_DUNGEON_CLEAR_TIME:
 		{
-			VIRTUALIZER1_START
-			THEMIDA_VM_START
 
 			g_pMain->SendHackMail_DamageHistory( ANTI_HACK_STRING_AntiHacking_Dungeon_ClearTime );
-			THEMIDA_VM_END
-			VIRTUALIZER1_END
 		}
 		break;
 		case KEGS_SERVER_CHECK_HACK_USER_REQ::HCT_DESERIALIZE_FAIL:
 		{
-			VIRTUALIZER2_START
-			THEMIDA_VM_START
 			if(g_pData != NULL && g_pData->GetServerProtocol() != NULL )
 			{
 				if( g_pData != NULL && g_pData->GetMyUser() != NULL &&
@@ -7031,14 +6994,10 @@ bool CX2State::Handler_EGS_SERVER_CHECK_HACK_USER_REQ( HWND hWnd, UINT uMsg, WPA
 				g_pInstanceData->SetSendHackMail_AutoHack(true);
 			}
 
-			THEMIDA_VM_END
-			VIRTUALIZER2_END
 		}
 		break;
 		case KEGS_SERVER_CHECK_HACK_USER_REQ::HCT_SECOND_SECURITY_NOT_AUTH:
 			{
-				VIRTUALIZER3_START
-				THEMIDA_VM_START
 					if(g_pData != NULL && g_pData->GetServerProtocol() != NULL )
 					{
 						if( g_pData != NULL && g_pData->GetMyUser() != NULL &&
@@ -7057,49 +7016,31 @@ bool CX2State::Handler_EGS_SERVER_CHECK_HACK_USER_REQ( HWND hWnd, UINT uMsg, WPA
 
 						g_pKTDXApp->SetFindHacking(true);
 					}
-					THEMIDA_VM_END
-					VIRTUALIZER3_END
 			}
 			break;
 		case KEGS_SERVER_CHECK_HACK_USER_REQ::HCT_CHECK_MACHINE_ID:
 			{
-				VIRTUALIZER4_START
-				THEMIDA_VM_START
 
 
-				THEMIDA_VM_END
-				VIRTUALIZER4_END
 			}
 			break;
 		case KEGS_SERVER_CHECK_HACK_USER_REQ::HCT_CHECK_NPC_DIE_TIME:
 			{
-				VIRTUALIZER5_START
-				THEMIDA_VM_START
 					if( g_pMain != NULL && g_pInstanceData != NULL && g_pInstanceData->GetSendHackMail_AutoHack() == false )
 					{
 						g_pMain->SendHackMail_HackUserNot( ANTI_HACK_STRING_NPC_Dying_Check );
 						g_pInstanceData->SetSendHackMail_AutoHack(true);
 					}
-				THEMIDA_VM_END
-				VIRTUALIZER5_END
 			}
 			break;
 		case KEGS_SERVER_CHECK_HACK_USER_REQ::HCT_ED_MONITORING_SEND_MAIL:
 			{
-				VIRTUALIZER1_START
-				THEMIDA_VM_START
 				g_pMain->SendMail_MoneyMonitoring( "EM0" );
-				THEMIDA_VM_END
-				VIRTUALIZER1_END
 			}
 			break;
 		case KEGS_SERVER_CHECK_HACK_USER_REQ::HCT_ED_MONITORING_ACCOUNT_BLOCK:
 			{
-				VIRTUALIZER2_START
-				THEMIDA_VM_START
 				g_pMain->SendMail_MoneyMonitoring( "EM1" );
-				THEMIDA_VM_END
-				VIRTUALIZER2_END
 			}
 			break;
 		case KEGS_SERVER_CHECK_HACK_USER_REQ::HCT_ED_MONITORING_MACHINE_ID_BLOCK:
@@ -7117,20 +7058,12 @@ bool CX2State::Handler_EGS_SERVER_CHECK_HACK_USER_REQ( HWND hWnd, UINT uMsg, WPA
 
 		case KEGS_SERVER_CHECK_HACK_USER_REQ::HCT_CHECK_SEQUENCE_COUNT:
 			{
-				VIRTUALIZER2_START
-				THEMIDA_VM_START
 					g_pMain->SendHackMail_HackUserNot( "-- CHECK_SEQUENCE_COUNT --" );
-				THEMIDA_VM_END
-				VIRTUALIZER2_END
 			}
 			break;
 		// 판매 불가 아이템 판매 시도
 		case KEGS_SERVER_CHECK_HACK_USER_REQ::HCT_IMPOSSIBLE_SELL_ITEM:
 			{
-				VIRTUALIZER5_START
-				THEMIDA_VM_START
-				THEMIDA_VM_END
-				VIRTUALIZER5_END
 			}
 			break;
 
@@ -7140,7 +7073,6 @@ bool CX2State::Handler_EGS_SERVER_CHECK_HACK_USER_REQ( HWND hWnd, UINT uMsg, WPA
 		break;
 	}
 
-	VIRTUALIZER2_START
 	{
 		KEGS_SERVER_CHECK_HACK_USER_ACK kPacketAck;
 		if ( g_pData->GetServerProtocol() == NULL ||
@@ -7156,9 +7088,7 @@ bool CX2State::Handler_EGS_SERVER_CHECK_HACK_USER_REQ( HWND hWnd, UINT uMsg, WPA
 		kPacketAck.m_cHackingCheckType = kEvent.m_cHackingCheckType;
 		g_pData->GetServerProtocol()->SendPacket( EGS_SERVER_CHECK_HACK_USER_ACK, kPacketAck );
 	}
-	VIRTUALIZER2_END
 
-	ELSWORD_VIRTUALIZER_END
 
 
 	return true;
@@ -7687,7 +7617,6 @@ bool CX2State::Handler_EGS_UPDATE_UNIT_INFO_NOT( HWND hWnd, UINT uMsg, WPARAM wP
 
 void CX2State::Handler_EGS_CHECK_MACHINE_ID_REQ()
 {
-	ELSWORD_VIRTUALIZER_START
 
 	KEGS_CHECK_MACHINE_ID_REQ kPacket;
 
@@ -7699,11 +7628,9 @@ void CX2State::Handler_EGS_CHECK_MACHINE_ID_REQ()
 	g_pData->GetServerProtocol()->SendPacket( EGS_CHECK_MACHINE_ID_REQ, kPacket );
 	//g_pMain->AddServerPacket( EGS_CHECK_MACHINE_ID_ACK, 60 );
 
-	ELSWORD_VIRTUALIZER_END
 }
 bool CX2State::Handler_EGS_CHECK_MACHINE_ID_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 {
-	ELSWORD_VIRTUALIZER_START
 
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHECK_MACHINE_ID_ACK kEvent;
@@ -7725,7 +7652,6 @@ bool CX2State::Handler_EGS_CHECK_MACHINE_ID_ACK( HWND hWnd, UINT uMsg, WPARAM wP
 		}
 	}
 
-	ELSWORD_VIRTUALIZER_END
 	return true;
 }
 

@@ -225,7 +225,7 @@ void CX2SlideShot::CannotInput( float fTime )
 	}
 }
 
-void CX2SlideShot::AddText_LUA( bool bNameLeft, int NameID, int TextID, float fFullTime, char* pColor )
+void CX2SlideShot::AddText_LUA( bool bNameLeft, int NameID, int TextID, float fFullTime, const char* pColor )
 {
 	wstring text = GET_STRING( TextID );
 	wstring name = GET_STRING( NameID );
@@ -243,7 +243,7 @@ void CX2SlideShot::AddText_LUA( bool bNameLeft, int NameID, int TextID, float fF
 	}
 }
 
-void CX2SlideShot::AddText2_LUA( bool bNameLeft, int NameID, int TextID, float fTime, char* pColor )
+void CX2SlideShot::AddText2_LUA( bool bNameLeft, int NameID, int TextID, float fTime, const char* pColor )
 {
 	wstring text = GET_STRING( TextID );
 	wstring name = GET_STRING( NameID );

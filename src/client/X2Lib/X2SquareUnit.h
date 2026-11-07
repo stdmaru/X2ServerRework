@@ -4,7 +4,7 @@
 
 //{{ seojt // 2009-1-13, 17:11
 class CX2SquareUnit;
-typedef boost::intrusive_ptr<CX2SquareUnit>    CX2SquareUnitPtr;
+typedef x2::intrusive_ptr<CX2SquareUnit>    CX2SquareUnitPtr;
 //}} seojt // 2009-1-13, 17:11
 
 /** @class : CX2SquareUnit
@@ -333,7 +333,7 @@ class CX2SquareUnit : public CKTDGObject
 
 		void SetRight_LUA( bool bRight )		{ m_SyncData.m_bIsRight = bRight; }
 		bool GetRight_LUA()						{ return m_SyncData.m_bIsRight; }
-		bool GetFootOnLine_LUA( bool bRight )	{ return m_bFootOnLine; }
+		bool GetFootOnLine_LUA( bool /*bRight*/ )	{ return m_bFootOnLine; }
 		bool CanDown_LUA();
 
 		void AddPosY_LUA( float fPosY )			{ m_SyncData.m_Pos.y += fPosY; }

@@ -518,14 +518,14 @@ public:
 		:
 		m_dMaxLifeTime(30.0),
 		m_bEnable(false),
-		m_iSelectBoneNameID(0),
-		m_fPowerRate(0.f)
+		m_fPowerRate(0.f),
+		m_iSelectBoneNameID(0)
 		{
-			for( int i = 0; i < ARRAY_SIZE(m_ahMajorMeshInstance); ++i )
+			for( int i = 0; i < std::ssize(m_ahMajorMeshInstance); ++i )
 			{
 				m_ahMajorMeshInstance[i] = INVALID_MESH_INSTANCE_HANDLE;
 			}
-			for( int i = 0; i < ARRAY_SIZE(m_ahMajorParticleInstance); ++i )
+			for( int i = 0; i < std::ssize(m_ahMajorParticleInstance); ++i )
 			{
 				m_ahMajorParticleInstance[i] = INVALID_PARTICLE_SEQUENCE_HANDLE;
 			}
@@ -596,12 +596,12 @@ public:
 		:
 		m_dMaxTime(0.),
 		m_bEnable(false),
-		m_iSkillSlotID(-1),
-		m_ChargeRank(CR_RANK_1),
 		m_bIsSucCharge(false),
-		m_bSkillSlotSwap( false )
+		m_ChargeRank(CR_RANK_1),
+		m_bSkillSlotSwap( false ),
+		m_iSkillSlotID(-1)
 		{
-			for( int i = 0; i < ARRAY_SIZE(m_ahMajorParticleInstance); ++i )
+			for( int i = 0; i < std::ssize(m_ahMajorParticleInstance); ++i )
 			{
 				m_ahMajorParticleInstance[i] = INVALID_PARTICLE_SEQUENCE_HANDLE;
 			}
@@ -669,15 +669,15 @@ public:
 			:
 		m_dMaxTime(0.),
 			m_bEnable(false),
-			m_bSelectedSlot(true),
-			m_ChargeRank(CR_RANK_1),
 			m_bIsSucCharge(false),
-			m_bSkillSlotSwap(false)
+			m_ChargeRank(CR_RANK_1),
+			m_bSkillSlotSwap(false),
+			m_bSelectedSlot(true)
 		{
 			m_iSkillSlotID[ST_A] = -1;
 			m_iSkillSlotID[ST_B] = -1;
 
-			for( int i = 0; i < ARRAY_SIZE(m_ahMajorParticleInstance); ++i )
+			for( int i = 0; i < std::ssize(m_ahMajorParticleInstance); ++i )
 			{
 				m_ahMajorParticleInstance[i] = INVALID_PARTICLE_SEQUENCE_HANDLE;
 			}
@@ -765,15 +765,15 @@ public:
 		SKugelBlitz_Data()
 			: m_dMaxTime(0.)
 			, m_bEnable(false)
-			, m_bSelectedSlot(true)
-			, m_ChargeRank(CR_RANK_1)
 			, m_bIsSucCharge(false)
+			, m_ChargeRank(CR_RANK_1)
 			, m_bSkillSlotSwap(false)
+			, m_bSelectedSlot(true)
 		{
 			m_iSkillSlotID[ST_A] = -1;
 			m_iSkillSlotID[ST_B] = -1;
 
-			for( int i = 0; i < ARRAY_SIZE(m_ahMajorParticleInstance); ++i )
+			for( int i = 0; i < std::ssize(m_ahMajorParticleInstance); ++i )
 			{
 				m_ahMajorParticleInstance[i] = INVALID_PARTICLE_SEQUENCE_HANDLE;
 			}
@@ -960,7 +960,7 @@ public:
 	void				ResetTaserPilumCharge();
 	void				ResetKugelBlitzCharge();
 	//�������� �ñر� - ��ũ ���� ���� ��� ��Ʈ�� �����ߴ��� üũ
-	const bool GetActiveLinkOverChargeIllusion() const { return m_bStartLinkOverChargeIllusion; }
+	bool GetActiveLinkOverChargeIllusion() const { return m_bStartLinkOverChargeIllusion; }
 	void SetActiveLinkOverChargeIllusion( const bool bActive ) { m_bStartLinkOverChargeIllusion = bActive; }
 
 	void SaveFerdinandNPCUID( const int npcUid ) { m_iFerdinandNPCUID = npcUid; }

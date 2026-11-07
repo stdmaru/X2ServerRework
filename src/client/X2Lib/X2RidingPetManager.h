@@ -276,7 +276,7 @@ public:
 	}
 	void SetShow( IN UidType uUserUid_, IN bool bVal_ );
 	bool GetShow( IN UidType uUserUid_ );
-	const bool GetDirectSummon(){ return m_bIsDirectSummon; }
+	bool GetDirectSummon(){ return m_bIsDirectSummon; }
 	bool UICustomEventProc( IN HWND hWnd_, IN UINT uMsg_, IN WPARAM wParam_, IN LPARAM lParam_ );
 	bool UIServerEventProc( IN HWND hWnd_, IN UINT uMsg_, IN WPARAM wParam_, IN LPARAM lParam_ );
 
@@ -306,8 +306,8 @@ public:
 	void LoadInitPetData();
 
 	bool AddRidingPetTemplet_LUA();
-	CX2RidingPetManager::RidingPetTemplet* CX2RidingPetManager::GetRidingPetTemplet( IN USHORT usId_ ) { return GetRidingPetTemplet(static_cast<RIDING_PET_UNIT_ID>(usId_));}
-	CX2RidingPetManager::RidingPetTemplet* CX2RidingPetManager::GetRidingPetTemplet( IN RIDING_PET_UNIT_ID eId_ );
+	CX2RidingPetManager::RidingPetTemplet* GetRidingPetTemplet( IN USHORT usId_ ) { return GetRidingPetTemplet(static_cast<RIDING_PET_UNIT_ID>(usId_));}
+	CX2RidingPetManager::RidingPetTemplet* GetRidingPetTemplet( IN RIDING_PET_UNIT_ID eId_ );
 
 	//#pragma region REQ, ACK, NOT
 	void Handler_EGS_CREATE_RIDING_PET_REQ( const UidType _uId );
@@ -344,7 +344,7 @@ public:
 	bool IsInvalideRiding() const;
 
 	void SetEnableStamina_LUA( float _EnableStamina );
-	const float GetEnableStamina(){ return m_fEnableStamina; }
+	float GetEnableStamina(){ return m_fEnableStamina; }
 
 	bool GetRidingOn();	            //���� ž�� �������� üũ(������Ŷ ACK�� ���� �Ŀ� true�� ��)
 	bool GetRidingOnState();		//���� ž�� ������ �������� üũ(wait����϶��� ž���ϵ���)

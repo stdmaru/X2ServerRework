@@ -1,5 +1,6 @@
-// Replacement for the part of boost::circular_buffer the engine uses (KTDNUDPStatisticData): a deque with a capacity,
-// where push_back on a full buffer drops the front element.
+// Replacement for the part of boost::circular_buffer the engine uses (KTDNUDPStatisticData, X2Lib's NPC sync history):
+// a deque with a capacity, where push_back on a full buffer drops the front element. insert() does not check the
+// capacity: X2Lib's callers grow it first when the buffer is full.
 #pragma once
 
 #include <cstddef>
@@ -26,6 +27,11 @@ public:
         if (full())
             this->pop_front();
         std::deque<T>::push_back(value);
+    }
+    // Boost erases the range moving the elements before it; the contents are the same.
+    typename std::deque<T>::iterator rerase(typename std::deque<T>::iterator first, typename std::deque<T>::iterator last)
+    {
+        return this->erase(first, last);
     }
 
 private:

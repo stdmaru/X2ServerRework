@@ -116,6 +116,14 @@ add_library(x2::client_serverprotocol ALIAS x2_client_serverprotocol)
 target_include_directories(x2_client_serverprotocol PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/X2ServerProtocol)
 target_link_libraries(x2_client_serverprotocol PUBLIC x2::common_net)
 
+# X2Lib, the game (docs/porting/client-x2lib.md). Every file includes stdafx.h -> X2Main.h, which includes the engine and
+# almost every game header. Built in steps (roadmap client/x2lib-build): for now only stdafx.cpp, the header chain.
+# X2UDPPacket.* is the servers' copy (T33), compiled through X2Packet.cpp.
+add_library(x2_client_x2lib STATIC X2Lib/stdafx.cpp)
+add_library(x2::client_x2lib ALIAS x2_client_x2lib)
+target_include_directories(x2_client_x2lib PUBLIC ${PROJECT_SOURCE_DIR}/src/server/X2Lib)
+target_link_libraries(x2_client_x2lib PUBLIC x2::client_ktdxlib x2::client_serverprotocol)
+
 # The executable (x2.exe in the original). X2/X2Skeleton.cpp stands in for X2.cpp until KTDXLIB and X2Lib build
 # (docs/porting/client-x2.md).
 add_executable(x2_client X2/X2Skeleton.cpp)

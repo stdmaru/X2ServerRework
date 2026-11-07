@@ -39,7 +39,7 @@ protected:
 	virtual ~CX2FieldMapBase(void);
 
 public:
-	virtual void SetVillageID( int iMapID ) = NULL;
+	virtual void SetVillageID( int iMapID ) = 0;
 
 	bool IsInWindowTexture( const D3DXVECTOR2& vProjectedPos );
 	void CalcWindowTexturePos( const D3DXVECTOR2& vProjectedMyPos );

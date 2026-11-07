@@ -393,7 +393,7 @@ class CX2Room
 		virtual bool		GetNotEnoughSpirit() { return m_bNotEnoughSpirit; }
 		virtual void		SetNotEnoughSpirit( bool bCheck ) { m_bNotEnoughSpirit = bCheck; }
 
-		virtual int			GetClickSlot( int x, int y ) = NULL;
+		virtual int			GetClickSlot( int x, int y ) = 0;
 		bool				GetRecievePitInNot() { return m_bRecievePitInNot; }
 
 		wstring				GetCenterServerIP() const { return m_wstrCenterServerIP; }

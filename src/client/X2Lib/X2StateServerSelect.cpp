@@ -5065,7 +5065,6 @@ bool CX2StateServerSelect::Handler_EGS_VERIFY_ACCOUNT_REQ()
 	KEGS_VERIFY_ACCOUNT_REQ kPacket;
 
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_START
 #endif
 
 	kPacket.m_wstrUserID = g_pInstanceData->GetUserID();
@@ -5106,7 +5105,6 @@ bool CX2StateServerSelect::Handler_EGS_VERIFY_ACCOUNT_REQ()
 	}
 
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_END
 #endif
 
 	return true;
@@ -5115,7 +5113,6 @@ bool CX2StateServerSelect::Handler_EGS_VERIFY_ACCOUNT_REQ()
 bool CX2StateServerSelect::Handler_EGS_VERIFY_ACCOUNT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 {
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_START
 #endif
 
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -5130,9 +5127,7 @@ bool CX2StateServerSelect::Handler_EGS_VERIFY_ACCOUNT_ACK( HWND hWnd, UINT uMsg,
 			//g_pMain->KTDGUIOKMsgBox( D3DXVECTOR2(260, 270), GET_STRING( STR_ID_29369 ), g_pMain->GetNowState(), -1, -1.f, L"DLG_UI_OKMsgBoxPlusNew.lua", D3DXVECTOR2(0, -100));
 
 
-			ELSWORD_VIRTUALIZER_START
 			Handler_EGS_CHECK_MACHINE_ID_REQ();
-			ELSWORD_VIRTUALIZER_END
 
 //#ifdef _SERVICE_
 //			OpenGlobalURL( L"http://Elsword.nexon.com/Elsword/etc/gameinstall.aspx?Section=chceck4" );
@@ -5237,7 +5232,6 @@ bool CX2StateServerSelect::Handler_EGS_VERIFY_ACCOUNT_ACK( HWND hWnd, UINT uMsg,
 
 
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_END
 #endif
 
 	return true;

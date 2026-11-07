@@ -69,7 +69,7 @@ class CX2Camera : public CKTDXStage
 			{
 			}
 
-			void OnFrameMove( double fTime, float fElapsedTime )
+			void OnFrameMove( double /*fTime*/, float fElapsedTime )
 			{
 				if( m_vFinalRelativeEyePosition != m_vCurrRelativeEyePosition )
 				{
@@ -250,7 +250,7 @@ class CX2Camera : public CKTDXStage
 
 		virtual HRESULT OnFrameMove( double fTime, float fElapsedTime );
 
-		const float GetLandHeight() { return m_fLand; }
+		float GetLandHeight() { return m_fLand; }
 		void SetLandHeight( float fLand ){ m_fLand = fLand; }
 		void PlayLuaCamera( CX2GameUnit* pFocusUnit, KLuaManager& luaManger, int index );
 		void PlayLuaCamera( CX2GameUnit* pFocusUnit, KLuaManager& luaManger, const char* pszTableNameUTF8 );

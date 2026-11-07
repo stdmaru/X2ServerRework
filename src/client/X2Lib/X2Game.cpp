@@ -261,7 +261,7 @@ m_bSkillSlotJustChanged(true)
 
 	// variable init
 
-	for( int i=0; i< ARRAY_SIZE( m_arraySkillCoolTime ); i++ )
+	for( int i=0; i< std::ssize( m_arraySkillCoolTime ); i++ )
 	{
 		m_arraySkillCoolTime[i] = 0.f;
 	}
@@ -5636,7 +5636,6 @@ bool CX2Game::Handler_EGS_NPC_UNIT_DIE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam,
 	DeSerialize( pBuff, &kEvent );
 	CX2PacketLog::PrintLog( &kEvent );
 
-ELSWORD_VIRTUALIZER_START
 	//if( g_pMain->DeleteServerPacket( EGS_NPC_UNIT_DIE_ACK ) == true )
 	{
 		if( g_pMain->IsValidPacket( kEvent.m_iOK ) == true )
@@ -5647,7 +5646,6 @@ ELSWORD_VIRTUALIZER_START
 
 	--m_iNpcDiePacket;
 
-ELSWORD_VIRTUALIZER_END
 
 	return false;
 }
@@ -5764,25 +5762,20 @@ bool CX2Game::CheckEnableKeyProcess()
 bool CX2Game::NPCUnitDieReq( const KEGS_NPC_UNIT_DIE_REQ& kPacket_ )
 {
 	// checked
-	ELSWORD_VIRTUALIZER_START
 
 	if( IsHost() == false )
 		return false;
 
-	THEMIDA_ENCODE_START
 
 	g_pData->GetServerProtocol()->SendPacket( EGS_NPC_UNIT_DIE_REQ, kPacket_ );
 
-	THEMIDA_ENCODE_END
 
-	ELSWORD_VIRTUALIZER_END
 }
 
 bool CX2Game::NPCUnitDieReq( char cAttUnitType, int iNPCUID, UidType uiAttUnit, UidType uiMDAttUnit, D3DXVECTOR3 diePos, bool bIsAllyNPC, bool bBounsDrop /*= false*/ )
 {
 
 	// checked
-	ELSWORD_VIRTUALIZER_START
 
 
 	if( bIsAllyNPC == true )
@@ -5800,21 +5793,18 @@ bool CX2Game::NPCUnitDieReq( char cAttUnitType, int iNPCUID, UidType uiAttUnit, 
 
 	++m_iNpcDiePacket;
 
-	ELSWORD_VIRTUALIZER_END
 }
 
 bool CX2Game::NPCUnitDieReq( char cAttUnitType, int iNPCUID, UidType uiAttUnit, UidType uiMDAttUnit, D3DXVECTOR3 diePos, KEGS_NPC_UNIT_DIE_REQ::NPC_DIE_STATE eDieState )
 {
 
 	// checked
-	ELSWORD_VIRTUALIZER_START
 
 
 
 	if( IsHost() == false )
 		return false;
 
-	THEMIDA_ENCODE_START
 
 	KEGS_NPC_UNIT_DIE_REQ kPacket;
 	kPacket.m_cAttUnitType	= cAttUnitType;
@@ -5831,9 +5821,7 @@ bool CX2Game::NPCUnitDieReq( char cAttUnitType, int iNPCUID, UidType uiAttUnit, 
 
 	++m_iNpcDiePacket;
 
-	THEMIDA_ENCODE_END
 
-	ELSWORD_VIRTUALIZER_END
 
 
 	return true;
@@ -6556,11 +6544,9 @@ bool CX2Game::Handler_EGS_GET_ITEM_REQ( UidType itemUID )
 
 
 	// checked
-	ELSWORD_VIRTUALIZER_START
 
 
 
-	THEMIDA_ENCODE_START
 
 	int iItemTID = m_pDropItemManager->GetDropItemID( itemUID );
 
@@ -6611,9 +6597,7 @@ bool CX2Game::Handler_EGS_GET_ITEM_REQ( UidType itemUID )
 
 
 
-	THEMIDA_ENCODE_END
 
-	ELSWORD_VIRTUALIZER_END
 
 	return true;
 
@@ -8034,7 +8018,6 @@ void CX2Game::KillNPC( const CX2UnitManager::NPC_UNIT_ID eNPCID, int nCount )
 		return;
 
 
-	THEMIDA_ENCODE_START
 
 	int iCount = 0;
 	for( int i=0; i<GetNPCUnitListSize(); i++ )
@@ -8059,7 +8042,6 @@ void CX2Game::KillNPC( const CX2UnitManager::NPC_UNIT_ID eNPCID, int nCount )
 	}
 
 
-	THEMIDA_ENCODE_END
 }
 
 void CX2Game::EnableAllNPCAI( bool bEnable )
@@ -12175,7 +12157,7 @@ CX2Item::SPECIAL_ITEM_TYPE CX2Game::GetSpecialItemGroupType(const CX2Item::ItemT
 	bool bCrest = false;
 
 	// 몬스터 소환
-	for(int i=0; i<ARRAY_SIZE(DUNGEON_ITEM_LIST4); ++i)
+	for(int i=0; i<std::ssize(DUNGEON_ITEM_LIST4); ++i)
 	{
 		if( dwItemID == DUNGEON_ITEM_LIST4[i] )
 		{
@@ -12184,7 +12166,7 @@ CX2Item::SPECIAL_ITEM_TYPE CX2Game::GetSpecialItemGroupType(const CX2Item::ItemT
 	}
 
 	// 비약
-	for(int i=0; i<ARRAY_SIZE(DUNGEON_ITEM_LIST1); ++i)
+	for(int i=0; i<std::ssize(DUNGEON_ITEM_LIST1); ++i)
 	{
 		if( dwItemID == DUNGEON_ITEM_LIST1[i] )
 		{
@@ -12196,7 +12178,7 @@ CX2Item::SPECIAL_ITEM_TYPE CX2Game::GetSpecialItemGroupType(const CX2Item::ItemT
 	// 정령소환
 	if(bNostrum == false)
 	{
-		for(int i=0; i<ARRAY_SIZE(DUNGEON_ITEM_LIST2); ++i)
+		for(int i=0; i<std::ssize(DUNGEON_ITEM_LIST2); ++i)
 		{
 			if( dwItemID == DUNGEON_ITEM_LIST2[i] )
 			{
@@ -12209,7 +12191,7 @@ CX2Item::SPECIAL_ITEM_TYPE CX2Game::GetSpecialItemGroupType(const CX2Item::ItemT
 	// 문장
 	if(bNostrum == false && bSpirit == false)
 	{
-		for(int i=0; i<ARRAY_SIZE(DUNGEON_ITEM_LIST3); ++i)
+		for(int i=0; i<std::ssize(DUNGEON_ITEM_LIST3); ++i)
 		{
 			if( dwItemID == DUNGEON_ITEM_LIST3[i] )
 			{

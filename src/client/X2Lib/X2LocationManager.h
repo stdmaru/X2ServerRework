@@ -479,7 +479,7 @@ class CX2LocationManager
 		bool IsValidVillage( int iVillageId );
 		bool IsValidWarpField( int iVillageId );
 		D3DXVECTOR3 GetWarpPos(int iVillageId );
-		bool CX2LocationManager::GetIsRight( int iStartPosID_); //해당 StartPosID와 연결된 캐릭터 좌/우 방향 값 얻기
+		bool GetIsRight( int iStartPosID_); //해당 StartPosID와 연결된 캐릭터 좌/우 방향 값 얻기
 
 		void			SetX2StateBeforeDungeonStart( const UINT uiX2StateBeforeDungeonStart_ )
 		{

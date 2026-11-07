@@ -1943,7 +1943,7 @@ class CX2UnitManager
 			NUI_GOD_AI_NPC_PENENSIO     			= 1371,      // 붉은 기사단 십부장 페넨시오
 
 			// 입장신 이벤트 몬스터
-			NUI_SEED_OF_DARK_PORTAL					= 1372,		 // 어둠의 문 입장신 이벤트 몬스터\
+			NUI_SEED_OF_DARK_PORTAL					= 1372,		 // 어둠의 문 입장신 이벤트 몬스터
 
 			//----------- 샌더 5, 6번 던전 ---------------------------
 			//-- 샌틸러스 호 // 2013.05.27 // 공솔
@@ -2843,7 +2843,7 @@ class CX2UnitManager
 		bool    _OpenNPCEAScripFile( const WCHAR* pFileName ); // 익스트라 어빌러티
 	private:
 
-        boost::array<UnitTypeLuaTemplet, CX2Unit::UT_END>	m_aUnitTypeLuaTemplet;
+        std::array<UnitTypeLuaTemplet, CX2Unit::UT_END>	m_aUnitTypeLuaTemplet;
 
 
 		UnitTempletMap									m_UnitTempletMap;

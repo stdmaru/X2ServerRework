@@ -3,7 +3,7 @@
 typedef srutil::delegate0<void> UINPCStateCBFunc;
 //{{ seojt // 2009-1-13, 17:22
 class CX2UIUnit;
-typedef boost::intrusive_ptr<CX2UIUnit>    CX2UIUnitPtr;
+typedef x2::intrusive_ptr<CX2UIUnit>    CX2UIUnitPtr;
 //}} seojt // 2009-1-13, 17:22
 
 

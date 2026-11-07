@@ -635,7 +635,7 @@ void CX2ComboManager::ClearParticleSeqGoodSeries()
 {
 	CKTDGParticleSystem::CParticleEventSequence* pSeq = NULL;
 
-	for ( int i = 0; i < ARRAY_SIZE(m_hInterjection); ++i )
+	for ( int i = 0; i < std::ssize(m_hInterjection); ++i )
 	{
 		pSeq = g_pX2Game->GetMajorParticle()->GetInstanceSequence( m_hInterjection[i] );
 		if ( NULL != pSeq )
@@ -649,7 +649,7 @@ void CX2ComboManager::ClearParticleSeqGoodSeries()
 	@param : 가중치가 적용되지 않는 경우 증가해야하는 점수
 	@return : 가중치가 적용된 후의 증가량
 */
-FORCEINLINE int CX2ComboManager::MultiplyWeights( int iScore_ )
+int CX2ComboManager::MultiplyWeights( int iScore_ )
 {
 // 	switch( m_pUnit->GetUnit()->GetType() )
 // 	{

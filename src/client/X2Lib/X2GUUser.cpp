@@ -5832,7 +5832,6 @@ bool CX2GUUser::StateChange( int state, int subState, bool bDirectChange /* = fa
 void CX2GUUser::DamageReact( CX2DamageManager::DamageData* pDamageData )
 {
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_START
 #endif
 
 	KTDXPROFILE();
@@ -7499,7 +7498,6 @@ void CX2GUUser::DamageReact( CX2DamageManager::DamageData* pDamageData )
 	PostProcessEnchantDamage( pDamageData );
 
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_END
 #endif
 }
 
@@ -7552,7 +7550,6 @@ void CX2GUUser::DamageDoubleAttack()
 void CX2GUUser::DamageReact_ExtraDamage( CX2DamageManager::DamageData* pDamageData, bool bApplyExtraDamageOfAttacker )
 {
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_START
 #endif
 
 	if( NULL == pDamageData )
@@ -7667,7 +7664,6 @@ void CX2GUUser::DamageReact_ExtraDamage( CX2DamageManager::DamageData* pDamageDa
 	}
 
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_END
 #endif
 }
 
@@ -9297,7 +9293,6 @@ void CX2GUUser::ProcessAttackResult()
 void CX2GUUser::AttackResult()
 {
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_START
 #endif
 
 	KTDXPROFILE();
@@ -9753,7 +9748,6 @@ void CX2GUUser::AttackResult()
 #endif
 
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_END
 #endif
 
 	if( NULL != g_pX2Game && true == g_pX2Game->IsHost() )
@@ -11661,7 +11655,6 @@ void CX2GUUser::CommonFrameMoveFuture()
 void CX2GUUser::CommonFrameMoveFuture_ExtraDamage()
 {
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_START
 #endif
 
 	//Ư�������� üũ
@@ -11728,7 +11721,6 @@ void CX2GUUser::CommonFrameMoveFuture_ExtraDamage()
 	}
 
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_END
 #endif
 
 }
@@ -22428,7 +22420,7 @@ void CX2GUUser::ScaleHand( D3DXVECTOR3 vChangeScale )
 
 		CKTDXDeviceXSkinMesh::MultiAnimFrame* pFrame = NULL;
 
-		for ( int i = 0; i < ARRAY_SIZE( wstrBoneName ); ++i )
+		for ( int i = 0; i < std::ssize( wstrBoneName ); ++i )
 		{
 			pFrame = m_pXSkinAnim->GetCloneFrame( wstrBoneName[i].c_str() );
 
@@ -22461,7 +22453,7 @@ void CX2GUUser::RestoreHand()
 
 	CKTDXDeviceXSkinMesh::MultiAnimFrame* pFrame = NULL;
 
-	for ( int i = 0; i < ARRAY_SIZE( wstrBoneName ); ++i )
+	for ( int i = 0; i < std::ssize( wstrBoneName ); ++i )
 	{
 		pFrame = m_pXSkinAnim->GetCloneFrame( wstrBoneName[i].c_str() );
 
@@ -28672,7 +28664,7 @@ void    CX2GUUser::PhysicProcess_UpdateRelativePos()
 
              )
              && ( pGameUnit->GetAllyTeam() == CX2Room::TN_NONE || pGameUnit->GetAllyTeam() != static_cast<CX2Room::TEAM_NUM>(GetTeam()) ) // ����� �Ʊ����� �����Ǿ����� �ʰų�, ����� �Ʊ����� �ƴϸ�
-	        && !( g_pX2Game->GetGameType() == CX2Game::GT_BATTLE_FIELD && false == pGameUnit->DidReceiveFirstSyncPacket() ) )  ) /// ��Ʋ�ʵ忡�� ��ũ��Ŷ�� �ѹ��� �������� �ƴϸ�
+	        && !( g_pX2Game->GetGameType() == CX2Game::GT_BATTLE_FIELD && false == pGameUnit->DidReceiveFirstSyncPacketOfUser() ) )  ) /// ��Ʋ�ʵ忡�� ��ũ��Ŷ�� �ѹ��� �������� �ƴϸ�
         {
             m_acLocalRelativePos[i] = 0;
             m_afLocalRelativePosTimers[ i ] = 0.f;
@@ -29329,7 +29321,7 @@ bool CX2GUUser::IsPlayAvatarEmotionSoundWithouEmotion  ( CX2Unit::EMOTION_TYPE e
 	switch ( eEmotionId )
 	{
 		case CX2Unit::ET_EMOTION_AVATAR7:
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_EMOTION_AVATAR1 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_EMOTION_AVATAR1 ); ++i )
 			{
 				if( NULL != GetUnit() )
 				{

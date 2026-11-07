@@ -137,7 +137,7 @@ void    CX2GUNPC::KNonHostReaction::Init()
 }
 
 
-FORCEINLINE /*static*/ bool CX2GUNPC::KNonHostReaction::_CheckCompatibleReactionCondition( float fSpeedX1, float fSpeedX2 )
+/*static*/ bool CX2GUNPC::KNonHostReaction::_CheckCompatibleReactionCondition( float fSpeedX1, float fSpeedX2 )
 {
     if ( fSpeedX1 < -X2GUNPC_NONHOST_SIM_XSPEED_TOLERANCE && fSpeedX2 > X2GUNPC_NONHOST_SIM_XSPEED_TOLERANCE
         || fSpeedX1 > X2GUNPC_NONHOST_SIM_XSPEED_TOLERANCE && fSpeedX2 < -X2GUNPC_NONHOST_SIM_XSPEED_TOLERANCE )
@@ -145,7 +145,7 @@ FORCEINLINE /*static*/ bool CX2GUNPC::KNonHostReaction::_CheckCompatibleReaction
     return true;
 }
 
-FORCEINLINE /*static*/ bool    CX2GUNPC::KNonHostReaction::CheckCompatibleReactionState( char state1, char state2, const std::vector<StateData>& vecStateData )
+/*static*/ bool    CX2GUNPC::KNonHostReaction::CheckCompatibleReactionState( char state1, char state2, const std::vector<StateData>& vecStateData )
 {
     if ( state1 == state2 )
         return true;
@@ -158,7 +158,7 @@ FORCEINLINE /*static*/ bool    CX2GUNPC::KNonHostReaction::CheckCompatibleReacti
         || vecStateData[ state2 ].m_cEquivalentReactionState == state1;
 }
 
-FORCEINLINE /*static*/ bool    CX2GUNPC::KNonHostReaction::_CheckInvincibleState(
+/*static*/ bool    CX2GUNPC::KNonHostReaction::_CheckInvincibleState(
     char stateID, float fTolerance, float fAnimSpeedAdjustFactor, const std::vector<StateData>& vecStateData )
 {
     if ( stateID < 0 || stateID >= (int) vecStateData.size() )
@@ -324,7 +324,7 @@ void    CX2GUNPC::KNonHostReaction::DoStateEndStart( bool bLocalUnit, const NPCF
 }
 
 
-FORCEINLINE void    CX2GUNPC::KNonHostReaction::FixStatesForLocalUnitOrReaction_NONE( bool bLocalUnit )
+void    CX2GUNPC::KNonHostReaction::FixStatesForLocalUnitOrReaction_NONE( bool bLocalUnit )
 {
     if ( bLocalUnit == true || m_eNowStateReaction == REACTION_STATE_NONE )
     {
@@ -343,7 +343,7 @@ FORCEINLINE void    CX2GUNPC::KNonHostReaction::FixStatesForLocalUnitOrReaction_
     }
 }
 
-FORCEINLINE void    CX2GUNPC::KNonHostReaction::FixStatesForReaction_NOT_FIRST( bool bLocalUnit )
+void    CX2GUNPC::KNonHostReaction::FixStatesForReaction_NOT_FIRST( bool bLocalUnit )
 {
     if ( bLocalUnit == true )
     {
@@ -360,7 +360,7 @@ FORCEINLINE void    CX2GUNPC::KNonHostReaction::FixStatesForReaction_NOT_FIRST( 
 
 
 
-FORCEINLINE void    CX2GUNPC::KNonHostReaction::UpdateNowStateStartSpeed( const NPCFrameData& m_NPCFrameData, const PhysicParam& m_PhysicParam )
+void    CX2GUNPC::KNonHostReaction::UpdateNowStateStartSpeed( const NPCFrameData& m_NPCFrameData, const PhysicParam& m_PhysicParam )
 {
     if ( m_eNowStateReaction != REACTION_STATE_NONE )
     {
@@ -381,7 +381,7 @@ FORCEINLINE void    CX2GUNPC::KNonHostReaction::UpdateNowStateStartSpeed( const 
 
 void    CX2GUNPC::KNonHostReaction::DoFrameMove_SimulateReaction_FIRST(
     NPCFrameData& m_NPCFrameData, PhysicParam& m_PhysicParam,
-    boost::circular_buffer< NPCFrameSync >& m_cbufReceiveDynamicPacket,
+    KCircularBuffer< NPCFrameSync >& m_cbufReceiveDynamicPacket,
     DWORD& m_dwLastProcessedFrameMoveCount, bool& bUpdatePositionBackup,
     float& fNowHP, float& fNowMP,
     bool bSuperArmorFactor, float fAnimSpeedAdjustFactor, float fUnitHeight, const std::vector<StateData>& vecStateData
@@ -427,7 +427,7 @@ void    CX2GUNPC::KNonHostReaction::DoFrameMove_SimulateReaction_FIRST(
             bool bReactionState = xPT_UNIT_NPC_SYNC.ExtractReactionState();
             if ( bReactionState == false )
             {
-                boost::circular_buffer<KNonHostSimState>::iterator iterHist = m_cbufNonHostSimState.begin();
+                KCircularBuffer<KNonHostSimState>::iterator iterHist = m_cbufNonHostSimState.begin();
                 for( ;iterHist != m_cbufNonHostSimState.end(); ++iterHist )
                 {
                     if ( iterHist->m_eReactionStateType == REACTION_STATE_NONE )
@@ -482,7 +482,7 @@ void    CX2GUNPC::KNonHostReaction::DoFrameMove_SimulateReaction_FIRST(
                     return;
                 }//if
                 unsigned char stateChangeNum = xPT_UNIT_NPC_SYNC.m_stateChangeParts.stateChangeNum & 0xf;
-                for( boost::circular_buffer<KNonHostSimState>::iterator iterHist2 = iterHist; iterHist2 != m_cbufNonHostSimState.end(); ++iterHist2 )
+                for( KCircularBuffer<KNonHostSimState>::iterator iterHist2 = iterHist; iterHist2 != m_cbufNonHostSimState.end(); ++iterHist2 )
                 {
                     iterHist2->m_kStateChangeParts.stateChangeNum = stateChangeNum;
                     stateChangeNum = ( stateChangeNum + 1 ) & 0xf;
@@ -510,7 +510,7 @@ void    CX2GUNPC::KNonHostReaction::DoFrameMove_SimulateReaction_FIRST(
                     return;
                 }
 
-                for( boost::circular_buffer<KNonHostSimState>::iterator iterHist = m_cbufNonHostSimState.begin();
+                for( KCircularBuffer<KNonHostSimState>::iterator iterHist = m_cbufNonHostSimState.begin();
                     iterHist != m_cbufNonHostSimState.end(); ++iterHist )
                 {
                     KNonHostSimState& kSimState = *iterHist;
@@ -526,7 +526,7 @@ void    CX2GUNPC::KNonHostReaction::DoFrameMove_SimulateReaction_FIRST(
 //    (int) xPT_UNIT_NPC_SYNC.m_stateChangeParts.stateChangeNum );
                         if ( kSimState.m_eReactionStateType == REACTION_STATE_FIRST )
                         {
-                            for( boost::circular_buffer<KNonHostSimState>::iterator iterHist2 = iterHist;
+                            for( KCircularBuffer<KNonHostSimState>::iterator iterHist2 = iterHist;
                                 iterHist2 != m_cbufNonHostSimState.end(); ++iterHist2 )
                             {
                                 KNonHostSimState& kSimState2 = *iterHist2;
@@ -544,7 +544,7 @@ void    CX2GUNPC::KNonHostReaction::DoFrameMove_SimulateReaction_FIRST(
 //printf( "NPC State skip3 %S(%d)\n", GetStateNameByStateID( xPT_UNIT_NPC_SYNC.m_cNowState ).c_str(),
 //    (int) xPT_UNIT_NPC_SYNC.m_stateChangeParts.stateChangeNum );
                         _UpdateNowStateReaction( REACTION_STATE_CONTINUE, GetNowStateReactionWait() ? REACTION_SUBSTATE_WAIT : REACTION_SUBSTATE_NORMAL );
-                        for( boost::circular_buffer<KNonHostSimState>::iterator iterHist2 = iterHist;
+                        for( KCircularBuffer<KNonHostSimState>::iterator iterHist2 = iterHist;
                             iterHist2 != m_cbufNonHostSimState.end(); ++iterHist2 )
                         {
                             KNonHostSimState& kSimState2 = *iterHist2;
@@ -564,7 +564,7 @@ void    CX2GUNPC::KNonHostReaction::DoFrameMove_SimulateReaction_FIRST(
                         return;
                     }
                 }
-                for( boost::circular_buffer<KNonHostSimState>::iterator iterHist = m_cbufNonHostSimState.begin();
+                for( KCircularBuffer<KNonHostSimState>::iterator iterHist = m_cbufNonHostSimState.begin();
                     iterHist != m_cbufNonHostSimState.end(); ++iterHist )
                 {
                     KNonHostSimState& kSimState = *iterHist;
@@ -578,7 +578,7 @@ void    CX2GUNPC::KNonHostReaction::DoFrameMove_SimulateReaction_FIRST(
 //printf( "NPC State skip4 %S(%d)\n", GetStateNameByStateID( xPT_UNIT_NPC_SYNC.m_cNowState ).c_str(),
 //    (int) xPT_UNIT_NPC_SYNC.m_stateChangeParts.stateChangeNum );
                         unsigned char stateChangeNum = xPT_UNIT_NPC_SYNC.m_stateChangeParts.stateChangeNum & 0xf;
-                        for( boost::circular_buffer<KNonHostSimState>::iterator iterHist2 = iterHist;
+                        for( KCircularBuffer<KNonHostSimState>::iterator iterHist2 = iterHist;
                             iterHist2 != m_cbufNonHostSimState.end(); ++iterHist2 )
                         {
                             KNonHostSimState& kSimState2 = *iterHist2;
@@ -601,7 +601,7 @@ void    CX2GUNPC::KNonHostReaction::DoFrameMove_SimulateReaction_FIRST(
 //    (int) xPT_UNIT_NPC_SYNC.m_stateChangeParts.stateChangeNum );
                         _UpdateNowStateReaction( REACTION_STATE_CONTINUE, GetNowStateReactionWait() ? REACTION_SUBSTATE_WAIT : REACTION_SUBSTATE_NORMAL );
                         unsigned char stateChangeNum = xPT_UNIT_NPC_SYNC.m_stateChangeParts.stateChangeNum & 0xf;
-                        for( boost::circular_buffer<KNonHostSimState>::iterator iterHist2 = iterHist;
+                        for( KCircularBuffer<KNonHostSimState>::iterator iterHist2 = iterHist;
                             iterHist2 != m_cbufNonHostSimState.end(); ++iterHist2 )
                         {
                             KNonHostSimState& kSimState2 = *iterHist2;
@@ -742,7 +742,7 @@ bool    CX2GUNPC::KNonHostReaction::DoFrameMove_SimulateReaction(
                 return true;
             }
         }
-        for( boost::circular_buffer<KNonHostSimState>::iterator iterHist = m_cbufNonHostSimState.begin();
+        for( KCircularBuffer<KNonHostSimState>::iterator iterHist = m_cbufNonHostSimState.begin();
             iterHist != m_cbufNonHostSimState.end(); ++iterHist )
         {
             KNonHostSimState& kSimState = *iterHist;
@@ -758,7 +758,7 @@ bool    CX2GUNPC::KNonHostReaction::DoFrameMove_SimulateReaction(
 //    (int) xPT_UNIT_NPC_SYNC.m_stateChangeParts.stateChangeNum );
                 if ( kSimState.m_eReactionStateType == REACTION_STATE_FIRST )
                 {
-                    for( boost::circular_buffer<KNonHostSimState>::iterator iterHist2 = iterHist;
+                    for( KCircularBuffer<KNonHostSimState>::iterator iterHist2 = iterHist;
                         iterHist2 != m_cbufNonHostSimState.end(); ++iterHist2 )
                     {
                         KNonHostSimState& kSimState2 = *iterHist2;
@@ -781,7 +781,7 @@ bool    CX2GUNPC::KNonHostReaction::DoFrameMove_SimulateReaction(
                     {
 //printf( "NPC State skip9 %S(%d)\n", GetStateNameByStateID( xPT_UNIT_NPC_SYNC.m_cNowState ).c_str(),
 //    (int) xPT_UNIT_NPC_SYNC.m_stateChangeParts.stateChangeNum );
-                        for( boost::circular_buffer<KNonHostSimState>::iterator iterHist2 = iterHist;
+                        for( KCircularBuffer<KNonHostSimState>::iterator iterHist2 = iterHist;
                             iterHist2 != m_cbufNonHostSimState.end(); ++iterHist2 )
                         {
                             KNonHostSimState& kSimState2 = *iterHist2;
@@ -815,7 +815,7 @@ bool    CX2GUNPC::KNonHostReaction::DoFrameMove_SimulateReaction(
         {
             goto match_complete_failed;
         }
-        for( boost::circular_buffer<KNonHostSimState>::iterator iterHist = m_cbufNonHostSimState.begin();
+        for( KCircularBuffer<KNonHostSimState>::iterator iterHist = m_cbufNonHostSimState.begin();
             iterHist != m_cbufNonHostSimState.end(); ++iterHist )
         {
             KNonHostSimState& kSimState = *iterHist;
@@ -829,7 +829,7 @@ bool    CX2GUNPC::KNonHostReaction::DoFrameMove_SimulateReaction(
 //printf( "NPC State skip11 %S(%d)\n", GetStateNameByStateID( xPT_UNIT_NPC_SYNC.m_cNowState ).c_str(),
 //    (int) xPT_UNIT_NPC_SYNC.m_stateChangeParts.stateChangeNum );
                 unsigned char stateChangeNum = xPT_UNIT_NPC_SYNC.m_stateChangeParts.stateChangeNum & 0xf;
-                for( boost::circular_buffer<KNonHostSimState>::iterator iterHist2 = iterHist;
+                for( KCircularBuffer<KNonHostSimState>::iterator iterHist2 = iterHist;
                     iterHist2 != m_cbufNonHostSimState.end(); ++iterHist2 )
                 {
                     KNonHostSimState& kSimState2 = *iterHist2;
@@ -853,7 +853,7 @@ bool    CX2GUNPC::KNonHostReaction::DoFrameMove_SimulateReaction(
                 if ( _CheckCompatibleReactionCondition( fSpeedX, kSimState.m_fStartSpeedX ) == true )
                 {
                     unsigned char stateChangeNum = xPT_UNIT_NPC_SYNC.m_stateChangeParts.stateChangeNum & 0xf;
-                    for( boost::circular_buffer<KNonHostSimState>::iterator iterHist2 = iterHist;
+                    for( KCircularBuffer<KNonHostSimState>::iterator iterHist2 = iterHist;
                         iterHist2 != m_cbufNonHostSimState.end(); ++iterHist2 )
                     {
                         KNonHostSimState& kSimState2 = *iterHist2;
@@ -928,7 +928,7 @@ match_complete_failed:
 }
 
 
-FORCEINLINE void    CX2GUNPC::KNonHostReaction::DoFrameMove_StateChangeByHost( bool& bUpdatePositionBackup, const KDYNAMIC_UNIT_NPC_SYNC& xPT_UNIT_NPC_SYNC )
+void    CX2GUNPC::KNonHostReaction::DoFrameMove_StateChangeByHost( bool& bUpdatePositionBackup, const KDYNAMIC_UNIT_NPC_SYNC& xPT_UNIT_NPC_SYNC )
 {
     if ( xPT_UNIT_NPC_SYNC.ExtractIsComeBackState() == true )
     {
@@ -951,7 +951,7 @@ FORCEINLINE void    CX2GUNPC::KNonHostReaction::DoFrameMove_StateChangeByHost( b
 }
 
 
-FORCEINLINE void    CX2GUNPC::KNonHostReaction::ReserveReceivePos( const D3DXVECTOR3& vReservedReceivePos, int iLastTouchLineIndex, bool bFootOnLine )
+void    CX2GUNPC::KNonHostReaction::ReserveReceivePos( const D3DXVECTOR3& vReservedReceivePos, int iLastTouchLineIndex, bool bFootOnLine )
 {
     m_bReservedReceivePos = true;
     m_vReservedReceivePos = vReservedReceivePos;
@@ -962,12 +962,12 @@ FORCEINLINE void    CX2GUNPC::KNonHostReaction::ReserveReceivePos( const D3DXVEC
 
 
 
-FORCEINLINE void    CX2GUNPC::KNonHostReaction::SetNextStateReaction_NONE()
+void    CX2GUNPC::KNonHostReaction::SetNextStateReaction_NONE()
 {
     m_eNextStateReaction = REACTION_STATE_NONE;
 }
 
-FORCEINLINE void    CX2GUNPC::KNonHostReaction::SetNextStateReaction_FIRST(
+void    CX2GUNPC::KNonHostReaction::SetNextStateReaction_FIRST(
     bool bRelaxReactionCheck,
     int  iAttackerUnitIndex,
     const D3DXVECTOR2& vReactionYMinMax )
@@ -980,7 +980,7 @@ FORCEINLINE void    CX2GUNPC::KNonHostReaction::SetNextStateReaction_FIRST(
 }
 
 
-FORCEINLINE void    CX2GUNPC::KNonHostReaction::SetNextStateReaction_CONTINUE( bool bWait )
+void    CX2GUNPC::KNonHostReaction::SetNextStateReaction_CONTINUE( bool bWait )
 {
     m_eNextStateReaction = ( m_eNowStateReaction == REACTION_STATE_HOST_FIRST || m_eNowStateReaction == REACTION_STATE_HOST_CONTINUE )
         ? REACTION_STATE_HOST_CONTINUE : REACTION_STATE_CONTINUE;
@@ -990,7 +990,7 @@ FORCEINLINE void    CX2GUNPC::KNonHostReaction::SetNextStateReaction_CONTINUE( b
 
 
 
-FORCEINLINE void    CX2GUNPC::KNonHostReaction::BuffPositionHistory( bool bLocalUnit, const D3DXVECTOR3& vPosition )
+void    CX2GUNPC::KNonHostReaction::BuffPositionHistory( bool bLocalUnit, const D3DXVECTOR3& vPosition )
 {
     if ( bLocalUnit == true )
         m_cbuffPositionHistory.push_back( vPosition );
@@ -999,7 +999,7 @@ FORCEINLINE void    CX2GUNPC::KNonHostReaction::BuffPositionHistory( bool bLocal
 }
 
 
-FORCEINLINE void    CX2GUNPC::KNonHostReaction::UpdateSimulationTolerance()
+void    CX2GUNPC::KNonHostReaction::UpdateSimulationTolerance()
 {
     CX2GUUser* pHostUser = g_pX2Game->GetHostGameUnit();
     if ( pHostUser != NULL && g_pX2Room != NULL )
@@ -1067,7 +1067,7 @@ void    CX2GUNPC::KNonHostReaction::AdjustDamageReactionSpeed( NPCFrameData& m_N
 }
 
 
-FORCEINLINE void    CX2GUNPC::KNonHostReaction::ResetRelativePosAndTimers()
+void    CX2GUNPC::KNonHostReaction::ResetRelativePosAndTimers()
 {
     m_dwRelativePos = 0;
     for( int i = 0; i < MAX_GAME_USER_UNIT_NUM; i++ )
@@ -1076,7 +1076,7 @@ FORCEINLINE void    CX2GUNPC::KNonHostReaction::ResetRelativePosAndTimers()
     }
 }
 
-FORCEINLINE void    CX2GUNPC::KNonHostReaction::UpdateRelativePosAndTimers( DWORD dwRelativePos )
+void    CX2GUNPC::KNonHostReaction::UpdateRelativePosAndTimers( DWORD dwRelativePos )
 {
     DWORD   dwOldRelativePos = m_dwRelativePos;
     DWORD   dwNewRelativePos = dwRelativePos;
@@ -1090,7 +1090,7 @@ FORCEINLINE void    CX2GUNPC::KNonHostReaction::UpdateRelativePosAndTimers( DWOR
     m_dwRelativePos = dwRelativePos;
 }//CX2GUNPC::_UpdateRelativePosAndTimers()
 
-FORCEINLINE void    CX2GUNPC::KNonHostReaction::UpdateRelativePosAndTimer( int iUnitIndex, int iPos )
+void    CX2GUNPC::KNonHostReaction::UpdateRelativePosAndTimer( int iUnitIndex, int iPos )
 {
     if ( iUnitIndex >= 0 && iUnitIndex < MAX_GAME_USER_UNIT_NUM
         && iPos >= 0 && iPos <= 3 && iPos != GetRelativePos( iUnitIndex ) )
@@ -1103,13 +1103,13 @@ FORCEINLINE void    CX2GUNPC::KNonHostReaction::UpdateRelativePosAndTimer( int i
     }
 }
 
-FORCEINLINE void    CX2GUNPC::KNonHostReaction::ResetLocalRelativePos()
+void    CX2GUNPC::KNonHostReaction::ResetLocalRelativePos()
 {
     ZeroMemory( m_acLocalRelativePos, sizeof(m_acLocalRelativePos) );
 }
 
 
-FORCEINLINE void    CX2GUNPC::KNonHostReaction::ResetLocalRelativePosAndTimers()
+void    CX2GUNPC::KNonHostReaction::ResetLocalRelativePosAndTimers()
 {
     ResetLocalRelativePos();
     for( int i = 0; i < MAX_GAME_USER_UNIT_NUM; i++ )
@@ -1118,7 +1118,7 @@ FORCEINLINE void    CX2GUNPC::KNonHostReaction::ResetLocalRelativePosAndTimers()
     }
 }
 
-FORCEINLINE void    CX2GUNPC::KNonHostReaction::IncrementLocalAndRelativePosTimers( float  fElapsedTime )
+void    CX2GUNPC::KNonHostReaction::IncrementLocalAndRelativePosTimers( float  fElapsedTime )
 {
     if ( fElapsedTime > 0.f )
     {
@@ -1131,7 +1131,7 @@ FORCEINLINE void    CX2GUNPC::KNonHostReaction::IncrementLocalAndRelativePosTime
 }
 
 
-FORCEINLINE void    CX2GUNPC::KNonHostReaction::PhysicProcess_RetrieveRelativePosInfo( bool bLocalUnit, int iUnitIndex, bool bMyUnit,
+void    CX2GUNPC::KNonHostReaction::PhysicProcess_RetrieveRelativePosInfo( bool bLocalUnit, int iUnitIndex, bool bMyUnit,
                        int iNumAccumFrames,
     OUT int& iLocalDirection, OUT int& iDirection, OUT bool& bReservePosReliable )
 {
@@ -1217,7 +1217,7 @@ void    CX2GUNPC::KNonHostReaction::PhysicProcess_UpdateRelativePos( bool bLocal
                 pX2Unit->GetTeam() == iTeam ||
 					pX2Unit->GetGameUnitState() == CX2GameUnit::GUSI_DIE ||
 					( g_pX2Game->GetGameType() == CX2Game::GT_BATTLE_FIELD && eAllyTeam != CX2Room::TN_NONE ) || /// 배틀필드에서 소환된 몬스터와 유저가 부딪힌게 아니라면
-                    ( g_pX2Game->GetGameType() == CX2Game::GT_BATTLE_FIELD && pX2Unit->IsMyUnit() == false && pX2Unit->DidReceiveFirstSyncPacket() == false ) )
+                    ( g_pX2Game->GetGameType() == CX2Game::GT_BATTLE_FIELD && pX2Unit->IsMyUnit() == false && pX2Unit->DidReceiveFirstSyncPacketOfUser() == false ) )
                 continue;
             bool bUnitCanPass = pX2Unit->GetStateparam( true ).bCanPassUnit;
             D3DXVECTOR3 vPosFuture = pX2Unit->GetPos( true );
@@ -1268,7 +1268,7 @@ void    CX2GUNPC::KNonHostReaction::PhysicProcess_UpdateRelativePos( bool bLocal
 			if ( NULL == pX2Unit || pX2Unit->GetTeam() == iTeam ||
 					pX2Unit->GetGameUnitState() == CX2GameUnit::GUSI_DIE ||
 					( g_pX2Game->GetGameType() == CX2Game::GT_BATTLE_FIELD && eAllyTeam != CX2Room::TN_NONE ) || /// 배틀필드에서 소환된 몬스터와 유저가 부딪힌게 아니라면
-                    ( g_pX2Game->GetGameType() == CX2Game::GT_BATTLE_FIELD && pX2Unit->IsMyUnit() == false && pX2Unit->DidReceiveFirstSyncPacket() == false ) )
+                    ( g_pX2Game->GetGameType() == CX2Game::GT_BATTLE_FIELD && pX2Unit->IsMyUnit() == false && pX2Unit->DidReceiveFirstSyncPacketOfUser() == false ) )
             {
                 iNewLocalDirection = 0;
                 UpdateRelativePosAndTimer( i, 0 );
@@ -1333,7 +1333,7 @@ void    CX2GUNPC::KNonHostReaction::PhysicProcess_UpdateRelativePos( bool bLocal
 }
 
 
-FORCEINLINE unsigned CX2GUNPC::KNonHostReaction::UpdateLastSentMiniInfo( int iTargetUnitIndex )
+unsigned CX2GUNPC::KNonHostReaction::UpdateLastSentMiniInfo( int iTargetUnitIndex )
 {
     if ( m_uLastSentMiniSyncCount > 0 )
         m_uLastSentMiniSyncCount--;
@@ -1345,13 +1345,13 @@ FORCEINLINE unsigned CX2GUNPC::KNonHostReaction::UpdateLastSentMiniInfo( int iTa
     return  m_uLastSentMiniSyncCount;
 }
 
-FORCEINLINE bool    CX2GUNPC::KNonHostReaction::CheckLastSentMiniInfo()
+bool    CX2GUNPC::KNonHostReaction::CheckLastSentMiniInfo()
 {
     return  ( m_dwLastSentRelativePos != m_dwRelativePos );
 }
 
 
-FORCEINLINE int     CX2GUNPC::KNonHostReaction::EvaluateConditionRandomRate( int iTableIndex, int iStateChangeNum, const ConditionTableData& conditionTableData,
+int     CX2GUNPC::KNonHostReaction::EvaluateConditionRandomRate( int iTableIndex, int iStateChangeNum, const ConditionTableData& conditionTableData,
                         const vector<std::pair<D3DXVECTOR3,int> >& m_EventIntervalList )
 {
     int iSeed = m_usDefenceRandomTableIndex + iTableIndex + iStateChangeNum;
@@ -1367,7 +1367,7 @@ FORCEINLINE int     CX2GUNPC::KNonHostReaction::EvaluateConditionRandomRate( int
 
 
 
-FORCEINLINE bool    CX2GUNPC::_IsReactionState( char StateID )
+bool    CX2GUNPC::_IsReactionState( char StateID )
 {
     if ( StateID <= 0 || StateID >= (char) GetInitStateData().m_vecStateData.size() )
         return false;
@@ -1375,14 +1375,14 @@ FORCEINLINE bool    CX2GUNPC::_IsReactionState( char StateID )
 }
 
 
-FORCEINLINE bool    CX2GUNPC::_IsReactionWaitState( char StateID )
+bool    CX2GUNPC::_IsReactionWaitState( char StateID )
 {
     if ( StateID <= 0 || StateID >= (char) GetInitStateData().m_vecStateData.size() )
         return false;
     return GetInitStateData().m_vecStateData[StateID].m_bitsetFlags.test( StateData::FLAG_WAIT_STATE );
 }
 
-FORCEINLINE bool    CX2GUNPC::_IsDyingState( char StateID )
+bool    CX2GUNPC::_IsDyingState( char StateID )
 {
     if ( StateID == 0 )
         return false;
@@ -6535,7 +6535,6 @@ void CX2GUNPC::DamageReact( CX2DamageManager::DamageData* pDamageData )
 {
 
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_START
 #endif
 	KTDXPROFILE();
 
@@ -7119,9 +7118,6 @@ void CX2GUNPC::DamageReact( CX2DamageManager::DamageData* pDamageData )
         m_bDieFly = false;
     }
 
-#ifdef APPLY_THEMIDA
-	ENCODE_START
-#endif
 
 
 
@@ -7605,7 +7601,6 @@ void CX2GUNPC::DamageReact( CX2DamageManager::DamageData* pDamageData )
 		}
 
 
-		THEMIDA_ENCODE_START
 
 
 
@@ -7710,7 +7705,6 @@ void CX2GUNPC::DamageReact( CX2DamageManager::DamageData* pDamageData )
 			}
 		}
 
-		THEMIDA_ENCODE_END
 	}
 
 
@@ -7747,9 +7741,6 @@ void CX2GUNPC::DamageReact( CX2DamageManager::DamageData* pDamageData )
 		DeleteEffectSetOnDamageReact();
 	}
 
-#ifdef APPLY_THEMIDA
-	ENCODE_END
-#endif
 
 
 	//{{ megagame : 박교현 : [2010-04-06]
@@ -7761,7 +7752,6 @@ void CX2GUNPC::DamageReact( CX2DamageManager::DamageData* pDamageData )
 	PostProcessEnchantDamage( pDamageData );
 
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_END
 #endif
 }
 
@@ -7830,7 +7820,6 @@ void CX2GUNPC::DamageReact_ExtraDamage( CX2DamageManager::DamageData* pDamageDat
 	KTDXPROFILE();
 
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_START
 #endif
 
 	if( NULL == pDamageData )
@@ -7959,7 +7948,6 @@ void CX2GUNPC::DamageReact_ExtraDamage( CX2DamageManager::DamageData* pDamageDat
 	}
 
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_END
 #endif
 }
 
@@ -9591,7 +9579,6 @@ bool CX2GUNPC::DamageReactStateChange( CX2DamageManager::DamageData* pDamageData
 void CX2GUNPC::AttackResult()
 {
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_START
 #endif
 
 	KTDXPROFILE();
@@ -9859,7 +9846,6 @@ void CX2GUNPC::AttackResult()
 	}
 
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_END
 #endif
 
 		/// 일반 공격 타격시 이펙트 셋 생성하는 함수 검사
@@ -10039,7 +10025,6 @@ bool CX2GUNPC::IsFocusUnit() const
 void CX2GUNPC::DyingStart()
 {
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_START
 #endif
 
         const StateData& nowStateData = GetNowStateData();
@@ -10080,7 +10065,6 @@ void CX2GUNPC::DyingStart()
 
 
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_END
 #endif
 
 
@@ -10247,7 +10231,6 @@ void CX2GUNPC::DyingStart()
 
 
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_START
 #endif
 
 
@@ -10284,7 +10267,6 @@ void CX2GUNPC::DyingStart()
 
 
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_END
 #endif
 
 		ClearStartOfDelayedFiringData();		/// 사망시 지연의 신호탄 적용 정보 삭제
@@ -18210,7 +18192,7 @@ void    CX2GUNPC::ReceiveMiniSyncData( UidType uidUnitUID, DWORD dwFrameMoveCoun
     }
     else
     {
-        boost::circular_buffer< NPCFrameSync >::iterator iter = std::lower_bound( m_cbufReceiveDynamicPacket.begin(), m_cbufReceiveDynamicPacket.end(), dwFrameMoveCount );
+        KCircularBuffer< NPCFrameSync >::iterator iter = std::lower_bound( m_cbufReceiveDynamicPacket.begin(), m_cbufReceiveDynamicPacket.end(), dwFrameMoveCount );
         if ( iter != m_cbufReceiveDynamicPacket.end() && iter->m_dwFrameMoveCount == dwFrameMoveCount )
         {
             iter->m_sync.m_dwRelativePos = kMiniSync.m_dwRelativePos;
@@ -18229,7 +18211,7 @@ void    CX2GUNPC::ReceiveMiniSyncData( UidType uidUnitUID, DWORD dwFrameMoveCoun
             sync.m_bMiniSync = true;
             if ( m_cbufReceiveDynamicPacket.full() == true )
             {
-                boost::circular_buffer< NPCFrameSync >::difference_type   diff = iter - m_cbufReceiveDynamicPacket.begin();
+                KCircularBuffer< NPCFrameSync >::difference_type   diff = iter - m_cbufReceiveDynamicPacket.begin();
                 m_cbufReceiveDynamicPacket.set_capacity( m_cbufReceiveDynamicPacket.capacity() + 1 );
                 iter = m_cbufReceiveDynamicPacket.begin() + diff;
             }
@@ -18298,7 +18280,7 @@ void CX2GUNPC::ReceiveFrameData( UidType uidUnitUID, DWORD dwFrameMoveCount, con
     }
     else
     {
-        boost::circular_buffer< NPCFrameSync >::iterator iter = std::lower_bound( m_cbufReceiveDynamicPacket.begin(), m_cbufReceiveDynamicPacket.end(), dwFrameMoveCount );
+        KCircularBuffer< NPCFrameSync >::iterator iter = std::lower_bound( m_cbufReceiveDynamicPacket.begin(), m_cbufReceiveDynamicPacket.end(), dwFrameMoveCount );
         if ( iter != m_cbufReceiveDynamicPacket.end() && iter->m_dwFrameMoveCount == dwFrameMoveCount )
         {
             iter->m_sync = kXPT_UNIT_NPC_SYNC;
@@ -18316,7 +18298,7 @@ void CX2GUNPC::ReceiveFrameData( UidType uidUnitUID, DWORD dwFrameMoveCount, con
             sync.m_bMiniSync = false;
             if ( m_cbufReceiveDynamicPacket.full() == true )
             {
-                boost::circular_buffer< NPCFrameSync >::difference_type   diff = iter - m_cbufReceiveDynamicPacket.begin();
+                KCircularBuffer< NPCFrameSync >::difference_type   diff = iter - m_cbufReceiveDynamicPacket.begin();
                 m_cbufReceiveDynamicPacket.set_capacity( m_cbufReceiveDynamicPacket.capacity() + 1 );
                 iter = m_cbufReceiveDynamicPacket.begin() + diff;
             }
@@ -20994,12 +20976,7 @@ void    CX2GUNPC::MarkNPCUnitDieNotReceived()
 // NOTE: 이 함수는 소스 코드에서는 사용하지 말아주세요~ ^^ 루아 스크립트에서만 사용해주세요
 void CX2GUNPC::SetNowHP_LUA( float fHP )
 {
-	THEMIDA_ENCODE_START
 
-#ifdef APPLY_THEMIDA
-	ENCODE_START
-	VM_START
-#endif
 
 	if( IsLocalUnit() == true )
 	{
@@ -21011,12 +20988,7 @@ void CX2GUNPC::SetNowHP_LUA( float fHP )
 
 	SetNowHp( fHP );
 
-#ifdef APPLY_THEMIDA
-	VM_END
-	ENCODE_END
-#endif
 
-	THEMIDA_ENCODE_END
 }
 
 

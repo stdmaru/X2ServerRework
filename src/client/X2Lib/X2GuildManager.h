@@ -147,7 +147,6 @@ public:
 
 		void UpdateMaxNumOfGuildAdmin()
 		{
-			BYTE byMaxNum = 0;
 			m_byMaxNumOfGuildAdmin = m_usNowNumOfGuildMember / _CONST_GUILD_MANAGER_::g_byGuildAdminMagicNumber;
 
 			if ( (m_usNowNumOfGuildMember % _CONST_GUILD_MANAGER_::g_byGuildAdminMagicNumber) != 0 )

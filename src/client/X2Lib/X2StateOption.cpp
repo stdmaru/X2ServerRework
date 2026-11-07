@@ -1624,22 +1624,6 @@ void CX2StateOption::HideBandiCamOption()
 			pControl->SetShowEnable( false, false );
 	}
 }
-//void CX2StateOption::IMEDataGetUserVideoOptionSetting()
-//{
-//	WCHAR wszText[64] = {0,};
-//
-//	//문자열 예외처리를 해야지 정상 작동을 보장할수 있다
-//	//한글 이나 다른 문자가 들어가면 예외처리 일단 패스 완성본에 넣자
-//	CKTDGUIIMEEditBox * pIME=(CKTDGUIIMEEditBox *)m_pDLGOptionWindow->GetControl( L"Cam_IME1" );
-//	g_pMain->GetGameOption().SetVideoSizeW(_wtoi(pIME->GetText()));
-//
-//
-//	pIME=(CKTDGUIIMEEditBox *)m_pDLGOptionWindow->GetControl( L"Cam_IME2" );
-//	g_pMain->GetGameOption().SetVideoSizeH(_wtoi(pIME->GetText()));
-//
-//	//g_pMain->GetGameOption().SetUserSetting(true);
-//
-//}
 
 
 void CX2StateOption::ShowCommunityOption( bool bShow )

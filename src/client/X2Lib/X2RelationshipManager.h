@@ -295,20 +295,20 @@ class CX2RelationshipEffectManager
 		};
 
 
-		RelationEffectInfo::RelationEffectInfo() :
+		RelationEffectInfo() :
 				m_iIndex(-1),
+				m_bIsErase (false),
+				m_fRelationEffectCooltime (0),
+				m_bRealtionEffectPopNotifyCheck(false),
+				m_vCloseEffectPosition ( D3DXVECTOR3 ( 0, 0, 0 ) ),
 				m_fPopNotifyEffectTime(0),
 				m_fRelationEffectPlayingTime(0),
+				m_iUIDOwnerAttachEffect ( 0 ),
 				m_wstrAttachEffectName (L""),
 				m_wstrCloseEffectName(L""),
 				m_wstrNotifyEffectName(L""),
 				m_wstrUserInputMessage(L""),
-				m_fRelationCloseEffectDistance(0),
-				m_fRelationEffectCooltime (0),
-				m_bRealtionEffectPopNotifyCheck(false),
-				m_bIsErase (false),
-				m_iUIDOwnerAttachEffect ( 0 ),
-				m_vCloseEffectPosition ( D3DXVECTOR3 ( 0, 0, 0 ) )
+				m_fRelationCloseEffectDistance(0)
 			{
 // 후에 인연 이펙트 추가 되면 여기 수정해야함!
 				m_iIndex = 1;
@@ -398,7 +398,7 @@ class CX2RelationshipEffectManager
 	int	  m_iMyRelationEffectIndex;
 	bool  m_bMyRealtionEffectPopNotifyCheck;
 
-	CX2RelationshipEffectManager::CX2RelationshipEffectManager ():
+	CX2RelationshipEffectManager ():
 		m_pMyRealtionEffectInfo ( NULL ),
 		m_fMyRelationAttachEffectCooltime ( 0 ),
 		m_fMyRelationCloseEffectCooltime ( 0 ),

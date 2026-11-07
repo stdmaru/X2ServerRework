@@ -715,7 +715,7 @@ bool    CX2ItemManager::KProxy2::AddItemTemplet_LUA()
         char    aszBuffer[MAX_PATH];
         D3DXVECTOR3 vOffset;
         DWORD       dwOffset;
-        for( int i = 1; i < ARRAY_SIZE( s_aszSmallName ); ++i )
+        for( int i = 1; i < std::ssize( s_aszSmallName ); ++i )
         {
             sprintf_s( aszBuffer, ARRAY_SIZE(aszBuffer), "m_FrameOffset%sX", s_aszSmallName[i] );
 	        LUA_GET_VALUE(				luaManager, aszBuffer,	vOffset.x,	0.0f );
@@ -740,14 +740,14 @@ bool    CX2ItemManager::KProxy2::AddItemTemplet_LUA()
         D3DXVECTOR3 vScale[ARRAY_SIZE( s_aszCapitalName )];
         D3DXVECTOR3 vRotate[ARRAY_SIZE( s_aszCapitalName )];
         DWORD       dwOffset;
-        for( int i = 1; i < ARRAY_SIZE( s_aszCapitalName ); ++i )
+        for( int i = 1; i < std::ssize( s_aszCapitalName ); ++i )
         {
             sprintf_s( aszBuffer, ARRAY_SIZE(aszBuffer), "%s_ITEM_SCALE_ROTATE", s_aszCapitalName[i] );
             strTemp.resize( 0 );
 	        LUA_GET_VALUE_UTF8( luaManager, aszBuffer, strTemp, "" );
 	        TokenizeByScaleRotate( strTemp, vScale[i], vRotate[i] );
         }
-        for( int i = 1; i < ARRAY_SIZE( s_aszCapitalName ); ++i )
+        for( int i = 1; i < std::ssize( s_aszCapitalName ); ++i )
         {
             dwOffset = AppendD3DXVECTOR3( vScale[i], true );
             if ( dwOffset != 0 )
@@ -758,7 +758,7 @@ bool    CX2ItemManager::KProxy2::AddItemTemplet_LUA()
                 kTemplet.m_byNumRenderScales++;
             }
         }
-        for( int i = 1; i < ARRAY_SIZE( s_aszCapitalName ); ++i )
+        for( int i = 1; i < std::ssize( s_aszCapitalName ); ++i )
         {
             dwOffset = AppendD3DXVECTOR3( vRotate[i], false );
             if ( dwOffset != 0 )
@@ -847,7 +847,7 @@ bool    CX2ItemManager::KProxy2::AddItemTemplet_LUA()
         ZeroMemory( adwModelNameOffset, sizeof(adwModelNameOffset) );
         ZeroMemory( adwXETNameOffset, sizeof(adwXETNameOffset) );
 
-        for( int i = 1; i < ARRAY_SIZE( s_aszCapitalName ); ++i )
+        for( int i = 1; i < std::ssize( s_aszCapitalName ); ++i )
         {
             sprintf_s( aszBuffer, ARRAY_SIZE(aszBuffer), "%s_MODEL_NAME", s_aszCapitalName[i] );
             wstrTemp.resize( 0 );
@@ -863,7 +863,7 @@ bool    CX2ItemManager::KProxy2::AddItemTemplet_LUA()
             }
         }
 
-        for( int i = 1; i < ARRAY_SIZE( s_aszCapitalName ); ++i )
+        for( int i = 1; i < std::ssize( s_aszCapitalName ); ++i )
         {
             if ( adwModelNameOffset[i] != 0 )
             {
@@ -873,7 +873,7 @@ bool    CX2ItemManager::KProxy2::AddItemTemplet_LUA()
                 kTemplet.m_byNumCommonItemModelNames++;
             }
         }
-        for( int i = 1; i < ARRAY_SIZE( s_aszCapitalName ); ++i )
+        for( int i = 1; i < std::ssize( s_aszCapitalName ); ++i )
         {
             if ( adwXETNameOffset[i] != 0 )
             {
@@ -1215,7 +1215,7 @@ bool    CX2ItemManager::KProxy2::AddItemTemplet_LUA()
 	if( luaManager.BeginTable( "SLASH_TRACE_COLOR" ) == true )
 	{
 		float afValue[4] = { 1.f, };
-		for( int valueIndex = 0; valueIndex < ARRAY_SIZE(afValue); valueIndex++ )
+		for( int valueIndex = 0; valueIndex < std::ssize(afValue); valueIndex++ )
 		{
 			if( false == luaManager.GetValue( valueIndex+1, afValue[valueIndex] ) )
 				break;
@@ -1232,7 +1232,7 @@ bool    CX2ItemManager::KProxy2::AddItemTemplet_LUA()
 	if( luaManager.BeginTable( "SLASH_TRACE_TIP_COLOR" ) == true )
 	{
 		float afValue[4] = { 1.f, };
-		for( int valueIndex = 0; valueIndex < ARRAY_SIZE(afValue); valueIndex++ )
+		for( int valueIndex = 0; valueIndex < std::ssize(afValue); valueIndex++ )
 		{
 			if( false == luaManager.GetValue( valueIndex+1, afValue[valueIndex] ) )
 				break;
@@ -1249,7 +1249,7 @@ bool    CX2ItemManager::KProxy2::AddItemTemplet_LUA()
 	if( luaManager.BeginTable( "HYPER_SLASH_TRACE_COLOR" ) == true )
 	{
 		float afValue[4] = { 1.f, };
-		for( int valueIndex = 0; valueIndex < ARRAY_SIZE(afValue); valueIndex++ )
+		for( int valueIndex = 0; valueIndex < std::ssize(afValue); valueIndex++ )
 		{
 			if( false == luaManager.GetValue( valueIndex+1, afValue[valueIndex] ) )
 				break;
@@ -1265,7 +1265,7 @@ bool    CX2ItemManager::KProxy2::AddItemTemplet_LUA()
 	if( luaManager.BeginTable( "HYPER_SLASH_TRACE_TIP_COLOR" ) == true )
 	{
 		float afValue[4] = { 1.f, };
-		for( int valueIndex = 0; valueIndex < ARRAY_SIZE(afValue); valueIndex++ )
+		for( int valueIndex = 0; valueIndex < std::ssize(afValue); valueIndex++ )
 		{
 			if( false == luaManager.GetValue( valueIndex+1, afValue[valueIndex] ) )
 				break;

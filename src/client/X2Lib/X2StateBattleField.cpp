@@ -269,7 +269,6 @@ CX2StateBattleField::CX2StateBattleField()
 /*virtual*/ bool CX2StateBattleField::UIServerEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 {
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_START
 #endif
 
 	if ( CX2StateMenu::UIServerEventProc( hWnd, uMsg, wParam, lParam ) == true )
@@ -437,7 +436,6 @@ CX2StateBattleField::CX2StateBattleField()
 // 		break;
 	}
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_END
 #endif
 
 	return false;
@@ -989,7 +987,7 @@ void CX2StateBattleField::MoveFromBattleFieldToOtherBattleField()
 
 }
 
-FORCEINLINE void CX2StateBattleField::MoveToOtherPlace( float fElapsedTime )
+void CX2StateBattleField::MoveToOtherPlace( float fElapsedTime )
 {
 	if ( true == m_pBattleFieldGame->IsNearPortalLineMap() &&
 		false == GetNowMovingToOtherPlace() )

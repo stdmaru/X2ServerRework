@@ -24,7 +24,7 @@ CX2MiniMap::CX2MiniMap( CX2MiniMapUI* pMiniMapUI )
 	m_pRenderTargetTexture	= g_pKTDXApp->GetDeviceManager()->OpenRenderTargetTexture( L"MiniMapTex", iRenderTargetWidth, iRenderTargetHeight, D3DFMT_A8R8G8B8 );
 	m_pTextureMiniMap		= g_pKTDXApp->GetDeviceManager()->OpenTexture( L"HQ_MiniMap.tga" );
 
-	for( int i=0; i<ARRAY_SIZE(m_pTextureIcon); i++ )
+	for( int i=0; i<std::ssize(m_pTextureIcon); i++ )
 	{
 		m_pTextureIcon[i] = NULL;
 	}
@@ -63,7 +63,7 @@ CX2MiniMap::~CX2MiniMap(void)
 	SAFE_CLOSE( m_pRenderTargetTexture );
 	SAFE_CLOSE( m_pTextureMiniMap );
 
-	for( int i=0; i<ARRAY_SIZE(m_pTextureIcon); i++ )
+	for( int i=0; i<std::ssize(m_pTextureIcon); i++ )
 	{
 		SAFE_CLOSE( m_pTextureIcon[i] );
 	}

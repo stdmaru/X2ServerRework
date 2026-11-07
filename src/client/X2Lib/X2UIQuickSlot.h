@@ -21,7 +21,11 @@ public:
 	void SetShow(bool val);
 	bool GetEnable(){ return m_bEnable; }
 
-	void SetEnable(bool val, bool bDirectEnable = false);
+	// The quick slot's own enable; it also overrides CX2SlotManager::SetEnable( bool ),
+	// which nothing calls through a base pointer.
+	using CX2UIDragable::SetEnable;
+	virtual void SetEnable( bool val ) { SetEnable( val, false ); }
+	void SetEnable( bool val, bool bDirectEnable );
 
 	void SetLayer(X2_DIALOG_LAYER layer);
 

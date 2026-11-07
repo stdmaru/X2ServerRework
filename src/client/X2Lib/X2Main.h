@@ -1,11 +1,8 @@
 #pragma once
 
-#pragma warning(disable:4996)
 #include "../X2ServerProtocol/X2ServerProtocolLib.h"
-#pragma warning(disable:4996)
 
 #include "KTDX.h"
-#pragma warning(disable:4996)
 #include "Enum/DungeonEnum.h"
 #include "Enum/Enum.h"
 
@@ -418,7 +415,6 @@
 #include "./X2StateAutoChanger.h"
 
 
-#include "./X2SystemInfo.h"
 
 
 //{{ JHKang / 강정훈 / 2010.09.06 / 숫자 출력 형태 변경
@@ -681,7 +677,7 @@ class CX2Main : public CKTDXStage
 			{
 				if( m_pDialog != NULL )
 				{
-					g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDialog, NULL, false );
+					g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDialog, 0, false );
 					m_pDialog = NULL;
 				}
 			}
@@ -725,11 +721,11 @@ class CX2Main : public CKTDXStage
 			void PushWindowInfo_Thread( const KHackingToolInfo& windowInfo) { m_vecWindowInfo_Thread.push_back(windowInfo); }
 			void SetChildWindow_Thread(bool bVal) { m_bFindChild_Thread = bVal; }
 
-			virtual bool BeginThread()
+			virtual bool BeginThread( THREAD_CALLBACK pThreadCallback_ = NULL, LPVOID pParam_ = NULL, bool bStartSuspended = false )
 			{
 				m_bLoop = true;
 				m_bForceExitThread = false;
-				return KJohnThread::BeginThread();
+				return KJohnThread::BeginThread( pThreadCallback_, pParam_, bStartSuspended );
 			}//BeginThread()
 
 			virtual void EndThread(DWORD dwTimeout_ = INFINITE)
@@ -741,14 +737,12 @@ class CX2Main : public CKTDXStage
 			virtual DWORD RunThread()
 			{
 #if !X2_DEV_TOOLS
-				ELSWORD_VIRTUALIZER_START
 #endif
 
                 g_CKTDXLog.RegisterCurrentThread();
 
 				while(1)
 				{
-					THEMIDA_ENCODE_START
 
 					if( m_bLoop.Verify() == false || m_bForceExitThread.Verify() == false )
 						break;
@@ -774,12 +768,10 @@ class CX2Main : public CKTDXStage
 					if( m_bForceExitThread == true )
 						break;
 
-					THEMIDA_ENCODE_END
 				}
 
 				m_bLoop = false;
 #if !X2_DEV_TOOLS
-				ELSWORD_VIRTUALIZER_END
 #endif
 				return 0;
 			}//RunThread()
@@ -993,10 +985,10 @@ class CX2Main : public CKTDXStage
 		void			SetConnectedGameServerPort(int val) { m_iConnectedGameServerPort = val; }
 
 		void			SetServerUDPPort( int port ){ m_ServerUDPPort = port; }		// 게임서버 udp relay port
-		const int		GetServerUDPPort(){ return m_ServerUDPPort; }
+		int		GetServerUDPPort(){ return m_ServerUDPPort; }
 
 		void			SetGameP2PPort( int port ){ m_GameP2PPort = port; }
-		const int		GetGameP2PPort(){ return m_GameP2PPort; }
+		int		GetGameP2PPort(){ return m_GameP2PPort; }
 
 		void			SetServerTimeOut_LUA(float fTime) { m_fServerTimeOut = fTime; }
 		float			GetServerTimeOut() { return m_fServerTimeOut; }
@@ -1022,17 +1014,17 @@ class CX2Main : public CKTDXStage
 
 		void			SetTutorialRandomLoadingBG( int iRandIndex ) { m_iRandLoadingBG = iRandIndex; }
 		int				GetTutorialRandomLoadingBG() { return m_iRandLoadingBG; }
-		const bool		GetIsPlayingTutorial() { return m_bIsPlayingTutorial; }
+		bool		GetIsPlayingTutorial() { return m_bIsPlayingTutorial; }
 		void			SetIsPlayingTutorial( bool bPlaying ) { m_bIsPlayingTutorial = bPlaying; }
-		const bool		GetIsExitingTutorial() { return m_bIsExitingTutorial; }
+		bool		GetIsExitingTutorial() { return m_bIsExitingTutorial; }
 		void			SetIsExitingTutorial( bool bExiting ) { m_bIsExitingTutorial = bExiting; }
 		X2_STATE		GetStateIDBeforeTutorial() { return m_StateIDBeforeTutorial; }
 		void			SetStateIDBeforeTutorial( X2_STATE stateID ) { m_StateIDBeforeTutorial = stateID; }
 
 		void			SetPlayFieldDungeon( bool bPlay) { m_bIsPlayFieldDungeon = bPlay; }
-		const bool		GetPlayFieldDungeon() { return m_bIsPlayFieldDungeon; }
+		bool		GetPlayFieldDungeon() { return m_bIsPlayFieldDungeon; }
 		void			SetExitFieldDungeon( bool bPlay) { m_bIsExitFieldDungeon = bPlay; }
-		const bool		GetExitFieldDungeon() { return m_bIsExitFieldDungeon; }
+		bool		GetExitFieldDungeon() { return m_bIsExitFieldDungeon; }
 
 
 		CX2StateAutoChanger& GetStateAutoChanger() { return m_AutoStateChanger; }
@@ -1110,7 +1102,6 @@ class CX2Main : public CKTDXStage
 		CX2NoticeManager* GetNoticeManager() { return m_pNoticeManager; }
 
 		void			SetQuitType( int quitType ) { m_QuitType = quitType; }
-		void			SetBetweenCharToCharSize( HDC hdc, int sizeValue = 0 ) { SetTextCharacterExtra( hdc, sizeValue ); }
 
 		void			BuyItemSuper_LUA( int itemID, int iQuantity = 1, short sPeriod = 0 );
 
@@ -1210,7 +1201,6 @@ class CX2Main : public CKTDXStage
 		void			EndWorldCamera();
 		void			SetProjectionFov( float fFov );
 		D3DXVECTOR2		GetWindowPos( D3DXVECTOR2 windowSize, D3DXVECTOR2 wantMousePoint );
-		void			OpenURL( WCHAR* pURL );
 		void			CreateStateChangeDLG( const WCHAR* szExplanation, wstring wstrCustomLuaFileName = L"", wstring wstrPlaySoundFileName = L"" );
 		void			DeleteStateChangeDLG();
 
@@ -1231,7 +1221,6 @@ class CX2Main : public CKTDXStage
 
 		void			AddMemoryInfo( stringstream& strstm );
 
-		void			AddSystemInfo(stringstream& strstm);
 		void			AddDLLInfo(stringstream& strstm);
 		void			AddProcessInfo(stringstream& strstm, bool bThreadInfo = true);
 		void 			UpdateProcessList();
@@ -1419,7 +1408,6 @@ class CX2Main : public CKTDXStage
 		void			DllManagerReport();
 
 //{{ megagame / 박교현 / 2010.05.12 / 시스템 정보
-		CX2SystemInfo*	GetSystemInfo() const	{ return m_pSystemInfo; }
 //}} megagame / 박교현 / 2010.05.12 / 시스템 정보
 
 
@@ -1641,7 +1629,6 @@ class CX2Main : public CKTDXStage
 		CX2InformerManager*			m_pInformerManager;
 		CX2MemoryHolder*			m_pMemoryHolder;
 
-		HINTERNET					m_hInternet;
 
 		CKTDGUIDialogType				m_pDLGStateChange;
 		vector<wstring>				m_KOMList;
@@ -1711,7 +1698,6 @@ class CX2Main : public CKTDXStage
 
 
 //{{ megagame / 박교현 / 2010.05.12 / 시스템 정보
-		CX2SystemInfo*					m_pSystemInfo;
 //}} megagame / 박교현 / 2010.05.12 / 시스템 정보
 
 		//{{ JHKang // 강정훈 // 2010/10/06
@@ -1817,32 +1803,10 @@ extern CX2ChatBox*		g_pChatBox;
 
 extern FILE*			g_fpStream;
 extern FILE*			g_fpStreamError;
-extern HINTERNET		g_hInternet;
 
 
 
 
-inline void OpenGlobalURL( WCHAR* pURL )
-{
-	if( g_hInternet == NULL )
-		return;
-
-	// 파일이 있는 URL을 열어놓는다.
-	HINTERNET hURLFile;
-	if ( NULL == ( hURLFile = ::InternetOpenUrl( g_hInternet,
-		pURL,
-		NULL,
-		0,
-		INTERNET_FLAG_RELOAD |
-		INTERNET_FLAG_NO_CACHE_WRITE,
-		0 ) ) )
-	{
-		ErrorLog( XEM_ERROR107 );
-		return;
-	}
-
-	::InternetCloseHandle( hURLFile );
-}
 
 
 

@@ -14,8 +14,8 @@ class CX2SlideShot
 		void		ScenEnd();
 
 		void		GoNextScen();
-		void		AddText_LUA( bool bNameLeft, int NameID, int TextID, float fFullTime = 0.0f, char* pColor = "#C000000" );
-		void		AddText2_LUA( bool bNameLeft, int NameID, int TextID, float fTime = 0.0f, char* pColor = "#C000000" );
+		void		AddText_LUA( bool bNameLeft, int NameID, int TextID, float fFullTime = 0.0f, const char* pColor = "#C000000" );
+		void		AddText2_LUA( bool bNameLeft, int NameID, int TextID, float fTime = 0.0f, const char* pColor = "#C000000" );
 		void		CannotInput( float fTime );
 
 		float		GetNowTime(){ return m_fScenTime; }

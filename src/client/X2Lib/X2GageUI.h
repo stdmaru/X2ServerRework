@@ -10,7 +10,7 @@
 class CX2GameUnit;
 class CX2RidingPet;
 class CX2GageUI;
-typedef boost::intrusive_ptr<CX2GageUI> CX2GageUIPtr;
+typedef x2::intrusive_ptr<CX2GageUI> CX2GageUIPtr;
 
 class CX2GageUI
     : private x2::NonCopyable
@@ -73,19 +73,19 @@ public:
 	};
 
 public:
-	CX2GageUI() : m_fAlpha( 0.0f ), m_bShow( true )
-        , m_uRefCount(0)
+	CX2GageUI() : m_uRefCount(0), m_fAlpha( 0.0f )
+        , m_bShow( true )
 	{}
 
 	virtual ~CX2GageUI();
 
 	virtual void			InitUI(){};
-    virtual void			OnFrameMove( float fElapsedTime_ ) = NULL;
+    virtual void			OnFrameMove( float fElapsedTime_ ) = 0;
 	virtual	void			OnFrameRender() {};
 
-	virtual void			CrashMyStateGageUI( const D3DXVECTOR2& _min, const D3DXVECTOR2& _max, D3DXCOLOR changeColor ) { ASSERT( !L"Crash Base Function is not available" ); }
-	virtual void			SetHpTexture( const WCHAR* pTexName_ ) { ASSERT( !L"Hp Base function is not available"); }
-	virtual void			SetMpTexture( const WCHAR* pTexName_ ) { ASSERT( !L"Mp Base function is not available"); }
+	virtual void			CrashMyStateGageUI( const D3DXVECTOR2& /*_min*/, const D3DXVECTOR2& /*_max*/, D3DXCOLOR /*changeColor*/ ) { ASSERT( !L"Crash Base Function is not available" ); }
+	virtual void			SetHpTexture( const WCHAR* /*pTexName_*/ ) { ASSERT( !L"Hp Base function is not available"); }
+	virtual void			SetMpTexture( const WCHAR* /*pTexName_*/ ) { ASSERT( !L"Mp Base function is not available"); }
 
 	virtual bool			GetShow() const { return m_bShow; }
 	virtual void			SetShow( const bool bShow_ ) { m_bShow = bShow_; }
@@ -95,14 +95,14 @@ public:
 
 	//void					SetOwnerGameUnit( CX2GameUnit* pOwnerGameUnit_ ) { m_optrGameUnit = pOwnerGameUnit_; }
 
-	virtual	void			PushBuff( const BuffIcon& BuffIconInfo_, bool bIsDeBuff_){};
-	virtual	void			EraseBuff(BUFF_TEMPLET_ID eBuffID_, bool bIsDeBuff_){};
+	virtual	void			PushBuff( const BuffIcon& /*BuffIconInfo_*/, bool /*bIsDeBuff_*/){};
+	virtual	void			EraseBuff(BUFF_TEMPLET_ID /*eBuffID_*/, bool /*bIsDeBuff_*/){};
 	virtual	void			ClearBuffList(){};
 	virtual	void			UpdateBuffIcon(){};
-	virtual void			NotifyDurationTime5sec(BUFF_TEMPLET_ID eBuffID_){};
-	virtual void			InitBuffIconFlicker(BUFF_TEMPLET_ID eBuffID_) {};
+	virtual void			NotifyDurationTime5sec(BUFF_TEMPLET_ID /*eBuffID_*/){};
+	virtual void			InitBuffIconFlicker(BUFF_TEMPLET_ID /*eBuffID_*/) {};
 
-	virtual void SetDurationTime( BUFF_TEMPLET_ID eBuffID_, int iTime_){}
+	virtual void SetDurationTime( BUFF_TEMPLET_ID /*eBuffID_*/, int /*iTime_*/){}
 
     void    AddRef()    {   ++m_uRefCount; }
     void    Release()   { if ( (--m_uRefCount) == 0 )   delete this; }
@@ -123,7 +123,7 @@ IMPLEMENT_INTRUSIVE_PTR( CX2GageUI )
 #define MAX_NUM_OF_POST_FIX_COLOR 5
 
 class CX2BossGageUI;
-typedef boost::intrusive_ptr<CX2BossGageUI> CX2BossGageUIPtr;
+typedef x2::intrusive_ptr<CX2BossGageUI> CX2BossGageUIPtr;
 
 class CX2BossGageUI : public CX2GageUI
 {
@@ -251,7 +251,7 @@ public:
 	virtual void			InitBuffIconFlicker(BUFF_TEMPLET_ID eBuffID_);
 
 protected:
-	virtual void			SetCharacterImage( const CX2Unit::UNIT_CLASS eGameUnitClass_ ) = NULL;
+	virtual void			SetCharacterImage( const CX2Unit::UNIT_CLASS eGameUnitClass_ ) = 0;
 	void	UpdateGageForUV( IN CKTDGUIStatic* pStaticBar_, IN int iPicNum, IN const WCHAR* pUVName_,
 							 IN float fPercent_, IN bool isWidth_ );
 
@@ -287,7 +287,7 @@ public:
 	virtual	void			UpdateBuffIcon();
 	void					SetBuffIconGuideDesc();
 	virtual void			SetCharacterImage( const CX2Unit::UNIT_CLASS eGameUnitClass_ );
-	virtual void			ResetGageUIEtc( const CX2Unit::UNIT_CLASS eGameUnitClass_ ){}
+	virtual void			ResetGageUIEtc( const CX2Unit::UNIT_CLASS /*eGameUnitClass_*/ ){}
 
 	virtual void SetDurationTime( BUFF_TEMPLET_ID eBuffID_, int iTime_);
 protected:
@@ -433,12 +433,11 @@ public:
 		m_pDLGOtherUnit( NULL ), m_wstrNickName( kPartyUserInfo_.m_wstrNickName ),
 		m_uiLevel( kPartyUserInfo_.m_ucLevel ), m_uidGameUnit( kPartyUserInfo_.m_iUnitUID ),
 		m_uiPositionIndex( uiPositionIndex_ ),
-		m_iVoteButtonType ( BVBT_NONE ),		// PartyMemberGageUI �� ���� ��ư Ÿ��
-		m_pButtonVotePlayer ( NULL ),			// �ش� ��ư�� Dlg ������
-		m_pButtonVoteComplete ( NULL ),			// �ش� ��ư�� Dlg ������
-
-		m_bOnPopUp( false )
-		, m_bIsSkillUITypeA ( false )
+		m_bOnPopUp( false ),
+		m_bIsSkillUITypeA ( false ),
+		m_pButtonVotePlayer ( NULL ),
+		m_pButtonVoteComplete ( NULL ),
+		m_iVoteButtonType ( BVBT_NONE )
 	{}
 
 	virtual ~CX2PartyMemberGageUI();
@@ -452,9 +451,9 @@ public:
 
     virtual void			OnFrameMove( float fElapsedTime_ );
 
-	virtual void			CrashMyStateGageUI( const D3DXVECTOR2& _min, const D3DXVECTOR2& _max, D3DXCOLOR changeColor ) { ASSERT( !L"Crash Base Function is not available" ); }
-	virtual void			SetHpTexture( const WCHAR* pTexName_ ) { ASSERT( !L"Hp Base function is not available"); }
-	virtual void			SetMpTexture( const WCHAR* pTexName_ ) { ASSERT( !L"Mp Base function is not available"); }
+	virtual void			CrashMyStateGageUI( const D3DXVECTOR2& /*_min*/, const D3DXVECTOR2& /*_max*/, D3DXCOLOR /*changeColor*/ ) { ASSERT( !L"Crash Base Function is not available" ); }
+	virtual void			SetHpTexture( const WCHAR* /*pTexName_*/ ) { ASSERT( !L"Hp Base function is not available"); }
+	virtual void			SetMpTexture( const WCHAR* /*pTexName_*/ ) { ASSERT( !L"Mp Base function is not available"); }
 
 	void					UpdateGageDataFromGameUnit();
 	void					UpdateResurrectShortKey();
@@ -489,7 +488,7 @@ public:
 
 
 protected:
-	virtual		void CX2PartyMemberGageUI::SetCharacterImage( const CX2Unit::UNIT_CLASS eGameUnitClass_ );
+	virtual		void SetCharacterImage( const CX2Unit::UNIT_CLASS eGameUnitClass_ );
 
 
 
@@ -541,15 +540,15 @@ public:
     virtual void			OnFrameMove( float fElapsedTime_ );
 	void			UpdatePvpRank();
 
-	virtual void	CrashMyStateGageUI( const D3DXVECTOR2& _min, const D3DXVECTOR2& _max, D3DXCOLOR changeColor )
+	virtual void	CrashMyStateGageUI( const D3DXVECTOR2& /*_min*/, const D3DXVECTOR2& /*_max*/, D3DXCOLOR /*changeColor*/ )
 	{
 		ASSERT( !L"Crash Base Function is not available" );
 	}
-	virtual void	SetHpTexture( const WCHAR* pTexName_ )
+	virtual void	SetHpTexture( const WCHAR* /*pTexName_*/ )
 	{
 		ASSERT( !L"Hp Base function is not available");
 	}
-	virtual void	SetMpTexture( const WCHAR* pTexName_ )
+	virtual void	SetMpTexture( const WCHAR* /*pTexName_*/ )
 	{
 		ASSERT( !L"Mp Base function is not available");
 	}
@@ -569,7 +568,7 @@ public:
 	virtual	void			UpdateBuffIcon();
 
 protected:
-	virtual void CX2PVPPlayerGageUI::SetCharacterImage( const CX2Unit::UNIT_CLASS eGameUnitClass_ );
+	virtual void SetCharacterImage( const CX2Unit::UNIT_CLASS eGameUnitClass_ );
 
 
 protected:
@@ -670,7 +669,7 @@ public:
 	virtual void			UpdateHyperGage( CKTDGUIStatic* pStaticStateBar_ );			/// �ֵ��� DP �ý����� ����, ���� �Լ��� ����
 	virtual void			UpdateMpAndHyperAndDetonationGage();
 
-	virtual void			ResetGageUIEtc( const CX2Unit::UNIT_CLASS eGameUnitClass_ )
+	virtual void			ResetGageUIEtc( const CX2Unit::UNIT_CLASS /*eGameUnitClass_*/ )
 	{
 		InitMutationCountUI();
 		InitDPGageUI();

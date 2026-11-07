@@ -4557,7 +4557,7 @@ int CX2PostBox::GetPostFee( IN int iED, IN const CX2Item* pItemData )
 		CX2Unit* pMyUnit = g_pData->GetMyUser()->GetSelectUnit();
 		if( NULL != pMyUnit )
 		{
-			for( int iFreeMailTicketIDIndex = 0; iFreeMailTicketIDIndex < ARRAY_SIZE( _CONST_FREE_MAIL_TICKET_::arriFreeMailTicketID ); ++iFreeMailTicketIDIndex )
+			for( int iFreeMailTicketIDIndex = 0; iFreeMailTicketIDIndex < std::ssize( _CONST_FREE_MAIL_TICKET_::arriFreeMailTicketID ); ++iFreeMailTicketIDIndex )
 			{
 				if( NULL != pMyUnit->GetInventory().GetItemByTID( _CONST_FREE_MAIL_TICKET_::arriFreeMailTicketID[iFreeMailTicketIDIndex] ) )
 				{

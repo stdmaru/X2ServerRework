@@ -14,7 +14,7 @@ CX2UserSkillTree::CX2UserSkillTree(void)
 	, m_usSelectPage( 0 )
 {
 	static_assert( ARRAY_SIZE( m_aEquippedSkill ) == ARRAY_SIZE( m_aEquippedSkillSlotB ) , "");
-	for( int i=0; i<ARRAY_SIZE( m_aEquippedSkill ); ++i )
+	for( int i=0; i<std::ssize( m_aEquippedSkill ); ++i )
 	{
 		m_aEquippedSkill[i].Init();
 		m_aEquippedSkillSlotB[i].Init();
@@ -46,7 +46,7 @@ void CX2UserSkillTree::OnFrameMove( double fTime, float fElapsedTime )
 
 
 
-	for( int i=0; i<ARRAY_SIZE( m_aEquippedSkill ); ++i )
+	for( int i=0; i<std::ssize( m_aEquippedSkill ); ++i )
 	{
 		SkillSlotData& skillData = m_aEquippedSkill[i];
 		if( skillData.m_fCoolTimeLeft > 0.f )
@@ -61,7 +61,7 @@ void CX2UserSkillTree::OnFrameMove( double fTime, float fElapsedTime )
 		}
 	}
 
-	for( int i=0; i<ARRAY_SIZE( m_aEquippedSkillSlotB ); i++ )
+	for( int i=0; i<std::ssize( m_aEquippedSkillSlotB ); i++ )
 	{
 		SkillSlotData& skillData = m_aEquippedSkillSlotB[i];
 		if( skillData.m_fCoolTimeLeft > 0.f )
@@ -178,7 +178,7 @@ void CX2UserSkillTree::Reset( bool bResetSkillTree, bool bResetEquippedSkill, bo
 {
 	if( true == bResetEquippedSkill )
 	{
-		for( int i=0; i<ARRAY_SIZE( m_aEquippedSkill ); ++i )
+		for( int i=0; i<std::ssize( m_aEquippedSkill ); ++i )
 		{
 			m_aEquippedSkill[i].Init();
 			m_aEquippedSkillSlotB[i].Init();
@@ -215,7 +215,7 @@ void CX2UserSkillTree::Reset( bool bResetSkillTree, bool bResetGuildSkillTree, b
 {
 	if( true == bResetEquippedSkill )
 	{
-		for( int i=0; i<ARRAY_SIZE( m_aEquippedSkill ); ++i )
+		for( int i=0; i<std::ssize( m_aEquippedSkill ); ++i )
 		{
 			m_aEquippedSkill[i].Init();
 			m_aEquippedSkillSlotB[i].Init();
@@ -335,7 +335,7 @@ void CX2UserSkillTree::SetEquippedSkill( const int iSlotIndex_, const bool bSlot
 void CX2UserSkillTree::SetEquippedSkill( const KSkillData aEquippedSkill[], const KSkillData aEquippedSkillSlotB[] )
 {
 	/// �ʱ�ȭ
-	for( int i=0; i<ARRAY_SIZE( m_aEquippedSkill ); ++i )
+	for( int i=0; i<std::ssize( m_aEquippedSkill ); ++i )
 	{
 		m_aEquippedSkill[i].Init();
 		m_aEquippedSkillSlotB[i].Init();
@@ -343,14 +343,14 @@ void CX2UserSkillTree::SetEquippedSkill( const KSkillData aEquippedSkill[], cons
 
 
 	/// A ����(ID, ����)
-	for( int i=0; i<ARRAY_SIZE( m_aEquippedSkill ); ++i )
+	for( int i=0; i<std::ssize( m_aEquippedSkill ); ++i )
 	{
 		m_aEquippedSkill[i].m_eID			= (CX2SkillTree::SKILL_ID) aEquippedSkill[i].m_iSkillID;
 		m_aEquippedSkill[i].m_iSkillLevel	= (int) aEquippedSkill[i].m_cSkillLevel;
 	}
 
 	/// B ����(ID, ����)
-	for( int i=0; i<ARRAY_SIZE( m_aEquippedSkillSlotB ); i++ )
+	for( int i=0; i<std::ssize( m_aEquippedSkillSlotB ); i++ )
 	{
 		m_aEquippedSkillSlotB[i].m_eID			= (CX2SkillTree::SKILL_ID) aEquippedSkillSlotB[i].m_iSkillID;
 		m_aEquippedSkillSlotB[i].m_iSkillLevel	= (int) aEquippedSkillSlotB[i].m_cSkillLevel;
@@ -378,12 +378,12 @@ void CX2UserSkillTree::SetEquippedSkillLevelPlusBySlotIndex( const int iEquipped
 */
 void CX2UserSkillTree::SetEquippedSkillLevelPlus( const int aEquippedSkillLevelPlus[], const int aEquippedSkillLevelPlusSlotB[] )
 {
-	for( int i=0; i<ARRAY_SIZE( m_aEquippedSkill ); ++i )
+	for( int i=0; i<std::ssize( m_aEquippedSkill ); ++i )
 	{
 		m_aEquippedSkill[i].m_iSkillLevelPlus	= aEquippedSkillLevelPlus[i];
 	}
 
-	for( int i=0; i<ARRAY_SIZE( m_aEquippedSkillSlotB ); ++i )
+	for( int i=0; i<std::ssize( m_aEquippedSkillSlotB ); ++i )
 	{
 		m_aEquippedSkillSlotB[i].m_iSkillLevelPlus	= aEquippedSkillLevelPlusSlotB[i];
 	}
@@ -1407,7 +1407,7 @@ void CX2UserSkillTree::ExpireCashSkillPoint( OUT const std::map<int, int> mapHav
 
 
 	// ������ ��ų �߿��� skill level�� 0������ ��ų�� ������ Ż����Ų��.
-	for( int i=0; i<ARRAY_SIZE( m_aEquippedSkill ); ++i )
+	for( int i=0; i<std::ssize( m_aEquippedSkill ); ++i )
 	{
 		SkillSlotData& skillSlotData = m_aEquippedSkill[i];
 		if( false == DoIHaveThisSkill( skillSlotData.m_eID ) )
@@ -1419,7 +1419,7 @@ void CX2UserSkillTree::ExpireCashSkillPoint( OUT const std::map<int, int> mapHav
 	}
 
 
-	for( int i=0; i<ARRAY_SIZE( m_aEquippedSkillSlotB ); i++ )
+	for( int i=0; i<std::ssize( m_aEquippedSkillSlotB ); i++ )
 	{
 		SkillSlotData& skillSlotData = m_aEquippedSkillSlotB[i];
 		if( false == DoIHaveThisSkill( skillSlotData.m_eID ) )
@@ -1447,7 +1447,7 @@ void CX2UserSkillTree::ExpireGuildCashSkillPoint()
     // oasis907 : ����� [2009.11.27] // ��� ��ų�� ��Ƽ�갡 �����Ƿ� �ʿ����
 /*
 	// ������ ��ų �߿��� skill level�� 0������ ��ų�� ������ Ż����Ų��.
-	for( int i=0; i<ARRAY_SIZE( m_aEquippedSkill ); i++ )
+	for( int i=0; i<std::ssize( m_aEquippedSkill ); i++ )
 	{
 		SkillSlotData& skillSlotData = m_aEquippedSkill[i];
 		if( false == DoIHaveThisSkill( skillSlotData.m_eID ) )
@@ -1457,7 +1457,7 @@ void CX2UserSkillTree::ExpireGuildCashSkillPoint()
 	}
 
 
-	for( int i=0; i<ARRAY_SIZE( m_aEquippedSkillSlotB ); i++ )
+	for( int i=0; i<std::ssize( m_aEquippedSkillSlotB ); i++ )
 	{
 		SkillSlotData& skillSlotData = m_aEquippedSkillSlotB[i];
 		if( false == DoIHaveThisSkill( skillSlotData.m_eID ) )
@@ -1787,7 +1787,7 @@ int CX2UserSkillTree::GetSkillEquippedSlotIndex( CX2SkillTree::SKILL_ID eSkillID
 {
 	if( false == bSlotB )
 	{
-		for( int i=0; i<ARRAY_SIZE( m_aEquippedSkill ); ++i )
+		for( int i=0; i<std::ssize( m_aEquippedSkill ); ++i )
 		{
 			if( m_aEquippedSkill[i].m_eID == eSkillID )
 				return i;
@@ -1796,7 +1796,7 @@ int CX2UserSkillTree::GetSkillEquippedSlotIndex( CX2SkillTree::SKILL_ID eSkillID
 	}
 	else
 	{
-		for( int i=0; i<ARRAY_SIZE( m_aEquippedSkillSlotB ); ++i )
+		for( int i=0; i<std::ssize( m_aEquippedSkillSlotB ); ++i )
 		{
 			if( m_aEquippedSkillSlotB[i].m_eID == eSkillID )
 				return i;
@@ -1832,7 +1832,7 @@ void CX2UserSkillTree::SetSkillCoolTimeLeft( CX2SkillTree::SKILL_ID eSkillID, fl
 {
 	CX2GageManager* pGageManager = CX2GageManager::GetInstance();
 
-	for( int i=0; i<ARRAY_SIZE( m_aEquippedSkill ); ++i )
+	for( int i=0; i<std::ssize( m_aEquippedSkill ); ++i )
 	{
 		SkillSlotData& skillSlot = m_aEquippedSkill[ i ];
 
@@ -1870,7 +1870,7 @@ void CX2UserSkillTree::SetSkillCoolTimeLeft( CX2SkillTree::SKILL_ID eSkillID, fl
 
 	if( true == GetEnabledSkillSlotB() )
 	{
-		for( int i=0; i<ARRAY_SIZE( m_aEquippedSkillSlotB ); ++i )
+		for( int i=0; i<std::ssize( m_aEquippedSkillSlotB ); ++i )
 		{
 			SkillSlotData& skillSlot = m_aEquippedSkillSlotB[ i ];
 

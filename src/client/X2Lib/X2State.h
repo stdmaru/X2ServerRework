@@ -116,9 +116,9 @@ class CX2State : public CKTDXStage
 		{
 		public:
 			FadeInOutNotice( const WCHAR* pFadeInOutNoticeText_, float fFadeInOutNoticeTime_ )
-				: m_wstrFadeInOutNoticeText ( pFadeInOutNoticeText_ )
-				,m_fFadeInOutNoticeTime( fFadeInOutNoticeTime_ )
+				: m_fFadeInOutNoticeTime( fFadeInOutNoticeTime_ )
 				,m_fFadeInOutNoticeMaxTime( fFadeInOutNoticeTime_ )
+				,m_wstrFadeInOutNoticeText ( pFadeInOutNoticeText_ )
 				,m_vOffsetPos(D3DXVECTOR2(0.f,0.f))
 			{
 				if( 5.f > fFadeInOutNoticeTime_ )	/// 일단 최소 출력 시간을 5초로 설정
@@ -403,11 +403,11 @@ class CX2State : public CKTDXStage
 		bool Handler_EGS_ADMIN_CHANGE_COUPLE_DATE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
 		bool Handler_EGS_JOIN_WEDDING_HALL_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
 
-		virtual bool Handler_EGS_CALL_MY_LOVER_STATE_CHANGE_FIELD_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam ){ return false;};
+		virtual bool Handler_EGS_CALL_MY_LOVER_STATE_CHANGE_FIELD_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ ){ return false;};
 
 
-		virtual void PopTalkBox( UidType iUnitUID_, const WCHAR* pWstrMsg_,
-			const D3DXCOLOR& coTextColor_, const D3DXCOLOR& coOutColor_, const D3DXCOLOR& coBackColor_ ) {};
+		virtual void PopTalkBox( UidType /*iUnitUID_*/, const WCHAR* /*pWstrMsg_*/,
+			const D3DXCOLOR& /*coTextColor_*/, const D3DXCOLOR& /*coOutColor_*/, const D3DXCOLOR& /*coBackColor_*/ ) {};
 
 
 		wstring GetExpirationDataDesc( IN const SEnum::AGENCY_SHOP_TYPE eAgencyShopType_, IN const wstring& wstrAgencyShopExpirationDate_ );
@@ -634,7 +634,7 @@ class CX2State : public CKTDXStage
         void CheckAndSendingPlayStatus( float fElapsedTime_ );
 
 		bool ProcessGameScoreAndPostEffect();
-		virtual void ProcessShowMiniMap( const bool bHide_ ) {};
+		virtual void ProcessShowMiniMap( const bool /*bHide_*/ ) {};
 
 
 

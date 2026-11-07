@@ -35,11 +35,11 @@
 			- �����ǿ� Ż �� �߰�
 
 */
-#include <boost/bimap/bimap.hpp>
+#include "x2/platform/bimap.h"
 #include "./X2SoundCloseManager.h"
 
 class CX2RidingPet;
-typedef boost::intrusive_ptr<CX2RidingPet> CX2RidingPetPtr;
+typedef x2::intrusive_ptr<CX2RidingPet> CX2RidingPetPtr;
 
 //#pragma region CX2RidingPet
 /** @class : CX2RidingPet
@@ -320,8 +320,8 @@ public:
 	//#pragma endregion ���� ������
 
 	//#pragma region typedef
-	typedef boost::bimaps::bimap< char, string > StateBiMap;				/// ���� �� ���� ���� ����� ���� bimap���� �ٲ�
-	typedef boost::bimaps::bimap< char, string >::value_type BiMapValue;	/// biMap�� �����ϱ� ���� ��
+	typedef x2::bimap< char, string > StateBiMap;				/// ���� �� ���� ���� ����� ���� bimap���� �ٲ�
+	typedef x2::bimap< char, string >::value_type BiMapValue;	/// biMap�� �����ϱ� ���� ��
 	typedef std::map< char, RidingPetStateData > RidingPetStateDataMap;		/// StateDataMap
 	typedef map< float, bool > EventTimeMap;								/// �̺�Ʈ Ÿ�̸� ��
 	//#pragma endregion Ÿ�� ����
@@ -379,7 +379,7 @@ public:
 		return m_pXSkinAnim->GetCloneFramePosition( pBoneName_, vPos_);
 	}
 
-	const int GetNowState() { return m_SyncData.m_nowState; }
+	int GetNowState() { return m_SyncData.m_nowState; }
 
 	const CKTDGXSkinAnim* GetXSkinAnim() const
 	{

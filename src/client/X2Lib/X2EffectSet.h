@@ -7,12 +7,12 @@
 
 class CX2GameUnit;
 class CX2SquareUnit;
-typedef boost::intrusive_ptr<CX2SquareUnit>    CX2SquareUnitPtr;
+typedef x2::intrusive_ptr<CX2SquareUnit>    CX2SquareUnitPtr;
 
 class CX2PET;
 
 class CX2RidingPet;
-typedef boost::intrusive_ptr<CX2RidingPet> CX2RidingPetPtr;
+typedef x2::intrusive_ptr<CX2RidingPet> CX2RidingPetPtr;
 
 
 struct  CX2EffectSet_EffectSetInstance_TAG {};
@@ -87,7 +87,7 @@ public:
 				return false;
 			return true;
 		}
-		bool operator== ( const CameraShakeData& rhs_ )
+		bool operator== ( const CameraShakeData& rhs_ ) const
 		{
 			if( m_eShakeType				!= rhs_.m_eShakeType			) return false;
 			if( m_iLimitDistanceSq			!= rhs_.m_iLimitDistanceSq		) return false;
@@ -194,7 +194,7 @@ public:
 				return false;
 			return true;
 		}
-		bool operator==( const EffectData& rhs_ )
+		bool operator==( const EffectData& rhs_ ) const
 		{
 			if( m_eEffectType					!= rhs_.m_eEffectType				) return false;
 			if( m_EffectName					!= rhs_.m_EffectName				) return false;
@@ -252,6 +252,7 @@ public:
 		, m_bLandPosition( false )
 		, m_vRotateRel( 0, 0, 0 )
 		, m_bApplyUnitRotation( true )
+		, m_bApplyUnitRotationMirror( false )
 		, m_bApplyInstanceScale( true )
 		, m_vScale( 0, 0, 0)
 		, m_vScaleOnLeft( 0, 0, 0)
@@ -262,7 +263,6 @@ public:
 		, m_bBoneTraceTargetMesh( false )
 		, m_bTraceUserTargetForce( false )
 		, m_fLimitDistanceSq( -1.f )
-		, m_bApplyUnitRotationMirror( false )
 		{
 		}
 	};
@@ -466,7 +466,7 @@ public:
 			EffectSetInstance( EffectSetData* pEffectSetData, CKTDGXSkinAnimPtr pSkinAnim, CX2GameUnit* pGameUnit, CX2GameUnit* pTraceTargetGameUnit, CX2SquareUnitPtr pSquareUnit, CX2PET *pPet);
 
 
-		void OnFrameMove( double fTime, float fElapsedTime )
+		void OnFrameMove( double /*fTime*/, float fElapsedTime )
 		{
 			m_fPrevElapsedTime = m_fElapsedTime;
 			m_fElapsedTime += fElapsedTime;
@@ -592,7 +592,7 @@ public:
 	CX2EffectSet::Handle PlayEffectSetByMeshPlayer( const WCHAR* wstrEffectSetName,
 													CKTDGXMeshPlayer::CXMeshInstanceHandle hTargetMesh, EFFECT_TYPE	eTargetMeshType );
 
-	void CX2EffectSet::SetEffectScale_LUA (CX2EffectSet::Handle hHandle, D3DXVECTOR3 vScale, bool bDamageEffectSclae )
+	void SetEffectScale_LUA (CX2EffectSet::Handle hHandle, D3DXVECTOR3 vScale, bool bDamageEffectSclae )
 	{
 		if( hHandle == INVALID_EFFECTSET_HANDLE )
 			return;

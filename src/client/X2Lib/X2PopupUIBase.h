@@ -27,7 +27,7 @@ public:
 	}
 
 	virtual void ClosePopupMenu();
-	virtual void OpenUserPopupMenu( UidType iUnitUID, bool bPartyMember = false ) { };
+	virtual void OpenUserPopupMenu( UidType /*iUnitUID*/, bool /*bPartyMember*/ = false ) { };
 	virtual void SetStage( CKTDXStage* pNowState  );
 
 	void ChangeTopImage( IN bool bChange_ );

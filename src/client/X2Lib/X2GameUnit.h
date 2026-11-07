@@ -812,7 +812,7 @@ class CX2GameUnit : public CKTDGObject, public CKTDXDeviceHolder, public KObserv
 // 				m_vecJumpSpeedFactor.clear();
 			}
 
-			void OnFrameMove( double fTime, float fElapsedTime )
+			void OnFrameMove( double /*fTime*/, float /*fElapsedTime*/ )
 			{
 // 				if( m_MoveSpeedFactor.m_fDuration > 0.f )
 // 				{
@@ -1336,7 +1336,7 @@ class CX2GameUnit : public CKTDGObject, public CKTDXDeviceHolder, public KObserv
 				m_fEffectiveRate = 0.f;
 			}
 
-			void OnFrameMove( double fTime, float fElapsedTime )
+			void OnFrameMove( double /*fTime*/, float fElapsedTime )
 			{
 				if( m_fTimeLeft > 0.f )
 				{
@@ -1434,7 +1434,7 @@ class CX2GameUnit : public CKTDGObject, public CKTDXDeviceHolder, public KObserv
 					m_fForceDownValueRateOfMeleeAttack = 1.f;
 			}
 
-			void OnFrameMove( double fTime, float fElapsedTime )
+			void OnFrameMove( double /*fTime*/, float /*fElapsedTime*/ )
 			{
 				KTDXPROFILE();
 			}
@@ -1542,7 +1542,7 @@ class CX2GameUnit : public CKTDGObject, public CKTDXDeviceHolder, public KObserv
 //-------------------------------------------------------------------------------------------------------
 
 		struct DamageEffectGroupData;
-        typedef boost::intrusive_ptr<DamageEffectGroupData> DamageEffectGroupDataPtr;
+        typedef x2::intrusive_ptr<DamageEffectGroupData> DamageEffectGroupDataPtr;
 
 		struct DamageEffectGroupData
             : private x2::NonCopyable
@@ -1557,11 +1557,11 @@ class CX2GameUnit : public CKTDGObject, public CKTDXDeviceHolder, public KObserv
 																	///				없는 데미지 이펙트는 그룹 데미지가 동작되지 않는다. )
 
 			DamageEffectGroupData()
-				: m_wstrDamageEffectName( L"" )
+				: m_uRefCount(0)
+				, m_wstrDamageEffectName( L"" )
 				, m_uidAttackerUID( -1 )
-				, m_fHitGFap( 0.f )
 				, m_eAttackerGameUnitType( CX2GameUnit::GUT_USER )
-                , m_uRefCount(0)
+                , m_fHitGFap( 0.f )
 			{
 			}
 
@@ -1596,7 +1596,7 @@ class CX2GameUnit : public CKTDGObject, public CKTDXDeviceHolder, public KObserv
 		static void					InitComponent( InitDeviceData& OutDevice_, KLuaManager& luaManager_ );
 		static void                 InitWeaponDataForNPC( InitDeviceData& OutDevice_, KLuaManager& luaManager_ );
 
-		virtual void				Init( bool bUseTeamPos = true, int startPosIndex = -1 )		= NULL;
+		virtual void				Init( bool bUseTeamPos = true, int startPosIndex = -1 )		= 0;
 		virtual void				ReInit( bool bUseTeamPos = true, int startPosIndex = -1 );
 		virtual void				InitEffect();
 		virtual void				DeleteMinorParticle();
@@ -1609,19 +1609,19 @@ class CX2GameUnit : public CKTDGObject, public CKTDXDeviceHolder, public KObserv
 
 //{{ robobeg : 2008-10-28
 		//virtual HRESULT				OnFrameRender()												= NULL;
-        virtual void                OnFrameRender_Draw()                                        = NULL;
+        virtual void                OnFrameRender_Draw()                                        = 0;
 //}} robobeg : 2008-10-28
 
-		virtual HRESULT				OnResetDevice()												= NULL;
-		virtual HRESULT				OnLostDevice()												= NULL;
+		virtual HRESULT				OnResetDevice()												= 0;
+		virtual HRESULT				OnLostDevice()												= 0;
 
 		virtual UidType				GetUnitUID() const { return m_UnitUID; }
 		//virtual CX2Unit*			GetUnit() const { return NULL; }
-		virtual CKTDGXSkinAnimPtr	GetSkinAnimPtr() const = NULL;
+		virtual CKTDGXSkinAnimPtr	GetSkinAnimPtr() const = 0;
 		//virtual void              StateChange( int state, bool bDirectChange = false )		= NULL;
-        virtual bool                StateChange( int state, bool bDirectChange = false )		= NULL;
-		virtual void				DamageReact( CX2DamageManager::DamageData* pDamageData )	= NULL;
-		virtual void				AttackResult()												= NULL;
+        virtual bool                StateChange( int state, bool bDirectChange = false )		= 0;
+		virtual void				DamageReact( CX2DamageManager::DamageData* pDamageData )	= 0;
+		virtual void				AttackResult()												= 0;
 
 		//virtual CX2DamageManager::Damage SetAttackDamage( CX2DamageManager::DamageData* pDamageData ); // obsolete!!
 		//virtual float				SetDefenceDamage( CX2DamageManager::DamageData* pDamageData, CX2DamageManager::Damage damage );		// 이함수 무슨 용도로 만들어 졌는지 모르겠음
@@ -1630,9 +1630,9 @@ class CX2GameUnit : public CKTDGObject, public CKTDXDeviceHolder, public KObserv
 		virtual float				GetFinalDamage( CX2DamageManager::DamageData* pAttDamageData );
 
 		// GetFinalDamage 계산 할 때 검의길 타입에 따라 데미지 변경 시켜 주기 위한 함수
-		virtual float GetFinalDamage_WayOfSword( CX2DamageManager::WAY_OF_SWORD_TYPE eWayOfSwordType_ ){ return 1.f; } // 기본 값 1
-		virtual void SetCriticalPercent_WayOfSword( IN CX2DamageManager::WAY_OF_SWORD_TYPE eWayOfSwordType_,
-													OUT float& fCriticalPercent_) {}
+		virtual float GetFinalDamage_WayOfSword( CX2DamageManager::WAY_OF_SWORD_TYPE /*eWayOfSwordType_*/ ){ return 1.f; } // 기본 값 1
+		virtual void SetCriticalPercent_WayOfSword( IN CX2DamageManager::WAY_OF_SWORD_TYPE /*eWayOfSwordType_*/,
+													OUT float& /*fCriticalPercent_*/) {}
 
 		void InitEnableDash();
 		virtual void SetEnableDash( bool bEnableDash,  ENABLE_DASH_STATE eState = EDS_END );
@@ -1648,22 +1648,22 @@ class CX2GameUnit : public CKTDGObject, public CKTDXDeviceHolder, public KObserv
 
 
 
-		virtual D3DXVECTOR3			GetBonePos( const WCHAR* pBoneName ) const						= NULL;
+		virtual D3DXVECTOR3			GetBonePos( const WCHAR* pBoneName ) const						= 0;
 
 		// 오현빈 // 2012-12-17 // 본이 없는 경우에 대해 체크하기 위해 OUT 인자를 사용하는 함수 추가
-		virtual bool				GetBonePos( const WCHAR* pBoneName, OUT D3DXVECTOR3& pos_ ) const = NULL;
+		virtual bool				GetBonePos( const WCHAR* pBoneName, OUT D3DXVECTOR3& pos_ ) const = 0;
 
 //{{ kimhc // 2011.1.17 // 지정한 Bone의 메트릭스 값을 Trace 함 (chung 코드 참고)
-		virtual const D3DXMATRIX*	GetCombineMatrixFromBoneName( const wstring& wstrBoneName )	const = NULL;
+		virtual const D3DXMATRIX*	GetCombineMatrixFromBoneName( const wstring& wstrBoneName )	const = 0;
 		const D3DXMATRIX* GetCombineMatrixFromWeaponBoneName( int iWeaponIndex, const wstring& wstrWeaponBoneName, int iModelIndex ) const;
 //}} kimhc // 2011.1.17 // 지정한 Bone의 메트릭스 값을 Trace 함 (chung 코드 참고)
 
 		virtual const D3DXMATRIX*	GetCombineMatrixFromRidingPetBoneName( const wstring& wstrBoneName );
 
 		//virtual D3DXVECTOR3			GetWeaponBonePos( const WCHAR* pBoneName );
-		virtual void				Win()														= NULL;
-		virtual void				Lose()														= NULL;
-		virtual void				Draw()														= NULL;
+		virtual void				Win()														= 0;
+		virtual void				Lose()														= 0;
+		virtual void				Draw()														= 0;
 
 //{{ robobeg : 2008-10-21
 		//virtual void				SetShow( bool bShow );
@@ -1673,11 +1673,11 @@ class CX2GameUnit : public CKTDGObject, public CKTDXDeviceHolder, public KObserv
 		void						SetShadow( const WCHAR* pTexName, float fSize );
 
 		virtual bool				IsFullHyperMode() const { return false; }		/// 3각성인가?
-		virtual void				SetFullHyperMode( const bool bFullHyperMode_ ) {}
+		virtual void				SetFullHyperMode( const bool /*bFullHyperMode_*/ ) {}
 
-		virtual void				SetHyperModeCount( int i )	= NULL;
-		virtual int					GetHyperModeCount() const	= NULL;
-		virtual int					GetLastStateHyperModeCount() const = NULL;
+		virtual void				SetHyperModeCount( int i )	= 0;
+		virtual int					GetHyperModeCount() const	= 0;
+		virtual int					GetLastStateHyperModeCount() const = 0;
 
 		float						GetRemainHyperModeTime() const
 		{
@@ -1709,7 +1709,7 @@ class CX2GameUnit : public CKTDGObject, public CKTDXDeviceHolder, public KObserv
 		virtual float				GetFinalDamageToBeChangedBySkill( float fFinalDamage_ ) { return fFinalDamage_; }
 		virtual float				GetFinalDamageToBeChangedByActiveSkill( float fFinalDamage_ ) { return fFinalDamage_; }
 		virtual void				ApplyHyperModeBuff();
-		virtual void				HyperModeBuffEffectStart() = NULL;
+		virtual void				HyperModeBuffEffectStart() = 0;
 		virtual void				HyperModeBuffEffectEnd();
 		virtual void				HyperModeBuffEffectOnFrameMove();
 
@@ -1807,7 +1807,7 @@ class CX2GameUnit : public CKTDGObject, public CKTDXDeviceHolder, public KObserv
 		void SetNowForceDown( const float value ) { GetGageData()->SetNowForceDown( value ); }
 		void SetMaxForceDown( const float value ) { GetGageData()->SetMaxForceDown(value); }
 
-		void SetShowMPGage( bool bShow ) { ASSERT( !L"수정필요!" ); }//GetGageManager()->SetShowMPGage( bShow ); }
+		void SetShowMPGage( bool /*bShow*/ ) { ASSERT( !L"수정필요!" ); }//GetGageManager()->SetShowMPGage( bShow ); }
 		bool GetShowMpGage() { ASSERT( !L"수정필요!" ); return true; } //{ return GetGageManager()->GetShowMPGage(); }
 
 		void SetChangeRateByItem( const float fRate_, const float fTime_ )
@@ -1832,43 +1832,43 @@ class CX2GameUnit : public CKTDGObject, public CKTDXDeviceHolder, public KObserv
 		const wstring&				GetHeadBoneName() const				{ return m_HeadBoneName; }
 		virtual D3DXVECTOR3			GetHeadBonePos() const				{ return D3DXVECTOR3(0,0,0); }
 
-		virtual void				SetStopTime( float fStopTime )		= NULL;
-		virtual void				SetStop2Time( float fStopTime )		= NULL;
+		virtual void				SetStopTime( float fStopTime )		= 0;
+		virtual void				SetStop2Time( float fStopTime )		= 0;
 
-		virtual float				GetStopTime() = NULL;
+		virtual float				GetStopTime() = 0;
 
 
-		virtual int					GetNowStateID() const = NULL;
+		virtual int					GetNowStateID() const = 0;
 		float GetForceInvincible() { return m_fForceInvincibleTime; }
 		float GetShowInvincible() { return m_fShowInvincibleTime; }
 		virtual void				SetForceInvincible( float fTime ){ m_fForceInvincibleTime = fTime; }
 		virtual void				SetShowInvincible( float fTime ){ m_fShowInvincibleTime = fTime; }
 
-		virtual const UnitCondition& GetUnitCondition( bool bFuture = false ) const	= NULL;
-		virtual const StateParam&	GetStateparam( bool bFuture = false ) const	= NULL;
+		virtual const UnitCondition& GetUnitCondition( bool bFuture = false ) const	= 0;
+		virtual const StateParam&	GetStateparam( bool bFuture = false ) const	= 0;
 
-		virtual int					GetLastTouchLineIndex( bool bFuture = false ) const = NULL;
-
-
-		virtual void SetPositionOnLine( const D3DXVECTOR3& vPosition, const int iLineIndex ) = NULL;
+		virtual int					GetLastTouchLineIndex( bool bFuture = false ) const = 0;
 
 
-		virtual const D3DXVECTOR3&	GetLandPos( bool bFuture = false ) const	= NULL;
-		virtual const D3DXVECTOR3&	GetPos( bool bFuture = false ) const = NULL;
-		virtual float				GetXPos( bool bFuture = false )	const	= NULL;
-		virtual float				GetYPos( bool bFuture = false )	const	= NULL;
-		virtual float				GetZPos( bool bFuture = false ) const		= NULL;
+		virtual void SetPositionOnLine( const D3DXVECTOR3& vPosition, const int iLineIndex ) = 0;
+
+
+		virtual const D3DXVECTOR3&	GetLandPos( bool bFuture = false ) const	= 0;
+		virtual const D3DXVECTOR3&	GetPos( bool bFuture = false ) const = 0;
+		virtual float				GetXPos( bool bFuture = false )	const	= 0;
+		virtual float				GetYPos( bool bFuture = false )	const	= 0;
+		virtual float				GetZPos( bool bFuture = false ) const		= 0;
         virtual void BackupPosition() = 0;
         const D3DXVECTOR3&          GetPositionBackup() { if ( m_bPositionBackup == false ) BackupPosition(); return m_vPositionBackup; }
-        virtual void                OnFrameMove_PostProcess() = NULL;
+        virtual void                OnFrameMove_PostProcess() = 0;
         float                       GetElapsedTime() const              { return m_fElapsedTime; }
 
-		virtual const D3DXVECTOR3&	GetRotateDegree() const				= NULL;
-		virtual float				GetXRotateDegree() const			= NULL;
-		virtual float				GetYRotateDegree() const					= NULL;
-		virtual float				GetZRotateDegree() const					= NULL;
+		virtual const D3DXVECTOR3&	GetRotateDegree() const				= 0;
+		virtual float				GetXRotateDegree() const			= 0;
+		virtual float				GetYRotateDegree() const					= 0;
+		virtual float				GetZRotateDegree() const					= 0;
 
-		virtual float				GetPlaySpeed() const				= NULL;
+		virtual float				GetPlaySpeed() const				= 0;
 
 		D3DXVECTOR3			        GetZVector() const
 		{
@@ -1891,25 +1891,25 @@ class CX2GameUnit : public CKTDGObject, public CKTDXDeviceHolder, public KObserv
 			return vDirVector;
 		}
 
-        virtual UINT    GetSizeOfAttackTimeList() const = NULL;
-        virtual const D3DXVECTOR2* const GetAttackTimeByIndex( const UINT uiIndex_ ) const = NULL;
+        virtual UINT    GetSizeOfAttackTimeList() const = 0;
+        virtual const D3DXVECTOR2* GetAttackTimeByIndex( const UINT uiIndex_ ) const = 0;
 
-		virtual const D3DXVECTOR3&	GetDirVector() const						= NULL;
-		virtual bool				GetIsRight() const						= NULL;
+		virtual const D3DXVECTOR3&	GetDirVector() const						= 0;
+		virtual bool				GetIsRight() const						= 0;
 
-		virtual GAME_UNIT_STATE_ID	GetGameUnitState() const			= NULL;
-		virtual bool				GetInvincible()	const				= NULL;
-		virtual bool				GetIsFallDownState()				= NULL;
+		virtual GAME_UNIT_STATE_ID	GetGameUnitState() const			= 0;
+		virtual bool				GetInvincible()	const				= 0;
+		virtual bool				GetIsFallDownState()				= 0;
 
-		virtual float				GetUnitWidth( bool bFuture ) const	= NULL;
-		virtual float				GetUnitHeight( bool bFuture ) const	= NULL;
+		virtual float				GetUnitWidth( bool bFuture ) const	= 0;
+		virtual float				GetUnitHeight( bool bFuture ) const	= 0;
 
 		bool						GetDyingStart() const { return m_bDyingStart; }
 
-		virtual bool				IsMyUnit()	const		= NULL;
-		virtual bool				IsLocalUnit() const		= NULL;
-		virtual bool				IsFocusUnit() const		= NULL;
-		virtual void				RenderName()		= NULL;
+		virtual bool				IsMyUnit()	const		= 0;
+		virtual bool				IsLocalUnit() const		= 0;
+		virtual bool				IsFocusUnit() const		= 0;
+		virtual void				RenderName()		= 0;
 
 		void						DeleteComboManager() { SAFE_DELETE( m_pComboManager ); }
 		CX2ComboManager*			GetComboManager() { return m_pComboManager; }
@@ -1968,10 +1968,10 @@ class CX2GameUnit : public CKTDGObject, public CKTDXDeviceHolder, public KObserv
 		D3DXVECTOR3					GetImpactPoint_LUA(){ return m_DamageData.impactPoint; }
 		CX2GameUnit*				GetAttackerUnit_LUA(){ return ( null != m_DamageData.optrAttackerGameUnit ? m_DamageData.optrAttackerGameUnit.GetObservable() : NULL ); }
 
-		virtual D3DXVECTOR3			GetCloneFramePosition( const WCHAR* boneName ) { return D3DXVECTOR3(0,0,0); }
+		virtual D3DXVECTOR3			GetCloneFramePosition( const WCHAR* /*boneName*/ ) { return D3DXVECTOR3(0,0,0); }
 		float						GetDieAfterTime(){ return m_fDieAfterTime; }
 
-		virtual void				InitPosition( bool bUseTeamPos = true, int startPosIndex = -1 ) = NULL;
+		virtual void				InitPosition( bool bUseTeamPos = true, int startPosIndex = -1 ) = 0;
 		bool						GetUpMPThisFrame(){ return m_bUpMPThisFrame; }
 		void						SetUpMPThisFrame( bool bUpMPThisFrame ){ m_bUpMPThisFrame = bUpMPThisFrame; }
 
@@ -2010,7 +2010,7 @@ class CX2GameUnit : public CKTDGObject, public CKTDXDeviceHolder, public KObserv
 //}} robobeg : 2013-11-04
 
 		//자신에게 걸린 무기 인챈트 타입을 반환
-		const CX2DamageManager::EXTRA_DAMAGE_TYPE		GetApplyWeaponExtraDamageType();
+		CX2DamageManager::EXTRA_DAMAGE_TYPE		GetApplyWeaponExtraDamageType();
 
 		void						AddOnStatReq( KEGS_ADD_ON_STAT_REQ::ADD_ON_STAT statType, float fStatVal, float fTime );
 		void						SetAddOnStat( KEGS_ADD_ON_STAT_REQ::ADD_ON_STAT statType, float fStatVal, float fTime );
@@ -2038,17 +2038,17 @@ class CX2GameUnit : public CKTDGObject, public CKTDXDeviceHolder, public KObserv
 		const CX2EnchantItem::EnchantData*	GetWeaponEnchantData( CX2DamageManager::EXTRA_DAMAGE_TYPE extraDamageType ) const;
 
 
-		virtual int							GetRandomInt( int iOffset = 0 ) = NULL;		// 0~99 사이의 값을 리턴
-		virtual float						GetRandomFloat( int iOffset = 0 ) = NULL;	// 0~0.99999 사이의 값을 리턴
+		virtual int							GetRandomInt( int iOffset = 0 ) = 0;		// 0~99 사이의 값을 리턴
+		virtual float						GetRandomFloat( int iOffset = 0 ) = 0;	// 0~0.99999 사이의 값을 리턴
 
 		virtual float						GetAttackRateByAbnormalityBlind();
 
-		virtual float						GetCriticalPercent( BYTE byDamageType, float fExtraCritical = 0.f ) { return 0.0f; }
-		virtual float						GetCriticalValue( float fDefenderCritical = 0.f ) { return GetCriticalAttack(); }
+		virtual float						GetCriticalPercent( BYTE /*byDamageType*/, float /*fExtraCritical*/ = 0.f ) { return 0.0f; }
+		virtual float						GetCriticalValue( float /*fDefenderCritical*/ = 0.f ) { return GetCriticalAttack(); }
 
 		//{{ 2011-04 에 패치될 청 캐시 스킬
 		/// 피격자가 크리티컬을 당할 기준 확률
-		const float							GetCriticalValueFromDefender();
+		float							GetCriticalValueFromDefender();
 		//}} 2011-04 에 패치될 청 캐시 스킬
 
 		virtual void						SetGameStat( const KStat& kGameStat_ );
@@ -2117,8 +2117,8 @@ class CX2GameUnit : public CKTDGObject, public CKTDXDeviceHolder, public KObserv
 
 		virtual void						ShowSnatchCureEffect() {}
 
-		virtual float						GetDamageUpPercentBySMA( int npcID ) { return 0; }
-		virtual float						GetEvadeUpPerBySMA( int npcID ) { return 0; }
+		virtual float						GetDamageUpPercentBySMA( int /*npcID*/ ) { return 0; }
+		virtual float						GetEvadeUpPerBySMA( int /*npcID*/ ) { return 0; }
 
 		int							GetWeaponCount() { return (int) m_vecpWeapon.size(); }
 		D3DXVECTOR3					GetWeaponBoneRot( int iWeaponIndex, int iModelIndex );
@@ -2126,7 +2126,7 @@ class CX2GameUnit : public CKTDGObject, public CKTDXDeviceHolder, public KObserv
 		D3DXVECTOR3 				GetWeaponBonePos_LUA( int iWeaponIndex, const char* pBoneName );
 		void                        SetWeaponEnable(UINT index, bool bEnable)
 		{
-			if( index < 0 || index >= m_vecpWeapon.size() )
+			if( index >= m_vecpWeapon.size() )
 				return;
 
 			m_vecpWeapon[index]->SetEnable(bEnable);
@@ -2183,7 +2183,7 @@ class CX2GameUnit : public CKTDGObject, public CKTDXDeviceHolder, public KObserv
 		void SetDoubleAttack(wstring wstrHitSound, float fDamage, D3DXVECTOR3 vimpactPoint);
 
 
-		virtual float GetPowerRate() = NULL;
+		virtual float GetPowerRate() = 0;
 
 
 
@@ -2227,7 +2227,7 @@ class CX2GameUnit : public CKTDGObject, public CKTDXDeviceHolder, public KObserv
 
 
 		//const CX2GameUnit::SPEED_FACTOR& GetMoveSpeedFactor() const { return m_PhysicParam.m_MoveSpeedFactor; }
-		void SetMoveSpeedFactor( float fSpeedRate, float fDuration )
+		void SetMoveSpeedFactor( float /*fSpeedRate*/, float /*fDuration*/ )
 		{
 // 			m_PhysicParam.m_MoveSpeedFactor.m_fSpeedRate = fSpeedRate;
 // 			m_PhysicParam.m_MoveSpeedFactor.m_fDuration = fDuration;
@@ -2235,7 +2235,7 @@ class CX2GameUnit : public CKTDGObject, public CKTDXDeviceHolder, public KObserv
 
 
 		//const CX2GameUnit::SPEED_FACTOR& GetJumpSpeedFactor() const { return m_PhysicParam.m_JumpSpeedFactor; }
-		void SetJumpSpeedFactor( float fSpeedRate, float fDuration )
+		void SetJumpSpeedFactor( float /*fSpeedRate*/, float /*fDuration*/ )
 		{
 // 			m_PhysicParam.m_JumpSpeedFactor.m_fSpeedRate = fSpeedRate;
 // 			m_PhysicParam.m_JumpSpeedFactor.m_fDuration = fDuration;
@@ -2252,7 +2252,7 @@ class CX2GameUnit : public CKTDGObject, public CKTDXDeviceHolder, public KObserv
 		void RemoveVecMoveSpeedFactor( SPEED_FACTOR_ID eID );
 
 		virtual bool CanApplyBuffToGameUnit() const;
-        virtual const std::vector<BUFF_TEMPLET_ID>& GetVecImmunityAtThisState() const = NULL;
+        virtual const std::vector<BUFF_TEMPLET_ID>& GetVecImmunityAtThisState() const = 0;
 		bool ApplyBuffToGameUnitInDamageReact( const CX2DamageManager::DamageData* pDamageData_ );
 
 		virtual bool SetBuffFactorToGameUnitByBuffFactorID( const UINT uiBuffFactorId_, IN const UINT uiLevel_ = 1 );
@@ -2277,8 +2277,8 @@ class CX2GameUnit : public CKTDGObject, public CKTDXDeviceHolder, public KObserv
 		UINT GetAppliedBuffCount( const bool bIsDeBuff_ ) const;
 
 		/// 각 유닛마다 특정 버프가 실행 또는 해제 될 때 셋팅해야 하는 함수 실행(ex: 매지컬메이크업이 시전중이라는 플래그 등...)
-		virtual void SetSpecificValueByBuffTempletID( const BUFF_TEMPLET_ID eBuffTempletId_ ) {}
-		virtual void UnSetSpecificValueByBuffTempletID( const BUFF_TEMPLET_ID eBuffTempletId_ ) {}
+		virtual void SetSpecificValueByBuffTempletID( const BUFF_TEMPLET_ID /*eBuffTempletId_*/ ) {}
+		virtual void UnSetSpecificValueByBuffTempletID( const BUFF_TEMPLET_ID /*eBuffTempletId_*/ ) {}
 
 //{{ kimhc // 2010.4.2 // 비밀던전 작업(셋트아이템효과)
 		float	GetStatUpBufferBySocketItem() const;
@@ -2368,7 +2368,7 @@ class CX2GameUnit : public CKTDGObject, public CKTDXDeviceHolder, public KObserv
 
 		//{{ kimhc // 2011-07-19 // 옵션데이타 수치화 작업
 		// 옵션 수치화에 의한 추가 데미지
-		virtual float			GetAdditionalAttackDamage( const CX2DamageManager::DamageData* pAttackDamageData )
+		virtual float			GetAdditionalAttackDamage( const CX2DamageManager::DamageData* /*pAttackDamageData*/ )
 		{ return 0.0f; }
 		//}} kimhc // 2011-07-19 // 옵션데이타 수치화 작업
 
@@ -2440,12 +2440,12 @@ class CX2GameUnit : public CKTDGObject, public CKTDXDeviceHolder, public KObserv
 		void EnableAfterImage();
 		void DisableAfterImage( const bool bForce_ = false );
 
-		virtual bool IsSuperArmor() const = NULL;
+		virtual bool IsSuperArmor() const = 0;
 		bool ShouldAttackAllTeam() const { return !m_vecAttackAllTeamPtr.empty(); }
 
 		/// 버프에 의한 RenderParam 변경
 		void CreateAndInsertRenderParamByBuff( const KBuffIdentity& BuffIdentity_, const StBuffRenderParam& stBuffRenderParam_ );
-		virtual void CreateAndInsertRenderParamByBuffUnitType( const KBuffIdentity& BuffIdentity_, const map<CX2Unit::UNIT_TYPE, StBuffRenderParamPtr>& mapStBuffRenderParamPtr_ ) = NULL;
+		virtual void CreateAndInsertRenderParamByBuffUnitType( const KBuffIdentity& BuffIdentity_, const map<CX2Unit::UNIT_TYPE, StBuffRenderParamPtr>& mapStBuffRenderParamPtr_ ) = 0;
 		void EraseRenderParamByBuff( const KBuffIdentity& BuffIdentity_ );
 
 		/// 버프에 걸린 경우, 타격시 타격점에 출력될 이펙트셋(무조건 스크립트에서 자동종료시켜야함)
@@ -2462,7 +2462,7 @@ class CX2GameUnit : public CKTDGObject, public CKTDXDeviceHolder, public KObserv
 		void CreateAndInsertChangeUnitScaleByBuff( const KBuffIdentity& BuffIdentity_, const D3DXVECTOR3& vScale_ );
 		void EraseChangeUnitScaleByBuff( const KBuffIdentity& BuffIdentity_, const bool bUseTimeToReturn_ );
 
-		virtual void TransformScale( const PROTECT_VECTOR3& vScale_ ) = NULL;
+		virtual void TransformScale( const PROTECT_VECTOR3& vScale_ ) = 0;
 
 		void TransformScale_LUA( const float fScale_, const float fTime_ );
 		void ProcessReturnFromScaleChange();
@@ -2541,7 +2541,7 @@ class CX2GameUnit : public CKTDGObject, public CKTDXDeviceHolder, public KObserv
 		// 합 연산 값, 곱 연산 값, 연산 타입 ( 버프 체인지 타입 ) 에 대해 묶어둠
 		struct EnchantAttackRate
 		{
-			EnchantAttackRate () : fIncreaseAttackRate ( 0.f ), eBuffchangeType ( BCT_PERCENT ), fIncreaseAttackRateFixValue ( 0.f ) {}
+			EnchantAttackRate () : fIncreaseAttackRate ( 0.f ), fIncreaseAttackRateFixValue ( 0.f ), eBuffchangeType ( BCT_PERCENT ) {}
 			EnchantAttackRate ( float IncreaseAttackRate_ , float IncraseAttackRateFixValue_, BUFF_CHANGE_TYPE BuffchangeType_ ) :
 				fIncreaseAttackRate ( IncreaseAttackRate_ ),fIncreaseAttackRateFixValue ( IncraseAttackRateFixValue_ ), eBuffchangeType ( BuffchangeType_ ) {}
 
@@ -2563,14 +2563,14 @@ class CX2GameUnit : public CKTDGObject, public CKTDXDeviceHolder, public KObserv
 
 		bool IsBuffTempletListEmpty() { return m_vecBuffTempletPtr.empty(); }	/// 버프 또는 디버프에 걸렸는지 여부를 알아보는 함수
 
-		virtual void AddUnitSlashData( const CX2UnitSlashTraceManager::SLASH_TRACE_CONDITION eSlashTraceCondition_ )
+		virtual void AddUnitSlashData( const CX2UnitSlashTraceManager::SLASH_TRACE_CONDITION /*eSlashTraceCondition_*/ )
 		{}
 
 		/// 실행되어야 하는 UnitSlashTrace의 종류를 지정
 		void SetUnitSlashTraceConditionToDo( const CX2UnitSlashTraceManager::SLASH_TRACE_CONDITION eSlashTraceCondition_ ) { m_eUnitSlashTraceConditionToDo = eSlashTraceCondition_; }
-		const CX2UnitSlashTraceManager::SLASH_TRACE_CONDITION GetUnitSlashTraceConditionToDo() const { return m_eUnitSlashTraceConditionToDo; }
+		CX2UnitSlashTraceManager::SLASH_TRACE_CONDITION GetUnitSlashTraceConditionToDo() const { return m_eUnitSlashTraceConditionToDo; }
 
-		virtual void ResetLeftSkillCoolTimeBySkillType( const CX2SkillTree::SKILL_TYPE eSkillType_, const float fCoolTime = 0.f, bool bForceSet = true, BUFF_CHANGE_TYPE eChangeType = BCT_RELATION_VALUE, const float fCoolTimeRate = 1.f, const bool bIsRelativeAllSkill = false ) {}
+		virtual void ResetLeftSkillCoolTimeBySkillType( const CX2SkillTree::SKILL_TYPE /*eSkillType_*/, const float /*fCoolTime*/ = 0.f, bool /*bForceSet*/ = true, BUFF_CHANGE_TYPE /*eChangeType*/ = BCT_RELATION_VALUE, const float /*fCoolTimeRate*/ = 1.f, const bool /*bIsRelativeAllSkill*/ = false ) {}
 
 		void InsertPairSubAttackListSet( const CKTDGXMeshPlayer::CXMeshInstanceHandle hMeshHandle_, const CKTDGXSkinAnim* pSkinAnim_ );
 		void ErasePairSubAttackListSet( const CKTDGXMeshPlayer::CXMeshInstanceHandle hMeshHandle_ );
@@ -2581,7 +2581,7 @@ class CX2GameUnit : public CKTDGObject, public CKTDXDeviceHolder, public KObserv
 		void SetNeedToUpdateWeaponEffect( bool bNeedToUpdateWeaponEffect_ ) { m_bNeedToUpdateWeaponEffect = bNeedToUpdateWeaponEffect_; }
 
 		virtual void UpdateWeaponEnchantEffectAndExtraDamageType() {}
-		virtual void GuildSkillProcess( const CX2SkillTree::SKILL_ID eSkillID_ ) {}
+		virtual void GuildSkillProcess( const CX2SkillTree::SKILL_ID /*eSkillID_*/ ) {}
 
 		void GetBuffFactor( OUT vector<KBuffFactor>& vecBuffFactor_ ) const;
 		void GetBuffFactorOnlyDebuff( OUT vector<KBuffFactor>& vecBuffFactor_ ) const;
@@ -2591,7 +2591,7 @@ class CX2GameUnit : public CKTDGObject, public CKTDXDeviceHolder, public KObserv
 		virtual bool IsGateNpc() const { return false; }
 
 		//레이븐 용병의 처신술 패시브(SI_P_RWT_BEHAVIOR_OF_MERCENARY) 효과를 적용시키기 위해 추가한 함수
-		virtual float GetReduceDebuffDurationRate(BUFF_TEMPLET_ID eBuffTempletID_){ return 1.f; }
+		virtual float GetReduceDebuffDurationRate(BUFF_TEMPLET_ID /*eBuffTempletID_*/){ return 1.f; }
 
 		/// 스크립트 내에서 트레이스 로그 출력을 해주는 함수
 		void WriteTraceLog_LUA( const char* wstrLog_ )
@@ -2609,8 +2609,8 @@ class CX2GameUnit : public CKTDGObject, public CKTDXDeviceHolder, public KObserv
 
 		const vector<CX2ReflectMagicByBuffPtr>& GetVecReflectMagicByBuffPtr() const { return m_vecReflectMagicByBuffPtr; }
 
-		virtual void		UpNowDPValueByHit( IN const CX2DamageManager::DamageData& DamageData_ ) {}	/// 애드일 때, 타격시 DP 변동 처리
-		virtual	void		UpNowDPValue( IN const float fDPValue_, IN const float fChangeValueRate_ = 1.f ) {}	/// 애드일 때, DP 수치 연산 함수
+		virtual void		UpNowDPValueByHit( IN const CX2DamageManager::DamageData& /*DamageData_*/ ) {}	/// 애드일 때, 타격시 DP 변동 처리
+		virtual	void		UpNowDPValue( IN const float /*fDPValue_*/, IN const float /*fChangeValueRate_*/ = 1.f ) {}	/// 애드일 때, DP 수치 연산 함수
 		bool				IsRightTarget(D3DXVECTOR3 vPos);	/// 특정위치가 나의 오른쪽인지 왼쪽인지 판별한다. ( 유저도 쓰기 위해, CX2GameUnit으로 이동 )
 
 		// Public Function End
@@ -2655,7 +2655,7 @@ class CX2GameUnit : public CKTDGObject, public CKTDXDeviceHolder, public KObserv
 #endif // WRITE_SCRIPT_LOG_AT_CONSOLE_WINDOW
 
 		// 데미지 이펙트로부터 불려지는 Callback 함수
-		virtual void DieDamageEffectProc( const CX2DamageManager::DamageData& pDamageData_ ){}
+		virtual void DieDamageEffectProc( const CX2DamageManager::DamageData& /*pDamageData_*/ ){}
 
 //-------------------------------------------------------------------------------------------------------
 
@@ -2691,8 +2691,8 @@ class CX2GameUnit : public CKTDGObject, public CKTDXDeviceHolder, public KObserv
 
 		virtual void		ResetPhysicParam(bool bPreserveNowSpeed = false );
 		virtual void		ApplyRenderParamOnEmptyRenderParamByBuff( CKTDGXRenderer::RenderParam* pRenderParam_ );
-		virtual void DoProcessWhenKillEnemy( const CX2GameUnit* pDefender_ ) {}
-		virtual void		ApplyWorldLightColor( OUT CKTDGXRenderer::RenderParam* pRenderParam_ ){}
+		virtual void DoProcessWhenKillEnemy( const CX2GameUnit* /*pDefender_*/ ) {}
+		virtual void		ApplyWorldLightColor( OUT CKTDGXRenderer::RenderParam* /*pRenderParam_*/ ){}
 
 //-------------------------------------------------------------------------------------------------------
 	protected:
@@ -2775,7 +2775,7 @@ class CX2GameUnit : public CKTDGObject, public CKTDXDeviceHolder, public KObserv
 
 		virtual float 	GetDamageUpByAMADS() { return 0.f; }
 
-		virtual void	GetDamageReduceByResistExtraDamage( CX2DamageManager::EXTRA_DAMAGE_TYPE damageType, float& fFinalDamage ) {}
+		virtual void	GetDamageReduceByResistExtraDamage( CX2DamageManager::EXTRA_DAMAGE_TYPE /*damageType*/, float& /*fFinalDamage*/ ) {}
 
 
 		bool ProcessEnchantExtraDamage( CX2DamageManager::DamageData* pDamageData,
@@ -2796,7 +2796,7 @@ class CX2GameUnit : public CKTDGObject, public CKTDXDeviceHolder, public KObserv
 
 		virtual	void	PostProcessEnchantDamage( OUT CX2DamageManager::DamageData* pDamageData_ );
 
-		virtual CX2EnchantItem::ENCHANT_TYPE CX2GameUnit::GetEnchantTypeFromExtraDamageType( CX2DamageManager::EXTRA_DAMAGE_TYPE edtType );
+		virtual CX2EnchantItem::ENCHANT_TYPE GetEnchantTypeFromExtraDamageType( CX2DamageManager::EXTRA_DAMAGE_TYPE edtType );
 		virtual void	ApplyEnchantResist( CX2EnchantItem::ENCHANT_TYPE enchantType, float& fDamage );
 		virtual bool	IsImmuneToEnchant( CX2EnchantItem::ENCHANT_TYPE enchantType );
 		virtual float	GetEnchantAttack( CX2DamageManager::EXTRA_DAMAGE_TYPE extraDamageType );
@@ -2804,16 +2804,16 @@ class CX2GameUnit : public CKTDGObject, public CKTDXDeviceHolder, public KObserv
 
 
 		void CommonFrameMoveStateAbnormality();
-		virtual void CommonFrameMoveStateAbnormalityFrozen() = NULL;
+		virtual void CommonFrameMoveStateAbnormalityFrozen() = 0;
 		void CommonFrameMoveStateAbnormalityEntangled();
 		void CommonFrameMoveStateAbnormalityTimeBomb();
 		void CommonFrameMoveStateAbnormalityAging();
 		void CommonFrameMoveStateAbnormalityStigmaDebuff();
 		void CommonFrameMoveStateAbnormalityBlind();
 
-		virtual void CommonFrameMoveStateAbnormalityFlashBang() = NULL;
+		virtual void CommonFrameMoveStateAbnormalityFlashBang() = 0;
 
-		virtual void CommonFrameMoveStateAbnormalityWaterHold() = NULL;
+		virtual void CommonFrameMoveStateAbnormalityWaterHold() = 0;
 
 
 
@@ -2883,7 +2883,7 @@ class CX2GameUnit : public CKTDGObject, public CKTDXDeviceHolder, public KObserv
 public:
 		virtual void	AnimStop() = 0;
 		virtual void	AnimPlay() = 0;
-		virtual void SetCanPassUnit( const bool bFlag_ ) = NULL;
+		virtual void SetCanPassUnit( const bool bFlag_ ) = 0;
 		bool GetShowSmallGageAndName() const { return m_bShowSmallGageAndName; }
 		void SetShowSmallGageAndName( bool bShowSmallGageAndName_ ) { m_bShowSmallGageAndName = bShowSmallGageAndName_; }
 
@@ -2916,14 +2916,14 @@ public:
 		UINT	GetUnitSlashTraceDataSize() const
 		{
 			if ( NULL != m_pUnitSlashTraceManager )
-				m_pUnitSlashTraceManager->GetUnitSlashTraceDataSize();
+				return m_pUnitSlashTraceManager->GetUnitSlashTraceDataSize();
 			else
 				return 0;
 		}
 
 		void	DoUnitSlashTraceInCommonStateStart();
 		void	AddSlashTraceTiming();
-		virtual void ModifyFinalDamageByGameUnitType( OUT CX2DamageManager::DAMAGE_TYPE& damageType_, OUT float& fAttackerPhysicDamage_, OUT float& fAttackerMagicDamage_, OUT float& fForceDownValue_ ) {}
+		virtual void ModifyFinalDamageByGameUnitType( OUT CX2DamageManager::DAMAGE_TYPE& /*damageType_*/, OUT float& /*fAttackerPhysicDamage_*/, OUT float& /*fAttackerMagicDamage_*/, OUT float& /*fForceDownValue_*/ ) {}
 
 		bool	ApplyDrainHpBuff()
 		{
@@ -2950,10 +2950,10 @@ public:
 			return 0.f;
 		}
 
-		virtual void SetStateToNowAnimation( const CKTDGXSkinAnim::XSKIN_ANIM_STATE eAnimState_ ) = NULL;
+		virtual void SetStateToNowAnimation( const CKTDGXSkinAnim::XSKIN_ANIM_STATE eAnimState_ ) = 0;
 
-		virtual float GetNowAnimationTime() const = NULL;
-		virtual void SetNowAnimationTime( const float fAnimCurrentTime_ ) = NULL;
+		virtual float GetNowAnimationTime() const = 0;
+		virtual void SetNowAnimationTime( const float fAnimCurrentTime_ ) = 0;
 
 		void SetToDamagedMap ( const UidType uidType_, const float Damage_ );		// 해당 유닛에 대미지 맵을 더함, Uid 로 검색
 		void AddToDamagedMap ( const UidType uidType_, const float Damage_ );		// 해당 유닛에 대미지 맵을 더함, Uid 로 검색
@@ -2971,7 +2971,7 @@ public:
 		virtual bool GetIsImmuneDebuff() const { return false; }
 		virtual bool GetIsImmuneAllEDT() const { return false; }
 
-		virtual float	GetChangeDamageRateByAttackerSkill( const CX2DamageManager::DamageData* pDamageData_ ) const { return 1.f; }
+		virtual float	GetChangeDamageRateByAttackerSkill( const CX2DamageManager::DamageData* /*pDamageData_*/ ) const { return 1.f; }
 		const D3DXCOLOR GetFlickerColorByBuff( IN const D3DXCOLOR& coRenderColor_, IN const float fFlickerGap_ );
 
 		// Public Member Start

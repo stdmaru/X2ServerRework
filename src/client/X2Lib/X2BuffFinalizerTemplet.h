@@ -5,7 +5,7 @@
 #pragma once
 
 class CX2BuffFinalizerTemplet;
-typedef boost::intrusive_ptr<CX2BuffFinalizerTemplet> CX2BuffFinalizerTempletPtr;
+typedef x2::intrusive_ptr<CX2BuffFinalizerTemplet> CX2BuffFinalizerTempletPtr;
 
 /** @class : CX2BuffFinalizerTemplet
 	@brief : 버프의 종료 부분을 정의하는 클래스
@@ -16,31 +16,31 @@ class CX2BuffFinalizerTemplet
 public:
 	static bool ParsingCombinationFinalizer( KLuaManager& luaManager_, OUT vector<CX2BuffFinalizerTempletPtr>& vecBuffFinalizerTempletPtr_ );
 
-	CX2BuffFinalizerTemplet( const CX2BuffFinalizerTemplet& rhs_ ) : m_eType( rhs_.m_eType ), m_bReserveToFinish( false )
-        , m_uRefCount(0)
+	CX2BuffFinalizerTemplet( const CX2BuffFinalizerTemplet& rhs_ ) : m_uRefCount(0), m_eType( rhs_.m_eType )
+        , m_bReserveToFinish( false )
 	{}
 	virtual ~CX2BuffFinalizerTemplet() {}
 
-    virtual void OnFrameMove( CX2GameUnit* pGameUnit_, float fElapsedTime_ ) {};
-	virtual bool SetFactor( const CX2BuffFactor& BuffFactor_, CX2GameUnit* pGameUnit_, const CX2BuffTemplet* pBuffTemplet_ ) = NULL;
-	virtual CX2BuffFinalizerTempletPtr GetClonePtr() const = NULL;
-	virtual bool DidFinish( CX2GameUnit* pGameUnit_ ) const = NULL;
-	virtual void GetFactor( OUT vector<KBuffFinalizerFactor>& vecFactors_, const CX2GameUnit* pGameUnit_ ) const = NULL;
+    virtual void OnFrameMove( CX2GameUnit* /*pGameUnit_*/, float /*fElapsedTime_*/ ) {};
+	virtual bool SetFactor( const CX2BuffFactor& BuffFactor_, CX2GameUnit* pGameUnit_, const CX2BuffTemplet* pBuffTemplet_ ) = 0;
+	virtual CX2BuffFinalizerTempletPtr GetClonePtr() const = 0;
+	virtual bool DidFinish( CX2GameUnit* pGameUnit_ ) const = 0;
+	virtual void GetFactor( OUT vector<KBuffFinalizerFactor>& vecFactors_, const CX2GameUnit* pGameUnit_ ) const = 0;
 
 	void ReserveToFinish() { m_bReserveToFinish = true; }
 	bool DidReserveToFinish() const { return m_bReserveToFinish; }
 
 	bool SetFactorFromPacketTemplateMothod( const KBuffFactor& kBuffFactor_, CX2GameUnit* pGameUnit_ );
 	BUFF_FINALIZER_TYPE GetType() const { return m_eType; }
-	virtual void SetBuffTempletID( BUFF_TEMPLET_ID eBuffTempletID_ ){}
+	virtual void SetBuffTempletID( BUFF_TEMPLET_ID /*eBuffTempletID_*/ ){}
 
     void    AddRef()    {   ++m_uRefCount; }
     void    Release()   { if ( (--m_uRefCount) == 0 )   delete this; }
 
 
 protected:
-	CX2BuffFinalizerTemplet() : m_eType( BFT_NONE )
-        , m_uRefCount(0)
+	CX2BuffFinalizerTemplet() : m_uRefCount(0)
+        , m_eType( BFT_NONE )
     {}
 
     CX2BuffFinalizerTemplet& operator = ( const CX2BuffFinalizerTemplet& );
@@ -48,8 +48,8 @@ protected:
 	void SetType(BUFF_FINALIZER_TYPE val) { m_eType = val; }
 
 	bool		ParsingFinalizerTemplateMethod( KLuaManager& luaManager_, const char* pszTableName_ );
-	virtual bool ParsingFinalizer( KLuaManager& luaManager_ ) { return true; }
-	virtual void SetFactorFromPacket( const KBuffFinalizerFactor& kFactor_, CX2GameUnit* pGameUnit_ ) {};
+	virtual bool ParsingFinalizer( KLuaManager& /*luaManager_*/ ) { return true; }
+	virtual void SetFactorFromPacket( const KBuffFinalizerFactor& /*kFactor_*/, CX2GameUnit* /*pGameUnit_*/ ) {};
 
 private:
     unsigned                                        m_uRefCount;

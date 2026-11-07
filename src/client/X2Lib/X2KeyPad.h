@@ -2,8 +2,8 @@
 #define X2KEY_PAD_H_
 #pragma once
 
-#include <boost/unordered_map.hpp>
-#include <boost/bimap/bimap.hpp>
+#include <unordered_map>
+#include "x2/platform/bimap.h"
 
 //#pragma region CX2KeyPad
 /** @class : CX2KeyPad
@@ -161,10 +161,10 @@ public:
 		KPUIM_USESLOT_MOUSEOUT,		/// ���콺 �ƿ� ��Ŀ��
 	};
 
-	typedef boost::unordered_map< GAME_ACTION, int > KeyMap;								/// �׼� Ű boost::map
-	typedef boost::unordered_map< unsigned char, wstring > KeyStringMap;					/// Key�� �´� String, boost::map
-	typedef boost::bimaps::bimap< unsigned char, KEY_BUTTON_INDEX > DeviceKeyMap;			/// DeviceKey�� �´� Pad Slot Index, Boost::bimap
-	typedef boost::bimaps::bimap< unsigned char, KEY_BUTTON_INDEX >::value_type value_t;	/// DeviceKeyMap�� ���� �����ϱ� ���� Value_type
+	typedef std::unordered_map< GAME_ACTION, int > KeyMap;								/// �׼� Ű boost::map
+	typedef std::unordered_map< unsigned char, wstring > KeyStringMap;					/// Key�� �´� String, boost::map
+	typedef x2::bimap< unsigned char, KEY_BUTTON_INDEX > DeviceKeyMap;			/// DeviceKey�� �´� Pad Slot Index, Boost::bimap
+	typedef x2::bimap< unsigned char, KEY_BUTTON_INDEX >::value_type value_t;	/// DeviceKeyMap�� ���� �����ϱ� ���� Value_type
 //#pragma endregion ����ü, ���, ����� Ÿ��
 
 //#pragma region public function

@@ -240,7 +240,7 @@ class CX2Community
 			~FriendReqMsg()
 			{
 				if ( m_pDialog != NULL )
-					g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDialog, NULL, false );
+					g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDialog, 0, false );
 				m_pDialog = NULL;
 			}
 		};
@@ -271,7 +271,7 @@ class CX2Community
 			~ChatSession()
 			{
 				if ( m_pDialog != NULL )
-					g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDialog, NULL, false );
+					g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDialog, 0, false );
 				m_pDialog = NULL;
 			}
 		};
@@ -297,8 +297,8 @@ class CX2Community
 
 			GuildUserListUIControls() :
 			m_pStaticNickName( NULL ),
-			m_pStaticChannel( NULL ),
 			m_pStaticLocationOrGradeOrTimeSpan( NULL ),
+			m_pStaticChannel( NULL ),
 			m_pButtonNickName( NULL ),
 			m_pButtonGrade( NULL )
 			, m_pButtonToolTip( NULL )
@@ -744,8 +744,8 @@ class CX2Community
 
 			RelationUIControls() :
 				m_pStaticNickName( NULL ),
-				m_pStaticChannel( NULL ),
 				m_pStaticLocationOrGradeOrTimeSpan( NULL ),
+				m_pStaticChannel( NULL ),
 				m_pButtonNickName( NULL )
 			{}
 		};

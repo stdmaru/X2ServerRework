@@ -17,13 +17,13 @@ public:
 	virtual void MouseMove( D3DXVECTOR2 mousePos );
 	virtual bool MouseRButtonUp( D3DXVECTOR2 mousePos );
 
-	virtual bool UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam ){ return false; }
-	virtual bool UIServerEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam ){ return false; }
+	virtual bool UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ ){ return false; }
+	virtual bool UIServerEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ ){ return false; }
 
 	virtual void SetNowDragItemReturn();
 
-	virtual bool OnRClickedItem( D3DXVECTOR2 mousePos ){ return false; }
-	virtual bool OnDropAnyItem( D3DXVECTOR2 mousePos ){ return false; }
+	virtual bool OnRClickedItem( D3DXVECTOR2 /*mousePos*/ ){ return false; }
+	virtual bool OnDropAnyItem( D3DXVECTOR2 /*mousePos*/ ){ return false; }
 
 	virtual void DrawSlotMouseOverImage();
 	virtual wstring GetSlotItemDesc();

@@ -420,7 +420,6 @@ void CX2DungeonSubStage::PrepareClearSubStage( int iClearConditionIndex )
 void CX2DungeonSubStage::ClearSubStage( int clearType, int nextStageNum, int nextSubStageNum )
 {
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_START
 #endif
 	if( NULL == g_pX2Game )
 		return;
@@ -525,7 +524,6 @@ void CX2DungeonSubStage::ClearSubStage( int clearType, int nextStageNum, int nex
 	}
 
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_END
 #endif
 }
 
@@ -583,7 +581,6 @@ void CX2DungeonSubStage::SetEnableClearCondition( int iIndex, bool bEnable )
 void CX2DungeonSubStage::CheckIfSubStageCleared()
 {
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_START
 #endif
 	if( NULL == g_pX2Game )
 		return;
@@ -792,7 +789,6 @@ void CX2DungeonSubStage::CheckIfSubStageCleared()
 	}
 
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_END
 #endif
 }
 

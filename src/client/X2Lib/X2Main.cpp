@@ -35,9 +35,6 @@ using std::bind;
 
 
 	// ????? ??? ??? ????? ???? ???? ????????.
-	THEMIDA_VM_START
-	THEMIDA_CODEREPLACE_START
-	THEMIDA_ENCODE_START
 
 
 
@@ -58,7 +55,6 @@ CX2ChatBox*			g_pChatBox		= NULL;
 FILE*				g_fpStream		= NULL;
 FILE*				g_fpStreamError = NULL;
 
-HINTERNET			g_hInternet		= NULL;
 
 
 
@@ -66,7 +62,6 @@ HINTERNET			g_hInternet		= NULL;
 
 BOOL CALLBACK EnumCheckThreadWndProc(HWND hwnd, LPARAM lParam)
 {
-	ELSWORD_VIRTUALIZER_START
 
 	if( hwnd )
 	{
@@ -103,14 +98,12 @@ BOOL CALLBACK EnumCheckThreadWndProc(HWND hwnd, LPARAM lParam)
 		}
 	}
 
-	ELSWORD_VIRTUALIZER_END
 
 	return TRUE;
 }
 
 vector<THREAD_WND_INFO> GetThreadWnd( DWORD threadId )
 {
-	ELSWORD_VIRTUALIZER_START
 
 	vector<THREAD_WND_INFO>	vecThreadWndInfo;
 	EnumThreadWindows(threadId, EnumCheckThreadWndProc, (LPARAM)&vecThreadWndInfo);
@@ -126,7 +119,6 @@ vector<THREAD_WND_INFO> GetThreadWnd( DWORD threadId )
 	fclose(fp);
 #endif
 
-	ELSWORD_VIRTUALIZER_END
 
 	return vecThreadWndInfo;
 }
@@ -139,7 +131,6 @@ BOOL CALLBACK EnumWindowsProc_Thread(HWND hwnd , LPARAM lp)
 
 #if !X2_DEV_TOOLS
 	// checked
-	ELSWORD_VIRTUALIZER_START
 #endif
 
 
@@ -178,7 +169,6 @@ BOOL CALLBACK EnumWindowsProc_Thread(HWND hwnd , LPARAM lp)
 
 
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_END
 #endif
 
 	return TRUE;
@@ -196,7 +186,6 @@ BOOL Pesudo_IsDebuggerPresent()
 
 #if !X2_DEV_TOOLS
 	// checked
-	ELSWORD_VIRTUALIZER_START
 #endif
 
 	BOOL Retval = 0;
@@ -211,7 +200,6 @@ BOOL Pesudo_IsDebuggerPresent()
 	}
 
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_END
 #endif
 
 	//THEMIDA_ENCODE_END
@@ -230,7 +218,6 @@ BOOL Pesudo_IsDebuggerPresent()
 int CheckDebugger()
 {
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_START
 #endif
 
 	_asm
@@ -242,7 +229,6 @@ int CheckDebugger()
 	}
 
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_END
 #endif
 }
 
@@ -388,7 +374,6 @@ m_pSecurityPad( NULL ),
 m_pInformerManager( NULL ),
 m_pMemoryHolder( NULL )
 , m_bIsPopUpOnChat( false )
-,m_pSystemInfo( NULL )
 , m_DefaultChannelServerInfo()
 #ifdef REFORM_UI_KEYPAD
 , m_pKeyPad( NULL )
@@ -480,16 +465,6 @@ m_pMemoryHolder( NULL )
 
 
 
-	m_hInternet = NULL;
-	// HTTP Open
-	if ( NULL == ( m_hInternet = ::InternetOpen( L"HTTP_WRAPPER_KOG",
-		INTERNET_OPEN_TYPE_PRECONFIG,
-		NULL,
-		NULL,
-		0 ) ) )
-	{
-		ErrorLog( XEM_ERROR106 );
-	}
 
 	m_pCheckSumManager		= new CX2CheckSumManager();
 
@@ -636,7 +611,6 @@ m_pMemoryHolder( NULL )
 //#endif SERV_MASSFILE_MAPPING_FUNCTION
 
 	//{{ megagame / ????? / 2010.05.12 / ????? ????
-	m_pSystemInfo = new CX2SystemInfo();
 	//}} megagame / ????? / 2010.05.12 / ????? ????
 
 	InstallFont( FT_DEFAULT_FONTNAME, "Gulim.ttc" );
@@ -760,7 +734,6 @@ m_pMemoryHolder( NULL )
 
 #	if !X2_DEV_TOOLS
 	// checked
-	ELSWORD_VIRTUALIZER_START
 #	endif
 
 	m_fCheckDebugeTimer = 0.f;
@@ -778,7 +751,6 @@ m_pMemoryHolder( NULL )
 
 
 #	if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_END
 #	endif
 
 g_pKTDXApp->GetDeviceManager()->ResumeThread();
@@ -830,15 +802,9 @@ CX2Main::~CX2Main(void)
 
 // #endif //  MOVIE_TEST	// 13-11-11, ???? ???? ????, kimjh, MOVIE_TEST ?? ??�� ????? Define ?? MOVIE_TEST_BASE ?? ????
 
-#ifdef APPLY_THEMIDA
-	CODEREPLACE_START
-#endif
 
 	DllManagerReport();
 
-#ifdef APPLY_THEMIDA
-	CODEREPLACE_END
-#endif
 
 
 
@@ -912,8 +878,6 @@ CX2Main::~CX2Main(void)
 			break;
 	}
 
-	if( m_hInternet != NULL )
-		InternetCloseHandle( m_hInternet );
 
 
 	for ( int i = 0; i < (int)m_UseFontNameList.size(); i++ )
@@ -939,7 +903,6 @@ CX2Main::~CX2Main(void)
 	//}}
 
 //{{ megagame / ????? / 2010.05.12 / ????? ????
-	SAFE_DELETE( m_pSystemInfo );
 //}} megagame / ????? / 2010.05.12 / ????? ????
 
 #ifdef ACTIVE_KOG_GAME_PERFORMANCE_CHECK
@@ -987,7 +950,6 @@ HRESULT CX2Main::OnFrameMove( double fTime, float fElapsedTime )
 
 #if !X2_DEV_TOOLS
 	// checked
-	ELSWORD_VIRTUALIZER_START
 #endif
 
 
@@ -1091,7 +1053,6 @@ HRESULT CX2Main::OnFrameMove( double fTime, float fElapsedTime )
 
 
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_END
 #endif
 
 
@@ -1153,7 +1114,6 @@ HRESULT CX2Main::OnFrameMove( double fTime, float fElapsedTime )
 
 
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_START
 #endif
 
 
@@ -1204,7 +1164,6 @@ HRESULT CX2Main::OnFrameMove( double fTime, float fElapsedTime )
 
 
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_END
 #endif
 
 
@@ -5429,24 +5388,6 @@ D3DXVECTOR2 CX2Main::GetWindowPos( D3DXVECTOR2 windowSize, D3DXVECTOR2 wantMouse
 	return resultPos;
 }
 
-void CX2Main::OpenURL( WCHAR* pURL )
-{
-	// ?????? ??? URL?? ??????��?.
-	HINTERNET hURLFile;
-	if ( NULL == ( hURLFile = ::InternetOpenUrl( m_hInternet,
-		pURL,
-		NULL,
-		0,
-		INTERNET_FLAG_RELOAD |
-		INTERNET_FLAG_NO_CACHE_WRITE,
-		0 ) ) )
-	{
-		ErrorLog( XEM_ERROR107 );
-		return;
-	}
-
-	::InternetCloseHandle( hURLFile );
-}
 void CX2Main::CreateStateChangeDLG( const WCHAR* szExplanation, wstring wstrCustomLuaFileName/* = L""*/, wstring wstrPlaySoundFileName /*= L""*/ )
 {
 	SAFE_DELETE_DIALOG( m_pDLGStateChange );
@@ -5865,7 +5806,6 @@ void CX2Main::SendHackMail()
 //
 //#ifdef MORE_INFO_ABOUT_HACK
 //		// ????? ????
-//		AddSystemInfo(wstrstm);
 //
 //		// DLL ????
 //		AddDLLInfo(wstrstm);
@@ -6050,7 +5990,6 @@ void CX2Main::SendHackMail_DamageHistory(const char *strComm)
 //
 //#ifdef MORE_INFO_ABOUT_HACK
 //	// ????? ????
-//	AddSystemInfo(wstrstm);
 //
 //	wstrstm << "- Loaded Dll -";
 //	const char *dlllist = SiCX2DLLManager()->GetPreLoadedDllList();
@@ -6183,7 +6122,6 @@ void CX2Main::SendHackMail_HackUserNot(const char *strComm)
 //
 //#ifdef MORE_INFO_ABOUT_HACK
 //	// ????? ????
-//	AddSystemInfo(wstrstm);
 //
 //	wstrstm << "- Loaded Dll -";
 //	const char *dlllist = SiCX2DLLManager()->GetPreLoadedDllList();
@@ -6332,7 +6270,6 @@ void CX2Main::SendHackMail_AttachFile(const char *strComm, const string& userId)
 //
 //#ifdef MORE_INFO_ABOUT_HACK
 //	// ????? ????
-//	AddSystemInfo(wstrstm);
 //
 //	// DLL ????
 //	wstring wstrDllInfo = SiCX2DLLManager()->GetReportEvent();
@@ -6578,7 +6515,6 @@ void CX2Main::SendHackMail_VERIFYVALUE(const char *strComm)
 //
 //#ifdef MORE_INFO_ABOUT_HACK
 //	// ????? ????
-//	AddSystemInfo(wstrstm);
 //
 //	wstrstm << "- Loaded Dll -";
 //	const char *dlllist = SiCX2DLLManager()->GetPreLoadedDllList();
@@ -6742,7 +6678,6 @@ void CX2Main::SendHackMailGameStart(int iVal, bool bVal)
 //
 //#ifdef MORE_INFO_ABOUT_HACK
 //	// ????? ????
-//	AddSystemInfo(wstrstm);
 //
 //	wstrstm << "- Loaded Dll -";
 //	const char *dlllist = SiCX2DLLManager()->GetPreLoadedDllList();
@@ -6873,43 +6808,6 @@ void CX2Main::AddMemoryInfo( stringstream& strstm )
 		strstm << "Driver: " << id.Driver << strNewLine;
 		strstm	<< "Description: " << id.Description << strNewLine;
 	}
-
-	strstm << strNewLine << strNewLine;
-}
-
-void CX2Main::AddSystemInfo(stringstream& strstm)
-{
-	string strNewLine = "\n";
-
-	strstm << "- System Information -" << strNewLine;
-	strstm << "OS: ";
-	strstm << GetSystemInfo()->GetOSVersion();
-	strstm << " " << GetSystemInfo()->GetOSName();
-	if(0 != GetSystemInfo()->GetServicePack())
-		strstm << " Service Pack " << GetSystemInfo()->GetServicePack();
-	strstm << strNewLine;
-
-	strstm << "Install Locale: " << GetSystemInfo()->GetInstallLocale() << strNewLine;
-
-	strstm << "System Locale: " << GetSystemInfo()->GetSystemLocale() << strNewLine;
-
-	const vector<string>& vecInputLocale = GetSystemInfo()->GetInputLocale();
-	for(vector<string>::const_iterator iter = vecInputLocale.begin(); iter != vecInputLocale.end(); ++iter)
-	{
-		if(iter == vecInputLocale.begin())
-			strstm << "Input Locales: ";
-		else
-            strstm << "                    ";
-
-		strstm << *iter << strNewLine;
-	}
-
-	strstm << strNewLine << GetMachineId().c_str() << strNewLine;
-
-
-	char cWallPaperPath[ MAX_PATH ];
-	if( GetWallPaperDirectory( cWallPaperPath, MAX_PATH ) == true )
-		strstm << cWallPaperPath << strNewLine;
 
 	strstm << strNewLine << strNewLine;
 }
@@ -7139,7 +7037,6 @@ void CX2Main::SendHackMail_DLLInjection(const char *strComm)
 //
 //#ifdef MORE_INFO_ABOUT_HACK
 //	// ????? ????
-//	AddSystemInfo(strstm);
 //
 //	// DLL ????
 //	AddDLLInfo(strstm);
@@ -7292,7 +7189,6 @@ void CX2Main::SendUserMonitoringMail(const char *strComm)
 //
 //#ifdef MORE_INFO_ABOUT_HACK
 //	// ????? ????
-//	AddSystemInfo(wstrstm);
 //
 //	// DLL ????
 //	AddDLLInfo(wstrstm);
@@ -7421,7 +7317,6 @@ void CX2Main::SendMail_MoneyMonitoring(const char *strComm)
 //
 //#ifdef MORE_INFO_ABOUT_HACK
 //	// ????? ????
-//	AddSystemInfo(wstrstm);
 //
 //	string strIp;
 //	ConvertWCHARToChar( strIp, m_wstrPublicIp.c_str() );
@@ -7865,7 +7760,6 @@ void CX2Main::RemoveTimedMessagePopup( TimedMessagePopUp::MESSAGE_TYPE eMessageT
 
 std::string CX2Main::GetMachineId()
 {
-	ELSWORD_VIRTUALIZER_START
 
 	CSystemInfo* pSystemInfo = new CSystemInfo();
 	if( pSystemInfo == NULL )
@@ -7877,7 +7771,6 @@ std::string CX2Main::GetMachineId()
 	std::string wstrMachineId = base64_encode(pMachineId, 16);
 	delete pSystemInfo;
 
-	ELSWORD_VIRTUALIZER_END
 
 	return wstrMachineId;
 }
@@ -7892,7 +7785,6 @@ std::string CX2Main::GetMachineId()
 void CX2Main::DllManagerReport()
 {
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_START
 #endif
 
 	//THEMIDA_VM_START
@@ -7902,7 +7794,6 @@ void CX2Main::DllManagerReport()
 	//THEMIDA_VM_END
 
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_END
 #endif
 }
 
@@ -8863,7 +8754,6 @@ BOOL CALLBACK EnumChildProc_Thread(HWND hwnd , LPARAM lp)
 bool CX2Main::CheckWindowInfo::CheckProcess_Thread()
 {
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_START
 #endif
 
 //  #ifndef _SERVICE_
@@ -9906,7 +9796,6 @@ bool CX2Main::CheckWindowInfo::CheckProcess_Thread()
 	}
 
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_END
 #endif
 	return false;
 }

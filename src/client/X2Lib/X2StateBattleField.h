@@ -191,7 +191,7 @@ protected:
 
 
 	virtual bool ShortCutKeyProcess();
-    FORCEINLINE void MoveToOtherPlace( float fElapsedTime_ );
+    void MoveToOtherPlace( float fElapsedTime_ );
 
 	void CreateMovingSmallBar();
 	void DrawMovingSmallBar();

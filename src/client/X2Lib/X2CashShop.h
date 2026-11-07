@@ -520,7 +520,7 @@ class CX2CashShop : public CX2ItemSlotManager
 		// 해당 유닛의 전직 아이템을 찜하기 목록에서 삭제함.
 		void RemoveUnitClassChangeItemInChoice( const CX2Unit::UNIT_CLASS eUnitClass_ );
 		// 해당 유닛에 해당하는 전직 아이템 ID를 받아옴.
-		const int GetUnitClassChangeItemID( const CX2Unit::UNIT_CLASS eUnitClass_ );
+		int GetUnitClassChangeItemID( const CX2Unit::UNIT_CLASS eUnitClass_ );
 
 
 	protected:

@@ -6,7 +6,7 @@
 
 class CX2BuffTemplet;
 class   CX2BuffDisplayerTemplet;
-typedef boost::intrusive_ptr<CX2BuffDisplayerTemplet> CX2BuffDisplayerTempletPtr;
+typedef x2::intrusive_ptr<CX2BuffDisplayerTemplet> CX2BuffDisplayerTempletPtr;
 
 /** @class : CX2BuffDisplayerTemplet
 	@brief : 버프의 표현을 정의 하는 클래스
@@ -18,15 +18,15 @@ public:
 	static bool ParsingCombinationDisplayer( KLuaManager& luaManager_, OUT vector<CX2BuffDisplayerTempletPtr>& vecBuffDisplayerTempletPtr_ );
 
 	CX2BuffDisplayerTemplet( const CX2BuffDisplayerTemplet& rhs_ )
-		: m_eType( rhs_.m_eType ), m_bStart( rhs_.m_bStart )
-        , m_uRefCount(0)
+		: m_uRefCount(0), m_eType( rhs_.m_eType )
+        , m_bStart( rhs_.m_bStart )
 	{}
 	virtual ~CX2BuffDisplayerTemplet() {}
 
-	virtual void StartDisplayer( CX2GameUnit* pGameUnit_, const CX2BuffTemplet* pBuffTemplet_ ) = NULL;
-	virtual CX2BuffDisplayerTempletPtr GetClonePtr() const = NULL;
-	virtual void DoFinish( CX2GameUnit* pGameUnit_, const CX2BuffTemplet* pBuffTemplet_ ) {}
-    virtual void OnFrameMove( CX2GameUnit* pGameUnit_, float fElapsedTime_ ) {}
+	virtual void StartDisplayer( CX2GameUnit* pGameUnit_, const CX2BuffTemplet* pBuffTemplet_ ) = 0;
+	virtual CX2BuffDisplayerTempletPtr GetClonePtr() const = 0;
+	virtual void DoFinish( CX2GameUnit* /*pGameUnit_*/, const CX2BuffTemplet* /*pBuffTemplet_*/ ) {}
+    virtual void OnFrameMove( CX2GameUnit* /*pGameUnit_*/, float /*fElapsedTime_*/ ) {}
 
 	bool DidStart() const { return m_bStart; }
 	void SetStart(bool val) { m_bStart = val; }
@@ -35,13 +35,13 @@ public:
     void    Release()   { if ( (--m_uRefCount) == 0 )   delete this; }
 
 protected:
-	CX2BuffDisplayerTemplet() : m_eType( BDT_NONE ), m_bStart( false )
-        , m_uRefCount(0)
+	CX2BuffDisplayerTemplet() : m_uRefCount(0), m_eType( BDT_NONE )
+        , m_bStart( false )
     {}
     CX2BuffDisplayerTemplet& operator = ( const CX2BuffDisplayerTemplet& );
 
 	bool		ParsingDisplayerTemplateMethod( KLuaManager& luaManager_, const char* pszTableNameUTF8_ );
-	virtual bool ParsingDisplayer( KLuaManager& luaManager_ ) = NULL;
+	virtual bool ParsingDisplayer( KLuaManager& luaManager_ ) = 0;
 
 	BUFF_DISPLAYER_TYPE GetType() const { return m_eType; }
 	void SetType(BUFF_DISPLAYER_TYPE val) { m_eType = val; }
@@ -91,8 +91,8 @@ public:
 			m_eCartoonTexType( rhs_.m_eCartoonTexType ), m_fOutLineWide( rhs_.m_fOutLineWide ),
 			m_d3dxColorOutLine( rhs_.m_d3dxColorOutLine ), m_d3dxColor( rhs_.m_d3dxColor ),
 			m_bAlphaBlend( rhs_.m_bAlphaBlend )
-        , m_uRefCount(0)
-		, m_fFlickerColorGap( rhs_.m_fFlickerColorGap )
+        , m_fFlickerColorGap( rhs_.m_fFlickerColorGap )
+		, m_uRefCount(0)
 		{}
 
 		void Initializer()
@@ -131,7 +131,7 @@ private:
 };
 
 typedef	CX2BuffRenderParamDisplayerTemplet::BuffRenderParam StBuffRenderParam;
-typedef boost::intrusive_ptr<StBuffRenderParam> StBuffRenderParamPtr;
+typedef x2::intrusive_ptr<StBuffRenderParam> StBuffRenderParamPtr;
 IMPLEMENT_INTRUSIVE_PTR(StBuffRenderParam);
 
 /** @class : CX2BuffRenderParamByUnitTypeDisplayerTemplet

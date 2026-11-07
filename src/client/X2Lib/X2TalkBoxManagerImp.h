@@ -115,7 +115,7 @@ class CX2TalkBoxManagerImp
 
 
 			}
-			TalkBox( const TalkBox& t ) { *this = t; }    // copy constructor
+			TalkBox( const TalkBox& ) = default;
 
 			//{{ 허상형 : [2009/10/28] //	주석처리(기본적으로 대입됨)
 

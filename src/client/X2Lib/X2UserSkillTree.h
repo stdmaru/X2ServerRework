@@ -325,11 +325,7 @@ public:		/// public function
 	}
 	void ToggleSkillSlotAB()
 	{
-		SkillSlotData EquipSkillTemp[4];
-
-		memcpy( EquipSkillTemp, m_aEquippedSkill, sizeof(m_aEquippedSkill) );
-		memcpy( m_aEquippedSkill, m_aEquippedSkillSlotB, sizeof(m_aEquippedSkillSlotB) );
-		memcpy( m_aEquippedSkillSlotB, EquipSkillTemp, sizeof(EquipSkillTemp) );
+		std::swap( m_aEquippedSkill, m_aEquippedSkillSlotB );
 	}
 
 	bool VerifyEquippedSkillslot() const
@@ -351,7 +347,7 @@ public:		/// public function
 
 	std::map< CX2SkillTree::SKILL_ID, UserSkillData >& AccessMapSkillAcquired() { return m_vecSkillDataMap[m_usUsingPage]; }	// 배운 스킬 목록 반환
 
-	const bool IsEnableSkillAcquiredPage() { return ( m_vecSkillDataMap.size() > m_usUsingPage ) ? true : false; }				// 해당 스킬 페이지가 있는지 검사
+	bool IsEnableSkillAcquiredPage() { return ( m_vecSkillDataMap.size() > m_usUsingPage ) ? true : false; }				// 해당 스킬 페이지가 있는지 검사
 
 	void SetDefaultSkill( USHORT usPageIndex_, bool bCanPassIfChecked_ = false );												// 각 전직별 기본 스킬 설정
 
@@ -359,18 +355,18 @@ public:		/// public function
 	void SetOpenedPage( IN USHORT usValue_ ) { m_usOpenedPage = usValue_; }
 	void SetSelectPage( IN USHORT usValue_ ) { m_usSelectPage = usValue_; }
 
-	const USHORT GetUsingPage() const { return m_usUsingPage; }
-	const USHORT GetOpenedPage() const { return m_usOpenedPage; }
-	const USHORT GetSelectPage() const { return m_usSelectPage; }
+	USHORT GetUsingPage() const { return m_usUsingPage; }
+	USHORT GetOpenedPage() const { return m_usOpenedPage; }
+	USHORT GetSelectPage() const { return m_usSelectPage; }
 
 	bool IsUsingPage() const { return ( m_usUsingPage + 1 == m_usSelectPage ? true : false ); }
 	int  GetIncreaseSkillLevel( CX2SkillTree::SKILL_ID eSkillID ) const;	/// 레벨 증가치 값 반환
 
 	/// 스킬 슬롯 ID에 설정 되어있는 스킬 아이디 반환
-	const CX2SkillTree::SKILL_ID GetSkillIDByEquipSlotID( IN const int iStateID_ ) const;
+	CX2SkillTree::SKILL_ID GetSkillIDByEquipSlotID( IN const int iStateID_ ) const;
 
-	const float GetIncreaseGainSoulRateByHit() const;
-	const float GetIncreaseGainSoulRateByDamage() const;
+	float GetIncreaseGainSoulRateByHit() const;
+	float GetIncreaseGainSoulRateByDamage() const;
 
 /// private variable Start ----------
 private:

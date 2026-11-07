@@ -612,8 +612,8 @@ struct    KItemFormatTemplet : public CX2ItemTemplet_Base
 
     KItemFormatTemplet()
     {
-        KItemFormatTemplet* pThis = this;
-        ZeroMemory( pThis, sizeof(KItemFormatTemplet) );
+        // A plain record read from the item file: zeroing it whole is intended.
+        ZeroMemory( static_cast<void*>( this ), sizeof(KItemFormatTemplet) );
 
         SetItemID( 0 );
 
