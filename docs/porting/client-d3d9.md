@@ -20,8 +20,11 @@ everything runs through this layer ([Phase 5](../project/roadmap.md#phase-5--dee
 |---|---|
 | `D3D9Types.h` | The vocabulary: `D3DRS_*`, `D3DTSS_*`, `D3DSAMP_*`, `D3DTOP_*`, `D3DTA_*`, `D3DBLEND*`, `D3DCMP_*`, `D3DCULL_*`, `D3DSTENCILOP_*`, `D3DFVF_*`, `D3DPT_*`, `D3DFMT_*`, `D3DPOOL_*`, `D3DUSAGE_*`, `D3DLOCK_*`, `D3DCLEAR_*`, `D3DTS_*`, `D3DLOCKED_RECT`, `D3DRECT`, `D3DSURFACE_DESC`, with d3d9types.h's names and values (enumerations as C enums, flags as macros). The math types come from [`x2/platform/d3dx_math.h`](platform.md) |
 | `Device.h` / `Device.cpp` | `x2::d3d9::Device`: states, frame, clears, draws, pipeline and sampler caches, uploads |
-| `Resources.cpp` | `Texture` (levels, `LockRect`/`UnlockRect`, format conversion) and `VertexBuffer` (`Lock`/`Unlock`) |
-| `D3DXTypes.h`, `D3DXTexture.cpp`, `D3DX.cpp` | D3DX's types for the engine (interfaces as plain classes, T38; the D3DX objects keep `AddRef`/`Release`, held by a minimal `CComPtr`) and its functions on the device: `D3DXCheckTextureRequirements` follows `Device::SupportsTextureFormat`, `D3DXCreateTexture` creates on the device, `D3DXGetImageInfoFromFileInMemory`/`D3DXCreateTextureFromFileInMemoryEx` read [image files](#image-files-2026-11-07-clientd3dx-textures). `D3DX.cpp`: reference-counted `D3DXCreateBuffer`, `D3DXFrameDestroy`/`Find`/`NumNamedMatrices`; the mesh, skin, animation controller and effect creators fail with `E_NOTIMPL` until the `.x` and effect steps (2026-11-06). `ID3DXMesh`, `ID3DXSkinInfo`, `ID3DXAnimationSet`/`Keyframed`/`Compressed` and `ID3DXEffect` are declared with the methods the engine calls; `ID3DXLine` is gone (no user) |
+| `Resources.cpp` | `Texture` (levels, `LockRect`/`UnlockRect`, format conversion), `VertexBuffer` and `IndexBuffer` (`Lock`/`Unlock`, `D3DFMT_INDEX16`/`INDEX32`) |
+| `D3DXTypes.h`, `D3DXTexture.cpp`, `D3DX.cpp` | D3DX's types for the engine (interfaces as plain classes, T38; the D3DX objects keep `AddRef`/`Release`, held by a minimal `CComPtr`) and its functions on the device: `D3DXCheckTextureRequirements` follows `Device::SupportsTextureFormat`, `D3DXCreateTexture` creates on the device, `D3DXGetImageInfoFromFileInMemory`/`D3DXCreateTextureFromFileInMemoryEx` read [image files](#image-files-2026-11-07-clientd3dx-textures). `D3DX.cpp`: reference-counted `D3DXCreateBuffer`, `D3DXFrameDestroy`/`Find`/`NumNamedMatrices`; mesh hierarchies, skin, animation controller and effect creators fail with `E_NOTIMPL` until their steps (2026-11-07). `ID3DXMesh`, `ID3DXSkinInfo`, `ID3DXAnimationSet`/`Keyframed`/`Compressed` and `ID3DXEffect` are declared with the methods the engine calls; `ID3DXLine` is gone (no user) |
+| `Mesh.h` / `Mesh.cpp` | [`ID3DXMesh`](#meshes-2026-11-07-clientx-loader) on the device (`x2::d3d9::Mesh`), FVF element offsets (`DescribeVertex`), point representatives and adjacency; `D3DXCreateMeshFVF`, `D3DXWeldVertices`, `D3DXIntersect` |
+| `XFile.h` / `XFile.cpp` | The [.x file](#x-files-2026-11-07-clientx-loader) reader (`x2::d3d9::xfile`): text, binary, MSZIP, as a tree of data objects |
+| `XMesh.h` / `XMesh.cpp` | A `Mesh` data object as D3DX lays it out (`ReadXMesh`), the materials buffer, `D3DXLoadMeshFromXInMemory` |
 | `Formats.h` | Texel and block sizes, pitch and rows of the D3D9 formats the device takes (shared by the device and the loaders) |
 | `Image.h`, `Image.cpp`, `ImageConvert.cpp` | The [image files](#image-files-2026-11-07-clientd3dx-textures) (`x2::d3d9::image`) and the texel conversions: BGRA8 to and from every device format, BC1–3 decoding, BC encoding (stb_dxt), D3DX's resize filters. The device's upload conversion uses them too |
 | `Fvf.h` | FVF → element offsets and the vertex shader variant |
@@ -47,6 +50,9 @@ everything runs through this layer ([Phase 5](../project/roadmap.md#phase-5--dee
 - **Culling**: D3D9's front faces are clockwise; `D3DCULL_CCW` (the default) culls back faces.
 - **Triangle fans** (SDL_GPU has none) are drawn as indexed lists from a shared index buffer (0, i, i+1), up to 16,384
   triangles per draw.
+- **Indexed draws** (2026-11-07): `SetIndices` and `DrawIndexedPrimitive` bind the index buffer as 16- or 32-bit and
+  pass `BaseVertexIndex` as the vertex offset; `MinIndex`/`NumVertices` are not needed. Indices past the buffer fail;
+  indexed fans fail (no caller).
 - **A stage with no texture** samples a 1×1 white texture, so `MODULATE` with no texture gives the vertex color.
   *Assumed* to be D3D9's behavior (it is wined3d's); to confirm against the original client when the engine renders.
 - **Clears**: a clear of the whole target becomes the next render pass's load operation; a smaller one (rectangles, or a
@@ -155,17 +161,73 @@ could not have read them: `Velder_Field_001.dds` and `Velder_Field_003.dds` (emp
 | 32-bit TGA with no attribute bits (755 files) | *Assumed* `A8R8G8B8` | `A8R8G8B8`, alpha kept | To confirm against the original client when the engine renders |
 | Exact texels after resizing or encoding | D3DX's filters and BC compressor | Ours and stb_dxt's | Close, not identical |
 
+## X files (2026-11-07, `client/x-loader`)
+
+`xfile::Read` reads DirectX `.x` files into a tree of data objects (T37: the assets load as they are, through our own
+parser). The 16-byte header (`xof 0303` + `txt `/`bin `/`tzip`/`bzip` + `0032`/`0064`) selects the encoding; files are
+recognized by it, not by name (`.x` and `.y` alike; KOG's `KME `/`KSM ` meshes are read by the engine itself).
+
+- **MSZIP** (`tzip`/`bzip`): after the header, a DWORD with the uncompressed size (header included), then blocks of
+  {WORD uncompressed size, WORD packed size + 2, `CK`, raw deflate}; each block is inflated (zlib) with the previous
+  32 KB of output as its dictionary. Some of the client's blocks end in a stored deflate block that has its length but
+  not the length's complement (NLEN); zlib rejects it, so such a block is inflated again with the complement put back
+  (found 2026-11-07 in a few dozen files; D3DX read them).
+- **Binary**: tokens `NAME`, `STRING` (with its terminator token), `INTEGER`, `GUID`, `INTEGER_LIST`, `FLOAT_LIST`
+  (32- or 64-bit floats), braces; punctuation and template keywords carry no payload.
+- **Text**: names, numbers (`std::from_chars`), quoted strings, GUIDs, `,`/`;` separators, `//` and `#` comments.
+- **Objects** keep their type, name, data members (numbers as `double`, strings apart) and children in file order;
+  `{ Name }` is a reference (`IsReference`). Template definitions are skipped: the loaders know the templates they read
+  and read members in their order (`xfile::Cursor`), so D3DX's template checks are not done.
+
+## Meshes (2026-11-07, `client/x-loader`)
+
+`x2::d3d9::Mesh` implements `ID3DXMesh` with a vertex buffer, a 16- or 32-bit index buffer (`D3DXMESH_32BIT`) and a
+per-face attribute buffer in CPU memory; `GetVertexBuffer`/`GetIndexBuffer` add no reference (buffers are not counted,
+T38). What the engine calls (`CKTDXDeviceXMesh` for `.x` and KOG's `.kme`, `KTDXCollision.h`):
+
+- **`D3DXLoadMeshFromXInMemory`**: every `Mesh` in the file, top level or in `Frame`s, merged into one mesh, each moved
+  by its frames' `FrameTransformMatrix` (normals by the inverse transpose, normalized); the FVF is `XYZ` plus `NORMAL`,
+  `DIFFUSE` (`MeshVertexColors`) and `TEX1` (`MeshTextureCoords`) when any mesh has them. A vertex is split when a face
+  corner gives it a different normal (`MeshNormals` has its own indices); polygons become triangle fans. Materials come
+  from each `MeshMaterialList` (inline or `{ Name }` references), in order; a short face list repeats its last index;
+  a mesh without one gets D3DX's default material (diffuse 0.5 gray, specular 0.5). The materials buffer holds the
+  `D3DXMATERIAL` entries followed by their texture names; effect instances are empty; adjacency is computed with exact
+  positions. More than 65,535 vertices makes the mesh 32-bit.
+- **`D3DXCreateMeshFVF`**, `Lock*`/`Unlock*`, `GetDeclaration` (from the FVF), `UpdateSemantics` (accepted; the device
+  draws by FVF), `CloneMeshFVF` (elements copied by meaning, new ones zero, diffuse white).
+- **`GenerateAdjacency`**: faces share an edge through point representatives (vertices at the same position, within
+  epsilon on each axis); edges used by more than two faces pair in order.
+- **`Optimize`**: `ATTRSORT`, `VERTEXCACHE` and `STRIPREORDER` sort faces by attribute (stable) and build the attribute
+  table (one range per attribute, `VertexStart` = lowest vertex, `VertexCount` = highest − lowest + 1); `COMPACT`,
+  `VERTEXCACHE` and `STRIPREORDER` renumber vertices in first-use order and drop unused ones, unless `IGNOREVERTS`.
+  Face and vertex remaps and the adjacency follow.
+- **`D3DXWeldVertices`**: vertices at the same position within `Position` weld to the first one whose other elements are
+  within their epsilons (position only with `WELDALL`); welded vertices are removed unless `DONOTREMOVEVERTICES`. The
+  attribute table's vertex ranges are recomputed.
+- **`DrawSubset`**: the subset's ranges from the attribute table (or each run of the attribute when there is none) as
+  indexed triangle lists, with the mesh's FVF, stream and indices set on the device.
+- **`D3DXIntersect`**: every face, both sides (Möller–Trumbore); the closest hit, the hit count and all hits.
+
+### Behavior changes and assumptions
+
+| Where | D3DX | Port | Why |
+|---|---|---|---|
+| Template checks | Members checked against the templates | Not checked; members read in order | The client's files use the standard templates |
+| `Optimize` with `VERTEXCACHE`/`STRIPREORDER` | Faces reordered for the GPU's vertex cache | Attribute sort and first-use vertex order only | Same contents; only draw speed differs |
+| `D3DXWeldVertices` | Also splits and partially matches (`WELDPARTIALMATCHES`, `DONOTSPLIT`) | Whole-vertex welds only | The engine welds with zero epsilons and no flags |
+| Order of a loaded mesh's vertices | D3DX's own | The file's, split vertices appended | Same mesh; the engine welds and optimizes after loading |
+
 ## DXUT and the skeleton
 
 The [DXUT replacement](client-dxut.md) creates the device with the window, passes it to the `FrameMove`/`FrameRender`
 callbacks and calls `Present` after `FrameRender`, as DXUT did; `DXUTGetD3DDevice()` returns it. The skeleton
 (`X2/X2Skeleton.cpp`) draws a test card through it: a textured, alpha-blended quad and a turning triangle fan.
 
-## Not emulated yet (2026-11-06)
+## Not emulated yet (2026-11-07)
 
 Lighting with materials (stored, see above; `D3DRS_LIGHTING` is on by default, but lit geometry goes through the effects, T37), fog, specular,
 point sprites and point sizes, texture transforms, stages 2–7, `D3DTA_TEMP`/`RESULTARG`, bump mapping, border and
-mirror-once addressing (mapped to clamp and mirror), the scissor test, index buffers and `DrawIndexedPrimitive*`,
+mirror-once addressing (mapped to clamp and mirror), the scissor test, `DrawIndexedPrimitiveUP` and indexed fans,
 vertex declarations and programmable shaders (`SetVertexShader`/`SetPixelShader`), `StretchRect`,
 `GetRenderTargetData`, surfaces, `SetDepthStencilSurface`, `D3DPOOL_DEFAULT` semantics (every non-target texture is
 lockable), state blocks. Each comes with the engine file that needs it.
@@ -192,7 +254,17 @@ lockable), state blocks. Each comes with the engine file that needs it.
   device at every detail level.
 - `test_d3dx.cpp` (`-tc="d3dx*"`, and the two `d3d9:` cases below): the material and lights with D3D9's default light,
   `UpdateTexture`'s copy and refusals, buffers and `CComPtr` reference counts, frame search/count/destroy through the
-  allocator, `D3DXCreateTexture`'s mip chain, the mesh and effect creators failing with null outputs.
+  allocator, `D3DXCreateTexture`'s mip chain, the skin and effect creators failing with null outputs.
+- `test_d3dx_mesh.cpp` (`-tc="d3d9: indexed*,xfile*,d3dx*"`): indexed draws (16/32-bit, base vertex, bounds, a released
+  index buffer unset); `.x` files written in the test as text, binary and MSZIP (one block and blocks leaning on the
+  previous one's dictionary), broken ones; `D3DXLoadMeshFromXInMemory` on a framed quad (normal split, materials inline
+  and by reference, texture names, adjacency) and on a mesh with no materials; `D3DXCreateMeshFVF`, `CloneMeshFVF`,
+  `GetDeclaration`, adjacency, `D3DXWeldVertices`, `Optimize` and its attribute table, `D3DXIntersect`, `DrawSubset`.
+  With `X2_MASSFILE_CLIENT_DATA`, every `.x`/`.y` of the client's archives is read and every one with a mesh goes
+  through `CKTDXDeviceXMesh`'s steps (load, clone, weld, optimize).
+  On 2026-11-07: 26,874 unique `.x`/`.y` names, 25,679 `xof` files (the rest are KOG's `KME`/`KSM`), all read; the
+  25,588 with a mesh all load and pass, with every attribute below the material count (a few minutes in the debug
+  build, the device calls serialized).
 - **On a GPU** (skipped without video or GPU, as in the container and CI): renders into a 16×16 target and reads it back —
   texels mapped 1:1 to pixels with the half-pixel rule, the vertex color with no texture, 50% blending, the alpha test, a
   fan. Passed on the user's Linux desktop (Vulkan, 2026-11-06).

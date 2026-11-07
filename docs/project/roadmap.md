@@ -234,7 +234,7 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
         until their steps), the material/light state and `UpdateTexture`; the tests run on the real `CKTDXApp`; X2Lib's
         32 loading-screen triplets became `CKTDXApp::RenderStageNow` (T38) (2026-11-06). See
         [KTDXLIB › Whole engine](../porting/client-ktdxlib.md#whole-engine-2026-11-06-clientktdxlib-build). What the device
-        still lacks comes with the file that needs it ([list](../porting/client-d3d9.md#not-emulated-yet-2026-11-06)).
+        still lacks comes with the file that needs it ([list](../porting/client-d3d9.md#not-emulated-yet-2026-11-07)).
 - [ ] Effects: the 4 `.fx` (31 techniques) rewritten by hand as HLSL in `src/`, compiled by shadercross, behind `KTDXLIB`'s effect
       API (T37).
 - [ ] Reimplement the rest of D3DX on the original assets (T1, T37): `.x` loader (mesh + skin + animation), `.dds` (BC1–3 native,
@@ -243,6 +243,12 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
         through stb_image, recognized by contents; BC decoding, D3DX's filters and stb_dxt encoding for the Medium/Low
         texture detail; all 57,793 textures of the client decode but 3 D3DX could not read either (2026-11-07). See
         [D3D9 device › Image files](../porting/client-d3d9.md#image-files-2026-11-07-clientd3dx-textures).
+  - [x] `client/x-loader`: the `.x` reader (text, binary, MSZIP) and static meshes — `ID3DXMesh` on the device's new
+        index buffers and `DrawIndexedPrimitive`, `D3DXLoadMeshFromXInMemory`, `D3DXCreateMeshFVF` (KME), clone,
+        weld, optimize, adjacency, `D3DXIntersect`; all 25,679 `xof` files of the client read and the 25,588 with meshes load, clone, weld and optimize (2026-11-07). See
+        [D3D9 device › Meshes](../porting/client-d3d9.md#meshes-2026-11-07-clientx-loader).
+  - [ ] `client/x-skin`: frame hierarchies (`D3DXLoadMeshHierarchyFromXInMemory`), `ID3DXSkinInfo`, KSM.
+  - [ ] `client/x-animation`: the animation controller and the keyframed/compressed animation sets.
 - [ ] ImGui renderer on `x2::render`, replacing the tools' `sdlgpu3` escape hatch (T36).
 - [x] Silent sound backend (2026-11-06, `client/ktdxlib-engine`, [Sound](../porting/client-ktdxlib.md#sound)): `CKTDXDeviceSound`, `KTDSManager` and
       `CKTDXDeviceManager::OpenSound` keep their interface and play nothing, so the 149 files that use sound compile

@@ -60,8 +60,8 @@ bool Inflate(std::span<const std::byte> in, std::span<const std::byte> dictionar
 // After the header: the uncompressed size (header included), then blocks of {uncompressed size, compressed size,
 // "CK", deflate data}; each block's dictionary is the 32 KB of output before it.
 //
-// Some blocks (49 of the client's files, 2026-11-07) end in a stored deflate block written with its length but without
-// the length's complement (NLEN), which zlib rejects: those are inflated again with the complement put back.
+// Some blocks of the client's files end in a stored deflate block written with its length but without the length's
+// complement (NLEN), which zlib rejects: those are inflated again with the complement put back.
 bool Decompress(std::span<const std::byte> file, std::vector<std::byte>& out, std::string& error)
 {
     if (file.size() < kHeaderSize + 4) {
