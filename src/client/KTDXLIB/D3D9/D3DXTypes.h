@@ -198,8 +198,8 @@ typedef ID3DXAnimationController* LPD3DXANIMATIONCONTROLLER;
 
 // --- Effects (d3dx9effect.h) -----------------------------------------------------------------------------------------
 
-// The callbacks an effect makes instead of calling the device. The effects are rewritten as shaders (T37); the
-// engine's CKTDGEffectStateManager still implements this until then.
+// The callbacks an effect makes instead of calling the device; the engine's CKTDGEffectStateManager implements them
+// (x2::d3d9::Effect calls them, T37).
 class ID3DXEffectStateManager {
 public:
     virtual ~ID3DXEffectStateManager() = default;
@@ -439,7 +439,8 @@ public:
 #define D3DXSHADER_DEBUG             (1 << 0)
 #define D3DXSHADER_SKIPOPTIMIZATION  (1 << 2)
 
-// The members of ID3DXEffect the engine calls. The `.fx` effects become the engine's own shaders (T37).
+// The members of ID3DXEffect the engine calls. The .fx effects are KTDXLIB's own (x2::d3d9::Effect, Effect.h; T37),
+// so there is no D3DXCreateEffect.
 class ID3DXEffect {
 public:
     virtual ~ID3DXEffect() = default;
@@ -607,9 +608,3 @@ HRESULT D3DXCreateCompressedAnimationSet(LPCSTR pName, DOUBLE TicksPerSecond, D3
                                          LPD3DXBUFFER pCompressedData, UINT NumCallbackKeys,
                                          const D3DXKEY_CALLBACK* pCallbackKeys,
                                          LPD3DXCOMPRESSEDANIMATIONSET* ppAnimationSet);
-struct D3DXMACRO;
-class ID3DXInclude;
-class ID3DXEffectPool;
-HRESULT D3DXCreateEffect(x2::d3d9::Device* pDevice, LPCVOID pSrcData, UINT SrcDataLen, const D3DXMACRO* pDefines,
-                         ID3DXInclude* pInclude, DWORD Flags, ID3DXEffectPool* pPool, LPD3DXEFFECT* ppEffect,
-                         LPD3DXBUFFER* ppCompilationErrors);

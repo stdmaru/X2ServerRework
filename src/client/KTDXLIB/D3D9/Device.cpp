@@ -14,7 +14,7 @@
 namespace x2::d3d9 {
 namespace {
 
-#include "shaders/generated/FixedFunctionShaders.inc"
+#include "shaders/generated/Shaders.inc"
 
 constexpr std::uint32_t kUploadChunkSize = 4u << 20;
 constexpr std::uint32_t kUploadFlushThreshold = 64u << 20;     // flush staged uploads past this, even mid-frame
@@ -167,13 +167,21 @@ struct VertexUniforms {
 static_assert(sizeof(VertexUniforms) == 112);
 
 struct FragmentUniforms {
-    std::int32_t colorStage[2][4];
-    std::int32_t alphaStage[2][4];
+    std::int32_t colorStage[kTextureStages][4];
+    std::int32_t alphaStage[kTextureStages][4];
     std::int32_t texCoordIndex[4];
     float textureFactor[4];
     float alphaTest[4];
+    float fogColor[4];
 };
-static_assert(sizeof(FragmentUniforms) == 112);
+static_assert(sizeof(FragmentUniforms) == 160);
+
+// The effect vertex program's own block (XRenderer.vert.hlsl, slot 1; slot 0 is the registers).
+struct EffectProgramUniforms {
+    std::int32_t program[4];
+    float pixelOffset[4];
+};
+static_assert(sizeof(EffectProgramUniforms) == 32);
 
 // Words of PipelineKey.
 enum KeyWord : std::size_t {
@@ -181,7 +189,7 @@ enum KeyWord : std::size_t {
     kZEnable, kZWrite, kZFunc, kStencilEnable, kStencilFail, kStencilZFail, kStencilPass, kStencilFunc,
     kStencilMask, kStencilWriteMask,
     kBlendEnable, kSrcBlend, kDestBlend, kBlendOp, kSeparateAlpha, kSrcBlendAlpha, kDestBlendAlpha, kBlendOpAlpha,
-    kColorWrite, kDepthBias, kSlopeScaleDepthBias, kKeyWordCount,
+    kColorWrite, kDepthBias, kSlopeScaleDepthBias, kVertexProgram, kKeyWordCount,
 };
 static_assert(kKeyWordCount == std::tuple_size_v<decltype(PipelineKey::words)>);
 
@@ -289,6 +297,13 @@ Device::Device(render::Device& render, SDL_Window* window) : m_render(render), m
             return;
         }
     }
+    for (const GeneratedShader& shader : kEffectVertex) {
+        m_effectShaders.push_back(create(shader));
+        if (!m_effectShaders.back()) {
+            Fail(std::string("effect vertex shader ") + shader.variant + ": " + m_render.LastError());
+            return;
+        }
+    }
     m_fragmentShader = create(kFixedFunctionFragment[0]);
     if (!m_fragmentShader) {
         Fail("fragment shader: " + m_render.LastError());
@@ -337,6 +352,9 @@ Device::~Device()
         buffer->m_buffer = {};
         buffer->m_device = nullptr;
     }
+    for (VertexShader* shader : m_liveShaders) {
+        shader->m_device = nullptr;
+    }
     for (auto& [key, pipeline] : m_pipelines) {
         m_render.ReleaseGraphicsPipeline(pipeline);
     }
@@ -344,6 +362,9 @@ Device::~Device()
         m_render.ReleaseSampler(sampler);
     }
     for (render::Shader shader : m_vertexShaders) {
+        m_render.ReleaseShader(shader);
+    }
+    for (render::Shader shader : m_effectShaders) {
         m_render.ReleaseShader(shader);
     }
     m_render.ReleaseShader(m_fragmentShader);
@@ -558,12 +579,34 @@ void Device::GetVertexDeclaration(IDirect3DVertexDeclaration9** declaration) con
     }
 }
 
-void Device::SetVertexShader(IDirect3DVertexShader9* /*shader*/) {}
+std::unique_ptr<VertexShader> Device::CreateVertexShader(const EffectProgram& program)
+{
+    std::unique_ptr<VertexShader> shader(new VertexShader());
+    shader->m_device = this;
+    shader->m_program = program;
+    m_liveShaders.insert(shader.get());
+    return shader;
+}
 
-void Device::GetVertexShader(IDirect3DVertexShader9** shader) const
+void Device::GetVertexShader(VertexShader** shader) const
 {
     if (shader != nullptr) {
-        *shader = nullptr;
+        *shader = m_vertexShader;
+    }
+}
+
+void Device::ForgetVertexShader(VertexShader* shader)
+{
+    if (m_vertexShader == shader) {
+        m_vertexShader = nullptr;
+    }
+    m_liveShaders.erase(shader);
+}
+
+VertexShader::~VertexShader()
+{
+    if (m_device) {
+        m_device->ForgetVertexShader(this);
     }
 }
 
@@ -802,6 +845,9 @@ bool Device::ClearRects(DWORD count, const D3DRECT* rects, DWORD flags, D3DCOLOR
     rs[D3DRS_CULLMODE] = D3DCULL_NONE;
     rs[D3DRS_FILLMODE] = D3DFILL_SOLID;
     rs[D3DRS_DEPTHBIAS] = rs[D3DRS_SLOPESCALEDEPTHBIAS] = 0;
+    rs[D3DRS_FOGENABLE] = FALSE;
+    VertexShader* const savedShader = m_vertexShader;
+    m_vertexShader = nullptr;   // a clear is fixed function
     m_stageStates[0][D3DTSS_COLOROP] = m_stageStates[0][D3DTSS_ALPHAOP] = D3DTOP_SELECTARG1;
     m_stageStates[0][D3DTSS_COLORARG1] = m_stageStates[0][D3DTSS_ALPHAARG1] = D3DTA_DIFFUSE;
     m_stageStates[1][D3DTSS_COLOROP] = m_stageStates[1][D3DTSS_ALPHAOP] = D3DTOP_DISABLE;
@@ -842,6 +888,7 @@ bool Device::ClearRects(DWORD count, const D3DRECT* rects, DWORD flags, D3DCOLOR
     m_streamOffset = savedOffset;
     m_streamStride = savedStride;
     m_fvf = savedFvf;
+    m_vertexShader = savedShader;
     return ok;
 }
 
@@ -892,6 +939,7 @@ PipelineKey Device::MakePipelineKey(D3DPRIMITIVETYPE type, DWORD fvf, UINT strid
         }
     }
     w[kColorWrite] = rs[D3DRS_COLORWRITEENABLE] & 0xF;
+    w[kVertexProgram] = m_vertexShader ? 1 : 0;
     return key;
 }
 
@@ -902,21 +950,42 @@ render::GraphicsPipeline Device::Pipeline(const PipelineKey& key, DWORD fvf, UIN
     }
     const auto& w = key.words;
     const FvfLayout layout = DescribeFvf(fvf);
+    const bool effect = w[kVertexProgram] != 0;
     std::vector<render::VertexAttribute> attributes;
-    attributes.push_back({0, 0, layout.rhw ? render::VertexElementFormat::Float4 : render::VertexElementFormat::Float3,
-                          0});
-    if (layout.diffuseOffset >= 0) {
-        attributes.push_back({1, 0, render::VertexElementFormat::UByte4Norm,
-                              static_cast<std::uint32_t>(layout.diffuseOffset)});
-    }
-    for (int i = 0; i < std::min(layout.texCount, 2); ++i) {
-        attributes.push_back({static_cast<std::uint32_t>(2 + i), 0, layout.texFormat[i],
-                              static_cast<std::uint32_t>(layout.texOffset[i])});
+    if (effect) {
+        // The elements XRenderer.vert.hlsl's variant for this layout reads (EffectShaderIndex).
+        attributes.push_back({0, 0, render::VertexElementFormat::Float3, 0});
+        if (layout.texCount > 0) {
+            attributes.push_back({2, 0, layout.texFormat[0], static_cast<std::uint32_t>(layout.texOffset[0])});
+        }
+        if (HasBlending(layout)) {
+            constexpr render::VertexElementFormat weights[] = {render::VertexElementFormat::Float,
+                                                               render::VertexElementFormat::Float2,
+                                                               render::VertexElementFormat::Float3};
+            attributes.push_back({4, 0, weights[std::min(layout.weightCount, 3) - 1], 12});
+            attributes.push_back({5, 0, render::VertexElementFormat::UByte4,
+                                  static_cast<std::uint32_t>(layout.indicesOffset)});
+        }
+        if (layout.normalOffset >= 0) {
+            attributes.push_back({6, 0, render::VertexElementFormat::Float3,
+                                  static_cast<std::uint32_t>(layout.normalOffset)});
+        }
+    } else {
+        attributes.push_back({0, 0, layout.rhw ? render::VertexElementFormat::Float4 : render::VertexElementFormat::Float3,
+                              0});
+        if (layout.diffuseOffset >= 0) {
+            attributes.push_back({1, 0, render::VertexElementFormat::UByte4Norm,
+                                  static_cast<std::uint32_t>(layout.diffuseOffset)});
+        }
+        for (int i = 0; i < std::min(layout.texCount, 2); ++i) {
+            attributes.push_back({static_cast<std::uint32_t>(2 + i), 0, layout.texFormat[i],
+                                  static_cast<std::uint32_t>(layout.texOffset[i])});
+        }
     }
     const render::VertexBufferDesc buffer{.slot = 0, .pitch = stride};
 
     render::GraphicsPipelineDesc desc;
-    desc.vertexShader = m_vertexShaders[VertexShaderIndex(layout)];
+    desc.vertexShader = effect ? m_effectShaders[EffectShaderIndex(layout)] : m_vertexShaders[VertexShaderIndex(layout)];
     desc.fragmentShader = m_fragmentShader;
     desc.vertexBuffers = {&buffer, 1};
     desc.vertexAttributes = attributes;
@@ -967,7 +1036,7 @@ render::GraphicsPipeline Device::Pipeline(const PipelineKey& key, DWORD fvf, UIN
         }
     }
     desc.colorTargets = {&color, 1};
-    desc.name = "d3d9 fixed function";
+    desc.name = effect ? "d3d9 effect" : "d3d9 fixed function";
 
     const render::GraphicsPipeline pipeline = m_render.CreateGraphicsPipeline(desc);
     if (!pipeline) {
@@ -1015,25 +1084,22 @@ render::Sampler Device::SamplerFor(DWORD stage)
 
 void Device::PushUniforms(DWORD fvf)
 {
-    VertexUniforms v{};
-    D3DXMATRIX worldView, worldViewProjection;
-    const D3DXMATRIX world(m_world), view(m_view), projection(m_projection);
-    D3DXMatrixMultiply(&worldView, &world, &view);
-    D3DXMatrixMultiply(&worldViewProjection, &worldView, &projection);
-    std::memcpy(v.worldViewProjection, &worldViewProjection, sizeof(v.worldViewProjection));
     const float width = static_cast<float>(std::max<DWORD>(1, m_viewport.Width));
     const float height = static_cast<float>(std::max<DWORD>(1, m_viewport.Height));
-    v.viewport[0] = static_cast<float>(m_viewport.X);
-    v.viewport[1] = static_cast<float>(m_viewport.Y);
-    v.viewport[2] = width;
-    v.viewport[3] = height;
-    v.depthRange[0] = m_viewport.MinZ;
-    v.depthRange[1] = m_viewport.MaxZ != m_viewport.MinZ ? 1.0f / (m_viewport.MaxZ - m_viewport.MinZ) : 1.0f;
-    v.pixelOffset[0] = 1.0f / width;
-    v.pixelOffset[1] = -1.0f / height;
+    if (m_vertexShader) {
+        const EffectProgram& p = m_vertexShader->m_program;
+        const EffectProgramUniforms program{{p.kind, p.bones, p.fog ? 1 : 0, p.axis},
+                                            {1.0f / width, -1.0f / height, 0.0f, 0.0f}};
+        m_frame->PushVertexUniformData(
+            0, std::as_bytes(std::span(m_vsConstants.data(), static_cast<std::size_t>(kEffectRegisters) * 4)));
+        m_frame->PushVertexUniformData(1, std::as_bytes(std::span(&program, 1)));
+    } else {
+        PushFixedFunctionVertexUniforms(width, height);
+    }
     (void)fvf;
 
     FragmentUniforms f{};
+
     for (DWORD stage = 0; stage < kTextureStages; ++stage) {
         const auto& ts = m_stageStates[stage];
         f.colorStage[stage][0] = static_cast<std::int32_t>(ts[D3DTSS_COLOROP]);
@@ -1044,7 +1110,7 @@ void Device::PushUniforms(DWORD fvf)
         f.alphaStage[stage][1] = static_cast<std::int32_t>(ts[D3DTSS_ALPHAARG1]);
         f.alphaStage[stage][2] = static_cast<std::int32_t>(ts[D3DTSS_ALPHAARG2]);
         f.alphaStage[stage][3] = static_cast<std::int32_t>(ts[D3DTSS_ALPHAARG0]);
-        f.texCoordIndex[stage] = (ts[D3DTSS_TEXCOORDINDEX] & 0xFFFF) == 0 ? 0 : 1;
+        f.texCoordIndex[stage] = static_cast<std::int32_t>(std::min<DWORD>(ts[D3DTSS_TEXCOORDINDEX] & 0xFFFF, 2));
     }
     const render::Color factor = ColorFromD3D(m_renderStates[D3DRS_TEXTUREFACTOR]);
     f.textureFactor[0] = factor.r;
@@ -1054,9 +1120,31 @@ void Device::PushUniforms(DWORD fvf)
     f.alphaTest[0] = static_cast<float>(m_renderStates[D3DRS_ALPHATESTENABLE] ? m_renderStates[D3DRS_ALPHAFUNC]
                                                                                : DWORD{D3DCMP_ALWAYS});
     f.alphaTest[1] = static_cast<float>(m_renderStates[D3DRS_ALPHAREF] & 0xFF);
-
-    m_frame->PushVertexUniformData(0, std::as_bytes(std::span(&v, 1)));
+    const render::Color fog = ColorFromD3D(m_renderStates[D3DRS_FOGCOLOR]);
+    f.fogColor[0] = fog.r;
+    f.fogColor[1] = fog.g;
+    f.fogColor[2] = fog.b;
+    f.fogColor[3] = m_renderStates[D3DRS_FOGENABLE] ? 1.0f : 0.0f;
     m_frame->PushFragmentUniformData(0, std::as_bytes(std::span(&f, 1)));
+}
+
+void Device::PushFixedFunctionVertexUniforms(float width, float height)
+{
+    VertexUniforms v{};
+    D3DXMATRIX worldView, worldViewProjection;
+    const D3DXMATRIX world(m_world), view(m_view), projection(m_projection);
+    D3DXMatrixMultiply(&worldView, &world, &view);
+    D3DXMatrixMultiply(&worldViewProjection, &worldView, &projection);
+    std::memcpy(v.worldViewProjection, &worldViewProjection, sizeof(v.worldViewProjection));
+    v.viewport[0] = static_cast<float>(m_viewport.X);
+    v.viewport[1] = static_cast<float>(m_viewport.Y);
+    v.viewport[2] = width;
+    v.viewport[3] = height;
+    v.depthRange[0] = m_viewport.MinZ;
+    v.depthRange[1] = m_viewport.MaxZ != m_viewport.MinZ ? 1.0f / (m_viewport.MaxZ - m_viewport.MinZ) : 1.0f;
+    v.pixelOffset[0] = 1.0f / width;
+    v.pixelOffset[1] = -1.0f / height;
+    m_frame->PushVertexUniformData(0, std::as_bytes(std::span(&v, 1)));
 }
 
 bool Device::Draw(D3DPRIMITIVETYPE type, UINT primitiveCount, render::Buffer buffer, UINT offset, UINT stride,

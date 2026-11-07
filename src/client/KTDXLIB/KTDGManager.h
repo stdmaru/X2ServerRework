@@ -54,7 +54,6 @@ class CKTDGUIDialog;
 
 #include "KTDGUIDialog.h"
 #include "KTDGUIDialogManager.h"
-//#include "KTDGGrayScale.h"
 
 
 class CKTDGManager : public CKTDXStage
@@ -206,7 +205,6 @@ class CKTDGManager : public CKTDXStage
 		CKTDGXRenderer*				GetXRenderer(){ return m_pXRenderer; }
 		CKTDGFontManager*			GetFontManager(){ return m_pFontManager; }
 		CKTDGUIDialogManager*		GetDialogManager(){ return m_pDialogManager; }
-		//CKTDGGrayScale*				GetGrayScale(){ return m_pGrayScale; }
 
 
 		bool						GetIsFading() { return m_bFading; }
@@ -277,7 +275,6 @@ class CKTDGManager : public CKTDXStage
 		CKTDGXRenderer*				m_pXRenderer;
 		CKTDGFontManager*			m_pFontManager;
 		CKTDGUIDialogManager*		m_pDialogManager;
-		//CKTDGGrayScale*				m_pGrayScale;
 
 		bool						m_bFading;
 		bool						m_bFadeOut;

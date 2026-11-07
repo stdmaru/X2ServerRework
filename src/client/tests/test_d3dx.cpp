@@ -178,7 +178,7 @@ TEST_CASE("d3dx: frame hierarchies are searched, counted and destroyed")
     CHECK(D3DXFrameDestroy(nullptr, &allocator) == D3DERR_INVALIDCALL);
 }
 
-TEST_CASE("d3dx: textures are created on the device; effects fail until their step")
+TEST_CASE("d3dx: textures are created on the device")
 {
     auto render = NullRender();
     x2::d3d9::Device device(*render, nullptr);
@@ -189,8 +189,4 @@ TEST_CASE("d3dx: textures are created on the device; effects fail until their st
     REQUIRE(texture != nullptr);
     CHECK(texture->GetLevelCount() == 4);
     delete texture;
-
-    LPD3DXEFFECT effect = reinterpret_cast<LPD3DXEFFECT>(&device);
-    CHECK(FAILED(D3DXCreateEffect(&device, "x", 1, nullptr, nullptr, 0, nullptr, &effect, nullptr)));
-    CHECK(effect == nullptr);
 }

@@ -1,12 +1,18 @@
 {
-    "comment": "Shaders of KTDXLIB's D3D9 translation (decision T38), compiled by tools/shaders/compile.py (T39).",
-    "output": "generated/FixedFunctionShaders.inc",
+    "comment": "Shaders of KTDXLIB's D3D9 translation (decision T38) and its effects (T37), compiled by tools/shaders/compile.py (T39).",
+    "output": "generated/Shaders.inc",
     "shaders": [
         {
             "name": "FixedFunctionVertex",
             "source": "FixedFunction.vert.hlsl",
             "stage": "vertex",
             "variants": {"POSITION_RHW": [0, 1], "DIFFUSE": [0, 1], "TEXCOORDS": [0, 1, 2]}
+        },
+        {
+            "name": "EffectVertex",
+            "source": "XRenderer.vert.hlsl",
+            "stage": "vertex",
+            "variants": {"SKINNED": [0, 1], "NORMAL": [0, 1], "TEXCOORD": [0, 1]}
         },
         {
             "name": "FixedFunctionFragment",

@@ -21,6 +21,14 @@ void ClearCommands(Device& device);
 std::span<const std::byte> TextureBytes(Device& device, Texture texture);
 std::span<const std::byte> BufferBytes(Device& device, Buffer buffer);
 
+// The uniform data pushed by submitted command buffers, in submission order; ClearCommands clears it too.
+struct PushedUniform {
+    ShaderStage stage;
+    std::uint32_t slot;
+    std::vector<std::byte> bytes;
+};
+const std::vector<PushedUniform>& PushedUniforms(Device& device);
+
 // Resources alive on the device (created and not released), to check that callers release what they create.
 std::size_t LiveResourceCount(Device& device);
 
