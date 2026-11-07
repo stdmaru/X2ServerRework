@@ -282,6 +282,20 @@ struct D3DXWELDEPSILONS {
     FLOAT TessFactor;
 };
 
+enum _D3DXWELDEPSILONSFLAGS {
+    D3DXWELDEPSILONS_WELDALL = 0x1,
+    D3DXWELDEPSILONS_WELDPARTIALMATCHES = 0x2,
+    D3DXWELDEPSILONS_DONOTREMOVEVERTICES = 0x4,
+    D3DXWELDEPSILONS_DONOTSPLIT = 0x8,
+};
+
+struct D3DXINTERSECTINFO {
+    DWORD FaceIndex;
+    FLOAT U;
+    FLOAT V;
+    FLOAT Dist;
+};
+
 struct D3DXBONECOMBINATION {
     DWORD AttribId;
     DWORD FaceStart;
@@ -496,7 +510,8 @@ HRESULT D3DXCreateTextureFromFileInMemoryEx(x2::d3d9::Device* pDevice, const voi
 HRESULT D3DXCheckTextureRequirements(x2::d3d9::Device* pDevice, UINT* pWidth, UINT* pHeight, UINT* pNumMipLevels,
                                      DWORD usage, D3DFORMAT* pFormat, D3DPOOL pool);
 
-// --- Mesh functions (declared for the inline callers in KTDXCollision.h; the `.x` step implements them) --------------
+// --- Mesh functions -------------------------------------------------------------------------------------------------
+// The closest face a ray hits, both sides (Mesh.cpp).
 
 HRESULT D3DXIntersect(LPD3DXBASEMESH pMesh, const D3DXVECTOR3* pRayPos, const D3DXVECTOR3* pRayDir, BOOL* pHit,
                       DWORD* pFaceIndex, FLOAT* pU, FLOAT* pV, FLOAT* pDist, LPD3DXBUFFER* ppAllHits,
@@ -562,8 +577,8 @@ HRESULT D3DXFrameDestroy(LPD3DXFRAME pFrameRoot, LPD3DXALLOCATEHIERARCHY pAlloc)
 LPD3DXFRAME D3DXFrameFind(const D3DXFRAME* pFrameRoot, LPCSTR Name);
 UINT D3DXFrameNumNamedMatrices(const D3DXFRAME* pFrameRoot);
 
-// Meshes, skinning, animation sets and controllers, and effects: the `.x` step and T37 implement them; until then they
-// fail with E_NOTIMPL and return null objects (docs/porting/client-d3d9.md).
+// Static meshes (Mesh.cpp, XMesh.cpp) work. Mesh hierarchies, skinning, animation sets and controllers, and effects
+// fail with E_NOTIMPL and return null objects until their steps (docs/porting/client-d3d9.md).
 class ID3DXLoadUserData;
 HRESULT D3DXLoadMeshFromXInMemory(LPCVOID Memory, DWORD SizeOfMemory, DWORD Options, x2::d3d9::Device* pD3DDevice,
                                   LPD3DXBUFFER* ppAdjacency, LPD3DXBUFFER* ppMaterials,
