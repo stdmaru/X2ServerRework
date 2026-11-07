@@ -87,32 +87,54 @@ private:
     std::vector<Level> m_levels;
 };
 
-// IDirect3DVertexBuffer9 without COM: a GPU buffer with a CPU copy. Unlock uploads what was locked; D3DLOCK_DISCARD
-// (and a lock with no flags, which must keep the rest) cycles the GPU buffer, D3DLOCK_NOOVERWRITE does not.
-class VertexBuffer {
+// IDirect3DVertexBuffer9 and IDirect3DIndexBuffer9 without COM: a GPU buffer with a CPU copy. Unlock uploads what was
+// locked; D3DLOCK_DISCARD (and a lock with no flags, which must keep the rest) cycles the GPU buffer,
+// D3DLOCK_NOOVERWRITE does not.
+class Buffer {
 public:
-    ~VertexBuffer();
-    VertexBuffer(const VertexBuffer&) = delete;
-    VertexBuffer& operator=(const VertexBuffer&) = delete;
+    ~Buffer();
+    Buffer(const Buffer&) = delete;
+    Buffer& operator=(const Buffer&) = delete;
 
     bool Lock(UINT offset, UINT size, void** data, DWORD flags);
     bool Unlock();
     UINT Size() const { return static_cast<UINT>(m_bytes.size()); }
-    DWORD Fvf() const { return m_fvf; }
+    DWORD Usage() const { return m_usage; }
     render::Buffer RenderBuffer() const { return m_buffer; }
+
+protected:
+    Buffer() = default;
 
 private:
     friend class Device;
-    VertexBuffer() = default;
 
     Device* m_device = nullptr;
     render::Buffer m_buffer;
     std::vector<std::byte> m_bytes;
     DWORD m_usage = 0;
-    DWORD m_fvf = 0;
     UINT m_lockOffset = 0, m_lockSize = 0;
     DWORD m_lockFlags = 0;
     bool m_locked = false;
+};
+
+class VertexBuffer : public Buffer {
+public:
+    DWORD Fvf() const { return m_fvf; }
+
+private:
+    friend class Device;
+    VertexBuffer() = default;
+    DWORD m_fvf = 0;
+};
+
+class IndexBuffer : public Buffer {
+public:
+    D3DFORMAT Format() const { return m_format; }      // D3DFMT_INDEX16 or D3DFMT_INDEX32
+
+private:
+    friend class Device;
+    IndexBuffer() = default;
+    D3DFORMAT m_format = D3DFMT_INDEX16;
 };
 
 // The pipeline state of a draw as D3D9 values, before translation. Public for tests.
@@ -165,6 +187,8 @@ public:
     void SetFVF(DWORD fvf);
     DWORD GetFVF() const { return m_fvf; }
     void SetStreamSource(UINT stream, VertexBuffer* buffer, UINT offset, UINT stride);
+    void SetIndices(IndexBuffer* buffer) { m_indices = buffer; }
+    IndexBuffer* GetIndices() const { return m_indices; }
     // Vertex shader float constants (kVertexShaderConstants registers of four floats): kept for the effects (T37),
     // which will read them; the fixed-function shaders do not. False for registers out of range.
     bool SetVertexShaderConstantF(UINT startRegister, const float* data, UINT registerCount);
@@ -203,12 +227,18 @@ public:
     bool DrawPrimitive(D3DPRIMITIVETYPE type, UINT startVertex, UINT primitiveCount);
     // Leaves stream 0 unset afterwards, as D3D9 does.
     bool DrawPrimitiveUP(D3DPRIMITIVETYPE type, UINT primitiveCount, const void* vertices, UINT stride);
+    // Stream 0 and the index buffer set: indices from startIndex, each plus baseVertexIndex. minIndex and numVertices
+    // are hints D3D9 used for vertex processing; triangle fans cannot be indexed.
+    bool DrawIndexedPrimitive(D3DPRIMITIVETYPE type, INT baseVertexIndex, UINT minIndex, UINT numVertices,
+                              UINT startIndex, UINT primitiveCount);
 
     // --- Resources ---
     // levels 0: the whole mip chain. Null on failure (LastError()).
     std::unique_ptr<Texture> CreateTexture(UINT width, UINT height, UINT levels, DWORD usage, D3DFORMAT format,
                                            D3DPOOL pool);
     std::unique_ptr<VertexBuffer> CreateVertexBuffer(UINT length, DWORD usage, DWORD fvf, D3DPOOL pool);
+    // format: D3DFMT_INDEX16 or D3DFMT_INDEX32.
+    std::unique_ptr<IndexBuffer> CreateIndexBuffer(UINT length, DWORD usage, D3DFORMAT format, D3DPOOL pool);
     // Whether CreateTexture takes this format with this usage (D3DUSAGE_RENDERTARGET, D3DUSAGE_AUTOGENMIPMAP).
     bool SupportsTextureFormat(D3DFORMAT format, DWORD usage) const;
 
@@ -222,7 +252,7 @@ public:
 
 private:
     friend class Texture;
-    friend class VertexBuffer;
+    friend class Buffer;
 
     struct Target {
         render::Texture color;
@@ -260,15 +290,18 @@ private:
     bool SubmitFrame();
 
     // Draws
+    // indices: null for a draw of firstVertex on; else indices from startIndex, each plus firstVertex.
     bool Draw(D3DPRIMITIVETYPE type, UINT primitiveCount, render::Buffer buffer, UINT offset, UINT stride,
-              UINT firstVertex, DWORD fvf);
+              INT firstVertex, DWORD fvf, const IndexBuffer* indices = nullptr, UINT startIndex = 0);
     render::GraphicsPipeline Pipeline(const PipelineKey& key, DWORD fvf, UINT stride);
     render::Sampler SamplerFor(DWORD stage);
     void PushUniforms(DWORD fvf);
     bool ClearRects(DWORD count, const D3DRECT* rects, DWORD flags, D3DCOLOR color, float z, DWORD stencil);
 
     void ForgetTexture(Texture* texture);
-    void ForgetVertexBuffer(VertexBuffer* buffer);
+    void ForgetBuffer(Buffer* buffer);
+    template <class T>
+    bool InitBuffer(T& buffer, UINT length, DWORD usage, const char* name);
     bool Fail(std::string message);
 
     render::Device& m_render;
@@ -286,6 +319,7 @@ private:
     D3DVIEWPORT9 m_viewport{};
     DWORD m_fvf = 0;
     VertexBuffer* m_stream = nullptr;
+    IndexBuffer* m_indices = nullptr;
     UINT m_streamOffset = 0, m_streamStride = 0;
     std::vector<float> m_vsConstants = std::vector<float>(kVertexShaderConstants * 4, 0.0f);
     Texture* m_target = nullptr;
@@ -322,7 +356,7 @@ private:
     std::unordered_map<PipelineKey, render::GraphicsPipeline, PipelineKeyHash> m_pipelines;
     std::unordered_map<std::uint64_t, render::Sampler> m_samplers;
     std::unordered_set<Texture*> m_liveTextures;         // detached if they outlive the device
-    std::unordered_set<VertexBuffer*> m_liveVertexBuffers;
+    std::unordered_set<Buffer*> m_liveBuffers;           // detached if they outlive the device
 };
 
 }  // namespace x2::d3d9
@@ -336,3 +370,5 @@ using IDirect3DBaseTexture9 = x2::d3d9::Texture;    // there are only 2D texture
 using LPDIRECT3DBASETEXTURE9 = x2::d3d9::Texture*;
 using IDirect3DVertexBuffer9 = x2::d3d9::VertexBuffer;
 using LPDIRECT3DVERTEXBUFFER9 = x2::d3d9::VertexBuffer*;
+using IDirect3DIndexBuffer9 = x2::d3d9::IndexBuffer;
+using LPDIRECT3DINDEXBUFFER9 = x2::d3d9::IndexBuffer*;

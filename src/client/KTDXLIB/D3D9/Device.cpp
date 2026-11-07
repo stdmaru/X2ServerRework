@@ -332,7 +332,7 @@ Device::~Device()
         texture->m_texture = {};
         texture->m_device = nullptr;
     }
-    for (VertexBuffer* buffer : m_liveVertexBuffers) {
+    for (Buffer* buffer : m_liveBuffers) {
         m_render.ReleaseBuffer(buffer->m_buffer);
         buffer->m_buffer = {};
         buffer->m_device = nullptr;
@@ -1060,7 +1060,7 @@ void Device::PushUniforms(DWORD fvf)
 }
 
 bool Device::Draw(D3DPRIMITIVETYPE type, UINT primitiveCount, render::Buffer buffer, UINT offset, UINT stride,
-                  UINT firstVertex, DWORD fvf)
+                  INT firstVertex, DWORD fvf, const IndexBuffer* indices, UINT startIndex)
 {
     PrimitiveShape shape{};
     if (!Shape(type, primitiveCount, shape)) {
@@ -1101,11 +1101,15 @@ bool Device::Draw(D3DPRIMITIVETYPE type, UINT primitiveCount, render::Buffer buf
     const render::BufferBinding vertices{buffer, offset};
     pass->BindVertexBuffers(0, {&vertices, 1});
     pass->BindFragmentSamplers(0, samplers);
-    if (shape.fan) {
+    if (indices) {
+        const bool wide = indices->m_format == D3DFMT_INDEX32;
+        pass->BindIndexBuffer({indices->m_buffer, 0}, wide ? render::IndexElementSize::U32 : render::IndexElementSize::U16);
+        pass->DrawIndexedPrimitives(shape.vertexCount, 1, startIndex, firstVertex, 0);
+    } else if (shape.fan) {
         pass->BindIndexBuffer({m_fanIndices, 0}, render::IndexElementSize::U16);
-        pass->DrawIndexedPrimitives(primitiveCount * 3, 1, 0, static_cast<std::int32_t>(firstVertex), 0);
+        pass->DrawIndexedPrimitives(primitiveCount * 3, 1, 0, firstVertex, 0);
     } else {
-        pass->DrawPrimitives(shape.vertexCount, 1, firstVertex, 0);
+        pass->DrawPrimitives(shape.vertexCount, 1, static_cast<std::uint32_t>(firstVertex), 0);
     }
     return true;
 }
@@ -1118,7 +1122,34 @@ bool Device::DrawPrimitive(D3DPRIMITIVETYPE type, UINT startVertex, UINT primiti
     if (!m_stream || !m_stream->m_buffer || m_streamStride == 0) {
         return Fail("DrawPrimitive: no vertex buffer on stream 0");
     }
-    return Draw(type, primitiveCount, m_stream->m_buffer, m_streamOffset, m_streamStride, startVertex, m_fvf);
+    return Draw(type, primitiveCount, m_stream->m_buffer, m_streamOffset, m_streamStride, static_cast<INT>(startVertex),
+                m_fvf);
+}
+
+bool Device::DrawIndexedPrimitive(D3DPRIMITIVETYPE type, INT baseVertexIndex, UINT /*minIndex*/,
+                                  UINT /*numVertices*/, UINT startIndex, UINT primitiveCount)
+{
+    if (!m_inScene) {
+        return Fail("DrawIndexedPrimitive outside BeginScene/EndScene");
+    }
+    if (!m_stream || !m_stream->m_buffer || m_streamStride == 0) {
+        return Fail("DrawIndexedPrimitive: no vertex buffer on stream 0");
+    }
+    if (!m_indices || !m_indices->m_buffer) {
+        return Fail("DrawIndexedPrimitive: no index buffer");
+    }
+    if (type == D3DPT_TRIANGLEFAN) {
+        return Fail("DrawIndexedPrimitive: indexed triangle fans are not supported");
+    }
+    PrimitiveShape shape{};
+    if (Shape(type, primitiveCount, shape)) {
+        const UINT indexBytes = m_indices->m_format == D3DFMT_INDEX32 ? 4 : 2;
+        if ((static_cast<std::uint64_t>(startIndex) + shape.vertexCount) * indexBytes > m_indices->Size()) {
+            return Fail("DrawIndexedPrimitive: indices out of the index buffer");
+        }
+    }
+    return Draw(type, primitiveCount, m_stream->m_buffer, m_streamOffset, m_streamStride, baseVertexIndex, m_fvf,
+                m_indices, startIndex);
 }
 
 bool Device::DrawPrimitiveUP(D3DPRIMITIVETYPE type, UINT primitiveCount, const void* vertices, UINT stride)
@@ -1277,12 +1308,15 @@ void Device::ForgetTexture(Texture* texture)
     m_liveTextures.erase(texture);
 }
 
-void Device::ForgetVertexBuffer(VertexBuffer* buffer)
+void Device::ForgetBuffer(Buffer* buffer)
 {
     if (m_stream == buffer) {
         m_stream = nullptr;
     }
-    m_liveVertexBuffers.erase(buffer);
+    if (m_indices == buffer) {
+        m_indices = nullptr;
+    }
+    m_liveBuffers.erase(buffer);
 }
 
 }  // namespace x2::d3d9

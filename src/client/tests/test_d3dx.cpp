@@ -178,7 +178,7 @@ TEST_CASE("d3dx: frame hierarchies are searched, counted and destroyed")
     CHECK(D3DXFrameDestroy(nullptr, &allocator) == D3DERR_INVALIDCALL);
 }
 
-TEST_CASE("d3dx: textures are created on the device; meshes and effects fail until their step")
+TEST_CASE("d3dx: textures are created on the device; skinning and effects fail until their step")
 {
     auto render = NullRender();
     x2::d3d9::Device device(*render, nullptr);
@@ -190,9 +190,9 @@ TEST_CASE("d3dx: textures are created on the device; meshes and effects fail unt
     CHECK(texture->GetLevelCount() == 4);
     delete texture;
 
-    LPD3DXMESH mesh = reinterpret_cast<LPD3DXMESH>(&device);
-    CHECK(D3DXCreateMeshFVF(1, 3, 0, D3DFVF_XYZ, &device, &mesh) == E_NOTIMPL);
-    CHECK(mesh == nullptr);
+    LPD3DXSKININFO skin = reinterpret_cast<LPD3DXSKININFO>(&device);
+    CHECK(D3DXCreateSkinInfoFVF(3, D3DFVF_XYZ, 1, &skin) == E_NOTIMPL);
+    CHECK(skin == nullptr);
     LPD3DXEFFECT effect = reinterpret_cast<LPD3DXEFFECT>(&device);
     CHECK(FAILED(D3DXCreateEffect(&device, "x", 1, nullptr, nullptr, 0, nullptr, &effect, nullptr)));
     CHECK(effect == nullptr);

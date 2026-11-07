@@ -1,6 +1,7 @@
-// D3DX's buffers, frame hierarchies, meshes, animation and effects on KTDXLIB's D3D9 device (decision T38). Buffers
-// and walking a frame hierarchy work; what needs `.x` meshes, animation data or effects fails until the `.x` step and
-// the effects on KTDXLIB's own shaders (T37). See docs/porting/client-d3d9.md.
+// D3DX's buffers, frame hierarchies, skinning, animation and effects on KTDXLIB's D3D9 device (decision T38). Buffers
+// and walking a frame hierarchy work; mesh hierarchies, skinning, animation data and effects fail until their steps and
+// the effects on KTDXLIB's own shaders (T37). Static meshes are in Mesh.cpp and XMesh.cpp. See
+// docs/porting/client-d3d9.md.
 
 #include "D3DXTypes.h"
 #include "Device.h"
@@ -95,20 +96,6 @@ UINT D3DXFrameNumNamedMatrices(const D3DXFRAME* pFrameRoot)
     return count;
 }
 
-HRESULT D3DXLoadMeshFromXInMemory(LPCVOID /*Memory*/, DWORD /*SizeOfMemory*/, DWORD /*Options*/,
-                                  x2::d3d9::Device* /*pD3DDevice*/, LPD3DXBUFFER* ppAdjacency,
-                                  LPD3DXBUFFER* ppMaterials, LPD3DXBUFFER* ppEffectInstances,
-                                  DWORD* pNumMaterials, LPD3DXMESH* ppMesh)
-{
-    NotImplemented(ppAdjacency);
-    NotImplemented(ppMaterials);
-    NotImplemented(ppEffectInstances);
-    if (pNumMaterials != nullptr) {
-        *pNumMaterials = 0;
-    }
-    return NotImplemented(ppMesh);
-}
-
 HRESULT D3DXLoadMeshHierarchyFromXInMemory(LPCVOID /*Memory*/, DWORD /*SizeOfMemory*/, DWORD /*MeshOptions*/,
                                            x2::d3d9::Device* /*pDevice*/, LPD3DXALLOCATEHIERARCHY /*pAlloc*/,
                                            ID3DXLoadUserData* /*pUserDataLoader*/, LPD3DXFRAME* ppFrameHierarchy,
@@ -116,19 +103,6 @@ HRESULT D3DXLoadMeshHierarchyFromXInMemory(LPCVOID /*Memory*/, DWORD /*SizeOfMem
 {
     NotImplemented(ppAnimController);
     return NotImplemented(ppFrameHierarchy);
-}
-
-HRESULT D3DXCreateMeshFVF(DWORD /*NumFaces*/, DWORD /*NumVertices*/, DWORD /*Options*/, DWORD /*FVF*/,
-                          x2::d3d9::Device* /*pD3DDevice*/, LPD3DXMESH* ppMesh)
-{
-    return NotImplemented(ppMesh);
-}
-
-HRESULT D3DXWeldVertices(LPD3DXMESH /*pMesh*/, DWORD /*Flags*/, const D3DXWELDEPSILONS* /*pEpsilons*/,
-                         const DWORD* /*pAdjacencyIn*/, DWORD* /*pAdjacencyOut*/, DWORD* /*pFaceRemap*/,
-                         LPD3DXBUFFER* ppVertexRemap)
-{
-    return NotImplemented(ppVertexRemap);
 }
 
 HRESULT D3DXFrameCalculateBoundingSphere(const D3DXFRAME* /*pFrameRoot*/, D3DXVECTOR3* pObjectCenter,
@@ -183,15 +157,3 @@ HRESULT D3DXCreateEffect(x2::d3d9::Device* /*pDevice*/, LPCVOID /*pSrcData*/, UI
     return NotImplemented(ppEffect);
 }
 
-HRESULT D3DXIntersect(LPD3DXBASEMESH /*pMesh*/, const D3DXVECTOR3* /*pRayPos*/, const D3DXVECTOR3* /*pRayDir*/,
-                      BOOL* pHit, DWORD* /*pFaceIndex*/, FLOAT* /*pU*/, FLOAT* /*pV*/, FLOAT* /*pDist*/,
-                      LPD3DXBUFFER* ppAllHits, DWORD* pCountOfHits)
-{
-    if (pHit != nullptr) {
-        *pHit = FALSE;
-    }
-    if (pCountOfHits != nullptr) {
-        *pCountOfHits = 0;
-    }
-    return NotImplemented(ppAllHits);
-}

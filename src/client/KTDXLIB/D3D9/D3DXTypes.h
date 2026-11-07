@@ -38,7 +38,7 @@
 #define PURE                     = 0
 #endif
 
-namespace x2::d3d9 { class Device; class Texture; class VertexBuffer; }
+namespace x2::d3d9 { class Device; class Texture; class VertexBuffer; class IndexBuffer; }
 
 typedef const char* D3DXHANDLE;
 typedef double DOUBLE;
@@ -251,8 +251,8 @@ enum D3DDECLTYPE { D3DDECLTYPE_FLOAT1 = 0, D3DDECLTYPE_FLOAT2 = 1, D3DDECLTYPE_F
 enum D3DDECLUSAGE { D3DDECLUSAGE_POSITION = 0, D3DDECLUSAGE_BLENDWEIGHT = 1, D3DDECLUSAGE_BLENDINDICES = 2,
                     D3DDECLUSAGE_NORMAL = 3, D3DDECLUSAGE_TEXCOORD = 5, D3DDECLUSAGE_COLOR = 10 };
 
-class IDirect3DIndexBuffer9;
-typedef IDirect3DIndexBuffer9* LPDIRECT3DINDEXBUFFER9;
+using IDirect3DIndexBuffer9 = x2::d3d9::IndexBuffer;
+using LPDIRECT3DINDEXBUFFER9 = x2::d3d9::IndexBuffer*;
 
 enum _D3DXMESH {
     D3DXMESH_32BIT = 0x001,
@@ -280,6 +280,20 @@ struct D3DXWELDEPSILONS {
     FLOAT Tangent;
     FLOAT Binormal;
     FLOAT TessFactor;
+};
+
+enum _D3DXWELDEPSILONSFLAGS {
+    D3DXWELDEPSILONS_WELDALL = 0x1,
+    D3DXWELDEPSILONS_WELDPARTIALMATCHES = 0x2,
+    D3DXWELDEPSILONS_DONOTREMOVEVERTICES = 0x4,
+    D3DXWELDEPSILONS_DONOTSPLIT = 0x8,
+};
+
+struct D3DXINTERSECTINFO {
+    DWORD FaceIndex;
+    FLOAT U;
+    FLOAT V;
+    FLOAT Dist;
 };
 
 struct D3DXBONECOMBINATION {
@@ -496,7 +510,8 @@ HRESULT D3DXCreateTextureFromFileInMemoryEx(x2::d3d9::Device* pDevice, const voi
 HRESULT D3DXCheckTextureRequirements(x2::d3d9::Device* pDevice, UINT* pWidth, UINT* pHeight, UINT* pNumMipLevels,
                                      DWORD usage, D3DFORMAT* pFormat, D3DPOOL pool);
 
-// --- Mesh functions (declared for the inline callers in KTDXCollision.h; the `.x` step implements them) --------------
+// --- Mesh functions -------------------------------------------------------------------------------------------------
+// The closest face a ray hits, both sides (Mesh.cpp).
 
 HRESULT D3DXIntersect(LPD3DXBASEMESH pMesh, const D3DXVECTOR3* pRayPos, const D3DXVECTOR3* pRayDir, BOOL* pHit,
                       DWORD* pFaceIndex, FLOAT* pU, FLOAT* pV, FLOAT* pDist, LPD3DXBUFFER* ppAllHits,
@@ -562,8 +577,8 @@ HRESULT D3DXFrameDestroy(LPD3DXFRAME pFrameRoot, LPD3DXALLOCATEHIERARCHY pAlloc)
 LPD3DXFRAME D3DXFrameFind(const D3DXFRAME* pFrameRoot, LPCSTR Name);
 UINT D3DXFrameNumNamedMatrices(const D3DXFRAME* pFrameRoot);
 
-// Meshes, skinning, animation sets and controllers, and effects: the `.x` step and T37 implement them; until then they
-// fail with E_NOTIMPL and return null objects (docs/porting/client-d3d9.md).
+// Static meshes (Mesh.cpp, XMesh.cpp) work. Mesh hierarchies, skinning, animation sets and controllers, and effects
+// fail with E_NOTIMPL and return null objects until their steps (docs/porting/client-d3d9.md).
 class ID3DXLoadUserData;
 HRESULT D3DXLoadMeshFromXInMemory(LPCVOID Memory, DWORD SizeOfMemory, DWORD Options, x2::d3d9::Device* pD3DDevice,
                                   LPD3DXBUFFER* ppAdjacency, LPD3DXBUFFER* ppMaterials,

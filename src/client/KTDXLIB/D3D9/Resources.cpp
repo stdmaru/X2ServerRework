@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <bit>
 #include <cstring>
+#include <string>
+#include <type_traits>
 
 namespace x2::d3d9 {
 namespace {
@@ -253,6 +255,23 @@ bool Device::UpdateTexture(Texture* source, Texture* destination)
 
 // --- Vertex buffer --------------------------------------------------------------------------------------------------
 
+template <class T>
+bool Device::InitBuffer(T& buffer, UINT length, DWORD usage, const char* name)
+{
+    buffer.m_device = this;
+    buffer.m_usage = usage;
+    buffer.m_bytes.resize(length);
+    const bool index = std::is_same_v<T, IndexBuffer>;
+    buffer.m_buffer = m_render.CreateBuffer({.usage = index ? render::BufferUsage::Index : render::BufferUsage::Vertex,
+                                             .size = length,
+                                             .name = name});
+    if (!buffer.m_buffer) {
+        return Fail(std::string(name) + ": " + m_render.LastError());
+    }
+    m_liveBuffers.insert(&buffer);
+    return true;
+}
+
 std::unique_ptr<VertexBuffer> Device::CreateVertexBuffer(UINT length, DWORD usage, DWORD fvf, D3DPOOL /*pool*/)
 {
     if (length == 0) {
@@ -260,29 +279,36 @@ std::unique_ptr<VertexBuffer> Device::CreateVertexBuffer(UINT length, DWORD usag
         return nullptr;
     }
     std::unique_ptr<VertexBuffer> buffer(new VertexBuffer());
-    buffer->m_device = this;
-    buffer->m_usage = usage;
     buffer->m_fvf = fvf;
-    buffer->m_bytes.resize(length);
-    buffer->m_buffer = m_render.CreateBuffer({.usage = render::BufferUsage::Vertex, .size = length,
-                                              .name = "d3d9 vertex buffer"});
-    if (!buffer->m_buffer) {
-        Fail("CreateVertexBuffer: " + m_render.LastError());
+    if (!InitBuffer(*buffer, length, usage, "d3d9 vertex buffer")) {
         return nullptr;
     }
-    m_liveVertexBuffers.insert(buffer.get());
     return buffer;
 }
 
-VertexBuffer::~VertexBuffer()
+std::unique_ptr<IndexBuffer> Device::CreateIndexBuffer(UINT length, DWORD usage, D3DFORMAT format, D3DPOOL /*pool*/)
+{
+    if (length == 0 || (format != D3DFMT_INDEX16 && format != D3DFMT_INDEX32)) {
+        Fail("CreateIndexBuffer: empty buffer or not an index format");
+        return nullptr;
+    }
+    std::unique_ptr<IndexBuffer> buffer(new IndexBuffer());
+    buffer->m_format = format;
+    if (!InitBuffer(*buffer, length, usage, "d3d9 index buffer")) {
+        return nullptr;
+    }
+    return buffer;
+}
+
+Buffer::~Buffer()
 {
     if (m_device) {
-        m_device->ForgetVertexBuffer(this);
+        m_device->ForgetBuffer(this);
         m_device->m_render.ReleaseBuffer(m_buffer);
     }
 }
 
-bool VertexBuffer::Lock(UINT offset, UINT size, void** data, DWORD flags)
+bool Buffer::Lock(UINT offset, UINT size, void** data, DWORD flags)
 {
     if (!m_device || !data || m_locked) {
         return false;
@@ -291,7 +317,7 @@ bool VertexBuffer::Lock(UINT offset, UINT size, void** data, DWORD flags)
         size = Size() > offset ? Size() - offset : 0;   // D3D9: 0 locks the rest of the buffer
     }
     if (offset + size > Size()) {
-        return m_device->Fail("VertexBuffer::Lock: range out of the buffer");
+        return m_device->Fail("Buffer::Lock: range out of the buffer");
     }
     m_locked = true;
     m_lockOffset = offset;
@@ -301,7 +327,7 @@ bool VertexBuffer::Lock(UINT offset, UINT size, void** data, DWORD flags)
     return true;
 }
 
-bool VertexBuffer::Unlock()
+bool Buffer::Unlock()
 {
     if (!m_device || !m_locked) {
         return false;
