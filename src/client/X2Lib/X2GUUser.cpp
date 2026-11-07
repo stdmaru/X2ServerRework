@@ -1667,7 +1667,7 @@ void CX2GUUser::ReInit( bool bUseTeamPos, int startPosIndex )
 	 {
 		 const vector<BUFF_FACTOR_ID>& vecWorldBuffFactorID = GetUnit()->GetWorldBuffFactorID();
 
-		 BOOST_FOREACH( BUFF_FACTOR_ID eWorldBuffFactorID, vecWorldBuffFactorID )
+		 for( BUFF_FACTOR_ID eWorldBuffFactorID : vecWorldBuffFactorID )
 		 {
 			 SetBuffFactorToGameUnitByBuffFactorID( eWorldBuffFactorID );
 		 }
@@ -2264,7 +2264,7 @@ bool CX2GUUser::InitPosByMonsterPos()
 			m_FrameDataNow.unitCondition.landPosition			= m_FrameDataFuture.unitCondition.landPosition;
 			m_FrameDataNow.syncData.lastTouchLineIndex			= m_FrameDataFuture.syncData.lastTouchLineIndex;
 
-			BOOST_FOREACH( SyncData& syncData, m_ReceiveSyncDataList )
+			for( SyncData& syncData : m_ReceiveSyncDataList )
 			{
 				syncData.position = vPos;
 				syncData.lastTouchLineIndex = iLineIndex;
@@ -2507,13 +2507,13 @@ void CX2GUUser::SumSocketOption( const vector<int>& vecSocketOption, const float
 		if( false == kSocketData.m_vecSkillLevelUpGroupID.empty() &&
 			NULL != g_pData->GetSocketItem() )
 		{
-			BOOST_FOREACH( int iGroupID, kSocketData.m_vecSkillLevelUpGroupID )
+			for( int iGroupID : kSocketData.m_vecSkillLevelUpGroupID )
 			{
 				vector<SkillLevelUpIDAndNum> vecSkillLevelUPIDAndNumList;
 				g_pData->GetSocketItem()->GetSkillIDByUnicClassAndGropID( vecSkillLevelUPIDAndNumList, GetUnitClass(), iGroupID );
 
 				// �׷� ID�� �ش��ϴ� ��� ��ų ����Ʈ ���.
-				BOOST_FOREACH( const SkillLevelUpIDAndNum& SkillLevelUPIDAndNumList, vecSkillLevelUPIDAndNumList )
+				for( const SkillLevelUpIDAndNum& SkillLevelUPIDAndNumList : vecSkillLevelUPIDAndNumList )
 				{
 					m_SocketData.m_vecSkillLevelUpID.push_back( SkillLevelUPIDAndNumList );
 				}
@@ -9218,7 +9218,7 @@ float CX2GUUser::CalculateHpUpPercentBySocketOption( const vector<D3DXVECTOR2>& 
 {
 	float fHpPercentToBeUp = 0.0f;
 	int iRandomSeed = 0;
-	BOOST_TEST_FOREACH( const D3DXVECTOR2&, val, vecHpUpPercentBySocketOption )
+	for( const D3DXVECTOR2& val : vecHpUpPercentBySocketOption )
 	{
 		if ( GetRandomFloat( CKTDXRandomNumbers::SRO_ADD_MANA_ON_ATTACK + iRandomSeed++ ) < val.x )
 			fHpPercentToBeUp += val.y;
@@ -9231,7 +9231,7 @@ float CX2GUUser::CalculateMpUpBySocketOption( const vector<D3DXVECTOR2>& vecMpUp
 {
 	float fMpUp = 0.0f;
 	int iRandomSeed = 0;
-	BOOST_TEST_FOREACH( const D3DXVECTOR2&, val, vecMpUpBySocketOption )
+	for( const D3DXVECTOR2& val : vecMpUpBySocketOption )
 	{
 		if ( GetRandomFloat( CKTDXRandomNumbers::SRO_ADD_MANA_ON_ATTACK + iRandomSeed++ ) < val.x )
 			fMpUp += val.y;
@@ -10078,7 +10078,7 @@ void CX2GUUser::NotifyShowObjectChanged()
 	if( false == bShow )
 		DisableAfterImage( true );
 
-	BOOST_TEST_FOREACH( CX2EqipPtr, pEqip, m_ViewEqipList )
+	for( CX2EqipPtr pEqip : m_ViewEqipList )
 	{
 		if ( pEqip != NULL )
 			pEqip->NotifyShowObjectChanged();
@@ -10101,7 +10101,7 @@ void CX2GUUser::NotifyDGManagerChanged( CKTDGManager& refInManager_ )
 {
 	if ( IsRecursivelyManagedByDGManager() )
 	{
-		BOOST_TEST_FOREACH( CX2EqipPtr, pEqip, m_ViewEqipList )
+		for( CX2EqipPtr pEqip : m_ViewEqipList )
 		{
 			if ( pEqip != NULL )
 				refInManager_.AddObjectChain( pEqip.get() );
@@ -10109,7 +10109,7 @@ void CX2GUUser::NotifyDGManagerChanged( CKTDGManager& refInManager_ )
 	}
 	else
 	{
-		BOOST_TEST_FOREACH( CX2EqipPtr, pEqip, m_ViewEqipList )
+		for( CX2EqipPtr pEqip : m_ViewEqipList )
 		{
 			if ( pEqip != NULL )
 				refInManager_.RemoveObjectChain( pEqip.get() );
@@ -14113,7 +14113,7 @@ void CX2GUUser::CommonFrameMove_TimedEvent()
 		}
 	}
 
-	BOOST_TEST_FOREACH( const CX2GameUnit::SoundPlayData&, soundData, m_vecSoundPlayData )
+	for( const CX2GameUnit::SoundPlayData& soundData : m_vecSoundPlayData )
 	{
 		float fTime = soundData.m_SoundPlayTime;
 		int iRate	= soundData.m_SoundPlayRate;
@@ -14649,9 +14649,9 @@ float CX2GUUser::DoAimingTarget(float fDist, const D3DXVECTOR3& vCoefficient, bo
 			const CKTDXCollision::CollisionDataListSet& AttackListSet = pUnit->GetCollisionListSet();
 			bool    bInit = false;
 
-			BOOST_FOREACH( const CKTDXCollision::CollisionDataList* collisionDataList, AttackListSet )
+			for( const CKTDXCollision::CollisionDataList* collisionDataList : AttackListSet )
 			{
-				BOOST_FOREACH( CKTDXCollision::CollisionData* collisionData, *collisionDataList )
+				for( CKTDXCollision::CollisionData* collisionData : *collisionDataList )
 				{
 					D3DXVECTOR3 vCollPos = collisionData->GetPointStart();
 					if ( bInit == false )
@@ -17749,7 +17749,7 @@ int CX2GUUser::GetSkillLevelUpNum( CX2SkillTree::SKILL_ID skillID ) const
 
 	int levelUpNum = 0;
 
-	BOOST_TEST_FOREACH( const SkillLevelUpIDAndNum&, sSkillLevelUpIDAndNum, m_SocketData.m_vecSkillLevelUpID )
+	for( const SkillLevelUpIDAndNum& sSkillLevelUpIDAndNum : m_SocketData.m_vecSkillLevelUpID )
 	{
 		if( skillID == sSkillLevelUpIDAndNum.first )
 		{
@@ -21295,7 +21295,7 @@ void CX2GUUser::UpdateEquippedEmblem()
 //{{ kimhc // 2010.12.10 // 2010-12-23 New Character CHUNG
 CX2EqipPtr	CX2GUUser::GetEquipPtrFromEquipViewListByEquipPosition( const CX2Unit::EQIP_POSITION eEquipPosition )
 {
-	BOOST_TEST_FOREACH( CX2EqipPtr, pViewEquipPtr, m_ViewEqipList )
+	for( CX2EqipPtr pViewEquipPtr : m_ViewEqipList )
 	{
 		if ( eEquipPosition == pViewEquipPtr->GetEqipPos() )
 		{
@@ -21338,7 +21338,7 @@ bool CX2GUUser::UpdateEquipViewListInfo( CX2Item* pItemToAddInViewList, CX2Item*
 */
 /*virtual*/ void CX2GUUser::SetShowViewList( bool bShow_ )
 {
-	BOOST_TEST_FOREACH( CX2EqipPtr, pViewEquipPtr, m_ViewEqipList )
+	for( CX2EqipPtr pViewEquipPtr : m_ViewEqipList )
 	{
 		if ( pViewEquipPtr != NULL )
 		{
@@ -22036,13 +22036,13 @@ void CX2GUUser::SetPositionOnLine( const D3DXVECTOR3& vPosition, const int iLine
 	m_FrameDataNow.unitCondition.landPosition = vIntersection;
 
 
-	BOOST_TEST_FOREACH( SyncData&, syncData, m_ReceiveSyncDataList )
+	for( SyncData& syncData : m_ReceiveSyncDataList )
 	{
 		syncData.position = vIntersection;
 		syncData.lastTouchLineIndex = iLineIndex;
 	}
 
-	BOOST_TEST_FOREACH( SyncData&, syncData, m_SendSyncDataList )
+	for( SyncData& syncData : m_SendSyncDataList )
 	{
 		syncData.position = vIntersection;
 		syncData.lastTouchLineIndex = iLineIndex;
@@ -22328,7 +22328,7 @@ void CX2GUUser::InitStateCommonRandom( OUT std::string &tableNameStartUTF8, OUT 
 
 	int iRandomPercent = rand() % 100;
 	int iAccumulatedPercent = 0;
-	BOOST_TEST_FOREACH( const CommonRandomState&, commonRandomState, m_vecRandomStartState )
+	for( const CommonRandomState& commonRandomState : m_vecRandomStartState )
 	{
 		iAccumulatedPercent += commonRandomState.m_iPercent;
 		if( iRandomPercent < iAccumulatedPercent )
@@ -22344,7 +22344,7 @@ void CX2GUUser::InitStateCommonRandom( OUT std::string &tableNameStartUTF8, OUT 
 
 	iRandomPercent = rand() % 100;
 	iAccumulatedPercent = 0;
-	BOOST_TEST_FOREACH( const CommonRandomState&, commonRandomState, m_vecRandomWinState )
+	for( const CommonRandomState& commonRandomState : m_vecRandomWinState )
 	{
 		iAccumulatedPercent += commonRandomState.m_iPercent;
 		if( iRandomPercent < iAccumulatedPercent )
@@ -22359,7 +22359,7 @@ void CX2GUUser::InitStateCommonRandom( OUT std::string &tableNameStartUTF8, OUT 
 
 	iRandomPercent = rand() % 100;
 	iAccumulatedPercent = 0;
-	BOOST_TEST_FOREACH( const CommonRandomState&, commonRandomState, m_vecRandomLoseState )
+	for( const CommonRandomState& commonRandomState : m_vecRandomLoseState )
 	{
 		iAccumulatedPercent += commonRandomState.m_iPercent;
 		if( iRandomPercent < iAccumulatedPercent )
@@ -23199,7 +23199,7 @@ CX2SocketItem::SOCKET_ITEM_EFFECT_EX CX2GUUser::ProcessSocketEffectEx( const CX2
 			if ( m_StatUpBufferBySocketItem.m_fBufferTime > 0.0f )
 				return eReturnVal;
 
-			BOOST_TEST_FOREACH( int, val, mItr->second )
+			for( int val : mItr->second )
 			{
 				const CX2SocketItem::SocketData* pSocketData = g_pData->GetSocketItem()->GetSocketData( val );
 
@@ -23241,7 +23241,7 @@ CX2SocketItem::SOCKET_ITEM_EFFECT_EX CX2GUUser::ProcessSocketEffectEx( const CX2
 			if ( m_fIntervalTimeForCureDebuff > 0.0f )
 				return eReturnVal;
 
-			BOOST_TEST_FOREACH( int, val, mItr->second )
+			for( int val : mItr->second )
 			{
 				const CX2SocketItem::SocketData* pSocketData = g_pData->GetSocketItem()->GetSocketData( val );
 
@@ -23258,7 +23258,7 @@ CX2SocketItem::SOCKET_ITEM_EFFECT_EX CX2GUUser::ProcessSocketEffectEx( const CX2
 
 	case CX2SocketItem::SIEE_DEBUFF_ATTACKER:		// �ڽ��� ������ ���ֿ��� �����̻��� ����
 		{
-			BOOST_TEST_FOREACH( int, val, mItr->second )
+			for( int val : mItr->second )
 			{
 				const CX2SocketItem::SocketData* pSocketData = g_pData->GetSocketItem()->GetSocketData( val );
 
@@ -23283,7 +23283,7 @@ CX2SocketItem::SOCKET_ITEM_EFFECT_EX CX2GUUser::ProcessSocketEffectEx( const CX2
 
 	case CX2SocketItem::SIEE_BONE_SHIELD:
 		{
-			BOOST_TEST_FOREACH( int, val, mItr->second )
+			for( int val : mItr->second )
 			{
 				const CX2SocketItem::SocketData* pSocketData = g_pData->GetSocketItem()->GetSocketData( val );
 
@@ -23298,7 +23298,7 @@ CX2SocketItem::SOCKET_ITEM_EFFECT_EX CX2GUUser::ProcessSocketEffectEx( const CX2
 
 	case CX2SocketItem::SIEE_ATTACK_SPEED_UP:
 		{
-			BOOST_TEST_FOREACH( int, val, mItr->second )
+			for( int val : mItr->second )
 			{
 				const CX2SocketItem::SocketData* pSocketData = g_pData->GetSocketItem()->GetSocketData( val );
 
@@ -23314,7 +23314,7 @@ CX2SocketItem::SOCKET_ITEM_EFFECT_EX CX2GUUser::ProcessSocketEffectEx( const CX2
 	//{{ kimhc // 2010.12.31 // �ϸ� ���� �߰��� ���� ExtraDamage
 	case CX2SocketItem::SIEE_ICE_NOVA:
 		{
-			BOOST_TEST_FOREACH( int, val, mItr->second )
+			for( int val : mItr->second )
 			{
 				const CX2SocketItem::SocketData* pSocketData = g_pData->GetSocketItem()->GetSocketData( val );
 
@@ -23331,7 +23331,7 @@ CX2SocketItem::SOCKET_ITEM_EFFECT_EX CX2GUUser::ProcessSocketEffectEx( const CX2
 
 	case CX2SocketItem::SIEE_POISON_BURST:
 		{
-			BOOST_TEST_FOREACH( int, val, mItr->second )
+			for( int val : mItr->second )
 			{
 				const CX2SocketItem::SocketData* pSocketData = g_pData->GetSocketItem()->GetSocketData( val );
 
@@ -23346,7 +23346,7 @@ CX2SocketItem::SOCKET_ITEM_EFFECT_EX CX2GUUser::ProcessSocketEffectEx( const CX2
 		} break;
 	case CX2SocketItem::SIEE_ABSORB_HP:
 		{
-			BOOST_TEST_FOREACH( int, val, mItr->second )
+			for( int val : mItr->second )
 			{
 				const CX2SocketItem::SocketData* pSocketData = g_pData->GetSocketItem()->GetSocketData( val );
 
@@ -23363,7 +23363,7 @@ CX2SocketItem::SOCKET_ITEM_EFFECT_EX CX2GUUser::ProcessSocketEffectEx( const CX2
 	case CX2SocketItem::SIEE_ABSORB_HP_NO_REACT:	/// �ǰ� �� HP ���� ��Ʈ ȿ�� ( ���� ���� )
 		{
 
-			BOOST_TEST_FOREACH( int, val, mItr->second )
+			for( int val : mItr->second )
 			{
 				const CX2SocketItem::SocketData* pSocketData = g_pData->GetSocketItem()->GetSocketData( val );
 
@@ -23395,7 +23395,7 @@ CX2SocketItem::SOCKET_ITEM_EFFECT_EX CX2GUUser::ProcessSocketEffectEx( const CX2
 	case CX2SocketItem::SIEE_ACTIVE_BUFF:			/// �ǰ� �� ���� ���� ȿ��
 		{
 
-			BOOST_TEST_FOREACH( int, val, mItr->second )
+			for( int val : mItr->second )
 			{
 				const CX2SocketItem::SocketData* pSocketData = g_pData->GetSocketItem()->GetSocketData( val );
 
@@ -23807,7 +23807,7 @@ void CX2GUUser::UpdateNotRenderingOtherEquipList()
 	{
 		if ( IsOnePieceAvatarRenderHair( pNoRenderFactorEquipBody->GetItemID() ) == true )
 		{
-			BOOST_TEST_FOREACH( CX2EqipPtr, pViewEquip, m_ViewEqipList )
+			for( CX2EqipPtr pViewEquip : m_ViewEqipList )
 			{
 				if( IsOnePieceAvatarWithNotRenderHairItem( pViewEquip->GetItemID() ) == true )
 				{
@@ -23850,7 +23850,7 @@ void CX2GUUser::UpdateNotRenderingOtherEquipList()
 		}
 		if ( IsOnePieceAvatar( pNoRenderFactorEquipBody->GetItemID() ) == true )
 		{
-			BOOST_TEST_FOREACH( CX2EqipPtr, pViewEquip, m_ViewEqipList )
+			for( CX2EqipPtr pViewEquip : m_ViewEqipList )
 			{
 				switch ( pViewEquip->GetEqipPos() )
 				{
@@ -23880,7 +23880,7 @@ void CX2GUUser::UpdateNotRenderingOtherEquipList()
 		}
 		if ( IsOnePieceAvatarNotRenderFace1( pNoRenderFactorEquipBody->GetItemID() ) == true )
 		{
-			BOOST_TEST_FOREACH( CX2EqipPtr, pViewEquip, m_ViewEqipList )
+			for( CX2EqipPtr pViewEquip : m_ViewEqipList )
 			{
 				switch ( pViewEquip->GetEqipPos() )
 				{
@@ -23911,7 +23911,7 @@ void CX2GUUser::UpdateNotRenderingOtherEquipList()
 		}
 		if ( IsOnePieceAvatarNotRenderFace1Face2( pNoRenderFactorEquipBody->GetItemID() ) == true )
 		{
-			BOOST_TEST_FOREACH( CX2EqipPtr, pViewEquip, m_ViewEqipList )
+			for( CX2EqipPtr pViewEquip : m_ViewEqipList )
 			{
 				switch ( pViewEquip->GetEqipPos() )
 				{
@@ -23943,7 +23943,7 @@ void CX2GUUser::UpdateNotRenderingOtherEquipList()
 		if ( IsOnePieceAvatarNotRenderFace( pNoRenderFactorEquipBody->GetItemID() ) == true )
 		{
 			SetHideNoRenderable(true);
-			BOOST_TEST_FOREACH( CX2EqipPtr, pViewEquip, m_ViewEqipList )
+			for( CX2EqipPtr pViewEquip : m_ViewEqipList )
 			{
 				switch ( pViewEquip->GetEqipPos() )
 				{
@@ -23977,7 +23977,7 @@ void CX2GUUser::UpdateNotRenderingOtherEquipList()
 		/// �ѹ� �ƹ�Ÿ �ܿ� ���� ��� �Ǽ������� ���� �ϴ� ������
 		if ( IsOnePieceAvatarNotRenderHairAndAllAccessory( pNoRenderFactorEquipBody->GetItemID() ) == true )
 		{
-			BOOST_TEST_FOREACH( CX2EqipPtr, pViewEquip, m_ViewEqipList )
+			for( CX2EqipPtr pViewEquip : m_ViewEqipList )
 			{
 				switch ( pViewEquip->GetEqipPos() )
 				{
@@ -24012,7 +24012,7 @@ void CX2GUUser::UpdateNotRenderingOtherEquipList()
 		}
 		if ( IsOnePieceAvatarRenderingHairAndFace1( pNoRenderFactorEquipBody->GetItemID() ) == true )
 		{
-			BOOST_TEST_FOREACH( CX2EqipPtr, pViewEquip, m_ViewEqipList )
+			for( CX2EqipPtr pViewEquip : m_ViewEqipList )
 			{
 				switch ( pViewEquip->GetEqipPos() )
 				{
@@ -24033,7 +24033,7 @@ void CX2GUUser::UpdateNotRenderingOtherEquipList()
 		// 2012.12.02 darkstarbt_������ // �ѹ� �ƹ�Ÿ �ε� ���Ƕ� ���ǰ� ��� �־ ���� �԰� �ִ� �ƹ�Ÿ ���� ���;� �ϴ� ���
 		if ( IsOnePieceAvatarWithRenderBodyItem( pNoRenderFactorEquipBody->GetItemID() ) == true )
 		{
-			BOOST_TEST_FOREACH( CX2EqipPtr, pViewEquip, m_ViewEqipList )
+			for( CX2EqipPtr pViewEquip : m_ViewEqipList )
 			{
 				switch ( pViewEquip->GetEqipPos() )
 				{
@@ -24063,7 +24063,7 @@ void CX2GUUser::UpdateNotRenderingOtherEquipList()
 		}
 		if ( IsOnePieceAvatarOnlyRenderFace1Face2Face3Equip( pNoRenderFactorEquipBody->GetItemID() ) == true )
 		{
-			BOOST_TEST_FOREACH( CX2EqipPtr, pViewEquip, m_ViewEqipList )
+			for( CX2EqipPtr pViewEquip : m_ViewEqipList )
 			{
 				switch ( pViewEquip->GetEqipPos() )
 				{
@@ -24099,7 +24099,7 @@ void CX2GUUser::UpdateNotRenderingOtherEquipList()
 	{
 		if ( IsNoRenderHandEquip( pNoRenderFactorEquipACArm->GetItemID() ) == true )
 		{
-			BOOST_TEST_FOREACH( CX2EqipPtr, pViewEquip, m_ViewEqipList )
+			for( CX2EqipPtr pViewEquip : m_ViewEqipList )
 			{
 				switch ( pViewEquip->GetEqipPos() )
 				{
@@ -24128,7 +24128,7 @@ void CX2GUUser::UpdateNotRenderingOtherEquipList()
 		// �Ѱ��� ���� �� �� ����
 		if ( IsNoRenderHairFace2Face3Equip( pNoRenderFactorEquip->GetItemID() ) == true )
 		{
-			BOOST_TEST_FOREACH( CX2EqipPtr, pViewEquip, m_ViewEqipList )
+			for( CX2EqipPtr pViewEquip : m_ViewEqipList )
 			{
 				switch ( pViewEquip->GetEqipPos() )
 				{
@@ -24152,7 +24152,7 @@ void CX2GUUser::UpdateNotRenderingOtherEquipList()
 		}
 		else if ( IsNoRenderHairFace2Equip( pNoRenderFactorEquip->GetItemID() ) == true )
 		{
-			BOOST_TEST_FOREACH( CX2EqipPtr, pViewEquip, m_ViewEqipList )
+			for( CX2EqipPtr pViewEquip : m_ViewEqipList )
 			{
 				switch ( pViewEquip->GetEqipPos() )
 				{
@@ -24177,7 +24177,7 @@ void CX2GUUser::UpdateNotRenderingOtherEquipList()
 		{
 			if(bOnePieceAvatarCheck == true)
 			{
-				BOOST_TEST_FOREACH( CX2EqipPtr, pViewEquip, m_ViewEqipList )
+				for( CX2EqipPtr pViewEquip : m_ViewEqipList )
 				{
 					switch ( pViewEquip->GetEqipPos() )
 					{
@@ -24193,7 +24193,7 @@ void CX2GUUser::UpdateNotRenderingOtherEquipList()
 			}
 			else
 			{
-				BOOST_TEST_FOREACH( CX2EqipPtr, pViewEquip, m_ViewEqipList )
+				for( CX2EqipPtr pViewEquip : m_ViewEqipList )
 				{
 					switch ( pViewEquip->GetEqipPos() )
 					{
@@ -24216,7 +24216,7 @@ void CX2GUUser::UpdateNotRenderingOtherEquipList()
 		{
 			if(bOnePieceAvatarCheck == true)
 			{
-				BOOST_TEST_FOREACH( CX2EqipPtr, pViewEquip, m_ViewEqipList )
+				for( CX2EqipPtr pViewEquip : m_ViewEqipList )
 				{
 					switch ( pViewEquip->GetEqipPos() )
 					{
@@ -24232,7 +24232,7 @@ void CX2GUUser::UpdateNotRenderingOtherEquipList()
 			else
 			{
 				SetHideNoRenderable(true);
-				BOOST_TEST_FOREACH( CX2EqipPtr, pViewEquip, m_ViewEqipList )
+				for( CX2EqipPtr pViewEquip : m_ViewEqipList )
 				{
 					switch ( pViewEquip->GetEqipPos() )
 					{
@@ -24265,7 +24265,7 @@ void CX2GUUser::UpdateNotRenderingOtherEquipList()
 		{
 			if(bOnePieceAvatarCheck == true)
 			{
-				BOOST_TEST_FOREACH( CX2EqipPtr, pViewEquip, m_ViewEqipList )
+				for( CX2EqipPtr pViewEquip : m_ViewEqipList )
 				{
 					switch ( pViewEquip->GetEqipPos() )
 					{
@@ -24281,7 +24281,7 @@ void CX2GUUser::UpdateNotRenderingOtherEquipList()
 			else
 			{
 				SetHideNoRenderable(true);
-				BOOST_TEST_FOREACH( CX2EqipPtr, pViewEquip, m_ViewEqipList )
+				for( CX2EqipPtr pViewEquip : m_ViewEqipList )
 				{
 					switch ( pViewEquip->GetEqipPos() )
 					{
@@ -24308,7 +24308,7 @@ void CX2GUUser::UpdateNotRenderingOtherEquipList()
 		{
 			if(bOnePieceAvatarCheck == true)
 			{
-				BOOST_TEST_FOREACH( CX2EqipPtr, pViewEquip, m_ViewEqipList )
+				for( CX2EqipPtr pViewEquip : m_ViewEqipList )
 				{
 					switch ( pViewEquip->GetEqipPos() )
 					{
@@ -24324,7 +24324,7 @@ void CX2GUUser::UpdateNotRenderingOtherEquipList()
 			}
 			else
 			{
-				BOOST_TEST_FOREACH( CX2EqipPtr, pViewEquip, m_ViewEqipList )
+				for( CX2EqipPtr pViewEquip : m_ViewEqipList )
 				{
 					switch ( pViewEquip->GetEqipPos() )
 					{
@@ -25058,7 +25058,7 @@ void CX2GUUser::UpdateBuffInfo( const KStat& kStat_, const vector<KBuffInfo>& ve
 void CX2GUUser::UpdateBuffEffect( const vector<KBuffInfo>& vecSetBuffInfo_, const vector<int>& vecEraseBuffInfo_ )
 {
 	////������� �� ���� ����Ʈ ���� �� ����
-	//BOOST_FOREACH( const int& iBuffID, vecEraseBuffInfo_ )
+	//for( const int& iBuffID : vecEraseBuffInfo_ )
 	//{
 	//	switch( iBuffID )
 	//	{
@@ -25077,7 +25077,7 @@ void CX2GUUser::UpdateBuffEffect( const vector<KBuffInfo>& vecSetBuffInfo_, cons
 	//}
 
 	////���� �Ǿ�� �� ���� ����Ʈ ���� �� �߰�
-	//BOOST_FOREACH( const KBuffInfo& kBuffInfo, vecSetBuffInfo_ )
+	//for( const KBuffInfo& kBuffInfo : vecSetBuffInfo_ )
 	//{
 	//	switch( kBuffInfo.m_iBuffID )
 	//	{
@@ -25223,7 +25223,7 @@ void CX2GUUser::SendBuffInfoNot( const UidType uidGameUnitToSendNot_ )
 */
 /*virtual*/ void CX2GUUser::HyperModeBuffEffectStart()
 {
-	BOOST_TEST_FOREACH( CX2EqipPtr, pEquipPtr, m_ViewEqipList )
+	for( CX2EqipPtr pEquipPtr : m_ViewEqipList )
 	{
 		pEquipPtr->ChangeHyperMode();
 	}
@@ -25235,7 +25235,7 @@ void CX2GUUser::SendBuffInfoNot( const UidType uidGameUnitToSendNot_ )
 /*virtual*/ void CX2GUUser::HyperModeBuffEffectEnd()
 {
 	CX2GameUnit::HyperModeBuffEffectEnd();
-	BOOST_TEST_FOREACH( CX2EqipPtr, pEquipPtr, m_ViewEqipList )
+	for( CX2EqipPtr pEquipPtr : m_ViewEqipList )
 	{
 		pEquipPtr->ChangeNormalMode();
 	}
@@ -27694,7 +27694,7 @@ void CX2GUUser::ProcessRidingOn( IN bool bVal_, IN const KRidingPetInfo& _Info )
 			/// ���̵� �� ���� ����
 			if ( NULL != pMyRidingPetTemplet )
 			{
-				BOOST_FOREACH( const CX2RidingPetManager::RidingPetBuffInfo& buffInfo, pMyRidingPetTemplet->m_vecBuff )
+				for( const CX2RidingPetManager::RidingPetBuffInfo& buffInfo : pMyRidingPetTemplet->m_vecBuff )
 				{
 					/// ������ �����Ǿ� ������ ����
 					if ( buffInfo.m_eBuffFactorID != BFI_NONE )
@@ -28416,7 +28416,7 @@ void CX2GUUser::ApplyBuffByUseHyperMode()
 		return;
 
 	/// ������ ������ ���� ���� ��ȸ
-	BOOST_FOREACH( CX2SocketItem::InfoByUseHyperMode sInfoByUseHyperMode, m_SocketData.m_vecInfoByUseHyperMode )
+	for( CX2SocketItem::InfoByUseHyperMode sInfoByUseHyperMode : m_SocketData.m_vecInfoByUseHyperMode )
 	{
 		/// ������ ����� �� �ִ� ��ġ ( ���� �� ���� )
 		const CX2SocketItem::POSSIBLE_USE_PLACE ePossible_Use_Place =  sInfoByUseHyperMode.m_ePossibleUsePlace;
@@ -28487,7 +28487,7 @@ void CX2GUUser::EraseDebuffAndAddMP( IN const float fMPValue_ )
 		int iEraseCount = 0;	/// ���� ���� ��
 
 		/// �طο� ȿ����� ���ǵ� �������� ����� ��� ��ȯ
-		BOOST_FOREACH( BUFF_TEMPLET_ID eBuffTempletID , g_pX2Game->GetOfficiallyDebuffList() )
+		for( BUFF_TEMPLET_ID eBuffTempletID : g_pX2Game->GetOfficiallyDebuffList() )
 		{
 			auto FindFunc
 				= [eBuffTempletID]( CX2BuffTempletPtr ptrBuffTemplet_ ) {
@@ -28833,7 +28833,7 @@ void CX2GUUser::GetActionSyncData( OUT map< int, UCHAR >& mapActionSyncData_, IN
 	// int : �ε��� , UCHAR : NowAction
 	mapActionSyncData_.clear();
 	int iIndex = 0;
-	BOOST_FOREACH( const SyncData& ReceiveSyncData, ReceiveSyncDataList_ )
+	for( const SyncData& ReceiveSyncData : ReceiveSyncDataList_ )
 	{
 		if( true == IsAvaliableActionDuringDamageReact(ReceiveSyncData.nowAction) )
 		{
@@ -28850,7 +28850,7 @@ void CX2GUUser::SetActionSyncData( OUT vector<SyncData>& ReceiveSyncDataList_, I
 	if( false == mapActionSyncData_.empty() )
 	{
 		int iIndex = 0;
-		BOOST_FOREACH( SyncData& ReceiveSyncData, ReceiveSyncDataList_ )
+		for( SyncData& ReceiveSyncData : ReceiveSyncDataList_ )
 		{
 			map< int, UCHAR >::const_iterator mitActionSyncData = mapActionSyncData_.find( iIndex );
 			if( mitActionSyncData != mapActionSyncData_.end() )

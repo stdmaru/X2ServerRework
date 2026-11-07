@@ -499,7 +499,7 @@ public:
         typedef boost::intrusive_ptr<CSkillDataBase> CSkillDataBasePtr;
 
 		class CSkillDataBase
-            : private boost::noncopyable
+            : private x2::NonCopyable
 		{
 			// kimhc // 2010-11-10 // 생각해보면 쿨타임이 필요 없을듯.. 신캐 이후 정리 요망!
 		private:

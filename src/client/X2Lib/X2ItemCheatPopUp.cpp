@@ -193,7 +193,7 @@ void CX2ItemCheatPopUp::UpdateItemList()
 
 	pListBox->RemoveAllItems();
 	WCHAR wszListBoxItemName[1024] = L"";
-	BOOST_FOREACH( const CX2Item::ItemTemplet* pItemTemplet, vecItemList )
+	for( const CX2Item::ItemTemplet* pItemTemplet : vecItemList )
 	{
 		StringCchPrintfW( wszListBoxItemName, ARRAY_SIZE(wszListBoxItemName), L"%-8d %-20s %-25s %-20s",
 			pItemTemplet->GetItemID(),

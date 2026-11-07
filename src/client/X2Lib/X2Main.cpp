@@ -6,8 +6,8 @@
 #include "MachineIdLib.h"
 
 
-#include <boost/bind.hpp>
-using boost::bind;
+#include <functional>
+using std::bind;
 
 
 
@@ -4628,7 +4628,7 @@ bool CX2Main::IsValidPacket( int enumID )
 		{
 			if ( g_pData->GetMyUser() != NULL && g_pData->GetMyUser()->GetAuthLevel() >= CX2User::XUAL_DEV )
 			{
-				std::wstring wstrErrorMsg = boost::str( boost::wformat( L"NetError(%1%)\n%2%\n%3%" ) % enumID % NetError::GetErrStrF(enumID) % NetError::GetErrStr(enumID) );
+				std::wstring wstrErrorMsg = x2::str( x2::wformat( L"NetError(%1%)\n%2%\n%3%" ) % enumID % NetError::GetErrStrF(enumID) % NetError::GetErrStr(enumID) );
 				KTDGUIOKMsgBox( D3DXVECTOR2(250,300), wstrErrorMsg.c_str(), m_pNowState );
 			}
 			else
@@ -6944,7 +6944,7 @@ void CX2Main::AddDLLInfo(stringstream& strstm)
 				//strcpy(szModName, "[Hidden]");
 			}
 
-			strstm << boost::str(boost::format("[0x%08X] %s") % hMods[i] % szModName);
+			strstm << x2::str(x2::format("[0x%08X] %s") % hMods[i] % szModName);
 
 			HANDLE hFile = CreateFileA( szModName, GENERIC_READ, 0, NULL, OPEN_EXISTING, 0, NULL );
 			DWORD dwFileSize = GetFileSize( hFile, NULL );
@@ -6980,7 +6980,7 @@ void CX2Main::AddProcessInfo(stringstream& strstm, bool bThreadInfo)
         CSLock lock(m_csSendedProcessList);
         setSendedProcessList = 			m_setSendedProcessList_CS;
     }
-    BOOST_FOREACH( const std::wstring& wstrProcessName, setSendedProcessList )
+    for( const std::wstring& wstrProcessName : setSendedProcessList )
     {
 		string processName;
 		ConvertWCHARToChar( processName, wstrProcessName );
@@ -6992,7 +6992,7 @@ void CX2Main::AddProcessInfo(stringstream& strstm, bool bThreadInfo)
         CSLock lock(m_csProcessNameToFindHack);
         setProcessNameToFindHack = m_setProcessNameToFindHack_CS;
     }
-    BOOST_FOREACH( const std::wstring& wstrProcessName, setProcessNameToFindHack )
+    for( const std::wstring& wstrProcessName : setProcessNameToFindHack )
     {
 		setSendedProcessList.insert( wstrProcessName );
 		string processName;
@@ -9036,7 +9036,7 @@ bool CX2Main::CheckWindowInfo::CheckProcess_Thread()
 #ifdef CONVERSION_VS
 					// Find (_1.ProcessID == tempProcessInfo.ProcessID)
 					std::vector<PROCESS_INFO>::iterator it = find_if(vecProcessInfo.begin(), vecProcessInfo.end(),
-						boost::bind(std::equal_to<DWORD>(), boost::bind(&PROCESS_INFO::ProcessID, _1), tempProcessInfo.ProcessID));
+						std::bind(std::equal_to<DWORD>(), std::bind(&PROCESS_INFO::ProcessID, _1), tempProcessInfo.ProcessID));
 #else
 					// Find (_1.ProcessID == tempProcessInfo.ProcessID)
 					std::vector<PROCESS_INFO>::iterator it = find_if(vecProcessInfo.begin(), vecProcessInfo.end(),
@@ -9059,7 +9059,7 @@ bool CX2Main::CheckWindowInfo::CheckProcess_Thread()
 #ifdef CONVERSION_VS
 					// Find (_1.ProcessID == tempProcessInfo.ProcessID)
 					std::vector<PROCESS_INFO>::iterator it = find_if(vecZombieProcessInfo.begin(), vecZombieProcessInfo.end(),
-						boost::bind(std::equal_to<DWORD>(), boost::bind(&PROCESS_INFO::ProcessID, _1), tempProcessInfo.ProcessID));
+						std::bind(std::equal_to<DWORD>(), std::bind(&PROCESS_INFO::ProcessID, _1), tempProcessInfo.ProcessID));
 #else
 					// Find (_1.ProcessID == tempProcessInfo.ProcessID)
 					std::vector<PROCESS_INFO>::iterator it = find_if(vecZombieProcessInfo.begin(), vecZombieProcessInfo.end(),
@@ -10320,8 +10320,8 @@ void    CX2Main::SetUDPMode_LUA( const char* pszGameType, const char* pszUDPMode
         "UDP_MODE_P2P",
         "UDP_MODE_RELAY",
     };
-    BOOST_STATIC_ASSERT( ARRAY_SIZE( apszGameType ) == CX2Game::GT_NUMS );
-    BOOST_STATIC_ASSERT( ARRAY_SIZE( apszUDPMode ) == CKTDNUDP::FORCE_CONNECT_MODE_NUMS );
+    static_assert( ARRAY_SIZE( apszGameType ) == CX2Game::GT_NUMS , "");
+    static_assert( ARRAY_SIZE( apszUDPMode ) == CKTDNUDP::FORCE_CONNECT_MODE_NUMS , "");
 
     CX2Game::GAME_TYPE          eGameType = CX2Game::GT_NONE;
     CKTDNUDP::EForceConnectMode eUDPMode = CKTDNUDP::FORCE_CONNECT_MODE_DEFAULT;
@@ -10465,7 +10465,7 @@ bool CX2Main::ResetDeveloperScriptSet_GameEffectSet ( DeveloperScriptSet::Develo
 
 		CX2EffectSet::EffectSetDataMap & mapEffectSetTemplet = pGameEffectSet->GetMapEffectSetTemplet();
 		// ???? ?? ??????? ???��????? ????? ?????? ???????.
-		BOOST_TEST_FOREACH( CX2EffectSet::EffectSetDataMap::value_type&, value, mapEffectSetTemplet )
+		for( CX2EffectSet::EffectSetDataMap::value_type& value : mapEffectSetTemplet )
 		{
 			CX2EffectSet::EffectSetData * pEffectSetData = g_pData->GetGameEffectSet()->GetEffectSetTemplet(value.first);
 			if ( false == g_pData->GetGameEffectSet()->MergeEffectSetTemplet( value.second, pEffectSetData) )
@@ -10532,7 +10532,7 @@ bool CX2Main::ResetDeveloperScriptSet_GameMajorXMeshPlayer ( DeveloperScriptSet:
 		CKTDGXMeshPlayer::XMeshTempletMap & mapXMeshTemplet = pGameMajorXMeshPlayer->GetTempletMap();
 
 		// ???? ?? ??????? ???��????? ????? ?????? ??????.
-		BOOST_TEST_FOREACH( CKTDGXMeshPlayer::XMeshTempletMap::value_type&, value, mapXMeshTemplet )
+		for( CKTDGXMeshPlayer::XMeshTempletMap::value_type& value : mapXMeshTemplet )
 		{
 			CKTDGXMeshPlayer::XMeshTemplet * pXMeshTemplet = const_cast<CKTDGXMeshPlayer::XMeshTemplet * > ( g_pData->GetGameMajorXMeshPlayer()->GetTempletByName( value.first ) );
 			if ( false == g_pData->GetGameMajorXMeshPlayer()->MergeXMeshTemplet( value.second, pXMeshTemplet ) )

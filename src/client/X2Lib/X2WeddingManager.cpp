@@ -238,7 +238,7 @@ void CX2WeddingManager::OnFrameMove_SoundStop( float fElapsedTime_ )
 		return;
 
 	// 효과음 지속시간 체크.
-	BOOST_FOREACH( CX2WeddingBehavior::Behavior_DurationTimeSound& DurationTimeSound, m_WeddingBehavior.m_vecBehavior_DurationTimeSound )
+	for( CX2WeddingBehavior::Behavior_DurationTimeSound& DurationTimeSound : m_WeddingBehavior.m_vecBehavior_DurationTimeSound )
 	{
 		if( NULL != DurationTimeSound.m_pSound )
 		{
@@ -596,7 +596,7 @@ CX2OfficiantManger::~CX2OfficiantManger()
 	std::map<SEnum::WEDDING_OFFICIANT_TYPE, OfficiantTemplet*>::iterator mit = m_mapOfficiantTemplet.begin();
 	for( ; mit != m_mapOfficiantTemplet.end() ; ++mit)
 	{
-		BOOST_FOREACH( OfficiantBehavior* pBehavior, mit->second->m_vecOfficiantBehavior )
+		for( OfficiantBehavior* pBehavior : mit->second->m_vecOfficiantBehavior )
 		{
 			SAFE_DELETE( pBehavior );
 		}
@@ -605,7 +605,7 @@ CX2OfficiantManger::~CX2OfficiantManger()
 
 	if( NULL != m_pCurrentOfficiant )
 	{
-		BOOST_FOREACH( OfficiantBehavior* pBehavior, m_pCurrentOfficiant->m_vecOfficiantBehavior )
+		for( OfficiantBehavior* pBehavior : m_pCurrentOfficiant->m_vecOfficiantBehavior )
 		{
 			SAFE_DELETE( pBehavior );
 		}

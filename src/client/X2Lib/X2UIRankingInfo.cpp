@@ -466,8 +466,8 @@ bool		CX2UIRankingInfo::Handler_EGS_GET_RANKING_INFO_ACK( HWND hWnd, UINT uMsg, 
 				// 다른 유저들의 랭킹
 				int i = 0;
 
-				//BOOST_TEST_FOREACH( KHenirRankingInfo, kHenirRankingInfo, kEvent.m_vecHenirRankingPage )
-				BOOST_TEST_FOREACH( KHenirRankingInfo&, kHenirRankingInfo, kEvent.m_vecHenirRankingPage )
+				//for( KHenirRankingInfo kHenirRankingInfo : kEvent.m_vecHenirRankingPage )
+				for( KHenirRankingInfo& kHenirRankingInfo : kEvent.m_vecHenirRankingPage )
 				{
 					SetRankNumImage( m_columnForOthersRank[i].m_pStaticRanking, kHenirRankingInfo.m_iRank );
 
@@ -478,7 +478,7 @@ bool		CX2UIRankingInfo::Handler_EGS_GET_RANKING_INFO_ACK( HWND hWnd, UINT uMsg, 
 					{
 						std::wstring wstrAddUnitUID = kHenirRankingInfo.m_wstrNickName;
 						wstrAddUnitUID += L"\nUID: ";
-						wstrAddUnitUID += boost::str( boost::wformat( L"%d" ) % kHenirRankingInfo.m_iUnitUID );
+						wstrAddUnitUID += x2::str( x2::wformat( L"%d" ) % kHenirRankingInfo.m_iUnitUID );
 						m_columnForOthersRank[i].m_pStaticNickName->SetString( 0, wstrAddUnitUID.c_str() );	// 닉네임
 					}
 					else
@@ -492,7 +492,7 @@ bool		CX2UIRankingInfo::Handler_EGS_GET_RANKING_INFO_ACK( HWND hWnd, UINT uMsg, 
 				}
 
 				// 유저 자신의 랭킹 정보
-				BOOST_TEST_FOREACH( KHenirRankingInfo&, kMyHenirRankingInfo, kEvent.m_vecMyHenirRanking )
+				for( KHenirRankingInfo& kMyHenirRankingInfo : kEvent.m_vecMyHenirRanking )
 				{
 					wstring wstrLatestRanking = CWordLineHandler::GetStrByLineBreakColorInX2Main(GET_STRING( STR_ID_3744 ), 55, XUF_DODUM_13_SEMIBOLD);
 					m_columnForMyRank.m_pStaticRanking->GetString( 0 )->fontIndex	=	XUF_DODUM_13_SEMIBOLD;
@@ -516,7 +516,7 @@ bool		CX2UIRankingInfo::Handler_EGS_GET_RANKING_INFO_ACK( HWND hWnd, UINT uMsg, 
 				// 다른 유저들의 랭킹
 				int i = 0;
 
-				BOOST_TEST_FOREACH( KDungeonRankingInfo&, kLevelRankingInfo, kEvent.m_vecDungeonRankingPage )
+				for( KDungeonRankingInfo& kLevelRankingInfo : kEvent.m_vecDungeonRankingPage )
 				{
 					SetRankNumImage( m_columnForOthersRank[i].m_pStaticRanking, kLevelRankingInfo.m_iRank );
 
@@ -527,7 +527,7 @@ bool		CX2UIRankingInfo::Handler_EGS_GET_RANKING_INFO_ACK( HWND hWnd, UINT uMsg, 
 					{
 						std::wstring wstrAddUnitUID = kLevelRankingInfo.m_wstrNickName;
 						wstrAddUnitUID += L"\nUID: ";
-						wstrAddUnitUID += boost::str( boost::wformat( L"%d" ) % kLevelRankingInfo.m_iUnitUID );
+						wstrAddUnitUID += x2::str( x2::wformat( L"%d" ) % kLevelRankingInfo.m_iUnitUID );
 						m_columnForOthersRank[i].m_pStaticNickName->SetString( 0, wstrAddUnitUID.c_str() );	// 닉네임
 					}
 					else
@@ -540,7 +540,7 @@ bool		CX2UIRankingInfo::Handler_EGS_GET_RANKING_INFO_ACK( HWND hWnd, UINT uMsg, 
 
 				// 유저 자신의 랭킹 정보
 
-				BOOST_TEST_FOREACH( KDungeonRankingInfo&, kMyLevelRankingInfo, kEvent.m_vecMyDungeonRanking )
+				for( KDungeonRankingInfo& kMyLevelRankingInfo : kEvent.m_vecMyDungeonRanking )
 				{
 					m_columnForMyRank.m_pStaticRanking->GetString( 0 )->fontIndex	=	XUF_DODUM_15_BOLD;
 					if ( kMyLevelRankingInfo.m_iRank <= _CONST_UIRANKING_INFO_::g_iLimitRankingToDisplay )
@@ -564,7 +564,7 @@ bool		CX2UIRankingInfo::Handler_EGS_GET_RANKING_INFO_ACK( HWND hWnd, UINT uMsg, 
 				// 다른 유저들의 랭킹
 				int i = 0;
 
-				BOOST_TEST_FOREACH( KPvpRankingInfo&, kPvpRankingInfo, kEvent.m_vecPvpRankingPage )
+				for( KPvpRankingInfo& kPvpRankingInfo : kEvent.m_vecPvpRankingPage )
 				{
 					SetRankNumImage( m_columnForOthersRank[i].m_pStaticRanking, kPvpRankingInfo.m_iRank );
 
@@ -575,7 +575,7 @@ bool		CX2UIRankingInfo::Handler_EGS_GET_RANKING_INFO_ACK( HWND hWnd, UINT uMsg, 
 					{
 						std::wstring wstrAddUnitUID = kPvpRankingInfo.m_wstrNickName;
 						wstrAddUnitUID += L"\nUID: ";
-						wstrAddUnitUID += boost::str( boost::wformat( L"%d" ) % kPvpRankingInfo.m_iUnitUID );
+						wstrAddUnitUID += x2::str( x2::wformat( L"%d" ) % kPvpRankingInfo.m_iUnitUID );
 						m_columnForOthersRank[i].m_pStaticNickName->SetString( 0, wstrAddUnitUID.c_str() );	// 닉네임
 					}
 					else
@@ -613,7 +613,7 @@ bool		CX2UIRankingInfo::Handler_EGS_GET_RANKING_INFO_ACK( HWND hWnd, UINT uMsg, 
 				}
 
 				// 유저 자신의 랭킹 정보
-				BOOST_TEST_FOREACH( KPvpRankingInfo&, kMyPvpRankingInfo, kEvent.m_vecMyPvpRanking )
+				for( KPvpRankingInfo& kMyPvpRankingInfo : kEvent.m_vecMyPvpRanking )
 				{
 					m_columnForMyRank.m_pStaticRanking->GetString( 0 )->fontIndex	=	XUF_DODUM_15_BOLD;
 					if ( kMyPvpRankingInfo.m_iRank <= _CONST_UIRANKING_INFO_::g_iLimitRankingToDisplay )

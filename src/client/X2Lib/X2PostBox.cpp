@@ -3978,7 +3978,7 @@ bool CX2PostBox::Handler_EGS_GET_POST_LETTER_LIST_ACK( HWND hWnd, UINT uMsg, WPA
 
 
 			int iIndex = 0;
-			BOOST_FOREACH( OUT KPostItemTitleInfo& kPostInfo, kEvent.m_vecPostItemTitle )
+			for( OUT KPostItemTitleInfo& kPostInfo : kEvent.m_vecPostItemTitle )
             {
 				//{{ 2009. 6. 24  최육사	편지스트링조합
 				g_pData->GetRewardTable()->MakeSystemLetterTitle( wstrNickName, kPostInfo );

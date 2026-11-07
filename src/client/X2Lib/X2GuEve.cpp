@@ -3616,7 +3616,7 @@ void CX2GUEve::CommonFrameMove()
 
 
 			// ��� ������ ��ƼŬ �Ⱥ��̰�
-			BOOST_TEST_FOREACH( CX2EqipPtr, pEquip, m_ViewEqipList )
+			for( CX2EqipPtr pEquip : m_ViewEqipList )
 			{
 				if( pEquip != NULL )
 					pEquip->SetShowAttachedParticle( true );
@@ -7514,7 +7514,7 @@ void CX2GUEve::ENSI_INVISIBILITY_ON_End()
 		//{{ kimhc // 2010.6.16 // ���� ����� �ϴ� �Լ��� �����Ͽ� �Լ��� �����
 
 		// ��� ������ ��ƼŬ �Ⱥ��̰�
-		BOOST_TEST_FOREACH( CX2EqipPtr, pEquip, m_ViewEqipList )
+		for( CX2EqipPtr pEquip : m_ViewEqipList )
 		{
 			if( pEquip != NULL )
 				pEquip->SetShowAttachedParticle( false );
@@ -20341,7 +20341,7 @@ void CX2GUEve::EveElectraSystem::LaserAttackLineSet( CX2DamageEffect::CEffect* _
     if ( pCollisionDataList == NULL )
         return;
 
-	BOOST_TEST_FOREACH( CKTDXCollision::CollisionData*, pColA, *pCollisionDataList )
+	for( CKTDXCollision::CollisionData* pColA : *pCollisionDataList )
 	{
 		ASSERT( pColA != NULL );
 		if( pColA->m_bEnable == false )
@@ -21046,9 +21046,9 @@ void CX2GUEve::DoFrameMoveThousandStar()
 					vPos = pGameUnit->GetPos();
 					vPos.y += 100.f;
 
-					BOOST_FOREACH( const CKTDXCollision::CollisionDataList* collisionDataList, AttackListSet )
+					for( const CKTDXCollision::CollisionDataList* collisionDataList : AttackListSet )
 					{
-						BOOST_FOREACH( CKTDXCollision::CollisionData* collisionData, *collisionDataList )
+						for( CKTDXCollision::CollisionData* collisionData : *collisionDataList )
 						{
 							D3DXVECTOR3 vCollPos = collisionData->GetPointStart();
 							float fDist = GetDistance( GetPos(), vCollPos );

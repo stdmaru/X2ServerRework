@@ -169,7 +169,7 @@ bool CX2BuffBehaviorTemplet::ParsingBehaviorTemplateMethod( KLuaManager& luaMana
 */
 bool CX2BuffBehaviorTemplet::SetFactorFromPacketTemplateMothod( const KBuffFactor& kBuffFactor_, CX2GameUnit* pGameUnit_ )
 {
-	BOOST_FOREACH( const KBuffBehaviorFactor& kFactor_, kBuffFactor_.m_vecBuffBehaviorFactors )
+	for( const KBuffBehaviorFactor& kFactor_ : kBuffFactor_.m_vecBuffBehaviorFactors )
 	{
 		if ( GetType() == kFactor_.m_uiType )
 		{
@@ -1814,7 +1814,7 @@ bool CX2BuffChangeStatBehaviorTemplet::MustUseOptionData() const
 {
 	if ( NULL != g_pX2Game && DidStart() )
 	{
-		BOOST_FOREACH( CX2EffectSet::Handle& hHandle, m_vecHandleEffectSet )
+		for( CX2EffectSet::Handle& hHandle : m_vecHandleEffectSet )
 		{
 			g_pX2Game->GetEffectSet()->StopEffectSet( hHandle );
 		}
@@ -2016,7 +2016,7 @@ void CX2BuffEffectSetWithDamageBehaviorTemplet::PlayEffectSet( CX2GameUnit* pGam
 */
 void CX2BuffFinishOtherBuffDebuffBehaviorTemplet::EraseBuffTempletFromGameUnit( CX2GameUnit* pGameUnit_, const BUFF_TEMPLET_ID eExceptBuffTempletID_ )
 {
-	BOOST_FOREACH( const BUFF_TEMPLET_ID eBuffTempletID_, m_vecBuffTempletIDToBeFinished )
+	for( const BUFF_TEMPLET_ID eBuffTempletID_ : m_vecBuffTempletIDToBeFinished )
 	{
 		if ( eExceptBuffTempletID_ != eBuffTempletID_ )
 			pGameUnit_->EraseBuffTempletFromGameUnit( eBuffTempletID_ );
@@ -2616,7 +2616,7 @@ void CX2BuffFreezeBehaviorTemplet::OnFrameMove( CX2GameUnit* pGameUnit_, CX2Buff
 	{
 		if ( !DidStart() )
 		{
-			BOOST_FOREACH( const AttackSphereNameAndScale& attackSphereNameAndScale, m_vecAttackSphereNameAndScale )
+			for( const AttackSphereNameAndScale& attackSphereNameAndScale : m_vecAttackSphereNameAndScale )
 			{
 				float fScale = pGameUnit_->GetSphereAttackBoxScale( attackSphereNameAndScale.m_wstrAttackSphereName );
 				fScale += attackSphereNameAndScale.m_fScale;
@@ -2684,7 +2684,7 @@ void CX2BuffFreezeBehaviorTemplet::OnFrameMove( CX2GameUnit* pGameUnit_, CX2Buff
 	/// 오작동 할 것으로 예상 됨... // 김현철 // 2013-07-18
 	if ( !DidStart() )
 	{
-		BOOST_FOREACH( const AttackSphereNameAndScale& attackSphereNameAndScale, m_vecAttackSphereNameAndScale )
+		for( const AttackSphereNameAndScale& attackSphereNameAndScale : m_vecAttackSphereNameAndScale )
 		{
 			float fScale = pGameUnit_->GetSphereAttackBoxScale( attackSphereNameAndScale.m_wstrAttackSphereName );
 			fScale += attackSphereNameAndScale.m_fScale;
@@ -2704,7 +2704,7 @@ void CX2BuffFreezeBehaviorTemplet::OnFrameMove( CX2GameUnit* pGameUnit_, CX2Buff
 */
 /*virtual*/ void CX2BuffChangeAttackSphereScaleBehaviorTemplet::DoFinish( CX2GameUnit* pGameUnit_, CX2BuffTemplet* pBuffTemplet_ )
 {
-	BOOST_FOREACH( const AttackSphereNameAndScale& attackSphereNameAndScale, m_vecAttackSphereNameAndScale )
+	for( const AttackSphereNameAndScale& attackSphereNameAndScale : m_vecAttackSphereNameAndScale )
 	{
 		float fScale = pGameUnit_->GetSphereAttackBoxScale( attackSphereNameAndScale.m_wstrAttackSphereName );
 		fScale -= attackSphereNameAndScale.m_fScale;

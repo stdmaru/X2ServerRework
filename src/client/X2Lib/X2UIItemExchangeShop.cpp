@@ -486,7 +486,7 @@ bool	CX2UIItemExchangeShop::InitItemExchangeData()
 		CX2ItemManager::ITEM_EXCHANGE_TYPE	eType	= CX2ItemManager::IET_INVALID;
 		int		iQuantity		=	-1;
 
-		BOOST_TEST_FOREACH( CX2ItemManager::ItemExchangeData&, tempItemExchangeData, vecTempItemExchangeData )
+		for( CX2ItemManager::ItemExchangeData& tempItemExchangeData : vecTempItemExchangeData )
 		{
 			int iCount = SearchItemInUserInventory( tempItemExchangeData.m_iSrcItemID );
 			if ( iCount == -1 )
@@ -792,7 +792,7 @@ bool	CX2UIItemExchangeShop::UpdateSlotList()
 	{
 		int index = 1;
 
-		BOOST_TEST_FOREACH( CX2ItemManager::ItemExchangeData&, itemExchangeData, m_vecItemExchangeData[i] )
+		for( CX2ItemManager::ItemExchangeData& itemExchangeData : m_vecItemExchangeData[i] )
 		{
 			CX2SlotItem* pSlotItem		=
 				static_cast< CX2SlotItem * >( GetSlot( ( i - uiOffset ) * numOfSlotInOneSet + index ) );		// 교환될 slot의 ID는 1~5, 11~15, 21~25, 31~35, 41~45 이다.

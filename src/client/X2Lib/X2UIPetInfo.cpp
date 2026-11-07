@@ -650,7 +650,7 @@ bool CX2UIPetInfo::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 		return true;
 	case PLUCM_ITEM_PICKUP_SKILL:
 		{
-			BOOST_FOREACH( KPetInfo kPetInfoData, m_vecPetList )
+			for( KPetInfo kPetInfoData : m_vecPetList )
 			{
 				if( kPetInfoData.m_iPetUID == m_ViewPetUid &&//현재 노출되어있는 펫의 UID 체크
 					false == kPetInfoData.m_bAutoLooting )// 스킬 잠금 상태일 때만 동작
@@ -2922,7 +2922,7 @@ bool CX2UIPetInfo::Handler_EGS_GET_RIDING_PET_LIST_ACK( HWND hWnd, UINT uMsg, WP
 
 				// 클라에서 사용 할 자료형으로 변경
 				std::vector<CX2RidingPetManager::sRidingPetInfo> vecRidingPetInfo;
-				BOOST_FOREACH( KRidingPetInfo RidingPetInfo, kEvent.m_vecRidingPetList )
+				for( KRidingPetInfo RidingPetInfo : kEvent.m_vecRidingPetList )
 				{
 					CX2RidingPetManager::sRidingPetInfo sPetInfo = RidingPetInfo;
 					vecRidingPetInfo.push_back( sPetInfo );
@@ -2950,7 +2950,7 @@ void CX2UIPetInfo::SortRidingPetListByServerData( OUT std::vector<KRidingPetInfo
 	std::sort( vecRidingPetList_.begin(), vecRidingPetList_.end(), UnSummonDateFirstSortFunc );
 
 	int i = 0;
-	BOOST_FOREACH( KRidingPetInfo& RidingPetInfo, vecRidingPetList_ )
+	for( KRidingPetInfo& RidingPetInfo : vecRidingPetList_ )
 	{
 		RidingPetInfo.m_iLastUnSummonDate = i++;
 	}

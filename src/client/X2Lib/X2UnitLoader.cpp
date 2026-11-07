@@ -148,7 +148,7 @@ void CX2UnitLoader::AddUnitLoadDataForGame( CX2Unit* pUnit
 	UidType uidUnitUID = pUnit->GetUID();
 	if ( m_mapLoadUnitDataLoaded.find( uidUnitUID ) != m_mapLoadUnitDataLoaded.end() )
 		return;
-    BOOST_FOREACH( const LoadUserUnitData& unitResource, m_listLoadUnitData )
+    for( const LoadUserUnitData& unitResource : m_listLoadUnitData )
     {
         if ( unitResource.m_UnitUID == uidUnitUID )
             return;
@@ -163,7 +163,7 @@ void CX2UnitLoader::AddUnitLoadDataForGame( CX2Unit* pUnit
 	vector<CX2EqipPtr> viewEqipList;
 	g_pData->GetItemManager()->UpdateEqip( pUnit, CKTDGXSkinAnimPtr(), NULL, NULL, IN OUT viewEqipList, false );
 
-    BOOST_TEST_FOREACH( CX2EqipPtr, pCX2Eqip, viewEqipList )
+    for( CX2EqipPtr pCX2Eqip : viewEqipList )
 	{
         if ( pCX2Eqip == NULL )
             continue;
@@ -208,7 +208,7 @@ void    CX2UnitLoader::AddUnitLoadDataForSquareOrField( CX2Unit* pUnit, bool bTF
 	UidType uidUnitUID = pUnit->GetUID();
 	if ( m_mapLoadUnitDataLoaded.find( uidUnitUID ) != m_mapLoadUnitDataLoaded.end() )
 		return;
-    BOOST_FOREACH( const LoadUserUnitData& unitResource, m_listLoadUnitData )
+    for( const LoadUserUnitData& unitResource : m_listLoadUnitData )
     {
         if ( unitResource.m_UnitUID == uidUnitUID )
             return;
@@ -280,7 +280,7 @@ void	CX2UnitLoader::AddNPCUnitUIDResource( UINT uid, CX2UnitManager::NPC_UNIT_ID
 
 	if ( m_mapNPCUnitUIDResourceLoaded.find( uid ) != m_mapNPCUnitUIDResourceLoaded.end() )
 		return;
-    BOOST_FOREACH( const NPCResource& npcResource, m_listNPCResource )
+    for( const NPCResource& npcResource : m_listNPCResource )
     {
         if ( npcResource.m_uid == uid )
             return;
@@ -304,7 +304,7 @@ void    CX2UnitLoader::AddNPCUnitIDResource( CX2UnitManager::NPC_UNIT_ID id )
 
 	if ( m_mapNPCUnitIDResourceLoaded.find( id ) != m_mapNPCUnitIDResourceLoaded.end() )
 		return;
-    BOOST_FOREACH( const NPCResource& npcResource, m_listNPCResource )
+    for( const NPCResource& npcResource : m_listNPCResource )
     {
         if ( npcResource.m_uid == UINT(-1) && npcResource.m_id == id )
             return;

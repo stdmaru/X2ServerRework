@@ -13,7 +13,7 @@ class CX2GageUI;
 typedef boost::intrusive_ptr<CX2GageUI> CX2GageUIPtr;
 
 class CX2GageUI
-    : private boost::noncopyable
+    : private x2::NonCopyable
 {
 
 public:

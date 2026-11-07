@@ -43,7 +43,7 @@ case type_: \
 */
 bool CX2BuffFactor::GetBehaviorFactor( const BUFF_BEHAVIOR_TYPE eType_, OUT const KBuffBehaviorFactor** ppFactor_ ) const
 {
-	BOOST_FOREACH( const KBuffBehaviorFactor& factor, m_pDataBuffFactor->m_vecBuffBehaviorFactors )
+	for( const KBuffBehaviorFactor& factor : m_pDataBuffFactor->m_vecBuffBehaviorFactors )
 	{
 		if ( eType_ == static_cast<BUFF_BEHAVIOR_TYPE>( factor.m_uiType ) )
 		{
@@ -62,7 +62,7 @@ bool CX2BuffFactor::GetBehaviorFactor( const BUFF_BEHAVIOR_TYPE eType_, OUT cons
 */
 bool CX2BuffFactor::GetFinalizerFactor( const BUFF_FINALIZER_TYPE eType_, OUT const KBuffFinalizerFactor** ppFactor_ ) const
 {
-	BOOST_FOREACH( const KBuffFinalizerFactor& factor, m_pDataBuffFactor->m_vecBuffFinalizerFactors )
+	for( const KBuffFinalizerFactor& factor : m_pDataBuffFactor->m_vecBuffFinalizerFactors )
 	{
 		if ( eType_ == factor.m_uiType )
 		{
@@ -371,7 +371,7 @@ void CX2BuffFactor::ApplyExternalFactorToFinalizer( const BUFF_FINALIZER_TYPE eT
 {
 	if ( NULL != m_pDataBuffFactor )
 	{
-		BOOST_FOREACH( KBuffFinalizerFactor& kFactor, m_pDataBuffFactor->m_vecBuffFinalizerFactors )
+		for( KBuffFinalizerFactor& kFactor : m_pDataBuffFactor->m_vecBuffFinalizerFactors )
 		{
 			switch ( kFactor.m_uiType )
 			{
@@ -402,12 +402,12 @@ void CX2BuffFactor::SetGameUnitBuffFactor( CX2GameUnit* pGameUnit_, UidType iCre
 		else
 			SetUidGameUnit( pGameUnit_->GetUnitUID() );
 
-		BOOST_FOREACH( KBuffBehaviorFactor& factor, m_pDataBuffFactor->m_vecBuffBehaviorFactors )
+		for( KBuffBehaviorFactor& factor : m_pDataBuffFactor->m_vecBuffBehaviorFactors )
 		{
 			SetGameUnitBehavior( factor, pGameUnit_ );
 		}
 
-		BOOST_FOREACH( KBuffFinalizerFactor& factor, m_pDataBuffFactor->m_vecBuffFinalizerFactors )
+		for( KBuffFinalizerFactor& factor : m_pDataBuffFactor->m_vecBuffFinalizerFactors )
 		{
 			SetGameUnitFinalizer( factor, pGameUnit_ );
 		}
@@ -1756,7 +1756,7 @@ void CX2BuffFactor::ParsingTableMinMaxForWhile( IN KLuaManager& luaManager_, IN 
 void BUFF_FACTOR::GetBehaviorFactorToLevel( IN const vector<KBuffBehaviorFactor>& vecInBehaviorFactorList ,
 											  OUT vector<KBuffBehaviorFactor>& vecOutBehaviorFactorList, IN const UINT uiLevel_ )
 {
-	BOOST_FOREACH( const KBuffBehaviorFactor& factor, vecInBehaviorFactorList )
+	for( const KBuffBehaviorFactor& factor : vecInBehaviorFactorList )
 	{
 		const BUFF_BEHAVIOR_TYPE eBehaviorType =static_cast<BUFF_BEHAVIOR_TYPE>( factor.m_uiType );
 		KBuffBehaviorFactor BuffBehaviorFactor( eBehaviorType );
@@ -1923,7 +1923,7 @@ void BUFF_FACTOR::GetBehaviorFactorToLevel( IN const vector<KBuffBehaviorFactor>
 void BUFF_FACTOR::GetFinalizerFactorToLevel( IN const vector<KBuffFinalizerFactor>& vecInFinalizerFactorList ,
 											OUT vector<KBuffFinalizerFactor>& vecOutFinalizerFactorList, IN const UINT uiLevel_ )
 {
-	BOOST_FOREACH( const KBuffFinalizerFactor& factor, vecInFinalizerFactorList )
+	for( const KBuffFinalizerFactor& factor : vecInFinalizerFactorList )
 	{
 		const BUFF_FINALIZER_TYPE eFinalizerType =static_cast<BUFF_FINALIZER_TYPE>( factor.m_uiType );
 

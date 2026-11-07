@@ -296,25 +296,25 @@ void CX2RidingPet::InitData::AppendToDeviceList( CKTDXDeviceDataList& listInOut_
 void CX2RidingPet::InitDeviceData::AppendToDeviceList( CKTDXDeviceDataList& listInOut_ ) const
 {
 	// Texture
-	BOOST_TEST_FOREACH( const wstring&, strTexture, m_vecstrReadyTexture )
+	for( const wstring& strTexture : m_vecstrReadyTexture )
 	{
 		g_pKTDXApp->GetDeviceManager()->AppendTexture( listInOut_, strTexture );
 	}
 
 	// skinMesh
-	BOOST_TEST_FOREACH( const wstring&, strXSkinMesh, m_vecstrReadyXSkinMesh )
+	for( const wstring& strXSkinMesh : m_vecstrReadyXSkinMesh )
 	{
 		g_pKTDXApp->GetDeviceManager()->AppendXSkinMesh( listInOut_, strXSkinMesh );
 	}
 
 	// xmesh
-	BOOST_TEST_FOREACH( const wstring&, strXMesh, m_vecstrReadyXMesh )
+	for( const wstring& strXMesh : m_vecstrReadyXMesh )
 	{
 		g_pKTDXApp->GetDeviceManager()->AppendXMesh( listInOut_, strXMesh );
 	}
 
 	// xet
-	BOOST_TEST_FOREACH( const wstring&, strXET, m_vecstrReadyXET )
+	for( const wstring& strXET : m_vecstrReadyXET )
 	{
 		g_pKTDXApp->GetDeviceManager()->AppendXET( listInOut_, strXET );
 	}

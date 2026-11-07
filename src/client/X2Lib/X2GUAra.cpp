@@ -2784,7 +2784,7 @@ void CX2GUAra::SetSkillLevelStateData( const CX2SkillTree::SkillTemplet* pSkillT
 */
 /*virtual*/ void CX2GUAra::InitEnchantWeaponEffectUnitSpecific()
 {
-	BOOST_TEST_FOREACH( Weapon*, pWeapon, m_vecpWeapon )
+	for( Weapon* pWeapon : m_vecpWeapon )
 	{
 		ASSERT( NULL != pWeapon );
 		pWeapon->InitEnchantParticleForBow();	// �ӽ�
@@ -3134,7 +3134,7 @@ void CX2GUAra::CommonFrameMove()
 	} // if
 
 	// ����ȭ ��忡 ���̴� ���� frameMove ������
-	BOOST_TEST_FOREACH( CX2EqipPtr, pPromotionEquipPtr, m_vecPromotionEquipList )
+	for( CX2EqipPtr pPromotionEquipPtr : m_vecPromotionEquipList )
 	{
 		pPromotionEquipPtr->SetRenderParam( m_fTime, m_fElapsedTime, m_pXSkinAnim->GetRenderParam() );
 		pPromotionEquipPtr->OnFrameMove( m_fTime, m_fElapsedTime );
@@ -3608,7 +3608,7 @@ void CX2GUAra::StateChangeSpecialAttack( IN const CX2SkillTree::SKILL_ID eSkillI
 void CX2GUAra::InitPromotionEquipList()
 {
 	// ���� ������ ID�� ���´�.
-	BOOST_TEST_FOREACH( CX2EqipPtr, pEquipPtr, m_ViewEqipList )
+	for( CX2EqipPtr pEquipPtr : m_ViewEqipList )
 	{
 		if ( pEquipPtr != NULL )
 		{
@@ -3627,7 +3627,7 @@ void CX2GUAra::InitPromotionEquipList()
 
 	m_vecPromotionEquipList.reserve( m_vecPromotionItemIDList.size() + m_vecPromotionItemIDList2.size() );
 
-	BOOST_TEST_FOREACH( int, iItemID, m_vecPromotionItemIDList )
+	for( int iItemID : m_vecPromotionItemIDList )
 	{
 		CX2EqipPtr pEquipPtr = CX2ItemManager::CreateDummyEquip( iItemID, GetUnit(), m_pXSkinAnim );
 		pEquipPtr->SetShowObject( false );
@@ -3642,7 +3642,7 @@ void CX2GUAra::InitPromotionEquipList()
 		} //if
 	}
 
-	BOOST_TEST_FOREACH( int, iItemID, m_vecPromotionItemIDList2 )
+	for( int iItemID : m_vecPromotionItemIDList2 )
 	{
 		CX2EqipPtr pEquipPtr = CX2ItemManager::CreateDummyEquip( iItemID, GetUnit(), m_pXSkinAnim );
 		pEquipPtr->SetShowObject( false );
@@ -3844,7 +3844,7 @@ void CX2GUAra::LoadPromotionItemID( IN KLuaManager& luaManager_ )
 
 	if ( IsRecursivelyManagedByDGManager() )
 	{
-		BOOST_TEST_FOREACH( CX2EqipPtr, pEquipPtr, m_vecPromotionEquipList )
+		for( CX2EqipPtr pEquipPtr : m_vecPromotionEquipList )
 		{
 			if ( pEquipPtr != NULL )
 				refInManager_.AddObjectChain( pEquipPtr.get() );
@@ -3852,7 +3852,7 @@ void CX2GUAra::LoadPromotionItemID( IN KLuaManager& luaManager_ )
 	}
 	else
 	{
-		BOOST_TEST_FOREACH( CX2EqipPtr, pEquipPtr, m_vecPromotionEquipList )
+		for( CX2EqipPtr pEquipPtr : m_vecPromotionEquipList )
 		{
 			if ( pEquipPtr != NULL )
 				refInManager_.RemoveObjectChain( pEquipPtr.get() );
@@ -3869,7 +3869,7 @@ void CX2GUAra::LoadPromotionItemID( IN KLuaManager& luaManager_ )
 void CX2GUAra::SetShowPromotionEquips( bool bShow_ )
 {
 	// ���θ�� ��� ������ ��
-	BOOST_TEST_FOREACH( CX2EqipPtr, pEquipPtr, m_vecPromotionEquipList )
+	for( CX2EqipPtr pEquipPtr : m_vecPromotionEquipList )
 	{
 		if ( pEquipPtr != NULL )
 		{
@@ -3913,7 +3913,7 @@ void CX2GUAra::SetShowPromotionEquips( bool bShow_ )
 */
 void CX2GUAra::SetShowOriginalViewList( bool bShow_ )
 {
-	BOOST_TEST_FOREACH( CX2EqipPtr, pViewEquipPtr, m_ViewEqipList )
+	for( CX2EqipPtr pViewEquipPtr : m_ViewEqipList )
 	{
 		if ( pViewEquipPtr != NULL )
 		{
@@ -4054,7 +4054,7 @@ void CX2GUAra::ReplaceWeapon( CX2EqipPtr pWeaponPtr_ )
 		{
 			if ( IsOnePieceAvatarRenderHair( pNoRenderFactorEquipBody->GetItemID() ) == true )
 			{
-				BOOST_TEST_FOREACH( CX2EqipPtr, pViewEquip, m_vecPromotionEquipList )
+				for( CX2EqipPtr pViewEquip : m_vecPromotionEquipList )
 				{
 					if( IsOnePieceAvatarWithNotRenderHairItem( pViewEquip->GetItemID() ) == true )
 					{
@@ -4097,7 +4097,7 @@ void CX2GUAra::ReplaceWeapon( CX2EqipPtr pWeaponPtr_ )
 			}
 			if ( IsOnePieceAvatar( pNoRenderFactorEquipBody->GetItemID() ) == true )
 			{
-				BOOST_TEST_FOREACH( CX2EqipPtr, pViewEquip, m_vecPromotionEquipList )
+				for( CX2EqipPtr pViewEquip : m_vecPromotionEquipList )
 				{
 					switch ( pViewEquip->GetEqipPos() )
 					{
@@ -4119,7 +4119,7 @@ void CX2GUAra::ReplaceWeapon( CX2EqipPtr pWeaponPtr_ )
 			}
 			if ( IsOnePieceAvatarNotRenderFace1( pNoRenderFactorEquipBody->GetItemID() ) == true )
 			{
-				BOOST_TEST_FOREACH( CX2EqipPtr, pViewEquip, m_vecPromotionEquipList )
+				for( CX2EqipPtr pViewEquip : m_vecPromotionEquipList )
 				{
 					switch ( pViewEquip->GetEqipPos() )
 					{
@@ -4142,7 +4142,7 @@ void CX2GUAra::ReplaceWeapon( CX2EqipPtr pWeaponPtr_ )
 			}
 			if ( IsOnePieceAvatarNotRenderFace1Face2( pNoRenderFactorEquipBody->GetItemID() ) == true )
 			{
-				BOOST_TEST_FOREACH( CX2EqipPtr, pViewEquip, m_vecPromotionEquipList )
+				for( CX2EqipPtr pViewEquip : m_vecPromotionEquipList )
 				{
 					switch ( pViewEquip->GetEqipPos() )
 					{
@@ -4167,7 +4167,7 @@ void CX2GUAra::ReplaceWeapon( CX2EqipPtr pWeaponPtr_ )
 			if ( IsOnePieceAvatarNotRenderFace( pNoRenderFactorEquipBody->GetItemID() ) == true )
 			{
 				SetHideNoRenderable(true);
-				BOOST_TEST_FOREACH( CX2EqipPtr, pViewEquip, m_vecPromotionEquipList )
+				for( CX2EqipPtr pViewEquip : m_vecPromotionEquipList )
 				{
 					switch ( pViewEquip->GetEqipPos() )
 					{
@@ -4192,7 +4192,7 @@ void CX2GUAra::ReplaceWeapon( CX2EqipPtr pWeaponPtr_ )
 			/// �ѹ� �ƹ�Ÿ �ܿ� ���� ��� �Ǽ������� ���� �ϴ� ������
 			if ( IsOnePieceAvatarNotRenderHairAndAllAccessory( pNoRenderFactorEquipBody->GetItemID() ) == true )
 			{
-				BOOST_TEST_FOREACH( CX2EqipPtr, pViewEquip, m_vecPromotionEquipList )
+				for( CX2EqipPtr pViewEquip : m_vecPromotionEquipList )
 				{
 					switch ( pViewEquip->GetEqipPos() )
 					{
@@ -4220,7 +4220,7 @@ void CX2GUAra::ReplaceWeapon( CX2EqipPtr pWeaponPtr_ )
 			}
 			if ( IsOnePieceAvatarRenderingHairAndFace1( pNoRenderFactorEquipBody->GetItemID() ) == true )
 			{
-				BOOST_TEST_FOREACH( CX2EqipPtr, pViewEquip, m_vecPromotionEquipList )
+				for( CX2EqipPtr pViewEquip : m_vecPromotionEquipList )
 				{
 					switch ( pViewEquip->GetEqipPos() )
 					{
@@ -4240,7 +4240,7 @@ void CX2GUAra::ReplaceWeapon( CX2EqipPtr pWeaponPtr_ )
 			// �� ��, ��, �� ���� ��� �Ǽ�, ����� ������ ��
 			if ( IsOnePieceAvatarOnlyRenderFace1Face2Face3Equip( pNoRenderFactorEquipBody->GetItemID() ) == true )
 			{
-				BOOST_TEST_FOREACH( CX2EqipPtr, pViewEquip, m_vecPromotionEquipList )
+				for( CX2EqipPtr pViewEquip : m_vecPromotionEquipList )
 				{
 					switch ( pViewEquip->GetEqipPos() )
 					{
@@ -4264,7 +4264,7 @@ void CX2GUAra::ReplaceWeapon( CX2EqipPtr pWeaponPtr_ )
 			}
 			if ( IsOnePieceAvatarWithRenderBodyItem( pNoRenderFactorEquipBody->GetItemID() ) == true )
 			{
-				BOOST_TEST_FOREACH( CX2EqipPtr, pViewEquip, m_vecPromotionEquipList )
+				for( CX2EqipPtr pViewEquip : m_vecPromotionEquipList )
 				{
 					switch ( pViewEquip->GetEqipPos() )
 					{
@@ -4292,7 +4292,7 @@ void CX2GUAra::ReplaceWeapon( CX2EqipPtr pWeaponPtr_ )
 		{
 			if ( IsNoRenderHandEquip( pNoRenderFactorEquipACArm->GetItemID() ) == true )
 			{
-				BOOST_TEST_FOREACH( CX2EqipPtr, pViewEquip, m_vecPromotionEquipList )
+				for( CX2EqipPtr pViewEquip : m_vecPromotionEquipList )
 				{
 					switch ( pViewEquip->GetEqipPos() )
 					{
@@ -4324,7 +4324,7 @@ void CX2GUAra::ReplaceWeapon( CX2EqipPtr pWeaponPtr_ )
 			// �Ѱ��� ���� �� �� ����
 			if ( IsNoRenderHairFace2Face3Equip( pNoRenderFactorEquip->GetItemID() ) == true )
 			{
-				BOOST_TEST_FOREACH( CX2EqipPtr, pViewEquip, m_vecPromotionEquipList )
+				for( CX2EqipPtr pViewEquip : m_vecPromotionEquipList )
 				{
 					switch ( pViewEquip->GetEqipPos() )
 					{
@@ -4341,7 +4341,7 @@ void CX2GUAra::ReplaceWeapon( CX2EqipPtr pWeaponPtr_ )
 
 			if ( IsNoRenderHairFace2Equip( pNoRenderFactorEquip->GetItemID() ) == true )
 			{
-				BOOST_TEST_FOREACH( CX2EqipPtr, pViewEquip, m_vecPromotionEquipList )
+				for( CX2EqipPtr pViewEquip : m_vecPromotionEquipList )
 				{
 					switch ( pViewEquip->GetEqipPos() )
 					{
@@ -4360,7 +4360,7 @@ void CX2GUAra::ReplaceWeapon( CX2EqipPtr pWeaponPtr_ )
 			{
 				if( bOnePieceAvatarCheck == true )
 				{
-					BOOST_TEST_FOREACH( CX2EqipPtr, pViewEquip, m_vecPromotionEquipList )
+					for( CX2EqipPtr pViewEquip : m_vecPromotionEquipList )
 					{
 						switch ( pViewEquip->GetEqipPos() )
 						{
@@ -4376,7 +4376,7 @@ void CX2GUAra::ReplaceWeapon( CX2EqipPtr pWeaponPtr_ )
 				}
 				else
 				{
-					BOOST_TEST_FOREACH( CX2EqipPtr, pViewEquip, m_vecPromotionEquipList )
+					for( CX2EqipPtr pViewEquip : m_vecPromotionEquipList )
 					{
 						switch ( pViewEquip->GetEqipPos() )
 						{
@@ -4395,7 +4395,7 @@ void CX2GUAra::ReplaceWeapon( CX2EqipPtr pWeaponPtr_ )
 			{
 				if(bOnePieceAvatarCheck == true)
 				{
-					BOOST_TEST_FOREACH( CX2EqipPtr, pViewEquip, m_vecPromotionEquipList )
+					for( CX2EqipPtr pViewEquip : m_vecPromotionEquipList )
 					{
 						switch ( pViewEquip->GetEqipPos() )
 						{
@@ -4411,7 +4411,7 @@ void CX2GUAra::ReplaceWeapon( CX2EqipPtr pWeaponPtr_ )
 				else
 				{
 					SetHideNoRenderable(true);
-					BOOST_TEST_FOREACH( CX2EqipPtr, pViewEquip, m_vecPromotionEquipList )
+					for( CX2EqipPtr pViewEquip : m_vecPromotionEquipList )
 					{
 						switch ( pViewEquip->GetEqipPos() )
 						{
@@ -4435,7 +4435,7 @@ void CX2GUAra::ReplaceWeapon( CX2EqipPtr pWeaponPtr_ )
 			{
 				if(bOnePieceAvatarCheck == true)
 				{
-					BOOST_TEST_FOREACH( CX2EqipPtr, pViewEquip, m_vecPromotionEquipList )
+					for( CX2EqipPtr pViewEquip : m_vecPromotionEquipList )
 					{
 						switch ( pViewEquip->GetEqipPos() )
 						{
@@ -4451,7 +4451,7 @@ void CX2GUAra::ReplaceWeapon( CX2EqipPtr pWeaponPtr_ )
 				else
 				{
 					SetHideNoRenderable(true);
-					BOOST_TEST_FOREACH( CX2EqipPtr, pViewEquip, m_vecPromotionEquipList )
+					for( CX2EqipPtr pViewEquip : m_vecPromotionEquipList )
 					{
 						switch ( pViewEquip->GetEqipPos() )
 						{
@@ -4772,7 +4772,7 @@ void CX2GUAra::SLockOnSystem::ProcessLockOn( CX2GUAra* myUnit )
 	{
 		int iCount = 0;
 
-		BOOST_FOREACH( CX2GameUnit* pUnit, vecAreaUnit )
+		for( CX2GameUnit* pUnit : vecAreaUnit )
 		{
 			if ( m_BeforeTargetUID == pUnit->GetUnitUID() )
 				vecAreaUnit.erase( vecAreaUnit.begin() + iCount );
@@ -5045,7 +5045,7 @@ void CX2GUAra::DeleteMinorParticle()
 		// ���⿡ �ٴ� ����Ʈ ���� ����
 		SetNeedToUpdateWeaponEffect( true );
 
- 		BOOST_TEST_FOREACH( CX2EqipPtr, pEquipPtr, m_vecPromotionEquipList )
+ 		for( CX2EqipPtr pEquipPtr : m_vecPromotionEquipList )
  		{
  			pEquipPtr->ChangeHyperMode();
  		}
@@ -5064,7 +5064,7 @@ void CX2GUAra::DeleteMinorParticle()
 		if ( INVALID_PARTICLE_SEQUENCE_HANDLE == m_hHyperBoostLArm )
 			m_hHyperBoostLArm = g_pX2Game->GetMinorParticle()->CreateSequenceHandle( (CKTDGObject*) this,  L"HyperBoostLeftOrange",	0, 0, 0, 0, 0);
 
-		BOOST_TEST_FOREACH( CX2EqipPtr, pEquipPtr, m_ViewEqipList )
+		for( CX2EqipPtr pEquipPtr : m_ViewEqipList )
 		{
 			pEquipPtr->ChangeHyperMode();
 		}
@@ -5083,7 +5083,7 @@ void CX2GUAra::DeleteMinorParticle()
 	// ����ȭ ����ε�, �����ð��� �� �Ǿ�����
 	if ( IsFullHyperMode() )
 	{
-		BOOST_TEST_FOREACH( CX2EqipPtr, pEquipPtr, m_vecPromotionEquipList )
+		for( CX2EqipPtr pEquipPtr : m_vecPromotionEquipList )
 		{
 			pEquipPtr->ChangeNormalMode();
 		}
@@ -5095,14 +5095,14 @@ void CX2GUAra::DeleteMinorParticle()
 		UpdateEquipCollisionData();
 		SetNeedToUpdateWeaponEffect( true );
 
-		BOOST_TEST_FOREACH( CX2EqipPtr, pEquipPtr, m_vecPromotionEquipList )
+		for( CX2EqipPtr pEquipPtr : m_vecPromotionEquipList )
 		{
 			pEquipPtr->ChangeNormalMode();
 		}
 	}
 	else
 	{
-		BOOST_TEST_FOREACH( CX2EqipPtr, pEquipPtr, m_ViewEqipList )
+		for( CX2EqipPtr pEquipPtr : m_ViewEqipList )
 		{
 			pEquipPtr->ChangeNormalMode();
 		}
@@ -11393,7 +11393,7 @@ void CX2GUAra::SetInvisibility(bool bVal_)
 
 	m_pXSkinAnim->SetLayer(1);
 	// ��� ������ ��ƼŬ
-	BOOST_TEST_FOREACH( CX2EqipPtr, pEquip, m_ViewEqipList )
+	for( CX2EqipPtr pEquip : m_ViewEqipList )
 	{
 		if( pEquip != NULL )
 			pEquip->SetShowAttachedParticle( !m_bInvisibility );
@@ -12199,7 +12199,7 @@ float CX2GUAra::GetReduceDebuffDurationRate(BUFF_TEMPLET_ID eBuffTempletID_)
 	if ( NULL != g_pX2Game )
 	{
 		/// �طο� ȿ����� ���ǵ� �������� ����� ����Ʈ�� �ش� ������ ���ԵǾ� �ִٸ�, ���� �ð� ����
-		BOOST_FOREACH( BUFF_TEMPLET_ID eBuffTempletID, g_pX2Game->GetOfficiallyDebuffList() )
+		for( BUFF_TEMPLET_ID eBuffTempletID : g_pX2Game->GetOfficiallyDebuffList() )
 		{
 			if ( eBuffTempletID_ == eBuffTempletID )
 				fReduceDebuffDurationRate = m_fReduceEDTDurationRate;
@@ -13323,7 +13323,7 @@ void CX2GUAra::ASI_SA_ALD_FINGER_BULLET_FINISH_FrameMove()
 {
 if( true == m_pXSkinAnim->EventTimerOneshot( m_fEventTime[0].keyInputStart ) )
 	{
-		BOOST_FOREACH( CX2GameUnitoPtr pGameUnit, m_vecHitUnitPointer )
+		for( CX2GameUnitoPtr pGameUnit : m_vecHitUnitPointer )
 		{
 			/// ���� ���� ������ ��
 			if ( null != pGameUnit && 0 < pGameUnit->GetNowHp() )
@@ -13711,7 +13711,7 @@ void CX2GUAra::ASI_A_AYR_STEAL_SOUL_FINISH_FrameMove()
 {
     if( true == m_pXSkinAnim->EventTimerOneshot( 0.577f ) )
 	{
-		BOOST_FOREACH( CX2GameUnitoPtr pGameUnit, m_vecHitUnitPointer )
+		for( CX2GameUnitoPtr pGameUnit : m_vecHitUnitPointer )
 		{
 			/// ���� ���� ������ ��
 			if ( null != pGameUnit && 0 < pGameUnit->GetNowHp() )

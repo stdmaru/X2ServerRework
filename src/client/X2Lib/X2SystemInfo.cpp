@@ -124,7 +124,7 @@ bool CX2SystemInfo::InitOSInfo()
 
 	// 버젼
 	// Major.Minor.BuildNumber
-	m_strOSVer = boost::str(boost::format("%1%.%2%.%3%") % osinfo.dwMajorVersion % osinfo.dwMinorVersion % osinfo.dwBuildNumber );
+	m_strOSVer = x2::str(x2::format("%1%.%2%.%3%") % osinfo.dwMajorVersion % osinfo.dwMinorVersion % osinfo.dwBuildNumber );
 
 	// 이름
 	if(osinfo.dwMajorVersion == 6)
@@ -194,10 +194,10 @@ bool CX2SystemInfo::InitOSLocale()
 bool CX2SystemInfo::InitInputLocale()
 {
 	QueryInputLocale(m_vecInputLocaleID);
-	BOOST_TEST_FOREACH(LANGID, lid, m_vecInputLocaleID)
+	for( LANGID lid : m_vecInputLocaleID )
 	{
-		m_vecInputLocale.push_back( boost::str( boost::format("%s") % GetLocaleName(lid).c_str() ) );
-		// m_vecInputLocale.push_back( boost::str( boost::format("%s [0x%X]") % GetLocaleName(lid).c_str() % hkl[i] ) );
+		m_vecInputLocale.push_back( x2::str( x2::format("%s") % GetLocaleName(lid).c_str() ) );
+		// m_vecInputLocale.push_back( x2::str( x2::format("%s [0x%X]") % GetLocaleName(lid).c_str() % hkl[i] ) );
 	}
 
 	return true;

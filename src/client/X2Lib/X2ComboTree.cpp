@@ -245,7 +245,7 @@ bool CX2ComboTree::OpenScriptFile( const std::wstring& filename )
 
 	vecUnitClassName.push_back( UnitClassName( CX2Unit::UC_ADD_LUNATIC_PSYKER,	"ADD_LUNATIC_PSYKER"	) );
 
-	BOOST_TEST_FOREACH( UnitClassName&, unitClassName, vecUnitClassName )
+	for( UnitClassName& unitClassName : vecUnitClassName )
 	{
 		CX2Unit::UNIT_CLASS eUnitClass = unitClassName.m_eUnitClass;
 		if( true == luaManager.BeginTable( unitClassName.m_Name.c_str() ) )

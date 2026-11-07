@@ -896,7 +896,7 @@ CX2PremiumBuffTempletPtr CX2PremiumBuffManager::GetPremiumBuffTempletPtr( const 
 
 void CX2PremiumBuffManager::GetSocketOptions( OUT vector<int>& vecBuffSocetOptions_ )
 {
-	BOOST_FOREACH( CX2PremiumBuffIconPtr ptrValue, m_vecPremiumBuffList )
+	for( CX2PremiumBuffIconPtr ptrValue : m_vecPremiumBuffList )
 	{
 		CX2PremiumBuffTempletPtr ptrTemplet = GetPremiumBuffTempletPtr( ptrValue->GetPremiumBuffID() );
 
@@ -907,7 +907,7 @@ void CX2PremiumBuffManager::GetSocketOptions( OUT vector<int>& vecBuffSocetOptio
 
 void CX2PremiumBuffManager::GetSocketOptions( IN const vector<int>& vecBuffIdList_, OUT vector<int>& vecBuffSocetOptions_ )
 {
-	BOOST_FOREACH( const int& iBuffId, vecBuffIdList_ )
+	for( const int& iBuffId : vecBuffIdList_ )
 	{
 		CX2PremiumBuffTempletPtr ptrTemplet = GetPremiumBuffTempletPtr( static_cast<CX2PremiumBuffTemplet::BUFF_ID>( iBuffId ) );
 

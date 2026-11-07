@@ -16201,7 +16201,7 @@ void CX2GULire_ElvenRanger::EntireExplosion()		/// ������ ��ȣź
 	int	iCountExplosionObjectNum = vExplosionArrowList.size();
 
 	/// NPC ����ü �� ����
-	BOOST_FOREACH( UidType iNPCUID, m_vecAngerOfElfTrapUID )
+	for( UidType iNPCUID : m_vecAngerOfElfTrapUID )
 	{
 		CX2GUNPC* pNPC = g_pX2Game->GetNPCUnitByUID( static_cast<int>(iNPCUID) );
 
@@ -18186,7 +18186,7 @@ void CX2GULire_ElvenRanger::SetInvisibility(bool bVal_)
 
 	m_pXSkinAnim->SetLayer(1);
 	// ��� ������ ��ƼŬ
-	BOOST_TEST_FOREACH( CX2EqipPtr, pEquip, m_ViewEqipList )
+	for( CX2EqipPtr pEquip : m_ViewEqipList )
 	{
 		if( pEquip != NULL )
 		{

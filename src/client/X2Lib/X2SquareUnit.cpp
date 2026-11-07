@@ -1323,7 +1323,7 @@ HRESULT	CX2SquareUnit::OnFrameMove( double fTime, float fElapsedTime )
 	}
 #endif // HANABI_VILLAGE
 
-	BOOST_TEST_FOREACH( const CX2GameUnit::SoundPlayData&, soundData, m_vecSoundPlayData )
+	for( const CX2GameUnit::SoundPlayData& soundData : m_vecSoundPlayData )
 	{
 		float fTime = soundData.m_SoundPlayTime;
 		int iRate	= soundData.m_SoundPlayRate;

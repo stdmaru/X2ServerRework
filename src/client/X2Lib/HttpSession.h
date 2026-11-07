@@ -1,6 +1,6 @@
 #pragma once
 
-#include <windows.h>
+#include "x2/platform/win32.h"
 #include <wininet.h>
 #include <string>
 #include <algorithm>

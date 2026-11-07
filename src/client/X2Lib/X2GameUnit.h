@@ -1545,7 +1545,7 @@ class CX2GameUnit : public CKTDGObject, public CKTDXDeviceHolder, public KObserv
         typedef boost::intrusive_ptr<DamageEffectGroupData> DamageEffectGroupDataPtr;
 
 		struct DamageEffectGroupData
-            : private boost::noncopyable
+            : private x2::NonCopyable
 		{
         private:
             unsigned                                        m_uRefCount;
@@ -2702,7 +2702,7 @@ class CX2GameUnit : public CKTDGObject, public CKTDXDeviceHolder, public KObserv
 		template<typename T>
 		bool VerifyVector( IN vector<T>& vector_ )
 		{
-			BOOST_FOREACH( T val, vector_ )
+			for( T val : vector_ )
 			{
 				if ( NULL != val && false == val->Verify() )
 					return false;

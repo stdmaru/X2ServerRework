@@ -407,7 +407,7 @@ void CX2QuestManager::SetUnitQuest( const std::vector<KQuestInstance>& vecQuestI
 	ClearUnitQuest();
 
 	// 캐릭터가 진행중인 퀘스트
-	BOOST_TEST_FOREACH( const KQuestInstance&, val, vecQuestInst )
+	for( const KQuestInstance& val : vecQuestInst )
 	{
 		QuestInst* pQuestInst = new QuestInst();
 		pQuestInst->SetKQuestInstance( &val );
@@ -418,7 +418,7 @@ void CX2QuestManager::SetUnitQuest( const std::vector<KQuestInstance>& vecQuestI
 	__time64_t t64TimeToRefreshDailyQuest = GetTimeToRefreshQuest();
 
 	// 캐릭터가 완료한 퀘스트
-	BOOST_TEST_FOREACH( const KCompleteQuestInfo&, val, vecCompleteQuest )
+	for( const KCompleteQuestInfo& val : vecCompleteQuest )
 	{
 		// 퀘스트가 일일 퀘스트 이고
 		const QuestTemplet* pQuestTemplet = GetQuestTemplet( val.m_iQuestID );
@@ -506,7 +506,7 @@ bool CX2QuestManager::RefreshDailyQuest()
 		mItr++;
 	}
 
-	BOOST_TEST_FOREACH( int, val, vecDailyQuest )
+	for( int val : vecDailyQuest )
 	{
 		m_mapCompleteQuest.erase( val );
 	}
@@ -986,7 +986,7 @@ bool CX2QuestManager::GetAvailableQuest( const CX2UnitManager::NPC_UNIT_ID eQues
 	for( UINT i = CJT_JOB_FIRST_OLD; i < CJT_JOB_END; ++i )
 	{
 		const std::set<int>& setClassChangeQuestID = changeJobQuest.m_setQuestID[ CHANGE_JOB_TYPE(i) ];
-		BOOST_TEST_FOREACH( int, iClassChangeQuestID, setClassChangeQuestID )
+		for( int iClassChangeQuestID : setClassChangeQuestID )
 		{
 			if( NULL != g_pData->GetQuestManager()->GetUnitQuest( iClassChangeQuestID ) ||
 				mapQuestClear.end() != mapQuestClear.find( iClassChangeQuestID ) )
@@ -3245,7 +3245,7 @@ bool CX2QuestManager::IsForbiddenQuest( int iQuestID )
 	}
 
 
-	BOOST_TEST_FOREACH( int, itemID, pQuestTemplet->m_vecShowItemID )
+	for( int itemID : pQuestTemplet->m_vecShowItemID )
 	{
 		if( NULL == g_pData->GetMyUser()->GetSelectUnit()->GetInventory().GetItemByTID( itemID, true ) )
 		{
@@ -3254,7 +3254,7 @@ bool CX2QuestManager::IsForbiddenQuest( int iQuestID )
 	}
 
 
-	BOOST_TEST_FOREACH( int, itemID, pQuestTemplet->m_vecHideItemID )
+	for( int itemID : pQuestTemplet->m_vecHideItemID )
 	{
 		if( NULL != g_pData->GetMyUser()->GetSelectUnit()->GetInventory().GetItemByTID( itemID, true ) )
 		{
@@ -3264,7 +3264,7 @@ bool CX2QuestManager::IsForbiddenQuest( int iQuestID )
 
 
 
-	BOOST_TEST_FOREACH( int, skillID, pQuestTemplet->m_vecHideSkillID )
+	for( int skillID : pQuestTemplet->m_vecHideSkillID )
 	{
 		if( true == g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_UserSkillTree.IsSkillUnsealed( (CX2SkillTree::SKILL_ID) skillID ) )
 		{
@@ -3274,7 +3274,7 @@ bool CX2QuestManager::IsForbiddenQuest( int iQuestID )
 	}
 
 
-	BOOST_TEST_FOREACH( const CX2Inventory::MEMBERSHIP_PRIVATE_BANK, bankGrade, pQuestTemplet->m_vecHideBankGrade )
+	for( const CX2Inventory::MEMBERSHIP_PRIVATE_BANK bankGrade : pQuestTemplet->m_vecHideBankGrade )
 	{
 		if( g_pData->GetMyUser()->GetSelectUnit()->GetInventory().GetBankMembershipGrade() == bankGrade )
 		{

@@ -2786,7 +2786,7 @@ void CX2GUAdd::StateChangeSpecialAttack( IN const CX2SkillTree::SkillTemplet* pS
 }
 /*virtual*/ void CX2GUAdd::InitEnchantWeaponEffectUnitSpecific()
 {
-	BOOST_TEST_FOREACH( Weapon*, pWeapon, m_vecpWeapon )
+	for( Weapon* pWeapon : m_vecpWeapon )
 	{
 		ASSERT( NULL != pWeapon );
 		pWeapon->InitEnchantParticleForBow();
@@ -5319,7 +5319,7 @@ void CX2GUAdd::NasodArmorAttackStartFuture()
 		bool bIsSetTargetData = false;	/// Ÿ�� ���� ����
 
 		/// Ÿ�� ���� �˻� �� ����
-		BOOST_FOREACH( FantasyTracerTargetInfo& TargetInfo, m_vecFantasyTracerTargetInfo )
+		for( FantasyTracerTargetInfo& TargetInfo : m_vecFantasyTracerTargetInfo )
 		{
 			if ( m_eNasodArmorAttackActiveSkillID == TargetInfo.m_eSkillID )
 			{
@@ -5434,7 +5434,7 @@ void CX2GUAdd::NasodArmorLandingEndFuture()
 		bool bIsSetTargetData = false;	/// Ÿ�� ���� ����
 
 		/// Ÿ�� ���� �˻� �� ����
-		BOOST_FOREACH( FantasyTracerTargetInfo& TargetInfo, m_vecFantasyTracerTargetInfo )
+		for( FantasyTracerTargetInfo& TargetInfo : m_vecFantasyTracerTargetInfo )
 		{
 			if ( m_eNasodArmorAttackActiveSkillID == TargetInfo.m_eSkillID )
 			{
@@ -6152,7 +6152,7 @@ void CX2GUAdd::ANSI_SA_APT_EMP_SHOCK_FrameMove()
 			const CX2UserSkillTree& userSkillTree	= GetUnit()->GetUnitData().m_UserSkillTree;
 			const int				iSkillLevel		= userSkillTree.GetSkillLevel( CX2SkillTree::SI_SA_APT_EMP_SHOCK );
 
-			BOOST_FOREACH( CX2GameUnit* pGameUnit, g_pX2Game->GetUnitList() )
+			for( CX2GameUnit* pGameUnit : g_pX2Game->GetUnitList() )
 			{
 				if ( NULL == pGameUnit )
 					continue;
@@ -7142,7 +7142,7 @@ void CX2GUAdd::ANSI_SA_ALP_DUST_ANATOMY_FrameMove()
 		/// ���� ����Ʈ ����
 		else if ( m_pXSkinAnim->EventTimerOneshot( 1.f ) )
 		{
-			BOOST_FOREACH( DustAnatomyTargetInfo TargetInfo, m_vecDustAnatomyTargetInfo )
+			for( DustAnatomyTargetInfo TargetInfo : m_vecDustAnatomyTargetInfo )
 			{
 				g_pX2Game->GetDamageEffect()->DestroyInstanceHandle( TargetInfo.m_eLinkEffect );
 			}
@@ -8047,7 +8047,7 @@ void CX2GUAdd::ANSI_HA_ALP_DOOMS_DAY_FrameMove()
 		/// ����Ʈ ����
 		else if( m_pXSkinAnim->EventTimerOneshot( 4.294f ) )
 		{
-			BOOST_FOREACH( CX2DamageEffect::CEffectHandle hHandle , m_vecDoomsDayLinkEffect )
+			for( CX2DamageEffect::CEffectHandle hHandle : m_vecDoomsDayLinkEffect )
 			{
 				g_pX2Game->GetDamageEffect()->DestroyInstanceHandle( hHandle );
 			}
@@ -8106,7 +8106,7 @@ void CX2GUAdd::ANSI_HA_ALP_DOOMS_DAY_StateEnd()
 	/// ���� ����Ʈ �����ִٸ�, ��������
 	if ( false == m_vecDoomsDayLinkEffect.empty() )
 	{
-		BOOST_FOREACH( CX2DamageEffect::CEffectHandle hHandle , m_vecDoomsDayLinkEffect )
+		for( CX2DamageEffect::CEffectHandle hHandle : m_vecDoomsDayLinkEffect )
 		{
 			g_pX2Game->GetDamageEffect()->DestroyInstanceHandle( hHandle );
 		}
@@ -9040,12 +9040,12 @@ void CX2GUAdd::AddPylonLinkDamageEffect( IN CX2DamageEffect::CEffect* pAddPylon_
 	const CX2DamageEffect::CEffectHandle hAddPylonHandle = pAddPylon_->GetHandle();
 
 	/// ��ġ�Ǿ� �ִ� ���Ϸ� �˻�
-	BOOST_FOREACH( const PylonDamageEffectData& AnotherPylonData, m_vecSummonPylonDamageEffectData )
+	for( const PylonDamageEffectData& AnotherPylonData : m_vecSummonPylonDamageEffectData )
 	{
 		bool bIsLink = false;		/// �ٸ� ���Ϸ��� ������ ����Ʈ ���� ����
 
 		/// ���� ������ ���� ������ ����Ʈ �˻�
-		BOOST_FOREACH( const PylonLinkDamageEffectData& LinkData, m_vecPylonLinkDamageEffectData )
+		for( const PylonLinkDamageEffectData& LinkData : m_vecPylonLinkDamageEffectData )
 		{
 			const CX2DamageEffect::CEffectHandle iStartLinkPylonHandle	= LinkData.m_hPylonHandle.first;	/// ����� ���Ϸ� �ڵ�
 			const CX2DamageEffect::CEffectHandle iEndLinkPylonHandle	= LinkData.m_hPylonHandle.second;	/// ����� �ݴ��� ���Ϸ� �ڵ�
@@ -9195,7 +9195,7 @@ bool CX2GUAdd::GetSummonPylonPos( OUT D3DXVECTOR3& fSummonPos )
 													   GetPos() - ( GetDirVector() * fCheckOffsetPosition[i] );
 
 			/// ���� ��ġ�� ���Ϸ����� ������ ��ġ�� �ʴ��� �˻�
-			BOOST_FOREACH( PylonDamageEffectData PylonData, m_vecSummonPylonDamageEffectData )
+			for( PylonDamageEffectData PylonData : m_vecSummonPylonDamageEffectData )
 			{
 				CX2DamageEffect::CEffect* pEffect = g_pX2Game->GetDamageEffect()->GetInstance( PylonData.m_EffectHandle );
 
@@ -9225,12 +9225,12 @@ void CX2GUAdd::ResetPylonData()
 {
 	if ( NULL != g_pX2Game && NULL != g_pX2Game->GetDamageEffect() )
 	{
-		BOOST_FOREACH( PylonDamageEffectData PylonData, m_vecSummonPylonDamageEffectData )
+		for( PylonDamageEffectData PylonData : m_vecSummonPylonDamageEffectData )
 		{
 			g_pX2Game->GetDamageEffect()->DestroyInstanceHandle( PylonData.m_EffectHandle );
 		}
 
-		BOOST_FOREACH( PylonLinkDamageEffectData LinkData, m_vecPylonLinkDamageEffectData )
+		for( PylonLinkDamageEffectData LinkData : m_vecPylonLinkDamageEffectData )
 		{
 			g_pX2Game->GetDamageEffect()->DestroyInstanceHandle( LinkData.m_hLinkEffectHandle);
 		}
@@ -9693,7 +9693,7 @@ void CX2GUAdd::MagnetronData::ResetMagnetronData()
 
 	if ( NULL != g_pX2Game && NULL != g_pX2Game->GetDamageEffect() )
 	{
-		BOOST_FOREACH( CX2DamageEffect::CEffectHandle hMagnetronHandle, m_vecMagnetronDamageEffectData )
+		for( CX2DamageEffect::CEffectHandle hMagnetronHandle : m_vecMagnetronDamageEffectData )
 		{
 			g_pX2Game->GetDamageEffect()->DestroyInstanceHandle( hMagnetronHandle );
 		}
@@ -10226,7 +10226,7 @@ const bool CX2GUAdd::GetIsFantasyTracerTargetSkillID( IN const CX2SkillTree::SKI
 	/// ȯ�� ������ ����ÿ��� �˻�
 	if ( true == GetIsFormationMode() && true == m_bEnableFantasyTracer )
 	{
-		BOOST_FOREACH( FantasyTracerTargetInfo TargetInfo, m_vecFantasyTracerTargetInfo )
+		for( FantasyTracerTargetInfo TargetInfo : m_vecFantasyTracerTargetInfo )
 		{
 			if ( eSkillID_ == TargetInfo.m_eSkillID && false == TargetInfo.m_bIsUseData )
 				return true;
@@ -10242,7 +10242,7 @@ const bool CX2GUAdd::GetIsFantasyTracerTargetSkillID( IN const CX2SkillTree::SKI
 */
 void CX2GUAdd::SetUseFantasyTracerTarget( IN const CX2SkillTree::SKILL_ID eSkillID_ )
 {
-	BOOST_FOREACH( FantasyTracerTargetInfo& TargetInfo, m_vecFantasyTracerTargetInfo )
+	for( FantasyTracerTargetInfo& TargetInfo : m_vecFantasyTracerTargetInfo )
 	{
 		if ( eSkillID_ == TargetInfo.m_eSkillID )
 		{
@@ -10336,7 +10336,7 @@ CX2GameUnit* CX2GUAdd::DustAnatomyTargetInfo::GetTargetUnit()
 {
 	if ( 0 < m_uidTargetUID && NULL != g_pX2Game )
 	{
-		BOOST_FOREACH( CX2GameUnit* pUnit, g_pX2Game->GetUnitList() )
+		for( CX2GameUnit* pUnit : g_pX2Game->GetUnitList() )
 		{
 			if ( NULL == pUnit )
 				continue;
@@ -10369,7 +10369,7 @@ CX2GameUnit* CX2GUAdd::ReverseReactorTargetInfo::GetTargetUnit()
 {
 	if ( 0 < m_uidTargetUID && NULL != g_pX2Game )
 	{
-		BOOST_FOREACH( CX2GameUnit* pUnit, g_pX2Game->GetUnitList() )
+		for( CX2GameUnit* pUnit : g_pX2Game->GetUnitList() )
 		{
 			if ( NULL == pUnit )
 				continue;

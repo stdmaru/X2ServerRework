@@ -6,7 +6,7 @@
 */
 
 class CBattleFieldPortalMovingInfo
-    : private boost::noncopyable
+    : private x2::NonCopyable
 {
 public:
 	// 생성자: 기본Type은 Initialize에 넣어주시고, 사용자 정의 타입은 멤버 초기화 리스트에서 초기화 해주세요
@@ -67,7 +67,7 @@ IMPLEMENT_INTRUSIVE_PTR( CBattleFieldPortalMovingInfo );
 @date  : 2011/10/25
 */
 class CBattleFieldRiskInfo
-    : private boost::noncopyable
+    : private x2::NonCopyable
 {
 public:
 	// true, false 속성을 가지는 타입의 플래그, std::bitset으로 관리
@@ -125,7 +125,7 @@ IMPLEMENT_INTRUSIVE_PTR( CBattleFieldRiskInfo );
 
 
 class CBattleFieldMiddleBossInfo		// 필드 중간 보스에 대한 정보를 담고 있는 클래스, BattleFieldData.lua 에서 파싱
-    : private boost::noncopyable
+    : private x2::NonCopyable
 {
 	public :
 		CBattleFieldMiddleBossInfo ()
@@ -202,7 +202,7 @@ IMPLEMENT_INTRUSIVE_PTR( CBattleFieldMiddleBossInfo );
 */
 
 class CBattleFieldData
-    : private boost::noncopyable
+    : private x2::NonCopyable
 {
 
 public:
@@ -210,7 +210,7 @@ public:
 	typedef boost::intrusive_ptr<CBattleFieldPortalMovingInfo> CBattleFieldPortalMovingInfoPtr;
 	typedef boost::intrusive_ptr<CBattleFieldRiskInfo> CBattleFieldRiskInfoPtr;
 
-	typedef boost::shared_ptr<CBattleFieldMiddleBossInfo> CBattleFieldMiddleBossInfoPtr;
+	typedef std::shared_ptr<CBattleFieldMiddleBossInfo> CBattleFieldMiddleBossInfoPtr;
 
 	CBattleFieldData()
 		: m_wstrBattleFieldName(), m_wstrBattleFieldTextureName(), m_uiReturnVillageId( 0 )

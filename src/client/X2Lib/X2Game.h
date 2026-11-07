@@ -2,7 +2,7 @@
 
 
 //{{ 2012. 10. 31	박세훈	Merge 랜선랙 방지 작업-릴레이를 기본적으로 사용한다.
-#include <boost/timer.hpp>
+#include "x2/platform/timer.h"
 //}}
 
 
@@ -1086,12 +1086,12 @@ protected:
 
 		void						InsertGUUserToCheckUDPTimer( const UidType uidCheckUser_ )
 		{
-			boost::timer timerFirst;
+			x2::Timer timerFirst;
 			timerFirst.restart();
 			m_mapCheckUDPTimer.insert( std::make_pair( uidCheckUser_, timerFirst ) );
 		}
 		void				AbuserUserCheck( const CX2GUUser* pCheckUser_ );
-		bool				CanCheckAbuser( const CX2GUUser* pCheckUser_, std::map< UidType, boost::timer >::iterator mit_ );
+		bool				CanCheckAbuser( const CX2GUUser* pCheckUser_, std::map< UidType, x2::Timer >::iterator mit_ );
 
 
 		void						AddChatLogByGetItem(const CX2Item::ItemTemplet* pItemTemplet, CX2GUUser* pCX2GUUser,
@@ -1331,7 +1331,7 @@ protected:
         std::vector<CX2DamageEffect::CEffectHandle>      m_vecRemoveDamageEffect;
 
 		//{{ 2012. 10. 31	박세훈	Merge 랜선랙 방지 작업-릴레이를 기본적으로 사용한다.
-		std::map< UidType, boost::timer >		m_mapCheckUDPTimer;
+		std::map< UidType, x2::Timer >		m_mapCheckUDPTimer;
 		//}}
 
 		CinematicUI	*m_pCinematicUI; //화면 위,아래 검게 만드는 UI

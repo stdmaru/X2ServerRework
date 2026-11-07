@@ -697,11 +697,11 @@ struct    KItemFormatTemplet : public CX2ItemTemplet_Base
         SetBuffID( 0 );
 //#endif  BUFF_TEMPLET_SYSTEM
 
-        BOOST_STATIC_ASSERT( CX2Unit::UT_NONE == 0 );
-        BOOST_STATIC_ASSERT( CX2Unit::UC_NONE == 0 );
-        BOOST_STATIC_ASSERT( CX2Unit::EP_NONE == 0 );
-        BOOST_STATIC_ASSERT( CX2PVPEmblem::PVPRANK_NONE == 0 );
-        BOOST_STATIC_ASSERT( CX2UnitManager::NUI_NONE == 0 );
+        static_assert( CX2Unit::UT_NONE == 0 , "");
+        static_assert( CX2Unit::UC_NONE == 0 , "");
+        static_assert( CX2Unit::EP_NONE == 0 , "");
+        static_assert( CX2PVPEmblem::PVPRANK_NONE == 0 , "");
+        static_assert( CX2UnitManager::NUI_NONE == 0 , "");
         SetUnitType( CX2Unit::UT_NONE );        // 유닛
         SetUnitClass( CX2Unit::UC_NONE );    // 클래스
         SetEqipPosition( CX2Unit::EP_NONE );	//장착 위치
@@ -863,18 +863,18 @@ private:
 
 #pragma pack( pop )
 
-BOOST_STATIC_ASSERT( sizeof(KItemFormatTemplet)/4*4 == sizeof(KItemFormatTemplet) );
-BOOST_STATIC_ASSERT( IT_NUM <= (1<<KItemFormatTemplet::FLAG_NUM_ITEM_TYPE) );
-BOOST_STATIC_ASSERT( IG_NUM <= (1<<KItemFormatTemplet::FLAG_NUM_ITEM_GRADE) );
-BOOST_STATIC_ASSERT( PT_NUM <= (1<<KItemFormatTemplet::FLAG_NUM_PERIOD_TYPE) );
-BOOST_STATIC_ASSERT( SPT_NUM <= (1<<KItemFormatTemplet::FLAG_NUM_SHOP_PRICE_TYPE) );
-BOOST_STATIC_ASSERT( UC_NUM <= (1<<KItemFormatTemplet::FLAG_NUM_USE_CONDITION) );
-BOOST_STATIC_ASSERT( UT_NUM <= (1<<KItemFormatTemplet::FLAG_NUM_USE_TYPE) );
-BOOST_STATIC_ASSERT( CX2UnitManager::NUI_MAX_LIMIT <= (1<<(8*sizeof(WORD))) );
-BOOST_STATIC_ASSERT( CX2PVPEmblem::PVPRANK_MAX <= (1<<(8*sizeof(BYTE))) );
-BOOST_STATIC_ASSERT( CX2Unit::UT_END <= (1<<(8*sizeof(BYTE))) );
-BOOST_STATIC_ASSERT( CX2Unit::UC_END <= (1<<(8*sizeof(BYTE))) );
-BOOST_STATIC_ASSERT( CX2Unit::EP_END <= (1<<(8*sizeof(BYTE))) );
+static_assert( sizeof(KItemFormatTemplet)/4*4 == sizeof(KItemFormatTemplet) , "");
+static_assert( IT_NUM <= (1<<KItemFormatTemplet::FLAG_NUM_ITEM_TYPE) , "");
+static_assert( IG_NUM <= (1<<KItemFormatTemplet::FLAG_NUM_ITEM_GRADE) , "");
+static_assert( PT_NUM <= (1<<KItemFormatTemplet::FLAG_NUM_PERIOD_TYPE) , "");
+static_assert( SPT_NUM <= (1<<KItemFormatTemplet::FLAG_NUM_SHOP_PRICE_TYPE) , "");
+static_assert( UC_NUM <= (1<<KItemFormatTemplet::FLAG_NUM_USE_CONDITION) , "");
+static_assert( UT_NUM <= (1<<KItemFormatTemplet::FLAG_NUM_USE_TYPE) , "");
+static_assert( CX2UnitManager::NUI_MAX_LIMIT <= (1<<(8*sizeof(WORD))) , "");
+static_assert( CX2PVPEmblem::PVPRANK_MAX <= (1<<(8*sizeof(BYTE))) , "");
+static_assert( CX2Unit::UT_END <= (1<<(8*sizeof(BYTE))) , "");
+static_assert( CX2Unit::UC_END <= (1<<(8*sizeof(BYTE))) , "");
+static_assert( CX2Unit::EP_END <= (1<<(8*sizeof(BYTE))) , "");
 
 typedef KItemFormatTemplet  ItemTemplet;
 typedef KItemFormatSpecialAbility   SpecialAbility;

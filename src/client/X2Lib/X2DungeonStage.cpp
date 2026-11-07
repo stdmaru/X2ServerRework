@@ -157,7 +157,7 @@ void CX2DungeonStage::LoadReadyNPCResources()
 	{
 		const CX2DungeonSubStage::SubStageData* pSubStageData	= m_pStageData->m_SubStageDataList[i];
 
-		BOOST_TEST_FOREACH( const CX2DungeonSubStage::NPCData*, pNpcData, pSubStageData->m_NPCDataList )
+		for( const CX2DungeonSubStage::NPCData* pNpcData : pSubStageData->m_NPCDataList )
 		{
 			if ( setUsed.insert( pNpcData->m_UnitID ).second == true )
 			{
@@ -167,7 +167,7 @@ void CX2DungeonStage::LoadReadyNPCResources()
 	}
 
 	//Ready 리스트에 있는 것들을 로드하고
-	BOOST_TEST_FOREACH( CX2UnitManager::NPC_UNIT_ID, readyNPCID, m_pStageData->m_ReadyNPCList )
+	for( CX2UnitManager::NPC_UNIT_ID readyNPCID : m_pStageData->m_ReadyNPCList )
 	{
 		if ( setUsed.insert( readyNPCID ).second == true )
 		{

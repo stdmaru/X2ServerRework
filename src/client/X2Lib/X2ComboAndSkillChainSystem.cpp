@@ -92,7 +92,7 @@ void CX2ComboAndSkillChainSystem::InitSkillStateChained( CX2GUUser* pCX2GUUser_ 
 {
 	if ( NULL != pCX2GUUser_ )
 	{
-		BOOST_FOREACH( CX2ComboAndSkillChainInfoPtr ptrComboAndSkillChainInfo, m_vecComboAndSkillChainInfoPtrInSystem )
+		for( CX2ComboAndSkillChainInfoPtr ptrComboAndSkillChainInfo : m_vecComboAndSkillChainInfoPtrInSystem )
 		{
 			if ( NULL != ptrComboAndSkillChainInfo )
 				pCX2GUUser_->InitAquiredActiveSkillState( ptrComboAndSkillChainInfo->GetSkillID() );
@@ -102,7 +102,7 @@ void CX2ComboAndSkillChainSystem::InitSkillStateChained( CX2GUUser* pCX2GUUser_ 
 
 CX2ComboAndSkillChainInfoPtr CX2ComboAndSkillChainSystem::GetSkillChainInfoPtrBySkillID( const int iSkillID_ ) const
 {
-	BOOST_FOREACH( CX2ComboAndSkillChainInfoPtr ptrComboAndSkillChainInfo, m_vecComboAndSkillChainInfoPtrInSystem )
+	for( CX2ComboAndSkillChainInfoPtr ptrComboAndSkillChainInfo : m_vecComboAndSkillChainInfoPtrInSystem )
 	{
 		if ( NULL != ptrComboAndSkillChainInfo
 			 && CASCT_SKILL == ptrComboAndSkillChainInfo->GetComboAndSkillChainType()
@@ -115,7 +115,7 @@ CX2ComboAndSkillChainInfoPtr CX2ComboAndSkillChainSystem::GetSkillChainInfoPtrBy
 
 CX2ComboAndSkillChainInfoPtr CX2ComboAndSkillChainSystem::GetSkillChainInfoPtrByStateID( const int iStateID_ ) const
 {
-	BOOST_FOREACH( CX2ComboAndSkillChainInfoPtr ptrComboAndSkillChainInfo, m_vecComboAndSkillChainInfoPtrInSystem )
+	for( CX2ComboAndSkillChainInfoPtr ptrComboAndSkillChainInfo : m_vecComboAndSkillChainInfoPtrInSystem )
 	{
 		if ( NULL != ptrComboAndSkillChainInfo
 			&& iStateID_ == ptrComboAndSkillChainInfo->GetStateIdChained() )
@@ -129,7 +129,7 @@ int CX2ComboAndSkillChainSystem::GetTriggerSecretSkillState( const CX2GUUser* pC
 {
 	if ( !m_vecComboAndSkillChainListPtr.empty() )
 	{
-		BOOST_FOREACH( CX2ComboAndSkillChainInfoListPtr ptrComboAndSkillChainInfoList, m_vecComboAndSkillChainListPtr )
+		for( CX2ComboAndSkillChainInfoListPtr ptrComboAndSkillChainInfoList : m_vecComboAndSkillChainListPtr )
 		{
 			if ( NULL != ptrComboAndSkillChainInfoList )
 			{

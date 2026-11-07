@@ -6119,7 +6119,7 @@ void CX2UISkillTreeNew::GetSkillUnSealedDesc( OUT wstring& wstrDesc, IN const CX
 	{
 		std::vector<CX2SkillTree::SKILL_ID> vecValue = mit->second.m_vecSkillID;
 
-		BOOST_FOREACH( CX2SkillTree::SKILL_ID eValue, vecValue )
+		for( CX2SkillTree::SKILL_ID eValue : vecValue )
 		{
 			/// �ش� ���� ��ų �������� ã�Ҵٸ�, ������ ���̵� ��ȯ
 			if ( eSkillID == eValue )

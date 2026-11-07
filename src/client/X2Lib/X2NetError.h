@@ -31,4 +31,4 @@ namespace NetError
     NetErrorID GetLastError();
 }
 
-#define SET_ERROR( id ) NetError::SetLastError( NetError::##id )
+#define SET_ERROR( id ) NetError::SetLastError( NetError::id )

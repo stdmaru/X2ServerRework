@@ -887,7 +887,7 @@ void CX2MiniMap::RenderGameUnitTexture()
 
 	const int iMyTeam = g_pX2Game->GetMyUnit()->GetTeam();	/// 내 팀 번호
 	const vector<CX2GameUnit*>& vecGameUnitList = g_pX2Game->GetUnitList();
-	BOOST_FOREACH( const CX2GameUnit* pGameUnit, vecGameUnitList )
+	for( const CX2GameUnit* pGameUnit : vecGameUnitList )
 	{
 		if ( NULL != pGameUnit && pGameUnit->GetShowOnMiniMap() )
 		{

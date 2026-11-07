@@ -886,7 +886,7 @@ bool CX2WeddingGame::IsWeddingHeroineMyUnit() const
 }
 bool CX2WeddingGame::IsWeddingHeroineByUID( UidType uiUserUID ) const
 {
-	BOOST_FOREACH( CX2SquareUnitPtr pSquareUnit, m_UserUnitList )
+	for( CX2SquareUnitPtr pSquareUnit : m_UserUnitList )
 	{
 		if( uiUserUID == pSquareUnit->GetUID() )
 		{

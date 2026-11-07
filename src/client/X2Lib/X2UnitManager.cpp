@@ -46,7 +46,7 @@ CX2UnitManager::CX2UnitManager(void)
 
 CX2UnitManager::~CX2UnitManager(void)
 {
-	BOOST_FOREACH( UnitTypeLuaTemplet& refTemplet, m_aUnitTypeLuaTemplet )
+	for( UnitTypeLuaTemplet& refTemplet : m_aUnitTypeLuaTemplet )
 	{
 		refTemplet.Release();
 	}
@@ -404,7 +404,7 @@ const CX2UnitManager::NPCUnitInfo*      CX2UnitManager::GetNPCUnitInfo( NPC_UNIT
 
 void	CX2UnitManager::UnloadAllNPCInitData()
 {
-	BOOST_TEST_FOREACH( NPCUnitInfoMap::value_type&, value, m_mapNPCUnitInfo )
+	for( NPCUnitInfoMap::value_type& value : m_mapNPCUnitInfo )
 	{
 		if ( value.second.m_pInitData != &s_dummyNPCInitData )
 		{
@@ -418,7 +418,7 @@ void	CX2UnitManager::UnloadAllNPCInitData()
 //#endif	X2OPTIMIZE_NPC_LUASPACE_SHARING
 	}//BOOST_TEST_FOREACH()
 
-// 	BOOST_TEST_FOREACH( const FileNPCInitDataMap::value_type&, value, m_mapFileNPCInitData )
+// 	for( const FileNPCInitDataMap::value_type& value : m_mapFileNPCInitData )
 // 	{
 // 		g_pKTDXApp->GetLuaFunctionManager()->UnregisterLuaFunction( value.first.c_str() );
 // 	}//BOOST_TEST_FOREACH()
@@ -658,7 +658,7 @@ bool CX2UnitManager::AddNPCExtraAbility_LUA()
 void CX2UnitManager::GetNPCUnitList( std::map< CX2UnitManager::NPC_UNIT_ID, std::wstring >& mapNpcList )
 {
 	mapNpcList.clear();
-    BOOST_TEST_FOREACH( const NPCUnitInfoMap::value_type&, value, m_mapNPCUnitInfo )
+    for( const NPCUnitInfoMap::value_type& value : m_mapNPCUnitInfo )
 	{
 		mapNpcList.insert( std::make_pair( value.first, value.second.m_templet.m_Description ) );
 	}

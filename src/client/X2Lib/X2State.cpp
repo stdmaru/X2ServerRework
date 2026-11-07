@@ -346,7 +346,7 @@ CX2State::~CX2State(void)
 		g_pInstanceData->GetMiniMapUI()->CloseWorldMapUI();
 
 
-	BOOST_FOREACH( FadeInOutNotice* pFadeInOutNotice, m_vecFadeInOutNotice )
+	for( FadeInOutNotice* pFadeInOutNotice : m_vecFadeInOutNotice )
 	{
 		if( NULL != pFadeInOutNotice )
 			SAFE_DELETE( pFadeInOutNotice );
@@ -4235,7 +4235,7 @@ bool CX2State::Handler_EGS_REWARD_MARKETING_EVENT_NOT( HWND hWnd, UINT uMsg, WPA
 		{
 			pMyUnit->m_mapEventData.clear();
 
-			BOOST_TEST_FOREACH( const KTimeEventSimpleInfo&, kTimeEventSimpleInfo, kEvent.m_vecTimeEvent )
+			for( const KTimeEventSimpleInfo& kTimeEventSimpleInfo : kEvent.m_vecTimeEvent )
 			{
 				CX2Unit::EventData eventData( kTimeEventSimpleInfo );
 				pMyUnit->AddMarketingEvent( eventData );
@@ -4247,7 +4247,7 @@ bool CX2State::Handler_EGS_REWARD_MARKETING_EVENT_NOT( HWND hWnd, UINT uMsg, WPA
 
 	case KEGS_TIME_EVENT_INFO_NOT::TENT_BEGIN:
 		{
-			BOOST_TEST_FOREACH( const KTimeEventSimpleInfo&, kTimeEventSimpleInfo, kEvent.m_vecTimeEvent )
+			for( const KTimeEventSimpleInfo& kTimeEventSimpleInfo : kEvent.m_vecTimeEvent )
 			{
 				CX2Unit::EventData eventData( kTimeEventSimpleInfo );
 				pMyUnit->AddMarketingEvent( eventData );
@@ -4259,7 +4259,7 @@ bool CX2State::Handler_EGS_REWARD_MARKETING_EVENT_NOT( HWND hWnd, UINT uMsg, WPA
 
 	case KEGS_TIME_EVENT_INFO_NOT::TENT_END:
 		{
-			BOOST_TEST_FOREACH( const KTimeEventSimpleInfo&, kTimeEventSimpleInfo, kEvent.m_vecTimeEvent )
+			for( const KTimeEventSimpleInfo& kTimeEventSimpleInfo : kEvent.m_vecTimeEvent )
 			{
 				pMyUnit->DeleteMarketingEvent( kTimeEventSimpleInfo.m_iEventUID );
 
@@ -5591,7 +5591,7 @@ bool CX2State::Handler_EGS_DISCONNECT_FOR_CHANNEL_CHANGE_ACK( HWND hWnd, UINT uM
 		Handler_EGS_CONNECT_CHANNEL_CHANGE_REQ();
 
 		//케릭터 선택창 나갈 때 버프 아이콘 초기화
-		BOOST_FOREACH( CX2PremiumBuffIconPtr pPremiumBuffIconPtr, g_pData->GetPremiumBuffManager()->GetPremiumBuffList() )
+		for( CX2PremiumBuffIconPtr pPremiumBuffIconPtr : g_pData->GetPremiumBuffManager()->GetPremiumBuffList() )
 		{
 			g_pData->GetPremiumBuffManager()->ErasePremiumBuff(static_cast<CX2PremiumBuffTemplet::BUFF_ID>( pPremiumBuffIconPtr->GetPremiumBuffID() ));
 		}
@@ -6505,7 +6505,7 @@ bool CX2State::Handler_EGS_EVENT_QUEST_INFO_NOT( HWND hWnd, UINT uMsg, WPARAM wP
 
 	if ( kEvent.m_cType == 0 ) // Begin
 	{
-		BOOST_TEST_FOREACH( int, iQuestID, kEvent.m_vecQuestID )
+		for( int iQuestID : kEvent.m_vecQuestID )
 		{
 			g_pData->GetQuestManager()->SetTimedEventQuest( iQuestID, false );
 		}
@@ -6514,7 +6514,7 @@ bool CX2State::Handler_EGS_EVENT_QUEST_INFO_NOT( HWND hWnd, UINT uMsg, WPARAM wP
 	{
 		bool bExcuteInfomer = false;
 
-		BOOST_TEST_FOREACH( int, iQuestID, kEvent.m_vecQuestID )
+		for( int iQuestID : kEvent.m_vecQuestID )
 		{
 			if ( g_pData->GetQuestManager()->RemoveUnitQuest( iQuestID, false ) == true
 				 && bExcuteInfomer == false )
@@ -6550,7 +6550,7 @@ bool CX2State::Handler_EGS_EVENT_QUEST_CHECK_FOR_ADMIN_NOT( HWND hWnd, UINT uMsg
 		// 여기서 문제의 퀘스트 ID 를 출력해주자
 		std::wstringstream  wstrMgs;
 		wstrMgs << L"Time 셋팅 안된 퀘스트가 DB에 있음. 확인 필요\n QUEST ID : ";
-		BOOST_TEST_FOREACH( int, val, kEvent.m_vecWarningQuestID )
+		for( int val : kEvent.m_vecWarningQuestID )
 		{
 			wstrMgs << val << L",";
 		}
@@ -7179,7 +7179,7 @@ bool CX2State::Handler_EGS_RESET_PERIOD_ITEM_NOT( HWND hWnd, UINT uMsg, WPARAM w
 
 	const CX2Inventory& kInventory = g_pData->GetMyUser()->GetSelectUnit()->GetInventory();
 
-	BOOST_TEST_FOREACH( KInventoryItemInfo&, val, kEvent.m_vecInventorySlotInfo )
+	for( KInventoryItemInfo& val : kEvent.m_vecInventorySlotInfo )
 	{
 		CX2Item* pItem = kInventory.GetItem( val.m_iItemUID, true );
 
@@ -7976,7 +7976,7 @@ bool CX2State::Handler_EGS_JOIN_BATTLE_FIELD_ACK( HWND hWnd, UINT uMsg, WPARAM w
 	}
 
 
-	BOOST_TEST_FOREACH( const KInventoryItemInfo&, itemInfo, kEvent.m_vecKInventorySlotInfo  )
+	for( const KInventoryItemInfo& itemInfo : kEvent.m_vecKInventorySlotInfo )
 	{
 		if( itemInfo.m_iItemUID > 0 &&
 			g_pData->GetQuestManager() != NULL )
@@ -8220,7 +8220,7 @@ void CX2State::ReturnToPlaceWhereBeforeDungeonStart()
 	//}} 허상형 : [2009/10/20] //	접속 후 길드 메시지가 출력 되도록 조건문 처리
 
 	//케릭터 선택창 나갈 때 버프 아이콘 초기화
-	BOOST_FOREACH( CX2PremiumBuffIconPtr pPremiumBuffIconPtr, g_pData->GetPremiumBuffManager()->GetPremiumBuffList() )
+	for( CX2PremiumBuffIconPtr pPremiumBuffIconPtr : g_pData->GetPremiumBuffManager()->GetPremiumBuffList() )
 	{
 		g_pData->GetPremiumBuffManager()->ErasePremiumBuff(static_cast<CX2PremiumBuffTemplet::BUFF_ID>( pPremiumBuffIconPtr->GetPremiumBuffID() ));
 	}

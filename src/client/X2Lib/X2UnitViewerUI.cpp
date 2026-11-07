@@ -133,7 +133,7 @@ CX2UnitViewerUI::~CX2UnitViewerUI(void)
 	//	SAFE_DELETE( pX2Eqip );
 	//}
 	//m_ViewEqipList.clear();
-    BOOST_TEST_FOREACH( const ViewEquipMap::value_type&, value_type, m_ViewEquipMap )
+    for( const ViewEquipMap::value_type& value_type : m_ViewEquipMap )
     {
         CX2EqipPtr pX2Eqip = value_type.second;
 		if( pX2Eqip != NULL )
@@ -245,7 +245,7 @@ HRESULT CX2UnitViewerUI::OnFrameMove( double fTime, float fElapsedTime )
 
 //{{ robobeg : 2008-10-17
 	//for( int i = 0; i < (int)m_ViewEqipList.size(); i++ )
-    BOOST_TEST_FOREACH( const ViewEquipMap::value_type&, value, m_ViewEquipMap )
+    for( const ViewEquipMap::value_type& value : m_ViewEquipMap )
 //}} robobeg : 2008-10-17
 	{
 //{{ robobeg : 2008-10-17
@@ -852,7 +852,7 @@ void CX2UnitViewerUI::NotifyShowObjectChanged()
 {
 	//CKTDGObject::SetShowObject( bShow );
 
-    BOOST_TEST_FOREACH( const ViewEquipMap::value_type&, value, m_ViewEquipMap )
+    for( const ViewEquipMap::value_type& value : m_ViewEquipMap )
     {
         CX2EqipPtr pX2Eqip = value.second;
 
@@ -998,7 +998,7 @@ RENDER_HINT   CX2UnitViewerUI::OnFrameRender_Prepare()
     if ( !IsRecursivelyManagedByDGManager() && !m_ViewEquipMap.empty() )
     {
         RENDER_HINT renderHint;
-        BOOST_TEST_FOREACH( const ViewEquipMap::value_type&, value, m_ViewEquipMap )
+        for( const ViewEquipMap::value_type& value : m_ViewEquipMap )
         {
             CX2EqipPtr pX2Eqip = value.second;
             ASSERT( pX2Eqip != NULL && !pX2Eqip->IsManagedByDGManager() );
@@ -1110,7 +1110,7 @@ void    CX2UnitViewerUI::OnFrameRender_Draw()
 
     if ( !IsRecursivelyManagedByDGManager() && !m_ViewEquipMap.empty() )
     {
-        BOOST_TEST_FOREACH( const ViewEquipMap::value_type&, value, m_ViewEquipMap )
+        for( const ViewEquipMap::value_type& value : m_ViewEquipMap )
         {
             CX2EqipPtr pX2Eqip = value.second;
             ASSERT( pX2Eqip != NULL && !pX2Eqip->IsManagedByDGManager() );
@@ -1339,7 +1339,7 @@ HRESULT CX2UnitViewerUI::OnResetDevice()
 
     if ( !IsRecursivelyManagedByDGManager() )
     {
-        BOOST_TEST_FOREACH( const ViewEquipMap::value_type&, value, m_ViewEquipMap )
+        for( const ViewEquipMap::value_type& value : m_ViewEquipMap )
         {
             CX2EqipPtr pX2Eqip = value.second;
 
@@ -1371,7 +1371,7 @@ HRESULT CX2UnitViewerUI::OnLostDevice()
 
     if ( !IsRecursivelyManagedByDGManager() )
     {
-        BOOST_TEST_FOREACH( const ViewEquipMap::value_type&, value, m_ViewEquipMap )
+        for( const ViewEquipMap::value_type& value : m_ViewEquipMap )
         {
             CX2EqipPtr pX2Eqip = value.second;
 
@@ -1397,7 +1397,7 @@ void    CX2UnitViewerUI::NotifyDGManagerChanged( CKTDGManager& refInManager_ )
 {
     if ( IsRecursivelyManagedByDGManager() )
     {
-        BOOST_TEST_FOREACH( const ViewEquipMap::value_type&, value, m_ViewEquipMap )
+        for( const ViewEquipMap::value_type& value : m_ViewEquipMap )
         {
             if ( value.second != NULL )
                 refInManager_.AddObjectChain( value.second.get() );
@@ -1405,7 +1405,7 @@ void    CX2UnitViewerUI::NotifyDGManagerChanged( CKTDGManager& refInManager_ )
     }
     else
     {
-        BOOST_TEST_FOREACH( const ViewEquipMap::value_type&, value, m_ViewEquipMap )
+        for( const ViewEquipMap::value_type& value : m_ViewEquipMap )
         {
             if ( value.second != NULL )
                 refInManager_.RemoveObjectChain( value.second.get()  );
@@ -2115,14 +2115,14 @@ void CX2UnitViewerUI::AppendToDeviceList( CKTDXDeviceDataList& listInOut_, CX2Un
 	g_pData->GetItemManager()->UpdateEqip( pUnit, CKTDGXSkinAnimPtr(), NULL, NULL, IN OUT viewEqipList, false );
 	//#endif EQUIP_STRIP_TEST
 
-	BOOST_TEST_FOREACH( CX2EqipPtr, pCX2Eqip, viewEqipList )
+	for( CX2EqipPtr pCX2Eqip : viewEqipList )
 	{
 		if ( pCX2Eqip == NULL )
 			continue;
 		pCX2Eqip->AppendToDeviceList( listInOut_ );
 	}
 
-	//BOOST_FOREACH( CX2EqipRSPtr pCX2Eqip, viewEqipList )
+	//for( CX2EqipRSPtr pCX2Eqip : viewEqipList )
 	//{
 	//    SAFE_DELETE_KTDGOBJECT( pCX2Eqip );
 	//}//BOOST_FOREACH()
@@ -2166,7 +2166,7 @@ void CX2UnitViewerUI::UpdateEqip( bool bEconomical /* = false */ )
 			}//for
 		}
 
-        BOOST_TEST_FOREACH( const ViewEquipMap::value_type&, value, m_ViewEquipMap )
+        for( const ViewEquipMap::value_type& value : m_ViewEquipMap )
         {
             if ( CX2EqipPtr pX2Eqip = value.second )
             {
@@ -2182,14 +2182,14 @@ void CX2UnitViewerUI::UpdateEqip( bool bEconomical /* = false */ )
                 vecItemUIDToDelete.push_back( value.first );
         }//BOOST_TEST_FOREACH()
 
-        BOOST_TEST_FOREACH( UidType, itemUID, vecItemUIDToDelete )
+        for( UidType itemUID : vecItemUIDToDelete )
         {
 // 부품을 지울 때마다 빈 위치에 Basic 장비가 장착되는 것을 막는다. 맨 마지막에 ReplaceEmptyToBasic 명령으로 일괄 장착!
 // by robobeg, 2008-10-18
             RemoveEqip( itemUID, true );
         }//BOOST_TEST_FOREACH()
 
-        BOOST_TEST_FOREACH( UidType, itemUID, setItemUID )
+        for( UidType itemUID : setItemUID )
         {
             if ( m_ViewEquipMap.find( itemUID ) == m_ViewEquipMap.end() )
                 AddEqip( itemUID );
@@ -2791,7 +2791,7 @@ void CX2UnitViewerUI::UpdateEquipSlotVisibility()
 	InitEquipVisibility(); // fix!! 함수 이름 바꾸기
 
 	bool bOnePieceAvatarWithNotRenderHairItem = false;
-	BOOST_TEST_FOREACH( const ViewEquipMap::value_type&, value2, m_ViewEquipMap )
+	for( const ViewEquipMap::value_type& value2 : m_ViewEquipMap )
 	{
 		if( IsOnePieceAvatarWithNotRenderHairItem( value2.second->GetItemID() ) == true && NULL != value2.second->GetItem())
 		{
@@ -2800,7 +2800,7 @@ void CX2UnitViewerUI::UpdateEquipSlotVisibility()
 	}
 
 	bool bOnePieceAvatarCheck = false;
-	BOOST_TEST_FOREACH( const ViewEquipMap::value_type&, value, m_ViewEquipMap )
+	for( const ViewEquipMap::value_type& value : m_ViewEquipMap )
 	{
 		if ( IsOnePieceAvatarRenderHair( value.second->GetItemID() ) == true && NULL != value.second->GetItem() )
 		{
@@ -3030,7 +3030,7 @@ void CX2UnitViewerUI::UpdateEquipSlotVisibility()
 		}
 	}
 
-	BOOST_TEST_FOREACH( const ViewEquipMap::value_type&, value, m_ViewEquipMap )
+	for( const ViewEquipMap::value_type& value : m_ViewEquipMap )
 	{
 		if ( IsNoRenderNasodHand( value.second->GetItemID() ) == true && NULL != value.second->GetItem() )
 		{
@@ -3050,7 +3050,7 @@ void CX2UnitViewerUI::UpdateEquipSlotVisibility()
 		}
 	}
 
-	BOOST_TEST_FOREACH( const ViewEquipMap::value_type&, value, m_ViewEquipMap )
+	for( const ViewEquipMap::value_type& value : m_ViewEquipMap )
 	{
 		if ( IsNoRenderHandEquip( value.second->GetItemID() ) == true && NULL != value.second->GetItem() )
 		{
@@ -3071,7 +3071,7 @@ void CX2UnitViewerUI::UpdateEquipSlotVisibility()
 	}
 
 
-	BOOST_TEST_FOREACH( const ViewEquipMap::value_type&, value, m_ViewEquipMap )
+	for( const ViewEquipMap::value_type& value : m_ViewEquipMap )
 	{
 		// kimhc // 이 이상 안보여야 할 분류가 달라 진다면
 		// 안보여야할 부위 및 그런 기능을 가지고 있는 아이템을 스크립트로 빼야할듯
@@ -5211,7 +5211,7 @@ void CX2UnitViewerUI::SetFixed(bool val)
 
 	if( true == m_bFixed )
 	{
-		BOOST_TEST_FOREACH( const ViewEquipMap::value_type&, value, m_ViewEquipMap )
+		for( const ViewEquipMap::value_type& value : m_ViewEquipMap )
 		{
 			CX2EqipPtr pX2Eqip = value.second;
 
@@ -5883,7 +5883,7 @@ void CX2UnitViewerUI::SetUnitReForm()
 //{{ kimhc // 2010-01-05 // PC방 프리미엄 서비스
 void CX2UnitViewerUI::RemovePCBangEquips()
 {
-	BOOST_TEST_FOREACH( const ViewEquipMap::value_type&, value, m_ViewEquipMap )
+	for( const ViewEquipMap::value_type& value : m_ViewEquipMap )
 	{
 		if ( CX2EqipPtr pX2Eqip = value.second )
 		{

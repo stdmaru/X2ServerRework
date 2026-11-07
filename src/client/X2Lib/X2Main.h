@@ -428,8 +428,8 @@
 #include "../X2/KOGGamePerformanceCheckDefine.h"
 
 #include "./WordWrap.h"
-#include <boost/random.hpp>
-using boost::mt19937;
+#include <random>
+using std::mt19937;
 
 #include "./X2StateWeddingGame.h"
 #include "./X2WeddingManager.h"
@@ -444,8 +444,7 @@ BOOL CALLBACK EnumChildProc_Thread(HWND , LPARAM);
 BOOL CALLBACK EnumWindowsProc_Thread(HWND , LPARAM);
 BOOL Pesudo_IsDebuggerPresent();
 
-	#include <boost/random.hpp>
-	using boost::mt19937;
+	using std::mt19937;
 
 template < typename T >
 inline void Serialize( KSerBuffer* pBuff, T* pData )
@@ -1317,7 +1316,7 @@ class CX2Main : public CKTDXStage
 
 		bool IsThereTimedMessagePopup( const TimedMessagePopUp::MESSAGE_TYPE eMessageType )
 		{
-			BOOST_TEST_FOREACH( const TimedMessagePopUp&, timedMessage, m_listTimedMessagePopUp )
+			for( const TimedMessagePopUp& timedMessage : m_listTimedMessagePopUp )
 			{
 				if( eMessageType == timedMessage.m_eMessageType )
 				{

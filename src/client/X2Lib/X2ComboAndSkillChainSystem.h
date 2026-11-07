@@ -13,8 +13,8 @@ enum COMBO_AND_SKILL_CHAIN_TYPE
 };
 
 class CX2ComboAndSkillChainInfo;
-typedef boost::shared_ptr<CX2ComboAndSkillChainInfo> CX2ComboAndSkillChainInfoPtr;
-typedef boost::weak_ptr<CX2ComboAndSkillChainInfo>	CX2ComboAndSkillChainInfoWeakPtr;
+typedef std::shared_ptr<CX2ComboAndSkillChainInfo> CX2ComboAndSkillChainInfoPtr;
+typedef std::weak_ptr<CX2ComboAndSkillChainInfo>	CX2ComboAndSkillChainInfoWeakPtr;
 
 class	CX2ComboAndSkillChainInfo
 {
@@ -104,7 +104,7 @@ class CX2ComboAndSkillChainInfoList;
 typedef  boost::intrusive_ptr<CX2ComboAndSkillChainInfoList> CX2ComboAndSkillChainInfoListPtr;
 
 class CX2ComboAndSkillChainInfoList
-    : private boost::noncopyable
+    : private x2::NonCopyable
 {
 public:
 	static CX2ComboAndSkillChainInfoListPtr CreateComboAndSkillChainInfoTemplet()
@@ -152,7 +152,7 @@ public:
 
 	bool CanTriggerToSecretSkill() const
 	{
-		BOOST_FOREACH( CX2ComboAndSkillChainInfoPtr ptrComboAndSkillChainInfo, m_vecComboAndSkillChainInfoPtr )
+		for( CX2ComboAndSkillChainInfoPtr ptrComboAndSkillChainInfo : m_vecComboAndSkillChainInfoPtr )
 		{
 			if ( NULL == ptrComboAndSkillChainInfo || false == ptrComboAndSkillChainInfo->GetChaining() )
 				return false;
@@ -163,7 +163,7 @@ public:
 
 	bool HasThisChainInfo( CX2ComboAndSkillChainInfoPtr ptrChainInfo_ )
 	{
-		BOOST_FOREACH( CX2ComboAndSkillChainInfoPtr ptrComboAndSkillChainInfo, m_vecComboAndSkillChainInfoPtr )
+		for( CX2ComboAndSkillChainInfoPtr ptrComboAndSkillChainInfo : m_vecComboAndSkillChainInfoPtr )
 		{
 			if ( NULL != ptrComboAndSkillChainInfo
 				&& ptrComboAndSkillChainInfo->GetStateIdChained() == ptrChainInfo_->GetStateIdChained() )
@@ -175,7 +175,7 @@ public:
 
 	void ResetChaining()
 	{
-		BOOST_FOREACH( CX2ComboAndSkillChainInfoPtr ptrComboAndSkillChainInfo, m_vecComboAndSkillChainInfoPtr )
+		for( CX2ComboAndSkillChainInfoPtr ptrComboAndSkillChainInfo : m_vecComboAndSkillChainInfoPtr )
 		{
 			if ( NULL != ptrComboAndSkillChainInfo )
 				ptrComboAndSkillChainInfo->SetChaining( false );
@@ -204,7 +204,7 @@ class CX2ComboAndSkillChainSystem;
 typedef boost::intrusive_ptr<CX2ComboAndSkillChainSystem> CX2ComboAndSkillChainSystemPtr;
 
 class CX2ComboAndSkillChainSystem
-    : private boost::noncopyable
+    : private x2::NonCopyable
 {
 public:
 	typedef std::vector<CX2ComboAndSkillChainInfoListPtr> VecComboAndSkillChainListPtr;
@@ -220,7 +220,7 @@ public:
 
 	void	ResetStateIdMatchedToChain()
 	{
-		BOOST_FOREACH( CX2ComboAndSkillChainInfoPtr ptrComboAndSkillChainInfo, m_vecComboAndSkillChainInfoPtrInSystem )
+		for( CX2ComboAndSkillChainInfoPtr ptrComboAndSkillChainInfo : m_vecComboAndSkillChainInfoPtrInSystem )
 		{
 			if ( NULL != ptrComboAndSkillChainInfo )
 			{
@@ -232,7 +232,7 @@ public:
 
 	void	ResetChaining()
 	{
-		BOOST_FOREACH( CX2ComboAndSkillChainInfoPtr ptrComboAndSkillChainInfo, m_vecComboAndSkillChainInfoPtrInSystem )
+		for( CX2ComboAndSkillChainInfoPtr ptrComboAndSkillChainInfo : m_vecComboAndSkillChainInfoPtrInSystem )
 		{
 			if ( NULL != ptrComboAndSkillChainInfo )
 				ptrComboAndSkillChainInfo->SetChaining( false );
@@ -241,7 +241,7 @@ public:
 
 	void	ResetOtherListChaining( CX2ComboAndSkillChainInfoPtr ptrNowChainInfo_ )
 	{
-		BOOST_FOREACH( CX2ComboAndSkillChainInfoListPtr ptrComboAndSkillChainInfoList, m_vecComboAndSkillChainListPtr )
+		for( CX2ComboAndSkillChainInfoListPtr ptrComboAndSkillChainInfoList : m_vecComboAndSkillChainListPtr )
 		{
 			if ( NULL != ptrComboAndSkillChainInfoList
 				&& false == ptrComboAndSkillChainInfoList->HasThisChainInfo( ptrNowChainInfo_ ) )

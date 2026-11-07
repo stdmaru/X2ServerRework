@@ -26,7 +26,7 @@ void    CX2FrameUDPPack::UpdateUDPMaxSize()
 //    if ( g_pData != NULL && g_pData->GetGameUDP() != NULL )
 //    {
 //        UidType MyUID = g_pData->GetGameUDP()->GetMyUID();
-//        BOOST_FOREACH( UidType uidType, vecSyncUserList )
+//        for( UidType uidType : vecSyncUserList )
 //        {
 //            const CKTDNUDP::Peer* pPeer = g_pData->GetGameUDP()->GetPeer( uidType );
 //            if ( pPeer != NULL && pPeer->m_UID != MyUID )

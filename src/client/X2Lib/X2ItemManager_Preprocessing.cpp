@@ -399,7 +399,7 @@ bool    CX2ItemManager::KProxy2::AddItemTemplet_LUA()
     {
         "", "ELSWORD", "AISHA", "RENA", "RAVEN", "EVE", "CHUNG", "ARA", "ELESIS", "ADD"
     };
-    BOOST_STATIC_ASSERT( ARRAY_SIZE( s_aszSmallName ) == ARRAY_SIZE( s_aszCapitalName ) );
+    static_assert( ARRAY_SIZE( s_aszSmallName ) == ARRAY_SIZE( s_aszCapitalName ) , "");
 
     char    aszError[MAX_PATH];
     CX2Item::KItemFormatTemplet     kTemplet;
@@ -509,7 +509,7 @@ bool    CX2ItemManager::KProxy2::AddItemTemplet_LUA()
 
     {
         CX2PVPEmblem::PVP_RANK  ePVPRank = CX2PVPEmblem::PVPRANK_NONE;
-        BOOST_STATIC_ASSERT( CX2PVPEmblem::PVPRANK_NONE == 0 );
+        static_assert( CX2PVPEmblem::PVPRANK_NONE == 0 , "");
 	    LUA_GET_VALUE_ENUM(	luaManager, "m_BuyPvpRankCondition", ePVPRank,	CX2PVPEmblem::PVP_RANK,	CX2PVPEmblem::PVPRANK_NONE );
         kTemplet.SetBuyPvpRankCondition( ePVPRank );
 
@@ -543,8 +543,8 @@ bool    CX2ItemManager::KProxy2::AddItemTemplet_LUA()
     {
         CX2Unit::UNIT_TYPE  eUnitType = CX2Unit::UT_NONE;
         CX2Unit::UNIT_CLASS eUnitClass = CX2Unit::UC_NONE;
-        BOOST_STATIC_ASSERT( CX2Unit::UT_NONE == 0 );
-        BOOST_STATIC_ASSERT( CX2Unit::UC_NONE == 0 );
+        static_assert( CX2Unit::UT_NONE == 0 , "");
+        static_assert( CX2Unit::UC_NONE == 0 , "");
 	    LUA_GET_VALUE_ENUM(	luaManager, "m_UnitType",			eUnitType,				CX2Unit::UNIT_TYPE,			CX2Unit::UT_NONE );
 	    LUA_GET_VALUE_ENUM(	luaManager, "m_UnitClass",			eUnitClass,				CX2Unit::UNIT_CLASS,		CX2Unit::UC_NONE );
         kTemplet.SetUnitType( eUnitType );
@@ -692,7 +692,7 @@ bool    CX2ItemManager::KProxy2::AddItemTemplet_LUA()
 
     {
         CX2Unit::EQIP_POSITION  eEqipPosition = CX2Unit::EP_QUICK_SLOT;
-        BOOST_STATIC_ASSERT( CX2Unit::EP_QUICK_SLOT == 1 );
+        static_assert( CX2Unit::EP_QUICK_SLOT == 1 , "");
 	    LUA_GET_VALUE_ENUM(			luaManager, "m_EqipPosition",			eEqipPosition,			CX2Unit::EQIP_POSITION,		CX2Unit::EP_QUICK_SLOT );
         kTemplet.SetEqipPosition( eEqipPosition );
         if ( false == ( eEqipPosition >= CX2Unit::EQIP_POSITION(0) && eEqipPosition < CX2Unit::EP_END ) )
@@ -1292,7 +1292,7 @@ bool    CX2ItemManager::KProxy2::AddItemTemplet_LUA()
     {
 //#ifdef  ADD_TRAININGGAME_NPC
         CX2UnitManager::NPC_UNIT_ID eNPCID = CX2UnitManager::NUI_NONE;
-        BOOST_STATIC_ASSERT( CX2UnitManager::NUI_NONE == 0 );
+        static_assert( CX2UnitManager::NUI_NONE == 0 , "");
 	    LUA_GET_VALUE_ENUM( luaManager, "m_Summon_Npc",		eNPCID, CX2UnitManager::NPC_UNIT_ID, CX2UnitManager::NUI_NONE );
         kTemplet.SetSummonNpcID( eNPCID );
 

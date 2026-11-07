@@ -10,7 +10,7 @@ const float CX2PetManager::SATIETY_RATIO_TO_BE_ABLE_TO_APPLY_AURA = 0.4f;
 
 CX2PetManager::PetTemplet::~PetTemplet()
 {
-	BOOST_FOREACH( PetInitLuaTemplet& kInitLuaTemplet, m_Evolution_Step_InitLuaTemplet )
+	for( PetInitLuaTemplet& kInitLuaTemplet : m_Evolution_Step_InitLuaTemplet )
 	{
 		SAFE_DELETE( kInitLuaTemplet.m_pInitTemplet );
 		SAFE_DELETE( kInitLuaTemplet.m_pLuaManager );

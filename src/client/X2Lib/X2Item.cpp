@@ -293,7 +293,7 @@ CX2Stat::Stat CX2Item::GetStat( bool bIncludeSocketOption /*= false*/ )
 		}
 
 		// 감정을 통해 얻는 랜덤 소켓 옵션
-		BOOST_FOREACH( int iSocketID, m_kItemData.m_vecRandomSocket )
+		for( int iSocketID : m_kItemData.m_vecRandomSocket )
 		{
 			const CX2SocketItem::SocketData* pSocketData = g_pData->GetSocketItem()->GetSocketData( iSocketID );
 			if( NULL == pSocketData )

@@ -907,7 +907,7 @@ bool CX2SocketItem::GetIsPossibleSocketItemByOnlyItemType( int itemID )
 		g_pData->GetSocketItem()->GetSkillIDByUnicClassAndGropID( vecSkillLevelUPIDAndNumList, eUnitClass_, m_vecSkillLevelUpGroupID.front() );
 
 		// 그룹 ID에 해당하는 모든 스킬 리스트 얻기.
-		BOOST_FOREACH( const SkillLevelUpIDAndNum& SkillLevelUPIDAndNumList, vecSkillLevelUPIDAndNumList )
+		for( const SkillLevelUpIDAndNum& SkillLevelUPIDAndNumList : vecSkillLevelUPIDAndNumList )
 		{
 			CX2SkillTree::SKILL_ID eSkillID = SkillLevelUPIDAndNumList.first;
 			if( CX2SkillTree::SI_NONE != eSkillID )
@@ -1881,7 +1881,7 @@ bool CX2SocketItem::GetSkillIDByUnicClassAndGropID( OUT vector<SkillLevelUpIDAnd
 		// 등록된 그룹ID라면, 전직에 맞는 스킬 ID 리스트 전달
 		SkillLevelUpIDAndNum sSkillLevelUpIDAndNum;
 
-		BOOST_FOREACH( const SkillLvUpSocketOption& sSkillLvUpSocketOption, it->second )
+		for( const SkillLvUpSocketOption& sSkillLvUpSocketOption : it->second )
 		{
 			// 자기 전직에 맞는 스킬만 등록
 			if( eUnitClass_ == sSkillLvUpSocketOption.m_eUnitClass )
@@ -1942,7 +1942,7 @@ void CX2SocketItem::GetSkillLevelIncreaseValue( IN const SocketData* pSocketData
 
 
 	/// 하나의 스킬 레벨을 올려주는 소켓 효과
-	BOOST_FOREACH( SkillLevelUpIDAndNum sSkillLevelUpIDAndNum, pSocketData->m_vecSkillLevelUpID)
+	for( SkillLevelUpIDAndNum sSkillLevelUpIDAndNum : pSocketData->m_vecSkillLevelUpID )
 	{
 		if ( eSkillID == sSkillLevelUpIDAndNum.first )
 		{
@@ -1951,13 +1951,13 @@ void CX2SocketItem::GetSkillLevelIncreaseValue( IN const SocketData* pSocketData
 	}
 
 	/// 그룹에 포함된 스킬 레벨을 올려주는 소켓 효과
-	BOOST_FOREACH( int iVal, pSocketData->m_vecSkillLevelUpGroupID )
+	for( int iVal : pSocketData->m_vecSkillLevelUpGroupID )
 	{
 		vector<SkillLevelUpIDAndNum> vecSkillLevelUPIDAndNumList;
 		g_pData->GetSocketItem()->GetSkillIDByUnicClassAndGropID( vecSkillLevelUPIDAndNumList, eUnitClass_, iVal );
 
 		// 그룹 ID에 해당하는 모든 스킬 리스트 얻기.
-		BOOST_FOREACH( const SkillLevelUpIDAndNum& SkillLevelUPIDAndNumList, vecSkillLevelUPIDAndNumList )
+		for( const SkillLevelUpIDAndNum& SkillLevelUPIDAndNumList : vecSkillLevelUPIDAndNumList )
 		{
 			if( eSkillID == SkillLevelUPIDAndNumList.first )
 			{

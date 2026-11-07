@@ -383,7 +383,7 @@ void CX2ItemStatCalculator::GetItemDescDev( OUT wstring& wstrItemDesc_,
 		if( false == vecRandomSocketID.empty() )
 		{
 			wstrItemDesc_ += L"Random Socket GroupID : ";
-			BOOST_FOREACH( int iSocketGroupID, vecRandomSocketID )
+			for( int iSocketGroupID : vecRandomSocketID )
 			{
 				StringCchPrintf( buff, 256, L"%d,", iSocketGroupID );
 				wstrItemDesc_ += buff;
@@ -450,7 +450,7 @@ void CX2ItemStatCalculator::GetSocketOptionStatRelLV( OUT CX2SocketItem::KItemSt
 		{
 			vector<int> vecSocketOption;
 			pItemTemplet_->GetSocketOptions( vecSocketOption );
-			BOOST_FOREACH( int iSocketID, vecSocketOption )
+			for( int iSocketID : vecSocketOption )
 			{
 				kItemStatRelLVData_.AddStat( g_pData->GetSocketItem()->GetStatRelLVDataBySocktID( iSocketID ) );
 			}
@@ -458,13 +458,13 @@ void CX2ItemStatCalculator::GetSocketOptionStatRelLV( OUT CX2SocketItem::KItemSt
 
 		{
 			// 마법석으로 추가하는 소켓 옵션
-			BOOST_FOREACH( int iSocketID, kItemData_.m_SocketOption )
+			for( int iSocketID : kItemData_.m_SocketOption )
 			{
 				kItemStatRelLVData_.AddStat( g_pData->GetSocketItem()->GetStatRelLVDataBySocktID( iSocketID ) );
 			}
 
 			// 감정을 통해 얻는 랜덤 소켓 옵션
-			BOOST_FOREACH( int iSocketID, kItemData_.m_vecRandomSocket )
+			for( int iSocketID : kItemData_.m_vecRandomSocket )
 			{
 				kItemStatRelLVData_.AddStat( g_pData->GetSocketItem()->GetStatRelLVDataBySocktID( iSocketID ) );
 			}

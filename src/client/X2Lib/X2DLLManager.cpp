@@ -7,12 +7,12 @@
 //{{ 박교현 : [2010/05/05]		 //	안티핵 코드
 
 #include <stdio.h>
-#include <windows.h>
+#include "x2/platform/win32.h"
 #include <winnt.h>
 #include <algorithm>
 
 #include <boost/tokenizer.hpp>
-#include <boost/bind.hpp>
+#include <functional>
 
 ImplementSingleton( CX2DLLManager );
 
@@ -456,7 +456,7 @@ bool CX2DLLManager::HookInjectionApi( LPBYTE TargetFunction, LPBYTE Trampoline, 
 		VirtualProtect( TargetFunction-5, 5+MinimumSize, OldProtect, &OldProtect );
 
 #ifdef _DEBUG
-		OutputDebugString(boost::str(boost::wformat(L"DLL-Manager: %1% 후킹 시작\n") % TargetFunction).c_str());
+		OutputDebugString(x2::str(x2::wformat(L"DLL-Manager: %1% 후킹 시작\n") % TargetFunction).c_str());
 #endif
 
 		m_bHook = true;
@@ -480,7 +480,7 @@ void CX2DLLManager::UnHookInjectionApi( LPBYTE TargetFunction, LPBYTE Trampoline
 	VirtualProtect( TargetFunction, MinimumSize, OldProtect, &OldProtect );
 
 #ifdef _DEBUG
-	OutputDebugString(boost::str(boost::wformat(L"DLL-Manager: %1% 후킹 중지\n") % TargetFunction).c_str());
+	OutputDebugString(x2::str(x2::wformat(L"DLL-Manager: %1% 후킹 중지\n") % TargetFunction).c_str());
 #endif
 }
 
@@ -548,7 +548,7 @@ bool CX2DLLManager::Init()
 				//strcpy(szModName, "[Hidden]");
 			}
 
-			m_PreLoadedDllLIst += ( boost::str(boost::format("[0x%08X] %s \n") % hMods[i] % szModName ) );
+			m_PreLoadedDllLIst += ( x2::str(x2::format("[0x%08X] %s \n") % hMods[i] % szModName ) );
 		}
 	}
 
@@ -772,7 +772,7 @@ void CX2DLLManager::ProcessEvent(const CX2DLLManager::DLLEvent& event)
 	{
 	case DLLEvent::DET_DLL_LOAD:
 		{
-			BOOST_TEST_FOREACH( DLLEventListener*, pListener, m_vecDLLEventListeners )
+			for( DLLEventListener* pListener : m_vecDLLEventListeners )
 			{
 				pListener->OnLoadDLLEvent(event);
 			}
@@ -781,7 +781,7 @@ void CX2DLLManager::ProcessEvent(const CX2DLLManager::DLLEvent& event)
 	case DLLEvent::DET_DLL_INJECTION:
 		{
 			// DLL Injection
-			BOOST_TEST_FOREACH( DLLEventListener*, pListener, m_vecDLLEventListeners )
+			for( DLLEventListener* pListener : m_vecDLLEventListeners )
 			{
 				pListener->OnInverifiedDLLEvent(event);
 			}
@@ -796,7 +796,7 @@ void CX2DLLManager::ProcessEvent(const CX2DLLManager::DLLEvent& event)
 
 	// 이벤트 기록
 	vector<DLLEvent>::const_iterator iter = find_if(m_vecDLLEvent.begin(), m_vecDLLEvent.end(),
-													boost::bind(std::equal_to<DLLEvent>(), event, _1) );
+													std::bind(std::equal_to<DLLEvent>(), event, _1) );
 	if(iter == m_vecDLLEvent.end())
 		m_vecDLLEvent.push_back(event);
 }
@@ -926,8 +926,8 @@ void CX2DLLManager::ReportEvent()
 	wstringstream wstrmEvent;
 	wstrmEvent << L"- DLL Injection -" << std::endl;
 
-	boost::wformat fmt(L"MType:%2%, CAddr:%3%, [%1%]");
-	BOOST_TEST_FOREACH(const DLLEvent&, event, m_vecDLLEvent)
+	x2::wformat fmt(L"MType:%2%, CAddr:%3%, [%1%]");
+	for( const DLLEvent& event : m_vecDLLEvent )
 	{
 		if(event.GetEventType() != DLLEvent::DET_DLL_INJECTION)
 			continue;
@@ -940,12 +940,12 @@ void CX2DLLManager::ReportEvent()
 
 	wstrmEvent << std::endl;
 	wstrmEvent << L"- DLL Load -" << std::endl;
-	BOOST_TEST_FOREACH(const DLLEvent&, event, m_vecDLLEvent)
+	for( const DLLEvent& event : m_vecDLLEvent )
 	{
 		if(event.GetEventType() == DLLEvent::DET_DLL_INJECTION)
 			continue;
 
-		wstrmEvent	<< boost::str( fmt	% event.GetDLLFileName()
+		wstrmEvent	<< x2::str( fmt	% event.GetDLLFileName()
 										% event.GetMethodType()
 										% event.GetCallerAddr() )
 					<< "\n";
@@ -986,8 +986,8 @@ wstring CX2DLLManager::GetReportEvent()
 	wstringstream wstrmEvent;
 	wstrmEvent << L"- DLL Injection -" << std::endl;
 
-	boost::wformat fmt(L"MType:%2%, CAddr:%3%, [%1%]");
-	BOOST_TEST_FOREACH(const DLLEvent&, event, m_vecDLLEvent)
+	x2::wformat fmt(L"MType:%2%, CAddr:%3%, [%1%]");
+	for( const DLLEvent& event : m_vecDLLEvent )
 	{
 		if(event.GetEventType() != DLLEvent::DET_DLL_INJECTION)
 			continue;
@@ -1000,12 +1000,12 @@ wstring CX2DLLManager::GetReportEvent()
 
 	wstrmEvent << std::endl;
 	wstrmEvent << L"- DLL Load -" << std::endl;
-	BOOST_TEST_FOREACH(const DLLEvent&, event, m_vecDLLEvent)
+	for( const DLLEvent& event : m_vecDLLEvent )
 	{
 		if(event.GetEventType() == DLLEvent::DET_DLL_INJECTION)
 			continue;
 
-		wstrmEvent	<< boost::str( fmt	% event.GetDLLFileName()
+		wstrmEvent	<< x2::str( fmt	% event.GetDLLFileName()
 			% event.GetMethodType()
 			% event.GetCallerAddr() )
 			<< "\n";
@@ -1026,7 +1026,7 @@ wstring CX2DLLManager::GetReportEvent()
 
 bool CX2DLLManager::FindModule(const wstring &wstrModuleName)
 {
-	BOOST_TEST_FOREACH(const DLLEvent&, event, m_vecDLLEvent)
+	for( const DLLEvent& event : m_vecDLLEvent )
 	{
 		WCHAR wstrFileName[MAX_PATH], wstrFileExt[256];
 		_wsplitpath(event.GetDLLFileName().c_str(), NULL, NULL, wstrFileName, wstrFileExt);
@@ -1045,7 +1045,7 @@ bool CX2DLLManager::FindModule(const wstring &wstrModuleName)
 }
 bool CX2DLLManager::FindModuleIn(const wstring &wstrModuleName)
 {
-	BOOST_TEST_FOREACH(const DLLEvent&, event, m_vecDLLEvent)
+	for( const DLLEvent& event : m_vecDLLEvent )
 	{
 		WCHAR wstrFileName[MAX_PATH], wstrFileExt[256];
 		_wsplitpath(event.GetDLLFileName().c_str(), NULL, NULL, wstrFileName, wstrFileExt);

@@ -15,7 +15,7 @@
 
 
 
-BOOST_STATIC_ASSERT( ( MAX_GAME_USER_UNIT_NUM * 2 ) <= ( sizeof(DWORD) * 8 ) );
+static_assert( ( MAX_GAME_USER_UNIT_NUM * 2 ) <= ( sizeof(DWORD) * 8 ) , "");
 
 /*static*/
 unsigned    CX2GUNPC::KNonHostReaction::ms_uReactionSimulationCounter = 0;
@@ -84,7 +84,7 @@ static const KStateEnumType   s_aStateTypes[] =
         { "SUMMON_END_STATE", CX2GUNPC::STATE_TYPE_SUMMON_END_STATE },
 };
 
-BOOST_STATIC_ASSERT( ARRAY_SIZE( s_aStateTypes ) == CX2GUNPC::STATE_TYPE_NUMS );
+static_assert( ARRAY_SIZE( s_aStateTypes ) == CX2GUNPC::STATE_TYPE_NUMS , "");
 
 
 CX2GUNPC::KNonHostReaction::KNonHostReaction()
@@ -1603,7 +1603,7 @@ CX2GUNPC::~CX2GUNPC(void)
 	}
 	SetUserGrapReset();
 
-	BOOST_TEST_FOREACH( CX2SubEquip*, pSubEquip, m_vecAttachMesh )
+	for( CX2SubEquip* pSubEquip : m_vecAttachMesh )
 	{
 		SAFE_DELETE_KTDGOBJECT( pSubEquip );
 	}
@@ -9971,7 +9971,7 @@ void CX2GUNPC::NotifyDGManagerChanged( CKTDGManager& refInManager_ )
 {
     if ( IsRecursivelyManagedByDGManager() )
     {
-        BOOST_TEST_FOREACH( CX2GameUnit::Weapon*, pWeapon, m_vecpWeapon )
+        for( CX2GameUnit::Weapon* pWeapon : m_vecpWeapon )
         {
             if ( pWeapon != NULL )
                 refInManager_.AddObjectChain( pWeapon );
@@ -9979,7 +9979,7 @@ void CX2GUNPC::NotifyDGManagerChanged( CKTDGManager& refInManager_ )
     }
     else
     {
-        BOOST_TEST_FOREACH( CX2GameUnit::Weapon*, pWeapon, m_vecpWeapon )
+        for( CX2GameUnit::Weapon* pWeapon : m_vecpWeapon )
         {
             if ( pWeapon != NULL )
                 refInManager_.RemoveObjectChain( pWeapon );
@@ -10705,7 +10705,7 @@ void CX2GUNPC::CommonStateStart()
     if ( NOWSTATE_FLAG( STOP_LOOP_SOUND ) == true )
     {
 		m_vecSoundPlayLoop.resize( 0 );
-        BOOST_FOREACH( CKTDXDeviceSound *pSound, m_vecLoopSound )
+        for( CKTDXDeviceSound *pSound : m_vecLoopSound )
 		{
 			if( pSound != NULL )
 			{
@@ -10716,10 +10716,10 @@ void CX2GUNPC::CommonStateStart()
     }
     else
     {
-        BOOST_FOREACH( const CX2GameUnit::SoundPlayData& sndPlayData, nowStateData.m_vecSetSoundPlayLoopValue )
+        for( const CX2GameUnit::SoundPlayData& sndPlayData : nowStateData.m_vecSetSoundPlayLoopValue )
 	    {
 		    bool bExist = false;
-            BOOST_FOREACH( const CX2GameUnit::SoundPlayData& sndPlayDataLoop, m_vecSoundPlayLoop )
+            for( const CX2GameUnit::SoundPlayData& sndPlayDataLoop : m_vecSoundPlayLoop )
 		    {
 			    if( sndPlayDataLoop.m_SoundPlayName == sndPlayData.m_SoundPlayName )
 			    {
@@ -10774,7 +10774,7 @@ void CX2GUNPC::CommonStateStart()
 
     if ( nowStateData.m_vecwstrEnableAttackBox.empty() == false )
     {
-        BOOST_FOREACH( const std::wstring& name, nowStateData.m_vecwstrEnableAttackBox )
+        for( const std::wstring& name : nowStateData.m_vecwstrEnableAttackBox )
         {
             SetEnableAttackBox( name.c_str(), true );
         }//BOOST_FOREACH()
@@ -10782,7 +10782,7 @@ void CX2GUNPC::CommonStateStart()
 
     if ( nowStateData.m_vecwstrDisableAttackBox.empty() == false )
     {
-        BOOST_FOREACH( const std::wstring& name, nowStateData.m_vecwstrDisableAttackBox )
+        for( const std::wstring& name : nowStateData.m_vecwstrDisableAttackBox )
         {
             SetEnableAttackBox( name.c_str(), false );
         }//BOOST_FOREACH()
@@ -10791,7 +10791,7 @@ void CX2GUNPC::CommonStateStart()
 
     if ( nowStateData.m_vecwstrEnableCollisionBox.empty() == false )
     {
-        BOOST_FOREACH( const std::wstring& name, nowStateData.m_vecwstrEnableCollisionBox )
+        for( const std::wstring& name : nowStateData.m_vecwstrEnableCollisionBox )
         {
             SetEnableCollisionBox( name.c_str(), true );
         }//BOOST_FOREACH()
@@ -10799,7 +10799,7 @@ void CX2GUNPC::CommonStateStart()
 
     if ( nowStateData.m_vecwstrDisableCollisionBox.empty() == false )
     {
-        BOOST_FOREACH( const std::wstring& name, nowStateData.m_vecwstrDisableCollisionBox )
+        for( const std::wstring& name : nowStateData.m_vecwstrDisableCollisionBox )
         {
             SetEnableCollisionBox( name.c_str(), false );
         }//BOOST_FOREACH()
@@ -10944,7 +10944,7 @@ void CX2GUNPC::CommonStateStart()
 			int iRateLowerBound = 0, iRateUpperBound = 0;
 			int randomNumber = rand()%100;
 
-            BOOST_FOREACH( const TalkBox& talkBoxData, nowStateData.m_vecTalkBox )
+            for( const TalkBox& talkBoxData : nowStateData.m_vecTalkBox )
 			{
 				iRateUpperBound += talkBoxData.m_iRate;
 
@@ -10974,7 +10974,7 @@ void CX2GUNPC::CommonStateStart()
 
     if ( nowStateData.m_veciEnableWeapon.empty() == false )
     {
-        BOOST_FOREACH( int weaponIndex, nowStateData.m_veciEnableWeapon )
+        for( int weaponIndex : nowStateData.m_veciEnableWeapon )
         {
             SetWeaponEnable(weaponIndex, true);
         }//
@@ -10982,7 +10982,7 @@ void CX2GUNPC::CommonStateStart()
 
     if ( nowStateData.m_veciDisableWeapon.empty() == false )
     {
-        BOOST_FOREACH( int weaponIndex, nowStateData.m_veciDisableWeapon )
+        for( int weaponIndex : nowStateData.m_veciDisableWeapon )
         {
             SetWeaponEnable( weaponIndex, false);
         }//
@@ -11075,7 +11075,7 @@ void CX2GUNPC::CommonFrameMoveHost()
 	{
 		if( GetNowMp() > GetMaxMp() * 0.7f )
 		{
-			BOOST_TEST_FOREACH( const CX2SkillTree::SKILL_ID, eSkillID, m_vecImmuneSkill )
+			for( const CX2SkillTree::SKILL_ID eSkillID : m_vecImmuneSkill )
 			{
 				if( true == g_pX2Game->IsThereAnyUserUnitUsingSkill( eSkillID ) )
 				{
@@ -13598,7 +13598,7 @@ void CX2GUNPC::CommonFrameMove()
 		{
 //			vector<UidType> vecUnHoldUserUID;
 
-			BOOST_TEST_FOREACH( UidType&, val, m_vecHoldUserUID )
+			for( UidType& val : m_vecHoldUserUID )
 			{
 				CX2GUUser* pHoldUser = g_pX2Game->GetUserUnitByUID( val );
 
@@ -13623,7 +13623,7 @@ void CX2GUNPC::CommonFrameMove()
 	{
 		if ( !m_vecGameUnitoPtr.empty() )
 		{
-			BOOST_FOREACH( CX2GameUnitoPtr oPtr, m_vecGameUnitoPtr )
+			for( CX2GameUnitoPtr oPtr : m_vecGameUnitoPtr )
 			{
 				if ( null != oPtr && oPtr->GetGameUnitType() == CX2GameUnit::GUT_USER )
 				{
@@ -14082,7 +14082,7 @@ void CX2GUNPC::CommonFrameMove_TimedEvent()
 
     {
         const std::vector<D3DXVECTOR3>& vecStopAllList = nowStateData.m_vecStopAllList;
-	    BOOST_FOREACH( const D3DXVECTOR3& stopTime, vecStopAllList )
+	    for( const D3DXVECTOR3& stopTime : vecStopAllList )
 	    {
             if( AnimEventTimer_LUA( stopTime.x ) == true )
 		    {
@@ -14091,7 +14091,7 @@ void CX2GUNPC::CommonFrameMove_TimedEvent()
 		    }
 	    }
         const std::vector<D3DXVECTOR3>& vecStop2AllList = nowStateData.m_vecStop2AllList;
-	    BOOST_FOREACH( const D3DXVECTOR3& stopTime, vecStop2AllList )
+	    for( const D3DXVECTOR3& stopTime : vecStop2AllList )
 	    {
             if( AnimEventTimer_LUA( stopTime.x ) == true )
 		    {
@@ -14100,7 +14100,7 @@ void CX2GUNPC::CommonFrameMove_TimedEvent()
 		    }
 	    }
         const std::vector<D3DXVECTOR2>& vecStopOtherList = nowStateData.m_vecStopOtherList;
-	    BOOST_FOREACH( const D3DXVECTOR2& stopTime, vecStopOtherList )
+	    for( const D3DXVECTOR2& stopTime : vecStopOtherList )
 	    {
             if( AnimEventTimer_LUA( stopTime.x ) == true )
 		    {
@@ -14109,7 +14109,7 @@ void CX2GUNPC::CommonFrameMove_TimedEvent()
 		    }
 	    }
         const std::vector<D3DXVECTOR2>& vecStop2OtherList = nowStateData.m_vecStop2OtherList;
-	    BOOST_FOREACH( const D3DXVECTOR2& stopTime, vecStop2OtherList )
+	    for( const D3DXVECTOR2& stopTime : vecStop2OtherList )
 	    {
             if( AnimEventTimer_LUA( stopTime.x ) == true )
 		    {
@@ -14118,7 +14118,7 @@ void CX2GUNPC::CommonFrameMove_TimedEvent()
 		    }
 	    }
         const std::vector<D3DXVECTOR2>& vecStopMyList = nowStateData.m_vecStopMyList;
-	    BOOST_FOREACH( const D3DXVECTOR2& stopTime, vecStopMyList )
+	    for( const D3DXVECTOR2& stopTime : vecStopMyList )
 	    {
             if( AnimEventTimer_LUA( stopTime.x ) == true )
 		    {
@@ -14126,7 +14126,7 @@ void CX2GUNPC::CommonFrameMove_TimedEvent()
 		    }
 	    }
         const std::vector<D3DXVECTOR2>& vecStop2MyList = nowStateData.m_vecStop2MyList;
-	    BOOST_FOREACH( const D3DXVECTOR2& stopTime, vecStop2MyList )
+	    for( const D3DXVECTOR2& stopTime : vecStop2MyList )
 	    {
             if( AnimEventTimer_LUA( stopTime.x ) == true )
 		    {
@@ -14138,7 +14138,7 @@ void CX2GUNPC::CommonFrameMove_TimedEvent()
     {
         const std::vector<SoundPlayData>& vecSoundPlayData = nowStateData.m_avecSoundPlayData[
             ( m_eSoundSetType >= ESoundSetType(0) && m_eSoundSetType < SOUND_SET_NUMS ) ?  m_eSoundSetType : 0 ];
-	    BOOST_FOREACH( const SoundPlayData& soundPlayData, vecSoundPlayData )
+	    for( const SoundPlayData& soundPlayData : vecSoundPlayData )
 	    {
 		    float fTime = soundPlayData.m_SoundPlayTime;
 		    int iRate	= soundPlayData.m_SoundPlayRate;
@@ -16169,7 +16169,7 @@ void CX2GUNPC::CommonEventProcess()
     {
         for( int i = 1; i < m_iFrameAccumCounter; i++ )
         {
-            BOOST_FOREACH( const EVENT_PROCESS_ACCUM& epaccum, m_vecEventProcessAccum )
+            for( const EVENT_PROCESS_ACCUM& epaccum : m_vecEventProcessAccum )
             {
                 if ( EstimateFrameOneshotPercent( (float) epaccum.m_iRate ) == true )
                 {
@@ -16198,13 +16198,13 @@ out:
 //	{
 //		bool bKeyProcessed = true;
 //#ifdef  X2OPTIMIZE_NPC_NONHOST_SIMULATION
-//        BOOST_TEST_FOREACH( const KeyEventProcessData&, keyEvent, GetNowStateData().m_vecKeyEventProcessData )
+//        for( const KeyEventProcessData& keyEvent : GetNowStateData().m_vecKeyEventProcessData )
 //#else   X2OPTIMIZE_NPC_NONHOST_SIMULATION
-//		BOOST_TEST_FOREACH( KeyEventProcessData&, keyEvent, m_NPCStateData.m_vecKeyEventProcessData )
+//		for( KeyEventProcessData& keyEvent : m_NPCStateData.m_vecKeyEventProcessData )
 //#endif  X2OPTIMIZE_NPC_NONHOST_SIMULATION
 //		{
 //			bKeyProcessed = true;
-//			BOOST_TEST_FOREACH( KeyCombinationData, keyCombination, keyEvent.m_vecKeyCombinationData )
+//			for( KeyCombinationData keyCombination : keyEvent.m_vecKeyCombinationData )
 //			{
 //				switch( keyCombination.eType )
 //				{
@@ -16424,9 +16424,9 @@ out:
 //				}
 //#endif  X2OPTIMIZE_NPC_NONHOST_SIMULATION
 //
-//				break; // BOOST_TEST_FOREACH( KeyCombinationData, keyCombination, keyEvent.m_vecKeyCombinationData )
+//				break; // for( KeyCombinationData keyCombination : keyEvent.m_vecKeyCombinationData )
 //			}
-//		} // BOOST_TEST_FOREACH( KeyEventProcessData&, keyEvent, m_NPCStateData.m_vecKeyEventProcessData )
+//		} // for( KeyEventProcessData& keyEvent : m_NPCStateData.m_vecKeyEventProcessData )
 //
 //
 //		if( false == bKeyProcessed )
@@ -16478,7 +16478,7 @@ void CX2GUNPC::CommonStateEnd()
 
     if ( nowStateData.m_vecwstrEnableAttackBox.empty() == false )
     {
-        BOOST_FOREACH( const std::wstring& name, nowStateData.m_vecwstrEnableAttackBox )
+        for( const std::wstring& name : nowStateData.m_vecwstrEnableAttackBox )
         {
             SetEnableAttackBox( name.c_str(), false );
         }//BOOST_FOREACH()
@@ -16486,7 +16486,7 @@ void CX2GUNPC::CommonStateEnd()
 
     if ( nowStateData.m_vecwstrDisableAttackBox.empty() == false )
     {
-        BOOST_FOREACH( const std::wstring& name, nowStateData.m_vecwstrDisableAttackBox )
+        for( const std::wstring& name : nowStateData.m_vecwstrDisableAttackBox )
         {
             SetEnableAttackBox( name.c_str(), true );
         }//BOOST_FOREACH()
@@ -16495,7 +16495,7 @@ void CX2GUNPC::CommonStateEnd()
 
     if ( nowStateData.m_vecwstrEnableCollisionBox.empty() == false )
     {
-        BOOST_FOREACH( const std::wstring& name, nowStateData.m_vecwstrEnableCollisionBox )
+        for( const std::wstring& name : nowStateData.m_vecwstrEnableCollisionBox )
         {
             SetEnableCollisionBox( name.c_str(), false );
         }//BOOST_FOREACH()
@@ -16503,7 +16503,7 @@ void CX2GUNPC::CommonStateEnd()
 
     if ( nowStateData.m_vecwstrDisableCollisionBox.empty() == false )
     {
-        BOOST_FOREACH( const std::wstring& name, nowStateData.m_vecwstrDisableCollisionBox )
+        for( const std::wstring& name : nowStateData.m_vecwstrDisableCollisionBox )
         {
             SetEnableCollisionBox( name.c_str(), true );
         }//BOOST_FOREACH()
@@ -16635,7 +16635,7 @@ void CX2GUNPC::CommonStateEnd()
 
     if ( nowStateData.m_veciEnableWeapon.empty() == false )
     {
-        BOOST_FOREACH( int weaponIndex, nowStateData.m_veciEnableWeapon )
+        for( int weaponIndex : nowStateData.m_veciEnableWeapon )
         {
             SetWeaponEnable(weaponIndex, true);
         }//
@@ -16643,7 +16643,7 @@ void CX2GUNPC::CommonStateEnd()
 
     if ( nowStateData.m_veciDisableWeapon.empty() == false )
     {
-        BOOST_FOREACH( int weaponIndex, nowStateData.m_veciDisableWeapon )
+        for( int weaponIndex : nowStateData.m_veciDisableWeapon )
         {
             SetWeaponEnable( weaponIndex, false);
         }//
@@ -20426,7 +20426,7 @@ void CX2GUNPC::SetUserGrapReset()
 
 	if ( !m_vecGameUnitoPtr.empty() )
 	{
-		BOOST_FOREACH( CX2GameUnitoPtr oPtr, m_vecGameUnitoPtr )
+		for( CX2GameUnitoPtr oPtr : m_vecGameUnitoPtr )
 		{
 			if ( null != oPtr && oPtr->GetGameUnitType() == CX2GameUnit::GUT_USER )
 			{
@@ -20447,7 +20447,7 @@ bool CX2GUNPC::IsLostGrap()
 		return true;
 	else
 	{
-		BOOST_FOREACH( CX2GameUnitoPtr oPtr, m_vecGameUnitoPtr )
+		for( CX2GameUnitoPtr oPtr : m_vecGameUnitoPtr )
 		{
 			if ( null != oPtr && oPtr->GetGameUnitType() == CX2GameUnit::GUT_USER )
 			{
@@ -20846,7 +20846,7 @@ void CX2GUNPC::MoveMonsterLineMap( const D3DXVECTOR3& vPosBackup )
 	// 이동거리 벡터
 	D3DXVECTOR3 vMoveDistance = m_NPCFrameData.syncData.position - vPosBackup;
 
-	BOOST_TEST_FOREACH( int&, val, m_vecMonsterLineMapIndex )
+	for( int& val : m_vecMonsterLineMapIndex )
 	{
 		const CKTDGLineMap::LineData* pLineData = g_pX2Game->GetLineMap()->GetLineData( val );
 
@@ -20862,7 +20862,7 @@ void CX2GUNPC::MoveMonsterLineMap( const D3DXVECTOR3& vPosBackup )
 			//map<int, vector<CX2GUUser*> >::iterator mItrUserList = mapUserList.find( val );
 			//if ( mItrUserList != mapUserList.end() )
 			//{
-			//	BOOST_TEST_FOREACH( CX2GUUser*, pUser, mItrUserList->second )
+			//	for( CX2GUUser* pUser : mItrUserList->second )
 			//	{
 			//		const_cast< CX2GUUser::FrameData* >( pUser->GetFrameData( true ) )->syncData.position += vMoveDistance;
 			//		//pUser->SetPos( pUser->GetPos( true ) + vMoveDistance );
@@ -20878,7 +20878,7 @@ void CX2GUNPC::MoveMonsterLineMap( const D3DXVECTOR3& vPosBackup )
 			map<int, vector<CX2GUNPC*> >::iterator mItrNpcList = mapNpcList.find( val );
 			if ( mItrNpcList != mapNpcList.end() )
 			{
-				BOOST_TEST_FOREACH( CX2GUNPC*, pNpc, mItrNpcList->second )
+				for( CX2GUNPC* pNpc : mItrNpcList->second )
 				{
 					pNpc->m_NPCFrameData.syncData.position += vMoveDistance;
 					//pNpc->SetPosition( pNpc->GetPos() + vMoveDistance, pNpc->GetIsRight() );
@@ -23061,7 +23061,7 @@ void CX2GUNPC::AdjustFrameSkipRate( float fElapsedTime )
 
     if ( nowStateData.m_vecAttackTime.empty() == false )
 	{
-        BOOST_FOREACH( const KAttackTimeProjSeqName& kATPSN, nowStateData.m_vecAttackTime )
+        for( const KAttackTimeProjSeqName& kATPSN : nowStateData.m_vecAttackTime )
 	    {
 		    if( m_pXSkinAnim->Predict_IntervalTimer( kATPSN.m_v2AttackTime.x, kATPSN.m_v2AttackTime.y, fAnimElapsedTime ) == true )
             {

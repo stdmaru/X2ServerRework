@@ -217,7 +217,7 @@ CX2StateCreateUnit::~CX2StateCreateUnit(void)
 
 	if ( NULL != g_pData->GetUIMajorXMeshPlayer() )
 	{
-		BOOST_FOREACH( CKTDGXMeshPlayer::CXMeshInstanceHandle hStandMeshInst, m_vecStandMeshInst )
+		for( CKTDGXMeshPlayer::CXMeshInstanceHandle hStandMeshInst : m_vecStandMeshInst )
 		{
 			g_pData->GetUIMajorXMeshPlayer()->DestroyInstanceHandle( hStandMeshInst );
 		}
@@ -2344,7 +2344,7 @@ void CX2StateCreateUnit::ChangeCreateUnitStandMeshInstance ( CX2Unit::UNIT_TYPE 
 
 		if ( NULL != g_pData->GetUIMajorXMeshPlayer() )
 		{
-			BOOST_FOREACH( CKTDGXMeshPlayer::CXMeshInstanceHandle hStandMeshInst, m_vecStandMeshInst )
+			for( CKTDGXMeshPlayer::CXMeshInstanceHandle hStandMeshInst : m_vecStandMeshInst )
 			{
 				g_pData->GetUIMajorXMeshPlayer()->DestroyInstanceHandle( hStandMeshInst );
 			}
@@ -2400,7 +2400,7 @@ void CX2StateCreateUnit::ChangeCreateUnitStandMeshInstance ( CX2Unit::UNIT_TYPE 
 		}
 
 
-		BOOST_FOREACH( wstring wstrName, vecWstrName )
+		for( wstring wstrName : vecWstrName )
 		{
 			CKTDGXMeshPlayer::CXMeshInstance* pMeshStandInst = g_pData->GetUIMajorXMeshPlayer()->CreateInstance( m_pUnitViewerUI,
 				wstrName.c_str(), m_pUnitViewerUI->GetMatrix().GetPos(),
@@ -2993,7 +2993,7 @@ bool CX2StateCreateUnit::Handler_EGS_GET_CREATE_UNIT_TODAY_COUNT_ACK( HWND hWnd,
 	{
 		typedef std::map< int, int > TodayCreateUnitCount;
 
-		BOOST_TEST_FOREACH( const TodayCreateUnitCount::value_type&, CreateAbleUnitSet, kEvent.m_mapCreateCharCountToday )
+		for( const TodayCreateUnitCount::value_type& CreateAbleUnitSet : kEvent.m_mapCreateCharCountToday )
 		{
 			switch ( CreateAbleUnitSet.first )
 			{

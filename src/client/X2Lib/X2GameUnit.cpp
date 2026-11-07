@@ -755,7 +755,7 @@ void CX2GameUnit::DeleteGameUnitMajorParticle()
 	ClearAnimSpeedFactor();
 //}} kimhc // 2010.4.28 // 비밀던전 작업(엘더 무기 효과)
 
-    BOOST_FOREACH( CKTDGParticleSystem::CParticleEventSequenceHandle hParticle, m_listSeqHitParticleTraceUnit )
+    for( CKTDGParticleSystem::CParticleEventSequenceHandle hParticle : m_listSeqHitParticleTraceUnit )
 	{
 		g_pX2Game->GetMajorParticle()->DestroyInstanceHandle( hParticle );
 	}
@@ -809,7 +809,7 @@ void CX2GameUnit::MultiplyStat( float fFactor )
 	// oasis907 : 김상윤 [2011.6.20] 청 2차 전직 - 아이언 팔라딘
 	if ( !m_vecKDebuffFactorListToTransit.empty() )
 	{
-		BOOST_FOREACH( const KBuffFactor& kBuffFactor, m_vecKDebuffFactorListToTransit )
+		for( const KBuffFactor& kBuffFactor : m_vecKDebuffFactorListToTransit )
 		{
 			EraseBuffTempletFromGameUnit( static_cast<BUFF_TEMPLET_ID>( kBuffFactor.m_BuffIdentity.m_eBuffTempletID ) );
 		}
@@ -904,7 +904,7 @@ void CX2GameUnit::MultiplyStat( float fFactor )
 
 	if ( !m_vecEffectSetImpactPointByBuffPtr.empty() )	/// 타격시 이펙트 셋 생성시키는 버프에 대한 생성 간격 갱신
 	{
-		BOOST_FOREACH( CX2EffectSetImpactPointByBuffPtr ptr, m_vecEffectSetImpactPointByBuffPtr )
+		for( CX2EffectSetImpactPointByBuffPtr ptr : m_vecEffectSetImpactPointByBuffPtr )
 		{
 			if ( NULL != ptr )
 				ptr->ProcessCoolTime( m_fElapsedTime );
@@ -913,7 +913,7 @@ void CX2GameUnit::MultiplyStat( float fFactor )
 
 	if ( !m_vecEffectSetHittedByBuffPtr.empty() )		/// 피격시 이펙트 셋 생성시키는 버프에 대한 생성 간격 갱신
 	{
-		BOOST_FOREACH( CX2EffectSetImpactPointByBuffPtr ptr, m_vecEffectSetHittedByBuffPtr )
+		for( CX2EffectSetImpactPointByBuffPtr ptr : m_vecEffectSetHittedByBuffPtr )
 		{
 			if ( NULL != ptr )
 				ptr->ProcessCoolTime( m_fElapsedTime );
@@ -922,7 +922,7 @@ void CX2GameUnit::MultiplyStat( float fFactor )
 
 	if ( !m_vecEffectSetNormalAttackByBuffPtr.empty() )	/// 일반 공격 타격시 이펙트 셋 생성시키는 버프에 대한 생성 간격 갱신
 	{
-		BOOST_FOREACH( CX2EffectSetImpactPointByBuffPtr ptr, m_vecEffectSetNormalAttackByBuffPtr )
+		for( CX2EffectSetImpactPointByBuffPtr ptr : m_vecEffectSetNormalAttackByBuffPtr )
 		{
 			if ( NULL != ptr )
 				ptr->ProcessCoolTime( m_fElapsedTime );
@@ -1026,10 +1026,10 @@ float CX2GameUnit::GetSphereAttackBoxScale( const wstring& attackBoxName )
 	KTDXPROFILE();
 
 
-	BOOST_TEST_FOREACH( const CKTDXCollision::CollisionDataList*, pCollisionDataList, m_AttackListSet )
+	for( const CKTDXCollision::CollisionDataList* pCollisionDataList : m_AttackListSet )
 	{
 		ASSERT( pCollisionDataList != NULL );
-		BOOST_TEST_FOREACH( CKTDXCollision::CollisionData*, pCollisionData, *pCollisionDataList )
+		for( CKTDXCollision::CollisionData* pCollisionData : *pCollisionDataList )
 		{
 			ASSERT( pCollisionData != NULL );
 			if( CKTDXCollision::CT_SPHERE == pCollisionData->m_CollisionType &&
@@ -1050,10 +1050,10 @@ void CX2GameUnit::SetSphereAttackBoxScale( const wstring& attackBoxName, float f
 	KTDXPROFILE();
 
 
-	BOOST_TEST_FOREACH( const CKTDXCollision::CollisionDataList*, pCollisionDataList, m_AttackListSet )
+	for( const CKTDXCollision::CollisionDataList* pCollisionDataList : m_AttackListSet )
 	{
 		ASSERT( pCollisionDataList != NULL );
-		BOOST_TEST_FOREACH( CKTDXCollision::CollisionData*, pCollisionData, *pCollisionDataList )
+		for( CKTDXCollision::CollisionData* pCollisionData : *pCollisionDataList )
 		{
 			ASSERT( pCollisionData != NULL );
 			if( CKTDXCollision::CT_SPHERE == pCollisionData->m_CollisionType &&
@@ -1090,10 +1090,10 @@ void CX2GameUnit::SetEnableAttackBox( const WCHAR* pName, bool bEnable )
 
 bool CX2GameUnit::SetEnableAttackBox( const CKTDXCollision::CollisionDataListSet& setCollisionDataList_, const WCHAR* pName_, const bool bEnable_ )
 {
-	BOOST_TEST_FOREACH( const CKTDXCollision::CollisionDataList*, pCollisionDataList, setCollisionDataList_ )
+	for( const CKTDXCollision::CollisionDataList* pCollisionDataList : setCollisionDataList_ )
 	{
 		ASSERT( pCollisionDataList != NULL );
-		BOOST_TEST_FOREACH( CKTDXCollision::CollisionData*, pCollisionData, *pCollisionDataList )
+		for( CKTDXCollision::CollisionData* pCollisionData : *pCollisionDataList )
 		{
 			ASSERT( pCollisionData != NULL );
 			if( pCollisionData->m_Name.compare( pName_ ) == 0 )
@@ -1127,10 +1127,10 @@ bool CX2GameUnit::SetEnableAttackBox( const CKTDXCollision::CollisionDataListSet
 
 void CX2GameUnit::SetEnableCollisionBox( const WCHAR* pName, bool bEnable )
 {
-    BOOST_TEST_FOREACH( const CKTDXCollision::CollisionDataList*, pCollisionDataList, m_CollisionListSet )
+    for( const CKTDXCollision::CollisionDataList* pCollisionDataList : m_CollisionListSet )
     {
         ASSERT( pCollisionDataList != NULL );
-        BOOST_TEST_FOREACH( CKTDXCollision::CollisionData*, pCollisionData, *pCollisionDataList )
+        for( CKTDXCollision::CollisionData* pCollisionData : *pCollisionDataList )
         {
             ASSERT( pCollisionData != NULL );
             if ( pCollisionData->m_Name.compare( pName ) == 0 )
@@ -2308,34 +2308,34 @@ float CX2GameUnit::GetFinalDamage( CX2DamageManager::DamageData* pAttDamageData 
 
 void    CX2GameUnit::InitDeviceData::AppendToDeviceList( CKTDXDeviceDataList& listInOut_ ) const
 {
- 	BOOST_TEST_FOREACH( const wstring&, strTexture, m_vecstrReadyTexture )
+ 	for( const wstring& strTexture : m_vecstrReadyTexture )
  	{
  		g_pKTDXApp->GetDeviceManager()->AppendTexture( listInOut_, strTexture );
  	}//BOOST_FOREACH()
 
- 	//BOOST_TEST_FOREACH( const wstring&, strSound, m_vecstrReadySound )
+ 	//for( const wstring& strSound : m_vecstrReadySound )
  	//{
  	//    CX2UnitLoader::AppendSound( listInOut_, strSound.c_str() );
  	//}//BOOST_FOREACH()
 
- 	BOOST_TEST_FOREACH( const wstring&, strXSkinMesh, m_vecstrReadyXSkinMesh )
+ 	for( const wstring& strXSkinMesh : m_vecstrReadyXSkinMesh )
  	{
  		g_pKTDXApp->GetDeviceManager()->AppendXSkinMesh( listInOut_, strXSkinMesh );
  	}//BOOST_FOREACH()
 
- 	BOOST_TEST_FOREACH( const wstring&, strXMesh, m_vecstrReadyXMesh )
+ 	for( const wstring& strXMesh : m_vecstrReadyXMesh )
  	{
  		g_pKTDXApp->GetDeviceManager()->AppendXMesh( listInOut_, strXMesh );
  	}//BOOST_FOREACH()
 
-	BOOST_TEST_FOREACH( const wstring&, strXET, m_vecstrReadyXET )
+	for( const wstring& strXET : m_vecstrReadyXET )
 	{
 		g_pKTDXApp->GetDeviceManager()->AppendXET( listInOut_, strXET );
 	}
 
 	if ( g_pData->GetGameMajorParticle() != NULL )
 	{
- 		BOOST_TEST_FOREACH( const wstring&, strParticle, m_vecstrReadyGameMajorParticle )
+ 		for( const wstring& strParticle : m_vecstrReadyGameMajorParticle )
  		{
  			g_pData->GetGameMajorParticle()->AppendToDeviceList( listInOut_, strParticle );
  		}//BOOST_FOREACH()
@@ -2343,7 +2343,7 @@ void    CX2GameUnit::InitDeviceData::AppendToDeviceList( CKTDXDeviceDataList& li
 
 	if ( g_pData->GetGameMinorParticle() != NULL )
 	{
- 		BOOST_TEST_FOREACH( const wstring&, strParticle, m_vecstrReadyGameMinorParticle )
+ 		for( const wstring& strParticle : m_vecstrReadyGameMinorParticle )
  		{
  			g_pData->GetGameMinorParticle()->AppendToDeviceList( listInOut_, strParticle );
  		}//BOOST_FOREACH()
@@ -4474,7 +4474,7 @@ CKTDGXMeshPlayer::CXMeshInstanceHandle CX2GameUnit::GetMinorMeshPlayerHandle( in
 
 void CX2GameUnit::DeleteEffectSetOnStateEnd()
 {
-	BOOST_TEST_FOREACH( CX2EffectSet::Handle, hHandle, m_vecEffectSetToDeleteOnStateEnd )
+	for( CX2EffectSet::Handle hHandle : m_vecEffectSetToDeleteOnStateEnd )
 	{
 		g_pX2Game->GetEffectSet()->StopEffectSet( hHandle );
 	}
@@ -4485,7 +4485,7 @@ void CX2GameUnit::DeleteEffectSetOnStateEnd()
 
 void CX2GameUnit::DeleteEffectSetOnDamageReact()
 {
-	BOOST_TEST_FOREACH( CX2EffectSet::Handle, hHandle, m_vecEffectSetToDeleteOnDamageReact )
+	for( CX2EffectSet::Handle hHandle : m_vecEffectSetToDeleteOnDamageReact )
 	{
 		g_pX2Game->GetEffectSet()->StopEffectSet( hHandle );
 	}
@@ -4504,7 +4504,7 @@ void CX2GameUnit::MakeEffectSetBeDeletedWhenDie( const CX2EffectSet::Handle& hEf
 
 void CX2GameUnit::DeleteEffectSetOnDie()
 {
-	BOOST_TEST_FOREACH( CX2EffectSet::Handle, hHandle, m_vecEffectSetToDeleteOnDie )
+	for( CX2EffectSet::Handle hHandle : m_vecEffectSetToDeleteOnDie )
 	{
 		g_pX2Game->GetEffectSet()->StopEffectSet( hHandle );
 	}
@@ -4513,7 +4513,7 @@ void CX2GameUnit::DeleteEffectSetOnDie()
 
 void CX2GameUnit::DeleteEffectSetOnCustomState()
 {
-	BOOST_TEST_FOREACH( CX2EffectSet::Handle, hHandle, m_vecEffectSetToDeleteOnCustomState )
+	for( CX2EffectSet::Handle hHandle : m_vecEffectSetToDeleteOnCustomState )
 	{
 		g_pX2Game->GetEffectSet()->StopEffectSet( hHandle );
 	}
@@ -5352,7 +5352,7 @@ void CX2GameUnit::ClearAnimSpeedFactor()
 {
 //{{ kimhc // 2010.4.28 // 비밀던전 작업(엘더 무기 효과)
 // #ifdef SERV_SECRET_HELL
-// 	BOOST_TEST_FOREACH( SPEED_FACTOR&, val, m_PhysicParam.m_vecAnimSpeedFactor )
+// 	for( SPEED_FACTOR& val : m_PhysicParam.m_vecAnimSpeedFactor )
 // 	{
 // 		if ( INVALID_EFFECTSET_HANDLE != val.m_hEffectSet )
 // 			g_pX2Game->GetEffectSet()->StopEffectSet( val.m_hEffectSet );
@@ -5723,7 +5723,7 @@ bool CX2GameUnit::IsDamagedReaction( const CX2DamageManager::DamageData* pDamage
 	{
 		//{{ kimhc // 2010.4.28 // 비밀던전 작업(엘더 무기 효과)
 // #ifdef SERV_SECRET_HELL
-// 		BOOST_TEST_FOREACH( SPEED_FACTOR&, val, m_PhysicParam.m_vecAnimSpeedFactor )
+// 		for( SPEED_FACTOR& val : m_PhysicParam.m_vecAnimSpeedFactor )
 // 		{
 // 			if ( INVALID_EFFECTSET_HANDLE != val.m_hEffectSet )
 // 				g_pX2Game->GetEffectSet()->StopEffectSet( val.m_hEffectSet );
@@ -5800,7 +5800,7 @@ bool CX2GameUnit::IsDamagedReaction( const CX2DamageManager::DamageData* pDamage
 	{
 		//{{ kimhc // 2010.4.28 // 비밀던전 작업(엘더 무기 효과)
 // #ifdef SERV_SECRET_HELL
-// 		BOOST_TEST_FOREACH( SPEED_FACTOR&, val, m_PhysicParam.m_vecJumpSpeedFactor )
+// 		for( SPEED_FACTOR& val : m_PhysicParam.m_vecJumpSpeedFactor )
 // 		{
 // 			if ( INVALID_EFFECTSET_HANDLE != val.m_hEffectSet )
 // 				g_pX2Game->GetEffectSet()->StopEffectSet( val.m_hEffectSet );
@@ -5895,7 +5895,7 @@ bool CX2GameUnit::IsDamagedReaction( const CX2DamageManager::DamageData* pDamage
 
 /*virtual*/	void CX2GameUnit::SetShowEnchantWeaponParticle( bool bShow )
 {
-	BOOST_TEST_FOREACH( CX2GameUnit::Weapon*, pWeapon, m_vecpWeapon )
+	for( CX2GameUnit::Weapon* pWeapon : m_vecpWeapon )
 	{
 		pWeapon->SetEnchantParticleShow( bShow );
 	}
@@ -10151,7 +10151,7 @@ void CX2GameUnit::SetKBuffFactorPacketToGameUnit( const vector<KBuffFactor>& vec
 {
 	const CX2BuffTempletManager* pBuffTempletManager = CX2BuffTempletManager::GetInstance();
 
-	BOOST_FOREACH( const KBuffFactor& kBuffFactor, vecBuffFactor_ )
+	for( const KBuffFactor& kBuffFactor : vecBuffFactor_ )
 	{
 		auto FindFunc = [&kBuffFactor]( CX2BuffTempletPtr ptr_ ) {
 			return ( ptr_->GetBuffTempletID() == kBuffFactor.m_BuffIdentity.m_eBuffTempletID
@@ -10231,7 +10231,7 @@ void CX2GameUnit::FinishAndClearAllBuff()
 	if ( IsMyUnit() )
 		pGageManager->GetBuffFactorFromGameUnit( this );	/// GageManager에 버프 정보 임시 저장
 
-	BOOST_FOREACH( CX2BuffTempletPtr ptrBuffTemplet, m_vecBuffTempletPtr )
+	for( CX2BuffTempletPtr ptrBuffTemplet : m_vecBuffTempletPtr )
 	{
 		if ( NULL != ptrBuffTemplet )
 		{
@@ -10528,7 +10528,7 @@ void CX2GameUnit::DoDelegateProcess( const vector<DelegateProcess>& vecDelegateP
 {
 	if ( !vecDelegateProcess_.empty() )
 	{
-		BOOST_FOREACH( const DelegateProcess& delegateProcess, vecDelegateProcess_ )
+		for( const DelegateProcess& delegateProcess : vecDelegateProcess_ )
 		{
 			if ( delegateProcess )
 				delegateProcess();
@@ -10544,7 +10544,7 @@ void CX2GameUnit::DoDelegateProcessWithDamageData( const vector<DelegateProcessW
 {
 	if ( !vecDelegateProcess_.empty() )
 	{
-		BOOST_FOREACH( const DelegateProcessWithDamageData& delegateProcess, vecDelegateProcess_ )
+		for( const DelegateProcessWithDamageData& delegateProcess : vecDelegateProcess_ )
 		{
 			if ( delegateProcess )
 				delegateProcess( damageData_ );
@@ -10628,7 +10628,7 @@ void CX2GameUnit::PlayEffectSetImpactPointByBuff()
 {
 	if ( !m_vecEffectSetImpactPointByBuffPtr.empty() )
 	{
-		BOOST_FOREACH( CX2EffectSetImpactPointByBuffPtr ptr, m_vecEffectSetImpactPointByBuffPtr )
+		for( CX2EffectSetImpactPointByBuffPtr ptr : m_vecEffectSetImpactPointByBuffPtr )
 		{
 			if ( NULL != ptr )
 				ptr->PlayEffectSetImpactPointByBuff( this, m_DamageData.impactPoint );
@@ -10842,7 +10842,7 @@ void CX2GameUnit::UpdateChangeUnitScaleByBuff( const KBuffIdentity& BuffIdentity
 	if( !m_vecChangeUnitScaleByBuffPtr.empty() )
 	{
 
-		BOOST_FOREACH( CX2ChangeUnitScaleByBuffPtr ptrChangeUnitScaleByBuff , m_vecChangeUnitScaleByBuffPtr )
+		for( CX2ChangeUnitScaleByBuffPtr ptrChangeUnitScaleByBuff : m_vecChangeUnitScaleByBuffPtr )
 		{
 			if( NULL != ptrChangeUnitScaleByBuff &&
 				true == ptrChangeUnitScaleByBuff->IsSame(BuffIdentity_) )
@@ -10942,7 +10942,7 @@ void CX2GameUnit::DoCustomFunctionByBuffInCommonStateStart()
 {
 	if ( !m_vecCustomFunctionByBuffPtr.empty() )
 	{
-		BOOST_FOREACH( CX2CustomFunctionByBuffPtr ptrCustomFunction, m_vecCustomFunctionByBuffPtr )
+		for( CX2CustomFunctionByBuffPtr ptrCustomFunction : m_vecCustomFunctionByBuffPtr )
 		{
 			if ( NULL != ptrCustomFunction )
 				ptrCustomFunction->FunctionInCommonStateStart( this, m_LuaManager );
@@ -10957,7 +10957,7 @@ void CX2GameUnit::DoCustomFunctionByBuffInCommonFrameMove()
 {
 	if ( !m_vecCustomFunctionByBuffPtr.empty() )
 	{
-		BOOST_FOREACH( CX2CustomFunctionByBuffPtr ptrCustomFunction, m_vecCustomFunctionByBuffPtr )
+		for( CX2CustomFunctionByBuffPtr ptrCustomFunction : m_vecCustomFunctionByBuffPtr )
 		{
 			if ( NULL != ptrCustomFunction )
 				ptrCustomFunction->FunctionInCommonFrameMove( this, m_LuaManager );
@@ -10972,7 +10972,7 @@ void CX2GameUnit::DoCustomFunctionByBuffInCommonStateEnd()
 {
 	if ( !m_vecCustomFunctionByBuffPtr.empty() )
 	{
-		BOOST_FOREACH( CX2CustomFunctionByBuffPtr ptrCustomFunction, m_vecCustomFunctionByBuffPtr )
+		for( CX2CustomFunctionByBuffPtr ptrCustomFunction : m_vecCustomFunctionByBuffPtr )
 		{
 			if ( NULL != ptrCustomFunction )
 				ptrCustomFunction->FunctionInCommonStateEnd( this, m_LuaManager );
@@ -10987,7 +10987,7 @@ void CX2GameUnit::DoCustomFunctionByBuffInDamageReact( IN CX2DamageManager::Dama
 {
 	if ( !m_vecCustomFunctionByBuffPtr.empty() )
 	{
-		BOOST_FOREACH( CX2CustomFunctionByBuffPtr ptrCustomFunction, m_vecCustomFunctionByBuffPtr )
+		for( CX2CustomFunctionByBuffPtr ptrCustomFunction : m_vecCustomFunctionByBuffPtr )
 		{
 			if ( NULL != ptrCustomFunction )
 				ptrCustomFunction->FunctionInDamageReact( this, damageData_ );
@@ -11028,7 +11028,7 @@ void CX2GameUnit::PlayEffectSetHittedByBuff()
 {
 	if ( !m_vecEffectSetHittedByBuffPtr.empty() )
 	{
-		BOOST_FOREACH( CX2EffectSetImpactPointByBuffPtr ptr, m_vecEffectSetHittedByBuffPtr )
+		for( CX2EffectSetImpactPointByBuffPtr ptr : m_vecEffectSetHittedByBuffPtr )
 		{
 			if ( NULL != ptr )
 				ptr->PlayEffectSetHittedByBuff( this );
@@ -11305,7 +11305,7 @@ UidType CX2GameUnit::GetGameUnitUIDMaxDamage() const
 */
 void CX2GameUnit::GetBuffFactor( OUT vector<KBuffFactor>& vecBuffFactor_ ) const
 {
-	BOOST_FOREACH( CX2BuffTempletPtr ptr, m_vecBuffTempletPtr )
+	for( CX2BuffTempletPtr ptr : m_vecBuffTempletPtr )
 	{
 		if ( NULL != ptr && false == ptr->GetDidFinish() && false == ptr->IsWorldBuff() )
 		{
@@ -11322,7 +11322,7 @@ void CX2GameUnit::GetBuffFactor( OUT vector<KBuffFactor>& vecBuffFactor_ ) const
 */
 void CX2GameUnit::GetBuffFactorOnlyDebuff( OUT vector<KBuffFactor>& vecBuffFactor_ ) const
 {
-	BOOST_FOREACH( CX2BuffTempletPtr ptr, m_vecBuffTempletPtr )
+	for( CX2BuffTempletPtr ptr : m_vecBuffTempletPtr )
 	{
 		if ( NULL != ptr && false == ptr->GetDidFinish() && ptr->IsDeBuff() && false == ptr->IsWorldBuff() )
 		{
@@ -11339,7 +11339,7 @@ void CX2GameUnit::GetBuffFactorOnlyDebuff( OUT vector<KBuffFactor>& vecBuffFacto
 */
 bool CX2GameUnit::IsApplyBuffByBuffTempletID( BUFF_TEMPLET_ID eBuffTempletID_ ) const
 {
-	BOOST_FOREACH( CX2BuffTempletPtr ptr, m_vecBuffTempletPtr )
+	for( CX2BuffTempletPtr ptr : m_vecBuffTempletPtr )
 	{
 		if ( NULL != ptr && false == ptr->GetDidFinish() )
 		{
@@ -11540,7 +11540,7 @@ bool CX2GameUnit::GetBuffFinalizerTempletPtrList( const BUFF_TEMPLET_ID eBuffTem
 {
 	if ( !m_vecBuffTempletPtr.empty() )
 	{
-		BOOST_FOREACH( CX2BuffTempletPtr ptr, m_vecBuffTempletPtr )
+		for( CX2BuffTempletPtr ptr : m_vecBuffTempletPtr )
 		{
 			if ( NULL != ptr && ptr->GetBuffTempletID() == eBuffTempletID_ )
 			{
@@ -11558,14 +11558,14 @@ bool CX2GameUnit::GetBuffFinalizerTempletPtrList( const BUFF_TEMPLET_ID eBuffTem
 */
 void CX2GameUnit::ChangeBuffFinalizerTempletPtrList( const BUFF_TEMPLET_ID eBuffTempletID_, OUT vector<CX2BuffFinalizerTempletPtr>& vecFinalizerPtr_ )
 {
-	BOOST_FOREACH( OUT CX2BuffFinalizerTempletPtr& FinalizePtr, vecFinalizerPtr_ )
+	for( OUT CX2BuffFinalizerTempletPtr& FinalizePtr : vecFinalizerPtr_ )
 	{
 		FinalizePtr->SetBuffTempletID(eBuffTempletID_);
 	}
 
 	if ( !m_vecBuffTempletPtr.empty() )
 	{
-		BOOST_FOREACH( CX2BuffTempletPtr ptr, m_vecBuffTempletPtr )
+		for( CX2BuffTempletPtr ptr : m_vecBuffTempletPtr )
 		{
 			if ( NULL != ptr && ptr->GetBuffTempletID() == eBuffTempletID_ )
 			{
@@ -11585,7 +11585,7 @@ bool CX2GameUnit::HaveThisBuff( const BUFF_TEMPLET_ID eBuffTempletID_ )
 {
 	if ( !m_vecBuffTempletPtr.empty() )
 	{
-		BOOST_FOREACH( CX2BuffTempletPtr ptr, m_vecBuffTempletPtr )
+		for( CX2BuffTempletPtr ptr : m_vecBuffTempletPtr )
 		{
 			if ( NULL != ptr && ptr->GetBuffTempletID() == eBuffTempletID_ )
 				return true;
@@ -11736,7 +11736,7 @@ void CX2GameUnit::ProcessGroupDamageData( float fElapsedTime_ )
 {
 	int iCount = 0;
 
-	BOOST_FOREACH( DamageEffectGroupDataPtr pDamageEffectGroupData, m_vecDamageEffectGroupDataPtr )
+	for( DamageEffectGroupDataPtr pDamageEffectGroupData : m_vecDamageEffectGroupDataPtr )
 	{
 		if( NULL != pDamageEffectGroupData )
 		{
@@ -11821,7 +11821,7 @@ void CX2GameUnit::PlayEffectSetNormalAttackByBuff( CX2DamageManager::ATTACK_TYPE
 {
 	if ( !m_vecEffectSetNormalAttackByBuffPtr.empty() )
 	{
-		BOOST_FOREACH( CX2EffectSetImpactPointByBuffPtr ptr, m_vecEffectSetNormalAttackByBuffPtr )
+		for( CX2EffectSetImpactPointByBuffPtr ptr : m_vecEffectSetNormalAttackByBuffPtr )
 		{
 			if ( NULL != ptr )
 				ptr->PlayEffectSetNormalAttackByBuff( this, eAttackType );

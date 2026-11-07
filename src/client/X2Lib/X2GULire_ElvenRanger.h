@@ -296,7 +296,7 @@ class CX2GULire_ElvenRanger : public CX2GUUser
         struct  RapidShotData;
         typedef boost::intrusive_ptr<RapidShotData> RapidShotDataPtr;	/// RapidShotData 구조체의 스마트 포인터 타입
 
-		struct RapidShotData : boost::noncopyable
+		struct RapidShotData : x2::NonCopyable
 		{
 		private:
             unsigned                                        m_uRefCount;

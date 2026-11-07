@@ -234,7 +234,7 @@ void CX2UITempInventory::AddTempItem( const KTempInventoryItemInfo& kTempInvento
 
 void CX2UITempInventory::AddItemToInventory( const std::vector< KInventoryItemInfo >& vecKInventoryItem )
 {
-	BOOST_TEST_FOREACH( const KInventoryItemInfo&, kInventoryItemInfo, vecKInventoryItem )
+	for( const KInventoryItemInfo& kInventoryItemInfo : vecKInventoryItem )
 	{
 		CX2Item::ItemData kItemData( kInventoryItemInfo );
 
@@ -548,7 +548,7 @@ bool CX2UITempInventory::Hander_EGS_GET_TEMP_ITEM_ACK( HWND hWnd, UINT uMsg, WPA
 			AddItemToInventory( kEvent.m_vecInventorySlotInfo );
 			RemoveTempItem( kEvent.m_iTempItemUID );
 
-			BOOST_TEST_FOREACH( const KInventoryItemInfo&, itemInfo, kEvent.m_vecInventorySlotInfo  )
+			for( const KInventoryItemInfo& itemInfo : kEvent.m_vecInventorySlotInfo )
 			{
 				if( itemInfo.m_iItemUID > 0 &&
 					g_pData->GetQuestManager() != NULL )

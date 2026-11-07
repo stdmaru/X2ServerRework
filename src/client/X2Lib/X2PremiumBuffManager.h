@@ -10,7 +10,7 @@ class CX2PremiumBuffTemplet;
 typedef boost::intrusive_ptr<CX2PremiumBuffTemplet> CX2PremiumBuffTempletPtr;
 
 class CX2PremiumBuffTemplet
-    : private boost::noncopyable
+    : private x2::NonCopyable
 {
 public:
 
@@ -104,7 +104,7 @@ class CX2PremiumBuffIcon;
 typedef boost::intrusive_ptr<CX2PremiumBuffIcon> CX2PremiumBuffIconPtr;
 
 class CX2PremiumBuffIcon
-    : private boost::noncopyable
+    : private x2::NonCopyable
 {
 public:
 

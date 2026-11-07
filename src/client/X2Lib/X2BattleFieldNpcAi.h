@@ -5,7 +5,7 @@ class CNpcCreatedInfo;
 typedef boost::intrusive_ptr<CNpcCreatedInfo> CNpcCreatedInfoPtr;
 
 class CNpcCreatedInfo
-    : private boost::noncopyable
+    : private x2::NonCopyable
 {
 private:
     unsigned        m_uRefCount;

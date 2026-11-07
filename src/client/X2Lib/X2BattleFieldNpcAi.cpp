@@ -393,7 +393,7 @@ void CX2BattleFieldNpcAi::SearchingTargetUnit( IN vector<CX2GameUnit*>& vecTarge
 	{
 	case TP_HIGH_LEVEL_FIRST:
 		{
-			BOOST_FOREACH( CX2GameUnit* pNewTargetCandidateGameUnit_, vecTargetCandidateUnitList_ )
+			for( CX2GameUnit* pNewTargetCandidateGameUnit_ : vecTargetCandidateUnitList_ )
 			{
 				// 기존의 Targeting 중인 유닛이 없거나, 기존의 유닛 보다 새로운 유닛의 Level이 높으면
 				if ( null == m_optrTargetGameUnit ||
@@ -404,7 +404,7 @@ void CX2BattleFieldNpcAi::SearchingTargetUnit( IN vector<CX2GameUnit*>& vecTarge
 
 	case TP_LOW_LEVEL_FIRST:
 		{
-			BOOST_FOREACH( CX2GameUnit* pNewTargetCandidateGameUnit_, vecTargetCandidateUnitList_ )
+			for( CX2GameUnit* pNewTargetCandidateGameUnit_ : vecTargetCandidateUnitList_ )
 			{
 				// 기존의 Targeting 중인 유닛이 없거나, 기존의 유닛 보다 새로운 유닛의 Level이 낮으면
 				if ( null == m_optrTargetGameUnit ||
@@ -415,7 +415,7 @@ void CX2BattleFieldNpcAi::SearchingTargetUnit( IN vector<CX2GameUnit*>& vecTarge
 
 	case TP_HIGH_HP_FIRST:
 		{
-			BOOST_FOREACH( CX2GameUnit* pNewTargetCandidateGameUnit_, vecTargetCandidateUnitList_ )
+			for( CX2GameUnit* pNewTargetCandidateGameUnit_ : vecTargetCandidateUnitList_ )
 			{
 				// 기존의 Targeting 중인 유닛이 없거나, 기존의 유닛 보다 새로운 유닛의 HP가 높으면
 				if ( null == m_optrTargetGameUnit ||
@@ -426,7 +426,7 @@ void CX2BattleFieldNpcAi::SearchingTargetUnit( IN vector<CX2GameUnit*>& vecTarge
 
 	case TP_LOW_HP_FIRST:
 		{
-			BOOST_FOREACH( CX2GameUnit* pNewTargetCandidateGameUnit_, vecTargetCandidateUnitList_ )
+			for( CX2GameUnit* pNewTargetCandidateGameUnit_ : vecTargetCandidateUnitList_ )
 			{
 				// 기존의 Targeting 중인 유닛이 없거나, 기존의 유닛 보다 새로운 유닛의 HP가 낮으면
 				if ( null == m_optrTargetGameUnit ||
@@ -438,7 +438,7 @@ void CX2BattleFieldNpcAi::SearchingTargetUnit( IN vector<CX2GameUnit*>& vecTarge
 	case TP_NEAR_FIRST:
 		{
 			float fDistanceSqFromTargetUnit = 0.0f;	// 현재 타겟팅 된 유닛과의 거리
-			BOOST_FOREACH( CX2GameUnit* pNewTargetCandidateGameUnit_, vecTargetCandidateUnitList_ )
+			for( CX2GameUnit* pNewTargetCandidateGameUnit_ : vecTargetCandidateUnitList_ )
 			{
 				// 기존의 Targeting 중인 유닛이 없거나, 새로운 타겟이 더 가까이 있으면
 				if( null == m_optrTargetGameUnit ||
@@ -450,7 +450,7 @@ void CX2BattleFieldNpcAi::SearchingTargetUnit( IN vector<CX2GameUnit*>& vecTarge
 	case TP_FAR_FIRST:
 		{
 			float fDistanceSqFromTargetUnit = 0.0f;	// 현재 타겟팅 된 유닛과의 거리
-			BOOST_FOREACH( CX2GameUnit* pNewTargetCandidateGameUnit_, vecTargetCandidateUnitList_ )
+			for( CX2GameUnit* pNewTargetCandidateGameUnit_ : vecTargetCandidateUnitList_ )
 			{
 				// 기존의 Targeting 중인 유닛이 없거나, 새로운 타겟이 더 멀리 있으면
 				if( null == m_optrTargetGameUnit ||
@@ -463,7 +463,7 @@ void CX2BattleFieldNpcAi::SearchingTargetUnit( IN vector<CX2GameUnit*>& vecTarge
 	case TP_RANDOM:
 		{
             float fRate = 0.f;
-            BOOST_FOREACH( CX2GameUnit* pNewTargetCandidateGameUnit_, vecTargetCandidateUnitList_ )
+            for( CX2GameUnit* pNewTargetCandidateGameUnit_ : vecTargetCandidateUnitList_ )
             {
                 fRate = fRate * 0.5f + 0.5f;
             }
@@ -541,7 +541,7 @@ bool CX2BattleFieldNpcAi::CheckOnPatrolLineMap()
 {
 	const int iLastTouchedLineMapIndex = m_pMasterNPC->GetLastTouchLineIndex();
 
-	BOOST_FOREACH( const int& iPatrolLineMapIndex, m_vecPatrolLineMapIndex )
+	for( const int& iPatrolLineMapIndex : m_vecPatrolLineMapIndex )
 	{
 		// Patrol LineMap 위에 있으면
 		if ( iLastTouchedLineMapIndex == iPatrolLineMapIndex )
@@ -556,7 +556,7 @@ bool CX2BattleFieldNpcAi::CheckOnPlayLineMap()
 {
 	const int iLastTouchedLineMapIndex = m_pMasterNPC->GetLastTouchLineIndex();
 
-	BOOST_FOREACH( const int& iPlayLineMapIndex, m_vecPlayLineMapIndex )
+	for( const int& iPlayLineMapIndex : m_vecPlayLineMapIndex )
 	{
 		// Play LineMap 위에 있으면
 		if ( iLastTouchedLineMapIndex == iPlayLineMapIndex )
@@ -843,7 +843,7 @@ void CX2BattleFieldNpcAi::CheckArrivedDestination()
 /*virtual*/ void CX2BattleFieldNpcAi::RenderPatrolLineIndex( WCHAR** wDest_ )
 {
 	swprintf( *wDest_, L"Patrol: " );
-	BOOST_FOREACH( int index, m_vecPatrolLineMapIndex)
+	for( int index : m_vecPatrolLineMapIndex )
 	{
 		WCHAR wSource[10] = { 0, };
 		swprintf( wSource, L"%d,", index );
@@ -854,7 +854,7 @@ void CX2BattleFieldNpcAi::CheckArrivedDestination()
 /*virtual*/ void CX2BattleFieldNpcAi::RenderPlayLineIndex( WCHAR** wDest_ )
 {
 	swprintf( *wDest_, L"Play: " );
-	BOOST_FOREACH( int index, m_vecPlayLineMapIndex )
+	for( int index : m_vecPlayLineMapIndex )
 	{
 		WCHAR wSource[10] = { 0, };
 		swprintf( wSource, L"%d,", index );

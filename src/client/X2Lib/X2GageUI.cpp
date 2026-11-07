@@ -442,7 +442,7 @@ void CX2SmallGageUI::DrawFace( float fX_, float fY_, float fWidth_, float fHeigh
 	KD3DPUSH( m_RenderStateID )
 
 //#ifdef DYNAMIC_VERTEX_BUFFER_OPT
-	BOOST_STATIC_ASSERT( D3DFVF_DRAWFACE_RHW_VERTEX == D3DFVF_XYZRHW_DIFFUSE_TEX1 );
+	static_assert( D3DFVF_DRAWFACE_RHW_VERTEX == D3DFVF_XYZRHW_DIFFUSE_TEX1 , "");
 	g_pKTDXApp->GetDVBManager()->DrawPrimitive( CKTDGDynamicVBManager::DVB_TYPE_XYZRHW_DIFFUSE_TEX1
 		, D3DPT_TRIANGLESTRIP, 2, vertex );
 //#else

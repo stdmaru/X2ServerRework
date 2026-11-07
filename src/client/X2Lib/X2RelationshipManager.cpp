@@ -573,7 +573,7 @@ bool CX2RelationshipManager::Handler_EGS_JOIN_WEDDING_HALL_ACK  ( HWND hWnd, UIN
 
 
 			UINT uiWeddingHeroineNum = 0;
-			BOOST_FOREACH( KRoomSlotInfo kSlotInfo, kEvent.m_vecSlot )
+			for( KRoomSlotInfo kSlotInfo : kEvent.m_vecSlot )
 			{
 				if( kSlotInfo.m_kRoomUserInfo.m_nUnitUID <= 0 )
 					continue;

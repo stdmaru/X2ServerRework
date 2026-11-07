@@ -13,7 +13,7 @@ CX2UserSkillTree::CX2UserSkillTree(void)
 	, m_usOpenedPage( 0 )
 	, m_usSelectPage( 0 )
 {
-	BOOST_STATIC_ASSERT( ARRAY_SIZE( m_aEquippedSkill ) == ARRAY_SIZE( m_aEquippedSkillSlotB ) );
+	static_assert( ARRAY_SIZE( m_aEquippedSkill ) == ARRAY_SIZE( m_aEquippedSkillSlotB ) , "");
 	for( int i=0; i<ARRAY_SIZE( m_aEquippedSkill ); ++i )
 	{
 		m_aEquippedSkill[i].Init();
@@ -224,7 +224,7 @@ void CX2UserSkillTree::Reset( bool bResetSkillTree, bool bResetGuildSkillTree, b
 
 	if( true == bResetSkillTree )
 	{
-		BOOST_FOREACH( SkillDataMap& userSkillPageData, m_vecSkillDataMap )
+		for( SkillDataMap& userSkillPageData : m_vecSkillDataMap )
 		{
 			userSkillPageData.clear();
 		}
@@ -259,7 +259,7 @@ void CX2UserSkillTree::ConstructSkillTreeNotMyUnit( const std::vector<KSkillData
 {
 	// ������ //
 	// �߰� �� m_iIncreaseSkillLevelBySocket���� �ʱ�ȭ ��Ű�� �ʱ� ���� false�� ����
-	BOOST_FOREACH( SkillDataMap& userSkillPageData, m_vecSkillDataMap )
+	for( SkillDataMap& userSkillPageData : m_vecSkillDataMap )
 	{
 		userSkillPageData.clear();
 	}
@@ -280,7 +280,7 @@ void CX2UserSkillTree::ConstructSkillTreeNotMyUnit( const std::vector<KSkillData
 		SetSkillLevelAndCSP( (CX2SkillTree::SKILL_ID) aEquippedSkillSlotB[i].m_iSkillID, (int) aEquippedSkillSlotB[i].m_cSkillLevel, 0 );
 	}
 
-	BOOST_TEST_FOREACH( const KSkillData&, kSkillData, vecSkillData )
+	for( const KSkillData& kSkillData : vecSkillData )
 	{
 		SetSkillLevelAndCSP( (CX2SkillTree::SKILL_ID) kSkillData.m_iSkillID, (int) kSkillData.m_cSkillLevel, 0 );
 	}
@@ -298,7 +298,7 @@ void CX2UserSkillTree::ConstructGuildSkillTreeNotMyUnit( const std::vector<KSkil
 	Reset( false, true, false, false, false );
 
 	// ��� ��ų
-	BOOST_TEST_FOREACH( const KSkillData&, kSkillData, vecGuildSkillData )
+	for( const KSkillData& kSkillData : vecGuildSkillData )
 	{
 		SetSkillLevelAndCSP( (CX2SkillTree::SKILL_ID) kSkillData.m_iSkillID, (int) kSkillData.m_cSkillLevel, 0 );
 	}
@@ -396,7 +396,7 @@ void CX2UserSkillTree::SetEquippedSkillLevelPlus( const int aEquippedSkillLevelP
 */
 void CX2UserSkillTree::SetAcquiredSkill( const std::vector<KUserSkillPageData>& vecSkillList )
 {
-	BOOST_FOREACH( SkillDataMap& userSkillPageData, m_vecSkillDataMap )
+	for( SkillDataMap& userSkillPageData : m_vecSkillDataMap )
 	{
 		userSkillPageData.clear();
 	}
@@ -410,9 +410,9 @@ void CX2UserSkillTree::SetAcquiredSkill( const std::vector<KUserSkillPageData>& 
 
 	int iPage = 0;
 
-	BOOST_FOREACH( const KUserSkillPageData& userSkillPageData, vecSkillList )
+	for( const KUserSkillPageData& userSkillPageData : vecSkillList )
 	{
-		BOOST_FOREACH( const KUserSkillData& userSkillData, userSkillPageData.m_vecUserSkillData )
+		for( const KUserSkillData& userSkillData : userSkillPageData.m_vecUserSkillData )
 		{
 			if ( true == m_vecSkillDataMap.empty() || iPage >= m_vecSkillDataMap.size() )
 				continue;
@@ -446,7 +446,7 @@ void CX2UserSkillTree::AddSkillPage()
 void CX2UserSkillTree::SetAcquiredGuildSkill( const std::vector<KGuildSkillData>& vecSkillList )
 {
 	m_mapGuildSkillAcquired.clear();
-	BOOST_TEST_FOREACH( const KGuildSkillData&, userSkillData, vecSkillList )
+	for( const KGuildSkillData& userSkillData : vecSkillList )
 	{
 		SkillDataMap::iterator mit;
 		mit = m_mapGuildSkillAcquired.find( (CX2SkillTree::SKILL_ID) userSkillData.m_iSkillID );
@@ -1133,7 +1133,7 @@ CX2Stat::Stat CX2UserSkillTree::GetSkillStat() const
 	if ( true == m_vecSkillDataMap.empty() || m_usUsingPage >= m_vecSkillDataMap.size() )
 		return retStat;
 
-	BOOST_TEST_FOREACH( const SkillDataMap::value_type&, value, m_vecSkillDataMap[m_usUsingPage] )
+	for( const SkillDataMap::value_type& value : m_vecSkillDataMap[m_usUsingPage] )
 	{
 		const UserSkillData& userSkillData = value.second;
 
@@ -1173,7 +1173,7 @@ CX2Stat::Stat CX2UserSkillTree::GetGuildSkillStat(int iGuildMemberGrade) const
 		return retStat;
 	}
 
-	BOOST_TEST_FOREACH( const SkillDataMap::value_type&, value, m_mapGuildSkillAcquired )
+	for( const SkillDataMap::value_type& value : m_mapGuildSkillAcquired )
 	{
 		const UserSkillData& userSkillData = value.second;
 
@@ -1303,7 +1303,7 @@ void CX2UserSkillTree::CalcCumulativeUsedSPointOnEachTier( OUT std::vector<int>&
 
 
 	int iCumulativeTierSPoint = 0;
-	BOOST_TEST_FOREACH( int&, iTierSPoint, vecTierSPoint )
+	for( int& iTierSPoint : vecTierSPoint )
 	{
 		iCumulativeTierSPoint += iTierSPoint;
 		iTierSPoint = iCumulativeTierSPoint;
@@ -1377,7 +1377,7 @@ void CX2UserSkillTree::CalcCumulativeUsedGuildSPointOnEachTier( OUT std::vector<
 
 
 	int iCumulativeTierSPoint = 0;
-	BOOST_TEST_FOREACH( int&, iTierSPoint, vecTierSPoint )
+	for( int& iTierSPoint : vecTierSPoint )
 	{
 		iCumulativeTierSPoint += iTierSPoint;
 		iTierSPoint = iCumulativeTierSPoint;
@@ -2184,7 +2184,7 @@ void CX2UserSkillTree::SetDefaultSkill( USHORT usPageIndex_, bool bCanPassIfChec
 	{
 		std::vector<int> vecDefaultSkillID = it->second;
 
-		BOOST_FOREACH( int iValue, vecDefaultSkillID )
+		for( int iValue : vecDefaultSkillID )
 		{
 			if ( true == bCanPassIfChecked_ &&
 				 0 < g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_UserSkillTree.GetSkillLevel( static_cast<CX2SkillTree::SKILL_ID> ( iValue ) ) )

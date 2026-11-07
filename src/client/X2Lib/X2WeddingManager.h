@@ -46,7 +46,7 @@ public:
 			m_eOfficantType			= rhs.m_eOfficantType;
 			m_fCameraDurationTime	= rhs.m_fCameraDurationTime;
 
-			BOOST_FOREACH( OfficiantBehavior* pOfficiantBehavior, rhs.m_vecOfficiantBehavior )
+			for( OfficiantBehavior* pOfficiantBehavior : rhs.m_vecOfficiantBehavior )
 			{
 				OfficiantBehavior* pTempOfficiantBehavior = new OfficiantBehavior;
 				*pTempOfficiantBehavior = *pOfficiantBehavior;

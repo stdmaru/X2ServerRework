@@ -19713,7 +19713,7 @@ void CX2GURaven::SetInvisibility(bool bVal_)
 
 	m_pXSkinAnim->SetLayer(1);
 	// ��� ������ ��ƼŬ
-	BOOST_TEST_FOREACH( CX2EqipPtr, pEquip, m_ViewEqipList )
+	for( CX2EqipPtr pEquip : m_ViewEqipList )
 	{
 		if( pEquip != NULL )
 			pEquip->SetShowAttachedParticle( !m_bInvisibility );

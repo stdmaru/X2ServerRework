@@ -98,7 +98,7 @@ bool CX2BuffFinalizerTemplet::ParsingFinalizerTemplateMethod( KLuaManager& luaMa
 */
 bool CX2BuffFinalizerTemplet::SetFactorFromPacketTemplateMothod( const KBuffFactor& kBuffFactor_, CX2GameUnit* pGameUnit_ )
 {
-	BOOST_FOREACH( const KBuffFinalizerFactor& kFactor_, kBuffFactor_.m_vecBuffFinalizerFactors )
+	for( const KBuffFinalizerFactor& kFactor_ : kBuffFactor_.m_vecBuffFinalizerFactors )
 	{
 		if ( GetType() == kFactor_.m_uiType )
 		{

@@ -1808,7 +1808,7 @@ bool CX2ItemManager::GetIceHeaterItemData( int iIceHeaterItemID_, CX2Unit::UNIT_
 	if( mit == m_mapIceHeaterItemData.end() )
 		return false;
 
-	BOOST_FOREACH( IceHeaterItemData ItemData, mit->second )
+	for( IceHeaterItemData ItemData : mit->second )
 	{
 		if( eUnitType_ == ItemData.m_eUnitType )
 		{
@@ -1891,7 +1891,7 @@ int	CX2ItemManager::GetPreviewIDByItemID( int iItemID_, PREVIEW_PET_TYPE ePetTyp
 		return -1;
 
 	std::vector<int> vecPetID;
-	BOOST_FOREACH( PREVIEW_PET_DATA PreviewData, m_vecPetPreViewData )
+	for( PREVIEW_PET_DATA PreviewData : m_vecPetPreViewData )
 	{
 		if( ePetType_ == PreviewData.ePreviewPetType )
 		{

@@ -212,7 +212,7 @@ class CX2GUElsword_SwordMan : public CX2GUUser
         class   CElswordGuardSkill;
         typedef boost::intrusive_ptr<CElswordGuardSkill> CElswordGuardSkillPtr;
 
-		class CElswordGuardSkill : boost::noncopyable
+		class CElswordGuardSkill : x2::NonCopyable
 		{
 		private:
             unsigned                                        m_uRefCount;

@@ -259,7 +259,7 @@ class CX2GURaven : public CX2GUUser
         struct  WildChargeData;
         typedef boost::intrusive_ptr<WildChargeData> WildChargeDataPtr;	/// WildChargeData ����ü�� ����Ʈ ������ Ÿ��
 
-		struct WildChargeData : boost::noncopyable
+		struct WildChargeData : x2::NonCopyable
 		{
 		private:
             unsigned                                        m_uRefCount;

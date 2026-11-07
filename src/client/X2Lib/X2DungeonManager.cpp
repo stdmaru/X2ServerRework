@@ -634,7 +634,7 @@ int CX2DungeonManager::GetDungeonType( int iDungeonID )
 // 한개라도 갈수있는 비밀던전이 있는가?
 bool CX2DungeonManager::CanGoOneSecretDungeonAtLeast()
 {
-	BOOST_TEST_FOREACH( SEnum::DUNGEON_ID&, val, m_vecSecretDungeonID )
+	for( SEnum::DUNGEON_ID& val : m_vecSecretDungeonID )
 	{
 		if ( IsActiveDungeon( val, 0 ) == true )
 			return true;

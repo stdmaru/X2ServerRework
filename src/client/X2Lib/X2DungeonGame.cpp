@@ -600,7 +600,7 @@ void CX2DungeonGame::StageLoading( int stageNum )
 //#else // BACKGROUND_LOADING_TEST // 2008-12-12
 		m_pWorld = g_pData->GetWorldManager()->CreateWorld(	pStageData->m_WorldID );
 
-		BOOST_TEST_FOREACH( CX2GUUser*, pUser, m_UserUnitList )
+		for( CX2GUUser* pUser : m_UserUnitList )
 		{
 			if( NULL == pUser )
 				continue;

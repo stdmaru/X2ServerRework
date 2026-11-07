@@ -21,7 +21,7 @@ public:
 // #endif // SERV_DUNGEON_FORCED_EXIT_SYSTEM
 
 	class CX2GageSet
-    : private boost::noncopyable
+    : private x2::NonCopyable
 	{
 		public:
 			CX2GageSet( CX2GageUI* pGageUI_, CX2GageData* pGageData_, const UidType uidGameUnit_ )
@@ -486,9 +486,9 @@ class CX2OldGageManager
 			bool					m_bBerserkMode;						/// 광폭화 모드인가?
 
 		public:
-			static boost::shared_ptr<CCannonBallUI> CreateCannonBallUIPtr()
+			static std::shared_ptr<CCannonBallUI> CreateCannonBallUIPtr()
 			{
-				boost::shared_ptr<CCannonBallUI> pCannonBallPtr( new CCannonBallUI );
+				std::shared_ptr<CCannonBallUI> pCannonBallPtr( new CCannonBallUI );
 				return pCannonBallPtr;
 			}
 
@@ -536,7 +536,7 @@ class CX2OldGageManager
 
 		};
 
-		typedef boost::shared_ptr<CCannonBallUI> CCannonBallUIPtr;
+		typedef std::shared_ptr<CCannonBallUI> CCannonBallUIPtr;
 #endif	NEW_CHARACTER_CHUNG
 //}} kimhc // 2010.12.12 //  2010-12-23 New Character CHUNG
 		*/

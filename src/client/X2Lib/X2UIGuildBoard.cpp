@@ -415,7 +415,7 @@ void CX2UIGuildBoard::SetRequiredGuildSkill( const std::vector<KGuildSkillData>&
 
 
 	m_mapGuildSkillRequired.clear();
-	BOOST_TEST_FOREACH( const KGuildSkillData&, userSkillData, vecSkillList )
+	for( const KGuildSkillData& userSkillData : vecSkillList )
 	{
 		SkillDataMap::iterator mit;
 		mit = m_mapGuildSkillRequired.find( (CX2SkillTree::SKILL_ID) userSkillData.m_iSkillID );
@@ -522,14 +522,14 @@ bool CX2UIGuildBoard::Handler_EGS_GET_GUILD_AD_LIST_ACK(  HWND hWnd, UINT uMsg, 
 				// 다른 유저들의 랭킹
 				int i = 0;
 
-				//BOOST_TEST_FOREACH( KHenirRankingInfo, kHenirRankingInfo, kEvent.m_vecHenirRankingPage )
-				BOOST_TEST_FOREACH( KGuildAdInfo&, kGuildAdInfo, kEvent.m_vecGuildAdList )
+				//for( KHenirRankingInfo kHenirRankingInfo : kEvent.m_vecHenirRankingPage )
+				for( KGuildAdInfo& kGuildAdInfo : kEvent.m_vecGuildAdList )
 				{
 					if( NULL != g_pData->GetMyUser() && CX2User::XUAL_OPERATOR <= g_pData->GetMyUser()->GetAuthLevel() )
 					{
 						std::wstring wstrAddGuildUID = kGuildAdInfo.m_wstrGuildName.c_str();
 						wstrAddGuildUID += L"\nUID: ";
-						wstrAddGuildUID += boost::str( boost::wformat( L"%d" ) % kGuildAdInfo.m_iGuildUID );
+						wstrAddGuildUID += x2::str( x2::wformat( L"%d" ) % kGuildAdInfo.m_iGuildUID );
 						m_columnForAdvertise[i].m_pStaticGuildName->SetString( 0, wstrAddGuildUID.c_str() );	// 길드 이름
 					}
 					else
@@ -772,7 +772,7 @@ bool CX2UIGuildBoard::Handler_EGS_GET_APPLY_JOIN_GUILD_LIST_ACK(  HWND hWnd, UIN
 				// 다른 유저들의 랭킹
 				int i = 0;
 
-				BOOST_TEST_FOREACH( KApplyJoinGuildInfo&, kApplyJoinGuildInfo, kEvent.m_vecApplyJoinGuildList )
+				for( KApplyJoinGuildInfo& kApplyJoinGuildInfo : kEvent.m_vecApplyJoinGuildList )
 				{
 
 					///////////////////////////////////////////////////////////////

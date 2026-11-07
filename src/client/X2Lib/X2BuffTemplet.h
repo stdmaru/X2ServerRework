@@ -33,21 +33,21 @@ public:
 	{
 		m_vecBehaviorPtr.clear();
 		m_vecBehaviorPtr.reserve( rhs_.m_vecBehaviorPtr.size() );
-		BOOST_FOREACH( CX2BuffBehaviorTempletPtr templet, rhs_.m_vecBehaviorPtr )
+		for( CX2BuffBehaviorTempletPtr templet : rhs_.m_vecBehaviorPtr )
 		{
 			m_vecBehaviorPtr.push_back( templet->GetClonePtr() );
 		}
 
 		m_vecFinalizerPtr.clear();
 		m_vecFinalizerPtr.reserve( rhs_.m_vecFinalizerPtr.size() );
-		BOOST_FOREACH( CX2BuffFinalizerTempletPtr templet, rhs_.m_vecFinalizerPtr )
+		for( CX2BuffFinalizerTempletPtr templet : rhs_.m_vecFinalizerPtr )
 		{
 			m_vecFinalizerPtr.push_back( templet->GetClonePtr() );
 		}
 
 		m_vecDisplayerPtr.clear();
 		m_vecDisplayerPtr.reserve( rhs_.m_vecDisplayerPtr.size() );
-		BOOST_FOREACH( CX2BuffDisplayerTempletPtr templet, rhs_.m_vecDisplayerPtr )
+		for( CX2BuffDisplayerTempletPtr templet : rhs_.m_vecDisplayerPtr )
 		{
 			m_vecDisplayerPtr.push_back( templet->GetClonePtr() );
 		}
@@ -462,7 +462,7 @@ private:
 			fPastTime	= 0.f;
 		}
 	};
-	typedef boost::shared_ptr<ThirdBladeMatrix> ThirdBladeMatrixPtr;
+	typedef std::shared_ptr<ThirdBladeMatrix> ThirdBladeMatrixPtr;
 
 	struct ThirdBladeDamageData
 	{
@@ -473,7 +473,7 @@ private:
 		{
 		}
 	};
-	typedef boost::shared_ptr<ThirdBladeDamageData> ThirdBladeDamageDataPtr;
+	typedef std::shared_ptr<ThirdBladeDamageData> ThirdBladeDamageDataPtr;
 
 	const float MAGIC_PHANTOM_SWORD_DELAY;			/// 팬텀소드 딜레이
 	const float MAGIC_PHANTOM_DAMAGE_MULTIPLIER;	/// 팬텀소드 1.2배 데미지

@@ -1855,7 +1855,7 @@ bool CX2StateDungeonGame::GameLoadingNot( HWND hWnd, UINT uMsg, WPARAM wParam, L
 	{
 
 		bool IsHaveUID = false;
-		BOOST_FOREACH( DUNGEON_LOADING_DATA& LoadingData, m_vecDungeonLoadingData )
+		for( DUNGEON_LOADING_DATA& LoadingData : m_vecDungeonLoadingData )
 		{
 			if( LoadingData.uidUnitUID == kPacket.m_iUnitUID )
 			{
@@ -1876,7 +1876,7 @@ bool CX2StateDungeonGame::GameLoadingNot( HWND hWnd, UINT uMsg, WPARAM wParam, L
 	if( g_pData->GetDungeonRoom()->GetUserNum() == static_cast<int>(m_vecDungeonLoadingData.size()) )
 	{
 		int iLoadingPercent1 = 100;
-		BOOST_FOREACH( DUNGEON_LOADING_DATA LoadingData, m_vecDungeonLoadingData )
+		for( DUNGEON_LOADING_DATA LoadingData : m_vecDungeonLoadingData )
 		{
 			if( LoadingData.iLoadingPercent < iLoadingPercent1 )
 				iLoadingPercent1 = LoadingData.iLoadingPercent;
@@ -5461,7 +5461,7 @@ void CX2StateDungeonGame::DrawFace( const float fX_, const float fY_, const CKTD
 	KD3DPUSH( m_RenderStateID )
 
 //#ifdef DYNAMIC_VERTEX_BUFFER_OPT
-		BOOST_STATIC_ASSERT( D3DFVF_DRAWFACE_RHW_VERTEX == D3DFVF_XYZRHW_DIFFUSE_TEX1 );
+		static_assert( D3DFVF_DRAWFACE_RHW_VERTEX == D3DFVF_XYZRHW_DIFFUSE_TEX1 , "");
 	g_pKTDXApp->GetDVBManager()->DrawPrimitive( CKTDGDynamicVBManager::DVB_TYPE_XYZRHW_DIFFUSE_TEX1
 		, D3DPT_TRIANGLESTRIP, 2, vertex );
 //#else
@@ -5544,7 +5544,7 @@ void CX2StateDungeonGame::AllocateFaultyPlayerWarningDlg ()
 		}
 
 		// 각 그림 데이터에 접근하여 SetFlicker 함수를 사용
-		BOOST_FOREACH( CKTDGUIControl::CPictureData* pPictureData, p_vecPictureData )
+		for( CKTDGUIControl::CPictureData* pPictureData : p_vecPictureData )
 		{
 			if ( NULL != pPictureData )
 			{

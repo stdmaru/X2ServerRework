@@ -2668,7 +2668,7 @@ void CX2DamageManager::ParsingBuffFactor( KLuaManager& luaManager_, DamageData* 
 			{
 				/// 소켓 옵션등을 통해서 생긴것
 				const vector<CX2BuffFactorPtr>& vecAttackerGameUnitBuffFactorPtr = pAttackerGameUnit->GetBuffFactorList();
-				BOOST_FOREACH( CX2BuffFactorPtr ptrBuffFactor, vecAttackerGameUnitBuffFactorPtr )
+				for( CX2BuffFactorPtr ptrBuffFactor : vecAttackerGameUnitBuffFactorPtr )
 				{
 					if ( NULL != ptrBuffFactor )
 					{
@@ -2680,7 +2680,7 @@ void CX2DamageManager::ParsingBuffFactor( KLuaManager& luaManager_, DamageData* 
 
 			/// 버프에 의해 일시적으로 생긴것 적용
 			const vector<CX2BuffFactorPtr>& vecAttackerGameUnitTemporaryBuffFactorPtr = pAttackerGameUnit->GetTemporaryBuffFactorList();
-			BOOST_FOREACH( CX2BuffFactorPtr ptrBuffFactor, vecAttackerGameUnitTemporaryBuffFactorPtr )
+			for( CX2BuffFactorPtr ptrBuffFactor : vecAttackerGameUnitTemporaryBuffFactorPtr )
 			{
 				if ( NULL != ptrBuffFactor )
 				{
@@ -2710,7 +2710,7 @@ bool CX2DamageManager::CheckActiveGroupDamage( const wstring& wstrDamageEffectNa
 	/// 공격자 유닛 아이디
 	UidType										  uidAttackerUID			= pDamageData_->optrAttackerGameUnit->GetUnitUID();
 
-	BOOST_FOREACH( const CX2GameUnit::DamageEffectGroupDataPtr& pDamageEffectGroupData, vecDamageEffectGroupData )
+	for( const CX2GameUnit::DamageEffectGroupDataPtr& pDamageEffectGroupData : vecDamageEffectGroupData )
 	{
 		if( NULL					!= pDamageEffectGroupData &&
 			uidAttackerUID			== pDamageEffectGroupData->m_uidAttackerUID &&			/// 공격자의 유닛 아이디도 같으며
@@ -2913,7 +2913,7 @@ void CX2DamageManager::ParsingBuffFactorID( KLuaManager& luaManager_, DamageData
 		}
 
 		if( iBuffFactorLV > 0 )
-		BOOST_FOREACH( UINT uiBuffFactorID, vecUiBuffFactor )
+		for( UINT uiBuffFactorID : vecUiBuffFactor )
 		{
 			SetBuffFactorToDamageDataByBuffFactorID( pDamageData_, uiBuffFactorID, iBuffFactorLV );
 		}

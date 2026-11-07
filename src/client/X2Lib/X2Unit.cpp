@@ -1159,7 +1159,7 @@ const CX2Stat::EnchantStat& CX2Unit::GetEnchantStat( bool bUpdate /*= true*/, bo
 		}
 
 		// ������ ���� ��� ���� ���� �ɼ�
-		BOOST_FOREACH( int iSocketID, pItem->GetItemData().m_vecRandomSocket )
+		for( int iSocketID : pItem->GetItemData().m_vecRandomSocket )
 		{
 			const CX2SocketItem::SocketData* pSocketData = g_pData->GetSocketItem()->GetSocketData( iSocketID );
 
@@ -1330,7 +1330,7 @@ float CX2Unit::GetRepairDiscountRate()
 	float fDiscountRate = 0.f;
 
 
-	BOOST_TEST_FOREACH( const UidType&, eqipUID, m_UnitData.m_NowEqipItemUIDList )
+	for( const UidType& eqipUID : m_UnitData.m_NowEqipItemUIDList )
 	{
 		CX2Item* pItem = m_UnitData.m_Inventory.GetItem( eqipUID );
 		if( NULL == pItem )
@@ -1370,7 +1370,7 @@ float CX2Unit::GetRepairDiscountRate()
 			fDiscountRate += pSocketData->m_fRepairPriceSale;
 		}
 		// ������ ���� ��� ���� ���� �ɼ�
-		BOOST_FOREACH( int iSocketID, pItem->GetItemData().m_vecRandomSocket )
+		for( int iSocketID : pItem->GetItemData().m_vecRandomSocket )
 		{
 			const CX2SocketItem::SocketData* pSocketData = g_pData->GetSocketItem()->GetSocketData( iSocketID );
 			if( NULL == pSocketData )
@@ -1433,7 +1433,7 @@ float CX2Unit::GetRepairDiscountRate()
 	}
 
 
-	BOOST_FOREACH( BUFF_FACTOR_ID eBuffFactorID, m_vecWorldBuffFactorID )
+	for( BUFF_FACTOR_ID eBuffFactorID : m_vecWorldBuffFactorID )
 	{
 		if ( NULL != CX2BuffTempletManager::GetInstance() )
 		{
@@ -3629,7 +3629,7 @@ int CX2Unit::GetIncreaseSkillLevelByBuff()
 		/// ���� ���� ���� �����̳�
 		std::vector<BUFF_FACTOR_ID> vecWorldBuffID = g_pData->GetMyUser()->GetSelectUnit()->GetWorldBuffFactorID();
 
-		BOOST_FOREACH( BUFF_FACTOR_ID eAddSkillLevelByBuffID, vecWorldBuffID )
+		for( BUFF_FACTOR_ID eAddSkillLevelByBuffID : vecWorldBuffID )
 		{
 			CX2BuffFactorPtr ptrBuffFactor = CX2BuffTempletManager::GetInstance()->GetBuffFactorPtr( eAddSkillLevelByBuffID );
 
@@ -3727,7 +3727,7 @@ int CX2Unit::GetIncreaseSkillLevelBySocket( CX2SkillTree::SKILL_ID eSkillID )
 		}
 
 		/// ������ ���� ��� ���� ���� �ɼ� �˻�
-		BOOST_FOREACH( int iSocketID, pItem->GetItemData().m_vecRandomSocket )
+		for( int iSocketID : pItem->GetItemData().m_vecRandomSocket )
 		{
 			const CX2SocketItem::SocketData* pSocketData = g_pData->GetSocketItem()->GetSocketData( iSocketID );
 			if( NULL == pSocketData )
@@ -3745,7 +3745,7 @@ int CX2Unit::GetIncreaseSkillLevelBySocket( CX2SkillTree::SKILL_ID eSkillID )
 	{
 		const vector<int>& vecTitleSocketOption = g_pData->GetTitleManager()->GetTitleInfo( iTitleID )->m_vecSocketOption;
 
-		BOOST_FOREACH( int socketOptionID, vecTitleSocketOption )
+		for( int socketOptionID : vecTitleSocketOption )
 		{
 			const CX2SocketItem::SocketData*	pSocketData		= g_pData->GetSocketItem()->GetSocketData( socketOptionID );
 			if( NULL == pSocketData )
@@ -3775,7 +3775,7 @@ int CX2Unit::GetIncreaseSkillLevelBySocket( CX2SkillTree::SKILL_ID eSkillID )
 			if ( false == vecOptions.empty() )
 			{
 				/// �ɼ��� ��ų ���� � ȿ���� ������, ����
-				BOOST_FOREACH( int iSocketID, vecOptions )
+				for( int iSocketID : vecOptions )
 				{
 					const CX2SocketItem::SocketData* pSocketData = g_pData->GetSocketItem()->GetSocketData( iSocketID );
 					if( NULL != pSocketData )

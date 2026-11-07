@@ -289,7 +289,7 @@ public:
 			if( m_vecpEffectData.size() != rhs_.m_vecpEffectData.size() ) return false;
 
 			int i = 0;
-			BOOST_FOREACH( EffectData* pData, m_vecpEffectData )
+			for( EffectData* pData : m_vecpEffectData )
 			{
 				if( (*pData) == (*rhs_.m_vecpEffectData[i]) )
 					++i;
@@ -299,7 +299,7 @@ public:
 
 			if( m_vecpCameraShakeData.size() != rhs_.m_vecpCameraShakeData.size() ) return false;
 			i = 0;
-			BOOST_FOREACH( CameraShakeData* pData, m_vecpCameraShakeData )
+			for( CameraShakeData* pData : m_vecpCameraShakeData )
 			{
 				if( (*pData) == (*rhs_.m_vecpCameraShakeData[i]) )
 					++i;
@@ -317,7 +317,7 @@ public:
 			m_iDeleteShakeCount = rhs.m_iDeleteShakeCount;
 
 			m_vecpEffectData.clear();
-			BOOST_FOREACH( CX2EffectSet::EffectData* pData, rhs.m_vecpEffectData )
+			for( CX2EffectSet::EffectData* pData : rhs.m_vecpEffectData )
 			{
 				CX2EffectSet::EffectData* pTempData = new CX2EffectSet::EffectData;
 				*pTempData = *pData;
@@ -325,7 +325,7 @@ public:
 			}
 
 			m_vecpCameraShakeData.clear();
-			BOOST_FOREACH( CX2EffectSet::CameraShakeData* pData, rhs.m_vecpCameraShakeData )
+			for( CX2EffectSet::CameraShakeData* pData : rhs.m_vecpCameraShakeData )
 			{
 				CX2EffectSet::CameraShakeData* pTempData = new CX2EffectSet::CameraShakeData;
 				*pTempData = *pData;
@@ -348,14 +348,14 @@ public:
 
 		~EffectSetData()
 		{
-			BOOST_TEST_FOREACH( EffectData*, pEffectData, m_vecpEffectData )
+			for( EffectData* pEffectData : m_vecpEffectData )
 			{
 				SAFE_DELETE( pEffectData );
 			}
 			m_vecpEffectData.clear();
 
 
-			BOOST_TEST_FOREACH( CameraShakeData*, pCameraShakeData, m_vecpCameraShakeData )
+			for( CameraShakeData* pCameraShakeData : m_vecpCameraShakeData )
 			{
 				SAFE_DELETE( pCameraShakeData );
 			}

@@ -308,7 +308,7 @@ public:
     struct sMoonLightSlashData;
     typedef boost::intrusive_ptr<sMoonLightSlashData> sMoonRightSlashDataPtr;
 
-	struct sMoonLightSlashData : boost::noncopyable
+	struct sMoonLightSlashData : x2::NonCopyable
 	{
 	private:
         unsigned                                        m_uRefCount;
@@ -364,7 +364,7 @@ public:
 
     struct SLockOnSystem;
     typedef boost::intrusive_ptr<SLockOnSystem> sLockOnSystemPtr;
-	struct SLockOnSystem : boost::noncopyable
+	struct SLockOnSystem : x2::NonCopyable
 	{
 	private:
         unsigned                                        m_uRefCount;

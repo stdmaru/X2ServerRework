@@ -2939,7 +2939,7 @@ bool CX2UIInventory::UpdateInventorySlotList( std::vector< KInventoryItemInfo >&
 
 
 
-	BOOST_TEST_FOREACH( const KInventoryItemInfo&, invenItemInfo, vecInventorySlotInfo )
+	for( const KInventoryItemInfo& invenItemInfo : vecInventorySlotInfo )
 	{
 		if( invenItemInfo.m_cSlotCategory == CX2Inventory::ST_E_EQUIP )
 		{
@@ -2957,7 +2957,7 @@ bool CX2UIInventory::UpdateInventorySlotList( std::vector< KInventoryItemInfo >&
 
 	bool bIsUpdate = false;
 
-	BOOST_TEST_FOREACH( const KInventoryItemInfo&, invenItemInfo, vecInventorySlotInfo )
+	for( const KInventoryItemInfo& invenItemInfo : vecInventorySlotInfo )
 	{
 		if( invenItemInfo.m_iItemUID <= 0 )
 			continue;

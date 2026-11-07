@@ -418,7 +418,7 @@ CX2WorldFieldMap::FieldData* CX2WorldFieldMap::GetFieldInfo( int iMapID )
 		{
 			CX2World::WORLD_ID eWorldID = (CX2World::WORLD_ID) g_pData->GetLocationManager()->GetWorldID(  (SEnum::VILLAGE_MAP_ID) iMapID );
 
-			BOOST_TEST_FOREACH( CX2LocationManager::CommonNpcPos&, npcPos, pHouseTemplate->m_vecCommonPos )
+			for( CX2LocationManager::CommonNpcPos& npcPos : pHouseTemplate->m_vecCommonPos )
 			{
 				if( eWorldID == npcPos.m_eWorldID )
 				{

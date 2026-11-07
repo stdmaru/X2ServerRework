@@ -1733,7 +1733,7 @@ void CX2UICharInfo::SumSocketOption( const vector<int>& vecOptions_, OUT CX2Sock
 	//}} kimhc // 2011-07-05 // 옵션데이타 수치화 작업
 {
 	const CX2SocketItem* pSocketItem = g_pData->GetSocketItem();
- 	BOOST_TEST_FOREACH( const int, iOptions, vecOptions_ )
+ 	for( const int iOptions : vecOptions_ )
  	{
 		const CX2SocketItem::SocketData* pSocketData = pSocketItem->GetSocketData( iOptions );
 

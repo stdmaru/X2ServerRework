@@ -370,7 +370,7 @@ void CX2UIComboTree::UpdateComboTree( CX2Unit::UNIT_CLASS eUnitClass, CX2ComboTr
 			}
 
 
-			BOOST_TEST_FOREACH( const CX2ComboTree::ComboIcon&, comboIcon, *pvecCombo )
+			for( const CX2ComboTree::ComboIcon& comboIcon : *pvecCombo )
 			{
 				if( false == GetComboIconTextureName( textureName, pieceName, comboIcon.m_eComboIcon ) )
 				{

@@ -33,9 +33,9 @@ CX2DungeonSubStage::CX2DungeonSubStage( int subStageIndex, SubStageData* pSubSta
 	if( NULL != pSubStageData )
 	{
 		bool bDone = false;
-		BOOST_TEST_FOREACH( const ClearCondtionData&, clearCond, pSubStageData->m_vecClearCondData )
+		for( const ClearCondtionData& clearCond : pSubStageData->m_vecClearCondData )
 		{
-			BOOST_TEST_FOREACH( const NextStageData&, nextStageData, clearCond.m_vecNextStage )
+			for( const NextStageData& nextStageData : clearCond.m_vecNextStage )
 			{
 				if( CT_GAME != nextStageData.m_eClearType )
 					continue;
@@ -650,7 +650,7 @@ void CX2DungeonSubStage::CheckIfSubStageCleared()
 								NULL != g_pX2Game->GetWorld() &&
 								NULL != g_pX2Game->GetLineMap() )
 							{
-								BOOST_TEST_FOREACH( int, portalLineIndex, clearCond.m_vecPortalLineIndex )
+								for( int portalLineIndex : clearCond.m_vecPortalLineIndex )
 								{
 									const CKTDGLineMap::LineData* pLineData = g_pX2Game->GetLineMap()->GetLineData( portalLineIndex );
 									if( NULL != pLineData )
@@ -814,7 +814,7 @@ void CX2DungeonSubStage::CheckIfSubStageCleared_NotHost()
 
 
 
-	BOOST_TEST_FOREACH( const ClearCondtionData&, clearCond, m_pSubStageData->m_vecClearCondData )
+	for( const ClearCondtionData& clearCond : m_pSubStageData->m_vecClearCondData )
 	{
 		if( false == clearCond.m_bEnable )
 			continue;
@@ -904,7 +904,7 @@ void CX2DungeonSubStage::DeleteAllNPCUnit( const vector<NPCData*>& vecNPCData_ )
 		return;
 
 	CX2GUNPC* pCX2GUNPC = NULL;
-	BOOST_TEST_FOREACH( const NPCData*, pNpcData, vecNPCData_ )
+	for( const NPCData* pNpcData : vecNPCData_ )
 	{
 		pCX2GUNPC = g_pX2Game->GetNPCUnitByUID( pNpcData->m_UID );
 		if( NULL != pCX2GUNPC )
@@ -1596,7 +1596,7 @@ void CX2DungeonSubStage::SubStageData::LoadSecretStageEnteringSpeech( KLuaManage
 /*static*/
 void CX2DungeonSubStage::CreateAndAppendGUNPC( std::vector<CX2GUNPC*>& vecInOutNPCs_, const vector<NPCData*>& vecNPCData_ )
 {
-	BOOST_TEST_FOREACH( const NPCData*, pNpcData, vecNPCData_ )
+	for( const NPCData* pNpcData : vecNPCData_ )
 	{
 		CX2GUNPC*  pCX2GUNPC = CreateGUNPC( pNpcData );
 

@@ -409,7 +409,7 @@ public:
     class   CFuryGuardianGuardSkill;
     typedef boost::intrusive_ptr<CFuryGuardianGuardSkill> CFuryGuardianGuardSkillPtr;	/// ǻ��������� ����ϴ� Guard ��Ƽ�꽺ų Ŭ������ ����Ʈ������Type
 
-	class CFuryGuardianGuardSkill : boost::noncopyable
+	class CFuryGuardianGuardSkill : x2::NonCopyable
 	{
 	private:
         unsigned                                        m_uRefCount;

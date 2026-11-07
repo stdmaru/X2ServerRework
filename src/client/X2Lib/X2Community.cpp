@@ -6645,7 +6645,7 @@ void CX2Community::UpdateGuildPositionInfo()
 	if ( pGulldManager == NULL )
 		return;
 
-	BOOST_TEST_FOREACH( const KGuildMemberInfo&, kGuildMemberInfo, m_vecGuildMemberInfo )
+	for( const KGuildMemberInfo& kGuildMemberInfo : m_vecGuildMemberInfo )
 	{
 		// 닉네임
 		m_GuildUserListUIConstrols[i].m_pStaticNickName->SetString( 0, kGuildMemberInfo.m_wstrNickName.c_str() );
@@ -6768,7 +6768,7 @@ void CX2Community::UpdateGuildGradeInfo()
 	if ( pGulldManager == NULL )
 		return;
 
-	BOOST_TEST_FOREACH( const KGuildMemberInfo&, kGuildMemberInfo, m_vecGuildMemberInfo )
+	for( const KGuildMemberInfo& kGuildMemberInfo : m_vecGuildMemberInfo )
 	{
 		m_vecUserUID.push_back( kGuildMemberInfo.m_iUnitUID );
 
@@ -7155,7 +7155,7 @@ void CX2Community::SetTabByShortCutKey( X2_COMMUNITY_TAB eCommunityTab )
 
 BYTE	CX2Community::GetGuildMemberGradeByUIDInThisList( UidType unitUID ) const
 {
-	BOOST_TEST_FOREACH( const KGuildMemberInfo&, kGuildMemberInfo, m_vecGuildMemberInfo )
+	for( const KGuildMemberInfo& kGuildMemberInfo : m_vecGuildMemberInfo )
 	{
 		if ( kGuildMemberInfo.m_iUnitUID == unitUID )
 			return kGuildMemberInfo.m_ucMemberShipGrade;
@@ -7166,7 +7166,7 @@ BYTE	CX2Community::GetGuildMemberGradeByUIDInThisList( UidType unitUID ) const
 
 std::wstring CX2Community::GetGuildMemberNickName( UidType unitUID ) const
 {
-	BOOST_TEST_FOREACH( const KGuildMemberInfo&, kGuildMemberInfo, m_vecGuildMemberInfo )
+	for( const KGuildMemberInfo& kGuildMemberInfo : m_vecGuildMemberInfo )
 	{
 		if ( kGuildMemberInfo.m_iUnitUID == unitUID )
 			return kGuildMemberInfo.m_wstrNickName;
