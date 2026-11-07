@@ -47,14 +47,49 @@ video recording and the Print Screen screenshot are gone.
 - Left for [Phase 5](../project/roadmap.md#phase-5--deep-cleanup): the recording settings in `CX2GameOption`
   (`m_UserSetting`, `m_VideoQuality`, FPS, sizes...), still read from and written to the option file, now unused.
 
+## Header chain (2026-11-07, `client/x2lib-headers`)
+
+Target `x2::client_x2lib` builds `stdafx.cpp` only: `stdafx.h` → `X2Main.h` and every header it includes compile
+warning-free on Clang and GCC. It adds `src/server/X2Lib` (`X2UDPPacket.h`) to the include path. The `.cpp` files come in
+the next steps ([roadmap](../project/roadmap.md#phase-4--client-graphics)).
+
+- **Events.** The shared `Event.h` already declares the client events, so `X2ServerEvent.h`'s `SERVER_EVENT_ID` is an alias
+  of `ENUM_CLIENT_EVENT_ID` and `EVENT_X2_STARTUP` names `E_CLIENT_EVENT_ID_BEGIN` (same values). `CX2ServerEvent` stays.
+- **Mechanical pass** (`tools/port/mechanical.py`, `tools/port/fix_warnings.py`): Boost and Win32 includes,
+  `boost::intrusive_ptr` → `x2::intrusive_ptr`, `boost::array` → `std::array`, `boost::unordered_map` →
+  `std::unordered_map`, Boost.Bimap → `x2::bimap` (`X2KeyPad.h`, `X2RidingPet.h`), `boost::circular_buffer` →
+  `KCircularBuffer` (`X2GUNPC`); switch defaults, unused parameters and member init order.
+- **Standard C++ by hand:** `= NULL` pure specifiers → `= 0`, extra qualifications, `typename`, `FORCEINLINE`,
+  `const` on by-value return types (128), `ARRAY_SIZE` loops with an `int` index → `std::ssize` (239), the item-ID tables
+  in `X2Define.h` as `const DWORD`, `std::binary_function` bases, virtual destructors for the classes `X2Data.h` deletes
+  (`CKTDGParticleSystem`, `CX2EventScene`, `CX2UIManager`), hidden virtuals (`using` declarations, `RayHit` and
+  `CheckWindowInfo::BeginThread` with their base signatures; `CX2UIQuickSlot::SetEnable( bool )` now overrides the slot
+  manager's, which nothing calls through a base pointer), `RAND_MAX` as a float, `const char*` Lua color arguments
+  (`X2SlideShot`), `NULL` passed as `UidType`/`LPARAM` → `0`.
+- **Removed:** the Themida and Code Virtualizer markers (third-party protection; the client's own anti-cheat stays:
+  `KProtectedType`, `Verify()`, `CX2CheckSumManager`, the process-check thread, the hack reports); `X2SystemInfo.*`
+  (system report, unused); `HttpSession.*` and WinINet (`g_hInternet`, `OpenURL`, `OpenGlobalURL`, `InternetOpen` in
+  `X2.cpp`); `SetBetweenCharToCharSize` (HDC); the Bandicam settings of `CX2GameOption` (fields, Lua read, option file
+  write; the leftover of [Bandicam removed](#bandicam-removed-2026-11-06-clientvideo-browser-cximage)); a commented-out
+  macro in `X2GUUser.h`.
+- **XML:** `CX2GameOption::_CalcBestGraphicOption` reads the graphics option table with `x2::platform::ParseXml`
+  ([Platform](platform.md)) instead of libxml; the score helpers take an `XmlElement`. Same scores and defaults.
+- **Original bugs fixed:**
+  - Missing `return`s: `CX2GageData::GetShow` (now `false`), `CX2GameUnit::GetUnitSlashTraceDataSize`,
+    `CX2BattleFieldManager::GetBitSetFlag`; `CX2ComboManager::SetCombo` returned nothing and is `void`.
+  - `X2NumbersToLanguage.h`: `memcpy` over `std::string` arrays (each string freed twice) → `std::copy`.
+  - `CX2UserSkillTree::ToggleSkillSlotAB`: `memcpy` over `KProtectedType` slots → `std::swap`.
+- **Kept, recorded as a bug:** `CX2GUUser::DidReceiveFirstSyncPacket() const` did not override `CX2GameUnit`'s non-const
+  one; it is now the non-virtual `DidReceiveFirstSyncPacketOfUser()`, called where the static type is `CX2GUUser*`
+  ([Original bugs](../original/bugs.md)).
+
 ## Status
 
-Not compiled yet ([roadmap](../project/roadmap.md#phase-3--client-platform)).
+The header chain compiles (2026-11-07); the `.cpp` files do not yet
+([roadmap](../project/roadmap.md#phase-4--client-graphics)).
 
-To do when it is compiled (found on 2026-11-05, `client/serverprotocol`):
+Notes for the `.cpp` steps (2026-11-07):
 
-- `X2ServerEvent.h` declares the `EventID_Client.h` enumerators in its own `SERVER_EVENT_ID` enum (after `EVENT_X2_STARTUP =
-  E_SYSTEM_EVENT_ID_END`), and the shared `Event.h` it now gets through `X2ServerProtocolLib.h` declares them too (same values,
-  `E_CLIENT_EVENT_ID_BEGIN = E_SYSTEM_EVENT_ID_END`): a redefinition. Use the shared enum and keep `EVENT_X2_STARTUP` as a name
-  for `E_CLIENT_EVENT_ID_BEGIN`. `CX2ServerEvent::SERVER_EVENT_ID_STR` is no longer needed by `CX2ServerProtocol`
-  ([Client: X2ServerProtocol](client-serverprotocol.md)).
+- `CSystemInfo` (the machine ID) is still used by `X2Main.cpp`: the login packet needs it.
+- `CX2Cursor`'s hardware cursor comes from an exe resource (`IDC_CURSOR1`); outside Windows it needs an SDL cursor.
+- The `switch( GetPublisher() )` branches for other countries are dead.
