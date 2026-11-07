@@ -21,7 +21,7 @@ TEST_CASE("bimap: both views, one-to-one inserts, copies")
     REQUIRE(right != map.right.end());
     CHECK(right->second == 0);
     CHECK(map.right.at("LOADING") == 1);
-    CHECK_THROWS(map.left.at(5));
+    CHECK_THROWS((void)map.left.at(5));
 
     x2::bimap<char, std::string> copy = map;
     map.clear();
