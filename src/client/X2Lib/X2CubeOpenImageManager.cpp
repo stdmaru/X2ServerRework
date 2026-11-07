@@ -374,7 +374,7 @@ bool	CX2CubeOpenImageManager::IsFadeInOutImage(IN const int iCubeID)
 
 	return pCubeImageInfo->m_bImageFadeInOut;
 }
-const bool		CX2CubeOpenImageManager::IsResultItemID(IN const int iItemID)
+bool		CX2CubeOpenImageManager::IsResultItemID(IN const int iItemID)
 {
 	if(m_setResultItemID.find(iItemID) != m_setResultItemID.end())
 		return true;

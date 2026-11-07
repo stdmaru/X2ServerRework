@@ -16324,7 +16324,8 @@ void CX2GULire_ElvenRanger::ClearStartOfDelayedFiringData()		/// ��� Ȥ�
 				/// �����ڰ� ��ġ�ϰ�, ���� �Ÿ� �ȿ� �ִ� ������ ����Ʈ �˻�
 				if( iUnitIndex == kEffect.GetDamageData().optrAttackerGameUnit->GetUnitIndex() )
 				{
-                    g_pX2Game->GetDamageEffect()->DestroyInstanceHandleSilently( kEffect.GetHandle() );
+                    CX2DamageEffect::CEffectHandle hEffect = kEffect.GetHandle();
+                    g_pX2Game->GetDamageEffect()->DestroyInstanceHandleSilently( hEffect );
 				}
 			} break;
 		}
@@ -18350,7 +18351,7 @@ void CX2GULire_ElvenRanger::CommonHyperModeFrameMove( float fTime1_, float fTime
 	CommonFrameMove();
 }
 
-const CX2SkillTree::ACTIVE_SKILL_USE_CONDITION CX2GULire_ElvenRanger::GetSkillUseCondition(const CX2SkillTree::SkillTemplet* pSkillTemplet_)
+CX2SkillTree::ACTIVE_SKILL_USE_CONDITION CX2GULire_ElvenRanger::GetSkillUseCondition(const CX2SkillTree::SkillTemplet* pSkillTemplet_)
 {
 	CX2SkillTree::ACTIVE_SKILL_USE_CONDITION eActiveSkillUseCondition = pSkillTemplet_->m_eActiveSkillUseCondtion;
 

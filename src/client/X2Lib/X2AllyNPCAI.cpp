@@ -513,7 +513,7 @@ void CX2AllyNPCAI::Moving( float fElapsedTime )
 
 	// 목적지로 이동
 	bool bIsTargetOnRight;
-	const float MAGIC_LINE_END_DETECT_RANGE = 50.f;
+	static constexpr float MAGIC_LINE_END_DETECT_RANGE = 50.f;
 	m_PathFinder.FollowTargetPath( /*fElapsedTime,*/ m_pMasterNPC->GetPos(), iLastLineIndex,
 		m_vFinalDest, m_iFinalDestLineIndex,
 		m_fMaxJumpUp, m_fMaxJumpRight, pLineMap,
@@ -536,6 +536,7 @@ void CX2AllyNPCAI::Moving( float fElapsedTime )
 	}
 
 
+	{
 	const float fFinalDestDist = GetDistance( m_pMasterNPC->GetPos(), m_vFinalDest );
 
 
@@ -664,6 +665,7 @@ void CX2AllyNPCAI::Moving( float fElapsedTime )
 	}
 
 
+	}
 SEND_AI_MESSAGE:
 	if( m_PrevAIMessage == message || CX2GUNPC::SCT_NO_CHANGE == message )
 	{

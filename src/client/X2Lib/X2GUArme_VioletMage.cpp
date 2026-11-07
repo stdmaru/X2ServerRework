@@ -16698,7 +16698,7 @@ void CX2GUArme_VioletMage::RidingHyperModeCameraMove()
 	}
 }
 
-const CX2SkillTree::ACTIVE_SKILL_USE_CONDITION CX2GUArme_VioletMage::GetSkillUseCondition(const CX2SkillTree::SkillTemplet* pSkillTemplet_)
+CX2SkillTree::ACTIVE_SKILL_USE_CONDITION CX2GUArme_VioletMage::GetSkillUseCondition(const CX2SkillTree::SkillTemplet* pSkillTemplet_)
 {
 	CX2SkillTree::ACTIVE_SKILL_USE_CONDITION eActiveSkillUseCondition = pSkillTemplet_->m_eActiveSkillUseCondtion;
 

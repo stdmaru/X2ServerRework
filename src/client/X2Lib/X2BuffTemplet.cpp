@@ -796,7 +796,7 @@ CX2CustomFunctionByBuffPhantomSword::CX2CustomFunctionByBuffPhantomSword( const 
             g_pX2Game->GetDamageEffect()->DestroyInstanceHandle( m_hDamageEffectThirdBlade );
 	}
 
-	m_ThirdBladeMatrixQueue.swap( std::queue<ThirdBladeMatrixPtr>() );
+	m_ThirdBladeMatrixQueue = std::queue<ThirdBladeMatrixPtr>();
 	std::list<ThirdBladeDamageDataPtr>().swap( m_ThirdBladeDamageDataList );
 }
 

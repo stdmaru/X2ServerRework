@@ -3510,7 +3510,7 @@ void CX2GageManager::UpdatePvpMemberGageData( const UidType uidPartyMember_, CX2
 	@param		: 검색할 유저 인덱스
 	@return		: PartyGageUI의 인덱스
 */
-const UidType CX2GageManager::GetPartyGageUIPositionIndexByUserList( int iIndex ) const
+UidType CX2GageManager::GetPartyGageUIPositionIndexByUserList( int iIndex ) const
 {
 	if ( m_vecGageSetPartyMember.size() > 0 )		// 벡터에 데이터가 있을 때,
 	{

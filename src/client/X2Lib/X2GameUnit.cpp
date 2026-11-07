@@ -8281,7 +8281,7 @@ float CX2GameUnit::GetAttackRateByAbnormalityBlind()
 	@param : void
 	@return : 확률 (공격자의 크리티컬 확률이 이것보다 크면 크리티컬 데미지를 받는다.)
 */
-const float CX2GameUnit::GetCriticalValueFromDefender()
+float CX2GameUnit::GetCriticalValueFromDefender()
 {
 	// 공격자로부터 Critical 데미지를 받을 확률
 	float fCriticalRateToGetFromAttacker = GetRandomFloat( CKTDXRandomNumbers::SRO_ATTACK_CRITICAL );
@@ -12034,7 +12034,7 @@ void CX2GameUnit::EraseReflectMagicByBuff( const KBuffIdentity& BuffIdentity_ )
 	@brief : 현재 자신에게 걸린 무기 인챈트 타입을 반환. 제일 시간이 긴 것을 반환한다.
 	@param : -
 */
-const CX2DamageManager::EXTRA_DAMAGE_TYPE		CX2GameUnit::GetApplyWeaponExtraDamageType()
+CX2DamageManager::EXTRA_DAMAGE_TYPE		CX2GameUnit::GetApplyWeaponExtraDamageType()
 {
 	float fCheckTime = 0.f;
 	CX2DamageManager::EXTRA_DAMAGE_TYPE eEDTType = CX2DamageManager::EDT_NONE;

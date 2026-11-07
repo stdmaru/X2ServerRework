@@ -517,7 +517,7 @@ bool CX2WorldMissionManager::GetDragonBreathEnchantStatIncreased( OUT const CX2S
 	}
 }
 
-const int CX2WorldMissionManager::GetDragonBreathAnimSpeedRateIncreased() const
+int CX2WorldMissionManager::GetDragonBreathAnimSpeedRateIncreased() const
 {
 	if ( NULL == m_pWorldBuffDragonBreath )
 		return 0;
@@ -525,7 +525,7 @@ const int CX2WorldMissionManager::GetDragonBreathAnimSpeedRateIncreased() const
 		return m_pWorldBuffDragonBreath->m_iAnimSpeedRateIncreased;
 }
 
-const float CX2WorldMissionManager::GetDragonBreathAttackStatRateIncreased() const
+float CX2WorldMissionManager::GetDragonBreathAttackStatRateIncreased() const
 {
 	if ( NULL == m_pWorldBuffDragonBreath )
 		return 0.0f;
@@ -538,7 +538,7 @@ const float CX2WorldMissionManager::GetDragonBreathAttackStatRateIncreased() con
 	@param : CX2EnchantItem::ENCHANT_TYPE eType (수치를 알고싶은 인첸트 타입)
 	@return : const float (해당 인첸트 타입의 수치 값)
 */
-const float CX2WorldMissionManager::GetEnchantStatFromDrgonBreath( int iEnchantType ) const
+float CX2WorldMissionManager::GetEnchantStatFromDrgonBreath( int iEnchantType ) const
 {
 	// 이 함수를 콜 하는 상위 함수에서 m_pWorldBuffDragonBreath에 대하여
 	// NULL Check를 해야 함
@@ -575,7 +575,7 @@ const float CX2WorldMissionManager::GetEnchantStatFromDrgonBreath( int iEnchantT
 
 }
 
-const int CX2WorldMissionManager::GetElBlessCriticalRateIncreased() const
+int CX2WorldMissionManager::GetElBlessCriticalRateIncreased() const
 {
 	if ( NULL == m_pWorldBuffElBless )
 		return 0;
@@ -583,7 +583,7 @@ const int CX2WorldMissionManager::GetElBlessCriticalRateIncreased() const
 		return m_pWorldBuffElBless->m_iCriticalRateIncreased;
 }
 
-const float CX2WorldMissionManager::GetElBlessDefenceStatRateIncreased() const
+float CX2WorldMissionManager::GetElBlessDefenceStatRateIncreased() const
 {
 	if ( NULL == m_pWorldBuffElBless )
 		return 0.0f;

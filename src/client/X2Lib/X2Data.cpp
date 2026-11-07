@@ -2515,7 +2515,7 @@ void CX2Data::ResetBattleFieldManager( const wchar_t* wszScriptFileName_ )
 	@brief : ���� ���õ� ĳ������ ���� ���
 */
 //������ // 2012-12-14 // ��üũ �ڵ� ���� ���̱� ���� �߰� �߽��ϴ�.
-const int CX2Data::GetSelectUnitLevel() const
+int CX2Data::GetSelectUnitLevel() const
 {
 	if( NULL != m_pMyUser && NULL != m_pMyUser->GetSelectUnit() )
 		return m_pMyUser->GetSelectUnit()->GetUnitData().m_Level;

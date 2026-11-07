@@ -5854,7 +5854,7 @@ void CX2UISkillTreeNew::SetBlindSelectSkill()
 	#param		: �˻��� ��ų ���̵�
 	@return		: �ݴ����� �ִ� ��ų ���̵�
 */
-const CX2SkillTree::SKILL_ID CX2UISkillTreeNew::GetAnotherSelectSkillID( CX2SkillTree::SKILL_ID eCheckSkillID ) const
+CX2SkillTree::SKILL_ID CX2UISkillTreeNew::GetAnotherSelectSkillID( CX2SkillTree::SKILL_ID eCheckSkillID ) const
 {
 	if (	NULL == g_pData ||
 			NULL == g_pData->GetSkillTree() ||
@@ -5893,7 +5893,7 @@ const CX2SkillTree::SKILL_ID CX2UISkillTreeNew::GetAnotherSelectSkillID( CX2Skil
 	#param		: �˻��� ��ų ���̵�
 	@return		: ��ų ����
 */
-const int CX2UISkillTreeNew::GetSkillLevelInSkillWimdow( const CX2SkillTree::SKILL_ID eSkillID ) const
+int CX2UISkillTreeNew::GetSkillLevelInSkillWimdow( const CX2SkillTree::SKILL_ID eSkillID ) const
 {
 	if (	NULL == g_pData ||
 			NULL == g_pData->GetMyUser() ||
@@ -6039,7 +6039,7 @@ bool CX2UISkillTreeNew::IsLearnBeforeSelectSkill( const int iNowTierIndex )
 	@brief		: ����� ���� �ֻ��� ��ų ���� ��ȯ
 	@return		: ��ų ���� Tier �ε���
 */
-const int CX2UISkillTreeNew::GetNotLearnTierIndex()
+int CX2UISkillTreeNew::GetNotLearnTierIndex()
 {
 	std::map<SkillPositionKey, CX2SkillTree::SKILL_ID>::iterator mit = m_mapSkillPosition.find( SkillPositionKey( 0, 0 ) );
 	int iTierIndex = 0;
@@ -6069,7 +6069,7 @@ const int CX2UISkillTreeNew::GetNotLearnTierIndex()
 	@brief		: ��� �� ���� ������ �ֻ��� ��ų ���� ��ȯ
 	@return		: ��ų ���� Tier �ε���
 */
-const int CX2UISkillTreeNew::GetNotEnoughLevelTierIndex( const int iLevel )
+int CX2UISkillTreeNew::GetNotEnoughLevelTierIndex( const int iLevel )
 {
 	int iTierIndex = 0;
 

@@ -592,7 +592,7 @@ bool CX2BattleFieldManager::GetIsBossRaidCurrentField() const
 /** @function : GetBossFieldPortalLineByFieldID
 	@brief : 보스 레이드 필드의 포탈이 열리는 라인맵 인덱스 얻기.
 */
-const USHORT CX2BattleFieldManager::GetRaidFieldPortalLineByFieldID( const UINT uiBattleFieldID_ ) const
+USHORT CX2BattleFieldManager::GetRaidFieldPortalLineByFieldID( const UINT uiBattleFieldID_ ) const
 {
 	if ( false == m_mapBattleFieldDataPtr.empty() )
 	{

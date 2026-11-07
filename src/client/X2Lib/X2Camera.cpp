@@ -2142,6 +2142,7 @@ bool CX2Camera::AddWorldCameraData_LUA()
 
 	LUA_GET_VALUE( luaManager, "WORLD_CAMERA_DURATION", kWorldCameraData.m_fWorldCameraDuration,	30.f	);	// play duration time
 
+	{
 	int index = 1;
 	while( luaManager.BeginTable( index ) == true )
 	{
@@ -2197,6 +2198,7 @@ bool CX2Camera::AddWorldCameraData_LUA()
 	m_vecWorldCameraData.push_back(kWorldCameraData);
 	return true;
 
+	}
 LoadFail:
 	wstringstream wstrStream;
 	wstrStream << L"WorldCameraLoadFail m_iWorldCameraID = " << kWorldCameraData.m_iWorldCameraID;

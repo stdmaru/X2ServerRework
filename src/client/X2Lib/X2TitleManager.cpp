@@ -248,6 +248,7 @@ bool CX2TitleManager::AddTitleMissionInfo_LUA()
     LUA_GET_VALUE_RETURN_ENUM(	luaManager, "m_eConditionUnitType",	kMissionTemplet.m_kCondition.m_eUnitType,	CX2Unit::UNIT_TYPE,	CX2Unit::UT_NONE,	goto LoadFail; );
     LUA_GET_VALUE_RETURN_ENUM(	luaManager, "m_eConditionUnitClass",	kMissionTemplet.m_kCondition.m_eUnitClass,	CX2Unit::UNIT_CLASS,	CX2Unit::UC_NONE,	goto LoadFail; );
 
+    {
     int iClearMissionID = 0;
     LUA_GET_VALUE_RETURN(		luaManager, "m_iConditionClearMissionID", iClearMissionID,							-1,			goto LoadFail );
 
@@ -279,6 +280,7 @@ bool CX2TitleManager::AddTitleMissionInfo_LUA()
     m_mapTitleMission.insert( std::make_pair( kMissionTemplet.m_iMissionID, kMissionTemplet ) );
     return true;
 
+    }
 LoadFail:
     ErrorLog(XEM_ERROR132);
     return false;

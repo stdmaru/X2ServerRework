@@ -2888,7 +2888,7 @@ void CX2GUUser::AddExtraDamageImmuneRateFromPassiveSkillToImmuneData()
 	@param : CX2EnchantItem::ENCHANT_TYPE eType (��ġ�� �˰����� ��þƮ Ÿ��)
 	@return : const float (�ش� ��þƮ Ÿ���� ��ġ ��)
 */
-const float CX2GUUser::GetEnchantStatFromPassiveSkillByEnchantType( int iEnchantType )
+float CX2GUUser::GetEnchantStatFromPassiveSkillByEnchantType( int iEnchantType )
 {
 	switch ( static_cast<CX2EnchantItem::ENCHANT_TYPE>( iEnchantType ) )
 	{
@@ -29153,7 +29153,7 @@ void    CX2GUUser::ClearAnimEventTimerOneshotFuture()
 	@param		: SA Ÿ��, ��ų ���̵�
 	@return		: SA Value
 */
-const float CX2GUUser::GetSpecialAbilityValue( IN const CX2SkillTree::SKILL_ABILITY_TYPE eSAValue, IN const CX2SkillTree::SKILL_ID eSkillID ) const
+float CX2GUUser::GetSpecialAbilityValue( IN const CX2SkillTree::SKILL_ABILITY_TYPE eSAValue, IN const CX2SkillTree::SKILL_ID eSkillID ) const
 {
 	float fReturnValue = 1.f;
 
@@ -29377,7 +29377,7 @@ bool CX2GUUser::IsPlayAvatarEmotionSoundWithouEmotion  ( CX2Unit::EMOTION_TYPE e
 	@param		: ��ų ���̵�
 	@return		: ��ų ����
 */
-const int CX2GUUser::GetSkillLevelValue( IN const CX2SkillTree::SKILL_ID eSkillID_ )
+int CX2GUUser::GetSkillLevelValue( IN const CX2SkillTree::SKILL_ID eSkillID_ )
 {
 	if ( NULL == GetUnit() )
 		return 1;

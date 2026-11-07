@@ -1283,7 +1283,8 @@ void CX2GUNPCAI::Moving( float fElapsedTime )
 	// 자 타게팅된 목적지로 이동을 해보자~
 	float fDestGap = 0.f;
 	//{{oasis:김상윤////2009-10-7////
-	float fMoveGap = 0.f;
+	float fMoveGap;	// split: a goto jumps over it
+	fMoveGap = 0.f;
 
 	// 그룹AI의 GAI_CMD_FORCED_MOVE를 수행 중이면
 	if(m_pMasterNPC->GetGroupAICommand_LUA() == CX2GUNPC::GAI_CMD_FORCED_MOVE)
@@ -1355,6 +1356,7 @@ void CX2GUNPCAI::Moving( float fElapsedTime )
 
 
 	bAIIsRight = m_bIsRight;
+	{
 	const float fFinalDestDist = GetDistance( m_vPosition, vFinalDest );
 
 	switch( m_PathFinder.GetMoveState() )
@@ -1692,6 +1694,7 @@ void CX2GUNPCAI::Moving( float fElapsedTime )
 		}
 	}
 
+	}
 SEND_AI_MESSAGE:
 
 	// 혼자 안드로메다로 가는 일 없도록 강제 고도조절한다.

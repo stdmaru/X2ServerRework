@@ -12,6 +12,10 @@ namespace x2::platform {
 // `name` must have static storage duration (__FILE__, __FUNCTION__); results are cached.
 const wchar_t* WidenStatic(const char* name);
 
+// True when a debugger is attached to this process (the client's own anti-cheat): IsDebuggerPresent on Windows,
+// a tracer in /proc/self/status on Linux.
+bool IsDebuggerAttached();
+
 } // namespace x2::platform
 
 #define __WFILE__     (::x2::platform::WidenStatic(__FILE__))

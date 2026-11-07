@@ -2672,7 +2672,7 @@ wstring CX2SkillTree::GetSkillLevelTextureKey( int iLevel )
 
 //{{ 2009. 8. 5  ������		���� ��ų ������ ����
 
-const CX2SkillTree::SKILL_ID CX2SkillTree::GetUnsealSkillItemInfo( const int iItemID ) const
+CX2SkillTree::SKILL_ID CX2SkillTree::GetUnsealSkillItemInfo( const int iItemID ) const
 {
 	if ( NULL != g_pData &&
 		 NULL != g_pData->GetMyUser() &&
@@ -3082,7 +3082,7 @@ bool CX2SkillTree::IsMyClassSkillID( SKILL_ID eSkillID )
 	@param		: ������ ���̵�
 	@return		: ���� Ŭ���� ����
 */
-const int CX2SkillTree::GetUnsealSkillItemRequireClass( const int iItemID ) const
+int CX2SkillTree::GetUnsealSkillItemRequireClass( const int iItemID ) const
 {
 	std::map< int, SealSkillItemInfo >::const_iterator mit = m_mapSealSkillItemTemplet.find( iItemID );
 
@@ -3097,7 +3097,7 @@ const int CX2SkillTree::GetUnsealSkillItemRequireClass( const int iItemID ) cons
 	@param		: ���� ����
 	@return		: �� ��ų ����Ʈ
 */
-const int CX2SkillTree::GetCalcInitSkillPoint( const int iUnitLevel ) const
+int CX2SkillTree::GetCalcInitSkillPoint( const int iUnitLevel ) const
 {
 	int iSkillPoint = 0;
 

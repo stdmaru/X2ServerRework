@@ -175,59 +175,13 @@ BOOL CALLBACK EnumWindowsProc_Thread(HWND hwnd , LPARAM lp)
 
 }
 
+// The client's own anti-cheat. The original read the PEB's BeingDebugged byte with 32-bit x86 assembly.
 BOOL Pesudo_IsDebuggerPresent()
 {
-
-	// TODO : ???? VM_START ??? ENCODE_START ??????? ?????? ???? ?????? ????
-	// Error: There is at least a nested VM/CodeReplace macros. VM/CodeReplace macros cannot be nested.
-	//THEMIDA_VM_START
-	//THEMIDA_ENCODE_START
-
-#if !X2_DEV_TOOLS
-	// checked
-#endif
-
-	BOOL Retval = 0;
-	__asm
-	{
-		push eax
-		mov eax,dword ptr fs:[0x18]
-		mov eax,dword ptr ds:[eax+0x30]
-		movzx eax,byte ptr ds:[eax+0x2]
-		mov Retval,eax
-		pop eax
-	}
-
-#if !X2_DEV_TOOLS
-#endif
-
-	//THEMIDA_ENCODE_END
-	//THEMIDA_VM_END
-
 #if X2_DEV_TOOLS
-	return false;
+	return FALSE;
 #else
-	return Retval;
-#endif
-
-}
-
-
-// NOTE : ???? ?? ????? ?????? ???? ???.
-int CheckDebugger()
-{
-#if !X2_DEV_TOOLS
-#endif
-
-	_asm
-	{
-		mov eax, fs:[30h]
-		mov eax, [eax+68h]
-		and eax, 0x70
-		test eax, eax
-	}
-
-#if !X2_DEV_TOOLS
+	return x2::platform::IsDebuggerAttached() ? TRUE : FALSE;
 #endif
 }
 
@@ -974,7 +928,7 @@ HRESULT CX2Main::OnFrameMove( double fTime, float fElapsedTime )
 	m_fCheckDebugeTimer += fElapsedTime;
 	if( m_fCheckDebugeTimer > 20.f )
 	{
-		if( Pesudo_IsDebuggerPresent() ) //|| CheckDebugger() )
+		if( Pesudo_IsDebuggerPresent() )
 		{
 			if( g_pData != NULL && g_pData->GetServerProtocol() != NULL &&
 				g_pKTDXApp->GetFindHacking() == false )

@@ -3524,7 +3524,7 @@ bool CX2UIPersonalShop::Handler_EGS_PICK_UP_FROM_PSHOP_AGENCY_ACK( HWND hWnd, UI
 	@brief		: 현재 샵 타입에 따른 최대 등록 페이지 수 반환
 	@return		: 최대 등록 페이지 수
 */
-const int CX2UIPersonalShop::GetMaxItemPageIndex()
+int CX2UIPersonalShop::GetMaxItemPageIndex()
 {
 	int iMaxPageIndex = 1;
 
@@ -3547,7 +3547,7 @@ const int CX2UIPersonalShop::GetMaxItemPageIndex()
 	@brief		: 물품 등록에 필요한 수수료를 납부할 수 있는가
 	@return		: 가능 여부
 */
-const bool CX2UIPersonalShop::CheckCanPaymentRegistTex()
+bool CX2UIPersonalShop::CheckCanPaymentRegistTex()
 {
 	/// 캐시 상점은 수수료 낼 필요가 없다.
 	if ( NULL != g_pInstanceData && SEnum::AST_PREMIUM == g_pInstanceData->GetAgencyShopType() )

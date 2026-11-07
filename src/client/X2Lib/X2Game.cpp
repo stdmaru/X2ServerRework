@@ -9666,7 +9666,7 @@ UidType CX2Game::GetLockOnNearstTarget( CX2Room::TEAM_NUM eTeamNum_, IN const D3
 
 //}} kimhc // 2010.12.17 //  2010-12-23 New Character CHUNG
 
-UidType CX2Game::GetLockOnNearstTargetInRange( CX2Room::TEAM_NUM eTeamNum_, IN const D3DXVECTOR3& vMyPos_, IN D3DXVECTOR2& vRange_, OUT bool& bUserUnit_
+UidType CX2Game::GetLockOnNearstTargetInRange( CX2Room::TEAM_NUM eTeamNum_, IN const D3DXVECTOR3& vMyPos_, IN const D3DXVECTOR2& vRange_, OUT bool& bUserUnit_
 												, bool bIsNotTargetPreLockOnTarget/* = false*/
 											)
 {

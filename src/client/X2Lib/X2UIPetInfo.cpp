@@ -3004,7 +3004,7 @@ void CX2UIPetInfo::SelectKindRideButton( KIND_OF_RIDE_BUTTON  _select, bool _ena
 	}
 }
 
-const bool CX2UIPetInfo::GetShowRPInfo()
+bool CX2UIPetInfo::GetShowRPInfo()
 {
 	if( NULL != m_pDLGUIRidingPetInfo )
 		return m_pDLGUIRidingPetInfo->GetShow();
@@ -3012,7 +3012,7 @@ const bool CX2UIPetInfo::GetShowRPInfo()
 		return false;
 }
 
-const bool CX2UIPetInfo::GetShowRPList()
+bool CX2UIPetInfo::GetShowRPList()
 {
 	if( NULL != m_pDLGUIRidingPetList )
 		return m_pDLGUIRidingPetList->GetShow();

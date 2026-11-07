@@ -1798,7 +1798,8 @@ bool CX2EffectSet::AddEffectSetTemplet_LUA()
 
 
 	// damageeffect, meshplayer, particle
-	int iEffectTableIndex = 0;
+	int iEffectTableIndex;	// split: a goto jumps over it
+	iEffectTableIndex = 0;
 	while( true == luaManager.BeginTable( "EFFECT", iEffectTableIndex ) )
 	{
 		EffectData* pEffectData = new EffectData;
@@ -1903,7 +1904,8 @@ bool CX2EffectSet::AddEffectSetTemplet_LUA()
 			//ASSERT( !"BONE_TRACE_TARGET_MESH is Do Not Use TRACE_MATRIX !!!" );
 		}
 
-		float fLimitDistance = -1.f;
+		float fLimitDistance;	// split: a goto jumps over it
+		fLimitDistance = -1.f;
 		LUA_GET_VALUE( luaManager,		"LIMIT_DISTANCE",				fLimitDistance,				-1.f	);
 		if( 0.f < fLimitDistance )
 		{
@@ -1951,7 +1953,8 @@ effect_error_proc:
 	}
 
 	// camera shake
-	int iCameraShakeTableIndex = 0;
+	int iCameraShakeTableIndex;	// split: a goto jumps over it
+	iCameraShakeTableIndex = 0;
 	while( true == luaManager.BeginTable( "CAMERA_SHAKE", iCameraShakeTableIndex ) )
 	{
 		CameraShakeData* pCameraShakeData = new CameraShakeData;
@@ -1963,7 +1966,8 @@ effect_error_proc:
 		LUA_GET_VALUE( luaManager,		"START_TIME",				pCameraShakeData->m_fStartAnimTime,				0.f		);
 
 		/// 카메라 크래시 발생 거리제한
-		int iLimitDistance = 0;
+		int iLimitDistance;	// split: a goto jumps over it
+		iLimitDistance = 0;
 		LUA_GET_VALUE( luaManager,		"LIMIT_DISTANCE",			iLimitDistance,			0		);
 		if ( IGNORE_DISTANCE == iLimitDistance )	//ignore인 경우에 해당 값을 그대로 대입
 			pCameraShakeData->m_iLimitDistanceSq = IGNORE_DISTANCE;

@@ -5557,7 +5557,7 @@ void CX2DamageEffect::CEffect::SetLockOnNearstTarget( IN const D3DXVECTOR3& vMyP
 				  ( 참고로, DamageEffect_APT_Pylon_Additional_Shock 의 길이 배율은 800.f 이다. )
 	@return		: 연결 성공 여부
 */
-const bool CX2DamageEffect::CEffect::SetLinkMainEffectByPos( IN const D3DXVECTOR3& vMyPos_, IN const D3DXVECTOR3& vTargetPos_,
+bool CX2DamageEffect::CEffect::SetLinkMainEffectByPos( IN const D3DXVECTOR3& vMyPos_, IN const D3DXVECTOR3& vTargetPos_,
 															 IN const float fDistance_ /*= 99999.f*/ )
 {
 	CKTDGXMeshPlayer::CXMeshInstance* pMeshInst = GetMainEffect();		/// 연결 데미지 이펙트의 Main Mesh

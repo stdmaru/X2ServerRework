@@ -1723,7 +1723,7 @@ void CX2EventScene::SetIsPlayingEventScene( bool bPlaying )
 {
 	m_bIsPlayingEventScene = bPlaying;
 }
-const bool CX2EventScene::GetIsPlayingEventScene()
+bool CX2EventScene::GetIsPlayingEventScene()
 {
 	return m_bIsPlayingEventScene;
 }

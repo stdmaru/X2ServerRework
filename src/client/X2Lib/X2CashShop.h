@@ -235,7 +235,7 @@ class CX2CashShop : public CX2ItemSlotManager
 				~CashShopSlotManager();
 
 				//{{ kimhc // 2009-10-12 // 자동결제 시 캐시 - 원 으로 표시
-				void Reset( vector<int>& vecItemID, bool bAutoPayment = false, bool bPossibleItemOnly = false );
+				void Reset( const vector<int>& vecItemID, bool bAutoPayment = false, bool bPossibleItemOnly = false );
 				//}} kimhc // 2009-10-12 // 자동결제 시 캐시 - 원 으로 표시
 
 				//{{ kimhc // 2009-10-12 // 자동결제 시 선물, 찜 버튼 안보이게 하기 위해 추가
@@ -575,7 +575,7 @@ class CX2CashShop : public CX2ItemSlotManager
 
 		void SetCashShopState( CASH_SHOP_STATE cashShopState, CASH_SHOP_CATEGORY cashShopCate = CSC_NONE );
 
-		void ResetItemSlot( CX2Slot::SLOT_TYPE slotType, vector<int>& vecItemID );
+		void ResetItemSlot( CX2Slot::SLOT_TYPE slotType, const vector<int>& vecItemID );
 		void ResetDepositItemSlot( CX2Slot::SLOT_TYPE slotType, vector< KBillOrderInfo >& vecKBillOrderInfo );
 		void DestroyItemSlotByType( const CX2Slot::SLOT_TYPE eSlotType_ );
 		void ResetMainPageNumUI();

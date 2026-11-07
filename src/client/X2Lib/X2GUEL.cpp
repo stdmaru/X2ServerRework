@@ -8958,7 +8958,7 @@ void CX2GUEL::BlazingDanceFindTargetAndMove()
 		}
 	}
 }
-const bool CX2GUEL::BlazindDanceCheckTargetPosition( CX2GameUnit* pUnit_, const CKTDGLineMap::LineData* pLineData_  )
+bool CX2GUEL::BlazindDanceCheckTargetPosition( CX2GameUnit* pUnit_, const CKTDGLineMap::LineData* pLineData_  )
 {
 	// Ÿ���� ����, ��ġ�� �� ������ �̵���Ű�⿡ �������� üũ
 
@@ -9021,7 +9021,7 @@ const bool CX2GUEL::BlazindDanceCheckTargetPosition( CX2GameUnit* pUnit_, const 
 	return bValiedTargetPosition;
 }
 
-const bool CX2GUEL::GetUnitClassLine( UNIT_CLASS_LINE UnitClassLine_ )
+bool CX2GUEL::GetUnitClassLine( UNIT_CLASS_LINE UnitClassLine_ )
 {
 	switch( UnitClassLine_ )
 	{

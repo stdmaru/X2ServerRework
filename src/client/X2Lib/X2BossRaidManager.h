@@ -51,7 +51,7 @@ public:
 	void SetStandardLeftTime(float val) { m_fStandardLeftTime = val; }
 
 	const CTime& GetReceivePacketTime() const { return m_tReceivePacketTime; }
-	void SetReceivePacketTime(CTime& val) { m_tReceivePacketTime = val; }
+	void SetReceivePacketTime(const CTime& val) { m_tReceivePacketTime = val; }
 
 	/// 치트
 	void OpenCheat();

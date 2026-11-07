@@ -6992,7 +6992,7 @@ void CX2ChatBox::SetCheckBoxData( CHAT_OPTION_INFO eChatOptionInfo )
 		Handler_EGS_CHAT_OPTION_INFO_WRITE_REQ(it->first, it->second);
 	}
 }
-const bool CX2ChatBox::GetDisplayObtainingED( CHAT_WINDOW_MODE eChatWindowMode )
+bool CX2ChatBox::GetDisplayObtainingED( CHAT_WINDOW_MODE eChatWindowMode )
 {
 	switch( eChatWindowMode )
 	{
@@ -7028,7 +7028,7 @@ const bool CX2ChatBox::GetDisplayObtainingED( CHAT_WINDOW_MODE eChatWindowMode )
 		break;
 	}
 }
-const bool CX2ChatBox::GetDisplayObtainingEXP( CHAT_WINDOW_MODE eChatWindowMode /*= CHAT_WINDOW_MODE::CWM_CURRENT*/ )
+bool CX2ChatBox::GetDisplayObtainingEXP( CHAT_WINDOW_MODE eChatWindowMode /*= CHAT_WINDOW_MODE::CWM_CURRENT*/ )
 {
 	switch( eChatWindowMode )
 	{
@@ -7063,7 +7063,7 @@ const bool CX2ChatBox::GetDisplayObtainingEXP( CHAT_WINDOW_MODE eChatWindowMode 
 		break;
 	}
 }
-const bool CX2ChatBox::GetDisplaySystem( CHAT_WINDOW_MODE eChatWindowMode /*= CHAT_WINDOW_MODE::CWM_CURRENT*/ )
+bool CX2ChatBox::GetDisplaySystem( CHAT_WINDOW_MODE eChatWindowMode /*= CHAT_WINDOW_MODE::CWM_CURRENT*/ )
 {
 	switch( eChatWindowMode )
 	{
@@ -7098,7 +7098,7 @@ const bool CX2ChatBox::GetDisplaySystem( CHAT_WINDOW_MODE eChatWindowMode /*= CH
 		break;
 	}
 }
-const bool CX2ChatBox::GetDisplayNomal( CHAT_WINDOW_MODE eChatWindowMode /*= CHAT_WINDOW_MODE::CWM_CURRENT*/ )
+bool CX2ChatBox::GetDisplayNomal( CHAT_WINDOW_MODE eChatWindowMode /*= CHAT_WINDOW_MODE::CWM_CURRENT*/ )
 {
 	switch( eChatWindowMode )
 	{
@@ -7112,7 +7112,7 @@ const bool CX2ChatBox::GetDisplayNomal( CHAT_WINDOW_MODE eChatWindowMode /*= CHA
 		break;
 	}
 }
-const bool CX2ChatBox::GetDisplayParty( CHAT_WINDOW_MODE eChatWindowMode /*= CHAT_WINDOW_MODE::CWM_CURRENT*/ )
+bool CX2ChatBox::GetDisplayParty( CHAT_WINDOW_MODE eChatWindowMode /*= CHAT_WINDOW_MODE::CWM_CURRENT*/ )
 {
 	switch( eChatWindowMode )
 	{
@@ -7131,7 +7131,7 @@ const bool CX2ChatBox::GetDisplayParty( CHAT_WINDOW_MODE eChatWindowMode /*= CHA
 		break;
 	}
 }
-const bool CX2ChatBox::GetDisplayGuild( CHAT_WINDOW_MODE eChatWindowMode /*= CHAT_WINDOW_MODE::CWM_CURRENT*/ )
+bool CX2ChatBox::GetDisplayGuild( CHAT_WINDOW_MODE eChatWindowMode /*= CHAT_WINDOW_MODE::CWM_CURRENT*/ )
 {
 	switch( eChatWindowMode )
 	{
@@ -7153,7 +7153,7 @@ const bool CX2ChatBox::GetDisplayGuild( CHAT_WINDOW_MODE eChatWindowMode /*= CHA
 
 
 
-const bool CX2ChatBox::GetDisplayRelation( CHAT_WINDOW_MODE eChatWindowMode /*= CHAT_WINDOW_MODE::CWM_CURRENT*/ )
+bool CX2ChatBox::GetDisplayRelation( CHAT_WINDOW_MODE eChatWindowMode /*= CHAT_WINDOW_MODE::CWM_CURRENT*/ )
 {
 	switch( eChatWindowMode )
 	{
@@ -7182,7 +7182,7 @@ const bool CX2ChatBox::GetDisplayRelation( CHAT_WINDOW_MODE eChatWindowMode /*= 
 
 
 
-const bool CX2ChatBox::GetDisplayWhisper( CHAT_WINDOW_MODE eChatWindowMode /*= CHAT_WINDOW_MODE::CWM_CURRENT*/ )
+bool CX2ChatBox::GetDisplayWhisper( CHAT_WINDOW_MODE eChatWindowMode /*= CHAT_WINDOW_MODE::CWM_CURRENT*/ )
 {
 	switch( eChatWindowMode )
 	{

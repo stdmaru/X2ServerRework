@@ -15120,7 +15120,7 @@ bool CX2GUAra::IsNoStageChangeSkill( IN const CX2SkillTree::SkillTemplet* pSkill
 	@brief		: �ƶ� 3���� ���ο� ���� ������Ʈ ���̵� ��ȯ
 	@return		: ������Ʈ ���̵�
 */
-/*virtual*/ const int CX2GUAra::GetHypetMpdeStateID()
+/*virtual*/ int CX2GUAra::GetHypetMpdeStateID()
 {
 	if ( 3 <= m_FrameDataFuture.syncData.m_HyperModeCount )
 		return static_cast<int>( ASI_BERSERK_MODE );

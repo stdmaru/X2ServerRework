@@ -468,7 +468,8 @@ void CX2PETAI::Moving( float fElapsedTime )
 //#ifdef SERV_PET_SYSTEM
 
 	// 자 타게팅된 목적지로 이동을 해보자~
-	float fDestGap = (float)m_pAIData->chaseMoveData.destGap;
+	float fDestGap;	// split: a goto jumps over it
+	fDestGap = (float)m_pAIData->chaseMoveData.destGap;
 	bool bIsTargetOnRight;
 	if( false == m_bFleeing )
 	{
@@ -512,6 +513,7 @@ void CX2PETAI::Moving( float fElapsedTime )
 
 	bAIIsRight = m_bIsRight;
 	vDist = vFinalDest - m_vPosition;
+	{
 	const float fFinalDestDist = D3DXVec3LengthSq( &vDist );
 
 	switch( m_PathFinder.GetMoveState() )
@@ -795,6 +797,7 @@ void CX2PETAI::Moving( float fElapsedTime )
 		}
 	}
 
+	}
 SEND_AI_MESSAGE:
 
 	if( m_PrevAIMessage == message || CX2PET::SCT_NO_CHANGE == message )

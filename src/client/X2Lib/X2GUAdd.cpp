@@ -2543,8 +2543,9 @@ bool CX2GUAdd::CanUseSpecialAttack( CX2SkillTree::ACTIVE_SKILL_USE_CONDITION eAc
 			}
 
 			/// ���̳ʸ� ���� - ���Ϸ� ��ȯ ���� ���� �˻�
+			D3DXVECTOR3 vSummonPylonPosUnused( 0.f, 0.f, 0.f );
 			if ( pSkillTemplet->m_eID == CX2SkillTree::SI_A_APT_PYLON_DYNAMO &&
-				false == GetSummonPylonPos( D3DXVECTOR3( 0.f, 0.f, 0.f ) ) )
+				false == GetSummonPylonPos( vSummonPylonPosUnused ) )
 			{
 				g_pX2Game->GetInfoTextManager().PushText( XUF_DODUM_20_BOLD, GET_STRING( STR_ID_29419 ), D3DXCOLOR(1,1,1,1),
 					D3DXCOLOR(0,0,0,1), DT_CENTER, 1.f, 1.f );
@@ -8184,7 +8185,7 @@ void CX2GUAdd::CommonHyperModeFrameMove( float fTime1_, float fTime2_, bool bSou
 	@param		: �ȳ� �޽��� ǥ�� ����
 	@return		: ��� ���� ����
 */
-const bool CX2GUAdd::GetPossibleChangeFormationMode( IN const bool bOutputInformation /*= true*/ )
+bool CX2GUAdd::GetPossibleChangeFormationMode( IN const bool bOutputInformation /*= true*/ )
 {
 	if ( NULL == g_pX2Game  )
 		return false;
@@ -8221,7 +8222,7 @@ const bool CX2GUAdd::GetPossibleChangeFormationMode( IN const bool bOutputInform
 /** @function	: GetChangeFormationCoolTime
 	@brief		: ���� ��� ��ȯ ��Ÿ�� ��ȯ
 */
-const float CX2GUAdd::GetChangeFormationCoolTime()
+float CX2GUAdd::GetChangeFormationCoolTime()
 {
 	return ( NULL != GetAddGageData() ) ? GetAddGageData()->GetChangeFormationCoolTime() : 0.f;
 }
@@ -8252,7 +8253,7 @@ CX2AddGageData* CX2GUAdd::GetAddGageData() const
 	@param		: ��ų ���̵�
 	@return		: ���� ���� ����
 */
-const bool CX2GUAdd::SpecialAttackCustomStateChange( IN const CX2SkillTree::SKILL_ID eSkillID_ )
+bool CX2GUAdd::SpecialAttackCustomStateChange( IN const CX2SkillTree::SKILL_ID eSkillID_ )
 {
 	switch ( eSkillID_ )
 	{
@@ -8309,7 +8310,7 @@ const bool CX2GUAdd::SpecialAttackCustomStateChange( IN const CX2SkillTree::SKIL
 	@param		: ���� ��Ÿ��, ��ų ���̵�
 	@return		: ���� ��ų ��Ÿ��
 */
-const float	CX2GUAdd::GetCustomSkillCoolTime( IN const float fCoolTime_, IN const CX2SkillTree::SKILL_ID eSkillID_ )
+float	CX2GUAdd::GetCustomSkillCoolTime( IN const float fCoolTime_, IN const CX2SkillTree::SKILL_ID eSkillID_ )
 {
 	float fCoolTime = fCoolTime_;
 
@@ -8386,7 +8387,7 @@ const float	CX2GUAdd::GetCustomSkillCoolTime( IN const float fCoolTime_, IN cons
 	}
 }
 
-const CX2SkillTree::ACTIVE_SKILL_USE_CONDITION CX2GUAdd::GetSkillUseCondition( IN const CX2SkillTree::SkillTemplet* pSkillTemplet_ )
+CX2SkillTree::ACTIVE_SKILL_USE_CONDITION CX2GUAdd::GetSkillUseCondition( IN const CX2SkillTree::SkillTemplet* pSkillTemplet_ )
 {
 	CX2SkillTree::ACTIVE_SKILL_USE_CONDITION eActiveSkillUseCondition = pSkillTemplet_->m_eActiveSkillUseCondtion;
 
@@ -8414,7 +8415,7 @@ const CX2SkillTree::ACTIVE_SKILL_USE_CONDITION CX2GUAdd::GetSkillUseCondition( I
 	@param		: MP �Һ�, DP �Һ�
 	@return		: ������ ���� ���� �Һ� �Ǿ����� ����
 */
-const bool CX2GUAdd::ConsumeMPorDP( IN const float fConsumeMP, IN const float fConsumeDP )
+bool CX2GUAdd::ConsumeMPorDP( IN const float fConsumeMP, IN const float fConsumeDP )
 {
 	if ( true == GetIsFormationMode() )
 	{
@@ -8436,7 +8437,7 @@ const bool CX2GUAdd::ConsumeMPorDP( IN const float fConsumeMP, IN const float fC
 	@param		: DP ���� Ÿ��
 	@return		: ���� ��
 */
-const float CX2GUAdd::GetDPRateByType( IN const CX2DamageManager::DYNAMO_PARTICLE_RATE_TYPE eDPRateType )
+float CX2GUAdd::GetDPRateByType( IN const CX2DamageManager::DYNAMO_PARTICLE_RATE_TYPE eDPRateType )
 {
 	switch ( eDPRateType )
 	{
@@ -8470,7 +8471,7 @@ const float CX2GUAdd::GetDPRateByType( IN const CX2DamageManager::DYNAMO_PARTICL
 	@brief		: ���� ��ġ ��ȯ �Լ�
 	@return		: ���� ��ġ
 */
-const int CX2GUAdd::GetMutationCount()
+int CX2GUAdd::GetMutationCount()
 {
 	return ( NULL != GetAddGageData() ) ? GetAddGageData()->GetMutationCount() : 0;
 }
@@ -8524,7 +8525,7 @@ void CX2GUAdd::UpMutationCount( IN const int iMutationCount_  )
 	@brief		: �ִ� DP ��ġ ��ȯ �Լ�
 	@return		: �ִ� DP ��ġ
 */
-const float	CX2GUAdd::GetMaxDPValue()
+float	CX2GUAdd::GetMaxDPValue()
 {
 	return ( NULL != GetAddGageData() ? GetAddGageData()->GetMaxDPValue() : 0.f );
 }
@@ -8533,7 +8534,7 @@ const float	CX2GUAdd::GetMaxDPValue()
 	@brief		: DP ��ġ ��ȯ �Լ�
 	@return		: DP ��ġ
 */
-const float CX2GUAdd::GetDPValue()
+float CX2GUAdd::GetDPValue()
 {
 	return ( NULL != GetAddGageData() ? GetAddGageData()->GetDPValue() : 0.f );
 }
@@ -8719,7 +8720,7 @@ void CX2GUAdd::UpNowDPValueByUseMP( IN const float fUseMP )
 	@param		: ��ų ����
 	@return		: DP �Ҹ�
 */
-const float CX2GUAdd::GetActualDPConsume( IN const CX2UserSkillTree::SkillSlotData* pSkillSlotData_ )
+float CX2GUAdd::GetActualDPConsume( IN const CX2UserSkillTree::SkillSlotData* pSkillSlotData_ )
 {
 	float fDPConsume = 0.f;		/// DP �Ҹ�
 
@@ -8780,7 +8781,7 @@ const float CX2GUAdd::GetActualDPConsume( IN const CX2UserSkillTree::SkillSlotDa
 	@param		: ��ų ����
 	@return		: ���� ����Ʈ �Ҹ�
 */
-const int CX2GUAdd::GetMutationPointConsume( IN const CX2UserSkillTree::SkillSlotData* pSkillSlotData_ )
+int CX2GUAdd::GetMutationPointConsume( IN const CX2UserSkillTree::SkillSlotData* pSkillSlotData_ )
 {
 	int iMutationPointConsume = 0;		/// ���� ����Ʈ �Ҹ�
 
@@ -8795,7 +8796,7 @@ const int CX2GUAdd::GetMutationPointConsume( IN const CX2UserSkillTree::SkillSlo
 	@brief		: ���� ��� ���� ���� ��ȯ �Լ�
 	@return		: ���� ��� ���� ����
 */
-/*virtual*/ const bool CX2GUAdd::GetIsFormationMode() const
+/*virtual*/ bool CX2GUAdd::GetIsFormationMode() const
 {
 	return ( NULL != GetAddGageData() ? GetAddGageData()->GetIsFormationMode() : false );
 }
@@ -8909,7 +8910,7 @@ bool CX2GUAdd::IsDPConsumptionSkill( IN const CX2SkillTree::SKILL_ID eSkillID_ )
 /** @function : GetUseDPByFormationMode
 	@brief : ���� ���� ��ȯ�� �Ҹ�Ǵ� DP ��ġ
 */
-const float CX2GUAdd::GetUseDPByFormationMode()
+float CX2GUAdd::GetUseDPByFormationMode()
 {
 	ASSERT( 0.f < m_fDPValueRateByActiveFormationMode );
 
@@ -8923,7 +8924,7 @@ const float CX2GUAdd::GetUseDPByFormationMode()
 	@brief		: DP ȹ�淮 ������ ��ȯ
 	@return		: DP ȹ�淮 ������
 */
-const float CX2GUAdd::GetEffectiveIncreaseDPValue()
+float CX2GUAdd::GetEffectiveIncreaseDPValue()
 {
 	// ���� ȿ��(���������ӵ�) ( ex 50%���� : 0.5f )		/// �ֵ�� ���ݸ� ���� �ȴ�.  ( ���� ����� ���� �����Ƿ�, ���⿡�� ���� ó�� ���� )
 	/// ���� ���� ������ ����
@@ -8941,7 +8942,7 @@ const float CX2GUAdd::GetEffectiveIncreaseDPValue()
 	@brief		: DP �Ҹ� ���Ұ� ��ȯ
 	@return		: DP �Ҹ� ���Ұ�
 */
-const float	CX2GUAdd::GetEffectiveDecreaseDPConsume()
+float	CX2GUAdd::GetEffectiveDecreaseDPConsume()
 {
 	// ���� ȿ��(�������ӽð�)  (ex 6%���� : 6 -> 0.06)		/// �ֵ�� ���ݸ� ���� �ȴ�. ( ���� ����� ���� �����Ƿ�, ���⿡�� ���� ó�� ���� )
 	const float fChangeRate_BySocket = GetSocketData().m_fHyperModeTime * 0.01f;
@@ -8997,7 +8998,7 @@ const float	CX2GUAdd::GetEffectiveDecreaseDPConsume()
 	@brief		: ����ȭ ��ų ������ ��ȯ �Լ�
 	@return		: ����ȭ ��ų ������ ( DP, ���� ��ġ )
 */
-const SHORT CX2GUAdd::GetAbilitySyncData()
+SHORT CX2GUAdd::GetAbilitySyncData()
 {
 	SHORT sAbilitySyncData = 0;
 
@@ -9261,7 +9262,7 @@ void CX2GUAdd::ProcessNonstopSummonPylon()
 /** @function	: GetPossibleNonstopSummonPylon
 	@brief		: ���Ϸ� ���� ��ȯ ���� ����
 */
-const bool CX2GUAdd::GetPossibleNonstopSummonPylon() const
+bool CX2GUAdd::GetPossibleNonstopSummonPylon() const
 {
 	/// ���� ��ȯ ���Ѽ��� ���� �ʰ�, ���� ��ȯ ��Ÿ���� �����ִٸ� ��ȯ ����
 	if ( 1 <= m_uiNonstopSummonPylonCount &&
@@ -10221,7 +10222,7 @@ void CX2GUAdd::ProcessPowerExchanger()
 	@param		: ��ų ���̵�
 	@return		: Ÿ�� ���� ���� ����
 */
-const bool CX2GUAdd::GetIsFantasyTracerTargetSkillID( IN const CX2SkillTree::SKILL_ID eSkillID_ ) const
+bool CX2GUAdd::GetIsFantasyTracerTargetSkillID( IN const CX2SkillTree::SKILL_ID eSkillID_ ) const
 {
 	/// ȯ�� ������ ����ÿ��� �˻�
 	if ( true == GetIsFormationMode() && true == m_bEnableFantasyTracer )
@@ -10629,7 +10630,7 @@ const D3DXCOLOR CX2GUAdd::SetQuicksilverFrenzyFlickerColor( IN const D3DXCOLOR& 
 	@param		: ��ų ���̵�
 	@return		: ��ų ��� ���� ����
 */
-const bool CX2GUAdd::CheckSkillSpecialUse( IN const CX2SkillTree::SKILL_ID eSkillID_  )
+bool CX2GUAdd::CheckSkillSpecialUse( IN const CX2SkillTree::SKILL_ID eSkillID_  )
 {
 	/// ���ǹ� �׼� ���� ���� ������ �ð��߿� �ٸ� ��ų�� ����Ϸ� �ϸ�, ������ ����.
 	if ( CX2SkillTree::SI_SA_ALP_QUICKSILVER_ACCEL == GetFutureStateSkillID() )

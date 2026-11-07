@@ -424,7 +424,8 @@ void    CX2GUNPC::KNonHostReaction::DoFrameMove_SimulateReaction_FIRST(
             {
                 goto continue_common;
             }
-            bool bReactionState = xPT_UNIT_NPC_SYNC.ExtractReactionState();
+            bool bReactionState;	// split: a goto jumps over it
+            bReactionState = xPT_UNIT_NPC_SYNC.ExtractReactionState();
             if ( bReactionState == false )
             {
                 KCircularBuffer<KNonHostSimState>::iterator iterHist = m_cbufNonHostSimState.begin();
@@ -5599,7 +5600,8 @@ void CX2GUNPC::DoFrameMove( bool bNoFrameMove )
         m_kNonHostReaction.ClearBuffNonHostSimState();
     }//if
 
-    bool    bUpdatePositionBackup = false;
+    bool bUpdatePositionBackup;	// split: a goto jumps over it
+    bUpdatePositionBackup = false;
 
 
     if ( bLocalUnit == false && m_kNonHostReaction.IsNowStateReaction_FIRST() == true )
@@ -10257,11 +10259,7 @@ void CX2GUNPC::DyingStart()
 		//g_pKTDXApp->SetFindHacking( true );
 
 		// 강제크래쉬
-		__asm
-		{
-			xor eax, eax
-			call eax
-		}
+		std::abort();
 	}
 
 

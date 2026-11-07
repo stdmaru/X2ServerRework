@@ -10,9 +10,9 @@ struct  CKTDGParticleSystem_CParticleEventSequence_TAG {};
 struct  CKTDGParticleSystem_CParticle_TAG {};
 
 typedef KHandleType<int,CKTDGParticleSystem_CParticleEventSequence_TAG> CKTDGParticleSystem_CParticleEventSequenceHandle;
-#define INVALID_PARTICLE_SEQUENCE_HANDLE    (CKTDGParticleSystem_CParticleEventSequenceHandle::invalid_handle())
+#define INVALID_PARTICLE_SEQUENCE_HANDLE    (CKTDGParticleSystem_CParticleEventSequenceHandle::invalid_handle{})
 typedef KHandleType<int,CKTDGParticleSystem_CParticle_TAG>              CKTDGParticleSystem_CParticleHandle;
-#define INVALID_PARTICLE_HANDLE             (CKTDGParticleSystem_CParticleHandle::invalid_handle())
+#define INVALID_PARTICLE_HANDLE             (CKTDGParticleSystem_CParticleHandle::invalid_handle{})
 
 
 
@@ -752,7 +752,7 @@ class CKTDGParticleSystem
 				bool FadeAllowed(){ return true; }
 
 				CMinMax<D3DXVECTOR3>	GetPosition()									{ return m_Position; }
-				void					SetPosition(CMinMax<D3DXVECTOR3> &data)	{ m_Position = data; }
+				void					SetPosition(const CMinMax<D3DXVECTOR3> &data)	{ m_Position = data; }
 
 				virtual bool ProcessTokenStream(std::vector<CParticleEmitterToken>::iterator &TokenIter,
 					std::vector<CParticleEmitterToken>::iterator &EndIter);

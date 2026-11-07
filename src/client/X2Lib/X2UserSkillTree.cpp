@@ -2230,7 +2230,7 @@ int CX2UserSkillTree::GetIncreaseSkillLevel( CX2SkillTree::SKILL_ID eSkillID ) c
 
 
 /// ��ų ���� ID�� ���� �Ǿ��ִ� ��ų ���̵� ��ȯ
-const CX2SkillTree::SKILL_ID CX2UserSkillTree::GetSkillIDByEquipSlotID( IN const int iStateID_ ) const
+CX2SkillTree::SKILL_ID CX2UserSkillTree::GetSkillIDByEquipSlotID( IN const int iStateID_ ) const
 {
 	int  iSkillSlotIndex	= -1;
 	bool bSlotB				= false;
@@ -2296,7 +2296,7 @@ const CX2SkillTree::SKILL_ID CX2UserSkillTree::GetSkillIDByEquipSlotID( IN const
 	@brief : 'Ÿ�� ��' ���� �ϴ� '���������ӵ�'�� ���� ����
 			 -> ����� ��� ��ų�� ���ؼ��� ���� ��
 */
-const float CX2UserSkillTree::GetIncreaseGainSoulRateByHit() const
+float CX2UserSkillTree::GetIncreaseGainSoulRateByHit() const
 {
 	float fIncreaseSoulRate = 1.f;
 
@@ -2320,7 +2320,7 @@ const float CX2UserSkillTree::GetIncreaseGainSoulRateByHit() const
 	@brief : '�ǰ� ��' ���� �ϴ� '���������ӵ�'�� ���� ����
 			 -> ����� ��� ��ų�� ���ؼ��� ���� ��
 */
-const float CX2UserSkillTree::GetIncreaseGainSoulRateByDamage() const
+float CX2UserSkillTree::GetIncreaseGainSoulRateByDamage() const
 {
 	float fIncreaseSoulRate = 1.f;
 

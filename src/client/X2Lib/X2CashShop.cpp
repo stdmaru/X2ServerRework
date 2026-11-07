@@ -3168,7 +3168,7 @@ void CX2CashShop::SetCashShopState( CASH_SHOP_STATE cashShopState, CASH_SHOP_CAT
 	}
 }
 
-void CX2CashShop::ResetItemSlot( CX2Slot::SLOT_TYPE slotType, vector<int>& vecItemID )
+void CX2CashShop::ResetItemSlot( CX2Slot::SLOT_TYPE slotType, const vector<int>& vecItemID )
 {
 	for ( int i = 0; i < (int)m_SlotList.size(); i++ )
 	{
@@ -5259,7 +5259,7 @@ bool CX2CashShop::CashShopSlotManager::IsPossibleUsedByMyBankMembership( int ite
 
 
 // bPossibleItemOnly : ���� ����� �� �ִ� �����۸� ���̰� ����
-void CX2CashShop::CashShopSlotManager::Reset( vector<int>& vecItemID, bool bAutoPayment /* = false */, bool bPossibleItemOnly /*= false*/ )
+void CX2CashShop::CashShopSlotManager::Reset( const vector<int>& vecItemID, bool bAutoPayment /* = false */, bool bPossibleItemOnly /*= false*/ )
 {
 	m_NowPage = 1;
 
@@ -7702,7 +7702,7 @@ void CX2CashShop::RemoveUnitClassChangeItemInChoice( const CX2Unit::UNIT_CLASS e
 	}
 }
 // ������ �ش��ϴ� ���� ������ ID�� ��ȯ��.
-const int CX2CashShop::GetUnitClassChangeItemID( const CX2Unit::UNIT_CLASS eUnitClass_ )
+int CX2CashShop::GetUnitClassChangeItemID( const CX2Unit::UNIT_CLASS eUnitClass_ )
 {
 	int ItemId = -1;
 

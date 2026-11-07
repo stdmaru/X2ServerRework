@@ -305,7 +305,8 @@ bool CX2ItemManager::AddShopItemList_LUA()
 	}
 
 	// 특정 npc만이 판매하는 물품
-	NpcItemIDList* pNpcItemIDList = NULL;
+	NpcItemIDList* pNpcItemIDList;	// split: a goto jumps over it
+	pNpcItemIDList = NULL;
 	if( luaManager.BeginTable( "SALE_ITEM_NPC" ) == true )
 	{
 		int index = 1;
