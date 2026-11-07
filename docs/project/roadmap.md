@@ -240,6 +240,8 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
       stage, vertex fog); `CKTDGXRenderer` draws the client's skinned meshes through it headless. The other three `.fx`
       have no caller in US/`_SERVICE_` and are not ported (28 techniques in all, recounted 2026-11-07). See
       [D3D9 device › Effects](../porting/client-d3d9.md#effects-2026-11-07-clienteffects).
+- [ ] `client/x2lib-build`: `X2Lib` (270 `.cpp`, 547 files) and `X2.cpp` compile and link on KTDXLIB and the device,
+      warning-free on GCC, Clang and clang-cl, split into sequential branches if large. See [Client: X2Lib](../porting/client-x2lib.md).
 - [ ] Reimplement the rest of D3DX on the original assets (T1, T37): `.x` loader (mesh + skin + animation), `.dds` (BC1–3 native,
       legacy formats to RGBA8). Fonts and sprites dropped: the engine uses neither `ID3DXFont` nor `ID3DXSprite`
       (2026-11-07).
