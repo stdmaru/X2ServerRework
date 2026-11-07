@@ -3,7 +3,7 @@
 
 //{{ seojt // 2009-1-13, 17:04
 class CX2WorldObjectSkinMesh;
-typedef boost::intrusive_ptr<CX2WorldObjectSkinMesh>   CX2WorldObjectSkinMeshPtr;
+typedef x2::intrusive_ptr<CX2WorldObjectSkinMesh>   CX2WorldObjectSkinMeshPtr;
 //}} seojt // 2009-1-13, 17:04
 
 
@@ -62,7 +62,7 @@ class CX2WorldObjectSkinMesh : public CX2WorldObject
 		CKTDXDeviceXSkinMesh* GetXSkinMotionMesh() { return m_pXSkinMotionMesh; }
 		wstring& GetXSkinMeshName() { return m_XSkinMeshName; }
 
-		const CKTDGMatrix::BILLBOARD_TYPE GetBillboardType() { return m_BillboardType; }
+		CKTDGMatrix::BILLBOARD_TYPE GetBillboardType() { return m_BillboardType; }
 
 		//LUA
 		bool PlayAnim_LUA( WORLD_OBJECT_SKIN_MESH_PLAY_TYPE playType, bool btransition = true );

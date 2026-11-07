@@ -1716,7 +1716,7 @@ bool CX2UIShop::Handler_EGS_REPAIR_ITEM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam
 	//	{
 	//		const CX2Inventory& kInventory = pUnit->GetInventory();
 	//		{
-	//			BOOST_TEST_FOREACH( const KInventoryItemInfo&, kInventoryItemInfo, kEvent.m_vecInventorySlotInfo )
+	//			for( const KInventoryItemInfo& kInventoryItemInfo : kEvent.m_vecInventorySlotInfo )
 	//			{
 	//				CX2Item* pItem = kInventory.GetItem( kInventoryItemInfo.m_iItemUID );
 	//				if( NULL != pItem )

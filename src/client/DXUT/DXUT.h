@@ -17,6 +17,7 @@
 #include "MessageBox.h"   // Win32 MessageBox outside Windows
 #include "WindowFunctions.h"   // the other Win32 window functions the UI calls, outside Windows
 #include "GrowableArray.h"   // DXUT's CGrowableArray
+#include "Camera.h"   // DXUT's CFirstPersonCamera (DXUTmisc.h)
 
 // Callbacks (DXUT.h)
 typedef void    (CALLBACK *LPDXUTCALLBACKFRAMEMOVE)(IDirect3DDevice9* pd3dDevice, double fTime, float fElapsedTime, void* pUserContext);

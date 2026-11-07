@@ -3,7 +3,7 @@
 
 //{{ seojt // 2009-1-14, 21:32
 class CX2TFieldNpc;
-typedef boost::intrusive_ptr<CX2TFieldNpc>     CX2TFieldNpcPtr;
+typedef x2::intrusive_ptr<CX2TFieldNpc>     CX2TFieldNpcPtr;
 //}} seojt // 2009-1-14, 21:32
 
 

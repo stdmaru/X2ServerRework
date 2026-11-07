@@ -10,7 +10,7 @@ m_pTextureWholeMap( NULL )
 	, m_pMyChar( NULL )
 {
 
-	for( int i=0; i<ARRAY_SIZE(m_pTextureIcon); i++ )
+	for( int i=0; i<std::ssize(m_pTextureIcon); i++ )
 	{
 		m_pTextureIcon[i] = NULL;
 	}
@@ -39,7 +39,7 @@ m_pTextureWholeMap( NULL )
 
 //#pragma region
 
-	for ( int i = 0; i < ARRAY_SIZE( m_pPartyMember ); ++i )
+	for ( int i = 0; i < std::ssize( m_pPartyMember ); ++i )
 		m_pPartyMember[i] = NULL;
 
 	m_ViewPort.X 		= 0;
@@ -54,14 +54,14 @@ CX2FieldMapBase::~CX2FieldMapBase(void)
 {
 	SAFE_CLOSE( m_pTextureWholeMap );
 
-	for( int i=0; i<ARRAY_SIZE(m_pTextureIcon); i++ )
+	for( int i=0; i<std::ssize(m_pTextureIcon); i++ )
 	{
 		SAFE_CLOSE( m_pTextureIcon[i] );
 	}
 
 	m_pMyChar = NULL;
 
-	for ( int i = 0; i < ARRAY_SIZE( m_pPartyMember ); ++i )
+	for ( int i = 0; i < std::ssize( m_pPartyMember ); ++i )
 		m_pPartyMember[i] = NULL;
 }
 

@@ -435,8 +435,8 @@ class CX2TFieldGame
 		void ResetNpcType( CX2LocationManager::HOUSE_ID houseID );
 		void AddShopType( int iNpcUnitID, int iType );
 
-		bool CX2TFieldGame::GetLinkVillageInfo( OUT map<int, D3DXVECTOR3>& mapVillageInfo_);
-		bool CX2TFieldGame::GetLinkVillageList( OUT  vector<int>& vecVillageID_ );
+		bool GetLinkVillageInfo( OUT map<int, D3DXVECTOR3>& mapVillageInfo_);
+		bool GetLinkVillageList( OUT  vector<int>& vecVillageID_ );
 		CX2NPCIndicator*		GetNpcIndicator(){return m_pNPCIndicator;}
 
 

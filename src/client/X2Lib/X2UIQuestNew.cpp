@@ -2324,7 +2324,7 @@ void CX2UIQuestNew::UpdateNewQuestNotice()
 	for( UINT i = CX2QuestManager::CJT_JOB_FIRST_OLD; i < CX2QuestManager::CJT_JOB_END; ++i )
 	{
 		const std::set<int>& setClassChangeQuestID = changeJobQuest.m_setQuestID[ CX2QuestManager::CHANGE_JOB_TYPE(i) ];
-		BOOST_TEST_FOREACH( int, iClassChangeQuestID, setClassChangeQuestID )
+		for( int iClassChangeQuestID : setClassChangeQuestID )
 		{
 			if( NULL != g_pData->GetQuestManager()->GetUnitQuest( iClassChangeQuestID ) ||
 				mapQuestClear.end() != mapQuestClear.find( iClassChangeQuestID ) )
@@ -4147,7 +4147,7 @@ void CX2UIQuestNew::UpdateOngoingQuestInfo()
 	std::sort(m_vecOnGoingEventQuestInfo.begin(), m_vecOnGoingEventQuestInfo.end(), QuestInfoSort());
 
 
-	BOOST_FOREACH( QuestInfo kQustInfo, m_vecQuickQuest )
+	for( QuestInfo kQustInfo : m_vecQuickQuest )
 	{
 		kQustInfo.m_eQuestState = ConvertToStateTypeSort( kQustInfo.m_eQuestState ) ;
 	}

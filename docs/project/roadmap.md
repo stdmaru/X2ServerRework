@@ -242,6 +242,13 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
       [D3D9 device › Effects](../porting/client-d3d9.md#effects-2026-11-07-clienteffects).
 - [ ] `client/x2lib-build`: `X2Lib` (270 `.cpp`, 547 files) and `X2.cpp` compile and link on KTDXLIB and the device,
       warning-free on GCC, Clang and clang-cl, split into sequential branches if large. See [Client: X2Lib](../porting/client-x2lib.md).
+  - [x] `client/x2lib-headers`: the precompiled header chain (`stdafx.h` → `X2Main.h` and all it includes) compiles
+        warning-free (target `x2::client_x2lib`); Themida/Virtualizer, WinINet, libxml (now `x2::platform::ParseXml`) and
+        Boost gone from the headers; DXUT's `CFirstPersonCamera` and `x2::bimap` added (2026-11-07). See
+        [Client: X2Lib](../porting/client-x2lib.md#header-chain-2026-11-07-clientx2lib-headers).
+  - [ ] `client/x2lib-build-*`: the `.cpp` files, by area.
+  - [ ] `client/x2-link`: `X2.cpp` replaces `X2Skeleton.cpp`; the client links.
+  - [ ] `client/x2-run`: headless start-up test, mass script tests, then login → channel → world on the Linux servers.
 - [ ] Reimplement the rest of D3DX on the original assets (T1, T37): `.x` loader (mesh + skin + animation), `.dds` (BC1–3 native,
       legacy formats to RGBA8). Fonts and sprites dropped: the engine uses neither `ID3DXFont` nor `ID3DXSprite`
       (2026-11-07).

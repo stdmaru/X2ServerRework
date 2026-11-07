@@ -301,7 +301,7 @@ public:
     wstring GetMIssionDesc(int missionId);
     wstring GetSubMissionDesc(int subMissionId);
     wstring GetTitleAbilityDesc(int titleId);
-    CX2Stat::Stat CX2TitleManager::GetSocketStat();
+    CX2Stat::Stat GetSocketStat();
     bool GetUnitType(int titleid);
     bool GetUnitClass(int titleid);
 

@@ -315,7 +315,7 @@ CX2DamageManager::EXTRA_DAMAGE_TYPE CX2EnchantItem::GetExtraDamageType( const st
 CX2DamageManager::EXTRA_DAMAGE_TYPE CX2EnchantItem::GetExtraDamageType( const CX2EnchantItem::ItemEnchantedAttribute& enchantedAttribute )
 {
 	int attribEnchantCount[CX2EnchantItem::ET_END] = { 0, };
-	for ( int i = 0; i < ARRAY_SIZE( enchantedAttribute.m_aEnchantedType) ; i++ )
+	for ( int i = 0; i < std::ssize( enchantedAttribute.m_aEnchantedType) ; i++ )
 	{
 		CX2EnchantItem::ENCHANT_TYPE eEnchantedType = enchantedAttribute.m_aEnchantedType[i];
 		if( eEnchantedType >= CX2EnchantItem::ET_PREFIX_START &&
@@ -532,7 +532,7 @@ CX2DamageManager::EXTRA_DAMAGE_TYPE CX2EnchantItem::GetExtraDamageType( const CX
 CX2DamageManager::EXTRA_DAMAGE_TYPE CX2EnchantItem::GetExtraDamageType( CX2EnchantItem::ItemEnchantedAttribute currEnchantedAttribute, CX2EnchantItem::ENCHANT_TYPE newEnchantType )
 {
 	bool bDone = false;
-	for( int i=0; i<ARRAY_SIZE( currEnchantedAttribute.m_aEnchantedType ) ; i++ )
+	for( int i=0; i<std::ssize( currEnchantedAttribute.m_aEnchantedType ) ; i++ )
 	{
 		if( currEnchantedAttribute.m_aEnchantedType[i] <= 0 )
 		{
@@ -591,7 +591,7 @@ int CX2EnchantItem::GetItemID( ENCHANT_TYPE enchantType )
 	// 서로 다른 suffix가 2개 이상인 경우에 enchant 할 수 없다.
 
 	int attribEnchantCount[CX2EnchantItem::ET_END] = { 0, };
-	for ( int i = 0; i < ARRAY_SIZE( currEnchantedAttribute.m_aEnchantedType) ; i++ )
+	for ( int i = 0; i < std::ssize( currEnchantedAttribute.m_aEnchantedType) ; i++ )
 	{
 		CX2EnchantItem::ENCHANT_TYPE eEnchantedType = currEnchantedAttribute.m_aEnchantedType[i];
 		if( eEnchantedType >= CX2EnchantItem::ET_PREFIX_START &&
@@ -615,7 +615,7 @@ int CX2EnchantItem::GetItemID( ENCHANT_TYPE enchantType )
 	int iPrefixCount = 0;
 	int iSuffixCount = 0;
 
-	for( int i=0; i<ARRAY_SIZE(attribEnchantCount); i++ )
+	for( int i=0; i<std::ssize(attribEnchantCount); i++ )
 	{
 		CX2EnchantItem::ENCHANT_TYPE eEnchantedType = (CX2EnchantItem::ENCHANT_TYPE) i;
 		if( eEnchantedType >= ET_PREFIX_START && eEnchantedType <= ET_PREFIX_END )

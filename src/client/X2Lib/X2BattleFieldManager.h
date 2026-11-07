@@ -6,7 +6,7 @@
 */
 
 class CBattleFieldPortalMovingInfo
-    : private boost::noncopyable
+    : private x2::NonCopyable
 {
 public:
 	// 생성자: 기본Type은 Initialize에 넣어주시고, 사용자 정의 타입은 멤버 초기화 리스트에서 초기화 해주세요
@@ -67,7 +67,7 @@ IMPLEMENT_INTRUSIVE_PTR( CBattleFieldPortalMovingInfo );
 @date  : 2011/10/25
 */
 class CBattleFieldRiskInfo
-    : private boost::noncopyable
+    : private x2::NonCopyable
 {
 public:
 	// true, false 속성을 가지는 타입의 플래그, std::bitset으로 관리
@@ -96,7 +96,7 @@ public:
 	USHORT GetRiskValue() const { return m_usRiskValue; }
 	void SetRiskValue( const USHORT usRiskValue_ ) { m_usRiskValue = usRiskValue_; }
 
-	bool GetBitSetFlag( const FLAG_RISK_INFO eFlagRiskInfo_ ) { m_bitsetFlagRiskInfo.test( eFlagRiskInfo_ ); }
+	bool GetBitSetFlag( const FLAG_RISK_INFO eFlagRiskInfo_ ) { return m_bitsetFlagRiskInfo.test( eFlagRiskInfo_ ); }
 	void SetBitSetFlag( const FLAG_RISK_INFO eFlagRiskInfo_, const bool bFlag_ ) {
 		m_bitsetFlagRiskInfo.set( eFlagRiskInfo_, bFlag_ );
 	}
@@ -125,7 +125,7 @@ IMPLEMENT_INTRUSIVE_PTR( CBattleFieldRiskInfo );
 
 
 class CBattleFieldMiddleBossInfo		// 필드 중간 보스에 대한 정보를 담고 있는 클래스, BattleFieldData.lua 에서 파싱
-    : private boost::noncopyable
+    : private x2::NonCopyable
 {
 	public :
 		CBattleFieldMiddleBossInfo ()
@@ -202,19 +202,19 @@ IMPLEMENT_INTRUSIVE_PTR( CBattleFieldMiddleBossInfo );
 */
 
 class CBattleFieldData
-    : private boost::noncopyable
+    : private x2::NonCopyable
 {
 
 public:
 
-	typedef boost::intrusive_ptr<CBattleFieldPortalMovingInfo> CBattleFieldPortalMovingInfoPtr;
-	typedef boost::intrusive_ptr<CBattleFieldRiskInfo> CBattleFieldRiskInfoPtr;
+	typedef x2::intrusive_ptr<CBattleFieldPortalMovingInfo> CBattleFieldPortalMovingInfoPtr;
+	typedef x2::intrusive_ptr<CBattleFieldRiskInfo> CBattleFieldRiskInfoPtr;
 
-	typedef boost::shared_ptr<CBattleFieldMiddleBossInfo> CBattleFieldMiddleBossInfoPtr;
+	typedef std::shared_ptr<CBattleFieldMiddleBossInfo> CBattleFieldMiddleBossInfoPtr;
 
 	CBattleFieldData()
-		: m_wstrBattleFieldName(), m_wstrBattleFieldTextureName(), m_uiReturnVillageId( 0 )
-        , m_uRefCount(0)
+		: m_uRefCount(0), m_uiReturnVillageId( 0 ), m_wstrBattleFieldName()
+        , m_wstrBattleFieldTextureName()
     {
 		_OnCreate();
 	}
@@ -271,7 +271,7 @@ public:
 		{
 			if ( (*it) != NULL )
 			{
-				if ( (*it)->GetMonsterSpawnID() == iSpawnGroup_ )		// 소환된 그룹 명과 검색 중인 해당 그룹의 이름이 같다면
+				if ( static_cast<int>( (*it)->GetMonsterSpawnID() ) == iSpawnGroup_ )		// 소환된 그룹 명과 검색 중인 해당 그룹의 이름이 같다면
 				{
 					return (*it)->GetMainMonsterName();					// 해당 그룹 명을 반환한다.
 				}
@@ -281,7 +281,7 @@ public:
 	}
 
 	bool GetIsBossRaidField() const { return m_bIsBossRaidField; }
-	const USHORT GetRaidFieldPortalLineIndex() const { return m_usRaidFieldPortalPositionIndex; }
+	USHORT GetRaidFieldPortalLineIndex() const { return m_usRaidFieldPortalPositionIndex; }
 
     void    AddRef()    {   ++m_uRefCount; }
     void    Release()   { if ( (--m_uRefCount) == 0 )   delete this; }
@@ -352,7 +352,7 @@ class CX2BattleFieldManager {
 
 public:
 
-    typedef boost::intrusive_ptr<CBattleFieldData> CBattleFieldDataPtr;
+    typedef x2::intrusive_ptr<CBattleFieldData> CBattleFieldDataPtr;
 
 	enum PORTAL_MOVE_TYPE {
 		PMT_INVALID = 0,
@@ -422,7 +422,7 @@ public:
 
 	bool		GetIsBossRaidFieldByFieldID( const UINT uiBattleFieldID_ ) const;
 	bool		GetIsBossRaidCurrentField() const;
-	const USHORT GetRaidFieldPortalLineByFieldID( const UINT uiBattleFieldID_ ) const;
+	USHORT GetRaidFieldPortalLineByFieldID( const UINT uiBattleFieldID_ ) const;
 
 private:
 	typedef std::map<UINT, CBattleFieldDataPtr> BattleFieldDataPtrMap;

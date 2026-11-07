@@ -239,7 +239,7 @@ void CX2Inventory::UpdateInventorySlotList( const std::vector<KInventoryItemInfo
 	//{{ mauntain : 김태환 [2012.07.10] 장착중인 소비성 아이템 획득시 퀵슬롯 갱신
 	//}}
 
-	BOOST_TEST_FOREACH( const KInventoryItemInfo&, itemInfo, vecInventorySlotInfo )
+	for( const KInventoryItemInfo& itemInfo : vecInventorySlotInfo )
 	{
 		RemoveItem( (CX2Inventory::SORT_TYPE)itemInfo.m_cSlotCategory, itemInfo.m_sSlotID );
 
@@ -1119,7 +1119,7 @@ void	CX2Inventory::SetPetInventory( const std::vector<KInventoryItemInfo>& vecIn
 	if( true == vecInventorySlotInfo.empty() )
 		return;
 
-	BOOST_TEST_FOREACH( const KInventoryItemInfo&, itemInfo, vecInventorySlotInfo )
+	for( const KInventoryItemInfo& itemInfo : vecInventorySlotInfo )
 	{
 		if( itemInfo.m_iItemUID > 0 )
 		{

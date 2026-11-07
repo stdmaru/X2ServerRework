@@ -117,7 +117,7 @@ void CX2GageManager::SetShow( const bool bShow_ )
 	if ( NULL != m_ptrMyGageSet )
 		m_ptrMyGageSet->SetShow( bShow_ );
 
-	BOOST_FOREACH( CX2GageSetPtr ptrGageSet, m_vecGageSetPartyMember )
+	for( CX2GageSetPtr ptrGageSet : m_vecGageSetPartyMember )
 	{
 		ptrGageSet->SetShow( bShow_ );
 	}
@@ -329,22 +329,22 @@ void CX2GageManager::OnFrameMove( float fElapsedTime_ )
         m_ptrMyGageSet->OnFrameMove( fElapsedTime_ );
     }
 
-	BOOST_FOREACH( CX2GageSetPtr ptrGageSet, m_vecGageSetPartyMember )
+	for( CX2GageSetPtr ptrGageSet : m_vecGageSetPartyMember )
 	{
         ptrGageSet->OnFrameMove( fElapsedTime_ );
 	}
 
-	BOOST_FOREACH( CX2BossGageUIPtr ptrBossGageUI, m_vecBossGageUIList )
+	for( CX2BossGageUIPtr ptrBossGageUI : m_vecBossGageUIList )
 	{
         ptrBossGageUI->OnFrameMove( fElapsedTime_ );
 	}
 
-	BOOST_FOREACH( CX2GageSetPtr ptrGageSet, m_vecGageSetPvpMyTeam )
+	for( CX2GageSetPtr ptrGageSet : m_vecGageSetPvpMyTeam )
 	{
         ptrGageSet->OnFrameMove( fElapsedTime_ );
 	}
 
-	BOOST_FOREACH( CX2GageSetPtr ptrGageSet, m_vecGageSetPvpOtherTeam )
+	for( CX2GageSetPtr ptrGageSet : m_vecGageSetPvpOtherTeam )
 	{
         ptrGageSet->OnFrameMove( fElapsedTime_ );
 	}
@@ -355,22 +355,22 @@ void CX2GageManager::OnFrameRender()
 	if ( NULL != m_ptrMyGageSet )
 		m_ptrMyGageSet->OnFrameRender();
 
-	BOOST_FOREACH( CX2GageSetPtr ptrGageSet, m_vecGageSetPartyMember )
+	for( CX2GageSetPtr ptrGageSet : m_vecGageSetPartyMember )
 	{
 		ptrGageSet->OnFrameRender();
 	}
 
-	BOOST_FOREACH( CX2BossGageUIPtr ptrBossGageUI, m_vecBossGageUIList )
+	for( CX2BossGageUIPtr ptrBossGageUI : m_vecBossGageUIList )
 	{
 		ptrBossGageUI->OnFrameRender();
 	}
 
-	BOOST_FOREACH( CX2GageSetPtr ptrGageSet, m_vecGageSetPvpMyTeam )
+	for( CX2GageSetPtr ptrGageSet : m_vecGageSetPvpMyTeam )
 	{
 		ptrGageSet->OnFrameRender();
 	}
 
-	BOOST_FOREACH( CX2GageSetPtr ptrGageSet, m_vecGageSetPvpOtherTeam )
+	for( CX2GageSetPtr ptrGageSet : m_vecGageSetPvpOtherTeam )
 	{
 		ptrGageSet->OnFrameRender();
 	}
@@ -395,7 +395,7 @@ void CX2GageManager::SetPartyMemberGameUnit( CX2GameUnit* pParyMemberGameUnit_ )
 {
 	if ( NULL != pParyMemberGameUnit_ )
 	{
-		BOOST_FOREACH( CX2GageSetPtr ptrGageSet, m_vecGageSetPartyMember )
+		for( CX2GageSetPtr ptrGageSet : m_vecGageSetPartyMember )
 		{
 			if ( ptrGageSet->GetUid() == pParyMemberGameUnit_->GetUnitUID() )
 				ptrGageSet->SetOwnerGameUnit( pParyMemberGameUnit_ );
@@ -452,7 +452,7 @@ void CX2GageManager::UpdatePartyMemberUIPosition(bool bForce /*= false*/)
 	if ( !m_vecGageSetPartyMember.empty() )
 	{
 		UINT uiPosindex = 0;
-		BOOST_FOREACH( CX2GageSetPtr ptrGageSet_, m_vecGageSetPartyMember )
+		for( CX2GageSetPtr ptrGageSet_ : m_vecGageSetPartyMember )
 		{
 			CX2PartyMemberGageUI* pPartyMemberGageUI = static_cast<CX2PartyMemberGageUI*>( ptrGageSet_->GetGageUI() );
 
@@ -646,7 +646,7 @@ void CX2GageManager::UpdateGageDataFromGameUnit()
 	if ( NULL != m_ptrMyGageSet )
 		m_ptrMyGageSet->UpdateGageDataFromGameUnit();
 
-	BOOST_FOREACH( CX2GageSetPtr ptrGageSet, m_vecGageSetPartyMember )
+	for( CX2GageSetPtr ptrGageSet : m_vecGageSetPartyMember )
 	{
 		ptrGageSet->UpdateGageDataFromGameUnit();
 	}
@@ -658,7 +658,7 @@ void CX2GageManager::SetMaxHp( const UidType uid_, const float fMaxHp_ )
 		m_ptrMyGageSet->SetMaxHp( fMaxHp_ );
 	else
 	{
-		BOOST_FOREACH( CX2GageSetPtr ptrGageSet,m_vecGageSetPartyMember )
+		for( CX2GageSetPtr ptrGageSet : m_vecGageSetPartyMember )
 		{
 			if ( uid_ == ptrGageSet->GetUid() )
 			{
@@ -675,7 +675,7 @@ void CX2GageManager::SetNowHp( const UidType uid_, const float fNowHp_ )
 		m_ptrMyGageSet->SetNowHp( fNowHp_ );
 	else
 	{
-		BOOST_FOREACH( CX2GageSetPtr ptrGageSet,m_vecGageSetPartyMember )
+		for( CX2GageSetPtr ptrGageSet : m_vecGageSetPartyMember )
 		{
 			if ( uid_ == ptrGageSet->GetUid() )
 			{
@@ -692,7 +692,7 @@ void CX2GageManager::SetMaxMp( const UidType uid_, const float fMaxMp_ )
 		m_ptrMyGageSet->SetMaxMp( fMaxMp_ );
 	else
 	{
-		BOOST_FOREACH( CX2GageSetPtr ptrGageSet,m_vecGageSetPartyMember )
+		for( CX2GageSetPtr ptrGageSet : m_vecGageSetPartyMember )
 		{
 			if ( uid_ == ptrGageSet->GetUid() )
 			{
@@ -709,7 +709,7 @@ void CX2GageManager::SetNowMp( const UidType uid_, const float fNowMp_ )
 		m_ptrMyGageSet->SetNowMp( fNowMp_ );
 	else
 	{
-		BOOST_FOREACH( CX2GageSetPtr ptrGageSet,m_vecGageSetPartyMember )
+		for( CX2GageSetPtr ptrGageSet : m_vecGageSetPartyMember )
 		{
 			if ( uid_ == ptrGageSet->GetUid() )
 			{
@@ -726,7 +726,7 @@ void CX2GageManager::SetMaxSoul( const UidType uid_, const float fMaxSoul_ )
 		m_ptrMyGageSet->SetMaxSoul( fMaxSoul_ );
 	else
 	{
-		BOOST_FOREACH( CX2GageSetPtr ptrGageSet,m_vecGageSetPartyMember )
+		for( CX2GageSetPtr ptrGageSet : m_vecGageSetPartyMember )
 		{
 			if ( uid_ == ptrGageSet->GetUid() )
 			{
@@ -743,7 +743,7 @@ void CX2GageManager::SetNowSoul( const UidType uid_, const float fNowSoul_ )
 		m_ptrMyGageSet->SetNowSoul( fNowSoul_ );
 	else
 	{
-		BOOST_FOREACH( CX2GageSetPtr ptrGageSet,m_vecGageSetPartyMember )
+		for( CX2GageSetPtr ptrGageSet : m_vecGageSetPartyMember )
 		{
 			if ( uid_ == ptrGageSet->GetUid() )
 			{
@@ -760,7 +760,7 @@ void CX2GageManager::SetHyperModeCount( const UidType uid_, const BYTE byHyperCo
 		m_ptrMyGageSet->SetHyperModeCount( byHyperCount_ );
 	else
 	{
-		BOOST_FOREACH( CX2GageSetPtr ptrGageSet,m_vecGageSetPartyMember )
+		for( CX2GageSetPtr ptrGageSet : m_vecGageSetPartyMember )
 		{
 			if ( uid_ == ptrGageSet->GetUid() )
 			{
@@ -803,7 +803,7 @@ void CX2GageManager::ShowBossGageUIByUIDAndNotShowOtherBossGageUI( const UidType
 		}
 	}
 
-	BOOST_FOREACH( CX2BossGageUIPtr val, m_vecBossGageUIList )
+	for( CX2BossGageUIPtr val : m_vecBossGageUIList )
 	{
 		if ( val->IsOwnerGameUnit( uidBoss_ ) )
 			val->SetShow( bShow_ );
@@ -813,7 +813,7 @@ void CX2GageManager::ShowBossGageUIByUIDAndNotShowOtherBossGageUI( const UidType
 }
 void CX2GageManager::ShowBossGageUI( bool bShow_ )
 {
-	BOOST_FOREACH( CX2BossGageUIPtr val, m_vecBossGageUIList )
+	for( CX2BossGageUIPtr val : m_vecBossGageUIList )
 	{
 		val->SetShow( bShow_ );
 	}
@@ -1016,7 +1016,7 @@ void CX2GageManager::RestoreGageData()
 
 void CX2GageManager::UpdatePartyMemberGageData( const UidType uidPartyMember_, const KPartyMemberStatus& kPartyMemberStatus_ )
 {
-	BOOST_FOREACH( CX2GageSetPtr ptrGageSet,m_vecGageSetPartyMember )
+	for( CX2GageSetPtr ptrGageSet : m_vecGageSetPartyMember )
 	{
 		if ( uidPartyMember_ == ptrGageSet->GetUid() )
 		{
@@ -1350,7 +1350,6 @@ void CX2OldGageManager::OnFrameMove( double fTime, float fElapsedTime )
 
 
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_START
 #endif
 	if( m_pGameUnit != NULL && m_pGameUnit->GetGameUnitType() == CX2GameUnit::GUT_USER )
 	{
@@ -1368,7 +1367,6 @@ void CX2OldGageManager::OnFrameMove( double fTime, float fElapsedTime )
 		}
 	}
 #if !X2_DEV_TOOLS
-		ELSWORD_VIRTUALIZER_END
 #endif
 
 
@@ -1779,7 +1777,6 @@ void CX2OldGageManager::OnFrameRender()
 float CX2OldGageManager::FlushMP()
 {
 #if defined( _SERVICE_ )
-	ELSWORD_VIRTUALIZER_START
 #endif
 
 
@@ -1810,7 +1807,6 @@ float CX2OldGageManager::FlushMP()
 	}
 
 #if defined( _SERVICE_ )
-	ELSWORD_VIRTUALIZER_END
 #endif
 
 	return m_fMPCharge;
@@ -2965,7 +2961,6 @@ void CX2OldGageManager::GetBerserkModeMyStateImage( OUT wstring& wstrFileName, O
 
 void CX2OldGageManager::Gage::Increase( const float increment, const float minimum /*= 0.f */ )
 {
-	THEMIDA_ENCODE_START
 
 	fNow += increment;
 
@@ -2975,7 +2970,6 @@ void CX2OldGageManager::Gage::Increase( const float increment, const float minim
 	if( fNow < minimum )
 		fNow = minimum;
 
-	THEMIDA_ENCODE_END
 }
 
 /** @function	: SetNumberIcon
@@ -3213,7 +3207,7 @@ void CX2GageManager::SetShowBuffIcon( bool bIsShow_ )
 	}
 
 
-	BOOST_FOREACH( CX2GageSetPtr ptrGageSet, m_vecGageSetPartyMember )
+	for( CX2GageSetPtr ptrGageSet : m_vecGageSetPartyMember )
 	{
 		CX2PartyMemberGageUI* pPartyMemberGageUI = static_cast<CX2PartyMemberGageUI*>( ptrGageSet->GetGageUI() );
 		if( NULL != pPartyMemberGageUI )
@@ -3223,7 +3217,7 @@ void CX2GageManager::SetShowBuffIcon( bool bIsShow_ )
 		}
 	}
 
-	BOOST_FOREACH( CX2GageSetPtr ptrGageSet, m_vecGageSetPvpMyTeam )
+	for( CX2GageSetPtr ptrGageSet : m_vecGageSetPvpMyTeam )
 	{
 		CX2PVPPlayerGageUI* pPVPPlayerGageUI = static_cast<CX2PVPPlayerGageUI*>( ptrGageSet->GetGageUI() );
 		if( NULL != pPVPPlayerGageUI )
@@ -3233,7 +3227,7 @@ void CX2GageManager::SetShowBuffIcon( bool bIsShow_ )
 		}
 	}
 
-	BOOST_FOREACH( CX2GageSetPtr ptrGageSet, m_vecGageSetPvpOtherTeam )
+	for( CX2GageSetPtr ptrGageSet : m_vecGageSetPvpOtherTeam )
 	{
 		CX2PVPPlayerGageUI* pPVPPlayerGageUI = static_cast<CX2PVPPlayerGageUI*>( ptrGageSet->GetGageUI() );
 		if( NULL != pPVPPlayerGageUI )
@@ -3440,7 +3434,7 @@ void CX2GageManager::UpdatePvpMemberUIPosition( bool bForce_/* = false*/ )
 	{
 		UINT uiPosindex = 0;
 
-		BOOST_FOREACH( CX2GageSetPtr ptrGageSet_, m_vecGageSetPvpMyTeam )
+		for( CX2GageSetPtr ptrGageSet_ : m_vecGageSetPvpMyTeam )
 		{
 			CX2PVPPlayerGageUI* pPvpMemberGageUI = static_cast<CX2PVPPlayerGageUI*>( ptrGageSet_->GetGageUI() );
 
@@ -3461,7 +3455,7 @@ void CX2GageManager::UpdatePvpMemberUIPosition( bool bForce_/* = false*/ )
 
 		UINT uiPosindex = 0;
 
-		BOOST_FOREACH( CX2GageSetPtr ptrGageSet_, m_vecGageSetPvpOtherTeam )
+		for( CX2GageSetPtr ptrGageSet_ : m_vecGageSetPvpOtherTeam )
 		{
 			CX2PVPPlayerGageUI* pPvpMemberGageUI = static_cast<CX2PVPPlayerGageUI*>( ptrGageSet_->GetGageUI() );
 
@@ -3479,7 +3473,7 @@ void CX2GageManager::UpdatePvpMemberGageData( const UidType uidPartyMember_, CX2
 {
 	if ( NULL != pGameUnitPartyMember_ )
 	{
-		BOOST_FOREACH( CX2GageSetPtr ptrGageSet, m_vecGageSetPvpMyTeam )
+		for( CX2GageSetPtr ptrGageSet : m_vecGageSetPvpMyTeam )
 		{
 			if ( uidPartyMember_ == ptrGageSet->GetUid() )
 			{
@@ -3488,7 +3482,7 @@ void CX2GageManager::UpdatePvpMemberGageData( const UidType uidPartyMember_, CX2
 			}
 		}
 
-		BOOST_FOREACH( CX2GageSetPtr ptrGageSet, m_vecGageSetPvpOtherTeam )
+		for( CX2GageSetPtr ptrGageSet : m_vecGageSetPvpOtherTeam )
 		{
 			if ( uidPartyMember_ == ptrGageSet->GetUid() )
 			{
@@ -3547,7 +3541,7 @@ const UidType CX2GageManager::GetPartyGageUIPositionIndexByUserList( int iIndex 
 */
 bool CX2GageManager::GetIsExsitancePartyMemberHPLessThanPer( float fHPRate_ )
 {
-	BOOST_FOREACH( const CX2GageSetPtr pGageSetPtr, m_vecGageSetPartyMember )
+	for( const CX2GageSetPtr pGageSetPtr : m_vecGageSetPartyMember )
 	{
 		if( pGageSetPtr->GetNowHpPercent() > 0.f &&
 			pGageSetPtr->GetNowHpPercent() <= fHPRate_ )
@@ -3559,7 +3553,7 @@ bool CX2GageManager::GetIsExsitancePartyMemberHPLessThanPer( float fHPRate_ )
 	상기 함수를 통해 대전에서는 퍼센트를 저장하지 않도록 예외처리 되어 있었음.
 	예외처리 한 정확한 이유를 알 수 없어서 일단 현재HP와 최대HP를 구하는 방식으로 구현 함
 	*/
-	BOOST_FOREACH( const CX2GageSetPtr pGageSetPtr, m_vecGageSetPvpMyTeam )
+	for( const CX2GageSetPtr pGageSetPtr : m_vecGageSetPvpMyTeam )
 	{
 		if( NULL != pGageSetPtr->GetGageData() )
 		{

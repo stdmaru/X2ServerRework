@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "./X2Eqip.h"
-#include <boost/static_assert.hpp>
 #include "boost_kog_extension.h"
 
 
@@ -24,9 +23,9 @@ CX2Eqip::CX2Eqip( CX2Item* pItem, CKTDGXSkinAnimPtr pUnitXSkinAnim, int enchantL
         후에, 포인터의 read/write가 atomic하다는 보장이 되지 않으면, 로드된 리소스 객체가 유효valid
         한지를 판단하기 위해 별도의 bool변수를 사용해야 할 것이다.
         - jintaeks on 2008-12-15, 10:59 */
-	BOOST_STATIC_ASSERT( sizeof(CKTDGXSkinAnim*) == sizeof(int) );
-	BOOST_STATIC_ASSERT( sizeof(CKTDXDeviceXSkinMesh*) == sizeof(int) );
-	BOOST_STATIC_ASSERT( sizeof(CKTDXDeviceXMesh*) == sizeof(int) );
+	static_assert( sizeof(CKTDGXSkinAnim*) == sizeof(int) , "");
+	static_assert( sizeof(CKTDXDeviceXSkinMesh*) == sizeof(int) , "");
+	static_assert( sizeof(CKTDXDeviceXMesh*) == sizeof(int) , "");
 //}} seojt // 2008-12-15, 10:56
 
 
@@ -277,7 +276,7 @@ CX2Eqip::~CX2Eqip(void)
 	}
 
 
-	BOOST_TEST_FOREACH( CX2SubEquip*, pSubEquip, m_vecpSubEquip )
+	for( CX2SubEquip* pSubEquip : m_vecpSubEquip )
 	{
 		SAFE_DELETE_KTDGOBJECT( pSubEquip );
 	}
@@ -378,7 +377,7 @@ HRESULT CX2Eqip::SetRenderParam( double fTime, float fElapsedTime, CKTDGXRendere
 						{
 							bool bDone = false;
 
-							for( int i=0; i<ARRAY_SIZE( ITEM_ID_ENCHANT_TYPE3_GOLD ); i++ )
+							for( int i=0; i<std::ssize( ITEM_ID_ENCHANT_TYPE3_GOLD ); i++ )
 							{
                                 if( ITEM_ID_ENCHANT_TYPE3_GOLD[i] == dwItemID )
 								{
@@ -390,7 +389,7 @@ HRESULT CX2Eqip::SetRenderParam( double fTime, float fElapsedTime, CKTDGXRendere
 
 							if( false == bDone )
 							{
-								for( int i=0; i<ARRAY_SIZE( ITEM_ID_ENCHANT_TYPE3_BLUE ); i++ )
+								for( int i=0; i<std::ssize( ITEM_ID_ENCHANT_TYPE3_BLUE ); i++ )
 								{
                                     if( ITEM_ID_ENCHANT_TYPE3_BLUE[i] == dwItemID )
 									{
@@ -404,7 +403,7 @@ HRESULT CX2Eqip::SetRenderParam( double fTime, float fElapsedTime, CKTDGXRendere
 
 							if( false == bDone )
 							{
-								for( int i=0; i<ARRAY_SIZE( ITEM_ID_ENCHANT_TYPE3_GREEN ); i++ )
+								for( int i=0; i<std::ssize( ITEM_ID_ENCHANT_TYPE3_GREEN ); i++ )
 								{
                                     if( ITEM_ID_ENCHANT_TYPE3_GREEN[i] == dwItemID )
 									{
@@ -419,7 +418,7 @@ HRESULT CX2Eqip::SetRenderParam( double fTime, float fElapsedTime, CKTDGXRendere
 
 							if( false == bDone )
 							{
-								for( int i=0; i<ARRAY_SIZE( ITEM_ID_ENCHANT_TYPE3_YELLOW ); i++ )
+								for( int i=0; i<std::ssize( ITEM_ID_ENCHANT_TYPE3_YELLOW ); i++ )
 								{
                                     if( ITEM_ID_ENCHANT_TYPE3_YELLOW[i] == dwItemID )
 									{
@@ -434,7 +433,7 @@ HRESULT CX2Eqip::SetRenderParam( double fTime, float fElapsedTime, CKTDGXRendere
 
 							if( false == bDone )
 							{
-								for( int i=0; i<ARRAY_SIZE( ITEM_ID_ENCHANT_TYPE3_RED ); i++ )
+								for( int i=0; i<std::ssize( ITEM_ID_ENCHANT_TYPE3_RED ); i++ )
 								{
 									if( ITEM_ID_ENCHANT_TYPE3_RED[i] == dwItemID )
 									{
@@ -447,7 +446,7 @@ HRESULT CX2Eqip::SetRenderParam( double fTime, float fElapsedTime, CKTDGXRendere
 
 							if( false == bDone )
 							{
-								for( int i=0; i<ARRAY_SIZE( ITEM_ID_ENCHANT_TYPE3_PINK ); i++ )
+								for( int i=0; i<std::ssize( ITEM_ID_ENCHANT_TYPE3_PINK ); i++ )
 								{
 									if( ITEM_ID_ENCHANT_TYPE3_PINK[i] == dwItemID )
 									{
@@ -471,7 +470,7 @@ HRESULT CX2Eqip::SetRenderParam( double fTime, float fElapsedTime, CKTDGXRendere
 							m_EnchantRenderParam.fLightFlowImpact = 300.0f;
 					}
 
-					for( int i=0; i<ARRAY_SIZE( ITEM_ID_JIGGLE_TYPE1 ); i++ )
+					for( int i=0; i<std::ssize( ITEM_ID_JIGGLE_TYPE1 ); i++ )
 					{
 						if( ITEM_ID_JIGGLE_TYPE1[i] == dwItemID )
 						{
@@ -482,7 +481,7 @@ HRESULT CX2Eqip::SetRenderParam( double fTime, float fElapsedTime, CKTDGXRendere
 					}
 
 					//{{ kimhc // 2010-01-12 // 외곽선 없앨 UT_ATTACH_ANIM 악세사리
-					for ( int i = 0; i < ARRAY_SIZE( REAL_COLOR_ATTACH_ANIM_ACCESSARY_ITEM_ID ); ++i )
+					for ( int i = 0; i < std::ssize( REAL_COLOR_ATTACH_ANIM_ACCESSARY_ITEM_ID ); ++i )
 					{
 						if ( REAL_COLOR_ATTACH_ANIM_ACCESSARY_ITEM_ID[i] == dwItemID )
 						{
@@ -492,7 +491,7 @@ HRESULT CX2Eqip::SetRenderParam( double fTime, float fElapsedTime, CKTDGXRendere
 					}
 					//}} kimhc // 2010-01-12 // 외곽선 없앨 UT_ATTACH_ANIM 악세사리
 
-					for ( int i = 0; i < ARRAY_SIZE( CARTOON_ACCESSARY_ITEM_ID ); ++i )
+					for ( int i = 0; i < std::ssize( CARTOON_ACCESSARY_ITEM_ID ); ++i )
 					{
 						if ( CARTOON_ACCESSARY_ITEM_ID[i] == dwItemID )
 						{
@@ -502,7 +501,7 @@ HRESULT CX2Eqip::SetRenderParam( double fTime, float fElapsedTime, CKTDGXRendere
 					}
 
 					// JHKang / 2012.8.29 / 알파 값 처리할 UT_ATTACH_ANIM 악세사리
-					for ( int i = 0; i < ARRAY_SIZE( ALPHA_BLEND_ATTACH_ANIM_ACCESSARY_ITEM_ID ); ++i )
+					for ( int i = 0; i < std::ssize( ALPHA_BLEND_ATTACH_ANIM_ACCESSARY_ITEM_ID ); ++i )
 					{
 						if ( ALPHA_BLEND_ATTACH_ANIM_ACCESSARY_ITEM_ID[i] == dwItemID )
 						{
@@ -514,7 +513,7 @@ HRESULT CX2Eqip::SetRenderParam( double fTime, float fElapsedTime, CKTDGXRendere
 						}
 					}
 
-					for ( int i = 0; i < ARRAY_SIZE( REAL_COLOR_ALPHA_BLEND_ATTACH_ANIM_ACCESSARY_ITEM_ID ); ++i )
+					for ( int i = 0; i < std::ssize( REAL_COLOR_ALPHA_BLEND_ATTACH_ANIM_ACCESSARY_ITEM_ID ); ++i )
 					{
 						if ( REAL_COLOR_ALPHA_BLEND_ATTACH_ANIM_ACCESSARY_ITEM_ID[i] == dwItemID )
 						{
@@ -531,7 +530,7 @@ HRESULT CX2Eqip::SetRenderParam( double fTime, float fElapsedTime, CKTDGXRendere
 
 					{
 						bool bAllAlphaBlend = false;
-						for( int i=0; i<ARRAY_SIZE( ALL_ALPHA_ACCESSARY_ITEM_ID ); i++ )
+						for( int i=0; i<std::ssize( ALL_ALPHA_ACCESSARY_ITEM_ID ); i++ )
 						{
 							if( ALL_ALPHA_ACCESSARY_ITEM_ID[i] == dwItemID )
 							{
@@ -613,7 +612,7 @@ HRESULT CX2Eqip::SetRenderParam( double fTime, float fElapsedTime, CKTDGXRendere
 						if( m_EnchantRenderParam.fLightFlowImpact < -300.0f )
 							m_EnchantRenderParam.fLightFlowImpact = 300.0f;
 					}
-					for( int i=0; i<ARRAY_SIZE( ITEM_ID_JIGGLE_TYPE1 ); i++ )
+					for( int i=0; i<std::ssize( ITEM_ID_JIGGLE_TYPE1 ); i++ )
 					{
 						if( ITEM_ID_JIGGLE_TYPE1[i] == dwItemID )
 						{
@@ -624,7 +623,7 @@ HRESULT CX2Eqip::SetRenderParam( double fTime, float fElapsedTime, CKTDGXRendere
 					}
 
 					//{{ kimhc // 2010-01-12 // 외곽선 없앨 UT_ATTACH_ANIM 악세사리
-					for ( int i = 0; i < ARRAY_SIZE( REAL_COLOR_ATTACH_ANIM_ACCESSARY_ITEM_ID ); ++i )
+					for ( int i = 0; i < std::ssize( REAL_COLOR_ATTACH_ANIM_ACCESSARY_ITEM_ID ); ++i )
 					{
 						if ( REAL_COLOR_ATTACH_ANIM_ACCESSARY_ITEM_ID[i] == dwItemID )
 						{
@@ -634,7 +633,7 @@ HRESULT CX2Eqip::SetRenderParam( double fTime, float fElapsedTime, CKTDGXRendere
 					}
 					//}} kimhc // 2010-01-12 // 외곽선 없앨 UT_ATTACH_ANIM 악세사리
 
-					for ( int i = 0; i < ARRAY_SIZE( CARTOON_ACCESSARY_ITEM_ID ); ++i )
+					for ( int i = 0; i < std::ssize( CARTOON_ACCESSARY_ITEM_ID ); ++i )
 					{
 						if ( CARTOON_ACCESSARY_ITEM_ID[i] == dwItemID )
 						{
@@ -644,7 +643,7 @@ HRESULT CX2Eqip::SetRenderParam( double fTime, float fElapsedTime, CKTDGXRendere
 					}
 
 					// JHKang / 2012.8.29 / 알파 값 처리할 UT_ATTACH_ANIM 악세사리
-					for ( int i = 0; i < ARRAY_SIZE( ALPHA_BLEND_ATTACH_ANIM_ACCESSARY_ITEM_ID ); ++i )
+					for ( int i = 0; i < std::ssize( ALPHA_BLEND_ATTACH_ANIM_ACCESSARY_ITEM_ID ); ++i )
 					{
 						if ( ALPHA_BLEND_ATTACH_ANIM_ACCESSARY_ITEM_ID[i] == dwItemID )
 						{
@@ -656,7 +655,7 @@ HRESULT CX2Eqip::SetRenderParam( double fTime, float fElapsedTime, CKTDGXRendere
 						}
 					}
 
-					for ( int i = 0; i < ARRAY_SIZE( REAL_COLOR_ALPHA_BLEND_ATTACH_ANIM_ACCESSARY_ITEM_ID ); ++i )
+					for ( int i = 0; i < std::ssize( REAL_COLOR_ALPHA_BLEND_ATTACH_ANIM_ACCESSARY_ITEM_ID ); ++i )
 					{
 						if ( REAL_COLOR_ALPHA_BLEND_ATTACH_ANIM_ACCESSARY_ITEM_ID[i] == dwItemID )
 						{
@@ -672,7 +671,7 @@ HRESULT CX2Eqip::SetRenderParam( double fTime, float fElapsedTime, CKTDGXRendere
 
 					{
 						bool bAllAlphaBlend = false;
-						for( int i=0; i<ARRAY_SIZE( ALL_ALPHA_ACCESSARY_ITEM_ID ); i++ )
+						for( int i=0; i<std::ssize( ALL_ALPHA_ACCESSARY_ITEM_ID ); i++ )
 						{
 							if( ALL_ALPHA_ACCESSARY_ITEM_ID[i] == dwItemID )
 							{
@@ -725,7 +724,7 @@ HRESULT CX2Eqip::SetRenderParam( double fTime, float fElapsedTime, CKTDGXRendere
 
 				// 외곽선 없는 카툰처리
 				{
-					for ( int i = 0; i < ARRAY_SIZE( CARTOON_ACCESSARY_ITEM_ID ); ++i )
+					for ( int i = 0; i < std::ssize( CARTOON_ACCESSARY_ITEM_ID ); ++i )
 					{
 						if ( CARTOON_ACCESSARY_ITEM_ID[i] == dwItemID )
 						{
@@ -737,7 +736,7 @@ HRESULT CX2Eqip::SetRenderParam( double fTime, float fElapsedTime, CKTDGXRendere
 
 				{
 					bool bAlphaBlend = false;
-					for( int i=0; i<ARRAY_SIZE( ALPHA_BLEND_ACCESSARY_ITEM_ID ); i++ )
+					for( int i=0; i<std::ssize( ALPHA_BLEND_ACCESSARY_ITEM_ID ); i++ )
 					{
 						if( ALPHA_BLEND_ACCESSARY_ITEM_ID[i] == dwItemID )
 						{
@@ -762,7 +761,7 @@ HRESULT CX2Eqip::SetRenderParam( double fTime, float fElapsedTime, CKTDGXRendere
 				{
 					// 외곽선 없는 알파 오브젝트 임시로 하드코딩
 					bool bAlphaBlend = false;
-					for( int i=0; i<ARRAY_SIZE( ALPHA_BLEND_REAL_COLOR_ACCESSARY_ITEM_ID ); i++ )
+					for( int i=0; i<std::ssize( ALPHA_BLEND_REAL_COLOR_ACCESSARY_ITEM_ID ); i++ )
 					{
 						if( ALPHA_BLEND_REAL_COLOR_ACCESSARY_ITEM_ID[i] == dwItemID )
 						{
@@ -788,7 +787,7 @@ HRESULT CX2Eqip::SetRenderParam( double fTime, float fElapsedTime, CKTDGXRendere
 				{
 					// dmlee, 2009-02-25, note!! 아래의 코드는 아크엔젤 서클렛 아이템을 위해 임시로 추가된 코드, 나중에 스크립트로 옮기거나 해야됨
 					bool bDestAlphaBlend = false;
-					for( int i=0; i<ARRAY_SIZE( DEST_ALPHA_BLEND_ACCESSARY_ITEM_ID ); i++ )
+					for( int i=0; i<std::ssize( DEST_ALPHA_BLEND_ACCESSARY_ITEM_ID ); i++ )
 					{
 						if( DEST_ALPHA_BLEND_ACCESSARY_ITEM_ID[i] == dwItemID )
 						{
@@ -809,7 +808,7 @@ HRESULT CX2Eqip::SetRenderParam( double fTime, float fElapsedTime, CKTDGXRendere
 
 				{
 					bool bAllAlphaBlend = false;
-					for( int i=0; i<ARRAY_SIZE( ALL_ALPHA_ACCESSARY_ITEM_ID ); i++ )
+					for( int i=0; i<std::ssize( ALL_ALPHA_ACCESSARY_ITEM_ID ); i++ )
 					{
 						if( ALL_ALPHA_ACCESSARY_ITEM_ID[i] == dwItemID )
 						{
@@ -833,7 +832,7 @@ HRESULT CX2Eqip::SetRenderParam( double fTime, float fElapsedTime, CKTDGXRendere
 
 				{
 					bool bAlphaCullNone = false;
-					for( int i=0; i<ARRAY_SIZE( ALPHA_REAL_COLOR_CULL_NONE_ACCESSARY_ITEM_ID ); i++ )
+					for( int i=0; i<std::ssize( ALPHA_REAL_COLOR_CULL_NONE_ACCESSARY_ITEM_ID ); i++ )
 					{
 						if( ALPHA_REAL_COLOR_CULL_NONE_ACCESSARY_ITEM_ID[i] == dwItemID )
 						{

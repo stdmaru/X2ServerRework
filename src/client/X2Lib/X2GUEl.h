@@ -833,7 +833,7 @@ public:
 	virtual float GetFinalDamage_WayOfSword( CX2DamageManager::WAY_OF_SWORD_TYPE eWayOfSwordType_ );
 	virtual void SetCriticalPercent_WayOfSword( IN CX2DamageManager::WAY_OF_SWORD_TYPE eWayOfSwordType_,
 		OUT float& fCriticalPercent_);
-	const bool GetUnitClassLine( UNIT_CLASS_LINE UnitClassLine_ );
+	bool GetUnitClassLine( UNIT_CLASS_LINE UnitClassLine_ );
 
 	////////////////////////////////////////////////////
 	/// 패시브 관련 함수
@@ -852,7 +852,7 @@ public:
 
 	//// 블레이징 댄스 ////
 	void BlazingDanceFindTargetAndMove();												// 타겟 위치를 찾아 이동시키는 함수.
-	const bool BlazindDanceCheckTargetPosition( CX2GameUnit* pUnit_, const CKTDGLineMap::LineData* pLineData_ );			// 적절한 타겟 위치인지 체크하는 함수.
+	bool BlazindDanceCheckTargetPosition( CX2GameUnit* pUnit_, const CKTDGLineMap::LineData* pLineData_ );			// 적절한 타겟 위치인지 체크하는 함수.
 
 	CFirstStrikeData & GetFirstStrikeData ( void ) { return m_cFirstStrikeData; }
 

@@ -1276,7 +1276,7 @@ public:
 		/** @function	: GetSkillStatValue
 		@brief		: ��ų ������ �ش��ϴ� ���� �䱸 ������ ������
 		*/
-		const int GetSkillRequireLevelValue( int iLevel ) const
+		int GetSkillRequireLevelValue( int iLevel ) const
 		{
 			const int iIndex = iLevel - 1;
 			if ( 0 <= iIndex && static_cast<int>( m_vecRequireCharacterLevel.size() ) > iIndex )
@@ -1302,7 +1302,7 @@ public:
 		/** @function	: GetSkillPowerRateValue
 		@brief		: ��ų ������ �ش��ϴ� ������ ���� ���� ������
 		*/
-		const float GetSkillPowerRateValue( int iLevel ) const
+		float GetSkillPowerRateValue( int iLevel ) const
 		{
 			const int iIndex = iLevel - 1;
 			if ( 0 <= iIndex && static_cast<int>( m_vecPowerRate.size() ) > iIndex )
@@ -1333,7 +1333,7 @@ public:
 		/** @function	: GetSkillMPConsumption
 			@brief		: ��ų ������ �ش��ϴ� MP�Һ��� ������
 		*/
-		const float GetSkillMPConsumptionValue( int iLevel ) const
+		float GetSkillMPConsumptionValue( int iLevel ) const
 		{
 			const int iIndex = iLevel - 1;
 			if ( 0 <= iIndex && static_cast<int>( m_vecMPConsumption.size() ) > iIndex )
@@ -1345,7 +1345,7 @@ public:
 		/** @function	: GetSkillCoolTimeValue
 			@brief		: ��ų ������ �ش��ϴ� ��Ÿ�� ���� ������
 		*/
-		const float GetSkillCoolTimeValue( int iLevel ) const
+		float GetSkillCoolTimeValue( int iLevel ) const
 		{
 			const int iIndex = iLevel - 1;
 			if ( 0 <= iIndex && static_cast<int>( m_vecSkillCoolTime.size() ) > iIndex )
@@ -1399,7 +1399,7 @@ public:
 		/** @function	: GetSkillDPConsumptionValue
 			@brief		: DP�Һ��� ������
 		*/
-		const float GetSkillDPConsumptionValue() const { return static_cast<float>( m_usFPConsumtion ); }
+		float GetSkillDPConsumptionValue() const { return static_cast<float>( m_usFPConsumtion ); }
 
 
 
@@ -1418,12 +1418,12 @@ public:
 		m_bBornSealed( false ),
 		m_wstrIconName( L"" ),
 		m_wstrIconPieceName( L"" ),
+		m_eActiveSkillUseCondtion( ASUT_NONE ),
+		m_bShowSkillLevel( false ),
 		m_wstrImageName( L"" ),
 		m_wstrImagePieceName( L"" ),
 		m_iRequireLearnSkillPoint( 0 ),
-		m_iRequireUpgradeSkillPoint( 0 ),
-		m_eActiveSkillUseCondtion( ASUT_NONE ),
-		m_bShowSkillLevel( false )
+		m_iRequireUpgradeSkillPoint( 0 )
 		{
 			m_vecBuffFactorPtr.clear();
 			m_mapSkillAbility.clear();
@@ -1522,9 +1522,9 @@ public:
 	//{{ 2009. 8. 5  ������		���� ��ų ������ ����
 	bool IsUnsealSkillItemID( int iItemID ) { return ( m_mapSealSkillItemTemplet.find( iItemID ) != m_mapSealSkillItemTemplet.end() ); }
 
-	const int GetUnsealSkillItemRequireClass( const int iItemID ) const;
+	int GetUnsealSkillItemRequireClass( const int iItemID ) const;
 
-	const CX2SkillTree::SKILL_ID GetUnsealSkillItemInfo( const int iItemID ) const;
+	CX2SkillTree::SKILL_ID GetUnsealSkillItemInfo( const int iItemID ) const;
 	//}}
 
 
@@ -1635,11 +1635,11 @@ public:
 	void FixOrInsertMapSkillInfoValue( CX2SkillTree::SKILL_ID eSkillID );
 
 	/// ������� ����� ��ų ����Ʈ
-	const int GetUsedSPoint() const { return m_iUsedSPoint; }
+	int GetUsedSPoint() const { return m_iUsedSPoint; }
 	void SetUsedSPoint( int val ) { m_iUsedSPoint = val; }
 
 	/// ������� ����� ĳ�� ��ų ����Ʈ
-	const int GetUsedCSPoint() const { return m_iUsedCSPoint; }
+	int GetUsedCSPoint() const { return m_iUsedCSPoint; }
 	void SetUsedCSPoint( int val ) { m_iUsedCSPoint = val; }
 
 	/// ������ ������ ���� ���̺� �Ľ� �Լ�
@@ -1659,13 +1659,13 @@ public:
 	bool IsMyClassSkillID( SKILL_ID eSkillID );
 
 	/// �ִ� ���� ��ų ������ ��ȯ
-	const int GetMaxLimitedSkillLevel() { return MAX_LIMITED_SKILL_LEVEL; }
+	int GetMaxLimitedSkillLevel() { return MAX_LIMITED_SKILL_LEVEL; }
 
 	/// ���� ��ų ���ø� ��ȯ
 	const map<int, SealSkillItemInfo>& GetSealSkillItemTemplet() const { return m_mapSealSkillItemTemplet; }
 
 	/// ������ ���� �� ��ų ����Ʈ ��ȯ
-	const int GetCalcInitSkillPoint( const int iUnitLevel ) const;
+	int GetCalcInitSkillPoint( const int iUnitLevel ) const;
 
 	void SetSkillTemplet( SKILL_ID  eSkillID, SkillTemplet* pSkillTemplet )
 	{

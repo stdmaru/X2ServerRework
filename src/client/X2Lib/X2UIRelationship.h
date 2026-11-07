@@ -84,8 +84,8 @@ public :
 		RIT_ADDED,					// 추가된 목록
 		RIT_NICKNAME,				// 닉네임 입력
 	};
-	CX2UIRelationship::CX2UIRelationship ();
-	CX2UIRelationship::~CX2UIRelationship();
+	CX2UIRelationship ();
+	~CX2UIRelationship();
 
 
 

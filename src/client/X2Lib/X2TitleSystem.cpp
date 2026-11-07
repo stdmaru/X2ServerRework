@@ -423,7 +423,7 @@ void CX2TitleSystem::ShowTitleDesc(TitleRecord* pData)
 	{
 		if ( g_pData->GetMyUser()->GetAuthLevel() == CX2User::XUAL_DEV )
 		{
-			wstrTitleID = (boost::wformat(L"ID = %1%\n") % pData->m_iTitleID).str();
+			wstrTitleID = (x2::wformat(L"ID = %1%\n") % pData->m_iTitleID).str();
 		}
 	}
 

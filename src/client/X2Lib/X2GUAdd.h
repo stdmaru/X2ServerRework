@@ -167,7 +167,7 @@ public:
 		void ResetStasisfieldData();
 
 		/// �����̽ý� �ʵ� ���� ����
-		const bool GetIsActiveStasisfield() const  { return ( 0.f < m_fRemainTime ); }
+		bool GetIsActiveStasisfield() const  { return ( 0.f < m_fRemainTime ); }
 	};
 
 	/// ���� ��ȭ ���� ����
@@ -1084,7 +1084,7 @@ public:
 	virtual void		ApplyHyperModeBuff();
 
 	/// ����ȭ ���� ó��
-	const SHORT			GetAbilitySyncData();
+	SHORT			GetAbilitySyncData();
 	void				SetAbilitySyncData( IN const SHORT sAbilitySyncData_ );
 
 	/// Ư�� ������Ʈ ���� ���� ó��
@@ -1096,48 +1096,49 @@ public:
 	CX2AddGageData*		GetAddGageData() const;
 
 	/// Ư�� ��ų�� ���� ó��
-	const bool			SpecialAttackCustomStateChange( IN const CX2SkillTree::SKILL_ID eSkillID_ );
-	const float			GetCustomSkillCoolTime( IN const float fCoolTime_, IN const CX2SkillTree::SKILL_ID eSkillID_ );
+	bool			SpecialAttackCustomStateChange( IN const CX2SkillTree::SKILL_ID eSkillID_ );
+	float			GetCustomSkillCoolTime( IN const float fCoolTime_, IN const CX2SkillTree::SKILL_ID eSkillID_ );
 
 
-	const bool			CheckSkillSpecialUse( IN const CX2SkillTree::SKILL_ID eSkillID_  );
+	bool			CheckSkillSpecialUse( IN const CX2SkillTree::SKILL_ID eSkillID_  );
 
-	const CX2SkillTree::ACTIVE_SKILL_USE_CONDITION GetSkillUseCondition( IN const CX2SkillTree::SkillTemplet* pSkillTemplet_ );
+	CX2SkillTree::ACTIVE_SKILL_USE_CONDITION GetSkillUseCondition( IN const CX2SkillTree::SkillTemplet* pSkillTemplet_ );
 
 	/// ���� ��ġ
-	const int			GetMutationCount();																		/// ���� ��ġ ��ȯ �Լ�
+	int			GetMutationCount();																		/// ���� ��ġ ��ȯ �Լ�
 	void				SetChangedMutationCount( IN const bool bChangedMutationCount_ );						/// ���� ��ġ ���� ���� ����
 	virtual void		SetMutationCount( IN const int iMutationCount_ );										/// ���� ��ġ ���� �Լ�
 	void				UpMutationCount( IN const int iMutationCount_  );										/// ���� ��ġ ���� �Լ�
 
 	/// DP ��ġ
-	const float			GetMaxDPValue();																		/// �ִ� DP ��ġ ��ȯ �Լ�
-	const float			GetDPValue();																			/// DP ��ġ ��ȯ �Լ�
+	float			GetMaxDPValue();																		/// �ִ� DP ��ġ ��ȯ �Լ�
+	using CX2GUUser::GetDPValue;
+	float			GetDPValue();																			/// DP ��ġ ��ȯ �Լ�
 	virtual void		SetDPValue( IN const float fDPValue_ );													/// DP ��ġ ���� �Լ�
 	virtual void		UpNowDPValue( IN const float fDPValue_, IN const float fChangeValueRate_ = 1.f );		/// DP ��ġ ���� �Լ�
 	virtual void		UpNowDPValueByDamage( IN const float fDamage_ );										/// �ǰݽ� DP ���� ó��
 	virtual void		UpNowDPValueByHit( IN const CX2DamageManager::DamageData& DamageData_ );				/// Ÿ�ݽ� DP ���� ó��
 	void				UpNowDPValueByUseMP( IN const float fUseMP );											/// MP ���� DP ���� ó��
-	const float			GetActualDPConsume( IN const CX2UserSkillTree::SkillSlotData* pSkillSlotData_ );				/// DP �Ҹ�
-	const int			GetMutationPointConsume( IN const CX2UserSkillTree::SkillSlotData* pSkillSlotData_ );	/// ���� ����Ʈ �Ҹ�
+	float			GetActualDPConsume( IN const CX2UserSkillTree::SkillSlotData* pSkillSlotData_ );				/// DP �Ҹ�
+	int			GetMutationPointConsume( IN const CX2UserSkillTree::SkillSlotData* pSkillSlotData_ );	/// ���� ����Ʈ �Ҹ�
 	bool				IsDPConsumptionSkill( IN const CX2SkillTree::SKILL_ID eSkillID_ ) const;				/// �ش� ��ų�� DP�� ����ϴ� ��ų���� �˻�
-	const bool			ConsumeMPorDP( IN const float fConsumeMP, IN const float fConsumeDP );					/// MP Ȥ�� DP �Һ� �˻� �Լ�
-	const float			GetDPRateByType( IN const CX2DamageManager::DYNAMO_PARTICLE_RATE_TYPE eDPRateType );	/// DP ���� Ÿ�Կ� ���� ���� ��
-	const float 		GetUseDPByFormationMode();		 														/// ���� ��忡 ���Ǵ� DP ��
-	const float			GetEffectiveIncreaseDPValue();															/// DP ȹ�淮 ������ ��ȯ
-	const float			GetEffectiveDecreaseDPConsume();														/// DP �Ҹ� ���Ұ� ��ȯ
-	virtual const bool	GetUpDPByAttackThisFrame() { return m_bSetUpDPByAttackThisFrame; }						/// Ÿ�ݽ� �� �����ӿ� DP ȹ��� ���� Flag ��ȯ
+	bool			ConsumeMPorDP( IN const float fConsumeMP, IN const float fConsumeDP );					/// MP Ȥ�� DP �Һ� �˻� �Լ�
+	float			GetDPRateByType( IN const CX2DamageManager::DYNAMO_PARTICLE_RATE_TYPE eDPRateType );	/// DP ���� Ÿ�Կ� ���� ���� ��
+	float 		GetUseDPByFormationMode();		 														/// ���� ��忡 ���Ǵ� DP ��
+	float			GetEffectiveIncreaseDPValue();															/// DP ȹ�淮 ������ ��ȯ
+	float			GetEffectiveDecreaseDPConsume();														/// DP �Ҹ� ���Ұ� ��ȯ
+	virtual bool	GetUpDPByAttackThisFrame() { return m_bSetUpDPByAttackThisFrame; }						/// Ÿ�ݽ� �� �����ӿ� DP ȹ��� ���� Flag ��ȯ
 	virtual void		SetUpDPByAttackThisFrame( IN const bool bval_ ) { m_bSetUpDPByAttackThisFrame = bval_; }/// Ÿ�ݽ� �� �����ӿ� DP ȹ��� ���� Flag ����
-	virtual const bool	GetUpDPByDamageThisFrame() { return m_bSetUpDPByAttackThisFrame; }						/// �ǰݽ� �� �����ӿ� DP ȹ��� ���� Flag ��ȯ
+	virtual bool	GetUpDPByDamageThisFrame() { return m_bSetUpDPByAttackThisFrame; }						/// �ǰݽ� �� �����ӿ� DP ȹ��� ���� Flag ��ȯ
 	virtual void		SetUpDPByDamageThisFrame( IN const bool bval_ ) { m_bSetUpDPByDamageThisFrame = bval_; }/// �ǰݽ� �� �����ӿ� DP ȹ��� ���� Flag ����
 
 
 	/// ���� ���
-	virtual const bool	GetIsFormationMode() const;																/// ���� ��� ���� ���� ��ȯ �Լ�
+	virtual bool	GetIsFormationMode() const;																/// ���� ��� ���� ���� ��ȯ �Լ�
 	virtual void		SetIsFormationMode( IN const bool bIsFormationMode_ );									/// ���� ��� ���� ���� ���� �Լ�
 	virtual float		GetHyperModeTime() const { return 9999999.f; }											/// ���� �ð� ��ȯ ( �ֵ�� ���� ���� �ð��� �����̴�. )
-	const bool			GetPossibleChangeFormationMode( IN const bool bOutputInformation = true );				/// ���� ��� ��� ���� ���� ��ȯ
-	const float			GetChangeFormationCoolTime();															/// ���� ��� ��ȯ ��Ÿ�� ��ȯ
+	bool			GetPossibleChangeFormationMode( IN const bool bOutputInformation = true );				/// ���� ��� ��� ���� ���� ��ȯ
+	float			GetChangeFormationCoolTime();															/// ���� ��� ��ȯ ��Ÿ�� ��ȯ
 	void				SetChangeFormationCoolTime( IN const float fCoolTime_ );								/// ���� ��� ��ȯ ��Ÿ�� ����
 
 	bool				IsPossibleChangeNasodBarrier( IN const CX2DamageManager::DamageData* pDamageData_ );	/// ���ҵ� �踮�� ���� ó�� �Լ�
@@ -1150,7 +1151,7 @@ public:
 	bool				GetSummonPylonPos( OUT D3DXVECTOR3& fSummonPos );										/// ���Ϸ� ��ȯ ������ ��ġ ��ȯ �Լ�
 	void				ResetPylonData();																		/// ���Ϸ� ���� ��� ���� �� ����Ʈ �ʱ�ȭ
 	void				ProcessNonstopSummonPylon();															/// ���Ϸ� ���� ��ȯ ���� ����
-	const bool			GetPossibleNonstopSummonPylon() const;													/// ���Ϸ� ���� ��ȯ ���� ����
+	bool			GetPossibleNonstopSummonPylon() const;													/// ���Ϸ� ���� ��ȯ ���� ����
 
 	/// ���̳ʸ� ���� - ���׳�Ʈ��
 	void				ProcessMagnetronDamageEffect();															/// ���׳�Ʈ�� ��ġ ���� �Լ�
@@ -1158,15 +1159,15 @@ public:
 
 	/// �����̽ý� �ʵ�
 	const StasisfieldData&	GetStasisfieldData() { return m_StasisfieldData; }									/// �����̽ý� �ʵ� ������ ��ȯ �Լ�
-	const bool			GetIsActiveStasisfield() { return m_StasisfieldData.GetIsActiveStasisfield(); }			/// �����̽ý� �ʵ� ���� ���� ��ȯ �Լ�
+	bool			GetIsActiveStasisfield() { return m_StasisfieldData.GetIsActiveStasisfield(); }			/// �����̽ý� �ʵ� ���� ���� ��ȯ �Լ�
 	virtual void		SetStasisfieldHitValue( IN const float fHitValue_ );									/// �����̽ý� �ʵ� Ÿ��ġ ���� �Լ�
 	virtual void		SetStasisfieldDamageValue( IN const float fDamageValue_ );								/// �����̽ý� �ʵ� �ǰ�ġ ���� �Լ�
 	void				ProcessStasisField();																	/// �����̽ý� �ʵ� �� ������ ó�� �Լ�
 	void				EndStasisFieldByTime();																	/// ���� �ð��� ������, �����̽ý� �ʵ� ���� �Ǿ��� �� ���� ó�� �Լ�
 
 	/// ���� ��ȭ
-	const float			GetPhaseShiftMPConsume() const { return m_PhaseShiftData.m_fReturnMPConsume; }
-	const bool			GetIsActivePhaseShift() const { return m_PhaseShiftData.GetIsActivePhaseShift(); }
+	float			GetPhaseShiftMPConsume() const { return m_PhaseShiftData.m_fReturnMPConsume; }
+	bool			GetIsActivePhaseShift() const { return m_PhaseShiftData.GetIsActivePhaseShift(); }
 	void				InitPhaseShift();
 
 	/// �̸��� ��ǳ
@@ -1186,7 +1187,7 @@ public:
 	void				ProcessPowerExchanger();
 
 	// ȯ�� ������
-	const bool			GetIsFantasyTracerTargetSkillID( IN const CX2SkillTree::SKILL_ID eSkillID_ )  const;
+	bool			GetIsFantasyTracerTargetSkillID( IN const CX2SkillTree::SKILL_ID eSkillID_ )  const;
 	void				SetUseFantasyTracerTarget( IN const CX2SkillTree::SKILL_ID eSkillID_ );
 	void				ProcessFantasyTracerTargetInfo();
 

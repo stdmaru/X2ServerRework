@@ -55,17 +55,17 @@ public:
 
 	// 드래곤의 숨결
 	bool GetDragonBreathEnchantStatIncreased( OUT const CX2Stat::EnchantStat*& pEnchantStatInreased_ ) const;
-	const int GetDragonBreathAnimSpeedRateIncreased() const;
-	const float GetDragonBreathAttackStatRateIncreased() const;
+	int GetDragonBreathAnimSpeedRateIncreased() const;
+	float GetDragonBreathAttackStatRateIncreased() const;
 
-	const float GetEnchantStatFromDrgonBreath( int iEnchantType ) const;
-	const bool IsNullWorldBuffDragonBreath() const { return (NULL == m_pWorldBuffDragonBreath ? true : false); }
+	float GetEnchantStatFromDrgonBreath( int iEnchantType ) const;
+	bool IsNullWorldBuffDragonBreath() const { return (NULL == m_pWorldBuffDragonBreath ? true : false); }
 
 	// 엘의 축복
-	const int GetElBlessCriticalRateIncreased() const;
-	const float GetElBlessDefenceStatRateIncreased() const;
+	int GetElBlessCriticalRateIncreased() const;
+	float GetElBlessDefenceStatRateIncreased() const;
 
-	const bool IsNULLWorldBuffElBless() const { return (NULL == m_pWorldBuffElBless ? true : false); }
+	bool IsNULLWorldBuffElBless() const { return (NULL == m_pWorldBuffElBless ? true : false); }
 
 	int GetRemainTimeToFinish() const { return m_iRemainTimeToFinish; }
 	void SetRemainTimeToFinish( const int iRemainTime_ ) { m_iRemainTimeToFinish = iRemainTime_; }

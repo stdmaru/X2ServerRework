@@ -16,7 +16,7 @@ public:
 		UINT uiStartPos;
 		UINT iMoveMapIndex;
 		StartPosInfo(UINT iMoveMapIndex_):
-		iMoveMapIndex(iMoveMapIndex_), uiStartPos(0){};
+		uiStartPos(0), iMoveMapIndex(iMoveMapIndex_){};
 	};
 
 public:

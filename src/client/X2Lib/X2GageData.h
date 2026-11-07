@@ -7,7 +7,7 @@ namespace _CONST_ELESIS_DETONATION_
 }
 
 class CX2GageData;
-typedef boost::intrusive_ptr<CX2GageData> CX2GageDataPtr;
+typedef x2::intrusive_ptr<CX2GageData> CX2GageDataPtr;
 
 class CX2ElswordGageData;
 class CX2GageData {
@@ -106,33 +106,33 @@ public:
 
 	};
 
-	CX2GageData() : m_pHpGage( NULL ), m_pMpGage( NULL ), m_fSwapGageTime( 0.0f ),
+	CX2GageData() : m_uRefCount(0), m_pHpGage( NULL ), m_pMpGage( NULL ),
+		m_ForceDownGage(), m_ChargeMpGageForDetonation(), m_fSwapGageTime( 0.0f ),
 		m_fChangeRateByItem( 0.0f ), m_fChangeRateTimeByItem( 0.0f ), m_fHyperModeRemainTime( 0.0f ),
-		m_byHyperModeCount( 0 ), m_bEnable( false ), m_bCanChargeMpForDetonation( false ),
-		m_bHpRelativeChangeRate( false ), m_ChargeMpGageForDetonation(), m_ForceDownGage(), m_bUpdateMpPoint(true)
-		,m_fAddMaxMP( 0.f )
+		m_byHyperModeCount( 0 ), m_bEnable( false ), m_bCanChargeMpForDetonation( false ), m_bHpRelativeChangeRate( false )
+		,m_bUpdateMpPoint(true)
+		, m_fAddMaxMP( 0.f )
 		, m_bIsActivateForceDown(false)
 		, m_bIsActivateDetonation(false)
-		, m_fNowChargeMpForDetonation(0.f)
-        , m_uRefCount(0)
+        , m_fNowChargeMpForDetonation(0.f)
 	{
 		Init();
 		m_SoulGage.fMax = 100.0f;
 	}
 
 	CX2GageData( const CX2GageData& rhs_ ) :
-		m_pHpGage( new Gage( rhs_.m_pHpGage ) ), m_pMpGage( new Gage( rhs_.m_pMpGage ) ), m_SoulGage( rhs_.m_SoulGage ),
-		m_fSwapGageTime( rhs_.m_fSwapGageTime ),
-		m_fChangeRateByItem( rhs_.m_fChangeRateByItem ), m_fChangeRateTimeByItem( rhs_.m_fChangeRateTimeByItem ),
-		m_fHyperModeRemainTime( rhs_.m_fHyperModeRemainTime ), m_byHyperModeCount( rhs_.m_byHyperModeCount ),
-		m_bEnable( rhs_.m_bEnable ), m_bCanChargeMpForDetonation( rhs_.m_bCanChargeMpForDetonation ),
-		m_bHpRelativeChangeRate( rhs_.m_bHpRelativeChangeRate ), m_ChargeMpGageForDetonation( rhs_.m_ChargeMpGageForDetonation ),
-		m_ForceDownGage( rhs_.m_ForceDownGage ), m_bUpdateMpPoint( rhs_.m_bUpdateMpPoint )
+		m_uRefCount(0), m_pHpGage( new Gage( rhs_.m_pHpGage ) ), m_pMpGage( new Gage( rhs_.m_pMpGage ) ),
+		m_SoulGage( rhs_.m_SoulGage ),
+		m_ForceDownGage( rhs_.m_ForceDownGage ), m_ChargeMpGageForDetonation( rhs_.m_ChargeMpGageForDetonation ),
+		m_fSwapGageTime( rhs_.m_fSwapGageTime ), m_fChangeRateByItem( rhs_.m_fChangeRateByItem ),
+		m_fChangeRateTimeByItem( rhs_.m_fChangeRateTimeByItem ), m_fHyperModeRemainTime( rhs_.m_fHyperModeRemainTime ),
+		m_byHyperModeCount( rhs_.m_byHyperModeCount ), m_bEnable( rhs_.m_bEnable ),
+		m_bCanChargeMpForDetonation( rhs_.m_bCanChargeMpForDetonation ), m_bHpRelativeChangeRate( rhs_.m_bHpRelativeChangeRate )
+		,m_bUpdateMpPoint( rhs_.m_bUpdateMpPoint )
 		,m_fAddMaxMP( rhs_.m_fAddMaxMP )
 		,m_bIsActivateForceDown( rhs_.m_bIsActivateForceDown )
 		,m_bIsActivateDetonation( rhs_.m_bIsActivateDetonation )
-		,m_fNowChargeMpForDetonation( rhs_.m_fNowChargeMpForDetonation )
-        , m_uRefCount(0)
+        , m_fNowChargeMpForDetonation( rhs_.m_fNowChargeMpForDetonation )
 	{
 	}
 
@@ -173,11 +173,11 @@ public:
 		m_pMpGage = new Gage();
 	}
 
-	void SetShow( const bool bShow_ ) { ASSERT( !L"Gage Data SetShow" ); }
-	bool GetShow() const { ASSERT( !L"Gage Data GetShow" ); }
+	void SetShow( const bool /*bShow_*/ ) { ASSERT( !L"Gage Data SetShow" ); }
+	bool GetShow() const { ASSERT( !L"Gage Data GetShow" ); return false; }
 	////////////////// Hp ���� Get/Set ///////////////////////////////////////////
 	/////// NowHp
-	float			GetNowHp() const { return ( NULL != m_pHpGage ? m_pHpGage->fNow : 0.0f );	}
+	float			GetNowHp() const { return ( NULL != m_pHpGage ? static_cast<float>( m_pHpGage->fNow ) : 0.0f );	}
 	void			SetNowHp( const float fNowHp_ )
 	{
 		if ( NULL != m_pHpGage )
@@ -206,7 +206,7 @@ public:
 	}
 
 	////// MaxHp
-	float			GetMaxHp() const { return ( NULL != m_pHpGage ? m_pHpGage->fMax : 0.0f );	}
+	float			GetMaxHp() const { return ( NULL != m_pHpGage ? static_cast<float>( m_pHpGage->fMax ) : 0.0f );	}
 	void			SetMaxHp( const float fMaxHp_ )
 	{
 		if ( NULL != m_pHpGage )
@@ -219,7 +219,7 @@ public:
 	}
 
 	/////// ChangeRateHp
-	float			GetChangeRateHp() const { return ( NULL != m_pHpGage ? m_pHpGage->fChangeRate : 0.0f );	}
+	float			GetChangeRateHp() const { return ( NULL != m_pHpGage ? static_cast<float>( m_pHpGage->fChangeRate ) : 0.0f );	}
 	void			SetChangeRateHp( const float fChangeRateHp_ )
 	{
 		if ( NULL != m_pHpGage )
@@ -233,7 +233,7 @@ public:
 
 	////////////////// Mp ���� Get/Set ///////////////////////////////////////////
 	////// NowMp
-	float			GetNowMp() const { return ( NULL != m_pMpGage ? m_pMpGage->fNow : 0.0f );	}
+	float			GetNowMp() const { return ( NULL != m_pMpGage ? static_cast<float>( m_pMpGage->fNow ) : 0.0f );	}
 	void			SetNowMp( const float fNowMp_ )
 	{
 		if ( NULL != m_pMpGage )
@@ -254,7 +254,7 @@ public:
 	}
 
 	////// MaxMp
-	float			GetMaxMp() const { return ( NULL != m_pMpGage ? m_pMpGage->fMax : 0.0f ); }
+	float			GetMaxMp() const { return ( NULL != m_pMpGage ? static_cast<float>( m_pMpGage->fMax ) : 0.0f ); }
 	void			SetMaxMp( const float fMaxMp_ )
 	{
 		if ( NULL != m_pMpGage )
@@ -293,7 +293,7 @@ public:
 	}
 
 	/////// ChangeRateMp
-	float			GetChangeRateMp() const { return ( NULL != m_pMpGage ? m_pMpGage->fChangeRate : 0.0f );	}
+	float			GetChangeRateMp() const { return ( NULL != m_pMpGage ? static_cast<float>( m_pMpGage->fChangeRate ) : 0.0f );	}
 	void			SetChangeRateMp( const float fChangeRateMp_ )
 	{
 		if ( NULL != m_pMpGage )
@@ -420,7 +420,7 @@ public:
 
 	///////dummy
 
-	void SetBossGaugeNumber( IN u_short usNumber_ ) { ASSERT( !L"Not Exist" ); }
+	void SetBossGaugeNumber( IN u_short /*usNumber_*/ ) { ASSERT( !L"Not Exist" ); }
 	//////////////dummy
 	virtual void	OnFrameMove( double fTime, float fElapsedTime );
 	virtual void	DetonationFrameMove( double fTime, float fElapsedTime );
@@ -829,11 +829,11 @@ public:
 	bool GetChangedMutationCount() const { return m_bChangedMutationCount; }
 	void SetChangedMutationCount( bool val_ ) { m_bChangedMutationCount = val_; }
 
-	int GetMutationCount() const { return min( max( m_iMutationCount, 0), MAX_MUTATION_COUNT_VALUE ); }
-	void SetMutationCount( int val_ ) { m_iMutationCount = min( max( val_, 0), MAX_MUTATION_COUNT_VALUE ); }
+	int GetMutationCount() const { return std::min( std::max( m_iMutationCount, 0), MAX_MUTATION_COUNT_VALUE ); }
+	void SetMutationCount( int val_ ) { m_iMutationCount = std::min( std::max( val_, 0), MAX_MUTATION_COUNT_VALUE ); }
 
-	float GetDPValue() const { return min( max( m_fDPValue, 0.f ), MAX_DP_GAGE_VALUE ); }
-	void SetDPValue( float val_ ) { m_fDPValue = min( max( val_, 0.f ), MAX_DP_GAGE_VALUE ); }
+	float GetDPValue() const { return std::min( std::max( m_fDPValue, 0.f ), MAX_DP_GAGE_VALUE ); }
+	void SetDPValue( float val_ ) { m_fDPValue = std::min( std::max( val_, 0.f ), MAX_DP_GAGE_VALUE ); }
 
 	float GetMaxDPValue() const { return m_fMaxDPValue; }
 	void SetMaxDPValue( float val_ ) { m_fMaxDPValue = val_; }		/// �ִ�ġ�� X2Define.h �� ���� �Ǿ� �־��!

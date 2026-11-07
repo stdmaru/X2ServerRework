@@ -244,7 +244,7 @@ bool CBattleFieldData::ParsingBattleFieldRiskInfo( IN KLuaManager& luaManager_ )
 
 CBattleFieldData::CBattleFieldPortalMovingInfoPtr CBattleFieldData::GetBattleFieldPortalMovingInfoPtrByLineMapIndex( const UINT uiLineMapIndex_ )
 {
-	BOOST_FOREACH( CBattleFieldPortalMovingInfoPtr val, m_vecBattleFieldPortalMovingInfoPtr )
+	for( CBattleFieldPortalMovingInfoPtr val : m_vecBattleFieldPortalMovingInfoPtr )
 	{
 		if ( val->GetLineNumber() == uiLineMapIndex_ )
 			return val;
@@ -256,7 +256,7 @@ CBattleFieldData::CBattleFieldPortalMovingInfoPtr CBattleFieldData::GetBattleFie
 bool CBattleFieldData::GetBattleFieldPortalMovingInfo( OUT map<UINT, UINT>& mapBattleFieldMovingInfo_)
 {
 	mapBattleFieldMovingInfo_.clear();
-	BOOST_FOREACH( CBattleFieldPortalMovingInfoPtr val, m_vecBattleFieldPortalMovingInfoPtr )
+	for( CBattleFieldPortalMovingInfoPtr val : m_vecBattleFieldPortalMovingInfoPtr )
 	{
 		UINT uiPlaceToMove = val->GetPlaceIdToMove();
 		UINT uiLineMapIndex = val->GetLineNumber();

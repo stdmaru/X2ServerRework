@@ -3148,7 +3148,7 @@ void CX2StateMenu::UpdateGuideDescPremiumBuffUI()
 
 	if ( g_pData->GetPremiumBuffManager()->GetPremiumBuffList().empty() == false )
 	{
-		BOOST_FOREACH( CX2PremiumBuffIconPtr pPremiumBuffPtr , g_pData->GetPremiumBuffManager()->GetPremiumBuffList() )
+		for( CX2PremiumBuffIconPtr pPremiumBuffPtr : g_pData->GetPremiumBuffManager()->GetPremiumBuffList() )
 		{
 			if( pPremiumBuffPtr->GetPremiumBuffID() != 16 )
 				UpdateGuideDescBuffTemplet( pPremiumBuffPtr );
@@ -3231,7 +3231,7 @@ bool CX2StateMenu::Handler_EGS_CHANGE_EQUIPPED_ITEM_IN_ROOM_NOT( HWND hWnd, UINT
 			// 파티원이면
 			if ( myUID != kEvent.m_UnitUID )
 			{
-				BOOST_TEST_FOREACH( KInventoryItemInfo&, kInventoryItemInfo, kEvent.m_vecInventorySlotInfo )
+				for( KInventoryItemInfo& kInventoryItemInfo : kEvent.m_vecInventorySlotInfo )
 				{
 					CX2Item* pItemToRemove = kInventory.GetItem( static_cast< CX2Inventory::SORT_TYPE >( kInventoryItemInfo.m_cSlotCategory ),
 						kInventoryItemInfo.m_sSlotID );
@@ -3287,7 +3287,7 @@ bool CX2StateMenu::Handler_EGS_CHANGE_EQUIPPED_ITEM_IN_ROOM_NOT( HWND hWnd, UINT
 				pUser->SetEnableAttackBox( L"Lhand2", false );
 				//}} kimhc // 2010.12.11 //  2010-12-23 New Character CHUNG
 
-				BOOST_TEST_FOREACH( KInventoryItemInfo&, kInventoryItemInfo, kEvent.m_vecInventorySlotInfo )
+				for( KInventoryItemInfo& kInventoryItemInfo : kEvent.m_vecInventorySlotInfo )
 				{
 					if ( kInventoryItemInfo.m_cSlotCategory == CX2Inventory::ST_E_EQUIP &&
 						( kInventoryItemInfo.m_sSlotID == _CONST_UIINVENTORY_::g_iEquippedNormalWeaponSlotID
@@ -3539,7 +3539,7 @@ bool CX2StateMenu::Hander_EGS_ZERO_ENDURANCE_ITEM_IN_ROOM_NOT( HWND hWnd, UINT u
 
 	const CX2Inventory& kInventory = pUser->GetUnit()->GetInventory();
 
-	BOOST_TEST_FOREACH( const KDecreaseEnduranceInfo&, enduranceInfo, kEvent.m_vecEnduranceUpdate )
+	for( const KDecreaseEnduranceInfo& enduranceInfo : kEvent.m_vecEnduranceUpdate )
 	{
 		CX2Item* pItem = kInventory.GetItem( enduranceInfo.m_iItemUID );
 		if ( NULL == pItem )
@@ -4138,7 +4138,7 @@ void CX2StateMenu::SetShowBuffTempletIcon( bool  bVal)
 {
 	if( g_pData->GetPremiumBuffManager()->GetPremiumBuffList().empty() != true )
 	{
-		BOOST_FOREACH( CX2PremiumBuffIconPtr pPremiumBuffPtr, g_pData->GetPremiumBuffManager()->GetPremiumBuffList() )
+		for( CX2PremiumBuffIconPtr pPremiumBuffPtr : g_pData->GetPremiumBuffManager()->GetPremiumBuffList() )
 		{
 			CX2PremiumBuffTemplet::BUFF_ID		ePremiumBuffID		= pPremiumBuffPtr->GetPremiumBuffID();													//버프 ID
 

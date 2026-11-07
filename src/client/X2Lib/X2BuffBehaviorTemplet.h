@@ -6,7 +6,7 @@
 
 class CX2BuffTemplet;
 class CX2BuffBehaviorTemplet;
-typedef boost::intrusive_ptr<CX2BuffBehaviorTemplet> CX2BuffBehaviorTempletPtr;
+typedef x2::intrusive_ptr<CX2BuffBehaviorTemplet> CX2BuffBehaviorTempletPtr;
 
 /** @class : CX2BuffBehaviorTemplet
 	@brief : 버프의 행동 방식을 정의하는 클래스
@@ -17,16 +17,16 @@ class CX2BuffBehaviorTemplet
 public:
 	static bool ParsingCombinationBehavior( KLuaManager& luaManager_, OUT vector<CX2BuffBehaviorTempletPtr>& vecBuffBehaviorTempletPtr_ );
 
-	CX2BuffBehaviorTemplet( const CX2BuffBehaviorTemplet& rhs_ ) : m_eType( rhs_.m_eType ), m_bStart( rhs_.m_bStart )
-        , m_uRefCount(0)
+	CX2BuffBehaviorTemplet( const CX2BuffBehaviorTemplet& rhs_ ) : m_uRefCount(0), m_eType( rhs_.m_eType )
+        , m_bStart( rhs_.m_bStart )
 	{}
 	virtual ~CX2BuffBehaviorTemplet() {}
 
-    virtual void OnFrameMove( CX2GameUnit* pGameUnit_, CX2BuffTemplet* pBuffTemplet_, float fElapsedTime_ ) {}
-	virtual bool SetFactor( const CX2BuffFactor& BuffFactor_, CX2GameUnit* pGameUnit_, const CX2BuffTemplet* pBuffTemplet_ ) = NULL;
-	virtual CX2BuffBehaviorTempletPtr GetClonePtr() const = NULL;
-	virtual void GetFactor( OUT vector<KBuffBehaviorFactor>& vecFactors_ ) const = NULL;
-	virtual void DoFinish( CX2GameUnit* pGameUnit_, CX2BuffTemplet* pBuffTemplet_ ) {}
+    virtual void OnFrameMove( CX2GameUnit* /*pGameUnit_*/, CX2BuffTemplet* /*pBuffTemplet_*/, float /*fElapsedTime_*/ ) {}
+	virtual bool SetFactor( const CX2BuffFactor& BuffFactor_, CX2GameUnit* pGameUnit_, const CX2BuffTemplet* pBuffTemplet_ ) = 0;
+	virtual CX2BuffBehaviorTempletPtr GetClonePtr() const = 0;
+	virtual void GetFactor( OUT vector<KBuffBehaviorFactor>& vecFactors_ ) const = 0;
+	virtual void DoFinish( CX2GameUnit* /*pGameUnit_*/, CX2BuffTemplet* /*pBuffTemplet_*/ ) {}
 
 	bool SetFactorFromPacketTemplateMothod( const KBuffFactor& kBuffFactor_, CX2GameUnit* pGameUnit_ );
 	bool DidStart() const { return m_bStart; }
@@ -40,8 +40,8 @@ public:
 
 
 protected:
-	CX2BuffBehaviorTemplet() : m_eType( BBT_NONE ), m_bStart( false )
-        , m_uRefCount(0)
+	CX2BuffBehaviorTemplet() : m_uRefCount(0), m_eType( BBT_NONE )
+        , m_bStart( false )
     {}
     CX2BuffBehaviorTemplet& operator = ( const CX2BuffBehaviorTemplet& );
 
@@ -49,8 +49,8 @@ protected:
 	void SetType(BUFF_BEHAVIOR_TYPE val) { m_eType = val; }
 
 	bool		ParsingBehaviorTemplateMethod( KLuaManager& luaManager_, const char* pszTableName_ );
-	virtual bool ParsingBehavior( KLuaManager& luaManager_ ) { return true; }
-	virtual void SetFactorFromPacket( const KBuffFactor& kBuffFactor_, const KBuffBehaviorFactor& kFactor_, CX2GameUnit* pGameUnit_ ) {};
+	virtual bool ParsingBehavior( KLuaManager& /*luaManager_*/ ) { return true; }
+	virtual void SetFactorFromPacket( const KBuffFactor& /*kBuffFactor_*/, const KBuffBehaviorFactor& /*kFactor_*/, CX2GameUnit* /*pGameUnit_*/ ) {};
 
 private:
     unsigned                                        m_uRefCount;
@@ -912,7 +912,7 @@ public:
 
 protected:
 	CX2BuffChangeConsumeMpRate() : CX2BuffBehaviorTemplet()
-		, m_eChangeType( BCT_SWAP_VALUE ), m_fResultValue( 0.0f ), m_uiSkillId( 0 ), m_fInitMp( 0.f )
+		, m_eChangeType( BCT_SWAP_VALUE ), m_uiSkillId( 0 ), m_fResultValue( 0.0f ), m_fInitMp( 0.f )
 	{}
 
 	virtual bool ParsingBehavior( KLuaManager& luaManager_ );

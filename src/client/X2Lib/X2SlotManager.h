@@ -148,8 +148,8 @@ public:
 
 	virtual void SetNowDragItemReturn();
 
-	virtual wstring GetSlotItemDesc() = NULL;
-	virtual void DrawSlotDesc() = NULL;
+	virtual wstring GetSlotItemDesc() = 0;
+	virtual void DrawSlotDesc() = 0;
 
 	void SetNowOverItemSlotAndDesc( CX2SlotItem* pSlotItem )
 	{

@@ -107,7 +107,7 @@ public:
 public:
     CX2UIManager();
 	void ResetUIManager();
-    ~CX2UIManager();
+    virtual ~CX2UIManager();
 
     virtual bool    UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
     virtual bool    UIServerEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
@@ -122,8 +122,8 @@ public:
 
 	bool IsOpenedWindow();
 	bool GetShow(UI_MENU menuInx);
-	bool ToggleUI(CX2UIManager::UI_MENU menuInx, UidType arg = NULL);
-    bool ToggleUI(CX2UIManager::UI_MENU menuInx, bool forOpen, UidType arg = NULL);
+	bool ToggleUI(CX2UIManager::UI_MENU menuInx, UidType arg = 0);
+    bool ToggleUI(CX2UIManager::UI_MENU menuInx, bool forOpen, UidType arg = 0);
 	void CloseAll();
 	void CloseAllLUDlg();		// LU : 왼쪽 위
 	void CloseAllNPCDlg();

@@ -844,7 +844,7 @@ bool CX2RidingPetManager::Handler_EGS_SUMMON_RIDING_PET_ACK( HWND hWnd, UINT uMs
 			}
 
 			// ��ȯ�� ���̵� ���� ���̵��� ����Ʈ �ֻ����� �ΰ� ������.
-			BOOST_FOREACH( sRidingPetInfo& kInfo, m_vecRidingPetList )
+			for( sRidingPetInfo& kInfo : m_vecRidingPetList )
 			{
 				if( kInfo.m_iRidingPetUID == kEvent.m_kRidingPetInfo.m_iRidingPetUID )
 				{
@@ -1077,7 +1077,7 @@ bool CX2RidingPetManager::Handler_EGS_UNSUMMON_RIDING_PET_ACK( HWND hWnd, UINT u
 
 
 			// ��ȯ������ ���̵� ���� ���̵��� ����Ʈ �ֻ����� �ΰ� ������.
-			BOOST_FOREACH( sRidingPetInfo& kInfo, m_vecRidingPetList )
+			for( sRidingPetInfo& kInfo : m_vecRidingPetList )
 			{
 				if( kInfo.m_iRidingPetUID == m_RidingPetUid )
 				{
@@ -1351,14 +1351,14 @@ void CX2RidingPetManager::SortRidingPetList()
 
 	// Date���� Index�� ����
 	int iOrder = 0;
-	BOOST_FOREACH( sRidingPetInfo& RidingPet, vecTempRidingPetList )
+	for( sRidingPetInfo& RidingPet : vecTempRidingPetList )
 	{
 		RidingPet.m_iPetListOrder = iOrder++;
 	}
 
 	m_vecRidingPetList.clear();
 	// Ȱ��ȭ ������ ���� ���� �켱������ ����
-	BOOST_FOREACH( sRidingPetInfo RidingPet, vecTempRidingPetList )
+	for( sRidingPetInfo RidingPet : vecTempRidingPetList )
 	{
 		if( RidingPet.m_fProtectStamina >= m_fEnableStamina )
 			m_vecRidingPetList.push_back( RidingPet );
@@ -1368,7 +1368,7 @@ void CX2RidingPetManager::SortRidingPetList()
 	if ( m_vecRidingPetList.size() == vecTempRidingPetList.size() )
 		return;
 
-	BOOST_FOREACH( sRidingPetInfo RidingPet, vecTempRidingPetList )
+	for( sRidingPetInfo RidingPet : vecTempRidingPetList )
 	{
 		if( RidingPet.m_fProtectStamina < m_fEnableStamina )
 			m_vecRidingPetList.push_back( RidingPet );
@@ -1385,7 +1385,7 @@ void CX2RidingPetManager::FullChargeRidingStamina( int iValue_ )
 		return;
 	}
 
-	BOOST_FOREACH( sRidingPetInfo& RidingPet, m_vecRidingPetList )
+	for( sRidingPetInfo& RidingPet : m_vecRidingPetList )
 	{
 		if( iValue_ > 0 )
 			RidingPet.m_fProtectStamina = static_cast<float>(iValue_);
@@ -1675,7 +1675,7 @@ void CX2RidingPetManager::SetEnableStamina_LUA( float _EnableStamina )
 
 bool CX2RidingPetManager::GetRidingPetInfoByUID( IN UidType uiRidingPetUID, OUT sRidingPetInfo& RidingPetInfo_ )
 {
-	BOOST_FOREACH( sRidingPetInfo sPetInfo, m_vecRidingPetList )
+	for( sRidingPetInfo sPetInfo : m_vecRidingPetList )
 	{
 		if( sPetInfo.m_iRidingPetUID == uiRidingPetUID )
 		{

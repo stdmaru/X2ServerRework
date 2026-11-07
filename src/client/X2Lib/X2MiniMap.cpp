@@ -24,7 +24,7 @@ CX2MiniMap::CX2MiniMap( CX2MiniMapUI* pMiniMapUI )
 	m_pRenderTargetTexture	= g_pKTDXApp->GetDeviceManager()->OpenRenderTargetTexture( L"MiniMapTex", iRenderTargetWidth, iRenderTargetHeight, D3DFMT_A8R8G8B8 );
 	m_pTextureMiniMap		= g_pKTDXApp->GetDeviceManager()->OpenTexture( L"HQ_MiniMap.tga" );
 
-	for( int i=0; i<ARRAY_SIZE(m_pTextureIcon); i++ )
+	for( int i=0; i<std::ssize(m_pTextureIcon); i++ )
 	{
 		m_pTextureIcon[i] = NULL;
 	}
@@ -63,7 +63,7 @@ CX2MiniMap::~CX2MiniMap(void)
 	SAFE_CLOSE( m_pRenderTargetTexture );
 	SAFE_CLOSE( m_pTextureMiniMap );
 
-	for( int i=0; i<ARRAY_SIZE(m_pTextureIcon); i++ )
+	for( int i=0; i<std::ssize(m_pTextureIcon); i++ )
 	{
 		SAFE_CLOSE( m_pTextureIcon[i] );
 	}
@@ -887,7 +887,7 @@ void CX2MiniMap::RenderGameUnitTexture()
 
 	const int iMyTeam = g_pX2Game->GetMyUnit()->GetTeam();	/// 내 팀 번호
 	const vector<CX2GameUnit*>& vecGameUnitList = g_pX2Game->GetUnitList();
-	BOOST_FOREACH( const CX2GameUnit* pGameUnit, vecGameUnitList )
+	for( const CX2GameUnit* pGameUnit : vecGameUnitList )
 	{
 		if ( NULL != pGameUnit && pGameUnit->GetShowOnMiniMap() )
 		{

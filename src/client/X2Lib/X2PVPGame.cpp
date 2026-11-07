@@ -846,7 +846,7 @@ CX2PVPGame::PVPResultInfo::~PVPResultInfo()
 /*virtual*/
 bool CX2PVPGame::GetIsExsitancePartyMemberHPLessThanPer( const float fHPRate_, const CX2GUUser* pGUUserWhoCallFunction_ ) const
 {
-	BOOST_FOREACH( CX2GUUser* pGUUser, m_UserUnitList )
+	for( CX2GUUser* pGUUser : m_UserUnitList )
 	{
 		if ( NULL != pGUUser &&
 			pGUUser->GetTeam() == pGUUserWhoCallFunction_->GetTeam() &&

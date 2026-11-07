@@ -151,7 +151,7 @@ public:
 	// 채널 서버 인증 이후 넘어온 채널링 코드를 저장해둔다
 	void				SetChannelingCode( IN int iChannelingCode_ ) { m_iChannelingCode = iChannelingCode_; }
 	int					GetChannelingCode() const { return m_iChannelingCode; }
-	const bool			IsAeriaChanneling() const { return ((m_iChannelingCode == 6) || (m_iChannelingCode == 7)); }
+	bool			IsAeriaChanneling() const { return ((m_iChannelingCode == 6) || (m_iChannelingCode == 7)); }
 
 	CKTDXTimer& GetTimerPacketTiming() { return m_TimerPacketTiming; }
 	bool IsElapsedPacketTiming( float fTime = 1.f ) { return m_TimerPacketTiming.elapsed() > fTime; }
@@ -218,7 +218,7 @@ public:
 
 	//{{ kimhc // 2010.4.9 // 비밀던전 작업(일일퀘스트 시스템)
 	void SetPreCheckTimeForDailyQuest( __time64_t t ) { m_t64PreCheckedTimeForDailyQuest = t; }
-	const __time64_t GetPreCheckTimeForDailyQuest() const { return m_t64PreCheckedTimeForDailyQuest; }
+	__time64_t GetPreCheckTimeForDailyQuest() const { return m_t64PreCheckedTimeForDailyQuest; }
 	//}} kimhc // 2010.4.9 // 비밀던전 작업(일일퀘스트 시스템)
 
 	bool GetVerifyNpcHp() { return m_bVerifyNpcHp; }
@@ -234,7 +234,7 @@ public:
 	wstring GetAgencyShopExpirationDate() { return m_wstrAgencyShopExpirationDate; }
 	bool GetIsPShopOpen() { return m_bIsPShopOpen; }
 
-	const SEnum::AGENCY_SHOP_TYPE GetAgencyShopType() { return m_eAgencyShopType; }
+	SEnum::AGENCY_SHOP_TYPE GetAgencyShopType() { return m_eAgencyShopType; }
 
 	void SetPShopAgencyInfo( IN const bool bIsPShopOpen_, IN const wstring wstrExpirationDate_, IN const SEnum::AGENCY_SHOP_TYPE eAgencyShopType_)
 	{

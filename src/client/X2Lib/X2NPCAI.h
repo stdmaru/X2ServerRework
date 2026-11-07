@@ -46,7 +46,7 @@ public:
 	CX2NPCAI( CX2GUNPC* pOwnerNPC, NPC_AI_TYPE eAIType );
 	virtual ~CX2NPCAI();
 
-	virtual void OnFrameMove( double fTime, float fElapsedTime ) = NULL;
+	virtual void OnFrameMove( double fTime, float fElapsedTime ) = 0;
 	virtual void LoadAIDataFromLUA( KLuaManager& luaManager );
 
 

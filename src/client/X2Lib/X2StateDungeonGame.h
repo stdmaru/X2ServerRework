@@ -498,7 +498,7 @@ public:
 	virtual bool MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
 
 
-	virtual void SetShowStateDLG( bool bShow ) {};
+	virtual void SetShowStateDLG( bool /*bShow*/ ) {};
 
 
 	bool DungeonStageLoadReq( int stageNum );

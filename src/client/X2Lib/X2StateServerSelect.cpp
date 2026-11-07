@@ -437,7 +437,7 @@ CX2StateServerSelect::~CX2StateServerSelect(void)
 
 	if ( NULL != g_pData->GetUIMajorXMeshPlayer() )
 	{
-		BOOST_FOREACH( CKTDGXMeshPlayer::CXMeshInstanceHandle hStandMeshInst, m_vecStandMeshInst )
+		for( CKTDGXMeshPlayer::CXMeshInstanceHandle hStandMeshInst : m_vecStandMeshInst )
 		{
 			g_pData->GetUIMajorXMeshPlayer()->DestroyInstanceHandle( hStandMeshInst );
 		}
@@ -3872,7 +3872,7 @@ bool CX2StateServerSelect::Handler_EGS_MY_UNIT_AND_INVENTORY_INFO_LIST_ACK( HWND
 			SetShowSelectUnitInfo( NULL );
 			if ( NULL != g_pData->GetUIMajorXMeshPlayer() )
 			{
-				BOOST_FOREACH( CKTDGXMeshPlayer::CXMeshInstanceHandle hStandMeshInst, m_vecStandMeshInst )
+				for( CKTDGXMeshPlayer::CXMeshInstanceHandle hStandMeshInst : m_vecStandMeshInst )
 				{
 					g_pData->GetUIMajorXMeshPlayer()->DestroyInstanceHandle( hStandMeshInst );
 				}
@@ -4240,7 +4240,7 @@ void CX2StateServerSelect::UpdateChannelListUI()
 
 		if(mit2 != g_pInstanceData->m_mapChannelBonusInfo.end() )
 		{
-			wstring wstrChannelLv = KncUtil::toWideString( boost::str(boost::format("(LV%1%~%2%)") % mit2->second.m_iBeginLv % mit2->second.m_iEndLv) );
+			wstring wstrChannelLv = KncUtil::toWideString( x2::str(x2::format("(LV%1%~%2%)") % mit2->second.m_iBeginLv % mit2->second.m_iEndLv) );
 			float fRightChannelStrPos = 678.f;
 			float fLeftChannelStrPos = 355.f;
 			wstring wstrLvWordCheck = L"";
@@ -5065,7 +5065,6 @@ bool CX2StateServerSelect::Handler_EGS_VERIFY_ACCOUNT_REQ()
 	KEGS_VERIFY_ACCOUNT_REQ kPacket;
 
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_START
 #endif
 
 	kPacket.m_wstrUserID = g_pInstanceData->GetUserID();
@@ -5106,7 +5105,6 @@ bool CX2StateServerSelect::Handler_EGS_VERIFY_ACCOUNT_REQ()
 	}
 
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_END
 #endif
 
 	return true;
@@ -5115,7 +5113,6 @@ bool CX2StateServerSelect::Handler_EGS_VERIFY_ACCOUNT_REQ()
 bool CX2StateServerSelect::Handler_EGS_VERIFY_ACCOUNT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 {
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_START
 #endif
 
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -5130,9 +5127,7 @@ bool CX2StateServerSelect::Handler_EGS_VERIFY_ACCOUNT_ACK( HWND hWnd, UINT uMsg,
 			//g_pMain->KTDGUIOKMsgBox( D3DXVECTOR2(260, 270), GET_STRING( STR_ID_29369 ), g_pMain->GetNowState(), -1, -1.f, L"DLG_UI_OKMsgBoxPlusNew.lua", D3DXVECTOR2(0, -100));
 
 
-			ELSWORD_VIRTUALIZER_START
 			Handler_EGS_CHECK_MACHINE_ID_REQ();
-			ELSWORD_VIRTUALIZER_END
 
 //#ifdef _SERVICE_
 //			OpenGlobalURL( L"http://Elsword.nexon.com/Elsword/etc/gameinstall.aspx?Section=chceck4" );
@@ -5237,7 +5232,6 @@ bool CX2StateServerSelect::Handler_EGS_VERIFY_ACCOUNT_ACK( HWND hWnd, UINT uMsg,
 
 
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_END
 #endif
 
 	return true;
@@ -6349,16 +6343,16 @@ void CX2StateServerSelect::UpdateServerGroupListUI()
 		//if(false == iter->second.m_bEnable)
 		//	continue;
 
-		boost::wformat fmtButtonName(L"server_button_%1%");
-		CKTDGUIButton* pButton = (CKTDGUIButton*)m_pDLGServerGroupSelectBack->GetControl( boost::str(fmtButtonName % button_index).c_str() );
+		x2::wformat fmtButtonName(L"server_button_%1%");
+		CKTDGUIButton* pButton = (CKTDGUIButton*)m_pDLGServerGroupSelectBack->GetControl( x2::str(fmtButtonName % button_index).c_str() );
 		if(pButton)
 		{
 			pButton->AddDummyInt(iter->m_iServerGroupUID);
 			pButton->SetShow(true);
 		}
 
-		boost::wformat fmtButtonCaption(L"server_name_%1%");
-		CKTDGUIStatic* pStaticName = (CKTDGUIStatic*)m_pDLGServerGroupSelectBack->GetControl( boost::str(fmtButtonCaption % button_index).c_str() );
+		x2::wformat fmtButtonCaption(L"server_name_%1%");
+		CKTDGUIStatic* pStaticName = (CKTDGUIStatic*)m_pDLGServerGroupSelectBack->GetControl( x2::str(fmtButtonCaption % button_index).c_str() );
 		if(pStaticName)
 		{
 			pStaticName->SetShow(true);
@@ -6391,10 +6385,10 @@ void CX2StateServerSelect::UpdateServerSelectButton( int iID )
 {
 	if(m_pDLGServerGroupSelectBack != NULL)
 	{
-		boost::wformat fmtButtonName(L"server_button_%1%");
+		x2::wformat fmtButtonName(L"server_button_%1%");
 		for(int i=0; i<MAX_SERVERGROUP_SIZE; ++i)
 		{
-			CKTDGUIButton* pServerButton = (CKTDGUIButton*)m_pDLGServerGroupSelectBack->GetControl( boost::str(fmtButtonName % i).c_str() );
+			CKTDGUIButton* pServerButton = (CKTDGUIButton*)m_pDLGServerGroupSelectBack->GetControl( x2::str(fmtButtonName % i).c_str() );
 			if(pServerButton)
 			{
 				int iServerGroup = pServerButton->GetDummyInt(0);
@@ -6925,7 +6919,7 @@ void CX2StateServerSelect::ChangeSelectUnitStandMeshInstance ( CX2Unit::UNIT_TYP
 
 		if ( NULL != g_pData->GetUIMajorXMeshPlayer() )
 		{
-			BOOST_FOREACH( CKTDGXMeshPlayer::CXMeshInstanceHandle hStandMeshInst, m_vecStandMeshInst )
+			for( CKTDGXMeshPlayer::CXMeshInstanceHandle hStandMeshInst : m_vecStandMeshInst )
 			{
 				g_pData->GetUIMajorXMeshPlayer()->DestroyInstanceHandle( hStandMeshInst );
 			}
@@ -6979,7 +6973,7 @@ void CX2StateServerSelect::ChangeSelectUnitStandMeshInstance ( CX2Unit::UNIT_TYP
 			ASSERT ( !L"Wrong Unit Type");
 			return ;
 		}
-		BOOST_FOREACH( wstring wstrName, vecWstrName )
+		for( wstring wstrName : vecWstrName )
 		{
 			CKTDGXMeshPlayer::CXMeshInstance* pMeshStandInst = g_pData->GetUIMajorXMeshPlayer()->CreateInstance( m_pUnitViewerUI,
 				wstrName.c_str(), m_pUnitViewerUI->GetMatrix().GetPos(),
@@ -7043,7 +7037,7 @@ bool CX2StateServerSelect::Handler_EGS_CHARACTER_LIST_ACK ( HWND hWnd, UINT uMsg
 				SetShowSelectUnitInfo( NULL );
 				if ( NULL != g_pData->GetUIMajorXMeshPlayer() )
 				{
-					BOOST_FOREACH( CKTDGXMeshPlayer::CXMeshInstanceHandle hStandMeshInst, m_vecStandMeshInst )
+					for( CKTDGXMeshPlayer::CXMeshInstanceHandle hStandMeshInst : m_vecStandMeshInst )
 					{
 						g_pData->GetUIMajorXMeshPlayer()->DestroyInstanceHandle( hStandMeshInst );
 					}
@@ -7060,7 +7054,7 @@ bool CX2StateServerSelect::Handler_EGS_CHARACTER_LIST_ACK ( HWND hWnd, UINT uMsg
 				typedef std::map< int, int > ServerGroupUnitMaxMany;
 				map < SEnum::SERVER_GROUP_ID, int > mapServerMaxUnitNumber;
 				int iMaxUnitNumberAllServerGroup = 0;
-				BOOST_TEST_FOREACH( const ServerGroupUnitMaxMany::value_type&, UnitSlotData, kEvent.m_mapServerGroupUnitSlot )
+				for( const ServerGroupUnitMaxMany::value_type& UnitSlotData : kEvent.m_mapServerGroupUnitSlot )
 				{
 					switch ( UnitSlotData.first )
 					{
@@ -7078,7 +7072,7 @@ bool CX2StateServerSelect::Handler_EGS_CHARACTER_LIST_ACK ( HWND hWnd, UINT uMsg
 				typedef std::map< int, std::vector<KUnitInfo>  > ServerGroupUnitNowMany;
 				map < SEnum::SERVER_GROUP_ID, int > mapServerNowUnitNumber;
 				int iNowUnitNumberAllServerGroup = 0;
-				BOOST_TEST_FOREACH( const ServerGroupUnitNowMany::value_type&, UnitInfo, kEvent.m_mapServerGroupUnitInfo )
+				for( const ServerGroupUnitNowMany::value_type& UnitInfo : kEvent.m_mapServerGroupUnitInfo )
 				{
 					int iGroupInfoSize = static_cast<int> ( UnitInfo.second.size() );
 					switch ( UnitInfo.first )
@@ -7099,7 +7093,7 @@ bool CX2StateServerSelect::Handler_EGS_CHARACTER_LIST_ACK ( HWND hWnd, UINT uMsg
 
 				ServerGroupUnitInfoAfterSort mapServerGroupUnitInfo;
 
-				BOOST_TEST_FOREACH( const ServerGroupUnitInfoBeforeSort::value_type&, UnitinfoData, kEvent.m_mapServerGroupUnitInfo )
+				for( const ServerGroupUnitInfoBeforeSort::value_type& UnitinfoData : kEvent.m_mapServerGroupUnitInfo )
 				{
 					for( int i =0; i < (int)UnitinfoData.second.size(); i++ )
 					{
@@ -7114,7 +7108,7 @@ bool CX2StateServerSelect::Handler_EGS_CHARACTER_LIST_ACK ( HWND hWnd, UINT uMsg
 					}
 				}
 
-				BOOST_TEST_FOREACH( const ServerGroupUnitInfoAfterSort::value_type &, ServerGroupUnitInfo, mapServerGroupUnitInfo )
+				for( const ServerGroupUnitInfoAfterSort::value_type & ServerGroupUnitInfo : mapServerGroupUnitInfo )
 				{
 					KUnitInfo kUnitInfo = ServerGroupUnitInfo.second;
 					CX2Unit* pUnit = new CX2Unit( kUnitInfo );
@@ -7151,7 +7145,7 @@ bool CX2StateServerSelect::Handler_EGS_CHARACTER_LIST_ACK ( HWND hWnd, UINT uMsg
 
 
 
-				BOOST_TEST_FOREACH( const ServerGroupUnitMany::value_type &, UnitManyMaxData, mapServerMaxUnitNumber )
+				for( const ServerGroupUnitMany::value_type & UnitManyMaxData : mapServerMaxUnitNumber )
 				{
 					ServerGroupUnitMany::const_iterator cit = mapServerNowUnitNumber.find ( UnitManyMaxData.first );
 					if ( cit != mapServerMaxUnitNumber.end() )
@@ -7577,7 +7571,7 @@ bool CX2StateServerSelect::Handler_EGS_GET_CREATE_UNIT_TODAY_COUNT_ACK( HWND hWn
 	{
 		typedef std::map< int, int > TodayCreateUnitCount;
 
-		BOOST_TEST_FOREACH( const TodayCreateUnitCount::value_type&, Count, kEvent.m_mapCreateCharCountToday )
+		for( const TodayCreateUnitCount::value_type& Count : kEvent.m_mapCreateCharCountToday )
 		{
 			switch ( Count.first )
 			{
@@ -7657,7 +7651,7 @@ bool CX2StateServerSelect::Handler_EGS_ENTRY_POINT_GET_CHANNEL_LIST_ACK( HWND hW
 
 		// #1 ??� ?????? ?????? �?? ???? ??????
 		std::map< int, KChannelInfo >::const_iterator mitChannelInfo;
-		BOOST_FOREACH( const int& iChannelID, vecRecommandedLevelChannelID_ )
+		for( const int& iChannelID : vecRecommandedLevelChannelID_ )
 		{
 			mitChannelInfo = kPacketChannelList_.find( iChannelID );
 			if( mitChannelInfo != kPacketChannelList_.end() )
@@ -7670,7 +7664,7 @@ bool CX2StateServerSelect::Handler_EGS_ENTRY_POINT_GET_CHANNEL_LIST_ACK( HWND hW
 		for( ; mitChannelInfo != kPacketChannelList_.end(); ++ mitChannelInfo )
 		{
 			bool bAredyInsert = false;
-			BOOST_FOREACH( const int& iChannelID, vecRecommandedLevelChannelID_ )
+			for( const int& iChannelID : vecRecommandedLevelChannelID_ )
 			{
 				if( iChannelID == mitChannelInfo->first )
 					bAredyInsert = true;

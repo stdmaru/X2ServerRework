@@ -632,7 +632,7 @@ bool CX2PartyManager::Handler_EGS_LEAVE_PARTY_NOT( HWND hWnd, UINT uMsg, WPARAM 
 	{
 		bool bComeBackUserInParty = false;
 
-		BOOST_TEST_FOREACH( const CX2PartyManager::PartyMemberData&, value, GetMyPartyData()->m_vecPartyMemberData )
+		for( const CX2PartyManager::PartyMemberData& value : GetMyPartyData()->m_vecPartyMemberData )
 		{
 			if ( true == value.m_bComeBackUser )
 			{
@@ -2815,7 +2815,7 @@ void CX2PartyManager::NetworkProcess( IN const float fElapsedTime )
 //
 //	//방 유저들을 피어로 유지시킨다.
 //	bool bAddNewPeer = false;
-//	BOOST_TEST_FOREACH( const PartyMemberData&, sPartyMemberData, m_MyPartyData.m_vecPartyMemberData )
+//	for( const PartyMemberData& sPartyMemberData : m_MyPartyData.m_vecPartyMemberData )
 //	{
 //		//슬롯에 있는 유저를 피어에 등록한다
 //		const CKTDNUDP::Peer* pPeer = g_pData->GetGameUDP()->GetPeer( sPartyMemberData.m_iUnitUID );

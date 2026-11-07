@@ -771,7 +771,7 @@ void CX2TalkBoxManagerImp::DrawTalkBoxEffectInnerFrame ( int iType, float _fX, f
 	KD3DPUSH( m_RenderStateID );
 
 //#ifdef DYNAMIC_VERTEX_BUFFER_OPT
-	BOOST_STATIC_ASSERT( D3DFVF_DRAWFACE_RHW_VERTEX == D3DFVF_XYZRHW_DIFFUSE_TEX1 );
+	static_assert( D3DFVF_DRAWFACE_RHW_VERTEX == D3DFVF_XYZRHW_DIFFUSE_TEX1 , "");
 		g_pKTDXApp->GetDVBManager()->DrawPrimitive( CKTDGDynamicVBManager::DVB_TYPE_XYZRHW_DIFFUSE_TEX1,
 			D3DPT_TRIANGLESTRIP, 2, &aFaces[ 0 ] );
 //#else
@@ -856,7 +856,7 @@ void CX2TalkBoxManagerImp::DrawBalloonBodyAndTip( int iType, float _fX, float _f
 	KD3DPUSH( m_RenderStateID );
 
 //#ifdef DYNAMIC_VERTEX_BUFFER_OPT
-	BOOST_STATIC_ASSERT( D3DFVF_DRAWFACE_RHW_VERTEX == D3DFVF_XYZRHW_DIFFUSE_TEX1 );
+	static_assert( D3DFVF_DRAWFACE_RHW_VERTEX == D3DFVF_XYZRHW_DIFFUSE_TEX1 , "");
 	for( int i = 0; i < CX2TalkBoxManagerImp_NUM_FACEUV; i++ )
 	{
 		g_pKTDXApp->GetDVBManager()->DrawPrimitive( CKTDGDynamicVBManager::DVB_TYPE_XYZRHW_DIFFUSE_TEX1

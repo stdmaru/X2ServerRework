@@ -588,7 +588,7 @@ class CX2DamageEffect
 				void SetHitDamageEffectScaleByUnit( const D3DXVECTOR3& vScale ) { m_vHitDamageScaleByUnit = vScale; }
 				void SetDieDamageEffectScaleByUnit( const D3DXVECTOR3& vScale ) { m_vDieDamageScaleByUnit = vScale; }
 
-				D3DXVECTOR3 CX2DamageEffect::CEffect::GetMainEffectScaleByUnit();
+				D3DXVECTOR3 GetMainEffectScaleByUnit();
 
 
 
@@ -628,7 +628,7 @@ class CX2DamageEffect
 				void	AddDieEffectDamage( CEffect* pCEffect );	/// 다이 데미지 이펙트 생성시 추가 데미지 설정 함수( 지연의 신호탄 )
 
 				void		SetCheckSpectro( IN bool bValue_ ) { m_bCheckSpectro = bValue_; }
-				const bool	GetCheckSpectro() const { return m_bCheckSpectro; }
+				bool	GetCheckSpectro() const { return m_bCheckSpectro; }
 
 				bool GetIsGroupDamage() const { return m_bGroupDamage; }	/// 데미지 이펙트 그룹 데미지 설정 반환 함수
 
@@ -640,11 +640,11 @@ class CX2DamageEffect
 
 				void SetLockOnNearstTarget( IN const D3DXVECTOR3& vMyPos_, int iTeam_ , int randomOffset = 0 );
 
-				const bool SetLinkMainEffectByPos( IN const D3DXVECTOR3& vMyPos_, IN const D3DXVECTOR3& vTargetPos_,
+				bool SetLinkMainEffectByPos( IN const D3DXVECTOR3& vMyPos_, IN const D3DXVECTOR3& vTargetPos_,
 												   IN const float fDistance_ = 99999.f );
 
 				/// SetLinkMainEffectByPos() 를 쓰기 위해 필요한 길이 배율 반환
-				const float GetLinkEffectRate() { return m_fLinkEffectRate; }
+				float GetLinkEffectRate() { return m_fLinkEffectRate; }
 
 			protected:
 				void SetStartParticle();

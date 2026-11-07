@@ -1505,7 +1505,7 @@ class CKTDGParticleSystem
 		CKTDGParticleSystem( LPDIRECT3DDEVICE9 pd3dDevice
             , unsigned char ucSystemID = 0
             );
-		~CKTDGParticleSystem();
+		virtual ~CKTDGParticleSystem();
 
 		HRESULT OnFrameMove( double fTime, float fElapsedTime );
 

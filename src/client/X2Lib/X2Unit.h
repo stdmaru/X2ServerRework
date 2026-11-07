@@ -744,7 +744,7 @@ class CX2Unit : public CKTDXDeviceHolder, public CX2Unit_PreHeader
 		void SetRecentEnterDungeonID(int val) { m_iRecentEnterDungeonID = val; }
 
 
-		bool IsManCharacter (); const			//���� ĳ�������� ���� ĳ�������� Ȯ��
+		bool IsManCharacter (); //���� ĳ�������� ���� ĳ�������� Ȯ��
 
 		char GetWeddingStatus() const { return m_UnitData.m_cWeddingStatus; }
 		UidType GetLoverUnitUID() const { return m_UnitData.m_iLoverUnitUID; }
@@ -1113,6 +1113,8 @@ inline bool GetX2UnitClassCompatibility( CX2Unit::UNIT_CLASS unitClass, CX2Unit:
 				{
 					return true;
 				} break;
+			default:
+				break;
 			}
 		} break;
 
@@ -1127,6 +1129,8 @@ inline bool GetX2UnitClassCompatibility( CX2Unit::UNIT_CLASS unitClass, CX2Unit:
 				{
 					return true;
 				} break;
+			default:
+				break;
 			}
 		} break;
 	case CX2Unit::UC_ELSWORD_INFINITY_SWORD:
@@ -1139,6 +1143,8 @@ inline bool GetX2UnitClassCompatibility( CX2Unit::UNIT_CLASS unitClass, CX2Unit:
 				{
 					return true;
 				} break;
+			default:
+				break;
 			}
 		} break;
 
@@ -1155,6 +1161,8 @@ inline bool GetX2UnitClassCompatibility( CX2Unit::UNIT_CLASS unitClass, CX2Unit:
 				{
 					return true;
 				} break;
+			default:
+				break;
 			}
 		} break;
 
@@ -1169,6 +1177,8 @@ inline bool GetX2UnitClassCompatibility( CX2Unit::UNIT_CLASS unitClass, CX2Unit:
 				{
 					return true;
 				} break;
+			default:
+				break;
 			}
 		} break;
 	case CX2Unit::UC_LIRE_NIGHT_WATCHER:
@@ -1181,6 +1191,8 @@ inline bool GetX2UnitClassCompatibility( CX2Unit::UNIT_CLASS unitClass, CX2Unit:
 				{
 					return true;
 				} break;
+			default:
+				break;
 			}
 		} break;
 
@@ -1196,6 +1208,8 @@ inline bool GetX2UnitClassCompatibility( CX2Unit::UNIT_CLASS unitClass, CX2Unit:
 				{
 					return true;
 				} break;
+			default:
+				break;
 			}
 		} break;
 
@@ -1209,6 +1223,8 @@ inline bool GetX2UnitClassCompatibility( CX2Unit::UNIT_CLASS unitClass, CX2Unit:
 				{
 					return true;
 				} break;
+			default:
+				break;
 			}
 		} break;
 	case CX2Unit::UC_ARME_DIMENSION_WITCH:
@@ -1221,6 +1237,8 @@ inline bool GetX2UnitClassCompatibility( CX2Unit::UNIT_CLASS unitClass, CX2Unit:
 				{
 					return true;
 				} break;
+			default:
+				break;
 			}
 		} break;
 
@@ -1234,6 +1252,8 @@ inline bool GetX2UnitClassCompatibility( CX2Unit::UNIT_CLASS unitClass, CX2Unit:
 				{
 					return true;
 				} break;
+			default:
+				break;
 			}
 		} break;
 
@@ -1247,6 +1267,8 @@ inline bool GetX2UnitClassCompatibility( CX2Unit::UNIT_CLASS unitClass, CX2Unit:
 				{
 					return true;
 				} break;
+			default:
+				break;
 			}
 		} break;
 	case CX2Unit::UC_RAVEN_VETERAN_COMMANDER:
@@ -1259,6 +1281,8 @@ inline bool GetX2UnitClassCompatibility( CX2Unit::UNIT_CLASS unitClass, CX2Unit:
 				{
 					return true;
 				} break;
+			default:
+				break;
 			}
 		} break;
 
@@ -1273,6 +1297,8 @@ inline bool GetX2UnitClassCompatibility( CX2Unit::UNIT_CLASS unitClass, CX2Unit:
 				{
 					return true;
 				} break;
+			default:
+				break;
 			}
 		}
 		break;
@@ -1287,6 +1313,8 @@ inline bool GetX2UnitClassCompatibility( CX2Unit::UNIT_CLASS unitClass, CX2Unit:
 				{
 					return true;
 				} break;
+			default:
+				break;
 			}
 		}
 		break;
@@ -1300,6 +1328,8 @@ inline bool GetX2UnitClassCompatibility( CX2Unit::UNIT_CLASS unitClass, CX2Unit:
 				{
 					return true;
 				} break;
+			default:
+				break;
 			}
 		}
 		break;
@@ -1326,6 +1356,8 @@ inline bool GetX2UnitClassCompatibility( CX2Unit::UNIT_CLASS unitClass, CX2Unit:
 				{
 					return true;
 				} break;
+			default:
+				break;
 			} // switch
 
 		} break;
@@ -1339,6 +1371,8 @@ inline bool GetX2UnitClassCompatibility( CX2Unit::UNIT_CLASS unitClass, CX2Unit:
 				{
 					return true;
 				} break;
+			default:
+				break;
 			} // switch
 		} break;
 		//}} kimhc // 2011.1.3 // û 1�� ����
@@ -1354,6 +1388,8 @@ inline bool GetX2UnitClassCompatibility( CX2Unit::UNIT_CLASS unitClass, CX2Unit:
 				{
 					return true;
 				} break;
+			default:
+				break;
 			} // switch
 		} break;
 
@@ -1369,6 +1405,8 @@ inline bool GetX2UnitClassCompatibility( CX2Unit::UNIT_CLASS unitClass, CX2Unit:
 				{
 					return true;
 				} break;
+			default:
+				break;
 			}
 		}
 		break;
@@ -1383,6 +1421,8 @@ inline bool GetX2UnitClassCompatibility( CX2Unit::UNIT_CLASS unitClass, CX2Unit:
 				{
 					return true;
 				} break;
+			default:
+				break;
 			}
 		}
 		break;
@@ -1396,6 +1436,8 @@ inline bool GetX2UnitClassCompatibility( CX2Unit::UNIT_CLASS unitClass, CX2Unit:
 				{
 					return true;
 				} break;
+			default:
+				break;
 			}
 		}
 		break;
@@ -1420,6 +1462,8 @@ inline bool GetX2UnitClassCompatibility( CX2Unit::UNIT_CLASS unitClass, CX2Unit:
 				{
 					return true;
 				} break;
+			default:
+				break;
 			} // switch
 		} break;
 
@@ -1433,6 +1477,8 @@ inline bool GetX2UnitClassCompatibility( CX2Unit::UNIT_CLASS unitClass, CX2Unit:
 				{
 					return true;
 				} break;
+			default:
+				break;
 			}
 		}
 		break;
@@ -1446,6 +1492,8 @@ inline bool GetX2UnitClassCompatibility( CX2Unit::UNIT_CLASS unitClass, CX2Unit:
 				{
 					return true;
 				} break;
+			default:
+				break;
 			} // switch
 		} break;
 
@@ -1459,6 +1507,8 @@ inline bool GetX2UnitClassCompatibility( CX2Unit::UNIT_CLASS unitClass, CX2Unit:
 				{
 					return true;
 				} break;
+			default:
+				break;
 			}
 		}
 		break;
@@ -1568,6 +1618,8 @@ inline bool GetX2UnitClassCompatibility( CX2Unit::UNIT_CLASS unitClass, CX2Unit:
 		} break;
 
 
+	default:
+		break;
 	}
 
 	return false;

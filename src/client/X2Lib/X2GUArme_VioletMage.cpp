@@ -199,7 +199,7 @@ CX2GUArme_VioletMage::~CX2GUArme_VioletMage(void)
 
 	if( NULL != g_pX2Game )
 	{
-		BOOST_TEST_FOREACH( StoneWallData&, stoneWallData, m_vecStoneWallData )
+		for( StoneWallData& stoneWallData : m_vecStoneWallData )
 		{
 			CX2GUNPC* pNPC = g_pX2Game->GetNPCUnitByUID( (int) stoneWallData.m_NPCUID );
 			if( NULL != pNPC )
@@ -4559,9 +4559,9 @@ RENDER_HINT CX2GUArme_VioletMage::CommonRender_Prepare()
 			vector<KBuffFactor> VecDebuffFactor;
 			GetBuffFactorOnlyDebuff( VecDebuffFactor );
 
-			BOOST_FOREACH( const KBuffFactor& kFactor_, VecDebuffFactor )
+			for( const KBuffFactor& kFactor_ : VecDebuffFactor )
 			{
-				BOOST_FOREACH( const KBuffBehaviorFactor& kBehavior_, kFactor_.m_vecBuffBehaviorFactors )
+				for( const KBuffBehaviorFactor& kBehavior_ : kFactor_.m_vecBuffBehaviorFactors )
 				{
 					if ( kBehavior_.m_uiType == BBT_CHANGE_CONSUME_MP_RATE
 						&& static_cast<UINT>( kBehavior_.m_vecValues[1] ) == CX2SkillTree::SI_A_AV_TELEPORT )

@@ -197,7 +197,7 @@ class CX2GULire_ElvenRanger : public CX2GUUser
 			{
 			}
 
-			void OnFrameMove( double fTime, float fElapsedTime )
+			void OnFrameMove( double /*fTime*/, float fElapsedTime )
 			{
 				if( m_fTimeLeft > 0.f )
 				{
@@ -294,9 +294,9 @@ class CX2GULire_ElvenRanger : public CX2GUUser
 
 
         struct  RapidShotData;
-        typedef boost::intrusive_ptr<RapidShotData> RapidShotDataPtr;	/// RapidShotData 구조체의 스마트 포인터 타입
+        typedef x2::intrusive_ptr<RapidShotData> RapidShotDataPtr;	/// RapidShotData 구조체의 스마트 포인터 타입
 
-		struct RapidShotData : boost::noncopyable
+		struct RapidShotData : x2::NonCopyable
 		{
 		private:
             unsigned                                        m_uRefCount;
@@ -305,8 +305,8 @@ class CX2GULire_ElvenRanger : public CX2GUUser
 			bool* m_pSkillKey;									/// 래피드 샷의 키가 눌려있는지 알아내기 위안 용도 (메모리를 생성하는 것이 아니므로 해제하지 않는다.)
 			float m_fTimeAfterStart;							/// 래피드 샷 스킬 시작 후 지난 시간.
 
-			RapidShotData() : m_eSlotID_RapidShot( LESI_BASE ), m_bSlotB( false ), m_pSkillKey( NULL ), m_fTimeAfterStart( 0.f )
-                , m_uRefCount(0)
+			RapidShotData() : m_uRefCount(0), m_eSlotID_RapidShot( LESI_BASE ), m_bSlotB( false ), m_pSkillKey( NULL )
+                , m_fTimeAfterStart( 0.f )
 			{}
 
 		public:
@@ -316,7 +316,7 @@ class CX2GULire_ElvenRanger : public CX2GUUser
 			void SetSlotID_RapidShot(LIRE_ELVENRANGER_STATE_ID eStateID_) { m_eSlotID_RapidShot = eStateID_; }
 
 			void SetTimeAfterStart( float fTimeAfterStart_ ){ m_fTimeAfterStart = fTimeAfterStart_; }
-			const float GetTimeAfterStart(){ return m_fTimeAfterStart; }
+			float GetTimeAfterStart(){ return m_fTimeAfterStart; }
 
 			bool GetSlotB() const { return m_bSlotB; }
 			void SetSlotB(bool bSlotB_) { m_bSlotB = bSlotB_; }
@@ -429,7 +429,7 @@ class CX2GULire_ElvenRanger : public CX2GUUser
 		virtual bool		SpecialAttackNoStageChange( const CX2SkillTree::SkillTemplet* pSkillTemplet );
 		virtual float		GetActualMPConsume( const CX2SkillTree::SKILL_ID eSkillID_, const int iSkillLevel_ ) const;
 
-		const CX2SkillTree::ACTIVE_SKILL_USE_CONDITION GetSkillUseCondition(const CX2SkillTree::SkillTemplet* pSkillTemplet_);
+		CX2SkillTree::ACTIVE_SKILL_USE_CONDITION GetSkillUseCondition(const CX2SkillTree::SkillTemplet* pSkillTemplet_);
 
 		FriendshipNatureData* GetFriendshipNatureData() { return m_pFriendshipNatureData; }
 

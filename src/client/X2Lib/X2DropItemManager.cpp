@@ -42,7 +42,7 @@ CX2DropItemManager::~CX2DropItemManager(void)
 	//}
 
 
-	for( int i=0; i<ARRAY_SIZE( m_apSoundGetItem ); i++ )
+	for( int i=0; i<std::ssize( m_apSoundGetItem ); i++ )
 	{
 		SAFE_CLOSE( m_apSoundGetItem[i] );
 	}
@@ -365,7 +365,6 @@ UidType CX2DropItemManager::TryGetDropItem( D3DXVECTOR3 pos )
 	KTDXPROFILE();
 
 
-	THEMIDA_ENCODE_START
 
 	UidType itemUID = -1;
 
@@ -403,7 +402,6 @@ UidType CX2DropItemManager::TryGetDropItem( D3DXVECTOR3 pos )
 		}
 
 		// NOTE : 이 함수는 자주 호출 되기 때문에 성능저하를 피하기 위해 themida_vm 을 적용하지 않고 themida_encode를 적용했습니다.
-		ELSWORD_VIRTUALIZER_START
 
 		D3DXVECTOR3 vDist = pos - pDropItemData->m_Pos;
 		if( D3DXVec3LengthSq( &vDist ) < m_fGetDist )
@@ -413,12 +411,10 @@ UidType CX2DropItemManager::TryGetDropItem( D3DXVECTOR3 pos )
 			break;
 		}
 
-		ELSWORD_VIRTUALIZER_END
 
 
 	}
 
-	THEMIDA_ENCODE_END
 
 	return itemUID;
 }
@@ -562,7 +558,6 @@ int CX2DropItemManager::GetDropItemID( UidType itemUID )
 {
 
 	// NOTE : 성능저하를 피하기 위해 themida_vm 적용하지 않았습니다.
-	ELSWORD_VIRTUALIZER_START
 
 	for( int i = 0; i < (int)m_DropItemDataList.size(); i++ )
 	{
@@ -573,7 +568,6 @@ int CX2DropItemManager::GetDropItemID( UidType itemUID )
 		}
 	}
 
-	ELSWORD_VIRTUALIZER_END
 
 	return -1;
 }

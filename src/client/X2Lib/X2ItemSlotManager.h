@@ -43,8 +43,8 @@ public:
 	//}} kimhc // 2011-07-05 // 옵션데이타 수치화 작업
 
 	virtual wstring GetExpirationDateDesc( CX2Item* pItem );
-	virtual wstring GetSlotCashItemPeriodDesc( int itemTID ) { return L""; }
-	virtual wstring GetSlotCashItemDesc( int itemTID ) { return L""; }
+	virtual wstring GetSlotCashItemPeriodDesc( int /*itemTID*/ ) { return L""; }
+	virtual wstring GetSlotCashItemDesc( int /*itemTID*/ ) { return L""; }
 
 	//{{ kimhc // 2011-07-05 // 옵션데이타 수치화 작업
 	virtual wstring GetSetItemDesc( CX2Item* pItem, int itemTID, const int iUserLevel_ );

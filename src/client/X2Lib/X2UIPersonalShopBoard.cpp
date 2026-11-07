@@ -1326,7 +1326,7 @@ wstring CX2UIPersonalShopBoard::GetSlotItemDesc()
 
 	if ( m_pNowOverItemSlot != NULL )
 	{
-		BOOST_TEST_FOREACH( KTradeBoardItemInfo, ItemInfo, m_vecItemInfo )
+		for( KTradeBoardItemInfo ItemInfo : m_vecItemInfo )
 		{
 			if ( ItemInfo.m_kSellItemInfo.m_kInventoryItemInfo.m_iItemUID == m_pNowOverItemSlot->GetItemUID() )
 			{
@@ -2449,7 +2449,7 @@ void CX2UIPersonalShopBoard::UpdateSearchKewordList( IN const wstring& wstrSearc
 	m_pListboxSearchKeyword->RemoveAllItems();
 
 	/// 리스트에 10개만 저장
-	BOOST_FOREACH( const wstring& wstrSearchKeyword, vecSearchKeywordList )
+	for( const wstring& wstrSearchKeyword : vecSearchKeywordList )
 	{
 		m_pListboxSearchKeyword->AddItem( wstrSearchKeyword.c_str(), NULL );
 	}
@@ -2512,7 +2512,7 @@ void CX2UIPersonalShopBoard::SetSearchKeywordList( IN const wstring wstrSearchKe
 		const wstring wstrItemName = vevSearchKeyword_[i];
 
 		/// 스크립트에서 받아온 "출력하면 않되는 아이템 이름 리스트"
-		BOOST_FOREACH( wstring wstrBanItemName, m_vecBanItemList )
+		for( wstring wstrBanItemName : m_vecBanItemList )
 		{
 			/// 해당 이름이 포함된 아이템이 있다면, 자동 완성 리스트에서 제거
 			if( NULL != wcsstr( wstrItemName.c_str(), wstrBanItemName.c_str() ) )

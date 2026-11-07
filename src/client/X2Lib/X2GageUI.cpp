@@ -442,7 +442,7 @@ void CX2SmallGageUI::DrawFace( float fX_, float fY_, float fWidth_, float fHeigh
 	KD3DPUSH( m_RenderStateID )
 
 //#ifdef DYNAMIC_VERTEX_BUFFER_OPT
-	BOOST_STATIC_ASSERT( D3DFVF_DRAWFACE_RHW_VERTEX == D3DFVF_XYZRHW_DIFFUSE_TEX1 );
+	static_assert( D3DFVF_DRAWFACE_RHW_VERTEX == D3DFVF_XYZRHW_DIFFUSE_TEX1 , "");
 	g_pKTDXApp->GetDVBManager()->DrawPrimitive( CKTDGDynamicVBManager::DVB_TYPE_XYZRHW_DIFFUSE_TEX1
 		, D3DPT_TRIANGLESTRIP, 2, vertex );
 //#else
@@ -1978,7 +1978,7 @@ void CX2ElswordMyGageUI::InitUI()
 
 	CKTDGParticleSystem* pGameMinorParticle = g_pData->GetGameMinorParticle();
 
-	for ( int i = 0; i < ARRAY_SIZE( m_hSeqVigorEffect ); ++i )
+	for ( int i = 0; i < std::ssize( m_hSeqVigorEffect ); ++i )
 	{
 		if( m_hSeqVigorEffect[i] != INVALID_PARTICLE_SEQUENCE_HANDLE )
 		{
@@ -2374,7 +2374,7 @@ void CX2ElswordMyGageUI::SetShowWspParticle( const bool bShowWspParticle_ )
 
 	CKTDGParticleSystem* pGameMinorParticle = g_pData->GetGameMinorParticle();
 
-	for ( int i = 0; i < ARRAY_SIZE(m_hSeqVigorEffect); ++i)
+	for ( int i = 0; i < std::ssize(m_hSeqVigorEffect); ++i)
 	{
 		if( m_hSeqVigorEffect[i] != INVALID_PARTICLE_SEQUENCE_HANDLE )
 		{
@@ -3449,7 +3449,7 @@ void CX2ElesisMyGageUI::InitUI()
 
 	CKTDGParticleSystem* pGameMinorParticle = g_pData->GetGameMinorParticle();
 
-	for ( int i = 0; i < ARRAY_SIZE( m_hSeqVigorEffect ); ++i )
+	for ( int i = 0; i < std::ssize( m_hSeqVigorEffect ); ++i )
 	{
 		if( m_hSeqVigorEffect[i] != INVALID_PARTICLE_SEQUENCE_HANDLE )
 		{
@@ -3822,7 +3822,7 @@ void CX2ElesisMyGageUI::SetShowWspParticle( const bool bShowWspParticle_ )
 
 	CKTDGParticleSystem* pGameMinorParticle = g_pData->GetGameMinorParticle();
 
-	for ( int i = 0; i < ARRAY_SIZE(m_hSeqVigorEffect); ++i)
+	for ( int i = 0; i < std::ssize(m_hSeqVigorEffect); ++i)
 	{
 		if( m_hSeqVigorEffect[i] != INVALID_PARTICLE_SEQUENCE_HANDLE )
 		{

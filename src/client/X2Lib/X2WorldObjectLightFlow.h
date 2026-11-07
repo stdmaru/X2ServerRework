@@ -3,7 +3,7 @@
 
 //{{ seojt // 2009-1-14, 23:42
 class CX2WorldObjectLightFlow;
-typedef boost::intrusive_ptr<CX2WorldObjectLightFlow>  CX2WorldObjectLightFlowPtr;
+typedef x2::intrusive_ptr<CX2WorldObjectLightFlow>  CX2WorldObjectLightFlowPtr;
 //}} seojt // 2009-1-14, 23:42
 
 

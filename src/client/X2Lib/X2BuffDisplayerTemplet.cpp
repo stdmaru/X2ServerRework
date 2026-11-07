@@ -273,7 +273,7 @@ bool CX2BuffDisplayerTemplet::ParsingDisplayerTemplateMethod( KLuaManager& luaMa
 		if ( uiAccumulationLimit > 1 && m_vecWstrEffectSetName.size() > 1 )	/// 중첩 가능한 것이고 이펙트가 중첩 별로 있다면
 		{
 			/// 기존의 이펙트 삭제 (레퍼런스로 실행해야함)
-			BOOST_FOREACH( CX2EffectSet::Handle& hHandle, m_vecHandleEffectSet )
+			for( CX2EffectSet::Handle& hHandle : m_vecHandleEffectSet )
 			{
 				if ( INVALID_EFFECTSET_HANDLE != hHandle )
 					g_pX2Game->GetEffectSet()->StopEffectSet( hHandle );
@@ -323,7 +323,7 @@ bool CX2BuffDisplayerTemplet::ParsingDisplayerTemplateMethod( KLuaManager& luaMa
 {
 	if ( NULL != g_pX2Game )
 	{
-		BOOST_FOREACH( CX2EffectSet::Handle& hHandle, m_vecHandleEffectSet )
+		for( CX2EffectSet::Handle& hHandle : m_vecHandleEffectSet )
 		{
 			if ( INVALID_EFFECTSET_HANDLE != hHandle )
 				g_pX2Game->GetEffectSet()->StopEffectSet( hHandle );
@@ -516,7 +516,7 @@ void CX2BuffEffectSetImpactPointDisplayerTemplet::DoFinishByType( CX2GameUnit* p
 	if ( NULL != g_pX2Game && DidStart() )
 	{
 		CKTDGParticleSystem* pMajorParticleSystem = g_pX2Game->GetMajorParticle();
-		BOOST_FOREACH( CKTDGParticleSystem::CParticleEventSequenceHandle& hHandle, m_vecHandleParticle )
+		for( CKTDGParticleSystem::CParticleEventSequenceHandle& hHandle : m_vecHandleParticle )
 		{
 			pMajorParticleSystem->DestroyInstanceHandle( hHandle );
 		}
@@ -848,7 +848,7 @@ void CX2BuffWeaponParticleDisplayerTemplet::OnFrameMoveSwordEnchant( CX2GameUnit
 	{
 		typedef std::pair< wstring, float > PairEffectSetNameAndGap;
 
-		BOOST_FOREACH( const PairEffectSetNameAndGap& PairValue, m_vecPairEffectSetNameAndGap )
+		for( const PairEffectSetNameAndGap& PairValue : m_vecPairEffectSetNameAndGap )
 		{
 			m_vecHandleEffectSet.push_back( g_pX2Game->GetEffectSet()->PlayEffectSet( PairValue.first, pGameUnit_,
 				NULL, ( 0 < pGameUnit_->GetRemainHyperModeTime() ), pGameUnit_->GetPowerRate() ) );
@@ -877,7 +877,7 @@ void CX2BuffWeaponParticleDisplayerTemplet::OnFrameMoveSwordEnchant( CX2GameUnit
 {
 	if ( NULL != g_pX2Game )
 	{
-		BOOST_FOREACH( CX2EffectSet::Handle& hHandle, m_vecHandleEffectSet )
+		for( CX2EffectSet::Handle& hHandle : m_vecHandleEffectSet )
 		{
 			if ( INVALID_EFFECTSET_HANDLE != hHandle )
 				g_pX2Game->GetEffectSet()->StopEffectSet( hHandle );
@@ -895,7 +895,7 @@ void CX2BuffWeaponParticleDisplayerTemplet::OnFrameMoveSwordEnchant( CX2GameUnit
 	{
 		typedef std::pair< wstring, CKTDXCheckElapsedTime > PairElapsedTimeForEffectSet;
 
-		BOOST_FOREACH( PairElapsedTimeForEffectSet& PairValue, m_vecCheckElapsedTimeForEffectSet )
+		for( PairElapsedTimeForEffectSet& PairValue : m_vecCheckElapsedTimeForEffectSet )
 		{
 			CKTDXCheckElapsedTime& CreateEffectSetGap = PairValue.second;
             CreateEffectSetGap.OnFrameMove( fElapsedTime_ );

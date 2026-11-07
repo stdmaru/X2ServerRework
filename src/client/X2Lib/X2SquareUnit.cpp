@@ -1323,7 +1323,7 @@ HRESULT	CX2SquareUnit::OnFrameMove( double fTime, float fElapsedTime )
 	}
 #endif // HANABI_VILLAGE
 
-	BOOST_TEST_FOREACH( const CX2GameUnit::SoundPlayData&, soundData, m_vecSoundPlayData )
+	for( const CX2GameUnit::SoundPlayData& soundData : m_vecSoundPlayData )
 	{
 		float fTime = soundData.m_SoundPlayTime;
 		int iRate	= soundData.m_SoundPlayRate;
@@ -3406,7 +3406,7 @@ bool CX2SquareUnit::IsPlayAvatarEmotionSoundWithouEmotion ( CX2Unit::EMOTION_TYP
 	switch ( eEmotionId )
 	{
 		case CX2Unit::ET_EMOTION_AVATAR7 :
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_EMOTION_AVATAR1 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_EMOTION_AVATAR1 ); ++i )
 			{
 				const CX2Item::ItemTemplet* pItemTempet = g_pData->GetItemManager()->GetItemTemplet( ITEM_ID_EMOTION_AVATAR1[i] );
 

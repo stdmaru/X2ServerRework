@@ -412,7 +412,7 @@ public:
 	void SetFocusChatEditBox(bool val) { m_bFocusChatEditBox = val; }
 	bool GetFocusChatEditBox() { return m_bFocusChatEditBox; }
 
-	void CX2ChatBox::ClearAllChatLog();	// kimhc // 채팅창에 있는 모든 글을 지움 // 2009-06-16
+	void ClearAllChatLog();	// kimhc // 채팅창에 있는 모든 글을 지움 // 2009-06-16
 
 	void PopTalkBox( const KEGS_CHAT_NOT& kEvent_,	const WCHAR* pWstrMsg_,
 		const D3DXCOLOR& coTextColor_ = D3DXCOLOR(0,0,0,1), const D3DXCOLOR& coOutColor_ = (DWORD)0x00000000, const D3DXCOLOR& coBackColor_ = (DWORD)0xffffffff );
@@ -442,7 +442,7 @@ public:
 	bool Handler_EGS_MEGAPHONE_MESSAGE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
 	//}} 허상형 : [2009/7/14] //
 
-	bool Handler_EGS_CHAT_OPTION_INFO_WRITE_REQ(byte cIndex, bool bVal);
+	bool Handler_EGS_CHAT_OPTION_INFO_WRITE_REQ(BYTE cIndex, bool bVal);
 	bool Handler_EGS_CHAT_OPTION_INFO_WRITE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
 
 	//{{ 박교현 : [2010/03/09] //	중국 중독방지 방침미 시스템
@@ -453,19 +453,19 @@ public:
 	void SetCheckBoxData( CHAT_OPTION_INFO eChatOptionInfo );
 
 
-	const bool GetDisplayObtainingED(CHAT_WINDOW_MODE eChatWindowMode);
-	const bool GetDisplayObtainingEXP(CHAT_WINDOW_MODE eChatWindowMode);
-	const bool GetDisplaySystem(CHAT_WINDOW_MODE eChatWindowMode);
-	const bool GetDisplayNomal(CHAT_WINDOW_MODE eChatWindowMode);
-	const bool GetDisplayParty(CHAT_WINDOW_MODE eChatWindowMode);
-	const bool GetDisplayGuild(CHAT_WINDOW_MODE eChatWindowMode);
-	const bool GetDisplayWhisper(CHAT_WINDOW_MODE eChatWindowMode);
+	bool GetDisplayObtainingED(CHAT_WINDOW_MODE eChatWindowMode);
+	bool GetDisplayObtainingEXP(CHAT_WINDOW_MODE eChatWindowMode);
+	bool GetDisplaySystem(CHAT_WINDOW_MODE eChatWindowMode);
+	bool GetDisplayNomal(CHAT_WINDOW_MODE eChatWindowMode);
+	bool GetDisplayParty(CHAT_WINDOW_MODE eChatWindowMode);
+	bool GetDisplayGuild(CHAT_WINDOW_MODE eChatWindowMode);
+	bool GetDisplayWhisper(CHAT_WINDOW_MODE eChatWindowMode);
 
-	const bool GetDisplayRelation(CHAT_WINDOW_MODE eChatWindowMode);
+	bool GetDisplayRelation(CHAT_WINDOW_MODE eChatWindowMode);
 
 	void ListBoxAddItem(wstring ControlName, wstring chatContent, int addRow );
 
-	void SetOptionData(std::map<byte,bool>mapChatOptionInfo);
+	void SetOptionData(std::map<BYTE,bool>mapChatOptionInfo);
 	bool ShowInviteCoupleDlg( bool bEnable );	//	초대 메시지 DLG 생성 및 보이기
 
 private:
@@ -535,7 +535,7 @@ protected:
 
 	CKTDGUIDialogType			m_pDLGTabMenu;	//	채팅탭 우클릭 메뉴
 
-	std::map<byte, bool>		m_mapChatOptionInfo;
+	std::map<BYTE, bool>		m_mapChatOptionInfo;
 	CHAT_WINDOW_MODE			m_ePopupWindowMode;
 
 };

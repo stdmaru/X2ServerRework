@@ -343,7 +343,6 @@ public:
 	private:
 		int		m_iGuardPointRemain;				/// �����ִ� ���� �� �� �ִ� Ƚ��
 		int		m_iMaxGuardPoint;					/// ������ �� �ִ� �ִ� Ƚ��
-		bool	m_bDamaged;							/// ���� �������� ���� �������� �� ���� �÷���
 		int		m_iDamageReducePercentGuardState;	/// ���� ������Ʈ���� ���ҵ� �������� Percent
 
 	public:
@@ -351,7 +350,7 @@ public:
 
 	public:
 		CGuardSystem() : m_iGuardPointRemain( INITIAL_MAX_GUARD_POINT ),
-			m_iMaxGuardPoint( INITIAL_MAX_GUARD_POINT ), m_bDamaged( false ), m_iDamageReducePercentGuardState( 0 )
+			m_iMaxGuardPoint( INITIAL_MAX_GUARD_POINT ), m_iDamageReducePercentGuardState( 0 )
 		{}
 
 		int GetGuardPointRemain() const { return m_iGuardPointRemain; }
@@ -407,9 +406,9 @@ public:
 	*/
 
     class   CFuryGuardianGuardSkill;
-    typedef boost::intrusive_ptr<CFuryGuardianGuardSkill> CFuryGuardianGuardSkillPtr;	/// ǻ��������� ����ϴ� Guard ��Ƽ�꽺ų Ŭ������ ����Ʈ������Type
+    typedef x2::intrusive_ptr<CFuryGuardianGuardSkill> CFuryGuardianGuardSkillPtr;	/// ǻ��������� ����ϴ� Guard ��Ƽ�꽺ų Ŭ������ ����Ʈ������Type
 
-	class CFuryGuardianGuardSkill : boost::noncopyable
+	class CFuryGuardianGuardSkill : x2::NonCopyable
 	{
 	private:
         unsigned                                        m_uRefCount;
@@ -418,9 +417,9 @@ public:
 		const bool*		m_pGuardKey;					/// ǻ��������� Guard�� �����Ǿ� �ִ� ��ų������ Key(A, S, D, C ��)
 		bool			m_bGuardEquippedAtSlotB;		/// ǻ��������� Guard�� B���Կ� �����Ǿ� �ִ����� ��� ����
 		int				m_iDamageReducePercent;			/// ǻ��������� Guard ���¿��� ������ ������
-		CFuryGuardianGuardSkill() : m_eSkillSlotID_Guard( CSI_BASE ),
-			m_pGuardKey( NULL ), m_bGuardEquippedAtSlotB( false ), m_iDamageReducePercent( 0 )
-            , m_uRefCount(0)
+		CFuryGuardianGuardSkill() : m_uRefCount(0),
+			m_eSkillSlotID_Guard( CSI_BASE ), m_pGuardKey( NULL ), m_bGuardEquippedAtSlotB( false )
+            , m_iDamageReducePercent( 0 )
 		{}
 
 	public:

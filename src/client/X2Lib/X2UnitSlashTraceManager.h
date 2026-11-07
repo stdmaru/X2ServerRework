@@ -93,7 +93,7 @@ private:
 
 	~CX2UnitSlashTraceManager()
 	{
-		BOOST_TEST_FOREACH( UnitSlashTraceData&, slashTraceData, m_vecUnitSlashTraceData )
+		for( UnitSlashTraceData& slashTraceData : m_vecUnitSlashTraceData )
 		{
 			slashTraceData.Delete();
 		}

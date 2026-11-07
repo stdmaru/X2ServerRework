@@ -5,7 +5,7 @@
 class CX2PETAI;
 
 class CX2PET;
-typedef boost::intrusive_ptr<CX2PET>   CX2PETPtr;
+typedef x2::intrusive_ptr<CX2PET>   CX2PETPtr;
 
 //#ifdef  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
 class   CX2FrameUDPPack;
@@ -173,7 +173,7 @@ public:
 			fSpeedFactor	= 1.f;
 		}
 
-		void OnFrameMove( double fTime, float fElapsedTime )
+		void OnFrameMove( double /*fTime*/, float /*fElapsedTime*/ )
 		{
 
 		}

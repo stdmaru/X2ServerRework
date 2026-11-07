@@ -7,7 +7,7 @@ typedef srutil::delegate0<void> NPCStateCBFunc;
 class CX2GUUser;
 class CX2NPCAI;
 class CNpcCreatedInfo;
-typedef boost::intrusive_ptr<CNpcCreatedInfo> CNpcCreatedInfoPtr;
+typedef x2::intrusive_ptr<CNpcCreatedInfo> CNpcCreatedInfoPtr;
 
 #define MAGIC_SPEED_BOUND 800.0f
 #define MAGIC_MAX_UNIT_DISPLACE 25.0f
@@ -1018,9 +1018,9 @@ class CX2GUNPC : public CX2GameUnit
                   m_vecfHintEventTimer(),
                   m_fSetCoolTimeValue( 0.f ),
                   m_cSetMindFlagValue(0),
+                  m_iSetFollowHitterValue( 0 ),
                   m_v2IgnoreLineTime(0,0),
                   m_fSlashTraceTipWide( 4.0f ),
-                  m_iSetFollowHitterValue( 0 ),
                   m_vDefenceTime(-1.f,-1.f,0.f),
                   m_fSetGuardDefenceValue( 0.f ),
                   m_v2SetRevengeTimeValue( -1.f, -1.f ),
@@ -1053,11 +1053,11 @@ class CX2GUNPC : public CX2GameUnit
                   m_vecwstrDisableCollisionBox(),
                   m_vecEffectSetToPlay(),
                   m_fEffectSetLifeTime( -1.f ),
-                  m_avecSoundPlayData(),
-                  m_vecSetSoundPlayLoopValue(),
                   m_iSoundSet0Rate(0),
                   m_iSoundSet1Rate(0),
                   m_iSoundSet2Rate(0),
+                  m_avecSoundPlayData(),
+                  m_vecSetSoundPlayLoopValue(),
                   m_vecTalkBox(),
                   m_veciEnableWeapon(),
                   m_veciDisableWeapon(),
@@ -1126,8 +1126,8 @@ class CX2GUNPC : public CX2GameUnit
                 , m_iLua_StateStartRefID( LUA_REFNIL )
                 , m_iLua_FrameMoveRefID( LUA_REFNIL )
                 , m_iLua_CameraMoveRefID( LUA_REFNIL )
-                , m_vecNPCEventProcessRuntime()
                 , m_iLua_StateEndRefID( LUA_REFNIL )
+                , m_vecNPCEventProcessRuntime()
             {
             }
         };//struct  StateRuntime
@@ -1470,14 +1470,14 @@ class CX2GUNPC : public CX2GameUnit
 		virtual void				SetStopTime( float fStopTime );
 		virtual void				SetStop2Time( float fStopTime );
 
-		virtual const UnitCondition& GetUnitCondition( bool bFuture = false ) const		{ return GetNPCFrameData().unitCondition; }
-		bool				        GetUnitCondition_bHit( bool bFuture = false ) const	{ return GetNPCFrameData().unitCondition.bHit; }
-		virtual const StateParam&	GetStateparam( bool bFuture = false ) const		{ return GetNPCFrameData().stateParam; }
+		virtual const UnitCondition& GetUnitCondition( bool /*bFuture*/ = false ) const		{ return GetNPCFrameData().unitCondition; }
+		bool				        GetUnitCondition_bHit( bool /*bFuture*/ = false ) const	{ return GetNPCFrameData().unitCondition.bHit; }
+		virtual const StateParam&	GetStateparam( bool /*bFuture*/ = false ) const		{ return GetNPCFrameData().stateParam; }
 
-		virtual const D3DXVECTOR3&	GetPos( bool bFuture = false ) const		{ return GetNPCSyncData().position; }
-		virtual float				GetXPos( bool bFuture = false )	const			{ return GetNPCSyncData().position.x; }
-		virtual float				GetYPos( bool bFuture = false )	const		{ return GetNPCSyncData().position.y; }
-		virtual float				GetZPos( bool bFuture = false )	const		{ return GetNPCSyncData().position.z; }
+		virtual const D3DXVECTOR3&	GetPos( bool /*bFuture*/ = false ) const		{ return GetNPCSyncData().position; }
+		virtual float				GetXPos( bool /*bFuture*/ = false )	const			{ return GetNPCSyncData().position.x; }
+		virtual float				GetYPos( bool /*bFuture*/ = false )	const		{ return GetNPCSyncData().position.y; }
+		virtual float				GetZPos( bool /*bFuture*/ = false )	const		{ return GetNPCSyncData().position.z; }
         virtual void                BackupPosition()
         {
             m_vPositionBackup = m_NPCFrameData.syncData.position;
@@ -1525,7 +1525,7 @@ class CX2GUNPC : public CX2GameUnit
         }
 
 
-		virtual float				GetUnitWidth( bool bFuture ) const
+		virtual float				GetUnitWidth( bool /*bFuture*/ ) const
 		{
             const StateData& nowStateData = GetNowStateData();
             if ( NOWSTATE_FLAG( SWAP_UNIT_WIDTH_HEIGHT ) )
@@ -1537,7 +1537,7 @@ class CX2GUNPC : public CX2GameUnit
 				return GetNPCFrameData().unitCondition.fUnitWidth;
 			}
 		}
-		virtual float				GetUnitHeight( bool bFuture ) const
+		virtual float				GetUnitHeight( bool /*bFuture*/ ) const
 		{
             const StateData& nowStateData = GetNowStateData();
             if ( NOWSTATE_FLAG( SWAP_UNIT_WIDTH_HEIGHT ) )
@@ -1558,7 +1558,7 @@ class CX2GUNPC : public CX2GameUnit
 
 
         virtual UINT    GetSizeOfAttackTimeList() const             { return GetNowStateData().m_vecAttackTime.size(); }
-        virtual const D3DXVECTOR2* const GetAttackTimeByIndex( const UINT uiIndex_ ) const
+        virtual const D3DXVECTOR2* GetAttackTimeByIndex( const UINT uiIndex_ ) const
         {
             const std::vector<KAttackTimeProjSeqName>& vecAttackTime = GetNowStateData().m_vecAttackTime;
             if ( uiIndex_ < vecAttackTime.size() )
@@ -1675,7 +1675,7 @@ class CX2GUNPC : public CX2GameUnit
         bool                        GetMotionEnd();
 
 
-		virtual int					GetLastTouchLineIndex( bool bFuture = false ) const
+		virtual int					GetLastTouchLineIndex( bool /*bFuture*/ = false ) const
 		{
 			const StateData& nowStateData = GetNowStateData();
 			if( true == NOWSTATE_FLAG( INVALID_LAST_TOUCH_INDEX ) )
@@ -1684,7 +1684,7 @@ class CX2GUNPC : public CX2GameUnit
 			return m_NPCFrameData.syncData.lastTouchLineIndex;
 		}
 
-		virtual const D3DXVECTOR3&	GetLandPos( bool bFuture = false ) const { return m_NPCFrameData.unitCondition.landPosition; }
+		virtual const D3DXVECTOR3&	GetLandPos( bool /*bFuture*/ = false ) const { return m_NPCFrameData.unitCondition.landPosition; }
 		D3DXVECTOR3					GetLandPosition_LUA(){ return m_NPCFrameData.unitCondition.landPosition; }
 
 		void						SetEnableCondtionTableEventProcess(bool val) { m_bEnableCondtionTableEventProcess = val; }
@@ -1895,7 +1895,7 @@ class CX2GUNPC : public CX2GameUnit
 		void SetPlayBossKillEffect(bool val) { m_bPlayBossKillEffect = val; }
 		//}}
 
-        void SetShowBossGage(bool val)
+        void SetShowBossGage(bool /*val*/)
         {
 // 			GetGageData()->SetShow(val);
 // 			SetHasBossGage( val );
@@ -2268,10 +2268,11 @@ class CX2GUNPC : public CX2GameUnit
 				m_optrNearestGUUser = pNearestGUUser;
 		}
 
-		void	SetCriticalRate( const float fValue_ ) { DISPLAY_ERROR( L"버프로 바꾸자" ); }
+		void	SetCriticalRate( const float /*fValue_*/ ) { DISPLAY_ERROR( L"버프로 바꾸자" ); }
 
 		bool						GetIsEliteMonster(); // oasis907 : 김상윤 [2011.4.19]
 
+		using CX2GameUnit::SetForceInvincible;
 		void SetForceInvincible( float fTime, float fShowTime )
 		{
 			if( fTime > 0.f )
@@ -2657,7 +2658,7 @@ class CX2GUNPC : public CX2GameUnit
 		KLastStateChangeParts m_kLastStateChangeParts_Recv;
 #endif //ACTIVE_KOG_GAME_PERFORMANCE_CHECK
 
-		boost::circular_buffer< NPCFrameSync >			m_cbufReceiveDynamicPacket;
+		KCircularBuffer< NPCFrameSync >			m_cbufReceiveDynamicPacket;
 
 		int												m_iSendReserveCount;
 		DWORD										    m_dwSendPacketFrame;
@@ -2708,7 +2709,7 @@ class CX2GUNPC : public CX2GameUnit
             void    FixStatesForReaction_NOT_FIRST( bool bLocalUnit );
             void    UpdateNowStateStartSpeed( const NPCFrameData& m_NPCFrameData, const PhysicParam& m_PhysicParam );
             void    DoFrameMove_SimulateReaction_FIRST( NPCFrameData& m_NPCFrameData, PhysicParam& m_PhysicParam,
-                        boost::circular_buffer< NPCFrameSync >& m_cbufReceiveDynamicPacket,
+                        KCircularBuffer< NPCFrameSync >& m_cbufReceiveDynamicPacket,
                         DWORD& m_dwLastProcessedFrameMoveCount, bool& bUpdatePositionBackup,
                         float& fNowHP, float& fNowMP,
                         bool bSuperArmorFactor, float fAnimSpeedAdjustFactor, float fUnitHeight, const std::vector<StateData>& vecStateData
@@ -2843,12 +2844,12 @@ class CX2GUNPC : public CX2GameUnit
             bool                                            m_bNowStateRelaxReactionCheck;
             EReactionSubstateType                           m_eNowSubstateReaction;
             int                                             m_iNowStateReactionUnitIndex;
-            boost::circular_buffer<KNonHostSimState>        m_cbufNonHostSimState;
+            KCircularBuffer<KNonHostSimState>        m_cbufNonHostSimState;
             bool                                            m_bNowStateStartSpeedX;
             float                                           m_fNowStateStartSpeedX;
             DWORD                                           m_dwNowReactionStartFrame;
             float                                           m_fNonHostSimulationTolerance;
-            boost::circular_buffer<D3DXVECTOR3>             m_cbuffPositionHistory;
+            KCircularBuffer<D3DXVECTOR3>             m_cbuffPositionHistory;
             bool                                            m_bReservedReceivePos;
             D3DXVECTOR3                                     m_vReservedReceivePos;
             int                                             m_iReservedReceiveLineIndex;
@@ -3456,7 +3457,7 @@ inline bool    CX2GUNPC::EstimateFrameAccumPercent( float fPercent_ )
         return true;
     if ( m_iFrameAccumCounter <= 1 )
     {
-        return  ( rand() * ( 100.f/RAND_MAX) ) < fPercent_;
+        return  ( rand() * ( 100.f / static_cast<float>( RAND_MAX ) ) ) < fPercent_;
     }
     float   fAccumProb = 0.f;
     float   fProb = fPercent_ * 0.01f;
@@ -3465,7 +3466,7 @@ inline bool    CX2GUNPC::EstimateFrameAccumPercent( float fPercent_ )
         fAccumProb = fAccumProb * ( 1.f - fProb ) + fProb;
     }
 
-   return  ( rand() * ( 1.f/RAND_MAX) ) < fAccumProb;
+   return  ( rand() * ( 1.f / static_cast<float>( RAND_MAX ) ) ) < fAccumProb;
 
 }
 
@@ -3476,7 +3477,7 @@ inline bool    CX2GUNPC::EstimateFrameAccumPercent( float fPercent_ )
     else if ( fPercent_ >= 100.f )
         return true;
 
-    return  ( rand() * ( 100.f/RAND_MAX) ) < fPercent_;
+    return  ( rand() * ( 100.f / static_cast<float>( RAND_MAX ) ) ) < fPercent_;
 }
 
 typedef KObserverPtr<CX2GUNPC> CX2GUNPCoPtr;

@@ -110,14 +110,14 @@ public:
 		EmblemTemplet():
 		m_bIsFirstOnly(false),
 		m_bCheckCondition(false),
+		m_bIsPassCondition(false),
 		m_uiShowOrder(0),
+		m_vTexture1stCostomPos(-1.f, -1.f),
+		m_vTexture2ndCostomPos(-1.f, -1.f),
 		m_bShowVilleage(false),
 		m_bShowBattleFIeld(false),
 		m_bShowDungeon(false),
-		m_bIsAlreadyShow(false),
-		m_bIsPassCondition(false),
-		m_vTexture1stCostomPos(-1.f, -1.f),
-		m_vTexture2ndCostomPos(-1.f, -1.f)
+		m_bIsAlreadyShow(false)
 		{}
 
 		void InitShowState()

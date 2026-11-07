@@ -81,7 +81,7 @@ public:
 	bool UIServerEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
 
 	bool GetShow() { return m_bShow; }
-	void SetShow(bool val, UidType eTab = NULL);
+	void SetShow(bool val, UidType eTab = 0);
 	void SetLayer( X2_DIALOG_LAYER layer );
 	D3DXVECTOR2 GetDLGSize(){ return m_DLGSize; }
 	void SetPosition( D3DXVECTOR2 vec );
@@ -112,12 +112,12 @@ public:
 
 	void SelectKindRideButton( KIND_OF_RIDE_BUTTON  _select, bool _enable = true );
 
-	const bool GetShowRPList();
-	const bool GetShowRPInfo();
+	bool GetShowRPList();
+	bool GetShowRPInfo();
 
 	void UpdateRidingButtonGuideDesc( bool IsSetKey_ ); //bool값에 따라 이미 탑승키가 정해져 있는가 아닌가에 따라 툴팁이 바뀜.
 
-	const UidType GetViewRidingPetID(){ return m_ViewRidingPetUid; }
+	UidType GetViewRidingPetID(){ return m_ViewRidingPetUid; }
 
 	CKTDGParticleSystem::CParticleEventSequenceHandle GethParticle() {return m_hParticle;} // Pet 성향 파티클 관련함수
 	void SethParticle(CKTDGParticleSystem::CParticleEventSequenceHandle mhParticle) { m_hParticle = mhParticle;} // Pet 성향 파티클 관련함수

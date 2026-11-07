@@ -378,7 +378,7 @@ class CX2Data : public CKTDXStage
 		//}}
 
 		//오현빈 // 2012-12-14 // 널체크 코드 길이 줄이기 위해 추가 했습니다.
-		const int				GetSelectUnitLevel() const;
+		int				GetSelectUnitLevel() const;
 		CX2Unit::UNIT_CLASS		GetSelectUnitClass() const;
 		CX2Unit::UNIT_TYPE		GetSelectUnitType() const;
 		SEnum::DUNGEON_ID		GetCurrentDungeonID();

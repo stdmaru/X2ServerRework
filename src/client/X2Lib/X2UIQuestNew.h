@@ -381,7 +381,7 @@ public:
 	};
 
 
-	struct EpicQuestInfoSort : public std::binary_function< QuestInfo, QuestInfo, bool >
+	struct EpicQuestInfoSort
 	{
 		bool operator()( const QuestInfo& _Left, const QuestInfo& _Right ) const
 		{
@@ -413,7 +413,7 @@ public:
 
 
 
-	struct QuestInfoSort : public std::binary_function< QuestInfo, QuestInfo, bool >
+	struct QuestInfoSort
 	{
 		bool operator()( const QuestInfo& _Left, const QuestInfo& _Right ) const
 		{
@@ -477,7 +477,7 @@ public:
 	};
 
 	//퀵퀘스트 정렬용
-	struct QuickQuestInfoSort : public std::binary_function< QuestInfo, QuestInfo, bool >
+	struct QuickQuestInfoSort
 	{
 		bool operator()( const QuestInfo& _Left, const QuestInfo& _Right ) const
 		{

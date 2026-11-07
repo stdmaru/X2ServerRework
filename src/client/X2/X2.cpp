@@ -150,16 +150,6 @@ INT WINAPI VirtualWinMain( HINSTANCE hInst, HINSTANCE, LPSTR, INT )
 
 
 
-	g_hInternet = NULL;
-	// HTTP Open
-	if ( NULL == ( g_hInternet = ::InternetOpen( L"HTTP_WRAPPER_KOG",
-		INTERNET_OPEN_TYPE_PRECONFIG,
-		NULL,
-		NULL,
-		0 ) ) )
-	{
-		ErrorLog( XEM_ERROR106 );
-	}
 
 
 

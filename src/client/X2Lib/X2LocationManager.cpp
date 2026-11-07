@@ -968,7 +968,7 @@ SEnum::VILLAGE_MAP_ID CX2LocationManager::GetDungeonLoungeIDByDungeonID(  const 
 
 	while ( m_mapLocalMapTemplet.end() != cmItr )
 	{
-		BOOST_FOREACH( const SEnum::DUNGEON_ID eVal, cmItr->second->m_DungeonList )
+		for( const SEnum::DUNGEON_ID eVal : cmItr->second->m_DungeonList )
 		{
 			// 던전아이디가 같은게 있으면
 			if ( eVal == eDungeonId_ )

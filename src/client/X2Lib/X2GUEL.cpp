@@ -3198,7 +3198,7 @@ void CX2GUEL::StateChangeSpecialAttack( IN const CX2SkillTree::SkillTemplet* pSk
 }
 /*virtual*/ void CX2GUEL::InitEnchantWeaponEffectUnitSpecific()
 {
-	BOOST_TEST_FOREACH( Weapon*, pWeapon, m_vecpWeapon )
+	for( Weapon* pWeapon : m_vecpWeapon )
 	{
 		ASSERT( NULL != pWeapon );
 		pWeapon->InitEnchantParticleForSword();
@@ -8763,7 +8763,7 @@ void CX2GUEL::ApplyDebuffStigmaOfFire( const CX2DamageManager::DamageData& damag
 				pDefenderUnit->GetBuffFactorOnlyDebuff( VecDebuffFactor );
 
 
-				BOOST_FOREACH( const KBuffFactor& kFactor_, VecDebuffFactor )
+				for( const KBuffFactor& kFactor_ : VecDebuffFactor )
 				{
 					if( kFactor_.m_BuffIdentity.m_eBuffTempletID == BTI_DEBUFF_STIGMA_OF_FIRE && kFactor_.m_ucAccumulationCountNow > 4 )
 					{
@@ -8831,7 +8831,7 @@ void CX2GUEL::FireBlossomsProc_FrameMove()
 			{
 				BUFF_TEMPLET_ID eEraseDebuff = BTI_NONE;
 
-				BOOST_FOREACH( CX2BuffTempletPtr ptr, m_vecBuffTempletPtr )
+				for( CX2BuffTempletPtr ptr : m_vecBuffTempletPtr )
 				{
 					if ( NULL != ptr && false == ptr->GetDidFinish() && ptr->IsDeBuff() && false == ptr->IsWorldBuff() )
 					{
@@ -8899,7 +8899,7 @@ void CX2GUEL::BlazingDanceFindTargetAndMove()
 					continue;
 
 				//�̹� �ѹ� Ÿ���� �Ǿ��� �����̶�� �ϴ� ����
-				BOOST_FOREACH( UidType uTargetUid_, m_vecBlazingDanceTargetUid )
+				for( UidType uTargetUid_ : m_vecBlazingDanceTargetUid )
 				{
 					if( uTargetUid_ == pUnit->GetUnitUID() )
 					{

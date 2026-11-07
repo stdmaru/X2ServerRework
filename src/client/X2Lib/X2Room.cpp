@@ -1777,7 +1777,7 @@ bool CX2Room::GetAverageTestPingTimeToOthers( OUT DWORD& dwAveragePingTime_ )
 	UINT uiSumOfPlayerNumber = 0;	/// 플레이어로 판단된 슬롯 수
 	UINT uiSumOfPingTime = 0;		/// 플레이어들과의 핑 시간
 
-	BOOST_FOREACH( const SlotData* pSlotData, m_SlotDataList )
+	for( const SlotData* pSlotData : m_SlotDataList )
 	{
 		if ( NULL != pSlotData )
 		{

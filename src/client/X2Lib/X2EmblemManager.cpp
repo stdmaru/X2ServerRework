@@ -34,7 +34,7 @@ m_fWaitTime(0.f)
 
 CX2EmblemManager::~CX2EmblemManager()
 {
-	BOOST_FOREACH( EmblemTemplet* pEmblem, m_vecEmblemTemplet)
+	for( EmblemTemplet* pEmblem : m_vecEmblemTemplet )
 	{
 		SAFE_DELETE ( pEmblem );
 	}
@@ -87,7 +87,7 @@ void CX2EmblemManager::ParsingEmblemTemplet( KLuaManager& luaManager )
 		luaManager.EndTable();
 	}
 
-	BOOST_FOREACH( const std::string& strTableNameUTF8, vecEmblemTempletNameUTF8 )
+	for( const std::string& strTableNameUTF8 : vecEmblemTempletNameUTF8 )
 	{
 		if( true == luaManager.BeginTable( strTableNameUTF8.c_str() ) )
 		{
@@ -96,7 +96,7 @@ void CX2EmblemManager::ParsingEmblemTemplet( KLuaManager& luaManager )
 			LUA_GET_VALUE_ENUM( luaManager, "EMBLEM_ID", pEmblemTemplet->m_eEmblemID, EMBLEM_ID, EI_NONE);
 
 			bool bCheckDuplicate = false;
-			BOOST_FOREACH( const EmblemTemplet* pEmblem, m_vecEmblemTemplet)
+			for( const EmblemTemplet* pEmblem : m_vecEmblemTemplet )
 			{
 				if( pEmblem->m_eEmblemID == pEmblemTemplet->m_eEmblemID )
 				{
@@ -358,7 +358,7 @@ void CX2EmblemManager::PlayEmblemEffect( const EmblemTemplet& sEmblemTemplet_ )
 */
 void CX2EmblemManager::InitEmbelmPlayInfo( bool bCharChange /*= false */)
 {
-	BOOST_FOREACH( EmblemTemplet* pEmblem, m_vecEmblemTemplet)
+	for( EmblemTemplet* pEmblem : m_vecEmblemTemplet )
 	{
 		if( false == pEmblem->m_bIsFirstOnly ||
 			true == bCharChange )
@@ -443,7 +443,7 @@ void CX2EmblemManager::OnFrameMove( float fElpaseTime )
 
 	m_hCurrentEmblem = INVALID_PARTICLE_SEQUENCE_HANDLE;
 	m_hCurrentEmblem2nd = INVALID_PARTICLE_SEQUENCE_HANDLE;
-	BOOST_FOREACH( EmblemTemplet* pEmblem, m_vecEmblemTemplet)
+	for( EmblemTemplet* pEmblem : m_vecEmblemTemplet )
 	{
 		// 스테이트 체크
 		switch( g_pMain->GetNowStateID() )
@@ -499,7 +499,7 @@ void CX2EmblemManager::OnFrameMove( float fElpaseTime )
 void CX2EmblemManager::CheckNextPlayingEmblem()
 {
 	bool bHasNextPlayEmblem = false;
-	BOOST_FOREACH( const EmblemTemplet* pEmblem, m_vecEmblemTemplet)
+	for( const EmblemTemplet* pEmblem : m_vecEmblemTemplet )
 	{
 		// 아직 출력하지 않은 이펙트가 있다면
 		if( false == pEmblem->m_bIsAlreadyShow )
@@ -513,7 +513,7 @@ void CX2EmblemManager::CheckNextPlayingEmblem()
 */
 void CX2EmblemManager::PlayEmblem( EMBLEM_ID eEmblemID_, bool bReShow_ /*= false*/ )
 {
-	BOOST_FOREACH( EmblemTemplet* pEmblem, m_vecEmblemTemplet)
+	for( EmblemTemplet* pEmblem : m_vecEmblemTemplet )
 	{
 		if( eEmblemID_ == pEmblem->m_eEmblemID )
 		{
@@ -529,7 +529,7 @@ void CX2EmblemManager::PlayEmblem( EMBLEM_ID eEmblemID_, bool bReShow_ /*= false
 */
 void CX2EmblemManager::EndEmblem( EMBLEM_ID eEmblemID_ )
 {
-	BOOST_FOREACH( EmblemTemplet* pEmblem, m_vecEmblemTemplet)
+	for( EmblemTemplet* pEmblem : m_vecEmblemTemplet )
 	{
 		if( eEmblemID_ == pEmblem->m_eEmblemID )
 		{
@@ -578,7 +578,7 @@ void CX2EmblemManager::PlayEmblemOtherProcess( const EmblemTemplet& sEmblemTempl
 }
 bool CX2EmblemManager::HasEmblem( EMBLEM_ID eEmblemID_ )
 {
-	BOOST_FOREACH( const EmblemTemplet* pEmblem, m_vecEmblemTemplet)
+	for( const EmblemTemplet* pEmblem : m_vecEmblemTemplet )
 	{
 		if( eEmblemID_ == pEmblem->m_eEmblemID )
 		{
@@ -589,7 +589,7 @@ bool CX2EmblemManager::HasEmblem( EMBLEM_ID eEmblemID_ )
 }
 void CX2EmblemManager::SetTexture2ndName( EMBLEM_ID eEmblemID_, const wstring& wstrTextureName )
 {
-	BOOST_FOREACH( EmblemTemplet* pEmblem, m_vecEmblemTemplet)
+	for( EmblemTemplet* pEmblem : m_vecEmblemTemplet )
 	{
 		if( eEmblemID_ == pEmblem->m_eEmblemID )
 		{

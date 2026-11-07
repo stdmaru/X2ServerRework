@@ -61,7 +61,7 @@ protected:
 	bool GetNowMovingToBattleField() const { return m_bNowMovingToBattleField; }
 	void SetNowMovingToBattleField( const bool bNowMovingToBattleField_ ) { m_bNowMovingToBattleField = bNowMovingToBattleField_; }
 
-	FORCEINLINE bool MoveFromVillageToBattleField( const int iVillageStartPosIdToBattleField_ ) const;
+	bool MoveFromVillageToBattleField( const int iVillageStartPosIdToBattleField_ ) const;
     bool MoveToOtherPlace( float fElapsedTime );
 	void DrawMovingSmallBar();
 	void CreateMovingSmallBar();

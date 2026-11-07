@@ -92,10 +92,8 @@ m_hLogoBack(INVALID_PARTICLE_SEQUENCE_HANDLE)
 
 
 
-	THEMIDA_VM_START
 #if !X2_DEV_TOOLS
 	// checked
-	ELSWORD_VIRTUALIZER_START
 #endif
 
 #ifdef EXTEND_SERVER_GROUP_MASK
@@ -111,9 +109,7 @@ m_hLogoBack(INVALID_PARTICLE_SEQUENCE_HANDLE)
 	ConnectToChannelServer();
 
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_END
 #endif
-	THEMIDA_VM_END
 
 
 	g_pKTDXApp->SkipFrame();
@@ -500,7 +496,6 @@ bool CX2StateLoading::UIServerEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LP
 		return true;
 
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_START
 #endif
 
 	switch( wParam )
@@ -512,7 +507,6 @@ bool CX2StateLoading::UIServerEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LP
 	}
 
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_END
 #endif
 
 	//{{AFX

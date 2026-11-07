@@ -210,9 +210,9 @@ class CX2GUElsword_SwordMan : public CX2GUUser
 
 
         class   CElswordGuardSkill;
-        typedef boost::intrusive_ptr<CElswordGuardSkill> CElswordGuardSkillPtr;
+        typedef x2::intrusive_ptr<CElswordGuardSkill> CElswordGuardSkillPtr;
 
-		class CElswordGuardSkill : boost::noncopyable
+		class CElswordGuardSkill : x2::NonCopyable
 		{
 		private:
             unsigned                                        m_uRefCount;
@@ -220,9 +220,9 @@ class CX2GUElsword_SwordMan : public CX2GUUser
 			const bool*					m_pGuardKey;					/// ���ҵ��� Guard�� �����Ǿ� �ִ� ��ų������ Key(A, S, D, C ��)
 			bool						m_bGuardEquippedAtSlotB;		/// ���ҵ��� Guard�� B���Կ� �����Ǿ� �ִ����� ��� ����
 			int							m_iDamageReducePercent;			/// ���ҵ��� Guard ���¿��� ������ ������
-			CElswordGuardSkill() : m_eSkillSlotID_Guard( ESSI_BASE ),
-				m_pGuardKey( NULL ), m_bGuardEquippedAtSlotB( false ), m_iDamageReducePercent( 0 )
-                , m_uRefCount(0)
+			CElswordGuardSkill() : m_uRefCount(0),
+				m_eSkillSlotID_Guard( ESSI_BASE ), m_pGuardKey( NULL ), m_bGuardEquippedAtSlotB( false )
+                , m_iDamageReducePercent( 0 )
 			{}
 
 		public:

@@ -50,6 +50,8 @@ Ported code includes `x2/platform/win32.h` instead of `<windows.h>`, `<atltime.h
 | `console.h` | `InitConsole` (at start of each server `main`), `IsColorTerminal` (used by logging), `Utf8Arguments` (`main` arguments as UTF-8; on Windows, from UTF-16 command line) | no-op; `isatty` | UTF-8 console input/output (`SetConsoleCP`/`SetConsoleOutputCP`, restored on exit) and ANSI escapes enabled (`ENABLE_VIRTUAL_TERMINAL_PROCESSING`); color only if console supports it |
 | `window_messages.h` (from `win32.h`) | `WM_*` (including IME), `VK_*`, `WA_*`/`SIZE_*`/`SC_*`/`MK_*`/`XBUTTON*`/`GCS_*` with their Windows values; `WPARAM`/`LPARAM`/`LRESULT`, `POINT`/`RECT`, `LOWORD`/`HIWORD`/`MAKELPARAM`/`GET_X_LPARAM`/`GET_WHEEL_DELTA_WPARAM`... (2026-11-05, for the client's `MsgProc`; see [Client: DXUT](client-dxut.md)) | definitions | `windows.h` |
 | `ime.h` | IMM32 types and constants for the client's IME edit box: `HIMC`, `HKL`, `CANDIDATELIST`, `INPUTCONTEXT`, `IMN_*`, `NI_*`, `CPS_*`, `IME_CMODE_*`, `ATTR_*`, `LANG_*` (2026-11-05; the functions are emulated in the client, see [Client: IME](client-ime.md)) | definitions | `imm.h`, `immdev.h` (types only) |
+| `bimap.h` | `x2::bimap<L, R>`: the part of Boost.Bimap the client uses (`insert` of a pair when neither key exists, read-only `left`/`right` maps, `clear`, `size`; 2026-11-07) | two `std::map`s | same |
+| `xml.h` | `ParseXml` → `XmlElement` tree (name, attributes, children, text; `Attribute`, `Child`): BOM, prolog, comments, processing instructions, CDATA, the five entities and character references; `DOCTYPE` is skipped. Replaces libxml for `CX2GameOption` (decided with the user, 2026-11-07) | custom implementation | same |
 | `d3dx_math.h` | D3DX 9 math for the servers and the client: `D3DXVECTOR2/3/4`, `D3DXMATRIX`, `D3DXCOLOR`, `D3DXQUATERNION`, `D3DXPLANE` (D3DX's full member sets), `D3DXKEY_VECTOR3/QUATERNION`, `D3DX_PI`, `D3DXToRadian/Degree`, `D3DX_ALIGN16`; `D3DXVec2/3/4*`, `D3DXMatrix*`, `D3DXQuaternion*`, `D3DXPlane*`, `D3DXComputeBoundingSphere` (list in [D3DX math](#d3dx-math)); and the `d3d9types.h` pieces it needs: `D3DCOLORVALUE`, `D3DVIEWPORT9`, `D3DCOLOR_ARGB/RGBA/XRGB/COLORVALUE`, `D3D_OK`/`D3DERR_INVALIDCALL` | custom implementation | same (without DXSDK) |
 
 ## Pitfalls handled by the layer
@@ -129,5 +131,5 @@ Behavior worth knowing (all as in D3DX):
 ## Tests
 
 `src/platform/tests` (doctest): Unicode, terminal (key decoder, line editor), JSON (flat and full), processes (with `x2_process_helper` as the child), control socket, MSVC formats, `CString`,
-`CTime`/`CTimeSpan`, events, threads, CRT, and D3DX math
+`CTime`/`CTimeSpan`, events, threads, CRT, `bimap`, XML, and D3DX math
 (expected values derived manually from D3DX conventions; every function added for the client has a case, 2026-11-05).

@@ -16,7 +16,7 @@ class CX2NoticeManager
 				m_Msg			= L"";
 			}
 
-			NoticeData& NoticeData::operator=( const NoticeData& rhs )
+			NoticeData& operator=( const NoticeData& rhs )
 			{
 				if ( this == &rhs )
 				{

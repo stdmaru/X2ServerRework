@@ -290,15 +290,15 @@ public:
 
 	bool													IsLearnBeforeSelectSkill( const int iNowTierIndex );						/// 이전 단계의 2지선다 스킬을 배웠는지 여부를 반환
 
-	const int												GetNotLearnTierIndex();														/// 배우지 못한 최상위 스킬 라인 반환
-	const int												GetNotEnoughLevelTierIndex( const int iLevel );								/// 배울 수 없는 레벨의 최상위 스킬 라인 반환
+	int												GetNotLearnTierIndex();														/// 배우지 못한 최상위 스킬 라인 반환
+	int												GetNotEnoughLevelTierIndex( const int iLevel );								/// 배울 수 없는 레벨의 최상위 스킬 라인 반환
 	const map<SkillPositionKey,	CX2SkillTree::SKILL_ID>&	GetMapSkillPosition() { return m_mapSkillPosition; }						/// 위치에 따른 스킬 아이디 저장 컨테이너 반환
 	const CKTDGUIDialogType									GetDLGUISkillTree() { return m_pDLGUISkillTree; }							/// 스킬 트리 다이얼로그 객체 반환
-	const int												GetSkillLevelInSkillWimdow( const CX2SkillTree::SKILL_ID eSkillID ) const;	/// 스킬창 내 스킬 아이디 반환
-	const CX2SkillTree::SKILL_ID							GetAnotherSelectSkillID( CX2SkillTree::SKILL_ID eCheckSkillID ) const;		/// 2지선다 스킬 중 반대편에 있는 스킬 아이디를 반환
-	const int												GetRequireSkillLineLevel( int iSkillLineTierIndex ) const					/// 스킬 Tire에 따른 스킬 습득 요구 레벨
+	int												GetSkillLevelInSkillWimdow( const CX2SkillTree::SKILL_ID eSkillID ) const;	/// 스킬창 내 스킬 아이디 반환
+	CX2SkillTree::SKILL_ID							GetAnotherSelectSkillID( CX2SkillTree::SKILL_ID eCheckSkillID ) const;		/// 2지선다 스킬 중 반대편에 있는 스킬 아이디를 반환
+	int												GetRequireSkillLineLevel( int iSkillLineTierIndex ) const					/// 스킬 Tire에 따른 스킬 습득 요구 레벨
 	{
-		if ( iSkillLineTierIndex >= ARRAY_SIZE( OPEN_SKILL_TREE_LEVEL ) )
+		if ( iSkillLineTierIndex >= std::ssize( OPEN_SKILL_TREE_LEVEL ) )
 		{
 			/// 각 라인별 습득 레벨 배열보다 큰 라인 인덱스를 참조하려고 해요!!!
 			ASSERT( !L"NowSkillLineLevel Is Large Then OPEN_SKILL_TREE_LEVEL Array Size!!!" );

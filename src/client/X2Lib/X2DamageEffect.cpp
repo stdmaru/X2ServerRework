@@ -1205,7 +1205,7 @@ CX2DamageEffect::CEffect::~CEffect()
 	KTDXPROFILE();
 
 
-	//BOOST_TEST_FOREACH( CKTDXDeviceSound*, pSound, m_vecPlayingLoopSound )
+	//for( CKTDXDeviceSound* pSound : m_vecPlayingLoopSound )
 	//{
 	//	if( NULL != pSound )
 	//	{
@@ -2174,9 +2174,9 @@ void CX2DamageEffect::CEffect::OnFrameMove_LockOnData(  float fElapsedTime_ )
 
 				const CKTDXCollision::CollisionDataListSet& AttackListSet = pCX2GUUser->GetCollisionListSet();
 				bool    bInit = false;
-				BOOST_FOREACH( const CKTDXCollision::CollisionDataList* collisionDataList, AttackListSet )
+				for( const CKTDXCollision::CollisionDataList* collisionDataList : AttackListSet )
 				{
-					BOOST_FOREACH( CKTDXCollision::CollisionData* collisionData, *collisionDataList )
+					for( CKTDXCollision::CollisionData* collisionData : *collisionDataList )
 					{
 						D3DXVECTOR3 vCollPos = collisionData->GetPointStart();
 						if ( bInit == false )
@@ -2230,9 +2230,9 @@ void CX2DamageEffect::CEffect::OnFrameMove_LockOnData(  float fElapsedTime_ )
 					const CKTDXCollision::CollisionDataListSet& AttackListSet = pCX2GUNPC->GetCollisionListSet();
 					bool    bInit = false;
 
-					BOOST_FOREACH( const CKTDXCollision::CollisionDataList* collisionDataList, AttackListSet )
+					for( const CKTDXCollision::CollisionDataList* collisionDataList : AttackListSet )
 					{
-						BOOST_FOREACH( CKTDXCollision::CollisionData* collisionData, *collisionDataList )
+						for( CKTDXCollision::CollisionData* collisionData : *collisionDataList )
 						{
 							D3DXVECTOR3 vCollPos = collisionData->GetPointStart();
                             if ( bInit == false )
@@ -2302,9 +2302,9 @@ void CX2DamageEffect::CEffect::OnFrameMove_LockOnData(  float fElapsedTime_ )
 				const CKTDXCollision::CollisionDataListSet& AttackListSet = pGameUnit->GetCollisionListSet();
 				bool    bInit = false;
 
-				BOOST_FOREACH( const CKTDXCollision::CollisionDataList* collisionDataList, AttackListSet )
+				for( const CKTDXCollision::CollisionDataList* collisionDataList : AttackListSet )
 				{
-					BOOST_FOREACH( CKTDXCollision::CollisionData* collisionData, *collisionDataList )
+					for( CKTDXCollision::CollisionData* collisionData : *collisionDataList )
 					{
 						D3DXVECTOR3 vCollPos = collisionData->GetPointStart();
 						if ( bInit == false )
@@ -2393,9 +2393,9 @@ void CX2DamageEffect::CEffect::OnFrameMove_LockOnData(  float fElapsedTime_ )
 				const CKTDXCollision::CollisionDataListSet& AttackListSet = pGameUnit->GetCollisionListSet();
                 bool    bInit = false;
 
-				BOOST_FOREACH( const CKTDXCollision::CollisionDataList* collisionDataList, AttackListSet )
+				for( const CKTDXCollision::CollisionDataList* collisionDataList : AttackListSet )
 				{
-					BOOST_FOREACH( CKTDXCollision::CollisionData* collisionData, *collisionDataList )
+					for( CKTDXCollision::CollisionData* collisionData : *collisionDataList )
 					{
 						D3DXVECTOR3 vCollPos = collisionData->GetPointStart();
                         if ( bInit == false )
@@ -2643,7 +2643,6 @@ void CX2DamageEffect::CEffect::DamageReact( CX2DamageManager::DamageData* pDamag
 {
 #if !X2_DEV_TOOLS
 	// checked
-	ELSWORD_VIRTUALIZER_START
 #endif
 
 	CX2GameUnit* pDefenderGameUnit = ( null != pDamageData->optrDefenderGameUnit ? pDamageData->optrDefenderGameUnit.GetObservable() : NULL );
@@ -2720,7 +2719,6 @@ void CX2DamageEffect::CEffect::DamageReact( CX2DamageManager::DamageData* pDamag
 	m_bLive = false;
 
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_END
 #endif
 }
 
@@ -2728,7 +2726,6 @@ void CX2DamageEffect::CEffect::AttackResult()
 {
 #if !X2_DEV_TOOLS
 	// checked
-	ELSWORD_VIRTUALIZER_START
 #endif
 
 	KTDXPROFILE();
@@ -3451,7 +3448,6 @@ void CX2DamageEffect::CEffect::AttackResult()
 	}
 
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_END
 #endif
 }
 
@@ -3620,7 +3616,7 @@ void CX2DamageEffect::CEffect::SetStartParticle()
 
 	if ( m_DamageEffectDataInLua.m_vecStartParticle.size() != 0 )
 	{
-		BOOST_TEST_FOREACH( ParticleData*, pStartParticleData, m_DamageEffectDataInLua.m_vecStartParticle )
+		for( ParticleData* pStartParticleData : m_DamageEffectDataInLua.m_vecStartParticle )
 		{
 			if ( pStartParticleData != NULL )
 				SetParticleTable( pStartParticleData );
@@ -3652,7 +3648,7 @@ void CX2DamageEffect::CEffect::SetPassiveParticle()
 
 	if ( m_DamageEffectDataInLua.m_vecPassiveParticle.size() != 0 )
 	{
-		BOOST_TEST_FOREACH( ParticleData*, pPassiveParticleData, m_DamageEffectDataInLua.m_vecPassiveParticle )
+		for( ParticleData* pPassiveParticleData : m_DamageEffectDataInLua.m_vecPassiveParticle )
 		{
 			if ( pPassiveParticleData != NULL )
 			{
@@ -3706,7 +3702,7 @@ void CX2DamageEffect::CEffect::SetTimeParticle()
 
 	if ( m_DamageEffectDataInLua.m_vecTimeParticle.size() != 0 )
 	{
-		BOOST_TEST_FOREACH( ParticleData*, pTimeParticleData, m_DamageEffectDataInLua.m_vecTimeParticle )
+		for( ParticleData* pTimeParticleData : m_DamageEffectDataInLua.m_vecTimeParticle )
 		{
 			if ( pTimeParticleData != NULL )
 				SetParticleTable( pTimeParticleData, false );
@@ -3738,7 +3734,7 @@ void CX2DamageEffect::CEffect::SetHitParticle()
 	if ( m_DamageEffectDataInLua.m_vecHitParticle.size() == 0 )
 		return;
 
-	BOOST_TEST_FOREACH( ParticleData*, pHitParticleData, m_DamageEffectDataInLua.m_vecHitParticle )
+	for( ParticleData* pHitParticleData : m_DamageEffectDataInLua.m_vecHitParticle )
 	{
 		if ( pHitParticleData != NULL )
 		{
@@ -3758,7 +3754,7 @@ void CX2DamageEffect::CEffect::SetHitDamageEffect()
 	//{{ kimhc // 2009-10-20 // 기존의 Set함수를 Load와 Set 으로 분류(일명 독구름 작업)
 	if ( m_DamageEffectDataInLua.m_vecHitDamageEffect.size() != 0 )
 	{
-		BOOST_TEST_FOREACH( DamageEffectData*, pHitDamageEffect, m_DamageEffectDataInLua.m_vecHitDamageEffect )
+		for( DamageEffectData* pHitDamageEffect : m_DamageEffectDataInLua.m_vecHitDamageEffect )
 		{
 			if ( pHitDamageEffect != NULL )
 			{
@@ -3791,7 +3787,7 @@ void CX2DamageEffect::CEffect::SetDieDamageEffect()
 	//{{ kimhc // 2009-10-20 // 기존의 Set함수를 Load와 Set 으로 분류(일명 독구름 작업)
 	if ( m_DamageEffectDataInLua.m_vecDieDamageEffect.size() != 0 )
 	{
-		BOOST_TEST_FOREACH( DamageEffectData*, pDieDamageEffect, m_DamageEffectDataInLua.m_vecDieDamageEffect )
+		for( DamageEffectData* pDieDamageEffect : m_DamageEffectDataInLua.m_vecDieDamageEffect )
 		{
 			if ( pDieDamageEffect != NULL )
 			{
@@ -5079,7 +5075,7 @@ void CX2DamageEffect::CEffect::SetPos( const D3DXVECTOR3& pos )
 		NULL != g_pX2Game->GetMajorParticle() )
 	{
 
-		BOOST_TEST_FOREACH( ParticleData*, pParticleData, m_PassiveParticleDataList )
+		for( ParticleData* pParticleData : m_PassiveParticleDataList )
 		{
 			if( INVALID_PARTICLE_SEQUENCE_HANDLE != pParticleData->m_hSeq )
 			{

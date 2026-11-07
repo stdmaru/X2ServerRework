@@ -4524,7 +4524,7 @@ void CX2StatePVPRoom::CX2MapSelectWindow::ResetSelectedMapButton()
 		pListBox->RemoveAllItems();
 
 		const std::vector<CX2World::WorldData*>& vecWorldData = g_pData->GetWorldManager()->GetWorldDataList();
-		BOOST_TEST_FOREACH( const CX2World::WorldData*, pWorldData, vecWorldData )
+		for( const CX2World::WorldData* pWorldData : vecWorldData )
 		{
 			pListBox->AddItem( pWorldData->worldName.c_str(), (void*) pWorldData->worldID );
 		}

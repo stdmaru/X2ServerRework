@@ -36,7 +36,7 @@ CX2BattleFieldGame::CX2BattleFieldGame()
 	CX2BossRaidManager::GetInstance()->SetSendIntrudeRestrictionNot(false);
 
 	// 레이드 게이트 이펙트 파티클 핸들
-	BOOST_FOREACH( CKTDGParticleSystem::CParticleEventSequenceHandle hRaidGateEffectParticle, m_vecRaidGateEffectParticle )
+	for( CKTDGParticleSystem::CParticleEventSequenceHandle hRaidGateEffectParticle : m_vecRaidGateEffectParticle )
 	{
 		hRaidGateEffectParticle = INVALID_PARTICLE_SEQUENCE_HANDLE;
 	}
@@ -405,7 +405,7 @@ void CX2BattleFieldGame::CreateBattleFieldNpcAtStart( const std::vector< KNPCUni
 								, const KAttribEnchantNpcInfoMap& mapAttribNpcInfo_
 								)
 {
-	BOOST_FOREACH( const KNPCUnitReq& kNpcUnitData, vecNPCDataList_ )
+	for( const KNPCUnitReq& kNpcUnitData : vecNPCDataList_ )
 	{
 		const KAttribEnchantNpcInfo* pkAttribInfo = NULL;
 		KAttribEnchantNpcInfoMap::const_iterator iter = mapAttribNpcInfo_.find( kNpcUnitData.m_UID );
@@ -414,7 +414,7 @@ void CX2BattleFieldGame::CreateBattleFieldNpcAtStart( const std::vector< KNPCUni
 		CreateBattleFieldNpc( kNpcUnitData, pkAttribInfo );
 	}
 
-	BOOST_FOREACH( CX2GUNPC* pNpc, m_NPCUnitList )
+	for( CX2GUNPC* pNpc : m_NPCUnitList )
 	{
 		if ( NULL != pNpc )
 			pNpc->SetCreatedBySyncNot( true );
@@ -427,7 +427,7 @@ void CX2BattleFieldGame::CreateBattleFieldNpcByNotData( const std::vector< KNPCU
 {
 	std::vector< KNPCUnitReq > vec;
 	vec.reserve( vecNPCDataList_.size() );
-	BOOST_FOREACH( const KNPCUnitNot& kNpcUnitData, vecNPCDataList_ )
+	for( const KNPCUnitNot& kNpcUnitData : vecNPCDataList_ )
 	{
 		vec.push_back( kNpcUnitData.m_kNPCUnitReq );
 	}
@@ -633,7 +633,7 @@ void CX2BattleFieldGame::CreateBattleFieldNpcByCreatedInfo( const CNpcCreatedInf
 							NpcCreatedInfoPtr_->GetNpcId(), NpcCreatedInfoPtr_->GetNpcUid(), NpcCreatedInfoPtr_->GetStartPosNum(), iLastTouchedIndex );
 						StringCchCat( wLog, 256, L"PetrolLineIndex: " );
 
-						BOOST_FOREACH( const int& iIndex, NpcCreatedInfoPtr_->GetPetrolLineIndexList() )
+						for( const int& iIndex : NpcCreatedInfoPtr_->GetPetrolLineIndexList() )
 						{
 							WCHAR wBuffer[10];
 							ZeroMemory( wBuffer, sizeof(WCHAR) * 10 );
@@ -753,7 +753,7 @@ void CX2BattleFieldGame::CreateNpcCreatedInfo( const vector<KNPCUnitReq>& vecNpc
 	std::deque<CNpcCreatedInfoPtr>& conNpcCreatedInfo = m_deqNpcCreatedInfo;
 	unsigned	uiOldSize = conNpcCreatedInfo.size();
 
-	BOOST_FOREACH( const KNPCUnitReq& kData, vecNpcData_ )
+	for( const KNPCUnitReq& kData : vecNpcData_ )
 	{
 
 		const D3DXVECTOR3 vNpcPos( kData.m_vPos.x, kData.m_vPos.y, kData.m_vPos.z );
@@ -926,7 +926,7 @@ void CX2BattleFieldGame::Send_EGS_UPDATE_BATTLE_FIELD_USER_POS_NOT()
 //
 ////#ifdef	BATTLE_FIELD_TEST
 //		//FieldTest
-//		BOOST_FOREACH( const KRoomSlotInfo& kRoomSlotInfo, kPacket.m_vecSlot )
+//		for( const KRoomSlotInfo& kRoomSlotInfo : kPacket.m_vecSlot )
 //		{
 //			if ( true == kRoomSlotInfo.m_bHost )
 //			{
@@ -1302,7 +1302,7 @@ void CX2BattleFieldGame::CheckNpcNotReceiveFirstSyncPacketAndRequestToCheckNpcUi
 */
 void CX2BattleFieldGame::CheckNpcNotReceiveFirstSyncPacketAndCollectNpcUid( vector<int>& vecNpcUidToCheck_ ) const
 {
-	BOOST_FOREACH( CX2GUNPC* pGUNpc, m_NPCUnitList )
+	for( CX2GUNPC* pGUNpc : m_NPCUnitList )
 	{
 		/// 아직 첫 싱크 패킷을 한번도 받지 못한 NPC라면
 		if ( NULL != pGUNpc && false == pGUNpc->DidReceiveFirstSyncPacket() )
@@ -1337,7 +1337,7 @@ bool CX2BattleFieldGame::Handler_EGS_CHECK_EXIST_MONSTER_UID_ACK( HWND hWnd, UIN
 			if ( false == kPacket.m_vecNotExistNpcUID.empty() )
 			{
 				StateLog( L"m_vecNotExistNpcUID has elements" );
-				BOOST_FOREACH( const int iNpcUid, kPacket.m_vecNotExistNpcUID )
+				for( const int iNpcUid : kPacket.m_vecNotExistNpcUID )
 				{
 					DeleteNPCUnitByUID( iNpcUid );
 				}
@@ -1466,7 +1466,7 @@ void CX2BattleFieldGame::DestoryRaidPotalParticle()
 		GetMajorParticle()->DestroyInstanceHandle( m_hRaidPortalParticle );
 		m_hRaidPortalParticle = INVALID_PARTICLE_SEQUENCE_HANDLE;
 
-		BOOST_FOREACH( CKTDGParticleSystem::CParticleEventSequenceHandle hRaidGateEffectParticle, m_vecRaidGateEffectParticle )
+		for( CKTDGParticleSystem::CParticleEventSequenceHandle hRaidGateEffectParticle : m_vecRaidGateEffectParticle )
 		{
 			GetMajorParticle()->DestroyInstanceHandle( hRaidGateEffectParticle );
 			hRaidGateEffectParticle = INVALID_PARTICLE_SEQUENCE_HANDLE;

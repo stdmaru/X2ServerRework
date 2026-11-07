@@ -762,7 +762,7 @@ bool CX2CashShop::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
 			m_pBuyItemPopUp->SetOpen( true );
 			m_pBuyItemPopUp->SetChoicedItemBuy( true );
 
-			BOOST_FOREACH( const int& iItemID, vecItemID )
+			for( const int& iItemID : vecItemID )
 			{
 				if ( ShowPopUpGuideByItemID( iItemID ) )
 					break;
@@ -832,7 +832,7 @@ bool CX2CashShop::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
 				m_pBuyItemPopUp->SetOpen( true );
 				m_pBuyItemPopUp->SetChoicedItemBuy( true );
 
-				BOOST_FOREACH( const int& iItemID, m_vecChoicedItemID )
+				for( const int& iItemID : m_vecChoicedItemID )
 				{
 					if ( ShowPopUpGuideByItemID( iItemID ) )
 						break;
@@ -2992,7 +2992,7 @@ bool CX2CashShop::MouseLRButtonUpEquip( CX2SlotItem* pItemSlot )
 				}
 				g_pData->GetItemManager()->GetIceHeaterItemData( _wtoi( kKBillProductInfo.m_wstrProductName.c_str()), eUnitType, vecIceHeaterItemData );
 
-				BOOST_FOREACH( int iItemID, vecIceHeaterItemData )
+				for( int iItemID : vecIceHeaterItemData )
 				{
 					InsertPreEquipItem( iItemID, true );
 					SetEnableBuyEquippingItem( false );
@@ -5858,7 +5858,7 @@ void CX2CashShop::CashItemToInvenPopupSlot::AddSocketIdListToComboBox( CKTDGUICo
 			if ( 0 != pSocketItem->GetSocketIdListForCashAvatar( iSocketGroupID, vecSocketIdList, pItemTemplet_->GetItemType() ) )
 			{
 				// ��������, ���ʷ� �ִ´�.
-				BOOST_FOREACH( const int iSocketID, vecSocketIdList )
+				for( const int iSocketID : vecSocketIdList )
 				{
 					const CX2SocketItem::SocketData* pSocketData = pSocketItem->GetSocketData( iSocketID );
 					if ( NULL != pSocketData )
@@ -7617,7 +7617,7 @@ bool CX2CashShop::CheckBuyPossibleRelationItem( int iItemID )
 		SEnum::RELATIONSHIP_TYPE eRelationType = g_pData->GetRelationshipManager()->GetMyRelationshipInfo()->m_eRelationStateType;
 		if( eRelationType == SEnum::RT_SOLO ) // �ַ� �϶��� üũ�Ѵ�.
 		{
-			for( int i = 0 ; i < ARRAY_SIZE(ITEM_ID_WEDDING_CASH_ITEM); ++i )
+			for( int i = 0 ; i < std::ssize(ITEM_ID_WEDDING_CASH_ITEM); ++i )
 			{
 				// �ش� �������� Wedding Cash Item �̶��
 				// false�� ��ȯ�ϰ� MessageBox �� ����.
@@ -7648,7 +7648,7 @@ bool CX2CashShop::CheckBuyPossibleRelationItem( const vector<int>& vecItemIDList
 			return true;
 	}
 
-	BOOST_FOREACH( int iItemID, vecItemIDList )
+	for( int iItemID : vecItemIDList )
 	{
 		if( false == CheckBuyPossibleRelationItem( iItemID ) )
 			return false;

@@ -74,8 +74,8 @@ class CX2User
 			    userUID( 0 ), userID()
                 , m_bMan( true ), m_ucAge( 0 ), maxUnitCount( 0 )
                 , userAuthLevel( XUAL_NORMAL_USER ), m_bIsPCRoom( false ), m_bIsGuestUser( false )
-				, hackingUserType( CX2User::HUT_NORMAL )
-				, IP(), port( 0 )
+				, IP()
+				, port( 0 ), hackingUserType( CX2User::HUT_NORMAL )
 				, m_uChannelCode( -1 )		/// CE_NONE
 				, m_wstrTooniLandID()
 			{}

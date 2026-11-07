@@ -118,12 +118,12 @@ frameBufferNum, pUnit )
 
 	m_hSeqBloodyAccel						= INVALID_PARTICLE_SEQUENCE_HANDLE;
 
-	for( int i=0; i<ARRAY_SIZE( m_hSeqPowerAssault ); i++ )
+	for( int i=0; i<std::ssize( m_hSeqPowerAssault ); i++ )
 	{
 		m_hSeqPowerAssault[i] = INVALID_PARTICLE_SEQUENCE_HANDLE;
 	}
 
-	for( int i=0; i<ARRAY_SIZE( m_hSeqSevenBurst ); i++ )
+	for( int i=0; i<std::ssize( m_hSeqSevenBurst ); i++ )
 	{
 		m_hSeqSevenBurst[i] = INVALID_PARTICLE_SEQUENCE_HANDLE;
 	}
@@ -19713,7 +19713,7 @@ void CX2GURaven::SetInvisibility(bool bVal_)
 
 	m_pXSkinAnim->SetLayer(1);
 	// ��� ������ ��ƼŬ
-	BOOST_TEST_FOREACH( CX2EqipPtr, pEquip, m_ViewEqipList )
+	for( CX2EqipPtr pEquip : m_ViewEqipList )
 	{
 		if( pEquip != NULL )
 			pEquip->SetShowAttachedParticle( !m_bInvisibility );

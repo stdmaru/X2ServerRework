@@ -261,7 +261,7 @@ m_bSkillSlotJustChanged(true)
 
 	// variable init
 
-	for( int i=0; i< ARRAY_SIZE( m_arraySkillCoolTime ); i++ )
+	for( int i=0; i< std::ssize( m_arraySkillCoolTime ); i++ )
 	{
 		m_arraySkillCoolTime[i] = 0.f;
 	}
@@ -629,11 +629,11 @@ WORD    CX2Game::Handler_P2P_UnitUserSyncPack( const BYTE* pbyData, BYTE byNumPa
 		if( GetGameType() == GT_PVP && m_pRoom != NULL && unitUID > 0 )
 		{
 			// 시간 갱신부
-			std::map< UidType, boost::timer >::iterator mitFirst = m_mapCheckUDPTimer.find( unitUID );
+			std::map< UidType, x2::Timer >::iterator mitFirst = m_mapCheckUDPTimer.find( unitUID );
 			if( mitFirst == m_mapCheckUDPTimer.end() )
 			{
 				// 2012.06.17 lygan_조성욱 // 처음 싱크를 주고 받았다 등록하자
-				boost::timer timerFirst;
+				x2::Timer timerFirst;
 				timerFirst.restart();
 				m_mapCheckUDPTimer.insert( std::make_pair( unitUID, timerFirst ) );
 			}
@@ -643,7 +643,7 @@ WORD    CX2Game::Handler_P2P_UnitUserSyncPack( const BYTE* pbyData, BYTE byNumPa
 			}
 
 			// 검사부
-			std::map< UidType, boost::timer >::iterator mit;
+			std::map< UidType, x2::Timer >::iterator mit;
 			for ( mit = m_mapCheckUDPTimer.begin(); mit != m_mapCheckUDPTimer.end(); mit++ )
 			{
 				// 2012.06.17 lygan_조성욱 // 두번째 싱크 지연시간이 5초 이상이다 이상하다
@@ -4901,7 +4901,7 @@ bool CX2Game::IsAllUserDead()
 void CX2Game::PartyFeverAllUser( float fAddHyperModeTime )
 {
 	{
-		BOOST_TEST_FOREACH( CX2GUUser*, pUser, m_UserUnitList )
+		for( CX2GUUser* pUser : m_UserUnitList )
 		{
 			if( NULL == pUser )
 				continue;
@@ -5636,7 +5636,6 @@ bool CX2Game::Handler_EGS_NPC_UNIT_DIE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam,
 	DeSerialize( pBuff, &kEvent );
 	CX2PacketLog::PrintLog( &kEvent );
 
-ELSWORD_VIRTUALIZER_START
 	//if( g_pMain->DeleteServerPacket( EGS_NPC_UNIT_DIE_ACK ) == true )
 	{
 		if( g_pMain->IsValidPacket( kEvent.m_iOK ) == true )
@@ -5647,7 +5646,6 @@ ELSWORD_VIRTUALIZER_START
 
 	--m_iNpcDiePacket;
 
-ELSWORD_VIRTUALIZER_END
 
 	return false;
 }
@@ -5764,25 +5762,20 @@ bool CX2Game::CheckEnableKeyProcess()
 bool CX2Game::NPCUnitDieReq( const KEGS_NPC_UNIT_DIE_REQ& kPacket_ )
 {
 	// checked
-	ELSWORD_VIRTUALIZER_START
 
 	if( IsHost() == false )
 		return false;
 
-	THEMIDA_ENCODE_START
 
 	g_pData->GetServerProtocol()->SendPacket( EGS_NPC_UNIT_DIE_REQ, kPacket_ );
 
-	THEMIDA_ENCODE_END
 
-	ELSWORD_VIRTUALIZER_END
 }
 
 bool CX2Game::NPCUnitDieReq( char cAttUnitType, int iNPCUID, UidType uiAttUnit, UidType uiMDAttUnit, D3DXVECTOR3 diePos, bool bIsAllyNPC, bool bBounsDrop /*= false*/ )
 {
 
 	// checked
-	ELSWORD_VIRTUALIZER_START
 
 
 	if( bIsAllyNPC == true )
@@ -5800,21 +5793,18 @@ bool CX2Game::NPCUnitDieReq( char cAttUnitType, int iNPCUID, UidType uiAttUnit, 
 
 	++m_iNpcDiePacket;
 
-	ELSWORD_VIRTUALIZER_END
 }
 
 bool CX2Game::NPCUnitDieReq( char cAttUnitType, int iNPCUID, UidType uiAttUnit, UidType uiMDAttUnit, D3DXVECTOR3 diePos, KEGS_NPC_UNIT_DIE_REQ::NPC_DIE_STATE eDieState )
 {
 
 	// checked
-	ELSWORD_VIRTUALIZER_START
 
 
 
 	if( IsHost() == false )
 		return false;
 
-	THEMIDA_ENCODE_START
 
 	KEGS_NPC_UNIT_DIE_REQ kPacket;
 	kPacket.m_cAttUnitType	= cAttUnitType;
@@ -5831,9 +5821,7 @@ bool CX2Game::NPCUnitDieReq( char cAttUnitType, int iNPCUID, UidType uiAttUnit, 
 
 	++m_iNpcDiePacket;
 
-	THEMIDA_ENCODE_END
 
-	ELSWORD_VIRTUALIZER_END
 
 
 	return true;
@@ -6258,7 +6246,7 @@ bool CX2Game::Handler_EGS_LEAVE_GAME_NOT( KEGS_LEAVE_GAME_NOT& kEGS_LEAVE_GAME_N
 //
 ////#ifdef	BATTLE_FIELD_TEST
 //	//FieldTest
-//	BOOST_FOREACH( const KRoomSlotInfo& kRoomSlotInfo, kEGS_LEAVE_GAME_NOT.m_vecSlot )
+//	for( const KRoomSlotInfo& kRoomSlotInfo : kEGS_LEAVE_GAME_NOT.m_vecSlot )
 //	{
 //		if ( true == kRoomSlotInfo.m_bHost )
 //		{
@@ -6556,11 +6544,9 @@ bool CX2Game::Handler_EGS_GET_ITEM_REQ( UidType itemUID )
 
 
 	// checked
-	ELSWORD_VIRTUALIZER_START
 
 
 
-	THEMIDA_ENCODE_START
 
 	int iItemTID = m_pDropItemManager->GetDropItemID( itemUID );
 
@@ -6611,9 +6597,7 @@ bool CX2Game::Handler_EGS_GET_ITEM_REQ( UidType itemUID )
 
 
 
-	THEMIDA_ENCODE_END
 
-	ELSWORD_VIRTUALIZER_END
 
 	return true;
 
@@ -8034,7 +8018,6 @@ void CX2Game::KillNPC( const CX2UnitManager::NPC_UNIT_ID eNPCID, int nCount )
 		return;
 
 
-	THEMIDA_ENCODE_START
 
 	int iCount = 0;
 	for( int i=0; i<GetNPCUnitListSize(); i++ )
@@ -8059,7 +8042,6 @@ void CX2Game::KillNPC( const CX2UnitManager::NPC_UNIT_ID eNPCID, int nCount )
 	}
 
 
-	THEMIDA_ENCODE_END
 }
 
 void CX2Game::EnableAllNPCAI( bool bEnable )
@@ -10052,7 +10034,7 @@ bool CX2Game::IsThereAnyUserUnitOnLine( int iLineIndex )
 bool CX2Game::IsThereAnyUserUnitUsingSkill( CX2SkillTree::SKILL_ID eSkillID )
 {
 
-	BOOST_TEST_FOREACH( CX2GUUser*, pUser, m_UserUnitList )
+	for( CX2GUUser* pUser : m_UserUnitList )
 	{
 		if( NULL == pUser )
 			continue;
@@ -11931,7 +11913,7 @@ void CX2Game::BuffAllNPC( int statType, float fStatVal, float fStatTime )
 	{
 		fSpeedYDelta = 0.f;
 
-		BOOST_TEST_FOREACH( ReverseGravityData&, reverseGravity, m_vecReverseGravityData )
+		for( ReverseGravityData& reverseGravity : m_vecReverseGravityData )
 		{
 			if( reverseGravity.m_fTimeLeft <= 0.f )
 				continue;
@@ -12175,7 +12157,7 @@ CX2Item::SPECIAL_ITEM_TYPE CX2Game::GetSpecialItemGroupType(const CX2Item::ItemT
 	bool bCrest = false;
 
 	// 몬스터 소환
-	for(int i=0; i<ARRAY_SIZE(DUNGEON_ITEM_LIST4); ++i)
+	for(int i=0; i<std::ssize(DUNGEON_ITEM_LIST4); ++i)
 	{
 		if( dwItemID == DUNGEON_ITEM_LIST4[i] )
 		{
@@ -12184,7 +12166,7 @@ CX2Item::SPECIAL_ITEM_TYPE CX2Game::GetSpecialItemGroupType(const CX2Item::ItemT
 	}
 
 	// 비약
-	for(int i=0; i<ARRAY_SIZE(DUNGEON_ITEM_LIST1); ++i)
+	for(int i=0; i<std::ssize(DUNGEON_ITEM_LIST1); ++i)
 	{
 		if( dwItemID == DUNGEON_ITEM_LIST1[i] )
 		{
@@ -12196,7 +12178,7 @@ CX2Item::SPECIAL_ITEM_TYPE CX2Game::GetSpecialItemGroupType(const CX2Item::ItemT
 	// 정령소환
 	if(bNostrum == false)
 	{
-		for(int i=0; i<ARRAY_SIZE(DUNGEON_ITEM_LIST2); ++i)
+		for(int i=0; i<std::ssize(DUNGEON_ITEM_LIST2); ++i)
 		{
 			if( dwItemID == DUNGEON_ITEM_LIST2[i] )
 			{
@@ -12209,7 +12191,7 @@ CX2Item::SPECIAL_ITEM_TYPE CX2Game::GetSpecialItemGroupType(const CX2Item::ItemT
 	// 문장
 	if(bNostrum == false && bSpirit == false)
 	{
-		for(int i=0; i<ARRAY_SIZE(DUNGEON_ITEM_LIST3); ++i)
+		for(int i=0; i<std::ssize(DUNGEON_ITEM_LIST3); ++i)
 		{
 			if( dwItemID == DUNGEON_ITEM_LIST3[i] )
 			{
@@ -13211,7 +13193,7 @@ void CX2Game::CreateSummonMonsterCardNPC( const CX2Item::SpecialAbility* pSa, CX
 	}
 }
 
-bool CX2Game::CanCheckAbuser( const CX2GUUser* pCheckUser_, std::map< UidType, boost::timer >::iterator mit_ )
+bool CX2Game::CanCheckAbuser( const CX2GUUser* pCheckUser_, std::map< UidType, x2::Timer >::iterator mit_ )
 {
  	return ( pCheckUser_->GetNowStateID() > static_cast<int>( CX2GUUser::USI_LOSE )
  		&& mit_->second.elapsed() > 1.0f
@@ -13226,7 +13208,7 @@ void CX2Game::AbuserUserCheck( const CX2GUUser* pCheckUser_ )
 		const UidType uidCheckUser = pCheckUser_->GetUnitUID();
 
 		// 시간 갱신부
-		std::map< UidType, boost::timer >::iterator mitFirst = m_mapCheckUDPTimer.find( uidCheckUser );
+		std::map< UidType, x2::Timer >::iterator mitFirst = m_mapCheckUDPTimer.find( uidCheckUser );
 		if( mitFirst == m_mapCheckUDPTimer.end() )
 		{
 			// 2012.06.17 lygan_조성욱 // 처음 싱크를 주고 받았다 등록하자
@@ -13238,7 +13220,7 @@ void CX2Game::AbuserUserCheck( const CX2GUUser* pCheckUser_ )
 		}
 
 		// 검사부
-		std::map< UidType, boost::timer >::iterator mit;
+		std::map< UidType, x2::Timer >::iterator mit;
 		for ( mit = m_mapCheckUDPTimer.begin(); mit != m_mapCheckUDPTimer.end(); mit++ )
 		{
 			// 2012.06.17 lygan_조성욱 // 두번째 싱크 지연시간이 5초 이상이다 이상하다
@@ -13322,7 +13304,7 @@ bool CX2Game::CheckAndWarningBusyStateNow( const bool bCheckDead_ /*= true*/ )
 void CX2Game::SetShowSmallGageAndNameForAllGameUnit( const bool bShow_ )
 {
 
-	BOOST_FOREACH( CX2GameUnit* pGameUnit, m_UnitList )
+	for( CX2GameUnit* pGameUnit : m_UnitList )
 	{
 		pGameUnit->SetShowSmallGageAndName( bShow_ );
 	}
@@ -13473,7 +13455,7 @@ CX2GUUser* CX2Game::CreateGUUser( const CX2Room::SlotData* pSlotData_, int iSlot
 
 void CX2Game::UpdateNpcNameColor( const int iMyLevel_ )
 {
-	BOOST_FOREACH( CX2GUNPC* pGUNpc, m_NPCUnitList )
+	for( CX2GUNPC* pGUNpc : m_NPCUnitList )
 	{
 		if ( NULL != pGUNpc )
 			pGUNpc->InitNameColor( iMyLevel_ );
@@ -13489,14 +13471,14 @@ void CX2Game::WriteBroadCastUser()
 
 //#ifdef SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
 
-	BOOST_FOREACH( UidType uid, g_pData->GetGameUDP()->GetNonRelayUIDs() )
+	for( UidType uid : g_pData->GetGameUDP()->GetNonRelayUIDs() )
 	{
 		WCHAR wBuffer[50];
 		ZeroMemory( wBuffer, sizeof(WCHAR) * 50 );
 		wsprintf( wBuffer, L"%lld ", uid );
 		StringCchCat( wLog, sizeof(WCHAR) * 512, wBuffer );
 	}
-	BOOST_FOREACH( UidType uid, g_pData->GetGameUDP()->GetRelayUIDs() )
+	for( UidType uid : g_pData->GetGameUDP()->GetRelayUIDs() )
 	{
 		WCHAR wBuffer[50];
 		ZeroMemory( wBuffer, sizeof(WCHAR) * 50 );
@@ -13506,7 +13488,7 @@ void CX2Game::WriteBroadCastUser()
 
 //#else   SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
 //
-//	BOOST_FOREACH( UidType uid, m_vecUserUIDforSyncPacket )
+//	for( UidType uid : m_vecUserUIDforSyncPacket )
 //	{
 //		WCHAR wBuffer[50];
 //		ZeroMemory( wBuffer, sizeof(WCHAR) * 50 );
@@ -13525,7 +13507,7 @@ void CX2Game::WriteBroadCastUser()
 */
 void CX2Game::SetBuffInfoPacketToNpc( const KEGS_UPDATE_NPC_UNIT_BUFF_INFO_BROAD_NOT& kEvent_ )
 {
-	BOOST_FOREACH( const KNpcUnitBuffInfo& kNpcUnitBuffInfo, kEvent_.m_vecNpcUnitBuff )
+	for( const KNpcUnitBuffInfo& kNpcUnitBuffInfo : kEvent_.m_vecNpcUnitBuff )
 	{
 		CX2GUNPC* pGUNpcUnit = GetNPCUnitByUID( kNpcUnitBuffInfo.m_iNpcUID );
 		if ( NULL != pGUNpcUnit )
@@ -13864,7 +13846,7 @@ void CX2Game::ApplyBuffFactorToGUUser( const CX2Item::ItemTemplet* pItemTemplet,
 */
 void CX2Game::SetQuestMonster( CX2UnitManager::NPC_UNIT_ID eNPCUnitID_ , bool bShow /*= true*/)
 {
-	BOOST_TEST_FOREACH( CX2GUNPC*, pNPC, m_NPCUnitList )
+	for( CX2GUNPC* pNPC : m_NPCUnitList )
 	{
 		if( NULL != pNPC )
 		{
@@ -14421,7 +14403,7 @@ bool CX2Game::GetIsExsitancePartyMemberHPLessThanPer( const float fHPRate_, cons
 {
 	if ( NULL != g_pData->GetPartyManager() )
 	{
-		BOOST_FOREACH( CX2GUUser* pGUUser, m_UserUnitList )
+		for( CX2GUUser* pGUUser : m_UserUnitList )
 		{
 			if ( NULL != pGUUser &&
 				pGUUser->GetUnitUID() != pGUUserWhoCallFunction_->GetUnitUID() )

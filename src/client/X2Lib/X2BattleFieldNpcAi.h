@@ -2,10 +2,10 @@
 #pragma once
 
 class CNpcCreatedInfo;
-typedef boost::intrusive_ptr<CNpcCreatedInfo> CNpcCreatedInfoPtr;
+typedef x2::intrusive_ptr<CNpcCreatedInfo> CNpcCreatedInfoPtr;
 
 class CNpcCreatedInfo
-    : private boost::noncopyable
+    : private x2::NonCopyable
 {
 private:
     unsigned        m_uRefCount;
@@ -44,18 +44,18 @@ private:
 
 	CNpcCreatedInfo( const float fDistance3Sq_, const KNPCUnitReq& kNpcUnitReq_
 		, const KAttribEnchantNpcInfo* pkAttribEnchantNpcInfo = NULL
-		) : m_fDistance3Sq( fDistance3Sq_ )
-		, m_uiGroupId( kNpcUnitReq_.m_iGroupID )
+		) : m_uRefCount(0)
+		, m_fDistance3Sq( fDistance3Sq_ )
 
 
 // #ifdef SERV_BATTLEFIELD_MIDDLE_BOSS
-		, m_uiBossGroupId ( kNpcUnitReq_.m_iBossGroupID )
+		, m_uiGroupId( kNpcUnitReq_.m_iGroupID )
 // #endif // SERV_BATTLEFIELD_MIDDLE_BOSS
-		, m_uiNpcId( kNpcUnitReq_.m_NPCID ), m_uiNpcUid( kNpcUnitReq_.m_UID ),
-		m_uidAllyUid( kNpcUnitReq_.m_iAllyUID ), m_fUnitScale( -1.0f ), m_uiStartPosNum( kNpcUnitReq_.m_nStartPos),
-		m_ucTeamNum( kNpcUnitReq_.m_cTeamNum ), m_bAggressive( kNpcUnitReq_.m_bAggressive ),
-		m_ucLevel( kNpcUnitReq_.m_Level ), m_bActive( kNpcUnitReq_.m_bActive )
-        , m_uRefCount(0)
+		, m_uiBossGroupId ( kNpcUnitReq_.m_iBossGroupID ), m_uiNpcId( kNpcUnitReq_.m_NPCID ),
+		m_uiNpcUid( kNpcUnitReq_.m_UID ), m_uidAllyUid( kNpcUnitReq_.m_iAllyUID ), m_fUnitScale( -1.0f ),
+		m_uiStartPosNum( kNpcUnitReq_.m_nStartPos), m_ucTeamNum( kNpcUnitReq_.m_cTeamNum ),
+		m_bAggressive( kNpcUnitReq_.m_bAggressive ), m_ucLevel( kNpcUnitReq_.m_Level )
+        , m_bActive( kNpcUnitReq_.m_bActive )
 	{
 		m_vecPetrolLineIndex	= kNpcUnitReq_.m_vecPetrolLineIndex;
 		m_vecPlayLineIndex		= kNpcUnitReq_.m_vecPlayLineIndex;
@@ -193,8 +193,8 @@ protected:
     bool GetCanScanCloaking( const float fDistance3Sq_, bool bAccumulate ) const
 	{
 		if ( fDistance3Sq_ <= GetScanNearRange() * GetScanNearRange() &&
-            ( bAccumulate == true && m_pMasterNPC->EstimateFrameAccumPercent( GetScanCloaking() ) == true
-            || bAccumulate == false && CX2GUNPC::EstimateFrameOneshotPercent( GetScanCloaking() ) == true )
+            ( ( bAccumulate == true && m_pMasterNPC->EstimateFrameAccumPercent( GetScanCloaking() ) == true )
+            || ( bAccumulate == false && CX2GUNPC::EstimateFrameOneshotPercent( GetScanCloaking() ) == true ) )
              )
 			 return true;
 		else

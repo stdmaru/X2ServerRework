@@ -3978,7 +3978,7 @@ bool CX2PostBox::Handler_EGS_GET_POST_LETTER_LIST_ACK( HWND hWnd, UINT uMsg, WPA
 
 
 			int iIndex = 0;
-			BOOST_FOREACH( OUT KPostItemTitleInfo& kPostInfo, kEvent.m_vecPostItemTitle )
+			for( OUT KPostItemTitleInfo& kPostInfo : kEvent.m_vecPostItemTitle )
             {
 				//{{ 2009. 6. 24  최육사	편지스트링조합
 				g_pData->GetRewardTable()->MakeSystemLetterTitle( wstrNickName, kPostInfo );
@@ -4557,7 +4557,7 @@ int CX2PostBox::GetPostFee( IN int iED, IN const CX2Item* pItemData )
 		CX2Unit* pMyUnit = g_pData->GetMyUser()->GetSelectUnit();
 		if( NULL != pMyUnit )
 		{
-			for( int iFreeMailTicketIDIndex = 0; iFreeMailTicketIDIndex < ARRAY_SIZE( _CONST_FREE_MAIL_TICKET_::arriFreeMailTicketID ); ++iFreeMailTicketIDIndex )
+			for( int iFreeMailTicketIDIndex = 0; iFreeMailTicketIDIndex < std::ssize( _CONST_FREE_MAIL_TICKET_::arriFreeMailTicketID ); ++iFreeMailTicketIDIndex )
 			{
 				if( NULL != pMyUnit->GetInventory().GetItemByTID( _CONST_FREE_MAIL_TICKET_::arriFreeMailTicketID[iFreeMailTicketIDIndex] ) )
 				{

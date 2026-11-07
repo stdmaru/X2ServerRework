@@ -4,7 +4,7 @@
 
 //{{ seojt // 2009-1-13, 16:59
 class CX2WorldObjectMesh;
-typedef boost::intrusive_ptr<CX2WorldObjectMesh>   CX2WorldObjectMeshPtr;
+typedef x2::intrusive_ptr<CX2WorldObjectMesh>   CX2WorldObjectMeshPtr;
 //}} seojt // 2009-1-13, 16:59
 
 class CX2WorldObjectMesh : public CX2WorldObject
@@ -45,7 +45,7 @@ class CX2WorldObjectMesh : public CX2WorldObject
 		wstring& GetXMeshName() { return m_XMeshName; }
 		wstring& GetXMeshLODName() { return m_XMeshLODName; }
 
-		const CKTDGMatrix::BILLBOARD_TYPE GetBillboardType() { return m_BillboardType; }
+		CKTDGMatrix::BILLBOARD_TYPE GetBillboardType() { return m_BillboardType; }
 
 		//LUA
 		void SetXMesh_LUA( const char* pFileName );
@@ -143,6 +143,8 @@ class CX2WorldObjectMesh : public CX2WorldObject
                 break;
             case CKTDGFrustum::TYPE_EXCLUDED:
                 return false;
+            default:
+            	break;
             }
 
 			//mesh subset bounding로 culling test
@@ -162,7 +164,7 @@ class CX2WorldObjectMesh : public CX2WorldObject
 					else
 						m_vecDrawSubset[i] = true;
 				}
-				if( iCulledNum == vecSubsetBoundingSphere.size() )
+				if( iCulledNum == std::ssize( vecSubsetBoundingSphere ) )
 					return false;
 			}
 			return true;

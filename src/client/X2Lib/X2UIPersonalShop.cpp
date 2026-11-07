@@ -3055,7 +3055,7 @@ bool CX2UIPersonalShop::CheckEdLimit()
 //{{ kimhc // 2009-09-07 // 구매한 아이템이 봉인된 아이템인지 확인
 bool CX2UIPersonalShop::CheckIsSealedItem( UidType itemUID )
 {
-	BOOST_TEST_FOREACH( KSellPersonalShopItemInfo, personalShopSlotItem, m_vecPersonalShopSlotItem )
+	for( KSellPersonalShopItemInfo personalShopSlotItem : m_vecPersonalShopSlotItem )
 	{
 		if ( personalShopSlotItem.m_kInventoryItemInfo.m_iItemUID == itemUID &&
 			 personalShopSlotItem.m_kInventoryItemInfo.m_kItemInfo.IsSealedItem() )

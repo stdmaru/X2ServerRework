@@ -1159,7 +1159,7 @@ const CX2Stat::EnchantStat& CX2Unit::GetEnchantStat( bool bUpdate /*= true*/, bo
 		}
 
 		// ������ ���� ��� ���� ���� �ɼ�
-		BOOST_FOREACH( int iSocketID, pItem->GetItemData().m_vecRandomSocket )
+		for( int iSocketID : pItem->GetItemData().m_vecRandomSocket )
 		{
 			const CX2SocketItem::SocketData* pSocketData = g_pData->GetSocketItem()->GetSocketData( iSocketID );
 
@@ -1330,7 +1330,7 @@ float CX2Unit::GetRepairDiscountRate()
 	float fDiscountRate = 0.f;
 
 
-	BOOST_TEST_FOREACH( const UidType&, eqipUID, m_UnitData.m_NowEqipItemUIDList )
+	for( const UidType& eqipUID : m_UnitData.m_NowEqipItemUIDList )
 	{
 		CX2Item* pItem = m_UnitData.m_Inventory.GetItem( eqipUID );
 		if( NULL == pItem )
@@ -1370,7 +1370,7 @@ float CX2Unit::GetRepairDiscountRate()
 			fDiscountRate += pSocketData->m_fRepairPriceSale;
 		}
 		// ������ ���� ��� ���� ���� �ɼ�
-		BOOST_FOREACH( int iSocketID, pItem->GetItemData().m_vecRandomSocket )
+		for( int iSocketID : pItem->GetItemData().m_vecRandomSocket )
 		{
 			const CX2SocketItem::SocketData* pSocketData = g_pData->GetSocketItem()->GetSocketData( iSocketID );
 			if( NULL == pSocketData )
@@ -1433,7 +1433,7 @@ float CX2Unit::GetRepairDiscountRate()
 	}
 
 
-	BOOST_FOREACH( BUFF_FACTOR_ID eBuffFactorID, m_vecWorldBuffFactorID )
+	for( BUFF_FACTOR_ID eBuffFactorID : m_vecWorldBuffFactorID )
 	{
 		if ( NULL != CX2BuffTempletManager::GetInstance() )
 		{
@@ -1947,7 +1947,7 @@ bool CX2Unit::GetAvatarEmotion(wstring &wstrEmotionName, CX2Unit::EMOTION_TYPE &
 	{
 	case CX2Unit::UT_ELSWORD:
 		{
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_ELSWORD1 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_ELSWORD1 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_ELSWORD1[i] ) == 6 )
 				{
@@ -1956,7 +1956,7 @@ bool CX2Unit::GetAvatarEmotion(wstring &wstrEmotionName, CX2Unit::EMOTION_TYPE &
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_ELSWORD2 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_ELSWORD2 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_ELSWORD2[i] ) == 6 )
 				{
@@ -1965,7 +1965,7 @@ bool CX2Unit::GetAvatarEmotion(wstring &wstrEmotionName, CX2Unit::EMOTION_TYPE &
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_ELSWORD3 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_ELSWORD3 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_ELSWORD3[i] ) == 6 )
 				{
@@ -1974,7 +1974,7 @@ bool CX2Unit::GetAvatarEmotion(wstring &wstrEmotionName, CX2Unit::EMOTION_TYPE &
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_ELSWORD4 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_ELSWORD4 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_ELSWORD4[i] ) == 6 )
 				{
@@ -1983,7 +1983,7 @@ bool CX2Unit::GetAvatarEmotion(wstring &wstrEmotionName, CX2Unit::EMOTION_TYPE &
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_ELSWORD5 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_ELSWORD5 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_ELSWORD5[i] ) == 6 )
 				{
@@ -1992,7 +1992,7 @@ bool CX2Unit::GetAvatarEmotion(wstring &wstrEmotionName, CX2Unit::EMOTION_TYPE &
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_ELSWORD6 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_ELSWORD6 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_ELSWORD6[i] ) == 2 )
 				{
@@ -2005,7 +2005,7 @@ bool CX2Unit::GetAvatarEmotion(wstring &wstrEmotionName, CX2Unit::EMOTION_TYPE &
 		break;
 	case CX2Unit::UT_ARME:
 		{
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_ARME1 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_ARME1 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_ARME1[i] ) == 6 )
 				{
@@ -2014,7 +2014,7 @@ bool CX2Unit::GetAvatarEmotion(wstring &wstrEmotionName, CX2Unit::EMOTION_TYPE &
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_ARME2 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_ARME2 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_ARME2[i] ) == 6 )
 				{
@@ -2023,7 +2023,7 @@ bool CX2Unit::GetAvatarEmotion(wstring &wstrEmotionName, CX2Unit::EMOTION_TYPE &
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_ARME3 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_ARME3 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_ARME3[i] ) == 6 )
 				{
@@ -2032,7 +2032,7 @@ bool CX2Unit::GetAvatarEmotion(wstring &wstrEmotionName, CX2Unit::EMOTION_TYPE &
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_ARME4 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_ARME4 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_ARME4[i] ) == 6 )
 				{
@@ -2041,7 +2041,7 @@ bool CX2Unit::GetAvatarEmotion(wstring &wstrEmotionName, CX2Unit::EMOTION_TYPE &
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_ARME5 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_ARME5 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_ARME5[i] ) == 6 )
 				{
@@ -2050,7 +2050,7 @@ bool CX2Unit::GetAvatarEmotion(wstring &wstrEmotionName, CX2Unit::EMOTION_TYPE &
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_ARME6 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_ARME6 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_ARME6[i] ) == 2 )
 				{
@@ -2063,7 +2063,7 @@ bool CX2Unit::GetAvatarEmotion(wstring &wstrEmotionName, CX2Unit::EMOTION_TYPE &
 		break;
 	case CX2Unit::UT_LIRE:
 		{
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_LIRE1 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_LIRE1 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_LIRE1[i] ) == 6 )
 				{
@@ -2072,7 +2072,7 @@ bool CX2Unit::GetAvatarEmotion(wstring &wstrEmotionName, CX2Unit::EMOTION_TYPE &
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_LIRE2 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_LIRE2 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_LIRE2[i] ) == 6 )
 				{
@@ -2081,7 +2081,7 @@ bool CX2Unit::GetAvatarEmotion(wstring &wstrEmotionName, CX2Unit::EMOTION_TYPE &
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_LIRE3 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_LIRE3 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_LIRE3[i] ) == 6 )
 				{
@@ -2090,7 +2090,7 @@ bool CX2Unit::GetAvatarEmotion(wstring &wstrEmotionName, CX2Unit::EMOTION_TYPE &
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_LIRE4 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_LIRE4 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_LIRE4[i] ) == 6 )
 				{
@@ -2099,7 +2099,7 @@ bool CX2Unit::GetAvatarEmotion(wstring &wstrEmotionName, CX2Unit::EMOTION_TYPE &
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_LIRE5 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_LIRE5 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_LIRE5[i] ) == 6 )
 				{
@@ -2108,7 +2108,7 @@ bool CX2Unit::GetAvatarEmotion(wstring &wstrEmotionName, CX2Unit::EMOTION_TYPE &
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_LIRE6 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_LIRE6 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_LIRE6[i] ) == 2 )
 				{
@@ -2121,7 +2121,7 @@ bool CX2Unit::GetAvatarEmotion(wstring &wstrEmotionName, CX2Unit::EMOTION_TYPE &
 		break;
 	case CX2Unit::UT_RAVEN:
 		{
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_RAVEN1 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_RAVEN1 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_RAVEN1[i] ) == 6 )
 				{
@@ -2130,7 +2130,7 @@ bool CX2Unit::GetAvatarEmotion(wstring &wstrEmotionName, CX2Unit::EMOTION_TYPE &
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_RAVEN2 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_RAVEN2 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_RAVEN2[i] ) == 6 )
 				{
@@ -2139,7 +2139,7 @@ bool CX2Unit::GetAvatarEmotion(wstring &wstrEmotionName, CX2Unit::EMOTION_TYPE &
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_RAVEN3 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_RAVEN3 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_RAVEN3[i] ) == 6 )
 				{
@@ -2148,7 +2148,7 @@ bool CX2Unit::GetAvatarEmotion(wstring &wstrEmotionName, CX2Unit::EMOTION_TYPE &
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_RAVEN4 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_RAVEN4 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_RAVEN4[i] ) == 6 )
 				{
@@ -2157,7 +2157,7 @@ bool CX2Unit::GetAvatarEmotion(wstring &wstrEmotionName, CX2Unit::EMOTION_TYPE &
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_RAVEN5 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_RAVEN5 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_RAVEN5[i] ) == 6 )
 				{
@@ -2166,7 +2166,7 @@ bool CX2Unit::GetAvatarEmotion(wstring &wstrEmotionName, CX2Unit::EMOTION_TYPE &
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_RAVEN6 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_RAVEN6 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_RAVEN6[i] ) == 2 )
 				{
@@ -2179,7 +2179,7 @@ bool CX2Unit::GetAvatarEmotion(wstring &wstrEmotionName, CX2Unit::EMOTION_TYPE &
 		break;
 	case CX2Unit::UT_EVE:
 		{
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_EVE1 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_EVE1 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_EVE1[i] ) == 6 )
 				{
@@ -2188,7 +2188,7 @@ bool CX2Unit::GetAvatarEmotion(wstring &wstrEmotionName, CX2Unit::EMOTION_TYPE &
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_EVE2 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_EVE2 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_EVE2[i] ) == 6 )
 				{
@@ -2197,7 +2197,7 @@ bool CX2Unit::GetAvatarEmotion(wstring &wstrEmotionName, CX2Unit::EMOTION_TYPE &
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_EVE3 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_EVE3 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_EVE3[i] ) == 6 )
 				{
@@ -2206,7 +2206,7 @@ bool CX2Unit::GetAvatarEmotion(wstring &wstrEmotionName, CX2Unit::EMOTION_TYPE &
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_EVE4 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_EVE4 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_EVE4[i] ) == 6 )
 				{
@@ -2215,7 +2215,7 @@ bool CX2Unit::GetAvatarEmotion(wstring &wstrEmotionName, CX2Unit::EMOTION_TYPE &
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_EVE5 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_EVE5 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_EVE5[i] ) == 6 )
 				{
@@ -2224,7 +2224,7 @@ bool CX2Unit::GetAvatarEmotion(wstring &wstrEmotionName, CX2Unit::EMOTION_TYPE &
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_EVE6 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_EVE6 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_EVE6[i] ) == 2 )
 				{
@@ -2237,7 +2237,7 @@ bool CX2Unit::GetAvatarEmotion(wstring &wstrEmotionName, CX2Unit::EMOTION_TYPE &
 		break;
 	case CX2Unit::UT_CHUNG:
 		{
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_CHUNG1 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_CHUNG1 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_CHUNG1[i] ) == 6 )
 				{
@@ -2246,7 +2246,7 @@ bool CX2Unit::GetAvatarEmotion(wstring &wstrEmotionName, CX2Unit::EMOTION_TYPE &
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_CHUNG2 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_CHUNG2 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_CHUNG2[i] ) == 6 )
 				{
@@ -2255,7 +2255,7 @@ bool CX2Unit::GetAvatarEmotion(wstring &wstrEmotionName, CX2Unit::EMOTION_TYPE &
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_CHUNG3 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_CHUNG3 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_CHUNG3[i] ) == 6 )
 				{
@@ -2264,7 +2264,7 @@ bool CX2Unit::GetAvatarEmotion(wstring &wstrEmotionName, CX2Unit::EMOTION_TYPE &
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_CHUNG4 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_CHUNG4 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_CHUNG4[i] ) == 6 )
 				{
@@ -2273,7 +2273,7 @@ bool CX2Unit::GetAvatarEmotion(wstring &wstrEmotionName, CX2Unit::EMOTION_TYPE &
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_CHUNG5 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_CHUNG5 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_CHUNG5[i] ) == 6 )
 				{
@@ -2282,7 +2282,7 @@ bool CX2Unit::GetAvatarEmotion(wstring &wstrEmotionName, CX2Unit::EMOTION_TYPE &
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_CHUNG6 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_CHUNG6 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_CHUNG6[i] ) == 2 )
 				{
@@ -2296,7 +2296,7 @@ bool CX2Unit::GetAvatarEmotion(wstring &wstrEmotionName, CX2Unit::EMOTION_TYPE &
 
 	case CX2Unit::UT_ARA:
 		{
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_ARA2 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_ARA2 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_ARA2[i] ) == 6 )
 				{
@@ -2306,7 +2306,7 @@ bool CX2Unit::GetAvatarEmotion(wstring &wstrEmotionName, CX2Unit::EMOTION_TYPE &
 				}
 			}
 
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_ARA5 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_ARA5 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_ARA5[i] ) == 6 )
 				{
@@ -2315,7 +2315,7 @@ bool CX2Unit::GetAvatarEmotion(wstring &wstrEmotionName, CX2Unit::EMOTION_TYPE &
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_ARA6 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_ARA6 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_ARA6[i] ) == 2 )
 				{
@@ -2332,7 +2332,7 @@ bool CX2Unit::GetAvatarEmotion(wstring &wstrEmotionName, CX2Unit::EMOTION_TYPE &
 		{
 			{
 				/// �Ѻ� �ƹ�Ÿ
-				for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_ELESIS2 ); ++i )
+				for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_ELESIS2 ); ++i )
 				{
 					if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_ELESIS2[i] ) == 6 )
 					{
@@ -2344,7 +2344,7 @@ bool CX2Unit::GetAvatarEmotion(wstring &wstrEmotionName, CX2Unit::EMOTION_TYPE &
 			}
 			break;
 
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_ELESIS6 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_ELESIS6 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_ELESIS6[i] ) == 2 )
 				{
@@ -2359,7 +2359,7 @@ bool CX2Unit::GetAvatarEmotion(wstring &wstrEmotionName, CX2Unit::EMOTION_TYPE &
 	case CX2Unit::UT_ADD:
 		{
 			/// �Ѻ� �ƹ�Ÿ
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_ADD2 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_ADD2 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_ADD2[i] ) == 6 )
 				{
@@ -2384,7 +2384,7 @@ bool CX2Unit::GetAvatarEmotionID(CX2Unit::EMOTION_TYPE &eEmotionID)
 	{
 	case CX2Unit::UT_ELSWORD:
 		{
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_ELSWORD1 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_ELSWORD1 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_ELSWORD1[i] ) == 6 )
 				{
@@ -2392,7 +2392,7 @@ bool CX2Unit::GetAvatarEmotionID(CX2Unit::EMOTION_TYPE &eEmotionID)
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_ELSWORD2 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_ELSWORD2 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_ELSWORD2[i] ) == 6 )
 				{
@@ -2400,7 +2400,7 @@ bool CX2Unit::GetAvatarEmotionID(CX2Unit::EMOTION_TYPE &eEmotionID)
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_ELSWORD3 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_ELSWORD3 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_ELSWORD3[i] ) == 6 )
 				{
@@ -2408,7 +2408,7 @@ bool CX2Unit::GetAvatarEmotionID(CX2Unit::EMOTION_TYPE &eEmotionID)
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_ELSWORD4 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_ELSWORD4 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_ELSWORD4[i] ) == 6 )
 				{
@@ -2416,7 +2416,7 @@ bool CX2Unit::GetAvatarEmotionID(CX2Unit::EMOTION_TYPE &eEmotionID)
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_ELSWORD5 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_ELSWORD5 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_ELSWORD5[i] ) == 6 )
 				{
@@ -2424,7 +2424,7 @@ bool CX2Unit::GetAvatarEmotionID(CX2Unit::EMOTION_TYPE &eEmotionID)
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_ELSWORD6 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_ELSWORD6 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_ELSWORD6[i] ) == 2 )
 				{
@@ -2436,7 +2436,7 @@ bool CX2Unit::GetAvatarEmotionID(CX2Unit::EMOTION_TYPE &eEmotionID)
 		break;
 	case CX2Unit::UT_ARME:
 		{
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_ARME1 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_ARME1 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_ARME1[i] ) == 6 )
 				{
@@ -2444,7 +2444,7 @@ bool CX2Unit::GetAvatarEmotionID(CX2Unit::EMOTION_TYPE &eEmotionID)
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_ARME2 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_ARME2 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_ARME2[i] ) == 6 )
 				{
@@ -2452,7 +2452,7 @@ bool CX2Unit::GetAvatarEmotionID(CX2Unit::EMOTION_TYPE &eEmotionID)
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_ARME3 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_ARME3 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_ARME3[i] ) == 6 )
 				{
@@ -2460,7 +2460,7 @@ bool CX2Unit::GetAvatarEmotionID(CX2Unit::EMOTION_TYPE &eEmotionID)
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_ARME4 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_ARME4 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_ARME4[i] ) == 6 )
 				{
@@ -2468,7 +2468,7 @@ bool CX2Unit::GetAvatarEmotionID(CX2Unit::EMOTION_TYPE &eEmotionID)
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_ARME5 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_ARME5 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_ARME5[i] ) == 6 )
 				{
@@ -2476,7 +2476,7 @@ bool CX2Unit::GetAvatarEmotionID(CX2Unit::EMOTION_TYPE &eEmotionID)
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_ARME6 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_ARME6 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_ARME6[i] ) == 2 )
 				{
@@ -2488,7 +2488,7 @@ bool CX2Unit::GetAvatarEmotionID(CX2Unit::EMOTION_TYPE &eEmotionID)
 		break;
 	case CX2Unit::UT_LIRE:
 		{
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_LIRE1 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_LIRE1 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_LIRE1[i] ) == 6 )
 				{
@@ -2496,7 +2496,7 @@ bool CX2Unit::GetAvatarEmotionID(CX2Unit::EMOTION_TYPE &eEmotionID)
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_LIRE2 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_LIRE2 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_LIRE2[i] ) == 6 )
 				{
@@ -2504,7 +2504,7 @@ bool CX2Unit::GetAvatarEmotionID(CX2Unit::EMOTION_TYPE &eEmotionID)
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_LIRE3 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_LIRE3 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_LIRE3[i] ) == 6 )
 				{
@@ -2512,7 +2512,7 @@ bool CX2Unit::GetAvatarEmotionID(CX2Unit::EMOTION_TYPE &eEmotionID)
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_LIRE4 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_LIRE4 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_LIRE4[i] ) == 6 )
 				{
@@ -2520,7 +2520,7 @@ bool CX2Unit::GetAvatarEmotionID(CX2Unit::EMOTION_TYPE &eEmotionID)
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_LIRE5 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_LIRE5 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_LIRE5[i] ) == 6 )
 				{
@@ -2528,7 +2528,7 @@ bool CX2Unit::GetAvatarEmotionID(CX2Unit::EMOTION_TYPE &eEmotionID)
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_LIRE6 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_LIRE6 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_LIRE6[i] ) == 2 )
 				{
@@ -2540,7 +2540,7 @@ bool CX2Unit::GetAvatarEmotionID(CX2Unit::EMOTION_TYPE &eEmotionID)
 		break;
 	case CX2Unit::UT_RAVEN:
 		{
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_RAVEN1 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_RAVEN1 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_RAVEN1[i] ) == 6 )
 				{
@@ -2548,7 +2548,7 @@ bool CX2Unit::GetAvatarEmotionID(CX2Unit::EMOTION_TYPE &eEmotionID)
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_RAVEN2 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_RAVEN2 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_RAVEN2[i] ) == 6 )
 				{
@@ -2556,7 +2556,7 @@ bool CX2Unit::GetAvatarEmotionID(CX2Unit::EMOTION_TYPE &eEmotionID)
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_RAVEN3 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_RAVEN3 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_RAVEN3[i] ) == 6 )
 				{
@@ -2564,7 +2564,7 @@ bool CX2Unit::GetAvatarEmotionID(CX2Unit::EMOTION_TYPE &eEmotionID)
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_RAVEN4 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_RAVEN4 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_RAVEN4[i] ) == 6 )
 				{
@@ -2572,7 +2572,7 @@ bool CX2Unit::GetAvatarEmotionID(CX2Unit::EMOTION_TYPE &eEmotionID)
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_RAVEN5 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_RAVEN5 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_RAVEN5[i] ) == 6 )
 				{
@@ -2580,7 +2580,7 @@ bool CX2Unit::GetAvatarEmotionID(CX2Unit::EMOTION_TYPE &eEmotionID)
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_RAVEN6 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_RAVEN6 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_RAVEN6[i] ) == 2 )
 				{
@@ -2592,7 +2592,7 @@ bool CX2Unit::GetAvatarEmotionID(CX2Unit::EMOTION_TYPE &eEmotionID)
 		break;
 	case CX2Unit::UT_EVE:
 		{
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_EVE1 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_EVE1 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_EVE1[i] ) == 6 )
 				{
@@ -2600,7 +2600,7 @@ bool CX2Unit::GetAvatarEmotionID(CX2Unit::EMOTION_TYPE &eEmotionID)
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_EVE2 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_EVE2 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_EVE2[i] ) == 6 )
 				{
@@ -2608,7 +2608,7 @@ bool CX2Unit::GetAvatarEmotionID(CX2Unit::EMOTION_TYPE &eEmotionID)
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_EVE3 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_EVE3 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_EVE3[i] ) == 6 )
 				{
@@ -2616,7 +2616,7 @@ bool CX2Unit::GetAvatarEmotionID(CX2Unit::EMOTION_TYPE &eEmotionID)
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_EVE4 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_EVE4 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_EVE4[i] ) == 6 )
 				{
@@ -2624,7 +2624,7 @@ bool CX2Unit::GetAvatarEmotionID(CX2Unit::EMOTION_TYPE &eEmotionID)
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_EVE5 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_EVE5 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_EVE5[i] ) == 6 )
 				{
@@ -2632,7 +2632,7 @@ bool CX2Unit::GetAvatarEmotionID(CX2Unit::EMOTION_TYPE &eEmotionID)
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_EVE6 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_EVE6 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_EVE6[i] ) == 2 )
 				{
@@ -2644,7 +2644,7 @@ bool CX2Unit::GetAvatarEmotionID(CX2Unit::EMOTION_TYPE &eEmotionID)
 		break;
 	case CX2Unit::UT_CHUNG:
 		{
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_CHUNG1 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_CHUNG1 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_CHUNG1[i] ) == 6 )
 				{
@@ -2652,7 +2652,7 @@ bool CX2Unit::GetAvatarEmotionID(CX2Unit::EMOTION_TYPE &eEmotionID)
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_CHUNG2 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_CHUNG2 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_CHUNG2[i] ) == 6 )
 				{
@@ -2660,7 +2660,7 @@ bool CX2Unit::GetAvatarEmotionID(CX2Unit::EMOTION_TYPE &eEmotionID)
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_CHUNG3 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_CHUNG3 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_CHUNG3[i] ) == 6 )
 				{
@@ -2668,7 +2668,7 @@ bool CX2Unit::GetAvatarEmotionID(CX2Unit::EMOTION_TYPE &eEmotionID)
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_CHUNG4 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_CHUNG4 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_CHUNG4[i] ) == 6 )
 				{
@@ -2676,7 +2676,7 @@ bool CX2Unit::GetAvatarEmotionID(CX2Unit::EMOTION_TYPE &eEmotionID)
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_CHUNG5 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_CHUNG5 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_CHUNG5[i] ) == 6 )
 				{
@@ -2684,7 +2684,7 @@ bool CX2Unit::GetAvatarEmotionID(CX2Unit::EMOTION_TYPE &eEmotionID)
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_CHUNG6 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_CHUNG6 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_CHUNG6[i] ) == 2 )
 				{
@@ -2697,7 +2697,7 @@ bool CX2Unit::GetAvatarEmotionID(CX2Unit::EMOTION_TYPE &eEmotionID)
 
 	case CX2Unit::UT_ARA:
 		{
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_ARA2 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_ARA2 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_ARA2[i] ) == 6 )
 				{
@@ -2705,7 +2705,7 @@ bool CX2Unit::GetAvatarEmotionID(CX2Unit::EMOTION_TYPE &eEmotionID)
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_ARA5 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_ARA5 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_ARA5[i] ) == 6 )
 				{
@@ -2713,7 +2713,7 @@ bool CX2Unit::GetAvatarEmotionID(CX2Unit::EMOTION_TYPE &eEmotionID)
 					return true;
 				}
 			}
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_ARA6 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_ARA6 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_ARA6[i] ) == 2 )
 				{
@@ -2726,7 +2726,7 @@ bool CX2Unit::GetAvatarEmotionID(CX2Unit::EMOTION_TYPE &eEmotionID)
 
 	case CX2Unit::UT_ELESIS:
 		{
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_ELESIS2 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_ELESIS2 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_ELESIS2[i] ) == 6 )
 				{
@@ -2735,7 +2735,7 @@ bool CX2Unit::GetAvatarEmotionID(CX2Unit::EMOTION_TYPE &eEmotionID)
 				}
 			}
 
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_ELESIS6 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_ELESIS6 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_ELESIS6[i] ) == 2 )
 				{
@@ -2749,7 +2749,7 @@ bool CX2Unit::GetAvatarEmotionID(CX2Unit::EMOTION_TYPE &eEmotionID)
 	case CX2Unit::UT_ADD:
 		{
 			/// �Ѻ� �ƹ�Ÿ
-			for( int i=0; i<ARRAY_SIZE( ITEM_ID_ET_EMOTION_AVATAR_ADD2 ); ++i )
+			for( int i=0; i<std::ssize( ITEM_ID_ET_EMOTION_AVATAR_ADD2 ); ++i )
 			{
 				if( GetInventory().GetEqiuppingSetItemNum( ITEM_ID_ET_EMOTION_AVATAR_ADD2[i] ) == 6 )
 				{
@@ -3629,7 +3629,7 @@ int CX2Unit::GetIncreaseSkillLevelByBuff()
 		/// ���� ���� ���� �����̳�
 		std::vector<BUFF_FACTOR_ID> vecWorldBuffID = g_pData->GetMyUser()->GetSelectUnit()->GetWorldBuffFactorID();
 
-		BOOST_FOREACH( BUFF_FACTOR_ID eAddSkillLevelByBuffID, vecWorldBuffID )
+		for( BUFF_FACTOR_ID eAddSkillLevelByBuffID : vecWorldBuffID )
 		{
 			CX2BuffFactorPtr ptrBuffFactor = CX2BuffTempletManager::GetInstance()->GetBuffFactorPtr( eAddSkillLevelByBuffID );
 
@@ -3727,7 +3727,7 @@ int CX2Unit::GetIncreaseSkillLevelBySocket( CX2SkillTree::SKILL_ID eSkillID )
 		}
 
 		/// ������ ���� ��� ���� ���� �ɼ� �˻�
-		BOOST_FOREACH( int iSocketID, pItem->GetItemData().m_vecRandomSocket )
+		for( int iSocketID : pItem->GetItemData().m_vecRandomSocket )
 		{
 			const CX2SocketItem::SocketData* pSocketData = g_pData->GetSocketItem()->GetSocketData( iSocketID );
 			if( NULL == pSocketData )
@@ -3745,7 +3745,7 @@ int CX2Unit::GetIncreaseSkillLevelBySocket( CX2SkillTree::SKILL_ID eSkillID )
 	{
 		const vector<int>& vecTitleSocketOption = g_pData->GetTitleManager()->GetTitleInfo( iTitleID )->m_vecSocketOption;
 
-		BOOST_FOREACH( int socketOptionID, vecTitleSocketOption )
+		for( int socketOptionID : vecTitleSocketOption )
 		{
 			const CX2SocketItem::SocketData*	pSocketData		= g_pData->GetSocketItem()->GetSocketData( socketOptionID );
 			if( NULL == pSocketData )
@@ -3775,7 +3775,7 @@ int CX2Unit::GetIncreaseSkillLevelBySocket( CX2SkillTree::SKILL_ID eSkillID )
 			if ( false == vecOptions.empty() )
 			{
 				/// �ɼ��� ��ų ���� � ȿ���� ������, ����
-				BOOST_FOREACH( int iSocketID, vecOptions )
+				for( int iSocketID : vecOptions )
 				{
 					const CX2SocketItem::SocketData* pSocketData = g_pData->GetSocketItem()->GetSocketData( iSocketID );
 					if( NULL != pSocketData )

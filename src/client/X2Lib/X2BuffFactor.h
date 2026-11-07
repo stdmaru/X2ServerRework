@@ -458,15 +458,15 @@ enum BUFF_FACTOR_ID
 struct BUFF_FACTOR
 {
 public:
-	BUFF_FACTOR() : m_uidGameUnit( 0 ), m_bIgnoreRegistForRate( true )
-		, m_bIsUserUID( true )
+	BUFF_FACTOR() : m_uidGameUnit( 0 ), m_bIsUserUID( true )
+		, m_bIgnoreRegistForRate( true )
 	{
 		m_vecRate.clear();
 	}
 
 	BUFF_FACTOR( const BUFF_FACTOR& rhs_ ) : m_BuffIdentity( rhs_.m_BuffIdentity ),
-		m_uidGameUnit( rhs_.m_uidGameUnit ), m_bIgnoreRegistForRate( rhs_.m_bIgnoreRegistForRate )
-		, m_bIsUserUID( rhs_.m_bIsUserUID )
+		m_uidGameUnit( rhs_.m_uidGameUnit ), m_bIsUserUID( rhs_.m_bIsUserUID )
+		, m_bIgnoreRegistForRate( rhs_.m_bIgnoreRegistForRate )
 	{
 		m_vecBuffBehaviorFactors = rhs_.m_vecBuffBehaviorFactors;
 		m_vecBuffFinalizerFactors = rhs_.m_vecBuffFinalizerFactors;
@@ -474,8 +474,8 @@ public:
 	}
 
 	BUFF_FACTOR( const BUFF_FACTOR& rhs_, IN const UINT uiLevel_ ) : m_BuffIdentity( rhs_.m_BuffIdentity ),
-		m_uidGameUnit( rhs_.m_uidGameUnit ), m_bIgnoreRegistForRate( rhs_.m_bIgnoreRegistForRate )
-		, m_bIsUserUID( rhs_.m_bIsUserUID )
+		m_uidGameUnit( rhs_.m_uidGameUnit ), m_bIsUserUID( rhs_.m_bIsUserUID )
+		, m_bIgnoreRegistForRate( rhs_.m_bIgnoreRegistForRate )
 	{
 		if ( uiLevel_ >= 1 )
 		{
@@ -525,7 +525,7 @@ public:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 class CX2GameUnit;
 class CX2BuffFactor;
-typedef boost::intrusive_ptr<CX2BuffFactor> CX2BuffFactorPtr;
+typedef x2::intrusive_ptr<CX2BuffFactor> CX2BuffFactorPtr;
 
 /** @class : CX2BuffFactor
 	@brief : 버프를 발생시키는 정보를 가지고 있는 클래스
@@ -539,18 +539,18 @@ public:
 	~CX2BuffFactor() { SAFE_DELETE( m_pDataBuffFactor ); }
 
 	CX2BuffFactor( const CX2BuffFactor& rhs_ )
-		: m_pDataBuffFactor( new BUFF_FACTOR( *(rhs_.m_pDataBuffFactor) ) ), m_DataBuffIdentity( rhs_.m_DataBuffIdentity )
-        , m_uRefCount(0)
+		: m_uRefCount(0), m_pDataBuffFactor( new BUFF_FACTOR( *(rhs_.m_pDataBuffFactor) ) )
+        , m_DataBuffIdentity( rhs_.m_DataBuffIdentity )
 	{}
 
 	CX2BuffFactor( const CX2BuffFactor& rhs_, IN const UINT uiLevel_ )
-		: m_pDataBuffFactor( new BUFF_FACTOR( *(rhs_.m_pDataBuffFactor), uiLevel_ ) ), m_DataBuffIdentity( rhs_.m_DataBuffIdentity )
-        , m_uRefCount(0)
+		: m_uRefCount(0), m_pDataBuffFactor( new BUFF_FACTOR( *(rhs_.m_pDataBuffFactor), uiLevel_ ) )
+        , m_DataBuffIdentity( rhs_.m_DataBuffIdentity )
 	{}
 
 private:
-	CX2BuffFactor() : m_pDataBuffFactor( new BUFF_FACTOR )
-        , m_uRefCount(0)
+	CX2BuffFactor() : m_uRefCount(0)
+        , m_pDataBuffFactor( new BUFF_FACTOR )
     {}
 
 public:

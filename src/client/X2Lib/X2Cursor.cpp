@@ -440,7 +440,7 @@ void CX2Cursor::DrawFace( float nX, float nY, float nWidth, float nHeight, D3DCO
 		vertex[2].color = vertex[3].color = color;
 
 //#ifdef DYNAMIC_VERTEX_BUFFER_OPT
-	BOOST_STATIC_ASSERT( D3DFVF_DRAWFACE_RHW_VERTEX == D3DFVF_XYZRHW_DIFFUSE_TEX1 );
+	static_assert( D3DFVF_DRAWFACE_RHW_VERTEX == D3DFVF_XYZRHW_DIFFUSE_TEX1 , "");
 	g_pKTDXApp->GetDVBManager()->DrawPrimitive( CKTDGDynamicVBManager::DVB_TYPE_XYZRHW_DIFFUSE_TEX1
 		, D3DPT_TRIANGLESTRIP, 2, vertex );
 //#else

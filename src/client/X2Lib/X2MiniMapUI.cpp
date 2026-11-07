@@ -984,7 +984,7 @@ void CX2MiniMapUI::UpdateEventNotice()
 		std::multimap<int, wstring> mapMarketing; // < 남은 시간, 이벤트명 > // 남은시간은 같을 수 있음으로 멀티맵 사용
 		std::wstringstream wstrStream;
 
-		BOOST_TEST_FOREACH( CX2Unit::MarketingEventMap::value_type&, value, pMyUnit->m_mapEventData )
+		for( CX2Unit::MarketingEventMap::value_type& value : pMyUnit->m_mapEventData )
 		{
 			float fTime = value.second.m_kTimeEventSimpleInfo.m_fEventTime * 60.f - static_cast<float>( value.second.m_pElapsedTimer.elapsed() );
 			int iMinute = static_cast<int>( (fTime+59.f)/ 60.f);
@@ -1049,7 +1049,7 @@ void CX2MiniMapUI::UpdateChannelInfo()
 	{
 		//{{ kimhc // 2009-12-16 // 서버군 추가
 		SetChannelComboBox();
-		BOOST_TEST_FOREACH( const KChannelInfo&, channelInfo, g_pInstanceData->m_vecChannelInfo )
+		for( const KChannelInfo& channelInfo : g_pInstanceData->m_vecChannelInfo )
 		{
 			wstring wstrChannelName( L" " );
 			wstrChannelName			+=	channelInfo.m_wstrChannelName;
@@ -1058,7 +1058,7 @@ void CX2MiniMapUI::UpdateChannelInfo()
 			std::map<int, KChannelBonusInfo>::const_iterator mit = g_pInstanceData->m_mapChannelBonusInfo.find(channelInfo.m_iChannelID);
 			if(mit != g_pInstanceData->m_mapChannelBonusInfo.end() )
 			{
-				wstring wstrChannelLv = KncUtil::toWideString( boost::str(boost::format("(%1%-%2%)") % mit->second.m_iBeginLv % mit->second.m_iEndLv) );
+				wstring wstrChannelLv = KncUtil::toWideString( x2::str(x2::format("(%1%-%2%)") % mit->second.m_iBeginLv % mit->second.m_iEndLv) );
 				wstrChannelName += wstrChannelLv;
 				wstrChannelName += L" ";
 			}
@@ -1115,7 +1115,7 @@ void CX2MiniMapUI::SetChannelComboBox()
 {
 	m_vecChannelInfoInMinimap.resize( 0 );
 
-	BOOST_TEST_FOREACH( const KChannelInfo&, kChannelInfo, g_pInstanceData->m_vecChannelInfo )
+	for( const KChannelInfo& kChannelInfo : g_pInstanceData->m_vecChannelInfo )
 	{
 		CHANNEL_INFO_IN_MINIMAP info( kChannelInfo.m_iChannelID, kChannelInfo.m_wstrChannelName );
 
@@ -1124,7 +1124,7 @@ void CX2MiniMapUI::SetChannelComboBox()
 	std::sort( m_vecChannelInfoInMinimap.begin(), m_vecChannelInfoInMinimap.end() );
 
 	// 테스트 용
-	BOOST_TEST_FOREACH( const CHANNEL_INFO_IN_MINIMAP&, channelInfo, m_vecChannelInfoInMinimap )
+	for( const CHANNEL_INFO_IN_MINIMAP& channelInfo : m_vecChannelInfoInMinimap )
 	{
 		int i = channelInfo.m_iChannelID;
 		wstring wstr( channelInfo.m_wstrChannelName );

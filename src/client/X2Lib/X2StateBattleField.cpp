@@ -269,7 +269,6 @@ CX2StateBattleField::CX2StateBattleField()
 /*virtual*/ bool CX2StateBattleField::UIServerEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 {
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_START
 #endif
 
 	if ( CX2StateMenu::UIServerEventProc( hWnd, uMsg, wParam, lParam ) == true )
@@ -437,7 +436,6 @@ CX2StateBattleField::CX2StateBattleField()
 // 		break;
 	}
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_END
 #endif
 
 	return false;
@@ -644,7 +642,7 @@ bool CX2StateBattleField::Handler_EGS_GAME_LOADING_ACK( HWND hWnd, UINT uMsg, WP
 
 				g_pData->GetCashShop()->GetEnterCashShopUserList(vecEnterCashShopUser);
 				g_pData->GetCashShop()->ClearEnterCashShopUserList();
-				BOOST_TEST_FOREACH( UidType, EnterCashShopUser, vecEnterCashShopUser )
+				for( UidType EnterCashShopUser : vecEnterCashShopUser )
 				{
 					CX2GUUser* pGUUser= g_pX2Game->GetUserUnitByUID( EnterCashShopUser );
 					if ( NULL != pGUUser )
@@ -989,7 +987,7 @@ void CX2StateBattleField::MoveFromBattleFieldToOtherBattleField()
 
 }
 
-FORCEINLINE void CX2StateBattleField::MoveToOtherPlace( float fElapsedTime )
+void CX2StateBattleField::MoveToOtherPlace( float fElapsedTime )
 {
 	if ( true == m_pBattleFieldGame->IsNearPortalLineMap() &&
 		false == GetNowMovingToOtherPlace() )
@@ -1144,7 +1142,7 @@ bool CX2StateBattleField::Handler_EGS_BATTLE_FIELD_NPC_P2P_SYNC_NOT( HWND hWnd, 
 //		/// 새로들어온 유저에게 NPC 버프 정보를 보낸다
 //		if ( !kPacketNpcUnitBuffInfo.m_vecNpcUnitBuff.empty() )
 //		{
-//			BOOST_FOREACH( const UidType uidType, kPacket.m_vecNonNpcSyncUserList )
+//			for( const UidType uidType : kPacket.m_vecNonNpcSyncUserList )
 //			{
 //				kPacketNpcUnitBuffInfo.m_iToUnitUID = uidType;
 //				g_pData->GetServerProtocol()->SendPacket( EGS_UPDATE_NPC_UNIT_BUFF_INFO_NOT, kPacketNpcUnitBuffInfo );
@@ -1380,7 +1378,7 @@ void CX2StateBattleField::DrawFace( const float fX_, const float fY_, const CKTD
 	KD3DPUSH( m_RenderStateID )
 
 //#ifdef DYNAMIC_VERTEX_BUFFER_OPT
-		BOOST_STATIC_ASSERT( D3DFVF_DRAWFACE_RHW_VERTEX == D3DFVF_XYZRHW_DIFFUSE_TEX1 );
+		static_assert( D3DFVF_DRAWFACE_RHW_VERTEX == D3DFVF_XYZRHW_DIFFUSE_TEX1 , "");
 	g_pKTDXApp->GetDVBManager()->DrawPrimitive( CKTDGDynamicVBManager::DVB_TYPE_XYZRHW_DIFFUSE_TEX1
 		, D3DPT_TRIANGLESTRIP, 2, vertex );
 //#else

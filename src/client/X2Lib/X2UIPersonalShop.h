@@ -222,9 +222,9 @@ public:
 	int		GetPickedShopItemIndex() const { return m_PickedShopItemIndex; }
 	void	SetPickedShopItemIndex(int val_) { m_PickedShopItemIndex = val_; }
 
-	const int GetMaxItemPageIndex();
+	int GetMaxItemPageIndex();
 
-	const bool CheckCanPaymentRegistTex();
+	bool CheckCanPaymentRegistTex();
 
 protected:
 	bool Handler_EGS_LEAVE_PERSONAL_SHOP_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );

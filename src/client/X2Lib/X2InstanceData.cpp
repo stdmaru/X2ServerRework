@@ -56,11 +56,9 @@ m_bFirstJoinVillage(false)
 #endif
 
 
-	THEMIDA_VM_START
 
 #if !X2_DEV_TOOLS
 	// checked
-	ELSWORD_VIRTUALIZER_START
 
 #endif
 
@@ -92,12 +90,10 @@ m_bFirstJoinVillage(false)
 
 	m_bMoneyMonitoring = false;
 #if !X2_DEV_TOOLS
-	ELSWORD_VIRTUALIZER_END
 #endif
 
 
 
-	THEMIDA_VM_END
 
 
 	m_iLastDungeonGatePosLineIndex = 0;

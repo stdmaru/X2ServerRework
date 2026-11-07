@@ -49,13 +49,13 @@ public:
 	bool		AddImageInfo_LUA();
 
 	// 큐브 UI 출력 상황제어
-	const bool		IsPlaying() const { return m_bPlaying; }
+	bool		IsPlaying() const { return m_bPlaying; }
 	void			SetPlaying( bool bVal ) { m_bPlaying = bVal; }
 
-	const bool		IsStart() const { return m_bStart; }
+	bool		IsStart() const { return m_bStart; }
 	void			SetStart( bool bVal ) { m_bStart = bVal; }
 
-	const bool		IsSoundPlaying() const { return m_bSoundPlaying;}
+	bool		IsSoundPlaying() const { return m_bSoundPlaying;}
 	void			SetSoundPlaying( bool bVal ) { m_bSoundPlaying = bVal; }
 
 	bool			IsEventCube( const int iCubeID );
@@ -75,7 +75,7 @@ public:
 
 	void			AddResultItemID(IN const int iResultItemID ) { m_setResultItemID.insert(iResultItemID); }
 	bool	        IsFadeInOutImage(IN const int iCubeID);
-	const bool		IsResultItemID(IN const int iItemID);
+	bool		IsResultItemID(IN const int iItemID);
 
 	bool			IsShowResultCustom( IN const int iCubeID );
 

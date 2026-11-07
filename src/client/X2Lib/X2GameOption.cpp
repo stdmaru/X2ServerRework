@@ -734,18 +734,6 @@ bool CX2GameOption::OpenScriptFile()
 			luaManager.EndTable();
 		}
 
-		//{{ 2011.9.16 이준호 반디캠 작업
-		LUA_GET_VALUE( luaManager, "GENERAL_VIDEO_TYPE",		m_OptionList.m_GeneralVideoType,	0 );
-
-		/*
-		사용자 세팅을 저장하지 않으므로 패스
-		LUA_GET_VALUE( luaManager, "VIDEO_SIZE_W",		m_OptionList.m_VideoSizeW,	0 );
-		LUA_GET_VALUE( luaManager, "VIDEO_SIZE_H",		m_OptionList.m_VideoSizeH,	0 );
-		LUA_GET_VALUE( luaManager, "VIDEO_FPS",		m_OptionList.m_VideoFPS,	0 );
-		LUA_GET_VALUE( luaManager, "VIDEO_QUAILTY",		m_OptionList.m_VideoQuality,	0 );
-		LUA_GET_VALUE( luaManager, "VIDEO_CHANNELS",		m_OptionList.m_AudioChannels,	0 );
-		LUA_GET_VALUE( luaManager, "VIDEO_SAMPLERATE",		m_OptionList.m_AudioSampleRate,	0 );
-		*/
 
 		int iServerGroupID = 0;
 		LUA_GET_VALUE( luaManager, "SERVER_GROUP_ID",		iServerGroupID,	0 );
@@ -1012,11 +1000,6 @@ bool CX2GameOption::SaveScriptFile()
 		fwprintf( file, L"\tSKILL_SLOT_UI_TYPE_A		= FALSE, \n" );
 
 
-	//{{ 2011.9.16 이준호 반디캠 작업
-	fwprintf( file, L"\n\n" );
-	fwprintf( file, L"\t-- RECORD VIDEO AUTO OPTION \n" );
-	fwprintf( file, L"\tGENERAL_VIDEO_TYPE		= %d, \n",GetGeneralVideoType() );
-	//}}
 
 
 	fwprintf( file, L"\n\n\n" );
@@ -1485,260 +1468,104 @@ int CX2GameOption::_CalcCpuScore()
 
 void CX2GameOption::_CalcBestGraphicOption( int iCpuTotalScore, int iGpuTotalScore )
 {
-	//AutoSetupGameOptionWeightConfig.xml를 읽기
+	// Read AutoSetupGameOptionWeightConfig.xml
 	KGCMassFileManager::CMassFile::MASSFILE_MEMBERFILEINFO_POINTER Info;
 	Info = g_pKTDXApp->GetDeviceManager()->GetMassFileManager()->LoadDataFile( "AutoSetupGameOptionWeightConfig.xml" );
 	if( Info == NULL )
 		return;
 
-	//AutoSetupGameOptionWeightConfig.xml를 로드
-	xmlDoc* doc = xmlReadMemory( Info->pRealData, Info->size, "AutoSetupGameOptionWeightConfig.xml", NULL, 0 );
-	if( doc == NULL )
+	const std::optional<x2::platform::XmlElement> kRoot = x2::platform::ParseXml( std::string_view( Info->pRealData, Info->size ) );
+	if( !kRoot || kRoot->name != "AutoSetupGameOptionWeightConfig" )
 		return;
 
-	xmlNode* pkRoot = xmlDocGetRootElement(doc);
-	if( pkRoot == NULL )
+	for( const x2::platform::XmlElement& kElement : kRoot->children )
 	{
-		xmlFreeDoc(doc);
-		return;
-	}
-
-	if(pkRoot->type == XML_ELEMENT_NODE && strcmp((char*)pkRoot->name,"AutoSetupGameOptionWeightConfig")==0)
-	{
-		xmlNode * pkElement = pkRoot->children;
-		while ( pkElement )
+		const std::string& name = kElement.name;
+		if ( name == "GRAPHIC_UNIT" )
+			m_OptionList.m_UnitDetail = _CalcHighMiddleLow( kElement, iCpuTotalScore, iGpuTotalScore );
+		else if ( name == "GRAPHIC_TEXTURE" )
+			m_OptionList.m_TexDetail = _CalcHighMiddleLow( kElement, iCpuTotalScore, iGpuTotalScore );
+		else if ( name == "GRAPHIC_MAP" )
+			m_OptionList.m_MapDetail = _CalcHighMiddleLow( kElement, iCpuTotalScore, iGpuTotalScore );
+		else if ( name == "GRAPHIC_EFFECT" )
+			m_OptionList.m_eEffect = _CalcHighMiddleLow( kElement, iCpuTotalScore, iGpuTotalScore );
+		// GRAPHIC_VIEWDISTANCE was not applied in the original either.
+		else if ( name == "GRAPHIC_FIELD" )
 		{
-			//Graphic Unit에 대한 사양 측정
-			if ( pkElement->type == XML_ELEMENT_NODE && strcmp((char*)pkElement->name,"GRAPHIC_UNIT")==0 )
+			switch( _CalcHighMiddleLow( kElement, iCpuTotalScore, iGpuTotalScore ) )
 			{
-				//best 값 설정
-				m_OptionList.m_UnitDetail = _CalcHighMiddleLow( pkElement, iCpuTotalScore, iGpuTotalScore );
+			case OL_HIGH:	m_OptionList.m_FieldDetail = FL_HIGH;	break;
+			case OL_MEDIUM:	m_OptionList.m_FieldDetail = FL_MEDIUM;	break;
+			case OL_LOW:	m_OptionList.m_FieldDetail = FL_LOW;	break;
+			default:	break;
 			}
-			else if ( pkElement->type == XML_ELEMENT_NODE && strcmp((char*)pkElement->name,"GRAPHIC_TEXTURE")==0 )//Graphic Texture에 대한 사양 측정
-			{
-				//best 값 설정
-				m_OptionList.m_TexDetail = _CalcHighMiddleLow( pkElement, iCpuTotalScore, iGpuTotalScore );
-			}
-			else if ( pkElement->type == XML_ELEMENT_NODE && strcmp((char*)pkElement->name, "GRAPHIC_MAP" )==0 )//Graphic Map에 대한 사양 측정
-			{
-				//best 값 설정
-				m_OptionList.m_MapDetail = _CalcHighMiddleLow( pkElement, iCpuTotalScore, iGpuTotalScore );
-			}
-			else if ( pkElement->type == XML_ELEMENT_NODE && strcmp((char*)pkElement->name, "GRAPHIC_EFFECT" )==0 )//Graphic Effect에 대한 사양 측정
-			{
-				//best 값 설정
-				m_OptionList.m_eEffect = _CalcHighMiddleLow( pkElement, iCpuTotalScore, iGpuTotalScore );
-			}
-			//else if ( pkElement->type == XML_ELEMENT_NODE && strcmp((char*)pkElement->name, "GRAPHIC_VIEWDISTANCE" )==0 )//시야에 대한 사양 측정
-			//{
-			//	//best 값 설정
-			//	m_OptionList.m_eViewDistance = _CalcHighMiddleLow( pkElement, iCpuTotalScore, iGpuTotalScore );
-			//}
-			else if ( pkElement->type == XML_ELEMENT_NODE && strcmp((char*)pkElement->name, "GRAPHIC_FIELD" )==0 )//Graphic Field에 대한 사양 측정
-			{
-				//best 값 설정
-				OptionLevel iOptionLevel = _CalcHighMiddleLow( pkElement, iCpuTotalScore, iGpuTotalScore );
-				switch( iOptionLevel )
-				{
-				case OL_HIGH:
-					m_OptionList.m_FieldDetail = FL_HIGH;
-					break;
-				case OL_MEDIUM:
-					m_OptionList.m_FieldDetail = FL_MEDIUM;
-					break;
-				case OL_LOW:
-					m_OptionList.m_FieldDetail = FL_LOW;
-					break;
-				}
-			}
-			else if ( pkElement->type == XML_ELEMENT_NODE && strcmp((char*)pkElement->name, "ShowAllPlayer" )==0 )//Party에 대한 사양 측정
-			{
-				//best 값 설정
-				m_OptionList.m_bParty = !_CalcOnOff( pkElement, iCpuTotalScore, iGpuTotalScore );
-			}
-			else if ( pkElement->type == XML_ELEMENT_NODE && strcmp((char*)pkElement->name, "NormalViewPlayer" )==0 )//SD에 대한 사양 측정
-			{
-				//best 값 설정
-				m_OptionList.m_bSD = !_CalcOnOff( pkElement, iCpuTotalScore, iGpuTotalScore );
-			}
-			else if ( pkElement->type == XML_ELEMENT_NODE && strcmp((char*)pkElement->name, "NormalResolution" )==0 )//Resolution에 대한 사양 측정
-			{
-				//best 값 설정
-				if( _CalcOnOff( pkElement, iCpuTotalScore, iGpuTotalScore ) == false )
-				{
-					m_OptionList.m_vResolution.x = 800;
-					m_OptionList.m_vResolution.y = 600;
-				}
-			}
-			else if ( pkElement->type == XML_ELEMENT_NODE && strcmp((char*)pkElement->name, "ShowLevel" )==0 )//Level에 대한 사양 측정
-			{
-				//best 값 설정
-				m_OptionList.m_bLevel = _CalcOnOff( pkElement, iCpuTotalScore, iGpuTotalScore );
-			}
-			else if ( pkElement->type == XML_ELEMENT_NODE && strcmp((char*)pkElement->name, "ShowPvPRank" )==0 )//PvPRank에 대한 사양 측정
-			{
-				//best 값 설정
-				m_OptionList.m_bPvpRank = _CalcOnOff( pkElement, iCpuTotalScore, iGpuTotalScore );
-			}
-			else if ( pkElement->type == XML_ELEMENT_NODE && strcmp((char*)pkElement->name, "ShowGuild" )==0 )//Guild에 대한 사양 측정
-			{
-				//best 값 설정
-				m_OptionList.m_bGuild = _CalcOnOff( pkElement, iCpuTotalScore, iGpuTotalScore );
-			}
-			else if ( pkElement->type == XML_ELEMENT_NODE && strcmp((char*)pkElement->name, "ShowMyInfo" )==0 )//Nothing에 대한 사양 측정
-			{
-				//best 값 설정
-				m_OptionList.m_bNothing = !_CalcOnOff( pkElement, iCpuTotalScore, iGpuTotalScore );
-			}
-			else if ( pkElement->type == XML_ELEMENT_NODE && strcmp((char*)pkElement->name, "ThreeDimensionSound" )==0 )//3DSound에 대한 사양 측정
-			{
-				//best 값 설정
-				m_OptionList.m_bEnable3DSound = _CalcOnOff( pkElement, iCpuTotalScore, iGpuTotalScore );
-			}
-			else if ( pkElement->type == XML_ELEMENT_NODE && strcmp((char*)pkElement->name, "FLASHEFFECT" )==0 )//화면번쩍임에 대한 사양 측정
-			{
-				//best 값 설정
-				m_OptionList.m_bFlashEffect = !_CalcOnOff( pkElement, iCpuTotalScore, iGpuTotalScore );
-			}
-			else if ( pkElement->type == XML_ELEMENT_NODE && strcmp((char*)pkElement->name, "DYNAMIC_CAMERA" )==0 )//다이나믹 카메라에 대한 사양 측정
-			{
-				//best 값 설정
-				m_OptionList.m_bDynamicCamera = _CalcOnOff( pkElement, iCpuTotalScore, iGpuTotalScore );
-			}
-
-			pkElement = pkElement->next;
 		}
+		else if ( name == "ShowAllPlayer" )
+			m_OptionList.m_bParty = !_CalcOnOff( kElement, iCpuTotalScore, iGpuTotalScore );
+		else if ( name == "NormalViewPlayer" )
+			m_OptionList.m_bSD = !_CalcOnOff( kElement, iCpuTotalScore, iGpuTotalScore );
+		else if ( name == "NormalResolution" )
+		{
+			if( _CalcOnOff( kElement, iCpuTotalScore, iGpuTotalScore ) == false )
+			{
+				m_OptionList.m_vResolution.x = 800;
+				m_OptionList.m_vResolution.y = 600;
+			}
+		}
+		else if ( name == "ShowLevel" )
+			m_OptionList.m_bLevel = _CalcOnOff( kElement, iCpuTotalScore, iGpuTotalScore );
+		else if ( name == "ShowPvPRank" )
+			m_OptionList.m_bPvpRank = _CalcOnOff( kElement, iCpuTotalScore, iGpuTotalScore );
+		else if ( name == "ShowGuild" )
+			m_OptionList.m_bGuild = _CalcOnOff( kElement, iCpuTotalScore, iGpuTotalScore );
+		else if ( name == "ShowMyInfo" )
+			m_OptionList.m_bNothing = !_CalcOnOff( kElement, iCpuTotalScore, iGpuTotalScore );
+		else if ( name == "ThreeDimensionSound" )
+			m_OptionList.m_bEnable3DSound = _CalcOnOff( kElement, iCpuTotalScore, iGpuTotalScore );
+		else if ( name == "FLASHEFFECT" )
+			m_OptionList.m_bFlashEffect = !_CalcOnOff( kElement, iCpuTotalScore, iGpuTotalScore );
+		else if ( name == "DYNAMIC_CAMERA" )
+			m_OptionList.m_bDynamicCamera = _CalcOnOff( kElement, iCpuTotalScore, iGpuTotalScore );
 	}
-
-	xmlFreeDoc(doc);
 }
 
-CX2GameOption::OptionLevel CX2GameOption::_CalcHighMiddleLow( const xmlNode* pkElement, int iCpuTotalScore, int iGpuTotalScore )
+namespace
 {
-	float fGpuWeight = 1.0f;
-	int iHighScore = 100;
-	int iMiddleScore = 100;
-	int iLowScore = 100;
-
-	xmlAttr * attribute =  pkElement->properties;
-	if( attribute )
+	// The GpuWeight attribute of an option element (1 when absent), and the score of its child `level` (100 when absent).
+	float GpuWeight( const x2::platform::XmlElement& kElement )
 	{
-		if ( strcmp ( (char*)attribute->name,"GpuWeight" ) == 0 && attribute->children )
-		{
-			fGpuWeight = (float)atof( (char*)attribute->children->content );
-		}
+		const std::string* pValue = kElement.Attribute( "GpuWeight" );
+		return pValue != nullptr ? static_cast<float>( std::atof( pValue->c_str() ) ) : 1.0f;
 	}
 
-	xmlNode * pkChildElement = pkElement->children;
-	while ( pkChildElement )
+	int LevelScore( const x2::platform::XmlElement& kElement, std::string_view level )
 	{
-		//Graphic Unit에 대한 사양 측정
-		if ( pkChildElement->type == XML_ELEMENT_NODE && strcmp((char*)pkChildElement->name,"High")==0 )
-		{
-			xmlAttr * attribute =  pkChildElement->properties;
-			if( attribute )
-			{
-				if ( strcmp ( (char*)attribute->name,"score" ) == 0 && attribute->children )
-				{
-					iHighScore = atoi( (char*)attribute->children->content );
-				}
-			}
-		}
-		else if ( pkChildElement->type == XML_ELEMENT_NODE && strcmp((char*)pkChildElement->name,"Middle")==0 )
-		{
-			xmlAttr * attribute =  pkChildElement->properties;
-			if( attribute )
-			{
-				if ( strcmp ( (char*)attribute->name,"score" ) == 0 && attribute->children )
-				{
-					iMiddleScore = atoi( (char*)attribute->children->content );
-				}
-			}
-		}
-		else if ( pkChildElement->type == XML_ELEMENT_NODE && strcmp((char*)pkChildElement->name,"Low")==0 )
-		{
-			xmlAttr * attribute =  pkChildElement->properties;
-			if( attribute )
-			{
-				if ( strcmp ( (char*)attribute->name,"score" ) == 0 && attribute->children )
-				{
-					iLowScore = atoi( (char*)attribute->children->content );
-				}
-			}
-		}
-
-		pkChildElement = pkChildElement->next;
+		const x2::platform::XmlElement* pChild = kElement.Child( level );
+		const std::string* pValue = pChild != nullptr ? pChild->Attribute( "score" ) : nullptr;
+		return pValue != nullptr ? std::atoi( pValue->c_str() ) : 100;
 	}
 
-	//'높음', '보통', '낮음' 계산
-	float fCpuWeight = 1.0f - fGpuWeight;
-	int iMyScore = (int)( iCpuTotalScore * fCpuWeight + iGpuTotalScore * fGpuWeight );
+	// The user's score for an option: the CPU and GPU scores, weighted.
+	int OptionScore( const x2::platform::XmlElement& kElement, int iCpuTotalScore, int iGpuTotalScore )
+	{
+		const float fGpuWeight = GpuWeight( kElement );
+		return static_cast<int>( iCpuTotalScore * ( 1.0f - fGpuWeight ) + iGpuTotalScore * fGpuWeight );
+	}
+}
 
-	if( iMyScore >= iHighScore )
+CX2GameOption::OptionLevel CX2GameOption::_CalcHighMiddleLow( const x2::platform::XmlElement& kElement, int iCpuTotalScore, int iGpuTotalScore )
+{
+	const int iMyScore = OptionScore( kElement, iCpuTotalScore, iGpuTotalScore );
+	if( iMyScore >= LevelScore( kElement, "High" ) )
 		return CX2GameOption::OL_HIGH;
-	else if( iMyScore >= iMiddleScore )
+	else if( iMyScore >= LevelScore( kElement, "Middle" ) )
 		return CX2GameOption::OL_MEDIUM;
-	else if( iMyScore >= iLowScore )
-		return CX2GameOption::OL_LOW;
-
 	return CX2GameOption::OL_LOW;
 }
 
-bool CX2GameOption::_CalcOnOff( const xmlNode* pkElement, int iCpuTotalScore, int iGpuTotalScore )
+bool CX2GameOption::_CalcOnOff( const x2::platform::XmlElement& kElement, int iCpuTotalScore, int iGpuTotalScore )
 {
-	float fGpuWeight = 1.0f;
-	int iOnScore = 100;
-	int iOffScore = 100;
-
-	xmlAttr * attribute =  pkElement->properties;
-	if( attribute )
-	{
-		if ( strcmp ( (char*)attribute->name,"GpuWeight" ) == 0 && attribute->children )
-		{
-			fGpuWeight = (float)atof( (char*)attribute->children->content );
-		}
-	}
-
-	xmlNode * pkChildElement = pkElement->children;
-	while ( pkChildElement )
-	{
-		//Graphic Unit에 대한 사양 측정
-		if ( pkChildElement->type == XML_ELEMENT_NODE && strcmp((char*)pkChildElement->name,"On")==0 )
-		{
-			xmlAttr * attribute =  pkChildElement->properties;
-			if( attribute )
-			{
-				if ( strcmp ( (char*)attribute->name,"score" ) == 0 && attribute->children )
-				{
-					iOnScore = atoi( (char*)attribute->children->content );
-				}
-			}
-		}
-		else if ( pkChildElement->type == XML_ELEMENT_NODE && strcmp((char*)pkChildElement->name,"Off")==0 )
-		{
-			xmlAttr * attribute =  pkChildElement->properties;
-			if( attribute )
-			{
-				if ( strcmp ( (char*)attribute->name,"score" ) == 0 && attribute->children )
-				{
-					iOffScore = atoi( (char*)attribute->children->content );
-				}
-			}
-		}
-
-		pkChildElement = pkChildElement->next;
-	}
-
-	//'높음', '보통', '낮음' 계산
-	float fCpuWeight = 1.0f - fGpuWeight;
-	int iMyScore = (int)( iCpuTotalScore * fCpuWeight + iGpuTotalScore * fGpuWeight );
-
-	if( iMyScore >= iOnScore )
-		return true;
-	else if( iMyScore >= iOffScore )
-		return false;
-
-	return false;
+	return OptionScore( kElement, iCpuTotalScore, iGpuTotalScore ) >= LevelScore( kElement, "On" );
 }
 
 void CX2GameOption::SetJoyEnable( bool bEnable )

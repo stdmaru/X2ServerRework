@@ -15,7 +15,7 @@ class CX2ComboManager
 
 		void	SetMyUnit( bool bMyUnit, CX2GUUser*	pUnit );
 		int		AddCombo();
-		int		SetCombo(int comboNum) { m_ComboNum = comboNum; }
+		void	SetCombo(int comboNum) { m_ComboNum = comboNum; }
 		int		GetCombo() { return m_ComboNum; }
 
 		vector<int>&	GetComboCount()		{ return m_vecComboCount; }
@@ -41,7 +41,7 @@ class CX2ComboManager
 
 	protected:
 		void ClearParticleSeqGoodSeries();
-		FORCEINLINE int	MultiplyWeights( int iScore_ );
+		int	MultiplyWeights( int iScore_ );
 
 
 	private:

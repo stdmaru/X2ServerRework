@@ -2939,7 +2939,7 @@ bool CX2UIInventory::UpdateInventorySlotList( std::vector< KInventoryItemInfo >&
 
 
 
-	BOOST_TEST_FOREACH( const KInventoryItemInfo&, invenItemInfo, vecInventorySlotInfo )
+	for( const KInventoryItemInfo& invenItemInfo : vecInventorySlotInfo )
 	{
 		if( invenItemInfo.m_cSlotCategory == CX2Inventory::ST_E_EQUIP )
 		{
@@ -2957,7 +2957,7 @@ bool CX2UIInventory::UpdateInventorySlotList( std::vector< KInventoryItemInfo >&
 
 	bool bIsUpdate = false;
 
-	BOOST_TEST_FOREACH( const KInventoryItemInfo&, invenItemInfo, vecInventorySlotInfo )
+	for( const KInventoryItemInfo& invenItemInfo : vecInventorySlotInfo )
 	{
 		if( invenItemInfo.m_iItemUID <= 0 )
 			continue;
@@ -4539,7 +4539,7 @@ bool CX2UIInventory::OnRClickedItem( D3DXVECTOR2 mousePos )
 	}
 
 
-	for(int i=0; i<ARRAY_SIZE(PET_ITEM_ID); ++i)
+	for(int i=0; i<std::ssize(PET_ITEM_ID); ++i)
 	{
 		if(
             pItem->GetItemTemplet()->GetItemID() == PET_ITEM_ID[i]
@@ -4562,7 +4562,7 @@ bool CX2UIInventory::OnRClickedItem( D3DXVECTOR2 mousePos )
 		}
 	}
 
-	for( int i = 0; i < ARRAY_SIZE(RIDING_PET_ITEM_ID); ++i )
+	for( int i = 0; i < std::ssize(RIDING_PET_ITEM_ID); ++i )
 	{
 		if( pItem->GetItemTemplet()->GetItemID() == RIDING_PET_ITEM_ID[i] )
 		{
@@ -4781,7 +4781,7 @@ bool CX2UIInventory::OnRClickedItem( D3DXVECTOR2 mousePos )
 			}
 
 			// Īȣ��� ������
-			for(int i=0; i<ARRAY_SIZE(TITLE_ITEM); ++i)
+			for(int i=0; i<std::ssize(TITLE_ITEM); ++i)
 			{
                 if( pItem->GetItemTemplet()->GetItemID() == TITLE_ITEM[i] )
 				{
@@ -5593,7 +5593,7 @@ bool CX2UIInventory::OnRClickedItem( D3DXVECTOR2 mousePos )
 			m_bHideCubeOpneBar = false;
 
 			bool bAttractionItemCheck = false;
-			for(int i=0; i<ARRAY_SIZE(ATTRACTION_ITEM_ID); ++i)
+			for(int i=0; i<std::ssize(ATTRACTION_ITEM_ID); ++i)
 			{
 				if( kItemData.m_ItemID == ATTRACTION_ITEM_ID[i] )
 				{
@@ -5606,7 +5606,7 @@ bool CX2UIInventory::OnRClickedItem( D3DXVECTOR2 mousePos )
 			}
 
 			bool bMiniAttractionItemCheck = false;		/// �̴� ������ �������ΰ�?
-			for(int i=0; i<ARRAY_SIZE(MINI_ATTRACTION_ITEM_ID); ++i)
+			for(int i=0; i<std::ssize(MINI_ATTRACTION_ITEM_ID); ++i)
 			{
 				if( kItemData.m_ItemID == MINI_ATTRACTION_ITEM_ID[i] )
 				{
@@ -5640,7 +5640,7 @@ bool CX2UIInventory::OnRClickedItem( D3DXVECTOR2 mousePos )
 			}
 
 			m_bIsHalloweenIceHeater = false;
-			for(int i=0; i<ARRAY_SIZE(HALLOWEEN_ATTRACTION_ITEM_ID); ++i)
+			for(int i=0; i<std::ssize(HALLOWEEN_ATTRACTION_ITEM_ID); ++i)
 			{
 				if( kItemData.m_ItemID == HALLOWEEN_ATTRACTION_ITEM_ID[i] )
 				{
@@ -5653,7 +5653,7 @@ bool CX2UIInventory::OnRClickedItem( D3DXVECTOR2 mousePos )
 			}
 
 			bool bGoldAttractionItemCheck = false;
-			for(int i=0; i<ARRAY_SIZE(GOLD_ATTRACTION_ITEM_ID); ++i)
+			for(int i=0; i<std::ssize(GOLD_ATTRACTION_ITEM_ID); ++i)
 			{
 				if( kItemData.m_ItemID == GOLD_ATTRACTION_ITEM_ID[i] )
 				{
@@ -5774,7 +5774,7 @@ bool CX2UIInventory::OnRClickedItem( D3DXVECTOR2 mousePos )
 						m_eRandomItemEventType = RIOET_NONE;
 
 						bool bNoCubeOpenItemCheck = false;
-						for(int i=0; i<ARRAY_SIZE(NO_CUBE_OPEN_ITEM_ID); ++i)
+						for(int i=0; i<std::ssize(NO_CUBE_OPEN_ITEM_ID); ++i)
 						{
 							if( kItemData.m_ItemID == NO_CUBE_OPEN_ITEM_ID[i] )
 							{
@@ -6964,7 +6964,7 @@ bool CX2UIInventory::Handler_EGS_USE_ITEM_IN_INVENTORY_ACK( HWND hWnd, UINT uMsg
 bool CX2UIInventory::CheckUseItem(CX2Item *pItem)
 {
 //#ifdef TITLE_SYSTEM
-	for(int i=0; i<ARRAY_SIZE(TITLE_ITEM); ++i)
+	for(int i=0; i<std::ssize(TITLE_ITEM); ++i)
 	{
         if( pItem->GetItemTemplet()->GetItemID() == TITLE_ITEM[i] )
 		{
@@ -8744,7 +8744,7 @@ bool CX2UIInventory::IsEnchantCouponUseable(int CouponItemID, int TargetEnchantL
 {
 	int CouponLevel = 0;
 
-	for(int i=0; i<ARRAY_SIZE(INT_ENCHANT_COUPON_ITEM_ID); ++i)
+	for(int i=0; i<std::ssize(INT_ENCHANT_COUPON_ITEM_ID); ++i)
 	{
 		if( CouponItemID == INT_ENCHANT_COUPON_ITEM_ID[i] )
 		{
@@ -8753,7 +8753,7 @@ bool CX2UIInventory::IsEnchantCouponUseable(int CouponItemID, int TargetEnchantL
 		}
 	}
 
-	for(int i=0; i<ARRAY_SIZE(ENCHANT_COUPON_ITEM_ID); ++i)
+	for(int i=0; i<std::ssize(ENCHANT_COUPON_ITEM_ID); ++i)
 	{
 		if( CouponItemID == ENCHANT_COUPON_ITEM_ID[i] )
 		{
@@ -8763,7 +8763,7 @@ bool CX2UIInventory::IsEnchantCouponUseable(int CouponItemID, int TargetEnchantL
 	}
 	if( CouponLevel == 0 )
 	{
-		for(int i=0; i<ARRAY_SIZE(DEFENCE_ENCHANT_COUPON_ITEM_ID); ++i)
+		for(int i=0; i<std::ssize(DEFENCE_ENCHANT_COUPON_ITEM_ID); ++i)
 		{
 			if( CouponItemID == DEFENCE_ENCHANT_COUPON_ITEM_ID[i] )
 			{
@@ -8952,7 +8952,7 @@ bool CX2UIInventory::IsMonsterCardSetItem( int iItemID )
 
 bool CX2UIInventory::IsAttachItem( int ItemID )
 {
-	for(int i=0; i<ARRAY_SIZE(ATTACH_ITEM_ITEM_ID); ++i)
+	for(int i=0; i<std::ssize(ATTACH_ITEM_ITEM_ID); ++i)
 	{
 		if( ItemID == ATTACH_ITEM_ITEM_ID[i] )
 			return true;
@@ -8979,7 +8979,7 @@ bool CX2UIInventory::IsAttachItem( int ItemID )
 
 bool CX2UIInventory::IsDefenceOnlyCoupon( int ItemID )
 {
-	for(int i=5; i<ARRAY_SIZE(DEFENCE_ENCHANT_COUPON_ITEM_ID); ++i)
+	for(int i=5; i<std::ssize(DEFENCE_ENCHANT_COUPON_ITEM_ID); ++i)
 	{
 		if( ItemID == DEFENCE_ENCHANT_COUPON_ITEM_ID[i] )
 			return true;
@@ -8997,7 +8997,7 @@ bool CX2UIInventory::IsDefenceOnlyCoupon( int ItemID )
 
 bool CX2UIInventory::IsAttributeItem( int ItemID )
 {
-	for(int i=0; i<ARRAY_SIZE(ATTRIBUTE_CHARM_COUPON_ITEM_ID); ++i)
+	for(int i=0; i<std::ssize(ATTRIBUTE_CHARM_COUPON_ITEM_ID); ++i)
 	{
 		if( ItemID == ATTRIBUTE_CHARM_COUPON_ITEM_ID[i] )
 			return true;
@@ -10608,7 +10608,7 @@ void CX2UIInventory::AddIceHeaterEventInfo_LUA()
 */
 bool CX2UIInventory::IsRestoreEvaluateItem( const int ItemID_ ) const
 {
-	for(int i=0; i<ARRAY_SIZE(ITEM_ID_RESTORE_ITEM_EVALUATE); ++i)
+	for(int i=0; i<std::ssize(ITEM_ID_RESTORE_ITEM_EVALUATE); ++i)
 	{
 		if( ItemID_ == ITEM_ID_RESTORE_ITEM_EVALUATE[i] )
 			return true;

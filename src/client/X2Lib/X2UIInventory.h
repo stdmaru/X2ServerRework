@@ -500,7 +500,7 @@ public:
 	void	OpenScriptFile( const WCHAR* szScriptFileName_ );
 	void	AddIceHeaterEventInfo_LUA();
 
-	const CX2Inventory::SORT_TYPE GetInventorySortType() { return m_NowInventorySortType; }
+	CX2Inventory::SORT_TYPE GetInventorySortType() { return m_NowInventorySortType; }
 
 	/// 외부 참조를 위해, Public으로 설정
 	bool	UpdatePageUI( int iPage = 1 );

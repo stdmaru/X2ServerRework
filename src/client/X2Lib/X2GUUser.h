@@ -231,12 +231,6 @@ typedef srutil::delegate1<void, CKTDGLineMap*> DelegatePhysicProcessPortalByGame
 	else if( true == (bCondition) && m_pXSkinAnimFuture->GetNowAnimationTime() < (float)(fInputTiming) && m_pXSkinAnimFuture->GetNowAnimationTime() >= (float)(fInputTimingStart) ) \
 	{ m_FrameDataFuture.stateParam.bEventFlagList[(int)(iEventFlagIndex)] = true; }
 
-// 공중에 떠 있는 시간이 일정시간 이상되면 wait 상태로 바꾼다
-//#ifdef LINEMAP_FAST_WIND_TEST
-//	#define IF_TIME_ELAPSED_IN_THE_AIR_THEN_STATE_CHANGE( time, targetState ) \
-//		if( false == m_bWaitInTheAir ) { m_bWaitInTheAir = true; m_fTimeInTheAir = (time); } \
-//		else if( 0.f == m_fTimeInTheAir ) StateChange( (targetState) );
-//#endif LINEMAP_FAST_WIND_TEST
 
 #define MAGIC_OXYGEN_GAGE	200.f
 
@@ -496,10 +490,10 @@ public:
 			@date  : 2010/11/09
 		*/
         class   CSkillDataBase;
-        typedef boost::intrusive_ptr<CSkillDataBase> CSkillDataBasePtr;
+        typedef x2::intrusive_ptr<CSkillDataBase> CSkillDataBasePtr;
 
 		class CSkillDataBase
-            : private boost::noncopyable
+            : private x2::NonCopyable
 		{
 			// kimhc // 2010-11-10 // 생각해보면 쿨타임이 필요 없을듯.. 신캐 이후 정리 요망!
 		private:
@@ -510,13 +504,13 @@ public:
 			float		m_fEffectiveTime;			/// 스킬 지속시간
 
 		protected:
-			CSkillDataBase() : m_eSkill_ID( CX2SkillTree::SI_NONE ), m_fCoolTime( 0.f ),
-				m_fTimerBasedOnCoolTime( 0.f ), m_fEffectiveTime( 0.f )
-                , m_uRefCount(0)
+			CSkillDataBase() : m_uRefCount(0), m_eSkill_ID( CX2SkillTree::SI_NONE ),
+				m_fCoolTime( 0.f ), m_fTimerBasedOnCoolTime( 0.f )
+                , m_fEffectiveTime( 0.f )
             {}
-			CSkillDataBase( CX2SkillTree::SKILL_ID eSkill_ID_, float fCoolTime_ ) : m_eSkill_ID( eSkill_ID_ ),
-				m_fCoolTime( fCoolTime_ ), m_fTimerBasedOnCoolTime( 0.f ), m_fEffectiveTime( 0.f )
-                , m_uRefCount(0)
+			CSkillDataBase( CX2SkillTree::SKILL_ID eSkill_ID_, float fCoolTime_ ) : m_uRefCount(0),
+				m_eSkill_ID( eSkill_ID_ ), m_fCoolTime( fCoolTime_ ), m_fTimerBasedOnCoolTime( 0.f )
+                , m_fEffectiveTime( 0.f )
             {}
 
 		public:
@@ -1360,7 +1354,7 @@ public:
         float                       GetNowSlashTraceTipWide() const         { return m_fNowSlashTraceTipWide; }
         bool                        FindNowAddSlashTraceWithWeaponIndex( int iWeaponIndex, OUT D3DXVECTOR3& vSlaceTraceTime ) const;
         virtual UINT                GetSizeOfAttackTimeList() const             { return m_vecAttackTime.size(); }
-        virtual const D3DXVECTOR2* const GetAttackTimeByIndex( const UINT uiIndex_ ) const
+        virtual const D3DXVECTOR2* GetAttackTimeByIndex( const UINT uiIndex_ ) const
         {
             if ( uiIndex_ < m_vecAttackTime.size() )
                 return  &m_vecAttackTime[ uiIndex_ ].m_v2AttackTime;
@@ -1485,7 +1479,7 @@ public:
 
 
 		// unit class 별로 별도로 사용하는 weapon enchant particle 관련 함수, CX2GameUnit::Weapon 클래스에 포함되어 있는 파티클이다
-		virtual void				InitEnchantWeaponEffectUnitSpecific() = NULL;
+		virtual void				InitEnchantWeaponEffectUnitSpecific() = 0;
 
 
 
@@ -1717,7 +1711,7 @@ public:
 		void SUMMON_MAGIC_SPEAR_FrameMove();
 		void SUMMON_MAGIC_SPEAR_EventProcess();
 
-		virtual void COMMON_BUFF_FrameMove() = NULL;
+		virtual void COMMON_BUFF_FrameMove() = 0;
 		void COMMON_BUFF_EventProcess();
 
 		virtual void COMMON_RELATIONSHIP_SKILL_FrameMove();
@@ -1783,7 +1777,7 @@ public:
 
 		// 각성
 		void HyperModeStart();
-		virtual void HyperModeFrameMove() = NULL;
+		virtual void HyperModeFrameMove() = 0;
 		void HyperModeEventProcess();
 		void HyperModeStartFuture();
 		void HyperModeEnd();
@@ -2053,7 +2047,7 @@ public:
 			return 0;
 		}
 
-		const CX2Unit::UNIT_CLASS GetUnitClass()
+		CX2Unit::UNIT_CLASS GetUnitClass()
 		{
 			if( m_pUnit != NULL )
 			{
@@ -2063,7 +2057,7 @@ public:
 			return CX2Unit::UC_NONE;
 		}
 
-		const CX2Unit::UNIT_TYPE GetUnitType()
+		CX2Unit::UNIT_TYPE GetUnitType()
 		{
 			if( m_pUnit != NULL )
 				return GetUnit()->GetType();
@@ -2199,10 +2193,12 @@ public:
 
 		virtual void ChargeMpAndEtcInTrainingGame();
 
-		virtual void				InitAquiredActiveSkillState( const int iSkillID_ ) {}
+		virtual void				InitAquiredActiveSkillState( const int /*iSkillID_*/ ) {}
 		virtual void				InitPassiveSkillState();
 		void						SendBuffInfoNot( const UidType uidGameUnitToSendNot_ );
-		virtual bool				DidReceiveFirstSyncPacket() const { return m_bFirstDataReceive; }		/// 해당 게임유닛의 첫 싱크패킷을 받았는지 여부를 알아보는 함수
+		// Not an override: CX2GameUnit's is not const, so through a CX2GameUnit* a user always counts as synced, as in the
+		// original (docs/original/bugs.md). Renamed from DidReceiveFirstSyncPacket, which hid the base's.
+		bool						DidReceiveFirstSyncPacketOfUser() const { return m_bFirstDataReceive; }		/// 해당 게임유닛의 첫 싱크패킷을 받았는지 여부를 알아보는 함수
 
 
 		virtual void ResetLeftSkillCoolTimeBySkillType( const CX2SkillTree::SKILL_TYPE eSkillType_, const float fCoolTime = 0.f, bool bForceSet = true, BUFF_CHANGE_TYPE eChangeType = BCT_RELATION_VALUE, const float fCoolTimeRate = 1.f, const bool bIsRelativeAllSkill = false );
@@ -2278,15 +2274,15 @@ public:
 		void SetRelationshipUnitUID(UidType val) { m_RelationshipTargetUID = val; }
 
 		// (명중률 관리)
-		float GetAddAccuaracyPercent() const { return min(m_fAddAccuaracyPercent, 1.f); }
+		float GetAddAccuaracyPercent() const { return std::min(m_fAddAccuaracyPercent, 1.f); }
 		void SetAddAccuaracyPercent(float val) { m_fAddAccuaracyPercent = val; }
 
 		// (마법 공격 크리티컬 발동 확률 )
-		float GetAddMagicAttackCriticalRate() const { return min(m_fAddMagicAttackCriticalRate, 1.f); }
+		float GetAddMagicAttackCriticalRate() const { return std::min(m_fAddMagicAttackCriticalRate, 1.f); }
 		void SetAddMagicAttackCriticalRate(float val) { m_fAddMagicAttackCriticalRate = val; }
 
 		// (마법 공격 크리티컬 데미지 배율)
-		float GetAddMagicAttackCriticalDamageRate() const { return min(m_fAddMagicAttackCriticalDamageRate, 1.f); }
+		float GetAddMagicAttackCriticalDamageRate() const { return std::min(m_fAddMagicAttackCriticalDamageRate, 1.f); }
 		void SetAddMagicAttackCriticalDamageRate(float val) { m_fAddMagicAttackCriticalDamageRate = val; }
 		const vector< int >& GetSetItemOptions(){ return m_vecSetItemOptions; }
 		int GetMyUnitSkillLevel( const CX2SkillTree::SKILL_ID eSkillID_ );
@@ -2295,7 +2291,7 @@ public:
 		void UpdateAfterImageEquip() { if( NULL != m_pAfterImage ) m_pAfterImage->UpdateEquipView( m_pXSkinAnim.get() ); }
 
 		/// 스킬 슬롯 스테이트 아이디에 해당하는 스테이트 아이디 반환
-		virtual void GetStateIDBySecretSkillTriggerStateID( IN OUT int& iStateID_ ) const {};
+		virtual void GetStateIDBySecretSkillTriggerStateID( IN OUT int& /*iStateID_*/ ) const {};
 
 		void ApplyBuffByUseHyperMode();								/// 각성시 적용할 버프를 설정하는 함수
 		void EraseDebuffAndAddMP( IN const float fMPValue_ );		///  (define ADJUST_SECRET_ITEM_OPTION) 디버프 삭제, 삭제 갯수에 관계없이 mp 회복으로 수정 <- 걸려있는 디버프를 지우고, 지운 개수만큼 MP 회복
@@ -2304,27 +2300,27 @@ public:
 
 		virtual void		ApplyWorldLightColor( OUT CKTDGXRenderer::RenderParam* pRenderParam_ );
 
-		virtual const int GetHypetMpdeStateID() { return static_cast<int>( USI_HYPER_MODE ); }
+		virtual int GetHypetMpdeStateID() { return static_cast<int>( USI_HYPER_MODE ); }
 
-		virtual void		UpNowDPValueByDamage( IN const float fDamage_ ) {}				/// 애드일 때, 피격시 DP 변동 처리
-		virtual const float	GetDPValue( IN const float fDPValue_ ) { return 0.f; }			/// 애드일 때, DP 설정
-		virtual void		SetDPValue( IN const float fDPValue_ ) {}						/// 애드일 때, DP 설정
-		virtual const bool	GetIsFormationMode() const { return false; }					/// 구성 모드 적용 여부 반환 함수
-		virtual void		SetIsFormationMode( IN const bool bIsFormationMode_ ) {}		/// 구성 모드 적용 여부 설정 함수
+		virtual void		UpNowDPValueByDamage( IN const float /*fDamage_*/ ) {}				/// 애드일 때, 피격시 DP 변동 처리
+		virtual float	GetDPValue( IN const float /*fDPValue_*/ ) { return 0.f; }			/// 애드일 때, DP 설정
+		virtual void		SetDPValue( IN const float /*fDPValue_*/ ) {}						/// 애드일 때, DP 설정
+		virtual bool	GetIsFormationMode() const { return false; }					/// 구성 모드 적용 여부 반환 함수
+		virtual void		SetIsFormationMode( IN const bool /*bIsFormationMode_*/ ) {}		/// 구성 모드 적용 여부 설정 함수
 
-		virtual void		SetStasisfieldHitValue( IN const float fHitValue_ ) {}			/// 스테이시스 필드 타격치 설정 함수
-		virtual void		SetStasisfieldDamageValue( IN const float fDamageValue_ ) {}	/// 스테이시스 필드 피격치 설정 함수
+		virtual void		SetStasisfieldHitValue( IN const float /*fHitValue_*/ ) {}			/// 스테이시스 필드 타격치 설정 함수
+		virtual void		SetStasisfieldDamageValue( IN const float /*fDamageValue_*/ ) {}	/// 스테이시스 필드 피격치 설정 함수
 
-		virtual const bool	GetUpDPByAttackThisFrame() { return false; }					/// 타격시 한 프레임에 DP 획득된 여부 Flag 반환
-		virtual void		SetUpDPByAttackThisFrame( IN const bool bval_ ) {}				/// 타격시 한 프레임에 DP 획득된 여부 Flag 설정
-		virtual const bool	GetUpDPByDamageThisFrame() { return false; }					/// 타격시 한 프레임에 DP 획득된 여부 Flag 반환
-		virtual void		SetUpDPByDamageThisFrame( IN const bool bval_ ) {}				/// 타격시 한 프레임에 DP 획득된 여부 Flag 설정
+		virtual bool	GetUpDPByAttackThisFrame() { return false; }					/// 타격시 한 프레임에 DP 획득된 여부 Flag 반환
+		virtual void		SetUpDPByAttackThisFrame( IN const bool /*bval_*/ ) {}				/// 타격시 한 프레임에 DP 획득된 여부 Flag 설정
+		virtual bool	GetUpDPByDamageThisFrame() { return false; }					/// 타격시 한 프레임에 DP 획득된 여부 Flag 반환
+		virtual void		SetUpDPByDamageThisFrame( IN const bool /*bval_*/ ) {}				/// 타격시 한 프레임에 DP 획득된 여부 Flag 설정
 
 		/// 특정 상태일 때, 애니메이션을 바꾸는 함수
-		virtual void		SetCustomAnimName( IN const UserUnitStateData& UserStateData, IN OUT wstring& wstrAnimName ) {}
+		virtual void		SetCustomAnimName( IN const UserUnitStateData& /*UserStateData*/, IN OUT wstring& /*wstrAnimName*/ ) {}
 
 		/// 스킬 아이디에 해당하는 SA값을 받아오는 함수
-		const float			GetSpecialAbilityValue( IN const CX2SkillTree::SKILL_ABILITY_TYPE eSAValue, IN const CX2SkillTree::SKILL_ID eSkillID ) const;
+		float			GetSpecialAbilityValue( IN const CX2SkillTree::SKILL_ABILITY_TYPE eSAValue, IN const CX2SkillTree::SKILL_ID eSkillID ) const;
 
 		/// MP 없을 때 나가는 만두 설정 ( 원래 각 캐릭터 별로 선언 되어 있었으나, 다 같은 함수를 쓰고 있어서 X2GUUser로 이동 )
 		void				CreateNotEnoughMPEffect( IN const D3DXVECTOR3 vPos, IN const float fDegreeX, IN const float fDegreeY, IN const float fDegreeZ );
@@ -2333,13 +2329,13 @@ public:
 		bool				IsEnoughMPForAttack( IN const float fConsumeMP, IN const D3DXVECTOR3 vPos, IN const float fOffsetPos = 0.f,
 			IN const D3DXVECTOR3 vRotDegree = D3DXVECTOR3( 0.f, 0.f, 0.f ) );
 
-		const bool			CheckElapsedTimeRidingWaitHabit() { return m_ElapsedTimeRidingWaitHabit.CheckElapsedTime(); }
-		const int			GetAirDashCount(){ return m_iAirDashCount; }
+		bool			CheckElapsedTimeRidingWaitHabit() { return m_ElapsedTimeRidingWaitHabit.CheckElapsedTime(); }
+		int			GetAirDashCount(){ return m_iAirDashCount; }
 
 
-		virtual void		SetMutationCount( IN const int iMutationCount_ ) {}						/// 애드일 때, 변이 포인트 설정
-		virtual void		SetReverseReactorTransitionDamage( IN const float fFinalDamage_ ) {}	/// 최종 데미지 값 반환 및 설정 함수
-		const int			GetSkillLevelValue( IN const CX2SkillTree::SKILL_ID eSkillID_ );		/// 스킬 아이디에 해당하는 스킬 레벨을 받아오는 함수
+		virtual void		SetMutationCount( IN const int /*iMutationCount_*/ ) {}						/// 애드일 때, 변이 포인트 설정
+		virtual void		SetReverseReactorTransitionDamage( IN const float /*fFinalDamage_*/ ) {}	/// 최종 데미지 값 반환 및 설정 함수
+		int			GetSkillLevelValue( IN const CX2SkillTree::SKILL_ID eSkillID_ );		/// 스킬 아이디에 해당하는 스킬 레벨을 받아오는 함수
 		void				SetEffectSoundParticle( IN const D3DXVECTOR3& vPos_, IN const wstring& wstrEffectName_ );		/// 효과음 이펙트 출력 함수
 
 		//{{ Public Function End
@@ -2367,7 +2363,7 @@ public:
 		virtual void				InitStat();
 		virtual void				InitComponent();
 
-		virtual void ParseCommonRandomState() = NULL;
+		virtual void ParseCommonRandomState() = 0;
 		void ParseCommonRandomState( const char* tableName );
 
 
@@ -2390,16 +2386,16 @@ public:
 		void InitStateCommonRandom( OUT std::string &tableNameStartUTF8, OUT std::string &tableNameWinUTF8, OUT std::string &tableNameLoseUTF8 );
 
 		void						ProcessAcceleraterBuff( CX2SkillTree::SKILL_ID eSkillID, bool bHyperMode );	/// 엑셀레이터류 버프 시전
-		virtual	float				GetAdditionalAccelBuffTime( const CX2SkillTree::SKILL_ID eSkillID_ ) const { return 0.0f; }	/// 엑셀레이터류 버프 추가시간
+		virtual	float				GetAdditionalAccelBuffTime( const CX2SkillTree::SKILL_ID /*eSkillID_*/ ) const { return 0.0f; }	/// 엑셀레이터류 버프 추가시간
 		void						ApplyAcceleratorBuffToGameUnit( const CX2SkillTree::SkillTemplet* pSkillTemplet_, const float fAddtionalAccelBuffTime_, const D3DXVECTOR3& vMyPos_ );
 		virtual void				ApplyAuraAcceleratorBuffToGameUnit( const CX2SkillTree::SkillTemplet* pSkillTemplet_, const float fAddtionalAccelBuffTime_, const D3DXVECTOR3& vMyPos_ );
 		virtual bool				CanApplyBuffToGameUnit() const;
         virtual const std::vector<BUFF_TEMPLET_ID>& GetVecImmunityAtThisState() const   { return m_vecImmunityAtThisState; }
 
 
-		virtual void				SetEquippedSkillFuncBySkillSlotIndex( const CX2SkillTree::SKILL_ID eSkillID_, const int iSlotIndex_, const bool bSlotB_ ) = NULL;
+		virtual void				SetEquippedSkillFuncBySkillSlotIndex( const CX2SkillTree::SKILL_ID eSkillID_, const int iSlotIndex_, const bool bSlotB_ ) = 0;
 		void						SetEquippedSkillFunc( const CX2Unit::UnitData& kUnitData_, const bool bSlotB_ );
-		virtual void				SetEquippedSkillLevel( const CX2SkillTree::SKILL_ID eSkillID_, const bool bChangeAll_ ) = NULL;
+		virtual void				SetEquippedSkillLevel( const CX2SkillTree::SKILL_ID eSkillID_, const bool bChangeAll_ ) = 0;
 
 		virtual void				SetEquippedSkillLevelCommon( const CX2Unit::UnitData& kUnitData_, bool bSlotB_ );
 		const CX2GUUser::UserUnitStateData&			GetPressedSkillState( const int iPressedIndex_ );
@@ -2470,10 +2466,10 @@ public:
 
 		bool CommonSpecialAttackEventProcess( IN const CX2UserSkillTree& cUserSkillTree_, OUT const CX2UserSkillTree::SkillSlotData* & pSkillSlotDataPressed_, OUT int& iSkillSlotIndexPressed_ );
 
-		virtual bool				SpecialAttackEventProcess( CX2SkillTree::ACTIVE_SKILL_USE_CONDITION eActiveSkillUseCondition = CX2SkillTree::ASUT_GROUND ) = NULL;
+		virtual bool				SpecialAttackEventProcess( CX2SkillTree::ACTIVE_SKILL_USE_CONDITION eActiveSkillUseCondition = CX2SkillTree::ASUT_GROUND ) = 0;
 
-		virtual void				NoStateChangeActionFrameMove() = NULL;
-		virtual bool				SpecialAttackNoStageChange( const CX2SkillTree::SkillTemplet* pSkillTemplet ) = NULL;
+		virtual void				NoStateChangeActionFrameMove() = 0;
+		virtual bool				SpecialAttackNoStageChange( const CX2SkillTree::SkillTemplet* pSkillTemplet ) = 0;
 
 		virtual	USHORT				GetActualCBConsume( CX2SkillTree::SKILL_ID eSkill_ID_, int iSkillLevel_ );
 
@@ -2481,7 +2477,7 @@ public:
 
 		bool CheckSkillUsePVPOfficial( CX2SkillTree::SKILL_ID eSkill_ID_ );
 
-		virtual bool IsValideSkillRidingOn( CX2SkillTree::SKILL_ID eSkill_ID_ ){ return true;}
+		virtual bool IsValideSkillRidingOn( CX2SkillTree::SKILL_ID /*eSkill_ID_*/ ){ return true;}
 
 		virtual	bool				IsSuperArmor() const;
 
@@ -2630,7 +2626,7 @@ public:
 //{{ kimhc // 2011.1.14 // 청 1차 전직
 		void AddEnchantStatFromPassiveSkillToDefenceEnchantData();
 		void AddExtraDamageImmuneRateFromPassiveSkillToImmuneData();
-		const float GetEnchantStatFromPassiveSkillByEnchantType( int iEnchantType );	// 인첸트 타입별 수치 값 리턴
+		float GetEnchantStatFromPassiveSkillByEnchantType( int iEnchantType );	// 인첸트 타입별 수치 값 리턴
 
 		float GetAddAnimSpeedFactor() const { return m_fAddAnimSpeedFactor; }	// 청 1차 전직, 슈팅 가디언의 난전의 기술 스킬에 의한 애니메이션 속도 증가
 		void SetAddAnimSpeedFactor(float fAddAnimSpeedFactor_) { m_fAddAnimSpeedFactor = fAddAnimSpeedFactor_; }
@@ -2678,7 +2674,7 @@ public:
 
 			void CommonFrameMove_InsertBuffFactor();
 
-		virtual void ShowActiveSkillCutInAndLightByScript( float fTimeToShow_, bool bOnlyLight_ ){}
+		virtual void ShowActiveSkillCutInAndLightByScript( float /*fTimeToShow_*/, bool /*bOnlyLight_*/ ){}
 		//}} Protected Function End
 
 		virtual void ChangeDamageData () {}

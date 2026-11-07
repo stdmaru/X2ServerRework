@@ -252,6 +252,13 @@ two globals (`g_pd3dDevice`, `g_pEffectStateManager`) are defined for them in `t
 The [engine tests](#tests-x2_client_tests--tcktdxlib) now run on the real `CKTDXApp`; added: `RenderStageNow` (one frame
 drawn and submitted, a frame with no stage), `KFileSerializer` save/load/cap/missing file and `CRC_32::GetCRCFromFile`.
 
+## For X2Lib's headers (2026-11-07, `client/x2lib-headers`)
+
+- `KTDX.h` no longer includes `AlwaysButConditionally.h` (deleted; its only content was the Themida switch) nor the
+  Themida header.
+- `KCircularBuffer` gained `rerase(first, last)` (an `erase`), which `CX2GUNPC` uses from `boost::circular_buffer`.
+- `CKTDGParticleSystem`'s destructor is virtual (it has virtual functions and X2Lib deletes it).
+
 ## Status
 
 All of `KTDXLIB` compiles and links ([roadmap](../project/roadmap.md#phase-4--client-graphics)); textures (2026-11-07)

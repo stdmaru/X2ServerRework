@@ -57,7 +57,7 @@ CX2SkillTree::CX2SkillTree(void)
 
 CX2SkillTree::~CX2SkillTree(void)
 {
-	BOOST_TEST_FOREACH( SkillTempletMap::value_type&, value, m_mapSkillTemplet )
+	for( SkillTempletMap::value_type& value : m_mapSkillTemplet )
 	{
 		SAFE_DELETE( value.second );
 	}
@@ -93,10 +93,10 @@ bool CX2SkillTree::OpenScriptFile( const WCHAR* pFileName, const WCHAR* pSkillDa
 void CX2SkillTree::OpenScriptFilePostProcess()
 {
 
-	BOOST_TEST_FOREACH( UnitSkillTreeTempletMap::value_type&, value, m_mapUnitSkillTreeTemplet )
+	for( UnitSkillTreeTempletMap::value_type& value : m_mapUnitSkillTreeTemplet )
 	{
 		SkillTreeTempletMap& mapSkillTreeTemplet = value.second;
-		BOOST_TEST_FOREACH( SkillTreeTempletMap::value_type&, value2, mapSkillTreeTemplet )
+		for( SkillTreeTempletMap::value_type& value2 : mapSkillTreeTemplet )
 		{
 			SkillTreeTemplet& skillTreeTemplet = value2.second;
 			skillTreeTemplet.m_iFollowingSkill = 0;
@@ -105,10 +105,10 @@ void CX2SkillTree::OpenScriptFilePostProcess()
 
 
 
-	BOOST_TEST_FOREACH( UnitSkillTreeTempletMap::value_type&, value, m_mapUnitSkillTreeTemplet )
+	for( UnitSkillTreeTempletMap::value_type& value : m_mapUnitSkillTreeTemplet )
 	{
 		SkillTreeTempletMap& mapSkillTreeTemplet = value.second;
-		BOOST_TEST_FOREACH( SkillTreeTempletMap::value_type&, value2, mapSkillTreeTemplet )
+		for( SkillTreeTempletMap::value_type& value2 : mapSkillTreeTemplet )
 		{
 			SkillTreeTemplet& skillTreeTemplet = value2.second;
 			const SkillTreeTemplet* pPrecedingSkillTreeTemplet = GetSkillTreeTemplet( value.first, static_cast<SKILL_ID>( skillTreeTemplet.m_iPrecedingSkill ) );
@@ -122,10 +122,10 @@ void CX2SkillTree::OpenScriptFilePostProcess()
 
 	//{{ oasis907 : ����� [2009.12.4] //
 
-	BOOST_TEST_FOREACH( GuildSkillTreeTempletMap::value_type&, value, m_mapGuildSkillTreeTemplet )
+	for( GuildSkillTreeTempletMap::value_type& value : m_mapGuildSkillTreeTemplet )
 	{
 		SkillTreeTempletMap& mapSkillTreeTemplet = value.second;
-		BOOST_TEST_FOREACH( SkillTreeTempletMap::value_type&, value2, mapSkillTreeTemplet )
+		for( SkillTreeTempletMap::value_type& value2 : mapSkillTreeTemplet )
 		{
 			SkillTreeTemplet& skillTreeTemplet = value2.second;
 			skillTreeTemplet.m_iFollowingSkill = 0;
@@ -134,10 +134,10 @@ void CX2SkillTree::OpenScriptFilePostProcess()
 
 
 
-	BOOST_TEST_FOREACH( GuildSkillTreeTempletMap::value_type&, value, m_mapGuildSkillTreeTemplet )
+	for( GuildSkillTreeTempletMap::value_type& value : m_mapGuildSkillTreeTemplet )
 	{
 		SkillTreeTempletMap& mapSkillTreeTemplet = value.second;
-		BOOST_TEST_FOREACH( SkillTreeTempletMap::value_type&, value2, mapSkillTreeTemplet )
+		for( SkillTreeTempletMap::value_type& value2 : mapSkillTreeTemplet )
 		{
 			SkillTreeTemplet& skillTreeTemplet = value2.second;
 				const SkillTreeTemplet* pPrecedingSkillTreeTemplet = GetGuildSkillTreeTemplet( value.first, static_cast<SKILL_ID>( skillTreeTemplet.m_iPrecedingSkill ) );
@@ -2588,7 +2588,7 @@ bool CX2SkillTree::Handler_EGS_DECIDE_TO_USE_THIS_SKILL_PAGE_ACK( HWND hWnd, UIN
 			pUnitData->m_UserSkillTree.SetSkillPoint( pUnitData->m_iSPoint );
 			pUnitData->m_UserSkillTree.SetCashSkillPoint( pUnitData->m_iCSPoint );
 
-			BOOST_FOREACH( const KUserSkillData& userSkillData, kEvent.m_kUserSkillPageData.m_vecUserSkillData )
+			for( const KUserSkillData& userSkillData : kEvent.m_kUserSkillPageData.m_vecUserSkillData )
 			{
 				pUnitData->m_UserSkillTree.SetSkillLevelAndCSP( static_cast<CX2SkillTree::SKILL_ID>( userSkillData.m_iSkillID ),
 					userSkillData.m_cSkillLevel, userSkillData.m_cSkillCSPoint, pUnitData->m_UserSkillTree.GetUsingPage() );
@@ -2690,7 +2690,7 @@ const CX2SkillTree::SKILL_ID CX2SkillTree::GetUnsealSkillItemInfo( const int iIt
 		const std::vector<CX2SkillTree::SKILL_ID> vVal = mit->second.m_vecSkillID;		/// �ش� ���� �������� ���� ��ų �����̳�
 
 		/// �ش� �ɸ����� ��ų�̶��, ���̵� ��ȯ
-		BOOST_FOREACH( CX2SkillTree::SKILL_ID eSkillID, vVal )
+		for( CX2SkillTree::SKILL_ID eSkillID : vVal )
 		{
 			/// ��ų ���̵� �ش� ĳ������ ��ų Ʈ�� ���ø��� �����ϴ��� �˻�
 			const CX2SkillTree::SkillTreeTemplet* pSkillTreeTemplet = g_pData->GetSkillTree()->GetSkillTreeTemplet( iUnitClass, eSkillID );
@@ -3040,7 +3040,7 @@ bool CX2SkillTree::isDefaultSkill( SKILL_ID eSkillID )
 		std::vector<int> vecDefaultSkill = mit->second;		/// �⺻ ��ų ���
 
 		/// ���ڷ� ���� ���̵� �⺻ ��ų ��Ͽ� �ִ��� �˻�
-		BOOST_FOREACH( int iVal, vecDefaultSkill )
+		for( int iVal : vecDefaultSkill )
 		{
 			if ( eSkillID == static_cast<SKILL_ID>( iVal ) )
 				return true;		/// ��ġ�ϴ� ���̵� �����Ƿ�, �⺻ ��ų�̴�.

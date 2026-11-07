@@ -28,7 +28,7 @@ class CX2TextManager
 						m_bAutoDelete	= false;
 					}
 
-					TextMoveItem& TextMoveItem::operator=(const TextMoveItem& rhs)
+					TextMoveItem& operator=(const TextMoveItem& rhs)
 					{
 						if ( this == &rhs )
 						{

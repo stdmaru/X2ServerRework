@@ -46,7 +46,7 @@ public:
 			m_eOfficantType			= rhs.m_eOfficantType;
 			m_fCameraDurationTime	= rhs.m_fCameraDurationTime;
 
-			BOOST_FOREACH( OfficiantBehavior* pOfficiantBehavior, rhs.m_vecOfficiantBehavior )
+			for( OfficiantBehavior* pOfficiantBehavior : rhs.m_vecOfficiantBehavior )
 			{
 				OfficiantBehavior* pTempOfficiantBehavior = new OfficiantBehavior;
 				*pTempOfficiantBehavior = *pOfficiantBehavior;
@@ -129,10 +129,10 @@ public:
 		m_vOffciantPos(0,0,0),
 		m_vOffciantCameraEye(0,0,0),
 		m_vOffciantCmaeraLookAt(0,0,0),
-		m_eWorldID(CX2World::WI_NONE),
-		m_eWeddingHallType(SEnum::WHT_CASH_A),
 		m_vColor(1,1,1,1),
-		m_vOutlineColor(0,0,0,1)
+		m_vOutlineColor(0,0,0,1),
+		m_eWorldID(CX2World::WI_NONE),
+		m_eWeddingHallType(SEnum::WHT_CASH_A)
 		{}
 	};
 

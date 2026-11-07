@@ -1495,7 +1495,7 @@ void CX2TrainingGameUI::OpenFreeTrainingMainMenu( bool bOpen )
 			m_vecNpc.push_back( CX2UnitManager::NUI_DUMMY_BIG_WAIT );
 	#endif //_IN_HOUSE_
 
-			for(int iItem=0; iItem<ARRAY_SIZE(NPC_CARD); ++iItem)
+			for(int iItem=0; iItem<std::ssize(NPC_CARD); ++iItem)
 			{
 				//CX2Inventory *pInven = g_pData->GetMyUser()->GetSelectUnit()->GetInventory();
 				CX2Item* pItem = g_pData->GetMyUser()->GetSelectUnit()->GetInventory().GetItemByTID( NPC_CARD[iItem] );

@@ -6,7 +6,7 @@
 	SERIALIZE_DEFINE_TAG(name, eTAG_USERCLASS); \
 	SERIALIZE_DECLARE_PUTGET(name); \
 struct name
-#define  DECL_DATA(name)    _DECL_DATA( name ) : public boost::noncopyable
+#define  DECL_DATA(name)    _DECL_DATA( name ) : public x2::NonCopyable
 
 #define COPYCON_ASSIGNOP( type, t ) type(const type& t) { *this = t; } \
 	type& operator=(const type& t)

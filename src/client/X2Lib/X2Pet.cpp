@@ -164,7 +164,7 @@ CX2PET::~CX2PET()
 
 	if( g_pData != NULL && g_pData->GetUIMajorParticle() != NULL )
 	{
-		BOOST_TEST_FOREACH( AttachedPetParticleData, kSeq, m_vecSeqPetParticle )
+		for( AttachedPetParticleData kSeq : m_vecSeqPetParticle )
 		{
 			g_pData->GetUIMajorParticle()->DestroyInstanceHandle( kSeq.hSeq );
 		}
@@ -1543,27 +1543,27 @@ void    CX2PET::InitData::AppendToDeviceList( CKTDXDeviceDataList& listInOut_ ) 
 
 void	CX2PET::InitDeviceData::AppendToDeviceList( CKTDXDeviceDataList& listInOut_ ) const
 {
- 	BOOST_TEST_FOREACH( const wstring&, strTexture, m_vecstrReadyTexture )
+ 	for( const wstring& strTexture : m_vecstrReadyTexture )
  	{
  		g_pKTDXApp->GetDeviceManager()->AppendTexture( listInOut_, strTexture );
  	}//BOOST_FOREACH()
 
- 	//BOOST_TEST_FOREACH( const wstring&, strSound, m_vecstrReadySound )
+ 	//for( const wstring& strSound : m_vecstrReadySound )
  	//{
  	//    CX2UnitLoader::AppendSound( listInOut_, strSound.c_str() );
  	//}//BOOST_FOREACH()
 
- 	BOOST_TEST_FOREACH( const wstring&, strXSkinMesh, m_vecstrReadyXSkinMesh )
+ 	for( const wstring& strXSkinMesh : m_vecstrReadyXSkinMesh )
  	{
  		g_pKTDXApp->GetDeviceManager()->AppendXSkinMesh( listInOut_, strXSkinMesh );
  	}//BOOST_FOREACH()
 
- 	BOOST_TEST_FOREACH( const wstring&, strXMesh, m_vecstrReadyXMesh )
+ 	for( const wstring& strXMesh : m_vecstrReadyXMesh )
  	{
  		g_pKTDXApp->GetDeviceManager()->AppendXMesh( listInOut_, strXMesh );
  	}//BOOST_FOREACH()
 
-	BOOST_TEST_FOREACH( const wstring&, strXET, m_vecstrReadyXET )
+	for( const wstring& strXET : m_vecstrReadyXET )
 	{
 		g_pKTDXApp->GetDeviceManager()->AppendXET( listInOut_, strXET );
 	}
@@ -3806,7 +3806,7 @@ void CX2PET::SetShowEffect(bool bVal)
 		}
 	}
 
-	BOOST_TEST_FOREACH( AttachedPetParticleData, kSeq, m_vecSeqPetParticle )
+	for( AttachedPetParticleData kSeq : m_vecSeqPetParticle )
 	{
 		if( kSeq.hSeq != INVALID_PARTICLE_SEQUENCE_HANDLE )
 		{

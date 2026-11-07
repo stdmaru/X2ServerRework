@@ -2187,7 +2187,7 @@ bool CX2TFieldGame::Handler_EGS_CHANGE_EQUIPPED_ITEM_IN_FIELD_NOT( KEGS_CHANGE_E
 
 
 	// 장착장비 제거, 아이템 제거
-	BOOST_TEST_FOREACH( const KInventoryItemInfo&, kInventorySlotInfo, kEGS_CHANGE_EQUIPPED_ITEM_NOT.m_vecInventorySlotInfo )
+	for( const KInventoryItemInfo& kInventorySlotInfo : kEGS_CHANGE_EQUIPPED_ITEM_NOT.m_vecInventorySlotInfo )
 	{
 		if( CX2Inventory::ST_E_EQUIP == kInventorySlotInfo.m_cSlotCategory )
 		{
@@ -2212,7 +2212,7 @@ bool CX2TFieldGame::Handler_EGS_CHANGE_EQUIPPED_ITEM_IN_FIELD_NOT( KEGS_CHANGE_E
 
 
 	// 아이템 추가, 장착장비 추가
-	BOOST_TEST_FOREACH( const KInventoryItemInfo&, kInventorySlotInfo, kEGS_CHANGE_EQUIPPED_ITEM_NOT.m_vecInventorySlotInfo )
+	for( const KInventoryItemInfo& kInventorySlotInfo : kEGS_CHANGE_EQUIPPED_ITEM_NOT.m_vecInventorySlotInfo )
 	{
 		if( kInventorySlotInfo.m_iItemUID <= 0 )
 			continue;
@@ -2441,7 +2441,7 @@ CX2Unit* CX2TFieldGame::GetSquareUnitUnitByUID( UidType UID )
 		}
 	}
 
-    BOOST_TEST_FOREACH( const AddUserInUnitLoader&, addUser, m_listAddUserInUnitLoader )
+    for( const AddUserInUnitLoader& addUser : m_listAddUserInUnitLoader )
     {
         if ( addUser.m_pUnit != NULL && addUser.m_pUnit->GetUID() == UID )
         {
@@ -2484,7 +2484,7 @@ CX2Unit*    CX2TFieldGame::GetSquareUnitUnitByNickName( const WCHAR* wszNickName
 		}
 	}
 
-    BOOST_TEST_FOREACH( const AddUserInUnitLoader&, addUser, m_listAddUserInUnitLoader )
+    for( const AddUserInUnitLoader& addUser : m_listAddUserInUnitLoader )
     {
         if ( addUser.m_pUnit != NULL && 0 == StrCmp( addUser.m_pUnit->GetNickName(), wszNickName ) )
         {
@@ -4118,7 +4118,7 @@ void CX2TFieldGame::ResetNpcType( CX2LocationManager::HOUSE_ID houseID )
 
 	if( pHouseTemplate != NULL )
 	{
-		BOOST_TEST_FOREACH( CX2TFieldNpcPtr, pNpcNode, m_vecFieldNpc )
+		for( CX2TFieldNpcPtr pNpcNode : m_vecFieldNpc )
 		{
 			if ( pNpcNode != NULL && pNpcNode->m_NpcHouseID == pHouseTemplate->m_ID )
 			{
@@ -4131,7 +4131,7 @@ void CX2TFieldGame::ResetNpcType( CX2LocationManager::HOUSE_ID houseID )
 
 void CX2TFieldGame::AddShopType( int iNpcUnitID, int iType )
 {
-	BOOST_TEST_FOREACH( CX2TFieldNpcPtr, pNpcNode, m_vecFieldNpc )
+	for( CX2TFieldNpcPtr pNpcNode : m_vecFieldNpc )
 	{
 		if ( pNpcNode != NULL && pNpcNode->GetNpcId() == iNpcUnitID )
         {
@@ -4707,7 +4707,7 @@ void CX2TFieldGame::UpdateUserPartyUid(KEGS_UPDATE_PARTY_UID_NOT partyInfo)
 		}
 	}
 
-    BOOST_TEST_FOREACH( AddUserInUnitLoader&, addUser, m_listAddUserInUnitLoader )
+    for( AddUserInUnitLoader& addUser : m_listAddUserInUnitLoader )
     {
         if ( addUser.m_pUnit != NULL && addUser.m_pUnit->GetUID() == partyInfo.m_iUnitUID )
         {
@@ -4729,7 +4729,7 @@ UidType CX2TFieldGame::GetUserPartyUid(UidType iUid)
 		}
 	}
 
-    BOOST_TEST_FOREACH( const AddUserInUnitLoader&, addUser, m_listAddUserInUnitLoader )
+    for( const AddUserInUnitLoader& addUser : m_listAddUserInUnitLoader )
     {
         if ( addUser.m_pUnit != NULL && addUser.m_pUnit->GetUID() == iUid )
         {

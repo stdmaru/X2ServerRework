@@ -2,14 +2,14 @@
 #include "X2NetError.h"
 
 #include <map>
-#include <Windows.h>    // DWORD, GetCurrentThreadID
+#include "x2/platform/win32.h"    // DWORD, GetCurrentThreadID
 #include "Thread/Locker.h"
 
 namespace NetError  // 변수 선언은 namespace scope를 열고 해주어야 한다.
 {
 
 #undef NET_ERROR
-#define NET_ERROR( id, comment ) L#comment,
+#define NET_ERROR( id, comment ) L ## #comment,
 //    wchar_t* szErrorStr[] = {
 //#include "NetError_def.h"
 //    };

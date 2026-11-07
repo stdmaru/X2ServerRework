@@ -29,7 +29,7 @@ void CX2EffectSet::ClearTempletAndInstance()
     StopEffectSetAll();
 
 
-	BOOST_TEST_FOREACH( EffectSetDataMap::value_type&, value, m_mapEffectSetTemplet )
+	for( EffectSetDataMap::value_type& value : m_mapEffectSetTemplet )
 	{
 		SAFE_DELETE( value.second );
 	}
@@ -2159,7 +2159,7 @@ CX2EffectSet::EffectSetInstance::~EffectSetInstance()
 
     m_hHandle = INVALID_EFFECTSET_HANDLE;
 
-	BOOST_TEST_FOREACH( EffectInstance*, pEffectInstance, m_vecpEffectInstance )
+	for( EffectInstance* pEffectInstance : m_vecpEffectInstance )
 	{
 		SAFE_DELETE( pEffectInstance );
 	}
@@ -3061,7 +3061,7 @@ bool CX2EffectSet::EffectSetInstance::GetEffectPositionByTargetMesh( OUT D3DXVEC
 */
 void CX2EffectSet::EffectSetInstance::SetPos( IN const D3DXVECTOR3& vOffsetPos_ )
 {
-	BOOST_FOREACH( EffectInstance* pEffectInstance, m_vecpEffectInstance )
+	for( EffectInstance* pEffectInstance : m_vecpEffectInstance )
 	{
 		if ( NULL == pEffectInstance )
 			continue;

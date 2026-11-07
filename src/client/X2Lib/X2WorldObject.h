@@ -3,7 +3,7 @@
 
 //{{ seojt // 2009-1-14, 23:16
 class CX2WorldObject;
-typedef boost::intrusive_ptr<CX2WorldObject>   CX2WorldObjectPtr;
+typedef x2::intrusive_ptr<CX2WorldObject>   CX2WorldObjectPtr;
 //}} seojt // 2009-1-14, 23:16
 
 
@@ -39,9 +39,9 @@ class CX2WorldObject : public CKTDGObject
 		virtual HRESULT OnResetDevice(){ return S_OK; }
 		virtual HRESULT OnLostDevice(){ return S_OK; }
 		virtual void	SetLOD( bool bLOD ){ m_bLOD = bLOD; }
-		virtual bool	RayHit( D3DXVECTOR3 rayStart, D3DXVECTOR3 rayEnd, float* pHitDistance = NULL ){ return false; }
+		virtual bool	RayHit( D3DXVECTOR3 /*rayStart*/, D3DXVECTOR3 /*rayEnd*/, float* /*pHitDistance*/ = NULL ){ return false; }
 
-		virtual bool	RayHit( D3DXVECTOR3 rayStart, D3DXVECTOR3 rayEnd, float* pHitDistance, const D3DXMATRIX& transform ) { return false; }
+		virtual bool	RayHit( const D3DXVECTOR3& /*rayStart*/, const D3DXVECTOR3& /*rayEnd*/, float* /*pHitDistance*/, const D3DXMATRIX& /*transform*/ ) { return false; }
 
 
 		OBJECT_TYPE		GetObjectType() const { return m_ObjectType; }

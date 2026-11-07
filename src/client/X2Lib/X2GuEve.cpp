@@ -3616,7 +3616,7 @@ void CX2GUEve::CommonFrameMove()
 
 
 			// ��� ������ ��ƼŬ �Ⱥ��̰�
-			BOOST_TEST_FOREACH( CX2EqipPtr, pEquip, m_ViewEqipList )
+			for( CX2EqipPtr pEquip : m_ViewEqipList )
 			{
 				if( pEquip != NULL )
 					pEquip->SetShowAttachedParticle( true );
@@ -3678,7 +3678,7 @@ void CX2GUEve::CommonFrameMove()
 				CKTDGXMeshPlayer::CXMeshInstance*		pMeshInst = NULL;
 				D3DXVECTOR3	vBonePos = GetBonePos(L"Bip01_Spine1");
 
-				for( int i = 0; i < ARRAY_SIZE(m_sEGQueensThrone.m_ahMajorMeshInstance); ++i )
+				for( int i = 0; i < std::ssize(m_sEGQueensThrone.m_ahMajorMeshInstance); ++i )
 				{
 					pMeshInst = g_pX2Game->GetMajorXMeshPlayer()->GetMeshInstance( m_sEGQueensThrone.m_ahMajorMeshInstance[i] );
 					if( NULL != pMeshInst && NULL != pMultiAnimFrame )
@@ -7514,7 +7514,7 @@ void CX2GUEve::ENSI_INVISIBILITY_ON_End()
 		//{{ kimhc // 2010.6.16 // ���� ����� �ϴ� �Լ��� �����Ͽ� �Լ��� �����
 
 		// ��� ������ ��ƼŬ �Ⱥ��̰�
-		BOOST_TEST_FOREACH( CX2EqipPtr, pEquip, m_ViewEqipList )
+		for( CX2EqipPtr pEquip : m_ViewEqipList )
 		{
 			if( pEquip != NULL )
 				pEquip->SetShowAttachedParticle( false );
@@ -11159,13 +11159,13 @@ void CX2GUEve::ENSI_SI2_ILLUSION_STINGER_FrameMove()
 
 		if( GetEqippedSkillMemo( CX2SkillTree::SMI_EVE_MEMO8 ) == true )
 		{
-			for(int i=0; i<ARRAY_SIZE( vEffPos ); ++i)
+			for(int i=0; i<std::ssize( vEffPos ); ++i)
 				vEffPos[i].x = ( vEffPos[i].x - 135.f) * 0.8f + 135.f;
 		}
 
 		D3DXVECTOR3 vRotDegree = GetRotateDegree();
 
-		for( int i=0; i<ARRAY_SIZE( vEffPos ); i++ )
+		for( int i=0; i<std::ssize( vEffPos ); i++ )
 		{
 			D3DXVECTOR3 vPos = GetPos();
 			vPos.y += vEffPos[i].y;
@@ -11468,13 +11468,13 @@ void CX2GUEve::ENSI_SI2_ILLUSION_STINGER_HYPER_FrameMove()
 
 		if( GetEqippedSkillMemo( CX2SkillTree::SMI_EVE_MEMO8 ) == true )
 		{
-			for(int i=0; i<ARRAY_SIZE( vEffPos ); ++i)
+			for(int i=0; i<std::ssize( vEffPos ); ++i)
 				vEffPos[i].x = ( vEffPos[i].x - 135.f) * 0.8f + 135.f;
 		}
 
 		D3DXVECTOR3 vRotDegree = GetRotateDegree();
 
-		for( int i=0; i<ARRAY_SIZE( vEffPos ); i++ )
+		for( int i=0; i<std::ssize( vEffPos ); i++ )
 		{
 			D3DXVECTOR3 vPos = GetPos();
 			vPos.y += vEffPos[i].y;
@@ -14922,14 +14922,14 @@ void CX2GUEve::EG_QueensThroneData::Reset()
 	m_bEnable				= false;
 	m_iSelectBoneNameID		= 0;
 
-	for( int i = 0; i < ARRAY_SIZE(m_ahMajorMeshInstance); ++i )
+	for( int i = 0; i < std::ssize(m_ahMajorMeshInstance); ++i )
 	{
 		if( m_ahMajorMeshInstance[i] != INVALID_MESH_INSTANCE_HANDLE )
 			g_pX2Game->GetMajorXMeshPlayer()->DestroyInstanceHandle( m_ahMajorMeshInstance[i] );
 
 		m_ahMajorMeshInstance[i] = INVALID_MESH_INSTANCE_HANDLE;
 	}
-	for( int i = 0; i < ARRAY_SIZE(m_ahMajorParticleInstance); ++i )
+	for( int i = 0; i < std::ssize(m_ahMajorParticleInstance); ++i )
 	{
 		if( m_ahMajorParticleInstance[i] != INVALID_PARTICLE_SEQUENCE_HANDLE )
 			g_pX2Game->GetMajorParticle()->DestroyInstanceHandle(m_ahMajorParticleInstance[i]);
@@ -15944,7 +15944,7 @@ void CX2GUEve::MEGA_ELECTRONBALL_Data::Reset(bool bIsChargeTrue /* = true */, Fr
 
 void CX2GUEve::MEGA_ELECTRONBALL_Data::ResetParticle()
 {
-	for( int i = 0; i < ARRAY_SIZE(m_ahMajorParticleInstance); ++i )
+	for( int i = 0; i < std::ssize(m_ahMajorParticleInstance); ++i )
 	{
 		if( m_ahMajorParticleInstance[i] != INVALID_PARTICLE_SEQUENCE_HANDLE )
 			g_pX2Game->GetMajorParticle()->DestroyInstanceHandle(m_ahMajorParticleInstance[i]);
@@ -20341,7 +20341,7 @@ void CX2GUEve::EveElectraSystem::LaserAttackLineSet( CX2DamageEffect::CEffect* _
     if ( pCollisionDataList == NULL )
         return;
 
-	BOOST_TEST_FOREACH( CKTDXCollision::CollisionData*, pColA, *pCollisionDataList )
+	for( CKTDXCollision::CollisionData* pColA : *pCollisionDataList )
 	{
 		ASSERT( pColA != NULL );
 		if( pColA->m_bEnable == false )
@@ -21046,9 +21046,9 @@ void CX2GUEve::DoFrameMoveThousandStar()
 					vPos = pGameUnit->GetPos();
 					vPos.y += 100.f;
 
-					BOOST_FOREACH( const CKTDXCollision::CollisionDataList* collisionDataList, AttackListSet )
+					for( const CKTDXCollision::CollisionDataList* collisionDataList : AttackListSet )
 					{
-						BOOST_FOREACH( CKTDXCollision::CollisionData* collisionData, *collisionDataList )
+						for( CKTDXCollision::CollisionData* collisionData : *collisionDataList )
 						{
 							D3DXVECTOR3 vCollPos = collisionData->GetPointStart();
 							float fDist = GetDistance( GetPos(), vCollPos );
@@ -23743,7 +23743,7 @@ void CX2GUEve::TASER_PILUM_Data::Reset(bool bIsChargeTrue /* = true */, FrameDat
 
 void CX2GUEve::TASER_PILUM_Data::ResetParticle()
 {
-	for( int i = 0; i < ARRAY_SIZE( m_ahMajorParticleInstance ); ++i )
+	for( int i = 0; i < std::ssize( m_ahMajorParticleInstance ); ++i )
 	{
 		if( m_ahMajorParticleInstance[i] != INVALID_PARTICLE_SEQUENCE_HANDLE )
 			g_pX2Game->GetMajorParticle()->DestroyInstanceHandle( m_ahMajorParticleInstance[i] );
@@ -26072,7 +26072,7 @@ void CX2GUEve::SKugelBlitz_Data::Reset(bool bIsChargeTrue /* = true */, FrameDat
 
 void CX2GUEve::SKugelBlitz_Data::ResetParticle()
 {
-	for( int i = 0; i < ARRAY_SIZE( m_ahMajorParticleInstance ); ++i )
+	for( int i = 0; i < std::ssize( m_ahMajorParticleInstance ); ++i )
 	{
 		if( m_ahMajorParticleInstance[i] != INVALID_PARTICLE_SEQUENCE_HANDLE )
 			g_pX2Game->GetMajorParticle()->DestroyInstanceHandle( m_ahMajorParticleInstance[i] );

@@ -3,7 +3,6 @@
 
 void CX2GageData::Gage::Increase( const float fIncrement, const float fMinimum /*= 0.f */ )
 {
-	THEMIDA_ENCODE_START
 
 		fNow += fIncrement;
 
@@ -13,7 +12,6 @@ void CX2GageData::Gage::Increase( const float fIncrement, const float fMinimum /
 	if( fNow < fMinimum )
 		fNow = fMinimum;
 
-	THEMIDA_ENCODE_END
 }
 /*virtual*/ void CX2GageData::DetonationFrameMove( double fTime, float fElapsedTime )
 {

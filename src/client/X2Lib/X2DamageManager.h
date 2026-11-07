@@ -1043,10 +1043,8 @@ class CX2DamageManager
 				Init();
 			}
 
-			DamageData( const DamageData& rhs )
-			{
-				*this = rhs;
-			}
+			DamageData( const DamageData& ) = default;
+			DamageData& operator=( const DamageData& ) = default;
 
 //{{ robobeg : 2013-09-17
             bool    IsAttackedByMyUnit();
@@ -1150,7 +1148,7 @@ class CX2DamageManager
 
 		wstring GetExtraDamageName( CX2DamageManager::EXTRA_DAMAGE_TYPE extraDamageType, bool bTwoLine = false );
 
-		void CX2DamageManager::SetExtraDamageData( DamageData* pDamageData, bool bApplyEffect,
+		void SetExtraDamageData( DamageData* pDamageData, bool bApplyEffect,
 			CX2DamageManager::EXTRA_DAMAGE_TYPE edtType, float fRate, float fTime, float fDamage,
 			float fExtraDamage = 0.f, int iLevel = -1, bool bIgnoreResist = false,
 			float fDamageRate = 0.f, float fRunJumpRate = 0.f, float fAnimSpeedRate = 0.f );

@@ -4502,7 +4502,7 @@ void	CX2GUChung::AppendEffectToDeviceList( CKTDXDeviceDataList& listInOut_, CX2D
 */
 /*virtual*/ void CX2GUChung::InitEnchantWeaponEffectUnitSpecific()
 {
-	BOOST_TEST_FOREACH( Weapon*, pWeapon, m_vecpWeapon )
+	for( Weapon* pWeapon : m_vecpWeapon )
 	{
 		ASSERT( NULL != pWeapon );
 		pWeapon->InitEnchantParticleForSword();	// �ӽ�
@@ -4791,7 +4791,7 @@ void CX2GUChung::CommonFrameMove()
 	} // if
 
 	// ����ȭ ��忡 ���̴� ���� frameMove ������
-	BOOST_TEST_FOREACH( CX2EqipPtr, pPromotionEquipPtr, m_vecPromotionEquipList )
+	for( CX2EqipPtr pPromotionEquipPtr : m_vecPromotionEquipList )
 	{
 		pPromotionEquipPtr->SetRenderParam( m_fTime, m_fElapsedTime, m_pXSkinAnim->GetRenderParam() );
 		pPromotionEquipPtr->OnFrameMove( m_fTime, m_fElapsedTime );
@@ -5383,7 +5383,7 @@ void CX2GUChung::InitPromotionEquipList()
 {
 	m_vecPromotionEquipList.reserve( m_vecPromotionItemIDList.size() );
 
-	BOOST_TEST_FOREACH( int, iItemID, m_vecPromotionItemIDList )
+	for( int iItemID : m_vecPromotionItemIDList )
 	{
 		CX2EqipPtr pEquipPtr = CX2ItemManager::CreateDummyEquip( iItemID, GetUnit(), m_pXSkinAnim );
 		pEquipPtr->SetShowObject( false );
@@ -5729,7 +5729,7 @@ bool CX2GUChung::IsThisStateCanBeChangedToGuardStateOnHit()
 
 	if ( IsRecursivelyManagedByDGManager() )
 	{
-		BOOST_TEST_FOREACH( CX2EqipPtr, pEquipPtr, m_vecPromotionEquipList )
+		for( CX2EqipPtr pEquipPtr : m_vecPromotionEquipList )
 		{
 			if ( pEquipPtr != NULL )
 				refInManager_.AddObjectChain( pEquipPtr.get() );
@@ -5737,7 +5737,7 @@ bool CX2GUChung::IsThisStateCanBeChangedToGuardStateOnHit()
 	}
 	else
 	{
-		BOOST_TEST_FOREACH( CX2EqipPtr, pEquipPtr, m_vecPromotionEquipList )
+		for( CX2EqipPtr pEquipPtr : m_vecPromotionEquipList )
 		{
 			if ( pEquipPtr != NULL )
 				refInManager_.RemoveObjectChain( pEquipPtr.get() );
@@ -5752,7 +5752,7 @@ bool CX2GUChung::IsThisStateCanBeChangedToGuardStateOnHit()
 void CX2GUChung::SetShowPromotionEquips( bool bShow_ )
 {
 	// ���θ�� ��� ������ ��
-	BOOST_TEST_FOREACH( CX2EqipPtr, pEquipPtr, m_vecPromotionEquipList )
+	for( CX2EqipPtr pEquipPtr : m_vecPromotionEquipList )
 	{
 		if ( pEquipPtr != NULL )
 		{
@@ -5792,7 +5792,7 @@ void CX2GUChung::SetShowPromotionEquips( bool bShow_ )
 */
 void CX2GUChung::SetShowOriginalViewList( bool bShow_ )
 {
-	BOOST_TEST_FOREACH( CX2EqipPtr, pViewEquipPtr, m_ViewEqipList )
+	for( CX2EqipPtr pViewEquipPtr : m_ViewEqipList )
 	{
 		if ( pViewEquipPtr != NULL )
 		{
@@ -9164,7 +9164,7 @@ void CX2GUChung::AttackDashJumpXStartFuture()
 	{
 		// Speed_Time�� 1/4���δ�.
 		const float REF_ONE_FORTH = 0.25f;
-		BOOST_TEST_FOREACH( TIME_SPEED&, Factor, m_vecSpeedFactor )
+		for( TIME_SPEED& Factor : m_vecSpeedFactor )
 		{
 			Factor.vSpeed.x *= REF_ONE_FORTH;
 			Factor.vSpeed.y *= REF_ONE_FORTH;
@@ -18079,14 +18079,14 @@ void CX2GUChung::DeleteMinorParticle()
 		GetChungGageData()->SetCannonBallChanged( true );
 
 
-		BOOST_TEST_FOREACH( CX2EqipPtr, pEquipPtr, m_vecPromotionEquipList )
+		for( CX2EqipPtr pEquipPtr : m_vecPromotionEquipList )
 		{
 			pEquipPtr->ChangeHyperMode();
 		}
 	}
 	else
 	{
-		BOOST_TEST_FOREACH( CX2EqipPtr, pEquipPtr, m_ViewEqipList )
+		for( CX2EqipPtr pEquipPtr : m_ViewEqipList )
 		{
 			pEquipPtr->ChangeHyperMode();
 		}
@@ -18103,7 +18103,7 @@ void CX2GUChung::DeleteMinorParticle()
 	// ����ȭ ����ε�, �����ð��� �� �Ǿ�����
 	if ( IsFullHyperMode() )
 	{
-		BOOST_TEST_FOREACH( CX2EqipPtr, pEquipPtr, m_vecPromotionEquipList )
+		for( CX2EqipPtr pEquipPtr : m_vecPromotionEquipList )
 		{
 			pEquipPtr->ChangeNormalMode();
 		}
@@ -18120,14 +18120,14 @@ void CX2GUChung::DeleteMinorParticle()
 		// ����ȭ�� ������ ĳ������ Ǯ ���� ������
 		SetCannonBallCount( GetChungGageData()->GetMaxCannonBallCount() );
 
-		BOOST_TEST_FOREACH( CX2EqipPtr, pEquipPtr, m_vecPromotionEquipList )
+		for( CX2EqipPtr pEquipPtr : m_vecPromotionEquipList )
 		{
 			pEquipPtr->ChangeNormalMode();
 		}
 	}
 	else
 	{
-		BOOST_TEST_FOREACH( CX2EqipPtr, pEquipPtr, m_ViewEqipList )
+		for( CX2EqipPtr pEquipPtr : m_ViewEqipList )
 		{
 			pEquipPtr->ChangeNormalMode();
 		}

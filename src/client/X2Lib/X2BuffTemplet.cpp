@@ -107,7 +107,7 @@ bool CX2BuffTemplet::ParsingScript( KLuaManager& luaManager_ )
 bool CX2BuffTemplet::SetFactor( const CX2BuffFactor& buffFactor_, CX2GameUnit* pGameUnit_ )
 {
 	/// 행동조건 셋팅
-	BOOST_FOREACH( CX2BuffBehaviorTempletPtr ptrBehavior, m_vecBehaviorPtr )
+	for( CX2BuffBehaviorTempletPtr ptrBehavior : m_vecBehaviorPtr )
 	{
 		if ( NULL != ptrBehavior && ptrBehavior->SetFactor( buffFactor_, pGameUnit_, this ) )
 			ptrBehavior->SetStart( true );	/// 정상 실행
@@ -123,7 +123,7 @@ bool CX2BuffTemplet::SetFactor( const CX2BuffFactor& buffFactor_, CX2GameUnit* p
 		IncreaseAccumulationCountNow();
 
 	/// 표현조건 셋팅
-	BOOST_FOREACH( CX2BuffDisplayerTempletPtr ptrDisplayer, m_vecDisplayerPtr )
+	for( CX2BuffDisplayerTempletPtr ptrDisplayer : m_vecDisplayerPtr )
 	{
 		if ( NULL != ptrDisplayer )
 		{
@@ -164,7 +164,7 @@ bool CX2BuffTemplet::SetFactorFromPacket( const KBuffFactor& kBuffFactor_, CX2Ga
 	}
 
 	/// 행동조건 셋팅
-	BOOST_FOREACH( CX2BuffBehaviorTempletPtr ptrBehavior, m_vecBehaviorPtr )
+	for( CX2BuffBehaviorTempletPtr ptrBehavior : m_vecBehaviorPtr )
 	{
 		if ( NULL != ptrBehavior && ptrBehavior->SetFactorFromPacketTemplateMothod( kBuffFactor_, pGameUnit_ ) )
 			ptrBehavior->SetStart( true );	/// 정상 실행
@@ -173,14 +173,14 @@ bool CX2BuffTemplet::SetFactorFromPacket( const KBuffFactor& kBuffFactor_, CX2Ga
 	}
 
 	/// 종료조건 셋팅
-	BOOST_FOREACH( CX2BuffFinalizerTempletPtr ptrFinalizer, m_vecFinalizerPtr )
+	for( CX2BuffFinalizerTempletPtr ptrFinalizer : m_vecFinalizerPtr )
 	{
 		if ( NULL != ptrFinalizer && !ptrFinalizer->SetFactorFromPacketTemplateMothod( kBuffFactor_, pGameUnit_ ) )
 			return false;
 	}
 
 	/// 표현조건 셋팅
-	BOOST_FOREACH( CX2BuffDisplayerTempletPtr ptrDisplayer, m_vecDisplayerPtr )
+	for( CX2BuffDisplayerTempletPtr ptrDisplayer : m_vecDisplayerPtr )
 	{
 		if ( NULL != ptrDisplayer )
 		{
@@ -261,7 +261,7 @@ float CX2BuffTemplet::GetAccumulationMultiflier() const
 */
 void CX2BuffTemplet::OnFrameMoveBehavior( CX2GameUnit* pGameUnit_, float fElapsedTime )
 {
-	BOOST_FOREACH( CX2BuffBehaviorTempletPtr ptrBehavior, m_vecBehaviorPtr )
+	for( CX2BuffBehaviorTempletPtr ptrBehavior : m_vecBehaviorPtr )
 	{
 		if ( NULL != ptrBehavior )
         {
@@ -276,7 +276,7 @@ void CX2BuffTemplet::OnFrameMoveBehavior( CX2GameUnit* pGameUnit_, float fElapse
 */
 void CX2BuffTemplet::OnFrameMoveFinalizerAndCheckFinish( CX2GameUnit* pGameUnit_, float fElapsedTime_ )
 {
-	BOOST_FOREACH( CX2BuffFinalizerTempletPtr ptrFinalizer, m_vecFinalizerPtr )
+	for( CX2BuffFinalizerTempletPtr ptrFinalizer : m_vecFinalizerPtr )
 	{
 		if ( NULL != ptrFinalizer )
 		{
@@ -297,7 +297,7 @@ void CX2BuffTemplet::OnFrameMoveDisplayer( CX2GameUnit* pGameUnit_, float fElaps
 {
 	if ( !m_vecDisplayerPtr.empty() )
 	{
-		BOOST_FOREACH( CX2BuffDisplayerTempletPtr ptrDisplayer, m_vecDisplayerPtr )
+		for( CX2BuffDisplayerTempletPtr ptrDisplayer : m_vecDisplayerPtr )
 		{
             ptrDisplayer->OnFrameMove( pGameUnit_, fElapsedTime_ );
 		}
@@ -310,7 +310,7 @@ void CX2BuffTemplet::OnFrameMoveDisplayer( CX2GameUnit* pGameUnit_, float fElaps
 */
 void CX2BuffTemplet::DoFinishBehavior( CX2GameUnit* pGameUnit_ )
 {
-	BOOST_FOREACH( CX2BuffBehaviorTempletPtr ptrBehavior, m_vecBehaviorPtr )
+	for( CX2BuffBehaviorTempletPtr ptrBehavior : m_vecBehaviorPtr )
 	{
 		ptrBehavior->DoFinish( pGameUnit_, this );
 	}
@@ -322,7 +322,7 @@ void CX2BuffTemplet::DoFinishBehavior( CX2GameUnit* pGameUnit_ )
 */
 void CX2BuffTemplet::DoFinishDisplayer( CX2GameUnit* pGameUnit_ )
 {
-	BOOST_FOREACH( CX2BuffDisplayerTempletPtr ptrDisplayer, m_vecDisplayerPtr )
+	for( CX2BuffDisplayerTempletPtr ptrDisplayer : m_vecDisplayerPtr )
 	{
 		ptrDisplayer->DoFinish( pGameUnit_, this );
 	}
@@ -336,12 +336,12 @@ void CX2BuffTemplet::GetFactor( OUT KBuffFactor& kBuffFactor_, const CX2GameUnit
 {
 	if ( !GetDidFinish() )
 	{
-		BOOST_FOREACH( CX2BuffBehaviorTempletPtr ptr, m_vecBehaviorPtr )
+		for( CX2BuffBehaviorTempletPtr ptr : m_vecBehaviorPtr )
 		{
 			ptr->GetFactor( kBuffFactor_.m_vecBuffBehaviorFactors );
 		}
 
-		BOOST_FOREACH( CX2BuffFinalizerTempletPtr ptr, m_vecFinalizerPtr )
+		for( CX2BuffFinalizerTempletPtr ptr : m_vecFinalizerPtr )
 		{
 			ptr->GetFactor( kBuffFactor_.m_vecBuffFinalizerFactors, pGameUnit_ );
 		}
@@ -366,7 +366,7 @@ void CX2BuffTemplet::GetFactor( OUT KBuffFactor& kBuffFactor_, const CX2GameUnit
 bool CX2BuffTemplet::SetFactorToOnlyFinalizer( const CX2BuffFactor& buffFactor_, CX2GameUnit* pGameUnit_ )
 {
 	/// 종료조건 셋팅
-	BOOST_FOREACH( CX2BuffFinalizerTempletPtr ptrFinalizer, m_vecFinalizerPtr )
+	for( CX2BuffFinalizerTempletPtr ptrFinalizer : m_vecFinalizerPtr )
 	{
 		if ( !ptrFinalizer->SetFactor( buffFactor_, pGameUnit_, this ) )
 			return false;
@@ -400,7 +400,7 @@ void CX2BuffTemplet::ChangeFinalizerTempletPtrList( const vector<CX2BuffFinalize
 void CX2BuffTemplet::ReserveToFinish()
 {
 	/// 종료조건 셋팅
-	BOOST_FOREACH( CX2BuffFinalizerTempletPtr ptrFinalizer, m_vecFinalizerPtr )
+	for( CX2BuffFinalizerTempletPtr ptrFinalizer : m_vecFinalizerPtr )
 	{
 		if ( NULL != ptrFinalizer )
 			ptrFinalizer->ReserveToFinish();
@@ -661,7 +661,7 @@ bool CX2AdditionalStatByBuff::VerifyStatFactor()
 {
 	for ( int i = 0; i < BCT_END; i++ )
 	{
-		BOOST_FOREACH( CX2StatFactorByBuffPtr& ptrStatFactor, m_vecStatFactorArray[i] )
+		for( CX2StatFactorByBuffPtr& ptrStatFactor : m_vecStatFactorArray[i] )
 		{
 			if ( NULL != ptrStatFactor && false == ptrStatFactor->Verify() )
 				return false;
@@ -803,7 +803,7 @@ CX2CustomFunctionByBuffPhantomSword::CX2CustomFunctionByBuffPhantomSword( const 
 	}
 
 	m_ThirdBladeMatrixQueue.swap( std::queue<ThirdBladeMatrixPtr>() );
-	m_ThirdBladeDamageDataList.swap( std::list<ThirdBladeDamageDataPtr>() );
+	std::list<ThirdBladeDamageDataPtr>().swap( m_ThirdBladeDamageDataList );
 }
 
 /** @function : FunctionInCommonStateStart
@@ -1242,7 +1242,7 @@ if( damageData_.m_fHpPercentUp <= 0.f &&
 // Ex. 블레이징 하트, 불꽃 개화
 bool CX2BuffTemplet::IsNonControlDebuff ()
 {
-	BOOST_FOREACH( CX2BuffBehaviorTempletPtr ptrBehavior, m_vecBehaviorPtr )
+	for( CX2BuffBehaviorTempletPtr ptrBehavior : m_vecBehaviorPtr )
 	{
 		switch ( ptrBehavior->GetBuffBehaviorType() )
 		{

@@ -811,7 +811,7 @@ void CX2World::StopAllEffectBGM()
 	if( true == m_vecEffectBGM.empty() )
 		return;
 
-	BOOST_FOREACH( CKTDXDeviceSound* pDeviceSound,  m_vecEffectBGM )
+	for( CKTDXDeviceSound* pDeviceSound : m_vecEffectBGM )
 	{
 		pDeviceSound->Stop();
 	}
@@ -821,7 +821,7 @@ void CX2World::PlayAllEffectBGM()
 	if( true == m_vecEffectBGM.empty() )
 		return;
 
-	BOOST_FOREACH( CKTDXDeviceSound* pDeviceSound,  m_vecEffectBGM )
+	for( CKTDXDeviceSound* pDeviceSound : m_vecEffectBGM )
 	{
 		pDeviceSound->Play( true, false );
 	}
