@@ -105,6 +105,8 @@ struct HWND__;
 typedef HWND__* HWND;
 struct HINSTANCE__;
 typedef HINSTANCE__* HINSTANCE, *HMODULE;
+struct HICON__;
+typedef HICON__* HICON, *HCURSOR;   // the client's cursor (CX2Cursor), on SDL outside Windows
 #define HWND_DESKTOP (static_cast<HWND>(nullptr))
 inline BOOL IsWindow(HWND) { return 0; } // no windows exist here
 
