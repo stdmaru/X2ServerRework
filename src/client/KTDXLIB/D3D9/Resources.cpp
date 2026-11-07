@@ -1,6 +1,8 @@
 // Textures and vertex buffers of KTDXLIB's D3D9 device (decision T38): D3D9 formats, locks and their uploads.
 
 #include "Device.h"
+#include "Formats.h"
+#include "Image.h"
 
 #include <algorithm>
 #include <bit>
@@ -8,45 +10,6 @@
 
 namespace x2::d3d9 {
 namespace {
-
-struct FormatInfo {
-    UINT blockBytes = 0;        // bytes per texel, or per 4x4 block
-    bool compressed = false;
-};
-
-FormatInfo Info(D3DFORMAT format)
-{
-    switch (format) {
-    case D3DFMT_A8R8G8B8:
-    case D3DFMT_X8R8G8B8: return {4, false};
-    case D3DFMT_R8G8B8: return {3, false};
-    case D3DFMT_R5G6B5:
-    case D3DFMT_X1R5G5B5:
-    case D3DFMT_A1R5G5B5:
-    case D3DFMT_A4R4G4B4:
-    case D3DFMT_X4R4G4B4:
-    case D3DFMT_A8L8: return {2, false};
-    case D3DFMT_A8:
-    case D3DFMT_L8: return {1, false};
-    case D3DFMT_DXT1: return {8, true};
-    case D3DFMT_DXT2:
-    case D3DFMT_DXT3:
-    case D3DFMT_DXT4:
-    case D3DFMT_DXT5: return {16, true};
-    default: return {};
-    }
-}
-
-UINT Pitch(D3DFORMAT format, UINT width)
-{
-    const FormatInfo info = Info(format);
-    return info.compressed ? std::max(1u, (width + 3) / 4) * info.blockBytes : width * info.blockBytes;
-}
-
-UINT Rows(D3DFORMAT format, UINT height)
-{
-    return Info(format).compressed ? std::max(1u, (height + 3) / 4) : height;
-}
 
 // The x2::render format a D3D9 format is uploaded as: native where the device takes it, else B8G8R8A8 (converted).
 render::TextureFormat RenderFormat(render::Device& device, D3DFORMAT format, render::TextureUsage usage)
@@ -81,11 +44,6 @@ render::TextureFormat RenderFormat(render::Device& device, D3DFORMAT format, ren
     }
 }
 
-std::uint8_t Expand(unsigned value, unsigned bits)
-{
-    return static_cast<std::uint8_t>((value * 255 + ((1u << bits) - 1) / 2) / ((1u << bits) - 1));
-}
-
 // A level's bytes as `to` wants them. Returns `level` itself when no conversion is needed.
 std::span<const std::byte> Convert(D3DFORMAT from, render::TextureFormat to, std::span<const std::byte> level,
                                    UINT texels, std::vector<std::byte>& scratch)
@@ -110,41 +68,7 @@ std::span<const std::byte> Convert(D3DFORMAT from, render::TextureFormat to, std
         return scratch;
     }
     scratch.resize(static_cast<std::size_t>(texels) * 4);
-    auto* out = reinterpret_cast<std::uint8_t*>(scratch.data());
-    for (UINT i = 0; i < texels; ++i) {
-        std::uint8_t b = 0, g = 0, r = 0, a = 255;
-        switch (from) {
-        case D3DFMT_X8R8G8B8: b = in[i * 4]; g = in[i * 4 + 1]; r = in[i * 4 + 2]; break;
-        case D3DFMT_R8G8B8: b = in[i * 3]; g = in[i * 3 + 1]; r = in[i * 3 + 2]; break;
-        case D3DFMT_R5G6B5: {
-            const unsigned v = word(i);
-            r = Expand(v >> 11, 5); g = Expand((v >> 5) & 0x3F, 6); b = Expand(v & 0x1F, 5);
-            break;
-        }
-        case D3DFMT_A1R5G5B5:
-        case D3DFMT_X1R5G5B5: {
-            const unsigned v = word(i);
-            r = Expand((v >> 10) & 0x1F, 5); g = Expand((v >> 5) & 0x1F, 5); b = Expand(v & 0x1F, 5);
-            a = from == D3DFMT_A1R5G5B5 && !(v & 0x8000) ? 0 : 255;
-            break;
-        }
-        case D3DFMT_A4R4G4B4:
-        case D3DFMT_X4R4G4B4: {
-            const unsigned v = word(i);
-            r = Expand((v >> 8) & 0xF, 4); g = Expand((v >> 4) & 0xF, 4); b = Expand(v & 0xF, 4);
-            a = from == D3DFMT_A4R4G4B4 ? Expand(v >> 12, 4) : 255;
-            break;
-        }
-        case D3DFMT_A8: a = in[i]; break;
-        case D3DFMT_L8: r = g = b = in[i]; break;
-        case D3DFMT_A8L8: r = g = b = in[i * 2]; a = in[i * 2 + 1]; break;
-        default: break;
-        }
-        out[i * 4] = b;
-        out[i * 4 + 1] = g;
-        out[i * 4 + 2] = r;
-        out[i * 4 + 3] = a;
-    }
+    image::ToBgra8(from, level, texels, 1, reinterpret_cast<std::uint8_t*>(scratch.data()));
     return scratch;
 }
 

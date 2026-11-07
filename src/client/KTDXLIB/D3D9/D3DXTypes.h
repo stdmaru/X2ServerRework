@@ -474,14 +474,18 @@ struct D3DXIMAGE_INFO {
 #define D3DXERR_INVALIDDATA     static_cast<HRESULT>(0x88760B59L)  // MAKE_DDHRESULT(2905)
 
 #define D3DX_DEFAULT            (static_cast<UINT>(-1))
+#define D3DX_DEFAULT_NONPOW2    (static_cast<UINT>(-2))
+#define D3DX_FROM_FILE          (static_cast<UINT>(-3))
+#define D3DFMT_FROM_FILE        (static_cast<D3DFORMAT>(-3))
 #define D3DX_FILTER_NONE        (1 << 0)
 #define D3DX_FILTER_POINT       (2 << 0)
 #define D3DX_FILTER_LINEAR      (3 << 0)
 #define D3DX_FILTER_TRIANGLE    (4 << 0)
 #define D3DX_FILTER_BOX         (5 << 0)
 
-// The image loaders (.dds, .tga) are the next step: until then these two fail with D3DXERR_INVALIDDATA
-// (docs/porting/client-d3d9.md).
+// .dds, .tga, .png, .jpg and .bmp, recognized by their contents (Image.h; docs/porting/client-d3d9.md#image-files).
+// Sizes 0, D3DX_DEFAULT and D3DX_DEFAULT_NONPOW2 keep the file's (the device takes any size); a format the device does
+// not take becomes A8R8G8B8; pPalette is ignored. Fail with D3DXERR_INVALIDDATA for a file they do not read.
 HRESULT D3DXGetImageInfoFromFileInMemory(const void* pSrcData, UINT srcDataSize, D3DXIMAGE_INFO* pSrcInfo);
 HRESULT D3DXCreateTextureFromFileInMemoryEx(x2::d3d9::Device* pDevice, const void* pSrcData, UINT srcDataSize,
                                             UINT width, UINT height, UINT mipLevels, DWORD usage, D3DFORMAT format,

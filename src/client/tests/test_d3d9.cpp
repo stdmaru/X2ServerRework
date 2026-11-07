@@ -449,7 +449,7 @@ TEST_CASE("d3d9: D3DX texture requirements follow the device's formats")
     CHECK(D3DXCheckTextureRequirements(nullptr, &width, &height, nullptr, 0, &format, D3DPOOL_MANAGED)
           == D3DERR_INVALIDCALL);
 
-    // The image loaders are the next step: loading from memory fails cleanly.
+    // A file that is not an image fails cleanly (the loaders: test_d3dx_texture.cpp).
     x2::d3d9::Texture* texture = reinterpret_cast<x2::d3d9::Texture*>(&device);
     D3DXIMAGE_INFO info{};
     CHECK(FAILED(D3DXGetImageInfoFromFileInMemory("DDS ", 4, &info)));
