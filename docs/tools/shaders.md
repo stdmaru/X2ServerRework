@@ -48,4 +48,4 @@ The generated file has one `x2::GeneratedShader` table per shader (`KTDXLIB/D3D9
 
 | Directory | Shaders | Used by |
 |---|---|---|
-| `src/client/KTDXLIB/D3D9/shaders` | Fixed-function vertex (12 variants) and fragment; 924 KB generated (2026-11-06) | [D3D9 device](../porting/client-d3d9.md) |
+| `src/client/KTDXLIB/D3D9/shaders` | Fixed-function vertex (12 variants) and fragment, the effects' vertex shader (`XRenderer`, 8 variants); `generated/Shaders.inc`, 2216 KB (2026-11-07) | [D3D9 device](../porting/client-d3d9.md) |

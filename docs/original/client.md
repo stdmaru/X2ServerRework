@@ -31,9 +31,9 @@ The ~22 X2Lib files that call `GetDevice()` need individual review.
 | Feature | Use | Replacement |
 |---|---|---|
 | `D3DXLoadMeshFromX` / `...HierarchyFromX`, `ID3DXAnimationController` | `KTDXDeviceXMesh`, `KTDXDeviceXSkinMesh`, `KTDXAnimationController` | custom `.x` parser (text/binary) + skinning; `.x` remains an asset format |
-| `D3DXCreateEffect` | 4 files; 4 `.fx` in `data041.kom`: `XRenderer` (20 techniques), `RenderState` (4), `XPostEffect` (5), `GCSkin` (2), ~68 KB in all; almost all `vs_1_1` with fixed-function pixel stages (`ColorOp`/`AlphaOp`/`FogEnable`), `ps_2_0`/`vs_2_0` only in `XPostEffect`, `ps_1_1` twice in `RenderState` (2026-11-06) | rewrite by hand as modern HLSL (T37); this is **code**, not an asset |
+| `D3DXCreateEffect` | 4 files; 4 `.fx` in `data041.kom`: `XRenderer` (19 techniques), `RenderState` (2), `XPostEffect` (5), `GCSkin` (2), 28 in all, ~68 KB (recounted 2026-11-07); only `XRenderer` has a caller in US/`_SERVICE_` (`CKTDGXRenderer`); almost all `vs_1_1` with fixed-function pixel stages (`ColorOp`/`AlphaOp`/`FogEnable`), `ps_2_0`/`vs_2_0` only in `XPostEffect`, `ps_1_1` twice in `RenderState` (2026-11-06) | rewrite by hand as modern HLSL (T37); this is **code**, not an asset. Done for `XRenderer`: [Effects](../porting/client-d3d9.md#effects-2026-11-07-clienteffects) |
 | `D3DXCreateTextureFromFile`, cube textures | `KTDXDeviceTexture` (from memory, one level; the texture detail option resizes and re-encodes to DXT1/DXT3); no cube map in the assets (2026-11-07) | DDS loader + stb_image, done: [Image files](../porting/client-d3d9.md#image-files-2026-11-07-clientd3dx-textures) |
-| `D3DXCreateFont`, `D3DXCreateSprite` | fonts/UI | FreeType (already used in `KTDGFreeTypeFont`) + 2D batcher |
+| `D3DXCreateFont`, `D3DXCreateSprite` | none: the engine draws text with FreeType (`KTDGFreeTypeFont`) and 2D through its own quads (2026-11-07) | nothing to replace |
 | Fixed-function (`SetRenderState`, `DrawPrimitiveUP`, FVF) | 16 / 21 files | emulate fixed-function pipeline with shaders + dynamic buffers |
 
 ## Other subsystems
