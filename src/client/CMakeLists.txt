@@ -117,9 +117,10 @@ target_include_directories(x2_client_serverprotocol PUBLIC ${CMAKE_CURRENT_SOURC
 target_link_libraries(x2_client_serverprotocol PUBLIC x2::common_net)
 
 # X2Lib, the game (docs/porting/client-x2lib.md). Every file includes stdafx.h -> X2Main.h, which includes the engine and
-# almost every game header. Built in steps (roadmap client/x2lib-build): for now only stdafx.cpp, the header chain.
-# X2UDPPacket.* is the servers' copy (T33), compiled through X2Packet.cpp.
-add_library(x2_client_x2lib STATIC X2Lib/stdafx.cpp)
+# almost every game header. The servers' Common is shared (T33): X2UDPPacket.* compiles through X2Packet.cpp, the packet
+# files through X2ServerPacket.cpp, and NetError.cpp (the original client had its own copy) is listed here.
+file(GLOB X2_CLIENT_X2LIB_SOURCES CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/X2Lib/*.cpp)
+add_library(x2_client_x2lib STATIC ${X2_CLIENT_X2LIB_SOURCES} ${PROJECT_SOURCE_DIR}/src/server/Common/NetError.cpp)
 add_library(x2::client_x2lib ALIAS x2_client_x2lib)
 target_include_directories(x2_client_x2lib PUBLIC ${PROJECT_SOURCE_DIR}/src/server/X2Lib)
 target_link_libraries(x2_client_x2lib PUBLIC x2::client_ktdxlib x2::client_serverprotocol)
