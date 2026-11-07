@@ -21,7 +21,8 @@ everything runs through this layer ([Phase 5](../project/roadmap.md#phase-5--dee
 | `D3D9Types.h` | The vocabulary: `D3DRS_*`, `D3DTSS_*`, `D3DSAMP_*`, `D3DTOP_*`, `D3DTA_*`, `D3DBLEND*`, `D3DCMP_*`, `D3DCULL_*`, `D3DSTENCILOP_*`, `D3DFVF_*`, `D3DPT_*`, `D3DFMT_*`, `D3DPOOL_*`, `D3DUSAGE_*`, `D3DLOCK_*`, `D3DCLEAR_*`, `D3DTS_*`, `D3DLOCKED_RECT`, `D3DRECT`, `D3DSURFACE_DESC`, with d3d9types.h's names and values (enumerations as C enums, flags as macros). The math types come from [`x2/platform/d3dx_math.h`](platform.md) |
 | `Device.h` / `Device.cpp` | `x2::d3d9::Device`: states, frame, clears, draws, pipeline and sampler caches, uploads |
 | `Resources.cpp` | `Texture` (levels, `LockRect`/`UnlockRect`, format conversion), `VertexBuffer` and `IndexBuffer` (`Lock`/`Unlock`, `D3DFMT_INDEX16`/`INDEX32`) |
-| `D3DXTypes.h`, `D3DXTexture.cpp`, `D3DX.cpp` | D3DX's types for the engine (interfaces as plain classes, T38; the D3DX objects keep `AddRef`/`Release`, held by a minimal `CComPtr`) and its functions on the device: `D3DXCheckTextureRequirements` follows `Device::SupportsTextureFormat`, `D3DXCreateTexture` creates on the device, `D3DXGetImageInfoFromFileInMemory`/`D3DXCreateTextureFromFileInMemoryEx` read [image files](#image-files-2026-11-07-clientd3dx-textures). `D3DX.cpp`: reference-counted `D3DXCreateBuffer`, `D3DXFrameDestroy`/`Find`/`NumNamedMatrices`/`CalculateBoundingSphere`; the effect creators fail with `E_NOTIMPL` until their step (2026-11-07). `ID3DXMesh`, `ID3DXSkinInfo`, `ID3DXAnimationSet`/`Keyframed`/`Compressed` and `ID3DXEffect` are declared with the methods the engine calls; `ID3DXLine` is gone (no user) |
+| `D3DXTypes.h`, `D3DXTexture.cpp`, `D3DX.cpp` | D3DX's types for the engine (interfaces as plain classes, T38; the D3DX objects keep `AddRef`/`Release`, held by a minimal `CComPtr`) and its functions on the device: `D3DXCheckTextureRequirements` follows `Device::SupportsTextureFormat`, `D3DXCreateTexture` creates on the device, `D3DXGetImageInfoFromFileInMemory`/`D3DXCreateTextureFromFileInMemoryEx` read [image files](#image-files-2026-11-07-clientd3dx-textures). `D3DX.cpp`: reference-counted `D3DXCreateBuffer`, `D3DXFrameDestroy`/`Find`/`NumNamedMatrices`/`CalculateBoundingSphere`. `ID3DXMesh`, `ID3DXSkinInfo`, `ID3DXAnimationSet`/`Keyframed`/`Compressed` and `ID3DXEffect` are declared with the methods the engine calls; `ID3DXLine` and `D3DXCreateEffect` are gone (no user, 2026-11-07) |
+| `Effect.h` / `Effect.cpp` | [Effects](#effects-2026-11-07-clienteffects): `x2::d3d9::Effect` (`ID3DXEffect` on a description), `XRendererEffect()`, `CreateXRendererEffect` |
 | `Mesh.h` / `Mesh.cpp` | [`ID3DXMesh`](#meshes-2026-11-07-clientx-loader) on the device (`x2::d3d9::Mesh`), FVF element offsets (`DescribeVertex`), point representatives and adjacency; `D3DXCreateMeshFVF`, `D3DXWeldVertices`, `D3DXIntersect` |
 | `XFile.h` / `XFile.cpp` | The [.x file](#x-files-2026-11-07-clientx-loader) reader (`x2::d3d9::xfile`): text, binary, MSZIP, as a tree of data objects |
 | `XMesh.h` / `XMesh.cpp` | A `Mesh` data object as D3DX lays it out (`ReadXMesh`), the materials buffer, `D3DXLoadMeshFromXInMemory`, `D3DXLoadMeshHierarchyFromXInMemory` |
@@ -29,23 +30,29 @@ everything runs through this layer ([Phase 5](../project/roadmap.md#phase-5--dee
 | `Animation.h` / `Animation.cpp` | [Animation](#animation-2026-11-07-clientx-animation): keyframed and compressed sets, `x2::d3d9::AnimationController`, `D3DXCreateAnimationController`, `D3DXFrameRegisterNamedMatrices`, `D3DXCreateKeyframedAnimationSet`, `D3DXCreateCompressedAnimationSet` |
 | `Formats.h` | Texel and block sizes, pitch and rows of the D3D9 formats the device takes (shared by the device and the loaders) |
 | `Image.h`, `Image.cpp`, `ImageConvert.cpp` | The [image files](#image-files-2026-11-07-clientd3dx-textures) (`x2::d3d9::image`) and the texel conversions: BGRA8 to and from every device format, BC1–3 decoding, BC encoding (stb_dxt), D3DX's resize filters. The device's upload conversion uses them too |
-| `Fvf.h` | FVF → element offsets and the vertex shader variant |
-| `GeneratedShader.h`, `shaders/` | The fixed-function HLSL, its manifest and the generated blobs (`generated/FixedFunctionShaders.inc`, [Shaders](../tools/shaders.md), T39) |
+| `Fvf.h` | FVF → element offsets (blend weights and indices, normal, diffuse, texture sets) and the vertex shader variant (fixed function or effect) |
+| `GeneratedShader.h`, `shaders/` | The fixed-function HLSL, XRenderer's vertex HLSL, their manifest and the generated blobs (`generated/Shaders.inc`, [Shaders](../tools/shaders.md), T39) |
 
 ## How a draw is translated
 
 - **States** are cached as D3D9 values (D3D9's defaults at creation). A draw builds a `PipelineKey` from what lives in an
   SDL_GPU pipeline: primitive class, FVF and stride, target formats, cull and fill mode, depth and stencil states, blend
-  states, color write mask, depth bias. Pipelines are cached by key; blend factors are left out of the key while blending
-  is off, stencil states while stencil is off. Viewport, stencil reference and blend factor are dynamic state; texture
-  stage states, the texture factor and the alpha test are uniforms (no new pipeline).
+  states, color write mask, depth bias, and whether an effect's vertex shader is set. Pipelines are cached by key; blend
+  factors are left out of the key while blending is off, stencil states while stencil is off. Viewport, stencil reference
+  and blend factor are dynamic state; texture stage states, the texture factor, fog and the alpha test are uniforms (no
+  new pipeline).
 - **Fixed function** runs on two generated shaders: `FixedFunction.vert.hlsl` (12 variants: pre-transformed `XYZRHW` or
   `XYZ` through world × view × projection, diffuse or not, 0–2 texture coordinate sets) and `FixedFunction.frag.hlsl`
-  (one shader that interprets texture stages 0 and 1 — every `D3DTOP_*` except bump mapping and `PREMODULATE`, the
-  `D3DTA_*` arguments with `COMPLEMENT`/`ALPHAREPLICATE`, `TEXCOORDINDEX` — and the alpha test on 8-bit values). Vertex
-  inputs use fixed locations (`TEXCOORD<n>` = location n): 0 position, 1 diffuse (`D3DCOLOR` read as `UByte4Norm`, swizzled
-  from B, G, R, A), 2 and 3 texture coordinates; other FVF elements (normal, point size, specular, blend weights) are
-  skipped by offset.
+  (one shader that interprets texture stages 0 to 2 — every `D3DTOP_*` except bump mapping and `PREMODULATE`, the
+  `D3DTA_*` arguments with `COMPLEMENT`/`ALPHAREPLICATE`, `TEXCOORDINDEX` 0–2; a disabled stage disables the ones after
+  it —, vertex fog (`D3DRS_FOGENABLE`/`FOGCOLOR` with the vertex's fog factor; the fixed-function vertex shader gives 1,
+  no fog) and the alpha test on 8-bit values). Vertex inputs use fixed locations (`TEXCOORD<n>` = location n): 0
+  position, 1 diffuse (`D3DCOLOR` read as `UByte4Norm`, swizzled from B, G, R, A), 2 and 3 texture coordinates; other
+  FVF elements (normal, point size, specular, blend weights) are skipped by offset.
+- **An effect's vertex shader** (set by an [effect](#effects-2026-11-07-clienteffects)) replaces the fixed-function one;
+  the pixel stage stays fixed function, as in the `.fx`. Its inputs: 0 position, 2 the first texture coordinates, 4 blend
+  weights (1–3 floats), 5 blend indices (`UByte4`, the position's last DWORD with `LASTBETA_UBYTE4`/`_D3DCOLOR`),
+  6 normal.
 - **Half-pixel offset**: D3D9 puts pixel centers on integers, modern APIs on halves. Pre-transformed vertices move
   +0.5 pixel before going back to clip space; transformed ones move by (1/width, −1/height) × w in clip space. The GPU test
   checks that a D3D9-style quad at −0.5 maps texels to pixels exactly.
@@ -103,9 +110,9 @@ What the engine sets and reads back but the fixed-function shaders do not use ye
 
 - **Material and lights**: `SetMaterial`/`GetMaterial` (zeroed at first), `SetLight`/`GetLight`/`LightEnable`/
   `GetLightEnable` for up to 1,024 lights; enabling a light never set gives D3D9's default (white, directional, +z).
-- **Shaders and vertex declarations**: no such objects exist (the effects become KTDXLIB's own shaders, T37); setting one
-  is ignored, getting one gives null. `IDirect3DVertexDeclaration9`/`VertexShader9`/`PixelShader9` are declared only as
-  interfaces.
+- **Pixel shaders and vertex declarations**: no such objects exist (the effects are KTDXLIB's own shaders, T37); setting
+  one is ignored, getting one gives null. `IDirect3DVertexDeclaration9`/`PixelShader9` are declared only as interfaces;
+  `IDirect3DVertexShader9` is the [effects'](#effects-2026-11-07-clienteffects) `x2::d3d9::VertexShader`.
 - `GetAvailableTextureMem` reports a fixed 512 MB (the backend does not say); `EvictManagedResources` does nothing.
 - `UpdateTexture(source, destination)` copies the levels both textures have from the source's CPU copy and uploads them
   (same size and format); `Texture::AddDirtyRect` is accepted (whole levels are copied).
@@ -224,8 +231,8 @@ T38). What the engine calls (`CKTDXDeviceXMesh` for `.x` and KOG's `.kme`, `KTDX
 `CKTDXDeviceXSkinMesh` loads skinned `.x` files through `D3DXLoadMeshHierarchyFromXInMemory` and its own allocator,
 and KOG's KSM files with `D3DXCreateMeshFVF` + `D3DXCreateSkinInfoFVF`; both then go through `Optimize` (with the
 vertex remap), `ID3DXSkinInfo::Remap` and `ConvertToIndexedBlendedMesh` (a palette of 20), and are cloned to
-`XYZB4 | NORMAL | TEX1 | LASTBETA_UBYTE4`. Drawing them uses the matrix palette in the effects (T37), which is a later
-step; this one gives the engine its data.
+`XYZB4 | NORMAL | TEX1 | LASTBETA_UBYTE4`. They are drawn through the matrix palette of the
+[effects](#effects-2026-11-07-clienteffects).
 
 - **`D3DXLoadMeshHierarchyFromXInMemory`**: one frame per `Frame` (`CreateFrame`, `FrameTransformMatrix` or identity,
   children in file order), one mesh container per `Mesh` with faces (`CreateMeshContainer`: the mesh in the file's FVF,
@@ -316,6 +323,53 @@ second; no D3DX compressed data); 5,466 `.x` files have 7,295 animation sets (ke
 | Tracks and events of the `.x` controller | *Assumed* 2 tracks, 30 events | The same as the KSM path | The engine uses tracks 0 and 1 |
 | A second frame of the same name | *Not known* | The first one is the output | The load would otherwise fail |
 
+## Effects (2026-11-07, `client/effects`)
+
+The client's `.fx` effects are rewritten by hand (decision [T37](../project/decisions.md#accepted)); the `.fx` in the
+`.kom` are not read. Of the four, only `XRenderer.fx` has a caller in US/`_SERVICE_` (2026-11-07):
+
+| `.fx` (`data041.kom`) | Techniques | Caller | Port |
+|---|---|---|---|
+| `XRenderer` | 19 | `CKTDGXRenderer` (every `.x` mesh and skinned mesh the engine draws) | rewritten |
+| `RenderState` | 2 | `CKTDGGrayScale`, never instantiated (commented out in `CKTDGManager`) | not ported; the class removed |
+| `XPostEffect` | 5 (`ps_2_0`) | `CKTDGPostEffect`, compiled out (`ADD_POSTEFFECT`, not defined; the imported file was empty) | not ported; the class removed |
+| `GCSkin` | 2 | none (listed only in the `XFileCompare` tool's project) | not ported |
+
+- **`x2::d3d9::Effect`** implements `ID3DXEffect` as `CKTDGXRenderer` calls it, on an `EffectDescription` written from the
+  `.fx` (`XRendererEffect()` in `Effect.cpp`): techniques of passes, each a list of D3D9 states (render, texture stage,
+  sampler), a vertex shader array, and whether it sets fog. `CKTDGXRenderer::OnResetDevice` calls
+  `CreateXRendererEffect` instead of loading the `.fx` and `D3DXCreateEffect`. Handles are the names the effect holds
+  (names work as handles too, as in D3DX).
+- **Parameters** are the vertex shader constant registers `XRenderer.vert.hlsl` reads (`kEffectRegisters`, 97): the
+  palette of 20 matrices in c0–c79, `g_mViewProj` c80, `g_mWorldViewProj` c84, the vectors c88–c94, the floats packed in
+  c95–c96 — matrices as D3DX's rows (the HLSL is `row_major`). `g_iShaderIndex`, `g_bFog` and `g_fColor` live in the
+  effect: only states use them.
+- **Passes**, as D3DX with a state manager: `BeginPass` sets the pass's states through `CKTDGEffectStateManager` (which
+  pushes them for `RestoreEffectState`), the vertex shader `vsArray[g_iShaderIndex]`, the fog states
+  (`FogEnable = g_bFog`, `FogVertexMode = Linear`, `FogColor = g_fColor`) and every register with
+  `SetVertexShaderConstantF` (the manager caches them; `CKTDGXRenderer` flushes them with `PostCommitChanges`).
+  `CommitChanges` sets the registers changed since and the states that depend on parameters again (the shader of the
+  index, fog). A shader index past its array fails the pass.
+- **Vertex shaders**: the `.fx`'s 80 `vs_1_1` shaders are one program, `XRenderer.vert.hlsl`; the device's
+  `VertexShader` objects (`Device::CreateVertexShader`, owned by the effect) hold which one: the kind (real color,
+  cartoon, black edge, color edge, light flow in world or local space), the bones (0: the world matrix in palette slot 0;
+  1–4 blended, the fourth weight being what the others leave), fog, and the light flow's axis, pushed as a second uniform
+  block with the half-pixel offset. Its 8 variants follow the FVF (blend data, normal, texture coordinates).
+- **The device** for them: `SetVertexShader`/`GetVertexShader` (no reference counts, so the state manager no longer
+  releases it), effect vertex layouts, a third texture stage (`CKTDGXRenderer` sets stage 2 for the XET's multi-textures),
+  and vertex fog in the fragment shader. A clear drawn as quads runs fixed function, without fog.
+
+### Behavior changes and assumptions
+
+| Where | D3DX / D3D9 | Port | Why |
+|---|---|---|---|
+| `Begin` without `D3DXFX_DONOTSAVE*` | Saves and restores the states the technique sets | Nothing saved | `CKTDGXRenderer` always passes the three flags and restores through the state manager |
+| `SetStateManager` | Takes a reference, released with the effect | No reference | `CKTDGEffectStateManager::Release` deletes it, and `X2.cpp` releases it itself |
+| Outputs a `.fx` shader leaves unwritten (the black edge's color, the light flow's fog) | *Assumed* white color, coordinates 0, no fog | The same | To confirm against the original client when the engine renders |
+| A skinned shader index on a vertex without blend data | Undefined (the shader reads missing inputs) | The world matrix (palette slot 0) | The engine selects bones only for skinned containers |
+| Blend indices | `D3DCOLOR` declared by the engine, read through `D3DCOLORtoUBYTE4` | The bytes as `UByte4` | The same indices, in memory order |
+| The fog factor of `vs_1_1`'s `oFog` | Clamped to 0–1 by the rasterizer | Clamped in the fragment shader | Same result |
+
 ## DXUT and the skeleton
 
 The [DXUT replacement](client-dxut.md) creates the device with the window, passes it to the `FrameMove`/`FrameRender`
@@ -324,10 +378,11 @@ callbacks and calls `Present` after `FrameRender`, as DXUT did; `DXUTGetD3DDevic
 
 ## Not emulated yet (2026-11-07)
 
-Lighting with materials (stored, see above; `D3DRS_LIGHTING` is on by default, but lit geometry goes through the effects, T37), fog, specular,
-point sprites and point sizes, texture transforms, stages 2–7, `D3DTA_TEMP`/`RESULTARG`, bump mapping, border and
-mirror-once addressing (mapped to clamp and mirror), the scissor test, `DrawIndexedPrimitiveUP` and indexed fans,
-vertex declarations and programmable shaders (`SetVertexShader`/`SetPixelShader`), `StretchRect`,
+Lighting with materials (stored, see above; `D3DRS_LIGHTING` is on by default, but lit geometry goes through the
+effects, T37), fixed-function fog (vertex fog from the effects is drawn; `D3DRS_FOGTABLEMODE` and fixed-function
+vertex fog are not), specular, point sprites and point sizes, texture transforms, stages 3–7, `D3DTA_TEMP`/`RESULTARG`,
+bump mapping, border and mirror-once addressing (mapped to clamp and mirror), the scissor test,
+`DrawIndexedPrimitiveUP` and indexed fans, vertex declarations and pixel shaders (`SetPixelShader`), `StretchRect`,
 `GetRenderTargetData`, surfaces, `SetDepthStencilSurface`, `D3DPOOL_DEFAULT` semantics (every non-target texture is
 lockable), state blocks. Each comes with the engine file that needs it.
 
@@ -353,7 +408,7 @@ lockable), state blocks. Each comes with the engine file that needs it.
   device at every detail level.
 - `test_d3dx.cpp` (`-tc="d3dx*"`, and the two `d3d9:` cases below): the material and lights with D3D9's default light,
   `UpdateTexture`'s copy and refusals, buffers and `CComPtr` reference counts, frame search/count/destroy through the
-  allocator, `D3DXCreateTexture`'s mip chain, the effect creators failing with null outputs.
+  allocator, `D3DXCreateTexture`'s mip chain.
 - `test_d3dx_mesh.cpp` (`-tc="d3d9: indexed*,xfile*,d3dx*"`): indexed draws (16/32-bit, base vertex, bounds, a released
   index buffer unset); `.x` files written in the test as text, binary and MSZIP (one block and blocks leaning on the
   previous one's dictionary), broken ones; `D3DXLoadMeshFromXInMemory` on a framed quad (normal split, materials inline
@@ -376,10 +431,19 @@ lockable), state blocks. Each comes with the engine file that needs it.
   at the rest matrix, interpolation, matrix keys and a mirror, no controller without sets, an unknown key type). With
   `X2_MASSFILE_CLIENT_DATA`, every `.x` with animation sets loads with its controller and every set plays (about
   2 minutes in the debug build): 5,466 files, 7,295 sets on 2026-11-07, and the rest-matrix count above.
+- `test_d3dx_effect.cpp` (`-tc="d3dx*"`): XRenderer's 19 techniques (pass counts) and 19 parameters by name and
+  handle; passes applying their states and selecting their shader (the index and fog reach the device at
+  `CommitChanges`, an index past its array fails, light flow arrays of five); parameters in the registers (rows,
+  packed floats, `CommitChanges` writing only what changed, a new pass writing everything); a skinned draw on the null
+  backend with the bytes it pushes (registers, program and half-pixel offset, fog in the fragment block) and the
+  fixed-function draw after it.
+- `test_ktdxlib.cpp`: `CKTDGXRenderer` on its effect through `CKTDGEffectStateManager` (a pass's states and shader, the
+  constants flushed by the manager, the device restored after the render, a two-pass render group).
 - `test_ktdxlib.cpp`, with `X2_MASSFILE_CLIENT_DATA`: every skinned mesh of the client loaded by
   `CKTDXDeviceXSkinMesh` itself, textures included, and every set of a clone of its controller played. On
   2026-11-07: 8,687 skinned meshes (7,600 `.x` with `SkinWeights`, 1,087 KSM — named `.x` too), all loaded (hierarchy
-  or KSM frames and KAC controller, optimize, remap, indexed blended mesh); 1,576 animated, 19,926 sets. The engine logs
+  or KSM frames and KAC controller, optimize, remap, indexed blended mesh); 1,576 animated, 19,926 sets. Each is then drawn by `CKTDGXRenderer` with `RT_CARTOON_BLACK_EDGE` (two
+  passes): 32,074 draws, no mesh drawing nothing, no device error (2 m 34 s in the debug build). The engine logs
   `OpenXET` failures for meshes with no `.xet` side file (most of them; it is optional) into `ErrorLog.txt` in the
   working folder.
 - **On a GPU** (skipped without video or GPU, as in the container and CI): renders into a 16×16 target and reads it back —

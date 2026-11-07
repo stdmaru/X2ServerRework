@@ -20,7 +20,7 @@
 #include <vector>
 
 namespace generated {
-#include "shaders/generated/FixedFunctionShaders.inc"
+#include "shaders/generated/Shaders.inc"
 }
 
 namespace {
@@ -103,7 +103,13 @@ TEST_CASE("d3d9: the generated shaders match their sources (tools/shaders/compil
         CHECK(shader.samplerCount == 0);
         CHECK(shader.uniformBufferCount == 1);
     }
-    CHECK(generated::kFixedFunctionFragment[0].samplerCount == 2);
+    CHECK(std::size(generated::kEffectVertex) == 8);
+    for (const x2::GeneratedShader& shader : generated::kEffectVertex) {
+        CHECK(shader.samplerCount == 0);
+        CHECK(shader.uniformBufferCount == 2);  // the registers and the program
+    }
+    CHECK(generated::kFixedFunctionFragment[0].samplerCount == 3);
+    CHECK(generated::kFixedFunctionFragment[0].uniformBufferCount == 1);
 }
 
 TEST_CASE("d3d9: FVF layouts and shader variants")

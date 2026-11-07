@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "./KTDGXRenderer.h"
 
+#include "Effect.h"
+
 
 #undef  EPHANDLE
 #define EPHANDLE(x) (m_ahEffectParameters[ CKTDGXRenderer::EP_##x ])
@@ -1062,40 +1064,13 @@ HRESULT CKTDGXRenderer::OnResetDevice()
 	HRESULT hr = 0;
 	if( m_pEffect == NULL )
 	{
-		KGCMassFileManager::CMassFile::MASSFILE_MEMBERFILEINFO_POINTER Info;
-		Info = g_pKTDXApp->GetDeviceManager()->GetMassFileManager()->LoadDataFile( L"XRenderer.fx" );
-		if( Info == NULL )
-		{
-			ErrorLogMsg( KEM_ERROR49, "XRenderer.fx" );
-			return E_FAIL;
-		}
-
-#if X2_DEV_TOOLS
-		LPD3DXBUFFER pErr = NULL;
-		if(FAILED(hr = D3DXCreateEffect( g_pKTDXApp->GetDevice(), Info->pRealData, Info->size,
-			NULL, NULL, D3DXFX_NOT_CLONEABLE, NULL, &m_pEffect, &pErr )))
-
-			//if(FAILED(hr = D3DXCreateEffectFromFileA( g_pKTDXApp->GetDevice(), "dat/System/FX/XSkinRenderer.fx",
-			//	NULL, NULL, D3DXSHADER_DEBUG | D3DXSHADER_SKIPOPTIMIZATION | D3DXFX_NOT_CLONEABLE, NULL, &m_pEffect, NULL )))
-		{
-			ErrorLog( KEM_ERROR50 );
-			SAFE_RELEASE( m_pEffect );
-
-			MessageBoxA(NULL, (LPCSTR)pErr->GetBufferPointer(), "Failed CreateEffect XRender", 0);
-			return hr;
-		}
-#else
-		if(FAILED(hr = D3DXCreateEffect( g_pKTDXApp->GetDevice(), Info->pRealData, Info->size,
-			NULL, NULL, D3DXFX_NOT_CLONEABLE, NULL, &m_pEffect, NULL )))
-
-		//if(FAILED(hr = D3DXCreateEffectFromFileA( g_pKTDXApp->GetDevice(), "dat/System/FX/XSkinRenderer.fx",
-		//	NULL, NULL, D3DXSHADER_DEBUG | D3DXSHADER_SKIPOPTIMIZATION | D3DXFX_NOT_CLONEABLE, NULL, &m_pEffect, NULL )))
+		// XRenderer.fx is rewritten as KTDXLIB's own effect (T37); the .fx in the .kom is not read.
+		if(FAILED(hr = x2::d3d9::CreateXRendererEffect( g_pKTDXApp->GetDevice(), &m_pEffect )))
 		{
 			ErrorLog( KEM_ERROR50 );
 			SAFE_RELEASE( m_pEffect );
 			return hr;
 		}
-#endif
 
         ASSERT( g_pEffectStateManager != NULL );
         hr = m_pEffect->SetStateManager( g_pEffectStateManager );

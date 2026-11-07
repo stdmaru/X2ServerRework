@@ -235,10 +235,16 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
         32 loading-screen triplets became `CKTDXApp::RenderStageNow` (T38) (2026-11-06). See
         [KTDXLIB › Whole engine](../porting/client-ktdxlib.md#whole-engine-2026-11-06-clientktdxlib-build). What the device
         still lacks comes with the file that needs it ([list](../porting/client-d3d9.md#not-emulated-yet-2026-11-07)).
-- [ ] Effects: the 4 `.fx` (31 techniques) rewritten by hand as HLSL in `src/`, compiled by shadercross, behind `KTDXLIB`'s effect
-      API (T37).
+- [x] `client/effects`: `XRenderer.fx` (19 techniques, its 80 `vs_1_1` shaders as one HLSL program in 8 variants)
+      rewritten by hand, compiled by shadercross, as `ID3DXEffect` on the device (vertex shaders, a third texture
+      stage, vertex fog); `CKTDGXRenderer` draws the client's skinned meshes through it headless. The other three `.fx`
+      have no caller in US/`_SERVICE_` and are not ported (28 techniques in all, recounted 2026-11-07). See
+      [D3D9 device › Effects](../porting/client-d3d9.md#effects-2026-11-07-clienteffects).
+- [ ] `client/x2lib-build`: `X2Lib` (270 `.cpp`, 547 files) and `X2.cpp` compile and link on KTDXLIB and the device,
+      warning-free on GCC, Clang and clang-cl, split into sequential branches if large. See [Client: X2Lib](../porting/client-x2lib.md).
 - [ ] Reimplement the rest of D3DX on the original assets (T1, T37): `.x` loader (mesh + skin + animation), `.dds` (BC1–3 native,
-      legacy formats to RGBA8), fonts, sprites.
+      legacy formats to RGBA8). Fonts and sprites dropped: the engine uses neither `ID3DXFont` nor `ID3DXSprite`
+      (2026-11-07).
   - [x] `client/d3dx-textures`: `.dds` (BC1–3 copied, legacy formats, mips), `.tga` and the disguised `.png`/`.jpg`/`.bmp`
         through stb_image, recognized by contents; BC decoding, D3DX's filters and stb_dxt encoding for the Medium/Low
         texture detail; all 57,793 textures of the client decode but 3 D3DX could not read either (2026-11-07). See

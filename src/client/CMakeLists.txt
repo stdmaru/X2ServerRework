@@ -32,7 +32,7 @@ endif()
 # KTDXLIB's D3D9 device: the engine's D3D9 calls translated onto x2::render (decisions T36 (5), T38), with
 # fixed-function shaders compiled offline (T39, D3D9/shaders). docs/porting/client-d3d9.md
 add_library(x2_client_d3d9 STATIC KTDXLIB/D3D9/Animation.cpp KTDXLIB/D3D9/Device.cpp KTDXLIB/D3D9/D3DX.cpp KTDXLIB/D3D9/D3DXTexture.cpp
-    KTDXLIB/D3D9/Image.cpp KTDXLIB/D3D9/ImageConvert.cpp KTDXLIB/D3D9/Mesh.cpp KTDXLIB/D3D9/Resources.cpp
+    KTDXLIB/D3D9/Effect.cpp KTDXLIB/D3D9/Image.cpp KTDXLIB/D3D9/ImageConvert.cpp KTDXLIB/D3D9/Mesh.cpp KTDXLIB/D3D9/Resources.cpp
     KTDXLIB/D3D9/SkinInfo.cpp KTDXLIB/D3D9/XFile.cpp KTDXLIB/D3D9/XMesh.cpp)
 add_library(x2::client_d3d9 ALIAS x2_client_d3d9)
 target_include_directories(x2_client_d3d9 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/KTDXLIB/D3D9)
@@ -70,9 +70,9 @@ add_library(x2_client_ktdxlib STATIC
     KTDXLIB/KSuperAssert.cpp KTDXLIB/KSystemTimer.cpp KTDXLIB/KTDGCamera.cpp KTDXLIB/KTDGDynamicTexture.cpp
     KTDXLIB/KTDGDynamicVBManager.cpp KTDXLIB/KTDGEffectStateManager.cpp KTDXLIB/KTDGFontManager.cpp
     KTDXLIB/KTDGFontUtil.cpp KTDXLIB/KTDGFreeTypeFont.cpp KTDXLIB/KTDGFrustum.cpp KTDXLIB/KTDGGlow.cpp
-    KTDXLIB/KTDGGrayScale.cpp KTDXLIB/KTDGLensFlare.cpp KTDXLIB/KTDGLineMap.cpp KTDXLIB/KTDGManager.cpp
+    KTDXLIB/KTDGLensFlare.cpp KTDXLIB/KTDGLineMap.cpp KTDXLIB/KTDGManager.cpp
     KTDXLIB/KTDGMatrix.cpp KTDXLIB/KTDGMotionBlur.cpp KTDXLIB/KTDGObject.cpp KTDXLIB/KTDGParticleSystem.cpp
-    KTDXLIB/KTDGPicChar.cpp KTDXLIB/KTDGPlanShadow.cpp KTDXLIB/KTDGPostEffect.cpp KTDXLIB/KTDGSkyDome.cpp
+    KTDXLIB/KTDGPicChar.cpp KTDXLIB/KTDGPlanShadow.cpp KTDXLIB/KTDGSkyDome.cpp
     KTDXLIB/KTDGSlashTrace.cpp KTDXLIB/KTDGStateManager.cpp KTDXLIB/KTDGTargetArrow.cpp KTDXLIB/KTDGUIButton.cpp
     KTDXLIB/KTDGUICheckBox.cpp KTDXLIB/KTDGUIComboBox.cpp KTDXLIB/KTDGUIControl.cpp KTDXLIB/KTDGUIControlList.cpp
     KTDXLIB/KTDGUIDialog.cpp KTDXLIB/KTDGUIDialogHandle.cpp KTDXLIB/KTDGUIDialogManager.cpp

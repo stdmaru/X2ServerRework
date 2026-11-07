@@ -1,6 +1,5 @@
-// D3DX's buffers, frame hierarchies and effects on KTDXLIB's D3D9 device (decision T38). Buffers and frame hierarchies
-// work; effects fail until the effects on KTDXLIB's own shaders (T37). Meshes are in Mesh.cpp and XMesh.cpp, skin info
-// in SkinInfo.cpp, animation in Animation.cpp. See docs/porting/client-d3d9.md.
+// D3DX's buffers and frame hierarchies on KTDXLIB's D3D9 device (decision T38). Meshes are in Mesh.cpp and XMesh.cpp,
+// skin info in SkinInfo.cpp, animation in Animation.cpp, effects in Effect.cpp. See docs/porting/client-d3d9.md.
 
 #include "D3DXTypes.h"
 #include "Device.h"
@@ -29,15 +28,6 @@ private:
     std::vector<std::byte> m_bytes;
     ULONG m_references = 1;
 };
-
-template <class T>
-HRESULT NotImplemented(T** ppObject)
-{
-    if (ppObject != nullptr) {
-        *ppObject = nullptr;
-    }
-    return E_NOTIMPL;
-}
 
 }  // namespace
 
@@ -145,11 +135,4 @@ HRESULT D3DXFrameCalculateBoundingSphere(const D3DXFRAME* pFrameRoot, D3DXVECTOR
                                      pObjectCenter, pObjectRadius);
 }
 
-HRESULT D3DXCreateEffect(x2::d3d9::Device* /*pDevice*/, LPCVOID /*pSrcData*/, UINT /*SrcDataLen*/,
-                         const D3DXMACRO* /*pDefines*/, ID3DXInclude* /*pInclude*/, DWORD /*Flags*/,
-                         ID3DXEffectPool* /*pPool*/, LPD3DXEFFECT* ppEffect, LPD3DXBUFFER* ppCompilationErrors)
-{
-    NotImplemented(ppCompilationErrors);
-    return NotImplemented(ppEffect);
-}
 

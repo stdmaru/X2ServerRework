@@ -347,6 +347,7 @@ public:
     void Finish(NullCommandBuffer* commands);
 
     std::vector<std::string> m_commands;
+    std::vector<null::PushedUniform> m_uniforms;
     std::unordered_map<std::uint64_t, Resource> m_resources;
 
 private:
@@ -401,11 +402,18 @@ public:
 
     void PushVertexUniformData(std::uint32_t slot, std::span<const std::byte> data) override
     {
-        Record("PushVertexUniformData slot=" + std::to_string(slot) + " bytes=" + std::to_string(data.size()));
+        PushUniform("PushVertexUniformData", ShaderStage::Vertex, slot, data);
     }
     void PushFragmentUniformData(std::uint32_t slot, std::span<const std::byte> data) override
     {
-        Record("PushFragmentUniformData slot=" + std::to_string(slot) + " bytes=" + std::to_string(data.size()));
+        PushUniform("PushFragmentUniformData", ShaderStage::Fragment, slot, data);
+    }
+    void PushUniform(const char* what, ShaderStage stage, std::uint32_t slot, std::span<const std::byte> data)
+    {
+        Record(std::string(what) + " slot=" + std::to_string(slot) + " bytes=" + std::to_string(data.size()),
+               [uniform = null::PushedUniform{stage, slot, {data.begin(), data.end()}}](NullDevice& device) {
+                   device.m_uniforms.push_back(uniform);
+               });
     }
 
     RenderPass* BeginRenderPass(std::span<const ColorTargetInfo> colorTargets,
@@ -1116,7 +1124,15 @@ void ClearCommands(Device& device)
     if (detail::NullDevice* null = AsNull(device)) {
         std::lock_guard lock(null->Mutex());
         null->m_commands.clear();
+        null->m_uniforms.clear();
     }
+}
+
+const std::vector<PushedUniform>& PushedUniforms(Device& device)
+{
+    static const std::vector<PushedUniform> none;
+    detail::NullDevice* null = AsNull(device);
+    return null ? null->m_uniforms : none;
 }
 
 std::span<const std::byte> TextureBytes(Device& device, Texture texture)

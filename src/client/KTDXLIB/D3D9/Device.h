@@ -10,7 +10,8 @@
 //    pipeline (blending, depth/stencil, culling, the vertex layout, the targets' formats) into a key and takes the
 //    pipeline from a cache; the rest is dynamic state (viewport, stencil reference, blend factor) or uniforms.
 //  - Fixed function runs on generated shaders (D3D9/shaders): a vertex shader per FVF shape and one fragment shader
-//    that interprets two texture stages and the alpha test from uniforms.
+//    that interprets three texture stages, fog and the alpha test from uniforms. An effect's vertex shader
+//    (VertexShader, set by x2::d3d9::Effect) replaces the fixed-function one and reads the vertex shader constants.
 //  - D3D9's pixel centers are on integers; the vertex shader moves them half a pixel.
 //  - Triangle fans become indexed triangle lists (a shared fan index buffer).
 //  - A frame is two command buffers: uploads (texture and vertex buffer unlocks, DrawPrimitiveUP data) and draws,
@@ -39,8 +40,35 @@ namespace x2::d3d9 {
 
 class Device;
 
-inline constexpr DWORD kTextureStages = 2;      // stages the fixed-function shader runs (D3D9 has 8)
+inline constexpr DWORD kTextureStages = 3;      // stages the fixed-function shader runs (D3D9 has 8)
 inline constexpr UINT kVertexShaderConstants = 256;  // float registers of vs_2_0 and later
+inline constexpr UINT kEffectRegisters = 97;     // the registers an effect's vertex shader reads (XRenderer.vert.hlsl)
+
+// Which of the effect vertex program's shaders runs (XRenderer.vert.hlsl's Program block).
+struct EffectProgram {
+    enum Kind : int { RealColor, Cartoon, BlackEdge, ColorEdge, FlowWorld, FlowLocal };
+    int kind = RealColor;
+    int bones = 0;      // 0: the world matrix (palette slot 0); 1-4: blended by the palette
+    bool fog = false;   // the shader computes the fog factor (kinds up to ColorEdge)
+    int axis = 0;       // light flow: 0 x, 1 y, 2 z, 3 a point
+};
+
+// IDirect3DVertexShader9 without COM: one of an effect's vertex shaders (T37), created by Device::CreateVertexShader.
+// While one is set, draws run the effect vertex program with the vertex shader constants instead of the
+// fixed-function vertex stage; the pixel stage stays fixed function.
+class VertexShader {
+public:
+    ~VertexShader();
+    VertexShader(const VertexShader&) = delete;
+    VertexShader& operator=(const VertexShader&) = delete;
+    const EffectProgram& Program() const { return m_program; }
+
+private:
+    friend class Device;
+    VertexShader() = default;
+    Device* m_device = nullptr;
+    EffectProgram m_program;
+};
 
 // IDirect3DTexture9 without COM. Lockable textures (managed, system memory, dynamic) keep a CPU copy of every level
 // in their D3D9 format; UnlockRect uploads the level. Render targets have no CPU copy.
@@ -139,7 +167,7 @@ private:
 
 // The pipeline state of a draw as D3D9 values, before translation. Public for tests.
 struct PipelineKey {
-    std::array<std::uint32_t, 28> words{};
+    std::array<std::uint32_t, 29> words{};
     friend bool operator==(const PipelineKey&, const PipelineKey&) = default;
 };
 
@@ -189,8 +217,8 @@ public:
     void SetStreamSource(UINT stream, VertexBuffer* buffer, UINT offset, UINT stride);
     void SetIndices(IndexBuffer* buffer) { m_indices = buffer; }
     IndexBuffer* GetIndices() const { return m_indices; }
-    // Vertex shader float constants (kVertexShaderConstants registers of four floats): kept for the effects (T37),
-    // which will read them; the fixed-function shaders do not. False for registers out of range.
+    // Vertex shader float constants (kVertexShaderConstants registers of four floats): an effect's vertex shader
+    // reads the first kEffectRegisters; the fixed-function shaders do not. False for registers out of range.
     bool SetVertexShaderConstantF(UINT startRegister, const float* data, UINT registerCount);
     bool GetVertexShaderConstantF(UINT startRegister, float* data, UINT registerCount) const;
 
@@ -202,12 +230,14 @@ public:
     bool GetLight(DWORD index, D3DLIGHT9* light) const;
     bool LightEnable(DWORD index, BOOL enable);
     bool GetLightEnable(DWORD index, BOOL* enable) const;
-    // Shaders and vertex declarations: no such objects exist (the effects become KTDXLIB's own shaders, T37), so
+    // Vertex shaders: an effect's (null: fixed function). GetVertexShader adds no reference (T38).
+    std::unique_ptr<VertexShader> CreateVertexShader(const EffectProgram& program);
+    void SetVertexShader(VertexShader* shader) { m_vertexShader = shader; }
+    void GetVertexShader(VertexShader** shader) const;
+    // Pixel shaders and vertex declarations: no such objects exist (the effects are KTDXLIB's own shaders, T37), so
     // setting one is ignored and getting one gives null.
     void SetVertexDeclaration(IDirect3DVertexDeclaration9* declaration);
     void GetVertexDeclaration(IDirect3DVertexDeclaration9** declaration) const;
-    void SetVertexShader(IDirect3DVertexShader9* shader);
-    void GetVertexShader(IDirect3DVertexShader9** shader) const;
     void SetPixelShader(IDirect3DPixelShader9* shader);
     void GetPixelShader(IDirect3DPixelShader9** shader) const;
     // Texture memory: the render backend does not report it, so a fixed 512 MB (the engine only reports the figure);
@@ -247,12 +277,13 @@ public:
     UINT BackBufferHeight() const { return m_backBuffer.height; }
     std::size_t PipelineCount() const { return m_pipelines.size(); }
 
-    // Builds the key a draw with these states would use (tests).
+    // Builds the key a draw with these states (and the vertex shader set) would use (tests).
     PipelineKey MakePipelineKey(D3DPRIMITIVETYPE type, DWORD fvf, UINT stride) const;
 
 private:
     friend class Texture;
     friend class Buffer;
+    friend class VertexShader;
 
     struct Target {
         render::Texture color;
@@ -296,10 +327,12 @@ private:
     render::GraphicsPipeline Pipeline(const PipelineKey& key, DWORD fvf, UINT stride);
     render::Sampler SamplerFor(DWORD stage);
     void PushUniforms(DWORD fvf);
+    void PushFixedFunctionVertexUniforms(float width, float height);
     bool ClearRects(DWORD count, const D3DRECT* rects, DWORD flags, D3DCOLOR color, float z, DWORD stencil);
 
     void ForgetTexture(Texture* texture);
     void ForgetBuffer(Buffer* buffer);
+    void ForgetVertexShader(VertexShader* shader);
     template <class T>
     bool InitBuffer(T& buffer, UINT length, DWORD usage, const char* name);
     bool Fail(std::string message);
@@ -322,6 +355,7 @@ private:
     IndexBuffer* m_indices = nullptr;
     UINT m_streamOffset = 0, m_streamStride = 0;
     std::vector<float> m_vsConstants = std::vector<float>(kVertexShaderConstants * 4, 0.0f);
+    VertexShader* m_vertexShader = nullptr;
     Texture* m_target = nullptr;
     D3DMATERIAL9 m_material{};
     struct Light {
@@ -350,6 +384,7 @@ private:
 
     // Device resources
     std::vector<render::Shader> m_vertexShaders;   // GeneratedShader order (kFixedFunctionVertex)
+    std::vector<render::Shader> m_effectShaders;   // GeneratedShader order (kEffectVertex)
     render::Shader m_fragmentShader;
     render::Texture m_white;
     render::Buffer m_fanIndices;
@@ -357,6 +392,7 @@ private:
     std::unordered_map<std::uint64_t, render::Sampler> m_samplers;
     std::unordered_set<Texture*> m_liveTextures;         // detached if they outlive the device
     std::unordered_set<Buffer*> m_liveBuffers;           // detached if they outlive the device
+    std::unordered_set<VertexShader*> m_liveShaders;     // detached if they outlive the device
 };
 
 }  // namespace x2::d3d9

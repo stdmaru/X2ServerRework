@@ -1,28 +1,38 @@
-// D3D9's fixed-function texture stages and alpha test, for two stages (decision T38). Stage states arrive as
+// D3D9's fixed-function texture stages, fog and alpha test, for three stages (decision T38). Stage states arrive as
 // uniforms with D3D9's values (D3DTOP_*, D3DTA_*, D3DCMP_*), so one shader serves every combination. A stage with no
 // texture samples a white texel (KTDXLIB binds a 1x1 white texture), so MODULATE with no texture gives the diffuse
-// color, as D3D9 does. Not emulated: D3DTA_SPECULAR (0), D3DTA_TEMP and D3DTSS_RESULTARG (always CURRENT), bump
-// mapping, fog.
+// color, as D3D9 does. Fog blends with the vertex's fog factor (an effect's oFog; the fixed-function vertex shader
+// gives 1). Not emulated: D3DTA_SPECULAR (0), D3DTA_TEMP and D3DTSS_RESULTARG (always CURRENT), bump mapping, pixel
+// (table) fog.
 
 Texture2D<float4> texture0 : register(t0, space2);
 SamplerState sampler0 : register(s0, space2);
 Texture2D<float4> texture1 : register(t1, space2);
 SamplerState sampler1 : register(s1, space2);
+Texture2D<float4> texture2 : register(t2, space2);
+SamplerState sampler2 : register(s2, space2);
 
 cbuffer FragmentUniforms : register(b0, space3)
 {
-    int4 colorStage[2];     // D3DTSS_COLOROP, COLORARG1, COLORARG2, COLORARG0
-    int4 alphaStage[2];     // D3DTSS_ALPHAOP, ALPHAARG1, ALPHAARG2, ALPHAARG0
-    int4 texCoordIndex;     // D3DTSS_TEXCOORDINDEX of stages 0 and 1 (0 or 1)
+    int4 colorStage[3];     // D3DTSS_COLOROP, COLORARG1, COLORARG2, COLORARG0
+    int4 alphaStage[3];     // D3DTSS_ALPHAOP, ALPHAARG1, ALPHAARG2, ALPHAARG0
+    int4 texCoordIndex;     // D3DTSS_TEXCOORDINDEX of stages 0 to 2 (0 to 2)
     float4 textureFactor;   // D3DRS_TEXTUREFACTOR
     float4 alphaTest;       // D3DRS_ALPHAFUNC (D3DCMP_ALWAYS when the test is off), D3DRS_ALPHAREF
+    float4 fogColor;        // D3DRS_FOGCOLOR; w: 1 with D3DRS_FOGENABLE, else 0
 };
 
 struct Input
 {
     float4 diffuse : TEXCOORD0;
-    float4 uv : TEXCOORD1;
+    float4 uv : TEXCOORD1;      // xy: set 0, zw: set 1
+    float4 extra : TEXCOORD2;   // xy: set 2, z: fog factor
 };
+
+float2 TexCoords(int set, Input input)
+{
+    return set == 0 ? input.uv.xy : set == 1 ? input.uv.zw : input.extra.xy;
+}
 
 static const int TOP_DISABLE = 1;
 
@@ -107,16 +117,24 @@ bool AlphaTest(int func, float alpha, float reference)
 float4 main(Input input) : SV_Target0
 {
     float4 current = input.diffuse;
+    // A disabled stage disables the ones after it.
     if (colorStage[0].x != TOP_DISABLE) {
-        const float4 texel0 = texture0.Sample(sampler0, texCoordIndex.x == 0 ? input.uv.xy : input.uv.zw);
+        const float4 texel0 = texture0.Sample(sampler0, TexCoords(texCoordIndex.x, input));
         current = Stage(0, current, input.diffuse, texel0);
         if (colorStage[1].x != TOP_DISABLE) {
-            const float4 texel1 = texture1.Sample(sampler1, texCoordIndex.y == 0 ? input.uv.xy : input.uv.zw);
+            const float4 texel1 = texture1.Sample(sampler1, TexCoords(texCoordIndex.y, input));
             current = Stage(1, current, input.diffuse, texel1);
+            if (colorStage[2].x != TOP_DISABLE) {
+                const float4 texel2 = texture2.Sample(sampler2, TexCoords(texCoordIndex.z, input));
+                current = Stage(2, current, input.diffuse, texel2);
+            }
         }
     }
     if (!AlphaTest(int(alphaTest.x), current.a, alphaTest.y)) {
         discard;
+    }
+    if (fogColor.w != 0.0) {
+        current.rgb = lerp(fogColor.rgb, current.rgb, saturate(input.extra.z));
     }
     return current;
 }

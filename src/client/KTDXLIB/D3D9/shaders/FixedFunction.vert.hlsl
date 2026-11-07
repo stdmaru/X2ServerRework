@@ -45,6 +45,7 @@ struct Output
 {
     float4 diffuse : TEXCOORD0;
     float4 uv : TEXCOORD1;      // xy: first set, zw: second set
+    float4 extra : TEXCOORD2;   // xy: third set (none here), z: fog factor (vertex fog is not emulated: 1, no fog)
     float4 position : SV_Position;
 };
 
@@ -68,6 +69,7 @@ Output main(Input input)
     output.diffuse = float4(1.0, 1.0, 1.0, 1.0);
 #endif
     output.uv = float4(0.0, 0.0, 0.0, 0.0);
+    output.extra = float4(0.0, 0.0, 1.0, 0.0);
 #if TEXCOORDS >= 1
     output.uv.xy = input.uv0;
 #endif

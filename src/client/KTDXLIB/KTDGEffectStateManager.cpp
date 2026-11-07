@@ -121,7 +121,7 @@ HRESULT     CKTDGEffectStateManager::RestoreEffectState()
         if ( m_bd3dVertexShader )
         {
             g_pd3dDevice->SetVertexShader( m_pd3dVertexShader );
-            SAFE_RELEASE( m_pd3dVertexShader );
+            m_pd3dVertexShader = NULL;  // device objects are not counted (T38)
             m_bd3dVertexShader = false;
         }//if
 
@@ -276,7 +276,7 @@ HRESULT STDMETHODCALLTYPE CKTDGEffectStateManager::SetSamplerState(THIS_ DWORD S
 HRESULT STDMETHODCALLTYPE CKTDGEffectStateManager::SetNPatchMode(THIS_ FLOAT /*NumSegments*/)
 {
     ASSERT( m_bInEffect );
-    return  D3D_OK;   // ignored: no shaders read it until the effects are rewritten (T37)
+    return  D3D_OK;   // ignored: there are no N-patches
 }//CKTDGEffectStateManager::SetNPatchMode()
 
 
@@ -313,14 +313,14 @@ HRESULT STDMETHODCALLTYPE CKTDGEffectStateManager::SetVertexShader(THIS_ LPDIREC
 HRESULT STDMETHODCALLTYPE CKTDGEffectStateManager::SetVertexShaderConstantI(THIS_ UINT /*RegisterIndex*/, CONST INT */*pConstantData*/, UINT /*RegisterCount*/)
 {
     ASSERT( m_bInEffect );
-    return  D3D_OK;   // ignored: no shaders read it until the effects are rewritten (T37)
+    return  D3D_OK;   // ignored: the effects (T37) use only float vertex shader constants
 }//CKTDGEffectStateManager::SetVertexShaderConstantI()
 
 
 HRESULT STDMETHODCALLTYPE CKTDGEffectStateManager::SetVertexShaderConstantB(THIS_ UINT /*RegisterIndex*/, CONST BOOL */*pConstantData*/, UINT /*RegisterCount*/)
 {
     ASSERT( m_bInEffect );
-    return  D3D_OK;   // ignored: no shaders read it until the effects are rewritten (T37)
+    return  D3D_OK;   // ignored: the effects (T37) use only float vertex shader constants
 }//CKTDGEffectStateManager::SetVertexShaderConstantB()
 
 
@@ -342,19 +342,19 @@ HRESULT STDMETHODCALLTYPE CKTDGEffectStateManager::SetPixelShader(THIS_ LPDIRECT
 HRESULT STDMETHODCALLTYPE CKTDGEffectStateManager::SetPixelShaderConstantF(THIS_ UINT /*RegisterIndex*/, CONST FLOAT */*pConstantData*/, UINT /*RegisterCount*/)
 {
     ASSERT( m_bInEffect );
-    return  D3D_OK;   // ignored: no shaders read it until the effects are rewritten (T37)
+    return  D3D_OK;   // ignored: the effects (T37) use only float vertex shader constants
 }//CKTDGEffectStateManager::SetPixelShaderConstantF()
 
 
 HRESULT STDMETHODCALLTYPE CKTDGEffectStateManager::SetPixelShaderConstantI(THIS_ UINT /*RegisterIndex*/, CONST INT */*pConstantData*/, UINT /*RegisterCount*/)
 {
     ASSERT( m_bInEffect );
-    return  D3D_OK;   // ignored: no shaders read it until the effects are rewritten (T37)
+    return  D3D_OK;   // ignored: the effects (T37) use only float vertex shader constants
 }//CKTDGEffectStateManager::SetPixelShaderConstantI()
 
 
 HRESULT STDMETHODCALLTYPE CKTDGEffectStateManager::SetPixelShaderConstantB(THIS_ UINT /*RegisterIndex*/, CONST BOOL */*pConstantData*/, UINT /*RegisterCount*/)
 {
     ASSERT( m_bInEffect );
-    return  D3D_OK;   // ignored: no shaders read it until the effects are rewritten (T37)
+    return  D3D_OK;   // ignored: the effects (T37) use only float vertex shader constants
 }//CKTDGEffectStateManager::SetPixelShaderConstantB()

@@ -509,17 +509,15 @@ struct D3DLIGHT9 {
     float Phi;
 };
 
-// Shaders and vertex declarations: interfaces only, so the engine's members and calls compile; nothing creates them
-// (the effects become KTDXLIB's own shaders, T37).
+// Vertex shaders are KTDXLIB's effects' own (x2::d3d9::VertexShader, Device.h; T37). Pixel shaders and vertex
+// declarations: interfaces only, so the engine's members and calls compile; nothing creates them.
+namespace x2::d3d9 {
+class VertexShader;
+}
+using IDirect3DVertexShader9 = x2::d3d9::VertexShader;
 class IDirect3DVertexDeclaration9 {
 public:
     virtual ~IDirect3DVertexDeclaration9() = default;
-    virtual ULONG AddRef() = 0;
-    virtual ULONG Release() = 0;
-};
-class IDirect3DVertexShader9 {
-public:
-    virtual ~IDirect3DVertexShader9() = default;
     virtual ULONG AddRef() = 0;
     virtual ULONG Release() = 0;
 };

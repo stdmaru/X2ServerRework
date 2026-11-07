@@ -303,7 +303,6 @@ CKTDGManager::CKTDGManager( HWND hWnd, LPDIRECT3DDEVICE9 /*pd3dDevice*/ )
 	//m_pMotionBlur			= new CKTDGMotionBlur( g_pKTDXApp->GetDevice() );
 	m_pXRenderer			= new CKTDGXRenderer( g_pKTDXApp->GetDevice() );
 	m_pFontManager			= new CKTDGFontManager( g_pKTDXApp->GetDevice() );
-	//m_pGrayScale			= new CKTDGGrayScale();
 
 //{{ robobeg : 2008-10-13
 	//m_RenderObjectChain.reserve( 4096 );
@@ -336,7 +335,6 @@ CKTDGManager::CKTDGManager( HWND hWnd, LPDIRECT3DDEVICE9 /*pd3dDevice*/ )
 
 CKTDGManager::~CKTDGManager(void)
 {
-	//SAFE_DELETE( m_pGrayScale );
 	//SAFE_DELETE( m_pCamera );
 	//SAFE_DELETE( m_pFrustum );
 	SAFE_DELETE( m_pDialogManager );
@@ -709,7 +707,6 @@ HRESULT CKTDGManager::OnResetDevice()
 	//m_pGlow->OnResetDevice();
 	//m_pMotionBlur->OnResetDevice();
 
-	//m_pGrayScale->OnResetDevice();
 
 	m_pTextureFadeInOut = g_pKTDXApp->GetDeviceManager()->OpenTexture( L"FadeInOut.dds" );
 
@@ -745,7 +742,6 @@ HRESULT CKTDGManager::OnLostDevice()
 		m_pXRenderer->OnLostDevice();
 	if ( m_pFontManager != NULL )
 		m_pFontManager->OnLostDevice();
-	//m_pGrayScale->OnLostDevice();
 
 	return S_OK;
 }
@@ -753,7 +749,6 @@ HRESULT CKTDGManager::OnLostDevice()
 HRESULT CKTDGManager::OnFrameMove( double fTime, float fElapsedTime )
 {
 	m_pFontManager->OnFrameMove( (float)fTime, fElapsedTime );
-	//m_pGrayScale->OnFrameMove( fElapsedTime );
 
 
 	if( m_bFading == true )

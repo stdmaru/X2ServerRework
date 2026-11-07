@@ -203,9 +203,11 @@ without warnings. The tests link the real `CKTDXApp`, `CKTDGManager`, `CKTDXDevi
 two globals (`g_pd3dDevice`, `g_pEffectStateManager`) are defined for them in `tests/x2_globals.cpp` until X2 builds.
 
 - **Device callers** use the device's own API (T38): `HRESULT` results became `bool`/`void`, textures and vertex buffers
-  are deleted (`SAFE_DELETE`) rather than released, render targets are textures (`CKTDGGrayScale` keeps the previous
-  target as a texture). `CKTDGEffectStateManager` returns `D3D_OK` for what it forwards, ignores the shader constants
-  the effects will not need until T37, and is no longer reference counted (`Release` deletes it).
+  are deleted (`SAFE_DELETE`) rather than released, render targets are textures. `CKTDGEffectStateManager` returns `D3D_OK` for what it forwards, ignores the
+  shader constants the effects do not use (they set only float vertex shader constants), and is no longer reference
+  counted (`Release` deletes it). Since 2026-11-07 (`client/effects`) it holds the vertex shader without a reference,
+  `CKTDGXRenderer` creates its effect with `CreateXRendererEffect` instead of reading `XRenderer.fx`, and the effects'
+  dead callers are removed: `CKTDGGrayScale` (never instantiated) and `CKTDGPostEffect` (compiled out) ([Effects](client-d3d9.md#effects-2026-11-07-clienteffects)).
 - **D3DX interfaces** (`ID3DXMesh`, skin info, animation sets, `ID3DXEffect`) are declared
   ([D3D9 device](client-d3d9.md#files)); static meshes (`.x` and `.kme`), skinned meshes (`.x` and KSM) and their
   animation load since 2026-11-07 ([Meshes](client-d3d9.md#meshes-2026-11-07-clientx-loader),
