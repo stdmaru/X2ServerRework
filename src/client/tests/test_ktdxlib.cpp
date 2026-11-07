@@ -4,12 +4,21 @@
 
 #include "KTDX.h"   // not stdafx.h: Windows would find X2ServerProtocol/StdAfx.h first
 
+#include "XFile.h"
+
+#include "x2/kom/mount.h"
 #include "x2/render/null.h"
 
 #include <doctest/doctest.h>
 
+#include <algorithm>
+#include <atomic>
+#include <cstdlib>
 #include <cstring>
 #include <filesystem>
+#include <mutex>
+#include <set>
+#include <thread>
 #include <memory>
 #include <string>
 #include <vector>
@@ -254,4 +263,116 @@ TEST_CASE("ktdxlib: KFileSerializer and CRC_32 read and write whole files")
     CHECK(CRC_32::GetCRCFromFile(file.c_str()) == CRC_32::GetCRCFromBuffer(data, sizeof(data)));
     CHECK(CRC_32::GetCRCFromFile((dir / "missing.bin").string().c_str()).empty());
     std::filesystem::remove_all(dir);
+}
+
+namespace {
+
+struct SkinMesh : CKTDXDeviceXSkinMesh {
+    using CKTDXDeviceXSkinMesh::CKTDXDeviceXSkinMesh;
+    using CKTDXDeviceXSkinMesh::_Load;
+    ~SkinMesh() override = default;
+};
+
+bool HasObject(const std::vector<x2::d3d9::xfile::Object>& objects, const char* type)
+{
+    for (const auto& object : objects) {
+        if (object.type == type || HasObject(object.children, type)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+}  // namespace
+
+// Every skinned mesh of the client (.x with SkinWeights, KOG's KSM) loaded by CKTDXDeviceXSkinMesh as the game does:
+// hierarchy, optimize and remap, indexed blended mesh, then its textures. Every .x must load; a KSM file reads its
+// animation controller before the rest, so only those without one load until the animation step (2026-11-07).
+TEST_CASE("ktdxlib: the client's skinned meshes load (X2_MASSFILE_CLIENT_DATA)")
+{
+    const char* folder = std::getenv("X2_MASSFILE_CLIENT_DATA");
+    if (folder == nullptr || *folder == '\0') {
+        MESSAGE("X2_MASSFILE_CLIENT_DATA not set: skipped");
+        return;
+    }
+    std::string error;
+    x2::kom::Mount mount([](const std::string&) {});
+    REQUIRE_MESSAGE(mount.AddFolder(folder, error), error);
+    std::vector<std::string> names;
+    std::set<std::string> seen;
+    for (const auto& archive : mount.Archives()) {
+        for (const x2::kom::Entry& entry : archive->Entries()) {
+            std::string lower = entry.name;
+            std::transform(lower.begin(), lower.end(), lower.begin(),
+                           [](char c) { return static_cast<char>(c >= 'A' && c <= 'Z' ? c - 'A' + 'a' : c); });
+            if ((lower.ends_with(".x") || lower.ends_with(".y")) && seen.insert(lower).second) {
+                names.push_back(entry.name);
+            }
+        }
+    }
+    // Which ones are skinned, on 8 threads.
+    std::vector<std::string> skinned;
+    std::set<std::string> ksm;
+    {
+        std::atomic<std::size_t> next{0};
+        std::mutex mutex;
+        std::vector<std::thread> threads;
+        for (int t = 0; t < 8; ++t) {
+            threads.emplace_back([&] {
+                std::vector<std::uint8_t> bytes;
+                std::string readError;
+                for (std::size_t i = next++; i < names.size(); i = next++) {
+                    if (!mount.Read(names[i], bytes, readError) || bytes.size() < 16) {
+                        continue;
+                    }
+                    const bool isKsm = std::memcmp(bytes.data(), "KSM ", 4) == 0;
+                    bool isSkinned = isKsm;
+                    if (!isKsm) {
+                        const auto file = x2::d3d9::xfile::Read(
+                            std::span(reinterpret_cast<const std::byte*>(bytes.data()), bytes.size()), readError);
+                        isSkinned = file && HasObject(file->objects, "SkinWeights");
+                    }
+                    if (isSkinned) {
+                        const std::lock_guard lock(mutex);
+                        skinned.push_back(names[i]);
+                        if (isKsm) {
+                            ksm.insert(names[i]);
+                        }
+                    }
+                }
+            });
+        }
+        for (std::thread& thread : threads) {
+            thread.join();
+        }
+    }
+    std::sort(skinned.begin(), skinned.end());
+
+    Engine engine;
+    KGCMassFileManager* files = g_pKTDXApp->GetDeviceManager()->GetMassFileManager();
+    REQUIRE_MESSAGE(files->AddMassFiles(folder, KGCMassFileManager::GetClientArchiveNames(), error), error);
+    files->LockMassFileMap();
+    std::vector<std::string> failed;
+    std::size_t withBones = 0, ksmLoaded = 0;
+    for (const std::string& name : skinned) {
+        std::wstring wide(name.begin(), name.end());
+        auto* mesh = new SkinMesh(&engine.device, wide);
+        const bool loaded = SUCCEEDED(mesh->_Load(true)) && mesh->GetFrameRoot() != nullptr && mesh->GetFrameNum() > 0;
+        if (ksm.contains(name)) {
+            ksmLoaded += loaded ? 1 : 0;    // until the animation step, only those without animation sets
+        } else if (!loaded) {
+            failed.push_back(name);
+        }
+        if (loaded && mesh->GetMaxSkinningVertices() > 0) {
+            ++withBones;
+        }
+        delete mesh;
+        x2::render::null::ClearCommands(*engine.render);
+    }
+    MESSAGE(skinned.size() << " skinned meshes (" << ksm.size() << " KSM, " << ksmLoaded << " of them loaded), "
+                           << withBones << " loaded with bones, " << failed.size() << " .x failed");
+    for (std::size_t i = 0; i < failed.size() && i < 40; ++i) {
+        MESSAGE(failed[i]);
+    }
+    CHECK(failed.empty());
 }
