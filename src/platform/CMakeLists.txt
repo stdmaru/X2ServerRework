@@ -16,7 +16,8 @@ add_library(x2_platform STATIC
     src/sync_posix.cpp
     src/text.cpp
     src/time.cpp
-    src/unicode.cpp)
+    src/unicode.cpp
+    src/xml.cpp)
 add_library(x2::platform ALIAS x2_platform)
 
 target_include_directories(x2_platform PUBLIC include)
