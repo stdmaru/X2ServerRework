@@ -42,7 +42,6 @@ class CX2StateUnitSelect : public CX2State
 		bool AnimateCharacterName( CKTDGUIButton* pButton );
 		void SetShowCharacterName( bool bShow );
 
-		void ResetCrashReport();
 
 		void SetShowCharacterNameForSelectedUnit();
 

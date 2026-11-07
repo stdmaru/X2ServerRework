@@ -1744,7 +1744,7 @@ std::wstring CX2ItemSlotManager::GetSlotItemDescByTID( CX2Item* pItem, int itemT
 	// 아이템에 요구레벨이 있는 경우에는 소켓 레벨을 아이템의 요구레벨로 하고
 	// 아이템에 요구레벨이 없는 경우에는 소켓 레벨을 유저(타겟유저)의 레벨 함
 
-	const int iSocketLevel = 0 < pkItemTemplet->GetUseLevel() ? pkItemTemplet->GetUseLevel() : pkUnit->GetUnitData().m_Level;
+	const int iSocketLevel = 0 < pkItemTemplet->GetUseLevel() ? pkItemTemplet->GetUseLevel() : static_cast<int>( pkUnit->GetUnitData().m_Level );
 		if( NULL != pItem && false == pItem->GetIsEvaluation() )
 		{
 			slotItemDesc += L"\n#C00FF00";

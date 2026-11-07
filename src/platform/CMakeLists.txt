@@ -13,6 +13,7 @@ add_library(x2_platform STATIC
     src/net_io.cpp
     src/process.cpp
     src/string.cpp
+    src/system_scan.cpp
     src/terminal.cpp
     src/sync_posix.cpp
     src/text.cpp
@@ -25,7 +26,7 @@ target_include_directories(x2_platform PUBLIC include)
 target_link_libraries(x2_platform PUBLIC x2::options PRIVATE x2::asio)
 
 if(WIN32)
-    target_link_libraries(x2_platform PUBLIC winmm ws2_32 mswsock shell32 ole32 psapi)
+    target_link_libraries(x2_platform PUBLIC winmm ws2_32 mswsock shell32 ole32 psapi advapi32)
 else()
     find_package(Threads REQUIRED)
     target_link_libraries(x2_platform PUBLIC Threads::Threads)

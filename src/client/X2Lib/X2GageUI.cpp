@@ -1471,7 +1471,7 @@ void CX2MyGageUI::UpdateInfoString()
 			const UINT uiStrSize = 8;
 			WCHAR buf[uiStrSize];
 			ZeroMemory( buf, sizeof(WCHAR) * uiStrSize );
-			StringCchPrintf( buf, uiStrSize, L"%d", kMyUnitData.m_Level );
+			StringCchPrintf( buf, uiStrSize, L"%d", static_cast<int>( kMyUnitData.m_Level ) );
 
 			pStaticText->GetString(0)->msg = L"Lv";
 			pStaticText->GetString(1)->msg = buf;

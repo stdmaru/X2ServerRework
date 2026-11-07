@@ -693,4 +693,30 @@ bool Process::WriteLine(std::string_view line)
     return Write(data);
 }
 
+std::string MachineIdentity()
+{
+#if defined(_WIN32)
+    char value[128] = {};
+    DWORD size = sizeof(value);
+    if (RegGetValueA(HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Cryptography", "MachineGuid",
+                     RRF_RT_REG_SZ | RRF_SUBKEY_WOW6464KEY, nullptr, value, &size) != ERROR_SUCCESS)
+        return {};
+    return value;
+#else
+    for (const char* path : {"/etc/machine-id", "/var/lib/dbus/machine-id"}) {
+        if (FILE* file = std::fopen(path, "r")) {
+            char value[128] = {};
+            const bool read = std::fgets(value, sizeof(value), file) != nullptr;
+            std::fclose(file);
+            std::string id = read ? value : "";
+            while (!id.empty() && (id.back() == '\n' || id.back() == '\r'))
+                id.pop_back();
+            if (!id.empty())
+                return id;
+        }
+    }
+    return {};
+#endif
+}
+
 } // namespace x2::platform

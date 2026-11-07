@@ -80,10 +80,10 @@ CX2SkillTreeSlotData::CX2SkillTreeSlotData()
 	/// ���� ��ų ����Ʈ ��ȯ ---------------------------------------------------------------------------------------------------------------------------------------
 		/// ���� ��ų ����Ʈ ( ��ų ���� �� ��ȭ �����̸� ��ų ����Ʈ ��뷮�� �������� ������ ��ȯ )
 	const int iNoUseSP		= true == bLearnMode ? g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_iSPoint - pSkillTree->GetUsedSPoint()
-												 : g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_iSPoint;
+												 : static_cast<int>( g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_iSPoint );
 		/// ���� ĳ�� ��ų ����Ʈ ( ��ų ���� �� ��ȭ �����̸� ĳ�� ��ų ����Ʈ ��뷮�� �������� ������ ��ȯ )
 	const int iNoUseCP		= true == bLearnMode ? g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_iCSPoint - pSkillTree->GetUsedCSPoint()
-												 : g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_iCSPoint;
+												 : static_cast<int>( g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_iCSPoint );
 
 
 	/// ���� ���� ���� ----------------------------------------------------------------------------------------------------------------------------------------------

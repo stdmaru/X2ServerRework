@@ -12,6 +12,7 @@
 #include <SDL3/SDL_video.h>
 
 #include <cstdint>
+#include <string>
 #include <vector>
 
 #include "Device.h"   // KTDXLIB/D3D9: IDirect3DDevice9 is x2::d3d9::Device
@@ -44,6 +45,13 @@ HRESULT DXUTMainLoop();
 // The window procedure: every translated SDL event goes through it, as DXUT's own WndProc did. Exposed, as in DXUT.
 LRESULT CALLBACK DXUTStaticWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 void DXUTShutdown(int nExitCode = 0);
+
+// The executable's arguments, argv[0] first (MSVC's __argc / __argv): main() stores them before DXUTInit.
+void DXUTSetCommandLine(int argc, char* argv[]);
+const std::vector<std::string>& DXUTGetCommandLine();
+// Whether Alt+F4 closes the window (the client turns it off, as its RegisterHotKey( MOD_ALT, VK_F4 ) did). Only
+// Windows lets an application keep it; elsewhere the window manager handles Alt+F4.
+void DXUTSetCloseOnAltF4(bool bClose);
 
 // Settings that are stored but have no effect yet (full screen cursor, multi-monitor adapter changes).
 void DXUTSetCursorSettings(bool bShowCursorWhenFullScreen, bool bClipCursorWhenFullScreen);

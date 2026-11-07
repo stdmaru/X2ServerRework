@@ -1281,7 +1281,8 @@ void CX2GUNPCAI::Moving( float fElapsedTime )
 	//}}oasis:김상윤////2009-10-7////
 
 	// 자 타게팅된 목적지로 이동을 해보자~
-	float fDestGap = 0.f;
+	float fDestGap;	// split: a goto jumps over it
+	fDestGap = 0.f;
 	//{{oasis:김상윤////2009-10-7////
 	float fMoveGap;	// split: a goto jumps over it
 	fMoveGap = 0.f;

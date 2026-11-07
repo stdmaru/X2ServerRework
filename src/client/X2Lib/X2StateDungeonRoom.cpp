@@ -380,9 +380,9 @@ HRESULT CX2StateDungeonRoom::OnFrameRender()
 
 				wstring ipAndPort = pSlotData->m_pUnit->GetUnitData().m_IP + L":";
 				WCHAR szPort[256] = {0};
-				swprintf( szPort, L"%d", pSlotData->m_pUnit->GetUnitData().m_Port );
+				swprintf_s( szPort, L"%d", pSlotData->m_pUnit->GetUnitData().m_Port );
 				ipAndPort += szPort;
-				swprintf( szPort, L"\n%d", (int)pSlotData->m_PingTime );
+				swprintf_s( szPort, L"\n%d", (int)pSlotData->m_PingTime );
 				ipAndPort += szPort;
 
 				if( true == pSlotData->m_pUnit->GetUnitData().m_bMan )

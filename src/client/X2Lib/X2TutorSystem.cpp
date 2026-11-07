@@ -1099,7 +1099,7 @@ void CX2TutorSystem::TutorInviting::OnFrameMove( double fTime, float fElapsedTim
 
 
 //////////////////////////////////////////////////////////////////////////
-CX2TutorSystem::TutorInvited::TutorInvited( UidType InviterUnitUID, wstring& wstrInviterName,
+CX2TutorSystem::TutorInvited::TutorInvited( UidType InviterUnitUID, const wstring& wstrInviterName,
 											float fTimeLeft, int YesMsgID, int NoMsgID, CKTDXStage* pNowStage )
 {
 	m_pDLGInvited		= NULL;

@@ -317,8 +317,8 @@ bool CX2UIWatch::OpenDialog(UidType uid)
 
 	// 레벨
 	CKTDGUIStatic* pStaticUserLv = (CKTDGUIStatic*)m_pDLGWatch->GetControl( L"g_pStaticLv" );
-	//wsprintf( buff, L"%d", pUnitData->m_Level );
-	StringCchPrintf( buff, 256, L"%d", pUnitData->m_Level );
+	//wsprintf( buff, L"%d", static_cast<int>( pUnitData->m_Level ) );
+	StringCchPrintf( buff, 256, L"%d", static_cast<int>( pUnitData->m_Level ) );
 	pStaticUserLv->GetString(0)->msg = buff;
 
 	// 전적
@@ -1345,7 +1345,7 @@ std::wstring CX2UIWatch::GetSlotItemDescByTID( CX2Item* pItem, int itemTID, bool
 					vecNormalAndRandomSocketOption.insert( vecNormalAndRandomSocketOption.end(), vecNormalSocketOption.begin(), vecNormalSocketOption.end() );
 
 					// 소켓 레벨 얻기
-					const int iSocketLevel = 0 < pkItemTemplet->GetUseLevel() ? pkItemTemplet->GetUseLevel() : m_pTargetUnit->GetUnitData().m_Level;
+					const int iSocketLevel = 0 < pkItemTemplet->GetUseLevel() ? pkItemTemplet->GetUseLevel() : static_cast<int>( m_pTargetUnit->GetUnitData().m_Level );
 
 					// 소켓 설명 얻기
 					if( true == bHasRandomSocket )

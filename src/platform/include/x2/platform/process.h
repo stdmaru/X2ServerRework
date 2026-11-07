@@ -72,6 +72,10 @@ bool CurrentProcessMemory(std::size_t& current, std::size_t& peak);
 // The machine's physical memory in bytes: installed (as the system sees it) and available now. False when unknown.
 bool PhysicalMemory(std::size_t& total, std::size_t& available);
 
+// A string that identifies this machine and stays the same across reboots: the MachineGuid on Windows, the
+// machine-id (systemd / D-Bus) elsewhere. Empty when the system has none.
+std::string MachineIdentity();
+
 // Sets (or, with an empty value, removes) a variable of this process's environment, which the children started from
 // then on inherit. Not thread-safe with other environment reads (getenv): call it before starting threads.
 void SetEnvironment(const std::string& name, const std::string& value);

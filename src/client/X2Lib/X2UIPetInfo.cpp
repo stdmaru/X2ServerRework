@@ -2263,7 +2263,7 @@ bool CX2UIPetInfo::Select_Button( LPARAM lParam )
 		{
 			std::vector< CX2RidingPetManager::sRidingPetInfo > vecRidingPetList;
 			CX2RidingPetManager::GetInstance()->GetRidingPetList( vecRidingPetList );
-			offsetIndex = min( offsetIndex, vecRidingPetList.size() - 1 );
+			offsetIndex = min( offsetIndex, static_cast<UINT>( vecRidingPetList.size() - 1 ) );
 			m_ViewRidingPetUid = vecRidingPetList[offsetIndex].m_iRidingPetUID;
 			bSelectButton = true;
 		}
@@ -2534,7 +2534,7 @@ void CX2UIPetInfo::UpdateStamina_List()
 		int staticIndex = 0;
 		UINT minIndex = ( 6 * ( m_iNowPageRiding - 1 ) );
 		UINT maxIndex = ( 6 * m_iNowPageRiding ) - 1;
-		maxIndex = min( maxIndex, vecRidingPetList.size() - 1 );
+		maxIndex = min( maxIndex, static_cast<UINT>( vecRidingPetList.size() - 1 ) );
 
 		CX2RidingPetManager::RidingPetTemplet *pTemplet = NULL;
 		float fMaxStamina = 120.f;
@@ -2599,7 +2599,7 @@ void CX2UIPetInfo::UpdatePeriod_List()
 
 		UINT iMin,iMax,iRow = 0;
 		iMin = 6 * ( m_iNowPageRiding - 1 );
-		iMax = min( static_cast<UINT>(6 * m_iNowPageRiding), vecRidingPetList.size() );
+		iMax = min( static_cast<UINT>(6 * m_iNowPageRiding), static_cast<UINT>( vecRidingPetList.size() ) );
 
 		int day,hour,minute,index=0;
 		CTime DestroyTime;
@@ -2879,7 +2879,7 @@ void CX2UIPetInfo::ViewRidingPetList( int iPage )
 
 	UINT iMin,iMax,iRow = 0;
 	iMin = 6 * ( m_iNowPageRiding - 1 );
-	iMax = min( static_cast<UINT>(6 * m_iNowPageRiding), vecRidingPetList.size() );
+	iMax = min( static_cast<UINT>(6 * m_iNowPageRiding), static_cast<UINT>( vecRidingPetList.size() ) );
 	for( i = iMin; i < iMax; ++i )
 	{
 		SetRidingPetRow( iRow, vecRidingPetList[i].m_usRindingPetID, vecRidingPetList[i].m_fStamina );

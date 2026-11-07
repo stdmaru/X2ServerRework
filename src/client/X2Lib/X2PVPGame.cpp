@@ -177,7 +177,7 @@ HRESULT CX2PVPGame::OnFrameRender()
 		if( KPVPChannelInfo::PCC_PLAY != g_pMain->GetPVPChannelClass( g_pMain->GetConnectedChannelID() ) )
 		{
 			WCHAR timeBuf[200] = {0,};
-			swprintf( timeBuf, L"%d", (int)GetRemainPlayTime() );
+			swprintf_s( timeBuf, L"%d", (int)GetRemainPlayTime() );
 			m_pFontForTime->OutTextXY( 516, 127, timeBuf, D3DXCOLOR(1,1,0,1), CKTDGFontManager::FS_SHELL, D3DXCOLOR(0,0,0,1), NULL, DT_CENTER );
 		}
 	}

@@ -1582,7 +1582,7 @@ void CX2SquareUnit::RenderName()
 	if ( g_pData->GetMyUser()->GetAuthLevel() >= CX2User::XUAL_DEV && g_pData->GetRenderEtc() == true)
 	{
 		WCHAR wszText[256] = L"";
-		swprintf_s( wszText, L"(%5.2f, %5.2f, %5.2f) Rating: %d", GetPos().x, GetPos().y, GetPos().z, GetUnit()->GetUnitData().m_iRating );
+		swprintf_s( wszText, L"(%5.2f, %5.2f, %5.2f) Rating: %d", GetPos().x, GetPos().y, GetPos().z, static_cast<int>( GetUnit()->GetUnitData().m_iRating ) );
 		wstrName += wszText;
 	}
 

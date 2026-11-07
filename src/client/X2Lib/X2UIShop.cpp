@@ -1160,7 +1160,7 @@ void CX2UIShop::ResetBuySlotList( int nPage )
 	pStaticPageNum->GetString(0)->msg = wstrmPageNum.str();
 	// 전체 상품의 인덱스
 	int iStartIndex = (m_nNowPage-1) * m_vecBuySlot.size();
-	int iEndIndex = min( m_nNowPage*m_vecBuySlot.size(), (int)m_vecItemList[m_NowBuyItemCategory].size() );
+	int iEndIndex = min( static_cast<int>( m_nNowPage*m_vecBuySlot.size() ), (int)m_vecItemList[m_NowBuyItemCategory].size() );
 
 	// const int MAGIC_MAX_NUM_BUY_ITEM_SLOT = m_pDLGShop->GetDummyInt(0);
 

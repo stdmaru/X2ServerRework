@@ -490,7 +490,7 @@ int CX2UserSkillTree::GetSkillLevel( CX2SkillTree::SKILL_ID eSkillID, bool bBasl
 		{
 			const UserSkillData& userSkillData = mit->second;
 
-			const int iSkillLevel = true == bBaslcLevel ? userSkillData.m_iSkillLevel : userSkillData.GetTotalSkillLevel();
+			const int iSkillLevel = true == bBaslcLevel ? static_cast<int>( userSkillData.m_iSkillLevel ) : userSkillData.GetTotalSkillLevel();
 
 			return min( iSkillLevel, MAX_LIMITED_SKILL_LEVEL );
 		}
@@ -507,14 +507,14 @@ int CX2UserSkillTree::GetSkillLevel( CX2SkillTree::SKILL_ID eSkillID, bool bBasl
 		usSkillPage = usPageNumber_ - 1;
 
 	if( m_vecSkillDataMap.size() <= usSkillPage )
-		usSkillPage = max( 0, m_vecSkillDataMap.size() - 1 );
+		usSkillPage = static_cast<USHORT>( m_vecSkillDataMap.size() - 1 );
 
 	SkillDataMap::const_iterator mit = m_vecSkillDataMap[usSkillPage].find( eSkillID );
 
 	if( mit != m_vecSkillDataMap[usSkillPage].end() )
 	{
 		const UserSkillData& userSkillData = mit->second;
-		const int iSkillLevel = true == bBaslcLevel ? userSkillData.m_iSkillLevel : userSkillData.GetTotalSkillLevel();
+		const int iSkillLevel = true == bBaslcLevel ? static_cast<int>( userSkillData.m_iSkillLevel ) : userSkillData.GetTotalSkillLevel();
 
 		return min( iSkillLevel, MAX_LIMITED_SKILL_LEVEL );
 	}
@@ -1984,7 +1984,7 @@ void CX2UserSkillTree::ResetLeftSkillCoolTimeBySkillType( const CX2SkillTree::SK
 			case BCT_RELATION_VALUE:
 				{
 					fNowCoolTime += fCoolTime;
-					fNowCoolTime = max( 0, fNowCoolTime );
+					fNowCoolTime = max( 0.f, fNowCoolTime );
 
 					m_aEquippedSkill[iCurrentIndex].m_fCoolTimeLeft = fNowCoolTime;
 					pGageManager->SetMySkillCoolTimeList( iCurrentIndex, fNowCoolTime );
@@ -2032,7 +2032,7 @@ void CX2UserSkillTree::ResetLeftSkillCoolTimeBySkillType( const CX2SkillTree::SK
 			case BCT_RELATION_VALUE:
 				{
 					fNowCoolTime += fCoolTime;
-					fNowCoolTime = max( 0, fNowCoolTime );
+					fNowCoolTime = max( 0.f, fNowCoolTime );
 
 					m_aEquippedSkillSlotB[iCurrentIndex].m_fCoolTimeLeft = fNowCoolTime;
 					pGageManager->SetMySkillCoolTimeList( iCurrentIndex + 4, fNowCoolTime );

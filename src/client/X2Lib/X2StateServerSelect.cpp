@@ -2871,7 +2871,6 @@ bool CX2StateServerSelect::Handler_EGS_SELECT_UNIT_2_NOT( HWND hWnd, UINT uMsg, 
 			if ( g_pData->GetCashShop() != NULL )
 				g_pData->GetCashShop()->ResetUnitViewer( pUnit );
 
-			g_pMain->ResetCrashReport( L"" );
 		}
 
 		if( NULL != g_pData && NULL != g_pData->GetQuestManager() )

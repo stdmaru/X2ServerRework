@@ -5816,8 +5816,8 @@ void CX2GUNPCFunc::GIANT_PPORU_RED_SPECIAL_ATTACK_A_FRAME_MOVE( CX2GUNPC* pNPCUn
 				{
 					pMinorParticle->GameUnitCreateSequence_LUA( pNPCUnit, "MagnumBladeFireWave", landPos, D3DXVECTOR2(10,10), D3DXVECTOR2(4, -1) );
 
-					D3DXVECTOR3 projPos = g_pKTDXApp->GetProj3DPos( pos );
-					projPos.z = 0;
+					const D3DXVECTOR2 projPos2 = g_pKTDXApp->GetProj3DPos( pos );
+					const D3DXVECTOR3 projPos( projPos2.x, projPos2.y, 0 );
 					pMinorParticle->GameUnitCreateSequence_LUA( pNPCUnit, "STR_KuAAang", projPos, D3DXVECTOR2(100,100), D3DXVECTOR2(1, -1) );
 				}
 

@@ -80,7 +80,7 @@ bool CX2GlobalMissionManager::Handler_EGS_GLOBAL_MISSION_UPDATE_NOT( HWND hWnd, 
 	DeSerialize( pBuff, &kEvent );
 
 	CTime tCurrentTime = g_pData->GetServerCurrentTime(); // g_pData->GetServerCurrentTime64()를 쓸까?
-	wstring wstrGlobalMissionBeginDate = tCurrentTime.Format( _T("%Y-%m-%d") );
+	wstring wstrGlobalMissionBeginDate = tCurrentTime.Format( _T("%Y-%m-%d") ).GetString();
 	wstrGlobalMissionBeginDate += L" 00:00:00";
 
 	std::map< std::wstring, KGlobalMissionInfo >::iterator mit = kEvent.m_mapGlobalMissionInfo.find( wstrGlobalMissionBeginDate );

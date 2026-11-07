@@ -125,7 +125,7 @@ m_sAdvertisePeriod(1)	// 이거 초기값 1로 해야하는게 맞는건지 아�
 	{
 		m_columnForJoinList[i].m_pCharacterIcon = new CKTDGUIDialog( g_pMain->GetNowState(), L"DLG_UI_Character_Icon.lua" );
 		D3DXVECTOR3 tempPos1 = m_pDlgJoinList->GetDummyPos(i);
-		D3DXVECTOR3 tempPos2 = m_pDlgJoinList->GetPos();
+		const D3DXVECTOR2 tempPos2 = m_pDlgJoinList->GetPos();
 		m_columnForJoinList[i].m_pCharacterIcon->SetPos_LUA(tempPos1.x + tempPos2.x, tempPos1.y + tempPos2.y);
 
 		g_pKTDXApp->GetDGManager()->GetDialogManager()->AddDlg( m_columnForJoinList[i].m_pCharacterIcon );

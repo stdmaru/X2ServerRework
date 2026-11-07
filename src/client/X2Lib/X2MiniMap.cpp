@@ -750,7 +750,8 @@ void CX2MiniMap::RenderMiniMapTextureVillage()
 				D3DXVec3Normalize( &vDist, &vDist );
 				D3DXVECTOR3 vDir = GetDirVecToDegree( vDist );
 				D3DXVECTOR3 vArrowPos( 0.f, 0.f, 0.f );
-				D3DXVECTOR3 vCenterPos = m_vMiniMapWindowSize * m_fRenderTargetTextureScale / 2.f;
+				const D3DXVECTOR2 vCenterPos2 = m_vMiniMapWindowSize * m_fRenderTargetTextureScale / 2.f;
+				D3DXVECTOR3 vCenterPos( vCenterPos2.x, vCenterPos2.y, 0.f );
 				vCenterPos.x -= 20.f;
 
 				if ( 0 > vProjection.x && 0 > vDist.x )

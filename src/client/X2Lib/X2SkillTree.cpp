@@ -259,7 +259,7 @@ bool CX2SkillTree::AddSkillTemplet_LUA()
 
 	LUA_GET_VALUE( luaManager,			"m_iRequireUpgradeSkillPoint",	pSkillTemplet->m_iRequireUpgradeSkillPoint,		0		);
 
-	LUA_GET_VALUE( luaManager,			"m_usWOSType",					static_cast<int>( pSkillTemplet->m_iWOSType ),	0		);
+	LUA_GET_VALUE( luaManager,			"m_usWOSType",					pSkillTemplet->m_iWOSType,	0		);
 
 
 	SetSkillStat( luaManager, pSkillTemplet->m_vecStat );

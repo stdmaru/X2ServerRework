@@ -515,9 +515,9 @@ HRESULT CX2StatePVPRoom::OnFrameRender()
 
 				wstring ipAndPort = pSlotData->m_pUnit->GetUnitData().m_IP + L":";
 				WCHAR szPort[256] = {0};
-				swprintf( szPort, L"%d", pSlotData->m_pUnit->GetUnitData().m_Port );
+				swprintf_s( szPort, L"%d", pSlotData->m_pUnit->GetUnitData().m_Port );
 				ipAndPort += szPort;
-				swprintf( szPort, L"\n%d", (int)pSlotData->m_PingTime );
+				swprintf_s( szPort, L"\n%d", (int)pSlotData->m_PingTime );
 				ipAndPort += szPort;
 
 				//{{ 2013. 1. 9	박세훈	Merge 공인IP 연결 실패시 내부IP로 시도( 박진웅 )
@@ -641,7 +641,7 @@ bool CX2StatePVPRoom::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LP
 				CKTDGUIListBox::ListBoxItem* pItem = pListBox->GetSelectedItem();
 				if( NULL != pItem )
 				{
-					int iWorldID = (int) pItem->pData;
+					int iWorldID = static_cast<int>( reinterpret_cast<intptr_t>( pItem->pData ) );
 					m_pCX2MapSelectWindow->SetSelectedMapWorldIDForce( iWorldID );
 				}
 			} break;
@@ -3780,7 +3780,7 @@ void CX2StatePVPRoom::PopTalkBox( UidType iUnitUID_, const WCHAR* pWstrMsg_,
 		talkBox.m_BackTexColor		= coBackColor_;
 
 		talkBox.m_bUseOutLine		 = true;
-		if( coOutColor_ == 0x00000000 )	//	입력 없을 경우는 글씨색 그대로 쓰기
+		if( static_cast<DWORD>( coOutColor_ ) == 0x00000000 )	// no outline color given: keep the text color
 		{
 			talkBox.m_bUseOutLine = false;
 		}

@@ -1582,7 +1582,7 @@ void CX2RelationshipEffectManager::RelationEffectInfo::PopTalkBoxEffect( UidType
 				talkBox.m_fBacklayerTextureWidth = 200.f;
 				talkBox.m_vTalkBoxPosition = vEffectPos;
 
-				if( outcolor == 0x00000000 )	//	입력 없을 경우는 글씨색 그대로 쓰기
+				if( static_cast<DWORD>( outcolor ) == 0x00000000 )	// no outline color given: keep the text color
 				{
 					talkBox.m_bUseOutLine = false;
 				}
@@ -1662,7 +1662,7 @@ void CX2RelationshipEffectManager::RelationEffectInfo::PopTalkBoxEffect( UidType
 
 
 
-				if( outcolor == 0x00000000 )	//	입력 없을 경우는 글씨색 그대로 쓰기
+				if( static_cast<DWORD>( outcolor ) == 0x00000000 )	// no outline color given: keep the text color
 				{
 					talkBox.m_bUseOutLine = false;
 				}

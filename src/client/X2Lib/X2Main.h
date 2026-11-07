@@ -435,9 +435,6 @@ using std::mt19937;
 
 
 #include "./X2BossRaidManager.h"
-BOOL CALLBACK EnumChildProc_Thread(HWND , LPARAM);
-
-BOOL CALLBACK EnumWindowsProc_Thread(HWND , LPARAM);
 BOOL Pesudo_IsDebuggerPresent();
 
 	using std::mt19937;
@@ -469,11 +466,6 @@ inline void DeSerialize( KSerBuffer* pBuff, T* pData )
 
 
 
-	struct THREAD_WND_INFO
-	{
-		wstring m_wstrName;
-		wstring m_wstrClass;
-	};
 
 
 
@@ -696,11 +688,6 @@ class CX2Main : public CKTDXStage
                 , m_pInstanceData( pInstanceData )
 			{
 				m_bLoop = true;
-				m_bSendedMail_Thread = false;
-				m_bFindChild_Thread = false;
-
-				m_vecDeskThreadInfo_Thread.clear();
-				m_vecTopWndInfo_Thread.clear();
 				m_bForceExitThread = false;
 
                 m_fGetCheckKomTime_Thread = 200.f;
@@ -719,7 +706,6 @@ class CX2Main : public CKTDXStage
 			bool CheckProcess_Thread();
 			void ClearWindowInfo_Thread() { m_vecWindowInfo_Thread.clear(); }
 			void PushWindowInfo_Thread( const KHackingToolInfo& windowInfo) { m_vecWindowInfo_Thread.push_back(windowInfo); }
-			void SetChildWindow_Thread(bool bVal) { m_bFindChild_Thread = bVal; }
 
 			virtual bool BeginThread( THREAD_CALLBACK pThreadCallback_ = NULL, LPVOID pParam_ = NULL, bool bStartSuspended = false )
 			{
@@ -787,11 +773,6 @@ class CX2Main : public CKTDXStage
 
 			KProtectedType<bool> m_bLoop;
 			KProtectedType<bool> m_bForceExitThread;
-			bool m_bSendedMail_Thread;
-			bool m_bFindChild_Thread;
-
-			vector<THREAD_WND_INFO> m_vecDeskThreadInfo_Thread;
-			vector<THREAD_WND_INFO> m_vecTopWndInfo_Thread;
 
             float   m_fGetCheckKomTime_Thread;
             std::vector< pair<string, string> >	m_vecChangeCheckKom_Thread;
@@ -1050,7 +1031,6 @@ class CX2Main : public CKTDXStage
 //{{ kimhc // 2010.9.14 // 홈페이지 개편에서 아바타 이미지 표현으로 사용될 캐릭터 이미지 캡쳐 기능 테스트
 //}} kimhc // 2010.9.14 // 홈페이지 개편에서 아바타 이미지 표현으로 사용될 캐릭터 이미지 캡쳐 기능 테스트
 
-		void			ResetCrashReport( const WCHAR* wszAddMsg );
 
 		CKTDGFontManager::CUKFont* GetFontForDebuf() { return m_pFontForDebug; }
 
@@ -1219,11 +1199,7 @@ class CX2Main : public CKTDXStage
 
 		//void			ResetLuaBinder( KLuabinder* pKLuabinder );
 
-		void			AddMemoryInfo( stringstream& strstm );
 
-		void			AddDLLInfo(stringstream& strstm);
-		void			AddProcessInfo(stringstream& strstm, bool bThreadInfo = true);
-		void 			UpdateProcessList();
 		void 			SetMailNameToFindHack( const WCHAR* wszMailName ) { m_MailNameToFindHack = wszMailName; }
         void            SetUserIdToFindHack_ThreadSafe( const std::string& strUserId )
         {
@@ -1242,9 +1218,7 @@ class CX2Main : public CKTDXStage
             return strID.compare( m_strUserIdToFindHack_CS ) == 0;
         }
 		void			SetHackingUser( bool b ) { m_bHackingUser = b; }
-		void 			SendHackMail();
 		void			SendHackMail_DamageHistory(const char *strComm);
-		void			SendHackMail_DLLInjection(const char *strComm);
 		void			SendUserMonitoringMail(const char *strComm);
 
 		void			SendHackMail_HackUserNot(const char *strComm);
@@ -1508,7 +1482,6 @@ class CX2Main : public CKTDXStage
 
 
 
-		void			DeleteNMCachData();
 		void			LoadLuaEnum();
 
 
@@ -1518,7 +1491,6 @@ class CX2Main : public CKTDXStage
 
 
 
-		bool GetWallPaperDirectory( char * pszDir, int iDirSize );
 
 		//{{ 2013.02.27 조효진	해외 기본 구조 작업 (SERV_GLOBAL_BASE)
 		std::wstring GetWstrBasicConfigFile();
@@ -1572,7 +1544,6 @@ class CX2Main : public CKTDXStage
 		X2_PUBLISHER		m_X2Publisher;
 		bool				m_bManualLogin;
 
-		LPVOID				m_pCrashReportState;
 
 		CKTDGFontManager::CUKFont* m_pFontForDebug;
 
@@ -1633,7 +1604,6 @@ class CX2Main : public CKTDXStage
 		vector<wstring>				m_KOMList;
 		vector<wstring>				m_MP3List;
 
-		vector<wstring>				m_UseFontNameList;
 
 		int							m_SquareMaxUserNum;
 
@@ -1643,14 +1613,11 @@ class CX2Main : public CKTDXStage
 
 		CX2LVUpEventMgr*			m_pLVUpEventMgr;
 
-		float						m_fTimeToUpdateProcessList;
 
 		wstring						m_MailNameToFindHack;
         MemberCriticalSection       m_csUserIdToFindHack;
         std::string                 m_strUserIdToFindHack_CS;
 		bool						m_bHackingUser;
-        MemberCriticalSection       m_csProcessNameToFindHack;
-		set<wstring>				m_setProcessNameToFindHack_CS;
         MemberCriticalSection       m_csSendedProcessList;
 		set<wstring>				m_setSendedProcessList_CS;
 

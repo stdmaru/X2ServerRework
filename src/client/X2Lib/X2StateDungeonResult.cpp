@@ -1246,7 +1246,7 @@ HRESULT CX2StateDungeonResult::OnFrameMove( double fTime, float fElapsedTime )
 								if ( pStaticEXPBG->GetString(0) != NULL )
 								{
 									WCHAR buff[256] = {0};
-									swprintf( buff, L"%d / %d (%.1f%%)", nowExp - nowBaseExp, nextBaseExp - nowBaseExp, (float)(nowExp - nowBaseExp)/(nextBaseExp - nowBaseExp)*100.0f );
+									swprintf_s( buff, L"%d / %d (%.1f%%)", nowExp - nowBaseExp, nextBaseExp - nowBaseExp, (float)(nowExp - nowBaseExp)/(nextBaseExp - nowBaseExp)*100.0f );
 									pStaticEXPBG->GetString(0)->msg = buff;
 								}
 								/*
@@ -2624,8 +2624,8 @@ bool CX2StateDungeonResult::InitUI()
 				CKTDGUIStatic* pStaticOtherDesc = (CKTDGUIStatic*)m_pDLGBack->GetControl( staticResultDesc );
 				pStaticOtherDesc->SetShow( true );
 				WCHAR unitDescBuff[1024] = {0};
-				StringCchPrintf( unitDescBuff, 1024, L"LV.%d ", pSlotData->m_pUnit->GetUnitData().m_Level );
-				//wsprintf( unitDescBuff, L"LV.%d ", pSlotData->m_pUnit->GetUnitData().m_Level );
+				StringCchPrintf( unitDescBuff, 1024, L"LV.%d ", static_cast<int>( pSlotData->m_pUnit->GetUnitData().m_Level ) );
+				//wsprintf( unitDescBuff, L"LV.%d ", static_cast<int>( pSlotData->m_pUnit->GetUnitData().m_Level ) );
 				pStaticOtherDesc->GetString(0)->msg = unitDescBuff;
 
 				CKTDGUIStatic* pStaticOtherID = (CKTDGUIStatic*)m_pDLGBack->GetControl( staticResultID );

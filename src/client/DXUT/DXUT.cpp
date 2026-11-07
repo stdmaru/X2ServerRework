@@ -31,6 +31,7 @@ struct DxutState {
     void* msgProcContext = nullptr;
 
     bool handleAltEnter = true;
+    std::vector<std::string> commandLine;
     bool showCursorWhenFullScreen = true;
     bool clipCursorWhenFullScreen = true;
     bool autoChangeAdapter = true;
@@ -199,6 +200,21 @@ void DXUTSetCallbackMsgProc(LPDXUTCALLBACKMSGPROC pCallbackMsgProc, void* pUserC
 {
     State().msgProc = pCallbackMsgProc;
     State().msgProcContext = pUserContext;
+}
+
+void DXUTSetCommandLine(int argc, char* argv[])
+{
+    State().commandLine.assign(argv, argv + argc);
+}
+
+const std::vector<std::string>& DXUTGetCommandLine()
+{
+    return State().commandLine;
+}
+
+void DXUTSetCloseOnAltF4(bool bClose)
+{
+    SDL_SetHint(SDL_HINT_WINDOWS_CLOSE_ON_ALT_F4, bClose ? "1" : "0");
 }
 
 HRESULT DXUTInit(bool /*bParseCommandLine*/, bool /*bHandleDefaultHotkeys*/, bool /*bShowMsgBoxOnError*/, bool bHandleAltEnter)

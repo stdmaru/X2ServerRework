@@ -2407,7 +2407,7 @@ void CX2UnitViewerUI::AddEquipByTID( int itemTID, bool bBasicItem  )
 	    if ( m_ViewEquipMap.empty() )
 		    kItemData.m_ItemUID = -1;
 	    else
-		    kItemData.m_ItemUID = min( m_ViewEquipMap.begin()->first, -1 ) - 1;
+		    kItemData.m_ItemUID = min( m_ViewEquipMap.begin()->first, static_cast<UidType>( -1 ) ) - 1;
 
 	    kItemData.m_Endurance = 1;
 

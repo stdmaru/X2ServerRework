@@ -336,7 +336,7 @@ HRESULT CX2UIInventory::OnFrameMove( double fTime, float fElapsedTime )
 					{
 						fAptime *= -1 ;
 					}
-					fAptime = min( fAptime * 2 , 1.0f );
+					fAptime = min( fAptime * 2 , 1.0 );
 
 					pStatic->GetPicture(0)->pPoint->color.a = (float)fAptime;
 					}

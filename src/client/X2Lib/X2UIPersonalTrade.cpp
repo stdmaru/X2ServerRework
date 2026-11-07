@@ -121,7 +121,7 @@ void CX2UIPersonalTrade::TradeInvited::OnFrameMove( double fTime, float fElapsed
 
 
 
-CX2UIPersonalTrade::TradeInviting::TradeInviting( wstring& wstrInviteeName, float fTimeLeft, CKTDXStage* pNowStage )
+CX2UIPersonalTrade::TradeInviting::TradeInviting( const wstring& wstrInviteeName, float fTimeLeft, CKTDXStage* pNowStage )
 {
 	m_pDLGInviting = NULL;
 	m_wstrInviteeName = wstrInviteeName;
@@ -2541,7 +2541,7 @@ void CX2UIPersonalTrade::PopPersonalTradeTalkBox( UidType iUnitUID, int iED, D3D
 	talkBox.m_BackTexColor		= backColor;
 
 	talkBox.m_bUseOutLine		 = true;
-	if( outcolor == 0x00000000 )	//	입력 없을 경우는 글씨색 그대로 쓰기
+	if( static_cast<DWORD>( outcolor ) == 0x00000000 )	// no outline color given: keep the text color
 	{
 		talkBox.m_bUseOutLine = false;
 	}

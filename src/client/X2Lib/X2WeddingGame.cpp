@@ -683,7 +683,7 @@ void CX2WeddingGame::PopTalkBox( UidType iUnitUID_, const WCHAR* pWstrMsg_,
 			talkBox.m_BackTexColor		= coBackColor_;
 
 			talkBox.m_bUseOutLine		 = true;
-			if( coOutColor_ == 0x00000000 )	//	입력 없을 경우는 글씨색 그대로 쓰기
+			if( static_cast<DWORD>( coOutColor_ ) == 0x00000000 )	// no outline color given: keep the text color
 			{
 				talkBox.m_bUseOutLine = false;
 			}
@@ -715,7 +715,7 @@ void CX2WeddingGame::PopOfficiantTalkBox( int iStrID_, const D3DXVECTOR3& vPos_,
 	talkBox.m_bUseOutLine		= true;
 	talkBox.m_vTalkBoxPosition  = vPos_;
 
-	if( outcolor_ == 0x00000000 )	//	입력 없을 경우는 글씨색 그대로 쓰기
+	if( static_cast<DWORD>( outcolor_ ) == 0x00000000 )	// no outline color given: keep the text color
 	{
 		talkBox.m_bUseOutLine = false;
 	}

@@ -1062,7 +1062,7 @@ bool		CX2UIGuild::SetFieldUserIcon(int i, bool bShow)
 	if(m_pGuildInfoControl!= NULL)
 	{
 		D3DXVECTOR3 tempPos1 = m_pDlgGuildInfo->GetDummyPos(i);
-		D3DXVECTOR3 tempPos2 = m_pDlgGuildInfo->GetPos();
+		const D3DXVECTOR2 tempPos2 = m_pDlgGuildInfo->GetPos();
 		m_pGuildMemberIcon[i]->SetPos_LUA(tempPos1.x + tempPos2.x, tempPos1.y + tempPos2.y);
 	}
 

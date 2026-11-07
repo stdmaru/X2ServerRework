@@ -1311,15 +1311,10 @@ HRESULT	CX2TFieldGame::OnFrameMove( double fTime, float fElapsedTime )
 	{
 		if(m_pSubAniXSkinAnim != NULL)
 		{
-			__time64_t t0 = g_pData->GetServerCurrentTime();
-#ifdef	CONVERSION_VS
+			const time_t t0 = static_cast<time_t>( g_pData->GetServerCurrentTime() );
             struct tm   ktm;
             struct tm* ptm = &ktm;
-            bool bOK = _localtime64_s( ptm, &t0 ) == 0;
-#else
-			struct tm* ptm = _localtime64( &t0 );
-			bool bOK = ( ptm != NULL );
-#endif // CONVERSION_VS
+            bool bOK = localtime_s( ptm, &t0 ) == 0;
 			if ( bOK == true )
 			{
 				float fNowSecond = (float)ptm->tm_hour * 3600.f + (float)ptm->tm_min * 60.f + (float) ptm->tm_sec;
@@ -2380,7 +2375,7 @@ void CX2TFieldGame::PopTalkBox( UidType iUnitUID_, const WCHAR* pWstrMsg_,
 			talkBox.m_BackTexColor		= coBackColor_;
 
 			talkBox.m_bUseOutLine		 = true;
-			if( coOutColor_ == 0x00000000 )	//	입력 없을 경우는 글씨색 그대로 쓰기
+			if( static_cast<DWORD>( coOutColor_ ) == 0x00000000 )	// no outline color given: keep the text color
 			{
 				talkBox.m_bUseOutLine = false;
 			}

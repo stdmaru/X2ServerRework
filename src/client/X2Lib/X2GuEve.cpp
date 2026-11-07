@@ -26171,9 +26171,9 @@ void CX2GUEve::ENSI_A_EBS_Kugelblitz_FrameMove()
 			}
 
 			fMPConsumption	= pSkillTemplet->GetSkillMPConsumptionValue( iSkillTempletLevel );
-			fPowerRate		= static_cast<float>( GetPowerRate() * ( min( m_sKugelBlitz_TinyData.m_timerElapsedTime.elapsed(), 3.f) / 3.f + 1.f ) );
+			fPowerRate		= static_cast<float>( GetPowerRate() * ( min( static_cast<float>( m_sKugelBlitz_TinyData.m_timerElapsedTime.elapsed() ), 3.f) / 3.f + 1.f ) );
 			iCount			= static_cast<int>( pSkillTemplet->GetSkillAbilityValue( CX2SkillTree::SA_PROJECTILE_PIERCING, iSkillTempletLevel ) *
-							  min( m_sKugelBlitz_TinyData.m_timerElapsedTime.elapsed(), 3.f) / 3.f );
+							  min( static_cast<float>( m_sKugelBlitz_TinyData.m_timerElapsedTime.elapsed() ), 3.f) / 3.f );
 			m_sKugelBlitz_TinyData.m_iAddDamageTime = iCount;
 		}
 		else
@@ -26466,7 +26466,7 @@ void CX2GUEve::ENSI_HA_EEP_LINK_OVERCHARGE_ILLUSION_FrameMove()
 			const int iSkillTempletLevel = max( 1, userSkillTree.GetSkillLevel( pSkillTemplet->m_eID ) );	/// ��ų ����
 
 			m_fFerdinandLifeTime = static_cast<float>(pSkillTemplet->GetSkillAbilityValue( CX2SkillTree::SA_EFFECTIVE_TIME, iSkillTempletLevel ));
-			m_fFerdinandLifeTime = max( 0, m_fFerdinandLifeTime );
+			m_fFerdinandLifeTime = max( 0.f, m_fFerdinandLifeTime );
 
 			if( m_fFerdinandLifeTime > 0.f )
 			{
