@@ -21,7 +21,9 @@ everything runs through this layer ([Phase 5](../project/roadmap.md#phase-5--dee
 | `D3D9Types.h` | The vocabulary: `D3DRS_*`, `D3DTSS_*`, `D3DSAMP_*`, `D3DTOP_*`, `D3DTA_*`, `D3DBLEND*`, `D3DCMP_*`, `D3DCULL_*`, `D3DSTENCILOP_*`, `D3DFVF_*`, `D3DPT_*`, `D3DFMT_*`, `D3DPOOL_*`, `D3DUSAGE_*`, `D3DLOCK_*`, `D3DCLEAR_*`, `D3DTS_*`, `D3DLOCKED_RECT`, `D3DRECT`, `D3DSURFACE_DESC`, with d3d9types.h's names and values (enumerations as C enums, flags as macros). The math types come from [`x2/platform/d3dx_math.h`](platform.md) |
 | `Device.h` / `Device.cpp` | `x2::d3d9::Device`: states, frame, clears, draws, pipeline and sampler caches, uploads |
 | `Resources.cpp` | `Texture` (levels, `LockRect`/`UnlockRect`, format conversion) and `VertexBuffer` (`Lock`/`Unlock`) |
-| `D3DXTypes.h`, `D3DXTexture.cpp`, `D3DX.cpp` | D3DX's types for the engine (interfaces as plain classes, T38; the D3DX objects keep `AddRef`/`Release`, held by a minimal `CComPtr`) and its functions on the device: `D3DXCheckTextureRequirements` follows `Device::SupportsTextureFormat`, `D3DXCreateTexture` creates on the device, loading from memory fails until the `.dds`/`.tga` loaders. `D3DX.cpp`: reference-counted `D3DXCreateBuffer`, `D3DXFrameDestroy`/`Find`/`NumNamedMatrices`; the mesh, skin, animation controller and effect creators fail with `E_NOTIMPL` until the `.x` and effect steps (2026-11-06). `ID3DXMesh`, `ID3DXSkinInfo`, `ID3DXAnimationSet`/`Keyframed`/`Compressed` and `ID3DXEffect` are declared with the methods the engine calls; `ID3DXLine` is gone (no user) |
+| `D3DXTypes.h`, `D3DXTexture.cpp`, `D3DX.cpp` | D3DX's types for the engine (interfaces as plain classes, T38; the D3DX objects keep `AddRef`/`Release`, held by a minimal `CComPtr`) and its functions on the device: `D3DXCheckTextureRequirements` follows `Device::SupportsTextureFormat`, `D3DXCreateTexture` creates on the device, `D3DXGetImageInfoFromFileInMemory`/`D3DXCreateTextureFromFileInMemoryEx` read [image files](#image-files-2026-11-07-clientd3dx-textures). `D3DX.cpp`: reference-counted `D3DXCreateBuffer`, `D3DXFrameDestroy`/`Find`/`NumNamedMatrices`; the mesh, skin, animation controller and effect creators fail with `E_NOTIMPL` until the `.x` and effect steps (2026-11-06). `ID3DXMesh`, `ID3DXSkinInfo`, `ID3DXAnimationSet`/`Keyframed`/`Compressed` and `ID3DXEffect` are declared with the methods the engine calls; `ID3DXLine` is gone (no user) |
+| `Formats.h` | Texel and block sizes, pitch and rows of the D3D9 formats the device takes (shared by the device and the loaders) |
+| `Image.h`, `Image.cpp`, `ImageConvert.cpp` | The [image files](#image-files-2026-11-07-clientd3dx-textures) (`x2::d3d9::image`) and the texel conversions: BGRA8 to and from every device format, BC1–3 decoding, BC encoding (stb_dxt), D3DX's resize filters. The device's upload conversion uses them too |
 | `Fvf.h` | FVF → element offsets and the vertex shader variant |
 | `GeneratedShader.h`, `shaders/` | The fixed-function HLSL, its manifest and the generated blobs (`generated/FixedFunctionShaders.inc`, [Shaders](../tools/shaders.md), T39) |
 
@@ -100,6 +102,59 @@ What the engine sets and reads back but the fixed-function shaders do not use ye
 - `UpdateTexture(source, destination)` copies the levels both textures have from the source's CPU copy and uploads them
   (same size and format); `Texture::AddDirtyRect` is accepted (whole levels are copied).
 
+## Image files (2026-11-07, `client/d3dx-textures`)
+
+`CKTDXDeviceTexture` loads every texture through `D3DXGetImageInfoFromFileInMemory` and
+`D3DXCreateTextureFromFileInMemoryEx`. Files are recognized by their contents, as D3DX did, not by name (T37: the assets
+load as they are):
+
+| File | Read by | D3DX's format (`D3DXIMAGE_INFO`) | Texture created as (format `UNKNOWN`) |
+|---|---|---|---|
+| DDS, FourCC `DXT1`–`DXT5` | `Image.cpp` | `DXT1`–`DXT5` | the same, blocks copied (native BC1–3) |
+| DDS, RGB masks | `Image.cpp` | `A8R8G8B8`, `X8R8G8B8`, `A8B8G8R8`, `X8B8G8R8`, `R8G8B8`, `R5G6B5`, `A1R5G5B5`, `X1R5G5B5`, `A4R4G4B4`, `X4R4G4B4` | the same, but `R8G8B8` → `X8R8G8B8` and `A/X8B8G8R8` → `A/X8R8G8B8` |
+| DDS, luminance/alpha, a D3DFORMAT number as FourCC | `Image.cpp` | `L8`, `A8L8`, `A8`, that number if the device takes it | the same |
+| TGA 24/32-bit, gray, color-mapped (raw and RLE) | stb_image | `R8G8B8`, `A8R8G8B8`, `L8`, `P8` | `X8R8G8B8`, `A8R8G8B8`, `L8`, `A8R8G8B8` |
+| TGA 15/16-bit (raw and RLE) | `Image.cpp` (stb_image drops the alpha bit) | `A1R5G5B5` with attribute bits, else `X1R5G5B5` | the same |
+| PNG, JPEG, BMP | stb_image | PNG `A8R8G8B8`/`X8R8G8B8`, JPEG `X8R8G8B8`, BMP `R8G8B8`/`A8R8G8B8` | as the TGA row |
+
+- **Levels**: a DDS's chain is read as stored; a volume texture keeps the first slice of each level and a cube map its
+  first face (none in the client; 49 DXT1 files are volumes of depth 1). Levels the texture has and the file does not
+  are generated from the level above with the mip filter (box when it is `D3DX_FILTER_NONE`).
+- **Size, levels and format asked for**: 0, `D3DX_DEFAULT` and `D3DX_DEFAULT_NONPOW2` keep the file's size (the device
+  takes any size); 0/`D3DX_DEFAULT` levels give the whole chain, `D3DX_FROM_FILE` the file's; `UNKNOWN`,
+  `D3DFMT_FROM_FILE` and `D3DX_DEFAULT` the format of the last column. A format the device does not take becomes
+  `A8R8G8B8`. When the size and format are the file's and there is no color key, levels are copied; otherwise they go
+  through BGRA8: decoded (BC1–3 in software), color-keyed (that exact ARGB becomes transparent black), resized with
+  `filter`, encoded (BC through stb_dxt, the others by `FromBgra8`).
+- **Filters**: `NONE` copies the top-left corner (transparent black outside the source), `POINT` takes the nearest
+  texel, `LINEAR` the four nearest, `TRIANGLE`/`BOX`/`D3DX_DEFAULT` average the texels each destination texel covers
+  (linear when enlarging). Mirror and dither flags are ignored.
+- **The texture detail option** (`CX2GameOption`, through `CKTDXDeviceManager::SetTextureDetailLevel`): High loads the file as it is (one level);
+  Medium halves textures of 128 texels and up and makes `R8G8B8`/`R5G6B5` files DXT1; Low quarters them and makes the
+  other files DXT3, so most DXT1/DXT5 textures are decoded, resized and encoded again at load. Medium and Low cost CPU
+  at load time, as they did with D3DX.
+- **stb**: [nothings/stb](https://github.com/nothings/stb) (public domain) pinned to commit `2c980bb` (2026-08-02,
+  stb_image 2.30, stb_dxt 1.12) as `x2::stb` in `cmake/X2Dependencies.cmake`, compiled without the project's warning
+  options like pl_mpeg; only the TGA, PNG, JPEG and BMP decoders, from memory.
+
+What the client's archives hold (2026-11-07, 57,793 unique `.dds`/`.tga` names, first-wins as the client mounts them):
+DXT1 28,633, DXT5 1,775, DXT3 1,277, R8G8B8 778, A8R8G8B8 438, X8R8G8B8 15 and A4R4G4B4 12 `.dds` (11,299 with mip
+chains); 24-bit 21,113, 32-bit 3,704, 16-bit 24 (all with the alpha bit), color-mapped 6 and gray 3 `.tga` (291 RLE).
+Seven `.dds` are PNGs and one a JPEG, one `.tga` is a JPEG and another (`UIEdge.tga`) a BMP. Three are not read, as D3DX
+could not have read them: `Velder_Field_001.dds` and `Velder_Field_003.dds` (empty) and
+`field_Peita_stage1_bluegate.dds` (`Q8W8V8U8`, a bump map format the device does not have).
+
+### Behavior changes and assumptions
+
+| Where | D3DX | Port | Why |
+|---|---|---|---|
+| A DDS cut short | Assumed to fail | Its whole levels load; missing ones are generated | No client file is cut short; tolerant |
+| `D3DX_DEFAULT` size | Rounded up to a power of two | The file's size | The device takes any size; the client passes explicit sizes |
+| A volume/cube DDS as a 2D texture | Not checked | First slice/face | The 49 volumes have depth 1 |
+| Encoding to DXT1 | Alpha below 128 became the transparent color | Alpha ignored | Only opaque formats (`R8G8B8`, `R5G6B5`) are made DXT1 by the client |
+| 32-bit TGA with no attribute bits (755 files) | *Assumed* `A8R8G8B8` | `A8R8G8B8`, alpha kept | To confirm against the original client when the engine renders |
+| Exact texels after resizing or encoding | D3DX's filters and BC compressor | Ours and stb_dxt's | Close, not identical |
+
 ## DXUT and the skeleton
 
 The [DXUT replacement](client-dxut.md) creates the device with the window, passes it to the `FrameMove`/`FrameRender`
@@ -126,7 +181,15 @@ lockable), state blocks. Each comes with the engine file that needs it.
   lists), the pipeline cache (uniform and dynamic state do not create pipelines; blending and culling do), texture formats
   and locked rectangles (A8R8G8B8 with mips, X8R8G8B8, A4R4G4B4, A8L8, DXT1), vertex buffer lock flags and the bytes they
   leave, partial clears drawn with the states restored, resources destroyed before and after the device.
-- `D3DXCheckTextureRequirements`: defaults, mip chains, formats a render target cannot take; loading from memory fails cleanly.
+- `D3DXCheckTextureRequirements`: defaults, mip chains, formats a render target cannot take; a file that is not an image
+  fails cleanly.
+- `test_d3dx_texture.cpp` (`-tc="d3dx*"`): `.dds`/`.tga`/`.png`/`.bmp` built in the test — the info of every format and of
+  files that are rejected, TGA orientation, RLE, 16-bit alpha, gray and color maps; BC1–3 decoding against hand-made
+  blocks and round trips through stb_dxt; every format to and from BGRA8; the four filters; textures copied, converted,
+  generated, color-keyed and cut short, volumes and cube maps; `CKTDXDeviceTexture`'s High/Medium/Low loads. With
+  `X2_MASSFILE_CLIENT_DATA` set to the client's `data` folder, every texture of its archives is decoded (8 threads, about
+  4 s in the container, 2026-11-07), the three unreadable ones are exactly the ones expected, and a few go through the
+  device at every detail level.
 - `test_d3dx.cpp` (`-tc="d3dx*"`, and the two `d3d9:` cases below): the material and lights with D3D9's default light,
   `UpdateTexture`'s copy and refusals, buffers and `CComPtr` reference counts, frame search/count/destroy through the
   allocator, `D3DXCreateTexture`'s mip chain, the mesh and effect creators failing with null outputs.

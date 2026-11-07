@@ -157,8 +157,8 @@ the texture, render target and sound devices, `KTDSManager`, `KTDSMP3Play`, `KSu
   `DrawPrimitiveUP`, itself a per-frame ring buffer. Draws longer than a type's size are cut in parts as the original did
   (strips by an even count, fans cut to one part).
 - **Textures:** files load through D3DX's functions on the device (`D3D9/D3DXTexture.cpp`); `D3DXCheckTextureRequirements`
-  follows the device's formats, and the `.dds`/`.tga` loaders are the next step, so loading a texture fails cleanly for
-  now.
+  follows the device's formats, and the `.dds`/`.tga`/`.png`/`.jpg`/`.bmp` files are read since 2026-11-07
+  ([D3D9 device › Image files](client-d3d9.md#image-files-2026-11-07-clientd3dx-textures)), the detail levels included.
 - **Assertions and logs** (`KSuperAssert`): the trace goes to stderr (`OutputDebugStringA` in the original), Retry in the
   assertion box traps into the debugger, Abort ends with `std::_Exit(3)`.
 

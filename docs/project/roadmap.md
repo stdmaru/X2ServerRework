@@ -239,6 +239,10 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
       API (T37).
 - [ ] Reimplement the rest of D3DX on the original assets (T1, T37): `.x` loader (mesh + skin + animation), `.dds` (BC1–3 native,
       legacy formats to RGBA8), fonts, sprites.
+  - [x] `client/d3dx-textures`: `.dds` (BC1–3 copied, legacy formats, mips), `.tga` and the disguised `.png`/`.jpg`/`.bmp`
+        through stb_image, recognized by contents; BC decoding, D3DX's filters and stb_dxt encoding for the Medium/Low
+        texture detail; all 57,793 textures of the client decode but 3 D3DX could not read either (2026-11-07). See
+        [D3D9 device › Image files](../porting/client-d3d9.md#image-files-2026-11-07-clientd3dx-textures).
 - [ ] ImGui renderer on `x2::render`, replacing the tools' `sdlgpu3` escape hatch (T36).
 - [x] Silent sound backend (2026-11-06, `client/ktdxlib-engine`, [Sound](../porting/client-ktdxlib.md#sound)): `CKTDXDeviceSound`, `KTDSManager` and
       `CKTDXDeviceManager::OpenSound` keep their interface and play nothing, so the 149 files that use sound compile
