@@ -5,7 +5,7 @@
 #include "./X2UIDragable.h"
 
 
-CX2UIDragable::CX2UIDragable( CKTDXStage* pNowStage, const WCHAR* pFileName )
+CX2UIDragable::CX2UIDragable( CKTDXStage* pNowStage, const WCHAR* /*pFileName*/ )
 : CX2ItemSlotManager( pNowStage, NULL )
 //: CX2ItemSlotManager( pNowStage, pFileName )
 {
@@ -25,7 +25,7 @@ HRESULT CX2UIDragable::OnFrameMove( double fTime, float fElapsedTime )
 }
 
 
-bool CX2UIDragable::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIDragable::MsgProc( HWND /*hWnd*/, UINT uMsg, WPARAM /*wParam*/, LPARAM lParam )
 {
 	switch( uMsg )
 	{

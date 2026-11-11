@@ -7,48 +7,48 @@ const double CX2PartyUI::PARTY_LIST_REFRESH_INTERVAL = 5.0;		// 파티 리스트
 
 
 CX2PartyUI::CX2PartyUI( CKTDXStage* pNowStage ) :
+CX2ItemSlotManager( pNowStage, NULL),
 m_pCurrStage( NULL ),
-m_pDLGParty( NULL ),
 //m_pDLGPartyMember( NULL ),
+m_pDLGParty( NULL ),
 m_pDLGPartyListMeberPreview( NULL ),
 m_pDLGWarningAllReady(NULL),
 m_pDLGPartyFever( NULL ),
-m_ePartyListLocalMapID( CX2LocationManager::LMI_INVALID ),
-m_iPartyListDungeonID( 0 ),
-m_iPartyListPageNumber( 1 ),
-m_iMaxPartyListPageNumber( 1 ),
-m_iPickedPartyListSlotIndex( -1 ),
-m_pLocalMapUI( new CX2LocalMapUI ),
-m_iNoviceGuideStep(0),
-m_fElapsedTime(3.f)
-, m_SumDelta(0)
-, m_bPartyDungeon(true)
-, m_bPartyPVP(false)
-, m_pDLGPartyMenu(NULL)
-, m_pDLGPartyPVP(NULL)
+m_pDLGQuestRewardItemInfo(NULL),
+m_pDLGQuestRewardItemInfoAdd(NULL),
+m_SumDelta(0),
+m_bPartyDungeon(true),
+m_bPartyPVP(false),
+m_pDLGPartyMenu(NULL),
+m_pDLGPartyPVP(NULL)
 , m_pDLGPartyPVPSetting(NULL)
 , m_pDLGPartyPVPSettingButton(NULL)
 , m_pDlgPartyPvpMapSetting(NULL)
-//, m_pDlgPartyPvpEtcSetting(NULL)
 , m_pDlgPvpConfirm(NULL)
-, m_fWaitPvpTime(0.f)
 , m_iEstimatedTime(0)
+, m_fWaitPvpTime(0.f)
+, m_ePartyListLocalMapID( CX2LocationManager::LMI_INVALID )
+, m_iPartyListDungeonID( 0 )
+//, m_pDlgPartyPvpEtcSetting(NULL)
+, m_iPartyListPageNumber( 1 )
+, m_iMaxPartyListPageNumber( 1 )
+, m_iPickedPartyListSlotIndex( -1 )
 
-, m_lParam (0)
+, m_pLocalMapUI( new CX2LocalMapUI )
 
 //어둠의 문 난이도가 변경 되었을 때, EGS_PARTY_CHANGE_DUNGEON_REQ 를 호출하도록 주는 신호
-, m_bChangePartyUI(false)
-, m_pDLGQuestRewardItemInfo(NULL)
+, m_iNoviceGuideStep(0)
+, m_fElapsedTime(3.f)
 
-, m_pDLGQuestRewardItemInfoAdd(NULL)
-
-
-, CX2ItemSlotManager( pNowStage, NULL)
 , m_bShowQuestMark(true)
+
+
 , m_pDungeonCheckBox(NULL)
 , m_pPVPCheckBox(NULL)
+, m_bChangePartyUI(false)
 , m_eDungeonButton(BUTTON_START)
 , m_ePVPButton(BUTTON_START)
+, m_lParam (0)
 {
 	m_vecDefaultMap.clear();
 	InitPvpSetting();
@@ -1809,6 +1809,8 @@ void CX2PartyUI::UpdatePartyDLG( bool bRenamePartyTitle /*= false*/ )
 						} break;
 					}
 				} break;
+			default:
+				break;
 			}
 //}} kimhc // 2010.3.19 //	비밀 던전 개편
 
@@ -2601,6 +2603,8 @@ void CX2PartyUI::UpdatePartyMenu()
 			OpenPartyDLG( false );
 			OpenPartyFeverDLG( false );
 		} break;
+	default:
+		break;
 	}
 
 	UpdatePartyDLG();
@@ -2678,7 +2682,7 @@ bool CX2PartyUI::GetShow()
 
 // @bHaveParty : true이면 파티장이 게임 시작할 수 있는지 검사
 // @bReadyOnly : true이면 파티원이 레디할 수 있는지만 검사
-bool CX2PartyUI::IsGameStartable( CX2LocationManager::LOCAL_MAP_ID eCurrLocalMapID, const CX2Dungeon::DungeonData* pDungeonData, bool bHaveParty, bool bPartyLeader )
+bool CX2PartyUI::IsGameStartable( CX2LocationManager::LOCAL_MAP_ID eCurrLocalMapID, const CX2Dungeon::DungeonData* /*pDungeonData*/, bool bHaveParty, bool bPartyLeader )
 {
 	// 운영자 이상은 모든 던전 그냥 시작할 수 있게
 	if( NULL != g_pData->GetMyUser() &&
@@ -3154,7 +3158,7 @@ void CX2PartyUI::UpdatePvpPartyDlg()
 	}
 }
 
-bool CX2PartyUI::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PartyUI::MsgProc( HWND /*hWnd*/, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/ )
 {
 	// 앞에 모달 다이얼로그가 있으면 메시지를 처리하지 않는다
 	if( m_pDlgPartyPvpMapSetting != NULL && m_pDlgPartyPvpMapSetting->GetShow() == true )
@@ -4053,7 +4057,7 @@ void CX2PartyUI::UpdateAdequateItemLevel(int iItemLevel_)
 }
 
 
-void CX2PartyUI::UpdateBossItemList(const CX2Dungeon::DungeonData::mapBossDropItem& BossDropItemList_, bool bIsHenirChallenge /*= false*/)
+void CX2PartyUI::UpdateBossItemList(const CX2Dungeon::DungeonData::mapBossDropItem& BossDropItemList_, bool /*bIsHenirChallenge*/ /*= false*/)
 {
 	CKTDGUIStatic* pStaticItem = static_cast<CKTDGUIStatic*>(m_pDLGParty->GetControl( L"ITEM")); // 보상 아이템
 	if( NULL != pStaticItem )

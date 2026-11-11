@@ -128,6 +128,8 @@ void CX2GameOption::UpTexDetail()
 			SetTexDetail( OL_MEDIUM );
 		}
 		break;
+	default:
+		break;
 	}
 }
 
@@ -148,6 +150,8 @@ void CX2GameOption::DownTexDetail()
 		{
 			SetTexDetail( OL_LOW );
 		}
+		break;
+	default:
 		break;
 	}
 }
@@ -197,6 +201,8 @@ void CX2GameOption::UpUnitDetail()
 			SetUnitDetail( OL_MEDIUM );
 		}
 		break;
+	default:
+		break;
 	}
 }
 
@@ -217,6 +223,8 @@ void CX2GameOption::DownUnitDetail()
 		{
 			SetUnitDetail( OL_LOW );
 		}
+		break;
+	default:
 		break;
 	}
 }
@@ -275,6 +283,8 @@ void CX2GameOption::UpMapDetail()
 			SetMapDetail( OL_MEDIUM );
 		}
 		break;
+	default:
+		break;
 	}
 }
 
@@ -295,6 +305,8 @@ void CX2GameOption::DownMapDetail()
 		{
 			SetMapDetail( OL_LOW );
 		}
+		break;
+	default:
 		break;
 	}
 }
@@ -364,6 +376,8 @@ void CX2GameOption::UpEffectDetail()
 			SetEffectDetail( OL_MEDIUM );
 		}
 		break;
+	default:
+		break;
 	}
 }
 
@@ -384,6 +398,8 @@ void CX2GameOption::DownEffectDetail()
 		{
 			SetEffectDetail( OL_LOW );
 		}
+		break;
+	default:
 		break;
 	}
 }
@@ -478,7 +494,7 @@ void CX2GameOption::SetFieldParty( bool bParty )
 	}
 }
 
-void CX2GameOption::SetFieldFriend( bool bFriend )
+void CX2GameOption::SetFieldFriend( bool /*bFriend*/ )
 {
 	//m_OptionList.m_bFriend = bFriend;
 

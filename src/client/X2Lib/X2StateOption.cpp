@@ -7,19 +7,19 @@
 
 CX2StateOption::CX2StateOption(void) :
 // 2009.01.09 김태완 : 초기화 코드정리
+m_DLGWaitKeyConfig(NULL),
+m_fKeyconfigTimer(-1.0f),
+m_eSelectedGameAction( GAME_ACTION_NONE ),
 m_pDLGOptionWindow(NULL),
 m_pDLGBlackList(NULL),
+//m_OldOptionList,
 m_pDLGBlackListAdd(NULL),
 m_pDLGBlackListRemoveOKAndCancel(NULL),
-m_bIsOptionWindowOpen(false),
-//m_OldOptionList,
-m_wstrNickNameForBlackListRemove(L""),
-m_pResolutionChangeConfirmDialog(NULL),
-m_vOriginalResolution(1024.f, 768.f ),			// D3DXVECTOR2
-m_bResetOriginalResolution(true)
-, m_DLGWaitKeyConfig(NULL)
-, m_fKeyconfigTimer(-1.0f)
-, m_eSelectedGameAction( GAME_ACTION_NONE )
+m_bIsOptionWindowOpen(false),			// D3DXVECTOR2
+m_wstrNickNameForBlackListRemove(L"")
+, m_pResolutionChangeConfirmDialog(NULL)
+, m_vOriginalResolution(1024.f, 768.f )
+, m_bResetOriginalResolution(true)
 {
 	// 초기화 코드 //////////////////////////////////////////////////////////////////////////
 
@@ -1278,6 +1278,8 @@ void CX2StateOption::ShowGraphicOption( bool bShow )
 			pRadio_Graphic_Texture_Middle->SetEnable( false );
 			pRadio_Graphic_Texture_Low->SetEnable( false );
 		} break;
+	default:
+		break;
 	}
 
 	//{{ kimhc // 2010.3.12 //	채팅창 개편
@@ -1626,10 +1628,10 @@ void CX2StateOption::HideBandiCamOption()
 }
 
 
-void CX2StateOption::ShowCommunityOption( bool bShow )
+void CX2StateOption::ShowCommunityOption( bool /*bShow*/ )
 {
 }
-void CX2StateOption::ShowStaticSecurity( bool bShow )
+void CX2StateOption::ShowStaticSecurity( bool /*bShow*/ )
 {
 	return;
 }
@@ -2231,7 +2233,7 @@ bool CX2StateOption::Handler_EGS_UPDATE_COMMUNITY_OPTION_REQ()
 	return true;
 }
 
-bool CX2StateOption::Handler_EGS_UPDATE_COMMUNITY_OPTION_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateOption::Handler_EGS_UPDATE_COMMUNITY_OPTION_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_UPDATE_COMMUNITY_OPTION_ACK kEvent;
@@ -2322,7 +2324,7 @@ CX2StateOption::ConfirmDialog::ConfirmDialog( const WCHAR* wszMsgTemplet, float 
 	m_pDLG = g_pMain->KTDGUIOkAndCancelMsgBox( D3DXVECTOR2(300,310), wszText, iYesMsg, pStage, iNoMsg );
 }
 
-void CX2StateOption::ConfirmDialog::OnFrameMove( double fTime, float fElapsedTime )
+void CX2StateOption::ConfirmDialog::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	if( m_fTimeLeft <= 0.f )
 		return;
@@ -2637,7 +2639,7 @@ void CX2StateOption::ShowInputOption( bool bShow )
 	pButtonKeyConfig->SetShowEnable(bShow, bShow);
 }
 
-void CX2StateOption::ShowStaticInput( bool bShow )
+void CX2StateOption::ShowStaticInput( bool /*bShow*/ )
 {
 	CKTDGUIStatic* pStatic_Input = NULL;
 }

@@ -415,17 +415,17 @@ bool CX2StateSquareGame::UIP2PEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LP
 	return false;
 }
 
-bool CX2StateSquareGame::Handler_EGS_STATE_CHANGE_VILLAGE_MAP_REQ( UINT nMapID )
+bool CX2StateSquareGame::Handler_EGS_STATE_CHANGE_VILLAGE_MAP_REQ( UINT /*nMapID*/ )
 {
 	return true;
 }
 
-bool CX2StateSquareGame::Handler_EGS_STATE_CHANGE_VILLAGE_MAP_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateSquareGame::Handler_EGS_STATE_CHANGE_VILLAGE_MAP_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	return false;
 }
 
-bool CX2StateSquareGame::Handler_EGS_SQUARE_UNIT_SYNC_DATA_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateSquareGame::Handler_EGS_SQUARE_UNIT_SYNC_DATA_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_SQUARE_UNIT_SYNC_DATA_NOT kEvent;
@@ -437,7 +437,7 @@ bool CX2StateSquareGame::Handler_EGS_SQUARE_UNIT_SYNC_DATA_NOT( HWND hWnd, UINT 
 
 
 
-bool CX2StateSquareGame::Handler_EGS_JOIN_SQUARE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateSquareGame::Handler_EGS_JOIN_SQUARE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_JOIN_SQUARE_NOT kEvent;
@@ -449,7 +449,7 @@ bool CX2StateSquareGame::Handler_EGS_JOIN_SQUARE_NOT( HWND hWnd, UINT uMsg, WPAR
 	return true;
 }
 
-bool CX2StateSquareGame::Handler_EGS_LEAVE_SQUARE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateSquareGame::Handler_EGS_LEAVE_SQUARE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_LEAVE_SQUARE_NOT kEvent;
@@ -481,7 +481,7 @@ bool CX2StateSquareGame::Handler_EGS_LEAVE_SQUARE_REQ( int leaveRoomReason /* = 
 	return true;
 }
 
-bool CX2StateSquareGame::Handler_EGS_LEAVE_SQUARE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateSquareGame::Handler_EGS_LEAVE_SQUARE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_LEAVE_SQUARE_ACK kEvent;
@@ -511,7 +511,7 @@ bool CX2StateSquareGame::Handler_EGS_LEAVE_SQUARE_ACK( HWND hWnd, UINT uMsg, WPA
 	return true;
 }
 
-bool CX2StateSquareGame::Handler_EGS_CHANGE_EQUIPPED_ITEM_IN_SQUARE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateSquareGame::Handler_EGS_CHANGE_EQUIPPED_ITEM_IN_SQUARE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_EQUIPPED_ITEM_IN_SQUARE_NOT kEvent;
@@ -520,7 +520,7 @@ bool CX2StateSquareGame::Handler_EGS_CHANGE_EQUIPPED_ITEM_IN_SQUARE_NOT( HWND hW
 	return g_pSquareGame->Handler_EGS_CHANGE_EQUIPPED_ITEM_IN_SQUARE_NOT( kEvent );
 }
 
-bool CX2StateSquareGame::Handler_EGS_UPDATE_SQUARE_PERSONAL_SHOP_INFO_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateSquareGame::Handler_EGS_UPDATE_SQUARE_PERSONAL_SHOP_INFO_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_UPDATE_SQUARE_PERSONAL_SHOP_INFO_NOT kEvent;

@@ -1021,6 +1021,8 @@ void CX2DungeonGame::SubStageStart()
 						}
 					}
 				} break;
+			default:
+				break;
 			}
 		}
 	}
@@ -1820,6 +1822,8 @@ bool CX2DungeonGame::Handler_EGS_STATE_CHANGE_RESULT_NOT( KEGS_STATE_CHANGE_RESU
 					g_pInstanceData->SetDungeonLoungeWorldID( m_pDungeon->GetNowStage()->GetStageData()->m_WorldID );
 				}
 			} break;
+		default:
+			break;
 		}
 	}
 
@@ -1957,7 +1961,7 @@ bool CX2DungeonGame::Handler_EGS_DUNGEON_EFFECT_REMAINING_TIME_NOT( KEGS_DUNGEON
 	return true;
 }
 
-bool CX2DungeonGame::Handler_EGS_DUNGEON_EFFECT_TIME_OUT_NOT( KEGS_DUNGEON_EFFECT_TIME_OUT_NOT& kEGS_DUNGEON_EFFECT_TIME_OUT_NOT )
+bool CX2DungeonGame::Handler_EGS_DUNGEON_EFFECT_TIME_OUT_NOT( KEGS_DUNGEON_EFFECT_TIME_OUT_NOT& /*kEGS_DUNGEON_EFFECT_TIME_OUT_NOT*/ )
 {
 	if( NULL != g_pData->GetDungeonRoom() )
 	{
@@ -2020,7 +2024,7 @@ void CX2DungeonGame::CreateDamageDataForDungeonTimeOut()
 
 
 
-void CX2DungeonGame::DungeonTimeOutFrameMove( double fTime, float fElapsedTime )
+void CX2DungeonGame::DungeonTimeOutFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	// oasis907 : 김상윤 [2010.5.6] // 타이머 관련
 	if( m_bShowDungeonClearLimitTimeOut == true )
@@ -2056,7 +2060,7 @@ void CX2DungeonGame::DungeonTimeOutFrameMove( double fTime, float fElapsedTime )
 }
 //}} oasis907 : 김상윤 [2010.4.26] //
 
-void CX2DungeonGame::CountTimeSubStageFrameMove( double fTime, float fElapsedTime )
+void CX2DungeonGame::CountTimeSubStageFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	if( true == m_bCountTimeLeftAfterSubStageOpen )
 	{
@@ -2086,7 +2090,7 @@ void CX2DungeonGame::CountTimeSubStageFrameMove( double fTime, float fElapsedTim
 	}
 }
 
-void CX2DungeonGame::TutorialFrameMove( double fTime, float fElapsedTime )
+void CX2DungeonGame::TutorialFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	if( true == g_pMain->GetIsPlayingTutorial() )
 	{
@@ -2522,7 +2526,7 @@ int	CX2DungeonGame::GetDungeonType()
 	}
 	//}} 허상형 : [2011/3/4/] //	월드 미션
 
-	void CX2DungeonGame::CloseDungeonName( float fTime )
+	void CX2DungeonGame::CloseDungeonName( float /*fTime*/ )
 	{
 		m_pDLGTitle->Move(m_pDLGTitle->GetPos(), D3DXCOLOR(1.f, 1.f, 1.f, 0.f), 0.75f, true);
 	}
@@ -2630,7 +2634,7 @@ void CX2DungeonGame::ResurrectOtherUser()
 
 
 
-bool CX2DungeonGame::Handler_EGS_BAD_ATTITUDE_USER_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2DungeonGame::Handler_EGS_BAD_ATTITUDE_USER_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = reinterpret_cast <KSerBuffer*> (lParam);	// lParam 을 KSerBuffer 로
 	KEGS_BAD_ATTITUDE_USER_NOT kEvent;

@@ -12,26 +12,26 @@ m_pButtonShop( NULL ),
 m_pButtonMake( NULL ),
 m_pButtonTraining( NULL ),
 m_pButtonFreeTraining( NULL ),
-m_pButtonEnchant( NULL ),
-m_pButtonAttribute( NULL ),
+m_pButtonGuild( NULL ),
+m_pButtonRanking( NULL ),
+m_pButtonExchange( NULL ),
+m_pButtonPrivateBank( NULL ),
+m_pButtonPersonalShop( NULL ),
 m_pButtonBack( NULL ),
 m_pButtonOut( NULL ),
 m_pButtonPass( NULL ),
 m_pButtonWindowPass( NULL ),
 m_pButtonNext( NULL ),
-m_pButtonAgree( NULL ),
-m_pButtonComplete( NULL ),
-m_pButtonGuild( NULL ),
 //}} kimhc // 2009-08-13 // NULL 초기화 추가
-m_pButtonRanking( NULL )
+m_pButtonAgree( NULL )
 //{{ kimhc // 2009-07-25 // 헤니르의 시공에 추가되는 ITEM_EXCHANGE_SHOP 작업
-, m_pButtonExchange( NULL )
+, m_pButtonComplete( NULL )
 //}} kimhc // 2009-07-25 // 헤니르의 시공에 추가되는 ITEM_EXCHANGE_SHOP 작업
 
 //{{ kimhc // 2009-08-03 // 캐릭터별 은행
-,m_pButtonPrivateBank( NULL )
+,m_pButtonEnchant( NULL )
 //}} kimhc // 2009-08-03 // 캐릭터별 은행
-,m_pButtonPersonalShop( NULL )
+,m_pButtonAttribute( NULL )
 ,m_pButtonAgencyTraderRegister(NULL)
 ,m_pButtonAgencyTraderReceive(NULL)
 //{{ 2011.05.04   임규수 아바타 합성 시스템
@@ -392,6 +392,8 @@ bool CX2TFieldNpcShop::GetShopType(NPC_SHOP_BUTTON_TYPE eType)
 			if( NULL != m_pButtoenExchangeNewItem )
 				return m_pButtoenExchangeNewItem->GetShow();
 		}
+		break;
+	default:
 		break;
 	}
 
@@ -1161,7 +1163,7 @@ void CX2TFieldNpcShop::CreateHouseNPCName(CX2LocationManager::HouseTemplet* pHou
 	}
 }
 
-HRESULT CX2TFieldNpcShop::OnFrameMove( double fTime, float fElapsedTime )
+HRESULT CX2TFieldNpcShop::OnFrameMove( double /*fTime*/, float /*fElapsedTime*/ )
 {
     //{{ seojt // 2009-8-21, 11:46
     // check whether handle is invalid or not. jintaeks on 2009-08-21, 11:46
@@ -1204,7 +1206,7 @@ HRESULT CX2TFieldNpcShop::OnFrameMove( double fTime, float fElapsedTime )
 	return S_OK;
 }
 
-int CX2TFieldNpcShop::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+int CX2TFieldNpcShop::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/ )
 {
 	switch(wParam)
 	{
@@ -1540,7 +1542,7 @@ int CX2TFieldNpcShop::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LP
 	return 0;
 }
 
-bool CX2TFieldNpcShop::UIServerEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2TFieldNpcShop::UIServerEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	return false;
 }

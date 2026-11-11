@@ -85,11 +85,11 @@ CX2GULire_ElvenRanger::CX2GULire_ElvenRanger( int unitIndex, int teamNum,
 , m_hWindSneakerFoot( INVALID_EFFECTSET_HANDLE )
 , m_hDESlideKick( INVALID_DAMAGE_EFFECT_HANDLE )
 , m_iArrowMeshPlayerIndex( 0 )
-, m_fPreRenderParamColorA (1.f)
-, m_fRenderParamColorA ( 1.f )
-, m_fSpiralStrikeRemainingTime ( 5.5f )
-
 , m_fPriorPlannedBlowIncreaseHPRate ( 0.f )
+, m_fSpiralStrikeRemainingTime ( 5.5f )
+, m_fPreRenderParamColorA (1.f)
+
+, m_fRenderParamColorA ( 1.f )
 {
 	m_bReAttackZ1Right		= false;
 	m_fReAttackZ1Time		= 0.0f;
@@ -1469,6 +1469,8 @@ void CX2GULire_ElvenRanger::InitState()
 		{
 			m_iSkillCutInSetIndex = 3;
 		} break;
+	default:
+		break;
 	}
 
 	switch( pUnitData->m_UnitClass )
@@ -2327,6 +2329,8 @@ void CX2GULire_ElvenRanger::InitState()
 			m_StateList[stateData.stateID] = stateData;
 		} break;
 
+	default:
+		break;
 	}
 
 
@@ -2633,6 +2637,8 @@ void CX2GULire_ElvenRanger::InitEquippedActiveSkillState(bool bOnlySkillLevel /*
 					hyperStateData.OnFrameMove		= normalStateData.OnFrameMove;
 					hyperStateData.OnEventProcess	= normalStateData.OnEventProcess;
 				} break;
+			default:
+				break;
 			}
 			return;
 		} break;
@@ -4623,6 +4629,8 @@ RENDER_HINT CX2GULire_ElvenRanger::CommonRender_Prepare()
 				return true;
 			}
 		} break;
+	default:
+		break;
 	}
 
 	return false;
@@ -18362,6 +18370,8 @@ CX2SkillTree::ACTIVE_SKILL_USE_CONDITION CX2GULire_ElvenRanger::GetSkillUseCondi
 			if( GetEqippedSkillMemo(CX2SkillTree::SMI_RENA_MEMO22) == true )
 				eActiveSkillUseCondition = CX2SkillTree::ASUT_AIR;
 		} break;
+	default:
+		break;
 	}
 
 

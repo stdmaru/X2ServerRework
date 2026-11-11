@@ -6,12 +6,12 @@
 	@brief		������, ���� ��ų �ʱ�ȭ, ���Ŭ���� �ʱ�ȭ
 	*/
 CX2UserSkillTree::CX2UserSkillTree(void)
-	: m_eSkillSlotBExpirationState( SSBES_EXPIRED )
-	, m_wstrSkillSlotBEndDate( L"" )
-	, m_iUnitClass( CX2Unit::UC_NONE )
-	, m_usUsingPage( 0 )
+	: m_usUsingPage( 0 )
 	, m_usOpenedPage( 0 )
 	, m_usSelectPage( 0 )
+	, m_eSkillSlotBExpirationState( SSBES_EXPIRED )
+	, m_wstrSkillSlotBEndDate( L"" )
+	, m_iUnitClass( CX2Unit::UC_NONE )
 {
 	static_assert( ARRAY_SIZE( m_aEquippedSkill ) == ARRAY_SIZE( m_aEquippedSkillSlotB ) , "");
 	for( int i=0; i<std::ssize( m_aEquippedSkill ); ++i )
@@ -39,7 +39,7 @@ CX2UserSkillTree::~CX2UserSkillTree(void)
 	@param[in]	fTime : ���� �ð�
 	@param[in]	fElapsedTime : ��� �ð�
 */
-void CX2UserSkillTree::OnFrameMove( double fTime, float fElapsedTime )
+void CX2UserSkillTree::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	CX2GageManager* pGageManager = CX2GageManager::GetInstance();
 
@@ -1151,6 +1151,8 @@ CX2Stat::Stat CX2UserSkillTree::GetSkillStat() const
 			{
 				retStat.AddStat( pSkillTemplet->GetSkillStatValue( userSkillData.m_iSkillLevel ), false );
 			} break;
+		default:
+			break;
 		}
 	}
 
@@ -1189,6 +1191,8 @@ CX2Stat::Stat CX2UserSkillTree::GetGuildSkillStat(int iGuildMemberGrade) const
 			{
 				retStat.AddStat( pSkillTemplet->GetSkillStatValue( userSkillData.m_iSkillLevel ), false );
 			} break;
+		default:
+			break;
 		}
 	}
 
@@ -2282,6 +2286,8 @@ CX2SkillTree::SKILL_ID CX2UserSkillTree::GetSkillIDByEquipSlotID( IN const int i
 			iSkillSlotIndex = 3;
 			bSlotB = true;
 		} break;
+	default:
+		break;
 	}
 
 	const SkillSlotData* pSkillSlotData = GetSkillSlot( iSkillSlotIndex, bSlotB );

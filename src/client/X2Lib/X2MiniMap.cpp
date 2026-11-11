@@ -109,6 +109,8 @@ void    CX2MiniMap::OnFrameRender_Draw()
 		{
 			RenderVillage();
 		}
+	default:
+		break;
 	}
 
 //	return S_OK;

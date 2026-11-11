@@ -54,7 +54,7 @@ bool CX2GlobalMissionManager::UIServerEventProc( HWND hWnd, UINT uMsg, WPARAM wP
 	return false;
 }
 
-HRESULT CX2GlobalMissionManager::OnFrameMove( double fTime, float fElapsedTime )
+HRESULT CX2GlobalMissionManager::OnFrameMove( double /*fTime*/, float /*fElapsedTime*/ )
 {
 	if( m_pUIGlobalMission->GetGlobalMissionDlg() != NULL )
 	{
@@ -73,7 +73,7 @@ HRESULT CX2GlobalMissionManager::OnFrameMove( double fTime, float fElapsedTime )
 	return S_OK;
 }
 
-bool CX2GlobalMissionManager::Handler_EGS_GLOBAL_MISSION_UPDATE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+bool CX2GlobalMissionManager::Handler_EGS_GLOBAL_MISSION_UPDATE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam)
 {	// 게임서버에서 주기적으로 정보를 보내줌.
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_GLOBAL_MISSION_UPDATE_NOT kEvent;

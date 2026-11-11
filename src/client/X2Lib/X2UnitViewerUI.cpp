@@ -2759,6 +2759,8 @@ void CX2UnitViewerUI::ReplaceEmptyToBasic()
 		{
 			ReplaceEmptyToBasic( CX2Unit::EP_RAVEN_LEFT_ARM,	m_pUnit->GetUnitTemplet()->m_RavenLeftArmItemID		);
 		} break;
+	default:
+		break;
 	}
 
 
@@ -4686,6 +4688,8 @@ void CX2UnitViewerUI::ProcessEnchantedWeaponEffectAtHand( CX2Unit::UNIT_TYPE uni
 			aEmitRate[2] = 60.f;
 			aEmitRate[3] = 25.f;
 		} break;
+	default:
+		break;
 	}
 
 
@@ -5319,6 +5323,8 @@ bool CX2UnitViewerUI::PlayEmotion(CX2Unit::EMOTION_TYPE eEmotionId, wstring &wst
 				break;
 			case CX2Unit::ET_EMOTION_AVATAR6:
 				m_bMixedEmotion[5] = true;
+				break;
+			default:
 				break;
 			}
 			SAFE_CLOSE( pMixMotion );

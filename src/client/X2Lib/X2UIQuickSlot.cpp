@@ -9,7 +9,7 @@ namespace _CONST_QUICK_SLOT_
 }
 
 
-CX2UIQuickSlot::CX2UIQuickSlot( CKTDXStage* pNowStage, const WCHAR* pFileName )
+CX2UIQuickSlot::CX2UIQuickSlot( CKTDXStage* pNowStage, const WCHAR* /*pFileName*/ )
 : CX2UIDragable( pNowStage, NULL ),
 m_bShow(false),
 m_bEnable(true),
@@ -574,7 +574,7 @@ bool CX2UIQuickSlot::Handler_EGS_USE_QUICK_SLOT_REQ( int slotID )
 
 
 
-bool CX2UIQuickSlot::Handler_EGS_USE_QUICK_SLOT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIQuickSlot::Handler_EGS_USE_QUICK_SLOT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_USE_QUICK_SLOT_ACK kEvent;
@@ -660,7 +660,7 @@ bool CX2UIQuickSlot::Handler_EGS_USE_QUICK_SLOT_ACK( HWND hWnd, UINT uMsg, WPARA
 }
 
 
-bool CX2UIQuickSlot::Handler_EGS_USE_QUICK_SLOT_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIQuickSlot::Handler_EGS_USE_QUICK_SLOT_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_USE_QUICK_SLOT_NOT kEvent;
@@ -1706,7 +1706,7 @@ bool CX2UIQuickSlot::Handler_EGS_USE_DEFENCE_DUNGEON_QUICK_SLOT_REQ( int slotID 
 	@param		: 슬롯 인덱스
 	@return		: 성공 여부
 */
-bool CX2UIQuickSlot::Handler_EGS_USE_DEFENCE_DUNGEON_QUICK_SLOT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIQuickSlot::Handler_EGS_USE_DEFENCE_DUNGEON_QUICK_SLOT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_USE_DEFENCE_DUNGEON_QUICK_SLOT_ACK kEvent;

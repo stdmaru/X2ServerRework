@@ -1359,7 +1359,7 @@ wstring CWordLineHandler::GetStrByLineBreakColorInX2Main( const WCHAR* pOrgStr, 
 
 //================================================================================//
 
-void CWordLineHandler::ProcessQuestDescInUIQuestNew( const wstring& wstrDesc, const int iLineWidth, CKTDGFontManager::CUKFont* pFont,D3DXVECTOR2 m_vQuestDescSize, vector<wstring>&  m_vecQuestDesc)
+void CWordLineHandler::ProcessQuestDescInUIQuestNew( const wstring& wstrDesc, const int iLineWidth, CKTDGFontManager::CUKFont* pFont,D3DXVECTOR2 /*m_vQuestDescSize*/, vector<wstring>&  m_vecQuestDesc)
 {
 	// 일단 wstrDesc를 만들어내자-_-
 	// 클리어 조건 ->

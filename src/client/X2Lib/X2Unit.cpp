@@ -705,6 +705,8 @@ CX2Item* CX2Unit::CreateBasicEquip( CX2Unit::EQIP_POSITION equipPosition )
 	case CX2Unit::EP_WEAPON_HAND:
 		kBasicEquipData.m_ItemID = GetUnitTemplet()->m_BasicWeaponItemID;
 		break;
+	default:
+		break;
 	}
 	if ( kBasicEquipData.m_ItemID == 0 )		// ���� ���ǿ� ���� �Ǽ��縮�� ���
 	{
@@ -1116,6 +1118,8 @@ const CX2Stat::EnchantStat& CX2Unit::GetEnchantStat( bool bUpdate /*= true*/, bo
 					m_EnchantStat.m_fDefNature += (int)CX2EnchantItem::EAR_VALUE;
 					m_EnchantStat.m_fDefDark += (int)CX2EnchantItem::EAR_VALUE;
 				} break;
+			default:
+				break;
 			}
 		}
 
@@ -1455,6 +1459,8 @@ float CX2Unit::GetRepairDiscountRate()
 					{
 						fDiscountRate -= 1.5f;
 					} break;
+				default:
+					break;
 				}
 			}
 		}
@@ -1857,6 +1863,8 @@ int CX2Unit::GetClassLevel()
 		{
 			return 2;
 		} break;
+	default:
+		break;
 	}
 
 
@@ -3425,7 +3433,7 @@ UidType CX2Unit::UnitData::GetBlackListUnitUID( const WCHAR* wszNickName ) const
 	return unitUID;
 }
 
-void CX2Unit::UnitData::SetPremiumBuffInfo( const vector<KBuffInfo>& vecBuffInfo_ )
+void CX2Unit::UnitData::SetPremiumBuffInfo( const vector<KBuffInfo>& /*vecBuffInfo_*/ )
 {
 	/*for ( const KBuffInfo& kBuffInfo : vecBuffInfo_ )		/// �� ���� �ý���
 	{
@@ -3433,7 +3441,7 @@ void CX2Unit::UnitData::SetPremiumBuffInfo( const vector<KBuffInfo>& vecBuffInfo
 	}*/
 }
 
-void CX2Unit::UnitData::ErasePremiumBuffInfo( const vector<int>& vecBuffInfo_ )
+void CX2Unit::UnitData::ErasePremiumBuffInfo( const vector<int>& /*vecBuffInfo_*/ )
 {
 	/*for ( const int& iBuffID : vecBuffInfo_ )				/// �� ���� �ý���
 	{
@@ -4054,12 +4062,14 @@ float CX2Unit::GetSkillCoolTimeDecreaseRate(CX2SkillTree::SKILL_ID eSkillID, CX2
 			return fDecreaseRate;
 		}
 		break;
+	default:
+		break;
 	}
 
 	return fDecreaseRate;
 }
 
-float CX2Unit::GetSkillMpDecreaseRate(CX2SkillTree::SKILL_ID eSkillID, CX2SkillTree::SKILL_TYPE eSkillType) const
+float CX2Unit::GetSkillMpDecreaseRate(CX2SkillTree::SKILL_ID /*eSkillID*/, CX2SkillTree::SKILL_TYPE eSkillType) const
 {
 	float fDecreaseRate = 1.0f;
 

@@ -174,7 +174,7 @@ CX2SlotItem* CX2ItemSlotManager::GetSlotByID( int iSlotID )
 	return NULL;
 }
 
-HRESULT CX2ItemSlotManager::OnFrameMove( double fTime, float fElapsedTime )
+HRESULT CX2ItemSlotManager::OnFrameMove( double /*fTime*/, float /*fElapsedTime*/ )
 {
 	KTDXPROFILE();
 
@@ -753,7 +753,7 @@ std::wstring CX2ItemSlotManager::GetSlotItemDescByUID( UidType itemUID, bool bIt
         bItemDescExtra, true);
 }
 
-std::wstring CX2ItemSlotManager::GetSlotItemDescByTID( CX2Item* pItem, int itemTID, bool bItemDescExtra /*= true*/, bool bMyUnitItem_ /*= false*/ )
+std::wstring CX2ItemSlotManager::GetSlotItemDescByTID( CX2Item* pItem, int itemTID, bool bItemDescExtra /*= true*/, bool /*bMyUnitItem_*/ /*= false*/ )
 {
 	wstring slotItemDesc = L"";
 	WCHAR buff[1024] = {0};
@@ -2096,6 +2096,8 @@ std::wstring CX2ItemSlotManager::GetSlotItemDescExtra_RBtn( int itemTID, CX2Item
 			    //}} kimhc // 2009-08-26 // 아이템 봉인 시 디스크립션 변경
 					    slotItemDesc += GET_STRING( STR_ID_307 );
 				    }
+                default:
+                	break;
                 }//switch
 			}
 		}
@@ -2363,7 +2365,7 @@ wstring CX2ItemSlotManager::GetExpirationDateDesc( CX2Item* pItem )		// 주의!!
 }
 
 //{{ kimhc // 2011-07-05 // 옵션데이타 수치화 작업
-/*virtual*/ wstring CX2ItemSlotManager::GetSetItemDesc( CX2Item* pItem, int itemTID, const int iUserLevel_ )
+/*virtual*/ wstring CX2ItemSlotManager::GetSetItemDesc( CX2Item* /*pItem*/, int itemTID, const int iUserLevel_ )
 //}} kimhc // 2011-07-05 // 옵션데이타 수치화 작업
 {
 	wstring tempDesc = L"";
@@ -3010,12 +3012,14 @@ bool CX2ItemSlotManager::GetIsShowCompareItemDescBySlotType( CX2Slot::SLOT_TYPE 
 		{
 			return false;
 		} break;
+	default:
+		break;
 	}
 
 	return true;
 }
 
-void CX2ItemSlotManager::SplitDescHeight( wstring* pOrgStr, wstring* pTempStr, int &pHeight, int &pFontHeight, int fontIndex, bool bSplit )
+void CX2ItemSlotManager::SplitDescHeight( wstring* pOrgStr, wstring* pTempStr, int &pHeight, int &pFontHeight, int /*fontIndex*/, bool bSplit )
 {
 	const int iHeight = DXUTGetBackBufferSurfaceDesc()->Height;
 	const int SIZE_Y = 40;

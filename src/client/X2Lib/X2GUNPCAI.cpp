@@ -47,7 +47,7 @@ CX2NPCAI( pMasterNPC, CX2NPCAI::NAT_NORMAL )
 	//}} oasis : 김상윤 // 2009-10-7 ////////////////
 }
 
-void CX2GUNPCAI::OnFrameMove( double fTime, float fElapsedTime )
+void CX2GUNPCAI::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	KTDXPROFILE();
 

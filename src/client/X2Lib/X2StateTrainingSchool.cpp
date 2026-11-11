@@ -297,12 +297,12 @@ void CX2StateTrainingSchool::SetShowStateDLG( bool bShow )
 }
 
 
-bool CX2StateTrainingSchool::Handler_EGS_STATE_CHANGE_VILLAGE_MAP_REQ( UINT nMapID )
+bool CX2StateTrainingSchool::Handler_EGS_STATE_CHANGE_VILLAGE_MAP_REQ( UINT /*nMapID*/ )
 {
 	return true;
 }
 
-bool CX2StateTrainingSchool::Handler_EGS_STATE_CHANGE_VILLAGE_MAP_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateTrainingSchool::Handler_EGS_STATE_CHANGE_VILLAGE_MAP_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	return false;
 }
@@ -326,7 +326,7 @@ bool CX2StateTrainingSchool::Handler_EGS_CREATE_TC_ROOM_REQ( int iTrainingID )
 
 
 
-bool CX2StateTrainingSchool::Handler_EGS_CREATE_TC_ROOM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateTrainingSchool::Handler_EGS_CREATE_TC_ROOM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CREATE_TC_ROOM_ACK kEvent;
@@ -722,7 +722,7 @@ void CX2StateTrainingSchool::StateChangeToVillage()
 	Handler_EGS_STATE_CHANGE_FIELD_REQ();
 }
 
-bool CX2StateTrainingSchool::OnMouseWheel( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateTrainingSchool::OnMouseWheel( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/ )
 {
 	short zDelta = (short)HIWORD(wParam);
 	m_SumDelta += zDelta;

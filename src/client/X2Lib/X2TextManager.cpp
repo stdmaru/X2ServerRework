@@ -174,7 +174,7 @@ CX2TextManager::CX2Text::~CX2Text()
 	m_pFont = NULL;
 }
 
-HRESULT CX2TextManager::CX2Text::OnFrameMove( double fTime, float fElapsedTime )
+HRESULT CX2TextManager::CX2Text::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	if ( m_bEnable == false )
 		return S_OK;

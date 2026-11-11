@@ -416,7 +416,7 @@ bool CX2StatePVPResult::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, 
 	@param : HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 	@return : 패킷 처리에 성공한 경우 true, 실패한 경웨 false
 */
-bool CX2StatePVPResult::Handler_EGS_CHANGE_EQUIPPED_ITEM_IN_ROOM_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPResult::Handler_EGS_CHANGE_EQUIPPED_ITEM_IN_ROOM_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_EQUIPPED_ITEM_IN_ROOM_NOT kEvent;
@@ -446,7 +446,7 @@ bool CX2StatePVPResult::Handler_EGS_RESULT_SUCCESS_REQ()
 	return true;
 }
 
-bool CX2StatePVPResult::Handler_EGS_RESULT_SUCCESS_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPResult::Handler_EGS_RESULT_SUCCESS_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	DialogLog( "CX2StatePVPResult::Handler_EGS_RESULT_SUCCESS_ACK Start" );
 
@@ -467,7 +467,7 @@ bool CX2StatePVPResult::Handler_EGS_RESULT_SUCCESS_ACK( HWND hWnd, UINT uMsg, WP
 	return false;
 }
 
-bool CX2StatePVPResult::Handler_EGS_RESULT_ALL_UNIT_SUCCESS_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPResult::Handler_EGS_RESULT_ALL_UNIT_SUCCESS_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	DialogLog( "CX2StatePVPResult::Handler_EGS_RESULT_ALL_UNIT_SUCCESS_NOT Start" );
 
@@ -494,7 +494,7 @@ bool CX2StatePVPResult::Handler_EGS_RESULT_ALL_UNIT_SUCCESS_NOT( HWND hWnd, UINT
 	return true;
 }
 
-bool CX2StatePVPResult::Handler_EGS_LEAVE_ROOM_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPResult::Handler_EGS_LEAVE_ROOM_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_LEAVE_ROOM_NOT kEvent;
@@ -504,7 +504,7 @@ bool CX2StatePVPResult::Handler_EGS_LEAVE_ROOM_NOT( HWND hWnd, UINT uMsg, WPARAM
 	return g_pX2Room->Handler_EGS_LEAVE_ROOM_NOT( kEvent );
 }
 
-bool CX2StatePVPResult::Handler_EGS_JOIN_ROOM_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPResult::Handler_EGS_JOIN_ROOM_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_JOIN_ROOM_NOT kEvent;
@@ -528,7 +528,7 @@ bool CX2StatePVPResult::Handler_EGS_PVP_REMATCH_REQ( bool bAcceptRematch )
 	return true;
 }
 
-bool CX2StatePVPResult::Handler_EGS_PVP_REMATCH_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPResult::Handler_EGS_PVP_REMATCH_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_PVP_REMATCH_ACK kEvent;
@@ -554,7 +554,7 @@ bool CX2StatePVPResult::Handler_EGS_PVP_REMATCH_ACK( HWND hWnd, UINT uMsg, WPARA
 	}
 	return false;
 }
-bool CX2StatePVPResult::Handler_EGS_PVP_REMATCH_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPResult::Handler_EGS_PVP_REMATCH_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_PVP_REMATCH_NOT kEvent;

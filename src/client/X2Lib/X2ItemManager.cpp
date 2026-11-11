@@ -531,11 +531,13 @@ void CX2ItemManager::ReplaceEmptyToBasic( CX2Unit* pUnit, CKTDGXSkinAnimPtr pAni
 		{
 			ReplaceEmptyToBasic( pUnit, pAnim, pMotion, pAnimXET, viewEqipList, viewEqipPosition, CX2Unit::EP_RAVEN_LEFT_ARM, pUnit->GetUnitTemplet()->m_RavenLeftArmItemID,	bLoad	);
 		} break;
+	default:
+		break;
 	}
 }
 
 void CX2ItemManager::ReplaceEmptyToBasic( CX2Unit* pUnit, CKTDGXSkinAnimPtr pAnim,
-										 CKTDXDeviceXSkinMesh* pMotion, CKTDXDeviceXET* pAnimXET,
+										 CKTDXDeviceXSkinMesh* /*pMotion*/, CKTDXDeviceXET* /*pAnimXET*/,
 										 IN OUT vector<CX2EqipPtr>& viewEqipList, bool* pViewEqipPosition,
 										 CX2Unit::EQIP_POSITION eqipPos, int itemID, bool bLoad )
 {
@@ -1167,7 +1169,7 @@ bool CX2ItemManager::AddCashItemEx()
 }
 
 //{{ 2008. 11. 18  최육사
-void CX2ItemManager::AddItemExchangeGroup_LUA( int iSourceItemID, int iResultItemID, float fRate )
+void CX2ItemManager::AddItemExchangeGroup_LUA( int iSourceItemID, int /*iResultItemID*/, float /*fRate*/ )
 {
 	m_mapItemExchange.insert( std::make_pair( iSourceItemID, iSourceItemID ) );
 }
@@ -1582,7 +1584,7 @@ bool CX2ItemManager::IsShowItemTooniland( int iItemId )
 
 
 
-bool CX2ItemManager::AddItemExchangeData( int iHOUSEID, ITEM_EXCHANGE_TYPE eExchangeType, int iSrcItemID, int iDestItemID, int iQuantity, float fDestItemRate /*= 0.f*/ )
+bool CX2ItemManager::AddItemExchangeData( int iHOUSEID, ITEM_EXCHANGE_TYPE eExchangeType, int iSrcItemID, int iDestItemID, int iQuantity, float /*fDestItemRate*/ /*= 0.f*/ )
 {
 	if( CX2LocationManager::HI_INVALID == iHOUSEID )
 		return false;
@@ -1714,7 +1716,7 @@ bool CX2ItemManager::SetItemLevelEnchantData_LUA( int iAtkPhysic, int iAtkMagic,
 	return true;
 }
 
-bool CX2ItemManager::GetItemLevel( IN const KItemInfo& kItemInfo, OUT int& iItemLevel )
+bool CX2ItemManager::GetItemLevel( IN const KItemInfo& /*kItemInfo*/, OUT int& /*iItemLevel*/ )
 {
 	//const CXSLItem::ItemTemplet* pItemTemplet = GetItemTemplet( kItemInfo.m_iItemID );
 	//if( pItemTemplet == NULL )

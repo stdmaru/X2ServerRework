@@ -2822,7 +2822,7 @@ void CX2UIManager::Handler_EGS_WATCH_UNIT_REQ(UidType uid)
 	g_pMain->AddServerPacket( EGS_WATCH_UNIT_ACK );
 }
 
-bool CX2UIManager::Handler_EGS_WATCH_UNIT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIManager::Handler_EGS_WATCH_UNIT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_WATCH_UNIT_ACK kEvent;
@@ -2886,6 +2886,8 @@ bool CX2UIManager::PetInventoryOpenCondition()
 		{
 			return false;
 		} break;
+	default:
+		break;
 	}
 	//}}
 
@@ -2923,6 +2925,8 @@ bool CX2UIManager::PetInventoryForceOpenCondition()
 		{
 			return false;
 		} break;
+	default:
+		break;
 	}
 
 	for(int i=(int)UI_MENU_UPPER; i<(int)UI_MENU_END; i++)

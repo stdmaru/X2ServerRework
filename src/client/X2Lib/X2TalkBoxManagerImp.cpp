@@ -138,7 +138,7 @@ CX2TalkBoxManagerImp::~CX2TalkBoxManagerImp(void)
 //#endif
 }
 
-bool CX2TalkBoxManagerImp::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2TalkBoxManagerImp::MsgProc( HWND /*hWnd*/, UINT uMsg, WPARAM /*wParam*/, LPARAM lParam )
 {
 	switch( uMsg )
 	{
@@ -155,7 +155,7 @@ bool CX2TalkBoxManagerImp::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 	return false;
 }
 
-HRESULT CX2TalkBoxManagerImp::OnFrameMove( double fTime, float fElapsedTime )
+HRESULT CX2TalkBoxManagerImp::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	KTDXPROFILE();
 
@@ -526,7 +526,7 @@ void CX2TalkBoxManagerImp::SetPos( UidType unitUID, D3DXVECTOR2 pos, int boxType
 	}
 }
 
-void CX2TalkBoxManagerImp::SetPos( int talkBoxID, D3DXVECTOR2 pos, int boxType, bool bTraceUnit /* = false */ , CX2GameUnit::GAME_UNIT_TYPE gameUnitType /* = CX2GameUnit::GUT_USER */ )
+void CX2TalkBoxManagerImp::SetPos( int talkBoxID, D3DXVECTOR2 pos, int boxType, bool /*bTraceUnit*/ /* = false */ , CX2GameUnit::GAME_UNIT_TYPE /*gameUnitType*/ /* = CX2GameUnit::GUT_USER */ )
 {
 	for ( int i = 0; i < (int)m_TalkBoxList.size(); i++ )
 	{
@@ -600,6 +600,8 @@ bool CX2TalkBoxManagerImp::CheckMousePointInTalkbox( D3DXVECTOR2 mousePos, UidTy
 				_pos.x = _pos.x - fCenterWidthScaled * fTipLerpCoeff - fCornerWidthScaled;
 				_pos.y = _pos.y + 3.f * fCornerHeightScaled + fCenterHeightScaled;
 			}
+			break;
+		default:
 			break;
 		}
 
@@ -722,7 +724,7 @@ void CX2TalkBoxManagerImp::DrawBalloon( int iType, float fX, float fY, float fCe
 }
 
 void CX2TalkBoxManagerImp::DrawTalkBoxEffect( int iType, float fX, float fY, float fCenterWidth, float fCenterHeight, float fWidthScale,
-	float fHeightScale, float fTipLerpCoeff, D3DXCOLOR backTexColor, wstring backTexName )
+	float fHeightScale, float /*fTipLerpCoeff*/, D3DXCOLOR backTexColor, wstring backTexName )
 {
 	KTDXPROFILE();
 
@@ -749,7 +751,7 @@ void CX2TalkBoxManagerImp::DrawTalkBoxEffect( int iType, float fX, float fY, flo
 	//}} robobeg : 2008-10-24
 }
 
-void CX2TalkBoxManagerImp::DrawTalkBoxEffectInnerFrame ( int iType, float _fX, float _fY, float fX, float fY, float fCenterWidth, float fCenterHeight,
+void CX2TalkBoxManagerImp::DrawTalkBoxEffectInnerFrame ( int /*iType*/, float _fX, float _fY, float /*fX*/, float /*fY*/, float fCenterWidth, float fCenterHeight,
 	float fWidthScale, float fHeightScale, D3DXCOLOR backTexColor )
 {
 	KTDXPROFILE();
@@ -874,7 +876,7 @@ void CX2TalkBoxManagerImp::DrawBalloonBodyAndTip( int iType, float _fX, float _f
 }
 
 // 말풍선의 뾰족한 부분을 뾰족한 부분의 시작점(fX, fY)를 중심으로 그린다
-void CX2TalkBoxManagerImp::SetBalloonTip( DRAWFACE_RHW_VERTEX aFaces[4], int iType, float fX, float fY, float fCenterWidth, float fCenterHeight,
+void CX2TalkBoxManagerImp::SetBalloonTip( DRAWFACE_RHW_VERTEX aFaces[4], int iType, float fX, float fY, float /*fCenterWidth*/, float /*fCenterHeight*/,
 										  float fWidthScale, float fHeightScale, D3DXCOLOR backTexColor )
 {
 	KTDXPROFILE();

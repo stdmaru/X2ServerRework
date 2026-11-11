@@ -6,18 +6,18 @@ CX2PlayGuide::CX2PlayGuide(void):
 m_pDLGPlayGuide( NULL ),
 m_fOnTime(0.f),
 m_bHide(false),
+m_eOldPlayGuide(PGT_NONE),
 m_uiGuideStep(-1),
 m_uiCurrentGuideStep(-1),
 m_bStart(false),
-m_bCompleteTutorial(false),
 m_bActiveNoviceGuide(false),
+m_bCompleteTutorial(false),
 m_bShowDungeonMenu(false),
 m_hIndicator(INVALID_PARTICLE_SEQUENCE_HANDLE),
 m_hIndicatorMark(INVALID_PARTICLE_SEQUENCE_HANDLE),
 m_pDLGParticle(NULL),
 m_bShowGuideParticle(false),
 m_hInputGuide(INVALID_PARTICLE_SEQUENCE_HANDLE),
-m_eOldPlayGuide(PGT_NONE),
 m_hParticleGo( INVALID_PARTICLE_SEQUENCE_HANDLE )
 , m_pDLGUIFirstEpicQuestGuide(NULL)
 , m_bShowFirstEpicQuestGuide(false)
@@ -63,7 +63,7 @@ CX2PlayGuide::~CX2PlayGuide(void)
 }
 
 
-void CX2PlayGuide::OnFrameMove( double fTime, float fElapsedTime )
+void CX2PlayGuide::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	OnFrameMove_Tutorial();
 
@@ -914,14 +914,14 @@ bool CX2PlayGuide::IsShowGuide()
 
 //================================================================================================================================
 CX2PlayGuide::PlayGuideData::PlayGuideData():
-m_eVillageID(SEnum::VMI_INVALID),
 m_eGuideType(PGT_NONE),
 m_ePlaceType(GPT_NONE),
-m_iStrID(0),
-m_iLimitLV(0),
-m_bRepeat(true),
+m_eVillageID(SEnum::VMI_INVALID),
+m_GuideString(L""),
 m_bShow(false),
-m_GuideString(L"")
+m_bRepeat(true),
+m_iStrID(0),
+m_iLimitLV(0)
 {
 }
 

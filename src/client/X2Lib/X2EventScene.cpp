@@ -68,7 +68,7 @@ CX2EventScene::~CX2EventScene(void)
 	m_mapEventScene.clear();
 	m_mapEventSceneObject.clear();
 }
-void CX2EventScene::TextPlayFrameMove( double fTime, float fElapsedTime )
+void CX2EventScene::TextPlayFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	if(m_bIsPlayingEventScene)
 	{
@@ -88,7 +88,7 @@ void CX2EventScene::TextPlayFrameMove( double fTime, float fElapsedTime )
 }
 
 
-void CX2EventScene::BlackOutFrameMove( double fTime, float fElapsedTime )
+void CX2EventScene::BlackOutFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	if(m_bBlackOutStart)
 	{
@@ -227,7 +227,7 @@ bool CX2EventScene::EventTimer( float fTime )
 	return false;
 }
 
-void CX2EventScene::CannotInput( float fTime )
+void CX2EventScene::CannotInput( float /*fTime*/ )
 {
 // 	if( g_pX2Game != NULL )
 // 	{
@@ -1381,6 +1381,8 @@ int CX2EventScene::GetPlayerTagName()
 	case CX2Unit::UT_ADD:
 		iPlayerTagName = STR_ID_29422;
 		break;
+	default:
+		break;
 	}
 	return iPlayerTagName;
 }
@@ -1661,7 +1663,7 @@ void CX2EventScene::Clear()
 }
 
 
-bool CX2EventScene::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2EventScene::MsgProc( HWND /*hWnd*/, UINT uMsg, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 
 	if(!m_bIsPlayingEventScene)

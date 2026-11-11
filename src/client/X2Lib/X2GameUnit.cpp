@@ -11,8 +11,8 @@ CX2GameUnit::CX2GameUnit( int unitIndex, int teamNum, const WCHAR* pScriptFileNa
 //{{ robobeg : 2008-10-28
 :
 //}} robobeg : 2008-10-28
-m_fNoSkillTime( 0 )
-, m_pUnitSlashTraceManager( NULL )
+m_iDieCount(0)
+, m_fMaxHyperModeTime( 0.0f )
 //#ifdef HEAD_INVERSE_KINEMATICS_TEST
 //, m_bEnableHeadIK( false )
 //, m_fHeadIKAngleChangeRate( 0.f )
@@ -34,100 +34,100 @@ m_fNoSkillTime( 0 )
 
 
 
-, m_fLastPositionValueOnAnimatedLine( -1.f )
-, m_vLastPositionOnAnimatedLine( 0, 0, 0 )
+, m_eAllyTeam( CX2Room::TN_NONE )
+, m_pGageData( NULL )
 
 
 
-, m_fReverseGravitySpeedDeltaY( 0.f )
-, m_vReverseGravityRotateSpeedDelta( D3DXVECTOR3(0.f, 0.f, 0.f) ) // oasis907 : 김상윤 [2011.6.29]
+, m_pGageUI( NULL )
+, m_Stat() // oasis907 : 김상윤 [2011.6.29]
 
-, m_bImmuneToExtraDamage( false )
+, m_optrGameUnitAttackedByMe()
+, m_optrGameUnitWhoAttackedMe()
+, m_bCanNotInput( false )
 , m_vBasicScale( 1.0f, 1.0f, 1.0f )
-, m_vTransScale( m_vBasicScale )
-, m_vOrgUnitSize( 1.0f, 1.0f )
 
 //#ifdef TRANSFORMER_TEST
 //, m_bIsTransformed( false )
 //, m_TransformerOwnerUID( -1 )
 //#endif TRANSFORMER_TEST
 //{{ kimhc // 2010.2.17 //
-, m_bApplyMotionOffset( true )
+, m_vTransScale( m_vBasicScale )
 //}} kimhc // 2010.2.17 //
-, m_fRevengeDefenceTime(0.f)
-, m_fEnduranceAttackTime(0.f)
-, m_fPoisonDeBuff(0.f)
-, m_fMaxHyperModeTime( 0.0f )
+, m_vOrgUnitSize( 1.0f, 1.0f )
+, m_bHittedExtraDamageHeadShot( false )
+, m_fNoSkillTime( 0 )
+, m_pUnitSlashTraceManager( NULL )
 //, m_fRemainHyperModeTime(  0.0f )
 
 //{{ JHKang / 강정훈 / 2010/11/29
-, m_fAtomicShieldDamageRate ( 1.0f )
+, m_fLastPositionValueOnAnimatedLine( -1.f )
 //}} JHKang / 강정훈 / 2010/11/29
-, m_bCheckChangeUnderWater(false)
-, m_bUnderWaterHead(false)
-, m_bChangeUnderWater(false)
-, m_bForceChagneColor(false)
-, m_cLineUnitColor( D3DXCOLOR(0.f, 0.f, 0.f, 0.f) )
+, m_vLastPositionOnAnimatedLine( 0, 0, 0 )
+, m_fReverseGravitySpeedDeltaY( 0.f )
+, m_vReverseGravityRotateSpeedDelta( D3DXVECTOR3(0.f, 0.f, 0.f) )
+, m_bImmuneToExtraDamage( false )
+, m_bApplyMotionOffset( true )
 //{{ JHKang / 강정훈 / 2011/01/13
-, m_BasicRenderType( CKTDGXRenderer::RT_CARTOON_BLACK_EDGE )
+, m_fRevengeDefenceTime(0.f)
 //}} JHKang / 강정훈 / 2011/01/13
+, m_fEnduranceAttackTime(0.f)
+, m_fPoisonDeBuff(0.f)
+//{{ 2011-04 에 패치될 청 메모 헤드샷
+, m_fAtomicShieldDamageRate ( 1.0f )	// 헤드샷 ExtraDamage에 당했는지를 알려주는 플래그
+//}} 2011-04 에 패치될 청 메모 헤드샷
+, m_bForceChagneColor(false)
+, m_bCheckChangeUnderWater(false)
+, m_bChangeUnderWater(false)
+, m_bUnderWaterHead(false)
+, m_cLineUnitColor( D3DXCOLOR(0.f, 0.f, 0.f, 0.f) )
+, m_BasicRenderType( CKTDGXRenderer::RT_CARTOON_BLACK_EDGE )
 , m_bScaleEffectSetByNpc( false )
 , m_fMaxDownForce(-9999.f)
-//{{ 2011-04 에 패치될 청 메모 헤드샷
-, m_bHittedExtraDamageHeadShot( false )	// 헤드샷 ExtraDamage에 당했는지를 알려주는 플래그
-//}} 2011-04 에 패치될 청 메모 헤드샷
 , m_fAntiCriticalRate( 0.f )
 , m_bEnableWeaponRenderEffect( false )
 , m_fFadeTimeLeft( 0.f )
 , m_fFadeChangeTime( 0.f )
+
 , m_fFadeChangeTimeLeft( 0.f )
+
 , m_fPulseDuration( 0.f )
 , m_fPulsePeriod( 0.f )
 , m_fPulseTimeLeft( 0.f )
 , m_eNowPulseWeaponColorID( PWCI_NONE )
-, m_WeaponRenderEffectColor( D3DXCOLOR( 0.f, 0.f, 0.f, 0.f ) )
 , m_WeaponRenderEffectColorStart( D3DXCOLOR( 0.f, 0.f, 0.f, 0.f ) )
 , m_WeaponRenderEffectColorEnd( D3DXCOLOR( 0.f, 0.f, 0.f, 0.f ) )
+, m_WeaponRenderEffectColor( D3DXCOLOR( 0.f, 0.f, 0.f, 0.f ) )
+, m_fHitCreateDamageEffectRate ( 0.f )
+, m_fHitCreateDamageEffectPowerRate(1.f)
+, m_hSeqEnchant_ArrowOfExplosion( INVALID_PARTICLE_SEQUENCE_HANDLE )
+, m_hStartOfDelayedFiringOverlap( INVALID_PARTICLE_SEQUENCE_HANDLE )
+, m_hActiveStartOfDelayedFiringEDT( INVALID_EFFECTSET_HANDLE )
+, m_fTacticalFieldDecreaseDamageValue( 1.f )
 
-, m_eAllyTeam( CX2Room::TN_NONE )
-
-, m_optrGameUnitWhoAttackedMe()
-, m_optrGameUnitAttackedByMe()
 , m_bNeedToUpdateWeaponEffect(false)
+//#ifndef SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
+//, m_dwFrameMoveCountNow( 0 )
+//, m_dwFrameMoveCountFuture( 0 )
+//#endif  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
 , m_bShowSmallGageAndName( false )
-, m_pGageUI( NULL )
-, m_pGageData( NULL )
-, m_iDieCount(0)
 , m_pFrame_Bip01( NULL )
 , m_pFrame_Bip01_Head( NULL )
 , m_pFrame_Bip01_R_Foot( NULL )
 , m_pFrame_Bip01_L_Foot( NULL )
 , m_pFrame_Bip01_R_UpperArm( NULL )
+
 , m_pFrame_Bip01_L_UpperArm( NULL )
-
 , m_fForceHyperModeTime( 0.0f )
-//#ifndef SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
-//, m_dwFrameMoveCountNow( 0 )
-//, m_dwFrameMoveCountFuture( 0 )
-//#endif  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
-, m_ucHittedCount( 0 )
-, m_ucHitCount( 0 )
-, m_ucNumOfDeBuff( 0 )
-, m_ucNumOfBuff( 0 )
+, m_ucHittedCount( 0 )			/// 폭발의 화살 이모티콘 핸들
+, m_ucHitCount( 0 )			/// 지연의 신호탄 중첩수 출력 이모티콘
+, m_ucNumOfDeBuff( 0 )	/// 지연의 신호탄 적용중 확인 이펙트
+, m_ucNumOfBuff( 0 )						/// 택티컬 필드에 의해 감소되는 데미지 수치
 , m_eUnitSlashTraceConditionToDo( CX2UnitSlashTraceManager::STC_NONE )
-, m_pAfterImage( NULL )
-
-, m_fHitCreateDamageEffectRate ( 0.f )
-, m_fHitCreateDamageEffectPowerRate(1.f)
-, m_hSeqEnchant_ArrowOfExplosion( INVALID_PARTICLE_SEQUENCE_HANDLE )			/// 폭발의 화살 이모티콘 핸들
-, m_hStartOfDelayedFiringOverlap( INVALID_PARTICLE_SEQUENCE_HANDLE )			/// 지연의 신호탄 중첩수 출력 이모티콘
-, m_hActiveStartOfDelayedFiringEDT( INVALID_EFFECTSET_HANDLE )	/// 지연의 신호탄 적용중 확인 이펙트
-, m_fTacticalFieldDecreaseDamageValue( 1.f )						/// 택티컬 필드에 의해 감소되는 데미지 수치
 , m_fRunJumpSpeedRate( 1.0f )
-, m_bPassDash( false )
-, m_bCanNotInput( false )
+, m_pAfterImage( NULL )
 //{{ robobeg : 2013-11-04
-, m_Stat()
+, m_bPassDash( false )
 //}} robobeg : 2013-11-04
 , m_fFlickerElapsedTime( 0.f )
 {
@@ -486,7 +486,7 @@ CX2GameUnit::~CX2GameUnit(void)
 }
 
 
-void CX2GameUnit::ReInit( bool bUseTeamPos, int startPosIndex )
+void CX2GameUnit::ReInit( bool /*bUseTeamPos*/, int /*startPosIndex*/ )
 {
 	SetLayer( XL_UNIT_0 );
 	SetAlphaObject( false );
@@ -1247,6 +1247,8 @@ float CX2GameUnit::GetItemAttackPower( CX2GameUnit* pAttacker, CX2Item* pItem /*
 				} break;
 
 				// 초기화를 했기 때문에 default는 있을 수 없음
+			default:
+				break;
 			}
 			if ( true == bLevelLinkedStat && g_pMain->GetNowStateID() == CX2Main::XS_PVP_GAME )
 				fItemAttackPower = ( fWeaponPhysicAtk + fWeaponMagicAtk ) * ( pGUUSer->GetUnitLevel() + iAddLevel );
@@ -1439,9 +1441,13 @@ float CX2GameUnit::CalcLevelFactorForFinalDamage( CX2GameUnit* pAttacker )
 							return 1.f;
 						}
 					} break;
+				default:
+					break;
 				}
 			}
 		} break;
+	default:
+		break;
 	}
 
 
@@ -1479,6 +1485,8 @@ float CX2GameUnit::CalcLevelFactorForFinalDamage( CX2GameUnit* pAttacker )
 		{
 			// 대전 게임에서는 레벨 보정없음
 		} break;
+	default:
+		break;
 	}
 
 
@@ -1561,6 +1569,8 @@ float CX2GameUnit::CalcExtraAttackPower( CX2DamageManager::DamageData* pAttDamag
 						} break;
 					}
 				} break;
+			default:
+				break;
 			}
 
 
@@ -1584,6 +1594,8 @@ float CX2GameUnit::CalcExtraAttackPower( CX2DamageManager::DamageData* pAttDamag
 				{
 					ApplyEnchantResist( CX2EnchantItem::ET_DARK, fSmashAttackPower );
 				} break;
+			default:
+				break;
 			}
 
 
@@ -1606,6 +1618,8 @@ float CX2GameUnit::CalcExtraAttackPower( CX2DamageManager::DamageData* pAttDamag
 				{
 					fSmashAttackPower *= MAGIC_EVENT_ATTACK_POWER_RATE;
 				} break;
+			default:
+				break;
 			}
 
 			fExtraAttackPower += fSmashAttackPower;
@@ -1923,6 +1937,8 @@ float CX2GameUnit::GetFinalDamage( CX2DamageManager::DamageData* pAttDamageData 
 		}
 		break;
 //}} kimhc // 2010.7.30 // 스탯을 제외한 무기만의 데미지
+	default:
+		break;
 	}
 
 	fDefencePower *= fSharpenDamageRate;	//	날카로운 화살 적용
@@ -1997,6 +2013,8 @@ float CX2GameUnit::GetFinalDamage( CX2DamageManager::DamageData* pAttDamageData 
 			fDefencePowerRate = fDefencePower / ( MAGIC_DEFENCE_POWER_LV1 + (fFullDefencePowerByAttackerLevel-MAGIC_DEFENCE_POWER_LV1) * 0.1f );
 
 		} break;
+	default:
+		break;
 	}
 
 	if( pAttDamageData->m_bLvDamage == true )
@@ -2098,6 +2116,8 @@ float CX2GameUnit::GetFinalDamage( CX2DamageManager::DamageData* pAttDamageData 
 			fAttackerPowerRateByMotion
 				+= 0.5f * ( fAttackPowerPhysic * fAttackerPhysicDamage + fAttackPowerMagic * fAttackerMagicDamage );
 		}
+		break;
+	default:
 		break;
 	}
 //}} kimhc // 2010.8.2 // 스탯을 제외한 무기만의 데미지
@@ -2554,7 +2574,7 @@ void CX2GameUnit::InitStat()
 }
 
 
-/*virtual*/ void CX2GameUnit::ResetPhysicParam( bool bPreserveNowSpeed /*= false */ )
+/*virtual*/ void CX2GameUnit::ResetPhysicParam( bool /*bPreserveNowSpeed*/ /*= false */ )
 {
 	m_PhysicParam	= m_OrgPhysicParam;
 
@@ -3364,7 +3384,7 @@ bool CX2GameUnit::ProcessEnchantPoison( CX2DamageManager::DamageData* pDamageDat
 
 
 
-bool CX2GameUnit::ProcessEnchantPiercing( CX2DamageManager::DamageData* pDamageData, CX2DamageManager::EXTRA_DAMAGE_TYPE damageType /*= CX2DamageManager::EDT_ENCHANT_PIERCING */ )
+bool CX2GameUnit::ProcessEnchantPiercing( CX2DamageManager::DamageData* pDamageData, CX2DamageManager::EXTRA_DAMAGE_TYPE /*damageType*/ /*= CX2DamageManager::EDT_ENCHANT_PIERCING */ )
 {
 
 	//대상의 방어력에 영향을 받지 않고 데미지를 입힌다!!
@@ -3750,6 +3770,8 @@ bool CX2GameUnit::ProcessEnchantSnatch( CX2DamageManager::DamageData* pDamageDat
 	case CX2EnchantItem::ET_DARK:
 		fFinalResist = m_AdditionalChangeAttributeDarkDefence.GetResultValue();
 		break;
+	default:
+		break;
 	}
 
 	map< CX2EnchantItem::ENCHANT_TYPE, int >::iterator mit;
@@ -3836,6 +3858,8 @@ CX2EnchantItem::ENCHANT_TYPE CX2GameUnit::GetEnchantTypeFromExtraDamageType( CX2
 			return CX2EnchantItem::ET_DARK;
 		} break;
 
+	default:
+		break;
 	}
 
 	return CX2EnchantItem::ET_NONE;
@@ -3870,7 +3894,7 @@ bool CX2GameUnit::IsImmuneToEnchant( CX2EnchantItem::ENCHANT_TYPE enchantType )
 }
 
 
-void CX2GameUnit::AddOnStatReq( KEGS_ADD_ON_STAT_REQ::ADD_ON_STAT statType, float fStatVal, float fTime )
+void CX2GameUnit::AddOnStatReq( KEGS_ADD_ON_STAT_REQ::ADD_ON_STAT /*statType*/, float /*fStatVal*/, float /*fTime*/ )
 {
 	DISPLAY_ERROR( L"This Function doesn't use" );
 // 	KEGS_ADD_ON_STAT_REQ kEGS_ADD_ON_STAT_REQ;
@@ -3891,7 +3915,7 @@ void CX2GameUnit::AddOnStatReq( KEGS_ADD_ON_STAT_REQ::ADD_ON_STAT statType, floa
 // 	g_pData->GetServerProtocol()->SendPacket( EGS_ADD_ON_STAT_REQ, kEGS_ADD_ON_STAT_REQ );
 }
 
-void CX2GameUnit::SetAddOnStat( KEGS_ADD_ON_STAT_REQ::ADD_ON_STAT statType, float fStatVal, float fTime )
+void CX2GameUnit::SetAddOnStat( KEGS_ADD_ON_STAT_REQ::ADD_ON_STAT statType, float /*fStatVal*/, float /*fTime*/ )
 {
 	switch( statType )
 	{
@@ -3944,6 +3968,8 @@ void CX2GameUnit::SetAddOnStat( KEGS_ADD_ON_STAT_REQ::ADD_ON_STAT statType, floa
 //
 // 			// fix!!! 얘는 이펙트가 없네??
 		}
+		break;
+	default:
 		break;
 	}
 }
@@ -3999,6 +4025,8 @@ float CX2GameUnit::EnchantAccumulationRateModifier( CX2DamageManager::EXTRA_DAMA
 						}
 					}
 					break;
+			default:
+				break;
 			}
 		}
 		break;
@@ -4029,6 +4057,8 @@ float CX2GameUnit::EnchantAccumulationRateModifier( CX2DamageManager::EXTRA_DAMA
 						fRate *= 2.0f;
 					}
 				}
+				break;
+			default:
 				break;
 			}
 		}
@@ -4061,8 +4091,12 @@ float CX2GameUnit::EnchantAccumulationRateModifier( CX2DamageManager::EXTRA_DAMA
 					}
 				}
 				break;
+			default:
+				break;
 			}
 		}
+		break;
+	default:
 		break;
 	}
 	return fRate;
@@ -4175,7 +4209,7 @@ void CX2GameUnit::RemoveAllWeaponAttackCollisionBoxForNPC()
 
 
 
-D3DXVECTOR3 CX2GameUnit::GetWeaponBoneRot( int iWeaponIndex, int iModelIndex )
+D3DXVECTOR3 CX2GameUnit::GetWeaponBoneRot( int iWeaponIndex, int /*iModelIndex*/ )
 {
 
 	if( iWeaponIndex < 0 ||
@@ -4613,6 +4647,8 @@ void	CX2GameUnit::ProcessStatPercentUpBuffer( CX2GameUnit* pAttacker, OUT CX2Sta
 				AttackerStat.AccessAddOnStat().m_fAtkPhysic += fAttackerUpRate;
 				AttackerStat.AccessAddOnStat().m_fAtkMagic += fAttackerUpRate;
 			} break;
+		default:
+			break;
 		}
 	}
 }
@@ -5355,7 +5391,7 @@ void CX2GameUnit::ClearAnimSpeedFactor()
 //	m_PhysicParam.m_vecAnimSpeedFactor.clear();
 }
 
-void CX2GameUnit::SetAnimSpeedFactor( float fSpeedRate, float fDuration, SPEED_FACTOR_ID eId /*= CX2GameUnit::SFI_NONE*/, SPEED_FACTOR_SET_TYPE eSetType /*= SFST_MULTY*/ )
+void CX2GameUnit::SetAnimSpeedFactor( float /*fSpeedRate*/, float /*fDuration*/, SPEED_FACTOR_ID /*eId*/ /*= CX2GameUnit::SFI_NONE*/, SPEED_FACTOR_SET_TYPE /*eSetType*/ /*= SFST_MULTY*/ )
 {
 // 	switch ( eSetType )
 // 	{
@@ -5412,7 +5448,7 @@ void CX2GameUnit::CommonFrameMoveAnimSpeedFactor()
 // 	}
 }
 
-void CX2GameUnit::CommonFrameMoveAnimSpeedFactorEffect(SPEED_FACTOR speedFactor)
+void CX2GameUnit::CommonFrameMoveAnimSpeedFactorEffect(SPEED_FACTOR /*speedFactor*/)
 {
 // 	if(speedFactor.m_fDuration <= 0.f)
 // 	{
@@ -5682,6 +5718,8 @@ void CX2GameUnit::CalcLastPositionValueOnAnimatedLine( const CKTDGLineMap::LineD
 			D3DXVECTOR3 vRelativePosition = position - pLineData->startPos;
 			m_fLastPositionValueOnAnimatedLine = D3DXVec3Length( &vRelativePosition ) / pLineData->fLength;
 		} break;
+	default:
+		break;
 	}
 }
 
@@ -5703,6 +5741,8 @@ bool CX2GameUnit::IsDamagedReaction( const CX2DamageManager::DamageData* pDamage
 		{
 			return false;
 		} break;
+	default:
+		break;
 	}
 
 	return true;
@@ -5726,7 +5766,7 @@ bool CX2GameUnit::IsDamagedReaction( const CX2DamageManager::DamageData* pDamage
 //		m_PhysicParam.m_vecMoveSpeedFactor.clear();
 	}
 
-	void CX2GameUnit::SetVecMoveSpeedFactor( float fSpeedRate, float fDuration, SPEED_FACTOR_ID eId /*= CX2GameUnit::SFI_NONE*/, SPEED_FACTOR_SET_TYPE eSetType /*= SFST_MULTY*/ )
+	void CX2GameUnit::SetVecMoveSpeedFactor( float /*fSpeedRate*/, float /*fDuration*/, SPEED_FACTOR_ID /*eId*/ /*= CX2GameUnit::SFI_NONE*/, SPEED_FACTOR_SET_TYPE /*eSetType*/ /*= SFST_MULTY*/ )
 	{
 // 		switch ( eSetType )
 // 		{
@@ -5783,7 +5823,7 @@ bool CX2GameUnit::IsDamagedReaction( const CX2DamageManager::DamageData* pDamage
 // 		}
 	}
 
-	void CX2GameUnit::CommonFrameMoveMoveSpeedFactorEffect(SPEED_FACTOR speedFactor)
+	void CX2GameUnit::CommonFrameMoveMoveSpeedFactorEffect(SPEED_FACTOR /*speedFactor*/)
 	{
 		// 이펙트 생성 / 소멸 처리
 	}
@@ -5803,7 +5843,7 @@ bool CX2GameUnit::IsDamagedReaction( const CX2DamageManager::DamageData* pDamage
 //		m_PhysicParam.m_vecJumpSpeedFactor.clear();
 	}
 
-	void CX2GameUnit::SetVecJumpSpeedFactor( float fSpeedRate, float fDuration, SPEED_FACTOR_ID eId /*= CX2GameUnit::SFI_NONE*/, SPEED_FACTOR_SET_TYPE eSetType /*= SFST_MULTY*/ )
+	void CX2GameUnit::SetVecJumpSpeedFactor( float /*fSpeedRate*/, float /*fDuration*/, SPEED_FACTOR_ID /*eId*/ /*= CX2GameUnit::SFI_NONE*/, SPEED_FACTOR_SET_TYPE /*eSetType*/ /*= SFST_MULTY*/ )
 	{
 // 		switch ( eSetType )
 // 		{
@@ -5844,7 +5884,7 @@ bool CX2GameUnit::IsDamagedReaction( const CX2DamageManager::DamageData* pDamage
 // 		m_PhysicParam.m_vecJumpSpeedFactor.push_back( jumpSpeedFactor );
 	}
 
-	void CX2GameUnit::RemoveVecMoveSpeedFactor( SPEED_FACTOR_ID eID )
+	void CX2GameUnit::RemoveVecMoveSpeedFactor( SPEED_FACTOR_ID /*eID*/ )
 	{
 // 		for(UINT i=0; i<m_PhysicParam.m_vecMoveSpeedFactor.size(); ++i)
 // 		{
@@ -5872,7 +5912,7 @@ bool CX2GameUnit::IsDamagedReaction( const CX2DamageManager::DamageData* pDamage
 // 		}
 	}
 
-	void CX2GameUnit::CommonFrameMoveJumpSpeedFactorEffect(SPEED_FACTOR speedFactor)
+	void CX2GameUnit::CommonFrameMoveJumpSpeedFactorEffect(SPEED_FACTOR /*speedFactor*/)
 	{
 		// 이펙트 생성 / 소멸 처리
 	}
@@ -6455,6 +6495,8 @@ void CX2GameUnit::Weapon::InitEnchantParticleForSword()
 				L"Weapon_Elsword_Property01_M_Poison2",
 				L"Weapon_Elsword_Property01_M_Poison2" );
 		} break;
+	default:
+		break;
 	}
 }
 
@@ -6531,6 +6573,8 @@ void	CX2GameUnit::Weapon::AppendEnchantParticleForSwordToDeviceList( CKTDXDevice
 			g_pData->GetGameMajorParticle()->AppendToDeviceList( listInOut_, L"Weapon_Elsword_Property01_M_Poison" );
 			g_pData->GetGameMajorParticle()->AppendToDeviceList( listInOut_, L"Weapon_Elsword_Property01_M_Poison2" );
 		} break;
+	default:
+		break;
 	}
 }
 
@@ -6602,6 +6646,8 @@ void CX2GameUnit::Weapon::AppendEnchantParticleForBowToDeviceList( CKTDXDeviceDa
 		{
 			g_pData->GetGameMajorParticle()->AppendToDeviceList( listInOut_, L"Weapon_Lire_Property01_M_Poison" );
 		} break;
+	default:
+		break;
 	}
 }
 
@@ -6684,6 +6730,8 @@ void CX2GameUnit::Weapon::InitEnchantParticleForBow()
 			CreateEnchantParticle( L"Weapon_Lire_Property01_M_Poison",
 				NULL, NULL );
 		} break;
+	default:
+		break;
 	}
 }
 
@@ -6778,6 +6826,8 @@ void CX2GameUnit::Weapon::UpdateSlashTraceTextureName()
 			{
 				m_pSlashTrace[i]->SetDefaultSlashTraceTextureName( CX2EnchantItem::GetSlashTraceTextureName( pUser->GetUnit()->GetType(), extraDamageType ) );
 			} break;
+		default:
+			break;
 		}
 	}
 }
@@ -6909,6 +6959,8 @@ bool CX2GameUnit::Weapon::LoadDataForUser( KLuaManager& luaManager )
 					slashTraceTextureName = CX2EnchantItem::GetSlashTraceTextureName( pUser->GetUnit()->GetType(), extraDamageType );
 					slashTraceTextureStride = 400.f;
 				} break;
+			default:
+				break;
 			}
 
 
@@ -7601,6 +7653,8 @@ void CX2GameUnit::Weapon::CommonFrameMoveForUser( double fTime, float fElapsedTi
 		{
 			EnchantParticleFrameMoveForAdd();
 		} break;
+	default:
+		break;
 	}
 
 }
@@ -8197,6 +8251,8 @@ void CX2GameUnit::ExtraDamagePack::Init(CX2DamageManager::EXTRA_DAMAGE_TYPE eExt
 		m_Bleeding.Init();
 		m_Bleeding.m_ExtraDamageType					= CX2DamageManager::EDT_BLEEDING;
 		break;
+	default:
+		break;
 	}
 	return;
 }
@@ -8518,7 +8574,7 @@ void CX2GameUnit::UpdateVisibilitySmallGageAndName()
 		return new CX2GageData();
 }
 
-/*virtual*/ CX2GageUI* CX2GameUnit::CreateGageUI( const CX2GageData* pOwnerGageData_ )
+/*virtual*/ CX2GageUI* CX2GameUnit::CreateGageUI( const CX2GageData* /*pOwnerGageData_*/ )
 {
 	if ( IsMyUnit() )
 	{
@@ -10499,6 +10555,8 @@ void CX2GameUnit::EraseBuffIdentity( const BUFF_BEHAVIOR_TYPE eType_, const KBuf
 	case BBT_X_ATTACK_IMPOSSIBLE:
 		ERASE_BUFF_IDENTITY( m_vecXImpossiblePtr, BuffIdentity_ );
 		break;
+	default:
+		break;
 	}
 }
 
@@ -11161,7 +11219,7 @@ void CX2GameUnit::EnableWeaponAfterImage()
 	}
 }
 
-void CX2GameUnit::DisableWeaponAfterImage( const bool bForce_ /*= false*/ )
+void CX2GameUnit::DisableWeaponAfterImage( const bool /*bForce_*/ /*= false*/ )
 {
 	if ( NULL != m_pAfterImage )
 	{

@@ -207,7 +207,7 @@ HRESULT	CX2PetManager::OnFrameRender()
 	return S_OK;
 }
 
-bool CX2PetManager::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PetManager::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/ )
 {
 	switch(wParam)
 	{
@@ -1679,7 +1679,7 @@ bool CX2PetManager::Handler_EGS_COMMANDS_FOR_PETS_REQ( CX2PET::PET_ACTION_COMMAN
 	return true;
 }
 
-bool CX2PetManager::Handler_EGS_COMMANDS_FOR_PETS_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PetManager::Handler_EGS_COMMANDS_FOR_PETS_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_COMMANDS_FOR_PETS_ACK kEvent;
@@ -1693,7 +1693,7 @@ bool CX2PetManager::Handler_EGS_COMMANDS_FOR_PETS_ACK( HWND hWnd, UINT uMsg, WPA
 	return false;
 }
 
-bool CX2PetManager::Handler_EGS_PET_ACTION_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PetManager::Handler_EGS_PET_ACTION_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_PET_ACTION_NOT kEvent;
@@ -1723,7 +1723,7 @@ void CX2PetManager::Handler_EGS_SUMMON_PET_REQ( UidType petUid )
 	return;
 }
 
-bool CX2PetManager::Handler_EGS_SUMMON_PET_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PetManager::Handler_EGS_SUMMON_PET_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_SUMMON_PET_ACK kEvent;
@@ -1775,7 +1775,7 @@ bool CX2PetManager::Handler_EGS_SUMMON_PET_ACK( HWND hWnd, UINT uMsg, WPARAM wPa
 	return false;
 }
 
-bool CX2PetManager::Handler_EGS_SUMMON_PET_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PetManager::Handler_EGS_SUMMON_PET_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_SUMMON_PET_NOT kEvent;
@@ -2022,7 +2022,7 @@ void CX2PetManager::Handler_EGS_PET_EVOLUTION_REQ( UidType petUid )
 	return;
 }
 
-bool CX2PetManager::Handler_EGS_PET_EVOLUTION_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PetManager::Handler_EGS_PET_EVOLUTION_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_PET_EVOLUTION_ACK kEvent;
@@ -2083,7 +2083,7 @@ bool CX2PetManager::Handler_EGS_PET_EVOLUTION_ACK( HWND hWnd, UINT uMsg, WPARAM 
 	return false;
 }
 
-bool CX2PetManager::Handler_EGS_PET_EVOLUTION_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PetManager::Handler_EGS_PET_EVOLUTION_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_PET_EVOLUTION_NOT kEvent;
@@ -2164,7 +2164,7 @@ bool CX2PetManager::Handler_EGS_PET_EVOLUTION_NOT( HWND hWnd, UINT uMsg, WPARAM 
 	return true;
 }
 
-bool CX2PetManager::Handler_EGS_CHANGED_PET_SATIETY_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PetManager::Handler_EGS_CHANGED_PET_SATIETY_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	// 포만도 변경
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -2174,7 +2174,7 @@ bool CX2PetManager::Handler_EGS_CHANGED_PET_SATIETY_NOT( HWND hWnd, UINT uMsg, W
 	return ChangeSatiety( kEvent.m_iUnitUID, kEvent.m_iPetUID, kEvent.m_sCurrentSatiety );
 }
 
-bool CX2PetManager::Handler_EGS_CHANGED_PET_INTIMACY_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PetManager::Handler_EGS_CHANGED_PET_INTIMACY_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	// 친밀도 변경
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -2485,7 +2485,7 @@ bool CX2PetManager::ChangeIntimacy(UidType iUnitUID, UidType iPetUID, int iCurre
 	return false;
 }
 
-bool CX2PetManager::Handler_EGS_CHANGED_PET_SATIETY_INTIMACY_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PetManager::Handler_EGS_CHANGED_PET_SATIETY_INTIMACY_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	// 포만도 변경
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -2524,7 +2524,7 @@ void CX2PetManager::Handler_EGS_CHANGE_PET_NAME_REQ( UidType itemUid, wstring ws
 	return;
 }
 
-bool CX2PetManager::Handler_EGS_CHANGE_PET_NAME_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PetManager::Handler_EGS_CHANGE_PET_NAME_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CREATE_PET_ACK kEvent;
@@ -2587,7 +2587,7 @@ void CX2PetManager::Handler_EGS_CREATE_PET_REQ( UidType itemUid, wstring wstrPet
 	return;
 }
 
-bool CX2PetManager::Handler_EGS_CREATE_PET_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PetManager::Handler_EGS_CREATE_PET_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CREATE_PET_ACK kEvent;
@@ -2659,7 +2659,7 @@ void CX2PetManager::Handler_EGS_FEED_PETS_REQ( UidType iItemUid )
 
 }
 
-bool CX2PetManager::Handler_EGS_FEED_PETS_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PetManager::Handler_EGS_FEED_PETS_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_FEED_PETS_ACK kEvent;
@@ -2715,7 +2715,7 @@ bool CX2PetManager::Handler_EGS_FEED_PETS_ACK( HWND hWnd, UINT uMsg, WPARAM wPar
 	return false;
 }
 //{{ oasis907 : 김상윤 [2010.9.9] // 자동 먹이 NOT
-bool CX2PetManager::Handler_EGS_AUTO_FEED_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PetManager::Handler_EGS_AUTO_FEED_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_AUTO_FEED_NOT kEvent;
@@ -2736,7 +2736,7 @@ bool CX2PetManager::Handler_EGS_AUTO_FEED_NOT( HWND hWnd, UINT uMsg, WPARAM wPar
 }
 //}}
 
-bool CX2PetManager::Handler_EGS_FIRST_FEED_PETS_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PetManager::Handler_EGS_FIRST_FEED_PETS_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_FIRST_FEED_PETS_NOT kEvent;
@@ -2761,7 +2761,7 @@ bool CX2PetManager::Handler_EGS_FIRST_FEED_PETS_NOT( HWND hWnd, UINT uMsg, WPARA
 }
 
 //{{ 2011. 05. 23  김민성	큐피엘 젤리 친밀도 증감
-bool CX2PetManager::Handler_EGS_EAT_SPECIAL_FEED_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PetManager::Handler_EGS_EAT_SPECIAL_FEED_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_EAT_SPECIAL_FEED_NOT kEvent;
@@ -2792,7 +2792,7 @@ bool CX2PetManager::Handler_EGS_EAT_SPECIAL_FEED_NOT( HWND hWnd, UINT uMsg, WPAR
 }
 //}}
 
-bool CX2PetManager::Handler_EGS_CHANGE_PET_ID_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PetManager::Handler_EGS_CHANGE_PET_ID_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_PET_ID_NOT kEvent;
@@ -2836,7 +2836,7 @@ void CX2PetManager::UpdateMasterUserSocketAndEnchantData( CX2GUUser* pMasterUser
 	}
 }
 
-bool CX2PetManager::Handler_EGS_RELEASE_PET_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PetManager::Handler_EGS_RELEASE_PET_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_RELEASE_PET_NOT kEvent;

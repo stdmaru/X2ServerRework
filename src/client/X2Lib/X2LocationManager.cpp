@@ -10,8 +10,8 @@ m_vCurrentPos( 0, 0, 0 ),
 m_iLineIndex( 0 ),
 m_vLastPos( 0, 0, 0 ),
 m_iLastPosLineIndex( 0 ),
-m_ComeBackInfoFromDungeon(),
-m_bIsRight(true)
+m_bIsRight(true),
+m_ComeBackInfoFromDungeon()
 {
 	OpenScript();
 }

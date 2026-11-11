@@ -565,6 +565,8 @@ wstring CX2DamageManager::GetExtraDamageName( CX2DamageManager::EXTRA_DAMAGE_TYP
 
 
 
+	default:
+		break;
 	}
 
 
@@ -881,6 +883,8 @@ bool CX2DamageManager::AreaHit( DamageData* pDamageData, bool bAttackOnlyThisUni
 		break;
 	case DAT_FAR_UNIT:
 		std::sort(vecAreaHitUnitIndex.begin(), vecAreaHitUnitIndex.end(), AreaHitCmpFar);
+		break;
+	default:
 		break;
 	}
 
@@ -2251,6 +2255,8 @@ float CX2DamageManager::ExtraDamageData::GetCalcPerDamage(int iUnitLevel, float 
 	case CX2DamageManager::EDT_LEG_WOUND:
 		fPerDamage = 82.f;
 		break;
+	default:
+		break;
 	}
 
 	if(g_pX2Game != NULL && g_pX2Game->GetGameType() == CX2Game::GT_PVP)
@@ -2389,7 +2395,7 @@ float CX2DamageManager::CalcWayOfSwordPoint( WAY_OF_SWORD_TYPE wayOfSwordType_, 
 }
 
 
-float CX2DamageManager::CalcWayOfSwordPointOnDamageReact( float fDamageRate_, int iWayOfSwordState )
+float CX2DamageManager::CalcWayOfSwordPointOnDamageReact( float /*fDamageRate_*/, int iWayOfSwordState )
 {
 	float fWSPGain = 0.f;
 
@@ -2933,6 +2939,8 @@ bool CX2DamageManager::GetIsPossibleProvokeExtraDamage ( DamageData * pDamageDat
 			case EDT_WATER_HOLD:
 			case EDT_ATTACK_ALL_TEAM:
 				return false;
+		default:
+			break;
 		}
 	}
 	return true;

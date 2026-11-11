@@ -1346,6 +1346,8 @@ CFirstPersonCamera* CX2Camera::GetFPSCamera()
 			if( g_pX2Game != NULL )
 				return g_pX2Game->GetFPSCamera();
 		} break;
+	default:
+		break;
 	}
 	return NULL;
 }
@@ -2208,7 +2210,7 @@ LoadFail:
 	return false;
 }
 
-void CX2Camera::WorldCameraFrameMove( double fTime, float fElapsedTime )
+void CX2Camera::WorldCameraFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	if(true == m_bWorldCameraEdit &&  true == m_bEnableWorldCamera)
 	{
@@ -2680,7 +2682,7 @@ void CX2Camera::EndWorldCamera()
 	return;
 }
 
-bool CX2Camera::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2Camera::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/ )
 {
 	switch(wParam)
 	{

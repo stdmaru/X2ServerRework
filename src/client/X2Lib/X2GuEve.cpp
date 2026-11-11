@@ -63,8 +63,8 @@ CX2GUEve::CX2GUEve( int unitIndex, int teamNum,
 	, m_fAddSpectrumTime( 0.f )
 	, m_fAddEnergeticHeartTime( 0.f )
 	, m_bStartLinkOverChargeIllusion( false )
-	, m_fFerdinandLifeTime( -1.f )
 	, m_iFerdinandNPCUID( -1 )
+	, m_fFerdinandLifeTime( -1.f )
 	, m_eReserveEndElCrystalBuffID( BTI_NONE )
 	, m_bIsCheckEndElCrystal ( false )
 	, m_fDecraseInvisibilityMP ( -4.f )
@@ -303,7 +303,7 @@ void CX2GUEve::ReInit( bool bRandom, int startPosIndex )
 
 
 /*static*/
-void	CX2GUEve::AppendDeviceToDeviceList( CKTDXDeviceDataList& listInOut_ )
+void	CX2GUEve::AppendDeviceToDeviceList( CKTDXDeviceDataList& /*listInOut_*/ )
 {
 }
 
@@ -1354,6 +1354,8 @@ void CX2GUEve::InitState()
 			m_iSkillCutInSetIndex = 3;
 		} break;
 		//}} kimhc // 2010.2.17 //	�̺� 2�� ���� ��ų ����
+	default:
+		break;
 	}
 
 	switch( pUnitData->m_UnitClass )
@@ -1454,6 +1456,8 @@ void CX2GUEve::InitState()
 			stateData.OnEventProcess	= SET_CB_FUNC( CX2GUEve, ENSI_COMBO_ZZZdownZZ_EventProcess );
 			m_StateList[stateData.stateID] = stateData;
 		} break;
+	default:
+		break;
 	}
 
 	switch( pUnitData->m_UnitClass )
@@ -1471,6 +1475,8 @@ void CX2GUEve::InitState()
 
 
 		} break;
+	default:
+		break;
 	}
 
 	switch( pUnitData->m_UnitClass )
@@ -1496,6 +1502,8 @@ void CX2GUEve::InitState()
 			stateData.OnEventProcess	= SET_CB_FUNC( CX2GUEve, ENSI_EPR_COMBO_XXZ_EventProcess );
 			m_StateList[stateData.stateID] = stateData;
 		} break;
+	default:
+		break;
 	}
 
 
@@ -1697,6 +1705,8 @@ void CX2GUEve::InitState()
 
 		}
 		break;
+	default:
+		break;
 	}
 
 	//{{ kimhc // 2010.1.25 // �̺� 2�� �޺�
@@ -1766,6 +1776,8 @@ void CX2GUEve::InitState()
 			m_StateList[stateData.stateID] = stateData;
 		}
 		break;
+	default:
+		break;
 	}
 	//}} kimhc // 2010.1.25 // �̺� 2�� �޺�
 
@@ -1813,6 +1825,8 @@ void CX2GUEve::InitState()
 			stateData.StateEnd			= SET_CB_FUNC( CX2GUEve, ENSI_DASH_JUMP_COMBO_XZ_End );
 			m_StateList[stateData.stateID] = stateData;
 		} break;
+	default:
+		break;
 	}
 
 
@@ -1895,6 +1909,8 @@ void CX2GUEve::InitState()
 					hyperStateData.OnFrameMove		= normalStateData.OnFrameMove;
 					hyperStateData.OnEventProcess	= normalStateData.OnEventProcess;
 				} break;
+			default:
+				break;
 			}
 			return;
 		} break;
@@ -2927,7 +2943,7 @@ void CX2GUEve::InitState()
 }
 
 /*static*/
-void	CX2GUEve::AppendComponentToDeviceList( CKTDXDeviceDataList& listInOut_ )
+void	CX2GUEve::AppendComponentToDeviceList( CKTDXDeviceDataList& /*listInOut_*/ )
 {
 }
 
@@ -3456,7 +3472,7 @@ void CX2GUEve::InitializeEveMinorParticleArray()
 }
 
 /*static*/
-void	CX2GUEve::AppendMinorParticleToDeviceList( CKTDXDeviceDataList& listInOut_ )
+void	CX2GUEve::AppendMinorParticleToDeviceList( CKTDXDeviceDataList& /*listInOut_*/ )
 {
 }
 
@@ -7936,6 +7952,8 @@ void CX2GUEve::ENSI_COMBO_ZZZdownZ_StartFuture()
 			m_pXSkinAnimFuture->ChangeAnim( L"EG_ComboZ4Down", false );
 			m_pXSkinAnimFuture->Play( CKTDGXSkinAnim::XAP_ONE_WAIT );
 		} break;
+	default:
+		break;
 	}
 	//}} hoons
 }
@@ -7957,6 +7975,8 @@ void CX2GUEve::ENSI_COMBO_ZZZdownZ_Start()
 			m_pXSkinAnim->ChangeAnim( L"EG_ComboZ4Down", false );
 			m_pXSkinAnim->Play( CKTDGXSkinAnim::XAP_ONE_WAIT );
 		} break;
+	default:
+		break;
 	}
 	//}} hoons
 }
@@ -8137,6 +8157,8 @@ void CX2GUEve::ENSI_COMBO_ZZZdownZ_EventProcess()
 		case CX2Unit::UC_EVE_CODE_EMPRESS:
 			m_FrameDataFuture.stateParam.bEventFlagList[0] = true;
 			break;
+		default:
+			break;
 		}
 	}
 	//}}
@@ -8171,6 +8193,8 @@ void CX2GUEve::ENSI_COMBO_ZZZdownZZ_Init()
 	case CX2Unit::UC_EVE_CODE_EMPRESS:
 		XSkinMeshReadyInBackground( L"Eve_AT_ComboZ5a_Mesh.X" );
 		break;
+	default:
+		break;
 	}
 }
 
@@ -8192,6 +8216,8 @@ void CX2GUEve::ENSI_COMBO_ZZZdownZZ_StartFuture()
 			m_pXSkinAnimFuture->ChangeAnim( L"AT_ComboZ5a", false );
 			m_pXSkinAnimFuture->Play( CKTDGXSkinAnim::XAP_ONE_WAIT );
 		} break;
+	default:
+		break;
 	}
 }
 
@@ -8213,6 +8239,8 @@ void CX2GUEve::ENSI_COMBO_ZZZdownZZ_Start()
 			m_pXSkinAnim->ChangeAnim( L"AT_ComboZ5a", false );
 			m_pXSkinAnim->Play( CKTDGXSkinAnim::XAP_ONE_WAIT );
 		} break;
+	default:
+		break;
 	}
 }
 
@@ -8277,6 +8305,8 @@ void CX2GUEve::ENSI_COMBO_ZZZdownZZ_FrameMove()
 				g_pX2Game->GetDamageEffect()->CreateInstance( this, L"EVE_EG_ZZZdownZZ", GetPowerRate(), vBonePos, vAngle, vAngle );
 			}
 			break;
+		default:
+			break;
 		}
 	}
 
@@ -8301,6 +8331,8 @@ void CX2GUEve::ENSI_COMBO_ZZZdownZZ_EventProcess()
 		case CX2Unit::UC_EVE_CODE_NEMESIS:
 		case CX2Unit::UC_EVE_CODE_EMPRESS:
 			fSkipTime = 0.45f; // 1/3 ����
+			break;
+		default:
 			break;
 		}
 
@@ -8499,6 +8531,8 @@ void CX2GUEve::ENSI_COMBO_XXZ4_Init()
 			XSkinMeshReadyInBackground( L"Eve_Guardian_BladeWave01.X" );
 			XSkinMeshReadyInBackground( L"DummyAttackBox_50x50x50.X" );
 		}
+		break;
+	default:
 		break;
 	}
 }
@@ -8942,6 +8976,8 @@ void CX2GUEve::ENSI_DASH_COMBO_Z_FrameMove()
 		case CX2Unit::UC_EVE_NASOD:
 			pEffect = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"EVE_DASH_COMBO_Z", GetPowerRate(), vBonePos, GetRotateDegree(), GetRotateDegree() );
 			break;
+		default:
+			break;
 		}
 		//}} hoons.
 
@@ -9013,6 +9049,8 @@ void CX2GUEve::ENSI_DASH_COMBO_Z_EventProcess()
 		case CX2Unit::UC_EVE_BATTLE_SERAPH:
 			m_FrameDataFuture.stateParam.bEventFlagList[4] = true;
 			break;
+		default:
+			break;
 		}
 	}
 	//}} hoons.
@@ -9030,6 +9068,8 @@ void CX2GUEve::ENSI_DASH_COMBO_Z_EventProcess()
 		{
 		case CX2Unit::UC_EVE_CODE_NEMESIS:
 			m_FrameDataFuture.stateParam.bEventFlagList[2] = true;
+			break;
+		default:
 			break;
 		}
 	}
@@ -9073,6 +9113,8 @@ void CX2GUEve::ENSI_DASH_COMBO_ZZ_Init()
 	case CX2Unit::UC_EVE_ARCHITECTURE:
 		XSkinMeshReadyInBackground( L"Eve_AT_DashComboZ2_mesh.X" );
 		break;
+	default:
+		break;
 	}
 }
 
@@ -9096,6 +9138,8 @@ void CX2GUEve::ENSI_DASH_COMBO_ZZ_StartFuture()
 			m_pXSkinAnimFuture->ChangeAnim( L"AT_DashComboZ2", false );
 			m_pXSkinAnimFuture->Play( CKTDGXSkinAnim::XAP_ONE_WAIT );
 		} break;
+	default:
+		break;
 	}
 }
 void CX2GUEve::ENSI_DASH_COMBO_ZZ_Start()
@@ -9118,6 +9162,8 @@ void CX2GUEve::ENSI_DASH_COMBO_ZZ_Start()
 			m_pXSkinAnim->ChangeAnim( L"AT_DashComboZ2", false );
 			m_pXSkinAnim->Play( CKTDGXSkinAnim::XAP_ONE_WAIT );
 		} break;
+	default:
+		break;
 	}
 }
 void CX2GUEve::ENSI_DASH_COMBO_ZZ_End()
@@ -9144,6 +9190,8 @@ void CX2GUEve::ENSI_DASH_COMBO_ZZ_FrameMove()
 			case CX2Unit::UC_EVE_ARCHITECTURE:
 			case CX2Unit::UC_EVE_CODE_EMPRESS:
 				g_pX2Game->GetDamageEffect()->CreateInstance( this, L"EVE_AT_DASH_COMBO_ZZ", GetPowerRate(), vBonePos, GetRotateDegree(), GetRotateDegree() );
+				break;
+			default:
 				break;
 			}
 		}
@@ -9172,6 +9220,8 @@ void CX2GUEve::ENSI_DASH_COMBO_ZZ_EventProcess()
 				m_FrameDataFuture.stateParam.bEventFlagList[0] = false;
 			}
 			break;
+		default:
+			break;
 		}
 	}
 	else if( m_InputData.oneZ == true &&
@@ -9188,6 +9238,8 @@ void CX2GUEve::ENSI_DASH_COMBO_ZZ_EventProcess()
 		case CX2Unit::UC_EVE_EXOTIC_GEAR:
 		case CX2Unit::UC_EVE_CODE_NEMESIS:
 			fSkipTime = 0.6f; //1/3 ����
+			break;
+		default:
 			break;
 		}
 
@@ -9226,6 +9278,8 @@ void CX2GUEve::ENSI_DASH_COMBO_ZZZ_StartFuture()
 			m_pXSkinAnimFuture->ChangeAnim( L"AT_DashComboZ3", false );
 			m_pXSkinAnimFuture->Play( CKTDGXSkinAnim::XAP_ONE_WAIT );
 		} break;
+	default:
+		break;
 	}
 }
 void CX2GUEve::ENSI_DASH_COMBO_ZZZ_Start()
@@ -9248,6 +9302,8 @@ void CX2GUEve::ENSI_DASH_COMBO_ZZZ_Start()
 			m_pXSkinAnim->ChangeAnim( L"AT_DashComboZ3", false );
 			m_pXSkinAnim->Play( CKTDGXSkinAnim::XAP_ONE_WAIT );
 		} break;
+	default:
+		break;
 	}
 
 	m_ahMajorMeshInstance[MajorMID_DashComboZZZ] = INVALID_MESH_INSTANCE_HANDLE;
@@ -9299,6 +9355,8 @@ void CX2GUEve::ENSI_DASH_COMBO_ZZZ_FrameMove()
 				}
 			}
 		}
+		break;
+	default:
 		break;
 	}
 	// 	if( m_pXSkinAnim->EventTimer( 0.01f ) == true && EventCheck( 0.01f, false ) == true &&
@@ -9368,6 +9426,8 @@ void CX2GUEve::ENSI_DASH_COMBO_ZZZ_EventProcess()
 		case CX2Unit::UC_EVE_EXOTIC_GEAR:
 		case CX2Unit::UC_EVE_CODE_EMPRESS:
 			fSkipTime = 1.f; //1/3 ����
+			break;
+		default:
 			break;
 		}
 
@@ -9511,6 +9571,8 @@ void CX2GUEve::ENSI_DASH_COMBO_X_EventProcess()
 		case CX2Unit::UC_EVE_CODE_NEMESIS:
 			m_FrameDataFuture.stateParam.bEventFlagList[0] = true;
 			break;
+		default:
+			break;
 		}
 	}
 	ELSE_IF_KEY_PRESSED_AT_SKIP_POINT_ZXC
@@ -9559,6 +9621,8 @@ void CX2GUEve::ENSI_DASH_COMBO_XZ_EventProcess()
 		case CX2Unit::UC_EVE_EXOTIC_GEAR:
 		case CX2Unit::UC_EVE_CODE_NEMESIS:
 			fSkipTime = 0.935f;
+			break;
+		default:
 			break;
 		}
 
@@ -9997,6 +10061,8 @@ void CX2GUEve::ENSI_DASH_JUMP_COMBO_Z_EventProcess()
 				StateChangeBoostAttackIfPossible();
 			}
 			break;
+		default:
+			break;
 		}
 		m_FrameDataFuture.stateParam.bEventFlagList[1] = false;
 	}
@@ -10009,6 +10075,8 @@ void CX2GUEve::ENSI_DASH_JUMP_COMBO_Z_EventProcess()
 			break;
 		case CX2Unit::UC_EVE_BATTLE_SERAPH:
 			m_FrameDataFuture.stateParam.bEventFlagList[1] = true;
+			break;
+		default:
 			break;
 		}
 	}
@@ -10123,6 +10191,8 @@ void CX2GUEve::ENSI_DASH_JUMP_COMBO_ZZ_EventProcess()
 		{
 		case CX2Unit::UC_EVE_CODE_EMPRESS:
 			m_FrameDataFuture.stateParam.bEventFlagList[1] = true;
+			break;
+		default:
 			break;
 		}
 	}
@@ -10455,6 +10525,8 @@ void CX2GUEve::ENSI_DASH_JUMP_COMBO_X_EventProcess()
 		case CX2Unit::UC_EVE_BATTLE_SERAPH:
 			m_FrameDataFuture.stateParam.bEventFlagList[0] = true;
 			break;
+		default:
+			break;
 		}
 	}
 	if( m_InputData.oneZ == true && m_FrameDataFuture.stateParam.bEventFlagList[0] == false )
@@ -10465,6 +10537,8 @@ void CX2GUEve::ENSI_DASH_JUMP_COMBO_X_EventProcess()
 		case CX2Unit::UC_EVE_CODE_EMPRESS:
 		case CX2Unit::UC_EVE_BATTLE_SERAPH:
 			m_FrameDataFuture.stateParam.bEventFlagList[1] = true;
+			break;
+		default:
 			break;
 		}
 	}
@@ -10488,6 +10562,8 @@ void CX2GUEve::ENSI_DASH_JUMP_COMBO_X_EventProcess()
 			break;
 		case CX2Unit::UC_EVE_BATTLE_SERAPH:
 			StateChange( ENSI_EBS_DASH_JUMP_COMBO_XZ );
+			break;
+		default:
 			break;
 		}
 
@@ -10530,6 +10606,8 @@ void CX2GUEve::ENSI_DASH_JUMP_COMBO_XZ_FrameMove()
 				//m_vSummonedUnitBonePos = pMeshInst->GetXSkinAnim()->GetCloneFramePosition(L"Bip01_Neck");
 				//m_vSummonedUnitBonePos += vBonePos;
 			}
+			break;
+		default:
 			break;
 		}
 	}
@@ -13156,6 +13234,8 @@ void CX2GUEve::SetSelfDestructSummonedNPC( CX2UnitManager::NPC_UNIT_ID eNPCID /*
 						ResetLinkOverChargeIllusion();
 					}
 					break;
+				default:
+					break;
 				}
 				//}} JHKang / ������ / 2010/11/29
 			}
@@ -15122,6 +15202,8 @@ void CX2GUEve::ENSI_A_EN_MEGA_ELECTRONBALL_FrameMove()
 		case CX2Unit::UC_EVE_ARCHITECTURE:
 		case CX2Unit::UC_EVE_CODE_EMPRESS:
 			fMPConsumption *= m_fMPConsumeRateElectronBall;
+			break;
+		default:
 			break;
 		}
 
@@ -18143,6 +18225,8 @@ void CX2GUEve::EveElectraLaserData::OnFrameMove( float fElapsedTime )
 					{
 						++m_iFireCount;
 					} break;
+				default:
+					break;
 				}
 
 				m_hParticleLaserCross = g_pX2Game->GetMajorParticle()->CreateSequenceHandle( (CKTDGObject*) m_pEveElectraSystem->m_pGUEve,  L"eve_spectro_bump_P01", vPlaneIntersectPoint );
@@ -18415,6 +18499,8 @@ void CX2GUEve::EveElectraLaserData::OnFrameMove( float fElapsedTime )
 						}
 					}
 				} break;
+			default:
+				break;
 			}
 			CKTDGParticleSystem::CParticleEventSequence* pSeqLaserCross = g_pX2Game->GetMajorParticle()->GetInstanceSequence( m_hParticleLaserCross );
 			if( pSeqLaserCross != NULL )
@@ -18869,6 +18955,8 @@ void CX2GUEve::EveElectraLaserData::OnFrameMove( float fElapsedTime )
 							}
 						}
 					} break;
+				default:
+					break;
 				}
 			}
 			//////////// GIGA STREAM ////////////////////////////////////////////////////////}}
@@ -19452,6 +19540,8 @@ void CX2GUEve::EveElectraEffectData::OnFrameMove( float fElapsedTime )
 						}
 					}
 				} break;
+			default:
+				break;
 			}
             g_pX2Game->GetDamageEffect()->DestroyInstanceHandleSilently( m_hDamageEffect );
 			m_bDie = true;
@@ -19624,6 +19714,8 @@ void CX2GUEve::EveElectraLockonData::OnFrameMove( float fElapsedTime )
                         }
 					}
 				}
+				break;
+			default:
 				break;
 			}
             g_pX2Game->GetDamageEffect()->DestroyInstanceHandleSilently( m_hDamageEffect );
@@ -19845,7 +19937,7 @@ void CX2GUEve::EveElectraSystem::ProcessPlane( float _fElapsedTime )
 
 
 
-void CX2GUEve::EveElectraSystem::ProcessGigaPlane( float _fElapsedTime )
+void CX2GUEve::EveElectraSystem::ProcessGigaPlane( float /*_fElapsedTime*/ )
 {
 	CKTDGXMeshPlayer::CXMeshInstance* pMeshInstPlane = g_pX2Game->GetMajorXMeshPlayer()->GetMeshInstance( m_hEffectGigaPlane );
 	if( pMeshInstPlane != NULL )
@@ -20014,6 +20106,8 @@ void CX2GUEve::EveElectraSystem::StartFormationEffect()
 			m_hParticleFormationMark[2] = g_pX2Game->GetMajorParticle()->CreateSequenceHandle( (CKTDGObject*) m_pGUEve,
 				L"eve_spectro_MsgMark_Green_03", m_pGUEve->GetBonePos( L"Bip01" ) );
 		} break;
+	default:
+		break;
 	}
 }
 
@@ -20452,7 +20546,7 @@ void CX2GUEve::ShowActiveSkillCutInAndLight( const WCHAR* szBoneName_, const flo
 	}
 }
 
-void CX2GUEve::EveElectraSystem::CreatePlane( float _fZAngle/* = 0.f*/, float _LifeTime/* = 2.f*/, float _fDistance/* = 300.f*/, float _fHeight/* = 130.f*/, wstring PlaneMeshName /*= L""*/ )
+void CX2GUEve::EveElectraSystem::CreatePlane( float _fZAngle/* = 0.f*/, float _LifeTime/* = 2.f*/, float _fDistance/* = 300.f*/, float _fHeight/* = 130.f*/, wstring /*PlaneMeshName*/ /*= L""*/ )
 {
 	if( GetEnableSystem() == false )
 		return;
@@ -22972,7 +23066,7 @@ void CX2GUEve::DeleteMinorParticle()
 @param : � ���������Ͱ� �ߵ��ƴ����� ���� ��ų���̵�(eSkillID_)
 @return : �߰��ð�(float)
 */
-/*virtual*/ float CX2GUEve::GetAdditionalAccelBuffTime( const CX2SkillTree::SKILL_ID eSkillID_ ) const
+/*virtual*/ float CX2GUEve::GetAdditionalAccelBuffTime( const CX2SkillTree::SKILL_ID /*eSkillID_*/ ) const
 {
 	float fAdditionalAccelBuffTime = 0.0f;
 

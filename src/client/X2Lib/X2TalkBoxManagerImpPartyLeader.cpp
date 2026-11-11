@@ -97,7 +97,7 @@ CX2TalkBoxManagerImpPartyLeader::~CX2TalkBoxManagerImpPartyLeader(void)
 
 // 말풍선의 뾰족한 끝을 중심(fX,fY)으로 말풍선 전체를 그린다
 void CX2TalkBoxManagerImpPartyLeader::DrawBalloon( int iType, float fX, float fY, float fCenterWidth, float fCenterHeight, float fWidthScale,
-											float fHeightScale, float fTipLerpCoeff, D3DXCOLOR backTexColor )
+											float fHeightScale, float fTipLerpCoeff, D3DXCOLOR /*backTexColor*/ )
 {
 	KTDXPROFILE();
 

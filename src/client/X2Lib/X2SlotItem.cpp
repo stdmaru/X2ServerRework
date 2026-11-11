@@ -300,6 +300,8 @@ bool CX2SlotItem::CreateItemUI(
 			    }
 			    //}} 허상형 : [2009/7/29] //	조건에 pItemTemplet->m_bNoEquip == false 추가. 착용불가 아이템은 밝게 표시하게 하기 위함
 		    }
+        default:
+        	break;
         }//switch
 
 	}

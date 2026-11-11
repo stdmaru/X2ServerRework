@@ -2,38 +2,38 @@
 
 #include "./X2UIPersonalShop.h"
 
-CX2UIPersonalShop::CX2UIPersonalShop( CKTDXStage* pNowStage, const WCHAR* pFileName )
+CX2UIPersonalShop::CX2UIPersonalShop( CKTDXStage* pNowStage, const WCHAR* /*pFileName*/ )
 : CX2UIDragable( pNowStage, NULL ),
 m_bShow(false),
 m_NowShopState(CX2UIPersonalShop::XPSS_CLOSE),
 m_MovedPosition(0,0),				// D3DXVECTOR2
 m_DLGPosition(0,0),					// D3DXVECTOR2
 m_DLGSize(0,0),						// D3DXVECTOR2
+m_bOpenFromBoard(false),
 m_pDLGUIPersonalShop(NULL),
 m_pDLGHelp(NULL),
 m_pDLGItemEnroll(NULL),
 m_pDLGCloseShopCheck(NULL),
 m_pDLGBuyConfirm(NULL),
-m_pDLGBuyQuantity(NULL),
 //m_vecSlotInfo;
+m_pDLGBuyQuantity(NULL),
+m_pDLGBuySealedItemConfirm( NULL ),
 m_ShopName(L""),
 m_ShopKeeperName(L""),
 m_PickedShopItemIndex(-1),
 m_RegShopItemSellEDPerOne(0),
 m_RegShopItemNum(0),
 m_RegShopItemUID(0),
+//m_vecPersonalShopSlotItem.clear();
 m_RegShopItemFee(0),
 m_RegShopItemID(0),
-//m_vecPersonalShopSlotItem.clear();
 m_ItemUIDToBuy(0),
 m_ItemNumToBuy(0),
 m_iNowPageIndex(1),
-m_iMaxPageIndex(1),
-m_Layer(XDL_NORMAL_1),
-m_bIsMyShopPremium(false)
-, m_bOpenFromBoard(false)
+m_iMaxPageIndex(1)
+, m_bIsMyShopPremium(false)
 //{{ kimhc // 2009-09-07 // 봉인된 아이템 구매시 뜨는 다이얼로그
-, m_pDLGBuySealedItemConfirm( NULL )
+, m_Layer(XDL_NORMAL_1)
 //}} kimhc // 2009-09-07 // 봉인된 아이템 구매시 뜨는 다이얼로그
 , m_uidSelectedItemUID( -1 )
 {
@@ -102,6 +102,8 @@ void CX2UIPersonalShop::BreakShop()
 		Handler_EGS_LEAVE_PERSONAL_SHOP_REQ();
 		break;
 	case XPSS_CLOSE:
+		break;
+	default:
 		break;
 	}
 }
@@ -281,7 +283,7 @@ bool CX2UIPersonalShop::Handler_EGS_CREATE_PERSONAL_SHOP_REQ()
 
 
 
-bool CX2UIPersonalShop::Handler_EGS_CREATE_PERSONAL_SHOP_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPersonalShop::Handler_EGS_CREATE_PERSONAL_SHOP_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	g_pKTDXApp->GetDIManager()->SetEnable( true );
 
@@ -377,7 +379,7 @@ bool CX2UIPersonalShop::Handler_EGS_JOIN_PERSONAL_SHOP_FROM_BOARD_REQ()
 }
 //}} oasis907 : 김상윤 [2010.3.25] //
 
-bool CX2UIPersonalShop::Handler_EGS_JOIN_PERSONAL_SHOP_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPersonalShop::Handler_EGS_JOIN_PERSONAL_SHOP_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	// 패킷 처리
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -526,7 +528,7 @@ bool CX2UIPersonalShop::Handler_BREAK_PERSONAL_SHOP_REQ()
 	return true;
 }
 
-bool CX2UIPersonalShop::Handler_BREAK_PERSONAL_SHOP_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPersonalShop::Handler_BREAK_PERSONAL_SHOP_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	// 패킷 처리
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -549,7 +551,7 @@ bool CX2UIPersonalShop::Handler_BREAK_PERSONAL_SHOP_ACK( HWND hWnd, UINT uMsg, W
 	return false;
 }
 
-bool CX2UIPersonalShop::Handler_BREAK_PERSONAL_SHOP_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPersonalShop::Handler_BREAK_PERSONAL_SHOP_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	// 패킷 처리
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -609,7 +611,7 @@ bool CX2UIPersonalShop::Handler_EGS_REG_PERSONAL_SHOP_ITEM_REQ()
 	return true;
 }
 
-bool CX2UIPersonalShop::Handler_EGS_REG_PERSONAL_SHOP_ITEM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPersonalShop::Handler_EGS_REG_PERSONAL_SHOP_ITEM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	// 패킷 처리
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -720,7 +722,7 @@ bool CX2UIPersonalShop::Handler_EGS_BUY_PERSONAL_SHOP_ITEM_REQ( UidType itemUID,
 	return false;
 }
 
-bool CX2UIPersonalShop::Handler_EGS_BUY_PERSONAL_SHOP_ITEM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPersonalShop::Handler_EGS_BUY_PERSONAL_SHOP_ITEM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_BUY_PERSONAL_SHOP_ITEM_ACK kEvent;
@@ -749,7 +751,7 @@ bool CX2UIPersonalShop::Handler_EGS_BUY_PERSONAL_SHOP_ITEM_ACK( HWND hWnd, UINT 
 	return false;
 }
 
-bool CX2UIPersonalShop::Handler_EGS_BUY_PERSONAL_SHOP_ITEM_COMPLETE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPersonalShop::Handler_EGS_BUY_PERSONAL_SHOP_ITEM_COMPLETE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_BUY_PERSONAL_SHOP_ITEM_COMPLETE_NOT kEvent;
@@ -782,7 +784,7 @@ bool CX2UIPersonalShop::Handler_EGS_BUY_PERSONAL_SHOP_ITEM_COMPLETE_NOT( HWND hW
 
 
 // 현재 보고 있는 상점(내 상점이던 남의 상점이던)이 업데이트 되었을 때 날아오는 메시지
-bool CX2UIPersonalShop::Handler_UPDATE_PERSONAL_SHOP_ITEM_INFO_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPersonalShop::Handler_UPDATE_PERSONAL_SHOP_ITEM_INFO_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_UPDATE_PERSONAL_SHOP_ITEM_INFO_NOT kEvent;
@@ -875,7 +877,7 @@ bool CX2UIPersonalShop::Handler_EGS_LEAVE_PERSONAL_SHOP_REQ()
 	return true;
 }
 
-bool CX2UIPersonalShop::Handler_EGS_LEAVE_PERSONAL_SHOP_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPersonalShop::Handler_EGS_LEAVE_PERSONAL_SHOP_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	// 패킷 처리
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -920,7 +922,7 @@ HRESULT CX2UIPersonalShop::OnFrameMove( double fTime, float fElapsedTime )
 }
 
 
-bool CX2UIPersonalShop::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPersonalShop::MsgProc( HWND /*hWnd*/, UINT uMsg, WPARAM /*wParam*/, LPARAM lParam )
 {
 // 	if ( GetCheckOperationCondition() == false )
 // 		return false;
@@ -1088,7 +1090,7 @@ bool CX2UIPersonalShop::UIServerEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, 
 }
 
 
-bool CX2UIPersonalShop::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPersonalShop::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM lParam )
 {
 	switch(wParam)
 	{
@@ -3185,7 +3187,7 @@ bool CX2UIPersonalShop::Handler_EGS_CREATE_PSHOP_AGENCY_REQ()
 
 	return true;
 }
-bool CX2UIPersonalShop::Handler_EGS_CREATE_PSHOP_AGENCY_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPersonalShop::Handler_EGS_CREATE_PSHOP_AGENCY_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	// 패킷 처리
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -3252,7 +3254,7 @@ bool CX2UIPersonalShop::Handler_EGS_REG_PSHOP_AGENCY_ITEM_REQ()
 
 	return true;
 }
-bool CX2UIPersonalShop::Handler_EGS_REG_PSHOP_AGENCY_ITEM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPersonalShop::Handler_EGS_REG_PSHOP_AGENCY_ITEM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	// 패킷 처리
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -3308,7 +3310,7 @@ bool CX2UIPersonalShop::Handler_EGS_JOIN_MY_PSHOP_AGENCY_REQ(bool bOnlyView)
 
 	return true;
 }
-bool CX2UIPersonalShop::Handler_EGS_JOIN_MY_PSHOP_AGENCY_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPersonalShop::Handler_EGS_JOIN_MY_PSHOP_AGENCY_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	// 패킷 처리
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -3386,7 +3388,7 @@ bool CX2UIPersonalShop::Handler_EGS_STOP_SALE_PSHOP_AGENCY_REQ()
 
 	return true;
 }
-bool CX2UIPersonalShop::Handler_EGS_STOP_SALE_PSHOP_AGENCY_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPersonalShop::Handler_EGS_STOP_SALE_PSHOP_AGENCY_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	// 패킷 처리
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -3414,7 +3416,7 @@ bool CX2UIPersonalShop::Handler_EGS_LEAVE_PSHOP_AGENCY_REQ()
 
 	return true;
 }
-bool CX2UIPersonalShop::Handler_EGS_LEAVE_PSHOP_AGENCY_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPersonalShop::Handler_EGS_LEAVE_PSHOP_AGENCY_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	// 패킷 처리
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -3474,7 +3476,7 @@ bool CX2UIPersonalShop::Handler_EGS_PICK_UP_FROM_PSHOP_AGENCY_REQ(int iSlotInx)
 
 	return true;
 }
-bool CX2UIPersonalShop::Handler_EGS_PICK_UP_FROM_PSHOP_AGENCY_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPersonalShop::Handler_EGS_PICK_UP_FROM_PSHOP_AGENCY_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	// 패킷 처리
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;

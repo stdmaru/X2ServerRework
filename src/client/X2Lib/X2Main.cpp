@@ -2626,7 +2626,7 @@ void CX2Main::RegisterLuabind()
 
 
 
-bool CX2Main::StateChange( int stateID, int iDetailStateID )
+bool CX2Main::StateChange( int stateID, int /*iDetailStateID*/ )
 {
 
 
@@ -3031,6 +3031,8 @@ void CX2Main::ReservedServerEventProc()
 					{
 						continue;	// continue for loop
 					} break;
+				default:
+					break;
 				}
 
 
@@ -3056,6 +3058,8 @@ void CX2Main::ReservedServerEventProc()
 					{
 						continue;	// continue for loop
 					} break;
+				default:
+					break;
 				}
 
 
@@ -3067,6 +3071,8 @@ void CX2Main::ReservedServerEventProc()
 				i--;
 			} break;
 //}} oasis907 : ????? [2009.12.17] //
+		default:
+			break;
 		}
 	}
 }
@@ -4299,12 +4305,14 @@ void CX2Main::BuyItemSuper_LUA( int itemID, int iQuantity /*= 1*/, short sPeriod
 				AddServerPacket( EGS_BUY_ED_ITEM_ACK );
 
 			} break;
+		default:
+			break;
 		}
 	}
 }
 
 
-void CX2Main::SetAuthLevel_LUA( const CHAR* userID, CX2User::X2_USER_AUTH_LEVEL level )
+void CX2Main::SetAuthLevel_LUA( [[maybe_unused]] const CHAR* userID, [[maybe_unused]] CX2User::X2_USER_AUTH_LEVEL level )
 {
 #if X2_DEV_TOOLS
 	if( g_pData->GetMyUser()->GetAuthLevel() < CX2User::XUAL_OPERATOR )
@@ -4722,6 +4730,8 @@ void CX2Main::SetFreeCamera( bool bEnable )
 			}
 
 		} break;
+	default:
+		break;
 	}
 }
 bool CX2Main::GetFreeCamera() const
@@ -4762,6 +4772,8 @@ bool CX2Main::GetFreeCamera() const
 				return g_pX2Game->GetFreeCamera();
 			}
 		} break;
+	default:
+		break;
 	}
 
 	return false;
@@ -4799,6 +4811,8 @@ void CX2Main::SetWorldCameraEdit( bool bEnable)
 				g_pX2Game->SetWorldCameraEdit( bEnable );
 			}
 		} break;
+	default:
+		break;
 	}
 
 
@@ -4838,6 +4852,8 @@ void CX2Main::PlayWorldCamera( int iWorldCameraID )
 				g_pX2Game->PlayWorldCamera(iWorldCameraID );
 			}
 		} break;
+	default:
+		break;
 	}
 
 
@@ -5170,7 +5186,7 @@ wstring CX2Main::GetStrByLineBreakColor( const WCHAR* pOrgStr, int width, int fo
 //}
 
 
-void CX2Main::SendHackMail_DamageHistory(const char *strComm)
+void CX2Main::SendHackMail_DamageHistory(const char */*strComm*/)
 {
 ////#ifdef _SERVICE_
 //	ELSWORD_VIRTUALIZER_START
@@ -5345,7 +5361,7 @@ void CX2Main::SendHackMail_DamageHistory(const char *strComm)
 ////#endif
 }
 
-void CX2Main::SendHackMail_HackUserNot(const char *strComm)
+void CX2Main::SendHackMail_HackUserNot(const char */*strComm*/)
 {
 //	ELSWORD_VIRTUALIZER_START
 //	THEMIDA_VM_START
@@ -5482,7 +5498,7 @@ void CX2Main::SendHackMail_HackUserNot(const char *strComm)
 }
 
 
-void CX2Main::SendHackMail_AttachFile(const char *strComm, const string& userId)
+void CX2Main::SendHackMail_AttachFile(const char */*strComm*/, const string& /*userId*/)
 {
 //	ELSWORD_VIRTUALIZER_START
 //	THEMIDA_VM_START
@@ -5628,7 +5644,7 @@ void CX2Main::SendHackMail_AttachFile(const char *strComm, const string& userId)
 
 
 
-void CX2Main::SendHackMail_FileList(const char *strComm, const string& userId)
+void CX2Main::SendHackMail_FileList(const char */*strComm*/, const string& /*userId*/)
 {
 //	ELSWORD_VIRTUALIZER_START
 //	THEMIDA_VM_START
@@ -5734,7 +5750,7 @@ void CX2Main::SendHackMail_FileList(const char *strComm, const string& userId)
 //
 }
 
-void CX2Main::SendHackMail_VERIFYVALUE(const char *strComm)
+void CX2Main::SendHackMail_VERIFYVALUE(const char */*strComm*/)
 {
 //#ifdef _SERVICE_
 //	ELSWORD_VIRTUALIZER_START
@@ -5868,7 +5884,7 @@ void CX2Main::SendHackMail_VERIFYVALUE(const char *strComm)
 
 }
 
-void CX2Main::SendHackMailGameStart(int iVal, bool bVal)
+void CX2Main::SendHackMailGameStart(int /*iVal*/, bool /*bVal*/)
 {
 //#ifdef _SERVICE_
 //	ELSWORD_VIRTUALIZER_START
@@ -6030,7 +6046,7 @@ void CX2Main::SendHackMailGameStart(int iVal, bool bVal)
 }
 
 //{{ ????? : [2010/05/05]	//	DLL ?????? ?????
-void CX2Main::SendUserMonitoringMail(const char *strComm)
+void CX2Main::SendUserMonitoringMail(const char */*strComm*/)
 {
 //	//#ifdef _SERVICE_
 //	ELSWORD_VIRTUALIZER_START
@@ -6178,7 +6194,7 @@ void CX2Main::SendUserMonitoringMail(const char *strComm)
 //	//#endif
 }
 
-void CX2Main::SendMail_MoneyMonitoring(const char *strComm)
+void CX2Main::SendMail_MoneyMonitoring(const char */*strComm*/)
 {
 ////#ifdef _SERVICE_
 //	ELSWORD_VIRTUALIZER_START
@@ -7843,7 +7859,7 @@ bool CX2Main::CheckWindowInfo::CheckProcess_Thread()
 	return false;
 }
 //////////////////////////////////////////////////////////////////////////
-void CX2Main::TimedMessagePopUp::OnFrameMove( double fTime, float fElapsedTime )
+void CX2Main::TimedMessagePopUp::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	if( NULL == m_pDialog )
 	{
@@ -8198,7 +8214,7 @@ void CX2Main::UdpPacketAnalysisLog_LUA( bool bEnable )
 #endif //UDP_PACKET_ANALYSIS_LOG
 
 //#ifdef SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
-void CX2Main::UdpPacketOverlapTest_LUA( bool bEnable )
+void CX2Main::UdpPacketOverlapTest_LUA( [[maybe_unused]] bool bEnable )
 {
 #if X2_DEV_TOOLS
 	m_bUdpPacketOverlap = bEnable;

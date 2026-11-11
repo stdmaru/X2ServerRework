@@ -165,7 +165,7 @@ void CX2PremiumBuffManager::SetFirstComeBack( IN bool bFirstComeBack_ )
 	@param		: bool
 	@return		: ����
 */
-void CX2PremiumBuffManager::SetShowFirstComBackUI( IN bool bShow_ )
+void CX2PremiumBuffManager::SetShowFirstComBackUI( IN bool /*bShow_*/ )
 {
 	switch ( g_pMain->GetNowStateID() )
 	{
@@ -181,6 +181,8 @@ void CX2PremiumBuffManager::SetShowFirstComBackUI( IN bool bShow_ )
 		{
 			m_pDLGComeBackUserBuffDesc->SetShowEnable( true, true );
 		}
+		break;
+	default:
 		break;
 	}
 }
@@ -228,7 +230,7 @@ bool CX2PremiumBuffManager::GetShowPremiumBuffUI() const
 	@param		: bool
 	@return		: ����
 */
-bool CX2PremiumBuffManager::SetShowPremiumBuffUI( IN bool bShow_ )
+bool CX2PremiumBuffManager::SetShowPremiumBuffUI( IN bool /*bShow_*/ )
 {
 /*
 	switch( g_pMain->GetNowStateID() )
@@ -347,7 +349,7 @@ void CX2PremiumBuffManager::UpdateGuideDescPremiumBuffUI()
 	@param		: procedure
 	@return		: bool
 */
-bool CX2PremiumBuffManager::UICustomEventProc( IN HWND hWnd, IN UINT uMsg, IN WPARAM wParam, IN LPARAM lParam )
+bool CX2PremiumBuffManager::UICustomEventProc( IN HWND /*hWnd*/, IN UINT /*uMsg*/, IN WPARAM wParam, IN LPARAM /*lParam*/ )
 {
 	switch ( wParam )
 	{
@@ -418,7 +420,7 @@ bool CX2PremiumBuffManager::UIServerEventProc( IN HWND hWnd, IN UINT uMsg, IN WP
 	@param		: HWND, UINT, WPARAM, LPARAM
 	@return		: bool
 */
-bool CX2PremiumBuffManager::Handler_EGS_COME_BACK_USER_NOT( IN HWND hWnd, IN UINT uMsg, IN WPARAM wParam, IN LPARAM lParam )
+bool CX2PremiumBuffManager::Handler_EGS_COME_BACK_USER_NOT( IN HWND /*hWnd*/, IN UINT /*uMsg*/, IN WPARAM /*wParam*/, IN LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_COME_BACK_USER_NOT kEvent;
@@ -455,7 +457,7 @@ bool CX2PremiumBuffManager::Handler_EGS_COME_BACK_USER_NOT( IN HWND hWnd, IN UIN
 	@param : �������� ������ ���� ������( ������Ѿ� �� ���� ��� ) ( kBuffInfo )
 	@return : true
 */
-bool CX2PremiumBuffManager::Handler_EGS_UPDATE_BUFF_INFO_IN_ROOM_NOT( IN HWND hWnd, IN UINT uMsg, IN WPARAM wParam, IN LPARAM lParam )
+bool CX2PremiumBuffManager::Handler_EGS_UPDATE_BUFF_INFO_IN_ROOM_NOT( IN HWND /*hWnd*/, IN UINT /*uMsg*/, IN WPARAM /*wParam*/, IN LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_UPDATE_BUFF_INFO_IN_ROOM_NOT kEvent;
@@ -515,7 +517,7 @@ bool CX2PremiumBuffManager::Handler_EGS_UPDATE_BUFF_INFO_IN_ROOM_NOT( IN HWND hW
 	@param : �������� ������ ���� ������( ������Ѿ� �� ���� ��� ) ( kBuffInfo )
 	@return : true
 */
-bool CX2PremiumBuffManager::Handler_EGS_UPDATE_BUFF_INFO_NOT( IN HWND hWnd, IN UINT uMsg, IN WPARAM wParam, IN LPARAM lParam )
+bool CX2PremiumBuffManager::Handler_EGS_UPDATE_BUFF_INFO_NOT( IN HWND /*hWnd*/, IN UINT /*uMsg*/, IN WPARAM /*wParam*/, IN LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_UPDATE_BUFF_INFO_NOT kEvent;
@@ -592,7 +594,7 @@ bool CX2PremiumBuffManager::Handler_EGS_UPDATE_BUFF_INFO_NOT( IN HWND hWnd, IN U
 	@param		: HWND, UINT, WPARAM, LPARAM
 	@return		: bool
 */
-bool CX2PremiumBuffManager::Handler_EGS_COME_BACK_BUFF_NOT( IN HWND hWnd, IN UINT uMsg, IN WPARAM wParam, IN LPARAM lParam )
+bool CX2PremiumBuffManager::Handler_EGS_COME_BACK_BUFF_NOT( IN HWND /*hWnd*/, IN UINT /*uMsg*/, IN WPARAM /*wParam*/, IN LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_COME_BACK_BUFF_NOT kEvent;
@@ -619,7 +621,7 @@ bool CX2PremiumBuffManager::Handler_EGS_COME_BACK_BUFF_NOT( IN HWND hWnd, IN UIN
 //#pragma endregion Handler_EGS_COME_BACK_BUFF_NOT
 
 //#pragma region OnFrameMove
-HRESULT CX2PremiumBuffManager::OnFrameMove( IN double fTime, IN float fElapsedTime )
+HRESULT CX2PremiumBuffManager::OnFrameMove( IN double /*fTime*/, IN float /*fElapsedTime*/ )
 {
 	//if ( true == IsComeBackUser() || IsComeBackUserInParty() )
 	{
@@ -936,7 +938,7 @@ CX2PremiumBuffIcon::~CX2PremiumBuffIcon()
 	return ptrPremiumBuff;
 }
 
-void CX2PremiumBuffIcon::CreateBuffIcon( const WCHAR* pFileName_, const WCHAR* pKeyName_ )
+void CX2PremiumBuffIcon::CreateBuffIcon( const WCHAR* /*pFileName_*/, const WCHAR* /*pKeyName_*/ )
 {
 /*
 	m_pDlgBuffIcon = new CKTDGUIDialog( NULL, L"DLG_UI_Buff_Icon.lua" );	//�ӽ� ����

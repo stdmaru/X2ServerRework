@@ -10,7 +10,7 @@ void CX2UnitSlashTraceManager::OnStateStart()
 }
 
 
-void CX2UnitSlashTraceManager::OnFrameMove( double fTime, float fElapsedTime )
+void CX2UnitSlashTraceManager::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	KTDXPROFILE();
 

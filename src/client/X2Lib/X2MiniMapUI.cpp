@@ -6,18 +6,18 @@ CX2MiniMapUI::CX2MiniMapUI(void) :
 m_pDungeonMiniMap( NULL ),
 m_pFieldMiniMap( NULL ),
 m_pWorldMapUI( NULL ),
+m_bShow(false),
 m_pDLGFrameWindow(NULL),
-m_QuestVillageMapID(-1),
 m_TopQuestID(-1),
+m_QuestVillageMapID(-1),
 m_bCreateNewQuestEffectWhenOpen(false),
 m_bCreateNewMailEffectWhenOpen(false),
 m_iNewMail(0),
-m_bShow(false),
+m_eCurrentMiniMapType( MMT_DUNGEON ),
 m_iChangeChannelId(0),
 m_pDLGQuery(NULL),
 m_fChannelInfoTime(10.f),
-m_fChangeChannelTime(5.f),
-m_eCurrentMiniMapType( MMT_DUNGEON )
+m_fChangeChannelTime(5.f)
 //{{ 허상형 : [2011/3/14/] //	월드 미션
 , m_bIsOpenDefenceMinimap(false)
 //}} 허상형 : [2011/3/14/] //	월드 미션
@@ -47,7 +47,7 @@ CX2MiniMapUI::~CX2MiniMapUI(void)
 
 }
 
-/*virtual*/ HRESULT	CX2MiniMapUI::OnFrameMove( double fTime, float fElapsedTime )
+/*virtual*/ HRESULT	CX2MiniMapUI::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	m_fChannelInfoTime += fElapsedTime;
 	m_fChangeChannelTime += fElapsedTime;
@@ -157,6 +157,8 @@ CX2MiniMapUI::~CX2MiniMapUI(void)
 						}
 					} break;
 				}
+			default:
+				break;
 			}
 			return true;
 
@@ -190,6 +192,8 @@ CX2MiniMapUI::~CX2MiniMapUI(void)
 
 					}
 				} break;
+			default:
+				break;
 			}
 			return true;
 		} break;
@@ -520,6 +524,8 @@ void CX2MiniMapUI::SetVillageMapID( int iMapID )
 							}
 						}
 					} break;
+				default:
+					break;
 				}
 
 				if( NULL != m_pFieldMiniMap )
@@ -936,14 +942,14 @@ void CX2MiniMapUI::SetMonsterNum( bool bShow, int iNum )
 
 
 // 미니맵 하단에 "이 던전에서는 경험치를 얻을 수 없습니다"
-void CX2MiniMapUI::SetNoExpAtThisDungeon(bool val)
+void CX2MiniMapUI::SetNoExpAtThisDungeon(bool /*val*/)
 {
 //{{오현빈 // 2012-07-18 // 경험치 얻을 수 없다는 것을 표현하는 방법을 기획적으로 변경할 예정, 요청에 의해 제거만 하기 위해 일단 함수 내부만 제거
 //}}오현빈 // 2012-07-18 // 경험치 얻을 수 없다는 것을 표현하는 방법을 기획적으로 변경할 예정, 요청에 의해 제거만 하기 위해 일단 함수 내부만 제거
 }
 
 //{{ kimhc // 2010.5.2 // 비밀던전 작업(경험치)
-void CX2MiniMapUI::SetWarningForGettingExp( bool bVal )		// 비밀던전에서 경험치를 얻지 못할 수 도 있는 경우에 true
+void CX2MiniMapUI::SetWarningForGettingExp( bool /*bVal*/ )		// 비밀던전에서 경험치를 얻지 못할 수 도 있는 경우에 true
 {
 	//{{오현빈 // 2012-07-18 // 경험치 얻을 수 없다는 것을 표현하는 방법을 기획적으로 변경할 예정, 요청에 의해 제거만 하기 위해 일단 함수 내부만 제거
 	//}}오현빈 // 2012-07-18 // 경험치 얻을 수 없다는 것을 표현하는 방법을 기획적으로 변경할 예정, 요청에 의해 제거만 하기 위해 일단 함수 내부만 제거

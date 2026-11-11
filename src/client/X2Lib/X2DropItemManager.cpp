@@ -53,7 +53,7 @@ CX2DropItemManager::~CX2DropItemManager(void)
 //#ifdef THEMIDA_BY_TOOL_TEAM
 //#	pragma optimize("",off)
 //#endif THEMIDA_BY_TOOL_TEAM
-HRESULT CX2DropItemManager::OnFrameMove( double fTime, float fElapsedTime )
+HRESULT CX2DropItemManager::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 
 	KTDXPROFILE();
@@ -680,7 +680,7 @@ bool CX2DropItemManager::GetDropItemPositionByUid( int itemUID, D3DXVECTOR3& vPo
 }
 
 // TODO: AddDropItem 함수가 2개 있습니다. refactoring
-void CX2DropItemManager::AddDropItem( int iItemID, UidType ItemUID, D3DXVECTOR3 pos, float fCoolTime, float fRemainTime )
+void CX2DropItemManager::AddDropItem( int iItemID, UidType ItemUID, D3DXVECTOR3 pos, float /*fCoolTime*/, float fRemainTime )
 {
 
 	// themida_checked

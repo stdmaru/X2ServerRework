@@ -64,7 +64,7 @@ CX2TrainingGameUI::~CX2TrainingGameUI(void)
 	SAFE_DELETE_DIALOG( m_pDLGFreeTrainingMenu );
 }
 
-void CX2TrainingGameUI::OnFrameMove( double fTime, float fElapsedTime )
+void CX2TrainingGameUI::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	const float MAGIC_MISSION_TEXT_SPREAD_TIME = 0.04f;
 

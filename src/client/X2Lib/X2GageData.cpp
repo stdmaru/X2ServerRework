@@ -13,7 +13,7 @@ void CX2GageData::Gage::Increase( const float fIncrement, const float fMinimum /
 		fNow = fMinimum;
 
 }
-/*virtual*/ void CX2GageData::DetonationFrameMove( double fTime, float fElapsedTime )
+/*virtual*/ void CX2GageData::DetonationFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	// ���� ����
 	if( GetCanChargeMpForDetonation() == true )
@@ -866,7 +866,7 @@ void CX2AraGageData::CopyGageData( IN CX2GageData* pGageData_ )
 //#pragma endregion Ŭ����
 
 
-/*virtual*/ void CX2ElesisGageData::DetonationFrameMove( double fTime, float fElapsedTime )
+/*virtual*/ void CX2ElesisGageData::DetonationFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	// ���� ����
 	if( GetCanChargeMpForDetonation() == true )

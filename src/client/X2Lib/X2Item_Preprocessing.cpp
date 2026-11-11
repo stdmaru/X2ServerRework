@@ -49,6 +49,8 @@ const wchar_t*      CX2Item::KItemFormatTemplet::GetNameColor_() const
 		return L"#CFFFFFF";
 	case CX2Item::IG_LOW:
 		return L"#C888888";
+	default:
+		break;
 	}
 
 	return L"#CFFFFFF";

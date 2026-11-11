@@ -3,9 +3,9 @@
 #include "X2UIGlobalMission.h"
 
 CX2UIGlobalMission::CX2UIGlobalMission() :
-m_pDlgGlobalMissionDlg( NULL )
-, m_iNumOfNowClearCount( 0 )
+m_iNumOfNowClearCount( 0 )
 , m_iNumOfClearCount( 0 )
+, m_pDlgGlobalMissionDlg( NULL )
 {
 }
 
@@ -36,7 +36,7 @@ void CX2UIGlobalMission::SetShowGlobalMissionDlg( bool bShow )
 	}
 }
 
-bool CX2UIGlobalMission::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIGlobalMission::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/ )
 {
 	switch(wParam)
 	{

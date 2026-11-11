@@ -151,7 +151,7 @@ CX2Cursor::~CX2Cursor(void)
 
 
 
-HRESULT CX2Cursor::OnFrameMove( double fTime, float fElapsedTime )
+HRESULT CX2Cursor::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	POINT point;
 	GetCursorPos( &point );

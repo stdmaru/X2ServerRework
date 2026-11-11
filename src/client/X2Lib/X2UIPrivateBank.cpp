@@ -149,7 +149,7 @@ HRESULT		CX2UIPrivateBank::OnFrameMove( double fTime, float fElapsedTime )
 	return	S_OK;
 }
 
-bool		CX2UIPrivateBank::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool		CX2UIPrivateBank::MsgProc( HWND /*hWnd*/, UINT uMsg, WPARAM /*wParam*/, LPARAM lParam )
 {
 	// �տ� ��� ���̾�αװ� ������ �޽����� ó������ �ʴ´�
 	if( true == g_pKTDXApp->GetDGManager()->GetDialogManager()->CheckFrontModalDlg( m_pDlgPrivateBank ) )
@@ -254,7 +254,7 @@ bool		CX2UIPrivateBank::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 
 }
 
-bool		CX2UIPrivateBank::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool		CX2UIPrivateBank::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM lParam )
 {
 	switch ( wParam )
 	{
@@ -487,7 +487,7 @@ void CX2UIPrivateBank::SetLayer( X2_DIALOG_LAYER layer )
 
 }
 
-void CX2UIPrivateBank::SetPosition( D3DXVECTOR2 vec, bool bAbsolute /* = true */ )
+void CX2UIPrivateBank::SetPosition( D3DXVECTOR2 /*vec*/, bool /*bAbsolute*/ /* = true */ )
 {
 
 }
@@ -689,6 +689,8 @@ void	CX2UIPrivateBank::UpdateUICashShopButton()
 			    }
 			    break;
 
+		    default:
+		    	break;
 		    }
 
 		    switch ( pMyInventory->GetBankMembershipGrade() )
@@ -1129,6 +1131,8 @@ bool CX2UIPrivateBank::OnDropAnyItem( D3DXVECTOR2 mousePos )
 
 		}
 		return true;
+	default:
+		break;
 	}
 
 	return false;
@@ -1193,7 +1197,7 @@ bool CX2UIPrivateBank::OnRClickedItem( D3DXVECTOR2 mousePos )
 	return false;	// ��...���̾�α�??
 }
 
-bool CX2UIPrivateBank::Handler_EGS_GET_MY_BANK_INFO_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPrivateBank::Handler_EGS_GET_MY_BANK_INFO_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*) lParam;
 	KEGS_GET_MY_BANK_INFO_ACK kEvent;
@@ -1232,7 +1236,7 @@ void CX2UIPrivateBank::ResetPrivateBank()
 	SetSlotManagerLayer( static_cast<int>(XDL_NORMAL_3) );
 }
 
-bool CX2UIPrivateBank::Handler_EGS_GET_SHARE_BANK_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPrivateBank::Handler_EGS_GET_SHARE_BANK_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*) lParam;
 	KEGS_GET_SHARE_BANK_ACK kEvent;

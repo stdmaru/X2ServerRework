@@ -91,7 +91,7 @@ void CX2Room::ConnectRelayServer( const WCHAR* pIP, int port )
 	}
 }
 
-HRESULT CX2Room::OnFrameMove( double fTime, float fElapsedTime )
+HRESULT CX2Room::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	KTDXPROFILE();
 	m_fElapsedTime = fElapsedTime;
@@ -207,6 +207,8 @@ HRESULT CX2Room::OnFrameMove( double fTime, float fElapsedTime )
 						bBlueTeamNum++;
 					}
 				}
+				break;
+			default:
 				break;
 			}
 		}
@@ -1534,7 +1536,7 @@ bool CX2Room::Handler_EGS_BAN_USER_REQ( UidType unitUID )
 	return true;
 }
 
-bool CX2Room::Handler_EGS_BAN_USER_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2Room::Handler_EGS_BAN_USER_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KPacketOK kEvent;
@@ -1628,6 +1630,8 @@ void CX2Room::PlayMotionByID( ROOM_MOTION motionID, CX2UnitViewerUI* pUnitViewer
 	case RM_WAIT2:
 		//motionName = L"LobbyWait2";
 		pUnitViewerUI->PlayByMotionType( CX2UnitViewerUI::UVVMT_WAIT2 );
+		break;
+	default:
 		break;
 	}
 }

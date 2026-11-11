@@ -59,12 +59,12 @@ m_pDlgHeroRecruit(NULL)
 }
 
 
-/*virtual*/ void CX2LocalMapUI::OnFrameMove( double fTime, float fElapsedTime )
+/*virtual*/ void CX2LocalMapUI::OnFrameMove( double /*fTime*/, float /*fElapsedTime*/ )
 {
 
 }
 
-/*virtual*/ bool CX2LocalMapUI::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+/*virtual*/ bool CX2LocalMapUI::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM lParam )
 {
 	switch( wParam )
 	{
@@ -855,7 +855,7 @@ void CX2LocalMapUI::DropDownDungeonButton( CKTDGUIControl* pControl )
 
 
 // fix!! 일단은 한번 New생성되면 안 없어지는 것으로
-void CX2LocalMapUI::CreateNewDungeonParticle( CKTDGUIControl* pControl, bool bEventDungeon /*= false*/ )
+void CX2LocalMapUI::CreateNewDungeonParticle( CKTDGUIControl* /*pControl*/, bool /*bEventDungeon*/ /*= false*/ )
 {
 	// fix!! not yet
 	//
@@ -958,7 +958,7 @@ void CX2LocalMapUI::DrawLocalMapQuestDesc(D3DXVECTOR2 DrawPos, int iDungeonID)
 	return;
 }
 
-void CX2LocalMapUI::UdateLocalMapQuestDesc( CX2LocationManager::LOCAL_MAP_ID eLocalMapID, int dungeonID, bool bShow )
+void CX2LocalMapUI::UdateLocalMapQuestDesc( CX2LocationManager::LOCAL_MAP_ID eLocalMapID, int dungeonID, bool /*bShow*/ )
 {
 	if( NULL != g_pData->GetDungeonManager() &&
 		true == g_pData->GetDungeonManager()->IsDefenceDungeon( dungeonID ) )
@@ -1222,6 +1222,8 @@ void CX2LocalMapUI::CloseOtherUI()
 					}
 				}
 			}
+			break;
+		default:
 			break;
 		}
 	}

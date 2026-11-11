@@ -12,8 +12,8 @@ m_pDlgRankingInfo( NULL ),
 m_nowRankingInfoType( RT_DAY_RANKING ),
 m_uiNowPage( 1 ),
 m_uiMaxPage( 1 ),
-m_vPosDlg( 0, 0 ),
 m_vSizeDlg( 0, 0 ),
+m_vPosDlg( 0, 0 ),
 m_pStaticCommonInfo( NULL ),
 m_pStaticHenirInfo( NULL ),
 m_pStaticPvpInfo( NULL ),
@@ -424,7 +424,7 @@ bool		CX2UIRankingInfo::Handler_EGS_GET_RANKING_INFO_REQ()
 	return true;
 }
 
-bool		CX2UIRankingInfo::Handler_EGS_GET_RANKING_INFO_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool		CX2UIRankingInfo::Handler_EGS_GET_RANKING_INFO_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_GET_RANKING_INFO_ACK kEvent;
@@ -649,6 +649,8 @@ bool		CX2UIRankingInfo::Handler_EGS_GET_RANKING_INFO_ACK( HWND hWnd, UINT uMsg, 
 
 			//{{ 허상형 : [2009/8/21] //	신학기 이벤트 응답 메시지 처리
 			//}} 허상형 : [2009/8/21] //	신학기 이벤트 응답 메시지 처리
+		default:
+			break;
 		}
 	}
 
@@ -943,12 +945,12 @@ void CX2UIRankingInfo::SetNumToPictureForRank( CKTDGUIControl::CPictureData* con
 
 
 
-HRESULT		CX2UIRankingInfo::OnFrameMove( double fTime, float fElapsedTime )
+HRESULT		CX2UIRankingInfo::OnFrameMove( double /*fTime*/, float /*fElapsedTime*/ )
 {
 	return S_OK;
 }
 
-bool		CX2UIRankingInfo::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool		CX2UIRankingInfo::MsgProc( HWND /*hWnd*/, UINT uMsg, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	// 앞에 모달 다이얼로그가 있으면 메시지를 처리하지 않는다
 	if( true == g_pKTDXApp->GetDGManager()->GetDialogManager()->CheckFrontModalDlg( m_pDlgRankingInfo ) )
@@ -996,7 +998,7 @@ bool		CX2UIRankingInfo::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 	return bFlag;
 }
 
-bool		CX2UIRankingInfo::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool		CX2UIRankingInfo::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/ )
 {
 
 	switch ( wParam )

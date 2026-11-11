@@ -85,7 +85,7 @@ void CX2SlotManager::SetSlotManagerChangeSequence( bool bFront )
 	}
 }
 
-bool CX2SlotManager::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2SlotManager::MsgProc( HWND /*hWnd*/, UINT uMsg, WPARAM /*wParam*/, LPARAM lParam )
 {
 	switch( uMsg )
 	{

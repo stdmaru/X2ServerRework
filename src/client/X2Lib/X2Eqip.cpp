@@ -334,7 +334,7 @@ void    CX2Eqip::NotifyShowObjectChanged()
 
 
 // OnFrameMove 에서 RenderParam 세팅을 분리하여 OnFrameMove 이전에 실행하도록 수정
-HRESULT CX2Eqip::SetRenderParam( double fTime, float fElapsedTime, CKTDGXRenderer::RenderParam* pRenderParam )
+HRESULT CX2Eqip::SetRenderParam( double /*fTime*/, float fElapsedTime, CKTDGXRenderer::RenderParam* pRenderParam )
 {
 	if( m_pItemTemplet == NULL )
 		return E_FAIL;
@@ -854,6 +854,8 @@ HRESULT CX2Eqip::SetRenderParam( double fTime, float fElapsedTime, CKTDGXRendere
 
 			} break;
 
+		default:
+			break;
 		} // switch
 	} // for
 
@@ -1122,6 +1124,8 @@ HRESULT CX2Eqip::OnFrameMove( double fTime, float fElapsedTime )
 				}
 			}
 		} break;
+	default:
+		break;
 	}
 
 
@@ -1230,6 +1234,8 @@ RENDER_HINT   CX2Eqip::OnFrameRender_Prepare()
 			}
 		}
 		break;
+    default:
+    	break;
     }//switch
 
     return RENDER_HINT_NORENDER;
@@ -1363,6 +1369,8 @@ void    CX2Eqip::OnFrameRender_Draw()
 						pSubEquip->OnFrameRender_Draw();
 				}
 			}
+			break;
+		default:
 			break;
 		} // switch
 	} // for
@@ -2563,6 +2571,8 @@ void    CX2Eqip::AppendToDeviceList( CKTDXDeviceDataList& listInOut_ ) const
 			case CX2Item::UT_ATTACH_NORMAL:
 				g_pKTDXApp->GetDeviceManager()->AppendXMesh( listInOut_, name );
 				break;
+			default:
+				break;
 			}
 		}
 	} // for(j)
@@ -2598,6 +2608,8 @@ void    CX2Eqip::AppendToDeviceList( CKTDXDeviceDataList& listInOut_ ) const
 				case CX2Item::UT_ATTACH_NORMAL:
 					g_pKTDXApp->GetDeviceManager()->AppendXMesh( listInOut_, name );
 					break;
+				default:
+					break;
 				}
 			}
 		} // for(j)
@@ -2618,6 +2630,8 @@ void    CX2Eqip::AppendToDeviceList( CKTDXDeviceDataList& listInOut_ ) const
 		AppendAttachedToDeviceList( listInOut_ );
 		break;
 	case CX2Item::UT_ATTACH_NORMAL:
+		break;
+	default:
 		break;
 	}//switch
 }//CX2Eqip::AppendToDeviceList()
@@ -2646,6 +2660,8 @@ void CX2Eqip::EquipResourceLoad()
 
 	case CX2Item::UT_ATTACH_NORMAL:
 		InitAttatchNormal();
+		break;
+	default:
 		break;
 	}
 
@@ -2708,6 +2724,8 @@ void	CX2Eqip::AppendAttachedToDeviceList( CKTDXDeviceDataList& listInOut_ ) cons
 			}
 
 		} break;
+	default:
+		break;
 	}
 
 
@@ -3054,6 +3072,8 @@ void CX2Eqip::LoadAttached()
 			}
 
 		} break;
+	default:
+		break;
 	}
 
 
@@ -3190,7 +3210,7 @@ void CX2Eqip::LoadAttached()
 		m_vecpAttachedParticle.clear();
 	}
 
-	void CX2Eqip::AttachedParticleGroup::OnFrameMove( double fTime, float fElapsedTime )
+	void CX2Eqip::AttachedParticleGroup::OnFrameMove( double /*fTime*/, float /*fElapsedTime*/ )
 	{
 		for( UINT i=0; i< m_vecpAttachedParticle.size(); i++ )
 		{

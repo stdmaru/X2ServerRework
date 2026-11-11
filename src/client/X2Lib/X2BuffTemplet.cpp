@@ -836,7 +836,7 @@ CX2CustomFunctionByBuffPhantomSword::CX2CustomFunctionByBuffPhantomSword( const 
 	@brief : CommonFrameMove 에서 수행될 함수
 	@param : 게임유닛(pGameUnit_), 루아매니저(luaManager_)
 */
-/*virtual*/ void CX2CustomFunctionByBuffPhantomSword::FunctionInCommonFrameMove( CX2GameUnit* pGameUnit_, KLuaManager& luaManager_ )
+/*virtual*/ void CX2CustomFunctionByBuffPhantomSword::FunctionInCommonFrameMove( CX2GameUnit* pGameUnit_, KLuaManager& /*luaManager_*/ )
 {
     if ( CX2DamageEffect::CEffect* m_pDamageEffectThirdBlade = g_pX2Game->GetDamageEffect()->GetInstance( m_hDamageEffectThirdBlade ) )
 	{
@@ -900,7 +900,7 @@ CX2CustomFunctionByBuffPhantomSword::CX2CustomFunctionByBuffPhantomSword( const 
 	@brief : CommonStateEnd 에서 수행될 함수
 	@param : 게임유닛(pGameUnit_), 루아매니저(luaManager_)
 */
-/*virtual*/ void CX2CustomFunctionByBuffPhantomSword::FunctionInCommonStateEnd( CX2GameUnit* pGameUnit_, KLuaManager& luaManager_ )
+/*virtual*/ void CX2CustomFunctionByBuffPhantomSword::FunctionInCommonStateEnd( CX2GameUnit* pGameUnit_, KLuaManager& /*luaManager_*/ )
 {
 	if ( pGameUnit_->GetSizeOfAttackTimeList() > 0 )
 	{
@@ -1152,12 +1152,12 @@ void CX2CustomFunctionByBuffPhantomSword::MoveDataDataToDamageEffect( CX2GameUni
 }
 
 
-/*virtual*/ void CX2CustomFunctionByBuffMarkOfCommand::FunctionInCommonFrameMove( CX2GameUnit* pGameUnit_, KLuaManager& luaManager_ )
+/*virtual*/ void CX2CustomFunctionByBuffMarkOfCommand::FunctionInCommonFrameMove( CX2GameUnit* pGameUnit_, KLuaManager& /*luaManager_*/ )
 {
     m_checkElapsedTime.OnFrameMove( pGameUnit_->GetElapsedTime() );
 }
 
-/*virtual*/ void CX2CustomFunctionByBuffBigBangStream::FunctionInCommonFrameMove( CX2GameUnit* pGameUnit_, KLuaManager& luaManager_ )
+/*virtual*/ void CX2CustomFunctionByBuffBigBangStream::FunctionInCommonFrameMove( CX2GameUnit* pGameUnit_, KLuaManager& /*luaManager_*/ )
 {
 	if ( !m_vecAnimationTime.empty() && pGameUnit_->GetSkinAnimPtr() )
 	{

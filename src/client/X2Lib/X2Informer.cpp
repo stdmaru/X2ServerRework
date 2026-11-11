@@ -152,7 +152,7 @@ void CX2Informer::InvalidInfo()
 	SetShow( false );
 }
 
-void CX2Informer::SetShow( bool bShow )
+void CX2Informer::SetShow( bool /*bShow*/ )
 {
 
 

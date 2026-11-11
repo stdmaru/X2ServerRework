@@ -304,7 +304,7 @@ CX2GURaven::~CX2GURaven(void)
 }
 
 /*static*/
-void	CX2GURaven::AppendDeviceToDeviceList( CKTDXDeviceDataList& listInOut_ )
+void	CX2GURaven::AppendDeviceToDeviceList( CKTDXDeviceDataList& /*listInOut_*/ )
 {
 }
 
@@ -562,6 +562,8 @@ void CX2GURaven::InitState()
 		{
 			m_iSkillCutInSetIndex = 3;
 		} break;
+	default:
+		break;
 	}
 
 	switch( pUnitData->m_UnitClass )
@@ -642,6 +644,8 @@ void CX2GURaven::InitState()
 		{
 			InitStateWeaponTaker();
 		} break;
+	default:
+		break;
 	}
 
 	// Ư�� Ŭ�������� �ְų� Ư�� Ŭ������ �⺻ Ŭ������ �ٸ� ����
@@ -691,6 +695,8 @@ void CX2GURaven::InitState()
 			m_StateList[stateData.stateID] = stateData;
 		}
 		break;
+	default:
+		break;
 	}
 
 	switch( pUnitData->m_UnitClass )
@@ -733,6 +739,8 @@ void CX2GURaven::InitState()
 			stateData.StateEndFuture	= SET_CB_FUNC( CX2GURaven, RWT_COMBO_ZZZX_EndFuture );
 			m_StateList[stateData.stateID] = stateData;
 		}
+		break;
+	default:
 		break;
 	}
 
@@ -902,6 +910,8 @@ void CX2GURaven::InitState()
 			m_StateList[stateData.stateID] = stateData;
 		}
 		break;
+	default:
+		break;
 	}
 
 
@@ -917,6 +927,8 @@ void CX2GURaven::InitState()
 			stateData.OnEventProcess	= SET_CB_FUNC( CX2GURaven, RSI_SOUL_TAKER_DASH_COMBO_ZZ_EventProcess );
 			m_StateList[ stateData.stateID ] = stateData;
 		} break;
+	default:
+		break;
 	}
 
 
@@ -2354,6 +2366,8 @@ void CX2GURaven::InitStateWeaponTaker()
 						hyperStateData.OnFrameMove		= normalStateData.OnFrameMove;
 						hyperStateData.OnEventProcess	= normalStateData.OnEventProcess;
 					} break;
+				default:
+					break;
 				}
 				return;
 			} break;
@@ -4101,7 +4115,7 @@ void CX2GURaven::InitStateWeaponTaker()
 }
 
 /*static*/
-void	CX2GURaven::AppendComponentToDeviceList( CKTDXDeviceDataList& listInOut_ )
+void	CX2GURaven::AppendComponentToDeviceList( CKTDXDeviceDataList& /*listInOut_*/ )
 {
 }
 
@@ -4273,7 +4287,7 @@ void CX2GURaven::InitializeRavenMinorParticleArray()
 }
 
 /*static*/
-void	CX2GURaven::AppendMinorParticleToDeviceList( CKTDXDeviceDataList& listInOut_ )
+void	CX2GURaven::AppendMinorParticleToDeviceList( CKTDXDeviceDataList& /*listInOut_*/ )
 {
 }
 
@@ -11369,7 +11383,7 @@ void CX2GURaven::Init( bool bUseTeamPos_, int iStartPosIndex_ )
 }
 
 
-void CX2GURaven::DoHyper(bool bFullHyper)
+void CX2GURaven::DoHyper(bool /*bFullHyper*/)
 {
 }
 

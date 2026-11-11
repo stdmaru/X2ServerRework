@@ -171,7 +171,7 @@ void CX2ComboManager::SetMyUnit( bool bMyUnit, CX2GUUser* pUnit )
 	}
 }
 
-HRESULT CX2ComboManager::OnFrameMove( double fTime, float fElapsedTime )
+HRESULT CX2ComboManager::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	KTDXPROFILE();
 

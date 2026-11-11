@@ -1322,7 +1322,7 @@ void CX2StatePVPRoom::LastMsgPopOk()
 }
 
 
-bool CX2StatePVPRoom::Handler_EGS_JOIN_ROOM_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPRoom::Handler_EGS_JOIN_ROOM_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_JOIN_ROOM_NOT kEvent;
@@ -1397,7 +1397,7 @@ bool CX2StatePVPRoom::Handler_EGS_LEAVE_ROOM_REQ( int leaveRoomReason /* = NetEr
 	return m_pCX2PVPRoom->Handler_EGS_LEAVE_ROOM_REQ( leaveRoomReason );
 }
 
-bool CX2StatePVPRoom::Handler_EGS_LEAVE_ROOM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPRoom::Handler_EGS_LEAVE_ROOM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_LEAVE_ROOM_ACK kEvent;
@@ -1433,7 +1433,7 @@ bool CX2StatePVPRoom::Handler_EGS_LEAVE_ROOM_ACK( HWND hWnd, UINT uMsg, WPARAM w
 	return false;
 }
 
-bool CX2StatePVPRoom::Handler_EGS_LEAVE_ROOM_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPRoom::Handler_EGS_LEAVE_ROOM_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_LEAVE_ROOM_NOT kEvent;
@@ -1463,7 +1463,7 @@ bool CX2StatePVPRoom::Handler_EGS_LEAVE_ROOM_NOT( HWND hWnd, UINT uMsg, WPARAM w
 	return false;
 }
 
-bool CX2StatePVPRoom::Handler_EGS_LEAVE_GAME_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPRoom::Handler_EGS_LEAVE_GAME_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_LEAVE_GAME_NOT kEvent;
@@ -1487,7 +1487,7 @@ bool CX2StatePVPRoom::Handler_EGS_CHANGE_TEAM_REQ( CX2Room::TEAM_NUM teamNum )
 	return m_pCX2PVPRoom->Handler_EGS_CHANGE_TEAM_REQ( teamNum );
 }
 
-bool CX2StatePVPRoom::Handler_EGS_CHANGE_TEAM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPRoom::Handler_EGS_CHANGE_TEAM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_TEAM_ACK kEvent;
@@ -1552,7 +1552,7 @@ bool CX2StatePVPRoom::Handler_EGS_CHANGE_TEAM_ACK( HWND hWnd, UINT uMsg, WPARAM 
 
 }
 
-bool CX2StatePVPRoom::Handler_EGS_CHANGE_TEAM_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPRoom::Handler_EGS_CHANGE_TEAM_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_TEAM_NOT kEvent;
@@ -1613,7 +1613,7 @@ bool CX2StatePVPRoom::Handler_EGS_CHANGE_READY_REQ()
 	return m_pCX2PVPRoom->Handler_EGS_CHANGE_READY_REQ();
 }
 
-bool CX2StatePVPRoom::Handler_EGS_CHANGE_READY_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPRoom::Handler_EGS_CHANGE_READY_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_READY_ACK kEvent;
@@ -1627,7 +1627,7 @@ bool CX2StatePVPRoom::Handler_EGS_CHANGE_READY_ACK( HWND hWnd, UINT uMsg, WPARAM
 	return m_pCX2PVPRoom->Handler_EGS_CHANGE_READY_ACK( kEvent );
 }
 
-bool CX2StatePVPRoom::Handler_EGS_CHANGE_READY_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPRoom::Handler_EGS_CHANGE_READY_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_READY_NOT kEvent;
@@ -1666,7 +1666,7 @@ bool CX2StatePVPRoom::Handler_EGS_CHANGE_PITIN_REQ()
 	return m_pCX2PVPRoom->Handler_EGS_CHANGE_PITIN_REQ();
 }
 
-bool CX2StatePVPRoom::Handler_EGS_CHANGE_PITIN_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPRoom::Handler_EGS_CHANGE_PITIN_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_PITIN_ACK kEvent;
@@ -1680,7 +1680,7 @@ bool CX2StatePVPRoom::Handler_EGS_CHANGE_PITIN_ACK( HWND hWnd, UINT uMsg, WPARAM
 	return m_pCX2PVPRoom->Handler_EGS_CHANGE_PITIN_ACK( kEvent );
 }
 
-bool CX2StatePVPRoom::Handler_EGS_CHANGE_PITIN_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPRoom::Handler_EGS_CHANGE_PITIN_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_PITIN_NOT kEvent;
@@ -1704,7 +1704,7 @@ bool CX2StatePVPRoom::Handler_EGS_CHANGE_MAP_REQ( int worldID )
 	return m_pCX2PVPRoom->Handler_EGS_CHANGE_MAP_REQ( worldID );
 }
 
-bool CX2StatePVPRoom::Handler_EGS_CHANGE_MAP_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPRoom::Handler_EGS_CHANGE_MAP_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_MAP_ACK kEvent;
@@ -1718,7 +1718,7 @@ bool CX2StatePVPRoom::Handler_EGS_CHANGE_MAP_ACK( HWND hWnd, UINT uMsg, WPARAM w
 	return m_pCX2PVPRoom->Handler_EGS_CHANGE_MAP_ACK( kEvent );
 }
 
-bool CX2StatePVPRoom::Handler_EGS_CHANGE_MAP_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPRoom::Handler_EGS_CHANGE_MAP_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_MAP_NOT kEvent;
@@ -1750,7 +1750,7 @@ bool CX2StatePVPRoom::Handler_EGS_CHANGE_SLOT_OPEN_REQ( int slotIndex )
 	return m_pCX2PVPRoom->Handler_EGS_CHANGE_SLOT_OPEN_REQ( slotIndex );
 }
 
-bool CX2StatePVPRoom::Handler_EGS_CHANGE_SLOT_OPEN_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPRoom::Handler_EGS_CHANGE_SLOT_OPEN_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_SLOT_OPEN_ACK kEvent;
@@ -1764,7 +1764,7 @@ bool CX2StatePVPRoom::Handler_EGS_CHANGE_SLOT_OPEN_ACK( HWND hWnd, UINT uMsg, WP
 	return m_pCX2PVPRoom->Handler_EGS_CHANGE_SLOT_OPEN_ACK( kEvent );
 }
 
-bool CX2StatePVPRoom::Handler_EGS_CHANGE_SLOT_OPEN_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPRoom::Handler_EGS_CHANGE_SLOT_OPEN_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_SLOT_OPEN_NOT kEvent;
@@ -1830,7 +1830,7 @@ bool CX2StatePVPRoom::Handler_EGS_STATE_CHANGE_GAME_START_REQ()
 	return true;
 }
 
-bool CX2StatePVPRoom::Handler_EGS_STATE_CHANGE_GAME_START_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPRoom::Handler_EGS_STATE_CHANGE_GAME_START_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_STATE_CHANGE_GAME_START_ACK kEvent;
@@ -1851,7 +1851,7 @@ bool CX2StatePVPRoom::Handler_EGS_STATE_CHANGE_GAME_START_ACK( HWND hWnd, UINT u
 	return false;
 }
 
-bool CX2StatePVPRoom::Handler_EGS_STATE_CHANGE_GAME_START_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPRoom::Handler_EGS_STATE_CHANGE_GAME_START_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_STATE_CHANGE_GAME_START_NOT kEvent;
@@ -1937,7 +1937,7 @@ bool CX2StatePVPRoom::Handler_EGS_STATE_CHANGE_GAME_INTRUDE_REQ()
 	return true;
 }
 
-bool CX2StatePVPRoom::Handler_EGS_STATE_CHANGE_GAME_INTRUDE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPRoom::Handler_EGS_STATE_CHANGE_GAME_INTRUDE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_STATE_CHANGE_GAME_INTRUDE_ACK kEvent;
@@ -1958,7 +1958,7 @@ bool CX2StatePVPRoom::Handler_EGS_STATE_CHANGE_GAME_INTRUDE_ACK( HWND hWnd, UINT
 	return false;
 }
 
-bool CX2StatePVPRoom::Handler_EGS_STATE_CHANGE_GAME_INTRUDE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPRoom::Handler_EGS_STATE_CHANGE_GAME_INTRUDE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_STATE_CHANGE_GAME_INTRUDE_NOT kEvent;
@@ -1991,7 +1991,7 @@ bool CX2StatePVPRoom::Handler_EGS_STATE_CHANGE_GAME_INTRUDE_NOT( HWND hWnd, UINT
 }
 
 
-bool CX2StatePVPRoom::Handler_EGS_PLAY_START_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPRoom::Handler_EGS_PLAY_START_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_PLAY_START_NOT kEvent;
@@ -2004,7 +2004,7 @@ bool CX2StatePVPRoom::Handler_EGS_PLAY_START_NOT( HWND hWnd, UINT uMsg, WPARAM w
 	return true;
 }
 
-bool CX2StatePVPRoom::Handler_EGS_INTRUDE_START_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPRoom::Handler_EGS_INTRUDE_START_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_INTRUDE_START_NOT kEvent;
@@ -2030,7 +2030,7 @@ bool CX2StatePVPRoom::Handler_EGS_INTRUDE_START_NOT( HWND hWnd, UINT uMsg, WPARA
 //	return true;
 //}
 
-bool CX2StatePVPRoom::Handler_EGS_RESULT_ALL_UNIT_SUCCESS_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPRoom::Handler_EGS_RESULT_ALL_UNIT_SUCCESS_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_RESULT_ALL_UNIT_SUCCESS_NOT kEvent;
@@ -2076,7 +2076,7 @@ bool CX2StatePVPRoom::Handler_EGS_CHANGE_PLAY_TIME_LIMIT_REQ( float fPlayTime )
 	return true;
 }
 
-bool CX2StatePVPRoom::Handler_EGS_CHANGE_PLAY_TIME_LIMIT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPRoom::Handler_EGS_CHANGE_PLAY_TIME_LIMIT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_PLAY_TIME_LIMIT_ACK kEvent;
@@ -2091,7 +2091,7 @@ bool CX2StatePVPRoom::Handler_EGS_CHANGE_PLAY_TIME_LIMIT_ACK( HWND hWnd, UINT uM
 	return false;
 }
 
-bool CX2StatePVPRoom::Handler_EGS_CHANGE_PLAY_TIME_LIMIT_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPRoom::Handler_EGS_CHANGE_PLAY_TIME_LIMIT_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_PLAY_TIME_LIMIT_NOT kEvent;
@@ -2143,7 +2143,7 @@ bool CX2StatePVPRoom::Handler_EGS_CHANGE_WINNING_NUM_KILL_REQ( int winKillNum )
 	return true;
 }
 
-bool CX2StatePVPRoom::Handler_EGS_CHANGE_WINNING_NUM_KILL_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPRoom::Handler_EGS_CHANGE_WINNING_NUM_KILL_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_WINNING_NUM_KILL_ACK kEvent;
@@ -2158,7 +2158,7 @@ bool CX2StatePVPRoom::Handler_EGS_CHANGE_WINNING_NUM_KILL_ACK( HWND hWnd, UINT u
 	return false;
 }
 
-bool CX2StatePVPRoom::Handler_EGS_CHANGE_WINNING_NUM_KILL_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPRoom::Handler_EGS_CHANGE_WINNING_NUM_KILL_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_WINNING_NUM_KILL_NOT kEvent;
@@ -2196,7 +2196,7 @@ bool CX2StatePVPRoom::Handler_EGS_CHANGE_MOTION_REQ( KEGS_CHANGE_MOTION_REQ& kEG
 
 	return true;
 }
-bool CX2StatePVPRoom::Handler_EGS_CHANGE_MOTION_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam  )
+bool CX2StatePVPRoom::Handler_EGS_CHANGE_MOTION_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam  )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_MOTION_ACK kEvent;
@@ -2211,7 +2211,7 @@ bool CX2StatePVPRoom::Handler_EGS_CHANGE_MOTION_ACK( HWND hWnd, UINT uMsg, WPARA
 
 	return true;
 }
-bool CX2StatePVPRoom::Handler_EGS_CHANGE_MOTION_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam  )
+bool CX2StatePVPRoom::Handler_EGS_CHANGE_MOTION_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam  )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_MOTION_NOT kEvent;
@@ -2246,7 +2246,7 @@ bool CX2StatePVPRoom::Handler_EGS_CHANGE_MOTION_NOT( HWND hWnd, UINT uMsg, WPARA
 	return true;
 }
 
-bool CX2StatePVPRoom::Handler_EGS_CHANGE_EQUIPPED_ITEM_IN_ROOM_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPRoom::Handler_EGS_CHANGE_EQUIPPED_ITEM_IN_ROOM_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_EQUIPPED_ITEM_IN_ROOM_NOT kEvent;
@@ -2258,7 +2258,7 @@ bool CX2StatePVPRoom::Handler_EGS_CHANGE_EQUIPPED_ITEM_IN_ROOM_NOT( HWND hWnd, U
 	return m_pCX2PVPRoom->Handler_EGS_CHANGE_EQUIPPED_ITEM_IN_ROOM_NOT( kEvent );
 }
 
-bool CX2StatePVPRoom::Handler_EGS_CHANGE_TRADE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPRoom::Handler_EGS_CHANGE_TRADE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_TRADE_NOT kEvent;
@@ -2285,7 +2285,7 @@ void CX2StatePVPRoom::Handler_EGS_CHANGE_PVP_ITEMMODE_REQ()
 	m_pDLGMsgBox = g_pMain->KTDGUIMsgBox( D3DXVECTOR2(250,300), GET_STRING( STR_ID_697 ), this );
 }
 
-bool CX2StatePVPRoom::Handler_EGS_CHANGE_PVP_ITEMMODE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPRoom::Handler_EGS_CHANGE_PVP_ITEMMODE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_PVP_ITEMMODE_ACK kEvent;
@@ -2302,7 +2302,7 @@ bool CX2StatePVPRoom::Handler_EGS_CHANGE_PVP_ITEMMODE_ACK( HWND hWnd, UINT uMsg,
 
 	return false;
 }
-bool CX2StatePVPRoom::Handler_EGS_CHANGE_PVP_ITEMMODE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPRoom::Handler_EGS_CHANGE_PVP_ITEMMODE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_PVP_ITEMMODE_NOT kEvent;
@@ -4054,7 +4054,7 @@ CX2StatePVPRoom::CX2MapSelectWindow::~CX2MapSelectWindow()
 
 }
 
-void CX2StatePVPRoom::CX2MapSelectWindow::OnFrameMove( double fTime, float fElapsedTime )
+void CX2StatePVPRoom::CX2MapSelectWindow::OnFrameMove( double /*fTime*/, float /*fElapsedTime*/ )
 {
 	if ( m_bOpen == false )
 		return;
@@ -4560,7 +4560,7 @@ void CX2StatePVPRoom::Handler_EGS_CHANGE_PVP_ROOM_PUBLIC_REQ(bool bPublic, std::
 	g_pMain->AddServerPacket( EGS_CHANGE_PVP_ROOM_PUBLIC_ACK );
 }
 
-bool CX2StatePVPRoom::Handler_EGS_CHANGE_PVP_ROOM_PUBLIC_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPRoom::Handler_EGS_CHANGE_PVP_ROOM_PUBLIC_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_PVP_ROOM_PUBLIC_ACK kEvent;
@@ -4577,7 +4577,7 @@ bool CX2StatePVPRoom::Handler_EGS_CHANGE_PVP_ROOM_PUBLIC_ACK( HWND hWnd, UINT uM
 	return true;
 }
 
-bool CX2StatePVPRoom::Handler_EGS_CHANGE_PVP_ROOM_PUBLIC_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPRoom::Handler_EGS_CHANGE_PVP_ROOM_PUBLIC_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_PVP_ROOM_PUBLIC_NOT kEvent;
@@ -4600,7 +4600,7 @@ void CX2StatePVPRoom::Handler_EGS_CHANGE_PVP_ROOM_NAME_REQ(std::wstring wstrRoom
 	g_pMain->AddServerPacket( EGS_CHANGE_PVP_ROOM_NAME_ACK );
 }
 
-bool CX2StatePVPRoom::Handler_EGS_CHANGE_PVP_ROOM_NAME_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPRoom::Handler_EGS_CHANGE_PVP_ROOM_NAME_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_PVP_ROOM_NAME_ACK kEvent;
@@ -4620,7 +4620,7 @@ bool CX2StatePVPRoom::Handler_EGS_CHANGE_PVP_ROOM_NAME_ACK( HWND hWnd, UINT uMsg
 	return true;
 }
 
-bool CX2StatePVPRoom::Handler_EGS_CHANGE_PVP_ROOM_NAME_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePVPRoom::Handler_EGS_CHANGE_PVP_ROOM_NAME_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_PVP_ROOM_NAME_NOT kEvent;

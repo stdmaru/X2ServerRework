@@ -236,7 +236,7 @@ void CX2UserListPopUp::NextPage()
 	}
 }
 
-bool CX2UserListPopUp::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UserListPopUp::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/ )
 {
 	switch(wParam)
 	{
@@ -272,7 +272,7 @@ bool CX2UserListPopUp::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, L
 	return false;
 }
 
-bool CX2UserListPopUp::UIServerEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UserListPopUp::UIServerEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	return false;
 }

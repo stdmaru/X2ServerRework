@@ -52,7 +52,7 @@ CX2TitleManager::~CX2TitleManager(void)
     SAFE_DELETE(m_pDlgTitle);
 }
 
-HRESULT CX2TitleManager::OnFrameMove(double fTime, float fElapsedTime)
+HRESULT CX2TitleManager::OnFrameMove(double /*fTime*/, float /*fElapsedTime*/)
 {
 
     //if(m_pDlgTitle != NULL && GetShow() == true)
@@ -608,7 +608,7 @@ const CX2TitleManager::TitleInfo* CX2TitleManager::GetTitleInfo( int iTitleID )
 	return mit->second;
 }
 
-bool CX2TitleManager::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2TitleManager::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM lParam )
 {
     switch(wParam)
     {
@@ -1380,7 +1380,7 @@ bool CX2TitleManager::UpdateMission(std::vector< KMissionInstance > vecMisstionI
     return ret;
 }
 
-void CX2TitleManager::UpdateSubMission(int iMissionId, std::vector< KSubMissionInstance > vecSubMission)
+void CX2TitleManager::UpdateSubMission(int /*iMissionId*/, std::vector< KSubMissionInstance > vecSubMission)
 {
     KSubMissionInstance kSubMission;
 
@@ -1587,7 +1587,7 @@ bool CX2TitleManager::Handler_EGS_EQUIP_TITLE_REQ(int titleId)
     return true;
 }
 
-bool CX2TitleManager::Handler_EGS_EQUIP_TITLE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2TitleManager::Handler_EGS_EQUIP_TITLE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
     // 패킷 처리
     KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -1621,7 +1621,7 @@ bool CX2TitleManager::Handler_EGS_EQUIP_TITLE_ACK( HWND hWnd, UINT uMsg, WPARAM 
 }
 
 // 진행중인 미션
-bool CX2TitleManager::Handler_EGS_NEW_MISSION_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2TitleManager::Handler_EGS_NEW_MISSION_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
     // 패킷 처리
     KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -1640,7 +1640,7 @@ bool CX2TitleManager::Handler_EGS_NEW_MISSION_NOT( HWND hWnd, UINT uMsg, WPARAM 
 }
 
 // 획득한 미션
-bool CX2TitleManager::Handler_EGS_REWARD_TITLE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2TitleManager::Handler_EGS_REWARD_TITLE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
     // 패킷 처리
     KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -1662,7 +1662,7 @@ bool CX2TitleManager::Handler_EGS_REWARD_TITLE_NOT( HWND hWnd, UINT uMsg, WPARAM
 
 
 // 타이틀 미션이 업데이트된 내용이 있을때
-bool CX2TitleManager::Handler_EGS_UPDATE_MISSION_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2TitleManager::Handler_EGS_UPDATE_MISSION_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
     // 패킷 처리
     KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -1685,7 +1685,7 @@ bool CX2TitleManager::Handler_EGS_UPDATE_MISSION_NOT( HWND hWnd, UINT uMsg, WPAR
 }
 
 //현재 장착중인 타이틀의 기간이 다되었을경우
-bool CX2TitleManager::Handler_EGS_TITLE_EXPIRATION_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2TitleManager::Handler_EGS_TITLE_EXPIRATION_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_TITLE_EXPIRATION_NOT kEvent;

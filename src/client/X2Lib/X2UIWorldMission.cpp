@@ -19,8 +19,8 @@ m_pDlgTime( NULL )
 //,m_iRewardItemID( 0 )
 //,m_iRewardQuantity( 0 )
 , m_iNumOfCrystalsProtected( 0 )
-, m_bEnableTimeDlg( false )
 , m_bForceUpdate(false)
+, m_bEnableTimeDlg( false )
 , m_bIsFlickerDanger(false)
 
 {
@@ -201,7 +201,7 @@ void CX2UIWorldMission::SetShowTimeDlg( bool bEnable )
 // 	return false;
 // }
 
-bool CX2UIWorldMission::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIWorldMission::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/ )
 {
 	switch(wParam)
 	{

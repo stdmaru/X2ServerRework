@@ -1873,7 +1873,7 @@ bool CX2StateDungeonResult::Handler_EGS_RESULT_SUCCESS_REQ()
 	return true;
 }
 
-bool CX2StateDungeonResult::Handler_EGS_RESULT_SUCCESS_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonResult::Handler_EGS_RESULT_SUCCESS_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	DialogLog( "CX2StatePVPResult::Handler_EGS_RESULT_SUCCESS_ACK Start" );
 
@@ -1901,7 +1901,7 @@ bool CX2StateDungeonResult::Handler_EGS_RESULT_SUCCESS_ACK( HWND hWnd, UINT uMsg
 	return false;
 }
 
-bool CX2StateDungeonResult::Handler_EGS_RESULT_ALL_UNIT_SUCCESS_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonResult::Handler_EGS_RESULT_ALL_UNIT_SUCCESS_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	DialogLog( "CX2StatePVPResult::Handler_EGS_RESULT_ALL_UNIT_SUCCESS_NOT Start" );
 
@@ -1960,7 +1960,7 @@ bool CX2StateDungeonResult::Handler_EGS_SELECT_REWARD_BOX_REQ( int boxNum )
 	return true;
 }
 
-bool CX2StateDungeonResult::Handler_EGS_SELECT_REWARD_BOX_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonResult::Handler_EGS_SELECT_REWARD_BOX_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -1978,7 +1978,7 @@ bool CX2StateDungeonResult::Handler_EGS_SELECT_REWARD_BOX_ACK( HWND hWnd, UINT u
 	return false;
 }
 
-bool CX2StateDungeonResult::Handler_EGS_SELECT_REWARD_BOX_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonResult::Handler_EGS_SELECT_REWARD_BOX_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_SELECT_REWARD_BOX_NOT kEvent;
@@ -2032,7 +2032,7 @@ bool CX2StateDungeonResult::Handler_EGS_SELECT_REWARD_BOX_NOT( HWND hWnd, UINT u
 
 }
 
-bool CX2StateDungeonResult::Handler_EGS_LEAVE_ROOM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonResult::Handler_EGS_LEAVE_ROOM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = reinterpret_cast<KSerBuffer*>( lParam );
 	KEGS_SELECT_REWARD_BOX_ACK kEvent;
@@ -2053,7 +2053,7 @@ bool CX2StateDungeonResult::Handler_EGS_LEAVE_ROOM_ACK( HWND hWnd, UINT uMsg, WP
 	return false;
 }
 
-bool CX2StateDungeonResult::Handler_EGS_LEAVE_ROOM_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonResult::Handler_EGS_LEAVE_ROOM_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_LEAVE_ROOM_NOT kEvent;
@@ -2063,7 +2063,7 @@ bool CX2StateDungeonResult::Handler_EGS_LEAVE_ROOM_NOT( HWND hWnd, UINT uMsg, WP
 	return g_pX2Room->Handler_EGS_LEAVE_ROOM_NOT( kEvent );
 }
 
-bool CX2StateDungeonResult::Handler_EGS_JOIN_ROOM_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonResult::Handler_EGS_JOIN_ROOM_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_JOIN_ROOM_NOT kEvent;
@@ -2738,7 +2738,7 @@ void CX2StateDungeonResult::ShowBonusEXPEvent( CX2StateDungeonResult::BonusEXPTy
 	}
 }
 
-void CX2StateDungeonResult::PicCharFrameMove( double fTime, float fElapsedTime )
+void CX2StateDungeonResult::PicCharFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	if ( m_pPicCharScore != NULL )
 		m_pPicCharScore->OnFrameMove( fElapsedTime );

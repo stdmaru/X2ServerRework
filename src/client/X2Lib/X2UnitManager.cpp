@@ -94,7 +94,7 @@ CX2UnitManager::~CX2UnitManager(void)
 
 }
 
-void CX2UnitManager::OnFrameMove( double fTime, float fElapsedTime )
+void CX2UnitManager::OnFrameMove( double /*fTime*/, float /*fElapsedTime*/ )
 {
 	if( g_pKTDXApp->GetIsNowVeryfy() == true )
 	{

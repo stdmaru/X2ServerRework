@@ -53,13 +53,13 @@ m_fRotSpeed( 0.f ),
 m_pDLGMSGOkBoxEnterTutorial( NULL )
 , m_SelectUnitType ( CX2Unit::UT_NONE )
 , m_pDLGCreateUnitChangeClassInfo ( NULL )
-, m_hStandEffect( INVALID_EFFECTSET_HANDLE )
 , m_pDLGCreateUnitServerSelect ( NULL )
 , m_pDLGCreateUnitCheckInfo ( NULL )
+, m_hStandEffect( INVALID_EFFECTSET_HANDLE )
 , m_eSelectServerGroupID ( SEnum::SGI_INVALID )
-, m_fFadeTitleControlValue ( 0.f )
 , m_iGaiaServerCreateAbleUnitMany ( 0 )
 , m_iSolesServerCreateAbleUnitMany ( 0 )
+, m_fFadeTitleControlValue ( 0.f )
 , m_sSumDelta( 0 )
 , m_sZoomState( 1 )
 , m_pCreateUnitSelectSound( NULL )
@@ -984,6 +984,8 @@ void CX2StateCreateUnit::EquipPromotionItem( CX2Unit::UNIT_CLASS eUnitClass )
 				m_pUnitViewerUI->AddEquipByTID( ADD_PROMOTION_ITEM_ID[i] );
 			}
 		} break;
+	default:
+		break;
 	}
 
 }
@@ -1814,7 +1816,7 @@ bool CX2StateCreateUnit::Handler_EGS_CREATE_UNIT_REQ()
 	return true;
 }
 
-bool CX2StateCreateUnit::Handler_EGS_CREATE_UNIT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateCreateUnit::Handler_EGS_CREATE_UNIT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CREATE_UNIT_ACK kEvent;
@@ -2158,7 +2160,7 @@ void CX2StateCreateUnit::OpenNickNameBox()
 	m_pDLGCreateUnitFront->GetControl( L"IMEEditBoxUnitCreateNickName" )->RequestFocus();
 }
 
-void CX2StateCreateUnit::SetAlarmAboutName( const WCHAR* pContent )
+void CX2StateCreateUnit::SetAlarmAboutName( const WCHAR* /*pContent*/ )
 {
 }
 
@@ -2637,6 +2639,8 @@ wstring CX2StateCreateUnit::GetUnitClassCreateInfoTextureNameByUnitType ( CX2Uni
 
 	case CX2Unit::UT_ADD :
 		return L"DLG_UI_Common_Texture_GUI_character_info_09.tga";
+	default:
+		break;
 	}
 
 	return L"";
@@ -2935,12 +2939,14 @@ CX2StateCreateUnit::UNIT_STAT_INFOMATION_CHART CX2StateCreateUnit::GetUnitStatIn
 		case CX2Unit::UC_ADD_LUNATIC_PSYKER :
 			return UNIT_STAT_INFOMATION_CHART ( USICL_MIDDLE, USICL_MIDDLE, USICL_MIDDLE );
 
+	default:
+		break;
 	}
 	return UNIT_STAT_INFOMATION_CHART ( USICL_NONE, USICL_NONE, USICL_NONE );
 }
 
 
-bool CX2StateCreateUnit::Handler_EGS_ENTRY_POINT_CHECK_NICK_NAME_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateCreateUnit::Handler_EGS_ENTRY_POINT_CHECK_NICK_NAME_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_ENTRY_POINT_CHECK_NICK_NAME_ACK kEvent;
@@ -2983,7 +2989,7 @@ bool CX2StateCreateUnit::Handler_EGS_GET_CREATE_UNIT_TODAY_COUNT_REQ ()
 	g_pMain->AddServerPacket( EGS_GET_CREATE_UNIT_TODAY_COUNT_ACK );
 	return true;
 }
-bool CX2StateCreateUnit::Handler_EGS_GET_CREATE_UNIT_TODAY_COUNT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateCreateUnit::Handler_EGS_GET_CREATE_UNIT_TODAY_COUNT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_GET_CREATE_UNIT_TODAY_COUNT_ACK kEvent;

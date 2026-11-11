@@ -2,10 +2,10 @@
 #include "X2NPCIndicator.h"
 
 CX2NPCIndicator::CX2NPCIndicator(void):
-m_iIndicatorCount(0),
 m_hPortalQuestion(INVALID_PARTICLE_SEQUENCE_HANDLE),
-m_fCheckDistance(0.f),
 m_pDLGParticle(NULL),
+m_iIndicatorCount(0),
+m_fCheckDistance(0.f),
 m_bShow(false)
 {
 	for( int i = 0; i < MAX_QUEST_INDICATOR_NUM; ++i )
@@ -117,6 +117,8 @@ void CX2NPCIndicator::OnFrameMove()
 				}
 			}
 		}break;
+	default:
+		break;
 	}
 	return;
 }
@@ -522,6 +524,8 @@ bool CX2NPCIndicator::GetLinkInfo(map<int, D3DXVECTOR3>& mapVillageInfo_)
 				}
 			}
 		} break;
+	default:
+		break;
 	}
 
 	return true;

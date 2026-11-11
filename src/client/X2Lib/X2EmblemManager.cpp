@@ -24,9 +24,9 @@ CX2EmblemManager* CX2EmblemManager::m_pEmblemManager = NULL;
 
 CX2EmblemManager::CX2EmblemManager():
 m_bHasNextPlayEmblem( false ),
+m_fWaitTime(0.f),
 m_hCurrentEmblem(INVALID_PARTICLE_SEQUENCE_HANDLE),
-m_hCurrentEmblem2nd(INVALID_PARTICLE_SEQUENCE_HANDLE),
-m_fWaitTime(0.f)
+m_hCurrentEmblem2nd(INVALID_PARTICLE_SEQUENCE_HANDLE)
 , m_fSoundPlayingCheckTime ( 0.f )
 {
 

@@ -3,7 +3,7 @@
 
 #include "./X2UIShop.h"
 
-CX2UIShop::CX2UIShop( CKTDXStage* pNowStage, const WCHAR* pFileName )
+CX2UIShop::CX2UIShop( CKTDXStage* pNowStage, const WCHAR* /*pFileName*/ )
 // : CX2UIDragable( pNowStage, NULL )
 : CX2ItemSlotManager( pNowStage, NULL ),
 m_bShow(false),
@@ -131,7 +131,7 @@ HRESULT CX2UIShop::OnFrameMove( double fTime, float fElapsedTime )
  	return S_OK;
 }
 
-bool CX2UIShop::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIShop::MsgProc( HWND /*hWnd*/, UINT uMsg, WPARAM /*wParam*/, LPARAM lParam )
 {
 	bool bFlag = false;
 	switch( uMsg )
@@ -254,7 +254,7 @@ bool CX2UIShop::MouseRButtonUp( D3DXVECTOR2 mousePos )
 
 }
 
-bool CX2UIShop::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIShop::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM lParam )
 {
 	switch(wParam)
 	{
@@ -1384,7 +1384,7 @@ void CX2UIShop::OpenSellItemConfirmDLG()
 
 
 // 이 코드는 앞으로 자주 쓰게 될 것이야
-void CX2UIShop::OpenItemSellNumDLG( D3DXVECTOR2 pos )
+void CX2UIShop::OpenItemSellNumDLG( D3DXVECTOR2 /*pos*/ )
 {
 
 	SAFE_DELETE_DIALOG(m_pDLGSellItemNum);
@@ -1496,7 +1496,7 @@ bool CX2UIShop::Handler_EGS_SELL_ITEM_REQ()
 	m_SellItemNum = 0;
 	return true;
 }
-bool CX2UIShop::Handler_EGS_SELL_ITEM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIShop::Handler_EGS_SELL_ITEM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	// 다이얼로그 처리
 	if ( m_pDLGSellItemConfirm != NULL )
@@ -1642,7 +1642,7 @@ bool CX2UIShop::Handler_EGS_REPAIR_ITEM_REQ( UidType ItemUID )
 	return true;
 }
 
-bool CX2UIShop::Handler_EGS_REPAIR_ITEM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIShop::Handler_EGS_REPAIR_ITEM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_REPAIR_ITEM_ACK kEvent;
@@ -1999,7 +1999,7 @@ int CX2UIShop::PreCheckShopBuyItem()
 	return 0;
 }
 // 이 코드는 앞으로 자주 쓰게 될 것이야
-void CX2UIShop::OpenItemBuyNumDLG( D3DXVECTOR2 pos )
+void CX2UIShop::OpenItemBuyNumDLG( D3DXVECTOR2 /*pos*/ )
 {
 
 	int iRet = PreCheckShopBuyItem();
@@ -2301,7 +2301,7 @@ bool CX2UIShop::Handler_EGS_BUY_ED_ITEM_REQ()
 	return true;
 }
 
-bool CX2UIShop::Handler_EGS_BUY_ED_ITEM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIShop::Handler_EGS_BUY_ED_ITEM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_BUY_ED_ITEM_ACK kEvent;
@@ -2468,7 +2468,7 @@ void CX2UIShop::EnchantItem( UidType EnchantItemUID, D3DXVECTOR2 pos )
 
 }
 
-void CX2UIShop::OpenEnchantDLG(D3DXVECTOR2 pos)
+void CX2UIShop::OpenEnchantDLG(D3DXVECTOR2 /*pos*/)
 {
 	// 다이얼로그 자동 클릭되는 현상을 막자
 	g_pData->GetUIManager()->SetDLGFlag(false);
@@ -2510,6 +2510,8 @@ void CX2UIShop::OpenEnchantDLG(D3DXVECTOR2 pos)
 		{
 			iCost = (int)( ( (float)pItem->GetItemTemplet()->GetPrice() * 0.1f ) * 0.1f );
 		}
+		break;
+	default:
 		break;
 	}
 
@@ -3059,6 +3061,8 @@ void CX2UIShop::UpdateEnchantWindow()
 				StringCchPrintfW( newStaticName, ARRAY_SIZE(newStaticName), L"Static_Inactive%d", iNewStoneLevel+1 );
 			}
 		} break;
+	default:
+		break;
 	}
 
 
@@ -3170,7 +3174,7 @@ bool CX2UIShop::Handler_EGS_ENCHANT_ITEM_REQ( bool bSpecialEnchant )
 	return true;
 }
 
-bool CX2UIShop::Handler_EGS_ENCHANT_ITEM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIShop::Handler_EGS_ENCHANT_ITEM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_ENCHANT_ITEM_ACK kEvent;
@@ -3439,7 +3443,7 @@ void CX2UIShop::SplitEnchantDLGStringSet ( CKTDGUIStatic* pStatic, wstring strIt
 }
 
 //////////////////////////////////////////////////////////////////////////
-void CX2UIShop::EnchantAttributeItem( UidType AttributeEnchantItemUID, D3DXVECTOR2 pos )
+void CX2UIShop::EnchantAttributeItem( UidType AttributeEnchantItemUID, D3DXVECTOR2 /*pos*/ )
 {
 	// 다이얼로그 자동 클릭되는 현상을 막자
 	g_pData->GetUIManager()->SetDLGFlag(false);
@@ -3945,7 +3949,7 @@ void CX2UIShop::ResetAtrribEnchantWindow()
 
 }
 
-bool CX2UIShop::Handler_EGS_ATTRIB_ENCHANT_ITEM_REQ( int slotNum, int enchantID, bool bDebug )
+bool CX2UIShop::Handler_EGS_ATTRIB_ENCHANT_ITEM_REQ( int slotNum, int enchantID, bool /*bDebug*/ )
 {
 	KEGS_ATTRIB_ENCHANT_ITEM_REQ kPacket;
 	kPacket.m_iItemUID = m_AttributeEnchantItemUID;
@@ -3958,7 +3962,7 @@ bool CX2UIShop::Handler_EGS_ATTRIB_ENCHANT_ITEM_REQ( int slotNum, int enchantID,
 	return true;
 }
 
-bool CX2UIShop::Handler_EGS_ATTRIB_ENCHANT_ITEM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIShop::Handler_EGS_ATTRIB_ENCHANT_ITEM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_ATTRIB_ENCHANT_ITEM_ACK kEvent;
@@ -4158,7 +4162,7 @@ bool CX2UIShop::Handler_EGS_SUPPORT_MATERIAL_EVENT_TIME_REQ()
 	return true;
 }
 
-bool CX2UIShop::Handler_EGS_SUPPORT_MATERIAL_EVENT_TIME_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIShop::Handler_EGS_SUPPORT_MATERIAL_EVENT_TIME_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_SUPPORT_MATERIAL_EVENT_TIME_ACK kEvent;

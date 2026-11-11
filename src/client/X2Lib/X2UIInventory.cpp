@@ -3,7 +3,7 @@
 
 #include "./X2UIInventory.h"
 
-CX2UIInventory::CX2UIInventory( CKTDXStage* pNowStage, const WCHAR* pFileName )
+CX2UIInventory::CX2UIInventory( CKTDXStage* pNowStage, const WCHAR* /*pFileName*/ )
 : CX2UIDragable( pNowStage, NULL ),
 //: CX2ItemSlotManager( pNowStage, pFileName )
 m_NowInventorySortType(CX2Inventory::ST_EQUIP),
@@ -17,95 +17,98 @@ m_pDLGSocketItemCheat(NULL),
 m_pDLGCubeCheck(NULL),
 m_pDLGElChanger(NULL),
 m_pDLGElChangerResult(NULL),
+m_pDLGElBreak( NULL ),
+m_pDLGCheckPShop( NULL ),
+m_pUISocketItem(NULL),
+m_pDLGItemEnroll( NULL ),
+m_pDLGDeleteItemConfirm( NULL ),
+m_iItemEnrollNum( 1 ),					// D3DXVECTOR2
+m_EnrollItemUid( 0 ),						// D3DXVECTOR2
+m_pDLGSealItemConfirm( NULL ),
+m_pSlotItemToBeSealed( NULL ),
+m_itemUIDForSeal( 0 ),
+m_itemUIDToBeUnSealed( 0 ),
+//m_mapResolveResultInsertedItem,
 m_pDLGRandomItem(NULL),
 m_eRandomItemEventType(RIOET_NONE),
 m_iRandomItemUID(0),
-m_RandomItemID(0),
+m_RandomItemID(0)
+,
 m_bShow(false),
-m_DLGPosition(0,0),					// D3DXVECTOR2
-m_DLGSize(0,0),						// D3DXVECTOR2
-m_ElChangerItemUID(0),
-m_ElChangerItemCount(0),
-m_DecompositionItemUID(0),
-m_DecompositionWindowNowPageNum(0),
-//m_mapResolveResultInsertedItem,
-m_SocketItemUID(0),
-m_SocketSlotIndex(-1),
-m_bSocketRareMagicStone(false),
-m_bSocketRemove(false)
+m_DLGPosition(0,0),
+m_DLGSize(0,0),
+m_ElChangerItemUID(0)
 ,
-m_pDLGTreeDay1(NULL),
-m_pDLGTreeDay2(NULL),
-m_bPlayingTreedayEvent(false),
-m_bAprilSoundPlayed(true)
-,
-m_RecoveryItemUid(0)
+m_ElChangerItemCount(0)
 //{{100416 ������ Ʈ���� �ڽ� �߰�
 //}}100416 ������ Ʈ���� �ڽ� �߰�
-,m_WarpItem(0),
-m_bIsNewItem(false),
-m_UseItemTempUID( 0 )
+,m_DecompositionItemUID(0),
+m_DecompositionWindowNowPageNum(0),
+m_SocketItemUID(0)
 ,
 //m_bOpenedAttractionItem(false),
+m_SocketSlotIndex(-1),
+m_bSocketRareMagicStone(false),
+m_bSocketRemove(false),
+m_fPlayTime(0),
 m_bPlayAttractionItem(false),
 m_pDLGOpenAttraction(NULL),
-m_pDLGGetAttractionItemBG(NULL),
 m_pDLGAttractionResult(NULL),
+m_pDLGGetAttractionItemBG(NULL),
 m_hMeshInstMeltMachine(INVALID_MESH_INSTANCE_HANDLE),
 m_hMeshInstMeltMachineStart(INVALID_MESH_INSTANCE_HANDLE),
 m_hSeqSpreadLight(INVALID_PARTICLE_SEQUENCE_HANDLE),
 m_hSeqEndLight(INVALID_PARTICLE_SEQUENCE_HANDLE),
-m_hSeqEndLight2(INVALID_PARTICLE_SEQUENCE_HANDLE),
+m_hSeqEndLight2(INVALID_PARTICLE_SEQUENCE_HANDLE)
+,
 m_hSeqEndLight3(INVALID_PARTICLE_SEQUENCE_HANDLE),
-m_CouponTargetUid(0),
 m_CouponUid(0),
-m_fPlayTime(0)
+m_CouponTargetUid(0),
+m_pDLGTreeDay1(NULL),
+m_pDLGTreeDay2(NULL)
+//m_MapAutoRandomItemGet.clear();
+, m_bPlayingTreedayEvent(false)
+, m_bAprilSoundPlayed(true)
+, m_RecoveryItemUid(0)
+
+//{{ kimhc // �ǽð� ���ҵ� �� ������ ������ ������
 ,
 m_bUsingRandomItemAutoOpen(false),
 m_OpenedRandomItemCount(0),
 m_pDLGAutoOpenMsgBox(NULL),
-m_UsedItemUID(0),
-m_TitleItemUID(0)
-//m_MapAutoRandomItemGet.clear();
-, m_pDLGCubeOpenEffect(NULL)
-, m_fCubeOpenTime(0)
-, m_bCubeJustOpen(false)
-
-//{{ kimhc // �ǽð� ���ҵ� �� ������ ������ ������
-,
-m_pDLGItemEnroll( NULL ),
-m_pDLGDeleteItemConfirm( NULL ),
-m_iItemEnrollNum( 1 ),
-m_EnrollItemUid( 0 )
+m_pDLGCubeOpenEffect(NULL)
 //}} kimhc // �ǽð� ���ҵ� �� ������ ������ ������
 
 //{{ kimhc // 2009-08-19 // ������ ���� ����� �� Ȯ�� â
-, m_pDLGSealItemConfirm( NULL )
-, m_pSlotItemToBeSealed( NULL )
-, m_itemUIDForSeal( 0 )
-, m_itemUIDToBeUnSealed( 0 )
+, m_fCubeOpenTime(0)
+, m_bCubeJustOpen(false)
+, m_WarpItem(0)
+, m_bIsNewItem(false)
 //}} kimhc // 2009-08-19 // ������ ���� ����� �� Ȯ�� â
+, m_UseItemTempUID( 0 )
+, m_UsedItemUID(0)
+, m_TitleItemUID(0)
 , m_pDLGWarpDestination( NULL )
 , m_iSelectedWarpDest(0)
+// oasis907 : ����� [2010.4.19] //
 , m_SumDelta(0)
+, m_iSelectedWarpDestIndex(-1)
+, m_iCurrentVillageWarpIndex(-1)
+, m_bIsEdConsumptionWarp(false) // oasis907 : ����� [2010.9.2] // �� �κ��丮
 , m_pDLGUSCJob( NULL )
 , m_iSelectedUSCJob(0)
-// oasis907 : ����� [2010.4.19] //
-, m_pUISocketItem(NULL)
+,m_UseTransformdItemUID( 0 )
+, m_UseTransformItemPetUID( 0 )
 , m_pDLGIdentifyStone(NULL)
-, m_pPetFoodSlot( NULL )
-, m_pUIPetInventory(NULL) // oasis907 : ����� [2010.9.2] // �� �κ��丮
-, m_bAutoFeed(false)
-, m_pDLGCheckPShop( NULL )
-,m_eItemObtainResultType ( IORT_NONE )
-, m_pDLGItemHighLight(NULL)
-, m_bProcessCubeOpen(false)
-,m_iCurrentVillageWarpIndex(-1)
-,m_iSelectedWarpDestIndex(-1)
-,m_bIsEdConsumptionWarp(false)
+,m_pUIPetInventory(NULL)
+,m_bAutoFeed(false)
+,m_pPetFoodSlot( NULL )
+, m_eItemObtainResultType ( IORT_NONE )
+,m_pDLGItemHighLight(NULL)
+,m_bProcessCubeOpen(false)
 , m_bHideCubeOpneBar( false )
-,m_pSptNoneItemDelete(NULL)
-,m_bIsSptNoneItem(false)
+, m_bIsSptNoneItem(false)
+, m_pSptNoneItemDelete(NULL)
 , m_pNowIceHeaterEventData( NULL )
 , m_hUIEffectSetWait ( INVALID_EFFECTSET_HANDLE )
 , m_hUIEffectSetPlay ( INVALID_EFFECTSET_HANDLE )
@@ -113,13 +116,10 @@ m_EnrollItemUid( 0 )
 , m_iTargetItemUID ( 0 )
 , m_iConsumeItemQuantity ( -1 )
 , m_iRidingItemUid( 0 )
-, m_pDLGElBreak( NULL )
 , m_ElBreakItemCount( 0 )
 , m_iConfirmED( 0 )
-, m_pDLGBuyConfirm( NULL )
-, m_fLeftMouseWhellCoolTime (-1.f)
-,m_UseTransformdItemUID( 0 )
-,m_UseTransformItemPetUID( 0 )
+,m_pDLGBuyConfirm( NULL )
+,m_fLeftMouseWhellCoolTime (-1.f)
 {
 	// �ʱ�ȭ ////////////////////////////////////////////////////////////////////////
 
@@ -2334,7 +2334,7 @@ void CX2UIInventory::SetShow(bool val)
 }
 
 //{{ kimhc // 2009-08-10 // ���� ���� Ȯ��
-bool CX2UIInventory::Handler_EGS_EXPAND_BANK_SLOT_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )		// ���� ���� Ȯ��
+bool CX2UIInventory::Handler_EGS_EXPAND_BANK_SLOT_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )		// ���� ���� Ȯ��
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_EXPAND_BANK_SLOT_NOT kEvent;
@@ -2376,6 +2376,8 @@ bool CX2UIInventory::Handler_EGS_EXPAND_BANK_SLOT_NOT( HWND hWnd, UINT uMsg, WPA
 			break;
 		case CX2Inventory::ST_BANK:
 			g_pMain->KTDGUIOKMsgBox ( D3DXVECTOR2(-999,-999), GET_STRING( STR_ID_3868 ),g_pMain->GetNowState() );
+			break;
+		default:
 			break;
 		}
 	}
@@ -2551,7 +2553,7 @@ bool CX2UIInventory::Handler_EGS_CHANGE_INVENTORY_SLOT_REQ( CX2Inventory::SORT_T
 	return true;
 }
 
-bool CX2UIInventory::Handler_EGS_CHANGE_INVENTORY_SLOT_ACK(  HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIInventory::Handler_EGS_CHANGE_INVENTORY_SLOT_ACK(  HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_INVENTORY_SLOT_ITEM_ACK kEvent;
@@ -2681,7 +2683,7 @@ bool CX2UIInventory::Handler_EGS_SORT_CATEGORY_ITEM_REQ(CX2Inventory::SORT_TYPE 
 }
 //}}
 
-bool CX2UIInventory::Handler_EGS_ITEM_EXPIRATION_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIInventory::Handler_EGS_ITEM_EXPIRATION_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_ITEM_EXPIRATION_NOT kEvent;
@@ -3939,7 +3941,7 @@ bool CX2UIInventory::GetOpenRegisterQuantityDLG()
 	return false;
 }
 
-void CX2UIInventory::OpenRegisterQuantityDLG( D3DXVECTOR2 pos )
+void CX2UIInventory::OpenRegisterQuantityDLG( D3DXVECTOR2 /*pos*/ )
 {
 
 	SAFE_DELETE_DIALOG(m_pDLGItemEnroll);
@@ -4516,6 +4518,8 @@ bool CX2UIInventory::OnRClickedItem( D3DXVECTOR2 mousePos )
 					return true;
 				}
 			} break;
+		default:
+			break;
 		}
 	}
 
@@ -6095,7 +6099,7 @@ bool CX2UIInventory::IsSealItem( CX2Item* pItem, int &iCanSealCount )
 	return true;
 }
 
-bool CX2UIInventory::Handler_EGS_UPDATE_ITEM_POSITION_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIInventory::Handler_EGS_UPDATE_ITEM_POSITION_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_UPDATE_ITEM_POSITION_NOT kEvent;
@@ -6402,7 +6406,7 @@ bool CX2UIInventory::Handler_EGS_SEAL_ITEM_REQ( UidType itemUID )
 	return true;
 }
 
-bool CX2UIInventory::Handler_EGS_SEAL_ITEM_ACK( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIInventory::Handler_EGS_SEAL_ITEM_ACK( HWND /*hwnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_SEAL_ITEM_ACK kEvent;
@@ -6437,7 +6441,7 @@ bool CX2UIInventory::Handler_EGS_UNSEAL_ITEM_REQ( UidType itemUID )
 	return true;
 }
 
-bool CX2UIInventory::Handler_EGS_UNSEAL_ITEM_ACK( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIInventory::Handler_EGS_UNSEAL_ITEM_ACK( HWND /*hwnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_UNSEAL_ITEM_ACK kEvent;
@@ -6699,7 +6703,7 @@ bool CX2UIInventory::Handler_EGS_IDENTIFY_ITEM_REQ()
 	return true;
 }
 
-bool CX2UIInventory::Handler_EGS_IDENTIFY_ITEM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIInventory::Handler_EGS_IDENTIFY_ITEM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_IDENTIFY_ITEM_ACK kEvent;
@@ -6881,7 +6885,7 @@ bool CX2UIInventory::Handler_EGS_USE_ITEM_IN_INVENTORY_REQ(UidType iUid, UidType
 	return true;
 }
 
-bool CX2UIInventory::Handler_EGS_USE_ITEM_IN_INVENTORY_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIInventory::Handler_EGS_USE_ITEM_IN_INVENTORY_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	// ��Ŷ ó��
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -7023,7 +7027,7 @@ bool CX2UIInventory::Handler_EGS_OPEN_RANDOM_ITEM_REQ()
 	return true;
 }
 
-bool CX2UIInventory::Handler_EGS_OPEN_RANDOM_ITEM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIInventory::Handler_EGS_OPEN_RANDOM_ITEM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_OPEN_RANDOM_ITEM_ACK kEvent;
@@ -7670,7 +7674,7 @@ bool CX2UIInventory::Handler_EGS_RESOLVE_ITEM_REQ()
 	return true;
 }
 
-bool CX2UIInventory::Handler_EGS_RESOLVE_ITEM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIInventory::Handler_EGS_RESOLVE_ITEM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_RESOLVE_ITEM_ACK kEvent;
@@ -7693,7 +7697,7 @@ bool CX2UIInventory::Handler_EGS_RESOLVE_ITEM_ACK( HWND hWnd, UINT uMsg, WPARAM 
 
 void CX2UIInventory::OpenResolveResultWindow( std::map< int, int >& mapInsertedItem,
 											 std::vector< KInventoryItemInfo >& vecKInventorySlotInfo,
-											 bool bJackpot )
+											 bool /*bJackpot*/ )
 {
 	SAFE_DELETE_DIALOG( m_pDLGResolveItemResult );
 
@@ -8016,7 +8020,7 @@ void CX2UIInventory::OpenPetInventory()
 
 
 //{{ 2012. 02. 21	��μ�	�κ��丮 ����
-bool CX2UIInventory::Handler_EGS_SORT_CATEGORY_ITEM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIInventory::Handler_EGS_SORT_CATEGORY_ITEM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_SORT_CATEGORY_ITEM_ACK kEGS_SORT_CATEGORY_ITEM_ACK;
@@ -8190,7 +8194,7 @@ bool CX2UIInventory::Handler_EGS_RESTORE_ITEM_REQ( UidType RecoveryItemUid )
 
 }
 
-bool CX2UIInventory::Handler_EGS_RESTORE_ITEM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIInventory::Handler_EGS_RESTORE_ITEM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -8252,7 +8256,7 @@ bool CX2UIInventory::Handler_EGS_DELETE_ITEM_REQ( UidType DeleteItemUid, int Qua
 }
 //}} kimhc // �ǽð� ���ҵ� �� ������ ������ ������
 
-bool CX2UIInventory::Handler_EGS_DELETE_ITEM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIInventory::Handler_EGS_DELETE_ITEM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_DELETE_ITEM_ACK kEvent;
@@ -8350,6 +8354,8 @@ std::wstring CX2UIInventory::GetSlotItemDescExtra_RBtn( int itemTID, CX2Item* pI
                     slotItemDesc += GET_STRING( STR_ID_19 );
                 }
                 break;
+            default:
+            	break;
             }
 
 		}
@@ -8501,7 +8507,7 @@ void CX2UIInventory::UpdateOpenAttractionItemAck()
 	UpdateInventorySlotList( m_TempOpenRandomItemAck.m_vecKInventorySlotInfo );
 }
 
-void CX2UIInventory::PlayGetAttractionItem( RANDOM_ITEM_OPEN_EVENT_TYPE eRandomItemEventType /*= RIOET_ICE_HEATER*/ )
+void CX2UIInventory::PlayGetAttractionItem( RANDOM_ITEM_OPEN_EVENT_TYPE /*eRandomItemEventType*/ /*= RIOET_ICE_HEATER*/ )
 {
 	if ( m_bPlayAttractionItem == false )
 	{
@@ -8667,7 +8673,7 @@ bool CX2UIInventory::Handler_EGS_ENCHANT_ATTACH_ITEM_REQ( UidType CouponItemUID,
 
 	return false;
 }
-bool CX2UIInventory::Handler_EGS_ENCHANT_ATTACH_ITEM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIInventory::Handler_EGS_ENCHANT_ATTACH_ITEM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_ENCHANT_ATTACH_ITEM_ACK kEvent;
@@ -8716,7 +8722,7 @@ bool CX2UIInventory::Handler_EGS_ATTRIB_ATTACH_ITEM_REQ( UidType CouponItemUID, 
 	return true;
 
 }
-bool CX2UIInventory::Handler_EGS_ATTRIB_ATTACH_ITEM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIInventory::Handler_EGS_ATTRIB_ATTACH_ITEM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_ATTRIB_ATTACH_ITEM_ACK kEvent;
@@ -8911,7 +8917,7 @@ void CX2UIInventory::UpdateOpenTreeDayItemAck()
 
 }
 
-bool CX2UIInventory::IsAprilEventRandomItem( int ItemID )
+bool CX2UIInventory::IsAprilEventRandomItem( int /*ItemID*/ )
 {
 	//{{ oasis907 : ����� [2011.3.29] ���� ������ ť�꿡�� �ĸ��� ������ ó��
 	return false;
@@ -9790,6 +9796,8 @@ void CX2UIInventory::CreateSecondJobDest()
 					if( AddSecondJobList( pControlList, row, CX2Unit::UC_ELESIS_BLAZING_HEART ) )
 						++row;
 				} break;
+			default:
+				break;
 			}
 
 			pControlList->SetIndex(0, 0);
@@ -10232,7 +10240,7 @@ void CX2UIInventory::InitItemResolveResult(const WCHAR* pFileName, std::map< int
 }
 
 
-void CX2UIInventory::UseDefenceDungeonPotion( const UidType uidItem_, const int iItemId_ )
+void CX2UIInventory::UseDefenceDungeonPotion( const UidType /*uidItem_*/, const int /*iItemId_*/ )
 {
 
 }
@@ -10332,7 +10340,7 @@ void CX2UIInventory::UseWarpPopup(bool bIsEdConsumption_)
 	}
 }
 
-void CX2UIInventory::UseUSCJobItem( CX2SlotItem* pItemSlot_ )
+void CX2UIInventory::UseUSCJobItem( CX2SlotItem* /*pItemSlot_*/ )
 {
 	switch ( g_pMain->GetNowStateID() )
 	{
@@ -10679,7 +10687,7 @@ bool CX2UIInventory::Handler_EGS_RESTORE_ITEM_EVALUATE_REQ()
 
 	return true;
 }
-bool CX2UIInventory::Handler_EGS_RESTORE_ITEM_EVALUATE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIInventory::Handler_EGS_RESTORE_ITEM_EVALUATE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = reinterpret_cast<KSerBuffer*>(lParam);
 	KEGS_RESTORE_ITEM_EVALUATE_ACK kPacket;
@@ -10735,7 +10743,7 @@ bool CX2UIInventory::Handler_EGS_ITEM_EVALUATE_REQ()
 
 	return true;
 }
-bool CX2UIInventory::Handler_EGS_ITEM_EVALUATE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIInventory::Handler_EGS_ITEM_EVALUATE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = reinterpret_cast<KSerBuffer*>(lParam);
 	KEGS_ITEM_EVALUATE_ACK kPacket;
@@ -10772,7 +10780,7 @@ void CX2UIInventory::Handler_EGS_ITEM_CONVERT_REQ( UidType iItemUID, int iQuanti
 	g_pData->GetServerProtocol()->SendPacket( EGS_ITEM_CONVERT_REQ, kPacket );
 	g_pMain->AddServerPacket( EGS_ITEM_CONVERT_ACK );
 }
-bool CX2UIInventory::Handler_EGS_ITEM_CONVERT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIInventory::Handler_EGS_ITEM_CONVERT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = reinterpret_cast<KSerBuffer*>(lParam);
 	KEGS_ITEM_CONVERT_ACK kPacket;
@@ -10911,7 +10919,7 @@ bool CX2UIInventory::Handler_EGS_ITEM_EXTRACT_REQ()
 	return true;
 }
 
-bool CX2UIInventory::Handler_EGS_ITEM_EXTRACT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIInventory::Handler_EGS_ITEM_EXTRACT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_ITEM_EXTRACT_ACK kEvent;
@@ -10939,7 +10947,7 @@ bool CX2UIInventory::Handler_EGS_ITEM_EXTRACT_ACK( HWND hWnd, UINT uMsg, WPARAM 
 //#pragma region Good Elsword
 //#pragma endregion Ȯ�� ���� ó�� ��Ŷ
 
-bool CX2UIInventory::OnMouseWheel( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIInventory::OnMouseWheel( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/ )
 {
 	// ���콺 Ŀ���� �κ��丮 ���� �ȿ� ���� ���� ó���ϱ�
 	if( false == CX2UIInventory::GetIsMouseOver() )
@@ -11063,7 +11071,7 @@ void CX2UIInventory::Handler_EGS_SOCKET_EXPAND_ITEM_REQ()
 	g_pData->GetServerProtocol()->SendPacket( EGS_SOCKET_EXPAND_ITEM_REQ, kPacket );
  	g_pMain->AddServerPacket( EGS_SOCKET_EXPAND_ITEM_ACK );
 }
-bool CX2UIInventory::Handler_EGS_SOCKET_EXPAND_ITEM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIInventory::Handler_EGS_SOCKET_EXPAND_ITEM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = reinterpret_cast<KSerBuffer*>(lParam);
 	KEGS_SOCKET_EXPAND_ITEM_ACK kPacket;
@@ -11260,7 +11268,7 @@ void CX2UIInventory::Handler_EGS_USE_PROPOSE_ITEM_REQ( UidType iItemUID, wstring
 	g_pMain->AddServerPacket( EGS_USE_PROPOSE_ITEM_ACK );
 }
 
-bool CX2UIInventory::Handler_EGS_USE_PROPOSE_ITEM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIInventory::Handler_EGS_USE_PROPOSE_ITEM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = reinterpret_cast<KSerBuffer*>(lParam);
 	KEGS_USE_PROPOSE_ITEM_ACK kPacket;
@@ -11297,7 +11305,7 @@ void CX2UIInventory::Handler_EGS_USE_DIVORCE_ITEM_REQ()
 	}
 }
 
-bool CX2UIInventory::Handler_EGS_USE_DIVORCE_ITEM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIInventory::Handler_EGS_USE_DIVORCE_ITEM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = reinterpret_cast<KSerBuffer*>(lParam);
 	KEGS_USE_DIVORCE_ITEM_ACK kPacket;
@@ -11328,7 +11336,7 @@ bool CX2UIInventory::Handler_EGS_USE_DIVORCE_ITEM_ACK( HWND hWnd, UINT uMsg, WPA
 	return true;
 }
 
-bool CX2UIInventory::Handler_EGS_CUBE_IN_ITEM_MAPPING_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIInventory::Handler_EGS_CUBE_IN_ITEM_MAPPING_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;

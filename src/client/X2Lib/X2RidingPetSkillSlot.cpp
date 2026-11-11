@@ -242,7 +242,7 @@ void CX2RidingPetSkillSlot::SetSkillSlotCoolTime( IN UINT islotNum_, IN float fC
 //#pragma endregion
 
 //#pragma region UpdateSkillSlotCoolTime
-void CX2RidingPetSkillSlot::OnFrameMove( double fTime, float fElapsedTime )
+void CX2RidingPetSkillSlot::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	for ( int i = 0; i < 3; ++i )
 	{

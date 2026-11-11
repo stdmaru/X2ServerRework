@@ -135,7 +135,7 @@ void CX2UnitLoader::OnFrameMove( float fElapsedTime )
 }
 
 void CX2UnitLoader::AddUnitLoadDataForGame( CX2Unit* pUnit
-						, bool bAddPetResource
+						, bool /*bAddPetResource*/
 						)
 {
     ASSERT( pUnit != NULL );

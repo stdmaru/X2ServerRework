@@ -741,7 +741,7 @@ bool CX2StatePvPLobby::Handler_EGS_ROOM_LIST_REQ( int pageNum )
 	return true;
 }
 
-bool CX2StatePvPLobby::Handler_EGS_ROOM_LIST_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePvPLobby::Handler_EGS_ROOM_LIST_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_ROOM_LIST_ACK kEvent;
@@ -805,7 +805,7 @@ bool CX2StatePvPLobby::Handler_EGS_CREATE_ROOM_REQ()
 	return true;
 }
 
-bool CX2StatePvPLobby::Handler_EGS_CREATE_ROOM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePvPLobby::Handler_EGS_CREATE_ROOM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CREATE_ROOM_ACK kEvent;
@@ -872,7 +872,7 @@ bool CX2StatePvPLobby::Handler_EGS_JOIN_ROOM_REQ( UidType roomUid, bool bIsObser
 	return true;
 }
 
-bool CX2StatePvPLobby::Handler_EGS_JOIN_ROOM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePvPLobby::Handler_EGS_JOIN_ROOM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_JOIN_ROOM_ACK kEvent;
@@ -988,7 +988,7 @@ bool CX2StatePvPLobby::Handler_EGS_CHANGE_PVP_ROOM_LIST_REQ( UINT channelID )
 }
 
 
-bool CX2StatePvPLobby::Handler_EGS_CHANGE_PVP_ROOM_LIST_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePvPLobby::Handler_EGS_CHANGE_PVP_ROOM_LIST_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_PVP_ROOM_LIST_ACK kEvent;
@@ -1485,6 +1485,8 @@ void CX2StatePvPLobby::SelectGametypeOnCreateRoomDLG(CX2PVPRoom::PVP_GAME_TYPE G
 				}
 			}
 			break;
+		default:
+			break;
 		}
 
 		WCHAR buff[256] = {0};
@@ -1541,6 +1543,8 @@ float CX2StatePvPLobby::GetPlayTimeForCreateRoom( CX2PVPRoom::PVP_GAME_TYPE eGam
 		{
 			return (float) SURVIVAL_PVP_PLAY_TIME[ m_PlayTimeForCreateRoomIndex ];
 		} break;
+	default:
+		break;
 	}
 
 	return 1.f;
@@ -1573,6 +1577,8 @@ int CX2StatePvPLobby::GetKillCountForCreateRoom( CX2PVPRoom::PVP_GAME_TYPE eGame
 		{
 			return SURVIVAL_PVP_KILL_COUNT[ m_KillCountForCreateRoomIndex ];
 		} break;
+	default:
+		break;
 	}
 
 	return 1;
@@ -1776,7 +1782,7 @@ bool CX2StatePvPLobby::Handler_EGS_QUICK_JOIN_REQ( CX2PVPRoom::PVP_GAME_TYPE gam
 	return true;
 }
 
-bool CX2StatePvPLobby::Handler_EGS_QUICK_JOIN_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StatePvPLobby::Handler_EGS_QUICK_JOIN_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_JOIN_ROOM_ACK kEvent;
@@ -1885,6 +1891,8 @@ bool CX2StatePvPLobby::Handler_EGS_QUICK_JOIN_ACK( HWND hWnd, UINT uMsg, WPARAM 
 
 					}
 				}
+				break;
+			default:
 				break;
 			}
 

@@ -29,10 +29,10 @@ CX2TFieldGame::CX2TFieldGame( CX2World::WORLD_ID worldID, SquareData* pSquareDat
 //#endif  MODIFY_PORTAL_GATE
 //, m_pInAreaParticle( NULL )
 //, m_pOtherLineParticle( NULL )
-, m_pDLGLoadingState( NULL )
-, m_pCX2GameLoadingTip( NULL )
-//#ifdef MODIFY_PORTAL_GATE
 , m_uiPortalCount(0)
+, m_pDLGLoadingState( NULL )
+//#ifdef MODIFY_PORTAL_GATE
+, m_pCX2GameLoadingTip( NULL )
 //#endif //MODIFY_PORTAL_GATE
 {
 	g_pTFieldGame			= this;
@@ -608,6 +608,8 @@ void CX2TFieldGame::OpenSubAni()
 		//m_iSubAniTime = 10;
 		//m_pSubAniMesh = g_pKTDXApp->GetDeviceManager()->OpenXSkinMesh( L"Besma_Peita_Dungeon_Gate_L.X" );
 		break;
+	default:
+		break;
 	}
 
 	if( m_pSubAniMesh != NULL )
@@ -642,6 +644,8 @@ void CX2TFieldGame::OpenSubAniSoundPlay()
 	case SEnum::VMI_ALTERA:
 		break;
 	case SEnum::VMI_PEITA:
+		break;
+	default:
 		break;
 	}
 }
@@ -2273,7 +2277,7 @@ bool CX2TFieldGame::Handler_EGS_SQUARE_LIST_REQ(int iPage)
 	return true;
 }
 
-bool CX2TFieldGame::Handler_EGS_SQUARE_LIST_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2TFieldGame::Handler_EGS_SQUARE_LIST_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_SQUARE_LIST_ACK kEvent;
@@ -3489,7 +3493,7 @@ bool CX2TFieldGame::Handler_EGS_JOIN_SQUARE_REQ( UidType iSquareUID )
 	return true;
 }
 
-bool CX2TFieldGame::Handler_EGS_JOIN_SQUARE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2TFieldGame::Handler_EGS_JOIN_SQUARE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_JOIN_SQUARE_ACK kEvent;
@@ -3592,7 +3596,7 @@ bool CX2TFieldGame::Handler_EGS_OPEN_PVP_ROOM_LIST_REQ()
 
 }
 
-bool CX2TFieldGame::Handler_EGS_OPEN_PVP_ROOM_LIST_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2TFieldGame::Handler_EGS_OPEN_PVP_ROOM_LIST_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_OPEN_PVP_ROOM_LIST_ACK kEvent;
@@ -3621,7 +3625,7 @@ bool CX2TFieldGame::Handler_EGS_OPEN_PVP_ROOM_LIST_ACK( HWND hWnd, UINT uMsg, WP
 }
 
 //{{ kimhc // 실시간 엘소드 중 실시간 레벨업, 실시간 내구도 감소
-bool CX2TFieldGame::Handler_EGS_CHAR_LEVEL_UP_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2TFieldGame::Handler_EGS_CHAR_LEVEL_UP_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHAR_LEVEL_UP_NOT kEvent;
@@ -3686,7 +3690,7 @@ bool CX2TFieldGame::Handler_EGS_CHECK_TIME_EVENT_COMPLETE_REQ()
 	return true;
 }
 
-bool	CX2TFieldGame::Handler_EGS_CHECK_TIME_EVENT_COMPLETE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool	CX2TFieldGame::Handler_EGS_CHECK_TIME_EVENT_COMPLETE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
     ASSERT( pBuff != NULL );
@@ -3790,6 +3794,8 @@ void CX2TFieldGame::LoadFieldImage(wstring &imgL, wstring &imgR)
 		case SEnum::VMI_BATTLE_FIELD_SANDER_REST_00:	/// 윈드스톤 유적지
 			imgL = L"HQ_Loading_SANDER_REST_01.tga";
 			imgR = L"HQ_Loading_SANDER_REST_02.tga";
+			break;
+		default:
 			break;
 		}
 	}
@@ -4420,7 +4426,7 @@ void CX2TFieldGame::SquareUI::UpdateSquareSlotList( KEGS_SQUARE_LIST_ACK& kEvent
 	}
 }
 
-bool CX2TFieldGame::SquareUI::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2TFieldGame::SquareUI::MsgProc( HWND /*hWnd*/, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/ )
 {
 	switch( uMsg )
 	{
@@ -4585,7 +4591,7 @@ CX2TFieldGame::NpcJoinShadow::~NpcJoinShadow()
 	g_pTFieldGame->GetUiParticle()->DestroyInstanceHandle( m_hNpcShadowBottom );
 }
 
-HRESULT CX2TFieldGame::NpcJoinShadow::OnFrameMove( double fTime, float fElapsedTime )
+HRESULT CX2TFieldGame::NpcJoinShadow::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	m_fTimer += fElapsedTime;
 
@@ -4842,7 +4848,7 @@ bool CX2TFieldGame::Handler_EGS_CREATE_TC_ROOM_REQ( int iTrainingID )
 
 
 
-bool CX2TFieldGame::Handler_EGS_CREATE_TC_ROOM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2TFieldGame::Handler_EGS_CREATE_TC_ROOM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
     ASSERT( pBuff != NULL );
@@ -5170,7 +5176,7 @@ void CX2TFieldGame::DisplayLevelUpEffect( UidType Uid )
 	}
 }
 //}} kimhc // 2010.7.14 // 실시간 엘소드 중 마을내에서 레벨업시 이펙트 효과함
-bool CX2TFieldGame::GetLinkVillageInfo(map<int, D3DXVECTOR3>& mapVillageInfo_)
+bool CX2TFieldGame::GetLinkVillageInfo(map<int, D3DXVECTOR3>& /*mapVillageInfo_*/)
 {
 	if( NULL != g_pData && NULL != g_pData->GetLocationManager() )
 	{
@@ -5201,7 +5207,7 @@ bool CX2TFieldGame::GetLinkVillageInfo(map<int, D3DXVECTOR3>& mapVillageInfo_)
 
 	return true;
 }
-bool CX2TFieldGame::GetLinkVillageList( vector<int>& vecVillageID_ )
+bool CX2TFieldGame::GetLinkVillageList( vector<int>& /*vecVillageID_*/ )
 {
 	if( NULL != g_pData && NULL != g_pData->GetLocationManager() )
 	{
@@ -5251,7 +5257,7 @@ bool CX2TFieldGame::Handler_EGS_READY_TO_SOSUN_EVENT_REQ()
 	return true;
 }
 
-bool CX2TFieldGame::Handler_EGS_READY_TO_SOSUN_EVENT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2TFieldGame::Handler_EGS_READY_TO_SOSUN_EVENT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_READY_TO_SOSUN_EVENT_ACK kEvent;
@@ -5292,7 +5298,7 @@ bool CX2TFieldGame::Handler_EGS_READY_TO_SOSUN_EVENT_ACK( HWND hWnd, UINT uMsg, 
 }
 
 
-bool CX2TFieldGame::Handler_EGS_EVENT_PROPOSE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2TFieldGame::Handler_EGS_EVENT_PROPOSE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = reinterpret_cast <KSerBuffer*> (lParam);
 	KEGS_EVENT_PROPOSE_NOT kEvent;
@@ -5353,7 +5359,7 @@ bool CX2TFieldGame::Send_EGS_EVENT_PROPOSE_AGREE_NOT( CX2RelationshipManager::PR
 	return true;
 }
 
-bool CX2TFieldGame::Handler_EGS_EVENT_PROPOSE_RESULT_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2TFieldGame::Handler_EGS_EVENT_PROPOSE_RESULT_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = reinterpret_cast <KSerBuffer*> (lParam);
 	KEGS_EVENT_PROPOSE_RESULT_NOT kEvent;
@@ -5426,6 +5432,8 @@ bool CX2TFieldGame::Handler_EGS_EVENT_PROPOSE_RESULT_NOT( HWND hWnd, UINT uMsg, 
 				g_pData->GetMyUser()->GetSelectUnit()->AccessUnitData().SetRelationTargetUserUID( 0 );
 				g_pData->GetMyUser()->GetSelectUnit()->AccessUnitData().SetRelationTargetUserNickname( L"" );
 			} break;
+		default:
+			break;
 		}
 	}
 
@@ -5435,7 +5443,7 @@ bool CX2TFieldGame::Handler_EGS_EVENT_PROPOSE_RESULT_NOT( HWND hWnd, UINT uMsg, 
 	return true;
 }
 
-bool CX2TFieldGame::Handler_EGS_EVENT_PROPOSE_RESULT_ACCEPTOR_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2TFieldGame::Handler_EGS_EVENT_PROPOSE_RESULT_ACCEPTOR_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = reinterpret_cast <KSerBuffer*> (lParam);
 	KEGS_EVENT_PROPOSE_RESULT_ACCEPTOR_NOT kEvent;

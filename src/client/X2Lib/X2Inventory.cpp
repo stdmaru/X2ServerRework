@@ -656,6 +656,8 @@ CX2Inventory::SORT_TYPE CX2Inventory::GetSortTypeByItemTemplet( const CX2ItemTem
 				sortType = ST_SPECIAL;
 			}
 			break;
+		default:
+			break;
 		}
 	}
 
@@ -758,6 +760,8 @@ wstring	CX2Inventory::GetInvenSortTypeName( SORT_TYPE sortType ) const
 		}
 		break;
 
+	default:
+		break;
 	};
 
 	return invenSortTypeName;
@@ -1171,7 +1175,7 @@ bool CX2Inventory::UpdateCategorySlotList( SORT_TYPE sortType, std::vector<UidTy
 }
 //}}
 
-bool CX2Inventory::IsNewItem( SORT_TYPE sortType, UidType iItemUID) const
+bool CX2Inventory::IsNewItem( SORT_TYPE /*sortType*/, UidType iItemUID) const
 {
 	if( true == m_SetNewItem.empty() )
 		return false;

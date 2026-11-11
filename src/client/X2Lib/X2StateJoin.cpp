@@ -85,7 +85,7 @@ bool CX2StateJoin::UIServerTimeOutProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 
 
 
-bool CX2StateJoin::ServerConnectReq( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateJoin::ServerConnectReq( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	CKTDGUIIMEEditBox*	pIDBox			= NULL;
 	CKTDGUIEditBox*		pPasswordBox	= NULL;
@@ -141,7 +141,7 @@ bool CX2StateJoin::ServerConnectReq( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
 	return true;
 }
 
-bool CX2StateJoin::ServerConnectAck( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateJoin::ServerConnectAck( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KPacketOK kEvent;
@@ -176,7 +176,7 @@ bool CX2StateJoin::ServerConnectTimeOutAck( HWND hWnd, UINT uMsg, WPARAM wParam,
 }
 */
 
-bool CX2StateJoin::NewUserJoinReq( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateJoin::NewUserJoinReq( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	KEGS_NEW_USER_JOIN_REQ	kEGS_NEW_USER_JOIN_REQ;
 	kEGS_NEW_USER_JOIN_REQ.m_wstrID			= m_UserID;
@@ -190,7 +190,7 @@ bool CX2StateJoin::NewUserJoinReq( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 	return true;
 }
 
-bool CX2StateJoin::NewUserJoinAck( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateJoin::NewUserJoinAck( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_NEW_USER_JOIN_ACK kEvent;

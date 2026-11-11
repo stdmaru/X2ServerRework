@@ -17,7 +17,7 @@ CX2PacketLog::~CX2PacketLog(void)
 
 //////////////////////////////////////////////////////////////////////////
 // CommonPacket
-void CX2PacketLog::PrintLog( KNetAddress* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KNetAddress* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -29,7 +29,7 @@ void CX2PacketLog::PrintLog( KNetAddress* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KItemInfo* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KItemInfo* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -46,7 +46,7 @@ void CX2PacketLog::PrintLog( KItemInfo* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KUnitInfo* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KUnitInfo* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -72,7 +72,7 @@ void CX2PacketLog::PrintLog( KUnitInfo* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KRoomInfo* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KRoomInfo* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -111,7 +111,7 @@ void CX2PacketLog::PrintLog( KRoomInfo* pPacket )
 }
 
 
-void CX2PacketLog::PrintLog( KRoomUserInfo* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KRoomUserInfo* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -122,7 +122,7 @@ void CX2PacketLog::PrintLog( KRoomUserInfo* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KRoomSlotInfo* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KRoomSlotInfo* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -149,7 +149,7 @@ void CX2PacketLog::PrintLog( KRoomSlotInfo* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KPacketOK* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KPacketOK* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -168,7 +168,7 @@ void CX2PacketLog::PrintLog( KPacketOK* pPacket )
 
 //////////////////////////////////////////////////////////////////////////
 // ClientPacket
-void CX2PacketLog::PrintLog( KEGS_CONNECT_REQ* pPacket )
+void CX2PacketLog::PrintLog( KEGS_CONNECT_REQ* /*pPacket*/ )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -176,13 +176,13 @@ void CX2PacketLog::PrintLog( KEGS_CONNECT_REQ* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_NEW_USER_JOIN_REQ* pPacket )
+void CX2PacketLog::PrintLog( KEGS_NEW_USER_JOIN_REQ* /*pPacket*/ )
 {
 	if( false == m_bEnable )
 		return;
 }
 
-void CX2PacketLog::PrintLog( KEGS_NEW_USER_JOIN_ACK* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_NEW_USER_JOIN_ACK* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -194,7 +194,7 @@ void CX2PacketLog::PrintLog( KEGS_NEW_USER_JOIN_ACK* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_VERIFY_ACCOUNT_REQ* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_VERIFY_ACCOUNT_REQ* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -206,7 +206,7 @@ void CX2PacketLog::PrintLog( KEGS_VERIFY_ACCOUNT_REQ* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_VERIFY_ACCOUNT_ACK* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_VERIFY_ACCOUNT_ACK* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -221,7 +221,7 @@ void CX2PacketLog::PrintLog( KEGS_VERIFY_ACCOUNT_ACK* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_MY_UNIT_AND_INVENTORY_INFO_LIST_ACK* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_MY_UNIT_AND_INVENTORY_INFO_LIST_ACK* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -239,7 +239,7 @@ void CX2PacketLog::PrintLog( KEGS_MY_UNIT_AND_INVENTORY_INFO_LIST_ACK* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_CREATE_UNIT_REQ* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_CREATE_UNIT_REQ* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -251,7 +251,7 @@ void CX2PacketLog::PrintLog( KEGS_CREATE_UNIT_REQ* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_CREATE_UNIT_ACK* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_CREATE_UNIT_ACK* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -264,7 +264,7 @@ void CX2PacketLog::PrintLog( KEGS_CREATE_UNIT_ACK* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_DELETE_UNIT_REQ* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_DELETE_UNIT_REQ* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -275,7 +275,7 @@ void CX2PacketLog::PrintLog( KEGS_DELETE_UNIT_REQ* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_DELETE_UNIT_ACK* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_DELETE_UNIT_ACK* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -286,7 +286,7 @@ void CX2PacketLog::PrintLog( KEGS_DELETE_UNIT_ACK* pPacket )
 		<< L" m_iUnitUID : " << pPacket->m_iUnitUID							<< dbg::endl;
 #endif
 }
-void CX2PacketLog::PrintLog( KEGS_SELECT_UNIT_REQ* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_SELECT_UNIT_REQ* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -296,7 +296,7 @@ void CX2PacketLog::PrintLog( KEGS_SELECT_UNIT_REQ* pPacket )
 		<< L" m_iUnitUID : " << pPacket->m_iUnitUID							<< dbg::endl;
 #endif
 }
-void CX2PacketLog::PrintLog( KEGS_SELECT_UNIT_ACK* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_SELECT_UNIT_ACK* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -306,7 +306,7 @@ void CX2PacketLog::PrintLog( KEGS_SELECT_UNIT_ACK* pPacket )
 		<< L" m_iOK : " << pPacket->m_iOK							<< dbg::endl;
 #endif
 }
-void CX2PacketLog::PrintLog( KEGS_STATE_CHANGE_SERVER_SELECT_ACK* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_STATE_CHANGE_SERVER_SELECT_ACK* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -317,7 +317,7 @@ void CX2PacketLog::PrintLog( KEGS_STATE_CHANGE_SERVER_SELECT_ACK* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KServerSetData* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KServerSetData* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -329,7 +329,7 @@ void CX2PacketLog::PrintLog( KServerSetData* pPacket )
 		<< L" userCountLevel : " << (int)pPacket->userCountLevel			<< dbg::endl;
 #endif
 }
-void CX2PacketLog::PrintLog( KEGS_GET_SERVER_SET_DATA_ACK* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_GET_SERVER_SET_DATA_ACK* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -346,7 +346,7 @@ void CX2PacketLog::PrintLog( KEGS_GET_SERVER_SET_DATA_ACK* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_SELECT_SERVER_SET_REQ* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_SELECT_SERVER_SET_REQ* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -357,7 +357,7 @@ void CX2PacketLog::PrintLog( KEGS_SELECT_SERVER_SET_REQ* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_SELECT_SERVER_SET_ACK* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_SELECT_SERVER_SET_ACK* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -377,7 +377,7 @@ void CX2PacketLog::PrintLog( KStateChangeReq* pPacket )
 	dbg::clog << L" KStateChangeReq : " << dbg::endl
 		<< L" m_nMapID : " << pPacket->m_nMapID				<< dbg::endl;
 }
-void CX2PacketLog::PrintLog( KStateChangeAck* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KStateChangeAck* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -398,7 +398,7 @@ void CX2PacketLog::PrintLog( KStateChangeAck* pPacket )
 //		<< L" m_nMapID : " << pPacket->m_nMapID				<< dbg::endl;
 //}
 
-void CX2PacketLog::PrintLog( KEGS_ROOM_LIST_REQ* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_ROOM_LIST_REQ* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -409,7 +409,7 @@ void CX2PacketLog::PrintLog( KEGS_ROOM_LIST_REQ* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_ROOM_LIST_ACK* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_ROOM_LIST_ACK* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -428,7 +428,7 @@ void CX2PacketLog::PrintLog( KEGS_ROOM_LIST_ACK* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_CREATE_ROOM_REQ* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_CREATE_ROOM_REQ* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -440,7 +440,7 @@ void CX2PacketLog::PrintLog( KEGS_CREATE_ROOM_REQ* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_CREATE_ROOM_ACK* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_CREATE_ROOM_ACK* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -459,7 +459,7 @@ void CX2PacketLog::PrintLog( KEGS_CREATE_ROOM_ACK* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_JOIN_ROOM_REQ* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_JOIN_ROOM_REQ* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -471,7 +471,7 @@ void CX2PacketLog::PrintLog( KEGS_JOIN_ROOM_REQ* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_JOIN_ROOM_ACK* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_JOIN_ROOM_ACK* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -490,7 +490,7 @@ void CX2PacketLog::PrintLog( KEGS_JOIN_ROOM_ACK* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_JOIN_ROOM_NOT* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_JOIN_ROOM_NOT* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -502,7 +502,7 @@ void CX2PacketLog::PrintLog( KEGS_JOIN_ROOM_NOT* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_LEAVE_ROOM_NOT* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_LEAVE_ROOM_NOT* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -520,7 +520,7 @@ void CX2PacketLog::PrintLog( KEGS_LEAVE_ROOM_NOT* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_LEAVE_GAME_NOT* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_LEAVE_GAME_NOT* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -538,7 +538,7 @@ void CX2PacketLog::PrintLog( KEGS_LEAVE_GAME_NOT* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_BAN_USER_REQ* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_BAN_USER_REQ* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -549,7 +549,7 @@ void CX2PacketLog::PrintLog( KEGS_BAN_USER_REQ* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_CHANGE_TEAM_REQ* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_CHANGE_TEAM_REQ* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -560,7 +560,7 @@ void CX2PacketLog::PrintLog( KEGS_CHANGE_TEAM_REQ* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_CHANGE_TEAM_ACK* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_CHANGE_TEAM_ACK* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -571,7 +571,7 @@ void CX2PacketLog::PrintLog( KEGS_CHANGE_TEAM_ACK* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_CHANGE_TEAM_NOT* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_CHANGE_TEAM_NOT* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -584,7 +584,7 @@ void CX2PacketLog::PrintLog( KEGS_CHANGE_TEAM_NOT* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_CHANGE_READY_REQ* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_CHANGE_READY_REQ* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -599,7 +599,7 @@ void CX2PacketLog::PrintLog( KEGS_CHANGE_READY_REQ* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_CHANGE_READY_ACK* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_CHANGE_READY_ACK* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -610,7 +610,7 @@ void CX2PacketLog::PrintLog( KEGS_CHANGE_READY_ACK* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_CHANGE_READY_NOT* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_CHANGE_READY_NOT* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -626,7 +626,7 @@ void CX2PacketLog::PrintLog( KEGS_CHANGE_READY_NOT* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_CHANGE_MAP_REQ* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_CHANGE_MAP_REQ* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -637,7 +637,7 @@ void CX2PacketLog::PrintLog( KEGS_CHANGE_MAP_REQ* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_CHANGE_MAP_ACK* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_CHANGE_MAP_ACK* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -648,7 +648,7 @@ void CX2PacketLog::PrintLog( KEGS_CHANGE_MAP_ACK* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_CHANGE_MAP_NOT* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_CHANGE_MAP_NOT* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -659,7 +659,7 @@ void CX2PacketLog::PrintLog( KEGS_CHANGE_MAP_NOT* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_CHANGE_SLOT_OPEN_REQ* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_CHANGE_SLOT_OPEN_REQ* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -671,7 +671,7 @@ void CX2PacketLog::PrintLog( KEGS_CHANGE_SLOT_OPEN_REQ* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_CHANGE_SLOT_OPEN_ACK* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_CHANGE_SLOT_OPEN_ACK* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -682,7 +682,7 @@ void CX2PacketLog::PrintLog( KEGS_CHANGE_SLOT_OPEN_ACK* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_CHANGE_SLOT_OPEN_NOT* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_CHANGE_SLOT_OPEN_NOT* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -694,7 +694,7 @@ void CX2PacketLog::PrintLog( KEGS_CHANGE_SLOT_OPEN_NOT* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_CHANGE_PLAY_TIME_LIMIT_REQ* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_CHANGE_PLAY_TIME_LIMIT_REQ* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -706,7 +706,7 @@ void CX2PacketLog::PrintLog( KEGS_CHANGE_PLAY_TIME_LIMIT_REQ* pPacket )
 }
 
 
-void CX2PacketLog::PrintLog( KEGS_CHANGE_PLAY_TIME_LIMIT_NOT* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_CHANGE_PLAY_TIME_LIMIT_NOT* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -717,7 +717,7 @@ void CX2PacketLog::PrintLog( KEGS_CHANGE_PLAY_TIME_LIMIT_NOT* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_CHANGE_WINNING_NUM_KILL_REQ* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_CHANGE_WINNING_NUM_KILL_REQ* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -730,7 +730,7 @@ void CX2PacketLog::PrintLog( KEGS_CHANGE_WINNING_NUM_KILL_REQ* pPacket )
 
 
 
-void CX2PacketLog::PrintLog( KEGS_CHANGE_WINNING_NUM_KILL_NOT* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_CHANGE_WINNING_NUM_KILL_NOT* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -742,7 +742,7 @@ void CX2PacketLog::PrintLog( KEGS_CHANGE_WINNING_NUM_KILL_NOT* pPacket )
 }
 
 
-void CX2PacketLog::PrintLog( KEGS_CHAT_REQ* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_CHAT_REQ* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -762,7 +762,7 @@ void CX2PacketLog::PrintLog( KEGS_CHAT_REQ* pPacket )
 //		<< L" m_iOK : " << pPacket->m_iOK								<< dbg::endl;
 //}
 
-void CX2PacketLog::PrintLog( KEGS_CHAT_NOT* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_CHAT_NOT* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -774,7 +774,7 @@ void CX2PacketLog::PrintLog( KEGS_CHAT_NOT* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_STATE_CHANGE_GAME_START_NOT* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_STATE_CHANGE_GAME_START_NOT* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -791,7 +791,7 @@ void CX2PacketLog::PrintLog( KEGS_STATE_CHANGE_GAME_START_NOT* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_STATE_CHANGE_GAME_INTRUDE_NOT* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_STATE_CHANGE_GAME_INTRUDE_NOT* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -804,7 +804,7 @@ void CX2PacketLog::PrintLog( KEGS_STATE_CHANGE_GAME_INTRUDE_NOT* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_GAME_LOADING_REQ* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_GAME_LOADING_REQ* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -815,7 +815,7 @@ void CX2PacketLog::PrintLog( KEGS_GAME_LOADING_REQ* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_GAME_LOADING_NOT* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_GAME_LOADING_NOT* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -827,7 +827,7 @@ void CX2PacketLog::PrintLog( KEGS_GAME_LOADING_NOT* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_PLAY_START_NOT* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_PLAY_START_NOT* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -844,7 +844,7 @@ void CX2PacketLog::PrintLog( KEGS_PLAY_START_NOT* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_INTRUDE_START_REQ* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_INTRUDE_START_REQ* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -855,7 +855,7 @@ void CX2PacketLog::PrintLog( KEGS_INTRUDE_START_REQ* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_INTRUDE_START_ACK* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_INTRUDE_START_ACK* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -865,7 +865,7 @@ void CX2PacketLog::PrintLog( KEGS_INTRUDE_START_ACK* pPacket )
 		<< L" m_iOK : " << pPacket->m_iOK								<< dbg::endl;
 #endif
 }
-void CX2PacketLog::PrintLog( KEGS_INTRUDE_START_NOT* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_INTRUDE_START_NOT* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -879,7 +879,7 @@ void CX2PacketLog::PrintLog( KEGS_INTRUDE_START_NOT* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_CURRENT_KILL_SCORE_NOT* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_CURRENT_KILL_SCORE_NOT* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -899,7 +899,7 @@ void CX2PacketLog::PrintLog( KEGS_CURRENT_KILL_SCORE_NOT* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_MY_USER_UNIT_INFO_TO_SERVER_REQ* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_MY_USER_UNIT_INFO_TO_SERVER_REQ* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -912,7 +912,7 @@ void CX2PacketLog::PrintLog( KEGS_MY_USER_UNIT_INFO_TO_SERVER_REQ* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_USER_UNIT_RE_BIRTH_POS_REQ* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_USER_UNIT_RE_BIRTH_POS_REQ* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -923,7 +923,7 @@ void CX2PacketLog::PrintLog( KEGS_USER_UNIT_RE_BIRTH_POS_REQ* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_USER_UNIT_RE_BIRTH_NOT* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_USER_UNIT_RE_BIRTH_NOT* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -956,7 +956,7 @@ void CX2PacketLog::PrintLog( KEGS_USER_UNIT_RE_BIRTH_NOT* pPacket )
 //}
 
 
-void CX2PacketLog::PrintLog( KEGS_USER_UNIT_DIE_REQ* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_USER_UNIT_DIE_REQ* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -968,7 +968,7 @@ void CX2PacketLog::PrintLog( KEGS_USER_UNIT_DIE_REQ* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_USER_UNIT_DIE_ACK* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_USER_UNIT_DIE_ACK* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -980,7 +980,7 @@ void CX2PacketLog::PrintLog( KEGS_USER_UNIT_DIE_ACK* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_USER_UNIT_DIE_NOT* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_USER_UNIT_DIE_NOT* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -993,7 +993,7 @@ void CX2PacketLog::PrintLog( KEGS_USER_UNIT_DIE_NOT* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( VECTOR3* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] VECTOR3* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -1006,7 +1006,7 @@ void CX2PacketLog::PrintLog( VECTOR3* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KNPCUnitReq* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KNPCUnitReq* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -1027,7 +1027,7 @@ void CX2PacketLog::PrintLog( KNPCUnitReq* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_NPC_UNIT_CREATE_REQ* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_NPC_UNIT_CREATE_REQ* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -1043,7 +1043,7 @@ void CX2PacketLog::PrintLog( KEGS_NPC_UNIT_CREATE_REQ* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KNPCUnitNot* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KNPCUnitNot* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -1053,7 +1053,7 @@ void CX2PacketLog::PrintLog( KNPCUnitNot* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_NPC_UNIT_CREATE_NOT* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_NPC_UNIT_CREATE_NOT* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -1069,7 +1069,7 @@ void CX2PacketLog::PrintLog( KEGS_NPC_UNIT_CREATE_NOT* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_NPC_UNIT_DIE_REQ* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_NPC_UNIT_DIE_REQ* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -1082,7 +1082,7 @@ void CX2PacketLog::PrintLog( KEGS_NPC_UNIT_DIE_REQ* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_NPC_UNIT_DIE_NOT* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_NPC_UNIT_DIE_NOT* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -1095,7 +1095,7 @@ void CX2PacketLog::PrintLog( KEGS_NPC_UNIT_DIE_NOT* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_DUNGEON_STAGE_LOAD_REQ* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_DUNGEON_STAGE_LOAD_REQ* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -1107,7 +1107,7 @@ void CX2PacketLog::PrintLog( KEGS_DUNGEON_STAGE_LOAD_REQ* pPacket )
 }
 
 
-void CX2PacketLog::PrintLog( KEGS_DUNGEON_STAGE_LOAD_NOT* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_DUNGEON_STAGE_LOAD_NOT* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -1118,7 +1118,7 @@ void CX2PacketLog::PrintLog( KEGS_DUNGEON_STAGE_LOAD_NOT* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_DUNGEON_STAGE_LOAD_COMPLETE_NOT* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_DUNGEON_STAGE_LOAD_COMPLETE_NOT* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -1129,7 +1129,7 @@ void CX2PacketLog::PrintLog( KEGS_DUNGEON_STAGE_LOAD_COMPLETE_NOT* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_DUNGEON_STAGE_START_NOT* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_DUNGEON_STAGE_START_NOT* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -1140,7 +1140,7 @@ void CX2PacketLog::PrintLog( KEGS_DUNGEON_STAGE_START_NOT* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_DUNGEON_SUB_STAGE_OPEN_REQ* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_DUNGEON_SUB_STAGE_OPEN_REQ* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -1157,7 +1157,7 @@ void CX2PacketLog::PrintLog( KEGS_DUNGEON_SUB_STAGE_OPEN_REQ* pPacket )
 //		<< L" m_iOK : " << pPacket->m_iOK							<< dbg::endl;
 //}
 
-void CX2PacketLog::PrintLog( KEGS_DUNGEON_SUB_STAGE_OPEN_NOT* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_DUNGEON_SUB_STAGE_OPEN_NOT* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -1168,7 +1168,7 @@ void CX2PacketLog::PrintLog( KEGS_DUNGEON_SUB_STAGE_OPEN_NOT* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_DUNGEON_SUB_STAGE_GO_NEXT_REQ* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_DUNGEON_SUB_STAGE_GO_NEXT_REQ* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -1186,7 +1186,7 @@ void CX2PacketLog::PrintLog( KEGS_DUNGEON_SUB_STAGE_GO_NEXT_REQ* pPacket )
 //		<< L" m_iOK : " << pPacket->m_iOK							<< dbg::endl;
 //}
 
-void CX2PacketLog::PrintLog( KEGS_DUNGEON_SUB_STAGE_GO_NEXT_ALL_NOT* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_DUNGEON_SUB_STAGE_GO_NEXT_ALL_NOT* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -1198,7 +1198,7 @@ void CX2PacketLog::PrintLog( KEGS_DUNGEON_SUB_STAGE_GO_NEXT_ALL_NOT* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_DUNGEON_SUB_STAGE_LOAD_COMPLETE_REQ* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_DUNGEON_SUB_STAGE_LOAD_COMPLETE_REQ* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -1215,7 +1215,7 @@ void CX2PacketLog::PrintLog( KEGS_DUNGEON_SUB_STAGE_LOAD_COMPLETE_REQ* pPacket )
 //		<< L" m_iOK	: " << pPacket->m_iOK						<< dbg::endl;
 //}
 
-void CX2PacketLog::PrintLog( KEGS_DUNGEON_SUB_STAGE_START_NOT* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_DUNGEON_SUB_STAGE_START_NOT* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -1226,7 +1226,7 @@ void CX2PacketLog::PrintLog( KEGS_DUNGEON_SUB_STAGE_START_NOT* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KDungeonNextStageData* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KDungeonNextStageData* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -1238,7 +1238,7 @@ void CX2PacketLog::PrintLog( KDungeonNextStageData* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_END_GAME_REQ* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_END_GAME_REQ* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -1249,7 +1249,7 @@ void CX2PacketLog::PrintLog( KEGS_END_GAME_REQ* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_END_GAME_NOT* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_END_GAME_NOT* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -1267,7 +1267,7 @@ void CX2PacketLog::PrintLog( KEGS_END_GAME_NOT* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_STATE_CHANGE_RESULT_REQ* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_STATE_CHANGE_RESULT_REQ* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -1278,7 +1278,7 @@ void CX2PacketLog::PrintLog( KEGS_STATE_CHANGE_RESULT_REQ* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_STATE_CHANGE_RESULT_ACK* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_STATE_CHANGE_RESULT_ACK* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -1289,7 +1289,7 @@ void CX2PacketLog::PrintLog( KEGS_STATE_CHANGE_RESULT_ACK* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( KEGS_STATE_CHANGE_RESULT_NOT* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] KEGS_STATE_CHANGE_RESULT_NOT* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -1306,7 +1306,7 @@ void CX2PacketLog::PrintLog( KEGS_STATE_CHANGE_RESULT_NOT* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( int* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] int* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )
@@ -1317,7 +1317,7 @@ void CX2PacketLog::PrintLog( int* pPacket )
 #endif
 }
 
-void CX2PacketLog::PrintLog( float* pPacket )
+void CX2PacketLog::PrintLog( [[maybe_unused]] float* pPacket )
 {
 #if X2_DEV_TOOLS
 	if( false == m_bEnable )

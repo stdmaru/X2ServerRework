@@ -8,54 +8,54 @@ CX2UIQuestNew::CX2UIQuestNew( CKTDXStage* pNowStage, const WCHAR* pFileName )
 m_iQuestPerPage(0),
 
 m_bShow(false),
-m_MovedPosition(0,0),						// D3DXVECTOR2
-m_DLGPosition(0,0),							// D3DXVECTOR2
-m_DLGSize(0,0),								// D3DXVECTOR2
+m_bShowClearDLG(false),						// D3DXVECTOR2
+m_MovedPosition(0,0),							// D3DXVECTOR2
+m_DLGPosition(0,0),								// D3DXVECTOR2
+m_DLGSize(0,0),
 m_pDLGUIQuestReceive(NULL),
 m_pDLGUIQuestClear(NULL),
 m_pDLGQuestRewardItemInfo(NULL),
 m_pDLGMsgBox(NULL),
 m_eNPCID(CX2UnitManager::NUI_NONE),
-m_bShowQuickQuestDLG(false),
-m_bShowClearDLG(false),
-m_bUserShowQuickQuestDLG(false),
+m_iPickedQuestID(0),
+m_bAdminQuestComplete(false),
 
-m_iTopQuestSlotIndex(0),
+m_bLastRewardWasSelection(false),
+m_SumDelta(0),
+m_iQuestDescIndex(0),
+m_iQuestDescLinePerPage(1),
+m_vQuestDescSize(0,0),
+m_byNumOfItemThatICanGet( 0 ),
+m_eNowQuestUIMode(QUM_EPIC_QUEST),
 m_bIsOpenAvailCategory(true),
 m_bIsOpenOngoingCategory(true),
 m_bIsOpenEventCategory(true),
 m_iOpenEpicCategory(-1),
-m_eNowQuestUIMode(QUM_EPIC_QUEST),
-m_iSelectedQuestID(0),
-m_iSelectedQuestSlotIndex(-1),
-m_eLastQuestUIMode(QUM_QUEST),
+
+
 m_bIsTalkingQuestNPC(false),
 m_bAvailableQuestNPCHas(false),
-
-
 m_bCompleteQuestInEpicTab(false),
 m_bCompleteQuestInNormalTab(false),
+
 m_bOngoingQuestInEpicTab(false),
 m_bOngoingQuestInNormalTab(false),
-
-m_iCompleteEpicCategory(-1),
-m_iOngoingEpicCategory(-1),
 
 // m_vecPrevNotAssignedQuestID.clear();
 // m_vecNotAssignedQuestID.clear();
 // m_vecAvailableQuestID.clear();
 // m_vQuestList.clear();
-m_iPickedQuestID(0),
+m_iCompleteEpicCategory(-1),
 //m_mapNewQuest.clear();
-m_bAdminQuestComplete(false),
-m_bLastRewardWasSelection(false),
-m_SumDelta(0),
+m_iOngoingEpicCategory(-1),
+m_iTopQuestSlotIndex(0),
+m_eLastQuestUIMode(QUM_QUEST),
 //m_vecQuestDesc,
-m_iQuestDescIndex(0),
-m_iQuestDescLinePerPage(1),
-m_vQuestDescSize(0,0),
-m_byNumOfItemThatICanGet( 0 )	// kimhc // 2009-12-18 // 가질수 있는 선택 보상 아이템 갯수
-, m_iShowQuickQuest(0) // 오현빈 // 2012-05-14 // 보여지는 퀵퀘스트 갯수
+m_iSelectedQuestID(0),
+m_iSelectedQuestSlotIndex(-1),
+m_iShowQuickQuest(0),
+m_bShowQuickQuestDLG(false)	// kimhc // 2009-12-18 // 가질수 있는 선택 보상 아이템 갯수
+, m_bUserShowQuickQuestDLG(false) // 오현빈 // 2012-05-14 // 보여지는 퀵퀘스트 갯수
 , m_hQuestCompleteParticle(INVALID_PARTICLE_SEQUENCE_HANDLE)
 {
 	m_vecPrevNotAssignedQuestID.clear();		// 새로 갱신된 퀘스트 리스트가 있는지 확인하기 위해서
@@ -413,7 +413,7 @@ bool CX2UIQuestNew::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam 
 }
 
 
-bool CX2UIQuestNew::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIQuestNew::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM lParam )
 {
 	switch(wParam)
 	{
@@ -444,6 +444,8 @@ bool CX2UIQuestNew::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 						static_cast<CX2BattleFieldGame*>(g_pX2Game)->GetNpcIndicator()->SetShow(m_bUserShowQuickQuestDLG);
 					}
 				} break;
+			default:
+				break;
 			}
 		}
 		return true;
@@ -1085,7 +1087,7 @@ bool CX2UIQuestNew::UIServerEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 	return false;
 }
 
-bool CX2UIQuestNew::OnMouseWheel( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIQuestNew::OnMouseWheel( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/ )
 {
 	D3DXVECTOR2 mousePos;
 
@@ -1135,7 +1137,7 @@ bool CX2UIQuestNew::Handler_EGS_TALK_WITH_NPC_REQ( CX2UnitManager::NPC_UNIT_ID q
 
 
 
-bool CX2UIQuestNew::Handler_EGS_TALK_WITH_NPC_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIQuestNew::Handler_EGS_TALK_WITH_NPC_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_TALK_WITH_NPC_ACK kEvent;
@@ -1192,7 +1194,7 @@ bool CX2UIQuestNew::Handler_EGS_QUEST_COMPLETE_REQ( CX2UnitManager::NPC_UNIT_ID 
 
 //{{ kimhc // 2010.4.5 // 비밀던전 작업(일일퀘스트 시스템)
 
-bool CX2UIQuestNew::Handler_EGS_QUEST_COMPLETE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIQuestNew::Handler_EGS_QUEST_COMPLETE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_QUEST_COMPLETE_ACK kEvent;
@@ -1322,7 +1324,7 @@ bool CX2UIQuestNew::Handler_EGS_GATHER_GIVE_UP_QUEST_REQ( std::vector< int >& ve
 	return true;
 }
 
-bool CX2UIQuestNew::Handler_EGS_GIVE_UP_QUEST_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIQuestNew::Handler_EGS_GIVE_UP_QUEST_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_GIVE_UP_QUEST_ACK kEvent;
@@ -1380,6 +1382,8 @@ bool CX2UIQuestNew::Handler_EGS_GIVE_UP_QUEST_ACK( HWND hWnd, UINT uMsg, WPARAM 
 						static_cast<CX2BattleFieldGame*>(g_pX2Game)->GetNpcIndicator()->ResetGuideTargetInfo();
 					}
 				} break;
+			default:
+				break;
 			}
 
 			UpdateQuickQuestDLG();
@@ -1419,7 +1423,7 @@ bool CX2UIQuestNew::Handler_EGS_NEW_QUEST_REQ( int iQuestID )
 }
 
 
-bool CX2UIQuestNew::Handler_EGS_NEW_QUEST_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIQuestNew::Handler_EGS_NEW_QUEST_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_NEW_QUEST_ACK kEvent;
@@ -1450,7 +1454,7 @@ bool CX2UIQuestNew::Handler_EGS_NEW_QUEST_ACK( HWND hWnd, UINT uMsg, WPARAM wPar
 	return false;
 }
 
-bool CX2UIQuestNew::Handler_EGS_NEW_QUEST_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIQuestNew::Handler_EGS_NEW_QUEST_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_NEW_QUEST_NOT kEvent;
@@ -1526,6 +1530,8 @@ bool CX2UIQuestNew::Handler_EGS_NEW_QUEST_NOT( HWND hWnd, UINT uMsg, WPARAM wPar
 				static_cast<CX2BattleFieldGame*>(g_pX2Game)->GetNpcIndicator()->ResetGuideTargetInfo();
 			}
 		} break;
+	default:
+		break;
 	}
 
 	//npc대화 퀘스트라면 다시한번 npc talk msg를 보낸다.
@@ -1591,7 +1597,7 @@ bool CX2UIQuestNew::Handler_EGS_ALL_COMPLETED_QUEST_COMPLETE_REQ( const KEGS_ALL
 
 	return true;
 }
-bool CX2UIQuestNew::Handler_EGS_ALL_COMPLETED_QUEST_COMPLETE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIQuestNew::Handler_EGS_ALL_COMPLETED_QUEST_COMPLETE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_ALL_COMPLETED_QUEST_COMPLETE_ACK kEvent;
@@ -1734,7 +1740,7 @@ void CX2UIQuestNew::SelectQuest( int SelectedQuestID )
 
 
 
-std::wstring CX2UIQuestNew::GetSlotItemDescExtra_RBtn( int itemTID, CX2Item* pItem )
+std::wstring CX2UIQuestNew::GetSlotItemDescExtra_RBtn( int /*itemTID*/, CX2Item* /*pItem*/ )
 {
 	std::wstring slotItemDesc = L"";
 	return slotItemDesc;
@@ -1998,7 +2004,7 @@ void CX2UIQuestNew::CloseQuestRewardWindow()
 
 }
 
-void CX2UIQuestNew::OpenRewardItemInfoPopup( bool bOpen, D3DXVECTOR2 vPos, int iItemID, int socketID , int Period )
+void CX2UIQuestNew::OpenRewardItemInfoPopup( bool bOpen, D3DXVECTOR2 /*vPos*/, int iItemID, int socketID , int Period )
 {
 	//{{ 허상형 : [2009/9/29] //	퀘스트 종료 후에도 툴팁이 남아있는 버그 수정을 위한 조건식 추가
 	if( m_pDLGUIQuestClear == NULL && true == bOpen )
@@ -3098,6 +3104,8 @@ wstring CX2UIQuestNew::GetLocalMapQuestDesc( std::vector<QuestInfo>& vecQuestInf
 				//wstrQuestType = L"+경쟁";
 				wstrQuestType = GET_STRING(STR_ID_9632);
 				break;
+			default:
+				break;
 			}
 			wstrm << L"#CFFFFFF" << wstrQuestType << L"#CX\n";
 		}
@@ -3782,6 +3790,8 @@ void CX2UIQuestNew::UpdateQuestButton()
 			}
 		}
 		break;
+	default:
+		break;
 	}
 	return;
 }
@@ -4205,7 +4215,7 @@ int CX2UIQuestNew::GetQuestPictureNumber(QUEST_STATE_SORT _eQuestStateSort)
 	return iRet;
 }
 
-void CX2UIQuestNew::SetUIQuestSlotInfoToEpicCategory( UINT iQuestSlotInfoIndex,  QuestInfo& QuestInfo )
+void CX2UIQuestNew::SetUIQuestSlotInfoToEpicCategory( UINT /*iQuestSlotInfoIndex*/,  QuestInfo& /*QuestInfo*/ )
 {
 
 	return;
@@ -5503,7 +5513,7 @@ void CX2UIQuestNew::ExpandAllUIQuickQuestWithExpandInfo()
 	return;
 }
 
-void CX2UIQuestNew::UpdateQuickQuestDLG(bool bResetExpand /*= false*/, bool bUpdateOngoingQuest /*= true*/)
+void CX2UIQuestNew::UpdateQuickQuestDLG(bool /*bResetExpand*/ /*= false*/, bool bUpdateOngoingQuest /*= true*/)
 {
 	if( true == GetShowQuickQuestDLG() )
 	{
@@ -5876,6 +5886,8 @@ void CX2UIQuestNew::SetNoviceGuideStep()
 					}
 
 				} break;
+			default:
+				break;
 			}
 		}
 	}

@@ -5,13 +5,13 @@ CX2AllyNPCAI::CX2AllyNPCAI( CX2GUNPC* pMasterNPC ) :
 CX2NPCAI( pMasterNPC, CX2NPCAI::NAT_ALLY ),
 m_AllyUnitUID( -1 ),
 m_eAllyUnitType( CX2GameUnit::GUT_USER ),
-m_iFinalDestLineIndex( -1 ),
-m_vFinalDest( 0, 0, 0 )
-, m_fMaxJumpRight( 0.f )
-, m_fMaxJumpUp( 0.f )
-, m_ChaseMoveData( ChaseMoveData() )
+m_TargetData( TargetData() ),
+m_ChaseMoveData( ChaseMoveData() )
 , m_RandomJumpData( RandomJumpData() )
-, m_TargetData( TargetData() )
+, m_iFinalDestLineIndex( -1 )
+, m_vFinalDest( 0, 0, 0 )
+, m_fMaxJumpUp( 0.f )
+, m_fMaxJumpRight( 0.f )
 ,m_bEnableLuaTargetingFunc(false)
 ,m_strLuaTargetingFunc("")
 {
@@ -21,7 +21,7 @@ CX2AllyNPCAI::~CX2AllyNPCAI(void)
 {
 }
 
-void CX2AllyNPCAI::OnFrameMove( double fTime, float fElapsedTime )
+void CX2AllyNPCAI::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	KTDXPROFILE();
 
@@ -214,7 +214,7 @@ bool CX2AllyNPCAI::RallyToAlly()
 
 
 // 타게팅된 유닛의 UID를 결정한다.
-void CX2AllyNPCAI::Targeting( float fElapsedTime )
+void CX2AllyNPCAI::Targeting( float /*fElapsedTime*/ )
 {
 	KTDXPROFILE();
 
@@ -318,8 +318,12 @@ void CX2AllyNPCAI::Targeting( float fElapsedTime )
 					{
 						continue;
 					} break;
+				default:
+					break;
 				}
 			} break;
+		default:
+			break;
 		}
 
 		const float fDistance3Sq = GetDistance3Sq( pGameUnit->GetPos(), m_pMasterNPC->GetPos() );
@@ -623,6 +627,8 @@ void CX2AllyNPCAI::Moving( float fElapsedTime )
 
 			message	= CX2GUNPC::SCT_AI_JUMP_DIR;
 		} break;
+	default:
+		break;
 	} // end of switch
 
 
@@ -660,8 +666,12 @@ void CX2AllyNPCAI::Moving( float fElapsedTime )
 						message = m_PrevAIMessage;
 					}
 				} break;
+			default:
+				break;
 			}
 		} break;
+	default:
+		break;
 	}
 
 

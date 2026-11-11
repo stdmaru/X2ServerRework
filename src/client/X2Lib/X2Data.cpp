@@ -802,15 +802,15 @@ static const CharacterImageName s_CharacterImageUnitSlot[] =
 
 CX2Data::CX2Data(void)
 //{{ kimhc // 2009-12-15 // ������ �÷��� �ߴ� ������ ����
-: m_wstrServerGroupFileName( L"SelectedServerGroup.lua" )
+: m_pBattleFieldRoom( NULL )
 //}} kimhc // 2009-12-15 // ������ �÷��� �ߴ� ������ ����
 //{{ ����� : [2011/3/14/] //	���� �̼�
-, m_pWorldMissionManager( NULL )
-//}} ����� : [2011/3/14/] //	���� �̼�
-, m_BattleFieldManager()
-, m_pBattleFieldRoom( NULL )
 , m_UIEffectSet( 0 )
+//}} ����� : [2011/3/14/] //	���� �̼�
 , m_GameEffectSet( 1 )
+, m_BattleFieldManager()
+, m_wstrServerGroupFileName( L"SelectedServerGroup.lua" )
+, m_pWorldMissionManager( NULL )
 , m_pGlobalMissionManager( NULL )
 {
 
@@ -2041,6 +2041,8 @@ wstring CX2Data::GetComboString( CX2DungeonRoom::RANK_TYPE rankType )
 		comboString = L"SS";
 		break;
 		//}} kimhc // 2011-02-22 // ������ũ SS ��� �߰�
+	default:
+		break;
 	}
 
 	return comboString;
@@ -2292,6 +2294,8 @@ void CX2Data::SetServerCurrentTime( wstring wstrTime )
 		} break;
 // #endif // REFORM_ENTRY_POINT	// 13-11-11, ���� ���� ����, kimjh
 
+	default:
+		break;
 	}
 
 	return false;

@@ -10,10 +10,10 @@ m_pDLGPartyQuickJoin(NULL)
 , m_bProcessPvpMatch(false)
 , m_iMatchUID(0)
 , m_pDlgPvpPartyMsg(NULL)
-, m_bChangeMap(false)
-, m_bStartGame(false)
 , m_bProcessDungeonMatch(false)
 , m_iCurrentDungeonIDWithDifficulty(0)
+, m_bChangeMap(false)
+, m_bStartGame(false)
 {
 }
 
@@ -319,7 +319,7 @@ CX2PartyManager::~CX2PartyManager(void)
 	return false;
 }
 
-bool CX2PartyManager::Handler_EGS_CLOSE_PARTY_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PartyManager::Handler_EGS_CLOSE_PARTY_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*) lParam;
 	KEGS_CLOSE_PARTY_NOT kEvent;
@@ -383,7 +383,7 @@ bool CX2PartyManager::Handler_EGS_CLOSE_PARTY_NOT( HWND hWnd, UINT uMsg, WPARAM 
 	return true;
 }
 
-bool CX2PartyManager::Handler_EGS_JOIN_PARTY_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PartyManager::Handler_EGS_JOIN_PARTY_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_JOIN_PARTY_NOT kEvent;
@@ -531,7 +531,7 @@ bool CX2PartyManager::Handler_EGS_LEAVE_PARTY_REQ( int iReason )
 	return true;
 }
 
-bool CX2PartyManager::Handler_EGS_LEAVE_PARTY_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PartyManager::Handler_EGS_LEAVE_PARTY_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_LEAVE_PARTY_ACK kEvent;
@@ -582,7 +582,7 @@ bool CX2PartyManager::Handler_EGS_LEAVE_PARTY_ACK( HWND hWnd, UINT uMsg, WPARAM 
 	return true;
 }
 
-bool CX2PartyManager::Handler_EGS_LEAVE_PARTY_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PartyManager::Handler_EGS_LEAVE_PARTY_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_LEAVE_PARTY_NOT kEvent;
@@ -806,7 +806,7 @@ bool CX2PartyManager::Handler_EGS_INVITE_PARTY_REQ( const wstring& wstrInviteNam
 	return true;
 }
 
-bool CX2PartyManager::Handler_EGS_INVITE_PARTY_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PartyManager::Handler_EGS_INVITE_PARTY_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*) lParam;
 	KEGS_INVITE_PARTY_ACK kEvent;
@@ -841,7 +841,7 @@ bool CX2PartyManager::Handler_EGS_INVITE_PARTY_ACK( HWND hWnd, UINT uMsg, WPARAM
 	return true;
 }
 
-bool CX2PartyManager::Handler_EGS_INVITE_PARTY_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PartyManager::Handler_EGS_INVITE_PARTY_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_INVITE_PARTY_NOT kEvent;
@@ -920,7 +920,7 @@ bool CX2PartyManager::Send_EGS_INVITE_PARTY_REPLY_NOT( char Reason, UidType part
 }
 //}} 김상훈 : 2010. 10. 04 파티 초대 관련 UI 개선
 
-bool CX2PartyManager::Handler_EGS_INVITE_PARTY_DENY_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PartyManager::Handler_EGS_INVITE_PARTY_DENY_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_INVITE_PARTY_DENY_NOT kEvent;
@@ -972,7 +972,7 @@ bool CX2PartyManager::Handler_EGS_PARTY_CHANGE_DUNGEON_REQ( int iDungeonID, int 
 }
 
 
-bool CX2PartyManager::Handler_EGS_PARTY_CHANGE_DUNGEON_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PartyManager::Handler_EGS_PARTY_CHANGE_DUNGEON_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_PARTY_CHANGE_DUNGEON_ACK kEvent;
@@ -989,7 +989,7 @@ bool CX2PartyManager::Handler_EGS_PARTY_CHANGE_DUNGEON_ACK( HWND hWnd, UINT uMsg
 	return true;
 }
 
-bool CX2PartyManager::Handler_EGS_PARTY_CHANGE_DUNGEON_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PartyManager::Handler_EGS_PARTY_CHANGE_DUNGEON_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 
 	if( m_bStartGame == true )
@@ -1018,7 +1018,7 @@ bool CX2PartyManager::Handler_EGS_PARTY_CHANGE_DUNGEON_NOT( HWND hWnd, UINT uMsg
 	return true;
 }
 
-bool CX2PartyManager::Handler_EGS_UPDATE_PARTY_USER_INFO_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PartyManager::Handler_EGS_UPDATE_PARTY_USER_INFO_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_UPDATE_PARTY_USER_INFO_NOT kEvent;
@@ -1075,7 +1075,7 @@ void CX2PartyManager::Handler_EGS_QUICK_START_DUNGEON_GAME_REQ( const CX2PartyMa
 	//}} kimhc // 2010.3.26 // 무한 스킬 버그 수정
 }
 
-bool CX2PartyManager::Handler_EGS_QUICK_START_DUNGEON_GAME_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PartyManager::Handler_EGS_QUICK_START_DUNGEON_GAME_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*) lParam;
 	KEGS_QUICK_START_DUNGEON_GAME_ACK kEvent;
@@ -1160,7 +1160,7 @@ bool CX2PartyManager::Handler_EGS_PARTY_GAME_START_REQ()
 }
 
 
-bool CX2PartyManager::Handler_EGS_PARTY_GAME_START_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PartyManager::Handler_EGS_PARTY_GAME_START_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*) lParam;
 	KEGS_PARTY_GAME_START_ACK kEvent;
@@ -1192,7 +1192,7 @@ bool CX2PartyManager::Handler_EGS_PARTY_GAME_START_ACK( HWND hWnd, UINT uMsg, WP
 }
 
 
-bool CX2PartyManager::Handler_EGS_PARTY_GAME_START_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PartyManager::Handler_EGS_PARTY_GAME_START_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_PARTY_GAME_START_NOT kEvent;
@@ -1248,7 +1248,7 @@ bool CX2PartyManager::Handler_EGS_PARTY_GAME_START_NOT( HWND hWnd, UINT uMsg, WP
 	@param		: Event Message
 	@return		: 처리 여부
 */
-bool CX2PartyManager::Handler_EGS_DEFENCE_DUNGEON_GAME_START_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PartyManager::Handler_EGS_DEFENCE_DUNGEON_GAME_START_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_PARTY_GAME_START_NOT kEvent;
@@ -1324,7 +1324,7 @@ bool CX2PartyManager::Handler_EGS_PARTY_CHANGE_CHECK_MIN_LEVEL_REQ( bool bLimit 
 	return true;
 }
 
-bool CX2PartyManager::Handler_EGS_PARTY_CHANGE_CHECK_MIN_LEVEL_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PartyManager::Handler_EGS_PARTY_CHANGE_CHECK_MIN_LEVEL_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*) lParam;
 	KEGS_PARTY_CHANGE_CHECK_MIN_LEVEL_ACK kEvent;
@@ -1348,7 +1348,7 @@ bool CX2PartyManager::Handler_EGS_PARTY_CHANGE_CHECK_MIN_LEVEL_ACK( HWND hWnd, U
 	return true;
 }
 
-bool CX2PartyManager::Handler_EGS_PARTY_CHANGE_CHECK_MIN_LEVEL_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PartyManager::Handler_EGS_PARTY_CHANGE_CHECK_MIN_LEVEL_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_PARTY_CHANGE_CHECK_MIN_LEVEL_NOT kEvent;
@@ -1381,7 +1381,7 @@ bool CX2PartyManager::Handler_EGS_PARTY_CHANGE_HOST_REQ( UidType unitUID )
 }
 
 
-bool CX2PartyManager::Handler_EGS_PARTY_CHANGE_HOST_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PartyManager::Handler_EGS_PARTY_CHANGE_HOST_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*) lParam;
 	KEGS_PARTY_CHANGE_HOST_ACK kEvent;
@@ -1400,7 +1400,7 @@ bool CX2PartyManager::Handler_EGS_PARTY_CHANGE_HOST_ACK( HWND hWnd, UINT uMsg, W
 }
 
 
-bool CX2PartyManager::Handler_EGS_PARTY_CHANGE_HOST_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PartyManager::Handler_EGS_PARTY_CHANGE_HOST_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_PARTY_CHANGE_HOST_NOT kEvent;
@@ -1464,7 +1464,7 @@ bool CX2PartyManager::Handler_EGS_PARTY_BAN_USER_REQ( UidType unitUID )
 }
 
 
-bool CX2PartyManager::Handler_EGS_PARTY_BAN_USER_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PartyManager::Handler_EGS_PARTY_BAN_USER_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*) lParam;
 	KEGS_PARTY_BAN_USER_ACK kEvent;
@@ -1482,7 +1482,7 @@ bool CX2PartyManager::Handler_EGS_PARTY_BAN_USER_ACK( HWND hWnd, UINT uMsg, WPAR
 }
 
 
-bool CX2PartyManager::Handler_EGS_PARTY_BAN_USER_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PartyManager::Handler_EGS_PARTY_BAN_USER_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	// 내가 강퇴 당한 경우
 	if( true == DoIHaveParty() )
@@ -1520,7 +1520,7 @@ bool CX2PartyManager::Handler_EGS_PARTY_CHANGE_GET_ITEM_TYPE_REQ( CX2Room::DUNGE
 	return true;
 }
 
-bool CX2PartyManager::Handler_EGS_PARTY_CHANGE_GET_ITEM_TYPE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PartyManager::Handler_EGS_PARTY_CHANGE_GET_ITEM_TYPE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*) lParam;
 	KEGS_PARTY_CHANGE_GET_ITEM_TYPE_ACK kEvent;
@@ -1537,7 +1537,7 @@ bool CX2PartyManager::Handler_EGS_PARTY_CHANGE_GET_ITEM_TYPE_ACK( HWND hWnd, UIN
 	return true;
 }
 
-bool CX2PartyManager::Handler_EGS_PARTY_CHANGE_GET_ITEM_TYPE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PartyManager::Handler_EGS_PARTY_CHANGE_GET_ITEM_TYPE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_PARTY_CHANGE_GET_ITEM_TYPE_NOT kEvent;
@@ -1566,7 +1566,7 @@ bool CX2PartyManager::Handler_EGS_PARTY_CHANGE_NUM_OF_PER_REQ( int iMaxSlot )
 	return true;
 }
 
-bool CX2PartyManager::Handler_EGS_PARTY_CHANGE_NUM_OF_PER_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PartyManager::Handler_EGS_PARTY_CHANGE_NUM_OF_PER_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*) lParam;
 	KEGS_PARTY_CHANGE_NUM_OF_PER_ACK kEvent;
@@ -1583,7 +1583,7 @@ bool CX2PartyManager::Handler_EGS_PARTY_CHANGE_NUM_OF_PER_ACK( HWND hWnd, UINT u
 	return true;
 }
 
-bool CX2PartyManager::Handler_EGS_PARTY_CHANGE_NUM_OF_PER_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PartyManager::Handler_EGS_PARTY_CHANGE_NUM_OF_PER_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_PARTY_CHANGE_NUM_OF_PER_NOT kEvent;
@@ -1603,7 +1603,7 @@ bool CX2PartyManager::Handler_EGS_PARTY_CHANGE_NUM_OF_PER_NOT( HWND hWnd, UINT u
 }
 
 
-	bool CX2PartyManager::Handler_EGS_PARTY_FEVER_POINT_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+	bool CX2PartyManager::Handler_EGS_PARTY_FEVER_POINT_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 	{
 		KSerBuffer* pBuff = (KSerBuffer*)lParam;
 		KEGS_PARTY_FEVER_POINT_NOT kEvent;
@@ -1627,7 +1627,7 @@ bool CX2PartyManager::Handler_EGS_PARTY_CHANGE_NUM_OF_PER_NOT( HWND hWnd, UINT u
 
 
 
-	bool CX2PartyManager::Handler_EGS_CHANGE_PARTY_FEVER_STATE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+	bool CX2PartyManager::Handler_EGS_CHANGE_PARTY_FEVER_STATE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 	{
 
 		KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -1718,7 +1718,7 @@ bool CX2PartyManager::Handler_EGS_CHANGE_PARTY_TYPE_REQ( const CX2PartyManager::
 
 	return true;
 }
-bool CX2PartyManager::Handler_EGS_CHANGE_PARTY_TYPE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PartyManager::Handler_EGS_CHANGE_PARTY_TYPE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*) lParam;
 	KEGS_CHANGE_PARTY_TYPE_ACK kEvent;
@@ -1734,7 +1734,7 @@ bool CX2PartyManager::Handler_EGS_CHANGE_PARTY_TYPE_ACK( HWND hWnd, UINT uMsg, W
 
 	return false;
 }
-bool CX2PartyManager::Handler_EGS_CHANGE_PARTY_TYPE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PartyManager::Handler_EGS_CHANGE_PARTY_TYPE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_PARTY_TYPE_NOT kEvent;
@@ -1777,7 +1777,7 @@ bool CX2PartyManager::Handler_EGS_REQUEST_MATCH_MAKING_REQ(char cPlayerNum, char
 
 	return true;
 }
-bool CX2PartyManager::Handler_EGS_REQUEST_MATCH_MAKING_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PartyManager::Handler_EGS_REQUEST_MATCH_MAKING_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*) lParam;
 	KEGS_REQUEST_MATCH_MAKING_ACK kEvent;
@@ -1793,7 +1793,7 @@ bool CX2PartyManager::Handler_EGS_REQUEST_MATCH_MAKING_ACK( HWND hWnd, UINT uMsg
 
 	return false;
 }
-bool CX2PartyManager::Handler_EGS_REG_MATCH_WAIT_LIST_SUCCESS_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PartyManager::Handler_EGS_REG_MATCH_WAIT_LIST_SUCCESS_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_REG_MATCH_WAIT_LIST_SUCCESS_NOT kEvent;
@@ -1808,7 +1808,7 @@ bool CX2PartyManager::Handler_EGS_REG_MATCH_WAIT_LIST_SUCCESS_NOT( HWND hWnd, UI
 	return true;
 }
 
-bool CX2PartyManager::Handler_EGS_MATCH_MAKING_SUCCESS_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PartyManager::Handler_EGS_MATCH_MAKING_SUCCESS_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_MATCH_MAKING_SUCCESS_NOT kEvent;
@@ -1843,7 +1843,7 @@ bool CX2PartyManager::Handler_EGS_CANCEL_MATCH_MAKING_REQ()
 
 	return true;
 }
-bool CX2PartyManager::Handler_EGS_CANCEL_MATCH_MAKING_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PartyManager::Handler_EGS_CANCEL_MATCH_MAKING_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*) lParam;
 	KEGS_CANCEL_MATCH_MAKING_ACK kEvent;
@@ -1860,7 +1860,7 @@ bool CX2PartyManager::Handler_EGS_CANCEL_MATCH_MAKING_ACK( HWND hWnd, UINT uMsg,
 	return false;
 }
 
-bool CX2PartyManager::Handler_EGS_UNREG_MATCH_WAIT_LIST_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PartyManager::Handler_EGS_UNREG_MATCH_WAIT_LIST_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_UNREG_MATCH_WAIT_LIST_NOT kEvent;
@@ -1891,7 +1891,7 @@ bool CX2PartyManager::Handler_EGS_UNREG_MATCH_WAIT_LIST_NOT( HWND hWnd, UINT uMs
 	return true;
 }
 
-bool CX2PartyManager::Handler_EGS_MATCH_CLOSE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PartyManager::Handler_EGS_MATCH_CLOSE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_MATCH_CLOSE_NOT kEvent;
@@ -1980,7 +1980,7 @@ bool CX2PartyManager::Handler_EGS_MATCH_MAKING_SUCCESS_REPLY_NOT( bool bStartAgr
 	}
 	return true;
 }
-bool CX2PartyManager::Handler_EGS_GAME_START_PVP_MATCH_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PartyManager::Handler_EGS_GAME_START_PVP_MATCH_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	// 매칭된 데이타로 실제 pvp 게임 시작
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -2032,7 +2032,7 @@ bool CX2PartyManager::Handler_EGS_PVP_PARTY_CHANGE_MATCH_INFO_REQ( char cPvpType
 
 	return true;
 }
-bool CX2PartyManager::Handler_EGS_PVP_PARTY_CHANGE_MATCH_INFO_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PartyManager::Handler_EGS_PVP_PARTY_CHANGE_MATCH_INFO_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*) lParam;
 	KEGS_PVP_PARTY_CHANGE_MATCH_INFO_ACK kEvent;
@@ -2048,7 +2048,7 @@ bool CX2PartyManager::Handler_EGS_PVP_PARTY_CHANGE_MATCH_INFO_ACK( HWND hWnd, UI
 
 	return false;
 }
-bool CX2PartyManager::Handler_EGS_PVP_PARTY_CHANGE_MATCH_INFO_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PartyManager::Handler_EGS_PVP_PARTY_CHANGE_MATCH_INFO_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_PVP_PARTY_CHANGE_MATCH_INFO_NOT kEvent;
@@ -2221,7 +2221,7 @@ CX2PartyManager::PartyMemberData* CX2PartyManager::PartyData::GetPartyMemberData
 	}
 	return NULL;
 }
-bool CX2PartyManager::Handler_EGS_PARTY_GAME_START_OPINION_CHECK_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PartyManager::Handler_EGS_PARTY_GAME_START_OPINION_CHECK_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*) lParam;
 	KEGS_PARTY_GAME_START_OPINION_CHECK_NOT kEvent;
@@ -2263,7 +2263,7 @@ void CX2PartyManager::Send_EGS_PARTY_GAME_START_OPINION_CHECK_REPLY_NOT( const b
 	g_pData->GetServerProtocol()->SendPacket( EGS_PARTY_GAME_START_OPINION_CHECK_REPLY_NOT, kPacket );
 }
 
-bool CX2PartyManager::Handler_EGS_PARTY_GAME_START_FAILED_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PartyManager::Handler_EGS_PARTY_GAME_START_FAILED_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_PARTY_GAME_START_FAILED_NOT kEvent;
@@ -2408,7 +2408,7 @@ void CX2PartyManager::Handler_EGS_AUTO_PARTY_DUNGEON_GAME_REQ()
 	g_pMain->AddServerPacket( EGS_AUTO_PARTY_DUNGEON_GAME_ACK );
 }
 
-bool CX2PartyManager::Handler_EGS_AUTO_PARTY_DUNGEON_GAME_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PartyManager::Handler_EGS_AUTO_PARTY_DUNGEON_GAME_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*) lParam;
 	KEGS_AUTO_PARTY_DUNGEON_GAME_ACK kEvent;
@@ -2462,7 +2462,7 @@ bool CX2PartyManager::Handler_EGS_AUTO_PARTY_DUNGEON_GAME_ACK( HWND hWnd, UINT u
 	return false;
 }
 
-bool CX2PartyManager::Handler_EGS_AUTO_PARTY_WAIT_USER_COUNT_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PartyManager::Handler_EGS_AUTO_PARTY_WAIT_USER_COUNT_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*) lParam;
 	KEGS_AUTO_PARTY_WAIT_USER_COUNT_NOT kEvent;
@@ -2472,7 +2472,7 @@ bool CX2PartyManager::Handler_EGS_AUTO_PARTY_WAIT_USER_COUNT_NOT( HWND hWnd, UIN
 
 	return true;
 }
-bool CX2PartyManager::Handler_EGS_REG_AUTO_PARTY_WAIT_LIST_SUCCESS_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PartyManager::Handler_EGS_REG_AUTO_PARTY_WAIT_LIST_SUCCESS_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*) lParam;
 	KEGS_REG_AUTO_PARTY_WAIT_LIST_SUCCESS_NOT kEvent;
@@ -2512,7 +2512,7 @@ void CX2PartyManager::Handler_EGS_CANCEL_AUTO_PARTY_MAKING_REQ()
 	}
 }
 
-bool CX2PartyManager::Handler_EGS_CANCEL_AUTO_PARTY_MAKING_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PartyManager::Handler_EGS_CANCEL_AUTO_PARTY_MAKING_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*) lParam;
 	KEGS_CANCEL_AUTO_PARTY_MAKING_ACK kEvent;
@@ -2530,7 +2530,7 @@ bool CX2PartyManager::Handler_EGS_CANCEL_AUTO_PARTY_MAKING_ACK( HWND hWnd, UINT 
 	return false;
 }
 
-bool CX2PartyManager::Handler_EGS_UNREG_AUTO_PARTY_WAIT_LIST_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PartyManager::Handler_EGS_UNREG_AUTO_PARTY_WAIT_LIST_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*) lParam;
 	KEGS_UNREG_AUTO_PARTY_WAIT_LIST_NOT kEvent;
@@ -2545,7 +2545,7 @@ bool CX2PartyManager::Handler_EGS_UNREG_AUTO_PARTY_WAIT_LIST_NOT( HWND hWnd, UIN
 	return true;
 }
 
-bool CX2PartyManager::Handler_EGS_AUTO_PARTY_MAKING_SUCCESS_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PartyManager::Handler_EGS_AUTO_PARTY_MAKING_SUCCESS_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*) lParam;
 	KEGS_AUTO_PARTY_MAKING_SUCCESS_NOT kEvent;
@@ -2603,7 +2603,7 @@ void CX2PartyManager::Handler_EGS_AUTO_PARTY_MAKING_SUCCESS_REPLY_NOT( const boo
 	}
 }
 
-bool CX2PartyManager::Handler_EGS_AUTO_PARTY_CLOSE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PartyManager::Handler_EGS_AUTO_PARTY_CLOSE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*) lParam;
 	KEGS_AUTO_PARTY_CLOSE_NOT kEvent;
@@ -2654,7 +2654,7 @@ bool CX2PartyManager::Handler_EGS_AUTO_PARTY_CLOSE_NOT( HWND hWnd, UINT uMsg, WP
 	return true;
 }
 
-bool CX2PartyManager::Handler_EGS_REGROUP_PARTY_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PartyManager::Handler_EGS_REGROUP_PARTY_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*) lParam;
 	KEGS_REGROUP_PARTY_NOT kEvent;
@@ -2701,7 +2701,7 @@ bool CX2PartyManager::Handler_EGS_REGROUP_PARTY_NOT( HWND hWnd, UINT uMsg, WPARA
 
 	return true;
 }
-bool CX2PartyManager::Handler_EGS_UPDATE_AUTO_PARTY_BONUS_INFO_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PartyManager::Handler_EGS_UPDATE_AUTO_PARTY_BONUS_INFO_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*) lParam;
 	KEGS_UPDATE_AUTO_PARTY_BONUS_INFO_NOT kEvent;
@@ -2795,7 +2795,7 @@ bool CX2PartyManager::IsHeroRecruitDungeon(int iDungeoID )
 
 //{{ 2013. 1. 9	박세훈	Merge 공인IP 연결 실패시 내부IP로 시도( 박진웅 )
 //#ifdef SERV_KTDX_RETRY_USING_INTERNAL_IP
-HRESULT CX2PartyManager::OnFrameMove( double fTime, float fElapsedTime )
+HRESULT CX2PartyManager::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	KTDXPROFILE();
 
@@ -2804,7 +2804,7 @@ HRESULT CX2PartyManager::OnFrameMove( double fTime, float fElapsedTime )
 	return S_OK;
 }
 
-void CX2PartyManager::NetworkProcess( IN const float fElapsedTime )
+void CX2PartyManager::NetworkProcess( IN const float /*fElapsedTime*/ )
 {
 	KTDXPROFILE();
 
@@ -2898,7 +2898,7 @@ void CX2PartyManager::AddClosePartyLog( const string& strPacketName_, int iReaso
 	}
 }
 
-bool CX2PartyManager::Handler_EGS_UPDATE_DUNGEON_STATUS_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PartyManager::Handler_EGS_UPDATE_DUNGEON_STATUS_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_UPDATE_DUNGEON_STATUS_NOT kEvent;

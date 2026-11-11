@@ -363,7 +363,7 @@ bool CX2BuffFactor::ParsingFinalizer( KLuaManager& luaManager_, bool bIsSkill/* 
 	@brief : 특정 FinalizerFactor에 외부요소를 적용하는 함수(적용 방법은 각 종료 마다 다름)
 	@param : 외부변경요소를 적용할 종료타입(eType_), 외부적용요소(fValue_)
 */
-void CX2BuffFactor::ApplyExternalFactorToFinalizer( const BUFF_FINALIZER_TYPE eType_, const float fValue_ )
+void CX2BuffFactor::ApplyExternalFactorToFinalizer( const BUFF_FINALIZER_TYPE /*eType_*/, const float fValue_ )
 {
 	if ( NULL != m_pDataBuffFactor )
 	{

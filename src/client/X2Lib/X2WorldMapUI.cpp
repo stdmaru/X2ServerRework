@@ -10,11 +10,11 @@ m_pStage( NULL ),
 m_pDLGWorldMap( NULL ),
 m_pDLGWorldMapFront( NULL ),
 m_pDLGFieldMap( NULL ),
+m_iCurrFieldMapID( 0 ),
 m_pWorldFieldMap( NULL ),
 m_pDLGNPCToolTip( NULL ),
 m_pDLGPartyToolTip(NULL),
-m_pDLGMiscToolTip( NULL ),
-m_iCurrFieldMapID( 0 )
+m_pDLGMiscToolTip( NULL )
 , m_bZoomed( false )
 , m_bBeforeField( false )
 {
@@ -39,7 +39,7 @@ CX2WorldMapUI::~CX2WorldMapUI(void)
 	m_mapDLGFieldMap.clear();
 }
 
-/*virtual*/ bool CX2WorldMapUI::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+/*virtual*/ bool CX2WorldMapUI::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM lParam )
 {
 	switch(wParam)
 	{
@@ -78,6 +78,8 @@ CX2WorldMapUI::~CX2WorldMapUI(void)
 				break;
 			case CX2Main::XS_BATTLE_FIELD:
 				iFieldID = g_pData->GetBattleFieldManager().GetBattleFieldIdWhereIam();
+				break;
+			default:
 				break;
 			}
 
@@ -127,6 +129,8 @@ CX2WorldMapUI::~CX2WorldMapUI(void)
 				break;
 			case CX2Main::XS_BATTLE_FIELD:
 				iFieldID = g_pData->GetBattleFieldManager().GetBattleFieldIdWhereIam();
+				break;
+			default:
 				break;
 			}
 

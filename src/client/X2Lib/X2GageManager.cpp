@@ -215,7 +215,7 @@ void CX2GageManager::CreateMyGageUI( const CX2Unit::UNIT_CLASS eGameUnitClass_, 
 // GageManager 의 모든 UI 메시지는 이곳을 거칩니다.
 // 해당 메시지는 X2State 의 UICustomEventProc 에서 GageManager Instance 를 불러온 뒤
 // Instance 에서 Call !
-/*virtual*/bool CX2GageManager::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+/*virtual*/bool CX2GageManager::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM lParam )
 {
 	switch(wParam)
 	{
@@ -485,7 +485,7 @@ bool CX2GageManager::Handler_EGS_FORCED_EXIT_VOTE_REQ ( const bool IsWantBan_, c
 	return false;
 }
 
-bool CX2GageManager::Handler_EGS_FORCED_EXIT_VOTE_ACK ( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2GageManager::Handler_EGS_FORCED_EXIT_VOTE_ACK ( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_FORCED_EXIT_VOTE_ACK kEvent;
@@ -1306,7 +1306,7 @@ bool CX2OldGageManager::IsMyUnit()
 		return false;
 }
 
-void CX2OldGageManager::OnFrameMove( double fTime, float fElapsedTime )
+void CX2OldGageManager::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	KTDXPROFILE();
 
@@ -1813,7 +1813,7 @@ float CX2OldGageManager::FlushMP()
 }
 */
 
-bool CX2OldGageManager::FlushMP( float fMP, bool bForce )
+bool CX2OldGageManager::FlushMP( float fMP, bool /*bForce*/ )
 {
 	if( m_pMPGage->fNow < fMP )
 		return false;
@@ -1866,7 +1866,7 @@ void CX2OldGageManager::UpHP( float fHP, const float hpMinimum /*= 0.f*/ )
 }
 
 
-void CX2OldGageManager::DamagedFaceDraw( int unitClass )
+void CX2OldGageManager::DamagedFaceDraw( int /*unitClass*/ )
 {
 	// kimhc // 2011-12-08 현재 PVP에서만 사용 됨
 	KTDXPROFILE();
@@ -1899,7 +1899,7 @@ bool CX2OldGageManager::OpenScript( const WCHAR* pFileName )
 }
 
 
-void CX2OldGageManager::UIFrameMove( double fTime, float fElapsedTime )
+void CX2OldGageManager::UIFrameMove( double /*fTime*/, float /*fElapsedTime*/ )
 {
 	if ( m_pGameUnit == NULL )
 		return;
@@ -2733,7 +2733,7 @@ void CX2OldGageManager::CrashMyStateGageUI( const D3DXVECTOR2& _min, const D3DXV
 }
 
 
-void CX2OldGageManager::SetPingLevel( int iLevel )
+void CX2OldGageManager::SetPingLevel( int /*iLevel*/ )
 {
 // 	CKTDGUIStatic* pStatic_Ping = NULL;
 //
@@ -2782,7 +2782,7 @@ void CX2OldGageManager::SetPingLevel( int iLevel )
 }
 
 
-void CX2OldGageManager::TwinkleMPGage( float fTime )
+void CX2OldGageManager::TwinkleMPGage( float /*fTime*/ )
 {
 	ASSERT( !L"Deprecated" );
 	return;

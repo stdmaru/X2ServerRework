@@ -76,6 +76,8 @@ bool CX2DungeonRoom::IsDefenceDungeon( SEnum::DUNGEON_ID eDungeonID )
 	{
 	CASE_DEFENCE_DUNGEON
 		return true;
+	default:
+		break;
 	}
 
 	return false;

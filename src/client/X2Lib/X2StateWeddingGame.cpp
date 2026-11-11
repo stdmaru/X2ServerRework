@@ -223,7 +223,7 @@ bool CX2StateWeddingGame::UIP2PEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, L
 	return false;
 }
 
-bool CX2StateWeddingGame::Handler_EGS_LEAVE_WEDDING_HALL_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateWeddingGame::Handler_EGS_LEAVE_WEDDING_HALL_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_LEAVE_WEDDING_HALL_NOT kEvent;
@@ -260,7 +260,7 @@ void CX2StateWeddingGame::Handler_EGS_LEAVE_WEDDING_HALL_REQ()
 	g_pMain->AddServerPacket( EGS_LEAVE_WEDDING_HALL_ACK );
 }
 
-bool CX2StateWeddingGame::Handler_EGS_LEAVE_WEDDING_HALL_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateWeddingGame::Handler_EGS_LEAVE_WEDDING_HALL_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_LEAVE_WEDDING_HALL_ACK kPacket;
@@ -319,7 +319,7 @@ void CX2StateWeddingGame::Handler_EGS_START_WEDDING_REQ()
 	g_pData->GetServerProtocol()->SendID( EGS_START_WEDDING_REQ );
 	g_pMain->AddServerPacket( EGS_START_WEDDING_ACK );
 }
-bool CX2StateWeddingGame::Handler_EGS_START_WEDDING_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateWeddingGame::Handler_EGS_START_WEDDING_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_START_WEDDING_ACK kPacket;
@@ -377,7 +377,7 @@ void CX2StateWeddingGame::Handler_EGS_START_WEDDING_ASK_ACK( bool bOk_ )
 
 	g_pData->GetServerProtocol()->SendPacket( EGS_START_WEDDING_ASK_ACK, kPacket );
 }
-bool CX2StateWeddingGame::Handler_EGS_START_WEDDING_AGREE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateWeddingGame::Handler_EGS_START_WEDDING_AGREE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_START_WEDDING_AGREE_NOT kPacket;
@@ -399,7 +399,7 @@ bool CX2StateWeddingGame::Handler_EGS_START_WEDDING_AGREE_NOT( HWND hWnd, UINT u
 	return true;
 }
 
-bool CX2StateWeddingGame::Handler_EGS_START_WEDDING_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateWeddingGame::Handler_EGS_START_WEDDING_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_START_WEDDING_NOT kEvent;

@@ -280,6 +280,8 @@ void    CX2GUNPC::KNonHostReaction::DoStateEndStart( bool bLocalUnit, const NPCF
                     m_cbufNonHostSimState.push_back( kSimState );
                 }//if.. else..
                 break;
+            default:
+            	break;
             }
         }
         else
@@ -380,7 +382,7 @@ void    CX2GUNPC::KNonHostReaction::UpdateNowStateStartSpeed( const NPCFrameData
 
 
 void    CX2GUNPC::KNonHostReaction::DoFrameMove_SimulateReaction_FIRST(
-    NPCFrameData& m_NPCFrameData, PhysicParam& m_PhysicParam,
+    NPCFrameData& m_NPCFrameData, PhysicParam& /*m_PhysicParam*/,
     KCircularBuffer< NPCFrameSync >& m_cbufReceiveDynamicPacket,
     DWORD& m_dwLastProcessedFrameMoveCount, bool& bUpdatePositionBackup,
     float& fNowHP, float& fNowMP,
@@ -6300,7 +6302,7 @@ bool CX2GUNPC::StateChange_LUA( const char* stateName, bool bDirectChange )
 
 
 
-bool    CX2GUNPC::StateChangeForce( int state, bool bDirectChange )
+bool    CX2GUNPC::StateChangeForce( int state, bool /*bDirectChange*/ )
 {
     if ( false == ( state >= 0 && state < (int) m_vecStateRuntime.size() ) )
         return false;
@@ -6344,7 +6346,7 @@ void    CX2GUNPC::StateChangeToDieForce()
 
 
 
-int CX2GUNPC::StateChange_CheckOnly( int state, bool bDirectChange )
+int CX2GUNPC::StateChange_CheckOnly( int state, bool /*bDirectChange*/ )
 {
 	if( state <= 0 )
 		return 0;
@@ -6566,6 +6568,8 @@ void CX2GUNPC::DamageReact( CX2DamageManager::DamageData* pDamageData )
 			{
 				m_FlyCount++;
 			} break;
+		default:
+			break;
 		}
 	}
 
@@ -6798,6 +6802,8 @@ void CX2GUNPC::DamageReact( CX2DamageManager::DamageData* pDamageData )
 		{
 			return;
 		} break;
+	default:
+		break;
 	}
 
 	bool bRevenge = false;
@@ -8000,6 +8006,8 @@ void CX2GUNPC::LevelCorrectionExtraDamage( const CX2DamageManager::DamageData* p
 		CASE_DEFENCE_DUNGEON
 			//}} 허상형 : [2011/3/3/] //	월드 미션
 			iLevel = 1;
+			break;
+		default:
 			break;
 		}
 	}
@@ -9396,6 +9404,8 @@ bool CX2GUNPC::DamageReactStateChange( CX2DamageManager::DamageData* pDamageData
 
 
 
+	default:
+		break;
 	}
 
 
@@ -9421,6 +9431,8 @@ bool CX2GUNPC::DamageReactStateChange( CX2DamageManager::DamageData* pDamageData
 						{
                             SetIsRightNow( !m_NPCFrameData.syncData.bIsRight );
 						} break;
+					default:
+						break;
 					}
 				}
 			}
@@ -9453,6 +9465,8 @@ bool CX2GUNPC::DamageReactStateChange( CX2DamageManager::DamageData* pDamageData
                                 SetIsRightNow( !m_NPCFrameData.syncData.bIsRight );
 							} // if
 						} break;
+					default:
+						break;
 					} // switch
 				} // if
 
@@ -9488,12 +9502,16 @@ bool CX2GUNPC::DamageReactStateChange( CX2DamageManager::DamageData* pDamageData
 								SetIsRightNow( !m_NPCFrameData.syncData.bIsRight );
 							} // if
 						} break;
+					default:
+						break;
 					} // switch
 				} // if
 			} // if
 		} break;
 
 
+	default:
+		break;
 	}
 
 
@@ -10210,6 +10228,8 @@ void CX2GUNPC::DyingStart()
 										uidAttackerUID		= pNPCAI->GetAllyUnitUID();
 										eAttackerUnitType	= CX2GameUnit::GUT_USER;
 									} break;
+								default:
+									break;
 								}
 							}
 						}
@@ -15162,6 +15182,8 @@ void    CX2GUNPC::CommonEventProcessNonHost()
 				KTDXPROFILE_END();
             }
 			break;
+        default:
+        	break;
         }//switch
 
 //#ifdef  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
@@ -18079,6 +18101,8 @@ void CX2GUNPC::PhysicProcess_Bungee( CKTDGLineMap* pLineMap )
 					SetAIEnable( false );
 
 				} break;
+			default:
+				break;
 			}
 		}
 	}
@@ -18135,6 +18159,8 @@ void CX2GUNPC::PhysicProcess_Bungee( CKTDGLineMap* pLineMap )
 						//InitPosByLineData( pLineData->m_iTeleportLineIndex );
 						SetAIEnable( true );
 					} break;
+				default:
+					break;
 				}
 			}
 		}
@@ -18643,7 +18669,7 @@ void CX2GUNPC::AnimStop()
 }
 
 
-float CX2GUNPC::GetCriticalPercent( BYTE byAttackType, float fExtraCritical )
+float CX2GUNPC::GetCriticalPercent( BYTE /*byAttackType*/, float fExtraCritical )
 {
 
 
@@ -19278,7 +19304,7 @@ bool CX2GUNPC::HasTarget()
 	return m_pAI->IsTargetAccquired();
 }
 
-void CX2GUNPC::ShowGateGuideFrameMove( double fTime, float fElapsedTime )
+void CX2GUNPC::ShowGateGuideFrameMove( double /*fTime*/, float /*fElapsedTime*/ )
 {
 	if( this->GetGameUnitState() == CX2GameUnit::GUSI_DIE || this->GetNowHp() <= 0.f )
 		return;
@@ -19726,7 +19752,7 @@ void CX2GUNPC::SetLuaTargetingFunc( const string& val )
 	}
 }
 
-void CX2GUNPC::SetTargetUnitType( int val )
+void CX2GUNPC::SetTargetUnitType( int /*val*/ )
 {
 	wstringstream wstream;
 	wstream << L"SetTargetUnitType 사용 금지: ID: ";
@@ -19738,7 +19764,7 @@ void CX2GUNPC::SetTargetUnitType( int val )
 // 		m_pAI->SetTargetUnitType( (CX2GameUnit::GAME_UNIT_TYPE) val );
 }
 
-void CX2GUNPC::SetTargetUnitUID( UidType tartgetUID )
+void CX2GUNPC::SetTargetUnitUID( UidType /*tartgetUID*/ )
 {
 	wstringstream wstream;
 	wstream << L"SetTargetUnitUID 사용 금지: ID: ";
@@ -21335,7 +21361,7 @@ CX2GUUser* CX2GUNPC::GetNearestGUUser()
 		return NULL;
 }
 
-/*virtual*/ CX2GageUI* CX2GUNPC::CreateGageUI( const CX2GageData* pOwnerGageData_ )
+/*virtual*/ CX2GageUI* CX2GUNPC::CreateGageUI( const CX2GageData* /*pOwnerGageData_*/ )
 {
 	switch ( GetNPCTemplet().m_ClassType )
 	{
@@ -22559,7 +22585,7 @@ void CX2GUNPC::FollowTargetUnitBone_FrameMove()
 		}
 	}
 }
-void CX2GUNPC::SetFollowTargetUnitBone( UidType iTargetUnitUID_, const CHAR* pTargetBoneName_, bool bIsUser_ )
+void CX2GUNPC::SetFollowTargetUnitBone( UidType iTargetUnitUID_, const CHAR* pTargetBoneName_, bool /*bIsUser_*/ )
 {
 	if( NULL == pTargetBoneName_ )
 		return;

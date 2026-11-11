@@ -4,19 +4,19 @@
 //{{ 허상형 : [2009/9/15] //	길드매니저 클래스 함수 정의
 
 CX2GuildManager::CX2GuildManager() :
-m_pUIGuild(NULL),
 m_pMyGuildInfo(NULL),
 m_iUseGuildItemUID(0),
-m_wstrSelectedUserName(L""),
-m_iSelectedUserUID(0),
 m_pDlgChangeGuildMessage(NULL),
 m_pDlgNewMaster(NULL),
 m_pDlgNewMasterRe(NULL),
+m_wstrSelectedUserName(L""),
+m_iSelectedUserUID(0),
 m_wstrCreateGuildName(L""),
 m_bIsShownGuildMessage(false),
 m_byLimitGuildLevel( 0 ),
-m_ucLimitGuildGrade(_CONST_GUILD_MANAGER_::g_ucLimitGuildGrade), // oasis907 : 김상윤 [2009.11.18] //
-m_DlgKickByMaster( NULL )
+m_ucLimitGuildGrade(_CONST_GUILD_MANAGER_::g_ucLimitGuildGrade),
+m_DlgKickByMaster( NULL ), // oasis907 : 김상윤 [2009.11.18] //
+m_pUIGuild(NULL)
 {
 	if( m_pUIGuild == NULL )
 	{
@@ -43,7 +43,7 @@ CX2GuildManager::~CX2GuildManager()
 
 }
 
-HRESULT CX2GuildManager::OnFrameMove( double fTime, float fElapsedTime )
+HRESULT CX2GuildManager::OnFrameMove( double /*fTime*/, float /*fElapsedTime*/ )
 {
 	return S_OK;
 }
@@ -885,7 +885,7 @@ bool CX2GuildManager::Handler_EGS_CHANGE_GUILD_NAME_CHECK_REQ( wstring wstrGuild
 	g_pData->GetServerProtocol()->SendPacket( EGS_CHANGE_GUILD_NAME_CHECK_REQ, kPacket );
 	return true;
 }
-bool CX2GuildManager::Handler_EGS_CHANGE_GUILD_NAME_CHECK_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2GuildManager::Handler_EGS_CHANGE_GUILD_NAME_CHECK_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_GUILD_NAME_CHECK_ACK kEvent;
@@ -922,7 +922,7 @@ bool CX2GuildManager::Handler_EGS_CHANGE_GUILD_NAME_REQ( int iOk )
 	return true;
 }
 
-bool CX2GuildManager::Handler_EGS_CHANGE_GUILD_NAME_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2GuildManager::Handler_EGS_CHANGE_GUILD_NAME_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_GUILD_NAME_ACK kEvent;
@@ -967,7 +967,7 @@ bool	CX2GuildManager::Handler_EGS_CREATE_GUILD_REQ( const wstring& wszGuildName 
 	return false;
 }
 
-bool	CX2GuildManager::Handler_EGS_CREATE_GUILD_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool	CX2GuildManager::Handler_EGS_CREATE_GUILD_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CREATE_GUILD_ACK kEvent;
@@ -1006,7 +1006,7 @@ bool	CX2GuildManager::Handler_EGS_CREATE_GUILD_ACK( HWND hWnd, UINT uMsg, WPARAM
 	return false;
 }
 
-bool	CX2GuildManager::Handler_EGS_GUILD_INFO_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+bool	CX2GuildManager::Handler_EGS_GUILD_INFO_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam)
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_GUILD_INFO_NOT kEvent;
@@ -1067,7 +1067,7 @@ bool	CX2GuildManager::Handler_EGS_CHANGE_GUILD_MEMBER_GRADE_REQ( UidType iUID, i
 	return true;
 }
 
-bool	CX2GuildManager::Handler_EGS_CHANGE_GUILD_MEMBER_GRADE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool	CX2GuildManager::Handler_EGS_CHANGE_GUILD_MEMBER_GRADE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_GUILD_MEMBER_GRADE_ACK kEvent;
@@ -1092,7 +1092,7 @@ bool	CX2GuildManager::Handler_EGS_CHANGE_GUILD_MEMBER_GRADE_ACK( HWND hWnd, UINT
 	return false;
 }
 
-bool	CX2GuildManager::Handler_EGS_GUILD_MESSAGE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool	CX2GuildManager::Handler_EGS_GUILD_MESSAGE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_GUILD_MESSAGE_NOT kEvent;
@@ -1475,7 +1475,7 @@ bool	CX2GuildManager::Handler_EGS_INVITE_GUILD_REQ( const wstring& wstrNickName 
 	return false;
 }
 
-bool	CX2GuildManager::Handler_EGS_INVITE_GUILD_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam ) const
+bool	CX2GuildManager::Handler_EGS_INVITE_GUILD_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam ) const
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_INVITE_GUILD_ACK kEvent;
@@ -1506,7 +1506,7 @@ bool	CX2GuildManager::Handler_EGS_INVITE_GUILD_ACK( HWND hWnd, UINT uMsg, WPARAM
 	return false;
 }
 
-bool	CX2GuildManager::Handler_EGS_INVITE_GUILD_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+bool	CX2GuildManager::Handler_EGS_INVITE_GUILD_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam)
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_INVITE_GUILD_NOT kEvent;
@@ -1636,7 +1636,7 @@ bool CX2GuildManager::Handler_EGS_INVITE_GUILD_REPLY_REQ( int iGuildUID, int iRe
 	return false;
 }
 
-bool CX2GuildManager::Handler_EGS_INVITE_GUILD_REPLY_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam ) const
+bool CX2GuildManager::Handler_EGS_INVITE_GUILD_REPLY_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam ) const
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_INVITE_GUILD_REPLY_ACK kEvent;
@@ -1653,7 +1653,7 @@ bool CX2GuildManager::Handler_EGS_INVITE_GUILD_REPLY_ACK( HWND hWnd, UINT uMsg, 
 	return false;
 }
 
-bool CX2GuildManager::Handler_EGS_INVITE_GUILD_REPLY_DENY_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2GuildManager::Handler_EGS_INVITE_GUILD_REPLY_DENY_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_INVITE_GUILD_REPLY_DENY_NOT kEvent;
@@ -1677,7 +1677,7 @@ bool CX2GuildManager::Handler_EGS_KICK_GUILD_MEMBER_REQ( UidType iUnitUID ) cons
 	return true;
 }
 
-bool CX2GuildManager::Handler_EGS_KICK_GUILD_MEMBER_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2GuildManager::Handler_EGS_KICK_GUILD_MEMBER_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_KICK_GUILD_MEMBER_ACK kEvent;
@@ -1711,7 +1711,7 @@ bool	CX2GuildManager::Handler_EGS_CHANGE_GUILD_MESSAGE_REQ( wstring &wstrMessage
 	return true;
 }
 
-bool CX2GuildManager::Handler_EGS_CHANGE_GUILD_MESSAGE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2GuildManager::Handler_EGS_CHANGE_GUILD_MESSAGE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_GUILD_MESSAGE_ACK kEvent;
@@ -1738,7 +1738,7 @@ bool CX2GuildManager::Handler_EGS_DISBAND_GUILD_REQ() const
 	return true;
 }
 
-bool CX2GuildManager::Handler_EGS_DISBAND_GUILD_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2GuildManager::Handler_EGS_DISBAND_GUILD_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_DISBAND_GUILD_ACK kEvent;
@@ -1803,7 +1803,7 @@ bool	CX2GuildManager::Handler_EGS_CHANGE_GUILD_MEMBER_MESSAGE_REQ( wstring &wstr
 	return true;
 }
 
-bool	CX2GuildManager::Handler_EGS_CHANGE_GUILD_MEMBER_MESSAGE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool	CX2GuildManager::Handler_EGS_CHANGE_GUILD_MEMBER_MESSAGE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_GUILD_MEMBER_MESSAGE_ACK kEvent;
@@ -1828,7 +1828,7 @@ bool	CX2GuildManager::Handler_EGS_CHANGE_GUILD_MEMBER_MESSAGE_ACK( HWND hWnd, UI
 	return false;
 }
 
-bool	CX2GuildManager::Handler_EGS_JOIN_GUILD_SUCCESS_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool	CX2GuildManager::Handler_EGS_JOIN_GUILD_SUCCESS_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_JOIN_GUILD_SUCCESS_NOT kEvent;

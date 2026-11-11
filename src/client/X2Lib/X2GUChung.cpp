@@ -107,20 +107,20 @@ CX2GUChung::CX2GUChung( int iUnitIndex_, int iTeamNum_,
 : CX2GUUser( iUnitIndex_, iTeamNum_,
 	pScriptLuaState,
 iFrameBufferNum_, pUnit_ )
-, m_bBerserkMode( false ), MAX_ANIMATION_LOOP_COUNT_AT_THIS_STATE(5)
-, m_ucCannonBallCountToBeUpUsingReLoadCannon(1), m_ucBasicCannonBallCount(0)
-, m_bAimingTarget(false), m_vAimingTargetPos( D3DXVECTOR3(0.f, 0.f, 0.f) ), m_vAimingTargetLandPos( D3DXVECTOR3(0.f, 0.f, 0.f) )
-, m_fDamageRelByCannonBallMastery( 1.0f )
+, m_uiCountToCallSetDamageReducePercentFuncInCommonStateStart( 0 ), m_uiCountToCallSetDamageReducePercentFuncInCommonStateEnd( 0 )
+, m_bVerifyGuardSystem( true ), m_bBerserkMode( false )
+, MAX_ANIMATION_LOOP_COUNT_AT_THIS_STATE(5), m_ucCannonBallCountToBeUpUsingReLoadCannon(1), m_fDamageRelByCannonBallMastery( 1.0f )
+, m_ucBasicCannonBallCount(0)
 //{{ kimhc // 2011.1.14 // û 1�� ����
-, m_fForceDownRelAtMeleeAttack( 1.0f ), m_fProbabilityBigDamageAtGuardMastery( 0.0f )
-, m_fIncreaseRangeSubWeaponShot( 1.0f ), m_fCriticalDamageRate( 0.0f )
+, m_bAimingTarget(false), m_vAimingTargetPos( D3DXVECTOR3(0.f, 0.f, 0.f) )
+, m_vAimingTargetLandPos( D3DXVECTOR3(0.f, 0.f, 0.f) ), m_fForceDownRelAtMeleeAttack( 1.0f )
 //}} kimhc // 2011.1.14 // û 1�� ����
-, m_iCountbyCsgComboDashJumpXXMiniGun(0)
+, m_fProbabilityBigDamageAtGuardMastery( 0.0f )
 
 //{{ kimhc // 2011-04-13 // û ���� ���� �׽�Ʈ
-, m_uiCountToCallSetDamageReducePercentFuncInCommonStateStart( 0 )
-, m_uiCountToCallSetDamageReducePercentFuncInCommonStateEnd( 0 )
-, m_bVerifyGuardSystem( true )
+, m_fIncreaseRangeSubWeaponShot( 1.0f )
+, m_fCriticalDamageRate( 0.0f )
+, m_iCountbyCsgComboDashJumpXXMiniGun(0)
 //}} kimhc // 2011-04-13 // û ���� ���� �׽�Ʈ
 , m_fProbabilityIronWill( 0.f )
 , m_bApplyLandDemolisher( false )
@@ -162,30 +162,30 @@ iFrameBufferNum_, pUnit_ )
 , m_bMobileArmoredModeXFired( false )
 , m_bInStateMobileArmoredMode( false )
 , m_iExtraCannonBallReloadCount( 0 )
-, m_fMobileArmoredModeStepDustElapsedTime( 0.f )
 , m_fMobileArmoredModeDistance( 0.f )
 , m_fMobileArmoredModeDamageRel( 0.f )
-, m_fMobileArmoredModeFireZCoolTime( 0.f )
+, m_fMobileArmoredModeStepDustElapsedTime( 0.f )
 , m_fMobileArmoredModeFireXCoolTime( 0.f )
+, m_fMobileArmoredModeFireZCoolTime( 0.f )
 , m_hMobileArmoredModeEffect( INVALID_EFFECTSET_HANDLE )
 , m_iRemoteMortarNPCUID( -1 )			/// ��ġ�� �ڰ��� ���̵�
 , m_fCannonBallExtraChargeRate( 0.f )	/// ĳ���� �߰� ���� Ȯ��
 , m_fMiniGunHeadShotRate( 0.f )
+, m_eArtilleryStrikeType ( CAST_NONE )
 , m_fRateGasPistonSystemAutoRecharge ( 0.f )
 , m_iArtilleryStrikeNowPlayCount ( 0 )
-, m_eArtilleryStrikeType ( CAST_NONE )
 , m_bArtilleryStrikeFire ( false )
+, m_fArtilleryStrikePowerRate ( 0 )
 , m_iBombardServiceTarget ( 0 )
 , m_hBombardServiceEffect( INVALID_EFFECTSET_HANDLE )
-, m_fArtilleryStrikePowerRate ( 0 )
 , m_iFireCount( 0 )
 , m_fChargeTime( 0.f )
 , m_fPassiveCriticalRateChung( 0.f )
 
 , m_hSateliteRainBigMissileSummonEffect ( INVALID_EFFECTSET_HANDLE )
-, m_hCEffectSateliteRain ( INVALID_DAMAGE_EFFECT_HANDLE )
 , m_bSateliteRainFire ( false )
 , m_fSateliteRainPowerRate ( 0.f )
+, m_hCEffectSateliteRain ( INVALID_DAMAGE_EFFECT_HANDLE )
 , m_fSateliteRainPhase ( 0.f )
 , m_bIsFireSateliteRainBigMissile ( false )
 
@@ -235,7 +235,7 @@ iFrameBufferNum_, pUnit_ )
 
 
 /*static*/
-void	CX2GUChung::AppendDeviceToDeviceList( CKTDXDeviceDataList& listInOut_ )
+void	CX2GUChung::AppendDeviceToDeviceList( CKTDXDeviceDataList& /*listInOut_*/ )
 {
 }
 
@@ -636,6 +636,8 @@ void	CX2GUChung::AppendDeviceToDeviceList( CKTDXDeviceDataList& listInOut_ )
 		{
 			m_iSkillCutInSetIndex = 6;
 		} break;
+	default:
+		break;
 	} // switch
 
 	InitStateID();
@@ -2688,6 +2690,8 @@ void CX2GUChung::InitStateByUnitClass()
 					hyperStateData.OnFrameMove		= normalStateData.OnFrameMove;
 					hyperStateData.OnEventProcess	= normalStateData.OnEventProcess;
 				} break;
+			default:
+				break;
 			}
 			return;
 		} break;
@@ -4381,7 +4385,7 @@ void CX2GUChung::SetEquippedSkillLevelStateData( const CX2SkillTree::SkillTemple
 */
 
 /*static*/
-void	CX2GUChung::AppendComponentToDeviceList( CKTDXDeviceDataList& listInOut_ )
+void	CX2GUChung::AppendComponentToDeviceList( CKTDXDeviceDataList& /*listInOut_*/ )
 {
 }
 
@@ -4626,7 +4630,7 @@ void CX2GUChung::InitializeChungMinorParticleArray()
 }
 
 /*static*/
-void	CX2GUChung::AppendMinorParticleToDeviceList( CKTDXDeviceDataList& listInOut_ )
+void	CX2GUChung::AppendMinorParticleToDeviceList( CKTDXDeviceDataList& /*listInOut_*/ )
 {
 }
 
@@ -5146,7 +5150,7 @@ RENDER_HINT CX2GUChung::CommonRender_Prepare()
 	@param : IN const CX2SkillTree::SkillTemplet* (����� ��ų�� ��ų ���ø� ������)
 	@return : ������Ʈ ���� ����
 */
-/*virtual*/ bool CX2GUChung::SpecialAttackNoStageChange( IN const CX2SkillTree::SkillTemplet* pSkillTemplet_ )
+/*virtual*/ bool CX2GUChung::SpecialAttackNoStageChange( IN const CX2SkillTree::SkillTemplet* /*pSkillTemplet_*/ )
 {
 	// pSkillTemplet_ NULL ó�� ����, ���� �Լ����� ȣ��� �̹� ó���Ͽ���
 
@@ -16422,6 +16426,8 @@ void CX2GUChung::SetSelfDestructSummonedNPC( CX2UnitManager::NPC_UNIT_ID eNPCID 
 					// ���� �ð� ���� �߰�
 					pNPC->StartSelfDestruction( fDeleteTime );
 					pNPC->AttachParticle_LUA( true, "CountDown3", "Bip01_Head", D3DXVECTOR3( 0, 80, 0 ) );
+					break;
+				default:
 					break;
 				}
 			}

@@ -3,25 +3,25 @@
 #include "./X2UIPetInfo.h"
 #include "./X2NPCUnitViewerUI.h"
 
-CX2UIPetInfo::CX2UIPetInfo( CKTDXStage* pNowStage ) :
+CX2UIPetInfo::CX2UIPetInfo( CKTDXStage* /*pNowStage*/ ) :
 m_bShow(false),
 m_MovedPosition(0,0),						// D3DXVECTOR2
 m_DLGPosition(0,0),							// D3DXVECTOR2
 m_DLGSize(0,0),								// D3DXVECTOR2
-m_pNPCViewerUI( NULL ),
 m_pDLGUIPetList(NULL),
 m_pDLGUIPetInfo(NULL),
 m_pDLGUIPetDetail(NULL),
+m_pNPCViewerUI( NULL ),
+m_UseItemUID(0),
 m_fRemainRotY(0.0f),
 m_fMouseSensitivity(0.01f),
-m_bRotateReturn(true),
-m_UnitClickPos(100,220),				// D3DXVECTOR2
-m_UnitClickSize(240,150),			// D3DXVECTOR2
-m_bUnitClicked(false)
-,m_UseItemUID(0)
+m_bRotateReturn(true),				// D3DXVECTOR2
+m_UnitClickPos(100,220),			// D3DXVECTOR2
+m_UnitClickSize(240,150)
+,m_bUnitClicked(false)
+,m_pDLGUIRidingPetReleasePopup( NULL )
 ,m_pRidingPetViewerUI( NULL )
 ,m_iSelectButtonIndex( -1 )
-,m_pDLGUIRidingPetReleasePopup( NULL )
 ,m_fListStaminaUpdateCooltime(5.0f)
 {
 	m_pDLGUIPetList = new CKTDGUIDialog( g_pMain->GetNowState(), L"DLG_UI_Pet_List.lua" );
@@ -445,7 +445,7 @@ HRESULT CX2UIPetInfo::OnFrameMove( double fTime, float fElapsedTime )
 	return S_OK;
 }
 
-bool CX2UIPetInfo::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPetInfo::MsgProc( HWND /*hWnd*/, UINT uMsg, WPARAM /*wParam*/, LPARAM lParam )
 {
 	bool bFlag = false;
 
@@ -540,7 +540,7 @@ bool CX2UIPetInfo::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 }
 
 
-bool CX2UIPetInfo::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPetInfo::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM lParam )
 {
 	switch(wParam)
 	{
@@ -1122,7 +1122,7 @@ void CX2UIPetInfo::Handler_EGS_GET_PET_LIST_REQ( UINT iViewPage )
 	return;
 }
 
-bool CX2UIPetInfo::Handler_EGS_GET_PET_LIST_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPetInfo::Handler_EGS_GET_PET_LIST_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_GET_PET_LIST_ACK kEvent;
@@ -2905,7 +2905,7 @@ void CX2UIPetInfo::Handler_EGS_GET_RIDING_PET_LIST_REQ( UINT iViewPage )
 	g_pMain->AddServerPacket( EGS_GET_RIDING_PET_LIST_ACK, 60.f );
 }
 
-bool CX2UIPetInfo::Handler_EGS_GET_RIDING_PET_LIST_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPetInfo::Handler_EGS_GET_RIDING_PET_LIST_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = reinterpret_cast<KSerBuffer*>( lParam );
 	KEGS_GET_RIDING_PET_LIST_ACK kEvent;

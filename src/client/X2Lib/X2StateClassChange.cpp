@@ -178,7 +178,7 @@ HRESULT CX2ClassChangePopup::OnFrameMove( double fTime, float fElapsedTime )
 
 
 
-bool CX2ClassChangePopup::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2ClassChangePopup::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/ )
 {
 	switch( wParam )
 	{

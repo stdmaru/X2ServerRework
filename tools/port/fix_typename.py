@@ -11,6 +11,7 @@ Usage: tools/port/fix_typename.py build.log [--root src] [--dry-run]
 """
 
 import argparse
+import unicodedata
 import re
 import sys
 from collections import defaultdict
@@ -20,12 +21,16 @@ PATTERN = re.compile(r"^(?P<file>[^:\s]+):(?P<line>\d+):(?P<col>\d+): error: nee
 
 
 def display_to_index(text: str, col: int, tabstop: int = 8) -> int:
-    """GCC's default column unit is the display column (1-based, tabs to the next multiple of 8)."""
+    """GCC's default column unit is the display column (1-based, tabs to the next multiple of 8, wide characters
+    such as Hangul take 2)."""
     width = 0
     for i, ch in enumerate(text):
         if width >= col - 1:
             return i
-        width = (width // tabstop + 1) * tabstop if ch == "\t" else width + 1
+        if ch == "\t":
+            width = (width // tabstop + 1) * tabstop
+        else:
+            width += 2 if unicodedata.east_asian_width(ch) in "WF" else 1
     return len(text)
 
 

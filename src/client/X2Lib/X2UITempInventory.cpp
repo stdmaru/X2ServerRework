@@ -63,7 +63,7 @@ HRESULT CX2UITempInventory::OnFrameMove( double fTime, float fElapsedTime )
 	return S_OK;
 }
 
-bool CX2UITempInventory::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UITempInventory::MsgProc( HWND /*hWnd*/, UINT uMsg, WPARAM /*wParam*/, LPARAM lParam )
 {
 	// 앞에 모달 다이얼로그가 있으면 메시지를 처리하지 않는다
 	if( true == g_pKTDXApp->GetDGManager()->GetDialogManager()->CheckFrontModalDlg( m_pDlgTempInventory ) )
@@ -128,7 +128,7 @@ bool CX2UITempInventory::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
     return bFlag;
 }
 
-bool CX2UITempInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UITempInventory::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/ )
 {
 	switch ( wParam )
 	{
@@ -534,7 +534,7 @@ bool CX2UITempInventory::Hander_EGS_DELETE_TEMP_ITEM_REQ()
 	return true;
 }
 
-bool CX2UITempInventory::Hander_EGS_GET_TEMP_ITEM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UITempInventory::Hander_EGS_GET_TEMP_ITEM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_GET_TEMP_ITEM_ACK kEvent;
@@ -597,7 +597,7 @@ bool CX2UITempInventory::Hander_EGS_GET_TEMP_ITEM_ACK( HWND hWnd, UINT uMsg, WPA
 	return false;
 }
 
-bool CX2UITempInventory::Hander_EGS_DELETE_TEMP_ITEM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UITempInventory::Hander_EGS_DELETE_TEMP_ITEM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_DELETE_TEMP_ITEM_ACK kEvent;

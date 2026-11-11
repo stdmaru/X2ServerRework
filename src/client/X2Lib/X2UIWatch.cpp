@@ -103,7 +103,7 @@ HRESULT CX2UIWatch::OnFrameMove( double fTime, float fElapsedTime )
 	return S_OK;
 }
 
-bool CX2UIWatch::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIWatch::MsgProc( HWND /*hWnd*/, UINT uMsg, WPARAM /*wParam*/, LPARAM lParam )
 {
 	// 앞에 모달 다이얼로그가 있으면 메시지를 처리하지 않는다
 	if( true == g_pKTDXApp->GetDGManager()->GetDialogManager()->CheckFrontModalDlg( m_pDLGWatch ) )
@@ -190,7 +190,7 @@ bool CX2UIWatch::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 	return bFlag;
 }
 
-bool CX2UIWatch::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIWatch::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/ )
 {
 
 	switch(wParam)

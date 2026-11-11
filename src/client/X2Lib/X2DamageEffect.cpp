@@ -875,23 +875,23 @@ CX2DamageEffect::CEffect::CEffect( CX2DamageEffect* pManager, KLuaManager* pLuaM
                                   float fHitAddMp /*=-1.f*/
 								  , bool bPetSkillEffect /*= false*/
 								  )
-: m_vHitDamageScaleByUnit( 1, 1, 1 )
-, m_vDieDamageScaleByUnit( 1, 1, 1 )
-, m_hHandle( hHandle )
-
+: m_hHandle( hHandle )
+, m_bFollowLineRight( false )
 , m_bFollowLineNew( false )
 
+, m_vHitDamageScaleByUnit( 1, 1, 1 )
+
+, m_vDieDamageScaleByUnit( 1, 1, 1 )
+
 , m_iReflectCount( 2 )
-
 , m_pAfterImage( NULL )
-, m_fDurationTime( 0.f )
 
-, m_iIndex( -1 )					/// 해당 DamageEffect의 Index ( 지연 폭발용 DamageEffect 인식 )
-, m_iType( DET_NONE )			/// 해당 DamageEffect의 Type  ( 현재 화살의 DamageEffect가 어떤 것인지 인식 )
-, m_iOrderNum( -1 )				/// 폭발의 화살 발사 순서
-, m_fAddDieEffectDamage( 0.f )	/// 해당 데미지 이펙트의 fPhysic, fMagic에 추가되는 수치
+, m_fDurationTime( 0.f )					/// 해당 DamageEffect의 Index ( 지연 폭발용 DamageEffect 인식 )
+, m_iIndex( -1 )			/// 해당 DamageEffect의 Type  ( 현재 화살의 DamageEffect가 어떤 것인지 인식 )
+, m_iType( DET_NONE )				/// 폭발의 화살 발사 순서
+, m_iOrderNum( -1 )	/// 해당 데미지 이펙트의 fPhysic, fMagic에 추가되는 수치
+, m_fAddDieEffectDamage( 0.f )
 , m_bCheckSpectro( false )
-, m_bFollowLineRight( false )
 , m_bShouldNotifyToOwnerUnitWhenDie( false )
 {
 	KTDXPROFILE();
@@ -1480,6 +1480,8 @@ void CX2DamageEffect::CEffect::OnFrameMove( double fTime, float fElapsedTime )
 																						true ); // todo!!!! 스크립트에 입력할 수 있게 해야함
 						} break;
 
+					default:
+						break;
 					}
 					m_CameraDataList.erase( m_CameraDataList.begin() + i );
 					i--;
@@ -2036,6 +2038,8 @@ void CX2DamageEffect::CEffect::OnFrameMove_BlackHoleData( float fElapsedTime )
 					case CX2UnitManager::NCT_THING_NOBUFF:		/// 버프/디버프에 영향을 받지 않음()
 						//}} JHKang / 강정훈 / 2010/12/07 / 버프 및 디버프 받지 않는 NPC TYPE
 						continue;
+					default:
+						break;
 					}
 				} break;
 			}
@@ -2565,6 +2569,8 @@ void CX2DamageEffect::CEffect::OnFrameMove_LockOnData(  float fElapsedTime_ )
 						}
 					}
 				} break;
+	default:
+		break;
 	}
 }
 
@@ -3089,6 +3095,8 @@ void CX2DamageEffect::CEffect::AttackResult()
 							pGUUser->UpNowMp( pGUUser->GetCashItemAbility().m_fUpMPAtAttackOrDamage );
 						}
 					} break;
+				default:
+					break;
 				}
 				//}} dmlee 2008.04.11 캐시 아이템 착용시
 
@@ -5504,7 +5512,7 @@ CX2DamageEffect::CEffect* CX2DamageEffect::GetInstanceByIndex( int iIndex )
 
 
 
-	void* CX2DamageEffect::ParticleData::operator new(size_t s)
+	void* CX2DamageEffect::ParticleData::operator new(size_t /*s*/)
 	{
 		return ParticleDataPool::malloc();
 	}
@@ -5514,7 +5522,7 @@ CX2DamageEffect::CEffect* CX2DamageEffect::GetInstanceByIndex( int iIndex )
 		ParticleDataPool::free(p);
 	}
 
-	void* CX2DamageEffect::DamageEffectData::operator new(size_t s)
+	void* CX2DamageEffect::DamageEffectData::operator new(size_t /*s*/)
 	{
 		return DamageEffectDataPool::malloc();
 	}
@@ -5525,7 +5533,7 @@ CX2DamageEffect::CEffect* CX2DamageEffect::GetInstanceByIndex( int iIndex )
 	}
 
 
-	void* CX2DamageEffect::CEffect::operator new(size_t s)
+	void* CX2DamageEffect::CEffect::operator new(size_t /*s*/)
 	{
 		return CEffectPool::malloc();
 	}

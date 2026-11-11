@@ -81,7 +81,7 @@ CX2Curtain::~CX2Curtain(void)
 	//CurtainBreak();
 }
 
-HRESULT CX2Curtain::OnFrameMove( double fTime, float fElapsedTime )
+HRESULT CX2Curtain::OnFrameMove( double /*fTime*/, float /*fElapsedTime*/ )
 {
 	CollisionCheck();
 	return S_OK;

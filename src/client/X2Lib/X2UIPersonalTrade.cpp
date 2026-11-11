@@ -2,18 +2,22 @@
 
 #include "./X2UIPersonalTrade.h"
 
-CX2UIPersonalTrade::CX2UIPersonalTrade( CKTDXStage* pNowStage, const WCHAR* pFileName )
+CX2UIPersonalTrade::CX2UIPersonalTrade( CKTDXStage* pNowStage, const WCHAR* /*pFileName*/ )
 : CX2UIDragable( pNowStage, NULL ),
 m_pDLGPersonalTrade(NULL),
 m_pDLGItemEnroll(NULL),
 m_pDLGMsgBox(NULL),
-m_bShow(false),
+m_pTalkBoxMgr( NULL ),
+m_iChangingEDLimit( 9 ),
+m_iChangedEDLimit( 11 ),					// D3DXVECTOR2
+m_pDLGTradeSealedItem( NULL ),						// D3DXVECTOR2
+m_bShow(false),							// D3DXVECTOR2
 m_bTrading(false),
-m_MovedPosition(0,0),					// D3DXVECTOR2
-m_DLGPosition(0,0),						// D3DXVECTOR2
-m_DLGSize(0,0),							// D3DXVECTOR2
-m_bTradeRequesting(false),
 //m_vecTradeInvited.clear();
+m_MovedPosition(0,0),
+m_DLGPosition(0,0),
+m_DLGSize(0,0),
+m_bTradeRequesting(false),
 m_pTradeInviting(NULL),
 m_iTradeUID(0),
 m_iOpponentUID(0),
@@ -22,20 +26,16 @@ m_bOpponentRegisteredTrade(false),
 m_bRegisteredTrade(false),
 m_bOpponentApprovedTrade(false),
 m_eNowMyTradeButtonStep(TS_BEFORE_REGISTER),
-m_eNowOpponentTradeButtonStep(TS_BEFORE_REGISTER),
-m_pTargetDragItemSlot(NULL),
-m_iItemEnrollNum(0),
-m_EnrollItemUid(0),
 //m_vMyItemSlot.clear();
 //m_vOpponentItemSlot.clear();
-m_iMyED(0),
-m_iOpponentED(0)
+m_eNowOpponentTradeButtonStep(TS_BEFORE_REGISTER),
+m_pTargetDragItemSlot(NULL)
 //{{ kimhc // 2009-09-07 // 봉인된 아이템을 거래 하겠냐고 묻는 다이얼로그
-, m_pDLGTradeSealedItem( NULL )
+, m_iItemEnrollNum(0)
 //}} kimhc // 2009-09-07 // 봉인된 아이템을 거래 하겠냐고 묻는 다이얼로그
-, m_pTalkBoxMgr( NULL )
-, m_iChangingEDLimit( 9 )
-, m_iChangedEDLimit( 11 )
+, m_EnrollItemUid(0)
+, m_iMyED(0)
+, m_iOpponentED(0)
 {
 	//////////////////////////////////////////////////////////////////////////
 
@@ -81,7 +81,7 @@ CX2UIPersonalTrade::TradeInvited::~TradeInvited()
 	SAFE_DELETE_DIALOG( m_pDLGInvited );
 }
 
-void CX2UIPersonalTrade::TradeInvited::OnFrameMove( double fTime, float fElapsedTime )
+void CX2UIPersonalTrade::TradeInvited::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	KTDXPROFILE();
 
@@ -136,7 +136,7 @@ CX2UIPersonalTrade::TradeInviting::~TradeInviting()
 	SAFE_DELETE_DIALOG( m_pDLGInviting );
 }
 
-void CX2UIPersonalTrade::TradeInviting::OnFrameMove( double fTime, float fElapsedTime )
+void CX2UIPersonalTrade::TradeInviting::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	KTDXPROFILE();
 
@@ -230,7 +230,7 @@ HRESULT CX2UIPersonalTrade::OnFrameMove( double fTime, float fElapsedTime )
 }
 
 
-bool CX2UIPersonalTrade::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPersonalTrade::MsgProc( HWND /*hWnd*/, UINT uMsg, WPARAM /*wParam*/, LPARAM lParam )
 {
 	// 앞에 모달 다이얼로그가 있으면 메시지를 처리하지 않는다
 	if( true == g_pKTDXApp->GetDGManager()->GetDialogManager()->CheckFrontModalDlg( m_pDLGPersonalTrade ) )
@@ -336,7 +336,7 @@ bool CX2UIPersonalTrade::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
 }
 
 
-bool CX2UIPersonalTrade::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPersonalTrade::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM lParam )
 {
 	switch(wParam)
 	{
@@ -672,6 +672,8 @@ bool CX2UIPersonalTrade::UIServerEventProc( HWND hWnd, UINT uMsg, WPARAM wParam,
 						return Handler_EGS_REQUEST_TRADE_NOT( hWnd, uMsg, wParam, lParam );
 					}
 				} break;
+			default:
+				break;
 			}
 
 		} break;
@@ -1422,7 +1424,7 @@ bool CX2UIPersonalTrade::Handler_EGS_REQUEST_TRADE_REQ( UidType iUnitUID )
 	return true;
 }
 
-bool CX2UIPersonalTrade::Handler_EGS_REQUEST_TRADE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPersonalTrade::Handler_EGS_REQUEST_TRADE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_REQUEST_TRADE_ACK kEvent;
@@ -1526,6 +1528,8 @@ bool CX2UIPersonalTrade::Handler_EGS_REQUEST_TRADE_ACK( HWND hWnd, UINT uMsg, WP
 						g_pMain->KTDGUIOKMsgBox(D3DXVECTOR2(-999,-999), GET_STRING( STR_ID_878 ), g_pMain->GetNowState() );
 					}
 				} break;
+			default:
+				break;
 			}
 
 			return true;
@@ -1543,7 +1547,7 @@ bool CX2UIPersonalTrade::Handler_EGS_REQUEST_TRADE_ACK( HWND hWnd, UINT uMsg, WP
 }
 
 
-bool CX2UIPersonalTrade::Handler_EGS_REQUEST_TRADE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPersonalTrade::Handler_EGS_REQUEST_TRADE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	// 체험 아이디이면 거래 안됨
 	if( true == g_pData->GetMyUser()->GetUserData().m_bIsGuestUser )
@@ -1610,6 +1614,8 @@ bool CX2UIPersonalTrade::Handler_EGS_REQUEST_TRADE_NOT( HWND hWnd, UINT uMsg, WP
 				}
 			}
 		} break;
+	default:
+		break;
 	}
 
 	return true;
@@ -1627,7 +1633,7 @@ bool CX2UIPersonalTrade::Handler_EGS_REQUEST_TRADE_REPLY_NOT( UidType iUnitUID, 
 	return true;
 }
 
-bool CX2UIPersonalTrade::Handler_EGS_REQUEST_TRADE_DENY_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPersonalTrade::Handler_EGS_REQUEST_TRADE_DENY_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_REQUEST_TRADE_DENY_NOT kEvent;
@@ -1684,6 +1690,8 @@ bool CX2UIPersonalTrade::Handler_EGS_REQUEST_TRADE_DENY_NOT( HWND hWnd, UINT uMs
 
 			}
 		} break;
+	default:
+		break;
 	}
 
 
@@ -1693,7 +1701,7 @@ bool CX2UIPersonalTrade::Handler_EGS_REQUEST_TRADE_DENY_NOT( HWND hWnd, UINT uMs
 
 //
 
-bool CX2UIPersonalTrade::Handler_EGS_CREATE_TRADE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPersonalTrade::Handler_EGS_CREATE_TRADE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CREATE_TRADE_NOT kEvent;
@@ -1717,7 +1725,7 @@ bool CX2UIPersonalTrade::Handler_EGS_BREAK_TRADE_REQ( int iReason )
 	return true;
 }
 
-bool CX2UIPersonalTrade::Handler_EGS_BREAK_TRADE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPersonalTrade::Handler_EGS_BREAK_TRADE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_BREAK_TRADE_ACK kEvent;
@@ -1735,7 +1743,7 @@ bool CX2UIPersonalTrade::Handler_EGS_BREAK_TRADE_ACK( HWND hWnd, UINT uMsg, WPAR
 	return false;
 }
 
-bool CX2UIPersonalTrade::Handler_EGS_BREAK_TRADE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPersonalTrade::Handler_EGS_BREAK_TRADE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_BREAK_TRADE_NOT kEvent;
@@ -1750,7 +1758,7 @@ bool CX2UIPersonalTrade::Handler_EGS_BREAK_TRADE_NOT( HWND hWnd, UINT uMsg, WPAR
 	return true;
 }
 
-bool CX2UIPersonalTrade::Handler_EGS_TRADE_USER_INFO_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPersonalTrade::Handler_EGS_TRADE_USER_INFO_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_TRADE_USER_INFO_NOT kEvent;
@@ -1786,7 +1794,7 @@ bool CX2UIPersonalTrade::Handler_EGS_TRADE_USER_INFO_NOT( HWND hWnd, UINT uMsg, 
 	return true;
 }
 
-bool CX2UIPersonalTrade::Handler_EGS_JOIN_TRADE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPersonalTrade::Handler_EGS_JOIN_TRADE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_JOIN_TRADE_NOT kEvent;
@@ -1832,7 +1840,7 @@ bool CX2UIPersonalTrade::Handler_EGS_UPDATE_TRADE_ITEM_REQ( UidType iItemUID, in
 	return true;
 }
 
-bool CX2UIPersonalTrade::Handler_EGS_UPDATE_TRADE_ITEM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPersonalTrade::Handler_EGS_UPDATE_TRADE_ITEM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_UPDATE_TRADE_ITEM_ACK kEvent;
@@ -1852,7 +1860,7 @@ bool CX2UIPersonalTrade::Handler_EGS_UPDATE_TRADE_ITEM_ACK( HWND hWnd, UINT uMsg
 	return false;
 }
 
-bool CX2UIPersonalTrade::Handler_EGS_UPDATE_TRADE_ITEM_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPersonalTrade::Handler_EGS_UPDATE_TRADE_ITEM_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_UPDATE_TRADE_ITEM_NOT kEvent;
@@ -1949,7 +1957,7 @@ bool CX2UIPersonalTrade::Handler_EGS_UPDATE_TRADE_ED_REQ( int iED )
 	return true;
 }
 
-bool CX2UIPersonalTrade::Handler_EGS_UPDATE_TRADE_ED_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPersonalTrade::Handler_EGS_UPDATE_TRADE_ED_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_UPDATE_TRADE_ED_ACK kEvent;
@@ -1974,7 +1982,7 @@ bool CX2UIPersonalTrade::Handler_EGS_UPDATE_TRADE_ED_ACK( HWND hWnd, UINT uMsg, 
 	return false;
 }
 
-bool CX2UIPersonalTrade::Handler_EGS_UPDATE_TRADE_ED_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPersonalTrade::Handler_EGS_UPDATE_TRADE_ED_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_UPDATE_TRADE_ED_NOT kEvent;
@@ -2018,7 +2026,7 @@ bool CX2UIPersonalTrade::Handler_EGS_OFFER_TRADE_REQ()
 	return true;
 }
 
-bool CX2UIPersonalTrade::Handler_EGS_OFFER_TRADE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPersonalTrade::Handler_EGS_OFFER_TRADE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_OFFER_TRADE_ACK kEvent;
@@ -2047,7 +2055,7 @@ bool CX2UIPersonalTrade::Handler_EGS_OFFER_TRADE_ACK( HWND hWnd, UINT uMsg, WPAR
 	return false;
 }
 
-bool CX2UIPersonalTrade::Handler_EGS_OFFER_TRADE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPersonalTrade::Handler_EGS_OFFER_TRADE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_OFFER_TRADE_NOT kEvent;
@@ -2080,7 +2088,7 @@ bool CX2UIPersonalTrade::Handler_EGS_APPROVE_TRADE_REQ()
 	return true;
 }
 
-bool CX2UIPersonalTrade::Handler_EGS_APPROVE_TRADE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPersonalTrade::Handler_EGS_APPROVE_TRADE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_APPROVE_TRADE_ACK kEvent;
@@ -2100,7 +2108,7 @@ bool CX2UIPersonalTrade::Handler_EGS_APPROVE_TRADE_ACK( HWND hWnd, UINT uMsg, WP
 }
 
 
-bool CX2UIPersonalTrade::Handler_EGS_APPROVE_TRADE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPersonalTrade::Handler_EGS_APPROVE_TRADE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_APPROVE_TRADE_NOT kEvent;
@@ -2118,7 +2126,7 @@ bool CX2UIPersonalTrade::Handler_EGS_APPROVE_TRADE_NOT( HWND hWnd, UINT uMsg, WP
 }
 
 
-bool CX2UIPersonalTrade::Handler_EGS_TRADE_COMPLETE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPersonalTrade::Handler_EGS_TRADE_COMPLETE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_TRADE_COMPLETE_NOT kEvent;
@@ -2144,6 +2152,8 @@ bool CX2UIPersonalTrade::Handler_EGS_TRADE_COMPLETE_NOT( HWND hWnd, UINT uMsg, W
 		{
 			ClosePersonalTradeWindow();
 		} break;
+	default:
+		break;
 	}
 
 	g_pMain->KTDGUIOKMsgBox( D3DXVECTOR2( 250, 300 ), GET_STRING( STR_ID_880 ), (CKTDXStage*) g_pMain->GetNowState() );
@@ -2152,7 +2162,7 @@ bool CX2UIPersonalTrade::Handler_EGS_TRADE_COMPLETE_NOT( HWND hWnd, UINT uMsg, W
 }
 
 // 이 코드는 앞으로 자주 쓰게 될 것이야
-void CX2UIPersonalTrade::OpenRegisgerQuantityDLG( D3DXVECTOR2 pos )
+void CX2UIPersonalTrade::OpenRegisgerQuantityDLG( D3DXVECTOR2 /*pos*/ )
 {
 
 	SAFE_DELETE_DIALOG(m_pDLGItemEnroll);
@@ -2268,7 +2278,7 @@ wstring CX2UIPersonalTrade::GetSlotItemDesc()
 	return itemDesc;
 }
 
-std::wstring CX2UIPersonalTrade::GetSlotItemDescExtra_RBtn( int itemTID, CX2Item* pItem )
+std::wstring CX2UIPersonalTrade::GetSlotItemDescExtra_RBtn( int /*itemTID*/, CX2Item* /*pItem*/ )
 {
 	std::wstring slotItemDesc = L"";
 	slotItemDesc += L"\n";

@@ -106,8 +106,16 @@ static const CX2GUUser::SkillCutInSet s_SkillCutInSet[] =
 CX2GUAdd::CX2GUAdd( int unitIndex, int teamNum, lua_State*   pScriptLuaState, int frameBufferNum, CX2Unit* pUnit )
 : CX2GUUser( unitIndex, teamNum, pScriptLuaState, frameBufferNum, pUnit )
 , m_iPressedSkillSlotIndex( -1 )
+, m_fMPConsume( 0.f )
+, m_fDPConsume( 0.f )
+, m_iMutationCountConsume( 0 )
 , m_bEnableAirDash( true )
 , m_bEnableLevitationWait( true )
+, m_iComboLoopCount( 0 )
+, m_fRenderParamColorA( 1.f )
+, m_fChargeTime( 0.f )
+, m_iChargeCount( 0 )
+, m_fChangeFormationCoolTime( 0.f )
 , m_fDPRateBySpecialActive( 1.f )
 , m_fDPRateByActive( 1.f )
 , m_fDPRateByCommand( 1.f )
@@ -116,35 +124,25 @@ CX2GUAdd::CX2GUAdd( int unitIndex, int teamNum, lua_State*   pScriptLuaState, in
 , m_fDPRateByFormationModeHit ( 0.f )
 , m_fDPRateByFormationModeUseMP ( 0.f )
 , m_fDPRateByNoFormationModeAttack ( 0.f )
+, m_fUseDPByNasodBarrier ( 0.f )
 , m_fUseDPByEnableFormationMode( 0.f )
 , m_fUseDPByFormationMode ( 0.f )
-, m_fUseDPByNasodBarrier ( 0.f )
+, m_bPossibleNasodArmorModeState( false )
+, m_bSetUpDPByAttackThisFrame( false )
+, m_bSetUpDPByDamageThisFrame( false )
+, m_hParticlePrsim( INVALID_EFFECTSET_HANDLE )
+, m_pLoopSound(NULL)
+, m_eCustomRenderState( CRS_NONE )
 , m_fGainDPValueChangeRate( 1.f )
+, m_fNotUsingDPSkillDamageRate( 1.f )
 , m_fUsingDPValueChangeRate( 1.f )
 , m_fUsingDPSkillDamageRate( 1.f )
-, m_fNotUsingDPSkillDamageRate( 1.f )
-, m_iComboLoopCount( 0 )
-, m_fChargeTime( 0.f )
-, m_iChargeCount( 0 )
-, m_fChangeFormationCoolTime( 0.f )
-, m_fRenderParamColorA( 1.f )
 , m_fNaCommandDamageRate( 1.f )
 , m_fDPValueRateByActiveFormationMode( 1.f )
 , m_iLibraryOfLimitlessLevel( 0 )
 , m_fDustStormRateByHit(1.f)
 , m_fDustStormRateByDamage(1.f)
 , m_fDustStormCoolTime(0.f)
-, m_bPossibleNasodArmorModeState( false )
-, m_hParticlePrsim( INVALID_EFFECTSET_HANDLE )
-, m_fMPConsume( 0.f )
-, m_fDPConsume( 0.f )
-, m_iMutationCountConsume( 0 )
-, m_pLoopSound(NULL)
-, m_bSetUpDPByAttackThisFrame( false )
-, m_bSetUpDPByDamageThisFrame( false )
-, m_fNonstopSummonPylonCoolTime( 0.f )
-, m_uiNonstopSummonPylonCount( 0 )
-, m_eCustomRenderState( CRS_NONE )
 , m_fBodyOfTranscendenceActiveRate( 0.f )
 , m_fBodyOfTranscendenceMoveSpeed( 1.f )
 , m_bEnablePowerExchanger( false )
@@ -153,6 +151,8 @@ CX2GUAdd::CX2GUAdd( int unitIndex, int teamNum, lua_State*   pScriptLuaState, in
 , m_fFantasyTracerUpMPRateByFormationMode( 0.f )
 , m_eNasodArmorAttackActiveSkillID( CX2SkillTree::SI_NONE )
 , m_eNasodArmorLandingActiveSkillID( CX2SkillTree::SI_NONE )
+, m_fNonstopSummonPylonCoolTime( 0.f )
+, m_uiNonstopSummonPylonCount( 0 )
 , m_fQuicksilverFrenzyFlickerTime( 0.f )
 {
 	m_fThrowStartTime		= 0.66f;
@@ -178,11 +178,11 @@ CX2GUAdd::~CX2GUAdd(void)
 	StopLoopSound();
 }
 
-/*static*/ void CX2GUAdd::AppendDeviceToDeviceList( CKTDXDeviceDataList& listInOut_ )
+/*static*/ void CX2GUAdd::AppendDeviceToDeviceList( CKTDXDeviceDataList& /*listInOut_*/ )
 {
 }
 
-/*static*/ void CX2GUAdd::AppendComponentToDeviceList( CKTDXDeviceDataList& listInOut_ )
+/*static*/ void CX2GUAdd::AppendComponentToDeviceList( CKTDXDeviceDataList& /*listInOut_*/ )
 {
 }
 
@@ -645,6 +645,8 @@ CX2GUAdd::~CX2GUAdd(void)
 					hyperStateData.OnFrameMove		= normalStateData.OnFrameMove;
 					hyperStateData.OnEventProcess	= normalStateData.OnEventProcess;
 				} break;
+			default:
+				break;
 			}
 			return;
 		} break;
@@ -1108,6 +1110,8 @@ CX2GUAdd::~CX2GUAdd(void)
 			hyperStateData.m_bHyperState		= true;
 			hyperStateData.OnEventProcess		= normalStateData.OnEventProcess;
 		} break;
+	default:
+		break;
 	}
 }
 
@@ -1410,6 +1414,8 @@ CX2GUAdd::~CX2GUAdd(void)
 				if ( CX2SkillTree::SI_SA_ALP_QUICKSILVER_ACCEL == GetFutureStateSkillID())
 					fMpConsumption = 10.f;
 			} break;
+		default:
+			break;
 		}
 	}
 
@@ -2868,7 +2874,7 @@ void CX2GUAdd::AttackResultByType( CX2DamageManager::DamageData &pDamageData )
 	g_pData->GetGameMajorParticle()->AppendToDeviceList( listInOut_, L"DamageImpactCoreRed" );
 	g_pData->GetGameMajorParticle()->AppendToDeviceList( listInOut_, L"DamageImpactSlashRed" );
 }
-/*static*/ void CX2GUAdd::AppendMinorParticleToDeviceList( CKTDXDeviceDataList& listInOut_ )
+/*static*/ void CX2GUAdd::AppendMinorParticleToDeviceList( CKTDXDeviceDataList& /*listInOut_*/ )
 {
 
 }
@@ -8300,6 +8306,8 @@ bool CX2GUAdd::SpecialAttackCustomStateChange( IN const CX2SkillTree::SKILL_ID e
 				return true;
 			}
 		} break;
+	default:
+		break;
 	}
 
 	return false;
@@ -8357,6 +8365,8 @@ float	CX2GUAdd::GetCustomSkillCoolTime( IN const float fCoolTime_, IN const CX2S
 			if ( CX2SkillTree::SI_SA_ALP_QUICKSILVER_ACCEL == GetFutureStateSkillID() )
 				fCoolTime = -1.f;
 		} break;
+	default:
+		break;
 	}
 
 	return fCoolTime;
@@ -8405,6 +8415,8 @@ CX2SkillTree::ACTIVE_SKILL_USE_CONDITION CX2GUAdd::GetSkillUseCondition( IN cons
 				CX2SkillTree::SI_SA_APT_STASIS_FIELD != m_FutureStateData.m_eSkillID )
 				eActiveSkillUseCondition = CX2SkillTree::ASUT_ANYTIME_EXCEPT_AIR;
 		} break;
+	default:
+		break;
 	}
 
 	return eActiveSkillUseCondition;
@@ -8673,6 +8685,8 @@ float CX2GUAdd::GetDPValue()
 	case CX2DamageManager::DT_PHYSIC:	fDamageRate = DamageData_.damage.fPhysic; break;
 	case CX2DamageManager::DT_MAGIC:	fDamageRate = DamageData_.damage.fMagic; break;
 	case CX2DamageManager::DT_MIX:		fDamageRate = ( DamageData_.damage.fPhysic + DamageData_.damage.fPhysic ) / 2.f; break;
+	default:
+		break;
 	}
 
 	float fNowDPValue = 0.f;		/// �����ų DP ��ġ
@@ -9787,7 +9801,7 @@ void CX2GUAdd::DieDamageEffectProc( const CX2DamageManager::DamageData& pDamageD
 		break;
 	}
 }
-void CX2GUAdd::PlayLoopSound( const WCHAR* pSoundFileName_, bool bLoop_, bool b3D_ )
+void CX2GUAdd::PlayLoopSound( const WCHAR* pSoundFileName_, bool /*bLoop_*/, bool /*b3D_*/ )
 {
 	if( NULL != g_pKTDXApp &&
 		NULL != g_pKTDXApp->GetDeviceManager() )

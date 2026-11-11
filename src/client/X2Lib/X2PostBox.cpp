@@ -519,7 +519,7 @@ void CX2PostBox::InitPostSend()
     ClearMailList();
 }
 
-void CX2PostBox::AddNewLetter( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+void CX2PostBox::AddNewLetter( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
     if(m_bNewLetterNotify == true)
     {
@@ -570,7 +570,7 @@ void CX2PostBox::ClearNewLetter()
     m_iNewLetter = 0;
 }
 
-bool CX2PostBox::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PostBox::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM lParam )
 {
 
     switch(wParam)
@@ -2306,7 +2306,7 @@ wstring CX2PostBox::GetSlotItemDesc()
     return itemDesc;
 }
 
-/*vitual*/ std::wstring CX2PostBox::GetSlotItemDescExtra_RBtn( int itemTID, CX2Item* pItem )
+/*vitual*/ std::wstring CX2PostBox::GetSlotItemDescExtra_RBtn( int /*itemTID*/, CX2Item* /*pItem*/ )
 {
     std::wstring slotItemDesc = L"";
 
@@ -3723,7 +3723,7 @@ bool CX2PostBox::Handler_EGS_SEND_LETTER_REQ()
     return true;
 }
 
-bool CX2PostBox::Handler_EGS_SEND_LETTER_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PostBox::Handler_EGS_SEND_LETTER_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
     m_bProcess = false;
 
@@ -3797,7 +3797,7 @@ bool CX2PostBox::Handler_EGS_DELETE_LETTER_REQ()
     return true;
 }
 
-bool CX2PostBox::Handler_EGS_DELETE_LETTER_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PostBox::Handler_EGS_DELETE_LETTER_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
     m_bProcess = false;
 
@@ -3883,7 +3883,7 @@ bool CX2PostBox::Handler_EGS_READ_LETTER_REQ(UidType postId)
     return true;
 }
 
-bool CX2PostBox::Handler_EGS_READ_LETTER_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PostBox::Handler_EGS_READ_LETTER_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
     m_bProcess = false;
 
@@ -3944,7 +3944,7 @@ bool CX2PostBox::Handler_EGS_GET_POST_LETTER_LIST_REQ()
     return true;
 }
 
-bool CX2PostBox::Handler_EGS_GET_POST_LETTER_LIST_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PostBox::Handler_EGS_GET_POST_LETTER_LIST_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
     m_bProcess = false;
 
@@ -4031,7 +4031,7 @@ bool CX2PostBox::Handler_EGS_GET_ITEM_FROM_LETTER_REQ(UidType postId)
     return true;
 }
 
-bool CX2PostBox::Handler_EGS_GET_ITEM_FROM_LETTER_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PostBox::Handler_EGS_GET_ITEM_FROM_LETTER_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
     m_bProcess = false;
 
@@ -4127,7 +4127,7 @@ bool CX2PostBox::Handler_EGS_GET_ITEM_FROM_LETTER_ACK( HWND hWnd, UINT uMsg, WPA
     return false;
 }
 
-bool CX2PostBox::Handler_EGS_RECEIVE_LETTER_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PostBox::Handler_EGS_RECEIVE_LETTER_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
     // 패킷 처리
     KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -4223,7 +4223,7 @@ bool CX2PostBox::Handler_EGS_NEW_POST_BLACK_LIST_REQ()
     return true;
 }
 
-bool CX2PostBox::Handler_EGS_NEW_POST_BLACK_LIST_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PostBox::Handler_EGS_NEW_POST_BLACK_LIST_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
     m_bProcess = false;
 
@@ -4301,7 +4301,7 @@ bool CX2PostBox::Handler_EGS_DEL_POST_BLACK_LIST_REQ()
     return false;
 }
 
-bool CX2PostBox::Handler_EGS_DEL_POST_BLACK_LIST_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PostBox::Handler_EGS_DEL_POST_BLACK_LIST_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
     m_bProcess = false;
 
@@ -4356,7 +4356,7 @@ bool CX2PostBox::Handler_EGS_GET_POST_BLACK_LIST_REQ()
     return true;
 }
 
-bool CX2PostBox::Handler_EGS_GET_POST_BLACK_LIST_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PostBox::Handler_EGS_GET_POST_BLACK_LIST_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
     m_bProcess = false;
 
@@ -4385,7 +4385,7 @@ bool CX2PostBox::Handler_EGS_GET_POST_BLACK_LIST_ACK( HWND hWnd, UINT uMsg, WPAR
     return false;
 }
 
-bool CX2PostBox::Handler_EGS_NEW_POST_LETTER_INFO_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PostBox::Handler_EGS_NEW_POST_LETTER_INFO_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
     // 패킷 처리
     KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -4419,7 +4419,7 @@ bool CX2PostBox::Handler_EGS_RENEWAL_LETTER_REQ()
 	return true;
 }
 
-bool CX2PostBox::Handler_EGS_RENEWAL_LETTER_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2PostBox::Handler_EGS_RENEWAL_LETTER_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	// 패킷 처리
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -4459,7 +4459,7 @@ void CX2PostBox::UpdateUnReadMailNotice()
 }
 
 //{{ 허상형 : [2010/8/25/] //	우편 수량 UI 개편
-void CX2PostBox::OpenRegisterQuantityDLG( D3DXVECTOR2 pos )
+void CX2PostBox::OpenRegisterQuantityDLG( D3DXVECTOR2 /*pos*/ )
 {
 
 	SAFE_DELETE_DIALOG(m_pDLGItemEnroll);

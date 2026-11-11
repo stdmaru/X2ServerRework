@@ -4,13 +4,13 @@
 
 #include "./X2UISocketItem.h"
 
-CX2UISocketItem::CX2UISocketItem( CKTDXStage* pNowStage, const WCHAR* pFileName )
+CX2UISocketItem::CX2UISocketItem( CKTDXStage* pNowStage, const WCHAR* /*pFileName*/ )
 : CX2UIDragable( pNowStage, NULL ),
-m_bShow(false),
 m_bFashion(false),
-m_iSocketCount(0),
 m_iTotalCostED(0),
+m_iSocketCount(0),
 m_ItemPrice(0),
+m_bShow(false),
 m_MovedPosition(0,0),				// D3DXVECTOR2
 m_DLGPosition(0,0),					// D3DXVECTOR2
 m_DLGSize(0,0),						// D3DXVECTOR2
@@ -1261,7 +1261,7 @@ HRESULT CX2UISocketItem::OnFrameMove( double fTime, float fElapsedTime )
 }
 
 
-bool CX2UISocketItem::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UISocketItem::MsgProc( HWND /*hWnd*/, UINT uMsg, WPARAM /*wParam*/, LPARAM lParam )
 {
 
 	bool bFlag = false;
@@ -1432,7 +1432,7 @@ bool CX2UISocketItem::Handler_EGS_SOCKET_ITEM_REQ( bool bDev )
 }
 
 
-bool CX2UISocketItem::Handler_EGS_SOCKET_ITEM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UISocketItem::Handler_EGS_SOCKET_ITEM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_SOCKET_ITEM_ACK kEvent;
@@ -1517,7 +1517,7 @@ bool CX2UISocketItem::Handler_EGS_SOCKET_ITEM_ACK( HWND hWnd, UINT uMsg, WPARAM 
 }
 
 
-bool CX2UISocketItem::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UISocketItem::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM lParam )
 {
 	switch(wParam)
 	{

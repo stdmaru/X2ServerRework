@@ -190,6 +190,8 @@ CX2SquareUnit::CX2SquareUnit( bool bMyUnit, CX2Unit* pUnit, const WCHAR* pScript
 			{
 				m_pMesh = g_pKTDXApp->GetDeviceManager()->OpenXSkinMesh( L"Mesh_Add_Base_SD.X" );
 			} break;
+	default:
+		break;
 	}
 
 	if( m_pMesh != NULL )
@@ -291,6 +293,8 @@ void    CX2SquareUnit::AppendToDeviceList( CKTDXDeviceDataList& listInOut_, CX2U
 		{
 			g_pKTDXApp->GetDeviceManager()->AppendXSkinMesh( listInOut_, L"Mesh_Eve_Base_SD.x" );
 		} break;
+	default:
+		break;
 	}
 
 	if ( NULL != g_pMain->GetPVPEmblem() )
@@ -874,6 +878,8 @@ void CX2SquareUnit::InitWaitMotion()
 
 	case CX2Unit::UC_ADD_LUNATIC_PSYKER:
 		m_wstrLobbyWaitMotionName = L"ALP_LobbyWait";
+		break;
+	default:
 		break;
 	}
 }
@@ -3169,6 +3175,8 @@ bool CX2SquareUnit::PlayEmotion(CX2Unit::EMOTION_TYPE eEmotionId)
 				case CX2Unit::ET_EMOTION_AVATAR6:
 					m_bMixedEmotion[5] = true;
 					break;
+				default:
+					break;
 				}
 				SAFE_CLOSE( pMixMotion );
 			}
@@ -3310,7 +3318,7 @@ bool CX2SquareUnit::IsAnimationEnd_LUA()
 }
 
 
-/*static*/ const WCHAR* CX2SquareUnit::GetSquareUnitScriptFileName( CX2Unit::UNIT_CLASS eUnitClass )
+/*static*/ const WCHAR* CX2SquareUnit::GetSquareUnitScriptFileName( CX2Unit::UNIT_CLASS /*eUnitClass*/ )
 {
 	return L"SQUARE_Unit.lua";
 }

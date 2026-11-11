@@ -358,6 +358,8 @@ void CX2SimplePathFinder::FollowTargetPath( /*float fElapsedTime,*/ const D3DXVE
 										{
 											m_MoveState = MS_FORCE_LEFT;
 										} break;
+									default:
+										break;
 									}
 								}
 							}
@@ -464,6 +466,8 @@ void CX2SimplePathFinder::FollowTargetPath( /*float fElapsedTime,*/ const D3DXVE
 									case MS_RIGHT:
 									case MS_FORCE_RIGHT:
 										m_MoveState = MS_FORCE_LEFT;
+										break;
+									default:
 										break;
 									}
 								}
@@ -1102,7 +1106,7 @@ void CX2SimplePathFinder::FollowTargetPathFly( /*float fElapsedTime,*/ const D3D
 } // end of OnFrameMove()
 
 
-void CX2SimplePathFinder::SimpleFollowTargetPath( float fElapsedTime, D3DXVECTOR3& vCurrPos, const int iCurrLineDataIndex,
+void CX2SimplePathFinder::SimpleFollowTargetPath( float /*fElapsedTime*/, D3DXVECTOR3& vCurrPos, const int iCurrLineDataIndex,
 										   const D3DXVECTOR3& vFinalDestPos, const int iFinalDestLineDataIndex,
 										   const float fMaxJumpUp, const float fMaxJumpRight,
 										   CKTDGLineMap* pLineMap, const float fDestArriveGap, const float fDestLeaveGap, bool bFootOnLine,
@@ -1398,6 +1402,8 @@ void CX2SimplePathFinder::SimpleFollowTargetPath( float fElapsedTime, D3DXVECTOR
 									{
 										m_MoveState = MS_FORCE_LEFT;
 									} break;
+								default:
+									break;
 								}
 							}
 						}
@@ -1496,6 +1502,8 @@ void CX2SimplePathFinder::SimpleFollowTargetPath( float fElapsedTime, D3DXVECTOR
 								case MS_FORCE_RIGHT:
 									m_MoveState = MS_FORCE_LEFT;
 									break;
+								default:
+									break;
 								}
 							}
 						}
@@ -1528,15 +1536,17 @@ void CX2SimplePathFinder::SimpleFollowTargetPath( float fElapsedTime, D3DXVECTOR
 			}
 		}break;
 
+	default:
+		break;
 	} // end of switch( m_MoveState )
 } // end of OnFrameMove()
 
-void CX2SimplePathFinder::SimpleFollowTargetPathFly( float fElapsedTime, D3DXVECTOR3& vCurrPos, const int iCurrLineDataIndex,
+void CX2SimplePathFinder::SimpleFollowTargetPathFly( float /*fElapsedTime*/, D3DXVECTOR3& vCurrPos, const int iCurrLineDataIndex,
 											  const D3DXVECTOR3& vFinalDestPos, const int iFinalDestLineDataIndex,
 											  const float fMaxJumpUp, const float fMaxJumpRight,
 											  const float fDestArriveHeight, const float fDestArriveArea,
-											  CKTDGLineMap* pLineMap, const float fDestArriveGap, const float fDestLeaveGap, bool bFootOnLine,
-											  bool bStayOnCurrLineGroup, bool& bTargetOnRight,
+											  CKTDGLineMap* pLineMap, const float fDestArriveGap, const float /*fDestLeaveGap*/, bool /*bFootOnLine*/,
+											  bool /*bStayOnCurrLineGroup*/, bool& bTargetOnRight,
 											  const float fLineEndDetectRange )
 {
 	KTDXPROFILE();
@@ -2242,6 +2252,8 @@ void CX2SimplePathFinder::FollowTargetPathInBattleField( const CX2BattleFieldNpc
 									{
 										m_MoveState = MS_FORCE_LEFT;
 									} break;
+								default:
+									break;
 								}
 							}
 						}
@@ -2346,6 +2358,8 @@ void CX2SimplePathFinder::FollowTargetPathInBattleField( const CX2BattleFieldNpc
 								case MS_FORCE_RIGHT:
 									m_MoveState = MS_FORCE_LEFT;
 									break;
+								default:
+									break;
 								}
 							}
 						}
@@ -2382,5 +2396,7 @@ void CX2SimplePathFinder::FollowTargetPathInBattleField( const CX2BattleFieldNpc
 			}
 		}break;
 
+	default:
+		break;
 	} // end of switch( m_MoveState )
 }

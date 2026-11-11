@@ -2,21 +2,21 @@
 #include "./X2WeddingGame.h"
 
 CX2WeddingGame::CX2WeddingGame( UDPData* pUdpData, SEnum::WEDDING_HALL_TYPE eHallType, SEnum::WEDDING_OFFICIANT_TYPE eOfficiantType_ ):
-m_fOfficiantCameraTime( -1.f ),
-m_pWeddingManager( NULL ),
 m_pWorld( NULL ),
 m_pCamera( NULL ),
+m_fReserveTime(0.f),
 m_pMajorParticle( NULL ),
 m_pMinorParticle( NULL ),
 m_pMajorXMeshPlayer( NULL ),
 m_pMinorXMeshPlayer( NULL ),
 m_pFontForUnitName( NULL ),
 m_fP2PSendGap(0.f),
-m_fReserveTime(0.f),
-m_bFreeCamera(false),
 m_bEnableKeyProcess(true),
 m_bEnableCameraProcess(true),
+m_bFreeCamera(false),
 m_bLeaveWeddingGame(false),
+m_fOfficiantCameraTime( -1.f ),
+m_pWeddingManager( NULL ),
 m_iReturnStateID(CX2Main::XS_WEDDING_GAME),
 m_iWeddingHeroineNum( 0 ),
 m_iNessesaryHeroineNum( 2 )

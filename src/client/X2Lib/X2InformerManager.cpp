@@ -125,7 +125,7 @@ void CX2InformerManager::Reset()
 	}
 }
 
-void CX2InformerManager::CheckInfo( bool bStateChange )
+void CX2InformerManager::CheckInfo( bool /*bStateChange*/ )
 {
 }
 

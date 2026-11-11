@@ -71,7 +71,7 @@ bool CX2StateCommonBG::SetCommonBG()
 	return true;
 }
 
-void CX2StateCommonBG::BGEffectFrameMove( double fTime, float fElapsedTime )
+void CX2StateCommonBG::BGEffectFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	KTDXPROFILE();
 

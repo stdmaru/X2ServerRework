@@ -98,6 +98,8 @@ bool CX2PVPRoom::Handler_EGS_CHANGE_SLOT_OPEN_NOT( KEGS_CHANGE_SLOT_OPEN_NOT& kE
 			pSlotData->m_SlotState = (SLOT_STATE)kEGS_CHANGE_SLOT_OPEN_NOT.m_SlotState;
 		}
 		break;
+	default:
+		break;
 	}
 
 	return true;

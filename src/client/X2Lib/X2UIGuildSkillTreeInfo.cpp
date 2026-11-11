@@ -257,7 +257,7 @@ void CX2GuildSkillTreeInfoSlotData::ShowSlotPicture(bool bShow, CKTDGUISlot* pSl
 //////////////////////////////////////////////////////////////////////////
 
 
-CX2UIGuildSkillTreeInfo::CX2UIGuildSkillTreeInfo( CKTDXStage* pNowStage ) :
+CX2UIGuildSkillTreeInfo::CX2UIGuildSkillTreeInfo( CKTDXStage* /*pNowStage*/ ) :
 m_bShow(false),
 m_bSkillRemoveMode(false),
 m_bClassInfoVaild(false),
@@ -268,9 +268,9 @@ m_pDLGUISkillTree(NULL),
 m_pDLGSkillToolTip(NULL),
 m_pDLGSkillUnsealInform(NULL),
 m_pDLGSkillUnsealed( NULL ),
+m_pUserSkillTree(NULL),
 m_SumDelta(0),
 m_iPrevSP(-1),
-m_pUserSkillTree(NULL),
 m_pTalkBoxManager(NULL),
 m_bUsingCSP( false )		// 이것도 안쓰이는거 같은데...
 {
@@ -313,7 +313,7 @@ void CX2UIGuildSkillTreeInfo::SetPosition( D3DXVECTOR2 vec )
 
 }
 
-HRESULT CX2UIGuildSkillTreeInfo::OnFrameMove( double fTime, float fElapsedTime )
+HRESULT CX2UIGuildSkillTreeInfo::OnFrameMove( double /*fTime*/, float /*fElapsedTime*/ )
 {
 
 	return S_OK;
@@ -375,7 +375,7 @@ bool CX2UIGuildSkillTreeInfo::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 	return bFlag;
 }
 
-bool CX2UIGuildSkillTreeInfo::OnMouseWheel(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+bool CX2UIGuildSkillTreeInfo::OnMouseWheel(HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/)
 {
 	CKTDGUIContolList* pControlList = (CKTDGUIContolList*) m_pDLGUISkillTree->GetControl( L"SkillTreeControlList" );
 	if( pControlList == NULL )
@@ -404,7 +404,7 @@ bool CX2UIGuildSkillTreeInfo::OnMouseWheel(HWND hWnd, UINT uMsg, WPARAM wParam, 
 	return true;
 }
 
-bool CX2UIGuildSkillTreeInfo::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIGuildSkillTreeInfo::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM lParam )
 {
 	switch(wParam)
 	{
@@ -836,7 +836,7 @@ void CX2UIGuildSkillTreeInfo::CreateSkillTree( CX2Unit::UNIT_CLASS eUnitClass )
 
 }
 
-void CX2UIGuildSkillTreeInfo::UpdateUI( bool bEquipped, bool bSP /*= true*/, bool bSkillTree /*= false*/ )
+void CX2UIGuildSkillTreeInfo::UpdateUI( bool /*bEquipped*/, bool bSP /*= true*/, bool bSkillTree /*= false*/ )
 {
 
 	if(bSP)
@@ -1357,7 +1357,7 @@ void CX2UIGuildSkillTreeInfo::SetArrowColor( CX2SkillTree::SKILL_ID eSkillID, D3
 // 아직 스킬 봉인해제 자체가 미구현이므로 기반만 닦아 둔다.
 // 다이얼로그 닫는 경우까지만 만들어 뒀습니다. 구매 버튼을 눌렀을 때는 아무것도 안 하게 되어 있으니 다음 작업자 분께서는
 // UICustomMsgProc에서 case GSTICM_UNSEAL_SKILL_BUY 항목에 그 부분을 작업해 주세요.
-void CX2UIGuildSkillTreeInfo::OpenSkillUnsealInformDLG( const CX2SkillTree::SkillTemplet* pSkillTemplet, D3DXVECTOR2 SlotCenterPos )
+void CX2UIGuildSkillTreeInfo::OpenSkillUnsealInformDLG( const CX2SkillTree::SkillTemplet* /*pSkillTemplet*/, D3DXVECTOR2 SlotCenterPos )
 {
 	SAFE_DELETE_DIALOG( m_pDLGSkillUnsealInform );
 

@@ -92,7 +92,7 @@ void CX2BossGageUI::SetBossGageTexture( const WCHAR* wszFaceTexName_, const WCHA
 	}
 }
 
-/*virtual*/ void CX2BossGageUI::OnFrameMove( float fElapsedTime_ )
+/*virtual*/ void CX2BossGageUI::OnFrameMove( float /*fElapsedTime_*/ )
 {
 	if ( GetShow() && null != m_optrGameUnit)
 	{
@@ -592,7 +592,7 @@ CX2MySmallGageUI::~CX2MySmallGageUI()
 	SetShow( false );
 }
 
-/*virtual*/ void CX2MySmallGageUI::OnFrameMove( float fElapsedTime_ )
+/*virtual*/ void CX2MySmallGageUI::OnFrameMove( float /*fElapsedTime_*/ )
 {
 	if ( null != m_optrGameUnit )
 	{
@@ -1084,7 +1084,7 @@ CX2MyGageUI::CX2MyGageUI( CX2GageData* pGageData_, const CX2Unit::UNIT_CLASS eOw
 	}
 }
 
-/*virtual*/ void CX2MyGageUI::OnFrameMove( float fElapsedTime_ )
+/*virtual*/ void CX2MyGageUI::OnFrameMove( float /*fElapsedTime_*/ )
 {
 	if ( NULL == m_pDLGMyUnit )
 		return;
@@ -1145,6 +1145,8 @@ CX2MyGageUI::CX2MyGageUI( CX2GageData* pGageData_, const CX2Unit::UNIT_CLASS eOw
 					}
 				}
 			}
+			break;
+		default:
 			break;
 		}
 	}
@@ -2622,7 +2624,7 @@ void CX2PartyMemberGageUI::SetPosition( const UINT uiPositionIndex_ )
 }
 
 
-/*virtual*/ void CX2PartyMemberGageUI::OnFrameMove( float fElapsedTime_ )
+/*virtual*/ void CX2PartyMemberGageUI::OnFrameMove( float /*fElapsedTime_*/ )
 {
 	ASSERT( NULL != m_pGageData );
 	if ( NULL != m_pGageData )
@@ -2693,6 +2695,8 @@ void CX2PartyMemberGageUI::SetPosition( const UINT uiPositionIndex_ )
 						}
 					}
 				}
+				break;
+			default:
 				break;
 			}
 		}
@@ -3108,7 +3112,7 @@ void CX2PVPPlayerGageUI::SetPosition( const UINT uiPositionIndex_ )
 		m_pDlgBuffIcon->SetShow( bShow_ );
 }
 
-/*virtual*/ void CX2PVPPlayerGageUI::OnFrameMove( float fElapsedTime_ )
+/*virtual*/ void CX2PVPPlayerGageUI::OnFrameMove( float /*fElapsedTime_*/ )
 {
 	ASSERT( NULL != m_pGageData );
 	if ( NULL != m_pGageData )

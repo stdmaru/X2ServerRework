@@ -28,10 +28,10 @@ IMPLEMENT_HELP_SYSTEM( CX2World )
 // constructor.
 CX2World::CX2World( WorldData* pWorldData, const bool bBackgroundLoad_ /*= false*/ )
 : m_bBackgroundLoad( bBackgroundLoad_ )
-, m_bObjectListSorted(false)
 , m_pLineMap( NULL )
 , m_pLineMapFuture( NULL )
 , m_bFirstLineMapFrameMove( true )
+, m_bObjectListSorted(false)
 {
 	m_pWorldData	= pWorldData;
 
@@ -646,7 +646,7 @@ CX2WorldObject* CX2World::FindObjectByName(const std::wstring& wstrName_)
 //}} seojt // 2008-10-21, 17:27
 
 
-bool CX2World::OpenScriptFile( const WCHAR* pFileName, KLuabinder* pKLuabinder /* = NULL */ )
+bool CX2World::OpenScriptFile( const WCHAR* pFileName, KLuabinder* /*pKLuabinder*/ /* = NULL */ )
 {
 	g_pKTDXApp->GetDGManager()->SetNear(10.f);
 	g_pKTDXApp->GetDGManager()->SetFar(50000.f);
@@ -880,6 +880,8 @@ bool CX2World::SetWorldCamera_LUA( const char* pFileName )
 		}
 		break;
 
+	default:
+		break;
 	}
 	return false;
 }
@@ -894,6 +896,8 @@ void CX2World::UnLoadWorldCamera()
 		}
 		break;
 
+	default:
+		break;
 	}
 
 	return;
@@ -1175,7 +1179,7 @@ CX2WorldObject* CX2World::GetSyncObject(int index)
         return NULL;
 }
 
-void CX2World::FrameMoveSyncObject(float fx, float fy)
+void CX2World::FrameMoveSyncObject(float /*fx*/, float /*fy*/)
 {
 }
 
@@ -1417,7 +1421,7 @@ void CX2World::DoTriggerEtc(CKTDGLineMap::TRIGGER_DATA_ETC &triggerEtc)
 	}
 }
 
-void CX2World::DoTriggerFrameMove( double fTime, float fElapsedTime )
+void CX2World::DoTriggerFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	if( GetLineMap() == NULL )
 		return;

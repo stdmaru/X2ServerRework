@@ -344,7 +344,7 @@ void CX2GuildSkillTreeSlotData::ShowSlotPicture(bool bShow, CKTDGUISlot* pSlot, 
 //////////////////////////////////////////////////////////////////////////
 
 
-CX2UIGuildSkillTree::CX2UIGuildSkillTree( CKTDXStage* pNowStage ) :
+CX2UIGuildSkillTree::CX2UIGuildSkillTree( CKTDXStage* /*pNowStage*/ ) :
 m_bShow(false),
 m_bSkillRemoveMode(false),
 m_bClassInfoVaild(false),
@@ -401,7 +401,7 @@ void CX2UIGuildSkillTree::SetPosition( D3DXVECTOR2 vec )
 
 }
 
-HRESULT CX2UIGuildSkillTree::OnFrameMove( double fTime, float fElapsedTime )
+HRESULT CX2UIGuildSkillTree::OnFrameMove( double /*fTime*/, float /*fElapsedTime*/ )
 {
 
 	return S_OK;
@@ -463,7 +463,7 @@ bool CX2UIGuildSkillTree::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 	return bFlag;
 }
 
-bool CX2UIGuildSkillTree::OnMouseWheel(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+bool CX2UIGuildSkillTree::OnMouseWheel(HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/)
 {
 	CKTDGUIContolList* pControlList = (CKTDGUIContolList*) m_pDLGUISkillTree->GetControl( L"SkillTreeControlList" );
 	if( pControlList == NULL )
@@ -492,7 +492,7 @@ bool CX2UIGuildSkillTree::OnMouseWheel(HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 	return true;
 }
 
-bool CX2UIGuildSkillTree::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIGuildSkillTree::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM lParam )
 {
 	switch(wParam)
 	{
@@ -1404,7 +1404,7 @@ void CX2UIGuildSkillTree::CreateSkillTree( CX2Unit::UNIT_CLASS eUnitClass )
 
 }
 
-void CX2UIGuildSkillTree::UpdateUI( bool bEquipped, bool bSP /*= true*/, bool bSkillTree /*= false*/ )
+void CX2UIGuildSkillTree::UpdateUI( bool /*bEquipped*/, bool bSP /*= true*/, bool bSkillTree /*= false*/ )
 {
 
 	if(bSP)
@@ -1950,7 +1950,7 @@ void CX2UIGuildSkillTree::SetArrowColor( CX2SkillTree::SKILL_ID eSkillID, D3DXCO
 // 아직 스킬 봉인해제 자체가 미구현이므로 기반만 닦아 둔다.
 // 다이얼로그 닫는 경우까지만 만들어 뒀습니다. 구매 버튼을 눌렀을 때는 아무것도 안 하게 되어 있으니 다음 작업자 분께서는
 // UICustomMsgProc에서 case GSTUCM_UNSEAL_SKILL_BUY 항목에 그 부분을 작업해 주세요.
-void CX2UIGuildSkillTree::OpenSkillUnsealInformDLG( const CX2SkillTree::SkillTemplet* pSkillTemplet, D3DXVECTOR2 SlotCenterPos )
+void CX2UIGuildSkillTree::OpenSkillUnsealInformDLG( const CX2SkillTree::SkillTemplet* /*pSkillTemplet*/, D3DXVECTOR2 SlotCenterPos )
 {
 	SAFE_DELETE_DIALOG( m_pDLGSkillUnsealInform );
 
@@ -1968,7 +1968,7 @@ void CX2UIGuildSkillTree::OpenSkillUnsealInformDLG( const CX2SkillTree::SkillTem
 
 // SlotManager의 ItemDesc 쪽 코드를 긁어왔음
 void CX2UIGuildSkillTree::ShowSkillDesc( bool bShow, CX2SkillTree::SKILL_ID eSkillID /*= CX2SkillTree::SI_NONE*/, D3DXVECTOR2 pos /*= D3DXVECTOR2(0,0)*/,
-								    D3DXVECTOR2 size /*= D3DXVECTOR2(0,0)*/, bool bEquipped /*= false*/ )
+								    D3DXVECTOR2 size /*= D3DXVECTOR2(0,0)*/, bool /*bEquipped*/ /*= false*/ )
 {
 
 	if(m_pDLGSkillToolTip == NULL )

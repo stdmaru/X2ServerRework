@@ -24,7 +24,7 @@ CX2Book::~CX2Book(void)
 	m_mapPageData.clear();
 }
 
-bool CX2Book::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2Book::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM lParam )
 {
 	switch(wParam)
 	{
@@ -57,7 +57,7 @@ bool CX2Book::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 	return false;
 }
 
-bool CX2Book::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2Book::MsgProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	if( g_pKTDXApp->GetDIManager()->Getkeyboard()->GetKeyState(DIK_F12) == TRUE )
 	{
@@ -66,7 +66,7 @@ bool CX2Book::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 	return false;
 }
 
-bool CX2Book::OnMouseWheel( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2Book::OnMouseWheel( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	return false;
 }

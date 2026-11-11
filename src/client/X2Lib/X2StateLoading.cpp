@@ -724,7 +724,7 @@ void CX2StateLoading::DropItemLoading()
 		return true;
 	}
 
-	bool CX2StateLoading::Handler_ECH_VERIFY_ACCOUNT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+	bool CX2StateLoading::Handler_ECH_VERIFY_ACCOUNT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 	{
 		KSerBuffer* pBuff = (KSerBuffer*)lParam;
 		KECH_VERIFY_ACCOUNT_ACK kEvent;
@@ -786,7 +786,7 @@ void CX2StateLoading::DropItemLoading()
 	}
 
 
-	bool CX2StateLoading::Handler_ECH_DISCONNECT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+	bool CX2StateLoading::Handler_ECH_DISCONNECT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 	{
 		if( g_pMain->DeleteServerPacket( ECH_DISCONNECT_ACK ) == true )
 		{

@@ -141,7 +141,7 @@ bool CX2NoticeManager::AddNotice( KEGS_NOTIFY_MSG_NOT::NOTIFY_TYPE eNotifyType, 
 	return true;
 }
 
-HRESULT	CX2NoticeManager::OnFrameMove( double fTime, float fElapsedTime )
+HRESULT	CX2NoticeManager::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	// 일반공지
 	for ( int i = 0; i < (int)m_TextListToDelete.size(); i++ )

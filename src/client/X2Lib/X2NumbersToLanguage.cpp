@@ -7,8 +7,8 @@
 	@date		: 2010/08/31
 */
 CX2NumbersToLanguage::CX2NumbersToLanguage(void):
-m_LanguageData(),
-m_eType(TL_KOR)
+m_eType(TL_KOR),
+m_LanguageData()
 {
 }
 
@@ -41,6 +41,8 @@ void CX2NumbersToLanguage::TranslateDigits(TypeLanguage eType, __int64 i64lNumbe
 		break;
 	case TL_CHN:
 		Lang = m_LanguageData.LD_CHN;
+		break;
+	default:
 		break;
 	}
 

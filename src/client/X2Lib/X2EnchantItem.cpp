@@ -279,6 +279,8 @@ CX2DamageManager::EXTRA_DAMAGE_TYPE CX2EnchantItem::GetExtraDamageType( CX2Encha
 		{
 			return CX2DamageManager::EDT_ENCHANT_SNATCH;
 		} break;
+	default:
+		break;
 	}
 
 
@@ -580,6 +582,8 @@ int CX2EnchantItem::GetItemID( ENCHANT_TYPE enchantType )
 		{
 			return ATI_UNKNOWN;
 		} break;
+	default:
+		break;
 	}
 
 	return 0;
@@ -818,6 +822,8 @@ wstring CX2EnchantItem::GetEnchantResistName( CX2DamageManager::EXTRA_DAMAGE_TYP
 
 			return wstrName;
 		} break;
+	default:
+		break;
 	}
 
 	return GET_STRING( iStringIndex );
@@ -893,6 +899,8 @@ wstring CX2EnchantItem::GetEnchantResistToolTip( CX2DamageManager::EXTRA_DAMAGE_
 
 			return wstrName;
 		} break;
+	default:
+		break;
 	}
 
 	return GET_STRING( iStringIndex );
@@ -1510,6 +1518,8 @@ CX2DamageManager::EXTRA_DAMAGE_TYPE CX2EnchantItem::GetBaseExtraDamageType( CX2D
 		{
 			return (int)CX2EnchantItem::EAR_MASTER_VALUE;
 		} break;
+	default:
+		break;
 	}
 
 	return 0;
@@ -1543,8 +1553,12 @@ CX2DamageManager::EXTRA_DAMAGE_TYPE CX2EnchantItem::GetBaseExtraDamageType( CX2D
 				{
 					return L"Elsword_SlashTrace_Texture_Poision.dds";
 				} break;
+			default:
+				break;
 			}
 		} break;
+	default:
+		break;
 	}
 
 	ASSERT( "NOT GOOD" );

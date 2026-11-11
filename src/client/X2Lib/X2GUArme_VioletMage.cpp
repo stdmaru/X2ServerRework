@@ -827,6 +827,8 @@ void CX2GUArme_VioletMage::InitState()
 		{
 			m_iSkillCutInSetIndex = 3;
 		} break;
+	default:
+		break;
 	}
 
 	switch( pUnitData->m_UnitClass )
@@ -939,6 +941,8 @@ void CX2GUArme_VioletMage::InitState()
 			stateData.OnEventProcess	= SET_CB_FUNC( CX2GUArme_VioletMage, AVSI_DARK_MAGICIAN_COMBO_X3back_EventProcess );
 			m_StateList[stateData.stateID] = stateData;
 		} break;
+	default:
+		break;
 	}
 
 
@@ -992,6 +996,8 @@ void CX2GUArme_VioletMage::InitState()
 			stateData.OnEventProcess	= SET_CB_FUNC( CX2GUArme_VioletMage, AVSI_DARK_MAGICIAN_COMBO_X4down_EventProcess );
 			m_StateList[stateData.stateID] = stateData;
 		} break;
+	default:
+		break;
 	}
 
 
@@ -1073,6 +1079,8 @@ void CX2GUArme_VioletMage::InitState()
 			m_StateList[stateData.stateID] = stateData;
 		}
 		break;
+	default:
+		break;
 	}
 
 
@@ -1134,6 +1142,8 @@ void CX2GUArme_VioletMage::InitState()
 			stateData.OnEventProcess	= SET_CB_FUNC( CX2GUArme_VioletMage, AVSI_DIMENSION_WITCH_DASH_ATTACK_X2_EventProcess );
 			m_StateList[stateData.stateID] = stateData;
 		} break;
+	default:
+		break;
 	}
 
 	switch( pUnitData->m_UnitClass )
@@ -1207,6 +1217,8 @@ void CX2GUArme_VioletMage::InitState()
 
 		} break;
 
+	default:
+		break;
 	}
 
 
@@ -1371,6 +1383,8 @@ void CX2GUArme_VioletMage::InitState()
 			stateData.OnEventProcess	= SET_CB_FUNC( CX2GUArme_VioletMage, AVSI_ADW_COMBO_ADD_X_EventProcess );
 			m_StateList[stateData.stateID] = stateData;
 		} break;
+	default:
+		break;
 	}
 
 
@@ -2473,6 +2487,8 @@ void CX2GUArme_VioletMage::InitEquippedActiveSkillState(bool bOnlySkillLevel /* 
 					hyperStateData.OnFrameMove		= normalStateData.OnFrameMove;
 					hyperStateData.OnEventProcess	= normalStateData.OnEventProcess;
 				} break;
+			default:
+				break;
 			}
 			return;
 		} break;
@@ -4314,6 +4330,8 @@ RENDER_HINT CX2GUArme_VioletMage::CommonRender_Prepare()
 				m_FrameDataFuture.syncData.nowAction = UAI_ELEMENTAL_FRIENDSHIP_UP;
 
 			} break;
+		default:
+			break;
 		}
 	}
 
@@ -4334,6 +4352,8 @@ RENDER_HINT CX2GUArme_VioletMage::CommonRender_Prepare()
 			{
 				fRestoreMPRate = m_pStrongMindData->m_fSpecialActiveSkillRate;
 			} break;
+		default:
+			break;
 		}
 
 
@@ -11495,6 +11515,8 @@ void CX2GUArme_VioletMage::SetSelfDestructSummonedNPC( CX2UnitManager::NPC_UNIT_
 				case CX2UnitManager::NUI_ADW_DISTORTION:
 					pNPC->StartSelfDestruction( 0.f );
 					break;
+				default:
+					break;
 				}
 			}
 		}
@@ -15231,7 +15253,7 @@ void CX2GUArme_VioletMage::ShowActiveSkillCutInAndLight( const WCHAR* szBoneName
 	@param : � ���������Ͱ� �ߵ��ƴ����� ���� ��ų���̵�(eSkillID_)
 	@return : �߰��ð�(float)
 */
-/*virtual*/ float CX2GUArme_VioletMage::GetAdditionalAccelBuffTime( const CX2SkillTree::SKILL_ID eSkillID_ ) const
+/*virtual*/ float CX2GUArme_VioletMage::GetAdditionalAccelBuffTime( const CX2SkillTree::SKILL_ID /*eSkillID_*/ ) const
 {
 	float fAdditionalAccelBuffTime = 0.0f;
 
@@ -16709,6 +16731,8 @@ CX2SkillTree::ACTIVE_SKILL_USE_CONDITION CX2GUArme_VioletMage::GetSkillUseCondit
 			if( GetEqippedSkillMemo(CX2SkillTree::SMI_AISHA_MEMO17) == true )
 				eActiveSkillUseCondition = CX2SkillTree::ASUT_AIR;
 		} break;
+	default:
+		break;
 	}
 
 

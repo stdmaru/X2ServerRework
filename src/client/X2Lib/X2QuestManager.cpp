@@ -924,6 +924,8 @@ bool CX2QuestManager::GetBoardStartQuestList(std::vector<int>& vecQuestID )
 			BoardVillageID = SEnum::VMI_SANDER;
 		}
 		break;
+	default:
+		break;
 	}
 
 
@@ -3100,6 +3102,8 @@ wstring CX2QuestManager::MakeSubQuestString( bool bAuto, const CX2QuestManager::
 				}
 			}
 		} break;
+	default:
+		break;
 	}
 
 	return wstrmQuestCond.str();
@@ -3436,6 +3440,8 @@ void CX2QuestManager::InsertCompletedVisitQuestID(QuestInst* pQuestInst)
 						m_vecCompletedQuestID.push_back( pQuestInst->m_iID );
 					}
 				}
+				break;
+			default:
 				break;
 			}
 		}

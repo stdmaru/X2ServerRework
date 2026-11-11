@@ -409,7 +409,7 @@ CX2WeddingHallManager::~CX2WeddingHallManager()
 	}
 }
 
-HRESULT CX2WeddingHallManager::OnFrameMove( double fTime, float fElapsedTime )
+HRESULT CX2WeddingHallManager::OnFrameMove( double /*fTime*/, float /*fElapsedTime*/ )
 {
 	return S_OK;
 }
@@ -577,8 +577,8 @@ UINT CX2WeddingHallManager::GetOfficiantStartPosIndexByWeddingStatus( SEnum::WED
 
 CX2OfficiantManger::CX2OfficiantManger():
 m_eCurrentOfficiantType(SEnum::WOT_NPC_A),
-m_hOfficiantMesh(INVALID_MESH_INSTANCE_HANDLE),
 m_pCurrentOfficiant(NULL),
+m_hOfficiantMesh(INVALID_MESH_INSTANCE_HANDLE),
 m_bIsPlayOfficiantsMessage(false),
 m_fOfficiantTime(0.f)
 {
@@ -613,7 +613,7 @@ CX2OfficiantManger::~CX2OfficiantManger()
 	SAFE_DELETE( m_pCurrentOfficiant );
 }
 
-HRESULT CX2OfficiantManger::OnFrameMove( double fTime, float fElapsedTime )
+HRESULT CX2OfficiantManger::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	if( NULL == m_pCurrentOfficiant )
 		return S_OK;
@@ -932,7 +932,7 @@ void CX2WeddingBehavior::OpenScript( KLuaManager& luaManager_ )
 		luaManager_.EndTable();
 	}
 }
-void CX2WeddingBehavior::CheckTimeError( float fBehaviorTime_, float fPreBehabiorTime_ )
+void CX2WeddingBehavior::CheckTimeError( [[maybe_unused]] float fBehaviorTime_, [[maybe_unused]] float fPreBehabiorTime_ )
 {
 #if X2_DEV_TOOLS
 	if( fBehaviorTime_ < fPreBehabiorTime_ )

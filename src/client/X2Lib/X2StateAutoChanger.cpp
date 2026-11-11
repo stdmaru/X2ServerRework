@@ -1251,7 +1251,7 @@ void CX2StateAutoChanger::TryEnterPVPRoom( bool bIsPublic /* = true */ )
 }
 
 
-void CX2StateAutoChanger::TryEnterArcadeRoom( bool bIsPublic /* = true */ )
+void CX2StateAutoChanger::TryEnterArcadeRoom( bool /*bIsPublic*/ /* = true */ )
 {
 	// fix!! 아케이드 코드 새로
 	//CX2StateArcadeLobby* pState = (CX2StateArcadeLobby*) g_pMain->GetNowState();

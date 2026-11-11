@@ -10,8 +10,8 @@ CX2BattleFieldNpcAi::CX2BattleFieldNpcAi( CX2GUNPC* pMasterNpc_, const CNpcCreat
 	: CX2GUNPCAI( pMasterNpc_ ), m_bAggressive( NpcCreatedInfoPtr_->GetAggressive() ), m_bCanTargeting( NpcCreatedInfoPtr_->GetAggressive() ),
 	m_bCanPatrol( true ), m_bBackState01( false ), m_bBackState02( false ), m_bArriveAtDest( false ),
  	m_vecPatrolLineMapIndex( NpcCreatedInfoPtr_->GetPetrolLineIndexList() ),
-	m_ElapsedTimeCheckOnLineMap( 5.0f ), m_ElapsedTimeAfterSuccessToPatrol( 0.0f ), //m_ElapsedTimeUpNowHp( 1.0f ),
- 	m_ElapsedTimeComeBackState( 5.0f ), m_vecPlayLineMapIndex( NpcCreatedInfoPtr_->GetPlayLineIndexList() ),
+	m_vecPlayLineMapIndex( NpcCreatedInfoPtr_->GetPlayLineIndexList() ), m_ElapsedTimeCheckOnLineMap( 5.0f ), //m_ElapsedTimeUpNowHp( 1.0f ),
+ 	m_ElapsedTimeAfterSuccessToPatrol( 0.0f ), m_ElapsedTimeComeBackState( 5.0f ),
 	m_fIncreaseHpPercentBySecond( BASIC_INCREASE_HP_PERCENT_BY_SECOND ), m_iCheckLineMapAtFirst( -1 )
 
 	, m_uiGroupId( NpcCreatedInfoPtr_->GetGroupId() )
@@ -24,7 +24,7 @@ CX2BattleFieldNpcAi::~CX2BattleFieldNpcAi()
 {
 }
 
-/*virtual*/ void CX2BattleFieldNpcAi::OnFrameMove( double fTime, float fElapsedTime )
+/*virtual*/ void CX2BattleFieldNpcAi::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	//*
 	if ( true == m_bNoBrain )
@@ -505,7 +505,7 @@ bool CX2BattleFieldNpcAi::IsHigherNewTargetGameUnitHp( const CX2GameUnit* pOldTa
 		return false;
 }
 
-bool CX2BattleFieldNpcAi::IsNearNewTargetGameUnit( IN const CX2GameUnit* pOldTargetGameUnit_, IN const CX2GameUnit* pNewGameUnit_, IN OUT float& fDistanceSqFromOldTargetUnit_ )
+bool CX2BattleFieldNpcAi::IsNearNewTargetGameUnit( IN const CX2GameUnit* /*pOldTargetGameUnit_*/, IN const CX2GameUnit* pNewGameUnit_, IN OUT float& fDistanceSqFromOldTargetUnit_ )
 {
 	// 새로운 타겟 대상과의 거리를 구한 후
 	const float fDistanceSqFromNewTargetGameUnit = GetDistance3Sq( m_pMasterNPC->GetPos(), pNewGameUnit_->GetPos() );
@@ -521,7 +521,7 @@ bool CX2BattleFieldNpcAi::IsNearNewTargetGameUnit( IN const CX2GameUnit* pOldTar
 		return false;
 }
 
-bool CX2BattleFieldNpcAi::IsFarNewTargetGameUnit( IN const CX2GameUnit* pOldTargetGameUnit_, IN const CX2GameUnit* pNewGameUnit_, IN OUT float& fDistanceSqFromOldTargetUnit_ )
+bool CX2BattleFieldNpcAi::IsFarNewTargetGameUnit( IN const CX2GameUnit* /*pOldTargetGameUnit_*/, IN const CX2GameUnit* pNewGameUnit_, IN OUT float& fDistanceSqFromOldTargetUnit_ )
 {
 	// 새로운 타겟 대상과의 거리를 구한 후
 	const float fDistanceSqFromNewTargetGameUnit = GetDistance3Sq( m_pMasterNPC->GetPos(), pNewGameUnit_->GetPos() );

@@ -131,45 +131,58 @@ void CX2Game::Debug_RenderHelp( int ix_, int iy_ )
 
 CX2Game::CX2Game() :
 //{{ kimhc // 게임 로딩이 끝날때 까지 ESC 처리 안되게 하는 작업
-m_bCanUseESC( false ),
+m_fResurrectionRemainTime( 0.f ),
 //}} kimhc // 게임 로딩이 끝날때 까지 ESC 처리 안되게 하는 작업
-m_GameType( GT_NONE ),
-m_GameState( GS_INIT ),
+m_bIsSendResurrectionReq( false ),
+m_bResurrectionCountStart( false ),
 //#ifdef  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
-m_uidMySlotUID( 0 ),
-m_uidHostSlotUID( 0 ),
+m_fAutoResurrectionTime (0.f),
+m_pDLGResurrect( NULL ),
 //#else   SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
 //m_bHost( false ),
 //#endif  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
-m_pRoom( NULL ),
-m_fTime( 0.f ),
-m_fElapsedTime( 0.f ),
-m_fGameTime( 0.f ),
-m_bGameWait( false ),
-m_optrMyUnit(),
-m_optrFocusUnit(),
-m_fFocusTime( 0.f ),
-m_pWorld( NULL ),
-m_pCamera( NULL ),
-m_pDamageEffect( NULL ),
+m_UnitUIDToResurrect( -1 ),
+m_pDLGContinue( NULL ),
+m_pSoundContinue( NULL ),
+m_pDLGCheckResurrectByUseCash( NULL ),
+m_fTimeWaitStopContinue( 0.f ),
+m_bStopRebirthCount( false ),
+m_fTimeEnableKEGS_RESURRECT_TO_CONTINUE_DUNGEON_REQ( 0.f ),
+m_bEnableSendKEGS_RESURRECT_TO_CONTINUE_DUNGEON_REQ( true ),
+m_bCanUseESC( false ),
+m_GameType( GT_NONE ),
+m_GameState( GS_INIT ),
 //m_pMajorParticle( NULL ),
 //m_pMinorParticle( NULL ),
 //m_pMajorXMeshPlayer( NULL ),
 //m_pMinorXMeshPlayer( NULL ),
+m_uidMySlotUID( 0 ),
+m_uidHostSlotUID( 0 ),
+m_pRoom( NULL ),
+m_fTime( 0.f ),
+m_fElapsedTime( 0.f ),
+m_fGameTime( 0.f ),
+//#ifdef  SERV_OPTIMIZE_ROBUST_USER_NPC_PACKET_SEND
+m_bGameWait( false ),
+m_optrMyUnit(),
+m_optrFocusUnit(),
+//#else   SERV_OPTIMIZE_ROBUST_USER_NPC_PACKET_SEND
+//m_NPCPacketSendInterval( 0.f ),
+//m_NPCPacketSendIntervalNow( 0.f ),
+//#endif  SERV_OPTIMIZE_ROBUST_USER_NPC_PACKET_SEND
+m_fFocusTime( 0.f ),
+m_pWorld( NULL ),
+m_pCamera( NULL ),
+m_pDamageEffect( NULL ),
 m_bBGMOn( true ),
 m_bLastKillCheck( false ),
 m_fLastKillWaitTime( 0.05f ),
 m_fLastKillWaitTimeAfterRebirth( 1.f ),
 m_bEnableCommandKeyProcess( true ),
 m_bEnableAllKeyProcess( true ),
-//#ifdef  SERV_OPTIMIZE_ROBUST_USER_NPC_PACKET_SEND
 m_iPacketSendFrameMoveCount( 0 ),
 m_iNPCRobustPacketSendIndex( 0 ),
 m_dwNPCRobustPacketSendBaseFrameMoveCount( 0 ),
-//#else   SERV_OPTIMIZE_ROBUST_USER_NPC_PACKET_SEND
-//m_NPCPacketSendInterval( 0.f ),
-//m_NPCPacketSendIntervalNow( 0.f ),
-//#endif  SERV_OPTIMIZE_ROBUST_USER_NPC_PACKET_SEND
 m_LoadingPercent( 0 ),
 m_pDropItemManager( NULL ),
 m_pFontForUnitName( NULL ),
@@ -193,56 +206,43 @@ m_GameScoreBack( -1 ),
 m_fTechPointViewTime( 0.f ),
 m_TechPoint( 0 ),
 m_TechPointFull( 0 ),
+m_iSubStageTechPoint ( 0 ),
 m_hSeqTech( INVALID_PARTICLE_SEQUENCE_HANDLE ),
 m_pTextGuideHelp( NULL ),
 m_fTimePauseNPCAI( 0.f ),
 m_bFreeCamera( false ),
+m_bWorldCameraEdit(false),
 m_pDLGMyScore( NULL ),
 m_pDLGSkillSlot( NULL ),
-m_TeamScoreAdvRed( 0 ),
-m_TeamScoreAdvBlue( 0 ),
-m_TeamVPMaxAdvRed( 0 ),
-m_TeamVPMaxAdvBlue( 0 ),
-m_AllowFrameCount( 0 ),
-m_SpeedHackCheck( 0 ),
-m_GetEXPInGame( 0 ),
-m_bGameEnd( false ),
-m_bShowAllUnitGageBar( true ),
-m_StateString( L"" ),
-m_bSkipKeyPressed( false ),
-m_pNPCFunc( NULL ),
-m_pDLGMissionOpening( NULL ),
-m_pDLGMissionProgress( NULL ),
-m_bFixedCamera( false ),
-m_bEnableMonsterFlyTest( false )
+m_TeamScoreAdvRed( 0 )
 ,
-m_bSkillSlotJustChanged(true)
-, m_bShowTeleportEffectOnStageStart( false )
+m_TeamScoreAdvBlue( 0 )
+, m_TeamVPMaxAdvRed( 0 )
 
-, m_bSendLeaveRoom(false)
-, m_bWorldCameraEdit(false)
+, m_TeamVPMaxAdvBlue( 0 )
+, m_AllowFrameCount( 0 )
 //{{ kimhc // 2011-07-28 // 옵션수치화
-, m_bIsDamageFreeGame( false ) // 1레벨 보정 던전인가?
+, m_SpeedHackCheck( 0 ) // 1레벨 보정 던전인가?
 //}} kimhc // 2011-07-28 // 옵션수치화
+, m_GetEXPInGame( 0 )
+, m_bGameEnd( false )
+, m_bShowAllUnitGageBar( true )
+, m_StateString( L"" )
+, m_bSkipKeyPressed( false )
+, m_pNPCFunc( NULL )
+, m_pDLGMissionOpening( NULL )
+, m_pDLGMissionProgress( NULL )
+, m_bFixedCamera( false )
+, m_bEnableMonsterFlyTest( false )
+, m_bSkillSlotJustChanged(true)
+, m_bShowTeleportEffectOnStageStart( false )
+, m_bSendLeaveRoom(false)
+, m_bIsDamageFreeGame( false )	/// 필드에서 DIE상태로 5분이상 경과시 자동으로 마을로 이동하기 위한 카운트
 , m_optrHostGameUnit()
-, m_fResurrectionRemainTime( 0.f )
-, m_bIsSendResurrectionReq( false )
-, m_bResurrectionCountStart( false )
-, m_pDLGResurrect( NULL )
-, m_UnitUIDToResurrect( -1 )
-, m_pDLGContinue( NULL )
-, m_pSoundContinue( NULL )
-, m_pDLGCheckResurrectByUseCash( NULL )
-, m_fTimeWaitStopContinue( 0.f )
-, m_bStopRebirthCount( false )
-, m_fTimeEnableKEGS_RESURRECT_TO_CONTINUE_DUNGEON_REQ( 0.f )
-, m_bEnableSendKEGS_RESURRECT_TO_CONTINUE_DUNGEON_REQ( true )
-, m_fAutoResurrectionTime (0.f)	/// 필드에서 DIE상태로 5분이상 경과시 자동으로 마을로 이동하기 위한 카운트
 , m_pCinematicUI ( NULL )
 , m_bCanNotInputAndPauseNPCAI( false )
 , m_uiPositionIndexRed( 0 )
-, m_uiPositionIndexBlue( 0 )
-, m_iSubStageTechPoint ( 0 )				// SubStage 의 테크닉 포인트를 초기화한다.
+, m_uiPositionIndexBlue( 0 )				// SubStage 의 테크닉 포인트를 초기화한다.
 
 
 , m_bIsAlreadySendingFrame ( false )
@@ -1747,6 +1747,8 @@ CX2GUUser* CX2Game::AddUserUnitIntruder( CX2Room::SlotData* pSlotData, int slotI
 				pSlotData->m_pUnit );
 		}
 		break;
+	default:
+		break;
 	}
 
 
@@ -3072,6 +3074,8 @@ HRESULT	CX2Game::OnFrameRender()
 					CX2OldGageManager::ResetTeamIndex(3,0);
 				}
 			} break;
+		default:
+			break;
 		}
 
 
@@ -3780,7 +3784,7 @@ int CX2Game::GetKillCount( UidType userUnitUID )
 	return (int) pUnit->m_KillUserUnitList.size();
 }
 
-void CX2Game::SetKillScore( UidType userUnitUID, int killNum, int killedNum, int mdKillNum )
+void CX2Game::SetKillScore( UidType userUnitUID, int killNum, int /*killedNum*/, int mdKillNum )
 {
 	CX2GameUnit* pCX2GUUser = NULL;
 	if( userUnitUID < 0 )
@@ -5425,7 +5429,7 @@ void CX2Game::PushCreateNPCReq_LUA3( int unitID, int level, bool bActive, D3DXVE
 
 
 
-bool CX2Game::Handler_EGS_NPC_FIELD_MIDDLE_BOSS_UNIT_CREATE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2Game::Handler_EGS_NPC_FIELD_MIDDLE_BOSS_UNIT_CREATE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	// 중간 보스 등장에 대한 ACK
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -5444,7 +5448,7 @@ bool CX2Game::Handler_EGS_NPC_FIELD_MIDDLE_BOSS_UNIT_CREATE_ACK( HWND hWnd, UINT
 	return false;
 }
 
-bool CX2Game::Handler_EGS_NPC_UNIT_CREATE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2Game::Handler_EGS_NPC_UNIT_CREATE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KPacketOK kEvent;
@@ -5462,7 +5466,7 @@ bool CX2Game::Handler_EGS_NPC_UNIT_CREATE_ACK( HWND hWnd, UINT uMsg, WPARAM wPar
 	return false;
 }
 
-bool CX2Game::Handler_EGS_NPC_UNIT_CREATE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2Game::Handler_EGS_NPC_UNIT_CREATE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_NPC_UNIT_CREATE_NOT kEvent;
@@ -5538,7 +5542,7 @@ bool CX2Game::Handler_EGS_USE_FINALITY_SKILL_REQ( UidType itemUID_ )
 	return true;
 }
 
-bool CX2Game::Handler_EGS_USE_FINALITY_SKILL_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2Game::Handler_EGS_USE_FINALITY_SKILL_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_USE_FINALITY_SKILL_ACK kEvent;
@@ -5579,7 +5583,7 @@ bool CX2Game::Handler_EGS_USE_FINALITY_SKILL_ACK( HWND hWnd, UINT uMsg, WPARAM w
 	return false;
 }
 
-bool CX2Game::Handler_EGS_CREATE_ATTRIB_NPC_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2Game::Handler_EGS_CREATE_ATTRIB_NPC_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CREATE_ATTRIB_NPC_NOT kEvent;
@@ -5625,7 +5629,7 @@ bool CX2Game::Handler_EGS_CREATE_ATTRIB_NPC_NOT( HWND hWnd, UINT uMsg, WPARAM wP
 
 
 
-bool CX2Game::Handler_EGS_NPC_UNIT_DIE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2Game::Handler_EGS_NPC_UNIT_DIE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KPacketOK kEvent;
@@ -5646,7 +5650,7 @@ bool CX2Game::Handler_EGS_NPC_UNIT_DIE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam,
 	return false;
 }
 
-/*virtual*/ bool CX2Game::Handler_EGS_NPC_UNIT_DIE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+/*virtual*/ bool CX2Game::Handler_EGS_NPC_UNIT_DIE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_NPC_UNIT_DIE_NOT kEvent;
@@ -5825,7 +5829,7 @@ bool CX2Game::NPCUnitDieReq( char cAttUnitType, int iNPCUID, UidType uiAttUnit, 
 }
 
 
-/*virtual*/ void CX2Game::UserUnitDieNot( KEGS_USER_UNIT_DIE_NOT& kEGS_USER_UNIT_DIE_NOT )
+/*virtual*/ void CX2Game::UserUnitDieNot( KEGS_USER_UNIT_DIE_NOT& /*kEGS_USER_UNIT_DIE_NOT*/ )
 {
 	return;
 }
@@ -6483,7 +6487,7 @@ void CX2Game::Handler_EGS_CURRENT_TEAM_KILL_SCORE_NOT( KEGS_CURRENT_TEAM_KILL_SC
 }
 
 
-/*virtual*/ bool CX2Game::Handler_EGS_END_GAME_NOT( KEGS_END_GAME_NOT& kKEGS_END_GAME_NOT )
+/*virtual*/ bool CX2Game::Handler_EGS_END_GAME_NOT( KEGS_END_GAME_NOT& /*kKEGS_END_GAME_NOT*/ )
 {
 	m_bGameEnd = true;
 
@@ -6605,7 +6609,7 @@ bool CX2Game::Handler_EGS_GET_ITEM_REQ( UidType itemUID )
 
 
 
-bool CX2Game::Handler_EGS_GET_ITEM_ACK( KEGS_GET_ITEM_ACK& kEGS_GET_ITEM_ACK )
+bool CX2Game::Handler_EGS_GET_ITEM_ACK( KEGS_GET_ITEM_ACK& /*kEGS_GET_ITEM_ACK*/ )
 {
 	return true;
 }
@@ -6710,7 +6714,7 @@ bool CX2Game::Handler_EGS_GET_ITEM_NOT( KEGS_GET_ITEM_NOT& kEGS_GET_ITEM_NOT )
 }
 //}} kimhc // 실시간 엘소드 중 실시간 ED 획득, 실시간 아이템 획득
 
-bool CX2Game::Handler_EGS_REMAINING_PLAY_TIME_NOT( KEGS_REMAINING_PLAY_TIME_NOT& kEGS_REMAINING_PLAY_TIME_NOT )
+bool CX2Game::Handler_EGS_REMAINING_PLAY_TIME_NOT( KEGS_REMAINING_PLAY_TIME_NOT& /*kEGS_REMAINING_PLAY_TIME_NOT*/ )
 {
 	if( m_AllowFrameCount < 0 )
 	{
@@ -6796,7 +6800,7 @@ bool CX2Game::Handler_EGS_DUNGEON_PLAY_INFO_TO_SERVER_NOT()
 	return true;
 }
 
-bool CX2Game::Handler_EGS_ADD_ON_STAT_ACK( KEGS_ADD_ON_STAT_ACK& kEGS_ADD_ON_STAT_ACK )
+bool CX2Game::Handler_EGS_ADD_ON_STAT_ACK( KEGS_ADD_ON_STAT_ACK& /*kEGS_ADD_ON_STAT_ACK*/ )
 {
 	return true;
 }
@@ -7680,6 +7684,8 @@ void CX2Game::UseItemSpecialAbility( const CX2Item::ItemTemplet* pItemTemplet, C
 				}
 			}
 			break;
+		default:
+			break;
 		}
 	}
 }
@@ -7740,6 +7746,8 @@ bool CX2Game::RemoveSpecialAbilityInEquip( const CX2Item::ItemTemplet* const pIt
 				pCXGUUser->AccessCashItemAbility().m_fUpMPAtAttackOrDamage = 0.0f;	// 증가량
 			}
 			break;
+		default:
+			break;
 		}
 	}
 
@@ -7772,6 +7780,8 @@ bool CX2Game::SetSpecialAbilityInEquip( const CX2Item::ItemTemplet* const pItemT
 			{
 				pCXGUUser->AccessCashItemAbility().m_fUpMPAtAttackOrDamage = static_cast< float >( pSa->m_Value1 );	// 증가량
 			}
+			break;
+		default:
 			break;
 		}
 	}
@@ -7944,7 +7954,7 @@ void CX2Game::PauseNPCAI( float fTime )
 
 
 // 운영자 이상 치트용으로만 사용
-void CX2Game::KillAllNPC_LUA( bool bActiveOnly /* = true */ )
+void CX2Game::KillAllNPC_LUA( [[maybe_unused]] bool bActiveOnly /* = true */ )
 {
 #if X2_DEV_TOOLS
 	if ( g_pData->GetMyUser()->GetAuthLevel() >= CX2User::XUAL_OPERATOR )
@@ -7962,7 +7972,7 @@ void CX2Game::KillAllNPC_LUA( bool bActiveOnly /* = true */ )
 }
 
 
-void CX2Game::KillAllNPC( bool bActiveOnly /* = true */, CX2GameUnit* pAttackerGameUnit_ /*= NULL*/, bool bExceptGate /*= false*/ )
+void CX2Game::KillAllNPC( [[maybe_unused]] bool bActiveOnly /* = true */, [[maybe_unused]] CX2GameUnit* pAttackerGameUnit_ /*= NULL*/, [[maybe_unused]] bool bExceptGate /*= false*/ )
 {
 #if X2_DEV_TOOLS
 	if( IsHost() == true )
@@ -8147,7 +8157,7 @@ void CX2Game::PlayWorldCamera( int iWorldCameraID )
 	return;
 }
 
-bool CX2Game::GoStage( int iStageIndex, int iSubStageIndex /*= 0*/  )
+bool CX2Game::GoStage( int /*iStageIndex*/, int /*iSubStageIndex*/ /*= 0*/  )
 {
 	return false;
 }
@@ -8666,7 +8676,7 @@ void CX2Game::UpdateAddNasodRulerSkillSlotIcon()
 	}
 }
 
-void CX2Game::UpdateSkillCoolTime( float fElapsedTime )
+void CX2Game::UpdateSkillCoolTime( float /*fElapsedTime*/ )
 {
 	if( g_pData != NULL &&
 		g_pData->GetMyUser() != NULL &&
@@ -9079,7 +9089,7 @@ void CX2Game::InitExpandSkillCoolTime()
 		}
 	}
 }
-void CX2Game::ResurrectionFrameMove( double fTime, float fElapsedTime )
+void CX2Game::ResurrectionFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	CKTDGUIStatic* pStaticRestore_Continue_End = static_cast<CKTDGUIStatic*>( m_pDLGContinue->GetControl( L"Restore_Continue_End" ) );
 	if ( pStaticRestore_Continue_End != NULL )
@@ -9627,6 +9637,8 @@ UidType CX2Game::GetLockOnNearstTarget( CX2Room::TEAM_NUM eTeamNum_, IN const D3
 				{
 					continue;
 				} break;
+			default:
+				break;
 			} // switch
 		} // if
 
@@ -9703,6 +9715,8 @@ UidType CX2Game::GetLockOnNearstTargetInRange( CX2Room::TEAM_NUM eTeamNum_, IN c
 				{
 					continue;
 				} break;
+			default:
+				break;
 			} // switch
 		} // if
 
@@ -9849,6 +9863,8 @@ UidType	CX2Game::GetLockOnTarget( CX2Room::TEAM_NUM teamNum, int seedNum, bool& 
 				{
 					continue;
 				} break;
+			default:
+				break;
 			}
 		}
 
@@ -9893,6 +9909,8 @@ UidType	CX2Game::GetLockOnTarget( CX2Room::TEAM_NUM teamNum, int seedNum, bool& 
 					{
 						continue;
 					} break;
+				default:
+					break;
 				}
 
 				keyCount--;
@@ -10187,7 +10205,7 @@ CX2GUUser* CX2Game::GetNearestUserUnit( const D3DXVECTOR3& vPos_ )
 	return pNearestGUUser;
 }
 
-UidType CX2Game::GetNearestUserUnitUID_LUA( D3DXVECTOR3 pos, float fMinRange, float fMaxRange )
+UidType CX2Game::GetNearestUserUnitUID_LUA( D3DXVECTOR3 /*pos*/, float /*fMinRange*/, float /*fMaxRange*/ )
 {
 	UidType retUID = 0;
 
@@ -12439,7 +12457,7 @@ bool CX2Game::Handler_EGS_WORLD_TRIGGER_RELOCATION_REQ( int iTriggerId )
 	g_pData->GetServerProtocol()->SendPacket( EGS_WORLD_TRIGGER_RELOCATION_REQ, kEGS_WORLD_TRIGGER_RELOCATION_REQ );
 	return true;
 }
-bool CX2Game::Handler_EGS_WORLD_TRIGGER_RELOCATION_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2Game::Handler_EGS_WORLD_TRIGGER_RELOCATION_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_WORLD_TRIGGER_RELOCATION_ACK kEvent;
@@ -12452,7 +12470,7 @@ bool CX2Game::Handler_EGS_WORLD_TRIGGER_RELOCATION_ACK( HWND hWnd, UINT uMsg, WP
 
 	return false;
 }
-bool CX2Game::Handler_EGS_WORLD_TRIGGER_RELOCATION_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2Game::Handler_EGS_WORLD_TRIGGER_RELOCATION_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_WORLD_TRIGGER_RELOCATION_NOT kEvent;
@@ -12549,7 +12567,7 @@ bool CX2Game::IsFront( CX2GameUnit *pMyUnit, CX2GameUnit *pTargetUnit )
 	return true;
 }
 
-void CX2Game::SendNpcUnitFirstSyncPacketImmediateForce( vector<UidType>& vecNonNpcSyncUserList_, OUT KEGS_UPDATE_NPC_UNIT_BUFF_INFO_NOT& kPacket_ )
+void CX2Game::SendNpcUnitFirstSyncPacketImmediateForce( vector<UidType>& /*vecNonNpcSyncUserList_*/, OUT KEGS_UPDATE_NPC_UNIT_BUFF_INFO_NOT& kPacket_ )
 {
 	// 호스트인 경우
 	if( IsHost() == true )
@@ -12919,7 +12937,7 @@ bool CX2Game::Send_EGS_ADMIN_NPC_UNIT_CREATE_REQ_LUA( int unitID, int level, D3D
 	return true;
 }
 
-bool CX2Game::Handler_EGS_ADMIN_NPC_UNIT_CREATE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2Game::Handler_EGS_ADMIN_NPC_UNIT_CREATE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KPacketOK kEvent;
@@ -12938,7 +12956,7 @@ bool CX2Game::Handler_EGS_ADMIN_NPC_UNIT_CREATE_ACK( HWND hWnd, UINT uMsg, WPARA
 }
 
 
-bool CX2Game::Handler_EGS_ADMIN_NPC_UNIT_CREATE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2Game::Handler_EGS_ADMIN_NPC_UNIT_CREATE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_ADMIN_NPC_UNIT_CREATE_NOT kEvent;
@@ -13534,14 +13552,14 @@ void CX2Game::SetBuffInfoPacketToGUUser( const KEGS_UPDATE_USER_UNIT_BUFF_INFO_B
 }
 
 CX2Game::CinematicUI::CinematicUI():
-    m_hCinematicTopParticle( INVALID_PARTICLE_HANDLE )
-	,m_hCinematicBottomParticle( INVALID_PARTICLE_HANDLE )
-	,m_hCinematicTop(INVALID_PARTICLE_SEQUENCE_HANDLE)
-	,m_hCinematicBottom(INVALID_PARTICLE_SEQUENCE_HANDLE)
-	,m_bStart (false )
+    m_bStart (false )
 	,m_bEnd ( false )
 	,m_fTimer ( 0.f )
 	,m_fDeleteTime ( -1.f )
+	,m_hCinematicTop(INVALID_PARTICLE_SEQUENCE_HANDLE)
+	,m_hCinematicBottom(INVALID_PARTICLE_SEQUENCE_HANDLE)
+	,m_hCinematicTopParticle( INVALID_PARTICLE_HANDLE )
+	,m_hCinematicBottomParticle( INVALID_PARTICLE_HANDLE )
 {
 	if( NULL != g_pData->GetUIMajorParticle() )
 	{
@@ -13578,7 +13596,7 @@ CX2Game::CinematicUI::~CinematicUI()
 	}
 }
 
-HRESULT CX2Game::CinematicUI::OnFrameMove( double fTime, float fElapsedTime )
+HRESULT CX2Game::CinematicUI::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	m_fTimer += fElapsedTime;
 
@@ -13891,6 +13909,8 @@ bool CX2Game::GetNearUnitUidList( IN CX2Room::TEAM_NUM eMyTeamNum_, IN const D3D
 				{
 					continue;
 				} break;
+			default:
+				break;
 			} // switch
 		} // if
 
@@ -14551,7 +14571,7 @@ void CX2Game::DisplayDamageInformation( IN const float fDamageValue_, IN const D
 		g_pData->GetPicChar()->DrawText( static_cast<int>( fDamageValue_ ), vPos, vDirVector_, CKTDGPicChar::AT_CENTER );
 }
 
-void CX2Game::ChatBoxLog( const CHAR* pLog, float fLog)
+void CX2Game::ChatBoxLog( [[maybe_unused]] const CHAR* pLog, [[maybe_unused]] float fLog)
 {
 #if X2_DEV_TOOLS
 	if( NULL != g_pChatBox )

@@ -147,6 +147,8 @@ CX2SkillTreeSlotData::CX2SkillTreeSlotData()
 			case SEnum::RT_MARRIED :
 				iRelationshipLevel = 2;
 				break;
+			default:
+				break;
 			}
 
 		}
@@ -979,7 +981,7 @@ void CX2UISkillTreeNew::SetPosition( D3DXVECTOR2 vec )
 
 }
 
-HRESULT CX2UISkillTreeNew::OnFrameMove( double fTime, float fElapsedTime )
+HRESULT CX2UISkillTreeNew::OnFrameMove( double /*fTime*/, float /*fElapsedTime*/ )
 {
 	return S_OK;
 }
@@ -1056,7 +1058,7 @@ bool CX2UISkillTreeNew::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 	return bFlag;
 }
 
-bool CX2UISkillTreeNew::OnMouseWheel(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+bool CX2UISkillTreeNew::OnMouseWheel(HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/)
 {
 	CKTDGUIContolList* pControlList = (CKTDGUIContolList*) m_pDLGUISkillTree->GetControl( L"SkillTreeControlList" );
 	if( pControlList == NULL )
@@ -1087,7 +1089,7 @@ bool CX2UISkillTreeNew::OnMouseWheel(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
 	return true;
 }
 
-bool CX2UISkillTreeNew::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UISkillTreeNew::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM lParam )
 {
 	switch(wParam)
 	{
@@ -3169,7 +3171,7 @@ void CX2UISkillTreeNew::CreateSlotUIPreset(SkillSlotUI& UISet, int eSkillID, int
 // ���� ��ų �������� ��ü�� �̱����̹Ƿ� ��ݸ� �۾� �д�.
 // ���̾�α� �ݴ� �������� ����� �׽��ϴ�. ���� ��ư�� ������ ���� �ƹ��͵� �� �ϰ� �Ǿ� ������ ���� �۾��� �в�����
 // UICustomMsgProc���� case STUCM_UNSEAL_SKILL_BUY �׸� �� �κ��� �۾��� �ּ���.
-void CX2UISkillTreeNew::OpenSkillUnsealInformDLG( const CX2SkillTree::SkillTemplet* pSkillTemplet, D3DXVECTOR2 SlotCenterPos )
+void CX2UISkillTreeNew::OpenSkillUnsealInformDLG( const CX2SkillTree::SkillTemplet* /*pSkillTemplet*/, D3DXVECTOR2 SlotCenterPos )
 {
 	SAFE_DELETE_DIALOG( m_pDLGSkillUnsealInform );
 
@@ -3341,6 +3343,8 @@ void CX2UISkillTreeNew::ShowSkillDesc( bool bShow, CX2SkillTree::SKILL_ID eSkill
 				iIncreasekillLevel = g_pData->GetMyUser()->GetSelectUnit()->GetIncreaseSkillLevelByBuff() +
 									 g_pData->GetMyUser()->GetSelectUnit()->GetIncreaseSkillLevelBySocket( eSkillID );
 			} break;
+		default:
+			break;
 		}
 
 		/// ����ġ���� ���ؼ� �Ѱ�ġ�� �Ѵ´ٸ�, �Ѱ�ġ�� �°� ����
@@ -4168,7 +4172,7 @@ void CX2UISkillTreeNew::DrawElswordWSSDesc( D3DXVECTOR2 vDrawPos_ )
 
 
 //x2game�� �����Ǿ� ���� ���� �� ����ϴ� ��Ÿ�Ӱ��� �Լ�.
-void CX2UISkillTreeNew::UpdateSkillCoolTime( float fElapsedTime )
+void CX2UISkillTreeNew::UpdateSkillCoolTime( float /*fElapsedTime*/ )
 {
 	if( g_pData != NULL &&
 		g_pData->GetMyUser() != NULL &&
@@ -4575,6 +4579,8 @@ void CX2UISkillTreeNew::CreateSkillTreePortrait( CKTDGUIContolList* pControlList
 				{
 					wstrTectureKey = L"Bg_Portrait_Add";
 				}
+				break;
+			default:
 				break;
 			}
 
@@ -4987,6 +4993,8 @@ void CX2UISkillTreeNew::SetUnitClassImageAndName(	CKTDGUIStatic* pStatic,
 					pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_25012 );
 					eUnitClass = CX2Unit::UC_ELSWORD_LORD_KNIGHT;
 				} break;
+			default:
+				break;
 			}
 		} break;
 	case CX2Unit::UC_ELSWORD_MAGIC_KNIGHT:		/// 1�� ����
@@ -5009,6 +5017,8 @@ void CX2UISkillTreeNew::SetUnitClassImageAndName(	CKTDGUIStatic* pStatic,
 					pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_25014 );
 					eUnitClass = CX2Unit::UC_ELSWORD_RUNE_SLAYER;
 				} break;
+			default:
+				break;
 			}
 		} break;
 	case CX2Unit::UC_ELSWORD_SHEATH_KNIGHT:		/// 1�� ����
@@ -5031,6 +5041,8 @@ void CX2UISkillTreeNew::SetUnitClassImageAndName(	CKTDGUIStatic* pStatic,
 					pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_25016 );
 					eUnitClass = CX2Unit::UC_ELSWORD_INFINITY_SWORD;
 				} break;
+			default:
+				break;
 			}
 		} break;
 
@@ -5063,6 +5075,8 @@ void CX2UISkillTreeNew::SetUnitClassImageAndName(	CKTDGUIStatic* pStatic,
 					pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_25019 );
 					eUnitClass = CX2Unit::UC_ARME_ELEMENTAL_MASTER;
 				} break;
+			default:
+				break;
 			}
 		} break;
 	case CX2Unit::UC_ARME_DARK_MAGICIAN:		/// 1�� ����
@@ -5085,6 +5099,8 @@ void CX2UISkillTreeNew::SetUnitClassImageAndName(	CKTDGUIStatic* pStatic,
 					pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_25021 );
 					eUnitClass = CX2Unit::UC_ARME_VOID_PRINCESS;
 				} break;
+			default:
+				break;
 			}
 		} break;
 	case CX2Unit::UC_ARME_BATTLE_MAGICIAN:		/// 1�� ����
@@ -5107,6 +5123,8 @@ void CX2UISkillTreeNew::SetUnitClassImageAndName(	CKTDGUIStatic* pStatic,
 					pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_25023 );
 					eUnitClass = CX2Unit::UC_ARME_DIMENSION_WITCH;
 				} break;
+			default:
+				break;
 			}
 		} break;
 
@@ -5139,6 +5157,8 @@ void CX2UISkillTreeNew::SetUnitClassImageAndName(	CKTDGUIStatic* pStatic,
 					pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_25026 );
 					eUnitClass = CX2Unit::UC_LIRE_WIND_SNEAKER;
 				} break;
+			default:
+				break;
 			}
 		} break;
 	case CX2Unit::UC_LIRE_SNIPING_RANGER:		/// 1�� ����
@@ -5161,6 +5181,8 @@ void CX2UISkillTreeNew::SetUnitClassImageAndName(	CKTDGUIStatic* pStatic,
 					pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_25028 );
 					eUnitClass = CX2Unit::UC_LIRE_GRAND_ARCHER;
 				} break;
+			default:
+				break;
 			}
 		} break;
 	case CX2Unit::UC_LIRE_TRAPPING_RANGER:		/// 1�� ����
@@ -5183,6 +5205,8 @@ void CX2UISkillTreeNew::SetUnitClassImageAndName(	CKTDGUIStatic* pStatic,
 					pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_25030 );
 					eUnitClass = CX2Unit::UC_LIRE_NIGHT_WATCHER;
 				} break;
+			default:
+				break;
 			}
 		} break;
 
@@ -5215,6 +5239,8 @@ void CX2UISkillTreeNew::SetUnitClassImageAndName(	CKTDGUIStatic* pStatic,
 					pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_25033 );
 					eUnitClass = CX2Unit::UC_RAVEN_BLADE_MASTER;
 				} break;
+			default:
+				break;
 			}
 		} break;
 	case CX2Unit::UC_RAVEN_OVER_TAKER:			/// 1�� ����
@@ -5237,6 +5263,8 @@ void CX2UISkillTreeNew::SetUnitClassImageAndName(	CKTDGUIStatic* pStatic,
 					pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_25035 );
 					eUnitClass = CX2Unit::UC_RAVEN_RECKLESS_FIST;
 				} break;
+			default:
+				break;
 			}
 		} break;
 	case CX2Unit::UC_RAVEN_WEAPON_TAKER:		/// 1�� ����
@@ -5259,6 +5287,8 @@ void CX2UISkillTreeNew::SetUnitClassImageAndName(	CKTDGUIStatic* pStatic,
 					pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_25037 );
 					eUnitClass = CX2Unit::UC_RAVEN_VETERAN_COMMANDER;
 				} break;
+			default:
+				break;
 			}
 		} break;
 
@@ -5291,6 +5321,8 @@ void CX2UISkillTreeNew::SetUnitClassImageAndName(	CKTDGUIStatic* pStatic,
 					pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_25040 );
 					eUnitClass = CX2Unit::UC_EVE_CODE_NEMESIS;
 				} break;
+			default:
+				break;
 			}
 		} break;
 	case CX2Unit::UC_EVE_ARCHITECTURE:			/// 1�� ����
@@ -5313,6 +5345,8 @@ void CX2UISkillTreeNew::SetUnitClassImageAndName(	CKTDGUIStatic* pStatic,
 					pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_25042 );
 					eUnitClass = CX2Unit::UC_EVE_CODE_EMPRESS;
 				} break;
+			default:
+				break;
 			}
 		} break;
 	case CX2Unit::UC_EVE_ELECTRA:				/// 1�� ����
@@ -5335,6 +5369,8 @@ void CX2UISkillTreeNew::SetUnitClassImageAndName(	CKTDGUIStatic* pStatic,
 					pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_25044 );
 					eUnitClass = CX2Unit::UC_EVE_BATTLE_SERAPH;
 				} break;
+			default:
+				break;
 			}
 		} break;
 
@@ -5367,6 +5403,8 @@ void CX2UISkillTreeNew::SetUnitClassImageAndName(	CKTDGUIStatic* pStatic,
 					pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_25047 );
 					eUnitClass = CX2Unit::UC_CHUNG_IRON_PALADIN;
 				} break;
+			default:
+				break;
 			}
 		} break;
 	case CX2Unit::UC_CHUNG_SHOOTING_GUARDIAN:	/// 1�� ����
@@ -5389,6 +5427,8 @@ void CX2UISkillTreeNew::SetUnitClassImageAndName(	CKTDGUIStatic* pStatic,
 					pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_25049 );
 					eUnitClass = CX2Unit::UC_CHUNG_DEADLY_CHASER;
 				} break;
+			default:
+				break;
 			}
 		} break;
 	case CX2Unit::UC_CHUNG_SHELLING_GUARDIAN:	/// 1�� ����
@@ -5411,6 +5451,8 @@ void CX2UISkillTreeNew::SetUnitClassImageAndName(	CKTDGUIStatic* pStatic,
 					pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_25051 );
 					eUnitClass = CX2Unit::UC_CHUNG_TACTICAL_TROOPER;
 				} break;
+			default:
+				break;
 			}
 		} break;
 		/// �ƶ�
@@ -5442,6 +5484,8 @@ void CX2UISkillTreeNew::SetUnitClassImageAndName(	CKTDGUIStatic* pStatic,
 					pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_25054 );
 					eUnitClass = CX2Unit::UC_ARA_SAKRA_DEVANAM;
 				} break;
+			default:
+				break;
 			}
 		} break;
 	case CX2Unit::UC_ELESIS_KNIGHT:
@@ -5474,6 +5518,8 @@ void CX2UISkillTreeNew::SetUnitClassImageAndName(	CKTDGUIStatic* pStatic,
 					pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_28263 );
 					eUnitClass = CX2Unit::UC_ELESIS_GRAND_MASTER;
 				} break;
+			default:
+				break;
 			}
 		} break;
 	case CX2Unit::UC_ELESIS_PYRO_KNIGHT:
@@ -5498,6 +5544,8 @@ void CX2UISkillTreeNew::SetUnitClassImageAndName(	CKTDGUIStatic* pStatic,
 					eUnitClass = CX2Unit::UC_ELESIS_BLAZING_HEART;
 				} break;
 
+			default:
+				break;
 			}
 		} break;
 	case CX2Unit::UC_ARA_LITTLE_DEVIL:			/// 1�� ����
@@ -5520,6 +5568,8 @@ void CX2UISkillTreeNew::SetUnitClassImageAndName(	CKTDGUIStatic* pStatic,
 					pStatic->GetString( 0 )->msg = GET_STRING( STR_ID_26772 );
 					eUnitClass = CX2Unit::UC_ARA_YAMA_RAJA;
 				} break;
+			default:
+				break;
 			}
 		} break;
 
@@ -5558,6 +5608,8 @@ void CX2UISkillTreeNew::SetUnitClassImageAndName(	CKTDGUIStatic* pStatic,
 		/// 1�� Ȥ�� 2�� ���� ( ��Ʈ 1 )	- �⺻ ���� ~ 2�� �������� �߰� ( �ش� �������� ���� ������ ������ �޾ƿ� �� �ֵ��� )
 		/// 1�� Ȥ�� 2�� ���� ( ��Ʈ 2 )	- �⺻ ���� ~ 2�� �������� �߰�
 		/// 1�� Ȥ�� 2�� ���� ( ��Ʈ 3 )	- �⺻ ���� ~ 2�� �������� �߰�
+	default:
+		break;
 	}
 
 	/// �ʻ�ȭ �̹��� Ű �� ����

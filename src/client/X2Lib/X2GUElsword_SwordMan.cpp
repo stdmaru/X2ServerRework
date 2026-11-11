@@ -78,23 +78,23 @@ CX2GUElsword_SwordMan::CX2GUElsword_SwordMan( int unitIndex, int teamNum,
 : CX2GUUser( unitIndex, teamNum,
 	pScriptLuaState,
 	frameBufferNum, pUnit )
-, m_fRollingSmashDuration( 0.f )
-, m_bIsMagicKnightWinMotion2( false )
 , m_hRuneSlayerDashJumpXZ( INVALID_DAMAGE_EFFECT_HANDLE )
 , m_hRuneSlayerComboXZ( INVALID_EFFECTSET_HANDLE )
 , m_hSwordEnchant( INVALID_EFFECTSET_HANDLE )
+, m_fRollingSmashDuration( 0.f )
+, m_bIsMagicKnightWinMotion2( false )
 , m_bERS_DASH_JUMP_XZ_Rune_Created( false )
 , m_bERS_COMBO_XZ_Rune_Created( false )
-, m_bShowWeaponEnchantEffect( true )
 , m_hDamageEffectHarshChaserBlade( INVALID_DAMAGE_EFFECT_HANDLE )
+, m_bShowWeaponEnchantEffect( true )
 , m_fAutoGuardRate( 0.f )
 , m_hDamageEffectPiercingSword( INVALID_DAMAGE_EFFECT_HANDLE )
 , m_fPiercingSwordProjectileRange( 0.f )
 , m_fRuneProjectileRangeIncPercent( 0.f )
 , m_fRuneProjectileSizeIncPercent( 0.f )
+, m_bIsGuardMotion( false )
 , m_ucSaveDebuffCount( 0 )
 , m_bAutoGuardBlocking( false )
-, m_bIsGuardMotion( false )
 , m_fIncreaseCoolTimeRel( 1.f )
 , m_fActiveSkillAddPowerRate( 1.f )
 , m_hEffectSwordShield( INVALID_EFFECTSET_HANDLE )
@@ -230,7 +230,7 @@ CX2GUElsword_SwordMan::~CX2GUElsword_SwordMan(void)
 }
 
 /*static*/
-void	CX2GUElsword_SwordMan::AppendDeviceToDeviceList( CKTDXDeviceDataList& listInOut_ )
+void	CX2GUElsword_SwordMan::AppendDeviceToDeviceList( CKTDXDeviceDataList& /*listInOut_*/ )
 {
 }
 
@@ -399,7 +399,7 @@ void CX2GUElsword_SwordMan::End_SwordmanDestruction()
 	m_CommonState.m_Wait = USI_WAIT;
 	return;
 }
-void CX2GUElsword_SwordMan::AddComboToBrutalSlayer( const CX2DamageManager::DamageData& damageData_ )
+void CX2GUElsword_SwordMan::AddComboToBrutalSlayer( const CX2DamageManager::DamageData& /*damageData_*/ )
 {
 	const int iComboNumber
 		= ( NULL != GetComboManager() ? GetComboManager()->GetCombo() : 0 );
@@ -692,6 +692,8 @@ void CX2GUElsword_SwordMan::InitState()
 		{
 			m_iSkillCutInSetIndex = 3;
 		} break;
+	default:
+		break;
 	}
 
 
@@ -774,6 +776,8 @@ void CX2GUElsword_SwordMan::InitState()
 			m_StateList[stateData.stateID] = stateData;
 
 		} break;
+	default:
+		break;
 	}
 
 	// COMBO_XX �迭
@@ -818,6 +822,8 @@ void CX2GUElsword_SwordMan::InitState()
 			m_StateList[stateData.stateID] = stateData;
 
 		} break;
+	default:
+		break;
 	}
 
 
@@ -900,6 +906,8 @@ void CX2GUElsword_SwordMan::InitState()
 			stateData.StateEnd			= SET_CB_FUNC( CX2GUElsword_SwordMan, ESSI_ETK_DASH_COMBO_ZZ_StateEnd );
 			m_StateList[stateData.stateID] = stateData;
 		} break;
+	default:
+		break;
 	}
 
 
@@ -987,6 +995,8 @@ void CX2GUElsword_SwordMan::InitState()
 			stateData.StateEnd			= SET_CB_FUNC( CX2GUElsword_SwordMan, ESSI_EIS_DASHJUMP_COMBO_XXX_End );
 			m_StateList[stateData.stateID] = stateData;
 		}
+		break;
+	default:
 		break;
 	}
 
@@ -1087,6 +1097,8 @@ void CX2GUElsword_SwordMan::InitState()
 		}
 		break;
 
+	default:
+		break;
 	}
 
 
@@ -2358,6 +2370,8 @@ void CX2GUElsword_SwordMan::InitStateCommon()
 					hyperStateData.OnFrameMove		= normalStateData.OnFrameMove;
 					hyperStateData.OnEventProcess	= normalStateData.OnEventProcess;
 				} break;
+			default:
+				break;
 			}
 			return;
 		} break;
@@ -3636,7 +3650,7 @@ void CX2GUElsword_SwordMan::InitStateCommon()
 
 
 /*static*/
-void	CX2GUElsword_SwordMan::AppendComponentToDeviceList( CKTDXDeviceDataList& listInOut_ )
+void	CX2GUElsword_SwordMan::AppendComponentToDeviceList( CKTDXDeviceDataList& /*listInOut_*/ )
 {
 }
 
@@ -15865,6 +15879,8 @@ void CX2GUElsword_SwordMan::SetSpecificValueByEnchant()
 				fMpConsumption -= 5.f;
 		} break;
 
+	default:
+		break;
 	}
 
 	const CX2SkillTree::SkillTemplet* pSkillTemplet = GetEquippedActiveSkillTemplet( eSkillID_ );

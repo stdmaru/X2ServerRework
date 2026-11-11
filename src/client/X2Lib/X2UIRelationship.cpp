@@ -5,9 +5,9 @@
 
 CX2UIRelationship::CX2UIRelationship () :
 	m_pDLGInviteCoupleMessage ( NULL ),
+	m_pDLGChangeLoveMessage ( NULL ),
 	m_pDLGInviteWedding ( NULL ),
 	m_pDLGInviteWeddingUserList ( NULL ),
-	m_pDLGChangeLoveMessage ( NULL ),
 	m_pDLGJoinWedding ( NULL )
 {
 //	m_vecInviteUserIDStringList.clear();
@@ -32,12 +32,12 @@ CX2UIRelationship::~CX2UIRelationship()
 
 
 
-HRESULT	CX2UIRelationship::OnFrameMove( double fTime, float fElapsedTime )
+HRESULT	CX2UIRelationship::OnFrameMove( double /*fTime*/, float /*fElapsedTime*/ )
 {
 
 	return S_OK;
 }
-bool CX2UIRelationship::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIRelationship::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM lParam )
 {
 	switch(wParam)
 	{
@@ -631,6 +631,8 @@ bool CX2UIRelationship::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, 
 						}
 					}
 					break;
+				default:
+					break;
 				}
 			}
 			return true;
@@ -673,6 +675,8 @@ bool CX2UIRelationship::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, 
 							ShowInvitedWeddingUserListControlListDlg ( true );
 						}
 					}
+					break;
+				default:
 					break;
 				}
 			}
@@ -905,6 +909,8 @@ void CX2UIRelationship::CheckWeddingInviteUserList ( CKTDGUICheckBox* pCheckBox_
 					}
 				}
 				break;
+			default:
+				break;
 			}
 
 			wstringstream wstrUserMany;
@@ -914,7 +920,7 @@ void CX2UIRelationship::CheckWeddingInviteUserList ( CKTDGUICheckBox* pCheckBox_
 		}
 	}
 }
-bool CX2UIRelationship::UIServerEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIRelationship::UIServerEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 
 	return false;
@@ -1119,6 +1125,8 @@ bool CX2UIRelationship::ShowInviteWeddingUserListDlg  ( bool bEnable, bool bIsSa
 					ShowInvitedWeddingUserListControlListDlg(true);
 					pDeleteButton->SetShowEnable( true , true );
 					break;
+			default:
+				break;
 			}
 
 
@@ -1189,6 +1197,8 @@ bool CX2UIRelationship::ShowInviteWeddingUserListDlg  ( bool bEnable, bool bIsSa
 //						ResetInvitingUserInfo ();
 						return true;
 					}
+					break;
+				default:
 					break;
 				}
 			}

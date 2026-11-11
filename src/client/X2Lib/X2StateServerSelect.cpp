@@ -279,6 +279,8 @@ m_bRemoveUnitAfterReceiveNMSerialNum( false )
 			{
 				g_pMain->SetIsExitingTutorial( false );
 			} break;
+		default:
+			break;
 		}
 	}
 
@@ -739,7 +741,7 @@ HRESULT CX2StateServerSelect::OnFrameMove( double fTime, float fElapsedTime )
 
 
 
-void CX2StateServerSelect::OnFrameMove_GameServerConnect( double fTime, float fElapsedTime )
+void CX2StateServerSelect::OnFrameMove_GameServerConnect( double /*fTime*/, float fElapsedTime )
 {
 	if ( m_bPortCheckReq == false &&
 		g_pData->GetMyUser() != NULL &&
@@ -2624,7 +2626,7 @@ bool CX2StateServerSelect::Handler_EGS_SELECT_UNIT_REQ( UidType unitUID, int iUn
 
 
 /// ?????? ????, ?????, ???
-bool CX2StateServerSelect::Handler_EGS_SELECT_UNIT_1_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_SELECT_UNIT_1_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_SELECT_UNIT_1_NOT kEvent;
@@ -2836,7 +2838,7 @@ bool CX2StateServerSelect::Handler_EGS_SELECT_UNIT_1_NOT( HWND hWnd, UINT uMsg, 
 }
 
 /// ?????
-bool CX2StateServerSelect::Handler_EGS_SELECT_UNIT_2_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_SELECT_UNIT_2_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_SELECT_UNIT_2_NOT kEvent;
@@ -2889,7 +2891,7 @@ bool CX2StateServerSelect::Handler_EGS_SELECT_UNIT_2_NOT( HWND hWnd, UINT uMsg, 
 }
 
 /// �???, ??
-bool CX2StateServerSelect::Handler_EGS_SELECT_UNIT_3_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_SELECT_UNIT_3_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_SELECT_UNIT_3_NOT kEvent;
@@ -2960,7 +2962,7 @@ bool CX2StateServerSelect::Handler_EGS_SELECT_UNIT_3_NOT( HWND hWnd, UINT uMsg, 
 }
 
 /// ???? ????, ????, ????, ???
-bool CX2StateServerSelect::Handler_EGS_SELECT_UNIT_4_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_SELECT_UNIT_4_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_SELECT_UNIT_4_NOT kEvent;
@@ -3082,7 +3084,7 @@ bool CX2StateServerSelect::Handler_EGS_SELECT_UNIT_4_NOT( HWND hWnd, UINT uMsg, 
 }
 
 /// ETC, 1??? ????
-bool CX2StateServerSelect::Handler_EGS_SELECT_UNIT_5_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_SELECT_UNIT_5_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_SELECT_UNIT_5_NOT kEvent;
@@ -3129,7 +3131,7 @@ bool CX2StateServerSelect::Handler_EGS_SELECT_UNIT_5_NOT( HWND hWnd, UINT uMsg, 
 
 
 /// ????? ???�? ????? ??????? ??? ???? ???? ?? m_iOK �??
-bool CX2StateServerSelect::Handler_EGS_SELECT_UNIT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_SELECT_UNIT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_SELECT_UNIT_ACK kEvent;
@@ -3332,7 +3334,7 @@ bool CX2StateServerSelect::Handler_EGS_DELETE_UNIT_REQ()
 	return true;
 }
 
-bool CX2StateServerSelect::Handler_EGS_DELETE_UNIT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_DELETE_UNIT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_DELETE_UNIT_ACK kEvent;
@@ -3432,7 +3434,7 @@ bool CX2StateServerSelect::Handler_EGS_STATE_CHANGE_VILLAGE_MAP_REQ()
 	return true;
 }
 
-bool CX2StateServerSelect::Handler_EGS_STATE_CHANGE_VILLAGE_MAP_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_STATE_CHANGE_VILLAGE_MAP_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 //#if 0
 //	KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -3476,7 +3478,7 @@ bool CX2StateServerSelect::Handler_EGS_CHANGE_NICK_NAME_REQ( UidType uid, const 
 }
 
 
-bool CX2StateServerSelect::Handler_EGS_CHANGE_NICK_NAME_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_CHANGE_NICK_NAME_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_NICK_NAME_ACK kEvent;
@@ -3533,7 +3535,7 @@ bool CX2StateServerSelect::Handler_EGS_CHANGE_NICK_NAME_ACK( HWND hWnd, UINT uMs
 }
 
 //{{ kimhc // 2010-01-04 // ?????? EGS_SELECT_UNIT_ACK?? ????????? ?????? ???? ?? ????
-bool CX2StateServerSelect::Handler_EGS_SELECT_UNIT_INVENTORY_INFO_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_SELECT_UNIT_INVENTORY_INFO_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_SELECT_UNIT_INVENTORY_INFO_NOT kEvent;
@@ -3561,7 +3563,7 @@ bool CX2StateServerSelect::Handler_EGS_SELECT_UNIT_INVENTORY_INFO_NOT( HWND hWnd
 	return false;
 }
 
-bool CX2StateServerSelect::Handler_EGS_GET_MY_INVENTORY_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_GET_MY_INVENTORY_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_GET_MY_INVENTORY_ACK kEvent;
@@ -3674,7 +3676,7 @@ bool CX2StateServerSelect::Handler_EGS_RECOMMEND_USER_REQ( const WCHAR* wszNickN
 	return true;
 }
 
-bool CX2StateServerSelect::Handler_EGS_RECOMMEND_USER_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_RECOMMEND_USER_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_RECOMMEND_USER_ACK kEvent;
@@ -3753,7 +3755,7 @@ bool CX2StateServerSelect::Handler_EGS_SELECT_SERVER_SET_REQ()
 	return true;
 }
 
-bool CX2StateServerSelect::Handler_EGS_SELECT_SERVER_SET_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_SELECT_SERVER_SET_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_SELECT_SERVER_SET_ACK kEvent;
@@ -3839,7 +3841,7 @@ bool CX2StateServerSelect::Handler_EGS_MY_UNIT_AND_INVENTORY_INFO_LIST_REQ()
 	return true;
 }
 
-bool CX2StateServerSelect::Handler_EGS_MY_UNIT_AND_INVENTORY_INFO_LIST_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_MY_UNIT_AND_INVENTORY_INFO_LIST_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_MY_UNIT_AND_INVENTORY_INFO_LIST_ACK kEvent;
@@ -3952,7 +3954,7 @@ bool CX2StateServerSelect::Handler_EGS_AGREE_HACK_USER_REQ()
 	return true;
 }
 
-bool CX2StateServerSelect::Handler_EGS_AGREE_HACK_USER_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_AGREE_HACK_USER_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_AGREE_HACK_USER_ACK kEvent;
@@ -4486,7 +4488,7 @@ CX2UnitViewerUI* CX2StateServerSelect::GetUnitViewer( CX2Unit* pUnit )
 
 
 
-void CX2StateServerSelect::DownAnimFrameMove( double fTime, float fElapsedTime )
+void CX2StateServerSelect::DownAnimFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	if ( m_bPlayDownAnim == true )
 	{
@@ -4610,7 +4612,7 @@ bool CX2StateServerSelect::Handler_EGS_STATE_CHANGE_FIELD_REQ(bool bForceMove)
 	return true;
 }
 
-bool CX2StateServerSelect::Handler_EGS_STATE_CHANGE_FIELD_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_STATE_CHANGE_FIELD_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_STATE_CHANGE_FIELD_ACK kEvent;
@@ -4694,7 +4696,7 @@ bool CX2StateServerSelect::Handler_EGS_STATE_CHANGE_FIELD_ACK( HWND hWnd, UINT u
 	return true;
 }
 
-bool CX2StateServerSelect::Handler_EGS_CHANGE_USER_LIST_IN_SECTOR_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_CHANGE_USER_LIST_IN_SECTOR_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_USER_LIST_IN_SECTOR_NOT kEvent;
@@ -4785,7 +4787,7 @@ void CX2StateServerSelect::Handler_EGS_CREATE_TUTORIAL_ROOM_REQ()
 	g_pMain->AddServerPacket( EGS_CREATE_TUTORIAL_ROOM_ACK, 40.f );
 }
 
-bool CX2StateServerSelect::Handler_EGS_CREATE_TUTORIAL_ROOM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_CREATE_TUTORIAL_ROOM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CREATE_TUTORIAL_ROOM_ACK kEvent;
@@ -4881,6 +4883,8 @@ bool CX2StateServerSelect::Handler_EGS_CONNECT_REQ( const wstring& wstrGameServe
 	{
 		switch( g_pMain->GetPublisher() )
 		{
+		default:
+			break;
 		}
 	}
 
@@ -4975,7 +4979,7 @@ bool CX2StateServerSelect::Handler_EGS_CONNECT_REQ( const wstring& wstrGameServe
 	return true;
 }
 
-bool CX2StateServerSelect::Handler_EGS_CONNECT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_CONNECT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CONNECT_ACK kEvent;
@@ -5101,7 +5105,7 @@ bool CX2StateServerSelect::Handler_EGS_VERIFY_ACCOUNT_REQ()
 	return true;
 }
 
-bool CX2StateServerSelect::Handler_EGS_VERIFY_ACCOUNT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_VERIFY_ACCOUNT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 #if !X2_DEV_TOOLS
 #endif
@@ -5228,7 +5232,7 @@ bool CX2StateServerSelect::Handler_EGS_VERIFY_ACCOUNT_ACK( HWND hWnd, UINT uMsg,
 	return true;
 }
 
-bool CX2StateServerSelect::Handler_ENX_USER_LOGIN_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_ENX_USER_LOGIN_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KENX_USER_LOGIN_NOT kEvent;
@@ -5304,7 +5308,7 @@ bool CX2StateServerSelect::Handler_KXPT_PORT_CHECK_ACK( const KXPT_PORT_CHECK_AC
 	return CX2State::Handler_EGS_STATE_CHANGE_SERVER_SELECT_REQ();
 }
 
-/*virtual*/ bool CX2StateServerSelect::Handler_EGS_STATE_CHANGE_SERVER_SELECT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+/*virtual*/ bool CX2StateServerSelect::Handler_EGS_STATE_CHANGE_SERVER_SELECT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_STATE_CHANGE_SERVER_SELECT_ACK kEvent;
@@ -5331,7 +5335,7 @@ bool CX2StateServerSelect::Handler_EGS_CURRENT_TIME_REQ()
 	return true;
 }
 
-bool CX2StateServerSelect::Handler_EGS_CURRENT_TIME_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_CURRENT_TIME_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CURRENT_TIME_ACK kEvent;
@@ -5394,7 +5398,7 @@ bool CX2StateServerSelect::Handler_ECH_GET_CHANNEL_LIST_REQ()
 }
 
 
-bool CX2StateServerSelect::Handler_ECH_GET_CHANNEL_LIST_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_ECH_GET_CHANNEL_LIST_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KECH_GET_CHANNEL_LIST_ACK kEvent;
@@ -5410,7 +5414,7 @@ bool CX2StateServerSelect::Handler_ECH_GET_CHANNEL_LIST_ACK( HWND hWnd, UINT uMs
 	return true;
 }
 
-bool CX2StateServerSelect::Handler_ECH_GET_CHANNEL_LIST_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_ECH_GET_CHANNEL_LIST_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KECH_GET_CHANNEL_LIST_NOT kEvent;
@@ -5527,7 +5531,7 @@ bool CX2StateServerSelect::Handler_ECH_DISCONNECT_REQ()
 }
 
 
-bool CX2StateServerSelect::Handler_ECH_DISCONNECT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_ECH_DISCONNECT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	if( g_pMain->DeleteServerPacket( ECH_DISCONNECT_ACK ) == true )
 	{
@@ -5572,7 +5576,7 @@ bool CX2StateServerSelect::Handler_EGS_DISCONNECT_FOR_SERVER_SELECT_REQ()
 }
 
 
-bool CX2StateServerSelect::Handler_EGS_DISCONNECT_FOR_SERVER_SELECT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_DISCONNECT_FOR_SERVER_SELECT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	if( g_pMain->DeleteServerPacket( EGS_DISCONNECT_FOR_SERVER_SELECT_ACK ) == true )
 	{
@@ -5726,7 +5730,7 @@ bool CX2StateServerSelect::Handler_EGS_GET_MY_MESSENGER_SN_REQ( UidType unitUID 
 	return true;
 }
 
-bool CX2StateServerSelect::Handler_EGS_GET_MY_MESSENGER_SN_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_GET_MY_MESSENGER_SN_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_GET_MY_MESSENGER_SN_ACK kEvent;
@@ -5761,7 +5765,7 @@ bool CX2StateServerSelect::Handler_EGS_GET_MY_MESSENGER_SN_ACK( HWND hWnd, UINT 
 }
 
 
-bool CX2StateServerSelect::ConnectToChannelServer( bool bIsReversingConnect /* = false */ )
+bool CX2StateServerSelect::ConnectToChannelServer( bool /*bIsReversingConnect*/ /* = false */ )
 {
 	ASSERT( NULL != g_pData->GetServerProtocol() );
 
@@ -5822,7 +5826,7 @@ bool CX2StateServerSelect::Handler_ECH_VERIFY_ACCOUNT_REQ()
 	return true;
 }
 
-bool CX2StateServerSelect::Handler_ECH_VERIFY_ACCOUNT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_ECH_VERIFY_ACCOUNT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KECH_VERIFY_ACCOUNT_ACK kEvent;
@@ -5867,7 +5871,7 @@ bool CX2StateServerSelect::Handler_ECH_VERIFY_ACCOUNT_ACK( HWND hWnd, UINT uMsg,
 
 
 
-bool CX2StateServerSelect::Handler_EGS_SECOND_SECURITY_INFO_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_SECOND_SECURITY_INFO_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_SECOND_SECURITY_INFO_NOT kEvent;
@@ -6105,7 +6109,7 @@ bool CX2StateServerSelect::Handler_EGS_FINAL_DELETE_UNIT_REQ()
 	return true;
 }
 
-bool CX2StateServerSelect::Handler_EGS_FINAL_DELETE_UNIT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_FINAL_DELETE_UNIT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_FINAL_DELETE_UNIT_ACK kEvent;
@@ -6163,7 +6167,7 @@ bool CX2StateServerSelect::Handler_EGS_RESTORE_UNIT_REQ()
 	return true;
 }
 
-bool CX2StateServerSelect::Handler_EGS_RESTORE_UNIT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_RESTORE_UNIT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_RESTORE_UNIT_ACK kEvent;
@@ -6217,7 +6221,7 @@ bool CX2StateServerSelect::Handler_ECH_GET_SERVERGROUP_LIST_REQ()
 	return true;
 }
 
-bool CX2StateServerSelect::Handler_ECH_GET_SERVERGROUP_LIST_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_ECH_GET_SERVERGROUP_LIST_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KECH_GET_CHANNEL_LIST_ACK kEvent;
@@ -6233,7 +6237,7 @@ bool CX2StateServerSelect::Handler_ECH_GET_SERVERGROUP_LIST_ACK( HWND hWnd, UINT
 	return true;
 }
 
-bool CX2StateServerSelect::Handler_ECH_GET_SERVERGROUP_LIST_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_ECH_GET_SERVERGROUP_LIST_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KECH_GET_SERVERGROUP_LIST_NOT kEvent;
@@ -6399,7 +6403,7 @@ void CX2StateServerSelect::UpdateServerSelectButton( int iID )
 //}}  kimhc // 2009-12-15 // ?????? ?�??? ??? ?????? ???
 
 
-bool CX2StateServerSelect::Handler_EGS_KEYBOARD_MAPPING_INFO_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_KEYBOARD_MAPPING_INFO_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_KEYBOARD_MAPPING_INFO_NOT kEvent;
@@ -6492,7 +6496,7 @@ void CX2StateServerSelect::SettingUserGamePadMappingInfo( const KKeyboardMapping
 	}
 }
 
-bool CX2StateServerSelect::Handler_EGS_CHAT_OPTION_INFO_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_CHAT_OPTION_INFO_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHAT_OPTION_INFO_NOT kEvent;
@@ -7010,7 +7014,7 @@ bool CX2StateServerSelect::Handler_EGS_CHARACTER_LIST_REQ()
 }
 
 
-bool CX2StateServerSelect::Handler_EGS_CHARACTER_LIST_ACK ( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+bool CX2StateServerSelect::Handler_EGS_CHARACTER_LIST_ACK ( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam)
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHARACTER_LIST_ACK kEvent;
@@ -7253,6 +7257,8 @@ void CX2StateServerSelect::SetBackgroundImageBySelectUnitType ( CX2Unit::UNIT_TY
 		case CX2Unit::UT_ADD :
 			wstrFileName = L"DLG_Unit_Background_add.tga";
 			break;
+	default:
+		break;
 	}
 
 	if ( NULL != m_pDLGUnitSelectFront->GetStatic_LUA( "Unit_Select_background" ) &&
@@ -7552,7 +7558,7 @@ void CX2StateServerSelect::ChangeUnitButtonInfo ()
 	}
 }
 
-bool CX2StateServerSelect::Handler_EGS_GET_CREATE_UNIT_TODAY_COUNT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_GET_CREATE_UNIT_TODAY_COUNT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_GET_CREATE_UNIT_TODAY_COUNT_ACK kEvent;
@@ -7595,7 +7601,7 @@ void CX2StateServerSelect::Handler_EGS_ENTRY_POINT_GET_CHANNEL_LIST_REQ ()
 	g_pData->GetServerProtocol()->SendID( EGS_ENTRY_POINT_GET_CHANNEL_LIST_REQ );
 	g_pMain->AddServerPacket( EGS_ENTRY_POINT_GET_CHANNEL_LIST_ACK );
 }
-bool CX2StateServerSelect::Handler_EGS_ENTRY_POINT_GET_CHANNEL_LIST_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateServerSelect::Handler_EGS_ENTRY_POINT_GET_CHANNEL_LIST_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_ENTRY_POINT_GET_CHANNEL_LIST_ACK kEvent;

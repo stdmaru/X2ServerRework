@@ -10,19 +10,19 @@ CX2UIPersonalShopBoard::CX2UIPersonalShopBoard(CKTDXStage* pNowStage, const WCHA
 , m_bRegMyGuildAd( false )
 , m_pNowStage( pNowStage )
 , m_pDlgPersonalShopBoard( NULL )
+, m_fCurrentTime( 0.f )
+, m_fLastSearchTime( 0.f )
+, m_vSizeDlg( 0, 0 )
+, m_vPosDlg( 0, 0 )
+, m_uiFirstPageinCurrentBoard( 1 )
 , m_uiNowPage( 1 )
 , m_uiMaxPage( 0 )
-, m_uiFirstPageinCurrentBoard( 1 )
 , m_iComboFirstindex( 0 )
 , m_iComboSecondindex( 0 )
 , m_iComboCharacterindex( 0 )
 , m_iComboClassindex( 0 )
 , m_iIMEEditMinLevel( 0 )
 , m_iIMEEditMaxLevel( 50 )
-, m_fCurrentTime( 0.f )
-, m_fLastSearchTime( 0.f )
-, m_vPosDlg( 0, 0 )
-, m_vSizeDlg( 0, 0 )
 , m_pListboxSearchKeyword( NULL )
 , m_iCloseSearchKeywordListTime( 0 )
 , m_iFocusOutSearchKeywordBoxTime( 0 )
@@ -323,7 +323,7 @@ HRESULT	CX2UIPersonalShopBoard::OnFrameMove( double fTime, float fElapsedTime )
 	return S_OK;
 }
 
-bool CX2UIPersonalShopBoard::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPersonalShopBoard::MsgProc( HWND /*hWnd*/, UINT uMsg, WPARAM wParam, LPARAM lParam )
 {
 
 	// 앞에 모달 다이얼로그가 있으면 메시지를 처리하지 않는다
@@ -506,7 +506,7 @@ bool CX2UIPersonalShopBoard::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 	return bFlag;
 }
 
-bool CX2UIPersonalShopBoard::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPersonalShopBoard::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM lParam )
 {
 	int tmp_min = 0;
 	int tmp_max = 0;
@@ -1935,7 +1935,7 @@ bool CX2UIPersonalShopBoard::Handler_EGS_SEARCH_TRADE_BOARD_REQ()
 
 	return true;
 }
-bool CX2UIPersonalShopBoard::Handler_EGS_SEARCH_TRADE_BOARD_ACK(  HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIPersonalShopBoard::Handler_EGS_SEARCH_TRADE_BOARD_ACK(  HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 

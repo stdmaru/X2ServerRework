@@ -4,10 +4,10 @@
 #include "./X2RelationshipManager.h"
 
 CX2RelationshipManager::CX2RelationshipManager () :
-m_pMyRelationshipInfo ( NULL ),
-m_pUIRelationship ( NULL ),
 m_bIsPossibleRefreshData ( true ),
 m_fRefreshDataCoolTime ( 0 ),
+m_pMyRelationshipInfo ( NULL ),
+m_pUIRelationship ( NULL ),
 m_pMyWeddingItemInfo ( NULL ),
 m_optrGameUnitRelationPartner (),
 m_pSquareUnitRelationPartner ()
@@ -28,7 +28,7 @@ CX2RelationshipManager::~CX2RelationshipManager ()
 
 }
 
-HRESULT CX2RelationshipManager::OnFrameMove( double fTime, float fElapsedTime )
+HRESULT CX2RelationshipManager::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	CX2RelationshipEffectManager * pRelationshipEffectManager = g_pData->GetRelationshipEffectManager();
 	CX2RelationshipManager::RelationshipInfo * pMyRelationInfo = GetMyRelationshipInfo();
@@ -255,7 +255,7 @@ bool CX2RelationshipManager::UIServerEventProc( HWND hWnd, UINT uMsg, WPARAM wPa
 
 }
 
-bool CX2RelationshipManager::Handler_EGS_CHANGE_LOVE_WORD_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2RelationshipManager::Handler_EGS_CHANGE_LOVE_WORD_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = reinterpret_cast <KSerBuffer*> (lParam);
 	KEGS_CHANGE_LOVE_WORD_NOT kEvent;
@@ -287,7 +287,7 @@ bool CX2RelationshipManager::Handler_EGS_CHANGE_LOVE_WORD_NOT( HWND hWnd, UINT u
 
 
 
-bool CX2RelationshipManager::Handler_EGS_CHANGE_LOVE_WORD_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2RelationshipManager::Handler_EGS_CHANGE_LOVE_WORD_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = reinterpret_cast <KSerBuffer*> (lParam);
 	KEGS_COUPLE_PROPOSE_ACK kEvent;
@@ -317,7 +317,7 @@ bool CX2RelationshipManager::Send_EGS_CHANGE_LOVE_WORD_REQ ( UidType ItemUID_, w
 
 
 
-bool CX2RelationshipManager::Handler_EGS_COUPLE_PROPOSE_ACK ( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2RelationshipManager::Handler_EGS_COUPLE_PROPOSE_ACK ( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = reinterpret_cast <KSerBuffer*> (lParam);
 	KEGS_COUPLE_PROPOSE_ACK kEvent;
@@ -376,7 +376,7 @@ bool CX2RelationshipManager::Send_EGS_COUPLE_PROPOSE_REQ ( wstring wstrNickname_
 
 
 
-bool CX2RelationshipManager::Handler_EGS_BREAK_UP_NOT ( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2RelationshipManager::Handler_EGS_BREAK_UP_NOT ( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = reinterpret_cast <KSerBuffer*> (lParam);
 	KEGS_BREAK_UP_NOT kEvent;
@@ -457,7 +457,7 @@ bool CX2RelationshipManager::Handler_EGS_BREAK_UP_NOT ( HWND hWnd, UINT uMsg, WP
 
 
 
-bool CX2RelationshipManager::Handler_EGS_BREAK_UP_ACK ( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2RelationshipManager::Handler_EGS_BREAK_UP_ACK ( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = reinterpret_cast <KSerBuffer*> (lParam);
 	KEGS_BREAK_UP_ACK kEvent;
@@ -475,7 +475,7 @@ bool CX2RelationshipManager::Handler_EGS_BREAK_UP_ACK ( HWND hWnd, UINT uMsg, WP
 	return false;
 }
 
-bool CX2RelationshipManager::Handler_EGS_CHECK_BREAK_UP_ACK ( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2RelationshipManager::Handler_EGS_CHECK_BREAK_UP_ACK ( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = reinterpret_cast <KSerBuffer*> (lParam);
 	KEGS_CHECK_BREAK_UP_ACK kEvent;
@@ -544,7 +544,7 @@ bool CX2RelationshipManager::Handler_EGS_JOIN_WEDDING_HALL_REQ ( UidType iItemUI
 /** @function : Handler_EGS_JOIN_WEDDING_HALL_ACK
 	@brief : 결혼식장 입장 패킷
 */
-bool CX2RelationshipManager::Handler_EGS_JOIN_WEDDING_HALL_ACK  ( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2RelationshipManager::Handler_EGS_JOIN_WEDDING_HALL_ACK  ( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = reinterpret_cast <KSerBuffer*> (lParam);
 	KEGS_JOIN_WEDDING_HALL_ACK kEvent;
@@ -630,7 +630,7 @@ bool CX2RelationshipManager::Send_EGS_CHECK_NICK_NAME_REQ ( wstring wstrNickname
 	return true;
 }
 
-bool CX2RelationshipManager::Handler_EGS_CHECK_NICK_NAME_ACK  ( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2RelationshipManager::Handler_EGS_CHECK_NICK_NAME_ACK  ( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = reinterpret_cast <KSerBuffer*> (lParam);
 	KEGS_CHECK_NICK_NAME_ACK kEvent;
@@ -701,7 +701,7 @@ bool CX2RelationshipManager::Send_EGS_RELATIONSHIP_EFFECT_NOT  ( int idx_ )
 	return true;
 }
 
-bool CX2RelationshipManager::Handler_EGS_RELATIONSHIP_EFFECT_NOT  ( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2RelationshipManager::Handler_EGS_RELATIONSHIP_EFFECT_NOT  ( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 
 	KSerBuffer* pBuff = reinterpret_cast <KSerBuffer*> (lParam);
@@ -773,7 +773,7 @@ bool CX2RelationshipManager::Handler_EGS_RELATIONSHIP_EFFECT_NOT  ( HWND hWnd, U
 	return false;
 }
 
-bool CX2RelationshipManager::Handler_EGS_COUPLE_PROPOSE_RESULT_NOT ( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2RelationshipManager::Handler_EGS_COUPLE_PROPOSE_RESULT_NOT ( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = reinterpret_cast <KSerBuffer*> (lParam);
 	KEGS_COUPLE_PROPOSE_RESULT_NOT kEvent;
@@ -910,6 +910,8 @@ bool CX2RelationshipManager::Handler_EGS_COUPLE_PROPOSE_RESULT_NOT ( HWND hWnd, 
 					GetMyRelationshipInfo()->ClearRelationInfo();
 
 				} break;
+			default:
+				break;
 			}
 			g_pData->GetMessenger()->SetRelationshipUI ( GetMyRelationshipInfo()->m_eRelationStateType );
 		}
@@ -923,7 +925,7 @@ bool CX2RelationshipManager::Handler_EGS_COUPLE_PROPOSE_RESULT_NOT ( HWND hWnd, 
 	return true;
 }
 
-bool CX2RelationshipManager::Handler_EGS_WEDDING_PROPOSE_ACK ( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2RelationshipManager::Handler_EGS_WEDDING_PROPOSE_ACK ( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = reinterpret_cast <KSerBuffer*> (lParam);
 	KEGS_WEDDING_PROPOSE_ACK kEvent;
@@ -958,7 +960,7 @@ bool CX2RelationshipManager::Handler_EGS_WEDDING_PROPOSE_ACK ( HWND hWnd, UINT u
 
 
 
-bool CX2RelationshipManager::Handler_EGS_WEDDING_ITEM_INFO_ACK ( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2RelationshipManager::Handler_EGS_WEDDING_ITEM_INFO_ACK ( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = reinterpret_cast <KSerBuffer*> (lParam);
 	KEGS_WEDDING_ITEM_INFO_ACK kEvent;
@@ -1017,7 +1019,7 @@ bool CX2RelationshipManager::Send_EGS_WEDDING_ITEM_INFO_REQ ( std::vector< UidTy
 
 
 
-bool CX2RelationshipManager::Handler_EGS_COUPLE_PROPOSE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2RelationshipManager::Handler_EGS_COUPLE_PROPOSE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = reinterpret_cast <KSerBuffer*> (lParam);
 	KEGS_COUPLE_PROPOSE_NOT kEvent;
@@ -1100,7 +1102,7 @@ bool CX2RelationshipManager::Send_EGS_GET_GUILD_USER_LIST_REQ ()
 	return true;
 }
 
-bool CX2RelationshipManager::Handler_EGS_GET_GUILD_USER_LIST_ACK ( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2RelationshipManager::Handler_EGS_GET_GUILD_USER_LIST_ACK ( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
     if ( NULL != g_pData->GetMessenger() )
 	{
@@ -1312,6 +1314,8 @@ void CX2RelationshipEffectManager::SetShowRelationshipAttachEffect ( RELATION_EF
 						}
 					}
 					break;
+				default:
+					break;
 				}
 			}
 			break;
@@ -1414,6 +1418,8 @@ bool CX2RelationshipEffectManager::IsPartnerClose ()
 				}
 			}
 			break;
+	default:
+		break;
 	}
 
 	return false;
@@ -1536,6 +1542,8 @@ void CX2RelationshipEffectManager::RelationEffectInfo::DrawRelationshipEffect ( 
 			}
 		}
 		break;
+	default:
+		break;
 	}
 
 }
@@ -1620,6 +1628,8 @@ void CX2RelationshipEffectManager::RelationEffectInfo::PopTalkBoxEffect( UidType
 				if ( pkSlotData == NULL )
 					return;
 				break;
+		default:
+			break;
 		}
 
 		if  ( pkSlotData == NULL )
@@ -1735,6 +1745,8 @@ void CX2RelationshipEffectManager::RelationEffectInfo::PrepareDrawRelationshipEf
 		}
 
 		break;
+	default:
+		break;
 	}
 
 	switch(g_pMain->GetNowStateID())
@@ -1807,6 +1819,8 @@ void CX2RelationshipEffectManager::RelationEffectInfo::PrepareDrawRelationshipEf
 			}
 		}
 		break;
+	default:
+		break;
 	}
 }
 
@@ -1862,6 +1876,8 @@ bool CX2RelationshipEffectManager::CalculateCloseEffectPosition ( UidType Uid1_,
 				}
 			}
 		}
+		break;
+	default:
 		break;
 	}
 	return false;
@@ -1968,6 +1984,8 @@ bool CX2RelationshipEffectManager::GetMyRelationCloseEffectPosition ( D3DXVECTOR
 				}
 			}
 		}
+		break;
+	default:
 		break;
 	}
 

@@ -9,11 +9,11 @@ m_wstrObjectName( L"" ),
 m_LightPos( 0, 0, 0 ),
 m_fElapsedTime( 0.f ),
 m_coColor( D3DXCOLOR( 1, 1, 1, 1 ) ),
+m_coOriginalColor( 1, 1, 1, 1 ),
 m_bUseWorldColor( true ),
 m_fHideDistance( 0.f ),
-m_fHideNearDistance( 0.f ),
-m_bForceShow( false )
-, m_coOriginalColor( 1, 1, 1, 1 )
+m_fHideNearDistance( 0.f )
+, m_bForceShow( false )
 {
 }
 
@@ -21,7 +21,7 @@ CX2WorldObject::~CX2WorldObject(void)
 {
 }
 
-HRESULT CX2WorldObject::OnFrameMove( double fTime, float fElapsedTime )
+HRESULT CX2WorldObject::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	m_fElapsedTime = fElapsedTime;
 	return S_OK;

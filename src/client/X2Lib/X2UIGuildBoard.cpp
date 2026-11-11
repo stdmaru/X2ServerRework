@@ -18,10 +18,10 @@ m_uiMaxPageJoinList( 1 ),
 m_uiListIndexForJoin( 0 ),
 m_uiListIndexForSkill( 0 ),
 m_uiJoinListIndex( 0 ),
-m_vPosDlg( 0, 0 ),
+m_sAdvertisePeriod(1),
 m_vSizeDlg( 0, 0 ),
-m_pGuildSkillTreeInfo( NULL ),
-m_sAdvertisePeriod(1)	// 이거 초기값 1로 해야하는게 맞는건지 아닌건지....
+m_vPosDlg( 0, 0 ),
+m_pGuildSkillTreeInfo( NULL )	// 이거 초기값 1로 해야하는게 맞는건지 아닌건지....
 {
 	m_pRadioGuildNumMember = NULL;
 	m_pRadioGuildLevel = NULL;
@@ -448,7 +448,7 @@ bool CX2UIGuildBoard::Handler_EGS_GET_GUILD_SKILL_IN_BOARD_REQ()
 	return true;
 }
 
-bool CX2UIGuildBoard::Handler_EGS_GET_GUILD_SKILL_IN_BOARD_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIGuildBoard::Handler_EGS_GET_GUILD_SKILL_IN_BOARD_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_GET_GUILD_SKILL_IN_BOARD_ACK kEvent;
@@ -482,7 +482,7 @@ bool CX2UIGuildBoard::Handler_EGS_GET_GUILD_AD_LIST_REQ()
 
 	return true;
 }
-bool CX2UIGuildBoard::Handler_EGS_GET_GUILD_AD_LIST_ACK(  HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIGuildBoard::Handler_EGS_GET_GUILD_AD_LIST_ACK(  HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
@@ -561,6 +561,8 @@ bool CX2UIGuildBoard::Handler_EGS_GET_GUILD_AD_LIST_ACK(  HWND hWnd, UINT uMsg, 
 				}
 			}
 			break;
+		default:
+			break;
 		}
 		return true;
 
@@ -581,7 +583,7 @@ bool CX2UIGuildBoard::Handler_EGS_MODIFY_REG_GUILD_AD_REQ( wstring &wstrMessage 
 	return true;
 }
 
-bool CX2UIGuildBoard::Handler_EGS_MODIFY_REG_GUILD_AD_ACK(  HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIGuildBoard::Handler_EGS_MODIFY_REG_GUILD_AD_ACK(  HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_MODIFY_REG_GUILD_AD_ACK kEvent;
@@ -632,7 +634,7 @@ bool CX2UIGuildBoard::Handler_EGS_REGISTRATION_GUILD_AD_REQ( wstring &wstrMessag
 	return true;
 }
 
-bool CX2UIGuildBoard::Handler_EGS_REGISTRATION_GUILD_AD_ACK(  HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIGuildBoard::Handler_EGS_REGISTRATION_GUILD_AD_ACK(  HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_REGISTRATION_GUILD_AD_ACK kEvent;
@@ -687,7 +689,7 @@ bool CX2UIGuildBoard::Handler_EGS_APPLY_JOIN_GUILD_REQ( wstring &wstrMessage, bo
 	return true;
 }
 
-bool CX2UIGuildBoard::Handler_EGS_APPLY_JOIN_GUILD_ACK(  HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIGuildBoard::Handler_EGS_APPLY_JOIN_GUILD_ACK(  HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_APPLY_JOIN_GUILD_ACK kEvent;
@@ -728,7 +730,7 @@ bool CX2UIGuildBoard::Handler_EGS_GET_APPLY_JOIN_GUILD_LIST_REQ()
 	return true;
 }
 
-bool CX2UIGuildBoard::Handler_EGS_GET_APPLY_JOIN_GUILD_LIST_ACK(  HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIGuildBoard::Handler_EGS_GET_APPLY_JOIN_GUILD_LIST_ACK(  HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_GET_APPLY_JOIN_GUILD_LIST_ACK kEvent;
@@ -874,7 +876,7 @@ bool CX2UIGuildBoard::Handler_EGS_ACCEPT_JOIN_GUILD_REQ()
 
 	return true;
 }
-bool CX2UIGuildBoard::Handler_EGS_ACCEPT_JOIN_GUILD_ACK(  HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIGuildBoard::Handler_EGS_ACCEPT_JOIN_GUILD_ACK(  HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_ACCEPT_JOIN_GUILD_ACK kEvent;
@@ -912,7 +914,7 @@ bool CX2UIGuildBoard::Handler_EGS_DELETE_APPLY_JOIN_GUILD_REQ()
 
 	return true;
 }
-bool CX2UIGuildBoard::Handler_EGS_DELETE_APPLY_JOIN_GUILD_ACK(  HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UIGuildBoard::Handler_EGS_DELETE_APPLY_JOIN_GUILD_ACK(  HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_DELETE_APPLY_JOIN_GUILD_ACK kEvent;
@@ -1291,7 +1293,7 @@ void CX2UIGuildBoard::SetNumToPicture( CKTDGUIControl::CPictureData* const pPict
 
 
 
-HRESULT		CX2UIGuildBoard::OnFrameMove( double fTime, float fElapsedTime )
+HRESULT		CX2UIGuildBoard::OnFrameMove( double /*fTime*/, float /*fElapsedTime*/ )
 {
 	return S_OK;
 }

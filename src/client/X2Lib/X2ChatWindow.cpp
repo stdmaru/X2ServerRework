@@ -30,7 +30,7 @@ CX2ChatWindow::~CX2ChatWindow(void)
 }
 
 
-HRESULT CX2ChatWindow::OnFrameMove( double fTime, float fElapsedTime )
+HRESULT CX2ChatWindow::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 	KTDXPROFILE();
 	for ( UINT i = 0; i < (UINT)m_ChatDataList.size(); i++ )
@@ -138,6 +138,8 @@ HRESULT CX2ChatWindow::OnFrameRender()
 
 				fontStyle			= CKTDGFontManager::FS_SHELL;
 			} break;
+		default:
+			break;
 		}
 
 

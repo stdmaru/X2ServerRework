@@ -933,7 +933,7 @@ void CX2StateDungeonRoom::LastMsgPopOk()
 	Handler_EGS_LEAVE_ROOM_REQ();
 }
 
-bool CX2StateDungeonRoom::Handler_EGS_JOIN_ROOM_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonRoom::Handler_EGS_JOIN_ROOM_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_JOIN_ROOM_NOT kEvent;
@@ -977,7 +977,7 @@ bool CX2StateDungeonRoom::Handler_EGS_LEAVE_ROOM_REQ()
 	return true;
 }
 
-bool CX2StateDungeonRoom::Handler_EGS_LEAVE_ROOM_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonRoom::Handler_EGS_LEAVE_ROOM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KPacketOK kPacket;
@@ -1008,7 +1008,7 @@ bool CX2StateDungeonRoom::Handler_EGS_LEAVE_ROOM_ACK( HWND hWnd, UINT uMsg, WPAR
 	return bRetVal;
 }
 
-bool CX2StateDungeonRoom::Handler_EGS_LEAVE_ROOM_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonRoom::Handler_EGS_LEAVE_ROOM_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_LEAVE_ROOM_NOT kEvent;
@@ -1062,7 +1062,7 @@ bool CX2StateDungeonRoom::Handler_EGS_STATE_CHANGE_LOCAL_MAP_REQ()
 	return true;
 }
 
-bool CX2StateDungeonRoom::Handler_EGS_STATE_CHANGE_LOCAL_MAP_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonRoom::Handler_EGS_STATE_CHANGE_LOCAL_MAP_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	return true;
 }
@@ -1095,7 +1095,7 @@ bool CX2StateDungeonRoom::Handler_EGS_CHANGE_SLOT_OPEN_REQ( wstring buttonName )
 	return m_pCX2DungeonRoom->Handler_EGS_CHANGE_SLOT_OPEN_REQ( slotIndex );
 }
 
-bool CX2StateDungeonRoom::Handler_EGS_CHANGE_SLOT_OPEN_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonRoom::Handler_EGS_CHANGE_SLOT_OPEN_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_SLOT_OPEN_ACK kEvent;
@@ -1110,7 +1110,7 @@ bool CX2StateDungeonRoom::Handler_EGS_CHANGE_SLOT_OPEN_ACK( HWND hWnd, UINT uMsg
 	return bRetVal;
 }
 
-bool CX2StateDungeonRoom::Handler_EGS_CHANGE_SLOT_OPEN_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonRoom::Handler_EGS_CHANGE_SLOT_OPEN_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_SLOT_OPEN_NOT kEvent;
@@ -1141,7 +1141,7 @@ bool CX2StateDungeonRoom::Handler_EGS_CHANGE_DUNGEON_DIFFICULTY_REQ( CX2Dungeon:
 	return true;
 }
 
-bool CX2StateDungeonRoom::Handler_EGS_CHANGE_DUNGEON_DIFFICULTY_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonRoom::Handler_EGS_CHANGE_DUNGEON_DIFFICULTY_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_STATE_CHANGE_GAME_START_ACK kEvent;
@@ -1156,7 +1156,7 @@ bool CX2StateDungeonRoom::Handler_EGS_CHANGE_DUNGEON_DIFFICULTY_ACK( HWND hWnd, 
 	return false;
 }
 
-bool CX2StateDungeonRoom::Handler_EGS_CHANGE_DUNGEON_DIFFICULTY_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonRoom::Handler_EGS_CHANGE_DUNGEON_DIFFICULTY_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_DUNGEON_DIFFICULTY_NOT kEvent;
@@ -1237,7 +1237,7 @@ bool CX2StateDungeonRoom::Handler_EGS_STATE_CHANGE_GAME_START_REQ()
 	return true;
 }
 
-bool CX2StateDungeonRoom::Handler_EGS_STATE_CHANGE_GAME_START_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonRoom::Handler_EGS_STATE_CHANGE_GAME_START_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KPacketOK kEvent;
@@ -1256,7 +1256,7 @@ bool CX2StateDungeonRoom::Handler_EGS_STATE_CHANGE_GAME_START_ACK( HWND hWnd, UI
 	return false;
 }
 
-bool CX2StateDungeonRoom::Handler_EGS_STATE_CHANGE_GAME_START_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonRoom::Handler_EGS_STATE_CHANGE_GAME_START_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_STATE_CHANGE_GAME_START_NOT kEvent;
@@ -1324,7 +1324,7 @@ bool CX2StateDungeonRoom::Handler_EGS_CHANGE_READY_REQ()
 	return m_pCX2DungeonRoom->Handler_EGS_CHANGE_READY_REQ();
 }
 
-bool CX2StateDungeonRoom::Handler_EGS_CHANGE_READY_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonRoom::Handler_EGS_CHANGE_READY_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_READY_ACK kEvent;
@@ -1337,7 +1337,7 @@ bool CX2StateDungeonRoom::Handler_EGS_CHANGE_READY_ACK( HWND hWnd, UINT uMsg, WP
 	return bRetVal;
 }
 
-bool CX2StateDungeonRoom::Handler_EGS_CHANGE_READY_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonRoom::Handler_EGS_CHANGE_READY_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_READY_NOT kEvent;
@@ -1374,7 +1374,7 @@ bool CX2StateDungeonRoom::Handler_EGS_CHANGE_PITIN_REQ()
 	return m_pCX2DungeonRoom->Handler_EGS_CHANGE_PITIN_REQ();
 }
 
-bool CX2StateDungeonRoom::Handler_EGS_CHANGE_PITIN_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonRoom::Handler_EGS_CHANGE_PITIN_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_PITIN_ACK kEvent;
@@ -1384,7 +1384,7 @@ bool CX2StateDungeonRoom::Handler_EGS_CHANGE_PITIN_ACK( HWND hWnd, UINT uMsg, WP
 	return m_pCX2DungeonRoom->Handler_EGS_CHANGE_PITIN_ACK( kEvent );
 }
 
-bool CX2StateDungeonRoom::Handler_EGS_CHANGE_PITIN_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonRoom::Handler_EGS_CHANGE_PITIN_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_PITIN_NOT kEvent;
@@ -1405,7 +1405,7 @@ bool CX2StateDungeonRoom::Handler_EGS_CHANGE_MOTION_REQ( KEGS_CHANGE_MOTION_REQ&
 
 	return true;
 }
-bool CX2StateDungeonRoom::Handler_EGS_CHANGE_MOTION_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam  )
+bool CX2StateDungeonRoom::Handler_EGS_CHANGE_MOTION_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam  )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_MOTION_ACK kEvent;
@@ -1420,7 +1420,7 @@ bool CX2StateDungeonRoom::Handler_EGS_CHANGE_MOTION_ACK( HWND hWnd, UINT uMsg, W
 
 	return true;
 }
-bool CX2StateDungeonRoom::Handler_EGS_CHANGE_MOTION_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam  )
+bool CX2StateDungeonRoom::Handler_EGS_CHANGE_MOTION_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam  )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_MOTION_NOT kEvent;
@@ -1456,7 +1456,7 @@ bool CX2StateDungeonRoom::Handler_EGS_CHANGE_MOTION_NOT( HWND hWnd, UINT uMsg, W
 	return true;
 }
 
-bool CX2StateDungeonRoom::Handler_EGS_CHANGE_EQUIPPED_ITEM_IN_ROOM_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonRoom::Handler_EGS_CHANGE_EQUIPPED_ITEM_IN_ROOM_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_EQUIPPED_ITEM_IN_ROOM_NOT kEvent;
@@ -1523,7 +1523,7 @@ bool CX2StateDungeonRoom::Handler_EGS_CHANGE_EQUIPPED_ITEM_IN_ROOM_NOT( HWND hWn
 //#endif //NOT_USE_DICE_ROLL
 
 
-bool CX2StateDungeonRoom::Handler_EGS_CHANGE_TRADE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonRoom::Handler_EGS_CHANGE_TRADE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_TRADE_NOT kEvent;
@@ -1541,7 +1541,7 @@ bool CX2StateDungeonRoom::Handler_EGS_CHANGE_TRADE_NOT( HWND hWnd, UINT uMsg, WP
 	return true;
 }
 
-bool CX2StateDungeonRoom::Handler_EGS_RESTORE_SPIRIT_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonRoom::Handler_EGS_RESTORE_SPIRIT_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_RESTORE_SPIRIT_NOT kEvent;
@@ -1560,7 +1560,7 @@ bool CX2StateDungeonRoom::Handler_EGS_RESTORE_SPIRIT_NOT( HWND hWnd, UINT uMsg, 
 }
 
 //{{ 2008. 10. 29  최육사
-bool CX2StateDungeonRoom::Handler_EGS_DUNGEON_REQUIRE_ITEM_MESSAGE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateDungeonRoom::Handler_EGS_DUNGEON_REQUIRE_ITEM_MESSAGE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_DUNGEON_REQUIRE_ITEM_MESSAGE_NOT kEvent;

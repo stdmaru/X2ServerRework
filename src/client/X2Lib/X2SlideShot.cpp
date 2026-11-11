@@ -2,16 +2,16 @@
 #include "./X2SlideShot.h"
 
 CX2SlideShot::CX2SlideShot(void):
-m_pNowState(NULL),
 m_bNowPresent(false),
 m_TextBoxShow(false),
 m_NowScenNum(0),
 m_fScenTimeBefore(0.f),
 m_fScenTime(0.f),
-m_fElapsedTimeAfterTextSpread(0.f),
+m_pNowState(NULL),
 m_pDLGSlideShot(NULL),
-m_bSetCursor(false)
-, m_fElapsedTimeAfterVoiceStopped(0.f)
+m_fElapsedTimeAfterTextSpread(0.f),
+m_fElapsedTimeAfterVoiceStopped(0.f)
+, m_bSetCursor(false)
 {
 	m_pDLGSlideShot		= new CKTDGUIDialog( (CKTDXStage*) m_pNowState, L"DLG_NewSlideShot.lua" );
 	g_pKTDXApp->GetDGManager()->GetDialogManager()->AddDlg( m_pDLGSlideShot );

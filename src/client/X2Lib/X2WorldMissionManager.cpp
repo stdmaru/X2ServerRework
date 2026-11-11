@@ -9,6 +9,7 @@ CX2WorldMissionManager::CX2WorldMissionManager()
 , m_usRemainTimeWorldBuff( 0 )
 , m_usWorldBuffStepNum( 0 )
 //, m_bIsEXPBonus( false )
+, m_iRemainTimeMissionStart( -1 )
 , m_pUIWorldMission( NULL )
 , m_pTextureDefenceDungeonMiniMap( NULL )
 , m_pUVDefenceDungeonMiniMap( NULL )
@@ -16,7 +17,6 @@ CX2WorldMissionManager::CX2WorldMissionManager()
 , m_iNumOfCrystals( 0 )
 , m_pWorldBuffDragonBreath( NULL )
 , m_pWorldBuffElBless( NULL )
-, m_iRemainTimeMissionStart( -1 )
 , m_iNowDefenceDungeonLevel( -1 )	//현재 어둠의 문 난이도
 // , MAGIC_X_LEFT( 0 )
 // , MAGIC_X_RIGHT( 0 )
@@ -296,7 +296,7 @@ bool CX2WorldMissionManager::UIServerEventProc( HWND hWnd, UINT uMsg, WPARAM wPa
 	return false;
 }
 
-HRESULT CX2WorldMissionManager::OnFrameMove( double fTime, float fElapsedTime )
+HRESULT CX2WorldMissionManager::OnFrameMove( double /*fTime*/, float /*fElapsedTime*/ )
 {
 	if( true == IsActiveDefenceDungeon() )
 	{
@@ -342,7 +342,7 @@ HRESULT CX2WorldMissionManager::OnFrameMove( double fTime, float fElapsedTime )
 	return S_OK;
 }
 
-bool	CX2WorldMissionManager::Handler_EGS_WORLD_MISSION_UPDATE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+bool	CX2WorldMissionManager::Handler_EGS_WORLD_MISSION_UPDATE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam)
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_WORLD_MISSION_UPDATE_NOT kEvent;
@@ -447,7 +447,7 @@ bool	CX2WorldMissionManager::Handler_EGS_WORLD_MISSION_UPDATE_NOT( HWND hWnd, UI
 	@brief : 디펜스던전 컨텐츠의 월드버프 패킷에 대한 핸들러
 	@return : bool
 */
-bool CX2WorldMissionManager::Handler_EGS_UPDATE_WORLD_BUFF_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2WorldMissionManager::Handler_EGS_UPDATE_WORLD_BUFF_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_UPDATE_WORLD_BUFF_NOT kEvent;

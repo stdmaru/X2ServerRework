@@ -11,11 +11,11 @@ m_pDlgGuildInfo( NULL ),
 m_pDlgInviteGuild( NULL ),
 m_pDlgChangeGuildMessage( NULL ),
 m_pDlgChangeGuildMemberMessage( NULL ),
+m_pGuildSkillTree( NULL),
+m_pDlgChangeGuildName( NULL ),
 m_cGuildInfoTabType( GIT_GUILD_INFO ),
 m_pGuildInfoControl( NULL ),
 m_pGuildMemberInfoControl( NULL ),
-m_pGuildSkillTree( NULL),
-m_pDlgChangeGuildName( NULL ),
 m_cNowMemberInfoPage( 1 ),
 m_cMaxMemberInfoPage( 1 )
 {

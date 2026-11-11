@@ -3,19 +3,19 @@
 
 #include "X2UISkillNote.h"
 
-CX2UISkillNote::CX2UISkillNote( CKTDXStage* pNowStage, const WCHAR* pFileName ) :
+CX2UISkillNote::CX2UISkillNote( CKTDXStage* /*pNowStage*/, const WCHAR* pFileName ) :
 m_iRegisterPage(0),
 m_iCurrentPage(0),
 m_iUpdatePage(0),
 m_bShow(false),
 m_bRegisterMemo(false),
-m_bUpdateMemo(false), // 메모 즉시 등록되도록 변경
-m_fWriteMemoTime(0.f),
-m_pDLGWrittingNote(NULL),
-m_iRegisterMemo(0),
+m_iRegisterMemo(0), // 메모 즉시 등록되도록 변경
+m_iViewPage(0),
 m_pDLGSkillNote(NULL),
 m_pDLGQuery(NULL),
-m_iViewPage(0)
+m_pDLGWrittingNote(NULL),
+m_fWriteMemoTime(0.f),
+m_bUpdateMemo(false)
 {
 	m_pDLGSkillNote = new CKTDGUIDialog( g_pMain->GetNowState(), pFileName );
 	g_pKTDXApp->GetDGManager()->GetDialogManager()->AddDlg( m_pDLGSkillNote );
@@ -70,7 +70,7 @@ CX2UISkillNote::~CX2UISkillNote(void)
 	SAFE_DELETE_DIALOG( m_pDLGWrittingNote );
 }
 
-HRESULT CX2UISkillNote::OnFrameMove( double fTime, float fElapsedTime )
+HRESULT CX2UISkillNote::OnFrameMove( double /*fTime*/, float fElapsedTime )
 {
 
 	KTDXPROFILE();
@@ -157,7 +157,7 @@ HRESULT CX2UISkillNote::OnFrameMove( double fTime, float fElapsedTime )
 	return S_OK;
 }
 
-bool CX2UISkillNote::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UISkillNote::MsgProc( HWND /*hWnd*/, UINT uMsg, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	// 앞에 모달 다이얼로그가 있으면 메시지를 처리하지 않는다
 	if( true == g_pKTDXApp->GetDGManager()->GetDialogManager()->CheckFrontModalDlg( m_pDLGSkillNote ) )
@@ -204,7 +204,7 @@ bool CX2UISkillNote::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 	return bFlag;
 }
 
-bool CX2UISkillNote::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UISkillNote::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM lParam )
 {
 	switch(wParam)
 	{
@@ -295,7 +295,7 @@ bool CX2UISkillNote::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 	return false;
 }
 
-bool CX2UISkillNote::UIServerEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2UISkillNote::UIServerEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 
 	return false;

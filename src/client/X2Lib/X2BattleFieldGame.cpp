@@ -829,7 +829,7 @@ bool CX2BattleFieldGame::DeleteNpcInCreatedInfoList( const UINT uiNpcUid_ )
 	return bReturn;
 }
 
-/*virtual*/ bool CX2BattleFieldGame::Handler_EGS_NPC_UNIT_DIE_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+/*virtual*/ bool CX2BattleFieldGame::Handler_EGS_NPC_UNIT_DIE_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_NPC_UNIT_DIE_NOT kEvent;
@@ -1324,7 +1324,7 @@ void CX2BattleFieldGame::Handler_EGS_CHECK_EXIST_MONSTER_UID_REQ( const KEGS_CHE
 	@brief : 현재 필드에 존재하지 않는 몬스터의 UID가 담긴 패킷 처리, 해당 NPC들을 삭제해 준다.
 	@return : 패킷을 정상적으로 처리 했으면 true, 아니면 false
 */
-bool CX2BattleFieldGame::Handler_EGS_CHECK_EXIST_MONSTER_UID_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2BattleFieldGame::Handler_EGS_CHECK_EXIST_MONSTER_UID_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHECK_EXIST_MONSTER_UID_ACK kPacket;
@@ -1355,7 +1355,7 @@ bool CX2BattleFieldGame::Handler_EGS_CHECK_EXIST_MONSTER_UID_ACK( HWND hWnd, UIN
 	@brief : 배틀필드에서는 무조건 false
 */
 /*virtual*/
-bool CX2BattleFieldGame::GetIsExsitancePartyMemberHPLessThanPer( const float fHPRate_, const CX2GUUser* pGUUserWhoCallFunction_ ) const
+bool CX2BattleFieldGame::GetIsExsitancePartyMemberHPLessThanPer( const float /*fHPRate_*/, const CX2GUUser* /*pGUUserWhoCallFunction_*/ ) const
 {
 	return false;
 }

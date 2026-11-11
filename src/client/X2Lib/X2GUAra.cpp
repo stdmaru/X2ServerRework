@@ -81,26 +81,26 @@ CX2GUAra::CX2GUAra( int iUnitIndex_, int iTeamNum_, IN lua_State* pScriptLuaStat
 	, m_eSkillID( CX2SkillTree::SI_NONE )
 	, m_fCurrentSpeed( 1.f ), m_bMoonSlash( false )
 	, m_fSuppresionPowerRate( 1.f )
+	, m_fUseForcePowerTime( -1.f )
+	, m_iUseForcePowerCount( 0 )
+	, m_fAddForcePowerTime( -1.f )
+	, m_iAddForcePowerCount( 0 )
 	, m_fIncreaseEnergeBulletSize( 1.f )
 	, m_fIncreaseEnergeBulletDamage( 1.f )
 	, m_fIncreaseEnergeBulletRange( 1.f )
 	, m_fIncreaseEnergeBulletForceDownValue( 0.f )
 	, m_fResurrectionCoolTime( 0.f )
 	, m_fHighSpeedValue( 0.f )
-	, m_fUseForcePowerTime( -1.f )
-	, m_iUseForcePowerCount( 0 )
-	, m_fAddForcePowerTime( -1.f )
-	, m_iAddForcePowerCount( 0 )
 	, m_iEnergeVoidChargeValue ( 0 )
     , m_hEnergeVoidDamageEffect( INVALID_DAMAGE_EFFECT_HANDLE )
 	, m_bEnergeVoidChargeEnd( false )
 	, m_fHowlingDamageRel( 1.0f )
 	, m_fHowlingActiveRate( 0.f )
-	, m_iWolfBreakeCount( 0 )
 	, m_fOpenTheHellIncreaseDamage( 1.f )
+	, m_iWolfBreakeCount( 0 )
 //#ifdef FIX_GAIN_FORCE_BUG
-	, m_iGainForceDamageTimeNow(0)
 	, m_hGainForceIntakeEffect(INVALID_DAMAGE_EFFECT_HANDLE)
+	, m_iGainForceDamageTimeNow(0)
 //#endif // FIX_GAIN_FORCE_BUG
 {
 	InitializeAraMajorParticleArray();
@@ -263,6 +263,8 @@ CX2GUAra::CX2GUAra( int iUnitIndex_, int iTeamNum_, IN lua_State* pScriptLuaStat
 		{
 			m_iSkillCutInSetIndex = 2;
 		} break;
+	default:
+		break;
 	}
 
 	InitStateID();
@@ -1670,6 +1672,8 @@ void CX2GUAra::InitStateByUnitClass()
 				}
 				//#pragma endregion
 			} break;
+	default:
+		break;
 	}
 
 
@@ -1758,6 +1762,8 @@ void CX2GUAra::InitStateByUnitClass()
 					hyperStateData.OnFrameMove		= normalStateData.OnFrameMove;
 					hyperStateData.OnEventProcess	= normalStateData.OnEventProcess;
 				} break;
+			default:
+				break;
 			}
 			return;
 		} break;
@@ -2935,7 +2941,7 @@ void CX2GUAra::InitializeAraMinorParticleArray()
 /** @function 	: AppendMinorParticleToDeviceList
 	@brief 		:
 */
-/*static*/ void CX2GUAra::AppendMinorParticleToDeviceList( CKTDXDeviceDataList& listInOut_ )
+/*static*/ void CX2GUAra::AppendMinorParticleToDeviceList( CKTDXDeviceDataList& /*listInOut_*/ )
 {
 }
 //#pragma endregion
@@ -3621,6 +3627,8 @@ void CX2GUAra::InitPromotionEquipList()
 			case CX2Unit::EP_DEFENCE_FOOT:
 				m_vecPromotionItemIDList2.push_back( pEquipPtr->GetItemID() );
 				break;
+			default:
+				break;
 			}
 		}
 	}
@@ -3747,6 +3755,8 @@ if( m_pXSkinAnim->EventTimerOneshot( fTimeToShow_ ) == true )
 					fMpConsumption *= 0.9f;
 			} break;
 
+	default:
+		break;
 	}
 
 	const CX2SkillTree::SkillTemplet* pSkillTemplet = GetEquippedActiveSkillTemplet( eSkillID_ );
@@ -4621,6 +4631,8 @@ void CX2GUAra::AddBerserkEquipToViewList( CX2Item* const pItem )
 	case CX2Unit::EP_WEAPON_SECOND:
 		weaponIndex = 1;
 		break;
+	default:
+		break;
 	}
 
 	// ���ο� ��� Weapon �� ���
@@ -4661,6 +4673,8 @@ void CX2GUAra::AddBerserkEquipToViewList( CX2Item* const pItem )
 			m_vecpWeapon.push_back( pWeapon );
 		}
 		break;	// switch ( pItemTemplet->GetEqipPosition() )
+	default:
+		break;
 	}
 }
 //#pragma endregion
@@ -4691,6 +4705,8 @@ void CX2GUAra::RemoveBerserkEquipFromViewList( CX2EqipPtr pEquipPtrToRemove, int
 	case CX2Unit::EP_WEAPON_SECOND:
 		weaponIndex = 1;
 		break;
+	default:
+		break;
 	}
 
 	if ( false == IsFullHyperMode() )
@@ -4715,6 +4731,8 @@ void CX2GUAra::RemoveBerserkEquipFromViewList( CX2EqipPtr pEquipPtrToRemove, int
 		}
 
 		break;	// switch
+	default:
+		break;
 	}
 }
 //#pragma endregion
@@ -4754,6 +4772,8 @@ void CX2GUAra::SLockOnSystem::ProcessLockOn( CX2GUAra* myUnit )
 				{
 					continue;
 				} break;
+			default:
+				break;
 			}
 		}
 
@@ -4909,6 +4929,8 @@ void CX2GUAra::SLockOnSystem::ProcessLockOn( CX2GUAra* myUnit )
 		{
 			pDamageData_->m_ExtraDamage.m_fTime *= m_fReduceEDTDurationRate;
 		} break;
+	default:
+		break;
 	}
 
 	/// �޸� ȿ�� �������� ���Ͽ� ������ ������, ���� ��ų ������ ��� ����
@@ -5285,7 +5307,7 @@ CKTDGXMeshPlayer::CXMeshInstanceHandle CX2GUAra::GetHandleAraMajorMeshByEnum( AR
 /** @function 	: AppendDeviceToDeviceList
 	@brief 		: � ����� �ϴ� �Լ��ϱ�?
 */
-/*static*/ void CX2GUAra::AppendDeviceToDeviceList( CKTDXDeviceDataList& listInOut_ )
+/*static*/ void CX2GUAra::AppendDeviceToDeviceList( CKTDXDeviceDataList& /*listInOut_*/ )
 {
 }
 //#pragma endregion
@@ -5294,7 +5316,7 @@ CKTDGXMeshPlayer::CXMeshInstanceHandle CX2GUAra::GetHandleAraMajorMeshByEnum( AR
 /** @function 	: AppendComponentToDeviceList
 	@brief 		: � ����� �ϴ� �Լ��ϱ�?
 */
-/*static*/ void CX2GUAra::AppendComponentToDeviceList( CKTDXDeviceDataList& listInOut_ )
+/*static*/ void CX2GUAra::AppendComponentToDeviceList( CKTDXDeviceDataList& /*listInOut_*/ )
 {
 }
 //#pragma endregion
@@ -5431,7 +5453,7 @@ __forceinline int CX2GUAra::GetMaxForcePower()
 	@brief : ���� �׿��� �� ó���ؾ��ϴ� �κ� �����ϴ� �Լ�
 	@param : ���� ������ ������
 */
-void CX2GUAra::DoProcessWhenKillEnemy( const CX2GameUnit* pDefender_ )
+void CX2GUAra::DoProcessWhenKillEnemy( const CX2GameUnit* /*pDefender_*/ )
 {
 	if ( NULL != g_pX2Game && IsFullHyperMode() )	/// 3���� �϶� ���� �׿�����
 	{
@@ -14669,6 +14691,8 @@ float CX2GUAra::GetSkillCoolTimeValue( const CX2SkillTree::SKILL_ID eSkillID_, c
 			if( true == GetEqippedSkillMemo( CX2SkillTree::SMI_ARA_MEMO1 ) )
 				fCoolTimeValue -= 1.f;
 		} break;
+	default:
+		break;
 	}
 
 	return fCoolTimeValue;
@@ -14697,6 +14721,8 @@ USHORT CX2GUAra::GetActualFPConsume( const CX2SkillTree::SKILL_ID eSkillID_, con
 			if( true == GetEqippedSkillMemo( CX2SkillTree::SMI_ARA_MEMO2 ) )
 				usForceGainValue = 1;
 		} break;
+	default:
+		break;
 	}
 
 	return usForceGainValue;
@@ -14719,6 +14745,8 @@ USHORT CX2GUAra::GetActualFPGainCount( const CX2SkillTree::SKILL_ID eSkillID_, c
 			if( true == GetEqippedSkillMemo( CX2SkillTree::SMI_ARA_MEMO2 ) )
 				usForceGainValue = 1;
 		} break;
+	default:
+		break;
 	}
 
 	return usForceGainValue;
@@ -14974,6 +15002,8 @@ void CX2GUAra::AddHitUnitInfoByDamageData( const CX2DamageManager::DamageData& d
 			/// �ش� UID�� �߰��Ǿ� ���� �ʴٸ�, �߰�
 			m_vecHitUnitPointer.push_back( damageData_.optrDefenderGameUnit );
 		} break;
+	default:
+		break;
 	}
 }
 //#pragma endregion
@@ -14983,8 +15013,8 @@ void CX2GUAra::AddHitUnitInfoByDamageData( const CX2DamageManager::DamageData& d
 	@brief		: ������ ó���� �߰��� ���� ��ġ �����ϴ� �Լ�( GetFinalDamage )
 	@param		: ������ Ÿ��, �߰� ���� ���ݷ�, �߰� ���� ���ݷ�, �ٿ� ��ġ
 */
-/*virtual*/ void CX2GUAra::ModifyFinalDamageByGameUnitType( OUT CX2DamageManager::DAMAGE_TYPE& damageType_, OUT float& fAttackerPhysicDamage_,
-															OUT float& fAttackerMagicDamage_, OUT float& fForceDownValue_ )
+/*virtual*/ void CX2GUAra::ModifyFinalDamageByGameUnitType( OUT CX2DamageManager::DAMAGE_TYPE& damageType_, OUT float& /*fAttackerPhysicDamage_*/,
+															OUT float& /*fAttackerMagicDamage_*/, OUT float& fForceDownValue_ )
 {
 	if ( NULL == GetUnit() )
 		return;
@@ -15032,6 +15062,8 @@ void CX2GUAra::AddHitUnitInfoByDamageData( const CX2DamageManager::DamageData& d
 				{
 					iStateID_ = static_cast<int>( ASI_A_AYR_STEAL_SOUL );
 				} break;
+			default:
+				break;
 			}
 		}
 	}
@@ -15098,6 +15130,8 @@ bool CX2GUAra::IsNoStageChangeSkill( IN const CX2SkillTree::SkillTemplet* pSkill
 		{
 		case CX2SkillTree::SI_A_ALD_REFLECTION:		/// �ƶ� 1�� ���� �Ҹ� - ��ź��
 			return true;
+		default:
+			break;
 		}
 	}
 

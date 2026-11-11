@@ -4,8 +4,8 @@
   -Wswitch            adds `default: break;` to the switch (MSVC does not warn about unhandled enum values;
                       the original relied on falling out of the switch, which is what `default: break;` does)
   -Wunused-parameter  comments out the parameter name: `int iValue` -> `int /*iValue*/` (not inside a macro: listed)
-  -Wreorder           sorts the constructor's mem-initializer list in member declaration order (only the text
-                      changes: members were always initialized in declaration order)
+  -Wreorder           sorts the constructor's mem-initializer list in member declaration order, base classes first
+                      (only the text changes: members were always initialized in declaration order)
 
 Each site is fixed once, however many translation units reported it. Columns are GCC display columns
 (tabs expand to 8). Run the build again afterwards.
@@ -161,6 +161,9 @@ def fix_reorder(path: Path, text: str, sites: set[tuple[int, Path, int]], class_
             regions[(colon, body)] = (decl_path, decl_line)
     edits = []
     for (colon, body), (decl_path, decl_line) in regions.items():
+        if re.search(r"^\s*#", code[colon:body], re.M):
+            print(f"skip {path}:{colon}: preprocessor lines in the list (sort by hand)", file=sys.stderr)
+            continue
         if decl_path not in class_texts:
             ctext = text if decl_path == path else decl_path.read_text(encoding="utf-8")
             ccode = strip_code(ctext)
@@ -195,9 +198,14 @@ def fix_reorder(path: Path, text: str, sites: set[tuple[int, Path, int]], class_
             name = re.match(r"\w+", seg[m.start():]).group(0)
             cores.append((m.start(), k + 1, name))
             i = k + 1
+        # the class head ("class X : public Base, ..."): base classes are initialized before every member
+        head = ccode[max(ccode.rfind(";", 0, a), ccode.rfind("}", 0, a)) + 1:a]
         keys = []
-        for _, _, name in cores:
+        for index, (_, _, name) in enumerate(cores):
             d = re.search(r"[\s*&>]" + re.escape(name) + r"\s*(;|\[|=|:(?!:)|,)", members)
+            if not d and re.search(r"\b" + re.escape(name) + r"\b", head):
+                keys.append(index - len(cores) - len(members))
+                continue
             if not d:
                 print(f"skip {path}:{colon}: member '{name}' not found in its class", file=sys.stderr)
                 break

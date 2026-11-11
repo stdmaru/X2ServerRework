@@ -404,6 +404,8 @@ wstring CX2GUUser::GetCutInFileName(bool IsRight)
 	case CX2Unit::UC_ARA_YAMA_RAJA:
 		wstrCutIn += _CONST_CUTIN_::s_SkillCutInSoma[texID];
 		break;
+	default:
+		break;
 	}
 	return wstrCutIn;
 }
@@ -1716,6 +1718,8 @@ void	CX2GUUser::AppendDeviceToDeviceList( CKTDXDeviceDataList& listInOut_, CX2Un
 	case CX2Unit::UT_ADD:
 		CX2GUAdd::AppendDeviceToDeviceList( listInOut_ );
 		break;
+	default:
+		break;
 	}
 }
 
@@ -3012,6 +3016,8 @@ void	CX2GUUser::AppendComponentToDeviceList( CKTDXDeviceDataList& listInOut_, CX
 		case CX2Unit::UT_ADD:
 			CX2GUAdd::AppendComponentToDeviceList( listInOut_ );
 			break;
+		default:
+			break;
 		}
 	}
 
@@ -3361,6 +3367,8 @@ void	CX2GUUser::AppendEffectToDeviceList( CKTDXDeviceDataList& listInOut_, CX2Un
 			break;
 		case CX2Unit::UT_ADD:
 			CX2GUAdd::AppendEffectToDeviceList( listInOut_, eDamageType );
+			break;
+		default:
 			break;
 		}
 
@@ -3861,6 +3869,8 @@ void CX2GUUser::InitEqip()
 
 
 				} break;
+			default:
+				break;
 			}
 		}
 	}
@@ -4040,7 +4050,7 @@ void CX2GUUser::InitState()
 }
 
 
-void CX2GUUser::ProcessAcceleraterBuff( CX2SkillTree::SKILL_ID eSkillID, bool bHyperMode )
+void CX2GUUser::ProcessAcceleraterBuff( CX2SkillTree::SKILL_ID eSkillID, bool /*bHyperMode*/ )
 {
 	if( NULL == GetUnit() )
 		return;
@@ -4655,8 +4665,12 @@ bool CX2GUUser::CheckSkillUseCondition( CX2SkillTree::ACTIVE_SKILL_USE_CONDITION
 				{
 					return false;
 				} break;
+			default:
+				break;
 			}
 		} break;
+	default:
+		break;
 	}
 
 	return true;
@@ -5348,6 +5362,8 @@ RENDER_HINT CX2GUUser::CommonRender_Prepare()
 		case CKTDGXRenderer::RT_CARTOON:
 			pRenderParam->renderType = CKTDGXRenderer::RT_ADD_CARTOON;
 			break;
+		default:
+			break;
 		}
 	}
 
@@ -5875,6 +5891,8 @@ void CX2GUUser::DamageReact( CX2DamageManager::DamageData* pDamageData )
 			{
 				m_FlyCount++;
 			} break;
+		default:
+			break;
 		}
 	}
 
@@ -5986,6 +6004,8 @@ void CX2GUUser::DamageReact( CX2DamageManager::DamageData* pDamageData )
 			}
 			return;
 		} break;
+	default:
+		break;
 	}
 
 
@@ -6375,6 +6395,8 @@ void CX2GUUser::DamageReact( CX2DamageManager::DamageData* pDamageData )
 			{
 				// fix!! not yet!!
 			} break;
+		default:
+			break;
 		}
 
 		if ( false == g_pMain->GetGameOption().GetFlashEffect() )
@@ -7112,6 +7134,8 @@ void CX2GUUser::DamageReact( CX2DamageManager::DamageData* pDamageData )
 					/// ������ �����Ϳ� �ǰ� ������ ����
 					SetReverseReactorTransitionDamage( fFinalDamage );
 				} break;
+			default:
+				break;
 			}
 		}
 
@@ -9035,6 +9059,8 @@ void CX2GUUser::DamageReactStateChange( CX2DamageManager::DamageData* pDamageDat
 			StateChange( iAvoidance, true );
 		}
 		break;
+	default:
+		break;
 	}
 
 
@@ -9102,6 +9128,8 @@ void CX2GUUser::DamageReactStateChange( CX2DamageManager::DamageData* pDamageDat
 
 			} // if
 		} break;
+	default:
+		break;
 	}
 
 
@@ -9835,7 +9863,7 @@ void CX2GUUser::AttackResult()
 	}
 }
 
-void CX2GUUser::AttackResultByType( CX2DamageManager::DamageData &pDamageData )
+void CX2GUUser::AttackResultByType( CX2DamageManager::DamageData &/*pDamageData*/ )
 {
 	return;
 }
@@ -9845,7 +9873,7 @@ void CX2GUUser::AttackResultByType( CX2DamageManager::DamageData &pDamageData )
 @param : vImpactPoint_( ��ƼŬ ��� ��ġ�� ���۷���)
 @return : void
 */
-void CX2GUUser::PlayRevengeReactTypeParticle( const D3DXVECTOR3& vImpactPoint_ )
+void CX2GUUser::PlayRevengeReactTypeParticle( const D3DXVECTOR3& /*vImpactPoint_*/ )
 {
 	CKTDGParticleSystem* pMajorParticleSystem = g_pX2Game->GetMajorParticle();
 
@@ -9871,7 +9899,7 @@ void CX2GUUser::PlayRevengeReactTypeParticle( const D3DXVECTOR3& vImpactPoint_ )
 @param : vImpactPoint_( ��ƼŬ ��� ��ġ�� ���۷���)
 @return : void
 */
-void CX2GUUser::PlaySmallDamageReactTypeParticle( const D3DXVECTOR3& vImpactPoint_ )
+void CX2GUUser::PlaySmallDamageReactTypeParticle( const D3DXVECTOR3& /*vImpactPoint_*/ )
 {
 	CKTDGParticleSystem* pMajorParticleSystem = g_pX2Game->GetMajorParticle();
 
@@ -9890,7 +9918,7 @@ void CX2GUUser::PlaySmallDamageReactTypeParticle( const D3DXVECTOR3& vImpactPoin
 @param : vImpactPoint_( ��ƼŬ ��� ��ġ�� ���۷���)
 @return : void
 */
-void CX2GUUser::PlayEtcReactTypeParticle( const D3DXVECTOR3& vImpactPoint_ )
+void CX2GUUser::PlayEtcReactTypeParticle( const D3DXVECTOR3& /*vImpactPoint_*/ )
 {
 	CKTDGParticleSystem* pMajorParticleSystem = g_pX2Game->GetMajorParticle();
 
@@ -9974,6 +10002,8 @@ void CX2GUUser::Lose()
 				g_pKTDXApp->GetDeviceManager()->PlaySound( L"Lose.ogg", false, false );
 
 			} break;
+		default:
+			break;
 		}
 	}
 }
@@ -10266,6 +10296,8 @@ void CX2GUUser::DyingStart()
 									CX2AllyNPCAI* pNPCAI = (CX2AllyNPCAI*) pNPC->GetNPCAI();
 									kPacket.m_KillerUserUnitUID = pNPCAI->GetAllyUnitUID();
 								} break;
+							default:
+								break;
 							}
 							kPacket.m_KillerNPCUID = static_cast<int>( pNPC->GetUnitUID() );
 						}
@@ -16079,6 +16111,8 @@ void CX2GUUser::PhysicProcess_Jumping( CKTDGLineMap* pLineMap )
 						}
 					}
 				} break;
+			default:
+				break;
 			}
 		}
 	}
@@ -16103,6 +16137,8 @@ void CX2GUUser::PhysicProcess_Bungee( CKTDGLineMap* pLineMap )
 					SetCanNotInputTime_ZXArrow( MAGIC_REBIRTH_WAIT_TIME );
 
 				} break;
+			default:
+				break;
 			}
 		}
 	}
@@ -16138,6 +16174,8 @@ void CX2GUUser::PhysicProcess_Bungee( CKTDGLineMap* pLineMap )
 						InitPosByLineData( pLineData->m_iTeleportLineIndex );
 
 					} break;
+				default:
+					break;
 				}
 			}
 		}
@@ -16396,7 +16434,7 @@ bool CX2GUUser::CommonSpecialAttackEventProcess( IN const CX2UserSkillTree& cUse
 	@param : ����� ��ų�� ID, ����� ��ų�� ����
 	@return : �Ҹ�� MP ��ġ
 */
-/*virtual*/ float CX2GUUser::GetActualMPConsume( const CX2SkillTree::SKILL_ID eSkillID_, const int iSkillLevel_ ) const
+/*virtual*/ float CX2GUUser::GetActualMPConsume( const CX2SkillTree::SKILL_ID eSkillID_, const int /*iSkillLevel_*/ ) const
 {
 
 	const CX2SkillTree::SkillTemplet* pSkillTemplet = g_pData->GetSkillTree()->GetSkillTemplet( eSkillID_ );
@@ -16439,7 +16477,7 @@ bool CX2GUUser::CommonSpecialAttackEventProcess( IN const CX2UserSkillTree& cUse
 	@param : ����� ��ų�� ID, ����� ��ų�� ����
 	@return : �Ҹ�� CB ��ġ
 */
-/*virtual*/ USHORT CX2GUUser::GetActualCBConsume( CX2SkillTree::SKILL_ID eSkill_ID_, int iSkillLevel_ )
+/*virtual*/ USHORT CX2GUUser::GetActualCBConsume( CX2SkillTree::SKILL_ID eSkill_ID_, int /*iSkillLevel_*/ )
 {
 	const CX2SkillTree::SkillTemplet* pSkillTemplet = g_pData->GetSkillTree()->GetSkillTemplet( eSkill_ID_ );
 
@@ -17914,7 +17952,7 @@ void CX2GUUser::ActiveSkillShow( const WCHAR* pBoneName, const WCHAR* pBackFaceT
 @param : ��½�̴� ����Ʈ�� ���� ����ġ, ��ų���� �ؽ��ĸ�, �ؽ��� ������, �ؽ��İ� ���� ��ġ, ������������ ����, ���� ���̰� �Ұ����� ����
 @return : void
 */
-void CX2GUUser::ActiveSkillShow( D3DXVECTOR3 bonePos, const WCHAR* pBackFaceTexName, D3DXVECTOR2 size, D3DXVECTOR3 pos, bool bHyper, bool bOnlyLight )
+void CX2GUUser::ActiveSkillShow( D3DXVECTOR3 /*bonePos*/, const WCHAR* pBackFaceTexName, D3DXVECTOR2 size, D3DXVECTOR3 pos, bool /*bHyper*/, bool bOnlyLight )
 {
 	if( g_pKTDXApp->GetDGManager()->GetDialogManager()->GetHideDialog() == true )
 		return;
@@ -18517,6 +18555,8 @@ void CX2GUUser::ProcessEnchantedWeaponEffectAtHand( CX2Unit::UNIT_TYPE unitType 
 			aEmitRate[2] = 60.f;
 			aEmitRate[3] = 25.f;
 		} break;
+	default:
+		break;
 	}
 
 
@@ -18678,6 +18718,8 @@ void	CX2GUUser::AppendEnchantedWeaponEffectAtHandToDeviceList( CKTDXDeviceDataLi
 			g_pData->GetGameMajorParticle()->AppendToDeviceList( listInOut_, L"Weapon_Elsword_Property04_Curse01" );
 			g_pData->GetGameMajorParticle()->AppendToDeviceList( listInOut_, L"Triple_Weapon_Property_Curse01"  );
 		} break;
+	default:
+		break;
 	}
 }
 
@@ -18783,6 +18825,8 @@ void CX2GUUser::InitEnchantedWeaponEffectAtHand()
 				L"Weapon_Elsword_Property04_Curse01",
 				L"Triple_Weapon_Property_Curse01" );
 		} break;
+	default:
+		break;
 	}
 }
 
@@ -20969,6 +21013,8 @@ bool CX2GUUser::PlayEmotion(CX2Unit::EMOTION_TYPE eEmotionId, wstring &wstrEmoti
 				case CX2Unit::ET_EMOTION_AVATAR6:
 					m_bMixedEmotion[5] = true;
 					break;
+				default:
+					break;
 				}
 				SAFE_CLOSE( pMixMotion );
 			}
@@ -21017,6 +21063,8 @@ bool CX2GUUser::PlayEmotion(CX2Unit::EMOTION_TYPE eEmotionId, wstring &wstrEmoti
 					m_bReserveSitReadyEmotion = true;
 				}
 			}break;
+		default:
+			break;
 		}
 	}
 	if( true == GetRidingOn() )
@@ -21399,6 +21447,8 @@ void CX2GUUser::AddEquipToViewList( CX2Item* const pItem )
 	case CX2Unit::EP_WEAPON_SECOND:
 		weaponIndex = 1;
 		break;
+	default:
+		break;
 	}
 
 	// ���ο� ��� Weapon �� ���
@@ -21444,6 +21494,8 @@ void CX2GUUser::AddEquipToViewList( CX2Item* const pItem )
 			m_vecpWeapon.push_back( pWeapon );
 		}
 		break;	// switch ( pItemTemplet->GetEqipPosition() )
+	default:
+		break;
 	}
 }
 void CX2GUUser::RemoveEquipFromViewList( CX2EqipPtr pEquipPtrToRemove, int index )
@@ -21464,6 +21516,8 @@ void CX2GUUser::RemoveEquipFromViewList( CX2EqipPtr pEquipPtrToRemove, int index
 
 	case CX2Unit::EP_WEAPON_SECOND:
 		weaponIndex = 1;
+		break;
+	default:
 		break;
 	}
 
@@ -21486,6 +21540,8 @@ void CX2GUUser::RemoveEquipFromViewList( CX2EqipPtr pEquipPtrToRemove, int index
 		}
 
 		break;	// switch
+	default:
+		break;
 	}
 }
 
@@ -21536,6 +21592,8 @@ bool CX2GUUser::IsSummonSpecialAttack( CX2SkillTree::SKILL_ID iSkillID )
 		{
 			return true;
 		} break;
+	default:
+		break;
 	}
 
 	return false;
@@ -21975,7 +22033,7 @@ void CX2GUUser::SetPos( D3DXVECTOR3 vPos )
 
 
 
-void CX2GUUser::SetPositionOnLine( const D3DXVECTOR3& vPosition, const int iLineIndex )
+void CX2GUUser::SetPositionOnLine( [[maybe_unused]] const D3DXVECTOR3& vPosition, [[maybe_unused]] const int iLineIndex )
 {
 #if X2_DEV_TOOLS
 	ASSERT( NULL != g_pX2Game );
@@ -24631,7 +24689,7 @@ float CX2GUUser::GetMpUpRateBySkill()
 {
 	return 0.f;
 }
-/*virtual*/ void CX2GUUser::SetWayOfSwordPoint( float fWayOfSwordPoint_ )
+/*virtual*/ void CX2GUUser::SetWayOfSwordPoint( float /*fWayOfSwordPoint_*/ )
 {
 	return;
 }
@@ -24701,7 +24759,7 @@ void CX2GUUser::StopSpecialItemBuffWind()
 //////////////////////////////////////////////////////////////////////////
 
 //#ifdef  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
-void CX2GUUser::SyncData::SetData( const KDYNAMIC_UNIT_USER_SYNC& SyncPacket, DWORD dwRealFrameMoveCount, float fMaxHP, float fMaxMP )
+void CX2GUUser::SyncData::SetData( const KDYNAMIC_UNIT_USER_SYNC& SyncPacket, DWORD dwRealFrameMoveCount, float /*fMaxHP*/, float /*fMaxMP*/ )
 {
 	dwFrameMoveCount	= dwRealFrameMoveCount;
 
@@ -25022,7 +25080,7 @@ void CX2GUUser::InitByGameType()
 	}
 }
 
-void CX2GUUser::UpdateBuffInfo( const KStat& kStat_, const vector<KBuffInfo>& vecSetBuffInfo_, const vector<int>& vecEraseBuffInfo_ )
+void CX2GUUser::UpdateBuffInfo( const KStat& /*kStat_*/, const vector<KBuffInfo>& /*vecSetBuffInfo_*/, const vector<int>& /*vecEraseBuffInfo_*/ )
 {
 	//CX2Unit* pUnit = GetUnit();		/// �� ���� �ý���
 	//if ( NULL != pUnit )
@@ -25047,7 +25105,7 @@ void CX2GUUser::UpdateBuffInfo( const KStat& kStat_, const vector<KBuffInfo>& ve
 	//}
 }
 
-void CX2GUUser::UpdateBuffEffect( const vector<KBuffInfo>& vecSetBuffInfo_, const vector<int>& vecEraseBuffInfo_ )
+void CX2GUUser::UpdateBuffEffect( const vector<KBuffInfo>& /*vecSetBuffInfo_*/, const vector<int>& /*vecEraseBuffInfo_*/ )
 {
 	////������� �� ���� ����Ʈ ���� �� ����
 	//for( const int& iBuffID : vecEraseBuffInfo_ )
@@ -28429,6 +28487,8 @@ void CX2GUUser::ApplyBuffByUseHyperMode()
 				if ( CX2SocketItem::PUP_DUNGEON_ONLY == ePossible_Use_Place )
 					continue;
 			}
+		default:
+			break;
 		}
 
 		switch ( sInfoByUseHyperMode.m_eHyperModeEffectiveType )

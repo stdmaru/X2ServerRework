@@ -316,6 +316,8 @@ void CX2StateLogin::RetrieveUserIDnPassword()
 	{
 		switch( g_pMain->GetPublisher() )
 		{
+		default:
+			break;
 		}
 	}
 
@@ -502,7 +504,7 @@ bool CX2StateLogin::Handler_ECH_VERIFY_ACCOUNT_REQ()
 	return true;
 }
 
-bool CX2StateLogin::Handler_ECH_VERIFY_ACCOUNT_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateLogin::Handler_ECH_VERIFY_ACCOUNT_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	SAFE_DELETE_DIALOG( m_pDLGMsgBox );
 
@@ -588,7 +590,7 @@ bool CX2StateLogin::Handler_ECH_VERIFY_ACCOUNT_ACK( HWND hWnd, UINT uMsg, WPARAM
 
 
 
-bool CX2StateLogin::Handler_ECH_SECURITY_INFO_NOT( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateLogin::Handler_ECH_SECURITY_INFO_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	// 인증을 기다리지 않도록 처리
 	g_pMain->DeleteServerPacket( ECH_VERIFY_ACCOUNT_ACK );
@@ -602,7 +604,7 @@ bool CX2StateLogin::Handler_ECH_SECURITY_INFO_NOT( HWND hWnd, UINT uMsg, WPARAM 
 	return true;
 }
 
-bool CX2StateLogin::Handler_ECH_SECURITY_AUTH_REQ( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2StateLogin::Handler_ECH_SECURITY_AUTH_REQ( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	KECH_SECURITY_AUTH_REQ kPacket;
 

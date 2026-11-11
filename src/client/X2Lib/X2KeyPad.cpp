@@ -110,7 +110,7 @@ const int CX2KeyPad::KEYPAD_STRING_INDEX[CX2KeyPad::KBI_END] =
 	/** @function 	: UICustomEventProc
 		@brief 		: Ű �е��� ����� ���� �̺�Ʈ�� ó���Ѵ�.
 	*/
-	bool CX2KeyPad::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+	bool CX2KeyPad::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM lParam )
 	{
 		switch ( wParam )
 		{
@@ -186,7 +186,7 @@ const int CX2KeyPad::KEYPAD_STRING_INDEX[CX2KeyPad::KBI_END] =
 	/** @function 	: MsgProc
 		@brief 		: �޽��� ���ν���
 	*/
-	bool CX2KeyPad::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+	bool CX2KeyPad::MsgProc(HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/)
 	{
 		return false;
 	}
@@ -583,6 +583,8 @@ const int CX2KeyPad::KEYPAD_STRING_INDEX[CX2KeyPad::KBI_END] =
 									return true;
 								}
 							} break;
+						default:
+							break;
 						}
 					}
 				} break;
@@ -647,6 +649,8 @@ const int CX2KeyPad::KEYPAD_STRING_INDEX[CX2KeyPad::KBI_END] =
 									return true;
 								}
 							} break;
+						default:
+							break;
 						}
 					}
 				} break;
@@ -685,7 +689,7 @@ const int CX2KeyPad::KEYPAD_STRING_INDEX[CX2KeyPad::KBI_END] =
 	/** @function 	: Handler_EGS_KEYBOARD_MAPPING_INFO_WRITE_ACK
 		@brief 		: ���� ��û Ȯ��
 	*/
-	bool CX2KeyPad::Handler_EGS_KEYBOARD_MAPPING_INFO_WRITE_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+	bool CX2KeyPad::Handler_EGS_KEYBOARD_MAPPING_INFO_WRITE_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 	{
 		KSerBuffer* pBuff = (KSerBuffer*)lParam;
 		KEGS_KEYBOARD_MAPPING_INFO_WRITE_ACK kEvent;

@@ -404,13 +404,13 @@ void CX2SecurityPad::ShuffleNumber()
 }
 
 
-HRESULT CX2SecurityPad::OnFrameMove(double fTime, float fElapsedTime)
+HRESULT CX2SecurityPad::OnFrameMove(double /*fTime*/, float /*fElapsedTime*/)
 {
 
 
 	return S_OK;
 }
-bool CX2SecurityPad::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+bool CX2SecurityPad::MsgProc(HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	if(m_bShow == false)
 		return false;
@@ -602,12 +602,14 @@ void CX2SecurityPad::ProcessPassword()
 			}
 		}
 		break;
+	default:
+		break;
 	}
 
 	return;
 }
 
-bool CX2SecurityPad::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2SecurityPad::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM lParam )
 {
 
 	switch ( wParam )
@@ -872,7 +874,7 @@ bool CX2SecurityPad::Handler_ECH_SECURITY_AUTH_REQ()
 	return true;
 }
 
-bool CX2SecurityPad::Handler_ECH_SECURITY_AUTH_ACK( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2SecurityPad::Handler_ECH_SECURITY_AUTH_ACK( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KECH_SECURITY_AUTH_ACK kEvent;
@@ -912,7 +914,7 @@ bool CX2SecurityPad::Handler_EGS_AUTH_SECOND_SECURITY_REQ()  // Phase Count 1
 	g_pMain->AddServerPacket( EGS_AUTH_SECOND_SECURITY_ACK);
 	return true;
 }
-bool CX2SecurityPad::Handler_EGS_AUTH_SECOND_SECURITY_ACK(  HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2SecurityPad::Handler_EGS_AUTH_SECOND_SECURITY_ACK(  HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_AUTH_SECOND_SECURITY_ACK kEvent;
@@ -969,7 +971,7 @@ bool CX2SecurityPad::Handler_EGS_CREATE_SECOND_SECURITY_REQ()  // Phase Count 2
 
 	return true;
 }
-bool CX2SecurityPad::Handler_EGS_CREATE_SECOND_SECURITY_ACK(  HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2SecurityPad::Handler_EGS_CREATE_SECOND_SECURITY_ACK(  HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CREATE_SECOND_SECURITY_ACK kEvent;
@@ -1011,7 +1013,7 @@ bool CX2SecurityPad::Handler_EGS_DELETE_SECOND_SECURITY_REQ()  // Phase Count 1
 	return true;
 }
 
-bool CX2SecurityPad::Handler_EGS_DELETE_SECOND_SECURITY_ACK(  HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2SecurityPad::Handler_EGS_DELETE_SECOND_SECURITY_ACK(  HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_DELETE_SECOND_SECURITY_ACK kEvent;
@@ -1042,7 +1044,7 @@ bool CX2SecurityPad::Handler_EGS_DELETE_SECOND_SECURITY_VERIFY_REQ()  // Phase C
 	return true;
 }
 
-bool CX2SecurityPad::Handler_EGS_DELETE_SECOND_SECURITY_VERIFY_ACK(  HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2SecurityPad::Handler_EGS_DELETE_SECOND_SECURITY_VERIFY_ACK(  HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_DELETE_SECOND_SECURITY_VERIFY_ACK kEvent;
@@ -1084,7 +1086,7 @@ bool CX2SecurityPad::Handler_EGS_COMPARE_SECOND_SECURITY_PW_REQ() // Phase Count
 	return true;
 }
 
-bool CX2SecurityPad::Handler_EGS_COMPARE_SECOND_SECURITY_PW_ACK(  HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2SecurityPad::Handler_EGS_COMPARE_SECOND_SECURITY_PW_ACK(  HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_COMPARE_SECOND_SECURITY_PW_ACK kEvent;
@@ -1125,7 +1127,7 @@ bool CX2SecurityPad::Handler_EGS_CHANGE_SECOND_SECURITY_PW_REQ() // Phase Count 
 	return true;
 }
 
-bool CX2SecurityPad::Handler_EGS_CHANGE_SECOND_SECURITY_PW_ACK(  HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2SecurityPad::Handler_EGS_CHANGE_SECOND_SECURITY_PW_ACK(  HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
 {
 	KSerBuffer* pBuff = (KSerBuffer*)lParam;
 	KEGS_CHANGE_SECOND_SECURITY_PW_ACK kEvent;

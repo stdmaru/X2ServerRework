@@ -387,6 +387,8 @@ bool CX2Dungeon::IsEventDungeon( const SEnum::DUNGEON_ID eDungeonId_ )
 	case SEnum::DI_EVENT_VALENTINE_DAY:
 
 		return true;
+	default:
+		break;
 	}
 
 	return false;
@@ -398,6 +400,8 @@ bool CX2Dungeon::IsHenirDungeon( const SEnum::DUNGEON_ID eDungeonId_ )
 	{
 	case SEnum::DI_ELDER_HENIR_SPACE:
 		return true;
+		break;
+	default:
 		break;
 	}
 
@@ -438,6 +442,8 @@ bool CX2Dungeon::IsSecretDungeon( const SEnum::DUNGEON_ID eDungeonId_ )
 	case SEnum::DI_HAMEL_SECRET_COMMON:
 	case SEnum::DI_HAMEL_SECRET_HELL:
 		return true;
+	default:
+		break;
 	}
 
 	return false;
@@ -475,6 +481,8 @@ bool CX2Dungeon::IsDamageFreeGame()
 			case KPVPChannelInfo::PCC_TOURNAMENT:
 			case KPVPChannelInfo::PCC_FREE:
 				return true;
+			default:
+				break;
 			}
 		} break;
 
