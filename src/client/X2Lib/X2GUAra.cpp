@@ -5417,7 +5417,7 @@ void CX2GUAra::SetForcePower( int iForcePower_ )
 /** @function	: GetForcePower
 	@brief		: ��� Ȯ��
 */
-__forceinline int CX2GUAra::GetForcePower()
+int CX2GUAra::GetForcePower()
 {
 	return GetAraGageData()->GetNowForcePower();
 }

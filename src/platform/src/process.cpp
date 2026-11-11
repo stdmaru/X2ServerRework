@@ -2,7 +2,6 @@
 
 #if defined(_WIN32)
 #include "x2/platform/types.h" // <windows.h>
-#include "x2/platform/unicode.h"
 #include <tlhelp32.h>
 #include <psapi.h>
 #include <shellapi.h>
@@ -14,8 +13,9 @@
 #include <spawn.h>
 #include <sys/wait.h>
 #include <unistd.h>
-#include "x2/platform/unicode.h"
 #endif
+
+#include "x2/platform/unicode.h"
 
 #include <cstdio>
 #include <cstdlib>
@@ -685,6 +685,7 @@ bool OpenUrl(const std::wstring& url)
     return std::system(command.c_str()) == 0;
 }
 
+#endif
 
 bool Process::WriteLine(std::string_view line)
 {

@@ -5341,7 +5341,7 @@ __forceinline bool CX2GUChung::IsFullCannonBallCount()
 	@brief : ���� ������ ĳ������ ������ ������
 	@return : int ������ ĳ������ ����
 */
-__forceinline int	CX2GUChung::GetCannonBallCount()
+int	CX2GUChung::GetCannonBallCount()
 {
 	return GetChungGageData()->GetNowCannonBallCount();
 }
