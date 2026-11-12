@@ -1128,7 +1128,7 @@ void CX2GameEdit::ToggleClassChangeCheat()
 	}
 	else
 	{
-		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGClassChangeCheat, NULL, false );
+		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGClassChangeCheat, 0, false );
 	}
 }
 #endif //CHEAT_CLASS_CHANGE

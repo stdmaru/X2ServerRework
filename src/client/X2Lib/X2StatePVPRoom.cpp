@@ -4503,7 +4503,7 @@ void CX2StatePVPRoom::CX2MapSelectWindow::ResetSelectedMapButton()
 		else
 		{
 			if ( m_pDLGPVPMapSelectionWindowForDebug != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGPVPMapSelectionWindowForDebug, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGPVPMapSelectionWindowForDebug, 0, false );
 			m_pDLGPVPMapSelectionWindowForDebug = NULL;
 		}
 	}

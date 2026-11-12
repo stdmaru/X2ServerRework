@@ -390,7 +390,7 @@ bool CKTDGParticleSystem::Compile( const char *pScript, const int iLength /*= -1
 
 		OutputDebugString(wFileName);
 #if X2_DEV_TOOLS
-		MessageBox( NULL, wFileName, NULL, NULL );
+		MessageBox( NULL, wFileName, NULL, 0 );
 #endif
 
 		goto particle_compile_error;
@@ -404,7 +404,7 @@ bool CKTDGParticleSystem::Compile( const char *pScript, const int iLength /*= -1
 
 		OutputDebugString(wFileName);
 #if X2_DEV_TOOLS
-		MessageBox( NULL, wFileName, NULL, NULL );
+		MessageBox( NULL, wFileName, NULL, 0 );
 #endif
 
 		goto particle_compile_error;
@@ -416,7 +416,7 @@ bool CKTDGParticleSystem::Compile( const char *pScript, const int iLength /*= -1
 		SAFE_DELETE_ARRAY( pErrString )
 
 #if X2_DEV_TOOLS
-		MessageBox( NULL, lastError.c_str(), NULL, NULL );
+		MessageBox( NULL, lastError.c_str(), NULL, 0 );
 #endif
 
 		goto particle_compile_error;
@@ -431,7 +431,7 @@ bool CKTDGParticleSystem::Compile( const char *pScript, const int iLength /*= -1
 		OutputDebugString(wFileName);
 
 #if X2_DEV_TOOLS
-		MessageBox( NULL, wFileName, NULL, NULL );
+		MessageBox( NULL, wFileName, NULL, 0 );
 #endif
 
 		goto particle_compile_error;

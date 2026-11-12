@@ -3908,7 +3908,7 @@ bool CKTDGXMeshPlayer::CreateXMeshTemplet( CKTDGXMeshPlayer::XMeshTemplet* pXMes
 	std::map<wstring,XMeshTemplet*>::iterator it = m_TempletMap.find( pXMeshTemplet_->templetName );
 	if( it != m_TempletMap.end() )
 	{
-		MessageBox( NULL, pXMeshTemplet_->templetName.c_str() , L"Duplication" , NULL );
+		MessageBox( NULL, pXMeshTemplet_->templetName.c_str() , L"Duplication" , 0 );
 		return false;
 	}
 	XMeshTemplet * newTemplet = new XMeshTemplet();
