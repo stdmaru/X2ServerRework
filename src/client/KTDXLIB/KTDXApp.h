@@ -7,6 +7,9 @@ class CKTDXApp
 
 {
 	public:
+		// Simulation steps per second in every state (T43); rendering interpolates between them (T41).
+		static constexpr float kSimulationRate = 60.f;
+
 		enum EXIT_CODE
 		{
 			EC_STANDARD,
@@ -96,7 +99,6 @@ class CKTDXApp
 
 		//void				TimeReset(){ m_BeforeFrameTime = m_NowFrameTime; }
 		float				GetElapsedTime(){ return m_fConstElapsedTime; }
-		void				SetFrameRate( float fFrameRate ){ m_fConstElapsedTime = 1.0f/fFrameRate; }
 
 		IDirect3DDevice9*	GetDevice(){ return m_pd3dDevice; }
 		HWND				GetHWND(){ return m_hWnd; }
