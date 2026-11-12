@@ -129,4 +129,8 @@ readable Lua: 4,553 scripts decompiled, none kept as bytecode, Item.kim converte
 ## Content changes (T42)
 
 Since 2026-11-12 the client's content may change ([T42](../project/decisions.md)). Every file changed in the client_data
-is listed here with the step that changed it and why. None yet (2026-11-12).
+is listed here with the step that changed it and why.
+
+| File | Step | Change |
+|---|---|---|
+| `ui/scripts/DLG_UI_Option_Graphic.lua` | `client/resolution` (2026-11-12) | Window mode check box: hit box `RIGHT_BOTTOM` (282, 275) → (282, 285). The original's was a 15×5 strip at the top of the 15×15 box, so only its upper edge took clicks; the other check boxes of the dialog are 15×15 |
