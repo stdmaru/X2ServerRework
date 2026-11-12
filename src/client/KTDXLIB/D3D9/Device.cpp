@@ -5,10 +5,13 @@
 #include "Fvf.h"
 #include "GeneratedShader.h"
 
+#include <SDL3/SDL_log.h>
+#include <SDL3/SDL_stdinc.h>
 #include <SDL3/SDL_video.h>
 
 #include <algorithm>
 #include <bit>
+#include <cstdlib>
 #include <cstring>
 
 namespace x2::d3d9 {
@@ -380,6 +383,10 @@ Device::~Device()
 bool Device::Fail(std::string message)
 {
     m_error = "d3d9: " + std::move(message);
+    // The engine ignores most return values: log each distinct error once so failed draws are visible.
+    if (m_reported.size() < 256 && m_reported.insert(m_error).second) {
+        SDL_LogWarn(SDL_LOG_CATEGORY_RENDER, "%s", m_error.c_str());
+    }
     return false;
 }
 
@@ -767,6 +774,16 @@ bool Device::EndScene()
 
 bool Device::Present()
 {
+    if (m_frameNumber == 0) {
+        if (const char* trace = SDL_getenv("X2_D3D9_TRACE")) {
+            m_traceFrame = std::strtol(trace, nullptr, 10);
+        }
+    }
+    ++m_frameNumber;
+    if (m_frameNumber - 1 == m_traceFrame) {
+        SDL_Log("d3d9 trace: frame %ld presented, back buffer %ux%u", m_traceFrame, m_backBuffer.width,
+                m_backBuffer.height);
+    }
     if (!m_frame) {
         if (!EnsureFrame()) {
             return false;
@@ -795,6 +812,11 @@ bool Device::SubmitFrame()
 
 bool Device::Clear(DWORD count, const D3DRECT* rects, DWORD flags, D3DCOLOR color, float z, DWORD stencil)
 {
+    if (m_frameNumber == m_traceFrame) {
+        SDL_Log("d3d9 trace: clear %u rects flags 0x%x color 0x%08x target %ux%u%s", static_cast<unsigned>(count),
+                static_cast<unsigned>(flags), static_cast<unsigned>(color), CurrentTarget().width,
+                CurrentTarget().height, m_target ? " (texture)" : "");
+    }
     if (!EnsureFrame()) {
         return false;
     }
@@ -1178,6 +1200,22 @@ bool Device::Draw(D3DPRIMITIVETYPE type, UINT primitiveCount, render::Buffer buf
         if (!samplers[stage].sampler) {
             return false;
         }
+    }
+    if (m_frameNumber == m_traceFrame) {
+        const Target t = CurrentTarget();
+        const Texture* t0 = m_textures[0];
+        SDL_Log("d3d9 trace: draw type %d prims %u fvf 0x%x stride %u target %ux%u%s viewport %u,%u %ux%u tex0 %s%ux%u "
+                "fmt %d color %u/%u/%u alpha %u/%u/%u blend %u %u/%u atest %u zenable %u",
+                static_cast<int>(type), primitiveCount, static_cast<unsigned>(fvf), stride, t.width, t.height,
+                m_target ? " (texture)" : "", static_cast<unsigned>(m_viewport.X), static_cast<unsigned>(m_viewport.Y),
+                static_cast<unsigned>(m_viewport.Width), static_cast<unsigned>(m_viewport.Height),
+                t0 ? "" : "none ", t0 ? t0->m_width : 0, t0 ? t0->m_height : 0, t0 ? static_cast<int>(t0->m_format) : 0,
+                static_cast<unsigned>(m_stageStates[0][D3DTSS_COLOROP]), static_cast<unsigned>(m_stageStates[0][D3DTSS_COLORARG1]),
+                static_cast<unsigned>(m_stageStates[0][D3DTSS_COLORARG2]), static_cast<unsigned>(m_stageStates[0][D3DTSS_ALPHAOP]),
+                static_cast<unsigned>(m_stageStates[0][D3DTSS_ALPHAARG1]), static_cast<unsigned>(m_stageStates[0][D3DTSS_ALPHAARG2]),
+                static_cast<unsigned>(m_renderStates[D3DRS_ALPHABLENDENABLE]), static_cast<unsigned>(m_renderStates[D3DRS_SRCBLEND]),
+                static_cast<unsigned>(m_renderStates[D3DRS_DESTBLEND]), static_cast<unsigned>(m_renderStates[D3DRS_ALPHATESTENABLE]),
+                static_cast<unsigned>(m_renderStates[D3DRS_ZENABLE]));
     }
     PushUniforms(fvf);
     pass->BindGraphicsPipeline(pipeline);
