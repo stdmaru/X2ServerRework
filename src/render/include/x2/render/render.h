@@ -440,11 +440,9 @@ protected:
 struct DeviceOptions {
     Backend backend = Backend::SdlGpu;
     ShaderFormat shaderFormats = ShaderFormat::SpirV | ShaderFormat::Dxil | ShaderFormat::Msl;
-#if X2_DEV_TOOLS
-    bool debug = true;          // validation layers where available
-#else
+    // Validation layers where available; X2_GPU_DEBUG=1 also turns them on. Off by default even with dev tools: the
+    // Vulkan layer checks every draw and took about 80% of the client's frame (2026-11-12).
     bool debug = false;
-#endif
     std::string driver;         // SDL_GPU driver name ("vulkan", "direct3d12", "metal"); empty: the best one
 };
 
