@@ -260,6 +260,8 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
         D3D9 fixes (loader thread, destination alpha, untextured stages) and GPU validation opt-in. Village ~600 fps,
         field ~350 (2026-11-12, PR #59).
   - [ ] `client/x2-world`: mass script tests, then character select → channel → town/world on the Linux servers.
+        Open: a stray server-select disconnect while entering the village, seen once (2026-11-12,
+        [Client: X2](../porting/client-x2.md#open-issues)).
 - [ ] Reimplement the rest of D3DX on the original assets (T1, T37): `.x` loader (mesh + skin + animation), `.dds` (BC1–3 native,
       legacy formats to RGBA8). Fonts and sprites dropped: the engine uses neither `ID3DXFont` nor `ID3DXSprite`
       (2026-11-07).

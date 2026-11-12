@@ -86,3 +86,13 @@ OK button's `GetKeyState(DIK_RETURN)` closes it at once; on Windows the refused 
 `x2` links and starts on Linux, and reaches the login screen headless (2026-11-12). Windowed on a GPU it logs in, shows
 the character select and the character creation screen with its movies (2026-11-12). Next: the frame-pacing step, then
 channel → town/world on the Linux servers ([roadmap](../project/roadmap.md#phase-4--client-graphics)).
+
+### Open issues
+
+- **Disconnected while entering the village** (2026-11-12, seen once, `linux-development`). Right after
+  `EGS_STATE_CHANGE_FIELD_ACK`, the client sent `EGS_DISCONNECT_FOR_SERVER_SELECT_REQ` on the GameServer connection; the
+  server closed the session, `EGS_FIELD_LOADING_COMPLETE_ACK` never came, and the character was left in an unloaded
+  village (camera at a stray spot, no movement, no log out). The request comes from `CX2StateServerSelect`
+  (`Handler_EGS_DISCONNECT_FOR_SERVER_SELECT_REQ`, five callers; likely the one in the constructor path that disconnects
+  when `m_sbSelectedServerSet` is false while connected). Sessions before and after entered normally. Waiting to see it
+  again on a debug build with full logs; part of `client/x2-world`.
