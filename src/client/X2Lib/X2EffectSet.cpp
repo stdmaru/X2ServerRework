@@ -4,7 +4,7 @@
 
 
 
-#pragma DMLEE_NOTE( "effect set에 사운드 작업할 수 있게 기능 추가해야 함" )
+// Note: effect sets still need a way to play sounds.
 
 
 

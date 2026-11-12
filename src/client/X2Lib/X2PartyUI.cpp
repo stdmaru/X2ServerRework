@@ -535,8 +535,8 @@ m_pDLGPartyPVP(NULL)
  			if( GetShow() == true && bChecked == false )
  			{
  				if( NULL != m_pDungeonCheckBox &&
-					g_pData->GetPartyManager()->DoIHaveParty() ||
-					g_pData->GetLocationManager()->IsDungeonGate( g_pData->GetLocationManager()->GetCurrentVillageID() ) == true )
+					( g_pData->GetPartyManager()->DoIHaveParty() ||
+					g_pData->GetLocationManager()->IsDungeonGate( g_pData->GetLocationManager()->GetCurrentVillageID() ) == true ) )
  				{
  					m_pDungeonCheckBox->SetChecked(true);
  					return true;
@@ -592,8 +592,8 @@ m_pDLGPartyPVP(NULL)
  			if( GetShow() == true && bChecked == false )
  			{
  				if( NULL != m_pPVPCheckBox &&
-					g_pData->GetPartyManager()->DoIHaveParty() ||
-					g_pData->GetLocationManager()->IsDungeonGate( g_pData->GetLocationManager()->GetCurrentVillageID() ) == true )
+					( g_pData->GetPartyManager()->DoIHaveParty() ||
+					g_pData->GetLocationManager()->IsDungeonGate( g_pData->GetLocationManager()->GetCurrentVillageID() ) == true ) )
  				{
  					m_pPVPCheckBox->SetChecked(true);
  					return true;
@@ -1556,8 +1556,6 @@ void CX2PartyUI::UpdatePartyDLG( bool bRenamePartyTitle /*= false*/ )
 		//영웅모집던전 정보 요청
 		g_pData->GetPartyManager()->Send_EGS_REQUEST_GET_AUTO_PARTY_BONUS_INFO_NOT();
 	}
-	CX2LocationManager::LOCAL_MAP_ID eCurrLocalMapID =
-		g_pData->GetLocationManager()->GetLocalMapID( g_pData->GetLocationManager()->GetCurrentVillageID() );
 
 
 	//////////////////////////////////////////////////////////////////////////

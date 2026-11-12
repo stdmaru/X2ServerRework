@@ -222,7 +222,7 @@ void CX2ItemCheatPopUp::UpdateItemList()
 
 }
 
-bool CX2ItemCheatPopUp::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+bool CX2ItemCheatPopUp::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM lParam )
 {
 	switch( wParam )
 	{

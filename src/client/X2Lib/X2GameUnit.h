@@ -47,7 +47,9 @@ class CX2GameUnit : public CKTDGObject, public CKTDXDeviceHolder, public KObserv
 			//GUT_TRANSFORMER,
 		};
 
-		enum GAME_UNIT_STATE_ID
+		// Holds the derived classes' state IDs too (CX2GUUser::USER_STATE_ID...): a fixed underlying type makes them
+		// valid values, so comparisons with them are not folded away.
+		enum GAME_UNIT_STATE_ID : int
 		{
 			GUSI_NONE = 0,
 			GUSI_LOADING,

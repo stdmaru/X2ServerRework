@@ -177,7 +177,7 @@ void CX2RidingPetManager::SetShowAll( IN bool bVal_ )
 
 	RidingPetMap::iterator iter;
 
-	for ( iter == m_mapRidingPet.begin(); iter != m_mapRidingPet.end(); ++iter )
+	for ( iter = m_mapRidingPet.begin(); iter != m_mapRidingPet.end(); ++iter )
 	{
 		CX2RidingPetPtr pRidingPet = iter->second;
 		pRidingPet->SetShowObject( m_bShow );
@@ -519,7 +519,7 @@ CX2RidingPet* CX2RidingPetManager::GetRidingPetIndex( IN int iIndex_ )
 	int iIndex = 0;
 	RidingPetMap::iterator iter;
 
-	for ( iter == m_mapRidingPet.begin(); iter != m_mapRidingPet.end(); ++iter )
+	for ( iter = m_mapRidingPet.begin(); iter != m_mapRidingPet.end(); ++iter )
 	{
 		CX2RidingPetPtr pRidingPet = iter->second;
 

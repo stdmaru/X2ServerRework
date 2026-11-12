@@ -690,7 +690,7 @@ void CX2SimplePathFinder::FollowTargetPathFly( /*float fElapsedTime,*/ const D3D
 										   const float fDestArriveHeight, const float fDestArriveArea,
 										   IN CKTDGLineMap* pLineMap, const float fDestArriveGap, /*const float fDestLeaveGap,*/ /*bool bFootOnLine,*/
 										   /*bool bStayOnCurrLineGroup,*/ bool& bTargetOnRight,
-										   const float fLineEndDetectRange )
+										   const float /*fLineEndDetectRange*/ )
 {
 	KTDXPROFILE();
 
@@ -1543,7 +1543,7 @@ void CX2SimplePathFinder::SimpleFollowTargetPathFly( float /*fElapsedTime*/, D3D
 											  const float fDestArriveHeight, const float fDestArriveArea,
 											  CKTDGLineMap* pLineMap, const float fDestArriveGap, const float /*fDestLeaveGap*/, bool /*bFootOnLine*/,
 											  bool /*bStayOnCurrLineGroup*/, bool& bTargetOnRight,
-											  const float fLineEndDetectRange )
+											  const float /*fLineEndDetectRange*/ )
 {
 	KTDXPROFILE();
 

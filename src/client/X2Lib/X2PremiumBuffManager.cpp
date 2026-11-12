@@ -1,7 +1,6 @@
 /**@file	X2PremiumBuff.cpp
    @breif	�޸� ���� ���� ���� �� ��Ÿ Ư�� ���� ����
 */
-#pragma once
 
 #include "stdafx.h"
 #include "./X2PremiumBuffManager.h"

@@ -520,96 +520,77 @@ void CX2GUUser::Debug_RenderHelp( int ix_, int iy_ )
 CX2GUUser::CX2GUUser( int unitIndex, int teamNum,
 	lua_State*   pScriptLuaState,
 	int frameBufferNum, CX2Unit* pUnit )
-: CX2GameUnit( unitIndex, teamNum,
+:
+  CX2GameUnit( unitIndex, teamNum,
 	NULL
 	)
+, m_iGrapStateID( USI_DAMAGE_AIR_FLY_FRONT )
+, m_bCanChangeHyperModeInHyperModeState( false )
+, m_wstrRidingMotionName( L"" )
+, m_bRidingOn( false )
+, m_bStarted( false )
+, m_fCurrentFinalDamage( 0 )
+, m_iDashCount ( 0 )
+, m_fCannonBallDamageUp( 0.f )
+, m_fForceDownRelDamageRateBase ( 0.f )
+, m_bHasHyperModeItem(false)
+, m_bChangeGroggyState( false )		/// ������ ���� ���� �׷α� ������Ʈ ��ȯ ����
+, m_RelationshipTargetUID( 0 )
+, m_fAddAccuaracyPercent(0.f)
+, m_fAddMagicAttackCriticalRate(0.f)
+, m_fAddMagicAttackCriticalDamageRate(0.f)
+, m_iAirDashCount( 0 )
+, m_fSlotChangeLeftCoolTime ( -1.f )
+, m_fPassiveCriticalRate( 0.f )
+, m_fManaRecoveryVal( 0.0f )
+, m_fManaRecoveryDurationTime( 0.0f )
+, m_fIntervalTimeForCureDebuff( 0.0f )
+, m_iHoldStateID( 0 )
+, m_fAddAnimSpeedFactor( 0.0f )
+, m_bCanAvoidance( false)
+, m_DeadStageIndex( 0 )
+, m_DeadSubStageIndex( 0 )
 , m_hSeqWeaponCommon1( INVALID_PARTICLE_SEQUENCE_HANDLE )
 , m_hSeqWeaponCommon2( INVALID_PARTICLE_SEQUENCE_HANDLE )
 , m_hSeqWeaponCommon3( INVALID_PARTICLE_SEQUENCE_HANDLE )
 , m_hSeqEnchantedWeaponCommon4( INVALID_PARTICLE_SEQUENCE_HANDLE )
-, m_DeadStageIndex( 0 )
-, m_DeadSubStageIndex( 0 )
 , m_bRotateBone( false )
 , m_fRotateBoneDegree( 0.f )
 , m_eSpecialAttackKeyPressed( SAKP_NONE )
 , m_bSpecialAttackEventProcessedAtThisFrame( false )
 , m_iSkillCutInSetIndex( 0 )
+, m_iSkillCutInSetSubIndex( 0 )
 , m_bHaveSacrificeOfHero( false )
-, m_fPassiveCriticalRate( 0.f )
 , m_fShadowOfDisasterRate( 0.f )
-//#ifdef TRANSFORMER_TEST
-//, m_pTransformer( NULL )
-//#endif TRANSFORMER_TEST
-	//{{ �ӱԼ� �ӱԼ� ���� ��ŸƮ ǥ�� ������ �� , ���� ���� ���� �Ŀ� ������ ��� ���ϵ��� ����
-, m_bStarted( false )
-	//}}
-//{{ kimhc // 2010.4.5 // ��д��� �۾�(��Ʈ������ȿ��)
-, m_fManaRecoveryDurationTime( 0.0f )
-, m_fManaRecoveryVal( 0.0f )
-, m_fIntervalTimeForCureDebuff( 0.0f )
+, m_bIsLimitCrusherCharge( false )
 , m_pBoneShieldData( NULL )
-//}} kimhc // 2010.4.5 // ��д��� �۾�(��Ʈ������ȿ��)
-
-//{{ kimhc // 2010.7.12 // �������� ������ HOLD �� �� �ֵ��� ��
-, m_iHoldStateID( 0 )
-//}} kimhc // 2010.7.12 // �������� ������ HOLD �� �� �ֵ��� ��
-
-//{{ kimhc // 2010.11.3 // ���� - ��ȭ�� �г�
-, m_bCanChangeHyperModeInHyperModeState( false )
-//}} kimhc // 2010.11.3 // ���� - ��ȭ�� �г�
-, m_bDownForce( false )
-, m_fAddAnimSpeedFactor( 0.0f )
-, m_iGrapStateID( USI_DAMAGE_AIR_FLY_FRONT )
-//{{ kimhc // 2011-08-08 // ���� ���� ä�θ� �̺�Ʈ
-//}} kimhc // 2011-08-08 // ���� ���� ä�θ� �̺�Ʈ
-, m_fCannonBallDamageUp( 0.f )
-, m_fForceDownRelDamageRateBase ( 0.f )
-, m_iDashCount ( 0 )
-
-, m_ElapsedTimeNotBusyState( 2.0f )
-
-, m_bLearnLightningStep( false )
-, m_OldStateId( USI_BASE )
-, m_iAdvancedTeleportationLv( 0 )
-, m_delegatePhysicProcessPortalByGameType( DelegatePhysicProcessPortalByGameType() )
-, m_fCurrentFinalDamage( 0 )
-, m_hEnterCashShop(INVALID_PARTICLE_SEQUENCE_HANDLE)
-, m_bHasHyperModeItem(false)
 , m_pTextureRank (NULL)
-, m_bEnterCashShop( false )
-, m_bCanAvoidance( false)
-, m_bChangeGroggyState( false )		/// ������ ���� ���� �׷α� ������Ʈ ��ȯ ����
+, m_bDownForce( false )
+, m_bLearnLightningStep( false )
+, m_iAdvancedTeleportationLv( 0 )
 , m_ComboAndSkillChainSystem()
-, m_bRidingOn( false )
-, m_wstrRidingMotionName( L"" )
+, m_bSetCustomRenderParam( false )
+, m_OldStateId( USI_BASE )
+, m_ElapsedTimeNotBusyState( 2.0f )
+, m_delegatePhysicProcessPortalByGameType( DelegatePhysicProcessPortalByGameType() )
+, m_hEnterCashShop(INVALID_PARTICLE_SEQUENCE_HANDLE)
+, m_bEnterCashShop( false )
 , m_ElapsedTimeRidingWaitHabit( 5.f )
 , m_iRidingBoost( 0 )
 , m_fAirDashTime( 0.f )
-, m_iAirDashCount( 0 )
 , m_iDoubleJumpCount( 0 )
-, m_RelationshipTargetUID( 0 )
-, m_fAddAccuaracyPercent(0.f)
-, m_fAddMagicAttackCriticalRate(0.f)
-, m_fAddMagicAttackCriticalDamageRate(0.f)
-, m_bSetCustomRenderParam( false )
 , m_uiNowStateSkillLevel( 0 )
 , m_fShowSkillCutInTime(-1.f)
 , m_bChangeWorldColor(false)
-, m_iSkillCutInSetSubIndex( 0 )
-, m_bIsLimitCrusherCharge( false )
-, m_bRightAtThisState( false )
-, m_pHairXSkinMesh(NULL)
-, fPreWorldNear(-1.f)
+, m_fGetFinalDamageValue( 0.f )
 #ifdef ACTIVE_KOG_GAME_PERFORMANCE_CHECK
 , m_dwLastRecvFrameMoveCount( 0 )
 #endif //ACTIVE_KOG_GAME_PERFORMANCE_CHECK
-, m_fSlotChangeLeftCoolTime ( -1.f )
-
+, m_pHairXSkinMesh(NULL)
+, m_bRightAtThisState( false )
+, fPreWorldNear(-1.f)
 , m_bDoubleAttack( false )
-
 , m_bIsPlayAvatarEmotionSoundWithoutEmotion ( false )
-
-, m_fGetFinalDamageValue( 0.f )
 {
 
     m_bFutureCanPassUnit = false;
@@ -5539,24 +5520,6 @@ void CX2GUUser::PreRenderForce()
 			pCX2Eqip->OnFrameRender();
 		}
 	}//if
-
-	/* //{{ seojt on 2008-10-18
-	// �Ʒ��� ���� �����Ͽ�����, D3D ������ memory leak�� �����Ǿ� �ϴ� ��ó��
-	// ������� �ǵ��� �ξ���. background thread loading �۾��� ������
-	// �ٽ� ������ ����. - jintaeks on 2008-10-18, 12:03
-	m_pXSkinAnim->PreLoad();
-
-	for( int i = 0; i < (int)m_ViewEqipList.size(); i++ )
-	{
-	CX2Eqip* pCX2Eqip = m_ViewEqipList[i];
-	if ( pCX2Eqip == NULL )
-	continue;
-
-	if( pCX2Eqip->GetEqipType() == CX2Item::ET_SKIN )
-	continue;
-	pCX2Eqip->PreLoad();
-	}
-	/**/ //}} seojt on 2008-10-18
 }//CX2GUUser::PreRenderForce()
 
 
@@ -8019,7 +7982,7 @@ void CX2GUUser::Process_ExtraDamage( const CX2DamageManager::DamageData* pDamage
 			if( null != pDamageData->optrAttackerGameUnit )
 			{
 				const float MAGIC_POWER_RATE = 1.f;
-				CX2DamageEffect::CEffect* pEffect = g_pX2Game->GetDamageEffect()->CreateInstance( pDamageData->optrAttackerGameUnit.GetObservable(), L"EXTRA_DAMAGE_POISON_CLOUD", MAGIC_POWER_RATE,
+				g_pX2Game->GetDamageEffect()->CreateInstance( pDamageData->optrAttackerGameUnit.GetObservable(), L"EXTRA_DAMAGE_POISON_CLOUD", MAGIC_POWER_RATE,
 					pDamageData->impactPoint, GetRotateDegree(), GetRotateDegree(), GetLandPosition().y );
 
 				UpDownCrashCamera( 20.0f, 0.5f );
@@ -8440,7 +8403,7 @@ void CX2GUUser::Process_ExtraDamage( const CX2DamageManager::DamageData* pDamage
 			if( null != pDamageData->optrAttackerGameUnit )
 			{
 				const float MAGIC_POWER_RATE = 1.f;
-				CX2DamageEffect::CEffect* pEffect = g_pX2Game->GetDamageEffect()->CreateInstance( pDamageData->optrAttackerGameUnit.GetObservable(), L"EXTRA_DAMAGE_CURSE_CLOUD", MAGIC_POWER_RATE,
+				g_pX2Game->GetDamageEffect()->CreateInstance( pDamageData->optrAttackerGameUnit.GetObservable(), L"EXTRA_DAMAGE_CURSE_CLOUD", MAGIC_POWER_RATE,
 					pDamageData->impactPoint, GetRotateDegree(), GetRotateDegree(), GetLandPosition().y );
 
 				UpDownCrashCamera( 20.0f, 0.5f );
@@ -12104,10 +12067,12 @@ void CX2GUUser::CommonFrameMove()
 
 	{
 		if(m_fReverseGravitySpeedDeltaY == 0.f)
+		{
 			if ( true == GetRidingOn() && GetNowStateID() != USI_RIDING_DIE )
 				m_pXSkinAnim->GetMatrix().RotateDegree( GetSaddleDegree() );
 			else
 				m_pXSkinAnim->GetMatrix().RotateDegree( m_FrameDataNow.unitCondition.dirDegree );
+		}
 	}
 
     bool    bXSkinAnimOnFrameMoveCalled = false;
@@ -24433,7 +24398,7 @@ bool CX2GUUser::GetAddItemAndRemoveItemToViewList( OUT CX2EqipPtr& pEquipPtrToRe
 		{
 			if ( pItemTempletForItemToRemove->GetEqipPosition() == m_ViewEqipList[numViewEquipInUser]->GetEqipPos() )
 			{
-				switch ( pItemTempletForItemToRemove->GetFashion() )
+				switch ( static_cast<int>( pItemTempletForItemToRemove->GetFashion() ) )
 				{
 				case true:	// ���� �� ��� �м� ���� ���
 					{
@@ -26151,7 +26116,6 @@ void CX2GUUser::COMMON_RELATIONSHIP_SKILL_FrameMove()
 		}
 		if( false == wstrDamageEffectName.empty() )
 		{
-			CX2DamageEffect::CEffect *pDamageEffect =
 				g_pX2Game->GetDamageEffect()->CreateInstance( this, wstrDamageEffectName.c_str(), GetPowerRate(), vEffectPos, vRotate, vRotate, m_FrameDataNow.unitCondition.landPosition.y );
 		}
 	}

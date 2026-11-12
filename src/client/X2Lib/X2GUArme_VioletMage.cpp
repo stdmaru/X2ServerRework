@@ -69,7 +69,6 @@ namespace _CONST_AISHA_
 	const float MAGICAL_MAKEUP_TRANSFORMING_TIME = 1.3f;	/// �����ø���ũ�� ���ŵ����� �����ϴ� �ð�
 
 	const float AEM_COMBOX4_MAX_CHARGING_TIME( 2.f );					/// 4��° ���̾ �ִ� ���� �ð�
-	const float AEM_METEO_SHOWER_USE_MP( 5.f );							/// ���׿� ���� 1�ߴ� �Ҹ� MP��
 	const float AEM_MEDITATION_REDUCE_COOLTIME_VALUE( 15.f );			/// �޵����̼� �޸� ��Ÿ�� ����ġ
 	const float AHM_CHAIN_BURST_MEMO_INCREASE_POWER_RATE_VALUE( 1.1f );	/// ü�� ����Ʈ �޸� ������ ����ġ
 
@@ -16200,7 +16199,7 @@ void CX2GUArme_VioletMage::AVSI_SA_AVP_Phantom_Breathing_Dark_Hole_FrameMove()
 		g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DamageEffect_Phantom_Breathing_DarkHole_NoDamage", GetPowerRate(),
 			pos, degree , degree, m_FrameDataNow.unitCondition.landPosition.y );
 
-		CX2DamageEffect::CEffect* pDE = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DamageEffect_Phantom_Breathing_DarkHole_Damage", GetPowerRate(),
+		g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DamageEffect_Phantom_Breathing_DarkHole_Damage", GetPowerRate(),
 			pos, degree , degree ,m_FrameDataNow.unitCondition.landPosition.y );
 
 		pos.y += 255;

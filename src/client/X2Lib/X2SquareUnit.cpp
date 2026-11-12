@@ -923,7 +923,6 @@ void    CX2SquareUnit::NotifyDGManagerChanged( CKTDGManager& refInManager_ )
 
 HRESULT	CX2SquareUnit::OnFrameMove( double fTime, float fElapsedTime )
 {
-	typedef std::map< float, bool > EventTimeStampMap;
 
 
 	if ( m_StateID.m_iRidingWait == m_SyncData.m_StateID )
@@ -1514,15 +1513,6 @@ void CX2SquareUnit::RenderServer(int iFinalLeft, int iFinalTop)
 
 	const CKTDXDeviceTexture::TEXTURE_UV*	pTexUV = NULL;
 
-#ifdef EXTEND_SERVER_GROUP_MASK
-
-	(int) g_pMain->ExtractServerGroupID(GetUID());
-#else
-	SERVER_GROUP_ID eServerGroupID	= SGI_INVALID;
-
-	eServerGroupID = (SERVER_GROUP_ID) g_pMain->ExtractServerGroupID(GetUID());
-#endif // EXTEND_SERVER_GROUP_MASK
-
 	{
 		pTexUV = NULL;
 	}
@@ -1632,7 +1622,7 @@ void CX2SquareUnit::RenderName()
 	}
 
 	D3DXVECTOR2 finalPos = g_pKTDXApp->GetProj3DPos( m_SyncData.m_Pos );
-	int iFinalLeft, iFinalTop;
+	int iFinalLeft = 0, iFinalTop;
 
 	iFinalTop = (int)finalPos.y;;
 

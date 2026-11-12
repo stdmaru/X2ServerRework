@@ -3332,7 +3332,6 @@ void CX2StateDungeonGame::TextOutSkillList( const char unitStateID )
 
 			if( true == m_bCreateCommandSuccessSplash )
 			{
-				CKTDGParticleSystem::CParticleEventSequence* pSeq =
 					g_pX2Game->GetMajorParticle()->CreateSequence( NULL,  L"SkillSuccessSplash", (float)iPosX+120, (float)iPosY+10, 0, 1000, 1000, 1, 1 );
 				m_bCreateCommandSuccessSplash = false;
 			}

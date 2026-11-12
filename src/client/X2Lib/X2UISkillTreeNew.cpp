@@ -5,7 +5,6 @@
 
 const int	MAGIC_SKILL_DESC_WIDTH					= 370;		/// ��ų ���� ��Ʈ�� ���ٴ� �ִ� ���� ����
 const int	MAX_ONE_CLASS_SKILL_ROW_NUM				= 5;		/// �ϳ��� ������ ��ų Ʈ�� �ִ� �� ����
-const int	SKILL_USE_IMAGE_WIDTH_SIZE				= 70;		/// ��ų ���� ���� �̹��� ���� ũ��
 const float SKILL_MAIN_DESC_OFFSET_Y				= 65.f;		/// ���� ������ ������ ���� ��ġ
 
 //////////////////////////////////////////////////////////////////////////
@@ -357,8 +356,8 @@ CX2SkillTreeSlotData::CX2SkillTreeSlotData()
 
 					/// ���� ��ų�� �ƴϰų�, ������ ���ν�ų�̸�, ���� ������ �ݴ��� ��ų�� ����
 					if ( NULL != pSkillTemplet &&
-							false == pSkillTemplet->m_bBornSealed ||
-							( true == pSkillTemplet->m_bBornSealed && true == refUserSkillTree.IsSkillUnsealed( eAnotherSkillID ) ) )
+							( false == pSkillTemplet->m_bBornSealed ||
+							( true == pSkillTemplet->m_bBornSealed && true == refUserSkillTree.IsSkillUnsealed( eAnotherSkillID ) ) ) )
 					{
 						bIsSelectAnotherSkill = true;
 					}
@@ -6143,7 +6142,7 @@ void CX2UISkillTreeNew::GetSkillUnSealedDesc( OUT wstring& wstrDesc, IN const CX
 	/// �ش� ��ų ���̵� ���� ���� ��ų �������� �˻�
 	std::map<int, CX2SkillTree::SealSkillItemInfo>::const_iterator mit = mapSealSkillItemTemplet.begin();
 
-	for ( mit; mit != mapSealSkillItemTemplet.end(); ++mit )
+	for ( ; mit != mapSealSkillItemTemplet.end(); ++mit )
 	{
 		std::vector<CX2SkillTree::SKILL_ID> vecValue = mit->second.m_vecSkillID;
 

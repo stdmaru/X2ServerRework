@@ -52,19 +52,12 @@ namespace _CONST_ELSWORD_
 	const float MAGIC_ERS_DASH_JUMP_XZ_MP_COST = 4.f;
 	const float MAGIC_ERS_DASH_JUMP_XZZ_MP_COST = 0.f;
 
-	const float VIGOR_FIRE_BALL_MP_COST = 5.f;			// �ı�
-	const float VIGOR_ERS_XZ_MP_COST = 3.f;				// �ı�
-	const float VIGOR_ERS_XZZ_MP_COST = 6.f;			// �ı�
-	const float VIGOR_ERS_DASH_JUMP_XZ_MP_COST = 3.f;	// �ı�
 	const float VIGOR_ERS_DASH_JUMP_XZZ_MP_COST = 3.5f;	// Ȱ�� - MP�Ҹ� 50% ����
 
-	const float MAGIC_PHANTOM_SWORD_DELAY	= 0.2f;
 
 	const int	CONST_BRUTAL_SLAYER_LEVEL = 5;
 
 
-	const int BLADE_RAIN_SKILL_RANGE = 250;								// �����̵� ���� �Ÿ�
-	const int BLADE_RAIN_GET_SUMMON_POS_CHECK_LINEMAP_COUNT = 10;		// �����̵� ���� ���θ� üũ �Ÿ�
 
 }
 
@@ -4513,7 +4506,7 @@ void CX2GUElsword_SwordMan::DieBackEventProcess()
 	}
 }
 
-#pragma DMLEE_NOTE( "�� �Լ� �� ĳ���� ���� �����ϰ� �����Ǹ� GUUSER�� �Űܼ� �ϳ��� ��������" )
+// Note: once this function is the same for every character, move it to CX2GUUser.
 
 void CX2GUElsword_SwordMan::WinFrameMove()
 {
@@ -10320,10 +10313,12 @@ void CX2GUElsword_SwordMan::ESSI_SI3_ES_ARMAGEDDON_BLADE_HYPER_FrameMove()
 	{
 		const CX2SkillTree::SkillTemplet* pSkillTemplet = GetEquippedActiveSkillTemplet( CX2SkillTree::SI_SA_ESK_ARMAGEDON_BLADE );
 		if ( NULL != pSkillTemplet )
+		{
 			if( GetEqippedSkillMemo( CX2SkillTree::SMI_ELSWORD_MEMO18 ) == true )
 				SetBuffFactorToGameUnit( pSkillTemplet, 3 );
 			else
 				SetBuffFactorToGameUnit( pSkillTemplet, 2 );
+		}
 	}
     else if( m_pXSkinAnim->EventTimerOneshot( 1.8f ) )
 	{
@@ -15202,7 +15197,7 @@ void CX2GUElsword_SwordMan::ESSI_SI_A_ES_DEFENCE_WAIT_EventProcess()
 	{
 		// ���� ��� ��, MP �� ��� �����Ǹ� ���� ���� ��ȯ ����
 		if( 0 >= static_cast<int> ( GetNowMp() )
-			 || NULL != m_GuardForElswordPtr && false == m_GuardForElswordPtr->GetGuardKeyValue() )
+			 || ( NULL != m_GuardForElswordPtr && false == m_GuardForElswordPtr->GetGuardKeyValue() ) )
 		{
 			StateChange( ESSI_SI_A_ES_DEFENCE_END );
 		}
@@ -15256,7 +15251,7 @@ void CX2GUElsword_SwordMan::ESSI_SI_A_ES_DEFENCE_DAMAGE_EventProcess()
 	{
 		StateChange( ESSI_SI_A_ES_DEFENCE_WAIT );
 	}
-	else if( 0.f >= GetNowMp() || 0.f >= GetNowHp() || NULL != m_GuardForElswordPtr && false == m_GuardForElswordPtr->GetGuardKeyValue() )
+	else if( 0.f >= GetNowMp() || 0.f >= GetNowHp() || ( NULL != m_GuardForElswordPtr && false == m_GuardForElswordPtr->GetGuardKeyValue() ) )
 	{
 		StateChange( ESSI_SI_A_ES_DEFENCE_END );
 	}

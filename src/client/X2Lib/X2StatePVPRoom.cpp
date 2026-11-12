@@ -4018,10 +4018,10 @@ void CX2StatePVPRoom::InitPvpRoomUI()
 
 CX2StatePVPRoom::CX2MapSelectWindow::CX2MapSelectWindow()
 : m_pDLGBack( NULL )
-, m_pDLGSelected( NULL )
 #if X2_DEV_TOOLS
 , m_pDLGPVPMapSelectionWindowForDebug( NULL )
-#endif // FREE_SELECT_PVP_MAP
+#endif
+, m_pDLGSelected( NULL )
 
 {
 	OpenScript( L"DLG_PVP_Map_List.lua" );

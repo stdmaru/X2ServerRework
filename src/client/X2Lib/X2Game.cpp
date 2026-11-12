@@ -5126,8 +5126,6 @@ CX2Game::CreateNPC( CX2UnitManager::NPC_UNIT_ID unitID, int level, bool bActive,
 					CX2GageManager* pGageManager = CX2GageManager::GetInstance();
 					if ( NULL != pGageManager )
 					{
-						CX2GameUnit* pGameUnitMember
-							= GetNPCUnitByUID( static_cast<int>( pSlotData->m_iNpcUid ) );
 						pGageManager->InsertPvpMemberUI( *pSlotData, pNPC );
 						pGageManager->UpdatePvpMemberGageData( pSlotData->m_iNpcUid, pNPC );
 					}
@@ -5761,8 +5759,7 @@ bool CX2Game::NPCUnitDieReq( const KEGS_NPC_UNIT_DIE_REQ& kPacket_ )
 
 
 	g_pData->GetServerProtocol()->SendPacket( EGS_NPC_UNIT_DIE_REQ, kPacket_ );
-
-
+	return true;
 }
 
 bool CX2Game::NPCUnitDieReq( char cAttUnitType, int iNPCUID, UidType uiAttUnit, UidType uiMDAttUnit, D3DXVECTOR3 diePos, bool bIsAllyNPC, bool bBounsDrop /*= false*/ )

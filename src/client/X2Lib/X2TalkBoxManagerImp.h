@@ -116,6 +116,7 @@ class CX2TalkBoxManagerImp
 
 			}
 			TalkBox( const TalkBox& ) = default;
+			TalkBox& operator=( const TalkBox& ) = default;
 
 			//{{ 허상형 : [2009/10/28] //	주석처리(기본적으로 대입됨)
 

@@ -1919,7 +1919,7 @@ void CX2DamageEffect::CEffect::OnFrameMove_SoundData()
 				{
 
 
-#pragma DMLEE_NOTE( "loop sound 는 채널 문제 수정하고 나서 사용가능" )
+// Note: loop sounds can be used once the channel problem is fixed.
 
 
 					pSound->Set3DPosition( pMeshInst->GetPos() );
@@ -3728,7 +3728,7 @@ void CX2DamageEffect::CEffect::SetTimeParticle()
 	//}} kimhc // 2009-10-20 // 기존의 Set함수를 Load와 Set 으로 분류(일명 독구름 작업)
 }
 
-void CX2DamageEffect::CEffect::SetSuckMagicParticle(WCHAR *particleName)
+void CX2DamageEffect::CEffect::SetSuckMagicParticle(const WCHAR* particleName)
 {
 	KTDXPROFILE();
 
@@ -3905,7 +3905,7 @@ void CX2DamageEffect::CEffect::SetDamageEffect()
 	//}} kimhc // 2009-10-20 // 기존의 Set함수를 Load와 Set 으로 분류(일명 독구름 작업)
 }
 
-CX2DamageEffect::ParticleData* CX2DamageEffect::CEffect::LoadParticleSuckMagic( WCHAR *particleName )
+CX2DamageEffect::ParticleData* CX2DamageEffect::CEffect::LoadParticleSuckMagic( const WCHAR* particleName )
 {
 	KTDXPROFILE();
 
@@ -5546,7 +5546,7 @@ CX2DamageEffect::CEffect* CX2DamageEffect::GetInstanceByIndex( int iIndex )
 
 void CX2DamageEffect::CEffect::SetLockOnNearstTarget( IN const D3DXVECTOR3& vMyPos_, int iTeam_ , int randomOffset/* = 0 */)
 {
-	bool bUserUnit;
+	bool bUserUnit = false;
 	UidType uid = ( g_pX2Game != NULL ) ? g_pX2Game->GetLockOnNearstTarget( static_cast<CX2Room::TEAM_NUM>(iTeam_), vMyPos_, bUserUnit ) : 0;
 
 	if( bUserUnit == true )

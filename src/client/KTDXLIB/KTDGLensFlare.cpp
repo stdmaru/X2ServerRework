@@ -19,10 +19,10 @@ static const CKTDGStateManager::KState s_akStates[] =
 
 
 CKTDGLensFlare::CKTDGLensFlare( HWND hWnd,
-							   WCHAR* pHaloTex,
-							   WCHAR* pFlareTex1,
-							   WCHAR* pFlareTex2,
-							   WCHAR* pFlareTex3 )
+							   const WCHAR* pHaloTex,
+							   const WCHAR* pFlareTex1,
+							   const WCHAR* pFlareTex2,
+							   const WCHAR* pFlareTex3 )
 {
 	m_hWnd			= hWnd;
 

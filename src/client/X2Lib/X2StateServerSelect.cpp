@@ -40,103 +40,87 @@ float CHANNEL_CONGESTION_SCOPE_TEMP[] = {0.1f, 0.2f, 0.3f, 0.9f, };
 // ?? ????? ????, ???? ???? ?? * CHANNEL_CONGESTION_SCOPE_TEMP[3] = FULL
 
 CX2StateServerSelect::CX2StateServerSelect(void) :
-m_pDLGServerSelectBack(NULL),
-m_pDLGCheckHack(NULL),
-//m_vecUnitSlot;
-m_pDLGUnitSelectBack(NULL),
-m_pDLGUnitSelectFront(NULL),
-m_pDLGDeleteUnitCheck(NULL),
-m_pDLGLoadingState(NULL),
-m_pDLGRenameMsgBox(NULL),
-m_pDLGRenameConfirmMsgBox( NULL ),
-m_pDLGRenameSuccessMsgBox( NULL ),
-m_pDLGTutorialMsgBox(NULL),
-m_pDLGGoToFirstDungeon(NULL),
-m_pDLGRecommend(NULL),
-m_pDLGRecommendSuccess(NULL),
-//m_UnitButtonList;
-//m_UnitViewerUIList;
-m_pSelectUnit(NULL),
-m_pSelectButton(NULL),
-m_bUnitClicked(false),
-m_fMouseSensitivity(0.01f),
-m_fRemainRotY(0.0f),
-m_bRotateReturn(true),
-m_fRotSpeed(false),
-m_pOveredButton(NULL),
-m_pOveredName(NULL),
-m_bOneTimeInit(true),
-m_bStateChangingToUnitCreate(false),
-m_bPlayDownAnim(false),
-m_fDownAnimTime(0.0f),
-m_MaxUnitNum(0),
-m_bReserveEnterTutorial(false),
-m_bCheckRecommend(false),
-m_bCheckRecommendSuccess(false),
-m_NowPage(1),
-m_MaxPage(1),		// ???????? ??? ????
-m_bPortCheckWait( false ),
-m_fPortCheckWaitTime( 0.f ),
-m_PortCheckRetryTime( 0 ),
-m_bENX_USER_LOGIN_NOT( false ),
-m_bEGS_VERIFY_ACCOUNT_ACK( false ),
-m_bIsGameBang( false ),
-m_bPortCheckReq( false ),
-m_bEGS_VERIFY_ACCOUNT_REQ( false ),
-m_fEGS_VERIFY_ACCOUNT_ACK_WaitTime( 0.f ),
-m_bReceivedServerGroupList( false ),
-m_pDLGServerGroupSelectBack(NULL),
-//{{ //2012.02.28 lygan_?????? // ????? unitUID?? ??????? ????? ???? ??? ????? ??
-m_iSelectUnitUID( 0 ),
-m_bMaintainNowUnitButton( false ),
-//}}
-m_bReceivedChannelList( false ),
-m_bSentEGS_CONNECT_REQ( false ),
-m_bReceivedEGS_MY_UNIT_AND_INVENTORY_INFO_LIST_ACK( false ),
-m_bReservedConnectionToChannelServer( false ),
-m_bWaiting_EGS_DISCONNECT_FOR_SERVER_SELECT_ACK( false ),
-m_iTryConnectChannelID( -1 ),
-m_bJustChangedNickName( false ),
-m_NickNameChangeUnitUID( -1 ),
-m_NickNameChangeUnitNickName( L"" ),
-m_bRemoveUnitAfterReceiveNMSerialNum( false )
-//{{ kimhc // 2009-12-15 // ?????? ??? ????? ???? �?? ??????? ???
+  m_bEnableUnitSelectBySecondSecurity( false )
+, m_pDLGServerSelectBack(NULL)
 , m_pDLGChannelSelectBack( NULL )
 , m_iChannelNum( 0 )
-//{{ ????? : [2011/6/20] //        �?? ???? ???????? ????
 , m_bSelectChannel( false )
-//}} ????? : [2011/6/20] //        �?? ???? ???????? ????
-//}}  kimhc // 2009-12-15 // ?????? ??? ????? ???? �?? ??????? ???
-, m_bEnableUnitSelectBySecondSecurity( false )
-, m_bRecivedKeyMap( false )
+, m_pDLGCheckHack(NULL)
+, m_pDLGUnitSelectBack(NULL)
+, m_pDLGUnitSelectFront(NULL)
+, m_pDLGDeleteUnitCheck(NULL)
+, m_pDLGLoadingState(NULL)
+, m_pDLGRenameMsgBox(NULL)
+, m_pDLGRenameConfirmMsgBox( NULL )
+, m_pDLGRenameSuccessMsgBox( NULL )
+, m_pDLGTutorialMsgBox(NULL)
+, m_pDLGGoToFirstDungeon(NULL)
+, m_pDLGRecommend(NULL)
+, m_pDLGRecommendSuccess(NULL)
 , m_pDLGATLLimitCheckMsgBox (NULL)
+, m_pSelectUnit(NULL)
+, m_pSelectButton(NULL)
+, m_bUnitClicked(false)
+, m_fMouseSensitivity(0.01f)
+, m_fRemainRotY(0.0f)
+, m_bRotateReturn(true)
+, m_fRotSpeed(false)
+, m_pOveredButton(NULL)
+, m_pOveredName(NULL)
+, m_bOneTimeInit(true)
+, m_bStateChangingToUnitCreate(false)
+, m_bPlayDownAnim(false)
+, m_fDownAnimTime(0.0f)
+, m_MaxUnitNum(0)
+, m_bReserveEnterTutorial(false)
+, m_bCheckRecommend(false)
+, m_bCheckRecommendSuccess(false)
+, m_NowPage(1)
+, m_MaxPage(1)		// ???????? ??? ????
+, m_bPortCheckWait( false )
+, m_fPortCheckWaitTime( 0.f )
+, m_PortCheckRetryTime( 0 )
+, m_bENX_USER_LOGIN_NOT( false )
+, m_bEGS_VERIFY_ACCOUNT_ACK( false )
+, m_bIsGameBang( false )
+, m_bPortCheckReq( false )
+, m_bEGS_VERIFY_ACCOUNT_REQ( false )
+, m_fEGS_VERIFY_ACCOUNT_ACK_WaitTime( 0.f )
+, m_pDLGServerGroupSelectBack(NULL)
+, m_bReceivedServerGroupList( false )
+, m_iSelectUnitUID( 0 )
+, m_bMaintainNowUnitButton( false )
+, m_bReceivedChannelList( false )
+, m_bSentEGS_CONNECT_REQ( false )
+, m_bReceivedEGS_MY_UNIT_AND_INVENTORY_INFO_LIST_ACK( false )
+, m_bReservedConnectionToChannelServer( false )
+, m_bWaiting_EGS_DISCONNECT_FOR_SERVER_SELECT_ACK( false )
+, m_iTryConnectChannelID( -1 )
+, m_bJustChangedNickName( false )
+, m_NickNameChangeUnitUID( -1 )
+, m_NickNameChangeUnitNickName( L"" )
+, m_bRemoveUnitAfterReceiveNMSerialNum( false )
+, m_bRecivedKeyMap( false )
+, m_bSend_EGS_SELECT_UNIT_REQ_For_Auto_Connection ( false )
 , m_pUnitViewerUI ( NULL )
 , m_iChannelNowPage ( 1 )
 , m_iChannelMaxPage ( 1 )
-, m_hStandEffect( INVALID_EFFECTSET_HANDLE )
 , m_iCreateUnitTodayCount ( 0 )
-
+, m_hStandEffect( INVALID_EFFECTSET_HANDLE )
 , m_fFadeTitleControlValue ( 0.f )
 , m_iReservedEntryPointServerChannelIndex ( -1 )
-, m_bSend_EGS_SELECT_UNIT_REQ_For_Auto_Connection ( false )
 , m_pSelectChannelButton ( NULL )
 , m_bIsAbledStateCreateUnitButton ( true )
 , m_pSound( NULL )
-, m_bOrgSound( false )
-, m_bOrgMusic( false )
-
 , m_pDLGReConnectChannelServer ( NULL )
 , m_bReservedSecurityPad ( false )
-
-, m_bWaitingEGS_CONNECT_REQ_ChannelButtonUp ( false )
-
 , m_bReservedHackingUserAgreeDlg ( false )
-
-
+, m_bWaitingEGS_CONNECT_REQ_ChannelButtonUp ( false )
+, m_bOrgSound( false )
+, m_bOrgMusic( false )
 #ifdef FIX_REFORM_ENTRY_POINT_10TH		// kimjh, ???? ???? ????, 10?? ???? ????
 , m_fElapsedTime_WaitingCharacterList ( 0.f )
 #endif // FIX_REFORM_ENTRY_POINT_10TH
-
 {
 	m_bReConnectChannelServer = true;
 

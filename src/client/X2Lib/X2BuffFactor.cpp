@@ -1,7 +1,6 @@
 /**@file : X2BuffFactor.cpp
    @breif : 버프를 발생 시키는 구성요소를 모아놓은 파일
 */
-#pragma once
 
 #include "stdafx.h"
 #include "./X2BuffFactor.h"
@@ -91,7 +90,7 @@ bool CX2BuffFactor::ParsingCombinationBehavior( KLuaManager& luaManager_, bool b
 		vector<UINT>::iterator vItr = vecBehaviorType.begin();
 		while ( vecBehaviorType.end() != vItr )		/// 조합에 포함된 행동요소들을 파싱
 		{
-			if( static_cast<BUFF_DISPLAYER_TYPE>( *vItr ) != BBT_REFLECT_MAGIC )
+			if( static_cast<BUFF_BEHAVIOR_TYPE>( *vItr ) != BBT_REFLECT_MAGIC )
 				bExceptionCase = false;
 
 			switch ( static_cast<BUFF_BEHAVIOR_TYPE>( *vItr ) )

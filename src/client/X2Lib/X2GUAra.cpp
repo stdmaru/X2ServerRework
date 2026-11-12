@@ -13,15 +13,11 @@ namespace _CONST_ARA_
 {
 	const float MAGIC_NUMBER_MULTIPLY_LINE_RADIUS = 1.5f;
 	const float MAGIC_MAX_AIRIAL_DASH_COUNT = 1;
-	const float MAGIC_MAX_DOUBLE_JUMP_COUNT = 1;
 
 	const float			FORCE_SPEAR_MEMO_ADDITIONAL_RANGE_RATE	= 1.33f;				/// ���â �޸�� ���� ��Ÿ� ������ ( ���� ���� �����Ͽ�, 33% ���� )
 	const D3DXVECTOR3	GAIN_FORCE_MEMO_ADDITIONAL_RANGE_RATE( 1.35f, 1.35f, 1.35f );	/// ���� �޸�� ���� ������ ����Ʈ ũ�� ������ ( 20% �����ε� Ŀ���ٴ� ������ �� �ʵ�, 1.35��� ���� )
-	const int			ROCK_CRASH_MEMO_RESUCE_DAMAGE			= 50;					/// ���� ���� �޸�� ���� ������ ������
 
 	const float			ENERGY_BULLET_MP_CONSUMPTION			=  4.f;					/// �ƶ� 1�� ���� �Ҹ�, 2�� ���� ���� ��ź MP �Ҹ�
-	const float			ENERGY_VOID_ONE_CHARGE_TIME				=  0.4f;				/// �ƶ� 2�� ���� ���� �������� ���� �ѹ��� �����ð�
-	const float			ENERGY_VOID_ONE_CHARGE_MP_CONSUMPTION	=  25.f;				/// �ƶ� 2�� ���� ���� �������� ���� �ѹ��� �Ҹ� MP
 	const int			ENERGY_VOID_MAX_CHARGE_VALUE			=  10;					/// �ƶ� 1�� ���� ���� �������� �ִ� ���� Ƚ��
 
 }
@@ -4529,7 +4525,7 @@ bool CX2GUAra::GetAddItemAndRemoveItemToViewListBerserk( OUT CX2EqipPtr& pEquipP
 		{
 			if ( pItemTempletForItemToRemove->GetEqipPosition() == m_vecPromotionEquipList[numViewEquipInUser]->GetEqipPos() )
 			{
-				switch ( pItemTempletForItemToRemove->GetFashion() )
+				switch ( static_cast<int>( pItemTempletForItemToRemove->GetFashion() ) )
 				{
 				case true:	// ���� �� ��� �м� ���� ���
 					{
@@ -11143,7 +11139,6 @@ void CX2GUAra::ASI_SA_ASD_SUPPRESSION_FrameMove()
 
 		vFirePos.y += 700.f;
 
-		CX2DamageEffect::CEffect* pDE =
 			g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DAMAGE_EFFECT_ASD_SUPPRESSION_DOWN_FORCE", m_fSuppresionPowerRate,
 				vFirePos, GetRotateDegree(), GetRotateDegree(), m_FrameDataNow.unitCondition.landPosition.y );
 
@@ -14989,7 +14984,7 @@ void CX2GUAra::AddHitUnitInfoByDamageData( const CX2DamageManager::DamageData& d
 			/// ���� ���͸� ��ȸ�Ͽ�, �̹� �ش� UID�� �߰��Ǿ����� �˻��Ѵ�.
 			std::vector<CX2GameUnitoPtr>::const_iterator vit = m_vecHitUnitPointer.begin();
 
-			for ( vit; vit != m_vecHitUnitPointer.end(); ++vit )
+			for ( ; vit != m_vecHitUnitPointer.end(); ++vit )
 			{
 				CX2GameUnitoPtr pGameUnit = *vit;
 

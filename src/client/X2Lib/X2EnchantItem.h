@@ -163,7 +163,7 @@ class CX2EnchantItem
 		CX2EnchantItem(void);
 		virtual ~CX2EnchantItem(void);
 
-		bool			OpenScriptFile( WCHAR* pFileName );
+		bool			OpenScriptFile( const WCHAR* pFileName );
 		const EnchantData*	GetEnchantData( CX2DamageManager::EXTRA_DAMAGE_TYPE extraDamageType ) const; // 2008.10.30 수정 - 김태완
 		const EnchantData*	GetNPCEnchantData( CX2DamageManager::EXTRA_DAMAGE_TYPE extraDamageType ) const;
 		bool			AddEnchantData_LUA();

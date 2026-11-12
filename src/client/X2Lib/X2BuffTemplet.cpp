@@ -1,7 +1,6 @@
 /** @file : X2BuffTemplet.cpp
     @breif : 버프의 행동과 종료등을 가지고 있는 클래스 정의 파일
 */
-#pragma once
 
 #include "stdafx.h"
 #include "./X2BuffTemplet.h"

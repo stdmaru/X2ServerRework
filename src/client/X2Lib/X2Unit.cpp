@@ -3603,7 +3603,7 @@ void CX2Unit::ResetIncreaseSkillLevelByBuff()
 	std::map<CX2SkillTree::SKILL_ID, CX2UserSkillTree::UserSkillData>::iterator mit = mapSkillAcquired.begin();
 
 	/// ������ ��ų���� ������ �ø��� ȿ���� ���� ������, �������� ��ų ��ο��� ����
-	for ( mit; mit != mapSkillAcquired.end(); ++mit )
+	for ( ; mit != mapSkillAcquired.end(); ++mit )
 	{
 		const int iIncreaseSkillLevelByBuff = GetIncreaseSkillLevelByBuff();	/// ��� ��ų�� ��ų ���� ������ ��ȯ
 

@@ -2,7 +2,6 @@
     @breif : 버프의 종료 조건을 정의하는 Templet 파일
 */
 
-#pragma once
 
 #include "stdafx.h"
 #include "./X2BuffFinalizerTemplet.h"

@@ -119,7 +119,7 @@ void CX2UserSkillTree::OnFrameMove( double /*fTime*/, float fElapsedTime )
 	{
 		SkillDataMap::const_iterator mit = m_vecSkillDataMap[m_usUsingPage].begin();
 
-		for ( mit; mit != m_vecSkillDataMap[m_usUsingPage].end(); ++mit )
+		for ( ; mit != m_vecSkillDataMap[m_usUsingPage].end(); ++mit )
 		{
 			if( mit->second.m_iSkillLevel.Verify() == false ||
 				mit->second.m_iSkillCSPoint.Verify() == false ||
@@ -143,7 +143,7 @@ void CX2UserSkillTree::OnFrameMove( double /*fTime*/, float fElapsedTime )
 
 		SkillDataMap::const_iterator mitGuild = m_mapGuildSkillAcquired.begin();
 
-		for ( mitGuild; mitGuild != m_mapGuildSkillAcquired.end(); ++mitGuild )
+		for ( ; mitGuild != m_mapGuildSkillAcquired.end(); ++mitGuild )
 		{
 			if( mitGuild->second.m_iSkillLevel.Verify() == false ||
 				mitGuild->second.m_iSkillCSPoint.Verify() == false ||
@@ -1398,7 +1398,7 @@ void CX2UserSkillTree::ExpireCashSkillPoint( OUT const std::map<int, int> mapHav
 	/// �׳�ý� ���� ������ ����� ��ų��� ����
 	std::map<int, int>::const_iterator it = mapHaveSKill_.begin();
 
-	for ( it; it != mapHaveSKill_.end(); ++it  )
+	for ( ; it != mapHaveSKill_.end(); ++it  )
 	{
 		const CX2SkillTree:: SKILL_ID	eSkillID	= static_cast<CX2SkillTree::SKILL_ID>( it->first );
 		const int						eSkillLevel	= it->second;

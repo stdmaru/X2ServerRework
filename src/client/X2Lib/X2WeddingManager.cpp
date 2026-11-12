@@ -650,7 +650,7 @@ HRESULT CX2OfficiantManger::OnFrameMove( double /*fTime*/, float fElapsedTime )
 */
 void CX2OfficiantManger::ChangeOfficiantMotion( const WCHAR* pMotionName_, CKTDGXSkinAnim::XSKIN_ANIM_PLAYTYPE eAnimPlayType_ )
 {
-	if( L"" == pMotionName_ )
+	if( NULL == pMotionName_ || L'\0' == pMotionName_[0] )
 		return;
 
 	if( INVALID_MESH_INSTANCE_HANDLE != m_hOfficiantMesh )

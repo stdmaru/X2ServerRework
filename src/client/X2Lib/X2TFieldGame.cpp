@@ -1293,7 +1293,7 @@ HRESULT	CX2TFieldGame::OnFrameMove( double fTime, float fElapsedTime )
 		if( m_bFindOtherLine == true )
 		{
 			// 갈림길 존재
-			if( (bShowUp == true && GET_KEY_STATE( GA_UP ) == TRUE || (bShowUp == false && GET_KEY_STATE( GA_DOWN ) == TRUE ) ) )
+			if( ( bShowUp == true && GET_KEY_STATE( GA_UP ) == TRUE ) || ( bShowUp == false && GET_KEY_STATE( GA_DOWN ) == TRUE ) )
 			{
 				if ( true == m_pMyUnit->GetRidingOn() )
 				{
@@ -5060,7 +5060,7 @@ bool CX2TFieldGame::CanNotShowThisUnit( UidType iUnitUID ) const
 	}
 
 
-	switch ( g_pData->GetGuildManager()->DidJoinGuild() )
+	switch ( static_cast<int>( g_pData->GetGuildManager()->DidJoinGuild() ) )
 	{
 	case false:
 		{
@@ -5274,7 +5274,6 @@ bool CX2TFieldGame::Handler_EGS_READY_TO_SOSUN_EVENT_ACK( HWND /*hWnd*/, UINT /*
 
 			if( kEvent.m_iFirstUnitClass == 28 )
 			{
-				g_pData->GetUnitManager()->GetUnitTemplet( (CX2Unit::UNIT_CLASS)kEvent.m_iFirstUnitClass )->m_Description;
 
 				// 소선!\n\n당첨! 아라의 1차 전직 이름은 바로 소선입니다. 인벤토리에 보상을 확인하세요.
 				g_pMain->KTDGUIOKMsgBox( D3DXVECTOR2(250,300), GET_REPLACED_STRING( ( STR_ID_25376, "L", g_pData->GetUnitManager()->GetUnitTemplet( (CX2Unit::UNIT_CLASS)kEvent.m_iFirstUnitClass )->m_Description ) ), (CKTDXStage*) g_pMain->GetNowState() );

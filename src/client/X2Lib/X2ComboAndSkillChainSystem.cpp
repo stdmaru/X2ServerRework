@@ -2,7 +2,6 @@
    @breif : 콤보 및 스킬 등의 체인 시스템을 구현한 파일
 */
 
-#pragma once
 
 #include "stdafx.h"
 #include "./X2ComboAndSkillChainSystem.h"

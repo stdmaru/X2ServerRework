@@ -1,6 +1,7 @@
 #pragma once
 
 #include "KStringVarArg.h"
+#include <unordered_map>
 
 #   undef _ENUM
 #   define _ENUM( id ) id,
@@ -78,6 +79,9 @@ public:
 
     bool InitializeStringTable( std::wstring& wstrGeneralStringFileName, std::wstring& wstrScriptStringFileName );
     const std::wstring& GetGeneralString( int iID );
+    // GetGeneralString, tagged "[S<id>]" while the debug info is on (GET_STRING). The tagged copies are kept, so the
+    // pointers GET_STRING returns stay valid like the untagged ones (the original returned a temporary's).
+    const std::wstring& GetDisplayString( int iID );
 	const std::wstring& GetScriptString( int iID );
     // szParam: one letter per argument (see KTDXStringTable.cpp); strings may be passed as std::wstring/std::string.
     template <class... Args>
@@ -100,6 +104,7 @@ protected:
     std::vector< std::wstring >     m_vecGeneralStringTable;
 	std::vector< std::wstring >     m_vecScriptStringTable;
     std::wstring                    m_wstrEmpty;
+    std::unordered_map< int, std::wstring > m_mapDebugInfoString;
 	bool							m_bEnableDebugInfo;
 };
 
@@ -119,9 +124,7 @@ do \
     } \
 } while( false )
 
-#define	GET_STRING( str_id )	( (SiCKTDXStringTable()->GetEnableDebugInfo()) ?	\
-								x2::str( x2::wformat( L"[S%1%]%2%" ) % str_id % SiCKTDXStringTable()->GetGeneralString( str_id ) ).c_str()	:	\
-								SiCKTDXStringTable()->GetGeneralString( str_id ).c_str() )
+#define GET_STRING( str_id ) SiCKTDXStringTable()->GetDisplayString( str_id ).c_str()
 
 #define GET_REPLACED_STRING( varg ) SiCKTDXStringTable()->GetReplacedString varg .c_str()
 

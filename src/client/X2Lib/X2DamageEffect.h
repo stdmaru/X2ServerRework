@@ -650,7 +650,7 @@ class CX2DamageEffect
 				void SetStartParticle();
 				void SetPassiveParticle();
 				void SetTimeParticle();
-				void SetSuckMagicParticle(WCHAR *particleName);
+				void SetSuckMagicParticle(const WCHAR* particleName);
 				void SetHitParticle();
 				void SetHitDamageEffect();
 				public:
@@ -694,7 +694,7 @@ class CX2DamageEffect
 				void VectorLockOn( const D3DXVECTOR3& targetPos );
 
 
-				ParticleData*		LoadParticleSuckMagic( WCHAR *particleName );
+				ParticleData*		LoadParticleSuckMagic( const WCHAR* particleName );
 
 				//{{ kimhc // 2009-10-20 // 기존의 LoadParticleTable을 Load와 Set 으로 분류(일명 독구름 작업)
 				//}} kimhc // 2009-10-20 // 기존의 LoadParticleTable을 Load와 Set 으로 분류(일명 독구름 작업)

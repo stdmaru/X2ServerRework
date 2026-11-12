@@ -282,9 +282,7 @@ void CX2UserListPopUp::OpenPopupMenu( bool bNotOpen )
 {
 	if ( m_bShow && bNotOpen != true )
 	{
-		if ( m_pDlgMenu->GetShow() )
-			m_bShow = m_bShow;
-		else
+		if ( !m_pDlgMenu->GetShow() )
 		{
 			m_bShow = false;
 			ClosePopupMenu();

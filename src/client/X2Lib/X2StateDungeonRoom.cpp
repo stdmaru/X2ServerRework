@@ -1954,10 +1954,6 @@ void CX2StateDungeonRoom::UISetting()
 																			g_pData->GetDungeonRoom()->GetDifficulty(),
 																			g_pData->GetSelectUnitLevel() );
 
-	D3DXCOLOR limitLevelColor = g_pData->GetDungeonManager()->GetLimitLevelColor(
-		g_pData->GetDungeonRoom()->GetDungeonID(),
-		g_pData->GetDungeonRoom()->GetDifficulty(),
-		g_pData->GetSelectUnitLevel() );
 
 	CKTDGUIStatic* pStaticRecommendLevel = (CKTDGUIStatic*)m_pDLGDungeonRoomBack->GetControl(L"Static_Dungeon_RecommendLevel");
 // 	pStaticRecommendLevel->GetString( 0 )->msg = GET_REPLACED_STRING( ( STR_ID_384, "ii",
@@ -2730,10 +2726,6 @@ void CX2StateDungeonRoom::UIFrameMove()
 		g_pData->GetDungeonRoom()->GetDifficulty(),
 		g_pData->GetSelectUnitLevel() );
 
-	D3DXCOLOR limitLevelColor = g_pData->GetDungeonManager()->GetLimitLevelColor(
-		g_pData->GetDungeonRoom()->GetDungeonID(),
-		g_pData->GetDungeonRoom()->GetDifficulty(),
-		g_pData->GetSelectUnitLevel() );
 
 	ASSERT( !L"Wrong Path" );
 	CKTDGUIStatic* pStaticRecommendLevel = (CKTDGUIStatic*)m_pDLGDungeonRoomBack->GetControl(L"Static_Dungeon_RecommendLevel");

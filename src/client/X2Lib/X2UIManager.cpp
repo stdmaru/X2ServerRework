@@ -638,7 +638,7 @@ bool CX2UIManager::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 		if(m_pInventory->UICustomEventProc(hWnd, uMsg, wParam, lParam) == true)
 			return true;
 	}
-	else if(m_pInventory != NULL && m_pInventory->GetDLGResolveItemResult() != NULL
+	else if( ( m_pInventory != NULL && m_pInventory->GetDLGResolveItemResult() != NULL )
 		|| (m_pInventory != NULL && m_pInventory->GetItemObtainResultType() != CX2UIInventory::IORT_NONE)
 		)
 	{

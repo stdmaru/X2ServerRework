@@ -144,42 +144,35 @@ BOOL Pesudo_IsDebuggerPresent()
 
 
 CX2Main::CX2Main() :
-m_bEnabledDeveloperCheatCode( true ),
-m_pData( NULL ),
-m_pStringFilter( NULL ),
-m_pGameEdit( NULL ),
-m_pTextManager( NULL ),
-m_pNoticeManager( NULL ),
-m_pCheckSumManager( NULL ),
-m_pLVUpEventMgr( NULL ),
-m_pTutorSystem( NULL ),
-m_pCouponBox( NULL ),
-
-m_pX2PVPEmblem( NULL ),
-m_pPostBox( NULL ),
-m_pSecurityPad( NULL ),
-m_pInformerManager( NULL ),
-m_pMemoryHolder( NULL )
-, m_bIsPopUpOnChat( false )
-, m_DefaultChannelServerInfo()
-#ifdef REFORM_UI_KEYPAD
-, m_pKeyPad( NULL )
-#endif
+  m_pData( NULL )
+, m_pStringFilter( NULL )
 , m_dwNationFlag( NF_NONE )
-, m_iGameHour( 0 )							//??????? ???? ?? ???? ?��? ???
-, m_pDlgPlayTimeInformation( NULL )			//?��??? ?��? ????? Dialog
-, m_pDlgShutDownInformation( NULL )			//?��??? ?��? ????? Dialog
-
-, m_fPlayTimeInfoShowTime( 0.f )			//???? ???? ?��?
-, m_fShutDownInfoShowTime( 0.f )			//???? ???? ?��?
-
-, m_bProcessPlayTimeInformation( false )	//???? Fade ??? ???? ????
-, m_bProcessShutDownInformation( false )	//???? Fade ??? ???? ????
-
-, m_wstrShutDownString( L"" )				//???? ?????? ????
+, m_pGameEdit( NULL )
+, m_pTextManager( NULL )
+, m_pNoticeManager( NULL )
+, m_pCouponBox( NULL )
+, m_pPostBox( NULL )
+, m_pSecurityPad( NULL )
+, m_pX2PVPEmblem( NULL )
+, m_pInformerManager( NULL )
+, m_pMemoryHolder( NULL )
+, m_pLVUpEventMgr( NULL )
+, m_bEnabledDeveloperCheatCode( true )
+, m_bIsPopUpOnChat( false )
+, m_wstrShutDownString( L"" )
+, m_bProcessShutDownInformation( false )
+, m_pKeyPad( NULL )
 , m_bSurveyUser( false )
-//{{ ???? [2013/1/4]  ????? ???? ??????? ????????? ???
 , m_bIsValideCheckKomScript ( true )
+, m_DefaultChannelServerInfo()
+, m_pCheckSumManager( NULL )
+, m_pTutorSystem( NULL )
+, m_iGameHour( 0 )
+, m_pDlgPlayTimeInformation( NULL )
+, m_fPlayTimeInfoShowTime( 0.f )
+, m_bProcessPlayTimeInformation( false )
+, m_pDlgShutDownInformation( NULL )
+, m_fShutDownInfoShowTime( 0.f )
 , m_bPlayIntroMovie( true )
 {
 
@@ -4114,14 +4107,12 @@ bool CX2Main::IsValidPacket( int enumID )
 	case NetError::ERR_SHUT_DOWN_04:
 	case NetError::ERR_SHUT_DOWN_05:
 		{
-			CKTDGUIDialogType pDLGOK =
 				KTDGUIOKMsgBox( D3DXVECTOR2(250,300), NetError::GetErrStrF(enumID),
 								m_pNowState, CX2StateCreateUnit::SCUUCM_SHUT_DOWN_OK );
 			return true;
 		} break;
 	case NetError::ERR_NX_AUTH_00:
 		{
-			CKTDGUIDialogType pDLGOK =
 				KTDGUIOKMsgBox( D3DXVECTOR2(250,300), NetError::GetErrStrF(enumID),
 								m_pNowState, CX2CashShop::CSUCM_CHECK_AUTHORITY_OK );
 			return true;
@@ -4141,8 +4132,7 @@ bool CX2Main::IsValidPacket( int enumID )
 			if( NULL != g_pData->GetUIManager() &&
 				NULL != g_pData->GetUIManager()->GetUIInventory() )
 			{
-				CKTDGUIDialogType pDLGOK =
-					KTDGUIOkAndCancelMsgBox( D3DXVECTOR2(-999,-999), GET_STRING( STR_ID_16527 ),
+				KTDGUIOkAndCancelMsgBox( D3DXVECTOR2(-999,-999), GET_STRING( STR_ID_16527 ),
 					CX2UIInventory::UIM_ITEM_USE_DEFENCE_DUNGEON_POTION,
 					GetNowState() );
 			}
@@ -8309,7 +8299,7 @@ bool CX2Main::ResetDeveloperScriptSet ( const WCHAR* pFileName )	// DevScriptTab
 		return false;
 
 	DeleteFile ( L"DevScriptTable_Log.txt");
-	KLOG("DevScriptTable_Log.txt")  << L"-----DevScriptTool ??? ???? ????-----" << fileout;
+	KLOG("DevScriptTable_Log.txt")  << L"-----DevScriptTool script loading start-----" << fileout;
 
 
 	vector<DeveloperScriptSet::DeveloperScript> & pVecDeveloperScript = m_DeveloperScriptSet.GetDeveloperScriptSet();
@@ -8345,7 +8335,7 @@ bool CX2Main::ResetDeveloperScriptSet ( const WCHAR* pFileName )	// DevScriptTab
 			ASSERT (!L"Can't Find DevScriptSet Type" );
 		}
  	}
-	KLOG("DevScriptTable_Log.txt")  << L"-----DevScriptTool ??? ???? ???-----" << fileout;
+	KLOG("DevScriptTable_Log.txt")  << L"-----DevScriptTool script loading end-----" << fileout;
 
 	return true;
 }
@@ -8468,7 +8458,7 @@ bool CX2Main::ResetDeveloperScriptSet_GameMajorXMeshPlayer ( DeveloperScriptSet:
 
 // ???? ?? ????? ??????? @1 ?????? ????????? ???
 // ??? ?????? GET_REPLACED_STRING ????? ?? ??????
-wstring CX2Main::GetReplacedWstring( wstring & wstrModify, char* szParamTypeList, ... )
+wstring CX2Main::GetReplacedWstring( wstring & wstrModify, const char* szParamTypeList, ... )
 {
 	wstring wstrReplacedString = wstrModify;
 	int iParamTypeListSize = strlen( szParamTypeList );

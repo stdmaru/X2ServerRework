@@ -1784,7 +1784,7 @@ class CX2GUNPC : public CX2GameUnit
 		void						SetDamageEffect_LUA( int index, CX2DamageEffect::CEffect* val);
 		void						ClearDamageEffect_LUA( int index );
 
-		void						AttachParticle_LUA( bool bIsMajorParticle, char* particleSeqName, char* pBoneName, D3DXVECTOR3 vOffsetPos );
+		void						AttachParticle_LUA( bool bIsMajorParticle, const char* particleSeqName, const char* pBoneName, D3DXVECTOR3 vOffsetPos );
 
 		float						GetSpeedY() { return m_PhysicParam.nowSpeed.y; }
 		void						SetSpeedX( float fSpeed ){ m_PhysicParam.nowSpeed.x = fSpeed; }

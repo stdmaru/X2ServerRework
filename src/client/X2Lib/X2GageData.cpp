@@ -215,9 +215,6 @@ bool CX2GageData::FlushSoul( const float fFlushSoul_ )
 		kGamePlayStatus_.m_iCurMP			= max( static_cast<int>( 0 ), static_cast<int>( GetNowMp() ) );
 		kGamePlayStatus_.m_iMaxHP			= max( static_cast<int>( 0 ), static_cast<int>( GetMaxHp() ) );
 		kGamePlayStatus_.m_iMaxMP			= max( static_cast<int>( 0 ), static_cast<int>( GetMaxMp() ) );
-		kGamePlayStatus_.m_mapPetMP;		// ���� �� �غ���...
-		kGamePlayStatus_.m_mapQuickSlotCoolTime;	// �̰͵� ���� �� �غ���...
-		kGamePlayStatus_.m_mapSkillCoolTime;	// �̰͵� ������ �غ���.
 
 		return true;
 	}

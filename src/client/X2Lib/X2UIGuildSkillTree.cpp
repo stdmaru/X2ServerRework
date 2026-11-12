@@ -4,8 +4,6 @@
 
 	const int	MAX_GUILD_SKILL_LEVEL					= 5;		/// 길드 스킬 최대 레벨
 	const int	MAGIC_SKILL_DESC_WIDTH					= 370;		/// 스킬 툴팁 스트링 한줄당 최대 가로 길이
-	const int	MAX_ONE_CLASS_SKILL_ROW_NUM				= 5;		/// 하나의 전직당 스킬 트리 최대 행 개수
-	const int	SKILL_USE_IMAGE_WIDTH_SIZE				= 70;		/// 스킬 시전 샘플 이미지 가로 크기
 	const float SKILL_MAIN_DESC_OFFSET_Y				= 65.f;		/// 메인 툴팁의 오프셋 세로 위치
 
 //////////////////////////////////////////////////////////////////////////

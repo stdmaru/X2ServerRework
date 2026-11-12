@@ -2264,8 +2264,7 @@ float CX2DamageManager::ExtraDamageData::GetCalcPerDamage(int iUnitLevel, float 
 			g_pMain->GetPVPChannelClass( g_pMain->GetConnectedChannelID() ) == KPVPChannelInfo::PCC_PLAY ||
 			g_pMain->GetPVPChannelClass( g_pMain->GetConnectedChannelID() ) == KPVPChannelInfo::PCC_TOURNAMENT )
 		{
-			// 자유채널,연습채널,대회채널 : iLevel은 1로 보정 (결국은 0)
-			fPerDamage = fPerDamage;
+			// free, practice and tournament channels: the level counts as 1 (no change in the end): fPerDamage stays
 		}
 		else
 		{

@@ -2534,8 +2534,6 @@ bool CX2PartyManager::Handler_EGS_UNREG_AUTO_PARTY_WAIT_LIST_NOT( HWND /*hWnd*/,
 	KEGS_UNREG_AUTO_PARTY_WAIT_LIST_NOT kEvent;
 	DeSerialize( pBuff, &kEvent );
 
-	kEvent.m_iReason;
-	kEvent.m_wstrCancelUnitNickName;
 
 	g_pMain->GetPartyUI()->CancelToWaitForDungeonPartyMatching();
 	SetProcessDungeonMatch(false);
@@ -2607,8 +2605,6 @@ bool CX2PartyManager::Handler_EGS_AUTO_PARTY_CLOSE_NOT( HWND /*hWnd*/, UINT /*uM
 	KEGS_AUTO_PARTY_CLOSE_NOT kEvent;
 	DeSerialize( pBuff, &kEvent );
 
-	kEvent.m_iCancelUnitUID;
-	kEvent.m_iReason;
 
 
 		switch( kEvent.m_iReason )

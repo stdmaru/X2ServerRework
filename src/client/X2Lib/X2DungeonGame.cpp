@@ -7,47 +7,43 @@
 
 
 CX2DungeonGame::CX2DungeonGame(void) :
-m_pDungeonRoom( NULL ),
-m_pDungeon( NULL ),
-m_WinTeam( CX2Room::TN_NONE ),
-m_bGoNextPacketSended( false ),
-m_bShowClear( false ),
-m_fClearEffDelayTime( 0.f ),
-m_fDungeonClearLimitTimeOut( 0.f ),
-m_bDungeonClearLimitTimeOut( false ),
-m_bShowDungeonClearLimitTimeOut( false ),	// 초기화 안 해 주던 버그 수정 by 박진웅
-m_bCountTimeLeftAfterSubStageOpen( false ),
-m_fTimeLeftAfterSubStageOpen( 0.f ),
-m_pFontForTime( NULL ),
-m_bIsSendSkipContinueNot( false ),
-m_bIsThereTutorialMsg( false ),
-m_pFontForTutorialMsg( NULL ),
-m_wstrTutorialMsg( L"" ),
-m_fTimeLeftForTutorialMessage( 0.f ),
-m_coTutorialMsg( D3DXCOLOR(1,1,1,1) ),
-m_coTutorialMsgIncrement( D3DXCOLOR(-0.04f, -0.04f, -0.04f, 0.f) ),
-m_iTutorialMsgFlashCount( 0 ),
-m_bShowTutorialUI( false ),
-m_bEnableRemainTime( false ),
-m_fRemainPlayTime( 0.f ),
-m_bStartRealTraining( false ),
-m_pTrainingGameUI( NULL ),
-m_bShowDungeonRemainTime( false ),
-m_bShowDungeonPlayTimeForQuest( false ),
-m_bHideDungeonPlayTimeAfterLoading( false ),
-//m_ReservedPacket;
-//m_StopContinueAlarmText[256];
-//m_TimerManyPurpose1;
-//m_TimerManyPurpose2;
-m_pMonsterIndicator( NULL ),
-m_pDamageDataForDungeonTimeOut( NULL ),
-m_bKilledBoss( false ),
-m_hBossName(INVALID_PARTICLE_SEQUENCE_HANDLE)
+  m_pDungeon( NULL )
+, m_WinTeam( CX2Room::TN_NONE )
+, m_bShowTutorialUI( false )
+, m_bIsThereTutorialMsg( false )
+, m_bStartRealTraining( false )
+, m_pTrainingGameUI( NULL )
+, m_fRemainPlayTime( 0.f )
+, m_bEnableRemainTime( false )
+, m_bHideDungeonPlayTimeAfterLoading( false )
+, m_bShowClear( false )
+, m_fClearEffDelayTime( 0.f )
+, m_bKilledBoss( false )
+, m_pDungeonRoom( NULL )
+, m_bGoNextPacketSended( false )
+, m_bShowDungeonClearLimitTimeOut( false )	// 초기화 안 해 주던 버그 수정 by 박진웅
+, m_fDungeonClearLimitTimeOut( 0.f )
+, m_bDungeonClearLimitTimeOut( false )
+, m_pDamageDataForDungeonTimeOut( NULL )
+, m_bCountTimeLeftAfterSubStageOpen( false )
+, m_fTimeLeftAfterSubStageOpen( 0.f )
+, m_pFontForTime( NULL )
+, m_bIsSendSkipContinueNot( false )
+, m_pFontForTutorialMsg( NULL )
+, m_wstrTutorialMsg( L"" )
+, m_fTimeLeftForTutorialMessage( 0.f )
+, m_coTutorialMsg( D3DXCOLOR(1,1,1,1) )
+, m_coTutorialMsgIncrement( D3DXCOLOR(-0.04f, -0.04f, -0.04f, 0.f) )
+, m_iTutorialMsgFlashCount( 0 )
+, m_bShowDungeonRemainTime( false )
+, m_bShowDungeonPlayTimeForQuest( false )
+, m_bShowStageReaminTime( false )
+, m_pMonsterIndicator( NULL )
+, m_hBossName(INVALID_PARTICLE_SEQUENCE_HANDLE)
 , m_iDefenceDungeonWaveID( -1 )		// 어둠의 문 서브스테이지( Wave )
 #ifdef ACTIVE_KOG_GAME_PERFORMANCE_CHECK
 , m_bEscape( true )
 #endif //ACTIVE_KOG_GAME_PERFORMANCE_CHECK
-, m_bShowStageReaminTime( false )
 {
 	// super class member init
 	m_GameType = GT_DUNGEON;
@@ -542,7 +538,7 @@ void CX2DungeonGame::GameStart()
 	if(pFieldComeBackUser != NULL)
 	{
 		pFieldComeBackUser->SetShow( false );
-		if ( NULL != g_pData->GetPremiumBuffManager() && true == g_pData->GetPremiumBuffManager()->IsComeBackUser() || true == g_pData->GetPremiumBuffManager()->IsComeBackUserInParty() )
+		if ( NULL != g_pData->GetPremiumBuffManager() && ( true == g_pData->GetPremiumBuffManager()->IsComeBackUser() || true == g_pData->GetPremiumBuffManager()->IsComeBackUserInParty() ) )
 		{
 			pFieldComeBackUser->SetShow( true );
 		}

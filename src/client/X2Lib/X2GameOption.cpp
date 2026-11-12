@@ -1298,7 +1298,7 @@ void CX2GameOption::SetVerticalSync( IN bool bVal_ )
 {
 	m_OptionList.m_bVerticalSync = bVal_;
 
-	if( true == bVal_ && D3DPRESENT_INTERVAL_IMMEDIATE == DXUTGetVerticalSync() )
+	if( true == bVal_ && static_cast<UINT>( D3DPRESENT_INTERVAL_IMMEDIATE ) == DXUTGetVerticalSync() )
 	{
 		DXUTSetVerticalSync( 0 );
 		::SetFocus( g_pKTDXApp->GetHWND() );

@@ -2,7 +2,7 @@
 #include "./X2CashShop.h"
 
 
-struct CashItemSorter : public std::binary_function< int, int, bool >
+struct CashItemSorter
 {
 	bool operator()(const int& lhs, const int& rhs) const
 	{
@@ -2081,8 +2081,8 @@ bool CX2CashShop::Handler_EGS_BUY_CASH_ITEM_REQ( vector< unsigned long >& vecPro
 			if( itemID == UNLIMITED_SECOND_CHANGE_JOB_ITEM_ID )
 			{
 				if( g_pData->GetMyUser()->GetSelectUnit() != NULL
-					&& g_pData->GetMyUser()->GetSelectUnit()->GetInventory().GetItemByTID( itemID ) != NULL
-					|| 2 != g_pData->GetMyUser()->GetSelectUnit()->GetClassLevel()
+					&& ( g_pData->GetMyUser()->GetSelectUnit()->GetInventory().GetItemByTID( itemID ) != NULL
+					|| 2 != g_pData->GetMyUser()->GetSelectUnit()->GetClassLevel() )
 					)
 				{
 					//���� �������� ���� �� �� �����ϴ�. ��� �޽����� �ٿ���

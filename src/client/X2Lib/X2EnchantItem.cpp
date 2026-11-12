@@ -17,7 +17,7 @@ CX2EnchantItem::~CX2EnchantItem(void)
 
 }
 
-bool CX2EnchantItem::OpenScriptFile( WCHAR* pFileName )
+bool CX2EnchantItem::OpenScriptFile( const WCHAR* pFileName )
 {
 	lua_tinker::decl( g_pKTDXApp->GetLuaBinder()->GetLuaState(),  "g_pCX2EnchantItem", this );
 

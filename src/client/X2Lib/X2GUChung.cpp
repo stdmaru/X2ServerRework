@@ -13,8 +13,6 @@ namespace _CONST_CHUNG_
 	const float MAGIC_MOBILE_MODE_Z_COOLTIME		= 0.4f;
 	const float MAGIC_MOBILE_MODE_X_COOLTIME		= 1.1f;
 	const float MAGIC_MOBILE_MODE_X_MAX_RANGE		= 1200.f;
-	const float MAGIC_MOBILE_MODE_X_MIN_RANGE		= 650.f;
-	const float	MAX_TACTICAL_FIELD_RANGE			= 660.f;			/// ��Ƽ�� �ʵ� �ִ� ���� �ݰ�
 
 	const int MAX_NUMBER_OF_RAPID_CANNON_BULLET   = 12;		// ���ǵ� ĳ���� �Ҹ� ������ �ִ� źȯ ����
 	const int MIN_NUMBER_OF_RAPID_CANNON_BULLET   = 3;		// ���ǵ� ĳ���� �Ҹ� ������ �ּ� źȯ ����
@@ -19277,7 +19275,6 @@ void CX2GUChung::CSI_SA_CHUNG_IMPACT_DETONATION_LOOP_FrameMove()
 			if ( 1 < GetCannonBallCount() || IsFullHyperMode() )
 			{
 				// ����Ʈ ���
-				CX2EffectSet::Handle hEffectSetDetonation =
 					g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_CSI_SA_CHUNG_IMPACT_DETONATION_LOOP", this,
 					NULL, false, GetPowerRate() );
 				UseCannon( 1 );

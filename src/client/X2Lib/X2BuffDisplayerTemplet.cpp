@@ -2,7 +2,6 @@
    @breif : 버프의 행동을 정의하는 Templet 파일
 */
 
-#pragma once
 
 #include "stdafx.h"
 #include "./X2BuffDisplayerTemplet.h"

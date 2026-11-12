@@ -5,7 +5,6 @@
 
 namespace _CONST_RAID_MANAGER_
 {
-	const float UPDATE_CYCLE_TIME_CONTRIBUTION_RANKING = 10.f;  // 기여도 순위 갱신 주기
 }
 
 CX2BossRaidManager* CX2BossRaidManager::m_pManager = NULL;

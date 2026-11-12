@@ -2,7 +2,6 @@
    @breif : 버프의 행동을 정의하는 Templet 파일
 */
 
-#pragma once
 
 #include "stdafx.h"
 #include "./X2BuffBehaviorTemplet.h"
@@ -37,7 +36,7 @@ case type_: \
 		vector<UINT>::iterator vItr = vecBehaviorType.begin();
 		while ( vecBehaviorType.end() != vItr )		/// 조합에 포함된 행동요소들을 파싱
 		{
-			if( static_cast<BUFF_DISPLAYER_TYPE>( *vItr ) != BBT_REFLECT_MAGIC )
+			if( static_cast<BUFF_BEHAVIOR_TYPE>( *vItr ) != BBT_REFLECT_MAGIC )
 			{
 				bExceptionCase = false;
 			}

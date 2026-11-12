@@ -1466,7 +1466,7 @@ class CX2Main : public CKTDXStage
 
 		// Wstring 도 GET_REPLACED_STRING 사용 할 수 있도록 추가
 		// 스킬 설명 확장이 필요한 경우의 예외 처리, 에너지 스퍼트의 @1 ( 현재 레벨 표기 ) 때문에 추가
-		wstring GetReplacedWstring( wstring & wstrModify, char* szParamTypeList, ... );
+		wstring GetReplacedWstring( wstring & wstrModify, const char* szParamTypeList, ... );
 	private:
 		void			RegisterLuabind();
         bool			OpenScriptFile( const WCHAR* pFileName );

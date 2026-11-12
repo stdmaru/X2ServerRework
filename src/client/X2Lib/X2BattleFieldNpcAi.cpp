@@ -463,7 +463,7 @@ void CX2BattleFieldNpcAi::SearchingTargetUnit( IN vector<CX2GameUnit*>& vecTarge
 	case TP_RANDOM:
 		{
             float fRate = 0.f;
-            for( CX2GameUnit* pNewTargetCandidateGameUnit_ : vecTargetCandidateUnitList_ )
+            for( [[maybe_unused]] CX2GameUnit* pNewTargetCandidateGameUnit_ : vecTargetCandidateUnitList_ )
             {
                 fRate = fRate * 0.5f + 0.5f;
             }

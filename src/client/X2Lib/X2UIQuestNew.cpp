@@ -491,7 +491,7 @@ bool CX2UIQuestNew::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wPar
 		{
 			//겹치는 UI(던전, 대전도구)가 열려 있을 때 마우스 오버 동작 하지 않도록 설정
 			if( NULL != g_pMain && NULL != g_pMain->GetPartyUI() &&
-				true == g_pMain->GetPartyUI()->GetShowDungeonMenu() || true == g_pMain->GetPartyUI()->GetShowPVPMenu() )
+				( true == g_pMain->GetPartyUI()->GetShowDungeonMenu() || true == g_pMain->GetPartyUI()->GetShowPVPMenu() ) )
 			{
 				return true;
 			}
@@ -520,7 +520,7 @@ bool CX2UIQuestNew::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wPar
 		{
 			//겹치는 UI(던전, 대전도구)가 열려 있을 때 마우스 동작 하지 않도록 설정
 			if( NULL != g_pMain && NULL != g_pMain->GetPartyUI() &&
-				true == g_pMain->GetPartyUI()->GetShowDungeonMenu() || true == g_pMain->GetPartyUI()->GetShowPVPMenu() )
+				( true == g_pMain->GetPartyUI()->GetShowDungeonMenu() || true == g_pMain->GetPartyUI()->GetShowPVPMenu() ) )
 			{
 				return true;
 			}
@@ -1021,7 +1021,7 @@ bool CX2UIQuestNew::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wPar
 
 			//겹치는 UI(던전, 대전도구)가 열려 있을 때 마우스 동작 하지 않도록 설정
 			if( NULL != g_pMain && NULL != g_pMain->GetPartyUI() &&
-				true == g_pMain->GetPartyUI()->GetShowDungeonMenu() || true == g_pMain->GetPartyUI()->GetShowPVPMenu() )
+				( true == g_pMain->GetPartyUI()->GetShowDungeonMenu() || true == g_pMain->GetPartyUI()->GetShowPVPMenu() ) )
 			{
 				return true;
 			}

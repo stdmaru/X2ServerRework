@@ -8,7 +8,6 @@ namespace _CONST_EL_
 	const float CHIVALRY_BUFF_CONDITION_HP_RATE = 0.5f;	 // ����� ���� ���� ���� ���� ü�� ����
 
 	const float MAX_EXTINCTION_CHARGE_TIME		= 1.f;	 // �ͽ��ü� �ִ� ���� �ð�
-	const float LIMIT_EXTINCTION_POWER_RATE		= 0.2f;  // �ͽ��ü� ���ݷ� ���� ���� ��
 
 	const float MIN_EXTINCTION_DEGREE_Z			= -45.f; // �ͽ��ü� �ּ� ����
 	const float MAX_EXTINCTION_DEGREE_Z			= 0.f;   // �ͽ��ü� �ְ� ����

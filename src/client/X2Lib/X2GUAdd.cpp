@@ -50,7 +50,6 @@ namespace _CONST_ADD_
 	const int	CONQUEROR_MAX_USE_MUTATION_COUNT			= 3;		/// �ִ� ���� ������ �Ҹ��
 
 	/// ���̵� �극��Ŀ
-	const int	VOID_BREAKER_MAX_USE_MUTATION_COUNT			= 3;		/// �ִ� ���� ������ �Ҹ��
 
 	/// �����̽ý� �ʵ�
 	const float STASIS_FIELD_REMAIN_TIME					= 15.f;		/// ���� �ð�
@@ -5188,10 +5187,6 @@ void CX2GUAdd::DashJumpComboXXLoopFrameMove()
 {
 	m_fChargeTime += m_fElapsedTime;
 
-	/// ���� ���갪 ���� ( �ִ� ���� ���갪 ���� )
-	const float fChargeValue = ( _CONST_ADD_::DASH_JUMP_COMBO_X2_MAX_CHARGE_TIME > m_fChargeTime )
-							   ? _CONST_ADD_::DASH_JUMP_COMBO_X2_MAX_CHARGE_TIME : m_fChargeTime;
-
 	CommonFrameMove();
 }
 
@@ -5958,7 +5953,7 @@ void CX2GUAdd::ANSI_SA_AN_PARTICLE_ACCELERATOR_FrameMove()
 			D3DXVECTOR3 vPos = GetBonePos( L"Bip01_Spine1" );
 
 			/// ���� ������ ����Ʈ
-			CX2DamageEffect::CEffect* pDamageEffect = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DamageEffect_SA_AN_Particle_Accelerator_Attack", fPowerRate,
+			g_pX2Game->GetDamageEffect()->CreateInstance( this, L"DamageEffect_SA_AN_Particle_Accelerator_Attack", fPowerRate,
 																					vPos, GetRotateDegree(), GetRotateDegree(), m_FrameDataNow.unitCondition.landPosition.y );
 
 			/// ȿ���� ����Ʈ ���
@@ -6971,7 +6966,6 @@ void CX2GUAdd::ANSI_SA_ALP_QUICKSILVER_ACCEL_BACK_FrameMove ()
 				( GetBonePos( L"Bip01" ) - ( GetDirVector() * 100.f ) );
 			vPos.y += 30.f;
 
-			CX2DamageEffect::CEffect* pEffect =
 				g_pX2Game->GetDamageEffect()->CreateInstance( this, wstrImpactDamageEffectName.c_str(), GetPowerRate(),
 				vPos, GetRotateDegree(), GetRotateDegree() );
 		}
@@ -9335,7 +9329,7 @@ void CX2GUAdd::SetNasodArmorAttackTarget( IN const CX2DamageManager::DamageData&
 					vector<FantasyTracerTargetInfo>::iterator vIt = m_vecFantasyTracerTargetInfo.begin();
 
 					/// ���� ���� ID�� Ÿ�� ������ ����ִٸ�, ����������
-					for ( vIt ; vIt != m_vecFantasyTracerTargetInfo.end(); ++vIt )
+					for ( ; vIt != m_vecFantasyTracerTargetInfo.end(); ++vIt )
 					{
 						if ( vIt->m_eSkillID == eSkillID )
 						{
@@ -9901,7 +9895,7 @@ void CX2GUAdd::RidingWaitEventProcess()
 		StateChange( USI_RIDING_WAIT_HABIT );
 	}
 	ELSE_IF_CAN_CHANGE_FORMATION_MODE( USI_RIDING_HYPER_MODE )
-	ELSE_IF_CAN_RELEASE_FORMATION_MODE( USI_RIDING_HYPER_MODE );
+	ELSE_IF_CAN_RELEASE_FORMATION_MODE
 
 	CommonEventProcess();
 }
@@ -9948,7 +9942,7 @@ void CX2GUAdd::RidingWalkEventProcess()
 		m_FrameDataFuture.syncData.position.y -= LINE_RADIUS * 1.5f;
 	}
 	ELSE_IF_CAN_CHANGE_FORMATION_MODE( USI_RIDING_HYPER_MODE )
-	ELSE_IF_CAN_RELEASE_FORMATION_MODE( USI_RIDING_HYPER_MODE );
+	ELSE_IF_CAN_RELEASE_FORMATION_MODE
 
 	CommonEventProcess();
 }
@@ -9993,7 +9987,7 @@ void CX2GUAdd::RidingJumpLandingEventProcess()
 		m_FrameDataFuture.syncData.position.y -= LINE_RADIUS * 1.5f;
 	}
 	ELSE_IF_CAN_CHANGE_FORMATION_MODE( USI_RIDING_HYPER_MODE )
-	ELSE_IF_CAN_RELEASE_FORMATION_MODE( USI_RIDING_HYPER_MODE );
+	ELSE_IF_CAN_RELEASE_FORMATION_MODE
 
 	CommonEventProcess();
 }
@@ -10056,7 +10050,7 @@ void CX2GUAdd::RidingDashEventProcess()
 		StateChange( USI_RIDING_SPECIAL_MOVE );
 	}
 	ELSE_IF_CAN_CHANGE_FORMATION_MODE( USI_RIDING_HYPER_MODE )
-	ELSE_IF_CAN_RELEASE_FORMATION_MODE( USI_RIDING_HYPER_MODE );
+	ELSE_IF_CAN_RELEASE_FORMATION_MODE
 
 	CommonEventProcess();
 }
@@ -10108,7 +10102,7 @@ void CX2GUAdd::RidingDashEndEventProcess()
 		StateChange( USI_RIDING_WAIT );
 	}
 	ELSE_IF_CAN_CHANGE_FORMATION_MODE( USI_RIDING_HYPER_MODE )
-	ELSE_IF_CAN_RELEASE_FORMATION_MODE( USI_RIDING_HYPER_MODE );
+	ELSE_IF_CAN_RELEASE_FORMATION_MODE
 
 	CommonEventProcess();
 }

@@ -3534,7 +3534,7 @@ UidType CX2GageManager::GetPartyGageUIPositionIndexByUserList( int iIndex ) cons
 */
 bool CX2GageManager::GetIsExsitancePartyMemberHPLessThanPer( float fHPRate_ )
 {
-	for( const CX2GageSetPtr pGageSetPtr : m_vecGageSetPartyMember )
+	for( const CX2GageSetPtr& pGageSetPtr : m_vecGageSetPartyMember )
 	{
 		if( pGageSetPtr->GetNowHpPercent() > 0.f &&
 			pGageSetPtr->GetNowHpPercent() <= fHPRate_ )
@@ -3546,7 +3546,7 @@ bool CX2GageManager::GetIsExsitancePartyMemberHPLessThanPer( float fHPRate_ )
 	상기 함수를 통해 대전에서는 퍼센트를 저장하지 않도록 예외처리 되어 있었음.
 	예외처리 한 정확한 이유를 알 수 없어서 일단 현재HP와 최대HP를 구하는 방식으로 구현 함
 	*/
-	for( const CX2GageSetPtr pGageSetPtr : m_vecGageSetPvpMyTeam )
+	for( const CX2GageSetPtr& pGageSetPtr : m_vecGageSetPvpMyTeam )
 	{
 		if( NULL != pGageSetPtr->GetGageData() )
 		{

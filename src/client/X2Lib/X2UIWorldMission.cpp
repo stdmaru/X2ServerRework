@@ -6,7 +6,6 @@
 
 namespace _CONST_UI_WORLD_MISSION_
 {
-	const float MAX_DEFENCE_VALUE							= 100.f;	/// 어둠의 문 UI 최대 진행 수치
 	const float DEFENCE_DUNGEON_WORLD_MISSION_UI_GAGE_WIDTH	= 74.f;		/// 월드 미션 UI의 게이지 길이
 }
 

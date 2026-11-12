@@ -101,7 +101,7 @@ void DXUTSetWindowClientRectAtModeChange(int width, int height);
 void DXUTSetFullscreenClientRectAtModeChange(int width, int height);
 // KOG's DXUT additions: the forced interval (D3DPRESENT_INTERVAL_DEFAULT or _IMMEDIATE), and setting it (1: immediate,
 // anything else: the vertical blank).
-int DXUTGetVerticalSync();
+UINT DXUTGetVerticalSync();  // the present interval (D3DPRESENT_INTERVAL_*)
 void DXUTSetVerticalSync(int iVal_);
 // Restarts the frame-rate count (KOG's addition, called when a battlefield loads).
 void DXUTResetStatsUpdateFrame();

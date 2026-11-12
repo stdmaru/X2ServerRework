@@ -1171,10 +1171,7 @@ bool CX2State::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
 					} break;
 
 				case CX2Main::XS_VILLAGE_MAP:
-					{
-						CX2PartyManager::PartyMemberData* pPartyMemberData =
-							g_pData->GetPartyManager()->GetMyPartyMemberData();
-					} break;
+					break;
 
 				default:
 					break;
@@ -4093,7 +4090,7 @@ bool CX2State::Handler_EGS_ADMIN_GET_TITLE_CHEAT_ACK( HWND /*hWnd*/, UINT /*uMsg
 //
 
 
-bool CX2State::Handler_EGS_REWARD_MARKETING_EVENT_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam )
+bool CX2State::Handler_EGS_REWARD_MARKETING_EVENT_NOT( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/ )
 {
 	//KEGS_REWARD_MARKETING_EVENT_NOT kEvent;
 	//DeSerialize( pBuff, &kEvent );
@@ -8399,11 +8396,11 @@ std::map<int,int> CX2State::GetSelectRewardItemIDList(const CX2QuestManager::Que
 				const CX2Item::ItemTemplet* pItemTemplet = g_pData->GetItemManager()->GetItemTemplet( itemData.m_iItemID );
 				if ( NULL != pItemTemplet )
 				{
-                    CX2Unit::UNIT_TYPE eUnitType = pItemTemplet->GetUnitType();
                     CX2Unit::UNIT_CLASS eUnitClass = pItemTemplet->GetUnitClass();
 					/// 가질 수 있는 아이템 이라면
-					if ( ( CX2Unit::UT_NONE == eUnitType || eUnitType == eUnitType ) &&
-						( CX2Unit::UC_NONE == eUnitClass || true == GetX2UnitClassCompatibility(eUnitClass, eUnitClass) ) )
+					// The original compared the item's type and class with themselves (see docs/original/bugs.md): the
+					// type test was always true and is gone; the class one is kept as it was.
+					if ( CX2Unit::UC_NONE == eUnitClass || true == GetX2UnitClassCompatibility(eUnitClass, eUnitClass) )
 					{
 						mapSelectedRewardItem.insert( std::make_pair( itemData.m_iItemID, itemData.m_iItemID ) );
 					}

@@ -11,7 +11,6 @@ namespace _CONST_RENA_
 
 	const int   MAX_PRIOR_PLANNED_BLOW_ACTIVE_NUM = 14;				/// ���� �ϰ� �ִ� ��ø ��
 	const int   MIN_PRIOR_PLANNED_BLOW_ACTIVE_NUM = 5;				/// ���� �ϰ� �ּ� ��ø ��
-	const int	PRIOR_PLANNED_BLOW_ACTIVE_LEVEL_1 = 5;				/// ���� �ϰ� ����Ʈ ���� 1
 	const int	PRIOR_PLANNED_BLOW_ACTIVE_LEVEL_2 = 9;				/// ���� �ϰ� ����Ʈ ���� 2
 	const int	PRIOR_PLANNED_BLOW_ACTIVE_LEVEL_3 = 14;				/// ���� �ϰ� ����Ʈ ���� 3
 
@@ -4764,7 +4763,7 @@ void CX2GULire_ElvenRanger::DieBackEventProcess()
 }
 
 
-#pragma DMLEE_NOTE( "�� �Լ� �� ĳ���� ���� �����ϰ� �����Ǹ� GUUSER�� �Űܼ� �ϳ��� ��������" )
+// Note: once this function is the same for every character, move it to CX2GUUser.
 
 //LESI_WAIT
 void CX2GULire_ElvenRanger::WaitStartFuture()

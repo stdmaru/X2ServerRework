@@ -242,7 +242,7 @@ bool CSHA1::HashFile( const char *szFileName )
 
 void CSHA1::Final()
 {
-	unsigned long i = 0, j = 0;
+	unsigned long i = 0;
 	unsigned char finalcount[ 8 ] =
 		{
 			0, 0, 0, 0, 0, 0, 0, 0
@@ -267,7 +267,6 @@ void CSHA1::Final()
 	// Wipe variables for security reasons
 	i = 0;
 
-	j = 0;
 
 	memset( m_buffer, 0, 64 );
 

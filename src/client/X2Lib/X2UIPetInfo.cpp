@@ -2539,7 +2539,7 @@ void CX2UIPetInfo::UpdateStamina_List()
 		float fMaxStamina = 120.f;
 		float fEnableStamina = CX2RidingPetManager::GetInstance()->GetEnableStamina();
 
-		for( minIndex; minIndex <= maxIndex; ++minIndex )
+		for( ; minIndex <= maxIndex; ++minIndex )
 		{
 			StringCchPrintf( cControlName, 30, L"Pet_List_Stamina%d", staticIndex );
 			if( vecRidingPetList[minIndex].m_fStamina < fEnableStamina )
@@ -2565,7 +2565,7 @@ void CX2UIPetInfo::UpdateStamina_List()
 
 		}
 
-		for( staticIndex; staticIndex < 6; ++staticIndex )
+		for( ; staticIndex < 6; ++staticIndex )
 		{
 			StringCchPrintf( cControlName, 30, L"Pet_List_Stamina%d", staticIndex );
 
@@ -2596,7 +2596,7 @@ void CX2UIPetInfo::UpdatePeriod_List()
 		m_iMaxPageRiding = static_cast<int>( ceil( vecRidingPetList.size() / 6.f ) );
 		m_iMaxPageRiding = max( 1, m_iMaxPageRiding );
 
-		UINT iMin,iMax,iRow = 0;
+		UINT iMin,iMax;
 		iMin = 6 * ( m_iNowPageRiding - 1 );
 		iMax = min( static_cast<UINT>(6 * m_iNowPageRiding), static_cast<UINT>( vecRidingPetList.size() ) );
 
@@ -2666,7 +2666,7 @@ void CX2UIPetInfo::UpdatePeriod_List()
 			++index;
 		}
 
-		for(index; index < 6; ++index)
+		for(; index < 6; ++index)
 		{
 			StringCchPrintf( wcharName, 30, L"Pet_List_period%d", index );
 			pStaticPeriod = static_cast<CKTDGUIStatic*>( m_pDLGUIRidingPetList->GetControl(wcharName) );

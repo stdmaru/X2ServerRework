@@ -139,8 +139,8 @@ void    CX2GUNPC::KNonHostReaction::Init()
 
 /*static*/ bool CX2GUNPC::KNonHostReaction::_CheckCompatibleReactionCondition( float fSpeedX1, float fSpeedX2 )
 {
-    if ( fSpeedX1 < -X2GUNPC_NONHOST_SIM_XSPEED_TOLERANCE && fSpeedX2 > X2GUNPC_NONHOST_SIM_XSPEED_TOLERANCE
-        || fSpeedX1 > X2GUNPC_NONHOST_SIM_XSPEED_TOLERANCE && fSpeedX2 < -X2GUNPC_NONHOST_SIM_XSPEED_TOLERANCE )
+    if ( ( fSpeedX1 < -X2GUNPC_NONHOST_SIM_XSPEED_TOLERANCE && fSpeedX2 > X2GUNPC_NONHOST_SIM_XSPEED_TOLERANCE )
+        || ( fSpeedX1 > X2GUNPC_NONHOST_SIM_XSPEED_TOLERANCE && fSpeedX2 < -X2GUNPC_NONHOST_SIM_XSPEED_TOLERANCE ) )
         return false;
     return true;
 }
@@ -8347,7 +8347,7 @@ void CX2GUNPC::Process_ExtraDamage( const CX2DamageManager::DamageData* pDamageD
 	case CX2DamageManager::EDT_POISON_CLOUD:
 		{
 			const float MAGIC_POWER_RATE = 1.f;
-			CX2DamageEffect::CEffect* pEffect = g_pX2Game->GetDamageEffect()->CreateInstance( pDamageData->optrAttackerGameUnit.GetObservable(), L"EXTRA_DAMAGE_POISON_CLOUD", MAGIC_POWER_RATE,
+			g_pX2Game->GetDamageEffect()->CreateInstance( pDamageData->optrAttackerGameUnit.GetObservable(), L"EXTRA_DAMAGE_POISON_CLOUD", MAGIC_POWER_RATE,
 				pDamageData->impactPoint, GetRotateDegree(), GetRotateDegree(), GetLandPosition_LUA().y );
 
 			UpDownCrashCamera( 20.0f, 0.5f );
@@ -8665,7 +8665,7 @@ void CX2GUNPC::Process_ExtraDamage( const CX2DamageManager::DamageData* pDamageD
 	case CX2DamageManager::EDT_CURSE_CLOUD:
 		{
 			const float MAGIC_POWER_RATE = 1.f;
-			CX2DamageEffect::CEffect* pEffect = g_pX2Game->GetDamageEffect()->CreateInstance( pDamageData->optrAttackerGameUnit.GetObservable(), L"EXTRA_DAMAGE_CURSE_CLOUD", MAGIC_POWER_RATE,
+			g_pX2Game->GetDamageEffect()->CreateInstance( pDamageData->optrAttackerGameUnit.GetObservable(), L"EXTRA_DAMAGE_CURSE_CLOUD", MAGIC_POWER_RATE,
 				pDamageData->impactPoint, GetRotateDegree(), GetRotateDegree(), GetLandPosition_LUA().y );
 
 			UpDownCrashCamera( 20.0f, 0.5f );
@@ -19675,7 +19675,7 @@ BOOL CX2GUNPC::GetDirPos_LUA(D3DXVECTOR3 vPos)
 
 
 
-void CX2GUNPC::AttachParticle_LUA( bool bIsMajorParticle, char* particleSeqName, char* pBoneName, D3DXVECTOR3 vOffsetPos )
+void CX2GUNPC::AttachParticle_LUA( bool bIsMajorParticle, const char* particleSeqName, const char* pBoneName, D3DXVECTOR3 vOffsetPos )
 {
 	if( NULL == particleSeqName )
 		return;

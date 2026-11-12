@@ -63,7 +63,7 @@ struct DxutState {
     DWORD framesSinceStats = 0;
 
     UINT presentInterval = D3DPRESENT_INTERVAL_DEFAULT;  // DXUTDeviceSettings::pp.PresentationInterval
-    int forcedVsync = D3DPRESENT_INTERVAL_DEFAULT;       // DXUTGetVerticalSync
+    UINT forcedVsync = D3DPRESENT_INTERVAL_DEFAULT;      // DXUTGetVerticalSync
 };
 
 DxutState& State()
@@ -677,7 +677,7 @@ HRESULT DXUTCreateDeviceFromSettings(DXUTDeviceSettings* pNewDeviceSettings, boo
 void DXUTSetWindowClientRectAtModeChange(int /*width*/, int /*height*/) {}
 void DXUTSetFullscreenClientRectAtModeChange(int /*width*/, int /*height*/) {}
 
-int DXUTGetVerticalSync()
+UINT DXUTGetVerticalSync()
 {
     return State().forcedVsync;
 }
@@ -685,8 +685,8 @@ int DXUTGetVerticalSync()
 void DXUTSetVerticalSync(int iVal_)
 {
     DXUTDeviceSettings settings = DXUTGetDeviceSettings();
-    const int interval = iVal_ == 1 ? static_cast<int>(D3DPRESENT_INTERVAL_IMMEDIATE) : D3DPRESENT_INTERVAL_DEFAULT;
-    settings.pp.PresentationInterval = static_cast<UINT>(interval);
+    const UINT interval = iVal_ == 1 ? static_cast<UINT>(D3DPRESENT_INTERVAL_IMMEDIATE) : D3DPRESENT_INTERVAL_DEFAULT;
+    settings.pp.PresentationInterval = interval;
     State().forcedVsync = interval;
     DXUTCreateDeviceFromSettings(&settings);
 }

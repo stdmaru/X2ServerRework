@@ -15440,7 +15440,7 @@ void CX2GUEve::ENSI_SA_EAT_SPACE_WRENCH_FrameMove()
 
     if( m_pXSkinAnim->EventTimerOneshot( 0.066f ) )
 	{
-		CX2DamageEffect::CEffect* pEffect = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"EVE_AT_SPACE_WRENCH", GetPowerRate() * fStatAtkRateOfSummoned,
+		g_pX2Game->GetDamageEffect()->CreateInstance( this, L"EVE_AT_SPACE_WRENCH", GetPowerRate() * fStatAtkRateOfSummoned,
 			GetPos(), GetRotateDegree(), GetRotateDegree() );
 	}
 
@@ -15488,7 +15488,7 @@ void CX2GUEve::ENSI_SA_EAT_SPACE_WRENCH_HYPER_FrameMove()
 
     if( m_pXSkinAnim->EventTimerOneshot( 0.066f ) )
 	{
-		CX2DamageEffect::CEffect* pEffect = g_pX2Game->GetDamageEffect()->CreateInstance( this, L"EVE_AT_SPACE_WRENCH_HYPER", GetPowerRate() * fStatAtkRateOfSummoned,
+		g_pX2Game->GetDamageEffect()->CreateInstance( this, L"EVE_AT_SPACE_WRENCH_HYPER", GetPowerRate() * fStatAtkRateOfSummoned,
 			GetPos(), GetRotateDegree(), GetRotateDegree() );
 	}
 
@@ -24051,7 +24051,7 @@ void CX2GUEve::ENSI_EBS_BOOST_DASH_START_StartFuture()
 
 	if ( false == GetAbsoluteInvisibility() )
 	{
-		CKTDGXMeshPlayer::CXMeshInstance* pMeshInstPlane = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance(
+		g_pX2Game->GetMajorXMeshPlayer()->CreateInstance(
 			(CKTDGObject*) this,  L"P_EBS_BoostDash_M01", GetBonePos( L"Bip01_Head" ), GetRotateDegree(), GetRotateDegree() );
 		//m_hBoostDashMesh = pMeshInstPlane->GetHandle();
 	}
@@ -24280,7 +24280,7 @@ void CX2GUEve::ENSI_EBS_BOOST_DASH_EventProcess()
 
 		if ( false == GetAbsoluteInvisibility() )
 		{
-			CKTDGXMeshPlayer::CXMeshInstance* pMeshInstPlane = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance(
+			g_pX2Game->GetMajorXMeshPlayer()->CreateInstance(
 				(CKTDGObject*) this,  L"P_EBS_BoostDash_M01", GetBonePos( L"Bip01_Head" ), GetRotateDegree(), GetRotateDegree() );
 			//m_hBoostDashMesh = pMeshInstPlane->GetHandle();
 			PlaySound( L"Eve_BoostDash4.ogg" );
@@ -24292,7 +24292,7 @@ void CX2GUEve::ENSI_EBS_BOOST_DASH_EventProcess()
 
 		if ( false == GetAbsoluteInvisibility() )
 		{
-			CKTDGXMeshPlayer::CXMeshInstance* pMeshInstPlane = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance(
+			g_pX2Game->GetMajorXMeshPlayer()->CreateInstance(
 				(CKTDGObject*) this,  L"P_EBS_BoostDash_M01", GetBonePos( L"Bip01_Head" ), GetRotateDegree(), GetRotateDegree() );
 			//m_hBoostDashMesh = pMeshInstPlane->GetHandle();
 			PlaySound( L"Eve_BoostDash4.ogg" );
@@ -24304,7 +24304,7 @@ void CX2GUEve::ENSI_EBS_BOOST_DASH_EventProcess()
 
 		if ( false == GetAbsoluteInvisibility() )
 		{
-			CKTDGXMeshPlayer::CXMeshInstance* pMeshInstPlane = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance(
+			g_pX2Game->GetMajorXMeshPlayer()->CreateInstance(
 				(CKTDGObject*) this,  L"P_EBS_BoostDash_M01", GetBonePos( L"Bip01_Head" ), GetRotateDegree(), GetRotateDegree() );
 			//m_hBoostDashMesh = pMeshInstPlane->GetHandle();
 			PlaySound( L"Eve_BoostDash4.ogg" );
@@ -24485,7 +24485,7 @@ void CX2GUEve::ENSI_EBS_BOOST_DASH_AIR_START_EndFuture()
 
 	if ( false == GetAbsoluteInvisibility() )
 	{
-		CKTDGXMeshPlayer::CXMeshInstance* pMeshInstPlane = g_pX2Game->GetMajorXMeshPlayer()->CreateInstance(
+		g_pX2Game->GetMajorXMeshPlayer()->CreateInstance(
 			(CKTDGObject*) this,  L"P_EBS_BoostDash_M01", GetBonePos( L"Bip01_Head" ), GetRotateDegree(), GetRotateDegree() );
 		//m_hBoostDashMesh = pMeshInstPlane->GetHandle();
 	}

@@ -9,7 +9,6 @@ namespace _CONST_RAVEN_
 	const float OVERHEAT_HP_LIMIT = 0.25f;
 	const float MAGIC_NUMBER_MULTIPLY_LINE_RADIUS = 1.5f;
 	const float DEFAULT_OVERHEAT_HP_PENALTY = 0.2f;
-	const float OVERHEAT_DAMAGE_BUFF_RATE = 1.1f;
 
 	const int OVERHEAT_KEY_PRESS_TIME = 5;
 
@@ -14476,7 +14475,6 @@ void CX2GURaven::RSI_WEAPON_TAKER_COMBO_XXX_LOOP_FrameMove()
 		}
 		else
 		{
-			CX2DamageEffect::CEffect* pEffect =
 				g_pX2Game->GetDamageEffect()->CreateInstance( this, L"RWT_COMBO_XXX_LOOP",
 				GetPowerRate(), GetBonePos( L"Bip01_L_Hand" ), GetRotateDegree(), GetRotateDegree(), m_FrameDataNow.unitCondition.landPosition.y );
 		}
@@ -19628,7 +19626,6 @@ void CX2GURaven::RSI_HA_RBM_EXTREM_BLADE_ATTACK_FrameMove()
 		SetInvisibility( true );
 		TransformScale( PROTECT_VECTOR3( 0.01f, 0.01f, 0.01f ) );
 
-		CX2EffectSet::Handle hEffectSset =
 			g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_SA_RBM_Extrem_Blade_Middle", this, NULL, false, GetPowerRate() );
 
 		D3DXVECTOR3 vMyPos = GetPos();
