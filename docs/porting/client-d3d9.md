@@ -370,11 +370,11 @@ The client's `.fx` effects are rewritten by hand (decision [T37](../project/deci
 | Blend indices | `D3DCOLOR` declared by the engine, read through `D3DCOLORtoUBYTE4` | The bytes as `UByte4` | The same indices, in memory order |
 | The fog factor of `vs_1_1`'s `oFog` | Clamped to 0–1 by the rasterizer | Clamped in the fragment shader | Same result |
 
-## DXUT and the skeleton
+## DXUT
 
-The [DXUT replacement](client-dxut.md) creates the device with the window, passes it to the `FrameMove`/`FrameRender`
-callbacks and calls `Present` after `FrameRender`, as DXUT did; `DXUTGetD3DDevice()` returns it. The skeleton
-(`X2/X2Skeleton.cpp`) draws a test card through it: a textured, alpha-blended quad and a turning triangle fan.
+The [DXUT replacement](client-dxut.md) creates the device with the window and passes it to the device and frame
+callbacks. It calls `Present` after `FrameRender`, as DXUT did, and `DXUTGetD3DDevice()` returns it. Until 2026-11-12,
+the skeleton (`X2/X2Skeleton.cpp`, now replaced by `X2.cpp`) drew a test card through it.
 
 ## Not emulated yet (2026-11-07)
 

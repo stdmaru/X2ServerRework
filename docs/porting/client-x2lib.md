@@ -168,8 +168,8 @@ OFF). It does not link yet: `X2.cpp` and the executable are the next step
 
 ## Status
 
-All 265 `.cpp` files compile warning-free (2026-11-11). The client does not link yet
-([roadmap](../project/roadmap.md#phase-4--client-graphics)).
+All 265 `.cpp` files compile warning-free (2026-11-11), and the client links on them
+([Client: X2](client-x2.md#x2cpp-2026-11-12-clientx2-link), 2026-11-12).
 
 Notes for linking (2026-11-07):
 

@@ -35,14 +35,13 @@ keeps `OFF` in its cache: reconfigure with `-DX2_BUILD_CLIENT=ON`. What compiles
 | `x2::client_browser` | `KTDXLIB`'s `KBrowserWrapper`: web pages in the system browser (2026-11-06, [Client: KTDXLIB › Web pages](client-ktdxlib.md#web-pages)) |
 | `x2::client_movie` | the MPEG-1 movie player on pl_mpeg that `CMovieData` uses, in place of BandiVideo (2026-11-06, [Client: movies](client-movie.md)) |
 | `x2::client_serverprotocol` | `X2ServerProtocol` on the servers' `x2::common_net` (T34, 2026-11-05, [Client: X2ServerProtocol](client-serverprotocol.md)) |
-| `x2_client` (`x2`/`x2.exe`) | the skeleton entry point `X2/X2Skeleton.cpp`, with the original icon ([Client: X2](client-x2.md)) |
+| `x2_client` (`x2`/`x2.exe`) | `X2/X2.cpp` on `x2::client_x2lib`, with the original icon (2026-11-12, [Client: X2](client-x2.md)) |
 | `x2_client_tests` | headless tests (ctest `client`) |
 
 `x2_client_includes` carries the original projects' include directories: `KTDXLIB`, `DXUT`, `X2Lib`, `X2Lib/Common`, `X2`,
 `X2ServerProtocol` and `src/server/Common` (`X2ServerProtocol/Socket` is gone since 2026-11-05: the shared `Socket/` is
-`src/server/Common/Socket`). `KTDXLIB` (apart from its input files, mass file manager and `KBrowserWrapper`), `X2Lib` and `X2.cpp` are not compiled yet: each gets its target when its
-dependencies are ported
-([roadmap](../project/roadmap.md#phase-3--client-platform)).
+`src/server/Common/Socket`). Every layer compiles, and the executable links since 2026-11-12
+([roadmap](../project/roadmap.md#phase-4--client-graphics)).
 
 ## Import (2026-11-05, `client/import`)
 
