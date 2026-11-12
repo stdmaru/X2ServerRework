@@ -33,6 +33,10 @@ namespace lua_tinker
 	// class helper, declared here for the templates below that call it (MSVC found it at instantiation)
 	void meta_push(lua_State *L, const char* name);
 
+	// Points every global of class `meta_name` that wraps `from` at `to` instead. Used when an object that a
+	// script may still reach through a stale global is deleted.
+	void retarget_globals(lua_State *L, const char* meta_name, const void* from, void* to);
+
 	// init LuaTinker
 	void	init(lua_State *L);
 

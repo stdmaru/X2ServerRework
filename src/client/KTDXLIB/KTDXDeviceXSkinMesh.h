@@ -96,7 +96,7 @@ class CKTDXDeviceXSkinMesh	: public CKTDXDevice
 
 			~MultiAnimFrame()
 			{
-				SAFE_DELETE( Name );
+				SAFE_DELETE_ARRAY( Name );
 			}
 
             HRESULT WriteToFileSerializer( KFileSerializer& kInOutFile_, DWORD dwInOffset_ ) const;

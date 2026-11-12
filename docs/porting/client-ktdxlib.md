@@ -264,7 +264,21 @@ drawn and submitted, a frame with no stage), `KFileSerializer` save/load/cap/mis
 `CKTDXStringTable::LoadStringTable` reads `General.ess` as bytes and decodes UTF-16LE itself; the original's `_wfopen` +
 `fgetws` relied on Windows' 16-bit `wchar_t`. The format is unchanged: a BOM, then one `index\tstring` line per string
 ending in CRLF, each code unit but the CRLF XORed with 16, `\n` written as text. The file is found in the current
-folder regardless of case (the client ships `general.ess`).
+folder regardless of case (the client ships `general.ess`, found with `x2::platform::FindFileIgnoreCase`).
+
+## Character creation screen (2026-11-12, `client/x2-run`)
+
+- `CMovieData::SetMovieFileName` finds the movie in `movie/` regardless of case: the unit templets ask for
+  `Movie_Create_Aisha_Base.avi`... and the folder has `movie_create_aisha_base.avi`, so no creation-screen movie played
+  on Linux.
+- `DLG_Unit_Create_Front_Menu_New.lua` creates `g_pIntroMovie` but then calls `g_pPromotionMovie:SetLoop(true)`, a
+  global still holding the character-select dialog's movie, deleted by then. The original wrote into freed memory
+  unnoticed; on Linux it corrupted the heap and the client crashed entering the screen. `~CMovieData` now points every
+  Lua global that wraps it at a static movie that is never shown (`lua_tinker::retarget_globals`), so the script runs
+  as before without touching freed memory.
+- Skinned meshes: `MultiAnimFrame::Name` (from `new[]`) is freed with `delete[]`, and `DestroyMeshContainer` deletes the
+  container as the `MultiAnimMC` it was allocated as (it deleted the `D3DXMESHCONTAINER` base, which has no virtual
+  destructor). Found with AddressSanitizer (GCC; the container has no Clang ASan runtime).
 
 ## Preprocessed files: `.tet`, `.xet`, `Item.kim` (2026-11-12, `client/x2-run`)
 
