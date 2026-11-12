@@ -72,7 +72,8 @@ state on `WM_ACTIVATEAPP`.
   buttons, double clicks, wheel, coordinates with pixel density, focus, size and close.
 - `test_dxut.cpp`: callback order (keyboard, then `MsgProc`), key and mouse state, `WM_ACTIVATEAPP` with and without
   `pbNoFurtherProcessing`, the timer, window creation failing cleanly with `sdlgpu` and no GPU, and the main loop on the `null`
-  renderer (two frames, each cleared to black and submitted, nothing leaked).
+  renderer (two frames, each cleared to black and submitted, nothing leaked); the device callbacks (Created, Reset, then
+  Lost and Destroyed while the device still exists, once each; `DXUTCreateDevice` fails without a window).
 - `test_luacommon.cpp`: [LuaCommon](client-luacommon.md) loads a UTF-8 script and reads its values.
 
 Device callbacks (2026-11-12): `DXUTCreateDevice` calls `DeviceCreated` then `DeviceReset` with the window's device.
