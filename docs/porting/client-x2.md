@@ -67,6 +67,11 @@ Left in the logs, from the data and as in the original:
 - 48 `_GetControl` misses while the community dialogs load.
 - First start only: `GameOptions.lua` and `TutorSystem.lua` missing (the client writes them).
 
+With a window (2026-11-12, Hyprland, workspace 9): the window floats at 1024×768 and reaches the login screen, but
+the screen shows no textures (a 512×512 orange quad at the top left on gray). Next to investigate. Also fixed:
+the string table (`general.ess`, see [Client: KTDXLIB](client-ktdxlib.md)), "not responding" during start-up
+([Client: DXUT](client-dxut.md)).
+
 ## Status
 
 `x2` links and starts on Linux, and reaches the login screen headless (2026-11-12). Next: the window on a GPU, then

@@ -31,7 +31,9 @@ The `WM_*`/`VK_*` constants and `WPARAM`/`LPARAM` come from `x2/platform/window_
   `pbNoFurtherProcessing`; if `MsgProc` does not stop the message, DXUT's own handling: `WM_SIZE` minimized/restored (pauses the
   loop), `WM_ACTIVATEAPP` (active flag), Alt+Enter toggles full screen when enabled by `DXUTInit` (on in `X2.cpp`), `WM_CLOSE`
   destroys the window and quits.
-- `DXUTCreateWindow` creates a resizable window with a 1024×768 client area (what `X2.cpp` asks of `DXUTCreateDevice`) and starts
+- `DXUTCreateWindow` creates a **fixed-size** window (since 2026-11-12; DXUT's was resizable) with a 1024×768 client area. Tiling window managers
+  such as Hyprland float a fixed-size window, so the game opens at its resolution; the options still change it through
+  `DXUTCreateDeviceFromSettings`. The window gets (what `X2.cpp` asks of `DXUTCreateDevice`) and starts
   SDL text input; it binds the translator's IME context for the IME edit box's IMM32 calls, and `DXUTInit` sets
   `SDL_HINT_IME_IMPLEMENTED_UI` so the client draws the composition and the candidates. Full screen is borderless desktop full screen.
 - Main loop: events → messages → frame (`CDXUTTimer` → `FrameMove` → `FrameRender`); while minimized it waits for events (100 ms).
@@ -75,6 +77,11 @@ state on `WM_ACTIVATEAPP`.
   renderer (two frames, each cleared to black and submitted, nothing leaked); the device callbacks (Created, Reset, then
   Lost and Destroyed while the device still exists, once each; `DXUTCreateDevice` fails without a window).
 - `test_luacommon.cpp`: [LuaCommon](client-luacommon.md) loads a UTF-8 script and reads its values.
+
+Long loads (2026-11-12): `DXUTPumpEventsWhileBusy()` (port addition) runs `SDL_PumpEvents` at most every 100 ms on the
+main thread, from `CKTDXApp::LoadAndDoMemory_ErrorCode` and `RenderStageNow`. It answers the compositor's pings while the
+start-up loads (Hyprland showed "not responding"); the events stay queued for the main loop. Message boxes turn CRLF
+into LF for the system dialogs (zenity on Linux).
 
 Device callbacks (2026-11-12): `DXUTCreateDevice` calls `DeviceCreated` then `DeviceReset` with the window's device.
 If the window is windowed and a size is given, it first sets the client area to that size. When the window closes,

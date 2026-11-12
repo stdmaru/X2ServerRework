@@ -259,6 +259,13 @@ drawn and submitted, a frame with no stage), `KFileSerializer` save/load/cap/mis
 - `KCircularBuffer` gained `rerase(first, last)` (an `erase`), which `CX2GUNPC` uses from `boost::circular_buffer`.
 - `CKTDGParticleSystem`'s destructor is virtual (it has virtual functions and X2Lib deletes it).
 
+## String table (2026-11-12, `client/x2-run`)
+
+`CKTDXStringTable::LoadStringTable` reads `General.ess` as bytes and decodes UTF-16LE itself; the original's `_wfopen` +
+`fgetws` relied on Windows' 16-bit `wchar_t`. The format is unchanged: a BOM, then one `index\tstring` line per string
+ending in CRLF, each code unit but the CRLF XORed with 16, `\n` written as text. The file is found in the current
+folder regardless of case (the client ships `general.ess`).
+
 ## Status
 
 All of `KTDXLIB` compiles and links ([roadmap](../project/roadmap.md#phase-4--client-graphics)); textures (2026-11-07)
