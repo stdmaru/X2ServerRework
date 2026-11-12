@@ -5001,7 +5001,7 @@ RENDER_HINT CX2GUChung::CommonRender_Prepare()
 	bool bGuardDamageReact = false;
 	if( GetEqippedSkillMemo(CX2SkillTree::SMI_CHUNG_MEMO12) == true )
 	{
-		if( GetGameUnitStateFuture() == CX2GUUser::USI_DAMAGE_SMALL_FRONT || GetGameUnitStateFuture() == CX2GUUser::USI_DAMAGE_BIG_FRONT )
+		if( static_cast<int>( GetGameUnitStateFuture() ) == CX2GUUser::USI_DAMAGE_SMALL_FRONT || static_cast<int>( GetGameUnitStateFuture() ) == CX2GUUser::USI_DAMAGE_BIG_FRONT )
 		{
 			if( pSkillTempletUsing->m_eID == CX2SkillTree::SI_A_CFG_GUARD )
 				bGuardDamageReact = true;
@@ -6974,7 +6974,7 @@ void CX2GUChung::DamageSmallEventProcess()
 	}
 	else if(  GetEqippedSkillMemo(CX2SkillTree::SMI_CHUNG_MEMO12) == true &&
 		g_pMain->GetNowStateID() != CX2Main::XS_PVP_GAME &&
-		GetGameUnitStateFuture() == CX2GUUser::USI_DAMAGE_SMALL_FRONT &&
+		static_cast<int>( GetGameUnitStateFuture() ) == CX2GUUser::USI_DAMAGE_SMALL_FRONT &&
 		SpecialAttackEventProcess() == true )
 	{
 	}
@@ -7016,7 +7016,7 @@ void CX2GUChung::DamageBigEventProcess()
 	}
 	else if(  GetEqippedSkillMemo(CX2SkillTree::SMI_CHUNG_MEMO12) == true &&
 		g_pMain->GetNowStateID() != CX2Main::XS_PVP_GAME &&
-		GetGameUnitStateFuture() == CX2GUUser::USI_DAMAGE_BIG_FRONT &&
+		static_cast<int>( GetGameUnitStateFuture() ) == CX2GUUser::USI_DAMAGE_BIG_FRONT &&
 		SpecialAttackEventProcess() == true )
 	{
 	}

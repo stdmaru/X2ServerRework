@@ -4423,7 +4423,7 @@ void CX2StateServerSelect::UnitHandling( double fTime, float fElapsedTime )
 				pUnitData->m_bDeletedMotionPlay = true;
 			}
 		}
-		else if( m_pUnitViewerUI->GetXSkinAnim()->GetState() == CKTDGXSkinAnim::XAP_ONE_WAIT )
+		else if( m_pUnitViewerUI->GetXSkinAnim()->GetState() == CKTDGXSkinAnim::XAS_WAIT )
 		{
 			if( true == m_bPlayDownAnim )
 			{

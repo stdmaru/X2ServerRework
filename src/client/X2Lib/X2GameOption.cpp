@@ -424,7 +424,7 @@ void CX2GameOption::SetFieldDetail( FieldLevel optionLevel, bool bForce /*= fals
 
 void CX2GameOption::UpFieldDetail()
 {
-	if( m_OptionList.m_FieldDetail == OL_HIGH )
+	if( m_OptionList.m_FieldDetail == FL_HIGH )
 		return;
 
 	switch( m_OptionList.m_FieldDetail )
@@ -447,7 +447,7 @@ void CX2GameOption::UpFieldDetail()
 
 void CX2GameOption::DownFieldDetail()
 {
-	if( m_OptionList.m_FieldDetail == OL_LOW )
+	if( m_OptionList.m_FieldDetail == FL_LOW )
 		return;
 
 	switch( m_OptionList.m_FieldDetail )

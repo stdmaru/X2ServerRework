@@ -2160,7 +2160,7 @@ void CX2UnitViewerUI::UpdateEqip( bool bEconomical /* = false */ )
 				if ( pItem->GetItemData().m_PeriodType == CX2Item::PT_ENDURANCE &&
 					pItem->GetItemData().m_Endurance <= 0 )
 					continue;
-					setItemUID.insert( pItem->GetUID() );
+				setItemUID.insert( pItem->GetUID() );
 				//}} kimhc // 실시간 엘소드 중 실시간 내구도 감소
 
 			}//for
@@ -2570,8 +2570,8 @@ void CX2UnitViewerUI::AddEquipByTID( int itemTID, bool bBasicItem  )
 
 void CX2UnitViewerUI::AddEqip( UidType itemUID )
 {
-    if ( itemUID <= 0 )
-        return;
+	if ( itemUID <= 0 )
+		return;
 
 	if ( m_ViewEquipMap.find( itemUID ) != m_ViewEquipMap.end() )
 		return;

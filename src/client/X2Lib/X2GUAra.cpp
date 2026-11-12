@@ -5254,7 +5254,7 @@ __forceinline void CX2GUAra::SetHandleAraMajorParticleByEnum( ARA_MAJOR_PARTICLE
 */
 __forceinline CKTDGParticleSystem::CParticleEventSequenceHandle	CX2GUAra::GetHandleAraMinorParticleByEnum( ARA_MINOR_PARTICLE_INSTANCE_ID eVal_ ) const
 {
-    ASSERT( ARA_MAJOR_PII_END > eVal_ && ARA_MAJOR_PARTICLE_INSTANCE_ID(0) <= eVal_ );
+    ASSERT( ARA_MINOR_PII_END > eVal_ && ARA_MINOR_PARTICLE_INSTANCE_ID(0) <= eVal_ );
 	return m_ahAraMinorParticleInstance[eVal_];
 }
 //#pragma endregion
@@ -5265,7 +5265,7 @@ __forceinline CKTDGParticleSystem::CParticleEventSequenceHandle	CX2GUAra::GetHan
 */
 __forceinline void CX2GUAra::SetHandleAraMinorParticleByEnum( ARA_MINOR_PARTICLE_INSTANCE_ID eVal_, ParticleEventSequenceHandle hHandle_ )
 {
-    ASSERT( ARA_MAJOR_PII_END > eVal_ && ARA_MAJOR_PARTICLE_INSTANCE_ID(0) <= eVal_ );
+    ASSERT( ARA_MINOR_PII_END > eVal_ && ARA_MINOR_PARTICLE_INSTANCE_ID(0) <= eVal_ );
 	m_ahAraMinorParticleInstance[eVal_] = hHandle_;
 }
 //#pragma endregion
@@ -5276,7 +5276,7 @@ __forceinline void CX2GUAra::SetHandleAraMinorParticleByEnum( ARA_MINOR_PARTICLE
 */
 CKTDGXMeshPlayer::CXMeshInstanceHandle CX2GUAra::GetHandleAraMajorMeshByEnum( ARA_MAJOR_MESH_INSTANCE_ID eVal_ ) const
 {
-    ASSERT( ARA_MAJOR_PII_END > eVal_ && ARA_MAJOR_PARTICLE_INSTANCE_ID(0) <= eVal_ );
+    ASSERT( ARA_MAJOR_MII_END > eVal_ && ARA_MAJOR_MESH_INSTANCE_ID(0) <= eVal_ );
 	return m_ahAraMajorMeshInstance[eVal_];
 }
 //#pragma endregion
@@ -8494,8 +8494,8 @@ if( true == m_pXSkinAnim->EventTimerOneshot( 0.462f ) )
 		if( true == GetEqippedSkillMemo( CX2SkillTree::SMI_ARA_MEMO4 ) )
 			bIsMemoAttack = true;
 
-			m_hPullinPierce = g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_Ara_ATTACK_BOX_Pulling_Pierce_1st",
-								this, NULL, bIsMemoAttack, GetPowerRate() );
+		m_hPullinPierce = g_pX2Game->GetEffectSet()->PlayEffectSet( L"EffectSet_Ara_ATTACK_BOX_Pulling_Pierce_1st",
+							this, NULL, bIsMemoAttack, GetPowerRate() );
 	}
 
 if( true == m_pXSkinAnim->EventTimerOneshot( 0.759f ) )
@@ -15019,7 +15019,8 @@ void CX2GUAra::AddHitUnitInfoByDamageData( const CX2DamageManager::DamageData& d
 	if ( 0 < userSkillTree.GetSkillLevel( CX2SkillTree::SI_P_ALD_ENERGY_REINFORCE ) )
 	{
 		///  �Ϲ� ������ ��, ��� ��ȭ�� ���� �ٿ� ��ġ ���Ұ� ����
-		if ( CX2DamageManager::AT_NORMAL == damageType_ )
+		// The original compared with AT_NORMAL (0, same value; see docs/original/bugs.md).
+		if ( CX2DamageManager::DT_PHYSIC == damageType_ )
 			fForceDownValue_ -= m_fIncreaseEnergeBulletForceDownValue;
 	}
 }

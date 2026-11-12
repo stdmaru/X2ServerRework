@@ -245,10 +245,10 @@ HRESULT CX2StateMenu::OnFrameMove( double fTime, float fElapsedTime )
 
 	//ChatProcess();
 	//m_pCharacterRoom->OnFrameMove( fTime, fElapsedTime );
-    if( m_pCashShop != NULL )
-    {
-	    m_pCashShop->OnFrameMove( fTime, fElapsedTime );
-    }//if
+	if( m_pCashShop != NULL )
+	{
+		m_pCashShop->OnFrameMove( fTime, fElapsedTime );
+	}//if
 
 	if ( g_pMain->GetLVUpEventMgr() != NULL && g_pTFieldGame != NULL)
 		g_pMain->GetLVUpEventMgr()->OnFrameMove( fTime, fElapsedTime );
@@ -256,7 +256,7 @@ HRESULT CX2StateMenu::OnFrameMove( double fTime, float fElapsedTime )
 	//{{ kimhc // 2009-11-02 // 길드 인포머는 던전 플레이 중에도 출력되야 함으로 수정
 	// OnFrameMove 내에서 막는 것으로 변경 함
 	//}} kimhc // 2009-11-02 // 길드 인포머는 던전 플레이 중에도 출력되야 함으로 수정
-		g_pMain->GetInformerManager()->OnFrameMove( fTime, fElapsedTime );
+	g_pMain->GetInformerManager()->OnFrameMove( fTime, fElapsedTime );
 
 // #ifdef NEW_VILLAGE_UI
 // 	if(g_pData->GetUIManager() != NULL )
@@ -2366,7 +2366,7 @@ bool CX2StateMenu::InitUI()
 
 
 
-					pControl->SetEnable(true);
+				pControl->SetEnable(true);
 			}
 
 		} break;

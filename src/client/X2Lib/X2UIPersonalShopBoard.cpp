@@ -61,7 +61,6 @@ CX2UIPersonalShopBoard::CX2UIPersonalShopBoard(CKTDXStage* pNowStage, const WCHA
 
 
 	m_pButtonInitSearchCondition = static_cast< CKTDGUIButton* >( m_pDlgPersonalShopBoard->GetControl( L"ButtonInitSearchCondition" ) );
-	//m_pButtonBuyItem = static_cast< CKTDGUIButton* >( m_pDlgPersonalShopBoard->GetControl( L"ButtonBuyItem" ) );
 
 
 	m_pComboFirst = static_cast< CKTDGUIComboBox* >( m_pDlgPersonalShopBoard->GetControl( L"ComboFirst" ) );

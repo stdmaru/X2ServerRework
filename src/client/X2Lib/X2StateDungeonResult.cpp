@@ -216,7 +216,8 @@ HRESULT CX2StateDungeonResult::OnFrameMove( double fTime, float fElapsedTime )
 
 	if ( m_bUIAnimStart == false )
 	{
-		m_fStartWaitRemainTime =- fElapsedTime;
+		// The original wrote "=-" for "-=" (docs/original/bugs.md): the wait ends on the first frame.
+		m_fStartWaitRemainTime = -fElapsedTime;
 	}
 
 	if ( m_fStartWaitRemainTime <= 0.0f )
@@ -2224,7 +2225,7 @@ bool CX2StateDungeonResult::InitUI()
 			pStaticDungeonPictrue->GetString(0)->msg	= wstrBuff;
 
 			[[maybe_unused]] int requireLevel = 0;
-			const CX2Dungeon::DungeonData* pDungeonData = g_pData->GetDungeonManager()->GetDungeonData( (SEnum::DUNGEON_ID)( g_pData->GetDungeonRoom()->GetDungeonID() + g_pData->GetDungeonRoom()->GetDifficulty() ) );
+			const CX2Dungeon::DungeonData* pDungeonData = g_pData->GetDungeonManager()->GetDungeonData( (SEnum::DUNGEON_ID)( g_pData->GetDungeonRoom()->GetDungeonID() + static_cast<int>( g_pData->GetDungeonRoom()->GetDifficulty() ) ) );
 			if ( pDungeonData != NULL )
 				requireLevel = pDungeonData->m_MinLevel;
 

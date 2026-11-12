@@ -549,7 +549,7 @@ bool    CX2ItemManager::KProxy2::AddItemTemplet_LUA()
             sprintf_s( aszError, ARRAY_SIZE( aszError ), "ITEMID_%d: INVALID_UNITTYPE_%d", dwItemID, eUnitType );
             ErrorLogMsg( XEM_ERROR144, aszError );
         }//if
-        if ( false == ( eUnitClass >= CX2Unit::UNIT_TYPE(0) && eUnitClass < CX2Unit::UC_END ) )
+        if ( false == ( eUnitClass >= CX2Unit::UNIT_CLASS(0) && eUnitClass < CX2Unit::UC_END ) )
         {
             sprintf_s( aszError, ARRAY_SIZE( aszError ), "ITEMID_%d: INVALID_UNITCLASS_%d", dwItemID, eUnitClass );
             ErrorLogMsg( XEM_ERROR144, aszError );

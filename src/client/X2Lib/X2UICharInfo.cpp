@@ -253,7 +253,7 @@ void CX2UICharInfo::UnitHandling( double fTime, float fElapsedTime )
 
 		m_pUnitViewerUI->OnFrameMove( fTime, fElapsedTime );
 
-		if ( m_pUnitViewerUI->GetXSkinAnim()->GetState() == CKTDGXSkinAnim::XAP_ONE_WAIT )
+		if ( m_pUnitViewerUI->GetXSkinAnim()->GetState() == CKTDGXSkinAnim::XAS_WAIT )
 		{
 			m_pUnitViewerUI->PlayByMotionType( CX2UnitViewerUI::UVUMT_WAIT );
 		}
@@ -1814,15 +1814,15 @@ CX2SocketItem::SocketData CX2UICharInfo::GetMyEquippedSocketData()
 
 		// 아이템 고유의 소켓 옵션
 			// 랜덤 소켓 옵션 담기
-			if( NULL != pItem )
-			{
-				vecSocketOption.assign( pItem->GetItemData().m_vecRandomSocket.begin(),
-					pItem->GetItemData().m_vecRandomSocket.end() );
-			}
-			// 일반 소켓 옵션 담기
-			std::vector<int> vecNormalSocketOption;
-			pItem->GetItemTemplet()->GetSocketOptions( vecNormalSocketOption );
-			vecSocketOption.insert( vecSocketOption.end(), vecNormalSocketOption.begin(), vecNormalSocketOption.end() );
+		if( NULL != pItem )
+		{
+			vecSocketOption.assign( pItem->GetItemData().m_vecRandomSocket.begin(),
+				pItem->GetItemData().m_vecRandomSocket.end() );
+		}
+		// 일반 소켓 옵션 담기
+		std::vector<int> vecNormalSocketOption;
+		pItem->GetItemTemplet()->GetSocketOptions( vecNormalSocketOption );
+		vecSocketOption.insert( vecSocketOption.end(), vecNormalSocketOption.begin(), vecNormalSocketOption.end() );
         SumSocketOption( vecSocketOption, SocketDataRetVal, iItemSocketLevel );
 
 		// 아이템에 유저가 박은 소켓에 의한 옵션

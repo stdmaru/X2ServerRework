@@ -343,7 +343,7 @@ bool CX2PetManager::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wPar
 					m_pDlgPetPopupMenu->SetShowEnable(false, false);
 				if ( NULL != m_pDlgPopup )
 					m_pDlgPopup->SetShowEnable(false, false);
-					return true;
+				return true;
 			}
 		}
 		break;

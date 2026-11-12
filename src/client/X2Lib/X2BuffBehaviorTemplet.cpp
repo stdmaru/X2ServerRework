@@ -229,7 +229,7 @@ bool CX2BuffBehaviorTemplet::SetFactorFromPacketTemplateMothod( const KBuffFacto
 // 			const float fRegist = ( BuffFactor_.GetIgnoreRegistForRate() ?
 // 				0.0f : pGameUnit_->GetEnchantResist( static_cast<CX2EnchantItem::ENCHANT_TYPE>( pBuffTemplet_->GetRegistType() ) ) / CX2EnchantItem::EAR_MAX_VALUE );
 
-			const float fRegist = pGameUnit_->GetEnchantResist( static_cast<CX2EnchantItem::ENCHANT_TYPE>( pBuffTemplet_->GetRegistType() ) ) / CX2EnchantItem::EAR_MAX_VALUE;
+			const float fRegist = pGameUnit_->GetEnchantResist( static_cast<CX2EnchantItem::ENCHANT_TYPE>( pBuffTemplet_->GetRegistType() ) ) / static_cast<float>( CX2EnchantItem::EAR_MAX_VALUE );
 
 			// 현재 효과의 적용값
 			const float fNewValueOrPercent = m_delegateGetValueOrPercentPerSecondFunc( pBehaviorFactor, fRegist );
@@ -489,7 +489,7 @@ void CX2BuffChangeNowHpPerSecondBehaviorTemplet::DrawText( CX2GameUnit* pGameUni
 // 			const float fRegist = ( BuffFactor_.GetIgnoreRegistForRate() ?
 // 				0.0f : pGameUnit_->GetEnchantResist( static_cast<CX2EnchantItem::ENCHANT_TYPE>( pBuffTemplet_->GetRegistType() ) ) / CX2EnchantItem::EAR_MAX_VALUE );
 
-			const float fRegist = pGameUnit_->GetEnchantResist( static_cast<CX2EnchantItem::ENCHANT_TYPE>( pBuffTemplet_->GetRegistType() ) ) / CX2EnchantItem::EAR_MAX_VALUE;
+			const float fRegist = pGameUnit_->GetEnchantResist( static_cast<CX2EnchantItem::ENCHANT_TYPE>( pBuffTemplet_->GetRegistType() ) ) / static_cast<float>( CX2EnchantItem::EAR_MAX_VALUE );
 
 			// 현재 효과의 적용값
 			const float fNewValueOrPercent = GetValueOrPercentPerSecond( pBehaviorFactor, fRegist );
@@ -849,7 +849,7 @@ void CX2BuffChangeNowMpPerSecondBehaviorTemplet::DrawText( CX2GameUnit* pGameUni
 // 				const float fRegist = ( BuffFactor_.GetIgnoreRegistForRate() ?
 // 					0.0f : pGameUnit_->GetEnchantResist( static_cast<CX2EnchantItem::ENCHANT_TYPE>( pBuffTemplet_->GetRegistType() ) ) / CX2EnchantItem::EAR_MAX_VALUE );
 
-				const float fRegist = pGameUnit_->GetEnchantResist( static_cast<CX2EnchantItem::ENCHANT_TYPE>( pBuffTemplet_->GetRegistType() ) ) / CX2EnchantItem::EAR_MAX_VALUE;
+				const float fRegist = pGameUnit_->GetEnchantResist( static_cast<CX2EnchantItem::ENCHANT_TYPE>( pBuffTemplet_->GetRegistType() ) ) / static_cast<float>( CX2EnchantItem::EAR_MAX_VALUE );
 
 				const float fNewValue = GetValue( pBehaviorFactor, pGameUnit_, fRegist );
 				if ( DidStart() )	/// 중첩 또는 교체라면

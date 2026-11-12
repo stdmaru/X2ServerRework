@@ -4468,7 +4468,7 @@ void CX2UISkillTreeNew::SwapSkillSlotTypeB(bool bVal_, bool bForce_/* = false */
 		{
 			if( NULL != GetEquippedSlot(i) )
 				vOffsetPos.y = ( i >= 4 ) ? -150.f : 0.f;
-				GetEquippedSlot(i)->SetOffsetPos( vOffsetPos );
+			GetEquippedSlot(i)->SetOffsetPos( vOffsetPos );
 		}
 
 		vOffsetPos.y = -200.f;

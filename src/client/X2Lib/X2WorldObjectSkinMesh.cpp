@@ -398,8 +398,8 @@ RENDER_HINT   CX2WorldObjectSkinMesh::OnFrameRender_Prepare()
 
     m_pXSkinAnim->SetInstantShow( false );
 
-    if ( !m_pXSkinAnim->GetShowObject() )
-        return RENDER_HINT_NORENDER;
+	if ( !m_pXSkinAnim->GetShowObject() )
+		return RENDER_HINT_NORENDER;
 
 
 

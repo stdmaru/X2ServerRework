@@ -174,7 +174,6 @@ private:
 
 	CKTDGUIButton*						m_pButtonSearchItem;
 	CKTDGUIButton*						m_pButtonInitSearchCondition;
-	CKTDGUIButton*						m_pButtonBuyItem;
 
 	CKTDGUIComboBox*					m_pComboFirst;
 	CKTDGUIComboBox*					m_pComboSecond;

@@ -235,9 +235,9 @@ CX2TFieldGame::CX2TFieldGame( CX2World::WORLD_ID worldID, SquareData* pSquareDat
 
 	// 마켓리스트 ui 생성
 	m_pSquareUI = new SquareUI( g_pMain->GetNowState() );
-    ASSERT( m_pSquareUI != NULL );
-    if ( m_pSquareUI != NULL )
-	m_pSquareUI->SetShow(false);
+	ASSERT( m_pSquareUI != NULL );
+	if ( m_pSquareUI != NULL )
+		m_pSquareUI->SetShow(false);
 
 	// 갈림길 가이드 생성
 //#ifndef MODIFY_PORTAL_GATE

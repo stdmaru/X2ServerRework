@@ -2277,7 +2277,7 @@ float CX2DamageManager::ExtraDamageData::GetCalcPerDamage(int iUnitLevel, float 
 		fPerDamage = (fPerDamage + (fPerDamage * 0.2f * iLevel));
 	}
 
-	fPerDamage *= (1.f - (fResist / CX2EnchantItem::EAR_MAX_VALUE));
+	fPerDamage *= (1.f - (fResist / static_cast<float>( CX2EnchantItem::EAR_MAX_VALUE )));
 
 	return fPerDamage;
 

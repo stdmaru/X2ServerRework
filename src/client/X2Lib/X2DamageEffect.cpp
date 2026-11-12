@@ -4646,7 +4646,7 @@ void CX2DamageEffect::CEffect::SetParticleData( ParticleData* pData )
 				//}} kimhc // 2010.2.3 //	매 프레임 Rotate Angle이 바뀌도록
 
 				//if(pData->bTrace == true)
-					pSeq->SetPosition( m_optrOwnerUnit->GetBonePos( pData->boneName.c_str() ), pData->bTraceMore, pData->bTraceMore );
+				pSeq->SetPosition( m_optrOwnerUnit->GetBonePos( pData->boneName.c_str() ), pData->bTraceMore, pData->bTraceMore );
 			}
 		}
 		break;

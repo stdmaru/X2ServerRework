@@ -946,8 +946,8 @@ HRESULT CX2Eqip::OnFrameMove( double fTime, float fElapsedTime )
 	if( m_pItemTemplet == NULL )
 		return E_FAIL;
 
-    if ( !GetShowObject() )
-        return E_FAIL;
+	if ( !GetShowObject() )
+		return E_FAIL;
 
 //}} robobeg : 2008-10-21
 

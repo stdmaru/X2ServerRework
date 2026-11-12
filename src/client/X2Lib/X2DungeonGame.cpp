@@ -1091,7 +1091,7 @@ void CX2DungeonGame::SubStageStart()
 
 void CX2DungeonGame::DungeonLoading(bool bIsNpcLoad)
 {
-	SEnum::DUNGEON_ID dungeonID = (SEnum::DUNGEON_ID)(m_pDungeonRoom->GetDungeonID() + m_pDungeonRoom->GetDifficulty());
+	SEnum::DUNGEON_ID dungeonID = (SEnum::DUNGEON_ID)(m_pDungeonRoom->GetDungeonID() + static_cast<int>( m_pDungeonRoom->GetDifficulty() ));
 	SAFE_DELETE( m_pDungeon );
 	m_pDungeon = g_pData->GetDungeonManager()->CreateDungeon( dungeonID, bIsNpcLoad );
 
@@ -2229,7 +2229,7 @@ bool CX2DungeonGame::DetermineShowDungeonPlayTime()
 				std::set<SEnum::DUNGEON_ID>::iterator sit = pSubQuestTemplet->m_ClearCondition.m_setDungeonID.begin();
 				for( ; sit != pSubQuestTemplet->m_ClearCondition.m_setDungeonID.end(); ++sit)
 				{
-					if( ((*sit) - g_pData->GetDungeonManager()->GetDungeonData(*sit)->m_eDifficulty)  == g_pData->GetDungeonRoom()->GetDungeonID() )
+					if( ((*sit) - static_cast<int>( g_pData->GetDungeonManager()->GetDungeonData(*sit)->m_eDifficulty ))  == g_pData->GetDungeonRoom()->GetDungeonID() )
 					{
 						if( CX2Dungeon::DT_SECRET == g_pData->GetDungeonManager()->GetDungeonType( (int) g_pData->GetDungeonRoom()->GetDungeonID() ) )
 						{

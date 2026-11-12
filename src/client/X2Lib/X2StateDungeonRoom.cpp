@@ -1168,7 +1168,7 @@ bool CX2StateDungeonRoom::Handler_EGS_CHANGE_DUNGEON_DIFFICULTY_NOT( HWND /*hWnd
 
 
 
-	SEnum::DUNGEON_ID dungeonID = (SEnum::DUNGEON_ID) ( m_pCX2DungeonRoom->GetDungeonID() + m_pCX2DungeonRoom->GetDifficulty() );
+	SEnum::DUNGEON_ID dungeonID = (SEnum::DUNGEON_ID) ( m_pCX2DungeonRoom->GetDungeonID() + static_cast<int>( m_pCX2DungeonRoom->GetDifficulty() ) );
 	const CX2Dungeon::DungeonData* pDungeonData = g_pData->GetDungeonManager()->GetDungeonData( dungeonID );
 	if( NULL != pDungeonData &&
 		pDungeonData->m_fTimeLimit > 0.f )
@@ -1961,7 +1961,7 @@ void CX2StateDungeonRoom::UISetting()
 //         ( int )m_pCX2DungeonRoom->GetRecommendLevel( ( int )difficulty ).y ) );
 	pStaticRecommendLevel->GetString( 0 )->color = diffColor;
 
-	const CX2Dungeon::DungeonData* pDungeonData = g_pData->GetDungeonManager()->GetDungeonData( (SEnum::DUNGEON_ID)( g_pData->GetDungeonRoom()->GetDungeonID() + g_pData->GetDungeonRoom()->GetDifficulty() ) );
+	const CX2Dungeon::DungeonData* pDungeonData = g_pData->GetDungeonManager()->GetDungeonData( (SEnum::DUNGEON_ID)( g_pData->GetDungeonRoom()->GetDungeonID() + static_cast<int>( g_pData->GetDungeonRoom()->GetDifficulty() ) ) );
 	if ( pDungeonData != NULL )
 	{
 	}
@@ -2735,7 +2735,7 @@ void CX2StateDungeonRoom::UIFrameMove()
 	pStaticRecommendLevel->GetString( 0 )->color = diffColor;
 
 	[[maybe_unused]] int requireLevel = 0;
-	const CX2Dungeon::DungeonData* pDungeonData = g_pData->GetDungeonManager()->GetDungeonData( (SEnum::DUNGEON_ID)( g_pData->GetDungeonRoom()->GetDungeonID() + g_pData->GetDungeonRoom()->GetDifficulty() ) );
+	const CX2Dungeon::DungeonData* pDungeonData = g_pData->GetDungeonManager()->GetDungeonData( (SEnum::DUNGEON_ID)( g_pData->GetDungeonRoom()->GetDungeonID() + static_cast<int>( g_pData->GetDungeonRoom()->GetDifficulty() ) ) );
 	if ( pDungeonData != NULL )
 		requireLevel = pDungeonData->m_MinLevel;
 

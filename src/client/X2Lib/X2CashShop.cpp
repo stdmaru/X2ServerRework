@@ -7104,7 +7104,7 @@ void CX2CashShop::MyUniyHandling( double fTime, float fElapsedTime )
 
 		m_pUnitViewerUI->OnFrameMove( fTime, fElapsedTime );
 
-		if ( m_pUnitViewerUI->GetXSkinAnim()->GetState() == CKTDGXSkinAnim::XAP_ONE_WAIT )
+		if ( m_pUnitViewerUI->GetXSkinAnim()->GetState() == CKTDGXSkinAnim::XAS_WAIT )
 		{
 			m_pUnitViewerUI->PlayByMotionType( CX2UnitViewerUI::UVUMT_WAIT );
 		}

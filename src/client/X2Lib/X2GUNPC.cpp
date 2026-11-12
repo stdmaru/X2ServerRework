@@ -6346,8 +6346,8 @@ int CX2GUNPC::StateChange_CheckOnly( int state, bool /*bDirectChange*/ )
 	if( state <= 0 )
 		return 0;
 
-    if ( false == ( state >= 0 && state < (int) m_vecStateRuntime.size() ) )
-        return 0;
+	if ( false == ( state >= 0 && state < (int) m_vecStateRuntime.size() ) )
+		return 0;
 
 //#ifdef  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
 	if ( GetNowStateID() == GUSI_DIE )
@@ -8030,7 +8030,7 @@ void CX2GUNPC::LevelCorrectionExtraDamage( const CX2DamageManager::DamageData* p
 			if ( null != pDamageData->optrDefenderGameUnit )
 				defencerLv = pDamageData->optrDefenderGameUnit->GetUnitLevel();
 
-			fRate = ( ( (attackerLv - defencerLv) * 0.025f ) + 0.5f ) * (1.f - (fResist / CX2EnchantItem::EAR_MAX_VALUE));
+			fRate = ( ( (attackerLv - defencerLv) * 0.025f ) + 0.5f ) * (1.f - (fResist / static_cast<float>( CX2EnchantItem::EAR_MAX_VALUE )));
 			if(fPureRate >= 1.f) // oasis907 : 김상윤 [2011.5.25] 스크립트 파싱시 디폴트 fRate는 1.f,
 			{					// 외부에서 Rate설정을 따로해주지 않으면 최대 Rate를 0.5로 한정
 				if( fRate > 0.5f )
@@ -9900,8 +9900,8 @@ bool CX2GUNPC::GetIsFallDowning()
         return true;
 
     const StateData& nowStateData = GetNowStateData();
-    if ( NOWSTATE_FLAG( DAMAGE_DOWN ) == false )
-        return false;
+	if ( NOWSTATE_FLAG( DAMAGE_DOWN ) == false )
+		return false;
 	if( GetIsDamageDown() == false)
 		return false;
 
@@ -12269,7 +12269,7 @@ void CX2GUNPC::CommonFrameMove()
 					float fAlpha = 1.0f - fApplySlowFact;
 
 					float fResist = GetEnchantResist( CX2EnchantItem::ET_NATURE );
-					fAlpha = fAlpha * fResist / CX2EnchantItem::EAR_MAX_VALUE;
+					fAlpha = fAlpha * fResist / static_cast<float>( CX2EnchantItem::EAR_MAX_VALUE );
 
 					// oasis907 : 김상윤 [2010.10.5] // 속성 포이즌 이동속도 -> 속도 디버프로 변경
 					if ( fAnimSpeedRate > fApplySlowFact + fAlpha )
@@ -12282,7 +12282,7 @@ void CX2GUNPC::CommonFrameMove()
 					float fAlpha = 1.0f - fApplySlowFact;
 
 					float fResist = GetEnchantResist( CX2EnchantItem::ET_NATURE );
-					fAlpha = fAlpha * fResist / CX2EnchantItem::EAR_MAX_VALUE;
+					fAlpha = fAlpha * fResist / static_cast<float>( CX2EnchantItem::EAR_MAX_VALUE );
 
 					if ( fAnimSpeedRate > fApplySlowFact + fAlpha )
 						fAnimSpeedRate = fApplySlowFact + fAlpha;
@@ -12296,7 +12296,7 @@ void CX2GUNPC::CommonFrameMove()
 					float fAlpha = 1.0f - fApplySlowFact;
 
 					float fResist = GetEnchantResist( CX2EnchantItem::ET_NATURE );
-					fAlpha = fAlpha * fResist / CX2EnchantItem::EAR_MAX_VALUE;
+					fAlpha = fAlpha * fResist / static_cast<float>( CX2EnchantItem::EAR_MAX_VALUE );
 
 					if ( fAnimSpeedRate > fApplySlowFact + fAlpha )
 						fAnimSpeedRate = fApplySlowFact + fAlpha;
@@ -12625,7 +12625,7 @@ void CX2GUNPC::CommonFrameMove()
 					float fAlpha = 1.0f - fApplySlowFact;
 
 					float fResist = GetEnchantResist( CX2EnchantItem::ET_WATER );
-					fAlpha = fAlpha * fResist / CX2EnchantItem::EAR_MAX_VALUE;
+					fAlpha = fAlpha * fResist / static_cast<float>( CX2EnchantItem::EAR_MAX_VALUE );
 
 
 
@@ -12641,7 +12641,7 @@ void CX2GUNPC::CommonFrameMove()
 					float fAlpha = 1.0f - fApplySlowFact;
 
 					float fResist = GetEnchantResist( CX2EnchantItem::ET_WATER );
-					fAlpha = fAlpha * fResist / CX2EnchantItem::EAR_MAX_VALUE;
+					fAlpha = fAlpha * fResist / static_cast<float>( CX2EnchantItem::EAR_MAX_VALUE );
 
 
 
@@ -12657,7 +12657,7 @@ void CX2GUNPC::CommonFrameMove()
 					float fAlpha = 1.0f - fApplySlowFact;
 
 					float fResist = GetEnchantResist( CX2EnchantItem::ET_WATER );
-					fAlpha = fAlpha * fResist / CX2EnchantItem::EAR_MAX_VALUE;
+					fAlpha = fAlpha * fResist / static_cast<float>( CX2EnchantItem::EAR_MAX_VALUE );
 
 
 					if ( fRunJumpSpeedRate > fApplySlowFact + fAlpha )
@@ -18768,7 +18768,7 @@ float CX2GUNPC::GetEnchantResist( CX2EnchantItem::ENCHANT_TYPE enchantType )
 	{
 		if ( m_vecEnchantType[i] == enchantType )
 		{
-			fResistValue += CX2EnchantItem::EAR_VALUE_FOR_NPC;
+			fResistValue += static_cast<float>( CX2EnchantItem::EAR_VALUE_FOR_NPC );
 		}
 	}
 

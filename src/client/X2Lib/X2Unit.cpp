@@ -1255,17 +1255,17 @@ const CX2Stat::EnchantStat& CX2Unit::GetEnchantStat( bool bUpdate /*= true*/, bo
 	AddEnchantStatFromDragonBreath( m_EnchantStat );
 	//}} kimhc // 2011.4.24 // ������� 2�ܰ�, �巡���� ����
 
-	if( m_EnchantStat.m_fDefBlaze > CX2EnchantItem::EAR_MAX_VALUE )
+	if( m_EnchantStat.m_fDefBlaze > static_cast<float>( CX2EnchantItem::EAR_MAX_VALUE ) )
 		m_EnchantStat.m_fDefBlaze = CX2EnchantItem::EAR_MAX_VALUE;
-	if( m_EnchantStat.m_fDefWater > CX2EnchantItem::EAR_MAX_VALUE )
+	if( m_EnchantStat.m_fDefWater > static_cast<float>( CX2EnchantItem::EAR_MAX_VALUE ) )
 		m_EnchantStat.m_fDefWater = CX2EnchantItem::EAR_MAX_VALUE;
-	if( m_EnchantStat.m_fDefNature > CX2EnchantItem::EAR_MAX_VALUE )
+	if( m_EnchantStat.m_fDefNature > static_cast<float>( CX2EnchantItem::EAR_MAX_VALUE ) )
 		m_EnchantStat.m_fDefNature = CX2EnchantItem::EAR_MAX_VALUE;
-	if( m_EnchantStat.m_fDefWind > CX2EnchantItem::EAR_MAX_VALUE )
+	if( m_EnchantStat.m_fDefWind > static_cast<float>( CX2EnchantItem::EAR_MAX_VALUE ) )
 		m_EnchantStat.m_fDefWind = CX2EnchantItem::EAR_MAX_VALUE;
-	if( m_EnchantStat.m_fDefLight > CX2EnchantItem::EAR_MAX_VALUE )
+	if( m_EnchantStat.m_fDefLight > static_cast<float>( CX2EnchantItem::EAR_MAX_VALUE ) )
 		m_EnchantStat.m_fDefLight = CX2EnchantItem::EAR_MAX_VALUE;
-	if( m_EnchantStat.m_fDefDark > CX2EnchantItem::EAR_MAX_VALUE )
+	if( m_EnchantStat.m_fDefDark > static_cast<float>( CX2EnchantItem::EAR_MAX_VALUE ) )
 		m_EnchantStat.m_fDefDark = CX2EnchantItem::EAR_MAX_VALUE;
 
 	return m_EnchantStat;

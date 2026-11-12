@@ -1588,9 +1588,9 @@ bool CX2UserSkillTree::CanIResetThisSkill( CX2SkillTree::SKILL_ID eSkillID ) con
 		return false;
 
 
-		CX2SkillTree::SKILL_ID eFollowingSkillID = static_cast<CX2SkillTree::SKILL_ID>( pSkillTreeTemplet->m_iFollowingSkill );
-		if( true == DoIHaveThisSkill( eFollowingSkillID ) )
-			return false;
+	CX2SkillTree::SKILL_ID eFollowingSkillID = static_cast<CX2SkillTree::SKILL_ID>( pSkillTreeTemplet->m_iFollowingSkill );
+	if( true == DoIHaveThisSkill( eFollowingSkillID ) )
+		return false;
 
 
 

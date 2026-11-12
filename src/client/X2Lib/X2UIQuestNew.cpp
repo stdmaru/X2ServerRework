@@ -5971,7 +5971,7 @@ void CX2UIQuestNew::SetQuestMonsterByQuestInfo( const vector<QuestInfo>& vecQues
 				else //~이상 난이도 체크 false 라면
 				{
 					if( pSubQuestTemplet->m_ClearCondition.m_setDungeonID.end() !=
-						pSubQuestTemplet->m_ClearCondition.m_setDungeonID.find( static_cast<SEnum::DUNGEON_ID>(eDungeonID+eCurrentDifficultyLevel)) )
+						pSubQuestTemplet->m_ClearCondition.m_setDungeonID.find( static_cast<SEnum::DUNGEON_ID>(eDungeonID + static_cast<int>( eCurrentDifficultyLevel ))) )
 					{//단일 대상만 체크
 						bPossibleQuest = true;
 					}

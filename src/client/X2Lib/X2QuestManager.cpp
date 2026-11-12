@@ -3636,7 +3636,7 @@ bool CX2QuestManager::GetNeedToClearDungeonList( OUT map<SEnum::DUNGEON_ID, bool
 						{
 							if( NULL != g_pData && NULL != g_pData->GetDungeonManager() && NULL != g_pData->GetDungeonManager()->GetDungeonData(*sit) )
 							{	//난이도를 제외한 던전ID로 구별합니다.
-								int iExecptDiffucltyLevelDungeonID = *sit - g_pData->GetDungeonManager()->GetDungeonData(*sit)->m_eDifficulty;
+								int iExecptDiffucltyLevelDungeonID = *sit - static_cast<int>( g_pData->GetDungeonManager()->GetDungeonData(*sit)->m_eDifficulty );
 								mapGuideTarget_.insert( std::make_pair( static_cast<SEnum::DUNGEON_ID>(iExecptDiffucltyLevelDungeonID), bIsEpic) );
 							}
 						}

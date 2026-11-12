@@ -53,7 +53,8 @@ HRESULT CX2StateTrainingResult::OnFrameMove( double fTime, float fElapsedTime )
 
 	if ( m_bUIAnimStart == false )
 	{
-		m_fStartWaitRemainTime =- fElapsedTime;
+		// The original wrote "=-" for "-=" (docs/original/bugs.md): the wait ends on the first frame.
+		m_fStartWaitRemainTime = -fElapsedTime;
 	}
 
 	if ( m_fStartWaitRemainTime <= 0.0f )

@@ -60,7 +60,7 @@ void CX2ItemStatCalculator::OpenScriptFile()
 				CX2Unit::UNIT_TYPE eUnitType = CX2Unit::UT_NONE;
 
 				LUA_GET_VALUE_ENUM( luaManager,		TDT_TYPE,		eUnitType,		CX2Unit::UNIT_TYPE,		CX2Unit::UT_NONE );
-				if( CX2Unit::UC_NONE == eUnitType )
+				if( CX2Unit::UT_NONE == eUnitType )
 				{
 					luaManager.EndTable();
 					ASSERT(!"CHARACTER_RELATIVE_STAT_TABLE Error");
@@ -93,7 +93,7 @@ void CX2ItemStatCalculator::OpenScriptFile()
 				CX2Unit::UNIT_CLASS eUnitClass = CX2Unit::UC_NONE;
 
 				LUA_GET_VALUE_ENUM( luaManager,		TDT_TYPE,		eUnitClass,		CX2Unit::UNIT_CLASS,		CX2Unit::UC_NONE );
-				if( CX2Unit::UT_NONE == eUnitClass )
+				if( CX2Unit::UC_NONE == eUnitClass )
 				{
 					luaManager.EndTable();
 					ASSERT(!"SECOND_CLASS_RELATIVE_STAT_TABLE Error");
@@ -190,7 +190,7 @@ void CX2ItemStatCalculator::CalculateItemStat( OUT CX2Item::KItemFormatStatData&
 	if( NULL == pItemTemplet_ )
 		return;
 
-	if( CX2Unit::UC_NONE == eUnitType_ || CX2Unit::UC_NONE == eUnitClass_ )
+	if( CX2Unit::UT_NONE == eUnitType_ || CX2Unit::UC_NONE == eUnitClass_ )
 	{ // UNIT_TYPE or UNIT_CLASS를 받지 못 했다면 저장된 내 캐릭터 정보로 설정
 		eUnitType_ = m_eUnitType;
 		eUnitClass_ = m_eUnitClass;
@@ -213,7 +213,7 @@ void CX2ItemStatCalculator::CalculateItemStat( OUT CX2Item::KItemFormatStatData&
 
 	// 연동 레벨이 설정되어있지 않다면 기본 스탯 구하기
 	if( false == kStatRelationAddLV.IsValideCheck() ||
-		( CX2Unit::UC_NONE == eUnitType_ || CX2Unit::UC_NONE == eUnitClass_ ) )
+		( CX2Unit::UT_NONE == eUnitType_ || CX2Unit::UC_NONE == eUnitClass_ ) )
 	{
 		sRealStatData_ = pItemTemplet_->GetStatData();
 		return;

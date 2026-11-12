@@ -13703,21 +13703,21 @@ void CX2GURaven::RBM_EMERGENCY_ESCAPE_StartFuture()
 		iSkillLevel = 1;
 
 
-		pSkillTemplet =  const_cast<CX2SkillTree::SkillTemplet*>( g_pData->GetSkillTree()->GetSkillTemplet( CX2SkillTree::SI_A_RF_SHADOW_STEP ) );
+	pSkillTemplet =  const_cast<CX2SkillTree::SkillTemplet*>( g_pData->GetSkillTree()->GetSkillTemplet( CX2SkillTree::SI_A_RF_SHADOW_STEP ) );
 
-		if( NULL != pSkillTemplet )
+	if( NULL != pSkillTemplet )
+	{
+		ASSERT( m_PhysicParam.passiveSpeed.x > 0.f );
+		if( 0.f != m_PhysicParam.passiveSpeed.x )
 		{
-			ASSERT( m_PhysicParam.passiveSpeed.x > 0.f );
-			if( 0.f != m_PhysicParam.passiveSpeed.x )
-			{
-				m_fShadowStepTimeLeft = pSkillTemplet->GetSkillAbilityValue( CX2SkillTree::SA_TELEPORT_RANGE_ABS,
-					min( iSkillLevel + GetSkillLevelUpNum( CX2SkillTree::SI_A_RF_SHADOW_STEP ), MAX_LIMITED_SKILL_LEVEL ) ) * 100.f / m_PhysicParam.passiveSpeed.x;
+			m_fShadowStepTimeLeft = pSkillTemplet->GetSkillAbilityValue( CX2SkillTree::SA_TELEPORT_RANGE_ABS,
+				min( iSkillLevel + GetSkillLevelUpNum( CX2SkillTree::SI_A_RF_SHADOW_STEP ), MAX_LIMITED_SKILL_LEVEL ) ) * 100.f / m_PhysicParam.passiveSpeed.x;
 
-				if( GetEqippedSkillMemo( CX2SkillTree::SMI_RAVEN_MEMO6 ) == true )
-				{
-					m_PhysicParam.passiveSpeed.x *= 1.3f;
-				}
+			if( GetEqippedSkillMemo( CX2SkillTree::SMI_RAVEN_MEMO6 ) == true )
+			{
+				m_PhysicParam.passiveSpeed.x *= 1.3f;
 			}
+		}
 	}
 
 }
@@ -17511,9 +17511,9 @@ void CX2GURaven::RVC_SI_P_SHADOW_STEP_FINISH_Start()
 	if ( m_pAfterImage != NULL )
 		m_pAfterImage->SetAfterImageColor( 0xffcccccc );
 
-		m_bActiveShadowStepCombo = true;	/// ������ ���� ����� ����
+	m_bActiveShadowStepCombo = true;	/// ������ ���� ����� ����
 
-		++m_iRVCComboLoopCount;
+	++m_iRVCComboLoopCount;
 }
 
 void CX2GURaven::RVC_SI_P_SHADOW_STEP_FINISH_FrameMove()

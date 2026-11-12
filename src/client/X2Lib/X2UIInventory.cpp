@@ -10352,9 +10352,9 @@ void CX2UIInventory::UseUSCJobPopup()
 		if( 0 == strClassName.length() )
 			return;
 
-			g_pMain->KTDGUIOkAndCancelMsgBox( D3DXVECTOR2(-999,-999),
-				GET_REPLACED_STRING((STR_ID_29778, "L", strClassName)),
-				UIM_UNLIMITED_SECOND_CHANGE_JOB_OK, g_pMain->GetNowState() );
+		g_pMain->KTDGUIOkAndCancelMsgBox( D3DXVECTOR2(-999,-999),
+		GET_REPLACED_STRING((STR_ID_29778, "L", strClassName)),
+		UIM_UNLIMITED_SECOND_CHANGE_JOB_OK, g_pMain->GetNowState() );
 
 	}
 }

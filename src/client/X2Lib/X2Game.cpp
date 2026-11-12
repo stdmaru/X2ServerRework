@@ -4391,8 +4391,8 @@ void CX2Game::KeyProcess()
 					CX2ChungGageData* pChungGageData = static_cast<CX2ChungGageData*>( pMyGUUser->GetGageData() );
 					if ( NULL != pChungGageData )
 						pChungGageData->SetNowCannonBallCount( pChungGageData->GetMaxCannonBallCount() );
-						if( CX2Unit::UC_CHUNG_TACTICAL_TROOPER == pMyGUUser->GetUnitClass() )
-						{
+					if( CX2Unit::UC_CHUNG_TACTICAL_TROOPER == pMyGUUser->GetUnitClass() )
+					{
 //							pChungGageData->SetExtraCannonBallCount( pChungGageData->GetMaxCannonBallCount() );
 						}
 				}

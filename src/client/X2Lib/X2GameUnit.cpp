@@ -2914,8 +2914,8 @@ bool CX2GameUnit::ProcessEnchantBlaze( CX2DamageManager::DamageData* pDamageData
 	}
 
 	const CX2EnchantItem::EnchantData* pEnchantData = NULL;
-    if ( null != pDamageData->optrAttackerGameUnit )
-        pEnchantData = pDamageData->optrAttackerGameUnit->GetWeaponEnchantData( damageType );
+	if ( null != pDamageData->optrAttackerGameUnit )
+		pEnchantData = pDamageData->optrAttackerGameUnit->GetWeaponEnchantData( damageType );
 
 	if ( pEnchantData == NULL )
 		return false;
@@ -3134,8 +3134,8 @@ bool CX2GameUnit::ProcessEnchantFrozen( CX2DamageManager::DamageData* pDamageDat
 	}
 
 	const CX2EnchantItem::EnchantData* pEnchantData = NULL;
-    if ( null != pDamageData->optrAttackerGameUnit )
-        pEnchantData = pDamageData->optrAttackerGameUnit->GetWeaponEnchantData( damageType );
+	if ( null != pDamageData->optrAttackerGameUnit )
+		pEnchantData = pDamageData->optrAttackerGameUnit->GetWeaponEnchantData( damageType );
 	if ( pEnchantData == NULL )
 		return false;
 
@@ -3177,8 +3177,8 @@ bool CX2GameUnit::ProcessEnchantPoison( CX2DamageManager::DamageData* pDamageDat
 	}
 
 	const CX2EnchantItem::EnchantData* pEnchantData = NULL;
-    if ( null != pDamageData->optrAttackerGameUnit )
-        pEnchantData = pDamageData->optrAttackerGameUnit->GetWeaponEnchantData( damageType );
+	if ( null != pDamageData->optrAttackerGameUnit )
+		pEnchantData = pDamageData->optrAttackerGameUnit->GetWeaponEnchantData( damageType );
 	if ( pEnchantData == NULL )
 		return false;
 
@@ -3435,8 +3435,8 @@ bool CX2GameUnit::ProcessEnchantShock( CX2DamageManager::DamageData* pDamageData
 
 	//스턴 상태..
 	const CX2EnchantItem::EnchantData* pEnchantData = NULL;
-    if ( null != pDamageData->optrAttackerGameUnit )
-        pEnchantData = pDamageData->optrAttackerGameUnit->GetWeaponEnchantData( damageType );
+	if ( null != pDamageData->optrAttackerGameUnit )
+		pEnchantData = pDamageData->optrAttackerGameUnit->GetWeaponEnchantData( damageType );
 	if ( pEnchantData == NULL )
 		return false;
 
@@ -3863,7 +3863,7 @@ CX2EnchantItem::ENCHANT_TYPE CX2GameUnit::GetEnchantTypeFromExtraDamageType( CX2
 
 void CX2GameUnit::ApplyEnchantResist( CX2EnchantItem::ENCHANT_TYPE enchantType, float& fDamage )
 {
-	float fResistRate = GetEnchantResist( enchantType ) / CX2EnchantItem::EAR_MAX_VALUE;
+	float fResistRate = GetEnchantResist( enchantType ) / static_cast<float>( CX2EnchantItem::EAR_MAX_VALUE );
 	if( fResistRate < 0.f )
 		fResistRate = 0.f;
 	if( fResistRate > 1.f )
@@ -4567,8 +4567,8 @@ void CX2GameUnit::ClearEffectiveBlackHoleDamageEffect()
 
 bool CX2GameUnit::IsEffectiveBlackHoleDamageEffect( CX2DamageEffect::CEffectHandle hDamageEffect )
 {
-    if ( hDamageEffect == INVALID_DAMAGE_EFFECT_HANDLE )
-        return false;
+	if ( hDamageEffect == INVALID_DAMAGE_EFFECT_HANDLE )
+		return false;
 
 	if( true == m_setEffectiveBlackHoleDamageEffect.empty() )
 		return false;
@@ -8827,7 +8827,7 @@ void CX2GameUnit::UpNowHpPerHitbyAttackPower( IN const float fHitAddHpPer_ )
 		return DISPLAY_ERROR( L"BuffTemplet doesn't exist" );
 
 	const float fRegist = ( buffFactor_.GetIgnoreRegistForRate() ?
-		0.0f : GetEnchantResist( static_cast<CX2EnchantItem::ENCHANT_TYPE>( ptrBuffTemplet->GetRegistType() ) ) / CX2EnchantItem::EAR_MAX_VALUE );
+		0.0f : GetEnchantResist( static_cast<CX2EnchantItem::ENCHANT_TYPE>( ptrBuffTemplet->GetRegistType() ) ) / static_cast<float>( CX2EnchantItem::EAR_MAX_VALUE ) );
 	const float fRate = buffFactor_.GetRate( 1 ); //걸릴 확률
 	const float fRateAndRegist = fRate * (1.0f - fRegist); //Regist값 포함한 걸릴 확률
 	float fRandomFloat = GetRandomFloat() ;

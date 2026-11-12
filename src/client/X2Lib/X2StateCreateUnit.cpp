@@ -358,7 +358,7 @@ HRESULT CX2StateCreateUnit::OnFrameMove( double fTime, float fElapsedTime )
 			}
 		}
 
-		if ( m_pUnitViewerUI->GetXSkinAnim()->GetState() == CKTDGXSkinAnim::XAP_ONE_WAIT )
+		if ( m_pUnitViewerUI->GetXSkinAnim()->GetState() == CKTDGXSkinAnim::XAS_WAIT )
 		{
 			//m_pUnitViewerUI->PlayAnim( L"LobbyWait", CKTDGXSkinAnim::XAP_LOOP, true );
 			//m_SelectUnitClass

@@ -15407,7 +15407,7 @@ void CX2GULire_ElvenRanger::SetFatalityData()
 			}
 
 			m_sFatalityData.m_fPowerRate = pSkillTemplet->GetSkillAbilityValue( static_cast<CX2SkillTree::SKILL_ABILITY_TYPE>( CX2SkillTree::SA_SKILLDAMAGE_MULTIPLE_01 +
-				m_sFatalityData.m_eRating ), iSkillLevel );
+				static_cast<int>( m_sFatalityData.m_eRating ) ), iSkillLevel );
 		}
 	}
 }

@@ -163,7 +163,7 @@ bool CX2BuffFinalizerTemplet::SetFactorFromPacketTemplateMothod( const KBuffFact
 // 		const float fRegist = ( BuffFactor_.GetIgnoreRegistForRate() ?
 // 			0.0f : pGameUnit_->GetEnchantResist( static_cast<CX2EnchantItem::ENCHANT_TYPE>( pBuffTemplet_->GetRegistType() ) ) / CX2EnchantItem::EAR_MAX_VALUE );
 
-		const float fRegist = pGameUnit_->GetEnchantResist( static_cast<CX2EnchantItem::ENCHANT_TYPE>( pBuffTemplet_->GetRegistType() ) ) / CX2EnchantItem::EAR_MAX_VALUE;
+		const float fRegist = pGameUnit_->GetEnchantResist( static_cast<CX2EnchantItem::ENCHANT_TYPE>( pBuffTemplet_->GetRegistType() ) ) / static_cast<float>( CX2EnchantItem::EAR_MAX_VALUE );
 
 		if ( m_eDurationTimeType == eDurationTimeType )
 		{

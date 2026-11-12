@@ -7680,7 +7680,7 @@ void CX2GUUser::LevelCorrectionExtraDamage( const CX2DamageManager::DamageData* 
 		int attackerLv = pDamageData->optrAttackerGameUnit->GetUnitLevel();
 		int defencerLv = pDamageData->optrDefenderGameUnit->GetUnitLevel();
 
-		fRate = ( ( (attackerLv - defencerLv) * 0.025f ) + 0.5f ) * (1.f - (fResist / CX2EnchantItem::EAR_MAX_VALUE));
+		fRate = ( ( (attackerLv - defencerLv) * 0.025f ) + 0.5f ) * (1.f - (fResist / static_cast<float>( CX2EnchantItem::EAR_MAX_VALUE )));
 		if(fPureRate >= 1.f) // oasis907 : ����� [2011.5.25] ��ũ��Ʈ �Ľ̽� ����Ʈ fRate�� 1.f,
 		{					// �ܺο��� Rate������ ���������� ������ �ִ� Rate�� 0.5�� ����
 			if( fRate > 0.5f )
@@ -12577,7 +12577,7 @@ void CX2GUUser::CommonFrameMove()
 					float fAlpha = 1.0f - fApplySlowFact;
 
 					float fResist = GetEnchantResist( CX2EnchantItem::ET_NATURE );
-					fAlpha = fAlpha * fResist / CX2EnchantItem::EAR_MAX_VALUE;
+					fAlpha = fAlpha * fResist / static_cast<float>( CX2EnchantItem::EAR_MAX_VALUE );
 
 					// oasis907 : ����� [2010.10.5] // �Ӽ� ������ �̵��ӵ� -> �ӵ� ������� ����
 					if ( fAnimSpeedRate > fApplySlowFact + fAlpha )
@@ -12591,7 +12591,7 @@ void CX2GUUser::CommonFrameMove()
 					float fAlpha = 1.0f - fApplySlowFact;
 
 					float fResist = GetEnchantResist( CX2EnchantItem::ET_NATURE );
-					fAlpha = fAlpha * fResist / CX2EnchantItem::EAR_MAX_VALUE;
+					fAlpha = fAlpha * fResist / static_cast<float>( CX2EnchantItem::EAR_MAX_VALUE );
 
 					if ( fAnimSpeedRate > fApplySlowFact + fAlpha )
 						fAnimSpeedRate = fApplySlowFact + fAlpha;
@@ -12605,7 +12605,7 @@ void CX2GUUser::CommonFrameMove()
 					float fAlpha = 1.0f - fApplySlowFact;
 
 					float fResist = GetEnchantResist( CX2EnchantItem::ET_NATURE );
-					fAlpha = fAlpha * fResist / CX2EnchantItem::EAR_MAX_VALUE;
+					fAlpha = fAlpha * fResist / static_cast<float>( CX2EnchantItem::EAR_MAX_VALUE );
 
 					if ( fAnimSpeedRate > fApplySlowFact + fAlpha )
 						fAnimSpeedRate = fApplySlowFact + fAlpha;
@@ -13007,7 +13007,7 @@ void CX2GUUser::CommonFrameMove()
 					float fAlpha = 1.0f - fApplySlowFact;
 
 					float fResist = GetEnchantResist( CX2EnchantItem::ET_WATER );
-					fAlpha = fAlpha * fResist / CX2EnchantItem::EAR_MAX_VALUE;
+					fAlpha = fAlpha * fResist / static_cast<float>( CX2EnchantItem::EAR_MAX_VALUE );
 
 
 
@@ -13023,7 +13023,7 @@ void CX2GUUser::CommonFrameMove()
 					float fAlpha = 1.0f - fApplySlowFact;
 
 					float fResist = GetEnchantResist( CX2EnchantItem::ET_WATER );
-					fAlpha = fAlpha * fResist / CX2EnchantItem::EAR_MAX_VALUE;
+					fAlpha = fAlpha * fResist / static_cast<float>( CX2EnchantItem::EAR_MAX_VALUE );
 
 
 
@@ -13039,7 +13039,7 @@ void CX2GUUser::CommonFrameMove()
 					float fAlpha = 1.0f - fApplySlowFact;
 
 					float fResist = GetEnchantResist( CX2EnchantItem::ET_WATER );
-					fAlpha = fAlpha * fResist / CX2EnchantItem::EAR_MAX_VALUE;
+					fAlpha = fAlpha * fResist / static_cast<float>( CX2EnchantItem::EAR_MAX_VALUE );
 
 
 
@@ -17785,7 +17785,7 @@ int CX2GUUser::GetSkillLevelUpNum( CX2SkillTree::SKILL_ID skillID ) const
 	case CX2DamageManager::DT_WEAPON_MIX:
 		if( 0 < GetAddMagicAttackCriticalRate() )
 			fCriticalEffectiveRate += GetAddMagicAttackCriticalRate();
-			fCriticalEffectiveRate += m_fShadowOfDisasterRate;
+		fCriticalEffectiveRate += m_fShadowOfDisasterRate;
 	default:
 		break;
 	}
@@ -22054,8 +22054,8 @@ void CX2GUUser::SetEnableDash( bool bEnableDash,  CX2GameUnit::ENABLE_DASH_STATE
 
 	if( false == bEnableDash )
 	{
-		if( USI_DASH == GetGameUnitState()
-			|| USI_DASH == GetGameUnitStateFuture()
+		if( USI_DASH == static_cast<int>( GetGameUnitState() )
+			|| USI_DASH == static_cast<int>( GetGameUnitStateFuture() )
 			)
 		{
 			StateChange( USI_WALK, true );
@@ -28906,7 +28906,7 @@ void CX2GUUser::LoadEffectSetFromScript( IN KLuaManager& luaManager, IN const bo
 			if( false == luaManager.GetValue( iValueIndex+1, fStartAnimationTime ) )
 				break;
 
-				m_vecEffectSetToPlay.push_back( EffectSetToPlay( wstrEffectSetName, fStartAnimationTime ) );
+			m_vecEffectSetToPlay.push_back( EffectSetToPlay( wstrEffectSetName, fStartAnimationTime ) );
 			}
 
 

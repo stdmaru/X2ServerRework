@@ -22731,8 +22731,8 @@ void CX2GUEve::ENSI_SA_EPR_SWEEP_ROLLING_CHARGE_EventProcess()
 
 void CX2GUEve::ENSI_SA_EPR_SWEEP_ROLLING_CHARGE_End()
 {
-    if ( m_hEffectSweepParadeLight != INVALID_DAMAGE_EFFECT_HANDLE )
-        g_pX2Game->GetDamageEffect()->DestroyInstanceHandle( m_hEffectSweepParadeLight );
+	if ( m_hEffectSweepParadeLight != INVALID_DAMAGE_EFFECT_HANDLE )
+		g_pX2Game->GetDamageEffect()->DestroyInstanceHandle( m_hEffectSweepParadeLight );
 	if ( m_hEffectSweepParadeElectric != INVALID_DAMAGE_EFFECT_HANDLE )
 		g_pX2Game->GetDamageEffect()->DestroyInstanceHandle( m_hEffectSweepParadeElectric );
 	CommonStateEnd();
@@ -25382,12 +25382,12 @@ void CX2GUEve::SPECTRO_EL_CRYSTAL_Start()
 			else
 				m_EveElectraSystem.SetSystemOperationTime( pSkillTemplet->GetSkillAbilityValue( CX2SkillTree::SA_EFFECTIVE_TIME, iSkillTempletLevel ) );
 
-				m_EveElectraSystem.SetPlaneFormation( PFT_AMPLIFIER );
-				if ( IsMyUnit() )
-					g_pX2Game->UpdateSkillSlotUI();
+			m_EveElectraSystem.SetPlaneFormation( PFT_AMPLIFIER );
+			if ( IsMyUnit() )
+				g_pX2Game->UpdateSkillSlotUI();
 
-				if ( true == m_EveElectraSystem.GetEnableHyperOpticalResearch() )
-					const_cast<CX2SkillTree::SkillTemplet*>(pSkillTemplet)->m_eActiveSkillUseCondtion = CX2SkillTree::ASUT_ANYTIME;
+			if ( true == m_EveElectraSystem.GetEnableHyperOpticalResearch() )
+				const_cast<CX2SkillTree::SkillTemplet*>(pSkillTemplet)->m_eActiveSkillUseCondtion = CX2SkillTree::ASUT_ANYTIME;
 			}
 		}
 	}

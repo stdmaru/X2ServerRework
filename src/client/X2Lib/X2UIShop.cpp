@@ -1313,7 +1313,7 @@ void CX2UIShop::SellItem( UidType sellItemUID, D3DXVECTOR2 pos )
 		return;
 	}
 
-	if ( pSellItem->GetItemTemplet()->GetPeriodType() == CX2Item::SPT_GP && pSellItem->GetItemTemplet()->GetItemType() == CX2Item::IT_ACCESSORY && pSellItem->GetItemData().m_Period != 0 )
+	if ( pSellItem->GetItemTemplet()->GetPeriodType() == CX2Item::PT_QUANTITY && pSellItem->GetItemTemplet()->GetItemType() == CX2Item::IT_ACCESSORY && pSellItem->GetItemData().m_Period != 0 )
 	{
 		CKTDGUIDialogType pMsgBox = g_pMain->KTDGUIOKMsgBox( D3DXVECTOR2( -999, -999 ), GET_STRING( STR_ID_21663 ), g_pMain->GetNowState() );
 		pMsgBox->SetEnableMoveByDrag_LUA(false);

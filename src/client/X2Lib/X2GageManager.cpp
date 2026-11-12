@@ -1885,8 +1885,8 @@ bool CX2OldGageManager::OpenScript( const WCHAR* pFileName )
 	lua_tinker::decl( g_pKTDXApp->GetLuaBinder()->GetLuaState(),  "g_pUIDialog", m_pDLGOtherUnit->Get() );
 
 
-    if ( g_pKTDXApp->LoadLuaTinker( pFileName ) == false )
-        return false;
+	if ( g_pKTDXApp->LoadLuaTinker( pFileName ) == false )
+		return false;
 
 
 	return true;

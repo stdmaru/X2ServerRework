@@ -573,10 +573,8 @@ HRESULT CX2State::OnFrameMove( double fTime, float fElapsedTime )
 		//}} kimhc // 2009-10-14 // 자동결제 관련해서 최근 열리고 닫힌 웹페이지가 무엇인지 조사
 	}
 
-//#ifdef TITLE_SYSTEM
-    if(g_pData != NULL && g_pData->GetTitleManager() != NULL)
-        g_pData->GetTitleManager()->CheckNewTitle();
-//#endif
+	if(g_pData != NULL && g_pData->GetTitleManager() != NULL)
+		g_pData->GetTitleManager()->CheckNewTitle();
 
 
 

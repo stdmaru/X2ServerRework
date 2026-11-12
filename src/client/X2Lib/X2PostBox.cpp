@@ -1362,10 +1362,10 @@ void CX2PostBox::RegisterItem(CX2SlotItem* pItemSlot)
 		return;
 
     CX2Item* pkItem = g_pData->GetMyUser()->GetSelectUnit()->GetInventory().GetItem( pItemSlot->GetItemUID() );
-    if ( pkItem == NULL ||
-        NULL == pkItem->GetItemTemplet()
-        )
-        return;
+	if ( pkItem == NULL ||
+		NULL == pkItem->GetItemTemplet()
+		)
+		return;
 
 	//{{ kimhc // 2009-09-03 // 봉인 아이템 우편 전송 가능하도록
 
@@ -1544,12 +1544,12 @@ void CX2PostBox::MouseMove( D3DXVECTOR2 mousePos )
 bool CX2PostBox::MouseUp( D3DXVECTOR2 mousePos )
 {
     if(m_bProcess || m_bRegisteredTrade || m_bAttachItem == false || m_CurrentState == 0)
-        return false;
+		return false;
 
-    //we-need-any-personal-item-slot-find
+	//we-need-any-personal-item-slot-find
 
-    // 마우스업된 위치가 임의의 인벤토리 슬롯인 경우
-    // No Change Inven
+	// 마우스업된 위치가 임의의 인벤토리 슬롯인 경우
+	// No Change Inven
 
 	if ( *m_pSlotBeforeDragging != NULL )
 	{
@@ -3268,8 +3268,8 @@ void CX2PostBox::GetItemLetter(int inx)
         m_pDLGQuery = NULL;
     }
 
-    if(inx < 0 || inx >= 6)
-        return;
+	if(inx < 0 || inx >= 6)
+		return;
 
 	if(m_listSlot[inx].m_ItemId <= 0 || m_listSlot[inx].m_postID <= 0)
 		return;
