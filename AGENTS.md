@@ -140,8 +140,11 @@ If interrupted, commit and push current progress, then update the PR with comple
 - **Use one short-lived branch per roadmap step**, named `area/topic`. Areas: `platform`, `kncsdk`, `server`, `client`, `tools`,
   `docs`, `build`. Examples: `tools/server-flags`, `server/common-import`, `build/windows-clang-cl`.
 - If `main` has moved, rebase the branch onto `main` and push the updated work branch before continuing.
-- Before requesting integration, run a clean build, tests, the link checker, and Windows validation
-  (`tools/win/winbuild.sh` or a CI run). Integrate through the PR after its checks pass and it is approved; preserve linear history
+- Before requesting integration, run the Linux Clang build (no warnings), `ctest`, and the link checker. GCC and Windows
+  (`tools/win/winbuild.sh`) are checked locally only when the PR is at risk there (`_WIN32` paths, `src/platform`, system or
+  window code, CMake, new names that may clash with Windows macros) and at milestones; otherwise the CI on `main` checks them
+  after the merge, and a failure there is fixed by the next PR before other work
+  ([Continuous integration](docs/tools/ci.md#minutes-orçamento), user, 2026-11-12). Integrate through the PR after its checks pass and it is approved; preserve linear history
   by using GitHub's rebase-and-merge option. Do not merge the PR locally or push its changes directly to `main`.
   Actions has a **2,000-minute monthly budget** (Windows counts twice); CI runs automatically only on `main`. See
   [Continuous integration](docs/tools/ci.md#minutes-orçamento). Delete the work branch after the PR is merged.
