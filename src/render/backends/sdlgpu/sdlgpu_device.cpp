@@ -827,7 +827,9 @@ void SdlGpuDevice::Finish(SdlCommandBuffer* commands)
 
 std::unique_ptr<Device> CreateSdlGpuDevice(const DeviceOptions& options, std::string& error)
 {
-    SDL_GPUDevice* device = SDL_CreateGPUDevice(ToSdl(options.shaderFormats), options.debug,
+    const char* debugEnv = SDL_getenv("X2_GPU_DEBUG");
+    const bool debug = options.debug || (debugEnv && debugEnv[0] == '1');
+    SDL_GPUDevice* device = SDL_CreateGPUDevice(ToSdl(options.shaderFormats), debug,
                                                 options.driver.empty() ? nullptr : options.driver.c_str());
     if (!device) {
         error = std::string("SDL_CreateGPUDevice: ") + SDL_GetError();

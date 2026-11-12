@@ -33,7 +33,7 @@ Only what SDL_GPU does, nothing added in advance for a future backend (T36 (1)):
 
 | Backend | Files | Behavior |
 |---|---|---|
-| `sdlgpu` | `backends/sdlgpu/sdlgpu_device.cpp` | The only real one: a near 1:1 wrapper; handles hold the SDL pointers, enums are mapped by table. Device created with SPIR-V, DXIL and MSL by default and validation layers in `X2_DEV_TOOLS` builds, as `x2::app` did before |
+| `sdlgpu` | `backends/sdlgpu/sdlgpu_device.cpp` | The only real one: a near 1:1 wrapper; handles hold the SDL pointers, enums are mapped by table. Device created with SPIR-V, DXIL and MSL by default; validation layers only with `DeviceOptions::debug` or `X2_GPU_DEBUG=1` (2026-11-12: on by default in `X2_DEV_TOOLS` builds before, where the Vulkan layer took about 80% of the client's frame) |
 | `null` | `backends/null/null_device.cpp` | No GPU. Validates handles and ranges (a misuse fails `Submit`), records one line per submitted command, keeps the bytes of buffers and textures so clears, uploads, copies and downloads behave (formats encoded as in DXGI/SDL: `B5G6R5` has blue in the low bits, BC data copied in whole 4×4 blocks); draws are only recorded. A claimed window gets a `B8G8R8A8Unorm` swapchain texture of its pixel size, none while minimized |
 
 - The null backend's test view is `x2/render/null.h`: `Commands`, `ClearCommands`, `TextureBytes`, `BufferBytes`,
