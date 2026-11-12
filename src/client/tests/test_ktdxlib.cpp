@@ -583,8 +583,8 @@ TEST_CASE("ktdxlib: drawing between ticks interpolates views and matrices, and s
     CHECK(camera._33 == doctest::Approx(1.f));
 
     // a cut: the camera jumps, so the last view is drawn as it is
-    const D3DXVECTOR3 far(5000, 100, -500), farAt = far + D3DXVECTOR3(0, 0, 1);
-    D3DXMatrixLookAtLH(&b, &far, &farAt, &up);
+    const D3DXVECTOR3 farEye(5000, 100, -500), farAt = farEye + D3DXVECTOR3(0, 0, 1);
+    D3DXMatrixLookAtLH(&b, &farEye, &farAt, &up);
     CHECK_FALSE(x2::ktdx::InterpolateView(a, b, 0.5f, out));
     CHECK(out == b);
 
