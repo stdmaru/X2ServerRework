@@ -125,3 +125,8 @@ as source and Item.kim compiled again, scripts that do not load refused, and `--
 6 GB free for `_client/data` in `X2_ASSETS_WORK_DIR` or the system temporary folder. 2026-11-05, `linux-debug`, with
 readable Lua: 4,553 scripts decompiled, none kept as bytecode, Item.kim converted, 173 of 173 archives identical,
 7 min 14 s (6 min 22 s without Lua).
+
+## Content changes (T42)
+
+Since 2026-11-12 the client's content may change ([T42](../project/decisions.md)). Every file changed in the client_data
+is listed here with the step that changed it and why. None yet (2026-11-12).

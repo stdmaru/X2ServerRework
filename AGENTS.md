@@ -27,7 +27,9 @@ finally, the client.
   binaries and client assets (decision T22).
 - **Original code enters `src/` only through the importer** (`tools/import`; see [Importer](docs/tools/importer.md)).
   Once an imported file has been edited by hand, do not reimport that module. Fix it directly in `src/`.
-- **Client assets must not change** (`_client/`, `.kom`, `.dds`, `.x`, `.fx`, ...). Adapt the code to them.
+- **Client asset formats must not change** (`_client/`, `.kom`, `.dds`, `.x`, `.fx`, ...): adapt the code to them. Since
+  2026-11-12 the client's *content* may change (UI layouts, scripts, options; decision T42), edited in the client_data and
+  recorded on [client_data](docs/tools/client-data.md); never edit `_client/`.
 - **Keep the protocol compatible with the original client** (`x2.exe`): do not change packet formats, sizes, or cryptography
   without a recorded decision. Types sent over the network must have fixed sizes (`int32_t`, `char16_t`, ...). See
   [Protocol](docs/original/protocol.md).
