@@ -155,7 +155,6 @@ private:
 
 private:
 	bool								m_bShow;
-	const CKTDXStage* const				m_pNowStage;
 	CKTDGUIDialogType					m_pDlgRankingInfo;
 
 	RANKING_TYPE						m_nowRankingInfoType;				// 현재 보여줘야 할 랭킹 정보 타입(헤니르 일일, 대전 등)

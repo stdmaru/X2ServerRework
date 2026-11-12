@@ -4,8 +4,7 @@
 #include "X2CubeOpenImageManager.h"
 
 CX2CubeOpenImageManager::CX2CubeOpenImageManager() :
-	m_iNowCubeID( 0 )
-	,m_bPlaying(false)
+	m_bPlaying(false)
 	,m_bStart(false)
 	,m_bSoundPlaying(false)
 	,m_bNowResultEventCubePlaying(false)

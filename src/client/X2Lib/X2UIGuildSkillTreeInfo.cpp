@@ -259,7 +259,6 @@ void CX2GuildSkillTreeInfoSlotData::ShowSlotPicture(bool bShow, CKTDGUISlot* pSl
 CX2UIGuildSkillTreeInfo::CX2UIGuildSkillTreeInfo( CKTDXStage* /*pNowStage*/ ) :
 m_bShow(false),
 m_bSkillRemoveMode(false),
-m_bClassInfoVaild(false),
 //m_MovedPosition(0,0),
 //m_DLGPosition(0,0),
 m_DLGSize(0,0),
@@ -267,11 +266,9 @@ m_pDLGUISkillTree(NULL),
 m_pDLGSkillToolTip(NULL),
 m_pDLGSkillUnsealInform(NULL),
 m_pDLGSkillUnsealed( NULL ),
-m_pUserSkillTree(NULL),
 m_SumDelta(0),
 m_iPrevSP(-1),
-m_pTalkBoxManager(NULL),
-m_bUsingCSP( false )		// 이것도 안쓰이는거 같은데...
+m_pTalkBoxManager(NULL)
 {
 	m_pTalkBoxManager = CX2TalkBoxManager::CreateTalkBoxManger();
 	g_pKTDXApp->GetDGManager()->AddObjectChain( m_pTalkBoxManager );

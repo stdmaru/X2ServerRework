@@ -744,6 +744,7 @@ struct TimeLimited
 {
 	float m_fTimeLeft;
 
+	virtual ~TimeLimited() = default;
 	virtual void OnTimeOutCallBack() {};
 
 	virtual void OnFrameMove( double /*fTime*/, float fElapsedTime )

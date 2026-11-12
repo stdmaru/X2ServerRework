@@ -258,7 +258,6 @@ private:
 	std::wstring						m_wstrLastMessage;
 	std::wstring						m_wstrLastADMessage;
 
-	const CKTDXStage* const				m_pNowStage;
 	CKTDGUIDialogType					m_pDlgGuildBoard;
 
 

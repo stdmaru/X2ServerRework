@@ -53,6 +53,7 @@ class CX2Room
 		/// ROOM 기본 정보
 		struct RoomSimpleInfo
 		{
+			virtual ~RoomSimpleInfo() = default;
 			UidType		m_RoomUID;		/// ROOM UID
 			wstring		m_RoomName;		/// ROOM 이름
 			ROOM_STATE	m_RoomState;	/// ROOM 상태

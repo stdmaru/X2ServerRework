@@ -40,8 +40,7 @@ float CHANNEL_CONGESTION_SCOPE_TEMP[] = {0.1f, 0.2f, 0.3f, 0.9f, };
 // ?? ????? ????, ???? ???? ?? * CHANNEL_CONGESTION_SCOPE_TEMP[3] = FULL
 
 CX2StateServerSelect::CX2StateServerSelect(void) :
-  m_bEnableUnitSelectBySecondSecurity( false )
-, m_pDLGServerSelectBack(NULL)
+  m_pDLGServerSelectBack(NULL)
 , m_pDLGChannelSelectBack( NULL )
 , m_iChannelNum( 0 )
 , m_bSelectChannel( false )
@@ -100,6 +99,7 @@ CX2StateServerSelect::CX2StateServerSelect(void) :
 , m_NickNameChangeUnitUID( -1 )
 , m_NickNameChangeUnitNickName( L"" )
 , m_bRemoveUnitAfterReceiveNMSerialNum( false )
+, m_bEnableUnitSelectBySecondSecurity( false )
 , m_bRecivedKeyMap( false )
 , m_bSend_EGS_SELECT_UNIT_REQ_For_Auto_Connection ( false )
 , m_pUnitViewerUI ( NULL )

@@ -171,10 +171,6 @@ class CX2WeddingGame
 		float						m_fReserveTime;
 		vector<CX2SquareUnitPtr>    m_UserUnitList;
 
-		CKTDGParticleSystem*		m_pMajorParticle;
-		CKTDGParticleSystem*		m_pMinorParticle;
-		CKTDGXMeshPlayer*			m_pMajorXMeshPlayer;
-		CKTDGXMeshPlayer*			m_pMinorXMeshPlayer;
 
 		CKTDGFontManager::CUKFont*	m_pFontForUnitName;
 

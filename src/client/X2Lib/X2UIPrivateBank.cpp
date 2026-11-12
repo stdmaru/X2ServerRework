@@ -11,7 +11,6 @@ CX2UIPrivateBank::CX2UIPrivateBank( const CKTDXStage* const pNowStage, const WCH
 	, m_vDlgSize( 0, 0 )
 	, m_iMaxNumOfSlot( 0 )
 	, m_iUsedNumOfSlot( 0 )
-	, m_iConfirmED( 0 )
 	, m_pDLGBuyConfirm( NULL )
 {
 	m_bReserveResetDialog = false;

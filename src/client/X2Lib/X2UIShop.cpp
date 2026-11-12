@@ -44,8 +44,7 @@ m_EnchantLevelBefore(0),
 m_AttributeEnchantItemUID(0),
 m_AttribEnchantID(-1),
 m_AttribEnchantSlotID(-1),
-m_SumDelta(0)
-, m_iAddEnchantLevel(0)	/// MAGIC_ENCHANT_LEVEL_LIMIT 기본 강화 제한 레벨의 추가 값(이벤트 용)
+m_iAddEnchantLevel(0)	/// MAGIC_ENCHANT_LEVEL_LIMIT 기본 강화 제한 레벨의 추가 값(이벤트 용)
 {
 	m_vecBuySlot.clear();
 	for(int i=0; i<BIC_COUNT; ++i)

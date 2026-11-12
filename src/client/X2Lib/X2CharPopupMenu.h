@@ -80,12 +80,7 @@ private:
 
 	//bool							m_bShow;
 
-	CKTDGUIControl::CPictureData*	m_pPicMiddle1;
-	CKTDGUIControl::CPictureData*	m_pPicBottom1;
-	CKTDGUIControl::CPictureData*	m_pPicMiddle2;
-	CKTDGUIControl::CPictureData*	m_pPicBottom2;
 
-	CKTDGUIControl::CPictureData*	m_pPicCharacter;		/// 캐릭터 이미지
 
 	CKTDGUIControl::CPictureData*	m_pPicLevelTen[10];		/// 레벨 십단위
 	CKTDGUIControl::CPictureData*	m_pPicLevelOne[10];		/// 레벨 일단위

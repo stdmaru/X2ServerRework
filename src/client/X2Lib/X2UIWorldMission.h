@@ -31,8 +31,6 @@ public:
 
 	void UpdateNumOfCrystalsProtected( int iNumOfCrystalsProtected_ = 0, int iNumOfMaxCrystalsProtected_ = 1 );
 
-	//int GetNumOfCrystalsProtected() const { return m_iNumOfCrystalsProtected; }
-	//void SetNumOfCrystalsProtected( int iNumOfCrystalsProtected_ ) { m_iNumOfCrystalsProtected = iNumOfCrystalsProtected_; }
 
 	void SetShowCrystalPictureData( CKTDGUIStatic* pStaticTime_, int iIndexOfColor_, bool bShow_ );
 
@@ -53,7 +51,6 @@ private:
 // 	bool						m_bReservedReward;
 // 	int							m_iRewardItemID;
 // 	int							m_iRewardQuantity;
-	int							m_iNumOfCrystalsProtected;	// 현재까지 지켜진 크리스탈의 갯수
 	bool						m_bForceUpdate;
 	bool						m_bEnableTimeDlg;
 

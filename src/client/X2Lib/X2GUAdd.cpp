@@ -9,7 +9,6 @@ namespace _CONST_ADD_
 	const float COMBO_XXZZ_MAX_COUNT						= 10.f;		/// �ִ� �ݺ���
 
 	/// ��� ���� �޺� XX ���� �ð�
-	const float DASH_JUMP_COMBO_X2_MAX_CHARGE_TIME			= 3.f;		/// �ִ� ���� �ð�
 	const float DASH_JUMP_COMBO_X2_MAX_REMAIN_TIME			= 3.f;		/// �ִ� ���� �ð�
 
 	/// ���׳�Ʈ��

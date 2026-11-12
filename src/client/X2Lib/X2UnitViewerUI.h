@@ -262,7 +262,6 @@
 
         int                                             m_iTitleId;
 //#endif
-		D3DXVECTOR3 m_vScrPos;
 		bool		m_bFixed;
 
 		bool		m_bPickUnit;

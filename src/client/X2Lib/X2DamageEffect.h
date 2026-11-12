@@ -472,7 +472,7 @@ class CX2DamageEffect
 		class CEffect
 		{
 			public:
-				~CEffect();
+				virtual ~CEffect();
 
 				CEffect( CX2DamageEffect* pManager, KLuaManager* pLuaManager, CX2GameUnit* pGameUnit, const WCHAR* pName, float fPowerRate,
 							D3DXVECTOR3 pos, D3DXVECTOR3 angleDegree, D3DXVECTOR3 moveAxisDegree, float fLandPos = 0.f, float fCreationDelayTime = -1.f,

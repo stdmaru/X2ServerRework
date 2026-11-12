@@ -44,12 +44,7 @@ m_ElChangerItemCount(0)
 //}}100416 ������ Ʈ���� �ڽ� �߰�
 ,m_DecompositionItemUID(0),
 m_DecompositionWindowNowPageNum(0),
-m_SocketItemUID(0)
-,
 //m_bOpenedAttractionItem(false),
-m_SocketSlotIndex(-1),
-m_bSocketRareMagicStone(false),
-m_bSocketRemove(false),
 m_fPlayTime(0),
 m_bPlayAttractionItem(false),
 m_pDLGOpenAttraction(NULL),

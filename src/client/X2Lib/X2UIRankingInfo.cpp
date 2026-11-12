@@ -7,7 +7,6 @@
 
 CX2UIRankingInfo::CX2UIRankingInfo( const CKTDXStage* const pNowStage, const WCHAR* const pFileName ) :
 m_bShow( false ),
-m_pNowStage( pNowStage ),
 m_pDlgRankingInfo( NULL ),
 m_nowRankingInfoType( RT_DAY_RANKING ),
 m_uiNowPage( 1 ),

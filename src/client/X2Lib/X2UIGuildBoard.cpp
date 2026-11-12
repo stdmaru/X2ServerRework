@@ -8,7 +8,6 @@ CX2UIGuildBoard::CX2UIGuildBoard( const CKTDXStage* const pNowStage, const WCHAR
 m_bShow( false ),
 m_bOldApplyDelete( false ),
 m_bRegMyGuildAd( false ),
-m_pNowStage( pNowStage ),
 m_pDlgGuildBoard( NULL ),
 m_nowSortType( ST_REG_DATE ),
 m_uiNowPage( 1 ),

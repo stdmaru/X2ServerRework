@@ -301,7 +301,6 @@ private:
 	int						m_AttribEnchantSlotID;
 
 	// 마우스 휠 관련
-	SHORT					m_SumDelta;
 
 	int						m_iAddEnchantLevel;	/// MAGIC_ENCHANT_LEVEL_LIMIT 기본 강화 제한 레벨의 추가 값(이벤트 용)
 };

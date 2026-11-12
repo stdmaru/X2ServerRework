@@ -87,7 +87,6 @@ private:
 	typedef map<int, CubeOpenImageInfo*>::iterator MapCubeOpenImageInfoItor;
 
 	// 큐브 UI 출력 상황제어
-	int			m_iNowCubeID;
 	bool		m_bPlaying;
 	bool		m_bStart;
 	bool		m_bSoundPlaying;

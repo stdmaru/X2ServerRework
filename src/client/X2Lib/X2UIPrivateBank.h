@@ -99,7 +99,6 @@ private:
 
 	//std::wstring					m_wstrNickName;				// 캐릭터 닉네임
 
-	int					m_iConfirmED;
 	CKTDGUIDialogType	m_pDLGBuyConfirm;
 
 	bool							m_bIsOpenedShareBank;		// 은행 공유 열려 있는지

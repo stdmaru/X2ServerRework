@@ -7,7 +7,6 @@
 CX2UIItemExchangeShop::CX2UIItemExchangeShop( const CKTDXStage* const pNowStage, const WCHAR* const pFileName )
 : CX2ItemSlotManager( const_cast< CKTDXStage* >( pNowStage ), NULL ),
 m_bShow( false ),
-m_pNowStage( NULL ),
 m_iHouseID( CX2LocationManager::HI_INVALID ),				// X2LocationManager::HOUSE_ID
 m_pDlgBackground( NULL ),									// 아이템 교환 다이얼로그
 //m_pDlgSelectedSlot( NULL ),

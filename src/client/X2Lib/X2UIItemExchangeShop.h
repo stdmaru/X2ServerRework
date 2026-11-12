@@ -104,7 +104,6 @@ private:
 private:
 	// 멤버변수
 	bool								m_bShow;
-	const CKTDXStage* const				m_pNowStage;
 	int									m_iHouseID;				// X2LocationManager::HOUSE_ID
 	CKTDGUIDialogType						m_pDlgBackground;		// 아이템 교환 다이얼로그
 	//CKTDGUIDialogType						m_pDlgSelectedSlot;		// m_pDlgSelectedItem은 mousemove에 사용되고, 이것은 mousedown에 사용됨

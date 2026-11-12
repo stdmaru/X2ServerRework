@@ -27,9 +27,6 @@ m_pDLGPartyPVP(NULL)
 , m_pDlgPvpConfirm(NULL)
 , m_iEstimatedTime(0)
 , m_fWaitPvpTime(0.f)
-, m_ePartyListLocalMapID( CX2LocationManager::LMI_INVALID )
-, m_iPartyListDungeonID( 0 )
-//, m_pDlgPartyPvpEtcSetting(NULL)
 , m_iPartyListPageNumber( 1 )
 , m_iMaxPartyListPageNumber( 1 )
 , m_iPickedPartyListSlotIndex( -1 )
@@ -37,7 +34,6 @@ m_pDLGPartyPVP(NULL)
 , m_pLocalMapUI( new CX2LocalMapUI )
 
 //어둠의 문 난이도가 변경 되었을 때, EGS_PARTY_CHANGE_DUNGEON_REQ 를 호출하도록 주는 신호
-, m_iNoviceGuideStep(0)
 , m_fElapsedTime(3.f)
 
 , m_bShowQuestMark(true)

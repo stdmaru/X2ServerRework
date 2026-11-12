@@ -176,7 +176,6 @@ public:
 private:
 	bool					m_bShow;
 	bool					m_bSkillRemoveMode;
-	bool					m_bClassInfoVaild;
 	//D3DXVECTOR2				m_MovedPosition;
 	//D3DXVECTOR2				m_DLGPosition;
 	D3DXVECTOR2				m_DLGSize;
@@ -192,7 +191,6 @@ private:
 	map<CX2SkillTree::SKILL_ID, SkillSlotUI>	m_mapSkillSlotUISet;
 	std::multimap<CX2SkillTree::SKILL_ID, ArrowUI>		m_mapArrowUISet;			// 화살표가 시작되는 스킬(선행 스킬) ID를 key로 잡는다. 한 스킬이 여러 스킬의 선행일 수 있으므로 멀티맵.
 
-	const CX2UserSkillTree*		m_pUserSkillTree;
 
 	// 마우스 휠 관련
 	SHORT				m_SumDelta;
@@ -201,7 +199,6 @@ private:
 
 	// ToolTip : TalkBox 이용해서.
 	CX2TalkBoxManager*		m_pTalkBoxManager;
-	bool					m_bUsingCSP;
 
 };
 

@@ -117,18 +117,13 @@ public:
 private:
 	bool								m_bShow;
 
-	bool								m_bOldApplyDelete;
-	bool								m_bRegMyGuildAd;
 
 	std::wstring						m_wstrLastMessage;
 	std::wstring						m_wstrLastADMessage;
 
-	const CKTDXStage* const				m_pNowStage;
 	CKTDGUIDialogType					m_pDlgPersonalShopBoard;
 
 
-	UINT								m_uiNowPageJoinList;					// 현재 보여지는 페이지 수 (가입 신청 목록)
-	UINT								m_uiMaxPageJoinList;					// 현재 보여줄 수 있는 최대 페이지 수(가입 신청 목록)
 
 
 	float								m_fCurrentTime;
@@ -178,7 +173,6 @@ private:
 	CKTDGUIButton*						m_pButtonNextBoard;
 
 	CKTDGUIButton*						m_pButtonSearchItem;
-	CKTDGUIButton*						m_pButtonRefresh;
 	CKTDGUIButton*						m_pButtonInitSearchCondition;
 	CKTDGUIButton*						m_pButtonBuyItem;
 
