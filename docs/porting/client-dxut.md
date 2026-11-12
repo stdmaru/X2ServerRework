@@ -81,7 +81,11 @@ state on `WM_ACTIVATEAPP`.
 Long loads (2026-11-12): `DXUTPumpEventsWhileBusy()` (port addition) runs `SDL_PumpEvents` at most every 100 ms on the
 main thread, from `CKTDXApp::LoadAndDoMemory_ErrorCode` and `RenderStageNow`. It answers the compositor's pings while the
 start-up loads (Hyprland showed "not responding"); the events stay queued for the main loop. Message boxes turn CRLF
-into LF for the system dialogs (zenity on Linux).
+into LF for the system dialogs (zenity on Linux). Called on the main thread, a message box runs on a worker thread
+without a parent window (SDL wants a parent's own thread) while the main thread pumps events every 20 ms, so the
+compositor does not call the game unresponsive while the box waits (2026-11-12, Hyprland showed its "not responding"
+dialog over the graphics options question); keys and mouse events that reach the game window meanwhile are dropped, as
+the modal box did.
 
 Device callbacks (2026-11-12): `DXUTCreateDevice` calls `DeviceCreated` then `DeviceReset` with the window's device.
 If the window is windowed and a size is given, it first sets the client area to that size. When the window closes,

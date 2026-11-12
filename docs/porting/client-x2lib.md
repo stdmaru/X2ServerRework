@@ -166,6 +166,15 @@ OFF). It does not link yet: `X2.cpp` and the executable are the next step
   `SPT_GP` on a period type; the result screens' `=-` timer; the field-entry period notices that never show; Arme
   falling into Lire's body reform.
 
+## Game options file (2026-11-12, `client/x2-run`)
+
+- `CX2GameOption::SaveScriptFile` wrote a UTF-8 BOM with `fputc` and the rest with `fwprintf`; glibc fixes a stream's
+  orientation at its first write, so every `fwprintf` failed and `GameOptions.lua` held only the BOM. Each line is now
+  formatted with `vswprintf` and written as UTF-8 bytes (`FilePrintf`); the file's contents are the original's.
+- **Behavior change:** with no `GameOptions.lua`, the original asked whether to choose the graphics options (and ran the
+  benchmark on Yes) and saved the file only after a login or an option change, so the question came back at every start
+  until then. The port saves right after the answer.
+
 ## Status
 
 All 265 `.cpp` files compile warning-free (2026-11-11), and the client links on them

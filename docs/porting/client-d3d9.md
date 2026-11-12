@@ -376,6 +376,13 @@ The [DXUT replacement](client-dxut.md) creates the device with the window and pa
 callbacks. It calls `Present` after `FrameRender`, as DXUT did, and `DXUTGetD3DDevice()` returns it. Until 2026-11-12,
 the skeleton (`X2/X2Skeleton.cpp`, now replaced by `X2.cpp`) drew a test card through it.
 
+## Diagnostics (2026-11-12, `client/x2-run`)
+
+- The engine ignores most of the device's return values: each distinct error (`LastError()`) is also logged once with
+  `SDL_LogWarn` (category render; shown with `SDL_LOGGING='*=warn'`), up to 256.
+- `X2_D3D9_TRACE=<n>` logs every draw (primitive, FVF, target, viewport, stage 0's texture and operations, blending,
+  alpha test) and clear of frame `n`, and its present, with `SDL_Log`.
+
 ## Not emulated yet (2026-11-07)
 
 Lighting with materials (stored, see above; `D3DRS_LIGHTING` is on by default, but lit geometry goes through the
