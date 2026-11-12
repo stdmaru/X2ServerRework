@@ -3,6 +3,13 @@
 #include <KncUtil.h>
 #include "KTDXStringTable.h"
 
+#include "x2/platform/string.h"
+#include "x2/platform/unicode.h"
+
+#include <filesystem>
+#include <fstream>
+#include <iterator>
+
 ImplementSingleton( CKTDXStringTable );
 
 CKTDXStringTable::CKTDXStringTable()
@@ -197,58 +204,65 @@ const std::wstring& CKTDXStringTable::GetScriptString( int iID )
 
 }
 
+namespace
+{
+// The file in the current folder whose name matches regardless of case (the client ships "general.ess"; the original
+// opened "General.ess" on a case-insensitive file system). Empty when there is none.
+std::filesystem::path FindInCurrentFolder( const std::wstring& wstrFileName )
+{
+    const std::filesystem::path wanted( wstrFileName );
+    std::error_code ec;
+    if( std::filesystem::is_regular_file( wanted, ec ) )
+        return wanted;
+    for( const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator( std::filesystem::current_path( ec ), ec ) )
+    {
+        if( entry.is_regular_file( ec ) &&
+            x2::platform::IEquals( entry.path().filename().wstring(), wanted.filename().wstring() ) )
+            return entry.path();
+    }
+    return {};
+}
+}
+
+// The string table (.ess): UTF-16LE with a BOM, one "[index]\t[string]" line per string ending in CRLF, every code
+// unit of a line but the CRLF XORed with 16. Read as bytes and decoded here: the original's _wfopen + fgetws relied on
+// Windows' 16-bit wchar_t.
 bool CKTDXStringTable::LoadStringTable( std::wstring& wstrFileName, std::vector< std::wstring >& vecStringTable )
 {
     vecStringTable.clear();
 
-    // 유니코드 파일을 읽으므로 바이너리 모드로 오픈한다.
-	FILE* fp = NULL;
-#ifdef	CONVERSION_VS
-	_wfopen_s( &fp, wstrFileName.c_str(), L"rb" );
-#else
-	fp = _wfopen( wstrFileName.c_str(), L"rb" );
-#endif // CONVERSION_VS
-
-    ASSERT( fp );
-    if( !fp )
+    const std::filesystem::path path = FindInCurrentFolder( wstrFileName );
+    std::ifstream file( path, std::ios::binary );
+    ASSERT( file );
+    if( path.empty() || !file )
     {
         return false;
     }
-
-    // UTF-16LE의 BOM( Byte Order Mark )을 뛰어 넘는다.
-    int iRetFSeek = fseek( fp, 2, SEEK_CUR );
-    ASSERT( iRetFSeek == 0 );
-    if( iRetFSeek != 0 )
+    const std::string bytes( ( std::istreambuf_iterator<char>( file ) ), std::istreambuf_iterator<char>() );
+    std::u16string units( bytes.size() / 2, u'\0' );
+    for( size_t i = 0; i < units.size(); ++i )
     {
-        return false;
+        units[i] = static_cast<char16_t>( static_cast<unsigned char>( bytes[2 * i] ) |
+                                          ( static_cast<unsigned char>( bytes[2 * i + 1] ) << 8 ) );
     }
+    // Skip the UTF-16LE byte order mark.
+    size_t pos = ( !units.empty() && units[0] == 0xFEFF ) ? 1 : 0;
 
-    // string table 에서 한 줄을 읽으면 다음과 같은 모양이다.
-    // [index]\t[string]\r\n
-    const int ciMaxStringLength = 2048;
-    wchar_t wszStringRead[ciMaxStringLength];
     int iIndex = 0;
-    while( fgetws( wszStringRead, ciMaxStringLength, fp ) )
+    while( pos < units.size() )
     {
-        std::wstring wstrStringRead( wszStringRead );
-        // 최대 스트링 길이만큼 읽었다면 문제가 있는지 의심해봐야 한다.
-        ASSERT( ( int )wstrStringRead.size() < ( ciMaxStringLength - 1 ) );
-
-		std::wstring wstrFullString;
+        size_t end = units.find( u'\n', pos );
+        if( end == std::u16string::npos )
+            end = units.size();
+        std::u16string line = units.substr( pos, end - pos );
+        pos = end + 1;
+        if( !line.empty() && line.back() == u'\r' )
+            line.pop_back();
 
 		//09. 07. 03 김정협  XOR암호화 한 파일 복호화
-		size_t iEnd = wstrStringRead.find( L"\r\n" );
-		if( iEnd != std::wstring::npos )
-		{
-			wstrStringRead.erase( iEnd );
-		}
-
-		short iKey = 16;
-		int nSize = wstrStringRead.length();
-		for ( int i = 0; i < nSize; i++ )
-		{
-			wstrStringRead[i] = wstrStringRead[i] ^ iKey;
-		}
+        for( char16_t& unit : line )
+            unit = static_cast<char16_t>( unit ^ 16 );
+        const std::wstring wstrStringRead = x2::platform::Utf16ToWide( line );
 
         // tab 을 읽어서 index를 구분해낸다.
         size_t iTabPos = wstrStringRead.find( L"\t" );
@@ -258,42 +272,18 @@ bool CKTDXStringTable::LoadStringTable( std::wstring& wstrFileName, std::vector<
         std::wstring wstrContent;
         // 파일의 index가 제대로 설정되어 있는지 검사한다.
         ASSERT( iIndexRead == iIndex );
-        if( iIndexRead == iIndex )
+        if( iIndexRead == iIndex && iTabPos != std::wstring::npos && ( iTabPos + 1 ) < wstrStringRead.size() )
         {
-            // tab 을 찾은 경우에만 그 뒤의 내용을 읽어야 한다.
-            if( iTabPos != std::wstring::npos )
-            {
-				//09. 07. 03 김정협  미리 없애기 때문에 막음
-                /*size_t iEnd = wstrStringRead.find( L"\r\n" );
-                if( iEnd != std::wstring::npos )
-                {
-                    wstrStringRead.erase( iEnd );
-                }*/
-
-                ASSERT( iTabPos < wstrStringRead.size() );
-                // tab 뒤에 있는 것들만 읽는다.
-                if( ( iTabPos + 1 ) < wstrStringRead.size() )
-                {
-                    wstrContent = wstrStringRead.substr( iTabPos + 1 );
-                }
-            }
+            // tab 뒤에 있는 것들만 읽는다.
+            wstrContent = wstrStringRead.substr( iTabPos + 1 );
         }
 
         // \n 으로 표시한 부분에 실제로 줄바꿈 해준다.
         REPLACE_PART_OF_STRING( wstrContent, L"\\n", L"\r\n" );
 
-        // 작은 따옴표가 있는 경우
-        //REPLACE_PART_OF_STRING( wstrContent, L"\\\'", L"\'" );
-
-        // 큰 따옴표가 있는 경우
-        //REPLACE_PART_OF_STRING( wstrContent, L"\\\"", L"\"" );
-
         vecStringTable.push_back( wstrContent );
         iIndex++;
     }
-
-    int iRetFClose = fclose( fp );
-    ASSERT( iRetFClose == 0 );
 
     return true;
 }

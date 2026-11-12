@@ -62,6 +62,9 @@ HRESULT DXUTMainLoop();
 // The window procedure: every translated SDL event goes through it, as DXUT's own WndProc did. Exposed, as in DXUT.
 LRESULT CALLBACK DXUTStaticWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 void DXUTShutdown(int nExitCode = 0);
+// Port addition (2026-11-12): keeps the window responsive during long loads on the main thread (at most every 100 ms;
+// no-op on other threads). Without it, compositors flag the client as not responding while it loads.
+void DXUTPumpEventsWhileBusy();
 
 // The executable's arguments, argv[0] first (MSVC's __argc / __argv): main() stores them before DXUTInit.
 void DXUTSetCommandLine(int argc, char* argv[]);

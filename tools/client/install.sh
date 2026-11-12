@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Assembles a runnable client folder (docs/tools/client-folder.md):
 #   tools/client/install.sh <client folder> [preset]      default preset: linux-debug
-# Copies the built x2 (x2.exe on Windows builds) into the folder and, when missing there, the loose folders the client
-# reads from disk (movie/, music/) from X2_CLIENT_DATA (default _client/data). The .kom archives and the client_data
+# Copies the built x2 (x2.exe on Windows builds) into the folder and, when missing there, what the client reads from
+# disk outside the archives (general.ess, movie/, music/) from X2_CLIENT_DATA (default _client/data). The .kom archives and the client_data
 # (data/, loose files for X2_DEV_TOOLS builds) are the user's: packed with x2_assets, never touched here.
 set -euo pipefail
 
@@ -25,6 +25,15 @@ fi
 mkdir -p "$dest"
 cp -f "$exe" "$dest/"
 echo "installed $(basename "$exe") ($preset)"
+
+if [ ! -f "$dest/general.ess" ]; then
+    if [ -f "$source_data/general.ess" ]; then
+        cp --preserve=timestamps "$source_data/general.ess" "$dest/" && chmod a-x "$dest/general.ess"
+        echo "copied general.ess (string table) from $source_data"
+    else
+        echo "warning: no general.ess in $source_data" >&2
+    fi
+fi
 
 for folder in movie music; do
     if [ -d "$dest/$folder" ]; then

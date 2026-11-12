@@ -304,7 +304,10 @@ HRESULT DXUTCreateWindow(const WCHAR* strWindowTitle, HINSTANCE /*hInstance*/, H
     options.title = strWindowTitle ? x2::platform::WideToUtf8(strWindowTitle) : std::string("X2");
     options.width = 1024;
     options.height = 768;
-    options.resizable = true;  // WS_OVERLAPPEDWINDOW
+    // Fixed size (WS_OVERLAPPEDWINDOW was resizable): the game draws at the resolution of its options, which
+    // DXUTCreateDeviceFromSettings applies. Tiling window managers (Hyprland, sway) float a window of fixed size, so the
+    // game opens at its own size instead of a tile's (2026-11-12).
+    options.resizable = false;
     std::string error;
     state.window = x2::app::Window::Create(options, error);
     if (!state.window) {
@@ -500,6 +503,21 @@ HRESULT DXUTMainLoop()
     }
     ReleaseWindow(state);
     return S_OK;
+}
+
+void DXUTPumpEventsWhileBusy()
+{
+    // Long loads (the start-up, a stage) run on the main thread between frames. SDL_PumpEvents answers the compositor
+    // (Wayland pings, X11 _NET_WM_PING) without taking events off the queue, which the main loop still handles in order.
+    static std::uint64_t lastPump = 0;
+    if (!State().window || !SDL_IsMainThread()) {
+        return;
+    }
+    const std::uint64_t now = SDL_GetTicks();
+    if (now - lastPump >= 100) {
+        lastPump = now;
+        SDL_PumpEvents();
+    }
 }
 
 void DXUTShutdown(int nExitCode)

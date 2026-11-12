@@ -66,13 +66,18 @@ int Show(HWND hWnd, const std::string& text, const std::string& caption, UINT ty
 
 int MessageBoxW(HWND hWnd, const wchar_t* text, const wchar_t* caption, UINT type)
 {
-    return Show(hWnd, x2::platform::WideToUtf8(text ? text : L""), x2::platform::WideToUtf8(caption ? caption : L"Error"),
-                type);
+    return MessageBoxA(hWnd, x2::platform::WideToUtf8(text ? text : L"").c_str(),
+                       x2::platform::WideToUtf8(caption ? caption : L"Error").c_str(), type);
 }
 
 int MessageBoxA(HWND hWnd, const char* text, const char* caption, UINT type)
 {
-    return Show(hWnd, text ? text : "", caption ? caption : "Error", type);
+    // Win32 text breaks lines with CRLF (the string table turns "\\n" into CRLF); the dialogs SDL uses want LF.
+    std::string body(text ? text : "");
+    for (std::size_t at = body.find("\r\n"); at != std::string::npos; at = body.find("\r\n", at)) {
+        body.erase(at, 1);
+    }
+    return Show(hWnd, body, caption ? caption : "Error", type);
 }
 
 #endif
