@@ -463,7 +463,7 @@ CX2Main::CX2Main() :
 	x2::platform::CloseDebugConsole();
 
 	g_pKTDXApp->InsertStage( m_pData );
-    g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, XS_START_UP, NULL, false );
+    g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, XS_START_UP, 0, false );
 
 	m_bHackingUser = false;
 
@@ -788,7 +788,7 @@ HRESULT CX2Main::OnFrameMove( double fTime, float fElapsedTime )
 			}
 #endif // _SERVICE_
 
-			g_pKTDXApp->SendGameMessage( XGM_SERVER_PACKET_TIMEOUT, pWaitServerPacket->waitACK, NULL, false );
+			g_pKTDXApp->SendGameMessage( XGM_SERVER_PACKET_TIMEOUT, pWaitServerPacket->waitACK, 0, false );
 			SAFE_DELETE( pWaitServerPacket );
 			m_WaitServerPacketList.erase( m_WaitServerPacketList.begin() + i );
 			i--;
@@ -897,7 +897,7 @@ HRESULT CX2Main::OnFrameMove( double fTime, float fElapsedTime )
 		{
 			if ( -1 != ItrTimedPopUp->m_iTimeOutMsg )
 			{
-				g_pKTDXApp->SendGameMessage( CKTDXApp::KM_UI_CONTROL_CUSTOM_EVENT, ItrTimedPopUp->m_iTimeOutMsg, NULL, false );
+				g_pKTDXApp->SendGameMessage( CKTDXApp::KM_UI_CONTROL_CUSTOM_EVENT, ItrTimedPopUp->m_iTimeOutMsg, 0, false );
 			}
 
 			m_listTimedMessagePopUp.erase( ItrTimedPopUp++ );
@@ -4982,7 +4982,7 @@ void CX2Main::CreateStateChangeDLG( const WCHAR* szExplanation, wstring wstrCust
 void CX2Main::DeleteStateChangeDLG()
 {
 	if ( m_pDLGStateChange != NULL )
-		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGStateChange, NULL, false );
+		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGStateChange, 0, false );
 
 	m_pDLGStateChange = NULL;
 }

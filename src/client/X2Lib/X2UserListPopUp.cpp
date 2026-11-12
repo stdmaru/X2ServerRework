@@ -430,7 +430,7 @@ const CX2Unit* CX2UserListPopUp::GetUnitByUserUid( const UidType uid_ )
 				if ( NULL != pGUUser )
 					return pGUUser->GetUnit();
 				else
-					NULL;
+					return NULL;
 			}
 		} break;
 

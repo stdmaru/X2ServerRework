@@ -784,7 +784,7 @@ bool CX2StateField::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 	case FQ_PARTY_JOIN_REQ:
 		{
 			if(m_pDLGJoinParty != NULL)
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGJoinParty, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGJoinParty, 0, false );
 			m_pDLGJoinParty = NULL;
 
 			ASSERT( !L"Party join Req" );
@@ -793,7 +793,7 @@ bool CX2StateField::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 	case FQ_PARTY_JOIN_CANCEL:
 		{
 			if(m_pDLGJoinParty != NULL)
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGJoinParty, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGJoinParty, 0, false );
 			m_pDLGJoinParty = NULL;
 			m_TalkBoxunitUID = 0;
 		}
@@ -1300,7 +1300,7 @@ bool CX2StateField::Handler_EGS_CREATE_TUTORIAL_ROOM_ACK( HWND /*hWnd*/, UINT /*
 
 			//방으로 스테이트 이동
 			g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_645 ) );
-			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_DUNGEON_ROOM, NULL, false );
+			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_DUNGEON_ROOM, 0, false );
 
 			return true;
 		}

@@ -614,7 +614,7 @@ HRESULT	CX2PET::OnFrameMove( double fTime, float fElapsedTime )
 		}
 	}
 
-	if( NULL != g_pX2Game != 0 && NULL != pMasterUserUnit )
+	if( NULL != g_pX2Game && NULL != pMasterUserUnit )
 	{
 		if( pMasterUserUnit->GetSyncData().bFrameStop == true )
 		{
@@ -2580,7 +2580,7 @@ void CX2PET::DoProcessEvent()
 
 		case SCT_POSITIVE_Y_SPEED:
 			{
-				if( m_PhysicParam.nowSpeed.y > 0.0f == true )
+				if( m_PhysicParam.nowSpeed.y > 0.0f )
 				{
 					StateChange( pEventProcessData->m_NextStateID );
 				}
@@ -2589,7 +2589,7 @@ void CX2PET::DoProcessEvent()
 
 		case SCT_NEGATIVE_Y_SPEED:
 			{
-				if( m_PhysicParam.nowSpeed.y <= 0.0f == true )
+				if( m_PhysicParam.nowSpeed.y <= 0.0f )
 				{
 					StateChange( pEventProcessData->m_NextStateID );
 				}

@@ -767,7 +767,7 @@ bool CX2SecurityPad::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wPa
 		{
 			CKTDGUIControl* pControl = NULL;
 			pControl		= reinterpret_cast< CKTDGUIControl* >( lParam );
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 			Handler_EGS_DELETE_SECOND_SECURITY_VERIFY_REQ();
 		} break;
 	case SPUM_CHANGE_STATE_CHANGE_PASSWORD :

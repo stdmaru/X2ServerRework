@@ -2748,11 +2748,7 @@ void CX2SkillTree::UnequipRelationSkill()
 void CX2SkillTree::SetSkillAbilityMap( KLuaManager* pLuaManager, SKILL_ABILITY_TYPE eSkillAbility, CX2SkillTree::SkillTemplet* pSkillTemplet )
 {
 	if ( NULL == pLuaManager )
-	{
-		pLuaManager->EndTable();
-
 		return;
-	}
 
 	vector<float>	vecSkillValue;			/// 30 ���� ������ ��ų ȿ�� ���� �����ϴ� ��ü
 	int				iTableIndex		= 1;	/// ���̺� �ε���

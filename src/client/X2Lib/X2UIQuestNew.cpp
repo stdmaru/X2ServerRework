@@ -654,7 +654,7 @@ bool CX2UIQuestNew::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wPar
 		{
 			if( m_pDLGMsgBox != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGMsgBox, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGMsgBox, 0, false );
 				m_pDLGMsgBox = NULL;
 			}
 
@@ -671,7 +671,7 @@ bool CX2UIQuestNew::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wPar
 		{
 			if( m_pDLGMsgBox != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGMsgBox, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGMsgBox, 0, false );
 				m_pDLGMsgBox = NULL;
 			}
 		}
@@ -685,7 +685,7 @@ bool CX2UIQuestNew::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wPar
 				{
 					if( m_pDLGMsgBox != NULL )
 					{
-						g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGMsgBox, NULL, false );
+						g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGMsgBox, 0, false );
 						m_pDLGMsgBox = NULL;
 					}
 
@@ -777,7 +777,7 @@ bool CX2UIQuestNew::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wPar
 				{
 					if( m_pDLGMsgBox != NULL )
 					{
-						g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGMsgBox, NULL, false );
+						g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGMsgBox, 0, false );
 						m_pDLGMsgBox = NULL;
 					}
 
@@ -797,7 +797,7 @@ bool CX2UIQuestNew::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wPar
 		{
 			if( m_pDLGMsgBox != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGMsgBox, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGMsgBox, 0, false );
 				m_pDLGMsgBox = NULL;
 			}
 
@@ -816,7 +816,7 @@ bool CX2UIQuestNew::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wPar
 		{
 			if( m_pDLGMsgBox != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGMsgBox, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGMsgBox, 0, false );
 				m_pDLGMsgBox = NULL;
 			}
 		}
@@ -1984,13 +1984,13 @@ void CX2UIQuestNew::CloseQuestRewardWindow()
 
 	if( m_pDLGUIQuestClear != NULL )
 	{
-		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGUIQuestClear, NULL, false );
+		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGUIQuestClear, 0, false );
 		m_pDLGUIQuestClear = NULL;
 	}
 
 	if( m_pDLGMsgBox != NULL )
 	{
-		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGMsgBox, NULL, false );
+		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGMsgBox, 0, false );
 		m_pDLGMsgBox = NULL;
 	}
 

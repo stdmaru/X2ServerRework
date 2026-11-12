@@ -1323,23 +1323,23 @@ void CX2GUNPCAI::Moving( float fElapsedTime )
 
 			m_PathFinder.FollowTargetPathFly( /*IN fElapsedTime,*/ m_vPosition, IN m_iLastTouchLineIndex, IN vDistPos, IN iFinalDestLineIndex,
 				IN m_fMaxJumpUp * 2.f, IN m_fMaxJumpRight,
-				IN (const float)m_pAIData->flymovedata.fDestHeight, IN (const float)m_pAIData->flymovedata.fDestArea,
-				pLineMap, IN (const float)m_pAIData->flymovedata.fDestGap, /*IN (const float)m_pAIData->chaseMoveData.moveGap,*/
+				IN (float)m_pAIData->flymovedata.fDestHeight, IN (float)m_pAIData->flymovedata.fDestArea,
+				pLineMap, IN (float)m_pAIData->flymovedata.fDestGap, /*IN (float)m_pAIData->chaseMoveData.moveGap,*/
 				/*IN m_bFootOnLine,*/ /*IN bStayOnCurrLineGroup,*/ OUT bIsTargetOnRight, IN m_pAIData->chaseMoveData.m_fLineEndDetectRange );
 		}
 		else	// FLY 상태가 아니면
 		{
 			m_PathFinder.FollowTargetPath( /*fElapsedTime,*/ m_vPosition, m_iLastTouchLineIndex, vFinalDest, iFinalDestLineIndex,
-				m_fMaxJumpUp, m_fMaxJumpRight, pLineMap, (const float)fDestGap, (const float)fMoveGap,
+				m_fMaxJumpUp, m_fMaxJumpRight, pLineMap, (float)fDestGap, (float)fMoveGap,
 				m_bFootOnLine, bStayOnCurrLineGroup, OUT bIsTargetOnRight, m_pAIData->chaseMoveData.m_fLineEndDetectRange );
 		}
 	}
 	else	// 그룹 AI를 수행하지 않으면서 도망 중이면
 	{
 		// FLY는 처리 없나?
-		// oasis  fDestGap -> 150.f  원본: (const float)fDestGap,
+		// oasis  fDestGap -> 150.f  원본: (float)fDestGap,
 		m_PathFinder.EscapeTargetPath( /*fElapsedTime,*/ m_vPosition, m_iLastTouchLineIndex, vFinalDest, iFinalDestLineIndex,
-			m_fMaxJumpUp, m_fMaxJumpRight, pLineMap, (const float)150.f, /*(const float)m_pAIData->chaseMoveData.moveGap,*/
+			m_fMaxJumpUp, m_fMaxJumpRight, pLineMap, (float)150.f, /*(float)m_pAIData->chaseMoveData.moveGap,*/
 			m_bFootOnLine, /*bStayOnCurrLineGroup,*/ OUT bIsTargetOnRight, m_bIsRight, m_pAIData->chaseMoveData.m_fLineEndDetectRange );
 	}
 

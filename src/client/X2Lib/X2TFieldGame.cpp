@@ -332,8 +332,9 @@ CX2TFieldGame::CX2TFieldGame( CX2World::WORLD_ID worldID, SquareData* pSquareDat
 		if ( NULL != g_pChatBox &&
 			NULL != pUnit )
 		{
-			if ( g_pData->GetUIManager() == NULL &&
-				g_pData->GetUIManager()->GetUISkillTree() == NULL )
+			// The original tested GetUIManager() == NULL && GetUIManager()->GetUISkillTree() == NULL, which can only
+			// hold by dereferencing NULL, so these notices never showed. Kept off (docs/original/bugs.md).
+			if ( false )
 			{
 				if( pUnit->IsTradeBlockUnit() == true )
 					g_pChatBox->AddChatLog( pUnit->GetTradeBlockChatMsg().c_str(), KEGS_CHAT_REQ::CPT_TOTAL, D3DXCOLOR( 1,1,0,1 ), L"#CFFFF00" );
@@ -3386,7 +3387,7 @@ bool CX2TFieldGame::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 			IF_EVENT_ENABLED( CEI_READY_TO_SOSUN_EVENT )
 			{
 				CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 				return Handler_EGS_READY_TO_SOSUN_EVENT_REQ();
 			}
@@ -3394,7 +3395,7 @@ bool CX2TFieldGame::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 	case RTSEUM_EVENT_CANCEL:
 		{
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 		} break;
 	case REUM_OK:
 		{
@@ -3613,7 +3614,7 @@ bool CX2TFieldGame::Handler_EGS_OPEN_PVP_ROOM_LIST_ACK( HWND /*hWnd*/, UINT /*uM
 			g_pMain->SetChannelList( kEvent.m_vecChannel );
 
 			g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_437 ) );
-			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_LOBBY, NULL, false );
+			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_LOBBY, 0, false );
 
 		}
 	}
@@ -4918,7 +4919,7 @@ bool CX2TFieldGame::Handler_EGS_CREATE_TC_ROOM_ACK( HWND /*hWnd*/, UINT /*uMsg*/
 
 			// 게임 바로 시작
 			g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_744 ) );
-			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_TRAINING_GAME, NULL, false );
+			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_TRAINING_GAME, 0, false );
 
 
 			const int MAGIC_FREE_TRAINING_ID = 1;

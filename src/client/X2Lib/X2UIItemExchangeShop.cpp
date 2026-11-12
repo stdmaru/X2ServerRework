@@ -327,7 +327,7 @@ bool		CX2UIItemExchangeShop::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WP
 
 			if ( m_pDlgExchangeConfirm != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgExchangeConfirm, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgExchangeConfirm, 0, false );
 				m_pDlgExchangeConfirm = NULL;
 			}
 
@@ -365,7 +365,7 @@ bool		CX2UIItemExchangeShop::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WP
 		{
 			if ( m_pDlgExchangeConfirm != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgExchangeConfirm, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgExchangeConfirm, 0, false );
 				m_pDlgExchangeConfirm = NULL;
 			}
 			if ( g_pData->GetUIManager()->GetShow( CX2UIManager::UI_MENU_INVEN ) == true )

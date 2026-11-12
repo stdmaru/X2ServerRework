@@ -36,7 +36,7 @@ CX2GuildManager::~CX2GuildManager()
 
 	while ( mItr != m_mapGuildInvitationDlg.end() )
 	{
-		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, mItr->first, NULL, false );
+		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, mItr->first, 0, false );
 		mItr++;
 	}
 	m_mapGuildInvitationDlg.clear();
@@ -156,7 +156,7 @@ bool CX2GuildManager::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LP
 		{
 			CKTDGUIControl* pControl = NULL;
 			pControl		= reinterpret_cast< CKTDGUIControl* >( lParam );
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 			Handler_EGS_CHANGE_GUILD_NAME_REQ( NetError::NET_OK );
 			return true;
 		}
@@ -167,7 +167,7 @@ bool CX2GuildManager::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LP
 			Handler_EGS_CHANGE_GUILD_NAME_REQ( NetError::ERR_GUILD_52 );
 			CKTDGUIControl* pControl = NULL;
 			pControl		= reinterpret_cast< CKTDGUIControl* >( lParam );
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 			return true;
 		}
 		break;
@@ -180,7 +180,7 @@ bool CX2GuildManager::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LP
 			//	Dialog 삭제
 			CKTDGUIControl* pControl = NULL;
 			pControl		= reinterpret_cast< CKTDGUIControl* >( lParam );
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			return true;
 		}
@@ -279,7 +279,7 @@ bool CX2GuildManager::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LP
 
 			while ( mItr != m_mapGuildInvitationDlg.end() )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, mItr->first, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, mItr->first, 0, false );
 				mItr++;
 			}
 
@@ -288,7 +288,7 @@ bool CX2GuildManager::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LP
 
 			// 길드 추방 메시지가 떠있다면 삭제
 			if ( m_DlgKickByMaster != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_DlgKickByMaster, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_DlgKickByMaster, 0, false );
 
 			// 거부 취소된 것들은 패킷을 보내지 않음
 			Handler_EGS_INVITE_GUILD_REPLY_REQ( iGuildUID, NetError::NET_OK ); //수락 했다고 보내야함
@@ -320,7 +320,7 @@ bool CX2GuildManager::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LP
 
 			if ( mItr != m_mapGuildInvitationDlg.end() )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, mItr->first, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, mItr->first, 0, false );
 				m_setGuildUIDForInvitation.erase( mItr->second );
 				m_mapGuildInvitationDlg.erase( mItr->first );
 			}
@@ -433,7 +433,7 @@ bool CX2GuildManager::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LP
 
 			CKTDGUIControl* pControl = NULL;
 			pControl		= reinterpret_cast< CKTDGUIControl* >( lParam );
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			return Handler_EGS_KICK_GUILD_MEMBER_REQ( g_pData->GetMyUser()->GetSelectUnit()->GetUID() );
 		}
@@ -443,7 +443,7 @@ bool CX2GuildManager::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LP
 		{
 			CKTDGUIControl* pControl = NULL;
 			pControl		= reinterpret_cast< CKTDGUIControl* >( lParam );
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			return true;
 		}
@@ -455,7 +455,7 @@ bool CX2GuildManager::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LP
 
 			if( NULL != m_pDlgChangeGuildMessage )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgChangeGuildMessage, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgChangeGuildMessage, 0, false );
 				m_pDlgChangeGuildMessage = NULL;
 			}
 
@@ -497,7 +497,7 @@ bool CX2GuildManager::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LP
 		{
 			CKTDGUIControl* pControl = NULL;
 			pControl		= reinterpret_cast< CKTDGUIControl* >( lParam );
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			return Handler_EGS_DISBAND_GUILD_REQ();
 		}
@@ -507,7 +507,7 @@ bool CX2GuildManager::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LP
 		{
 			CKTDGUIControl* pControl = NULL;
 			pControl		= reinterpret_cast< CKTDGUIControl* >( lParam );
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			return true;
 		}
@@ -656,14 +656,14 @@ bool CX2GuildManager::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LP
 
 			if( NULL != m_pDlgNewMaster )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgNewMaster, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgNewMaster, 0, false );
 				m_pDlgNewMaster = NULL;
 			}
 
 			//	창 닫기
 			if( NULL != m_pDlgNewMasterRe )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgNewMasterRe, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgNewMasterRe, 0, false );
 				m_pDlgNewMasterRe = NULL;
 			}
 
@@ -675,14 +675,14 @@ bool CX2GuildManager::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LP
 		{
 			if( NULL != m_pDlgNewMaster )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgNewMaster, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgNewMaster, 0, false );
 				m_pDlgNewMaster = NULL;
 			}
 
 			//	창 닫기
 			if( NULL != m_pDlgNewMasterRe )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgNewMasterRe, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgNewMasterRe, 0, false );
 				m_pDlgNewMasterRe = NULL;
 			}
 
@@ -719,7 +719,7 @@ bool CX2GuildManager::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LP
 
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
 			if ( pControl != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			return Handler_EGS_CHANGE_GUILD_MEMBER_MESSAGE_REQ( wstrMessage, GetSelectedUserUID() );
 		}

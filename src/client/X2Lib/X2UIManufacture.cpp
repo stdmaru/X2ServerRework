@@ -339,7 +339,7 @@ bool CX2UIManufacture::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM w
 	case UMCM_RESULT_CLOSE:
 		{
 			if ( m_pDLGManufactureResult != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGManufactureResult, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGManufactureResult, 0, false );
 
 			m_pDLGManufactureResult = NULL;
 		}
@@ -348,7 +348,7 @@ bool CX2UIManufacture::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM w
 		{
 			if( m_pDLGMakeQuery != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGMakeQuery, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGMakeQuery, 0, false );
 				m_pDLGMakeQuery = NULL;
 			}
 			if(CheckCanMake(m_SelectedRecipeID, m_nQuantity))
@@ -406,7 +406,7 @@ bool CX2UIManufacture::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM w
 
 			UpdateRegisterQuantityDLG(true);
 			if(m_pDLGItemEnroll != NULL)
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGItemEnroll, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGItemEnroll, 0, false );
 
 			m_pDLGItemEnroll = NULL;
 			m_EnrollItemUid = 0;
@@ -418,7 +418,7 @@ bool CX2UIManufacture::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM w
 	case UMCM_REGISTER_QUANTITY_CANCEL:
 		{
 			if(m_pDLGItemEnroll != NULL)
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGItemEnroll, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGItemEnroll, 0, false );
 
 			m_pDLGItemEnroll = NULL;
 			m_nQuantity = 1;		// 수량성 아이템을 버리는 Dialog Text 1로 고정
@@ -639,7 +639,7 @@ void CX2UIManufacture::GetManufactureList()
 					if ( false == IsPossibleUsedByMyCharacter(pItemTemplet) )
 					{
 						//{{ 허상형 : [2009/7/29] //	착용불능 장비일 경우 화면에 표시해준다.(헤니르의 시공 관련 수정)
-						if( true == pItemTemplet->GetNoEquip() != true )
+						if( false == pItemTemplet->GetNoEquip() )
 						{
 							continue;
 						}

@@ -224,13 +224,13 @@ bool CX2GageData::FlushSoul( const float fFlushSoul_ )
 
 /*virtual*/ void CX2GageData::SetMyPlayStatusFromPacket( IN const KGamePlayStatus& kGamePlayStatus_ )
 {
-	SetHyperModeCount( static_cast<const BYTE>( kGamePlayStatus_.m_cCurHyperCount ) );
-	SetMaxHp( static_cast<const float>( kGamePlayStatus_.m_iMaxHP ) );
-	SetMaxMp( static_cast<const float>( kGamePlayStatus_.m_iMaxMP ) );
-	SetNowHp( static_cast<const float>( kGamePlayStatus_.m_iCurHP ) );
-	SetNowMp( static_cast<const float>( kGamePlayStatus_.m_iCurMP ) );
+	SetHyperModeCount( static_cast<BYTE>( kGamePlayStatus_.m_cCurHyperCount ) );
+	SetMaxHp( static_cast<float>( kGamePlayStatus_.m_iMaxHP ) );
+	SetMaxMp( static_cast<float>( kGamePlayStatus_.m_iMaxMP ) );
+	SetNowHp( static_cast<float>( kGamePlayStatus_.m_iCurHP ) );
+	SetNowMp( static_cast<float>( kGamePlayStatus_.m_iCurMP ) );
 	SetMaxSoul( 100.0f );
-	SetNowSoul( static_cast<const float>( kGamePlayStatus_.m_iCurHyperGage ) );
+	SetNowSoul( static_cast<float>( kGamePlayStatus_.m_iCurHyperGage ) );
 
 }
 

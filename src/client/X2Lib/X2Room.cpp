@@ -2369,7 +2369,7 @@ bool CX2Room::Handler_EGS_CHANGE_GAME_STAT_INFO_IN_ROOM_NOT( KEGS_CHANGE_GAME_ST
 
 	kUnitData.m_GameStat.SetKStat( kEvent_.m_kGameStat );
 
-	pUser->SetMaxHp( static_cast< const float >( kEvent_.m_kGameStat.m_iBaseHP ) );
+	pUser->SetMaxHp( static_cast<float>( kEvent_.m_kGameStat.m_iBaseHP ) );
 	if ( pUser->GetNowHp() > pUser->GetMaxHp() )
 	{
 		pUser->SetNowHp( pUser->GetMaxHp() );

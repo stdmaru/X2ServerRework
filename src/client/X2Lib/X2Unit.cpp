@@ -488,6 +488,10 @@ bool CX2Unit::AddClearDungeon( int dungeonID )
 	if ( mit == m_mapDungeonClear.end() )
 	{
 		KDungeonClearInfo kDungeonClearInfo;
+		kDungeonClearInfo.m_iDungeonID = dungeonID;
+		kDungeonClearInfo.m_iMaxScore = 0;
+		kDungeonClearInfo.m_cMaxTotalRank = 0;
+		kDungeonClearInfo.m_bNew = true;
 
 		m_mapDungeonClear.insert( std::make_pair( (int)dungeonID, kDungeonClearInfo ) );
 

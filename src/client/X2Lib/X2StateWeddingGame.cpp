@@ -126,7 +126,7 @@ bool CX2StateWeddingGame::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam
 
 	case SWGUCM_LEAVE_WEDDING_GAME_CANCEL:
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGExitMsgBox, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGExitMsgBox, 0, false );
 			m_pDLGExitMsgBox = NULL;
 			return true;
 		}

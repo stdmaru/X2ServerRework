@@ -759,7 +759,7 @@ private:
 	CKTDGFontManager::CUKFont*		m_pFontForSkillList;
 
 
-	char							m_HighLightSkillID;
+	int 							m_HighLightSkillID;
 	float							m_fTimeLeftForHighlight;
 	D3DXCOLOR						m_coHighlight;
 	D3DXCOLOR						m_coHighLightIncrement;

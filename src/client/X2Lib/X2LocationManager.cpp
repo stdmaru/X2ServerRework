@@ -271,9 +271,9 @@ void CX2LocationManager::LocalParsing( KLuaManager& kLuamanager, const vector< L
 		}
 
 		CX2LocationManager::LocalMapTemplet* pLocalMapTemplet
-			= new CX2LocationManager::LocalMapTemplet( static_cast<const LOCAL_MAP_ID>( localMapID ),
-			static_cast<const SEnum::VILLAGE_MAP_ID>( villageID ), static_cast<const SEnum::VILLAGE_MAP_ID>( villageDGID ),
-			static_cast<const SEnum::VILLAGE_MAP_ID>( villageDungeonLoungeID ), static_cast<const SEnum::VILLAGE_MAP_ID>( iBattleFieldRestID ),
+			= new CX2LocationManager::LocalMapTemplet( static_cast<LOCAL_MAP_ID>( localMapID ),
+			static_cast<SEnum::VILLAGE_MAP_ID>( villageID ), static_cast<SEnum::VILLAGE_MAP_ID>( villageDGID ),
+			static_cast<SEnum::VILLAGE_MAP_ID>( villageDungeonLoungeID ), static_cast<SEnum::VILLAGE_MAP_ID>( iBattleFieldRestID ),
 			vecDungeonID, vecBattleFieldID, localDialogFileName, true );
 
 		if( kLuamanager.BeginTable( "EnterCondition" ) == true )

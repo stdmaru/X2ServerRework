@@ -832,7 +832,7 @@ bool CX2StatePvPLobby::Handler_EGS_CREATE_ROOM_ACK( HWND /*hWnd*/, UINT /*uMsg*/
 
 			//방으로 스테이트 이동
 			g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_438 ) );
-			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_ROOM, NULL, false );
+			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_ROOM, 0, false );
 
 			return true;
 		}
@@ -907,7 +907,7 @@ bool CX2StatePvPLobby::Handler_EGS_JOIN_ROOM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, 
 
 			//방으로 스테이트 이동
 			g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_438 ) );
-			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_ROOM, NULL, false );
+			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_ROOM, 0, false );
 
 			return true;
 		}
@@ -1808,7 +1808,7 @@ bool CX2StatePvPLobby::Handler_EGS_QUICK_JOIN_ACK( HWND /*hWnd*/, UINT /*uMsg*/,
 
 			//방으로 스테이트 이동
 			g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_438 ) );
-			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_ROOM, NULL, false );
+			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_ROOM, 0, false );
 
 			return true;
 		}

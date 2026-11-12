@@ -565,7 +565,7 @@ bool CX2StateCreateUnit::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam,
 						SAFE_CLOSE( m_pCreateUnitSelectSound );
 					}
 				}
-				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, /*CX2Main::XS_UNIT_SELECT*/CX2Main::XS_SERVER_SELECT, NULL, false );
+				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, /*CX2Main::XS_UNIT_SELECT*/CX2Main::XS_SERVER_SELECT, 0, false );
 			}
 			break;
 
@@ -585,12 +585,12 @@ bool CX2StateCreateUnit::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam,
 				g_pMain->SetIsPlayingTutorial( true );
 				if( m_pDLGMSGOkBoxEnterTutorial != NULL )
 				{
-					g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGMSGOkBoxEnterTutorial, NULL, false );
+					g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGMSGOkBoxEnterTutorial, 0, false );
 					m_pDLGMSGOkBoxEnterTutorial = NULL;
 				}
 				g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_552 ), L"DLG_UI_Selection_MessageBox_No_Button.lua", L"UI_PopUp_Positive_01.ogg"  );
 
-				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, /*CX2Main::XS_UNIT_SELECT*/CX2Main::XS_SERVER_SELECT, NULL, false );
+				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, /*CX2Main::XS_UNIT_SELECT*/CX2Main::XS_SERVER_SELECT, 0, false );
 			}
 			break;
 
@@ -599,7 +599,7 @@ bool CX2StateCreateUnit::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam,
 				g_pMain->SetIsPlayingTutorial( false );
 				if( m_pDLGMSGOkBoxEnterTutorial != NULL )
 				{
-					g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGMSGOkBoxEnterTutorial, NULL, false );
+					g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGMSGOkBoxEnterTutorial, 0, false );
 					m_pDLGMSGOkBoxEnterTutorial = NULL;
 				}
 
@@ -807,27 +807,27 @@ bool CX2StateCreateUnit::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam,
 				g_pMain->SetIsPlayingTutorial( true );
 				if( m_pDLGMSGOkBoxEnterTutorial != NULL )
 				{
-					g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGMSGOkBoxEnterTutorial, NULL, false );
+					g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGMSGOkBoxEnterTutorial, 0, false );
 					m_pDLGMSGOkBoxEnterTutorial = NULL;
 				}
 				if ( m_pDLGCreateUnitCheckInfo != NULL )
 				{
-					g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGCreateUnitCheckInfo, NULL, false );
+					g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGCreateUnitCheckInfo, 0, false );
 					m_pDLGCreateUnitCheckInfo = NULL;
 				}
 
 				if ( m_pDLGCreateUnitServerSelect != NULL )
 				{
-					g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGCreateUnitServerSelect, NULL, false );
+					g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGCreateUnitServerSelect, 0, false );
 					m_pDLGCreateUnitServerSelect = NULL;
 				}
 				g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_552 ), L"DLG_UI_Selection_MessageBox_No_Button.lua", L"UI_PopUp_Positive_01.ogg"  );
-				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, /*CX2Main::XS_UNIT_SELECT*/CX2Main::XS_SERVER_SELECT, NULL, false );
+				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, /*CX2Main::XS_UNIT_SELECT*/CX2Main::XS_SERVER_SELECT, 0, false );
 			}
 			break;
 
 		case SCUUCM_PASS_NICKNAME_CHECK_CANCEL :
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGCreateUnitCheckInfo, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGCreateUnitCheckInfo, 0, false );
 			break;
 
 		case SCUUCM_NICKNAME_CHECK :
@@ -1899,12 +1899,12 @@ bool CX2StateCreateUnit::Handler_EGS_CREATE_UNIT_ACK( HWND /*hWnd*/, UINT /*uMsg
 
 				if( m_pDLGMSGOkBoxEnterTutorial != NULL )
 				{
-					g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGMSGOkBoxEnterTutorial, NULL, false );
+					g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGMSGOkBoxEnterTutorial, 0, false );
 					m_pDLGMSGOkBoxEnterTutorial = NULL;
 				}
 				g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_552 ), L"DLG_UI_Selection_MessageBox_No_Button.lua", L"UI_PopUp_Positive_01.ogg"  );
 
-				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, /*CX2Main::XS_UNIT_SELECT*/CX2Main::XS_SERVER_SELECT, NULL, false );
+				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, /*CX2Main::XS_UNIT_SELECT*/CX2Main::XS_SERVER_SELECT, 0, false );
 
 			}
 		}
@@ -2191,7 +2191,7 @@ void CX2StateCreateUnit::SetAlarmAboutName( const WCHAR* /*pContent*/ )
 /*virtual*/ void CX2StateCreateUnit::LastMsgPopOk()
 {
 	if ( m_pDLGLastMsgPopUp != NULL )
-		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGLastMsgPopUp, NULL, false );
+		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGLastMsgPopUp, 0, false );
 	m_pDLGLastMsgPopUp = NULL;
 
 	//{{ kimhc // 2009-12-23 // ������ �߰��� ������ ���� ��� ä�� ����â���� �̵� �Ѵٴ� �˾�
@@ -2201,7 +2201,7 @@ void CX2StateCreateUnit::SetAlarmAboutName( const WCHAR* /*pContent*/ )
 
 		g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_552 ), L"DLG_UI_Selection_MessageBox_No_Button.lua", L"UI_PopUp_Positive_01.ogg"  );
 
-	g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_SERVER_SELECT, NULL, false );
+	g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_SERVER_SELECT, 0, false );
 }
 
 

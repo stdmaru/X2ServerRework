@@ -35,7 +35,7 @@ CX2StateStartUp::CX2StateStartUp(void)
 	SetForegroundWindow( g_pKTDXApp->GetHWND() );
 	SetFocus( g_pKTDXApp->GetHWND() );
 
-	g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_LOGIN, NULL, false );
+	g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_LOGIN, 0, false );
 
 
 //

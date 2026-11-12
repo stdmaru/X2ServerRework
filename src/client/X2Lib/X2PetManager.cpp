@@ -725,7 +725,7 @@ void CX2PetManager::ShowChangePetName(bool bVal, UidType iChangeItemId)
 	}
 	else
 	{
-		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgChangePetName, NULL, false );
+		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgChangePetName, 0, false );
 		m_pDlgChangePetName = NULL;
 		m_iChangeItemUID = -1;
 	}
@@ -743,7 +743,7 @@ void CX2PetManager::ShowMakePetName(bool bVal, UidType iMakePetId)
 
 	if( bVal == false )
 	{
-		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgMakePetName, NULL, false );
+		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgMakePetName, 0, false );
 		m_pDlgMakePetName = NULL;
 		m_iMakePetId = -1;
 	}

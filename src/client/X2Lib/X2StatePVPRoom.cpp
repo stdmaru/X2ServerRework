@@ -394,7 +394,7 @@ HRESULT CX2StatePVPRoom::OnFrameMove( double fTime, float fElapsedTime )
 			m_pCX2PVPRoom = NULL; // added by wonpok, 20100318.
 
 			DialogLog( "XGM_STATE_CHANGE, CX2Main::XS_PVP_LOBBY, NULL, false" );
-			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_LOBBY, NULL, false );
+			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_LOBBY, 0, false );
 		}
 	}
 
@@ -422,7 +422,6 @@ HRESULT CX2StatePVPRoom::OnFrameMove( double fTime, float fElapsedTime )
 			POINT mousePoint;
 			GetCursorPos( &mousePoint );
 			ScreenToClient( g_pKTDXApp->GetHWND(), &mousePoint );
-			D3DXVECTOR2 mousePos = D3DXVECTOR2( (float)mousePoint.x, (float)mousePoint.y );
 
 			if( m_pCX2PVPRoom != NULL )
 			{
@@ -881,7 +880,7 @@ bool CX2StatePVPRoom::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LP
 			{
 				g_pX2Room->Handler_EGS_BAN_USER_REQ( m_UnitUIDToBan );
 				CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 			}
 			break;
 
@@ -1384,7 +1383,7 @@ bool CX2StatePVPRoom::Handler_EGS_LEAVE_ROOM_REQ( int leaveRoomReason /* = NetEr
 
 		m_pCX2PVPRoom = NULL; // added by wonpok, 20100318.
 		DialogLog( "XGM_STATE_CHANGE, CX2Main::XS_PVP_LOBBY, NULL, false" );
-		g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_LOBBY, NULL, false );
+		g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_LOBBY, 0, false );
 
 		return true;
 	}
@@ -1419,14 +1418,14 @@ bool CX2StatePVPRoom::Handler_EGS_LEAVE_ROOM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, 
 
 		m_pCX2PVPRoom = NULL;
 		DialogLog( "XGM_STATE_CHANGE, CX2Main::XS_PVP_LOBBY, NULL, false" );
-		g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_LOBBY, NULL, false );
+		g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_LOBBY, 0, false );
 		return true;
 	}
 
 	// added by wonpok, 20100318, 크래쉬 예외처리
 	if( m_pCX2PVPRoom == NULL )
 	{
-		g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_LOBBY, NULL, false );
+		g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_LOBBY, 0, false );
 		return true;
 	}
 
@@ -1882,7 +1881,7 @@ bool CX2StatePVPRoom::Handler_EGS_STATE_CHANGE_GAME_START_NOT( HWND /*hWnd*/, UI
 			m_Timer_EGS_STATE_CHANGE_GAME_START_NOT.restart();
 
 			DialogLog( "XGM_STATE_CHANGE, CX2Main::XS_PVP_GAME, NULL, false" );
-			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_GAME, NULL, false );
+			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_GAME, 0, false );
 
 			//{{ kimhc // 2010.3.26 // 무한 스킬 버그 수정
 			g_pInstanceData->SetReceiveGameStartNotPacket( true );	// kimhc // 2010-03-23 // packet 을 받았음
@@ -1981,7 +1980,7 @@ bool CX2StatePVPRoom::Handler_EGS_STATE_CHANGE_GAME_INTRUDE_NOT( HWND /*hWnd*/, 
 		g_pData->GetPVPRoom()->SetIntrudeGame( true );
 		DialogLog( "XGM_STATE_CHANGE, CX2Main::XS_PVP_GAME, NULL, false" );
 
-		g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_GAME, NULL, false );
+		g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_GAME, 0, false );
 
 		//{{ kimhc // 2010.05.10 // 난입 시에 무한 스킬 버그 수정
 		g_pInstanceData->SetReceiveGameStartNotPacket( true );	// kimhc // 2010-05-10 // 난입시 NOT 패킷을 받음

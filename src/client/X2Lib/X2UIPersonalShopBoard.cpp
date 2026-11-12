@@ -2722,6 +2722,7 @@ bool CX2UIPersonalShopBoard::CheckSelectCategoryOption( IN const CX2Item::ItemTe
 			case 6:
 				if ( eItemEquipPosition != CX2Unit::EP_AC_LEG )
 					return false;
+				break;
 			case 7:
 				if ( eItemEquipPosition != CX2Unit::EP_AC_ARM )
 					return false;

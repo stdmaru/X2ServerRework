@@ -632,7 +632,7 @@ bool CX2UIPetInfo::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wPara
 		{
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
 			if ( pControl != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			g_pData->GetPetManager()->Handler_EGS_PET_EVOLUTION_REQ( m_ViewPetUid );
 		}
@@ -687,7 +687,7 @@ bool CX2UIPetInfo::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wPara
 			if ( pControl == NULL )
 				return true;
 
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 			g_pData->GetUIManager()->GetUIInventory()->Handler_EGS_USE_ITEM_IN_INVENTORY_REQ(m_UseItemUID, m_ViewPetUid);
 			m_UseItemUID = 0;
 		}
@@ -698,7 +698,7 @@ bool CX2UIPetInfo::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wPara
 			if ( pControl == NULL )
 				return true;
 
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			//마을이 아니면 채팅 로그 추가
 			if( g_pX2Game != NULL && g_pMain->GetNowStateID() != CX2Main::XS_BATTLE_FIELD )
@@ -846,7 +846,7 @@ bool CX2UIPetInfo::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wPara
 		{
 			if(m_pDLGUIRidingPetReleasePopup != NULL)
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGUIRidingPetReleasePopup, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGUIRidingPetReleasePopup, 0, false );
 				m_pDLGUIRidingPetReleasePopup = NULL;
 			}
 			m_pDLGUIRidingPetReleasePopup =
@@ -870,7 +870,7 @@ bool CX2UIPetInfo::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wPara
 					{
 						m_eTabSelect = RIDING_PET_TAB_SELECT;
 						CX2RidingPetManager::GetInstance()->Handler_EGS_RELEASE_RIDING_PET_REQ( m_ViewRidingPetUid );
-						g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGUIRidingPetReleasePopup, NULL, false );
+						g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGUIRidingPetReleasePopup, 0, false );
 						m_pDLGUIRidingPetReleasePopup = NULL;
 					}
 					else
@@ -889,7 +889,7 @@ bool CX2UIPetInfo::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wPara
 		{
 			if(m_pDLGUIRidingPetReleasePopup != NULL)
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGUIRidingPetReleasePopup, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGUIRidingPetReleasePopup, 0, false );
 				m_pDLGUIRidingPetReleasePopup = NULL;
 			}
 		}
@@ -1082,7 +1082,7 @@ void CX2UIPetInfo::SetShow(bool val, UidType eTab)
 		m_pDLGUIRidingPetList->SetShowEnable( false, false );
 		if(m_pDLGUIRidingPetReleasePopup != NULL)
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGUIRidingPetReleasePopup, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGUIRidingPetReleasePopup, 0, false );
 			m_pDLGUIRidingPetReleasePopup = NULL;
 		}
 

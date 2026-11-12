@@ -275,7 +275,7 @@ CX2MiniMapUI::~CX2MiniMapUI(void)
 		{
 			if ( m_pDLGQuery != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGQuery, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGQuery, 0, false );
 				m_pDLGQuery = NULL;
 			}
 
@@ -290,7 +290,7 @@ CX2MiniMapUI::~CX2MiniMapUI(void)
 		{
 			if ( m_pDLGQuery != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGQuery, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGQuery, 0, false );
 				m_pDLGQuery = NULL;
 			}
 
@@ -350,7 +350,7 @@ void CX2MiniMapUI::SetShowMiniMap( MINI_MAP_TYPE eMiniMapType, bool bShow )
 	if(bShow == false)
 	{
 		if(m_pDLGQuery != NULL)
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGQuery, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGQuery, 0, false );
 		m_pDLGQuery = NULL;
 	}
 

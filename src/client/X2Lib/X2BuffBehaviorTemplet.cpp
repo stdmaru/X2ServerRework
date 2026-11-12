@@ -1057,9 +1057,9 @@ bool CX2BuffChangeStatBehaviorTemplet::MustUseOptionData() const
 			if ( DidStart() )	/// 기존에 작동 중인 것이었으면 기존의 효과 삭제
 				pGameUnit_->EraseTemporaryBuffFactor( pBuffTemplet_->GetBuffIdentity() );
 
-			m_uiSkillId = static_cast<UINT>( (*pBehaviorFactor)[FO_SKILL_ID] );
-			if ( 0 > m_uiSkillId )
+			if ( 0 > (*pBehaviorFactor)[FO_SKILL_ID] )
 				return DISPLAY_ERROR( L"SKILL_ID doesn't exist" );
+			m_uiSkillId = static_cast<UINT>( (*pBehaviorFactor)[FO_SKILL_ID] );
 
 			CX2BuffFactorPtr ptrBuffFactor = CX2BuffTempletManager::GetInstance()->GetBuffFactorPtr( m_uiBuffFactorId );
 			if ( pGameUnit_->GetGameUnitType() == CX2GameUnit::GUT_USER )
@@ -2904,10 +2904,10 @@ void CX2BuffFreezeBehaviorTemplet::OnFrameMove( CX2GameUnit* pGameUnit_, CX2Buff
 	/// 버프가 가지고 있는 여러 요소 중 현재 클래스에 해당 하는 정보를 얻어옴
 	if ( BuffFactor_.GetBehaviorFactor( GetType(), &pBehaviorFactor ) )
 	{
-		m_uiSkillId = static_cast<UINT>( (*pBehaviorFactor)[FO_SKILL_ID] );
-
-		if ( 0 > m_uiSkillId )
+		if ( 0 > (*pBehaviorFactor)[FO_SKILL_ID] )
 			return DISPLAY_ERROR( L"SKILL_ID doesn't exist" );
+
+		m_uiSkillId = static_cast<UINT>( (*pBehaviorFactor)[FO_SKILL_ID] );
 
 		if ( pGameUnit_->GetGameUnitType() == CX2GameUnit::GUT_USER )
 		{

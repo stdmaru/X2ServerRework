@@ -13170,7 +13170,7 @@ void CX2GULire_ElvenRanger::LESI_LGA_DASH_JUMP_Z_EventProcess()
 
 void CX2GULire_ElvenRanger::LESI_LGA_DASH_JUMP_ZX_FrameMoveFuture()
 {
-	if( true == m_pXSkinAnimFuture->GetNowAnimationTime() > 0.72f )
+	if( m_pXSkinAnimFuture->GetNowAnimationTime() > 0.72f )
 	{
 		m_PhysicParam.passiveSpeed.x = -1.f;
 	}
@@ -13222,7 +13222,7 @@ void CX2GULire_ElvenRanger::LESI_LGA_DASH_JUMP_ZX_EventProcess()
 
 	//if( true == m_pXSkinAnimFuture->IsAnimationEnd() &&
 	//	true == IsOnSomethingFuture() )
-	if( true == m_pXSkinAnimFuture->GetNowAnimationTime() > 0.8f &&
+	if( m_pXSkinAnimFuture->GetNowAnimationTime() > 0.8f &&
 		true == IsOnSomethingFuture() )
 	{
 		StateChange( USI_JUMP_LANDING );
@@ -16572,8 +16572,7 @@ void CX2GULire_ElvenRanger::CreateGuideArrow( bool bMemo_, bool bHyperMode_/* = 
 	}
 
 	//���̵� �ַο� ����Ʈ ����
-	CX2DamageEffect::CEffect* aDamageEffect[4];
-    ZeroMemory( aDamageEffect, sizeof(0) );
+	CX2DamageEffect::CEffect* aDamageEffect[4] = {};
     int iNumDe = 0;
 	aDamageEffect[iNumDe++] = g_pX2Game->GetDamageEffect()->CreateInstance( this, EffectName.c_str() , GetPowerRate(), posR, degree, degree, m_FrameDataNow.unitCondition.landPosition.y );
 	degree.z += fDegreeZ;

@@ -1115,7 +1115,7 @@ class CKTDGLineMap : public CKTDGObject
                     continue;
 
                 //점과 선사이의 최단 거리를 구한다.
-                D3DXVECTOR3 projectionPoint;
+                D3DXVECTOR3 projectionPoint( 0.f, 0.f, 0.f );
                 float		fFinalLength;
                 fFinalLength = GetLengthToLine( pos, i, &projectionPoint );
 

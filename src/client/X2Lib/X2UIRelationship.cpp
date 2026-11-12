@@ -156,7 +156,7 @@ bool CX2UIRelationship::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM 
 			if ( pControl == NULL )
 				return true;
 
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			g_pData->GetServerProtocol()->SendID ( EGS_BREAK_UP_REQ );
 			g_pMain->AddServerPacket( EGS_BREAK_UP_ACK, 60.f );
@@ -185,7 +185,7 @@ bool CX2UIRelationship::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM 
 			if ( pControl == NULL )
 				return true;
 
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			//마을이 아니면 채팅 로그 추가
 			if( g_pX2Game != NULL && g_pMain->GetNowStateID() != CX2Main::XS_BATTLE_FIELD )
@@ -346,7 +346,6 @@ bool CX2UIRelationship::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM 
 					if ( pReserveTimeCombo != NULL )
 					{
 						CTime ctNowTime = g_pData->GetServerCurrentTime();
-						CTime ctNowTimeOnStarted = CTime ( ctNowTime.GetYear(), ctNowTime.GetMonth(), ctNowTime.GetDay(), 0, 0, 0, 0 );
 						CTimeSpan ctsSpandTime = CTimeSpan( pReserveTimeCombo->GetSelectedItemIndex(), 23, 59, 0 );
 						CTime ctReserveTime = ctNowTime + ctsSpandTime;
 						kEvent.m_tWeddingDate = static_cast<__int64> ( ctReserveTime.GetTime() );
@@ -545,7 +544,7 @@ bool CX2UIRelationship::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM 
 			{
 				if ( NULL != g_pData->GetGuildManager() &&
 					 NULL != g_pData->GetGuildManager()->GetMyGuildInfo() &&
-					 0 != g_pData->GetGuildManager()->GetMyGuildInfo()->m_iGuildUID > 0 )
+					 g_pData->GetGuildManager()->GetMyGuildInfo()->m_iGuildUID > 0 )
 				{
 					g_pData->GetRelationshipManager()->Send_EGS_GET_GUILD_USER_LIST_REQ();
 					ShowInviteWeddingUserListDlg(true, false, RIT_GUILD);
@@ -1215,7 +1214,7 @@ bool CX2UIRelationship::ShowInviteWeddingUserListDlg  ( bool bEnable, bool bIsSa
 				}
 			}
 		}
-		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGInviteWeddingUserList, NULL, false );
+		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGInviteWeddingUserList, 0, false );
 		m_pDLGInviteWeddingUserList = NULL;
 
 
@@ -1238,7 +1237,7 @@ void CX2UIRelationship::ShowChangeLoveMessageDlg( bool bEnable, UidType ItemUid_
 	{
 		if(m_pDLGChangeLoveMessage != NULL)
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGChangeLoveMessage, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGChangeLoveMessage, 0, false );
 			m_pDLGChangeLoveMessage = NULL;
 		}
 	}
@@ -1257,7 +1256,7 @@ bool CX2UIRelationship::ShowInviteCoupleDlg( bool bEnable )
 	{
 		if(m_pDLGInviteCoupleMessage != NULL)
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGInviteCoupleMessage, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGInviteCoupleMessage, 0, false );
 			m_pDLGInviteCoupleMessage = NULL;
 		}
 		return true;
@@ -1362,7 +1361,7 @@ bool CX2UIRelationship::ShowJoinWeddingDlg( bool bEnable, bool bIsWeddingHeroine
 	{
 		if(m_pDLGJoinWedding != NULL)
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGJoinWedding, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGJoinWedding, 0, false );
 			m_pDLGJoinWedding = NULL;
 		}
 		return true;
@@ -1451,7 +1450,7 @@ bool CX2UIRelationship::ShowInviteWeddingDlg ( bool bEnable )
 	{
 		if(m_pDLGInviteWedding != NULL)
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGInviteWedding, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGInviteWedding, 0, false );
 			m_pDLGInviteWedding = NULL;
 		}
 		return true;

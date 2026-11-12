@@ -213,7 +213,7 @@ HRESULT CX2StatePVPResult::OnFrameMove( double fTime, float fElapsedTime )
 			else
 			{
 				g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_438 ) );
-				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_ROOM, NULL, false );
+				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_ROOM, 0, false );
 			}
 		}
 		else
@@ -484,7 +484,7 @@ bool CX2StatePVPResult::Handler_EGS_RESULT_ALL_UNIT_SUCCESS_NOT( HWND /*hWnd*/, 
 	{
 		g_pMain->CreateStateChangeDLG( GET_STRING(STR_ID_438  ) );
 		DialogLog( "XGM_STATE_CHANGE, CX2Main::XS_PVP_ROOM, NULL, false" );
-		g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_ROOM, NULL, false );
+		g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_ROOM, 0, false );
 		DialogLog( "CX2StatePVPResult::Handler_EGS_RESULT_ALL_UNIT_SUCCESS_NOT End" );
 	}
 

@@ -2227,7 +2227,7 @@ bool CX2ChatBox::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam,
 		{
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
 			if ( pControl != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			m_pDLGNasodScopeMessageYesNo = NULL;
 			return true;
@@ -2237,7 +2237,7 @@ bool CX2ChatBox::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam,
 		{
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
 			if ( pControl != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			m_pDLGNasodScopeMessageYesNo = NULL;
 			Handler_EGS_USE_MEGAPHONE_REQ();
@@ -5580,7 +5580,7 @@ bool CX2ChatBox::ShowNasodMessageDlg( bool bEnable )	//	나소드 메가폰 메�
 	{
 		if(m_pDLGNasodScopeMessage != NULL)
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGNasodScopeMessage, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGNasodScopeMessage, 0, false );
 			m_pDLGNasodScopeMessage = NULL;
 			//	선택된 아이템 슬롯 제거
 			SetItemSlot( NULL );
@@ -6388,6 +6388,7 @@ void CX2ChatBox::ProcessChangeIMEEditWindowByTabKey()
 			case CWM_RELATION_COUPLE:
 			case CWM_RELATION_MARRIED:
 				eIMEEditWindowMode = CWM_TOTAL;
+				[[fallthrough]];
 
 
 			default:

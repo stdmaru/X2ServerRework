@@ -394,7 +394,7 @@ bool CX2StateTrainingSchool::Handler_EGS_CREATE_TC_ROOM_ACK( HWND /*hWnd*/, UINT
 
 			// 게임 바로 시작
 			g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_744 ) );
-			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_TRAINING_GAME, NULL, false );
+			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_TRAINING_GAME, 0, false );
 
 
 			const int MAGIC_FREE_TRAINING_ID = 1;

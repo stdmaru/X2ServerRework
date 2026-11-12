@@ -832,7 +832,7 @@ bool CX2UIGuildBoard::Handler_EGS_GET_APPLY_JOIN_GUILD_LIST_ACK(  HWND /*hWnd*/,
 
 					//m_columnForJoinList[i].m_pStaticJoinList->SetString( 2, L"09-06-21 145:2434:434");
 					WCHAR	temp[20] = { 0, };
-					if( kApplyJoinGuildInfo.m_wstrRegDate.find( L" " ) >= 0 )
+					if( kApplyJoinGuildInfo.m_wstrRegDate.find( L" " ) != std::wstring::npos )
 						kApplyJoinGuildInfo.m_wstrRegDate.copy(temp, kApplyJoinGuildInfo.m_wstrRegDate.find( L" " ) );
 
 					m_columnForJoinList[i].m_pStaticJoinList->SetString( 2,  temp );
@@ -946,7 +946,7 @@ bool CX2UIGuildBoard::SetShowGuildAdvertiseMessageDlg(bool bEnable)
 	{
 		if(m_pDlgGuildAdvertiseMessage != NULL)
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgGuildAdvertiseMessage, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgGuildAdvertiseMessage, 0, false );
 			m_pDlgGuildAdvertiseMessage = NULL;
 		}
 		return true;
@@ -969,7 +969,7 @@ bool CX2UIGuildBoard::SetShowGuildJoinMessageDlg(bool bEnable)
 	{
 		if(m_pDlgGuildJoinMessage != NULL)
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgGuildJoinMessage, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgGuildJoinMessage, 0, false );
 			m_pDlgGuildJoinMessage = NULL;
 		}
 		return true;
@@ -1526,7 +1526,7 @@ bool		CX2UIGuildBoard::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, L
 				CKTDGUIControl* pControl = NULL;
 				pControl		= reinterpret_cast< CKTDGUIControl* >( lParam );
 
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 				Handler_EGS_APPLY_JOIN_GUILD_REQ( m_wstrLastMessage , true);
 				return true;
@@ -1569,7 +1569,7 @@ bool		CX2UIGuildBoard::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, L
 		{
 			CKTDGUIControl* pControl = NULL;
 			pControl		= reinterpret_cast< CKTDGUIControl* >( lParam );
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 			Handler_EGS_APPLY_JOIN_GUILD_REQ( m_wstrLastMessage , false);
 		} break;
 	case UGBCM_PUSH_JOIN_MESSAGE_CANCEL:
@@ -1579,7 +1579,7 @@ bool		CX2UIGuildBoard::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, L
 				m_bOldApplyDelete = false;
 				CKTDGUIControl* pControl = NULL;
 				pControl		= reinterpret_cast< CKTDGUIControl* >( lParam );
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 			}
 			else
 			{
@@ -1658,7 +1658,7 @@ bool		CX2UIGuildBoard::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, L
 		{
 			CKTDGUIControl* pControl = NULL;
 			pControl		= reinterpret_cast< CKTDGUIControl* >( lParam );
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			if( m_bRegMyGuildAd == true )
 			{
@@ -1679,7 +1679,7 @@ bool		CX2UIGuildBoard::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, L
 		{
 			CKTDGUIControl* pControl = NULL;
 			pControl		= reinterpret_cast< CKTDGUIControl* >( lParam );
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			SetShowGuildAdvertiseMessageDlg(true);
 		} break;
@@ -1735,7 +1735,6 @@ bool		CX2UIGuildBoard::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, L
 			CKTDGUIRadioButton* pRadioButton = (CKTDGUIRadioButton*) lParam;
 			m_uiJoinListIndex = pRadioButton->GetDummyInt(0);
 
-			if( m_uiJoinListIndex >= 0 )
 			{
 				m_columnForJoinList[m_uiJoinListIndex].m_pButtonDescMessage->SetShowEnable(true, true);
 

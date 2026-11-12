@@ -70,7 +70,7 @@ HRESULT CX2DamageEffect::OnFrameMove( double fTime, float fElapsedTime )
         {
             iterNext = iter; ++iterNext;
             CEffect* pCEffect = iter->m_pInstance;
-            if ( pCEffect != NULL && true == pCEffect->IsCreationDelayElapsed() == true )
+            if ( pCEffect != NULL && true == pCEffect->IsCreationDelayElapsed() )
             {
                 iter->m_eListType = LIST_LIVE;
                 m_coInstanceHandleList.splice( m_coInstanceHandleList.end( LIST_LIVE ), iter );
@@ -3411,7 +3411,7 @@ void CX2DamageEffect::CEffect::AttackResult()
 			if( pParticleData->bForceDieHit == true )
 			{
                 if ( g_pX2Game != NULL )
-				g_pX2Game->GetMajorParticle()->DestroyInstanceHandle( pParticleData->m_hSeq );
+					g_pX2Game->GetMajorParticle()->DestroyInstanceHandle( pParticleData->m_hSeq );
 				SAFE_DELETE( pParticleData );
 				m_StartParticleDataList.erase( m_StartParticleDataList.begin() + i );
 				i--;
@@ -3424,7 +3424,7 @@ void CX2DamageEffect::CEffect::AttackResult()
 			if( pParticleData->bForceDieHit == true )
 			{
                 if ( g_pX2Game != NULL )
-				g_pX2Game->GetMajorParticle()->DestroyInstanceHandle( pParticleData->m_hSeq );
+					g_pX2Game->GetMajorParticle()->DestroyInstanceHandle( pParticleData->m_hSeq );
 				SAFE_DELETE( pParticleData );
 				m_PassiveParticleDataList.erase( m_PassiveParticleDataList.begin() + i );
 				i--;
@@ -3436,7 +3436,7 @@ void CX2DamageEffect::CEffect::AttackResult()
 			if( pParticleData->bForceDieHit == true )
 			{
                 if ( g_pX2Game != NULL )
-				g_pX2Game->GetMajorParticle()->DestroyInstanceHandle( pParticleData->m_hSeq );
+					g_pX2Game->GetMajorParticle()->DestroyInstanceHandle( pParticleData->m_hSeq );
 				SAFE_DELETE( pParticleData );
 				m_TimeParticleDataList.erase( m_TimeParticleDataList.begin() + i );
 				i--;

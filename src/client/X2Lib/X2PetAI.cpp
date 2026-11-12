@@ -482,21 +482,21 @@ void CX2PETAI::Moving( float fElapsedTime )
 
 			m_PathFinder.SimpleFollowTargetPathFly( fElapsedTime, m_vPosition, m_iLastTouchLineIndex, vDistPos, iFinalDestLineIndex,
 				m_fMaxJumpUp * 2.f, m_fMaxJumpRight,
-				(const float)m_pAIData->flymovedata.fDestHeight, (const float)m_pAIData->flymovedata.fDestArea,
-				pLineMap, (const float)m_pAIData->flymovedata.fDestGap, (const float)m_pAIData->chaseMoveData.moveGap,
+				(float)m_pAIData->flymovedata.fDestHeight, (float)m_pAIData->flymovedata.fDestArea,
+				pLineMap, (float)m_pAIData->flymovedata.fDestGap, (float)m_pAIData->chaseMoveData.moveGap,
 				m_bFootOnLine, bStayOnCurrLineGroup, bIsTargetOnRight, m_pAIData->chaseMoveData.m_fLineEndDetectRange );
 		}
 		else
 		{
 			m_PathFinder.SimpleFollowTargetPath( fElapsedTime, m_vPosition, m_iLastTouchLineIndex, vFinalDest, iFinalDestLineIndex,
-				m_fMaxJumpUp, m_fMaxJumpRight, pLineMap, (const float)fDestGap, (const float)m_pAIData->chaseMoveData.moveGap,
+				m_fMaxJumpUp, m_fMaxJumpRight, pLineMap, (float)fDestGap, (float)m_pAIData->chaseMoveData.moveGap,
 				m_bFootOnLine, bStayOnCurrLineGroup, bIsTargetOnRight, m_pAIData->chaseMoveData.m_fLineEndDetectRange );
 		}
 	}
 	else
 	{
 		m_PathFinder.SimpleFollowTargetPath( fElapsedTime, m_vPosition, m_iLastTouchLineIndex, vFinalDest, iFinalDestLineIndex,
-			m_fMaxJumpUp, m_fMaxJumpRight, pLineMap, (const float)fDestGap, (const float)m_pAIData->chaseMoveData.moveGap,
+			m_fMaxJumpUp, m_fMaxJumpRight, pLineMap, (float)fDestGap, (float)m_pAIData->chaseMoveData.moveGap,
 			m_bFootOnLine, bStayOnCurrLineGroup, bIsTargetOnRight, m_pAIData->chaseMoveData.m_fLineEndDetectRange );
 	}
 

@@ -474,7 +474,7 @@ HRESULT CX2StateServerSelect::OnFrameMove( double fTime, float fElapsedTime )
 			{
 				g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_701 ), L"DLG_UI_Selection_MessageBox_No_Button.lua", L"UI_PopUp_Positive_01.ogg"  );
 
-				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_CREATE_UNIT, NULL, false );
+				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_CREATE_UNIT, 0, false );
 				m_bStateChangingToUnitCreate = true;
 			}
 			//}} ????? : [2011/6/20] //        �?? ???? ???????? ????
@@ -767,7 +767,7 @@ void CX2StateServerSelect::OnFrameMove_GameServerConnect( double /*fTime*/, floa
 			//{{ kimhc // 2010-05-07 // ????�? ???? ???? ???? ????? ????
 			// 	 int* x = NULL;
 			// 	 *x = 1;
-			g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, 0, NULL, false );
+			g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, 0, 0, false );
 			//}} kimhc // 2010-05-07 // ????�? ???? ???? ???? ????? ????
 		}
 	}
@@ -1006,7 +1006,7 @@ bool CX2StateServerSelect::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wPara
 				//Handler_EGS_ENTRY_POINT_GET_CHANNEL_LIST_REQ ();
 
 
-				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_CREATE_UNIT, NULL, false );
+				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_CREATE_UNIT, 0, false );
 			}
 			else
 			{
@@ -1112,7 +1112,7 @@ bool CX2StateServerSelect::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wPara
 
 		case SUSUCM_DELETE_UNIT_CHECK:
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGDeleteUnitCheck, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGDeleteUnitCheck, 0, false );
 				m_pDLGDeleteUnitCheck = NULL;
 
 				//{{AFX
@@ -1137,7 +1137,7 @@ bool CX2StateServerSelect::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wPara
 			break;
 		case SUSUCM_FINAL_DELETE_UNIT_CHECK:
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGDeleteUnitCheck, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGDeleteUnitCheck, 0, false );
 				m_pDLGDeleteUnitCheck = NULL;
 
 				return Handler_EGS_FINAL_DELETE_UNIT_REQ();
@@ -1156,7 +1156,7 @@ bool CX2StateServerSelect::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wPara
 			break;
 		case SUSUCM_RESTORE_UNIT_CHECK:
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGDeleteUnitCheck, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGDeleteUnitCheck, 0, false );
 				m_pDLGDeleteUnitCheck = NULL;
 
 				return Handler_EGS_RESTORE_UNIT_REQ();
@@ -1223,7 +1223,7 @@ bool CX2StateServerSelect::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wPara
 
 		case SUSUCM_RENAME_CONFIRM_OK:
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGRenameConfirmMsgBox, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGRenameConfirmMsgBox, 0, false );
 				m_pDLGRenameConfirmMsgBox = NULL;
 
 				Handler_EGS_ENTRY_POINT_CHANGE_NICK_NAME_REQ ( m_NickNameChangeUnitUID, m_NickNameChangeUnitNickName.c_str(), false, m_pSelectUnit->GetServerGroupID() );
@@ -1233,7 +1233,7 @@ bool CX2StateServerSelect::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wPara
 
 		case SUSUCM_RENAME_CONFIRM_CANCEL:
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGRenameConfirmMsgBox, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGRenameConfirmMsgBox, 0, false );
 				m_pDLGRenameConfirmMsgBox = NULL;
 				return true;
 			} break;
@@ -1241,7 +1241,7 @@ bool CX2StateServerSelect::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wPara
 
 		case SUSUCM_RENAME_SUCCESS_OK:
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGRenameSuccessMsgBox, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGRenameSuccessMsgBox, 0, false );
 				m_pDLGRenameSuccessMsgBox = NULL;
 
 
@@ -1254,7 +1254,7 @@ bool CX2StateServerSelect::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wPara
 
 		case SUSUCM_START_TUTORIAL_OK:
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGTutorialMsgBox, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGTutorialMsgBox, 0, false );
 				m_pDLGTutorialMsgBox = NULL;
 
 
@@ -1265,7 +1265,7 @@ bool CX2StateServerSelect::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wPara
 
 		case SUSUCM_START_TUTORIAL_CANCEL:
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGTutorialMsgBox, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGTutorialMsgBox, 0, false );
 				m_pDLGTutorialMsgBox = NULL;
 
 				g_pMain->SetIsPlayingTutorial( false );
@@ -1280,7 +1280,7 @@ bool CX2StateServerSelect::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wPara
 
 		case SUSUCM_START_FIRST_DUNGEON_OK:
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGGoToFirstDungeon, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGGoToFirstDungeon, 0, false );
 				m_pDLGGoToFirstDungeon = NULL;
 
 				if( NULL == m_pSelectUnit )
@@ -1298,7 +1298,7 @@ bool CX2StateServerSelect::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wPara
 
 		case SUSUCM_START_FIRST_DUNGEON_CANCEL:
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGGoToFirstDungeon, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGGoToFirstDungeon, 0, false );
 				m_pDLGGoToFirstDungeon = NULL;
 
 
@@ -1482,7 +1482,7 @@ bool CX2StateServerSelect::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wPara
 				x2::platform::OpenUrl( L"https://member.nexon.com/verify/realname.aspx" );
 				if( NULL != m_pDLGATLLimitCheckMsgBox )
 				{
-					g_pKTDXApp->SendGameDlgMessage(XGM_DELETE_DIALOG, m_pDLGATLLimitCheckMsgBox, NULL, false);
+					g_pKTDXApp->SendGameDlgMessage(XGM_DELETE_DIALOG, m_pDLGATLLimitCheckMsgBox, 0, false);
 				}
 				g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, 0, 0, false );
 			}
@@ -1611,13 +1611,13 @@ bool CX2StateServerSelect::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wPara
 					g_pData->GetServerProtocol()->DisconnectFromGameServer();
 				if ( true == g_pData->GetServerProtocol()->IsChConnected() )
 					g_pData->GetServerProtocol()->DisconnectFromChannelServer();
-				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_SERVER_SELECT, NULL, false );
+				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_SERVER_SELECT, 0, false );
 			} break;
 
 		case SSSUCM_DOUBLE_CONNECT:
 			{
 				g_pKTDXApp->NoticeQuitType( CKTDXApp::KQT_DOUBLE_CONNECT );
-				g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, 0, NULL, false );
+				g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, 0, 0, false );
 			}break;
 	}
 
@@ -3351,7 +3351,7 @@ bool CX2StateServerSelect::Handler_EGS_DELETE_UNIT_ACK( HWND /*hWnd*/, UINT /*uM
 			if ( g_pData->GetMyUser()->GetUnitNum() <= 0 )
 			{
 				g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_701 ), L"DLG_UI_Selection_MessageBox_No_Button.lua", L"UI_PopUp_Positive_01.ogg"  );
-				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_CREATE_UNIT, NULL, false );
+				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_CREATE_UNIT, 0, false );
 			}
 			else
 			{
@@ -3695,7 +3695,7 @@ void CX2StateServerSelect::OpenRecommendMsgBox( bool bOpen )
 	if ( bOpen == true )
 	{
 		if ( m_pDLGRecommend != NULL )
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGRecommend, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGRecommend, 0, false );
 
 		m_pDLGRecommend = NULL;
 
@@ -3712,7 +3712,7 @@ void CX2StateServerSelect::OpenRecommendMsgBox( bool bOpen )
 	else
 	{
 		if ( m_pDLGRecommend != NULL )
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGRecommend, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGRecommend, 0, false );
 
 		m_pDLGRecommend = NULL;
 	}
@@ -4640,7 +4640,7 @@ bool CX2StateServerSelect::Handler_EGS_STATE_CHANGE_FIELD_ACK( HWND /*hWnd*/, UI
 //				}
 //#endif
 
-				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_VILLAGE_MAP, NULL, false );
+				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_VILLAGE_MAP, 0, false );
 			}
 		}
 		else
@@ -4818,7 +4818,7 @@ bool CX2StateServerSelect::Handler_EGS_CREATE_TUTORIAL_ROOM_ACK( HWND /*hWnd*/, 
 			if(g_pInstanceData != NULL)
 				g_pInstanceData->SetFirstJoinVillage(true);
 			g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_645 ), L"DLG_UI_Selection_MessageBox_No_Button.lua", L"UI_PopUp_Positive_01.ogg" );
-			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_DUNGEON_ROOM, NULL, false );
+			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_DUNGEON_ROOM, 0, false );
 
 			//???? ??????? ????
 			if( NULL != g_pData && NULL != g_pData->GetPartyManager() )
@@ -4923,7 +4923,7 @@ bool CX2StateServerSelect::Handler_EGS_CONNECT_REQ( const wstring& wstrGameServe
 					m_bCanNotConenctToBusyServer = true;
 					m_sbSelectedServerSet = false;
 					// ConnectToChannelServer(true);
-					g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, /*CX2Main::XS_UNIT_SELECT*/ CX2Main::XS_SERVER_SELECT, NULL, false );
+					g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, /*CX2Main::XS_UNIT_SELECT*/ CX2Main::XS_SERVER_SELECT, 0, false );
 
 					if ( g_pData->GetServerProtocol()->IsConnected() == true )
 					{
@@ -4951,7 +4951,7 @@ bool CX2StateServerSelect::Handler_EGS_CONNECT_REQ( const wstring& wstrGameServe
 		//g_pData->DeleteServerProtocol();
 		//g_pData->DeleteMyUser();
 		g_pKTDXApp->NoticeQuitType( CKTDXApp::KQT_INVALID_ID_OR_PASSWORD );
-		g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, 0, NULL, false );
+		g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, 0, 0, false );
 	}
 
 	m_bWaitingEGS_CONNECT_REQ_ChannelButtonUp = false;
@@ -4985,13 +4985,13 @@ bool CX2StateServerSelect::Handler_EGS_CONNECT_ACK( HWND /*hWnd*/, UINT /*uMsg*/
 			default:
 				{
 					g_pKTDXApp->NoticeQuitType( CKTDXApp::KQT_CONNECT_FAILED );
-					g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, 0, NULL, false );
+					g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, 0, 0, false );
 				} break;
 
 			case NetError::ERR_CONNECT_00:
 				{
 					MessageBox( g_pKTDXApp->GetHWND(), GET_STRING( STR_ID_727 ), L"Quit", MB_OK );
-					g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, 0, NULL, false );
+					g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, 0, 0, false );
 				} break;
 
 			case NetError::ERR_CONNECT_04:
@@ -5006,7 +5006,7 @@ bool CX2StateServerSelect::Handler_EGS_CONNECT_ACK( HWND /*hWnd*/, UINT /*uMsg*/
 						m_bCanNotConenctToBusyServer = true;
 						m_sbSelectedServerSet = false;
 						// ConnectToChannelServer(true);
-						g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, /*CX2Main::XS_UNIT_SELECT*/ CX2Main::XS_SERVER_SELECT, NULL, false );
+						g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, /*CX2Main::XS_UNIT_SELECT*/ CX2Main::XS_SERVER_SELECT, 0, false );
 
 						if ( g_pData->GetServerProtocol()->IsConnected() == true )
 						{
@@ -5197,7 +5197,7 @@ bool CX2StateServerSelect::Handler_EGS_VERIFY_ACCOUNT_ACK( HWND /*hWnd*/, UINT /
 			default:
 				{
 					g_pKTDXApp->NoticeQuitType( CKTDXApp::KQT_VERIFY_ACCOUNT );
-					g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, 0, NULL, false );
+					g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, 0, 0, false );
 				} break;
 			}
 
@@ -5835,7 +5835,7 @@ bool CX2StateServerSelect::Handler_ECH_VERIFY_ACCOUNT_ACK( HWND /*hWnd*/, UINT /
 			case NetError::ERR_VERIFY_20:
 				{
 					g_pKTDXApp->NoticeQuitType( CKTDXApp::KQT_CONNECT_FAILED );
-					g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, 0, NULL, false );
+					g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, 0, 0, false );
 				} break;
 			default:
 				{
@@ -5944,7 +5944,7 @@ bool CX2StateServerSelect::Handler_EGS_SECOND_SECURITY_INFO_NOT( HWND /*hWnd*/, 
 			{
 				m_sbSelectedServerSet = false;
 				m_bCanNotConenctToBusyServer = false;
-				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, /*CX2Main::XS_UNIT_SELECT*/ CX2Main::XS_SERVER_SELECT, NULL, false );
+				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, /*CX2Main::XS_UNIT_SELECT*/ CX2Main::XS_SERVER_SELECT, 0, false );
 			}
 		}
 		else
@@ -5963,10 +5963,10 @@ bool CX2StateServerSelect::Handler_EGS_SECOND_SECURITY_INFO_NOT( HWND /*hWnd*/, 
 /*virtual*/ void CX2StateServerSelect::LastMsgPopOk()
 {
 	if ( m_pDLGLastMsgPopUp != NULL )
-		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGLastMsgPopUp, NULL, false );
+		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGLastMsgPopUp, 0, false );
 	m_pDLGLastMsgPopUp = NULL;
 
-	g_pKTDXApp->SendGameMessage( CKTDXApp::KM_UI_CONTROL_CUSTOM_EVENT, SSSUCM_UNIT_SELECT_EXIT, NULL, false );
+	g_pKTDXApp->SendGameMessage( CKTDXApp::KM_UI_CONTROL_CUSTOM_EVENT, SSSUCM_UNIT_SELECT_EXIT, 0, false );
 }
 
 void CX2StateServerSelect::UnitSelectExit()
@@ -6113,7 +6113,7 @@ bool CX2StateServerSelect::Handler_EGS_FINAL_DELETE_UNIT_ACK( HWND /*hWnd*/, UIN
 			if ( g_pData->GetMyUser()->GetUnitNum() <= 0 )
 			{
 				g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_701 ), L"DLG_UI_Selection_MessageBox_No_Button.lua", L"UI_PopUp_Positive_01.ogg"  );
-				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_CREATE_UNIT, NULL, false );
+				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_CREATE_UNIT, 0, false );
 			}
 			else
 			{
@@ -7991,7 +7991,7 @@ void CX2StateServerSelect::FindAndConnectLowerUserCountGameServer ( const vector
 
 
 		g_pData->GetServerProtocol()->DisconnectFromGameServer();
-		g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_SERVER_SELECT, NULL, false );
+		g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_SERVER_SELECT, 0, false );
 	}
 }
 

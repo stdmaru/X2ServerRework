@@ -897,7 +897,7 @@ bool CX2State::UIEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM 
 					&& wParam == CKTDGUIButton::BEM_BUTTON_MOUSEUP )
 				{
 					g_pKTDXApp->GetDIManager()->SetEnable(true);
-					g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+					g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 					return true;
 				}
@@ -911,7 +911,7 @@ bool CX2State::UIEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM 
 					}
 
 					g_pKTDXApp->GetDIManager()->SetEnable(true);
-					g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+					g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 					return true;
 				}
 			}
@@ -1128,7 +1128,7 @@ bool CX2State::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
 			g_pMain->GetStateAutoChanger().StartStateChange( (int)g_pMain->GetNowStateID(), (int)CX2Main::XS_SERVER_SELECT, targetDetail );
 			if( NULL != m_pDLGGuestUserGoUnitSelect )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGGuestUserGoUnitSelect, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGGuestUserGoUnitSelect, 0, false );
 				m_pDLGGuestUserGoUnitSelect = NULL;
 			}
 
@@ -1143,7 +1143,7 @@ bool CX2State::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
 
 	case SUCM_USER_INFO_OK:
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGUserInfo, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGUserInfo, 0, false );
 			m_pDLGUserInfo = NULL;
 
 			return true;
@@ -1175,7 +1175,7 @@ bool CX2State::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
 					break;
 				}
 
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGUnReady, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGUnReady, 0, false );
 
 				//ProcessChangeEquipSlotAfterUnReady();
 
@@ -1186,7 +1186,7 @@ bool CX2State::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
 
 	case SUCM_UNREADY_CANCEL:
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGUnReady, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGUnReady, 0, false );
 		} break;
 		//}} kimhc // 2010.3.26 // 무한 스킬 버그 수정
 
@@ -1205,7 +1205,7 @@ bool CX2State::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
 		{
 			if( NULL != m_pDLGPCBangBenefitGuide )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGPCBangBenefitGuide, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGPCBangBenefitGuide, 0, false );
 			}
 		} break;
 
@@ -1849,12 +1849,6 @@ bool CX2State::UIServerEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
 			return Handler_EGS_CHECK_MACHINE_ID_ACK( hWnd, uMsg, wParam, lParam );
 		} break;
 
-		if ( NULL !=g_pData->GetPremiumBuffManager() )
-		{
-			if ( true == g_pData->GetPremiumBuffManager()->UIServerEventProc( hWnd, uMsg, wParam, lParam ) )
-				return true;
-		}
-
 	case EGS_USER_UNIT_DIE_ACK:
 		return Handler_EGS_USER_UNIT_DIE_ACK( hWnd, uMsg, wParam, lParam );
 		break;
@@ -2116,7 +2110,7 @@ bool CX2State::UIServerEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
 bool CX2State::UIServerTimeOutProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/ )
 {
 
-	std::wstring packetExplain = KEvent::GetIDStr( (const unsigned short)wParam );
+	std::wstring packetExplain = KEvent::GetIDStr( (unsigned short)wParam );
 
 #if X2_DEV_TOOLS
 	{
@@ -2820,7 +2814,7 @@ bool CX2State::PutOffPopUpDialog()
 				}
 			}
 
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pDialog, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pDialog, 0, false );
 			return true;
 		}
 
@@ -2892,7 +2886,7 @@ void CX2State::LastMsgPopOk()
 void CX2State::LastMsgPopCancel()
 {
 	if ( m_pDLGLastMsgPopUp != NULL )
-		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGLastMsgPopUp, NULL, false );
+		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGLastMsgPopUp, 0, false );
 
 	m_pDLGLastMsgPopUp = NULL;
 }
@@ -5067,7 +5061,7 @@ bool CX2State::Handler_EGS_STATE_CHANGE_FIELD_ACK( HWND /*hWnd*/, UINT /*uMsg*/,
 			// 마을 생성
 			if(bCanCreateWorld == true)
 			{
-				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_VILLAGE_MAP, NULL, false );
+				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_VILLAGE_MAP, 0, false );
 			}
 		}
 		else
@@ -5688,7 +5682,7 @@ bool CX2State::Handler_EGS_CONNECT_CHANNEL_CHANGE_REQ()
 		g_pData->GetUIManager()->CloseAll();
 		CX2StateServerSelect::m_sbSelectedServerSet = false;
 		g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_552 ) );
-		g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, /*CX2Main::XS_UNIT_SELECT*/ CX2Main::XS_SERVER_SELECT, NULL, false );
+		g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, /*CX2Main::XS_UNIT_SELECT*/ CX2Main::XS_SERVER_SELECT, 0, false );
 
 
 		//m_bFailToConnectServer = true;
@@ -5756,14 +5750,14 @@ bool CX2State::Handler_EGS_CONNECT_CHANNEL_CHANGE_ACK( HWND /*hWnd*/, UINT /*uMs
 			//g_pMain->GetStateAutoChanger().StartStateChange( (int)g_pMain->GetNowStateID(), (int)CX2Main::XS_SERVER_SELECT, targetDetail );
 
 			g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_552 ) );
-			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, /*CX2Main::XS_UNIT_SELECT*/ CX2Main::XS_SERVER_SELECT, NULL, false );
+			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, /*CX2Main::XS_UNIT_SELECT*/ CX2Main::XS_SERVER_SELECT, 0, false );
 			//{{ 2013.03.05 조효진		KOG_OTP 정리 및 재구성
 			switch( kEvent.m_iOK )
 			{
 			case NetError::ERR_UNKNOWN		:// OTP 틀린 경우 ..
 				{
 					MessageBox( g_pKTDXApp->GetHWND(), GET_STRING( STR_ID_648 ), L"Quit", MB_OK );
-					g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, 0, NULL, false );
+					g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, 0, 0, false );
 				} break;
 			default:
 				break;
@@ -7697,7 +7691,7 @@ bool CX2State::Handler_EGS_JOIN_BATTLE_FIELD_ACK( HWND /*hWnd*/, UINT /*uMsg*/, 
 //#endif  SERV_KTDX_OPTIMIZE_UDP_PACKET_PACK
 
 
-					g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_BATTLE_FIELD, NULL, false );
+					g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_BATTLE_FIELD, 0, false );
 
 					if( NULL != g_pTFieldGame )
 					{
@@ -8089,7 +8083,7 @@ void CX2State::ReturnToPlaceWhereBeforeDungeonStart()
 			//오현빈//2013-01-17//채널 선택창으로 이동 시에 현재 체력 저장
 			Send_EGS_UPDATE_PLAY_STATUS_NOT();
 			g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_552 ) );
-			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, /*CX2Main::XS_UNIT_SELECT*/ CX2Main::XS_SERVER_SELECT, NULL, false );
+			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, /*CX2Main::XS_UNIT_SELECT*/ CX2Main::XS_SERVER_SELECT, 0, false );
 		}
 	}
 
@@ -9477,7 +9471,7 @@ bool CX2State::Handler_EGS_CALL_MY_LOVER_JOIN_BATTLE_FIELD_NOT( HWND /*hWnd*/, U
 
 
 
-				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_BATTLE_FIELD, NULL, false );
+				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_BATTLE_FIELD, 0, false );
 
 				if( NULL != g_pTFieldGame )
 				{

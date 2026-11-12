@@ -701,7 +701,7 @@ bool CX2StateOption::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 
 	case SOUCM_OPTION_COMMUNITY_BLACKLIST_REMOVE_CANCEL:
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGBlackListRemoveOKAndCancel, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGBlackListRemoveOKAndCancel, 0, false );
 			m_pDLGBlackListRemoveOKAndCancel = NULL;
 		}
 		break;
@@ -2362,7 +2362,7 @@ void CX2StateOption::ShowKeyConfigDLG( bool bShow )
 	else
 	{
 		if( m_DLGKeyConfig != NULL )
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_DLGKeyConfig, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_DLGKeyConfig, 0, false );
 	}
 }
 

@@ -340,7 +340,7 @@ bool CX2StateSquareGame::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam,
 
 	case SQGUCM_LEAVE_SQUARE_GAME_CANCEL:
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGExitMsgBox, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGExitMsgBox, 0, false );
 			m_pDLGExitMsgBox = NULL;
 		}
         break;

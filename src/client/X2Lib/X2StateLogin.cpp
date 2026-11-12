@@ -209,7 +209,7 @@ bool CX2StateLogin::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 			break;
 		case SLUCM_CHANGE_STATE_MEMBER_JOIN:
 			{
-				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_JOIN, NULL, false );
+				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_JOIN, 0, false );
 				return true;
 			}
 			break;
@@ -229,7 +229,7 @@ bool CX2StateLogin::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 
 				if ( g_pMain->GetManualLogin() == true )
 				{
-					g_pKTDXApp->SendGameMessage( CKTDXApp::KM_UI_CONTROL_CUSTOM_EVENT, SLUCM_LOGIN, NULL, false );
+					g_pKTDXApp->SendGameMessage( CKTDXApp::KM_UI_CONTROL_CUSTOM_EVENT, SLUCM_LOGIN, 0, false );
 				}
 			}
 			break;
@@ -290,7 +290,7 @@ void CX2StateLogin::StateChangeLoading()
 
 	g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_656 ) );
 
-	g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_LOADING, NULL, false );
+	g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_LOADING, 0, false );
 }
 
 
@@ -496,7 +496,7 @@ bool CX2StateLogin::Handler_ECH_VERIFY_ACCOUNT_REQ()
 	// The password Steam logins send: typed by hand without Steam, the client quits (CX2Steam::IsValidSteamUser of the
 	// original; there is no Steam client in the port).
 	if( kPacket.m_wstrPassword == L"J2380DE81621XZ" )
-		g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, 0, NULL, false );
+		g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, 0, 0, false );
 
 	g_pData->GetServerProtocol()->SendChPacket( ECH_VERIFY_ACCOUNT_REQ, kPacket );
 	g_pMain->AddServerPacket( ECH_VERIFY_ACCOUNT_ACK );

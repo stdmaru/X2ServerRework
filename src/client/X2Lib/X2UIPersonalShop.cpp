@@ -93,7 +93,7 @@ void CX2UIPersonalShop::BreakShop()
 	case XPSS_SELL:
 		{
 			if ( m_pDLGCloseShopCheck != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGCloseShopCheck, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGCloseShopCheck, 0, false );
 			m_pDLGCloseShopCheck = NULL;
 			Handler_BREAK_PERSONAL_SHOP_REQ();
 		}
@@ -850,9 +850,9 @@ bool CX2UIPersonalShop::Handler_UPDATE_PERSONAL_SHOP_ITEM_INFO_NOT( HWND /*hWnd*
 		ResetSlotList( m_vecPersonalShopSlotItem );
 
 		/// 갱신
-		if ( NULL == g_pData &&
-			 NULL == g_pData->GetUIManager() &&
-			 NULL == g_pData->GetUIManager()->GetUIPersonalShopBoard() )
+		if ( NULL != g_pData &&
+			 NULL != g_pData->GetUIManager() &&
+			 NULL != g_pData->GetUIManager()->GetUIPersonalShopBoard() )
 			 g_pData->GetUIManager()->GetUIPersonalShopBoard()->Handler_EGS_SEARCH_TRADE_BOARD_REQ();
 
 	}
@@ -1106,7 +1106,7 @@ bool CX2UIPersonalShop::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM 
 	case UPSCM_SELL_EXIT_CONFIRM:
 		{
 			if ( m_pDLGCloseShopCheck != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGCloseShopCheck, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGCloseShopCheck, 0, false );
 
 			m_pDLGCloseShopCheck = NULL;
 
@@ -1236,7 +1236,7 @@ bool CX2UIPersonalShop::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM 
 	case UPSCM_SELL_BEGIN_CONFIRM:
 		{
 			if ( m_pDLGCloseShopCheck != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGCloseShopCheck, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGCloseShopCheck, 0, false );
 
 			m_pDLGCloseShopCheck = NULL;
 
@@ -1356,7 +1356,7 @@ bool CX2UIPersonalShop::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM 
 	case UPSCM_BUY_CONFIRM:
 		{
 			if ( m_pDLGBuyConfirm != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGBuyConfirm, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGBuyConfirm, 0, false );
 
 			m_pDLGBuyConfirm = NULL;
 
@@ -1365,7 +1365,7 @@ bool CX2UIPersonalShop::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM 
 			{
 				if ( m_pDLGBuySealedItemConfirm != NULL )
 				{
-					g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGBuySealedItemConfirm, NULL, false );
+					g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGBuySealedItemConfirm, 0, false );
 					m_pDLGBuySealedItemConfirm = NULL;
 				}
 
@@ -1384,7 +1384,7 @@ bool CX2UIPersonalShop::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM 
 	case UPSCM_BUY_CANCLE:
 		{
 			if ( m_pDLGBuyConfirm != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGBuyConfirm, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGBuyConfirm, 0, false );
 
 			m_pDLGBuyConfirm = NULL;
 
@@ -1400,7 +1400,7 @@ bool CX2UIPersonalShop::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM 
 		{
 			if ( m_pDLGBuySealedItemConfirm != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGBuySealedItemConfirm, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGBuySealedItemConfirm, 0, false );
 				m_pDLGBuySealedItemConfirm = NULL;
 			}
 
@@ -1412,7 +1412,7 @@ bool CX2UIPersonalShop::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM 
 		{
 			if ( m_pDLGBuySealedItemConfirm != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGBuySealedItemConfirm, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGBuySealedItemConfirm, 0, false );
 				m_pDLGBuySealedItemConfirm = NULL;
 			}
 
@@ -1488,7 +1488,7 @@ bool CX2UIPersonalShop::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM 
             m_pDLGBuyConfirm = g_pMain->KTDGUIOkAndCancelMsgBox( D3DXVECTOR2(-999,-999), wstrstm.str().c_str(), UPSCM_BUY_CONFIRM, g_pMain->GetNowState() );
 
 			if ( m_pDLGBuyQuantity != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGBuyQuantity, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGBuyQuantity, 0, false );
 			m_pDLGBuyQuantity = NULL;
 
 		}
@@ -1496,7 +1496,7 @@ bool CX2UIPersonalShop::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM 
 	case UPSCM_BUY_QUANTITY_CANCLE:
 		{
 			if ( m_pDLGBuyQuantity != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGBuyQuantity, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGBuyQuantity, 0, false );
 			m_pDLGBuyQuantity = NULL;
 
 			/// 들어갔던 개인 상점 나가자

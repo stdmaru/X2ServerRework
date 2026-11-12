@@ -224,13 +224,21 @@ bool CSHA1::HashFile( const char *szFileName )
 
 	for ( i = 0; i < ulBlocks; i++ )
 	{
-		fread( uData, 1, MAX_FILE_READ_BUFFER, fIn );
+		if ( fread( uData, 1, MAX_FILE_READ_BUFFER, fIn ) != MAX_FILE_READ_BUFFER )
+		{
+			fclose( fIn );
+			return false;
+		}
 		Update( uData, MAX_FILE_READ_BUFFER );
 	}
 
 	if ( ulRest != 0 )
 	{
-		fread( uData, 1, ulRest, fIn );
+		if ( fread( uData, 1, ulRest, fIn ) != ulRest )
+		{
+			fclose( fIn );
+			return false;
+		}
 		Update( uData, ulRest );
 	}
 
@@ -283,19 +291,19 @@ void CSHA1::Final()
 void CSHA1::ReportHash( char *szReport, unsigned char uReportType, bool bNoBlank )
 {
 	unsigned char i = 0;
-	char szTemp[ 4 ];
+	char szTemp[ 16 ];
 
 	if ( uReportType == REPORT_HEX )
 	{
-		sprintf( szTemp, "%02X", m_digest[ 0 ] );
+		snprintf( szTemp, sizeof( szTemp ), "%02X", m_digest[ 0 ] );
 		strcat( szReport, szTemp );
 
 		for ( i = 1; i < 20; i++ )
 		{
 			if( bNoBlank )
-				sprintf( szTemp, "%02X", m_digest[ i ] );
+				snprintf( szTemp, sizeof( szTemp ), "%02X", m_digest[ i ] );
 			else
-				sprintf( szTemp, " %02X", m_digest[ i ] );
+				snprintf( szTemp, sizeof( szTemp ), " %02X", m_digest[ i ] );
 			strcat( szReport, szTemp );
 		}
 	}
@@ -303,15 +311,15 @@ void CSHA1::ReportHash( char *szReport, unsigned char uReportType, bool bNoBlank
 	else
 		if ( uReportType == REPORT_DIGIT )
 		{
-			sprintf( szTemp, "%u", m_digest[ 0 ] );
+			snprintf( szTemp, sizeof( szTemp ), "%u", m_digest[ 0 ] );
 			strcat( szReport, szTemp );
 
 			for ( i = 1; i < 20; i++ )
 			{
 				if( bNoBlank )
-					sprintf( szTemp, "%u", m_digest[ i ] );
+					snprintf( szTemp, sizeof( szTemp ), "%u", m_digest[ i ] );
 				else
-					sprintf( szTemp, " %u", m_digest[ i ] );
+					snprintf( szTemp, sizeof( szTemp ), " %u", m_digest[ i ] );
 				strcat( szReport, szTemp );
 			}
 		}

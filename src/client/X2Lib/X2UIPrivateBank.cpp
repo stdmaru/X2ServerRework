@@ -387,7 +387,7 @@ bool		CX2UIPrivateBank::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM 
 	case UPBCM_WANT_BUY_SHARING_CASH_ITEM:
 		{
 			if ( m_pDlgWantBuySharingBank != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgWantBuySharingBank, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgWantBuySharingBank, 0, false );
 
 			m_pDlgWantBuySharingBank = NULL;
 			// ���� : ĳ�� ������ �����ش�.( �������� ���� ���� ������ �ִ� ������ )
@@ -414,7 +414,7 @@ bool		CX2UIPrivateBank::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM 
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
 			if ( pControl != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 			}
 
 			g_pData->GetServerProtocol()->SendPacket( EGS_CHANGE_INVENTORY_SLOT_ITEM_REQ, g_pData->GetUIManager()->GetUIInventory()->m_kTempChangeSlotInfo );

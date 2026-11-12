@@ -1830,7 +1830,6 @@ void CX2RelationshipEffectManager::RelationEffectInfo::PrepareDrawRelationshipEf
 
 bool CX2RelationshipEffectManager::CalculateCloseEffectPosition ( UidType Uid1_, UidType Uid2_, D3DXVECTOR3 & vPos )
 {
-	D3DXVECTOR3 vResult = D3DXVECTOR3 ( 0, 0, 0 );
 	switch(g_pMain->GetNowStateID())
 	{
 

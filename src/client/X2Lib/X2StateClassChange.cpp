@@ -242,7 +242,7 @@ bool CX2ClassChangePopup::SetShow( bool bShow, int iType )
 	{
 		m_pDLGClassChange->SetHasUnit( NULL );
 
-		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGClassChange, NULL, false );
+		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGClassChange, 0, false );
 		m_pDLGClassChange = NULL;
 	}
 
@@ -282,7 +282,7 @@ void CX2ClassChangePopup::SetShow( bool bShow )
 	{
 		m_pDLGClassChange->SetHasUnit( NULL );
 
-		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGClassChange, NULL, false );
+		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGClassChange, 0, false );
 		m_pDLGClassChange = NULL;
 	}
 

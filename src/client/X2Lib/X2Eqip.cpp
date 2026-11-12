@@ -1697,8 +1697,9 @@ void CX2Eqip::_UpdateSkin(int iIndex_)
 			case 2:
 				break;
 			case 1:
-                if ( m_pUnitXSkinAnim != NULL )
-				m_pUnitXSkinAnim->RemoveModelXSkinMesh( m_pNormalXSkinModel[i] );
+				if ( m_pUnitXSkinAnim != NULL )
+					m_pUnitXSkinAnim->RemoveModelXSkinMesh( m_pNormalXSkinModel[i] );
+				[[fallthrough]];
 
 
 			default:
@@ -1717,8 +1718,9 @@ void CX2Eqip::_UpdateSkin(int iIndex_)
 			case 1:
 				break;
 			case 2:
-                if ( m_pUnitXSkinAnim != NULL )
-				m_pUnitXSkinAnim->RemoveModelXSkinMesh( m_pHyperXSkinModel[i] );
+				if ( m_pUnitXSkinAnim != NULL )
+					m_pUnitXSkinAnim->RemoveModelXSkinMesh( m_pHyperXSkinModel[i] );
+				[[fallthrough]];
 
 			default:
                 if ( m_pUnitXSkinAnim != NULL )
@@ -1780,8 +1782,9 @@ void CX2Eqip::_UpdateSkin()
 				case 2:
 					break;
 				case 1:
-                    if ( m_pUnitXSkinAnim != NULL )
-					m_pUnitXSkinAnim->RemoveModelXSkinMesh( m_pNormalXSkinModel[i] );
+					if ( m_pUnitXSkinAnim != NULL )
+						m_pUnitXSkinAnim->RemoveModelXSkinMesh( m_pNormalXSkinModel[i] );
+					[[fallthrough]];
 
 				default:
 					if ( m_pUnitXSkinAnim != NULL )
@@ -1796,8 +1799,9 @@ void CX2Eqip::_UpdateSkin()
 				case 1:
 					break;
 				case 2:
-                    if ( m_pUnitXSkinAnim != NULL )
-					m_pUnitXSkinAnim->RemoveModelXSkinMesh( m_pHyperXSkinModel[i] );
+					if ( m_pUnitXSkinAnim != NULL )
+						m_pUnitXSkinAnim->RemoveModelXSkinMesh( m_pHyperXSkinModel[i] );
+					[[fallthrough]];
 
 				default:
 					if ( m_pUnitXSkinAnim != NULL )

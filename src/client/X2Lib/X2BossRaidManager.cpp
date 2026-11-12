@@ -494,7 +494,6 @@ bool CX2BossRaidManager::Handler_EGS_ADMIN_GET_TOTAL_DANGEROUS_VALUE_ACK( HWND /
 	{
 		if( g_pMain->IsValidPacket( kEvent.m_iOK ) == true )
 		{
-			if( kEvent.m_byteTotalDangerousValue >= 0 )
 			{
 				g_pChatBox->AddChatLog( GET_REPLACED_STRING( ( STR_ID_19208, "i", kEvent.m_byteTotalDangerousValue ) ),
 					KEGS_CHAT_REQ::CPT_TOTAL, D3DXCOLOR(1,1,0,1), L"#CFFFF00" );

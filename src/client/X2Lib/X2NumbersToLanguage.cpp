@@ -32,7 +32,7 @@ void CX2NumbersToLanguage::TranslateDigits(TypeLanguage eType, __int64 i64lNumbe
 	int length = static_cast<int>(InData.length());
 	int iCount = 0;
 
-	string (*Lang)[10];
+	string (*Lang)[10] = NULL;
 
 	switch (eType)
 	{
@@ -43,7 +43,7 @@ void CX2NumbersToLanguage::TranslateDigits(TypeLanguage eType, __int64 i64lNumbe
 		Lang = m_LanguageData.LD_CHN;
 		break;
 	default:
-		break;
+		return;
 	}
 
 	while (length != 0)

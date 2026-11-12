@@ -991,7 +991,6 @@ void CX2UIGuildSkillTreeInfo::UpdateSPInfo()
 		CTime cTime;
 		// oasis907 : 김상윤 [2009.12.3] //
 		KncUtil::ConvertStringToCTime( g_pData->GetUIManager()->GetUIGuildBoard()->m_wstrGuildCSPointEndDate, cTime );
-		CTime tCurrentTime = g_pData->GetServerCurrentTime();
 
 		if( bUsingCSP )
 		{

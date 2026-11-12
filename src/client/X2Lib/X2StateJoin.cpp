@@ -34,7 +34,7 @@ bool CX2StateJoin::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 
 		case SJUCM_BACK_TO_LOGIN:
 			{
-				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_LOGIN, NULL, false );
+				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_LOGIN, 0, false );
 				return true;
 			}
 			break;
@@ -151,7 +151,7 @@ bool CX2StateJoin::ServerConnectAck( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM /*wPar
 		if( g_pMain->IsValidPacket( kEvent.m_iOK ) == true )
 		{
 			//g_pData->GetServerProtocol()->SetConnectAccept();
-			NewUserJoinReq( NULL,0,0,NULL );
+			NewUserJoinReq( NULL,0,0,0 );
 		}
 		else
 		{

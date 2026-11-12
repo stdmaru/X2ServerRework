@@ -491,7 +491,7 @@ CX2Game::~CX2Game()
 
 	SAFE_DELETE_DIALOG( m_pDLGResurrect );
 	SAFE_DELETE_DIALOG( m_pDLGCheckResurrectByUseCash );
-	ZeroMemory( &m_ReservedPacket, sizeof(KEGS_RESURRECT_TO_CONTINUE_DUNGEON_REQ) );
+	m_ReservedPacket = KEGS_RESURRECT_TO_CONTINUE_DUNGEON_REQ();
 	ClearDangerAlarm();
 	if( NULL != GetMajorParticle() )
 	{
@@ -9340,7 +9340,7 @@ void CX2Game::ResurrectOtherUserOK()
 {
 	Handler_EGS_RESURRECT_TO_CONTINUE_DUNGEON_REQ( m_UnitUIDToResurrect );
 	if ( m_pDLGResurrect != NULL )
-		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGResurrect, NULL, false );
+		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGResurrect, 0, false );
 
 	m_pDLGResurrect = NULL;
 }
@@ -9348,7 +9348,7 @@ void CX2Game::ResurrectOtherUserOK()
 void CX2Game::ResurrectOtherUserCancel()
 {
 	if ( m_pDLGResurrect != NULL )
-		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGResurrect, NULL, false );
+		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGResurrect, 0, false );
 
 	m_pDLGResurrect = NULL;
 }
@@ -9454,7 +9454,7 @@ bool CX2Game::Handler_EGS_RESURRECT_TO_CONTINUE_DUNGEON_REQ( UidType unitUID, bo
 
 	//SAFE_DELETE_DIALOG( m_pDLGCheckResurrectByUseCash );
 	if ( m_pDLGCheckResurrectByUseCash != NULL )
-		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGCheckResurrectByUseCash, NULL, false );
+		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGCheckResurrectByUseCash, 0, false );
 
 	m_pDLGCheckResurrectByUseCash = NULL;
 
@@ -14376,7 +14376,7 @@ void CX2Game::DeleteRemainingNpcWhenSubStageClear ()
 				if ( pCX2GUNPC == pGameUnit )
 				{
 					pCX2GUNPC->ResetGameUnitWhoAttackedMe();
-					DeleteNPCUnitByUID( static_cast<const UINT> ( pCX2GUNPC->GetUnitUID() ) );
+					DeleteNPCUnitByUID( static_cast<UINT> ( pCX2GUNPC->GetUnitUID() ) );
 					break;
 				}
 				else

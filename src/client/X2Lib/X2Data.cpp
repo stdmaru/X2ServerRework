@@ -2585,7 +2585,7 @@ SEnum::DUNGEON_ID CX2Data::GetCurrentDungeonID()
 	if( NULL != GetPartyManager() &&
 		NULL != GetPartyManager()->GetMyPartyData() )
 	{
-		return static_cast<const SEnum::DUNGEON_ID>(GetPartyManager()->GetMyPartyData()->m_iDungeonID);
+		return static_cast<SEnum::DUNGEON_ID>(GetPartyManager()->GetMyPartyData()->m_iDungeonID);
 	}
 	return SEnum::DI_NONE;
 }

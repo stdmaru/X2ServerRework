@@ -80,7 +80,7 @@ HRESULT	CX2WeddingManager::OnFrameRender()
 			rt.left = 0;
 			rt.right =  (LONG)1024;
 
-			D3DXCOLOR vColor, vOutlineColor;
+			D3DXCOLOR vColor( 1.f, 1.f, 1.f, 1.f ), vOutlineColor( 0.f, 0.f, 0.f, 1.f );
 			m_pWeddingHallManager->GetNoticeColor(vColor);
 			m_pWeddingHallManager->GetNoticeOutlineColor(vOutlineColor);
 

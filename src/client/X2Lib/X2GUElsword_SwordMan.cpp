@@ -236,7 +236,7 @@ void CX2GUElsword_SwordMan::ReInit( bool bRandom, int startPosIndex )
 
 	if( IsMyUnit() == true && CX2Game::GT_PVP == g_pX2Game->GetGameType() )
 	{
-		const WAY_OF_SWORD_STATE eWayOfSwordState = static_cast<const WAY_OF_SWORD_STATE>( GetWayOfSwordState() );
+		const WAY_OF_SWORD_STATE eWayOfSwordState = static_cast<WAY_OF_SWORD_STATE>( GetWayOfSwordState() );
 
 		if( (GetTeam() == CX2Room::TN_RED && g_pX2Game->GetRedTeamKill() > g_pX2Game->GetBlueTeamKill()) ||
 			(GetTeam() == CX2Room::TN_BLUE && g_pX2Game->GetRedTeamKill() < g_pX2Game->GetBlueTeamKill()) )
@@ -4435,7 +4435,7 @@ void CX2GUElsword_SwordMan::DieFrontStart()
 	CommonStateStart();
 	DyingStart();
 
-	const WAY_OF_SWORD_STATE eWayofSwordState = static_cast<const WAY_OF_SWORD_STATE>( GetWayOfSwordState() );
+	const WAY_OF_SWORD_STATE eWayofSwordState = static_cast<WAY_OF_SWORD_STATE>( GetWayOfSwordState() );
 
 	if( eWayofSwordState == WSS_VIGOR )
 		End_SwordmanVigor();
@@ -4477,7 +4477,7 @@ void CX2GUElsword_SwordMan::DieBackStart()
 	CommonStateStart();
 	DyingStart();
 
-	const WAY_OF_SWORD_STATE eWayofSwordState = static_cast<const WAY_OF_SWORD_STATE>( GetWayOfSwordState() );
+	const WAY_OF_SWORD_STATE eWayofSwordState = static_cast<WAY_OF_SWORD_STATE>( GetWayOfSwordState() );
 
 	if( eWayofSwordState == WSS_VIGOR )
 		End_SwordmanVigor();
@@ -6057,7 +6057,7 @@ void CX2GUElsword_SwordMan::WayOfSwordStateChange()
 		iNextWayOfSwordState = m_FrameDataNow.syncData.m_CannonBallCount;
 	}
 
-	const WAY_OF_SWORD_STATE eWayofSwordState = static_cast<const WAY_OF_SWORD_STATE>( GetWayOfSwordState() );
+	const WAY_OF_SWORD_STATE eWayofSwordState = static_cast<WAY_OF_SWORD_STATE>( GetWayOfSwordState() );
 
 	if( iNextWayOfSwordState == WSS_VIGOR &&
 		eWayofSwordState != WSS_VIGOR )
@@ -7632,8 +7632,6 @@ void CX2GUElsword_SwordMan::ESSI_MAGIC_KNIGHT_DASH_JUMP_COMBO_X2a_FrameMove()
 		else
 		{
 			D3DXVECTOR3 pos = m_pXSkinAnim->GetCloneFramePosition( L"Dummy2_Lhand" );
-			D3DXVECTOR3 angle = GetRotateDegree();
-			angle.z = -30.0f;
 			CKTDGParticleSystem::CParticleEventSequence* pSeq = g_pX2Game->GetMajorParticle()->CreateSequence( (CKTDGObject*) this,  L"MagicFail", pos, 100, 100, 1, 1 );
 			if( pSeq != NULL )
 			{

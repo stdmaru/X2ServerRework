@@ -281,7 +281,6 @@ void CX2BossGageUI::SetBossGageTexture( const WCHAR* wszFaceTexName_, const WCHA
 				CKTDGUIControl::CPictureData* pLineNumber1		= pStatic_BossState->GetPicture(7);
 				if ( NULL != pLineNumber1 )
 				{
-					if ( usBarNumber >= 0 )
 					{
 						int iNumOne = usBarNumber % 10;
 						SetNumberIcon( pLineNumber1, iNumOne );

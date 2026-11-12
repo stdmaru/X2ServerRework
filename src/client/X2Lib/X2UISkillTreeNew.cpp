@@ -1096,7 +1096,7 @@ bool CX2UISkillTreeNew::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM 
 		{
 			if( m_pDLGSkillUnsealInform != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGSkillUnsealInform, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGSkillUnsealInform, 0, false );
 				m_pDLGSkillUnsealInform = NULL;
 			}
 		} break;
@@ -1171,7 +1171,7 @@ bool CX2UISkillTreeNew::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM 
 		{
 			if(m_pDLGFirstGuide != NULL)
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGFirstGuide, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGFirstGuide, 0, false );
 			}
 			m_pDLGFirstGuide = NULL;
 			return true;
@@ -1366,7 +1366,7 @@ bool CX2UISkillTreeNew::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM 
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
 
 			if ( NULL != pControl )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			 SetShow(false);
 
@@ -1441,7 +1441,7 @@ bool CX2UISkillTreeNew::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM 
 
 			if ( NULL != pControl && NULL != pControl->GetDialog() )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 				if ( false == m_bNowLearnSkill )
 				{
@@ -1514,7 +1514,7 @@ bool CX2UISkillTreeNew::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM 
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
 
 			if ( NULL != pControl )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			if ( NULL != g_pData && NULL != g_pData->GetSkillTree() )
 			{
@@ -1665,7 +1665,7 @@ bool CX2UISkillTreeNew::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM 
 			{
 				CX2SkillTree::SKILL_ID eCheckSkillID = static_cast<CX2SkillTree::SKILL_ID>( pControl->GetDialog()->GetDummyInt( 0 ) );
 
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 				if ( NULL != g_pData && NULL != g_pData->GetSkillTree() && CX2SkillTree::SI_NONE != eCheckSkillID  )
 				{
@@ -1685,7 +1685,7 @@ bool CX2UISkillTreeNew::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM 
 			{
 				CX2SkillTree::SKILL_ID eCheckSkillID = static_cast<CX2SkillTree::SKILL_ID>( pControl->GetDialog()->GetDummyInt( 0 ) );
 
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 				if ( NULL != g_pData && NULL != g_pData->GetSkillTree() && CX2SkillTree::SI_NONE != eCheckSkillID  )
 				{
@@ -1826,7 +1826,7 @@ bool CX2UISkillTreeNew::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM 
 	case STUCM_BUY_CONFIRM:
 		{
 			if ( m_pDLGBuyConfirm != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGBuyConfirm, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGBuyConfirm, 0, false );
 
 			m_pDLGBuyConfirm = NULL;
 
@@ -1839,7 +1839,7 @@ bool CX2UISkillTreeNew::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM 
 	case STUCM_BUY_CANCEL:
 		{
 			if ( m_pDLGBuyConfirm != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGBuyConfirm, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGBuyConfirm, 0, false );
 
 			m_pDLGBuyConfirm = NULL;
 
@@ -1851,7 +1851,7 @@ bool CX2UISkillTreeNew::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM 
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
 
 			if ( NULL != pControl )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			if ( NULL != g_pData && NULL != g_pData->GetSkillTree() )
 			{
@@ -1872,7 +1872,7 @@ bool CX2UISkillTreeNew::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM 
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
 
 			if ( NULL != pControl )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			if ( NULL != g_pData && NULL != g_pData->GetSkillTree() )
 			{
@@ -5557,6 +5557,7 @@ void CX2UISkillTreeNew::SetUnitClassImageAndName(	CKTDGUIStatic* pStatic,
 				eUnitClass = CX2Unit::UC_ADD_NASOD_RULER;
 			}
 		}
+		[[fallthrough]];
 
 	case CX2Unit::UC_ADD_PSYCHIC_TRACER:
 	case CX2Unit::UC_ADD_LUNATIC_PSYKER:

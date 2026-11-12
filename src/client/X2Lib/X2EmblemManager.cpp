@@ -220,8 +220,7 @@ CKTDGParticleSystem::CParticleEventSequence* CX2EmblemManager::CreateEventSequen
 	pParticleSequence->m_EventList.push_back(pEventTexture);
 
 	// 사이즈 설정
-	CKTDXDeviceTexture* pTexture =
-		pTexture = g_pKTDXApp->GetDeviceManager()->OpenTexture( wstrTextureFile_ );
+	CKTDXDeviceTexture* pTexture = g_pKTDXApp->GetDeviceManager()->OpenTexture( wstrTextureFile_ );
 
 	if( NULL != pTexture )
 	{

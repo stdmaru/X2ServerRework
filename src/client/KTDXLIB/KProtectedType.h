@@ -78,6 +78,7 @@
 #endif // _MSC_VER > 1000
 
 
+#include <bit>
 #include <sstream>
 #include <vector>
 #include <assert.h>
@@ -464,11 +465,7 @@ public:
         ProtectDebugHelper::g_dwVerifyCall++;
 #endif
 
-        float fTempData = m_data;
-        int* pInt;
-        pInt = (int*)( &fTempData );
-        (*pInt) = ((*pInt) << 1) - g_kProtectTable[ m_ucTableIndex ];
-        bool bRet = ( m_verifyData == (*pInt) );
+        bool bRet = ( m_verifyData == VerifyValue( m_data ) );
         ProtectTableHelper::g_bHackSafe &= bRet;
 
         assert( bRet != false );
@@ -496,11 +493,7 @@ private:
 
         m_ucTableIndex = rand() % g_iTableSize;
 
-        float fTempData = rhs;
-        int* pInt;
-        pInt = (int*)( &fTempData );
-        (*pInt) = ((*pInt) << 1) - g_kProtectTable[ m_ucTableIndex ];
-        m_verifyData = (*pInt);
+        m_verifyData = VerifyValue( rhs );
 
 #ifdef _DEBUG
         ProtectDebugHelper::g_dwUpdateCall++;
@@ -516,11 +509,7 @@ private:
 
         m_ucTableIndex = rand() % g_iTableSize;
 
-        float fTempData = rhs;
-        int* pInt;
-        pInt = (int*)( &fTempData );
-        (*pInt) = ((*pInt) << 1) - g_kProtectTable[ m_ucTableIndex ];
-        m_verifyData = (*pInt);
+        m_verifyData = VerifyValue( rhs );
 
 #ifdef _DEBUG
         ProtectDebugHelper::g_dwUpdateCall++;
@@ -532,6 +521,13 @@ private:
 
 private:
     float   m_data;             // data field
+    // The float's bits, shifted and offset like the integer types (computed unsigned, so it wraps instead of overflowing).
+    inline int VerifyValue( float f ) const
+    {
+        const unsigned int uBits = std::bit_cast<unsigned int>( f );
+        return static_cast<int>( ( uBits << 1 ) - static_cast<unsigned int>( g_kProtectTable[ m_ucTableIndex ] ) );
+    }
+
     int     m_verifyData;       // for Verify
     UCHAR   m_ucTableIndex;     // index of ref table
 };

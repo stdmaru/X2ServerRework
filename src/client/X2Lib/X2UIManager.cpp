@@ -780,7 +780,7 @@ bool CX2UIManager::UIServerEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 			return true;
 	}
 	// 2008.11.10 김태완 : 인벤토리 쪽 msg proc 추가
-	if(m_pInventory != NULL == true)
+	if(m_pInventory != NULL)
 	{
 		// 추후 다른 UI와 동시 처리될 수 있는지 확인하여 return값 결정한다.
 		if(m_pInventory->UIServerEventProc(hWnd, uMsg, wParam, lParam) == true)

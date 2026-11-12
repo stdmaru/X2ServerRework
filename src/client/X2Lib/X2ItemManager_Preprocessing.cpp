@@ -30,7 +30,7 @@ bool    CX2ItemManager::KProxy::AddItemTemplet_LUA()
 
     DWORD   dwItemID = 0;
     std::wstring        wstrName;
-    CX2Item::ITEM_TYPE  eItemType;
+    [[maybe_unused]] CX2Item::ITEM_TYPE  eItemType;
 	LUA_GET_VALUE_RETURN(	luaManager, "m_ItemID",	dwItemID, 0, return false; );
 	LUA_GET_VALUE_RETURN(	luaManager, "m_Name", wstrName, L"", return false; );
 	LUA_GET_VALUE_RETURN_ENUM(	luaManager, "m_ItemType", eItemType, CX2Item::ITEM_TYPE, CX2Item::IT_NONE, return false; );

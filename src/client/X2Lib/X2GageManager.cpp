@@ -385,7 +385,7 @@ void CX2GageManager::SetMyGameUnit( CX2GameUnit* pMyGameUnit_ )
 
 void CX2GageManager::SetPartyMemberGameUnit( const UINT uiIndex_, CX2GameUnit* pParyMemberGameUnit_ )
 {
-	if ( uiIndex_ >= 0 && uiIndex_ < m_vecGageSetPartyMember.size() )
+	if ( uiIndex_ < m_vecGageSetPartyMember.size() )
 	{
 		CX2GageSetPtr ptrGageSet = m_vecGageSetPartyMember[uiIndex_];
 		ptrGageSet->SetOwnerGameUnit( pParyMemberGameUnit_ );
@@ -914,7 +914,7 @@ void CX2GageManager::SetMySkillCoolTimeList( const map<int, int>& mapSkillCoolTi
 		const UINT iSlotIndex = cmItr->first;
 
 		// 벡터 범위 내에 있는지 검사
-		if ( m_vecSkillCoolTime.size() > iSlotIndex && 0 <= iSlotIndex )
+		if ( m_vecSkillCoolTime.size() > iSlotIndex )
 			m_vecSkillCoolTime[iSlotIndex] = static_cast<float>( cmItr->second );	// 스킬 쿨타임 셋팅
 
 		++cmItr;
@@ -924,7 +924,7 @@ void CX2GageManager::SetMySkillCoolTimeList( const map<int, int>& mapSkillCoolTi
 void CX2GageManager::SetMySkillCoolTimeList( const UINT uiSlotIndex_, const float fRemainCoolTime_ )
 {
 	// 벡터 범위 내에 있는지 검사
-	if ( m_vecSkillCoolTime.size() > uiSlotIndex_ && 0 <= uiSlotIndex_ )
+	if ( m_vecSkillCoolTime.size() > uiSlotIndex_ )
 		m_vecSkillCoolTime[uiSlotIndex_] = fRemainCoolTime_;
 }
 
@@ -1038,7 +1038,7 @@ void CX2GageManager::SetMyRidingSkillCoolTimeList( const map<int, int>& mapSkill
 		const UINT iSlotIndex = cmItr->first;
 
 		// 벡터 범위 내에 있는지 검사
-		if ( m_vecRidingPetSkillCoolTime.size() > iSlotIndex && 0 <= iSlotIndex )
+		if ( m_vecRidingPetSkillCoolTime.size() > iSlotIndex )
 			m_vecRidingPetSkillCoolTime[iSlotIndex] = static_cast<float>( cmItr->second );	// 스킬 쿨타임 셋팅
 
 		++cmItr;
@@ -1048,7 +1048,7 @@ void CX2GageManager::SetMyRidingSkillCoolTimeList( const map<int, int>& mapSkill
 void CX2GageManager::SetMyRidingSkillCoolTimeList(  const UINT uiSlotIndex_, const float fRemainCoolTime_ )
 {
 	// 벡터 범위 내에 있는지 검사
-	if ( m_vecRidingPetSkillCoolTime.size() > uiSlotIndex_ && 0 <= uiSlotIndex_ )
+	if ( m_vecRidingPetSkillCoolTime.size() > uiSlotIndex_ )
 		m_vecRidingPetSkillCoolTime[uiSlotIndex_] = fRemainCoolTime_;
 }
 
@@ -2653,7 +2653,6 @@ void CX2OldGageManager::UIFrameMove( double /*fTime*/, float /*fElapsedTime*/ )
 					pLineNumber10->SetShow( false );
 					pLineX->pos.x =  pLineNumber10->pos.x;
 				}
-				if ( usBarNumber >= 0 )
 				{
 					iNumOne = usBarNumber % 10;
                     SetNumberIcon( pLineNumber1, iNumOne );

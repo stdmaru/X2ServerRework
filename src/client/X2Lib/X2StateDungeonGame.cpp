@@ -96,7 +96,7 @@ CX2StateDungeonGame::CX2StateDungeonGame(void)
 	m_pCX2GameLoadingTip	= new CX2GameLoadingTip();
 	if( NULL != m_pCX2GameLoadingTip && NULL != g_pData->GetPartyManager() && NULL != g_pData->GetPartyManager()->GetMyPartyData() )
 	{
-		if( true == CX2Dungeon::IsHenirDungeon( static_cast<const SEnum::DUNGEON_ID>( g_pData->GetPartyManager()->GetMyPartyData()->m_iDungeonID ) ) )
+		if( true == CX2Dungeon::IsHenirDungeon( static_cast<SEnum::DUNGEON_ID>( g_pData->GetPartyManager()->GetMyPartyData()->m_iDungeonID ) ) )
 			m_pCX2GameLoadingTip->SetVillageSetting();
 	}
 
@@ -228,7 +228,7 @@ CX2StateDungeonGame::CX2StateDungeonGame(void)
 		}
 	}
 
-	if( true == CX2Dungeon::IsHenirDungeon( static_cast<const SEnum::DUNGEON_ID>( g_pData->GetPartyManager()->GetMyPartyData()->m_iDungeonID ) ) &&
+	if( true == CX2Dungeon::IsHenirDungeon( static_cast<SEnum::DUNGEON_ID>( g_pData->GetPartyManager()->GetMyPartyData()->m_iDungeonID ) ) &&
 		CX2Dungeon::DM_HENIR_CHALLENGE == g_pData->GetPartyManager()->GetMyPartyData()->m_iDungeonMode )
 	{
 		g_pData->GetUIManager()->SetShowQuickSlot(false);
@@ -1169,7 +1169,7 @@ bool CX2StateDungeonGame::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam
 
 	case DGUCM_GAME_EXIT_OK:
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGExitMsgBox, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGExitMsgBox, 0, false );
 			m_pDLGExitMsgBox = NULL;
 
 			if( true == g_pMain->GetIsPlayingTutorial() )
@@ -1205,7 +1205,7 @@ bool CX2StateDungeonGame::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam
 
 	case DGUCM_GAME_EXIT_CANCEL:
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGExitMsgBox, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGExitMsgBox, 0, false );
 			m_pDLGExitMsgBox = NULL;
 
 			return true;
@@ -1215,7 +1215,7 @@ bool CX2StateDungeonGame::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam
 
 	case DGUCM_GOTO_FIRST_DUNGEON_OK:
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGGoToFirstDungeon, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGGoToFirstDungeon, 0, false );
 			m_pDLGGoToFirstDungeon = NULL;
 
 
@@ -1232,7 +1232,7 @@ bool CX2StateDungeonGame::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam
 
 	case DGUCM_GOTO_FIRST_DUNGEON_CANCEL:
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGGoToFirstDungeon, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGGoToFirstDungeon, 0, false );
 			m_pDLGGoToFirstDungeon = NULL;
 
 			g_pMain->SetIsExitingTutorial( true );
@@ -3044,7 +3044,7 @@ HRESULT CX2StateDungeonGame::TutorialFrameMove( double /*fTime*/, float fElapsed
 		if( m_fTimeLeftForHighlight <= 0.f )
 		{
 			m_fTimeLeftForHighlight = 0.f;
-			m_HighLightSkillID = (char)-1;
+			m_HighLightSkillID = -1;
 		}
 	}
 
@@ -3056,8 +3056,8 @@ HRESULT CX2StateDungeonGame::TutorialFrameMove( double /*fTime*/, float fElapsed
 		{
 
 			CX2Unit::UNIT_TYPE eUnitType = pCX2GUUser->GetUnit()->GetType();
-			char nowUserStateID = (char)pCX2GUUser->GetNowStateID();
-			// note!! 전직 커맨드 추가되면 여기에 작업
+			const int nowUserStateID = pCX2GUUser->GetNowStateID();
+			// note!! add new job-class commands here
 			switch( eUnitType )
 			{
 			case CX2Unit::UT_ELSWORD:
@@ -5655,7 +5655,7 @@ void CX2StateDungeonGame::WaitDefenceDungeonStart( const float fElapsedTime )
 
 		if ( 0.f >= m_fWaitDefenceDungeonStartTime && NULL != g_pKTDXApp )
 		{
-			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_DUNGEON_GAME, NULL, false );
+			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_DUNGEON_GAME, 0, false );
 			m_fWaitDefenceDungeonStartTime = -1.f;
 		}
 	}

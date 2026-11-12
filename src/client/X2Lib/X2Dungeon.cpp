@@ -281,22 +281,20 @@ void CX2Dungeon::SetStageStaticNPC( int stageNum, std::map<int, KNPCList>& mapNP
 
 void CX2Dungeon::SetDungeonMapOpen( int iStageIndex, int iSubStageIndex, bool bOpen )
 {
-	D3DXVECTOR2 m_vOpenStagePos;
-
 	map< std::pair<int,int>, DungeonMapData >::iterator it;
 	it = m_mapDungeonMapData.find( std::make_pair(iStageIndex, iSubStageIndex) );
 	if( it != m_mapDungeonMapData.end() )
 	{
 		DungeonMapData& dungeonMapData = it->second;
 		dungeonMapData.m_bOpen = bOpen;
-		m_vOpenStagePos = dungeonMapData.m_vPos;
-	}
-
-	for(it = m_mapDungeonMapData.begin(); it != m_mapDungeonMapData.end(); it++)
-	{
-		DungeonMapData& dungeonMapData = it->second;
-		if(dungeonMapData.m_vPos == m_vOpenStagePos)
-			dungeonMapData.m_bAutoOpen = true;
+		// Stages drawn at the same map position open with it (the original compared an uninitialized position when
+		// the stage was not found).
+		const D3DXVECTOR2 vOpenStagePos = dungeonMapData.m_vPos;
+		for( auto& [key, mapData] : m_mapDungeonMapData )
+		{
+			if( mapData.m_vPos == vOpenStagePos )
+				mapData.m_bAutoOpen = true;
+		}
 	}
 
 	FullStageIndex nowStageIndex( iStageIndex, iSubStageIndex );

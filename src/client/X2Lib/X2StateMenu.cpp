@@ -582,7 +582,7 @@ bool CX2StateMenu::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 
 	if ( uMsg == WM_LBUTTONDOWN )
 	{
-		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGMenuWindow, NULL, false );
+		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGMenuWindow, 0, false );
 		m_pDLGMenuWindow = NULL;
 		m_bShowWindowMenu = false;
 	}
@@ -949,6 +949,7 @@ bool CX2StateMenu::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 				return ToggleSystemMenu(true);
 			}
 		}
+		break;
 
 
 	case SMUCM_VIEW_STUDENT_CANDIDATE_LIST:
@@ -1146,7 +1147,7 @@ bool CX2StateMenu::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 
 	case SMUCM_FIND_USER_CANCEL:
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGFindUser, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGFindUser, 0, false );
 			m_pDLGFindUser = NULL;
 
 			//{{ 2007. 11. 13  최육사  안쓰는 통계정리
@@ -1158,7 +1159,7 @@ bool CX2StateMenu::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 
 	case SMUCM_USER_INFO_OK:
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGUserInfo, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGUserInfo, 0, false );
 			m_pDLGUserInfo = NULL;
 
 			return true;
@@ -1173,7 +1174,7 @@ bool CX2StateMenu::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 			targetDetail.m_iDungeonID = m_iSearchUnitDungeonID;
 			targetDetail.m_iRoomUID = m_iSearchUnitRoomUID;
 
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGUserInfo, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGUserInfo, 0, false );
 			m_pDLGUserInfo = NULL;
 
 			return true;
@@ -1189,7 +1190,7 @@ bool CX2StateMenu::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 
 	case SMUCM_INVITE_NOT_CANCEL:
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGInviteNot, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGInviteNot, 0, false );
 			m_pDLGInviteNot = NULL;
 		}
 		break;
@@ -1342,7 +1343,7 @@ bool CX2StateMenu::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 	case SMUCM_PRESENT_ARRIVAL_CLOSE:
 		{
 			if ( m_pDLGPresentArrival != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGPresentArrival, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGPresentArrival, 0, false );
 
 			m_pDLGPresentArrival = NULL;
 		}
@@ -1394,16 +1395,16 @@ bool CX2StateMenu::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 
 	case SMUCM_LEAVE_DUNGEON_LOUNGE_OK:
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGLeavePartyOrLounge, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGLeavePartyOrLounge, 0, false );
 			m_pDLGLeavePartyOrLounge = NULL;
-			g_pKTDXApp->SendGameMessage( CKTDXApp::KM_UI_CONTROL_CUSTOM_EVENT, CX2PartyUI::PUCM_PARTY_LEAVE_DUNGEON_LOUNGE, NULL, false );
+			g_pKTDXApp->SendGameMessage( CKTDXApp::KM_UI_CONTROL_CUSTOM_EVENT, CX2PartyUI::PUCM_PARTY_LEAVE_DUNGEON_LOUNGE, 0, false );
 
 			return true;
 		} break;
 
 	case SMUCM_LEAVE_DUNGEON_LOUNGE_CANCEL:
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGLeavePartyOrLounge, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGLeavePartyOrLounge, 0, false );
 			m_pDLGLeavePartyOrLounge = NULL;
 
 			return true;
@@ -1412,17 +1413,17 @@ bool CX2StateMenu::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 
 	case SMUCM_LEAVE_PARTY_OK:
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGLeavePartyOrLounge, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGLeavePartyOrLounge, 0, false );
 			m_pDLGLeavePartyOrLounge = NULL;
 
-			g_pKTDXApp->SendGameMessage( CKTDXApp::KM_UI_CONTROL_CUSTOM_EVENT, CX2PartyUI::PUCM_PARTY_LEAVE_PARTY, NULL, false );
+			g_pKTDXApp->SendGameMessage( CKTDXApp::KM_UI_CONTROL_CUSTOM_EVENT, CX2PartyUI::PUCM_PARTY_LEAVE_PARTY, 0, false );
 
 			return true;
 		} break;
 
 	case SMUCM_LEAVE_PARTY_CANCEL:
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGLeavePartyOrLounge, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGLeavePartyOrLounge, 0, false );
 			m_pDLGLeavePartyOrLounge = NULL;
 
 			return true;
@@ -1571,13 +1572,13 @@ bool CX2StateMenu::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 
 			CKTDGUIControl* pControl = reinterpret_cast<CKTDGUIControl*>(lParam);
 			if ( NULL != pControl )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 		} break;
 	case SMUCM_RAID_FIELD_EXIT_CANCEL:
 		{
 			CKTDGUIControl* pControl = reinterpret_cast<CKTDGUIControl*>(lParam);
 			if ( NULL != pControl )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 		} break;
 	case SMUCM_SHOW_ADVERTISEMENT:
 		{
@@ -1677,7 +1678,7 @@ bool CX2StateMenu::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 		{
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
 			if ( pControl != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			// 여기 워프 처리 핸들러 넣자
 			Handler_EGS_WARP_BY_BUTTON_REQ( m_iSelectedWarpDest );
@@ -1737,7 +1738,7 @@ case SMUCM_FACEBOOK_MOVE:
 	case SMUCM_COMPLETE_NEW_YEAR_MISSION_OK:
 		{
 			if ( m_pDLG2014Confirm != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLG2014Confirm, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLG2014Confirm, 0, false );
 
 			Handler_EGS_2014_EVENT_MISSION_COMPLETE_REQ();
 
@@ -1747,7 +1748,7 @@ case SMUCM_FACEBOOK_MOVE:
 	case SMUCM_COMPLETE_NEW_YEAR_MISSION_CANCEL:
 		{
 			if ( m_pDLG2014Confirm != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLG2014Confirm, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLG2014Confirm, 0, false );
 
 			m_pDLG2014Confirm		= NULL;
 			return true;
@@ -2431,7 +2432,7 @@ void CX2StateMenu::PopUpMenuClose( HWND /*hWnd*/, UINT uMsg, WPARAM wParam, LPAR
 			CKTDGUIDialogType pDialog = pControl->GetDialog();
 			if ( pDialog != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGMenuWindow, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGMenuWindow, 0, false );
 				m_pDLGMenuWindow = NULL;
 
 				m_bShowWindowMenu = false;
@@ -3211,7 +3212,7 @@ bool CX2StateMenu::Handler_EGS_CHANGE_EQUIPPED_ITEM_IN_ROOM_NOT( HWND /*hWnd*/, 
 	pUser->SetGameStat( kEvent.m_kGameStat );
 	pUnitData->m_GameStat.SetKStat( kEvent.m_kGameStat );
 
-	pUser->SetMaxHp( static_cast< const float >( kEvent.m_kGameStat.m_iBaseHP ) );
+	pUser->SetMaxHp( static_cast<float>( kEvent.m_kGameStat.m_iBaseHP ) );
 	if ( pUser->GetNowHp() > pUser->GetMaxHp() )
 	{
 		pUser->SetNowHp( pUser->GetMaxHp() );

@@ -197,7 +197,7 @@ HRESULT CX2StateDungeonResult::OnFrameMove( double fTime, float fElapsedTime )
 			g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_553 ) );
 			//g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_DUNGEON_ROOM, NULL, false );
 
-			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_VILLAGE_MAP, NULL, false );
+			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_VILLAGE_MAP, 0, false );
 		}
 		else
 		{
@@ -1725,7 +1725,7 @@ bool CX2StateDungeonResult::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wPar
 				DialogLog("XGM_STATE_CHANGE, CX2Main::XS_DUNGEON_ROOM, NULL, false");
 				g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_553 ) );
 				//g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_DUNGEON_ROOM, NULL, false );
-				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_VILLAGE_MAP, NULL, false );
+				g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_VILLAGE_MAP, 0, false );
 
 			}
 			break;
@@ -1735,7 +1735,7 @@ bool CX2StateDungeonResult::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wPar
 				CKTDGUIControl* pControl = reinterpret_cast<CKTDGUIControl*>( lParam );
 				if ( NULL != pControl )
 				{
-					g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+					g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 					if( true == g_pMain->GetIsPlayingTutorial() )
 					{
@@ -1756,7 +1756,7 @@ bool CX2StateDungeonResult::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wPar
 			{
 				CKTDGUIControl* pControl = reinterpret_cast<CKTDGUIControl*>( lParam );
 				if ( NULL != pControl )
-					g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+					g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			} break;
 

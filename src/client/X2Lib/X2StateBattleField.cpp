@@ -1016,7 +1016,7 @@ void CX2StateBattleField::MoveToOtherPlace( float fElapsedTime )
 
 				if ( NULL != pBattleFieldPortalMovingInfoPtr )
 				{
-					const CX2BattleFieldManager::PORTAL_MOVE_TYPE ePortalMoveType = static_cast<const CX2BattleFieldManager::PORTAL_MOVE_TYPE>( pBattleFieldPortalMovingInfoPtr->GetPortalMoveType() );
+					const CX2BattleFieldManager::PORTAL_MOVE_TYPE ePortalMoveType = static_cast<CX2BattleFieldManager::PORTAL_MOVE_TYPE>( pBattleFieldPortalMovingInfoPtr->GetPortalMoveType() );
 
 					switch ( ePortalMoveType )
 					{
@@ -1552,7 +1552,7 @@ bool CX2StateBattleField::Handler_EGS_CALL_MY_LOVER_STATE_CHANGE_FIELD_NOT( HWND
 		{
 			g_pData->GetLocationManager()->SetVillage( eVillageId, vPos, iLastTouchLineIndex );
 
-			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_VILLAGE_MAP, NULL, false );
+			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_VILLAGE_MAP, 0, false );
 		}
 	}
 	else

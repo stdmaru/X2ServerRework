@@ -142,12 +142,16 @@ void CX2UISocketItem::ResetSocketWindow( UidType Uid )
 		{
 		case 5:
 			m_pIMEEditSocketOptionCode[4]->SetShowEnable(true, true);
+			[[fallthrough]];
 		case 4:
 			m_pIMEEditSocketOptionCode[3]->SetShowEnable(true, true);
+			[[fallthrough]];
 		case 3:
 			m_pIMEEditSocketOptionCode[2]->SetShowEnable(true, true);
+			[[fallthrough]];
 		case 2:
 			m_pIMEEditSocketOptionCode[1]->SetShowEnable(true, true);
+			[[fallthrough]];
 		case 1:
 			m_pIMEEditSocketOptionCode[0]->SetShowEnable(true, true);
 			break;
@@ -1550,7 +1554,7 @@ bool CX2UISocketItem::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wP
 			CKTDGUIControl* pControl = NULL;
 			pControl		= reinterpret_cast< CKTDGUIControl* >( lParam );
 
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			Handler_EGS_SOCKET_ITEM_REQ();
 		}

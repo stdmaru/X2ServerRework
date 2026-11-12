@@ -433,7 +433,7 @@ bool CX2UIPersonalTrade::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM
 		{
 			if ( m_pDLGTradeSealedItem != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGTradeSealedItem, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGTradeSealedItem, 0, false );
 				m_pDLGTradeSealedItem = NULL;
 			}
 
@@ -445,7 +445,7 @@ bool CX2UIPersonalTrade::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM
 		{
 			if ( m_pDLGTradeSealedItem != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGTradeSealedItem, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGTradeSealedItem, 0, false );
 				m_pDLGTradeSealedItem = NULL;
 			}
 
@@ -557,7 +557,7 @@ bool CX2UIPersonalTrade::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM
 	case UPTCM_REGISTER_QUANTITY_CONFIRM:
 		{
 			if(m_pDLGItemEnroll != NULL)
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGItemEnroll, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGItemEnroll, 0, false );
 			m_pDLGItemEnroll = NULL;
 
 			RegisterMyItem( m_EnrollItemUid, m_iItemEnrollNum );
@@ -570,7 +570,7 @@ bool CX2UIPersonalTrade::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM
 	case UPTCM_REGISTER_QUANTITY_CANCLE:
 		{
 			if(m_pDLGItemEnroll != NULL)
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGItemEnroll, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGItemEnroll, 0, false );
 
 			m_pDLGItemEnroll = NULL;
 			m_pTargetDragItemSlot	= NULL;
@@ -972,7 +972,7 @@ void CX2UIPersonalTrade::OpenPersonalTradeWindow()
 
 	if( NULL != m_pDLGMsgBox )
 	{
-		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGMsgBox, NULL, false );
+		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGMsgBox, 0, false );
 		m_pDLGMsgBox = NULL;
 	}
 
@@ -1047,7 +1047,7 @@ void CX2UIPersonalTrade::ClosePersonalTradeWindow()
 
 	if( NULL != m_pDLGMsgBox )
 	{
-		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGMsgBox, NULL, false );
+		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGMsgBox, 0, false );
 		m_pDLGMsgBox = NULL;
 	}
 
@@ -1064,7 +1064,7 @@ void CX2UIPersonalTrade::ClosePersonalTradeWindow()
 		g_pKTDXApp->GetDGManager()->RemoveObjectChain( m_pTalkBoxMgr );
 		m_pTalkBoxMgr->SetOverUI( false );
 		m_pDLGPersonalTrade->SetShowEnable(false, false);
-		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGPersonalTrade, NULL, false );
+		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGPersonalTrade, 0, false );
 		m_pDLGPersonalTrade = NULL;
 	}
 

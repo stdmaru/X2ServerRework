@@ -734,7 +734,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
 			if ( pControl != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 			}
 
 			if( g_pData->GetSkillTree() != NULL )
@@ -748,7 +748,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
 			if ( pControl != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 			}
 
 			Handler_EGS_USE_ITEM_IN_INVENTORY_REQ( m_UseItemTempUID );
@@ -762,7 +762,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
 			if ( pControl != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 			}
 
 			Handler_EGS_USE_ITEM_IN_INVENTORY_REQ( m_TitleItemUID );
@@ -775,7 +775,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
 			if ( pControl != NULL && NULL != pControl->GetDialog() )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 			}
 
 			Handler_EGS_USE_ITEM_IN_INVENTORY_REQ( m_UsedItemUID );
@@ -936,7 +936,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 	case UIM_CLOSE_RANDOM_ITEM_RESULT:
 		{
 			if ( m_pDLGCubeCheck != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGCubeCheck, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGCubeCheck, 0, false );
 
 			m_pDLGCubeCheck = NULL;
 			m_eRandomItemEventType = RIOET_NONE;
@@ -968,7 +968,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 			}
 			if ( m_pDLGResolveItem != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGResolveItem, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGResolveItem, 0, false );
 			}
 			m_pDLGResolveItem = NULL;
 
@@ -980,7 +980,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 		{
 			if ( m_pDLGResolveItem != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGResolveItem, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGResolveItem, 0, false );
 			}
 			m_pDLGResolveItem = NULL;
 
@@ -991,7 +991,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 		{
 			if ( m_pDLGResolveItemResult != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGResolveItemResult, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGResolveItemResult, 0, false );
 			}
 			m_pDLGResolveItemResult = NULL;
 
@@ -1022,7 +1022,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 		{
 			if( m_pDLGElChanger != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGElChanger, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGElChanger, 0, false );
 			}
 			m_pDLGElChanger = NULL;
 			return true;
@@ -1048,7 +1048,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 		{
 			if( m_pDLGElChanger != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGElChanger, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGElChanger, 0, false );
 			}
 			m_pDLGElChanger = NULL;
 
@@ -1096,7 +1096,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 		{
 			if( m_pDLGElChangerResult != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGElChangerResult, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGElChangerResult, 0, false );
 			}
 			m_pDLGElChangerResult = NULL;
 			return true;
@@ -1107,7 +1107,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 		{
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
 			if ( pControl != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			Handler_EGS_RESTORE_ITEM_REQ( m_RecoveryItemUid );
 			m_RecoveryItemUid = 0;
@@ -1120,7 +1120,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
 			if ( pControl != NULL )
 
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			Handler_EGS_USE_ITEM_IN_INVENTORY_REQ( m_WarpItem );
 			m_WarpItem = 0;
@@ -1132,7 +1132,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
 			if ( pControl != NULL )
 
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			Handler_EGS_USE_ITEM_IN_INVENTORY_REQ( m_UsedItemUID );
 			m_UsedItemUID = 0;
@@ -1187,7 +1187,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 
 			if ( m_pDLGOpenAttraction != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGOpenAttraction, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGOpenAttraction, 0, false );
 				m_pDLGOpenAttraction = NULL;
 			}
 
@@ -1200,7 +1200,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 	case UIM_ATTRACTION_ITEM_RESULT_OK:
 		{
 			if ( m_pDLGAttractionResult != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGAttractionResult, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGAttractionResult, 0, false );
 			m_pDLGAttractionResult = NULL;
 
 			m_eRandomItemEventType = RIOET_NONE;
@@ -1221,7 +1221,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
 			if ( pControl != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			return true;
 		}
@@ -1238,7 +1238,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
 			if ( pControl != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			return true;
 		}
@@ -1264,7 +1264,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
 			if ( pControl != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 			return true;
 
 		}
@@ -1274,7 +1274,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 			m_eRandomItemEventType = RIOET_NONE;
 			if ( m_pDLGRandomItem != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGRandomItem, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGRandomItem, 0, false );
 				m_pDLGRandomItem = NULL;
 			}
 
@@ -1286,7 +1286,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 	case UIM_REGISTER_QUANTITY_CONFIRM:
 		{
 			if(m_pDLGItemEnroll != NULL)
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGItemEnroll, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGItemEnroll, 0, false );
 
 			m_pDLGItemEnroll = NULL;
 
@@ -1316,7 +1316,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 	case UIM_REGISTER_QUANTITY_CANCEL:
 		{
 			if(m_pDLGItemEnroll != NULL)
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGItemEnroll, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGItemEnroll, 0, false );
 
 			m_bIsSptNoneItem = false;
 
@@ -1352,7 +1352,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 	case UIM_DELETE_ITEM_CONFIRM_OK:
 		{
 			if ( m_pDLGDeleteItemConfirm != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGDeleteItemConfirm, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGDeleteItemConfirm, 0, false );
 
 			Handler_EGS_DELETE_ITEM_REQ( m_EnrollItemUid, m_iItemEnrollNum );
 
@@ -1366,7 +1366,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 	case UIM_DELETE_ITEM_CONFIRM_CANCEL:
 		{
 			if ( m_pDLGDeleteItemConfirm != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGDeleteItemConfirm, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGDeleteItemConfirm, 0, false );
 
 			m_pDLGDeleteItemConfirm		= NULL;
 			m_iItemEnrollNum			= 1;		// ������ �������� ������ Dialog Text 1�� ����
@@ -1389,7 +1389,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 					{
 
 						//Handler_EGS_DELETE_ITEM_REQ( m_EnrollItemUid, m_iItemEnrollNum );
-						g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pSptNoneItemDelete, NULL, false );
+						g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pSptNoneItemDelete, 0, false );
 						m_pSptNoneItemDelete = NULL;
 						m_bIsSptNoneItem = false;
 						OpenDeleteItemConfirmDLG();
@@ -1410,7 +1410,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 		{
 			if(m_pSptNoneItemDelete != NULL)
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pSptNoneItemDelete, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pSptNoneItemDelete, 0, false );
 				m_pSptNoneItemDelete = NULL;
 				m_bIsSptNoneItem = false;
 			}
@@ -1421,7 +1421,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 	case UIM_SEAL_ITEM_CONFIRM_OK:
 		{
 			if ( m_pDLGSealItemConfirm != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGSealItemConfirm, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGSealItemConfirm, 0, false );
 
 			if ( g_pData->GetMyUser() == NULL ||
 				 g_pData->GetMyUser()->GetSelectUnit() == NULL )
@@ -1448,7 +1448,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 	case UIM_SEAL_ITEM_CONFIRM_CANCEL:
 		{
 			if ( m_pDLGSealItemConfirm != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGSealItemConfirm, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGSealItemConfirm, 0, false );
 
 			m_pDLGSealItemConfirm		= NULL;
 			m_pSlotItemToBeSealed		= NULL;
@@ -1463,7 +1463,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 		{
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
 			if ( pControl != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			Handler_EGS_UNSEAL_ITEM_REQ( m_itemUIDToBeUnSealed );
 
@@ -1474,7 +1474,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 		{
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
 			if ( pControl != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 		}
 		break;
 		//}} kimhc // 2009-09-03 // ���ε� �������� ��Ŭ�� �������� Ȯ��, ���
@@ -1532,7 +1532,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 		{
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
 			if ( pControl != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			Handler_EGS_USE_ITEM_IN_INVENTORY_REQ( m_WarpItem, m_iSelectedWarpDest );
 			m_WarpItem = 0;
@@ -1592,7 +1592,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 		{
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
 			if ( pControl != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			//���� ��û �Ѵ� �������� üũ�� �ؾ��Ѵ�. �������� �κ����ִ��� ���� 2�� ��������,unit���� üũ����
 
@@ -1622,7 +1622,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
 			if ( pControl != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 			}
 
 			if( g_pData->GetSkillTree() != NULL )
@@ -1644,7 +1644,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 		break;
 	case UIM_UNKNOWN_TO_IDENTIFY:
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGIdentifyStone, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGIdentifyStone, 0, false );
 			m_pDLGIdentifyStone = NULL;
 			return Handler_EGS_IDENTIFY_ITEM_REQ();
 		}
@@ -1658,7 +1658,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 		{
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
 			if ( pControl != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			//if( g_pMain->GetInfoBox() != NULL )
 			//	g_pMain->DeleteInfoBox();
@@ -1688,7 +1688,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 		{
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
 			if ( pControl != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			Handler_EGS_USE_ITEM_IN_INVENTORY_REQ( m_DefencedungeonPotion, 0, m_DefencedungeonPotionID );
 		}
@@ -1696,10 +1696,11 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 	case UIM_CHECK_PSHOP_OK:
 		{
 			if ( m_pDLGCheckPShop != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGCheckPShop, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGCheckPShop, 0, false );
 			m_pDLGCheckPShop = NULL;
 			g_pData->GetUIManager()->ToggleUI(CX2UIManager::UI_MENU_PERSONAL_SHOP, true, CX2UIPersonalShop::OPENFORSELL);
 		}
+		break;
 		//{{ 2011.10.24 ������ : ��� Ƽ�� �۾� ( ����ϸ� ĳ�� �ִ� ������ )
 		//}}
 	case UIM_PET_DROP_ITEM_PICK_UP_OK:
@@ -1708,7 +1709,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 			if ( pControl == NULL )
 				return true;
 
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 			Handler_EGS_USE_ITEM_IN_INVENTORY_REQ( m_UsedItemUID, m_UseItemTempUID );
 
 			m_UsedItemUID = 0;
@@ -1722,7 +1723,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 			if ( pControl == NULL )
 				return true;
 
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			g_pData->GetPetManager()->Handler_EGS_SUMMON_PET_REQ( 0 ); // �� ��ȯ ���� ����!!!
 
@@ -1739,7 +1740,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 
 			CKTDGUIControl* pControl = reinterpret_cast<CKTDGUIControl*>(lParam);
 			if ( NULL != pControl )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			return true;
 		}
@@ -1748,7 +1749,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 		{
 			CKTDGUIControl* pControl = reinterpret_cast<CKTDGUIControl*>(lParam);
 			if ( NULL != pControl )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			return true;
 		} break;
@@ -1758,7 +1759,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 
 			CKTDGUIControl* pControl = reinterpret_cast<CKTDGUIControl*>(lParam);
 			if ( NULL != pControl )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			return true;
 		}
@@ -1767,7 +1768,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 		{
 			CKTDGUIControl* pControl = reinterpret_cast<CKTDGUIControl*>(lParam);
 			if ( NULL != pControl )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			return true;
 		} break;
@@ -1779,7 +1780,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 
 			CKTDGUIControl* pControl = reinterpret_cast<CKTDGUIControl*>(lParam);
 			if ( NULL != pControl )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			return true;
 		}
@@ -1791,7 +1792,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 
 			CKTDGUIControl* pControl = reinterpret_cast<CKTDGUIControl*>(lParam);
 			if ( NULL != pControl )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			return true;
 		} break;
@@ -1801,7 +1802,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 			CKTDGUIControl* pControl = reinterpret_cast<CKTDGUIControl*>(lParam);
 			if ( pControl != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 			}
 
 			CX2RidingPetManager::GetInstance()->Handler_EGS_CREATE_RIDING_PET_REQ( m_iRidingItemUid );
@@ -1814,7 +1815,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 		{
 			if( m_pDLGElBreak != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGElBreak, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGElBreak, 0, false );
 			}
 			m_pDLGElBreak = NULL;
 			return true;
@@ -1840,7 +1841,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 		{
 			if( m_pDLGElBreak != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGElBreak, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGElBreak, 0, false );
 			}
 			m_pDLGElBreak = NULL;
 
@@ -1921,7 +1922,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 
 			CKTDGUIControl* pControl = reinterpret_cast<CKTDGUIControl*>(lParam);
 			if ( NULL != pControl )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			return true;
 		} break;
@@ -1932,7 +1933,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 
 			CKTDGUIControl* pControl = reinterpret_cast<CKTDGUIControl*>(lParam);
 			if ( NULL != pControl )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			return true;
 		} break;
@@ -1943,7 +1944,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 			CKTDGUIControl* pControl = reinterpret_cast<CKTDGUIControl*>(lParam);
 			if ( pControl != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 			}
 
 			SAFE_DELETE_DIALOG(m_pDLGMarryEventNickName);
@@ -1971,7 +1972,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 				CKTDGUIControl* pControl = reinterpret_cast<CKTDGUIControl*>(lParam);
 				if ( pControl != NULL )
 				{
-					g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+					g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 				}
 			}
 			return true;
@@ -1981,7 +1982,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 			CKTDGUIControl* pControl = reinterpret_cast<CKTDGUIControl*>(lParam);
 			if ( pControl != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 			}
 
 			return true;
@@ -1991,7 +1992,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 			CKTDGUIControl* pControl = reinterpret_cast<CKTDGUIControl*>(lParam);
 			if ( pControl != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 			}
 
 			Handler_EGS_USE_DIVORCE_ITEM_REQ();
@@ -2004,7 +2005,7 @@ bool CX2UIInventory::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
 			if ( pControl != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 			}
 
 			Handler_EGS_USE_ITEM_IN_INVENTORY_REQ( m_UsedItemUID );
@@ -2242,7 +2243,7 @@ void CX2UIInventory::SetShow(bool val)
 	{
 		if(m_pSptNoneItemDelete != NULL)
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pSptNoneItemDelete, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pSptNoneItemDelete, 0, false );
 			m_pSptNoneItemDelete = NULL;
 			m_bIsSptNoneItem = false;
 		}
@@ -3683,6 +3684,7 @@ bool CX2UIInventory::MouseUp( D3DXVECTOR2 mousePos )
 						g_pMain->KTDGUIOKMsgBox( D3DXVECTOR2(250,300), GET_STRING( STR_ID_796 ), g_pMain->GetNowState() );
 					}
 				}
+				[[fallthrough]];
 			case CX2Cursor::XCS_ITEM_EVALUTE:
 				{
 					// ���� �۾� �� ó�� ���� �ʱ�
@@ -7022,7 +7024,7 @@ bool CX2UIInventory::Handler_EGS_OPEN_RANDOM_ITEM_ACK( HWND /*hWnd*/, UINT /*uMs
 
 	if ( m_pDLGRandomItem != NULL )
 	{
-		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGRandomItem, NULL, false );
+		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGRandomItem, 0, false );
 		m_pDLGRandomItem = NULL;
 	}
 
@@ -7220,7 +7222,7 @@ bool CX2UIInventory::Handler_EGS_OPEN_RANDOM_ITEM_ACK( HWND /*hWnd*/, UINT /*uMs
 
 			if ( m_pDLGOpenAttraction != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGOpenAttraction, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGOpenAttraction, 0, false );
 				m_pDLGOpenAttraction = NULL;
 			}
 			m_eRandomItemEventType = RIOET_NONE;
@@ -7621,7 +7623,7 @@ void CX2UIInventory::OpenResolveWindow( CX2SlotItem* pSlot )
 			m_DecompositionItemUID = pItem->GetUID();
 			if ( m_pDLGResolveItem != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGResolveItem, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGResolveItem, 0, false );
 			}
 
 			m_pDLGResolveItem = new CKTDGUIDialog(g_pMain->GetNowState(), L"DLG_UI_Item_Apart.lua");
@@ -8404,7 +8406,7 @@ void CX2UIInventory::UpdateOpenAttractionItemAck()
 
 	// ���� â�� �����..
 	if ( m_pDLGOpenAttraction != NULL )
-		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGOpenAttraction, NULL, false );
+		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGOpenAttraction, 0, false );
 	m_pDLGOpenAttraction = NULL;
 
 	// ���� ������
@@ -8832,7 +8834,7 @@ void CX2UIInventory::UpdateOpenTreeDayItemAck()
 
 	// ���� â�� �����..
 	if ( m_pDLGOpenAttraction != NULL )
-		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGOpenAttraction, NULL, false );
+		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGOpenAttraction, 0, false );
 	m_pDLGOpenAttraction = NULL;
 
 	// ���� ������
@@ -10389,10 +10391,12 @@ void CX2UIInventory::SetShowInventoryPageUI( int iMaxPageNum /*= 0*/ )
 				pRadio_Page1->SetShow( false );
 				pRadio_Page2->SetShow( false );
 			}
+			[[fallthrough]];
 		case 2:
 			{
 				pRadio_Page3->SetShow( false );
 			}
+			[[fallthrough]];
 		case 3:
 			{
 				pRadio_Page4->SetShow( false );
@@ -11126,7 +11130,7 @@ void CX2UIInventory::OpenRandomItem( int iItemID, ITEM_OBTAIN_RESULT_TYPE eIORT 
 	}
 	if ( m_pDLGRandomItem != NULL )
 	{
-		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGRandomItem, NULL, false );
+		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGRandomItem, 0, false );
 		m_pDLGRandomItem = NULL;
 	}
 	InvalidSlotDesc();
@@ -11143,7 +11147,7 @@ void CX2UIInventory::UpdateOpenHalloWeenItemAck()
 
 	// ���� â�� �����..
 	if ( m_pDLGOpenAttraction != NULL )
-		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGOpenAttraction, NULL, false );
+		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGOpenAttraction, 0, false );
 	m_pDLGOpenAttraction = NULL;
 
 	// ���� ������

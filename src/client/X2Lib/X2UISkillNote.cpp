@@ -258,7 +258,7 @@ bool CX2UISkillNote::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wPa
 	case USNM_REGISTER_OK:
 		{
 			//메모등록
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGQuery, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGQuery, 0, false );
 			m_pDLGQuery = NULL;
 
 			Handler_EGS_REG_SKILL_NOTE_MEMO_REQ( m_iRegisterPage );
@@ -274,7 +274,7 @@ bool CX2UISkillNote::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wPa
 		break;
 	case USNM_REGISTER_CANCEL:
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGQuery, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGQuery, 0, false );
 			m_pDLGQuery = NULL;
 		}
 		break;

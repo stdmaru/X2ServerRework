@@ -196,7 +196,7 @@ m_pDLGPartyPVP(NULL)
 	case PUCM_CREATE_LEVEL_UNLIMIT_PARTY_OK:
 		{
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 			g_pData->GetPartyManager()->GetMyPartyData()->m_bPvpParty = false;
 			CX2PartyManager::PartyData partydata = *g_pData->GetPartyManager()->GetMyPartyData();
 			partydata.m_bIsLimitLevel = false;
@@ -206,7 +206,7 @@ m_pDLGPartyPVP(NULL)
 	case PUCM_CREATE_LEVEL_UNLIMIT_PARTY_CANCEL:
 		{
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 			return true;
 		} break;
 	case PUCM_DUNGEON_PARTY_MATCH_CANCEL:
@@ -865,7 +865,7 @@ m_pDLGPartyPVP(NULL)
 		{
 			if( m_pDlgPvpConfirm != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgPvpConfirm, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgPvpConfirm, 0, false );
 				m_pDlgPvpConfirm = NULL;
 			}
 
@@ -880,7 +880,7 @@ m_pDLGPartyPVP(NULL)
 		{
 			if( m_pDlgPvpConfirm != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgPvpConfirm, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgPvpConfirm, 0, false );
 				m_pDlgPvpConfirm = NULL;
 			}
 			return true;
@@ -890,7 +890,7 @@ m_pDLGPartyPVP(NULL)
 		{
 			if( m_pDlgPvpConfirm != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgPvpConfirm, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgPvpConfirm, 0, false );
 				m_pDlgPvpConfirm = NULL;
 			}
 
@@ -903,7 +903,7 @@ m_pDLGPartyPVP(NULL)
 		{
 			if( m_pDlgPvpConfirm != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgPvpConfirm, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDlgPvpConfirm, 0, false );
 				m_pDlgPvpConfirm = NULL;
 			}
 			return true;

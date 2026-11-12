@@ -528,6 +528,7 @@ CX2GUAdd::~CX2GUAdd(void)
 				}
 			}
 		}/// 1�� ���� �нú긦 �˻��ϱ� ����, break ���� ����
+		[[fallthrough]];
 
 
 	case CX2Unit::UC_ADD_PSYCHIC_TRACER:
@@ -2309,6 +2310,7 @@ void CX2GUAdd::InitStateByUnitClass()
 			stateData.OnEventProcess	= SET_CB_FUNC( CX2GUAdd, NasodArmorComboXDirectionXZEventProcess );
 			m_StateList[stateData.stateID] = stateData;
 		} /// 1�� ���� ������ Ÿ�� ����, Break ����
+		[[fallthrough]];
 
 
 	case CX2Unit::UC_ADD_PSYCHIC_TRACER:

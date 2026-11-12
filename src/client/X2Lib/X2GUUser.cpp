@@ -3683,6 +3683,7 @@ void CX2GUUser::InitMotion()
 		{
 		case 2:
 			vecMotion.push_back( GetUnit()->GetUnitTemplet()->m_GameMotion2 );
+			[[fallthrough]];
 		case 1:
 			vecMotion.push_back( GetUnit()->GetUnitTemplet()->m_GameMotion1 );
 			break;
@@ -4877,20 +4878,8 @@ HRESULT CX2GUUser::OnFrameMove( double fTime, float fElapsedTime )
 		{
 			if( m_bConnect == false )
 			{
-				//�� ������ P2P ���ӿ� �����ߴ�
-				KEGS_GAME_P2P_CONNECT_RESULT_REQ kPacket;
-				kPacket.m_UnitUID			= m_UnitUID;
-				kPacket.m_bConnectSuccess	= false;
-				//g_pData->GetServerProtocol()->SendPacket( EGS_GAME_P2P_CONNECT_RESULT_REQ, kPacket );
+				// the P2P connection failed
 				ErrorLogMsg( XEM_ERROR87, L"P2PFail" );
-			}
-			else
-			{
-				//�� ������ P2P ���ӿ� �����ߴ�
-				KEGS_GAME_P2P_CONNECT_RESULT_REQ kPacket;
-				kPacket.m_UnitUID			= m_UnitUID;
-				kPacket.m_bConnectSuccess	= true;
-				//g_pData->GetServerProtocol()->SendPacket( EGS_GAME_P2P_CONNECT_RESULT_REQ, kPacket );
 			}
 
 			m_bConnectSend = true;
@@ -16161,6 +16150,7 @@ void CX2GUUser::PhysicProcess_Portal( CKTDGLineMap* pLineMap )
 						false == CX2BossRaidManager::GetInstance()->IsActiveRaidPortal() )// ���� ����Ǵ� ������ �ƴ϶��
 						break;
 				}
+				[[fallthrough]];
 			case CKTDGLineMap::LT_POTAL:
 				{
 					if( true == m_bLeavePortal )
@@ -16232,6 +16222,7 @@ void CX2GUUser::PhysicProcess_PortalInBattleField( CKTDGLineMap* pLineMap )
 						false == CX2BossRaidManager::GetInstance()->IsActiveRaidPortal() )// ���� ����Ǵ� ������ �ƴ϶��
 						break;
 				}
+				[[fallthrough]];
 			case CKTDGLineMap::LT_POTAL:
 				{
 					if( true == m_bLeavePortal )
@@ -16457,8 +16448,6 @@ bool CX2GUUser::CommonSpecialAttackEventProcess( IN const CX2UserSkillTree& cUse
 		break;
 	}
 
-	if( usCBConsume < 0 )
-		usCBConsume = 0;
 
 	return usCBConsume;
 }
@@ -21581,8 +21570,6 @@ bool CX2GUUser::CheckSummonSpecialAttack( CX2SkillTree::SKILL_ID iSkillID_ )
 			if( true == g_pX2Game->GetLastKillCheck() )
 				bCheck = false;
 
-			if( true == true == g_pX2Game->GetLastKillCheck() )
-				bCheck = false;
 		} break;
 	}
 
@@ -22487,14 +22474,14 @@ void CX2GUUser::SetUnitReForm()
 	if( m_pXSkinAnim == NULL )
 		return;
 
-	float fMoveBip01 = 10.f;
-	float fMoveFootStep = -15.f;
-	D3DXVECTOR3 vHead = D3DXVECTOR3(1.f, 1.f, 1.f);
-	D3DXVECTOR3 vThigh = D3DXVECTOR3(1.f, 1.f, 1.f);
-	D3DXVECTOR3 vCalf = D3DXVECTOR3(1.f, 1.f, 1.f);
-	D3DXVECTOR3 vFoot = D3DXVECTOR3(1.f, 1.f, 1.f);
-	D3DXVECTOR3 vHand = D3DXVECTOR3(1.f, 1.f, 1.f);
-	D3DXVECTOR3 vSpine = D3DXVECTOR3(1.f, 1.f, 1.f);
+	[[maybe_unused]] float fMoveBip01 = 10.f;
+	[[maybe_unused]] float fMoveFootStep = -15.f;
+	[[maybe_unused]] D3DXVECTOR3 vHead = D3DXVECTOR3(1.f, 1.f, 1.f);
+	[[maybe_unused]] D3DXVECTOR3 vThigh = D3DXVECTOR3(1.f, 1.f, 1.f);
+	[[maybe_unused]] D3DXVECTOR3 vCalf = D3DXVECTOR3(1.f, 1.f, 1.f);
+	[[maybe_unused]] D3DXVECTOR3 vFoot = D3DXVECTOR3(1.f, 1.f, 1.f);
+	[[maybe_unused]] D3DXVECTOR3 vHand = D3DXVECTOR3(1.f, 1.f, 1.f);
+	[[maybe_unused]] D3DXVECTOR3 vSpine = D3DXVECTOR3(1.f, 1.f, 1.f);
 
 #if X2_DEV_TOOLS
 	// �ǽð� �׽�Ʈ��
@@ -22628,6 +22615,7 @@ void CX2GUUser::SetUnitReForm()
 				if ( pFrame_L_Dummy != NULL )
 					SetFrameScale( &vDummyHand, true, pFrame_L_Dummy );
 			}
+			[[fallthrough]];
 
 		case CX2Unit::UT_LIRE:
 			{
@@ -22694,7 +22682,6 @@ void CX2GUUser::SetUnitReForm()
 				D3DXVECTOR3 vThigh = D3DXVECTOR3( 1.05f, 0.94f, 0.92f );
 				D3DXVECTOR3 vCalf = D3DXVECTOR3( 1.065f, 0.93f, 0.9f );
 				D3DXVECTOR3 vFoot = D3DXVECTOR3( 0.93f, 0.85f, 0.83f );
-				D3DXVECTOR3 vDummyHand = D3DXVECTOR3( 1.f, 1.f, 1.f );
 				D3DXVECTOR3 vSpine = D3DXVECTOR3( 0.94f, 0.97f, 1.f );
 
 				CKTDXDeviceXSkinMesh::MultiAnimFrame* pFrameHead = m_pXSkinAnim->GetCloneFrame( L"Bip01_Head" );
@@ -25924,7 +25911,7 @@ void CX2GUUser::SetDamageExceptionProcess( CX2DamageManager::DamageData* pDamage
 {
 	CX2GameUnit::SetDamageExceptionProcess(pDamageData_, fPowerRate);
 
-	if( null != pDamageData_->optrAttackerGameUnit != 0 && pDamageData_->optrAttackerGameUnit->GetGameUnitType() == CX2GameUnit::GUT_USER )
+	if( null != pDamageData_->optrAttackerGameUnit && pDamageData_->optrAttackerGameUnit->GetGameUnitType() == CX2GameUnit::GUT_USER )
 	{
 		CX2GUUser *pUser = static_cast<CX2GUUser*>( pDamageData_->optrAttackerGameUnit.GetObservable() );
 		CX2DamageManager::DAMAGE_TYPE eDamageType;

@@ -70,9 +70,8 @@ CX2CashShop::CX2CashShop( CKTDXStage* pStage, const WCHAR* wszFileName )
 
 	m_pDLGMainPage		= NULL;
 	m_pDLGSubPage		= NULL;
-    //{{ seojt // 2009-1-8, 20:43
-    ZeroMemory( m_pDLGSubPageMenu, sizeof(m_pDLGSubPageMenu) );
-    //}} seojt // 2009-1-8, 20:43
+	for ( CKTDGUIDialogType& pDLGSubPageMenu : m_pDLGSubPageMenu )
+		pDLGSubPageMenu = NULL;
 
 	m_bAllCharItem		= false;
 
@@ -691,7 +690,7 @@ bool CX2CashShop::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam
 	case CSCUM_ITEM_TO_INVEN_CHECK_OK:
 		{
 			if ( m_pDLGCheckCashItemToInven != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGCheckCashItemToInven, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGCheckCashItemToInven, 0, false );
 
 			m_pDLGCheckCashItemToInven = NULL;
 
@@ -707,7 +706,7 @@ bool CX2CashShop::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam
 	case CSCUM_ITEM_TO_INVEN_OVERLAP_CHECK_OK:
 		{
 			if ( m_pDLGOverlapCheckCashItemToInven != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGOverlapCheckCashItemToInven, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGOverlapCheckCashItemToInven, 0, false );
 
 			m_pDLGOverlapCheckCashItemToInven = NULL;
 
@@ -718,7 +717,7 @@ bool CX2CashShop::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam
 	case CSCUM_ITEM_TO_INVEN_OVERLAP_CHECK_OK_PACKAGE:
 		{
 			if ( m_pDLGOverlapCheckCashItemToInven != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGOverlapCheckCashItemToInven, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGOverlapCheckCashItemToInven, 0, false );
 
 			m_pDLGOverlapCheckCashItemToInven = NULL;
 
@@ -904,7 +903,7 @@ bool CX2CashShop::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam
 				break;
 
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			m_pBuyItemPopUp->SetOpen( false );
 
@@ -919,7 +918,7 @@ bool CX2CashShop::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam
 	case CSCUM_BUY_POP_UP_OVERLAP_CANCEL:
 		{
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			m_pBuyItemPopUp->SetOpen( false );
 		}
@@ -928,7 +927,7 @@ bool CX2CashShop::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam
 	case CSCUM_BUY_PLATINUM_CARD_OK:
 		{
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 			m_bCheckDialogWarningPlatinumMembership	= true;
 
 			ProcessBuyPopUpOk();
@@ -938,7 +937,7 @@ bool CX2CashShop::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wParam
 	case CSCUM_BUY_PLATINUM_CARD_CANCEL:
 		{
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 			m_bCheckDialogWarningPlatinumMembership	= false;
 
 			m_pBuyItemPopUp->SetOpen( false );
@@ -1374,7 +1373,7 @@ void CX2CashShop::SetOpen( bool bOpen )
 			{
 				// # �޸� ���Ÿ� ���� ī�װ����� �̵�
 				SetCashShopState( CX2CashShop::CSS_SUB, CX2CashShop::CSC_CONSUME );
-				CKTDGUIRadioButton* pRadioButton = pRadioButton = static_cast< CKTDGUIRadioButton* >( m_pDLGFront->GetControl( L"tab_Use" ) );
+				CKTDGUIRadioButton* pRadioButton = static_cast< CKTDGUIRadioButton* >( m_pDLGFront->GetControl( L"tab_Use" ) );
 				if ( NULL != pRadioButton )
 					pRadioButton->SetChecked( true );
 
@@ -5017,7 +5016,7 @@ CX2CashShop::CashShopSlot::CashShopSlot( CX2Slot::SLOT_TYPE cashShopSlotType, in
 CX2CashShop::CashShopSlot::~CashShopSlot()
 {
 	if ( m_pDLGCashShopSlot != NULL )
-		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGCashShopSlot, NULL, false );
+		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGCashShopSlot, 0, false );
 
 	m_pDLGCashShopSlot = NULL;
 }
@@ -6664,7 +6663,7 @@ void CX2CashShop::PresentItemPopup::SetOpen( bool bOpen, int itemID )
 	else
 	{
 		if ( m_pDLGPresent != NULL )
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGPresent, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGPresent, 0, false );
 
 		m_pDLGPresent = NULL;
 	}
@@ -6865,7 +6864,7 @@ wstring CX2CashShop::PresentItemPopup::GetPassword()
 void CX2CashShop::PresentItemPopup::InitUI()
 {
 	if ( m_pDLGPresent != NULL )
-		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGPresent, NULL, false );
+		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGPresent, 0, false );
 
 	m_pDLGPresent = NULL;
 	m_pDLGPresent = new CKTDGUIDialog( g_pMain->GetNowState(), L"DLG_Cash_Shop_Popup_Present.lua" );

@@ -65,7 +65,7 @@ namespace KBenchMark_LINPACK
 	  float ops;
 	  float *resid;
 	  float resid_max;
-	  float residn;
+	  [[maybe_unused]] float residn;
 	  float *rhs;
 	  double t1;
 	  double t2;

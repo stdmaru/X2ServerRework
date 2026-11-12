@@ -269,7 +269,7 @@ bool CX2PVPGame::Handler_EGS_LEAVE_ROOM_NOT( KEGS_LEAVE_ROOM_NOT& kEGS_LEAVE_ROO
 		else
 		{
 			g_pMain->CreateStateChangeDLG( GET_STRING( 437 ) );
-			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_LOBBY, NULL, false );
+			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_LOBBY, 0, false );
 		}
 
 		CX2GageManager::GetInstance()->ClearPvpMemberUI();
@@ -302,7 +302,7 @@ bool CX2PVPGame::Handler_EGS_LEAVE_GAME_NOT( KEGS_LEAVE_GAME_NOT& kEGS_LEAVE_GAM
 		else
 		{
 			DialogLog( "XGM_STATE_CHANGE, CX2Main::XS_PVP_ROOM, NULL, false" );
-			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_ROOM, NULL, false );
+			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_ROOM, 0, false );
 		}
 
 		CX2GageManager::GetInstance()->ClearPvpMemberUI();
@@ -370,7 +370,7 @@ bool CX2PVPGame::Handler_EGS_STATE_CHANGE_RESULT_NOT( KEGS_STATE_CHANGE_RESULT_N
 	CX2Game::Handler_EGS_STATE_CHANGE_RESULT_NOT( kEGS_STATE_CHANGE_RESULT_NOT );
 	DialogLog( "XGM_STATE_CHANGE, CX2Main::XS_PVP_RESULT, NULL, false" );
 	g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_441 ) );
-	g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_RESULT, NULL, false );
+	g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_RESULT, 0, false );
 
 #ifdef ACTIVE_KOG_GAME_PERFORMANCE_CHECK
 	m_bEscape = false;

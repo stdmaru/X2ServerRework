@@ -39,7 +39,7 @@ CX2ComboManager::CX2ComboManager( float fComboIntervalTime )
 
 	m_iUsingSubStageComboScore = 0;		// 서브 스테이지의 콤보 스코어에 사용할 값을 초기화
 
-	ZeroMemory( m_ComboContent, 256 );
+	ZeroMemory( m_ComboContent, sizeof( m_ComboContent ) );
 }
 
 CX2ComboManager::~CX2ComboManager(void)

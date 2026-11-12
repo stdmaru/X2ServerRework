@@ -1262,7 +1262,7 @@ float CX2GameUnit::GetItemAttackPower( CX2GameUnit* pAttacker, CX2Item* pItem /*
 					// 보정던전이 더 많아진다면 던전데이타 스크립트에 보정여부를 추가하는 방법이 더 나을 것 같다.
 
 
-					if( true == CX2Dungeon::IsHenirDungeon( static_cast<const SEnum::DUNGEON_ID>( g_pData->GetPartyManager()->GetMyPartyData()->m_iDungeonID ) ) &&
+					if( true == CX2Dungeon::IsHenirDungeon( static_cast<SEnum::DUNGEON_ID>( g_pData->GetPartyManager()->GetMyPartyData()->m_iDungeonID ) ) &&
 						CX2Dungeon::DM_HENIR_CHALLENGE == g_pData->GetPartyManager()->GetMyPartyData()->m_iDungeonMode )
 					{
 						if(	g_pData->GetUIManager() != NULL &&
@@ -3009,7 +3009,7 @@ bool CX2GameUnit::ProcessEnchantBlaze( CX2DamageManager::DamageData* pDamageData
 			{
 
 
-				if( true == CX2Dungeon::IsHenirDungeon( static_cast<const SEnum::DUNGEON_ID>( g_pData->GetPartyManager()->GetMyPartyData()->m_iDungeonID ) ) &&
+				if( true == CX2Dungeon::IsHenirDungeon( static_cast<SEnum::DUNGEON_ID>( g_pData->GetPartyManager()->GetMyPartyData()->m_iDungeonID ) ) &&
 					CX2Dungeon::DM_HENIR_CHALLENGE == g_pData->GetPartyManager()->GetMyPartyData()->m_iDungeonMode )
 				{
 					if(	g_pData->GetUIManager() != NULL &&
@@ -3266,7 +3266,7 @@ bool CX2GameUnit::ProcessEnchantPoison( CX2DamageManager::DamageData* pDamageDat
 			}
 			else if( g_pMain->GetNowStateID() == CX2Main::XS_DUNGEON_GAME)
 			{
-				if( true == CX2Dungeon::IsHenirDungeon( static_cast<const SEnum::DUNGEON_ID>( g_pData->GetPartyManager()->GetMyPartyData()->m_iDungeonID ) ) &&
+				if( true == CX2Dungeon::IsHenirDungeon( static_cast<SEnum::DUNGEON_ID>( g_pData->GetPartyManager()->GetMyPartyData()->m_iDungeonID ) ) &&
 					CX2Dungeon::DM_HENIR_CHALLENGE == g_pData->GetPartyManager()->GetMyPartyData()->m_iDungeonMode )
 				{
 					if(	g_pData->GetUIManager() != NULL &&
@@ -3549,7 +3549,7 @@ bool CX2GameUnit::ProcessEnchantSnatch( CX2DamageManager::DamageData* pDamageDat
 			{
 
 
-				if( true == CX2Dungeon::IsHenirDungeon( static_cast<const SEnum::DUNGEON_ID>( g_pData->GetPartyManager()->GetMyPartyData()->m_iDungeonID ) ) &&
+				if( true == CX2Dungeon::IsHenirDungeon( static_cast<SEnum::DUNGEON_ID>( g_pData->GetPartyManager()->GetMyPartyData()->m_iDungeonID ) ) &&
 					CX2Dungeon::DM_HENIR_CHALLENGE == g_pData->GetPartyManager()->GetMyPartyData()->m_iDungeonMode )
 				{
 					if(	g_pData->GetUIManager() != NULL &&

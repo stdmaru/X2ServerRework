@@ -144,7 +144,7 @@ CX2Community::~CX2Community(void)
 
 	SAFE_CLOSE( m_pSoundAlarm );
 
-	g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGQuery, NULL, false );
+	g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGQuery, 0, false );
 	m_pDLGQuery = NULL;
 
 	//{{ kimhc // 2009-09-30 // 길드원들의 UID와 등급을 가진 map 제거
@@ -417,7 +417,7 @@ bool CX2Community::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wPara
 
 	case XCCUM_BAN_TUTOR_UNIT:
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGQuery, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGQuery, 0, false );
 			m_pDLGQuery = NULL;
 
 			if( NULL != g_pMain->GetTutorSystem() )
@@ -1325,8 +1325,9 @@ bool CX2Community::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wPara
 				return true;
 			}
 		}
+		break;
 
-		// 전체탭 초대하기 버튼
+		// "All" tab: invite button
 	case XCCUM_PVP_INVITE:
 		{
 			if( m_iPickedUserUID == g_pData->GetMyUser()->GetSelectUnit()->GetUID() )
@@ -1435,7 +1436,7 @@ bool CX2Community::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wPara
 		{
 			if ( m_pDLGQuery != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGQuery, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGQuery, 0, false );
 				m_pDLGQuery = NULL;
 			}
 
@@ -1449,7 +1450,7 @@ bool CX2Community::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wPara
 		{
 			if ( m_pDLGQuery != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGQuery, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGQuery, 0, false );
 				m_pDLGQuery = NULL;
 			}
 
@@ -1726,7 +1727,7 @@ bool CX2Community::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wPara
 
 			CKTDGUIControl* pControl = NULL;
 			pControl		= reinterpret_cast< CKTDGUIControl* >( lParam );
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			return g_pData->GetGuildManager()->Handler_EGS_KICK_GUILD_MEMBER_REQ( GetSelectedGuildMemberUID() );
 		}
@@ -1736,7 +1737,7 @@ bool CX2Community::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARAM wPara
 		{
 			CKTDGUIControl* pControl = NULL;
 			pControl		= reinterpret_cast< CKTDGUIControl* >( lParam );
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			return true;
 		}
@@ -2504,7 +2505,7 @@ bool CX2Community::OpenSearchFriendWindow( bool bOpen )
 	else
 	{
 		if(m_pDLGSearchFriend != NULL)
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGSearchFriend, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGSearchFriend, 0, false );
 		m_pDLGSearchFriend = NULL;
 		return true;
 	}
@@ -2549,7 +2550,7 @@ bool CX2Community::SearchFriendReq()
 bool CX2Community::CloseSearchFriendResultWindow()
 {
 	if(m_pDLGSearchFriendResult != NULL)
-		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGSearchFriendResult, NULL, false );
+		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGSearchFriendResult, 0, false );
 	m_pDLGSearchFriendResult = NULL;
 	SAFE_DELETE_DIALOG(m_pDLGSearchFriendResultCharIcon);
 	m_bSearchUnitUnitInfoValid = false;
@@ -2889,7 +2890,7 @@ bool CX2Community::OpenAddFriendWindow( bool bCheck )
 	else
 	{
 		if(m_pDLGAddFriend != NULL)
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGAddFriend, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGAddFriend, 0, false );
 		m_pDLGAddFriend = NULL;
 	}
 
@@ -3026,7 +3027,7 @@ bool CX2Community::OpenCreateGroupWindow( bool bCheck )
 	{
 		if ( m_pDLGCreateGroup != NULL )
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGCreateGroup, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGCreateGroup, 0, false );
 			m_pDLGCreateGroup = NULL;
 		}
 	}
@@ -3120,7 +3121,7 @@ bool CX2Community::OpenGroupMoveWindow( bool bOpen )
 	{
 		if ( m_pDLGGroupMove != NULL )
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGGroupMove, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGGroupMove, 0, false );
 			m_pDLGGroupMove = NULL;
 		}
 	}
@@ -3140,7 +3141,7 @@ bool CX2Community::OpenGroupNameChangeWindow( bool bOpen )
 	{
 		if ( m_pDLGChangeGroupName != NULL )
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGChangeGroupName, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGChangeGroupName, 0, false );
 			m_pDLGChangeGroupName = NULL;
 		}
 	}

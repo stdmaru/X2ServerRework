@@ -495,7 +495,7 @@ bool CX2UIGuildSkillTree::UICustomEventProc( HWND /*hWnd*/, UINT /*uMsg*/, WPARA
 		{
 			if( m_pDLGSkillUnsealInform != NULL )
 			{
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGSkillUnsealInform, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGSkillUnsealInform, 0, false );
 				m_pDLGSkillUnsealInform = NULL;
 			}
 		} break;
@@ -1558,7 +1558,6 @@ void CX2UIGuildSkillTree::UpdateSPInfo()
 		CTime cTime;
 		// oasis907 : 김상윤 [2009.12.3] //
 		KncUtil::ConvertStringToCTime( g_pData->GetMyUser()->GetSelectUnit()->GetUnitData().m_wstrGuildCSPointEndDate, cTime );
-		CTime tCurrentTime = g_pData->GetServerCurrentTime();
 
 		if( bUsingCSP )
 		{

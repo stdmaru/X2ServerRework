@@ -441,6 +441,7 @@ CX2GUEL::~CX2GUEL(void)
 				}
 			}
 		} // break ������ �ȵ�.
+		[[fallthrough]];
 	// 1-1 ���̹� ����Ʈ
 	case CX2Unit::UC_ELESIS_SABER_KNIGHT:
 		{
@@ -564,6 +565,7 @@ CX2GUEL::~CX2GUEL(void)
 
 
 		} // break ������ �ȵ�.
+		[[fallthrough]];
 	// 1-2 ���̷� ����Ʈ
 	case CX2Unit::UC_ELESIS_PYRO_KNIGHT:
 		{
@@ -2711,6 +2713,7 @@ void CX2GUEL::InitStateByUnitClass()
 			m_StateList[stateData.stateID] = stateData;
 			// Ŀ�ǵ�, �޺� ��
 		} //break;
+		[[fallthrough]];
 	case CX2Unit::UC_ELESIS_SABER_KNIGHT:
 		{
 			stateData.Init();
@@ -2807,6 +2810,7 @@ void CX2GUEL::InitStateByUnitClass()
 			stateData.OnFrameMoveFuture	= SET_CB_FUNC( CX2GUEL, ESI_DASH_COMBO_SBH_XXXZ_FrameMoveFuture );
 			m_StateList[stateData.stateID] = stateData;
 		}
+		[[fallthrough]];
 	case CX2Unit::UC_ELESIS_PYRO_KNIGHT:
 		{
 			stateData.Init();
@@ -3074,7 +3078,7 @@ void CX2GUEL::StateChangeSpecialAttack( IN const CX2SkillTree::SkillTemplet* pSk
 	{
 		if( CX2Game::GT_PVP == g_pX2Game->GetGameType() )
 		{
-			const WAY_OF_SWORD_STATE eWayOfSwordState = static_cast<const WAY_OF_SWORD_STATE>( GetWayOfSwordState() );
+			const WAY_OF_SWORD_STATE eWayOfSwordState = static_cast<WAY_OF_SWORD_STATE>( GetWayOfSwordState() );
 
 			if( (GetTeam() == CX2Room::TN_RED && g_pX2Game->GetRedTeamKill() > g_pX2Game->GetBlueTeamKill()) ||
 				(GetTeam() == CX2Room::TN_BLUE && g_pX2Game->GetRedTeamKill() < g_pX2Game->GetBlueTeamKill()) )
@@ -3543,7 +3547,7 @@ void CX2GUEL::WayOfSwordStateChange()
 		iNextWayOfSwordState = m_FrameDataNow.syncData.m_CannonBallCount;
 	}
 
-	const WAY_OF_SWORD_STATE eWayofSwordState = static_cast<const WAY_OF_SWORD_STATE>( GetWayOfSwordState() );
+	const WAY_OF_SWORD_STATE eWayofSwordState = static_cast<WAY_OF_SWORD_STATE>( GetWayOfSwordState() );
 
 	if( iNextWayOfSwordState == WSS_VIGOR &&
 		eWayofSwordState != WSS_VIGOR )
@@ -3806,7 +3810,7 @@ void CX2GUEL::DieFrontStartFuture()
 {
 	CommonStateStartFuture();
 
-	const WAY_OF_SWORD_STATE eWayofSwordState = static_cast<const WAY_OF_SWORD_STATE>( GetWayOfSwordState() );
+	const WAY_OF_SWORD_STATE eWayofSwordState = static_cast<WAY_OF_SWORD_STATE>( GetWayOfSwordState() );
 
 	if( eWayofSwordState == WSS_VIGOR )
 		End_SwordmanVigor();
@@ -3840,7 +3844,7 @@ void CX2GUEL::DieBackStartFuture()
 {
 	CommonStateStartFuture();
 
-	const WAY_OF_SWORD_STATE eWayofSwordState = static_cast<const WAY_OF_SWORD_STATE>( GetWayOfSwordState() );
+	const WAY_OF_SWORD_STATE eWayofSwordState = static_cast<WAY_OF_SWORD_STATE>( GetWayOfSwordState() );
 
 	if( eWayofSwordState == WSS_VIGOR )
 		End_SwordmanVigor();

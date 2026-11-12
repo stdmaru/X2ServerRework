@@ -1755,7 +1755,7 @@ bool CX2DungeonGame::Handler_EGS_STATE_CHANGE_RESULT_NOT( KEGS_STATE_CHANGE_RESU
 
 	DialogLog( "XGM_STATE_CHANGE, CX2Main::XS_DUNGEON_RESULT, NULL, false" );
 	g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_135 ) );
-	g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_DUNGEON_RESULT, NULL, false );
+	g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_DUNGEON_RESULT, 0, false );
 
 #ifdef ACTIVE_KOG_GAME_PERFORMANCE_CHECK
 	m_bEscape = false;

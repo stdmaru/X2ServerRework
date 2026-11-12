@@ -443,7 +443,7 @@ HRESULT CX2StateLoading::OnFrameMove( double fTime, float fElapsedTime )
 //}} kimhc // 2010.3.10 //	광고노출도 초기화
 
 			//Handler_EGS_STATE_CHANGE_SERVER_SELECT_REQ();
-			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_SERVER_SELECT, NULL, false );
+			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_SERVER_SELECT, 0, false );
 
 
 #if !X2_DEV_TOOLS
@@ -694,7 +694,7 @@ void CX2StateLoading::DropItemLoading()
 			g_pMain->KTDGUIOKMsgBox( D3DXVECTOR2(250,300), GET_STRING( STR_ID_735 ), this );
 
 			g_pKTDXApp->NoticeQuitType( CKTDXApp::KQT_CONNECT_FAILED );									// fix!! id 변경
-			g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, 0, NULL, false );
+			g_pKTDXApp->SendGameMessage( XGM_QUIT_GAME, 0, 0, false );
 		}
 
 		return false;

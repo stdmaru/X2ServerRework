@@ -230,7 +230,7 @@ void CX2Book::GotoPage(int iTargetPage)
 	// 이전에 있던 페이지를 삭제해주고
 	if(m_pDLGBook != NULL)
 	{
-		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGBook, NULL, false );
+		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGBook, 0, false );
 	}
 
 	// 새로운 페이지를 열자

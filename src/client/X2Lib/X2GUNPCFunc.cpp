@@ -2800,16 +2800,16 @@ void CX2GUNPCFunc::SMALL_GATE_POST_BROKEN_START_STATE( CX2GUNPC* pNPCUnit )
 {
     CKTDGParticleSystem *pMinorParticle = g_pX2Game->GetMinorParticle();
     CKTDGParticleSystem::CParticleEventSequence *pParticle;
-    float degreeY;
-
     if(pMinorParticle == NULL)
         return;
+
+    // Both chain lights share the rotation (the second one used to read it uninitialized when the first was not created).
+    const float degreeY = pNPCUnit->GetXSkinAnimPtr()->GetMatrix().GetYRotateDegree() + 90.0f;
 
     pParticle= pMinorParticle->GameUnitCreateSequence_LUA( pNPCUnit, "ChainGateLight1", pNPCUnit->GetBonePos_LUA( "COLLISION_SPHERE2" ), D3DXVECTOR2(1000,1000), D3DXVECTOR2(1,-1) );
     if(pParticle != NULL)
     {
         pNPCUnit->SetMinorParticle_LUA( 0, pParticle->GetHandle() );
-        degreeY = pNPCUnit->GetXSkinAnimPtr()->GetMatrix().GetYRotateDegree() + 90.0f;
         pParticle->SetAddRotate( D3DXVECTOR3( 0.0f, degreeY, 0.0f ) );
     }
 
@@ -4884,16 +4884,16 @@ void CX2GUNPCFunc::CHAIN_GATE_POST_BROKEN_START_STATE( CX2GUNPC* pNPCUnit )
 {
     CKTDGParticleSystem *pMinorParticle = g_pX2Game->GetMinorParticle();
     CKTDGParticleSystem::CParticleEventSequence *pParticle;
-    float degreeY;
-
     if(pMinorParticle == NULL)
         return;
+
+    // Both chain lights share the rotation (the second one used to read it uninitialized when the first was not created).
+    const float degreeY = pNPCUnit->GetXSkinAnimPtr()->GetMatrix().GetYRotateDegree() + 90.0f;
 
     pParticle= pMinorParticle->GameUnitCreateSequence_LUA( pNPCUnit, "ChainGateLight1", pNPCUnit->GetBonePos_LUA( "COLLISION_SPHERE2" ), D3DXVECTOR2(1000,1000), D3DXVECTOR2(1,-1) );
     if(pParticle != NULL)
     {
         pNPCUnit->SetMinorParticle_LUA( 0, pParticle->GetHandle() );
-        degreeY = pNPCUnit->GetXSkinAnimPtr()->GetMatrix().GetYRotateDegree() + 90.0f;
         pParticle->SetAddRotate( D3DXVECTOR3( 0.0f, degreeY, 0.0f ) );
     }
 
@@ -4911,16 +4911,16 @@ void CX2GUNPCFunc::CHAIN_GATE_POST_EXTRA_BROKEN_START_STATE( CX2GUNPC* pNPCUnit 
 {
     CKTDGParticleSystem *pMinorParticle = g_pX2Game->GetMinorParticle();
     CKTDGParticleSystem::CParticleEventSequence *pParticle;
-    float degreeY;
-
     if(pMinorParticle == NULL)
         return;
+
+    // Both chain lights share the rotation (the second one used to read it uninitialized when the first was not created).
+    const float degreeY = pNPCUnit->GetXSkinAnimPtr()->GetMatrix().GetYRotateDegree() + 90.0f;
 
     pParticle= pMinorParticle->GameUnitCreateSequence_LUA( pNPCUnit, "ChainGateLight1", pNPCUnit->GetBonePos_LUA( "COLLISION_SPHERE2" ), D3DXVECTOR2(1000,1000), D3DXVECTOR2(1,-1) );
     if(pParticle != NULL)
     {
         pNPCUnit->SetMinorParticle_LUA( 0, pParticle->GetHandle() );
-        degreeY = pNPCUnit->GetXSkinAnimPtr()->GetMatrix().GetYRotateDegree() + 90.0f;
         pParticle->SetAddRotate( D3DXVECTOR3( 0.0f, degreeY, 0.0f ) );
     }
 

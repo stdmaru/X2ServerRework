@@ -62,9 +62,6 @@ bool CX2UIDragable::MsgProc( HWND /*hWnd*/, UINT uMsg, WPARAM /*wParam*/, LPARAM
 
 	case WM_RBUTTONDOWN:
 		{
-			POINT mousePoint = { short(LOWORD(lParam)), short(HIWORD(lParam)) };
-			D3DXVECTOR2 mousePos = D3DXVECTOR2( (float)mousePoint.x, (float)mousePoint.y );
-
 			SetNowDragItemReturn();
 		}
 		break;

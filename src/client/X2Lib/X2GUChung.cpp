@@ -18810,7 +18810,7 @@ void CX2GUChung::CTT_MobileArmoredModeZFrameMove()
 }
 void CX2GUChung::CTT_MobileArmoredModeZEventProcess()
 {
-	if ( true == m_pXSkinAnimFuture->GetNowAnimationTime() > 0.06666f )
+	if ( m_pXSkinAnimFuture->GetNowAnimationTime() > 0.06666f )
 	{
 		StateChange( CSI_CTT_MOBILE_ARMORED_MODE_LOOP );
 	}

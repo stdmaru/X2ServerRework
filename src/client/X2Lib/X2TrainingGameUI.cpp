@@ -94,7 +94,7 @@ void CX2TrainingGameUI::OnFrameMove( double /*fTime*/, float fElapsedTime )
 				if( waitState.iNowCount < waitState.iMaxCount )
 				{
 					if( m_bWasSimpleWaitState == true &&
-						pMyUnit->GetNowStateID() == (const char) waitState.iStateID )
+						pMyUnit->GetNowStateID() == (char) waitState.iStateID )
 					{
 						if( -1 != waitState.iIsRight )
 						{
@@ -273,7 +273,7 @@ void CX2TrainingGameUI::OnFrameMove( double /*fTime*/, float fElapsedTime )
 				if( waitState.iNowCount < waitState.iMaxCount )
 				{
 					if( m_bWasWaitState == true &&
-						pMyUnit->GetNowStateID() == (const char) waitState.iStateID )
+						pMyUnit->GetNowStateID() == (char) waitState.iStateID )
 					{
 						m_bWasWaitState = false;
 						waitState.iNowCount += 1;
@@ -339,7 +339,7 @@ void CX2TrainingGameUI::OnFrameMove( double /*fTime*/, float fElapsedTime )
 						}
 					}
 
-					if( pMyUnit->GetNowStateID() == (const char) waitSeqState.vecStateID[ waitSeqState.iStateIndex ] )
+					if( pMyUnit->GetNowStateID() == (char) waitSeqState.vecStateID[ waitSeqState.iStateIndex ] )
 					{
 						if( static_cast<size_t>( waitSeqState.iStateIndex ) == waitSeqState.vecStateID.size()-1 )
 						{

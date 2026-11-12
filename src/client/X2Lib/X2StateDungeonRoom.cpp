@@ -295,7 +295,6 @@ HRESULT CX2StateDungeonRoom::OnFrameMove( double fTime, float fElapsedTime )
 		POINT mousePoint;
 		GetCursorPos( &mousePoint );
 		ScreenToClient( g_pKTDXApp->GetHWND(), &mousePoint );
-		D3DXVECTOR2 mousePos = D3DXVECTOR2( (float)mousePoint.x, (float)mousePoint.y );
 
 		int selectSlot = m_pCX2DungeonRoom->GetClickSlot( mousePoint.x, mousePoint.y );
 		if( selectSlot != -1 )
@@ -512,7 +511,7 @@ bool CX2StateDungeonRoom::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam
 		{
 			g_pX2Room->Handler_EGS_BAN_USER_REQ( m_UnitUIDToBan );
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 		}
 		break;
 
@@ -596,7 +595,7 @@ bool CX2StateDungeonRoom::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam
 			}
 
 			if ( m_pDLG_Dungeon_Help != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLG_Dungeon_Help, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLG_Dungeon_Help, 0, false );
 
 			m_pDLG_Dungeon_Help = NULL;
 			return true;
@@ -606,7 +605,7 @@ bool CX2StateDungeonRoom::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam
 	case DRUCM_CLOSE_DUNGEON_GUIDE:
 		{
 			if ( m_pDLG_Dungeon_Help != NULL )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLG_Dungeon_Help, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLG_Dungeon_Help, 0, false );
 
 			m_pDLG_Dungeon_Help = NULL;
 			return true;
@@ -616,7 +615,7 @@ bool CX2StateDungeonRoom::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam
 	case DRUCM_CHANGE_DIFFICULTY_OK:
 		{
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			m_pCX2DungeonRoom->SetCharLvLimit(false);
 			ChangeDifficulty(m_bChangeDifficultyLower);
@@ -626,7 +625,7 @@ bool CX2StateDungeonRoom::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam
 	case DRUCM_BAN_CHANGE_DIFFICULTY_OK:
 		{
 			CKTDGUIControl* pControl = (CKTDGUIControl*)lParam;
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pControl->GetDialog(), 0, false );
 
 			ChangeDifficulty(m_bChangeDifficultyLower);
 			return true;
@@ -1284,7 +1283,7 @@ bool CX2StateDungeonRoom::Handler_EGS_STATE_CHANGE_GAME_START_NOT( HWND /*hWnd*/
 		if( m_pCX2DungeonRoom->GetMySlot()->m_bHost == true	|| m_pCX2DungeonRoom->GetMySlot()->m_bReady == true )
 		{
 			DialogLog( "XGM_STATE_CHANGE, CX2Main::XS_DUNGEON_GAME, NULL, false" );
-			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_DUNGEON_GAME, NULL, false );
+			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_DUNGEON_GAME, 0, false );
 		}
 	}
 	else

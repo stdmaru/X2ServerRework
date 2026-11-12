@@ -14813,7 +14813,7 @@ void    CX2GUNPC::CommonEventProcessNonHost()
 
 		case SCT_POSITIVE_Y_SPEED:
 			{
-				if( m_PhysicParam.nowSpeed.y > 0.0f == true )
+				if( m_PhysicParam.nowSpeed.y > 0.0f )
 				{
                     if ( m_kNonHostReaction.IsNowStateReaction_NONE_OR_WAIT() == false )
                     {
@@ -14834,7 +14834,7 @@ void    CX2GUNPC::CommonEventProcessNonHost()
 
 		case SCT_NEGATIVE_Y_SPEED:
 			{
-				if( m_PhysicParam.nowSpeed.y <= 0.0f == true )
+				if( m_PhysicParam.nowSpeed.y <= 0.0f )
 				{
                     if ( m_kNonHostReaction.IsNowStateReaction_NONE_OR_WAIT() == false )
                     {
@@ -15422,7 +15422,7 @@ void CX2GUNPC::CommonEventProcess()
 
 		case SCT_POSITIVE_Y_SPEED:
 			{
-				if( m_PhysicParam.nowSpeed.y > 0.0f == true )
+				if( m_PhysicParam.nowSpeed.y > 0.0f )
 				{
                     if ( m_kNonHostReaction.IsNowStateReaction_NONE() == false
                         && _IsReactionState( pEventProcessData->m_NextStateID ) == true )
@@ -15435,7 +15435,7 @@ void CX2GUNPC::CommonEventProcess()
 
 		case SCT_NEGATIVE_Y_SPEED:
 			{
-				if( m_PhysicParam.nowSpeed.y <= 0.0f == true )
+				if( m_PhysicParam.nowSpeed.y <= 0.0f )
 				{
                     if ( m_kNonHostReaction.IsNowStateReaction_NONE() == false
                         && _IsReactionState( pEventProcessData->m_NextStateID ) == true )

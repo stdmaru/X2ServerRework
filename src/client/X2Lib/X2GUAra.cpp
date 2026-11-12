@@ -1295,6 +1295,7 @@ void CX2GUAra::InitStateByUnitClass()
 			stateData.OnEventProcess	= SET_CB_FUNC( CX2GUAra, ASI_DOUBLE_JUMP_FRONT_COMBO_ASD_Z_BACK_EventProcess );
 			m_StateList[stateData.stateID] = stateData;
 		}
+		[[fallthrough]];
 	case CX2Unit::UC_ARA_LITTLE_HSIEN: // �Ҽ�, ��õ State (case UC_ARA_SAKRA_DEVANAM: break �߰��ϸ� �ȵ�)
 		{
 			stateData.Init();
@@ -1405,6 +1406,7 @@ void CX2GUAra::InitStateByUnitClass()
 		//#pragma endregion
 
 		}
+		[[fallthrough]];
 	case CX2Unit::UC_ARA_LITTLE_DEVIL:
 		{
 
@@ -1542,6 +1544,7 @@ void CX2GUAra::InitStateByUnitClass()
 			}
 			//#pragma endregion ����� ���
 		}
+		[[fallthrough]];
 
 	case CX2Unit::UC_ARA_LITTLE_HSIEN:  // �Ҽ�, ��õ State (case UC_ARA_SAKRA_DEVANAM: break �߰��ϸ� �ȵ�)
 		{
@@ -1607,6 +1610,7 @@ void CX2GUAra::InitStateByUnitClass()
 				}
 				//#pragma endregion
 			}
+			[[fallthrough]];
 
 		case CX2Unit::UC_ARA_LITTLE_DEVIL:	// �Ҹ�, ���� State (case UC_ARA_YAMA_RAJA: break �߰��ϸ� �ȵ�)
 			{

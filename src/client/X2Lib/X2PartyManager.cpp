@@ -1234,7 +1234,7 @@ bool CX2PartyManager::Handler_EGS_PARTY_GAME_START_NOT( HWND /*hWnd*/, UINT /*uM
 			= g_pData->GetDungeonManager()->GetDungeonData( static_cast<SEnum::DUNGEON_ID>( kEvent.m_RoomInfo.m_iDungeonID ) );
 
 		ASSERT( NULL != pDungeonData );
-		g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_DUNGEON_GAME, NULL, false );
+		g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_DUNGEON_GAME, 0, false );
 
 		SetProcessDungeonMatch(false);
 	}
@@ -1304,7 +1304,7 @@ bool CX2PartyManager::Handler_EGS_DEFENCE_DUNGEON_GAME_START_NOT( HWND /*hWnd*/,
 		}
 		else	/// 만약 페이드 아웃을 동작하는데 문제가 있다면, 바로 스테이트 변경 시작 ( 사실 이쪽이 동작될 일은 없다. )
 		{
-			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_DUNGEON_GAME, NULL, false );
+			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_DUNGEON_GAME, 0, false );
 		}
 
 		SetProcessDungeonMatch(false);
@@ -2011,7 +2011,7 @@ bool CX2PartyManager::Handler_EGS_GAME_START_PVP_MATCH_NOT( HWND /*hWnd*/, UINT 
 
 	g_pMain->SetConnectedChannelID( kEvent.m_RoomInfo.m_iPVPChannelClass );
 
-	g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_GAME, NULL, false );
+	g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_GAME, 0, false );
 
 	g_pMain->GetPartyUI()->OpenPartyDLG(false);
 	SetProcessPvpMatch(false);
@@ -2296,7 +2296,7 @@ void CX2PartyManager::RememberComeBackInfoBeforeInstanceGameStart()
 	case CX2Main::XS_BATTLE_FIELD:	// 던전의 시작 위치가 배틀필드라면
 		{
 			CX2LocationManager* pLocationManager = g_pData->GetLocationManager();
-			pLocationManager->SetX2StateBeforeDungeonStart( static_cast<const UINT>( g_pMain->GetNowStateID() ) );
+			pLocationManager->SetX2StateBeforeDungeonStart( static_cast<UINT>( g_pMain->GetNowStateID() ) );
 
 			ASSERT( NULL != g_pX2Game && NULL != g_pX2Game->GetMyUnit() );
 			if ( NULL != g_pX2Game && NULL != g_pX2Game->GetMyUnit() )
@@ -2308,7 +2308,7 @@ void CX2PartyManager::RememberComeBackInfoBeforeInstanceGameStart()
 	case CX2Main::XS_SERVER_SELECT:
 		{	//튜토리얼의 경우 XS_SERVER_SELECT에서 시작
 			CX2LocationManager* pLocationManager = g_pData->GetLocationManager();
-			pLocationManager->SetX2StateBeforeDungeonStart( static_cast<const UINT>( g_pMain->GetNowStateID() ) );
+			pLocationManager->SetX2StateBeforeDungeonStart( static_cast<UINT>( g_pMain->GetNowStateID() ) );
 
 
 			const CX2Unit::UnitData* pUnitData = 	&g_pData->GetMyUser()->GetSelectUnit()->GetUnitData();
@@ -2368,8 +2368,8 @@ void CX2PartyManager::RememberComeBackInfoBeforeInstanceGameStart()
 			if( false == g_pData->GetLocationManager()->IsDungeonLounge( g_pData->GetLocationManager()->GetCurrentVillageID() ) )
 			{
 				CX2LocationManager* pLocationManager = g_pData->GetLocationManager();
-				pLocationManager->SetX2StateBeforeDungeonStart( static_cast<const UINT>( g_pMain->GetNowStateID() ) );
-				pLocationManager->SetVillageIdBeforeDungeonStart( static_cast<const UINT>( pLocationManager->GetCurrentVillageID() ) );
+				pLocationManager->SetX2StateBeforeDungeonStart( static_cast<UINT>( g_pMain->GetNowStateID() ) );
+				pLocationManager->SetVillageIdBeforeDungeonStart( static_cast<UINT>( pLocationManager->GetCurrentVillageID() ) );
 
 				ASSERT( NULL != g_pTFieldGame && NULL != g_pTFieldGame->GetMyUnit() );
 				if ( NULL != g_pTFieldGame && NULL != g_pTFieldGame->GetMyUnit() )

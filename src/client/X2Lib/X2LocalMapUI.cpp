@@ -93,7 +93,7 @@ m_pDlgHeroRecruit(NULL)
 			}
 			//}} kimhc // 2011-04-27 // 디펜스 던전 시간에 따라, 던전 아이콘 비/활성화 여부 결정
 
-			if ( CX2Dungeon::IsHenirDungeon( static_cast<const SEnum::DUNGEON_ID>( iDungeonID ) ) )
+			if ( CX2Dungeon::IsHenirDungeon( static_cast<SEnum::DUNGEON_ID>( iDungeonID ) ) )
 			{
 				wstringstream wstrStreamDungeonIconDesc;
 				GetHenirDungeonIcnoDesc( wstrStreamDungeonIconDesc );

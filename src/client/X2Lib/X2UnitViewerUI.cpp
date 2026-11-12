@@ -5438,15 +5438,15 @@ void CX2UnitViewerUI::SetUnitReForm()
 	if( m_pXSkinAnim == NULL )
 		return;
 
-	float fMoveBip01 = 10.f;
-	float fMoveFootStep = -10.f;
-	D3DXVECTOR3 vHead = D3DXVECTOR3(1.f, 1.f, 1.f);
-	D3DXVECTOR3 vThigh = D3DXVECTOR3(1.f, 1.f, 1.f);
-	D3DXVECTOR3 vCalf = D3DXVECTOR3(1.f, 1.f, 1.f);
-	D3DXVECTOR3 vFoot = D3DXVECTOR3(1.f, 1.f, 1.f);
-	D3DXVECTOR3 vHand = D3DXVECTOR3(1.f, 1.f, 1.f);
-	D3DXVECTOR3 vSpine = D3DXVECTOR3(1.f, 1.f, 1.f);
-	float fScale = 1.f;
+	[[maybe_unused]] float fMoveBip01 = 10.f;
+	[[maybe_unused]] float fMoveFootStep = -10.f;
+	[[maybe_unused]] D3DXVECTOR3 vHead = D3DXVECTOR3(1.f, 1.f, 1.f);
+	[[maybe_unused]] D3DXVECTOR3 vThigh = D3DXVECTOR3(1.f, 1.f, 1.f);
+	[[maybe_unused]] D3DXVECTOR3 vCalf = D3DXVECTOR3(1.f, 1.f, 1.f);
+	[[maybe_unused]] D3DXVECTOR3 vFoot = D3DXVECTOR3(1.f, 1.f, 1.f);
+	[[maybe_unused]] D3DXVECTOR3 vHand = D3DXVECTOR3(1.f, 1.f, 1.f);
+	[[maybe_unused]] D3DXVECTOR3 vSpine = D3DXVECTOR3(1.f, 1.f, 1.f);
+	[[maybe_unused]] float fScale = 1.f;
 
 	// 실시간 테스트용
 #if X2_DEV_TOOLS
@@ -5560,6 +5560,7 @@ void CX2UnitViewerUI::SetUnitReForm()
 				if ( pFrame_L_Dummy != NULL )
 					SetFrameScale( &vDummyHand, true, pFrame_L_Dummy );
 			}
+			[[fallthrough]];
 
 		case CX2Unit::UT_LIRE:
 			{
@@ -5626,7 +5627,6 @@ void CX2UnitViewerUI::SetUnitReForm()
 				D3DXVECTOR3 vThigh = D3DXVECTOR3( 1.05f, 0.94f, 0.92f );
 				D3DXVECTOR3 vCalf = D3DXVECTOR3( 1.065f, 0.93f, 0.9f );
 				D3DXVECTOR3 vFoot = D3DXVECTOR3( 0.93f, 0.85f, 0.83f );
-				D3DXVECTOR3 vDummyHand = D3DXVECTOR3( 1.f, 1.f, 1.f );
 				D3DXVECTOR3 vSpine = D3DXVECTOR3( 0.94f, 0.97f, 1.f );
 
 				CKTDXDeviceXSkinMesh::MultiAnimFrame* pFrameHead = m_pXSkinAnim->GetCloneFrame( L"Bip01_Head" );

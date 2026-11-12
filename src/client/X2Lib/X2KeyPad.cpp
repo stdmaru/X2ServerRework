@@ -99,7 +99,7 @@ const int CX2KeyPad::KEYPAD_STRING_INDEX[CX2KeyPad::KBI_END] =
 		else
 		{
 			if ( NULL != m_DLGKeyPad )
-				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_DLGKeyPad, NULL, false );
+				g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_DLGKeyPad, 0, false );
 		}
 
 		m_bShowKeyPad = bShow_;

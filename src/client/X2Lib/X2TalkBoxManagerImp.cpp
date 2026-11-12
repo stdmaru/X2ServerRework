@@ -1560,26 +1560,6 @@ void CX2TalkBoxManagerImp::ResetTalkBox( TalkBox& talkBox )
 	}
 	else
 	{
-		const float fCenterWidth  = talkBox.m_vTalkBoxSize.x - m_fMarginLeft - m_fMarginLeft;
-		const float fCenterHeight = talkBox.m_vTalkBoxSize.y - m_fMarginTop - m_fMarginTop;
-		const float fCornerHeight = m_fMarginTop;
-		const float fCornerHeightScaled = fCornerHeight * talkBox.m_vTalkBoxSizeScale.y;
-		const float fCenterWidthScaled  = fCenterWidth * talkBox.m_vTalkBoxSizeScale.x;
-		const float fCenterHeightScaled = fCenterHeight * talkBox.m_vTalkBoxSizeScale.y;
-
-		D3DXVECTOR2 pos = D3DXVECTOR2( 0, 0 );
-
-		if ( talkBox.m_TalkBoxType == TBT_FROM_DOWN_LEFT || talkBox.m_TalkBoxType == TBT_FROM_DOWN_RIGHT )
-		{
-			pos.x = talkBox.m_vPos.x - fCenterWidthScaled * talkBox.m_fTalkBoxTipLerpCoef;
-			pos.y = talkBox.m_vPos.y - fCenterHeightScaled - fCornerHeightScaled / g_pKTDXApp->GetResolutionScaleY(); // ??????
-		}
-		else
-		{
-			pos.x = talkBox.m_vPos.x - fCenterWidthScaled * talkBox.m_fTalkBoxTipLerpCoef;
-			pos.y = talkBox.m_vPos.y + (fCornerHeight * 3 / g_pKTDXApp->GetResolutionScaleY());
-		}
-
 		talkBox.ResetFontPos( m_pFont, m_fMarginLeft, m_fMarginTop );
 	}
 }
@@ -1797,13 +1777,13 @@ void CX2TalkBoxManagerImp::TalkBox::ResetFontPos( CKTDGFontManager::CUKFont* pKT
 				{
 				//fix!!
 				//pArticle->pos.x = pos.x - fCornerWidthScaled;
-				//pArticle->pos.y = pos.y + fCenterHeightScaled * m_fTalkBoxTipLerpCoef ; - fCornerHeightScaled / g_pKTDXApp->GetResolutionScaleY(); // ??????/
+				//pArticle->pos.y = pos.y + fCenterHeightScaled * m_fTalkBoxTipLerpCoef ; - fCornerHeightScaled / g_pKTDXApp->GetResolutionScaleY();
 				} break;
 
 				case TBT_FROM_RIGHT:
 				{
 				//pArticle->pos.x = pos.x - fCenterWidthScaled * m_fTalkBoxTipLerpCoef;
-				//pArticle->pos.y = pos.y + fCenterHeightScaled - fCornerHeightScaled / g_pKTDXApp->GetResolutionScaleY(); // ??????/
+				//pArticle->pos.y = pos.y + fCenterHeightScaled - fCornerHeightScaled / g_pKTDXApp->GetResolutionScaleY();
 				} break;
 				*/
 			}

@@ -400,7 +400,7 @@ void CX2LVUpEventMgr::LVUpEvent::DeleteDialog()
 	for ( int i = 0; i < (int)m_vecDialog.size(); i++ )
 	{
 		CKTDGUIDialogType pDialog = m_vecDialog[i];
-		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pDialog, NULL, false );
+		g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, pDialog, 0, false );
 	}
 	m_vecDialog.clear();
 }

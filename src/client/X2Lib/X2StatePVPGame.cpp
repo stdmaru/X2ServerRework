@@ -1013,7 +1013,7 @@ bool CX2StatePVPGame::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LP
 
 	case PGUCM_GAME_EXIT_OK:
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGExitMsgBox, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGExitMsgBox, 0, false );
 			m_pDLGExitMsgBox = NULL;
 
 			if ( g_pData->GetPVPRoom()->GetCanIntrude() == false )
@@ -1030,7 +1030,7 @@ bool CX2StatePVPGame::UICustomEventProc( HWND hWnd, UINT uMsg, WPARAM wParam, LP
 
 	case PGUCM_GAME_EXIT_CANCEL:
 		{
-			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGExitMsgBox, NULL, false );
+			g_pKTDXApp->SendGameDlgMessage( XGM_DELETE_DIALOG, m_pDLGExitMsgBox, 0, false );
 			m_pDLGExitMsgBox = NULL;
 		}
 		break;
@@ -1674,7 +1674,7 @@ bool CX2StatePVPGame::Handler_EGS_LEAVE_ROOM_ACK( HWND /*hWnd*/, UINT /*uMsg*/, 
 			g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_437 ) );
 
 
-			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_LOBBY, NULL, false );
+			g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_LOBBY, 0, false );
 			DialogLog( "  XGM_STATE_CHANGE, CX2Main::XS_PVP_LOBBY, NULL, false  " );
 		}
 
@@ -1699,7 +1699,7 @@ bool CX2StatePVPGame::Handler_EGS_GAME_LOADING_TIME_OUT_NOT( HWND /*hWnd*/, UINT
 		g_pMain->CreateStateChangeDLG( GET_STRING( STR_ID_437 ) );
 
 
-		g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_LOBBY, NULL, false );
+		g_pKTDXApp->SendGameMessage( XGM_STATE_CHANGE, CX2Main::XS_PVP_LOBBY, 0, false );
 		DialogLog( "  XGM_STATE_CHANGE, CX2Main::XS_PVP_LOBBY, NULL, false  " );
 	}
 	return true;
