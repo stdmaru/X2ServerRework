@@ -3895,13 +3895,12 @@ void CX2Main::AddChannelServerIP_LUA( const char* pServerIP, int iServerPort /*=
 	if( NULL == pServerIP )
 		return;
 
-	struct hostent* host = NULL;
 	wstring wstrChannelServerIP = L"";
-	host = gethostbyname(pServerIP);
+	const std::string strResolvedIP = x2::platform::ResolveIPv4( pServerIP );
 
-	if( host != NULL )
+	if( !strResolvedIP.empty() )
 	{
-		ConvertUtf8ToWCHAR( wstrChannelServerIP, inet_ntoa(*(struct in_addr*)host->h_addr_list[0]) );
+		ConvertUtf8ToWCHAR( wstrChannelServerIP, strResolvedIP.c_str() );
 	}
 	else
 	{
@@ -8236,7 +8235,7 @@ void    CX2Main::SetUDPMode_LUA( const char* pszGameType, const char* pszUDPMode
 
     for( int i = 0; i <  CX2Game::GT_NUMS; ++i )
     {
-        if ( stricmp( pszGameType, apszGameType[ i ] ) == 0 )
+        if ( _stricmp( pszGameType, apszGameType[ i ] ) == 0 )
         {
             eGameType = CX2Game::GAME_TYPE( i );
             goto udpmode;
@@ -8246,7 +8245,7 @@ void    CX2Main::SetUDPMode_LUA( const char* pszGameType, const char* pszUDPMode
 udpmode:
     for( int i = 0; i < CKTDNUDP::FORCE_CONNECT_MODE_NUMS; ++i )
     {
-        if ( stricmp( pszUDPMode, apszUDPMode[ i ] ) == 0 )
+        if ( _stricmp( pszUDPMode, apszUDPMode[ i ] ) == 0 )
         {
             eUDPMode = CKTDNUDP::EForceConnectMode( i );
             goto setmode;

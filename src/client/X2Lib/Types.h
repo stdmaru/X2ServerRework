@@ -73,39 +73,16 @@
  * - COMPILER_BORLANDC
  */
 
+#include <bit>
+
 namespace cat
 {
 
-	//// endian-ness (ignoring NUXI) ////
-	// Prevent an error message with gcc which define preprocessor symbol
-	// LITTLE_ENDIAN or BIG_ENDIAN (endian.h)
-	// dalfy
-#if !defined(BIG_ENDIAN) && !defined(LITTLE_ENDIAN)
-#if defined(__sparc) || defined(__sparc__) || defined(__powerpc__) || \
- defined(__ppc__) || defined(__hppa) || defined(_MIPSEB) || defined(_POWER) || \
- defined(_M_PPC) || defined(_M_MPPC) || defined(_M_MRX000) || \
- defined(__POWERPC) || defined(m68k) || defined(powerpc) || \
- defined(sel) || defined(pyr) || defined(mc68000) || defined(is68k) || \
- defined(tahoe) || defined(ibm032) || defined(ibm370) || defined(MIPSEB) || \
- defined(__convex__) || defined(DGUX) || defined(hppa) || defined(apollo) || \
- defined(_CRAY) || defined(__hp9000) || defined(__hp9000s300) || defined(_AIX) || \
- defined(__AIX) || defined(__pyr__) || defined(hp9000s700) || defined(_IBMR2)
-
-# define BIG_ENDIAN
-
-#elif defined(__i386__) || defined(i386) || defined(intel) || defined(_M_IX86) || \
-   defined(__alpha__) || defined(__alpha) || defined(__ia64) || defined(__ia64__) || \
-   defined(_M_ALPHA) || defined(ns32000) || defined(__ns32000__) || defined(sequent) || \
-   defined(MIPSEL) || defined(_MIPSEL) || defined(sun386) || defined(__sun386__)
-
+	// Every supported target (x86_64, arm64) is little-endian. glibc's <endian.h> may already define the macro.
+#ifndef LITTLE_ENDIAN
 # define LITTLE_ENDIAN
-
-#else
-
-# error "I can't tell what endian-ness to use for your architecture."
-
 #endif
-#endif
+	static_assert( std::endian::native == std::endian::little, "X2Lib assumes a little-endian target" );
 
 #ifndef FALSE
 	/**

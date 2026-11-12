@@ -573,7 +573,7 @@ void CX2BattleFieldGame::CreateBattleFieldNpcByCreatedInfo( const CNpcCreatedInf
 			ASSERT( NULL != pBattleFieldNpc );
 			if ( NULL != pBattleFieldNpc )
 			{
-				ASSERT( -1 != NpcCreatedInfoPtr_->GetStartPosNum() );
+				ASSERT( static_cast<UINT>( -1 ) != NpcCreatedInfoPtr_->GetStartPosNum() );
 
 				pBattleFieldNpc->Init( false, NpcCreatedInfoPtr_->GetStartPosNum() );
 

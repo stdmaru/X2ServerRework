@@ -4141,7 +4141,7 @@ void CX2GameUnit::PlaySound_LUA( const char* pName )
 		return;
 
 	//DieLight.wav는 게임옵션에 따라 생성여부가 결정된다.
-	if( g_pMain->GetGameOption().GetOptionList().m_eEffect == CX2GameOption::OL_LOW && stricmp( pName, "DieLight.ogg" ) == 0 )
+	if( g_pMain->GetGameOption().GetOptionList().m_eEffect == CX2GameOption::OL_LOW && _stricmp( pName, "DieLight.ogg" ) == 0 )
 		return;
 
 	wstring wName = L"";
@@ -4363,7 +4363,7 @@ void CX2GameUnit::DeleteEnchantWeaponEffectUnitSpecific( int index )
 
 void CX2GameUnit::SetMajorMeshPlayer_LUA( int index, CKTDGXMeshPlayer::CXMeshInstance* pMeshPlayer )
 {
-	ASSERT( index >= 0 && index < ARRAY_SIZE(m_hMajorMeshPlayerList) );
+	ASSERT( index >= 0 && index < std::ssize(m_hMajorMeshPlayerList) );
 	if( index < 0 || static_cast<size_t>( index ) >= ARRAY_SIZE(m_hMajorMeshPlayerList) )
 		return;
 
@@ -4385,7 +4385,7 @@ void CX2GameUnit::SetMajorMeshPlayer_LUA( int index, CKTDGXMeshPlayer::CXMeshIns
 
 void CX2GameUnit::ClearMajorMeshPlayer_LUA( int index )
 {
-	ASSERT( index >= 0 && index < ARRAY_SIZE(m_hMajorMeshPlayerList) );
+	ASSERT( index >= 0 && index < std::ssize(m_hMajorMeshPlayerList) );
 	if( index < 0 || static_cast<size_t>( index ) >= ARRAY_SIZE(m_hMajorMeshPlayerList) )
 		return;
 
@@ -4410,7 +4410,7 @@ void CX2GameUnit::SetDoubleAttack(wstring wstrHitSound, float fDamage, D3DXVECTO
 
 CKTDGXMeshPlayer::CXMeshInstance* CX2GameUnit::GetMajorMeshPlayer_LUA( int index )
 {
-	ASSERT( index >= 0 && index < ARRAY_SIZE(m_hMajorMeshPlayerList) );
+	ASSERT( index >= 0 && index < std::ssize(m_hMajorMeshPlayerList) );
 	if( index < 0 || static_cast<size_t>( index ) >= ARRAY_SIZE(m_hMajorMeshPlayerList) )
 		return NULL;
 
@@ -4429,7 +4429,7 @@ CKTDGXMeshPlayer::CXMeshInstance* CX2GameUnit::GetMajorMeshPlayer_LUA( int index
 
 CKTDGXMeshPlayer::CXMeshInstanceHandle CX2GameUnit::GetMajorMeshPlayerHandle( int index )
 {
-	ASSERT( index >= 0 && index < ARRAY_SIZE(m_hMajorMeshPlayerList) );
+	ASSERT( index >= 0 && index < std::ssize(m_hMajorMeshPlayerList) );
 	if( index < 0 || static_cast<size_t>( index ) >= ARRAY_SIZE(m_hMajorMeshPlayerList) )
 		return INVALID_MESH_INSTANCE_HANDLE;
 
@@ -4439,7 +4439,7 @@ CKTDGXMeshPlayer::CXMeshInstanceHandle CX2GameUnit::GetMajorMeshPlayerHandle( in
 
 void CX2GameUnit::SetMinorMeshPlayer_LUA( int index, CKTDGXMeshPlayer::CXMeshInstance* pMeshPlayer )
 {
-	ASSERT( index >= 0 && index < ARRAY_SIZE(m_hMinorMeshPlayerList) );
+	ASSERT( index >= 0 && index < std::ssize(m_hMinorMeshPlayerList) );
 	if( index < 0 || static_cast<size_t>( index ) >= ARRAY_SIZE(m_hMinorMeshPlayerList) )
 		return;
 
@@ -4457,7 +4457,7 @@ void CX2GameUnit::SetMinorMeshPlayer_LUA( int index, CKTDGXMeshPlayer::CXMeshIns
 
 void CX2GameUnit::ClearMinorMeshPlayer_LUA( int index )
 {
-	ASSERT( index >= 0 && index < ARRAY_SIZE(m_hMinorMeshPlayerList) );
+	ASSERT( index >= 0 && index < std::ssize(m_hMinorMeshPlayerList) );
 	if( index < 0 || static_cast<size_t>( index ) >= ARRAY_SIZE(m_hMinorMeshPlayerList) )
 		return;
 
@@ -4466,7 +4466,7 @@ void CX2GameUnit::ClearMinorMeshPlayer_LUA( int index )
 
 CKTDGXMeshPlayer::CXMeshInstance* CX2GameUnit::GetMinorMeshPlayer_LUA( int index )
 {
-	ASSERT( index >= 0 && index < ARRAY_SIZE(m_hMinorMeshPlayerList) );
+	ASSERT( index >= 0 && index < std::ssize(m_hMinorMeshPlayerList) );
 	if( index < 0 || static_cast<size_t>( index ) >= ARRAY_SIZE(m_hMinorMeshPlayerList) )
 		return NULL;
 
@@ -4482,7 +4482,7 @@ CKTDGXMeshPlayer::CXMeshInstance* CX2GameUnit::GetMinorMeshPlayer_LUA( int index
 
 CKTDGXMeshPlayer::CXMeshInstanceHandle CX2GameUnit::GetMinorMeshPlayerHandle( int index )
 {
-	ASSERT( index >= 0 && index < ARRAY_SIZE(m_hMinorMeshPlayerList) );
+	ASSERT( index >= 0 && index < std::ssize(m_hMinorMeshPlayerList) );
 	if( index < 0 || static_cast<size_t>( index ) >= ARRAY_SIZE(m_hMinorMeshPlayerList) )
 		return INVALID_MESH_INSTANCE_HANDLE;
 
@@ -9842,7 +9842,7 @@ bool CX2GameUnit::AbsorbEffectAttackProcess( CX2DamageManager::DamageData* pDama
 		UpNowMp( fSumOfAbsorbValue );
 
 		WCHAR wstr[10];
-		ZeroMemory( wstr, ARRAY_SIZE( wstr ) );
+		ZeroMemory( wstr, sizeof( wstr ) );
 		swprintf_s( wstr, L"MP+ %d", static_cast<int>( fSumOfAbsorbValue ) );
 
 		D3DXVECTOR3 pos = GetPos();

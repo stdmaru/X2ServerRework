@@ -151,9 +151,14 @@ OFF). It does not link yet: `X2.cpp` and the executable are the next step
   - Out of bounds:
     - `SkillCutIn` built a `D3DXVECTOR3` from a `D3DXVECTOR2` and read past it (`z` is now 0);
     - the SHA1 report wrote `" 255"` into `szTemp[4]`;
-    - `CX2ComboManager` cleared half of `m_ComboContent`.
+    - `CX2ComboManager` cleared half of `m_ComboContent`, and `AbsorbEffectAttackProcess` half of its `wstr`.
   - `ZeroMemory` over non-trivial types replaced by assignment (cash-shop dialog handles, the reserved resurrect packet).
   - `DXUTGetVerticalSync` returns `UINT`; SHA1 file hashing fails on a short read.
+- **Windows (clang-cl).** `Types.h`'s endianness detection knew no 64-bit target. It now defines `LITTLE_ENDIAN` and
+  asserts `std::endian::little`; on Linux it had only passed because glibc's `<endian.h>` defines both macros. The channel
+  host resolves through `x2::platform::ResolveIPv4` (in place of `gethostbyname`/`inet_ntoa`), and `stricmp` is now
+  `_stricmp`. `ASSERT` is a real assert there, so its conditions must be warning-free too. Linux debug only takes the
+  `sizeof` of them (2026-11-11).
 - **Removed as dead:** a copy of the premium-buff event dispatch after a `break` in `CX2State` (the reachable one runs
   first); the commented-out P2P connect-result packets in `CX2GUUser::OnFrameMove`.
 - **Kept, recorded as bugs** ([Original bugs](../original/bugs.md)): quest reward auto-selection compares the item's
