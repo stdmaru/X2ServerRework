@@ -285,6 +285,26 @@ void SdlMessageTranslator::Key(const SDL_KeyboardEvent& key, std::vector<WinMess
         message = system ? WM_SYSKEYUP : WM_KEYUP;
     }
     out.push_back({message, vk.vk, lParam});
+
+    // TranslateMessage also makes a WM_CHAR of the keys that type control characters, which SDL's text input never
+    // reports: Backspace, Tab, Enter and Escape, and Ctrl+letter (Ctrl+C is 3, Ctrl+V 22). The edit boxes act on these.
+    if (message == WM_KEYDOWN) {
+        WPARAM control = 0;
+        switch (vk.vk) {
+        case VK_BACK: control = 0x08; break;
+        case VK_TAB: control = 0x09; break;
+        case VK_RETURN: control = 0x0D; break;
+        case VK_ESCAPE: control = 0x1B; break;
+        default:
+            if (ctrl && !alt && vk.vk >= 'A' && vk.vk <= 'Z') {
+                control = vk.vk - 'A' + 1;
+            }
+            break;
+        }
+        if (control != 0) {
+            out.push_back({WM_CHAR, control, lParam});
+        }
+    }
 }
 
 void SdlMessageTranslator::Text(const SDL_TextInputEvent& text, std::vector<WinMessage>& out)

@@ -387,6 +387,48 @@ bool FiniteFrames(const D3DXFRAME* frame)
 // Every skinned mesh of the client (.x with SkinWeights, KOG's KSM) loaded by CKTDXDeviceXSkinMesh as the game does:
 // hierarchy (KSM: frames, then its KAC animation controller), optimize and remap, indexed blended mesh, then its
 // textures. Every one must load, and every animation set of a clone of its controller plays (finite frame matrices).
+TEST_CASE("ktdxlib: preprocessed .tet keys are UTF-16, as the Windows tools wrote them")
+{
+    // DLG_Login0.tet's layout: header, one key offset, one UV rectangle, then the key "BG01" (WORD length, UTF-16, null)
+    std::vector<BYTE> file;
+    auto put = [&](const void* data, std::size_t size) {
+        const auto* bytes = static_cast<const BYTE*>(data);
+        file.insert(file.end(), bytes, bytes + size);
+    };
+    KTETFormatHeader header;
+    header.m_dwMagic = KTET_FORMAT_MAGIC;
+    header.m_dwVersion = KTET_FORMAT_VERSION;
+    header.m_dwNumTextureUV = 1;
+    put(&header, sizeof header);
+    const DWORD keyOffset = sizeof(KTETFormatHeader) + sizeof(DWORD) + sizeof(KTETFormatTextureUV);
+    put(&keyOffset, sizeof keyOffset);
+    KTETFormatTextureUV uv;
+    uv.rightBottom = D3DXVECTOR2(512, 512);
+    uv.rectSize = D3DXVECTOR2(512, 512);
+    put(&uv, sizeof uv);
+    const WORD length = 4;
+    put(&length, sizeof length);
+    const char16_t key[] = u"BG01";
+    put(key, sizeof key);
+
+    CKTDXDeviceTET_Preprocessing tet;
+    REQUIRE(tet.OpenFile(file.data(), static_cast<int>(file.size()), L"DLG_Login0.TGA"));
+    CHECK(tet.GetNumTexUVs() == 1);
+    CHECK(tet.GetKeyFromIndex(0) == L"BG01");
+    const KTETFormatTextureUV* found = tet.GetTexUV(L"BG01");
+    REQUIRE(found != nullptr);
+    CHECK(found->rectSize.x == 512.0f);
+    CHECK(tet.GetTexUV(L"BG0") == nullptr);
+    CHECK(tet.GetTexUV(L"BG010") == nullptr);
+    CHECK(tet.GetTexUV(L"BG02") == nullptr);
+
+    CHECK(KComparePreprocessedString(u"Abc", L"aBC", true) == 0);
+    CHECK(KComparePreprocessedString(u"Abc", L"aBC", false) != 0);
+    CHECK(KComparePreprocessedString(u"ab", L"abc", true) < 0);
+    CHECK(KReadPreprocessedString(file, 0).empty());
+    CHECK(KReadPreprocessedString(file, static_cast<DWORD>(file.size())).empty());
+}
+
 TEST_CASE("ktdxlib: the client's skinned meshes load (X2_MASSFILE_CLIENT_DATA)")
 {
     const char* folder = std::getenv("X2_MASSFILE_CLIENT_DATA");

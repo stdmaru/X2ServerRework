@@ -31,7 +31,9 @@ The `WM_*`/`VK_*` constants and `WPARAM`/`LPARAM` come from `x2/platform/window_
   `pbNoFurtherProcessing`; if `MsgProc` does not stop the message, DXUT's own handling: `WM_SIZE` minimized/restored (pauses the
   loop), `WM_ACTIVATEAPP` (active flag), Alt+Enter toggles full screen when enabled by `DXUTInit` (on in `X2.cpp`), `WM_CLOSE`
   destroys the window and quits.
-- `DXUTCreateWindow` creates a resizable window with a 1024×768 client area (what `X2.cpp` asks of `DXUTCreateDevice`) and starts
+- `DXUTCreateWindow` creates a **fixed-size** window (since 2026-11-12; DXUT's was resizable) with a 1024×768 client area. Tiling window managers
+  such as Hyprland float a fixed-size window, so the game opens at its resolution; the options still change it through
+  `DXUTCreateDeviceFromSettings`. The window gets (what `X2.cpp` asks of `DXUTCreateDevice`) and starts
   SDL text input; it binds the translator's IME context for the IME edit box's IMM32 calls, and `DXUTInit` sets
   `SDL_HINT_IME_IMPLEMENTED_UI` so the client draws the composition and the candidates. Full screen is borderless desktop full screen.
 - Main loop: events → messages → frame (`CDXUTTimer` → `FrameMove` → `FrameRender`); while minimized it waits for events (100 ms).
@@ -51,7 +53,7 @@ The `WM_*`/`VK_*` constants and `WPARAM`/`LPARAM` come from `x2/platform/window_
 
 | SDL | Messages |
 |---|---|
-| `KEY_DOWN`/`KEY_UP` | `WM_KEYDOWN`/`WM_KEYUP`, or `WM_SYSKEY*` when Alt is down without Ctrl, for F10, and for Alt itself; `lParam` = repeat 1, set-1 scan code, extended bit (24), context bit (29), previous state (30), transition (31). Generic `VK_SHIFT`/`VK_CONTROL`/`VK_MENU`; letters and digits follow the keyboard layout; keypad keys depend on Num Lock |
+| `KEY_DOWN`/`KEY_UP` | `WM_KEYDOWN`/`WM_KEYUP`, or `WM_SYSKEY*` when Alt is down without Ctrl, for F10, and for Alt itself; `lParam` = repeat 1, set-1 scan code, extended bit (24), context bit (29), previous state (30), transition (31). Generic `VK_SHIFT`/`VK_CONTROL`/`VK_MENU`; letters and digits follow the keyboard layout; keypad keys depend on Num Lock. A `WM_KEYDOWN` of Backspace, Tab, Enter, Esc or Ctrl+letter is followed by its `WM_CHAR` control character, as `TranslateMessage` makes (2026-11-12; the edit boxes act on them) |
 | `TEXT_INPUT` | one `WM_CHAR` per UTF-16 unit; while composing, first `WM_IME_COMPOSITION` (`GCS_RESULTSTR`) and `WM_IME_ENDCOMPOSITION`. The `WM_CHAR`s of a result are dropped if `MsgProc` handled the composition result, as `DefWindowProc` would not generate them |
 | `TEXT_EDITING` | `WM_IME_STARTCOMPOSITION`, `WM_IME_COMPOSITION` (`GCS_COMPSTR`, `GCS_COMPATTR`, `GCS_CURSORPOS`); empty text ends the composition. The composition (string, cursor, attributes) is in the translator's `ImeContext`, which IMM32 calls read ([Client: IME](client-ime.md)) |
 | `TEXT_EDITING_CANDIDATES` | `WM_IME_NOTIFY` (`IMN_OPENCANDIDATE`, `IMN_CHANGECANDIDATE`, `IMN_CLOSECANDIDATE`); a list still open closes before the composition ends ([Client: IME](client-ime.md)) |
@@ -75,6 +77,20 @@ state on `WM_ACTIVATEAPP`.
   renderer (two frames, each cleared to black and submitted, nothing leaked); the device callbacks (Created, Reset, then
   Lost and Destroyed while the device still exists, once each; `DXUTCreateDevice` fails without a window).
 - `test_luacommon.cpp`: [LuaCommon](client-luacommon.md) loads a UTF-8 script and reads its values.
+
+Long loads (2026-11-12): `DXUTPumpEventsWhileBusy()` (port addition) runs `SDL_PumpEvents` at most every 100 ms on the
+main thread, from `CKTDXApp::LoadAndDoMemory_ErrorCode` and `RenderStageNow`. It answers the compositor's pings while the
+start-up loads (Hyprland showed "not responding"); the events stay queued for the main loop. Message boxes turn CRLF
+into LF for the system dialogs (zenity on Linux). Called on the main thread, a message box runs on a worker thread
+without a parent window (SDL wants a parent's own thread) while the main thread pumps events every 20 ms, so the
+compositor does not call the game unresponsive while the box waits (2026-11-12, Hyprland showed its "not responding"
+dialog over the graphics options question); keys and mouse events that reach the game window meanwhile are dropped, as
+the modal box did.
+
+Present modes (2026-11-12): vsync on (`D3DPRESENT_INTERVAL_DEFAULT`) presents in mailbox mode where the window has
+it, else FIFO; vsync off is immediate, else mailbox. The engine steps at a fixed 85 Hz and sleeps between frames
+(`CKTDXApp::OnFrameMove`), so under FIFO each 11.8 ms frame waited for a second vertical blank on a 144 Hz display
+(~72–77 fps); mailbox shows the 85 frames without tearing.
 
 Device callbacks (2026-11-12): `DXUTCreateDevice` calls `DeviceCreated` then `DeviceReset` with the window's device.
 If the window is windowed and a size is given, it first sets the client area to that size. When the window closes,

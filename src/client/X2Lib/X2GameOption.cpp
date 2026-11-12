@@ -1,6 +1,10 @@
 #include "stdafx.h"
 #include "./X2GameOption.h"
 #include "x2/platform/process.h"
+#include "x2/platform/unicode.h"
+
+#include <cstdarg>
+#include <cwchar>
 
 #include "KBenchmark_SUM.h"
 #include "KBenchmark_LINPACK.h"
@@ -767,6 +771,8 @@ bool CX2GameOption::OpenScriptFile()
 		{
 			_DecideProperGraphicOption();
 		}
+		// Saved now, so the question is asked once (the original saved only after a login or an option change).
+		SaveScriptFile();
 	}
 
 	m_eFieldLevelOld = m_OptionList.m_FieldDetail;
@@ -845,6 +851,25 @@ bool CX2GameOption::OpenScriptFile()
 
 
 
+namespace
+{
+	// The file is UTF-8 with a BOM. fwprintf after fputc writes nothing on glibc (a stream is either byte or wide
+	// oriented), so each line is formatted as wide text and written as UTF-8 bytes.
+	void FilePrintf( FILE* file, const wchar_t* format, ... )
+	{
+		wchar_t buffer[512];
+		va_list args;
+		va_start( args, format );
+		const int length = vswprintf( buffer, std::size( buffer ), format, args );
+		va_end( args );
+		if ( length > 0 )
+		{
+			const std::string utf8 = x2::platform::WideToUtf8( std::wstring( buffer, static_cast<size_t>( length ) ) );
+			fwrite( utf8.data(), 1, utf8.size(), file );
+		}
+	}
+}
+
 bool CX2GameOption::SaveScriptFile()
 {
 
@@ -863,121 +888,121 @@ bool CX2GameOption::SaveScriptFile()
     fputc( 0xBB, file );
     fputc( 0xBF, file );
 
-	fwprintf( file, L"  \n" );
-	fwprintf( file, L"  \n" );
-	fwprintf( file, L"GAME_OPTION_CURRENT = \n" );
-	fwprintf( file, L"{ \n" );
+	FilePrintf( file, L"  \n" );
+	FilePrintf( file, L"  \n" );
+	FilePrintf( file, L"GAME_OPTION_CURRENT = \n" );
+	FilePrintf( file, L"{ \n" );
 
 
-	fwprintf( file, L"\t-- GRAPHIC OPTION \n" );
-	fwprintf( file, L"\tAUTOSET_LEVEL		= %d, \n", m_OptionList.m_iAutoSetLevel );
+	FilePrintf( file, L"\t-- GRAPHIC OPTION \n" );
+	FilePrintf( file, L"\tAUTOSET_LEVEL		= %d, \n", m_OptionList.m_iAutoSetLevel );
 
 	switch( m_OptionList.m_UnitDetail )
 	{
 	case OL_HIGH:
-		fwprintf( file, L"\tGRAPHIC_UNIT		= OPTION_LEVEL[\"OL_HIGH\"], \n" );
+		FilePrintf( file, L"\tGRAPHIC_UNIT		= OPTION_LEVEL[\"OL_HIGH\"], \n" );
 		break;
 	case OL_MEDIUM:
-		fwprintf( file, L"\tGRAPHIC_UNIT		= OPTION_LEVEL[\"OL_MEDIUM\"], \n" );
+		FilePrintf( file, L"\tGRAPHIC_UNIT		= OPTION_LEVEL[\"OL_MEDIUM\"], \n" );
 		break;
 	case OL_LOW:
-		fwprintf( file, L"\tGRAPHIC_UNIT		= OPTION_LEVEL[\"OL_LOW\"], \n" );
+		FilePrintf( file, L"\tGRAPHIC_UNIT		= OPTION_LEVEL[\"OL_LOW\"], \n" );
 		break;
 	}
 
 	switch( m_OptionList.m_TexDetail )
 	{
 	case OL_HIGH:
-		fwprintf( file, L"\tGRAPHIC_TEXTURE		= OPTION_LEVEL[\"OL_HIGH\"], \n" );
+		FilePrintf( file, L"\tGRAPHIC_TEXTURE		= OPTION_LEVEL[\"OL_HIGH\"], \n" );
 		break;
 	case OL_MEDIUM:
-		fwprintf( file, L"\tGRAPHIC_TEXTURE		= OPTION_LEVEL[\"OL_MEDIUM\"], \n" );
+		FilePrintf( file, L"\tGRAPHIC_TEXTURE		= OPTION_LEVEL[\"OL_MEDIUM\"], \n" );
 		break;
 	case OL_LOW:
-		fwprintf( file, L"\tGRAPHIC_TEXTURE		= OPTION_LEVEL[\"OL_LOW\"], \n" );
+		FilePrintf( file, L"\tGRAPHIC_TEXTURE		= OPTION_LEVEL[\"OL_LOW\"], \n" );
 		break;
 	}
 
 	switch( m_OptionList.m_MapDetail )
 	{
 	case OL_HIGH:
-		fwprintf( file, L"\tGRAPHIC_MAP			= OPTION_LEVEL[\"OL_HIGH\"], \n" );
+		FilePrintf( file, L"\tGRAPHIC_MAP			= OPTION_LEVEL[\"OL_HIGH\"], \n" );
 		break;
 	case OL_MEDIUM:
-		fwprintf( file, L"\tGRAPHIC_MAP			= OPTION_LEVEL[\"OL_MEDIUM\"], \n" );
+		FilePrintf( file, L"\tGRAPHIC_MAP			= OPTION_LEVEL[\"OL_MEDIUM\"], \n" );
 		break;
 	case OL_LOW:
-		fwprintf( file, L"\tGRAPHIC_MAP			= OPTION_LEVEL[\"OL_LOW\"], \n" );
+		FilePrintf( file, L"\tGRAPHIC_MAP			= OPTION_LEVEL[\"OL_LOW\"], \n" );
 		break;
 	}
 
 	switch( m_OptionList.m_eEffect )
 	{
 		case OL_HIGH:
-			fwprintf( file, L"\tGRAPHIC_EFFECT_VER2	= OPTION_LEVEL[\"OL_HIGH\"], \n" );
+			FilePrintf( file, L"\tGRAPHIC_EFFECT_VER2	= OPTION_LEVEL[\"OL_HIGH\"], \n" );
 			break;
 		case OL_MEDIUM:
-			fwprintf( file, L"\tGRAPHIC_EFFECT_VER2	= OPTION_LEVEL[\"OL_MEDIUM\"], \n" );
+			FilePrintf( file, L"\tGRAPHIC_EFFECT_VER2	= OPTION_LEVEL[\"OL_MEDIUM\"], \n" );
 			break;
 		case OL_LOW:
-			fwprintf( file, L"\tGRAPHIC_EFFECT_VER2	= OPTION_LEVEL[\"OL_LOW\"], \n" );
+			FilePrintf( file, L"\tGRAPHIC_EFFECT_VER2	= OPTION_LEVEL[\"OL_LOW\"], \n" );
 			break;
 	}
 
 
-	fwprintf( file, L"\tRESOLUTION_X		= %d, \n", (int)m_OptionList.m_vResolution.x );
-	fwprintf( file, L"\tRESOLUTION_Y		= %d, \n", (int)m_OptionList.m_vResolution.y );
+	FilePrintf( file, L"\tRESOLUTION_X		= %d, \n", (int)m_OptionList.m_vResolution.x );
+	FilePrintf( file, L"\tRESOLUTION_Y		= %d, \n", (int)m_OptionList.m_vResolution.y );
 
 	//{{ kimhc // 2010.3.12 //	채팅창 개편
 	if( true == m_OptionList.m_bFullScreen )
-		fwprintf( file, L"\tFULLSCREEN			= TRUE, \n" );
+		FilePrintf( file, L"\tFULLSCREEN			= TRUE, \n" );
 	else
-		fwprintf( file, L"\tFULLSCREEN			= FALSE, \n" );
+		FilePrintf( file, L"\tFULLSCREEN			= FALSE, \n" );
 	//}} kimhc // 2010.3.12 //	채팅창 개편
 
 	if( true == m_OptionList.m_bJoyEnable )
-		fwprintf( file, L"\tJOY_ENABLE			= TRUE, \n" );
+		FilePrintf( file, L"\tJOY_ENABLE			= TRUE, \n" );
 	else
-		fwprintf( file, L"\tJOY_ENABLE			= FALSE, \n" );
+		FilePrintf( file, L"\tJOY_ENABLE			= FALSE, \n" );
 
 	if ( true == m_OptionList.m_bFlashEffect )
-		fwprintf( file, L"\tFLASHEFFECT			= TRUE, \n" );
+		FilePrintf( file, L"\tFLASHEFFECT			= TRUE, \n" );
 	else
-		fwprintf( file, L"\tFLASHEFFECT			= FALSE, \n" );
+		FilePrintf( file, L"\tFLASHEFFECT			= FALSE, \n" );
 
 
-	fwprintf( file, L"\n\n\n" );
-	fwprintf( file, L"\t-- SOUND OPTION \n" );
+	FilePrintf( file, L"\n\n\n" );
+	FilePrintf( file, L"\t-- SOUND OPTION \n" );
 
 
 	if( true == m_OptionList.m_bSound )
-		fwprintf( file, L"\tSOUND			= TRUE, \n" );
+		FilePrintf( file, L"\tSOUND			= TRUE, \n" );
 	else
-		fwprintf( file, L"\tSOUND			= FALSE, \n" );
+		FilePrintf( file, L"\tSOUND			= FALSE, \n" );
 
 	if( true == m_OptionList.m_bMusic )
-		fwprintf( file, L"\tMUSIC			= TRUE, \n" );
+		FilePrintf( file, L"\tMUSIC			= TRUE, \n" );
 	else
-		fwprintf( file, L"\tMUSIC			= FALSE, \n" );
+		FilePrintf( file, L"\tMUSIC			= FALSE, \n" );
 
 
 
 	if( true == m_OptionList.m_bEnable3DSound )
-		fwprintf( file, L"\tENABLE_3D_SOUND			= TRUE, \n" );
+		FilePrintf( file, L"\tENABLE_3D_SOUND			= TRUE, \n" );
 	else
-		fwprintf( file, L"\tENABLE_3D_SOUND			= FALSE, \n" );
+		FilePrintf( file, L"\tENABLE_3D_SOUND			= FALSE, \n" );
 
 
 
 
-	fwprintf( file, L"\tSOUND_VOLUME		= %d, \n", (int)m_OptionList.m_fSoundVolume );
-	fwprintf( file, L"\tMUSIC_VOLUME		= %d, \n", (int)m_OptionList.m_fMusicVolume );
+	FilePrintf( file, L"\tSOUND_VOLUME		= %d, \n", (int)m_OptionList.m_fSoundVolume );
+	FilePrintf( file, L"\tMUSIC_VOLUME		= %d, \n", (int)m_OptionList.m_fMusicVolume );
 
 
 
 
-	fwprintf( file, L"\n\n\n" );
-	fwprintf( file, L"\t-- OTHER OPTION \n" );
+	FilePrintf( file, L"\n\n\n" );
+	FilePrintf( file, L"\t-- OTHER OPTION \n" );
 
 
 //{{ kimhc // 2010.3.12 //	채팅창 개편
@@ -985,79 +1010,79 @@ bool CX2GameOption::SaveScriptFile()
 
 
 	if( true == m_OptionList.m_bDynamicCamera )
-		fwprintf( file, L"\tDYNAMIC_CAMERA		= TRUE, \n" );
+		FilePrintf( file, L"\tDYNAMIC_CAMERA		= TRUE, \n" );
 	else
-		fwprintf( file, L"\tDYNAMIC_CAMERA		= FALSE, \n" );
+		FilePrintf( file, L"\tDYNAMIC_CAMERA		= FALSE, \n" );
 
-	fwprintf( file, L"\tCAMERA_ZOOM_LEVEL		= %d, \n", m_OptionList.m_iZoomLevel );
+	FilePrintf( file, L"\tCAMERA_ZOOM_LEVEL		= %d, \n", m_OptionList.m_iZoomLevel );
 
 
 	if ( true == m_OptionList.m_bVerticalSync )
-		fwprintf( file, L"\tVERTICALSYNC			= TRUE, \n" );
+		FilePrintf( file, L"\tVERTICALSYNC			= TRUE, \n" );
 	else
-		fwprintf( file, L"\tVERTICALSYNC			= FALSE, \n" );
+		FilePrintf( file, L"\tVERTICALSYNC			= FALSE, \n" );
 
 
 	switch( m_OptionList.m_eSkillCutinShowState )
 	{
 	case SCSS_ONESELF:
-		fwprintf( file, L"\tSKILL_CUTIN_SHOW		= SKILL_CUTIN_SHOW_STATE[\"SCSS_ONESELF\"], \n" );
+		FilePrintf( file, L"\tSKILL_CUTIN_SHOW		= SKILL_CUTIN_SHOW_STATE[\"SCSS_ONESELF\"], \n" );
 		break;
 	case SCSS_PARTY_MEMBER:
-		fwprintf( file, L"\tSKILL_CUTIN_SHOW		= SKILL_CUTIN_SHOW_STATE[\"SCSS_PARTY_MEMBER\"], \n" );
+		FilePrintf( file, L"\tSKILL_CUTIN_SHOW		= SKILL_CUTIN_SHOW_STATE[\"SCSS_PARTY_MEMBER\"], \n" );
 		break;
 	case SCSS_HIDE:
-		fwprintf( file, L"\tSKILL_CUTIN_SHOW		= SKILL_CUTIN_SHOW_STATE[\"SCSS_HIDE\"], \n" );
+		FilePrintf( file, L"\tSKILL_CUTIN_SHOW		= SKILL_CUTIN_SHOW_STATE[\"SCSS_HIDE\"], \n" );
 		break;
 	}
 
 	if( true == m_OptionList.m_bIsSkillUITypeA )
-		fwprintf( file, L"\tSKILL_SLOT_UI_TYPE_A		= TRUE, \n" );
+		FilePrintf( file, L"\tSKILL_SLOT_UI_TYPE_A		= TRUE, \n" );
 	else
-		fwprintf( file, L"\tSKILL_SLOT_UI_TYPE_A		= FALSE, \n" );
+		FilePrintf( file, L"\tSKILL_SLOT_UI_TYPE_A		= FALSE, \n" );
 
 
 
 
-	fwprintf( file, L"\n\n\n" );
-	fwprintf( file, L"\t-- FIELD OPTION \n" );
+	FilePrintf( file, L"\n\n\n" );
+	FilePrintf( file, L"\t-- FIELD OPTION \n" );
 	switch( m_OptionList.m_FieldDetail )
 	{
 	case FL_HIGH:
-		fwprintf( file, L"\tFIELD_LEVEL			= FIELD_LEVEL[\"FL_HIGH\"], \n" );
+		FilePrintf( file, L"\tFIELD_LEVEL			= FIELD_LEVEL[\"FL_HIGH\"], \n" );
 		break;
 	case FL_MEDIUM:
-		fwprintf( file, L"\tFIELD_LEVEL			= FIELD_LEVEL[\"FL_MEDIUM\"], \n" );
+		FilePrintf( file, L"\tFIELD_LEVEL			= FIELD_LEVEL[\"FL_MEDIUM\"], \n" );
 		break;
 	case FL_LOW:
-		fwprintf( file, L"\tFIELD_LEVEL			= FIELD_LEVEL[\"FL_LOW\"], \n" );
+		FilePrintf( file, L"\tFIELD_LEVEL			= FIELD_LEVEL[\"FL_LOW\"], \n" );
 		break;
 	}
-	fwprintf( file, L"\tFIELD_PARTY		= %d, \n", m_OptionList.m_bParty );
-	fwprintf( file, L"\tFIELD_SD		= %d, \n", m_OptionList.m_bSD );
-	//fwprintf( file, L"\tFIELD_FRIEND		= %d, \n", m_OptionList.m_bFriend );
+	FilePrintf( file, L"\tFIELD_PARTY		= %d, \n", m_OptionList.m_bParty );
+	FilePrintf( file, L"\tFIELD_SD		= %d, \n", m_OptionList.m_bSD );
+	//FilePrintf( file, L"\tFIELD_FRIEND		= %d, \n", m_OptionList.m_bFriend );
 
 	// 캐릭터 정보 저장
-	fwprintf( file, L"\tCHARINFO_LEVEL		= %d, \n", m_OptionList.m_bLevel );
-	fwprintf( file, L"\tCHARINFO_PVP		= %d, \n", m_OptionList.m_bPvpRank );
-	fwprintf( file, L"\tCHARINFO_GUILD		= %d, \n", m_OptionList.m_bGuild );
-	fwprintf( file, L"\tCHARINFO_NOTHING	= %d, \n", m_OptionList.m_bNothing );
+	FilePrintf( file, L"\tCHARINFO_LEVEL		= %d, \n", m_OptionList.m_bLevel );
+	FilePrintf( file, L"\tCHARINFO_PVP		= %d, \n", m_OptionList.m_bPvpRank );
+	FilePrintf( file, L"\tCHARINFO_GUILD		= %d, \n", m_OptionList.m_bGuild );
+	FilePrintf( file, L"\tCHARINFO_NOTHING	= %d, \n", m_OptionList.m_bNothing );
 
 	// 대전 맵 설정
 	if( m_OptionList.m_vecPvpMap.size() > 0 )
 	{
-		fwprintf( file, L"\tPVP_MAP = { " );
+		FilePrintf( file, L"\tPVP_MAP = { " );
 		for(unsigned int i=0; i<m_OptionList.m_vecPvpMap.size(); ++i)
 		{
-			fwprintf( file, L"%d, ", m_OptionList.m_vecPvpMap[i] );
+			FilePrintf( file, L"%d, ", m_OptionList.m_vecPvpMap[i] );
 		}
-		fwprintf( file, L"},\n" );
+		FilePrintf( file, L"},\n" );
 	}
 
-	fwprintf( file, L"\tSERVER_GROUP_ID		= %d, \n", g_pInstanceData->GetServerGroupID() );
+	FilePrintf( file, L"\tSERVER_GROUP_ID		= %d, \n", g_pInstanceData->GetServerGroupID() );
 
 
-	fwprintf( file, L"} \n" );
+	FilePrintf( file, L"} \n" );
 
 	fclose(file);
 

@@ -642,24 +642,13 @@ CX2Main::~CX2Main(void)
 //{{ 2013.02.27 ?????	??? ?? ???? ??? (SERV_GLOBAL_BASE)
 std::wstring CX2Main::GetWstrBasicConfigFile()
 {
-	std::wstring wstrBasicConfigFile = L"Config_INTERNAL.lua";
-//	std::wstring wstrBasicConfigFile = L"Config.lua";
-
-#if !X2_DEV_TOOLS
-#if CLIENT_COUNTRY_US
-	wstrBasicConfigFile = L"Config_US_SERVICE.lua";
+	// One variant (US): the configs have no country in their names (Config_US_*.lua of datai015.kom renamed,
+	// 2026-11-12).
+#if X2_DEV_TOOLS
+	return L"Config_INTERNAL.lua";
 #else
-	wstrBasicConfigFile = L"Config_SERVICE.lua";
+	return L"Config_SERVICE.lua";
 #endif
-#else // INTERNAL
-#if CLIENT_COUNTRY_US
-	wstrBasicConfigFile = L"Config_US_INTERNAL.lua";
-#else
-	wstrBasicConfigFile = L"Config_INTERNAL.lua";
-#endif
-#endif // _SERVICE_
-
-	return wstrBasicConfigFile;
 }
 
 HRESULT CX2Main::OnFrameMove( double fTime, float fElapsedTime )

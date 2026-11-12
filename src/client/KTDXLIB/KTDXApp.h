@@ -477,6 +477,7 @@ extern bool KTDXSendGameMessage( UINT uMsg, WPARAM wParam, LPARAM lParam, bool b
 template<typename LUADOMEMORYNOTENCRYPT>
 __forceinline HRESULT CKTDXApp::LoadAndDoMemory_ErrorCode( LUADOMEMORYNOTENCRYPT* pLuaManager, const WCHAR* pFileName, bool /*bEncryption*/ )
 {
+	DXUTPumpEventsWhileBusy();	// port: scripts load on the main thread during long loads
 	//루아 매니져 로딩
     if ( pLuaManager == NULL || pFileName == NULL || pFileName[0] == L'\0' )
     {

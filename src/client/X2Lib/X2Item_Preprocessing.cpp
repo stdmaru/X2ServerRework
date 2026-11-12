@@ -1,5 +1,19 @@
 #include "stdafx.h"
 
+#include "x2/platform/unicode.h"
+
+#include <cstring>
+#include <mutex>
+#include <string>
+#include <unordered_map>
+
+namespace
+{
+    // The strings GetWideString converted from UTF-16, by offset (wchar_t is 4 bytes outside Windows).
+    std::mutex                              s_stringCacheMutex;
+    std::unordered_map<DWORD, std::wstring> s_stringCache;
+}
+
 
 
 /*static*/
@@ -24,6 +38,14 @@ const CX2Item::KItemFormatStatRelLVData  CX2Item::KItemFormatTemplet::ms_kDummyS
 void    CX2Item::KItemFormatTemplet::_ResetData()
 {
     ms_pData = (const BYTE*) &ms_kDummyItemFormatHeader;
+    _ClearStringCache();
+}
+
+/*static*/
+void    CX2Item::KItemFormatTemplet::_ClearStringCache()
+{
+    std::lock_guard<std::mutex> lock( s_stringCacheMutex );
+    s_stringCache.clear();
 }
 
 
@@ -61,10 +83,25 @@ const wchar_t*  CX2Item::KItemFormatTemplet::GetWideString( DWORD dwOffset_ )
 {
     if ( dwOffset_ != 0 )
     {
-        WORD   wLength = *( (const WORD*) ( ms_pData + dwOffset_ ) );
+        WORD   wLength = 0;
+        memcpy( &wLength, ms_pData + dwOffset_, sizeof(WORD) );
         if ( wLength != 0 )
         {
+#if defined(_WIN32)
             return  (const wchar_t*) ( ms_pData + dwOffset_ + sizeof(WORD) );
+#else
+            // The strings are UTF-16 (KFileSerializer, and Item.kim as the original's tools wrote it); wchar_t is 4 bytes
+            // here, so each one is converted once and kept for the callers' pointers until the data changes (_SetData).
+            std::lock_guard<std::mutex> lock( s_stringCacheMutex );
+            auto found = s_stringCache.find( dwOffset_ );
+            if ( found == s_stringCache.end() )
+            {
+                std::u16string utf16( wLength, u'\0' );
+                memcpy( utf16.data(), ms_pData + dwOffset_ + sizeof(WORD), wLength * sizeof(char16_t) );
+                found = s_stringCache.emplace( dwOffset_, x2::platform::Utf16ToWide( utf16 ) ).first;
+            }
+            return  found->second.c_str();
+#endif
         }
     }//if
     return  L"";

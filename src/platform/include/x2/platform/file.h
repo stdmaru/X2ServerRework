@@ -39,4 +39,9 @@ private:
     std::uint64_t size_ = 0;
 };
 
+// The file `name` in `directory`, found regardless of case as on Windows: the path as given when it exists, else the
+// directory entry whose name matches ignoring case (the original opened "General.ess" or "Movie_Create_Ara_Base.avi" on
+// a case-insensitive file system; the client ships them in lower case). Empty when there is none.
+std::filesystem::path FindFileIgnoreCase(const std::filesystem::path& directory, const std::filesystem::path& name);
+
 } // namespace x2::platform

@@ -907,6 +907,33 @@ void lua_tinker::meta_push(lua_State *L, const char* name)
 	lua_gettable(L, LUA_GLOBALSINDEX);
 }
 
+void lua_tinker::retarget_globals(lua_State *L, const char* meta_name, const void* from, void* to)
+{
+	meta_push(L, meta_name);
+	if (!lua_istable(L, -1))
+	{
+		lua_pop(L, 1);
+		return;
+	}
+	const int meta = lua_gettop(L);
+	lua_pushnil(L);
+	while (lua_next(L, LUA_GLOBALSINDEX) != 0)
+	{
+		if (lua_isuserdata(L, -1) && !lua_islightuserdata(L, -1) && lua_getmetatable(L, -1))
+		{
+			if (lua_rawequal(L, -1, meta))
+			{
+				user* u = static_cast<user*>(lua_touserdata(L, -2));
+				if (u->m_p == from)
+					u->m_p = to;
+			}
+			lua_pop(L, 1);
+		}
+		lua_pop(L, 1);
+	}
+	lua_pop(L, 1);
+}
+
 /*---------------------------------------------------------------------------*/
 /* table object on stack                                                     */
 /*---------------------------------------------------------------------------*/

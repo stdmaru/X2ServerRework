@@ -882,6 +882,7 @@ HRESULT CKTDXApp::OnLostDevice()
 
 void CKTDXApp::RenderStageNow( CKTDXStage* stage_ )
 {
+	DXUTPumpEventsWhileBusy();	// port: the loading screens draw between long loads
 	if ( m_pd3dDevice == NULL )
 		return;
 	if ( stage_ != NULL && m_pd3dDevice->BeginScene() )

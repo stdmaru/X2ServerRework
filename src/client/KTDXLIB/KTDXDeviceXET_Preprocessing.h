@@ -108,7 +108,7 @@ public:
     int                         FindAniTexChangeEventIndex( const KXETFormatAniData& kAniData, float fAniTime, const wchar_t* pwszTexName ) const;
 
     const KXETFormatHeader&     GetHeader() const;
-    const wchar_t*              GetString( DWORD dwOffset ) const;
+    std::wstring                GetString( DWORD dwOffset ) const;
 
     static void                 RegisterLuabind( lua_State* L );
 

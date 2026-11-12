@@ -2,7 +2,17 @@
 #ifndef _KFILESERIALIZER_H
 #define _KFILESERIALIZER_H
 #include <filesystem>
+#include <string>
+#include <string_view>
 #include <unordered_map>
+#include <vector>
+
+// Strings of the files the original's tools preprocessed on Windows (.tet, .xet): a WORD length, then that many UTF-16
+// code units and a null. wchar_t is 4 bytes outside Windows, so they are read as char16_t. Empty when the offset is 0
+// or the string does not fit in the data.
+std::u16string_view KReadPreprocessedString( const std::vector<BYTE>& vecData, DWORD dwOffset );
+// Compares such a string with a wide string by code unit; ignoring case lowers both, as _wcsicmp.
+int                 KComparePreprocessedString( std::u16string_view a, const wchar_t* b, bool bIgnoreCase );
 
 class   KFileSerializer
 {

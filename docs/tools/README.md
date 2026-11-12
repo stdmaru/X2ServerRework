@@ -12,6 +12,7 @@
 | [Build environment](build-environment.md) | Dev Container, `docker/build.sh`, and `docker/build/Dockerfile`: shared Ubuntu image for local and CI builds/tests (T24) |
 | [Continuous integration](ci.md) | `.github/workflows/ci.yml`: Linux x86_64 and ARM64 build/test jobs, an x86_64 GCC check, and Windows clang-cl |
 | [Shaders](shaders.md) | `tools/shaders/compile.py`: HLSL compiled offline by SDL_shadercross into SPIR-V, DXIL and MSL with reflection, committed as generated sources (T39) |
+| [Client folder](client-folder.md) | `tools/client/install.sh`: the folder the ported client runs from (executable, `.kom`, loose `movie/`/`music/`, client_data for dev builds) |
 | [client_data](client-data.md) | `src/tools/AssetTool` (`x2_assets`): imports the client's `.kom` into an organized folder + manifest and packs it back byte for byte (T35); layout rules in `tools/assets/layout.txt` |
 | [ServerManager](servermanager.md) | `src/tools/ServerManager`: SDL3 + ImGui tool that starts and monitors the servers, locally and over SSH (T30); protocol client, orchestration, SSH and window |
 | [Flags and verification](flags.md) | `gen_flags.py` (which flags original build defines), `check_equivalence.py` (proves resolver leaves code unchanged) and `compare_flags.py` (server x client in shared code) |

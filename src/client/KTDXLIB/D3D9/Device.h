@@ -343,6 +343,10 @@ private:
     SDL_Window* m_window;
     bool m_ok = false;
     std::string m_error;
+    std::unordered_set<std::string> m_reported;     // errors already logged (each once)
+    // X2_D3D9_TRACE=<n>: logs every draw and clear of frame n (debugging aid)
+    long m_traceFrame = -1;
+    long m_frameNumber = 0;
     render::ShaderFormat m_shaderFormat = render::ShaderFormat::None;
 
     // States (D3D9 values)

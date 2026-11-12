@@ -1,5 +1,7 @@
 #include <stdafx.h>
 
+#include "x2/platform/unicode.h"
+
 
 
 CKTDXDeviceTET_Preprocessing::CKTDXDeviceTET_Preprocessing()
@@ -47,25 +49,9 @@ bool CKTDXDeviceTET_Preprocessing::OpenFile( const BYTE* pbFileData, int iFileSi
 
 }
 
-const wchar_t*              CKTDXDeviceTET_Preprocessing::GetString( DWORD dwOffset ) const
+std::wstring                CKTDXDeviceTET_Preprocessing::GetString( DWORD dwOffset ) const
 {
-    if ( dwOffset == 0 )
-        return L"";
-    ASSERT( dwOffset + sizeof(WORD) <= m_vecData.size() );
-    if ( dwOffset + sizeof(WORD) > m_vecData.size() )
-        return L"";
-    const BYTE* pStringLength = ( (const BYTE*) &m_vecData.front() ) + dwOffset;
-    WORD   wLength = * ( (const WORD*) pStringLength );
-    if ( wLength == 0 )
-        return L"";
-    ASSERT( dwOffset + sizeof(WORD) + wLength + 1 <= m_vecData.size() );
-    if ( dwOffset + sizeof(WORD) + wLength + 1 > m_vecData.size() )
-        return L"";
-    const wchar_t* pwszString = (const wchar_t*) ( pStringLength + sizeof(WORD) );
-    ASSERT( pwszString[ wLength ] == 0 );
-    if ( pwszString[ wLength ] != 0 )
-        return L"";
-    return pwszString;
+    return x2::platform::Utf16ToWide( KReadPreprocessedString( m_vecData, dwOffset ) );
 }
 
 unsigned                    CKTDXDeviceTET_Preprocessing::GetNumTexUVs() const
@@ -77,7 +63,7 @@ unsigned                    CKTDXDeviceTET_Preprocessing::GetNumTexUVs() const
     return kHeader.m_dwNumTextureUV;
 }
 
-const wchar_t*              CKTDXDeviceTET_Preprocessing::GetKeyFromIndex( unsigned uIndex ) const
+std::wstring                CKTDXDeviceTET_Preprocessing::GetKeyFromIndex( unsigned uIndex ) const
 {
     if ( m_vecData.size() >= sizeof(KTETFormatHeader) )
     {
@@ -122,10 +108,10 @@ const KTETFormatTextureUV*  CKTDXDeviceTET_Preprocessing::GetTexUV( const wchar_
     const CKTDXDeviceTET_Preprocessing* pThis = this;
     auto StringLessCB = [pThis]( DWORD dwOffset, const wchar_t* pwszKey ) -> bool
     {
-        return  wcscmp( pThis->GetString( dwOffset ), pwszKey ) < 0;
+        return  KComparePreprocessedString( KReadPreprocessedString( pThis->m_vecData, dwOffset ), pwszKey, false ) < 0;
     };
     const DWORD* pKeyFound = std::lower_bound( pKeyArray, pKeyArrayEnd, pwszKey, StringLessCB );
-    if ( pKeyFound == pKeyArrayEnd || wcscmp( pwszKey, pThis->GetString( *pKeyFound ) ) < 0 )
+    if ( pKeyFound == pKeyArrayEnd || KComparePreprocessedString( KReadPreprocessedString( m_vecData, *pKeyFound ), pwszKey, false ) > 0 )
         return NULL;
     unsigned uIndex = (unsigned) ( pKeyFound - pKeyArray );
     return ( const KTETFormatTextureUV* ) ( pData + sizeof(KTETFormatHeader) + kHeader.m_dwNumTextureUV * sizeof(DWORD)

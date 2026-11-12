@@ -290,6 +290,25 @@ HRESULT DXUTInit(bool /*bParseCommandLine*/, bool /*bHandleDefaultHotkeys*/, boo
     return S_OK;
 }
 
+namespace {
+
+// The engine steps its logic at a fixed 85 Hz and sleeps between frames (CKTDXApp::OnFrameMove). Held to the vertical
+// blank (FIFO), a frame of 11.8 ms waits for the next blank, so a 144 Hz display showed about 72 fps. With vsync on,
+// mailbox keeps the frames whole and in step with the blank without blocking; FIFO remains where it is missing.
+// Vsync off is immediate, or mailbox when tearing is not available.
+x2::render::PresentMode PresentModeFor(x2::render::Device& device, SDL_Window* window, bool immediate)
+{
+    if (immediate && device.WindowSupportsPresentMode(window, x2::render::PresentMode::Immediate)) {
+        return x2::render::PresentMode::Immediate;
+    }
+    if (device.WindowSupportsPresentMode(window, x2::render::PresentMode::Mailbox)) {
+        return x2::render::PresentMode::Mailbox;
+    }
+    return x2::render::PresentMode::Vsync;
+}
+
+}  // namespace
+
 HRESULT DXUTCreateWindow(const WCHAR* strWindowTitle, HINSTANCE /*hInstance*/, HICON /*hIcon*/, HMENU /*hMenu*/, int x, int y)
 {
     DxutState& state = State();
@@ -304,7 +323,10 @@ HRESULT DXUTCreateWindow(const WCHAR* strWindowTitle, HINSTANCE /*hInstance*/, H
     options.title = strWindowTitle ? x2::platform::WideToUtf8(strWindowTitle) : std::string("X2");
     options.width = 1024;
     options.height = 768;
-    options.resizable = true;  // WS_OVERLAPPEDWINDOW
+    // Fixed size (WS_OVERLAPPEDWINDOW was resizable): the game draws at the resolution of its options, which
+    // DXUTCreateDeviceFromSettings applies. Tiling window managers (Hyprland, sway) float a window of fixed size, so the
+    // game opens at its own size instead of a tile's (2026-11-12).
+    options.resizable = false;
     std::string error;
     state.window = x2::app::Window::Create(options, error);
     if (!state.window) {
@@ -322,9 +344,9 @@ HRESULT DXUTCreateWindow(const WCHAR* strWindowTitle, HINSTANCE /*hInstance*/, H
         state.exitCode = 1;
         return E_FAIL;
     }
-    // D3DPRESENT_INTERVAL_DEFAULT: one present per vertical blank.
+    // D3DPRESENT_INTERVAL_DEFAULT: in step with the vertical blank, without tearing.
     if (!state.device->ClaimWindow(window) ||
-        !state.device->SetSwapchainParameters(window, x2::render::PresentMode::Vsync)) {
+        !state.device->SetSwapchainParameters(window, PresentModeFor(*state.device, window, false))) {
         SDL_Log("DXUT: %s", state.device->LastError().c_str());
         state.device->ReleaseWindow(window);
         state.device.reset();
@@ -502,10 +524,25 @@ HRESULT DXUTMainLoop()
     return S_OK;
 }
 
+void DXUTPumpEventsWhileBusy()
+{
+    // Long loads (the start-up, a stage) run on the main thread between frames. SDL_PumpEvents answers the compositor
+    // (Wayland pings, X11 _NET_WM_PING) without taking events off the queue, which the main loop still handles in order.
+    static std::uint64_t lastPump = 0;
+    if (!State().window || !SDL_IsMainThread()) {
+        return;
+    }
+    const std::uint64_t now = SDL_GetTicks();
+    if (now - lastPump >= 100) {
+        lastPump = now;
+        SDL_PumpEvents();
+    }
+}
+
 void DXUTShutdown(int nExitCode)
 {
     DxutState& state = State();
-    if (state.hwnd) {
+    if (state.window) {  // SDL's dummy video driver has no Win32 HWND: test the window itself
         DXUTStaticWndProc(state.hwnd, WM_CLOSE, 0, 0);
     }
     state.exitCode = nExitCode;
@@ -741,11 +778,8 @@ HRESULT DXUTCreateDeviceFromSettings(DXUTDeviceSettings* pNewDeviceSettings, boo
     }
     if (pp.PresentationInterval != state.presentInterval) {
         const bool immediate = pp.PresentationInterval == static_cast<UINT>(D3DPRESENT_INTERVAL_IMMEDIATE);
-        x2::render::PresentMode mode = immediate ? x2::render::PresentMode::Immediate : x2::render::PresentMode::Vsync;
-        if (immediate && !state.device->WindowSupportsPresentMode(window, mode)) {
-            mode = x2::render::PresentMode::Mailbox;  // no tearing, but not held to the vertical blank either
-        }
-        if (!state.device->WindowSupportsPresentMode(window, mode) || !state.device->SetSwapchainParameters(window, mode)) {
+        const x2::render::PresentMode mode = PresentModeFor(*state.device, window, immediate);
+        if (!state.device->SetSwapchainParameters(window, mode)) {
             return E_FAIL;
         }
         state.presentInterval = pp.PresentationInterval;

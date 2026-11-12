@@ -113,7 +113,7 @@ What the engine sets and reads back but the fixed-function shaders do not use ye
 - **Pixel shaders and vertex declarations**: no such objects exist (the effects are KTDXLIB's own shaders, T37); setting
   one is ignored, getting one gives null. `IDirect3DVertexDeclaration9`/`PixelShader9` are declared only as interfaces;
   `IDirect3DVertexShader9` is the [effects'](#effects-2026-11-07-clienteffects) `x2::d3d9::VertexShader`.
-- `GetAvailableTextureMem` reports a fixed 512 MB (the backend does not say); `EvictManagedResources` does nothing.
+- `GetAvailableTextureMem` reports the largest `UINT` (about 4 GB, what D3D9 reports on current GPUs; the backend does not say). The fixed 512 MB it reported before 2026-11-12 made `CX2GameOption`'s automatic options choose Low textures. `EvictManagedResources` does nothing.
 - `UpdateTexture(source, destination)` copies the levels both textures have from the source's CPU copy and uploads them
   (same size and format); `Texture::AddDirtyRect` is accepted (whole levels are copied).
 
@@ -375,6 +375,13 @@ The client's `.fx` effects are rewritten by hand (decision [T37](../project/deci
 The [DXUT replacement](client-dxut.md) creates the device with the window and passes it to the device and frame
 callbacks. It calls `Present` after `FrameRender`, as DXUT did, and `DXUTGetD3DDevice()` returns it. Until 2026-11-12,
 the skeleton (`X2/X2Skeleton.cpp`, now replaced by `X2.cpp`) drew a test card through it.
+
+## Diagnostics (2026-11-12, `client/x2-run`)
+
+- The engine ignores most of the device's return values: each distinct error (`LastError()`) is also logged once with
+  `SDL_LogWarn` (category render; shown with `SDL_LOGGING='*=warn'`), up to 256.
+- `X2_D3D9_TRACE=<n>` logs every draw (primitive, FVF, target, viewport, stage 0's texture and operations, blending,
+  alpha test) and clear of frame `n`, and its present, with `SDL_Log`.
 
 ## Not emulated yet (2026-11-07)
 

@@ -2793,7 +2793,8 @@ HRESULT CKTDXDeviceXSkinMesh::CMultiAnimAllocateHierarchy::DestroyMeshContainer(
     SAFE_DELETE_ARRAY( pMC->m_pAttributeRange );
     SAFE_DELETE_ARRAY( pMC->m_pdwBoneCombinationExtra );
     SAFE_DELETE_ARRAY( pMC->m_ppBoneFrames );
-	SAFE_DELETE( pMeshContainerToFree );
+	// Delete as the allocated type: D3DXMESHCONTAINER has no virtual destructor.
+	SAFE_DELETE( pMC );
 
 	return S_OK;
 }

@@ -259,6 +259,47 @@ drawn and submitted, a frame with no stage), `KFileSerializer` save/load/cap/mis
 - `KCircularBuffer` gained `rerase(first, last)` (an `erase`), which `CX2GUNPC` uses from `boost::circular_buffer`.
 - `CKTDGParticleSystem`'s destructor is virtual (it has virtual functions and X2Lib deletes it).
 
+## String table (2026-11-12, `client/x2-run`)
+
+`CKTDXStringTable::LoadStringTable` reads `General.ess` as bytes and decodes UTF-16LE itself; the original's `_wfopen` +
+`fgetws` relied on Windows' 16-bit `wchar_t`. The format is unchanged: a BOM, then one `index\tstring` line per string
+ending in CRLF, each code unit but the CRLF XORed with 16, `\n` written as text. The file is found in the current
+folder regardless of case (the client ships `general.ess`, found with `x2::platform::FindFileIgnoreCase`).
+
+## Character creation screen (2026-11-12, `client/x2-run`)
+
+- `CMovieData::SetMovieFileName` finds the movie in `movie/` regardless of case: the unit templets ask for
+  `Movie_Create_Aisha_Base.avi`... and the folder has `movie_create_aisha_base.avi`, so no creation-screen movie played
+  on Linux.
+- `DLG_Unit_Create_Front_Menu_New.lua` creates `g_pIntroMovie` but then calls `g_pPromotionMovie:SetLoop(true)`, a
+  global still holding the character-select dialog's movie, deleted by then. The original wrote into freed memory
+  unnoticed; on Linux it corrupted the heap and the client crashed entering the screen. `~CMovieData` now points every
+  Lua global that wraps it at a static movie that is never shown (`lua_tinker::retarget_globals`), so the script runs
+  as before without touching freed memory.
+- Skinned meshes: `MultiAnimFrame::Name` (from `new[]`) is freed with `delete[]`, and `DestroyMeshContainer` deletes the
+  container as the `MultiAnimMC` it was allocated as (it deleted the `D3DXMESHCONTAINER` base, which has no virtual
+  destructor). Found with AddressSanitizer (GCC; the container has no Clang ASan runtime).
+
+## Preprocessed files: `.tet`, `.xet`, `Item.kim` (2026-11-12, `client/x2-run`)
+
+The original's tools wrote `.tet` (texture UV keys), `.xet` (texture changes and animations) and `Item.kim` (the item
+templets, which the client builds from the item scripts when the file is missing) on Windows: their strings are a WORD
+length, then UTF-16 code units and a null. `CKTDXDeviceTET_Preprocessing` and
+`CKTDXDeviceXET_Preprocessing` cast them to `wchar_t*`, 4 bytes outside Windows, so no key was ever found on Linux
+(the login screen drew `DLG_Login0.TGA`'s "BG01" as one texel, the other quads with size 0). They now read them with
+`KReadPreprocessedString` (`KFileSerializer.h`, a `std::u16string_view`) and compare with
+`KComparePreprocessedString` (code units; ignoring case lowers both, as `_wcsicmp`); `GetString` and `GetKeyFromIndex`
+return `std::wstring`.
+
+- `CX2Item::KItemFormatTemplet::GetWideString` read `Item.kim`'s strings the same way, so every model name was garbage
+  and the character select drew no character (`ErrorEnum(10093)` in `CX2Eqip::InitSkin`). Outside Windows it converts
+  each string once and keeps it by offset (callers hold the pointers); `_SetData`/`_ResetData` clear the cache.
+- `KFileSerializer::AppendWideString` writes UTF-16 (lengths in UTF-16 units, aligned to 2), so the item templets the
+  client builds in memory have the same layout as the files. `KMemoryDeserializer::RetrieveWideString*` still read
+  `wchar_t` (no caller).
+
+Test: `x2_client_tests -tc="ktdxlib: preprocessed*"`.
+
 ## Status
 
 All of `KTDXLIB` compiles and links ([roadmap](../project/roadmap.md#phase-4--client-graphics)); textures (2026-11-07)

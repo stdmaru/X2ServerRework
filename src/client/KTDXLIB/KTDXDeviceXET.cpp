@@ -114,9 +114,9 @@ HRESULT CKTDXDeviceXET::_Load( bool bSkipStateCheck
         {
             const KXETFormatChangeTexture& kChangeTexture = *( const KXETFormatChangeTexture* )
                 ( pData + dwOffset );
-            const wchar_t* pwszString = preprocessing.GetString( kChangeTexture.m_dwOffset_ChangeTexName );
-            if ( pwszString != NULL && pwszString[0] != 0 )
-                vecTexture[ dwIndex ] = g_pKTDXApp->GetDeviceManager()->OpenTexture( pwszString );
+            const std::wstring wstrName = preprocessing.GetString( kChangeTexture.m_dwOffset_ChangeTexName );
+            if ( !wstrName.empty() )
+                vecTexture[ dwIndex ] = g_pKTDXApp->GetDeviceManager()->OpenTexture( wstrName );
             else
                 vecTexture[ dwIndex ] = NULL;
         }
@@ -124,25 +124,25 @@ HRESULT CKTDXDeviceXET::_Load( bool bSkipStateCheck
         for( DWORD dwIndex = 0; dwIndex != kHeader.m_dwNumAniEventTexChange; ++dwIndex, dwOffset += sizeof(KXETFormatAniTexChangeEvent) )
         {
             const KXETFormatAniTexChangeEvent& kEvent = *( const KXETFormatAniTexChangeEvent* ) ( pData + dwOffset );
-            const wchar_t* pwszString = preprocessing.GetString( kEvent.m_dwOffset_ChangeTexName );
-            if ( pwszString != NULL && pwszString[0] != 0 )
-                vecTexture[ dwIndex + kHeader.m_dwNumChangeTexture ] = g_pKTDXApp->GetDeviceManager()->OpenTexture( pwszString );
+            const std::wstring wstrName = preprocessing.GetString( kEvent.m_dwOffset_ChangeTexName );
+            if ( !wstrName.empty() )
+                vecTexture[ dwIndex + kHeader.m_dwNumChangeTexture ] = g_pKTDXApp->GetDeviceManager()->OpenTexture( wstrName );
             else
                 vecTexture[ dwIndex + kHeader.m_dwNumChangeTexture ] = NULL;
         }
         if ( kHeader.m_kMultiStage1.m_dwOffset_BlendTexName != 0 )
         {
-            const wchar_t* pwszString = preprocessing.GetString( kHeader.m_kMultiStage1.m_dwOffset_BlendTexName );
-            if ( pwszString != NULL && pwszString[0] != 0 )
-                multiTexStage1.pTexture = g_pKTDXApp->GetDeviceManager()->OpenTexture( pwszString );
+            const std::wstring wstrName = preprocessing.GetString( kHeader.m_kMultiStage1.m_dwOffset_BlendTexName );
+            if ( !wstrName.empty() )
+                multiTexStage1.pTexture = g_pKTDXApp->GetDeviceManager()->OpenTexture( wstrName );
             multiTexStage1.colorOP = D3DTEXTUREOP( kHeader.m_kMultiStage1.m_dwColorOP );
 
         }
         if ( kHeader.m_kMultiStage2.m_dwOffset_BlendTexName != 0 )
         {
-            const wchar_t* pwszString = preprocessing.GetString( kHeader.m_kMultiStage2.m_dwOffset_BlendTexName );
-            if ( pwszString != NULL && pwszString[0] != 0 )
-                multiTexStage2.pTexture = g_pKTDXApp->GetDeviceManager()->OpenTexture( pwszString );
+            const std::wstring wstrName = preprocessing.GetString( kHeader.m_kMultiStage2.m_dwOffset_BlendTexName );
+            if ( !wstrName.empty() )
+                multiTexStage2.pTexture = g_pKTDXApp->GetDeviceManager()->OpenTexture( wstrName );
             multiTexStage2.colorOP = D3DTEXTUREOP( kHeader.m_kMultiStage2.m_dwColorOP );
         }
         if ( kHeader.m_dwNumAniData != 0 )

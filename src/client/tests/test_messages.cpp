@@ -128,6 +128,33 @@ TEST_CASE("Alt makes system keys")
     CHECK(f10[0].message == WM_SYSKEYDOWN);
 }
 
+TEST_CASE("keys that type control characters also send WM_CHAR, as TranslateMessage")
+{
+    SdlMessageTranslator translator;
+    const auto back = Translate(translator, KeyEvent(true, SDL_SCANCODE_BACKSPACE, SDLK_BACKSPACE));
+    REQUIRE(back.size() == 2);
+    CHECK(back[0].message == WM_KEYDOWN);
+    CHECK(back[1].message == WM_CHAR);
+    CHECK(back[1].wParam == 0x08);
+    CHECK(back[1].lParam == back[0].lParam);
+
+    const auto enter = Translate(translator, KeyEvent(true, SDL_SCANCODE_KP_ENTER, SDLK_KP_ENTER));
+    REQUIRE(enter.size() == 2);
+    CHECK(enter[1].wParam == 0x0D);
+    CHECK(Translate(translator, KeyEvent(true, SDL_SCANCODE_TAB, SDLK_TAB))[1].wParam == 0x09);
+    CHECK(Translate(translator, KeyEvent(true, SDL_SCANCODE_ESCAPE, SDLK_ESCAPE))[1].wParam == 0x1B);
+
+    const auto paste = Translate(translator, KeyEvent(true, SDL_SCANCODE_V, SDLK_V, SDL_KMOD_LCTRL));
+    REQUIRE(paste.size() == 2);
+    CHECK(paste[1].wParam == 22);
+
+    CHECK(Translate(translator, KeyEvent(true, SDL_SCANCODE_A, SDLK_A)).size() == 1);           // text input types it
+    CHECK(Translate(translator, KeyEvent(false, SDL_SCANCODE_BACKSPACE, SDLK_BACKSPACE)).size() == 1);
+    CHECK(Translate(translator, KeyEvent(true, SDL_SCANCODE_RETURN, SDLK_RETURN, SDL_KMOD_LALT))[0].message ==
+          WM_SYSKEYDOWN);
+    CHECK(Translate(translator, KeyEvent(true, SDL_SCANCODE_RETURN, SDLK_RETURN, SDL_KMOD_LALT)).size() == 1);
+}
+
 TEST_CASE("text input becomes WM_CHAR")
 {
     SdlMessageTranslator translator;

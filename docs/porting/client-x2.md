@@ -55,8 +55,34 @@ The executable links warning-free on Clang (dev tools ON) and GCC (dev tools OFF
   original showed the 32-bit virtual address space), through `x2::platform::PhysicalMemory`/`CurrentProcessMemory`.
   Legacy `swprintf` calls became `swprintf_s` (MSVC `%s` semantics).
 
+## Start-up (2026-11-12, `client/x2-run`)
+
+In the [client folder](../tools/client-folder.md), headless (`null` renderer, dev tools ON), the client reaches
+`XS_LOGIN` in about 4 seconds. Fixed on the way: the config file name (T40; the importer had left the original's
+`#elif CLIENT_COUNTRY_US` as an undefined `#if`, so the client asked for `Config_INTERNAL.lua` under the US names).
+
+Left in the logs, from the data and as in the original:
+
+- `OpenXET` fails for 40 `MOTION_*.XET` (e.g. `MOTION_ELSWORD_LK.XET`): no archive has them.
+- 48 `_GetControl` misses while the community dialogs load.
+- First start only: `GameOptions.lua` and `TutorSystem.lua` missing (the client writes them).
+
+With a window (2026-11-12, Hyprland, workspace 9): the window floats at 1024×768 and shows the login screen with its
+textures. Fixed on the way: the string table (`general.ess`, see [Client: KTDXLIB](client-ktdxlib.md)), the `.tet` UV
+keys (the screen was a 512×512 orange quad: [Preprocessed `.tet` and `.xet`](client-ktdxlib.md#preprocessed-files-tet-xet-itemkim-2026-11-12-clientx2-run)),
+"not responding" during start-up and while a message box waits ([Client: DXUT](client-dxut.md)), and the graphics
+options question asked at every start ([Client: X2Lib](client-x2lib.md#game-options-file-2026-11-12-clientx2-run)).
+
+With the six Linux servers (2026-11-12): login (`test`/`test`) reaches the character select, which draws the character
+once `Item.kim`'s strings are read as UTF-16 ([Client: KTDXLIB](client-ktdxlib.md#preprocessed-files-tet-xet-itemkim-2026-11-12-clientx2-run)).
+Also fixed: Backspace, Enter, Tab, Esc and Ctrl+letter type their control characters ([Client: DXUT](client-dxut.md)),
+vsync presents in mailbox mode (the fixed 85 Hz step showed ~72–77 fps on 144 Hz), and the automatic options chose Low
+textures because the device reported 512 MB of video memory ([Client: D3D9 device](client-d3d9.md)).
+Seen, not changed: a connection refused at once (server down) opens "failed to connect" while Enter is still held, and the
+OK button's `GetKeyState(DIK_RETURN)` closes it at once; on Windows the refused connect takes about a second.
+
 ## Status
 
-`x2` links and starts on Linux (2026-11-12). Without the game's `.kom` files in the working directory, it stops in
-`CX2Main` with "Cannot load the game data". Running it is the next step, `client/x2-run`
-([roadmap](../project/roadmap.md#phase-4--client-graphics)).
+`x2` links and starts on Linux, and reaches the login screen headless (2026-11-12). Windowed on a GPU it logs in, shows
+the character select and the character creation screen with its movies (2026-11-12). Next: the frame-pacing step, then
+channel → town/world on the Linux servers ([roadmap](../project/roadmap.md#phase-4--client-graphics)).
