@@ -68,7 +68,10 @@ TEST_CASE("FindFileIgnoreCase: exact names, other cases, missing files")
     std::ofstream(dir / "movie_create_ara_base.avi") << "x";
 
     CHECK(x2::platform::FindFileIgnoreCase(dir, "movie_create_ara_base.avi") == dir / "movie_create_ara_base.avi");
-    CHECK(x2::platform::FindFileIgnoreCase(dir, "Movie_Create_Ara_Base.avi") == dir / "movie_create_ara_base.avi");
+    // Windows' file system ignores case itself, so the name may come back as asked; it is still the same file.
+    const auto other = x2::platform::FindFileIgnoreCase(dir, "Movie_Create_Ara_Base.avi");
+    REQUIRE_FALSE(other.empty());
+    CHECK(std::filesystem::equivalent(other, dir / "movie_create_ara_base.avi"));
     CHECK(x2::platform::FindFileIgnoreCase(dir, "Movie_Create_Ara_SD.avi").empty());
     CHECK(x2::platform::FindFileIgnoreCase(dir, "SUB").empty());     // directories are not files
     CHECK(x2::platform::FindFileIgnoreCase(dir / "missing", "a.avi").empty());

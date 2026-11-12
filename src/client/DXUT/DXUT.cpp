@@ -542,7 +542,7 @@ void DXUTPumpEventsWhileBusy()
 void DXUTShutdown(int nExitCode)
 {
     DxutState& state = State();
-    if (state.hwnd) {
+    if (state.window) {  // SDL's dummy video driver has no Win32 HWND: test the window itself
         DXUTStaticWndProc(state.hwnd, WM_CLOSE, 0, 0);
     }
     state.exitCode = nExitCode;
