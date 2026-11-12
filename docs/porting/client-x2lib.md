@@ -174,6 +174,8 @@ OFF). It does not link yet: `X2.cpp` and the executable are the next step
 - **Behavior change:** with no `GameOptions.lua`, the original asked whether to choose the graphics options (and ran the
   benchmark on Yes) and saved the file only after a login or an option change, so the question came back at every start
   until then. The port saves right after the answer.
+- `FRAME_LIMIT = <fps>` (new, 2026-11-12, [T41](../project/decisions.md)): at most that many frames per second, 0 for
+  no limit; read, saved and applied with the other options (`CX2GameOption::SetFrameLimit`). No option screen sets it.
 
 ## Status
 

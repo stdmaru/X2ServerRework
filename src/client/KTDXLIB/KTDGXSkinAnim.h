@@ -100,6 +100,8 @@ class CKTDGXSkinAnim : public CKTDGObject
 		inline void CopyCloneFrameStructure( CKTDXDeviceXSkinMesh::MultiAnimFrame* pSrcCloneFrame )
 		{
 			CopyFrame( m_pCloneFrameRoot, pSrcCloneFrame );
+			m_iPoseTick = -1;	// T41: a pose copied from elsewhere (after-images) is drawn as it is
+			m_bPrevPoseValid = false;
 		}
 
 		virtual HRESULT OnFrameMove( double fTime, float fElapsedTime );
@@ -369,15 +371,18 @@ class CKTDGXSkinAnim : public CKTDGObject
 			KTDXPROFILE_END();
 
 			KTDXPROFILE_BEGIN("UpdateAnimationFrame");
+			BeginTickPose();
 			if( m_bUseDXMatrix == false )
 			{
 				D3DXMATRIX temp = GetMatrix().GetMatrix( m_BillBoardType );
 
 				UpdateAnimationFrame( m_pAnimXSkinMesh->GetFrameRoot(), &temp, m_pCloneFrameRoot );
+				m_TickWorld = temp;
 			}
 			else
 			{
 				UpdateAnimationFrame( m_pAnimXSkinMesh->GetFrameRoot(), &m_DXMatrix, m_pCloneFrameRoot );
+				m_TickWorld = m_DXMatrix;
 			}
 			KTDXPROFILE_END();
 		}
@@ -560,9 +565,20 @@ class CKTDGXSkinAnim : public CKTDGObject
 			}
 		}
 
+		// T41: keeps the pose of the tick before for rendering between ticks (KTDGXSkinAnim.cpp).
+		void BeginTickPose();
+		// The pose to draw: the clone frames (the last tick), or between the two last ticks.
+		const D3DXMATRIX& GetRenderFrame( int iFrame ) const
+		{
+			return m_bRenderPoseInterpolated ? m_RenderFrames[iFrame] : *m_FrameMatrixList[iFrame];
+		}
+		void PrepareRenderPose();
+
 		__forceinline void CopyModelFrameStructure()
 		{
 			KTDXPROFILE();
+
+			PrepareRenderPose();
 
             CKTDXDeviceXSkinMesh::MultiAnimFrame* pFrame = NULL;
 			CKTDXDeviceXSkinMesh* pModel = NULL;
@@ -580,7 +596,7 @@ class CKTDGXSkinAnim : public CKTDGObject
 					//*pModel->m_FrameMatrixList[j] = *m_FrameMatrixList[j];
                     pFrame = pModel->GetFrame( j );
                     if ( pFrame != NULL )
-                        pFrame->combineMatrix = *m_FrameMatrixList[j];
+                        pFrame->combineMatrix = GetRenderFrame( j );
 //}} robobeg : 2008-01-05
 				}
 			}
@@ -711,6 +727,15 @@ class CKTDGXSkinAnim : public CKTDGObject
 		CKTDXDeviceXSkinMesh::MultiAnimFrame*		m_pCloneFrameRoot;
 		int											m_FrameNum;
 		D3DXMATRIX*									m_FrameMatrixList[MAX_FRAME_NUM];
+
+		// T41: the pose and world of the tick before the last one (m_iPoseTick), and the pose drawn between them.
+		std::vector<D3DXMATRIX>						m_PrevTickFrames;
+		std::vector<D3DXMATRIX>						m_RenderFrames;
+		D3DXMATRIX									m_TickWorld;
+		D3DXMATRIX									m_PrevTickWorld;
+		int											m_iPoseTick = -1;
+		bool										m_bPrevPoseValid = false;
+		bool										m_bRenderPoseInterpolated = false;
 
 		CKTDGXRenderer::RenderParam					m_RenderParam;
 

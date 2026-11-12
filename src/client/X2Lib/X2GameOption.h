@@ -106,7 +106,8 @@ class CX2GameOption
 			std::vector<int> m_vecPvpMap;
 
 			bool			m_bFlashEffect;		/// 화면 번쩍임 효과
-			bool			m_bVerticalSync;	/// 수직 동기화
+			bool			m_bVerticalSync;	/// vertical sync
+			int				m_iFrameLimit;		/// T41: at most this many frames per second, 0 for no limit (GameOptions.lua only)
 
 
 #ifdef PVP_ZOOM_CAMERA
@@ -190,6 +191,7 @@ class CX2GameOption
 
 				m_bFlashEffect			= false;
 				m_bVerticalSync			= false;
+				m_iFrameLimit			= 0;
 
 #ifdef PVP_ZOOM_CAMERA
 				m_bAutoCamera				= false;
@@ -378,6 +380,8 @@ class CX2GameOption
 		bool GetFlashEffect() const { return m_OptionList.m_bFlashEffect; }
 		void SetVerticalSync( IN bool bVal_ );
 		bool GetVerticalSync() const { return m_OptionList.m_bVerticalSync; }
+		void SetFrameLimit( IN int iFps_ );
+		int GetFrameLimit() const { return m_OptionList.m_iFrameLimit; }
 
 
 #ifdef PVP_ZOOM_CAMERA

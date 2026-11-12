@@ -300,6 +300,28 @@ return `std::wstring`.
 
 Test: `x2_client_tests -tc="ktdxlib: preprocessed*"`.
 
+## Frame pacing (2026-11-12, `client/frame-pacing`, [T41](../project/decisions.md))
+
+**Behavior change.** `CKTDXApp::OnFrameMove` keeps the original's fixed steps (`m_fConstElapsedTime`, set per state by
+`SetFrameRate`) but no longer sleeps until the next one: it runs the steps that are due (none if less than one is) and
+every loop renders. The step logic is the original's single-step branch for every step (stop-frame delay, stop frames,
+`m_bFinalFrame` on the last step of a loop); a hitch over a second still drops the backlog.
+
+What is drawn is interpolated between the last two steps by `GetTickInterpolation()` (the fraction of a step left
+over), with `KTDXTickInterpolation.h` (`InterpolateView`, `IsWorldJump`, `LerpMatrix`):
+
+- **Camera:** the view after each step is kept; `OnFrameRender` draws with eye, forward and up interpolated (rebuilt as a
+  look-at view) and then gives the simulation back the last step's view. Not when something else changed the view
+  since the step, nor on a cut (the eye moves over 400 units or turns over 30° in one step).
+- **Skinned meshes** (`CKTDGXSkinAnim`): the first pose update of a step keeps the previous step's bone matrices;
+  `CopyModelFrameStructure`, which copies the pose into the meshes right before drawing, copies matrices interpolated
+  element-wise. The clone frames the game reads (bone positions, hit boxes, weapon traces) keep the step's pose. Drawn as
+  they are: objects not updated in both steps, poses copied from elsewhere (after-images), jumps and turns over 30°.
+- Not interpolated yet: mesh players, particles and slash traces, which move at the step rate.
+
+Measured on 2026-11-12 (optimized build, 144 Hz display, vsync off): character select ~1,200 fps, village ~600, field
+~350; with vsync, 144.
+
 ## Status
 
 All of `KTDXLIB` compiles and links ([roadmap](../project/roadmap.md#phase-4--client-graphics)); textures (2026-11-07)

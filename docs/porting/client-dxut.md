@@ -87,10 +87,12 @@ compositor does not call the game unresponsive while the box waits (2026-11-12, 
 dialog over the graphics options question); keys and mouse events that reach the game window meanwhile are dropped, as
 the modal box did.
 
-Present modes (2026-11-12): vsync on (`D3DPRESENT_INTERVAL_DEFAULT`) presents in mailbox mode where the window has
-it, else FIFO; vsync off is immediate, else mailbox. The engine steps at a fixed 85 Hz and sleeps between frames
-(`CKTDXApp::OnFrameMove`), so under FIFO each 11.8 ms frame waited for a second vertical blank on a 144 Hz display
-(~72–77 fps); mailbox shows the 85 frames without tearing.
+Present modes (2026-11-12, `client/frame-pacing`, [T41](../project/decisions.md)): vsync on
+(`D3DPRESENT_INTERVAL_DEFAULT`) presents FIFO, one frame per vertical blank at the display's rate, since the engine
+renders every loop between its fixed ticks; vsync off is immediate, else mailbox. A change is logged (render category,
+info) and a failure warned. `DXUTSetFrameLimit(fps)` (new) caps the frame rate by waiting before the next loop
+(`SDL_DelayPrecise`; a frame late by over a period restarts the schedule); the game sets it from `FRAME_LIMIT` in
+`GameOptions.lua`. MangoHud's `vsync=` setting overrides the present mode the game asks for (seen 2026-11-12).
 
 Device callbacks (2026-11-12): `DXUTCreateDevice` calls `DeviceCreated` then `DeviceReset` with the window's device.
 If the window is windowed and a size is given, it first sets the client area to that size. When the window closes,

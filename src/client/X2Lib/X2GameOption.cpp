@@ -739,6 +739,7 @@ bool CX2GameOption::OpenScriptFile()
 
 
 		LUA_GET_VALUE( luaManager, "VERTICALSYNC",					m_OptionList.m_bVerticalSync,		false );
+		LUA_GET_VALUE( luaManager, "FRAME_LIMIT",					m_OptionList.m_iFrameLimit,			0 );
 		LUA_GET_VALUE_ENUM( luaManager, "SKILL_CUTIN_SHOW", 		m_OptionList.m_eSkillCutinShowState,	SKILL_CUTIN_SHOW_STATE,		SCSS_ONESELF );
 
 		LUA_GET_VALUE( luaManager, "SKILL_SLOT_UI_TYPE_A",			m_OptionList.m_bIsSkillUITypeA,		true );
@@ -1021,6 +1022,7 @@ bool CX2GameOption::SaveScriptFile()
 		FilePrintf( file, L"\tVERTICALSYNC			= TRUE, \n" );
 	else
 		FilePrintf( file, L"\tVERTICALSYNC			= FALSE, \n" );
+	FilePrintf( file, L"\tFRAME_LIMIT			= %d, \n", m_OptionList.m_iFrameLimit );
 
 
 	switch( m_OptionList.m_eSkillCutinShowState )
@@ -1092,6 +1094,7 @@ bool CX2GameOption::SaveScriptFile()
 void CX2GameOption::ApplyAllOption( bool bForce /*= false*/ )
 {
 	SetVerticalSync( m_OptionList.m_bVerticalSync );
+	SetFrameLimit( m_OptionList.m_iFrameLimit );
 
 	// GRAPHIC
 	SetUnitDetail( m_OptionList.m_UnitDetail, bForce );
@@ -1317,6 +1320,12 @@ void CX2GameOption::SetFullScreen( bool bFullScreen )
 void CX2GameOption::SetFlashEffect( IN bool bVal_ )
 {
 	m_OptionList.m_bFlashEffect = bVal_;
+}
+
+void CX2GameOption::SetFrameLimit( IN int iFps_ )
+{
+	m_OptionList.m_iFrameLimit = iFps_ > 0 ? iFps_ : 0;
+	DXUTSetFrameLimit( static_cast<float>( m_OptionList.m_iFrameLimit ) );
 }
 
 void CX2GameOption::SetVerticalSync( IN bool bVal_ )
