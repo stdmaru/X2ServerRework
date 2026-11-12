@@ -752,7 +752,8 @@ private:
 
     static const D3DXVECTOR3&  _GetD3DXVECTOR( DWORD dwOffset_, bool bDefaultOne = false );
     static void                _ResetData();
-    static void                _SetData( const BYTE* pData )                        { ms_pData = pData; }
+    static void                _SetData( const BYTE* pData )                        { ms_pData = pData; _ClearStringCache(); }
+    static void                _ClearStringCache();     // the converted strings of GetWideString (not Windows)
 
 private:
 

@@ -360,66 +360,15 @@ DWORD   KFileSerializer::AppendString( bool bShort, bool bNoMap, const std::stri
 
 DWORD   KFileSerializer::AppendWideString( bool bShort, bool bNoMap, const wchar_t* pwszInChar_ )
 {
-    ASSERT( m_iLockCounter <= 0 );
-
     if ( pwszInChar_ == NULL )
         return 0;
-    DWORD   dwLength = (DWORD) wcslen( pwszInChar_ );
-	if( dwLength == 0 )
-		return 0;
-
-	AlignSpace( sizeof(wchar_t) );
-
-    DWORD   dwOffset = GetSize();
-
-	if ( bNoMap == false )
-	{
-		std::pair<KWideStringOffsetMap::iterator, bool> insertResult
-			= m_mapWideStringOffset.insert( KWideStringOffsetMap::value_type( pwszInChar_, dwOffset ) );
-		if( !insertResult.second )
-		{
-			return insertResult.first->second;
-		}//if
-	}
-
-	if ( bShort == false )
-	{
-		if ( m_bSaveStringEndNull )
-		{
-			m_vecbBuffer.resize( dwOffset + sizeof(DWORD) + (dwLength + 1)*sizeof(wchar_t) );
-			CopyMemory( &m_vecbBuffer[dwOffset], &dwLength, sizeof(DWORD) );
-			CopyMemory( &m_vecbBuffer[dwOffset+sizeof(DWORD)], pwszInChar_, dwLength*sizeof(wchar_t) );
-			*( (wchar_t*) &m_vecbBuffer[dwOffset+sizeof(DWORD)+dwLength*sizeof(wchar_t) ] ) = 0;
-		}
-		else
-		{
-			m_vecbBuffer.resize( dwOffset + sizeof(DWORD) + dwLength * sizeof(wchar_t) );
-			CopyMemory( &m_vecbBuffer[dwOffset], &dwLength, sizeof(DWORD) );
-			CopyMemory( &m_vecbBuffer[dwOffset+sizeof(DWORD)], pwszInChar_, dwLength*sizeof(wchar_t) );
-		}//if.. else..
-	}
-	else
-	{
-		WORD wLength = (WORD) dwLength;
-		if ( m_bSaveStringEndNull )
-		{
-			m_vecbBuffer.resize( dwOffset + sizeof(WORD) + (wLength + 1)*sizeof(wchar_t) );
-			CopyMemory( &m_vecbBuffer[dwOffset], &wLength, sizeof(WORD) );
-			CopyMemory( &m_vecbBuffer[dwOffset+sizeof(WORD)], pwszInChar_, wLength*sizeof(wchar_t) );
-			*( (wchar_t*) &m_vecbBuffer[dwOffset+sizeof(WORD) + wLength*sizeof(wchar_t)] ) = 0;
-		}
-		else
-		{
-			m_vecbBuffer.resize( dwOffset + sizeof(WORD) + wLength*sizeof(wchar_t) );
-			CopyMemory( &m_vecbBuffer[dwOffset], &wLength, sizeof(WORD) );
-			CopyMemory( &m_vecbBuffer[dwOffset+sizeof(WORD)], pwszInChar_, wLength*sizeof(wchar_t) );
-		}//if.. else..
-	}
-
-    return  dwOffset;
+    return AppendWideString( bShort, bNoMap, pwszInChar_, (DWORD) wcslen( pwszInChar_ ) );
 }//KFileSerializer::AppendWideString()
 
 
+// Strings are stored as UTF-16, as the original wrote them with Windows' 2-byte wchar_t: the length (a DWORD, or a WORD
+// when bShort) in UTF-16 code units, the units, and a null when m_bSaveStringEndNull. The files built in memory and the
+// ones the original's tools preprocessed (Item.kim, .tet, .xet) then read the same way (KReadPreprocessedString).
 DWORD   KFileSerializer::AppendWideString( bool bShort, bool bNoMap, const wchar_t* pwszInChar_, DWORD dwLength )
 {
     ASSERT( m_iLockCounter <= 0 );
@@ -427,7 +376,7 @@ DWORD   KFileSerializer::AppendWideString( bool bShort, bool bNoMap, const wchar
 	if ( pwszInChar_ == NULL || dwLength == 0 )
 		return 0;
 
-	AlignSpace( sizeof(wchar_t) );
+	AlignSpace( sizeof(char16_t) );
 
     DWORD   dwOffset = GetSize();
 
@@ -442,39 +391,23 @@ DWORD   KFileSerializer::AppendWideString( bool bShort, bool bNoMap, const wchar
 		}//if
 	}
 
-	if ( bShort == false )
-	{
-		if ( m_bSaveStringEndNull )
-		{
-			m_vecbBuffer.resize( dwOffset + sizeof(DWORD) + (dwLength + 1)*sizeof(wchar_t) );
-			CopyMemory( &m_vecbBuffer[dwOffset], &dwLength, sizeof(DWORD) );
-			CopyMemory( &m_vecbBuffer[dwOffset+sizeof(DWORD)], pwszInChar_, dwLength*sizeof(wchar_t) );
-			*( (wchar_t*) &m_vecbBuffer[dwOffset+sizeof(DWORD)+dwLength*sizeof(wchar_t) ] ) = 0;
-		}
-		else
-		{
-			m_vecbBuffer.resize( dwOffset + sizeof(DWORD) + dwLength * sizeof(wchar_t) );
-			CopyMemory( &m_vecbBuffer[dwOffset], &dwLength, sizeof(DWORD) );
-			CopyMemory( &m_vecbBuffer[dwOffset+sizeof(DWORD)], pwszInChar_, dwLength*sizeof(wchar_t) );
-		}//if.. else..
-	}
-	else
-	{
-		WORD wLength = (WORD) dwLength;
-		if ( m_bSaveStringEndNull )
-		{
-			m_vecbBuffer.resize( dwOffset + sizeof(WORD) + (wLength + 1)*sizeof(wchar_t) );
-			CopyMemory( &m_vecbBuffer[dwOffset], &wLength, sizeof(WORD) );
-			CopyMemory( &m_vecbBuffer[dwOffset+sizeof(WORD)], pwszInChar_, wLength*sizeof(wchar_t) );
-			*( (wchar_t*) &m_vecbBuffer[dwOffset+sizeof(WORD) + wLength*sizeof(wchar_t)] ) = 0;
-		}
-		else
-		{
-			m_vecbBuffer.resize( dwOffset + sizeof(WORD) + wLength*sizeof(wchar_t) );
-			CopyMemory( &m_vecbBuffer[dwOffset], &wLength, sizeof(WORD) );
-			CopyMemory( &m_vecbBuffer[dwOffset+sizeof(WORD)], pwszInChar_, wLength*sizeof(wchar_t) );
-		}//if.. else..
-	}
+    const std::u16string utf16 = x2::platform::WideToUtf16( std::wstring_view( pwszInChar_, dwLength ) );
+    const size_t lengthSize = bShort ? sizeof(WORD) : sizeof(DWORD);
+    const size_t textSize = utf16.size() * sizeof(char16_t);
+    m_vecbBuffer.resize( dwOffset + lengthSize + textSize + ( m_bSaveStringEndNull ? sizeof(char16_t) : 0 ) );
+    if ( bShort )
+    {
+        const WORD wLength = (WORD) utf16.size();
+        CopyMemory( &m_vecbBuffer[dwOffset], &wLength, sizeof(WORD) );
+    }
+    else
+    {
+        const DWORD dwUnits = (DWORD) utf16.size();
+        CopyMemory( &m_vecbBuffer[dwOffset], &dwUnits, sizeof(DWORD) );
+    }
+    CopyMemory( &m_vecbBuffer[dwOffset + lengthSize], utf16.data(), textSize );
+    if ( m_bSaveStringEndNull )
+        ZeroMemory( &m_vecbBuffer[dwOffset + lengthSize + textSize], sizeof(char16_t) );
 
     return  dwOffset;
 }//KFileSerializer::AppendWideString()
