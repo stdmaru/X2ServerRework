@@ -256,8 +256,8 @@ See [Client — Windows / Direct3D 9 dependencies](../original/client.md).
         window on Hyprland it shows the textured login screen, logs in to the Linux servers, draws the character select
         and the character creation screen with its movies (2026-11-12). See [Client: X2](../porting/client-x2.md#status).
   - [ ] `client/frame-pacing`: fixed simulation ticks as in the original, rendering at any rate with the camera and units
-        interpolated between ticks; vsync at the monitor's rate (FIFO) or an in-game frame limit. Needs a decision
-        (behavior change; agreed with the user 2026-11-12). Later: skeletal animation, mesh players, particles.
+        interpolated between ticks; vsync at the monitor's rate (FIFO) or a frame limit ([T41](decisions.md)).
+        Later, if needed: mesh players, particles.
   - [ ] `client/x2-world`: mass script tests, then character select → channel → town/world on the Linux servers.
 - [ ] Reimplement the rest of D3DX on the original assets (T1, T37): `.x` loader (mesh + skin + animation), `.dds` (BC1–3 native,
       legacy formats to RGBA8). Fonts and sprites dropped: the engine uses neither `ID3DXFont` nor `ID3DXSprite`
