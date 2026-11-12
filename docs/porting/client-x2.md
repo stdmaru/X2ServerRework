@@ -85,4 +85,4 @@ OK button's `GetKeyState(DIK_RETURN)` closes it at once; on Windows the refused 
 
 `x2` links and starts on Linux, and reaches the login screen headless (2026-11-12). Windowed on a GPU it logs in, shows
 the character select and the character creation screen with its movies (2026-11-12). Next: the frame-pacing step, then
-login → channel → world on the Linux servers ([roadmap](../project/roadmap.md#phase-4--client-graphics)).
+channel → town/world on the Linux servers ([roadmap](../project/roadmap.md#phase-4--client-graphics)).
