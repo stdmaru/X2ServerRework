@@ -4,9 +4,14 @@
 
 #include "x2/platform/unicode.h"
 
+#include <SDL3/SDL_events.h>
+#include <SDL3/SDL_init.h>
 #include <SDL3/SDL_messagebox.h>
+#include <SDL3/SDL_timer.h>
 
+#include <atomic>
 #include <string>
+#include <thread>
 #include <vector>
 
 namespace {
@@ -44,10 +49,32 @@ int Show(HWND hWnd, const std::string& text, const std::string& caption, UINT ty
     }
     flags |= SDL_MESSAGEBOX_BUTTONS_LEFT_TO_RIGHT;
 
-    const SDL_MessageBoxData box{flags, reinterpret_cast<SDL_Window*>(hWnd), caption.c_str(), text.c_str(),
-                                 static_cast<int>(data.size()), data.data(), nullptr};
     int pressed = 0;
-    if (!SDL_ShowMessageBox(&box, &pressed)) {
+    bool shown = false;
+    if (SDL_IsMainThread() && SDL_WasInit(SDL_INIT_VIDEO)) {
+        // A box blocks until it is answered. Shown from a worker thread (without a parent: SDL wants the parent's
+        // thread), it lets the main thread keep pumping events, so the compositor does not call the game unresponsive.
+        // Input that reaches the game window meanwhile is dropped, as the modal box would have.
+        const SDL_MessageBoxData box{flags, nullptr, caption.c_str(), text.c_str(), static_cast<int>(data.size()),
+                                     data.data(), nullptr};
+        std::atomic<bool> done{false};
+        std::thread worker([&] {
+            shown = SDL_ShowMessageBox(&box, &pressed);
+            done = true;
+        });
+        while (!done) {
+            SDL_PumpEvents();
+            SDL_Delay(20);
+        }
+        worker.join();
+        SDL_PumpEvents();
+        SDL_FlushEvents(SDL_EVENT_KEY_DOWN, SDL_EVENT_MOUSE_REMOVED);
+    } else {
+        const SDL_MessageBoxData box{flags, reinterpret_cast<SDL_Window*>(hWnd), caption.c_str(), text.c_str(),
+                                     static_cast<int>(data.size()), data.data(), nullptr};
+        shown = SDL_ShowMessageBox(&box, &pressed);
+    }
+    if (!shown) {
         return 0;   // Win32 returns 0 on failure
     }
     // Closing the box without a button: Win32 answers IDCANCEL when there is a Cancel button, else IDOK for MB_OK
